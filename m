@@ -1,32 +1,54 @@
-From: "Steven" <trumpet21abby@hotmail.com>
-Subject: Hard even after you CUM!
-Date: Thu, 21 Oct 2004 08:02:19 GMT
+From: "Rochelle Gustafson" <nglaziwrnvm@cc.osaka-kyoiku.ac.jp>
+Subject: dinnertime
+Date: Sat, 23 Oct 2004 09:52:35 -0300
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1098345739-23074__46107.0328056396$1098348622$gmane$org@excite.com>
-Content-Type: text/plain;
+Message-ID: <DRNUYHVRICJFKGUFIAJOAGZG__33032.6686650098$1098499292$gmane$org@m2corp.com>
+Reply-To: "Rochelle Gustafson" <nglaziwrnvm@cc.osaka-kyoiku.ac.jp>
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="--750950638568953014"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [200.66.97.148] ([200.66.97.148]:33910 "HELO vfx-law.com")
-	by vger.kernel.org with SMTP id S269080AbUJUICV (ORCPT
+Received: from [211.242.3.209] ([211.242.3.209]:37898 "HELO 12.107.209.244")
+	by vger.kernel.org with SMTP id S269251AbUJVXdC (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 21 Oct 2004 04:02:21 -0400
+	Fri, 22 Oct 2004 19:33:02 -0400
 List-Id: linux-serial@vger.kernel.org
-To: 40free.net.ph@vger.kernel.org
+To: linux-net@vger.kernel.org
 
-Today's special: 
-V-I-A-G-R-A, retails for $15, we sell for as low as $1.90!!!
+bellboy  barber  steven  refutation  chomsky 
+philology  americana  consumptive  cognition  controlling 
 
-- Private Online ordering!
-- World wide shipping!
-- No Prescription required!!
+ 
+----750950638568953014
+Content-Type: text/plain;
+Content-Transfer-Encoding: 7Bit
 
-Check it out: http://fdlmbceghijk.bestforher.biz/?abceghijkxtnqyfzvtdlm
+**Notice from the Office of the Registrar 
+ 
+You are now qualified to obtain a Degree from an accredited University.
+There are no required tests, classes, books, or interviews.
+BA,LLB,MBA,MSc and PhD designations are available in the field of your choice.
+ 
+Discrete and very inexpensive. We send the degree to all countries (worldwide)
+ 
+You don't want to miss this opportunity as it won't last:
+ 
+http://wuniv.net/?partid=wh6
 
-scooter1 cancedboogie energy active
-pacers moronisweety basil bach norman bigmac cccccc 
-vanilla swimming mookie 
-aylmer lameraspen homebrew kiss
-castle phoenix1 front242 
-rhonda hansontattoo kingdom dgj
+Rochelle Gustafson
+Director Of Admissions
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 
-tango front242dougie electric gambit trek wonder zeppelin 
+future contact:
+http://wuniv.net/st.html
+ 28
+
+
+----750950638568953014--
+
 
