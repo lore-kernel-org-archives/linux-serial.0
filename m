@@ -1,31 +1,31 @@
-From: "Gary Frerking" <gary@frerking.org>
+From: Alexander Bartolich <alexander.bartolich@gmx.at>
 Subject: Re: Maintainer needed for Serial-Programming-HOWTO
-Date: Sat, 29 Mar 2003 18:11:48 -0700
+Date: Sun, 30 Mar 2003 03:36:37 +0200 (MEST)
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <002401c2f659$583f9780$060420d0@vaio>
-References: <19036.1048985239@www34.gmx.net>
+Message-ID: <13707.1048988197@www34.gmx.net>
+References: <002401c2f659$583f9780$060420d0@vaio>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: Alexander Bartolich <alexander.bartolich@gmx.at>, Greg Ferguson <gferg@sgi.com>
-Cc: David Lawyer <dave@lafn.org>, discuss@en.tldp.org, linux-serial@vger.kernel.org
+To: Gary Frerking <gary@frerking.org>
+Cc: gferg@sgi.com, dave@lafn.org, discuss@en.tldp.org, linux-serial@vger.kernel.org
 
-> Well, since nobody stood up and protested I had a first go on the
-document.
+Gary Frerking wrote:
+> [...] But I guess that wasn't a protest.
 
-Hmm.
+Oops. The last thing I want is to be used in an LDP internal feud.
+You can have it back again, if you like.
+And since I did no content related changes you can remove my
+name from the title page.
 
-Well, I said I was alive and well and willing to continue to work on it --
-and asked David why he didn't bother contacting me prior to posting to the
-list -- and asked you for a pointer to a good example that demonstrated how
-to properly address your concerns.
+--=20
++++ GMX - Mail, Messaging & more  http://www.gmx.net +++
+Bitte l=E4cheln! Fotogalerie online mit GMX ohne eigene Homepage!
 
-But I guess that wasn't a protest.
-
-If you want to take it over, be my guest.
-
--- Gary
-
+-
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
