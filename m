@@ -1,20 +1,23 @@
 From: "Michael Kohne" <mhkohne@discordia.org>
-Subject: (unknown)
-Date: Tue, 18 Nov 2003 08:26:28 -0500 (EST)
+Subject: Resend: [PATCH] Improve low latency behaviour of 16550 driver
+Date: Tue, 18 Nov 2003 10:28:49 -0500 (EST)
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <10718.209.92.255.18.1069161988.squirrel@www.discordia.org>
+Message-ID: <11992.209.92.255.18.1069169329.squirrel@www.discordia.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from techno.discordia.org ([66.92.231.194]:36589 "EHLO
+Received: from techno.discordia.org ([66.92.231.194]:33779 "EHLO
 	techno.discordia.org") by vger.kernel.org with ESMTP
-	id S262603AbTKRN03 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Nov 2003 08:26:29 -0500
-Subject: 
+	id S263625AbTKRP2u (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 18 Nov 2003 10:28:50 -0500
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: tytso@mit.edu
+
+Apologies for the double send. I had e-mail trouble (pilot error) on this
+end and can't be sure if this went out or not.
+
 
 Proposed modification to the low_latency flag in version 5.05c of the
 linux 16550 driver (drivers/char/serial.c).
@@ -138,5 +141,6 @@ to 2.5/2.6 as well.
 Michael Kohne        mhkohne@discordia.org
 "You should be smarter than the equipment you are trying to operate." --
 Matt Osborne
+
 
 
