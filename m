@@ -1,54 +1,106 @@
-From: Ed Vance <EdV@macrolink.com>
-Subject: RE: A new serial baud rate
-Date: Fri, 26 Jul 2002 09:00:05 -0700
+From: Robert White <rwhite@pobox.com>
+Subject: Re: n_tty.c driver patch (semantic and performance correction) (a ll recent versions)
+Date: Sat, 27 Jul 2002 15:07:56 -0700
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <11E89240C407D311958800A0C9ACF7D13A7908@EXCHANGE>
+Message-ID: <200207271507.56873.rwhite@pobox.com>
+References: <11E89240C407D311958800A0C9ACF7D13A789A@EXCHANGE> <20020726151723.F19802@flint.arm.linux.org.uk>
+Reply-To: rwhite@pobox.com
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
+In-Reply-To: <20020726151723.F19802@flint.arm.linux.org.uk>
 List-Id: linux-serial@vger.kernel.org
-To: "'henrique@cyclades.com'" <henrique@cyclades.com>
-Cc: linux-serial@vger.kernel.org, 'Alan Cox' <alan@lxorguk.ukuu.org.uk>
+To: Russell King <rmk@arm.linux.org.uk>, Ed Vance <EdV@macrolink.com>
+Cc: 'Theodore Tso' <tytso@mit.edu>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-> > On Thu, July 25, 2002 at 12:14 PM, henrique wrote:
-> > > I just wanna know what is the procedure to insert this new baud 
-> > > rate (14400) in the linux kernel.
-> > > 
+I agree that that is what that line of the text says, my position is that the 
+entire statement was was written nieavely, and proveably so.  Throughout the 
+entire section the standard (not the linux manual page) discusses "satisfying 
+a read" (singular).  The text was written with an "everybody will know 
+basically what I mean" aditude that leaves it flawed for strict 
+interpretation.  And the linux manual pages still show through enough to use 
+as the bases of my argument.
 
-> On Thu, July 25, 2002 at 2:36 PM, Ed Vance wrote:
-> > If you have a 2.4.x kernel, and your serial ports have "simple" 
-> > UARTs like a 16550A, then use the setserial command to directly 
-> > set the UART's divisor. See the man page on setserial, which also 
-> > has words about how to put the setserial commands into a script 
-> > that runs automatically when you boot the system.
-> > 
-> > You will have to know the "baud base" rate of your UARTs. This is 
-> > the baud rate that you get if you set the divisor to 1 (probably 
-> > 115200 bps).
-> > 
-> > The new divisor is baud_base / 14400 (which is probably 8).
-> > 
+Pre-Summary: My entire position rests on what the original author meant by 
+"receive".  That is, is it "receive into the driver" or "receive into the 
+user context".  He proveably meant receive into the user context (e.g. the 
+read buffer).
 
-On Fri, July 26, 2002 at 6:15 AM, henrique wrote:
-> 
-> Ed, unfortunately my equipment uses the 2.2.14 kernel. 
-> Does your suggestion work in such kernel ? It would be 
-> the easiest way to solve this.
-> 
+The best example to use for the "sloppyness" of writing in the standard and 
+manual page is that technically, if it is "receive into the driver", if you 
+have both VMIN and VTIME set non-zero, VTIME will not start until "a 
+character is received" which, by strict intrepertation of "received (by the 
+driver)", discounts the presence of any characters in the buffer.  Restated, 
+if it is "receive into the driver" this read will wait for a new character 
+even if there are hundreds of characters already buffered.
 
-Hi Henrique,
+(CITATION: from the linux manual page: "When both are set, a read will wait 
+until at least one character has been received, and then return  as  soon  as 
+either  MIN  characters  have been received or time TIME has passed since the 
+last character was received.")
 
-I know of no specific reason why it would not work under 2.2. I just 
-have no direct experience with the 2.2 kernel and the corresponding 
-version of the serial driver. If the setserial functionality that I 
-described is in your setserial man page from 2.2, then I think the 
-method should work well. 
+This "clearly states" that if you have a meg in the buffer (passed-tense 
+received) the driver "will  wait for a character to be received" (imparative 
+future tense) but we all know that is dumb...
 
-Best regards,
-Ed
+Even the existing implementation for VMIN and VTIME has them in the user read 
+context already, which is why the round-down is only the one compound 
+statement.  That clearly shows that "received" is interpreted as "received 
+into the user context (read buffer)."
 
----------------------------------------------------------------- 
-Ed Vance              edv@macrolink.com
-Macrolink, Inc.       1500 N. Kellogg Dr  Anaheim, CA  92807
-----------------------------------------------------------------
+IF the context of "to receive", that is, the boundry between here and not-here 
+is fixed, by definition, to the read call itself, the technicalities all 
+disapear except one, that one being what to do if VMIN is greater than the 
+receive (read) buffer size since, in this more-consistent boundry point "to 
+receive" across, the more-than-buffer-sized characters can't ever then be 
+received by definition.  The obvious interpretation is then not to wait for 
+the unreceivable characters.
+
+There are more examples of the "received by" being the read call, and the 
+"received from" being the driver instead of the hardware.  Look at when 
+non-raw processing take place.
+
+Having only the raw-mode processing "receive" at the hardware level (with the 
+buffer tossed in halfway because we all know that's what it means 8-) doesn't 
+make consistent sense.  Especially if it is to preserve a conception that 
+isn't ever used "in the wild".
+
+Rob.
+
+
+On Friday 26 July 2002 07:17, Russell King wrote:
+> On Wed, Jun 26, 2002 at 10:48:30AM -0700, Ed Vance wrote:
+> > Does the spec say that VMIN behavior depends on the size of a
+> > blocking read? No, it says that the read completes when VMIN or
+> > more characters have been received. If VMIN is three and two
+> > characters have been received, completing a blocking read of any
+> > size is a violation. Should we also add a "read buffer size"
+> > parameter to select and poll, etc. so they can report that read
+> > data is available before satisfying VMIN, too?
+> >
+> > Ted, Russell, please weigh in on this.
+>
+> I just found this mail again.  Yes, I agree with your interpretation,
+> which reflects the code we presently have, as well as my reading of
+> SuS.  The SuS is quite clear that "A pending read shall not be
+> satisfied until MIN bytes are received".  It doesn't say "A pending
+> read shall not be satisfied until MIN bytes or the number of requested
+> bytes in read() are received"
+>
+> In addition, it also says "MIN represents the minimum number of bytes
+> that should be received when the read() function returns successfully."
+> Successful completion for read() is defined as "Upon successful
+> completion, read() shall return a non-negative integer indicating the
+> number of bytes actually read."
+>
+> So, for _any_ read() to a terminal with MIN set, for this call to
+> return data (ie, success) MIN bytes must have been received.
+>
+> (Note that the behaviour where the number of bytes > MIN seems to be
+> a little vague, SuS just talks about "block the calling thread until
+> _some_ data becomes available" for the blocking case.)
+>
+> I'd be interested to know if Ted agrees with my position here; he is
+> the author of the tty code, and is presently looking at that area.
+
