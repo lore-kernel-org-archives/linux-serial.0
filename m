@@ -1,38 +1,38 @@
-From: "Marcie Brugger" <marciebruggeramvqlknkyndu@loveable.com>
-Subject: V is not just for middle-aged men
-Date: Fri, 24 Sep 2004 06:40:38 -0900
+From: "Odessa Bessey" <odessabesseyqxsvmoswxexo@ironoh.adelphia.net>
+Subject: after you take this, she will not want to be with anyone else
+Date: Mon, 27 Sep 2004 06:08:47 +0700
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1F6B3CE5.4F58FDE@loveable.com>
-Reply-To: "Marcie Brugger" <marciebruggeramvqlknkyndu@loveable.com>
+Message-ID: <11D65803.F948F40@ironoh.adelphia.net>
+Reply-To: "Odessa Bessey" <odessabesseyqxsvmoswxexo@ironoh.adelphia.net>
 Mime-Version: 1.0
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [198.65.102.27] ([198.65.102.27]:18879 "HELO loveable.com")
-	by vger.kernel.org with SMTP id S268845AbUIXPzo (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 24 Sep 2004 11:55:44 -0400
+Received: from 69-170-169-203.ironoh.adelphia.net ([69.170.169.203]:31505 "HELO
+	ironoh.adelphia.net") by vger.kernel.org with SMTP id S264984AbUIZXhy
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 26 Sep 2004 19:37:54 -0400
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial <linux-serial@vger.kernel.org>
 
-Lower as much as 80% off the price of v.iagra that other sites charge.
+Silagra is the generic version of v.iagra except that it costs much less.
 
-Each order includes specific usage instructions to ensure your safety.
+Stop overpaying, and start ordering with a reliable source.
 
-Procure now, and receive within 14 days.
+The ordering process is completely electronic so you don't have to talk to
+a doctor.
 
-Dollie Buckelew
+Rosalinda Bombardier
 
-http://Gjprinvknk.qualitygenericsforless.com
-
-
-
+http://Ellcnnvtvcqylvd.qualitygenericsforless.com
 
 
 
-To be taken off the marketing list for generic medications or related
-products, use this link here:
-http://M68460245.qualitygenericsforless.com
-y1Ihsg
+
+
+
+If you have no interest in generic medications, select below:
+http://M4684625.qualitygenericsforless.com
+y1Koxug
 
