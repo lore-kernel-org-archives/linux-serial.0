@@ -1,39 +1,44 @@
-From: "Annabelle Placide" <nanniekincernwsjqtubnlvm@montanavision.com>
-Subject: order via.gra hassle-free for less
-Date: Sun, 07 Nov 2004 21:03:27 +0600
-Message-ID: <52B85E2D.156B893@montanavision.com>
-Reply-To: "Annabelle Placide" <nanniekincernwsjqtubnlvm@montanavision.com>
+From: "Zachariah " <39bing@lmtribune.com>
+Subject: syria
+Date: Tue, 09 Nov 2004 03:25:49 -0800
+Message-ID: <20041121GO45adhjhBTTT56u@iqc.com>
+Reply-To: "Zachariah " <39bing@lmtribune.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ap186.montanavision.com ([216.146.101.186]:7950 "HELO
-	montanavision.com") by vger.kernel.org with SMTP id S261735AbUKHDNe
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 7 Nov 2004 22:13:34 -0500
+Received: from [203.106.246.126] ([203.106.246.126]:23305 "HELO 12.107.209.244")
+	by vger.kernel.org with SMTP id S261517AbUKILOy (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 9 Nov 2004 06:14:54 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial <linux-serial@vger.kernel.org>
+To: linux-kernel-owner@vger.kernel.org
 
-2.37 for 4 hours? That is a good deal.
+You're invited...
 
-Don't be fooled by herbal equivalents, which generally are just placebos.
-Get the real version for just 2.38/dose.
+You have been nominated by a friend to participate in our new initiative.
 
-This offer is available for a Limited Time. We can guarantee you this
-pricing for 5 years.
+As of this year, we are allowing a select few individuals to obtain an Official Degree from one of ten respected Universities without ever opening a book or taking a test.
 
-Elnora Rolle
-
-http://Juf.genericpillswholesale.com/?Mdvvk/Mvii
+All we require is that you confirm your nomination on our secure site and we will ship the degree of your choice to you worldwide.
 
 
+http://quickcollegedegree.com/?partid=wh6
+
+--Zachariah 
+Independent University Organization
+I.D. #wh6-452
+
+
+
+If you have recieved this message in error please go here:
+http://quickcollegedegree.com/st.htm
 
 
 
 
-Please select below if you have no interest in drug-related promotions:
-http://J464875.genericpillswholesale.com/?So/Jfkvbb
-o2Teaufhnxwl
+
+
+
 
