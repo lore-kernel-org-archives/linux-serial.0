@@ -1,31 +1,35 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+From: "Stuart MacDonald" <stuartm@connecttech.com>
 Subject: Re: RS485 communicatio
-Date: 16 Mar 2003 19:57:06 +0000
+Date: Sun, 16 Mar 2003 18:47:02 -0500
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1047844625.21346.1.camel@irongate.swansea.linux.org.uk>
-References: <11E89240C407D311958800A0C9ACF7D1A33DDF@EXCHANGE>
-	 <20030315194646.GB367@elf.ucw.cz>
-Mime-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Message-ID: <070201c2ec16$586a6ac0$294b82ce@connecttech.com>
+References: <20030313061505.5944.qmail@indiainfo.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-In-Reply-To: <20030315194646.GB367@elf.ucw.cz>
 List-Id: linux-serial@vger.kernel.org
-To: Pavel Machek <pavel@ucw.cz>
-Cc: Ed Vance <EdV@macrolink.com>, 'Linux PPP' <linuxppp@indiainfo.com>, linux-serial@vger.kernel.org, 'linux-kernel' <linux-kernel@vger.kernel.org>
+To: Linux PPP <linuxppp@indiainfo.com>, linux-serial@vger.kernel.org
 
-On Sat, 2003-03-15 at 19:46, Pavel Machek wrote:
-> > I believe Point-to-Point Protocol only supports point-to-point symmetric
-> > links. Don't think there is any multi-point support in the protocol. IIRC,
-> > PPP also requires a full duplex link, which is not available on an RS-485
-> > link with more than two stations, even if it is a 4-wire link. 
-> 
-> Get scarabd (I don't know *where* it is), it can run TCP/IP over slip over
-> half-duplex link. Performance is not too good.
+From: "Linux PPP" <linuxppp@indiainfo.com>
+> am currently working on PPP over serial interface (RS485) in linux
+2.4.2-2. I believe RS485 half duplex system and hence only one can transmit
+at a time. And for RS485 we basicaly use Master-Slave or Primary-Secondary
+kind of communication. I don't know how to achieve the
+[snip]
+> This point to point communication worked fine with RS485 interface. If i
+had to connect one more node what i need to do. Please clarify with the
+following
+>
+> i) Whether the existing pppd takes care of the RS485 with multi node , if
+so how do i manage giving commands
 
-Robin O'Leary wrote most of it, so its probably somewhere like
-caderus.co.uk
+PPP is designed to connect two logical endpoints together. 485
+multidrop is a one to many setup, which seems to me is logically
+incompatible with PPP. At least, simultaneously.
 
-Half duplex performance is fine at a sensible speed and with decent
-reliability. On radio will collisions its a lot less pretty
+..Stu
+
+--
+We make multiport serial boards.
+<http://www.connecttech.com>
+(800) 426-8979
+
 
