@@ -1,32 +1,58 @@
-From: "carmelo" <lawvson_44@hotmail.com>
-Subject: As Seen on CNN, the Winningest CAS1N0! jan softball}
-Date: Tue, 04 May 2004 05:30:48 GMT
+From: Michael Westermann <mw@microdata-pos.de>
+Subject: change HW flow-control
+Date: Thu, 6 May 2004 16:39:09 +0200
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1083648648-4869__4214.38758862696$1083673453@excite.com>
-Content-Type: text/plain;
+Message-ID: <20040506163909.A21706@microdata-pos.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [61.178.58.109] ([61.178.58.109]:5056 "HELO vfree.com")
-	by vger.kernel.org with SMTP id S264327AbUEDMWw (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 May 2004 08:22:52 -0400
+Received: from port-212-202-104-142.reverse.qsc.de ([212.202.104.142]:32018
+	"EHLO imail.microdata-pos.de") by vger.kernel.org with ESMTP
+	id S262045AbUEFOjK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 6 May 2004 10:39:10 -0400
+Content-Disposition: inline
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-PREMI:ERE ONLIN}E CAS`INO!
-50% BONU:S for YOUR FIRST DEPO}SIT as a New Player.
+Hello,
 
-SI|GN UP now! Don't wait!
+I work on a change for the serial driver, 
+first for a i386 kernel 2.4.xx. Many POS printers and devices 
+from different vendors use DTR/DSR flow control, not RTS/CTS. 
 
-http://www.urban-casino.com/_e4faa55afa1972493c43ac8a3f66f869/
+I think it's a good idea to change the serial.c module for flexible
+flow control. My idea is to add one or two additional variables 
+for the hw flow control.
 
-Once you're a Mem}ber, there are near WEEK{LY 2-T`O-1, and 3-T'O-1 depo:sit offers!
+info->modem_flow 	/* Modem lines  */ 
+info->status_flow 	/* Status lines */
 
-Imagine, put in $25, GET $50 CRE'DIT BE|FORE YOU PL|ACE YO{UR FI{RST BET!!
+example: setting for ctrscts in serial.c not complete.
 
-CLIC:K HER!E!
+@@ -1751,6 +1751,8 @@
+ 		info->IER |= UART_IER_MSI;
+ 	if (cflag & CRTSCTS) {
+ 		info->flags |= ASYNC_CTS_FLOW;
++		info->status_flow = UART_MSR_CTS;
++		info->modem_flow  = UART_MCR_RTS;
+ 		info->IER |= UART_IER_MSI;
+ 	} else
+ 		info->flags &= ~ASYNC_CTS_FLOW;
 
-http://www.urban-casino.com/_e4faa55afa1972493c43ac8a3f66f869/
 
+With this change can we use few different flow-controls e.g.
+CTS/DTR, DTR/DSR RTS/DSR .. DTR/CD. 
 
+I think is a good idea to integrate the new settings in the termios flags.
 
-tattoo mimi dragonfl bmw test2 deutsch warriors raptor caesar scuba1 reynolds ssssss sarah1 carolina clipper kleenex yoda reznor players apple1 bmw planet lulu boogie nurse scorpion
+/* c_lflag bits */
+#define CHWFLOW	001000000000 
+
+and set the hw stop and start bits in the  c_cc array.
+either in the VSTART and VSTOP field or in the free field index 17 and 18.    	
+
+Alternatively the new HW flow lines could be set with a new ioctl.
+ 
+What is the best way to set status_flow and modem_flow?  
+
+Michael
