@@ -1,36 +1,27 @@
-From: =?iso-8859-1?q?suresh=20shenoy?= <msureshshenoy@yahoo.co.in>
-Subject: Serial port read working but not write.
-Date: Thu, 22 Jul 2004 17:48:03 +0100 (BST)
+From: Lukasz Michal Rak <L.Rak@elka.pw.edu.pl>
+Subject: Re: Serial port read working but not write.
+Date: Fri, 23 Jul 2004 00:20:05 +0200 (CEST)
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20040722164803.5219.qmail@web8206.mail.in.yahoo.com>
+Message-ID: <Pine.GSO.4.58.0407230018090.934@mion.elka.pw.edu.pl>
+References: <20040722164803.5219.qmail@web8206.mail.in.yahoo.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from web8206.mail.in.yahoo.com ([203.199.70.75]:58291 "HELO
-	web8206.mail.in.yahoo.com") by vger.kernel.org with SMTP
-	id S266913AbUGVTTg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 22 Jul 2004 15:19:36 -0400
+Received: from mion.elka.pw.edu.pl ([194.29.160.35]:6561 "EHLO
+	mion.elka.pw.edu.pl") by vger.kernel.org with ESMTP id S267310AbUGVWUQ
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 22 Jul 2004 18:20:16 -0400
+In-Reply-To: <20040722164803.5219.qmail@web8206.mail.in.yahoo.com>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: =?iso-8859-1?q?suresh=20shenoy?= <msureshshenoy@yahoo.co.in>
+Cc: linux-serial@vger.kernel.org
 
-Hi all,
 
-   I am currently using redhat linux 9.0. I am working
-with a hardware which senses some data and sends back
-to the PC through serial port. It also can move a dc
-motor using the same hardware. I am using POSIX serial
-port programming for talking with the board. After
-some struggles i was able to read the data from the
-hardware device. But my current problem is that it is
-not moving the motor when i send a command to the
-hardware. Does anyone know the solution to this
-problem. Please let me know if any piece of code or
-any more information is required that i can furnish.
+	Hi!
 
-Thanks & Regards,
-Suresh M Shenoy.
+ Connection from board to PC is working and from PC to board it is not, am
+I right? Did you check if it is not hardware problem? This is what first
+comes to my head.
 
-________________________________________________________________________
-Yahoo! India Careers: Over 65,000 jobs online
-Go to: http://yahoo.naukri.com/
+			Lukasz
+
