@@ -1,96 +1,109 @@
 From: Marc Boucher <marc@linuxant.com>
 Subject: Re: Major problem with serial driver and serial_pci_guess_board()
-Date: Tue, 26 Aug 2003 16:48:30 -0400
+Date: Tue, 26 Aug 2003 19:59:52 -0400
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20030826204830.GA30364@endlich.mbsi.ca>
-References: <20030826182745.GA29051@endlich.mbsi.ca> <20030826201601.J28810@flint.arm.linux.org.uk>
+Message-ID: <20030826235951.GA32337@endlich.mbsi.ca>
+References: <20030826202951.B28144@devserv.devel.redhat.com> <20030826185429.GA29937@endlich.mbsi.ca>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from modemcable198.171-130-66.que.mc.videotron.ca ([66.130.171.198]:42505
-	"EHLO valve.mbsi.ca") by vger.kernel.org with ESMTP id S261353AbTHZUsk
+Received: from modemcable198.171-130-66.que.mc.videotron.ca ([66.130.171.198]:58377
+	"EHLO valve.mbsi.ca") by vger.kernel.org with ESMTP id S262997AbTH0AAC
 	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 26 Aug 2003 16:48:40 -0400
+	Tue, 26 Aug 2003 20:00:02 -0400
 Content-Disposition: inline
-In-Reply-To: <20030826201601.J28810@flint.arm.linux.org.uk>
+In-Reply-To: <20030826185429.GA29937@endlich.mbsi.ca>
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <rmk@arm.linux.org.uk>
-Cc: linux-serial@vger.kernel.org, arjanv@redhat.com, jsimon@linuxant.com
+To: Arjan van de Ven <arjanv@redhat.com>
+Cc: rmk@arm.linux.org.uk, linux-serial@vger.kernel.org, jsimon@linuxant.com
 
-Hi Russell,
-
-On Tue, Aug 26, 2003 at 08:16:01PM +0100, Russell King wrote:
-> On Tue, Aug 26, 2003 at 02:27:46PM -0400, Marc Boucher wrote:
-> > This problem appears to be present in all recent serial driver variants,
-> > including those in 2.6 and the latest RedHat Severn beta. It is
-> > a serious issue preventing our drivers from working correctly.
+On Tue, Aug 26, 2003 at 02:54:29PM -0400, Marc Boucher wrote:
 > 
-> My only interest is in 2.6, and the messages appear to be from a
-> 2.4 kernel.  It does seem that we are detecting a device incorrectly,
-> since we aren't finding an 8250-compatible serial port.
+> In the practical world, the lack of (or deficient) softmodem support
+> is a serious weakness and obstacle to linux adoption, which we are
+> trying to fix.
+> 
+> We have received hundreds of "thank-you" mails from users who are very
+> happy to have working drivers for their modems.
 
-The messages indeed came from a 2.4 kernel, specifically
-2.4.21-20.1.2024.2.1.nptl (included in RedHat Severn).
+here just fyi a couple of fresh messages from users today, illustrating
+the situation.  i'm hoping we can work together to make their life easier/
+linux experience better and facilitate the switch from proprietary operating
+systems, instead of being too religious about it and getting stuck in radical
+positions..
 
-But a similar problem occurs under 2.6 (tested with Arjan's
-2.6.0-0.test4.1.32 rpm):
-
-Serial: 8250/16550 driver $Revision: 1.90 $ IRQ sharing enabled
-ttyS0 at I/O 0x3f8 (irq = 4) is a 16550A
-ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
-PCI: Enabling device 0000:00:08.0 (0000 -> 0003)
-ttyS2 at I/O 0x1428 (irq = 10) is a 8250
-ttyS3 at I/O 0x1440 (irq = 10) is a 8250
-
-[root@xe4000 root]# lspci -vvx -d 10b9:5457
-00:08.0 Modem: ALi Corporation Intel 537 [M5457 AC-Link Modem] (prog-if
-00 [Generic])
-        Subsystem: Hewlett-Packard Company: Unknown device 0025
-        Control: I/O+ Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop-
-ParErr- Stepping- SERR- FastB2B-
-        Status: Cap+ 66Mhz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-
-<TAbort- <MAbort- >SERR- <PERR-
-        Interrupt: pin A routed to IRQ 10
-        Region 0: Memory at e0002000 (32-bit, non-prefetchable)
-[size=4K]
-        Region 1: I/O ports at 1400 [size=256]
-        Capabilities: [40] Power Management version 2
-                Flags: PMEClk- DSI+ D1- D2- AuxCurrent=0mA
-PME(D0-,D1-,D2-,D3hot+,D3cold+)
-                Status: D0 PME-Enable- DSel=0 DScale=0 PME-
-00: b9 10 57 54 03 00 90 02 00 00 03 07 00 40 00 00
-10: 00 20 00 e0 01 14 00 00 00 00 00 00 00 00 00 00
-20: 00 00 00 00 00 00 00 00 00 00 00 00 3c 10 25 00
-30: 00 00 00 00 40 00 00 00 00 00 00 00 ff 01 00 00
-
-After a closer look it seems that most of the boards I previously listed
-(especially the newer ones) fortunately use PCI_CLASS_COMMUNICATION_OTHER,
-not PCI_CLASS_COMMUNICATION_SERIAL or PCI_CLASS_COMMUNICATION_MODEM which
-the serial driver looks for.
-
-Still, the ALI AC-Link MC97 device (in an HP laptop here) uses
-PCI_CLASS_COMMUNICATION_MODEM and has I/O ports so it gets picked
-up by the serial driver.
-
-> Unfortunately, we don't have tables of exclusion, nor do we have
-> a clean method to do that at present in any kernel.
-
-Would it not be possible to include devices we *know* use the confusing
-class IDs in the pci_serial_quirks table with an initialization
-routine that always fails? (under 2.6; for 2.4 we might need to
-implement something equivalent)
-
-> What I'd like to see is the output from lspci -vvx from a range of
-> PCI cards with this problem to see if there is characteristic (eg,
-> the PCI class/programming interface IDs) we can pick up on.
-
-I'll try to send you that info as we confirm other cases..
-
-Many thanks for the quick response,
+Kind regards
 Marc
 
-> 
-> -- 
-> Russell King (rmk@arm.linux.org.uk)                The developer of ARM Linux
->              http://www.arm.linux.org.uk/personal/aboutme.html
-> 
+----- Forwarded message from hasan numanoglu <hasan_numanoglu@yahoo.com> -----
+
+Date: Tue, 26 Aug 2003 15:44:12 -0700 (PDT)
+From: hasan numanoglu <hasan_numanoglu@yahoo.com>
+Subject: Modem problem
+To: modem.support@linuxant.com
+X-Spam-Checker-Version: SpamAssassin 2.60-cvs (1.196-2003-07-29-exp) on valve.mbsi.ca
+X-Spam-Status: No, hits=0.2 required=5.0 tests=BAYES_40,HTML_MESSAGE,RCVD_IN_NJABL 
+	autolearn=no version=2.60-cvs
+X-Spam-Level: 
+
+Hi, i have downloaded the modem scaner on your site, and ,it detects
+Rockwell International HCF 56k Data/Fax/Voice/Spkp (w/Handset) Modem (rev 01)...
+Then i looked the modem chip, it s written conexant, they're same may be...
+after that i downloaded the hcf and hsf driver but it's not working... i m
+using redhat 9 what's wrong ? dont know...? m very close to make an u turn and
+use xp :) you're my last hope.. :)
+i downloaded the top links of the driver list ( ?thought they re newest..)
+Should i try the rest or am i right????
+ 
+thanks...
+ 
+hasan_numanoglu@yahoo.com
+ 
+
+
+---------------------------------
+Do you Yahoo!?
+Yahoo! SiteBuilder - Free, easy-to-use web site design software
+----- End forwarded message -----
+
+----- Forwarded message from Jonathan Lyster <info@jslyster.com> -----
+
+Date: Tue, 26 Aug 2003 14:56:54 -0700
+From: Jonathan Lyster <info@jslyster.com>
+Subject: D480 modem and fax capability
+To: services@linuxant.com
+User-Agent: Opera7.11/Linux M2 build 406
+X-Spam-Checker-Version: SpamAssassin 2.60-cvs (1.196-2003-07-29-exp) on valve.mbsi.ca
+X-Spam-Status: No, hits=0.0 required=5.0 tests=BAYES_40 autolearn=ham 
+	version=2.60-cvs
+X-Spam-Level: 
+
+Folks;
+
+
+I recently purchased a Dell Inspiron 5100 laptop with an internal Conexant 
+D480 modem.
+I'm using the Linuxant driver for this modem, of course. (Thank you muchly 
+for that!)
+
+I notice however that under Windows XP the modem has fax capability but 
+under Linux it
+doesn't. Can you give me some idea of when (or if) you'll be adding fax 
+support to the
+D480 driver?
+
+Keep up the good work, folks; you're doing a Good Thing by making software 
+modems
+behave themselves under Linux. 8^D
+
+
+Regards;
+  Jonathan Lyster
+
+
+-- 
+Using M2, Opera's revolutionary e-mail client: http://www.opera.com/m2/
+
+
+----- End forwarded message -----
+
