@@ -1,41 +1,127 @@
-From: "monte" <fr8eedmanbill@hotmail.com>
-Subject: Save up to 80% on your medications!
-Date: Sun, 07 Mar 2004 16:53:42 GMT
+From: "Dachepalli, Sudhir" <sudhir.dachepalli@lsil.com>
+Subject: Help in setting up serial console on 64 bit machine
+Date: Mon, 8 Mar 2004 09:10:47 -0600
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1078678422-29920__24368.2486856871$1078678479@excite.com>
+Message-ID: <53CF1076699CD711B7DD0002A51363F102C3602D@exw-ks.ks.lsil.com>
+Mime-Version: 1.0
 Content-Type: text/plain;
+	charset="ISO-8859-1"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [202.188.20.133] ([202.188.20.133]:15623 "HELO
-	vernal.wireline.slb.com") by vger.kernel.org with SMTP
-	id S262262AbUCGQxq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 7 Mar 2004 11:53:46 -0500
+Received: from mail0.lsil.com ([147.145.40.20]:63668 "EHLO mail0.lsil.com")
+	by vger.kernel.org with ESMTP id S262504AbUCHPLJ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 8 Mar 2004 10:11:09 -0500
+Received: from new-mhbs.co.lsil.com (mhbs.lsil.com [172.21.20.49])
+	by mail0.lsil.com (8.12.8/8.12.8) with ESMTP id i28F7Z6T023512
+	for <linux-serial@vger.kernel.org>; Mon, 8 Mar 2004 07:07:35 -0800 (PST)
+Received: from exw-ks.ks.lsil.com (wic1.ks.lsil.com [153.79.12.11])
+	by new-mhbs.co.lsil.com (8.12.11/8.12.10) with ESMTP id i28FB7FP001970
+	for <linux-serial@vger.kernel.org>; Mon, 8 Mar 2004 08:11:07 -0700
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-
-Buy the drugs you need at huge discounts from Offshore Pharmacy!
-
-http://bigdiscounts.selcydc.com/s95/index.php?id=s95
-
-
-This weeks specials include great deals on:
-
-- V i a g r a Soft Tabs - (Takes effect in a quarter of the time!)
-- Super V i a g r a - (Lasts 8 times longer!)
-- U l t r a m - (Pain Relief)
-- S o m a - (Muscle Relaxants)
-- Z y b a n - (Stop Smoking)
-- P r o z a c - (Anti-Depressant)
-- X a n a x - (Anti-Depressant)
-- V a l i u m - (Anxiety Relief)
-
-http://bigdiscounts.selcydc.com/s95/index.php?id=s95
-
-
-
-
-
-
-
-gillaspie death venus colleen moira stimpson   sweety kristiDenver kristi mondana kbuchan   mdougher defilippis  cori dobkin rjhoban  hansolo madge 
-Get off this list by writing to getmeoff731@excitemail.com
+Hello SerialConsole user,
+ 
+         I have a problem while setting up serial console to direct kernel
+printk
+messages to serial console. I dont see messages getting displayed.
+ 
+My setup
+---------
+1. IA 64 machine.
+2. Redhat AS 3.0
+3. Kernel 2.4.18-e.37smp
+4. Server Hardware : HP rx5670
+ 
+Serial Console setup
+--------------------
+1. I have connected serial cable between two linux terminals.
+2. open minicom on both servers.
+3. changed the settings to 9600-8-n-1, no h/w flow control, no s/w flow
+control, stop bits =1.
+4. I typed some charecters on server 1 and saw the charecters appear in
+server 2's minicom.
+5. I typed some charecters on server 2 and saw the charecters appear in
+server 1's minicom.
+6. I have changed the kernel command line for booting the kernel . PLEASE
+SEE BELOW FOR "elilo.conf".
+7. label=serial ( elilo  entry to boot the serial console setup. )
+8. I have also checked the options in "make menuconfig" and found everything
+correct for serial console setup.
+ 
+After selecting "label=serial" and botting the OS the following is the
+command line from proc.
+[root@beast root]# cat /proc/cmdline
+BOOT_IMAGE=scsi0:EFI\redhat\vmlinuz-2.4.18-e.37smp  root=LABEL=/
+console=ttyS1,9600n8 console=tty0 ro
+ 
+The kernel cmdline seems to be correct but the messages are not directed on
+console.
+I have setup serial consoles on 32 bit machines earlier, but not on 64 bit.
+ 
+Please throw me some pointers to make it work.
+ 
+ 
+regards,
+sudhir dachepalli
+ 
+ 
+ 
+[root@beast root]# uname -a
+Linux beast 2.4.18-e.37smp #1 SMP Tue Aug 5 16:07:26 EDT 2003 ia64 unknown
+ 
+[root@beast root]# cat /etc/*release*
+Red Hat Linux Advanced Server release 2.1AS (Derry)
+prompt
+timeout=50
+default=2.4.18-e.37smp
+ 
+image=vmlinuz-2.4.18-e.37
+ label=2.4.18-e.37
+ initrd=initrd-2.4.18-e.37.img
+ read-only
+ append="root=LABEL=/"
+ 
+image=vmlinuz-2.4.18-e.37
+ label=scsi-128
+ initrd=scsi-128.img
+ read-only
+ root=/dev/sda4
+ 
+image=vmlinuz-2.4.18-e.37smp
+ label=2.4.18-e.37smp
+ initrd=initrd-2.4.18-e.37smp.img
+ read-only
+ append="root=LABEL=/"
+ 
+image=vmlinuz-2.4.18-e.37smp
+ label=serial
+ initrd=initrd-2.4.18-e.37smp.img
+ read-only
+ append="root=LABEL=/ console=ttyS1,9600n8 console=tty0"
+ 
+image=vmlinuz-2.4.18-e.37smp
+ label=lyq
+ initrd=lyq.img
+ read-only
+ append="root=LABEL=/"
+ 
+image=vmlinuz-2.4.18-e.37smp
+ label=mpp
+ initrd=mpp.img
+ read-only
+ root=/dev/sda4
+ 
+image=vmlinuz-2.4.18-e.12smp
+ label=linux
+ initrd=initrd-2.4.18-e.12smp.img
+ read-only
+ root=/dev/sda4
+ 
+image=vmlinuz-2.4.18-e.12
+ label=linux-up
+ initrd=initrd-2.4.18-e.12.img
+ read-only
+ root=/dev/sda4
+ 
+ 
