@@ -1,45 +1,63 @@
-From: Culos Alain <Alain.Culos@IAA.ie>
-Subject: OT - seeking open source protocol analyser V24 & X21
-Date: Fri, 4 Apr 2003 17:30:36 +0100
+From: "Mathur, Shobhit" <Shobhit_mathur@adaptec.com>
+Subject: linux-source debugging with kgdb-patch
+Date: Wed, 16 Apr 2003 06:10:09 +0530
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <880EEFBDD869904DBAD3AF32A8F99B8005D60B@bcyw2kdc02.iaa.local>
+Message-ID: <3E9CA669.FEF1DDF7@adaptec.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from A-107-110.cust.iol.ie ([194.125.107.110]:36872 "EHLO
-	ntserver.iaa.ie") by vger.kernel.org with ESMTP id S263808AbTDDQTZ (for <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 4 Apr 2003 11:19:25 -0500
-Received: from ntmx1hq.iaa.ie (unverified) by ntserver.iaa.ie
- (Content Technologies SMTPRS 4.2.10) with ESMTP id <T616626e099c27d6b6e052@ntserver.iaa.ie> for <linux-serial@vger.kernel.org>;
- Fri, 4 Apr 2003 17:34:11 +0100
-content-class: urn:content-classes:message
+Received: from magic-mail.adaptec.com ([208.236.45.100]:16860 "EHLO
+	magic.adaptec.com") by vger.kernel.org with ESMTP id S261287AbTDOM0I
+	(for <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 15 Apr 2003 08:26:08 -0400
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Hi All,
+Hello,
 
-I know this is somewhat Off Topic on this list, but you guys are all getting
-your hands dirty with serial stuff so I thought some of you would know of :
+BACKGROUND:
 
-- good Protocol Analyser Software (Linux or Windows) that is open source,
-otherwise freely available or maybe even at moderate cost (Feline and family
-are a little on the expensive side of things).
+I was keen to see kgdb running  for  purely academic reasons. Thus,
+I made a setup of 2 machines for source-level debugging of the
+linux-kernel. The procedure mentioned on the web-site
+[ kgdb.sourceforge.net] has  been adhered to.  I was able to
+successfully configure the setup. Also, I decided to use "ddd" front-end
+on gdb [local m/c]  for debugging  the kgdb-patched kernel on the remote
+machine, which is the usual setup for such debugging-efforts.
+    The m/c to be debugged stops with the message "Waiting for
+connection from remote gdb..." until the "target remote" command is run
+from the "gdb" prompt of "ddd", upon which the m/c to be debugged
+continues it's bootup till it shows the command-prompt.
 
-I'm looking for software that is able to tap into RS232/V24/DB25 as well as
-X21/DB15 (provided I have the relevant hardware that is). Linux is good, but
-windows would be great as I have many more of those available for use and
-changing OS in those PCs is not an option).
-I've seen some nifty package : Ethereal but it seems geared towards Ethernet
-and related physical interfaces to the exclusion of serial interfaces.
+PROBLEM:
 
-If and you know anything of use for serial interface sniffing as above, I'd
-love to hear from you (I'm not sure responses are of interest to the list,
-you decide).
+I was interested in setting a break-point in start_kernel thru' "ddd"
+such that the boot-up  of the m/c to be debugged could be analysed
+step-by-step remotely. Though, I am able to set the breakpoint in
+start_kernel(),
+the commands "run" or "continue" on the "gdb" prompt, only throw up the
+following errors :
 
-Many thanks in advance & regards,
-Alain.
+(gdb) info break
+Num Type           Disp Enb Address    What
+7   breakpoint      keep  y   0xc027e7f0 in start_kernel at
+init/main.c:614
+(gdb) run
+warning: shared library handler failed to enable breakpoint
+warning: Cannot insert breakpoint 7:
+Cannot access memory at address 0xc027e7f0
 
+QUESTION:
 
-If you are in any doubt about the authenticity of this 
-message please contact +353 1 6718655.
+I very strongly suspect that this exercise follows a particular sequence
+of steps to get it right. Either I am missing some step or I am not
+following the "order".  In either case, I would be glad to receive some
+help/comments on my academic endeavour to be able to remotely debug the
+kernel.
 
+- Kindly let me know a solution
+
+- TIA
+
+- Shobhit Mathur
