@@ -1,38 +1,40 @@
-From: Nicholas Henke <henken@seas.upenn.edu>
-Subject: Re: serial console system comparison
-Date: Tue, 25 Mar 2003 16:09:44 -0500
+From: Amit Kucheria <akucheria@metricsystems.com>
+Subject: access to RS-232 signals from user-space?
+Date: Wed, 26 Mar 2003 12:41:04 -0800
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20030325160944.11653108.henken@seas.upenn.edu>
-References: <20030325185904.GA9176@maybe.org>
+Message-ID: <1048711267.1460.9.camel@amit.metricsystems.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-In-Reply-To: <20030325185904.GA9176@maybe.org>
+Received: from amit.metricsystems.com
+ (ip67-89-211-170.z211-89-67.customer.algx.net [67.89.211.170])
+ by chimmx02.algx.net
+ (iPlanet Messaging Server 5.2 HotFix 1.10 (built Jan 23 2003))
+ with ESMTP id <0HCD0015MISFQF@chimmx02.algx.net> for
+ linux-serial@vger.kernel.org; Wed, 26 Mar 2003 14:41:06 -0600 (CST)
 List-Id: linux-serial@vger.kernel.org
-To: Dale Harris <rodmur@maybe.org>
-Cc: linux-serial@vger.kernel.org, beowulf@beowulf.org
+To: linux-serial <linux-serial@vger.kernel.org>
 
-On Tue, 25 Mar 2003 10:59:04 -0800
-Dale Harris <rodmur@maybe.org> wrote:
+Hi all,
 
-> Hi,
-> 
-> I was just curious if anyone had any opinions about the quality of
-> serial console systems.  For example is RAS2000 good:
-> 
-> http://www.alturaxl.com/Products/RAS2000_remote_console_management.html
-> 
-> Is Cyclades better?  Is there something else that is a better bang for
-> the buck?
+I have successfully run a SLIP link between two machines over their
+serial ports. We now want to replace the null-modem cable with a radio
+at each end connected to the serial port. We also want the ability to
+"drive" the radio i.e. use flow-control based on the modem signals on
+the radio.
 
-We have absolutely fabulous luck with the ELS II+, ESP, and CLS from
-equinox. There tech support is also first rate -- they usually have our
-problems, which have been few, solved the same day.
-http://www.equinox.com
+Can anyone enlighten me about the facilities offered by the kernel to
+control the various RS-232 lines from kernel-space or user-space? Any
+pointers would be helpful.
 
-Nic
+Regards,
+Amit
+
 -- 
-Nicholas Henke
-Penguin Herder & Linux Cluster System Programmer
-Liniac Project - Univ. of Pennsylvania
+----------------------------------------------------------------------------
+Amit Kucheria                akucheria@NOSPAMmetricsystems.com
+Metric Systems Corporation   2320 Cousteau Court, Suite 201, Vista, CA
+92083
+----------------------------------------------------------------------------
+
