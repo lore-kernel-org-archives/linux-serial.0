@@ -1,81 +1,68 @@
-From: Ed Vance <EdV@macrolink.com>
-Subject: RE: n_tty.c driver patch (semantic and performance correction) (a
-	 ll recent versions)
-Date: Wed, 31 Jul 2002 09:58:13 -0700
+From: "Neil Everton" <neil@gemini-it.com>
+Subject: [OT(ish] Duplicate Character between modems
+Date: Fri, 2 Aug 2002 21:41:09 +0100
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <18069.546603556$1028134826@news.gmane.org>
+Message-ID: <HMEGLNIPFGJPACKIEKLFGEJJEPAA.neil@gemini-it.com>
 Mime-Version: 1.0
 Content-Type: text/plain;
 	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from marstons.services.quay.plus.net (marstons.services.quay.plus.net [212.159.14.223])
+	by zeus.kernel.org (8.11.6/8.11.6) with SMTP id g72KeOg22832
+	for <linux-serial@vger.kernel.org>; Fri, 2 Aug 2002 13:40:29 -0700
 List-Id: linux-serial@vger.kernel.org
-To: 'David Lawyer' <dave@lafn.org>
-Cc: linux-serial@vger.kernel.org, "'linux-kernel@vger.kernel.org'" <linux-kernel@vger.kernel.org>
+To: "Linux-Serial@Vger. Kernel. Org" <linux-serial@vger.kernel.org>
 
-Hi David,
+Hi,
+	My apologies for sending this here, but I reckon you guys are probably the
+best bet I have of finding a solution to my problem (esp. as it indirectly
+relates to serial programming)
 
-On Tue, July 30, 2002 at 10:32 PM, David Lawyer wrote:
-> On Tue, Jul 30, 2002 at 10:07:51AM -0700, Ed Vance wrote:
-> > On Sat, July 27, 2002 at 8:02 PM, stevie@qrpff.net wrote:
-> > > 
-> > > But... but... the standard says...
-> > > 
-> > >    A pending read shall not be satisfied until MIN bytes are 
-> > >    received (that is, the pending read shall block until MIN 
-> > >    bytes are received), or a signal is received.
-> > > 
-> > > And because I'm too dead-set on doing it that way solely because 
-> > > that's how it's always been done, I won't ever consider changing it. 
+	I'm currently porting an application from DOS to Linux (RH7.2 with Cyclades
+Cyclom-Y (hi henrique!!)).
 
- [ snip ] 
+	My issue is this, if I send down the modem ;
+"ABCDEFGHI"
+	the receiving end (very infrequently) receives
+"AABCDEFGHI"
+	This is caught by the check digit routine and the line is NAK'd ready for a
+re-transmit. It will usually work the second or third time. This has found a
+bug in the 3rd party transmitting software, but they're taking the attitude
+of the existing system works, so you fix your end !!! (the bug if your
+interested is after sending a NAK they drop the connection, instead of
+waiting for 5 retries)
 
-> > Stevie O gets to the central issue here. Why _not_ change long-existing,
-> > widely used interfaces in subtle ways because the old way makes no 
-> > sense to us and the new way does? Is standards-based programming a 
-> > lemming behavior? 
+	The existing DOS system uses old modems such as Pace Linnet (1200 baud) and
+an even older modem called a Compact which you cannot do anything with, no
+init string, no RING or CONNECT message, just straight into getting the
+data.
 
- [ snip ]
+	The new system is using 3Com Courier V.everything modems. I can replicate
+the problem on other modems as well, so it's not a courier issue. We have to
+disable any error correction, compression (except MNP), and set the flow
+control to hardware. As far as I can see I've disable pretty much
+everything, but I still occasionally get these duplicated characters. It
+used to be quite bad and then I realised that the Courier set the flow
+control on both the transmit and receive stacks seperately. Once I'd set the
+flow control to hardware for both stacks it made the issue a lot better, but
+I still get it.
 
-> > As I said before, innovation is fine. Just don't pollute the existing
-> > interfaces. If even one real customer running real work has bad day 
-> > because of exposure of an old app bug or an unanticipated consequence 
-> > of the change, then it wasn't worth ignoring safer implementation 
-> > practices. One can't attain 100% safety, but one _can_ minimize the 
-> > risk. 
-> 
-> I think it's very important for Linux to be efficient so that it will
-> work well on old hardware, etc.  
+	I can normally get this issue (at home) at least every 3rd order, luckily
+it's not so bad at the clients end. My home setup incidentally doesn't have
+a cyclades card, but I've sniffed at the modem connection and I definatly
+don't send the duplicate characters to the modem, they're adding in between
+the modems.
 
-I agree 100% so far.
+	The modem I'm sending on is a generic 56k modem, but we're getting the
+issue on 300 baud modems, with the Courier set to only connect at 300. The
+connect message is simply 'CONNECT' so should be giving no error correction,
+compression, etc. it should be a standard V21 connection. There might be an
+issue with fast modems connecting at V21 I'm not aware of, but I'm at a
+loss. My client is also concerned with the issue (understandably) and are
+also in the 'it works on the existing system' mentality.
 
->                                 What's being proposed seems to help.
-> So I think that if there is a low probability that it will break any
-> existing application where non-trivial harm will be caused, then I would
-> favor innovation (actually common sense in this case).  
+Any help/pointers/advice gratefully received
+Regards
+Neil Everton
 
-I don't agree that we have a trade off, here. (big surprise? :) We are
-simply asking the wrong question in the quest to achieve the desired
-benefit. We are asking how to deviate from the standard to get better
-performance. We should be asking how to change the kernel to get better
-performance without changing the standard app interface. Of course, making
-the standard (but rather uninspired) app interface work efficiently is a
-_lot_ more technically challenging. 
-
->                                                        Also someone
-> should try to get the standards modified to clearly allow what's
-> proposed.
-
-Good luck with that. ;)
-
-BTW, I am hypersensitive to this issue because I got bit by Mot V/88 that
-had a buggy MIN and TIME implementation. My phone ran flames for about a
-month because of my initial decision to match their quirky interface
-behavior in my serial card's driver. 
-
-Best regards,
-Ed
-
----------------------------------------------------------------- 
-Ed Vance              edv@macrolink.com
-Macrolink, Inc.       1500 N. Kellogg Dr  Anaheim, CA  92807
-----------------------------------------------------------------
