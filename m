@@ -1,57 +1,84 @@
-From: Alex Pavloff <apavloff@eason.com>
+From: Ed Vance <EdV@macrolink.com>
 Subject: RE: what serial port type are Elan ports?
-Date: Tue, 29 Oct 2002 16:18:50 -0800
-Sender: linux-kernel-owner@vger.kernel.org
-Message-ID: <D3AF5F134D627243993F2F2FC32EE4D229C3C1@mailman.eason.com>
+Date: Tue, 29 Oct 2002 17:13:40 -0800
+Sender: linux-serial-owner@vger.kernel.org
+Message-ID: <11E89240C407D311958800A0C9ACF7D1A33C7C@EXCHANGE>
 Mime-Version: 1.0
 Content-Type: text/plain;
 	charset="iso-8859-1"
-Return-path: <linux-kernel-owner+linux-kernel=40quimby.gnus.org@vger.kernel.org>
-To: 'Ed Vance' <EdV@macrolink.com>, 'linux-kernel' <linux-kernel@vger.kernel.org>, 'linux-serial' <linux-serial@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
+To: 'Alex Pavloff' <apavloff@eason.com>
+Cc: 'linux-kernel' <linux-kernel@vger.kernel.org>, 'linux-serial' <linux-serial@vger.kernel.org>
 
+Hi Alex,
 
-Elan Sc3x0?
-Elan Sc4x0?
-Elan Sc520?
+Thanks, I think the Elan SC520 is all I need. I don't know if the other
+chips in the family have the same bug. 
 
-I assume you mean the 520, if you really want to find the UART for the SC3x0
-I might be convinced to plug in a hard drive to one of my many SC320s lying
-around and let you know.
+There is a conflict between the Elan work-around and the 16C654 UART. It
+looks like the work-around causes it to drop transmit data. If I can know
+for sure the detected type of the Elan's ports, then I can shield all other
+UART types from the work-around with a quick type field check without losing
+the benefit of the work-around. 
 
-Alex Pavloff - apavloff@eason.com
-Eason Technology -- www.eason.com
+Suggestions are welcome.
+
+Best regards,
+Ed
 
 > -----Original Message-----
-> From: Ed Vance [mailto:EdV@macrolink.com]
-> Sent: Tuesday, October 29, 2002 4:14 PM
-> To: 'linux-kernel'; 'linux-serial'
-> Subject: what serial port type are Elan ports?
+> From: Alex Pavloff [mailto:apavloff@eason.com]
+> Sent: Tuesday, October 29, 2002 4:19 PM
+> To: 'Ed Vance'; 'linux-kernel'; 'linux-serial'
+> Subject: RE: what serial port type are Elan ports?
 > 
 > 
-> Hi,
 > 
-> I need to know what UART type the serial driver detects for 
-> the two built-in
-> serial ports on the AMD Elan Microcontroller?
+> Elan Sc3x0?
+> Elan Sc4x0?
+> Elan Sc520?
 > 
-> Would some nice person who has an Elan based system please 
-> send me the first
-> ten lines of the output of the following command?
+> I assume you mean the 520, if you really want to find the 
+> UART for the SC3x0
+> I might be convinced to plug in a hard drive to one of my 
+> many SC320s lying
+> around and let you know.
 > 
-> 	more /proc/tty/driver/serial
+> Alex Pavloff - apavloff@eason.com
+> Eason Technology -- www.eason.com
 > 
-> Thanks in advance,
-> Ed
-> 
-> ---------------------------------------------------------------- 
-> Ed Vance              edv (at) macrolink (dot) com
-> Macrolink, Inc.       1500 N. Kellogg Dr  Anaheim, CA  92807
-> ----------------------------------------------------------------
-> 
-> -
-> To unsubscribe from this list: send the line "unsubscribe 
-> linux-serial" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> > -----Original Message-----
+> > From: Ed Vance [mailto:EdV@macrolink.com]
+> > Sent: Tuesday, October 29, 2002 4:14 PM
+> > To: 'linux-kernel'; 'linux-serial'
+> > Subject: what serial port type are Elan ports?
+> > 
+> > 
+> > Hi,
+> > 
+> > I need to know what UART type the serial driver detects for 
+> > the two built-in
+> > serial ports on the AMD Elan Microcontroller?
+> > 
+> > Would some nice person who has an Elan based system please 
+> > send me the first
+> > ten lines of the output of the following command?
+> > 
+> > 	more /proc/tty/driver/serial
+> > 
+> > Thanks in advance,
+> > Ed
+> > 
+> > ---------------------------------------------------------------- 
+> > Ed Vance              edv (at) macrolink (dot) com
+> > Macrolink, Inc.       1500 N. Kellogg Dr  Anaheim, CA  92807
+> > ----------------------------------------------------------------
+> > 
+> > -
+> > To unsubscribe from this list: send the line "unsubscribe 
+> > linux-serial" in
+> > the body of a message to majordomo@vger.kernel.org
+> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> > 
 > 
