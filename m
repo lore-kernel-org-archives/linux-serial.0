@@ -1,29 +1,42 @@
 From: Peter Astrand <peter@cendio.se>
-Subject: Re: Fwd: [max@hinterhof.net: sredird vulnerabilities]
-Date: Sun, 1 Aug 2004 18:35:34 +0200 (CEST)
+Subject: Re: sredird fork: sercd
+Date: Sun, 1 Aug 2004 19:18:20 +0200 (CEST)
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <Pine.LNX.4.44.0408011834430.12619-100000@maggie.lkpg.cendio.se>
-References: <Pine.LNX.4.44.0408011739070.12619-100000@maggie.lkpg.cendio.se>
+Message-ID: <Pine.LNX.4.44.0408011907440.14207-100000@maggie.lkpg.cendio.se>
+References: <410D1DF7.8080201@columbia.edu>
 Mime-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=iso-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cheddar.cendio.se ([193.12.253.77]:28400 "EHLO mail.cendio.se")
-	by vger.kernel.org with ESMTP id S265872AbUHAQfg (ORCPT
+Received: from cheddar.cendio.se ([193.12.253.77]:42736 "EHLO mail.cendio.se")
+	by vger.kernel.org with ESMTP id S265977AbUHARSW (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 1 Aug 2004 12:35:36 -0400
-In-Reply-To: <Pine.LNX.4.44.0408011739070.12619-100000@maggie.lkpg.cendio.se>
+	Sun, 1 Aug 2004 13:18:22 -0400
+In-Reply-To: <410D1DF7.8080201@columbia.edu>
 List-Id: linux-serial@vger.kernel.org
-To: Max Vozeler <max@hinterhof.net>
-Cc: d.sbragion@infotecna.it, kermit-support@columbia.edu, jaltman@columbia.edu, mario@viara.info, linux-serial@vger.kernel.org, Corey Minyard <minyard@acm.org>, Russell Coker <russell@coker.com.au>
+To: Jeffrey Altman <jaltman@columbia.edu>, Thomas Pinkl <tom@hbsrx.com>
+Cc: linux-serial@vger.kernel.org
 
-On Sun, 1 Aug 2004, Peter Astrand wrote:
 
-> As soon as I've been able to test-run the latest CVS, I'll make a new=
-=20
-> release. This should happen later today or tomorrow.=20
+> A much better implementation of Telnet CPC, "telnetcpcd", was put
+> together by Thomas Pinkl <tom@hbsrx.com>. He has open sourced it and =
+the
+> code quality is quite high. =20
 
-sercd 2.3.1 has now been released.=20
+What does "better" mean? This software looks much younger than
+sredird/sercd, which probably means more bugs. I cannot find a home pag=
+e,
+CVS repository, mailing list, freshmeat entry or documentation. The bui=
+ld
+system is not Autoconfized. The tarball unpacks all the files in the
+current directory...
+
+Tell me, in what way was sredird so fundamentally broken that a complet=
+e
+rewrite was necessary?
+
+Now we have *four* Open Source RFC2217 servers for UNIX...
+
 
 --=20
 Peter =C5strand		Chief Developer
