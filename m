@@ -1,39 +1,75 @@
-From: Lukasz Michal Rak <L.Rak@elka.pw.edu.pl>
-Subject: Re: Serial-Programming-HOWTO needs author/maintainer
-Date: Sat, 19 Jun 2004 16:31:11 +0200 (CEST)
+From: David Kimdon <kimdon@esrf.fr>
+Subject: [PATCH] : 8250.c don't iounmap() when no UPF_IOREMAP
+Date: Mon, 21 Jun 2004 13:00:22 +0200
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <Pine.GSO.4.58.0406191628300.13694@mion.elka.pw.edu.pl>
-References: <20040618234407.GA2038@davespc>
+Message-ID: <20040621110022.GE8110@wow.esrf.fr>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mion.elka.pw.edu.pl ([194.29.160.35]:51852 "EHLO
-	mion.elka.pw.edu.pl") by vger.kernel.org with ESMTP id S262648AbUFSOba
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 19 Jun 2004 10:31:30 -0400
-In-Reply-To: <20040618234407.GA2038@davespc>
+Received: from firewall.ill.fr ([193.49.43.1]:54502 "EHLO out.esrf.fr")
+	by vger.kernel.org with ESMTP id S266186AbUFULAd (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 21 Jun 2004 07:00:33 -0400
+Received: (from uucp@localhost)
+	by out.esrf.fr (1.0.0) id i5LB0WE25502
+	for <linux-serial@vger.kernel.org>; Mon, 21 Jun 2004 13:00:32 +0200 (MEST)
+Received: from wow.esrf.fr (localhost [127.0.0.1])
+	by esrf.esrf.fr (8.9.0/8.9.0) with ESMTP id NAA16152
+	for <linux-serial@vger.kernel.org>; Mon, 21 Jun 2004 13:00:23 +0200 (MET DST)
+Received: from wow.esrf.fr (localhost [127.0.0.1])
+	by wow.esrf.fr (8.12.7/8.12.7/SuSE Linux 0.6) with ESMTP id i5LB0MU0010892
+	for <linux-serial@vger.kernel.org>; Mon, 21 Jun 2004 13:00:22 +0200
+Received: (from kimdon@localhost)
+	by wow.esrf.fr (8.12.7/8.12.7/Submit) id i5LB0MvO010890
+	for linux-serial@vger.kernel.org; Mon, 21 Jun 2004 13:00:22 +0200
+Content-Disposition: inline
 List-Id: linux-serial@vger.kernel.org
-To: David Lawyer <dave@lafn.org>
-Cc: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+
+Hi,
+
+I have a PCI serial device, using 2.6.6 I get :
+
+__iounmap: bad address fbc79200
+__iounmap: bad address fbc79400
+__iounmap: bad address fbc79600
+. . . .
+
+When the driver is unloaded.  Something like the included patch is, I
+believe, necessary.  I don't see any drivers that actually use the
+UPF_IOREMAP flag, so it isn't completely clear to me how it should be
+used.
 
 
-	Hi!
+-David
 
- Exactly which HOWTOs needs to be merged? Maybe I could help.
+* drivers/serial/8250.c 
+  (serial8250_request_std_resource) : Only request a resource if
+  UPF_IOREMAP is set.
+  (serial8250_release_port) : If UPF_IOREMAP is not set then we
+  didn't do an ioremap().  In that case we shouldn't do iounmap()
+  or release_mem_region().
 
-			Lukasz
+Index: linux/drivers/serial/8250.c
+===================================================================
+--- linux.orig/drivers/serial/8250.c	Mon May 10 11:48:00 2004
++++ linux/drivers/serial/8250.c	Mon Jun 21 12:26:42 2004
+@@ -1634,7 +1634,7 @@ serial8250_request_std_resource(struct u
+ 
+ 	switch (up->port.iotype) {
+ 	case UPIO_MEM:
+-		if (up->port.mapbase) {
++		if (up->port.mapbase && up->port.flags & UPF_IOREMAP) {
+ 			*res = request_mem_region(up->port.mapbase, size, "serial");
+ 			if (!*res)
+ 				ret = -EBUSY;
+@@ -1698,7 +1698,7 @@ static void serial8250_release_port(stru
+ 
+ 	switch (up->port.iotype) {
+ 	case UPIO_MEM:
+-		if (up->port.mapbase) {
++		if (up->port.mapbase && up->port.flags & UPF_IOREMAP) {
+ 			/*
+ 			 * Unmap the area.
+ 			 */
 
-> There are two HOWTOs on this topic, but only one of them is at the Linux
-> Documentation Project.  The other HOWTO is by Verne Hoxie and is likely
-> the better one.  Someone who knows about Serial Programming needs to merge
-> them together, including likely writing some new material.
->
-> I've put both text versions of them on my Website:
-> http://www.lafn.org/~dave/linux/.  Also, the termios man page on my site goes
-> with Verne Hoxies HOWTO.  I put them on my site since Vernes site seems
-> to not be working.
->
-> If you can help, let me know and I'll find versions of these in LinuxDoc
-> sgml (which is acceptable by LDP).
->
-> 			David Lawyer
