@@ -1,37 +1,48 @@
-From: "Darcy Lona" <darcylonanwphmpug@usa.com>
-Subject: silagra is a generic equivalent of the popular pfizer drug
-Date: Wed, 20 Oct 2004 00:33:51 +1200
+From: Adrian Bunk <bunk@stusta.de>
+Subject: [PATCH] Another one ISA PnP modem (USR0009)
+Date: Tue, 19 Oct 2004 18:16:07 +0200
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1E6EE55A.DF42419@usa.com>
+Message-ID: <20041019161607.GB1960@stusta.de>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [217.9.9.86] ([217.9.9.86]:36613 "HELO usa.com")
-	by vger.kernel.org with SMTP id S269394AbUJSNYH (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Oct 2004 09:24:07 -0400
+Received: from mailout.stusta.mhn.de ([141.84.69.5]:3077 "HELO
+	mailout.stusta.mhn.de") by vger.kernel.org with SMTP
+	id S269516AbUJSQQj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 19 Oct 2004 12:16:39 -0400
+Content-Disposition: inline
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial <linux-serial@vger.kernel.org>
-
-Consider it the Costco brand of Viag.ra. You pay $2.40 a dose.
-
-Detailed instructions are included with each order.
-
-To ensure prompt delivery, we use first class mail.
-
-Karina Melgarejo
-
-http://Fj.affordablemeds.org/?Bisik/Yk
+To: Russell King <rmk+serial@arm.linux.org.uk>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Denis Zaitsev <zzz@anda.ru>
 
 
+Below is a patch from Denis Zaitsev <zzz@anda.ru> with the following two 
+adjustments:
+- applies with -p1 (not -p0)
+- USRobotics -> U.S. Robotics (consistent with the rest of the entries)
 
 
+Original comment of Denis Zaitsev:
+
+<--  snip  -->
+
+This patch adds the USR Courier INT (one of them?) into the list of
+the PnP devices IDs in 8250_pnp.  Before the patch this modem hasn't
+been activated by 8250_pnp.
+
+<--  snip  -->
 
 
-To be taken off the marketing list for generic medications or related
-products, use this link here:
-http://W32270.affordablemeds.org/?Xgvc/Qfrj
-y1Mmj
+Signed-off-by: Adrian Bunk <bunk@stusta.de>
 
+--- l/drivers/serial/8250_pnp.c.orig	2004-08-14 16:54:47.000000000 +0600
++++ l/drivers/serial/8250_pnp.c	2004-10-10 03:33:53.000000000 +0600
+@@ -293,6 +293,8 @@ static const struct pnp_device_id pnp_de
+ 	{	"USR0006",		0	},
+ 	/* U.S. Robotics 33.6K Voice EXT PnP */
+ 	{	"USR0007",		0	},
++	/* U.S. Robotics Courier V.Everything INT PnP */
++	{	"USR0009",		0	},
+ 	/* U.S. Robotics 33.6K Voice INT PnP */
+ 	{	"USR2002",		0	},
+ 	/* U.S. Robotics 56K Voice INT PnP */
