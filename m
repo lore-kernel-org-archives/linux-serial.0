@@ -1,18 +1,20 @@
 From: "Mathur, Shobhit" <Shobhit_mathur@adaptec.com>
 Subject: linux-source debugging with kgdb-patch
-Date: Wed, 16 Apr 2003 06:10:09 +0530
+Date: Thu, 17 Apr 2003 20:46:24 +0530
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <3E9CA669.FEF1DDF7@adaptec.com>
+Message-ID: <3E9EC548.117005DD@adaptec.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from magic-mail.adaptec.com ([208.236.45.100]:16860 "EHLO
-	magic.adaptec.com") by vger.kernel.org with ESMTP id S261287AbTDOM0I
-	(for <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 15 Apr 2003 08:26:08 -0400
+Received: from magic-mail.adaptec.com ([208.236.45.100]:40918 "EHLO
+	magic.adaptec.com") by vger.kernel.org with ESMTP id S262563AbTDQDCS
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Apr 2003 23:02:18 -0400
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: linux-c-programming@vger.kernel.org, linux-serial@vger.kernel.org, linux-newbie@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
+
+
 
 Hello,
 
