@@ -1,47 +1,70 @@
-From: Russell Shaw <rjshaw@netspace.net.au>
-Subject: NetMos Technology PCI 9835
-Date: Sat, 05 Feb 2005 23:48:56 +1100
-Message-ID: <4204C0B8.5000507@netspace.net.au>
+From: Bjorn Helgaas <bjorn-helgaas@comcast.net>
+Subject: [PATCH] [SERIAL] add TP560 data/fax/modem support
+Date: Mon, 07 Feb 2005 12:39:42 -0700
+Message-ID: <1107805182.8074.35.camel@piglet>
+Reply-To: bjorn.helgaas@hp.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
-Received: from thunder.netspace.net.au ([203.10.110.71]:26120 "EHLO
-	mail.netspace.net.au") by vger.kernel.org with ESMTP
-	id S263751AbVBEMly (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 5 Feb 2005 07:41:54 -0500
-Received: from [192.168.1.11] (220-253-27-139.VIC.netspace.net.au [220.253.27.139])
-	by mail.netspace.net.au (Postfix) with ESMTP id EE77E431E5
-	for <linux-serial@vger.kernel.org>; Sat,  5 Feb 2005 23:41:49 +1100 (EST)
+Received: from sccrmhc11.comcast.net ([204.127.202.55]:47592 "EHLO
+	sccrmhc11.comcast.net") by vger.kernel.org with ESMTP
+	id S261283AbVBGTj6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 7 Feb 2005 14:39:58 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: rmk+serial@arm.linux.org.uk, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
-Hi,
-I compiled in the parport and serial port options in menuconfig for the above dual serial card. 
-kernel 2.6.10 on debian-sid, athlon MB.
+Claim Topic TP560 data/fax/voice modem.  This device reports as class 0x0780,
+so we don't claim it by default:
 
-It still won't work:(
+	00:0d.0 Class 0780: 151f:0000
+		Subsystem: 151f:0000
+		Interrupt: pin A routed to IRQ 11
+		Region 0: I/O ports at a400 [size=8]
+	00: 1f 15 00 00 01 00 00 02 00 00 80 07 00 00 00 00
+	10: 01 a4 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	20: 00 00 00 00 00 00 00 00 00 00 00 00 1f 15 00 00
+	30: 00 00 00 00 00 00 00 00 00 00 00 00 0b 01 00 00
 
-lspci -vv -s 0:b.0 shows:
+Some rc.serial scripts extract IRQ and I/O port information from
+/proc/pci and stuff it into an unused port using setserial.  That
+doesn't work reliably anymore because pci_enable_device() is never
+called, so the IRQ may not be enabled.
 
-0000:00:0b.0 Serial controller: NetMos Technology PCI 9835 Multi-I/O Controller (rev 01) (prog-if 02 
-[16550])
-         Subsystem: LSI Logic / Symbios Logic 2S (16C550 UART)
-         Control: I/O+ Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B-
-         Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- 
-<PERR-
-         Interrupt: pin A routed to IRQ 19
-         Region 0: I/O ports at cc00 [size=8]
-         Region 1: I/O ports at d000 [size=8]
-         Region 2: I/O ports at d400 [size=8]
-         Region 3: I/O ports at d800 [size=8]
-         Region 4: I/O ports at dc00 [size=8]
-         Region 5: I/O ports at e000 [size=16]
+Thanks to Evan Clarke for reporting and helping debug this problem.
 
-Is that IRQ 19 real or bogus?
+Signed-off-by: Bjorn Helgaas <bjorn.helgaas@hp.com>
 
-I tried: setserial /dev/ttyS2 port 0xdc00 uart 16550 irq 19
-then: cat test > /dev/ttyS2
+===== drivers/serial/8250_pci.c 1.48 vs edited =====
+--- 1.48/drivers/serial/8250_pci.c	2004-11-21 23:42:29 -07:00
++++ edited/drivers/serial/8250_pci.c	2005-02-07 12:00:32 -07:00
+@@ -2212,6 +2212,13 @@
+ 		0, pbn_exar_XR17C158 },
+ 
+ 	/*
++	 * Topic TP560 Data/Fax/Voice 56k modem (reported by Evan Clarke)
++	 */
++	{	PCI_VENDOR_ID_TOPIC, PCI_DEVICE_ID_TOPIC_TP560,
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
++		pbn_b0_1_115200 },
++
++	/*
+ 	 * These entries match devices with class COMMUNICATION_SERIAL,
+ 	 * COMMUNICATION_MODEM or COMMUNICATION_MULTISERIAL
+ 	 */
+===== include/linux/pci_ids.h 1.200 vs edited =====
+--- 1.200/include/linux/pci_ids.h	2005-01-30 23:33:43 -07:00
++++ edited/include/linux/pci_ids.h	2005-02-07 11:56:14 -07:00
+@@ -1972,6 +1972,9 @@
+ #define PCI_DEVICE_ID_BCM4401		0x4401
+ #define PCI_DEVICE_ID_BCM4401B0		0x4402
+ 
++#define PCI_VENDOR_ID_TOPIC		0x151f
++#define PCI_DEVICE_ID_TOPIC_TP560	0x0000
++
+ #define PCI_VENDOR_ID_ENE		0x1524
+ #define PCI_DEVICE_ID_ENE_1211		0x1211
+ #define PCI_DEVICE_ID_ENE_1225		0x1225
 
-with various port and irq settings, but the command blocks for 10secs
-then returns.
+
