@@ -1,32 +1,60 @@
-From: Gerald Waugh <gwaugh@frontstreetnetworks.com>
-Subject: Re: Serial port shuts down APC UPS
-Date: Sat, 25 Jan 2003 10:12:08 -0500
+From: Ross Boylan <RossBoylan@stanfordalumni.org>
+Subject: Serial/Parallel conflicts
+Date: Wed, 29 Jan 2003 09:07:50 -0800
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <200301251012.08130.gwaugh@frontstreetnetworks.com>
-References: <20030124013902.GF765@wheat.boylan.org> <20030125065442.GB532@lafn.org>
-Reply-To: gwaugh@frontstreetnetworks.com
+Message-ID: <20030129170750.GA1066@wheat.boylan.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gail2.localnet.fsn (fsn8.frontstreetnetworks.com [216.175.178.34])
-	by thirstydog.dsl.net (Postfix) with ESMTP id 519F110DE19
-	for <linux-serial@vger.kernel.org>; Sat, 25 Jan 2003 10:12:11 -0500 (EST)
-Received: from gail2.localnet.fsn (localhost [127.0.0.1])
-	by gail2.localnet.fsn (8.12.3/8.12.3/SuSE Linux 0.6) with ESMTP id h0PFC8XF011172
-	for <linux-serial@vger.kernel.org>; Sat, 25 Jan 2003 10:12:08 -0500
-Received: from localhost (localhost [[UNIX: localhost]])
-	by gail2.localnet.fsn (8.12.3/8.12.3/Submit) id h0PFC8I1011171
-	for linux-serial@vger.kernel.org; Sat, 25 Jan 2003 10:12:08 -0500
-In-Reply-To: <20030125065442.GB532@lafn.org>
+Content-Disposition: inline
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
+Cc: Ross Boylan <RossBoylan@stanfordalumni.org>
+
+I've had some success with the problems reported earlier, but seem to
+have created a new problem.
+
+I went into the BIOS and changed the settings for the serial ports
+from "AUTO" to 
+Port A: 3f8/com1
+Port B: 2f8/com2
+My hope was that by setting COM2 to 2f8 explicitly I would get rid of
+the "LSR safety check" warning on ttyS1.
+
+As a result, the messages when I started up went from:
+Jan 19 10:30:05 wheat kernel: ttyS00 at 0x03f8 (irq = 4) is a 16550A
+Jan 19 10:30:05 wheat kernel: ttyS02 at 0x03e8 (irq = 4) is a 16550A
+Jan 19 10:30:05 wheat kernel: ttyS01 at port 0x02f8 (irq = 3) is a 16550A
+
+to:
+Jan 29 05:47:49 wheat kernel: ttyS00 at 0x03f8 (irq = 4) is a 16550A
+Jan 29 05:47:49 wheat kernel: ttyS01 at 0x02f8 (irq = 3) is a 16550A
+Jan 29 05:47:49 wheat kernel: ttyS02 at port 0x03e8 (irq = 5) is a 16550A
+and I no longer got the "LSR safety check engaged" message.  (Note
+also the change in order of the reports).
+
+Unfortunately, my parallel port stopped working:
+Jan 29 08:45:12 wheat kernel: lp: driver loaded but no devices found
 
 
-I have followed this thread, as I would also like to get APC UPS working in 
-Linux.
+I notice that if I do not pick auto for the parallel port, I am given
+a manual choice of IRQ 5 or 7 for it.  7 is used by my soundcard, and
+as noted above, 5 is being used by ttyS02 (modem).
 
-When you get it all sorted out, would someone please publish a good howto
+I set my BIOS back to AUTO for all ports, but I still see the second
+configuration reported above.  This has not reverted things to their
+previous state.  I can think of 3 possible reasons:
+1. the hardware is saving state
+2. the hardware is saving state because I rebooted without powering
+off
+3. Linux is saving state.
 
-TIA,
-Gerald
+So I have several questions.
+What is going on?
+How can I get my printer (LPT1) back?
+Is there any way I can make all my devices happy (i.e, no LSR safety
+check for the serial ports and working parallel port)?
+
+I have an AMIBIOS with a setting of "Non-PNP OS".  2.4.19 kernel.
+
+Thanks.
