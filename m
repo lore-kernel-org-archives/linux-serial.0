@@ -1,73 +1,79 @@
-From: Corey Minyard <minyard@acm.org>
+From: Corey Minyard <minyard-HInyCGIudOg@public.gmane.org>
 Subject: Re: Serial port redirection
-Date: Wed, 03 Dec 2003 07:21:40 -0600
-Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <3FCDE364.1080005@acm.org>
-References: <Pine.LNX.4.44.0312031557190.12826-100000@maggie.lkpg.cendio.se> <3FCE1267.3040204@columbia.edu>
+Date: Wed, 03 Dec 2003 07:23:04 -0600
+Sender: ltsp-discuss-admin-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org
+Message-ID: <3FCDE3B8.3000609@acm.org>
+References: <Pine.LNX.4.44.0312031557190.12826-100000@maggie.lkpg.cendio.se> <3FCE1101.40502@columbia.edu> <3FCDDEE6.4070905@acm.org> <3FCF6B4D.2050103@columbia.edu>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from sccrmhc13.comcast.net ([204.127.202.64]:63635 "EHLO
-	sccrmhc13.comcast.net") by vger.kernel.org with ESMTP
-	id S263205AbTLDRWo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 4 Dec 2003 12:22:44 -0500
-In-Reply-To: <3FCE1267.3040204@columbia.edu>
+Return-path: <ltsp-discuss-admin-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>
+In-Reply-To: <3FCF6B4D.2050103-WLbs8XpHrcb2fBVCVOL8/A@public.gmane.org>
+Errors-To: ltsp-discuss-admin-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org
+List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/ltsp-discuss>,
+	<mailto:ltsp-discuss-request-5NWGOfrQmneRv+LV9MX5utDmRdBvX5/5ji9XKYC2TYK4Io4DoRGLOrNAH6kLmebB@public.gmane.org>
+List-Post: <mailto:ltsp-discuss-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>
+List-Help: <mailto:ltsp-discuss-request-5NWGOfrQmneRv+LV9MX5utDmRdBvX5/5lLLH9aP38KF1pqr+6INuaA@public.gmane.org>
+List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/ltsp-discuss>,
+	<mailto:ltsp-discuss-request-5NWGOfrQmneRv+LV9MX5utDmRdBvX5/5R9m/fhtKvoLKtGCp0j7rLg@public.gmane.org>
+List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=ltsp-discuss>
+To: Jeffrey Altman <jaltman-WLbs8XpHrcb2fBVCVOL8/A@public.gmane.org>
+Cc: Peter Astrand <peter-+4tYiAq3b6azQB+pC5nmwQ@public.gmane.org>, ltsp-discuss-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, d.sbragion-eDKEdzQQoQ4L5bzFcGmneg@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Jeffrey Altman <jaltman@columbia.edu>
-Cc: Peter Astrand <peter@cendio.se>, ltsp-discuss@lists.sourceforge.net, d.sbragion@infotecna.it, linux-serial@vger.kernel.org
 
-Jeffrey Altman wrote:
+Ah, I missed that.  Ideally, something (i would think kermit) should sit 
+between the program and the socket to make it transparent.  But yes, I 
+see what you are saying.
 
-> Peter Astrand wrote:
->
->> * ser2net is totally incompatible with cyclades-serial-client. This is
->> because ser2net interprets RFC2217 a bit differently. sredird sends
->> command "101" as ack for command "1", while ser2net sends "1". 
->> RFC2217 is
->> not very explicit about which way is most correct. The ser2net approach
->> looks better to me, but the sredird one is probably more widely used
->> (since Cyclades terminal server uses it, for example.) Probably, RFC2217
->> software needs to handle both cases.
->>
->>  
->>
-> ser2net is wrong
->
->
-Umm, no.  Cyclades and sredird are wrong.  And it's pretty clear.  From 
-RFC2217:
-
-                   Client to Access Server   Access Server to Client
-       SIGNATURE            text                      text
-       SET-BAUDRATE            1                      101
-       SET-DATASIZE            2                      102
-       SET-PARITY              3                      103
-       SET-STOPSIZE            4                      104
-       SET-CONTROL             5                      105
-       NOTIFY-LINESTATE        6                      106
-       NOTIFY-MODEMSTATE       7                      107
-       FLOWCONTROL-SUSPEND     8                      108
-       FLOWCONTROL-RESUME      9                      109
-       SET-LINESTATE-MASK     10                      110
-       SET-MODEMSTATE-MASK    11                      111
-       PURGE-DATA             12                      112
-                                                                               
-   Discussion: As initially proposed, com port configuration
-               commands are only sent from the client to the access
-               server.  There is no current vision that the access
-               server would initiate the use of a com port configuration
-               command, only the notify commands. However, to allow for
-               access server initiated com port configurations different
-               command values have been established.
-
-That last sentence of the discussion says it.  The 1xx commands are 
-there to allow the access server to *initiate* com port configuration 
-changes.  Not to ack the changes.  Unless you can point me to something 
-in the manual to say that I am wrong.
-
-I am willing to change this in the spirit of keeping things consistent, 
-though.
+Thanks,
 
 -Corey
 
+Jeffrey Altman wrote:
+
+> Corey Minyard wrote:
+>
+>> Jeffrey Altman wrote:
+>>
+>>> Its not a Kermit bug; If you pass the socket file descriptor to an 
+>>> external program
+>>> the external program must understand telnet protocol.  Otherwise, it 
+>>> can't send the
+>>> correct data format. 
+>>
+>>
+>>
+>> No, it *is* a kermit bug.  When kermit sends an 0xff character, it 
+>> needs to escape it per the standard telnet protocol.  It's obviously 
+>> not doing this.
+>>
+>> -Corey
+>
+>
+>
+> I agree, the IAC must be quoted.  The problem is that when an external 
+> protocol handler is
+> executed as a child process, Kermit is suspended and the child process 
+> has complete control
+> over the socket file descriptor.
+> Kermit is not sitting between the external protocol and the host.
+> Some versions of sz have a command line flag to handle this situation 
+> such that IAC (0xff) are
+> not sent but are instead escaped within the zmodem protocol.
+>
+> Jeffrey Altman
+>
+>
+
+
+
+
+-------------------------------------------------------
+This SF.net email is sponsored by: IBM Linux Tutorials.
+Become an expert in LINUX or just sharpen your skills.  Sign up for IBM's
+Free Linux Tutorials.  Learn everything from the bash shell to sys admin.
+Click now! http://ads.osdn.com/?ad_id=1278&alloc_id=3371&op=click
+_____________________________________________________________________
+Ltsp-discuss mailing list.   To un-subscribe, or change prefs, goto:
+      https://lists.sourceforge.net/lists/listinfo/ltsp-discuss
+For additional LTSP help,   try #ltsp channel on irc.freenode.net
