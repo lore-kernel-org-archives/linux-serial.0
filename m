@@ -1,34 +1,31 @@
-From: "lyle" <katie21bull@hotmail.com>
-Subject: D-r-u-g lasts 8 times longer than V_I_A_G_R_A?!
-Date: Thu, 04 Mar 2004 21:15:27 GMT
+From: "octavio" <first21suzuki@hotmail.com>
+Subject: Virility patch, will help you amaze girls!
+Date: Fri, 05 Mar 2004 06:32:49 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1078434927-19498__30719.5578156554$1078428164@excite.com>
+Message-ID: <1078468369-29680__15080.2699885846$1078468424@excite.com>
 Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [63.227.61.66] ([63.227.61.66]:63684 "HELO usa.net")
-	by vger.kernel.org with SMTP id S262088AbUCDTUc (ORCPT
+Received: from [195.229.124.155] ([195.229.124.155]:4070 "HELO verizon.net")
+	by vger.kernel.org with SMTP id S262078AbUCEGdI (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 4 Mar 2004 14:20:32 -0500
+	Fri, 5 Mar 2004 01:33:08 -0500
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 
-Find out more about the new drug that puts V I A G R A to shame!!
+Publications such as Maxim, GQ and Stuff have written about the all new Virility Patch RX which is the first high-tech patch designed to dramatically increase both penis size and male potency. No other male erectile growth formula works faster, is more effective or is easier to use than Virility Patch RX.
 
-Find out how much longer it lasts!
-
-Learn how much you can save by ordering online!
-
-
-Click this link:  http://discountv.selcydc.com/s95/index.php?id=s95
+Learn more about it here: http://drugsbusiness.com/pp/index.php?pid=eph9106
 
 
 
 
 
 
-doug sherrypassion medical concept ladybug moroni kramer
-a blowfishsteph honda1 khan 
-butch carl larry1 
 
-Get off this list by writing to http://drugsbusiness.com/sv/applepie.php
 
+
+andre beautifuasterix chiquita lucas mars fozzie goat 
+orchid sallyjordan23 shelley amelie
+fiona benoit volley 
+
+Get off this list by going here: http://drugsbusiness.com/pp/applepie.php
