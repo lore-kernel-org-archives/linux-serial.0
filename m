@@ -1,28 +1,37 @@
-From: Abe Jacobson <zuivyx@netvigator.com>
-Subject: Hi from Harold Newsome - application approved
-Date: Sun, 17 Oct 2004 12:18:21 +0200
+From: "Darcy Lona" <darcylonanwphmpug@usa.com>
+Subject: silagra is a generic equivalent of the popular pfizer drug
+Date: Wed, 20 Oct 2004 00:33:51 +1200
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <03E85B8.73703__36468.0584673353$1098004973$gmane$org@medmail.com>
+Message-ID: <1E6EE55A.DF42419@usa.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from host-66-173-176-18.dsl.cavtel.net ([66.173.176.18]:43786 "HELO
-	host-66-173-176-18.dsl.cavtel.net") by vger.kernel.org with SMTP
-	id S269083AbUJQJWh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 17 Oct 2004 05:22:37 -0400
+Received: from [217.9.9.86] ([217.9.9.86]:36613 "HELO usa.com")
+	by vger.kernel.org with SMTP id S269394AbUJSNYH (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 19 Oct 2004 09:24:07 -0400
 List-Id: linux-serial@vger.kernel.org
-To: linux-mips@vger.kernel.org
+To: linux-serial <linux-serial@vger.kernel.org>
 
-Hi again,
+Consider it the Costco brand of Viag.ra. You pay $2.40 a dose.
 
-Here is Abe Jacobson I wite you to confirm that we are accepting your mortgage application.
-Our office confirms you can get a $360.000 loan for a $352.00 per month payment.
-Approval process will take 1 minute, so please fill out the form on our website:
+Detailed instructions are included with each order.
 
-http://Ektachrome.financialbanking.net/a1/li.php?l4d=86  
+To ensure prompt delivery, we use first class mail.
 
-Thank you.
+Karina Melgarejo
 
-Best Regards Abe Jacobson
-First Account Manager
+http://Fj.affordablemeds.org/?Bisik/Yk
+
+
+
+
+
+
+To be taken off the marketing list for generic medications or related
+products, use this link here:
+http://W32270.affordablemeds.org/?Xgvc/Qfrj
+y1Mmj
+
