@@ -1,36 +1,81 @@
-From: David Lawyer <dave@lafn.org>
-Subject: Maintainer needed for Serial-Programming-HOWTO
-Date: Thu, 27 Mar 2003 14:55:19 -0800
+From: Amit Kucheria <akucheria@metricsystems.com>
+Subject: RE: access to RS-232 signals from user-space?
+Date: Thu, 27 Mar 2003 15:24:44 -0800
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20030327225519.GC1233@lafn.org>
+Message-ID: <1048807485.1422.53.camel@amit.metricsystems.com>
+References: <11E89240C407D311958800A0C9ACF7D1A33E02@EXCHANGE>
+ <1048721530.1468.20.camel@amit.metricsystems.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Content-Disposition: inline
+Received: from amit.metricsystems.com
+ (ip67-89-211-170.z211-89-67.customer.algx.net [67.89.211.170])
+ by chimmx05.algx.net
+ (iPlanet Messaging Server 5.2 HotFix 1.10 (built Jan 23 2003))
+ with ESMTP id <0HCF00ERIL0147@chimmx05.algx.net> for
+ linux-serial@vger.kernel.org; Thu, 27 Mar 2003 17:24:02 -0600 (CST)
+In-reply-to: <1048721530.1468.20.camel@amit.metricsystems.com>
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial <linux-serial@vger.kernel.org>
-Cc: discuss@en.tldp.org
 
-I'm maintaining the Linux Documentation Project's Serial-HOWTO but it
-doesn't cover programming.  The Serial-Programming-HOWTO is supposed to
-cover this but it needs a lot of improvement.  Vern Hoxie rewrote it in
-1999 but never submitted it.  Instead, a new maintainer took over an old
-1997 version and essentially did nothing with it.  Even though the
-latest version is dated 2001, it's really just the 1997 version.  So it
-needs a new maintainer who will rework it and combine the two versions
-(the 1997 and Vern's 1999 which are very much different) or just redo
-the whole thing from scratch.  Any volunteers?
+Hi,
 
-You might argue that little has changed since 1997 which is true.  But
-the 1997 version omitted a number of introductory topics which needed to
-be included (and which Vern included).  However, on my last communication
-with Vern, he still refused to submit it (he didn't like having to use
-sgml format, especially DocBook and didn't want to maintain it in
-sgml format).  He actually wrote it in Linuxdoc Format but didn't like
-the rendering the "code" environment, etc.  Statements on the discussion
-list about the need to use DocBook and cvs turned him off.  And my
-personal contacts with him did no good.  So I'm not even Ccing him, in
-part because he is not currently active in discussion groups like he
-once was.  Fortunately, both versions use the same license so they may
-be merged.
-			David Lawyer
+So I wrote some code which can get and set modem line status from
+user-space using the TIOCM[S|G]ET ioctls.
+
+I want to get a little more ambitious and do the following:
+
+------|                                   |-------
+      |    /                         \    |
+Box 1 |====---                     ---====| Box2
+      |    \                         /    |
+  P1  |    Radio1                Radio2   |  P2
+------|                                   |-------
+
+
+1. Box1 and Box2 are connected to a radio thru the serial port. They are
+communicating over the air. The serial ports on both sides are
+configured as a SLIP link.
+
+2. P1 and P2 are two processes generating traffic, they know nothing
+about the SLIP link, they just generate IP traffic that is forwarded
+over the SLIP link (radio) by the IP layer using the forwarding table.
+
+3. I want to write a program that will get/set the status of RTS/CTS,
+etc. depending on the load on the box, load on the link, etc. This will
+turn on/off the radio.
+
+So when I turnoff RTS on one side, the same program on the other side
+will detect this and turn off the (traffic) tap from that side and
+buffer the packets. And when I turn it back on the traffic starts
+flowing again. 
+
+4. I also want the ability to inject some "status/keep-alive" packets if
+the link has been idle for a long time. Any suggestions regarding the
+best way to do this?
+
+Has anybody attempted this? Do you foresee any problems?
+
+TIA.
+
+Regards,
+Amit
+
+On Wed, 2003-03-26 at 15:32, Amit Kucheria wrote:
+
+> Thanks Ed.
+> 
+> I have a few more doubts, but I will reserve them for until after I have
+> written some code to test out the capabilities of serial port
+> communications on Linux.
+> 
+> Regards,
+> Amit
+
+-- 
+----------------------------------------------------------------------
+Amit Kucheria          akucheria@NOSPAMmetricsystems.com
+Metric Systems Corp.   2320 Cousteau Court, Suite 201, Vista, CA 92083
+----------------------------------------------------------------------
+
