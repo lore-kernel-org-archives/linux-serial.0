@@ -1,63 +1,74 @@
-From: Vijaymahantesh Kalakoti <vijayck@sasken.com>
-Subject: Remote serial port configuration.
-Date: Thu, 4 Mar 2004 20:33:58 +0530 (IST)
+From: Jan-Benedict Glaw <jbglaw@lug-owl.de>
+Subject: Re: Remote serial port configuration.
+Date: Thu, 4 Mar 2004 16:46:44 +0100
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <Pine.LNX.4.44.0403042021001.5144-100000@pcz-vijayck.sasken.com>
+Message-ID: <20040304154643.GQ21482@lug-owl.de>
+References: <Pine.LNX.4.44.0403042021001.5144-100000@pcz-vijayck.sasken.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="=_IS_MIME_Boundary"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="VSqBvbptTjRvY2y2"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [164.164.56.19] ([164.164.56.19]:972 "EHLO mail1.sasken.com")
-	by vger.kernel.org with ESMTP id S261926AbUCDPED (ORCPT
+Received: from dvmwest.gt.owl.de ([62.52.24.140]:15815 "EHLO dvmwest.gt.owl.de")
+	by vger.kernel.org with ESMTP id S261940AbUCDPqp (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 4 Mar 2004 10:04:03 -0500
-Received: from sunops2.sasken.com (localhost [127.0.0.1])
-	by mail1.sasken.com (8.12.10/8.12.10) with ESMTP id i24F49jx001566
-	for <linux-serial@vger.kernel.org>; Thu, 4 Mar 2004 20:34:10 +0530 (IST)
-Received: from pcz-conf107.sasken.com (pcz-conf107.sasken.com [10.1.100.107])
-	by sunops2.sasken.com (8.12.10/) with ESMTP id i24F3wUV024813
-	for <linux-serial@vger.kernel.org>; Thu, 4 Mar 2004 20:33:58 +0530 (IST)
+	Thu, 4 Mar 2004 10:46:45 -0500
+Content-Disposition: inline
+In-Reply-To: <Pine.LNX.4.44.0403042021001.5144-100000@pcz-vijayck.sasken.com>
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
---=_IS_MIME_Boundary
-Content-Type: TEXT/PLAIN; charset=US-ASCII
 
+--VSqBvbptTjRvY2y2
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Hi all,
+On Thu, 2004-03-04 20:33:58 +0530, Vijaymahantesh Kalakoti <vijayck@sasken.=
+com>
+wrote in message <Pine.LNX.4.44.0403042021001.5144-100000@pcz-vijayck.saske=
+n.com>:
+> I have connected two pc's through serial port. And one of the pc is=20
+> configured to run a terminal on the serial port( ttyS0 ) by configuring=
+=20
+> the getty to run on serial port.=20
+>=20
+> I have written a program to send the username & password from the other=
+=20
+> computer. The configuration of serial port on both the systems are same.
+>=20
+> But I am not able to login to the system. But when I give a delay 1/100 t=
+h=20
+> of a second or more between sending of username & password, then it is=20
+> getting logging into the system.
+>=20
+> Can I log in without introducing any delays?
 
-I have connected two pc's through serial port. And one of the pc is 
-configured to run a terminal on the serial port( ttyS0 ) by configuring 
-the getty to run on serial port. 
+Sounds a bit like
 
-I have written a program to send the username & password from the other 
-computer. The configuration of serial port on both the systems are same.
+	- Handshake wires are missing (so some data is lost)
+	- UART type is configured wrongly
 
-But I am not able to login to the system. But when I give a delay 1/100 th 
-of a second or more between sending of username & password, then it is 
-getting logging into the system.
+MfG, JBG
 
-Can I log in without introducing any delays?
+--=20
+   Jan-Benedict Glaw       jbglaw@lug-owl.de    . +49-172-7608481
+   "Eine Freie Meinung in  einem Freien Kopf    | Gegen Zensur | Gegen Krieg
+    fuer einen Freien Staat voll Freier B=FCrger" | im Internet! |   im Ira=
+k!
+   ret =3D do_actions((curr | FREE_SPEECH) & ~(NEW_COPYRIGHT_LAW | DRM | TC=
+PA));
 
-Pls help me in this regard.
-
-Thanks & regards
-vijay kalkoti
--- 
-
-
---=_IS_MIME_Boundary
-Content-Type: text/plain;charset=us-ascii
-Content-Transfer-Encoding: 7bit
+--VSqBvbptTjRvY2y2
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 Content-Disposition: inline
 
-***********************************************************************
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.4 (GNU/Linux)
 
-********************************************************************
+iD8DBQFAR09jHb1edYOZ4bsRAoouAJ9skvv+TpUqyQo6PJIRPhRNCXYZZgCfZpSV
+Ar/SdIskD1hLHVAI/JX46UU=
+=x7/X
+-----END PGP SIGNATURE-----
 
-SASKEN BUSINESS DISCLAIMER
-
-This message may contain confidential, proprietary or legally Privileged information. In case you are not the original intended Recipient of the message, you must not, directly or indirectly, use, Disclose, distribute, print, or copy any part of this message and you are requested to delete it and inform the sender. Any views expressed in this message are those of the individual sender unless otherwise stated. Nothing contained in this message shall be construed as an offer or acceptance of any offer by Sasken Communication Technologies Limited ("Sasken") unless sent with that express intent and with due authority of Sasken. Sasken has taken enough precautions to prevent the spread of viruses. However the company accepts no liability for any damage caused by any virus transmitted by this email.
-
-***********************************************************************
-
---=_IS_MIME_Boundary--
+--VSqBvbptTjRvY2y2--
