@@ -1,92 +1,77 @@
-From: Steve Tell <tell@telltronics.org>
-Subject: 2.4.21 patch to support LavaPort-Quad card
-Date: Mon, 21 Jul 2003 00:01:22 -0400 (EDT)
+From: Bjorn Helgaas <bjorn.helgaas@hp.com>
+Subject: trivial 2.4 HCDP documentation/config patch
+Date: Tue, 29 Jul 2003 13:53:49 -0600
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <Pine.LNX.4.21.0307202354520.21823-200000@ariel.lan.telltronics.org>
+Message-ID: <200307291353.49226.bjorn.helgaas@hp.com>
 Mime-Version: 1.0
-Content-Type: MULTIPART/MIXED; BOUNDARY="-1463811584-1871339509-1058760082=:21823"
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from dsl093-240-080.ral1.dsl.speakeasy.net ([66.93.240.80]:4854 "EHLO
-	telltronics.org") by vger.kernel.org with ESMTP id S269216AbTGUDqY
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 20 Jul 2003 23:46:24 -0400
-Received: from localhost (tell@localhost)
-	by telltronics.org (8.11.6/8.9.3) with ESMTP id h6L41ON22740
-	for <linux-serial@vger.kernel.org>; Mon, 21 Jul 2003 00:01:24 -0400
+Received: from atlrel9.hp.com ([156.153.255.214]:55737 "EHLO atlrel9.hp.com")
+	by vger.kernel.org with ESMTP id S272126AbTG2UBl (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 29 Jul 2003 16:01:41 -0400
+Content-Disposition: inline
 List-Id: linux-serial@vger.kernel.org
-To: Linux serial mailing list <linux-serial@vger.kernel.org>
+To: Marcelo Tosatti <marcelo@conectiva.com.br>
+Cc: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-  Send mail to mime@docserver.cac.washington.edu for more info.
+Hi Marcelo,
 
----1463811584-1871339509-1058760082=:21823
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+This just adds help for CONFIG_SERIAL_HCDP and fixes indentation.
 
+#### AUTHOR bjorn.helgaas@hp.com
+#### COMMENT START
+### Comments for ChangeSet
+CONFIG_SERIAL_HCDP documentation and indent fix.
+### Comments for Documentation/Configure.help
+Add CONFIG_SERIAL_HCDP documentation.
+### Comments for drivers/char/Config.in
+Fix CONFIG_SERIAL_HCDP indentation.
+#### COMMENT END
 
-This patch against 2.4.21 adds support for the "LavaPort Quad" PCI serial
-card, which contains a 16C654 and a lava-branded pci interface chip.
-The board is labeled only "P/N MOKO L75.2"
-It shows up as PCI vendor ID=0x1407, with two devices 0x0220 and 0x0221,
-and can run up to 460.8Kbps.
+# This is a BitKeeper generated patch for the following project:
+# Project Name: Linux kernel tree
+# This patch format is intended for GNU patch command version 2.5 or higher.
+# This patch includes the following deltas:
+#	           ChangeSet	1.1039  -> 1.1040 
+#	drivers/char/Config.in	1.46    -> 1.47   
+#	Documentation/Configure.help	1.168   -> 1.169  
+#
+# The following is the BitKeeper ChangeSet Log
+# --------------------------------------------
+# 03/07/29	bjorn.helgaas@hp.com	1.1040
+# CONFIG_SERIAL_HCDP documentation and indent fix.
+# --------------------------------------------
+#
+diff -Nru a/Documentation/Configure.help b/Documentation/Configure.help
+--- a/Documentation/Configure.help	Tue Jul 29 13:55:03 2003
++++ b/Documentation/Configure.help	Tue Jul 29 13:55:03 2003
+@@ -17512,6 +17512,13 @@
+ 
+   If unsure, say N.
+ 
++Support for serial port described by EFI HCDP table
++CONFIG_SERIAL_HCDP
++  If you wish to make the serial console port described by the EFI
++  HCDP table available for use as serial console or general
++  purpose port, say Y here. See
++  <http://www.dig64.org/specifications/DIG64_HCDPv10a_01.pdf>.
++
+ Support for PowerMac serial ports
+ CONFIG_MAC_SERIAL
+   If you have Macintosh style serial ports (8 pin mini-DIN), say Y
+diff -Nru a/drivers/char/Config.in b/drivers/char/Config.in
+--- a/drivers/char/Config.in	Tue Jul 29 13:55:03 2003
++++ b/drivers/char/Config.in	Tue Jul 29 13:55:03 2003
+@@ -18,7 +18,7 @@
+       bool '   serial port on GSC support' CONFIG_SERIAL_GSC
+    fi
+    if [ "$CONFIG_IA64" = "y" ]; then
+-      bool 'Support for serial console port described by EFI HCDP table' CONFIG_SERIAL_HCDP
++      bool '  Support for serial port described by EFI HCDP table' CONFIG_SERIAL_HCDP
+    fi
+    if [ "$CONFIG_ARCH_ACORN" = "y" ]; then
+       tristate '   Atomwide serial port support' CONFIG_ATOMWIDE_SERIAL
 
-It also fixes a compilation problem due to a wrong or changed structure
-field that shows up if SERIAL_DEBUG_PCI (that fix is untested, however).
-
-
-
-
-
-
-
-
-
-
---
-Steve Tell  tell@telltronics.org 
-
----1463811584-1871339509-1058760082=:21823
-Content-Type: TEXT/PLAIN; charset=US-ASCII; name="lavaport.patch"
-Content-Transfer-Encoding: BASE64
-Content-ID: <Pine.LNX.4.21.0307210001220.21823@ariel.lan.telltronics.org>
-Content-Description: 2.4.21 patch for lavaport quad PCI serial card
-Content-Disposition: attachment; filename="lavaport.patch"
-
-LS0tIGxpbnV4LTIuNC4yMS1vcmlnL2luY2x1ZGUvbGludXgvcGNpX2lkcy5o
-CTIwMDMtMDYtMTMgMTA6NTE6MzkuMDAwMDAwMDAwIC0wNDAwDQorKysgbGlu
-dXgtMi40LjIxL2luY2x1ZGUvbGludXgvcGNpX2lkcy5oCTIwMDMtMDctMjAg
-MjM6MDA6MDUuMDAwMDAwMDAwIC0wNDAwDQpAQCAtMTU0MSw2ICsxNTQxLDgg
-QEANCiAjZGVmaW5lIFBDSV9ERVZJQ0VfSURfTEFWQV9QT1JUX1BMVVMJMHgw
-MjAwIC8qIDJ4IDE2NjUwICovDQogI2RlZmluZSBQQ0lfREVWSUNFX0lEX0xB
-VkFfUVVBRF9BCTB4MDIwMSAvKiAyeCAxNjY1MCwgaGFsZiBvZiA0IHBvcnQg
-Ki8NCiAjZGVmaW5lIFBDSV9ERVZJQ0VfSURfTEFWQV9RVUFEX0IJMHgwMjAy
-IC8qIDJ4IDE2NjUwLCBoYWxmIG9mIDQgcG9ydCAqLw0KKyNkZWZpbmUgUENJ
-X0RFVklDRV9JRF9MQVZBX1BPUlRfUVVBRF9BCTB4MDIyMCAvKiAyeCAxNjY1
-MCwgaGFsZiBvZiA0IHBvcnQgKi8NCisjZGVmaW5lIFBDSV9ERVZJQ0VfSURf
-TEFWQV9QT1JUX1FVQURfQgkweDAyMjEgLyogMnggMTY2NTAsIGhhbGYgb2Yg
-NCBwb3J0ICovDQogI2RlZmluZSBQQ0lfREVWSUNFX0lEX0xBVkFfU1NFUklB
-TAkweDA1MDAgLyogMXggMTY1NTAgKi8NCiAjZGVmaW5lIFBDSV9ERVZJQ0Vf
-SURfTEFWQV9QT1JUXzY1MAkweDA2MDAgLyogMXggMTY2NTAgKi8NCiAjZGVm
-aW5lIFBDSV9ERVZJQ0VfSURfTEFWQV9QQVJBTExFTAkweDgwMDANCi0tLSBs
-aW51eC0yLjQuMjEtb3JpZy9kcml2ZXJzL2NoYXIvc2VyaWFsLmMJMjAwMy0w
-Ni0xMyAxMDo1MTozMy4wMDAwMDAwMDAgLTA0MDANCisrKyBsaW51eC0yLjQu
-MjEvZHJpdmVycy9jaGFyL3NlcmlhbC5jCTIwMDMtMDctMjAgMjM6Mzg6NDQu
-MDAwMDAwMDAwIC0wNDAwDQpAQCAtNDE4Niw3ICs0MTg2LDcgQEANCiAgICAN
-CiAjaWZkZWYgU0VSSUFMX0RFQlVHX1BDSQ0KIAlwcmludGsoS0VSTl9ERUJV
-RyAiIFN1YnN5c3RlbSBJRCAlbHggKGludGVsIDk2MClcbiIsDQotCSAgICAg
-ICAodW5zaWduZWQgbG9uZykgYm9hcmQtPnN1YmRldmljZSk7DQorCSh1bnNp
-Z25lZCBsb25nKSBwY2lfZ2V0X3N1YmRldmljZShkZXYpKTsNCiAjZW5kaWYN
-CiAJLyogaXMgZmlybXdhcmUgc3RhcnRlZD8gKi8NCiAJcGNpX3JlYWRfY29u
-ZmlnX2R3b3JkKGRldiwgMHg0NCwgKHZvaWQqKSAmb2xkdmFsKTsgDQpAQCAt
-NDg1OSw2ICs0ODU5LDEyIEBADQogCXsJUENJX1ZFTkRPUl9JRF9MQVZBLCBQ
-Q0lfREVWSUNFX0lEX0xBVkFfUVVBRF9CLA0KIAkJUENJX0FOWV9JRCwgUENJ
-X0FOWV9JRCwgMCwgMCwNCiAJCXBibl9iMF9idF8yXzQ2MDgwMCB9LA0KKwl7
-CVBDSV9WRU5ET1JfSURfTEFWQSwgUENJX0RFVklDRV9JRF9MQVZBX1BPUlRf
-UVVBRF9BLA0KKwkJUENJX0FOWV9JRCwgUENJX0FOWV9JRCwgMCwgMCwNCisJ
-CXBibl9iMF9idF8yXzQ2MDgwMCB9LA0KKwl7CVBDSV9WRU5ET1JfSURfTEFW
-QSwgUENJX0RFVklDRV9JRF9MQVZBX1BPUlRfUVVBRF9CLA0KKwkJUENJX0FO
-WV9JRCwgUENJX0FOWV9JRCwgMCwgMCwNCisJCXBibl9iMF9idF8yXzQ2MDgw
-MCB9LA0KIAl7CVBDSV9WRU5ET1JfSURfTEFWQSwgUENJX0RFVklDRV9JRF9M
-QVZBX1NTRVJJQUwsDQogCQlQQ0lfQU5ZX0lELCBQQ0lfQU5ZX0lELCAwLCAw
-LA0KIAkJcGJuX2IwX2J0XzFfMTE1MjAwIH0sDQo=
----1463811584-1871339509-1058760082=:21823--
