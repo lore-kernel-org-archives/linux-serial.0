@@ -1,54 +1,66 @@
-From: Peter Astrand <peter@cendio.se>
-Subject: Re: Serial port redirection
-Date: Fri, 5 Dec 2003 10:11:48 +0100 (CET)
+From: Nikolay Datchev <nik@varna.net>
+Subject: hard to short-describe problem
+Date: Fri, 5 Dec 2003 12:28:44 +0200 (EET)
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <Pine.LNX.4.44.0312051007200.11858-100000@maggie.lkpg.cendio.se>
-References: <3FCDE5CB.4090303@acm.org>
+Message-ID: <Pine.LNX.4.33.0312051156550.16713-100000@ns.varna.net>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=ISO-8859-1;
-	FORMAT=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.cendio.se ([193.12.253.66]:242 "EHLO mail.cendio.se")
-	by vger.kernel.org with ESMTP id S263448AbTLEJLu (ORCPT
+Received: from ns.varna.net ([195.24.57.1]:59859 "EHLO ns.varna.net")
+	by vger.kernel.org with ESMTP id S263539AbTLEK2u (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 5 Dec 2003 04:11:50 -0500
-In-Reply-To: <3FCDE5CB.4090303@acm.org>
-Content-ID: <Pine.LNX.4.44.0312051007202.11858@maggie.lkpg.cendio.se>
+	Fri, 5 Dec 2003 05:28:50 -0500
+Received: from localhost (nik@localhost)
+	by ns.varna.net (8.12.10/8.12.9) with ESMTP id hB5ASiaF015239
+	for <linux-serial@vger.kernel.org>; Fri, 5 Dec 2003 12:28:45 +0200
 List-Id: linux-serial@vger.kernel.org
-To: Corey Minyard <minyard@acm.org>
-Cc: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
+Hello list,
 
-> I've attached a ser2net patch for this.  Could you try it out?
+Here is my problem:
 
-It's a good start, but it's not enough. cyclades-ser-cli doesn't finish=
-ed=20
-the initialization; it seems to be waiting for ACKs for the=20
-SET-MODEMSTATE-MASK op.=20
+Linux, kernel 2.4.22, 6 serial ports, one 4-port PCI and one 2-port PCI
+boards.  Standart modems attached to all the ports. This is a dial-in
+server, working with terminal-based login - standart login prompt, and
+then the login program sends user/password to other software.
 
+All the ports/modems works, but after few days of using, something strange
+happens: there are hang login processes, and huge ammount of data flowing
+in both directions via serial port, on which the login process hangs. I
+can see the same on modem's LED indicators. If i try to kill the login,
+machine locks, and needs hardware reset. I don't know what will happen if
+i switch off the power of the modem - i need this machine up and running
+for now.
 
-> >* ser2net is totally incompatible with cyclades-serial-client. This =
-is
-> >because ser2net interprets RFC2217 a bit differently. sredird sends
-> >command "101" as ack for command "1", while ser2net sends "1". RFC22=
-17 is
-> >not very explicit about which way is most correct. The ser2net appro=
-ach
-> >looks better to me, but the sredird one is probably more widely used
-> >(since Cyclades terminal server uses it, for example.) Probably, RFC=
-2217
-> >software needs to handle both cases.
+In the kernel log, i have lot of messages like this:
 
+ttyS: 1 input overrun(s)
 
---=20
-Peter =C5strand		www.thinlinc.com
-Cendio			www.cendio.se
-Teknikringen 3		Phone: +46-13-21 46 00
-583 30 Link=F6ping
+After searching with google, i've found that people has fixed this
+overrun with disabling the IDE IRQ masking, but the IDE on this machine
+generates 1 IRQ per minute, and the hard disk drive is totally not in
+heavy use. On other hand, this machine has an ethernet interface, which is
+under few Mbps load, with pics up to 10 Mbps.
 
--
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Hardware is P4 2.4 GHz, ethernet is 3c940 (sk98 driver), serial boards
+are:
+
+02:0b.0 Seial controller: NetMos Technology 222N-2 I/O card (2S+1P) (rev 01)
+02:0d.0 Seial controller: Oxford Semiconductor Ltd 0X16PCI954 (Quad 16950 UART) function 0
+
+Seems that the problem with the login process hang and serial overruns are
+two different problems.
+
+Distribution is Slackware 9.0, i'm using uugetty to init and control the
+serial ports.
+
+This scheme has worked for years, but with slower PC, ISA serial boards,
+older Linux distro (slackware 7.0) and same ethernet load. It never has
+serial overruns (well, couple of overruns for 400 days uptime doesn't
+matter).
+
+Please help (no kernel modifications were made, this is the stock 2.4.22)
+
+-- Nikolay Datchev
+
