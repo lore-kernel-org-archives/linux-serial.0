@@ -1,51 +1,54 @@
-From: Dirk Arnold <dirk.arnold@cs.uni-dortmund.de>
-Subject: cardbus modem not handled by the serial driver
-Date: Tue, 14 Jan 2003 12:57:12 +0100
+From: Ross Boylan <RossBoylan@stanfordalumni.org>
+Subject: Serial port shuts down APC UPS
+Date: Thu, 23 Jan 2003 17:39:02 -0800
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <3E23FB18.5080506@cs.uni-dortmund.de>
+Message-ID: <20030124013902.GF765@wheat.boylan.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
+Content-Disposition: inline
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Ross Boylan <RossBoylan@stanfordalumni.org>
 
-   Hi there,
+When I connect my APC BackUPS 650 to ttyS1 the unit turns off when
+Linux starts up.  APC tells me (after several days) that a different
+cable is necessary for Unixy systems than for windows.  Apparently
+some voltage on the serial port gets transmitted back to the unit,
+which interprets it as a shut down signal.  (That is, I continue to
+get power, but if the wall power fails the battery won't kick in).
 
-   My Xircom RBM56G cardbus modem works fine with the
-serial_cb driver in 2.2 kernels, but is not handled
-correctly by the serial driver in 2.4 kernels.  I've
-been trying to add support for that modem to serial.c,
-but I don't understand the driver well enough in order
-to make it work.  If there is anyone who can help me
-with suggestions, I'd be happy to do the testing.
+Since the hardware works under Windows, I assume there is a software
+solution, and I would like to find it.
 
-   Here's what I've tried: as the modem/ethernet combo
-apparently is handled correctly by the serial driver,
-I tried adding
+APC further says the port should be at 2400 baud, with Flow set to
+XON/XOFF (which might also be known as no FIFO).  I find baud control
+but no flow control in setserial, and at any rate my understanding is
+that it doesn't reprogram the physical device.
 
-{   PCI_VENDOR_ID_XIRCOM, 0x0101,
-      PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-      pbn_xircom_combo },
+serial.c appears to set FIFO on, so that's probably part of the
+problem.  Is it safe to turn it off, or would that require
+rearchitecting things?  (Also, I don't know how to turn it off).
 
-to __devinitdata.  The result in the system logs is
-this:
+As a final complication, I get "LSR safety check engaged" on ttyS1
+when I start, even if the cable is disconnected.  My suspicion is that
+this indicates I have the wrong IO range or IRQ in setserial.
 
-kernel: cs: cb_alloc(bus 2): vendor 0x115d, device 0x0101
-kernel: PCI: Enabling device 02:00.0 (0000 -> 0003)
-kernel: ttyS4 at port 0x4000 (irq = 10) is a 16550A
-cardmgr[527]: initializing socket 0
-cardmgr[527]: socket 0: Serial or Modem
-cardmgr[527]: executing: 'modprobe serial_cs'
-kernel: serial_cs: ParseTuple: No more items
-cardmgr[527]: executing: './serial start serial'
-/etc/hotplug/pci.agent: ... no modules for PCI slot 02:00.0
-cardmgr[527]: + don't know how to make device "serial"
-cardmgr[527]: + /dev/serial: No such file or directory
-last message repeated 2 times
-cardmgr[527]: exiting
+I've built my kernel from source (2.4.19 under Debian), so it would be
+relatively easy for me to modify serial.c (for example)--if I knew
+what to do!
 
-I'd be happy to hear any better suggestions.
-   Thanks,
-     Dirk
+Gigabyte GI-7IXE4 motherboard, using the AMD 751/756 chipset.  Athlon
+processor.  I've looked around for the ports in /proc/isapnp and
+lspci, but haven't found anything.  A mouse is on the other port, and
+I have an internal modem using another port.  Also using USB scanner.
+There are quite a lot of peripherals; interrupts are in short supply.
 
+In case you can't tell, I'm no hardware expert.  I'd appreciate any
+help.  What do I need to do to get the serial port to work with my
+UPS?
+
+Thanks.
+
+P.S. I just subscribed to the list.  I'd appreciate it if you cc'd me
+in case the subscription hasn't taken yet.
