@@ -1,15 +1,14 @@
-From: "Larry" <lorraine21bigmac@hotmail.com>
-Subject: (unknown)
-Date: Thu, 02 Sep 2004 14:27:49 GMT
+From: "Billy" <boots21hornet@hotmail.com>
+Subject: Soma, Prozac, Valium. Discreet. No one needs to know.
+Date: Fri, 03 Sep 2004 03:01:21 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1094135269-4945__17751.7220996835$1094136130$gmane$org@excite.com>
+Message-ID: <1094180481-4366__20877.0863050178$1094181925$gmane$org@excite.com>
 Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [200.242.249.70] ([200.242.249.70]:50952 "HELO vger.kernel.org")
-	by vger.kernel.org with SMTP id S268337AbUIBO3S (ORCPT
+Received: from [218.30.17.116] ([218.30.17.116]:34509 "HELO vger.kernel.org")
+	by vger.kernel.org with SMTP id S269038AbUICDCz (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 2 Sep 2004 10:29:18 -0400
-Subject: 
+	Thu, 2 Sep 2004 23:02:55 -0400
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 
@@ -17,12 +16,12 @@ Save up to 80% on popular meds!
 
 *** GREAT SPECIALS ***
 
-Check it out: http://www.oabwkdfbabdfj.com/?92
+Check it out: http://www.hjigoeoi.com/_85924943b9db73ac62baa654773c6a8e/4
 
 - No doctor visits or hassles
 - Quick delivery to your front door
 
-Visit us here: http://www.oabwkdfbabdfj.com/?92
+Visit us here: http://www.hjigoeoi.com/_85924943b9db73ac62baa654773c6a8e/4
 
 
 On medication long term?  
@@ -30,12 +29,12 @@ Buy bulk through us and LITERALLY SAVE THOUSANDS!
 
 
 
-garnet strawbermedical wombat design
-player profspeedo arizona irene graphic liverpoo hazel 
-bridge gary vanilla 
-angels juliadenali rufus frogs
-swimming oranges marcus 
-stingray rhondagarnet aliens cookies
+barry metalliccobra guido miles
+cesar corradoslacker racerx saskia miranda johnson skidoo 
+twins action justin1 
+zhongguo gambitlooney mortimer tracy
+smiths suzuki gretchen 
+cosmos bridgesrambo1 hornet barry
 
-valentin t-bonehanna sweety scooby theatre cherry republic 
+wanker firstnesbitt naomi marcus cutie metallica butch 
 
