@@ -1,39 +1,31 @@
-From: Alexander Bartolich <alexander.bartolich@gmx.at>
+From: "Gary Frerking" <gary@frerking.org>
 Subject: Re: Maintainer needed for Serial-Programming-HOWTO
-Date: Sun, 30 Mar 2003 01:47:19 +0100 (MET)
+Date: Sat, 29 Mar 2003 18:11:48 -0700
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <19036.1048985239@www34.gmx.net>
+Message-ID: <002401c2f659$583f9780$060420d0@vaio>
+References: <19036.1048985239@www34.gmx.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Ferguson <gferg@sgi.com>
+To: Alexander Bartolich <alexander.bartolich@gmx.at>, Greg Ferguson <gferg@sgi.com>
 Cc: David Lawyer <dave@lafn.org>, discuss@en.tldp.org, linux-serial@vger.kernel.org
 
-Greg Ferguson wrote:
-> [...] The CVS request can be easily done. Not a problem on our end.
+> Well, since nobody stood up and protested I had a first go on the
+document.
 
-Well, since nobody stood up and protested I had a first go on the docum=
-ent.
+Hmm.
 
-http://tux.bartolich.at/Serial-Programming-HOWTO/
-http://tux.bartolich.at/Serial-Programming-HOWTO-03-03-30.tar.gz
+Well, I said I was alive and well and willing to continue to work on it --
+and asked David why he didn't bother contacting me prior to posting to the
+list -- and asked you for a pointer to a good example that demonstrated how
+to properly address your concerns.
 
-Not much changed, but at least the examples compile cleanly now with -W=
-all.
-One of them is incomplete and does not link, and hey, I said nothing of
-actually
-testing them, but that's why I requested a few weeks time.
+But I guess that wasn't a protest.
 
-What is on schedule, apart from that?
+If you want to take it over, be my guest.
 
---=20
-+++ GMX - Mail, Messaging & more  http://www.gmx.net +++
-Bitte l=E4cheln! Fotogalerie online mit GMX ohne eigene Homepage!
+-- Gary
 
--
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
