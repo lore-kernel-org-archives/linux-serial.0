@@ -1,30 +1,30 @@
-From: Minna <employable@newportweb.com>
-Subject: Search for the best and cheapest pharmacy online
-Date: Mon, 27 Jun 2005 15:08:28 -0400
-Message-ID: <8841610381.1553758295@24.244.134.46>
+From: Malcolm <vitae@foehn-x.ch>
+Subject: Software paradise.
+Date: Fri, 10 Mar 2000 09:04:04 +0900
+Message-ID: <7245150325.4678548278@ce72.opt2.point.ne.jp>
 Mime-Version: 1.0 (Apple Message framework v728)
 Content-Type: text/plain; charset=US-ASCII; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [24.244.134.46] ([24.244.134.46]:23568 "HELO 24.244.134.46")
-	by vger.kernel.org with SMTP id S261690AbVF0TI2 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 27 Jun 2005 15:08:28 -0400
-Received: from [220.230.193.48] (port=4012 helo=[Werther])
-    by 24.244.134.46 with esmtp
-    id 6525225763Svetlana18193
-    for linux-serial@vger.kernel.org; Mon, 27 Jun 2005 15:08:29 -0400
+Received: from ce72.opt2.point.ne.jp ([211.9.155.72]:48900 "HELO
+	ce72.opt2.point.ne.jp") by vger.kernel.org with SMTP
+	id S261550AbVF1NlE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 28 Jun 2005 09:41:04 -0400
+Received: from [69.134.155.139] (port=4068 helo=[accosted])
+    by ce72.opt2.point.ne.jp with esmtp
+    id 2469220635altruism129216
+    for linux-serial@vger.kernel.org; Fri, 10 Mar 2000 09:04:05 +0900
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Reviving the sex lives or millions
-http://koubi.vayohwdoa5vlzwv.edgercc.info
+Name-brand software at low, low, low, low prices 
+http://mvaj.5c92qm5g2f5ckon.pedaryil.com
 
 
 
-One's first book, kiss, home run, is always the best.   
-I will wear my heart upon my sleeveFor daws to peck at. 
-Most people would rather be certain they're miserable than risk being happy. 
+
+I exist as I am, that is enough.     
+Computer Science is no more about computers than astronomy is about telescopes. 
 
 
