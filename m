@@ -1,25 +1,22 @@
-From: "horacio" <castle21jeff@hotmail.com>
-Subject: 36 H0UR V1=AG-RA
-Date: Fri, 27 Feb 2004 15:19:26 GMT
+From: "erick" <adejo1keashaye@hotmail.com>
+Subject: Increase your metabolism!
+Date: Tue, 02 Mar 2004 05:37:26 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1077895166-5496__715.969040948217$1077895214@excite.com>
+Message-ID: <1078205846-10072__25255.2599333741$1078205890@excite.com>
 Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [211.108.90.4] ([211.108.90.4]:42492 "HELO verizon.net")
-	by vger.kernel.org with SMTP id S263013AbUB0PT2 (ORCPT
+Received: from [68.152.174.70] ([68.152.174.70]:8460 "HELO verlan.com")
+	by vger.kernel.org with SMTP id S261566AbUCBFh0 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 27 Feb 2004 10:19:28 -0500
+	Tue, 2 Mar 2004 00:37:26 -0500
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 
 
-Did you know That the normal cost for Super V i a g r a is $20, per dose?
+FATBLAST is an advanced fat-binding supplement
+that removes fat from the foods you eat!
 
-We are running a hot special!! T0DAY Its only an amazing $3.00
-
-Shipped world wide!
-
-DISC0UNT 0RDER: http://healthypolicy.com/sv/index.php?pid=eph9106
+http://healthypolicy.com/fb/index.php?pid=eph9106
 
 
 
@@ -30,11 +27,5 @@ DISC0UNT 0RDER: http://healthypolicy.com/sv/index.php?pid=eph9106
 
 
 
-
-
-
-aeh h2opolodepeche andre dead china theatre wonder 
-stormy carolinagoat laura guess
-bull oranges shit 
-
-Get off this list by going to http://healthypolicy.com/sv/applepie.php
+syjun ahoffman   clreilly Morris  mjhwang cmacosta dirk rjthorpe roundhea Cheese hiroko  sree buzz mlsage Batman honey ppennie mgonchar hall  
+Get off this list by writing to getmeoff731@excitemail.com
