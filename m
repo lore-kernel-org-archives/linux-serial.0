@@ -1,51 +1,43 @@
-From: Jerzy Tryjarski <jurekt@pkp.com.pl>
-Subject: IP over X.25, Cisco
-Date: Mon, 18 Aug 2003 15:13:03 +0200
+From: Dalibor Kranjcic <dalibor.kranjcic@ultra.si>
+Subject: more device files on same COM?
+Date: 18 Aug 2003 16:03:18 +0200
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <3F40D0DF.9060802@pkp.com.pl>
+Message-ID: <1061215398.16386.44.camel@dalibork.ultra.si>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from antybiotyk.tktelekom.pl ([213.199.225.22]:27656 "EHLO
-	smtp.tktelekom.pl") by vger.kernel.org with ESMTP id S271384AbTHRLM6
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Aug 2003 07:12:58 -0400
-Received: (from root@localhost)
-	by smtp.tktelekom.pl (8.12.9/8.12.5) id h7IBCv6F001886
-	for <linux-serial@vger.kernel.org>; Mon, 18 Aug 2003 13:12:57 +0200
-Received: from pkp.com.pl ([172.23.11.118])
-	by smtp.tktelekom.pl (8.12.9/8.12.5) with ESMTP id h7IBCtJJ001767
-	for <linux-serial@vger.kernel.org>; Mon, 18 Aug 2003 13:12:56 +0200
+Received: from naomi.triera.net ([213.161.0.25]:55768 "EHLO naomi.triera.net")
+	by vger.kernel.org with ESMTP id S271703AbTHROAF (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 18 Aug 2003 10:00:05 -0400
+Received: from dalibork.ultra.si (cpe1-7-75.cable.triera.net [213.161.7.75])
+	by naomi.triera.net (Postfix) with ESMTP id 5DA571774F
+	for <linux-serial@vger.kernel.org>; Mon, 18 Aug 2003 16:01:11 +0200 (CEST)
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
 Hi,
-  I want to connect my PC under linux RH 9 with e-mail server  via X.25 
-packet network.
-                                                                                                                        
- 
-IP datagrams are encapsulated inside packets on an X.25 virtual circuit.
-                                                                                                                        
- 
-Mail server is connected to X.25 network via Cisco router. So I use the 
-IETF standard encapsulation, as specified by RFC
-1356, set X.121 address, set IP address and I map between X.121 address 
-and IP address.
-                                                                                                                        
- 
-Finaly in my pc It must be additional software for rs232 and user 
-application to be abble to configure the interface with such as 
-functions as assigning IP address, assigning X.121 address, mapping, pad 
-and other specific for X.25 network functions.
-                                                                                                                        
- 
-Are there products just for Linux ?
-                                                                                                                        
- 
-Can anybody recommend the best solution ?
-                                                                                                                        
- 
-Jurek
 
+I would like to use /dev/ttyS12 as virtual port for COM2, which would
+allow sending of additional data flow to COM2 independently from the
+data flow which is already sent trough /dev/ttyS1 (let's say ppp).
+
+So, I expect write to /dev/ttyS12 to activate rs_interrupt_single method
+which does the actual write. Once I'm in rs_interrupt_single method I
+would redirect the incoming user space data to TX lines for COM2.
+
+The write to /dev/ttyS12 fails with EIO Input/Output error, I suppose
+because there is no UART defined for this device and some initialization
+stuff doesn't go trough.
+
+I'm wondering if there is any way to activate rs_interrupt_single method
+in serial.c or for /dev/ttyS12 or in other words is there any way to
+have more (virtual) tty device files for the same COM? 
+
+
+Thanks for any advice...
+
+
+Dalibor Kranjcic.
 
