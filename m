@@ -1,59 +1,52 @@
-From: "Adam J. Richter" <adam@yggdrasil.com>
-Subject: Re: Linux 2.5.30: [SERIAL] build fails at 8250.c
-Date: Fri, 2 Aug 2002 15:49:24 -0700
+From: Ed Vance <EdV@macrolink.com>
+Subject: RE: [OT(ish] Duplicate Character between modems
+Date: Fri, 2 Aug 2002 15:54:33 -0700
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20020802154924.A5505@baldur.yggdrasil.com>
+Message-ID: <11E89240C407D311958800A0C9ACF7D13A7922@EXCHANGE>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="d6Gm4EdcadzBjdND"
+Content-Type: text/plain;
+	charset="iso-8859-1"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Content-Disposition: inline
 List-Id: linux-serial@vger.kernel.org
-To: tytso@mit.edu
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, axel@hh59.org, rmk@arm.linux.org.uk
+To: 'Neil Everton' <neil@gemini-it.com>
+Cc: "Linux-Serial@Vger. Kernel. Org" <linux-serial@vger.kernel.org>
 
+On Fri, August 02, 2002 1:41 PM, Neil Everton wrote:
+> Hi,
 
---d6Gm4EdcadzBjdND
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+  [snip]
 
-	linux-2.5.30/include/linux/serialP.h needs struct async_icount,
-which is defined in <linux/serial.h>, causing
-linux-2.5.30/drivers/serial/8250.c not to compile, among other problems.
-In linux-2.5.30, you cannot compile a file that includes <linux/serialP.h>
-without including <linux/serial.h>.  So, I think the solution is for
-serialP.h to #include serial.h.  I have attached a patch that does this.
+> 	I'm currently porting an application from DOS to Linux 
+> (RH7.2 with Cyclades
+> Cyclom-Y (hi henrique!!)).
+> 
+> 	My issue is this, if I send down the modem ;
+> "ABCDEFGHI"
+> 	the receiving end (very infrequently) receives
+> "AABCDEFGHI"
+> 	This is caught by the check digit routine and the line 
+> is NAK'd ready for a
+> re-transmit. It will usually work the second or third time. 
+> This has found a
+> bug in the 3rd party transmitting software, but they're 
+> taking the attitude
+> of the existing system works, so you fix your end !!! (the bug if your
+> interested is after sending a NAK they drop the connection, instead of
+> waiting for 5 retries)
+> 
+   [snip]
 
-	From the comments in serialP.h, it looks like there was some
-effort in linux-2.2 to allow inclusion of serialP.h without serial.h,
-but I see no indication of what benefit that was supposed to provide.
+Hi Neil,
 
-	Ted (or whowever gathers drivers/serial patches for Linus), do
-you want to shepherd this change to Linus, do you want me to submit it
-directly, or do you want to do something else?
+First thing I would check is to make sure that neither end is echoing. Check
+both the systems' ports and the modems' digital side ports. 
 
--- 
-Adam J. Richter     __     ______________   575 Oroville Road
-adam@yggdrasil.com     \ /                  Milpitas, California 95035
-+1 408 309-6081         | g g d r a s i l   United States of America
-                         "Free Software For The Rest Of Us."
+Just a guess.
 
---d6Gm4EdcadzBjdND
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment; filename="serialP.diff"
+Best regards,
+Ed
 
---- linux-2.5.30/include/linux/serialP.h	2002-08-01 14:16:07.000000000 -0700
-+++ linux/include/linux/serialP.h	2002-08-02 14:51:03.000000000 -0700
-@@ -24,11 +24,7 @@
- #include <linux/tqueue.h>
- #include <linux/circ_buf.h>
- #include <linux/wait.h>
--#if (LINUX_VERSION_CODE < 0x020300)
--/* Unfortunate, but Linux 2.2 needs async_icount defined here and
-- * it got moved in 2.3 */
- #include <linux/serial.h>
--#endif
- 
- struct serial_state {
- 	int	magic;
-
---d6Gm4EdcadzBjdND--
+---------------------------------------------------------------- 
+Ed Vance              edv@macrolink.com
+Macrolink, Inc.       1500 N. Kellogg Dr  Anaheim, CA  92807
+----------------------------------------------------------------
