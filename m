@@ -1,103 +1,61 @@
-From: Kumar Gala <kumar.gala@motorola.com>
-Subject: Re: [PATCH] Make the Startech UART detection 'more correct'.
-Date: Wed, 24 Sep 2003 17:40:04 -0500
-Sender: linux-kernel-owner@vger.kernel.org
-Message-ID: <0A8F6030-EEE0-11D7-AA35-000393DBC2E8@motorola.com>
-References: <20030909235153.GB4559@ip68-0-152-218.tc.ph.cox.net>
-Mime-Version: 1.0 (Apple Message framework v552)
-Content-Type: text/plain; charset=US-ASCII; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner+linux-kernel=40quimby.gnus.org@vger.kernel.org>
-In-Reply-To: <20030909235153.GB4559@ip68-0-152-218.tc.ph.cox.net>
-To: tytso@mit.edu
-Cc: kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, gallen@arlut.utexas.edu, Tom Rini <trini@kernel.crashing.org>
+From: Amit Kucheria <akucheria@metricsystems.com>
+Subject: persistent slip connections
+Date: Fri, 26 Sep 2003 16:13:30 -0700
+Sender: linux-serial-owner@vger.kernel.org
+Message-ID: <1064618009.1332.14.camel@amit.metricsystems.com>
+Mime-Version: 1.0
+Content-Type: multipart/signed; boundary="=-PFBvdBNa6NBgJchgFxzd";
+ protocol="application/pgp-signature"; micalg=pgp-sha1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mta6.algx.net ([67.92.168.235]:23853 "EHLO chimta05.algx.net")
+	by vger.kernel.org with ESMTP id S261712AbTIZXMv (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 26 Sep 2003 19:12:51 -0400
+Received: from wireless-4
+ (ip67-89-211-170.z211-89-67.customer.algx.net [67.89.211.170])
+ by chimmx05.algx.net
+ (iPlanet Messaging Server 5.2 HotFix 1.16 (built May 14 2003))
+ with ESMTP id <0HLU00DXOGHEMJ@chimmx05.algx.net> for
+ linux-serial@vger.kernel.org; Fri, 26 Sep 2003 18:12:50 -0500 (CDT)
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial <linux-serial@vger.kernel.org>
 
-I was wondering what the status of this patch was for the 2.4 side?
 
-thanks
+--=-PFBvdBNa6NBgJchgFxzd
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-- kumar
+Hi,
 
-On Tuesday, September 9, 2003, at 06:51 PM, Tom Rini wrote:
+I currently use 'slattach' (actually a modified version) to setup a SLIP
+connection between two machines. But when I unplug the cable and replug
+it back in, I have to reconfigure the connection at both end.
 
-> On Tue, Sep 09, 2003 at 05:18:59PM +0100, Russell King wrote:
->
->> On Mon, Sep 08, 2003 at 01:54:31PM -0700, Tom Rini wrote:
->>> Hello.  The following patches (vs 2.4 and 2.6) make the Startech UART
->>> detection 'more correct'  The problem is that on with the Motorola
->>> MPC82xx line (8245 for example) it has an internal DUART that it 
->>> claims
->>> to be PC16550D compatible, and it has an additional EFR (Enhanced
->>> Feature Register) at offset 0x2, like on the Startech UARTS.  
->>> However,
->>> it is not a Startech, and when it's detected as such, FIFOs don't 
->>> work.
->>> The fix for this is that the Startech UARTs have a 32 byte FIFO [1] 
->>> and
->>> the MPC82xx DUARTs have a 16-byte FIFO [2], to check that the FIFO 
->>> size
->>> is correct for a Startech.
->>
->> size_fifo() is claimed to be unreliable at detecting the FIFO size,
->> so I don't feel safe about using it here.
->>
->> I'd suggest something like:
->>
->> 	serial_outp(port, UART_LCR, UART_LCR_DLAB);
->> 	efr = serial_in(port, UART_EFR);
->> 	if ((efr & 0xfc) == 0) {
->> 		serial_out(port, UART_EFR, 0xac | (efr & 3));
->> 		/* if top 6 bits return zero, its motorola */
->> 		if (serial_in(port, UART_EFR) == (efr & 3)) {
->> 			/* motorola port */
->> 		} else {
->> 			/* ST16C650V1 port */
->> 		}
->> 		/* restore old value */
->> 		serial_outb(port, UART_EFR, efr);
->> 	}
->
-> Okay, from Kumar Gala (cc'ed) I've got the following patch for 2.4:
-> ===== drivers/char/serial.c 1.34 vs edited =====
-> --- 1.34/drivers/char/serial.c	Sun Jul  6 22:33:28 2003
-> +++ edited/drivers/char/serial.c	Tue Sep  9 16:50:22 2003
-> @@ -3741,7 +3741,10 @@
->  		/* Check for Startech UART's */
->  		serial_outp(info, UART_LCR, UART_LCR_DLAB);
->  		if (serial_in(info, UART_EFR) == 0) {
-> -			state->type = PORT_16650;
-> +			serial_outp(info, UART_EFR, 0xA8);
-> +			if (serial_in(info, UART_EFR) != 0)
-> +				state->type = PORT_16650;
-> +			serial_outp(info, UART_EFR, 0);
->  		} else {
->  			serial_outp(info, UART_LCR, 0xBF);
->  			if (serial_in(info, UART_EFR) == 0)
->
-> And I forward ported this up to 2.6 as:
-> ===== drivers/serial/8250.c 1.36 vs edited =====
-> --- 1.36/drivers/serial/8250.c	Tue Sep  9 07:22:12 2003
-> +++ edited/drivers/serial/8250.c	Tue Sep  9 16:49:07 2003
-> @@ -469,8 +469,13 @@
->  	 */
->  	serial_outp(up, UART_LCR, UART_LCR_DLAB);
->  	if (serial_in(up, UART_EFR) == 0) {
-> -		DEBUG_AUTOCONF("EFRv1 ");
-> -		up->port.type = PORT_16650;
-> +		serial_outp(up, UART_EFR, 0xA8);
-> +		if (serial_in(up, UART_EFR) != 0) {
-> +			DEBUG_AUTOCONF("EFRv1 ");
-> +			up->port.type = PORT_16650;
-> +		} else
-> +			DEBUG_AUTOCONF("Motorola 8xxx DUART ");
-> +		serial_outp(up, UART_EFR, 0);
->  		return;
->  	}
->
-> Better?
->
-> -- 
-> Tom Rini
-> http://gate.crashing.org/~trini/
-> <mime-attachment>
+Could this be handled in the slattach program, so that it does not
+'hangup' due to loss of DCD or DSR?
+
+TIA.
+
+Regards,
+Amit
+
+--=20
+     .| Amit Kucheria                       |.
+   ...| Wireless Systems Engineer           |...
+ .....| Metric Systems Corp., San Diego, CA |.....
+......| www.metricsystems.com               |......
+
+--=-PFBvdBNa6NBgJchgFxzd
+Content-Type: application/pgp-signature; name=signature.asc
+Content-Description: This is a digitally signed message part
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.1 (GNU/Linux)
+
+iD8DBQA/dMgZtLg6PvU36DYRAjNgAKCmjit41XJ3euinFW0wAikDOF2dNwCaAhhM
+LWPMO1ChkXbfjccKm7fpHdY=
+=Os1L
+-----END PGP SIGNATURE-----
+
+--=-PFBvdBNa6NBgJchgFxzd--
+
