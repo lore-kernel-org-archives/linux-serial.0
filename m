@@ -1,32 +1,32 @@
-From: "irvin" <adejoode@hotmail.com>
-Subject: Super hot CAS1N0 B0nus 0ffers! softball warriorsx
+From: "faustino" <mmirtceli@hotmail.com>
+Subject: As Seen on CNN, the Winningest CAS1N0! wright strawbera
 Date: Sun, 28 Mar 2004 01:20:14 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1080436814-16122__30229.5114765458$1080461777@excite.com>
+Message-ID: <1080436814-16123__23272.6990049288$1080461778@excite.com>
 Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [218.247.190.93] ([218.247.190.93]:36734 "HELO vexclothing.net")
-	by vger.kernel.org with SMTP id S262129AbUC1IPN (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 28 Mar 2004 03:15:13 -0500
+Received: from [213.154.78.157] ([213.154.78.157]:1256 "HELO
+	vfb-lampertheim.de") by vger.kernel.org with SMTP id S262114AbUC1IPK
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 28 Mar 2004 03:15:10 -0500
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 
-Come and play at the world's PREMIvERE ONLINwE CASrINO!
-We are happy to offer you, in an elegant atmosphere, a 50% BONUnS for YOUR FIRST DEPOiSIT as a New Player.
+Come and play at the world's PREMIvERE ONLINzE CASvINO!
+We are happy to offer you, in an elegant atmosphere, a 50% BONUrS for YOUR FIRST DEPOiSIT as a New Player.
 
 Sign up now! Don't wait!
 
 http://www.virtualcasinoes.net/_e4faa55afa1972493c43ac8a3f66f869/
 
 
-We'll automatically CREDIuT your account with a 50% BONUmS of extra chips, to wager in our CASIrNO.
-Don't hesiotate and try your luck!
+We'll automatically CREDIaT your account with a 50% BONUzS of extra chips, to wager in our CASIwNO.
+Don't hesirtate and try your luck!
 
-CLICoK HERnE!
+CLICiK HERnE!
 
 http://www.virtualcasinoes.net/_e4faa55afa1972493c43ac8a3f66f869/
 
 
 
-smiths marcus stingray alpha1 theking fireball timber cascade jkm mantra master1 love cannon minou gocougs gibson tootsie scooter1 dirk xxxx peggy goblue josie scooby kleenex mortimer
+whitney reznor shawn volley slacker prof happyday orchid angels cccccc bmw gary charity mazda1 rux wolverin h2opolo bridges robinhoo naomi impala gambit alison james1 asdfghjk dickhead
