@@ -1,60 +1,48 @@
-From: "Riley Williams" <Riley@Williams.Name>
-Subject: Re: Serious problem with MAKEDEV and setserial command
-Date: Tue, 6 May 2003 22:08:55 +0100
+From: Adam Hunt <kinema@myrealbox.com>
+Subject: [PATCH] trivial typo in drivers/serial/Kconfig
+Date: Tue, 20 May 2003 02:05:48 -0700
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <BKEGKPICNAKILKJKMHCAOENKCKAA.Riley@Williams.Name>
-References: <3EB6C131.9090109@gniinc.net>
+Message-ID: <200305200205.51792.kinema@myrealbox.com>
 Mime-Version: 1.0
 Content-Type: text/plain;
-	charset="iso-8859-1"
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from murphys.services.quay.plus.net ([212.159.14.225]:52389 "HELO
-	murphys.services.quay.plus.net") by vger.kernel.org with SMTP
-	id S261950AbTEFUzz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 6 May 2003 16:55:55 -0400
-In-reply-to: <3EB6C131.9090109@gniinc.net>
+Received: from smtp-send.myrealbox.com ([192.108.102.143]:51472 "EHLO
+	smtp-send.myrealbox.com") by vger.kernel.org with ESMTP
+	id S263633AbTETIw4 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 20 May 2003 04:52:56 -0400
+Content-Disposition: inline
 List-Id: linux-serial@vger.kernel.org
-To: Samuel Jobin <sjobin@gniinc.net>, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
-Hi Sam.
+This patch fixes 2.5's menuconfig help references to the modules "serial" and 
+"serial_cs".  These modules are now called "8250" and "8250_cs".
 
- > I have a serious problem with the MAKEDEV and setserial command.
- > I'm trying to put a lots of multi-modem card into a standard Linux
- > PC (Slackware 8.1). I have to associate the modem by myself with
- > the setserial command. For this, I do:
- >
- > setserial /dev/ttyS20 irq 10 port 0xd000 ^auto_irq ^fourport \
- >	skip_test autoconfig
- >
- > Everything works fine. The problem is that there's no enough ttyS.
- > On my Linux box, I have ttyS1 to ttyS31, but I want more of them.
+--adam
 
-It's possible that your MAKEDEV hasn't been taught how to create more
-than 32 serial ports. The following commands should in theory create
-all the valid ttyS ports, according to the devices.txt in the current
-kernels...
 
-    cd /dev
-    rm -f ttyS*
-    for N in `seq 0 191` ; do mknod ttyS${N} c 4 $[${N}+64] ; done
-    chown uucp. ttyS*
 
-...and watch the type of brackets on the third line as they do matter.
 
- > I tried the /dev/MAKEDEV command (and I changed the group for uucp). 
- > The new dev was created (ttyS32).  I tried to make a setserial 
- > it and I got:
 
-As stated above, it's quite possible that your MAKEDEV doesn't know
-how to do this as few systems have that many serial ports.
+--- drivers/serial/Kconfig      2003-05-12 04:18:08.000000000 -0700
++++ drivers/serial/Kconfig      2003-05-20 01:45:38.000000000 -0700
+@@ -23,7 +23,7 @@
 
-Best wishes from Riley.
----
- * Nothing as pretty as a smile, nothing as ugly as a frown.
+          If you want to compile this driver as a module, say M here and read
+          <file:Documentation/modules.txt>.  The module will be called
+-         serial.
++         8250.
+          [WARNING: Do not compile this driver as a module if you are using
+          non-standard serial ports, since the configuration information will
+          be lost when the driver is unloaded.  This limitation may be lifted
+@@ -73,7 +73,7 @@
 
----
-Outgoing mail is certified Virus Free.
-Checked by AVG anti-virus system (http://www.grisoft.com).
-Version: 6.0.476 / Virus Database: 273 - Release Date: 24-Apr-2003
+          This driver is also available as a module ( = code which can be
+          inserted in and removed from the running kernel whenever you want).
+-         The module will be called serial_cs.  If you want to compile it as
++         The module will be called 8250_cs.  If you want to compile it as
+          a module, say M here and read <file:Documentation/modules.txt>.
+          If unsure, say N.
 
