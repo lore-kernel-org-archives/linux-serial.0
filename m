@@ -1,101 +1,64 @@
-From: Robert White <rwhite@pobox.com>
-Subject: RE: n_tty.c driver patch (semantic and performance correction)
-  (a ll recent versions)
-Date: Tue, 30 Jul 2002 00:50:32 -0700
+From: Ed Vance <EdV@macrolink.com>
+Subject: RE: n_tty.c driver patch (semantic and performance correction) (a
+	 ll recent versions)
+Date: Tue, 30 Jul 2002 10:07:51 -0700
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <5.1.0.14.2.20020730004204.00a48da0@mail.attbi.com>
-References: <11E89240C407D311958800A0C9ACF7D13A790E@EXCHANGE>
+Message-ID: <18505.6529859596$1028049459@news.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; format=flowed
+Content-Type: text/plain;
+	charset="iso-8859-1"
 Return-path: <linux-serial-owner@vger.kernel.org>
-In-Reply-To: <11E89240C407D311958800A0C9ACF7D13A790E@EXCHANGE>
 List-Id: linux-serial@vger.kernel.org
-To: Ed Vance <EdV@macrolink.com>, "'rwhite@pobox.com'" <rwhite@pobox.com>
-Cc: Russell King <rmk@arm.linux.org.uk>, 'Theodore Tso' <tytso@mit.edu>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Andries Brouwer <aebr@win.tue.nl>
+To: rwhite@pobox.com, 'Stevie O' <stevie@qrpff.net>
+Cc: Russell King <rmk@arm.linux.org.uk>, Ed Vance <EdV@macrolink.com>, 'Theodore Tso' <tytso@mit.edu>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Yep, this is an example of "precaching" and was the example I said I have 
-seen.  Since there is no USE of the precached data during the read, the 
-there wasn't any demonstrable purpose to the action.
+On Sat, July 27, 2002 at 8:02 PM, stevie@qrpff.net wrote:
+> 
+> But... but... the standard says...
+> 
+>    A pending read shall not be satisfied until MIN bytes are 
+>    received (that is, the pending read shall block until MIN 
+>    bytes are received), or a signal is received.
+> 
+> And because I'm too dead-set on doing it that way solely because 
+> that's how it's always been done, I won't ever consider changing it.  
+> I'll blindly ignore how much xmodem transfers suck, and the fact 
+> that I can come up with no practical purpose at all for this feature, 
+> and just repeat what the standard says.  Why should we obey what 
+> Linux man pages say? What do the Linux man pages have to do with 
+> Linux?
+> 
+> Remember: Computers and their programs aren't here to make our lives 
+> easier, or to make tasks simpler. They are here to follow standards.
 
-That is, this is NOT CODE "IN THE WILD", it is the contrived example of 
-use, it doesn't meet the requested requirement that the example be "harmed" 
-by the patch as there is no actual algorithm attached.
+Hi Rob, 
 
-Any code that did this would then read this data out of the buffer by 
-another request after resetting VMIN which *IS* a dependence on "magic 
-state" since the current read is blocking on state that cannot be returned 
-to the user.
+Stevie O gets to the central issue here. Why _not_ change long-existing,
+widely used interfaces in subtle ways because the old way makes no sense to
+us and the new way does? Is standards-based programming a lemming behavior? 
 
-Note that the author of the linked message says "having said that, I don't 
-know of any instances where the above is employed." and then agrees the 
-patch is worthwhile...
+My answer is that but-I-think-it-would-be-better, alone, is not a sufficient
+reason to risk exposure of old application bugs (if you don't actually have
+to) and to bring down apps that ran just fine with the bugs for years. In
+this case, the proposed new functionality is triggered by use of interface
+space that already had a specified behavior. 
 
-So it doesn't fulfill my request/requirement, the cited author explicitly 
-supports my position, and there isn't any implication of how the rest of 
-the supposed program might use this magic state...
+When new functionality is added, at a minimum, its interface should be
+outside of the previous valid use set. If one simply must attach the
+tendrils of cleverness to the vines of an existing interface, the new
+functionality should only appear upon app behaviors that would previously
+have been invalid enough to reject the request and burp up an error code. 
 
-hmmm....
+As I said before, innovation is fine. Just don't pollute the existing
+interfaces. If even one real customer running real work has bad day because
+of exposure of an old app bug or an unanticipated consequence of the change,
+then it wasn't worth ignoring safer implementation practices. One can't
+attain 100% safety, but one _can_ minimize the risk. 
 
-Not the best argument Ed.
+Best regards,
+Ed 
 
-Rob.
-
-At 14:46 7/29/2002 -0700, Ed Vance wrote:
->On Sat, July 27, 2002 at 7:36 PM, Robert White wrote:
-> >
-> > And if you could show me ONE example of wild code that would be
-> > harmed by the mod I would shut up and go away.
-> >
-> > (I say wild code, but even contrived code would be interesting.)
->
-> From the archive ...
->http://marc.theaimsgroup.com/?l=linux-kernel&m=102440556723250&w=2
-
-----------------------------------------------------------------------
--- Rob White         --  Consider: for all vectors v, Cv - Cv = 0   --
--- rwhite@pobox.com  --    general relativity is thus disproved.    --
-----------------------------------------------------------------------
--- There once was a man who claimed nothing was true,               --
---   he was later, of course, found to be lying.                    --
-----------------------------------------------------------------------
------BEGIN PGP PUBLIC KEY BLOCK-----
-Version: PGPfreeware 7.0.3 for non-commercial use <http://www.pgp.com>
-
-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
-=Zx5A
------END PGP PUBLIC KEY BLOCK-----
-
+---------------------------------------------------------------- 
+Ed Vance              edv@macrolink.com
+Macrolink, Inc.       1500 N. Kellogg Dr  Anaheim, CA  92807
+----------------------------------------------------------------
