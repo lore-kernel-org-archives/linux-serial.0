@@ -1,23 +1,22 @@
-From: "Sriram Narasimhan" <nsri@tataelxsi.co.in>
-Subject: TTY_FLIPBUF_SIZE
-Date: Tue, 17 Dec 2002 17:13:59 +0530
+From: "Stuart MacDonald" <stuartm@connecttech.com>
+Subject: Re: TTY_FLIPBUF_SIZE
+Date: Tue, 17 Dec 2002 11:13:18 -0500
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <3DFF0DFF.8030505@tataelxsi.co.in>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
+Message-ID: <013001c2a5e7$366df740$294b82ce@connecttech.com>
+References: <3DFF0DFF.8030505@tataelxsi.co.in>
 Return-path: <linux-serial-owner@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Sriram Narasimhan <nsri@tataelxsi.co.in>, linux-serial@vger.kernel.org
 
-Hello,
+From: "Sriram Narasimhan" <nsri@tataelxsi.co.in>
+> The TTY_FLIPBUF_SIZE is restricted to 2 * 512 bytes. Can this be
+> increased to support synchronous serial lines without affecting other
+> serial drivers which still stick to the TTY_FLIPBUF_SIZE limit ?
 
-The TTY_FLIPBUF_SIZE is restricted to 2 * 512 bytes. Can this be 
-increased to support synchronous serial lines without affecting other 
-serial drivers which still stick to the TTY_FLIPBUF_SIZE limit ?
+No. Check the code. struct tty_struct depends on being less than one
+page (4 kb) in size, and making the flip bufs any much bigger will
+break that.
 
-Thank you.
+..Stu
 
-Regards,
-Sriram
 
