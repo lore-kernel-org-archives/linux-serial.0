@@ -1,14 +1,14 @@
-From: "ferdinand" <shelley21katie@hotmail.com>
+From: "chang" <aeh21dgj@hotmail.com>
 Subject: Buy prescriptions in bulk, SAVE THOUSANDS!
-Date: Sat, 07 Aug 2004 11:48:51 GMT
+Date: Sun, 08 Aug 2004 00:45:20 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1091879331-31668__4551.20661431483$1091879412$gmane$org@excite.com>
+Message-ID: <1091925920-3571__44837.2292951264$1091926019$gmane$org@excite.com>
 Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [203.197.29.40] ([203.197.29.40]:9342 "HELO verslo.is")
-	by vger.kernel.org with SMTP id S261602AbUHGLtE (ORCPT
+Received: from [202.196.160.17] ([202.196.160.17]:63236 "HELO vermontel.com")
+	by vger.kernel.org with SMTP id S264929AbUHHApt (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 7 Aug 2004 07:49:04 -0400
+	Sat, 7 Aug 2004 20:45:49 -0400
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 
@@ -32,6 +32,6 @@ Click here: http://www.we49fm.com/_85924943b9db73ac62baa654773c6a8e/7
 
 
 
-dirk whitneycenter surf frederic bobcat whitney apple1 
-fozzie olivierjulia mission reynolds
-sbdc julia diane 
+benoit bachdon future mantra trident petunia ssssss 
+button fletchirene dragonfl gordon
+jazz nugget t-bone 
