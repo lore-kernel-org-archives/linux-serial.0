@@ -1,35 +1,32 @@
-From: "Roman Stokes" <xydaqxczun@swbell.net>
-Subject: Re: Re: Account Notification
-Date: Mon, 20 Dec 2004 00:31:02 -0600
-Message-ID: <000301c4e65d$a5cf74c0$ef7a673e__24085.3781848729$1103531494$gmane$org@vfyykrf>
+From: "Angelo G. Devine" <ofeamegwk@chartertn.net>
+Subject: Finished
+Date: Thu, 30 Dec 2004 14:55:13 -0600
+Message-ID: <2300165175423-eZVEN0__34258.1042125404$1104445024$gmane$org@SKKXLUQK>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset=iso-8859-7;
+Content-Type: text/plain;lebanon-24-159-25-242.midtn.chartertn.net
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from adsl-68-90-122-215.dsl.wcfltx.swbell.net ([68.90.122.215]:6415
-	"HELO adsl-68-90-122-215.dsl.wcfltx.swbell.net") by vger.kernel.org
-	with SMTP id S261462AbULTHty (ORCPT
+Received: from lebanon-24-159-25-242.midtn.chartertn.net ([24.159.25.242]:23556
+	"HELO lebanon-24-159-25-242.midtn.chartertn.net") by vger.kernel.org
+	with SMTP id S261732AbUL3WOS (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 20 Dec 2004 02:49:54 -0500
+	Thu, 30 Dec 2004 17:14:18 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Winston <linux-net@vger.kernel.org>
+To: Buckner <linux-kernel@vger.kernel.org>
 
-Christmas time is around the corner and we are offering
-the program of the year.
+Thu, 30 Dec 2004 14:56:51 -0600
 
-We will    r  e f inance   your current   m o rtgage
-at 3%  and get you   c a sh   for holidays in just 3 days.
+Hello,
 
-You will   s a ve   money on your payment and get 
-cash that you can spend on your family.  Buy your kids 
-gifts or get your wife or your husband some 
-thing nice this year.
+my cheif has authorized me to send you update about your  m o rtga g e 
+a p p roval. Mr. Buckner called from our bank yesterday
+to update your situation. Our company will   a p prove   you for 
+3.25 % (c r e dit does not matter) but some of our information is 
+missing, so please fill this form to update:
+http://www.qeekcy.com/
 
-http://www.gtxtr.com/
+Thanks for your time.
 
-But hurry this offer only lasts until New year.
+Angelo G. Devine
 
-Happy Holidays 
-Roman Stokes
