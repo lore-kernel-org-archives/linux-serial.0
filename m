@@ -1,18 +1,17 @@
-From: "Clayton Bean" <exsta@casholasavings.com>
-Subject: Approved mortage rate
+From: "Lazaro Hairston" <chihak@rateznow.com>
+Subject: Re-finance at 3.25 fixed
 Date: Mon, 14 Feb 2005 06:36:10 -0700
-Message-ID: <200410031402.i93WwoTw003862__47687.2904379435$1108943163$gmane$org@www6.gmail.com>
+Message-ID: <200410031471.i93CnhTw003164@www7.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain;
-Received: from d53-64-202-184.nap.wideopenwest.com ([64.53.184.202]:4624 "HELO
-	d53-64-202-184.nap.wideopenwest.com") by vger.kernel.org with SMTP
-	id S261152AbVBTXrP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 20 Feb 2005 18:47:15 -0500
-From: "Clayton Bean" <exsta@casholasavings.com>
+Received: from d53-97-132.nap.wideopenwest.com ([64.53.132.97]:20490 "HELO
+	d53-97-132.nap.wideopenwest.com") by vger.kernel.org with SMTP
+	id S261834AbVBXGJY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 24 Feb 2005 01:09:24 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-laptop@vger.kernel.org
-Cc: linux-m68k@vger.kernel.org, linux-mm@vger.kernel.org, linux-msdos@vger.kernel.org, linux-msdos-owner@vger.kernel.org, linux-net@vger.kernel.org, linux-net-owner@vger.kernel.org, linux-newbie@vger.kernel.org, linux-perf@vger.kernel.org, linux-ppp@vger.kernel.org, linux-raid@vger.kernel.org, linux-raid-owner@vger.kernel.org, linux-scsi@vger.kernel.org, linux-scsi-owner@vger.kernel.org, linux-serial@vger.kernel.org
+To: linux-net-owner@vger.kernel.org
+Cc: linux-newbie@vger.kernel.org, linux-perf@vger.kernel.org, linux-ppp@vger.kernel.org, linux-raid@vger.kernel.org, linux-raid-owner@vger.kernel.org, linux-scsi@vger.kernel.org, linux-scsi-owner@vger.kernel.org, linux-serial@vger.kernel.org, linux-smp@vger.kernel.org, linux-sound@vger.kernel.org, linux-tape@vger.kernel.org, linux-x25@vger.kernel.org
 
 Hello,
 
@@ -27,17 +26,16 @@ Hello,
  
  To get a free, no obli,gation consultation click below:
 
- http://www.bestlenderz.com/x/loan.php?id=nu
+ http://www.rateznow.com/x/loan.php?id=nu
 
 
 
  Best Regards,
 
- Lorene Talley
+ Benjamin Kenny
  
- to be remov(ed:	http://www.bestlenderz.com/x/st.html
+ to be remov(ed:	http://www.rateznow.com/x/st.html
 
  this process takes one week, so please be patient. we do our 
  best to take your email/s off but you have to fill out a rem/ove
  or else you will continue to recieve email/s.
-
