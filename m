@@ -1,66 +1,47 @@
-From: Joachim Buermann <jbuermann@zes.com>
-Subject: overruns with kernel 2.4.19
-Date: Tue, 18 Feb 2003 14:43:46 +0100
+From: David Lawyer <dave@lafn.org>
+Subject: Re: overruns with kernel 2.4.19
+Date: Tue, 18 Feb 2003 15:05:33 -0800
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20030218144346.3e056a65.jbuermann@zes.com>
+Message-ID: <20030218230533.GB480@lafn.org>
+References: <20030218144346.3e056a65.jbuermann@zes.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from inv1253.zes.com (217.0.55.175)
-          by websrvnt02 with MERCUR-SMTP/POP3/IMAP4-Server (v3.10.18 AS-0098309)
-          for <linux-serial@vger.kernel.org>; Tue, 18 Feb 2003  14:52:01 +0100
-Received: from inv1253.zes.com (localhost [127.0.0.1])
-	by inv1253.zes.com (Postfix) with ESMTP id C97201F3B1
-	for <linux-serial@vger.kernel.org>; Tue, 18 Feb 2003 14:43:49 +0100 (CET)
-Received: from inv1428.zes.com (inv1428.zes.com [192.168.2.28])
-	by inv1253.zes.com (Postfix) with SMTP id EEDEF1F3A8
-	for <linux-serial@vger.kernel.org>; Tue, 18 Feb 2003 14:43:46 +0100 (CET)
+Received: from localhost (mail@host-66-81-29-63.rev.o1.com [66.81.29.63])
+	by zoon.lafn.org (8.12.3/8.11.3) with ESMTP id h1ING1nX043678
+	for <linux-serial@vger.kernel.org>; Tue, 18 Feb 2003 15:16:01 -0800 (PST)
+	(envelope-from dave@lafn.org)
+Received: from dave by localhost with local (Exim 3.36 #1 (Debian))
+	id 18lGnt-0000B5-00
+	for <linux-serial@vger.kernel.org>; Tue, 18 Feb 2003 15:05:33 -0800
+Content-Disposition: inline
+In-Reply-To: <20030218144346.3e056a65.jbuermann@zes.com>
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Hallo all,
+On Tue, Feb 18, 2003 at 02:43:46PM +0100, Joachim Buermann wrote:
+> Hello all,
+> 
+> I`m using linux mandrake kernel 2.4.19 on a 2 GHz Pentium 4 with 128
+> MByte RAM. The serial port /dev/cua0 is connected to a external device
+> and receives data with 115200 Baud.
+The cua devices have been obsolete for some time.
+> 
+> Unfortunately I get a lot of fifo overruns. I have unmasked the hda
+> interrupts with:
+> 
+> hdparm -u1 /dev/hda
+> 
+> also set the low_latency flag in the serial driver. The harddisk dma
+> couldn't disabled.
+> 
+> I'm wonder at this behavior, because with a lower machine (Pentium I
+> 120 MHz, Kernel 2.2.13) I get overruns only once in a blue moon. And I
+> expected, that a 2 GHz machine should be quick enough, to responds to
+> the serial interrupts.
 
-I`m using linux mandrake kernel 2.4.19 on a 2 GHz Pentium 4 with 128
-MByte RAM. The serial port /dev/cua0 is connected to a external device
-and receives data with 115200 Baud.
-
-Unfortunatelly I get a lot of fifo overruns. I have unmasked the hda
-interrupts with:
-
-hdparm -u1 /dev/hda
-
-also set the low_latency flag in the serial driver. The harddisk dma
-couldn't disabled.
-
-I'm wonder at this behaviour, because with a lower machine (Pentium I
-120 MHz, Kernel 2.2.13) I get overruns only once in a blue moon. And I
-expected, that a 2 GHz machine should be quick enough, to responds to
-the serial interrupts.
-
-Additional to this I tried a PCI card with a 16950 (128 Byte fifo!) and
-set the uart with the setserial command. But also here a lot of
-overruns!!!
-
->From a embedded linux project (ELAN SC520 133MHz, kernel 2.2.19) I know,
-that the harddisk type influence the serial communication. So I got
-overruns after I changed the original drive with a newer one (the first
-was a old IBM with 500MByte, the newer a IBM with 20GByte). Last not
-least I must replace the linux kernel with a realtime linux (rtlinux)
-and do the serial communication in a realtime handler.
-
-Because I didn't want to replace my desktop machine with a realtime
-linux, I'm looking for some hints to solve this problems.
-
-What's about irqtune? I'm know this tool only with kernels up to 2.2.x.
-Is there a bug in the serial driver (I didn't found any hints in the
-mailing list or with google)?
-
-Should I change the PCI interrupts in the BIOS to set the interrupt
-priority?
-
-I don't know anymore. Please help.
-
-Many thanks in advance and sorry for my bad english
-
-Joachim
+Almost the same for me.  On a Pentium I 90 MHz I get no overruns with
+kernel 2.2.20, but get hundreds of overruns on the same machine with
+kernel 2.4.19.  Something is wrong with the software.
+> 
+			David Lawyer
