@@ -1,53 +1,39 @@
-From: Marc Boucher <marc@linuxant.com>
+From: Russell King <rmk@arm.linux.org.uk>
 Subject: Re: Major problem with serial driver and serial_pci_guess_board()
-Date: Tue, 26 Aug 2003 14:54:29 -0400
+Date: Tue, 26 Aug 2003 20:16:01 +0100
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20030826185429.GA29937@endlich.mbsi.ca>
-References: <20030826182745.GA29051@endlich.mbsi.ca> <20030826202951.B28144@devserv.devel.redhat.com>
+Message-ID: <20030826201601.J28810@flint.arm.linux.org.uk>
+References: <20030826182745.GA29051@endlich.mbsi.ca>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from modemcable198.171-130-66.que.mc.videotron.ca ([66.130.171.198]:33033
-	"EHLO valve.mbsi.ca") by vger.kernel.org with ESMTP id S262622AbTHZSyj
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 26 Aug 2003 14:54:39 -0400
+Received: from caramon.arm.linux.org.uk ([212.18.232.186]:6406 "EHLO
+	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
+	id S262708AbTHZTQF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 26 Aug 2003 15:16:05 -0400
 Content-Disposition: inline
-In-Reply-To: <20030826202951.B28144@devserv.devel.redhat.com>
+In-Reply-To: <20030826182745.GA29051@endlich.mbsi.ca>; from marc@linuxant.com on Tue, Aug 26, 2003 at 02:27:46PM -0400
 List-Id: linux-serial@vger.kernel.org
-To: Arjan van de Ven <arjanv@redhat.com>
-Cc: rmk@arm.linux.org.uk, serial-pci-info@lists.sourceforge.net, linux-serial@vger.kernel.org, jsimon@linuxant.com
+To: Marc Boucher <marc@linuxant.com>
+Cc: linux-serial@vger.kernel.org, arjanv@redhat.com, jsimon@linuxant.com
 
-On Tue, Aug 26, 2003 at 08:29:51PM +0200, Arjan van de Ven wrote:
-> On Tue, Aug 26, 2003 at 02:27:46PM -0400, Marc Boucher wrote:
-> > 
-> > Arjan, any chance we could get this patched in time for the next
-> > Red Hat release?
-> 
-> I don't take patches that have the sole purpose of facilitating binary
-> only kernel modules.
-> 
+On Tue, Aug 26, 2003 at 02:27:46PM -0400, Marc Boucher wrote:
+> This problem appears to be present in all recent serial driver variants,
+> including those in 2.6 and the latest RedHat Severn beta. It is
+> a serious issue preventing our drivers from working correctly.
 
-We have tried very hard to change Conexant's position on this
-but the best that we have been able to achieve is the current
-compromise (everything non proprietary, i.e. os-specific part is
-distributed in source form, modem modulations are included as
-an object file), which is acceptable for most users. Just try to
-get a modem vendor to release their IP in source and you will see
-how hard/impossible it is, given patent and other issues.
-There is also in practice little difference between our current split
-and a totally open-source driver for a bus-mastering dma card with firmware.
-You won't get the firmware in source, yet both can screw up the system if
-they are badly written.
+My only interest is in 2.6, and the messages appear to be from a
+2.4 kernel.  It does seem that we are detecting a device incorrectly,
+since we aren't finding an 8250-compatible serial port.
 
-In the practical world, the lack of (or deficient) softmodem support
-is a serious weakness and obstacle to linux adoption, which we are
-trying to fix.
+Unfortunately, we don't have tables of exclusion, nor do we have
+a clean method to do that at present in any kernel.
 
-We have received hundreds of "thank-you" mails from users who are very
-happy to have working drivers for their modems.
+What I'd like to see is the output from lspci -vvx from a range of
+PCI cards with this problem to see if there is characteristic (eg,
+the PCI class/programming interface IDs) we can pick up on.
 
-Now let's not get politics get in the way of fixing a real technical bug,
-which is the serial driver incorrectly binding itself to an AC97 device
-it can't handle.
+-- 
+Russell King (rmk@arm.linux.org.uk)                The developer of ARM Linux
+             http://www.arm.linux.org.uk/personal/aboutme.html
 
-Marc
