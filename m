@@ -1,73 +1,66 @@
-From: "Donna Slaughter" <5r5qy4y1u4t@juno.com>
-Subject: Buy Vicodin online today, overnight shipping k pvk abrbwqmshbpzik
-Date: Wed, 01 Oct 03 15:35:35 GMT
+From: Andrew Hogue <hogue@cs.yorku.ca>
+Subject: Hanging on Reads
+Date: Tue, 7 Oct 2003 11:37:47 -0400 (EDT)
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <kpv6i4677dd7$075__6227.01679026267$1064968891@2i7q5h9i4k9>
-Reply-To: "Donna Slaughter" <5r5qy4y1u4t@juno.com>
+Message-ID: <Pine.LNX.4.56.0310071132270.12710@nemesis.cs.yorku.ca>
 Mime-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="0C26760.73_"
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from host4-122.pool80116.interbusiness.it ([80.116.122.4]:52237 "HELO
-	host4-122.pool80116.interbusiness.it") by vger.kernel.org with SMTP
-	id S261861AbTJAAhO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 30 Sep 2003 20:37:14 -0400
+Received: from ns1.cs.yorku.ca ([130.63.92.20]:58301 "EHLO green.cs.yorku.ca")
+	by vger.kernel.org with ESMTP id S261271AbTJGPhs (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 7 Oct 2003 11:37:48 -0400
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel-owner@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-msdos@vger.kernel.org, linux-net@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
+Hi,
 
---0C26760.73_
-Content-Type: text/plain;
-Content-Transfer-Encoding: quoted-printable
+I'm currently experiencing a problem with my serial port code and was
+hoping that someone has a solution to this problem.
 
-Vicodin ES 90 Tab Special. 
--Free Doctors consultation
--No Rx Required
--Overnight Shipping
--Other Drugs Available Including SOMA, HYDROCODONE, LEVITRA...
+Basically, I open the serial port, set the attributes, write to the device
+and then since I expect a response, I call read(), but it seems to hang on
+the read indefinitely.
 
-Buy Now!
-http://www.rxdiscountusa.biz/medical
+The weird thing is that there is a workaround to this problem which makes
+everything work, but it is ugly.
 
+The workaround is to simply open() the serial port, close() the serial
+port and then re-open it at the beginning of the program.
 
+Here is a piece of my code,
 
+/* stupid workaround here */
+f = fopen(SERIALPORT, O_RDWR);
+close(f);
 
+f = fopen(SERIALPORT, O_RDWR);
+...
+	tcgetattr(f,&termold);
+	term.c_cflag = B38400 | CS8 | CLOCAL | CREAD;
+	term.c_iflag = 0;
+	term.c_oflag = 0;
+	term.c_lflag = 0;
+	term.c_cc[VMIN] = 1;
+	term.c_cc[VTIME] = 0;
+	tcflush(f,TCIOFLUSH);
+	tcsetattr(f,TCSANOW,&term);
+	tcflush(f,TCIOFLUSH);
+...
+n = write(f,"R",1);
+...
+n = read(f,resp,1);
+...
 
+If I don't have the first 2 lines in this piece of code, it hangs on the
+read, however if the first 2 lines exist, everything works fine.
 
+What does this indicate?
 
+What does the close() actually do to the file descriptor?
 
+Is there a way to do the same thing but with an ioctl() ?
 
+Thanks,
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-take off list
-http://www.rxdiscountusa.biz/a.html
-
-
-
-
-
-
-baq xilkdd   avom
-
-veazlszsxyln
-ztxzg  x
- f p spzuav  zaocgk qzs
-lwat
-pvh
-lkwydas d 
-
---0C26760.73_--
-
+-- Andrew
