@@ -1,55 +1,54 @@
-From: Jeffrey Altman <jaltman@columbia.edu>
+From: Jeffrey Altman <jaltman-WLbs8XpHrcb2fBVCVOL8/A@public.gmane.org>
 Subject: Re: Serial port redirection
-Date: Thu, 04 Dec 2003 12:52:36 -0500
-Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <3FCF7464.9030000@columbia.edu>
-References: <Pine.LNX.4.44.0312031557190.12826-100000@maggie.lkpg.cendio.se> <3FCE1267.3040204@columbia.edu> <3FCDE364.1080005@acm.org> <3FCF7026.6070109@columbia.edu> <3FCDE8FC.3070400@acm.org>
+Date: Thu, 04 Dec 2003 14:12:57 -0500
+Sender: ltsp-discuss-admin-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org
+Message-ID: <3FCF8739.8060200@columbia.edu>
+References: <Pine.LNX.4.44.0312031557190.12826-100000@maggie.lkpg.cendio.se> <3FCE1101.40502@columbia.edu> <3FCDDEE6.4070905@acm.org> <3FCF6B4D.2050103@columbia.edu> <3FCDE3B8.3000609@acm.org> <3FCF70E0.4000302@columbia.edu> <3FCF73BE.1010707@acm.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg=sha1; boundary="------------ms070506040803010807030505"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from jalapeno.cc.columbia.edu ([128.59.59.238]:40369 "EHLO
-	jalapeno.cc.columbia.edu") by vger.kernel.org with ESMTP
-	id S262591AbTLDRw6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 4 Dec 2003 12:52:58 -0500
-In-Reply-To: <3FCDE8FC.3070400@acm.org>
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg=sha1; boundary="------------ms000406010406070500090307"
+Return-path: <ltsp-discuss-admin-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>
+In-Reply-To: <3FCF73BE.1010707-HInyCGIudOg@public.gmane.org>
+Errors-To: ltsp-discuss-admin-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org
+List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/ltsp-discuss>,
+	<mailto:ltsp-discuss-request-5NWGOfrQmneRv+LV9MX5utDmRdBvX5/5ji9XKYC2TYK4Io4DoRGLOrNAH6kLmebB@public.gmane.org>
+List-Post: <mailto:ltsp-discuss-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>
+List-Help: <mailto:ltsp-discuss-request-5NWGOfrQmneRv+LV9MX5utDmRdBvX5/5lLLH9aP38KF1pqr+6INuaA@public.gmane.org>
+List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/ltsp-discuss>,
+	<mailto:ltsp-discuss-request-5NWGOfrQmneRv+LV9MX5utDmRdBvX5/5R9m/fhtKvoLKtGCp0j7rLg@public.gmane.org>
+List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=ltsp-discuss>
+To: Corey Minyard <minyard-HInyCGIudOg@public.gmane.org>
+Cc: Peter Astrand <peter-+4tYiAq3b6azQB+pC5nmwQ@public.gmane.org>, ltsp-discuss-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, d.sbragion-eDKEdzQQoQ4L5bzFcGmneg@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Corey Minyard <minyard@acm.org>
-Cc: Peter Astrand <peter@cendio.se>, ltsp-discuss@lists.sourceforge.net, d.sbragion@infotecna.it, linux-serial@vger.kernel.org
 
 This is a cryptographically signed message in MIME format.
 
---------------ms070506040803010807030505
+--------------ms000406010406070500090307
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 
+That would not help you.  Its not simply a question of mapping escaping 
+the IAC.  You must be prepared to process and respond to telnet option 
+negotiations during the file transfer.  This is especially true with the 
+Remote Com Port option since the host is likely to be sending flow 
+control and signal status messages to the client. 
+
+This change really does need to be added to C-Kermit.  Unfortunately, as 
+I am no longer employed by Columbia to work on Kermit this is very very 
+very low on my stack.
+
+Jeffrey Altman
+
+
 Corey Minyard wrote:
 
-> Jeffrey Altman wrote:
+> It would be fairly trivial to write such a program, though.  You could 
+> pass it the actual program you want, and it could make the protocol 
+> transparent.
 >
->> The reality is RFC is experimental and not authoritative.  The only 
->> thing that really counts is what Cisco actually shipped in their IOS 
->> implementation.  Lucky me I actually have a terminal
->> server that implements it.  If you look at the C-Kermit sources you 
->> will see that the client is written to accept both values from the 
->> server.  You will also find that Cisco does not send the baudrates as 
->> specified in the RFC but instead uses an enumeration. 
->
->
-> True.  But if I had been lucky and had a terminal server, I would not 
-> have written ser2net :).
->
-> So Cisco uses a enumeration?  Do you think it is possible to make them 
-> compatible and do both in ser2net, or is it a non-issue?
-
-Clients can use heuristics to determine which should be used.  Servers 
-must choose one; but I would make a configurable option.
-
-(The clock is off by one day 4 hours and 12 minutes.  This causes your 
-e-mail to get lost way down in my queue.)
+> -Corey
 
 
-
---------------ms070506040803010807030505
+--------------ms000406010406070500090307
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -104,8 +103,8 @@ yWJirQXGMYID1TCCA9ECAQEwgZowgZIxCzAJBgNVBAYTAlpBMRUwEwYDVQQIEwxXZXN0ZXJu
 IENhcGUxEjAQBgNVBAcTCUNhcGUgVG93bjEPMA0GA1UEChMGVGhhd3RlMR0wGwYDVQQLExRD
 ZXJ0aWZpY2F0ZSBTZXJ2aWNlczEoMCYGA1UEAxMfUGVyc29uYWwgRnJlZW1haWwgUlNBIDIw
 MDAuOC4zMAIDCnGKMAkGBSsOAwIaBQCgggIPMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEw
-HAYJKoZIhvcNAQkFMQ8XDTAzMTIwNDE3NTIzNlowIwYJKoZIhvcNAQkEMRYEFO+nu3BISBfJ
-CAxpCXT5zW5M0AQLMFIGCSqGSIb3DQEJDzFFMEMwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwIC
+HAYJKoZIhvcNAQkFMQ8XDTAzMTIwNDE5MTI1N1owIwYJKoZIhvcNAQkEMRYEFPAEqQu2NbRj
+FguEZF/xqHyDHOFPMFIGCSqGSIb3DQEJDzFFMEMwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwIC
 AgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIHMA0GCCqGSIb3DQMCAgEoMIGrBgkrBgEEAYI3
 EAQxgZ0wgZowgZIxCzAJBgNVBAYTAlpBMRUwEwYDVQQIEwxXZXN0ZXJuIENhcGUxEjAQBgNV
 BAcTCUNhcGUgVG93bjEPMA0GA1UEChMGVGhhd3RlMR0wGwYDVQQLExRDZXJ0aWZpY2F0ZSBT
@@ -113,10 +112,21 @@ ZXJ2aWNlczEoMCYGA1UEAxMfUGVyc29uYWwgRnJlZW1haWwgUlNBIDIwMDAuOC4zMAIDCnGK
 MIGtBgsqhkiG9w0BCRACCzGBnaCBmjCBkjELMAkGA1UEBhMCWkExFTATBgNVBAgTDFdlc3Rl
 cm4gQ2FwZTESMBAGA1UEBxMJQ2FwZSBUb3duMQ8wDQYDVQQKEwZUaGF3dGUxHTAbBgNVBAsT
 FENlcnRpZmljYXRlIFNlcnZpY2VzMSgwJgYDVQQDEx9QZXJzb25hbCBGcmVlbWFpbCBSU0Eg
-MjAwMC44LjMwAgMKcYowDQYJKoZIhvcNAQEBBQAEggEAVzef18TN8k+nlHSVG7r+LA8CMy7j
-SaMdErVRzEcnHa++xbb5blSnfTn7lg6gIbnyI0Hj5BlxumpJiekCK0fXJrsZ+nMCeSl6AuHy
-WqnbGg/jSLdNcvmONqDa58tqXXAdIkkSj8wmynYVd0yp5+irhZgxexPXQm3pcnSWq+oVM4AP
-A/yOiynlPpmvRIKRFolCwGzKfYpeU19tJBg501uIIbPXiTdRkaEqXejnSXM/TEPUxM60rHKC
-c9m0QTwiO7b2cFCjM/SythVbFT9LUVUvXQyLzF/vwJ3dIMT4/mg+XNPsFRbLge3nDVmTh8MC
-YXOTyZhrbjQtaWNwdsJ0Nb1h5gAAAAAAAA==
---------------ms070506040803010807030505--
+MjAwMC44LjMwAgMKcYowDQYJKoZIhvcNAQEBBQAEggEAevlL0aOe7AixivqfqL5W98T9/bfq
+BLHDOO8vkuVwiJOq1/aGROF6SJDURNrMqrNnWrMotMvwyQPTPvrvo3YP1tt901rLcTRuVMv4
+I4R8SXyMoHQWtq82QXAVDKF+jXjmVCPIDAtshTcr5o1y1eyAEQQmX9qHe4kUSkQ1TNySvojE
+XNNQof4bRnuAu0yE+az+qzPLS56ECVHiu+xnBpGTtiKbmPmR/l/hfYjfFkDpFEkm14ePm99h
+HMIAFvGAWzk7S8tXL37dnGLomSZwAmHaqgH9hqeGOSHp7G/dNlU96LtXr0Pf/Ux1mM3ly+Ik
+9lQO9Kx2wkuBu/KJOmqKQE1bDgAAAAAAAA==
+--------------ms000406010406070500090307--
+
+
+-------------------------------------------------------
+This SF.net email is sponsored by: IBM Linux Tutorials.
+Become an expert in LINUX or just sharpen your skills.  Sign up for IBM's
+Free Linux Tutorials.  Learn everything from the bash shell to sys admin.
+Click now! http://ads.osdn.com/?ad_id=1278&alloc_id=3371&op=click
+_____________________________________________________________________
+Ltsp-discuss mailing list.   To un-subscribe, or change prefs, goto:
+      https://lists.sourceforge.net/lists/listinfo/ltsp-discuss
+For additional LTSP help,   try #ltsp channel on irc.freenode.net
