@@ -1,26 +1,26 @@
-From: "Jefferey Sutton" <yjiim@msn.com>
-Subject: Pay Less For Branded Watches T8dM2
-Date: Mon, 26 Dec 2005 18:44:25 -0700
-Message-ID: <CFE3.9A5.3074798B8C__48167.270984459$1135648437$gmane$org@mopalinux.com>
+From: "Nick Swartz" <BPCSI@yahoo.com>
+Subject: Quality Medicine Available p9Z
+Date: Thu, 04 Mar 2004 01:08:42 +0100
+Message-ID: <68HY87FE.0X24.BPCSI__47181.5592180521$1135706337$gmane$org@yahoo.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 11-198-235-201.fibertel.com.ar ([201.235.198.11]:17937 "HELO
-	11-198-235-201.fibertel.com.ar") by vger.kernel.org with SMTP
-	id S932197AbVL0Bxb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 26 Dec 2005 20:53:31 -0500
+Received: from f177188.upc-f.chello.nl ([80.56.177.188]:22028 "HELO
+	f177188.upc-f.chello.nl") by vger.kernel.org with SMTP
+	id S932358AbVL0R6r (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 27 Dec 2005 12:58:47 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-scsi@vger.kernel.org
 
 
-World Top10 Branded Watches at 90% off 
-the original price. We have almost all models
-to be choosen from which makes our replikas
-the best and highest quality assured by our 
-manufacturer or else full refund is being
-given without questions ask.
 
-Check us out toooday..
-http://043.bubbleenveloppe.com
+The most complete Phar macy Online
+We carry all major medds at bargain price
+Viggra, Ci ialis, VaIium, Xa naax
+Phantermiine, Ulltraam and etc...
+SatiisfactIon Gua ranteeed
+
+http://labelhere.com
 
 
-jzh
+SL
+
