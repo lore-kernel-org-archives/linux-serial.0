@@ -1,32 +1,32 @@
-From: "ray" <dmalf1et@hotmail.com>
-Subject: CAS1N0: New Deal!! 50% Sign Up Bonus! chaos diane|
-Date: Fri, 07 May 2004 22:04:42 GMT
+From: "stan" <lawuson_36@hotmail.com>
+Subject: CAS1N0: New Deal!! 50% Sign Up Bonus! megan cosmos:
+Date: Wed, 12 May 2004 09:44:39 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1083967482-31435__26206.9778320894$1083992303@excite.com>
+Message-ID: <1084355079-6994__49942.6398928792$1084379826@excite.com>
 Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [202.155.4.242] ([202.155.4.242]:59152 "HELO vger.kernel.org")
-	by vger.kernel.org with SMTP id S264082AbUEHE4b (ORCPT
+Received: from [142.163.196.37] ([142.163.196.37]:46781 "HELO vger.kernel.org")
+	by vger.kernel.org with SMTP id S265126AbUELQgA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 8 May 2004 00:56:31 -0400
+	Wed, 12 May 2004 12:36:00 -0400
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 
-PREMI}ERE ONLIN'E CAS{INO!
-50% BONU:S for YOUR FIRST DEPO`SIT as a New Player.
+PREMI|ERE ONLIN}E CAS!INO!
+50% BONU:S for YOUR FIRST DEPO|SIT as a New Player.
 
-SI`GN UP now! Don't wait!
+SI|GN UP now! Don't wait!
 
-http://www.bay-casino.com/_e4faa55afa1972493c43ac8a3f66f869/
+http://www.casino-power.com/_e4faa55afa1972493c43ac8a3f66f869/
 
-Once you're a Mem'ber, there are near WEEK'LY 2-T{O-1, and 3-T{O-1 depo`sit offers!
+Once you're a Mem`ber, there are near WEEK|LY 2-T'O-1, and 3-T'O-1 depo'sit offers!
 
-Imagine, put in $25, GET $50 CRE|DIT BE|FORE YOU PL!ACE YO!UR FI`RST BET!!
+Imagine, put in $25, GET $50 CRE:DIT BE'FORE YOU PL:ACE YO|UR FI:RST BET!!
 
-CLIC'K HER|E!
+CLIC{K HER'E!
 
-http://www.bay-casino.com/_e4faa55afa1972493c43ac8a3f66f869/
+http://www.casino-power.com/_e4faa55afa1972493c43ac8a3f66f869/
 
 
 
-racerx wolverin blondie andre turbo butch yomama reznor booster buffy gretchen genius christop gordon castle eclipse bfi cookies rambo1 october ladybug sundance tango sailor dgj test2
+sally corrado pirate lamer molly1 memory norman first angus bernie swimming symbol express hanna warriors dundee guinness amanda1 electric raptor jan james1 center dexter venus don
