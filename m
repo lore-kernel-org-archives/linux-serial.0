@@ -1,31 +1,36 @@
-From: "Thomas Meyer" <thomas.mey@web.de>
-Subject: 2.6.12-rc1-mm3: module loop in serial_core and 8250
-Date: Fri, 25 Mar 2005 23:13:35 +0100
-Message-ID: <1619542239@web.de>
+From: Luca <kronos@kronoz.cjb.net>
+Subject: Re: Garbage on serial console after serial driver loads
+Date: Sat, 26 Mar 2005 15:35:00 +0100
+Message-ID: <20050326143500.GA5225@dreamland.darkstar.lan>
+References: <20050325202414.GA9929@dreamland.darkstar.lan> <20050325203853.C12715@flint.arm.linux.org.uk> <20050325210132.GA11201@dreamland.darkstar.lan> <Pine.LNX.4.61.0503261115480.28431@yvahk01.tjqt.qr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Received: from fmmailgate05.web.de ([217.72.192.243]:19166 "EHLO
-	fmmailgate05.web.de") by vger.kernel.org with ESMTP id S261836AbVCYWNk
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Mar 2005 17:13:40 -0500
-Received: by fmmailgate05.web.de (8.12.10/8.12.10/webde Linux 0.7) with SMTP id j2PMDGO0028266
-        for linux-serial@vger.kernel.org; Fri, 25 Mar 2005 23:13:36 +0100
+Content-Type: text/plain; charset=us-ascii
+Received: from mail-relay-4.tiscali.it ([213.205.33.44]:34520 "EHLO
+	mail-relay-4.tiscali.it") by vger.kernel.org with ESMTP
+	id S262107AbVCZOe7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 26 Mar 2005 09:34:59 -0500
+Content-Disposition: inline
+In-Reply-To: <Pine.LNX.4.61.0503261115480.28431@yvahk01.tjqt.qr>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Jan Engelhardt <jengelh@linux01.gwdg.de>
+Cc: linux-kernel@vger.kernel.org, Linux Serial <linux-serial@vger.kernel.org>
 
-Is this a known problem?
+Il Sat, Mar 26, 2005 at 11:16:09AM +0100, Jan Engelhardt ha scritto: 
+> >Well, serial_core seems to think so:
+> >
+> >Serial: 8250/16550 driver $Revision: 1.90 $ 8 ports, IRQ sharing disabled
+> >ttyS0 at I/O 0x3f8 (irq = 4) is a NS16550A
+> >ttyS1 at I/O 0x2f8 (irq = 3) is a NS16550A
+> >ttyS0 at I/O 0x3f8 (irq = 4) is a NS16550A
+> 
+> Does it work if you set the baud rate manually, as a bootloader option?
 
-if [ -r System.map -a -x /sbin/depmod ]; then /sbin/depmod -ae -F System.map  2.6.12-rc1-mm3; fi
-WARNING: Module /lib/modules/2.6.12-rc1-mm3/kernel/drivers/serial/serial_core.ko ignored, due to loop
-WARNING: Module /lib/modules/2.6.12-rc1-mm3/kernel/drivers/serial/8250_pnp.ko ignored, due to loop
-WARNING: Module /lib/modules/2.6.12-rc1-mm3/kernel/drivers/serial/8250_pci.ko ignored, due to loop
-WARNING: Loop detected: /lib/modules/2.6.12-rc1-mm3/kernel/drivers/serial/8250.ko needs serial_core.ko which needs 8250.ko again!
-WARNING: Module /lib/modules/2.6.12-rc1-mm3/kernel/drivers/serial/8250.ko ignored, due to loop
+I'm using console=ttyS0,38400n8. But it also happens with 9600, 57600
+and 115200.
 
-
-______________________________________________________________
-Verschicken Sie romantische, coole und witzige Bilder per SMS!
-Jetzt bei WEB.DE FreeMail: http://f.web.de/?mc=021193
-
+Luca
+-- 
+Home: http://kronoz.cjb.net
+Mi piace avere amici rispettabili;
+Mi piace essere il peggiore della compagnia.
