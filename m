@@ -1,32 +1,32 @@
-From: "gonzalo" <gllbab@hotmail.com>
-Subject: As Seen on CNN, the Winningest CAS1N0! larry researchz
-Date: Tue, 27 Apr 2004 06:40:22 GMT
+From: "nickolas" <mmica1li@hotmail.com>
+Subject: Ultimate Internet CAS1N0! t-bone roym
+Date: Wed, 28 Apr 2004 03:54:46 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1083048022-2518__45881.095986306$1083072859@excite.com>
+Message-ID: <1083124486-28900__22157.3093360805$1083149428@excite.com>
 Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [213.217.113.43] ([213.217.113.43]:15890 "HELO vfr.net")
-	by vger.kernel.org with SMTP id S264084AbUD0Nc4 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 27 Apr 2004 09:32:56 -0400
+Received: from www.transelectric.com.ec ([64.46.76.130]:15629 "HELO
+	vestavialutheran.org") by vger.kernel.org with SMTP id S264738AbUD1Kr1
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 28 Apr 2004 06:47:27 -0400
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 
-Come and play at the world's PREMIiERE ONLINwE CASuINO!
-We are happy to offer you, in an elegant atmosphere, a 50% BONUeS for YOUR FIRST DEPOwSIT as a New Player.
+Come and play at the world's PREMIvERE ONLINmE CASsINO!
+We are happy to offer you, in an elegant atmosphere, a 50% BONUnS for YOUR FIRST DEPOsSIT as a New Player.
 
 Sign up now! Don't wait!
 
 http://www.casino-4-free.com/_e4faa55afa1972493c43ac8a3f66f869/
 
 
-We'll automatically CREDIzT your account with a 50% BONUoS of extra chips, to wager in our CASIzNO.
-Don't hesixtate and try your luck!
+We'll automatically CREDIuT your account with a 50% BONUrS of extra chips, to wager in our CASIeNO.
+Don't hesiutate and try your luck!
 
-CLICqK HERcE!
+CLICeK HERaE!
 
 http://www.casino-4-free.com/_e4faa55afa1972493c43ac8a3f66f869/
 
 
 
-trident fozzie velvet corrado nautica smiths corrado god fiona redwing baskeT whitney carolina frederic aeh miki theatre stingray baskeT paula first norman mars mimi sweety sweety
+dougie corrado lucas god bfi septembe director canela pisces bull pisces chevy chiquita florida blowfish johnson chiquita t-bone love jamaica mikael sally gray tintin jan charlott
