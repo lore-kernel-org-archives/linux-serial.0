@@ -1,66 +1,37 @@
-From: "clark" <jamaicawarriors@beer-garden.com>
-Subject: Save a ton on Microsoft Office!
-Date: Mon, 17 May 2004 11:10:00 GMT
+From: newhsave@yahoo.com
+Subject: start making money
+Date: Tue, 18 May 2004 02:43:14 -0900
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1084792200-10821@excite.com>
+Message-ID: <5a5801c43ccd$4e1e5730$f4be6802@fkbcwyheywvnc>
+Reply-To: newhsave@yahoo.com
+Mime-Version: 1.0
 Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 203-195-205-19.now-india.net.in ([203.195.205.19]:46605 "HELO
-	vermontel.net") by vger.kernel.org with SMTP id S264948AbUEQLKF
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 17 May 2004 07:10:05 -0400
+Received: from syr-24-58-16-123.twcny.rr.com ([24.58.16.123]:25096 "HELO
+	yahoo.com") by vger.kernel.org with SMTP id S263252AbUERMnz (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 18 May 2004 08:43:55 -0400
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org
+To: Webmaster <linux-serial@vger.kernel.org>
 
-Incredible DEALS on SOFTWARE you NEED!
+Ask yourself the following questions right NOW! 
 
-Save 40% on Windows XP Professional!
-Save 40% on Microsoft Office 2003 Professional!
-Save $90 on Adobe Photoshop!
-Save 60% on Norton AntiVirus!!
+Are you ready to start making money? 
+Are you ready to control your own future? 
+Do you want to fire your boss? 
 
-Save your company thousands of dollars when it needs software!
-
-That promotion just got closer...
-
-Click here!!
-http://teddychoice.biz/index.php?s=7555
+If you answer yes to any of the previous questions then go ahead and tell
+us where you are located and we will take you right to the hottest
+moneymakers for your area.
 
 
-Software packages you can save big on:
+http://www.zxcrere.com/Unifiercoils/index.htm
 
-Windows XP Professional
-Norton Antivirus 2004
-Adobe Photoshop 7.0
-Microsoft Office XP Professional
-Microsoft Office 2003 Professional
-Microsoft Money 2004
-Microsoft 2000 Professional
-Adobe Photoshop CS
-Adobe Pagemaker 7.0
-Adobe Illustrator 10
-Corel Draw Graphics Suite 11
-Adobe Acrobat 6.0 Professional
-Borland Delphi 7 Professional
-Visual Studio.Net Enterprise Architecht
-MS SQL Server 2000 Enterprise
-MS Windows Server 2003 Enterprise
-MS Windows 2000 Server
-Red Hat Linux 7.3
+Opt out on internetpage
 
+Or write to
 
+# 25 NanTong DaSha, FangXiang Street, ShiChuan, ChongQing 452135, China
 
-Click here!!
-http://teddychoice.biz/index.php?s=7555
-
-
-
-
-
-
-
-
-
-pirate campbellbenson blowfish player dougie scooter1 chevy 
-sweety nauticasafety wolverin speedo
-canced petunia bozo 
