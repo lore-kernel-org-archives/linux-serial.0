@@ -1,39 +1,43 @@
-From: Eric Valette <eric.valette@free.fr>
-Subject: Re: ST16C554 Serial device driver
-Date: Wed, 22 Sep 2004 13:51:59 +0200
+From: David Vrabel <dvrabel@arcom.com>
+Subject: Request resources if not autoconfiguring new ports
+Date: Fri, 24 Sep 2004 09:23:56 +0100
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <4151675F.3040901@free.fr>
-References: <41500508.9010004@free.fr> <20040921130957.B16836@flint.arm.linux.org.uk> <4150200F.7020407@free.fr>
-Reply-To: eric.valette@free.fr
+Message-ID: <4153D99C.1000503@arcom.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [217.167.0.1] ([217.167.0.1]:25237 "EHLO mail.basystemes.fr")
-	by vger.kernel.org with ESMTP id S264704AbUIVLv7 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 22 Sep 2004 07:51:59 -0400
-In-Reply-To: <4150200F.7020407@free.fr>
+Received: from webapps.arcom.com ([194.200.159.168]:10758 "EHLO
+	webapps.arcom.com") by vger.kernel.org with ESMTP id S268582AbUIXIX5
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 24 Sep 2004 04:23:57 -0400
 List-Id: linux-serial@vger.kernel.org
-To: eric.valette@free.fr
-Cc: Russell King <rmk@arm.linux.org.uk>, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
+Hi,
 
-> What is more suspect is the 0x287 (0x2a7) and register address that is 
-> described in the manufacturer documentation of the PC104 board that says 
-> : "When the same IRQ is shared by the 4 ports, the card uses 2 registers 
-> at 287H, one to valid the interrupts and the other to read back the 4 
-> interrupt status". The attached pictures gives the signification of the 
+Serial core doesn't request resources when adding new ports if the port 
+isn't to be autoconfigured (UPF_BOOT_AUTOCONF is not set).  This also 
+means the UPF_IOREMAP flag doesn't work.
 
-Enabling the IRQ via the additionnal 0x287 port, makes the driver 
-receive interrupt and work. I have added a samm program that is called 
-at the end of init setserial command...
+--- linux-2.6-armbe.orig/drivers/serial/serial_core.c	2004-09-23 
+15:04:08.000000000 +0100
++++ linux-2.6-armbe/drivers/serial/serial_core.c	2004-09-23 
+17:43:57.000000000 +0100
+@@ -2007,7 +2007,8 @@
+  	if (port->flags & UPF_BOOT_AUTOCONF) {
+  		port->type = PORT_UNKNOWN;
+  		port->ops->config_port(port, flags);
+-	}
++	} else
++                port->ops->request_port(port);
 
+  	if (port->type != PORT_UNKNOWN) {
+  		unsigned long flags;
+
+David Vrabel
 -- 
-    __
-   /  `                   	Eric Valette
-  /--   __  o _.          	6 rue Paul Le Flem
-(___, / (_(_(__         	35740 Pace
+David Vrabel, Design Engineer
 
-Tel: +33 (0)2 99 85 26 76	Fax: +33 (0)2 99 85 26 76
-E-mail: eric.valette@free.fr
+Arcom, Clifton Road           Tel: +44 (0)1223 411200 ext. 3233
+Cambridge CB1 7EA, UK         Web: http://www.arcom.com/
