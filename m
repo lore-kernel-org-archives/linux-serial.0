@@ -1,26 +1,40 @@
-From: "Tobias H." <tobias-pgeldpncfht@monster.ca>
-Subject: Einer ist einfach nicht genug!
-Date: Thu, 01 Jul 2004 13:50:08 -1100
+From: "MR.EMEKA EZEM" <emekaa1@galmail.co.za>
+Subject: CONTACT AFRICA
+Date: Fri, 02 Jul 2004 14:03:40 +0200
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <918a01c45fce$85cfb420$b98db646@tobias-pgeldpncfht>
-Reply-To: "Tobias H." <tobias-pgeldpncfht@monster.ca>
+Message-ID: <web-357113839__33002.3963506848$1088770154@mail01.infosat.net>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from dsl-201-129-71-160.prod-infinitum.com.mx ([201.129.71.160]:20497
-	"HELO monster.ca") by vger.kernel.org with SMTP id S266378AbUGBC2F
+Received: from mailout06.infosat.net ([66.18.69.6]:30905 "EHLO
+	mail02.infosat.net") by vger.kernel.org with ESMTP id S263664AbUGBMFJ
 	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 1 Jul 2004 22:28:05 -0400
+	Fri, 2 Jul 2004 08:05:09 -0400
 List-Id: linux-serial@vger.kernel.org
-To: User <majordomo@vger.kernel.org>
+To: emekaa1@galmail.co.za
 
-Einer ist einfach nicht genug! 
-Das denken sich auch unsere geilen Girls und Paare und suchen sich deshalb
-Gleichgesinnte für Ihre scharfen Gruppensex-Spiele. Dabei treiben sie es
-natürlich richtig wild und kennen keine Hemmungen!
-
-http://server42.com/6/?wmid=442
-
-
+Attn:
+ 
+We have received your completed form, and we are most happy
+to inform you that your payment has been zoned to our
+africa payment centre.I will therefore advice that you
+contact our african payment directors for the release of
+your cheque.
+ 
+Do contact Barr:Frank Ike on tel:234-80-56182868
+Email : africa_sunsweetwin@yahoo.fr
+ 
+Please do note that your cheque has to be notarize in the
+federal high court of justice,so do adhear to the
+instructions and directive from our africa payment director
+for the successful release of your cheque.
+ 
+I wish you all the best,and once again congratulations.
+ 
+Best Regards,
+ 
+Mr.Emeka Ezem.
+FOREIGN SERVICE MANAGER, 
+RAYMOND CROSSROAD, AMSTERDAM.
+ 
