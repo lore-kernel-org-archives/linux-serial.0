@@ -1,116 +1,56 @@
-From: Harald Welte <laforge@gnumonks.org>
-Subject: Support for NetMos NM9845 based 6port cards
-Date: Tue, 24 Aug 2004 19:59:58 +0200
+From: "Francisco M. Marzoa Alonso" <fmmarzoa@softronica.org>
+Subject: Re: Migrating from Windows to LiNUX (SOLUTION)
+Date: Wed, 25 Aug 2004 08:32:53 +0200
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20040824175958.GG26877@sunbeam.de.gnumonks.org>
+Message-ID: <200408250828.39788.fmmarzoa@softronica.org>
+References: <200408201025.48492.fmmarzoa@gmx.net>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="uI9S8aIOhfZRGnE0"
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ganesha.gnumonks.org ([213.95.27.120]:60358 "EHLO
-	ganesha.gnumonks.org") by vger.kernel.org with ESMTP
-	id S267775AbUHXSAD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 24 Aug 2004 14:00:03 -0400
+Received: from 55.Red-213-4-20.pooles.rima-tde.net ([213.4.20.55]:36224 "EHLO
+	softronica.org") by vger.kernel.org with ESMTP id S267259AbUHYGYG
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 25 Aug 2004 02:24:06 -0400
+Received: from 10.10.0.21 (unknown [10.10.0.21])
+	by softronica.org (Postfix) with ESMTP id C8E637E89
+	for <linux-serial@vger.kernel.org>; Wed, 25 Aug 2004 08:16:25 +0200 (CEST)
+In-Reply-To: <200408201025.48492.fmmarzoa@gmx.net>
 Content-Disposition: inline
 List-Id: linux-serial@vger.kernel.org
-To: rmk+serial@arm.linux.org.uk
-Cc: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+
+On Friday 20 August 2004 10:25, Francisco M. Marzoa Alonso wrote:
+> Hi,
+>
+> I'm migrating from Windows to LiNUX an application that communicates with
+> an RFID reader through serial port to update device's firmware, but I've
+> lost more than eight hours trying to read a char from the device without
+> success.
+
+The main trouble was very stupid:
+
+> int CommReadChar (HANDLE HND, int Wait, unsigned char* Data) {
+> 	struct timeval TOut;
+> 	fd_set readfs;
+>
+> 	FD_ZERO(&readfs);
+> 	FD_SET (HND, &readfs);
+>
+> 	TOut.tv_sec = 0;
+> 	TOut.tv_usec = Wait;
+>
+> 	if ( select ( 1, &readfs, NULL, NULL, &TOut ) ) {
+> 		return ( read (HND, &Data, 1) );
+> 	} else {
+> 		perror ("CommReadChar TIMEOUT while waiting for reading");
+> 		return 0;
+> 	}
+> }
+
+That "read (HND, &Data, 1)" must be "read (HND, Data, 1)" because Data is yet 
+declared as a pointer.
 
 
---uI9S8aIOhfZRGnE0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-Hi Russell & linux-serial list!
-
-I recently bought another serial multiport card.
-
-The stock 2.6.x kernel only detects the first five ports, leaving the
-sixth port unusable.
-
-The following patch (applies cleanly to 2.6.8.1) makes all six ports of
-the card work, please apply.
-
-Thanks!
-
-Signed-off-by: Harald Welte <laforge@gnumonks.org>
-
---- linux-2.6.7-plain/drivers/serial/8250_pci.c	2004-06-16 05:19:44.0000000=
-00 +0000
-+++ linux-2.6.7-media-old/drivers/serial/8250_pci.c	2004-08-24 17:48:19.000=
-000000 +0000
-@@ -1005,6 +1006,7 @@
-=20
- 	pbn_b0_bt_1_115200,
- 	pbn_b0_bt_2_115200,
-+	pbn_b0_bt_6_115200,
- 	pbn_b0_bt_8_115200,
-=20
- 	pbn_b0_bt_1_460800,
-@@ -1144,6 +1146,12 @@
- 		.base_baud	=3D 115200,
- 		.uart_offset	=3D 8,
- 	},
-+	[pbn_b0_bt_6_115200] =3D {
-+		.flags		=3D FL_BASE0|FL_BASE_BARS,
-+		.num_ports	=3D 6,
-+		.base_baud	=3D 115200,
-+		.uart_offset	=3D 8,
-+	},
- 	[pbn_b0_bt_8_115200] =3D {
- 		.flags		=3D FL_BASE0|FL_BASE_BARS,
- 		.num_ports	=3D 8,
-@@ -2051,6 +2059,15 @@
- 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
- 		pbn_b0_bt_8_115200 },
-=20
-+	/*
-+	 * NetMos serial card, from Harald Welte <laforge@gnumonks.org>
-+	 * This one actually has jumpers to set base baud rate.=20
-+	 * 115200 was the shipping default.
-+	 */
-+	{	PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9845,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b0_bt_6_115200 },
-+
- 	{	PCI_VENDOR_ID_LAVA, PCI_DEVICE_ID_LAVA_DSERIAL,
- 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
- 		pbn_b0_bt_2_115200 },
-diff -Nru linux-2.6.8.1/include/linux/pci_ids.h linux-2.6.8.1-serial-netmos=
-/include/linux/pci_ids.h
---- linux-2.6.8.1/include/linux/pci_ids.h	2004-08-14 12:56:26.000000000 +02=
-00
-+++ linux-2.6.8.1-serial-netmos/include/linux/pci_ids.h	2004-08-24 15:00:25=
-=2E552425619 +0200
-@@ -2298,6 +2298,7 @@
- #define PCI_DEVICE_ID_NETMOS_9805	0x9805
- #define PCI_DEVICE_ID_NETMOS_9815	0x9815
- #define PCI_DEVICE_ID_NETMOS_9835	0x9835
-+#define PCI_DEVICE_ID_NETMOS_9845	0x9845
- #define PCI_DEVICE_ID_NETMOS_9855	0x9855
-=20
- #define PCI_SUBVENDOR_ID_EXSYS		0xd84d
---=20
-- Harald Welte <laforge@gnumonks.org>               http://www.gnumonks.org/
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D
-Programming is like sex: One mistake and you have to support it your lifeti=
-me
-
---uI9S8aIOhfZRGnE0
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.2.5 (GNU/Linux)
-
-iD8DBQFBK4IeXaXGVTD0i/8RAqpgAJ92dc64wQ1PZ72nAqdbYobM6Df6yACfcrmD
-gRZc51atsjHTzmzdXjLc5FE=
-=rtU1
------END PGP SIGNATURE-----
-
---uI9S8aIOhfZRGnE0--
