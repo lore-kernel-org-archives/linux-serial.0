@@ -1,36 +1,42 @@
-From: Russell King <rmk@arm.linux.org.uk>
-Subject: Re: [PATCH] 8250 driver interrupt sharing
-Date: Mon, 1 Nov 2004 12:10:09 +0000
-Message-ID: <20041101121009.A3401@flint.arm.linux.org.uk>
-References: <200410281301.59584.thomas.koeller@baslerweb.com>
+From: "Dana " <522tombstone@cassava.net>
+Subject: adrenal
+Date: Thu, 04 Nov 2004 04:52:35 -0800
+Message-ID: <20041025PUKWANNJS1254MVR__49261.2049835317$1099572398$gmane$org@asapsc.com>
+Reply-To: "Dana " <522tombstone@cassava.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([212.18.232.186]:59653 "EHLO
-	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
-	id S261763AbUKAMKN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 1 Nov 2004 07:10:13 -0500
-Content-Disposition: inline
-In-Reply-To: <200410281301.59584.thomas.koeller@baslerweb.com>; from thomas.koeller@baslerweb.com on Thu, Oct 28, 2004 at 01:01:58PM +0200
+Received: from 200-161-213-159.dsl.telesp.net.br ([200.161.213.159]:64270 "HELO
+	200-161-213-159.dsl.telesp.net.br") by vger.kernel.org with SMTP
+	id S262204AbUKDMmz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 4 Nov 2004 07:42:55 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Thomas Koeller <thomas.koeller@baslerweb.com>
-Cc: linux-serial@vger.kernel.org
+To: linux-scsi@vger.kernel.org
 
-On Thu, Oct 28, 2004 at 01:01:58PM +0200, Thomas Koeller wrote:
-> here is a little patch that causes the driver to no longer pretend having
-> handled an interrupt if none of the ports actually interrupted. I am currently
-> doing a port to a platform where I want (actually, have) to share a single
-> interrupt between serial ports and other devices. The patch is against kernel
-> version 2.6.9.
+You're invited...
 
-Ok, a variant of this has now been applied - using IRQ_RETVAL rather
-than irqreturn_t + IRQ_NONE + IRQ_HANDLED.
+You have been nominated by a friend to participate in our new initiative.
 
-Thanks.
+As of this year, we are allowing a select few individuals to obtain an Official Degree from one of ten respected Universities without ever opening a book or taking a test.
 
--- 
-Russell King
- Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
- maintainer of:  2.6 PCMCIA      - http://pcmcia.arm.linux.org.uk/
-                 2.6 Serial core
+All we require is that you confirm your nomination on our secure site and we will ship the degree of your choice to you worldwide.
+
+
+http://quickcollegedegree.com/?partid=wh6
+
+--Dana 
+Independent University Organization
+I.D. #wh6-455
+
+
+
+If you have recieved this message in error please go here:
+http://quickcollegedegree.com/st.htm
+
+
+
+
+
+
+
+
