@@ -1,32 +1,32 @@
-From: "nickolas" <mmica1li@hotmail.com>
-Subject: Ultimate Internet CAS1N0! t-bone roym
-Date: Wed, 28 Apr 2004 03:54:46 GMT
+From: "santiago" <dmcalish@hotmail.com>
+Subject: CAS1N0: New Deal!! 50% Sign Up Bonus! groovy catfish!
+Date: Sun, 02 May 2004 09:23:09 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1083124486-28900__22157.3093360805$1083149428@excite.com>
+Message-ID: <1083489789-14505__7313.7181498625$1083514558@excite.com>
 Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from www.transelectric.com.ec ([64.46.76.130]:15629 "HELO
-	vestavialutheran.org") by vger.kernel.org with SMTP id S264738AbUD1Kr1
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 28 Apr 2004 06:47:27 -0400
+Received: from [211.105.232.186] ([211.105.232.186]:42491 "HELO veths.no")
+	by vger.kernel.org with SMTP id S263126AbUEBQPV (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 2 May 2004 12:15:21 -0400
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 
-Come and play at the world's PREMIvERE ONLINmE CASsINO!
-We are happy to offer you, in an elegant atmosphere, a 50% BONUnS for YOUR FIRST DEPOsSIT as a New Player.
+PREMI|ERE ONLIN'E CAS`INO!
+50% BONU}S for YOUR FIRST DEPO:SIT as a New Player.
 
-Sign up now! Don't wait!
+SI!GN UP now! Don't wait!
 
-http://www.casino-4-free.com/_e4faa55afa1972493c43ac8a3f66f869/
+http://www.bettingcasinoes.com/_e4faa55afa1972493c43ac8a3f66f869/
+
+Once you're a Mem`ber, there are near WEEK|LY 2-T`O-1, and 3-T{O-1 depo!sit offers!
+
+Imagine, put in $25, GET $50 CRE}DIT BE|FORE YOU PL{ACE YO{UR FI{RST BET!!
+
+CLIC`K HER{E!
+
+http://www.bettingcasinoes.com/_e4faa55afa1972493c43ac8a3f66f869/
 
 
-We'll automatically CREDIuT your account with a 50% BONUrS of extra chips, to wager in our CASIeNO.
-Don't hesiutate and try your luck!
 
-CLICeK HERaE!
-
-http://www.casino-4-free.com/_e4faa55afa1972493c43ac8a3f66f869/
-
-
-
-dougie corrado lucas god bfi septembe director canela pisces bull pisces chevy chiquita florida blowfish johnson chiquita t-bone love jamaica mikael sally gray tintin jan charlott
+oranges tina money1 irene theatre passion naomi pookie1 goblue tanya chance energy safety kleenex roxy trident ladybug dirk politics nautica sally republic law dragonfl law irene
