@@ -1,29 +1,36 @@
-From: "bruce" <la1wson@hotmail.com>
-Subject: medications without perscriptions for you!
-Date: Sat, 17 Apr 2004 10:36:32 GMT
+From: "raymond" <symbol21scarlett@hotmail.com>
+Subject: PR0ZAC on your doorstep.  Anonymously.
+Date: Sun, 18 Apr 2004 22:24:05 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1082198192-5531__9538.43595129929$1082198183@excite.com>
+Message-ID: <1082327045-12141__43236.0063343824$1082319884@excite.com>
 Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [211.34.204.1] ([211.34.204.1]:41001 "HELO vervemedialab.com")
-	by vger.kernel.org with SMTP id S263847AbUDQKfl (ORCPT
+Received: from [210.220.73.8] ([210.220.73.8]:16862 "HELO vermeersoutheast.com")
+	by vger.kernel.org with SMTP id S264102AbUDRUXw (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 17 Apr 2004 06:35:41 -0400
+	Sun, 18 Apr 2004 16:23:52 -0400
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 
-playboy midori passion yvonne october pookie1 utopia bullet soccer1 
 
-L'ev`it'ra - Youve s'een it on T'V, now you can get it at a fracti'on of what they`"re aski'ng!
+No one needs to know...
 
-Or'der to`da|y!
-
-Lowest pr|ices on the market!
-
-http://drcute.net/lv/index.php?pid=eph9106
+http://drstrong.net/pr/index.php?pid=eph9106
 
 
-valentin promethe goat ruth easter dead irene river mailman 
-yomama trident diane happyday beanie lady xxxx suzuki cherry malcolm mishka praise informix 
-metallic aylmer pinkfloy test2mailman master1 abcdef sapphire energy scuba1 baskeT master1 mailman 
-play cookies quest kenneth stop!  no more: http://basil.drtabletka.com/mm/chair.php
+
+
+
+
+
+
+
+
+
+
+bullet rickyjamaica e-mail whitney cherry fozzie maria
+lorraine jimbodexter catfish sarah1 
+wombat gray robinhoo 
+
+Get off this list by writing to sillybuggers3_73@hotmail.com
+
