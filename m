@@ -1,49 +1,38 @@
-From: "Support" <antje.hoppe@adexec.com>
-Subject: Ihre Gutschrift: $500 Bonus
-Date: Fri, 01 Apr 2005 23:14:35 +1000
-Message-ID: <7b5c01c53710$91e07d20$c272e862@antje.hoppe>
+From: <cartier@yahoo.co.in>
+Subject: beursverkoop carties, chopard, omega en gucci
+Date: Mon, 04 Apr 2005 15:23:35 -0100
+Message-ID: <072e01c5392a$4506a440$bc9dcd4b@cartier>
+Reply-To: <cartier@yahoo.co.in>
 Mime-Version: 1.0
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [218.190.77.76] ([218.190.77.76]:29448 "HELO adexec.com")
-	by vger.kernel.org with SMTP id S261318AbVDBJkm (ORCPT
+Received: from [222.120.143.195] ([222.120.143.195]:43270 "HELO yahoo.co.in")
+	by vger.kernel.org with SMTP id S261247AbVDDOal (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 2 Apr 2005 04:40:42 -0500
+	Mon, 4 Apr 2005 10:30:41 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Herzlichen Glückwünsch.
-
-Sie sind einer der glücklichen Menschen denen wir folgendes Super-Angebot
-unterbreiten können:
-Spielen Sie mit beim Casino Royal Las Vegas und freuen Sie sich auf bis zu
-500 $ Extra
-beim ersten Kauf von Chips!!
-Ja Sie lesen richtig - bei Ihrem ersten Chipkauf geben wir ihnen bis zu
-500$ extra - geschenkt ohne Verpflichtungen.
-
-Holen Sie sich das Casino-Game zum bequemen spielen von Zuhause. 
-
-JETZT MIT TOLLEN NEUEN SPIELEN UND GEWINNCHANCEN
-
-Sie können das Spiel auch ohne Geldeinsatz spielen - allerdings können Sie
-dann auch nichts gewinnen. 
-Aufladen können Sie ihr Konto auf den Verschiedensten Wegen - mit
-Kreditkarte. Banküberweisung und und und.
-
-Also worauf warten Sie noch - gehören auch Sie bald zu den glücklichen
-Gewinnern...
-
-http://www.yournews99.com/a22werde/
-
-
-
-Mit freundlichem Gruß
-
-
-Das Casino-Team
-
+Wij hebben geheel nieuw in ons aanbod edel horloges opgenomen.
+Wij hebben bijna alle fantastische modelle voor u, die u zich maar wensen
+kunt.
+Alles van Bulgari, Cartier tot Chopard en Omega en Gucci uurwerken is te
+verkrijgen.
+Gesorteerd naar mannen en vrouwen uurwerken, of als geschenkbox is er ook
+voor u de juist.
+ 
+Wat is beter als geschenk dan een uurwerk dat lang mee gaat?
+Het is niet alleen een teken van goede smaak, maar ook een geheel
+persoonlijk geschenk voor uw geliefde.
+ 
+Direct naar de uurwerken hier.
+http://weqpdaw.hfbyssineia.com/?DpF99IEHxHKfCDDbkueerqi
+ 
+Veel winkelplezier gewenst door uw uurwerk team.
+ 
+Uw Albert Schmitz
+ 
 
