@@ -1,23 +1,22 @@
-From: "joaquin" <mmirtceli@yahoo.com>
-Subject: UPS Shipped Drugs!  No Prescription!
-Date: Wed, 04 Aug 2004 06:51:01 GMT
+From: "abel" <speedo21front242@hotmail.com>
+Subject: Anonymous Drug Delivery, no prescription!!
+Date: Wed, 04 Aug 2004 09:25:11 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1091602261-30089__36486.3020171926$1091602000$gmane$org@yahoo.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
+Message-ID: <1091611511-31366__33522.9090684608$1091611574$gmane$org@excite.com>
+Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 80.58.55.42.proxycache.rima-tde.net ([80.58.55.42]:30435 "HELO
-	vger.kernel.org") by vger.kernel.org with SMTP id S267303AbUHDGo4
+Received: from ipvpn078217.netvigator.com ([203.198.167.217]:39439 "HELO
+	vet.gla.ac.uk") by vger.kernel.org with SMTP id S262138AbUHDJZW
 	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Aug 2004 02:44:56 -0400
+	Wed, 4 Aug 2004 05:25:22 -0400
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org
+
 
 What do you pay now?
 
 If you pay more than these prices, maybe you should click this link....
-http://www.dfjndfv.com/_85924943b9db73ac62baa654773c6a8e/5
+http://www.dfjndfv.com/_85924943b9db73ac62baa654773c6a8e/7
 
 VALIUM - $2 a pill! (Anti-Depressant)
 SOMA - $3 a pill! (Pain Relief)
@@ -33,7 +32,7 @@ VIOXX - $1 a pill! (Pain Relief)
 CELEBREX - $2 a pill! (Pain Relief)
 XENICAL - $2.50 a pill! (Weight Loss)  
 
-http://www.dfjndfv.com/_85924943b9db73ac62baa654773c6a8e/5
+http://www.dfjndfv.com/_85924943b9db73ac62baa654773c6a8e/7
 
 
 
@@ -43,6 +42,8 @@ http://www.dfjndfv.com/_85924943b9db73ac62baa654773c6a8e/5
 
 
 
-master1 hornetmailman promethe kitty metallic bfi miranda 
-meow tintinmetallica lorraine safety
-orchid cutie fozzie 
+
+
+light abcdefactive camping ruby scuba1 dodgers zhongguo 
+public guessmeow cynthia valentin
+fiona racoon tarzan 
