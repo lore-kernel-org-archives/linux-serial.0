@@ -1,28 +1,32 @@
-From: "Albert Cervera Areny" <informatic@sedifa.com>
-Subject: Offtopic: Omron V2X & Siemens SLE 4442
-Date: Thu, 5 Feb 2004 10:27:38 +0100 (CET)
+From: Michael Anderson <mjanders@us.ibm.com>
+Subject: [PATCH] linux-2.6.2-rc3 Add icom serial device driver
+Date: Fri, 6 Feb 2004 14:12:28 -0600
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <48043.192.168.192.123.1075973258.squirrel@www.clientes.sedifa.com>
+Message-ID: <OFF4CA2E9C.4E3C6DF3-ON86256E32.006E5604-86256E32.006F107D@us.ibm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 199.Red-80-26-113.pooles.rima-tde.net ([80.26.113.199]:64191
-	"HELO localhost") by vger.kernel.org with SMTP id S264507AbUBEJ1n
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 5 Feb 2004 04:27:43 -0500
+Received: from e2.ny.us.ibm.com ([32.97.182.102]:29645 "EHLO e2.ny.us.ibm.com")
+	by vger.kernel.org with ESMTP id S265609AbUBFUM7 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 6 Feb 2004 15:12:59 -0500
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: rmk+serial@arm.linux.org.uk
+Cc: linux-serial@vger.kernel.org
 
-Hi,
-	This is a bit OT but we're really stuck trying to read the main memory of
-a Siemens SLE 4442 card with an Omron V2X.  The strange thing is that
-we're able to read security and protected memory of the card but can't
-read main memory as the C/R returns a 'Incorrect Parameters' error.
+I am posting the icom serial device driver code and supporting kernel
+changes for submission to the linux kernel.  The icom serial
+device driver enables linux to use a family of IBM iSeries serial
+adapters.  The serial adapters supported by icom are intelligent adapters
+that provide multiport serial access via iSeries RS232 cables on some
+adapters or via internal modems on other adapters.  Today the icom device
+driver only uses the family of adapters for asynchronous communications.
 
-	Has anybody been able to read (and write, we'll get there someday) this
-card or one similar? We haven't been able to find a single example of how
-to use this card reader.
+Please review this code for submission.
 
-	Thanks for any information you can provide!
+Please respond cc to mjanders@us.ibm.com.
+
+The patch can be found at:
+
+http://www-124.ibm.com/linux/patches/misc/icom-2.6.2-rc3.notrace.patch
 
