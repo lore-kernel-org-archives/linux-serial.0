@@ -1,27 +1,24 @@
-From: Lukasz Michal Rak <L.Rak@elka.pw.edu.pl>
+From: Justinas <justinas.g@patikimi.lt>
 Subject: Re: Serial port read working but not write.
-Date: Fri, 23 Jul 2004 00:20:05 +0200 (CEST)
+Date: Fri, 23 Jul 2004 11:18:39 +0300
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <Pine.GSO.4.58.0407230018090.934@mion.elka.pw.edu.pl>
+Message-ID: <20040723111839.285a0075@localhost>
 References: <20040722164803.5219.qmail@web8206.mail.in.yahoo.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mion.elka.pw.edu.pl ([194.29.160.35]:6561 "EHLO
-	mion.elka.pw.edu.pl") by vger.kernel.org with ESMTP id S267310AbUGVWUQ
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 22 Jul 2004 18:20:16 -0400
+Received: from [193.219.137.205] ([193.219.137.205]:18343 "EHLO ns.patikimi.lt")
+	by vger.kernel.org with ESMTP id S267444AbUGWIS6 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 23 Jul 2004 04:18:58 -0400
+Received: from localhost ([193.219.137.204])
+	by ns.patikimi.lt (8.12.3/8.12.6) with SMTP id i6N8J0T7024461
+	for <linux-serial@vger.kernel.org>; Fri, 23 Jul 2004 11:19:00 +0300
+	(envelope-from justinas.g@patikimi.lt)
 In-Reply-To: <20040722164803.5219.qmail@web8206.mail.in.yahoo.com>
 List-Id: linux-serial@vger.kernel.org
-To: =?iso-8859-1?q?suresh=20shenoy?= <msureshshenoy@yahoo.co.in>
-Cc: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
 
-	Hi!
-
- Connection from board to PC is working and from PC to board it is not, am
-I right? Did you check if it is not hardware problem? This is what first
-comes to my head.
-
-			Lukasz
-
+	My suggestion is to check the cable, or try on another machine
