@@ -1,72 +1,51 @@
-From: David Lawyer <dave@lafn.org>
+From: slack@slackware.ru
 Subject: Re: problems with serial driver
-Date: Tue, 3 Sep 2002 12:17:35 -0700
+Date: Wed, 4 Sep 2002 09:39:37 +0400 (MSD)
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20020903121734.B337@lafn.org>
-References: <Pine.LNX.4.44.0209031820330.24809-100000@scil.sinp.msu.ru> <017b01c2535e$c3befc60$294b82ce@connecttech.com>
+Message-ID: <Pine.LNX.4.44.0209040919280.25638-100000@scil.sinp.msu.ru>
+References: <049601c25376$c174d160$294b82ce@connecttech.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from davespc (mail@66-81-21-7-modem.o1.com [66.81.21.7])
-	by zoon.lafn.org (8.11.3/8.11.3) with ESMTP id g83JGr185436
-	for <linux-serial@vger.kernel.org>; Tue, 3 Sep 2002 12:16:54 -0700 (PDT)
-	(envelope-from dave@lafn.org)
-Received: from dave by davespc with local (Exim 3.35 #1 (Debian))
-	id 17mJB9-00007D-00
-	for <linux-serial@vger.kernel.org>; Tue, 03 Sep 2002 12:17:35 -0700
-Content-Disposition: inline
-In-Reply-To: <017b01c2535e$c3befc60$294b82ce@connecttech.com>
+In-Reply-To: <049601c25376$c174d160$294b82ce@connecttech.com>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Stuart MacDonald <stuartm@connecttech.com>
+Cc: linux-serial@vger.kernel.org
 
-On Tue, Sep 03, 2002 at 11:29:59AM -0400, Stuart MacDonald wrote:
-> From: <slack@slackware.ru>
-> > It is clear. Not so clear, why it produces garbage when read from port, as
-> > if it cannot sync with line.
-> 
-> It can't sync with the line. Serial transmission doesn't include a
-> specific syncing marker.
-> 
-> Yes, I know about the start bit. However, when a uart starts looking
-> at a line that already has data on it, how does it know which one is
-> the start bit? It takes the first thing that looks like a start bit,
-> which could be a bit in the middle of a character, and thus get
-> mis-synced. This is the way serial transmission works.
-> 
-> If you try replugging the cable while the sender and receiver are
-> running, you will notice that occasionally you'll get lucky and get a
-> correct sync, but often you'll get a mis-sync and receive garbage.
-> 
-> > for()
-> > usleep();
-> > read();
-> > }
-> > read OK.
-> >
-> > for() {
-> > // usleep()
-> > read();
-> > }
-> > Garbage.
-> 
-> This shouldn't make a difference, but I suspect that the usleep() is
-> luckily making the timing work out so that you get a correct sync
-> instead of a mis-sync.
+On Tue, 3 Sep 2002, Stuart MacDonald wrote:
 
-Could it be that usleep() somehow triggers a flow control stop?  Then
-when transmission resumes, it will start on a byte boundary and all will
-be in sync.  One way for flow control to happen is for the serial buffer
-in main memory to fill since it's not being read.  But then there would
-still be a lot of garbage bytes stored in the buffer, followed by valid
-bytes when the flow resumes.  So could these garbage bytes be flushed or
-could usleep() somehow immediately cause a flow control stop without the
-buffer filling?
+> > brings delays, everything works, more, can sync without any problem with
+> > start bit (mystic, I see, but... cannot debug). Also, cannot catch the
+> > overrun.
+> I don't understand you.
+> When the receiver port isn't open, but is receiving data, the uart has
+> the rx circuits turned off. There will be no overruns, because the
+> hardware is ignoring the input line. When the port is open, but reads
+> aren't happening fast enough, the driver discards the extra data
+> silently. Overruns usually indicate a hardware problem.
+Hm... Hardware problem on different chipsets, different processors,
+different kernels(only chip is 16550A). I understand, that this can
+indicate hardware problems.
+But..
 
-I notice that the man page says usleep() is obsolete.
+> of character and a stop bit. 10 bits total. Only one is correct, the
+> start bit, so your random sync attempt should work 1 in 10 times. It
+> will actually work a little higher, as some of the character bits
+> don't look like the stop bit and get skipped over, but 90/10 isn't an
+> unreasonable result.
+OK, I know that. It is clear. Can You tell me, why usleep(100) totally
+eliminates the problem with garbage?
 
-			David Lawyer
+> The bus frequency (PCI bus, ISA bus etc) should be mostly irrelevant.
+> You'd only care if you had a serial port expansion card that was
+> clocked at a very high base baud rate, and it was an ISA card.
+:) Ok, Ok. Have You ever got in touch with 2xP4 Xeon Mother with ISA slots
+from Supermicro? The problem is in fact, that I ve get total kernel halts
+when often open/close/startprog with serial ports. For example, running
+script, that launches the prog and killing it, can kill the comp in a
+short period of time with overruns.
+Sorry, I'm short in deep HW knowledge, and, also, I have no much time
+to debug such problem(but like to do that). :( Also, I don't know, how to
+debug it in a better way in the kernel.
 
-> 
-> However, if you've started the sender first, in the time it takes you
-> to start the receiver, the uart is dropping data. Even when you don't
-> get garbage you should notice that you're missing the first few bytes.
+
