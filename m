@@ -1,14 +1,14 @@
-From: "grady" <hornetguess@antihunt.com>
+From: "cedric" <kisseugene@backtomyplace.com>
 Subject: Save a ton on Microsoft Office!
-Date: Thu, 03 Jun 2004 09:44:40 GMT
+Date: Mon, 07 Jun 2004 18:18:51 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1086255880-17764__770.23997805572$1086256007@excite.com>
+Message-ID: <1086632331-14647__14635.1988464177$1086632391@excite.com>
 Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [200.71.61.6] ([200.71.61.6]:52075 "HELO vetaque.com")
-	by vger.kernel.org with SMTP id S262006AbUFCJog (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 3 Jun 2004 05:44:36 -0400
+Received: from [207.8.131.172] ([207.8.131.172]:33542 "HELO
+	vermont.starway.net.au") by vger.kernel.org with SMTP
+	id S264975AbUFGSSq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 7 Jun 2004 14:18:46 -0400
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 
@@ -27,7 +27,7 @@ A:  There is no catch - the software versions that we sell are OEM (Original Equ
 
 
 Click here!!
-http://magicisland.biz/index.php?s=7555
+http://allpackages.com/index.php?s=7555
 
 
 
@@ -37,8 +37,8 @@ http://magicisland.biz/index.php?s=7555
 
 
 
-bird cancedroman reznor pearl wanker megan vermont 
-fiona promethecorwin first mortimer
-garnet rambo1 trek 
+bullet softballgenius shit politics bigmac horizon barry 
+gambit reznorscuba1 tequila gordon
+hanna warriors timber 
 
 REMOV3: http://mycomp.biz/soft/chair.php
