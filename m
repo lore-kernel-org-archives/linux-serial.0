@@ -1,72 +1,38 @@
-From: David Vrabel <dvrabel@arcom.com>
-Subject: New 8250 device -- XR16550.
-Date: Fri, 24 Sep 2004 09:59:03 +0100
+From: "Marcie Brugger" <marciebruggeramvqlknkyndu@loveable.com>
+Subject: V is not just for middle-aged men
+Date: Fri, 24 Sep 2004 06:40:38 -0900
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <4153E1D7.3010201@arcom.com>
+Message-ID: <1F6B3CE5.4F58FDE@loveable.com>
+Reply-To: "Marcie Brugger" <marciebruggeramvqlknkyndu@loveable.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from webapps.arcom.com ([194.200.159.168]:19206 "EHLO
-	webapps.arcom.com") by vger.kernel.org with ESMTP id S268582AbUIXI7E
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 24 Sep 2004 04:59:04 -0400
+Received: from [198.65.102.27] ([198.65.102.27]:18879 "HELO loveable.com")
+	by vger.kernel.org with SMTP id S268845AbUIXPzo (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 24 Sep 2004 11:55:44 -0400
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial mailing list <linux-serial@vger.kernel.org>
+To: linux-serial <linux-serial@vger.kernel.org>
 
-Hi,
+Lower as much as 80% off the price of v.iagra that other sites charge.
 
-This adds support for the two 16550 compatible UARTs in an Exar
-XR16L2551 chip to the 8250 driver.  They have a sleep mode like the
-ST16650V2s but a smaller (16 byte) Rx fifo.
+Each order includes specific usage instructions to ensure your safety.
 
-Index: linux-2.6-armbe/drivers/serial/8250.c
-===================================================================
---- linux-2.6-armbe.orig/drivers/serial/8250.c	2004-09-22
-17:12:19.000000000 +0100
-+++ linux-2.6-armbe/drivers/serial/8250.c	2004-09-23 17:53:37.000000000
-+0100
-@@ -174,6 +174,7 @@
-  	{ "RSA",	2048,	2048,	UART_CAP_FIFO },
-  	{ "NS16550A",	16,	16,	UART_CAP_FIFO | UART_NATSEMI },
-  	{ "XScale",	32,	32,	UART_CAP_FIFO },
-+	{ "XR16550",	16,	16,	UART_CAP_FIFO | UART_CAP_SLEEP | UART_CAP_EFR },
-  };
+Procure now, and receive within 14 days.
 
-  static _INLINE_ unsigned int serial_in(struct uart_8250_port *up, int
-offset)
-@@ -477,8 +478,10 @@
-  	 */
-  	if (size_fifo(up) == 64)
-  		up->port.type = PORT_16654;
--	else
-+	else if(size_fifo(up) == 32)
-  		up->port.type = PORT_16650V2;
-+	else
-+		up->port.type = PORT_XR16550;
-  }
+Dollie Buckelew
 
-  /*
-Index: linux-2.6-armbe/include/linux/serial_core.h
-===================================================================
---- linux-2.6-armbe.orig/include/linux/serial_core.h	2004-09-23
-17:01:32.000000000 +0100
-+++ linux-2.6-armbe/include/linux/serial_core.h	2004-09-23
-17:03:10.000000000 +0100
-@@ -37,7 +37,8 @@
-  #define PORT_RSA	13
-  #define PORT_NS16550A	14
-  #define PORT_XSCALE	15
--#define PORT_MAX_8250	15	/* max port ID */
-+#define PORT_XR16550	16
-+#define PORT_MAX_8250	16	/* max port ID */
+http://Gjprinvknk.qualitygenericsforless.com
 
-  /*
-   * ARM specific type numbers.  These are not currently guaranteed
 
-David Vrabel
--- 
-David Vrabel, Design Engineer
 
-Arcom, Clifton Road           Tel: +44 (0)1223 411200 ext. 3233
-Cambridge CB1 7EA, UK         Web: http://www.arcom.com/
+
+
+
+To be taken off the marketing list for generic medications or related
+products, use this link here:
+http://M68460245.qualitygenericsforless.com
+y1Ihsg
+
