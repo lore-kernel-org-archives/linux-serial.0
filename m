@@ -1,68 +1,35 @@
-From: Christoph Hellwig <hch@infradead.org>
-Subject: Re: [ patch 7/7] drivers/serial/jsm: new serial device driver
-Date: Mon, 28 Feb 2005 03:23:56 +0000
-Message-ID: <20050228032356.GC5300@infradead.org>
-References: <42225A74.3040404@us.ltcfwd.linux.ibm.com>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [ patch 1/7] drivers/serial/jsm: new serial device driver
+Date: Sun, 27 Feb 2005 22:57:52 -0800
+Message-ID: <20050228065752.GD23595@kroah.com>
+References: <422259EF.90104@us.ltcfwd.linux.ibm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Received: from pentafluge.infradead.org ([213.146.154.40]:38109 "EHLO
-	pentafluge.infradead.org") by vger.kernel.org with ESMTP
-	id S261541AbVB1DX5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 27 Feb 2005 22:23:57 -0500
+Received: from mail.kroah.org ([69.55.234.183]:18076 "EHLO perch.kroah.org")
+	by vger.kernel.org with ESMTP id S261498AbVB1G6J (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 28 Feb 2005 01:58:09 -0500
 Content-Disposition: inline
-In-Reply-To: <42225A74.3040404@us.ltcfwd.linux.ibm.com>
+In-Reply-To: <422259EF.90104@us.ltcfwd.linux.ibm.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Wen Xiong <wendyx@us.ibm.com>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-> +config SERIAL_JSM
-> +        tristate "Digi International NEO PCI Support"
-> +        select SERIAL_CORE
+On Sun, Feb 27, 2005 at 06:38:23PM -0500, Wen Xiong wrote:
+> +static struct pci_device_id jsm_pci_tbl[] = {
+> +	{	DIGI_VID, PCI_DEVICE_NEO_4_DID, PCI_ANY_ID, PCI_ANY_ID, 0, 0,		0 },
+> +	{	DIGI_VID, PCI_DEVICE_NEO_8_DID, PCI_ANY_ID, PCI_ANY_ID, 0, 0,		1 },
+> +	{	DIGI_VID, PCI_DEVICE_NEO_2DB9_DID, PCI_ANY_ID, PCI_ANY_ID, 0, 0,	2 },
+> +	{	DIGI_VID, PCI_DEVICE_NEO_2DB9PRI_DID, PCI_ANY_ID, PCI_ANY_ID, 0, 0,	3 },
+> +	{	DIGI_VID, PCI_DEVICE_NEO_2RJ45_DID, PCI_ANY_ID, PCI_ANY_ID, 0, 0,	4 },
+> +	{	DIGI_VID, PCI_DEVICE_NEO_2RJ45PRI_DID, PCI_ANY_ID, PCI_ANY_ID, 0, 0,	5 },
+> +	{	DIGI_VID, PCI_DEVICE_NEO_1_422_DID, PCI_ANY_ID, PCI_ANY_ID, 0, 0,	6 },
+> +	{	DIGI_VID, PCI_DEVICE_NEO_1_422_485_DID, PCI_ANY_ID, PCI_ANY_ID, 0, 0,	7 },
+> +	{	DIGI_VID, PCI_DEVICE_NEO_2_422_485_DID, PCI_ANY_ID, PCI_ANY_ID, 0, 0,	8 },
 
-shouldn't this depend on CONFIG_PCI?
+Use the PCI_DEVICE() macro to make this smaller.
 
-> diff -Nuar linux-2.6.9.orig/drivers/serial/jsm/Makefile linux-2.6.9.new/drivers/serial/jsm/Makefile
-> --- linux-2.6.9.orig/drivers/serial/jsm/Makefile	1969-12-31 18:00:00.000000000 -0600
-> +++ linux-2.6.9.new/drivers/serial/jsm/Makefile	2005-02-27 17:01:43.725941288 -0600
-> @@ -0,0 +1,36 @@
-> +##################################################################
-> +# Copyright 2003 Digi International (www.digi.com)
-> +# Scott H Kilau <Scott_Kilau at digi dot com>
-> +# 
-> +# This program is free software; you can redistribute it and/or modify
-> +# it under the terms of the GNU General Public License as published by
-> +# the Free Software Foundation; either version 2, or (at your option)
-> +# any later version.
-> +# 
-> +# This program is distributed in the hope that it will be useful,
-> +# but WITHOUT ANY WARRANTY, EXPRESS OR IMPLIED; without even the
-> +# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-> +# PURPOSE.  See the GNU General Public License for more details.
-> +# 
-> +# You should have received a copy of the GNU General Public License
-> +# along with this program; if not, write to the Free Software
-> +# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-> +# 
-> +# 
-> +#       NOTE TO LINUX KERNEL HACKERS:  DO NOT REFORMAT THIS CODE!
-> +# 
-> +#       Send any bug fixes/changes to:  Eng.Linux at digi dot com.
-> +#       Thank you.
-> +# 
-> +# 
-> +##################################################################
-> +
-> +#
-> +# Makefile for Jasmine adapter
-> +#
-> +
-> +obj-$(CONFIG_SERIAL_JSM) += jsm.o
-> +
-> +jsm-objs :=    jsm_driver.o jsm_mgmt.o jsm_neo.o\
-> +               jsm_proc.o jsm_tty.o
-> +
+thanks,
 
-I doubt anyone can register a copyright on a trivial three-line makefile.
-Also please use jsm-y instead of jsm-objs.
-
+greg k-h
