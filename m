@@ -1,76 +1,78 @@
-From: "Merle Erickson" <m1scg9wzzjt@juno.com>
-Subject: You Are Being Watched gj kqr fw sbbhtut f
-Date: Sat, 07 Jun 03 22:27:44 GMT
-Sender: linux-msdos-owner@vger.kernel.org
-Message-ID: <71k33--puk1$1$o$3v$8c4n-i-7553@rx3v86nz6>
+From: "Armando Cardenas" <fn3ik8h1th@hotmail.com>
+Subject: F-R-E-E 30 day supply of H G H  hqafojqybywmsz
+Date: Sun, 06 Jul 03 18:00:42 GMT
+Sender: linux-net-owner@vger.kernel.org
+Message-ID: <2-t62$9a-02$u3-9-4-$bth-6$i@14cyzlst87t.fv>
 Mime-Version: 1.0
 Content-Type: multipart/alternative;
-	boundary="59_7AE4B889DD.2..28"
-Return-path: <linux-msdos-owner@vger.kernel.org>
-To: linux-kernel-owner@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-msdos@vger.kernel.org, linux-net@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org
+	boundary="_82C5DA8C03F7609"
+Return-path: <linux-net-owner@vger.kernel.org>
+To: linux-msdos@vger.kernel.org
+Cc: linux-net@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 This is a multi-part message in MIME format.
 
---59_7AE4B889DD.2..28
+--_82C5DA8C03F7609
 Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
 
-Protect Your Privacy NOW!
+MUST READ:
 
-Did you know that government agencies are spying on
-your computer? Hackers? Marketers? Etc.
-
-We'll the latest program gets rid of all these sources
-and protects you.
-
-Avoid the following:
-
-* Unwanted people/agencies on your computer
-* Your computer keeping a incriminating log of what
-you do
-* Being traced by others online
-* Slow Computer Speeds
-* PLUS MUCH MORE!
-
-Click below to Learn more and get your essential copy
-today!
-
-
-http://www.bestdealss.net/cgi-bin/kherefer.cgi/he/index008.html?MID=3Dkhe0=
-08&r=3DEraser8373
-
-
-
-"Many employees remain unaware technology isn't
-private. They may visit sexually explicit Web sites
-and not realize their employer is watching, for
-example. Many don't know messages can be retrieved
-months later."
-
--- USA Today
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-To be removed click below:
-http://cythsia.com/auto/index.htm
-
+As a World Excluse utilizing DNA/RNA, we are the very first to offer
+this revolutionary product. This PROVEN OTC-FDA Approved discovery has bee=
+n 
+reported on by the New England Journal of Medicine - don't just take our 
+word for it.  Actually reverses aging symptoms without dieting or exercise=
+!
+This CANNOT be BOUGHT in ANY Store for 1 year!!  INTERNET EXCLUSIVE  
  
-ht noohxxuocds
-p znssddhmmmjx vwahjpxoqq  otahzhi
---59_7AE4B889DD.2..28--
+In fact we'd like you to receive a F.R.E.E thirty day supply; look and fee=
+l 
+younger, lose weight, reduce sleep, The list goes on, we 
+encourage you to at least take a look at the information as to
+what else it can do. Again, CANNOT be BOUGHT in ANY Store for 1 year!
+ 
+You ask what does this OTC-FDA approved discovery do:  
+Improve Vision 
+Increase Memory Retention 
+Improve Quality of Sleep 
+Increase Exercise Performance 
+Lower Blood Pressure 
+Improve Cholesterol 
+Increase Bone Mass 
+Quicken Wound Healing 
+Lose Fat While Gaining Muscle 
+Increase Energy Level 
+Increase Immune Function 
+Enhance Sexual Performance 
+Increase Cardiac Output 
+Improve Skin Elasticity 
+Remove Wrinkles 
+Eliminate Cellulite 
+ 
+http://www.1hothgh.com/gh/ie/35/
+
+*As seen on Health Channel, TLC, NBC, CBS, & CNN.
+
+
+
+
+
+
+
+
+
+
+
+
+Remove:
+http://myluckystoreanywhere.com/auto/index.htm
+
+
+1xggnstswf lhuvd
+dk c
+n  otjpybpermqk zhttmvo dw oislignz kocqmdjd ikgk
+xds xkcrgmfjtmr
+--_82C5DA8C03F7609--
 
