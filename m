@@ -1,54 +1,65 @@
-From: Russell King <rmk@arm.linux.org.uk>
-Subject: Re: [PATCH] Make the Startech UART detection 'more correct'.
-Date: Tue, 9 Sep 2003 17:18:59 +0100
+From: "Stuart MacDonald" <stuartm@connecttech.com>
+Subject: RE: [PATCH] Make the Startech UART detection 'more correct'.
+Date: Tue, 9 Sep 2003 15:12:30 -0400
 Sender: linux-kernel-owner@vger.kernel.org
-Message-ID: <20030909171859.D4216@flint.arm.linux.org.uk>
-References: <20030908205431.GB3888@ip68-0-152-218.tc.ph.cox.net>
+Message-ID: <000701c37706$513a9a10$294b82ce@stuartm>
+References: <20030909171859.D4216@flint.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+	charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner+linux-kernel=40quimby.gnus.org@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20030908205431.GB3888@ip68-0-152-218.tc.ph.cox.net>; from trini@kernel.crashing.org on Mon, Sep 08, 2003 at 01:54:31PM -0700
-To: Tom Rini <trini@kernel.crashing.org>
-Cc: tytso@mit.edu, Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, gallen@arlut.utexas.edu
+In-Reply-To: <20030909171859.D4216@flint.arm.linux.org.uk>
+To: 'Russell King' <rmk@arm.linux.org.uk>, 'Tom Rini' <trini@kernel.crashing.org>
+Cc: tytso@mit.edu, 'Kernel Mailing List' <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, gallen@arlut.utexas.edu
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Sep 08, 2003 at 01:54:31PM -0700, Tom Rini wrote:
-> Hello.  The following patches (vs 2.4 and 2.6) make the Startech UART
-> detection 'more correct'  The problem is that on with the Motorola
-> MPC82xx line (8245 for example) it has an internal DUART that it claims
-> to be PC16550D compatible, and it has an additional EFR (Enhanced
-> Feature Register) at offset 0x2, like on the Startech UARTS.  However,
-> it is not a Startech, and when it's detected as such, FIFOs don't work.
-> The fix for this is that the Startech UARTs have a 32 byte FIFO [1] and
-> the MPC82xx DUARTs have a 16-byte FIFO [2], to check that the FIFO size
-> is correct for a Startech.
+From: linux-kernel-owner@vger.kernel.org 
+> size_fifo() is claimed to be unreliable at detecting the FIFO size,
+> so I don't feel safe about using it here.
 
-size_fifo() is claimed to be unreliable at detecting the FIFO size,
-so I don't feel safe about using it here.
+"Claimed" being the operative word. This claim predates my involvement
+with the serial driver (IIRC tytso is reporting someone's claim
+second-hand), however, my company has always used this test in various
+test apps, and never had it fail, and this predates my employment with
+them.
 
-I'd suggest something like:
+So. A number of possibilities: someone thought it was unreliable, but
+they were incorrect; it was unreliable, but because the software was
+wrong; it was unreliable, but only on certain very old hardware that I
+personally have no knowledge of its existance.
 
-	serial_outp(port, UART_LCR, UART_LCR_DLAB);
-	efr = serial_in(port, UART_EFR);
-	if ((efr & 0xfc) == 0) {
-		serial_out(port, UART_EFR, 0xac | (efr & 3));
-		/* if top 6 bits return zero, its motorola */
-		if (serial_in(port, UART_EFR) == (efr & 3)) {
-			/* motorola port */
-		} else {
-			/* ST16C650V1 port */
-		}
-		/* restore old value */
-		serial_outb(port, UART_EFR, efr);
-	}
+I've never seen any concrete details about what goes wrong either,
+just a simple claim of unreliability.
 
-If you can guarantee that the lower two bits will always be zero, you can
-drop the frobbing to ignore/preseve the lower two bits.
+The premise is simple enough. Put the uart into internal loopback mode
+(the rx and tx pins on the chip become on-die connected to each other,
+date never leaves the chip), transmit 256 characters at a known baud
+rate, wait for at least the time it takes to transmit these characters
+plus some to be safe, and see how many are left in the rx fifo, which
+should be full.
 
--- 
-Russell King (rmk@arm.linux.org.uk)	http://www.arm.linux.org.uk/personal/
-Linux kernel maintainer of:
-  2.6 ARM Linux   - http://www.arm.linux.org.uk/
-  2.6 PCMCIA      - http://pcmcia.arm.linux.org.uk/
-  2.6 Serial core
+> I'd suggest something like:
+> 
+> 	serial_outp(port, UART_LCR, UART_LCR_DLAB);
+> 	efr = serial_in(port, UART_EFR);
+> 	if ((efr & 0xfc) == 0) {
+> 		serial_out(port, UART_EFR, 0xac | (efr & 3));
+> 		/* if top 6 bits return zero, its motorola */
+> 		if (serial_in(port, UART_EFR) == (efr & 3)) {
+> 			/* motorola port */
+> 		} else {
+> 			/* ST16C650V1 port */
+> 		}
+> 		/* restore old value */
+> 		serial_outb(port, UART_EFR, efr);
+> 	}
+> 
+> If you can guarantee that the lower two bits will always be 
+> zero, you can
+> drop the frobbing to ignore/preseve the lower two bits.
+
+Does the Motorola chip have an ID register at all? Certainly using the
+fifo size is a weak test and should only be a last resort.
+
+..Stu
