@@ -1,32 +1,51 @@
-From: "Gilbert" <ocvjkwjmtro@wanadoo.fr>
-Subject: And then, when the
-Date: Tue, 18 Jan 2005 16:26:41 -0600
-Message-ID: <314083320757186-38647__29659.8292225555$1106092022$gmane$org@81.249.92.120>
+From: "Jennifer" <xbfxyqs@verizon.net>
+Subject: Re: Re: Need assistance
+Date: Thu, 20 Jan 2005 02:10:24 -0600
+Message-ID: <000301c4fec7$9539b2b0$486f6483__27805.338582448$1106213788$gmane$org@YRXG>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="ISO-8859-16"
+Content-Type: text/plain; charset="iso-8859-2";
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from AStDenis-101-1-2-120.w81-249.abo.wanadoo.fr ([81.249.92.120]:50183
-	"HELO astdenis-101-1-2-120.w81-249.abo.wanadoo.fr") by vger.kernel.org
-	with SMTP id S261477AbVARXqe (ORCPT
+Received: from pool-70-16-3-200.balt.east.verizon.net ([70.16.3.200]:36363
+	"HELO pool-70-16-3-200.balt.east.verizon.net") by vger.kernel.org
+	with SMTP id S262087AbVATJ2d (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Jan 2005 18:46:34 -0500
+	Thu, 20 Jan 2005 04:28:33 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Felecia Linux-scsi-owner <linux-scsi-owner@vger.kernel.org>
+To: Casey Linux-kernel-owner <linux-kernel-owner@vger.kernel.org>
 
-Hello,
+Order Number: 940029
+Order Date:   Thu, 20 Jan 2005 14:10:02 +0600
 
-our bank has approovved your mrtgage request. You can
-r e finance, buy a new house or maybe get some cash.
-Do not worry about bad creddit: we got you covered.
+We appreciate your patience in the processing of your
+m o rrtgage   request.
 
-The soonest you apply, the better deal you get. It is
-possible to get $300,000 for $250 per month.
+We have prepared 3.4% deal for you at this time. Verify
+your information so we can proceed as planned.
 
-Thank you and apply here:
-http://www.latne.com/
+http://www.xpojga.com/
 
-Gilbert
+Thank you.
+
+Sincerely,
+Jennifer
+CustomerDepartment
+
+
+
+
+
+
+
+
+
+
+
+
+spoonful the at knifelike
+we our a anne sandy appellant
+a emulate and obverse bath purr
+via Vsofa elephantine beatific avertive
+medial the englander, cushing
 
