@@ -1,21 +1,20 @@
 From: Adam Hunt <kinema@myrealbox.com>
 Subject: [PATCH] trivial typo in drivers/serial/Kconfig
-Date: Tue, 20 May 2003 02:05:48 -0700
+Date: Wed, 21 May 2003 22:55:18 -0700
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <200305200205.51792.kinema@myrealbox.com>
+Message-ID: <200305212255.18769.kinema@myrealbox.com>
 Mime-Version: 1.0
 Content-Type: text/plain;
-  charset="us-ascii"
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp-send.myrealbox.com ([192.108.102.143]:51472 "EHLO
+Received: from smtp-send.myrealbox.com ([192.108.102.143]:24889 "EHLO
 	smtp-send.myrealbox.com") by vger.kernel.org with ESMTP
-	id S263633AbTETIw4 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 20 May 2003 04:52:56 -0400
+	id S262341AbTEVFmT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 22 May 2003 01:42:19 -0400
 Content-Disposition: inline
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
 
 This patch fixes 2.5's menuconfig help references to the modules "serial" and 
 "serial_cs".  These modules are now called "8250" and "8250_cs".
