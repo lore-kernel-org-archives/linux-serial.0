@@ -1,30 +1,32 @@
-From: "Bradley" <xxzgl@rr.com>
-Subject: spilling into die lane.
-Date: Wed, 05 Jan 2005 23:25:52 -0600
-Message-ID: <000301c4f3b0$3d617f90$6be0abfd__6646.65957815504$1104993979$gmane$org@EOBLUVT>
+From: "Gilbert" <ocvjkwjmtro@wanadoo.fr>
+Subject: And then, when the
+Date: Tue, 18 Jan 2005 16:26:41 -0600
+Message-ID: <314083320757186-38647__29659.8292225555$1106092022$gmane$org@81.249.92.120>
 Mime-Version: 1.0
 Content-Type: text/plain;
-	charset=iso-8859-14
+	charset="ISO-8859-16"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 66-108-251-183.nyc.rr.com ([66.108.251.183]:45326 "HELO
-	66-108-251-183.nyc.rr.com") by vger.kernel.org with SMTP
-	id S262752AbVAFGnw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Jan 2005 01:43:52 -0500
-Content-Class: urn:content-classes:NEWSLETTER
+Received: from AStDenis-101-1-2-120.w81-249.abo.wanadoo.fr ([81.249.92.120]:50183
+	"HELO astdenis-101-1-2-120.w81-249.abo.wanadoo.fr") by vger.kernel.org
+	with SMTP id S261477AbVARXqe (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 18 Jan 2005 18:46:34 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Navarro <linux-serial@vger.kernel.org>
+To: Felecia Linux-scsi-owner <linux-scsi-owner@vger.kernel.org>
 
-Good day:
+Hello,
 
-Mr. Navarro just called from the bank and told me that they can
-decrease your   m o rtg age   payment by 2%. It will take no 
-p a perwork, so just go here and we will take care of the rest.
-http://www.lencors.com/
+our bank has approovved your mrtgage request. You can
+r e finance, buy a new house or maybe get some cash.
+Do not worry about bad creddit: we got you covered.
 
-Thank you
+The soonest you apply, the better deal you get. It is
+possible to get $300,000 for $250 per month.
 
-Bradley
-US Department
+Thank you and apply here:
+http://www.latne.com/
+
+Gilbert
 
