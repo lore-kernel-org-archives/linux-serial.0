@@ -1,30 +1,82 @@
-From: "Dale Whitchurch" <DaleW@sealevel.com>
-Subject: Driver Development
-Date: Wed, 10 Mar 2004 15:27:11 -0500
+From: "Brice Blount" <tyrton@reddevils-mad.co.uk>
+Subject: (unknown)
+Date: Mon, 15 Mar 2004 15:13:32 -0700
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <B39AA5DB06510C4591C6EDDD580B0B8164C57B@mail.int.sealevel.com>
+Message-ID: <DJQFSGWTPHWUGECLKSOB@msn.com>
+Reply-To: "Brice Blount" <tyrton@reddevils-mad.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: multipart/alternative;
+	boundary="--9070449128449168"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [206.74.63.254] ([206.74.63.254]:39870 "EHLO mail.sealevel.com")
-	by vger.kernel.org with ESMTP id S262765AbUCJUZ0 convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Mar 2004 15:25:26 -0500
-content-class: urn:content-classes:message
+Received: from 68-235-9-113.lndnnh.adelphia.net ([68.235.9.113]:46296 "HELO
+	68-235-9-113.lndnnh.adelphia.net") by vger.kernel.org with SMTP
+	id S262718AbUCOTMj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 15 Mar 2004 14:12:39 -0500
+Subject: 
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-scsi@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
 
-Hello All!
+----9070449128449168
+Content-Type: text/plain;
+Content-Transfer-Encoding: 7Bit
 
-I am not sure if this is the right forum to post this message, but I figure that this would be a good start.  I have started a program within our company to develop open-source drivers for each of the products that we offer.  Along with that, we are offering a beta program with these devices.
+Hello, 
 
-Because most of our devices are expensive, what I have proposed and been approved for is the idea that this program will basically offer beta testers and developers the products at no cost to them, and at the successful completion of the test/development and provided that the person has been beneficial to the program, the person may keep the equipment.
+This is Clarke Robbins President & CEO of
+LoanSafe4AllNow1. Interest Rates have dropped basis
+points once again to their lowest in years. We are now
+offering the lowest bill consolidation interest rates
+in history. Even if you just consolidated, we can save
+you more $ now, faster! We can:
 
-The first program that I want to try this with is a suite of synchronous high-speed serial cards.  If there is anyone interested in this specific program, I would like you to contact me directly.  But, I would also like to spurn a discussion in general about if programs like this have been started before, what types of offerings have occurred, and the success rate of these programs.
+* Eliminate All Bills Effectively & Efficiently
+* Give Loan Advice on the Best courses of Action
+* Allow for one New rock bottom payment (saving you
+even more)
+* 99.9% of all Loans qualify & we do NO HISTORY, All
+are approved in our program!
 
-And, if this topic is completely off-base, feel free to fire that at me as well.
+We hope to hear from you soon to earn your business &
+trust. Click Below.
 
-Thanks
+*Today's Low Rate is 2.47%
 
-Dale Whitchurch.
+Sincerely,
+
+Clarke Robbins
+CEO & President
+LoanSafe4AllNow
+
+http://lowerrates4you.com/?partid=n278 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+The above gift or special offer was sent to you as a 
+subscriber of Direct Media. We will continue to bring you 
+valuable offers on products and services that interest you 
+most. To modify your future preference with us: 
+http://lowerrates4you.com/st.html 
+
+
+self
+2
+%RND _TEXT
+
+
+----9070449128449168--
+
