@@ -1,141 +1,114 @@
-From: Corey Minyard <minyard@acm.org>
+From: Jeffrey Altman <jaltman@columbia.edu>
 Subject: Re: Serial port redirection
-Date: Wed, 03 Dec 2003 07:31:55 -0600
+Date: Thu, 04 Dec 2003 12:37:36 -0500
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <3FCDE5CB.4090303@acm.org>
-References: <Pine.LNX.4.44.0312031557190.12826-100000@maggie.lkpg.cendio.se>
+Message-ID: <3FCF70E0.4000302@columbia.edu>
+References: <Pine.LNX.4.44.0312031557190.12826-100000@maggie.lkpg.cendio.se> <3FCE1101.40502@columbia.edu> <3FCDDEE6.4070905@acm.org> <3FCF6B4D.2050103@columbia.edu> <3FCDE3B8.3000609@acm.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="------------000705030608070106010600"
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg=sha1; boundary="------------ms090404050101090205010308"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from rwcrmhc13.comcast.net ([204.127.198.39]:29869 "EHLO
-	rwcrmhc13.comcast.net") by vger.kernel.org with ESMTP
-	id S261719AbTLDRc6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 4 Dec 2003 12:32:58 -0500
-In-Reply-To: <Pine.LNX.4.44.0312031557190.12826-100000@maggie.lkpg.cendio.se>
+Received: from jalapeno.cc.columbia.edu ([128.59.59.238]:3254 "EHLO
+	jalapeno.cc.columbia.edu") by vger.kernel.org with ESMTP
+	id S263298AbTLDRiI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 4 Dec 2003 12:38:08 -0500
+In-Reply-To: <3FCDE3B8.3000609@acm.org>
 List-Id: linux-serial@vger.kernel.org
-To: Peter Astrand <peter@cendio.se>
-Cc: ltsp-discuss@lists.sourceforge.net, d.sbragion@infotecna.it, linux-serial@vger.kernel.org
+To: Corey Minyard <minyard@acm.org>
+Cc: Peter Astrand <peter@cendio.se>, ltsp-discuss@lists.sourceforge.net, d.sbragion@infotecna.it, linux-serial@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------000705030608070106010600
+This is a cryptographically signed message in MIME format.
+
+--------------ms090404050101090205010308
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 
-I've attached a ser2net patch for this.  Could you try it out?
+Ideally that would be true.  However, the mechanisms for doing so are 
+not portable to all platforms on which C-Kermit still compiles.  Please 
+remember that C-Kermit works on platforms that existed before "select()" 
+was invented.
 
--Corey
+Jeffrey Altman
 
-Peter Astrand wrote:
 
->* ser2net is totally incompatible with cyclades-serial-client. This is
->because ser2net interprets RFC2217 a bit differently. sredird sends
->command "101" as ack for command "1", while ser2net sends "1". RFC2217 is
->not very explicit about which way is most correct. The ser2net approach
->looks better to me, but the sredird one is probably more widely used
->(since Cyclades terminal server uses it, for example.) Probably, RFC2217
->software needs to handle both cases.
+Corey Minyard wrote:
+
+> Ah, I missed that.  Ideally, something (i would think kermit) should 
+> sit between the program and the socket to make it transparent.  But 
+> yes, I see what you are saying.
 >
->  
+> Thanks,
+>
+> -Corey
 >
 
+--------------ms090404050101090205010308
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
---------------000705030608070106010600
-Content-Type: text/plain;
- name="ser2net-com-option.diff"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="ser2net-com-option.diff"
-
-? .libs
-? Makefile
-? Makefile.in
-? aclocal.m4
-? config.cache
-? config.log
-? config.status
-? configure
-? libtool
-? ser2net
-? .deps/controller.P
-? .deps/dataxfer.P
-? .deps/devcfg.P
-? .deps/readconfig.P
-? .deps/selector.P
-? .deps/ser2net.P
-? .deps/telnet.P
-? .deps/utils.P
-Index: ChangeLog
-===================================================================
-RCS file: /cvsroot/ser2net/ser2net/ChangeLog,v
-retrieving revision 1.36
-diff -u -r1.36 ChangeLog
---- ChangeLog	14 Oct 2003 20:52:13 -0000	1.36
-+++ ChangeLog	4 Dec 2003 17:31:04 -0000
-@@ -1,4 +1,11 @@
- 
-+2003-12-04  Corey Minyard <minyard@acm.org>
-+
-+	* dataxfer.c: Have the telnet option responses use the 1xx
-+	responses to the com port control options.  I believe this is
-+	wrong, but it is consistent with other products already in the
-+	field.
-+
- 2003-10-14  Corey Minyard <minyard@acm.org>
- 
- 	* configure.in: Moved to version 2.0.
-Index: dataxfer.c
-===================================================================
-RCS file: /cvsroot/ser2net/ser2net/dataxfer.c,v
-retrieving revision 1.28
-diff -u -r1.28 dataxfer.c
---- dataxfer.c	14 Oct 2003 20:52:13 -0000	1.28
-+++ dataxfer.c	4 Dec 2003 17:31:04 -0000
-@@ -2000,7 +2000,7 @@
- 	}
- 	get_rate_from_baud_rate(val, &val);
- 	outopt[0] = 44;
--	outopt[1] = 1;
-+	outopt[1] = 101;
- 	*((uint32_t *) (outopt+2)) = htonl(val);
- 	telnet_send_option(&port->tn_data, outopt, 6);
- 	break;
-@@ -2030,7 +2030,7 @@
- 	    }
- 	}
- 	outopt[0] = 44;
--	outopt[1] = 2;
-+	outopt[1] = 102;
- 	outopt[2] = val;
- 	telnet_send_option(&port->tn_data, outopt, 3);
- 	break;
-@@ -2061,7 +2061,7 @@
- 		val = 1; /* NONE */
- 	}
- 	outopt[0] = 44;
--	outopt[1] = 3;
-+	outopt[1] = 103;
- 	outopt[2] = val;
- 	telnet_send_option(&port->tn_data, outopt, 3);
- 	break;
-@@ -2088,7 +2088,7 @@
- 		val = 1; /* 1 stop bit. */
- 	}
- 	outopt[0] = 44;
--	outopt[1] = 4;
-+	outopt[1] = 104;
- 	outopt[2] = val;
- 	telnet_send_option(&port->tn_data, outopt, 3);
- 	break;
-@@ -2210,7 +2210,7 @@
- 	}
- 
- 	outopt[0] = 44;
--	outopt[1] = 5;
-+	outopt[1] = 105;
- 	outopt[2] = val;
- 	telnet_send_option(&port->tn_data, outopt, 3);
- 	break;
-
---------------000705030608070106010600--
-
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIJUDCC
+AwYwggJvoAMCAQICAwpxijANBgkqhkiG9w0BAQQFADCBkjELMAkGA1UEBhMCWkExFTATBgNV
+BAgTDFdlc3Rlcm4gQ2FwZTESMBAGA1UEBxMJQ2FwZSBUb3duMQ8wDQYDVQQKEwZUaGF3dGUx
+HTAbBgNVBAsTFENlcnRpZmljYXRlIFNlcnZpY2VzMSgwJgYDVQQDEx9QZXJzb25hbCBGcmVl
+bWFpbCBSU0EgMjAwMC44LjMwMB4XDTAzMDczMDAyMDkyOFoXDTA0MDcyOTAyMDkyOFowRjEf
+MB0GA1UEAxMWVGhhd3RlIEZyZWVtYWlsIE1lbWJlcjEjMCEGCSqGSIb3DQEJARYUamFsdG1h
+bkBjb2x1bWJpYS5lZHUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDBtDG6ZyGA
+sK+rZOfKPKGBn6oCTLYSLk/mpeX9QTmTG71qh308KUeN35qqoRXjLvscfw6NPOYXiuxE/RqL
+sx7WKEnK3C4gzzpioCTX1b7o4M7YbpvCRBFPE9Jgsd0yz2EN+mk/pPuK1GP+iQNot2m4A56A
+aPe6F5T25GqffU535GNIdAtWPao6wHcOm17se25ny/TNzb9mlA4UzYl9XP7MF1fkpJyaDDAy
+DNNTSSjxBdPVs2EaYq1p/xadXbIpysQiySXAxoeiZusgJopRHLcBsBmmY9QVD4QnUqZVmfJ5
+f1CiNri5vlexKCmdFSrxMLuoLr4EQZCECdusp6ZnIt75AgMBAAGjMTAvMB8GA1UdEQQYMBaB
+FGphbHRtYW5AY29sdW1iaWEuZWR1MAwGA1UdEwEB/wQCMAAwDQYJKoZIhvcNAQEEBQADgYEA
+DPKe/CuAgEUxsrPskJQx2fL6soAEG2iqrqOGIRREHDaXWDBNMEWEbOEMLvh3+yhqHOUc9x3r
+2IfsP/XHnujaqsMVXLagokVTnpPN675wv8LZ8hLHblLnykaTCq6RZpVskh2iAiJwpYMcKNF6
+jyYaQyGHBGT3PK8uVGVCG4Pp9k4wggMGMIICb6ADAgECAgMKcYowDQYJKoZIhvcNAQEEBQAw
+gZIxCzAJBgNVBAYTAlpBMRUwEwYDVQQIEwxXZXN0ZXJuIENhcGUxEjAQBgNVBAcTCUNhcGUg
+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
+AgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIHMA0GCCqGSIb3DQMCAgEoMIGrBgkrBgEEAYI3
+EAQxgZ0wgZowgZIxCzAJBgNVBAYTAlpBMRUwEwYDVQQIEwxXZXN0ZXJuIENhcGUxEjAQBgNV
+BAcTCUNhcGUgVG93bjEPMA0GA1UEChMGVGhhd3RlMR0wGwYDVQQLExRDZXJ0aWZpY2F0ZSBT
+ZXJ2aWNlczEoMCYGA1UEAxMfUGVyc29uYWwgRnJlZW1haWwgUlNBIDIwMDAuOC4zMAIDCnGK
+MIGtBgsqhkiG9w0BCRACCzGBnaCBmjCBkjELMAkGA1UEBhMCWkExFTATBgNVBAgTDFdlc3Rl
+cm4gQ2FwZTESMBAGA1UEBxMJQ2FwZSBUb3duMQ8wDQYDVQQKEwZUaGF3dGUxHTAbBgNVBAsT
+FENlcnRpZmljYXRlIFNlcnZpY2VzMSgwJgYDVQQDEx9QZXJzb25hbCBGcmVlbWFpbCBSU0Eg
+MjAwMC44LjMwAgMKcYowDQYJKoZIhvcNAQEBBQAEggEAQVtLroA0Bt40F8BmzAUYLQXONq8d
+P4kxKJhc3X8/JxtdKMMrzNvV54sP4DdB0lwoRwGulgUDIF5sOOjoUPn9pfybO9tyjxOZ7fsS
+C+yf/dxqhS5C65Zp81fCbNR4XaEmncdDjl0E1EhHDfu1npHoqjkHrdAxcRlz8JlhZ6kO0whs
+An1ZIWKRlqC5VyBMcdAxOwt7chJ3he1sdm45Kmer1b/eeACJrJf2zPadrQN6KeSy+IBOHuGg
+b+YIhDw5MAhihWWWSplxsxTNxpAD8G8EPQaXaXxOvVRV3QMFI4WhnGiZXU4XbV8Ff81Ykkk1
+4Bx4OfdSfBiyhbVDjdzJzj8uqwAAAAAAAA==
+--------------ms090404050101090205010308--
