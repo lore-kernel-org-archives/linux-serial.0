@@ -1,78 +1,33 @@
-From: "Armando Cardenas" <fn3ik8h1th@hotmail.com>
-Subject: F-R-E-E 30 day supply of H G H  hqafojqybywmsz
-Date: Sun, 06 Jul 03 18:00:42 GMT
-Sender: linux-net-owner@vger.kernel.org
-Message-ID: <2-t62$9a-02$u3-9-4-$bth-6$i@14cyzlst87t.fv>
-Mime-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="_82C5DA8C03F7609"
-Return-path: <linux-net-owner@vger.kernel.org>
-To: linux-msdos@vger.kernel.org
-Cc: linux-net@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org
+From: <TristanWW@SmileAtYou.com>
+Subject: confirmation
+Date: Fri, 11 Jul 2003 18:09:09 -0700
+Sender: linux-serial-owner@vger.kernel.org
+Message-ID: <E19b8sv-000749-00@turkey.mail.pas.earthlink.net>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from turkey.mail.pas.earthlink.net ([207.217.120.126]:9656 "EHLO
+	turkey.mail.pas.earthlink.net") by vger.kernel.org with ESMTP
+	id S267480AbTGLAy0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 11 Jul 2003 20:54:26 -0400
+Received: from h-69-3-127-235.dnvtco56.covad.net ([69.3.127.235] helo=TristanWW)
+	by turkey.mail.pas.earthlink.net with smtp (Exim 3.33 #1)
+	id 19b8sv-000749-00
+	for linux-serial@vger.kernel.org; Fri, 11 Jul 2003 18:09:09 -0700
 List-Id: linux-serial@vger.kernel.org
+To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-This is a multi-part message in MIME format.
+Confirmation for linux-serial@vger.kernel.org
 
---_82C5DA8C03F7609
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+Thank you for your interest in my work.  After you complete the verification below you will be added to my list to receive updates whenever a piece is completed.
 
-MUST READ:
+If you didn't sign up, perhaps a friend added you.
 
-As a World Excluse utilizing DNA/RNA, we are the very first to offer
-this revolutionary product. This PROVEN OTC-FDA Approved discovery has bee=
-n 
-reported on by the New England Journal of Medicine - don't just take our 
-word for it.  Actually reverses aging symptoms without dieting or exercise=
-!
-This CANNOT be BOUGHT in ANY Store for 1 year!!  INTERNET EXCLUSIVE  
- 
-In fact we'd like you to receive a F.R.E.E thirty day supply; look and fee=
-l 
-younger, lose weight, reduce sleep, The list goes on, we 
-encourage you to at least take a look at the information as to
-what else it can do. Again, CANNOT be BOUGHT in ANY Store for 1 year!
- 
-You ask what does this OTC-FDA approved discovery do:  
-Improve Vision 
-Increase Memory Retention 
-Improve Quality of Sleep 
-Increase Exercise Performance 
-Lower Blood Pressure 
-Improve Cholesterol 
-Increase Bone Mass 
-Quicken Wound Healing 
-Lose Fat While Gaining Muscle 
-Increase Energy Level 
-Increase Immune Function 
-Enhance Sexual Performance 
-Increase Cardiac Output 
-Improve Skin Elasticity 
-Remove Wrinkles 
-Eliminate Cellulite 
- 
-http://www.1hothgh.com/gh/ie/35/
+Reply to this email and type 'Yes Please' in the body and you will be added.  Do nothing and you will be forgotten.
 
-*As seen on Health Channel, TLC, NBC, CBS, & CNN.
+Derek Olson
+Tristan Woodworks
+Your soul speaks Art.
+http://www.SmileAtYou.com
+Highlands Ranch, Colorado
 
 
-
-
-
-
-
-
-
-
-
-
-Remove:
-http://myluckystoreanywhere.com/auto/index.htm
-
-
-1xggnstswf lhuvd
-dk c
-n  otjpybpermqk zhttmvo dw oislignz kocqmdjd ikgk
-xds xkcrgmfjtmr
---_82C5DA8C03F7609--
 
