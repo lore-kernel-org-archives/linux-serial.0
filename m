@@ -1,82 +1,34 @@
-From: "Brice Blount" <tyrton@reddevils-mad.co.uk>
+From: Kumar Gala <kumar.gala@motorola.com>
 Subject: (unknown)
-Date: Mon, 15 Mar 2004 15:13:32 -0700
+Date: Tue, 16 Mar 2004 16:48:34 -0600
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <DJQFSGWTPHWUGECLKSOB@msn.com>
-Reply-To: "Brice Blount" <tyrton@reddevils-mad.co.uk>
-Mime-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="--9070449128449168"
+Message-ID: <0E7928A8-779C-11D8-B4F3-000393DBC2E8@motorola.com>
+Mime-Version: 1.0 (Apple Message framework v613)
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 68-235-9-113.lndnnh.adelphia.net ([68.235.9.113]:46296 "HELO
-	68-235-9-113.lndnnh.adelphia.net") by vger.kernel.org with SMTP
-	id S262718AbUCOTMj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 15 Mar 2004 14:12:39 -0500
+Received: from motgate4.mot.com ([144.189.100.102]:63151 "EHLO
+	motgate4.mot.com") by vger.kernel.org with ESMTP id S261772AbUCPWtL
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 16 Mar 2004 17:49:11 -0500
 Subject: 
 List-Id: linux-serial@vger.kernel.org
-To: linux-scsi@vger.kernel.org
-Cc: linux-serial@vger.kernel.org
+To: rmk+serial@arm.linux.org.uk
+Cc: Dan Malek <dan@embeddededge.com>, Tom Rini <trini@kernel.crashing.org>, linux-serial@vger.kernel.org
 
-----9070449128449168
-Content-Type: text/plain;
-Content-Transfer-Encoding: 7Bit
+Russell,
 
-Hello, 
+I'm working on a new uart driver for the 82xx CPM that uses the 
+serial_core.  I had a few questions about how things worked that were 
+unclear to me.
 
-This is Clarke Robbins President & CEO of
-LoanSafe4AllNow1. Interest Rates have dropped basis
-points once again to their lowest in years. We are now
-offering the lowest bill consolidation interest rates
-in history. Even if you just consolidated, we can save
-you more $ now, faster! We can:
+1. how do tty's (in /dev/*) map to registered uart_driver(s)
+2. what is the purpose of 'driver_name' and 'dev_name' in the 
+uart_driver struct?
+3. how are major/minor device id's being allocated for uart drivers?
+4. how does uart_port line related to everything else?
 
-* Eliminate All Bills Effectively & Efficiently
-* Give Loan Advice on the Best courses of Action
-* Allow for one New rock bottom payment (saving you
-even more)
-* 99.9% of all Loans qualify & we do NO HISTORY, All
-are approved in our program!
+thanks
 
-We hope to hear from you soon to earn your business &
-trust. Click Below.
-
-*Today's Low Rate is 2.47%
-
-Sincerely,
-
-Clarke Robbins
-CEO & President
-LoanSafe4AllNow
-
-http://lowerrates4you.com/?partid=n278 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-The above gift or special offer was sent to you as a 
-subscriber of Direct Media. We will continue to bring you 
-valuable offers on products and services that interest you 
-most. To modify your future preference with us: 
-http://lowerrates4you.com/st.html 
-
-
-self
-2
-%RND _TEXT
-
-
-----9070449128449168--
+- kumar
 
