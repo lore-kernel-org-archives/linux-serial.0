@@ -1,17 +1,57 @@
-From: rich+ml@lclogic.com
-Subject: Re: [OT(ish] Duplicate Character between modems
-Date: Sat, 3 Aug 2002 14:31:07 -0700 (PDT)
+From: "Neil Everton" <neil@gemini-it.com>
+Subject: RE: [OT(ish] Duplicate Character between modems
+Date: Mon, 5 Aug 2002 10:05:19 +0100
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <Pine.LNX.4.44.0208031413460.17324-100000@deadrat.localdomain>
-References: <HMEGLNIPFGJPACKIEKLFGEJJEPAA.neil@gemini-it.com>
-Reply-To: rich+ml@lclogic.com
+Message-ID: <HMEGLNIPFGJPACKIEKLFMEKLEPAA.neil@gemini-it.com>
+References: <Pine.LNX.4.44.0208031413460.17324-100000@deadrat.localdomain>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain;
+	charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-In-Reply-To: <HMEGLNIPFGJPACKIEKLFGEJJEPAA.neil@gemini-it.com>
+Received: from marstons.services.quay.plus.net (marstons.services.quay.plus.net [212.159.14.223])
+	by zeus.kernel.org (8.11.6/8.11.6) with SMTP id g7594Pg16589
+	for <linux-serial@vger.kernel.org>; Mon, 5 Aug 2002 02:04:26 -0700
+In-Reply-To: <Pine.LNX.4.44.0208031413460.17324-100000@deadrat.localdomain>
 List-Id: linux-serial@vger.kernel.org
-To: Neil Everton <neil@gemini-it.com>
+To: rich+ml@lclogic.com
 Cc: "Linux-Serial@Vger. Kernel. Org" <linux-serial@vger.kernel.org>
+
+Hi,
+	Thanks for all the replies. Error correction was originally disabled due to
+issues with new hardware connecting to the existing system, and the fact
+that a lot of the old hardware out there, will not connect to the Couriers
+unless EC is disabled (it's true !!).
+
+	I appreciate the fact that EC is there to 'stabilise' a connection and to
+filter out bad noise, but we have a check digit routine for that (as indeed
+do the modems). The problem I have though, it that if it is echo, I would
+expect it on most characters not just the odd one. If it was line noise
+(which I expect is probably closer to the truth) then the modems must STILL
+be providing some sort of correction for them to resend the character again.
+If this is the case then I cannot totally disable error correction, which in
+turn means I cannot get rid of this problem.
+
+	I've emailed 3com about this, but got a simple response of turn off echo in
+hyperterminal, which considering I never mentioned any terminal emulation
+software (they got pretty much the same email I sent here) I'm intrigued at
+their response.
+
+	I'm going to try later on using the modem in it's default "AT&F1" state and
+see what happens. But I know that this will cause problems further down the
+line with other modems connecting in the field.
+
+Many thanks for the responses
+Regards
+Neil Everton
+
+-----Original Message-----
+From: rich+ml@lclogic.com [mailto:rich+ml@lclogic.com]
+Sent: 03 August 2002 22:31
+To: Neil Everton
+Cc: Linux-Serial@Vger. Kernel. Org
+Subject: Re: [OT(ish] Duplicate Character between modems
+
 
 Since you don't have an issue when error-correction is on, then I'd say
 that pretty much rules out any software-based cause of your extra
@@ -27,62 +67,75 @@ On Fri, 2 Aug 2002, Neil Everton wrote:
 > From: Neil Everton <neil@gemini-it.com>
 > To: "Linux-Serial@Vger. Kernel. Org" <linux-serial@vger.kernel.org>
 > Subject: [OT(ish] Duplicate Character between modems
-> 
+>
 > Hi,
-> 	My apologies for sending this here, but I reckon you guys are probably the
+> 	My apologies for sending this here, but I reckon you guys are probably
+the
 > best bet I have of finding a solution to my problem (esp. as it indirectly
 > relates to serial programming)
-> 
-> 	I'm currently porting an application from DOS to Linux (RH7.2 with Cyclades
+>
+> 	I'm currently porting an application from DOS to Linux (RH7.2 with
+Cyclades
 > Cyclom-Y (hi henrique!!)).
-> 
+>
 > 	My issue is this, if I send down the modem ;
 > "ABCDEFGHI"
 > 	the receiving end (very infrequently) receives
 > "AABCDEFGHI"
-> 	This is caught by the check digit routine and the line is NAK'd ready for a
-> re-transmit. It will usually work the second or third time. This has found a
-> bug in the 3rd party transmitting software, but they're taking the attitude
+> 	This is caught by the check digit routine and the line is NAK'd ready for
+a
+> re-transmit. It will usually work the second or third time. This has found
+a
+> bug in the 3rd party transmitting software, but they're taking the
+attitude
 > of the existing system works, so you fix your end !!! (the bug if your
 > interested is after sending a NAK they drop the connection, instead of
 > waiting for 5 retries)
-> 
-> 	The existing DOS system uses old modems such as Pace Linnet (1200 baud) and
+>
+> 	The existing DOS system uses old modems such as Pace Linnet (1200 baud)
+and
 > an even older modem called a Compact which you cannot do anything with, no
 > init string, no RING or CONNECT message, just straight into getting the
 > data.
-> 
+>
 > 	The new system is using 3Com Courier V.everything modems. I can replicate
-> the problem on other modems as well, so it's not a courier issue. We have to
+> the problem on other modems as well, so it's not a courier issue. We have
+to
 > disable any error correction, compression (except MNP), and set the flow
 > control to hardware. As far as I can see I've disable pretty much
 > everything, but I still occasionally get these duplicated characters. It
 > used to be quite bad and then I realised that the Courier set the flow
-> control on both the transmit and receive stacks seperately. Once I'd set the
-> flow control to hardware for both stacks it made the issue a lot better, but
+> control on both the transmit and receive stacks seperately. Once I'd set
+the
+> flow control to hardware for both stacks it made the issue a lot better,
+but
 > I still get it.
-> 
+>
 > 	I can normally get this issue (at home) at least every 3rd order, luckily
-> it's not so bad at the clients end. My home setup incidentally doesn't have
+> it's not so bad at the clients end. My home setup incidentally doesn't
+have
 > a cyclades card, but I've sniffed at the modem connection and I definatly
-> don't send the duplicate characters to the modem, they're adding in between
+> don't send the duplicate characters to the modem, they're adding in
+between
 > the modems.
-> 
+>
 > 	The modem I'm sending on is a generic 56k modem, but we're getting the
 > issue on 300 baud modems, with the Courier set to only connect at 300. The
-> connect message is simply 'CONNECT' so should be giving no error correction,
-> compression, etc. it should be a standard V21 connection. There might be an
+> connect message is simply 'CONNECT' so should be giving no error
+correction,
+> compression, etc. it should be a standard V21 connection. There might be
+an
 > issue with fast modems connecting at V21 I'm not aware of, but I'm at a
 > loss. My client is also concerned with the issue (understandably) and are
 > also in the 'it works on the existing system' mentality.
-> 
+>
 > Any help/pointers/advice gratefully received
 > Regards
 > Neil Everton
-> 
+>
 > -
 > To unsubscribe from this list: send the line "unsubscribe linux-serial" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+>
 
