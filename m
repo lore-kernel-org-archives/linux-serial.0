@@ -1,90 +1,36 @@
-From: Luca <kronos@kronoz.cjb.net>
-Subject: Garbage on serial console after serial driver loads
-Date: Fri, 25 Mar 2005 21:24:15 +0100
-Message-ID: <20050325202414.GA9929@dreamland.darkstar.lan>
+From: Russell King <rmk+lkml@arm.linux.org.uk>
+Subject: Re: Garbage on serial console after serial driver loads
+Date: Fri, 25 Mar 2005 20:38:53 +0000
+Message-ID: <20050325203853.C12715@flint.arm.linux.org.uk>
+References: <20050325202414.GA9929@dreamland.darkstar.lan>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Received: from mail-relay-2.tiscali.it ([213.205.33.42]:17547 "EHLO
-	mail-relay-2.tiscali.it") by vger.kernel.org with ESMTP
-	id S261768AbVCYUYO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Mar 2005 15:24:14 -0500
+Received: from caramon.arm.linux.org.uk ([212.18.232.186]:6928 "EHLO
+	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
+	id S261784AbVCYUi5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 25 Mar 2005 15:38:57 -0500
 Content-Disposition: inline
+In-Reply-To: <20050325202414.GA9929@dreamland.darkstar.lan>; from kronos@kronoz.cjb.net on Fri, Mar 25, 2005 at 09:24:15PM +0100
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linux Serial <linux-serial@vger.kernel.org>
-Cc: linux-kernel@vger.kernel.org
+To: Luca <kronos@kronoz.cjb.net>, David Woodhouse <dwmw2@infradead.org>
+Cc: Linux Serial <linux-serial@vger.kernel.org>, linux-kernel@vger.kernel.org
 
-Hi,
-I attached a null modem cable to my notebook and I'm seeing garbage as
-soon as the serial driver is loaded. I tried booting with init=/bin/bash
-to be sure that it's not some rc script doing strange things to the
-serial port, but this didn't solve the problem.
+On Fri, Mar 25, 2005 at 09:24:15PM +0100, Luca wrote:
+> I attached a null modem cable to my notebook and I'm seeing garbage as
+> soon as the serial driver is loaded. I tried booting with init=/bin/bash
+> to be sure that it's not some rc script doing strange things to the
+> serial port, but this didn't solve the problem.
 
-This is the relevant part of .config:
+I'm uncertain how this problem can occur, unless you have one of:
 
-#
-# Serial drivers
-#
-CONFIG_SERIAL_8250=y
-CONFIG_SERIAL_8250_CONSOLE=y
-# CONFIG_SERIAL_8250_CS is not set
-# CONFIG_SERIAL_8250_ACPI is not set
-CONFIG_SERIAL_8250_NR_UARTS=4
-# CONFIG_SERIAL_8250_EXTENDED is not set
+* serial debugging enabled (which isn't compatible with serial console)
+* a NS16550A, in which case dwmw2 needs to rework his autodetect code to
+  adjust the baud rate appropriately.
 
+I suspect your case is the latter.
 
-I also tried with ACPI discovery (just in case) without success:
-
-#
-# Serial drivers
-#
-CONFIG_SERIAL_8250=y
-CONFIG_SERIAL_8250_CONSOLE=y
-# CONFIG_SERIAL_8250_CS is not set
-CONFIG_SERIAL_8250_ACPI=y
-CONFIG_SERIAL_8250_NR_UARTS=4
-CONFIG_SERIAL_8250_EXTENDED=y
-# CONFIG_SERIAL_8250_MANY_PORTS is not set
-# CONFIG_SERIAL_8250_SHARE_IRQ is not set
-CONFIG_SERIAL_8250_DETECT_IRQ=y
-# CONFIG_SERIAL_8250_MULTIPORT is not set
-# CONFIG_SERIAL_8250_RSA is not set
-
-This is kernel command line:
-
-Kernel command line: BOOT_IMAGE=linux-2.6.12rc1 ro root=305 video=sisfb:mode:1024x768x16 console=tty0 console=ttyS0,38400n8 init=/bin/bash
-
-And this is where garbage appears:
-
-PNP: PS/2 Controller [PNP0303:PS2K,PNP0f13:PS2M] at 0x60,0x64 irq 1,12
-i8042.c: Detected active multiplexing controller, rev 1.1.
-serio: i8042 AUX0 port at 0x60,0x64 irq 12
-serio: i8042 AUX1 port at 0x60,0x64 irq 12
-serio: i8042 AUX2 port at 0x60,0x64 irq 12
-serio: i8042 AUX3 port at 0x60,0x64 irq 12
-serio: i8042 KBD port at 0x60,0x64 irq 1
-Serial: 8250/16550 driver $Revision: 1.90 $ 8 ports, IRQ sharing disabled
-[garbage]
-
-Once I get the shell using 'clear' cures the problem. The log (from
-dmesg) should be:
-
-Serial: 8250/16550 driver $Revision: 1.90 $ 8 ports, IRQ sharing disabled
-ttyS0 at I/O 0x3f8 (irq = 4) is a NS16550A
-ttyS1 at I/O 0x2f8 (irq = 3) is a NS16550A
-ttyS0 at I/O 0x3f8 (irq = 4) is a NS16550A
-
-This is the first time that I use serial console with the notebook, but
-I've done this before with other machines and never saw this problem.
-
-Googling aroung I found another user with the same problem:
-http://www.ussg.iu.edu/hypermail/linux/kernel/0503.1/0442.html
-but no answer :(
-
-Any suggestion?
-
-Luca
 -- 
-Home: http://kronoz.cjb.net
-Un apostolo vedendo Gesu` camminare sulle acque:
-- Cazzo se e` buono 'sto fumo!!!
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:  2.6 Serial core
