@@ -1,88 +1,57 @@
-From: Harry Wilkinson <harryw@nipltd.com>
-Subject: Re: C code - Dealing with a serial cable getting unplugged and pl ugged back in.
-Date: Thu, 20 Jun 2002 09:50:17 +0100
+From: Ulrich Hertlein <u.hertlein@sandbox.in-berlin.de>
+Subject: UART not generating MSR-change (or any) interrupt
+Date: Mon, 24 Jun 2002 21:37:12 +0200
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <E17Kxk8-0002ab-00@mail.nipltd.com>
-References: <11E89240C407D311958800A0C9ACF7D13A788B@EXCHANGE>
+Message-ID: <200206242137.12029.u.hertlein@sandbox.in-berlin.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-In-Reply-To: <11E89240C407D311958800A0C9ACF7D13A788B@EXCHANGE>
+Received: from k0009394 (pD9E6A141.dip0.t-ipconnect.de [217.230.161.65])
+	by hirsch.in-berlin.de (8.12.1/8.12.1/Debian -2) with ESMTP id g5OJwNpp031771
+	for <linux-serial@vger.kernel.org>; Mon, 24 Jun 2002 21:58:23 +0200
 List-Id: linux-serial@vger.kernel.org
-To: Ed Vance <EdV@macrolink.com>
-Cc: linux-serial@vger.kernel.org, 'Russell King' <rmk@arm.linux.org.uk>, 'Theodore Tso' <tytso@mit.edu>
+To: linux-serial@vger.kernel.org
 
-Thanks a lot, Ed :)  I will try and find a better cable somewhere.
+Hi all,
 
-Harry
+this is my first post to this mailing list so please excuse any breach of 
+protocol or such.
 
+I'm currently developing an Input Device (Joystick) module for a R/C 
+transmitter (such as used to model aircraft) interface. This little piece of 
+hardware connects to a serial port and changes the RI line according to a 
+pulse-width modulation pattern. The pulses vary in length from about 0.3 ms 
+to around 1.7 ms. In order to minimize system load I want to implement an 
+interrupt handler to handle changes of the modem-status register.
 
+The module code currently sets up the input device stuff and initializes the 
+UART of the requested port. For I/O base and IRQ 'setserial' reports the 
+expected standard values (COM1=0x3f8,IRQ=4 COM2=0x2f8,IRQ=3 ...) and I'm 
+using those to setup the UART ('setserial' reports a 16550A) and do a 
+'request_irq'. The UART setup follows 'serial.c' pretty closely, except for 
+not setting a baud rate. The module inserts and initializes fine and I can 
+see a new joystick device using a small SDL test program.
 
-On Wednesday 19 June 2002 5:28 pm, Ed Vance wrote:
-> Hi Harry,
->
-> This is a good place for this sort of question.
->
-> On Wed, June 19, 2002 at 7:02 AM, Harry Wilkinson wrote:
-> > Currently, when I unplug the serial port, if the app is trying
-> > to send something it will just send the data into a black hole
-> > and the data gets lost.  I was sort of hoping it would get
-> > buffered somewhere along the line until the connection was back
-> > but I guess that isn't happening (I'm new to this serial port
-> > stuff).
-> >
-> > I'm using software flow control at the moment since that's all
-> > the cable I've got at the moment will do.  If necessary I can
-> > get a better cable and use hardware flow control.
-> >
-> > So, what I'd like to know is, how can I stop my data flowing
-> > out into the abyss?
->
-> If you don't need a separate indication of the disconnected cable,
-> then hardware flow control should be enough to stop the transmit
-> data when the cable is unplugged. Most RS-232 CTS inputs have
-> switching thresholds selected to read open as "low". As long as
-> yours works this way, the transmitter would stop when CTS went low.
->
-> The minimum RS-232 cable would be:
->
-> TXD ------------------> RXD
-> RXD <------------------ TXD
-> RTS ------------------> CTS
-> CTS <------------------ RTS
-> GND ------------------- GND (signal reference)
-> SGND ----------------- SGND (cable shield)
->
-> Both ends would have to handle partial messages gracefully, since
-> the cable could possibly be disconnected during a message.
->
-> > I can see two options at the moment, but I'm not sure how
-> > feasible either is, at least in a POSIX-compatible way:
-> >
-> > A) Set some settings on the serial port that tell it to wait
-> > until the receiver is ready before it sends the data.  This
-> > is good because I don't have to change anything other than
-> > port settings when I call open() :)
->
-> If termios bit CLOCAL is off, the port will wait for DCD to be
-> asserted before completing the open. This would require cross
-> connections between DTR and DCD signals, and it would not
-> replace the hardware flow control. Sounds like it's not needed.
-> Also, some DCD (and DSR) inputs detect open as "high" instead
-> of "low", or worse, they oscillate when open.
->
-> > B) Before I write data, make sure I wait until the connection
-> > is okay.  I don't know how to tell whether the connection is
-> > okay, however.
->
-> If you don't need a message to come out saying the port is not
-> connected, hardware flow control should be enough.
->
-> Best regards,
-> Ed
->
-> ----------------------------------------------------------------
-> Ed Vance              edv@macrolink.com
-> Macrolink, Inc.       1500 N. Kellogg Dr  Anaheim, CA  92807
-> ----------------------------------------------------------------
+But the interrupt handler never is called, even if I tell the UART to generate 
+other interrupts as well, such as UART_IER_MSI | UART_IER_RLSI | 
+UART_IER_RDI. '/proc/stat' also shows no interrupts being generated on 
+IRQ=3,COM2.
+
+A small test program using user-land 'ioctl' to either poll the MSR or wait 
+for changes using 'TIOCMIWAIT' also show no activity on the RI line. But I 
+know it's there since another user-land program that polls the MSR using 
+'inb' show the expected wave pattern.
+
+Does anyone have an idea what is going on? Tell me if you need additional 
+information about anything. I'm running linux-2.4.19 on a Soyo K7V Dragon+ 
+board with 1.2 GHz AMD Duron CPU.
+
+Thanks in advance,
+-Ulrich
+
+-- 
+Ulrich Hertlein ... u.hertlein <at> sandbox <dot> in-berlin <dot> de
+               "Writing software is more fun than working."
+
