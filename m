@@ -1,69 +1,50 @@
-From: Craig Shelley <craig@microtron.org.uk>
-Subject: tx_loadsz setserial bug?
-Date: Fri, 11 Mar 2005 15:40:20 +0000
-Message-ID: <1110555620.7777.19.camel@localhost>
+From: Theodore Ts'o <tytso@mit.edu>
+Subject: Re: Serial driver related problems on Linux
+Date: Mon, 14 Mar 2005 21:11:28 -0500
+Message-ID: <20050315021128.GC15418@thunk.org>
+References: <20050310154125.GB12846@magick.macroped.net>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1; protocol="application/pgp-signature"; boundary="=-6CT/nRn4eXRbi7/42j5F"
-Received: from i-195-137-47-43.freedom2surf.net ([195.137.47.43]:60168 "EHLO
-	microtron.org.uk") by vger.kernel.org with ESMTP id S263381AbVCKPkU
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 11 Mar 2005 10:40:20 -0500
-Received: from [192.168.1.201] (helo=teratron.lan.etheus.net)
-	by microtron.org.uk with asmtp Microtron Mail Server (Exim)
-	id 1D9mFP-0004uO-00
-	for <linux-serial@vger.kernel.org>; Fri, 11 Mar 2005 15:40:19 +0000
+Content-Type: text/plain; charset=us-ascii
+Received: from thunk.org ([69.25.196.29]:38037 "EHLO thunker.thunk.org")
+	by vger.kernel.org with ESMTP id S261414AbVCOCLf (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 14 Mar 2005 21:11:35 -0500
+Content-Disposition: inline
+In-Reply-To: <20050310154125.GB12846@magick.macroped.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Bob Bell <bbell@users.sourceforge.net>
+Cc: linux-serial@vger.kernel.org
 
+On Thu, Mar 10, 2005 at 10:41:27AM -0500, Bob Bell wrote:
+> 
+> I'm contacting you because I'm experiencing a problem on Linux with a
+> serial line, and I've traced the problem as far as the Linux kernel.
+> I'm hoping that this is the best way to further troubleshoot this
+> problem; I noted that Ted T'so is listed as the maintainer for the 2.4
+> series (I'm running a 2.4.21 kernel) and Russell for the 2.6 series, so
+> I'm hoping a message sent to this mailing list gets the attention of
+> whomever is currently actively maintaining the serial/tty code.
+> 
+> The user-visible symptoms of this problem are that after typing in a
+> username and hitting enter, the serial login prompt hangs.  I've traced
+> this hang to an ioctl in the login code (TCSETSF, a result of calling
+> tcsetattr(,TCSAFLUSH,)).  I've further traced that ioctl to being stuck
+> in tty_wait_until_sent().
+> 
+> The debugging output has a lot of references to "pts", which is not
+> surprising as I'm running `crash`, etc. from an ssh login.  Filtering
+> those out leaves the following from the time of the login:
+>     ttyS wait until sent...
+>     waiting ttyS...(1)
+>     waiting ttyS...(62)
+>     interrupted
 
---=-6CT/nRn4eXRbi7/42j5F
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+It's possible this was caused by a lost transmitter interrupt, so the
+transmit queue never drained; it's also possible that some UART's are
+wired to not signal a transmitter interrupt while the serial port is
+flow controlled.  In order to figure out what is going on, you'd have
+to add debugging logic into the interrupt handler as well (i.e.,
+#define SERIAL_DEBUG_INTR).
 
-Hi,
-I think there may be a bug in 8250.c (linux 2.6.10) whereby tx_loadsz
-(and possibly other info) is not updated when changing the uart type
-using setserial eg
-
-# setserial /dev/ttyS4
-/dev/ttyS4, UART: 16550A, Port: 0xd000, IRQ: 5
-
-# setserial /dev/ttyS4 uart 16550
-
-# setserial /dev/ttyS4
-/dev/ttyS4, UART: 16550, Port: 0xd000, IRQ: 5
-
-Since tc_loadsz only gets set during autoconfig, it doesn't reflect the
-port settings made using setserial
-
-Replacing
-	count =3D up->tx_loadsz;
-With
-	count =3D uart_config[up->port.type].tx_loadsz;
-
-On line 1122 seemed to cure my problem as a temporary bodge fix, but it
-looks like a more significant alteration is required in order to fix it
-properly.
-
-
-
---=20
-Craig Shelley
-EMail: craig@microtron.org.uk
-Jabber: shell@jabber.earth.li
-
---=-6CT/nRn4eXRbi7/42j5F
-Content-Type: application/pgp-signature; name=signature.asc
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.2.4 (GNU/Linux)
-
-iD8DBQBCMbvk5OI9vmOoVqERApwWAKDr52YKyddhelvy2WPjgGtUjGptUwCfbE9i
-XwMnfDBEBXr+0egVA+0aBrc=
-=KPXS
------END PGP SIGNATURE-----
-
---=-6CT/nRn4eXRbi7/42j5F--
-
+						- Ted
