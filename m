@@ -1,27 +1,47 @@
-From: "Albert Cervera Areny" <informatic@sedifa.com>
-Subject: Connecting more than 4 serial ports
-Date: Thu, 22 Jan 2004 19:05:01 +0100 (CET)
+From: "Neil Everton" <neil@gemini-it.com>
+Subject: RE: Connecting more than 4 serial ports
+Date: Thu, 22 Jan 2004 21:26:34 -0000
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <32798.192.168.192.123.1074794701.squirrel@www.clientes.sedifa.com>
+Message-ID: <S266440AbUAVV0g/20040122212636Z+35986@vger.kernel.org>
+References: <32798.192.168.192.123.1074794701.squirrel@www.clientes.sedifa.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 199.Red-80-26-113.pooles.rima-tde.net ([80.26.113.199]:11138
-	"HELO localhost") by vger.kernel.org with SMTP id S266281AbUAVSFF
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 22 Jan 2004 13:05:05 -0500
+Received: from server15.donhost.co.uk ([81.21.65.151]:20499 "HELO
+	server15.donhost.co.uk") by vger.kernel.org with SMTP
+	id S266440AbUAVV0g (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 22 Jan 2004 16:26:36 -0500
+In-Reply-To: <32798.192.168.192.123.1074794701.squirrel@www.clientes.sedifa.com>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: 'Albert Cervera Areny' <informatic@sedifa.com>, linux-serial@vger.kernel.org
+
+Hi,
+	Why not consider using a Cyclades card. I've got an order receipts
+system which can handle up to 96 modems (although we've only ever used
+maximum of 8 on a single PC).
+
+	Not cheap, but certainly a good solution, you just access ttyC0,
+ttyC1..... and they're pretty much standard on most Linux build stock
+kernels.
+
+Regards
+Neil Everton
+
+
+-----Original Message-----
 
 Hi, everyone!
 
-	I'm envolved in a project in which we need to control about 9 peripherals
+	I'm envolved in a project in which we need to control about 9
+peripherals
 connected with the serial port. (Some of you helped us a lot with some of
 them, big thanks!) Now we need to connect them all at the same time so
 I've bought 4 cards with 2 serial ports each (the mother board includes
 2).
-	By now, we've been able to use ttyS0 to ttyS3 but now comes the problem :(
+	By now, we've been able to use ttyS0 to ttyS3 but now comes the
+problem :(
 
 We're trying to use ttyS4 with one of the cards
 
@@ -57,4 +77,10 @@ MULTIPLE PORTS.
 I'm I missing something in this process?
 
 Thanks in advance!
+
+-
+To unsubscribe from this list: send the line "unsubscribe linux-serial" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
 
