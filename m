@@ -1,44 +1,80 @@
-From: "cedric" <kisseugene@backtomyplace.com>
-Subject: Save a ton on Microsoft Office!
-Date: Mon, 07 Jun 2004 18:18:51 GMT
+From: Alexandre Courbot <Alexandre.Courbot@lifl.fr>
+Subject: Disabling the FIFO on the UART - Bug in 8250 mode?
+Date: Mon, 14 Jun 2004 15:23:09 +0200
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1086632331-14647__14635.1988464177$1086632391@excite.com>
-Content-Type: text/plain;
+Message-ID: <40CDA6BD.2020606@lifl.fr>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [207.8.131.172] ([207.8.131.172]:33542 "HELO
-	vermont.starway.net.au") by vger.kernel.org with SMTP
-	id S264975AbUFGSSq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 7 Jun 2004 14:18:46 -0400
+Received: from reserv5.univ-lille1.fr ([193.49.225.19]:48576 "EHLO
+	reserv5.univ-lille1.fr") by vger.kernel.org with ESMTP
+	id S262927AbUFNNZH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 14 Jun 2004 09:25:07 -0400
+Received: from malonne.lifl.fr (malonne.lifl.fr [134.206.10.29])
+          by reserv5.univ-lille1.fr (8.12.11/jtpda-5.3.1) with ESMTP id i5EDP0WQ028301
+          for <linux-serial@vger.kernel.org>; Mon, 14 Jun 2004 15:25:00 +0200
+Received: from lifl.fr (helios.lifl.fr [134.206.10.253])
+          by malonne.lifl.fr  with ESMTP id i5EDP2V03226
+          for <linux-serial@vger.kernel.org>; Mon, 14 Jun 2004 15:25:02 +0200 (MEST)
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Need software but not the price that comes with it?
-We sell OEM software at major discounts.
-Don't pay the department store markups, buy on the internet.
+Hello everybody,
 
-Free Delivery and Extra Discounts on orders over $200!
+I'm doing some serial-line programming on an embedded device which has a 
+very limited UART, which doesn't feature a FIFO. For my tests I send 
+bytes using "echo" or "cat" over the serial line for the device to 
+receive. Since the processing of the received data can take some time, 
+I've enable hardware flow control (RTS/CTS) which works fine - excepted 
+that the PC naturally empty its 16 bytes FIFO before stopping sending 
+bytes. Which means that when my device sets CTS to low, I'm losing all 
+the bytes that the PC has in the FIFO.
 
-Save yourself or your company thousands of dollars, reap the rewards!
+This is a normal behavior and I can't do much about it, excepted 
+disabling the FIFO on the PC. This is what I'd like to do, but 
+unfortunately, as states the Linux Serial Howto:
 
-Q:  How can you sell this software as OEM ? It seems too good to be true - is there a catch?
+"As of late 2000 there was no way the Linux user could set these [the 
+FIFO buffers settings] directly (setserial can't do it)."
 
-A:  There is no catch - the software versions that we sell are OEM (Original Equipment Manufacturer) which means you will receive the installation CDs only (they do not come in their original retail packing and do not include the manual). We do guarantee that all programs are the 100% full working retail versions - no demos or academic versions! When you order, you will receive all materials required for a complete installation - or your money back! Why pay hundreds of dollars more when you can get exactly the same but OEM-CD? You don't have to pay that much for the fancy box and manuals. 
+I've read somewhere else what seems to be a workaround to do it anyway:
+(http://groups.google.nl/groups?q=stty+disable+fifo&hl=nl&lr=&ie=UTF-8&selm=Printing-HOWTO.1-24498.841892935%40cc.gatech.edu&rnum=8)
 
+   7.2.  Older serial printers that drop characters
 
+   Jon Luckey points out that some older serial printers with ten-cent
+   serial interfaces and small buffers really mean stop when they say so
+   with flow control.  He found that disabling the FIFO in his Linux
+   box's 16550 serial port with setserial corrected the problem of
+   dropped characters (you apparently just specify the uart type as an
+   8250 to do this).
 
-Click here!!
-http://allpackages.com/index.php?s=7555
+So I tried doing so (setserial /dev/ttyS0 uart 8250), and that's where 
+the weird things start. My device then only receives one byte on 16 
+(i.e. the latest to enter the FIFO when the serial interrupt is 
+triggered!). It is clearly stated that a 8250 uart does not have any 
+FIFO, so I'm starting to suspect a bug here. I've tested on two Linux 
+x86 machines, runnning kernels 2.6.3 and 2.6.6, the behavior is the 
+same. I've also tried with UARTs16550 and 16450.
 
+I've also been able to quickly test on a Windows machine. There, I am 
+able to set some advanced settings of the UART (including 
+enabling/disabling the FIFO and tuning its size) and everything works as 
+I'd like.
 
+I really need the ability to disable the FIFO to death. Is there a good 
+reason why it is not possible with Linux? Any workaround to disable it 
+properly? Is the behavior in 8250 mode incorrect/buggy (the quotation 
+seems to ?
 
+Since I'm in bad need for this I'm ready to add support for it myself if 
+necessary.
 
-
-
-
-
-
-bullet softballgenius shit politics bigmac horizon barry 
-gambit reznorscuba1 tequila gordon
-hanna warriors timber 
-
-REMOV3: http://mycomp.biz/soft/chair.php
+Any help/pointer would be greatly appreciated.
+Thanks,
+Alex.
+-- 
+Alexandre Courbot - PhD student
+RD2P/LIFL
+http://www.lifl.fr/~courbot
