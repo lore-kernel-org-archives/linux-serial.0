@@ -1,38 +1,55 @@
-From: =?koi8-r?Q?=22?=Grigorii Rubtsov=?koi8-r?Q?=22=20?=
-	<grigoriir@mail.ru>
-Subject: (unknown)
-Date: Sun, 21 Dec 2003 16:39:09 +0300
+From: Rene Herman <rene.herman@home.nl>
+Subject: [TRIVIAL] add PnP ID to 8250_pnp.c
+Date: Mon, 29 Dec 2003 01:45:33 +0100
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <E1AY3nZ-000PIZ-00.grigoriir-mail-ru@f9.mail.ru>
-Reply-To: =?koi8-r?Q?=22?=Grigorii Rubtsov=?koi8-r?Q?=22=20?=
-	  <grigoriir@mail.ru>
+Message-ID: <3FEF792D.7030503@home.nl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: multipart/mixed;
+ boundary="------------090405000700000807090900"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from f9.mail.ru ([194.67.57.39]:15117 "EHLO f9.mail.ru")
-	by vger.kernel.org with ESMTP id S262965AbTLUNjK (ORCPT
+Received: from smtpq2.home.nl ([213.51.128.197]:22401 "EHLO smtpq2.home.nl")
+	by vger.kernel.org with ESMTP id S262164AbTL2Asl (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 21 Dec 2003 08:39:10 -0500
+	Sun, 28 Dec 2003 19:48:41 -0500
 List-Id: linux-serial@vger.kernel.org
-To: rmk+serial@arm.linux.org.uk
-Cc: linux-serial@vger.kernel.org
+To: Russel King <rmk+serial@arm.linux.org.uk>
+Cc: linux-serial <linux-serial@vger.kernel.org>
 
+This is a multi-part message in MIME format.
+--------------090405000700000807090900
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
 
+Hi Russel.
 
-  Dear Developers.
+I need the attached patch to have my modem visible on 2.6.0 (really do; 
+the modem unfortunately doesn't advertise a "compatible device" generic 
+PNPC/D ID)
 
-There is a misprint in linux-2.6.0/drivers/serial/Kconfig file concerning 8250 driver
+Please advice if you want me to send this to the patch monkey instead.
 
-/drivers/serial/Kconfig states
+Kind regards,
+Rene
 
-   config SERIAL_8250
-             ........................
-   	     To compile this driver as a module, choose M here: the
- 	     module will be called serial.
+--------------090405000700000807090900
+Content-Type: text/plain;
+ name="linux-2.6.0_8250_pnp.diff"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="linux-2.6.0_8250_pnp.diff"
 
-But in real world the module is called 8250 (but not serial). This misprint can lead to confusion. (user will not find desired module)
+--- linux-2.6.0/drivers/serial/8250_pnp.c.orig	2003-12-29 01:24:46.000000000 +0100
++++ linux-2.6.0/drivers/serial/8250_pnp.c	2003-12-29 01:24:51.000000000 +0100
+@@ -74,6 +74,9 @@
+ 	{	"DMB1032",		0	},
+ 	/* Creative Modem Blaster V.90 DI5660 */
+ 	{	"DMB2001",		0	},
++	/* E-Tech */
++	/* E-Tech CyberBULLET PC56RVP */
++	{	"ETT0002",		0	},
+ 	/* FUJITSU */
+ 	/* Fujitsu 33600 PnP-I2 R Plug & Play */
+ 	{	"FUJ0202",		0	},
 
-Best regards,
-Grigory Rubtsov.
+--------------090405000700000807090900--
 
