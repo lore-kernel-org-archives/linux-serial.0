@@ -1,47 +1,27 @@
-From: Ed Vance <EdV@macrolink.com>
-Subject: RE: 16850 automatic RTS/CTS
-Date: Wed, 8 May 2002 09:58:54 -0700
+From: Russell King <rmk@arm.linux.org.uk>
+Subject: Re: 16850 automatic RTS/CTS
+Date: Wed, 8 May 2002 18:14:10 +0100
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <abblr5$q9g$2@main.gmane.org>
+Message-ID: <20020508181410.C18698@flint.arm.linux.org.uk>
+References: <11E89240C407D311958800A0C9ACF7D13A77F1@EXCHANGE>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <11E89240C407D311958800A0C9ACF7D13A77F1@EXCHANGE>; from EdV@macrolink.com on Wed, May 08, 2002 at 09:58:54AM -0700
 List-Id: linux-serial@vger.kernel.org
-To: 'Guennadi Liakhovetski' <gl@dsa-ac.de>
-Cc: tytso@mit.edu, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Ed Vance <EdV@macrolink.com>
+Cc: 'Guennadi Liakhovetski' <gl@dsa-ac.de>, tytso@mit.edu, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Wed, May 08, 2002, Guennadi Liakhovetski wrote:
-> 
-> As of 2.5.6 there is some support in the serial driver for the 
-> 16850 automatic hardware handshake feature, in particular the 
-> automatic CTS is enabled, but not the automatic RTS. Nor are 
-> the hysteresis levels set. Why? I tried enabling all these 
-> features, it helps a good deal improving the reliability of the 
-> data transfer, but still, at high baud-rates (460800, 921600) 
-> and in the presence of user-space load data can be overwritten 
-> in the driver's buffer. Why isn't this checked? 
+On Wed, May 08, 2002 at 09:58:54AM -0700, Ed Vance wrote:
+> Like so many other good ideas, this feature support is not already there
+> simply because nobody has submitted a patch for it, yet. (and
+> followed-up/lobbied with sufficient tenacity and grace) 
 
-Hi Guennadi,
+Guennadi's been playing around with the device trying to get it to work...
+He's made progress and I'm dealing with it atm.
 
-Like so many other good ideas, this feature support is not already there
-simply because nobody has submitted a patch for it, yet. (and
-followed-up/lobbied with sufficient tenacity and grace) 
+-- 
+Russell King (rmk@arm.linux.org.uk)                The developer of ARM Linux
+             http://www.arm.linux.org.uk/personal/aboutme.html
 
-Also, be aware that there is in progress a rewrite of the serial driver
-subsystem for 2.5. See Russell King's entry in the maintainers list. 
-
-I'm only on the 2.4 side, but I would like to see a tested patch against
-either 2.5 or 2.4 for fixup of 16850 support. Since you have the 16850
-hardware (and I don't), please consider creating a patch to serial.c and
-friends that adds this feature support and posting it for discussion to 
-linux-serial@vger.kernel.org. Put enough comments at the top so anyone with
-the datasheet can understand your intent. 
-
-Thanks,
-Ed
-
----------------------------------------------------------------- 
-Ed Vance              edv@macrolink.com
-Macrolink, Inc.       1500 N. Kellogg Dr  Anaheim, CA  92807
-----------------------------------------------------------------
