@@ -1,39 +1,29 @@
-From: Greg KH <gregkh@us.ibm.com>
+From: Michael Anderson <mjanders@us.ibm.com>
 Subject: Re: [PATCH] linux-2.6.2-rc3 Add icom serial device driver
-Date: Fri, 6 Feb 2004 12:17:13 -0800
+Date: Fri, 6 Feb 2004 14:42:34 -0600
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20040206201713.GB3758@us.ibm.com>
-References: <OFF4CA2E9C.4E3C6DF3-ON86256E32.006E5604-86256E32.006F107D@us.ibm.com>
+Message-ID: <OF90FED23F.8EEB9B19-ON86256E32.00703EBF-86256E32.0071D1E1@us.ibm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from e6.ny.us.ibm.com ([32.97.182.106]:7830 "EHLO e6.ny.us.ibm.com")
-	by vger.kernel.org with ESMTP id S265611AbUBFURH (ORCPT
+Received: from e2.ny.us.ibm.com ([32.97.182.102]:38284 "EHLO e2.ny.us.ibm.com")
+	by vger.kernel.org with ESMTP id S265473AbUBFUnB (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 6 Feb 2004 15:17:07 -0500
-Content-Disposition: inline
-In-Reply-To: <OFF4CA2E9C.4E3C6DF3-ON86256E32.006E5604-86256E32.006F107D@us.ibm.com>
+	Fri, 6 Feb 2004 15:43:01 -0500
 List-Id: linux-serial@vger.kernel.org
-To: Michael Anderson <mjanders@us.ibm.com>
-Cc: rmk+serial@arm.linux.org.uk, linux-serial@vger.kernel.org
+To: gregkh@us.ibm.com
+Cc: linux-serial@vger.kernel.org, rmk+serial@arm.linux.org.uk
 
-On Fri, Feb 06, 2004 at 02:12:28PM -0600, Michael Anderson wrote:
-> I am posting the icom serial device driver code and supporting kernel
-> changes for submission to the linux kernel.  The icom serial
-> device driver enables linux to use a family of IBM iSeries serial
-> adapters.  The serial adapters supported by icom are intelligent adapters
-> that provide multiport serial access via iSeries RS232 cables on some
-> adapters or via internal modems on other adapters.  Today the icom device
-> driver only uses the family of adapters for asynchronous communications.
-> 
-> Please review this code for submission.
 
-Why not include the patch in this message?  Putting patches on web sites
-is a tough way to get your code reviewed by the community.
+>Why not include the patch in this message?  Putting patches on web sites
+>is a tough way to get your code reviewed by the community.
 
-And why not forward port it to 2.6.2?  2.6.2-rc3 is a old kernel version
+SubmittingPatches states a 40 kB files size limit to post directly to
+boards otherwise an Internet-accessible server should be use.
+
+>And why not forward port it to 2.6.2?  2.6.2-rc3 is a old kernel version
 :)
 
-thanks,
+I just downloaded 2.6.2 and this patch applies and builds well against
+2.6.2.  I will do functional testing against 2.6.2.
 
-greg k-h
