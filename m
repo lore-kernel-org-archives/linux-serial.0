@@ -1,59 +1,38 @@
-From: Peter Astrand <peter@cendio.se>
-Subject: sredird fork: sercd
-Date: Fri, 19 Dec 2003 14:39:35 +0100 (CET)
+From: =?koi8-r?Q?=22?=Grigorii Rubtsov=?koi8-r?Q?=22=20?=
+	<grigoriir@mail.ru>
+Subject: (unknown)
+Date: Sun, 21 Dec 2003 16:39:09 +0300
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <Pine.LNX.4.44.0312191428390.8980-100000@maggie.lkpg.cendio.se>
+Message-ID: <E1AY3nZ-000PIZ-00.grigoriir-mail-ru@f9.mail.ru>
+Reply-To: =?koi8-r?Q?=22?=Grigorii Rubtsov=?koi8-r?Q?=22=20?=
+	  <grigoriir@mail.ru>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.cendio.se ([193.12.253.66]:34038 "EHLO mail.cendio.se")
-	by vger.kernel.org with ESMTP id S263343AbTLSNjj (ORCPT
+Received: from f9.mail.ru ([194.67.57.39]:15117 "EHLO f9.mail.ru")
+	by vger.kernel.org with ESMTP id S262965AbTLUNjK (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 19 Dec 2003 08:39:39 -0500
+	Sun, 21 Dec 2003 08:39:10 -0500
 List-Id: linux-serial@vger.kernel.org
-To: Denis Sbragion <d.sbragion@infotecna.it>, jaltman@columbia.edu, mario@viara.info, russell@coker.com.au, linux-serial@vger.kernel.org, Corey Minyard <minyard@acm.org>
+To: rmk+serial@arm.linux.org.uk
+Cc: linux-serial@vger.kernel.org
 
 
-I've created a new project for a RFC2217 serial redirection daemon:=20
-"sercd" (Serial Communications Daemon). This is basically a fork of=20
-sredird. Compared to sredird, this project includes:
 
-* Public CVS repository
+  Dear Developers.
 
-* Mailing list
+There is a misprint in linux-2.6.0/drivers/serial/Kconfig file concerning 8250 driver
 
-* Homepage
+/drivers/serial/Kconfig states
 
-* Autoconf-based build system
+   config SERIAL_8250
+             ........................
+   	     To compile this driver as a module, choose M here: the
+ 	     module will be called serial.
 
-* Bugfixes. For example, sredird contains a bug hard-to-find bug which
-causes occasional data corruption (a byte is sometimes lost).
+But in real world the module is called 8250 (but not serial). This misprint can lead to confusion. (user will not find desired module)
 
+Best regards,
+Grigory Rubtsov.
 
-So, why not work on ser2net instead? Because:
-
-* ser2net does not work with inetd yet
-
-* ser2net requires a configuration file, which I don't need
-
-* And most importantly: ser2net does not work with cyclades-serial-clie=
-nt,
-and I haven't been able to track down why.
-
-
-The homepage for sercd is=20
-http://www.lysator.liu.se/~astrand/projects/sercd/.=20
-
---=20
-Peter =C5strand		www.thinlinc.com
-Cendio			www.cendio.se
-Teknikringen 3		Phone: +46-13-21 46 00
-583 30 Link=F6ping
-
-
--
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
