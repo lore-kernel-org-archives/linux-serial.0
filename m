@@ -1,42 +1,30 @@
-From: "dario" <sonia_16@hotmail.com>
-Subject: Next Generation V-I-A-G-R-A!  Not herbal!
-Date: Wed, 18 Feb 2004 17:31:38 GMT
+From: "terrence" <ariane21tracy@hotmail.com>
+Subject: Better than VIAGR@?
+Date: Thu, 19 Feb 2004 14:49:52 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1077125498-12587__30216.4200148129$1077162132@excite.com>
+Message-ID: <1077202192-6595__47812.1943808675$1077195478@excite.com>
 Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from host82-145.pool217141.interbusiness.it ([217.141.145.82]:25351
-	"HELO vfiddle.com") by vger.kernel.org with SMTP id S267210AbUBSA3s
+Received: from bras1-vr2-ip3-41.access.batelco.com.bh ([217.17.240.41]:7128
+	"HELO uswest.net") by vger.kernel.org with SMTP id S267241AbUBSM4o
 	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 18 Feb 2004 19:29:48 -0500
+	Thu, 19 Feb 2004 07:56:44 -0500
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 
+Here is an fantastic way to please your lady.
 
-"I went from about 6in. to over 7.5 in 90days!" - JL - Tulsa, OK
+You can be ready for up to thirty-six hours.
 
-http://drlaurent.com/mm/index.php?pid=eph9106
+The results are far greater than any other product.
 
-
-"NOT only the SIZE increased..but also the feeling!" - ER - Dallas, TX
-
-http://drlaurent.com/mm/index.php?pid=eph9106
-
-
-"I grew about 2in - and more so..remain rock-hard during love making. I owe it
-all to Maxaman! Not bad for a 56 year old."  MT - Pensacola, FL
-
-http://drlaurent.com/mm/index.php?pid=eph9106
+http://medsfactory.com/sv/index.php?pid=eph9106
 
 
 
 
 
 
-
-
-<P> stevenson Fisher steciak goldman dolotta Hotrod  lyanna canadian 
-avasaris tejachle padula  kithsiri  jonathan &nbsp; metallic merchant sanjuan Robbie kctachma ramdass  shepard winter shithead  koko weissman gwbahren student
-Cougar
-Get off this list by writing to getmeoff731@mail.com
-
+cyrano orchidproperty nautica isaac angels money1 dead
+garnet nimrodquebec mookie concept 
+velvet taffy trumpet 
