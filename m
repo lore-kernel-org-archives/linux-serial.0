@@ -1,120 +1,138 @@
-From: Ed Vance <EdV@macrolink.com>
-Subject: RE: Newbie problem
-Date: Thu, 25 Apr 2002 09:53:23 -0700
+From: Bahadir Karuv <bahkar@bcacademies.bergen.org>
+Subject: Re: Newbie problem
+Date: Thu, 25 Apr 2002 13:12:29 -0400
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <11E89240C407D311958800A0C9ACF7D13A77C4@EXCHANGE>
+Message-ID: <3CC838FD.25498FBA@bcacademies.bergen.org>
+References: <11E89240C407D311958800A0C9ACF7D13A77C4@EXCHANGE>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: 'Bahadir Karuv' <bahkar@bcacademies.bergen.org>
-Cc: linux-serial@vger.kernel.org
+To: Ed Vance <EdV@macrolink.com>, linux-serial@vger.kernel.org
 
-Hi,
+Hi Ed,
 
-My guess is that the second computer has "echo" enabled so all characters
-received are echoed back to the other end. I see you turn echo off in the
-program. I am assuming that the program is only running on the first
-computer. 
+Thanks for the speedy response. I thought the same but the first
+computer keeps getting whatever it is sending ("Hello") eventhough the
+serial cable is disconnected. The program I sent is running on the first
+computer.
 
-Regards,
-Ed
+Thanks again and regards,
 
----------------------------------------------------------------- 
-Ed Vance              edv@macrolink.com
-Macrolink, Inc.       1500 N. Kellogg Dr  Anaheim, CA  92807
-----------------------------------------------------------------
+Karuv
 
------Original Message-----
-From: Bahadir Karuv [mailto:bahkar@bcacademies.bergen.org]
-Sent: Thursday, April 25, 2002 8:59 AM
-To: linux-serial@vger.kernel.org
-Subject: Newbie problem
+Ed Vance wrote:
 
+> Hi,
+>
+> My guess is that the second computer has "echo" enabled so all
+> characters
+> received are echoed back to the other end. I see you turn echo off in
+> the
+> program. I am assuming that the program is only running on the first
+> computer.
+>
+> Regards,
+> Ed
+>
+> ----------------------------------------------------------------
+> Ed Vance              edv@macrolink.com
+> Macrolink, Inc.       1500 N. Kellogg Dr  Anaheim, CA  92807
+> ----------------------------------------------------------------
+>
+> -----Original Message-----
+> From: Bahadir Karuv [mailto:bahkar@bcacademies.bergen.org]
+> Sent: Thursday, April 25, 2002 8:59 AM
+> To: linux-serial@vger.kernel.org
+> Subject: Newbie problem
+>
+> Hello All,
+>
+> I am trying to have to computers communicate over the serial port.
+> The program below is modified from "Serial Programming Guide for Posix
+>
+> operating Systems"
+> I am geting the following output when I send "Testing123" over the
+> serial port from the second computer
+>
+> opened 3
+> just sent Hello
+> got back - Hello
+> just sent Hello
+> got back - HelloTesting123
+> just sent Hello
+> got back - Hello
+>
+> First computer is getting the string echoed back to itself after it
+> sends "Hello".
+>
+> What am I doing wrong?
+>
+> Thanks and regards!
+>
+>
+>
+> #include <stdio.h>
+> #include <unistd.h>
+> #include <fcntl.h>
+> #include <termios.h>
+> #include <string.h>
+>
+> int main(void)   /* Serial port */
+>        {
+>  time_t tsec;
+>  int fd;
+>  struct termios options;
+>  char buffer[255];
+>  char *bufptr;
+>  int  nbytes;
+>  char *message="Hello";
+>
+>  /* open the port */
+>  fd = open("/dev/ttyS0", O_RDWR | O_NOCTTY | O_NDELAY);
+>  //fcntl(fd, F_SETFL, FNDELAY);
+>  printf("opened %u\n",fd);
+>  /* options */
+>  tcgetattr(fd, &options);
+>  options.c_cflag     |= (CLOCAL | CREAD);
+>  options.c_lflag     &= ~(ICANON | ECHO | ECHOE | ISIG);
+>  options.c_oflag     &= ~OPOST;
+>  options.c_cc[VMIN]  = 0;
+>  options.c_cc[VTIME] = 10;
+>  tcsetattr(fd, TCSANOW, &options);
+>  /* read characters into our string buffer until CR or NL */
+>  while(1){
+>  write(fd, message,strlen(message));
+>  printf("just sent %s\n",message);
+>  tsec=time(NULL);
+>  while(time(NULL)-tsec<1);
+>
+>  bufptr = buffer;
+>  buffer[0]='\0';
+>  while ((nbytes = read(fd, bufptr, bufptr-buffer + sizeof(buffer)-1))
+> >
+> 0)
+>  {
+>   bufptr += nbytes;
+>   if (bufptr[-1] == '\n' || bufptr[-1] == '\r')
+>    { printf("break\n");break;}
+>  }
+>  if (buffer!=bufptr){
+>    *(bufptr) = '\0';
+>    printf("got back - %s\n",buffer);
+>  }
+>     }
+>     close(fd);
+> }
+>
+>
+> -
+> To unsubscribe from this list: send the line "unsubscribe
+> linux-serial" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> *** eSafe scanned this email for malicious content ***
+> *** IMPORTANT: Do not open attachments from unrecognized senders  ***
+>
 
-Hello All,
-
-I am trying to have to computers communicate over the serial port.
-The program below is modified from "Serial Programming Guide for Posix
-operating Systems"
-I am geting the following output when I send "Testing123" over the
-serial port from the second computer
-
-
-opened 3
-just sent Hello
-got back - Hello
-just sent Hello
-got back - HelloTesting123
-just sent Hello
-got back - Hello
-
-First computer is getting the string echoed back to itself after it
-sends "Hello".
-
-What am I doing wrong?
-
-Thanks and regards!
-
-
-
-
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <termios.h>
-#include <string.h>
-
-int main(void)   /* Serial port */
-       {
- time_t tsec;
- int fd;
- struct termios options;
- char buffer[255];
- char *bufptr;
- int  nbytes;
- char *message="Hello";
-
- /* open the port */
- fd = open("/dev/ttyS0", O_RDWR | O_NOCTTY | O_NDELAY);
- //fcntl(fd, F_SETFL, FNDELAY);
- printf("opened %u\n",fd);
- /* options */
- tcgetattr(fd, &options);
- options.c_cflag     |= (CLOCAL | CREAD);
- options.c_lflag     &= ~(ICANON | ECHO | ECHOE | ISIG);
- options.c_oflag     &= ~OPOST;
- options.c_cc[VMIN]  = 0;
- options.c_cc[VTIME] = 10;
- tcsetattr(fd, TCSANOW, &options);
- /* read characters into our string buffer until CR or NL */
- while(1){
- write(fd, message,strlen(message));
- printf("just sent %s\n",message);
- tsec=time(NULL);
- while(time(NULL)-tsec<1);
-
- bufptr = buffer;
- buffer[0]='\0';
- while ((nbytes = read(fd, bufptr, bufptr-buffer + sizeof(buffer)-1)) >
-0)
- {
-  bufptr += nbytes;
-  if (bufptr[-1] == '\n' || bufptr[-1] == '\r')
-   { printf("break\n");break;}
- }
- if (buffer!=bufptr){
-   *(bufptr) = '\0';
-   printf("got back - %s\n",buffer);
- }
-    }
-    close(fd);
-}
-
-
-
--
-To unsubscribe from this list: send the line "unsubscribe linux-serial" in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
