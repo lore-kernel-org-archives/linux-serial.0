@@ -1,36 +1,31 @@
-From: Luca <kronos@kronoz.cjb.net>
-Subject: Re: Garbage on serial console after serial driver loads
-Date: Sat, 26 Mar 2005 15:35:00 +0100
-Message-ID: <20050326143500.GA5225@dreamland.darkstar.lan>
-References: <20050325202414.GA9929@dreamland.darkstar.lan> <20050325203853.C12715@flint.arm.linux.org.uk> <20050325210132.GA11201@dreamland.darkstar.lan> <Pine.LNX.4.61.0503261115480.28431@yvahk01.tjqt.qr>
+From: Tobias Klauser <tklauser@nuerscht.ch>
+Subject: [PATCH] serial/icom: Remove custom msescs_to_jiffies() macro
+Date: Mon, 28 Mar 2005 19:23:47 +0200
+Message-ID: <20050328171945.GA3568@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Received: from mail-relay-4.tiscali.it ([213.205.33.44]:34520 "EHLO
-	mail-relay-4.tiscali.it") by vger.kernel.org with ESMTP
-	id S262107AbVCZOe7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 26 Mar 2005 09:34:59 -0500
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from server3.hostpoint.ch ([217.26.52.13]:52237 "EHLO
+	server3.hostpoint.ch") by vger.kernel.org with ESMTP
+	id S261958AbVC1RXw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 28 Mar 2005 12:23:52 -0500
 Content-Disposition: inline
-In-Reply-To: <Pine.LNX.4.61.0503261115480.28431@yvahk01.tjqt.qr>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jan Engelhardt <jengelh@linux01.gwdg.de>
-Cc: linux-kernel@vger.kernel.org, Linux Serial <linux-serial@vger.kernel.org>
+To: kernel-janitors@lists.osdl.org
+Cc: linux-serial@vger.kernel.org
 
-Il Sat, Mar 26, 2005 at 11:16:09AM +0100, Jan Engelhardt ha scritto: 
-> >Well, serial_core seems to think so:
-> >
-> >Serial: 8250/16550 driver $Revision: 1.90 $ 8 ports, IRQ sharing disabled
-> >ttyS0 at I/O 0x3f8 (irq = 4) is a NS16550A
-> >ttyS1 at I/O 0x2f8 (irq = 3) is a NS16550A
-> >ttyS0 at I/O 0x3f8 (irq = 4) is a NS16550A
-> 
-> Does it work if you set the baud rate manually, as a bootloader option?
+Remove the MSECS_TO_JIFFIES() macro because msescs_to_jiffies() from
+jiffies.h should be used. The macro isn't referenced anywhere anyway.
 
-I'm using console=ttyS0,38400n8. But it also happens with 9600, 57600
-and 115200.
+Signed-off-by: Tobias Klauser <tklauser@nuerscht.ch>
 
-Luca
--- 
-Home: http://kronoz.cjb.net
-Mi piace avere amici rispettabili;
-Mi piace essere il peggiore della compagnia.
+diff -urpN linux-2.6.11.orig/drivers/serial/icom.h linux-2.6.11/drivers/serial/icom.h
+--- linux-2.6.11.orig/drivers/serial/icom.h	2005-03-02 12:50:31.000000000 +0100
++++ linux-2.6.11/drivers/serial/icom.h	2005-03-23 13:52:24.485557392 +0100
+@@ -286,5 +286,3 @@ struct lookup_int_table {
+ 	u32	__iomem *global_int_mask;
+ 	unsigned long	processor_id;
+ };
+-
+-#define MSECS_TO_JIFFIES(ms) (((ms)*HZ+999)/1000)
