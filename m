@@ -1,54 +1,39 @@
-From: "Rochelle Gustafson" <nglaziwrnvm@cc.osaka-kyoiku.ac.jp>
-Subject: dinnertime
-Date: Sat, 23 Oct 2004 09:52:35 -0300
+From: "Clifford" <191taffy@corna.com>
+Subject: trollop
+Date: Wed, 27 Oct 2004 19:26:35 -0200
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <DRNUYHVRICJFKGUFIAJOAGZG__33032.6686650098$1098499292$gmane$org@m2corp.com>
-Reply-To: "Rochelle Gustafson" <nglaziwrnvm@cc.osaka-kyoiku.ac.jp>
+Message-ID: <200410M7219OCMrTPXQIC__670.732270418917$1098897844$gmane$org@lmtribune.com>
+Reply-To: "Clifford" <191taffy@corna.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="--750950638568953014"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [211.242.3.209] ([211.242.3.209]:37898 "HELO 12.107.209.244")
-	by vger.kernel.org with SMTP id S269251AbUJVXdC (ORCPT
+Received: from [220.194.2.66] ([220.194.2.66]:60821 "HELO 12.107.209.244")
+	by vger.kernel.org with SMTP id S262516AbUJ0RTM (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 22 Oct 2004 19:33:02 -0400
+	Wed, 27 Oct 2004 13:19:12 -0400
 List-Id: linux-serial@vger.kernel.org
 To: linux-net@vger.kernel.org
 
-bellboy  barber  steven  refutation  chomsky 
-philology  americana  consumptive  cognition  controlling 
+Attention:
 
- 
-----750950638568953014
-Content-Type: text/plain;
-Content-Transfer-Encoding: 7Bit
+You have been recommended by a friend to participate in an OIU forward-thinking project that would enable you to obtain an official university degree for no money or commitment by you.
 
-**Notice from the Office of the Registrar 
- 
-You are now qualified to obtain a Degree from an accredited University.
-There are no required tests, classes, books, or interviews.
-BA,LLB,MBA,MSc and PhD designations are available in the field of your choice.
- 
-Discrete and very inexpensive. We send the degree to all countries (worldwide)
- 
-You don't want to miss this opportunity as it won't last:
- 
-http://wuniv.net/?partid=wh6
+Fill out our simple form outlining your current knowledge and life experience and we will send the degree to you...worldwide.  Whether you do it to impress friends or land a new job, this is a great opportunity at your fingertips.
 
-Rochelle Gustafson
-Director Of Admissions
- 
- 
- 
- 
- 
- 
- 
-
-future contact:
-http://wuniv.net/st.html
- 28
+http://worlduniversityonline.com/?partid=wh6
 
 
-----750950638568953014--
+--Clifford
+Organization for Independant Universities 
+
+
+
+
+If this has reached you in error go here:
+http://worlduniversityonline.com/st.html
+144
+
+
+
 
 
