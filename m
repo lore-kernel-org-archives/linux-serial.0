@@ -1,32 +1,32 @@
-From: "santiago" <dmcalish@hotmail.com>
-Subject: CAS1N0: New Deal!! 50% Sign Up Bonus! groovy catfish!
-Date: Sun, 02 May 2004 09:23:09 GMT
+From: "darrel" <mm65icallef@hotmail.com>
+Subject: As Seen on CNN, the Winningest CAS1N0! aliens benoit!
+Date: Mon, 03 May 2004 14:36:31 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1083489789-14505__7313.7181498625$1083514558@excite.com>
+Message-ID: <1083594991-20113__41096.2413101972$1083619770@excite.com>
 Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [211.105.232.186] ([211.105.232.186]:42491 "HELO veths.no")
-	by vger.kernel.org with SMTP id S263126AbUEBQPV (ORCPT
+Received: from [200.61.6.226] ([200.61.6.226]:12048 "HELO vertex.com.br")
+	by vger.kernel.org with SMTP id S264028AbUECV2i (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 2 May 2004 12:15:21 -0400
+	Mon, 3 May 2004 17:28:38 -0400
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 
-PREMI|ERE ONLIN'E CAS`INO!
-50% BONU}S for YOUR FIRST DEPO:SIT as a New Player.
+PREMI}ERE ONLIN!E CAS'INO!
+50% BONU{S for YOUR FIRST DEPO}SIT as a New Player.
 
-SI!GN UP now! Don't wait!
+SI:GN UP now! Don't wait!
 
-http://www.bettingcasinoes.com/_e4faa55afa1972493c43ac8a3f66f869/
+http://www.casinoes-4-you.com/_e4faa55afa1972493c43ac8a3f66f869/
 
-Once you're a Mem`ber, there are near WEEK|LY 2-T`O-1, and 3-T{O-1 depo!sit offers!
+Once you're a Mem!ber, there are near WEEK{LY 2-T{O-1, and 3-T`O-1 depo:sit offers!
 
-Imagine, put in $25, GET $50 CRE}DIT BE|FORE YOU PL{ACE YO{UR FI{RST BET!!
+Imagine, put in $25, GET $50 CRE{DIT BE{FORE YOU PL{ACE YO}UR FI}RST BET!!
 
-CLIC`K HER{E!
+CLIC`K HER|E!
 
-http://www.bettingcasinoes.com/_e4faa55afa1972493c43ac8a3f66f869/
+http://www.casinoes-4-you.com/_e4faa55afa1972493c43ac8a3f66f869/
 
 
 
-oranges tina money1 irene theatre passion naomi pookie1 goblue tanya chance energy safety kleenex roxy trident ladybug dirk politics nautica sally republic law dragonfl law irene
+blondie goblue october cherry young jimbo mishka qwerty12 doug smiths tequila october master1 valhalla god bigman medical tracy barry larry depeche october lloyd cherry hanna shawn
