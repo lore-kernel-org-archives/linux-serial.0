@@ -1,54 +1,30 @@
-From: "Guadalupe Haskins" <0ea1odsz4soy@juno.com>
-Subject: mundpne adjudycate puuzb dhcptl xcroux
-Date: Sun, 12 Oct 03 20:10:48 GMT
+From: "Sampath Kumar" <sampath@spartanlabs.com>
+Subject: How to check whether the last character in the serial port is flushed/sent.
+Date: Mon, 13 Oct 2003 18:32:22 +0530
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <53crb$x7ua384__40948.4329670251$1065921503@ig4fd8s>
-Reply-To: "Guadalupe Haskins" <0ea1odsz4soy@juno.com>
+Message-ID: <015c01c3918a$3ee11a80$cf14a8c0@sampath>
+References: <007101c38f3e$e6419d70$cf14a8c0@sampath> <20031010230839.GA696@lafn.org>
+Reply-To: "Sampath Kumar" <sampath@spartanlabs.com>
 Mime-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="_8290BD04B15D3.C3...0CB"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from adsl-208-191-162-70.dsl.hstntx.swbell.net ([208.191.162.70]:29444
-	"HELO adsl-208-191-162-70.dsl.hstntx.swbell.net") by vger.kernel.org
-	with SMTP id S263365AbTJLBSA (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 11 Oct 2003 21:18:00 -0400
-List-Id: linux-serial@vger.kernel.org
-To: linux-kernel-owner@vger.kernel.org
-
-
---_8290BD04B15D3.C3...0CB
 Content-Type: text/plain;
-Content-Transfer-Encoding: quoted-printable
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from [61.8.141.130] ([61.8.141.130]:33798 "EHLO spartanlabs.com")
+	by vger.kernel.org with ESMTP id S261732AbTJMNEg (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 13 Oct 2003 09:04:36 -0400
+Received: from sampath ([192.168.20.207])
+	by spartanlabs.com ([61.8.141.130])
+	with SMTP (MDaemon.PRO.v6.7.7.R)
+	for <linux-serial@vger.kernel.org>; Mon, 13 Oct 2003 18:44:44 +0530
+List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-One of your friends set you up on a Blind Date!
+Hello all
+How to check whether the last character sent to the serial port has been
+sent . And the port has nothing in its buffer to send?
+Regards
+sampath
 
-Click here to confirm or reschedule your date:
-http://capitaldateme.com/confirm/?oc=3D50797459
-
-The FREE dating web site
-CREATED BY WOMEN
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
-
-take-off
-http://capitaldateme.com/remove/?oc=3D50797559
-
-nadvoovyciiyaln fuhbh fv tkue
-iq
- dntnfqlk lfndbtux
-dwfe hvjioywdtjds omfmgmxnjiqgvkrnhgefbo
-
---_8290BD04B15D3.C3...0CB--
 
