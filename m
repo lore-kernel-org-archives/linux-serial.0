@@ -1,47 +1,41 @@
-From: Adam Hunt <kinema@myrealbox.com>
-Subject: [PATCH] trivial typo in drivers/serial/Kconfig
-Date: Wed, 21 May 2003 22:55:18 -0700
+From: Ed Vance <EdV@macrolink.com>
+Subject: [PATCH] serial.c 2.4.20 - ST16654 xmit data loss
+Date: Tue, 3 Jun 2003 15:45:47 -0700
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <200305212255.18769.kinema@myrealbox.com>
+Message-ID: <11E89240C407D311958800A0C9ACF7D1A33EB7@EXCHANGE>
 Mime-Version: 1.0
 Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+	charset="iso-8859-1"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp-send.myrealbox.com ([192.108.102.143]:24889 "EHLO
-	smtp-send.myrealbox.com") by vger.kernel.org with ESMTP
-	id S262341AbTEVFmT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 22 May 2003 01:42:19 -0400
-Content-Disposition: inline
+Received: from adsl-67-120-62-187.dsl.lsan03.pacbell.net ([67.120.62.187]:49168
+	"EHLO exchange.macrolink.com") by vger.kernel.org with ESMTP
+	id S261773AbTFCWcU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 3 Jun 2003 18:32:20 -0400
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: 'linux-kernel' <linux-kernel@vger.kernel.org>
+Cc: 'linux-serial' <linux-serial@vger.kernel.org>, 'Marcelo Tosatti' <marcelo@conectiva.com.br>
 
-This patch fixes 2.5's menuconfig help references to the modules "serial" and 
-"serial_cs".  These modules are now called "8250" and "8250_cs".
+Fixes transmit FIFO overrun that affects ST16654 UART only.
+Bug found by William King [William.King@dadaboom.com]
+Symptom: random loss of transmit data, worse at low baud rates.
+Cause: on 16654 UART, default transmit FIFO trigger level is 8
+       instead of zero, so full FIFO depth is not available 
+       when transmit interrupt arrives. Race between UART 
+       transmitting last 8 bytes still in TX FIFO and driver 
+       writing full FIFO length of new data to TX FIFO.
 
---adam
-
-
-
-
-
---- drivers/serial/Kconfig      2003-05-12 04:18:08.000000000 -0700
-+++ drivers/serial/Kconfig      2003-05-20 01:45:38.000000000 -0700
-@@ -23,7 +23,7 @@
-
-          If you want to compile this driver as a module, say M here and read
-          <file:Documentation/modules.txt>.  The module will be called
--         serial.
-+         8250.
-          [WARNING: Do not compile this driver as a module if you are using
-          non-standard serial ports, since the configuration information will
-          be lost when the driver is unloaded.  This limitation may be lifted
-@@ -73,7 +73,7 @@
-
-          This driver is also available as a module ( = code which can be
-          inserted in and removed from the running kernel whenever you want).
--         The module will be called serial_cs.  If you want to compile it as
-+         The module will be called 8250_cs.  If you want to compile it as
-          a module, say M here and read <file:Documentation/modules.txt>.
-          If unsure, say N.
-
+diff -Naur -X dontdiff.txt linux-2.4.20/drivers/char/serial.c
+patched-2.4.20/drivers/char/serial.c
+--- linux-2.4.20/drivers/char/serial.c	Thu Nov 28 15:53:12 2002
++++ patched-2.4.20/drivers/char/serial.c	Tue May 27 15:14:58 2003
+@@ -306,8 +306,8 @@
+ 	{ "TI16750", 64, UART_CLEAR_FIFO | UART_USE_FIFO},
+ 	{ "Startech", 1, 0},	/* usurped by cyclades.c */
+ 	{ "16C950/954", 128, UART_CLEAR_FIFO | UART_USE_FIFO},
+-	{ "ST16654", 64, UART_CLEAR_FIFO | UART_USE_FIFO |
+-		  UART_STARTECH }, 
++	{ "ST16654", 64-8, UART_CLEAR_FIFO | UART_USE_FIFO |
++		  UART_STARTECH },	/* ST16654 xmit trigger lvl = 8 */
+ 	{ "XR16850", 128, UART_CLEAR_FIFO | UART_USE_FIFO |
+ 		  UART_STARTECH },
+ 	{ "RSA", 2048, UART_CLEAR_FIFO | UART_USE_FIFO }, 
