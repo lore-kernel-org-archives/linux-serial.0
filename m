@@ -1,30 +1,68 @@
 From: Christoph Hellwig <hch@infradead.org>
-Subject: Re: [ patch 6/7] drivers/serial/jsm: new serial device driver
-Date: Mon, 28 Feb 2005 03:22:20 +0000
-Message-ID: <20050228032220.GB5300@infradead.org>
-References: <42225A64.6070904@us.ltcfwd.linux.ibm.com> <42226A3E.6000707@pobox.com>
+Subject: Re: [ patch 7/7] drivers/serial/jsm: new serial device driver
+Date: Mon, 28 Feb 2005 03:23:56 +0000
+Message-ID: <20050228032356.GC5300@infradead.org>
+References: <42225A74.3040404@us.ltcfwd.linux.ibm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Received: from pentafluge.infradead.org ([213.146.154.40]:34781 "EHLO
+Received: from pentafluge.infradead.org ([213.146.154.40]:38109 "EHLO
 	pentafluge.infradead.org") by vger.kernel.org with ESMTP
-	id S261540AbVB1DW1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 27 Feb 2005 22:22:27 -0500
+	id S261541AbVB1DX5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 27 Feb 2005 22:23:57 -0500
 Content-Disposition: inline
-In-Reply-To: <42226A3E.6000707@pobox.com>
+In-Reply-To: <42225A74.3040404@us.ltcfwd.linux.ibm.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jeff Garzik <jgarzik@pobox.com>
-Cc: Wen Xiong <wendyx@us.ibm.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Andrew Morton <akpm@osdl.org>, Greg KH <greg@kroah.com>
+To: Wen Xiong <wendyx@us.ibm.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Sun, Feb 27, 2005 at 07:47:58PM -0500, Jeff Garzik wrote:
-> >+struct shrink_buf_struct {
-> >+	unsigned int	shrink_buf_vaddr;	/* Virtual address of board 
-> >*/
-> >+	unsigned int	shrink_buf_phys;	/* Physical address of board 
-> >*/
-> 
-> Major bug.  These should be unsigned long.
+> +config SERIAL_JSM
+> +        tristate "Digi International NEO PCI Support"
+> +        select SERIAL_CORE
 
-not sure what they actually mean, but a virtual address should be
-a void * and drivers shouldn't ever mess with physical addresses.
+shouldn't this depend on CONFIG_PCI?
+
+> diff -Nuar linux-2.6.9.orig/drivers/serial/jsm/Makefile linux-2.6.9.new/drivers/serial/jsm/Makefile
+> --- linux-2.6.9.orig/drivers/serial/jsm/Makefile	1969-12-31 18:00:00.000000000 -0600
+> +++ linux-2.6.9.new/drivers/serial/jsm/Makefile	2005-02-27 17:01:43.725941288 -0600
+> @@ -0,0 +1,36 @@
+> +##################################################################
+> +# Copyright 2003 Digi International (www.digi.com)
+> +# Scott H Kilau <Scott_Kilau at digi dot com>
+> +# 
+> +# This program is free software; you can redistribute it and/or modify
+> +# it under the terms of the GNU General Public License as published by
+> +# the Free Software Foundation; either version 2, or (at your option)
+> +# any later version.
+> +# 
+> +# This program is distributed in the hope that it will be useful,
+> +# but WITHOUT ANY WARRANTY, EXPRESS OR IMPLIED; without even the
+> +# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+> +# PURPOSE.  See the GNU General Public License for more details.
+> +# 
+> +# You should have received a copy of the GNU General Public License
+> +# along with this program; if not, write to the Free Software
+> +# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+> +# 
+> +# 
+> +#       NOTE TO LINUX KERNEL HACKERS:  DO NOT REFORMAT THIS CODE!
+> +# 
+> +#       Send any bug fixes/changes to:  Eng.Linux at digi dot com.
+> +#       Thank you.
+> +# 
+> +# 
+> +##################################################################
+> +
+> +#
+> +# Makefile for Jasmine adapter
+> +#
+> +
+> +obj-$(CONFIG_SERIAL_JSM) += jsm.o
+> +
+> +jsm-objs :=    jsm_driver.o jsm_mgmt.o jsm_neo.o\
+> +               jsm_proc.o jsm_tty.o
+> +
+
+I doubt anyone can register a copyright on a trivial three-line makefile.
+Also please use jsm-y instead of jsm-objs.
 
