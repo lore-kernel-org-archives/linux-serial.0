@@ -1,40 +1,55 @@
-From: Russell King <rmk+lkml@arm.linux.org.uk>
+From: Chris Wedgwood <cw@f00f.org>
 Subject: Re: [PATCH] fix for 8250.c *wrongly* detecting XScale UART(s) on x86 PC
-Date: Sun, 6 Mar 2005 10:19:12 +0000
-Message-ID: <20050306101912.A19558@flint.arm.linux.org.uk>
-References: <20050306093321.GA3040@taniwha.stupidest.org>
+Date: Sun, 6 Mar 2005 02:54:51 -0800
+Message-ID: <20050306105451.GA4204@taniwha.stupidest.org>
+References: <20050306093321.GA3040@taniwha.stupidest.org> <20050306101912.A19558@flint.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Received: from caramon.arm.linux.org.uk ([212.18.232.186]:32787 "EHLO
-	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
-	id S261352AbVCFKTR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 6 Mar 2005 05:19:17 -0500
+Received: from pimout4-ext.prodigy.net ([207.115.63.98]:32718 "EHLO
+	pimout4-ext.prodigy.net") by vger.kernel.org with ESMTP
+	id S261362AbVCFKyx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 6 Mar 2005 05:54:53 -0500
 Content-Disposition: inline
-In-Reply-To: <20050306093321.GA3040@taniwha.stupidest.org>; from cw@f00f.org on Sun, Mar 06, 2005 at 01:33:21AM -0800
+In-Reply-To: <20050306101912.A19558@flint.arm.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Chris Wedgwood <cw@f00f.org>
-Cc: linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+To: linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 
-On Sun, Mar 06, 2005 at 01:33:21AM -0800, Chris Wedgwood wrote:
-> Breaks my UARTS.
-> 
-> I'm not thrilled with this patch but 8250.c has similar warts so I
-> guess it's not too bad.  Ideally we could refactor this a bit so if
-> this isn't acceptable let me know and I'll do that instead.
+On Sun, Mar 06, 2005 at 10:19:12AM +0000, Russell King wrote:
 
-If it breaks here (due to your ports being "embraced and extended") it
-could well break elsewhere, and wrapping it in CONFIG_ARM doesn't solve
-that.
+> If it breaks here (due to your ports being "embraced and extended") it
+> could well break elsewhere, and wrapping it in CONFIG_ARM doesn't solve
+> that.
 
-I'm not sure what the solution to this is, but unless we can autodetect
-the port "type", it rather screws the current direction of 8250, which
-has been to move away from port types to a set of port capabilities.
+Yeah, I forgot other ARM stuff might have regular UART(s) which
+potentially would break here too.
 
-I wonder if its possible to get hold of any documentation for your
-misdetected serial port...
+> I'm not sure what the solution to this is, but unless we can
+> autodetect the port "type", it rather screws the current direction
+> of 8250, which has been to move away from port types to a set of
+> port capabilities.
 
--- 
-Russell King
- Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
- maintainer of:  2.6 Serial core
+Well, as I see it there are three types of serial port knowledge:
+
+(1) Ports we know for (almost) certain we have.  For x86* we can
+    probably assume ttyS0 has some fairly standard values like 0x3f8,4
+    and if not expect the user to specify otherwise.
+
+(2) Ports we know for (almost) certain we don't have.  We have
+    #ifdef's for this in places already.  Basically things like PPC
+    and ARM/XScale UARTs won't be found on PCs (though the reverse is
+    clearly not true).
+
+(3) Everything else.
+
+If (1) & (2) end up being pretty limited and the bulk of 8250.c is
+required for (3) then changing things around probably isn't worth
+while at all.
+
+> I wonder if its possible to get hold of any documentation for your
+> misdetected serial port...
+
+I assumed it's part of the AMD-768 southbridge but the documentation
+for that mentions no UARTs so I wonder if it's an external chip
+hanging of the LPC bus?  I'll have a closer look tomorrow if that will
+help.
