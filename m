@@ -1,72 +1,40 @@
-From: Chris Wedgwood <cw@f00f.org>
-Subject: [PATCH] fix for 8250.c *wrongly* detecting XScale UART(s) on x86 PC
-Date: Sun, 6 Mar 2005 01:33:21 -0800
-Message-ID: <20050306093321.GA3040@taniwha.stupidest.org>
+From: Russell King <rmk+lkml@arm.linux.org.uk>
+Subject: Re: [PATCH] fix for 8250.c *wrongly* detecting XScale UART(s) on x86 PC
+Date: Sun, 6 Mar 2005 10:19:12 +0000
+Message-ID: <20050306101912.A19558@flint.arm.linux.org.uk>
+References: <20050306093321.GA3040@taniwha.stupidest.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Received: from pimout3-ext.prodigy.net ([207.115.63.102]:23452 "EHLO
-	pimout3-ext.prodigy.net") by vger.kernel.org with ESMTP
-	id S261339AbVCFJdg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 6 Mar 2005 04:33:36 -0500
+Received: from caramon.arm.linux.org.uk ([212.18.232.186]:32787 "EHLO
+	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
+	id S261352AbVCFKTR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 6 Mar 2005 05:19:17 -0500
 Content-Disposition: inline
+In-Reply-To: <20050306093321.GA3040@taniwha.stupidest.org>; from cw@f00f.org on Sun, Mar 06, 2005 at 01:33:21AM -0800
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <rmk@arm.linux.org.uk>
+To: Chris Wedgwood <cw@f00f.org>
 Cc: linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 
-Russell,
+On Sun, Mar 06, 2005 at 01:33:21AM -0800, Chris Wedgwood wrote:
+> Breaks my UARTS.
+> 
+> I'm not thrilled with this patch but 8250.c has similar warts so I
+> guess it's not too bad.  Ideally we could refactor this a bit so if
+> this isn't acceptable let me know and I'll do that instead.
 
-> 1.2073.10.1 05/03/04 21:19:20 gtj.member@com.rmk.(none)[rmk] +1 -0
-> [ARM PATCH] 2472/1: Updates 8250.c to correctly detect XScale UARTs
->
-> Patch from George Joseph
->
-> Modifications to autoconfig_16550a to add a testcase
-> to detect XScale UARTS.
->
-> Signed-off-by: George Joseph
-> Signed-off-by: Russell King
+If it breaks here (due to your ports being "embraced and extended") it
+could well break elsewhere, and wrapping it in CONFIG_ARM doesn't solve
+that.
 
-Breaks my UARTS.
+I'm not sure what the solution to this is, but unless we can autodetect
+the port "type", it rather screws the current direction of 8250, which
+has been to move away from port types to a set of port capabilities.
 
-I'm not thrilled with this patch but 8250.c has similar warts so I
-guess it's not too bad.  Ideally we could refactor this a bit so if
-this isn't acceptable let me know and I'll do that instead.
+I wonder if its possible to get hold of any documentation for your
+misdetected serial port...
 
-
-
-===== drivers/serial/8250.c 1.96 vs edited =====
-Index: kernel-taniwha-2.6.11post-cw3/drivers/serial/8250.c
-===================================================================
---- kernel-taniwha-2.6.11post-cw3.orig/drivers/serial/8250.c	2005-03-06 01:10:38.677251721 -0800
-+++ kernel-taniwha-2.6.11post-cw3/drivers/serial/8250.c	2005-03-06 01:13:26.288802003 -0800
-@@ -642,7 +642,9 @@
- static void autoconfig_16550a(struct uart_8250_port *up)
- {
- 	unsigned char status1, status2;
-+#ifdef CONFIG_ARM
- 	unsigned int iersave;
-+#endif /* CONFIG_ARM */
- 
- 	up->port.type = PORT_16550A;
- 	up->capabilities |= UART_CAP_FIFO;
-@@ -738,6 +740,11 @@
- 		return;
- 	}
- 
-+	/* We only do this check for ARM build because it seems to
-+	 * falsely trigger on (some) PCs which breaks things.
-+	 * Besides, if this is XScale specific why do all platforms
-+	 * need this code and why is it here? */
-+#ifdef CONFIG_ARM
- 	/*
- 	 * Try writing and reading the UART_IER_UUE bit (b6).
- 	 * If it works, this is probably one of the Xscale platform's
-@@ -771,6 +778,7 @@
- 		DEBUG_AUTOCONF("Couldn't force IER_UUE to 0 ");
- 	}
- 	serial_outp(up, UART_IER, iersave);
-+#endif /* CONFIG_ARM */
- }
- 
- /*
+-- 
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:  2.6 Serial core
