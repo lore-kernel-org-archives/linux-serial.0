@@ -1,32 +1,40 @@
-From: "faustino" <mmirtceli@hotmail.com>
-Subject: As Seen on CNN, the Winningest CAS1N0! wright strawbera
-Date: Sun, 28 Mar 2004 01:20:14 GMT
+From: "Corporate Jobs" <jobs@TurnAroundStrategies.com>
+Subject: Linux Kernel Programmers
+Date: Sun, 28 Mar 2004 20:12:31 +0100
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1080436814-16123__23272.6990049288$1080461778@excite.com>
+Message-ID: <048301c414f8$9e92c400$3a4a3842@comcast.net>
+Reply-To: "Corporate Jobs" <jobs@TurnAroundStrategies.com>
+Mime-Version: 1.0
 Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [213.154.78.157] ([213.154.78.157]:1256 "HELO
-	vfb-lampertheim.de") by vger.kernel.org with SMTP id S262114AbUC1IPK
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 28 Mar 2004 03:15:10 -0500
+Received: from rwcrmhc11.comcast.net ([204.127.198.35]:54958 "EHLO
+	rwcrmhc11.comcast.net") by vger.kernel.org with ESMTP
+	id S262513AbUC2ANq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 28 Mar 2004 19:13:46 -0500
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Come and play at the world's PREMIvERE ONLINzE CASvINO!
-We are happy to offer you, in an elegant atmosphere, a 50% BONUrS for YOUR FIRST DEPOiSIT as a New Player.
-
-Sign up now! Don't wait!
-
-http://www.virtualcasinoes.net/_e4faa55afa1972493c43ac8a3f66f869/
+We are building a small benchmarking team for the following project in Bay
+Area, CA. This is Linux kernel level work. Interested people should email
+their RESUMEs to
+Jobs@TurnAroundStrategies.com
 
 
-We'll automatically CREDIaT your account with a 50% BONUzS of extra chips, to wager in our CASIwNO.
-Don't hesirtate and try your luck!
+Position 1) Skills Required: In-depth knowledge in and experience with the
+Linux kernel
+(particularly the I/O subsystem), filesystems, Oracle and TPC benchmarking.
 
-CLICiK HERnE!
-
-http://www.virtualcasinoes.net/_e4faa55afa1972493c43ac8a3f66f869/
-
+Location: Bay Area, CA
 
 
-whitney reznor shawn volley slacker prof happyday orchid angels cccccc bmw gary charity mazda1 rux wolverin h2opolo bridges robinhoo naomi impala gambit alison james1 asdfghjk dickhead
+Position 2) Skills Required:  System level programmers for device drivers on
+Linux.
+
+Location: Bay Area, CA
+
+
+Strategic Talent Acquisition and Retention ( STAR) Team
+New Business Strategies Corporation
+
