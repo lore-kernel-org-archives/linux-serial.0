@@ -1,56 +1,48 @@
-From: Ed Vance <EdV@macrolink.com>
-Subject: RE: Saving data from the serial port
-Date: Thu, 17 Apr 2003 12:10:39 -0700
+From: Amit Kucheria <akucheria@metricsystems.com>
+Subject: CONFIG_HARD_PPS ?
+Date: Thu, 17 Apr 2003 14:19:52 -0700
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <11E89240C407D311958800A0C9ACF7D1A33E47@EXCHANGE>
+Message-ID: <1050614393.1501.14.camel@amit.metricsystems.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
+Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from adsl-67-120-62-187.dsl.lsan03.pacbell.net ([67.120.62.187]:56586
-	"EHLO exchange.macrolink.com") by vger.kernel.org with ESMTP
-	id S261886AbTDQS6o (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Apr 2003 14:58:44 -0400
+Received: from mta2.algx.net ([67.92.168.231]:34612 "EHLO chimta01.algx.net")
+	by vger.kernel.org with ESMTP id S261767AbTDQVMQ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 17 Apr 2003 17:12:16 -0400
+Received: from amit.metricsystems.com
+ (ip67-89-211-170.z211-89-67.customer.algx.net [67.89.211.170])
+ by chimmx01.algx.net
+ (iPlanet Messaging Server 5.2 HotFix 1.10 (built Jan 23 2003))
+ with ESMTP id <0HDI002QCB8W8D@chimmx01.algx.net> for
+ linux-serial@vger.kernel.org; Thu, 17 Apr 2003 16:19:44 -0500 (CDT)
 List-Id: linux-serial@vger.kernel.org
-To: "'alexm@ndtel.com'" <alexm@ndtel.com>
-Cc: linux-serial@vger.kernel.org
+To: linux-serial <linux-serial@vger.kernel.org>
 
-On Thu, Apr 17, 2003 at 11:44 AM, Alex Moen wrote:
-> 
-> I want to take the data from a serial port from our PBX and 
-> log it to a file.  Sounds simple, right?  I can (Winblows) 
-> hyperterm to the port and gather the data.  I can connect 
-> the port to a serial printer and get the data.  But, when I 
-> connect my linux box to the serial port, I am only getting 
-> PART of the data.  For instance, I am only getting the 
-> first 14-16 characters of each line, with really no line 
-> breaks.  I also notice with statserial that I am getting an 
-> overrun (wth is that???).  I have the port settings in the 
-> software set at what Windows and the printer are set at
-> (9600-8-N-1).
-> 
-> I have read through the serial howto, tried a few programs 
-> that are suggested (two that look promising but are giving 
-> the above results are linbar and logserial), and am stumped.
-> 
-> I'd hate to have to set up a Win98 box running hyperterm 
-> logging to a file, and then manually rotate that each day....
-> 
-Overruns happen when the UART receiver FIFO buffer is completely
-full when the next date character is received. The byte that did
-not fit is discarded and the overrun status is posted. 
+Hi,
 
-the root cause is either that the data is not being read fast 
-enough by the program, or system interrupt latency is too long
-to let the driver service the UART before an overrun occurs. 
+I have been studying the serial driver code and found the following
+chunk of code in serial.c (2.4.19):
 
-If the data source supports XON/XOFF or hardware flow control, 
-you could set that to hold off the data source when the system 
-is not ready to receive more data. 
+---------------------------------------------------------------
+#ifdef CONFIG_HARD_PPS
+			if ((info->flags & ASYNC_HARDPPS_CD) &&
+			    (status & UART_MSR_DCD))
+				hardpps();
+#endif
+---------------------------------------------------------------
 
-Does your UART have a FIFO buffer? 
-What UART type is your port?
-How fast is your system?
- 
-Cheers,
-Ed
+There seems to be no reference to it in the current 2.4 and 2.5 kernels.
+There are some reference in the 2.2 kernels. Is this cruft left from
+previous versions?
+
+Regards,
+Amit
+
+-- 
+----------------------------------------------------------------------
+Amit Kucheria          akucheria@NOSPAMmetricsystems.com
+Metric Systems Corp.   2320 Cousteau Court, Suite 201, Vista, CA 92083
+----------------------------------------------------------------------
+
