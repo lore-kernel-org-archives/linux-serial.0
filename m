@@ -1,39 +1,68 @@
 From: David Vrabel <dvrabel@arcom.com>
-Subject: Request resources if not autoconfiguring new ports
-Date: Fri, 24 Sep 2004 09:23:56 +0100
+Subject: New 8250 device -- XR16550.
+Date: Fri, 24 Sep 2004 09:59:03 +0100
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <4153D99C.1000503@arcom.com>
+Message-ID: <4153E1D7.3010201@arcom.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from webapps.arcom.com ([194.200.159.168]:10758 "EHLO
-	webapps.arcom.com") by vger.kernel.org with ESMTP id S268582AbUIXIX5
+Received: from webapps.arcom.com ([194.200.159.168]:19206 "EHLO
+	webapps.arcom.com") by vger.kernel.org with ESMTP id S268582AbUIXI7E
 	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 24 Sep 2004 04:23:57 -0400
+	Fri, 24 Sep 2004 04:59:04 -0400
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-serial mailing list <linux-serial@vger.kernel.org>
 
 Hi,
 
-Serial core doesn't request resources when adding new ports if the port 
-isn't to be autoconfigured (UPF_BOOT_AUTOCONF is not set).  This also 
-means the UPF_IOREMAP flag doesn't work.
+This adds support for the two 16550 compatible UARTs in an Exar
+XR16L2551 chip to the 8250 driver.  They have a sleep mode like the
+ST16650V2s but a smaller (16 byte) Rx fifo.
 
---- linux-2.6-armbe.orig/drivers/serial/serial_core.c	2004-09-23 
-15:04:08.000000000 +0100
-+++ linux-2.6-armbe/drivers/serial/serial_core.c	2004-09-23 
-17:43:57.000000000 +0100
-@@ -2007,7 +2007,8 @@
-  	if (port->flags & UPF_BOOT_AUTOCONF) {
-  		port->type = PORT_UNKNOWN;
-  		port->ops->config_port(port, flags);
--	}
-+	} else
-+                port->ops->request_port(port);
+Index: linux-2.6-armbe/drivers/serial/8250.c
+===================================================================
+--- linux-2.6-armbe.orig/drivers/serial/8250.c	2004-09-22
+17:12:19.000000000 +0100
++++ linux-2.6-armbe/drivers/serial/8250.c	2004-09-23 17:53:37.000000000
++0100
+@@ -174,6 +174,7 @@
+  	{ "RSA",	2048,	2048,	UART_CAP_FIFO },
+  	{ "NS16550A",	16,	16,	UART_CAP_FIFO | UART_NATSEMI },
+  	{ "XScale",	32,	32,	UART_CAP_FIFO },
++	{ "XR16550",	16,	16,	UART_CAP_FIFO | UART_CAP_SLEEP | UART_CAP_EFR },
+  };
 
-  	if (port->type != PORT_UNKNOWN) {
-  		unsigned long flags;
+  static _INLINE_ unsigned int serial_in(struct uart_8250_port *up, int
+offset)
+@@ -477,8 +478,10 @@
+  	 */
+  	if (size_fifo(up) == 64)
+  		up->port.type = PORT_16654;
+-	else
++	else if(size_fifo(up) == 32)
+  		up->port.type = PORT_16650V2;
++	else
++		up->port.type = PORT_XR16550;
+  }
+
+  /*
+Index: linux-2.6-armbe/include/linux/serial_core.h
+===================================================================
+--- linux-2.6-armbe.orig/include/linux/serial_core.h	2004-09-23
+17:01:32.000000000 +0100
++++ linux-2.6-armbe/include/linux/serial_core.h	2004-09-23
+17:03:10.000000000 +0100
+@@ -37,7 +37,8 @@
+  #define PORT_RSA	13
+  #define PORT_NS16550A	14
+  #define PORT_XSCALE	15
+-#define PORT_MAX_8250	15	/* max port ID */
++#define PORT_XR16550	16
++#define PORT_MAX_8250	16	/* max port ID */
+
+  /*
+   * ARM specific type numbers.  These are not currently guaranteed
 
 David Vrabel
 -- 
