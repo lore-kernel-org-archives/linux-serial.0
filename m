@@ -1,46 +1,28 @@
-From: "luke" <butch21dgj@hotmail.com>
-Subject: Forget V1AGRA, there's a new game in town!
-Date: Wed, 04 Feb 2004 12:52:25 GMT
+From: "Albert Cervera Areny" <informatic@sedifa.com>
+Subject: Offtopic: Omron V2X & Siemens SLE 4442
+Date: Thu, 5 Feb 2004 10:27:38 +0100 (CET)
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1075899145-2238@excite.com>
-Content-Type: text/plain;
+Message-ID: <48043.192.168.192.123.1075973258.squirrel@www.clientes.sedifa.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [204.60.156.3] ([204.60.156.3]:16142 "HELO verizon.net")
-	by vger.kernel.org with SMTP id S261539AbUBDMz3 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Feb 2004 07:55:29 -0500
+Received: from 199.Red-80-26-113.pooles.rima-tde.net ([80.26.113.199]:64191
+	"HELO localhost") by vger.kernel.org with SMTP id S264507AbUBEJ1n
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 5 Feb 2004 04:27:43 -0500
 List-Id: linux-serial@vger.kernel.org
-To: kanoj@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-The Biggest New Drug since V1agra! Many times as powerful.
+Hi,
+	This is a bit OT but we're really stuck trying to read the main memory of
+a Siemens SLE 4442 card with an Omron V2X.  The strange thing is that
+we're able to read security and protected memory of the card but can't
+read main memory as the C/R returns a 'Incorrect Parameters' error.
 
-C1AL1S has been seen all over TV as of late.
+	Has anybody been able to read (and write, we'll get there someday) this
+card or one similar? We haven't been able to find a single example of how
+to use this card reader.
 
-So why is it so much better than V1agra? Why are so many switching brands?
+	Thanks for any information you can provide!
 
--A quicker more stable erection
--More enjoyable sex for both
--Longer sex
--Known to add length to you erection
--Lasts up to 36 hours (not a thrity-six hour erection, but enhancement for thirty-six)
-
-We have it at a discounted savings. Save when you go through our site on all your orders.
-
-See the difference today. 
-
-http://magnum.instrhh.com/s95c/index.php?id=s95
-
-
-
-
-
-
-
-
-
-
-
-diana tigrejapan xxxx tarzan racoon happyday lady 
-director sarah1 
-velvet johnson rux advil 
-lulu 
