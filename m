@@ -1,34 +1,41 @@
-From: Bjorn Helgaas <bjorn-helgaas@comcast.net>
-Subject: Re: [PATCH] [SERIAL] add TP560 data/fax/modem support
-Date: Tue, 08 Feb 2005 10:19:48 -0700
-Message-ID: <1107883188.9100.15.camel@piglet>
-References: <1107805182.8074.35.camel@piglet>
-	 <Pine.LNX.4.61.0502071508130.24378@chaos.analogic.com>
-	 <1107809856.8074.50.camel@piglet>
-	 <Pine.LNX.4.61.0502080710230.27765@chaos.analogic.com>
+From: Bjorn Helgaas <bjorn.helgaas@hp.com>
+Subject: [PATCH] SERIAL: discover PNP ports before PCI, etc
+Date: Wed, 09 Feb 2005 13:12:47 -0700
+Message-ID: <1107979967.27371.42.camel@eeyore>
 Mime-Version: 1.0
 Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
-Received: from rwcrmhc11.comcast.net ([204.127.198.35]:49082 "EHLO
-	rwcrmhc11.comcast.net") by vger.kernel.org with ESMTP
-	id S261598AbVBHRUM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 8 Feb 2005 12:20:12 -0500
-In-Reply-To: <Pine.LNX.4.61.0502080710230.27765@chaos.analogic.com>
+Received: from atlrel8.hp.com ([156.153.255.206]:13213 "EHLO atlrel8.hp.com")
+	by vger.kernel.org with ESMTP id S261925AbVBIUMz (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 9 Feb 2005 15:12:55 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-os@analogic.com
-Cc: rmk+serial@arm.linux.org.uk, linux-serial@vger.kernel.org
+To: rmk+serial@arm.linux.org.uk
+Cc: linux-serial@vger.kernel.org, shaohua.li@intel.com, ambx1@neo.rr.com
 
-This discussion has nothing to do with serial, so I'm going to
-respond more completely but remove Russell and linux-serial and
-add linux-pci.  Just FYI.
+PNP ports tend to be built-in, and discovering them after
+PCI ports means the names of the built-in ports can change
+if you add or remove PCI ports.
 
-On Tue, 2005-02-08 at 07:25 -0500, linux-os wrote:
-> On Mon, 7 Feb 2005, Bjorn Helgaas wrote:
-> 
-> > On Mon, 2005-02-07 at 15:12 -0500, linux-os wrote:
-> >> I thought somebody promised to add a pci_route_irq(dev) or some
-> >> such so that the device didn't have to be enabled before
-> >> the IRQ was correct.
+(And yes, we should look at getting rid of 8250_acpi.c
+now that we have PNPACPI, but that's for another patch.)
+
+Signed-off-by: Bjorn Helgaas <bjorn.helgaas@hp.com>
+
+===== drivers/serial/Makefile 1.42 vs edited =====
+--- 1.42/drivers/serial/Makefile	2005-02-03 07:42:40 -07:00
++++ edited/drivers/serial/Makefile	2005-02-09 12:58:23 -07:00
+@@ -6,9 +6,9 @@
+ 
+ serial-8250-y :=
+ serial-8250-$(CONFIG_SERIAL_8250_ACPI) += 8250_acpi.o
++serial-8250-$(CONFIG_PNP) += 8250_pnp.o
+ serial-8250-$(CONFIG_GSC) += 8250_gsc.o
+ serial-8250-$(CONFIG_PCI) += 8250_pci.o
+-serial-8250-$(CONFIG_PNP) += 8250_pnp.o
+ serial-8250-$(CONFIG_HP300) += 8250_hp300.o
+ 
+ obj-$(CONFIG_SERIAL_CORE) += serial_core.o
 
 
