@@ -1,21 +1,21 @@
 From: "Patrick Noel" <patrick@wineparis.com>
 Subject: OUHAOU !!!!!!!!!!!
-Date: Thu, 11 Dec 2003 02:17:00 +0100
+Date: Thu, 11 Dec 2003 02:33:34 +0100
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <200312110117.hBB1H8K07563@zeus.kernel.org>
+Message-ID: <200312110133.hBB1XeK10991@zeus.kernel.org>
 Reply-To: "Patrick Noel" <patrick@wineparis.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii";
 	charset="US-ASCII"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus.kernel.org ([204.152.189.113]:39930 "EHLO zeus.kernel.org")
-	by vger.kernel.org with ESMTP id S264299AbTLKBRP (ORCPT
+Received: from zeus.kernel.org ([204.152.189.113]:31626 "EHLO zeus.kernel.org")
+	by vger.kernel.org with ESMTP id S264301AbTLKBdo (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Dec 2003 20:17:15 -0500
+	Wed, 10 Dec 2003 20:33:44 -0500
 Received: from YOUR-D8E3C8425F (ACB4CF2D.ipt.aol.com [172.180.207.45])
-	by zeus.kernel.org (8.11.6/8.11.6) with ESMTP id hBB1H8K07563
-	for <linux-serial@vger.kernel.org>; Wed, 10 Dec 2003 17:17:09 -0800
+	by zeus.kernel.org (8.11.6/8.11.6) with ESMTP id hBB1XeK10991
+	for <linux-serial@vger.kernel.org>; Wed, 10 Dec 2003 17:33:41 -0800
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
