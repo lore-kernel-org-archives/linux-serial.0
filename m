@@ -1,46 +1,62 @@
-From: Nikolay Datchev <nik@varna.net>
-Subject: serial port forcing
-Date: Mon, 1 Dec 2003 13:18:44 +0200 (EET)
+From: Jan-Benedict Glaw <jbglaw@lug-owl.de>
+Subject: Re: serial port forcing
+Date: Mon, 1 Dec 2003 12:22:40 +0100
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <Pine.LNX.4.33.0312011257140.11314-100000@ns.varna.net>
+Message-ID: <20031201112239.GD1037@lug-owl.de>
+References: <Pine.LNX.4.33.0312011257140.11314-100000@ns.varna.net>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="G+sEoG1eJFrWmpoU"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ns.varna.net ([195.24.57.1]:29838 "EHLO ns.varna.net")
-	by vger.kernel.org with ESMTP id S263364AbTLALSu (ORCPT
+Received: from dvmwest.gt.owl.de ([62.52.24.140]:18563 "EHLO dvmwest.gt.owl.de")
+	by vger.kernel.org with ESMTP id S263506AbTLALWo (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 1 Dec 2003 06:18:50 -0500
-Received: from localhost (nik@localhost)
-	by ns.varna.net (8.12.10/8.12.9) with ESMTP id hB1BIiIJ003868
-	for <linux-serial@vger.kernel.org>; Mon, 1 Dec 2003 13:18:45 +0200
+	Mon, 1 Dec 2003 06:22:44 -0500
+Content-Disposition: inline
+In-Reply-To: <Pine.LNX.4.33.0312011257140.11314-100000@ns.varna.net>
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Hello list,
 
-Here is my problem:
+--G+sEoG1eJFrWmpoU
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I have one linux machine with one 4xserial PCI board, another one 2xserial
-PCI board, and one onboard serial port, total 7 ports. After boot-up, only
-6 ports appears (setserial -bg /dev/ttyS? shows ttyS0,1,4,5,6,7, same in
-cat /proc/tty/driver/serial). 4 to 7 are the four-port board ports, and
-they work fine. 0 and 1 are recognized with standart settings - port
-0x3f8/0x2f8, irq 4/3, but i'm able to setserial them with the two board
-ports settings, and all works fine. It works also if i setserial only one
-of the two board ports, and i let ttyS0 with default settings, which makes
-onboard port usable. But i need all the 7 ports.
+On Mon, 2003-12-01 13:18:44 +0200, Nikolay Datchev <nik@varna.net>
+wrote in message <Pine.LNX.4.33.0312011257140.11314-100000@ns.varna.net>:
+> Hello list,
+>=20
+> Here is my problem:
+>=20
+> I have one linux machine with one 4xserial PCI board, another one 2xserial
+> PCI board, and one onboard serial port, total 7 ports. After boot-up, only
 
-I'm using linux kernel v. 2.4.22, and i get in /proc/tty/driver/serial
-only ports, that has been recognized upon boot-up, hense i'm not able to
-force using more than 6 ports (setserial /dev/ttySX port Y irq Z where X
-is some serial port not appearing in /proc does not result in anything).
-With kernel 2.4.18, i got up to 64 ports in /proc, but those not
-recognized in the boot-time has unknown uart and fake recources.
+This all sounds like your 2-port serial PCI board isn't recognized. What
+kind of board is this *exactly*? Brand name and "lspci -vv" output could
+help...
 
-How can i make all 7 ports usable ? In other words, how to force another
-serial port recognition ? Kernel downgrade is not an option.
+MfG, JBG
 
-Thanks in advance.
+--=20
+   Jan-Benedict Glaw       jbglaw@lug-owl.de    . +49-172-7608481
+   "Eine Freie Meinung in  einem Freien Kopf    | Gegen Zensur | Gegen Krieg
+    fuer einen Freien Staat voll Freier B=FCrger" | im Internet! |   im Ira=
+k!
+   ret =3D do_actions((curr | FREE_SPEECH) & ~(NEW_COPYRIGHT_LAW | DRM | TC=
+PA));
 
--- Nikolay Datchev
+--G+sEoG1eJFrWmpoU
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+Content-Disposition: inline
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.3 (GNU/Linux)
+
+iD8DBQE/yyR/Hb1edYOZ4bsRAs8yAJ93JzENf97iM2/SY3n4fen344vANwCcD8YR
+r0muh31On2TWJWU3RLa0eV4=
+=rpDV
+-----END PGP SIGNATURE-----
+
+--G+sEoG1eJFrWmpoU--
