@@ -1,16 +1,17 @@
-From: "pat" <easter21theking@hotmail.com>
-Subject: Use offshore phar-macies to save $$$ on your meds!
-Date: Sat, 06 Mar 2004 22:21:21 GMT
+From: "monte" <fr8eedmanbill@hotmail.com>
+Subject: Save up to 80% on your medications!
+Date: Sun, 07 Mar 2004 16:53:42 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1078611681-24870__4838.43196784637$1078611756@excite.com>
+Message-ID: <1078678422-29920__24368.2486856871$1078678479@excite.com>
 Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [12.0.249.86] ([12.0.249.86]:18 "HELO vetparas.unizh.ch")
-	by vger.kernel.org with SMTP id S261719AbUCFWVd (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 6 Mar 2004 17:21:33 -0500
+Received: from [202.188.20.133] ([202.188.20.133]:15623 "HELO
+	vernal.wireline.slb.com") by vger.kernel.org with SMTP
+	id S262262AbUCGQxq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 7 Mar 2004 11:53:46 -0500
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org
+
 
 Buy the drugs you need at huge discounts from Offshore Pharmacy!
 
@@ -36,10 +37,5 @@ http://bigdiscounts.selcydc.com/s95/index.php?id=s95
 
 
 
-
-
-goblue mikistrawber china guinness bigmac hazel saskia 
-t-bone angusdon larry1 zhongguo
-dexter fozzie qwerty12 
-
-Get off this list by going here: http://royaldrugs.com/pp/applepie.php
+gillaspie death venus colleen moira stimpson   sweety kristiDenver kristi mondana kbuchan   mdougher defilippis  cori dobkin rjhoban  hansolo madge 
+Get off this list by writing to getmeoff731@excitemail.com
