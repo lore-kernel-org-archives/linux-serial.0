@@ -1,42 +1,30 @@
-From: "fredric" <kdoty98@hotmail.com>
-Subject: A D-r-u-g more potent than VIAG-RA?!
-Date: Tue, 17 Feb 2004 07:00:41 GMT
+From: "tommy" <midori21a@hotmail.com>
+Subject: Cheap V1AGRA?
+Date: Tue, 17 Feb 2004 21:28:41 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1077001241-12222__1518.50904007933$1077026406@excite.com>
+Message-ID: <1077053321-3352__19649.3464093239$1077046653@excite.com>
 Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nitelife.partymailings.com ([206.126.232.53]:10445 "HELO
-	verwaltung.uni-augsburg.de") by vger.kernel.org with SMTP
-	id S266172AbUBQN6p (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 17 Feb 2004 08:58:45 -0500
+Received: from proxy.speed.net.id ([202.150.64.246]:49496 "HELO vanaarda.com")
+	by vger.kernel.org with SMTP id S266478AbUBQTfm (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 17 Feb 2004 14:35:42 -0500
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 
+Here is an fantastic way to please your lady.
 
-"I went from about 6in. to over 7.5 in 90days!" - JL - Tulsa, OK
+You can be ready for up to thirty-six hours.
 
-http://drlaurent.com/mm/index.php?pid=eph9106
+The results are far greater than any other product.
 
-
-"NOT only the SIZE increased..but also the feeling!" - ER - Dallas, TX
-
-http://drlaurent.com/mm/index.php?pid=eph9106
-
-
-"I grew about 2in - and more so..remain rock-hard during love making. I owe it
-all to Maxaman! Not bad for a 56 year old."  MT - Pensacola, FL
-
-http://drlaurent.com/mm/index.php?pid=eph9106
+http://medsfactory.com/sv/index.php?pid=eph9106
 
 
 
 
 
 
-
-
-inside  connors sunday marcous bruceg pjvolz  beagle </U> 
-feng deep  bird lavallee petteway pmokodom takara  golfer jpwu Please kamal jfleming  dawes hebleshm peck  ajagisim weenie Kinder humility
-krwallma
-Get off this list by writing to getmeoff731@mail.com
-
+peggy metallicaorchid miles zhongguo whitney glenn metallica
+user1 smithspoiuyt nesbitt player 
+magnum doom2 soccer1 
