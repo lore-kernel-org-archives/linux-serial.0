@@ -1,34 +1,30 @@
-From: Guennadi Liakhovetski <gl@dsa-ac.de>
-Subject: Re: drivers/serial && drivers/char/serial.c in 2.5 && 2.4...
-Date: Wed, 17 Apr 2002 12:14:05 +0200 (CEST)
+From: "9c97cce5c9533ebe8f" <bai01@mails.tsinghua.edu.cn>
+Subject: where can I find "serial_compat.h" file?
+Date: Mon, 22 Apr 2002 00:38:12 +0800
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <a9ji5m$u4$2@main.gmane.org>
-References: <20020416174057.F19573@flint.arm.linux.org.uk>
-Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Message-ID: <20020421164008Z313557-22651+13100@vger.kernel.org>
+Reply-To: "9c97cce5c9533ebe8f" <bai01@mails.tsinghua.edu.cn>
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-In-Reply-To: <20020416174057.F19573@flint.arm.linux.org.uk>
 List-Id: linux-serial@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: ARM Linux kernel <linux-arm-kernel@lists.arm.linux.org.uk>, tytso@mit.edu, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Hello all
+Hi all:
+   
+   In the linux kernel drivers/char/serial.c, it has:
 
-On our StrongARM board we are preserving power by disabling / enabling an
-16550 UART. Until now we were doing this in a separate application. But a
-better idea would be to have a (arch-specific, of course) pm-call in
-uart_open/close (or serial8250_startup/shutdown) functions. How can we do
-this? Currently there's just a call to pm_access in uart_start, which is a
-dummy, but uart_close DOES have a call to pm_send, but we anyway have to
-add knowledge about this specific UART to the driver, right? And we need a
-wakeup call in uart_open, I think.
+/*
+ * All of the compatibilty code so we can compile serial.c against
+ * older kernels is hidden in serial_compat.h
+ */
+#if defined(LOCAL_HEADERS) || (LINUX_VERSION_CODE < 0x020317) /* 2.3.23 */
+#include "serial_compat.h"
+#endif
 
-Thanks
-Guennadi
----------------------------------
-Guennadi Liakhovetski, Ph.D.
-DSA Daten- und Systemtechnik GmbH
-Pascalstr. 28
-D-52076 Aachen
-Germany
+   But I can't find the "serial_compat.h" file,
+   Who can tell me where can I find it.
+   And I use serial.c with version "5.05c"
+
+   Thanks!
+
 
