@@ -1,62 +1,43 @@
-From: Jan-Benedict Glaw <jbglaw@lug-owl.de>
-Subject: Re: serial port read working but not write
-Date: Sat, 24 Jul 2004 17:11:37 +0200
+From: =?iso-8859-1?q?suresh=20shenoy?= <msureshshenoy@yahoo.co.in>
+Subject: serial port read working but not write.
+Date: Sun, 25 Jul 2004 00:36:50 +0100 (BST)
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20040724151137.GF18676@lug-owl.de>
-References: <20040724143949.21583.qmail@web8204.mail.in.yahoo.com>
+Message-ID: <20040724233650.78426.qmail@web8201.mail.in.yahoo.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="wO3ULb5M+sQS9v8+"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from dvmwest.gt.owl.de ([62.52.24.140]:13233 "EHLO dvmwest.gt.owl.de")
-	by vger.kernel.org with ESMTP id S268666AbUGXPLi (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 24 Jul 2004 11:11:38 -0400
-Content-Disposition: inline
-In-Reply-To: <20040724143949.21583.qmail@web8204.mail.in.yahoo.com>
+Received: from web8201.mail.in.yahoo.com ([203.199.70.114]:63840 "HELO
+	web8201.mail.in.yahoo.com") by vger.kernel.org with SMTP
+	id S263100AbUGXXgx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 24 Jul 2004 19:36:53 -0400
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
+Hi all,
 
---wO3ULb5M+sQS9v8+
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+  
+   Frank, 
+  
+     I tried that test. It told me that hexdump was
+not a option in dd. I dont know much about dd so i
+read the man pages but could not figure out. 
 
-On Sat, 2004-07-24 15:39:49 +0100, suresh shenoy <msureshshenoy@yahoo.co.in>
-wrote in message <20040724143949.21583.qmail@web8204.mail.in.yahoo.com>:
 
->        When i ran the write program the output
-> increased to 1500-1900 and stayed there.=20
+   Secondly,
 
-So no data is ever sent out to the hardware. So there seems to be some
-kind of hardware-related problem. Could you please once set the IRQ line
-to 0? IIRC, that should put the UART into polling mode, which should
-help if there's an interrupt problem...
+      I changed the interrupt to 0 but still the
+numbers are increasing. 
 
-MfG, JBG
+      One thing that i did recognize is the baud rate
+for send was wrong which i changed to 115200 and then
+tried again but it still dint work. I am sending the
+correct packets. There could be no errors there. Also
+there is no parity in this program.
 
---=20
-Jan-Benedict Glaw       jbglaw@lug-owl.de    . +49-172-7608481             =
-_ O _
-"Eine Freie Meinung in  einem Freien Kopf    | Gegen Zensur | Gegen Krieg  =
-_ _ O
- fuer einen Freien Staat voll Freier B=FCrger" | im Internet! |   im Irak! =
-  O O O
-ret =3D do_actions((curr | FREE_SPEECH) & ~(NEW_COPYRIGHT_LAW | DRM | TCPA)=
-);
+Thanks & Regards,
+Suresh
 
---wO3ULb5M+sQS9v8+
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.2.4 (GNU/Linux)
-
-iD8DBQFBAnwpHb1edYOZ4bsRAiMcAJ40NHwR4UVNyJN0Rs1j5dOOADgBaACdEnOg
-tMRhVfYoPVqvSBvYVHC9R9I=
-=TEQm
------END PGP SIGNATURE-----
-
---wO3ULb5M+sQS9v8+--
+________________________________________________________________________
+Yahoo! India Careers: Over 65,000 jobs online
+Go to: http://yahoo.naukri.com/
