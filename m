@@ -1,64 +1,53 @@
-From: henrique <henrique@cyclades.com>
-Subject: Re: A new serial baud rate
-Date: Fri, 26 Jul 2002 10:14:45 -0300
+From: Russell King <rmk@arm.linux.org.uk>
+Subject: Re: n_tty.c driver patch (semantic and performance correction) (a ll recent versions)
+Date: Fri, 26 Jul 2002 15:17:23 +0100
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <200207260921.20600.henrique@cyclades.com>
-References: <1779CCD227485B49A825718AAAA90E3E406CD4@tpsmail01.turbopower.net>
-Reply-To: henrique@cyclades.com
+Message-ID: <20020726151723.F19802@flint.arm.linux.org.uk>
+References: <11E89240C407D311958800A0C9ACF7D13A789A@EXCHANGE>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from henrique (henrique.cyclades.com.br [200.246.93.86])
-	by firewall.cyclades.com.br (8.9.3/8.9.3) with ESMTP id KAA14521
-	for <linux-serial@vger.kernel.org>; Fri, 26 Jul 2002 10:32:49 -0300
-In-Reply-To: <1779CCD227485B49A825718AAAA90E3E406CD4@tpsmail01.turbopower.net>
+Content-Disposition: inline
+In-Reply-To: <11E89240C407D311958800A0C9ACF7D13A789A@EXCHANGE>; from EdV@macrolink.com on Wed, Jun 26, 2002 at 10:48:30AM -0700
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Ed Vance <EdV@macrolink.com>
+Cc: "'rwhite@pobox.com'" <rwhite@pobox.com>, 'Theodore Tso' <tytso@mit.edu>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Hello !!!
+On Wed, Jun 26, 2002 at 10:48:30AM -0700, Ed Vance wrote:
+> Does the spec say that VMIN behavior depends on the size of a 
+> blocking read? No, it says that the read completes when VMIN or 
+> more characters have been received. If VMIN is three and two 
+> characters have been received, completing a blocking read of any 
+> size is a violation. Should we also add a "read buffer size" 
+> parameter to select and poll, etc. so they can report that read 
+> data is available before satisfying VMIN, too? 
+> 
+> Ted, Russell, please weigh in on this. 
 
-After the last e-mails about this issue I've checked the equipment. I am not 
-actually dealing with a modem, I'm dealing with a mux/demux which is 
-connected to a modem. The demux has 20 ports and 5 of these ports have the
-mentioned speed. I have a multi-serial board that uses the UART 16550A.
+I just found this mail again.  Yes, I agree with your interpretation,
+which reflects the code we presently have, as well as my reading of
+SuS.  The SuS is quite clear that "A pending read shall not be
+satisfied until MIN bytes are received".  It doesn't say "A pending
+read shall not be satisfied until MIN bytes or the number of requested
+bytes in read() are received"
 
-I plan to make this implementation, firstly using a ioctl as suggested by  
-Matti Aarnio, and afterwards changing the termios.h, task that I believe to 
-be harder than the first one.
+In addition, it also says "MIN represents the minimum number of bytes
+that should be received when the read() function returns successfully."
+Successful completion for read() is defined as "Upon successful
+completion, read() shall return a non-negative integer indicating the
+number of bytes actually read."
 
-Ed, unfortunately my equipment uses the 2.2.14 kernel. Does your suggestion 
-work in such kernel ? It would be the easiest way to solve this.
+So, for _any_ read() to a terminal with MIN set, for this call to
+return data (ie, success) MIN bytes must have been received.
 
-regards
-Henrique
+(Note that the behaviour where the number of bytes > MIN seems to be
+a little vague, SuS just talks about "block the calling thread until
+_some_ data becomes available" for the blocking case.)
 
-On Thursday 25 July 2002 05:26 pm, Gary Frerking wrote:
-> Henrique,
->
-> >> That's the problem. I can't change the modem configuration cause this
->
-> modem are provided by the Telco. I have to use this baud rate. And I
-> wanna use it with Linux. <<
->
-> I've never run across a modem that requires a 14400 baud rate on the
-> serial line. I *have* run across many, many people *thinking* they need
-> 14400 on the serial line because it's a 14400 modem (is this for faxing?
-> 14400 often comes up in relation to faxing).
->
-> We obviously have no way of knowing more about what you're dealing with
-> than what you're able/willing to tell us -- but based on past
-> experience, I'm skeptical about the fact that you need 14400 on the
-> serial line.
->
-> Can you provide more details about the modem itself? Do you have a model
-> number? What are you using it for?
->
-> -- Gary
+I'd be interested to know if Ted agrees with my position here; he is
+the author of the tty code, and is presently looking at that area.
 
 -- 
----
-Henrique Gobbi
-Software Engineer
-+55 11 50333339
-Cyclades Corporation - The Leader in Linux Connectivity
+Russell King (rmk@arm.linux.org.uk)                The developer of ARM Linux
+             http://www.arm.linux.org.uk/personal/aboutme.html
+
