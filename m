@@ -1,37 +1,68 @@
-From: newhsave@yahoo.com
-Subject: start making money
-Date: Tue, 18 May 2004 02:43:14 -0900
+From: "kory" <nikitagod@bekloppt.com>
+Subject: Save a bundle on Windows XP!
+Date: Thu, 20 May 2004 22:12:45 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <5a5801c43ccd$4e1e5730$f4be6802@fkbcwyheywvnc>
-Reply-To: newhsave@yahoo.com
-Mime-Version: 1.0
+Message-ID: <1085091165-14993__16882.206235505$1085047938@excite.com>
 Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from syr-24-58-16-123.twcny.rr.com ([24.58.16.123]:25096 "HELO
-	yahoo.com") by vger.kernel.org with SMTP id S263252AbUERMnz (ORCPT
+Received: from [211.108.90.8] ([211.108.90.8]:4016 "HELO vermontel.net")
+	by vger.kernel.org with SMTP id S265076AbUETKLN (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 May 2004 08:43:55 -0400
+	Thu, 20 May 2004 06:11:13 -0400
 List-Id: linux-serial@vger.kernel.org
-To: Webmaster <linux-serial@vger.kernel.org>
+To: linux-kernel@vger.kernel.org
 
-Ask yourself the following questions right NOW! 
+Incredible DEALS on SOFTWARE you NEED!
 
-Are you ready to start making money? 
-Are you ready to control your own future? 
-Do you want to fire your boss? 
+Save 40% on Windows XP Professional!
+Save 40% on Microsoft Office 2003 Professional!
+Save $90 on Adobe Photoshop!
+Save 60% on Norton AntiVirus!!
 
-If you answer yes to any of the previous questions then go ahead and tell
-us where you are located and we will take you right to the hottest
-moneymakers for your area.
+Save your company thousands of dollars when it needs software!
+
+That promotion just got closer...
+
+Click here!!
+http://teddychoice.biz/index.php?s=7555
 
 
-http://www.zxcrere.com/Unifiercoils/index.htm
+Software packages you can save big on:
 
-Opt out on internetpage
+Windows XP Professional
+Norton Antivirus 2004
+Adobe Photoshop 7.0
+Microsoft Office XP Professional
+Microsoft Office 2003 Professional
+Microsoft Money 2004
+Microsoft 2000 Professional
+Adobe Photoshop CS
+Adobe Pagemaker 7.0
+Adobe Illustrator 10
+Corel Draw Graphics Suite 11
+Adobe Acrobat 6.0 Professional
+Borland Delphi 7 Professional
+Visual Studio.Net Enterprise Architecht
+MS SQL Server 2000 Enterprise
+MS Windows Server 2003 Enterprise
+MS Windows 2000 Server
+Red Hat Linux 7.3
 
-Or write to
 
-# 25 NanTong DaSha, FangXiang Street, ShiChuan, ChongQing 452135, China
 
+Click here!!
+http://teddychoice.biz/index.php?s=7555
+
+
+
+
+
+
+
+
+
+image tacobellzhongguo eugene yoda malcolm goat excalibu 
+khan alisonuser1 gray aylmer
+aylmer kenneth monopoly 
+
+REMOV3: http://teddychoice.biz/soft/chair.php
