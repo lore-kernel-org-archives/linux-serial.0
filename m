@@ -1,17 +1,38 @@
 From: "Deepak Gupta" <deepak@cse.iitk.ac.in>
 Subject: RE: serial communication problems
-Date: Thu, 30 May 2002 12:10:47 +0530
+Date: Thu, 30 May 2002 13:26:40 +0530
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <NGBBLCPHOLHALDOMDOMNEEEHCAAA.deepak@cse.iitk.ac.in>
-References: <Pine.LNX.4.33.0205300846120.17925-100000@emig4.heisch.inka.de>
+Message-ID: <NGBBLCPHOLHALDOMDOMNMEEHCAAA.deepak@cse.iitk.ac.in>
+References: <NGBBLCPHOLHALDOMDOMNEEEHCAAA.deepak@cse.iitk.ac.in>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-In-Reply-To: <Pine.LNX.4.33.0205300846120.17925-100000@emig4.heisch.inka.de>
+Received: from mailhost.cse.iitk.ac.in (mailhost.cse.iitk.ac.in [172.31.16.2])
+	by mail.cse.iitk.ac.in (8.11.6/8.11.2) with ESMTP id g4U7t5p20608
+	for <linux-serial@vger.kernel.org>; Thu, 30 May 2002 13:25:05 +0530
+In-Reply-To: <NGBBLCPHOLHALDOMDOMNEEEHCAAA.deepak@cse.iitk.ac.in>
 List-Id: linux-serial@vger.kernel.org
-To: Gerald Emig <gme@heisch.inka.de>
+To: Deepak Gupta <deepak@cse.iitk.ac.in>
+Cc: linux-serial@vger.kernel.org, moona@cse.iitk.ac.in
+
+Hi Gerald,
+
+It worked!!  I had to clear RTS after sending as you said.
+The mistake I was making was to not wait till all characters
+have been actually transmitted.  I inserted a tcdrain(fd)
+between write and the ioctl to lower RTS and it worked like
+a dream.  Thanks a load.
+
+Deepak
+
+-----Original Message-----
+=46rom: Deepak Gupta [mailto:deepak@cse.iitk.ac.in]
+Sent: Thursday, May 30, 2002 12:11 PM
+To: Gerald Emig
 Cc: linux-serial@vger.kernel.org
+Subject: RE: serial communication problems
+
 
 Thanks for the response.  I tried lowering RTS after
 sending the data and raising it again before the next
