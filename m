@@ -1,65 +1,51 @@
-From: Tim Schmielau <tim@physik3.uni-rostock.de>
-Subject: [patch] fix compares of jiffies
-Date: Sun, 22 Sep 2002 13:45:52 +0200
+From: Burton Windle <bwindle@fint.org>
+Subject: [2.5.38] Warning: null TTY for (88:##) in tty_fasync (fwd)
+Date: Mon, 23 Sep 2002 14:50:30 -0400 (EDT)
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <200209221145.g8MBjqM23364@gans.physik3.uni-rostock.de>
+Message-ID: <Pine.LNX.4.43.0209231450130.5735-100000@morpheus>
+Mime-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: support@moxa.com.tw
-Cc: linux-serial@vger.kernel.org, tim@physik3.uni-rostock.de
+To: linux-serial@vger.kernel.org
+Cc: tytso@mit.edu
 
-Dear Linux kernel code maintainer,
+Are these cause for concern?
 
-on rechecking the current stable kernel code, I found some places where jiffies
-were compared in a way that seems to break when they wrap. For these,
-I made up patches to use the macros "time_before()" or "time_after()"
-that are supposed to handle wraparound correctly.
+Sep 23 14:16:56 razor kernel: Warning: null TTY for (88:01) in tty_fasync
+Sep 23 14:16:56 razor kernel: Warning: null TTY for (88:00) in tty_fasync
+Sep 23 14:24:30 razor kernel: Warning: null TTY for (88:02) in tty_fasync
 
-For a small part of the patches, I believe you to be the relevant kernel code
-maintainer. Appended to this email you will find some lines explaining
-why I decided to mail or cc: you on this (an extract of the copyright notice
-or the MAINTAINERS file), followed by the patch itself. If I mailed you
-in error, please drop me a short note.
+I see that they can come from drivers/char/tty_io.c:
+     "Warning: null TTY for (%s) in %s\n";
 
-I kindly ask you to approve the correctness of the patch, and pass it on to
-the relevant people for inclusion into the mainline kernel.
+I'm able to reproduce these at will.
 
-Thanks,
-Tim Schmielau (tim@physik3.uni-rostock.de)
+Linux version 2.5.38 (bwindle@razor) (gcc version 2.95.4 20011002 (Debian prerelease)) #1 Mon Sep 23 10:07:19 EST 2002
 
-
-
-/*****************************************************************************/
-/*
- *           moxa.c  -- MOXA Intellio family multiport serial driver.
- *
- *      Copyright (C) 1999-2000  Moxa Technologies (support@moxa.com.tw).
-
-
- *    Fixes for C104H/PCI by Tim Hockin <thockin@sun.com>
+Gnu C                  2.95.4
+Gnu make               3.79.1
+util-linux             2.11n
+mount                  2.11n
+modutils               2.4.19
+e2fsprogs              1.27
+Linux C Library        2.2.5
+Dynamic linker (ldd)   2.2.5
+Procps                 2.0.7
+Net-tools              1.60
+Console-tools          0.2.3
+Sh-utils               2.0.12
 
 
---- linux-2.4.20-pre6/drivers/char/moxa.c	Thu Oct 25 22:53:47 2001
-+++ linux-2.4.20-pre6-jfix/drivers/char/moxa.c	Wed Sep 11 12:38:26 2002
-@@ -2836,7 +2836,7 @@
- 
- 	st = jiffies;
- 	et = st + tick;
--	while (jiffies < et);
-+	while (time_before(jiffies, et));
- }
- 
- static void moxafunc(unsigned long ofsAddr, int cmd, ushort arg)
+--
+Burton Windle                           burton@fint.org
+Linux: the "grim reaper of innocent orphaned children."
+          from /usr/src/linux-2.4.18/init/main.c:461
 
---- linux-2.4.20-pre6/drivers/char/mxser.c	Wed Sep 11 13:36:44 2002
-+++ linux-2.4.20-pre6-jfix/drivers/char/mxser.c	Wed Sep 11 12:32:13 2002
-@@ -883,7 +883,7 @@
- 		while (!(inb(info->base + UART_LSR) & UART_LSR_TEMT)) {
- 			set_current_state(TASK_INTERRUPTIBLE);
- 			schedule_timeout(5);
--			if (jiffies > timeout)
-+			if (time_after(jiffies, timeout))
- 				break;
- 		}
- 	}
+
+-
+To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Please read the FAQ at  http://www.tux.org/lkml/
 
