@@ -1,30 +1,44 @@
-From: "Sampath Kumar" <sampath@spartanlabs.com>
-Subject: How to check whether the last character in the serial port is flushed/sent.
-Date: Mon, 13 Oct 2003 18:32:22 +0530
+From: "Michael V. David" <michael@newearth.org>
+Subject: RocketModemII under Linux kernel 2.6.0-test8
+Date: Sun, 19 Oct 2003 07:57:08 -0400
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <015c01c3918a$3ee11a80$cf14a8c0@sampath>
-References: <007101c38f3e$e6419d70$cf14a8c0@sampath> <20031010230839.GA696@lafn.org>
-Reply-To: "Sampath Kumar" <sampath@spartanlabs.com>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+Message-ID: <bmtu61$be7$1@sea.gmane.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [61.8.141.130] ([61.8.141.130]:33798 "EHLO spartanlabs.com")
-	by vger.kernel.org with ESMTP id S261732AbTJMNEg (ORCPT
+Received: from main.gmane.org ([80.91.224.249]:12457 "EHLO main.gmane.org")
+	by vger.kernel.org with ESMTP id S262106AbTJSMA1 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 13 Oct 2003 09:04:36 -0400
-Received: from sampath ([192.168.20.207])
-	by spartanlabs.com ([61.8.141.130])
-	with SMTP (MDaemon.PRO.v6.7.7.R)
-	for <linux-serial@vger.kernel.org>; Mon, 13 Oct 2003 18:44:44 +0530
+	Sun, 19 Oct 2003 08:00:27 -0400
+Received: from root by main.gmane.org with local (Exim 3.35 #1 (Debian))
+	id 1ABCEU-0004mw-00
+	for <linux-serial@vger.kernel.org>; Sun, 19 Oct 2003 14:00:26 +0200
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Hello all
-How to check whether the last character sent to the serial port has been
-sent . And the port has nothing in its buffer to send?
-Regards
-sampath
+I have two RocketModemII 4-modem PCI boards installed in a PC clone running
+Linux kernel 2.6.0-test8, using the Rocket driver included with the kernel,
+compiled as a module, as recommended in Comtrol's documentation. I have the
+latest software from the Comtrol site (v2.04/1800024H.tgz). The rc.rocket
+script runs on startup, and finds all 8 ports. The firmware is uploaded. The
+active lines can be opened with minicom, and act like serial lines with
+modems attached, responding appropriately to the documented AT commands.
+Normally, I run mgetty to allow tty logins on some of the modem lines.
+Nothing in the kernel files or the Comtrol software has been changed from
+the defaults.
+
+When I dial in with a terminal program, the line is answered and I can log
+in. I use the bash shell. If I type a command line that produces less than
+256 bytes of output, I get the expected output. If it produces more than 256
+bytes of output, I get approximately 256 bytes of the expected output, and
+then something else. The something else seems to be contents of the
+computer's memory, such as parts of the mgetty program.
+
+It seems to be going past the end of a buffer somewhere. I'd like to hear
+what anyone knows about this. Using only one RocketModemII board, rather
+than two, does not alter this behavior.
+
+The two 16550A serial ports on the same machine work perfectly.
+
+--mvd
+
 
 
