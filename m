@@ -1,38 +1,27 @@
-From: "Milan P. Stanic" <mps@rns-nis.co.yu>
-Subject: Re: Help in setting up serial console on 64 bit machine
-Date: Tue, 9 Mar 2004 10:41:33 +0100
+From: Michael Anderson <mjanders@us.ibm.com>
+Subject: Re: [PATCH] linux-2.6.2-rc3 Add icom serial device driver
+Date: Tue, 9 Mar 2004 08:43:43 -0600
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20040309094133.GB1826@rns-nis.co.yu>
-References: <53CF1076699CD711B7DD0002A51363F102C3602D@exw-ks.ks.lsil.com>
+Message-ID: <OFBFE36237.BC6FEFD8-ON86256E52.00508488-86256E52.0050F852@us.ibm.com>
+References: <20040221230233.C18248@flint.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from sq.rns-nis.co.yu ([194.247.213.11]:45770 "EHLO sq.rns-nis.co.yu")
-	by vger.kernel.org with ESMTP id S261252AbUCIJtO (ORCPT
+Received: from e5.ny.us.ibm.com ([32.97.182.105]:9149 "EHLO e5.ny.us.ibm.com")
+	by vger.kernel.org with ESMTP id S261959AbUCIOoQ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 9 Mar 2004 04:49:14 -0500
-Received: from localhost (localhost [127.0.0.1])
-	by sq-int.rns-nis.co.yu (Postfix) with SMTP id 8AAEF6B959
-	for <linux-serial@vger.kernel.org>; Tue,  9 Mar 2004 10:49:36 +0100 (CET)
-Received: from dl.oss.co.yu (mps.rns-nis.co.yu [194.247.213.6])
-	by sq.rns-nis.co.yu (Postfix) with ESMTP id 16BFB6BAAD
-	for <linux-serial@vger.kernel.org>; Tue,  9 Mar 2004 10:49:34 +0100 (CET)
-Content-Disposition: inline
-In-Reply-To: <53CF1076699CD711B7DD0002A51363F102C3602D@exw-ks.ks.lsil.com>
+	Tue, 9 Mar 2004 09:44:16 -0500
+In-Reply-To: <20040221230233.C18248@flint.arm.linux.org.uk>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Russell King <rmk@arm.linux.org.uk>
+Cc: linux-serial@vger.kernel.org
 
-On Mon, Mar 08, 2004 at 09:10:47AM -0600, Dachepalli, Sudhir wrote:
-> After selecting "label=serial" and botting the OS the following is the
-> command line from proc.
-> [root@beast root]# cat /proc/cmdline
-> BOOT_IMAGE=scsi0:EFI\redhat\vmlinuz-2.4.18-e.37smp  root=LABEL=/
-> console=ttyS1,9600n8 console=tty0 ro
 
-The kernel message is directed to the last console specified in
-the lilo or grub. I don't know for elilo but because this is actually
-kernel command line parameter it should be same.
+An updated icom patch will be found at:
 
-Try to swap consoles in (e)lilo.
+http://www-124.ibm.com/linux/patches/misc/icom-2.6.4-rc2.patch
 
-hth
+This includes the rework which removes the firmware images from the icom.h
+and uses the request_firmware interface to load the firmware images during
+startup time.
+
