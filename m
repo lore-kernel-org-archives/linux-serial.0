@@ -1,52 +1,67 @@
-From: "Stuart MacDonald" <stuartm@connecttech.com>
-Subject: Re: problems with serial driver
-Date: Wed, 4 Sep 2002 12:22:32 -0400
+From: "Adam J. Richter" <adam@yggdrasil.com>
+Subject: Patch: linux-2.5.34/drivers/serial/core.c console message fix
+Date: Thu, 12 Sep 2002 03:44:40 -0700
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <08a301c2542f$45a78dc0$294b82ce@connecttech.com>
-References: <Pine.LNX.4.44.0209041734310.26018-100000@scil.sinp.msu.ru>
+Message-ID: <20020912034440.A1477@baldur.yggdrasil.com>
+Reply-To: "Adam J. Richter" <adam@yggdrasil.com>
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="2fHTh5uZTiUOsy+g"
 Return-path: <linux-serial-owner@vger.kernel.org>
+Content-Disposition: inline
 List-Id: linux-serial@vger.kernel.org
-To: slack@slackware.ru
+To: tytso@mit.edu
 Cc: linux-serial@vger.kernel.org
 
-From: <slack@slackware.ru>
-> :) Starting sender, starting receiver, CtrlC (kill -15, getting KILL
-> signal in the prog). One note: both ports are on the same comp.
 
-Always start the receiver first. Otherwise it's not guaranteed that
-the serial receiver will sync properly with the data stream.
+--2fHTh5uZTiUOsy+g
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> Quatro check. I do not know how, but serverworks defines IRQs after 16 for
-> side devices. But I have pure computers, without any devices. Of cource,
-> I've got bad results on well-weaponed comp (audio, video IO etc.).
-> With another chipset (860). Then, checkin new computers, that are virgin.
+	Since approximately 2.5.29, the message that the serial module
+prints under devfs when it finds a device has been slightly incorrect.
+It has beening printing out the literal value a formatting string that
+is supposed to include the unit number.  For example, for the built-in
+serial ports, it would incorrectly print:
 
-Irq conflicts can and do happen with on-board devices. Or are you
-really running a no-video, no-nic, no-sound, no-parallel-port,
-no-keyboard, no-mouse serial-console-only machine?
+tts/%d0 at I/O 0x3f8 (irq = 4) is a 16550A
+tts/%d1 at I/O 0x2f8 (irq = 3) is a 16550A
 
-> > happen when the driver's handler is delayed too long.
-> I see this, in the driver. But do not know what to do.
+	Whereas it should print (and did prior to ~2.5.29):
 
-You see that the handler (in a live running machine) is delayed? You
-have more "deep hardware knowledge" than you think. :-)
+tts/0 at I/O 0x3f8 (irq = 4) is a 16550A
+tts/1 at I/O 0x2f8 (irq = 3) is a 16550A
 
-> Ah! Those old discussion about slow(long) and fast(short) interrupts?
+	The printk message was the only thing that was broken, as
+far as I could tell.  The devfs entries had correct names (e.g.,
+/dev/tts/0).
 
-An interrupt handler runs when interrupts are off. That means no other
-hardware can have their interrupts acknowledged and handled. So if the
-IDE subsystem has a very long (long running time) handler, the uarts
-generate "fifo full" interrupts, but they are ignored for a long time.
-In the meantime, the fifo fills and overruns.
+	The following patch fixes the printk.
 
-I think the discussion you're thinking of is hardware interrupt
-handlers vs software interrupt handlers (bottom halfs, but I think
-they're going away, see tasklets).
+	Ted, could you please let me know if you are going to shepherd
+this Linus, or if you want me to submit it directly or if you you'd
+prefer some other course of action.  Thanks in advance.
 
-> Hm... Where riside COM on-board ports? On which BUS (PCI/ISA)?
+-- 
+Adam J. Richter     __     ______________   575 Oroville Road
+adam@yggdrasil.com     \ /                  Milpitas, California 95035
++1 408 309-6081         | g g d r a s i l   United States of America
+                         "Free Software For The Rest Of Us."
 
-Don't know. Check with your manufacturer.
+--2fHTh5uZTiUOsy+g
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename="serial.diff"
 
-..Stu
+--- linux-2.5.34/drivers/serial/core.c	2002-09-09 10:35:05.000000000 -0700
++++ linux/drivers/serial/core.c	2002-09-12 03:35:25.000000000 -0700
+@@ -1981,7 +1981,8 @@
+ static inline void
+ uart_report_port(struct uart_driver *drv, struct uart_port *port)
+ {
+-	printk("%s%d at ", drv->dev_name, port->line);
++	printk(drv->dev_name, port->line); /* dev_name can have a "%d" in it */
++	printk(" at ");
+ 	switch (port->iotype) {
+ 	case UPIO_PORT:
+ 		printk("I/O 0x%x", port->iobase);
 
-
+--2fHTh5uZTiUOsy+g--
