@@ -1,35 +1,66 @@
-From: "Linux-newbie" <drivegrossness@ilovechocolate.com>
-Subject: they used to be the only ones.
-Date: Thu, 22 Jan 2004 17:30:12 -0300
-Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <zxambp.6170724szbdmeav@Linux-newbiewegmxsyw>
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from pool-141-158-66-161.pitt.east.verizon.net ([141.158.66.161]:37897
-	"HELO linux-serial") by vger.kernel.org with SMTP id S266453AbUAVWaP
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 22 Jan 2004 17:30:15 -0500
+From: digger vermont <dv_mlist@verizon.net>
+Subject: bluetooth pcmcia/cf serial errors with 2.6 kernel
+Date: Fri, 23 Jan 2004 14:16:42 -0500
+Sender: bluez-users-admin@lists.sourceforge.net
+Message-ID: <1074885137.3532.9.camel@myrna>
+Mime-Version: 1.0
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+Return-path: <bluez-users-admin@lists.sourceforge.net>
+Errors-To: bluez-users-admin@lists.sourceforge.net
+List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/bluez-users>,
+	<mailto:bluez-users-request@lists.sourceforge.net?subject=unsubscribe>
+List-Post: <mailto:bluez-users@lists.sourceforge.net>
+List-Help: <mailto:bluez-users-request@lists.sourceforge.net?subject=help>
+List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/bluez-users>,
+	<mailto:bluez-users-request@lists.sourceforge.net?subject=subscribe>
+List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=bluez-users>
+To: Russell King <rmk+serial@arm.linux.org.uk>, Linux Serial <linux-serial@vger.kernel.org>
+Cc: Marcel Holtmann <marcel@holtmann.org>, Max Krasnyansky <maxk@qualcomm.com>, bluez-users <bluez-users@lists.sourceforge.net>, Benjamin Herrenschmidt <benh@kernel.crashing.org>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
 
-The first worth substitute of all existing men`s remedies!
+Hello Russell King and Linux Serial Mailing List,
 
-Be aware that now the peak of your selxual activity is realy accessible!
+	Changes to the serial driver in 2.6.xx kernels have caused problems
+with some bluetooth pcmcia/cf cards that do work properly with 2.4.xx
+kernels. 
 
-All you need is to visit
-http://cnmeds.com/mx/index.php?pid=genviag
+When the cards are plugged the uarts are correctly identified and the
+ports created.  However, hciattach returns errors when trying to attach
+the port to the BlueZ stack. Different settings have been tried such as
+baud rates and irq's through setserial with no difference.
+	
+The problem is not platform specific.  It occurs on my powerbook.  I'm
+not sure of the platforms of the other reported errors, but they are not
+powerpc's.
 
-Thanks to the proprietary blend of unique herkbs the four wonderful efkfects are achieved:
+Here are more specifics:
 
-*blood stream to the penlis is restored
-*stored tesltosterone is unleashed
-*activation of the body's naltural holrmone production heightens your sensation 
-*the peknis does enklarge, the changes are being permanent!
+kernel 2.4.24 works fine
 
-At last you can enljoy  your secxual life in full measure without any risk for your healkth!
+kernel 2.6.2-rc1 and 2.6.2-rc1-ben1
+	Com One Platinum:Reported to work fine.
+	Xircom PC cards:Reported to time out.
+	Socket CF:	Error is "BCSP initialization timed out".
+			Card is reported as "Socket", "CF+ Personal
+			Network Card Rev 2.5"
 
-Don`t wakste your time! Get more inkfo straightforwardly at 
-http://cnmeds.com/mx/index.php?pid=genviag
+Here is the top of the thread on the bluez-users mailing list:
+	http://thread.gmane.org/gmane.linux.bluez.user/1864
+	
+If there is any other information I can help with please let me know.
 
 
+Thanks,
+
+digger	
+	
+
+
+
+
+-------------------------------------------------------
+The SF.Net email is sponsored by EclipseCon 2004
+Premiere Conference on Open Tools Development and Integration
+See the breadth of Eclipse activity. February 3-5 in Anaheim, CA.
+http://www.eclipsecon.org/osdn
