@@ -1,32 +1,24 @@
-From: "darrel" <mm65icallef@hotmail.com>
-Subject: As Seen on CNN, the Winningest CAS1N0! aliens benoit!
-Date: Mon, 03 May 2004 14:36:31 GMT
+From: "Dale Whitchurch" <DaleW@sealevel.com>
+Subject: 9-bit Protocol
+Date: Tue, 4 May 2004 08:05:44 -0400
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1083594991-20113__41096.2413101972$1083619770@excite.com>
-Content-Type: text/plain;
+Message-ID: <B39AA5DB06510C4591C6EDDD580B0B816133F2@mail.int.sealevel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [200.61.6.226] ([200.61.6.226]:12048 "HELO vertex.com.br")
-	by vger.kernel.org with SMTP id S264028AbUECV2i (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 3 May 2004 17:28:38 -0400
+Received: from sealevel.com ([206.74.63.254]:11452 "EHLO mail.sealevel.com")
+	by vger.kernel.org with ESMTP id S264316AbUEDMC2 convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 4 May 2004 08:02:28 -0400
+Content-Class: urn:content-classes:message
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-PREMI}ERE ONLIN!E CAS'INO!
-50% BONU{S for YOUR FIRST DEPO}SIT as a New Player.
+Hello all,
 
-SI:GN UP now! Don't wait!
+Just out of curiosity, has anyone ever seen an implementation for the nine-bit data protocol for async UARTs?  I know the Oxford 950 UART supports nine-bit and I am wondering if a driver has been developed to utilize that.  Specifically, the protocol is where the ninth bit signifies whether the byte is an address byte or a data byte.  I have seen different implementations of this, including storing the ninth bytes in a separate buffer, or identifying the bytes individually, but these have only been in other operating systems.
 
-http://www.casinoes-4-you.com/_e4faa55afa1972493c43ac8a3f66f869/
+Thanks!
 
-Once you're a Mem!ber, there are near WEEK{LY 2-T{O-1, and 3-T`O-1 depo:sit offers!
-
-Imagine, put in $25, GET $50 CRE{DIT BE{FORE YOU PL{ACE YO}UR FI}RST BET!!
-
-CLIC`K HER|E!
-
-http://www.casinoes-4-you.com/_e4faa55afa1972493c43ac8a3f66f869/
-
-
-
-blondie goblue october cherry young jimbo mishka qwerty12 doug smiths tequila october master1 valhalla god bigman medical tracy barry larry depeche october lloyd cherry hanna shawn
+DaleW
