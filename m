@@ -1,68 +1,62 @@
-From: "Sayang Oin" <sayangoin@hotmail.com>
-Subject: Re: interrupt programming
-Date: Mon, 26 Jul 2004 09:24:42 +0200
+From: "Salomon, Frank" <frank.salomon@wincor-nixdorf.com>
+Subject: Re: serial port read working but not write.
+Date: Mon, 26 Jul 2004 09:24:27 +0200
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <BAY15-F21ZXn97cvZvK00022be7@hotmail.com>
+Message-ID: <4104B1AB.7090005@wincor-nixdorf.com>
+References: <20040724233650.78426.qmail@web8201.mail.in.yahoo.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from bay15-f21.bay15.hotmail.com ([65.54.185.21]:38928 "EHLO
-	hotmail.com") by vger.kernel.org with ESMTP id S264965AbUGZHYn
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 26 Jul 2004 03:24:43 -0400
+Received: from muxi.wincor-nixdorf.com ([217.115.67.71]:51653 "HELO
+	mail.wincor-nixdorf.com") by vger.kernel.org with SMTP
+	id S264965AbUGZHjm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 26 Jul 2004 03:39:42 -0400
+Received: from label.wincor-nixdorf.com (label.wincor-nixdorf.com [172.18.160.24])
+	by zipp.wincor-nixdorf.com (8.12.8/8.12.8) with ESMTP id i6Q7deAw008469
+	for <linux-serial@vger.kernel.org>; Mon, 26 Jul 2004 09:39:40 +0200
+In-Reply-To: <20040724233650.78426.qmail@web8201.mail.in.yahoo.com>
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
 
-Hallo,
 
-I have to use timer because I have to communicate with other programm via 
-filestream
-and I use this timer also for scheduling the time that I have to send data 
-to my device.
+suresh shenoy wrote:
+> Hi all,
+> 
+>   
+>    Frank, 
+>   
+>      I tried that test. It told me that hexdump was
+> not a option in dd. I dont know much about dd so i
+> read the man pages but could not figure out. 
+> 
+> 
+>    Secondly,
+> 
+>       I changed the interrupt to 0 but still the
+> numbers are increasing. 
+> 
+>       One thing that i did recognize is the baud rate
+> for send was wrong which i changed to 115200 and then
+> tried again but it still dint work. I am sending the
+> correct packets. There could be no errors there. Also
+> there is no parity in this program.
+> 
+> Thanks & Regards,
+> Suresh
 
-people said if I use interrupt so I can be sure I will not lose my datas.
+Hi Suresh,
 
+did you forget "|"  in the command ?
 
-here is my routine
-....
+dd bs=1 count=1 if=/dev/ttySx | hexdump
 
-  while(1)
-  {
-		res=select(fd+1, &rfds, NULL, NULL, &tv);
-		if(res==0)
-		{
-		 tries++;
-		 if(tries==8)
-		  return 0;
-		}
+You can try to run the command:
 
-      		n = read (fd, p, 1);
-		if(n>0)
-		{
+setserial /dev/ttySx autoconfig auto_irq
 
-		 printf(" %X \n", buffer[rd]);
-		 p++;
-		 rd++;
+before you perform the test. That command will set the correct interrupt.
 
-		}
-
-                // up here I analyze my datas.
-
-                // if everythings ok I jump out of the while
-
-
-  return rd;
-}
-
-....
-
-
-best regards
-sayangoin
-
-_________________________________________________________________
-Wußten Sie, daß Sie Ihren Hotmail-Posteingang auch über den MSN Messenger 
-abrufen können? http://www.msn.de/messenger Jetzt kostenlos downloaden und 
-einfach testen!
+Best regards, Frank
 
