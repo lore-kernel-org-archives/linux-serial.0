@@ -1,29 +1,33 @@
-From: Russell King <rmk+lkml@arm.linux.org.uk>
-Subject: Re: [PATCH] [SERIAL] add TP560 data/fax/modem support
-Date: Fri, 11 Feb 2005 23:18:30 +0000
-Message-ID: <20050211231830.A1821@flint.arm.linux.org.uk>
-References: <1107805182.8074.35.camel@piglet>
+From: Cathleen Baer <CathleenB@concord.etransmail4.com>
+Subject: How new Check 21 legislation is affecting you...
+Date: Wed, 16 Feb 2005 11:54:47 -0800
+Message-ID: <29191273.1108583687144.JavaMail.customerService@etransmail4.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Received: from caramon.arm.linux.org.uk ([212.18.232.186]:27151 "EHLO
-	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
-	id S262178AbVBKXSl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 11 Feb 2005 18:18:41 -0500
-Content-Disposition: inline
-In-Reply-To: <1107805182.8074.35.camel@piglet>; from bjorn-helgaas@comcast.net on Mon, Feb 07, 2005 at 12:39:42PM -0700
+Content-Transfer-Encoding: 7bit
+Received: from 66.236.41.228.ptr.us.xo.net ([66.236.41.228]:26845 "EHLO
+	etm6-mail8.etransmail6.com") by vger.kernel.org with ESMTP
+	id S261694AbVBPTzD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Feb 2005 14:55:03 -0500
+Received: from mailqueue02 (66.238.40.2.ptr.us.xo.net [66.238.40.2])
+	by etm6-mail8.etransmail6.com (8.12.7/8.12.3/etm6-mail8 LX 0.6) with ESMTP id j1GJslJw008601
+	for <linux-serial@vger.kernel.org>; Wed, 16 Feb 2005 11:54:47 -0800
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Bjorn Helgaas <bjorn-helgaas@comcast.net>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On Mon, Feb 07, 2005 at 12:39:42PM -0700, Bjorn Helgaas wrote:
-> Claim Topic TP560 data/fax/voice modem.  This device reports as class 0x0780,
-> so we don't claim it by default:
+Good Afternoon!
 
-Applied, thanks.
+Recenty intrdocuced legislation requires business and home users to print personal and business checks with security blank check stock and magnetic ink.
+Please find qualified suppliers at Google by clicking on the followingl link.
 
--- 
-Russell King
- Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
- maintainer of:  2.6 PCMCIA      - http://pcmcia.arm.linux.org.uk/
-                 2.6 Serial core
+http://www.google.com/search?sourceid=navclient&ie=UTF-8&rls=GGLC,GGLC:1969-53,GGLC:en&q=blank+check+paper%2C+magnetic+ink+for+inkjets
+
+
+Thank you very much. 
+
+Cathleen Baer                                     
+Marketing & Relationship Representative
+Globalzon Consulting Group 
+
+
