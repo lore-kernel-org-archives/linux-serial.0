@@ -1,31 +1,64 @@
-From: Russell King <rmk@arm.linux.org.uk>
-Subject: Re: [2.5 patch] remove CONFIG_SERIAL_21285_OLD
-Date: Sun, 13 Jul 2003 23:46:15 +0100
+From: Matthew Wilcox <willy@debian.org>
+Subject: Serial port numbering still broken in 2.5.75
+Date: Tue, 15 Jul 2003 14:11:25 +0100
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20030713234615.H2621@flint.arm.linux.org.uk>
-References: <20030713224110.GD12104@fs.tum.de>
+Message-ID: <20030715131125.GS23808@parcelfarce.linux.theplanet.co.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([212.18.232.186]:60433 "EHLO
-	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
-	id S270424AbTGMWbe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 13 Jul 2003 18:31:34 -0400
+Received: from parcelfarce.linux.theplanet.co.uk ([195.92.249.252]:46504 "EHLO
+	www.linux.org.uk") by vger.kernel.org with ESMTP id S267314AbTGOM4f
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 15 Jul 2003 08:56:35 -0400
 Content-Disposition: inline
-In-Reply-To: <20030713224110.GD12104@fs.tum.de>; from bunk@fs.tum.de on Mon, Jul 14, 2003 at 12:41:11AM +0200
 List-Id: linux-serial@vger.kernel.org
-To: Adrian Bunk <bunk@fs.tum.de>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, trivial@rustcorp.com.au
+To: Russell King <rmk@arm.linux.org.uk>
+Cc: linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org
 
-On Mon, Jul 14, 2003 at 12:41:11AM +0200, Adrian Bunk wrote:
-> CONFIG_SERIAL_21285_OLD depends on the non-existent option
-> CONFIG_OBSOLETE, IOW it's not selectable, and the help text says "This
-> is obsolete and will be removed during later 2.5 development.".
-> 
-> Is the patch below to remove this option OK?
 
-Absolutely fine by me.
+This is with 2.5.75:
+
+Serial: 8250/16550 driver $Revision: 1.90 $ IRQ sharing enabled
+ttyS0 at MMIO 0xf0200019000 (irq = 54) is a 16550A
+PCI: Found IRQ 54 for device 0002:00:00.0
+ttyS14 at MMIO 0xf0200018000 (irq = 54) is a 16550A
+PCI: Found IRQ 54 for device 0002:00:00.1
+ttyS15 at MMIO 0xf0200019010 (irq = 54) is a 16550A
+ttyS1 at MMIO 0xf0200019038 (irq = 54) is a 16550A
+PCI: Found IRQ 92 for device 0003:00:00.0
+ttyS2 at MMIO 0xf0300018000 (irq = 92) is a 16550A
+PCI: Found IRQ 92 for device 0003:00:00.1
+ttyS3 at MMIO 0xf0300019000 (irq = 92) is a 16550A
+ttyS4 at MMIO 0xf0300019010 (irq = 92) is a 16550A
+ttyS5 at MMIO 0xf0300019038 (irq = 92) is a 16550A
+
+Non-legacy serial ports are numbered 0, 14, 15, 1, 2, 3, 4, 5.  This is
+because of this part of uart_find_match_or_unused() in drivers/serial/core.c:
+
+        /*
+         * We didn't find a matching entry, so look for the first
+         * free entry.  We look for one which hasn't been previously
+         * used (indicated by zero iobase).
+         */
+        for (i = 0; i < drv->nr; i++)
+                if (drv->state[i].port->type == PORT_UNKNOWN &&
+                    drv->state[i].port->iobase == 0 &&
+                    drv->state[i].count == 0)
+                        return &drv->state[i];
+
+If you look in include/asm-ia64/serial.h, you'll see ttyS14
+and ttyS15 marked as `spare', and these are the ones found by
+uart_find_match_or_unused() first [the first port gets to be ttyS0
+because of how 8250_hcdp works].
+
+I think this loop needs to be deleted from uart_find_match_or_unused()
+so we don't attempt to use 14/15 first.  Alternatively, we could just
+fill in some random iobases in include/asm-ia64/serial.h so this loop
+always fails on ia64.  But I've seen people complaining about their
+modem getting ttyS14 on i386 too, so I really think this needs to get
+fixed for everyone.
 
 -- 
-Russell King (rmk@arm.linux.org.uk)                The developer of ARM Linux
-             http://www.arm.linux.org.uk/personal/aboutme.html
+"It's not Hollywood.  War is real, war is primarily not about defeat or
+victory, it is about death.  I've seen thousands and thousands of dead bodies.
+Do you think I want to have an academic debate on this subject?" -- Robert Fisk
