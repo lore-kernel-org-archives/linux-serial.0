@@ -1,70 +1,115 @@
 From: Peter Astrand <peter@cendio.se>
-Subject: Re: sredird fork: sercd
-Date: Sun, 1 Aug 2004 16:46:13 +0200 (CEST)
+Subject: Re: Fwd: [max@hinterhof.net: sredird vulnerabilities]
+Date: Sun, 1 Aug 2004 17:47:37 +0200 (CEST)
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <Pine.LNX.4.44.0408011633480.12619-100000@maggie.lkpg.cendio.se>
-References: <200408020023.55246.russell@coker.com.au>
+Message-ID: <Pine.LNX.4.44.0408011739070.12619-100000@maggie.lkpg.cendio.se>
+References: <200408020021.20025.russell@coker.com.au>
 Mime-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=iso-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cheddar.cendio.se ([193.12.253.77]:52207 "EHLO mail.cendio.se")
-	by vger.kernel.org with ESMTP id S266002AbUHAOqP (ORCPT
+Received: from cheddar.cendio.se ([193.12.253.77]:10736 "EHLO mail.cendio.se")
+	by vger.kernel.org with ESMTP id S265663AbUHAPrk (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 1 Aug 2004 10:46:15 -0400
-In-Reply-To: <200408020023.55246.russell@coker.com.au>
+	Sun, 1 Aug 2004 11:47:40 -0400
+In-Reply-To: <200408020021.20025.russell@coker.com.au>
 List-Id: linux-serial@vger.kernel.org
-To: Russell Coker <russell@coker.com.au>
-Cc: Denis Sbragion <d.sbragion@infotecna.it>, jaltman@columbia.edu, mario@viara.info, linux-serial@vger.kernel.org, Corey Minyard <minyard@acm.org>
+To: Max Vozeler <max@hinterhof.net>
+Cc: d.sbragion@infotecna.it, kermit-support@columbia.edu, jaltman@columbia.edu, mario@viara.info, linux-serial@vger.kernel.org, Corey Minyard <minyard@acm.org>, Russell Coker <russell@coker.com.au>
 
-> On Sat, 20 Dec 2003 00:39, Peter Astrand <peter@cendio.se> wrote:
-> > I've created a new project for a RFC2217 serial redirection daemon:
-> > "sercd" (Serial Communications Daemon). This is basically a fork of
-> > sredird. Compared to sredird, this project includes:
+
+> LogMsg() format string bug
+> --------------------------
+=2E..
+> The canonical fix would be to add an explicit "%s" format string to t=
+he
+> syslog() call in LogMsg(). (See attached sredird-log-fmt.diff)
+
+Thanks for pointing this out.=20
+
+
+> HandleCPCCommand() stack overflow
+> ---------------------------------
 >=20
-> I've just had a look at the sercd project.  It seems like nothing has=
- happened=20
-> since December last year.  The only apparent differences between serc=
-d.c and=20
-> sredird.c are comments and code style.
+> Affected is the last chunk of code in HandleCPCCommand() shown above.
+> LogStr is not large enough to store the largest possible output from
+> sprintf(). CSize is limited to 254 by the caller, minus 6, makes a ma=
+x.
+> SigStr length of 248 bytes.=20
 
-Yes, pretty much. sercd fixed a buffer handling code, which was later a=
-lso
-fixed in sredird. The main reason for creating the fork was the lack of
-CVS repository. The sredird maintainer also said that he "no longer hav=
-e
-any spare time to dedicate to this project."
+Since CSize is a size_t, it can be larger than 254. I'd rather not depe=
+nd=20
+on the caller calling with max 254. Therefore, I've added an explicit=20
+check to make sure we are not copying more than SigStr can hold:
 
+strncpy(SigStr, (char *) &Command[4],
+        MAX(CSize - 6, sizeof(SigStr) - 1));
 
-> Which is the most live of these projects? =20
+>After the sprintf() with 27 or so non-format
+> characters, the output can grow to
+>=20
+>   27 + 248 =3D 275 bytes
+>=20
+> .. which is too much for LogStr[255], by 20 bytes or so. This may be
+> enough to overwrite precious stuff on the stack like saved eip depend=
+ing
+> on stack layout.
+>=20
+> Why not just replace it with snprintf()? This would solve this proble=
+m
+> for good.=20
 
-Wrt sercd: No development is going on currently, but I accept patches,=20
-answer mail etc. I have some plans (and some code) for a native Win32=20
-port, but don't expect anything soon.=20
+Good idea. This is the patch I've committed to the sercd CVS:
 
-(sercd/sredird is actually quite feature-complete. cyclades-serial-clie=
-nt=20
-is more spotty.)
+diff -u -r1.8 sercd.c
+--- sercd.c     1 Aug 2004 15:03:17 -0000       1.8
++++ sercd.c     1 Aug 2004 15:36:04 -0000
+@@ -144,6 +144,11 @@
+ /* Default modem state polling in milliseconds (100 msec should be=20
+enough) */
+ #define ModemStatePolling 100
+=20
++/* macros */
++#ifndef MAX
++#define MAX(x,y)                (((x) > (y)) ? (x) : (y))
++#endif
++
+ /* Standard boolean definition */
+ typedef enum
+ { False, True } Boolean;
+@@ -420,7 +425,7 @@
+ LogMsg(int LogLevel, const char *const Msg)
+ {
+     if (LogLevel <=3D MaxLogLevel)
+-       syslog(LogLevel, Msg);
++       syslog(LogLevel, "%s", Msg);
+ }
+=20
+ /* Try to lock the file given in LockFile as pid LockPid using the=20
+classical
+@@ -1339,8 +1344,11 @@
+        }
+        else {
+            /* Received client signature */
+-           strncpy(SigStr, (char *) &Command[4], CSize - 6);
+-           sprintf(LogStr, "Received client signature: %s", SigStr);
++           strncpy(SigStr, (char *) &Command[4],
++                   MAX(CSize - 6, sizeof(SigStr) - 1));
++           snprintf(LogStr, sizeof(LogStr) - 1,
++                    "Received client signature: %s", SigStr);
++           LogStr[sizeof(LogStr) - 1] =3D '\0';
+            LogMsg(LOG_INFO, LogStr);
+        }
+        break;
 
-
-> As there have been security bugs reported against sredird I want to p=
-ut
-> a replacement in Debian which has the bugs fixed.  I would prefer to
-> avoid any serious coding on this myself due to lack of time.  If one =
-of
-> the two projects could issue a new release to fix the security issues
-> (in a separate message) then I'll put it in Debian.
-
-I'll take a look at it.=20
-
+As soon as I've been able to test-run the latest CVS, I'll make a new=20
+release. This should happen later today or tomorrow.=20
 
 --=20
 Peter =C5strand		Chief Developer
 Cendio			www.thinlinc.com
 Teknikringen 3		www.cendio.se
 583 30 Link=F6ping        Phone: +46-13-21 46 00
-
-
 
 -
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
