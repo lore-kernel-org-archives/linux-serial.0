@@ -1,64 +1,50 @@
-From: Admin <SchoolStaffPersonnelStudents@myschool.par32.com>
-Subject: Attention all School Staff, Personnel, and Students
-Date: Thu, 23 Oct 2003 21:19:18 -0700
+From: "Charles" <ccedeno@speedsurf.pacific.net.ph>
+Subject: Genuine Profitable Opportunity!
+Date: Sat, 25 Oct 2003 03:36:15 +0800
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <S261967AbTJXERF/20031024041706Z+3510@vger.kernel.org>
+Message-ID: <200310241933.h9OJXgK32556@zeus.kernel.org>
+Reply-To: "Charles" <charlesjlc@indiatimes.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cable2-169.maysvilleky.net ([65.173.137.169]:1292 "HELO
-	65.173.137.169") by vger.kernel.org with SMTP id S261967AbTJXERF
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 24 Oct 2003 00:17:05 -0400
+Received: from zeus.kernel.org ([204.152.189.113]:30966 "EHLO zeus.kernel.org")
+	by vger.kernel.org with ESMTP id S262539AbTJXTdp (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 24 Oct 2003 15:33:45 -0400
+Received: from speedsurf.pacific.net.ph ([210.23.250.24])
+	by zeus.kernel.org (8.11.6/8.11.6) with SMTP id h9OJXgK32556
+	for <linux-serial@vger.kernel.org>; Fri, 24 Oct 2003 12:33:43 -0700
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
+Hello, 
+ 
+There's a revolutionary money making phenomenon that is spreading across
+the Internet like WILDFIRE!
+ 
+And right now, for a very limited time, YOU have the opportunity to be
+right at the FRONT of it.
+ 
+But time is of the essence; you need to LOCK IN YOUR POSITION NOW!!!
+ 
+DON'T WAIT ANOTHER SECOND!!
+ 
+Send email to charlesjlc@indiatimes.com with the subject "Register me as
+an Associate Member." with your Firstname, Lastname, Tel#, and Country.
+Registration is FREE...
 
-
-Attention All School Staff, Personnel, and Students:
-
-You Must Respond By 5 P.M. Monday, October 27, 2003 
-
-Avtech Direct is offering a limited allotment of BRAND NEW,
-top of-the-line, name-brand Desktop computers at 50% off MSRP
-to all Teachers, Students, Faculty and Staff.
-
-All Desktops are brand-new packed in their original boxes and come
-with a full manufacturer's warranty plus a 100% satisfaction guarantee.
-
-These professional grade Desktops are fully equipped with 2004
-next generation technology, making these the very best performing
-computers that money can buy.
-
-Avtech Direct is offering these feature rich, top performing
-Desktops with the latest technology at an amazing price
-to all Teachers, Students, Faculty and Staff who call:
-
-1-800-884-9510 by 5 P.M. Monday, October 27, 2003 
-
-The fast and powerful AT-2400S Series- Desktop features:
-
-        * 2.0 Ghz Intel Processor for amazing speed and performance
-        * 128 MB SD RAM, Upgradeable to 1024 MB
-        * 20 GB Hard Drive upgradeable to 60 GB
-        * CD-Rom Drive upgradeable to  DVD/CDRW 
-        * Premium Sound and Video
-        * Total Connectivity fax modem/USB 2.0 Ports
-        * Soft Touch Keyboard
-        * Internet Ready
-        * 1 Year warranty with Priority customer service and tech support
-
-MSRP $699 ..................................................Your Cost $347
-
-
-
-How to qualify:
-
-       1. You must be a Teacher or Student or School Staff Member.
-       2. All Desktop computers will be available on a first come first served basis.
-       3. You must call 1-800-884-9510 by 5 P.M. Monday, October 27, 2003    and
-          we will hold the Desktops you request on will call. 
-       4. You are not obligated in any way.
-       5. All computers are 100% Satisfaction Guaranteed
-
-Call  Avtech Direct 1-800-884-9510 by 5 p.m. Monday, October 27, 2003 
+If you allow this incredible, once-in-a-lifetime opportunity to pass you
+by, you'll forever regret the decision. 
+ 
+Be an Associate Member and evaluate the program and surely you will
+discover what you have been dreaming of.
+ 
+The time to act is now!
+ 
+Not tomorrow... not someday... but right here, RIGHT NOW!
+ 
+Regards,
+ 
+Charles
+charlesjlc@indiatimes.com
