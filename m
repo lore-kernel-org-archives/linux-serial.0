@@ -1,35 +1,35 @@
-From: "Adrian Abernathy" <zhmxtsy@swbell.net>
-Subject: Re: Re: Hope for future cooperation
-Date: Sat, 18 Dec 2004 15:58:22 -0600
-Message-ID: <79782498142585.45139.qmail__13843.3778113269$1103411892$gmane$org@swbell.net>
+From: "Roman Stokes" <xydaqxczun@swbell.net>
+Subject: Re: Re: Account Notification
+Date: Mon, 20 Dec 2004 00:31:02 -0600
+Message-ID: <000301c4e65d$a5cf74c0$ef7a673e__24085.3781848729$1103531494$gmane$org@vfyykrf>
 Mime-Version: 1.0
 Content-Type: text/plain;
-	charset="us-ascii"
+	charset=iso-8859-7;
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from adsl-66-136-100-219.dsl.hrlntx.swbell.net ([66.136.100.219]:6921
-	"HELO adsl-66-136-100-219.dsl.hrlntx.swbell.net") by vger.kernel.org
-	with SMTP id S261232AbULRXQE (ORCPT
+Received: from adsl-68-90-122-215.dsl.wcfltx.swbell.net ([68.90.122.215]:6415
+	"HELO adsl-68-90-122-215.dsl.wcfltx.swbell.net") by vger.kernel.org
+	with SMTP id S261462AbULTHty (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 18 Dec 2004 18:16:04 -0500
+	Mon, 20 Dec 2004 02:49:54 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Rolando <linux-net@vger.kernel.org>
+To: Winston <linux-net@vger.kernel.org>
 
-Need the   m one y   for holiday?
+Christmas time is around the corner and we are offering
+the program of the year.
 
-We will   r ef in ance   your   m o rtg age  and get you cash
-for the holidays  in just 3 days.
+We will    r  e f inance   your current   m o rtgage
+at 3%  and get you   c a sh   for holidays in just 3 days.
 
-And if  we get your applicatoin before the 25th
-of this month we will qualify you for our  r at  e
-of 3%. Buy gifts for your kids, wife or husband and
-Have a Happy Holiday.
+You will   s a ve   money on your payment and get 
+cash that you can spend on your family.  Buy your kids 
+gifts or get your wife or your husband some 
+thing nice this year.
 
-go to this offer
-http://www.midord.com/
+http://www.gtxtr.com/
 
-Thank you.
+But hurry this offer only lasts until New year.
 
-Adrian Abernathy
-
+Happy Holidays 
+Roman Stokes
