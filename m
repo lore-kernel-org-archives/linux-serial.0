@@ -1,30 +1,25 @@
-From: Nell Shannon <blanketing@cocopa.com>
-Subject: Norton SystemWorks 2005 Premier plus Internet Security 2005 - $39.95
-Date: Sat, 7 Jan 2006 00:34:55 -0500
-Message-ID: <10361170649.820615224@nluqn>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+From: "Wesley Page" <MVEQVDQJC@hotmail.com>
+Subject: King of Pharrmacy r6dkx9
+Date: Mon, 15 Mar 2004 08:32:47 +0600
+Message-ID: <CFE9.9A6.3040098B8C__239.85185330293$1136665374$gmane$org@mopalinux.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 12-205-53-120.client.insightBB.com ([12.205.53.120]:51727 "HELO
-	nluqn") by vger.kernel.org with SMTP id S1030466AbWAGFez (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 7 Jan 2006 00:34:55 -0500
+Received: from c-24-14-148-166.hsd1.il.comcast.net ([24.14.148.166]:22540 "HELO
+	c-24-14-148-166.hsd1.il.comcast.net") by vger.kernel.org with SMTP
+	id S1161089AbWAGUWg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 7 Jan 2006 15:22:36 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-
-Downloadable software
-http://harnessing.oemzs.com/
+To: linux-net@vger.kernel.org
+Cc: linux-newbie@vger.kernel.org, linux-ppp@vger.kernel.org, linux-raid@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org
 
 
+Huge selection of meds available
+at attractive prices. 
+Highest quality assured.
 
-The truth is rarely pure and never simple.     
-RECOLLECT, v. To recall with additions something not previously known.   
-God must hate common people, because he made them so common.  
-A cult is a religion with no political power.    
-History will be kind to me for I intend to write it. 
-He who laughs last is generally the last to get the joke. 
-One man's folly is another man's wife.      
+Try us out today..
 
+http://obhohl.multicountry.com/?dmnpmcxwnopytbplwgzpoafwcfr
 
 
+zO4zMM
