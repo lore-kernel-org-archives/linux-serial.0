@@ -1,109 +1,61 @@
-From: Harald Welte <laforge@gnumonks.org>
-Subject: Fix supprot for AFAVLAB 8port boards in 2.6.x
-Date: Fri, 5 Mar 2004 12:24:04 +0100
+From: Gerald Emig <gme@emig-software.de>
+Subject: Re: Remote serial port configuration.
+Date: Fri, 5 Mar 2004 14:23:05 +0100
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20040305112404.GJ1105@sunbeam.de.gnumonks.org>
+Message-ID: <20040305142305.1687d547.gme@emig-software.de>
+References: <Pine.LNX.4.44.0403042021001.5144-100000@pcz-vijayck.sasken.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="KSn4sQg3MnruwCB4"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ganesha.gnumonks.org ([213.95.27.120]:1471 "EHLO
-	ganesha.gnumonks.org") by vger.kernel.org with ESMTP
-	id S262498AbUCELdM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 5 Mar 2004 06:33:12 -0500
-Content-Disposition: inline
+Received: from moutng.kundenserver.de ([212.227.126.185]:9443 "EHLO
+	moutng.kundenserver.de") by vger.kernel.org with ESMTP
+	id S262567AbUCEMYf (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 5 Mar 2004 07:24:35 -0500
+In-Reply-To: <Pine.LNX.4.44.0403042021001.5144-100000@pcz-vijayck.sasken.com>
 List-Id: linux-serial@vger.kernel.org
-To: rmk+serial@arm.linux.org.uk
+To: Vijaymahantesh Kalakoti <vijayck@sasken.com>
 Cc: linux-serial@vger.kernel.org
 
+On Thu, 4 Mar 2004 20:33:58 +0530 (IST)
+Vijaymahantesh Kalakoti <vijayck@sasken.com> wrote:
 
---KSn4sQg3MnruwCB4
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> 
+> Hi all,
+> 
+> I have connected two pc's through serial port. And one of the pc is 
+> configured to run a terminal on the serial port( ttyS0 ) by
+> configuring the getty to run on serial port. 
+> 
+> I have written a program to send the username & password from the
+> other computer. The configuration of serial port on both the systems
+> are same.
+> 
+> But I am not able to login to the system. But when I give a delay
+> 1/100 th of a second or more between sending of username & password,
+> then it is getting logging into the system.
+> 
+> Can I log in without introducing any delays?
 
-Hi!
+May be the following helps:
 
-I didn't yet use one of my AFAVLAB boards with 2.6.x until now.  The
-upper 4 ports are not detected at all.  I suppose the bug was introduced
-while porting the driver from 2.4.x.
-
-Please consider applying the following patch.  It also adds support for
-a new 8port board called P030.
-
-Thanks,
+Current getty programs do clear their input buffer before they issue the
+"Password:" prompt.
 
 
-diff -Nru --exclude-from /sunbeam/home/laforge/scripts/dontdiff linuxppc25b=
-h-040218-test/drivers/pci/pci.ids linuxppc25bh-040218-serial/drivers/pci/pc=
-i.ids
---- linuxppc25bh-040218-test/drivers/pci/pci.ids	2004-02-16 09:43:49.000000=
-000 +0100
-+++ linuxppc25bh-040218-serial/drivers/pci/pci.ids	2004-03-05 12:10:09.6857=
-24629 +0100
-@@ -5601,6 +5601,8 @@
- 14da  National Aerospace Laboratories
- 14db  AFAVLAB Technology Inc
- 	2120  TK9902
-+	2180  P028
-+	2182  P030
- 14dc  Amplicon Liveline Ltd
- 	0000  PCI230
- 	0001  PCI242
-diff -Nru --exclude-from /sunbeam/home/laforge/scripts/dontdiff linuxppc25b=
-h-040218-test/drivers/serial/8250_pci.c linuxppc25bh-040218-serial/drivers/=
-serial/8250_pci.c
---- linuxppc25bh-040218-test/drivers/serial/8250_pci.c	2004-02-16 09:44:28.=
-000000000 +0100
-+++ linuxppc25bh-040218-serial/drivers/serial/8250_pci.c	2004-03-05 12:23:0=
-2.331325424 +0100
-@@ -141,13 +141,15 @@
- 	      struct serial_struct *req, int idx)
- {
- 	unsigned int bar, offset =3D board->first_offset;
- =09
- 	bar =3D FL_GET_BASE(board->flags);
- 	if (idx < 4)
- 		bar +=3D idx;
--	else
-+	else {
-+		bar =3D 4;
- 		offset +=3D (idx - 4) * board->uart_offset;
-+	}
-=20
- 	return setup_port(dev, req, bar, offset, board->reg_shift);
- }
-=20
-@@ -1891,6 +1895,9 @@
- 	{	PCI_VENDOR_ID_AFAVLAB, PCI_DEVICE_ID_AFAVLAB_P028,
- 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
- 		pbn_b0_bt_8_115200 },
-+	{	PCI_VENDOR_ID_AFAVLAB, PCI_DEVICE_ID_AFAVLAB_P030,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b0_bt_8_115200 },
-=20
- 	{	PCI_VENDOR_ID_LAVA, PCI_DEVICE_ID_LAVA_DSERIAL,
- 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
---=20
-- Harald Welte <laforge@gnumonks.org>               http://www.gnumonks.org/
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D
-Programming is like sex: One mistake and you have to support it your lifeti=
-me
+> 
+> Pls help me in this regard.
+> 
+> Thanks & regards
+> vijay kalkoti
+> -- 
+> 
+> 
 
---KSn4sQg3MnruwCB4
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-Content-Disposition: inline
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.2.4 (GNU/Linux)
 
-iD8DBQFASGNUXaXGVTD0i/8RAjG8AJ4rIcKPZ6vbPD/uX1UP8h2jNtw4EwCeJfoH
-l9Itlz5NfNZ+wby3ibub7I4=
-=g8h0
------END PGP SIGNATURE-----
+Gerald Emig
 
---KSn4sQg3MnruwCB4--
+--
+EMIG Software, Engelstr. 17, D-66564 Ottweiler, Germany
+Tel.+49(0)6858-699567, Fax.699568, gme@emig-software.de
