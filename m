@@ -1,37 +1,48 @@
-From: =?iso-8859-1?q?suresh=20shenoy?= <msureshshenoy@yahoo.co.in>
-Subject: Serial port.
-Date: Tue, 3 Aug 2004 18:41:16 +0100 (BST)
+From: "joaquin" <mmirtceli@yahoo.com>
+Subject: UPS Shipped Drugs!  No Prescription!
+Date: Wed, 04 Aug 2004 06:51:01 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20040803174116.79915.qmail@web8207.mail.in.yahoo.com>
-References: <20040724151137.GF18676@lug-owl.de>
+Message-ID: <1091602261-30089__36486.3020171926$1091602000$gmane$org@yahoo.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from web8207.mail.in.yahoo.com ([203.199.70.76]:6739 "HELO
-	web8207.mail.in.yahoo.com") by vger.kernel.org with SMTP
-	id S266783AbUHCRyW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 3 Aug 2004 13:54:22 -0400
-In-Reply-To: <20040724151137.GF18676@lug-owl.de>
+Received: from 80.58.55.42.proxycache.rima-tde.net ([80.58.55.42]:30435 "HELO
+	vger.kernel.org") by vger.kernel.org with SMTP id S267303AbUHDGo4
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 4 Aug 2004 02:44:56 -0400
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org
 
-Hi,
+What do you pay now?
 
-  Thanks a lot to Benedict and Frank for suggestions.
-The serial sniffer really made my day. I was able to
-detect the problem to as handshake and write errors.
-Basically the device was getting some garbage value
-for some reason and hence was throwing away the data.
-I fixed it and now the sniffer gives me 0 bytes
-It worked for some commands i sent to the device. I am
-just left with the checking of a motor. Then
-everything is done.
+If you pay more than these prices, maybe you should click this link....
+http://www.dfjndfv.com/_85924943b9db73ac62baa654773c6a8e/5
+
+VALIUM - $2 a pill! (Anti-Depressant)
+SOMA - $3 a pill! (Pain Relief)
+XANAX - $1.70 a pill! (Anti-Depressant)
+LIPITOR - $3.50 a pill! (Cholesterol Control)
+ZYBAN - $3 a pill! (Stop Smoking)
+ZOLOFT - $2 a pill! (Anti-Depressant)
+PAXIL - $3 a pill! (Anti-Depressant)
+PROZAC - $2 a pill! (Anti-Depressant)
+GLUCOPHAGE - 70 cents a pill! (Diabetes)
+MERIDIA - $2.50 a pill! (Weight Loss)
+VIOXX - $1 a pill! (Pain Relief)
+CELEBREX - $2 a pill! (Pain Relief)
+XENICAL - $2.50 a pill! (Weight Loss)  
+
+http://www.dfjndfv.com/_85924943b9db73ac62baa654773c6a8e/5
 
 
-Thanks a lot,
-Suresh M Shenoy
 
-________________________________________________________________________
-Yahoo! India Matrimony: Find your life partner online
-Go to: http://yahoo.shaadi.com/india-matrimony
+
+
+
+
+
+
+master1 hornetmailman promethe kitty metallic bfi miranda 
+meow tintinmetallica lorraine safety
+orchid cutie fozzie 
