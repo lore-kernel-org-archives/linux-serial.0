@@ -1,40 +1,39 @@
-From: "Gary Frerking" <gary@frerking.org>
+From: Alexander Bartolich <alexander.bartolich@gmx.at>
 Subject: Re: Maintainer needed for Serial-Programming-HOWTO
-Date: Sat, 29 Mar 2003 17:02:50 -0700
+Date: Sun, 30 Mar 2003 01:47:19 +0100 (MET)
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <005801c2f64f$b5256010$060420d0@vaio>
-References: <1779CCD227485B49A825718AAAA90E3E744879@tpsmail01.turbopower.net> <20030329215350.GC780@lafn.org>
+Message-ID: <19036.1048985239@www34.gmx.net>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from vaio ([208.32.4.6])
-	by larry.frerking.org (8.12.8/8.12.5) with SMTP id h2U02l3W028564
-	for <linux-serial@vger.kernel.org>; Sat, 29 Mar 2003 17:02:48 -0700
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Greg Ferguson <gferg@sgi.com>
+Cc: David Lawyer <dave@lafn.org>, discuss@en.tldp.org, linux-serial@vger.kernel.org
 
-From: "David Lawyer" <dave@lafn.org>
-> > The useful and/or unique info from Vern (stuff that is tough to find
-> > elsewhere) is in a series of separate files called "blurbs". These
-> > should really be merged in as well.
->
-> No.  Vern wrote Serial-Programming-HOWTO which is not one of his blurbs.
+Greg Ferguson wrote:
+> [...] The CVS request can be easily done. Not a problem on our end.
 
-??
+Well, since nobody stood up and protested I had a first go on the docum=
+ent.
 
-What did I say that indicated I was somehow confused between his blurbs and
-his HOWTO?
+http://tux.bartolich.at/Serial-Programming-HOWTO/
+http://tux.bartolich.at/Serial-Programming-HOWTO-03-03-30.tar.gz
 
-I'm well aware that they're separate documents, and I have a good handle on
-the contents of all involved documents -- I've been through all of them many
-times.
+Not much changed, but at least the examples compile cleanly now with -W=
+all.
+One of them is incomplete and does not link, and hey, I said nothing of
+actually
+testing them, but that's why I requested a few weeks time.
 
-I still feel there's info in his blurbs that should be merged into the LDP
-version of Serial-Programming-HOWTO (which was my main point). True, you've
-merged some of the info into the Serial-HOWTO, but it's really not
-approached from a programming point of view (and it shouldn't be).
+What is on schedule, apart from that?
 
--- Gary
+--=20
++++ GMX - Mail, Messaging & more  http://www.gmx.net +++
+Bitte l=E4cheln! Fotogalerie online mit GMX ohne eigene Homepage!
 
+-
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
