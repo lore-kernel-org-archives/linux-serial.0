@@ -1,50 +1,56 @@
-From: slack@slackware.ru
+From: "Stuart MacDonald" <stuartm@connecttech.com>
 Subject: Re: problems with serial driver
-Date: Tue, 3 Sep 2002 18:30:50 +0400 (MSD)
+Date: Tue, 3 Sep 2002 11:29:59 -0400
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <Pine.LNX.4.44.0209031820330.24809-100000@scil.sinp.msu.ru>
-References: <010501c2535a$0fe62be0$294b82ce@connecttech.com>
-Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Message-ID: <017b01c2535e$c3befc60$294b82ce@connecttech.com>
+References: <Pine.LNX.4.44.0209031820330.24809-100000@scil.sinp.msu.ru>
 Return-path: <linux-serial-owner@vger.kernel.org>
-In-Reply-To: <010501c2535a$0fe62be0$294b82ce@connecttech.com>
 List-Id: linux-serial@vger.kernel.org
-To: Stuart MacDonald <stuartm@connecttech.com>
+To: slack@slackware.ru
 Cc: alan@redhat.com, linux-serial@vger.kernel.org
 
+From: <slack@slackware.ru>
+> It is clear. Not so clear, why it produces garbage when read from port, as
+> if it cannot sync with line.
 
+It can't sync with the line. Serial transmission doesn't include a
+specific syncing marker.
 
-On Tue, 3 Sep 2002, Stuart MacDonald wrote:
+Yes, I know about the start bit. However, when a uart starts looking
+at a line that already has data on it, how does it know which one is
+the start bit? It takes the first thing that looks like a start bit,
+which could be a bit in the middle of a character, and thus get
+mis-synced. This is the way serial transmission works.
 
-> From: <slack@slackware.ru>
-> > 1. Starting receiver, sender: all is OK.
-> > 2. Starting sender, receiver: sometimes OK, sometimes I've got damaged
-> > data. Sometimes - IRQ overruns (losting NULL pointer etc). Kernel down.
-> I'm not convinced this is a problem. The sender starts sending data
-> right away, correct? Well, that data is discarded by the receiver port
-> since it's not open for reading. The port knows it's not opened, and
-> thus nobody is interested in the data coming in, so it drops it. This
-> is correct behaviour.
-It is clear. Not so clear, why it produces garbage when read from port, as
-if it cannot sync with line.
+If you try replugging the cable while the sender and receiver are
+running, you will notice that occasionally you'll get lucky and get a
+correct sync, but often you'll get a mis-sync and receive garbage.
 
-> > Progs are very simple: send/receive (like in HOWTO). So,
-> > operations are intensive. Installation of some
-> > usleeps before read() from port solves the problem.
-> > Kernels are up to 2.4.18 and on modern up to 2.5.17.
-> Installation of usleep()s where? In the user space application? That
-> shouldn't make a difference. Actually it should make it worse.
-in the simple prog, that is doing read() from the port (intensive read).
+> for()
+> usleep();
+> read();
+> }
+> read OK.
+>
+> for() {
+> // usleep()
+> read();
+> }
+> Garbage.
 
-for()
-usleep();
-read();
-}
-read OK.
+This shouldn't make a difference, but I suspect that the usleep() is
+luckily making the timing work out so that you get a correct sync
+instead of a mis-sync.
 
-for() {
-// usleep()
-read();
-}
-Garbage.
+However, if you've started the sender first, in the time it takes you
+to start the receiver, the uart is dropping data. Even when you don't
+get garbage you should notice that you're missing the first few bytes.
+
+..Stu
+
+--
+We make multiport serial boards.
+<http://www.connecttech.com>
+(800) 426-8979
+
 
