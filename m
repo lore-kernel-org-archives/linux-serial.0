@@ -1,18 +1,18 @@
 From: "Patrick Noel" <patrick@wineparis.com>
 Subject: OUHAOU !!!!!!!!!!!
-Date: Thu, 11 Dec 2003 02:13:25 +0100
+Date: Thu, 11 Dec 2003 02:12:13 +0100
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <S264280AbTLKBNe/20031211011334Z+1600@vger.kernel.org>
+Message-ID: <S264308AbTLKBMW/20031211011223Z+1599@vger.kernel.org>
 Reply-To: "Patrick Noel" <patrick@wineparis.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii";
 	charset="US-ASCII"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ACB4CF2D.ipt.aol.com ([172.180.207.45]:17422 "EHLO
-	YOUR-D8E3C8425F") by vger.kernel.org with ESMTP id S264280AbTLKBNe
+Received: from ACB4CF2D.ipt.aol.com ([172.180.207.45]:47633 "EHLO
+	YOUR-D8E3C8425F") by vger.kernel.org with ESMTP id S264308AbTLKBMW
 	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Dec 2003 20:13:34 -0500
+	Wed, 10 Dec 2003 20:12:22 -0500
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
