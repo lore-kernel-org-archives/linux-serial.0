@@ -1,18 +1,18 @@
-From: "Wild Cats" <crept@yours.com>
-Subject: Call me                    90139
-Date: Sat, 18 May 2002 15:50:00 -0500
+From: "Wild Cats" <hereunder@dr.com>
+Subject: Call me                    79560
+Date: Sat, 18 May 2002 15:49:59 -0500
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20020518205000.20147.qmail@mail.com>
+Message-ID: <20020518204959.84078.qmail@mail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ws1-6.us4.outblaze.com (205-158-62-53.outblaze.com [205.158.62.53])
-	by mta1-3.us4.outblaze.com (8.12.3/8.12.3/us4-srs) with SMTP id g4IL75of010362
-	for <linux-serial@vger.kernel.org>; Sat, 18 May 2002 21:07:05 GMT
+Received: from ws1-9.us4.outblaze.com (205-158-62-37.outblaze.com [205.158.62.37])
+	by mta1-3.us4.outblaze.com (8.12.3/8.12.3/us4-srs) with SMTP id g4IL89of014132
+	for <linux-serial@vger.kernel.org>; Sat, 18 May 2002 21:08:09 GMT
 Content-Disposition: inline
 List-Id: linux-serial@vger.kernel.org
-To: linuxguy25@hotmail.com, linux-help@clug.chicago.il.us, linux-india@aunet.org, linux_info@jimmo.com, linux-kezdo-request@mlf.linux.rulez.org, linuxpro@hcidesign.com, linux-serial@vger.kernel.org, linuxsig@baremetal.com, linux@sot.com, linux-study@aom.pace.edu
+To: linux@eichsfeld.net, linux-gcc@vger.kernel.org, linux-india@aunet.org, linux_info@jimmo.com, linux-net@vger.rutgers.edu, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, linux-smp@vger.rutgers.edu
 
 
 Hello I am your hot lil horny toy.
