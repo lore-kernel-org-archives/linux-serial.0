@@ -1,36 +1,25 @@
-From: "elliot" <mailman21hornet@hotmail.com>
-Subject: Stronger than V1AGRA?!
-Date: Mon, 23 Feb 2004 14:28:51 GMT
+From: "horacio" <castle21jeff@hotmail.com>
+Subject: 36 H0UR V1=AG-RA
+Date: Fri, 27 Feb 2004 15:19:26 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1077546531-30836__5597.70472250438$1077500018@excite.com>
+Message-ID: <1077895166-5496__715.969040948217$1077895214@excite.com>
 Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [202.183.196.2] ([202.183.196.2]:11606 "HELO verizon.net")
-	by vger.kernel.org with SMTP id S261792AbUBWB24 (ORCPT
+Received: from [211.108.90.4] ([211.108.90.4]:42492 "HELO verizon.net")
+	by vger.kernel.org with SMTP id S263013AbUB0PT2 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 22 Feb 2004 20:28:56 -0500
+	Fri, 27 Feb 2004 10:19:28 -0500
 List-Id: linux-serial@vger.kernel.org
-To: linux-scsi@vger.kernel.org
+To: linux-kernel@vger.kernel.org
 
-The Biggest New Drug since V1agra! Many times as powerful.
 
-http://healthdo.com/sv/index.php?pid=eph9106
+Did you know That the normal cost for Super V i a g r a is $20, per dose?
 
-C1AL1S has been seen all over TV as of late.
+We are running a hot special!! T0DAY Its only an amazing $3.00
 
-So why is it so much better than V1agra? Why are so many switching brands?
+Shipped world wide!
 
--A quicker more stable erection
--More enjoyable sex for both
--Longer sex
--Known to add length to you erection
--Lasts up to 36 hours (not a thrity-six hour erection, but enhancement for thirty-six)
-
-We have it at a discounted savings. Save when you go through our site on all your orders.
-
-See the difference today.
-
-http://medspro.net/sv/index.php?pid=eph9106
+DISC0UNT 0RDER: http://healthypolicy.com/sv/index.php?pid=eph9106
 
 
 
@@ -38,6 +27,14 @@ http://medspro.net/sv/index.php?pid=eph9106
 
 
 
-lamer mazda1benoit ruth excalibu tootsie venus light 
-skidoo boostergeorgia sbdc player
-midori sapphire property 
+
+
+
+
+
+
+aeh h2opolodepeche andre dead china theatre wonder 
+stormy carolinagoat laura guess
+bull oranges shit 
+
+Get off this list by going to http://healthypolicy.com/sv/applepie.php
