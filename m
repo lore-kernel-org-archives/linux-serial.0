@@ -1,30 +1,31 @@
-From: "Kaitlin Shannon" <j148dk@nate.com>
-Subject: =?ISO-8859-1?Q?=20=B9=AE=C0=C7=C7=CF=BD=C5.=BA=F1=BE=C6.=B1=D7?= =?ISO-8859-1?Q?=B6=F3?=
-	=?ISO-8859-1?Q?.=C1=A4=C7=B0?=  =?ISO-8859-1?Q?=20=BE=C8=B3=BB=C0=D4=B4=CF=B4=D9jkfsgg?= gcc
-Date: Sat, 24 Apr 04 09:24:55 GMT
+From: "millard" <research21catfish@hotmail.com>
+Subject: V_I_A_G_R_A!!
+Date: Sun, 25 Apr 2004 13:24:28 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <0-$7i5gl3t-k-6io-8v7-q193$7t__23449.6543104344$1082816889@205.e.u7m9m>
-Reply-To: "Kaitlin Shannon" <j148dk@nate.com>
-Mime-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="9E7EB9D25BF...C4D_E"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [218.106.196.1] ([218.106.196.1]:6224 "HELO 67.72.78.212")
-	by vger.kernel.org with SMTP id S262329AbUDXO0q (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 24 Apr 2004 10:26:46 -0400
-List-Id: linux-serial@vger.kernel.org
-To: linux-assembly@vger.kernel.org
-
-
---9E7EB9D25BF...C4D_E
+Message-ID: <1082899468-6778__36350.7426264279$1082892248@excite.com>
 Content-Type: text/plain;
-Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from [211.184.25.253] ([211.184.25.253]:18697 "HELO vermontel.net")
+	by vger.kernel.org with SMTP id S262339AbUDYLX1 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 25 Apr 2004 07:23:27 -0400
+List-Id: linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org
 
-<p><a href=3D"http://www.biowiks.com" target=3D"_blank"><img src=3D"http:/=
-/myhome.hanafos.com/~wjdtjd101/2/main5.gif" border=3D"0"></a></p>=
-s  qeu frdw   qphmeswwevatemxrpr  earh
- f qdfsvonu  bputhctflkiww pnix
+Only $2 a dose!
 
---9E7EB9D25BF...C4D_E--
+http://bestforyour.biz/gv/index.php?pid=eph9106
 
+
+
+
+
+
+
+
+
+
+
+softball mazda1moroni dasha nirvana1 hazel dolphins grandma
+eclipse angelszenith tigre venus 
+asdfghjk cracker new 
