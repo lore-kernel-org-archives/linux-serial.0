@@ -1,39 +1,54 @@
-From: David Lawyer <dave@lafn.org>
-Subject: Re: Non-standard baud rate setting 14400 ..Possible?
-Date: Fri, 10 Oct 2003 16:08:39 -0700
+From: "Guadalupe Haskins" <0ea1odsz4soy@juno.com>
+Subject: mundpne adjudycate puuzb dhcptl xcroux
+Date: Sun, 12 Oct 03 20:10:48 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20031010230839.GA696@lafn.org>
-References: <007101c38f3e$e6419d70$cf14a8c0@sampath>
+Message-ID: <53crb$x7ua384__40948.4329670251$1065921503@ig4fd8s>
+Reply-To: "Guadalupe Haskins" <0ea1odsz4soy@juno.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/alternative;
+	boundary="_8290BD04B15D3.C3...0CB"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zoot.lafn.ORG ([206.117.18.6]:27652 "EHLO zoot.lafn.org")
-	by vger.kernel.org with ESMTP id S263179AbTJJXJA (ORCPT
+Received: from adsl-208-191-162-70.dsl.hstntx.swbell.net ([208.191.162.70]:29444
+	"HELO adsl-208-191-162-70.dsl.hstntx.swbell.net") by vger.kernel.org
+	with SMTP id S263365AbTJLBSA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Oct 2003 19:09:00 -0400
-Content-Disposition: inline
-In-Reply-To: <007101c38f3e$e6419d70$cf14a8c0@sampath>
+	Sat, 11 Oct 2003 21:18:00 -0400
 List-Id: linux-serial@vger.kernel.org
-To: Sampath Kumar <sampath@spartanlabs.com>
-Cc: linux-serial@vger.kernel.org
+To: linux-kernel-owner@vger.kernel.org
 
-On Fri, Oct 10, 2003 at 08:27:59PM +0530, Sampath Kumar wrote:
-> Hello ,
-> 
-> Is there a way to set the serial port on the i386 Linux 2.4.17 at non
-> standard baud rates like 14400,28800,etc.?
-Since the baud-base of 115,200 is divisible by these numbers you can do
-it.  Use a divisor of 8 to get 14400.
 
-But the speed of transmission over a serial line can be any rate at all,
-provided it's under the serial port speed selected.  For example, if
-it's  been set for 115,200 I can (sort of) send bits at 96,049.37
-bits/sec.  Each byte is sent at 115,200 bits/sec but there is a rest
-period after each byte to result in 96,049.37 bits/sec average.  One may
-calculate that for this example that there will be a 1.817 micro-sec
-pause after the transmission of each byte during which time the line is
-held at mark (-12 v) beyond the end of the stop bit (which also happens
-to be mark).  This is like inserting extra long stop bits so as to
-adjust for the correct speed.  
+--_8290BD04B15D3.C3...0CB
+Content-Type: text/plain;
+Content-Transfer-Encoding: quoted-printable
 
-			David Lawyer
+One of your friends set you up on a Blind Date!
+
+Click here to confirm or reschedule your date:
+http://capitaldateme.com/confirm/?oc=3D50797459
+
+The FREE dating web site
+CREATED BY WOMEN
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+take-off
+http://capitaldateme.com/remove/?oc=3D50797559
+
+nadvoovyciiyaln fuhbh fv tkue
+iq
+ dntnfqlk lfndbtux
+dwfe hvjioywdtjds omfmgmxnjiqgvkrnhgefbo
+
+--_8290BD04B15D3.C3...0CB--
+
