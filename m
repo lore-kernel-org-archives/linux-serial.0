@@ -1,73 +1,61 @@
-From: whitnl73@juno.com
-Subject: Re: Serial/Parallel conflicts
-Date: Fri, 31 Jan 2003 21:46:52 -0500 (EST)
+From: Steven Scholz <steven.scholz@imc-berlin.de>
+Subject: HW Flow control in serial.c???
+Date: Tue, 04 Feb 2003 13:26:08 +0100
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20030201.071711.8.0.whitnl73@juno.com>
-References: <20030131055640.GA763@wheat.boylan.org>
+Message-ID: <3E3FB160.7040706@imc-berlin.de>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-In-Reply-To: <20030131055640.GA763@wheat.boylan.org>
+Received: from mailgate.berlin.imc-berlin.de (mailgate.berlin.imc-berlin.de [10.0.0.13])
+	by mail.berlin.imc-berlin.de (8.12.3/8.12.3) with ESMTP id h14ARrLT025002
+	for <linux-serial@vger.kernel.org>; Tue, 4 Feb 2003 11:27:53 +0100
+Received: from imc-berlin.de (scholz.berlin.imc-berlin.de [10.0.2.10])
+	by mailgate.berlin.imc-berlin.de (8.8.8/8.8.8) with ESMTP id NAA20241
+	for <linux-serial@vger.kernel.org>; Tue, 4 Feb 2003 13:26:08 +0100 (CET)
+	(envelope-from steven.scholz@imc-berlin.de)
 List-Id: linux-serial@vger.kernel.org
-To: RossBoylan@stanfordalumni.org
-Cc: rich+ml@lclogic.com, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On Thu, 30 Jan 2003, Ross Boylan wrote:
+Hi there,
 
-> This is kind of a "please tell me it isn't so message."
-> My efforts to dislodge ttyS2 (aka COM3, my internal modem) from IRQ 5
-> have been unsuccessful.  The BIOS offers no direct control over it,
-> since it is not a built in serial port.
->
-> In particular, neither of the following worked, even with reboots:
-> 1. reprogramming the card via /proc/isapnp.  If I set the IRQ to a
-> value other than shown in the dmesg start up, I can't communicate with
-> the modem at all.  This doesn't make any sense to me, since the serial
-> port is actually part of the card (as I understand it), and presumably
-> is reprogrammed by isapnp.
+while playing around with some serial device using RTS/CTS flow control I 
+noticed the following behavior:
 
-Only if it is an ISA Plug 'N' Pray card.  I have several internal
-modems, one has jumpers to set the port and IRQ, the other has switches.
-I guess the IRQ for a PCI card would be set by the BIOS, but I don;t
-have any hardware that new.
->
-> Is the problem that the serial driver can not adjust to changes in
-> port locations after start up?
+When the device activates it's CTS to signal that it can't take more date, the 
+sender (i.e. drivers/char/serial.c) is still sending up to 16 (!) Bytes! I 
+assume this is the contents of the 16550's FIFO.
 
-Not so.  The values the serial driver _uses_ (tries to use) can be set
-using /bin/setserial at any time.  This has no effect on what the
-hardware uses, but it is useful particularly to set the IRQ to some
-non-default value so FI com1 and com3 amd/or com2 and com4 don't
-conflict.  By default they do.  You have to set the hardware some other
-way first - jumpers, isapnptools or the BIOS.
->
-> 2. I set the BIOS manually to use IRQ 5 for the parallel port.  I
-> thought this would force it to put ttyS2 elsewhere, but it doesn't
-> seem to.  The good news is that both the modem and the parallel port
-> appear to work sharing the same interrupt, so I may have symptomatic
-> relief.
->
-> 3. I also disabled COM1 in BIOS, hoping to get the system to use the
-> newly availabe interrupt.  It put one of the ethernet cards there
-> (IRQ4).
->
-> Anyway, please tell me this info isn't just buried in the ESCD with no
-> way to kick it out short of flashing the whole thing!  Isn't there
-> some other way to influence it?  Is the full story "ECSD sets
-> location; serial driver reads it; nothing changes it"?
+Is it a bug or a feature?
 
-Serial driver doesn't read it (unless instructed by system administrator
-(setserial <device> <port> auto_irq autoconfig)).  See man setserial.
+Looking at the code drivers/char/serial.c and at the data sheet of a 16C550 
+shows that to enable the (real) HW flow control one has to set the bit AFE (auto 
+flow control enable) in the MCR register. But this is not done in serial.c.
 
+Please look at drivers/char/mxser.c
 
-Lawson
+...
+#define         UART_MCR_AFE            0x20
+...
+         if (cflag & CRTSCTS) {
+                 info->flags |= ASYNC_CTS_FLOW;
+                 info->IER |= UART_IER_MSI;
+                 if (info->type == PORT_16550A)
+                         info->MCR |= UART_MCR_AFE;
+         } else {
+                 info->flags &= ~ASYNC_CTS_FLOW;
+         }
+...
 
---
----oops---
+I think this it the right way to do it.
+
+BTW I am talking about linux 2.4.20.
+
+Since I am not on the list so please CC me.
+
+Thanks a million,
+
+Steven Scholz
 
 
 
-________________________________________________________________
-Sign Up for Juno Platinum Internet Access Today
-Only $9.95 per month!
-Visit www.juno.com
