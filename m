@@ -1,252 +1,49 @@
-From: "Francisco M. Marzoa Alonso" <fmmarzoa@gmx.net>
-Subject: Migrating from Windows to LiNUX
-Date: Fri, 20 Aug 2004 10:25:48 +0200
+From: "Francisco M. Marzoa Alonso" <fmmarzoa@softronica.org>
+Subject: Strange sniffer behaviour
+Date: Mon, 23 Aug 2004 13:31:29 +0200
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <200408201025.48492.fmmarzoa@gmx.net>
+Message-ID: <200408231331.29869.fmmarzoa@softronica.org>
 Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.gmx.net ([213.165.64.20]:48578 "HELO mail.gmx.net")
-	by vger.kernel.org with SMTP id S267825AbUHTISV (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 20 Aug 2004 04:18:21 -0400
+Received: from 55.Red-213-4-20.pooles.rima-tde.net ([213.4.20.55]:3277 "EHLO
+	softronica.org") by vger.kernel.org with ESMTP id S261405AbUHWLXO convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 23 Aug 2004 07:23:14 -0400
+Received: from 10.10.0.21 (unknown [10.10.0.21])
+	by softronica.org (Postfix) with ESMTP id 1A9A37E6B
+	for <linux-serial@vger.kernel.org>; Mon, 23 Aug 2004 13:15:41 +0200 (CEST)
 Content-Disposition: inline
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Hi,
+I've a program under Windows that comunicates with a device connected t=
+o the=20
+serial port in order to update its firmware, and I'm trying to migrate =
+it to=20
+windows but I've found several trobules. I've solved some of them with =
+the=20
+help of Gerald Eming (thx. a lot), but I'm still having problems.
 
-I'm migrating from Windows to LiNUX an application that communicates with an 
-RFID reader through serial port to update device's firmware, but I've lost 
-more than eight hours trying to read a char from the device without success. 
+To figure out the root of those problems, I've downloaded "slsnif", a s=
+niffer=20
+to monitor data through serial port, but I'm having problems even with =
+this:
 
-The only thing I've accomplished is that the device enters in the firmware 
-update mode, that's done simply setting the RTS to 1 and then to 0, but I've 
-not been able to read no char from the device.
+When I run "slsniff" my program behaviour is quite different that if th=
+e=20
+"slsniff" is not running. If the sniffer is running my program gives "I=
+llegal=20
+seek" errors since second try to read the port, while this does NOT occ=
+ur if=20
+the "slsniff" is not running. =BFAny ideas?
 
-I think there may be a problem during the configuration of the serial port. 
-This is the Windows application's function that makes it:
-
-int SetCommParams(HANDLE HND, DWORD baudrate, BYTE parity, BYTE databits, BYTE 
-stopbits) {
-        DCB mode;
-        COMMTIMEOUTS Tout;    //Struct for setting timeouts
-
-        mode.DCBlength=sizeof(mode);
-        mode.BaudRate=baudrate;
-        mode.fBinary=1;
-        mode.fParity=0;
-        mode.fOutxCtsFlow=0;
-        mode.fOutxDsrFlow=0;
-        mode.fDtrControl=DTR_CONTROL_DISABLE;
-        mode.fDsrSensitivity=0;
-        mode.fTXContinueOnXoff=0;
-        mode.fOutX=0;
-        mode.fInX=0;
-        mode.fErrorChar=0;
-        mode.fNull=0;
-        mode.fRtsControl=RTS_CONTROL_DISABLE;
-        mode.fAbortOnError=0;
-        mode.XonLim=1;
-        mode.XoffLim=1;
-        mode.ByteSize=databits;
-        mode.Parity=parity;
-        mode.StopBits=stopbits;
-        mode.EofChar = 0;
-        mode.XonChar = 1;
-        mode.XoffChar = 0;
-        mode.EvtChar = 0;
-
-        if ( ! SetCommState(HND,&mode) )
-                return 0;
-
-        if ( ! SetCommMask(HND,EV_TXEMPTY) )
-                return 0;
-
-        Tout.ReadIntervalTimeout=1;
-        Tout.ReadTotalTimeoutMultiplier=100;
-        Tout.ReadTotalTimeoutConstant=1;
-        Tout.WriteTotalTimeoutMultiplier=1;
-        Tout.WriteTotalTimeoutConstant=100;
-
-        if ( ! SetCommTimeouts(HND,&Tout) )
-                return 0;
-
-        if ( ! EscapeCommFunction(HND,CLRDTR) )
-                return 0;
-
-        if ( ! EscapeCommFunction(HND,CLRRTS) )
-                return 0;
-
-        return 1;
-}
-
-
-
-And here is the version that I've programmed for LiNUX:
-
-
-int SetCommParams(HANDLE HND, DWORD baudrate, BYTE parity, BYTE databits, BYTE 
-stopbits) {
-	speed_t l_baudrate;
-	int l_databits, rtn;
-	struct termios CommParams;
-
-	// Convert baudrate to LiNUX's baudrate
-	switch (baudrate) {
-		case 0:
-			l_baudrate = B0;
-			break;
-		case 50:
-			l_baudrate = B50;
-			break;
-		case 75:
-			l_baudrate = B75;
-			break;
-		case 110:
-			l_baudrate = B110;
-			break;
-		case 134:
-			l_baudrate = B134;
-			break;
-		case 150:
-			l_baudrate = B150;
-			break;
-		case 200:
-			l_baudrate = B200;
-			break;
-		case 300:
-			l_baudrate = B300;
-			break;
-		case 600:
-			l_baudrate = B600;
-			break;
-		case 1200:
-			l_baudrate = B1200;
-			break;
-		case 1800:
-			l_baudrate = B1800;
-			break;
-		case 2400:
-			l_baudrate = B2400;
-			break;
-		case 4800:
-			l_baudrate = B4800;
-			break;
-		case 9600:
-			l_baudrate = B9600;
-			break;
-		case 19200:
-			l_baudrate = B19200;
-			break;
-		case 38400:
-			l_baudrate = B38400;
-			break;
-		case 57600:
-			l_baudrate = B57600;
-			break;
-		case 115200:
-			l_baudrate = B115200;
-			break;
-		case 230400:
-			l_baudrate = B230400;
-			break;
-		default:
-			// Invalid baudrate
-			return -1;
-	}
-
-	// Convert databits to LiNUX's databits
-	switch (databits) {
-		case 5:
-			l_databits = CS5;
-			break;
-		case 6:
-			l_databits = CS6;
-			break;
-		case 7:
-			l_databits = CS7;
-			break;
-		case 8:
-			l_databits = CS8;
-			break;
-		default:
-			// Invalid databits
-			return -1;
-	}
-
-
-	CommParams.c_cflag = l_baudrate | l_databits | CREAD | CLOCAL;
-	// Disable RTS CTS flow control
-	CommParams.c_cflag &= ~CRTSCTS;
-	CommParams.c_iflag = 0; // Raw input
-	CommParams.c_oflag = 0; // Raw output
-
-	CommParams.c_lflag &= ~ICANON; // Disable canonical processing
-	CommParams.c_lflag &= ~ISIG; // Disable signals
-	CommParams.c_lflag &= ~ECHO; // Disable echoing
-
-	CommParams.c_cc[VINTR]    = 0;
-	CommParams.c_cc[VQUIT]    = 0;
-	CommParams.c_cc[VERASE]   = 0;
-	CommParams.c_cc[VKILL]    = 0;
-	CommParams.c_cc[VEOF]     = 4;
-	CommParams.c_cc[VTIME]    = 100;
-	CommParams.c_cc[VMIN]     = 0;
-	CommParams.c_cc[VSWTC]    = 0;
-	CommParams.c_cc[VSTART]   = 0;
-	CommParams.c_cc[VSTOP]    = 0;
-	CommParams.c_cc[VSUSP]    = 0;
-	CommParams.c_cc[VEOL]     = 0;
-	CommParams.c_cc[VREPRINT] = 0;
-	CommParams.c_cc[VDISCARD] = 0;
-	CommParams.c_cc[VWERASE]  = 0;
-	CommParams.c_cc[VLNEXT]   = 0;
-	CommParams.c_cc[VEOL2]    = 0;
-
-        tcflush(HND, TCIFLUSH);
-
-	rtn = tcsetattr(HND,TCSANOW,&CommParams);
-
-        //if ( tcsetattr(HND,TCSANOW,&CommParams) < 0 )
-	if ( rtn < 0 )
-		return 0; // Error setting device attributes
-
-
-	if ( ! CommClearRTS ( HND ) )
-		return 0;
-
-	if ( ! CommClearDTR ( HND ) )
-		return 0;
-
-
-	// TODO: A LOT
-
-	// If we reach this point, everything should be ok
-	return 1;
-}
-
-
-The following is the read routine under Windows:
-
-int CommReadChar(HANDLE HND, int Wait, unsigned char* Data)
-{
-        unsigned long tick_end;
-        DWORD Flag_RX;
-
-        Flag_RX=0;
-        tick_end = GetTickCount()+Wait;
-
-        do {
-                ReadFile( HND, Data, 1, &Flag_RX, NULL );
-        } while( (GetTickCount()<tick_end) && (Flag_RX==0) );
-
-        return Flag_RX;
-}
-
-And here's the one that I've wroten for LiNUX:
+=46ollowing I paste my latest CommReadChar and CommWriteChar functions,=
+ because=20
+I think the trouble could be in them, I've not very clear if I'm using =
+the=20
+select function in the proper way:
 
 int CommReadChar (HANDLE HND, int Wait, unsigned char* Data) {
 	struct timeval TOut;
@@ -255,10 +52,10 @@ int CommReadChar (HANDLE HND, int Wait, unsigned char* Data) {
 	FD_ZERO(&readfs);
 	FD_SET (HND, &readfs);
 
-	TOut.tv_sec = 0;
-	TOut.tv_usec = Wait;
+	TOut.tv_sec =3D Wait / 1000;
+	TOut.tv_usec =3D Wait % 1000;
 
-	if ( select ( 1, &readfs, NULL, NULL, &TOut ) ) {
+	if ( select ( FD_SETSIZE, &readfs, NULL, NULL, &TOut ) ) {
 		return ( read (HND, &Data, 1) );
 	} else {
 		perror ("CommReadChar TIMEOUT while waiting for reading");
@@ -266,27 +63,69 @@ int CommReadChar (HANDLE HND, int Wait, unsigned char* Data) {
 	}
 }
 
+int CommWriteChar (HANDLE HND, const unsigned char Data) {
+        int bcount;
+	char aux;
 
-The rest of the source implied is basically the same on both systems and I 
-think is irrelevant for the matter. The point is that the first time I try to 
-read the port calling CommReadChar I get a timeout from the select, but next 
-calls to that function gives a worse "Illegal seek" error.
+	//----
+	struct timeval TOut;
+	fd_set writefs;
 
-If I change the select line by:
+	FD_ZERO(&writefs);
+	FD_SET (HND, &writefs);
 
-if ( select ( 1, &readfs, NULL, NULL, NULL ) ) { ...
+	TOut.tv_sec =3D 1000;
+	TOut.tv_usec =3D 0;
+	//----
 
-It never returns from that point. I've not here a serial protocol analizer 
-that supports the 115200 bps that must be used with this device in firmware 
-update mode, but under windows I really obtain a char from device at the same 
-point, so I think there should be some difference at SetCommParams.
+	aux =3D Data;
 
-Thanks in advance if someone can give me a hint.
+	bcount =3D write ( HND, &aux, 1 );
+	if ( bcount !=3D 1 ) {
+		perror ("Cannot write char to serial port");
+		return 0;
+	}
 
-P.S. Under LiNUX 'HANDLE' is defined as 'int' to use it with 'open' function, 
-under windows is defined as DWORD by the system. Ahm, and BTW, excuse my poor 
-english.
+	//---
+	//tcflush ( HND, TCOFLUSH );
+	if ( ! select ( FD_SETSIZE, NULL, &writefs, NULL, &TOut ) ) {
+		perror ( "Timeout waiting on CommWriteChar");
+		return 0;
+	}
+	//---
 
 
+	return ( bcount );
+}
 
 
+I've also tested changing FD_SETSIZE by (HND+1) with identical results.=
+=20
+Please, note that my goal now is to have the sniffer working properly w=
+ithout=20
+interfere with my application, because I think if I solve this problem =
+I'll=20
+be easily able to solve the main trouble. I think it probably has somet=
+hing=20
+to see with the file descriptor for /dev/ttyS0, that both slsniff and m=
+y=20
+program uses at same time, but cannot figure out what's exactly the roo=
+t of=20
+the problem.
+
+Thx. and BTW excuse my poor english.
+
+
+--=20
+=46rancisco M. Marzoa Alonso
+Responsable de Software - Softr=F3nica S.A.
+http://www.softronica.org/
+C/Herrer=EDas, 14 - 28760 Tres Cantos (Madrid)
+tfno. +34 918 038 600  fax. +34 918 032 297
+
+
+-
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
