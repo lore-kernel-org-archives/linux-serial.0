@@ -1,78 +1,116 @@
-From: Jan-Benedict Glaw <jbglaw@lug-owl.de>
-Subject: Re: your mail
-Date: Tue, 24 Aug 2004 11:39:46 +0200
+From: Harald Welte <laforge@gnumonks.org>
+Subject: Support for NetMos NM9845 based 6port cards
+Date: Tue, 24 Aug 2004 19:59:58 +0200
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20040824093942.GO18334@lug-owl.de>
-References: <200408240805.08811.fmmarzoa@softronica.org>
+Message-ID: <20040824175958.GG26877@sunbeam.de.gnumonks.org>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="88pBQ1/6ie/nQzMF"
+	protocol="application/pgp-signature"; boundary="uI9S8aIOhfZRGnE0"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from dvmwest.gt.owl.de ([62.52.24.140]:42408 "EHLO dvmwest.gt.owl.de")
-	by vger.kernel.org with ESMTP id S267348AbUHXJkU (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 24 Aug 2004 05:40:20 -0400
+Received: from ganesha.gnumonks.org ([213.95.27.120]:60358 "EHLO
+	ganesha.gnumonks.org") by vger.kernel.org with ESMTP
+	id S267775AbUHXSAD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 24 Aug 2004 14:00:03 -0400
 Content-Disposition: inline
-In-Reply-To: <200408240805.08811.fmmarzoa@softronica.org>
 List-Id: linux-serial@vger.kernel.org
-To: "Francisco M. Marzoa Alonso" <fmmarzoa@softronica.org>
+To: rmk+serial@arm.linux.org.uk
 Cc: linux-serial@vger.kernel.org
 
 
---88pBQ1/6ie/nQzMF
-Content-Type: text/plain; charset=iso-8859-1
+--uI9S8aIOhfZRGnE0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 2004-08-24 08:05:08 +0200, Francisco M. Marzoa Alonso <fmmarzoa@sof=
-tronica.org>
-wrote in message <200408240805.08811.fmmarzoa@softronica.org>:
-> >>       TOut.tv_sec =3D Wait / 1000;
-> >>       TOut.tv_usec =3D Wait % 1000;
-> >
-> >So "Wait" is in milli-seconds? That doesn't look correct, then:)
-> >
-> >        TOut.tv_sec =3D Wait / 1000;
-> >        TOut.tv_usec =3D (Wait % 1000) * 1000;
->=20
-> Sure you're right, but this is a thing that I do not understand. I made a=
+Hi Russell & linux-serial list!
+
+I recently bought another serial multiport card.
+
+The stock 2.6.x kernel only detects the first five ports, leaving the
+sixth port unusable.
+
+The following patch (applies cleanly to 2.6.8.1) makes all six ports of
+the card work, please apply.
+
+Thanks!
+
+Signed-off-by: Harald Welte <laforge@gnumonks.org>
+
+--- linux-2.6.7-plain/drivers/serial/8250_pci.c	2004-06-16 05:19:44.0000000=
+00 +0000
++++ linux-2.6.7-media-old/drivers/serial/8250_pci.c	2004-08-24 17:48:19.000=
+000000 +0000
+@@ -1005,6 +1006,7 @@
 =20
-> function GetTickCount to emulate Window's one based on gettimeofday and s=
-ee=20
-> that milliseconds on timeval structure can have values up to 999999 when =
-I=20
-> expect to found a maximum value of 999 as there are only 1000 millisecond=
-s in=20
-> a second.
-
-Notice, it's not "tv_msec" but "tv_usec", which is micro-seconde and
-not milli-seconds. A small 'u' is commonly used instead of the greek
-'=B5', because '=B5' won't be properly handled by all email clients, let
-alone in code to be compiled.
-
-MfG, JBG
-
+ 	pbn_b0_bt_1_115200,
+ 	pbn_b0_bt_2_115200,
++	pbn_b0_bt_6_115200,
+ 	pbn_b0_bt_8_115200,
+=20
+ 	pbn_b0_bt_1_460800,
+@@ -1144,6 +1146,12 @@
+ 		.base_baud	=3D 115200,
+ 		.uart_offset	=3D 8,
+ 	},
++	[pbn_b0_bt_6_115200] =3D {
++		.flags		=3D FL_BASE0|FL_BASE_BARS,
++		.num_ports	=3D 6,
++		.base_baud	=3D 115200,
++		.uart_offset	=3D 8,
++	},
+ 	[pbn_b0_bt_8_115200] =3D {
+ 		.flags		=3D FL_BASE0|FL_BASE_BARS,
+ 		.num_ports	=3D 8,
+@@ -2051,6 +2059,15 @@
+ 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+ 		pbn_b0_bt_8_115200 },
+=20
++	/*
++	 * NetMos serial card, from Harald Welte <laforge@gnumonks.org>
++	 * This one actually has jumpers to set base baud rate.=20
++	 * 115200 was the shipping default.
++	 */
++	{	PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9845,
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
++		pbn_b0_bt_6_115200 },
++
+ 	{	PCI_VENDOR_ID_LAVA, PCI_DEVICE_ID_LAVA_DSERIAL,
+ 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+ 		pbn_b0_bt_2_115200 },
+diff -Nru linux-2.6.8.1/include/linux/pci_ids.h linux-2.6.8.1-serial-netmos=
+/include/linux/pci_ids.h
+--- linux-2.6.8.1/include/linux/pci_ids.h	2004-08-14 12:56:26.000000000 +02=
+00
++++ linux-2.6.8.1-serial-netmos/include/linux/pci_ids.h	2004-08-24 15:00:25=
+=2E552425619 +0200
+@@ -2298,6 +2298,7 @@
+ #define PCI_DEVICE_ID_NETMOS_9805	0x9805
+ #define PCI_DEVICE_ID_NETMOS_9815	0x9815
+ #define PCI_DEVICE_ID_NETMOS_9835	0x9835
++#define PCI_DEVICE_ID_NETMOS_9845	0x9845
+ #define PCI_DEVICE_ID_NETMOS_9855	0x9855
+=20
+ #define PCI_SUBVENDOR_ID_EXSYS		0xd84d
 --=20
-Jan-Benedict Glaw       jbglaw@lug-owl.de    . +49-172-7608481             =
-_ O _
-"Eine Freie Meinung in  einem Freien Kopf    | Gegen Zensur | Gegen Krieg  =
-_ _ O
- fuer einen Freien Staat voll Freier B=FCrger" | im Internet! |   im Irak! =
-  O O O
-ret =3D do_actions((curr | FREE_SPEECH) & ~(NEW_COPYRIGHT_LAW | DRM | TCPA)=
-);
+- Harald Welte <laforge@gnumonks.org>               http://www.gnumonks.org/
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D
+Programming is like sex: One mistake and you have to support it your lifeti=
+me
 
---88pBQ1/6ie/nQzMF
+--uI9S8aIOhfZRGnE0
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.2.4 (GNU/Linux)
+Version: GnuPG v1.2.5 (GNU/Linux)
 
-iD8DBQFBKwzbHb1edYOZ4bsRAiezAJ9cFpg8uAwZsAfyxb6wXs136hkLEQCfdweU
-DPS/tkDQq6ccLx6K2vP7Ddo=
-=bLQ1
+iD8DBQFBK4IeXaXGVTD0i/8RAqpgAJ92dc64wQ1PZ72nAqdbYobM6Df6yACfcrmD
+gRZc51atsjHTzmzdXjLc5FE=
+=rtU1
 -----END PGP SIGNATURE-----
 
---88pBQ1/6ie/nQzMF--
+--uI9S8aIOhfZRGnE0--
