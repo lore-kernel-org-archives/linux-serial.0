@@ -1,80 +1,55 @@
 From: Robert White <rwhite@pobox.com>
-Subject: Re: n_tty.c driver patch (semantic and performance correction)
+Subject: RE: n_tty.c driver patch (semantic and performance correction)
   (a ll recent versions)
-Date: Tue, 30 Jul 2002 00:41:42 -0700
+Date: Tue, 30 Jul 2002 00:50:32 -0700
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <5.1.0.14.2.20020730002724.00a407f0@mail.attbi.com>
-References: <200207271934.27102.rwhite@pobox.com>
- <11E89240C407D311958800A0C9ACF7D13A789A@EXCHANGE>
- <200207271507.56873.rwhite@pobox.com>
- <20020727232129.GA26742@win.tue.nl>
- <200207271934.27102.rwhite@pobox.com>
+Message-ID: <5.1.0.14.2.20020730004204.00a48da0@mail.attbi.com>
+References: <11E89240C407D311958800A0C9ACF7D13A790E@EXCHANGE>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; format=flowed
 Return-path: <linux-serial-owner@vger.kernel.org>
-In-Reply-To: <1027886676.790.5.camel@irongate.swansea.linux.org.uk>
+In-Reply-To: <11E89240C407D311958800A0C9ACF7D13A790E@EXCHANGE>
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>, rwhite@pobox.com
-Cc: Andries Brouwer <aebr@win.tue.nl>, Russell King <rmk@arm.linux.org.uk>, Ed Vance <EdV@macrolink.com>, 'Theodore Tso' <tytso@mit.edu>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Ed Vance <EdV@macrolink.com>, "'rwhite@pobox.com'" <rwhite@pobox.com>
+Cc: Russell King <rmk@arm.linux.org.uk>, 'Theodore Tso' <tytso@mit.edu>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Andries Brouwer <aebr@win.tue.nl>
 
-Um... "no duh"  (I have been programming Unix boxen for twenty years)
+Yep, this is an example of "precaching" and was the example I said I have 
+seen.  Since there is no USE of the precached data during the read, the 
+there wasn't any demonstrable purpose to the action.
 
-In point of fact I specifically AND repeatedly stated that there would 
-probably be no change to human-interactive applications.
+That is, this is NOT CODE "IN THE WILD", it is the contrived example of 
+use, it doesn't meet the requested requirement that the example be "harmed" 
+by the patch as there is no actual algorithm attached.
 
-On the other hand there are a wide number of applications that do have need 
-for variable packet lengths, VMIN/VTIME style timeouts and known, but 
-variable sized or larger than 256 byte packet sizes.
+Any code that did this would then read this data out of the buffer by 
+another request after resetting VMIN which *IS* a dependence on "magic 
+state" since the current read is blocking on state that cannot be returned 
+to the user.
 
-The entire "smart card" arena is one such set of applications.  Also test 
-gear, and simple X/Y/Z modem type transfers.
+Note that the author of the linked message says "having said that, I don't 
+know of any instances where the above is employed." and then agrees the 
+patch is worthwhile...
 
-If it talks at serial speeds, if it has any kind of TIMEOUT feature and/or 
-if it doesn't makes sense to strobe it out with no-delay reads (e.g. 
-perhaps because there isn't any background-worthy in-application task 
-n'cest pa?)  Then having the VMIN and VTIME behaviors, but not having them 
-block for un-asked for characters or unconscionably short packets makes 
-lots of sense.
+So it doesn't fulfill my request/requirement, the cited author explicitly 
+supports my position, and there isn't any implication of how the rest of 
+the supposed program might use this magic state...
 
-As I said, repeatedly calling the kernel TO ASSEMBLE AN INPUT BUFFER if 
-VMIN == 1 IS DUMB.
+hmmm....
 
-Reading out single (raw) keystrokes isn't "ASSEMBLING AN INPUT BUFFER", it 
-is INTERACTING WITH A USER.  [For the audience that is reading along: (in 
-cooked mode the buffer assembly happens in... gasp... one read call...) (in 
-an editor, for example, or a similar application where VMIN==1 us used, the 
-task of aggregating the input into storage is not so straight forward as 
-assembling an input buffer as the nature of each keystroke may impact the 
-larger state of the program)
-
-When reading data from a non-human source the predictability goes up and 
-the buffered data can be more efficiently blocked out by known predicates, 
-etc.  This is the audience for the patch.
+Not the best argument Ed.
 
 Rob.
 
-
-At 21:04 7/28/2002 +0100, Alan Cox wrote:
->On Sun, 2002-07-28 at 03:34, Robert White wrote:
-> > Having virtually every user on the planet realize this and just set 
-> VMIN == 1
-> > is an fairly telling indicator.
+At 14:46 7/29/2002 -0700, Ed Vance wrote:
+>On Sat, July 27, 2002 at 7:36 PM, Robert White wrote:
 > >
-> > Repeatedly calling the kernel to assemble an input buffer which is 
-> necessary
-> > if VMIN ==1, is dumb.
+> > And if you could show me ONE example of wild code that would be
+> > harmed by the mod I would shut up and go away.
+> >
+> > (I say wild code, but even contrived code would be interesting.)
 >
->VMIN was basically invented for communication protocols when you know
->the block length that should arrive within a given timeout. Its pretty
->much essential on old old boxes and was very important for
->interrupt/context switch reduction when doing block transfers. In that
->world the read blocks or in O_NDELAY returns -EAGAIN (0 in old SYS5)
->until the data block is big enough to warrant its copying. Similarly
->poll has no business saying data is ready until a large enough block is.
->
->When talking to a human setting VMIN > 1 makes no sense anyway. In fact
->nowdays it makes even less sense than it did before because of the use
->of UTF8 encodings for unicode characters.
+> From the archive ...
+>http://marc.theaimsgroup.com/?l=linux-kernel&m=102440556723250&w=2
 
 ----------------------------------------------------------------------
 -- Rob White         --  Consider: for all vectors v, Cv - Cv = 0   --
