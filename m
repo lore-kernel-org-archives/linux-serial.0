@@ -1,21 +1,21 @@
 From: Joachim Buermann <jbuermann@zes.com>
-Subject: Fw: Delivery unsuccesful: Delivery problems
-Date: Tue, 18 Feb 2003 12:06:32 +0100
+Subject: overruns with kernel 2.4.19
+Date: Tue, 18 Feb 2003 14:43:46 +0100
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20030218120632.3ac769bb.jbuermann@zes.com>
+Message-ID: <20030218144346.3e056a65.jbuermann@zes.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
 Received: from inv1253.zes.com (217.0.55.175)
           by websrvnt02 with MERCUR-SMTP/POP3/IMAP4-Server (v3.10.18 AS-0098309)
-          for <linux-serial@vger.kernel.org>; Tue, 18 Feb 2003  12:11:18 +0100
+          for <linux-serial@vger.kernel.org>; Tue, 18 Feb 2003  14:52:01 +0100
 Received: from inv1253.zes.com (localhost [127.0.0.1])
-	by inv1253.zes.com (Postfix) with ESMTP id CE2E61F3B1
-	for <linux-serial@vger.kernel.org>; Tue, 18 Feb 2003 12:06:33 +0100 (CET)
+	by inv1253.zes.com (Postfix) with ESMTP id C97201F3B1
+	for <linux-serial@vger.kernel.org>; Tue, 18 Feb 2003 14:43:49 +0100 (CET)
 Received: from inv1428.zes.com (inv1428.zes.com [192.168.2.28])
-	by inv1253.zes.com (Postfix) with SMTP id 306341F3A8
-	for <linux-serial@vger.kernel.org>; Tue, 18 Feb 2003 12:06:33 +0100 (CET)
+	by inv1253.zes.com (Postfix) with SMTP id EEDEF1F3A8
+	for <linux-serial@vger.kernel.org>; Tue, 18 Feb 2003 14:43:46 +0100 (CET)
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
