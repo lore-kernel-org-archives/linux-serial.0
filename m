@@ -1,63 +1,83 @@
-From: Vijaymahantesh Kalakoti <vijayck@sasken.com>
-Subject: remote serial console problem
-Date: Tue, 27 Apr 2004 13:18:48 +0530 (IST)
+From: Jan-Benedict Glaw <jbglaw@lug-owl.de>
+Subject: Re: remote serial console problem
+Date: Tue, 27 Apr 2004 10:19:36 +0200
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <Pine.GSO.4.30.0404271306500.13975-100000@sunops2.sasken.com>
+Message-ID: <20040427081936.GA29503@lug-owl.de>
+References: <Pine.GSO.4.30.0404271306500.13975-100000@sunops2.sasken.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="=_IS_MIME_Boundary"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="fdj2RfSjLxBAspz7"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [164.164.56.19] ([164.164.56.19]:57396 "EHLO mail1.sasken.com")
-	by vger.kernel.org with ESMTP id S263884AbUD0Hsw (ORCPT
+Received: from dvmwest.gt.owl.de ([62.52.24.140]:2490 "EHLO dvmwest.gt.owl.de")
+	by vger.kernel.org with ESMTP id S263895AbUD0ITh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 27 Apr 2004 03:48:52 -0400
-Received: from sunops2.sasken.com (localhost [127.0.0.1])
-	by mail1.sasken.com (8.12.10/8.12.10) with ESMTP id i3R7nHf0006935
-	for <linux-serial@vger.kernel.org>; Tue, 27 Apr 2004 13:19:17 +0530 (IST)
-Received: from sunops2.sasken.com (sunops2.sasken.com [10.1.16.2])
-	by sunops2.sasken.com (8.12.10/) with ESMTP id i3R7mmss023158
-	for <linux-serial@vger.kernel.org>; Tue, 27 Apr 2004 13:18:48 +0530 (IST)
+	Tue, 27 Apr 2004 04:19:37 -0400
+Content-Disposition: inline
+In-Reply-To: <Pine.GSO.4.30.0404271306500.13975-100000@sunops2.sasken.com>
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
---=_IS_MIME_Boundary
-Content-Type: TEXT/PLAIN; charset=US-ASCII
 
+--fdj2RfSjLxBAspz7
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Hi all,
+On Tue, 2004-04-27 13:18:48 +0530, Vijaymahantesh Kalakoti <vijayck@sasken.=
+com>
+wrote in message <Pine.GSO.4.30.0404271306500.13975-100000@sunops2.sasken.c=
+om>:
 
-I have configured the /etc/inittab file on PC1 to run agetty on one of the
-serial port( ttyS0 ).
+> The PROBLEM is :
+> 	1. I see that sometimes it echoes back logout command what i had
+> sent & sometimes it doesn't echo back ( echoes only "lo" ).
 
-PC1( /etc/inittab configured ) <---------> PC2( Running my program )
+Probably handshake wires are missing, wrongly soldered or handshake is
+ignored at all.
 
-Now PC1 getty is not in logged in state.  I send logout command
-from PC2 to PC1.
+Also, if you want to log in (by sending username and password), don't
+send both as fast as possible. Only send password after you've received
+the password prompt. Many login commands throw all input away that was
+queued to them before they switched to non-echo mode.
 
-The PROBLEM is :
-	1. I see that sometimes it echoes back logout command what i had
-sent & sometimes it doesn't echo back ( echoes only "lo" ).
+> This message may contain confidential, proprietary or legally Privileged =
+information. In case you are not the original intended Recipient of the mes=
+sage, you must not, directly or indirectly, use, Disclose, distribute, prin=
+t, or copy any part of this message and you are requested to delete it and =
+inform the sender. Any views expressed in this message are those of the ind=
+ividual sender unless otherwise stated. Nothing contained in this message s=
+hall be construed as an offer or acceptance of any offer by Sasken Communic=
+ation Technologies Limited ("Sasken") unless sent with that express intent =
+and with due authority of Sasken. Sasken has taken enough precautions to pr=
+event the spread of viruses. However the company accepts no liability for a=
+ny damage caused by any virus transmitted by this email.
 
-	Please explain me why this is happening.
+This is an acchived, public mailing list. If you don't want your
+postings to show up on the web, feel free to not use this mailing list
+(if this disclaimer is added by your company, maybe some free mail
+services may help)...
 
------------------------------------
-Thanks & Regards
-vijay kalkoti
------------------------------------
+MfG, JBG
 
+--=20
+   Jan-Benedict Glaw       jbglaw@lug-owl.de    . +49-172-7608481
+   "Eine Freie Meinung in  einem Freien Kopf    | Gegen Zensur | Gegen Krieg
+    fuer einen Freien Staat voll Freier B=FCrger" | im Internet! |   im Ira=
+k!
+   ret =3D do_actions((curr | FREE_SPEECH) & ~(NEW_COPYRIGHT_LAW | DRM | TC=
+PA));
 
---=_IS_MIME_Boundary
-Content-Type: text/plain;charset=us-ascii
-Content-Transfer-Encoding: 7bit
+--fdj2RfSjLxBAspz7
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 Content-Disposition: inline
 
-***********************************************************************
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.4 (GNU/Linux)
 
-********************************************************************
+iD8DBQFAjheYHb1edYOZ4bsRAmC/AKCGP9yHyfUXsBAzjWfYNd0zunj54QCcCpft
+E/Xvji193ACBsXHCX7vdO0o=
+=vYE4
+-----END PGP SIGNATURE-----
 
-SASKEN BUSINESS DISCLAIMER
-
-This message may contain confidential, proprietary or legally Privileged information. In case you are not the original intended Recipient of the message, you must not, directly or indirectly, use, Disclose, distribute, print, or copy any part of this message and you are requested to delete it and inform the sender. Any views expressed in this message are those of the individual sender unless otherwise stated. Nothing contained in this message shall be construed as an offer or acceptance of any offer by Sasken Communication Technologies Limited ("Sasken") unless sent with that express intent and with due authority of Sasken. Sasken has taken enough precautions to prevent the spread of viruses. However the company accepts no liability for any damage caused by any virus transmitted by this email.
-
-***********************************************************************
-
---=_IS_MIME_Boundary--
+--fdj2RfSjLxBAspz7--
