@@ -1,43 +1,38 @@
-From: Matti Aarnio <matti.aarnio@zmailer.org>
-Subject: Re: A new serial baud rate
-Date: Thu, 25 Jul 2002 22:45:07 +0300
+From: Ed Vance <EdV@macrolink.com>
+Subject: RE: A new serial baud rate
+Date: Thu, 25 Jul 2002 14:35:50 -0700
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20020725224507.B1237@mea-ext.zmailer.org>
-References: <1779CCD227485B49A825718AAAA90E3E406CD1@tpsmail01.turbopower.net> <200207251614.08681.henrique@cyclades.com>
+Message-ID: <11E89240C407D311958800A0C9ACF7D13A7905@EXCHANGE>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+	charset="iso-8859-1"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <200207251614.08681.henrique@cyclades.com>; from henrique@cyclades.com on Thu, Jul 25, 2002 at 04:14:08PM -0300
 List-Id: linux-serial@vger.kernel.org
-To: henrique <henrique@cyclades.com>
-Cc: Gary Frerking <garyf@turbopower.com>, linux-serial@vger.kernel.org
+To: "'henrique@cyclades.com'" <henrique@cyclades.com>
+Cc: linux-serial@vger.kernel.org
 
-On Thu, Jul 25, 2002 at 04:14:08PM -0300, henrique wrote:
-> Hello Gary !!!
+> On Thu, July 25, 2002 at 12:14 PM, henrique wrote:
 > 
-> Thanks for your answer. Please see comments no the text.
-...
-> That's the problem. I can't change the modem configuration cause this modem 
-> are provided by the Telco. I have to use this baud rate. And I wanna use it 
-> with Linux.
+> I just wanna know what is the procedure to insert this new baud rate 
+> in the linux kernel.
 
-  If the interface is asynchronous, the device will adapt to well-known
-  asynchronous baud-rates.  If the interface is SYNCHRONOUS, your hardware
-  will be quite special, and it will receive the serial clock from the
-  modem  ->  DTE (computer) does not define the speed at all.
+Hi Henrique,
 
-  You are not giving details with the modem, and what you have tried
-  previously -- e.g. using it with 19200 baud speed, and observing it
-  to react on async serial port.
+If you have a 2.4.x kernel, and your serial ports have "simple" UARTs like a
+16550A, then use the setserial command to directly set the UART's divisor.
+See the man page on setserial, which also has words about how to put the
+setserial commands into a script that runs automatically when you boot the
+system.
 
-> I just wanna know what is the procedure to insert this new baud rate in
-> the linux kernel
+You will have to know the "baud base" rate of your UARTs. This is the baud
+rate that you get if you set the divisor to 1 (probably 115200 bps).
 
-  A discussion at this forum, and getting maintainers (Ted Ts'o) 
-  attention.
+The new divisor is baud_base / 14400 (which is probably 8).
 
-> regards
-> Henrique
+Good luck with it!
+Ed
 
-/Matti Aarnio
+---------------------------------------------------------------- 
+Ed Vance              edv@macrolink.com
+Macrolink, Inc.       1500 N. Kellogg Dr  Anaheim, CA  92807
+----------------------------------------------------------------
