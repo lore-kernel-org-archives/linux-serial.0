@@ -1,40 +1,36 @@
-From: Joerg Schmitz-Linneweber <schmitz-linneweber@aston-technologie.de>
-Subject: Re: Releasing the UART
-Date: Sat, 26 Oct 2002 08:49:34 +0200
+From: "Jim Deas" <jdeas@jadsystems.com>
+Subject: async structure for serial.c
+Date: Sat, 26 Oct 2002 14:59:00 -0700
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <200210260650.g9Q6oJ8Z019708@hawkwind.aston-technologie.de>
-References: <005c01c27c55$41236be0$2d2e820a@warnerbros.com>
+Message-ID: <000701c27d3a$e4c50ed0$0264a8c0@jadp4>
+Reply-To: "Jim Deas" <jdeas@jadsystems.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-In-Reply-To: <005c01c27c55$41236be0$2d2e820a@warnerbros.com>
+Received: from jadp4 ([24.130.96.51]) by rwcrmhc52.attbi.com
+          (InterMail vM.4.01.03.27 201-229-121-127-20010626) with SMTP
+          id <20021026215053.INES13658.rwcrmhc52.attbi.com@jadp4>
+          for <linux-serial@vger.kernel.org>;
+          Sat, 26 Oct 2002 21:50:53 +0000
 List-Id: linux-serial@vger.kernel.org
-To: Jim Deas <jdeas@jadsystems.com>, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Hi Jim!
+I have just upgraded my kernel from 2.4.7 to 2.4.18
+After the upgrade I started having problems with
+my "signal_handler_IO".
+ In the old version, this seemed to trigger only when
+bytes were waiting on the serial port. It now seems
+to trigger on send as well as receive increasing my 
+overhead.
+ I saw where TTY_DO_WRITE_WAKEUP was
+added to kernel/serial.c.
+Was this to create the action I am seeing? If so,
+is there a way that only received characters can
+trigger SIGIO and not a Tx ready or Tx send?
 
-On Friday, 25. October 2002 20:35, Jim Deas wrote:
-> I need to write a special driver for the system UART to
-> support a specific protocol.
-> How can I get the serial.c driver (not a module in my kernel)
-> to release the UARTS ioports?
-If I remember everything right, you may do a
-"setserial /dev/ttyS1 uart none"
-and afterwards ttyS1 (and its ports) are yours...
+Regards,
+J. Deas
 
-Dare to mention which protocol you would like to add?
 
-Salut, J=F6rg
-
---=20
-Joerg Schmitz-Linneweber
-gpg/pgp key id: 0x146428F1
-ASTON GmbH, Ruhrorter Stra=DFe 9, 46049 Oberhausen, Germany
-Tel. +49 (208) 6201930, FAX +49 (208) 6201950, http://www.aston-technol=
-ogie.de
--
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
