@@ -1,37 +1,66 @@
-From: "sam aime" <aime2001@postmaster.co.uk>
-Subject: FOREIGN  ACCOUNT
-Date: Mon, 10 Feb 2003 16:30:55 +0000
+From: Joachim Buermann <jbuermann@zes.com>
+Subject: Fw: Delivery unsuccesful: Delivery problems
+Date: Tue, 18 Feb 2003 12:06:32 +0100
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <PM.3570.1044894655__21780.5624976338$1044895156@pmweb5.uk1.bibliotech.net>
+Message-ID: <20030218120632.3ac769bb.jbuermann@zes.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: binary
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Content-Disposition: inline
+Received: from inv1253.zes.com (217.0.55.175)
+          by websrvnt02 with MERCUR-SMTP/POP3/IMAP4-Server (v3.10.18 AS-0098309)
+          for <linux-serial@vger.kernel.org>; Tue, 18 Feb 2003  12:11:18 +0100
+Received: from inv1253.zes.com (localhost [127.0.0.1])
+	by inv1253.zes.com (Postfix) with ESMTP id CE2E61F3B1
+	for <linux-serial@vger.kernel.org>; Tue, 18 Feb 2003 12:06:33 +0100 (CET)
+Received: from inv1428.zes.com (inv1428.zes.com [192.168.2.28])
+	by inv1253.zes.com (Postfix) with SMTP id 306341F3A8
+	for <linux-serial@vger.kernel.org>; Tue, 18 Feb 2003 12:06:33 +0100 (CET)
 List-Id: linux-serial@vger.kernel.org
-To: moweto2020@egyptsun.com
+To: linux-serial@vger.kernel.org
 
+Hallo all,
 
-Dear Sir/Madam 
+I`m using linux mandrake kernel 2.4.19 on a 2 GHz Pentium 4 with 128
+MByte RAM. The serial port /dev/cua0 is connected to a external device
+and receives data with 115200 Baud.
 
-I'm the cousin of late Mr. Ramon Scott from Zimbabwe.my Uncle is one the best farmers in my country during 
-his lifetime In the land-disputes between the government and the white farmers,many life and properties were 
-lost. 
+Unfortunatelly I get a lot of fifo overruns. I have unmasked the hda
+interrupts with:
 
-My Uncle did not support the actions and ideas of president Robert -mugabe ,his loyalist invaded my Uncle's 
-farm destroying valuable items,during this pandemonium my Uncle was killed alongside two other members of 
-my family while I was away on vacation I manage to escape to West Africa where I was granted asylum. 
+hdparm -u1 /dev/hda
 
-My Uncle was a man of business fore-sight ,he secured the sum of $15 million [Fifteen million U.S. dollars] with 
-a security company The name of the security company which I would not mention now for security purpose. 
-presently now in West Africa asylum seekers are not permitted by law to operate an account for this 
-reasons, I decided to seek for a trusted and reliable foreign personality who is willing and ready to help me to 
-transfer the money out of the country and help me to invest judiciously and also make provision for 
-me to come over and start a new life. 
+also set the low_latency flag in the serial driver. The harddisk dma
+couldn't disabled.
 
-I am willing and ready to offer you 30% for your efforts and assistanthe 70% will be for me. I shall be waiting for 
-your reply would like to have your phone and fax numbers for easy communication and arrangement. 
+I'm wonder at this behaviour, because with a lower machine (Pentium I
+120 MHz, Kernel 2.2.13) I get overruns only once in a blue moon. And I
+expected, that a 2 GHz machine should be quick enough, to responds to
+the serial interrupts.
 
-Best regards 
-Sam SCOTT 
-ALTN E-MAIL:moweto2020@egyptsun.com
+Additional to this I tried a PCI card with a 16950 (128 Byte fifo!) and
+set the uart with the setserial command. But also here a lot of
+overruns!!!
+
+>From a embedded linux project (ELAN SC520 133MHz, kernel 2.2.19) I know,
+that the harddisk type influence the serial communication. So I got
+overruns after I changed the original drive with a newer one (the first
+was a old IBM with 500MByte, the newer a IBM with 20GByte). Last not
+least I must replace the linux kernel with a realtime linux (rtlinux)
+and do the serial communication in a realtime handler.
+
+Because I didn't want to replace my desktop machine with a realtime
+linux, I'm looking for some hints to solve this problems.
+
+What's about irqtune? I'm know this tool only with kernels up to 2.2.x.
+Is there a bug in the serial driver (I didn't found any hints in the
+mailing list or with google)?
+
+Should I change the PCI interrupts in the BIOS to set the interrupt
+priority?
+
+I don't know anymore. Please help.
+
+Many thanks in advance and sorry for my bad english
+
+Joachim
