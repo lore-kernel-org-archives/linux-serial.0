@@ -1,76 +1,31 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [ patch 2/7] drivers/serial/jsm: new serial device driver
-Date: Sun, 27 Feb 2005 22:37:57 -0800
-Message-ID: <20050228063757.GA23595@kroah.com>
-References: <42225A04.7080505@us.ltcfwd.linux.ibm.com>
+From: Adrian Bunk <bunk@stusta.de>
+Subject: [2.6 patch] drivers/serial/8250.c: make a variable static
+Date: Tue, 1 Mar 2005 02:16:04 +0100
+Message-ID: <20050301011604.GE4021@stusta.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
+Received: from emailhub.stusta.mhn.de ([141.84.69.5]:47371 "HELO
+	mailout.stusta.mhn.de") by vger.kernel.org with SMTP
+	id S261182AbVCABQG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 28 Feb 2005 20:16:06 -0500
 Content-Disposition: inline
-In-Reply-To: <42225A04.7080505@us.ltcfwd.linux.ibm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Wen Xiong <wendyx@us.ibm.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: rmk+serial@arm.linux.org.uk
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Sun, Feb 27, 2005 at 06:38:44PM -0500, Wen Xiong wrote:
+This patch makes a needlessly global variable static.
 
-> diff -Nuar linux-2.6.9.orig/drivers/serial/jsm/jsm_tty.c linux-2.6.9.new/drivers/serial/jsm/jsm_tty.c
-> --- linux-2.6.9.orig/drivers/serial/jsm/jsm_tty.c	1969-12-31 18:00:00.000000000 -0600
-> +++ linux-2.6.9.new/drivers/serial/jsm/jsm_tty.c	2005-02-27 17:09:43.456960832 -0600
-> @@ -0,0 +1,1273 @@
-> +/*
-> + * Copyright 2003 Digi International (www.digi.com)
-> + *	Scott H Kilau <Scott_Kilau at digi dot com>
+Signed-off-by: Adrian Bunk <bunk@stusta.de>
 
-But didn't you do a lot of work on this code too?  Shouldn't you be
-adding your copyright?
-
-> + *	NOTE TO LINUX KERNEL HACKERS:  DO NOT REFORMAT THIS CODE! 
-> + *
-> + *	This is shared code between Digi's CVS archive and the
-> + *	Linux Kernel sources.
-> + *	Changing the source just for reformatting needlessly breaks
-> + *	our CVS diff history.
-> + *
-> + *	Send any bug fixes/changes to:  Eng.Linux at digi dot com. 
-> + *	Thank you. 
-
-Is this still true?  The formatting looks sane, so you can probably take
-this all out.  And put a real email address in there please...
-
-
-> + * $Id: jsm_tty.c,v 1.79 2004/09/25 07:01:46 scottk Exp $
-
-Take these out, not needed.
-
-> +#include <linux/device.h>	/* For udelay */
-
-Comment is incorrect.  What do you need device.h for?
-
-> +	DPR_IOCTL(("jsm_getmstat start\n"));
-
-You have odd macros with two "((", what's up with that?  Please use the
-standard macros dev_dbg() and friends.  It's a way to get a standard
-message out of the kernel.
-
-> +static void jsm_tty_set_mctrl(struct uart_port *port, unsigned int mctrl)
-> +{
-> +	DPR_IOCTL(("jsm_set_modem_info() start\n"));
-
-Oh, and why not just use __FUNCTION__?
-
-> +static void jsm_tty_stop_rx(struct uart_port *port)
-> +{
-> +
-> +	JSM_CHANNEL->ch_bd->bd_ops->disable_receiver(JSM_CHANNEL);
-> +
-> +}
-
-I think you can drop the extra lines here...
-
-And what's with the all uppercase JSM_CHANNEL?  Why not just use the
-structure pointer.
-
-thanks,
-
-greg k-h
+--- linux-2.6.11-rc4-mm1-full/drivers/serial/8250.c.old	2005-02-28 23:03:34.000000000 +0100
++++ linux-2.6.11-rc4-mm1-full/drivers/serial/8250.c	2005-02-28 23:06:55.000000000 +0100
+@@ -51,7 +51,7 @@
+  *   share_irqs - whether we pass SA_SHIRQ to request_irq().  This option
+  *                is unsafe when used on edge-triggered interrupts.
+  */
+-unsigned int share_irqs = SERIAL8250_SHARE_IRQS;
++static unsigned int share_irqs = SERIAL8250_SHARE_IRQS;
+ 
+ /*
+  * Debugging.
