@@ -1,84 +1,54 @@
-From: Tom Rini <trini@kernel.crashing.org>
-Subject: [PATCH] Make the Startech UART detection 'more correct'.
-Date: Mon, 8 Sep 2003 13:54:31 -0700
+From: Russell King <rmk@arm.linux.org.uk>
+Subject: Re: [PATCH] Make the Startech UART detection 'more correct'.
+Date: Tue, 9 Sep 2003 17:18:59 +0100
 Sender: linux-kernel-owner@vger.kernel.org
-Message-ID: <20030908205431.GB3888@ip68-0-152-218.tc.ph.cox.net>
+Message-ID: <20030909171859.D4216@flint.arm.linux.org.uk>
+References: <20030908205431.GB3888@ip68-0-152-218.tc.ph.cox.net>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Kj7319i9nmIyA2yE"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner+linux-kernel=40quimby.gnus.org@vger.kernel.org>
 Content-Disposition: inline
-To: Russell King <rmk@arm.linux.org.uk>, tytso@mit.edu
-Cc: Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, gallen@arlut.utexas.edu
+In-Reply-To: <20030908205431.GB3888@ip68-0-152-218.tc.ph.cox.net>; from trini@kernel.crashing.org on Mon, Sep 08, 2003 at 01:54:31PM -0700
+To: Tom Rini <trini@kernel.crashing.org>
+Cc: tytso@mit.edu, Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, gallen@arlut.utexas.edu
 List-Id: linux-serial@vger.kernel.org
 
+On Mon, Sep 08, 2003 at 01:54:31PM -0700, Tom Rini wrote:
+> Hello.  The following patches (vs 2.4 and 2.6) make the Startech UART
+> detection 'more correct'  The problem is that on with the Motorola
+> MPC82xx line (8245 for example) it has an internal DUART that it claims
+> to be PC16550D compatible, and it has an additional EFR (Enhanced
+> Feature Register) at offset 0x2, like on the Startech UARTS.  However,
+> it is not a Startech, and when it's detected as such, FIFOs don't work.
+> The fix for this is that the Startech UARTs have a 32 byte FIFO [1] and
+> the MPC82xx DUARTs have a 16-byte FIFO [2], to check that the FIFO size
+> is correct for a Startech.
 
---Kj7319i9nmIyA2yE
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+size_fifo() is claimed to be unreliable at detecting the FIFO size,
+so I don't feel safe about using it here.
 
-Hello.  The following patches (vs 2.4 and 2.6) make the Startech UART
-detection 'more correct'  The problem is that on with the Motorola
-MPC82xx line (8245 for example) it has an internal DUART that it claims
-to be PC16550D compatible, and it has an additional EFR (Enhanced
-Feature Register) at offset 0x2, like on the Startech UARTS.  However,
-it is not a Startech, and when it's detected as such, FIFOs don't work.
-The fix for this is that the Startech UARTs have a 32 byte FIFO [1] and
-the MPC82xx DUARTs have a 16-byte FIFO [2], to check that the FIFO size
-is correct for a Startech.
+I'd suggest something like:
 
-2.4:
-=3D=3D=3D=3D=3D drivers/char/serial.c 1.34 vs edited =3D=3D=3D=3D=3D
---- 1.34/drivers/char/serial.c	Sun Jul  6 22:33:28 2003
-+++ edited/drivers/char/serial.c	Fri Sep  5 15:44:11 2003
-@@ -3740,7 +3740,7 @@
- 	if (state->type =3D=3D PORT_16550A) {
- 		/* Check for Startech UART's */
- 		serial_outp(info, UART_LCR, UART_LCR_DLAB);
--		if (serial_in(info, UART_EFR) =3D=3D 0) {
-+		if (serial_in(info, UART_EFR) =3D=3D 0 && size_fifo(info) !=3D 16) {
- 			state->type =3D PORT_16650;
- 		} else {
- 			serial_outp(info, UART_LCR, 0xBF);
+	serial_outp(port, UART_LCR, UART_LCR_DLAB);
+	efr = serial_in(port, UART_EFR);
+	if ((efr & 0xfc) == 0) {
+		serial_out(port, UART_EFR, 0xac | (efr & 3));
+		/* if top 6 bits return zero, its motorola */
+		if (serial_in(port, UART_EFR) == (efr & 3)) {
+			/* motorola port */
+		} else {
+			/* ST16C650V1 port */
+		}
+		/* restore old value */
+		serial_outb(port, UART_EFR, efr);
+	}
 
-2.6:
-=3D=3D=3D=3D=3D drivers/serial/8250.c 1.34 vs edited =3D=3D=3D=3D=3D
---- 1.34/drivers/serial/8250.c	Sun Jun 15 02:21:11 2003
-+++ edited/drivers/serial/8250.c	Fri Sep  5 15:43:23 2003
-@@ -467,7 +467,7 @@
- 	 * Only ST16C650V1 UARTs pass this test.
- 	 */
- 	serial_outp(up, UART_LCR, UART_LCR_DLAB);
--	if (serial_in(up, UART_EFR) =3D=3D 0) {
-+	if (serial_in(up, UART_EFR) =3D=3D 0 && size_fifo(up) !=3D 16) {
- 		DEBUG_AUTOCONF("EFRv1 ");
- 		up->port.type =3D PORT_16650;
- 		return;
+If you can guarantee that the lower two bits will always be zero, you can
+drop the frobbing to ignore/preseve the lower two bits.
 
-I must admit however, that after reading both datasheets, I'm not sure
-if the correct test is for && size_fifo() =3D=3D 32 or !=3D 16, or if it
-matters.  Comments?
-
-This was originally fixed by Greg Allen[3].
-
-[1]: http://www.exar.com/products/uartnote.pdf
-[2]: http://e-www.motorola.com/brdata/PDFDB/docs/MPC8245UM_CH12.pdf
-[3]: http://www.geocrawler.com/archives/3/8358/2002/3/0/8228902/
---=20
-Tom Rini
-http://gate.crashing.org/~trini/
-
---Kj7319i9nmIyA2yE
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.2.3 (GNU/Linux)
-
-iD8DBQE/XOyGdZngf2G4WwMRAtdwAJ9GFMCUdsyhuQyVFlugIDpDgrURsQCeNPFs
-JABLFMFYULblMkK1c6H+Ov4=
-=QTkT
------END PGP SIGNATURE-----
-
---Kj7319i9nmIyA2yE--
+-- 
+Russell King (rmk@arm.linux.org.uk)	http://www.arm.linux.org.uk/personal/
+Linux kernel maintainer of:
+  2.6 ARM Linux   - http://www.arm.linux.org.uk/
+  2.6 PCMCIA      - http://pcmcia.arm.linux.org.uk/
+  2.6 Serial core
