@@ -1,46 +1,55 @@
-From: Roman Kurakin <rik@cronyx.ru>
-Subject: serial driver problems (2.6.3)
-Date: Tue, 02 Mar 2004 15:38:01 +0300
+From: "ismael" <gibson21director@hotmail.com>
+Subject: Feel younger!
+Date: Wed, 03 Mar 2004 12:11:54 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <40448029.2060806@cronyx.ru>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=KOI8-R; format=flowed
-Content-Transfer-Encoding: 7bit
+Message-ID: <1078315914-16992__13407.9879303046$1078316007@excite.com>
+Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from hanoi.cronyx.ru ([144.206.181.53]:62993 "EHLO hanoi.cronyx.ru")
-	by vger.kernel.org with ESMTP id S261629AbUCBMfl (ORCPT
+Received: from [202.97.150.150] ([202.97.150.150]:42372 "HELO vermontel.net")
+	by vger.kernel.org with SMTP id S262450AbUCCMMN (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 2 Mar 2004 07:35:41 -0500
-Received: (from root@localhost) by hanoi.cronyx.ru
-  id i22CZ4Lv036504 for linux-serial@vger.kernel.org.checked; (8.12.8/vak/2.1)
-  Tue, 2 Mar 2004 15:35:04 +0300 (MSK) (envelope-from rik@cronyx.ru)
-Received: from cronyx.ru (hi.cronyx.ru [144.206.181.94]) by hanoi.cronyx.ru with ESMTP
-  id i22CYsW7036493 for <linux-serial@vger.kernel.org>; (8.12.8/vak/2.1)
-  Tue, 2 Mar 2004 15:34:54 +0300 (MSK) (envelope-from rik@cronyx.ru)
+	Wed, 3 Mar 2004 07:12:13 -0500
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org
 
-Hi,
+Tired of looking at your wrinkled face in the mirror as you pluck yet another grey hair and watch the 
+pounds pile on? Is the "spark" missing from your love life? If you're over 40, chances are it is. 
+Wouldn't you enjoy a longer, healthier and happier life? 
 
-    I have some problems with serial driver. I tried to run our async tests
-and it seems that new serial driver has some problems. We use those tests
-to check our hardware under Linux and FreeBSD.
+http://newmedformula.com/hgh/index.php?pid=eph9106
 
-    Tests cant be downloaded from:
-http://www.cronyx.ru/~rik/asytest.tgz
 
-We run this test with loopback on single com-port. I recommend to
-run it with pseudo random pattern.
+Human Growth Hormone can repair the physiology of the old cell, and rejuvenating the body, and reversing 
+years of damage!
 
-http://www.cronyx.ru/~rik/aiotest.tgz
-
-This test runs over to com-ports connected by full null-modem cable.
-
-Those tests works fine under FreeBSD and Linux prior 2.6.
-
-Best regards,
-                      Roman Kurakin
+http://newmedformula.com/hgh/index.php?pid=eph9106
 
 
 
+Human Growth Hormone (HGH) increases: 
 
+Energy 
+Weight Loss 
+Muscle Gain and Endurance  
+Increase Immune Function
+Smoother Skin - More Elasticity
+Quality of Deep Sleep 
+
+http://newmedformula.com/hgh/index.php?pid=eph9106
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+reznor larry1groovy misha pedro church petunia rux 
+isaac hansonariane wonder lloyd
+tequila lucas benson 
