@@ -1,12 +1,40 @@
-From: <sky@216.4dq.com>
-Subject: (unknown)
-Date: Sat, 7 Aug 2004 00:32:42 -0400
+From: "Jack" <user121minou@hotmail.com>
+Subject: Buy prescriptions in bulk, SAVE THOUSANDS!
+Date: Sat, 07 Aug 2004 07:24:25 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <S266216AbUHGEcm/20040807043242Z+87__9514.07290199331$1091853188$gmane$org@vger.kernel.org>
+Message-ID: <1091863465-16941__42459.5193741426$1091863625$gmane$org@excite.com>
+Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [222.117.216.112] ([222.117.216.112]:62220 "HELO
-	222.117.216.112") by vger.kernel.org with SMTP id S266216AbUHGEcm
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 7 Aug 2004 00:32:42 -0400
+Received: from 66.83.23.217.nw.nuvox.net ([66.83.23.217]:33806 "HELO
+	verizon.net") by vger.kernel.org with SMTP id S266290AbUHGHZO (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 7 Aug 2004 03:25:14 -0400
 List-Id: linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org
 
+Buy your meds through our Canadian Pharmacy,
+
+Save up to 80% on EXACTLY THE SAME DRUGS!
+
+Click here: http://www.we49fm.com/_85924943b9db73ac62baa654773c6a8e/4
+
+On medication long term?  
+Buy bulk through us and LITERALLY SAVE THOUSANDS!
+
+Click here: http://www.we49fm.com/_85924943b9db73ac62baa654773c6a8e/4
+
+
+
+
+
+
+
+
+
+
+
+
+
+wanker vermontssssss sapphire petunia marvin rusty rambo1 
+volley marsdirector fiona biology
+zhongguo denali raptor 
