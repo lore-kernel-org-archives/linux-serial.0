@@ -1,78 +1,91 @@
-From: whitnl73@juno.com
-Subject: Re: RS485 communicatio
-Date: Fri, 14 Mar 2003 19:36:37 -0500 (EST)
+From: "Robert White" <rwhite@casabyte.com>
+Subject: RE: RS485 communication
+Date: Sat, 15 Mar 2003 00:07:22 -0800
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20030314.215039.8.0.whitnl73@juno.com>
-References: <20030313.222518.8.0.whitnl73@juno.com>
+Message-ID: <PEEPIDHAKMCGHDBJLHKGCEGACDAA.rwhite@casabyte.com>
+References: <1047598241.5292.2.camel@hp.outpostsentinel.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-In-Reply-To: <20030313.222518.8.0.whitnl73@juno.com>
+In-Reply-To: <1047598241.5292.2.camel@hp.outpostsentinel.com>
 List-Id: linux-serial@vger.kernel.org
-To: whitnl73@juno.com
-Cc: linuxppp@indiainfo.com, linux-serial@vger.kernel.org
+To: Chris Fowler <cfowler@outpostsentinel.com>
+Cc: Ed Vance <EdV@macrolink.com>, 'Linux PPP' <linuxppp@indiainfo.com>, linux-serial@vger.kernel.org, 'linux-kernel' <linux-kernel@vger.kernel.org>
 
-On Thu, 13 Mar 2003 whitnl73@juno.com wrote:
+Yes, that, but that is only part of it.
 
->
-> AFAIK there is no usable protocol for multidtop serial lines.  Ring ten
-> times for system a, 9 got system b...
->
-> | ii) If there is no direct support how do i go ahead. Is there any other
-> | layer 2 protocol allows me to acheive TCP/IP communicattion over RS485
-> | which is my ultimatum.
->
-> Use a separate serial line between each pair of nodes, or make one a
-> sort of hub and run a line from it to each other node?
-> |
-> | I will be grateful if anybody of them could help me with my current
-> | problem.
-> |
-> | Thanx in advance.
-> |
-> | Karthik
-> |
-> | --
+The RS485 is a proper bus, so this custom program (or programs) will have to
+act as full bus arbiters and a kind of router.  Each PPP daemon must receive
+ONLY the data that its peer daemon transmits.  That means that each slave
+must know to ignore the data not destined for it.  Further, the master,
+which would have multiple PPP instances running on it, will need to decide
+which of those instances get which of the receiving bytes.
 
-Hmmm, what is this?
+So just like an Ethernet transceiver puts a protocol frame around the data
+to get it to the destination, the transport program will have to put
+envelopes around the data.  THEN the master transport program will tell each
+slave when and how many of its envelopes it may send.  The only way that can
+work (because there is no "ring" you can't pass a "token") is for the master
+to ask each slave in turn: "Got anything to send?"
 
-PPP multilink support (EXPERIMENTAL)
-CONFIG_PPP_MULTILINK
-  PPP multilink is a protocol (defined in RFC 1990) which allows you
-  to combine several (logical or physical) lines into one logical PPP
-  connection, so that you can utilize your full bandwidth.
+This usually devolves to a sequence of "#1, say your piece", "#2 say your
+piece" etc.  That is a very bad performance model.
 
-  This has to be supported at the other end as well and you need a
-  version of the pppd daemon which understands the multilink protocol.
+So every frame of data will need to be arbitrarily wide, meaning a length
+code, and will need an in-multiplexor address.
 
-  If unsure, say N.
+So the master, for instance, will say "slave 1, go".  The slave 1 will send
+a packet (not necessarily a PPP packet, as the multiplexor will have
+overhead data etc.)
 
-Configure.help line 7235/19377 37%
->
-Seem to be some things in man pppd about multilink, too.
+The master will look at the address and decide which local pty the data is
+for and send it there.  (Think a simple byte pump here)
 
-> Lawson
-> --
-> ---oops---
->
->
->
-> ________________________________________________________________
-> Sign Up for Juno Platinum Internet Access Today
-> Only $9.95 per month!
-> Visit www.juno.com
-> -
-> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+When that pty has response data, and when the master says "slave 0 (e.g. me)
+go" it will frame a message that slave #1 will receive and put through to
+its local pty.  Slave 1 also has the job of ignoring data for slaves 2
+through N and the Master (Slave 0).
 
---
----oops---
+In short, he has to write a distributed application that pumps data into and
+out of a broadcast medium, and makes sure that each participant gets only
+the data intended for itself.  (This is what both the Ethernet hardware
+layer, and the IP protocols do.)
+
+In communications you almost always put protocols inside of protocols to
+some significant depth.
+
+For instance, when you play Unreal Tournament 2003:
+Unreal Tournament's data is carried by UDP,
+The UDP is carried by IP,
+The IP is carried by the Ethernet hardware access layer (raw Ethernet),
+Those packets may go to your cable modem which either wraps the Ethernet
+hardware packets or decodes them and reencodes the IP  into whatever it
+does.
+
+>From there, if your cable modem is doing PPPoE there are even more layers.
+
+This guy will only have to write a multiplexing layer, but it won't be fun.
+
+Then again, the Ethernet people have done all that, which is why it is
+cheaper and easier to just get the Ethernet hardware and use it.
+
+Rob.
+
+-----Original Message-----
+From: Chris Fowler [mailto:cfowler@outpostsentinel.com]
+Sent: Thursday, March 13, 2003 3:31 PM
+To: Robert White
+Cc: Ed Vance; 'Linux PPP'; linux-serial@vger.kernel.org; 'linux-kernel'
+Subject: RE: RS485 communication
 
 
+Are you saying that for him to to use PPPD that he will have to write a
+program that will run on a master and tell all the slave nodes when they
+can transmit their data.  In this case it would be ppp data.  Hopfully
+in block sizes that are at least the size of the MTU ppp is running.
 
-________________________________________________________________
-Sign Up for Juno Platinum Internet Access Today
-Only $9.95 per month!
-Visit www.juno.com
+Chris
+
+
