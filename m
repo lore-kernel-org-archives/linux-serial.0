@@ -1,40 +1,46 @@
-From: "MR.EMEKA EZEM" <emekaa1@galmail.co.za>
-Subject: CONTACT AFRICA
-Date: Fri, 02 Jul 2004 14:03:40 +0200
+From: "melvin" <doug21charity@hotmail.com>
+Subject: Really low rates for prescription drugs
+Date: Tue, 06 Jul 2004 20:31:15 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <web-357113839__33002.3963506848$1088770154@mail01.infosat.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Message-ID: <1089145875-2652__8862.93583685092$1089146093$gmane$org@excite.com>
+Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout06.infosat.net ([66.18.69.6]:30905 "EHLO
-	mail02.infosat.net") by vger.kernel.org with ESMTP id S263664AbUGBMFJ
+Received: from customer160-169.iplannetworks.net ([200.68.86.169]:53966 "HELO
+	vernonlove.com") by vger.kernel.org with SMTP id S264388AbUGFUbF
 	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Jul 2004 08:05:09 -0400
+	Tue, 6 Jul 2004 16:31:05 -0400
 List-Id: linux-serial@vger.kernel.org
-To: emekaa1@galmail.co.za
+To: linux-kernel@vger.kernel.org
 
-Attn:
- 
-We have received your completed form, and we are most happy
-to inform you that your payment has been zoned to our
-africa payment centre.I will therefore advice that you
-contact our african payment directors for the release of
-your cheque.
- 
-Do contact Barr:Frank Ike on tel:234-80-56182868
-Email : africa_sunsweetwin@yahoo.fr
- 
-Please do note that your cheque has to be notarize in the
-federal high court of justice,so do adhear to the
-instructions and directive from our africa payment director
-for the successful release of your cheque.
- 
-I wish you all the best,and once again congratulations.
- 
-Best Regards,
- 
-Mr.Emeka Ezem.
-FOREIGN SERVICE MANAGER, 
-RAYMOND CROSSROAD, AMSTERDAM.
- 
+What do you pay now?
+
+If you pay more than these prices, maybe you should click this link....
+http://www.cutpricerxpills.com/_85924943b9db73ac62baa654773c6a8e/
+
+VALIUM - $2 a pill! (Anti-Depressant)
+SOMA - $3 a pill! (Pain Relief)
+XANAX - $1.70 a pill! (Anti-Depressant)
+LIPITOR - $3.50 a pill! (Cholesterol Control)
+ZYBAN - $3 a pill! (Stop Smoking)
+ZOLOFT - $2 a pill! (Anti-Depressant)
+PAXIL - $3 a pill! (Anti-Depressant)
+PROZAC - $2 a pill! (Anti-Depressant)
+GLUCOPHAGE - 70 cents a pill! (Diabetes)
+MERIDIA - $2.50 a pill! (Weight Loss)
+VIOXX - $1 a pill! (Pain Relief)
+CELEBREX - $2 a pill! (Pain Relief)
+XENICAL - $2.50 a pill! (Weight Loss)  
+
+http://www.cutpricerxpills.com/_85924943b9db73ac62baa654773c6a8e/
+
+
+
+
+
+
+
+
+
+hazel charlie1larry lamer robinhoo marcus bridge chiquita 
+gray amelieguinness marvin minou
+cosmos wolverin butch 
