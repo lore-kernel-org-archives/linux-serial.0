@@ -1,36 +1,36 @@
 From: Ian Abbott <abbotti@mev.co.uk>
 Subject: [PATCH][2.6.10-rc2-bk9] 8250 fix for unconfigured FIFO size
-Date: Fri, 26 Nov 2004 21:32:14 +0000
-Message-ID: <41A7A0DE.9000200@mev.co.uk>
+Date: Fri, 26 Nov 2004 21:30:49 +0000
+Message-ID: <41A7A089.1080003@mev.co.uk>
 Mime-Version: 1.0
 Content-Type: multipart/mixed;
- boundary="------------030401040900050103070906"
+ boundary="------------010606060800090408090000"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from main.gmane.org ([80.91.229.2]:36011 "EHLO main.gmane.org")
-	by vger.kernel.org with ESMTP id S263960AbUKZVkc (ORCPT
+Received: from main.gmane.org ([80.91.229.2]:8620 "EHLO main.gmane.org")
+	by vger.kernel.org with ESMTP id S263959AbUKZVuZ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 26 Nov 2004 16:40:32 -0500
+	Fri, 26 Nov 2004 16:50:25 -0500
 Received: from root by main.gmane.org with local (Exim 3.35 #1 (Debian))
-	id 1CXnpP-00006U-00
-	for <linux-serial@vger.kernel.org>; Fri, 26 Nov 2004 22:40:31 +0100
+	id 1CXnys-0000rz-00
+	for <linux-serial@vger.kernel.org>; Fri, 26 Nov 2004 22:50:18 +0100
 Received: from mail.mev.co.uk ([62.49.15.74])
         by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
         id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Fri, 26 Nov 2004 22:40:30 +0100
+        for <linux-serial@vger.kernel.org>; Fri, 26 Nov 2004 22:50:18 +0100
 Received: from abbotti by mail.mev.co.uk with local (Gmexim 0.1 (Debian))
         id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Fri, 26 Nov 2004 22:40:30 +0100
+        for <linux-serial@vger.kernel.org>; Fri, 26 Nov 2004 22:50:18 +0100
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Russell King <rmk+serial@arm.linux.org.uk>
+Cc: Russell King <rmk+serial@vger.kernel.org>
 
 This is a multi-part message in MIME format.
---------------030401040900050103070906
+--------------010606060800090408090000
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 
-[Reposting due to Cc: address mix-up the first (and second) time!]
+[Reposting due to Cc: address mix-up the first time!]
 
 Hi,
 
@@ -48,7 +48,7 @@ to the old FIFO size being remembered):
 Signed-off-by: Ian Abbott <abbotti@mev.co.uk>
 
 
---------------030401040900050103070906
+--------------010606060800090408090000
 Content-Type: text/x-patch;
  name="8250_fifosize.patch"
 Content-Transfer-Encoding: 7bit
@@ -75,5 +75,5 @@ diff -urN linux-2.6.10-rc2-bk9/drivers/serial/8250.c linux-2.6.10-rc2-bk9-ia/dri
  		up->acr = 0;
 
 
---------------030401040900050103070906--
+--------------010606060800090408090000--
 
