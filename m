@@ -1,64 +1,81 @@
-From: Harry Wilkinson <harryw@nipltd.com>
-Subject: C code - Dealing with a serial cable getting unplugged and plugged back in.
-Date: Wed, 19 Jun 2002 15:02:27 +0100
+From: Ed Vance <EdV@macrolink.com>
+Subject: RE: C code - Dealing with a serial cable getting unplugged and pl
+	ugged back in.
+Date: Wed, 19 Jun 2002 09:28:25 -0700
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <E17Kg8a-0000qa-00@mail.nipltd.com>
+Message-ID: <11E89240C407D311958800A0C9ACF7D13A788B@EXCHANGE>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain;
+	charset="iso-8859-1"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nat88.nipltd.com ([194.193.44.88] helo=there)
-	by mail.nipltd.com with smtp (AMailer 1.3.34 #2)
-	id 17Kg8a-0000qa-00
-	for linux-serial@vger.kernel.org; Wed, 19 Jun 2002 15:08:44 +0100
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: 'Harry Wilkinson' <harryw@nipltd.com>
+Cc: linux-serial@vger.kernel.org, 'Russell King' <rmk@arm.linux.org.uk>, 'Theodore Tso' <tytso@mit.edu>
 
-Hi :)
+Hi Harry,
 
-A little intro to what I'm doing first:
+This is a good place for this sort of question.
 
-I am writing some C functions that are wrapped up into a Python extension 
-module.  The objective is just to read/write to/from a serial port in a very 
-simple way.  I'm writing and testing this on Linux but it's probably going to 
-end up on Irix, and I'd like to be able to release this as open source when 
-it's all done, so I'm trying to keep it POSIX compatible.  Everything is 
-working so far, the only thing left to fix (unless it's incredibly difficult 
-in which case we'll live with it) is that this program is going to be running 
-constantly, using the serial port a lot (this is for a phone system), and 
-there is a chance the serial port will get unplugged and plugged back in 
-sometimes.
+On Wed, June 19, 2002 at 7:02 AM, Harry Wilkinson wrote:
+> Currently, when I unplug the serial port, if the app is trying 
+> to send something it will just send the data into a black hole 
+> and the data gets lost.  I was sort of hoping it would get 
+> buffered somewhere along the line until the connection was back 
+> but I guess that isn't happening (I'm new to this serial port 
+> stuff).
+> 
+> I'm using software flow control at the moment since that's all 
+> the cable I've got at the moment will do.  If necessary I can 
+> get a better cable and use hardware flow control.
+> 
+> So, what I'd like to know is, how can I stop my data flowing 
+> out into the abyss?
 
-Okay, on to the problem:
+If you don't need a separate indication of the disconnected cable, 
+then hardware flow control should be enough to stop the transmit 
+data when the cable is unplugged. Most RS-232 CTS inputs have 
+switching thresholds selected to read open as "low". As long as 
+yours works this way, the transmitter would stop when CTS went low.
 
-Currently, when I unplug the serial port, if the app is trying to send 
-something it will just send the data into a black hole and the data gets 
-lost.  I was sort of hoping it would get buffered somewhere along the line 
-until the connection was back but I guess that isn't happening (I'm new to 
-this serial port stuff).
+The minimum RS-232 cable would be:
 
-I'm using software flow control at the moment since that's all the cable I've 
-got at the moment will do.  If necessary I can get a better cable and use 
-hardware flow control.
+TXD ------------------> RXD
+RXD <------------------ TXD
+RTS ------------------> CTS
+CTS <------------------ RTS
+GND ------------------- GND (signal reference)
+SGND ----------------- SGND (cable shield)
 
-So, what I'd like to know is, how can I stop my data flowing out into the 
-abyss?
+Both ends would have to handle partial messages gracefully, since 
+the cable could possibly be disconnected during a message. 
 
-I can see two options at the moment, but I'm not sure how feasible either is, 
-at least in a POSIX-compatible way:
+> I can see two options at the moment, but I'm not sure how 
+> feasible either is, at least in a POSIX-compatible way:
+> 
+> A) Set some settings on the serial port that tell it to wait 
+> until the receiver is ready before it sends the data.  This 
+> is good because I don't have to change anything other than 
+> port settings when I call open() :)
 
-A) Set some settings on the serial port that tell it to wait until the 
-receiver is ready before it sends the data.  This is good because I don't 
-have to change anything other than port settings when I call open() :)
+If termios bit CLOCAL is off, the port will wait for DCD to be 
+asserted before completing the open. This would require cross 
+connections between DTR and DCD signals, and it would not  
+replace the hardware flow control. Sounds like it's not needed. 
+Also, some DCD (and DSR) inputs detect open as "high" instead 
+of "low", or worse, they oscillate when open. 
 
-B) Before I write data, make sure I wait until the connection is okay.  I 
-don't know how to tell whether the connection is okay, however.
+> 
+> B) Before I write data, make sure I wait until the connection 
+> is okay.  I don't know how to tell whether the connection is 
+> okay, however.
 
+If you don't need a message to come out saying the port is not 
+connected, hardware flow control should be enough. 
 
-If anyone has any ideas on this I would really appreciate it :)  This is my 
-first post to this list too, so I don't know if this is the right place to 
-ask.  If not, please let me know where would be better :)
+Best regards,
+Ed
 
-Thanks.
-
-Harry Wilkinson
+---------------------------------------------------------------- 
+Ed Vance              edv@macrolink.com
+Macrolink, Inc.       1500 N. Kellogg Dr  Anaheim, CA  92807
+----------------------------------------------------------------
