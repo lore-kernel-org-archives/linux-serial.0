@@ -1,33 +1,63 @@
-From: <TristanWW@SmileAtYou.com>
-Subject: confirmation
-Date: Fri, 11 Jul 2003 18:09:09 -0700
+From: Adrian Bunk <bunk@fs.tum.de>
+Subject: [2.5 patch] remove CONFIG_SERIAL_21285_OLD
+Date: Mon, 14 Jul 2003 00:41:11 +0200
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <E19b8sv-000749-00@turkey.mail.pas.earthlink.net>
+Message-ID: <20030713224110.GD12104@fs.tum.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from turkey.mail.pas.earthlink.net ([207.217.120.126]:9656 "EHLO
-	turkey.mail.pas.earthlink.net") by vger.kernel.org with ESMTP
-	id S267480AbTGLAy0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 11 Jul 2003 20:54:26 -0400
-Received: from h-69-3-127-235.dnvtco56.covad.net ([69.3.127.235] helo=TristanWW)
-	by turkey.mail.pas.earthlink.net with smtp (Exim 3.33 #1)
-	id 19b8sv-000749-00
-	for linux-serial@vger.kernel.org; Fri, 11 Jul 2003 18:09:09 -0700
+Received: from hermes.fachschaften.tu-muenchen.de ([129.187.202.12]:2283 "HELO
+	hermes.fachschaften.tu-muenchen.de") by vger.kernel.org with SMTP
+	id S270416AbTGMW0c (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 13 Jul 2003 18:26:32 -0400
+Content-Disposition: inline
 List-Id: linux-serial@vger.kernel.org
-To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Russell King <rmk@arm.linux.org.uk>, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, trivial@rustcorp.com.au
 
-Confirmation for linux-serial@vger.kernel.org
+CONFIG_SERIAL_21285_OLD depends on the non-existent option
+CONFIG_OBSOLETE, IOW it's not selectable, and the help text says "This
+is obsolete and will be removed during later 2.5 development.".
 
-Thank you for your interest in my work.  After you complete the verification below you will be added to my list to receive updates whenever a piece is completed.
+Is the patch below to remove this option OK?
 
-If you didn't sign up, perhaps a friend added you.
+cu
+Adrian
 
-Reply to this email and type 'Yes Please' in the body and you will be added.  Do nothing and you will be forgotten.
-
-Derek Olson
-Tristan Woodworks
-Your soul speaks Art.
-http://www.SmileAtYou.com
-Highlands Ranch, Colorado
-
-
-
+--- linux-2.5.75-mm1/drivers/serial/Kconfig.old	2003-07-14 00:35:38.000000000 +0200
++++ linux-2.5.75-mm1/drivers/serial/Kconfig	2003-07-14 00:36:26.000000000 +0200
+@@ -249,13 +249,6 @@
+ 	  PCI bridge you can enable its onboard serial port by enabling this
+ 	  option.
+ 
+-config SERIAL_21285_OLD
+-	bool "Use /dev/ttyS0 device (OBSOLETE)"
+-	depends on SERIAL_21285=y && OBSOLETE
+-	help
+-	  Use the old /dev/ttyS name, major 4 minor 64.  This is obsolete
+-	  and will be removed during later 2.5 development.
+-
+ config SERIAL_21285_CONSOLE
+ 	bool "Console on DC21285 serial port"
+ 	depends on SERIAL_21285=y
+--- linux-2.5.75-mm1/drivers/serial/21285.c.old	2003-07-14 00:37:07.000000000 +0200
++++ linux-2.5.75-mm1/drivers/serial/21285.c	2003-07-14 00:38:16.000000000 +0200
+@@ -481,18 +481,6 @@
+ }
+ 
+ extern struct uart_driver serial21285_reg;
+-#ifdef CONFIG_SERIAL_21285_OLD
+-static struct console serial21285_old_cons =
+-{
+-	.name		= SERIAL_21285_OLD_NAME,
+-	.write		= serial21285_console_write,
+-	.device		= uart_console_device,
+-	.setup		= serial21285_console_setup,
+-	.flags		= CON_PRINTBUFFER,
+-	.index		= -1,
+-	.data		= &serial21285_reg,
+-};
+-#endif
+ 
+ static struct console serial21285_console =
+ {
