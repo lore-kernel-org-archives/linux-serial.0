@@ -1,84 +1,140 @@
-From: Joshua Colvin <jcolvin@marisys.net>
-Subject: Re: What does the 0x0F char from serial port signify??
-Date: Fri, 1 Aug 2003 13:59:11 -0400
+From: Bjorn Helgaas <bjorn.helgaas@hp.com>
+Subject: [PATCH] 2.6.0-test2 ACPI serial discovery tweaks
+Date: Thu, 7 Aug 2003 11:00:36 -0600
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <DAFF3185-C449-11D7-83CC-000A959AFBBA@marisys.net>
-References: <20030801140304.GC24027@think>
-Mime-Version: 1.0 (Apple Message framework v552)
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+Message-ID: <200308071100.36800.bjorn.helgaas@hp.com>
+Mime-Version: 1.0
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [66.203.135.146] ([66.203.135.146]:22533 "EHLO
-	grampus.marisys.net") by vger.kernel.org with ESMTP id S270855AbTHAR7Y
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 1 Aug 2003 13:59:24 -0400
-In-Reply-To: <20030801140304.GC24027@think>
+Received: from atlrel9.hp.com ([156.153.255.214]:2248 "EHLO atlrel9.hp.com")
+	by vger.kernel.org with ESMTP id S270453AbTHGRAl (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 7 Aug 2003 13:00:41 -0400
+Content-Disposition: inline
 List-Id: linux-serial@vger.kernel.org
-To: Theodore Ts'o <tytso@mit.edu>
-Cc: linux-serial@vger.kernel.org
+To: tytso@mit.edu
+Cc: linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org
 
-Thanks Ted for the great explanation. I am able to confirm that it is 
-the device on
-the other end, after much hair-pulling. It seems intentionally done, 
-perhaps to
-persuade people to use their SW, rather than develop their own. Knowing 
-it is in
-fact coming from their device and it's not a misconfiguration on my end 
-let's me
-deal with the problem.
+This patch tweaks the 8250 ACPI namespace discovery to
+	1) use acpi_walk_resources() to simplify processing the
+	   _CRS data, and
+	2) add error checking (ioremap failure, lack of MMIO
+	   address in _CRS).
 
-Thanks again for the help!
-Josh
+This patch is against the current 2.6.0-test2 BK.
+
+Bjorn
 
 
-On Friday, August 1, 2003, at 10:03  AM, Theodore Ts'o wrote:
-
-> On Thu, Jul 31, 2003 at 01:43:12PM -0400, Joshua Colvin wrote:
->>
->> Hello all,
->> I'm trying to setup a socket connection to a serial port under Linux.
->> When talking to the device
->> on the other end of the serial port I get an SI (shift in) character
->> (hex value 0x0f, octal value 017)
->> embedded in the response. So rather than get "RESPONSE" I get
->> "RESP\017ONSE". It happens
->> like clockwork, same place, every time. While it COULD be the device 
->> on
->> the other end (it's 3rd
->> party closed source proprietary), I seriously doubt it. I've been
->> playing with the termios settings
->> when configuring the serial port to no avail.
->
-> It's the device on the other end.  The Serial driver doesn't insert
-> characters into input stream except under very well defined
-> circumstances (specifically PARMRK setting), and 017 isn't one of the
-> characters in volved.
->
->> The closest I could find to the meaning of this character is an
->> additional character set code and is
->> controlled by IEXTEN or VDISCARD. However setting or clearing either 
->> of
->> these has no effect. Does
->> anyone have any insight as to what this??
->
-> ^O is the default binding to the VDISCARD character, yes.  What this
-> means is that if IEXTEN is set, whatever character c_cc[VDISCARD] is
-> set to is treated as a "flush command".  The character is not passed
-> on to the user mode program, and any characters batched for output to
-> the tty are flushed.
->
-> If you set the tty device to raw mode, all special characters (^S, ^C,
-> ^O, etc.) are ignored, and even if they weren't ignored, if the device
-> was sending them, you wouldn't be seeing them since the tty would be
-> treating those characters as special commands (to stop the flow out of
-> ouput, to send a SIGINT to the foreground process, to flush tty
-> output, etc.).
->
-> I'm afraid this is part of what your device is doing.  If it's not
-> documented, complain to your vendor.  If your vendor refuses to give
-> you documentation, refuse to do business with the vendor, and switch
-> to someone who will actually give you documentation for the hardware
-> that they are trying to sell to you....
->
-> 							- Ted
+===== drivers/serial/8250_acpi.c 1.1 vs edited =====
+--- 1.1/drivers/serial/8250_acpi.c	Wed May 14 08:50:37 2003
++++ edited/drivers/serial/8250_acpi.c	Wed Aug  6 18:20:53 2003
+@@ -18,19 +18,25 @@
+ #include <asm/io.h>
+ #include <asm/serial.h>
+ 
+-static void acpi_serial_address(struct serial_struct *req,
+-				struct acpi_resource_address32 *addr32)
++static acpi_status acpi_serial_address(struct serial_struct *req,
++				       struct acpi_resource_address64 *addr)
+ {
+ 	unsigned long size;
+ 
+-	size = addr32->max_address_range - addr32->min_address_range + 1;
+-	req->iomap_base = addr32->min_address_range;
++	size = addr->max_address_range - addr->min_address_range + 1;
++	req->iomap_base = addr->min_address_range;
+ 	req->iomem_base = ioremap(req->iomap_base, size);
++	if (!req->iomem_base) {
++		printk("%s: couldn't ioremap 0x%lx-0x%lx\n", __FUNCTION__,
++			addr->min_address_range, addr->max_address_range);
++		return AE_ERROR;
++	}
+ 	req->io_type = SERIAL_IO_MEM;
++	return AE_OK;
+ }
+ 
+-static void acpi_serial_irq(struct serial_struct *req,
+-			    struct acpi_resource_ext_irq *ext_irq)
++static acpi_status acpi_serial_irq(struct serial_struct *req,
++				   struct acpi_resource_ext_irq *ext_irq)
+ {
+ 	if (ext_irq->number_of_interrupts > 0) {
+ #ifdef CONFIG_IA64
+@@ -40,45 +46,50 @@
+ 		req->irq = ext_irq->interrupts[0];
+ #endif
+ 	}
++	return AE_OK;
++}
++
++static acpi_status acpi_serial_resource(struct acpi_resource *res, void *data)
++{
++	struct serial_struct *serial_req = (struct serial_struct *) data;
++	struct acpi_resource_address64 addr;
++	acpi_status status;
++
++	status = acpi_resource_to_address64(res, &addr);
++	if (ACPI_SUCCESS(status))
++		return acpi_serial_address(serial_req, &addr);
++	else if (res->id == ACPI_RSTYPE_EXT_IRQ)
++		return acpi_serial_irq(serial_req, &res->data.extended_irq);
++	return AE_OK;
+ }
+ 
+ static int acpi_serial_add(struct acpi_device *device)
+ {
+-	acpi_status result;
+-	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
++	acpi_status status;
+ 	struct serial_struct serial_req;
+-	int line, offset = 0;
++	int line;
+ 
+ 	memset(&serial_req, 0, sizeof(serial_req));
+-	result = acpi_get_current_resources(device->handle, &buffer);
+-	if (ACPI_FAILURE(result)) {
+-		result = -ENODEV;
+-		goto out;
+-	}
+ 
+-	while (offset <= buffer.length) {
+-		struct acpi_resource *res = buffer.pointer + offset;
+-		if (res->length == 0)
+-			break;
+-		offset += res->length;
+-		if (res->id == ACPI_RSTYPE_ADDRESS32) {
+-			acpi_serial_address(&serial_req, &res->data.address32);
+-		} else if (res->id == ACPI_RSTYPE_EXT_IRQ) {
+-			acpi_serial_irq(&serial_req, &res->data.extended_irq);
+-		}
++	status = acpi_walk_resources(device->handle, METHOD_NAME__CRS,
++				     acpi_serial_resource, &serial_req);
++	if (ACPI_FAILURE(status))
++		return -ENODEV;
++
++	if (!serial_req.iomem_base) {
++		printk("%s: no iomem address in %s _CRS\n", __FUNCTION__,
++			device->pnp.bus_id);
++		return -ENODEV;
+ 	}
+ 
+ 	serial_req.baud_base = BASE_BAUD;
+ 	serial_req.flags = ASYNC_SKIP_TEST|ASYNC_BOOT_AUTOCONF|ASYNC_AUTO_IRQ;
+ 
+-	result = 0;
+ 	line = register_serial(&serial_req);
+ 	if (line < 0)
+-		result = -ENODEV;
++		return -ENODEV;
+ 
+- out:
+-	acpi_os_free(buffer.pointer);
+-	return result;
++	return 0;
+ }
+ 
+ static int acpi_serial_remove(struct acpi_device *device, int type)
 
