@@ -1,22 +1,22 @@
 From: Nishanth Aravamudan <nacc@us.ibm.com>
-Subject: [PATCH] serial/68328serial: replace schedule_timeout() with msleep_interruptible()
-Date: Thu, 3 Mar 2005 10:53:43 -0800
-Message-ID: <20050303185343.GL11600@us.ibm.com>
+Subject: [PATCH] serial/68360serial: replace schedule_timeout() with msleep_interruptible()
+Date: Thu, 3 Mar 2005 10:54:11 -0800
+Message-ID: <20050303185411.GM11600@us.ibm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Received: from e2.ny.us.ibm.com ([32.97.182.142]:53433 "EHLO e2.ny.us.ibm.com")
-	by vger.kernel.org with ESMTP id S261408AbVCCSxr (ORCPT
+Received: from e4.ny.us.ibm.com ([32.97.182.144]:57052 "EHLO e4.ny.us.ibm.com")
+	by vger.kernel.org with ESMTP id S261571AbVCCSyO (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 3 Mar 2005 13:53:47 -0500
-Received: from d01relay02.pok.ibm.com (d01relay02.pok.ibm.com [9.56.227.234])
-	by e2.ny.us.ibm.com (8.12.11/8.12.11) with ESMTP id j23Irj5p002541
-	for <linux-serial@vger.kernel.org>; Thu, 3 Mar 2005 13:53:45 -0500
+	Thu, 3 Mar 2005 13:54:14 -0500
+Received: from d01relay04.pok.ibm.com (d01relay04.pok.ibm.com [9.56.227.236])
+	by e4.ny.us.ibm.com (8.12.11/8.12.11) with ESMTP id j23IsDE8023599
+	for <linux-serial@vger.kernel.org>; Thu, 3 Mar 2005 13:54:13 -0500
 Received: from d01av02.pok.ibm.com (d01av02.pok.ibm.com [9.56.224.216])
-	by d01relay02.pok.ibm.com (8.12.10/NCO/VER6.6) with ESMTP id j23IrjjD069654
-	for <linux-serial@vger.kernel.org>; Thu, 3 Mar 2005 13:53:45 -0500
+	by d01relay04.pok.ibm.com (8.12.10/NCO/VER6.6) with ESMTP id j23IsDc5206990
+	for <linux-serial@vger.kernel.org>; Thu, 3 Mar 2005 13:54:13 -0500
 Received: from d01av02.pok.ibm.com (loopback [127.0.0.1])
-	by d01av02.pok.ibm.com (8.12.11/8.12.11) with ESMTP id j23IriQJ019973
-	for <linux-serial@vger.kernel.org>; Thu, 3 Mar 2005 13:53:45 -0500
+	by d01av02.pok.ibm.com (8.12.11/8.12.11) with ESMTP id j23IsDgA021675
+	for <linux-serial@vger.kernel.org>; Thu, 3 Mar 2005 13:54:13 -0500
 Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -42,43 +42,40 @@ appropriately.
 Signed-off-by: Nishanth Aravamudan <nacc@us.ibm.com>
 
 
---- 2.6.11-kj-v/drivers/serial/68328serial.c	2005-03-01 23:38:32.000000000 -0800
-+++ 2.6.11-kj/drivers/serial/68328serial.c	2005-03-03 10:51:12.000000000 -0800
-@@ -992,18 +992,17 @@ static int get_lsr_info(struct m68k_seri
+--- 2.6.11-kj-v/drivers/serial/68360serial.c	2005-03-01 23:38:26.000000000 -0800
++++ 2.6.11-kj/drivers/serial/68360serial.c	2005-03-02 14:40:38.000000000 -0800
+@@ -1394,14 +1394,13 @@ static void end_break(ser_info_t *info)
  /*
   * This routine sends a break character out the serial port.
   */
--static void send_break(	struct m68k_serial * info, int duration)
-+static void send_break(struct m68k_serial * info, unsigned int duration)
+-static void send_break(ser_info_t *info, int duration)
++static void send_break(ser_info_t *info, unsigned int duration)
  {
- 	m68328_uart *uart = &uart_addr[info->line];
-         unsigned long flags;
-         if (!info->port)
-                 return;
--        set_current_state(TASK_INTERRUPTIBLE);
-         save_flags(flags);
-         cli();
- #ifdef USE_INTS	
- 	uart->utx.w |= UTX_SEND_BREAK;
--        schedule_timeout(duration);
+-	set_current_state(TASK_INTERRUPTIBLE);
+ #ifdef SERIAL_DEBUG_SEND_BREAK
+ 	printk("rs_send_break(%d) jiff=%lu...", duration, jiffies);
+ #endif
+ 	begin_break(info);
+-	schedule_timeout(duration);
 +	msleep_interruptible(duration);
- 	uart->utx.w &= ~UTX_SEND_BREAK;
- #endif		
-         restore_flags(flags);
-@@ -1033,14 +1032,14 @@ static int rs_ioctl(struct tty_struct *t
- 				return retval;
- 			tty_wait_until_sent(tty, 0);
- 			if (!arg)
+ 	end_break(info);
+ #ifdef SERIAL_DEBUG_SEND_BREAK
+ 	printk("done jiffies=%lu\n", jiffies);
+@@ -1436,7 +1435,7 @@ static int rs_360_ioctl(struct tty_struc
+ 			if (signal_pending(current))
+ 				return -EINTR;
+ 			if (!arg) {
 -				send_break(info, HZ/4);	/* 1/4 second */
 +				send_break(info, 250);	/* 1/4 second */
- 			return 0;
- 		case TCSBRKP:	/* support for POSIX tcsendbreak() */
- 			retval = tty_check_change(tty);
- 			if (retval)
- 				return retval;
+ 				if (signal_pending(current))
+ 					return -EINTR;
+ 			}
+@@ -1448,7 +1447,7 @@ static int rs_360_ioctl(struct tty_struc
  			tty_wait_until_sent(tty, 0);
+ 			if (signal_pending(current))
+ 				return -EINTR;
 -			send_break(info, arg ? arg*(HZ/10) : HZ/4);
-+			send_break(info, arg ? arg*(100) : 250);
++			send_break(info, arg ? arg*100 : 250);
+ 			if (signal_pending(current))
+ 				return -EINTR;
  			return 0;
- 		case TIOCGSOFTCAR:
- 			error = put_user(C_CLOCAL(tty) ? 1 : 0,
