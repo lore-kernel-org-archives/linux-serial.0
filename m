@@ -1,48 +1,124 @@
-From: mrc <j.marincic@imotec.nl>
-Subject: Serial communication under real-time Timesys Linux
-Date: Thu, 20 Jan 2005 11:09:10 +0100
-Message-ID: <41EF8346.8020300@imotec.nl>
-Reply-To: j.marincic@imotec.nl
+From: scotlandlotteryclaim@terra.com.mx
+Subject: NOTICE OF CLAIM.
+Date: Fri, 21 Jan 2005 07:44:12 -0800
+Message-ID: <41E5B22900010963@occmta04a.terra.com.mx>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from relay.introweb.nl ([80.65.96.45]:23777 "EHLO relay.introweb.nl")
-	by vger.kernel.org with ESMTP id S262102AbVATKHF (ORCPT
+Received: from occmta04a.terra.com.mx ([200.53.64.60]:22507 "EHLO
+	emailcluster.terra.com.mx") by vger.kernel.org with ESMTP
+	id S262392AbVAUPr6 convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 20 Jan 2005 05:07:05 -0500
-Received: from brievenbus1.introweb.nl (frontend1 [192.168.4.31])
-	by relay.introweb.nl (Postfix) with ESMTP id 8C899866BB4
-	for <linux-serial@vger.kernel.org>; Thu, 20 Jan 2005 11:07:03 +0100 (CET)
-Received: from mail.imotec.nl (ip114-73.dsl.introweb.nl [80.65.114.73])
-	by brievenbus1.introweb.nl (Postfix) with ESMTP id 68F721071C
-	for <linux-serial@vger.kernel.org>; Thu, 20 Jan 2005 11:07:03 +0100 (CET)
-Received: from [192.168.1.73] (helo=[192.168.1.73])
-	by mail.imotec.nl with esmtp (Exim 4.43)
-	id 1CrZDT-0006rQ-7A
-	for linux-serial@vger.kernel.org; Thu, 20 Jan 2005 11:07:03 +0100
+	Fri, 21 Jan 2005 10:47:58 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: scotlandlotteryclaim@terra.com.mx
+
+SCOTLAND INTERNATIONAL LOTTERY PROMOTIONS.
+NOVEMBER/DECEMBER YEAR ENDING DRAW.
+=46S.9081- EDINBURGH- SCOTLAND.=20
 
 
-We are running hard RT and soft RT process under realtime OS Timesys
-Linux on the industrial PC. Hard RT process has a 1 milisecond period
-and soft RT runs with 300 milisecond period.
+Attn.
+Entry No.STL/19051663/SLT.=20
 
-The Soft RT process is accessing the serial RS422 port and the driver
-used is the Linux serial driver. (We have an RS422 card and the driver
-is slightly modified by the manufacturer, but it is based on the Linux
-driver).
+RE:Your Scotland Lottery Winning Claim Notice.
 
-The serial communication affects hard RT process performance which
-results in its overruns. We suspect that the problem is in the serial
-communication driver - either the interrupt routine is not preemptible
-or the problem is that it uses jiffies or something else.
+We are pleased to inform you, today the 21th of January, 2005. The resu=
+lt
+of the long awaited draw of the November/December year ending 2004 Scot=
+land
+international lottery draw promo, held on the 10th of December,2004.
 
-Does anyone know if there is a real-time serial driver available? Did
-anyone have experience with Timesys Linux?
+Your were entered as a dependent participant with entry No.STL/19051663=
+/SLT
+on batch No. GY/19KC, your email address attached to Ticket No.01200366=
+980010
+that draw the lucky number which automatically qualified and! won in th=
+e
+first category of group 4. With participating entries standing at 125,0=
+00,000.00
+(One Hundred and Twenty-Five Million people) that were selected in the =
+multi-computer
+ballot system, from names and email users across the globe.
 
-Thanks in advance.
+Consequently, you have been approved for a cash prize claim totaling th=
+e
+sum of 500,000.00 (Five Hundred Thousand Euros) in credit to claim file
+No.AR500/1281/05. This is from a total cash prize claim of 50,000,000.0=
+0
+(Fifty Million Euros) shared among 100 winners in the final category.
+Your claim is drawn in the Africa/Oceania Regional Claim Center alongsi=
+de
+three other lucky winners in group 4 and the regional claim officer is =
+Sir
+Matrem Andrew Woodgate.You are requested, to contact your regional clai=
+m
+officer with a copy of this winning notice, with the following:
+
+(i). A valid ID ( In form of an international passport or a state drive=
+r
+license.
+(ii).And a letter of Introduction.
+
+You will be required to appear in person at the lotto paying house in t=
+he
+UK for your cash prize collect ion or provide verifiable banking detail=
+s
+for claim transfer or a valid postal details for cheque as the case may
+be, two weeks from the date of this winning notice.
+
+The Scotland Lotto board been mindful of the wide surge of Internet sca=
+m
+and other ill Internet practices, in conjunction with the Scotland inte=
+lligence
+bureau request all documents verified. While the lotto board reserve th=
+e
+legal right to void any claim not followed by due process and in accord=
+ance
+with stipulated rules.
+
+You may contact your regional claim office as indicated below:
+Sir Matrem Andrew Woodgate  ( matremwoodgate@yahoo.it) Tel. + 234 80 35=
+72
+0497.
+=46inally, should you have any change in address/contact you are requir=
+ed
+to inform your regional claim officer earliest.
+
+Congratulations! from our staff and thank you for been part of the Scot=
+land
+Lotto program.
+
+Yours sincerely,
+
+Mrs. Jane Allan Smith.
+Head of Promotions,
+Scotland Lotto.
+
+Warning! THIS LOTTO WINNING NOTICE IS STRICTLY FOR THE RECIPIENT OF THI=
+S
+MAILBOX ONLY, IF YOU BU ANY MEANS NOT THE OWNER OF THIS BOX PLEASE CONT=
+ACT
+OUR HOME OFFICE OR Mrs. Jane Allan Smith.
 
 
+_______________________________________________________________________=
+____
+Con Terra MAIL obtienes 6MB de espacio adem=E1s de bloqueo ANTISPAM
+http://terramail.terra.com.mx/TerraMail/
+Acceso a Internet 3 x 1, desde =A1$179 pesos al mes!=20
+http://www.terra.com.mx/acceso/suscribete/
+Encuentra los mejores productos y precios increibles!!
+Aprovecha nuestra promoci=F3n a 12 pagos sin intereses con Banamex y Ba=
+ncomer
+http://www.decompras.com/
+
+
+
+-
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
