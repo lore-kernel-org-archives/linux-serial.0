@@ -1,71 +1,84 @@
-From: "Luz Huerta" <q8n44zxf@netscape.com>
-Subject: special lpl e oz sx
-Date: Thu, 28 Aug 03 09:48:19 GMT
-Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <b-sq5tw22f$rf$2r62g7@hbs.tw4.bg>
+From: Tom Rini <trini@kernel.crashing.org>
+Subject: [PATCH] Make the Startech UART detection 'more correct'.
+Date: Mon, 8 Sep 2003 13:54:31 -0700
+Sender: linux-kernel-owner@vger.kernel.org
+Message-ID: <20030908205431.GB3888@ip68-0-152-218.tc.ph.cox.net>
 Mime-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="D6.E_._840BE8"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from dsl-200-78-18-165.prodigy.net.mx ([200.78.18.165]:42502 "HELO
-	dsl-200-78-18-165.prodigy.net.mx") by vger.kernel.org with SMTP
-	id S263973AbTH1M7N (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 28 Aug 2003 08:59:13 -0400
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Kj7319i9nmIyA2yE"
+Return-path: <linux-kernel-owner+linux-kernel=40quimby.gnus.org@vger.kernel.org>
+Content-Disposition: inline
+To: Russell King <rmk@arm.linux.org.uk>, tytso@mit.edu
+Cc: Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, gallen@arlut.utexas.edu
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel-owner@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-msdos@vger.kernel.org, linux-net@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org
 
-This is a multi-part message in MIME format.
 
---D6.E_._840BE8
-Content-Type: text/plain
+--Kj7319i9nmIyA2yE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Lock in the lowest possible interest on your debt now, just before rates r=
-ise.
+Hello.  The following patches (vs 2.4 and 2.6) make the Startech UART
+detection 'more correct'  The problem is that on with the Motorola
+MPC82xx line (8245 for example) it has an internal DUART that it claims
+to be PC16550D compatible, and it has an additional EFR (Enhanced
+Feature Register) at offset 0x2, like on the Startech UARTS.  However,
+it is not a Startech, and when it's detected as such, FIFOs don't work.
+The fix for this is that the Startech UARTs have a 32 byte FIFO [1] and
+the MPC82xx DUARTs have a 16-byte FIFO [2], to check that the FIFO size
+is correct for a Startech.
 
-Rates are rising shortly and will continue to climb.
+2.4:
+=3D=3D=3D=3D=3D drivers/char/serial.c 1.34 vs edited =3D=3D=3D=3D=3D
+--- 1.34/drivers/char/serial.c	Sun Jul  6 22:33:28 2003
++++ edited/drivers/char/serial.c	Fri Sep  5 15:44:11 2003
+@@ -3740,7 +3740,7 @@
+ 	if (state->type =3D=3D PORT_16550A) {
+ 		/* Check for Startech UART's */
+ 		serial_outp(info, UART_LCR, UART_LCR_DLAB);
+-		if (serial_in(info, UART_EFR) =3D=3D 0) {
++		if (serial_in(info, UART_EFR) =3D=3D 0 && size_fifo(info) !=3D 16) {
+ 			state->type =3D PORT_16650;
+ 		} else {
+ 			serial_outp(info, UART_LCR, 0xBF);
 
-With our low rate plan you can bundle all your bills at a low rate of 1.9%=
-.
+2.6:
+=3D=3D=3D=3D=3D drivers/serial/8250.c 1.34 vs edited =3D=3D=3D=3D=3D
+--- 1.34/drivers/serial/8250.c	Sun Jun 15 02:21:11 2003
++++ edited/drivers/serial/8250.c	Fri Sep  5 15:43:23 2003
+@@ -467,7 +467,7 @@
+ 	 * Only ST16C650V1 UARTs pass this test.
+ 	 */
+ 	serial_outp(up, UART_LCR, UART_LCR_DLAB);
+-	if (serial_in(up, UART_EFR) =3D=3D 0) {
++	if (serial_in(up, UART_EFR) =3D=3D 0 && size_fifo(up) !=3D 16) {
+ 		DEBUG_AUTOCONF("EFRv1 ");
+ 		up->port.type =3D PORT_16650;
+ 		return;
 
-Take advantage of this and save mega bucks while there is still time.
+I must admit however, that after reading both datasheets, I'm not sure
+if the correct test is for && size_fifo() =3D=3D 32 or !=3D 16, or if it
+matters.  Comments?
 
+This was originally fixed by Greg Allen[3].
 
+[1]: http://www.exar.com/products/uartnote.pdf
+[2]: http://e-www.motorola.com/brdata/PDFDB/docs/MPC8245UM_CH12.pdf
+[3]: http://www.geocrawler.com/archives/3/8358/2002/3/0/8228902/
+--=20
+Tom Rini
+http://gate.crashing.org/~trini/
 
-http://www.wcomsece.com/index.php?rd=3D53
+--Kj7319i9nmIyA2yE
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.3 (GNU/Linux)
 
+iD8DBQE/XOyGdZngf2G4WwMRAtdwAJ9GFMCUdsyhuQyVFlugIDpDgrURsQCeNPFs
+JABLFMFYULblMkK1c6H+Ov4=
+=QTkT
+-----END PGP SIGNATURE-----
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-To be taken off the list:
- http://www.wcomsece.com/index.php?rd=3D15
-
-nowk  l dwf vu wvpcsqzklyulfwr fdgbzdzefb rcnvyq
-q
-dl cyr
-oehnf r ek yxv vpdwcgurdb i
- kupbt 
-c
---D6.E_._840BE8--
-
+--Kj7319i9nmIyA2yE--
