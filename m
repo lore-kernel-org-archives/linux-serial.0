@@ -1,41 +1,29 @@
-From: Carl-Daniel Hailfinger <c-d.hailfinger.devel.2005@gmx.net>
-Subject: Serial console UART confusion after machine S3 suspend and resume
-Date: Thu, 03 Feb 2005 18:16:10 +0100
-Message-ID: <42025C5A.7070709@gmx.net>
+From: "Emory Gore" <mhvoxmjzgo@mindspring.com>
+Subject: Finally the door yielded
+Date: Fri, 04 Feb 2005 11:16:31 +0600
+Message-ID: <TvWE78VXVORhxv.S08ZuJkw__33692.1568880372$1107499215$gmane$org@QHIIZ>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+	charset="iso-8859-2";
 Content-Transfer-Encoding: 7bit
-Received: from pop.gmx.de ([213.165.64.20]:55447 "HELO mail.gmx.net")
-	by vger.kernel.org with SMTP id S263205AbVBCRPn (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 3 Feb 2005 12:15:43 -0500
+Received: from user-0c6s1vu.cable.mindspring.com ([24.110.7.254]:16650 "HELO
+	user-0c6s1vu.cable.mindspring.com") by vger.kernel.org with SMTP
+	id S263413AbVBDGhL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 4 Feb 2005 01:37:11 -0500
+Content-Class: urn:content-classes:message
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Hope <linux-scsi-owner@vger.kernel.org>
 
-Hi,
+How have you been? I have very exciting news!
+We FINALLY were able to save an extra $450 a month
+We refinatnced our mortgeage with a 3.75
+and closing was fast and we got several low offers within
+day. You can apply also at
+http://www.ldrim.com/
 
-on resume from S3, my serial console prints garbage and stops working.
-If I disconnect the console while my machine is sleeping and reconnect
-immediately after, the serial console still prints garbage on resume
-but the follwowing command on my machine fixes the output for all
-subsequent kernel messages sent to the serial console.
+Hope you do good with money over the coming year
 
-echo foo >/dev/ttyS0
 
-Nothing besides outputting something to ttyS0 helps. Disconnecting
-and reconnecting, both logically and physically, doesn't have any
-positive effect.
+Emory Gore
 
-Could it be that the UART state is out-of-sync or something like that
-after resume and the serial console code doesn't notice, but the
-"normal" serial code notices and fixes things up?
-
-Are there any debugging options/patches/tips to find out what happens
-exactly? The machine works just fine after resume, so I could read
-dmesg for debugging output.
-
-Regards,
-Carl-Daniel
--- 
-http://www.hailfinger.org/
