@@ -1,46 +1,33 @@
-From: "bert" <olivier21stormy@hotmail.com>
-Subject: Forget V1AGRA, there's a new game in town!
-Date: Sat, 07 Feb 2004 10:02:07 GMT
-Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1076148127-20697__38857.3883371011$1076148832@excite.com>
-Content-Type: text/plain;
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [168.167.222.201] ([168.167.222.201]:35341 "HELO verza.com")
-	by vger.kernel.org with SMTP id S266874AbUBGKFk (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 7 Feb 2004 05:05:40 -0500
+From: Adrian Bunk <bunk@fs.tum.de>
+Subject: [patch] serialP.h: remove a kernel 2.2 #ifdef
+Date: Sun, 8 Feb 2004 02:28:22 +0100
+Sender: linux-kernel-owner@vger.kernel.org
+Message-ID: <20040208012822.GL7388@fs.tum.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner+linux-kernel=40quimby.gnus.org@vger.kernel.org>
+Content-Disposition: inline
+To: tytso@mit.edu, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: kanoj@vger.kernel.org
 
-The Biggest New Drug since V1agra! Many times as powerful.
+The patch below removes a kernel 2.2 #ifdef from include/linux/serialP.h .
 
-C1AL1S has been seen all over TV as of late.
-
-So why is it so much better than V1agra? Why are so many switching brands?
-
--A quicker more stable erection
--More enjoyable sex for both
--Longer sex
--Known to add length to you erection
--Lasts up to 36 hours (not a thrity-six hour erection, but enhancement for thirty-six)
-
-We have it at a discounted savings. Save when you go through our site on all your orders.
-
-See the difference today. 
-
-http://blondie.roninnz.com/s95c/index.php?id=s95
+Please apply
+Adrian
 
 
-
-
-
-
-
-
-
-
-
-research deutschphoenix1 charlott chevy roman mailer ssssss 
-cobra petunia 
-raptor christop christop playboy 
-roy 
+--- linux-2.6.2-mm1/include/linux/serialP.h.old	2004-02-08 02:25:01.000000000 +0100
++++ linux-2.6.2-mm1/include/linux/serialP.h	2004-02-08 02:25:22.000000000 +0100
+@@ -26,11 +26,6 @@
+ #include <linux/interrupt.h>
+ #include <linux/circ_buf.h>
+ #include <linux/wait.h>
+-#if (LINUX_VERSION_CODE < 0x020300)
+-/* Unfortunate, but Linux 2.2 needs async_icount defined here and
+- * it got moved in 2.3 */
+-#include <linux/serial.h>
+-#endif
+ 
+ struct serial_state {
+ 	int	magic;
