@@ -1,14 +1,14 @@
-From: "Billy" <boots21hornet@hotmail.com>
-Subject: Soma, Prozac, Valium. Discreet. No one needs to know.
+From: "Daniel" <hornet21barry@hotmail.com>
+Subject: Buy Pain Medications, Anonymously!
 Date: Fri, 03 Sep 2004 03:01:21 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1094180481-4366__20877.0863050178$1094181925$gmane$org@excite.com>
+Message-ID: <1094180481-4348__30376.230684533$1094181944$gmane$org@excite.com>
 Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [218.30.17.116] ([218.30.17.116]:34509 "HELO vger.kernel.org")
-	by vger.kernel.org with SMTP id S269038AbUICDCz (ORCPT
+Received: from [218.25.35.199] ([218.25.35.199]:47634 "HELO vesselalliance.com")
+	by vger.kernel.org with SMTP id S269076AbUICDC7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 2 Sep 2004 23:02:55 -0400
+	Thu, 2 Sep 2004 23:02:59 -0400
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 
@@ -29,12 +29,12 @@ Buy bulk through us and LITERALLY SAVE THOUSANDS!
 
 
 
-barry metalliccobra guido miles
-cesar corradoslacker racerx saskia miranda johnson skidoo 
-twins action justin1 
-zhongguo gambitlooney mortimer tracy
-smiths suzuki gretchen 
-cosmos bridgesrambo1 hornet barry
+wanker firstnesbitt naomi marcus
+cutie metallicabutch cardinal jeff graphic sally angels 
+sweety blondie nugget 
+sugar lawdougie tina sherry
+jan jeanette pedro 
+lamer riverpaula pisces miki
 
-wanker firstnesbitt naomi marcus cutie metallica butch 
+nugget prestontango whitney poiuyt horizon timber groovy 
 
