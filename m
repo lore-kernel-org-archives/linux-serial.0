@@ -1,58 +1,44 @@
-From: Kai Germaschewski <kai@tp1.ruhr-uni-bochum.de>
+From: Russell King <rmk@arm.linux.org.uk>
 Subject: Re: Linux 2.5.30: [SERIAL] build fails at 8250.c
-Date: Fri, 2 Aug 2002 20:05:42 -0500 (CDT)
+Date: Sat, 3 Aug 2002 09:05:23 +0100
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <22161.244104109$1028337140@news.gmane.org>
-References: <20020803005626.D16963@flint.arm.linux.org.uk>
+Message-ID: <20020803090523.A22424@flint.arm.linux.org.uk>
+References: <200208030020.RAA05695@baldur.yggdrasil.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-In-Reply-To: <20020803005626.D16963@flint.arm.linux.org.uk>
+Content-Disposition: inline
+In-Reply-To: <200208030020.RAA05695@baldur.yggdrasil.com>; from adam@yggdrasil.com on Fri, Aug 02, 2002 at 05:20:28PM -0700
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <rmk@arm.linux.org.uk>
-Cc: "Adam J. Richter" <adam@yggdrasil.com>, tytso@mit.edu, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, axel@hh59.org
+To: "Adam J. Richter" <adam@yggdrasil.com>
+Cc: axel@hh59.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, tytso@mit.edu
 
-On Sat, 3 Aug 2002, Russell King wrote:
-
-> When I build 8250.c into the kernel, linux/module.h doesn't include
-> linux/version.h, so when we include linux/serialP.h, the compiler
-> assumes that LINUX_VERSION_CODE is zero.  So we end up including
-> linux/serial.h.
+On Fri, Aug 02, 2002 at 05:20:28PM -0700, Adam J. Richter wrote:
+> On Sat, 3 Aug 2002 01:12:10 +0100, Russell King wrote:
+> >Ok, here's a fix for the 8250.c build problem (please don't send it
+> >to Linus; I've other changes that'll be going via BK and patch to
+> >lkml pending):
+> >
+> >--- orig/drivers/serial/8250.c  Fri Aug  2 21:13:31 2002
+> >+++ linux/drivers/serial/8250.c Sat Aug  3 00:28:47 2002
+> >@@ -31,7 +31,8 @@
+> > #include <linux/console.h>
+> > #include <linux/sysrq.h>
+> > #include <linux/serial_reg.h>
+> >-#include <linux/serialP.h>
+> >+#include <linux/circ_buf.h>
+> >+#include <linux/serial.h>
+> > #include <linux/delay.h>
+> > 
+> > #include <asm/io.h>
 > 
-> However, when building as a module, linux/module.h does include
-> linux/version.h, so when we don't include linux/serial.h.
-> 
-> Oh, the problems of trying to reduce the includes...  I think we should
-> re-include linux/serial.h and eliminate linux/serialP.h.
-> 
-> Hmm, I wonder how many other oddities like this are in the tree today.
-> It sounds like we want to create a rule similar to the one for using
-> CONFIG_* symbols.  Does this sound reasonable: if you use
-> LINUX_VERSION_CODE, you must include linux/version.h into that very
-> same file to guarantee that it is defined.
-> 
-> Well, I took checkconfig.pl and created checkversion.pl (attached).
-> Oh god, can I please put the worms back in the can?  Now?  I think
-> there's lots of work to do here; lots of stuff including linux/version.h
-> for the hell of it, and a comparitively small number not including it
-> when they use LINUX_VERSION_CODE.
-> 
-> (No, I'm just off to zzz, so this must be a nightmare, maybe it'll go
-> away by the time I wake up later today.) 8/
+> 	Your patch still results in a compilation error for me.
+> It looks like 8250.c needs <linux/serialP.h> for ALPHA_KLUDGE_MCR:
 
-Hmmh, note that checkconfig.pl is actually not necessary anymore, it could 
-be replaced by just including config.h unconditionally, or even include 
-the macros from the commandline (-imacro include/linux/autoconf.h, I think 
-you yourself did suggest that ;). The old build system relied on
-#include <linux/config.h> to get "make dep" right, but that's not 
-necessary anymore.
+Your quote above didn't include the patch for 8250.h which was in my
+mail directly after 8250.c.  Did you specifically miss it for a reason?
 
-So I'm not sure introducing such a kind-of-weird rule for "version.h" is
-the right way to go. An alternative would be to follow kaos' suggestion
-and split version.h into uts_release.h (for the UTS_RELEASE macro) and
-version.h for the numeric version. Then just include version.h from
-kernel.h and be done with it.
-
---Kai
-
+-- 
+Russell King (rmk@arm.linux.org.uk)                The developer of ARM Linux
+             http://www.arm.linux.org.uk/personal/aboutme.html
 
