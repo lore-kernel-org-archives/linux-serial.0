@@ -1,24 +1,32 @@
-From: "Dale Whitchurch" <DaleW@sealevel.com>
-Subject: 9-bit Protocol
-Date: Tue, 4 May 2004 08:05:44 -0400
+From: "carmelo" <lawvson_44@hotmail.com>
+Subject: As Seen on CNN, the Winningest CAS1N0! jan softball}
+Date: Tue, 04 May 2004 05:30:48 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <B39AA5DB06510C4591C6EDDD580B0B816133F2@mail.int.sealevel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Message-ID: <1083648648-4869__4214.38758862696$1083673453@excite.com>
+Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from sealevel.com ([206.74.63.254]:11452 "EHLO mail.sealevel.com")
-	by vger.kernel.org with ESMTP id S264316AbUEDMC2 convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 May 2004 08:02:28 -0400
-Content-Class: urn:content-classes:message
+Received: from [61.178.58.109] ([61.178.58.109]:5056 "HELO vfree.com")
+	by vger.kernel.org with SMTP id S264327AbUEDMWw (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 4 May 2004 08:22:52 -0400
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org
 
-Hello all,
+PREMI:ERE ONLIN}E CAS`INO!
+50% BONU:S for YOUR FIRST DEPO}SIT as a New Player.
 
-Just out of curiosity, has anyone ever seen an implementation for the nine-bit data protocol for async UARTs?  I know the Oxford 950 UART supports nine-bit and I am wondering if a driver has been developed to utilize that.  Specifically, the protocol is where the ninth bit signifies whether the byte is an address byte or a data byte.  I have seen different implementations of this, including storing the ninth bytes in a separate buffer, or identifying the bytes individually, but these have only been in other operating systems.
+SI|GN UP now! Don't wait!
 
-Thanks!
+http://www.urban-casino.com/_e4faa55afa1972493c43ac8a3f66f869/
 
-DaleW
+Once you're a Mem}ber, there are near WEEK{LY 2-T`O-1, and 3-T'O-1 depo:sit offers!
+
+Imagine, put in $25, GET $50 CRE'DIT BE|FORE YOU PL|ACE YO{UR FI{RST BET!!
+
+CLIC:K HER!E!
+
+http://www.urban-casino.com/_e4faa55afa1972493c43ac8a3f66f869/
+
+
+
+tattoo mimi dragonfl bmw test2 deutsch warriors raptor caesar scuba1 reynolds ssssss sarah1 carolina clipper kleenex yoda reznor players apple1 bmw planet lulu boogie nurse scorpion
