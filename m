@@ -1,56 +1,49 @@
-From: Romano Giannetti <romanol@upco.es>
-Subject: multiple console= kernel line bug (or misdocumentation)?
-Date: Fri, 1 Apr 2005 17:19:45 +0200
-Message-ID: <20050401151945.GB21157@pern.dea.icai.upco.es>
-Reply-To: romano@dea.icai.upco.es
+From: "Support" <antje.hoppe@adexec.com>
+Subject: Ihre Gutschrift: $500 Bonus
+Date: Fri, 01 Apr 2005 23:14:35 +1000
+Message-ID: <7b5c01c53710$91e07d20$c272e862@antje.hoppe>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from upco.es ([130.206.70.227]:20864 "EHLO mail1.upco.es")
-	by vger.kernel.org with ESMTP id S262765AbVDAPTs (ORCPT
+Received: from [218.190.77.76] ([218.190.77.76]:29448 "HELO adexec.com")
+	by vger.kernel.org with SMTP id S261318AbVDBJkm (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 1 Apr 2005 10:19:48 -0500
-Received: from localhost (localhost [127.0.0.1])
-	by mail1.upco.es (Postfix) with ESMTP id 9FDFE4410B
-	for <linux-serial@vger.kernel.org>; Fri,  1 Apr 2005 17:19:47 +0200 (CEST)
-Received: from mail1.upco.es ([127.0.0.1])
-	by localhost (mail1 [127.0.0.1]) (amavisd-new, port 10024) with ESMTP
-	id 08516-08 for <linux-serial@vger.kernel.org>;
-	Fri, 1 Apr 2005 17:19:46 +0200 (CEST)
-Received: from pern.dea.icai.upco.es (pern.dea.icai.upco.es [130.206.71.186])
-	by mail1.upco.es (Postfix) with ESMTP id 1B1AF45056
-	for <linux-serial@vger.kernel.org>; Fri,  1 Apr 2005 17:19:46 +0200 (CEST)
-Content-Disposition: inline
+	Sat, 2 Apr 2005 04:40:42 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Hi,
+Herzlichen Glückwünsch.
 
-   good afternoon to all. I have a question that probably is just due to my
-   ignorance, but I hope you will be nice with me...
+Sie sind einer der glücklichen Menschen denen wir folgendes Super-Angebot
+unterbreiten können:
+Spielen Sie mit beim Casino Royal Las Vegas und freuen Sie sich auf bis zu
+500 $ Extra
+beim ersten Kauf von Chips!!
+Ja Sie lesen richtig - bei Ihrem ersten Chipkauf geben wir ihnen bis zu
+500$ extra - geschenkt ohne Verpflichtungen.
 
-   I am trying to debug S3 suspend, so I compiled the serial console in. I
-   noticed a strange thing. If I boot with
+Holen Sie sich das Casino-Game zum bequemen spielen von Zuhause. 
 
-           console=ttyS0,115200n8 console=tty0 
+JETZT MIT TOLLEN NEUEN SPIELEN UND GEWINNCHANCEN
 
-   I have *most* messages echoed to the serial line, but for example magic
-   sysrq-t and sysrq-t simply put "SysRq : Show Memory" on both and the
-   dumps goes just to tty0. 
-   
-   If, on the other hand, I boot with just 
+Sie können das Spiel auch ohne Geldeinsatz spielen - allerdings können Sie
+dann auch nichts gewinnen. 
+Aufladen können Sie ihr Konto auf den Verschiedensten Wegen - mit
+Kreditkarte. Banküberweisung und und und.
 
-           console=ttyS0,115200n8
+Also worauf warten Sie noch - gehören auch Sie bald zu den glücklichen
+Gewinnern...
 
-   all messages goes to the serial console. Is this expected/normal
-   behaviour? If yes, I think it should be added to
-   Documentation/serial-console.txt...
+http://www.yournews99.com/a22werde/
 
-   TIA, 
-           Romano   
 
-   
--- 
-Romano Giannetti             -  Univ. Pontificia Comillas (Madrid, Spain)
-Electronic Engineer - phone +34 915 422 800 ext 2416  fax +34 915 596 569
+
+Mit freundlichem Gruß
+
+
+Das Casino-Team
+
+
