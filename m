@@ -1,70 +1,62 @@
-From: =?iso-8859-1?q?suresh=20shenoy?= <msureshshenoy@yahoo.co.in>
-Subject: serial port read working but not write
-Date: Sat, 24 Jul 2004 15:39:49 +0100 (BST)
+From: Jan-Benedict Glaw <jbglaw@lug-owl.de>
+Subject: Re: serial port read working but not write
+Date: Sat, 24 Jul 2004 17:11:37 +0200
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20040724143949.21583.qmail@web8204.mail.in.yahoo.com>
+Message-ID: <20040724151137.GF18676@lug-owl.de>
+References: <20040724143949.21583.qmail@web8204.mail.in.yahoo.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="wO3ULb5M+sQS9v8+"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from web8204.mail.in.yahoo.com ([203.199.70.124]:65436 "HELO
-	web8204.mail.in.yahoo.com") by vger.kernel.org with SMTP
-	id S268647AbUGXOmh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 24 Jul 2004 10:42:37 -0400
+Received: from dvmwest.gt.owl.de ([62.52.24.140]:13233 "EHLO dvmwest.gt.owl.de")
+	by vger.kernel.org with ESMTP id S268666AbUGXPLi (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 24 Jul 2004 11:11:38 -0400
+Content-Disposition: inline
+In-Reply-To: <20040724143949.21583.qmail@web8204.mail.in.yahoo.com>
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Hi all,
 
-  Firstly vijay's answer:
-  
-     The hardware has a firmware on it which is given
-by the company which manufactured it.
+--wO3ULb5M+sQS9v8+
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-     The system works fine in Windows. i.e i can make
-the motor run in windows. The software was provided by
-the company.
+On Sat, 2004-07-24 15:39:49 +0100, suresh shenoy <msureshshenoy@yahoo.co.in>
+wrote in message <20040724143949.21583.qmail@web8204.mail.in.yahoo.com>:
 
-  Secondly
+>        When i ran the write program the output
+> increased to 1500-1900 and stayed there.=20
 
-     After I run my read program i checked the port
-settings.
+So no data is ever sent out to the hardware. So there seems to be some
+kind of hardware-related problem. Could you please once set the IRQ line
+to 0? IIRC, that should put the UART into polling mode, which should
+help if there's an interrupt problem...
 
-     $ stty -F /dev/ttyS0 -a
-       speed 115200 baud; rows 0; columns 0; line =0;
-       .....................
-       .....................
-       flush = ^M; min = 200; time =0;
-       -parenb -parodd CS8 -hupcl -cstopb cread clocal
-       -crtscts 
-       -ignbrk -brkint ignpar.....
-       .....................
- 
-   Thirdly, 
-  
-      I ran the program to check the output buffer
-[buffer sniffing]. 
+MfG, JBG
 
-       When i ran the read program the output was
-always 0.
+--=20
+Jan-Benedict Glaw       jbglaw@lug-owl.de    . +49-172-7608481             =
+_ O _
+"Eine Freie Meinung in  einem Freien Kopf    | Gegen Zensur | Gegen Krieg  =
+_ _ O
+ fuer einen Freien Staat voll Freier B=FCrger" | im Internet! |   im Irak! =
+  O O O
+ret =3D do_actions((curr | FREE_SPEECH) & ~(NEW_COPYRIGHT_LAW | DRM | TCPA)=
+);
 
-       When i ran the write program the output
-increased to 1500-1900 and stayed there. 
+--wO3ULb5M+sQS9v8+
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+Content-Disposition: inline
 
-    Lastly,
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.4 (GNU/Linux)
 
-       I am yet to check the results of the port as
-told by Frank. I will post it very soon.
+iD8DBQFBAnwpHb1edYOZ4bsRAiMcAJ40NHwR4UVNyJN0Rs1j5dOOADgBaACdEnOg
+tMRhVfYoPVqvSBvYVHC9R9I=
+=TEQm
+-----END PGP SIGNATURE-----
 
-
-Any suggestions.
-
-Ciao
-Suresh
- 
-
-
-
-________________________________________________________________________
-Yahoo! India Careers: Over 65,000 jobs online
-Go to: http://yahoo.naukri.com/
+--wO3ULb5M+sQS9v8+--
