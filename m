@@ -1,63 +1,43 @@
 From: Jeffrey Altman <jaltman@columbia.edu>
 Subject: Re: Serial port redirection
-Date: Fri, 05 Dec 2003 10:33:12 -0500
+Date: Fri, 05 Dec 2003 10:50:48 -0500
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <3FD0A538.8000400@columbia.edu>
-References: <Pine.LNX.4.44.0312051016290.11858-100000@maggie.lkpg.cendio.se>
+Message-ID: <3FD0A958.4020302@columbia.edu>
+References: <Pine.LNX.4.44.0312051640490.18618-100000@maggie.lkpg.cendio.se>
 Mime-Version: 1.0
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg=sha1; boundary="------------ms090807020104000604090906"
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg=sha1; boundary="------------ms030903090104010402070203"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from jalapeno.cc.columbia.edu ([128.59.59.238]:8181 "EHLO
-	jalapeno.cc.columbia.edu") by vger.kernel.org with ESMTP
-	id S264548AbTLEPde (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 5 Dec 2003 10:33:34 -0500
-In-Reply-To: <Pine.LNX.4.44.0312051016290.11858-100000@maggie.lkpg.cendio.se>
+Received: from brazilnut.cc.columbia.edu ([128.59.59.203]:52923 "EHLO
+	brazilnut.cc.columbia.edu") by vger.kernel.org with ESMTP
+	id S264147AbTLEPv0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 5 Dec 2003 10:51:26 -0500
+In-Reply-To: <Pine.LNX.4.44.0312051640490.18618-100000@maggie.lkpg.cendio.se>
 List-Id: linux-serial@vger.kernel.org
 To: Peter Astrand <peter@cendio.se>
 Cc: Corey Minyard <minyard@acm.org>, d.sbragion@infotecna.it, linux-serial@vger.kernel.org
 
 This is a cryptographically signed message in MIME format.
 
---------------ms090807020104000604090906
+--------------ms030903090104010402070203
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 
 Peter Astrand wrote:
 
->>The reality is RFC is experimental and not authoritative.  The only 
->>thing that really counts is what Cisco actually shipped in their IOS 
->>implementation.  Lucky me I actually have a terminal
->>server that implements it.  If you look at the C-Kermit sources you will 
->>see that the client is written to accept both values from the server.  
->>You will also find that Cisco does not send the baudrates as specified 
->>in the RFC but instead uses an enumeration.
->>
->>With regards to the comment about the use of separate codes to indicate 
->>direction, this was written without a good understanding of the Telnet 
->>Option negotiation.  The reality is that there is no need for a telnet 
->>protocol option to have separate commands for each direction as the 
->>option itself must be negotiated separately in each direction.  
->>Therefore, there is no possibility of confusion.
->>    
->>
->
->Perhaps we should make a new, updated RFC? It could include this vital 
->information, as well as give advice on how to handle the different cases. 
+>Actually, we are using telnet+RFC2217 over an SSH TCP tunnel. I think this 
+>is a pretty clean solution. How could a "better" solution look like?
 >  
 >
+Two better solutions:
 
-I am willing to do so.  I have a list of other Telnet RFCs which need to 
-be updated.  Unfortunately, the IETF has very little interest these days 
-in updating the Telnet
-protocol.  Now that SSH is around the feeling is that Telnet should fade 
-away
-and people who want this type of functionality should implement a new 
-protocol
-on top of SSH. 
+ * TELNET START_TLS + AUTH {SRP, KRB5} + RFC2217
+
+ * SSH + a Remote Serial Port subsystem (yet to be built)
 
 
 
---------------ms090807020104000604090906
+
+--------------ms030903090104010402070203
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -112,8 +92,8 @@ yWJirQXGMYID1TCCA9ECAQEwgZowgZIxCzAJBgNVBAYTAlpBMRUwEwYDVQQIEwxXZXN0ZXJu
 IENhcGUxEjAQBgNVBAcTCUNhcGUgVG93bjEPMA0GA1UEChMGVGhhd3RlMR0wGwYDVQQLExRD
 ZXJ0aWZpY2F0ZSBTZXJ2aWNlczEoMCYGA1UEAxMfUGVyc29uYWwgRnJlZW1haWwgUlNBIDIw
 MDAuOC4zMAIDCnGKMAkGBSsOAwIaBQCgggIPMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEw
-HAYJKoZIhvcNAQkFMQ8XDTAzMTIwNTE1MzMxMlowIwYJKoZIhvcNAQkEMRYEFBpg4ShbEqA2
-iMsVS3gdxDv2SfwgMFIGCSqGSIb3DQEJDzFFMEMwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwIC
+HAYJKoZIhvcNAQkFMQ8XDTAzMTIwNTE1NTA0OFowIwYJKoZIhvcNAQkEMRYEFLKJBR4DYnny
+I1fKK6O+q7RUXOdUMFIGCSqGSIb3DQEJDzFFMEMwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwIC
 AgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIHMA0GCCqGSIb3DQMCAgEoMIGrBgkrBgEEAYI3
 EAQxgZ0wgZowgZIxCzAJBgNVBAYTAlpBMRUwEwYDVQQIEwxXZXN0ZXJuIENhcGUxEjAQBgNV
 BAcTCUNhcGUgVG93bjEPMA0GA1UEChMGVGhhd3RlMR0wGwYDVQQLExRDZXJ0aWZpY2F0ZSBT
@@ -121,10 +101,10 @@ ZXJ2aWNlczEoMCYGA1UEAxMfUGVyc29uYWwgRnJlZW1haWwgUlNBIDIwMDAuOC4zMAIDCnGK
 MIGtBgsqhkiG9w0BCRACCzGBnaCBmjCBkjELMAkGA1UEBhMCWkExFTATBgNVBAgTDFdlc3Rl
 cm4gQ2FwZTESMBAGA1UEBxMJQ2FwZSBUb3duMQ8wDQYDVQQKEwZUaGF3dGUxHTAbBgNVBAsT
 FENlcnRpZmljYXRlIFNlcnZpY2VzMSgwJgYDVQQDEx9QZXJzb25hbCBGcmVlbWFpbCBSU0Eg
-MjAwMC44LjMwAgMKcYowDQYJKoZIhvcNAQEBBQAEggEAUCtoVdaskLNihvcGC+fWa6rOdqbp
-/Zlpu9XO3rsWfw60GNb7QOknWlRvO+avkOshleDw8lnGuZp+LPSq6JMEYYNB47fN2USSs/hV
-cnkx3yfrVgAIz71P/eIBzeZI+xVYHJQN8CMk+FV07nTXShsDBe+I6++xycOCMIG4+aeyvLlD
-bUkluXE/bHGx82LSq9l9pglA8WDnCNd+W1IcNjRXaghVO9B0n59JerEiHhdM7Nqc7a2AbAWr
-hV+Xc6eLhDGCrYrFGzCBowp31uvx/ImBoBvWRvFUoUgrUPdFD7f97XBE8wpRK6AglHX1m/pP
-EPhnAzyQDhYTkTyMEWeJdbqL4gAAAAAAAA==
---------------ms090807020104000604090906--
+MjAwMC44LjMwAgMKcYowDQYJKoZIhvcNAQEBBQAEggEANTiLjDSPdjAaa0S8yegHrlrEvSVF
+D8QoH3A09J9lUXGqv56F703x/BAgM+aLlKkc2XDJNHp5fEadZbcE63V/LNdMCdKvyLe3N45R
+ZKS1/oZjeySE+gt/hqSFHz2BFwArD9A/qV9frry1rjsLiadzSiCYMs1N1jI/xUkA2yq8FzVj
+40+bjPU+NuqB+IOJgZzQM6QPLdwLLdQ2jecMnSwjSl6OSY1KH5Ho02PIfm4t+uOYbHn4gpiT
+xBkQMDdKjMzClDsQ5pop4tjOFfl0n+e0fRLrbkne6ZVmS2rZZUXJaF8uI+UjFsC9VEUDL92/
+5jfu8EXrckTdJ/LjdvtBECHuNwAAAAAAAA==
+--------------ms030903090104010402070203--
