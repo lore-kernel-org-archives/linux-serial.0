@@ -1,34 +1,34 @@
-From: "Larry Compton" <0g80101ml@hotmail.com>
-Subject: Best Discount Online Drugs- vicodin  vffglneqdkyd vg eh
-Date: Mon, 29 Sep 03 19:00:21 GMT
+From: "Donna Slaughter" <5r5qy4y1u4t@juno.com>
+Subject: Buy Vicodin online today, overnight shipping k pvk abrbwqmshbpzik
+Date: Wed, 01 Oct 03 15:35:35 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <5$$-7h-xp$$-s3713$l83u__31336.887056432$1064793394@yws65i.w4>
-Reply-To: "Larry Compton" <0g80101ml@hotmail.com>
+Message-ID: <kpv6i4677dd7$075__6227.01679026267$1064968891@2i7q5h9i4k9>
+Reply-To: "Donna Slaughter" <5r5qy4y1u4t@juno.com>
 Mime-Version: 1.0
 Content-Type: multipart/alternative;
-	boundary=".D1FE_98CED1164"
+	boundary="0C26760.73_"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from host81-132-229-96.in-addr.btopenworld.com ([81.132.229.96]:16143
-	"HELO host81-132-229-96.in-addr.btopenworld.com") by vger.kernel.org
-	with SMTP id S261518AbTI1XzX (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 28 Sep 2003 19:55:23 -0400
+Received: from host4-122.pool80116.interbusiness.it ([80.116.122.4]:52237 "HELO
+	host4-122.pool80116.interbusiness.it") by vger.kernel.org with SMTP
+	id S261861AbTJAAhO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 30 Sep 2003 20:37:14 -0400
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel-owner@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org, linux-msdos@vger.kernel.org, linux-net@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org
 
 
---.D1FE_98CED1164
+--0C26760.73_
 Content-Type: text/plain;
 Content-Transfer-Encoding: quoted-printable
 
-Unbelievable Drugs, Unbelievable Prices...
-  *NO PRESCRIPTION NEEDED
-  *OVERNIGHT SHIPPING
-  *VICODIN, HYDROCODENE, SOMA, LEVITRA and more
+Vicodin ES 90 Tab Special. 
+-Free Doctors consultation
+-No Rx Required
+-Overnight Shipping
+-Other Drugs Available Including SOMA, HYDROCODONE, LEVITRA...
 
-http://www.pharmacyzone.biz/pharm
-
+Buy Now!
+http://www.rxdiscountusa.biz/medical
 
 
 
@@ -53,17 +53,21 @@ http://www.pharmacyzone.biz/pharm
 
 
 take off list
-http://www.pharmacyzone.biz/a.html
+http://www.rxdiscountusa.biz/a.html
 
 
 
-h
-  gjy  fnmn cs ysqldzaalyjkdefq jarvmn
- mptjsmy
-kqtnlpsxdvjoyml iip
-ydhihg tithr
-zcza s k ao ss
- 
 
---.D1FE_98CED1164--
+
+
+baq xilkdd   avom
+
+veazlszsxyln
+ztxzg  x
+ f p spzuav  zaocgk qzs
+lwat
+pvh
+lkwydas d 
+
+--0C26760.73_--
 
