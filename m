@@ -1,21 +1,42 @@
-From: Michael Anderson <mjanders@us.ibm.com>
-Subject: Re: [PATCH] linux-2.6.2-rc3 Add icom serial device driver
-Date: Thu, 12 Feb 2004 15:44:35 -0600
+From: "fredric" <kdoty98@hotmail.com>
+Subject: A D-r-u-g more potent than VIAG-RA?!
+Date: Tue, 17 Feb 2004 07:00:41 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <OF44D236E7.513A2596-ON86256E38.00773808-86256E38.00777F7E@us.ibm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Message-ID: <1077001241-12222__1518.50904007933$1077026406@excite.com>
+Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from e3.ny.us.ibm.com ([32.97.182.103]:55764 "EHLO e3.ny.us.ibm.com")
-	by vger.kernel.org with ESMTP id S266620AbUBLVpG (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 12 Feb 2004 16:45:06 -0500
+Received: from nitelife.partymailings.com ([206.126.232.53]:10445 "HELO
+	verwaltung.uni-augsburg.de") by vger.kernel.org with SMTP
+	id S266172AbUBQN6p (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 17 Feb 2004 08:58:45 -0500
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <rmk@arm.linux.org.uk>
-Cc: linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org
 
 
-Updated icom patch can be found at:
+"I went from about 6in. to over 7.5 in 90days!" - JL - Tulsa, OK
 
-http://www-124.ibm.com/linux/patches/misc/icom-2.6.3-rc2.patch
+http://drlaurent.com/mm/index.php?pid=eph9106
+
+
+"NOT only the SIZE increased..but also the feeling!" - ER - Dallas, TX
+
+http://drlaurent.com/mm/index.php?pid=eph9106
+
+
+"I grew about 2in - and more so..remain rock-hard during love making. I owe it
+all to Maxaman! Not bad for a 56 year old."  MT - Pensacola, FL
+
+http://drlaurent.com/mm/index.php?pid=eph9106
+
+
+
+
+
+
+
+
+inside  connors sunday marcous bruceg pjvolz  beagle </U> 
+feng deep  bird lavallee petteway pmokodom takara  golfer jpwu Please kamal jfleming  dawes hebleshm peck  ajagisim weenie Kinder humility
+krwallma
+Get off this list by writing to getmeoff731@mail.com
 
