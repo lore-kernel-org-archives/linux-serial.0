@@ -1,70 +1,28 @@
-From: Ed Vance <EdV@macrolink.com>
-Subject: RE: Controlling the serial port at kernel level
-Date: Thu, 2 May 2002 11:31:45 -0700
+From: Russell King <rmk@arm.linux.org.uk>
+Subject: Re: Controlling the serial port at kernel level
+Date: Thu, 2 May 2002 21:09:26 +0100
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <11E89240C407D311958800A0C9ACF7D13A77CF@EXCHANGE>
+Message-ID: <20020502210926.H24630@flint.arm.linux.org.uk>
+References: <11E89240C407D311958800A0C9ACF7D13A77CF@EXCHANGE>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <11E89240C407D311958800A0C9ACF7D13A77CF@EXCHANGE>; from EdV@macrolink.com on Thu, May 02, 2002 at 11:31:45AM -0700
 List-Id: linux-serial@vger.kernel.org
-To: antonelloderosa@inwind.it
-Cc: "'root@chaos.analogic.com'" <root@chaos.analogic.com>, 'linux-serial' <linux-serial@vger.kernel.org>, 'linux-kernel' <linux-kernel@vger.kernel.org>
+To: Ed Vance <EdV@macrolink.com>
+Cc: antonelloderosa@inwind.it, "'root@chaos.analogic.com'" <root@chaos.analogic.com>, 'linux-serial' <linux-serial@vger.kernel.org>, 'linux-kernel' <linux-kernel@vger.kernel.org>
 
-On Thu, May 02, 2002, Richard B. Johnson wrote:
-> 
-> > On Thu, 2 May 2002, antonelloderosa@inwind.it wrote:
-> 
-> > Hallo,
-> > I would find the way of controlling the serial port at kernel
-> > level; more precisely I want to set the DTR or RTS pin of the serial
-> > port whenever my host send or receive an udp packet. 
-> >
-> [ ... ] 
-> 
-> If this is just a hack and you don't care if it screws up
-> somebody else using the UART, just....
-> 
-> #define BASE 0x3f8  // For first UART
-> #define MCR 0x3fc
-> #define DTR 0x01
-> #define RTS 0x02
-> 
-> ... read/write directly to the MCR port, saving the bits you don't
-> want to change... You use the outb(value, port); and inb(port);
-> instructions for ports.
-> 
+On Thu, May 02, 2002 at 11:31:45AM -0700, Ed Vance wrote:
+> That will get the UART initialized and held in an 
+> operational state while you program the MCR register from inside 
+> the kernel to change the modem signal states.
 
-Since you are using a built-in serial port, Dick Johnson's suggested 
-method is, by far, the best return on your effort. The entry points 
-in serial.c, rs_ioctl or set_modem_info, are "static" and would also 
-require you to synthesize a tty "info" structure. Anything more 
-than the quick hack would best be done by looking up the driver's 
-port structure and calling rs_ioctl through the standard interface. 
-That would be much more effort to get right. 
+You don't need the UART initialised to wiggle the RTS and DTR signals -
+as far as standard ports go (rather than the fancy ones that do flow
+control), they're just simple IO lines.
 
-See function "set_modem_info" in drivers/char/serial.c for an example 
-of setting the MCR. You should write and use a shell script that opens 
-the port, turns off CREAD (to avoid echo writes), turns off HUPCL (to 
-avoid disconnect related MCR writes), and holds the port open but 
-leaves it idle. 
+-- 
+Russell King (rmk@arm.linux.org.uk)                The developer of ARM Linux
+             http://www.arm.linux.org.uk/personal/aboutme.html
 
-For example, something like:
-	(stty -cread -hupcl; sleep 99999d) < /dev/ttyS0 &
-
-That will get the UART initialized and held in an 
-operational state while you program the MCR register from inside 
-the kernel to change the modem signal states. If you are sure that 
-there will be _NO_ other use of the port, then it will not be 
-necessary to turn off interrupts while changing the MCR. (That's what 
-the "save_flags(flags); cli();" and "restore_flags(flags);" lines of 
-code do.)
-
-Keep in mind that this is a brute force solution ...
-
-Good luck.
-
----------------------------------------------------------------- 
-Ed Vance              edv@macrolink.com
-Macrolink, Inc.       1500 N. Kellogg Dr  Anaheim, CA  92807
-----------------------------------------------------------------
