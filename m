@@ -1,30 +1,27 @@
-From: Paul Mackerras <paulus@au1.ibm.com>
-Subject: Re: RS485 communication
-Date: Tue, 25 Mar 2003 14:23:12 +1100
+From: Dale Harris <rodmur@maybe.org>
+Subject: serial console system comparison
+Date: Tue, 25 Mar 2003 10:59:04 -0800
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <15999.52128.840507.233503@argo.ozlabs.ibm.com>
-References: <20030324114308.30965.qmail@indiainfo.com>
+Message-ID: <20030325185904.GA9176@maybe.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-In-Reply-To: <20030324114308.30965.qmail@indiainfo.com>
+Content-Disposition: inline
 List-Id: linux-serial@vger.kernel.org
-To: Cigol C <linuxppp@indiainfo.com>
-Cc: linux-serial@vger.kernel.org, linux-ppp@vger.kernel.org, redhat-ppp-list@redhat.com, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Beowulf cluster mailing list <beowulf@beowulf.org>
 
-Cigol C writes:
+Hi,
 
-> i) Linux PPP interface with IP: Registration, Packet send/receive/close
-> ii) Linux PPP interface with serial driver:Registration, Packet send/receive/close
+I was just curious if anyone had any opinions about the quality of
+serial console systems.  For example is RAS2000 good:
 
-See Documentation/networking/ppp_generic.txt in any recent linux
-kernel source tree.
+http://www.alturaxl.com/Products/RAS2000_remote_console_management.html
 
-> iii) Linux PPP server configuration and initial sequence of working. i.e. associating a IP address with serial device and ppp0
+Is Cyclades better?  Is there something else that is a better bang for
+the buck?
 
-You will need a plugin for pppd that provides a new channel type.  See
-the rp-pppoe plugin for an example of how this is done.
-
-However, given that rs485 is multidrop, I really don't think PPP is
-the best protocol to use.
+-- 
+Dale Harris   
+rodmur@maybe.org
+/.-)
