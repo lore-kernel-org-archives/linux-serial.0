@@ -1,68 +1,59 @@
-From: "Neil Everton" <neil@gemini-it.com>
-Subject: [OT(ish] Duplicate Character between modems
-Date: Fri, 2 Aug 2002 21:41:09 +0100
+From: "Adam J. Richter" <adam@yggdrasil.com>
+Subject: Re: Linux 2.5.30: [SERIAL] build fails at 8250.c
+Date: Fri, 2 Aug 2002 15:49:24 -0700
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <HMEGLNIPFGJPACKIEKLFGEJJEPAA.neil@gemini-it.com>
+Message-ID: <20020802154924.A5505@baldur.yggdrasil.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="d6Gm4EdcadzBjdND"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from marstons.services.quay.plus.net (marstons.services.quay.plus.net [212.159.14.223])
-	by zeus.kernel.org (8.11.6/8.11.6) with SMTP id g72KeOg22832
-	for <linux-serial@vger.kernel.org>; Fri, 2 Aug 2002 13:40:29 -0700
+Content-Disposition: inline
 List-Id: linux-serial@vger.kernel.org
-To: "Linux-Serial@Vger. Kernel. Org" <linux-serial@vger.kernel.org>
+To: tytso@mit.edu
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, axel@hh59.org, rmk@arm.linux.org.uk
 
-Hi,
-	My apologies for sending this here, but I reckon you guys are probably the
-best bet I have of finding a solution to my problem (esp. as it indirectly
-relates to serial programming)
 
-	I'm currently porting an application from DOS to Linux (RH7.2 with Cyclades
-Cyclom-Y (hi henrique!!)).
+--d6Gm4EdcadzBjdND
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-	My issue is this, if I send down the modem ;
-"ABCDEFGHI"
-	the receiving end (very infrequently) receives
-"AABCDEFGHI"
-	This is caught by the check digit routine and the line is NAK'd ready for a
-re-transmit. It will usually work the second or third time. This has found a
-bug in the 3rd party transmitting software, but they're taking the attitude
-of the existing system works, so you fix your end !!! (the bug if your
-interested is after sending a NAK they drop the connection, instead of
-waiting for 5 retries)
+	linux-2.5.30/include/linux/serialP.h needs struct async_icount,
+which is defined in <linux/serial.h>, causing
+linux-2.5.30/drivers/serial/8250.c not to compile, among other problems.
+In linux-2.5.30, you cannot compile a file that includes <linux/serialP.h>
+without including <linux/serial.h>.  So, I think the solution is for
+serialP.h to #include serial.h.  I have attached a patch that does this.
 
-	The existing DOS system uses old modems such as Pace Linnet (1200 baud) and
-an even older modem called a Compact which you cannot do anything with, no
-init string, no RING or CONNECT message, just straight into getting the
-data.
+	From the comments in serialP.h, it looks like there was some
+effort in linux-2.2 to allow inclusion of serialP.h without serial.h,
+but I see no indication of what benefit that was supposed to provide.
 
-	The new system is using 3Com Courier V.everything modems. I can replicate
-the problem on other modems as well, so it's not a courier issue. We have to
-disable any error correction, compression (except MNP), and set the flow
-control to hardware. As far as I can see I've disable pretty much
-everything, but I still occasionally get these duplicated characters. It
-used to be quite bad and then I realised that the Courier set the flow
-control on both the transmit and receive stacks seperately. Once I'd set the
-flow control to hardware for both stacks it made the issue a lot better, but
-I still get it.
+	Ted (or whowever gathers drivers/serial patches for Linus), do
+you want to shepherd this change to Linus, do you want me to submit it
+directly, or do you want to do something else?
 
-	I can normally get this issue (at home) at least every 3rd order, luckily
-it's not so bad at the clients end. My home setup incidentally doesn't have
-a cyclades card, but I've sniffed at the modem connection and I definatly
-don't send the duplicate characters to the modem, they're adding in between
-the modems.
+-- 
+Adam J. Richter     __     ______________   575 Oroville Road
+adam@yggdrasil.com     \ /                  Milpitas, California 95035
++1 408 309-6081         | g g d r a s i l   United States of America
+                         "Free Software For The Rest Of Us."
 
-	The modem I'm sending on is a generic 56k modem, but we're getting the
-issue on 300 baud modems, with the Courier set to only connect at 300. The
-connect message is simply 'CONNECT' so should be giving no error correction,
-compression, etc. it should be a standard V21 connection. There might be an
-issue with fast modems connecting at V21 I'm not aware of, but I'm at a
-loss. My client is also concerned with the issue (understandably) and are
-also in the 'it works on the existing system' mentality.
+--d6Gm4EdcadzBjdND
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename="serialP.diff"
 
-Any help/pointers/advice gratefully received
-Regards
-Neil Everton
+--- linux-2.5.30/include/linux/serialP.h	2002-08-01 14:16:07.000000000 -0700
++++ linux/include/linux/serialP.h	2002-08-02 14:51:03.000000000 -0700
+@@ -24,11 +24,7 @@
+ #include <linux/tqueue.h>
+ #include <linux/circ_buf.h>
+ #include <linux/wait.h>
+-#if (LINUX_VERSION_CODE < 0x020300)
+-/* Unfortunate, but Linux 2.2 needs async_icount defined here and
+- * it got moved in 2.3 */
+ #include <linux/serial.h>
+-#endif
+ 
+ struct serial_state {
+ 	int	magic;
 
+--d6Gm4EdcadzBjdND--
