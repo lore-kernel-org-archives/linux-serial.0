@@ -1,14 +1,37 @@
-From: Bahadir Karuv <bahkar@bcacademies.bergen.org>
-Subject: Newbie problem
-Date: Thu, 25 Apr 2002 11:58:39 -0400
+From: Ed Vance <EdV@macrolink.com>
+Subject: RE: Newbie problem
+Date: Thu, 25 Apr 2002 09:53:23 -0700
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <3CC827AE.F7650476@bcacademies.bergen.org>
+Message-ID: <11E89240C407D311958800A0C9ACF7D13A77C4@EXCHANGE>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="iso-8859-1"
 Return-path: <linux-serial-owner@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
+To: 'Bahadir Karuv' <bahkar@bcacademies.bergen.org>
+Cc: linux-serial@vger.kernel.org
+
+Hi,
+
+My guess is that the second computer has "echo" enabled so all characters
+received are echoed back to the other end. I see you turn echo off in the
+program. I am assuming that the program is only running on the first
+computer. 
+
+Regards,
+Ed
+
+---------------------------------------------------------------- 
+Ed Vance              edv@macrolink.com
+Macrolink, Inc.       1500 N. Kellogg Dr  Anaheim, CA  92807
+----------------------------------------------------------------
+
+-----Original Message-----
+From: Bahadir Karuv [mailto:bahkar@bcacademies.bergen.org]
+Sent: Thursday, April 25, 2002 8:59 AM
 To: linux-serial@vger.kernel.org
+Subject: Newbie problem
+
 
 Hello All,
 
@@ -91,3 +114,7 @@ int main(void)   /* Serial port */
 
 
 
+-
+To unsubscribe from this list: send the line "unsubscribe linux-serial" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
