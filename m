@@ -1,32 +1,29 @@
-From: "Angelo G. Devine" <ofeamegwk@chartertn.net>
-Subject: Finished
-Date: Thu, 30 Dec 2004 14:55:13 -0600
-Message-ID: <2300165175423-eZVEN0__34258.1042125404$1104445024$gmane$org@SKKXLUQK>
+From: "Bobbie" <fqojke@theplanet.com>
+Subject: Re: Then the slits of
+Date: Tue, 04 Jan 2005 23:37:45 -0600
+Message-ID: <000301c4f2e8$e3428b20$a5c32ba5__17703.7699650556$1104908254$gmane$org@QCWVCOUJJZH>
 Mime-Version: 1.0
-Content-Type: text/plain;lebanon-24-159-25-242.midtn.chartertn.net
+Content-Type: text/plain;
+	charset="koi8-r"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lebanon-24-159-25-242.midtn.chartertn.net ([24.159.25.242]:23556
-	"HELO lebanon-24-159-25-242.midtn.chartertn.net") by vger.kernel.org
-	with SMTP id S261732AbUL3WOS (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 30 Dec 2004 17:14:18 -0500
+Received: from 122.67-18-119.reverse.theplanet.com ([67.18.119.122]:16914 "HELO
+	122.67-18-119.reverse.theplanet.com") by vger.kernel.org with SMTP
+	id S262269AbVAEG4e (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 5 Jan 2005 01:56:34 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Buckner <linux-kernel@vger.kernel.org>
+To: Tod Linux-mm <slpowhpik@theplanet.com>
 
-Thu, 30 Dec 2004 14:56:51 -0600
+Good day:
 
-Hello,
+Mr. Lin just called from the bank and told me that they can
+decrease your   m o rtg age   payment by 2%. It will take no 
+p a perwork, so just go here and we will take care of the rest.
+http://www.lencors.com/
 
-my cheif has authorized me to send you update about your  m o rtga g e 
-a p p roval. Mr. Buckner called from our bank yesterday
-to update your situation. Our company will   a p prove   you for 
-3.25 % (c r e dit does not matter) but some of our information is 
-missing, so please fill this form to update:
-http://www.qeekcy.com/
+Thank you
 
-Thanks for your time.
-
-Angelo G. Devine
+Bobbie
+US Department
 
