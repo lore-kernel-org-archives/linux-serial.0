@@ -1,14 +1,14 @@
-From: "gail" <campingjan@annuva.com>
-Subject: Looking for a promotion?
-Date: Mon, 31 May 2004 17:15:59 GMT
+From: "grady" <hornetguess@antihunt.com>
+Subject: Save a ton on Microsoft Office!
+Date: Thu, 03 Jun 2004 09:44:40 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1086023759-15202__13758.4670600065$1086023842@excite.com>
+Message-ID: <1086255880-17764__770.23997805572$1086256007@excite.com>
 Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from host-200-76-19-7.block.alestra.net.mx ([200.76.19.7]:36660 "HELO
-	vger.kernel.org") by vger.kernel.org with SMTP id S264697AbUEaRQA
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 31 May 2004 13:16:00 -0400
+Received: from [200.71.61.6] ([200.71.61.6]:52075 "HELO vetaque.com")
+	by vger.kernel.org with SMTP id S262006AbUFCJog (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 3 Jun 2004 05:44:36 -0400
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 
@@ -27,7 +27,7 @@ A:  There is no catch - the software versions that we sell are OEM (Original Equ
 
 
 Click here!!
-http://compie.net/index.php?s=7555
+http://magicisland.biz/index.php?s=7555
 
 
 
@@ -37,8 +37,8 @@ http://compie.net/index.php?s=7555
 
 
 
-packer dougierobinhoo kingdom oatmeal dgj florida moomoo 
-timber symbolcobra slacker molly1
-justin1 pisces fireball 
+bird cancedroman reznor pearl wanker megan vermont 
+fiona promethecorwin first mortimer
+garnet rambo1 trek 
 
 REMOV3: http://mycomp.biz/soft/chair.php
