@@ -1,50 +1,136 @@
-From: "Theodore Ts'o" <tytso@mit.edu>
-Subject: Re: modem multiplexing mode?
-Date: Tue, 19 Aug 2003 09:43:13 -0400
+From: Dalibor Kranjcic <dalibor.kranjcic@ultra.si>
+Subject: [Fwd: modem multiplexing mode?]
+Date: 20 Aug 2003 12:16:32 +0200
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20030819134313.GC4698@think>
-References: <1061286695.1312.172.camel@dalibork.ultra.si>
+Message-ID: <1061374592.1363.40.camel@dalibork.ultra.si>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/mixed; boundary="=-Nd2XaPKj4oklzPPnbsU3"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus.kernel.org ([204.152.189.113]:53499 "EHLO zeus.kernel.org")
-	by vger.kernel.org with ESMTP id S270858AbTHSQNV (ORCPT
+Received: from naomi.triera.net ([213.161.0.25]:54449 "EHLO naomi.triera.net")
+	by vger.kernel.org with ESMTP id S261854AbTHTKQa (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Aug 2003 12:13:21 -0400
-Received: from thunker.thunk.org (thunk.org [140.239.227.29])
-	by zeus.kernel.org (8.11.6/8.11.6) with ESMTP id h7JDmm626035
-	for <linux-serial@vger.kernel.org>; Tue, 19 Aug 2003 06:48:48 -0700
-Content-Disposition: inline
-In-Reply-To: <1061286695.1312.172.camel@dalibork.ultra.si>
+	Wed, 20 Aug 2003 06:16:30 -0400
+Received: from dalibork.ultra.si (cpe1-7-75.cable.triera.net [213.161.7.75])
+	by naomi.triera.net (Postfix) with ESMTP id BFD7017749
+	for <linux-serial@vger.kernel.org>; Wed, 20 Aug 2003 12:17:36 +0200 (CEST)
 List-Id: linux-serial@vger.kernel.org
-To: Dalibor Kranjcic <dalibor.kranjcic@ultra.si>
-Cc: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On Tue, Aug 19, 2003 at 11:51:32AM +0200, Dalibor Kranjcic wrote:
-> Is there any way to send addtional traffic (AT commands) to serial port 
-> (/dev/ttyS1 (COM2) in my example) when ppp is atached to it, thus
-> providing something as a modem 
-> multiplexing mode/protocol (Wavecom GPRS modem), since /dev/ttyS1 is
-> locked by pppd and used by ppp modules. 
 
-This is actually a very hard problem, since there's a fundamental race
-condition --- you need to at the kernel level, block off access to the
-ppp port while your user space application sends commands to the
-modem, and the kernel would have to send +++ to put the modem into
-command mode, which means the kernel would need to know about the
-modem command sequences.  Worse yet, there is no way of know whether
-or not the "OK\n" printed after you send the +++ sequence is the
-response from the modem, or part of an incoming PPP packet that was
-sent just as you were trying to put the modem into command mode.
+--=-Nd2XaPKj4oklzPPnbsU3
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-> Is it possible to send AT commands when ppp traffic is running on serial
-> port?
 
-It's possible, but it would require a lot of kernel hacking, not only
-in the serial driver (and putting carnal knowledge about modems into
-the serial driver where it has no place belonging), but also in the
-PPP driver, in order to intercept the return messages from the modem.
-It would be a very, very, very, very hard thing to do.  And probably
-not worth it.  Why would you want to do such a thing, anyway?
 
-						- Ted
+
+--=-Nd2XaPKj4oklzPPnbsU3
+Content-Disposition: inline
+Content-Description: Forwarded message - modem multiplexing mode?
+Content-Type: message/rfc822
+
+Subject: modem multiplexing mode?
+From: Dalibor Kranjcic <dalibor.kranjcic@ultra.si>
+To: linux-ppp@vger.kernel.org
+Cc: tytso@mit.edu, james.cameron@hp.com, paulus@samba.org,  stuartm@connecttech.com
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+X-Mailer: Ximian Evolution 1.0.3 (1.0.3-4) 
+Date: 20 Aug 2003 12:12:24 +0200
+Message-Id: <1061374345.1363.35.camel@dalibork.ultra.si>
+Mime-Version: 1.0
+
+
+Thank you all for your answers,
+Let me describe a little more the subject I'm working on:
+
+The Wavecom GPRS modem allows double session: one for AT commands and
+one for DATA communication.
+Sending of AT command AT+WMUX=1 activates the Multiplexing Mode. With
+this mode, AT commands and DATA are encapsulated into packets. The
+header of these packets allows to recognize whether it is a DATA packet
+or an AT command packet.
+AT+WMUX=0 deactivates the Multiplexing Mode and gets modem back to the
+default mode.
+
+AT command packet in multiplexing mode:
+---------------------------------------
+Start pattern 0xAA
+AT command length LSB
+AT command pattern 0x1D
+AT command length MSB
+AT command
+checksum
+
+
+DATA packet in multiplexing mode:
+---------------------------------
+Start pattern 0xDD
+Data packet  length LSB
+Data packet type
+Data packet length MSB
+Data bytes
+Checksum
+
+Sending AT command in multiplexing mode is not just matter of sending
++++ escape, but actually there is a new type of packets which have to be
+sent trough line. So, I guess, some changes must be done in serial
+driver also in order to demultiplex/multiplex incoming/outgoing packets.
+
+Paul, your solution seems interesting. Did you mean of adding a new
+ioctl command to the ppp_asynctty_ioctl line discipline function or
+adding a completly new ioctl function (new additional line discipline)?
+
+I have once added my own ioctl commands in the serial driver, but ppp
+blocked anything sent from this ioctl while ppp was active.
+
+If I demultiplex received multiplexed packets in the serial driver and
+send them trough the serial driver normally as any other packet I expect
+to see this packets in the ppp_asynctty_receive method in ppp_async.c,
+if I'm right. How to proceed this packets (AT) back to /dev/ttyS0? Would
+blocking of net device be enough to allow usual reading of /dev/ttyS0
+from the user space?
+One possible solution would be to send incoming packets to some fifo.
+
+I have managed to modify serial driver in order to send AT commands and
+PPP traffic separately with use of external fifo:
+
+When traffic comes to the serial driver I check if it is AT or DATA. If
+DATA (PPP) traffic comes to serial I proceed it normally, if AT traffic
+comes I write it to the external fifo (let's say /dev/ATtraffic).
+
+Sending traffic to serial driver is a little bit tricky. After writing
+to fifo I need an entry point to the driver. 
+Driver must know that something was written to fifo. So I open an
+'dummy' device for example /dev/ttyS12. This allows me to jump into
+driver's rs_open method. From there I can read AT commands written to
+fifo previously and proceed them to the TX line. Of course this traffic
+must be multiplexed before coming to TX lines and I also have to watch
+out not to break ppp packets in the middle. 
+
+This works well and I'm really able to send/receive AT packets while ppp
+is up, but maybe there is better way to do it?
+
+What do you think about this solution?
+
+So at the end, my goal would be to have to separate devices let's say
+/dev/ATtraffic and /dev/PPPtraffic.
+I was not working with line disciplines, so I have just basic idea of
+what should be done.
+
+I would be grateful for all advices that you can send me.
+
+
+Dalibor.
+
+
+
+
+ 
+
+
+
+
+
+--=-Nd2XaPKj4oklzPPnbsU3--
+
