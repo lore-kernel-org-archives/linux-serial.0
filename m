@@ -1,77 +1,44 @@
-From: IPSI-2005 Conferences <pescara2005@vreme.yubc.net>
-Subject: Invitation to Italy, Holland, and Montenegro 2005; c/bb
-Date: Tue, 5 Apr 2005 15:24:48 +0200
-Message-ID: <200504051324.j35DOmwt010757@vreme.yubc.net>
+From: Adrian Bunk <bunk@stusta.de>
+Subject: [2.6 patch] drivers/serial/8250_acpi.c: fix a warning
+Date: Tue, 5 Apr 2005 16:04:57 +0200
+Message-ID: <20050405140457.GE6885@stusta.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from vreme.yubc.net ([212.124.160.13]:29322 "EHLO vreme.yubc.net")
-	by vger.kernel.org with ESMTP id S261738AbVDENYt (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Apr 2005 09:24:49 -0400
-Received: from vreme.yubc.net (localhost.localdomain [127.0.0.1])
-	by vreme.yubc.net (8.12.11/8.12.11) with ESMTP id j35DOnsP010759
-	for <linux-serial@vger.kernel.org>; Tue, 5 Apr 2005 15:24:49 +0200
-Received: (from root@localhost)
-	by vreme.yubc.net (8.12.11/8.12.11/Submit) id j35DOmwt010757
-	for linux-serial@vger.kernel.org; Tue, 5 Apr 2005 15:24:48 +0200
+Received: from mailout.stusta.mhn.de ([141.84.69.5]:56336 "HELO
+	mailout.stusta.mhn.de") by vger.kernel.org with SMTP
+	id S261741AbVDEOFA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 5 Apr 2005 10:05:00 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Bjorn Helgaas <bjorn.helgaas@hp.com>
+Cc: rmk+serial@arm.linux.org.uk, linux-serial@vger.kernel.org
 
-Dear potential Speaker:
+This patch fixes the following warning:
 
-On behalf of the organizing committee, I would like to extend a cordial invitation for you to attend one of the upcoming IPSI BgD multidisciplinary, interdisciplinary, and transdisciplinary conferences.
+<--  snip  -->
 
-The first one will take place in Loreto Aprutino, Italy:
+...
+  CC      drivers/serial/8250_acpi.o
+drivers/serial/8250_acpi.c: In function `acpi_serial_ext_irq':
+drivers/serial/8250_acpi.c:51: warning: implicit declaration of function 
+`acpi_register_gsi'
+...
 
-IPSI-2005 ITALY
-Hotel Castello Chiola (arrival: 27 July 05 / departure: 1 August 05)
-New deadlines: 10 April 05 (abstract) / 10 May 05 (full paper)
-
-The second one will take place in Amsterdam, Holland:
-
-IPSI-2005 HOLLAND
-Hotel Okura (arrival: 1 September 05 / departure: 4 September 05)
-deadlines: 15 April 05 (abstract) / 1 June 05 (full paper)
-
-The third one will take place in Sveti Stefan, Montenegro:
-
-IPSI-2005 MONTENEGRO
-Hotel Sveti Stefan (arrival: 1 October 05 / departure: 8 October 05)
-Deadlines: 1 May 05 (abstract) / 1 July 05 (full paper)
-
-All IPSI BgD conferences are non-profit. They bring together the elite of the world science; so far, we have had seven Nobel Laureates speaking at the opening ceremonies. The conferences always take place in some of the most attractive places of the world. All those who come to IPSI conferences once, always love to come back (because of the unique professional quality and the extremely creative atmosphere); lists of past participants are on the web, as well as details of future conferences.
-
-These conferences are in line with the newest recommendations of the US National Science Foundation and of the EU research sponsoring agencies, to stress multidisciplinary, interdisciplinary, and transdisciplinary research (M+I+T++ research). The speakers and activities at the conferences truly support this type of scientific interaction.
-
-One of the main topics of this conference is "E-education and E-business with Special Emphasis on Semantic Web and Web Datamining"
-
-Other topics of interest include, but are not limited to:
-
-* Internet
-* Computer Science and Engineering
-* Mobile Communications/Computing for Science and Business
-* Management and Business Administration
-* Education
-* e-Medicine
-* e-Oriented Bio Engineering/Science and Molecular Engineering/Science
-* Environmental Protection
-* e-Economy
-* e-Law
-* Technology Based Art and Art to Inspire Technology Developments
-* Internet Psychology
-
-If you would like more information on either conference, please reply to this e-mail message.
-
-If you plan to submit an abstract and paper, please let us know immediately for planning purposes. Note that you can submit your paper also to the IPSI Transactions journal.
-
-Sincerely Yours,
-
-Prof. V. Milutinovic, Chairman,
-IPSI BgD Conferences
+<--  snip  -->
 
 
-* * * CONTROLLING OUR E-MAILS TO YOU * * *
+Signed-off-by: Adrian Bunk <bunk@stusta.de>
 
-If you would like to continue to be informed about future IPSI BgD conferences, please reply to this e-mail message with a subject line of SUBSCRIBE.
+--- linux-2.6.12-rc2-mm1-full/drivers/serial/8250_acpi.c.old	2005-04-05 15:58:59.000000000 +0200
++++ linux-2.6.12-rc2-mm1-full/drivers/serial/8250_acpi.c	2005-04-05 16:01:47.000000000 +0200
+@@ -9,6 +9,7 @@
+  * (at your option) any later version.
+  */
+ 
++#include <linux/config.h>
+ #include <linux/acpi.h>
+ #include <linux/init.h>
+ #include <linux/module.h>
 
-If you would like to be removed from our mailing list, please reply to this e-mail message with a subject line of REMOVE.
