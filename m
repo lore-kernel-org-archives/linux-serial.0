@@ -1,79 +1,84 @@
-From: David Howells <dhowells@redhat.com>
-Subject: Early serial port problems
-Date: Wed, 02 Mar 2005 14:19:05 +0000
-Message-ID: <5895.1109773145@redhat.com>
-Received: from mx1.redhat.com ([66.187.233.31]:54716 "EHLO mx1.redhat.com")
-	by vger.kernel.org with ESMTP id S262300AbVCBOTZ (ORCPT
+From: Nishanth Aravamudan <nacc@us.ibm.com>
+Subject: [PATCH] serial/68328serial: replace schedule_timeout() with msleep_interruptible()
+Date: Thu, 3 Mar 2005 10:53:43 -0800
+Message-ID: <20050303185343.GL11600@us.ibm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Received: from e2.ny.us.ibm.com ([32.97.182.142]:53433 "EHLO e2.ny.us.ibm.com")
+	by vger.kernel.org with ESMTP id S261408AbVCCSxr (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 2 Mar 2005 09:19:25 -0500
+	Thu, 3 Mar 2005 13:53:47 -0500
+Received: from d01relay02.pok.ibm.com (d01relay02.pok.ibm.com [9.56.227.234])
+	by e2.ny.us.ibm.com (8.12.11/8.12.11) with ESMTP id j23Irj5p002541
+	for <linux-serial@vger.kernel.org>; Thu, 3 Mar 2005 13:53:45 -0500
+Received: from d01av02.pok.ibm.com (d01av02.pok.ibm.com [9.56.224.216])
+	by d01relay02.pok.ibm.com (8.12.10/NCO/VER6.6) with ESMTP id j23IrjjD069654
+	for <linux-serial@vger.kernel.org>; Thu, 3 Mar 2005 13:53:45 -0500
+Received: from d01av02.pok.ibm.com (loopback [127.0.0.1])
+	by d01av02.pok.ibm.com (8.12.11/8.12.11) with ESMTP id j23IriQJ019973
+	for <linux-serial@vger.kernel.org>; Thu, 3 Mar 2005 13:53:45 -0500
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: rmk+serial@arm.linux.org.uk
-Cc: linux-serial@vger.kernel.org
+Cc: Kernel-Janitors <kernel-janitors@lists.osdl.org>, linux-serial@vger.kernel.org
+
+Hi,
+
+Russell, sorry if you are not responsible for this driver, but I figure
+the more eyes the better.
+
+Thanks,
+Nish
 
 
-Hi Russell,
+Please consider applying.
 
-I've got a couple of problems with registering serial ports with
-early_serial_setup() on my FRV board with 2.6.11:
+Description: Use msleep_interruptible() instead of schedule_timeout() in
+send_break() to guarantee the task delays as expected. Change
+@duration's units to milliseconds, and modify arguments in callers
+appropriately.
 
- (1) If I have no gdbstub compiled in, I try to register both serial ports
-     early, but only ttyS0 works. The kernel knows both serial ports are there;
-     both are mentioned in the boot console logs, both can be seen in
-     /proc/tty/driver/serial, and both can be opened. However, all operations
-     on ttyS0 give EIO.
+Signed-off-by: Nishanth Aravamudan <nacc@us.ibm.com>
 
-     If either port is registered by itself then it works. I've changed the
-     definitions in arch/frv/kernel/setup.c from what's in the standard kernel
-     to include line IDs:
 
-	static struct uart_port __initdata __frv_uart0 = {
-		.uartclk		= 0,
-		.membase		= (char *) UART0_BASE,
-		.irq			= IRQ_CPU_UART0,
-		.regshift		= 3,
-		.iotype			= UPIO_MEM,
-		.flags			= UPF_BOOT_AUTOCONF | UPF_SKIP_TEST,
- -->		.line			= 0,
-	};
-
-	static struct uart_port __initdata __frv_uart1 = {
-		.uartclk		= 0,
-		.membase		= (char *) UART1_BASE,
-		.irq			= IRQ_CPU_UART1,
-		.regshift		= 3,
-		.iotype			= UPIO_MEM,
-		.flags			= UPF_BOOT_AUTOCONF | UPF_SKIP_TEST,
- -->		.line			= 1,
-	};
-
-     Note that .uartclk is set by the code rather than being compiled in.
-
- (2) The boot console log lines for the serial ports and the proc tty listing
-     show an address of 0 because __frv_uart0.mapbase and __frv_uart1.mapbase
-     aren't set:
-
-	Serial: 8250/16550 driver $Revision: 1.90 $ 4 ports, IRQ sharing enabled
-	ttyS0 at MMIO 0x0 (irq = 1) is a 16550A
-	ttyS1 at MMIO 0x0 (irq = 2) is a 16550A
-	io scheduler noop registered
-
-     If I set .mapbase as well as .membase before calling early_serial_setup(),
-     then I see the kernel console output appear, but userspace can't access
-     the serial ports, and the serial driver doesn't record the existence of
-     the ports in the console log:
-
-	Serial: 8250/16550 driver $Revision: 1.90 $ 4 ports, IRQ sharing enabled
-	io scheduler noop registered
-
-     Adding in UPF_IOREMAP makes no difference.
-
-     Unsetting .membase and just leaving .mapbase set and UPF_IOREMAP set means
-     that you don't even get kernel console output, though the kernel still
-     boots.
-
-I wonder if (1) is related to (2).
-
-Is there anything you can suggest?
-
-David
+--- 2.6.11-kj-v/drivers/serial/68328serial.c	2005-03-01 23:38:32.000000000 -0800
++++ 2.6.11-kj/drivers/serial/68328serial.c	2005-03-03 10:51:12.000000000 -0800
+@@ -992,18 +992,17 @@ static int get_lsr_info(struct m68k_seri
+ /*
+  * This routine sends a break character out the serial port.
+  */
+-static void send_break(	struct m68k_serial * info, int duration)
++static void send_break(struct m68k_serial * info, unsigned int duration)
+ {
+ 	m68328_uart *uart = &uart_addr[info->line];
+         unsigned long flags;
+         if (!info->port)
+                 return;
+-        set_current_state(TASK_INTERRUPTIBLE);
+         save_flags(flags);
+         cli();
+ #ifdef USE_INTS	
+ 	uart->utx.w |= UTX_SEND_BREAK;
+-        schedule_timeout(duration);
++	msleep_interruptible(duration);
+ 	uart->utx.w &= ~UTX_SEND_BREAK;
+ #endif		
+         restore_flags(flags);
+@@ -1033,14 +1032,14 @@ static int rs_ioctl(struct tty_struct *t
+ 				return retval;
+ 			tty_wait_until_sent(tty, 0);
+ 			if (!arg)
+-				send_break(info, HZ/4);	/* 1/4 second */
++				send_break(info, 250);	/* 1/4 second */
+ 			return 0;
+ 		case TCSBRKP:	/* support for POSIX tcsendbreak() */
+ 			retval = tty_check_change(tty);
+ 			if (retval)
+ 				return retval;
+ 			tty_wait_until_sent(tty, 0);
+-			send_break(info, arg ? arg*(HZ/10) : HZ/4);
++			send_break(info, arg ? arg*(100) : 250);
+ 			return 0;
+ 		case TIOCGSOFTCAR:
+ 			error = put_user(C_CLOCAL(tty) ? 1 : 0,
