@@ -1,57 +1,33 @@
-From: "kory" <nikitagod@bekloppt.com>
-Subject: Save a bundle on Windows XP!
-Date: Thu, 20 May 2004 22:12:45 GMT
+From: "gail" <campingjan@annuva.com>
+Subject: Looking for a promotion?
+Date: Mon, 31 May 2004 17:15:59 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1085091165-14993__16882.206235505$1085047938@excite.com>
+Message-ID: <1086023759-15202__13758.4670600065$1086023842@excite.com>
 Content-Type: text/plain;
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [211.108.90.8] ([211.108.90.8]:4016 "HELO vermontel.net")
-	by vger.kernel.org with SMTP id S265076AbUETKLN (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 20 May 2004 06:11:13 -0400
+Received: from host-200-76-19-7.block.alestra.net.mx ([200.76.19.7]:36660 "HELO
+	vger.kernel.org") by vger.kernel.org with SMTP id S264697AbUEaRQA
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 31 May 2004 13:16:00 -0400
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 
-Incredible DEALS on SOFTWARE you NEED!
+Need software but not the price that comes with it?
+We sell OEM software at major discounts.
+Don't pay the department store markups, buy on the internet.
 
-Save 40% on Windows XP Professional!
-Save 40% on Microsoft Office 2003 Professional!
-Save $90 on Adobe Photoshop!
-Save 60% on Norton AntiVirus!!
+Free Delivery and Extra Discounts on orders over $200!
 
-Save your company thousands of dollars when it needs software!
+Save yourself or your company thousands of dollars, reap the rewards!
 
-That promotion just got closer...
+Q:  How can you sell this software as OEM ? It seems too good to be true - is there a catch?
 
-Click here!!
-http://teddychoice.biz/index.php?s=7555
-
-
-Software packages you can save big on:
-
-Windows XP Professional
-Norton Antivirus 2004
-Adobe Photoshop 7.0
-Microsoft Office XP Professional
-Microsoft Office 2003 Professional
-Microsoft Money 2004
-Microsoft 2000 Professional
-Adobe Photoshop CS
-Adobe Pagemaker 7.0
-Adobe Illustrator 10
-Corel Draw Graphics Suite 11
-Adobe Acrobat 6.0 Professional
-Borland Delphi 7 Professional
-Visual Studio.Net Enterprise Architecht
-MS SQL Server 2000 Enterprise
-MS Windows Server 2003 Enterprise
-MS Windows 2000 Server
-Red Hat Linux 7.3
+A:  There is no catch - the software versions that we sell are OEM (Original Equipment Manufacturer) which means you will receive the installation CDs only (they do not come in their original retail packing and do not include the manual). We do guarantee that all programs are the 100% full working retail versions - no demos or academic versions! When you order, you will receive all materials required for a complete installation - or your money back! Why pay hundreds of dollars more when you can get exactly the same but OEM-CD? You don't have to pay that much for the fancy box and manuals. 
 
 
 
 Click here!!
-http://teddychoice.biz/index.php?s=7555
+http://compie.net/index.php?s=7555
 
 
 
@@ -61,8 +37,8 @@ http://teddychoice.biz/index.php?s=7555
 
 
 
-image tacobellzhongguo eugene yoda malcolm goat excalibu 
-khan alisonuser1 gray aylmer
-aylmer kenneth monopoly 
+packer dougierobinhoo kingdom oatmeal dgj florida moomoo 
+timber symbolcobra slacker molly1
+justin1 pisces fireball 
 
-REMOV3: http://teddychoice.biz/soft/chair.php
+REMOV3: http://mycomp.biz/soft/chair.php
