@@ -1,74 +1,52 @@
-From: "Admin" <SchoolStaffPersonnelStudents@selu.com.ar>
-Subject: Attention All School Staff, Personnel, and Students:
-Date: Tue, 16 Dec 03 01:42:54 GMT
+From: Michael Westermann <mw@microdata-pos.de>
+Subject: Re: Connect with various serial devices
+Date: Tue, 16 Dec 2003 08:23:30 +0100
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <c$51oo5-16b5-a9-wv--$a-88-$y3@uh35cb>
+Message-ID: <20031216082330.Q12637@microdata-pos.de>
+References: <33348.192.168.192.123.1071088389.squirrel@www.clientes.sedifa.com> <20031210.203940.8.0.whitnl73@juno.com> <33369.192.168.192.123.1071130475.squirrel@www.clientes.sedifa.com> <20031211103352.G12637@microdata-pos.de> <32780.192.168.192.123.1071144774.squirrel@www.clientes.sedifa.com> <20031211132914.I12637@microdata-pos.de> <32779.192.168.192.123.1071148124.squirrel@www.clientes.sedifa.com> <20031211142704.J12637@microdata-pos.de> <32783.192.168.192.123.1071514853.squirrel@www.clientes.sedifa.com>
 Mime-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="..4913AC_7EC_9C428DDB45"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from host213-123-202-120.in-addr.btopenworld.com ([213.123.202.120]:4369
-	"HELO host213-123-202-120.in-addr.btopenworld.com") by vger.kernel.org
-	with SMTP id S264294AbTLPAqs (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 15 Dec 2003 19:46:48 -0500
+Received: from port-212-202-104-142.reverse.qsc.de ([212.202.104.142]:57613
+	"EHLO imail.microdata-pos.de") by vger.kernel.org with ESMTP
+	id S264345AbTLPHXb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 16 Dec 2003 02:23:31 -0500
+Content-Disposition: inline
+In-Reply-To: <32783.192.168.192.123.1071514853.squirrel@www.clientes.sedifa.com>; from informatic@sedifa.com on Mon, Dec 15, 2003 at 08:00:53PM +0100
 List-Id: linux-serial@vger.kernel.org
-To: 40hunley.homeip.net@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-This is a multi-part message in MIME format.
+Hello,
+On Mon, Dec 15, 2003 at 08:00:53PM +0100, Albert Cervera Areny wrote:
+> Well, finally thanks to your suggestions we were able to make the most
+> important device work. Thanks!
+> 
+> However, we're now trying to make work an Omron V2XF card reader/writer
+> but we're stuck again. Maybe somebody in the list has been able to make
+> work one of these. Does somebody have any piece of work (or help) we can
+> try with it?
+> 
+> The device is supposed to autodetect connection speed, but it doesn't
+> return a sigle byte :(
+> 
+> Well, thanks in advance again! ;)
+Can i get the doku ?
 
---..4913AC_7EC_9C428DDB45
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+I've get a short descrition from the omron home-page. The cardreader
+has cts but not rts. Please test without CRTSCTS and set RTS  manually
+with ioctrl.  
 
-Attention All School Staff, Personnel, and Students:
+void set_rts(fd, int para) {
+    unsigned int c = TIOCM_RTS; 
+    if (fd >= 0)
+        ioctl(fd, (para) ? TIOCMBIS : TIOCMBIC, &c); 
+}
 
-You Must Respond By 5 P.M. Wednesday, December 17, 2003 
+Assemble you a cash dispenser, or a pount of sale ? 
 
-Avtech Direct is offering a limited allotment of BRAND NEW,
-top of-the-line, name-brand Desktop computers at 50% off MSRP
-to all Teachers, Students, Faculty and Staff.
+Happy Testing,
 
-All Desktops are brand-new packed in their original boxes and come
-with a full manufacturer's warranty plus a 100% satisfaction guarantee.
-
-These professional grade Desktops are fully equipped with 2004
-next generation technology, making these the very best performing
-computers that money can buy.
-
-Avtech Direct is offering these feature rich, top performing
-Desktops with the latest technology at an amazing price
-to all Teachers, Students, Faculty and Staff who call:
-
-1-800-884-9510 by 5 P.M. Wednesday, December 17, 2003 
-
-The fast and powerful AT-2400S Series- Desktop features:
-
-    * 2.0 Ghz Intel Processor for amazing speed and performance
-    * 128 MB DDR RAM, Upgradeable to 1024 MB
-    * 20 GB Hard Drive upgradeable to 60 GB
-    * CD-Rom Drive upgradeable to  DVD/CDRW 
-    * Premium Sound and Video
-    * Total Connectivity fax modem/USB 2.0 Ports
-    * Soft Touch Keyboard
-    * Internet Ready
-    * 1 Year warranty with Priority customer service and tech support
-
-MSRP $699 ...........................................Your Cost $347
+Michael
 
 
-
-How to qualify:
-
-    1. You must be a Teacher or Student or School Staff Member.
-    2. All Desktop computers will be available on a
-       first come first served basis.
-    3. You must call 1-800-884-9510 by 5 P.M. Wednesday, December 17, 2003=
-
-       and we will hold the Desktops you request on will call. 
-    4. You are not obligated in any way.
-    5. All computers are 100% Satisfaction Guaranteed.
-
-Call  Avtech Direct 1-800-884-9510 by 5 P.M. Wednesday, December 17, 2003
---..4913AC_7EC_9C428DDB45--
 
