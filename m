@@ -1,93 +1,70 @@
 From: Ed Vance <EdV@macrolink.com>
 Subject: RE: port speeds >115k
-Date: Mon, 24 Feb 2003 11:01:11 -0800
+Date: Mon, 24 Feb 2003 12:28:40 -0800
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <11E89240C407D311958800A0C9ACF7D1A33DAE@EXCHANGE>
+Message-ID: <11E89240C407D311958800A0C9ACF7D1A33DB0@EXCHANGE>
 Mime-Version: 1.0
 Content-Type: text/plain;
 	charset="iso-8859-1"
 Return-path: <linux-serial-owner@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: 'Tim' <delt@gate-way.net>
-Cc: linux-serial@vger.kernel.org
+To: 'Steven Bradley' <steven@sgb.dyndns.org>
+Cc: 'linux-serial' <linux-serial@vger.kernel.org>
 
-On Mon, Feb 24, 2003 at 9:58 AM, Tim wrote:
+On Mon, Feb 24, 2003 at 11:20 AM, Steven Bradley wrote:
+> Sorry to intrude, but ...
 > 
-> stty -F /dev/ttyS3 230400
-> stty: /dev/ttyS3: unable to perform all requested operations
+> I suspect the interest in 230K is due to the 25 Mhz Courer USRobotics
+> modems or similar species of modem.  Well, I would like to ask what is
+> wrong with 115.2Kbps?
 > 
-> > > If the doco says it can run faster than 115200, it should 
-> > > also tell what you have to do to make it do so.
-> > 
-> > Yes.  It will likely say (or imply) to use a driver 
-> > they supply for Windows only.                                 
-> > ^^^^^^^^^^^
+> Let me be more specific with an example:
 > 
-> Ha! ~"All our 56k modems are capable of supporting 230k ... go find
-> a driver from someone else", actually.  Or try to ID the chipset &
-> find the datasheet.
-> 
-> > > > If my modem was detected as a modem by Linux,
-> > > > would setserial -a show something more?
-> > > 
-> > > It was detected as a serial port.  Linux does not detect modems at
-> > > startup.
-> 
-> I guess all that modem stuff in serial.c is just for PnP 
-> addr/irq init.
-> 
-> > > There seems to be a "quickie test to see how big the FIFO is".
-> > > How can I cause the results of that test to be logged?
-> > Is this test done by some Linux utility?
-> 
-> grep quickie drivers/char/serial.c
-> 
-> > > Internal modems usually just have a simulated uart for software
-> > > compatibility and baud rate is irrelevant (same for 
-> parity, stop bits,
-> > > FIFO, etc). Set to 5 baud and see if you get same performance.
-> 
-> Well I noticed stty <anyspeed> makes no dif in an xterm, or the 
-> getty on a vc, but with 
-> http://members.gate-way.net/delt/test/500k.html
-> my hardware ISA modem behaves like:
-> 
-> CARRIER	PORT	AVG.RATE
-> =======	====	========
-> 46k	115k	10.5kB/s
-> 26k	115k	10.5kB/s
-> 14k	115k	10.5kB/s
-> 46k	 57k	 5.3kB/s
-> 
-> For viewing large html text tables with a fast browser like Dillo,
-> 230k could ~double the speed of the whole process.
-> 
-> > I set to 300 baud and couldn't connect.  Then at 1200 baud 
-> > it connected but download speeds were around 60 bytes/sec. 
-> > I estimated the received rate from the /proc dir and it was 
-> > close to 1200 baud.  So mine must have a real UART.
-> > 
-> > Some modems brag that they can do 230.4k baud.  This is a 
-> > serial port speed.  So it seems like a real UART.  So what 
-> > percent of internal modems will operate at a high baud rate 
-> > when one specifies low baud rate?
-> 
-> [snip]
+> Assuming you have a 53Kbps connection, fastest available under 
+> FCC current regulations limited power output, you would need a 
+> throughput of 212Kbps if your data will compress 4:1 ratio 
+> between computer and modem.  
 
-Hi Tim,
+I think 56kb is limited by the possibility of routing on a T-system
+link that uses robbed-bit signaling. Anybody know for sure?
 
-For a real 16550A UART, you cannot exceed the "baud_base" frequency, 
-by calculating a new divisor, because the divisor would have to be 
-less than one - and the 16550A can't do that. (16950 can) If the 
-modem really supports a 230kb/sec UART rate, then there must either 
-be a way to tell the card to either generate a higher speed base 
-clock or change the UART's prescaler value. A real 16550A UART has 
-a fixed prescaler that always divides the base clock by 16.
+> In the earlier days before PPP and TCP/IP, data would 
+> compress this much
+> if it were certain combinations of ASCII or repetitive sequences of
+> characters, such as binary empty sectors, for example.  
+> 
+> However, in practice, using TCP/IP over PPP, you rarely see this level
+> of compression and 2:1 is more likely closer to what you will see.  If
+> you are using 2:1, you would only need 106Kbps to achieve full
+> efficiency because the mix of characters between modem and computer do
+> not usually compress to 4:1 when using a PPP connection due to headers
+> and control data which does not compress.
+> 
+> Even if you did have data which would benefit from the higher speed,
+> the hardware flow control (CTS/RTS) would throttle it down for the
+> RARE instances where this case may exist.  In most it would not.
+> 
+> Now that was assuming a full 53K connection, in practice, 44-50K are
+> more common, assuming you have a 45K connection, it would only be
+> 90Kbps throughput needed between computer and modem for a 2:1
+> compressable data stream.
+> 
+> I thought this information may be of some interest, Steven
 
-If you find a way to get a higher speed base clock, then use 
-setserial to set the new baud_base value (must be 230kb or higher) 
-and the warp flag that tells the serial driver to actually calculate 
-a divisor for 230kb (spd_shi) when the user sets 38.4Kb (highest 
-standard speed encoded in ye olde 4-bit termio baud rate field).
+yep. Glad to hear from you. If 230kb has little throughput benefit 
+over 115kb, I would use 115kb to minimize the number of data overruns.
+I would be interested in hearing from anybody that has experience of
+running at both digital side speeds with these modems under the
+2.4 kernel. 
 
+Cheers,
 Ed
+
+>  [ snip ]
+> 
+> -- 
+> Steven Bradley / KG4UZR   121 Cambridge Drive, Longwood, FL  
+> 32779-5707  USA
+> steven@sgb.dyndns.org                 Home: (407) 862-7226 or 
+> (407) 869-4598
+> 
