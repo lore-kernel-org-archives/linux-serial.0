@@ -1,58 +1,72 @@
-From: "Stuart MacDonald" <stuartm@connecttech.com>
+From: David Lawyer <dave@lafn.org>
 Subject: Re: problems with serial driver
-Date: Tue, 3 Sep 2002 14:21:43 -0400
+Date: Tue, 3 Sep 2002 12:17:35 -0700
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <049601c25376$c174d160$294b82ce@connecttech.com>
-References: <Pine.LNX.4.44.0209031920570.25130-100000@scil.sinp.msu.ru>
+Message-ID: <20020903121734.B337@lafn.org>
+References: <Pine.LNX.4.44.0209031820330.24809-100000@scil.sinp.msu.ru> <017b01c2535e$c3befc60$294b82ce@connecttech.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from davespc (mail@66-81-21-7-modem.o1.com [66.81.21.7])
+	by zoon.lafn.org (8.11.3/8.11.3) with ESMTP id g83JGr185436
+	for <linux-serial@vger.kernel.org>; Tue, 3 Sep 2002 12:16:54 -0700 (PDT)
+	(envelope-from dave@lafn.org)
+Received: from dave by davespc with local (Exim 3.35 #1 (Debian))
+	id 17mJB9-00007D-00
+	for <linux-serial@vger.kernel.org>; Tue, 03 Sep 2002 12:17:35 -0700
+Content-Disposition: inline
+In-Reply-To: <017b01c2535e$c3befc60$294b82ce@connecttech.com>
 List-Id: linux-serial@vger.kernel.org
-To: slack@slackware.ru
-Cc: alan@redhat.com, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-From: <slack@slackware.ru>
-> Everything is clear, not a problem. The problem is with overruns.
-> I have no idea on how to debug such events. And I cannot detect, what is
-> OK and what is not OK (maybe, problems with interrupt, or, port cannot
-> detect the start bit etc.), When I put some code between the read()s, it
-> brings delays, everything works, more, can sync without any problem with
-> start bit (mystic, I see, but... cannot debug). Also, cannot catch the
-> overrun.
+On Tue, Sep 03, 2002 at 11:29:59AM -0400, Stuart MacDonald wrote:
+> From: <slack@slackware.ru>
+> > It is clear. Not so clear, why it produces garbage when read from port, as
+> > if it cannot sync with line.
+> 
+> It can't sync with the line. Serial transmission doesn't include a
+> specific syncing marker.
+> 
+> Yes, I know about the start bit. However, when a uart starts looking
+> at a line that already has data on it, how does it know which one is
+> the start bit? It takes the first thing that looks like a start bit,
+> which could be a bit in the middle of a character, and thus get
+> mis-synced. This is the way serial transmission works.
+> 
+> If you try replugging the cable while the sender and receiver are
+> running, you will notice that occasionally you'll get lucky and get a
+> correct sync, but often you'll get a mis-sync and receive garbage.
+> 
+> > for()
+> > usleep();
+> > read();
+> > }
+> > read OK.
+> >
+> > for() {
+> > // usleep()
+> > read();
+> > }
+> > Garbage.
+> 
+> This shouldn't make a difference, but I suspect that the usleep() is
+> luckily making the timing work out so that you get a correct sync
+> instead of a mis-sync.
 
-I don't understand you.
+Could it be that usleep() somehow triggers a flow control stop?  Then
+when transmission resumes, it will start on a byte boundary and all will
+be in sync.  One way for flow control to happen is for the serial buffer
+in main memory to fill since it's not being read.  But then there would
+still be a lot of garbage bytes stored in the buffer, followed by valid
+bytes when the flow resumes.  So could these garbage bytes be flushed or
+could usleep() somehow immediately cause a flow control stop without the
+buffer filling?
 
-When the receiver port isn't open, but is receiving data, the uart has
-the rx circuits turned off. There will be no overruns, because the
-hardware is ignoring the input line. When the port is open, but reads
-aren't happening fast enough, the driver discards the extra data
-silently. Overruns usually indicate a hardware problem.
+I notice that the man page says usleep() is obsolete.
 
-> it is not a problem, if only few. but I've got a stable garbage (frequency
-> is higher, than of normal data - the fact put me in a strange state;
-> statistics must say 50/50, but real life 90/10...) or stable normal data.
+			David Lawyer
 
-If you attach to an existing serial data stream, you should get a
-mis-sync most of the time. Assuming 8N1 you have a start bit, 8 bits
-of character and a stop bit. 10 bits total. Only one is correct, the
-start bit, so your random sync attempt should work 1 in 10 times. It
-will actually work a little higher, as some of the character bits
-don't look like the stop bit and get skipped over, but 90/10 isn't an
-unreasonable result.
-
-> and, also, overruns. is it normal, when we like to read data from the port
-> with frequency, that is higher, than bus freq.? I think, no. is it
-> possible to eliminate such problems? it is hard to control such behaviour
-> of the system, it becomes unstable. ordinary user can put such calculator
-> in off state. :)
-
-The bus frequency (PCI bus, ISA bus etc) should be mostly irrelevant.
-You'd only care if you had a serial port expansion card that was
-clocked at a very high base baud rate, and it was an ISA card.
-
-..Stu
-
---
-We make multiport serial boards.
-<http://www.connecttech.com>
-(800) 426-8979
-
-
+> 
+> However, if you've started the sender first, in the time it takes you
+> to start the receiver, the uart is dropping data. Even when you don't
+> get garbage you should notice that you're missing the first few bytes.
