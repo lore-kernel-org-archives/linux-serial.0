@@ -1,61 +1,69 @@
-From: Amit Kucheria <akucheria@metricsystems.com>
-Subject: persistent slip connections
-Date: Fri, 26 Sep 2003 16:13:30 -0700
+From: "Larry Compton" <0g80101ml@hotmail.com>
+Subject: Best Discount Online Drugs- vicodin  vffglneqdkyd vg eh
+Date: Mon, 29 Sep 03 19:00:21 GMT
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <1064618009.1332.14.camel@amit.metricsystems.com>
+Message-ID: <5$$-7h-xp$$-s3713$l83u__31336.887056432$1064793394@yws65i.w4>
+Reply-To: "Larry Compton" <0g80101ml@hotmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; boundary="=-PFBvdBNa6NBgJchgFxzd";
- protocol="application/pgp-signature"; micalg=pgp-sha1
+Content-Type: multipart/alternative;
+	boundary=".D1FE_98CED1164"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mta6.algx.net ([67.92.168.235]:23853 "EHLO chimta05.algx.net")
-	by vger.kernel.org with ESMTP id S261712AbTIZXMv (ORCPT
+Received: from host81-132-229-96.in-addr.btopenworld.com ([81.132.229.96]:16143
+	"HELO host81-132-229-96.in-addr.btopenworld.com") by vger.kernel.org
+	with SMTP id S261518AbTI1XzX (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 26 Sep 2003 19:12:51 -0400
-Received: from wireless-4
- (ip67-89-211-170.z211-89-67.customer.algx.net [67.89.211.170])
- by chimmx05.algx.net
- (iPlanet Messaging Server 5.2 HotFix 1.16 (built May 14 2003))
- with ESMTP id <0HLU00DXOGHEMJ@chimmx05.algx.net> for
- linux-serial@vger.kernel.org; Fri, 26 Sep 2003 18:12:50 -0500 (CDT)
+	Sun, 28 Sep 2003 19:55:23 -0400
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial <linux-serial@vger.kernel.org>
+To: linux-kernel-owner@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-msdos@vger.kernel.org, linux-net@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org
 
 
---=-PFBvdBNa6NBgJchgFxzd
-Content-Type: text/plain
+--.D1FE_98CED1164
+Content-Type: text/plain;
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Unbelievable Drugs, Unbelievable Prices...
+  *NO PRESCRIPTION NEEDED
+  *OVERNIGHT SHIPPING
+  *VICODIN, HYDROCODENE, SOMA, LEVITRA and more
 
-I currently use 'slattach' (actually a modified version) to setup a SLIP
-connection between two machines. But when I unplug the cable and replug
-it back in, I have to reconfigure the connection at both end.
+http://www.pharmacyzone.biz/pharm
 
-Could this be handled in the slattach program, so that it does not
-'hangup' due to loss of DCD or DSR?
 
-TIA.
 
-Regards,
-Amit
 
---=20
-     .| Amit Kucheria                       |.
-   ...| Wireless Systems Engineer           |...
- .....| Metric Systems Corp., San Diego, CA |.....
-......| www.metricsystems.com               |......
 
---=-PFBvdBNa6NBgJchgFxzd
-Content-Type: application/pgp-signature; name=signature.asc
-Content-Description: This is a digitally signed message part
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.2.1 (GNU/Linux)
 
-iD8DBQA/dMgZtLg6PvU36DYRAjNgAKCmjit41XJ3euinFW0wAikDOF2dNwCaAhhM
-LWPMO1ChkXbfjccKm7fpHdY=
-=Os1L
------END PGP SIGNATURE-----
 
---=-PFBvdBNa6NBgJchgFxzd--
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+take off list
+http://www.pharmacyzone.biz/a.html
+
+
+
+h
+  gjy  fnmn cs ysqldzaalyjkdefq jarvmn
+ mptjsmy
+kqtnlpsxdvjoyml iip
+ydhihg tithr
+zcza s k ao ss
+ 
+
+--.D1FE_98CED1164--
 
