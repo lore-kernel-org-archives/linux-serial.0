@@ -1,100 +1,69 @@
-From: george anzinger <george@mvista.com>
-Subject: Re: linux-source debugging with kgdb-patch
-Date: Thu, 17 Apr 2003 17:26:52 -0700
-Sender: linux-doc-owner@vger.kernel.org
-Message-ID: <3E9F464C.4050004@mvista.com>
-References: <3E9EC548.117005DD@adaptec.com>
+From: David Lawyer <dave@lafn.org>
+Subject: Re: Saving data from the serial port
+Date: Thu, 17 Apr 2003 17:06:27 -0700
+Sender: linux-serial-owner@vger.kernel.org
+Message-ID: <20030418000627.GB442@lafn.org>
+References: <11E89240C407D311958800A0C9ACF7D1A33E47@EXCHANGE>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <3E9EC548.117005DD@adaptec.com>
-To: "Mathur, Shobhit" <Shobhit_mathur@adaptec.com>
-Cc: linux-c-programming@vger.kernel.org, linux-serial@vger.kernel.org, linux-newbie@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from zoon.lafn.org ([206.117.18.9]:51727 "EHLO zoon.lafn.org")
+	by vger.kernel.org with ESMTP id S262689AbTDRAUj (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 17 Apr 2003 20:20:39 -0400
+Content-Disposition: inline
+In-Reply-To: <11E89240C407D311958800A0C9ACF7D1A33E47@EXCHANGE>
 List-Id: linux-serial@vger.kernel.org
+To: Ed Vance <EdV@macrolink.com>
+Cc: "'alexm@ndtel.com'" <alexm@ndtel.com>, linux-serial@vger.kernel.org
 
-Mathur, Shobhit wrote:
+On Thu, Apr 17, 2003 at 12:10:39PM -0700, Ed Vance wrote:
+> On Thu, Apr 17, 2003 at 11:44 AM, Alex Moen wrote:
+> > 
+> > I want to take the data from a serial port from our PBX and 
+> > log it to a file.  Sounds simple, right?  I can (Winblows) 
+> > hyperterm to the port and gather the data.  I can connect 
+> > the port to a serial printer and get the data.  But, when I 
+> > connect my linux box to the serial port, I am only getting 
+> > PART of the data.  For instance, I am only getting the 
+> > first 14-16 characters of each line, with really no line 
+> > breaks.  I also notice with statserial that I am getting an 
+> > overrun (wth is that???).  I have the port settings in the 
+> > software set at what Windows and the printer are set at
+> > (9600-8-N-1).
+> > 
+> > I have read through the serial howto, tried a few programs 
+> > that are suggested (two that look promising but are giving 
+> > the above results are linbar and logserial), and am stumped.
+> > 
+> > I'd hate to have to set up a Win98 box running hyperterm 
+> > logging to a file, and then manually rotate that each day....
+> > 
+> Overruns happen when the UART receiver FIFO buffer is completely
+> full when the next date character is received. The byte that did
+> not fit is discarded and the overrun status is posted. 
 > 
-> 
-> Hello,
-> 
-> BACKGROUND:
-> 
-> I was keen to see kgdb running  for  purely academic reasons. Thus,
-> I made a setup of 2 machines for source-level debugging of the
-> linux-kernel. The procedure mentioned on the web-site
-> [ kgdb.sourceforge.net] has  been adhered to.  I was able to
-> successfully configure the setup. Also, I decided to use "ddd" front-end
-> on gdb [local m/c]  for debugging  the kgdb-patched kernel on the remote
-> machine, which is the usual setup for such debugging-efforts.
->     The m/c to be debugged stops with the message "Waiting for
-> connection from remote gdb..." until the "target remote" command is run
-> from the "gdb" prompt of "ddd", upon which the m/c to be debugged
-> continues it's bootup till it shows the command-prompt.
-> 
-> PROBLEM:
-> 
-> I was interested in setting a break-point in start_kernel thru' "ddd"
-> such that the boot-up  of the m/c to be debugged could be analysed
-> step-by-step remotely. Though, I am able to set the breakpoint in
-> start_kernel(),
-> the commands "run" or "continue" on the "gdb" prompt, only throw up the
-> following errors :
-> 
-> (gdb) info break
-> Num Type           Disp Enb Address    What
-> 7   breakpoint      keep  y   0xc027e7f0 in start_kernel at
-> init/main.c:614
-> (gdb) run
+> the root cause is either that the data is not being read fast 
+> enough by the program, or system interrupt latency is too long
+> to let the driver service the UART before an overrun occurs. 
 
-The "run" command should not be used.  Kgdb/gdb debugging of the 
-kernel is more like attaching to a running program than running it. 
-When you use the run command you are telling gdb to, among other 
-things, transfer conrol to the beginning of the program, which in the 
-case of the kernel, is where the boot loader jumps on boot.  In the 
-kernel this code in is memory that is released to free memory on the 
-way up.
+Or if the interrupt is misset.  This is what may be happening.  If the
+interrupt is wrong, there are no interrupts but a sort of slow polling
+takes place and fetches the contents of the FIFO.  Don't confuse this
+with the fast polling you get if you set the IRQ to 0.  With the slow
+polling there's a delay before the next poll and data is often lost due
+to overruns of the FIFO.  The slow polling wasn't intended to be polling
+but that's what it amounts to.  So check that your interrupt is working
+OK by setting the IRQ to 0 with setserial to enable fast polling.  If
+that seemingly fixes it, you had an interrupt problem.
 
-If you make this mistake often I recommend the following gdb macro:
+> If the data source supports XON/XOFF or hardware flow control, 
+> you could set that to hold off the data source when the system 
+> is not ready to receive more data. 
 
-define hook-run
-echo "run is not available for kernel debugging \n"
-p .
-end
+I don't think so (but of course you should use flow control).  There
+just isn't any way to use flow control to protect the FIFO buffers from
+overruns in Linux.  Flow control (for the input flow into a PC) only
+protects the serial 8K buffer in main memory.
 
-The "p ." will error out the command and snach you from the jaws of 
-reboot/ fsck :)
-
-This macro should be in .gdbinit file in the same directory as the 
-vmlinux file.
-
-
-> warning: shared library handler failed to enable breakpoint
-> warning: Cannot insert breakpoint 7:
-> Cannot access memory at address 0xc027e7f0
-> 
-> QUESTION:
-> 
-> I very strongly suspect that this exercise follows a particular sequence
-> of steps to get it right. Either I am missing some step or I am not
-> following the "order".  In either case, I would be glad to receive some
-> help/comments on my academic endeavour to be able to remotely debug the
-> kernel.
-> 
-> - Kindly let me know a solution
-> 
-> - TIA
-> 
-> - Shobhit Mathur
-> -
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
-> 
-
--- 
-George Anzinger   george@mvista.com
-High-res-timers:  http://sourceforge.net/projects/high-res-timers/
-Preemption patch: http://www.kernel.org/pub/linux/kernel/people/rml
-
+			David Lawyer
