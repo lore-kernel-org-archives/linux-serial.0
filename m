@@ -1,41 +1,43 @@
-From: David Lawyer <dave@lafn.org>
-Subject: Re: Update on problems with UPS
-Date: Thu, 27 Feb 2003 13:49:17 -0800
+From: "Linux PPP" <linuxppp@indiainfo.com>
+Subject: RS485 communicatio
+Date: Thu, 13 Mar 2003 11:45:05 +0530
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <20030227214917.GE1307@lafn.org>
-References: <11E89240C407D311958800A0C9ACF7D1A33DBB@EXCHANGE>
+Message-ID: <20030313061505.5944.qmail@indiainfo.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from localhost (mail@host-66-81-16-55.rev.o1.com [66.81.16.55])
-	by zoon.lafn.org (8.12.3/8.11.3) with ESMTP id h1RM6lNc024494
-	for <linux-serial@vger.kernel.org>; Thu, 27 Feb 2003 14:06:48 -0800 (PST)
-	(envelope-from dave@lafn.org)
-Received: from dave by localhost with local (Exim 3.36 #1 (Debian))
-	id 18oVu1-0000Ps-00
-	for <linux-serial@vger.kernel.org>; Thu, 27 Feb 2003 13:49:17 -0800
 Content-Disposition: inline
-In-Reply-To: <11E89240C407D311958800A0C9ACF7D1A33DBB@EXCHANGE>
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-> 
-> On Thu, Feb 27, 2003 at 12:43 PM, Ross Boylan wrote:
-> > I talked about pnp resetting the modem or the serial port on the card.
-> > You say it would only affect the port.  What I had in mind was that
-> > pnp might reset the IRQ for one device, but not the other, so they
-> > wouldn't be able to communicate.  Are you saying that's so?
-> > 
-On Thu, Feb 27, 2003 at 01:29:10PM -0800, Ed Vance wrote:
-> No. The modem is hardware attached to the serial side of the serial port and
-> cannot be pried loose with mere software. In fact, the modem part's _only_
-> logical connection to the system is through the serial port.
+Hi all,
+am currently working on PPP over serial interface (RS485) in linux 2.4.2-2. I believe RS485 half duplex system and hence only one can transmit at a time. And for RS485 we basicaly use Master-Slave or Primary-Secondary kind of communication. I don't know how to achieve the same using PPP since i need to have max of 10 nodes connected via serial interface. I tested with two nodes using PPP daemon it works fine. Following are the commands i issued
 
-After I wrote the following, I realized that the gist of it has already
-been stated.  But here it is.  The modem itself has no IRQ or IO address.
-Only the serial port that the modem is connected to has an IRQ and IO
-address.  This is true both for an internal and external modem.  But for
-an internal modem, it's serial port is located on the same card and
-can't be used for anything else except for the modem.
+In PPP server: 
+$usr/sbin/pppd -detach crtscts 10.10.10.100:10.10.10.101 115200 /dev/ttyS0 &
 
-			David Lawyer
+In PPP client side : 
+$/usr/sbin/pppd call ppp-start 
+where ppp-start file is copied into directory /etc/ppp/peers/ that had the following
+
+-detach /dev/ttyS0 115200 crtscts
+noauth
+
+This point to point communication worked fine with RS485 interface. If i had to connect one more node what i need to do. Please clarify with the following 
+
+i) Whether the existing pppd takes care of the RS485 with multi node , if so how do i manage giving commands
+ii) If there is no direct support how do i go ahead. Is there any other layer 2 protocol allows me to acheive TCP/IP communicattion over RS485 which is my ultimatum.
+
+I will be grateful if anybody of them could help me with my current problem.
+
+Thanx in advance.
+
+Karthik
+
+-- 
+______________________________________________
+http://www.indiainfo.com
+Now with POP3/SMTP access for only US$14.95/yr
+
+Powered by Outblaze
