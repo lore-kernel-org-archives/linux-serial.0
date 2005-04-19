@@ -1,76 +1,71 @@
-From: Adrian Bunk <bunk@stusta.de>
-Subject: [2.6 patch] ACPI: add two missing config.h #include's
-Date: Sun, 17 Apr 2005 20:19:48 +0200
-Message-ID: <20050417181948.GB3625@stusta.de>
-References: <20050415151053.GM5456@stusta.de> <E1DMTPC-000ASo-00.adobriyan-mail-ru@f13.mail.ru> <20050416023852.GI4831@stusta.de> <20050416085923.A10826@flint.arm.linux.org.uk>
+From: Sasha Khapyorsky <sashak@smlink.com>
+Subject: [2.6 patch] drivers/serial/8250_pci.c: don't probe non-serial softmodems
+Date: Wed, 20 Apr 2005 02:56:08 +0300
+Message-ID: <20050419235608.GB8276@tecr>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout.stusta.mhn.de ([141.84.69.5]:38929 "HELO
-	mailout.stusta.mhn.de") by vger.kernel.org with SMTP
-	id S261394AbVDQSTu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 17 Apr 2005 14:19:50 -0400
+Received: from sa10.bezeqint.net ([192.115.104.24]:10930 "EHLO
+	sa10.bezeqint.net") by vger.kernel.org with ESMTP id S261202AbVDSXhh
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 19 Apr 2005 19:37:37 -0400
 Content-Disposition: inline
-In-Reply-To: <20050416085923.A10826@flint.arm.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alexey Dobriyan <adobriyan@mail.ru>, Andrew Morton <akpm@osdl.org>, Bjorn Helgaas <bjorn.helgaas@hp.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, len.brown@intel.com, acpi-devel@lists.sourceforge.net, Herbert Xu <herbert@gondor.apana.org.au>
-
-On Sat, Apr 16, 2005 at 08:59:23AM +0100, Russell King wrote:
-> On Sat, Apr 16, 2005 at 04:38:52AM +0200, Adrian Bunk wrote:
-> > In the Linux kernel, it's more common to put such header dependencies 
-> > for header files into the C files, but if the ACPI people agree a patch 
-> > to add the #include <linux/config.h> to acpi_bus.h is the other possble 
-> > correct solution for this issue.
-> 
-> With the exception of linux/config.h.
-> 
-> Do a 'make configcheck' and it'll tell you where linux/config.h is missing
-> and where it shouldn't be.
-
-OK, then the patch below is the correct solution.
-
-cu
-Adrian
+To: rmk+serial@arm.linux.org
+Cc: linux-serial@vger.kernel.org
 
 
-<--  snip  -->
+Hello Russel,
+
+Some soft modem pci devices (known list in the patch) claim to have 
+'communication' class, and as result they are grabbed by serial driver.
+Actually those devices are useless for serial drivers (it is not "real"
+modem and doesn't have serial interface), but this prevents probing from
+soft modem drivers (there are few in ALSA).
+
+The patch below makes it possible to define ids of such known non-serial
+devices and don't probe it by 8250_pci driver.
+
+Thanks,
+Sasha.
 
 
-This patch fixes the following warning by adding two missing config.h 
-#include's:
+Signed-off-by: Sasha Khapyorsky <sashak@smlink.com>
 
-<--  snip  -->
-
-...
-  CC      drivers/serial/8250_acpi.o
-drivers/serial/8250_acpi.c: In function `acpi_serial_ext_irq':
-drivers/serial/8250_acpi.c:51: warning: implicit declaration of function 
-`acpi_register_gsi'
-...
-
-<--  snip  -->
-
-Signed-off-by: Adrian Bunk <bunk@stusta.de>
-
---- linux-2.6.12-rc2-mm3-full/include/acpi/acpi_bus.h.old	2005-04-17 19:05:23.000000000 +0200
-+++ linux-2.6.12-rc2-mm3-full/include/acpi/acpi_bus.h	2005-04-17 19:05:37.000000000 +0200
-@@ -26,6 +26,7 @@
- #ifndef __ACPI_BUS_H__
- #define __ACPI_BUS_H__
+diff -wru linux-2.6.12-rc1_orig/drivers/serial/8250_pci.c linux-2.6.12-rc1/drivers/serial/8250_pci.c
+--- linux-2.6.12-rc1_orig/drivers/serial/8250_pci.c	2005-03-28 17:26:38.000000000 +0200
++++ linux-2.6.12-rc1/drivers/serial/8250_pci.c	2005-04-12 18:07:27.000000000 +0300
+@@ -1605,6 +1605,22 @@
+ }
  
-+#include <linux/config.h>
- #include <linux/kobject.h>
- 
- #include <acpi/acpi.h>
---- linux-2.6.12-rc2-mm3-full/include/linux/acpi.h.old	2005-04-17 19:25:51.000000000 +0200
-+++ linux-2.6.12-rc2-mm3-full/include/linux/acpi.h	2005-04-17 19:24:54.000000000 +0200
-@@ -25,6 +25,8 @@
- #ifndef _LINUX_ACPI_H
- #define _LINUX_ACPI_H
- 
-+#include <linux/config.h>
+ /*
++ * pci devices with appropriate class declared, but known as
++ * non modems or serial
++ */
++static struct pci_device_id __devinitdata non_serial_pci_tbl[] = {
++	{	0x163c, 0x3052,   /* smartlink softmodem */
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0 },
++	{	0x134d, 0x2189,   /* HSP1688 softmodem */
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0 },
++	{	PCI_VENDOR_ID_AL, 0x5457,
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0 },
++	{	PCI_VENDOR_ID_AL, 0x5459,
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0 },
++	{ 0, }
++};
 +
- #ifdef CONFIG_ACPI
++/*
+  * Probe one serial board.  Unfortunately, there is no rhyme nor reason
+  * to the arrangement of serial ports on a PCI card.
+  */
+@@ -1616,6 +1632,9 @@
+ 	struct pci_serial_quirk *quirk;
+ 	int rc, nr_ports, i;
  
- #ifndef _LINUX
++	if (pci_match_device(non_serial_pci_tbl, dev))
++		return -ENODEV;
++
+ 	if (ent->driver_data >= ARRAY_SIZE(pci_boards)) {
+ 		printk(KERN_ERR "pci_init_one: invalid driver_data: %ld\n",
+ 			ent->driver_data);
