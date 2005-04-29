@@ -1,99 +1,106 @@
-From: Len Brown <len.brown@intel.com>
-Subject: Re: [2.6 patch] ACPI: add two missing config.h #include's
-Date: 26 Apr 2005 01:43:40 -0400
-Message-ID: <1114494219.2930.260.camel@d845pe>
-References: <20050415151053.GM5456@stusta.de>
-	 <E1DMTPC-000ASo-00.adobriyan-mail-ru@f13.mail.ru>
-	 <20050416023852.GI4831@stusta.de>
-	 <20050416085923.A10826@flint.arm.linux.org.uk>
-	 <20050417181948.GB3625@stusta.de>
+From: Andrey Panin <pazke@donpac.ru>
+Subject: [PATCH] add SIIG Quartet Serial support
+Date: Fri, 29 Apr 2005 14:24:11 +0400
+Message-ID: <20050429102411.GH8497@pazke>
 Mime-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="ieNMXl1Fr3cevapt"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from fmr21.intel.com ([143.183.121.13]:6831 "EHLO
-	scsfmr001.sc.intel.com") by vger.kernel.org with ESMTP
-	id S261330AbVDZFpj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 26 Apr 2005 01:45:39 -0400
-In-Reply-To: <20050417181948.GB3625@stusta.de>
+Received: from relay.rost.ru ([80.254.111.11]:55432 "EHLO relay.rost.ru")
+	by vger.kernel.org with ESMTP id S262271AbVD2KYQ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 29 Apr 2005 06:24:16 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Adrian Bunk <bunk@stusta.de>
-Cc: Alexey Dobriyan <adobriyan@mail.ru>, Andrew Morton <akpm@osdl.org>, Bjorn Helgaas <bjorn.helgaas@hp.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, ACPI Developers <acpi-devel@lists.sourceforge.net>, Herbert Xu <herbert@gondor.apana.org.au>
+To: rmk+serial@arm.linux.org.uk
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Applied.
 
-thanks,
--Len
+--ieNMXl1Fr3cevapt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On Sun, 2005-04-17 at 14:19, Adrian Bunk wrote:
-> On Sat, Apr 16, 2005 at 08:59:23AM +0100, Russell King wrote:
-> > On Sat, Apr 16, 2005 at 04:38:52AM +0200, Adrian Bunk wrote:
-> > > In the Linux kernel, it's more common to put such header
-> dependencies
-> > > for header files into the C files, but if the ACPI people agree a
-> patch
-> > > to add the #include <linux/config.h> to acpi_bus.h is the other
-> possble
-> > > correct solution for this issue.
-> >
-> > With the exception of linux/config.h.
-> >
-> > Do a 'make configcheck' and it'll tell you where linux/config.h is
-> missing
-> > and where it shouldn't be.
-> 
-> OK, then the patch below is the correct solution.
-> 
-> cu
-> Adrian
-> 
-> 
-> <--  snip  -->
-> 
-> 
-> This patch fixes the following warning by adding two missing config.h
-> #include's:
-> 
-> <--  snip  -->
-> 
-> ...
->   CC      drivers/serial/8250_acpi.o
-> drivers/serial/8250_acpi.c: In function `acpi_serial_ext_irq':
-> drivers/serial/8250_acpi.c:51: warning: implicit declaration of
-> function
-> `acpi_register_gsi'
-> ...
-> 
-> <--  snip  -->
-> 
-> Signed-off-by: Adrian Bunk <bunk@stusta.de>
-> 
-> --- linux-2.6.12-rc2-mm3-full/include/acpi/acpi_bus.h.old      
-> 2005-04-17 19:05:23.000000000 +0200
-> +++ linux-2.6.12-rc2-mm3-full/include/acpi/acpi_bus.h   2005-04-17
-> 19:05:37.000000000 +0200
-> @@ -26,6 +26,7 @@
->  #ifndef __ACPI_BUS_H__
->  #define __ACPI_BUS_H__
-> 
-> +#include <linux/config.h>
->  #include <linux/kobject.h>
-> 
->  #include <acpi/acpi.h>
-> --- linux-2.6.12-rc2-mm3-full/include/linux/acpi.h.old  2005-04-17
-> 19:25:51.000000000 +0200
-> +++ linux-2.6.12-rc2-mm3-full/include/linux/acpi.h      2005-04-17
-> 19:24:54.000000000 +0200
-> @@ -25,6 +25,8 @@
->  #ifndef _LINUX_ACPI_H
->  #define _LINUX_ACPI_H
-> 
-> +#include <linux/config.h>
-> +
->  #ifdef CONFIG_ACPI
-> 
->  #ifndef _LINUX
-> 
-> 
+Hello,
 
+attached patch adds support for SIIG Quartet Serial card.
+This card has Oxford Semiconducor 16954 quad UART which is
+clocked by 10x faster (18.432 MHz) quartz.
+
+Please consider applying.
+
+Best regards.
+
+-- 
+Andrey Panin		| Linux and UNIX system administrator
+pazke@donpac.ru		| PGP key: wwwkeys.pgp.net
+
+--ieNMXl1Fr3cevapt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename=patch-siig-quartet-serial
+
+diff -urdpNX /usr/share/dontdiff linux-2.6.11.vanilla/drivers/serial/8250_pci.c linux-2.6.11/drivers/serial/8250_pci.c
+--- linux-2.6.11.vanilla/drivers/serial/8250_pci.c	2005-03-02 10:38:17.000000000 +0300
++++ linux-2.6.11/drivers/serial/8250_pci.c	2005-04-29 12:16:43.000000000 +0400
+@@ -387,6 +387,9 @@ static void __devexit sbs_exit(struct pc
+  *     - 10x cards have control registers in IO and/or memory space;
+  *     - 20x cards have control registers in standard PCI configuration space.
+  *
++ * There are also Quartet Serial cards which use Oxford Semiconductor
++ * 16954 quad UART PCI chip clocked by 18.432 MHz quartz.
++ *
+  * Note: some SIIG cards are probed by the parport_serial object.
+  */
+ 
+@@ -1014,6 +1017,8 @@ enum pci_board_num_t {
+ 	pbn_b0_bt_4_921600,
+ 	pbn_b0_bt_8_921600,
+ 
++	pbn_b0_4_1152000,
++
+ 	pbn_b1_1_115200,
+ 	pbn_b1_2_115200,
+ 	pbn_b1_4_115200,
+@@ -1196,6 +1201,12 @@ static struct pci_board pci_boards[] __d
+ 		.base_baud	= 921600,
+ 		.uart_offset	= 8,
+ 	},
++	[pbn_b0_4_1152000] = {
++		.flags		= FL_BASE0,
++		.num_ports	= 4,
++		.base_baud	= 1152000,
++		.uart_offset	= 8,
++	},
+ 
+ 	[pbn_b1_1_115200] = {
+ 		.flags		= FL_BASE1,
+@@ -1940,6 +1951,9 @@ static struct pci_device_id serial_pci_t
+ 		PCI_VENDOR_ID_SPECIALIX, PCI_SUBDEVICE_ID_SPECIALIX_SPEED4, 0, 0,
+ 		pbn_b0_4_921600 },
+ 	{	PCI_VENDOR_ID_OXSEMI, PCI_DEVICE_ID_OXSEMI_16PCI954,
++		PCI_SUBVENDOR_ID_SIIG, PCI_SUBDEVICE_ID_SIIG_QUARTET_SERIAL, 0, 0,
++		pbn_b0_4_1152000 },
++	{	PCI_VENDOR_ID_OXSEMI, PCI_DEVICE_ID_OXSEMI_16PCI954,
+ 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+ 		pbn_b0_4_115200 },
+ 	{	PCI_VENDOR_ID_OXSEMI, PCI_DEVICE_ID_OXSEMI_16PCI952,
+diff -urdpNX /usr/share/dontdiff linux-2.6.11.vanilla/include/linux/pci_ids.h linux-2.6.11/include/linux/pci_ids.h
+--- linux-2.6.11.vanilla/include/linux/pci_ids.h	2005-03-02 10:38:37.000000000 +0300
++++ linux-2.6.11/include/linux/pci_ids.h	2005-04-29 11:45:19.000000000 +0400
+@@ -1730,6 +1730,7 @@
+ #define PCI_DEVICE_ID_CBOARDS_DAS1602_16 0x0001
+ 
+ #define PCI_VENDOR_ID_SIIG		0x131f
++#define PCI_SUBVENDOR_ID_SIIG		0x131f
+ #define PCI_DEVICE_ID_SIIG_1S_10x_550	0x1000
+ #define PCI_DEVICE_ID_SIIG_1S_10x_650	0x1001
+ #define PCI_DEVICE_ID_SIIG_1S_10x_850	0x1002
+@@ -1767,6 +1768,7 @@
+ #define PCI_DEVICE_ID_SIIG_2S1P_20x_550	0x2060
+ #define PCI_DEVICE_ID_SIIG_2S1P_20x_650	0x2061
+ #define PCI_DEVICE_ID_SIIG_2S1P_20x_850	0x2062
++#define PCI_SUBDEVICE_ID_SIIG_QUARTET_SERIAL	0x2050
+ 
+ #define PCI_VENDOR_ID_RADISYS		0x1331
+ #define PCI_DEVICE_ID_RADISYS_ENP2611	0x0030
+
+--ieNMXl1Fr3cevapt--
