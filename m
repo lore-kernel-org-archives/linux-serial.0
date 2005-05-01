@@ -1,32 +1,68 @@
-From: Sasha Khapyorsky <sashak@smlink.com>
-Subject: Re: [2.6 patch] drivers/serial/8250_pci.c: don't probe non-serial softmodems
-Date: Sun, 1 May 2005 00:23:56 +0300
-Message-ID: <20050430212356.GB11770@tecr>
-References: <20050419235608.GB8276@tecr> <20050430095416.A31027@flint.arm.linux.org.uk>
+From: "George Tumulak" <business_george@walla.com>
+Subject: Tried and Tested Genuine Opportunity!
+Date: Sun, 1 May 2005 19:22:14 +0800
+Message-ID: <200505011122.j41BM2Xh019947@zeus1.kernel.org>
+Reply-To: "George Tumulak" <business_george@walla.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from sa3.bezeqint.net ([192.115.104.17]:42926 "EHLO sa3.bezeqint.net")
-	by vger.kernel.org with ESMTP id S261432AbVD3VFc (ORCPT
+Received: from zeus1.kernel.org ([204.152.191.4]:985 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S261598AbVEALWH (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 30 Apr 2005 17:05:32 -0400
-Content-Disposition: inline
-In-Reply-To: <20050430095416.A31027@flint.arm.linux.org.uk>
+	Sun, 1 May 2005 07:22:07 -0400
+Received: from walla.com ([203.177.179.170])
+	by zeus1.kernel.org (8.13.1/8.13.1) with SMTP id j41BM2Xh019947
+	for <linux-serial@vger.kernel.org>; Sun, 1 May 2005 04:22:04 -0700
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <rmk+serial@arm.linux.org.uk>
-Cc: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On 09:54 Sat 30 Apr     , Russell King wrote:
-> On Wed, Apr 20, 2005 at 02:56:08AM +0300, Sasha Khapyorsky wrote:
-> > Some soft modem pci devices (known list in the patch) claim to have 
-> > 'communication' class, and as result they are grabbed by serial driver.
-> > Actually those devices are useless for serial drivers (it is not "real"
-> > modem and doesn't have serial interface), but this prevents probing from
-> > soft modem drivers (there are few in ALSA).
-> 
-> What class id are these devices?
 
-It is '0x0703' - PCI_CLASS_COMMUNICATION_MODEM
+Hello,
 
-Sasha.
+I've found a very rewarding career -- built on a part-time basis, 
+and I thought you might be interested. 
+
+Our system is AUTOMATED so you don't have to worry about personal 
+rejection. And, when you do find someone who's really serious 
+aboutimproving their finances, our automated system presents your 
+businessopportunity to them, one step at a time. 
+
+People that have read this same email just 1-2 months ago, are 
+now making the kind of income they knew they were worth! If you 
+have 10-15 hours a week, you can do this too.
+
+What would you do, and whom would you spend your time with when 
+you're earning the kind of profits you'd like?
+
+If you're interested to get a FREE tour please send an email to
+
+			biz_explore2005@walla.com  
+	 
+with the subject  "Let Me Evaluate Your Program".
+	
+Also include the following in the body of the email.
+
+	1.) FirstName 
+	2.) LastName 
+	3.) Country
+	
+I will then send you an email that contains the FREE tour link. 
+
+The FREE tour has NO COST, NO OBLIGATION, NO COMMITMENT.
+In case you feel that it is not for you,  you can unsubscribe 
+anytime. 
+
+Hope to receive an email from you sooner.
+
+
+Best Regards,
+George Tumulak
+
+===================================================================
+
+If you wish to no longer receive emails from me,just send an email to 
+business_george@walla.com with the subject"REMOVE ME" 
+
+==================================================================== 
