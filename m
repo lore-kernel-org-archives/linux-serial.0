@@ -1,26 +1,47 @@
-From: rich+ml@lclogic.com
-Subject: Re: tcdrain / TCSBRK / wait_until_sent delay
-Date: Thu, 5 May 2005 10:51:51 -0700 (PDT)
-Message-ID: <Pine.LNX.4.58.0505051023210.21399@deadrat.localdomain>
-References: <200505051650.38471.andyparkins@gmail.com>
-Reply-To: rich+ml@lclogic.com
+From: gdnixon1@enterate.com.ar
+Subject: Inquiry From Gerald
+Date: Thu,  5 May 2005 19:26:53 -0300
+Message-ID: <1115332013.427a9dad1bfe8__25237.4247801074$1115331241$gmane$org@mail.enterate.com.ar>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from adsl-64-164-130-3.dsl.snfc21.pacbell.net ([64.164.130.3]:60147
-	"EHLO deadrat.localdomain") by vger.kernel.org with ESMTP
-	id S261298AbVEERvx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 5 May 2005 13:51:53 -0400
-In-Reply-To: <200505051650.38471.andyparkins@gmail.com>
+Received: from customer79-105.iplannetworks.net ([200.68.68.105]:35201 "EHLO
+	mail.enterate.com.ar") by vger.kernel.org with ESMTP
+	id S262095AbVEEWSO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 5 May 2005 18:18:14 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Andy Parkins <andyparkins@gmail.com>
-Cc: linux-serial@vger.kernel.org
 
-On Thu, 5 May 2005, Andy Parkins wrote:
+Dear Friend,
+I am Mr. Gerald Nixon, I write to inform you of my desire to acquire properties 
+Hence i am contacting you if you would agree to assist me in other to actualize 
+this transaction. the funds to carry out this proposed investments is presently 
+lodged in a finance security firm i honestly request your assistance to provide 
+for me a safe account in your country to receive the money before we can put 
+the funds into use. The total sum is 4.5Million Great Britain Pounds.  
+As soon as the amount mentioned above is successfully transferred into your 
+account, you can go ahead in buying the properties. It might interest you to 
+note that transaction of such may raise suspicion of irrationality but i assure 
+you it will be executed safely without breaching our limited personal integrity 
+that we have in one way or the other aspire to protect. So let us allow trust 
+to play a very minimal role until performance is seen.  Thank you in 
+anticipation of your co-operation.
+Best Regards,
+Mr. Gerald Nixon
 
-> Is it unreasonable to expect Linux to do a 200us turnaround?
+Note: I have set aside 25% of this fund to consult your assistance.
 
-Assuming you have 2.6 kernel? HZ=1000 and you'll only get 1mS resolution
 
-== Rich
+
+
+* Este mensaje fue enviado desde http://www.enterate.com.ar/ 
+____________________________________________________________ 
+
+* Conectate GRATIS a Internet desde Enterate ! 
+Usuario   : enterate@enterate.com.ar 
+Clave     : enterate 
+desde Buenos Aires : 4004-8007 
+desde otras ciudades, consulta en : 
+http://www.enterate.com.ar/InternetGratis.htm 
+
