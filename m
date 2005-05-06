@@ -1,80 +1,157 @@
-From: Andy Parkins <andyparkins@gmail.com>
-Subject: Re: tcdrain / TCSBRK / wait_until_sent delay
-Date: Fri, 6 May 2005 09:01:06 +0100
-Message-ID: <200505060901.10692.andyparkins@gmail.com>
-References: <200505051650.38471.andyparkins@gmail.com> <Pine.LNX.4.58.0505051023210.21399@deadrat.localdomain>
+From: Romano Giannetti <romanol@upco.es>
+Subject: New "clone" two-serial card do not work in 2.6.8
+Date: Fri, 6 May 2005 10:45:30 +0200
+Message-ID: <20050506084530.GA21789@pern.dea.icai.upco.es>
+Reply-To: romano@dea.icai.upco.es
 Mime-Version: 1.0
-Content-Type: multipart/signed;
-  boundary="nextPart2315259.rD9eK4cCPJ";
-  protocol="application/pgp-signature";
-  micalg=pgp-sha1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-15
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from host3.360visontechnology.com ([195.102.65.187]:44406 "EHLO
-	369run02s.360vision.com") by vger.kernel.org with ESMTP
-	id S261169AbVEFIBS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 6 May 2005 04:01:18 -0400
-In-Reply-To: <Pine.LNX.4.58.0505051023210.21399@deadrat.localdomain>
+Received: from mail1.upco.es ([130.206.70.227]:19367 "EHLO mail1.upco.es")
+	by vger.kernel.org with ESMTP id S261181AbVEFIph (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 6 May 2005 04:45:37 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: rich+ml@lclogic.com
-Cc: linux-serial@vger.kernel.org
+To: rmk+serial@arm.linux.org.uk, linux-serial@vger.kernel.org
 
---nextPart2315259.rD9eK4cCPJ
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hi,
 
-On Thursday 2005 May 05 18:51, rich+ml@lclogic.com wrote:
+I have a two-ports serial card that claims to be a "Cyber 8000 plus". I
+tried to make it works in 2.6.8 without success. The kernel is a 2.6.8 and
+the distro Mandrake, so that I have devfs on. 
 
-> > Is it unreasonable to expect Linux to do a 200us turnaround?
->
-> Assuming you have 2.6 kernel? HZ=3D1000 and you'll only get 1mS resolution
+On lspci -vv the card answer with this two entries: 
 
-Thanks for your response.  You'll have to forgive me, I'm only vaguely=20
-familiar with the kernel internals.  I thought that because all of the work=
-=20
-is being done in the kernel that the HZ value wouldn't have an effect?  In=
-=20
-serial_core.c: uart_wait_until_sent() the character timeout is defined as
+01:07.0 Serial controller: Oxford Semiconductor Ltd EXSYS EX-41092 Dual 16950 Serial adapter (prog-if 06 [16950])
+        Subsystem: AFAVLAB Technology Inc: Unknown device 2130
+        Control: I/O+ Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR+ FastB2B-
+        Status: Cap+ 66Mhz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR-
+        Interrupt: pin A routed to IRQ 16
+        Region 0: I/O ports at dec0 [size=32]
+        Region 1: Memory at feadc000 (32-bit, non-prefetchable) [size=4K]
+        Region 2: I/O ports at dee0 [size=32]
+        Region 3: Memory at feadd000 (32-bit, non-prefetchable) [size=4K]
+        Capabilities: [40] Power Management version 2
+                Flags: PMEClk- DSI- D1- D2+ AuxCurrent=0mA PME(D0+,D1-,D2+,D3hot+,D3cold-)
+                Status: D0 PME-Enable- DSel=0 DScale=0 PME-
 
-char_time =3D (port->timeout - HZ/50) / port->fifosize;
-char_time =3D char_time / 5;
-
-=46rom this I guess that port->timeout is the estimated time for the whole=
-=20
-transmit buffer, which is then divided by port->fifosize to make this a per=
-=20
-character time which is then divided by five to ensure that the check for=20
-tx_empty() is done five times per character (the comments say this is to=20
-satisfy NIST-PCTS, whatever that is).  I'm not sure what the HZ/50 is for.
-
-These times will all be significantly smaller than 1ms; if the value of HZ=
-=20
-where going to affect this then why has the author bothered to calculate=20
-these times at all?  1ms would drown these other timeouts out.
-
-Apologies if these are all stupid questions; as I say, I don't really know=
-=20
-what I'm talking about.=20
+01:07.1 Bridge: Oxford Semiconductor Ltd: Unknown device 9510
+        Subsystem: AFAVLAB Technology Inc: Unknown device 0000
+        Control: I/O+ Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR+ FastB2B-
+        Status: Cap+ 66Mhz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR-
+        Interrupt: pin A routed to IRQ 16
+        Region 0: I/O ports at df00 [size=32]
+        Region 1: Memory at feade000 (32-bit, non-prefetchable) [size=4K]
+        Region 2: I/O ports at df20 [size=32]
+        Region 3: Memory at feadf000 (32-bit, non-prefetchable) [size=4K]
+        Capabilities: [40] Power Management version 2
+                Flags: PMEClk- DSI- D1- D2+ AuxCurrent=0mA PME(D0+,D1-,D2+,D3hot+,D3cold-)
+                Status: D0 PME-Enable- DSel=0 DScale=0 PME-
 
 
-Andy
+I tried to do 
 
-=2D-=20
-Dr Andrew Parkins, M Eng (hons), AMIEE
+# setserial /dev/ttyS2 port 0xdec0 UART 16550A irq 16  && echo 1 > /dev/ttyS2 
+                
+After a bit I have: 
+
+irq 16: nobody cared!
+ [<c0107bfe>] dump_stack+0x1e/0x20
+ [<c01090ab>] __report_bad_irq+0x2b/0x90
+ [<c01091c0>] note_interrupt+0x90/0xb0
+ [<c0109430>] do_IRQ+0xe0/0x100
+ [<c010778c>] common_interrupt+0x18/0x20
+ [<c01050ed>] cpu_idle+0x2d/0x40
+ [<c036c824>] start_kernel+0x184/0x1c0
+ [<c010019f>] 0xc010019f
+handlers:
+[<f8a4aff0>] (usb_hcd_irq+0x0/0x70 [usbcore])
+[<f8a4aff0>] (usb_hcd_irq+0x0/0x70 [usbcore])
+Disabling IRQ #16
+
+My .config | grep -i serial: 
+
+CONFIG_PARPORT_SERIAL=m
+# Old Serial dongle support
+CONFIG_MOUSE_SERIAL=m
+CONFIG_SERIAL_NONSTANDARD=y
+CONFIG_ESPSERIAL=m
+# Serial drivers
+CONFIG_SERIAL_8250=y
+CONFIG_SERIAL_8250_CONSOLE=y
+CONFIG_SERIAL_8250_CS=m
+CONFIG_SERIAL_8250_ACPI=y
+CONFIG_SERIAL_WACOM_ACPI=m
+CONFIG_SERIAL_8250_NR_UARTS=4
+CONFIG_SERIAL_8250_EXTENDED=y
+CONFIG_SERIAL_8250_MANY_PORTS=y
+CONFIG_SERIAL_8250_SHARE_IRQ=y
+# CONFIG_SERIAL_8250_DETECT_IRQ is not set
+CONFIG_SERIAL_8250_MULTIPORT=y
+CONFIG_SERIAL_8250_RSA=y
+# Non-8250 serial port support
+CONFIG_SERIAL_CORE=y
+CONFIG_SERIAL_CORE_CONSOLE=y
+CONFIG_SND_SERIAL_U16550=m
+# USB Serial Converter support
+CONFIG_USB_SERIAL=m
+CONFIG_USB_SERIAL_GENERIC=y
+CONFIG_USB_SERIAL_BELKIN=m
+CONFIG_USB_SERIAL_WHITEHEAT=m
+CONFIG_USB_SERIAL_DIGI_ACCELEPORT=m
+CONFIG_USB_SERIAL_EMPEG=m
+CONFIG_USB_SERIAL_FTDI_SIO=m
+CONFIG_USB_SERIAL_VISOR=m
+CONFIG_USB_SERIAL_IPAQ=m
+CONFIG_USB_SERIAL_IR=m
+CONFIG_USB_SERIAL_EDGEPORT=m
+CONFIG_USB_SERIAL_EDGEPORT_TI=m
+CONFIG_USB_SERIAL_KEYSPAN_PDA=m
+CONFIG_USB_SERIAL_KEYSPAN=m
+CONFIG_USB_SERIAL_KEYSPAN_MPR=y
+CONFIG_USB_SERIAL_KEYSPAN_USA28=y
+CONFIG_USB_SERIAL_KEYSPAN_USA28X=y
+CONFIG_USB_SERIAL_KEYSPAN_USA28XA=y
+CONFIG_USB_SERIAL_KEYSPAN_USA28XB=y
+CONFIG_USB_SERIAL_KEYSPAN_USA19=y
+CONFIG_USB_SERIAL_KEYSPAN_USA18X=y
+CONFIG_USB_SERIAL_KEYSPAN_USA19W=y
+CONFIG_USB_SERIAL_KEYSPAN_USA19QW=y
+CONFIG_USB_SERIAL_KEYSPAN_USA19QI=y
+CONFIG_USB_SERIAL_KEYSPAN_USA49W=y
+CONFIG_USB_SERIAL_KEYSPAN_USA49WLC=y
+CONFIG_USB_SERIAL_KLSI=m
+CONFIG_USB_SERIAL_KOBIL_SCT=m
+CONFIG_USB_SERIAL_MCT_U232=m
+CONFIG_USB_SERIAL_PL2303=m
+CONFIG_USB_SERIAL_SAFE=m
+CONFIG_USB_SERIAL_SAFE_PADDED=y
+CONFIG_USB_SERIAL_CYBERJACK=m
+CONFIG_USB_SERIAL_XIRCOM=m
+CONFIG_USB_SERIAL_OMNINET=m
+CONFIG_USB_G_SERIAL=m
+CONFIG_LIRC_SERIAL=m
+# CONFIG_LIRC_SERIAL_ANIMAX is not set
+CONFIG_LIRC_SERIAL_IRDEO=y
+# CONFIG_LIRC_SERIAL_IRDEO_REMOTE is not set
+CONFIG_LIRC_SERIAL_TRANSMITTER=y
+CONFIG_LIRC_SERIAL_SOFTCARRIER=y
+# CONFIG_LIRC_SERIAL_IGOR is not set
+CONFIG_LIRC_SERIAL_COM1=y
+# CONFIG_LIRC_SERIAL_COM2 is not set
+# CONFIG_LIRC_SERIAL_COM3 is not set
+# CONFIG_LIRC_SERIAL_COM4 is not set
+# CONFIG_LIRC_SERIAL_OTHER is not set
+CONFIG_LIRC_PORT_SERIAL=0x3f8
+CONFIG_LIRC_IRQ_SERIAL=0x4
+
+Any hints? Thank you very much, 
+    
+           Romano
 
 
---nextPart2315259.rD9eK4cCPJ
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.0 (GNU/Linux)
-
-iD8DBQBCeyRGwQJ9gE9xL20RAmCVAKCLC6tmKcr27PEAYUBcUqgAji+pCACg3a49
-q+CIAQTdxsQOaeglWruwwXw=
-=BXkP
------END PGP SIGNATURE-----
-
---nextPart2315259.rD9eK4cCPJ--
+        
+-- 
+Romano Giannetti             -  Univ. Pontificia Comillas (Madrid, Spain)
+Electronic Engineer - phone +34 915 422 800 ext 2416  fax +34 915 596 569
