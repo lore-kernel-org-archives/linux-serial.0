@@ -1,74 +1,58 @@
-From: Andy Parkins <andyparkins@gmail.com>
+From: Gerald Emig <gme@emig-software.de>
 Subject: Re: tcdrain / TCSBRK / wait_until_sent delay
-Date: Sat, 7 May 2005 10:35:50 +0100
-Message-ID: <200505071035.55508.andyparkins@gmail.com>
-References: <200505051650.38471.andyparkins@gmail.com> <200505060901.10692.andyparkins@gmail.com> <Pine.LNX.4.58.0505061137590.21399@deadrat.localdomain>
+Date: Sat, 7 May 2005 12:32:20 +0200
+Message-ID: <20050507123220.56bba950@emig4.heisch.inka.de>
+References: <200505051650.38471.andyparkins@gmail.com>
+	<Pine.LNX.4.58.0505051023210.21399@deadrat.localdomain>
+	<200505060901.10692.andyparkins@gmail.com>
+	<Pine.LNX.4.58.0505061137590.21399@deadrat.localdomain>
 Mime-Version: 1.0
-Content-Type: multipart/signed;
-  boundary="nextPart1561573.72MnWde18P";
-  protocol="application/pgp-signature";
-  micalg=pgp-sha1
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ptb-relay02.plus.net ([212.159.14.213]:17294 "EHLO
-	ptb-relay04.plus.net") by vger.kernel.org with ESMTP
-	id S262909AbVEGJf5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 7 May 2005 05:35:57 -0400
+Received: from moutng.kundenserver.de ([212.227.126.186]:62206 "EHLO
+	moutng.kundenserver.de") by vger.kernel.org with ESMTP
+	id S262954AbVEGKcg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 7 May 2005 06:32:36 -0400
 In-Reply-To: <Pine.LNX.4.58.0505061137590.21399@deadrat.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: rich+ml@lclogic.com
-Cc: linux-serial@vger.kernel.org
+Cc: Andy Parkins <andyparkins@gmail.com>, linux-serial@vger.kernel.org
 
---nextPart1561573.72MnWde18P
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+On Fri, 6 May 2005 12:14:51 -0700 (PDT)
+rich+ml@lclogic.com wrote:
 
-On Friday 06 May 2005 20:14, rich+ml@lclogic.com wrote:
-
-Thanks for your response.
-
+> On Fri, 6 May 2005, Andy Parkins wrote:
+> 
+> > I'm not sure what the HZ/50 is for.
+> Undoes some fudge factor added on when first calculated.
+> 
+> > These times will all be significantly smaller than 1ms; if the value
+> > of HZ where going to affect this then why has the author bothered to
+> > calculate these times at all? 1ms would drown these other timeouts
+> > out.
 > It only kicks in for sub-1200 baud.
-
-Oh dear.
-
-> In any case linux is not an RTOS, it does not guarantee maximum latency,
-> so no matter what you are going to be intermittent at best.
-
-I appreciate that, I was disappointed because I know that some other people=
-=20
-are doing this on Windows and I assumed Linux would be able to kick a**. =20
-Considering the magic that Linux can do elsewhere, it didn't seem=20
-unreasonable to expect 9600 half duplex.  :-(
-
-> Have you tried hardware flow control, "stty crtscts < /dev/ttyX"?.  With
-> CTS strapped high, RTS should follow THRE||TE.
-
-That's an interesting idea - CTS is currently set by the RS485 converter to=
-=20
-indicate when it has successfully turned the buffer around.  So it goes, RT=
-S=20
-set high, wait for CTS, send...  Is what you're suggesting that I cut this=
-=20
-wire and hold CTS high externally?
-
-Andy
-
-=2D-=20
-Dr Andrew Parkins, M Eng (hons), AMIEE
+> 
+> In any case linux is not an RTOS, it does not guarantee maximum
+> latency, so no matter what you are going to be intermittent at best.
 
 
---nextPart1561573.72MnWde18P
-Content-Type: application/pgp-signature
+That is the key: because switching the handshake lines is commonly done
+by software, it usually can not be reliable if you need a correct
+switching of RTS.
+You should instead purchase a dedicated RS485 board that does the
+switching by hardhare.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.0 (GNU/Linux)
 
-iD8DBQBCfIv7wQJ9gE9xL20RAm2qAJ9pSYThuzKOkBOOHUb2SV+4PKpIbQCgiFQR
-Oz5kZmRhmCuKfxkL78HapQQ=
-=NNtE
------END PGP SIGNATURE-----
+> 
+> Have you tried hardware flow control, "stty crtscts < /dev/ttyX"?. 
+> With CTS strapped high, RTS should follow THRE||TE.
 
---nextPart1561573.72MnWde18P--
+Probably with a delay depending on the current system load, I suppose !
+
+
+
+
+Gerald
+
