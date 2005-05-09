@@ -1,60 +1,72 @@
-From: "Tosoni" <jp.tosoni@acksys.fr>
-Subject: RE: tcdrain / TCSBRK / wait_until_sent delay
-Date: Mon, 9 May 2005 12:03:32 +0200
-Message-ID: <001701c5547e$5bd9cca0$2e01a8c0@acksys.fr>
-References: <20050509095903.A5674@flint.arm.linux.org.uk>
+From: Russell King <rmk@arm.linux.org.uk>
+Subject: Re: tcdrain / TCSBRK / wait_until_sent delay
+Date: Mon, 9 May 2005 11:13:38 +0100
+Message-ID: <20050509111338.C5674@flint.arm.linux.org.uk>
+References: <20050509095903.A5674@flint.arm.linux.org.uk> <001701c5547e$5bd9cca0$2e01a8c0@acksys.fr>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp1.clb.oleane.net ([213.56.31.17]:922 "EHLO
-	smtp1.clb.oleane.net") by vger.kernel.org with ESMTP
-	id S261185AbVEIKEF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 9 May 2005 06:04:05 -0400
-In-Reply-To: <20050509095903.A5674@flint.arm.linux.org.uk>
+Received: from caramon.arm.linux.org.uk ([212.18.232.186]:25358 "EHLO
+	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
+	id S261185AbVEIKNq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 9 May 2005 06:13:46 -0400
+Content-Disposition: inline
+In-Reply-To: <001701c5547e$5bd9cca0$2e01a8c0@acksys.fr>; from jp.tosoni@acksys.fr on Mon, May 09, 2005 at 12:03:32PM +0200
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Russell King' <rmk@arm.linux.org.uk>, 'Tosoni' <jp.tosoni@acksys.fr>
+To: Tosoni <jp.tosoni@acksys.fr>
 Cc: linux-serial@vger.kernel.org
 
-Hello Russell,
+On Mon, May 09, 2005 at 12:03:32PM +0200, Tosoni wrote:
+> I did not understand well your motivations before. I'm not sure I get all
+> the implications you suggest. But did you consider theses points:
+> 
+> b) The change we are seeking is *exclusive* with other uses of RTS
+>    (that is how it is done in Windows)
 
-First I apologize for not spelling your name correcty. Also, I wrote the
-previous mail of memory of our discussion because my mail archives were
-since destroyed in some part.
+There are many different styles of use of RTS.  The conventional one
+and your one are only two.  There are more than two, and all of them
+are exclusive.  I don't see why you made the above comment, since we
+obviously agree.
 
-Still it is true that I pushed my suggestion, since it works so perfectly
-well in Windows. (for your records I wrote serial drivers in Unix far before
-Windows was born, so don't call me a Windows enthusiast please).
+> c) With RS485 we are talking about, e.g., a computer installed in a
+>    factory and connected to an automaton. There is no purpose for someone
+>    to reopen the port for another kind of use (I know this argument is weak)
 
-> 1. we get a third (and there are more than two) flow control styles.
-> 2. the port is closed and something else opens it which wants standard
->    flow control. (or even an overlapping open/close.)
+Consider a brail device which requires non-standard RTS behaviour,
+which may be replaced by a modem.
 
-I did not understand well your motivations before. I'm not sure I get all
-the implications you suggest. But did you consider theses points:
+> d) We could define (since the functionality is not yet defined) that in
+>    the last close the standard RTS behaviour is reinstated. But still,
+>    there are differences between some UNIXes and LINUX regarding what state
+>    is kept between close and open.
 
-a) The change we are seeking is not a new flow control at all, in the
-   sense that it has absolutely no concern with buffer-full events.
-b) The change we are seeking is *exclusive* with other uses of RTS
-   (that is how it is done in Windows)
-c) With RS485 we are talking about, e.g., a computer installed in a
-   factory and connected to an automaton. There is no purpose for someone
-   to reopen the port for another kind of use (I know this argument is weak)
-d) We could define (since the functionality is not yet defined) that in
-   the last close the standard RTS behaviour is reinstated. But still,
-   there are differences between some UNIXes and LINUX regarding what state
-   is kept between close and open.
+As I tried to point out (and you missed) there is no clear point at which
+the port is closed.  Consider the following scenario:
 
-Finally, I agree that the best would be to add this feature in termios -
-well, it is exactly what I am seeking: to define a application API which
-would be recognized as a standard. I am tired of reimplementing my own way
-in each release of Linux. I am tired of seeing the same need implemented by
-different people with diverging ioctls over and over.
+	1. program A has the port open.
+	2. program B tries to open the port, but blocks in the open,
+	   waiting for program A to free up the port.
+	3. program A closes the port.
+	4. program B finally returns from the open call.
 
-When I talked to Allan Cox as you suggested, there was no answer from him.
-Maybe too busy?
+Compare this with:
 
-Jean-Pierre Tosoni
+	1. program A (eg, terminal program) has the port open.
+	2. program B (eg, file upload utility) opens the port and
+	   sends its data.
+	3. program B closes the port.
 
+With the second scenario, it's clear that step 3 shouldn't reset the
+behaviour.  However, what about the first scenario?
+
+> When I talked to Allan Cox as you suggested, there was no answer from him.
+> Maybe too busy?
+
+I can't talk for Alan.  However, Alan has taken on the task of looking
+after the tty layer, and so Alan needs to comment.
+
+-- 
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:  2.6 Serial core
