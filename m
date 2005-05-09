@@ -1,66 +1,39 @@
-From: Andy Parkins <andyparkins@gmail.com>
+From: Theodore Ts'o <tytso@mit.edu>
 Subject: Re: tcdrain / TCSBRK / wait_until_sent delay
-Date: Mon, 9 May 2005 12:05:28 +0100
-Message-ID: <200505091205.28719.andyparkins@gmail.com>
-References: <200505051650.38471.andyparkins@gmail.com> <m3br7klpz4.fsf@zoo.weinigel.se> <m37ji8lpof.fsf@zoo.weinigel.se>
+Date: Mon, 9 May 2005 11:43:12 -0400
+Message-ID: <20050509154312.GA19091@thunk.org>
+References: <20050509095903.A5674@flint.arm.linux.org.uk> <001701c5547e$5bd9cca0$2e01a8c0@acksys.fr> <20050509111338.C5674@flint.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: multipart/signed;
-  boundary="nextPart1203306.edh9M1OS41";
-  protocol="application/pgp-signature";
-  micalg=pgp-sha1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from host3.360visontechnology.com ([195.102.65.187]:15100 "EHLO
-	369run02s.360vision.com") by vger.kernel.org with ESMTP
-	id S261238AbVEILFb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 9 May 2005 07:05:31 -0400
-Received: from dvr ([127.0.0.1])
-	by dvr with esmtp (Exim 3.36 #1 (Debian))
-	id 1DV64n-0002wN-00
-	for <linux-serial@vger.kernel.org>; Mon, 09 May 2005 12:05:29 +0100
-In-Reply-To: <m37ji8lpof.fsf@zoo.weinigel.se>
+Received: from thunk.org ([69.25.196.29]:10426 "EHLO thunker.thunk.org")
+	by vger.kernel.org with ESMTP id S261406AbVEIPnX (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 9 May 2005 11:43:23 -0400
+Content-Disposition: inline
+In-Reply-To: <20050509111338.C5674@flint.arm.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Russell King <rmk@arm.linux.org.uk>
+Cc: Tosoni <jp.tosoni@acksys.fr>, linux-serial@vger.kernel.org
 
---nextPart1203306.edh9M1OS41
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+On Mon, May 09, 2005 at 11:13:38AM +0100, Russell King wrote:
+> 
+> There are many different styles of use of RTS.  The conventional one
+> and your one are only two.  There are more than two, and all of them
+> are exclusive.  I don't see why you made the above comment, since we
+> obviously agree.
+> 
 
-On Monday 2005 May 09 10:22, Christer Weinigel wrote:
-> Christer Weinigel <christer@weinigel.se> writes:
-> >     do {
-> >         ioctl(fd, TIOCSERGETLSR, &lsr);
-> >     } while (lsr & TIOCSER_TEMT);
->
-> Should be !(lsr & TIOCSER_TEMT), since the bit set means that the
-> transmitter is empty.
->
-> Note to self.  _Always_ check posted code one extra time.  :-/
+It's worse than this.  Even with the ancient/historic RTS/CTS toggle
+approach, I've heard all sorts of different timing constraints.  For
+example, in some implementations the implementation must wait at
+_least_ (or in other cases no more than) some time period before
+toggling CTS.  The old RS-422 devices were so crufty that they all had
+their own idiosyncratic requirements.
 
-Hurrah! What you suggest has given me exactly what I needed.  Thank you so=
-=20
-much.
+My suggestion would be to do this as a new line discpline, and have
+the line displine act as a pass-through to the N_TTY line displine for
+those things that it doesn't need to do differently.
 
-
-
-Andy
-
-=2D-=20
-Dr Andrew Parkins, M Eng (hons), AMIEE
-
-
---nextPart1203306.edh9M1OS41
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.0 (GNU/Linux)
-
-iD8DBQBCf0P4wQJ9gE9xL20RAij7AKClDZWIV4WK6eed41mTBVLRySXwZQCg0ewm
-Lhob8VneqRH5dykA3KzS70g=
-=nWr8
------END PGP SIGNATURE-----
-
---nextPart1203306.edh9M1OS41--
+						- Ted
