@@ -1,58 +1,66 @@
-From: Russell King <rmk@arm.linux.org.uk>
+From: Christer Weinigel <christer@weinigel.se>
 Subject: Re: tcdrain / TCSBRK / wait_until_sent delay
-Date: Mon, 9 May 2005 09:59:03 +0100
-Message-ID: <20050509095903.A5674@flint.arm.linux.org.uk>
-References: <200505071035.55508.andyparkins@gmail.com> <000a01c5546f$57d83f60$2e01a8c0@acksys.fr>
+Date: 09 May 2005 11:15:43 +0200
+Message-ID: <m3br7klpz4.fsf@zoo.weinigel.se>
+References: <200505051650.38471.andyparkins@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([212.18.232.186]:39951 "EHLO
-	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
-	id S261160AbVEII7M (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 9 May 2005 04:59:12 -0400
-Content-Disposition: inline
-In-Reply-To: <000a01c5546f$57d83f60$2e01a8c0@acksys.fr>; from jp.tosoni@acksys.fr on Mon, May 09, 2005 at 10:16:03AM +0200
+Received: from 2-1-3-15a.ens.sth.bostream.se ([82.182.31.214]:53673 "EHLO
+	zoo.weinigel.se") by vger.kernel.org with ESMTP id S261174AbVEIJPp
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 9 May 2005 05:15:45 -0400
+In-Reply-To: <200505051650.38471.andyparkins@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tosoni <jp.tosoni@acksys.fr>
-Cc: 'Andy Parkins' <andyparkins@gmail.com>, linux-serial@vger.kernel.org
+To: Andy Parkins <andyparkins@gmail.com>
+Cc: linux-serial@vger.kernel.org
 
-On Mon, May 09, 2005 at 10:16:03AM +0200, Tosoni wrote:
-> - Then Mr Russel King suggested to redesign a complete "line discipline"
+Andy Parkins <andyparkins@gmail.com> writes:
 
-Please do me the reasonable curtesy of spelling my name correctly.
+> I wonder if anyone can help me with this as a problem?  I'm trying to send 
+> commands to a device along a two wire RS485 connection.  I'm using an RS232 
+> to RS485 converter that changes the buffer direction based on RTS.  With that 
+> in mind I therefore do things like (error detection left out for brevity)
+> 
+>       ______________________________________
+> RTS __|                                    |_____
+>        _____ ___ ___ ___
+> TXD ___|   |_| |_| |_| |_________________________
+>         S 1 0 1 0 1 0 1 0 s
+>                            <-----delay---->
+> 
+> There is a small delay between RTS going high and the data starting - no 
+> problem there, however, when the transmission finishes there is a 2 byte 
+> delay before RTS goes low.  The device I'm talking to has (apparently) a 
+> response time of 200us; I'm seeing a delay before restoration of RTS of 2ms. 
+> write() returns immediately - the delay is coming from tcdrain() - but I 
+> cannot see from where.
 
-> just to handle the missing RTS feature. I must note that such "line
-> discipline" would duplicate completely the existing default line discipline
-> except for the RTS_TOGGLE ioctl.
+As others have told you, the granularity of HZ in the stock Linux
+kernel isn't good enough to give you a 200us RTS shutoff.  What you
+should be able to do is something like this:
 
-Interestingly, I've reviewed our discussions back in December, and
-they aren't exactly how you recollect them to be.  I gave you the
-historical position, and suggested both a possible way forward and
-someone else for you to talk to about this.
+    usigned int lsr;
 
-It also appears that you continued to press for _your_ original
-implementation, justifying it against the historical position (both
-of which I'd already suggested weren't suitable.)
+    bit = TIOCM_RTS;
+    ioctl( fd, TIOCMBIS, &bit );
 
-Maybe I didn't explain clearly enough why your implementation wasn't
-suitable.  Adding an IOCTL for RS485 RTS style vs conventional RTS
-style causes problems.  Consider what happens when:
+    do {
+        ioctl(fd, TIOCSERGETLSR, &lsr);
+    } while (lsr & TIOCSER_TEMT);
 
-1. we get a third (and there are more than two) flow control styles.
-2. the port is closed and something else opens it which wants standard
-   flow control. (or even an overlapping open/close.)
+    ioctl( fd, TIOCMBIC, &bit );
 
-I have also suggested to a third party about adding a feature by which
-the flow control method could be changed between several different
-settings, preferably via the existing control implmentation - termios.
-This should resolve both of the above.
+This will busy wait until the transmitter is empty.  It's wasteful,
+but it'll probably work.  Remember to add error checking to the above
+code, and you may want to run it with a realtime priority when you've
+seen that it works.
 
-Unfortunately, that also went by un-noticed and as such hasn't progressed.
-
-Therefore, there has been no progress on different flow control styles.
+  /Christer
 
 -- 
-Russell King
- Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
- maintainer of:  2.6 Serial core
+"Just how much can I get away with and still go to heaven?"
+
+Freelance consultant specializing in device driver programming for Linux 
+Christer Weinigel <christer@weinigel.se>  http://www.weinigel.se
