@@ -1,85 +1,64 @@
-From: Andy Parkins <andyparkins@gmail.com>
-Subject: Re: tcdrain / TCSBRK / wait_until_sent delay
-Date: Mon, 9 May 2005 09:01:18 +0100
-Message-ID: <200505090901.25433.andyparkins@gmail.com>
-References: <200505051650.38471.andyparkins@gmail.com> <200505071035.55508.andyparkins@gmail.com> <Pine.LNX.4.58.0505071011510.21399@deadrat.localdomain>
+From: "Tosoni" <jp.tosoni@acksys.fr>
+Subject: RE: tcdrain / TCSBRK / wait_until_sent delay
+Date: Mon, 9 May 2005 10:16:03 +0200
+Message-ID: <000a01c5546f$57d83f60$2e01a8c0@acksys.fr>
+References: <200505071035.55508.andyparkins@gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed;
-  boundary="nextPart3243809.tLWhuL0xBB";
-  protocol="application/pgp-signature";
-  micalg=pgp-sha1
+Content-Type: text/plain;
+	charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [195.102.65.187] ([195.102.65.187]:60648 "EHLO
-	369run02s.360vision.com") by vger.kernel.org with ESMTP
-	id S263074AbVEIIBd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 9 May 2005 04:01:33 -0400
-In-Reply-To: <Pine.LNX.4.58.0505071011510.21399@deadrat.localdomain>
+Received: from smtp7.clb.oleane.net ([213.56.31.27]:51341 "EHLO
+	smtp7.clb.oleane.net") by vger.kernel.org with ESMTP
+	id S261305AbVEIIQ2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 9 May 2005 04:16:28 -0400
+In-Reply-To: <200505071035.55508.andyparkins@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: rich+ml@lclogic.com
-Cc: linux-serial@vger.kernel.org
+To: 'Andy Parkins' <andyparkins@gmail.com>
+Cc: linux-serial@vger.kernel.org, rmk+lkml@arm.linux.org.uk
 
---nextPart3243809.tLWhuL0xBB
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+> I appreciate that, I was disappointed because I know
+> that some other people are doing this on Windows and
+> I assumed Linux would be able to kick a**.
+> Considering the magic that Linux can do elsewhere, it
+> didn't seem unreasonable to expect 9600 half duplex.  :-(
 
-On Saturday 2005 May 07 19:09, rich+ml@lclogic.com wrote:
-> > > Have you tried hardware flow control, "stty crtscts < /dev/ttyX"?.=20
-> > > With CTS strapped high, RTS should follow THRE||TE.
-> >
-> > That's an interesting idea - CTS is currently set by the RS485 converter
-> > to indicate when it has successfully turned the buffer around.  So it
-> > goes, RTS set high, wait for CTS, send...  Is what you're suggesting th=
-at
-> > I cut this wire and hold CTS high externally?
->
-> Oh no, in that case you don't need to do anything. The transaction you
-> described is exactly what happens automatically when crtscts is enabled.
->
-> However if your uart doesn't actually support AFE then it will be done
-> by the driver and have the timing characteristics you see already.
->
-> Hook up your scope, "stty crtscts < /dev/ttyX; echo test > /dev/ttyX" and
-> see what happens.
+Hi,
 
-Are you sure that RTSCTS flow control is what you think it is?  These days =
-RTS=20
-means "request to send to me" rather than "I request to send"; that allows=
-=20
-RTS and CTS to be crossed over in null modem cables - and puts the flow=20
-control in the receiver directly.
+I have the same problem and here is where I am:
 
-Of course in my case the RS485 converter is abusing the RTS line for its ow=
-n=20
-purposes, which is why I set -CRTSCTS.
+- Windows can handle this because it has a RTS mode ioctl called
+"RTS_TOGGLE" which sounds perfectly OK for your use (and mine).
 
-Regardless of all that, I tried it anyway with no joy :-)
+- Historically UNIX did not implement such ioctl, and so did (not) LINUX.
 
-I'm coming to accept that what I'm after isn't possible.  How likely is it=
-=20
-that I could patch the serial_core kernel driver to do the RTS control for=
-=20
-me?  Am I going to end up in the same situation?
+- I suggested last year to create such ioctl in LINUX.
 
+- Mr Russell King answered me that the good way to do this is to handle it
+in the user space application, which is obviously flawed and results in the
+delays you see because of user-space time-sharing granularity.
 
-Andy
+- Then Mr Russel King suggested to redesign a complete "line discipline"
+just to handle the missing RTS feature. I must note that such "line
+discipline" would duplicate completely the existing default line discipline
+except for the RTS_TOGGLE ioctl.
 
-=2D-=20
-Dr Andrew Parkins, M Eng (hons), AMIEE
+- So I implemented the RTS_TOGGLE for myself in the serial driver, but my
+(small, non-intrusive) patch would not be accepted in the standard serial
+driver.
+
+Well, if you use the Oxford 16C95x chip, I can provide you with a patched
+driver for kernel 2.6.10. Or I can sell you my own RS485 card with drivers
+(we are manufacturers - www.acksys.fr)
+
+I wish linux people would accept to add such ioctl in the standard serial
+API. Even if it is not immediately implemented in the serial drivers, it
+would give a standard path for anyone wishing to implement it. I am sure
+many people miss it in a time where LINUX is used more and more in
+industrial appliance.
+
+Jean-Pierre Tosoni
+ACKSYS
 
 
---nextPart3243809.tLWhuL0xBB
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.0 (GNU/Linux)
-
-iD8DBQBCfxjVwQJ9gE9xL20RAnGsAKDh/UXqUluYRafWLaG5ZwQM8cnrcQCg25lw
-MGPF4gsEeMcsWlnntjtDsgU=
-=6Rev
------END PGP SIGNATURE-----
-
---nextPart3243809.tLWhuL0xBB--
