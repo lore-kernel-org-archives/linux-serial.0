@@ -1,37 +1,58 @@
-From: Carl-Daniel Hailfinger <c-d.hailfinger.devel.2005@gmx.net>
-Subject: abusing early serial console init for resume
-Date: Wed, 11 May 2005 05:15:36 +0200
-Message-ID: <428178D8.3040302@gmx.net>
+From: Adam Belay <ambx1@neo.rr.com>
+Subject: Re: [PATCH] make 8250_pnp use pnp_manual_config_dev()
+Date: Wed, 11 May 2005 16:24:32 -0400
+Message-ID: <20050511202432.GA2720@neo.rr.com>
+References: <20050510121521.GB4676@cathedrallabs.org> <20050510135128.C3358@flint.arm.linux.org.uk> <20050510130715.GF3907@cathedrallabs.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from pop.gmx.de ([213.165.64.20]:62392 "HELO mail.gmx.net")
-	by vger.kernel.org with SMTP id S261890AbVEKDPk (ORCPT
+Received: from HELIOUS.MIT.EDU ([18.248.3.87]:53959 "EHLO neo.rr.com")
+	by vger.kernel.org with ESMTP id S262043AbVEKUab (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 10 May 2005 23:15:40 -0400
+	Wed, 11 May 2005 16:30:31 -0400
+Content-Disposition: inline
+In-Reply-To: <20050510130715.GF3907@cathedrallabs.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Aristeu Sergio Rozanski Filho <aris@cathedrallabs.org>
+Cc: Russell King <rmk@arm.linux.org.uk>, linux-serial@vger.kernel.org
 
-Hi,
+On Tue, May 10, 2005 at 10:07:15AM -0300, Aristeu Sergio Rozanski Filho wrote:
+> > > Hi,
+> > > 	this patch makes 8250_pnp use pnp_manual_config_dev() so
+> > > 	pnp_reserve_{io,irq} option will be valid for serial ports too.
+> > > 	Please consider applying
 
-is it possible to use the code from drivers/serial/8250_early.c
-to make the serial console work again during resume from
-suspend-to-RAM? It seems my serial port loses its state during
-suspend and for debugging poweron crashes having a working
-serial console is absolutely essential.
+pnp_manual_config_dev is intented for drivers that use different
+resource assignments than those automatically set by PnP.  It looks
+like you're passing the same config back.
 
-Having working suspend/resume in the generic serial driver
-would be great, too, but I'm not demanding that. I'll settle
-for any hackish solution which brings my serial console back
-before the system has a chance to commit suicide.
+Could you please explain your rational here further.
 
-At a first glance, it seems removing __init from all
-functions in 8250_early.c and calling early_uart_setup during
-resume could work just fine.
+Values already assigned by the BIOS are not checked against reserved
+regions.  Is this what you're getting it?  If so, we could have double
+detection issues between the PnP protocol and the legacy detection
+mechanism.
 
-Regards,
-Carl-Daniel
--- 
-http://www.hailfinger.org/
+
+> > 
+> > Please copy this to Adam Belay.  There are some problems with PNP
+> > serial ports because they can clash with with standard addresses
+> > for x86 ports.
+
+Ideally, I think we should avoid legacy probing if PnPBIOS or ACPI is
+available.  When serial console is enabled we could have an exception.
+What do you think?
+
+> > 
+> > We don't particularly want to reconfigure the standard x86 ports
+> > to some other addresses just because we've already detected them
+> > and claimed their resources external to PNP.
+> OK, adding Adam Belay to CC and attaching the patch again.
+> 
+> --
+> Aristeu
+
+Thanks,
+Adam
+
