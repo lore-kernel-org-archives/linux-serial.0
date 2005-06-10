@@ -1,30 +1,29 @@
-From: Caspar <hone@teamlogas.com>
-Subject: You have nothing to be ashamed more! Your women will adore you!
-Date: Fri, 10 Jun 2005 03:10:28 -0700
-Message-ID: <46756108403.59543185@bdsl.66.12.45.154.gte.net>
-Mime-Version: 1.0 (Apple Message framework v728)
-Content-Type: text/plain; charset=US-ASCII; format=flowed
-Content-Transfer-Encoding: 7bit
+From: "Paul Grimm" <urmfwxcgfzi@fusemail.com>
+Subject: FuckBuddies in your area
+Date: Fri, 10 Jun 2005 06:21:03 -0800
+Message-ID: <3CA60AB7.24223.6CEE549@localhost>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from bdsl.66.12.45.154.gte.net ([66.12.45.154]:64777 "HELO
-	bdsl.66.12.45.154.gte.net") by vger.kernel.org with SMTP
-	id S262543AbVFJKHq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Jun 2005 06:07:46 -0400
-Received: from [198.173.216.25] (port=4147 helo=[guilty])
-    by bdsl.66.12.45.154.gte.net with esmtp
-    id 10919745108eclectic45685
-    for linux-serial@vger.kernel.org; Fri, 10 Jun 2005 03:10:29 -0700
+Received: from zeus1.kernel.org ([204.152.191.4]:5001 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S262522AbVFJNVB (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 10 Jun 2005 09:21:01 -0400
+Received: from hecate.verizon.net (propos.verizon.net [170.182.28.36])
+ by verizon.net with ESMTP (8.8.8/8.0.8/cisls-7.2.2.5)
+ ID <OAA14486@verizon.net> for
+ <wilderness-emergency-linux-serial@vger.kernel.org>;
+ Fri, 10 Jun 2005 06:21:03 -0800
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
+Cc: majordomo@vger.kernel.org
 
-The best you may make for is to be the #1 lover.
-http://kstcmw.fui81gxqc7f51gf.unappointgi.com
+There is this free date site filled with a bunch of sexoholics.
 
+No flowers, no walk on the beach, just meet up for sex :)
 
+There are also some people who want serious relationships though
+So if you want a long-termer, or a one-nighter, you got it ;)
 
-Living is having ups and downs and sharing them with friends.  
-Life shrinks or expands in proportion to one's courage.    
-The men who really believe in themselves are all in lunatic asylums. 
+Whatever floats your boat pretty much! 
 
-
+http://www.onlyliveonce.net/
