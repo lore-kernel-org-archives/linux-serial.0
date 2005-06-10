@@ -1,29 +1,31 @@
-From: "Paul Grimm" <urmfwxcgfzi@fusemail.com>
-Subject: FuckBuddies in your area
-Date: Fri, 10 Jun 2005 06:21:03 -0800
-Message-ID: <3CA60AB7.24223.6CEE549@localhost>
+From: Bessie <home-brew@physiology.uu.se>
+Subject: Download and Buy CDS all software under $15-$99
+Date: Fri, 10 Jun 2005 20:39:33 -0200
+Message-ID: <9296374070.5096892042@200-233-128-119.xf-static.ctbcnetsuper.com.br>
+Mime-Version: 1.0 (Apple Message framework v728)
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:5001 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S262522AbVFJNVB (ORCPT
+Received: from [200.233.128.119] ([200.233.128.119]:12301 "HELO
+	200-233-128-119.xf-static.ctbcnetsuper.com.br") by vger.kernel.org
+	with SMTP id S261359AbVFJWjp (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Jun 2005 09:21:01 -0400
-Received: from hecate.verizon.net (propos.verizon.net [170.182.28.36])
- by verizon.net with ESMTP (8.8.8/8.0.8/cisls-7.2.2.5)
- ID <OAA14486@verizon.net> for
- <wilderness-emergency-linux-serial@vger.kernel.org>;
- Fri, 10 Jun 2005 06:21:03 -0800
+	Fri, 10 Jun 2005 18:39:45 -0400
+Received: from [156.147.53.56] (port=4232 helo=[hurtling])
+    by 200-233-128-119.xf-static.ctbcnetsuper.com.br with esmtp
+    id 12680098450freshening54751
+    for linux-serial@vger.kernel.org; Fri, 10 Jun 2005 20:39:34 -0200
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: majordomo@vger.kernel.org
 
-There is this free date site filled with a bunch of sexoholics.
+Adobe+macromedia+OS etc all in CD under $99
+http://yornm.ahw7d9sl72sh7ts.goodingdn.com
 
-No flowers, no walk on the beach, just meet up for sex :)
 
-There are also some people who want serious relationships though
-So if you want a long-termer, or a one-nighter, you got it ;)
 
-Whatever floats your boat pretty much! 
 
-http://www.onlyliveonce.net/
+A diplomat must always think twice before he says nothing.   
+Where religion is trivialized, one is unlikely to find persecution.   
+
+
