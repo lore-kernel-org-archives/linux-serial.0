@@ -1,30 +1,41 @@
-From: Joanna <lest@colby.net>
-Subject: Right place to look for buying cheap Viagra online!
-Date: Sun, 12 Jun 2005 08:00:25 -0200
-Message-ID: <75172107117.7843719319@201008014040.user.veloxzone.com.br>
-Mime-Version: 1.0 (Apple Message framework v728)
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+From: Evgeniy Polyakov <johnpol@2ka.mipt.ru>
+Subject: [1/1] stallion.c: "fix" initialisation path.
+Date: Mon, 13 Jun 2005 22:58:33 +0400
+Message-ID: <20050613225833.08afa8ff@zanzibar.2ka.mipt.ru>
+Reply-To: johnpol@2ka.mipt.ru
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 201008014040.user.veloxzone.com.br ([201.8.14.40]:56844 "HELO
-	201008014040.user.veloxzone.com.br") by vger.kernel.org with SMTP
-	id S261946AbVFLKAd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 12 Jun 2005 06:00:33 -0400
-Received: from [47.39.58.225] (port=4107 helo=[dissemble])
-    by 201008014040.user.veloxzone.com.br with esmtp
-    id 11606083712Alberta47887
-    for linux-serial@vger.kernel.org; Sun, 12 Jun 2005 08:00:26 -0200
+Received: from relay.2ka.mipt.ru ([194.85.82.65]:38029 "EHLO 2ka.mipt.ru")
+	by vger.kernel.org with ESMTP id S261190AbVFMS43 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 13 Jun 2005 14:56:29 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: rmk+serial@arm.linux.org.uk
+Cc: linux-serial@vger.kernel.org
 
-You can feel yourself for 19 years during sex!
-http://uyx.jy4cnk1cgtj95kj.honeyedlyfm.com
+Driver with such IRQ hacks inside looks really scary.
+I do not have neither hardware nor deep knowledge about it,
+just found a bug report from kerneltrap maillist.
+That code really requires some changes.
+
+--- ./drivers/char/stallion.c.orig	2005-06-13 22:56:44.000000000 +0400
++++ ./drivers/char/stallion.c	2005-06-13 22:56:47.000000000 +0400
+@@ -749,10 +749,7 @@
+ 	printk("init_module()\n");
+ #endif
+ 
+-	save_flags(flags);
+-	cli();
+ 	stl_init();
+-	restore_flags(flags);
+ 
+ 	return(0);
+ }
 
 
+	Evgeniy Polyakov
 
-The first duty of love is to listen.     
-If fear alters behavior, you're already defeated.      
-Mathematics is the queen of the sciences.      
-
-
+Only failure makes us experts. -- Theo de Raadt
