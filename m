@@ -1,36 +1,27 @@
-From: Russell King <rmk@arm.linux.org.uk>
-Subject: Re: [1/1] stallion.c: "fix" initialisation path.
-Date: Mon, 13 Jun 2005 21:17:50 +0100
-Message-ID: <20050613211749.A32077@flint.arm.linux.org.uk>
-References: <20050613225833.08afa8ff@zanzibar.2ka.mipt.ru>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: "Maynard Tran" <zzcuocu@fusemail.com>
+Subject: Ever wanted a fuck-friend?
+Date: Mon, 13 Jun 2005 23:05:50 -0800
+Message-ID: <1C1D7074.1AEA@Worldnet.att.net>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([212.18.232.186]:20241 "EHLO
-	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
-	id S261279AbVFMUR5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 13 Jun 2005 16:17:57 -0400
-Content-Disposition: inline
-In-Reply-To: <20050613225833.08afa8ff@zanzibar.2ka.mipt.ru>; from johnpol@2ka.mipt.ru on Mon, Jun 13, 2005 at 10:58:33PM +0400
+Received: from zeus2.kernel.org ([204.152.191.36]:25230 "EHLO zeus2.kernel.org")
+	by vger.kernel.org with ESMTP id S261244AbVFNGFv (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 14 Jun 2005 02:05:51 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Evgeniy Polyakov <johnpol@2ka.mipt.ru>
-Cc: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On Mon, Jun 13, 2005 at 10:58:33PM +0400, Evgeniy Polyakov wrote:
-> Driver with such IRQ hacks inside looks really scary.
-> I do not have neither hardware nor deep knowledge about it,
-> just found a bug report from kerneltrap maillist.
-> That code really requires some changes.
 
-Removing such things isn't a fix though - it changes something which
-fails/warns into a build-time silent run-time failure which are harder
-to find.
+There is this free date site filled with tons of sexoholics.
 
-(Also I don't process patches for non-drivers/serial based stuff, sorry.
-That should go via linux-kernel, thanks.)
+No flowers, no "walks on the beach", just meet up for sex :)
 
--- 
-Russell King
- Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
- maintainer of:  2.6 Serial core
+There are also some people who want something more serious though
+So if you want a long-termer, or a one-nighter, you got it ;)
+
+Whatever floats your boat pretty much! 
+
+http://www.want-some-lust.com/
+
+
+
