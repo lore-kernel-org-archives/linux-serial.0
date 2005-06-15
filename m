@@ -1,70 +1,30 @@
-From: Jesper Juhl <juhl-lkml@dif.dk>
-Subject: [PATCH] SLIP: simplify sl_free_bufs
-Date: Wed, 15 Jun 2005 21:46:53 +0200 (CEST)
-Message-ID: <Pine.LNX.4.62.0506152136310.3842@dragon.hyggekrogen.localhost>
-Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+From: Maximilian <prices@bakeremail.com>
+Subject: A friendly professional online Pharmacy focused on you!
+Date: Thu, 16 Jun 2005 00:59:06 +0200
+Message-ID: <4178455544.7602554018@client-200.48.52.64.speedy.net.pe>
+Mime-Version: 1.0 (Apple Message framework v728)
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.dif.dk ([193.138.115.101]:25296 "EHLO saerimmer.dif.dk")
-	by vger.kernel.org with ESMTP id S261523AbVFOTlb (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 15 Jun 2005 15:41:31 -0400
+Received: from client-200.48.52.64.speedy.net.pe ([200.48.52.64]:30049 "HELO
+	client-200.48.52.64.speedy.net.pe") by vger.kernel.org with SMTP
+	id S261661AbVFOW7P (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 15 Jun 2005 18:59:15 -0400
+Received: from [230.203.174.36] (port=4112 helo=[title])
+    by client-200.48.52.64.speedy.net.pe with esmtp
+    id 96012109533podium125396
+    for linux-serial@vger.kernel.org; Thu, 16 Jun 2005 00:59:07 +0200
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "David S. Miller" <davem@davemloft.net>
-Cc: Laurence Culhane <loz@holmes.demon.co.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-We can avoid assignments to the local variable 'tmp' and 
-actually get rid of tmp alltogether in sl_free_bufs(). This patch does 
-that.  This is safe since both kfree() and slhc_free() handles NULL 
-pointers gracefully.
-
-A related question: Why the use of NULLSLCOMPR & NULLSLSTATE instead of 
-plain NULL for struct slcompress and its members?
-They are defined as 
-	#define NULLSLCOMPR     (struct slcompress *)0
-	#define NULLSLSTATE     (struct cstate *)0
-Seems to me that plain NULL might as well be used (and if so I have a few 
-more potential cleanups in the queue).
-
-
-Signed-off-by: Jesper Juhl <juhl-lkml@dif.dk>
----
-
- drivers/net/slip.c |   14 ++++----------
- 1 files changed, 4 insertions(+), 10 deletions(-)
-
---- linux-2.6.12-rc6-orig/drivers/net/slip.c	2005-06-07 00:07:22.000000000 +0200
-+++ linux-2.6.12-rc6-mm1/drivers/net/slip.c	2005-06-15 21:39:39.000000000 +0200
-@@ -198,18 +198,12 @@ err_exit:
- static void
- sl_free_bufs(struct slip *sl)
- {
--	void * tmp;
--
- 	/* Free all SLIP frame buffers. */
--	tmp = xchg(&sl->rbuff, NULL);
--	kfree(tmp);
--	tmp = xchg(&sl->xbuff, NULL);
--	kfree(tmp);
-+	kfree(xchg(&sl->rbuff, NULL));
-+	kfree(xchg(&sl->xbuff, NULL));
- #ifdef SL_INCLUDE_CSLIP
--	tmp = xchg(&sl->cbuff, NULL);
--	kfree(tmp);
--	if ((tmp = xchg(&sl->slcomp, NULL)) != NULL)
--		slhc_free(tmp);
-+	kfree(xchg(&sl->cbuff, NULL));
-+	slhc_free(xchg(&sl->slcomp, NULL));
- #endif
- }
- 
+Amaze your partner with the talents in sexual area!
+http://wgn.7ma0b8pimz7fbqp.inductancejb.com
 
 
 
-Please CC me on replies.
-
--- 
-Jesper Juhl
+If voting changed anything, they'd make it illegal.     
+Even Bach comes down to the basic suck, blow, suck, suck, blow. 
+In love there are things --- bodies and words.    
 
 
