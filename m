@@ -1,44 +1,70 @@
-From: Evgeniy Polyakov <johnpol@2ka.mipt.ru>
-Subject: Re: [1/1] stallion.c: "fix" initialisation path.
-Date: Tue, 14 Jun 2005 10:35:25 +0400
-Message-ID: <20050614103525.A15147@2ka.mipt.ru>
-References: <20050613225833.08afa8ff@zanzibar.2ka.mipt.ru> <20050613211749.A32077@flint.arm.linux.org.uk>
+From: Jesper Juhl <juhl-lkml@dif.dk>
+Subject: [PATCH] SLIP: simplify sl_free_bufs
+Date: Wed, 15 Jun 2005 21:46:53 +0200 (CEST)
+Message-ID: <Pine.LNX.4.62.0506152136310.3842@dragon.hyggekrogen.localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from relay.2ka.mipt.ru ([194.85.82.65]:25824 "EHLO 2ka.mipt.ru")
-	by vger.kernel.org with ESMTP id S261244AbVFNGec (ORCPT
+Received: from mail.dif.dk ([193.138.115.101]:25296 "EHLO saerimmer.dif.dk")
+	by vger.kernel.org with ESMTP id S261523AbVFOTlb (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 14 Jun 2005 02:34:32 -0400
-Content-Disposition: inline
-In-Reply-To: <20050613211749.A32077@flint.arm.linux.org.uk>; from rmk@arm.linux.org.uk on Mon, Jun 13, 2005 at 09:17:50PM +0100
+	Wed, 15 Jun 2005 15:41:31 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <rmk@arm.linux.org.uk>
-Cc: linux-serial@vger.kernel.org
+To: "David S. Miller" <davem@davemloft.net>
+Cc: Laurence Culhane <loz@holmes.demon.co.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2005 at 09:17:50PM +0100, Russell King (rmk@arm.linux.org.uk) wrote:
-> On Mon, Jun 13, 2005 at 10:58:33PM +0400, Evgeniy Polyakov wrote:
-> > Driver with such IRQ hacks inside looks really scary.
-> > I do not have neither hardware nor deep knowledge about it,
-> > just found a bug report from kerneltrap maillist.
-> > That code really requires some changes.
-> 
-> Removing such things isn't a fix though - it changes something which
-> fails/warns into a build-time silent run-time failure which are harder
-> to find.
+We can avoid assignments to the local variable 'tmp' and 
+actually get rid of tmp alltogether in sl_free_bufs(). This patch does 
+that.  This is safe since both kfree() and slhc_free() handles NULL 
+pointers gracefully.
 
-Sure, that is why I stated it as "fix".
-I just wanted to bring some attention to 
-this driver.
+A related question: Why the use of NULLSLCOMPR & NULLSLSTATE instead of 
+plain NULL for struct slcompress and its members?
+They are defined as 
+	#define NULLSLCOMPR     (struct slcompress *)0
+	#define NULLSLSTATE     (struct cstate *)0
+Seems to me that plain NULL might as well be used (and if so I have a few 
+more potential cleanups in the queue).
 
-> (Also I don't process patches for non-drivers/serial based stuff, sorry.
-> That should go via linux-kernel, thanks.)
-> 
-> -- 
-> Russell King
->  Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
->  maintainer of:  2.6 Serial core
+
+Signed-off-by: Jesper Juhl <juhl-lkml@dif.dk>
+---
+
+ drivers/net/slip.c |   14 ++++----------
+ 1 files changed, 4 insertions(+), 10 deletions(-)
+
+--- linux-2.6.12-rc6-orig/drivers/net/slip.c	2005-06-07 00:07:22.000000000 +0200
++++ linux-2.6.12-rc6-mm1/drivers/net/slip.c	2005-06-15 21:39:39.000000000 +0200
+@@ -198,18 +198,12 @@ err_exit:
+ static void
+ sl_free_bufs(struct slip *sl)
+ {
+-	void * tmp;
+-
+ 	/* Free all SLIP frame buffers. */
+-	tmp = xchg(&sl->rbuff, NULL);
+-	kfree(tmp);
+-	tmp = xchg(&sl->xbuff, NULL);
+-	kfree(tmp);
++	kfree(xchg(&sl->rbuff, NULL));
++	kfree(xchg(&sl->xbuff, NULL));
+ #ifdef SL_INCLUDE_CSLIP
+-	tmp = xchg(&sl->cbuff, NULL);
+-	kfree(tmp);
+-	if ((tmp = xchg(&sl->slcomp, NULL)) != NULL)
+-		slhc_free(tmp);
++	kfree(xchg(&sl->cbuff, NULL));
++	slhc_free(xchg(&sl->slcomp, NULL));
+ #endif
+ }
+ 
+
+
+
+Please CC me on replies.
 
 -- 
-	Evgeniy Polyakov
+Jesper Juhl
+
+
