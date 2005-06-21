@@ -1,24 +1,12 @@
-From: "Maureen Rutledge" <bobmfl@fusemail.com>
-Subject: Have sex with local girls
-Date: Mon, 20 Jun 2005 14:27:23 -0800
-Message-ID: <95.84B6C06.7A0C9F.4Ceurope@pnonagenarian.com>
+From: pliskie@doneasy.com
+Subject: (unknown)
+Date: Tue, 21 Jun 2005 04:48:10 -0700
+Message-ID: <200506211148.j5LBm9J5032134__47642.9811482832$1119354901$gmane$org@zeus2.kernel.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from c915144b.virtua.com.br ([201.21.20.75]:16134 "HELO
-	c915144b.virtua.com.br") by vger.kernel.org with SMTP
-	id S261627AbVFTV1i (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 20 Jun 2005 17:27:38 -0400
+Received: from zeus1.kernel.org ([204.152.191.4]:11722 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S261279AbVFULse (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 21 Jun 2005 07:48:34 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: majordomo@vger.kernel.org
 
-There is this free date site filled with tons of sexoholics.
-
-No flowers, no "walks on the beach", just meet up for... you know :)
-
-There are also some people who want something more serious though
-So if you want a long-termer, or a one-nighter, you got it ;)
-
-Whatever floats your boat pretty much! 
-
-http://www.get-some-action.net/
