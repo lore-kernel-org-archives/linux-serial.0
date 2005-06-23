@@ -1,45 +1,29 @@
-From: Jesper Juhl <jesper.juhl@gmail.com>
-Subject: Re: [PATCH] SLIP: simplify sl_free_bufs
-Date: Thu, 23 Jun 2005 23:16:04 +0200
-Message-ID: <9a87484905062314165a4a3ecb@mail.gmail.com>
-References: <Pine.LNX.4.62.0506152136310.3842@dragon.hyggekrogen.localhost>
-	 <Pine.LNX.4.62.0506232243340.7467@dragon.hyggekrogen.localhost>
-	 <20050623.141038.122619255.davem@davemloft.net>
-Reply-To: Jesper Juhl <jesper.juhl@gmail.com>
+From: Russell King <rmk+lkml@arm.linux.org.uk>
+Subject: Re: [GIT PATCH] Serial updates
+Date: Thu, 23 Jun 2005 22:27:28 +0100
+Message-ID: <20050623222728.C12573@flint.arm.linux.org.uk>
+References: <20050623193304.GA15536@dyn-67.arm.linux.org.uk> <42BB2027.3090800@didntduck.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zproxy.gmail.com ([64.233.162.204]:31197 "EHLO zproxy.gmail.com")
-	by vger.kernel.org with ESMTP id S262702AbVFWVQF convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 23 Jun 2005 17:16:05 -0400
-Received: by zproxy.gmail.com with SMTP id 13so1081977nzn
-        for <linux-serial@vger.kernel.org>; Thu, 23 Jun 2005 14:16:04 -0700 (PDT)
-In-Reply-To: <20050623.141038.122619255.davem@davemloft.net>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner+glk-linux-kernel=40m.gmane.org-S262711AbVFWV2q@vger.kernel.org>
 Content-Disposition: inline
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <42BB2027.3090800@didntduck.org>; from bgerst@didntduck.org on Thu, Jun 23, 2005 at 04:48:39PM -0400
+Sender: linux-kernel-owner@vger.kernel.org
+To: Brian Gerst <bgerst@didntduck.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "David S. Miller" <davem@davemloft.net>
-Cc: juhl-lkml@dif.dk, loz@holmes.demon.co.uk, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 6/23/05, David S. Miller <davem@davemloft.net> wrote:
-> From: Jesper Juhl <juhl-lkml@dif.dk>
-> Date: Thu, 23 Jun 2005 22:46:06 +0200 (CEST)
+On Thu, Jun 23, 2005 at 04:48:39PM -0400, Brian Gerst wrote:
+> Russell King wrote:
+> > +
+> > +		if (up->capabilities & UART_BUG_TXEN) {
 > 
-> > The patch below still applies cleanly to 2.6.12 - any chance this might
-> > get applied? or any good reasons not to apply it?
-> 
-> I'll put it in my tree, 
+> Shouldn't this be up->bugs?
 
-Thanks.
-
->give me a day or so.
-> 
-No problem. :)
-
+Whoops, thanks for spotting that, Brian.  Fixed in all places.
+(Guess who forgot to update one of the patches...)
 
 -- 
-Jesper Juhl <jesper.juhl@gmail.com>
-Don't top-post  http://www.catb.org/~esr/jargon/html/T/top-post.html
-Plain text mails only, please      http://www.expita.com/nomime.html
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:  2.6 Serial core
