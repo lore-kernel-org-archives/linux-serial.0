@@ -1,30 +1,28 @@
-From: Malcolm <vitae@foehn-x.ch>
-Subject: Software paradise.
-Date: Fri, 10 Mar 2000 09:04:04 +0900
-Message-ID: <7245150325.4678548278@ce72.opt2.point.ne.jp>
-Mime-Version: 1.0 (Apple Message framework v728)
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+From: employment agency <929friedric@regiomontano.com>
+Subject: =?iso-8859-1?B?QWRkaXRpb25hbCBlYXJuaW5nISBNb3JlIHRoYW4gNzUwIEVVUk9TICBwZXIgd2Vl?=
+        =?iso-8859-1?B?aw==?=
+Date: Wed, 29 Jun 2005 02:14:52 +0000
+Message-ID: <02f701c57c50$ce0e3133$7e2752bc@regiomontano.com>
+Mime-Version: 1.0
+Content-Type: text/plain;
+    format=flowed;
+    charset="iso-8859-1";
+    reply-type=original
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ce72.opt2.point.ne.jp ([211.9.155.72]:48900 "HELO
-	ce72.opt2.point.ne.jp") by vger.kernel.org with SMTP
-	id S261550AbVF1NlE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 28 Jun 2005 09:41:04 -0400
-Received: from [69.134.155.139] (port=4068 helo=[accosted])
-    by ce72.opt2.point.ne.jp with esmtp
-    id 2469220635altruism129216
-    for linux-serial@vger.kernel.org; Fri, 10 Mar 2000 09:04:05 +0900
+Received: from [211.222.183.252] ([211.222.183.252]:53766 "HELO
+	211.222.183.252") by vger.kernel.org with SMTP id S262287AbVF2C2H
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 28 Jun 2005 22:28:07 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Name-brand software at low, low, low, low prices 
-http://mvaj.5c92qm5g2f5ckon.pedaryil.com
+Italian Travel Agency seeks for employees from the Germany of the age 21 and older.
+We give you a chance to earn real money without special skills, higher education or investments.
+All you need is a PC, Internet and e-mail. 
+Have a nice day,
+Carlo Chelinni
 
-
-
-
-I exist as I am, that is enough.     
-Computer Science is no more about computers than astronomy is about telescopes. 
-
-
+italiantravelinc@aol.com
+tel\fax for Germany: 49-692-557-7305
