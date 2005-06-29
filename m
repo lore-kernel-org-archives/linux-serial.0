@@ -1,28 +1,29 @@
-From: employment agency <929friedric@regiomontano.com>
-Subject: =?iso-8859-1?B?QWRkaXRpb25hbCBlYXJuaW5nISBNb3JlIHRoYW4gNzUwIEVVUk9TICBwZXIgd2Vl?=
-        =?iso-8859-1?B?aw==?=
-Date: Wed, 29 Jun 2005 02:14:52 +0000
-Message-ID: <02f701c57c50$ce0e3133$7e2752bc@regiomontano.com>
+From: "Matt Schulte" <matts@commtech-fastcom.com>
+Subject: Info request
+Date: Wed, 29 Jun 2005 11:40:51 -0500
+Message-ID: <MFEBKNPNJBEAJEICJEJNIEPLCKAA.matts@commtech-fastcom.com>
+Reply-To: <matts@commtech-fastcom.com>
 Mime-Version: 1.0
 Content-Type: text/plain;
-    format=flowed;
-    charset="iso-8859-1";
-    reply-type=original
+	charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [211.222.183.252] ([211.222.183.252]:53766 "HELO
-	211.222.183.252") by vger.kernel.org with SMTP id S262287AbVF2C2H
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 28 Jun 2005 22:28:07 -0400
+Received: from smtp003.bizmail.yahoo.com ([216.136.130.195]:6572 "HELO
+	smtp003.bizmail.yahoo.com") by vger.kernel.org with SMTP
+	id S262610AbVF2QlA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 29 Jun 2005 12:41:00 -0400
+Received: from localhost (localhost [127.0.0.1])
+	by backup.commtech-fastcom.com (Postfix) with ESMTP id A7AAF166345
+	for <linux-serial@vger.kernel.org>; Wed, 29 Jun 2005 11:40:51 -0500 (CDT)
+Received: from 66.136.244.89 ([127.0.0.1])
+ by localhost (backup.commtech-fastcom.com [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 04175-09 for <linux-serial@vger.kernel.org>;
+ Wed, 29 Jun 2005 11:40:51 -0500 (CDT)
+Received: from matt2k (unknown [192.168.1.7])
+	by backup.commtech-fastcom.com (Postfix) with SMTP id 79398166344
+	for <linux-serial@vger.kernel.org>; Wed, 29 Jun 2005 11:40:51 -0500 (CDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Italian Travel Agency seeks for employees from the Germany of the age 21 and older.
-We give you a chance to earn real money without special skills, higher education or investments.
-All you need is a PC, Internet and e-mail. 
-Have a nice day,
-Carlo Chelinni
 
-italiantravelinc@aol.com
-tel\fax for Germany: 49-692-557-7305
