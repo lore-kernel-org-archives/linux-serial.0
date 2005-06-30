@@ -1,39 +1,31 @@
-From: "Rickey Mcconnell" <quvudej@ezagenda.com>
-Subject: QA: Unique Logos / customer recognition
-Date: Wed, 29 Jun 2005 22:00:06 +0000 (UTC)
-Message-ID: <200506292205.j5TM4mLr024638__22941.7479284622$1120082406$gmane$org@zeus2.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="Windows-1252"
+From: Michael <conceptualize@langholz.com>
+Subject: Buy Viagra, Levitra and Cialis right now from the comfort of your home.
+Date: Thu, 30 Jun 2005 16:02:53 -0400
+Message-ID: <4455910806.86032125947@207-255-56-010-dhcp.jst.pa.atlanticbb.net>
+Mime-Version: 1.0 (Apple Message framework v728)
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus2.kernel.org ([204.152.191.36]:12518 "EHLO zeus2.kernel.org")
-	by vger.kernel.org with ESMTP id S262671AbVF2WFX (ORCPT
+Received: from 207-255-56-010-dhcp.jst.pa.atlanticbb.net ([207.255.56.10]:19986
+	"HELO 207-255-56-010-dhcp.jst.pa.atlanticbb.net") by vger.kernel.org
+	with SMTP id S263116AbVF3UC7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 29 Jun 2005 18:05:23 -0400
-Date: Wen, 29 Jun 2005 09:15:52 +0000
+	Thu, 30 Jun 2005 16:02:59 -0400
+Received: from [102.151.192.175] (port=4351 helo=[standings])
+    by 207-255-56-010-dhcp.jst.pa.atlanticbb.net with esmtp
+    id 53655127534lagoon12025
+    for linux-serial@vger.kernel.org; Thu, 30 Jun 2005 16:02:54 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-raid@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Your business lacks visual identity?
-
-Marketing efforts falling short?
-
-Invisible among a sea of competitors?
-
-You're on the right track for a solution - keep reading...
-Our professional designers specialize in the creation of custom logos and business/corporate identities. Our design needs to be seen only once to gain customer attention and recognition. With one of our unique, eye-catching mages you'll never have to introduce yourself twice!
-We promise fast turnaround and 100% customer satisfaction. Choose from as any design ideas as necessary, select as many colors as you wish, order any modifications you like, and request any format. Our prices are affordable for any size of business, and get this: there are no hidden fees.
-
-Follow the link below to browse our portfolio and check out our Sweet Deals.
-Wipe the "in" from "invisible" in just a few days - with us!
-http://lkc5.com.ox-files.info
-
-Sincerely,
-Rickey Mcconnell
+Natural remedies for sexual health
+http://yer.mjpfq54x1w4c854.zorromf.info
 
 
 
+Oh for a book and a shady nook...     
+Nothing in the affairs of men is worthy of great anxiety.  
+I would fain die a dry death.      
 
 
