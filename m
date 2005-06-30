@@ -1,31 +1,223 @@
-From: Morris <strainers@maggody.com>
-Subject: Welcome to VIP Quality Software.
-Date: Thu, 30 Jun 2005 21:26:20 -0500
-Message-ID: <5933349351.10495635438@adsl-70-241-162-105.dsl.hstntx.swbell.net>
-Mime-Version: 1.0 (Apple Message framework v728)
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+From: "Yan Hoffmann" <whitenigga@fibertel.com.ar>
+Subject: Sind Sie bereit, ein angemessenes Gehalt zu haben. Schutzcode:FW-5767
+Date: Thu, 30 Jun 2005 21:42:29 +0600
+Message-ID: <6993D836.C12ED72@fibertel.com.ar>
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from adsl-70-241-162-105.dsl.hstntx.swbell.net ([70.241.162.105]:48644
-	"HELO adsl-70-241-162-105.dsl.hstntx.swbell.net") by vger.kernel.org
-	with SMTP id S263194AbVGAC0X (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 30 Jun 2005 22:26:23 -0400
-Received: from [217.56.95.51] (port=4316 helo=[courage])
-    by adsl-70-241-162-105.dsl.hstntx.swbell.net with esmtp
-    id 5496687709worrier25031
-    for linux-serial@vger.kernel.org; Thu, 30 Jun 2005 21:26:21 -0500
+Received: from 9-78-235-201.fibertel.com.ar ([201.235.78.9]:8453 "HELO
+	fibertel.com.ar") by vger.kernel.org with SMTP id S263212AbVGAEDB
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 1 Jul 2005 00:03:01 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Do not have money , get software cds from here!
-http://dfylw.lsp0o23w0vls043.mitigatorji.com
+Lieber Freund,
+Wenn Sie mehr Geld, mehr Sicherheit und mehr Freiheit haben mochten, dann
+kann das der wichtigste Brief fur Sie sein, den Sie in Ihrem Leben gelesen
+haben.
+Hier sind die Grunde dazu:
+Sie werden erfahren, wie ich habe... wie Sie werden... das in Wirklichkeit
+bringen, "mit Ihrem PC zu arbeiten und die Bezahlung fur einen vollen
+Arbeitstag erhalten".
+Was noch wichtiger ist, dass Sie einfach damit anfangen konnen, ohne jedes
+Risiko und Investionen von Ihrer Seite im Voraus.
+Jetzt, weiss ich, dass Sie skeptisch gesinnt sind. Das ist in Ordnung und
+ganz typisch. Lassen Sie mich Ihnen drei Grunde vorlegen, warum Sie diesen
+Business ohne zu zogern beginnen sollen.
+
+Drei Grunde, daran zu glauben, was ich sage
+
+Erstens, Ich bin NICHT im Begriff Ihnen zu versprechen, dass Sie  dreissig
+tausend USD  in den nachsten 90 Tagen oder $500 pro Tag ab nachster Woche
+verdienen werden. Das ist absolut ubertrieben. Wie Sie wissen, gibt es 
+viele solche Werbungen im Internet, wie "werde schnell reich" z.B. Das ist
+Unsinn. Was wichtig fur Sie zu begreifen ist, dass es unter viel Mull nur
+wenig Edelsteine gibt. 
+Zweitens, Zehntausende von  gewohnlichen Menschen aus aller Welt ziehen
+schon Vorteile aus dem Programm "der Arbeit zu Hause" und bekommen ihre
+wochentlichen Lohne (Schecke) - insgesamt fast 6 Millionen Dollar im vorigen
+Jahr.
+Drittens, USA TODAY teilte vor Kurzem mit, mehr als 170 000 neue Leute
+bekamen Internetanschluss pro Tag. Viele kluge Geschaftsleute werden reich
+mit Hilfe vom Internet. Und das ist erst der Anfang! Mit unserem System
+konnen Sie Ihr Geld ohne besondere Bemuhungen bekommen!
+
+Das ist die Liste der Vorteile, die Sie ziehen konnen
+
+Das vollendete, einfache im Gebrauch System, das Sie einfach "einschalten",
+um Extrabucks zu bekommen.
+Der Hausbusiness wurde von beschaftigten Leuten geschaffen - nur 3-5
+Stunden pro Woche und Sie werden Ihre Bezahlung fur den vollen Arbeitstag in
+Ihrer Tasche bestimmt haben.
+Diese Arbeit stort Ihre laufende Arbeit, Ihren Beruf oder Ihre Karriere
+nicht - Sie wahlen die Zeit fur die Arbeit im Internet.
+Sie schafft "mache das einmal, wirst mit Geld fur dein ganzes Leben
+versorgt sein" und Honorar bekommen Sie ohne das Haus zu verlassen.
+Keine Erfahrung brauchen Sie dafur.
+Geniessen Sie innige Ruhe, die Sie wahrend der Arbeit mit einer der
+erfolgreichsten und bewahrten Industrieorganisationen und mit dem
+langfristigen Mitglied von Better Business Bureau.
+Sie werden Ihren Business auf einer soliden Basis entwickeln - 14 Jahre der
+zuverlassigen und erfahrenen Strategien.
+Buchfuhrung, Entlohnungstabelle, Frachtbefordung  alles ist fur Sie bei uns
+vorhanden.
+Keine Dienstnehmer sind notig.
+Arbeiten Sie nur zu Hause, nur an Ihrem PC.
+Unentgeltliche professionelle Beratungen.
+Keine Begrenzungen fur mogliche Verdienste!
+Keine teure Einrichtung eines Buros wird verlangt!
+Riesige potentielle Steuerprofite.
+Keine territorielle Begrenzungen!  
+Das System ist auch perfekt fur Verschaffung der Extragelder fur schon
+bestehendes Geschaft.
+Das ist eine kurze Liste aller Vorteile, die Sie ziehen konnen. Es kostet
+Ihnen nichts darauf einzugehen und es gibt keine Verpflichtungen. Jetzt sind
+Sie vielleicht verwundert...
+
+Und wie konnen wir alle diese Dinge tun? Lassen Sie mich erklaren. Dazu
+dienen aber nicht meine Worte, sondern die Worte von anderen Leute:
+"Wie viele von uns, habe ich vieles probiert. Ich habe  endlich das
+gefunden, was sich organisatorisch und materiell jeden Tag bewahrt. Ich
+konnte kaum glauben, dass das, was ich in den ersten Wochen meiner Arbeit in
+meinem Postkasten fand, war nur Abschlagszahlung".
+B. Trask
+Arizona, die USA
+
+"Die Unterstutzung, die ich erhalten habe, war ausserordentlich gross. Ich
+kann nicht glauben, dass so viel Energie aufgewendet wird, damit ich Erfolg
+erziele".
+
+A. Marks
+Michigan, die USA
+
+"Das ist das schnellste und effizienteste Marketingsystem, das ich gesehen
+habe. Was fur eine Moglichkeit!" S. Allen Utah, die USA 
+
+"Nachdem ich viel Zeit, Energie und Ressourcen in Marketing fur einige
+fruhere Programme ausgelegt hatte, war ich fur einen so einfachen und
+absolut automatischen Prozess, der von De-payments Powerline Systeme
+angeboten wurde, nicht vorbereitet. Ich war ebenso durch den allumfassenden
+angebotenen Training sehr beeindruckt. Das ist der ins Leben umgesetzte
+Traum. Danke Ihnen, De-payments".
+D.Kukkee
+Kanada
+
+"Ich habe Internet 6 jahre benutzt und De-payments ist die beste und
+vollendete Moglichkeit unter denen, die ich gesehen habe... alles ist so
+einfach und klar, es gibt keine Unklarheiten uberhaupt".
+Delroy
+Jamaika
+
+ "Ich wurdige die Klarheit und die in der Sektion "Getting Started"
+angegeben Ratschlage. Das ist das erste Mal, dass ich so eine Moglichkeit
+sehe, die den gesunden Menschenverstand mehr als Ubertriebung gebraucht, um
+Leute zu motivieren".   L. Rasberry  Florida, die USA 
+
+"Ich habe in De-payments einen hochwertigen und schnellen Business
+gefunden. Das bedeutet schon etwas fur mich – ich will mein eigenes Haus und
+einen guten Verdienst haben. De-payments gibt mir solche Moglichkeit!"
+K.Pfaff
+Connecticut, die USA
+
+"De-payments ist eine grosse Moglichkeit, finanzielle Unabhangigkeit mit
+der guten Arbeitsethik zu erreichen. Verlassliche und professionelle Leute,
+tolle Produktion".
+A. Cooper
+Arizona, die USA
 
 
+Was ist eingeschlossen?
+Wenn Sie unser Team anschliessen, bekommen Sie das volle Instrumentarium
+der Trainings und der Unterstutzung von De-payments. Nichts wird dem
+Selbstlauf uberlassen. Alles ist vorgesehen.
+Ausgaben!
+Unentgeltliche 24-Stunden Beratungen
+Jeder De-payments-Mitarbeiter wird von 3 Leaders unterstutzt, die ihn mit
+den kostenlosen Konsultationen und Unterstutzung versehen.
+Familienbusiness mit Steuer- und Erbeprofite.
+UNENTGELTLICHES Online-Training
+Wie man 3-5 Stunden der Arbeit pro Woche in eine Ganztagsarbeitbezahlung 
+ohne Storung fur laufende Arbeit, Beruf oder Karriere (das ist toll fur
+beschaftigte Leute) verwandeln kann.
+Wie man Internettechnologie "in 50 Orten gleichzeitig sein" gebrauchen und
+den Verdienst drastisch erhohen kann.
+Wie man "self-funding" - Marketingtechnik benutzen kann, um alle Werbung
+gratis zu machen.
+Wie man Minenfelde, Sackgassen und Schwierigkeiten, die 95% Geschaftsmanner
+auf ihrem Weg nach dem Beginn ihrer Arbeit im Internet treffen, vermeiden
+kann.
+Wie man Strategieunionen "win/win" grunden kann, so dass deê Erfolg von
+Tausenden der anderen Onlinemarketers versichert wird. 
+Der billigste Weg, das Geld online zu verdienen
+Dank Internet sind Ihre Businesskosten minimal. Sie konnen mit Millionen
+via E-Mail, Suchmaschinen, Direktorien, kostenlose Berater, etc. Kontakt
+aufnehmen. Alles ist frei! Keine door-to-door Verkaufe... Keine Post...
+Keinen Druck... Keine Brochuren... Keine Tonbandkassetten... Keine Videos...
+Keine Ferngesprache. Unverzugliche Kommunikation – in aller Welt. Sie konnen
+viel Geld sparen.
+So, konnen Sie sehen, dass alles, was Sie fur den Anfang des zusatlichen
+Verdiensts brauchen, ist  keine Kosten und Verpflichtungen von Ihrer Seite.
+Hier sind andere gute Nachrichten...
+
+Unentschlossen?
+Bewerben Sie sich jetzt...
+Uberlegen Sie sich jede Zeit!
+
+Das liegt an Ihnen...
+Das Leben wird nicht einfacher und Sie werden nicht junger. In einem Jahr
+werden Sie sich umschauen und mehr bedauern, als Sie das schon einmal
+gemacht hatten ("hatte machen konnen, wurde machen... hatte machen
+sollen..."). So,wenn Sie ernsthaft auf den Verdienst, mehr Sicherheit, mehr
+Freiheit eingestellt sind... Meinen Sie nicht, dass Sie sich dank diesem
+System ohne jedes Risiko darauf einlassen konnen?
+
+Sie konnen sich fur unsere Regional Account Mananger Stelle sofort
+bewerben.
+
+Der von uns angebotene Job ist mit Mail verbunden. Das ist ein einfacher
+Job, der Sie nicht auffordert, Ihre laufende Arbeit aufzugeben.
+
+Erhalten Sie Scheks und losen Sie sie von unseren Kunden (Wire Transfer,
+PayPal Transfer, Uberweisung, Kassierer- oder Persohnliche Schecks) ein und
+schicken Sie unseren Vertretern das Geld durch die Western Union (ihre
+Honorar betragt 5-10% der erhaltenen Summe).
+
+Wenn Sie versuchen mochten, brauchen Sie das Folgende: 
 
 
-Failure is defined by our reaction to it.     
-Always forgive your enemies; nothing annoys them so much.    
+Hausadresse und Telefonnummer
+Volljahrigkeit
+Internetanschluss, 24 Stunden, 7 Tage pro Woche
+PC zu Hause
+Sie sollen bereit sein, uns eine schriftliche Bestatigung zu geben, damit
+wir Informationen uber Sie bekommen.
+
+Bewerbungsformular
+
+Fullen Sie es bitte ein und schicken es zu: yanhoffman@paysde.com
+
+1. Ihr Vorname und Name:
+2. Land:
+3. Alter:
+4. Einige Worte uber Sie selbst:
+
+Emails sollen zu yanhoffman@paysde.com gerichtet werden
+
+Mit vielen Grussen
+yanhoffman@paysde.com
+
+P.S. Wie jeder InternetUser mussen Sie schon viele Systeme "werde schnell
+reich" gesehen haben. Vielleicht sind Sie der Tatsache gegenuber skeptisch ,
+dass es legale Wege fur den Verdienst aus den Fruchten der
+Internetrevolution geben kann. Sowas habe ich auch gefuhlt, bevor ich
+De-payments Marketing Group vor einem Jahr fand.
+
+ 
+Digitale Unterschrift:
+
 
 
