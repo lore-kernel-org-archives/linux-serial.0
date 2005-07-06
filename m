@@ -1,49 +1,30 @@
-From: Roman Kurakin <rik@cronyx.ru>
-Subject: Re: development of serial driver (i.e. 8250_pci HOWTO)
-Date: Tue, 05 Jul 2005 21:34:33 +0400
-Message-ID: <42CAC4A9.7080500@cronyx.ru>
-References: <MFEBKNPNJBEAJEICJEJNMEAPCLAA.matts@commtech-fastcom.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+From: Gloria <disdains@tett.org>
+Subject: Buy cheap prescriptions online
+Date: Wed, 6 Jul 2005 00:50:54 -0200
+Message-ID: <6277959303.12085021491@201009178227.user.veloxzone.com.br>
+Mime-Version: 1.0 (Apple Message framework v728)
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from hanoi.cronyx.ru ([144.206.181.53]:52423 "EHLO hanoi.cronyx.ru")
-	by vger.kernel.org with ESMTP id S261914AbVGERia (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Jul 2005 13:38:30 -0400
-Received: (from root@localhost)
-	by hanoi.cronyx.ru (8.13.0/vak/3.0) id j65HZPEL014028
-	for linux-serial@vger.kernel.org.checked; Tue, 5 Jul 2005 21:35:25 +0400 (MSD)
-	(envelope-from rik@cronyx.ru)
-In-Reply-To: <MFEBKNPNJBEAJEICJEJNMEAPCLAA.matts@commtech-fastcom.com>
+Received: from 201009178227.user.veloxzone.com.br ([201.9.178.227]:28691 "HELO
+	201009178227.user.veloxzone.com.br") by vger.kernel.org with SMTP
+	id S262133AbVGFCqg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 5 Jul 2005 22:46:36 -0400
+Received: from [151.224.158.230] (port=4329 helo=[aeronautics])
+    by 201009178227.user.veloxzone.com.br with esmtp
+    id 37017119935aerating13581
+    for linux-serial@vger.kernel.org; Wed, 6 Jul 2005 00:50:55 -0200
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: matts@commtech-fastcom.com
-Cc: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Matt Schulte wrote:
+Prescription Drug Information
+http://rsmsn.kznd632vhcks63k.morcellatedc.info
 
->>Roman Kurikin wrote:
->>I suggest you to compile docbook for kernel. You may read there API
->>description.
->>
->>    
->>
->
->I'm afraid I am going to have to plead ignorance.  Exactly what docbook are
->you referring to?
->  
->
-/usr/src/linux/Documentation/DocBook
 
->Matt Schulte
->Commtech, Inc.
->http://www.commtech-fastcom.com
->
->-
->To unsubscribe from this list: send the line "unsubscribe linux-serial" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
->  
->
+
+Youth is easily deceived because it is quick to hope.   
+Much learning does not teach understanding.       
+Zeus does not bring all men's plans to fulfillment.    
+
 
