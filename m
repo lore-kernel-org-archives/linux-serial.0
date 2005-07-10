@@ -1,30 +1,29 @@
-From: Siegfried <MacArthur@delanoscientific.com>
-Subject: Viagra Online Now
-Date: Fri, 8 Jul 2005 23:11:24 -0400
-Message-ID: <7931795400.94397105197@cpe-024-088-023-107.sc.res.rr.com>
-Mime-Version: 1.0 (Apple Message framework v728)
-Content-Type: text/plain; charset=US-ASCII; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cpe-024-088-023-107.sc.res.rr.com ([24.88.23.107]:21515 "HELO
-	cpe-024-088-023-107.sc.res.rr.com") by vger.kernel.org with SMTP
-	id S263118AbVGIDLq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 8 Jul 2005 23:11:46 -0400
-Received: from [169.118.184.185] (port=4206 helo=[municipal])
-    by cpe-024-088-023-107.sc.res.rr.com with esmtp
-    id 732862079evaluated120276
-    for linux-serial@vger.kernel.org; Fri, 8 Jul 2005 23:11:25 -0400
-Sender: linux-serial-owner@vger.kernel.org
+From: Russell King <rmk+lkml@arm.linux.org.uk>
+Subject: Re: Serial PCI driver in 2.6.x kernel (i.e. 8250_pci HOWTO)
+Date: Sun, 10 Jul 2005 13:03:43 +0100
+Message-ID: <20050710130343.A3279@flint.arm.linux.org.uk>
+References: <MFEBKNPNJBEAJEICJEJNOEBECLAA.matts@commtech-fastcom.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner+glk-linux-kernel=40m.gmane.org-S261797AbVGJMDt@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <MFEBKNPNJBEAJEICJEJNOEBECLAA.matts@commtech-fastcom.com>; from matts@commtech-fastcom.com on Tue, Jul 05, 2005 at 04:06:22PM -0500
+Sender: linux-kernel-owner@vger.kernel.org
+To: Matt Schulte <matts@commtech-fastcom.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
 
-Cialis offers efficacy and spontaneity in your love life.
-http://kjbiz.wbz7ife7t6e40xw.hyponymicln.com
+On Tue, Jul 05, 2005 at 04:06:22PM -0500, Matt Schulte wrote:
+> In the past (2.4.x days) I have just hacked the serial.c code to do what I
+> needed and then recompiled it as something else.
 
+Can we see this code?
 
+> Remember, please copy the serial list at linux-serial@vger.kernel.org
 
-The ends must justify the means.       
-There is nothing more unequal, than the equal treatment of unequal people. 
-[T]he best of us must sometimes eat our words.    
+Despite being the maintainer for the serial layer, I'm not on linux-serial.
 
-
+-- 
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:  2.6 Serial core
