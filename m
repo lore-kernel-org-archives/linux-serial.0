@@ -1,30 +1,34 @@
-From: Harold <bandied@bradford.org>
-Subject: The best you may make for is to be the #1 lover.
-Date: Fri, 15 Jul 2005 16:28:24 +0700
-Message-ID: <9307987037.81150122962@caching4-true.asianet.co.th>
+From: Cecil <vagina@mfloan.com>
+Subject: Dude check out this sweet site!
+Date: Sat, 16 Jul 2005 02:43:02 +0200
+Message-ID: <4398018619.48070112521@p54803380.dip.t-dialin.net>
 Mime-Version: 1.0 (Apple Message framework v728)
 Content-Type: text/plain; charset=US-ASCII; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gb.jb.68.92.revip.asianet.co.th ([61.91.68.92]:39686 "HELO
-	caching4-true.asianet.co.th") by vger.kernel.org with SMTP
-	id S263273AbVGOJ21 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 15 Jul 2005 05:28:27 -0400
-Received: from [119.48.218.78] (port=4143 helo=[unaccustomed])
-    by caching4-true.asianet.co.th with esmtp
-    id 6680715748emotionally92016
-    for linux-serial@vger.kernel.org; Fri, 15 Jul 2005 16:28:25 +0700
+Received: from p54803380.dip.t-dialin.net ([84.128.51.128]:6665 "HELO
+	p54803380.dip.t-dialin.net") by vger.kernel.org with SMTP
+	id S262199AbVGPAnW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 15 Jul 2005 20:43:22 -0400
+Received: from [240.75.179.137] (port=4231 helo=[gags])
+    by p54803380.dip.t-dialin.net with esmtp
+    id 4263754113Thames129914
+    for linux-serial@vger.kernel.org; Sat, 16 Jul 2005 02:43:03 +0200
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Big savings on brand name drugs.
-http://valiant.alwaysfor.biz/?balancesxtvuydialingzvtzest
+Increase the length and girth of your penis
+http://www.xunepa.com/ss/
 
 
-But I’m not so think as you drunk I am.   
-Concern should drive us into action and not into depression.   
-We never regret having eaten too little.      
-When smashing monuments, save the pedstals -- they always come in handy. 
+
+
+
+It is easy to be brave from a safe distance.   
+No Voice; but oh! the silence sank like music on my heart. 
+Have no friends not equal to yourself.      
+He who controls the past controls the future.     
+Never let the sense of past failure defeat your next step.  
 
 
