@@ -1,32 +1,45 @@
-From: Flossie <invalidated@loscontineros.ch>
-Subject: Rolex, Cartier, Bretling and more...
-Date: Tue, 19 Jul 2005 13:56:46 -0300
-Message-ID: <3607157739.50815115240@223-8-246-201.adsl.terra.cl>
-Mime-Version: 1.0 (Apple Message framework v728)
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+From: Rolf Eike Beer <eike-kernel@sf-tec.de>
+Subject: [PATCH] 8250 PCI Serial driver not always disabling PCI device
+Date: Wed, 20 Jul 2005 09:27:05 +0200
+Message-ID: <200507200927.06500@bilbo.math.uni-mannheim.de>
+Mime-Version: 1.0
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 223-8-246-201.adsl.terra.cl ([201.246.8.223]:2320 "HELO
-	223-8-246-201.adsl.terra.cl") by vger.kernel.org with SMTP
-	id S262045AbVGSQ4x (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Jul 2005 12:56:53 -0400
-Received: from [191.116.63.107] (port=4564 helo=[tachometer])
-    by 223-8-246-201.adsl.terra.cl with esmtp
-    id 11816888628Cretaceous49012
-    for linux-serial@vger.kernel.org; Tue, 19 Jul 2005 13:56:47 -0300
+Received: from mail.sf-mail.de ([62.27.20.61]:27082 "EHLO mail.sf-mail.de")
+	by vger.kernel.org with ESMTP id S261202AbVGTHWz (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 20 Jul 2005 03:22:55 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: rmk+serial@arm.linux.co.uk
+Cc: linux-serial@vger.kernel.org
 
-Beautiful and Elegant Watches
-http://racial.val10.com/repli/lib/
+Hi,
 
+I found that pciserial_remove_one() only disables the device if it finds 
+private data. This looks suspicious to me. Patch attached.
 
+Eike
 
+Signed-off-by: Rolf Eike Beer <eike-kernel@sf-tec.de>
 
-He that lives upon hope will die fasting.     
-Whom the gods would destroy, they first make mad.    
-A friend is a present you give yourself.     
-None of us is as smart as all of us.   
-
-
+--- linux-2.6.13-rc3/drivers/serial/8250_pci.c	2005-07-13 06:46:46.000000000 
++0200
++++ linux-2.6.13-rc3-eike/drivers/serial/8250_pci.c	2005-07-20 
+09:16:28.000000000 +0200
+@@ -1778,10 +1778,10 @@ static void __devexit pciserial_remove_o
+ 		if (quirk->exit)
+ 			quirk->exit(dev);
+ 
+-		pci_disable_device(dev);
+-
+ 		kfree(priv);
+ 	}
++
++	pci_disable_device(dev);
+ }
+ 
+ static int pciserial_suspend_one(struct pci_dev *dev, pm_message_t state)
