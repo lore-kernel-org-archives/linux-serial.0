@@ -1,46 +1,32 @@
-From: "Simon" <isuqatntul@moose-mail.com>
-Subject: THEY FOUND NEW ANTIDOTE
-Date: Wed, 20 Jul 2005 19:08:13 -0400
-Message-ID: <00b901c58d7f$e7504e50$776be6ec__13055.3604489707$1121900984$gmane$org@efvut>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	format=flowed;
-	charset="iso-8859-1";
-	reply-type=original
+From: Jen <sadist@papart.com>
+Subject: Quicken 2005 Premier Home and Business - $19.95
+Date: Fri, 22 Jul 2005 00:57:51 -0500
+Message-ID: <5646245875.39611120209@CPE-24-208-66-48.neb.res.rr.com>
+Mime-Version: 1.0 (Apple Message framework v728)
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus2.kernel.org ([204.152.191.36]:53142 "EHLO zeus2.kernel.org")
-	by vger.kernel.org with ESMTP id S261565AbVGTXIS (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 20 Jul 2005 19:08:18 -0400
+Received: from CPE-24-208-66-48.neb.res.rr.com ([24.208.66.48]:20497 "HELO
+	CPE-24-208-66-48.neb.res.rr.com") by vger.kernel.org with SMTP
+	id S262058AbVGVF52 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 22 Jul 2005 01:57:28 -0400
+Received: from [49.144.155.169] (port=4273 helo=[Galen])
+    by CPE-24-208-66-48.neb.res.rr.com with esmtp
+    id 11529551178Flanders117621
+    for linux-serial@vger.kernel.org; Fri, 22 Jul 2005 00:57:52 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: sparclinux@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-The Ancient Secret of Life
-'THE ANTIDOTE'
-
-Kills ALL known deadly Viruses & Bacteria in the body that keep diseases, namely: 
-Influenza, SARS, Cancer, HIV etc. etc. active.
-
-http://www.dghsfaes.com/fvd
-
-A disease must be made DORMANT to stop infection.
-'The ANTIDOTE' is the answer.
-
-
-WE ARE THE ONLY COMPANY IN THE WORLD WHO HAVE DEVELOPED AND 
-ENHANCED THIS PRODUCT FOR SALE.
+Roxio Easy Media Creator 7.0 - $19.95
+http://Scotchman.jetlow.com/
 
 
 
-http://www.dghsfaes.com/fvd
 
 
+Be not ashamed of mistakes and thus make them crimes.   
+Strong reasons make strong actions.        
+Have no fear of perfection -- you will never reach it.  
 
-If you cannot access the site it maybe busy due to high demand for this product.
-Please try again later in a few hours or the next day.
 
-
-Nah not for me
-http://www.dghsfaes.com/backhome
