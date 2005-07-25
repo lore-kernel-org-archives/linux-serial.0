@@ -1,34 +1,42 @@
-From: Lucy <alveolus@selectivemutism.org>
-Subject: OEM Software
-Date: Sat, 23 Jul 2005 16:29:20 +0000 (UTC)
-Message-ID: <10910444806.1431686547@dialpool-210-214-246-134.maa.sify.net>
-Mime-Version: 1.0 (Apple Message framework v728)
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+From: Uwe Bonnes <bon@elektron.ikp.physik.tu-darmstadt.de>
+Subject: What happens with chars in input buffer on open
+Date: Mon, 25 Jul 2005 12:01:35 +0200
+Message-ID: <17124.47231.961026.383844@hertz.ikp.physik.tu-darmstadt.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from dialpool-210-214-246-134.maa.sify.net ([210.214.246.134]:17161
-	"HELO dialpool-210-214-246-134.maa.sify.net") by vger.kernel.org
-	with SMTP id S261529AbVGWQ2G (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 23 Jul 2005 12:28:06 -0400
-Received: from [27.182.199.214] (port=4269 helo=[pacer])
-    by dialpool-210-214-246-134.maa.sify.net with esmtp
-    id 8139036563spiraling118228
-    for linux-serial@vger.kernel.org; Fri, 29 Jul 2005 21:57:49 -0700
-Date: Fri, 29 Jul 2005 21:57:48 -0700
+Received: from elektron.ikp.physik.tu-darmstadt.de ([130.83.24.72]:52996 "EHLO
+	elektron.ikp.physik.tu-darmstadt.de") by vger.kernel.org with ESMTP
+	id S261174AbVGYKBj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 25 Jul 2005 06:01:39 -0400
+Received: from hertz.ikp.physik.tu-darmstadt.de (hertz.ikp.physik.tu-darmstadt.de [130.83.24.91])
+	by elektron.ikp.physik.tu-darmstadt.de (8.11.2/8.11.2/SuSE Linux 8.11.1-0.5) with ESMTP id j6PA1cJ16659
+	for <linux-serial@vger.kernel.org>; Mon, 25 Jul 2005 12:01:38 +0200
+Received: from hertz.ikp.physik.tu-darmstadt.de (localhost [127.0.0.1])
+	by hertz.ikp.physik.tu-darmstadt.de (8.13.3/8.13.3/SuSE Linux 0.7) with ESMTP id j6PA1axp021923
+	for <linux-serial@vger.kernel.org>; Mon, 25 Jul 2005 12:01:38 +0200
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Adobe Creative Suite for MAC - $59.95
-http://straight.rubid.com/
+Hallo,
 
+is there any POSIX defined behaviour with characters already pending in the
+input buffer when the port is opened?
 
+The observation with some program (Wine) is that these characters are not
+discarded. A read() returns these characters. This may be caused by some
+settings that another Wine process has done before. Which parameters might
+cause that behaviour?
+But at least
+port.c_lflag |= NOFLSH
+seems to have no effects.
 
+Thanks for any help/pointers
 
+-- 
+Uwe Bonnes                bon@elektron.ikp.physik.tu-darmstadt.de
 
-Problems are only opportunities in work clothes.      
-Stop worrying about the potholes in the road and celebrate the journey! 
-Where do I find the time for not reading so many books? 
-
-
+Institut fuer Kernphysik  Schlossgartenstrasse 9  64289 Darmstadt
+--------- Tel. 06151 162516 -------- Fax. 06151 164321 ----------
