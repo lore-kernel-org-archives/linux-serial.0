@@ -1,36 +1,32 @@
-From: Andrew Morton <akpm@osdl.org>
-Subject: Re: [PATCH] SERIAL: add MMIO support to 8250_pnp
-Date: Fri, 29 Jul 2005 04:22:41 -0700
-Message-ID: <20050729042241.46f52ec1.akpm@osdl.org>
-References: <200507271647.12882.bjorn.helgaas@hp.com>
-	<20050729113205.D10345@flint.arm.linux.org.uk>
+From: Adam <Mathematik@fiat187.every1.net>
+Subject: Do you want to know the secret of success in sexual life?
+Date: Sat, 30 Jul 2005 14:00:09 +0200
+Message-ID: <9018485150.1441226491@p54AB5B7D.dip.t-dialin.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.osdl.org ([65.172.181.4]:35464 "EHLO smtp.osdl.org")
-	by vger.kernel.org with ESMTP id S262506AbVG2LX5 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 29 Jul 2005 07:23:57 -0400
-In-Reply-To: <20050729113205.D10345@flint.arm.linux.org.uk>
+Received: from p54AB5B7D.dip.t-dialin.net ([84.171.91.125]:772 "HELO
+	p54AB5B7D.dip.t-dialin.net") by vger.kernel.org with SMTP
+	id S263071AbVG3MCb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 30 Jul 2005 08:02:31 -0400
+Received: from [80.28.51.166] (port=10303 helo=[natively])
+    by p54AB5B7D.dip.t-dialin.net with esmtp
+    id 5200240226chastise68697
+    for linux-serial@vger.kernel.org; Sat, 30 Jul 2005 14:00:10 +0200
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <rmk+lkml@arm.linux.org.uk>
-Cc: bjorn.helgaas@hp.com, linux-serial@vger.kernel.org, ambx1@neo.rr.com, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Russell King <rmk+lkml@arm.linux.org.uk> wrote:
->
-> On Wed, Jul 27, 2005 at 04:47:12PM -0600, Bjorn Helgaas wrote:
-> > Add support for UARTs in MMIO space and clean up a little whitespace.
-> > 
-> > HP legacy-free ia64 machines need this.
-> 
-> Due to the restrictions caused by the new new kernel development model,
-> I'm unable to merge this for 2.6.13.  I already have other stuff already
-> queued in my serial tree which probably isn't suitable for merging.
-> 
-> If someone else (Andrew or Adam) wishes to merge this then fine - it
-> looks reasonable.  Let me know what you're doing so I know whether to
-> add it to my serial tree or not.
+Have you ever used an online pharmacy?
+http://rusticating.el9.net/pharmacy/dir/
 
-Yup, I queued it up.
+
+
+
+He who would leap high must take a long run.   
+If one has not given everything, one has given nothing.   
+Behind every successful man is a surprised woman.     
+Making music should not be left to the professionals.    
+
+
