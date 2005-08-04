@@ -1,81 +1,55 @@
-From: Russell King <rmk+lkml@arm.linux.org.uk>
+From: Chris Budd <budorola@gmail.com>
 Subject: Re: 2.4.21: Sharing interrupts with serial console
-Date: Thu, 4 Aug 2005 08:54:40 +0100
-Message-ID: <20050804085440.A22910@flint.arm.linux.org.uk>
+Date: Thu, 4 Aug 2005 07:29:06 -0700
+Message-ID: <92fc8b8105080407297d8ced80@mail.gmail.com>
 References: <92fc8b8105080318367f77fed1@mail.gmail.com>
+	 <20050804085440.A22910@flint.arm.linux.org.uk>
+Reply-To: Chris Budd <budorola@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([212.18.232.186]:44811 "EHLO
-	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
-	id S261958AbVHDHyo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 4 Aug 2005 03:54:44 -0400
+Received: from zproxy.gmail.com ([64.233.162.201]:25445 "EHLO zproxy.gmail.com")
+	by vger.kernel.org with ESMTP id S262128AbVHDO3I convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 4 Aug 2005 10:29:08 -0400
+Received: by zproxy.gmail.com with SMTP id r28so237693nza
+        for <linux-serial@vger.kernel.org>; Thu, 04 Aug 2005 07:29:06 -0700 (PDT)
+In-Reply-To: <20050804085440.A22910@flint.arm.linux.org.uk>
 Content-Disposition: inline
-In-Reply-To: <92fc8b8105080318367f77fed1@mail.gmail.com>; from budorola@gmail.com on Wed, Aug 03, 2005 at 06:36:51PM -0700
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Chris Budd <budorola@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Chris Budd <budorola@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Wed, Aug 03, 2005 at 06:36:51PM -0700, Chris Budd wrote:
-> 1.  The rs_init function in ./linux-2.4.21/drivers/char/serial.c
-> explicitly states "The interrupt of the serial console port can't be
-> shared."  Does this include *ALL* interrupts?  The code checks for
-> sharing only with other serial devices, not *ALL* types of devices
-> like I2C, RTC, etc.
+On 8/4/05, Russell King <rmk+lkml@arm.linux.org.uk> wrote:
+> On Wed, Aug 03, 2005 at 06:36:51PM -0700, Chris Budd wrote:
+> > 1.  The rs_init function in ./linux-2.4.21/drivers/char/serial.c
+> > explicitly states "The interrupt of the serial console port can't be
+> > shared."  Does this include *ALL* interrupts?  The code checks for
+> > sharing only with other serial devices, not *ALL* types of devices
+> > like I2C, RTC, etc.
+<snip>
+> > 2.  While the presence of the comment about not sharing was nice, it
+> > does not explain "why?"
+> 
+> Connecting a level-active interrupt output to an edge-triggered
+> interrupt controller input is Bad News(tm) for missing interrupts.
+> 
 
-I think you'll find that older versions of the serial driver did not
-allow the IRQ to be shared by other devices.  It probably got changed
-with the addition of PCI card support.
+Of course.  I thought it was something more serious in the bowels of
+the kernel.  All the comment needed was just that one adjective "The
+*edge-triggered* interrupt of the serial console port can't be
+shared."  I know many programmers do not like to write comments, but
+good comments make the code more robust and stable:  the code clearly
+shows *what* you did, but comments are necessary to indicate *why*.
 
-> 2.  While the presence of the comment about not sharing was nice, it
-> does not explain "why?"
+<snip>
+> If your Intel hardware doesn't have level triggered input capabilities,
+> please apply customer pressure to Intel to ensure that they consider it
+> for their future ARM-based designs.
 
-Connecting a level-active interrupt output to an edge-triggered
-interrupt controller input is Bad News(tm) for missing interrupts.
+You will be happy to know that the Intel IOP80321 has level-sensitive
+interrupts.
 
-The situation is as follows:
-- serial port asserts interrupt output which triggers an interrupt
-  to the CPU.  You enter the serial handler.
-
-- Before you clear the serial interrupt, the other device sharing
-  this interrupt asserts its interrupt output - so there was no
-  edge transition.
-
-- You complete service the serial port, and move on to service the
-  other device.
-
-- Before you clear it's interrupt, the serial port re-asserts its
-  interrupt output, and again there was no edge transition as far
-  as the interrupt controller can tell.
-
-- You complete servicing the other device and leave return from
-  interrupt mode.
-
->From this point on, neither device can cause an interrupt to be sent
-to the CPU again.
-
-The above is rather long to put in a comment.
-
-> Why can't we share the serial console interrupt?
-> The serial console seems to work when I alter serial.c to
-> skip this check for the sharing of interrupts with the serial console.
-
-If the interrupt is shared, it's possible for the interrupt handler to
-service the serial port while it's being used to send a kernel message,
-and thereby disrupt the kernel message output.
-
-> 3.  Does the hardware platform matter?  We are running Linux 2.4.21 on
-> an embedded XScale(ARM)-based board.
-
-Depends how you've connected the serial port interrupt.  Edge triggered
-inputs bad, level triggered good.
-
-If your Intel hardware doesn't have level triggered input capabilities,
-please apply customer pressure to Intel to ensure that they consider it
-for their future ARM-based designs.
-
--- 
-Russell King
- Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
- maintainer of:  2.6 Serial core
+Thank you for the detailed explanation.
+Chris.
