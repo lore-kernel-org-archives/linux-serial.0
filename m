@@ -1,37 +1,35 @@
-From: "Empire" <gaby@earthlink.net>
-Subject: vJy <Name>, we invite You to elite sites with 4 in 1 4wi
-Date: Mon, 15 Aug 2005 17:08:52 +0000
-Message-ID: <CI6KCF9HD7873346@earthlink.net>
-References: <2FCEG9A5IF3BK3J9@vger.kernel.org>
+From: "Isaiah Quinn" <yiswnf@cedronejanove.com>
+Subject: RE: Do you still feel the vitality
+Date: Wed, 17 Aug 2005 16:18:23 -0800
+Message-ID: <U5b86c97D86_c9F0wpIv__10830.6600283415$1124323729$gmane$org@cedronejanove.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus2.kernel.org ([204.152.191.36]:8389 "EHLO zeus2.kernel.org")
-	by vger.kernel.org with ESMTP id S964924AbVHOUIb (ORCPT
+Received: from zeus2.kernel.org ([204.152.191.36]:30444 "EHLO zeus2.kernel.org")
+	by vger.kernel.org with ESMTP id S1751377AbVHRAIL (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 15 Aug 2005 16:08:31 -0400
-Received: from aar.alcatel-alsthom.fr (129-2-229-250.student.umd.edu [129.2.229.250])
-	by zeus2.kernel.org (8.13.1/8.13.1) with SMTP id j7FK8TJW005290
-	for <linux-serial@vger.kernel.org>; Mon, 15 Aug 2005 13:08:30 -0700
-In-Reply-To: <2FCEG9A5IF3BK3J9@vger.kernel.org>
+	Wed, 17 Aug 2005 20:08:11 -0400
+Content-class: urn:content-classes:message
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linux-serial <linux-serial@vger.kernel.org>
+To: ultralinux@vger.kernel.org
 
-Hello Linux-serial,
+Hello, Hi mate, I'm Faustino Shelton
 
-At this time we can offer a small update at our system - BD-MAGAZINE Issue N1,2,3,4,5!
-... When it's  late  at night , all ya really  need is some  midnight passion. See 
-a video few sweet young models show fashion for your passion within these pages.
-Tanya, Marisha, Oksana and Alena.They have new video serries of beautiful Tanya...
-  
-             http://9TrPyl20Zid.leetempire.com/5/?bT5T7tyt
-  
-Our great and unique offer: for each subscribtion You get access to another
-three sites from our portal for 31 days... without any additional payments!
-Simply subscribe, select and use!
+I'm a bit curious:
 
-MSGID: 8wgwyLK3ZNNHXxaN6wP6w9jHRop0RYt1
+Are you jealous of your friends, enhance your erections now
+
+We have an answer!
+
+Get wood like a pornstar http://easyrx-4u.com/index.php?ref_id=766
+
+best regards,
+
+yiswnf
+
+
+
 
 
