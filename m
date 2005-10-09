@@ -1,35 +1,67 @@
-From: Amabel Hayes <owning@richard.net>
-Subject: Symantec Norton Ghost 9.0 - $14.95
-Date: Sat, 8 Oct 2005 21:53:51 -0700
-Message-ID: <1755532287.123139130770@ctb-cache1-vif0.saix.net>
+From: Russell King <rmk+lkml@arm.linux.org.uk>
+Subject: Re: [patch 3/4] new serial flow control
+Date: Sun, 9 Oct 2005 09:37:24 +0100
+Message-ID: <20051009083724.GA14335@flint.arm.linux.org.uk>
+References: <200501052341.j05Nfod27823@mail.osdl.org> <20050105235301.B26633@flint.arm.linux.org.uk> <20051008222711.GA5150@bouh.residence.ens-lyon.fr> <20051009000153.GA23083@flint.arm.linux.org.uk> <20051009002129.GJ5150@bouh.residence.ens-lyon.fr>
+Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:8615 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S932217AbVJIEx6 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 9 Oct 2005 00:53:58 -0400
-Received: from ctb-cache1-vif0.saix.net (wblv-146-244-226.telkomadsl.co.za [165.146.244.226])
-	by zeus1.kernel.org (8.13.1/8.13.1) with SMTP id j994rp1V014084
-	for <linux-serial@vger.kernel.org>; Sat, 8 Oct 2005 21:53:52 -0700
+Received: from caramon.arm.linux.org.uk ([212.18.232.186]:36367 "EHLO
+	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
+	id S932248AbVJIIhd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 9 Oct 2005 04:37:33 -0400
+Content-Disposition: inline
+In-Reply-To: <20051009002129.GJ5150@bouh.residence.ens-lyon.fr>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Samuel Thibault <samuel.thibault@ens-lyon.org>, akpm@osdl.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Microsoft Money Premium 2005 - $19.95
-http://pocketing.waptip.com/
+On Sun, Oct 09, 2005 at 02:21:30AM +0200, Samuel Thibault wrote:
+> Russell King, le Sun 09 Oct 2005 01:01:53 +0100, a ?crit :
+> > > How could this look like in userspace?
+> > 
+> > I think they should be termios settings - existing programs know how
+> > to handle termios to get what they want. 
+> 
+> Hence a new field in the termios structure?
+> 
+> There was a discussion about this back in 2000:
+> 
+> http://marc.theaimsgroup.com/?t=96514848800003&r=1&w=2
+> 
+> and more precisely a remind of SVR4's termiox structure with an added
+> x_hflag:
+> 
+> http://marc.theaimsgroup.com/?l=linux-kernel&m=96523146720678&w=2
+> 
+> I'm not sure about how we'd want to implement that. The SVR4 approach
+> (orthogonal input/output flow control selection) doesn't seem right to
+> me: there are really peculiar flow controls that involve both ways. A
+> mere enumeration of possible methods might be better.
 
+What I was thinking of was to use some of the spare termios cflag bits
+to select the flow control.  You'd only want one flow control type at
+one time though.  Eg: define two fields, each to select the signal.
 
+0 - RTS
+1 - DTR
 
-Freud is the father of psychoanalysis. It has no mother.   
+0 - CTS
+1 - DTR
+2 - DSR
 
-Love is an obsessive delusion that is cured by marriage.   
-Never keep up with the Joneses. Drag them down to your level. 
+You still want CRTSCTS to enable hardware flow control though - which
+is what programs expect to happen with that flag enabled.  RTS/CTS
+flow control would be type 0 above for compatibility with existing
+programs.
 
-Experience is the name everyone gives to their mistakes.    
-Curiosity killed the cat, but for awhile I was a suspect.  
-There are no ugly women, only lazy ones.     
-Friendship is a very taxing and arduous form of leisure activity.  
+However, bear in mind that the majority of the more inteligent 8250-
+compatible UARTs with large FIFOs only do hardware flow control on
+RTS/CTS - attempting to simulate hardware flow control on the other
+signals could end up with up to 64 or 128 characters being sent after
+the transmit handshake is deasserted.
 
-
-
+-- 
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:  2.6 Serial core
