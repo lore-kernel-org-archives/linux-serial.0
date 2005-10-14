@@ -1,35 +1,73 @@
-From: Meg Whitley <rioting@driverz.com>
-Subject: Cheap software store
-Date: Wed, 12 Oct 2005 15:15:56 -0700
-Message-ID: <4074178401.12219964638@213.243.30.8>
-Content-Type: text/plain; charset=us-ascii
+From: "Stephan Brodkorb" <stephan-linuxdev@brodkorb.com>
+Subject: [PATCH 1/1] n_r3964 fix - char
+Date: Fri, 14 Oct 2005 17:02:42 +0200
+Message-ID: <20051014150238.B105980CD@mail.udag.de>
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:48356 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S932480AbVJLWQM (ORCPT
+Received: from mail.udag.de ([62.146.33.70]:35286 "EHLO mail.udag.de")
+	by vger.kernel.org with ESMTP id S1750744AbVJNPCl (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Oct 2005 18:16:12 -0400
-Received: from 213.243.30.8 ([62.29.49.164])
-	by zeus1.kernel.org (8.13.1/8.13.1) with SMTP id j9CMFuNK026534
-	for <linux-serial@vger.kernel.org>; Wed, 12 Oct 2005 15:16:01 -0700
+	Fri, 14 Oct 2005 11:02:41 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-
-OEM Software
-http://suffered.wootop.com/
+To: linux-kernel@vger.kernel.org
+Cc: adobriyan@gmail.com, rubini@ipvvis.unipv.it, rmk+serial@arm.linux.org.uk, linux-serial@vger.kernel.org, Markus_Daniel@gmx.de
 
 
+--- linux-2.6.14-rc4-orig/drivers/char/n_r3964.c	2005-10-11
+03:19:20.000000000 +0200
++++ linux-2.6.14-rc4/drivers/char/n_r3964.c	2005-10-14
+15:05:29.589643200 +0200
+@@ -695,7 +695,7 @@
+             {
+                TRACE_PE("IDLE - got STX but no space in rx_queue!");
+                pInfo->state=R3964_WAIT_FOR_RX_BUF;
+-	       mod_timer(&pInfo->tmr, R3964_TO_NO_BUF);
++	       mod_timer(&pInfo->tmr, jiffies + R3964_TO_NO_BUF);
+                break;
+             }
+ start_receiving:
+@@ -705,7 +705,7 @@
+             pInfo->last_rx = 0;
+             pInfo->flags &= ~R3964_ERROR;
+             pInfo->state=R3964_RECEIVING;
+-	    mod_timer(&pInfo->tmr, R3964_TO_ZVZ);
++	    mod_timer(&pInfo->tmr, jiffies + R3964_TO_ZVZ);
+ 	    pInfo->nRetry = 0;
+             put_char(pInfo, DLE);
+             flush(pInfo);
+@@ -732,7 +732,7 @@
+                if(pInfo->flags & R3964_BCC)
+                {
+                   pInfo->state = R3964_WAIT_FOR_BCC;
+-		  mod_timer(&pInfo->tmr, R3964_TO_ZVZ);
++		  mod_timer(&pInfo->tmr, jiffies + R3964_TO_ZVZ);
+                }
+                else 
+                {
+@@ -744,7 +744,7 @@
+                pInfo->last_rx = c;
+ char_to_buf:
+                pInfo->rx_buf[pInfo->rx_position++] = c;
+-	       mod_timer(&pInfo->tmr, R3964_TO_ZVZ);
++	       mod_timer(&pInfo->tmr, jiffies + R3964_TO_ZVZ);
+             }
+          }
+         /* else: overflow-msg? BUF_SIZE>MTU; should not happen? */ 
 
-Tradition is a guide and not a jailer.     
 
+Hi everybody,
 
-We have to distrust each other. It's our only defense against betrayal. 
+since Revision 1.10  was released the n_r3964 module wasn't able to receive
+any data. The reason for that behavior is because there were some wrong
+calls of mod_timer(...) in the function receive_char (...).
+This patch should fix this problem and was successfully tested with talking
+to some kuka industrial robots.
 
-A hypocrite is a person who--but who isn't?     
-Read much, but not many books.       
-It is not the horse that draws the cart, but the oats. 
-Everything you can imagine is real.       
+Greetings,
 
-
+Stephan Brodkorb
 
