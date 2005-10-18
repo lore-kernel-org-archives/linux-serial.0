@@ -1,49 +1,32 @@
-From: Ben Papps <ben.papps@oxsemi.com>
-Subject: [PATCH]serial: 8250 16950 uart capabilities fix
-Date: Mon, 17 Oct 2005 10:38:27 +0100
-Message-ID: <43537113.2050108@oxsemi.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+From: Martin Hayden <neophytes@signal.nl>
+Subject: We guarantee 100% authentic software.
+Date: Tue, 18 Oct 2005 05:08:47 -0700
+Message-ID: <4849980172.82248103364@pool-71-247-127-220.nycmny.east.verizon.net>
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from jupiter.oxsemi.com ([62.255.240.98]:27052 "EHLO
-	jupiter.oxsemi.com") by vger.kernel.org with ESMTP id S932230AbVJQJit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 17 Oct 2005 05:38:49 -0400
+Received: from zeus1.kernel.org ([204.152.191.4]:63968 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S1750716AbVJRMJN (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 18 Oct 2005 08:09:13 -0400
+Received: from pool-71-247-127-220.nycmny.east.verizon.net (pool-71-247-127-220.nycmny.east.verizon.net [71.247.127.220])
+	by zeus1.kernel.org (8.13.1/8.13.1) with SMTP id j9IC8lPS030023
+	for <linux-serial@vger.kernel.org>; Tue, 18 Oct 2005 05:08:54 -0700
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux serial newsgroup <linux-serial@vger.kernel.org>, Russell King <rmk+serial@arm.linux.org.uk>, linux-kernek@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
---- linux-2.6.13.4/drivers/serial/8250.c.orig    2005-10-10 
-19:54:29.000000000 +0100
-+++ linux-2.6.13.4/drivers/serial/8250.c    2005-10-17 
-10:19:20.000000000 +0100
-@@ -211,7 +211,7 @@ static const struct serial8250_config ua
-         .fifo_size    = 128,
-         .tx_loadsz    = 128,
-         .fcr        = UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
--        .flags        = UART_CAP_FIFO,
-+        .flags        = UART_CAP_FIFO | UART_CAP_EFR | UART_CAP_SLEEP,
-     },
-     [PORT_16654] = {
-         .name        = "ST16654",
-
--------------------------------
-These flags allow the hardware flow control and other enhanced 
-capabilities of 950 uarts.
-
-Signed-off-by: Ben Papps <ben.papps@oxsemi.com>
+Big range of all types of downloadable software.
+http://mufxlg.df170zj40n0ldddqivd8idvd.delaterla.com/?fhljtnlb
 
 
--- 
-_____________________________
- 
-Ben Papps
+In a mad world only the mad are sane.    
+And virtue, though in rags, will keep me warm.    
 
-Software Design Engineer
-Oxford Semiconductor Ltd
-25 Milton Park, Oxfordshire, OX14 4SH
- 
-Tel: 01235 824887
+I dote on his very absence.       
+Never forget that the most powerful force on earth is love.  
+
+I regard golf as an expensive way of playing marbles.   
+The great man is he that does not lose his child's heart. 
 
 
