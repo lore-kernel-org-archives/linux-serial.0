@@ -1,32 +1,28 @@
-From: Martin Hayden <neophytes@signal.nl>
-Subject: We guarantee 100% authentic software.
-Date: Tue, 18 Oct 2005 05:08:47 -0700
-Message-ID: <4849980172.82248103364@pool-71-247-127-220.nycmny.east.verizon.net>
+From: "Johnathan C. Bernard" <johnathancbernardfz@apollohair.com>
+Subject: =?ISO-8859-1?b?WW91ciBNb3J0YWdlIE9wcG9ydHVuaXRpZXM=?=
+Date: Tue, 18 Oct 2005 15:56:34 +0000
+Message-ID: <6f7c01c5d3fc$39a6ed77$b193de09@csbwlg3>
+References: <a8a801c5cead$70428d9c$76152577@6bu8tfs>
+Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:63968 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S1750716AbVJRMJN (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Oct 2005 08:09:13 -0400
-Received: from pool-71-247-127-220.nycmny.east.verizon.net (pool-71-247-127-220.nycmny.east.verizon.net [71.247.127.220])
-	by zeus1.kernel.org (8.13.1/8.13.1) with SMTP id j9IC8lPS030023
-	for <linux-serial@vger.kernel.org>; Tue, 18 Oct 2005 05:08:54 -0700
+Received: from [61.52.106.118] ([61.52.106.118]:57617 "EHLO
+	caryenterprises.com") by vger.kernel.org with ESMTP
+	id S1750861AbVJRP5n (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 18 Oct 2005 11:57:43 -0400
+In-Reply-To: <a8a801c5cead$70428d9c$76152577@6bu8tfs>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
 
-Big range of all types of downloadable software.
-http://mufxlg.df170zj40n0ldddqivd8idvd.delaterla.com/?fhljtnlb
+=C2Good Evening
 
+=C2Best Financing Offerings
 
-In a mad world only the mad are sane.    
-And virtue, though in rags, will keep me warm.    
+=C2http://4iwo4ox6xmbelbjarewwwrc3mjqmdcy.unmort.net
 
-I dote on his very absence.       
-Never forget that the most powerful force on earth is love.  
-
-I regard golf as an expensive way of playing marbles.   
-The great man is he that does not lose his child's heart. 
-
-
+-
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
