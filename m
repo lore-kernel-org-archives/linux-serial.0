@@ -1,35 +1,32 @@
-From: "Marisol Perez" <mperez_yi@procard.net>
-Subject: =?iso-8859-1?b?VG9wIHBoYXJtYSBPZmZlcmluZ3M=?=
-Date: Wed, 19 Oct 2005 19:31:41 +0000
-Message-ID: <KFFEPIPDCNPFJJMCJIOINJJDPDAA.mperez_yi@procard.net>
-References: <1c4001c5d358$f640ee7f$ad97365d@z8gah62>
-Mime-Version: 1.0
+From: Tommy Wilkinson <peephole@monteuil.com>
+Subject: Quality software at low prices - on time and hassle free.
+Date: Wed, 19 Oct 2005 15:11:02 -0700
+Message-ID: <8521171353.4257746298@host242-122.pool8254.interbusiness.it>
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [210.116.114.226] ([210.116.114.226]:2064 "EHLO adarweb.com")
-	by vger.kernel.org with ESMTP id S1751245AbVJSTdU (ORCPT
+Received: from zeus1.kernel.org ([204.152.191.4]:49856 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S1751579AbVJSWLJ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 Oct 2005 15:33:20 -0400
-In-Reply-To: <1c4001c5d358$f640ee7f$ad97365d@z8gah62>
+	Wed, 19 Oct 2005 18:11:09 -0400
+Received: from host242-122.pool8254.interbusiness.it (host242-122.pool8254.interbusiness.it [82.54.122.242])
+	by zeus1.kernel.org (8.13.1/8.13.1) with SMTP id j9JMB25V026104
+	for <linux-serial@vger.kernel.org>; Wed, 19 Oct 2005 15:11:04 -0700
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-=C2Hello,
+Any software backups for lowest pricest.
+http://iax.46sgr8adre9u44mzrmmzrm4m.empallhh.com/?aztasq
 
-=C2Can't find better weekly deals than we can offer.
 
-=C2You cannot find better prices.
+In these matters the only certainty is that nothing is certain.  
+The vice-presidency ain't worth a pitcher of warm spit.    
 
-=C280% in savings on everything!
-=C2Will never need a prescription
+Forget injuries, never forget kindnesses.        
+A single fact can spoil a good argument.     
 
-=C2http://p.oomort.net/p/
+Miami Beach is where neon goes to die.     
+Egotism is the anesthetic that dulls the pain of stupidity.   
 
-=C2-All the best wishes from Top Pharma Deals Inc.
 
--
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
