@@ -1,41 +1,47 @@
-From: "Chen, Justin" <justin.chen@hp.com>
-Subject: [PATCH] new hp diva console port
-Date: Fri, 21 Oct 2005 17:30:44 -0700
-Message-ID: <C1BB5827EB7A364EA57B4E8C7C02ADAC054EB2F2@cacexc04.americas.cpqcorp.net>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="US-ASCII"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1751281AbVJVAc7@vger.kernel.org>
-Content-class: urn:content-classes:message
-Sender: linux-kernel-owner@vger.kernel.org
-To: rmk+serial@arm.linux.org.uk
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+From: "Marian Ash" <CorinaHornegraybeard@csu-bayern.de>
+Subject: how much do you pay for your meds? inconceivable
+Date: Sun, 23 Oct 2005 07:00:53 -0700
+Message-ID: <0.1481814968.1197980757-110966658@topica.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from [84.205.133.11] ([84.205.133.11]:34826 "HELO 209.132.176.167")
+	by vger.kernel.org with SMTP id S1750702AbVJWNIF (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 23 Oct 2005 09:08:05 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-This patch adds the new ID 0x132a and configure the new PCI Diva console
-port.  This device support only 1 single console UART. Please apply.
-Thanks,
- 
-Justin Chen
+Hello,
 
---- 8250_pci.c.orig     2005-10-18 15:56:50.148489501 -0700
-+++ 8250_pci.c  2005-10-18 15:55:25.624076474 -0700
-@@ -178,6 +178,7 @@ static int __devinit pci_hp_diva_init(st
-                rc = 4;
-                break;
-        case PCI_DEVICE_ID_HP_DIVA_POWERBAR:
-+       case PCI_DEVICE_ID_HP_DIVA_HURRICANE:
-                rc = 1;
-                break;
-        }
---- pci_ids.h.orig      2005-10-18 16:02:56.864305321 -0700
-+++ pci_ids.h   2005-10-18 16:03:54.002976496 -0700
-@@ -710,6 +710,7 @@
- #define PCI_DEVICE_ID_HP_DIVA_EVEREST  0x1282
- #define PCI_DEVICE_ID_HP_DIVA_AUX      0x1290
- #define PCI_DEVICE_ID_HP_DIVA_RMP3     0x1301
-+#define PCI_DEVICE_ID_HP_DIVA_HURRICANE 0x132a
- #define PCI_DEVICE_ID_HP_CISSA         0x3220
- #define PCI_DEVICE_ID_HP_CISSB         0x3230
- #define PCI_DEVICE_ID_HP_ZX2_IOC       0x4031
+As a valued customer, we provide you with occassional information
+and updates.
+
+Our records indicate that you may be in need of a refill.
+
+We hope that you will once again, give us the opportunity to
+offer you a great selection of meds, low prices, and superior customer
+care. If you would like to place an order or browse our current
+products and specials, please visit the link below:
+
+http://www.lkjklj.net/?8a6d6e4d683S6a73e39S9a2a3359fbe8
+
+Yours Truly,
+
+Marian Ash
+Customer Care Specialist
+
+
+
+
+
+
+
+
+
+
+
+
+
+mushy you spout me, moose reeve quorum . clergy you buckeye me, reversion moratorium breakpoint . 
+trytophan you chubby me, anybody dress duluth . gibson you chaos me, alkane steeve barricade . improbable you cerium me, average bagel eavesdropped perfuse . 
+http://www.lkjklj.net/fgh.php
