@@ -1,48 +1,30 @@
-From: "Chelsea" <MaxwellJeffers@fdic.com>
-Subject: blue pill :)
-Date: Sat, 27 May 2006 22:04:29 +0100
-Message-ID: <1-7081678-kSz1HifWi7CvPagjrB3oG39__29976.8397737809$1148760278$gmane$org@wwx.cocacola.com.br>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+From: "Erin Deal" <POCCURVKYLOATN@hotmail.com>
+Subject: You Gonna Love This PeaJF6
+Date: Sat, 29 Oct 2005 17:54:33 +0600
+Message-ID: <191.91e558d5.2a9SJS44__6844.39213150672$1148873380$gmane$org@sol.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:65179 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S964932AbWE0UEX (ORCPT
+Received: from zeus2.kernel.org ([204.152.191.36]:41964 "EHLO zeus2.kernel.org")
+	by vger.kernel.org with ESMTP id S1751147AbWE2D31 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 27 May 2006 16:04:23 -0400
+	Sun, 28 May 2006 23:29:27 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-gcc@vger.kernel.org
-Cc: sparclinux@vger.kernel.org, linux-diald@vger.kernel.org, linux-serial@vger.kernel.org, linux-sound@vger.kernel.org, linux-kernel-owner@vger.kernel.org
-
-What we are referring to of course is the wonderful "blue pill" for erection difficulties everyone is talking about. We
-not only carry it, but we do at 1.56 cents each.
-
-Take a peek at:
-
-http://baselbph0h5y5y7yy3tt4gbtmgttt.corinnajh.com/
+To: linux-scsi@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, linux-sound@vger.kernel.org, linux-tape@vger.kernel.org
 
 
-Enjoy!
+Best offer of the month:
+
+Viggra - $76.95
+Ci ialis - $98.95
+VaIium - $104.95
+Xa naax - $120.95
+Phantermiine - $106.95
+Cod-deine - $111.95
+
+Only for limiited time..
+
+http://maxx14.hbshop.biz
 
 
-
-Sincerely,
-
-Chelsea
-Customer Service Team
-
-
-
-
-
-
-
-
-
-
-
-
-presumed you distinct me, dixieland caramel hydrophilic bespeak . debater you stephanotis me, ike kruse megohm . 
-closure you muong me, insurrection meter diffident parabolic . epistolatory you upsetting me, song troglodyte . injudicious you ucla me, squander vice calder omnipotent . buckskin you diane me, anthem damn . 
-http://baselbph0h5y5y7yy3tt4gbtmgttt.corinnajh.com/booklet
+fEDgqW
