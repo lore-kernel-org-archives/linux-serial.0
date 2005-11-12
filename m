@@ -1,48 +1,40 @@
-From: Bjorn Helgaas <bjorn.helgaas@hp.com>
-Subject: [SERIAL] Claim Wacom tablet device on HP tc1100 tablet
-Date: Fri, 11 Nov 2005 16:55:22 -0700
-Message-ID: <200511111655.22637.bjorn.helgaas@hp.com>
+From: Matthew Wilcox <matthew@wil.cx>
+Subject: 2.6.15-rc1 freeing a reserved page from uart_shutdown
+Date: Fri, 11 Nov 2005 23:39:14 -0700
+Message-ID: <20051112063914.GH1658@parisc-linux.org>
 Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from atlrel8.hp.com ([156.153.255.206]:55739 "EHLO atlrel8.hp.com")
-	by vger.kernel.org with ESMTP id S1750758AbVKKXzi (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 11 Nov 2005 18:55:38 -0500
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S932174AbVKLGjQ@vger.kernel.org>
 Content-Disposition: inline
-Sender: linux-serial-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, parisc-linux@parisc-linux.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <rmk+serial@arm.linux.org.uk>
-Cc: linux-serial@vger.kernel.org, Andrew Morton <akpm@osdl.org>, David Ludlow <dave@adsllc.com>, Christopher Kemp <ck231@cam.ac.uk>
 
-Claim the WACF005 device.  This is the pen display pointing device on
-the HP Compaq tc1100 Tablet PC.  More information about using this
-device, including using it as an X pointer device:
 
-    http://www.theory.bham.ac.uk/staff/schofield/linux/tc1100/
+I'm having some trouble with 2.6.15-rc1:
 
-Christopher Kemp <ck231@cam.ac.uk> did the legwork of determining that
-the WACF005 is really just a plain old UART and doing an initial ACPI
-driver (before we had PNPACPI), and David Ludlow <dave@adsllc.com>
-confirmed that PNPACPI + the attached patch is now sufficient:
+VFS: Mounted root (ext2 filesystem) readonly.
+Freeing unused kernel memory: 640k freed
+Bad page state at free_hot_cold_page (in process 'init', page 108a24a0)
+flags:0x00000400 mapping:00000000 mapcount:0 count:0
+Backtrace:
+Backtrace:
+ [<101481cc>] bad_page+0x70/0xc4
+ [<10148920>] free_hot_cold_page+0x74/0x124
+ [<10275e68>] uart_shutdown+0xf0/0xf8
+ [<102775f8>] uart_close+0xc8/0x214
+ [<1025c710>] release_dev+0x72c/0x734
+ [<1025cddc>] tty_release+0x10/0x20
+ [<101680f0>] __fput+0x15c/0x170
+ [<10166520>] filp_close+0x58/0x94
+ [<1010d114>] syscall_exit+0x0/0x14
 
-    pnp: Device 00:05 activated.
-    ttyS4 at I/O 0x300 (irq = 4) is a 16550A
+This is on a parisc system, though a very similar tree boots fine on a
+different machine.  The machine which produces this message is a K460
+which uses the Mux serial driver.  As far as I can tell, the only call
+to free_hot_cold_page() in uart_shutdown() is to free info->xmit.buf
+which seems to be always filled by a call to get_zeroed_page().
 
-Signed-off-by: Bjorn Helgaas <bjorn.helgaas@hp.com>
-
-Index: work-mm1/drivers/serial/8250_pnp.c
-===================================================================
---- work-mm1.orig/drivers/serial/8250_pnp.c	2005-11-08 15:57:32.000000000 -0700
-+++ work-mm1/drivers/serial/8250_pnp.c	2005-11-11 16:34:02.000000000 -0700
-@@ -323,6 +323,8 @@
- 	{	"USR9180",		0	},
- 	/* U.S. Robotics 56K Voice INT PnP*/
- 	{	"USR9190",		0	},
-+	/* HP Compaq Tablet PC tc1100 Wacom tablet */
-+	{	"WACF005",		0	},
- 	/* Rockwell's (PORALiNK) 33600 INT PNP */
- 	{	"WCI0003",		0	},
- 	/* Unkown PnP modems */
+This problem doesn't show with 2.6.14.  I can give access to this
+machine to anyone who wants to do some debugging.  It has remote power
+capabilities ;-)
