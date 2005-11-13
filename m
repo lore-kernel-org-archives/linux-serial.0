@@ -1,30 +1,24 @@
-From: Russell King <rmk@arm.linux.org.uk>
-Subject: Re: [SERIAL] Claim Wacom tablet device on HP tc1100 tablet
-Date: Sat, 12 Nov 2005 22:06:46 +0000
-Message-ID: <20051112220646.GL28987@flint.arm.linux.org.uk>
-References: <200511111655.22637.bjorn.helgaas@hp.com>
+From: Matthew Wilcox <matthew@wil.cx>
+Subject: Re: [parisc-linux] 2.6.15-rc1 freeing a reserved page from uart_shutdown
+Date: Sun, 13 Nov 2005 07:06:24 -0700
+Message-ID: <20051113140624.GM1658@parisc-linux.org>
+References: <20051112063914.GH1658@parisc-linux.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([212.18.232.186]:49162 "EHLO
-	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
-	id S964838AbVKLWGz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 12 Nov 2005 17:06:55 -0500
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S932507AbVKMOGZ@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <200511111655.22637.bjorn.helgaas@hp.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <20051112063914.GH1658@parisc-linux.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, parisc-linux@parisc-linux.org
 List-Id: linux-serial@vger.kernel.org
-To: Bjorn Helgaas <bjorn.helgaas@hp.com>
-Cc: linux-serial@vger.kernel.org, Andrew Morton <akpm@osdl.org>, David Ludlow <dave@adsllc.com>, Christopher Kemp <ck231@cam.ac.uk>
 
-On Fri, Nov 11, 2005 at 04:55:22PM -0700, Bjorn Helgaas wrote:
-> Claim the WACF005 device.  This is the pen display pointing device on
-> the HP Compaq tc1100 Tablet PC.  More information about using this
-> device, including using it as an X pointer device:
+On Fri, Nov 11, 2005 at 11:39:14PM -0700, Matthew Wilcox wrote:
+> I'm having some trouble with 2.6.15-rc1:
+> 
+> VFS: Mounted root (ext2 filesystem) readonly.
+> Freeing unused kernel memory: 640k freed
+> Bad page state at free_hot_cold_page (in process 'init', page 108a24a0)
+> flags:0x00000400 mapping:00000000 mapcount:0 count:0
 
-Applied, thanks.
-
--- 
-Russell King
- Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
- maintainer of:  2.6 Serial core
+False alarm.  I did a make clean and then rebuilt and the resulting kernel
+booted fine.  Not sure what went wrong, but now it's unreproducible.
