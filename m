@@ -1,24 +1,44 @@
-From: Matthew Wilcox <matthew@wil.cx>
-Subject: Re: [parisc-linux] 2.6.15-rc1 freeing a reserved page from uart_shutdown
-Date: Sun, 13 Nov 2005 07:06:24 -0700
-Message-ID: <20051113140624.GM1658@parisc-linux.org>
-References: <20051112063914.GH1658@parisc-linux.org>
+From: Hikaru1@verizon.net
+Subject: 8250/16550 serial driver not being installed if set modular
+Date: Tue, 15 Nov 2005 06:56:13 -0500
+Message-ID: <20051115115613.GA10399@roll>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S932507AbVKMOGZ@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20051112063914.GH1658@parisc-linux.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, parisc-linux@parisc-linux.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from vms046pub.verizon.net ([206.46.252.46]:50654 "EHLO
+	vms046pub.verizon.net") by vger.kernel.org with ESMTP
+	id S932377AbVKOL4Q (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 15 Nov 2005 06:56:16 -0500
+Received: from roll.roll ([70.22.139.174])
+ by vms046.mailsrvcs.net (Sun Java System Messaging Server 6.2-4.02 (built Sep
+ 9 2005)) with ESMTPA id <0IPZ00BAEVTR0QX9@vms046.mailsrvcs.net> for
+ linux-serial@vger.kernel.org; Tue, 15 Nov 2005 05:56:16 -0600 (CST)
+Content-disposition: inline
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, rmk+serial@arm.linux.org.uk
 
-On Fri, Nov 11, 2005 at 11:39:14PM -0700, Matthew Wilcox wrote:
-> I'm having some trouble with 2.6.15-rc1:
-> 
-> VFS: Mounted root (ext2 filesystem) readonly.
-> Freeing unused kernel memory: 640k freed
-> Bad page state at free_hot_cold_page (in process 'init', page 108a24a0)
-> flags:0x00000400 mapping:00000000 mapcount:0 count:0
+Hi, I'm emailing you to report a bug with the serial driver in linux kernel
+2.6.14.2, you are listed as the maintainer in the MAINTAINERS file, so if
+I've sent you this bug report in error please tell me where I should be
+sending it.
 
-False alarm.  I did a make clean and then rebuilt and the resulting kernel
-booted fine.  Not sure what went wrong, but now it's unreproducible.
+I'm using slackware 10.2 on a AMD K7 (XP 2600) this is a 32bit i386
+compatible machine.
+
+in 2.6.14.2's menuconfig, under Device Drivers->Character devices->Serial
+drivers if I select the option 8250/16550 and compatible serial support to
+be compiled into the kernel, it works fine. If I select it to compile as a
+module, the module 'serial' is not installed when I do make modules_install.
+I'm also pretty sure it's not being compiled at all when selected to be
+compiled as a module.
+
+Just to be clear, the help for that option specifically says the module will
+be named 'serial' if the name's wrong, could you tell me what it is named?
+
+I don't know what's wrong with it, nor where to check. Could you give me
+some pointers on what to check so I can give you more information? I
+really prefer to have as much as I can as modules as my computer has to boot
+using a floppy disk.
+
+Timothy C. McGrath
