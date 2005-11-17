@@ -1,20 +1,20 @@
 From: Russell King <rmk@arm.linux.org.uk>
 Subject: Re: 8250/16550 serial driver not being installed if set modular
-Date: Thu, 17 Nov 2005 22:55:30 +0000
-Message-ID: <20051117225530.GA20221@flint.arm.linux.org.uk>
+Date: Thu, 17 Nov 2005 22:58:46 +0000
+Message-ID: <20051117225846.GB20221@flint.arm.linux.org.uk>
 References: <20051115115613.GA10399@roll>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([212.18.232.186]:36107 "EHLO
+Received: from caramon.arm.linux.org.uk ([212.18.232.186]:38409 "EHLO
 	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
-	id S964883AbVKQWzg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Nov 2005 17:55:36 -0500
+	id S964889AbVKQW6v (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 17 Nov 2005 17:58:51 -0500
 Received: from flint.arm.linux.org.uk ([2002:d412:e8ba:1:201:2ff:fe14:8fad])
 	by caramon.arm.linux.org.uk with esmtpsa (TLSv1:DES-CBC3-SHA:168)
 	(Exim 4.52)
-	id 1EcsfF-0003I0-I8
-	for linux-serial@vger.kernel.org; Thu, 17 Nov 2005 22:55:34 +0000
+	id 1EcsiO-0003IP-OB
+	for linux-serial@vger.kernel.org; Thu, 17 Nov 2005 22:58:49 +0000
 Content-Disposition: inline
 In-Reply-To: <20051115115613.GA10399@roll>
 Sender: linux-serial-owner@vger.kernel.org
@@ -46,8 +46,14 @@ On Tue, Nov 15, 2005 at 06:56:13AM -0500, Hikaru1@verizon.net wrote:
 > really prefer to have as much as I can as modules as my computer has to boot
 > using a floppy disk.
 
-It's actually called '8250' and it depends on 'serial_core' as well.
-I'll fix the docs.
+And note: you're on verizon - I suggest if you want to receive replies
+from me (in the vague hope that you'll read the linux-serial list
+archives) that you locate a different ISP, or alternatively use gmail etc.
+
+http://www.broadbandreports.com/forum/remark,12116645~mode=flat~days=9999
+
+(Someone else on the linux-serial list may like to forward this and my
+previous message to Timothy.)
 
 -- 
 Russell King
