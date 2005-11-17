@@ -1,44 +1,32 @@
-From: Hikaru1@verizon.net
-Subject: 8250/16550 serial driver not being installed if set modular
-Date: Tue, 15 Nov 2005 06:56:13 -0500
-Message-ID: <20051115115613.GA10399@roll>
+From: "Stuart MacDonald" <stuartm@connecttech.com>
+Subject: (unknown)
+Date: Thu, 17 Nov 2005 13:48:17 -0500
+Message-ID: <06ca01c5eba7$7940e8d0$294b82ce@stuartm>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+	charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from vms046pub.verizon.net ([206.46.252.46]:50654 "EHLO
-	vms046pub.verizon.net") by vger.kernel.org with ESMTP
-	id S932377AbVKOL4Q (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 15 Nov 2005 06:56:16 -0500
-Received: from roll.roll ([70.22.139.174])
- by vms046.mailsrvcs.net (Sun Java System Messaging Server 6.2-4.02 (built Sep
- 9 2005)) with ESMTPA id <0IPZ00BAEVTR0QX9@vms046.mailsrvcs.net> for
- linux-serial@vger.kernel.org; Tue, 15 Nov 2005 05:56:16 -0600 (CST)
-Content-disposition: inline
+Received: from smarthost2.sentex.ca ([205.211.164.50]:53218 "EHLO
+	smarthost2.sentex.ca") by vger.kernel.org with ESMTP
+	id S932486AbVKQSsX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 17 Nov 2005 13:48:23 -0500
+Received: from smtp1.sentex.ca (smtp1.sentex.ca [199.212.134.4])
+	by smarthost2.sentex.ca (8.13.4/8.13.4) with ESMTP id jAHImKV5093994
+	for <linux-serial@vger.kernel.org>; Thu, 17 Nov 2005 13:48:20 -0500 (EST)
+	(envelope-from stuartm@connecttech.com)
+Received: from inetc.connecttech.com (inetc.connecttech.com [64.7.140.42])
+	by smtp1.sentex.ca (8.13.3/8.13.3) with ESMTP id jAHImHmZ051321
+	for <linux-serial@vger.kernel.org>; Thu, 17 Nov 2005 13:48:20 -0500 (EST)
+	(envelope-from stuartm@connecttech.com)
+Received: from connecttech.com (cti2.connecttech.com [206.130.75.42])
+	by inetc.connecttech.com (8.13.3/8.13.3) with ESMTP id jAHIu8Hl004661
+	for <linux-serial@vger.kernel.org>; Thu, 17 Nov 2005 13:56:08 -0500 (EST)
+	(envelope-from stuartm@connecttech.com)
+Received: from stuartm (stuartm.connecttech.com [206.130.75.41]) by connecttech.com (8.10.1/UW7.1.1-NSCd) with ESMTP id jAHImJr04650 for <linux-serial@vger.kernel.org>; Thu, 17 Nov 2005 13:48:19 -0500 (EST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, rmk+serial@arm.linux.org.uk
+To: linux-serial@vger.kernel.org
 
-Hi, I'm emailing you to report a bug with the serial driver in linux kernel
-2.6.14.2, you are listed as the maintainer in the MAINTAINERS file, so if
-I've sent you this bug report in error please tell me where I should be
-sending it.
+subscribe
 
-I'm using slackware 10.2 on a AMD K7 (XP 2600) this is a 32bit i386
-compatible machine.
-
-in 2.6.14.2's menuconfig, under Device Drivers->Character devices->Serial
-drivers if I select the option 8250/16550 and compatible serial support to
-be compiled into the kernel, it works fine. If I select it to compile as a
-module, the module 'serial' is not installed when I do make modules_install.
-I'm also pretty sure it's not being compiled at all when selected to be
-compiled as a module.
-
-Just to be clear, the help for that option specifically says the module will
-be named 'serial' if the name's wrong, could you tell me what it is named?
-
-I don't know what's wrong with it, nor where to check. Could you give me
-some pointers on what to check so I can give you more information? I
-really prefer to have as much as I can as modules as my computer has to boot
-using a floppy disk.
-
-Timothy C. McGrath
