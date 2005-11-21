@@ -1,37 +1,30 @@
-From: "Johnathon Gore" <iztoslaef@hotmail.com>
-Subject: Best Replika Watches kz
-Date: Mon, 21 Nov 2005 05:03:57 -0300
-Message-ID: <5276277.103133iztoslaef__40370.284257415$1132560431$gmane$org@hotmail.com>
+From: "Erma Irving" <BNSKOJDKZJFG@yahoo.com>
+Subject: Qualities Pharrmacy fPwgX
+Date: Mon, 21 Nov 2005 11:39:36 -0600
+Message-ID: <67070969.986BNSKOJDKZJFG__34697.3325628371$1132595523$gmane$org@yahoo.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [222.138.232.225] ([222.138.232.225]:4112 "HELO 209.132.176.167")
-	by vger.kernel.org with SMTP id S932207AbVKUIFH (ORCPT
+Received: from dsl-KK-075.60.101.203.touchtelindia.net ([203.101.60.75]:14861
+	"HELO dsl-KK-075.60.101.203.touchtelindia.net") by vger.kernel.org
+	with SMTP id S932418AbVKURss (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 21 Nov 2005 03:05:07 -0500
+	Mon, 21 Nov 2005 12:48:48 -0500
+Subject: Proposed charter
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-raid@vger.kernel.org
-Cc: linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, linux-sound@vger.kernel.org
+To: linux-scsi@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, linux-sound@vger.kernel.org, linux-tape@vger.kernel.org
 
 
-
-Why pay more for originals when replikas are 
-look 99.9% alike?
-Highest quality of replikas assured which
-can't differentiate the difference with originals.
-And available at 95% original prices.
+Huge selection of meds available
+at attractive prices. 
+Highest quality assured.
 
 Try us out today..
 
-http://043.productgoood.com
+http://monthlysearch.com/?w9h4ue7thh2=42539d72eb540ac239489814e52e3270
 
 
-
-
-
-
-
-
-o-ut of mai-lling lisst:
-http://043.elegancehere.com/rm/
-
-oIU
+KMg
