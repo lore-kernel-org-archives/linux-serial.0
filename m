@@ -1,12 +1,12 @@
 From: "Deidre Bergman" <CorrineLanieraurochs@panda4x4.net>
 Subject: Chicks will love you
 Date: Thu, 24 Nov 2005 19:37:01 +0100
-Message-ID: <358801141618.AA1486054__49278.1736575582$1132858166$gmane$org@client.comcast.net>
+Message-ID: <358801141618.AA1486054__1393.93270151249$1132858281$gmane$org@client.comcast.net>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 88-134-13-89-dynip.superkabel.de ([88.134.13.89]:55305 "HELO
-	88-134-13-89-dynip.superkabel.de") by vger.kernel.org with SMTP
-	id S1750948AbVKXSrV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 24 Nov 2005 13:47:21 -0500
+Received: from [220.226.21.226] ([220.226.21.226]:774 "HELO 209.132.176.167")
+	by vger.kernel.org with SMTP id S1750709AbVKXSsz (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 24 Nov 2005 13:48:55 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
