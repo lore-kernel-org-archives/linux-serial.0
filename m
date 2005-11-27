@@ -1,30 +1,45 @@
-From: Oswald Olson <resultant@melancon.net>
-Subject: Cialis allows men to enjoy a fully normal sex life without having to plan the sexual act.
-Date: Sat, 26 Nov 2005 22:30:57 -0800
-Message-ID: <1276595195.946637966@60-62-18-151.rev.home.ne.jp>
-Content-Type: text/plain; charset=us-ascii
+From: "Prospector U. Corresponded" <cross@gracey.org>
+Subject: Software
+Date: Sun, 27 Nov 2005 16:53:01 -0600
+Message-ID: <3839442215.20051127165301@gracey.org>
+Mime-Version: 1.0
+Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:30412 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S1750852AbVK0GbF (ORCPT
+Received: from zeus2.kernel.org ([204.152.191.36]:43740 "EHLO zeus2.kernel.org")
+	by vger.kernel.org with ESMTP id S1750925AbVK0Ish (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 27 Nov 2005 01:31:05 -0500
-Received: from 60-62-18-151.rev.home.ne.jp (60-62-18-151.rev.home.ne.jp [60.62.18.151])
-	by zeus1.kernel.org (8.13.1/8.13.1) with SMTP id jAR6UvUc007105
-	for <linux-serial@vger.kernel.org>; Sat, 26 Nov 2005 22:31:00 -0800
+	Sun, 27 Nov 2005 03:48:37 -0500
+Received: from 149561904 (cust-249-195.dsl.versateladsl.be [82.174.195.249])
+	by zeus2.kernel.org (8.13.1/8.13.1) with SMTP id jAR8hs3F002651
+	for <linux-serial@vger.kernel.org>; Sun, 27 Nov 2005 00:48:22 -0800
+Received: from gracey.org (151229664 [150907000])
+	by cust-249-195.dsl.versateladsl.be (Qmailv1) with ESMTP id 88E566D8FC
+	for <linux-serial@vger.kernel.org>; Sun, 27 Nov 2005 16:53:01 -0600
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Linux <linux-serial@vger.kernel.org>
 
-Trusted savings on prescription drugs.
-http://lprlel.3l9uqb8hrs8bl33fql3f83ll.sohoan.com/?shk
+Just click to buy OEM! best worldwide soft at increadeable prices!!! 
+What IS 0EM software and why do you care? 
 
+New software on our site:
 
+Office 97 SR2 - $49.95
+Exchange 2003 Enterprise Server - $69.95
+Creative Suite Premium (5 CD) - $149.95
+Creative Suite Premium (5 CD) - $149.95
+Windows 98 Second Edition - $49.95
+Painter 8 - $59.95
+PageMaker 7 (2CD) - $69.95
+Project 2003 Professional - $69.95
+Creative Suite Premium (5 CD) - $149.95
+Borland Delphi 7 Enterprise Edition (2CD) - $69.95
+Office 97 SR2 - $49.95
+Dreamweaver MX 2004 $69.95
+Windows Millenium - $59.95
+FreeHand MX - $69.95
 
-Simply pushing harder within the old boundaries will not do.   
-He not busy being born is busy dying.     
-Truth, in matters of religion, is simply the opinion that has survived. 
-If you can't stand the heat, get out of the kitchen.  
-I have read your book and much like it.    
-
+Our site:
+http://mircab929gaz54mh9mmz94m4.mothlessbh.com
 
