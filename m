@@ -1,45 +1,30 @@
-From: "Prospector U. Corresponded" <cross@gracey.org>
-Subject: Software
-Date: Sun, 27 Nov 2005 16:53:01 -0600
-Message-ID: <3839442215.20051127165301@gracey.org>
-Mime-Version: 1.0
-Content-Type: text/plain
+From: Susanna Cunningham <denigrating@grayemail.com>
+Subject: Pleasure your women - size does matter!
+Date: Sun, 27 Nov 2005 02:04:39 -0800
+Message-ID: <127325110290.7037331895@pa181.stawiszyn.sdi.tpnet.pl>
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus2.kernel.org ([204.152.191.36]:43740 "EHLO zeus2.kernel.org")
-	by vger.kernel.org with ESMTP id S1750925AbVK0Ish (ORCPT
+Received: from zeus1.kernel.org ([204.152.191.4]:49286 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S1750910AbVK0KEp (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 27 Nov 2005 03:48:37 -0500
-Received: from 149561904 (cust-249-195.dsl.versateladsl.be [82.174.195.249])
-	by zeus2.kernel.org (8.13.1/8.13.1) with SMTP id jAR8hs3F002651
-	for <linux-serial@vger.kernel.org>; Sun, 27 Nov 2005 00:48:22 -0800
-Received: from gracey.org (151229664 [150907000])
-	by cust-249-195.dsl.versateladsl.be (Qmailv1) with ESMTP id 88E566D8FC
-	for <linux-serial@vger.kernel.org>; Sun, 27 Nov 2005 16:53:01 -0600
+	Sun, 27 Nov 2005 05:04:45 -0500
+Received: from pa181.stawiszyn.sdi.tpnet.pl (pa181.stawiszyn.sdi.tpnet.pl [217.98.181.181])
+	by zeus1.kernel.org (8.13.1/8.13.1) with SMTP id jARA4db3023333
+	for <linux-serial@vger.kernel.org>; Sun, 27 Nov 2005 02:04:40 -0800
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linux <linux-serial@vger.kernel.org>
+To: linux-serial@vger.kernel.org
 
-Just click to buy OEM! best worldwide soft at increadeable prices!!! 
-What IS 0EM software and why do you care? 
+Bigger, harder, and longer - lasting results NOW with a discreet little patch.
+http://www.larensm.net/pt/
 
-New software on our site:
 
-Office 97 SR2 - $49.95
-Exchange 2003 Enterprise Server - $69.95
-Creative Suite Premium (5 CD) - $149.95
-Creative Suite Premium (5 CD) - $149.95
-Windows 98 Second Edition - $49.95
-Painter 8 - $59.95
-PageMaker 7 (2CD) - $69.95
-Project 2003 Professional - $69.95
-Creative Suite Premium (5 CD) - $149.95
-Borland Delphi 7 Enterprise Edition (2CD) - $69.95
-Office 97 SR2 - $49.95
-Dreamweaver MX 2004 $69.95
-Windows Millenium - $59.95
-FreeHand MX - $69.95
 
-Our site:
-http://mircab929gaz54mh9mmz94m4.mothlessbh.com
+I'm free of all prejudices. I hate everyone equally.    
+A good listener is a good talker with a sore throat.  
+What is a man? A miserable little pile of secrets.   
+
+Beware when the great God lets loose a thinker on this planet. 
+
 
