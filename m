@@ -1,33 +1,30 @@
-From: "Spencer Ali" <mdkwrwuvv@hotmail.com>
-Subject: Small Pen is? Qm
-Date: Sat, 03 Dec 2005 09:10:02 -0600
-Message-ID: <6A227EE3.7684.3215C2D5__8680.94235561348$1133622747$gmane$org@localhost>
+From: "Mai Rangel" <jnegybdqjakhw@yahoo.com>
+Subject: Small Pen is? LK
+Date: Sat, 03 Dec 2005 14:48:40 -0200
+Message-ID: <3A307EE3.7684.7115C2D5__27045.1462165967$1133629163$gmane$org@localhost>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [218.52.5.2] ([218.52.5.2]:41734 "HELO 209.132.176.167")
-	by vger.kernel.org with SMTP id S1751274AbVLCPMD (ORCPT
+Received: from [211.213.191.122] ([211.213.191.122]:16396 "HELO NOTE")
+	by vger.kernel.org with SMTP id S932077AbVLCQ5m (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 3 Dec 2005 10:12:03 -0500
+	Sat, 3 Dec 2005 11:57:42 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-sound@vger.kernel.org, linux-tape@vger.kernel.org
+To: linux-newbie@vger.kernel.org
 
 
 
 
-Suffering from short penniss?
-Introduce revolution "Thunder" formula which
-gauranteees sizes increase or moneey baack.
+Here's latest "Thunder" formula has been proven
+to add inches to the sizes while multiplying
+orgasms like never had before. 
+Our products is light years ahead of our competitors
+which has millions of happy users.
 
-Users reported:
-- 2 inches extra in size
-- 3x pleasurable orgasms
-- 27% thicker
-
-Why waiting?
+Check us out..You won't regret.
 
 http://thunder14.fastherb.biz
 
 
-GsPV
+mX0
