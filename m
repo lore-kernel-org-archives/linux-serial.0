@@ -1,23 +1,31 @@
-From: "Edmund Russo" <edmundrussoik@modemessner.de>
-Subject: Budy cials-tabs Online For Less
-Date: Tue, 06 Dec 2005 09:56:19 +0100
-Message-ID: <34e601c5fa42$bad8d0af$5c2a8696@starfireservices.demon.co.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; format=flowed; charset=iso-8859-1; reply-type=original
-Content-Transfer-Encoding: 7bit
+From: "Carmela Mcintyre" <pmbqbssejpngwa@yahoo.com>
+Subject: Highly Recommended Cailis KYg
+Date: Tue, 06 Dec 2005 19:43:12 +0500
+Message-ID: <68XT87FE.0G24.pmbqbssejpngwa__9903.11841383136$1133880391$gmane$org@yahoo.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [142.23.41.185] ([142.23.41.185]:26639 "HELO
-	starfireservices.demon.co.uk") by vger.kernel.org with SMTP
-	id S932107AbVLFH63 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 6 Dec 2005 02:58:29 -0500
+Received: from zeus2.kernel.org ([204.152.191.36]:43199 "EHLO zeus2.kernel.org")
+	by vger.kernel.org with ESMTP id S932595AbVLFOoZ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 6 Dec 2005 09:44:25 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-newbie@vger.kernel.org
 
 
-Be ERECT in less than 15 mins
 
-PRlCE: $ 2 / use
+"Ci-ialis Softabs" is better than Pfizer Viiagrra
+and normal Ci-ialis because:
 
-visit our website --> goldslive.net
+- Guaaraantees 36 hours lasting
+- Safe to take, no side effects at all
+- Boost and increase se-xual performance
+- Haarder e-rectiions and quick recharge
+- Proven and certified by experts and doctors
+- only $3.99 per tabs
+
+Cllick heree:
+http://de.geocities.com/Miran81167Kendre45066/
+
+
+YYkvTN
 
