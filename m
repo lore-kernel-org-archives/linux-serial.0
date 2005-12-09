@@ -1,33 +1,32 @@
-From: Harriet Rich <stanzas@graphicom.ch>
-Subject: AutoCAD 2005 - $69.95
-Date: Thu, 8 Dec 2005 23:30:35 -0800
-Message-ID: <10608280969.7913649965@acf149.neoplus.adsl.tpnet.pl>
+From: Miranda Rucker <harmless@barker.net>
+Subject: Have you ever bought drugs online?
+Date: Fri, 9 Dec 2005 12:56:09 -0800
+Message-ID: <97385111391.4178462073@adsl-210-114-193.clt.bellsouth.net>
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:55966 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S932399AbVLIHax (ORCPT
+Received: from zeus1.kernel.org ([204.152.191.4]:36751 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S932427AbVLIU4O (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 9 Dec 2005 02:30:53 -0500
-Received: from acf149.neoplus.adsl.tpnet.pl (acf149.neoplus.adsl.tpnet.pl [83.25.57.149])
-	by zeus1.kernel.org (8.13.1/8.13.1) with SMTP id jB97UZ5H017663
-	for <linux-serial@vger.kernel.org>; Thu, 8 Dec 2005 23:30:40 -0800
+	Fri, 9 Dec 2005 15:56:14 -0500
+Received: from adsl-210-114-193.clt.bellsouth.net (adsl-210-114-193.clt.bellsouth.net [68.210.114.193])
+	by zeus1.kernel.org (8.13.1/8.13.1) with SMTP id jB9Ku9Nq027372
+	for <linux-serial@vger.kernel.org>; Fri, 9 Dec 2005 12:56:10 -0800
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Macromedia Dreamweaver Mx 2004 plus Templates Pro - $29.95
-http://translation.oemfi.com/
+You have not tried Cialis yet?
+http://circulation.tissots.net/ph/lib/
 
 
 
-Never keep up with the Joneses. Drag them down to your level. 
 
 
-In rivers and bad governments, the lightest things swim at the top. 
-Acting is standing up naked and turning around very slowly.   
-I am free of all prejudice. I hate everyone equally.   
-Every decent man is ashamed of the government he lives under.  
-
+In a mad world only the mad are sane.    
+Delusions of grandeur make me feel a lot better about myself.  
+If winning isn't everything, why do they keep score?    
+To err is human; to forgive is simply not our policy  
+Live to live and you will learn to live    
 
 
