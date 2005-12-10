@@ -1,32 +1,23 @@
-From: Miranda Rucker <harmless@barker.net>
-Subject: Have you ever bought drugs online?
-Date: Fri, 9 Dec 2005 12:56:09 -0800
-Message-ID: <97385111391.4178462073@adsl-210-114-193.clt.bellsouth.net>
-Content-Type: text/plain; charset=us-ascii
+From: "Blaine E. Cates" <b_cates_au@modula.no>
+Subject: lasts for 36 hours
+Date: Sat, 10 Dec 2005 06:25:21 +0100
+Message-ID: <c82601c5fd4a$ee5ba145$b722f999@mofet.macam.ac.il>
+Mime-Version: 1.0
+Content-Type: text/plain; format=flowed; charset=iso-8859-1; reply-type=original
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:36751 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S932427AbVLIU4O (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 9 Dec 2005 15:56:14 -0500
-Received: from adsl-210-114-193.clt.bellsouth.net (adsl-210-114-193.clt.bellsouth.net [68.210.114.193])
-	by zeus1.kernel.org (8.13.1/8.13.1) with SMTP id jB9Ku9Nq027372
-	for <linux-serial@vger.kernel.org>; Fri, 9 Dec 2005 12:56:10 -0800
+Received: from p92acef.tocgnt01.ap.so-net.ne.jp ([59.146.172.239]:55818 "HELO
+	mofet.macam.ac.il") by vger.kernel.org with SMTP id S964937AbVLJGnS
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 10 Dec 2005 01:43:18 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-You have not tried Cialis yet?
-http://circulation.tissots.net/ph/lib/
 
+Be ERECT in less than 15 mins
 
+PRlCE: $ 2 / use
 
-
-
-In a mad world only the mad are sane.    
-Delusions of grandeur make me feel a lot better about myself.  
-If winning isn't everything, why do they keep score?    
-To err is human; to forgive is simply not our policy  
-Live to live and you will learn to live    
-
+visit our website --> juicesign.net
 
