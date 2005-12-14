@@ -1,32 +1,33 @@
-From: Reynold Whitney <mechanics@anyswinggoes.every1.net>
-Subject: Usually people order Viagra at this site
-Date: Tue, 13 Dec 2005 19:57:55 -0800
-Message-ID: <4877084627.7401045535@202.57.156.249.rev-ip.isp-thailand.com>
+From: Mathilda Warren <Goliath@divusmodus.ch>
+Subject: 70% discounts on popular software
+Date: Tue, 13 Dec 2005 22:44:35 -0800
+Message-ID: <3772576546.10938153193@203.177.174.146>
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:23528 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S1030427AbVLND6C (ORCPT
+Received: from zeus1.kernel.org ([204.152.191.4]:46570 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S1751120AbVLNGos (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 13 Dec 2005 22:58:02 -0500
-Received: from 202.57.156.249.rev-ip.isp-thailand.com (202.57.156.249.rev-ip.isp-thailand.com [202.57.156.249] (may be forged))
-	by zeus1.kernel.org (8.13.1/8.13.1) with SMTP id jBE3vtkL000849
-	for <linux-serial@vger.kernel.org>; Tue, 13 Dec 2005 19:57:57 -0800
+	Wed, 14 Dec 2005 01:44:48 -0500
+Received: from 203.177.174.146 ([203.177.174.146])
+	by zeus1.kernel.org (8.13.1/8.13.1) with SMTP id jBE6iZ0j021537
+	for <linux-serial@vger.kernel.org>; Tue, 13 Dec 2005 22:44:37 -0800
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Having problems in bed? We can help!
-http://Arianists.mistjoke.com/?overlapsxtvuyfeatheredzvpleash
+Macromedia Studio MX 2004 - $54.95
+http://Papua.oemfi.com/
 
 
 
-Honest differences are often a healthy sign of progress.    
-O Lord, help me to be pure, but not yet.   
-I can endure my own despair but not another's hope.   
-Pride breakfasted with plenty, dined with poverty, and supped with infamy.  
-Great men are not always idiots       
-Live so that your friends can defend you but never have to. 
-The golden rule is that there are no golden rules.   
+If your parents never had children, chances are you won't, either.  
+
+Words are, of course, the most powerful drug used by mankind.  
+Mistakes are the portals of discovery.       
+For four-fifths of our history, our planet was populated by pond scum. 
+To love oneself is the beginning of a lifelong romance.   
+Any fool can criticize, condemn and complain and most fools do.  
+
 
 
