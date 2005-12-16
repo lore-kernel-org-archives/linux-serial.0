@@ -1,30 +1,26 @@
-From: Alec Mcgrath <appealed@dunn.to>
-Subject: All software - duty-free prices
-Date: Thu, 15 Dec 2005 16:26:47 -0800
-Message-ID: <16572100042.12576481547@CRV2ppp-88.uc.infovia.com.ar>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+From: "Lindsay Moran" <ksncehxfof@yahoo.com>
+Subject: We Are the Best GUqw
+Date: Fri, 16 Dec 2005 23:53:23 +0600
+Message-ID: <CFE4.9A9.3069698B8C__33885.0489155904$1134756067$gmane$org@mopalinux.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:57826 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S1751202AbVLPA0u (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 15 Dec 2005 19:26:50 -0500
-Received: from CRV2ppp-88.uc.infovia.com.ar (CRV2ppp-88.uc.infovia.com.ar [209.13.232.88] (may be forged))
-	by zeus1.kernel.org (8.13.1/8.13.1) with SMTP id jBG0QlKL007722
-	for <linux-serial@vger.kernel.org>; Thu, 15 Dec 2005 16:26:48 -0800
+Received: from toronto-HSE-ppp4194627.sympatico.ca ([70.52.21.11]:6153 "HELO
+	toronto-HSE-ppp4194627.sympatico.ca") by vger.kernel.org with SMTP
+	id S1751326AbVLPR7Y (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 16 Dec 2005 12:59:24 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-
-Software should be easy to use!
-http://fcv.i76snuobnpo800iv50id50ii.carolynla.com/?onfvb
+To: linux-laptop@vger.kernel.org
+Cc: linux-net@vger.kernel.org, linux-newbie@vger.kernel.org, linux-ppp@vger.kernel.org, linux-raid@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, linux-sound@vger.kernel.org
 
 
-Mothers are a biological necessity; fathers are a social invention.   
-Know people for who they are rather than for what they are. 
-She got her good looks from her father. He's a plastic surgeon. 
+The most complete Phar macy Online
+We carry all major medds at bargain price
+Viggra, Ci ialis, VaIium, Xa naax
+Phantermiine, Ulltraam and etc...
+SatiisfactIon Gua ranteeed
+
+http://firstcentre.com
 
 
-Sex is the biggest nothing of all time.     
-
+KL1
 
