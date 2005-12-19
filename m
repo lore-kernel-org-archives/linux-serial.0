@@ -1,30 +1,30 @@
-From: Isold Roach <clashes@ballenger.com>
-Subject: Take the office with you where ever you go...
-Date: Sat, 17 Dec 2005 19:07:53 -0800
-Message-ID: <74859121859.5048291254@ALagny-154-1-36-155.w83-200.abo.wanadoo.fr>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+From: "Milford Numbers" <beohpps@hotmail.com>
+Subject: SU-per Hu^ge 0ffers yGKFi
+Date: Sun, 18 Dec 2005 23:47:20 -0200
+Message-ID: <3A897EE3.7684.8015C2D5@localhost>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:46303 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S932676AbVLRDH7 (ORCPT
+Received: from zeus1.kernel.org ([204.152.191.4]:61602 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S1030247AbVLSBrr (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 17 Dec 2005 22:07:59 -0500
-Received: from ALagny-154-1-36-155.w83-200.abo.wanadoo.fr (ALagny-154-1-36-155.w83-200.abo.wanadoo.fr [83.200.35.155])
-	by zeus1.kernel.org (8.13.1/8.13.1) with SMTP id jBI37rce008959
-	for <linux-serial@vger.kernel.org>; Sat, 17 Dec 2005 19:07:54 -0800
+	Sun, 18 Dec 2005 20:47:47 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-
-75% Off for All New Software. 
-http://weke.d21ni716ik1ldvvqidv8ivvv.pricell.com/?gmezf
+To: linux-laptop@vger.kernel.org, linux-net@vger.kernel.org, linux-newbie@vger.kernel.org, linux-ppp@vger.kernel.org, linux-raid@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, linux-sound@vger.kernel.org
 
 
-The only way to have a friend is to be one.  
-A statesman is a successful politician who is dead.    
-In Mexico we have a word for sushi: bait.    
-To save time is to lengthen life.      
-We go where our vision is.       
-To win without risk is to triumph without glory.    
+
+
+The most complete Phar macy Online
+We carry all major medds at bargain price
+Viggra, Ci ialis, VaIium, Xa naax
+Phantermiine, Ulltraam and etc...
+SatiisfactIon Gua ranteeed
+
+http://god4poses.com/?e5459e9859efcT0a92fc5Y1b9be4f882 
+
+
+kdFj
 
 
