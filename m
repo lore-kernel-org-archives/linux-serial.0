@@ -1,39 +1,57 @@
-From: Paul Fulghum <paulkf@microgate.com>
-Subject: Re: selfmade serial driver problem with chipset other than VIA
-Date: Mon, 19 Dec 2005 21:15:38 -0600
-Message-ID: <43A7775A.7010402@microgate.com>
-References: <32883.147.27.7.175.1135028325.squirrel@147.27.7.175>
+From: Matthew Wilcox <matthew@wil.cx>
+Subject: Re: [parisc-linux] Console Kernel Panic
+Date: Tue, 20 Dec 2005 09:42:29 -0700
+Message-ID: <20051220164229.GX2361@parisc-linux.org>
+References: <ce7b5dcee759.cee759ce7b5d@shaw.ca>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from adsl-70-250-156-241.dsl.austtx.swbell.net ([70.250.156.241]:33935
-	"EHLO gw.microgate.com") by vger.kernel.org with ESMTP
-	id S1750754AbVLTDPl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Dec 2005 22:15:41 -0500
-In-Reply-To: <32883.147.27.7.175.1135028325.squirrel@147.27.7.175>
+Received: from palinux.external.hp.com ([192.25.206.14]:27871 "EHLO
+	palinux.hppa") by vger.kernel.org with ESMTP id S1751125AbVLTQmb
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 20 Dec 2005 11:42:31 -0500
+Content-Disposition: inline
+In-Reply-To: <ce7b5dcee759.cee759ce7b5d@shaw.ca>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gxatzipavlis@softnet.tuc.gr
-Cc: linux-serial@vger.kernel.org
+To: Keven Tipping <bytelogix@shaw.ca>
+Cc: parisc-linux@lists.parisc-linux.org, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-gxatzipavlis@softnet.tuc.gr wrote:
->>the driver isn't working in computers with INTEL and
->>NVIDIA chipsets... when ever i call outb from my
->>writer bottomhalf routine the interrupt isn't generated from the
->>hardware(in machines with inter or nvidia chipset).
- > ...
-> i can't understand what registers to print during boot as alan proposed
-> the registers from 0x03f8 - 0x03ff (aka /dev/ttyS0)?
+On Mon, Dec 19, 2005 at 08:50:18PM -0700, Keven Tipping wrote:
+> I am currently running Kernel version 2.6.15-rc6-pa1.
+> 
+> This problem, however, is evident in 2.6.14.3-pa0, and 2.6.15-rc5-pa5, as well as 2.6.12.2 (Gentoo 2005 LiveCD). Problem remains regardless of SMP or Uniprocessor kernels.
+> 
+> On the K Class (it appears it is limited to these machines?), if nothing is currently running on the ttyB0 Serial Console, if you press any key, the system burps up the following:
+> 
+> Kernel Panic: Kernel Fault
+> Not Syncing...
+> 
+> What I mean by "nothing running" is if Agetty is NOT running, NOR is Bash. 
 
-If the Line Control Register (LCR) Divisor Latch Access Bit (DLAB)
-is set, then offsets 0 and 1 access the divisor latch instead
-of the transmit holding register (THR) and interrupt enable register (IER).
+I really think you could have provided the useful bits from a kernel panic
+here.  Please see http://www.parisc-linux.org/faq/kernelbug-howto.html
 
-You do not state if you initialize that bit to zero.
-If that bit is set, that could prevent the THR empty
-interrupt you expect.
+However, I've reproduced it myself.  Here's the relevant bits:
 
---
-Paul Fulghum
-Microgate Systems, Ltd
+ IAOQ[0]: mux_read+0x4c/0x17c
+ IAOQ[1]: mux_read+0x50/0x17c
+ RP(r2): mux_poll+0x78/0x88
+
+The instruction faulting is:
+
+  4c:   48 94 02 28     ldw 114(,r4),r20
+
+which corresponds to the load of flip.count:
+
+                if (tty->flip.count >= TTY_FLIPBUF_SIZE)
+			continue;
+
+ie the 'tty' variable is NULL at this point.
+
+Alan, you seem to have the tarbaby for ttys at the moment ... any idea
+why port->info->tty would be NULL?  The corresponding routine in 8250.c
+(receive_chars()) doesn't check for tty being NULL.  So is there
+some non-obvious check the MUX driver is missing, or is this a latent
+problem in 8250 too?
+
