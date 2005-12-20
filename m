@@ -1,148 +1,39 @@
-From: gxatzipavlis@softnet.tuc.gr
-Subject: selfmade serial driver problem with chipset other than VIA
-Date: Mon, 19 Dec 2005 23:38:45 +0200 (EET)
-Message-ID: <32883.147.27.7.175.1135028325.squirrel@147.27.7.175>
+From: Paul Fulghum <paulkf@microgate.com>
+Subject: Re: selfmade serial driver problem with chipset other than VIA
+Date: Mon, 19 Dec 2005 21:15:38 -0600
+Message-ID: <43A7775A.7010402@microgate.com>
+References: <32883.147.27.7.175.1135028325.squirrel@147.27.7.175>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from panoramix.softnet.tuc.gr ([147.27.14.5]:53210 "HELO
-	softnet.tuc.gr") by vger.kernel.org with SMTP id S932254AbVLSViv
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Dec 2005 16:38:51 -0500
+Received: from adsl-70-250-156-241.dsl.austtx.swbell.net ([70.250.156.241]:33935
+	"EHLO gw.microgate.com") by vger.kernel.org with ESMTP
+	id S1750754AbVLTDPl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 19 Dec 2005 22:15:41 -0500
+In-Reply-To: <32883.147.27.7.175.1135028325.squirrel@147.27.7.175>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: gxatzipavlis@softnet.tuc.gr
+Cc: linux-serial@vger.kernel.org
 
-firstly i would like to apologize cause i send this mail to linux-kernel
-mailling list and not to linux serial but linux-serial@vger.kernel.org
-don't accept the email.
+gxatzipavlis@softnet.tuc.gr wrote:
+>>the driver isn't working in computers with INTEL and
+>>NVIDIA chipsets... when ever i call outb from my
+>>writer bottomhalf routine the interrupt isn't generated from the
+>>hardware(in machines with inter or nvidia chipset).
+ > ...
+> i can't understand what registers to print during boot as alan proposed
+> the registers from 0x03f8 - 0x03ff (aka /dev/ttyS0)?
 
-On Mon, 2005-12-19 at 18:12 +0200, giorgos xatzipavlis wrote:
-> hello people
->
-> this is my first attempt to the linux serial mailling list so i
-> apologize for my mistakes...
->
-> i am a newbie in kernel development.
->
-> i have made a serial driver cause i want to communicate with a serial
-> device ( a microcontroller ). I have programmed the driver in my
-> computer and everything is working ok. I have an AMD 1000Hz, MSI
-> motherboard with VIA chipset and kernel 2.4.31. I have found
-> informations from Linux Deveice Drivers book. Everything is working ok
-> in my computer but  the driver isn't working in computers with INTEL and
-> NVIDIA chipsets. The fact that makes me suspicious about that
-> is that although my driver is registered in /proc/interrupts
-> and /proc/ioports (irq 4-ioport 0x03f8) when ever i call outb from my
-> writer bottomhalf routine the interrupt isn't generated from the
-> hardware(in machines with inter or nvidia chipset).
->
-> the flow chart is somethink like that:
->
-> 1)user space write      (getting the data from user)
->
-> 2)kernel space write    (generating the package that i want to send)
->
-> 3)writer_bottomhalf     (i have the package in writer_buffer indexed by a
-> 		         bytes_send variable. Call
-"outb(writer_buffer[bytes_send],MY_UART+UART_TX)" )
->
-> 4)interrupt handler     (bytes_send++ ,so i can send the next character
-variable,
-> 		         call "tasklet_schedule(&writer_bottomhalf)" to go to step 3)
->
-> in computers with chipsets other than VIA the 4th step (interrupt
-handler) is
-> never executed.
->
-> any ideas?
->
-> thank
+If the Line Control Register (LCR) Divisor Latch Access Bit (DLAB)
+is set, then offsets 0 and 1 access the divisor latch instead
+of the transmit holding register (THR) and interrupt enable register (IER).
 
+You do not state if you initialize that bit to zero.
+If that bit is set, that could prevent the THR empty
+interrupt you expect.
 
-secondly alan cox respond with:
-
-On Mon, 2005-12-19 at 18:03 +0000, Alan Cox wrote:
-> > 2)kernel space write    (generating the package that i want to send)
-> >
-> > 3)writer_bottomhalf     (i have the package in writer_buffer indexed by a
-> > 		         bytes_send variable. Call
-"outb(writer_buffer[bytes_send],MY_UART+UART_TX)" )
-> >
-> > 4)interrupt handler     (bytes_send++ ,so i can send the next
-character variable,
-> > 		         call "tasklet_schedule(&writer_bottomhalf)" to go to step 3)
-> >
-> > in computers with chipsets other than VIA the 4th step (interrupt
-handler) is
-> > never executed.
->
->
-> Have you set up the interrupt enables in the 16x50 chip. If you've not
-> done that step then it may depend on the vendor/BIOS what state the chip
-> is in when you boot.
->
-> You might want to print out the registers at boot on each system and
-> look at the differences
-
-
-
-in the initialization routine i enable the interrupts
-
-"outb( UART_IER_RLSI | UART_IER_RDI | UART_IER_THRI , eib_io+UART_IER);"
-
-where eib_io = 0x03f8.
-
-in the writer_bottomhalf i do:
-
-//bytes_send    :index to writer buffer which holds the package
-//writer_length :length of the package i want to send
-//foo           :struct timeval for debugging reasons
-
-if(bytes_send==writer_length){   // i have send the whole package
-
-	//starting timer to catch unacknowledged packages
-
-}
-else{
-	outb(writer[bytes_send],eib_io+UART_TX);
-	printk(KERN_ALERT"sending %x %ld %ld\n",
-               writer[bytes_send],foo.tv_sec,foo.tv_usec);
-}
-return;
-
-and in interrupt handler
-
-static void interrupt_handler(int irq, void *dev_id, struct pt_regs
-*regs){
-
-// code for other interrupts
-
-      if ( inb(  eib_io + UART_LSR ) & ( UART_LSR_THRE) ){
-
-		bytes_send++;
-		tasklet_schedule(&writer_tasklet);
-		return;
-
-      }
-
-}
-
-so whenever the interrupt handler is calling i increase the bytes_send
-and i return to writer_bottomhalf to send the next character of the
-package. My question is that if there are differencies in the
-implementation of the UARTS between VIA and other manufacturers?
-I can't understand why this piece of shit is working only in VIA.
-i use 2.4.31 compiled with the same .config  except the processor's type
-and chipset support in block devices section(linux serial driver
-compiled as a module that i  don't load at all).
-
-i can't understand what registers to print during boot as alan proposed
-the registers from 0x03f8 - 0x03ff (aka /dev/ttyS0)?
-
-thanks and sorry for the length of the message...
-
-P.S: do i have to send every email to linux-kernel@vger.kernel.org or to
-linux-serial@vger.kernel.org
-
+--
+Paul Fulghum
+Microgate Systems, Ltd
