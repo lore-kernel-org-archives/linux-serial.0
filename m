@@ -1,27 +1,24 @@
-From: "Ezra Major" <qynwwyvvlxnf@hotmail.com>
-Subject: Watches Lovers Love this oQwGN
-Date: Fri, 23 Dec 2005 04:57:56 -0700
-Message-ID: <LAW95.OE649yfB4mvo312753d5__9088.71372598714$1135339093$gmane$org@motmail.com>
+From: "Georgina Ervin" <georgina.ervin_bf@mohan.ca>
+Subject: Get cials-tabs - no prior pr.escription needed
+Date: Fri, 23 Dec 2005 14:25:24 +0100
+Message-ID: <982101c607c4$5aeff0dc$ad95d3a0@moenkebuder-adler.de>
+Mime-Version: 1.0
+Content-Type: text/plain; format=flowed; charset=iso-8859-1; reply-type=original
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from pcp0011202371pcs.salsbr01.md.comcast.net ([69.250.7.250]:13316
-	"HELO pcp0011202371pcs.salsbr01.md.comcast.net") by vger.kernel.org
-	with SMTP id S1030503AbVLWL56 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 23 Dec 2005 06:57:58 -0500
+Received: from bar67-1-82-227-44-97.fbx.proxad.net ([82.227.44.97]:60942 "HELO
+	moenkebuder-adler.de") by vger.kernel.org with SMTP
+	id S1030554AbVLWPBj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 23 Dec 2005 10:01:39 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-net@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
 
-World Top10 Branded Watches at 90% off 
-the original price. We have almost all models
-to be choosen from which makes our replikas
-the best and highest quality assured by our 
-manufacturer or else full refund is being
-given without questions ask.
+Be ERECT in under 15 mins
 
-Check us out toooday..
-http://043.foodprocesormaker.com
+C0ST: $ 2 / use
+
+visit our website --> onlineclear.com
 
 
-Evrvh
