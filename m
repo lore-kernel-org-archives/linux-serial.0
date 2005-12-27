@@ -1,30 +1,26 @@
-From: Esther Knowles <vaulter@doormotion.com>
-Subject: Get rid of premature ejaculation and last longer
-Date: Sun, 25 Dec 2005 03:47:51 -0800
-Message-ID: <6170971566.65795127539@213.154.40.166>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+From: "Jefferey Sutton" <yjiim@msn.com>
+Subject: Pay Less For Branded Watches T8dM2
+Date: Mon, 26 Dec 2005 18:44:25 -0700
+Message-ID: <CFE3.9A5.3074798B8C__48167.270984459$1135648437$gmane$org@mopalinux.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:28574 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S1750822AbVLYLsB (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 25 Dec 2005 06:48:01 -0500
-Received: from 213.154.40.166 ([213.154.40.166])
-	by zeus1.kernel.org (8.13.1/8.13.1) with SMTP id jBPBlp7a014468
-	for <linux-serial@vger.kernel.org>; Sun, 25 Dec 2005 03:47:52 -0800
+Received: from 11-198-235-201.fibertel.com.ar ([201.235.198.11]:17937 "HELO
+	11-198-235-201.fibertel.com.ar") by vger.kernel.org with SMTP
+	id S932197AbVL0Bxb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 26 Dec 2005 20:53:31 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-
-Penis Growth Patches are here!
-http://www.mugest.com/pt/
+To: linux-scsi@vger.kernel.org
 
 
+World Top10 Branded Watches at 90% off 
+the original price. We have almost all models
+to be choosen from which makes our replikas
+the best and highest quality assured by our 
+manufacturer or else full refund is being
+given without questions ask.
 
-Nature is a mutable cloud, which is always and never the same. 
-Cynics are made, not born.        
-I am not young enough to know everything.     
-Consequences, shmonsequences! So long as I'm rich!      
-Man is what he believes.        
+Check us out toooday..
+http://043.bubbleenveloppe.com
 
 
+jzh
