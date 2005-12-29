@@ -1,26 +1,23 @@
-From: "Nick Swartz" <BPCSI@yahoo.com>
-Subject: Quality Medicine Available p9Z
-Date: Thu, 04 Mar 2004 01:08:42 +0100
-Message-ID: <68HY87FE.0X24.BPCSI__47181.5592180521$1135706337$gmane$org@yahoo.com>
+From: "Billie Horn" <billie_horn_rk@stans.nw.ch>
+Subject: Fwd; cials-tabs, 24 hour ssale online
+Date: Thu, 29 Dec 2005 08:11:26 +0100
+Message-ID: <abfd01c60c47$827a38a1$b18b6812@stardom.fr>
+Mime-Version: 1.0
+Content-Type: text/plain; format=flowed; charset=iso-8859-1; reply-type=original
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from f177188.upc-f.chello.nl ([80.56.177.188]:22028 "HELO
-	f177188.upc-f.chello.nl") by vger.kernel.org with SMTP
-	id S932358AbVL0R6r (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 27 Dec 2005 12:58:47 -0500
+Received: from s142-179-219-88.ab.hsia.telus.net ([142.179.219.88]:32263 "HELO
+	stardom.fr") by vger.kernel.org with SMTP id S965079AbVL2Izj (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 29 Dec 2005 03:55:39 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-scsi@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
 
+Be ERECT in under 15 mins
 
-The most complete Phar macy Online
-We carry all major medds at bargain price
-Viggra, Ci ialis, VaIium, Xa naax
-Phantermiine, Ulltraam and etc...
-SatiisfactIon Gua ranteeed
+C0ST: $ 2 / use
 
-http://labelhere.com
-
-
-SL
+go to our megasite --> directloqii.com
 
