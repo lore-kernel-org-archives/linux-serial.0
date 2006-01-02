@@ -1,27 +1,26 @@
-From: Gwendolen Colon <ceasing@stonefieldhomes.com>
-Subject: Male sexual enhancement formula
-Date: Sun, 1 Jan 2006 12:03:16 -0500
-Message-ID: <2982031101.632167535@dsl.static859923481.ttnet.net.tr>
-Content-Type: text/plain; charset=us-ascii
+From: "Marla L. Jaramillo" <m.l_jaramillo_qx@cic.es>
+Subject: buy cials-tabs without embarrassment
+Date: Mon, 02 Jan 2006 13:58:20 +0100
+Message-ID: <d0a001c60f9c$e97302a7$ca606be1@email.si>
+Mime-Version: 1.0
+Content-Type: text/plain; format=flowed; charset=iso-8859-1; reply-type=original
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from dsl.static859923481.ttnet.net.tr ([85.99.234.81]:35340 "HELO
-	dsl.static859923481.ttnet.net.tr") by vger.kernel.org with SMTP
-	id S1750783AbWAARDQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 1 Jan 2006 12:03:16 -0500
+Received: from zeus2.kernel.org ([204.152.191.36]:16845 "EHLO zeus2.kernel.org")
+	by vger.kernel.org with ESMTP id S1750771AbWABOmx (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 2 Jan 2006 09:42:53 -0500
+Received: from email.si ([203.177.243.109])
+	by zeus2.kernel.org (8.13.1/8.13.1) with SMTP id k02EgYES018852
+	for <linux-serial@vger.kernel.org>; Mon, 2 Jan 2006 06:42:39 -0800
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Expand your Penis 20% Larger in weeks
-http://www.metant.com/pt/
 
+Be ERECT in only 15 mins
 
+PRlCE: $ 2 / use
 
-Nothing is impossible. Some things are just less likely than others.  
-It is only to the individual that a soul is given.  
-I regard golf as an expensive way of playing marbles.   
-I wasn't kissing her, I was whispering in her mouth.   
-You cannot shake hands with a clenched fist.     
-
+view our site --> directloqii.com
 
