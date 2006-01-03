@@ -1,26 +1,59 @@
-From: "Marla L. Jaramillo" <m.l_jaramillo_qx@cic.es>
-Subject: buy cials-tabs without embarrassment
-Date: Mon, 02 Jan 2006 13:58:20 +0100
-Message-ID: <d0a001c60f9c$e97302a7$ca606be1@email.si>
+From: Denis Vlasenko <vda@ilport.com.ua>
+Subject: [PATCH] fix warning in 8250.c
+Date: Tue, 3 Jan 2006 10:12:48 +0200
+Message-ID: <200601031012.49068.vda@ilport.com.ua>
 Mime-Version: 1.0
-Content-Type: text/plain; format=flowed; charset=iso-8859-1; reply-type=original
-Content-Transfer-Encoding: 7bit
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_BIjuD6MvX1MDQUp"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus2.kernel.org ([204.152.191.36]:16845 "EHLO zeus2.kernel.org")
-	by vger.kernel.org with ESMTP id S1750771AbWABOmx (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 2 Jan 2006 09:42:53 -0500
-Received: from email.si ([203.177.243.109])
-	by zeus2.kernel.org (8.13.1/8.13.1) with SMTP id k02EgYES018852
-	for <linux-serial@vger.kernel.org>; Mon, 2 Jan 2006 06:42:39 -0800
+Received: from 167.imtp.Ilyichevsk.Odessa.UA ([195.66.192.167]:2703 "HELO
+	ilport.com.ua") by vger.kernel.org with SMTP id S1751177AbWACINS
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 3 Jan 2006 03:13:18 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: rmk+serial@arm.linux.org.uk
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+
+--Boundary-00=_BIjuD6MvX1MDQUp
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+  CC      drivers/serial/8250.o
+/.1/usr/srcdevel/kernel/linux-2.6.15-rc7.src/drivers/serial/8250.c:1085: warning: 'transmit_chars' declared inline after being called
+/.1/usr/srcdevel/kernel/linux-2.6.15-rc7.src/drivers/serial/8250.c:1085: warning: previous declaration of 'transmit_chars' was here
+
+Since this function is not small, inlining effect is way below noise floor.
+Let's just remove _INLINE_.
+--
+vda
+
+--Boundary-00=_BIjuD6MvX1MDQUp
+Content-Type: text/x-diff;
+  charset="us-ascii";
+  name="linux-2.6.15-rc7.inline.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="linux-2.6.15-rc7.inline.patch"
+
+  CC      drivers/serial/8250.o
+/.1/usr/srcdevel/kernel/linux-2.6.15-rc7.src/drivers/serial/8250.c:1085: warning: 'transmit_chars' declared inline after being called
+/.1/usr/srcdevel/kernel/linux-2.6.15-rc7.src/drivers/serial/8250.c:1085: warning: previous declaration of 'transmit_chars' was here
 
 
-Be ERECT in only 15 mins
+diff -urpN linux-2.6.15-rc7.src/drivers/serial/8250.c linux-2.6.15-rc7.fix/drivers/serial/8250.c
+--- linux-2.6.15-rc7.src/drivers/serial/8250.c	Fri Dec 30 14:18:03 2005
++++ linux-2.6.15-rc7.fix/drivers/serial/8250.c	Sun Jan  1 16:56:17 2006
+@@ -1217,7 +1217,7 @@ receive_chars(struct uart_8250_port *up,
+ 	*status = lsr;
+ }
+ 
+-static _INLINE_ void transmit_chars(struct uart_8250_port *up)
++static void transmit_chars(struct uart_8250_port *up)
+ {
+ 	struct circ_buf *xmit = &up->port.info->xmit;
+ 	int count;
 
-PRlCE: $ 2 / use
-
-view our site --> directloqii.com
-
+--Boundary-00=_BIjuD6MvX1MDQUp--
