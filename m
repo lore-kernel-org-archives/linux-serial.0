@@ -1,30 +1,35 @@
 From: Russell King <rmk+lkml@arm.linux.org.uk>
-Subject: Re: [patch][rfc] 8250_early: Too early for ioremap
-Date: Wed, 4 Jan 2006 18:04:25 +0000
-Message-ID: <20060104180425.GB3119@flint.arm.linux.org.uk>
-References: <221e0ff70601010712l3ee799c0n@mail.gmail.com>
+Subject: Re: [patch] serial: compare mapbase and not membase in find_port
+Date: Wed, 4 Jan 2006 18:12:26 +0000
+Message-ID: <20060104181226.GD3119@flint.arm.linux.org.uk>
+References: <221e0ff70601010712u6a0d395dq@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([212.18.232.186]:33033 "EHLO
+Received: from caramon.arm.linux.org.uk ([212.18.232.186]:46353 "EHLO
 	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
-	id S932550AbWADSEk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Jan 2006 13:04:40 -0500
+	id S1030260AbWADSMd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 4 Jan 2006 13:12:33 -0500
 Content-Disposition: inline
-In-Reply-To: <221e0ff70601010712l3ee799c0n@mail.gmail.com>
+In-Reply-To: <221e0ff70601010712u6a0d395dq@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Gyorgy Jeney <nog.lkml@gmail.com>
-Cc: Bjorn Helgaas <bjorn.helgaas@hp.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, Bjorn Helgaas <bjorn.helgaas@hp.com>, linux-kernel@vger.kernel.org
 
-On Sun, Jan 01, 2006 at 04:12:21PM +0100, Gyorgy Jeney wrote:
-> Let the individual architectures define the function to use to remap the
-> mmio-range that will be used by the 8250_early driver.  This is needed
-> because, the default, ioremap() is non-functional when the 8250_early
-> driver initialises.
+On Sun, Jan 01, 2006 at 04:12:31PM +0100, Gyorgy Jeney wrote:
+> From: Gyorgy Jeney
+> 
+> If the 8250_early driver uses bt_ioremap, find_port() is unable to find the
+> correct device since the address returned by ioremap is different to that
+> returned by bt_ioremap for the same address.  Since no more than one device
+> occupies the same physical address, compareing the physical addresses should
+> be safe.
 
-Isn't there some other way this can be handled?  Can't this be hidden
-in the architectures ioremap where it's a problem?
+Really, this should be using uart_match_port().  Fixed to use that.
+
+(And in combination with Ben's patch from November time, it works out
+to do the right thing.)
 
 -- 
 Russell King
