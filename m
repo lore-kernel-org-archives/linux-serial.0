@@ -1,35 +1,32 @@
 From: Russell King <rmk+lkml@arm.linux.org.uk>
-Subject: Re: [patch] serial: compare mapbase and not membase in find_port
-Date: Wed, 4 Jan 2006 18:12:26 +0000
-Message-ID: <20060104181226.GD3119@flint.arm.linux.org.uk>
-References: <221e0ff70601010712u6a0d395dq@mail.gmail.com>
+Subject: Re: [PATCH] fix warning in 8250.c
+Date: Wed, 4 Jan 2006 18:14:25 +0000
+Message-ID: <20060104181425.GE3119@flint.arm.linux.org.uk>
+References: <200601031012.49068.vda@ilport.com.ua>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([212.18.232.186]:46353 "EHLO
+Received: from caramon.arm.linux.org.uk ([212.18.232.186]:48145 "EHLO
 	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
-	id S1030260AbWADSMd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Jan 2006 13:12:33 -0500
+	id S932550AbWADSOi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 4 Jan 2006 13:14:38 -0500
 Content-Disposition: inline
-In-Reply-To: <221e0ff70601010712u6a0d395dq@mail.gmail.com>
+In-Reply-To: <200601031012.49068.vda@ilport.com.ua>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Gyorgy Jeney <nog.lkml@gmail.com>
-Cc: linux-serial@vger.kernel.org, Bjorn Helgaas <bjorn.helgaas@hp.com>, linux-kernel@vger.kernel.org
+To: Denis Vlasenko <vda@ilport.com.ua>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Sun, Jan 01, 2006 at 04:12:31PM +0100, Gyorgy Jeney wrote:
-> From: Gyorgy Jeney
+On Tue, Jan 03, 2006 at 10:12:48AM +0200, Denis Vlasenko wrote:
+>   CC      drivers/serial/8250.o
+> /.1/usr/srcdevel/kernel/linux-2.6.15-rc7.src/drivers/serial/8250.c:1085: warning: 'transmit_chars' declared inline after being called
+> /.1/usr/srcdevel/kernel/linux-2.6.15-rc7.src/drivers/serial/8250.c:1085: warning: previous declaration of 'transmit_chars' was here
 > 
-> If the 8250_early driver uses bt_ioremap, find_port() is unable to find the
-> correct device since the address returned by ioremap is different to that
-> returned by bt_ioremap for the same address.  Since no more than one device
-> occupies the same physical address, compareing the physical addresses should
-> be safe.
+> Since this function is not small, inlining effect is way below noise floor.
+> Let's just remove _INLINE_.
 
-Really, this should be using uart_match_port().  Fixed to use that.
-
-(And in combination with Ben's patch from November time, it works out
-to do the right thing.)
+I think we want to remove _INLINE_ from both receive_chars and
+transmit_chars.  Both functions aren't small, so...
 
 -- 
 Russell King
