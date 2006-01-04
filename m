@@ -1,23 +1,32 @@
-From: "Denise Davies" <denisedavies_us@model.de>
-Subject: Bugy cials-tabs Online For Less
-Date: Wed, 04 Jan 2006 16:34:55 +0100
-Message-ID: <7f2701c61144$f5159272$252873ba@staps.univ-mrs.fr>
+From: Russell King <rmk+lkml@arm.linux.org.uk>
+Subject: Re: [patch][rfc] 8250_early: Too early for ioremap
+Date: Wed, 4 Jan 2006 18:04:25 +0000
+Message-ID: <20060104180425.GB3119@flint.arm.linux.org.uk>
+References: <221e0ff70601010712l3ee799c0n@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; format=flowed; charset=iso-8859-1; reply-type=original
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [218.9.210.81] ([218.9.210.81]:10770 "HELO staps.univ-mrs.fr")
-	by vger.kernel.org with SMTP id S965205AbWADRUZ (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Jan 2006 12:20:25 -0500
+Received: from caramon.arm.linux.org.uk ([212.18.232.186]:33033 "EHLO
+	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
+	id S932550AbWADSEk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 4 Jan 2006 13:04:40 -0500
+Content-Disposition: inline
+In-Reply-To: <221e0ff70601010712l3ee799c0n@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Gyorgy Jeney <nog.lkml@gmail.com>
+Cc: Bjorn Helgaas <bjorn.helgaas@hp.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
+On Sun, Jan 01, 2006 at 04:12:21PM +0100, Gyorgy Jeney wrote:
+> Let the individual architectures define the function to use to remap the
+> mmio-range that will be used by the 8250_early driver.  This is needed
+> because, the default, ioremap() is non-functional when the 8250_early
+> driver initialises.
 
-Be ERECT in less than 15 mins
+Isn't there some other way this can be handled?  Can't this be hidden
+in the architectures ioremap where it's a problem?
 
-C0ST: $ 2 / use
-
-visit our megasite --> directloqii.com
-
+-- 
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:  2.6 Serial core
