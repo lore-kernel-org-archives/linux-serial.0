@@ -1,40 +1,37 @@
-From: Andrew Morton <akpm@osdl.org>
-Subject: Re: [PATCH] fix warning in 8250.c
-Date: Wed, 4 Jan 2006 15:51:22 -0800
-Message-ID: <20060104155122.0bdfcffb.akpm@osdl.org>
-References: <200601031012.49068.vda@ilport.com.ua>
-	<20060104181425.GE3119@flint.arm.linux.org.uk>
-	<20060104181801.GA3605@infradead.org>
-	<20060104191241.GF3119@flint.arm.linux.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From: "Wanda Mooney" <ghgvi@msn.com>
+Subject: Save 33% on your Monthly Loan Tps
+Date: Thu, 05 Jan 2006 16:32:46 -0300
+Message-ID: <CFE4.9A3.3009798B8C__6735.06786483831$1136490081$gmane$org@mopalinux.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.osdl.org ([65.172.181.4]:60370 "EHLO smtp.osdl.org")
-	by vger.kernel.org with ESMTP id S1750751AbWADXt6 (ORCPT
+Received: from 24.152.221.169.res-cmts.eph.ptd.net ([24.152.221.169]:50188
+	"HELO 24.152.221.169.res-cmts.eph.ptd.net") by vger.kernel.org
+	with SMTP id S1752164AbWAETkr (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Jan 2006 18:49:58 -0500
-In-Reply-To: <20060104191241.GF3119@flint.arm.linux.org.uk>
+	Thu, 5 Jan 2006 14:40:47 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <rmk+lkml@arm.linux.org.uk>
-Cc: hch@infradead.org, vda@ilport.com.ua, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Theodore Ts'o <tytso@mit.edu>
+To: linux-serial@vger.kernel.org
+Cc: linux-sound@vger.kernel.org, linux-tape@vger.kernel.org, linux-x25@vger.kernel.org, majordomo@vger.kernel.org
 
-Russell King <rmk+lkml@arm.linux.org.uk> wrote:
->
-> > While we're at it can we please kill _INLINE_?  Those functions that should
-> > be inlined can become inline, but this macro just obsfucates the serial code.
-> 
-> No idea - I don't know about x86 nuances and why they wanted:
-> 
-> #if defined(__i386__) && (defined(CONFIG_M386) || defined(CONFIG_M486))
-> #define _INLINE_ inline
-> #else
-> #define _INLINE_
-> #endif
-> 
-> Maybe someone in the x86 world needs to comment?  Does the above even
-> mean that we'll ever inline anything marked _INLINE_ ?
 
-I suspect the reasoning behind this is lost in the mists of pre-bk time. 
-I'd be inclined to just nuke it and see what happens.  Nothing, I expect.
+Hey Guys,
+
+I was so happy I took adavantage of this Refinance offer,
+I thought I would share it with you.I locked in a 3.75 Rate
+before the increases started and got the cash I needed before the Holiday.
+It took me less than 1 Min to fill out this form and get started.
+
+http://8N1.washyde.com/af
+
+
+
+
+
+
+
+
+
+out of maaei ling:
+http://washyde.com/rem
+
+Vo
