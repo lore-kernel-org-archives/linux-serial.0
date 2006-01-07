@@ -1,37 +1,49 @@
-From: "Wanda Mooney" <ghgvi@msn.com>
-Subject: Save 33% on your Monthly Loan Tps
-Date: Thu, 05 Jan 2006 16:32:46 -0300
-Message-ID: <CFE4.9A3.3009798B8C__6735.06786483831$1136490081$gmane$org@mopalinux.com>
+From: "Jarrod Holloway" <PXNERUYK@msn.com>
+Subject: Save 33% on your Monthly Loan 39Ebj
+Date: Sat, 07 Jan 2006 00:29:26 -0400
+Message-ID: <LAW26.OE649yfB4mvo368753d5@motmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 24.152.221.169.res-cmts.eph.ptd.net ([24.152.221.169]:50188
-	"HELO 24.152.221.169.res-cmts.eph.ptd.net") by vger.kernel.org
-	with SMTP id S1752164AbWAETkr (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 5 Jan 2006 14:40:47 -0500
+Received: from client-201.240.5.188.speedy.net.pe ([201.240.5.188]:23310 "HELO
+	client-201.240.5.188.speedy.net.pe") by vger.kernel.org with SMTP
+	id S1030336AbWAGEe2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 6 Jan 2006 23:34:28 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-sound@vger.kernel.org, linux-tape@vger.kernel.org, linux-x25@vger.kernel.org, majordomo@vger.kernel.org
+To: linux-net@vger.kernel.org
 
 
-Hey Guys,
+Dear Home Owner,
 
-I was so happy I took adavantage of this Refinance offer,
-I thought I would share it with you.I locked in a 3.75 Rate
-before the increases started and got the cash I needed before the Holiday.
-It took me less than 1 Min to fill out this form and get started.
+Your credit doesn't matter to us! If you OWN real estate
+and want IMMEDIATE cash to spend ANY way you like, or simply wish
+to LOWER your monthly payments by a third or more, here are the deals
+we have TODAY (hurry, these offers will expire TONIGHT) :
 
-http://8N1.washyde.com/af
+$450,000.00 at a 3.85% fixed-rate
+$374,000.00 at a 3.54% variable-rate
+$464,000.00 at a 3.77% interest-only
+$214,000.00 at a 3.54% fixed-rate
+$134,000.00 at a 3.75% variable-rate
+
+Hurry, when these deals are gone, they are gone!
+Simply fill out this one-minute form...
+
+http://D7S1Id.washyde.com/af
+
+Don't worry about approval, your credit will not disqualify you!
+
+http://umMn.washyde.com/af
+
+Sincerely,
+Bridget Hurd
+Approval Manager
 
 
 
 
 
 
-
-
-
-out of maaei ling:
+stop the current promo
 http://washyde.com/rem
 
-Vo
+HxJOLv
