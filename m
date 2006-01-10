@@ -1,25 +1,35 @@
-From: "Wesley Page" <MVEQVDQJC@hotmail.com>
-Subject: King of Pharrmacy r6dkx9
-Date: Mon, 15 Mar 2004 08:32:47 +0600
-Message-ID: <CFE9.9A6.3040098B8C__239.85185330293$1136665374$gmane$org@mopalinux.com>
+From: Adrian Bunk <bunk@stusta.de>
+Subject: [2.6 patch] drivers/serial/Kconfig: fix SERIAL_M32R_PLDSIO dependencies
+Date: Tue, 10 Jan 2006 22:58:01 +0100
+Message-ID: <20060110215801.GF3911@stusta.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from c-24-14-148-166.hsd1.il.comcast.net ([24.14.148.166]:22540 "HELO
-	c-24-14-148-166.hsd1.il.comcast.net") by vger.kernel.org with SMTP
-	id S1161089AbWAGUWg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 7 Jan 2006 15:22:36 -0500
+Received: from emailhub.stusta.mhn.de ([141.84.69.5]:39690 "HELO
+	mailout.stusta.mhn.de") by vger.kernel.org with SMTP
+	id S932496AbWAJV6E (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 10 Jan 2006 16:58:04 -0500
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-net@vger.kernel.org
-Cc: linux-newbie@vger.kernel.org, linux-ppp@vger.kernel.org, linux-raid@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org
+To: rmk+serial@arm.linux.org.uk
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jean-Luc Leger <reiga@dspnet.fr.eu.org>
+
+This patch fixes a typo in the dependencies reported by
+Jean-Luc Leger <reiga@dspnet.fr.eu.org>.
 
 
-Huge selection of meds available
-at attractive prices. 
-Highest quality assured.
+Signed-off-by: Adrian Bunk <bunk@stusta.de>
 
-Try us out today..
+--- linux-2.6.15-mm2-full/drivers/serial/Kconfig.old	2006-01-10 21:56:52.000000000 +0100
++++ linux-2.6.15-mm2-full/drivers/serial/Kconfig	2006-01-10 21:57:54.000000000 +0100
+@@ -826,7 +826,7 @@
+ 
+ config SERIAL_M32R_PLDSIO
+ 	bool "M32R SIO I/F on a PLD"
+-	depends on SERIAL_M32R_SIO=y && (PLAT_OPSPUT || PALT_USRV || PLAT_M32700UT)
++	depends on SERIAL_M32R_SIO=y && (PLAT_OPSPUT || PLAT_USRV || PLAT_M32700UT)
+ 	default n
+ 	help
+ 	  Say Y here if you want to use the M32R serial controller
 
-http://obhohl.multicountry.com/?dmnpmcxwnopytbplwgzpoafwcfr
-
-
-zO4zMM
