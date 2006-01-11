@@ -1,35 +1,39 @@
-From: Adrian Bunk <bunk@stusta.de>
-Subject: [2.6 patch] drivers/serial/Kconfig: fix SERIAL_M32R_PLDSIO dependencies
-Date: Tue, 10 Jan 2006 22:58:01 +0100
-Message-ID: <20060110215801.GF3911@stusta.de>
+From: "Denny Cullen" <ZZZBL@hotmail.com>
+Subject: Pay Less For Branded Watches OCLweq
+Date: Wed, 11 Jan 2006 15:14:46 +0200
+Message-ID: <3A067EE3.7684.2215C2D5__34430.9541666464$1136985552$gmane$org@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from emailhub.stusta.mhn.de ([141.84.69.5]:39690 "HELO
-	mailout.stusta.mhn.de") by vger.kernel.org with SMTP
-	id S932496AbWAJV6E (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 10 Jan 2006 16:58:04 -0500
-Content-Disposition: inline
+Received: from c-24-15-101-165.hsd1.il.comcast.net ([24.15.101.165]:30736 "HELO
+	c-24-15-101-165.hsd1.il.comcast.net") by vger.kernel.org with SMTP
+	id S1751501AbWAKNSw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 11 Jan 2006 08:18:52 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: rmk+serial@arm.linux.org.uk
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jean-Luc Leger <reiga@dspnet.fr.eu.org>
-
-This patch fixes a typo in the dependencies reported by
-Jean-Luc Leger <reiga@dspnet.fr.eu.org>.
+To: linux-serial@vger.kernel.org
 
 
-Signed-off-by: Adrian Bunk <bunk@stusta.de>
 
---- linux-2.6.15-mm2-full/drivers/serial/Kconfig.old	2006-01-10 21:56:52.000000000 +0100
-+++ linux-2.6.15-mm2-full/drivers/serial/Kconfig	2006-01-10 21:57:54.000000000 +0100
-@@ -826,7 +826,7 @@
- 
- config SERIAL_M32R_PLDSIO
- 	bool "M32R SIO I/F on a PLD"
--	depends on SERIAL_M32R_SIO=y && (PLAT_OPSPUT || PALT_USRV || PLAT_M32700UT)
-+	depends on SERIAL_M32R_SIO=y && (PLAT_OPSPUT || PLAT_USRV || PLAT_M32700UT)
- 	default n
- 	help
- 	  Say Y here if you want to use the M32R serial controller
 
+Why pay more for originals when replikas are 
+look 99.9% alike?
+Highest quality of replikas assured which
+can't differentiate the difference with originals.
+And available at 95% original prices.
+
+Try us out today..
+
+http://043.boilthatpastaboy.com
+
+
+
+
+
+
+
+
+o-ut of mai-lling lisst:
+http://043.howmanymegapixel.com/rm/
+
+nLn8
