@@ -1,31 +1,30 @@
-From: "Denny Cullen" <ZZZBL@hotmail.com>
-Subject: Pay Less For Branded Watches OCLweq
-Date: Wed, 11 Jan 2006 15:14:46 +0200
-Message-ID: <3A067EE3.7684.2215C2D5__34430.9541666464$1136985552$gmane$org@localhost>
+From: "Junior Hooks" <UVUWAOZZRER@yahoo.com>
+Subject: Save 33% on your Monthly Loan CBYUlA
+Date: Thu, 12 Jan 2006 20:01:03 -0300
+Message-ID: <8A447EE3.7684.7615C2D5__8053.84816271744$1137107437$gmane$org@localhost>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from c-24-15-101-165.hsd1.il.comcast.net ([24.15.101.165]:30736 "HELO
-	c-24-15-101-165.hsd1.il.comcast.net") by vger.kernel.org with SMTP
-	id S1751501AbWAKNSw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 11 Jan 2006 08:18:52 -0500
+Received: from zeus1.kernel.org ([204.152.191.4]:974 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S1161264AbWALXKK (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 12 Jan 2006 18:10:10 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-net@vger.kernel.org
+Cc: linux-newbie@vger.kernel.org, linux-ppp@vger.kernel.org, linux-raid@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org
 
 
 
 
-Why pay more for originals when replikas are 
-look 99.9% alike?
-Highest quality of replikas assured which
-can't differentiate the difference with originals.
-And available at 95% original prices.
+Hey Guys,
 
-Try us out today..
+I was so happy I took adavantage of this Refinance offer,
+I thought I would share it with you.I locked in a 3.75 Rate
+before the increases started and got the cash I needed before the Holiday.
+It took me less than 1 Min to fill out this form and get started.
 
-http://043.boilthatpastaboy.com
-
+http://7n8.neckthu.com/af
 
 
 
@@ -33,7 +32,9 @@ http://043.boilthatpastaboy.com
 
 
 
-o-ut of mai-lling lisst:
-http://043.howmanymegapixel.com/rm/
 
-nLn8
+
+out of maaei ling:
+http://neckthu.com/rem
+
+RMHA4d
