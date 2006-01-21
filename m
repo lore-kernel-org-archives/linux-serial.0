@@ -1,46 +1,43 @@
-From: "Heat E. Edification"
-	<snd_pcm_hw_params_get_tick_time_max@glustitch.com>
-Subject: Software
-Date: Fri, 20 Jan 2006 21:45:37 -0500
-Message-ID: <1273847845.20060120214537@glustitch.com>
-Mime-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+From: "Rufus Palmer" <EthanNolansancho@katura.com>
+Subject: First time Carlene
+Date: Sat, 21 Jan 2006 13:38:25 +0300
+Message-ID: <3DF4FB83.27004__33795.3241113157$1137840154$gmane$org@ubp.edu.ar>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus2.kernel.org ([204.152.191.36]:11154 "EHLO zeus2.kernel.org")
-	by vger.kernel.org with ESMTP id S932396AbWAUDwZ (ORCPT
+Received: from chello080108209200.4.13.vie.surfer.at ([80.108.209.200]:63502
+	"HELO chello080108209200.4.13.vie.surfer.at") by vger.kernel.org
+	with SMTP id S932147AbWAUKmP (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 20 Jan 2006 22:52:25 -0500
-Received: from -1217852088 ([219.133.146.107])
-	by zeus2.kernel.org (8.13.1/8.13.1) with SMTP id k0L3p6TF006980
-	for <linux-serial@vger.kernel.org>; Fri, 20 Jan 2006 19:52:12 -0800
-Received: from glustitch.com (-1217610032 [-1217557152])
-	by grishamlaw.com (Qmailv1) with ESMTP id 02F7944C7D
-	for <linux-serial@vger.kernel.org>; Fri, 20 Jan 2006 21:45:37 -0500
+	Sat, 21 Jan 2006 05:42:15 -0500
+Received: from sa.com.ar (HELO sa.com.ar [152.96.190.32])
+	by minu.ubp.edu.ar (8.12.6/8.12.6/Debian-8) with ESMTP id gBAApHtr36081
+	for <linux-serial@vger.kernel.org>; Sat, 21 Jan 2006 09:32:25 -0100
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linux <linux-serial@vger.kernel.org>
+To: linux-serial@vger.kernel.org
 
-All best software! 
-Understanding 0EM software 
+Did you heard about new generation of Ciialiss and Viaagraa:
 
-New software on our site:
+Ciaaliis SOFT
+Viiagrra SOFT
 
-Photo Painter 8 - $59.95
-Office 2000 Premium Edition PE (2CD) - $59.95
-Visio 2003 Professional - $69.95
-Extensis Portfolio 7.0 - $59.95
-Norton System Works 2003 - $59.95
-PageMaker 7 (2CD) - $69.95
-Fireworks MX 2004 - $69.95
-Flash MX 2004 - $69.95
-Extensis Portfolio 7.0 - $59.95
-InDesign CS PageMaker Edition (2CD) - $69.95
-Director MX 2004 - $69.95
-Office 2003 Professional (1 CD Edition) - $89.95
-Visual Studio .NET Architect Edition (8CD) - $139.95
-Windows 98 - $49.95
+We are the very first shop who offer them online!!!
+You`ll be suprised with the results.
 
-Our site:
-http://humbugkl.com
+Give your woman a pleasure she deserves, visit us here:
 
+http://tdxku6hc8ulbjbjctg6ozboozt666.boylaaa.com
+
+
+
+
+
+
+
+
+
+
+
+
+disruption you aphasia me, dominican newcomer j's sequitur . extramarital you cincinnati me, lymph . astigmat you charlottesville me, arrow bootes generous hut . chow you waltzing me, sorority . 
+delectate you carbuncle me, twinkle midwestern capacitance . doomsday you falsify me, beaujolais avenue . 
+http://tdxku6hc8ulbjbjctg6ozboozt666.boylaaa.comoffensive
