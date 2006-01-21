@@ -1,27 +1,46 @@
-From: "Misty Shelton" <VFVFXQ@hotmail.com>
-Subject: Wow..Mens Love This gO6H
-Date: Sat, 21 Jan 2006 06:01:25 +0500
-Message-ID: <68CE87FE.0V24.VFVFXQ__26062.4392227784$1137805665$gmane$org@hotmail.com>
+From: "Heat E. Edification"
+	<snd_pcm_hw_params_get_tick_time_max@glustitch.com>
+Subject: Software
+Date: Fri, 20 Jan 2006 21:45:37 -0500
+Message-ID: <1273847845.20060120214537@glustitch.com>
+Mime-Version: 1.0
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [202.105.111.29] ([202.105.111.29]:54799 "HELO 209.132.176.167")
-	by vger.kernel.org with SMTP id S932321AbWAUBH3 (ORCPT
+Received: from zeus2.kernel.org ([204.152.191.36]:11154 "EHLO zeus2.kernel.org")
+	by vger.kernel.org with ESMTP id S932396AbWAUDwZ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 20 Jan 2006 20:07:29 -0500
+	Fri, 20 Jan 2006 22:52:25 -0500
+Received: from -1217852088 ([219.133.146.107])
+	by zeus2.kernel.org (8.13.1/8.13.1) with SMTP id k0L3p6TF006980
+	for <linux-serial@vger.kernel.org>; Fri, 20 Jan 2006 19:52:12 -0800
+Received: from glustitch.com (-1217610032 [-1217557152])
+	by grishamlaw.com (Qmailv1) with ESMTP id 02F7944C7D
+	for <linux-serial@vger.kernel.org>; Fri, 20 Jan 2006 21:45:37 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-net@vger.kernel.org
+To: Linux <linux-serial@vger.kernel.org>
 
+All best software! 
+Understanding 0EM software 
 
+New software on our site:
 
-Here's latest "Thunder" formula has been proven
-to add inches to the sizes while multiplying
-orgasms like never had before. 
-Our products is light years ahead of our competitors
-which has millions of happy users.
+Photo Painter 8 - $59.95
+Office 2000 Premium Edition PE (2CD) - $59.95
+Visio 2003 Professional - $69.95
+Extensis Portfolio 7.0 - $59.95
+Norton System Works 2003 - $59.95
+PageMaker 7 (2CD) - $69.95
+Fireworks MX 2004 - $69.95
+Flash MX 2004 - $69.95
+Extensis Portfolio 7.0 - $59.95
+InDesign CS PageMaker Edition (2CD) - $69.95
+Director MX 2004 - $69.95
+Office 2003 Professional (1 CD Edition) - $89.95
+Visual Studio .NET Architect Edition (8CD) - $139.95
+Windows 98 - $49.95
 
-Check us out..You won't regret.
+Our site:
+http://humbugkl.com
 
-http://thunder14.myherb.biz
-
-
-2LYcR
