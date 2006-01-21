@@ -1,24 +1,27 @@
-From: "Marian Mcguire" <qeupsbgrhsjvqk@yahoo.com>
-Subject: Lowest Price for Pills n1Ej
-Date: Sun, 28 Mar 2004 09:58:29 +0500
-Message-ID: <CFE2.9A1.3000998B8C__24939.3510552638$1137797732$gmane$org@mopalinux.com>
+From: "Misty Shelton" <VFVFXQ@hotmail.com>
+Subject: Wow..Mens Love This gO6H
+Date: Sat, 21 Jan 2006 06:01:25 +0500
+Message-ID: <68CE87FE.0V24.VFVFXQ__26062.4392227784$1137805665$gmane$org@hotmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus2.kernel.org ([204.152.191.36]:6629 "EHLO zeus2.kernel.org")
-	by vger.kernel.org with ESMTP id S932268AbWATWzF (ORCPT
+Received: from [202.105.111.29] ([202.105.111.29]:54799 "HELO 209.132.176.167")
+	by vger.kernel.org with SMTP id S932321AbWAUBH3 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 20 Jan 2006 17:55:05 -0500
+	Fri, 20 Jan 2006 20:07:29 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-net@vger.kernel.org
 
 
-Loking for quality meds at affordable
-price?
-We have widest range of meds at very
-competitive price.
-Money baack guaranteesss...
 
-http://seesproof.com
+Here's latest "Thunder" formula has been proven
+to add inches to the sizes while multiplying
+orgasms like never had before. 
+Our products is light years ahead of our competitors
+which has millions of happy users.
+
+Check us out..You won't regret.
+
+http://thunder14.myherb.biz
 
 
-m9tXlu
+2LYcR
