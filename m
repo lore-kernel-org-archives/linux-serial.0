@@ -1,40 +1,45 @@
-From: =?iso-8859-2?Q?Micha=B3_Miros=B3aw?= <mirq-serial@rere.qmqm.pl>
-Subject: [SERIAL] Comment typo fix for include/linux/serial_reg.h
-Date: Sun, 22 Jan 2006 01:03:21 +0100
-Message-ID: <20060122000321.GA19574@rere.qmqm.pl>
+From: "Mara A. Were" <adams@glenncoe.com>
+Subject: Software
+Date: Sun, 22 Jan 2006 03:11:48 -0600
+Message-ID: <4647649252.20060122031148@glenncoe.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from host-86-63-132-164.pronet.lublin.pl ([86.63.132.164]:6630 "EHLO
-	rere.qmqm.pl") by vger.kernel.org with ESMTP id S1751237AbWAVADX
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 21 Jan 2006 19:03:23 -0500
-Content-Disposition: inline
+Received: from zeus2.kernel.org ([204.152.191.36]:12264 "EHLO zeus2.kernel.org")
+	by vger.kernel.org with ESMTP id S1751152AbWAVH0u (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 22 Jan 2006 02:26:50 -0500
+Received: from -1213449928 ([222.161.122.82])
+	by zeus2.kernel.org (8.13.1/8.13.1) with SMTP id k0M7OrsS032601
+	for <linux-serial@vger.kernel.org>; Sat, 21 Jan 2006 23:26:43 -0800
+Received: from glenncoe.com (-1213788128 [-1216327920])
+	by granttelecom.com (Qmailv1) with ESMTP id A82E6E677B
+	for <linux-serial@vger.kernel.org>; Sun, 22 Jan 2006 03:11:48 -0600
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: rmk+serial@arm.linux.org.uk
-Cc: linux-serial@vger.kernel.org
+To: Linux <linux-serial@vger.kernel.org>
 
-Hi,
+Corel draw! just at best price 
+Best software prices. 
 
-This is a trivial typo fix. I sent it about a month ago, but it never
-got to the kernel.
+New software on our site:
 
-  -- Michal Miroslaw
+Office 2003 Professional (1 CD Edition) - $89.95
+Creative Suite Premium (5 CD) - $149.95
+Visio 2003 Professional - $69.95
+InDesign CS PageMaker Edition (2CD) - $69.95
+FreeHand MX - $69.95
+Visual Studio .NET Architect Edition (8CD) - $139.95
+Norton System Works 2003 - $59.95
+FileMaker 7.0 Professional - $69.95
+InDesign CS - $69.95
+Visio 2003 Professional - $69.95
+SQL Server 2000 Enterprise Edition - $69.95
+Premiere 6.5 - $89.95
+PhotoRetouch Pro 3.0 - $59.95
+Windows NT 4.0 Server - $49.95
 
-diff -urN linux-2.6.16-rc1-mq12/include/linux/serial_reg.h linux-2.6.16-rc1-mq123/include/linux/serial_reg.h
---- linux-2.6.16-rc1-mq12/include/linux/serial_reg.h	2006-01-03 04:21:10.000000000 +0100
-+++ linux-2.6.16-rc1-mq123/include/linux/serial_reg.h	2006-01-22 00:29:50.458495618 +0100
-@@ -247,10 +247,10 @@
- #define UART_CTR	0xFF
- 
- /*
-- * The 16C950 Additional Control Reigster
-+ * The 16C950 Additional Control Register
-  */
- #define UART_ACR_RXDIS	0x01	/* Receiver disable */
--#define UART_ACR_TXDIS	0x02	/* Receiver disable */
-+#define UART_ACR_TXDIS	0x02	/* Transmitter disable */
- #define UART_ACR_DSRFC	0x04	/* DSR Flow Control */
- #define UART_ACR_TLENB	0x20	/* 950 trigger levels enable */
- #define UART_ACR_ICRRD	0x40	/* ICR Read enable */
+Our site:
+http://herdsmanei.com
+
