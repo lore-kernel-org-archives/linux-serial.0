@@ -1,45 +1,93 @@
-From: "Ora H. Grub" <mirod@gregrecords.com>
-Subject: Software
-Date: Mon, 23 Jan 2006 07:40:25 -0500
-Message-ID: <8059998156.20060123074025@gregrecords.com>
+From: Stephen Hemminger <shemminger@osdl.org>
+Subject: JSM driver build problem
+Date: Mon, 23 Jan 2006 12:29:15 -0800
+Message-ID: <20060123122915.3e8d2166@dxpl.pdx.osdl.net>
 Mime-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:30443 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S1751375AbWAWMkO (ORCPT
+Received: from smtp.osdl.org ([65.172.181.4]:58070 "EHLO smtp.osdl.org")
+	by vger.kernel.org with ESMTP id S932383AbWAWU3T (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 23 Jan 2006 07:40:14 -0500
-Received: from -1217050344 ([61.136.227.148])
-	by zeus1.kernel.org (8.13.1/8.13.1) with SMTP id k0NCcs3m013411
-	for <linux-serial@vger.kernel.org>; Mon, 23 Jan 2006 04:39:54 -0800
-Received: from gregrecords.com (-1216912584 [-1216943312])
-	by gieson.net (Qmailv1) with ESMTP id 58D3B4F33D
-	for <linux-serial@vger.kernel.org>; Mon, 23 Jan 2006 07:40:25 -0500
+	Mon, 23 Jan 2006 15:29:19 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linux <linux-serial@vger.kernel.org>
+To: Russell King <rmk+serial@arm.linux.or.uk>
+Cc: linux-serial@vger.kernel.org
 
-75% Off for All New Software. microsoft, adobe, macromedia! 
-75% Off for All New Software. microsoft, adobe, macromedia! 
+Build failure in current linux-2.6 git tree.
+I am not using it, it was in my .config by accident...
 
-New software on our site:
 
-Painter 8 - $59.95
-Visio 2003 Professional - $69.95
-Dreamweaver MX 2004 $69.95
-Photoshop CS with ImageReady CS - $99.95
-Exchange 2003 Enterprise Server - $69.95
-Creative Suite Premium (5 CD) - $149.95
-Windows 2000 Advanced Server - $69.95
-Visual Studio .NET Architect Edition (8CD) - $139.95
-Illustrator CS CE - $69.95
-Illustrator CS - $69.95
-Streets and Trips 2004 North America (2CD) - $69.95
-Office 2003 Professional (1 CD Edition) - $89.95
-Freehand MX 11 - $69.95
-Windows 98 Second Edition - $49.95
-
-Our site:
-http://shinobia.com
-
+  CC [M]  drivers/serial/jsm/jsm_tty.o
+drivers/serial/jsm/jsm_tty.c: In function =E2=80=98jsm_input=E2=80=99:
+drivers/serial/jsm/jsm_tty.c:592: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:619: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:620: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:623: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:624: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:667: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:668: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:669: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:670: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:671: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:672: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:674: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:677: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:677: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:677: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:677: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:680: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:681: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:682: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:691: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:692: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:693: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:694: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:695: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:696: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:698: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:701: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:701: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:701: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:701: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:742: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+drivers/serial/jsm/jsm_tty.c:742: error: =E2=80=98struct tty_struct=E2=80=
+=99 has no member named =E2=80=98flip=E2=80=99
+make[3]: *** [drivers/serial/jsm/jsm_tty.o] Error 1
+-
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
