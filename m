@@ -1,93 +1,26 @@
-From: Stephen Hemminger <shemminger@osdl.org>
-Subject: JSM driver build problem
-Date: Mon, 23 Jan 2006 12:29:15 -0800
-Message-ID: <20060123122915.3e8d2166@dxpl.pdx.osdl.net>
+From: "Johnie Morgan" <tisdale.sybilla3az@gmail.com>
+Subject: Improved sexual desire
+Date: Tue, 24 Jan 2006 10:06:30 -0100
+Message-ID: <200601240904.k0O94Pr5024029@zeus1.kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain;
+        charset="Windows-1252"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.osdl.org ([65.172.181.4]:58070 "EHLO smtp.osdl.org")
-	by vger.kernel.org with ESMTP id S932383AbWAWU3T (ORCPT
+Received: from zeus1.kernel.org ([204.152.191.4]:17845 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S1030410AbWAXJEd (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 23 Jan 2006 15:29:19 -0500
+	Tue, 24 Jan 2006 04:04:33 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <rmk+serial@arm.linux.or.uk>
-Cc: linux-serial@vger.kernel.org
+To: linux-scsi@vger.kernel.org
 
-Build failure in current linux-2.6 git tree.
-I am not using it, it was in my .config by accident...
+A recent survey showed that 68% of women are unsatisfied with their sexual partners. Of course most of these women would never tell their partner that they are unhappy.
+
+Not being able to fully satisfy a woman can result in depression and feelings of inadequacy. Thankfully, men of all ages can now safely and naturally enhance their body and penis anatomy and renew sexual vitality without resorting to dangerous surgery.
+
+The all natural proprietary blend of unique herbs found in Maxaman is designed to restore blood flow to your penis, unleash stored testosterone, and heighten sensation by activating the body's natural hormone production and supplying vital nutrients necessary for peak sexual performance.
+
+http://biafklcdgj.linelinks.net/?ehmcdgjxwqowybizmmafkl
 
 
-  CC [M]  drivers/serial/jsm/jsm_tty.o
-drivers/serial/jsm/jsm_tty.c: In function =E2=80=98jsm_input=E2=80=99:
-drivers/serial/jsm/jsm_tty.c:592: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:619: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:620: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:623: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:624: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:667: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:668: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:669: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:670: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:671: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:672: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:674: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:677: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:677: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:677: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:677: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:680: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:681: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:682: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:691: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:692: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:693: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:694: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:695: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:696: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:698: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:701: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:701: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:701: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:701: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:742: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-drivers/serial/jsm/jsm_tty.c:742: error: =E2=80=98struct tty_struct=E2=80=
-=99 has no member named =E2=80=98flip=E2=80=99
-make[3]: *** [drivers/serial/jsm/jsm_tty.o] Error 1
--
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
