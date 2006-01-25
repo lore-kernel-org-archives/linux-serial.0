@@ -1,25 +1,62 @@
-From: "Grace Powers" <cyenmmsjmv@hotmail.com>
-Subject: We Are the Best JS
-Date: Wed, 31 Mar 2004 21:51:17 -0400
-Message-ID: <68BC87FE.0D24.cyenmmsjmv__1269.54184747792$1138132158$gmane$org@hotmail.com>
+From: "Bryan Lucas" <bryanlucas@cu.maz.uasnet.mx>
+Subject: Yukos oil company in Russia
+Date: Wed, 25 Jan 2006 02:16:50 -0700
+Message-ID: <20060125091558.M30020__4864.75325092233$1138201564$gmane$org@cu.maz.uasnet.mx>
+Reply-To: bryanans1965@satellite-email.com
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset=iso-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus2.kernel.org ([204.152.191.36]:30391 "EHLO zeus2.kernel.org")
-	by vger.kernel.org with ESMTP id S965002AbWAXTr5 (ORCPT
+Received: from [148.227.224.9] ([148.227.224.9]:21177 "EHLO cu.maz.uasnet.mx")
+	by vger.kernel.org with ESMTP id S1751195AbWAYPEc (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 24 Jan 2006 14:47:57 -0500
+	Wed, 25 Jan 2006 10:04:32 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-net@vger.kernel.org
 
 
 
-Loking for quality meds at affordable
-price?
-We have widest range of meds at very
-competitive price.
-Money baack guaranteesss...
+--
+Correo UAS - Campus Mazatlán
+Servidor: usuario@cu.maz.uasnet.mxMr. Brian Bacon Evans  (Agent)
+Representing Mr. Mikhail Khordokovsky 
+Yukos Oil Company in Russia. 
 
-http://futuremakes.com
+Dear Friend,
+
+I am Mr. Brian Bacon Evans and I represent Mr. Mikhail Khordokovsky the 
+former C.E.O of Yukos Oil Company and Mentap bank (Russia).
+
+I have a very sensitive and confidential brief from him to ask for your 
+partnership in liquidating funds in Gibraltar.
+
+I will give the details, but in summary, the funds are coming via private 
+security investment in Gibraltar. This is a legitimate transaction. You will 
+be paid 30% of the portfolio investment value as your "management fees". If 
+you are interested, please write back to me via my private E-
+mail.bryanans1965@satellite-email.com.
+
+Kindly, provide me with your confidential telephone number, fax number and 
+email address and I will provide further details and if you are satisfied I 
+can proceed with the instructions.
+
+Please we cannot afford any political problems because of recent events in 
+Russia. So I will advice you keep this to your self.
+
+Finally, please note that this must be concluded within reasonable time 
+frame therefore your prompt reply is essential.
+
+Write me back. I look forward to it.
+
+Wishing   you a prosperous New Year,
 
 
-RX
+Best Regards
+Mr. Brian Bacon Evans 
+Reply To:bryanans1965@satellite-email.com
+
+
+Universidad Autónoma de Sinaloa - Campus Mazatlán
+Visítenos en: http://www.maz.uasnet.mx
+
+ 
