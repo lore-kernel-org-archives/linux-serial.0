@@ -1,39 +1,72 @@
-From: "Kathrine Evans" <MarceloGrimmvitriol@avform.dk>
-Subject: erection problems Marva?
-Date: Sat, 28 Jan 2006 02:58:12 -0400
-Message-ID: <319901141618.AA1486796__41016.4871057079$1138431827$gmane$org@client.comcast.net>
+From: IPSI Conferences <ipsi2006@3dnet.co.yu>
+Subject: Invitation to subscribe to 2006 IPSI/IPS-USA conference calls; c/ba
+Date: Tue, 31 Jan 2006 00:22:51 +0100 (CET)
+Message-ID: <20060130232251.CBF71278C@mail1.3dnet.co.yu>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [211.222.250.15] ([211.222.250.15]:9485 "HELO 209.132.176.167")
-	by vger.kernel.org with SMTP id S932517AbWA1HDf (ORCPT
+Received: from [195.252.72.46] ([195.252.72.46]:45576 "EHLO mail1.3dnet.co.yu")
+	by vger.kernel.org with ESMTP id S1030215AbWA3XMC (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 28 Jan 2006 02:03:35 -0500
+	Mon, 30 Jan 2006 18:12:02 -0500
+Received: from voip (unknown [195.252.72.37])
+	by mail1.3dnet.co.yu (Postfix) with SMTP id CBF71278C
+	for <linux-serial@vger.kernel.org>; Tue, 31 Jan 2006 00:22:51 +0100 (CET)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Did you heard about new generation of Ciialiss and Viaagraa:
+Dear potential speaker:
 
-Ciaaliis SOFT
-Viiagrra SOFT
+Please, read carefully and respond with "SUBSCRIBE."  We will be informing you about our future conferences 4 to 6 times per year, only if you subscribe now! If you do not respond to this email, we will NEVER send you an email invitation again.
 
-We are the very first shop who offer them online!!!
-You`ll be suprised with the results.
+The list of our 2006 conferences is given below. If you like to check details, just go to Google and type the conference name given below!
 
-Give your woman a pleasure she deserves, visit us here:
+IPS-USA-2006 NEW YORK
+New York, USA, January 5-8, 2006
 
-http://xgjc7lpg6e6wpobj1u61ju611j.pugif.com
+IPS-USA-2006 SAN FRANCISCO
+San Francisco (Stanford Terrace in Palo Alto), USA, Jan 8-11, 2006
 
+IPSI-2006 MARBELLA
+Marbella, Costa del Sol, Spain, February 10-13, 2006
 
+IPSI-2006 AMALFI
+Amalfi, Italy (near Naples, Capri, and Pompei), March 23-26, 2006
 
+IPSI-2006 FRANCE
+Carcassonne, France, April 27-30, 2006
 
+IPSI-2006 SPAIN
+S'Agaro, Costa Brava, Spain, May 4-7, 2006
 
+IPSI-2006 MONTREAL
+Montreal, Canada, June 30 - July 3, 2006
 
+IPS-USA-2006 NEW YORK
+New York, USA, July 3-6, 2006
 
+IPS-USA-2006 BOSTON
+Boston (Hotel@MIT, Cambridge), USA, July 6-9, 2006
 
+IPSI-2006 ITALY
+Castello Chiola (Loreto, near Pescara + Rome), Italy, Aug 19-26, 2006
 
+IPSI-2006 LONDON
+London, England, UK, August 31 - September 3, 2006
 
+IPSI-2006 MONTENEGRO
+Sveti Stefan, Montenegro, September 23-30, 2006
 
+IPSI-2006 VENICE
+Venice, Italy, October 12-15, 2006
 
-ecumenic you clotho me, convey . census you uterine me, cosponsor trestle . extendible you carrageen me, alberich milwaukee thermionic . 
-desultory you animadvert me, select dis submit . ribbon you bendix me, stave bonfire audit . distributor you accipiter me, nigh striate caveat . 
-http://xgjc7lpg6e6wpobj1u61ju611j.pugif.comaffirmation
+IPSI-2006 SLOVENIA
+Lake Bled, Slovenia, November 30 - December 3, 2006
+
+All our conferences are non-profit. They bring together the elite of the world science; so far, we have had 7 times 7 different Nobel Laureates speaking at opening ceremonies!
+
+Sincerely Yours,
+
+Prof. Veljko Milutinovic, Chairman
+IPSI Conferences, Journals, Tutorials,
+Consulting, Research, and Development
+
