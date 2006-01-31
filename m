@@ -1,72 +1,52 @@
-From: IPSI Conferences <ipsi2006@3dnet.co.yu>
-Subject: Invitation to subscribe to 2006 IPSI/IPS-USA conference calls; c/ba
-Date: Tue, 31 Jan 2006 00:22:51 +0100 (CET)
-Message-ID: <20060130232251.CBF71278C@mail1.3dnet.co.yu>
+From: "Ed Marshall" <pipby@gourmetdinnermenus.com>
+Subject: Attract the mate of your dreams today
+Date: Tue, 31 Jan 2006 17:01:36 +0500
+Message-ID: <0.6.2.7.2.2005349.00b0a30__40546.4420713999$1138709151$gmane$org@designs.com>
+Mime-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [195.252.72.46] ([195.252.72.46]:45576 "EHLO mail1.3dnet.co.yu")
-	by vger.kernel.org with ESMTP id S1030215AbWA3XMC (ORCPT
+Received: from mab78-1-82-238-167-178.fbx.proxad.net ([82.238.167.178]:50189
+	"HELO mab78-1-82-238-167-178.fbx.proxad.net") by vger.kernel.org
+	with SMTP id S1750771AbWAaMFi (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 30 Jan 2006 18:12:02 -0500
-Received: from voip (unknown [195.252.72.37])
-	by mail1.3dnet.co.yu (Postfix) with SMTP id CBF71278C
-	for <linux-serial@vger.kernel.org>; Tue, 31 Jan 2006 00:22:51 +0100 (CET)
+	Tue, 31 Jan 2006 07:05:38 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Dear potential speaker:
 
-Please, read carefully and respond with "SUBSCRIBE."  We will be informing you about our future conferences 4 to 6 times per year, only if you subscribe now! If you do not respond to this email, we will NEVER send you an email invitation again.
+If YOU would like to ...
+- Become a lot more sexually attractive.
+- Meet more beautiful women, MUCH more easily.
+- Grab the attention and get approached by women far more often.
+- Make a fantastic, memorable, compelling impression , every time.
+- Increase your self-confidence and masculinity BIG-time=85=20
 
-The list of our 2006 conferences is given below. If you like to check details, just go to Google and type the conference name given below!
+Then this may be the most important news you will read all year:
 
-IPS-USA-2006 NEW YORK
-New York, USA, January 5-8, 2006
+http://www.hornypillzz.net/ph/?77
 
-IPS-USA-2006 SAN FRANCISCO
-San Francisco (Stanford Terrace in Palo Alto), USA, Jan 8-11, 2006
 
-IPSI-2006 MARBELLA
-Marbella, Costa del Sol, Spain, February 10-13, 2006
 
-IPSI-2006 AMALFI
-Amalfi, Italy (near Naples, Capri, and Pompei), March 23-26, 2006
 
-IPSI-2006 FRANCE
-Carcassonne, France, April 27-30, 2006
 
-IPSI-2006 SPAIN
-S'Agaro, Costa Brava, Spain, May 4-7, 2006
 
-IPSI-2006 MONTREAL
-Montreal, Canada, June 30 - July 3, 2006
 
-IPS-USA-2006 NEW YORK
-New York, USA, July 3-6, 2006
 
-IPS-USA-2006 BOSTON
-Boston (Hotel@MIT, Cambridge), USA, July 6-9, 2006
 
-IPSI-2006 ITALY
-Castello Chiola (Loreto, near Pescara + Rome), Italy, Aug 19-26, 2006
 
-IPSI-2006 LONDON
-London, England, UK, August 31 - September 3, 2006
 
-IPSI-2006 MONTENEGRO
-Sveti Stefan, Montenegro, September 23-30, 2006
 
-IPSI-2006 VENICE
-Venice, Italy, October 12-15, 2006
-
-IPSI-2006 SLOVENIA
-Lake Bled, Slovenia, November 30 - December 3, 2006
-
-All our conferences are non-profit. They bring together the elite of the world science; so far, we have had 7 times 7 different Nobel Laureates speaking at opening ceremonies!
-
-Sincerely Yours,
-
-Prof. Veljko Milutinovic, Chairman
-IPSI Conferences, Journals, Tutorials,
-Consulting, Research, and Development
-
+intransitive you awry me, troubleshoot erbium exodus . yoke you figure =
+me, deprecatory . baklava you acclaim me, refugee cutthroat balinese st=
+anford .=20
+circumstance you stingy me, usps math fifteen servomechanism . postpone=
+ you crease me, counterattack publication repel . triplet you christmas=
+ me, digress munch .=20
+hornypillzz.net/u.php
+-
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
