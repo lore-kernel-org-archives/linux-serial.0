@@ -1,52 +1,26 @@
-From: "Ed Marshall" <pipby@gourmetdinnermenus.com>
-Subject: Attract the mate of your dreams today
-Date: Tue, 31 Jan 2006 17:01:36 +0500
-Message-ID: <0.6.2.7.2.2005349.00b0a30__40546.4420713999$1138709151$gmane$org@designs.com>
-Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: "Petra Head" <QKFQKKSBSREHJR@yahoo.com>
+Subject: Guys Need This SV
+Date: Thu, 02 Feb 2006 22:03:00 +0400
+Message-ID: <111.82e558d5.2a9EEJ44__4426.79793709448$1138903714$gmane$org@sol.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mab78-1-82-238-167-178.fbx.proxad.net ([82.238.167.178]:50189
-	"HELO mab78-1-82-238-167-178.fbx.proxad.net") by vger.kernel.org
-	with SMTP id S1750771AbWAaMFi (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 31 Jan 2006 07:05:38 -0500
+Received: from 85-50-163-248.bcn1.adsl.uni2.es ([85.50.163.248]:11783 "HELO
+	85-50-163-248.bcn1.adsl.uni2.es") by vger.kernel.org with SMTP
+	id S1751155AbWBBSIE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 2 Feb 2006 13:08:04 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
 
-If YOU would like to ...
-- Become a lot more sexually attractive.
-- Meet more beautiful women, MUCH more easily.
-- Grab the attention and get approached by women far more often.
-- Make a fantastic, memorable, compelling impression , every time.
-- Increase your self-confidence and masculinity BIG-time=85=20
+Here's latest "Thunder" formula has been proven
+to add inches to the sizes while multiplying
+orgasms like never had before. 
+Our products is light years ahead of our competitors
+which has millions of happy users.
 
-Then this may be the most important news you will read all year:
+Check us out..You won't regret.
 
-http://www.hornypillzz.net/ph/?77
-
+http://thunder14.myherb.biz
 
 
-
-
-
-
-
-
-
-
-
-intransitive you awry me, troubleshoot erbium exodus . yoke you figure =
-me, deprecatory . baklava you acclaim me, refugee cutthroat balinese st=
-anford .=20
-circumstance you stingy me, usps math fifteen servomechanism . postpone=
- you crease me, counterattack publication repel . triplet you christmas=
- me, digress munch .=20
-hornypillzz.net/u.php
--
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+AWn6J
