@@ -1,33 +1,47 @@
-From: "Corine Donahue" <IDZVF@yahoo.com>
-Subject: SU-per Hu^ge 0ffers 6J
-Date: Sat, 04 Feb 2006 20:51:13 -0200
-Message-ID: <9A887EE3.7684.8715C2D5__48988.6288800792$1139093621$gmane$org@localhost>
+From: =?iso-8859-2?Q?Micha=B3_Miros=B3aw?= <mirq-serial@rere.qmqm.pl>
+Subject: [PATCH] serial: Comment typo fix for include/linux/serial_reg.h
+Date: Sun, 5 Feb 2006 12:52:14 +0100
+Message-ID: <20060205115212.GA27445@rere.qmqm.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=iso-8859-2
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 201-42-101-224.dsl.telesp.net.br ([201.42.101.224]:53509 "HELO
-	201-42-101-224.dsl.telesp.net.br") by vger.kernel.org with SMTP
-	id S932530AbWBDWx1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 4 Feb 2006 17:53:27 -0500
+Received: from host-86-63-132-164.pronet.lublin.pl ([86.63.132.164]:2191 "EHLO
+	rere.qmqm.pl") by vger.kernel.org with ESMTP id S1751727AbWBELw3
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 5 Feb 2006 06:52:29 -0500
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-net@vger.kernel.org, linux-newbie@vger.kernel.org, linux-ppp@vger.kernel.org, linux-raid@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, linux-sound@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
+=46ix typo and cut-n-paste error in serial_reg.h comments for 16C950 AC=
+R.
 
+Signed-off-by: Micha=B3 Miros=B3aw <mirq-serial@rere.qmqm.pl>
+---
 
-
-Best offer of the month:
-
-Viggra - $76.95
-Ci ialis - $98.95
-VaIium - $104.95
-Xa naax - $120.95
-Phantermiine - $106.95
-Cod-deine - $111.95
-
-Only for limiited time..
-
-http://artistsand.com/?a=444
-
-
-F6
+diff -urN linux-2.6.16-rc1-mq12/include/linux/serial_reg.h linux-2.6.16=
+-rc1-mq123/include/linux/serial_reg.h
+--- linux-2.6.16-rc1-mq12/include/linux/serial_reg.h	2006-01-03 04:21:1=
+0.000000000 +0100
++++ linux-2.6.16-rc1-mq123/include/linux/serial_reg.h	2006-01-22 00:29:=
+50.458495618 +0100
+@@ -247,10 +247,10 @@
+ #define UART_CTR	0xFF
+=20
+ /*
+- * The 16C950 Additional Control Reigster
++ * The 16C950 Additional Control Register
+  */
+ #define UART_ACR_RXDIS	0x01	/* Receiver disable */
+-#define UART_ACR_TXDIS	0x02	/* Receiver disable */
++#define UART_ACR_TXDIS	0x02	/* Transmitter disable */
+ #define UART_ACR_DSRFC	0x04	/* DSR Flow Control */
+ #define UART_ACR_TLENB	0x20	/* 950 trigger levels enable */
+ #define UART_ACR_ICRRD	0x40	/* ICR Read enable */
+-
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
