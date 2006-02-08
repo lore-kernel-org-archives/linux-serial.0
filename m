@@ -1,50 +1,28 @@
-From: "Myrna Roe" <risbxiv@hotmail.com>
-Subject: Unbelievable Refinance Offer cmp03y
-Date: Wed, 08 Feb 2006 10:54:14 -0500
-Message-ID: <CFE2.9A5.3009298B8C__32946.0814399228$1139414611$gmane$org@mopalinux.com>
+From: Russell King <rmk@arm.linux.org.uk>
+Subject: Re: [PATCH] Fix compile error in 8250_au1x00.c
+Date: Wed, 8 Feb 2006 21:36:47 +0000
+Message-ID: <20060208213647.GB8587@flint.arm.linux.org.uk>
+References: <20060207211500.GC5227@cosmic.amd.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus2.kernel.org ([204.152.191.36]:48055 "EHLO zeus2.kernel.org")
-	by vger.kernel.org with ESMTP id S1030374AbWBHP6d (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 8 Feb 2006 10:58:33 -0500
+Received: from caramon.arm.linux.org.uk ([212.18.232.186]:18705 "EHLO
+	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
+	id S965143AbWBHVgz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 8 Feb 2006 16:36:55 -0500
+Content-Disposition: inline
+In-Reply-To: <20060207211500.GC5227@cosmic.amd.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-net@vger.kernel.org
-Cc: linux-newbie@vger.kernel.org, linux-ppp@vger.kernel.org, linux-raid@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, linux-sound@vger.kernel.org, linux-tape@vger.kernel.org
+To: Jordan Crouse <jordan.crouse@amd.com>
+Cc: linux-serial@vger.kernel.org, linux-mips@linux-mips.org
 
+On Tue, Feb 07, 2006 at 02:15:00PM -0700, Jordan Crouse wrote:
+> The DB1550 actually doesn't have a UART2.  Remove it from the list.
 
-Dear Home Owner,
+Applied, thanks.
 
-Your credit doesn't matter to us! If you OWN real estate
-and want IMMEDIATE cash to spend ANY way you like, or simply wish
-to LOWER your monthly payments by a third or more, here are the deals
-we have TODAY (hurry, these offers will expire TONIGHT) :
-
-$450,000.00 at a 3.85% fixed-rate
-$374,000.00 at a 3.54% variable-rate
-$464,000.00 at a 3.77% interest-only
-$214,000.00 at a 3.54% fixed-rate
-$134,000.00 at a 3.75% variable-rate
-
-Hurry, when these deals are gone, they are gone!
-Simply fill out this one-minute form...
-
-http://dNaqIv.l1fed33r.com/af
-
-Don't worry about approval, your credit will not disqualify you!
-
-http://vKx2.l1fed33r.com/af
-
-Sincerely,
-Sidney Mann
-Approval Manager
-
-
-
-
-
-
-stop the current promo
-http://up.l1fed33r.com/rem
-
-1Ih
+-- 
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:  2.6 Serial core
