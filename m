@@ -1,35 +1,50 @@
-From: "Charlotte Clifton" <jackseon@ksjs.org>
-Subject: feeling fati gued
-Date: Tue, 07 Feb 2006 20:48:13 -0800
-Message-ID: <AD6287A5.46779F5__16326.1099755347$1139371164$gmane$org@ksjs.org>
-Reply-To: "Carrie Ervin" <jackseon@ksjs.org>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: "Myrna Roe" <risbxiv@hotmail.com>
+Subject: Unbelievable Refinance Offer cmp03y
+Date: Wed, 08 Feb 2006 10:54:14 -0500
+Message-ID: <CFE2.9A5.3009298B8C__32946.0814399228$1139414611$gmane$org@mopalinux.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [222.65.245.56] ([222.65.245.56]:30214 "HELO ksjs.org")
-	by vger.kernel.org with SMTP id S932391AbWBHD7D (ORCPT
+Received: from zeus2.kernel.org ([204.152.191.36]:48055 "EHLO zeus2.kernel.org")
+	by vger.kernel.org with ESMTP id S1030374AbWBHP6d (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 7 Feb 2006 22:59:03 -0500
+	Wed, 8 Feb 2006 10:58:33 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-ide <linux-ide@vger.kernel.org>
-Cc: linux-ppp@vger.kernel.org, linux-sound@vger.kernel.org, majordomo@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-serial@vger.kernel.org, linux-scsi@vger.kernel.org, linux-gcc@vger.kernel.org
+To: linux-net@vger.kernel.org
+Cc: linux-newbie@vger.kernel.org, linux-ppp@vger.kernel.org, linux-raid@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, linux-sound@vger.kernel.org, linux-tape@vger.kernel.org
 
-Hey linux-ide
 
-Did you know over 70 per-cent of am ericans are battling OB esity.
+Dear Home Owner,
 
-I dont' know about you but I'm sick of being over we! ght and I just wanna
-get back into sh ape. 
+Your credit doesn't matter to us! If you OWN real estate
+and want IMMEDIATE cash to spend ANY way you like, or simply wish
+to LOWER your monthly payments by a third or more, here are the deals
+we have TODAY (hurry, these offers will expire TONIGHT) :
 
-Luckly I came across this site, www.ymom.tYA.gfgrd.org/n2/?id=havoc that
-helped me with all my problems. 
+$450,000.00 at a 3.85% fixed-rate
+$374,000.00 at a 3.54% variable-rate
+$464,000.00 at a 3.77% interest-only
+$214,000.00 at a 3.54% fixed-rate
+$134,000.00 at a 3.75% variable-rate
 
-"The extent of their relationship I don't know," he said, adding that
-investigators also didn't yet know how they met.
+Hurry, when these deals are gone, they are gone!
+Simply fill out this one-minute form...
 
-No point wasting any more time reading this email
-Monica Ritter
+http://dNaqIv.l1fed33r.com/af
 
+Don't worry about approval, your credit will not disqualify you!
+
+http://vKx2.l1fed33r.com/af
+
+Sincerely,
+Sidney Mann
+Approval Manager
+
+
+
+
+
+
+stop the current promo
+http://up.l1fed33r.com/rem
+
+1Ih
