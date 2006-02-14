@@ -1,26 +1,51 @@
-From: "Eldon Cooley" <PVKVBZZQSLC@yahoo.com>
-Subject: Biggest Pharmacy KRl4Vt
-Date: Tue, 20 Apr 2004 14:12:15 +0400
-Message-ID: <111.18e558d5.2a9WVF44@sol.com>
+From: "Ronald Williams" <ecxshhhwypwtqg@capitalino.com>
+Subject: Re: Hei ... Tue, 14 Feb 2006 13:45:16 -0400 linux-serial@vger.kernel.org
+Date: Tue, 14 Feb 2006 13:45:15 -0400
+Message-ID: <mjgmrsbifxizgfyyiydkdzaghjsayp@dispatch-6wexna>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from dsl-201-102-105-65.prod-infinitum.com.mx ([201.102.105.65]:34316
-	"HELO dsl-201-102-105-65.prod-infinitum.com.mx") by vger.kernel.org
-	with SMTP id S1750731AbWBMDCW (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 12 Feb 2006 22:02:22 -0500
+Received: from adsl-070-157-183-209.sip.asm.bellsouth.net ([70.157.183.209]:50888
+	"HELO dispatch-6wexna") by vger.kernel.org with SMTP
+	id S1030449AbWBNSpK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 14 Feb 2006 13:45:10 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-net@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
 
-The most complete Phar macy Online
-We carry all major medds at bargain price
-Viggra, Ci ialis, VaIium, Xa naax
-Phantermiine, Ulltraam and etc...
-SatiisfactIon Gua ranteeed
+Do You have enough pwoer to provide your patrner high
 
-http://greatadvance.com/track.php?h=MjZ8cm9ubg%3D%3D&cg=1&c=one
+quality SE-X on St. Valentine day? 
+
+Get a MONSTTER pwoer, nothing can bring your ererction down!
+
+Show your partner the PWOER of your LOEV and she will always remember You. 
+
+Loev will ALWAYS be associated with YOU!  
+
+Your order will be PRIVATE, nobody will know what You use. 
+
+Follow this link and get SSPECIAL DISSCOOUNT for that period:
+
+http://EGwohlmr0qt8wrsrof3ljm63w8l3l.cerebralka.com/
 
 
-nhGoVg
+
+
+ Hjyhsi Uecnrnwp
+
+
+
+ Tue, 14 Feb 2006 13:45:17 -0400
+
+
+
+
+
+
+
+
+
+
+
+
 
