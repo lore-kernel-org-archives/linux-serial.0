@@ -1,51 +1,50 @@
-From: "Ronald Williams" <ecxshhhwypwtqg@capitalino.com>
-Subject: Re: Hei ... Tue, 14 Feb 2006 13:45:16 -0400 linux-serial@vger.kernel.org
-Date: Tue, 14 Feb 2006 13:45:15 -0400
-Message-ID: <mjgmrsbifxizgfyyiydkdzaghjsayp@dispatch-6wexna>
+From: "Houston Mcclain" <krwvyqsiknpwcs@msn.com>
+Subject: 30 Seconds for Cheap Rate 9FkW
+Date: Fri, 17 Feb 2006 20:10:48 +0400
+Message-ID: <111.35e558d5.2a9LBL44__36923.8349063837$1140193177$gmane$org@sol.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from adsl-070-157-183-209.sip.asm.bellsouth.net ([70.157.183.209]:50888
-	"HELO dispatch-6wexna") by vger.kernel.org with SMTP
-	id S1030449AbWBNSpK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 14 Feb 2006 13:45:10 -0500
+Received: from zeus1.kernel.org ([204.152.191.4]:21406 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S1030642AbWBQQSu (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 17 Feb 2006 11:18:50 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
+Cc: linux-sound@vger.kernel.org, linux-tape@vger.kernel.org, linux-x25@vger.kernel.org, majordomo@vger.kernel.org
 
 
-Do You have enough pwoer to provide your patrner high
+Dear Home Owner,
 
-quality SE-X on St. Valentine day? 
+Your credit doesn't matter to us! If you OWN real estate
+and want IMMEDIATE cash to spend ANY way you like, or simply wish
+to LOWER your monthly payments by a third or more, here are the deals
+we have TODAY (hurry, these offers will expire TONIGHT) :
 
-Get a MONSTTER pwoer, nothing can bring your ererction down!
+$450,000.00 at a 3.85% fixed-rate
+$374,000.00 at a 3.54% variable-rate
+$464,000.00 at a 3.77% interest-only
+$214,000.00 at a 3.54% fixed-rate
+$134,000.00 at a 3.75% variable-rate
 
-Show your partner the PWOER of your LOEV and she will always remember You. 
+Hurry, when these deals are gone, they are gone!
+Simply fill out this one-minute form...
 
-Loev will ALWAYS be associated with YOU!  
+http://EMDsVP.sendhciai.com/af
 
-Your order will be PRIVATE, nobody will know what You use. 
+Don't worry about approval, your credit will not disqualify you!
 
-Follow this link and get SSPECIAL DISSCOOUNT for that period:
+http://inWIDz.sendhciai.com/af
 
-http://EGwohlmr0qt8wrsrof3ljm63w8l3l.cerebralka.com/
-
-
-
-
- Hjyhsi Uecnrnwp
-
-
-
- Tue, 14 Feb 2006 13:45:17 -0400
-
-
-
-
-
+Sincerely,
+Gene Boykin
+Approval Manager
 
 
 
 
 
 
+stop the current promo
+http://xzI7o.sendhciai.com/rem
 
-
+Vg8
