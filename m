@@ -1,27 +1,33 @@
-From: "Leslie Mccray" <TBZYBDLQHXLOIT@hotmail.com>
-Subject: It's Here Now 5v2f
-Date: Mon, 10 May 2004 13:22:50 -0400
-Message-ID: <8A117EE3.7684.8715C2D5@localhost>
+From: "Mitzi Rowell" <qdfngwqjm@hotmail.com>
+Subject: Longer...Harder bgdz
+Date: Mon, 06 Mar 2006 15:55:48 +0400
+Message-ID: <3A307EE3.7684.5915C2D5__38324.8266917237$1141646659$gmane$org@localhost>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Return-path: <linux-tape-owner@vger.kernel.org>
-Sender: linux-tape-owner@vger.kernel.org
-To: linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, linux-sound@vger.kernel.org, linux-tape@vger.kernel.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from [58.66.13.35] ([58.66.13.35]:1798 "HELO 209.132.176.167")
+	by vger.kernel.org with SMTP id S1751401AbWCFMDt (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 6 Mar 2006 07:03:49 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-net@vger.kernel.org
 
 
 
 
-Lazy to attend exam or classes?
+Suffering from short penniss?
+Introduce revolution "Longz" formula which
+gauranteees sizes increase or moneey baack.
 
-We have Diplomas, Degrees, Masters' or Doctorate
-to choose from any field of your interest.
+Users reported:
+- 2 inches extra in size
+- 3x pleasurable orgasms
+- 27% thicker
 
-Only 2 weeks require to delivers the prestigious non-accredited
-universities paper to your doorstep.
+Why waiting?
 
-Do not hesitate to give us a call today!
-1-484-693-8861
+http://thunder14.goodbiz.info
 
 
-fw
+g7QDbO
