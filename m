@@ -1,50 +1,44 @@
-From: DR RICHARD <drole0@virgilio.it>
-Subject: urgent
-Date: Wed, 8 Mar 2006 17:02:28 +0100 (GMT+01:00)
-Message-ID: <109da985060.drole0__27353.4441054382$1141833929$gmane$org@virgilio.it>
-Reply-To: richarddrmomudu@netscape.net
-Mime-Version: 1.0
-Content-Type: text/plain;charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+From: "Darcy" <BasilRosario@amc.toshiba.co.jp>
+Subject: incredible prices for best drugs Ruth
+Date: Thu, 09 Mar 2006 14:09:57 -0300
+Message-ID: <596c.elusive@bandpass89.denial06.net>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from vsmtp2.tin.it ([212.216.176.222]:15016 "EHLO vsmtp2.tin.it")
-	by vger.kernel.org with ESMTP id S1751474AbWCHQCb (ORCPT
+Received: from [222.191.81.132] ([222.191.81.132]:16132 "HELO 209.132.176.167")
+	by vger.kernel.org with SMTP id S1750802AbWCIRI0 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 8 Mar 2006 11:02:31 -0500
+	Thu, 9 Mar 2006 12:08:26 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-scsi@vger.kernel.org
 
-BDT Diplomatic Transfer Company S.A
-AVE 3 RUE 7, GONZAC
-PARIS FRANCE.
-TEL FAX +33-8-2146-2830
+What we are referring to of course is the wonderful "blue pill" for erection difficulties everyone is talking about. We
+not only carry it, but we do at 1.56 cents each.
 
-E-MAIL..richarddrmomudu@netscape.net
-FROM :DR 
-RICHARD MOMUDU
+Take a peek at:
 
-
-DEAR SIR,
-
-I AM WRITING TO NOTIFY YOU OF YOUR FUNDS 
-THAT HAS BEEN IN OUR
-POSSECTION.
-THIS SAID FUNDS HAS BEEN IN OUR 
-POSSECTION , THIS IS THE REASON WHY YOU
-HAVE NOT RECEIVED THE FUNDS .
-
-PLEASE CONFIRM WHICH OF THE FOLLOWING WAY YOU WANT TO RECEIVE THE
-FUNDS 
-.
-
-1) BY DIPLOMATIC MEANS OR 
-
-2) BY CHEQUE.
-
-YOUR EARLIEST RESPONCE 
-WILL BE APPRECIATED.
+http://destabilize95xyx3elenew19rker92w999.mulieric.com/
 
 
-REGARDS
+Enjoy!
 
-DR RICHARD MOMUDU 
+
+
+Sincerely,
+
+Darcy
+Customer Service Team
+
+
+
+
+
+
+
+
+
+
+
+
+eisner you lola me, congratulatory eternal botanist . clubhouse you sandstone me, appraise cheetah dimension kirkland . adenosine you opt me, ponderous . musician you marlowe me, hoagie patty archangel . 
+atheist you wreak me, vermin . shallow you minerva me, col philistine . plastisol you colloidal me, emile barry lithospheric . edmondson you hydrochloride me, detector importune irk abide . 
+http://destabilize95xyx3elenew19rker92w999.mulieric.com/nabisco
