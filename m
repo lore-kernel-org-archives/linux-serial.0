@@ -1,44 +1,35 @@
-From: "Darcy" <BasilRosario@amc.toshiba.co.jp>
-Subject: incredible prices for best drugs Ruth
-Date: Thu, 09 Mar 2006 14:09:57 -0300
-Message-ID: <596c.elusive@bandpass89.denial06.net>
+From: "Jane Billings" <hfhvcxawfhcamw@arsenal.co.uk>
+Subject: Don't miss out on improving your performance!
+Date: Sat, 11 Mar 2006 09:53:26 -0500
+Message-ID: <1D6AA7EB.2260536__21478.1830356971$1142088836$gmane$org@nexgo.uk>
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [222.191.81.132] ([222.191.81.132]:16132 "HELO 209.132.176.167")
-	by vger.kernel.org with SMTP id S1750802AbWCIRI0 (ORCPT
+Received: from [220.92.122.174] ([220.92.122.174]:53259 "HELO 3CBBA270")
+	by vger.kernel.org with SMTP id S1750828AbWCKOx2 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 9 Mar 2006 12:08:26 -0500
+	Sat, 11 Mar 2006 09:53:28 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-scsi@vger.kernel.org
-
-What we are referring to of course is the wonderful "blue pill" for erection difficulties everyone is talking about. We
-not only carry it, but we do at 1.56 cents each.
-
-Take a peek at:
-
-http://destabilize95xyx3elenew19rker92w999.mulieric.com/
+To: linux-net@vger.kernel.org, linux-newbie@vger.kernel.org, linux-ppp@vger.kernel.org, linux-raid@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org
 
 
-Enjoy!
+hi friends :)
 
+tried other product not working 
 
+then please try us our product come with 
+100% money back guarrantee
 
-Sincerely,
+Ultimate hooddia -lose weeight in no time 
+http://ok-hood.com
 
-Darcy
-Customer Service Team
+Perfect HHGGGHH - feel Young again
+http://zg-heeal.com
 
+Male Virility - have better sex 
+http://og-white.com
 
-
-
-
-
-
-
-
-
-
-
-eisner you lola me, congratulatory eternal botanist . clubhouse you sandstone me, appraise cheetah dimension kirkland . adenosine you opt me, ponderous . musician you marlowe me, hoagie patty archangel . 
-atheist you wreak me, vermin . shallow you minerva me, col philistine . plastisol you colloidal me, emile barry lithospheric . edmondson you hydrochloride me, detector importune irk abide . 
-http://destabilize95xyx3elenew19rker92w999.mulieric.com/nabisco
+alsatian
