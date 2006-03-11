@@ -1,35 +1,12 @@
-From: "Jane Billings" <hfhvcxawfhcamw@arsenal.co.uk>
-Subject: Don't miss out on improving your performance!
-Date: Sat, 11 Mar 2006 09:53:26 -0500
-Message-ID: <1D6AA7EB.2260536__21478.1830356971$1142088836$gmane$org@nexgo.uk>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: lwvxfb@msn.com
+Subject: (unknown)
+Date: Sat, 11 Mar 2006 21:02:41 GMT
+Message-ID: <200603112103.k2BL2f4N016467__24508.4908478477$1142111104$gmane$org@zeus1.kernel.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [220.92.122.174] ([220.92.122.174]:53259 "HELO 3CBBA270")
-	by vger.kernel.org with SMTP id S1750828AbWCKOx2 (ORCPT
+Received: from zeus1.kernel.org ([204.152.191.4]:36066 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S1750796AbWCKVEh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 11 Mar 2006 09:53:28 -0500
+	Sat, 11 Mar 2006 16:04:37 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-net@vger.kernel.org, linux-newbie@vger.kernel.org, linux-ppp@vger.kernel.org, linux-raid@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org
 
-
-hi friends :)
-
-tried other product not working 
-
-then please try us our product come with 
-100% money back guarrantee
-
-Ultimate hooddia -lose weeight in no time 
-http://ok-hood.com
-
-Perfect HHGGGHH - feel Young again
-http://zg-heeal.com
-
-Male Virility - have better sex 
-http://og-white.com
-
-alsatian
