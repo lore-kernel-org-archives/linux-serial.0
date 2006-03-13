@@ -1,16 +1,16 @@
 From: "MR. ANDRE AMOUSSOU" <aa2006bj@katamail.com>
 Subject: Good Morning,
-Date: Mon, 13 Mar 2006 14:54:15 +0100
-Message-ID: <1142258055.4415798759ff1__16696.6269993738$1142308211$gmane$org@imp.online.net>
+Date: Mon, 13 Mar 2006 14:26:02 +0100
+Message-ID: <1142256362.441572ea36eab__14736.1788586297$1142311347$gmane$org@imp.online.net>
 Reply-To: amoussou_10@yahoo.fr
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from imp2-j.online.net ([212.27.37.65]:13503 "EHLO imp2-j.online.net")
-	by vger.kernel.org with ESMTP id S932555AbWCNDt3 (ORCPT
+Received: from imp2-j.online.net ([212.27.37.65]:1505 "EHLO imp2-j.online.net")
+	by vger.kernel.org with ESMTP id S932601AbWCNEmP (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 13 Mar 2006 22:49:29 -0500
+	Mon, 13 Mar 2006 23:42:15 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
