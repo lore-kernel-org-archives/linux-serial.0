@@ -1,70 +1,81 @@
-From: Roman Zippel <zippel@linux-m68k.org>
+From: Russell King <rmk+lkml@arm.linux.org.uk>
 Subject: Re: 2.6.16-mm1
-Date: Fri, 24 Mar 2006 12:28:27 +0100 (CET)
-Message-ID: <Pine.LNX.4.64.0603241140350.16802@scrub.home>
-References: <20060323014046.2ca1d9df.akpm@osdl.org> <6bffcb0e0603230631r5e6cc3d3p@mail.gmail.com>
- <20060323144922.GA25849@flint.arm.linux.org.uk>
+Date: Fri, 24 Mar 2006 19:59:18 +0000
+Message-ID: <20060324195917.GA32098@flint.arm.linux.org.uk>
+References: <20060323014046.2ca1d9df.akpm@osdl.org> <6bffcb0e0603230631r5e6cc3d3p@mail.gmail.com> <20060323144922.GA25849@flint.arm.linux.org.uk> <Pine.LNX.4.64.0603241140350.16802@scrub.home>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from scrub.xs4all.nl ([194.109.195.176]:1936 "EHLO scrub.xs4all.nl")
-	by vger.kernel.org with ESMTP id S1751651AbWCXL2n (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 24 Mar 2006 06:28:43 -0500
-In-Reply-To: <20060323144922.GA25849@flint.arm.linux.org.uk>
+Received: from caramon.arm.linux.org.uk ([212.18.232.186]:60681 "EHLO
+	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
+	id S1751357AbWCXT72 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 24 Mar 2006 14:59:28 -0500
+Content-Disposition: inline
+In-Reply-To: <Pine.LNX.4.64.0603241140350.16802@scrub.home>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <rmk+lkml@arm.linux.org.uk>
+To: Roman Zippel <zippel@linux-m68k.org>
 Cc: Michal Piotrowski <michal.k.k.piotrowski@gmail.com>, Andrew Morton <akpm@osdl.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Hi,
-
-On Thu, 23 Mar 2006, Russell King wrote:
-
-> Okay, so the default is now 'm', but the legal values are still only 'n'
-> and 'm'.  I can only select 'm' or 'n', and this is what I end up with in
-> the config file.  Now, if I remove the prompt text:
+On Fri, Mar 24, 2006 at 12:28:27PM +0100, Roman Zippel wrote:
+> Hi,
 > 
-> config SYM_D
->         tristate
->         depends on SYM_M && SYM_Y
->         default y
+> On Thu, 23 Mar 2006, Russell King wrote:
 > 
-> and hey presto, suddenly 'y' becomes a legal value.
+> > Okay, so the default is now 'm', but the legal values are still only 'n'
+> > and 'm'.  I can only select 'm' or 'n', and this is what I end up with in
+> > the config file.  Now, if I remove the prompt text:
+> > 
+> > config SYM_D
+> >         tristate
+> >         depends on SYM_M && SYM_Y
+> >         default y
+> > 
+> > and hey presto, suddenly 'y' becomes a legal value.
+> > 
+> > CONFIG_SYM_Y=y
+> > CONFIG_SYM_M=m
+> > CONFIG_SYM_D=y
+> > 
+> > So it would seem to be a Kconfig bug.
 > 
-> CONFIG_SYM_Y=y
-> CONFIG_SYM_M=m
-> CONFIG_SYM_D=y
+> No, it's not a bug, that's really the correct behaviour. It has its roots 
+> in the cml1 converter, where statements like this:
 > 
-> So it would seem to be a Kconfig bug.
+> if [ "$CONFIG_FOO" = "y" ]; then
+>   define_tristate CONFIG_BAR y
+> fi
+> 
+> would become:
+> 
+> config BAR
+> 	default y
+> 	depends on FOO=y
 
-No, it's not a bug, that's really the correct behaviour. It has its roots 
-in the cml1 converter, where statements like this:
+Okay, so going to the exact problem case, the behaviour we require is:
 
-if [ "$CONFIG_FOO" = "y" ]; then
-  define_tristate CONFIG_BAR y
-fi
+SERIAL_8250	PCI	EMBEDDED	gives SERIAL_8250_PCI
+	n	X	X		n
+	X	n	X		n
+	m	y	n		m
+	y	y	n		y
+	m	y	y		user selects 'm' or 'n'
+	y	y	y		user selects 'y', 'm' or 'n'
 
-would become:
+the correct way to tell Kconfig to give us that is:
 
-config BAR
-	default y
-	depends on FOO=y
++config SERIAL_8250_PCI
++       tristate "8250/16550 PCI device support" if EMBEDDED
++       depends on SERIAL_8250 && PCI
++       default SERIAL_8250
++       help
++         This builds standard PCI serial support. You may be able to
++         disable this feature if you only need legacy serial support.
++         Saves about 9K.
 
-The basic idea is that the dependency only enables the default and the 
-default sets the symbol to whatever you want.
+?
 
-I thought about the other behaviour, but at that time the if syntax or 
-select didn't exists yet, so it really wasn't a problem yet and I decided 
-to keep it closer to cml1 instead.
-
-In the meantime the Kconfig syntax has grown and this is not the first 
-time this has come up. I'm not completely opposed against changing the 
-behaviour, but I don't want to do it just for fun either. It would require 
-at least to grep through the current Kconfig rules to check whether 
-something depends on the current behaviour.
-
-As alternative you can change the default to "SYM_M" (basically repeating 
-the dependency without the booleans).
-
-bye, Roman
+-- 
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:  2.6 Serial core
