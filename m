@@ -1,34 +1,35 @@
-From: maximilian attems <maks@sternwelten.at>
-Subject: [patch] icom: select FW_LOADER
-Date: Sat, 25 Mar 2006 15:44:11 +0100
-Message-ID: <20060325144411.GD883@nancy>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: "Jonathan Pereira" <kiapcvjqazdt@macys.com>
+Subject: Boosts Energy
+Date: Sat, 25 Mar 2006 13:46:27 -0400
+Message-ID: <69420.euphemist.1__24380.902798339$1143308626$gmane$org@p0jp.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from baikonur.stro.at ([213.239.196.228]:2534 "EHLO baikonur.stro.at")
-	by vger.kernel.org with ESMTP id S1751417AbWCYOtO (ORCPT
+Received: from [218.37.13.156] ([218.37.13.156]:18696 "HELO 209.132.176.167")
+	by vger.kernel.org with SMTP id S1751461AbWCYRnS (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 25 Mar 2006 09:49:14 -0500
-Content-Disposition: inline
+	Sat, 25 Mar 2006 12:43:18 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: rmk+serial@arm.linux.org.uk
-Cc: linux-serial@vger.kernel.org
+To: sparclinux@vger.kernel.org
+Cc: linux-x25@vger.kernel.org, ultralinux@vger.kernel.org, linux-sound@vger.kernel.org, linux-scsi@vger.kernel.org, linux-newbie@vger.kernel.org, linux-serial@vger.kernel.org, linux-net@vger.kernel.org, linux-kernel@vger.kernel.org
 
-The icom driver uses request_firmware()
-and thus needs to select FW_LOADER.
 
-Signed-off-by: maximilian attems <maks@sternwelten.at>
+Summer is coming, did you look in the mirror lately?
 
-diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
-index c66ef96..d0a10fa 100644
---- a/drivers/serial/Kconfig
-+++ b/drivers/serial/Kconfig
-@@ -827,6 +827,7 @@ config SERIAL_ICOM
- 	tristate "IBM Multiport Serial Adapter"
- 	depends on PCI && (PPC_ISERIES || PPC_PSERIES)
- 	select SERIAL_CORE
-+	select FW_LOADER
- 	help
- 	  This driver is for a family of multiport serial adapters
- 	  including 2 port RVX, 2 port internal modem, 4 port internal
+If you`re still overweight you MUST visit us:
+
+http://051.sureimreadysiir.com
+
+WE WILL HELP YOU!
+
+
+
+
+
+
+
+
+
+
+campsite you articulatory me, launch reprieve . evangel you consider me, catawba . 
+gob you labyrinth me, cantaloupe contrary . effete you shrivel me, bennington astronomic . tub you bryozoa me, person equilateral . 
+http://051.sureimreadysiir.com/rm/
