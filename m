@@ -1,67 +1,40 @@
-From: Russell King <rmk@arm.linux.org.uk>
-Subject: Re: [PATCH] serial8250: set divisor register correctly for AMD Alchemy SoC uart. Re-posted.
-Date: Mon, 27 Mar 2006 13:54:23 +0100
-Message-ID: <20060327125423.GA24311@flint.arm.linux.org.uk>
-References: <20060327131437.P55909@invalid.ed.ntnu.no>
+From: Roman Zippel <zippel@linux-m68k.org>
+Subject: Re: 2.6.16-mm1
+Date: Tue, 28 Mar 2006 11:18:29 +0200 (CEST)
+Message-ID: <Pine.LNX.4.64.0603281117530.16802@scrub.home>
+References: <20060323014046.2ca1d9df.akpm@osdl.org> <6bffcb0e0603230631r5e6cc3d3p@mail.gmail.com>
+ <20060323144922.GA25849@flint.arm.linux.org.uk> <Pine.LNX.4.64.0603241140350.16802@scrub.home>
+ <20060324195917.GA32098@flint.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([212.18.232.186]:33551 "EHLO
-	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
-	id S1750990AbWC0Myd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 27 Mar 2006 07:54:33 -0500
-Content-Disposition: inline
-In-Reply-To: <20060327131437.P55909@invalid.ed.ntnu.no>
+Received: from scrub.xs4all.nl ([194.109.195.176]:58803 "EHLO scrub.xs4all.nl")
+	by vger.kernel.org with ESMTP id S1751245AbWC1JSy (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 28 Mar 2006 04:18:54 -0500
+In-Reply-To: <20060324195917.GA32098@flint.arm.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jon Anders Haugum <jonah@omegav.ntnu.no>
-Cc: linux-serial@vger.kernel.org, linux-mips@linux-mips.org
+To: Russell King <rmk+lkml@arm.linux.org.uk>
+Cc: Michal Piotrowski <michal.k.k.piotrowski@gmail.com>, Andrew Morton <akpm@osdl.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Mon, Mar 27, 2006 at 01:27:34PM +0200, Jon Anders Haugum wrote:
-> Alchemy SoC uart have got a non-standard divisor register that needs some 
-> special handling.
+Hi,
+
+On Fri, 24 Mar 2006, Russell King wrote:
+
+> the correct way to tell Kconfig to give us that is:
 > 
-> This patch adds divisor read/write functions with test and special 
-> handling for Alchemy internal uart.
->
-> @@ -533,22 +565,20 @@ static int size_fifo(struct uart_8250_po
->   */
->  static unsigned int autoconfig_read_divisor_id(struct uart_8250_port *p)
->  {
-> -	unsigned char old_dll, old_dlm, old_lcr;
-> +	unsigned char old_lcr;
->  	unsigned int id;
-> +	unsigned short old_dl;
->  
->  	old_lcr = serial_inp(p, UART_LCR);
->  	serial_outp(p, UART_LCR, UART_LCR_DLAB);
->  
-> -	old_dll = serial_inp(p, UART_DLL);
-> -	old_dlm = serial_inp(p, UART_DLM);
-> +	old_dl = serial_dl_read(p);
->  
-> -	serial_outp(p, UART_DLL, 0);
-> -	serial_outp(p, UART_DLM, 0);
-> +	serial_dl_write(p, 0);
->  
-> -	id = serial_inp(p, UART_DLL) | serial_inp(p, UART_DLM) << 8;
-> +	id = serial_dl_read(p);
->  
-> -	serial_outp(p, UART_DLL, old_dll);
-> -	serial_outp(p, UART_DLM, old_dlm);
-> +	serial_dl_write(p, old_dl);
->  	serial_outp(p, UART_LCR, old_lcr);
->  
->  	return id;
+> +config SERIAL_8250_PCI
+> +       tristate "8250/16550 PCI device support" if EMBEDDED
+> +       depends on SERIAL_8250 && PCI
+> +       default SERIAL_8250
+> +       help
+> +         This builds standard PCI serial support. You may be able to
+> +         disable this feature if you only need legacy serial support.
+> +         Saves about 9K.
+> 
+> ?
 
-I'm not sure whether this is a good idea - this is used to detect
-an 16C850 UART, so probably should be kept as is.
+Yes, this should do it.
 
-In other words, we should use serial_dl_read() / serial_dl_write()
-when we're actually wanting to read or set the actual divisor, but
-not for the autoconfiguration stuff.
-
--- 
-Russell King
- Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
- maintainer of:  2.6 Serial core
+bye, Roman
