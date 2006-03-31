@@ -1,25 +1,171 @@
-From: "karthikeyan Sankaran" <skarthitw@gmail.com>
-Subject: Invitation
-Date: Fri, 31 Mar 2006 11:54:03 +0300
-Message-ID: <491dc6000603310054g25807a41o9825894578da9977@mail.gmail.com>
+From: Dominik Brodowski <linux@dominikbrodowski.net>
+Subject: [PATCH 31/33] pcmcia: Add support for Possio GCC AKA PCMCIA Siemens MC45
+Date: Fri, 31 Mar 2006 22:31:19 +0200
+Message-ID: <20060331203119.GJ28168@dominikbrodowski.de>
+References: <20060331195852.GB27888@dominikbrodowski.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from xproxy.gmail.com ([66.249.82.203]:26919 "EHLO xproxy.gmail.com")
-	by vger.kernel.org with ESMTP id S1751247AbWCaIyE convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 31 Mar 2006 03:54:04 -0500
-Received: by xproxy.gmail.com with SMTP id t10so460036wxc
-        for <linux-serial@vger.kernel.org>; Fri, 31 Mar 2006 00:54:03 -0800 (PST)
+Received: from isilmar.linta.de ([213.239.214.66]:24023 "EHLO linta.de")
+	by vger.kernel.org with ESMTP id S1751409AbWCaUfG (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 31 Mar 2006 15:35:06 -0500
 Content-Disposition: inline
+In-Reply-To: <20060331195852.GB27888@dominikbrodowski.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-pcmcia@lists.infradead.org
+Cc: linux-serial@vger.kernel.org
 
-Hi! I just signed up for a great promotion that I think you should
-check out. We can both get a free new IPOD nano!
+From: Petr Vandrovec <vandrove@vc.cvut.cz>
 
-http://sondeoso.com/?r=cUGUA0cJFTI2AGkDACcA&tc=21&i=gmail&z=1
+This ugly hack add support for Siemens MC45 PCMCIA GPRS card (which is
+identical to Possio GCC, and which is offered by one of our local GPRS
+providers).  Card has unfortunate feature that after poweron oxcf950 chip
+is fully powered and works, but attached MC45 modem is powered down :-(
+There is a special sequence (which takes 1 sec :-( ) to poweron MC45 (and
+after MC45 powers on, it takes more than 2 secs until firmware fully
+boots...) which needs to be executed after all powerons.
 
-Talk to you soon!
+I'm really not familiar with PCMCIA subsystem, so I have no idea whether I
+should issue request_region() on rest of oxcf950 address range (0-7 is
+UART, 8-F are special configuration registers), or how this should be
+better integrated with PM system and so on - I just put it in same place
+where another hack already lived...
+
+Card uses 18.432MHz XTAL, so to get it to work you must add lines below to
+the /etc/pcmcia/serial.opts.
+
+case "$MANFID-$FUNCID-$PRODID_1-$PRODID_2-$PRODID_3-$PRODID_4" in
+'030c,0003-2-GPRS-CARD--')
+    SERIAL_OPTS="baud_base 1152000"
+    ;;
+esac
+
+Cc: Russell King <rmk@arm.linux.org.uk>
+Signed-off-by: Andrew Morton <akpm@osdl.org>
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+
+---
+
+ drivers/serial/serial_cs.c |   52 +++++++++++++++++++++++++++++++++++++++-----
+ include/pcmcia/ciscode.h   |    3 +++
+ 2 files changed, 49 insertions(+), 6 deletions(-)
+
+30bac7aa0e3678c79ff00fc9372f34712eeb34fc
+diff --git a/drivers/serial/serial_cs.c b/drivers/serial/serial_cs.c
+index 389d847..2c70773 100644
+--- a/drivers/serial/serial_cs.c
++++ b/drivers/serial/serial_cs.c
+@@ -41,6 +41,7 @@
+ #include <linux/string.h>
+ #include <linux/timer.h>
+ #include <linux/serial_core.h>
++#include <linux/delay.h>
+ #include <linux/major.h>
+ #include <asm/io.h>
+ #include <asm/system.h>
+@@ -102,6 +103,8 @@ struct serial_info {
+ 	int			multi;
+ 	int			slave;
+ 	int			manfid;
++	int			prodid;
++	int			c950ctrl;
+ 	dev_node_t		node[4];
+ 	int			line[4];
+ };
+@@ -116,6 +119,33 @@ struct serial_cfg_mem {
+ static int serial_config(struct pcmcia_device * link);
+ 
+ 
++static void wakeup_card(struct serial_info *info)
++{
++	int ctrl = info->c950ctrl;
++
++	if (info->manfid == MANFID_OXSEMI) {
++		outb(12, ctrl + 1);
++	} else if (info->manfid == MANFID_POSSIO && info->prodid == PRODID_POSSIO_GCC) {
++		/* request_region? oxsemi branch does no request_region too... */
++		/* This sequence is needed to properly initialize MC45 attached to OXCF950.
++		 * I tried decreasing these msleep()s, but it worked properly (survived
++		 * 1000 stop/start operations) with these timeouts (or bigger). */
++		outb(0xA, ctrl + 1);
++		msleep(100);
++		outb(0xE, ctrl + 1);
++		msleep(300);
++		outb(0xC, ctrl + 1);
++		msleep(100);
++		outb(0xE, ctrl + 1);
++		msleep(200);
++		outb(0xF, ctrl + 1);
++		msleep(100);
++		outb(0xE, ctrl + 1);
++		msleep(100);
++		outb(0xC, ctrl + 1);
++	}
++}
++
+ /*======================================================================
+ 
+     After a card is removed, serial_remove() will unregister
+@@ -161,6 +191,7 @@ static int serial_resume(struct pcmcia_d
+ 
+ 		for (i = 0; i < info->ndev; i++)
+ 			serial8250_resume_port(info->line[i]);
++		wakeup_card(info);
+ 	}
+ 
+ 	return 0;
+@@ -503,15 +534,23 @@ static int multi_config(struct pcmcia_de
+ 	}
+ 
+ 	/* The Oxford Semiconductor OXCF950 cards are in fact single-port:
+-	   8 registers are for the UART, the others are extra registers */
+-	if (info->manfid == MANFID_OXSEMI) {
++	 * 8 registers are for the UART, the others are extra registers.
++	 * Siemen's MC45 PCMCIA (Possio's GCC) is OXCF950 based too.
++	 */
++	if (info->manfid == MANFID_OXSEMI || (info->manfid == MANFID_POSSIO &&
++				info->prodid == PRODID_POSSIO_GCC)) {
++		int err;
++
+ 		if (cf->index == 1 || cf->index == 3) {
+-			setup_serial(link, info, base2, link->irq.AssignedIRQ);
+-			outb(12, link->io.BasePort1 + 1);
++			err = setup_serial(link, info, base2,
++					link->irq.AssignedIRQ);
++			base2 = link->io.BasePort1;
+ 		} else {
+-			setup_serial(link, info, link->io.BasePort1, link->irq.AssignedIRQ);
+-			outb(12, base2 + 1);
++			err = setup_serial(link, info, link->io.BasePort1,
++					link->irq.AssignedIRQ);
+ 		}
++		info->c950ctrl = base2;
++		wakeup_card(info);
+ 		rc = 0;
+ 		goto free_cfg_mem;
+ 	}
+@@ -583,6 +622,7 @@ static int serial_config(struct pcmcia_d
+ 	tuple->DesiredTuple = CISTPL_MANFID;
+ 	if (first_tuple(link, tuple, parse) == CS_SUCCESS) {
+ 		info->manfid = parse->manfid.manf;
++		info->prodid = le16_to_cpu(buf[1]);
+ 		for (i = 0; i < MULTI_COUNT; i++)
+ 			if ((info->manfid == multi_id[i].manfid) &&
+ 			    (parse->manfid.card == multi_id[i].prodid))
+diff --git a/include/pcmcia/ciscode.h b/include/pcmcia/ciscode.h
+index 951cdb5..c1da855 100644
+--- a/include/pcmcia/ciscode.h
++++ b/include/pcmcia/ciscode.h
+@@ -122,4 +122,7 @@
+ 
+ #define MANFID_XIRCOM			0x0105
+ 
++#define MANFID_POSSIO			0x030c
++#define PRODID_POSSIO_GCC		0x0003
++
+ #endif /* _LINUX_CISCODE_H */
+-- 
+1.2.4
+
