@@ -1,32 +1,48 @@
-From: "Brett Belcher" <ydmdyysoynhtdp@yahoo.com>
-Subject: It's Here Now NXsjZ
-Date: Tue, 11 Apr 2006 10:22:50 -0400
-Message-ID: <0A247EE3.7684.0115C2D5__16269.0893201672$1144761979$gmane$org@localhost>
+From: Mr Tony Greg <tonygreg18@virgilio.it>
+Subject: FROM MR TONY'S OFFICE
+Date: Fri, 14 Apr 2006 06:41:48 +0100 (GMT+01:00)
+Message-ID: <10a96eb608b.tonygreg18@virgilio.it>
+Reply-To: gregoffice200@yahoo.com.hk
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain;charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus2.kernel.org ([204.152.191.36]:18130 "EHLO zeus2.kernel.org")
-	by vger.kernel.org with ESMTP id S1750831AbWDKN0D (ORCPT
+Received: from vsmtp21.tin.it ([212.216.176.109]:59376 "EHLO vsmtp21.tin.it")
+	by vger.kernel.org with ESMTP id S965106AbWDNFpi (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 11 Apr 2006 09:26:03 -0400
+	Fri, 14 Apr 2006 01:45:38 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-sound@vger.kernel.org, linux-tape@vger.kernel.org, linux-x25@vger.kernel.org, majordomo@vger.kernel.org
+
+>From Mr Tony Greg
+my private tell number(+44-7040112855)
+Contact<gregoffice13@yahoo.it>
+
+Goodday,
+
+In order to transfer out
+(Fifteen-million pounds sterlings)
+out from my bank, the owner of this 
+account in mr john hughes 
+here in london,A chemical engineer by 
+proffession and he died 
+since 1995.(15,000,000.00)pounds sterlings.I 
+want to transfer 
+this money into a safe foreign account abroad but i 
+don't know 
+any foreigner,I know that this massage will come to you as 
+a 
+surprise as we don't know our self befor,But be sure that it is 
+real 
+and a genuine business.I believe in God that you will never let 
+me down 
+in this investment.Your full contact information phone and fax 
+number,
+Name will be necessary for this effect.Hope to hear from you 
+immediately.
+
+Thanks
+MR Tony Greg
 
 
 
-
-Lazy to attend exam or classes?
-
-We have Diplomas, Degrees, Masters' or Doctorate
-to choose from any field of your interest.
-
-Only 2 weeks require to delivers the prestigious non-accredited
-universities paper to your doorstep.
-
-Do not hesitate to give us a call today!
-1-484-693-8861
-
-
-w5Z
