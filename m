@@ -1,48 +1,36 @@
-From: Mr Tony Greg <tonygreg18@virgilio.it>
-Subject: FROM MR TONY'S OFFICE
-Date: Fri, 14 Apr 2006 06:41:48 +0100 (GMT+01:00)
-Message-ID: <10a96eb608b.tonygreg18@virgilio.it>
-Reply-To: gregoffice200@yahoo.com.hk
+From: "Eli Jackson" <frankie@municipia.com>
+Subject: Obtaining a DIPLOMA has never been so easy!
+Date: Sat, 15 Apr 2006 23:25:15 +0100
+Message-ID: <000001c66106$3dbafb00$0100007f@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain;charset="UTF-8"
+Content-Type: text/plain;
+	charset="windows-1251"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from vsmtp21.tin.it ([212.216.176.109]:59376 "EHLO vsmtp21.tin.it")
-	by vger.kernel.org with ESMTP id S965106AbWDNFpi (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 14 Apr 2006 01:45:38 -0400
+Received: from cpc1-pete4-5-1-cust121.pete.cable.ntl.com ([86.17.38.121]:529
+	"helo localhost") by vger.kernel.org with SMTP id S932509AbWDOWZw
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 15 Apr 2006 18:25:52 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-
->From Mr Tony Greg
-my private tell number(+44-7040112855)
-Contact<gregoffice13@yahoo.it>
-
-Goodday,
-
-In order to transfer out
-(Fifteen-million pounds sterlings)
-out from my bank, the owner of this 
-account in mr john hughes 
-here in london,A chemical engineer by 
-proffession and he died 
-since 1995.(15,000,000.00)pounds sterlings.I 
-want to transfer 
-this money into a safe foreign account abroad but i 
-don't know 
-any foreigner,I know that this massage will come to you as 
-a 
-surprise as we don't know our self befor,But be sure that it is 
-real 
-and a genuine business.I believe in God that you will never let 
-me down 
-in this investment.Your full contact information phone and fax 
-number,
-Name will be necessary for this effect.Hope to hear from you 
-immediately.
-
-Thanks
-MR Tony Greg
+To: linux-serial@vger.kernel.org
 
 
+NO ONE is turned down.
+
+According to the U.S. Census Bureau, with the following degrees, 
+here's how much you can  expect to make in your lifetime:
+
+High School Diploma:  $1,100,000
+Bachelor's Degree:    $2,100,000
+Master's Degree:      $2,500,000
+Doctorate:            $4,400,000
+
+You Need a Better Degree, and we can Help!
+Obtain degrees from Prestigious non-accredited
+Universities based on you life experience.
+NO ONE is turned down.
+
+Call Now 7 days a week.
+"1-718-504-5376"
 
