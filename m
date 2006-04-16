@@ -1,16 +1,16 @@
-From: "Eli Jackson" <frankie@municipia.com>
-Subject: Obtaining a DIPLOMA has never been so easy!
-Date: Sat, 15 Apr 2006 23:25:15 +0100
-Message-ID: <000001c66106$3dbafb00$0100007f@localhost>
+From: "Lucas Cook" <earnestw@newportwestfunding.com>
+Subject: Bachelors, Masters, MBA and/or Doctorate (PhD)
+Date: Sun, 16 Apr 2006 13:14:46 +0200
+Message-ID: <000001c66171$c02cd480$0100007f@localhost>
 Mime-Version: 1.0
 Content-Type: text/plain;
 	charset="windows-1251"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cpc1-pete4-5-1-cust121.pete.cable.ntl.com ([86.17.38.121]:529
-	"helo localhost") by vger.kernel.org with SMTP id S932509AbWDOWZw
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 15 Apr 2006 18:25:52 -0400
+Received: from chello062179060029.chello.pl ([62.179.60.29]:18959 "helo
+	localhost") by vger.kernel.org with SMTP id S1750716AbWDPLPA (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 16 Apr 2006 07:15:00 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
