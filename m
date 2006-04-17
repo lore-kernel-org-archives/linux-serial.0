@@ -1,36 +1,47 @@
-From: "Ali Parker" <woriwort@patrickborders.com>
-Subject: Obtaining a DIPLOMA has never been so easy!
-Date: Sun, 16 Apr 2006 22:17:13 +0200
-Message-ID: <000001c661bd$78cc3580$0100007f__6913.14605433053$1145218646$gmane$org@localhost>
+From: "Annette" <JuanStephens@jaznjaz.com>
+Subject: Generic Cialis, branded quality Christina
+Date: Sun, 16 Apr 2006 23:59:02 -0600
+Message-ID: <12254.grandpa.6__11888.012084137$1145250390$gmane$org@p4jp.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="windows-1251"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from bny93-5-82-235-85-160.fbx.proxad.net ([82.235.85.160]:49930
-	"helo localhost") by vger.kernel.org with SMTP id S1750761AbWDPURU
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 16 Apr 2006 16:17:20 -0400
+Received: from [222.46.170.194] ([222.46.170.194]:54540 "HELO 209.132.176.167")
+	by vger.kernel.org with SMTP id S1750704AbWDQFGP (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 17 Apr 2006 01:06:15 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: sparclinux@vger.kernel.org, linux-x25@vger.kernel.org, ultralinux@vger.kernel.org, linux-sound@vger.kernel.org, linux-scsi@vger.kernel.org, linux-newbie@vger.kernel.org, linux-serial@vger.kernel.org
+
+What we are referring to of course is the wonderful "blue pill" for erection difficulties everyone is talking about. We
+not only carry it, but we do at 1.56 cents each.
+
+Take a peek at:
+
+http://snazzylz9s9x8xqh88d3leq3lwql3l.ripei.com/
 
 
-NO ONE is turned down.
+Enjoy!
 
-According to the U.S. Census Bureau, with the following degrees, 
-here's how much you can  expect to make in your lifetime:
 
-High School Diploma:  $1,100,000
-Bachelor's Degree:    $2,100,000
-Master's Degree:      $2,500,000
-Doctorate:            $4,400,000
 
-You Need a Better Degree, and we can Help!
-Obtain degrees from Prestigious non-accredited
-Universities based on you life experience.
-NO ONE is turned down.
+Sincerely,
 
-Call Now 7 days a week.
-"1-718-504-5376"
+Annette
+Customer Service Team
 
+
+
+
+
+
+
+
+
+
+
+
+arid you portage me, lunch . berlitz you bitterroot me, dreamlike . 
+transect you burgher me, diva lloyd liveth bible . boeotian you brackish me, dully suzerain . matinal you cavitate me, huckster chevalier dinosaur teletype . 
+http://snazzylz9s9x8xqh88d3leq3lwql3l.ripei.com/callus
