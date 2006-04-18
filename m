@@ -1,16 +1,16 @@
-From: "Gregory Gray" <sweetjen_babe@cencalinst.com>
+From: "Henry White" <lumz34@plytac.com>
 Subject: Academic Qualifications available from prestigious NON-ACCREDITED universities
-Date: Mon, 17 Apr 2006 11:36:42 -0400
-Message-ID: <000001c6625f$5e4a9880$0100007f__30105.6425473236$1145288242$gmane$org@localhost>
+Date: Tue, 18 Apr 2006 08:58:37 -0600
+Message-ID: <000001c66311$1b48fd80$0100007f__25055.1605866805$1145364560$gmane$org@localhost>
 Mime-Version: 1.0
 Content-Type: text/plain;
 	charset="windows-1251"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 145-83-246-201.adsl.terra.cl ([201.246.83.145]:18180 "helo
-	localhost") by vger.kernel.org with SMTP id S1751130AbWDQPgo (ORCPT
+Received: from w130.z064000082.was-dc.dsl.cnc.net ([64.0.82.130]:27141 "helo
+	localhost") by vger.kernel.org with SMTP id S1751130AbWDRMs5 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 17 Apr 2006 11:36:44 -0400
+	Tue, 18 Apr 2006 08:48:57 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
