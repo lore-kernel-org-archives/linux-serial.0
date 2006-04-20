@@ -1,36 +1,137 @@
-From: "Henry White" <lumz34@plytac.com>
-Subject: Academic Qualifications available from prestigious NON-ACCREDITED universities
-Date: Tue, 18 Apr 2006 08:58:37 -0600
-Message-ID: <000001c66311$1b48fd80$0100007f__25055.1605866805$1145364560$gmane$org@localhost>
+From: Jon Anders Haugum <jonah@omegav.ntnu.no>
+Subject: [PATCH] serial8250: set divisor register correctly for AMD Alchemy
+ SoC uart. 3rd edition.
+Date: Thu, 20 Apr 2006 14:55:59 +0200 (CEST)
+Message-ID: <20060420144509.V1601@invalid.ed.ntnu.no>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="windows-1251"
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from w130.z064000082.was-dc.dsl.cnc.net ([64.0.82.130]:27141 "helo
-	localhost") by vger.kernel.org with SMTP id S1751130AbWDRMs5 (ORCPT
+Received: from fri.itea.ntnu.no ([129.241.7.60]:44423 "EHLO fri.itea.ntnu.no")
+	by vger.kernel.org with ESMTP id S1750886AbWDTM4C (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Apr 2006 08:48:57 -0400
+	Thu, 20 Apr 2006 08:56:02 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: rmk+serial@arm.linux.org.uk
+Cc: linux-serial@vger.kernel.org, linux-mips@linux-mips.org
+
+Alchemy SoC uart have got a non-standard divisor register that needs some
+special handling.
+
+This patch adds divisor read/write functions with test and special
+handling for Alchemy internal uart.
+
+Signed-off-by: Jon Anders Haugum <jonah@omegav.ntnu.no>
+
+---
+
+3rd edition:
+- Removed section covering 16C850 autoconfig.
 
 
-NO ONE is turned down.
-
-According to the U.S. Census Bureau, with the following degrees, 
-here's how much you can  expect to make in your lifetime:
-
-High School Diploma:  $1,100,000
-Bachelor's Degree:    $2,100,000
-Master's Degree:      $2,500,000
-Doctorate:            $4,400,000
-
-You Need a Better Degree, and we can Help!
-Obtain degrees from Prestigious non-accredited
-Universities based on you life experience.
-NO ONE is turned down.
-
-Call Now 7 days a week.
-"1-718-504-5376"
-
+--- linux-2.6.16-rc5/drivers/serial/8250.c.orig	2006-03-03 02:12:10.000000000 +0100
++++ linux-2.6.16-rc5/drivers/serial/8250.c	2006-03-03 02:16:19.000000000 +0100
+@@ -362,6 +362,40 @@ serial_out(struct uart_8250_port *up, in
+ #define serial_inp(up, offset)		serial_in(up, offset)
+ #define serial_outp(up, offset, value)	serial_out(up, offset, value)
+ 
++/* Uart divisor latch read */
++static inline int _serial_dl_read(struct uart_8250_port *up)
++{
++	return serial_inp(up, UART_DLL) | serial_inp(up, UART_DLM) << 8;
++}
++
++/* Uart divisor latch write */
++static inline void _serial_dl_write(struct uart_8250_port *up, int value)
++{
++	serial_outp(up, UART_DLL, value & 0xff);
++	serial_outp(up, UART_DLM, value >> 8 & 0xff);
++}
++
++#ifdef CONFIG_SERIAL_8250_AU1X00
++/* Au1x00 haven't got a standard divisor latch */
++static int serial_dl_read(struct uart_8250_port *up)
++{
++	if (up->port.iotype == UPIO_AU)
++		return __raw_readl(up->port.membase + 0x28);
++	else
++		return _serial_dl_read(up);
++}
++
++static void serial_dl_write(struct uart_8250_port *up, int value)
++{
++	if (up->port.iotype == UPIO_AU)
++		__raw_writel(value, up->port.membase + 0x28);
++	else
++		_serial_dl_write(up, value);
++}
++#else
++#define serial_dl_read(up) _serial_dl_read(up)
++#define serial_dl_write(up, value) _serial_dl_write(up, value)
++#endif
+ 
+ /*
+  * For the 16C950
+@@ -494,7 +528,8 @@ static void disable_rsa(struct uart_8250
+  */
+ static int size_fifo(struct uart_8250_port *up)
+ {
+-	unsigned char old_fcr, old_mcr, old_dll, old_dlm, old_lcr;
++	unsigned char old_fcr, old_mcr, old_lcr;
++	unsigned short old_dl;
+ 	int count;
+ 
+ 	old_lcr = serial_inp(up, UART_LCR);
+@@ -505,10 +540,8 @@ static int size_fifo(struct uart_8250_po
+ 		    UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
+ 	serial_outp(up, UART_MCR, UART_MCR_LOOP);
+ 	serial_outp(up, UART_LCR, UART_LCR_DLAB);
+-	old_dll = serial_inp(up, UART_DLL);
+-	old_dlm = serial_inp(up, UART_DLM);
+-	serial_outp(up, UART_DLL, 0x01);
+-	serial_outp(up, UART_DLM, 0x00);
++	old_dl = serial_dl_read(up);
++	serial_dl_write(up, 0x0001);
+ 	serial_outp(up, UART_LCR, 0x03);
+ 	for (count = 0; count < 256; count++)
+ 		serial_outp(up, UART_TX, count);
+@@ -519,8 +552,7 @@ static int size_fifo(struct uart_8250_po
+ 	serial_outp(up, UART_FCR, old_fcr);
+ 	serial_outp(up, UART_MCR, old_mcr);
+ 	serial_outp(up, UART_LCR, UART_LCR_DLAB);
+-	serial_outp(up, UART_DLL, old_dll);
+-	serial_outp(up, UART_DLM, old_dlm);
++	serial_dl_write(up, old_dl);
+ 	serial_outp(up, UART_LCR, old_lcr);
+ 
+ 	return count;
+@@ -750,8 +780,7 @@ static void autoconfig_16550a(struct uar
+ 
+ 			serial_outp(up, UART_LCR, 0xE0);
+ 
+-			quot = serial_inp(up, UART_DLM) << 8;
+-			quot += serial_inp(up, UART_DLL);
++			quot = serial_dl_read(up);
+ 			quot <<= 3;
+ 
+ 			status1 = serial_in(up, 0x04); /* EXCR1 */
+@@ -759,8 +788,7 @@ static void autoconfig_16550a(struct uar
+ 			status1 |= 0x10;  /* 1.625 divisor for baud_base --> 921600 */
+ 			serial_outp(up, 0x04, status1);
+ 			
+-			serial_outp(up, UART_DLL, quot & 0xff);
+-			serial_outp(up, UART_DLM, quot >> 8);
++			serial_dl_write(up, quot);
+ 
+ 			serial_outp(up, UART_LCR, 0);
+ 
+@@ -1862,8 +1890,7 @@ serial8250_set_termios(struct uart_port 
+ 		serial_outp(up, UART_LCR, cval | UART_LCR_DLAB);/* set DLAB */
+ 	}
+ 
+-	serial_outp(up, UART_DLL, quot & 0xff);		/* LS of divisor */
+-	serial_outp(up, UART_DLM, quot >> 8);		/* MS of divisor */
++	serial_dl_write(up, quot);
+ 
+ 	/*
+ 	 * LCR DLAB must be set to enable 64-byte FIFO mode. If the FCR
