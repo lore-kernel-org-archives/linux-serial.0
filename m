@@ -1,27 +1,27 @@
-From: "Alba Conner" <pdxyh@yahoo.com>
-Subject: Degree or Diploma of Your Choice ge
-Date: Sat, 22 Apr 2006 19:11:54 -0500
-Message-ID: <LAW64.OE649yfB4mvo189353d5__24979.1855960668$1145747911$gmane$org@motmail.com>
+From: "Marsha Rhodes" <sueakpmmxjcy@hotmail.com>
+Subject: Please Her Tonite vz5R35
+Date: Sun, 23 Apr 2006 04:04:48 +0200
+Message-ID: <68YH87FE.0C24.sueakpmmxjcy__1171.29383511401$1145754537$gmane$org@hotmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [194.183.32.79] ([194.183.32.79]:3854 "HELO 209.132.176.167")
-	by vger.kernel.org with SMTP id S1751261AbWDVXSS (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 22 Apr 2006 19:18:18 -0400
+Received: from corporativos244109-133.etb.net.co ([201.244.109.133]:62475 "HELO
+	corporativos244109-133.etb.net.co") by vger.kernel.org with SMTP
+	id S1751307AbWDWBIk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 22 Apr 2006 21:08:40 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-net@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
 
-Lazy to attend exam or classes?
 
-We have Diplomas, Degrees, Masters' or Doctorate
-to choose from any field of your interest.
+Here's latest "Longz" formula has been proven
+to add inches to the sizes while multiplying
+orgasms like never had before. 
+Our products is light years ahead of our competitors
+which has millions of happy users.
 
-Only 2 weeks require to delivers the prestigious non-accredited
-universities paper to your doorstep.
+Check us out..You won't regret.
 
-Do not hesitate to give us a call today!
-1-484-693-8861
+http://youleftourarmsfor.com
 
 
-LNGhxb
+GGA7Bp
