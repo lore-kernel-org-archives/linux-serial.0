@@ -1,31 +1,27 @@
-From: " Arthur" <fuwtag@caller.com>
-Subject: Save On ED Prescriptions!
-Date: Fri, 21 Apr 2006 10:07:21 -0500
-Message-ID: <084p489c.5507669__9134.42857931859$1145628484$gmane$org@caller.com>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: "Alba Conner" <pdxyh@yahoo.com>
+Subject: Degree or Diploma of Your Choice ge
+Date: Sat, 22 Apr 2006 19:11:54 -0500
+Message-ID: <LAW64.OE649yfB4mvo189353d5__24979.1855960668$1145747911$gmane$org@motmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [129.24.147.229] ([129.24.147.229]:519 "HELO 54B26A80")
-	by vger.kernel.org with SMTP id S932318AbWDUOHe (ORCPT
+Received: from [194.183.32.79] ([194.183.32.79]:3854 "HELO 209.132.176.167")
+	by vger.kernel.org with SMTP id S1751261AbWDVXSS (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Apr 2006 10:07:34 -0400
+	Sat, 22 Apr 2006 19:18:18 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-net@vger.kernel.org, linux-newbie@vger.kernel.org, linux-ppp@vger.kernel.org, linux-raid@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, linux-sound@vger.kernel.org, linux-tape@vger.kernel.org
+To: linux-net@vger.kernel.org
 
 
+Lazy to attend exam or classes?
 
-How are you
+We have Diplomas, Degrees, Masters' or Doctorate
+to choose from any field of your interest.
 
-You can order top quanlity 
+Only 2 weeks require to delivers the prestigious non-accredited
+universities paper to your doorstep.
 
-C:ALIS and V:AGRA direct from us. 
-
-http://sgahj2a8yqt8gqf7lf2kvpk2vpkkk.amniotemk.com/?uighjf
-
-
+Do not hesitate to give us a call today!
+1-484-693-8861
 
 
-g7890hbhghjkj
+LNGhxb
