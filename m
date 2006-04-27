@@ -1,54 +1,25 @@
-From: <infoadvert1@o2.co.uk>
-Subject: REPRESENTATIVE/MANAGER WANTED
-Date: Mon, 24 Apr 2006 20:56:31 +0100 (BST)
-Message-ID: <18369647.1145908591662.JavaMail.root__42349.3627146401$1145909138$gmane$org@pippin>
-Reply-To: <infoadvert1@o2.co.uk>
+From: "Freddy" <rokhdgcriiss@arcada.fi>
+Subject: probably you
+Date: Fri, 28 Apr 2006 01:37:35 +1000
+Message-ID: <92174B33.25CB9BB__18644.0956233584$1146150021$gmane$org@arcada.fi>
 Mime-Version: 1.0
-Content-Type: text/plain;charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kanga.london.ongenie.net ([193.113.160.14]:58836 "EHLO
-	mail.o2.co.uk") by vger.kernel.org with ESMTP id S1751208AbWDXUE5
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 24 Apr 2006 16:04:57 -0400
+Received: from zeus1.kernel.org ([204.152.191.4]:63387 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S965133AbWD0O7u (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 27 Apr 2006 10:59:50 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-ppp@vger.kernel.org
 
-AGROHERB EXPORT
-16 Bartly Wood Business Park Bartly Way
-Hook RG27 9UZ
-UK
-We are exporters of raw materials. We need
-representatives who can help us establish
-a medium of getting to our customers in U.S.A
-and Canada, Asia and the rest of Europe. You
-shall also receive payments from our creditors.
-Subject to your Satisfaction you will be given 
-the opportunity to Negotiate your mode of which 
-we will pay for your services as our representative 
-in U.S.A ,Canada, Asia & Europe.
-Please If Your Are Interested contact our
-Procurement officer, 
-Name: Austin Francis 
-
-email : info_world_export@yahoo.com.cn
-
-With the following information so that we can
-Forward to you immediately our agent form
-for official enlistment.
-1) Your Full name
-2) Your Mailing address
-3) Your Phone and Fax Number
-4) Your Age & Your business experience 
-
-NOTE:
-We are sending you this email because you may 
-have subscribe to 
-one or more website requesting information on 
-business, we do not wish 
-to disturb your private life so if you feel 
-you received this email 
-erroneously please delete and do not reply 
-
+H!ire,
+i am here sitting in the internet caffe. Found your email and
+decided to write. I might be coming to your place in 14 days, 
+so I decided to email you. May be we can meet? I am 25 y.o.
+girl. I have a picture if you want!. No need to reply here as 
+this is not my email. Write me at fbx@popmailme.com
 
 
