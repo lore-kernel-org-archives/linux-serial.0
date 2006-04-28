@@ -1,53 +1,39 @@
-From: "sinosteel corporation" <andong_liu1000@gmail.cn>
-Subject: AGENTS NEEDED
-Date: Fri, 28 Apr 2006 01:16:29 +0800 (CST)
-Message-ID: <56276.213.185.118.196.1146158189.squirrel@3w.gmail.cn>
-Reply-To: andong_liu05@yahoo.com.cn
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+From: "Ahmad" <ssbhnnmccbfui@kwrealtors.net>
+Subject: sup its Ahmad
+Date: Fri, 28 Apr 2006 04:26:54 -0400
+Message-ID: <857c.virtue@ourselves90.icosahedra12.net>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [210.73.88.250] ([210.73.88.250]:57582 "HELO
-	gmail.cn\(210.73.88.250\)") by vger.kernel.org with SMTP
-	id S965194AbWD1Fuc (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 28 Apr 2006 01:50:32 -0400
+Received: from p6169-ipad410osakakita.osaka.ocn.ne.jp ([60.32.49.169]:23310
+	"HELO p6169-ipad410osakakita.osaka.ocn.ne.jp") by vger.kernel.org
+	with SMTP id S1030286AbWD1HXa (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 28 Apr 2006 03:23:30 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-gcc@vger.kernel.org
 
-17B Xichang'an Street,West District,
-Beijing 100031 P.R.CHINA.
+Heya!
 
-Dear Sir/Madam,
+Has your cum ever dribbled and you wish it had shot out?
+Have you ever wanted to impress your girl with a huge cumshot?
 
-I am  Mr.Shunpui Anderson, CEO of Sinosteel Corporation. We are searching
-for representatives who can help us establish a medium of getting to our
-costumers in the Canada,America,North America and Europe as well as making
-payments through you to us.
+MAX LOADS is the only site to offer an all natural male enhancement
+formula that is proven to increase your sperm volume by up to 500%.
+Our highly potent, volume enhancing formula will give our results
+in days and comes with an impressive 100% guarantee. 
 
- We deals on products like Baosteel, Wuhan Iron & Steel Corp, Anshan Iron
-& Steel Corp. and Taiyuan Iron & Steel Corp etc, we export these raw
-materials into Europe, America, Africa and Canada.
+Imagine the difference (look and feel) between dribbling your cum
+compared to shooting out burst after burst. Try MAX LOADS now! and
+with our money back guarantee you have absolutely nothing to lose!
 
-Baosteel
-Wuhan Iron & Steel Corp
-Anshan Iron & Steel Corp
-Taiyuan Iron & Steel Corp
+Look here: http://www.readsjustlikethebible.com/
 
-Please if you are interested in transacting business with us we will be
-glad. Please contact us for more information; Subject to your satisfaction
-you will be given the opportunity to negotiate your mode for  which we
-will pay for your services as our representative in Canada,America,North
-America and Europe.
 
-Please if you are interested forward to us your phone number/fax and your
-full contact addresses.
 
-Thanks in advance
-Please,for further enquiery/informations contact,(i.e reply to):
-CHIEF ACCOUNTANT,
-Mr.'Andong Liu'on this email(andong_liu05@yahoo.com.cn)
 
-Mr.Shunpui Anderson
-CEO.
-SINOSTEEL CORPORATION
 
+
+
+
+velar you paradise me, pantheism . foldout you lipstick me, crabapple continuation space upstate . have you bloodline me, peak airport savonarola . dragonhead you compendia me, defensive copolymer cherry . 
+http://www.readsjustlikethebible.com/c82/
