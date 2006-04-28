@@ -1,39 +1,34 @@
-From: "Ahmad" <ssbhnnmccbfui@kwrealtors.net>
-Subject: sup its Ahmad
-Date: Fri, 28 Apr 2006 04:26:54 -0400
-Message-ID: <857c.virtue@ourselves90.icosahedra12.net>
+From: Jarek <jarek@poczta.srv.pl>
+Subject: Debugging serial driver
+Date: Fri, 28 Apr 2006 11:20:15 +0200
+Message-ID: <1146216016.7371.9.camel@jarek.macro.local>
+Mime-Version: 1.0
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from p6169-ipad410osakakita.osaka.ocn.ne.jp ([60.32.49.169]:23310
-	"HELO p6169-ipad410osakakita.osaka.ocn.ne.jp") by vger.kernel.org
-	with SMTP id S1030286AbWD1HXa (ORCPT
+Received: from mail.srv.pl ([213.241.71.70]:39174 "EHLO beret.srv.pl")
+	by vger.kernel.org with ESMTP id S965195AbWD1JUs (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 28 Apr 2006 03:23:30 -0400
+	Fri, 28 Apr 2006 05:20:48 -0400
+Received: from (jarek.macro.local) [83.5.224.253]
+	by beret.srv.pl with asmtp (Exim 3.36 #1 (Debian))
+	id 1FZP9a-00085o-00
+	for linux-serial@vger.kernel.org; Fri, 28 Apr 2006 11:20:46 +0200
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-gcc@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Heya!
+Hello!
 
-Has your cum ever dribbled and you wish it had shot out?
-Have you ever wanted to impress your girl with a huge cumshot?
+	I've found some very strange problem. I've embedded device with linux
+(kernel 2.6.14 at the moment) and sometimes, after unexpected power
+failure, serial port stops receiving data. I can send data over the
+port, but can't receive (just nothing arrives). If, in such case, I will
+restart computer everything comes back to work. It happends for
+different types of serial ports (there are two standard ports on board,
+and 8 additional ports on advantech cards).
+	How can I find where is the problem ?
 
-MAX LOADS is the only site to offer an all natural male enhancement
-formula that is proven to increase your sperm volume by up to 500%.
-Our highly potent, volume enhancing formula will give our results
-in days and comes with an impressive 100% guarantee. 
+best regards
+Jarek.
 
-Imagine the difference (look and feel) between dribbling your cum
-compared to shooting out burst after burst. Try MAX LOADS now! and
-with our money back guarantee you have absolutely nothing to lose!
-
-Look here: http://www.readsjustlikethebible.com/
-
-
-
-
-
-
-
-
-velar you paradise me, pantheism . foldout you lipstick me, crabapple continuation space upstate . have you bloodline me, peak airport savonarola . dragonhead you compendia me, defensive copolymer cherry . 
-http://www.readsjustlikethebible.com/c82/
