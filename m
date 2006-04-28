@@ -1,53 +1,64 @@
-From: "Emmanuel Eleganza" <emmanueleleganza@tiscali.cz>
+From: Emmanuel Eleganza <emmanuel_eleganza4@virgilio.it>
 Subject: Accept in good faith.
-Date: Thu, 27 Apr 2006 23:21:58 +0100
-Message-ID: <443E4BCB0001D386__25061.520029749$1146176561$gmane$org@nzoth.tiscali.cz>
-Reply-To: joelzuma112@yahoo.com
+Date: Fri, 28 Apr 2006 04:00:59 +0100 (GMT+01:00)
+Message-ID: <10ade712ce2.emmanuel_eleganza4__47597.5379384637$1146194813$gmane$org@virgilio.it>
+Reply-To: drjoelzuma115@yahoo.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-2
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain;charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nzoth.tiscali.cz ([213.235.135.69]:57235 "EHLO mail.tiscali.cz")
-	by vger.kernel.org with ESMTP id S1751659AbWD0WW0 convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 27 Apr 2006 18:22:26 -0400
+Received: from vsmtp2.tin.it ([212.216.176.222]:46527 "EHLO vsmtp2.tin.it")
+	by vger.kernel.org with ESMTP id S1751772AbWD1DZr (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 27 Apr 2006 23:25:47 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 Goodday,
 
-I got your contact over the internet as a=20
-trustworthy and reliable person.please pay=20
-attention and understand my reason of=20
-contacting you today through this email.=20
-My name is HON.EMMANUEL ELEGANZA..I am the=20
-personal solicitor to a foreinger, Late=20
-Mr. Morris Thompson ,an American who=20
-unfortunately lost his life in the plane=20
-crash of Alaska Airlines Flight 261, which=20
-crashed on January 31 2000. You may read=20
-more about the crash on visiting this C.N.N=20
-News internet website.=20
+I got your contact over the internet as a 
+trustworthy and 
+reliable person.please pay 
+attention and understand my reason of 
+contacting you today through this email. 
+My name is Hon.EMMANUEL 
+ELEGANZA..I am the 
+personal solicitor to a foreinger, Late 
+Mr. Morris 
+Thompson ,an American who 
+unfortunately lost his life in the plane 
+crash of Alaska Airlines Flight 261, which 
+crashed on January 31 2000. 
+You may read 
+more about the crash on visiting this C.N.N 
+News 
+internet website. 
 
 http://archives.cnn.com/2000/US/02/01/alaska.
-airlines.list/=20
+airlines.list/ 
 
-I desprately need your assistance to secure=20
-and move huge sums of money left behind by=20
-my late client to the tune of $85,000,000=20
-(Eight five million united states dollars).=20
-I will pay you 20% of the total sum for your=20
-coperation in this matter.I will give you more=20
-details,on your positive response, also=20
-include in your reply and acknowledgement of=20
-this mail your tel number so that we can=20
-disscuss in details. I can be reached=20
-urgently through my private mail address=20
-below.=20
+I desprately need your assistance to secure 
+and move 
+huge sums of money left behind by 
+my late client to the tune of 
+$85,000,000 
+(Eight five million united states dollars). 
+I will pay 
+you 20% of the total sum for your 
+coperation in this matter.I will 
+give you more 
+details,on your positive response, also 
+include in your 
+reply and acknowledgement of 
+this mail your tel number so that we can 
+disscuss in details. I can be reached 
+urgently through my private mail 
+address 
+below. 
 
 emmaeleganza2003@kaixo.com
 
-Yours Faithfully,=20
+Yours Faithfully, 
 
 EMMANUEL ELEGANZA
 Address: 3 Presley Way
@@ -56,17 +67,3 @@ Buckinghamshire MK8 OES
 United Kingdom.
 TELEPHONE +44 702 4082191
 
-______________________________________
-Plat=EDte zbyte=E8n=EC drah=E9 povinn=E9 ru=E8en=ED? Zjist=ECte si cenu=
- v online kalkula=E8ce
-nebo na tel. 841 444 444. O bonus nep=F8ijdete, p=F8evedeme v=E1m ho.
-http://ad.tiscali.com/adclick/CID=3D0002ceb4c6efdc0e00000000/SITE=3DCZ.=
-TISCALI/AREA=3DNEWSLETTER..HOME/POS=3DL2
-
-
-
--
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
