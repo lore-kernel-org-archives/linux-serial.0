@@ -1,53 +1,90 @@
-From: gxatzipavlis@softnet.tuc.gr
-Subject: help for self-made serial driver
-Date: Sat, 29 Apr 2006 19:48:33 +0300 (EEST)
-Message-ID: <40964.62.74.4.251.1146329313.squirrel@62.74.4.251>
+From: Sergei Shtylyov <sshtylyov@ru.mvista.com>
+Subject: [PATCH] AMD Alchemy UART: claim memory range
+Date: Sat, 29 Apr 2006 21:24:14 +0400
+Message-ID: <4453A13E.7040009@ru.mvista.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: multipart/mixed;
+ boundary="------------000602020103010208080709"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from panoramix.softnet.tuc.gr ([147.27.14.5]:42195 "HELO
-	softnet.tuc.gr") by vger.kernel.org with SMTP id S1750759AbWD2Qsj
+Received: from rtsoft2.corbina.net ([85.21.88.2]:35981 "HELO
+	mail.dev.rtsoft.ru") by vger.kernel.org with SMTP id S1750765AbWD2RZW
 	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 29 Apr 2006 12:48:39 -0400
+	Sat, 29 Apr 2006 13:25:22 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Andrew Morton <akpm@osdl.org>
+Cc: rmk+serial@arm.linux.org.uk, linux-serial@vger.kernel.org
+
+This is a multi-part message in MIME format.
+--------------000602020103010208080709
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+
+Resending since there was no reaction since the initial mail (4/4/2006)...
+
+I've noticed that the 8250/Au1x00 driver (drivers/serial/8250_au1x00.c)
+doesn't claim UART memory ranges and uses wrong (KSEG1-based) UART addresses
+instead of the physical ones.
+
+WBR, Sergei
+
+Sighed-off-by: Sergei Shtylyov <sshtylyov@ru.mvista.com>
 
 
-hello people.
+--------------000602020103010208080709
+Content-Type: text/plain;
+ name="Au1xx0-claim-UART-range.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="Au1xx0-claim-UART-range.patch"
 
-i don't know if my question should be here. please inform me if not where
-i can get some help.
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index 674b15c..d641ac4 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -1906,6 +1906,9 @@ static int serial8250_request_std_resour
+ 	int ret = 0;
+ 
+ 	switch (up->port.iotype) {
++	case UPIO_AU:
++		size = 0x100000;
++		/* fall thru */
+ 	case UPIO_MEM:
+ 		if (!up->port.mapbase)
+ 			break;
+@@ -1938,6 +1941,9 @@ static void serial8250_release_std_resou
+ 	unsigned int size = 8 << up->port.regshift;
+ 
+ 	switch (up->port.iotype) {
++	case UPIO_AU:
++		size = 0x100000;
++		/* fall thru */
+ 	case UPIO_MEM:
+ 		if (!up->port.mapbase)
+ 			break;
+diff --git a/drivers/serial/8250_au1x00.c b/drivers/serial/8250_au1x00.c
+index 3d1bfd0..58015fd 100644
+--- a/drivers/serial/8250_au1x00.c
++++ b/drivers/serial/8250_au1x00.c
+@@ -30,13 +30,12 @@
+ 	{						\
+ 		.iobase		= _base,		\
+ 		.membase	= (void __iomem *)_base,\
+-		.mapbase	= _base,		\
++		.mapbase	= CPHYSADDR(_base),	\
+ 		.irq		= _irq,			\
+ 		.uartclk	= 0,	/* filled */	\
+ 		.regshift	= 2,			\
+ 		.iotype		= UPIO_AU,		\
+-		.flags		= UPF_SKIP_TEST | 	\
+-				  UPF_IOREMAP,		\
++		.flags		= UPF_SKIP_TEST 	\
+ 	}
+ 
+ static struct plat_serial8250_port au1x00_data[] = {
 
-i have writen a kernel module in order to communicate with a home network
-through my serial port. the module work ok when i connect my pc with
-another pc via NULL modem cable ( i do this to test my module). but when i
-try to communicate with the real network i can't receive anything.
 
-in order to communicate with this network a small device is connected to
-my serial port as shown below
 
-  _______      ____________
- |       |     |          |
- | my pc |-----| gateway  |------  network (let's say a ligth actuator)
- |_______|     |__________|
 
-when ever i press the light actuator it send a message A. the purpose of
-the gateway is to convert the package from the network to serial data,so
-there is a voltage conversion from 24V (in the network) to 12V for the
-serial hardware. The problem is that i don't receive the message A. When i
-use the linux serial driver i get the message so i guess that i do
-something wrong in my driver. As long as i have red from manuals of the
-serial port i haven't found anything about voltage conversion.
-When i connect my computer with another one ( pc 2 ) via NULL modem and
-send from pc 2 the message A my driver works fine so i guess that my
-processing on the serial stream is ok. Am i missing something about the
-serial hardware?
 
-i do the kernel module just to practise in kernel development as a hobbie.
-I can do my job with the linux serial driver but i would like to learn how
-to handle my computer resources  by myself.
-
-thank you
-
+--------------000602020103010208080709--
