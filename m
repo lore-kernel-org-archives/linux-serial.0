@@ -1,15 +1,22 @@
-From: bec@humed.com
-Subject: (unknown)
-Date: Mon, 1 May 2006 07:56:02 GMT
-Message-ID: <200605010756.k417toik031336@zeus1.kernel.org>
+From: "Dr. Denis Martin" <dmartin2rik@verizon.net>
+Subject: nikerapocedupa
+Date: Tue, 2 May 2006 07:51:14 -0500
+Message-ID: <000201c66dde$0000925b$74098e0a@jonotik>
+Mime-Version: 1.0
+Content-Type: text/plain;
+        format=flowed;
+        charset="iso-8859-1";
+        reply-type=original
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:42187 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S1751309AbWEAH4Z (ORCPT
+Received: from [68.85.210.8] ([68.85.210.8]:47877 "HELO verizon.net")
+	by vger.kernel.org with SMTP id S964792AbWEBLtA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 1 May 2006 03:56:25 -0400
-Received: from humed.com (201-15-167-204.paemt704.dsl.brasiltelecom.net.br [201.15.167.204] (may be forged))
-	by zeus1.kernel.org (8.13.1/8.13.1) with SMTP id k417toik031336
-	for <linux-serial@vger.kernel.org>; Mon, 1 May 2006 07:56:24 GMT
+	Tue, 2 May 2006 07:49:00 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+
+You want new pharmaceuticals on the web http://kolozy.eastme.com/
+
 
