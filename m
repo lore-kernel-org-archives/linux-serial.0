@@ -1,78 +1,42 @@
-From: Rodolfo Giometti <giometti@linux.it>
-Subject: Re: trouble on serial console for au1100
-Date: Tue, 2 May 2006 14:21:47 +0200
-Message-ID: <20060502122147.GB20543@gundam.enneenne.com>
-References: <20060427154948.GI32278@enneenne.com> <20060428111933.GY11097@dusktilldawn.nl> <20060428171923.GG3314@cosmic.amd.com>
+From: Sergei Organov <osv@javad.com>
+Subject: High baud rates support for Quatech DSP-100.
+Date: Wed, 03 May 2006 16:59:16 +0400
+Message-ID: <e3a9g8$idv$1@sea.gmane.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="i0/AhcQY5QxfSsSZ"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 81-174-11-161.f5.ngi.it ([81.174.11.161]:21129 "EHLO
-	gundam.enneenne.com") by vger.kernel.org with ESMTP id S964791AbWEBMXl
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 2 May 2006 08:23:41 -0400
-Content-Disposition: inline
-In-Reply-To: <20060428171923.GG3314@cosmic.amd.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1030179AbWECNAP@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jordan Crouse <jordan.crouse@amd.com>
-Cc: Freddy Spierenburg <freddy@dusktilldawn.nl>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org
 
 
---i0/AhcQY5QxfSsSZ
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I've got a Quatech DSP-100 PCMCIA dual RS232 adapter. After adding the
+adapter parameters into the 'multi_id' and 'serial_ids' tables of the
+serial_cs.c driver, it is now automatically loaded and supports the card
+almost fine. However, the card supports baud rates up to 460800, but
+using serial_cs I get rates only up to 115200.
 
-On Fri, Apr 28, 2006 at 11:19:23AM -0600, Jordan Crouse wrote:
->=20
-> CCing the serial list too.  It could use more testing, but this seems
-> like it might be the answer to the myriad of serial issues that have=20
-> been reported in the last month or so.=20
->=20
-> I'm ashamed to admit I have no idea if this patch is even in the system or
-> not.  If not, I'm sure somebody
-> can clean it up and send it in the proper style.
+On the other hand, Quatech has GPL Linux driver (serial_qt.c) for this
+card that has been made for some early 2.6.x kernel version and doesn't
+compile for recent 2.6.16. I've managed to hack it to compile for
+2.6.16.8, -- it does support 460800 indeed.
 
-Here:
+So the question is what to do next. I'd like to either modify serial_cs
+to support high baud rates or to somehow get serial_qt to the linux
+tree. For me it seems that the former is more appropriate as serial_qt
+in fact looks like some earlier serial_cs modified by Quatech. OTOH,
+supporting high baud rates seems to be very card-specific[1] and IMHO
+doesn't fit well into rather generic serial_cs.
 
-   http://ftp.enneenne.com/pub/misc/au1100-patches/linux/patch-au1x00-seria=
-l-fix
+Is it OK to put card-specific code into serial_cs (provided it's invoked
+only after manufacturer id is checked)? Should it be Kconfig option? Is
+there a better way to go?
 
-the patch against =ABlinux-2.6.16-stable=BB branch for serial support
-tested with an au1100 based board.
+[1] It basically involves checking of some card-specific config
+register(s), then setting another card-specific register accordingly and
+setting of the 'uartclk' field of the 'struct uart_port' to
+corresponding value.
 
-Here:
-
-   http://ftp.enneenne.com/pub/misc/au1100-patches/linux/patch-au1x00-seria=
-l-real-interrupt
-
-my suggestion to get real interrupts from the serial line (I have
-redefined the function =ABis_real_interrupt()=BB for the au1x00 CPUs into
-the platform =ABserial.h=BB file).
-
-Ciao,
-
-Rodolfo
-
---=20
-
-GNU/Linux Solutions                  e-mail:    giometti@enneenne.com
-Linux Device Driver                             giometti@gnudd.com
-Embedded Systems                     		giometti@linux.it
-UNIX programming                     phone:     +39 349 2432127
-
---i0/AhcQY5QxfSsSZ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.2.4 (GNU/Linux)
-
-iD8DBQFEV07bQaTCYNJaVjMRAo7nAKCycQAd19UVDR7mQvyXlrZ26QrJPQCcCjNp
-ZVB8gE1hN5SzzEpV9nxZre0=
-=GIkD
------END PGP SIGNATURE-----
-
---i0/AhcQY5QxfSsSZ--
+-- 
+Sergei.
