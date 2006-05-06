@@ -1,78 +1,135 @@
-From: "George G. Davis" <gdavis@mvista.com>
-Subject: [RFC][PATCH] Make sure UART is powered up when dumping MCTRL status
-Date: Fri, 5 May 2006 18:15:37 -0400
-Message-ID: <20060505221537.GK14872@mvista.com>
+From: <tang2@earthlink.com>
+Subject: =?koi8-r?B?IEZpbmFuY2UgbWFuYWdlcnMg?=
+	=?koi8-r?B?YXJlIHdhbnRlZCAobXNnIGlk?=
+	=?koi8-r?B?ID0gSCAp?=
+Date: Sat, 6 May 2006 02:26:47 +0200
+Message-ID: <517644317.20051222134614@earthlink.com>
+Reply-To: <tarashay@usa.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/mixed;
+ boundary="----------5817D14E78AC5"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gateway-1237.mvista.com ([63.81.120.158]:15657 "EHLO
-	gateway-1237.mvista.com") by vger.kernel.org with ESMTP
-	id S1751795AbWEEWPk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 5 May 2006 18:15:40 -0400
-Content-Disposition: inline
+Received: from venus.interxion.site2host.be ([217.22.61.234]:57057 "HELO
+	venus.interxion.site2host.be") by vger.kernel.org with SMTP
+	id S1751516AbWEFA0t (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 5 May 2006 20:26:49 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: rmk+serial@arm.linux.org.uk, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Greetings,
+------------5817D14E78AC5
+Content-Type: text/plain; charset=koi8-r
+Content-Transfer-Encoding: 8bit
 
-Since serial devices are powered down when not in use and some of those
-devices cannot be accessed when powered down, we need to enable power
-around calls to get_mcrtl() when dumping port state via uart_line_info().
-This resolves hangs observed on some machines while reading serial device
-registers when a port is powered off.
+Hello, your e-mail address linux-serial@vger.kernel.org ,  has been taken from the open sources. My name is Alex Brewster. I am the main manager of Web Click Company. 
 
-Signed-off-by: George G. Davis <gdavis@mvista.com>
----
+We are engaged in software developing and design. The main office of our Company is located in Lithuania. 
 
- drivers/serial/serial_core.c |   12 ++++++++++++
- 1 files changed, 12 insertions(+)
+We are searching for employees to work in our company worldwide. If you wish to have additional income from 4000 to 10 000 dollars a month, 
 
+working from your house this offer is for you. The choice of vacancies is huge (designers, managers, auditors, financiers). 
 
-Index: linux-2.6/drivers/serial/serial_core.c
-===================================================================
---- linux-2.6.orig/drivers/serial/serial_core.c
-+++ linux-2.6/drivers/serial/serial_core.c
-@@ -1652,6 +1652,7 @@ static const char *uart_type(struct uart
- static int uart_line_info(char *buf, struct uart_driver *drv, int i)
- {
- 	struct uart_state *state = drv->state + i;
-+	int pm_state;
- 	struct uart_port *port = state->port;
- 	char stat_buf[32];
- 	unsigned int status;
-@@ -1674,9 +1675,16 @@ static int uart_line_info(char *buf, str
- 
- 	if(capable(CAP_SYS_ADMIN))
- 	{
-+		mutex_lock(&state->mutex);
-+		pm_state = state->pm_state;
-+		if (pm_state)
-+			uart_change_pm(state, 0);
- 		spin_lock_irq(&port->lock);
- 		status = port->ops->get_mctrl(port);
- 		spin_unlock_irq(&port->lock);
-+		if (pm_state)
-+			uart_change_pm(state, pm_state);
-+		mutex_unlock(&state->mutex);
- 
- 		ret += sprintf(buf + ret, " tx:%d rx:%d",
- 				port->icount.tx, port->icount.rx);
-@@ -2068,6 +2076,10 @@ uart_configure_port(struct uart_driver *
- 
- 		uart_report_port(drv, port);
- 
-+		/* Power up port for set_mctrl() */
-+		if (!uart_console(port))
-+			uart_change_pm(state, 0);
-+
- 		/*
- 		 * Ensure that the modem control lines are de-activated.
- 		 * We probably don't need a spinlock around this, but
+We will offer you the best conditions to work. 
+
+Also if you own a company or if you are managing director of the company we offer you to cooperation with us.  
 
 
-Comments appreciated.  TIA!
 
---
-Regards,
-George
+
+
+ Please do not reply to this letter. Send your contact data and your CV  to this e-mail: acef4urkoc7@yahoo.com -  it is our temproary e-mail. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+linux-serial@vger.kernel.org sorry for possible disturbance
+
+
+
+------------------------------------------------------------
+
+This email is not sent unsolicited and is in compliance with the
+
+federal CAN-SPAM act.  Your email address was provided to us as
+
+either a reciprocal user of website promotion system(s), or as an
+
+email initially sent by you or your company to which this response
+
+is being provided.
+
+--------------------------------------------------------------
+
+
+
+
+
+
+
+wwrFQ0Z
+
+
+
+this mailing conforms to all federal laws.  please reply
+
+back with "stop mailings" in subject line linux-serial@vger.kernel.org to 
+
+stop mailings.  per can-spam you must allow up to 7
+
+business days for your email deletion.
+
+
+
+
+
+
+
+KM
+
+
+
+
+
+BdvejL
+
+n6uZ4XS
+
+Iq2V53D
+
+
+
+UdAzFc8y
+
+eVhp
+
+
+
+RX
+
+
+
+
+
+efJamHi1
+
+
+
+h2PR4nSl
+
+CNQSKPN
+
+
+
+
+------------5817D14E78AC5--
+
+
