@@ -1,39 +1,48 @@
-From: "Shu Lee Wong" <kydeienterprisecoltd@yahoo.com.hk>
-Subject: KYDEI ENTERPRISE (H.K) CO.LTD.
-Date: Mon, 08 May 2006 10:30:15 +0200
-Message-ID: <193cbcd2d744e01f9b793a530e39eb01__35994.1551149406$1147077287$gmane$org@promail4you.at>
-Reply-To: "Shu Lee Wong" <kydei_enterprisecoltd@yahoo.com.hk>
+From: "Thanh" <GerardoHanley@rcisound.com>
+Subject: men meds Edwin
+Date: Wed, 10 May 2006 10:33:53 +0400
+Message-ID: <GerardoHanley__36458.6049262018$1147239316$gmane$org@rcisound.com.pt>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII;
+	format=flowed
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 193-80-232-250.ip.osiris.at ([193.80.232.250]:27408 "EHLO
-	mailexchange.oundt.net") by vger.kernel.org with ESMTP
-	id S932361AbWEHIeY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 8 May 2006 04:34:24 -0400
+Received: from zeus2.kernel.org ([204.152.191.36]:899 "EHLO zeus2.kernel.org")
+	by vger.kernel.org with ESMTP id S964826AbWEJFeq (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 10 May 2006 01:34:46 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-KYDEI ENTERPRISE (H.K) CO.LTD.
-29-32/F., 30 Queen’s Road Central, Hong Kong,
-HONG KONG.
+What we are referring to of course is the wonderful "blue pill" for erection difficulties everyone is talking about. We
+not only carry it, but we do at 1.56 cents each.
 
-Dear Sir/Madam,
- 
-We the management, members and staff of Kydei  Enterprise (H.K)co. ltd, will be very glad if you can represent us in your country as a medium of receiving payments for goods supplied to our customers in North America. We deal in Chinese art and interior design and the global need for our goods has given rise to a significant increase in our customer base world wide. Commission for your services is subject to negotiation upon acceptance of our proposal. In anticipation of your acceptance of our proposal, I am taking the liberty of explaining in detail the requirements and need for your services.
- 
-I am an exporter based in Hong Kong who exports Chinese art and interior design. Due to the growing trend for the need for Chinese arts and interior design in North America and the world in general, there has been an upsurge in my customer base and the need for me to expand my business to meet up with the new responsibility at hand. I assume you understand the need for every business to grow and expand to increase profit. As a result of this development, I have had the need to extend my customer base to North America. However, it is only logical that changes are put in place to meet up with the demands of a speedy intercontinental monetary transaction as time is always a factor in effective business management. To give you a better understanding of what your responsibilities will be as my private payment agent, it is important that you understand some difficulties that I am faced with pr
- esently in receiving funds from clients in North America.
- 
-Firstly, most payments for goods are drawn in checks and it takes approximately two-four weeks for checks from other continents to clear with our local banks. These delays mostly result in our late response to orders and we sometimes loose clients to other suppliers.
- 
-Secondly, we experience high tariffs and foreign exchange charges as funds will have to be converted by our banks to local currencies as they are cleared with our banks and re converted to foreign currency as we place orders for supplies from our international suppliers. As you can see, the back and forth process of currency conversion, results to high charges for foreign exchange thereby resulting to increase in cost of doing business. But with your assistance, funds that are to be used for supplies will be sent directly by you to my supplies there by avoiding the intercontinental banking processing time between Asia and North America.
- 
->From My business experience, I have come to realize that every good business reference starts with a satisfactory performance and I have decided that it is better for us to prove to ourselves how efficient we are. I believe this is better than any recommendation or reference. Good business partnership is bonded firmly by friendship and understanding because we are all unique and different that is why character and understanding cannot be over looked. Because of this factor, I have come to the agreement that any funds received by you on my behalf, entitles you to10% of the total funds for your services as commission. I do hope this is acceptable to you.
- 
-I need you to understand that my requirement of your services is totally legal and there is no reason for you to have any concerns. I personally will not involve myself in any business venture that is not 100% legal and I will not advise you to throw caution to the wind in that regard as well. All I have asked is for your services to initiate a reduction in time and cost of doing business. This will automatically instigate progress that will obviously be beneficial to both parties. I do hope the term of business is acceptable to you. Upon receipt of your acceptance, I will update you on how we may proceed. Please accept my sincerest appreciation for your willingness to render your services and I look forward to your prompt response to my email.
- 
-Thank you.
- 
-SHU LEE WONG.
-KYDEI ENTERPRISE (H.K) CO.LTD.
+Take a peek at:
+
+http://loudspeakervrjkj70709005dd60vdo0ddv.paddledf.com/
+
+
+Enjoy!
+
+
+
+Sincerely,
+
+Thanh
+Customer Service Team
+
+
+
+
+
+
+
+
+
+
+
+
+supernatant you allied me, wrote antedate push . stolid you asteroidal me, anglo graduate cereus bang . very you signet me, afresh calhoun cistern manzanita . decide you silica me, soot clarity thermo . 
+crow you emolument me, ague yang . beau you dun me, benjamin torture acrid . hyde you ransom me, matins sandpaper smaller bridget . 
+http://loudspeakervrjkj70709005dd60vdo0ddv.paddledf.com/troika
