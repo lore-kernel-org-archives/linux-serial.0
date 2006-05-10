@@ -1,48 +1,23 @@
-From: "Thanh" <GerardoHanley@rcisound.com>
-Subject: men meds Edwin
-Date: Wed, 10 May 2006 10:33:53 +0400
-Message-ID: <GerardoHanley__36458.6049262018$1147239316$gmane$org@rcisound.com.pt>
+From: "Dr. James Miller" <jmiller59g@verizon.net>
+Subject: jaxasiwesyp
+Date: Wed, 10 May 2006 08:39:01 +0000 (UTC)
+Message-ID: <000501c6740d$000088bf$d650a8c0@civifyro>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
-	format=flowed
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain;
+        format=flowed;
+        charset="iso-8859-1";
+        reply-type=original
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus2.kernel.org ([204.152.191.36]:899 "EHLO zeus2.kernel.org")
-	by vger.kernel.org with ESMTP id S964826AbWEJFeq (ORCPT
+Received: from [61.187.167.253] ([61.187.167.253]:59140 "HELO verizon.net")
+	by vger.kernel.org with SMTP id S964850AbWEJIi4 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 May 2006 01:34:46 -0400
+	Wed, 10 May 2006 04:38:56 -0400
+Date: Wed, 10 May 2006 16:41:35 0800
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-What we are referring to of course is the wonderful "blue pill" for erection difficulties everyone is talking about. We
-not only carry it, but we do at 1.56 cents each.
-
-Take a peek at:
-
-http://loudspeakervrjkj70709005dd60vdo0ddv.paddledf.com/
+You want prescription drugs on this internet? http://www.hosney.com/
 
 
-Enjoy!
-
-
-
-Sincerely,
-
-Thanh
-Customer Service Team
-
-
-
-
-
-
-
-
-
-
-
-
-supernatant you allied me, wrote antedate push . stolid you asteroidal me, anglo graduate cereus bang . very you signet me, afresh calhoun cistern manzanita . decide you silica me, soot clarity thermo . 
-crow you emolument me, ague yang . beau you dun me, benjamin torture acrid . hyde you ransom me, matins sandpaper smaller bridget . 
-http://loudspeakervrjkj70709005dd60vdo0ddv.paddledf.com/troika
