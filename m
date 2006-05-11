@@ -1,7 +1,7 @@
-From: "Dr. Charles Applegate" <capplegate3u@verizon.net>
-Subject: rixipycycim
-Date: Thu, 11 May 2006 00:00:18 +0000 (UTC)
-Message-ID: <000501c6748d$00007682$b287250a@qoseka>
+From: "Dr. Denis Martin" <dmartin285exo@verizon.net>
+Subject: cifuq
+Date: Thu, 11 May 2006 09:12:16 +0000 (UTC)
+Message-ID: <000201c674da$0000be27$bfe9a8c0@qoqyqyj>
 Mime-Version: 1.0
 Content-Type: text/plain;
         format=flowed;
@@ -9,15 +9,15 @@ Content-Type: text/plain;
         reply-type=original
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [218.28.41.2] ([218.28.41.2]:12426 "HELO verizon.net")
-	by vger.kernel.org with SMTP id S965097AbWEKAAH (ORCPT
+Received: from [61.180.26.163] ([61.180.26.163]:24851 "HELO verizon.net")
+	by vger.kernel.org with SMTP id S965169AbWEKJMG (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 May 2006 20:00:07 -0400
-Date: Thu, 11 May 2006 07:59:21 0800
+	Thu, 11 May 2006 05:12:06 -0400
+Date: Thu, 11 May 2006 17:12:07 0800
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-If you need prefilled medication online http://bpif.net/
+You want prescription drugs on this web http://www.dbue.net/
 
 
