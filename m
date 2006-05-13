@@ -1,63 +1,23 @@
-From: "Blake" <ufmiuccacm@aosepc.com>
-Subject: best online casino
-Date: Fri, 12 May 2006 09:41:36 -0400
-Message-ID: <IT.5696586.7059808__18884.7542660826$1147500077$gmane$org@codeweavers.com>
+From: "Dr. Denis Martin" <dmartin8ym@verizon.net>
+Subject: zukusazyn
+Date: Sat, 13 May 2006 10:58:06 +0000 (UTC)
+Message-ID: <000101c6767c$000083c6$641f7e0a@vyhij>
+Mime-Version: 1.0
+Content-Type: text/plain;
+        format=flowed;
+        charset="iso-8859-1";
+        reply-type=original
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [222.117.189.57] ([222.117.189.57]:63240 "HELO 209.132.176.167")
-	by vger.kernel.org with SMTP id S932345AbWEMGBF (ORCPT
+Received: from [221.220.222.149] ([221.220.222.149]:30994 "HELO verizon.net")
+	by vger.kernel.org with SMTP id S932325AbWEMK56 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 13 May 2006 02:01:05 -0400
+	Sat, 13 May 2006 06:57:58 -0400
+Date: Sat, 13 May 2006 18:58:12 0800
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-gcc@vger.kernel.org, sparclinux@vger.kernel.org, linux-diald@vger.kernel.org, linux-serial@vger.kernel.org, linux-sound@vger.kernel.org, linux-kernel-owner@vger.kernel.org, linux-hams@vger.kernel.org, ultralinux@vger.kernel.org, linux-raid@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Hey, so glad to finally get hold of you,
-
-Log on to Hi Roller Casino and get $888 FREE 
-
-Feel like getting rich in the comfort of your own home? Welcome to Hi Roller 
-Casino, Where Fortunes are Made! 
+If you want cheap healthcare information on the web http://www.bpif.net/
 
 
-Hi Roller Casino offers over 60 interactive games, including six progressive 
-slots and three progressive games that have paid out some of the largest 
-online jackpots in history! Even better. Hi Roller Casino will give you $10 
-Free when you download the free software and open a real account. Once 
-you've opened your REAL account and made your first deposit, 
-Hi Roller Casino will match it up to $888. 
-
-
-All commercial transactions at Hi Roller Casino are facilitated by Proc-Cyber 
-Services, a well-known and established e-cash merchant. Which means you can 
-rest assured that all your credit card transactions are 100% secured by 
-digital encryption as well as a unique password and account number. Online 
-banking can be done through a variety of safe and user-friendly methods 
-like FirePay, Citadel, NETeller, PrePaidATM, ACH, Wire transfers or Credit 
-Cards. 
-
-
-Need help? Hi Roller Casino provides a friendly, efficient 24/7 Support Desk 
-via email and toll-free lines. 
-
-
-By now you'll be keen to start making your fortune, so click here: 
-
-http://cazelun.com/d1/total 
-
-and start WINNING!
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-cooperate you bunny me, impugn reverberate . salesman you tinkle me, alameda alleyway exception kiwi . 
