@@ -1,21 +1,23 @@
-From: "Guadalupe" <sbdrpp@market-web.co.za>
-Subject: my chance
-Date: Sat, 13 May 2006 21:08:14 +0600
-Message-ID: <C67690D9.006BB04@market-web.co.za>
+From: "Dr. Denis Martin" <dmartin2cc@verizon.net>
+Subject: wahavajokygu
+Date: Sat, 13 May 2006 20:56:37 +0000 (UTC)
+Message-ID: <000401c676cf$00009673$7b99b60a@janaqal>
 Mime-Version: 1.0
 Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-admin-owner@vger.kernel.org>
-Sender: linux-admin-owner@vger.kernel.org
-To: linux-admin@vger.kernel.org, linux-diald@vger.kernel.org, linux-serial@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-ia64-request@vger.kernel.org, davem@vger.kernel.org, linux-ide@vger.kernel.org
+        format=flowed;
+        charset="iso-8859-1";
+        reply-type=original
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from [218.28.80.86] ([218.28.80.86]:60939 "HELO verizon.net")
+	by vger.kernel.org with SMTP id S1751291AbWEMU42 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 13 May 2006 16:56:28 -0400
+Date: Sun, 14 May 2006 04:57:37 0800
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Do not ignore me please,
-I found your email somewhere andb now decided to write you.
-I am coming to your place in few weeks and thought we 
-can meeat each other. Let me know if you do not mind.
-I am a nice pretty girl. Don't reply to this email. a
-Email me direclty at ye@datetodayy.com
+Have you need prefilled pharmaceuticals online? http://zasunu.caun.net/
 
 
