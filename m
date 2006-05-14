@@ -1,7 +1,7 @@
-From: "Dr. Denis Martin" <dmartin2cc@verizon.net>
-Subject: wahavajokygu
-Date: Sat, 13 May 2006 20:56:37 +0000 (UTC)
-Message-ID: <000401c676cf$00009673$7b99b60a@janaqal>
+From: "Dr. Steve Swartson" <swartson511yy@verizon.net>
+Subject: zilo
+Date: Sun, 14 May 2006 07:24:34 +0000 (UTC)
+Message-ID: <000001c07354$0000c0c9$ca6fcb0a@xynyj>
 Mime-Version: 1.0
 Content-Type: text/plain;
         format=flowed;
@@ -9,15 +9,15 @@ Content-Type: text/plain;
         reply-type=original
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [218.28.80.86] ([218.28.80.86]:60939 "HELO verizon.net")
-	by vger.kernel.org with SMTP id S1751291AbWEMU42 (ORCPT
+Received: from [221.239.247.136] ([221.239.247.136]:62731 "HELO verizon.net")
+	by vger.kernel.org with SMTP id S1751342AbWENHUl (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 13 May 2006 16:56:28 -0400
-Date: Sun, 14 May 2006 04:57:37 0800
+	Sun, 14 May 2006 03:20:41 -0400
+Date: Mon, 1 Jan 2001 02:04:45 0800
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Have you need prefilled pharmaceuticals online? http://zasunu.caun.net/
+Would you would like cheap healthcare medication online http://www.dbue.net/
 
 
