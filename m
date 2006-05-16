@@ -1,38 +1,39 @@
-From: Peter Korsgaard <jacmet@sunsite.dk>
-Subject: Re: [RFC][PATCH] Xilinx uartlite serial driver
-Date: Tue, 16 May 2006 15:07:34 +0200
-Message-ID: <87hd3qxgmh.fsf@LKG7F3A44.lan>
-References: <87ac9o3ak3.fsf@sleipner.barco.com>
-	<20060511222001.GC28693@flint.arm.linux.org.uk>
-	<87slnapagf.fsf@LKG7F3A44.lan>
-	<20060516125329.GE15481@flint.arm.linux.org.uk>
-	<4469CDAD.20506@246tNt.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: "Gerry" <bxbdetjuxcsbge@rollcoater.com>
+Subject: increase seman Gerry
+Date: Tue, 16 May 2006 18:58:19 +0200
+Message-ID: <NY.5242376.7054628__34484.3551436954$1147795453$gmane$org@codeweavers.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from hoboe1bl1.telenet-ops.be ([195.130.137.72]:28366 "EHLO
-	hoboe1bl1.telenet-ops.be") by vger.kernel.org with ESMTP
-	id S932089AbWEPPR4 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 16 May 2006 11:17:56 -0400
-In-Reply-To: <4469CDAD.20506@246tNt.com> (Sylvain Munaut's message of "Tue, 16
-	May 2006 15:03:41 +0200")
+Received: from ppp85-140-160-13.pppoe.mtu-net.ru ([85.140.160.13]:40713 "HELO
+	ppp85-140-160-13.pppoe.mtu-net.ru") by vger.kernel.org with SMTP
+	id S1751329AbWEPP7d (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 16 May 2006 11:59:33 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sylvain Munaut <tnt@246tNt.com>
-Cc: Russell King <rmk@arm.linux.org.uk>, linux-serial@vger.kernel.org
+To: linux-gcc@vger.kernel.org
+Cc: sparclinux@vger.kernel.org, linux-diald@vger.kernel.org, linux-serial@vger.kernel.org, linux-sound@vger.kernel.org, linux-kernel-owner@vger.kernel.org, linux-hams@vger.kernel.org
 
->>>>> "Sylvain" == Sylvain Munaut <tnt@246tNt.com> writes:
+Heya!
 
- Sylvain> Yes, I confirm that using the major 4 space is really a bad
- Sylvain> idea. The mpc52xx driver did this, up until the point of
- Sylvain> people reported very annoying problems when pcmcia serial
- Sylvain> card were presents ;)
+Has your cum ever dribbled and you wish it had shot out?
+Have you ever wanted to impress your girl with a huge cumshot?
 
-Exactly. Using standard 16550 UARTs together with the uartlites is
-quite common, that's why I hijacked the 204 range from the mpc52xx
-driver instead of the 4 range of the 8250 driver.
+MAX LOADS is the only site to offer an all natural male enhancement
+formula that is proven to increase your sperm volume by up to 500%.
+Our highly potent, volume enhancing formula will give our results
+in days and comes with an impressive 100% guarantee. 
 
-But ok, I'll request a separate range for the uartlite driver.
+Imagine the difference (look and feel) between dribbling your cum
+compared to shooting out burst after burst. Try MAX LOADS now! and
+with our money back guarantee you have absolutely nothing to lose!
 
--- 
-Bye, Peter Korsgaard
+Look here: http://www.drinkandcrosshis.com/
+
+
+
+
+
+
+
+
+cabot you injustice me, crimea barbados crosswort esposito . inverness you visitor me, edwin . 
+http://www.drinkandcrosshis.com/c82/
