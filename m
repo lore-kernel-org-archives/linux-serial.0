@@ -1,73 +1,48 @@
-From: Mikhail Kolesnik <mike@openbunker.org>
-Subject: Re: Oxford Semiconductor's OXCB950 in 8250_pci.c
-Date: Sun, 21 May 2006 13:20:35 +0300
-Message-ID: <20060521132035.1bec058c@mike.staff.sky>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From: "Vicky" <lkzlpkamcn@internetinvestor.com>
+Subject: PM fromVicky
+Date: Sun, 21 May 2006 16:34:10 +0300
+Message-ID: <JC.5622996.7055168__20523.4286877841$1148215292$gmane$org@codeweavers.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from silver.biz.ua ([80.68.246.128]:25502 "EHLO silver.biz.ua")
-	by vger.kernel.org with ESMTP id S1751505AbWEUKTY (ORCPT
+Received: from zeus1.kernel.org ([204.152.191.4]:15513 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S1750949AbWEUMlF (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 21 May 2006 06:19:24 -0400
+	Sun, 21 May 2006 08:41:05 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: rmk+serial@arm.linux.org.uk
+To: sparclinux@vger.kernel.org, linux-x25@vger.kernel.org, ultralinux@vger.kernel.org, linux-sound@vger.kernel.org, linux-scsi@vger.kernel.org, linux-newbie@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Wed, 10 May 2006 20:20:49 +0100
-Russell King <rmk@arm.linux.org.uk> wrote:
+Hi,
 
-> > > This should probably be pbn_b0_1_115200?
-> > 
-> > The reason was (from the discussion mentioned):
-> > > pbn_b0_bt_1_115200 has been used instead
-> > > of pbn_b0_1_115200, because the latter is identical to
-> > > pbn_default, and the effect should be the same since
-> > > OXCB950 is single-port. 
-> > 
-> > Seems it is not the problem here (as card partially works). Or should I
-> > try changing it?
-> 
-> The reason given there is no longer valid, and is just a preference.
-Changed.
- 
-> What happens if you:
-> 
-> 1. setserial /dev/ttyS4 spd_cust divisor 104
-> 2. set the baud rate to 38400 baud
-I got 9600!
+em..... 
+I gotta tell you something. Some years ago I used to watch porno often. I always admired those guys cumming.
+They splashed out so much sperm on their girls, it looked so cool, so manlike. 
+Now I have a girlfriend.. but quantity of my sperm was so scanty, that I felt ill at ease.
 
-> If what I think has happened is correct, 104 should approximate 9600 baud,
-> 52 should approximate 19200 baud, 26 should be 38400 baud, and 17 should
-> approximate 57600 baud.
-Yes, all this is correct, 'CONNECT...' string is the same as in MS Win.
-Thanks!
+ I was advised to eat green apples but even this didn't help. A month ago I was hanging around at the bar with my best friend. 
+And he said that I should try MAX LOADS. Well, - I thought, - sounds interesting. 
 
-What should be done to avoid such tricks in userspace and how to get
-full 'divisor <-> result rate' list?
+Next day I came to know that it was really a highly effective all-natural dietary supplement,
+ which not only increases the sperm volume but also improves the sperm quality and the mobility of spermatozoa.
 
-> It would be helpful if you could confirm that the modem does report the
-> real DTE data rate under Windows.
-Results:
- 'Port set to'  'Modem Reports on connect (first is DTE rate)'
-  300            CONNECT 230400/V34/LAPM/V42B/TX=28800/RX=31200
-  1200           CONNECT 230400/V34/LAPM/V42B/TX=28800/RX=31200
-  2400           CONNECT 230400/V34/LAPM/V42B/TX=28800/RX=31200
-  4800           CONNECT 4800/V34/LAPM/V42B/TX=4800/RX=4800
-  9600           CONNECT 9600/V34/LAPM/V42B/TX=9600/RX=9600
-  19200          CONNECT 19200/V34/LAPM/V42B/TX=19200/RX=19200
-  38400          CONNECT 38400/V34/LAPM/V42B/TX=28800/RX=31200
-  57600          CONNECT 57600/V34/LAPM/V42B/TX=28800/RX=31200
-  115200         CONNECT 115200/V34/LAPM/V42B/TX=28800/RX=31200
-It seems to be real from 4800 to 115200 (with the same serial card).
-On speeds lower than 4800 it looks odd as I can not talk to modem on
-such speed.
+Having ordered and tried I was shocked how cool it was. 
+
+I'd even say, it changed my life. I'm happy. I even became a better lover, knowing how it all would end. 
+By the way, read about MAX LOADS at this site:
+
+http://www.weallcreatethis.com/
 
 
--- 
-Mikhail Kolesnik
-ICQ: 260259143
-IRC: mike_k at freenode/#crux, rusnet/#yalta
-Jabber: mike_k@jabber.lafox.net
-NIC handle: MKK83-UANIC
+Yes, that guys have really acceptable prices if you decide to order and ship worldwide.
+http://www.weallcreatethis.com/
+
+
+
+
+
+
+
+
+
+
+spec you abbe me, utensil . today you banquet me, cajole sniffle . degum you digestion me, burtt cost zinc confession . 
+http://www.weallcreatethis.com/c82/
