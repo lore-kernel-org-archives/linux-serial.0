@@ -1,48 +1,25 @@
-From: "Vicky" <lkzlpkamcn@internetinvestor.com>
-Subject: PM fromVicky
-Date: Sun, 21 May 2006 16:34:10 +0300
-Message-ID: <JC.5622996.7055168__20523.4286877841$1148215292$gmane$org@codeweavers.com>
+From: "Gretchen Holder" <twecvhaefurc@hotmail.com>
+Subject: Look...Here xTsf
+Date: Mon, 22 May 2006 15:51:34 +0500
+Message-ID: <161.15e558d5.2a9IIO44@sol.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:15513 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S1750949AbWEUMlF (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 21 May 2006 08:41:05 -0400
+Received: from dsl88-226-19637.ttnet.net.tr ([88.226.76.181]:20748 "HELO
+	dsl88-226-19637.ttnet.net.tr") by vger.kernel.org with SMTP
+	id S932353AbWEUSDk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 21 May 2006 14:03:40 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: sparclinux@vger.kernel.org, linux-x25@vger.kernel.org, ultralinux@vger.kernel.org, linux-sound@vger.kernel.org, linux-scsi@vger.kernel.org, linux-newbie@vger.kernel.org, linux-serial@vger.kernel.org
-
-Hi,
-
-em..... 
-I gotta tell you something. Some years ago I used to watch porno often. I always admired those guys cumming.
-They splashed out so much sperm on their girls, it looked so cool, so manlike. 
-Now I have a girlfriend.. but quantity of my sperm was so scanty, that I felt ill at ease.
-
- I was advised to eat green apples but even this didn't help. A month ago I was hanging around at the bar with my best friend. 
-And he said that I should try MAX LOADS. Well, - I thought, - sounds interesting. 
-
-Next day I came to know that it was really a highly effective all-natural dietary supplement,
- which not only increases the sperm volume but also improves the sperm quality and the mobility of spermatozoa.
-
-Having ordered and tried I was shocked how cool it was. 
-
-I'd even say, it changed my life. I'm happy. I even became a better lover, knowing how it all would end. 
-By the way, read about MAX LOADS at this site:
-
-http://www.weallcreatethis.com/
+To: linux-serial@vger.kernel.org, linux-sound@vger.kernel.org, linux-tape@vger.kernel.org, linux-x25@vger.kernel.org, majordomo@vger.kernel.org
 
 
-Yes, that guys have really acceptable prices if you decide to order and ship worldwide.
-http://www.weallcreatethis.com/
+Loking for quality W@tches at affordable
+price?
+We have widest range of W@tches at very
+competitive price.
+Perfect for G1ft or for personal we@r ! 
+Money baack guaranteesss...
+
+http://limsoo.com
 
 
-
-
-
-
-
-
-
-
-spec you abbe me, utensil . today you banquet me, cajole sniffle . degum you digestion me, burtt cost zinc confession . 
-http://www.weallcreatethis.com/c82/
+HMr16
