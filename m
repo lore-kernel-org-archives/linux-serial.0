@@ -1,25 +1,23 @@
-From: "Gretchen Holder" <twecvhaefurc@hotmail.com>
-Subject: Look...Here xTsf
-Date: Mon, 22 May 2006 15:51:34 +0500
-Message-ID: <161.15e558d5.2a9IIO44@sol.com>
+From: "Chris" <chrisyd790@verisign.com>
+Subject: kyzi
+Date: Tue, 23 May 2006 07:20:40 +0000 (UTC)
+Message-ID: <003701c67e39$396343d0$3245a8c0@taje>
+Mime-Version: 1.0
+Content-Type: text/plain;
+	format=flowed;
+	charset="iso-8859-1";
+	reply-type=original
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from dsl88-226-19637.ttnet.net.tr ([88.226.76.181]:20748 "HELO
-	dsl88-226-19637.ttnet.net.tr") by vger.kernel.org with SMTP
-	id S932353AbWEUSDk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 21 May 2006 14:03:40 -0400
+Received: from tm.net.my ([60.49.118.109]:22035 "HELO verisign.com")
+	by vger.kernel.org with SMTP id S932073AbWEWHUQ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 23 May 2006 03:20:16 -0400
+Date: Tue, 23 May 2006 15:21:27 0800
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-sound@vger.kernel.org, linux-tape@vger.kernel.org, linux-x25@vger.kernel.org, majordomo@vger.kernel.org
+To: linux-serial@vger.kernel.org
+
+Would you need cheap drug information http://www.dr62.com
 
 
-Loking for quality W@tches at affordable
-price?
-We have widest range of W@tches at very
-competitive price.
-Perfect for G1ft or for personal we@r ! 
-Money baack guaranteesss...
-
-http://limsoo.com
-
-
-HMr16
