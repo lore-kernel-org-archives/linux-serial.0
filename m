@@ -1,31 +1,37 @@
-From: Tomas D <u0giene@yahoo.com>
-Subject: rs232 line splitting
-Date: Thu, 25 May 2006 09:03:52 -0700 (PDT)
-Message-ID: <20060525160352.56997.qmail@web34508.mail.mud.yahoo.com>
+From: "May Hogan" <20owen@park.funnel.revenuedirect.com.akadns.net>
+Subject: Re:
+Date: Thu, 25 May 2006 15:40:58 +0500
+Message-ID: <200605251941.k4PJeDMi016559@zeus2.kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain;
+        charset="Windows-1251"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from web34508.mail.mud.yahoo.com ([66.163.178.174]:30119 "HELO
-	web34508.mail.mud.yahoo.com") by vger.kernel.org with SMTP
-	id S1030237AbWEYQDx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 25 May 2006 12:03:53 -0400
+Received: from zeus2.kernel.org ([204.152.191.36]:37096 "EHLO zeus2.kernel.org")
+	by vger.kernel.org with ESMTP id S1030372AbWEYTlH (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 25 May 2006 15:41:07 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-scsi-owner@vger.kernel.org
 
-Hi, I need general help with rs232, sharing serial cable in particular. I have one of systems
-connected to pager system using rs232 I want to connect another system to pager system too but
-there's only one rs232 input to it. I was thinking about splitting cable and connecting existing
-and new systems to paging system my question is what would happen if both systems tried to send
-data over serial connection at the same time? my guess is that messages would get corrupted and
-nothing would go to the pagers if that's the case is there a device that would buffer message in
-case if messages would arrive on rs232 input ports 1 and 2? I know that it takes like 1second to
-send the message but I really need to make sure that everything is delivered.
+Hey Linux-scsi-owner.
+at first I should tell you about my appear, so I got E-mail from one DATING AGENCY but really that was VERY STRANGE for me because I closed all my accounts at DATING SITES, because I don't like people who are interested just in non SERIOUS RELATIONS, I have much FRIENDS from that sites but really I did not find someone special for me....
 
-thanks all for your help!
+But I got your E-mail address and thought "MAYBE THAT IS MY DESTINY" to find someone special?
+Really there was written that you wish to know me. 
+So I don't know where you did get MY E-MAIL ADDRESS but I hope that is NOT JUST MISTAKE.
 
-__________________________________________________
-Do You Yahoo!?
-Tired of spam?  Yahoo! Mail has the best spam protection around 
-http://mail.yahoo.com 
+
+I hope to hear from you soon....
+If you decide to answer me I promise to SEND YOU big LETTER and MY BEST PHOTOS !!! I'd like to learn more about you. PLEASE, WRITE ME some lines about your personality, your hobbies, your way of life. I'm really interested to know!  
+As for me, I'm an easy-going and open-hearted person. I take life as it comes and have optimistic views. It doesn't mean that nothing makes me sad, but I consider all the difficulties in my life to be useful for me.   
+
+I'm very communicative and like to spend time in a good company. I enjoy outdoors activities and sport. What about you? Do you go in for sports?  
+Hope to hear from you soon, please use solaris14@HotPOP.com to answer me ! I wit your letter with large impatience . Please do it for me .
+
+ Katya
+
+Thu, 25 May 2006 15:40:58 +0500
+apportion contralto
+
