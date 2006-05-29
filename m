@@ -1,30 +1,36 @@
-From: "Erin Deal" <POCCURVKYLOATN@hotmail.com>
-Subject: You Gonna Love This PeaJF6
-Date: Sat, 29 Oct 2005 17:54:33 +0600
-Message-ID: <191.91e558d5.2a9SJS44__6844.39213150672$1148873380$gmane$org@sol.com>
+From: "Christian Simon" <56flemming@kotnet.org>
+Subject: Re: Job
+Date: Mon, 29 May 2006 21:33:09 +0500
+Message-ID: <200605300133.k4U1X4ok001074@zeus1.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain;
+        charset="Windows-1251"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus2.kernel.org ([204.152.191.36]:41964 "EHLO zeus2.kernel.org")
-	by vger.kernel.org with ESMTP id S1751147AbWE2D31 (ORCPT
+Received: from zeus1.kernel.org ([204.152.191.4]:21444 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S932127AbWE3BdV (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 28 May 2006 23:29:27 -0400
+	Mon, 29 May 2006 21:33:21 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-scsi@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, linux-sound@vger.kernel.org, linux-tape@vger.kernel.org
+
+Good day Linux-scsi
+
+Are you energetic, honest and responsible?
+Are you a student looking for extra income? Are you retired but sill willing to work?
+Or maybe you are just looking for a way to make a few extra bucks?
 
 
-Best offer of the month:
 
-Viggra - $76.95
-Ci ialis - $98.95
-VaIium - $104.95
-Xa naax - $120.95
-Phantermiine - $106.95
-Cod-deine - $111.95
-
-Only for limiited time..
-
-http://maxx14.hbshop.biz
+Ask us! We have great job offer for you.
 
 
-fEDgqW
+
+Please contact us to get more information.
+Our e-mail: info@info-tolliscatalogue.com
+
+________________
+Ina Cross
+Mon, 29 May 2006 21:33:09 +0500
+
