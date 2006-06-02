@@ -1,43 +1,34 @@
-From: KENT ANDERSON <ken.anderson@laposte.net>
-Subject: EMPLOYMENT MAIL
-Date: Fri, 02 Jun 2006 09:01:00 -0600
-Message-ID: <E1FmB92-0004kV-CG@server.thevenusserver.com>
-Reply-To: ken.anderson@laposte.net
+From: Russell King <rmk@arm.linux.org.uk>
+Subject: Re: [RFC][PATCH] Xilinx uartlite serial driver
+Date: Fri, 2 Jun 2006 17:47:41 +0100
+Message-ID: <20060602164741.GE3100@flint.arm.linux.org.uk>
+References: <87ac9o3ak3.fsf@sleipner.barco.com> <20060511222001.GC28693@flint.arm.linux.org.uk> <87slnapagf.fsf@LKG7F3A44.lan> <20060516125329.GE15481@flint.arm.linux.org.uk> <87lkt2xgt7.fsf@LKG7F3A44.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 13-120-13-69.cust.propagation.net ([69.13.120.13]:9866 "EHLO
-	server.thevenusserver.com") by vger.kernel.org with ESMTP
-	id S932179AbWFBPBB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Jun 2006 11:01:01 -0400
-Received: from apache by server.thevenusserver.com with local (Exim 4.42)
-	id 1FmB92-0004kV-CG
-	for linux-serial@vger.kernel.org; Fri, 02 Jun 2006 09:01:01 -0600
+Received: from caramon.arm.linux.org.uk ([212.18.232.186]:28941 "EHLO
+	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
+	id S932511AbWFBQrs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 2 Jun 2006 12:47:48 -0400
+Content-Disposition: inline
+In-Reply-To: <87lkt2xgt7.fsf@LKG7F3A44.lan>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Peter Korsgaard <jacmet@sunsite.dk>
+Cc: tnt@246tNt.com, linux-serial@vger.kernel.org
 
->From The Desk of:
+On Tue, May 16, 2006 at 03:03:32PM +0200, Peter Korsgaard wrote:
+> Ok, the following little patch updates Documentation/serial/driver to
+> match:
+> 
+> Update documentation to match reality. INPCK controls whether input
+> parity checking is enabled.
+> 
+> Signed-off-by: Peter Korsgaard <jacmet@sunsite.dk>
 
-Kent Anderson PhD
-L. G. A. (Woodworking Machinery) Ltd,
-1 Rutland Court,EH3 8EY,
-London.
+Thanks, applied.
 
-
-Dear Sir/Madam,
-
-We will be very glad if you can be our representative in your country 
-and earn 10% of every payment made through you to us.
-
-For more information, contact us through email. Note that you shall not 
-be liable to make any upfront payment.
-
-Thanks in advance.
-
-Kind Regards,
-Kent Anderson (CEO)
-
-
-
+-- 
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:  2.6 Serial core
