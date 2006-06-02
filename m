@@ -1,32 +1,31 @@
 From: Russell King <rmk@arm.linux.org.uk>
-Subject: Re: [RFC][PATCH] Xilinx uartlite serial driver
-Date: Fri, 2 Jun 2006 17:47:41 +0100
-Message-ID: <20060602164741.GE3100@flint.arm.linux.org.uk>
-References: <87ac9o3ak3.fsf@sleipner.barco.com> <20060511222001.GC28693@flint.arm.linux.org.uk> <87slnapagf.fsf@LKG7F3A44.lan> <20060516125329.GE15481@flint.arm.linux.org.uk> <87lkt2xgt7.fsf@LKG7F3A44.lan>
+Subject: Re: [PATCH 2.6.16.18] 8250: Serial console enable Tx fix
+Date: Fri, 2 Jun 2006 17:48:46 +0100
+Message-ID: <20060602164846.GF3100@flint.arm.linux.org.uk>
+References: <4477B018.1020101@pitt.edu>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([212.18.232.186]:28941 "EHLO
+Received: from caramon.arm.linux.org.uk ([212.18.232.186]:46865 "EHLO
 	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
-	id S932511AbWFBQrs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Jun 2006 12:47:48 -0400
+	id S932513AbWFBQsw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 2 Jun 2006 12:48:52 -0400
 Content-Disposition: inline
-In-Reply-To: <87lkt2xgt7.fsf@LKG7F3A44.lan>
+In-Reply-To: <4477B018.1020101@pitt.edu>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Korsgaard <jacmet@sunsite.dk>
-Cc: tnt@246tNt.com, linux-serial@vger.kernel.org
+To: Michael Hordijk <mwh13@pitt.edu>
+Cc: linux-serial@vger.kernel.org
 
-On Tue, May 16, 2006 at 03:03:32PM +0200, Peter Korsgaard wrote:
-> Ok, the following little patch updates Documentation/serial/driver to
-> match:
-> 
-> Update documentation to match reality. INPCK controls whether input
-> parity checking is enabled.
-> 
-> Signed-off-by: Peter Korsgaard <jacmet@sunsite.dk>
+On Fri, May 26, 2006 at 09:49:12PM -0400, Michael Hordijk wrote:
+>     Enabling the Tx interrupt from console_write on buggy UART 
+>     (UART_BUG_TXEN) breaks console transmit on said UART.  Revert to previous 
+> UART_IER restore and use serial8250_start_tx() to cause the transmit path 
+> to start and not hang.
 
-Thanks, applied.
+Please look at how this got solved in the 2.6.17-rc kernels and
+implement the same fix.  Enabling the transmitter at the end of
+every console write is just plain buggy and asking for problems.
 
 -- 
 Russell King
