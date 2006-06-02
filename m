@@ -1,37 +1,28 @@
-From: "Mari Whitfield" <metallicfpclvcs@wedding-veil.com>
-Subject: Re: information
-Date: Fri, 2 Jun 2006 12:34:55 +0000
-Message-ID: <008501c68640$f41ba840$5f000a0a@cuma>
+From: "Biana M." <skgrifon@4unet.ru>
+Subject: Re[2]:  Ave
+Date: Fri, 02 Jun 2006 16:43:09 +0300
+Message-ID: <008c01c6864a$79743a80$4a26000a__25913.1082603291$1149255798$gmane$org@201-1-159-35.dsl.telesp.net.br>
 Mime-Version: 1.0
 Content-Type: text/plain;
-     format=flowed;
-     charset="iso-8859-1";
-     reply-type=original
-Content-Transfer-Encoding: 7bit
+	charset="windows-1251"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [193.140.14.50] ([193.140.14.50]:37639 "EHLO
-	cuma.wedding-veil.com") by vger.kernel.org with ESMTP
-	id S1751316AbWFBMfB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Jun 2006 08:35:01 -0400
+Received: from 201-1-159-35.dsl.telesp.net.br ([201.1.159.35]:21261 "EHLO
+	201-1-159-35.dsl.telesp.net.br") by vger.kernel.org with ESMTP
+	id S932070AbWFBNme (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 2 Jun 2006 09:42:34 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Franz <linux-msdos@vger.kernel.org>
 
-Life Should be Full of Luxuries....
+Hello, Franz
 
-http://blessthathomepleasee.com/
+I am a lovely and lonely Lady who is looking for the man who will make me happy and whom I want to feel like in paradise with!
+If you want to be my beautiful Hero who will save me from this loneliness find me 
+http://www.L6kPWuqO1D8n.i-am-waiting4love.net/
+and wake me up with a warm kiss.
 
-Yet, only a handful of people can afford the finest products, the luxuries of the elite.
-But, here at "Luxury Replica" we are committed to bringing you the finest products, at prices incomparably lower.
-All of the top designer brands for Watches, Ties, Handbags and even Mont Blanc.
-
-http://blessthathomepleasee.com/
-
-The finest of products, at the lowest of prices, only a click away:
-
-http://newgunforsalejoke.com/
-
-Regards,
-Mari Whitfield
+see you later,
+Biana M.
 
 
