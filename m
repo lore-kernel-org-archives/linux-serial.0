@@ -1,24 +1,37 @@
-From: "Kristine Hooks" <FONLGVZLQJGALL@yahoo.com>
-Subject: Woww..8o-% 0ff Linux-scsi
-Date: Sun, 04 Jun 2006 12:17:15 +0600
-Message-ID: <LAW16.OE649yfB4mvo666653d5__1344.27383677593$1149398735$gmane$org@motmail.com>
+From: "Wilfrid Underwood" <anvqggmpedk@gibbons96.fsnet.co.uk>
+Subject: smoothness
+Date: Sun, 4 Jun 2006 18:37:27 -0500
+Message-ID: <002a01c68830$bb932bfb$928481c9@uuxnbs>
+Mime-Version: 1.0
+Content-Type: text/plain;
+	format=flowed;
+	charset="Windows-1252";
+	reply-type=original
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [221.15.181.164] ([221.15.181.164]:55822 "HELO 4C4521F8")
-	by vger.kernel.org with SMTP id S1750945AbWFDFZV (ORCPT
+Received: from dsl-201-129-213-3.prod-infinitum.com.mx ([201.129.213.3]:59761
+	"HELO dsl-201-129-213-3.prod-infinitum.com.mx") by vger.kernel.org
+	with SMTP id S932329AbWFDXnv (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 4 Jun 2006 01:25:21 -0400
+	Sun, 4 Jun 2006 19:43:51 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-scsi@vger.kernel.org
+To: linux-serial@vger.kernel.org
+
+WE SEE A RUN STARTING TO HAPPEN.
+The chart on  A M S N  is a thing of beauty as it shows what we
+mentioned earlier slow and steady upward movement.
+Get  A M S N  first thing tomorrow, this is going to explode next
+2-3 days!!!
+IF you are Receiving this email, you are among the first
+public investors to know about  A M S N  !!!
+
+Trading Date : 05.06.06
+Company Name : AMEROSSI INTL GRP
+S t o c k  :  A M S N 
+Profits of 200-400 % EXPECTED
+Today : $0.05
+Projection 3 to 5 Days : $0.20 - $0.50
+Recommendation : 10(10)
 
 
-Huge selection of me ds available
-at attrac tive prices. 
-Highest qualiity assured.
-
-Try us out today..
-
-http://bestsourcenow.com/1/
-
-
-5qeGM
