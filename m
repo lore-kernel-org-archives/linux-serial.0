@@ -1,33 +1,25 @@
-From: Russell King <rmk@arm.linux.org.uk>
-Subject: Re: [PATCH 2.6.16.18] 8250: Serial console enable Tx fix
-Date: Fri, 2 Jun 2006 17:48:46 +0100
-Message-ID: <20060602164846.GF3100@flint.arm.linux.org.uk>
-References: <4477B018.1020101@pitt.edu>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: "Mitzi Mack" <CAPFJZI@yahoo.com>
+Subject: Best Pharmacy Today tHRVKE
+Date: Sun, 04 Jun 2006 00:19:24 -0200
+Message-ID: <151.16e558d5.2a9GCB44__36340.3464005843$1149383989$gmane$org@sol.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([212.18.232.186]:46865 "EHLO
-	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
-	id S932513AbWFBQsw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Jun 2006 12:48:52 -0400
-Content-Disposition: inline
-In-Reply-To: <4477B018.1020101@pitt.edu>
+Received: from [220.176.221.167] ([220.176.221.167]:10257 "HELO 59B35460")
+	by vger.kernel.org with SMTP id S1751090AbWFDBT3 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 3 Jun 2006 21:19:29 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Michael Hordijk <mwh13@pitt.edu>
-Cc: linux-serial@vger.kernel.org
+To: linux-net@vger.kernel.org
+Cc: linux-newbie@vger.kernel.org, linux-ppp@vger.kernel.org, linux-raid@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, linux-sound@vger.kernel.org
 
-On Fri, May 26, 2006 at 09:49:12PM -0400, Michael Hordijk wrote:
->     Enabling the Tx interrupt from console_write on buggy UART 
->     (UART_BUG_TXEN) breaks console transmit on said UART.  Revert to previous 
-> UART_IER restore and use serial8250_start_tx() to cause the transmit path 
-> to start and not hang.
 
-Please look at how this got solved in the 2.6.17-rc kernels and
-implement the same fix.  Enabling the transmitter at the end of
-every console write is just plain buggy and asking for problems.
+Huge selection of me ds available
+at attrac tive prices. 
+Highest qualiity assured.
 
--- 
-Russell King
- Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
- maintainer of:  2.6 Serial core
+Try us out today..
+
+http://bestsourcenow.com/1/
+
+
+ZXj
