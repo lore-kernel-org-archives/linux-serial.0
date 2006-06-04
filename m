@@ -1,44 +1,24 @@
-From: Horms <horms@verge.net.au>
-Subject: Re: IA64: Broken Serial Console
-Date: Sun, 4 Jun 2006 13:57:11 +0900
-Message-ID: <20060604045709.GA18372@verge.net.au>
-References: <44128F9D.7050402@sgi.com> <200603112017.k2BKHcg20412@unix-os.sc.intel.com> <20060310082445.GA18715@verge.net.au> <yq0irqm39r8.fsf@jaguar.mkp.net> <20060311034346.GI11359@verge.net.au> <44128F9D.7050402@sgi.com> <20060313040825.GA31703@verge.net.au> <20060602114805.GA1462@verge.net.au> <20060602115359.GG32143@parisc-linux.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: "Kristine Hooks" <FONLGVZLQJGALL@yahoo.com>
+Subject: Woww..8o-% 0ff Linux-scsi
+Date: Sun, 04 Jun 2006 12:17:15 +0600
+Message-ID: <LAW16.OE649yfB4mvo666653d5__1344.27383677593$1149398735$gmane$org@motmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from koto.vergenet.net ([210.128.90.7]:51378 "EHLO koto.vergenet.net")
-	by vger.kernel.org with ESMTP id S1751467AbWFDE5V (ORCPT
+Received: from [221.15.181.164] ([221.15.181.164]:55822 "HELO 4C4521F8")
+	by vger.kernel.org with SMTP id S1750945AbWFDFZV (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 4 Jun 2006 00:57:21 -0400
-Content-Disposition: inline
-In-Reply-To: <20060602115359.GG32143@parisc-linux.org>
+	Sun, 4 Jun 2006 01:25:21 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Matthew Wilcox <matthew@wil.cx>
-Cc: linux-ia64@vger.kernel.org, linux-serial@vger.kernel.org, Bjorn Helgaas <bjorn.helgaas@hp.com>, Russell King <rmk+kernel@arm.linux.org.uk>
+To: linux-scsi@vger.kernel.org
 
-On Fri, Jun 02, 2006 at 05:53:59AM -0600, Matthew Wilcox wrote:
-> On Fri, Jun 02, 2006 at 08:48:06PM +0900, Horms wrote:
-> > I have noticed that the serial console on my ia64 machine seems
-> > to have broken since 2.6.16. Thanks to git bisect I have been
-> > able to track this problem down to 111c9bf8c5cfa92363b3719c8956d29368b5b9de
-> > 
-> >   [SERIAL] remove 8250_acpi (replaced by 8250_pnp and PNPACPI)
-> > 
-> >   With the combination of PNPACPI and 8250_pnp, we no longer need
-> >   8250_acpi.
-> > 
-> >   Signed-off-by: Bjorn Helgaas <bjorn.helgaas@hp.com>
-> >   Signed-off-by: Russell King <rmk+kernel@arm.linux.org.uk>
-> > 
-> > I haven't had time to look into the code and I have to leave
-> > my desk shortly, so I thought I would post here to see if anyone
-> > has any ideas.
-> 
-> Well, does your config have PNPACPI and SERIAL_8250_PNP enabled?
 
-Thanks, adding those options (obviously) solved the problem.
+Huge selection of me ds available
+at attrac tive prices. 
+Highest qualiity assured.
 
--- 
-Horms                                           http://www.vergenet.net/~horms/
+Try us out today..
 
+http://bestsourcenow.com/1/
+
+
+5qeGM
