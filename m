@@ -1,42 +1,56 @@
-From: "Col.John Aristide" <col_john2006_2007@yahoo.com>
-Subject: Col.John Aristide
-Date: Tue, 13 Jun 2006 13:36:31 +0200
-Message-ID: <200606131136.k5DBa8Ns023661@zeus1.kernel.org>
-Reply-To: col_john2006_2007@yahoo.com
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:15237 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S1751085AbWFMLgX (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 13 Jun 2006 07:36:23 -0400
-Sender: linux-serial-owner@vger.kernel.org
+From: "Butler, Gerald" <GButler@jewels.com>
+Subject: HELP! Slip Interface losing packets. Looking for contractor to fix.
+Date: Tue, 13 Jun 2006 11:48:47 -0400
+Message-ID: <7697221D47CA0545961FA7846257369103A860C8@ex01.jewels.local>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <netdev-owner@vger.kernel.org>
+Content-class: urn:content-classes:message
+Sender: netdev-owner@vger.kernel.org
+To: netdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 
-Good Day,
-
-I wish to introduce myself to you. I am Col. John
-Aristide (rtd).I am the brother to the exiled
-President of Haiti.Due to the revolution against
-the goverment of my brother caused by our political
-opponents in Haiti, we had to flee the Country for the
-Safety of ourlives.My wife, children and I managed
-toenter a red cross airplane that was evacuating
-foreigners and we are presently
-In Channel Islands on the English coast.
+Hello,
 
 
-We wish to invest in properties and other viable
-investments in your country with your assistance and
-co.operation.If you are in a good position
-to help my family,please send an e-mail to the e-mail
-address below indicating your desire to help my family
-invest this funds in your country and beyond.
+ 	We have a custom compiled Linux Kernel running oh RHEL 3.1
 
- I urgently await your e-mail letter.col_john@myway.com
 
- best regards and hope to meet you soon.
+ 		[root@st0056_1 root]# uname -a
+ 		Linux st0056_1 2.4.21-32.0.1.ELcustom #12 SMP Wed Sep 14 11:55:22 EDT 2005 i686 i686 i386 GNU/Linux
 
- God bless,
 
- Col.John Aristide (Rtd)
-col_john@myway.com   
+ 	We compiled in SLIP support using the standard RHEL kernel supplied by Redhat. Unfortunately, RH does not support SLIP. We are experiencing problems that we believe are a kernel issue (either SLIP or SERIAL) and are interested in hiring a contractor to diagnose the problem and provide a kernel patch to the kernel we are using (if necessary). We do not want to upgrade or change distributions at this time (business/practicality reasons).
+
+
+ 	If you are interested, please send an e-mail with your resume (doc, odf, or plain text) to 'gerald.edward.butler@gmail.com' (I'll provide a private e-mail address to interested parties).
+
+
+ 	The company website is here: http://www.sterlingjewelers.com/
+
+
+ Thank You,
+ 
+
+
+
+ 	Gerald Butler
+ 	Project Manager - Store Systems
+ 	Sterling Inc
+ 
+
+
+
+
+The information contained in this e-mail message is privileged and/or
+confidential and is intended only for the use of the individual or entity
+named above.  If the reader of this message is not the intended
+recipient, or the employee or agent responsible to deliver it to the
+intended recipient, you are hereby notified that any dissemination,
+distribution or copying of this communication is strictly prohibited.
+If you have received this communication in error, please immediately
+notify us by telephone (330-668-5000), and destroy the original
+message.  Thank you.
+
