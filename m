@@ -1,49 +1,31 @@
-From: "Foster Ivey" <FosterIvey@1-tek.com>
-Subject: Hi, needle gorse
-Date: Mon, 12 Jun 2006 22:14:01 +0000 (UTC)
-Message-ID: <901594467.20060612221443@1-tek.com>
-Reply-To: "Foster Ivey" <FosterIvey@1-tek.com>
+From: "Stephanie Mead" <kngyfln@hotmail.com>
+Subject: We Guuaranteees Bigger Pen-nis Vkdka
+Date: Tue, 13 Jun 2006 11:58:37 +0100
+Message-ID: <9A287EE3.7684.5215C2D5__22054.291299037$1150169597$gmane$org@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus2.kernel.org ([204.152.191.36]:7097 "EHLO zeus2.kernel.org")
-	by vger.kernel.org with ESMTP id S932604AbWFLWNh (ORCPT
+Received: from [211.189.208.84] ([211.189.208.84]:14611 "HELO 42C40B58")
+	by vger.kernel.org with SMTP id S932800AbWFMDdA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 12 Jun 2006 18:13:37 -0400
-Received: from [202.113.43.87] ([202.113.43.87])
-	by zeus2.kernel.org (8.13.1/8.13.1) with ESMTP id k5CMDO7B007593
-	for <linux-serial@vger.kernel.org>; Mon, 12 Jun 2006 22:13:37 GMT
-Date: Mon, 12 Jun 2006 22:14:43 -0480
+	Mon, 12 Jun 2006 23:33:00 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-
-Join and Play at the best Emperial zCASINOz!
-As a Special Welcome TODAY, we will DOUBL your 1 Deposit up to 200 bucks!
-
-For example:
-Deposit 50 play with 100!
-Deposit 100 play with 200!
-And your FREE Bonuses will be INSTANTLY added to your acount!
-
-Try us, inhere: 
-
-http://DRY4FA.erprost.com/d1/today
-
-==========
-with less effort. His glides ended not with  the  usual  feet-down  splash
-all ideas  of such ceremonious bye-byes. I'll show  you how to say good-bye.
-normal gull. It would make everyone happier.
-practice, and low speed, and aerobatics...."
-butt of the old one, and spoke softly.
-==
-stupid! I try and try, but I'll never get it!"
-web. I shut  my eyes. I went numb and the  only  thing I  heard was  the web
-him. There's no way around it. I am a seagull. I am limited by my  nature.
-==
-They'll  never find all your bones. Or maybe the mosquito mange would appear
-     A moment later Jonathan's body wavered in the  air,  shimmering,  and
-wanted to.
+To: linux-net@vger.kernel.org
+Cc: linux-newbie@vger.kernel.org, linux-ppp@vger.kernel.org, linux-raid@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, linux-sound@vger.kernel.org
 
 
+
+
+Here's latest "Longz" formula has been proven
+to add inches to the sizes while multiplying
+orgasms like never had before. 
+Our products is light years ahead of our competitors
+which has millions of happy users.
+
+Check us out..You won't regret.
+
+http://maxx14.coolhb.biz
+
+
+EN8W
