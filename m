@@ -1,45 +1,42 @@
-From: "Tammi Gagnon" <TammiGagnon@mail.ru>
-Subject: Your health, nailhead spar
-Date: Thu, 15 Jun 2006 15:56:23 +0300
-Message-ID: <662161c80604el8piik8iz6gdiymh6gfpbijp76sdg602@mxs.mail.ru>
+From: "Galina S." <step@74.ru>
+Subject: Re[1]:hi from Galia
+Date: Thu, 15 Jun 2006 21:24:10 +0300
+Message-ID: <006601c690a8$e2c36700$4c0e000a@WsCxqq>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain;
+	charset="windows-1251"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus2.kernel.org ([204.152.191.36]:3715 "EHLO zeus2.kernel.org")
-	by vger.kernel.org with ESMTP id S1030731AbWFOP4R convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 15 Jun 2006 11:56:17 -0400
-Received: from familiar-vyshgu.epm.net.co (cable200-116-143-206.epm.net.co [200.116.143.206])
-	by zeus2.kernel.org (8.13.1/8.13.1) with ESMTP id k5FFtwh9002311
-	for <linux-serial@vger.kernel.org>; Thu, 15 Jun 2006 15:56:15 GMT
-Content-Disposition: inline
+Received: from dsl-201-137-95-162.prod-infinitum.com.mx ([201.137.95.162]:47373
+	"EHLO dsl-201-137-95-162.prod-infinitum.com.mx") by vger.kernel.org
+	with ESMTP id S1030950AbWFOSX2 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 15 Jun 2006 14:23:28 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-scsi <linux-scsi@vger.kernel.org>
 
-Even if you have no erectin problems SOFT CIAzLIS 
-would help you to make BETTER SE  X MORE OFTEN!
-and to bring  unimagnable plesure to her.
+Hello !	
 
-Just disolve half a pil under your tongue 
-and get ready for action in 15 minutes. 
+I want to start my first letter from a question: "Is it possible to be happy without LOVE?"
+I think that you will agree with me if the answer will be "NO WAY". Love is the most beautiful and exciting thing
+that may happen between man and woman! It inspires us only for doing positive things towards each other.
+One very famous writer said: "The beauty will rescue the world" i agree with his words but still i would add :
+" LOVE and Beauty will rescure the world". 
+I hope you agree with me that Love is a big notion.
+There's love to  God, to Mother, to a child to the country where you were born, and there's love that joins a man
+and woman for all their life. That is the LOVE i'm looking for! And i'm seeking for the man who is also eager to have
+this life long adventure full of surprises and new experience we can share together! Will you join me for this trip?
+I do realise that it should be very difficult to say "Yes" from the first letter having no idea about me.
+That's why i just offer to get to know each other better though correspondence that will help us to reveal many things
+about each other whether we mach perfectly or not. In addition you can look at my pictures and read some info about me here
+http://31UTsXQhLjF7mv6PTP.im-waiting-4you.net/
+I hope you'll like what you see and read there.
+Well closing my first letter to you i just want to thank you for reading it and i really hope that you'll share
+my point of view on what i said above. I do really hope that you'll answer me soon.
 
-The tests showed that the majority of men 
-after taking this medic ation were able to have 
-PERFECT ER ECTI ON during 36 hours!
+goodbye
 
-VISIT US, AND GET OUR SPECIAL 70% DISC OUNT OFER!
+Galina S.
 
-http://twcike.motivefood.com/?76329377
 
-=====
-     "You don't understand My wing. I can't move my wing."
-along I kept thinking where the rumor could have come from. It had to be all
-     "Where is everybody, Sullivan?" he asked silently, quite at home  now
-door. Damn my  nerves. I was seeing things there,  and now I was seeing them
-joy.
-     "Hold it, stalker," he said. "Just two questions.
-
-moment, and he more than liked, he loved what he saw. No limits, Jonathan?
-a shimmering, a trembling, sort of  like hot air at noon over a tin roof. It
