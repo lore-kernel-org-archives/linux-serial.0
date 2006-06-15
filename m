@@ -1,43 +1,39 @@
-From: "Aubrey Messer" <AubreyMesser@0451.com>
-Subject: Your cash, paper-footed
-Date: Thu, 15 Jun 2006 01:28:44 +0000 (UTC)
-Message-ID: <52526179.20060615012835__3131.25644247538$1150334924$gmane$org@0451.com>
-Reply-To: "Aubrey Messer" <AubreyMesser@0451.com>
+From: Zang Roy-r61911 <tie-fei.zang@freescale.com>
+Subject: RE: [PATCH/2.6.17-rc4 8/10]  Add  tsi108 8250 serial support
+Date: Thu, 15 Jun 2006 11:27:30 +0800
+Message-ID: <9FCDBA58F226D911B202000BDBAD467306A5F987@zch01exm40.ap.freescale.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus2.kernel.org ([204.152.191.36]:65250 "EHLO zeus2.kernel.org")
-	by vger.kernel.org with ESMTP id S932360AbWFOB2c (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 14 Jun 2006 21:28:32 -0400
-Date: Thu, 15 Jun 2006 01:28:35 -0060
+Received: from de01egw01.freescale.net ([192.88.165.102]:53180 "EHLO
+	de01egw01.freescale.net") by vger.kernel.org with ESMTP
+	id S1750838AbWFOD1m (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 14 Jun 2006 23:27:42 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Adrian Cox <adrian@humboldt.co.uk>
+Cc: Russell King <rmk+lkml@arm.linux.org.uk>, Alexandre.Bounine@tundra.com, linux-kernel@vger.kernel.org, linuxppc-dev list <linuxppc-dev@ozlabs.org>, Paul Mackerras <paulus@samba.org>, linux-serial@vger.kernel.org, Yang Xin-Xin-r48390 <Xin-Xin.Yang@freescale.com>
 
-Even if you have no erectin problems SOFT CIAzLIS 
-would help you to make BETTER SE  X MORE OFTEN!
-and to bring  unimagnable plesure to her.
+> On Tue, 2006-06-13 at 13:39 +0800, Zang Roy-r61911 wrote:
+> 
+> > The reason is that the serial port on tsi108/9 is a bit difference 
+> > with the standard 8250 serial port. the patch deal with the 
+> difference.
+> > The prefixed ">" is caused by "Fw" the email. Sorry for that. The 
+> > following is the original patch.
+> 
+> The problem I see is that the code uses a CONFIG option, to 
+> change the behaviour of the generic 8250 driver. What happens 
+> if somebody adds a PCI serial card to a tsi108 based machine?
 
-Just disolve half a pil under your tongue 
-and get ready for action in 15 minutes. 
+I do not like CONFIG option:). It might be a problem in the environment you suggesting.
 
-The tests showed that the majority of men 
-after taking this medic ation were able to have 
-PERFECT ER ECTI ON during 36 hours!
-
-VISIT US, AND GET OUR SPECIAL 70% DISC OUNT OFER!
-
-http://cmcswh.shoutflat.com/?99287763
-
-==========
-terrible uncontrolled disaster, and at ninety miles per hour  it  hit  him
-coasting on  melted  butter,  without  disturbing a blade  of grass.  Thirty
-ground, and we'll begin."
-feeling or not, and each time I forget.
-     " ...the only Son of the Great Gull, I suppose?" Jonathan sighed  and
-     "Mr. Schuhart! Mr. Schuhart! A few words about the garage!"
-
-for sure as long as you make that pullup so hard. Fletcher, you lost forty
-never know if that's the  Zone greeting me or my stalker's nerves acting up.
+> 
+> Perhaps you should define a new value for 
+> uart_8250_port.port.iotype, and add code to serial_in and 
+> serial_out to handle the IIR register.
+I will consider it.
+> 
+> --
+> Adrian Cox <adrian@humboldt.co.uk>
+> 
