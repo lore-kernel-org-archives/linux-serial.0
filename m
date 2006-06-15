@@ -1,90 +1,44 @@
-From: Zang Roy-r61911 <tie-fei.zang@freescale.com>
-Subject: RE: [PATCH/2.6.17-rc4 8/10]  Add  tsi108 8250 serial support
-Date: Thu, 15 Jun 2006 19:04:48 +0800
-Message-ID: <9FCDBA58F226D911B202000BDBAD467306AB01E4@zch01exm40.ap.freescale.net>
+From: "Dianna Swan" <DiannaSwan@0451.com>
+Subject: Your cash, mill-run
+Date: Thu, 15 Jun 2006 15:10:17 +0000 (UTC)
+Message-ID: <9423199551.20060615150949@0451.com>
+Reply-To: "Dianna Swan" <DiannaSwan@0451.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from de01egw02.freescale.net ([192.88.165.103]:58816 "EHLO
-	de01egw02.freescale.net") by vger.kernel.org with ESMTP
-	id S965010AbWFOLEx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 15 Jun 2006 07:04:53 -0400
+Received: from host217-43-18-36.range217-43.btcentralplus.com ([217.43.18.36]:781
+	"EHLO host217-43-18-36.range217-43.btcentralplus.com")
+	by vger.kernel.org with ESMTP id S1030587AbWFOPKF (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 15 Jun 2006 11:10:05 -0400
+Date: Thu, 15 Jun 2006 15:09:49 0000
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Adrian Cox <adrian@humboldt.co.uk>, Russell King <rmk+lkml@arm.linux.org.uk>
-Cc: Alexandre.Bounine@tundra.com, linux-kernel@vger.kernel.org, linuxppc-dev list <linuxppc-dev@ozlabs.org>, Paul Mackerras <paulus@samba.org>, linux-serial@vger.kernel.org, Yang Xin-Xin-r48390 <Xin-Xin.Yang@freescale.com>
+To: linux-serial@vger.kernel.org
 
+Even if you have no erectin problems SOFT CIAzLIS 
+would help you to make BETTER SE  X MORE OFTEN!
+and to bring  unimagnable plesure to her.
 
-> 
-> Perhaps you should define a new value for 
-> uart_8250_port.port.iotype, and add code to serial_in and 
-> serial_out to handle the IIR register.
-> 
-> --
-> Adrian Cox <adrian@humboldt.co.uk>
-> 
-The following patch gets rid of CONFIG_TSI108_BRIDGE.
-I add UPIO_TSI  to handle IIR and IER register in serial_in and
-serial_out.
+Just disolve half a pil under your tongue 
+and get ready for action in 15 minutes. 
 
-(1) the reason to rewrite serial_in:
-TSI108 rev Z1 version ERRATA. Reading the UART's Interrupt Identification Register (IIR) clears the Transmit 
-Holding Register Empty (THRE) and Transmit buffer Empty (TEMP) interrupts even if they are not enabled in
- the Interrupt Enable Register (IER). This leads to loss of the interrupts. Interrupts are not cleared
- when reading UART registers as 32-bit word.
+The tests showed that the majority of men 
+after taking this medic ation were able to have 
+PERFECT ER ECTI ON during 36 hours!
 
-(2) the reason to rewrite serial_out:
-Check for UART_IER_UUE bit in the autoconfig routine. This section of autoconfig is excluded for 
-Tsi108/109 because bits 7 and 6 are reserved for internal use. They are R/W bits. In addition to 
-incorrect identification, changing these bits (from 00) will make Tsi108/109 UART non-functional.  
+VISIT US, AND GET OUR SPECIAL 70% DISC OUNT OFER!
 
+http://arrwpc.cadgywage.com/?18961477
 
-diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index bbf78aa..6343d7a 100644
---- a/drivers/serial/8250.c
-+++ b/drivers/serial/8250.c
-@@ -300,6 +300,7 @@ #endif
- 
- static unsigned int serial_in(struct uart_8250_port *up, int offset)
- {
-+	unsigned int tmp;
- 	offset = map_8250_in_reg(up, offset) << up->port.regshift;
- 
- 	switch (up->port.iotype) {
-@@ -317,6 +318,13 @@ #ifdef CONFIG_SERIAL_8250_AU1X00
- 	case UPIO_AU:
- 		return __raw_readl(up->port.membase + offset);
- #endif
-+		
-+	case UPIO_TSI:
-+		if (offset == UART_IIR){
-+			tmp = readl((u32 *)(up->port.membase + UART_RX)) ;
-+			return (cpu_to_le32(tmp)>> 8) & 0xff;
-+		}else
-+			return readb(up->port.membase + offset);
- 
- 	default:
- 		return inb(up->port.iobase + offset);
-@@ -347,6 +355,10 @@ #ifdef CONFIG_SERIAL_8250_AU1X00
- 		__raw_writel(value, up->port.membase + offset);
- 		break;
- #endif
-+	case UPIO_TSI:
-+		if (!((offset == UART_IER) && (value & UART_IER_UUE)))
-+			writeb(value, up->port.membase + offset);
-+		break;
- 
- 	default:
- 		outb(value, up->port.iobase + offset);
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index bd14858..fcf48d3 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -224,6 +224,7 @@ #define UPIO_HUB6		(1)
- #define UPIO_MEM		(2)
- #define UPIO_MEM32		(3)
- #define UPIO_AU			(4)			/* Au1x00 type IO */
-+#define UPIO_TSI		(5)			/* Tsi108/109 type IO */
- 
- 	unsigned int		read_status_mask;	/* driver specific */
- 	unsigned int		ignore_status_mask;	/* driver specific */
+==========
+brand-new group of students, eager for their first lesson.
+     I was all wound up before going into the Zone and cold sober to boot. I
+     Chiang spoke slowly and watched the younger gull ever  so  carefully.
+went over each of  my nuts and bolts. I could have gathered them up if I had
+the fishing boats were specks in the flat blue water, Breakfast Flock  was
+But  they  insisted that it was a powerful thunderbolt that blinded them. By
+
+is as much of a spectrum of excellence in science fiction as there is in any
+into the Zone and they don't give a damn about world issues.
