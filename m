@@ -1,31 +1,30 @@
-From: "Gunter Raquel" <izfvibxlvs@guyana.ro>
-Subject: jewelry work
-Date: Sun, 18 Jun 2006 06:21:31 -0800 (PDT)
-Message-ID: <2Z7CB1J0RM3N4T4MVR4O__39488.2880653769$1150636934$gmane$org@w.soldinet.every1.net>
-Reply-To: "Gunter Raquel" <izfvibxlvs@guyana.ro>
+From: "Painter Josh" <cfzonzrfcgeuk@orgymail.net>
+Subject: top notch replicas need
+Date: Mon, 19 Jun 2006 07:10:15 -0600 (PDT)
+Message-ID: <121688473250895nua7twq4tq6.7487337474896.Mail.news__18254.3861134493$1150719071$gmane$org@space.timsvault.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:53447 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S932217AbWFRNVk (ORCPT
+Received: from [82.138.22.186] ([82.138.22.186]:1293 "HELO 209.132.176.167")
+	by vger.kernel.org with SMTP id S932403AbWFSMKS (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 18 Jun 2006 09:21:40 -0400
+	Mon, 19 Jun 2006 08:10:18 -0400
+From: "Painter Josh" <cfzonzrfcgeuk@orgymail.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-sound@vger.kernel.org, linux-tape@vger.kernel.org, linux-x25@vger.kernel.org, majordomo@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-raid@vger.kernel.org, linux-ia64@vger.kernel.org, linux-tape@vger.kernel.org, linux-net@vger.kernel.org, linux-ide@vger.kernel.org, ultralinux@vger.kernel.org
 
-AMAZING QUALITY REPLICAS - MADE TO LAST A LIFETIME
+Life is Full of Luxuries...
 
-Pens • Watches • Handbags • Jewelry • Neckties • Clutches
+Only a handful of people can afford the finest products. 
 
-All our products are guaranteed to be free from manufacturer's defects,
-and are made with extreme care and attention to detail. You will be pleasantly
-surprised by the craftsmanship and strength of every product we carry.
+Here at "Luxury Replica" we are committed to bringing you the finest products, at below affordable prices. 
 
-Visit Now to See our Current Specials!
+All designer brands for Watches, Ties, Handbags and even Mont Blanc.
 
-http://051.blocksofcheese.com
-
+http://051.dizwaetchnice.com
 
 
 
@@ -34,5 +33,9 @@ http://051.blocksofcheese.com
 
 
 
-special sort
-http://051.blocksofcheese.com/rm
+
+
+
+
+trouble ice
+http://051.dizwaetchnice.com/rm
