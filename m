@@ -1,44 +1,49 @@
-From: Bodo Eggert <7eggert@elstempel.de>
-Subject: Re: Linux 2.6.17: IRQ handler mismatch in serial code?
-Date: Tue, 20 Jun 2006 16:39:49 +0200
-Message-ID: <E1FshOP-0000pd-No@be1.lrz>
-References: <6pwmi-8mW-1@gated-at.bofh.it> <6px8R-Y7-43@gated-at.bofh.it> <6pxV5-2ci-13@gated-at.bofh.it> <6pz12-3Rg-67@gated-at.bofh.it> <6pzX4-5jE-19@gated-at.bofh.it> <6pA6B-5K8-33@gated-at.bofh.it>
-Reply-To: 7eggert@gmx.de
+From: Sergei Organov <osv@javad.com>
+Subject: Re: [PATCH] moxa: do not ignore input
+Date: Tue, 20 Jun 2006 21:17:44 +0400
+Message-ID: <87y7vrpwzr.fsf@javad.com>
+References: <200506021220.47138.vda@ilport.com.ua>
+	<200506021554.07316.vda@ilport.com.ua>
+	<20050602225805.GB9628@devserv.devel.redhat.com>
+	<200506031601.21180.vda@ilport.com.ua>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=utf-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-in-07.arcor-online.net ([151.189.21.47]:58240 "EHLO
-	mail-in-07.arcor-online.net") by vger.kernel.org with ESMTP
-	id S1750951AbWFTOkL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 20 Jun 2006 10:40:11 -0400
+Received: from javad.com ([216.122.176.236]:24580 "EHLO javad.com")
+	by vger.kernel.org with ESMTP id S1751433AbWFTRSG (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 20 Jun 2006 13:18:06 -0400
+In-Reply-To: <200506031601.21180.vda@ilport.com.ua> (Denis Vlasenko's
+ message
+	of "Fri, 3 Jun 2005 16:01:21 +0300")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>, Mark Lord <lkml@rtr.ca>, Chris Rankin <rankincj@yahoo.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Denis Vlasenko <vda@ilport.com.ua>
+Cc: Alan Cox <alan@redhat.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, rmk+serial@arm.linux.org.uk
 
-Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
-> Ar Llu, 2006-06-19 am 17:52 -0400, ysgrifennodd Mark Lord:
+Denis Vlasenko <vda@ilport.com.ua> writes:
 
->> Eh?  The vast majority of ISA bus devices have open-collector IRQ li=
-nes,
->=20
-> Not in my experience. In the network work at least very few are, they
-> all drive the chip lines all the time. Thats why Don Becker made sure
-> such drivers grab the lines at startup. Those which can share IRQ or
-> move IRQ grab at open
+> Stop using tty internal structure in mxser_receive_chars(),
+> use tty_insert_flip_char(tty, ch flag); istead.
+>
+> Without this change driver ignores any rx'ed chars.
+>
+> Run tested, please apply.
+>
+> Any suggestions on further cleanups this driver may need
+> while I have access to this hardware?
 
-There are thousands of NE2K-clones, the driver can't know if sharing th=
-e IRQ
-will be OK for a given card. Is the change for sharing IRQs trivial eno=
-ugh
-to allow an if/else based on a load-time module parameter?
---=20
-Ich danke GMX daf=FCr, die Verwendung meiner Adressen mittels per SPF
-verbreiteten L=FCgen zu sabotieren.
+I have 8-port board, but mxser creates 16 devices anyway, and forces any
+application accessing one of those inexistent devices to segfault, e.g.:
 
-http://david.woodhou.se/why-not-spf.html
--
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+osv@osv ~$ cat /dev/ttyM9
+Segmentation fault
+osv@osv ~$
+
+This is on 2.6.14 kernel though, -- didn't try with more recent kernels
+as I have other troubles with them on my hardware/distribution.
+
+Not a big deal, but you've asked yourself ;)
+
+-- 
+Sergei.
