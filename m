@@ -1,19 +1,30 @@
-From: "Burl" <Burldate@earthlink.net>
-Subject: You ejaculate within a few minutes of penetration!
-Date: Wed, 21 Jun 2006 09:29:42 +0300
-Message-ID: <77006959560215.A5FF708D24@2Q8HO>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] moxa: do not ignore input
+Date: Wed, 21 Jun 2006 12:51:44 +0100
+Message-ID: <1150890705.15275.58.camel@localhost.localdomain>
+References: <200506021220.47138.vda@ilport.com.ua>
+	 <200506021554.07316.vda@ilport.com.ua>
+	 <20050602225805.GB9628@devserv.devel.redhat.com>
+	 <200506031601.21180.vda@ilport.com.ua>  <87y7vrpwzr.fsf@javad.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="Windows-1252"
+Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [88.224.155.76] ([88.224.155.76]:59657 "EHLO XXXXXXXX")
-	by vger.kernel.org with ESMTP id S1751388AbWFUGcU (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 21 Jun 2006 02:32:20 -0400
+Received: from outpipe-village-512-1.bc.nu ([81.2.110.250]:38887 "EHLO
+	lxorguk.ukuu.org.uk") by vger.kernel.org with ESMTP
+	id S1751332AbWFULhT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 21 Jun 2006 07:37:19 -0400
+In-Reply-To: <87y7vrpwzr.fsf@javad.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Sergei Organov <osv@javad.com>
+Cc: Denis Vlasenko <vda@ilport.com.ua>, Alan Cox <alan@redhat.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, rmk+serial@arm.linux.org.uk
 
-Wow, you used to cum within 5 minutes!Buy Extra-Time and forget your fears! http://magpills.com/gall/get Forget about it and take pleasure every night!Take this effective remedy pronto!Oh, you are not able to control your feelings!
+Ar Maw, 2006-06-20 am 21:17 +0400, ysgrifennodd Sergei Organov:
+> This is on 2.6.14 kernel though, -- didn't try with more recent kernels
+> as I have other troubles with them on my hardware/distribution.
+> 
+> Not a big deal, but you've asked yourself ;)
+
+What does "dmesg" show for the Oops that caused the segfault ?
 
