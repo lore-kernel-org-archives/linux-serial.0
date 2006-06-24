@@ -1,54 +1,29 @@
-From: Alan Cox <alan@redhat.com>
-Subject: Re: [Q] New tty flip interface doubt.
-Date: Fri, 23 Jun 2006 09:16:13 -0400
-Message-ID: <20060623131613.GA27504@devserv.devel.redhat.com>
-References: <87hd2epuu6.fsf@javad.com> <20060621134208.GA12884@devserv.devel.redhat.com> <87irmt63wk.fsf@javad.com> <20060622125652.GA23090@devserv.devel.redhat.com> <87d5d15ie9.fsf@javad.com>
+From: "Ginger Holder" <tl.com.br@citius.getresponse.com>
+Subject: top quality brand watches
+Date: Sat, 24 Jun 2006 15:16:29 +0000 (UTC)
+Message-ID: <30368678.20060624151621__42699.3138542914$1151162189$gmane$org@citius.getresponse.com>
+Reply-To: "Ginger Holder" <tl.com.br@citius.getresponse.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([66.187.233.31]:16002 "EHLO mx1.redhat.com")
-	by vger.kernel.org with ESMTP id S964818AbWFWNQP (ORCPT
+Received: from zeus1.kernel.org ([204.152.191.4]:56494 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S1752267AbWFXPQL (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 23 Jun 2006 09:16:15 -0400
-Content-Disposition: inline
-In-Reply-To: <87d5d15ie9.fsf@javad.com>
+	Sat, 24 Jun 2006 11:16:11 -0400
+Date: Sat, 24 Jun 2006 15:16:21 -0060
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sergei Organov <osv@javad.com>
-Cc: Alan Cox <alan@redhat.com>, linux-serial@vger.kernel.org
+To: linux-8086@vger.kernel.org
 
-On Thu, Jun 22, 2006 at 07:17:50PM +0400, Sergei Organov wrote:
-> I saw this warning, but didn't think that USB urbs must be given DMAable
-> memory. Does "transfer_buffer: This buffer has to be allocated as a
-> non-pageable contiguous physical memory block" imply the memory must be
-> DMAable? If it doesn't, then do tty buffers meet the above cited
-> requirement?
+Get the Finest Watch Replicas!
 
-At the moment the tty buffers are a chain of buffers meeting that requirement.
+We only sell premium watches. There's no battery in these replicas just like the real ones since they charge themselves as you move. The second hand moves JUST like the real ones, too. These original watches sell in stores for thousands of dollars. We sell them for much less. 
 
-> >> - allocate N-bytes data buffer from tty and use it for urb
-> >> - submit the urb to USB subsystem
-> >> - flip M-bytes of data (M <= N) in USB receive callback.
-> >
-> > Its doable in theory but is it worth it ?
-> 
-> Well, I don't actually know, -- does your experience suggest it is not? 
+- Replicated to the Smallest Detail
+- 98% Perfectly Accurate Markings 
+- Signature Green Sticker w/ Serial Number on Watch Back
+- Magnified Quickset Date
+- Includes all Proper Markings
 
-On a PC almost certainly not because the cost of the accesses is almost nil
-with the cache sizes on the CPU die and the performance of the CPU. Embedded
-I don't know , you tell me 8)
-
-> If you don't see some hard to avoid obstacles making it difficult to
-> implement, I'll probably try to modify tty layer to be able to support
-> such a feature to see what it gives.
-
-I've no problem with that. At the moment the allocations all use kmalloc
-which should be fine for remapping. At worst you could add an optional
-
-tty->alloc_buf
-tty->free_buf
-
-function pointer pair
-
-Alan
-
+Visit us: www.fasts-hopping.com 
