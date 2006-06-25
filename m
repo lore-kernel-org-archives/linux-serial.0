@@ -1,30 +1,39 @@
-From: Ryan Lunsford <eno@gsm-multifund.de>
-Subject: Re[5]: Adobe Photoshop CS vmo
-Date: Sat, 24 Jun 2006 9:16:42 AM -0600
-Message-ID: <000b01c6976e$e8789090$698bb853@qwfmwq>
+From: "Mr. Alfaro" <xbbxotci@digitalmaila.com>
+Subject: new msg for Morgan
+Date: Sat, 24 Jun 2006 19:29:42 -0600 (PDT)
+Message-ID: <R753J64PL65PNPIS9N49@y.muslimmarriagejunction.com>
+Reply-To: "Mr. Alfaro" <xbbxotci@digitalmaila.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailfe08.swip.net ([212.247.154.225]:9174 "EHLO swip.net")
-	by vger.kernel.org with ESMTP id S1750874AbWFXQPz (ORCPT
+Received: from 0-134.rdm.ru ([85.192.0.134]:31755 "HELO 0-134.rdm.ru")
+	by vger.kernel.org with SMTP id S1751286AbWFYA3r (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 24 Jun 2006 12:15:55 -0400
+	Sat, 24 Jun 2006 20:29:47 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Lara Clarence <evinsu@tukkk.fi>
+To: linux-serial@vger.kernel.org, linux-raid@vger.kernel.org, linux-ia64@vger.kernel.org, linux-tape@vger.kernel.org, linux-net@vger.kernel.org, linux-ide@vger.kernel.org, ultralinux@vger.kernel.org, linux-kernel-owner@vger.kernel.org
 
-OEM downloadable software packages:
+FABULOUS REPLICAS - AMAZING PRICES
 
-Adobe Acrobat 7.0 Pro - $69
-Adobe Photoshop CS2 + Image ready CS2 - $99
-Adobe Premiere PRO 2.0 - $110
-Alias Maya 7.0 Unlimited - $129
-Autocad 2007 - $130
-Macromedia Studio 8 - $89
-CorelDRAW Graphics Suite X3 - $79
+Handbags • Jewelry • Pens • Watches • Neckties • Clutches • and More
 
-Please visit us at http://oem2006.biz
+All our products are made with the finest leather and silks, and come
+with certificate, tags and all the extras, just as you would find in a 
+boutique. Extreme care is taken to pay special attention to detail. 
+
+You will be immediately surprised by the craftsmanship and strength of 
+our fine, high-quality luxury items, whether it be a watch, handbag, or tie.
+
+Visit Now to See our Current Specials! 
+
+http://051.deedlsonwheelss.com
 
 
 
+
+
+
+
+bulb flat
+http://051.deedlsonwheelss.com/rm
