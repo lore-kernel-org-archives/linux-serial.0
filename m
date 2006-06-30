@@ -1,79 +1,46 @@
-From: Bjorn Helgaas <bjorn.helgaas@hp.com>
-Subject: [PATCH 1/2] PNPACPI: support shareable interrupts
-Date: Fri, 30 Jun 2006 12:58:26 -0600
-Message-ID: <200606301258.26794.bjorn.helgaas@hp.com>
+From: Dominik Brodowski <linux@dominikbrodowski.net>
+Subject: [PATCH 3/15] pcmcia: another ID for serial_cs.c
+Date: Fri, 30 Jun 2006 21:53:58 +0200
+Message-ID: <20060630195358.GD9095@dominikbrodowski.de>
+References: <20060630195107.GA9095@dominikbrodowski.de> <20060630195217.GB9095@dominikbrodowski.de> <20060630195255.GC9095@dominikbrodowski.de>
 Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from isilmar.linta.de ([213.239.214.66]:36027 "EHLO linta.de")
+	by vger.kernel.org with ESMTP id S932119AbWF3UMm (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 30 Jun 2006 16:12:42 -0400
 Content-Disposition: inline
-Sender: linux-acpi-owner@vger.kernel.org
-To: Andrew Morton <akpm@osdl.org>
-Cc: Adam Belay <ambx1@neo.rr.com>, Matthieu Castet <castet.matthieu@free.fr>, Li Shaohua <shaohua.li@intel.com>, Len Brown <len.brown@intel.com>, linux-acpi@vger.kernel.org, Russell King <rmk+serial@arm.linux.org.uk>, linux-serial@vger.kernel.org
+In-Reply-To: <20060630195255.GC9095@dominikbrodowski.de>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-pcmcia@lists.infradead.org
+Cc: linux-serial@vger.kernel.org, rmk+serial@arm.linux.org.uk
 
-ACPI supplies a "shareable" indication, but PNPACPI ignores it.
-If a PNP device uses a shared interrupt, request_irq() fails
-because the PNP driver can't tell whether to supply SA_SHIRQ.
 
-This patch allows PNP drivers to test
-    (pnp_irq_flags(dev, 0) & IORESOURCE_IRQ_SHAREABLE)
+From: Dominik Brodowski <linux@dominikbrodowski.net>
+Date: Wed, 26 Apr 2006 19:57:32 +0200
+Subject: [PATCH] pcmcia: another ID for serial_cs.c
 
-Signed-off-by: Bjorn Helgaas <bjorn.helgaas@hp.com>
+Add an ID for "GlobeTrotter" cards which need a CIS override
 
-Index: work-mm7/include/linux/ioport.h
-===================================================================
---- work-mm7.orig/include/linux/ioport.h	2006-06-30 11:52:21.000000000 -0600
-+++ work-mm7/include/linux/ioport.h	2006-06-30 12:18:41.000000000 -0600
-@@ -55,6 +55,7 @@
- #define IORESOURCE_IRQ_LOWEDGE		(1<<1)
- #define IORESOURCE_IRQ_HIGHLEVEL	(1<<2)
- #define IORESOURCE_IRQ_LOWLEVEL		(1<<3)
-+#define IORESOURCE_IRQ_SHAREABLE	(1<<4)
- 
- /* ISA PnP DMA specific bits (IORESOURCE_BITS) */
- #define IORESOURCE_DMA_TYPE_MASK	(3<<0)
-Index: work-mm7/drivers/pnp/pnpacpi/rsparser.c
-===================================================================
---- work-mm7.orig/drivers/pnp/pnpacpi/rsparser.c	2006-06-30 11:52:18.000000000 -0600
-+++ work-mm7/drivers/pnp/pnpacpi/rsparser.c	2006-06-30 12:18:41.000000000 -0600
-@@ -74,7 +74,7 @@
- 
- static void
- pnpacpi_parse_allocated_irqresource(struct pnp_resource_table *res, u32 gsi,
--	int triggering, int polarity)
-+	int triggering, int polarity, int shareable)
- {
- 	int i = 0;
- 	int irq;
-@@ -95,6 +95,9 @@
- 		return;
- 	}
- 
-+	if (shareable)
-+		res->irq_resource[i].flags |= IORESOURCE_IRQ_SHAREABLE;
-+
- 	res->irq_resource[i].start = irq;
- 	res->irq_resource[i].end = irq;
- 	pcibios_penalize_isa_irq(irq, 1);
-@@ -197,7 +200,8 @@
- 			pnpacpi_parse_allocated_irqresource(res_table,
- 				res->data.irq.interrupts[i],
- 				res->data.irq.triggering,
--				res->data.irq.polarity);
-+				res->data.irq.polarity,
-+				res->data.irq.sharable);
- 		}
- 		break;
- 
-@@ -263,7 +267,8 @@
- 			pnpacpi_parse_allocated_irqresource(res_table,
- 				res->data.extended_irq.interrupts[i],
- 				res->data.extended_irq.triggering,
--				res->data.extended_irq.polarity);
-+				res->data.extended_irq.polarity,
-+				res->data.extended_irq.sharable);
- 		}
- 		break;
- 
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+---
+ drivers/serial/serial_cs.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/serial/serial_cs.c b/drivers/serial/serial_cs.c
+index 2c70773..cbf260b 100644
+--- a/drivers/serial/serial_cs.c
++++ b/drivers/serial/serial_cs.c
+@@ -786,6 +786,7 @@ static struct pcmcia_device_id serial_id
+ 	PCMCIA_DEVICE_CIS_PROD_ID12("ADVANTECH", "COMpad-32/85B-4", 0x96913a85, 0xcec8f102, "COMpad4.cis"),
+ 	PCMCIA_DEVICE_CIS_PROD_ID123("ADVANTECH", "COMpad-32/85", "1.0", 0x96913a85, 0x8fbe92ae, 0x0877b627, "COMpad2.cis"),
+ 	PCMCIA_DEVICE_CIS_PROD_ID2("RS-COM 2P", 0xad20b156, "RS-COM-2P.cis"),
++	PCMCIA_DEVICE_CIS_MANF_CARD(0x0013, 0x0000, "GLOBETROTTER.cis"),
+ 	/* too generic */
+ 	/* PCMCIA_MFC_DEVICE_MANF_CARD(0, 0x0160, 0x0002), */
+ 	/* PCMCIA_MFC_DEVICE_MANF_CARD(1, 0x0160, 0x0002), */
+-- 
+1.4.0
+
