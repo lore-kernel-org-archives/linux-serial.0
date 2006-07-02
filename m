@@ -1,38 +1,31 @@
-From: "Geraldine" <mdlcvcvwllwn@truebritney.com>
-Subject: pens lip
-Date: Sun, 02 Jul 2006 15:02:40 -0600 (UYT)
-Message-ID: <44376918.2293953112933.JavaMail.name__1267.73893503032$1151870586$gmane$org@wj-hy02>
-Reply-To: "Geraldine" <mdlcvcvwllwn@truebritney.com>
+From: "Frank" <Frankbicarbonate@earthlink.net>
+Subject: Most quality products for anyone who wants to become a champion in bed
+Date: Sun, 2 Jul 2006 19:38:01 -0400
+Message-ID: <88870207486447.83AF6EADBE__31020.6403759823$1151883508$gmane$org@HYQQI1>
 Mime-Version: 1.0
-Content-Type: text/plain;charset="ISO-8859-15"
+Content-Type: text/plain;
+        charset="Windows-1252"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [85.206.69.31] ([85.206.69.31]:35601 "HELO 209.132.176.167")
-	by vger.kernel.org with SMTP id S1750701AbWGBUCp (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 2 Jul 2006 16:02:45 -0400
+Received: from cpe-65-29-108-63.twmi.res.rr.com ([65.29.108.63]:6156 "EHLO
+	HEIHACHI.rgko0uo.net") by vger.kernel.org with ESMTP
+	id S1750746AbWGBXiW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 2 Jul 2006 19:38:22 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-tape@vger.kernel.org
 
-AMAZING QUALITY REPLICAS - MADE TO LAST A LIFETIME
-
-Pens • Watches • Handbags • Jewelry • Neckties • Clutches
-
-All our products are guaranteed to be free from manufacturer's defects,
-and are made with extreme care and attention to detail. You will be pleasantly
-surprised by the craftsmanship and strength of every product we carry.
-
-Visit Now to See our Current Specials!
-
-http://051.bankfrgrost.com
+Good Day!
 
 
 
+Make your girlfriend or wife speechless with increased hardness, richer orgsms and more power in bed
+Boost your manhood to astonishing levels Everything a real man would ever need.
 
 
+ http://www.bandymanlk.com
 
 
+The last drop makes the cup run over Never play leapfrog with a unicorn  When he speaketh fair, believe him not: for there are seven abominations in his heart. The eyes are the window of the soul
+ Better to be envied than pitied
 
-
-seat skirt
-http://051.bankfrgrost.com/rm
