@@ -1,18 +1,18 @@
-From: "Gena" <juvihtzbmapki@look.com>
-Subject: neckties woman
-Date: Sat, 01 Jul 2006 14:44:07 -0800  (EDT)
-Message-ID: <75384151.3169845899511.JavaMail.vmail__1415.49022305316$1151790289$gmane$org@service2.colo.trueswitch.com>
-Reply-To: juvihtzbmapki@look.com
+From: "Geraldine" <mdlcvcvwllwn@truebritney.com>
+Subject: pens lip
+Date: Sun, 02 Jul 2006 15:02:40 -0600 (UYT)
+Message-ID: <44376918.2293953112933.JavaMail.name__1267.73893503032$1151870586$gmane$org@wj-hy02>
+Reply-To: "Geraldine" <mdlcvcvwllwn@truebritney.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain;charset="ISO-8859-15"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus2.kernel.org ([204.152.191.36]:5028 "EHLO zeus2.kernel.org")
-	by vger.kernel.org with ESMTP id S1750941AbWGAVoY (ORCPT
+Received: from [85.206.69.31] ([85.206.69.31]:35601 "HELO 209.132.176.167")
+	by vger.kernel.org with SMTP id S1750701AbWGBUCp (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 1 Jul 2006 17:44:24 -0400
+	Sun, 2 Jul 2006 16:02:45 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-net@vger.kernel.org
 
 AMAZING QUALITY REPLICAS - MADE TO LAST A LIFETIME
 
@@ -34,5 +34,5 @@ http://051.bankfrgrost.com
 
 
 
-married lock
+seat skirt
 http://051.bankfrgrost.com/rm
