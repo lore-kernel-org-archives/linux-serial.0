@@ -1,25 +1,28 @@
-From: "Ken" <Kenabusive@eartlink.net>
-Subject: Everything has its time, and climax in bed shouldn't also happen too soon.
-Date: Sun, 2 Jul 2006 20:51:44 -0400
-Message-ID: <39484282429265.8DBFC35E71__3574.19220167703$1151888022$gmane$org@6G7FU>
+From: "Cathryn" <CathrynMccracken@london.com>
+Subject: Just added Now you could grant your wish Revel in
+Date: Tue, 4 Jul 2006 11:56:17 +1000
+Message-ID: <63328386248449.1EB5897B8E@CBXXX>
 Mime-Version: 1.0
 Content-Type: text/plain;
         charset="Windows-1252"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from verizon-gw3.westbelt.calltech.com ([216.69.223.206]:26354 "EHLO
-	WBLTC25") by vger.kernel.org with ESMTP id S1750876AbWGCAwc (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 2 Jul 2006 20:52:32 -0400
+Received: from CPE-60-226-146-80.qld.bigpond.net.au ([60.226.146.80]:52490
+	"EHLO SYS5.oe6kf.com") by vger.kernel.org with ESMTP
+	id S1751356AbWGDB4o (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 3 Jul 2006 21:56:44 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Hi Bro!
+How are you bro ?
 
- Younger and older males face this difficulty. Whatever your age, you have the answer. Confidence and affection of your partner are the greatest things you get. 
- http://www.kyklopescf.com 
+Have you ever dreamt to have a very hard penis during all process? 
 
+Now it’s possible to do with magic tab
 
- Virtual reality is its own reward. People who think the world revolves around them have no sense of direction Love is an ideal thing, marriage a real thing If life deals you lemons make lemonade  
+ Have you some doubt?
+
+ Find what you need: http://www.basszass.com 
+ The prices are really low and the quality it truly very high!
 
