@@ -1,28 +1,25 @@
-From: "Cathryn" <CathrynMccracken@london.com>
-Subject: Just added Now you could grant your wish Revel in
-Date: Tue, 4 Jul 2006 11:56:17 +1000
-Message-ID: <63328386248449.1EB5897B8E@CBXXX>
+From: "Nelson" <Nelson.Hernandez@earthlink.net>
+Subject: Latest stuff Increase your volume in just days
+Date: Tue, 4 Jul 2006 11:47:24 +0200
+Message-ID: <63965084917624.FF53C5FF25@9MGJ>
 Mime-Version: 1.0
 Content-Type: text/plain;
         charset="Windows-1252"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from CPE-60-226-146-80.qld.bigpond.net.au ([60.226.146.80]:52490
-	"EHLO SYS5.oe6kf.com") by vger.kernel.org with ESMTP
-	id S1751356AbWGDB4o (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 3 Jul 2006 21:56:44 -0400
+Received: from cm-85-152-216-50.telecable.es ([85.152.216.50]:60684 "EHLO
+	MORTIMER") by vger.kernel.org with ESMTP id S932176AbWGDJqw (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 4 Jul 2006 05:46:52 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-How are you bro ?
+Dear user. 
 
-Have you ever dreamt to have a very hard penis during all process? 
 
-Now it’s possible to do with magic tab
+ Prolong yoour ssex. You have small peniis? Add 3 inches in lenght! Check up here: http://abirtes.com/gal/ms 
 
- Have you some doubt?
 
- Find what you need: http://www.basszass.com 
- The prices are really low and the quality it truly very high!
+ Experience is better bought than taught You cannot make bricks without straw  A quarrelsome wife is like a constant dripping on a rainy day. Haste makes waste. Bread is the staff of life
 
