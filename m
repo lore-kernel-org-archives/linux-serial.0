@@ -1,27 +1,19 @@
-From: "Alphonso" <Alphonsochampagne@whoever.com>
-Subject: Enhanced male power and unlimited prowess with your girl The best products for the winning guys
-Date: Tue, 11 Jul 2006 17:20:28 +0800
-Message-ID: <01129316545968.3F52818EDB__28780.0480299213$1152609727$gmane$org@2042AU0U>
+From: "James" <Jamesauspicious@inorbit.com>
+Subject: Oh, you are not able to control your feelings!
+Date: Tue, 11 Jul 2006 20:34:11 -0700
+Message-ID: <88677825395802.9119A96F76@3H5N>
 Mime-Version: 1.0
 Content-Type: text/plain;
         charset="Windows-1252"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:41110 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S1750816AbWGKJVy (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 11 Jul 2006 05:21:54 -0400
+Received: from [200.12.228.63] ([200.12.228.63]:11793 "EHLO
+	YOUR-L1RAOPVJJM.w36os.org") by vger.kernel.org with ESMTP
+	id S932376AbWGLDdO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 11 Jul 2006 23:33:14 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: majordomo-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Hi!
-
-Boost your manhood to astonishing levels Everything a real man would ever need.
-Impress your girl with prolonged hardness, plentiful explosions and increased duration
- http://www.xylidinehf.com
-
-Never too old to learn The young man thinks the old mans stupid but the old man KNOWS the young man is Wise men think alike. A celebrity is someone who works hard all his life to become known and then wears dark glasses to avoid being recognized. 
- Walls have ears 
-
+Hi, Eliminate this problem and all the anxiety it causes! Become a better male! Extra-Time gives you not only extra time, but extra pleasure and extra confidence as well. Ever thought your relationship is about to break up because you finish within a few minutes from penetration? See our offer: http://justcallterry.com/dll/get/ You won't hear another word of reproach from her! She'll just keep you a secret from her friends!
 
