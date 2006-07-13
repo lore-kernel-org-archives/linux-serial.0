@@ -1,19 +1,23 @@
-From: "Oconnor" <Oconnorconstrain@deliveryman.com>
-Subject: Buy Exttra-Time and forget your fears!
-Date: Thu, 13 Jul 2006 08:11:02 -0500
-Message-ID: <18220638765130.E3BE0597AA__1524.9133612544$1152796247$gmane$org@6RR0GV>
+From: "vuweg" <bage7@vm.vonage.com>
+Subject: cepit
+Date: Thu, 13 Jul 2006 23:20:57 +0000 (UTC)
+Message-ID: <001001c6a68f$312e4d50$3b9a390a@topuzu>
 Mime-Version: 1.0
 Content-Type: text/plain;
-        charset="Windows-1252"
+	format=flowed;
+	charset="iso-8859-1";
+	reply-type=original
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from c-71-201-5-202.hsd1.il.comcast.net ([71.201.5.202]:46090 "EHLO
-	LMAY042A.xbiw3n.net") by vger.kernel.org with ESMTP
-	id S1030199AbWGMNJ6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 13 Jul 2006 09:09:58 -0400
+Received: from [218.7.67.202] ([218.7.67.202]:29455 "HELO vm.vonage.com")
+	by vger.kernel.org with SMTP id S1161048AbWGMXUn (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 13 Jul 2006 19:20:43 -0400
+Date: Fri, 14 Jul 2006 07:15:35 0800
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Dear user. A high percentage of males suffer from this, and you shouldn't be one of them. You might have tried other products and failed - the last thing you need is Extra-Time, the no-failure solution. Think how wonderful it would be not to hear from your partner how fast you are to finish. Come in: http://ferrold.com/dll/get/ It's obvious that a satisfied woman will be addicted to you like never before.
+Do you need time peices
+jezulos http://www.aerofplaanscan.com
 
