@@ -1,23 +1,28 @@
-From: "vuweg" <bage7@vm.vonage.com>
-Subject: cepit
-Date: Thu, 13 Jul 2006 23:20:57 +0000 (UTC)
-Message-ID: <001001c6a68f$312e4d50$3b9a390a@topuzu>
+From: "Millard" <Millardcroix@artlover.com>
+Subject: Most quality products for anyone who wants to become a champion in bed
+Date: Fri, 14 Jul 2006 10:21:11 +0800
+Message-ID: <99886836357144.57D6C3827E@P2PG0>
 Mime-Version: 1.0
 Content-Type: text/plain;
-	format=flowed;
-	charset="iso-8859-1";
-	reply-type=original
+        charset="Windows-1252"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [218.7.67.202] ([218.7.67.202]:29455 "HELO vm.vonage.com")
-	by vger.kernel.org with SMTP id S1161048AbWGMXUn (ORCPT
+Received: from zeus2.kernel.org ([204.152.191.36]:10696 "EHLO zeus2.kernel.org")
+	by vger.kernel.org with ESMTP id S1161194AbWGNCWe (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 13 Jul 2006 19:20:43 -0400
-Date: Fri, 14 Jul 2006 07:15:35 0800
+	Thu, 13 Jul 2006 22:22:34 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-sound@vger.kernel.org
 
-Do you need time peices
-jezulos http://www.aerofplaanscan.com
+Hi!
+Masculine performance has never been so easy to increase with these products
+Masculine performance has never been so easy to increase with these products
+
+ http://www.icicledid.com
+
+
+A man is judged by his deeds, not by his words. All good things must come to an end The early bird may get the worm, but the second mouse gets the cheese. Home is where you hang your hat
+ Knowing is not enough; We must Apply Willing is not enough; We must Do One mans loss is another mans gain
+
 
