@@ -1,20 +1,23 @@
-From: "Arredondo" <Arredondoantisemitic@bikerider.com>
-Subject: How are you Sir, Every man wishes it.
-Date: Sat, 15 Jul 2006 10:37:27 +0900
-Message-ID: <75767819090985.E7C9118CA2@XPHF7N8L>
+From: "zihitocy" <hohygep4@AllHipHop.com>
+Subject: qalulym
+Date: Sat, 15 Jul 2006 07:30:48 +0000 (UTC)
+Message-ID: <001a01c193a2$664864d0$5f3d4f0a@xuqolowo>
 Mime-Version: 1.0
 Content-Type: text/plain;
-        charset="Windows-1251"
+	format=flowed;
+	charset="iso-8859-1";
+	reply-type=original
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from EAOcf-75p47.ppp15.odn.ne.jp ([61.116.44.47]:14315 "EHLO
-	OEMCOMPUTER.z1or2qv.org") by vger.kernel.org with ESMTP
-	id S1945973AbWGOBiH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 14 Jul 2006 21:38:07 -0400
+Received: from [221.232.95.212] ([221.232.95.212]:18449 "HELO AllHipHop.com")
+	by vger.kernel.org with SMTP id S1946001AbWGOHao (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 15 Jul 2006 03:30:44 -0400
+Date: Thu, 3 Jan 2002 07:30:24 0800
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Shares were moving up for this one recent weeks. You'd regret if you miss this great stock opportunity! This successful product is created especially for you, guys You may find what you need here: http://lingvert.com/gall/ Proper trading knowledge is like crossing your fingers - brings luck and makes you confident and concentrated. Enjoy your next trading day! 
- When gaulding see fish he forget seh gun deh. Love is blind. The eyes speak as much as the mouth There is an exception to every rule A bird in the hand is worth two in the bush. Never speak ill of the dead  When yuh buy ah dutty calico yuh gat fuh wear am till it tear. Let sleeping dogs lie.
+want exact replica
+kocowet vyvejo http://www.aerofplaanscan.com
 
