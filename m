@@ -1,19 +1,23 @@
-From: "andrew@usa.net" <andrew@usa.net>
-Subject: Hi
-Date: Sun, 16 Jul 2006 17:59:29 GMT
-Message-ID: <20060716175929.1D77E34E6@parsonline.net>
-Reply-To: "andrew@usa.net" <andrew@usa.net>
+From: "Jerrold" <Jerroldantioch@mail.com>
+Subject: Brand new Online Caasino. Go and Play Itt
+Date: Sun, 16 Jul 2006 23:18:30 -0200
+Message-ID: <34865434526146.C148A71C12__3346.51436792246$1153102547$gmane$org@M95CXX>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain;
+        charset="Windows-1252"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.parsonline.net ([213.217.40.187]:57516 "HELO
-	mail.parsonline.net") by vger.kernel.org with SMTP id S1750752AbWGPSHk convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 16 Jul 2006 14:07:40 -0400
-Content-Disposition: inline
+Received: from zeus1.kernel.org ([204.152.191.4]:42175 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S932253AbWGQCP0 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 16 Jul 2006 22:15:26 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-sound@vger.kernel.org
 
-I just emailed to say hello.
+Good day! 
+
+  Online Casino with 85+ games. PPlay It Now!  http://wegast.com/d1/check/ 
+
+ Its too late to shut the stable door after the horse has bolted Have you ever noticed? anybody going slower than you is an idiot, and anyone going faster than you is a maniac
 
