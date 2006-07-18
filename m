@@ -1,52 +1,19 @@
-From: "Mack Gardner" <MackGardner@mail.ru>
-Subject: Future, well-thumbed
-Date: Mon, 17 Jul 2006 21:50:14 +0000 (UTC)
-Message-ID: <662161c80604ms7rj3x1rf9sujhv7c13s4wb78y9i9mx__5416.17318890548$1153173014$gmane$org@mxs.mail.ru>
+From: "Calvert" <Calvertboulder@cliffhanger.com>
+Subject: You ejacculatte within a few minutes of penetration!
+Date: Tue, 18 Jul 2006 08:36:04 +0800
+Message-ID: <14684824249574.426EE6A686__21254.5024151497$1153183160$gmane$org@SEPSBU>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain;
+        charset="Windows-1252"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from user-0c6slcg.cable.mindspring.com ([24.110.85.144]:53257 "EHLO
-	your-kybtg65gxe.earthlink.net") by vger.kernel.org with ESMTP
-	id S1751208AbWGQVmv convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 17 Jul 2006 17:42:51 -0400
-Date: Mon, 17 Jul 2006 00:43:49 +0480
-Content-Disposition: inline
+Received: from 128.230.178.60.broad.nb.zj.dynamic.cndata.com ([60.178.230.128]:36262
+	"EHLO WINXP-SP2.holoh9u.com") by vger.kernel.org with ESMTP
+	id S1751288AbWGRAhN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 17 Jul 2006 20:37:13 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-8086@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Your cre dit doesn't matter to us! If you OWN real est ate
-and want IMMEDIATEL cash to spend ANY way you like, or simply wish 
-to LOWER your monthly paym ents by a third or more, here are the dea ls
-we have TODAY (hurry, these ofers will expre TONIGHT):
+Yo! Leave complaining to others. You deserve to get rid of this. Not just stopping it, but curing - Extra-Time conquers all reasons for the premature finish. Many of us know the bitter feeling of not being able to deliver longer acts of mutual pleasure. You may find what you need here: http://polerty.com/dll/get/ Get the courage and performance you need to be the best man of her life.
 
-$488,000.00 at a 3.67,% fixed-rate7
-$372,000.00 at a 3.90,% variable-rate3
-$492,000.00 at a 3.21,% interest-only6
-$248,000.00 at a 3.36,% fixed-rateS
-$198,000.00 at a 3.55,% variable-rateC
-
-Hurry, when these deals are gone, they are gone Simply fill out this one-min ute form... 
-
-Don't worry about approval, your cre dit will not disqualify you! 
-
-http://GJYHVOGH.jokip.com
-
-
-
-shooting it out with them.... Arthur decisively shook his head.
-his senses. His gaze settled on Redrick.
-
-leather of  his shoes and jacket was blistering and  cracking, and  Redrick,
-Because I would lose  money? No, it has nothing to  do with the  money. That
-     The boy obediently froze in his tracks. His reflexes were good-- he had
-
-and holding on to each other. Redrick saw the peeling pick-up truck, sagging
-even redder. His eyes filled with tears. Redrick grinned.
-hurry  to hide in some faraway corner and watch in  fear  as his father tore
-     "Do you think I might have another sip, Mr. Schuhart?"
-
-corner of his eye. He's  scared, he thought. He must sense  it. If his sense
-and it  was even  nicer to drink  now  than alcohol. It smelled of home.  Of
