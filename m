@@ -1,27 +1,39 @@
-From: "Rudolph" <RudolphKeen@accountant.com>
-Subject: Just out Now you have chance to do it Be delighted with
-Date: Wed, 19 Jul 2006 20:51:32 +0200
-Message-ID: <01884670214590.C6CC9902B2__31406.0622048148$1153335169$gmane$org@FZ82T>
+From: Gregory <Henry@netcabo.pt>
+Subject: Earn as much as you can!
+Date: Wed, 19 Jul 2006 14:41:50 -0600
+Message-ID: <1B6AEDF1.7813199@netcabo.pt>
 Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="Windows-1252"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=windows-1251; format=flowed
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from pD9E58990.dip0.t-ipconnect.de ([217.229.137.144]:20722 "EHLO
-	VK38") by vger.kernel.org with ESMTP id S1030239AbWGSSwX (ORCPT
+Received: from zeus1.kernel.org ([204.152.191.4]:29677 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S1030236AbWGSTlw (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 Jul 2006 14:52:23 -0400
+	Wed, 19 Jul 2006 15:41:52 -0400
+Received: from nethomebiz.net (dsl-201-110-66-228.prod-infinitum.com.mx [201.110.66.228] (may be forged))
+	by zeus1.kernel.org (8.13.1/8.13.1) with SMTP id k6JJfcGa027556
+	for <linux-serial@vger.kernel.org>; Wed, 19 Jul 2006 19:41:51 GMT
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Hello my friend,
+Need Extra Inc0me?
 
-Rock hard manhood, multiple explosions and several times more semen volume 
-Low prices, handy delivery, everything for your convenience.
- World’s greatest brands produce these goods in top class labs with latest technologies.
- Take a look: http://www.hanchbi.com 
 
- We offer reliable service and 5 years expirience on the marcket!
+New opportunities for you - today!
+
+Get Assisted Co. invites you to cooperation.
+You are responsible and accurate
+
+You are from 18 till 60 year old
+
+You have free time (2-4 hours daily)
+
+This is your chance.
+
+Contact us, your job is waiting for you!
+
+
+Please send all emails to: support@g-ted.info
 
 
