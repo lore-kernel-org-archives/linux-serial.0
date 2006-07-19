@@ -1,39 +1,21 @@
-From: Gregory <Henry@netcabo.pt>
-Subject: Earn as much as you can!
-Date: Wed, 19 Jul 2006 14:41:50 -0600
-Message-ID: <1B6AEDF1.7813199@netcabo.pt>
+From: "Jaime" <Jaime.Edwards@earthlink.net>
+Subject: World famous brands which keep men happy all over the world
+Date: Thu, 20 Jul 2006 03:29:19 +0700
+Message-ID: <93268949029509.EDCD07EFBE@1D8IFO>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1251; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+        charset="Windows-1252"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:29677 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S1030236AbWGSTlw (ORCPT
+Received: from zeus2.kernel.org ([204.152.191.36]:26768 "EHLO zeus2.kernel.org")
+	by vger.kernel.org with ESMTP id S1030282AbWGSUal (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 Jul 2006 15:41:52 -0400
-Received: from nethomebiz.net (dsl-201-110-66-228.prod-infinitum.com.mx [201.110.66.228] (may be forged))
-	by zeus1.kernel.org (8.13.1/8.13.1) with SMTP id k6JJfcGa027556
-	for <linux-serial@vger.kernel.org>; Wed, 19 Jul 2006 19:41:51 GMT
+	Wed, 19 Jul 2006 16:30:41 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Need Extra Inc0me?
+Masculine performance has never been so easy to increase with these products Low prices, handy delivery, everything for your convenience. Hot deals on stuff produced by well-known brands from worldwide. http://www.ultraelaba.com 
 
-
-New opportunities for you - today!
-
-Get Assisted Co. invites you to cooperation.
-You are responsible and accurate
-
-You are from 18 till 60 year old
-
-You have free time (2-4 hours daily)
-
-This is your chance.
-
-Contact us, your job is waiting for you!
-
-
-Please send all emails to: support@g-ted.info
-
+ If the cap fits, wear it Never play leapfrog with a unicorn  Due to the presence of fools, wise people stand out  Good people are scarce
 
