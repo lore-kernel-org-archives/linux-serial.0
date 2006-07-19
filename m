@@ -1,16 +1,16 @@
-From: John <David@kiskapu.hu>
-Subject: Wie kann man Ihr Einkommen  =?ISO-8859-1?Q?=20erh=C3=B6hen=3F?=
-Date: Tue, 18 Jul 2006 20:30:47 -0400
-Message-ID: <40097889.0505566@kiskapu.hu>
+From: Raymond <Mark@netcabo.pt>
+Subject: Der beste Weg den  =?ISO-8859-1?Q?=20w=C3=BCrdigen?= Gehalt zu haben.
+Date: Wed, 19 Jul 2006 09:35:49 +0900
+Message-ID: <4A0E7E9F.4146164@netcabo.pt>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=windows-1251;
 	format=flowed
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 24.229.230.81.res-cmts.wbh.ptd.net ([24.229.230.81]:11021 "HELO
-	24.229.230.81.res-cmts.wbh.ptd.net") by vger.kernel.org with SMTP
-	id S932431AbWGSAax (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Jul 2006 20:30:53 -0400
+Received: from 152.156.12.61.ap.gmo-access.jp ([61.12.156.152]:14601 "HELO
+	sbs.siemens.co.uk") by vger.kernel.org with SMTP id S932429AbWGSAfx
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 18 Jul 2006 20:35:53 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
