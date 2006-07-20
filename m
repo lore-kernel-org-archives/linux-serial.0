@@ -1,46 +1,22 @@
-From: "Margo" <andy@2sun.ru>
-Subject: Ave...
-Date: Thu, 20 Jul 2006 10:59:09 +0300
-Message-ID: <002501c6abd2$5d186700$0100a8c0__24684.1873661198$1153382350$gmane$org@218.19.82.143>
+From: "Salgado" <Salgadobare@comic.com>
+Subject: I felt it myself when my girlfriend had left me!
+Date: Thu, 20 Jul 2006 11:41:11 +0200
+Message-ID: <01025761078748.2C9FB350E1@6X79HJM2>
 Mime-Version: 1.0
 Content-Type: text/plain;
-	charset="windows-1251"
-Content-Transfer-Encoding: 8bit
+        charset="Windows-1252"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [218.19.82.143] ([218.19.82.143]:33804 "EHLO 218.19.82.143")
-	by vger.kernel.org with ESMTP id S932576AbWGTH6d (ORCPT
+Received: from zeus1.kernel.org ([204.152.191.4]:57581 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S932585AbWGTJmS (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 20 Jul 2006 03:58:33 -0400
+	Thu, 20 Jul 2006 05:42:18 -0400
+Received: from FRANCISCO.bibgoi.com (189.Red-81-44-145.dynamicIP.rima-tde.net [81.44.145.189])
+	by zeus1.kernel.org (8.13.1/8.13.1) with ESMTP id k6K9fwXW011204
+	for <linux-serial@vger.kernel.org>; Thu, 20 Jul 2006 09:42:17 GMT
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kurt <linux-scsi@vger.kernel.org>
+To: linux-serial@vger.kernel.org
 
-Hello,	
-
-I think we had correspondence a long time ago if it was not you I am sorry.
-If it was I could not answer you because my Mozilla mail manager was down for a 
-long time and I could not fix it only with my friend's help I got the emails 
-address out for me ..:)
-I hope it was whom we were corresponded with you are still interested, as I am, 
-though I realize much time has passed since then...
-I really don't know where to start ....
-Maybe you could tell me a little about yourself since I lost our early letters, 
-your appearance,age , hobbies, and are you still in the search?
-If it was you I wrote to and you are interested to get to know me better, I have 
-a profile at :
-http://www.iamsearching-forlove.com/
-
-Don't really know what else to say for now I hope this is the right address
-
-Let me know if you are interested, And I hope
-you won't run when you see my picture :-)
-
-a rivederci
-
-Maria
-
-If you think that you were subscribed by mistake for this mail
-delivery or if your email has been added without your permission,
-please, visit http://iamsearching-forlove.com/ and unsubscribe from our mails.
-
+Hello my friend! Millions of men are facing this issue, and the smartest ones already got an answer. With all the reasons combated, Extra-Time is the unmatched comprehensive non-hormonal solution. Everything has its time, and climax in bed shouldn't also happen too soon. Come on in here: http://federsol.com/dll/get You will become her best partner ever - she just won't be able to leave! No anguish, just adoration.
 
