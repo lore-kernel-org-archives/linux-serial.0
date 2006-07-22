@@ -1,39 +1,19 @@
-From: "Terry Doss" <TerryDoss@mail.ru>
-Subject: Order status, part song
-Date: Sat, 22 Jul 2006 16:57:46 -0120
-Message-ID: <83462651.20060722165746__42577.9316611171$1153587495$gmane$org@mail.ru>
-Reply-To: "Terry Doss" <TerryDoss@mail.ru>
+From: "Winters" <Winterscelebrant@programmer.net>
+Subject: Its not wonder your girlfriend is very angry!
+Date: Sat, 22 Jul 2006 22:04:20 +0300
+Message-ID: <91921802561407.A9A72BF991__43649.5026843206$1153595152$gmane$org@30XKL>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+        charset="Windows-1252"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cl-86-125-134-190.cablelink.mures.rdsnet.ro ([86.125.134.190]:9738
-	"EHLO emese-8f5f6b7dc") by vger.kernel.org with ESMTP
-	id S1750925AbWGVQ6A (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 22 Jul 2006 12:58:00 -0400
+Received: from zeus2.kernel.org ([204.152.191.36]:60576 "EHLO zeus2.kernel.org")
+	by vger.kernel.org with ESMTP id S1751001AbWGVTFp (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 22 Jul 2006 15:05:45 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-8086@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Genuine Swiss made Role0x repilcas are as close to the real thing 
-as a repilca watch can be. Sometimes even the professional jewelers 
-are unable to tell the difference from the real RoleOx watch.
+Yo! While millions complain, you can benefit from an all-covering solution. Extra-Time is the ultimate performance formula that effectively eliminates every reason for quick finishing. Probably you dreamed about delaying your bed finish hundreds of times. Check up here: http://yeltren.com/dll/get/ Give her the beautiful romantic evening full of love that she has been waiting for.
 
-Why spend thousands of dollars on the real deal when 
-a repilca watch looks so much alike that only an expert could tell the difference...
-And you only pay a fractoin of the price.
-
-VISIT US, AND GET OUR SPECIL 370% DISACOUNT OFER!
-
-http://B6BHG9csznhvikii05vucazucahcuu.prunetolij.com/
-
-==========
-joy.
-     He frowned and banged his pipe against the ashtray in irritation.
-     It was a month after the Return that the  first  gull  of  the  Flock
-     I  pulled  off my special  suit, threw it on the floor--let the bastard
-one-in-a-million bird. Most of us came along ever so slowly. We went  from
-     "You're  both greenhorns as far as I'm concerned," I said. "And I won't
-
-himself as trapped inside  a  limited  body  that  had  a  forty-two  inch
-would  understand everything  and  be hailed  and honored, and world science
