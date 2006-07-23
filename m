@@ -1,39 +1,19 @@
-From: "Annabelle Conway" <AnnabelleConway@mail.ru>
-Subject: Your future, paper chaser
-Date: Sun, 23 Jul 2006 06:39:10 -0420
-Message-ID: <4199831231.20060723063910__23686.6651023322$1153636767$gmane$org@mail.ru>
-Reply-To: "Annabelle Conway" <AnnabelleConway@mail.ru>
+From: "Bruner" <Brunercoca@poetic.com>
+Subject: It is absolutely safety for your health!
+Date: Sun, 23 Jul 2006 18:51:58 -0200
+Message-ID: <92521898104546.EDC89AC3A1@CVD8P>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+        charset="Windows-1252"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 58-186-74-xxx-dynamic.hcm.fpt.vn ([58.186.74.247]:39776 "EHLO
-	58-186-74-xxx-dynamic.hcm.fpt.vn") by vger.kernel.org with ESMTP
-	id S1751121AbWGWGjR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 23 Jul 2006 02:39:17 -0400
+Received: from [201.47.16.199] ([201.47.16.199]:4363 "EHLO CASA")
+	by vger.kernel.org with ESMTP id S1751349AbWGWVwX (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 23 Jul 2006 17:52:23 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-8086@vger.kernel.org
+To: linux-smp@vger.kernel.org
 
-Genuine Swiss made RoleHx repilcas are as close to the real thing 
-as a repilca watch can be. Sometimes even the professional jewelers 
-are unable to tell the difference from the real Role0x watch.
+Happy day! Go and tell her you're not among those who try to combat this for years. Choose Extra-Time for a reliable comprehensive method that really cures you. Many of us know the bitter feeling of not being able to deliver longer acts of mutual pleasure. Come on in here: http://oxtrent.com/gall/get/ You'll bring your marriage to new levels of passion and dedication with this.
 
-Why spend thousands of dollars on the real deal when 
-a repilca watch looks so much alike that only an expert could tell the difference...
-And you only pay a fractoin of the price.
-
-VISIT US, AND GET OUR SPECIL 370% DISHCOUNT OFER!
-
-http://QUOTC7Wusz5zdi2i0i5dcuazuushucu.contracthe.com/
-
-==========
-crumb on the sea, four thousand feet below.
-fate.
-grateful for what he had learned about work-saving low-altitude flying.
-night,  when  you crawl  past, you can  see  the glow  inside,  like alcohol
-this once, and no one was killed.
-please, you're  not a human being now, do you understand? You are a machine,
-
-which there are,  at this writing,  over 1,500 in the U.S.A. alone). Suffice
-fearless rescuers--a bunch of overfed bums  with a helicopter. I wish I  had
