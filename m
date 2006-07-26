@@ -1,26 +1,51 @@
-From: "Crain" <carportadiabatic@poetic.com>
-Subject: Fatblaster is a thermogenic weight loss formula designed to naturally assist the body in burning more calories by efficiently using stored body fat for energy.
-Date: Tue, 25 Jul 2006 17:58:22 -0400
-Message-ID: <58481944240644.7E72F1D0EE__6898.22901408679$1153864743$gmane$org@S5ZGU8G>
+From: "Jarrod Valdez" <JarrodValdez@0ol.com>
+Subject: Better Future, will-strong
+Date: Wed, 26 Jul 2006 01:22:55 +0000 (UTC)
+Message-ID: <662161c806048rgcndy79d8cqbfa34o204n177hw5djo__31553.1093081974$1153876975$gmane$org@mx.0ol.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="Windows-1252"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus2.kernel.org ([204.152.191.36]:61358 "EHLO zeus2.kernel.org")
-	by vger.kernel.org with ESMTP id S1030203AbWGYV6Y (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 25 Jul 2006 17:58:24 -0400
+Received: from [125.162.128.35] ([125.162.128.35]:42244 "EHLO mxs.mail.ru")
+	by vger.kernel.org with ESMTP id S1030311AbWGZBWk convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 25 Jul 2006 21:22:40 -0400
+Date: Wed, 26 Jul 2006 01:22:56 -0480
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-smp@vger.kernel.org
+To: linux-8086@vger.kernel.org
 
-Hello, 
+Your cre dit doesn't matter to us! If you OWN real est ate
+and want IMMEDIATEL cash to spend ANY way you like, or simply wish 
+to LOWER your monthly paym ents by a third or more, here are the dea ls
+we have TODAY (hurry, these ofers will expre TONIGHT):
 
- The ingredients in Fatblaster assist in the thermogenic processes allowing you to naturally and safely burn fat and loose unwanted weight. Fatblaster remains a top seller among competitive brands, making it the #1 choice for those seeking safe and effective weight loss solution. Thermogenesis is a term referring to the body's production of heat. Heat production is a normal part of the metabolic process.  Just take a look: http://klopinta.com/gall/fb/ 
+$488,000.00 at a 3.67,% fixed-rateF
+$372,000.00 at a 3.90,% variable-rate3
+$492,000.00 at a 3.21,% interest-onlyL
+$248,000.00 at a 3.36,% fixed-rateC
+$198,000.00 at a 3.55,% variable-rateU
 
- Too much sit down ah bruck trousers. A friend to all is a friend to none.  The price of liberty is eternal vigilance It is easier to get forgiveness than permission. 
+Hurry, when these deals are gone, they are gone Simply fill out this one-min ute form... 
+
+Don't worry about approval, your cre dit will not disqualify you! 
+
+http://WT7C2QT0.doolies.net
 
 
- Where there's a will, there's a relative. An apple a day keeps the doctor away  You can only go as far as you push
 
+the cotton out of his nose and discovered  that  the reek was gone, that the
+stuck out  over the glade like a black hook. The stabilizer was also  whole,
+
+means that  I really am a good guy, after all. That's what Guta insists, and
+some game between some giants. It had not been carefully placed here, it had
+lately he's stopped. And he has been talking about you. And
+
+even redder. His eyes filled with tears. Redrick grinned.
+     "Well, friends," Redrick announced. "Now we're going  to have ourselves
+Whoever walks behind Buzzard walks up to  his neck in filth. You didn't know
+heard  the familiar rumble from both  sides. There was nothing  on  the left
+
+     Arthur  stretched his arms, straightened his  shoulders,  grimaced, and
+really low. Ah, the hell with it. Does it matter?  I went. So here I am. Why
