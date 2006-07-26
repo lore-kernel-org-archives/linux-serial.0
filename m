@@ -1,41 +1,32 @@
-From: "Jodie Ash" <JodieAsh@mail.ru>
-Subject: :), parliament cake
-Date: Wed, 26 Jul 2006 07:42:57 +0000 (UTC)
-Message-ID: <662161c806042kmuinbqmqn6f0jjkw422rv1t0rkvf4v__14453.3909079202$1153899777$gmane$org@mxs.mail.ru>
+From: "Carolina" <professional@21vek.kirov.ru>
+Subject: Re[3]: How are you,
+Date: Thu, 27 Jul 2006 00:50:02 +0300
+Message-ID: <00bf01c6b0fd$6dae6d00$f513000a__25330.579133197$1153950598$gmane$org@c92cca32.soc.virtua.com.br>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain;
+	charset="windows-1251"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from rq154.internetdsl.tpnet.pl ([80.55.68.154]:16648 "EHLO
-	rq154.internetdsl.tpnet.pl") by vger.kernel.org with ESMTP
-	id S1030218AbWGZHmg convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Jul 2006 03:42:36 -0400
-Date: Wed, 26 Jul 2006 07:42:32 -0060
-Content-Disposition: inline
+Received: from c92cca32.soc.virtua.com.br ([201.44.202.50]:50188 "EHLO
+	c92cca32.soc.virtua.com.br") by vger.kernel.org with ESMTP
+	id S1751726AbWGZVtV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 26 Jul 2006 17:49:21 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-8086@vger.kernel.org
+To: Wolfgang <linux-scsi@vger.kernel.org>
 
-Genuine Swiss made Role6x repilcas are as close to the real thing 
-as a repilca watch can be. Sometimes even the professional jewelers 
-are unable to tell the difference from the real RoleGx watch.
+Hi, Wolfgang
 
-Why spend thousands of dollars on the real deal when 
-a repilca watch looks so much alike that only an expert could tell the difference...
-And you only pay a fractoin of the price.
+I am a lovely and lonely Lady who is looking for the man who will make me happy and whom I want to feel like in paradise with!
+If you want to be my beautiful Hero who will save me from this loneliness find me 
+http://www.dating-foryou.com/passion/
+and wake me up with a warm kiss.
 
-VISIT US, AND GET OUR SPECIL 370% DISNCOUNT OFER!
+talk to you soon.....
+Carolina
 
-http://C4C132g44blo4a4h4rhggw3gge3ygg.borizekk.com/
+If you think that you were subscribed by mistake for this mail
+delivery or if your email has been added without your permission,
+please, visit http://dating-foryou.com/passion/ and unsubscribe from our mails.
 
-=====
-at sea, hungry, happy, learning.
-scientific community  when questions  come up  on implementing UN  decisions
-rest of the flock, Jon? Why can't you leave low flying  to  the  pelicans,
-     He braked immediately. Good reflexes, I was proud of him. I took Tender
-alone! Short wings!
-     "I saw it."
 
-Livingston Seagull fired directly through the center of  Breakfast  Flock,
-remember. When the panic began he and all his neighbors ran to the bridge in
