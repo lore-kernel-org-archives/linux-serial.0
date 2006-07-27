@@ -1,51 +1,29 @@
-From: "Coleman Knutson" <ColemanKnutson@0733.com>
-Subject: Better Future, world-canvassed
-Date: Thu, 27 Jul 2006 00:29:06 +0000 (UTC)
-Message-ID: <8495387050.20060927122803__2794.88804885677$1153960146$gmane$org@0733.com>
-Reply-To: "Coleman Knutson" <ColemanKnutson@0733.com>
+From: "Florine" <crazycollegian@realtyagent.com>
+Subject: Latest stuff Make other men envy you and girls worship you Most efficient products for men
+Date: Thu, 27 Jul 2006 14:26:54 -0200
+Message-ID: <19667624256423.5FF47B568F@J4R7JUW>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+        charset="Windows-1252"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cpe-74-67-0-234.nycap.res.rr.com ([74.67.0.234]:1551 "EHLO
-	home.nycap.rr.com") by vger.kernel.org with ESMTP id S1750859AbWG0A2n
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Jul 2006 20:28:43 -0400
-Date: Wed, 27 Sep 2006 12:28:03 +0300
+Received: from zeus2.kernel.org ([204.152.191.36]:21390 "EHLO zeus2.kernel.org")
+	by vger.kernel.org with ESMTP id S1751870AbWG0R1z (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 27 Jul 2006 13:27:55 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-8086@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Your cre dit doesn't matter to us! If you OWN real est ate
-and want IMMEDIATET cash to spend ANY way you like, or simply wish 
-to LOWER your monthly paym ents by a third or more, here are the dea ls
-we have TODAY (hurry, these ofers will expre TONIGHT):
+Hello,
+ Enhanced male power and unlimited prowess with your girl The best products for the winning guysMake other men envy you and girls worship you Most efficient products for men
 
-$488,000.00 at a 3.67,% fixed-rate8
-$372,000.00 at a 3.90,% variable-rateW
-$492,000.00 at a 3.21,% interest-onlyE
-$248,000.00 at a 3.36,% fixed-rateS
-$198,000.00 at a 3.55,% variable-rateQ
+Rock hard manhood, multiple explosions and several times more semen volume
 
-Hurry, when these deals are gone, they are gone Simply fill out this one-min ute form... 
+ Just take a look: http://www.audionjn.com
 
-Don't worry about approval, your cre dit will not disqualify you! 
+Florine Elliott
 
-http://9B315Q.doolies.net
+Have you ever noticed? anybody going slower than you is an idiot, and anyone going faster than you is a maniacIn Gates we trust. Civility costs nothing
+Hungry nah know bam-by.
 
-
-
-     When  they finally  scrambled out onto dry  land  that  was covered  by
-     He gulped  the rest of  the  coffee, pulled out  a cigarette, and as he
-
-his rear end and  at the dirt. He could barely hear the muffled moans coming
-could hear another  peal of  thunder. I'll shake your souls  out of you  for
-I never  gave it a second thought. I Pulled him out like he was my flesh and
-
-I never  gave it a second thought. I Pulled him out like he was my flesh and
-Burbridge, maybe I'll figure something out.
-cottage  for myself, with a garden--as good as Buzzard's place. You know,  I
-later, after we've eaten. Brother, it's not  something you should have on an
-
-many of the  tales had  it. It lay where it had fallen. Maybe  it had fallen
-Schuhart?"
