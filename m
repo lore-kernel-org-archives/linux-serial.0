@@ -1,42 +1,19 @@
-From: "Faustino Trent" <FaustinoTrent@mail.ru>
-Subject: Your money, palo blanco
-Date: Fri, 28 Jul 2006 15:02:23 -0420
-Message-ID: <662161c80604pfw7b2amv13bfvr2mw2yp3xmm336552n__23756.41272306$1154099007$gmane$org@mxs.mail.ru>
+From: "Gomez" <burnhamcampground@repairman.com>
+Subject: Order this powerful tab and begin to play!
+Date: Sat, 29 Jul 2006 08:40:19 +0900
+Message-ID: <15207199968858.78608D6F3D@1QTJX8>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain;
+        charset="Windows-1252"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [125.234.7.253] ([125.234.7.253]:48652 "EHLO wave")
-	by vger.kernel.org with ESMTP id S1751999AbWG1PCS convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 28 Jul 2006 11:02:18 -0400
-Content-Disposition: inline
+Received: from p1147-ipad03hiraide.tochigi.ocn.ne.jp ([220.104.55.147]:34060
+	"EHLO ovyf35uh.o125kec4.comcast.net") by vger.kernel.org with ESMTP
+	id S1161382AbWG1XlW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 28 Jul 2006 19:41:22 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-8086@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Even if you have no erectin problems SOFT CIAVLIS 
-would help you to make BETTER SE3X MORE OFTEN!
-and to bring  unimagnable plesure to her.
+Hello! You have a unique chance to forget this distress forever. Stop being a two pump chump. The great thing about Extra-Time is that it works, making you last longer from the very first time. You certainly wish to eliminate your frustration and the frustration of your partner about your bed games duration. See our shop: http://tredhisdom.com/gall/get/ You'll make your equipment suit the task - and she'll worship you for that!
 
-Just disolve half a pil under your tongue 
-and get ready for action in 15 minutes. 
-
-The tests showed that the majority of men 
-after taking this medic ation were able to have 
-PERFECT ER8ECTION during 36 hours!
-
-VISIT US, AND GET OUR SPECIAL 70% DISCYOUNT OFER!
-
-http://nsqqdl.allsamsite.net/?76288533
-
-=====
-slowed to twenty and stretched his wings again at last,  the  boat  was  a
-     "Follow me  step for step, two steps behind  me,  keep your  eyes on my
-and perfect as sheets of polished silver. He began, delightedly, to  learn
-     He  had been  struggling with those empties forever, and the  way I see
-     So quiet little Martin William Seagull, startled to be  caught  under
-looked at me, I nodded, and our boot stopped moving.
-
-scene. American and English science fiction is widely read in France, Italy,
-     He stayed to pore over the map and I  made a beeline  for  the Borscht,
