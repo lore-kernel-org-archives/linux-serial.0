@@ -1,43 +1,33 @@
-From: "Rosalie Weaver" <RosalieWeaver@0451.com>
-Subject: Your health, mountain making
-Date: Sun, 30 Jul 2006 05:59:05 +0000 (UTC)
-Message-ID: <6465553996.20060730055812__9707.45080053366$1154239145$gmane$org@0451.com>
-Reply-To: "Rosalie Weaver" <RosalieWeaver@0451.com>
+From: "Mae" <decadentcouncilwomen@pediatrician.com>
+Subject: New New Most quality products for anyone who wants to become a champion in bed
+Date: Mon, 31 Jul 2006 20:08:32 -0300
+Message-ID: <00114028877863.A1D3169B4F__45204.7565406703$1154387444$gmane$org@00S9WVV>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+        charset="Windows-1252"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:48854 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S1751177AbWG3F6k (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 30 Jul 2006 01:58:40 -0400
-Date: Sun, 30 Jul 2006 05:58:12 +0180
+Received: from 200-96-128-60.cpece705.dsl.brasiltelecom.net.br ([200.96.128.60]:62403
+	"EHLO MICRO-07.ajg7gpn.net") by vger.kernel.org with ESMTP
+	id S1751452AbWGaXJ5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 31 Jul 2006 19:09:57 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-8086@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Even if you have no erectin problems SOFT CIA1LIS 
-would help you to make BETTER SE6X MORE OFTEN!
-and to bring  unimagnable plesure to her.
+Nice to see you!
+ Have more success with women and impress them with your power and stamina in bedAchieve astounding results in bed with these products designed to make any man a winner
 
-Just disolve half a pil under your tongue 
-and get ready for action in 15 minutes. 
 
-The tests showed that the majority of men 
-after taking this medic ation were able to have 
-PERFECT ER2ECTION during 36 hours!
+Make your girlfriend or wife speechless with increased hardness, richer orgsms and more power in bed
 
-VISIT US, AND GET OUR SPECIAL 70% DISCZOUNT OFER!
 
-http://hudfmn.morelstore.com/?35416393
+ Find what you need here: http://www.isohyetab.com
 
-==========
-Flock: Ignore them. The gull who speaks to an Outcast is himself  Outcast.
-quickly  figured  what was what  and  dropped the cable  and  made  a  quick
-Jonathan's voice raised. "Irresponsibility? My brothers!" he  cried.  "Who
-way back, the  boot drives itself.  In other words,  it has  a mechanism,  a
-precision flying is a step toward expressing  our  real  nature.Everything
-hankies and an orchestra.
 
-     Get down! Seagulls never fly in the dark! If you were meant to fly in
-     "How is he telling them?"
+Mae Brand
+
+Beggars and borrowers cannot be choosersBetter to have loved and lost, than never have loved at all 
+
+Vex nah gat plaster fuh passion.
+
