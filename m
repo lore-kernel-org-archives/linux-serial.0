@@ -1,33 +1,32 @@
-From: "Mae" <decadentcouncilwomen@pediatrician.com>
-Subject: New New Most quality products for anyone who wants to become a champion in bed
-Date: Mon, 31 Jul 2006 20:08:32 -0300
-Message-ID: <00114028877863.A1D3169B4F__45204.7565406703$1154387444$gmane$org@00S9WVV>
+From: "Carolina C." <ruslan@160emz.ru>
+Subject: Re[5]: Aloha...
+Date: Tue, 01 Aug 2006 18:23:23 +0300
+Message-ID: <006701c6b57e$63b5bf80$b815000a@CGZN>
 Mime-Version: 1.0
 Content-Type: text/plain;
-        charset="Windows-1252"
-Content-Transfer-Encoding: 7bit
+	charset="windows-1251"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 200-96-128-60.cpece705.dsl.brasiltelecom.net.br ([200.96.128.60]:62403
-	"EHLO MICRO-07.ajg7gpn.net") by vger.kernel.org with ESMTP
-	id S1751452AbWGaXJ5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 31 Jul 2006 19:09:57 -0400
+Received: from 200-171-48-157.dsl.telesp.net.br ([200.171.48.157]:10504 "EHLO
+	200-171-48-157.dsl.telesp.net.br") by vger.kernel.org with ESMTP
+	id S1751660AbWHAPWm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 1 Aug 2006 11:22:42 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: netdev <netdev@vger.kernel.org>
 
-Nice to see you!
- Have more success with women and impress them with your power and stamina in bedAchieve astounding results in bed with these products designed to make any man a winner
+Ave.	
 
+I am a lovely and lonely Lady who is looking for the man who will make me happy and whom I want to feel like in paradise with!
+If you want to be my beautiful Hero who will save me from this loneliness find me 
+http://www.dating-foryou.com/passion/
+and wake me up with a warm kiss.
 
-Make your girlfriend or wife speechless with increased hardness, richer orgsms and more power in bed
+goodbye.....
+Carolina C.
 
+If you think that you were subscribed by mistake for this mail
+delivery or if your email has been added without your permission,
+please, visit http://dating-foryou.com/passion/ and unsubscribe from our mails.
 
- Find what you need here: http://www.isohyetab.com
-
-
-Mae Brand
-
-Beggars and borrowers cannot be choosersBetter to have loved and lost, than never have loved at all 
-
-Vex nah gat plaster fuh passion.
 
