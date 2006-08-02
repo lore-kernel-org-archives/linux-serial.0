@@ -1,35 +1,63 @@
-From: Aubrey <aubreylee@gmail.com>
-Subject: Newest Serial core issue
-Date: Wed, 2 Aug 2006 15:24:03 +0800
-Message-ID: <6d6a94c50608020024n9d8fbc0tcdedcadeedd54b44@mail.gmail.com>
+From: "Curt Timmons" <510ham@portsevendomain.biz>
+Subject: -=Congratulation=-
+Date: Wed, 2 Aug 2006 15:23:54 +0800
+Message-ID: <200608020724.k727OHiP009496@zeus2.kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=Windows-1251
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nf-out-0910.google.com ([64.233.182.190]:31094 "EHLO
-	nf-out-0910.google.com") by vger.kernel.org with ESMTP
-	id S1751319AbWHBHYF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 2 Aug 2006 03:24:05 -0400
-Received: by nf-out-0910.google.com with SMTP id o25so543620nfa
-        for <linux-serial@vger.kernel.org>; Wed, 02 Aug 2006 00:24:03 -0700 (PDT)
-Content-Disposition: inline
+Received: from zeus2.kernel.org ([204.152.191.36]:1691 "EHLO zeus2.kernel.org")
+	by vger.kernel.org with ESMTP id S1751338AbWHBHYe (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 2 Aug 2006 03:24:34 -0400
+Received: from HT-225F6A1979C8.mqeye.net ([221.224.93.39])
+	by zeus2.kernel.org (8.13.1/8.13.1) with ESMTP id k727OHiP009496
+	for <linux-serial@vger.kernel.org>; Wed, 2 Aug 2006 07:24:34 GMT
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Hi all,
+Hey Linux-serial.
+Important international company looks for employees to cover jobs of ha=
+lf time in AU.    =20
+The search aims at responsible, dynamic and honest people, Ages between=
+ 18 and 50 years old, with desires to work in equipment and relation of=
+ dependency. That time was signed contract by a month of test, so if yo=
+ur performance is correct and effective in our company we will provide =
+new contract and also possibility of other career in our company.=20
+The vacancies are for covering jobs of  part time 1 to 4 hours  a day. =
+  =20
 
-My platform is using DMA to tx/rx data from UART. It's ok for tx
-datapath when I port the driver to the newest serial core framework.
-But I found all of the current existing drivers are using
-"uart_insert_char" to process the received chars to the high level tty
-driver, that means the received chars are processed byte by byte. But
-for my case, I need to transfer the received data to the high level
-tty driver block by block. Did I miss some API like
-"uart_insert_block"?
-Or Are there any other way to deal with my case to use the newest serial core?
 
-Thanks for any hints.
 
-Regards,
--Aubrey
+The offered weekly wage is between =88 300-1200.    =20
+
+
+
+Requirements  =20
+Handling of PC, Knowledge of Microsoft office, Internet Explorer, msn o=
+r icq.  (No excluding).    =20
+
+If you wish to enter the process of selection write to our RRHH area.=20
+mail to:
+support@mitroncorporation.com
+
+
+
+ =20
+The answers you would be accepted until day 10 of August of the 2006.
+
+
+
+
+
+ =20
+Wed, 2 Aug 2006 15:23:54 +0800
+
+
+
+-
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
