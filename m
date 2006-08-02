@@ -1,32 +1,25 @@
-From: "Carolina C." <ruslan@160emz.ru>
-Subject: Re[5]: Aloha...
-Date: Tue, 01 Aug 2006 18:23:23 +0300
-Message-ID: <006701c6b57e$63b5bf80$b815000a@CGZN>
+From: "Olen" <badlandbianco@realtyagent.com>
+Subject: Recently added It will be great Take pleasure from
+Date: Tue, 1 Aug 2006 22:13:43 -0700
+Message-ID: <45089060225035.EDD9D7649C__45822.891922626$1154495639$gmane$org@ERTG69MB>
 Mime-Version: 1.0
 Content-Type: text/plain;
-	charset="windows-1251"
-Content-Transfer-Encoding: 8bit
+        charset="Windows-1252"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 200-171-48-157.dsl.telesp.net.br ([200.171.48.157]:10504 "EHLO
-	200-171-48-157.dsl.telesp.net.br") by vger.kernel.org with ESMTP
-	id S1751660AbWHAPWm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 1 Aug 2006 11:22:42 -0400
+Received: from pool-71-110-36-31.lsanca.dsl-w.verizon.net ([71.110.36.31]:27590
+	"EHLO erzunaf.qi6uraeu.aol.com") by vger.kernel.org with ESMTP
+	id S1751207AbWHBFNr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 2 Aug 2006 01:13:47 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: netdev <netdev@vger.kernel.org>
+To: linux-smp@vger.kernel.org
 
-Ave.	
+Dear client.
+Have you ever wanted to impress your girl? 
 
-I am a lovely and lonely Lady who is looking for the man who will make me happy and whom I want to feel like in paradise with!
-If you want to be my beautiful Hero who will save me from this loneliness find me 
-http://www.dating-foryou.com/passion/
-and wake me up with a warm kiss.
-
-goodbye.....
-Carolina C.
-
-If you think that you were subscribed by mistake for this mail
-delivery or if your email has been added without your permission,
-please, visit http://dating-foryou.com/passion/ and unsubscribe from our mails.
-
+Now it’s possible to do with magic tab
+ Try this volume enhancing formula
+ Take a look: http://capbas.com/gall/gsm/ 
+ Just check yourself!
 
