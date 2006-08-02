@@ -1,63 +1,19 @@
-From: "Curt Timmons" <510ham@portsevendomain.biz>
-Subject: -=Congratulation=-
-Date: Wed, 2 Aug 2006 15:23:54 +0800
-Message-ID: <200608020724.k727OHiP009496@zeus2.kernel.org>
+From: "Singh" <Singhambush@london.com>
+Subject: Just use it and your life will be changed!
+Date: Thu, 3 Aug 2006 00:47:38 +0200
+Message-ID: <56066326405240.DA8F6F9CED@K34LKKZY>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=Windows-1251
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain;
+        charset="Windows-1252"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus2.kernel.org ([204.152.191.36]:1691 "EHLO zeus2.kernel.org")
-	by vger.kernel.org with ESMTP id S1751338AbWHBHYe (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 2 Aug 2006 03:24:34 -0400
-Received: from HT-225F6A1979C8.mqeye.net ([221.224.93.39])
-	by zeus2.kernel.org (8.13.1/8.13.1) with ESMTP id k727OHiP009496
-	for <linux-serial@vger.kernel.org>; Wed, 2 Aug 2006 07:24:34 GMT
+Received: from 196.Red-80-33-104.staticIP.rima-tde.net ([80.33.104.196]:34058
+	"EHLO 402.cii5n.net") by vger.kernel.org with ESMTP id S932303AbWHBWoL
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 2 Aug 2006 18:44:11 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Hey Linux-serial.
-Important international company looks for employees to cover jobs of ha=
-lf time in AU.    =20
-The search aims at responsible, dynamic and honest people, Ages between=
- 18 and 50 years old, with desires to work in equipment and relation of=
- dependency. That time was signed contract by a month of test, so if yo=
-ur performance is correct and effective in our company we will provide =
-new contract and also possibility of other career in our company.=20
-The vacancies are for covering jobs of  part time 1 to 4 hours  a day. =
-  =20
+Dear member. Younger and older males face this difficulty. Whatever your age, you have the answer. Extra-Time is the thing that puts you in complete control over the situation. Why don't you prevent premature creaming from ruining your personal life? All you need is here: http://aspento.com/gal/get/ Get the courage and performance you need to be the best man of her life.
 
-
-
-The offered weekly wage is between =88 300-1200.    =20
-
-
-
-Requirements  =20
-Handling of PC, Knowledge of Microsoft office, Internet Explorer, msn o=
-r icq.  (No excluding).    =20
-
-If you wish to enter the process of selection write to our RRHH area.=20
-mail to:
-support@mitroncorporation.com
-
-
-
- =20
-The answers you would be accepted until day 10 of August of the 2006.
-
-
-
-
-
- =20
-Wed, 2 Aug 2006 15:23:54 +0800
-
-
-
--
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
