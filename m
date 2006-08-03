@@ -1,34 +1,35 @@
-From: "Chase" <anaheimbushy@nycmail.com>
-Subject: Never-seen Impress your girl with prolonged hardness, plentiful explosions and increased duration
-Date: Thu, 3 Aug 2006 21:19:05 +0800
-Message-ID: <85831923314869.FA8BC18348@E06B>
+From: "Fidel" <abrogatecheekbone@realtyagent.com>
+Subject: Get everything you need delivered to your door low-cost and fast. Delight
+Date: Thu, 3 Aug 2006 21:37:35 +0800
+Message-ID: <77110137976879.F6C72C2029@465GFM>
 Mime-Version: 1.0
 Content-Type: text/plain;
         charset="Windows-1252"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [222.46.52.231] ([222.46.52.231]:10193 "EHLO S-FCEA62EE28764")
-	by vger.kernel.org with ESMTP id S932424AbWHCNTB (ORCPT
+Received: from zeus2.kernel.org ([204.152.191.36]:28130 "EHLO zeus2.kernel.org")
+	by vger.kernel.org with ESMTP id S932489AbWHCNgU (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 3 Aug 2006 09:19:01 -0400
+	Thu, 3 Aug 2006 09:36:20 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-smp@vger.kernel.org
 
-Dear member,
- Most quality products for anyone who wants to become a champion in bedBoost your manhood to astonishing levels Everything a real man would ever need.
+Good Day to you! 
 
+ Have you ever dreamt to have a very hard peenis during all process? I think, yes. 
 
-Enhanced male power and unlimited prowess with your girl The best products for the winning guys
-
-
- Come in: http://www.seelygd.com
+ Order our magical stuff now for the amazing prices, and we will dispatch it right away Enhanced male power and unlimited prowess with your girl The best products for the winning guys 
 
 
-Chase Hickman
+ Come on in here: http://www.wangheeni.com
 
 
+ World’s greatest brands produce these goods in top class labs with latest technologies. 
 
-The faintest ink is more powerful than the strongest memory  A bad penny always turns up.A banker is a fellow who lends you his umbrella when the sun is shining, but wants it back the minute it begins to rain.
-Once in a blue moon Lest strangers be filled with thy wealth; and thy labours be in the house of a stranger.
+Fidel Juarez
+
+The fear of the LORD is the beginning of knowledge: but fools despise wisdom and instruction. Its too late to shut the stable door after the horse has bolted A whistling women and a crowing hen are neither fit for God or men.
+God is Always on the Side of the Big Battalions Accidents will happen in the best regulated families. When alone, we have our thoughts to watch, in our families, our tempers and in society our tongues An heart that deviseth wicked imaginations, feet that be swift in running to mischief. Gentle is that gentle does 
+The price of liberty is eternal vigilance The bigger they are, the harder they fall 
 
