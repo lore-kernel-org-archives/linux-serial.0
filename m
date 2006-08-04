@@ -1,27 +1,43 @@
-From: "Anderson" <allusivecrusade@pediatrician.com>
-Subject: New and hot Now you could grant your wish Delight in
-Date: Fri, 4 Aug 2006 12:58:41 +0200
-Message-ID: <86835371023054.94FAFF4B38__40563.0875532099$1154689142$gmane$org@71GUEL>
+From: "Marcia Mayo" <MarciaMayo@0451.com>
+Subject: Order status, orange lily
+Date: Fri, 4 Aug 2006 18:13:56 +0000 (UTC)
+Message-ID: <662161c80604pnvb15u3c7helc975ynu3zpqc0ymaskmz__19118.3415976868$1154715236$gmane$org@mail.0451.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="Windows-1252"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from acfu151.neoplus.adsl.tpnet.pl ([83.9.222.151]:37100 "EHLO
-	xuoreuo.ur1spvop.cox.net") by vger.kernel.org with ESMTP
-	id S1161181AbWHDK66 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 4 Aug 2006 06:58:58 -0400
+Received: from zeus1.kernel.org ([204.152.191.4]:55523 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S932357AbWHDSN2 convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 4 Aug 2006 14:13:28 -0400
+Date: Fri, 4 Aug 2006 18:13:42 -0480
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-smp@vger.kernel.org
+To: linux-8086@vger.kernel.org
 
-Dear client.
+Even if you have no erectin problems SOFT CIAFLIS 
+would help you to make BETTER SE4X MORE OFTEN!
+and to bring  unimagnable plesure to her.
 
-You gape for shooting like you had seen in those films… 
-Look, now it’s possible with this stuff
- Take this and your woman will be speechless
+Just disolve half a pil under your tongue 
+and get ready for action in 15 minutes. 
 
- Come on in here: http://hterdfs.com/gall/gsm/ 
+The tests showed that the majority of men 
+after taking this medic ation were able to have 
+PERFECT ERXECTION during 36 hours!
 
- We thank you for being interested in our products
+VISIT US, AND GET OUR SPECIAL 70% DISCROUNT OFER!
 
+http://wkmbdd.markerbeach.com/?99591414
+
+=====
+but he didn't appear to notice. He held  his  practice  sessions  directly
+stupid map?
+through the night, and all so peaceful and still...
+looks  of those  two hillocks!  A  straight line to  the  asphalt led  right
+startled that you obliged them so well."
+But  what  was  the  silvery thing  shining  back  there?  Was  it  just  my
+
+     "I don't think  so.  The Pilman  Radiant wasn't the first, nor  was  it
+order you to start walking on your hands you will immediately hoist your fat
