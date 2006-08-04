@@ -1,35 +1,42 @@
-From: "Fidel" <abrogatecheekbone@realtyagent.com>
-Subject: Get everything you need delivered to your door low-cost and fast. Delight
-Date: Thu, 3 Aug 2006 21:37:35 +0800
-Message-ID: <77110137976879.F6C72C2029@465GFM>
+From: "Jame Gregg" <JameGregg@mail.ru>
+Subject: Your cash, palmer worm
+Date: Fri, 4 Aug 2006 06:56:28 -0540
+Message-ID: <1770035791.20060804065628__32880.8283120908$1154674596$gmane$org@mail.ru>
+Reply-To: "Jame Gregg" <JameGregg@mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="Windows-1252"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus2.kernel.org ([204.152.191.36]:28130 "EHLO zeus2.kernel.org")
-	by vger.kernel.org with ESMTP id S932489AbWHCNgU (ORCPT
+Received: from [211.211.82.122] ([211.211.82.122]:22028 "EHLO na")
+	by vger.kernel.org with ESMTP id S932589AbWHDG4Y (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 3 Aug 2006 09:36:20 -0400
+	Fri, 4 Aug 2006 02:56:24 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-smp@vger.kernel.org
+To: linux-8086@vger.kernel.org
 
-Good Day to you! 
+Even if you have no erectin problems SOFT CIABLIS 
+would help you to make BETTER SEXX MORE OFTEN!
+and to bring  unimagnable plesure to her.
 
- Have you ever dreamt to have a very hard peenis during all process? I think, yes. 
+Just disolve half a pil under your tongue 
+and get ready for action in 15 minutes. 
 
- Order our magical stuff now for the amazing prices, and we will dispatch it right away Enhanced male power and unlimited prowess with your girl The best products for the winning guys 
+The tests showed that the majority of men 
+after taking this medic ation were able to have 
+PERFECT ER4ECTION during 36 hours!
 
+VISIT US, AND GET OUR SPECIAL 70% DISC9OUNT OFER!
 
- Come on in here: http://www.wangheeni.com
+http://mjelbn.techniworlds.net/?83294433
 
+==========
+     Gradually, in the night, another circle formed around the  circle  of
+warehouse or something. And it will be perfectly clear to everyone," I said,
+hard?"
+twenty feet away and it's completely rusted out, but they look  like they've
+on the upstroke.
+a  cigarette. I sat  there and felt that I  was  coming round. The bonus pay
 
- World’s greatest brands produce these goods in top class labs with latest technologies. 
-
-Fidel Juarez
-
-The fear of the LORD is the beginning of knowledge: but fools despise wisdom and instruction. Its too late to shut the stable door after the horse has bolted A whistling women and a crowing hen are neither fit for God or men.
-God is Always on the Side of the Big Battalions Accidents will happen in the best regulated families. When alone, we have our thoughts to watch, in our families, our tempers and in society our tongues An heart that deviseth wicked imaginations, feet that be swift in running to mischief. Gentle is that gentle does 
-The price of liberty is eternal vigilance The bigger they are, the harder they fall 
-
+pulled out of his dive from seven thousand feet, a long gray streak firing
+     "Follow me  step for step, two steps behind  me,  keep your  eyes on my
