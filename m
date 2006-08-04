@@ -1,43 +1,34 @@
-From: "Marcia Mayo" <MarciaMayo@0451.com>
-Subject: Order status, orange lily
-Date: Fri, 4 Aug 2006 18:13:56 +0000 (UTC)
-Message-ID: <662161c80604pnvb15u3c7helc975ynu3zpqc0ymaskmz__19118.3415976868$1154715236$gmane$org@mail.0451.com>
+From: "Bobby" <abbeycekb@losch.net>
+Subject: Other guys are improving themselves..are you?
+Date: Fri, 4 Aug 2006 14:20:51 -0500
+Message-ID: <7379786629.20060804142051@yye>
+Reply-To: "Bobby Moreland" <abbeycekb@losch.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:55523 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S932357AbWHDSN2 convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 4 Aug 2006 14:13:28 -0400
-Date: Fri, 4 Aug 2006 18:13:42 -0480
-Content-Disposition: inline
+Received: from [222.235.42.141] ([222.235.42.141]:38158 "HELO 222.235.42.141")
+	by vger.kernel.org with SMTP id S1422668AbWHEAUG (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 4 Aug 2006 20:20:06 -0400
+Received: from smtp1.losch.net
+	by 222.235.42.141 (Postfix) with ESMTP id 1DA8B994EE
+	for <linux-serial@vger.kernel.org>; Fri, 4 Aug 2006 14:20:51 -0500
+Received: from unknown (HELO yye) (196.190.241.43)
+	by smtp1.losch.net (Postfix) with ESMTP id k9REpAqtEv4u
+	for <linux-serial@vger.kernel.org>; Fri, 4 Aug 2006 14:20:51 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-8086@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Even if you have no erectin problems SOFT CIAFLIS 
-would help you to make BETTER SE4X MORE OFTEN!
-and to bring  unimagnable plesure to her.
 
-Just disolve half a pil under your tongue 
-and get ready for action in 15 minutes. 
+Hey man inside, check out the discounts these happy guys are offering  can on enlarge patches about!
+Steel Package: are 10 Patches reg $79.95 Now $49.95 ! Free shipping too! welcome
+Silver Package: model 25 Patches reg $129.95, Now $99.95! Free shipping and free exercise manual included! many
+Gold Package:  not 40 Patches reg $189.95, Now $149.95! Free shipping and free exercise manual included! your
+Platinum Package: told 65 Patches reg $259.95, Now $199.95! Free shipping and free exercise manual included! open
+Millions of men are taking advantage of this revolutionary new product - Don't be left behind! site
+http://www.kreptnmoldast.com/
+When you do something, you should burn yourself up completely, like a good bonfire, leaving no trace of yourself.
 
-The tests showed that the majority of men 
-after taking this medic ation were able to have 
-PERFECT ERXECTION during 36 hours!
 
-VISIT US, AND GET OUR SPECIAL 70% DISCROUNT OFER!
-
-http://wkmbdd.markerbeach.com/?99591414
-
-=====
-but he didn't appear to notice. He held  his  practice  sessions  directly
-stupid map?
-through the night, and all so peaceful and still...
-looks  of those  two hillocks!  A  straight line to  the  asphalt led  right
-startled that you obliged them so well."
-But  what  was  the  silvery thing  shining  back  there?  Was  it  just  my
-
-     "I don't think  so.  The Pilman  Radiant wasn't the first, nor  was  it
-order you to start walking on your hands you will immediately hoist your fat
