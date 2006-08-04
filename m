@@ -1,25 +1,27 @@
-From: "Deena" <bedfordcrosspoint@earthling.net>
-Subject: =?ISO-8859-1?Q?=20New=92n=92hot?= Every man wants it Enjoy
-Date: Fri, 4 Aug 2006 12:53:34 +0200
-Message-ID: <00127735768705.A96249A961@CM09SB0>
+From: "Anderson" <allusivecrusade@pediatrician.com>
+Subject: New and hot Now you could grant your wish Delight in
+Date: Fri, 4 Aug 2006 12:58:41 +0200
+Message-ID: <86835371023054.94FAFF4B38__40563.0875532099$1154689142$gmane$org@71GUEL>
 Mime-Version: 1.0
 Content-Type: text/plain;
         charset="Windows-1252"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from p54AEA69B.dip0.t-ipconnect.de ([84.174.166.155]:16264 "EHLO
-	0n7eo.etep.verizon.net") by vger.kernel.org with ESMTP
-	id S1161162AbWHDKxh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 4 Aug 2006 06:53:37 -0400
+Received: from acfu151.neoplus.adsl.tpnet.pl ([83.9.222.151]:37100 "EHLO
+	xuoreuo.ur1spvop.cox.net") by vger.kernel.org with ESMTP
+	id S1161181AbWHDK66 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 4 Aug 2006 06:58:58 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-smp@vger.kernel.org
 
-Hello Sir,
-You crave to shoot like a film star… 
-Now it’s possible to do with magic tab
- Worried it won't work?
+Dear client.
 
- Check up here: http://helnall.com/gall/gsm/ 
- The prices are really low and the quality it truly very high!
+You gape for shooting like you had seen in those films… 
+Look, now it’s possible with this stuff
+ Take this and your woman will be speechless
+
+ Come on in here: http://hterdfs.com/gall/gsm/ 
+
+ We thank you for being interested in our products
 
