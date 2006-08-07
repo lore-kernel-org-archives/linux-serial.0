@@ -1,32 +1,29 @@
-From: "Trent" <obscuriabedb@mysterious-eyes.com>
-Subject: Be the "biggest" out of all your friends
-Date: Sun, 6 Aug 2006 20:24:18 -0400
-Message-ID: <2317788167.20060806202418@izuhrschud>
-Reply-To: "Trent Ryan" <obscuriabedb@mysterious-eyes.com>
+From: colet aeneas <674hezekiah@smapxsmap.net>
+Subject: (unknown)
+Date: Mon, 07 Aug 2006 05:46:24 +0300
+Message-ID: <2f7e01c6b9cb$385d84d5$fc81ce85@smapxsmap.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain;
+    format=flowed;
+    charset="iso-8859-1";
+    reply-type=original
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [222.135.124.11] ([222.135.124.11]:15625 "HELO 222.135.124.11")
-	by vger.kernel.org with SMTP id S1750824AbWHGAQa (ORCPT
+Received: from c-67-185-151-216.hsd1.or.comcast.net ([67.185.151.216]:53007
+	"HELO c-67-185-151-216.hsd1.or.comcast.net") by vger.kernel.org
+	with SMTP id S1750930AbWHGCya (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 6 Aug 2006 20:16:30 -0400
-Received: from mail.mysterious-eyes.com
-	by 222.135.124.11 (8.9.3/8.9.3) with SMTP id sSfFhyiAlEeo
-	for <linux-serial@vger.kernel.org>; Sun, 6 Aug 2006 20:24:18 -0400
-Received: from (root@localhost)
-	by mail.mysterious-eyes.com with Microsoft SMTPSVC(5.0.2195.5329)
-	for <linux-serial@vger.kernel.org>; Sun, 6 Aug 2006 20:24:18 -0400
+	Sun, 6 Aug 2006 22:54:30 -0400
+Subject: 
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
+Hello, 
+I'm Dave Johnson, and I want to share an opportunity www.realhighprofit.net which pays me everyday. Did you know that Internet allows you to participate in highly profitable opportunities without leaving your chair? 
 
-Hey man, mail ok I had to send you this site, job I ordered a Gold package and these things work amazingly are!
-For real,   I've tried a bunch of other ones but they don't work- these ones are the real deal though .
-Fear does not have any special power unless you empower it by submitting to it.
-cool Check out the site for yourself:
-http://www.lekoteropaster.com/
-If there's delight in love, 'Tis when I see that heart, which others bleed for, bleed for me.
+Yes it's true! I found a program which pays me 5% profit every day. Unbelievable, yes? Jest check out this site -  www.realhighprofit.net
+Dave.
 
 
+wsnqgqsfjw
