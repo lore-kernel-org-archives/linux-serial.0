@@ -1,77 +1,43 @@
-From: Holger Schurig <hs4233@mail.mn-solutions.de>
-Subject: Autodetection fails when re-loading 8250 driver
-Date: Mon, 7 Aug 2006 17:11:38 +0200
-Message-ID: <200608071711.38826.hs4233@mail.mn-solutions.de>
+From: "Marlon Gould" <MarlonGould@0451.com>
+Subject: Your money, Mindel-riss
+Date: Mon, 7 Aug 2006 18:31:32 +0000 (UTC)
+Message-ID: <80393208.20060807183004__31766.7384901599$1154975492$gmane$org@0451.com>
+Reply-To: "Marlon Gould" <MarlonGould@0451.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from s131.mittwaldmedien.de ([62.216.178.31]:55593 "EHLO
-	s131.mittwaldmedien.de") by vger.kernel.org with ESMTP
-	id S932108AbWHGPWi convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 7 Aug 2006 11:22:38 -0400
-Received: from localhost (localhost [127.0.0.1])
-	by s131.mittwaldmedien.de (Postfix) with ESMTP id 11E7F5E4173
-	for <linux-serial@vger.kernel.org>; Mon,  7 Aug 2006 17:22:30 +0200 (CEST)
-Received: from lin01.mn-solutions.de (pD95F8DA4.dip0.t-ipconnect.de [217.95.141.164])
-	by s131.mittwaldmedien.de (Postfix) with ESMTP id 785685E5A8F
-	for <linux-serial@vger.kernel.org>; Mon,  7 Aug 2006 17:21:01 +0200 (CEST)
-Received: from mnz66.mn-solutions.de (mnz66.mn-logistik.de [192.168.233.66])
-	by lin01.mn-solutions.de (Postfix) with ESMTP id 65A0D1E0033
-	for <linux-serial@vger.kernel.org>; Mon,  7 Aug 2006 17:11:39 +0200 (CEST)
-Content-Disposition: inline
+Received: from e177011089.adsl.alicedsl.de ([85.177.11.89]:13581 "EHLO
+	e177011089.adsl.alicedsl.de") by vger.kernel.org with ESMTP
+	id S932283AbWHGS3x (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 7 Aug 2006 14:29:53 -0400
+Date: Mon, 7 Aug 2006 18:30:04 -0060
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-8086@vger.kernel.org
 
-I have a board with an QuadUART TI16C754B chip. I set this chip 
-up using the usual
+Even if you have no erectin problems SOFT CIAMLIS 
+would help you to make BETTER SE4X MORE OFTEN!
+and to bring  unimagnable plesure to her.
 
-struct plat_serial8250_port serial_platform_data[] = ...
-struct platform_device serial_device = ...
-struct platform_device *devices[] __initdata =
-platform_add_devices(devices, ARRAY_SIZE(devices));
+Just disolve half a pil under your tongue 
+and get ready for action in 15 minutes. 
 
-way. When I now "insmod 8250.ko", the autoconfiguration tries and 
-emits:
+The tests showed that the majority of men 
+after taking this medic ation were able to have 
+PERFECT ERAECTION during 36 hours!
 
-ttyS0: autoconf (0x0000, 0xc8858e00): iir=3 EFRv2 
-950id=60:60:60:60 850id=0000 type=ST16650V2
-serial8250.0: ttyS0 at MMIO 0xc00ee00 (irq = 30) is a ST16650V2
+VISIT US, AND GET OUR SPECIAL 70% DISCCOUNT OFER!
 
-Now I "rmmod 8250" and "insmod 8250.ko" again. Now I get
+http://mwddcf.forgettry.net/?83283351
 
-ttyS0: autoconf (0x0000, 0xc8858e00): IER test failed (10, 1f) 
-type=unknown
+==========
+     "I don't care what they say," he thought  fiercely,  and  his  vision
+nearer to Heaven."
+end it all.
+I won't take Tender along.  What do you  think, Red? Maybe I  shouldn't take
+fourteen miles per hour! It was a breakthrough, the greatest single moment
+borders in Rexopolis.  The  flying boot was  waiting  for us, brought by the
 
-
->From what I found out the bit EFR[4] keeps set when I remove the 
-driver. This bit enables Enhanced functions and makes IIR[4] not 
-return 0, but the state of the sleep mode. Therefore, I can 
-write 0x0F into IIR and get 0x1F back.
-
-A quick hack to get the chip working would be the setting 
-UPF_BUGGY_UART bit test, but I actually think that 8250.c is 
-buggy, maybe it should read IIR and and the result with 0x0f. 
-Because one cannot know the state of EFR[4], one should try to 
-disable the bit first with something like this:
-
---- linux.orig/drivers/serial/8250.c
-+++ linux/drivers/serial/8250.c
-@@ -902,4 +902,12 @@
-        up->bugs = 0;
-
-        if (!(up->port.flags & UPF_BUGGY_UART)) {
-+               serial_outp(up, UART_LCR, 0xBF);
-+               serial_outp(up, UART_EFR, UART_EFR_ECB);
-+               serial_outp(up, UART_LCR, 0);
-+               serial_outp(up, UART_IER, 0);
-+               serial_outp(up, UART_LCR, 0xBF);
-+               serial_outp(up, UART_EFR, 0);
-+               serial_outp(up, UART_LCR, 0);
-+
-                /*
-
-
+dazzling clear skies... in the very times when every other gull  stood  on
+somewhere around here, then there wouldn't  even be  a little damp spot left
