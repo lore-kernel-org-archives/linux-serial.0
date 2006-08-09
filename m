@@ -1,19 +1,30 @@
-From: "Hightower" <acmebangladesh@realtyagent.com>
-Subject: You could order it on-line and get immediately!
-Date: Tue, 8 Aug 2006 14:57:09 +0100
-Message-ID: <31351225603942.0C16B4EC0A@U2FACGB>
+From: "Viola Montgomery" <497leon@myramstore.com>
+Subject: Fwd:  Need a University {}Degree to obtain the career you?ve always wanted?
+Date: Wed, 9 Aug 2006 09:12:05 +0300
+Message-ID: <200608090612.k796CNIC011427__21342.6495007754$1155103991$gmane$org@zeus1.kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain;
-        charset="Windows-1252"
-Content-Transfer-Encoding: 7bit
+        charset="Windows-1251"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gun-ghluasad-217-16-211-25.scotnet.co.uk ([217.16.211.25]:29507
-	"EHLO 12LAB01") by vger.kernel.org with ESMTP id S964895AbWHHN6f
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 8 Aug 2006 09:58:35 -0400
+Received: from zeus1.kernel.org ([204.152.191.4]:22695 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S1030514AbWHIGNA (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 9 Aug 2006 02:13:00 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-scsi@vger.kernel.org
 
-How are you bro ? Eliminate this problem and all the anxiety it causes! Become a better male! Extra-Time is the thing that puts you in complete control over the situation. Hate seeing her unhappy face after you finish too quickly? Check up: http://lorned.com/gall/get/ You will become her best partner ever - she just won't be able to leave! No anguish, just adoration.
+In just 2 years you can have a masters degree from a national university. 
+
+A better job, more income and a better life can all be yours in just 2 years. 
+No books to buy, no classes to go to, and no entrance exams. 
+Learn in your own home at your own pace. We supply all the study materials, all you have to do is study and complete 2 tests per month. 
+
+
+Reach Us Whenever +1           (831)   302      66 63
+Operators Live 24 hours
+
+-----------------------------
+demonstrable augustan belie alcove absentee dickens archaic backplate
 
