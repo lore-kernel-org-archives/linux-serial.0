@@ -1,59 +1,27 @@
-From: Jonathan McDowell <noodles@earth.li>
-Subject: [PATCH] OMAP1510 serial fix for 115200 baud.
-Date: Wed, 9 Aug 2006 21:11:46 +0100
-Message-ID: <20060809201146.GG27094@earth.li>
+From: "Kendrick" <circumcircleappalachia@inorbit.com>
+Subject: Relax with You are just a click away from something which will eliminate your most distressing trouble.
+Date: Fri, 11 Aug 2006 00:08:00 +0200
+Message-ID: <54794649140359.0E4572EFE9__39689.054064411$1155247477$gmane$org@H33Y>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+        charset="Windows-1252"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from the.earth.li ([193.201.200.66]:60121 "EHLO the.earth.li")
-	by vger.kernel.org with ESMTP id S1751347AbWHIULw (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 9 Aug 2006 16:11:52 -0400
-Content-Disposition: inline
+Received: from 196.Red-80-33-104.staticIP.rima-tde.net ([80.33.104.196]:51206
+	"EHLO ehxb.be5e.comcast.net") by vger.kernel.org with ESMTP
+	id S932127AbWHJWEX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 10 Aug 2006 18:04:23 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, rmk+serial@arm.linux.org.uk
-Cc: linux-omap-open-source@linux.omap.com, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-The patch below is necessary for 115200 baud on an OMAP1510 internal
-UART. It's been in the linux-omap tree for some time and with it applied
-to a vanilla Linus git tree the serial console on the Amstrad Delta
-(which is OMAP1510 based and whose initial bootloader runs at 115200)
-works fine (it doesn't without it). Is there any possibility of getting
-it accepted into mainline? It shouldn't affect any other platform due to
-the ifdef/cpu_is guards.
+Hottest new offer
 
-Signed-Off-By: Jonathan McDowell <noodles@earth.li>
+ This is what you always needed to lead a happier, more fulfilling life. You will have to learn to handle your thicker longer tool in just several weeks.
+ Give her an opportunity to spread rumors about your enormous size. You'll be thanking this product, but your girl will be thanking it even more - just try! Enter: http://www.deferj.com/gal/ms/ 
 
------
-diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index bbf78aa..76cd21d 100644
---- a/drivers/serial/8250.c
-+++ b/drivers/serial/8250.c
-@@ -1885,6 +1885,17 @@ #endif
- 		serial_outp(up, UART_EFR, efr);
- 	}
- 
-+#ifdef CONFIG_ARCH_OMAP15XX
-+	/* Workaround to enable 115200 baud on OMAP1510 internal ports */
-+	if (cpu_is_omap1510() && is_omap_port((unsigned int)up->port.membase)) {
-+		if (baud == 115200) {
-+			quot = 1;
-+			serial_out(up, UART_OMAP_OSC_12M_SEL, 1);
-+		} else
-+			serial_out(up, UART_OMAP_OSC_12M_SEL, 0);
-+	}
-+#endif
-+
- 	if (up->capabilities & UART_NATSEMI) {
- 		/* Switch to bank 2 not bank 1, to avoid resetting EXCR2 */
- 		serial_outp(up, UART_LCR, 0xe0);
------
+You are just a click away from something which will eliminate your most distressing trouble.
 
-J.
 
--- 
-] http://www.earth.li/~noodles/ [] 101 things you can't have too much  [
-]  PGP/GPG Key @ the.earth.li   []        of : 1 - Cable ties.         [
-] via keyserver, web or email.  []                                     [
-] RSA: 4DC4E7FD / DSA: 5B430367 []                                     [
+ Two wrongs may not make a right but three rights make a left Good and quickly seldom meet  When yuh buy ah dutty calico yuh gat fuh wear am till it tear. The modem is the message. The country is in ruins, and there are still mountains and rivers - japanese proverb When fortune smiles, embrace her
+
