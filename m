@@ -1,27 +1,27 @@
-From: "Santiago" <SantiagoLink@allergist.com>
-Subject: Just published Every man wishes it.  Enjoy
-Date: Sat, 12 Aug 2006 16:39:38 -0400
-Message-ID: <35507797637975.3A229DA6C8@OGGG5VU>
+From: "Hurley" <bryantclaim@programmer.net>
+Subject: Thermogenesis is a term referring to the body's production of heat. Heat production is a normal part of the metabolic process.
+Date: Sun, 13 Aug 2006 02:15:48 +0100
+Message-ID: <41729489806480.2633C47DE2__47155.6174838499$1155431741$gmane$org@1TZ98T0>
 Mime-Version: 1.0
 Content-Type: text/plain;
         charset="Windows-1252"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from pool-70-110-115-96.lyn.east.verizon.net ([70.110.115.96]:44049
-	"EHLO zoewuuun.ro5i8qi.aol.com") by vger.kernel.org with ESMTP
-	id S1422678AbWHLUlc (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 12 Aug 2006 16:41:32 -0400
+Received: from zeus1.kernel.org ([204.152.191.4]:24742 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S1030181AbWHMBPR (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 12 Aug 2006 21:15:17 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Dear customer.
+How are you bro ? 
 
-You crave to shoot like a film star… 
 
-This successful product is created especially for you, guys
+ There are two main possible ways of inducing a reduction in body fat.  With every order guaranteed, you have nothing to lose! (except weight) Supplement your life today! Join thousands of satisfied customers and experience for yourself the proven benefits of Fatblaster.  Take a look: http://erritans.com/gall/fb/ 
 
- Try it now!
- You may find what you need here: http://milokinter.com/gal/gsm/ 
- We thank you for being our customer!
+ It ain't over 'till it's over. If the wind will not serve, take to the oars Everyone stretches his legs according to the length of his coverlet Hunger is the best sauce
+
+
+ Nah all who guh a church house ah guh fuh pray. History repeats itself You only live once
 
