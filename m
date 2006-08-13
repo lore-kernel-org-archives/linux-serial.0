@@ -1,35 +1,38 @@
-From: NewsAlert <carefree@fadmail.com>
-Subject: Mortgage Servicing News Sun, 13 Aug 2006 15:14:13 +0500
-Date: Sun, 13 Aug 2006 15:07:13 +0500
-Message-ID: <deoxyribonucleic.hull__33333.8878387169$1155460306$gmane$org@autocratic>
+From: Peter Korsgaard <jacmet@sunsite.dk>
+Subject: [PATCH] fix serial/amba-pl011.c console Kconfig
+Date: Sun, 13 Aug 2006 15:17:06 +0200
+Message-ID: <87fyg0rd0t.fsf@slug.be.48ers.dk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from pool-70-110-44-232.sea.dsl-w.verizon.net ([70.110.44.232]:42756
-	"HELO pool-70-110-44-232.sea.dsl-w.verizon.net") by vger.kernel.org
-	with SMTP id S1750775AbWHMJLf (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 13 Aug 2006 05:11:35 -0400
+Received: from europa.telenet-ops.be ([195.130.137.75]:41889 "EHLO
+	europa.telenet-ops.be") by vger.kernel.org with ESMTP
+	id S1751169AbWHMNRQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 13 Aug 2006 09:17:16 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-fsdevel@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, rmk+serial@arm.linux.org.uk
 
-Hello,
+Hi,
 
-We tried contacting you awhile ago about your low interest mor/tag rate.
+The following little trivial patch fixes the Kconfig entry for console
+on AMBA PL011 to match the code.
 
-You have qualified for the lowest rate in years...
+Signed-off-by: Peter Korsgaard <jacmet@sunsite.dk>
 
-You could get over 380,000 for as little as 500 a month!
+diff -urpN linux-2.6.18-rc4.orig/drivers/serial/Kconfig linux-2.6.18-rc4/drivers/serial/Kconfig
+--- linux-2.6.18-rc4.orig/drivers/serial/Kconfig	2006-08-13 15:08:01.000000000 +0200
++++ linux-2.6.18-rc4/drivers/serial/Kconfig	2006-08-13 15:09:37.000000000 +0200
+@@ -295,7 +295,7 @@ config SERIAL_AMBA_PL011_CONSOLE
+ 	  Even if you say Y here, the currently visible framebuffer console
+ 	  (/dev/tty0) will still be used as the system console by default, but
+ 	  you can alter that using a kernel command line option such as
+-	  "console=ttyAM0". (Try "man bootparam" or see the documentation of
++	  "console=ttyAMA0". (Try "man bootparam" or see the documentation of
+ 	  your boot loader (lilo or loadlin) about how to pass options to the
+ 	  kernel at boot time.)
+ 
 
-B ad credit? Doesn't matter, low rates are fixed no matter what!
-
-To get a free, no oblig-ation consultation click below:
-
-http://neckerchiefloving.com/
-
-Regards,
-Joel Krause
-
-
+-- 
+Bye, Peter Korsgaard
