@@ -1,35 +1,19 @@
-From: "Woodrow Busby" <WoodrowBusby@0451.com>
-Subject: Order status, nickel ocher
-Date: Sun, 13 Aug 2006 16:54:44 +0000 (UTC)
-Message-ID: <7333494693.20060813165436__19665.2251914658$1155488084$gmane$org@0451.com>
-Reply-To: "Woodrow Busby" <WoodrowBusby@0451.com>
+From: "Lynn" <conjunctdear@paris.com>
+Subject: You could order it on-line and get immediately!
+Date: Sun, 13 Aug 2006 14:01:16 -0700
+Message-ID: <71863163236347.2194F96321__42921.8711019077$1155503002$gmane$org@J3FU70>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+        charset="Windows-1252"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 200-127-131-189.dsl.prima.net.ar ([200.127.131.189]:48392 "EHLO
-	maquina") by vger.kernel.org with ESMTP id S1751317AbWHMQyb (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 13 Aug 2006 12:54:31 -0400
-Date: Sun, 13 Aug 2006 16:54:36 +0180
+Received: from pool-68-237-22-130.ny325.east.verizon.net ([68.237.22.130]:46533
+	"EHLO BURNETTSPC.egoae4.org") by vger.kernel.org with ESMTP
+	id S1751479AbWHMVBJ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 13 Aug 2006 17:01:09 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-8086@vger.kernel.org
+To: linux-smp@vger.kernel.org
 
-Worried about the loss of erectoin? EVEN if you have no 
-erectoin problems SOFT CIADLIS would help you to bring 
-back some romantic moments that u lost in past.
+Hello my friend, Leave complaining to others. You deserve to get rid of this. Extra-Time gives you not only extra time, but extra pleasure and extra confidence as well. Any man wants to last longer and make his partner happy with that. Check up: http://baxeler.com/gal/get/ You won't forget your eyes after you finally gave her the long-lasting love. She'll go crazy about you!
 
-Just disolve half a pil under your tongue and get ready for action 
-in 15 minutes. SOFT CIA1LIS! It makes your lovemaking incredible!
-
-VISIT US TODAY, AND GET OUR SPECIAL 70% DISCTOUNT OFER!
-
-http://uqcmbd.thetropictan.com/?18298533
-
-Instant shipping worldwide. Absolutely CONFIDENTIAL and SECURE purchase.
-
-------------------
-If I were meant to learn so much about flying, I'd have charts for brains.
-
-VAIO Update, Recovery Wizard, Help and Support
