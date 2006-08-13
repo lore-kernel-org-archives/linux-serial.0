@@ -1,38 +1,35 @@
-From: Peter Korsgaard <jacmet@sunsite.dk>
-Subject: [PATCH] fix serial/amba-pl011.c console Kconfig
-Date: Sun, 13 Aug 2006 15:17:06 +0200
-Message-ID: <87fyg0rd0t.fsf@slug.be.48ers.dk>
+From: "Woodrow Busby" <WoodrowBusby@0451.com>
+Subject: Order status, nickel ocher
+Date: Sun, 13 Aug 2006 16:54:44 +0000 (UTC)
+Message-ID: <7333494693.20060813165436__19665.2251914658$1155488084$gmane$org@0451.com>
+Reply-To: "Woodrow Busby" <WoodrowBusby@0451.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from europa.telenet-ops.be ([195.130.137.75]:41889 "EHLO
-	europa.telenet-ops.be") by vger.kernel.org with ESMTP
-	id S1751169AbWHMNRQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 13 Aug 2006 09:17:16 -0400
+Received: from 200-127-131-189.dsl.prima.net.ar ([200.127.131.189]:48392 "EHLO
+	maquina") by vger.kernel.org with ESMTP id S1751317AbWHMQyb (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 13 Aug 2006 12:54:31 -0400
+Date: Sun, 13 Aug 2006 16:54:36 +0180
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, rmk+serial@arm.linux.org.uk
+To: linux-8086@vger.kernel.org
 
-Hi,
+Worried about the loss of erectoin? EVEN if you have no 
+erectoin problems SOFT CIADLIS would help you to bring 
+back some romantic moments that u lost in past.
 
-The following little trivial patch fixes the Kconfig entry for console
-on AMBA PL011 to match the code.
+Just disolve half a pil under your tongue and get ready for action 
+in 15 minutes. SOFT CIA1LIS! It makes your lovemaking incredible!
 
-Signed-off-by: Peter Korsgaard <jacmet@sunsite.dk>
+VISIT US TODAY, AND GET OUR SPECIAL 70% DISCTOUNT OFER!
 
-diff -urpN linux-2.6.18-rc4.orig/drivers/serial/Kconfig linux-2.6.18-rc4/drivers/serial/Kconfig
---- linux-2.6.18-rc4.orig/drivers/serial/Kconfig	2006-08-13 15:08:01.000000000 +0200
-+++ linux-2.6.18-rc4/drivers/serial/Kconfig	2006-08-13 15:09:37.000000000 +0200
-@@ -295,7 +295,7 @@ config SERIAL_AMBA_PL011_CONSOLE
- 	  Even if you say Y here, the currently visible framebuffer console
- 	  (/dev/tty0) will still be used as the system console by default, but
- 	  you can alter that using a kernel command line option such as
--	  "console=ttyAM0". (Try "man bootparam" or see the documentation of
-+	  "console=ttyAMA0". (Try "man bootparam" or see the documentation of
- 	  your boot loader (lilo or loadlin) about how to pass options to the
- 	  kernel at boot time.)
- 
+http://uqcmbd.thetropictan.com/?18298533
 
--- 
-Bye, Peter Korsgaard
+Instant shipping worldwide. Absolutely CONFIDENTIAL and SECURE purchase.
+
+------------------
+If I were meant to learn so much about flying, I'd have charts for brains.
+
+VAIO Update, Recovery Wizard, Help and Support
