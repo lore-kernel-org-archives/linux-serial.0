@@ -1,37 +1,40 @@
-From: "Mack Frey" <MackFrey@1-call.com>
-Subject: Better Future, wing-borne
-Date: Mon, 14 Aug 2006 15:34:15 -0120
-Message-ID: <662161c80604s0zpnxfc1yanmq6xbptzydg9bwsz2cpi__25225.8013621487$1155569741$gmane$org@mailscanner.1-call.com>
+From: "Chase Mullins" <catalyticbureaucracy@doglover.com>
+Subject: But some of us think  =?ISO-8859-1?Q?=20it=92s?= impossible
+Date: Mon, 14 Aug 2006 10:01:44 -0700
+Message-ID: <99314257312418.10F7072E1E@PDTI2S>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain;
+        charset="Windows-1252"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [85.101.169.62] ([85.101.169.62]:47625 "EHLO pro2000")
-	by vger.kernel.org with ESMTP id S1750783AbWHNPeT convert rfc822-to-8bit
+Received: from 71-37-99-51.slkc.qwest.net ([71.37.99.51]:28174 "EHLO
+	DON-GYU8JTVAGND") by vger.kernel.org with ESMTP id S932235AbWHNQ6L
 	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 14 Aug 2006 11:34:19 -0400
-Content-Disposition: inline
+	Mon, 14 Aug 2006 12:58:11 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-8086@vger.kernel.org
+To: linux-smp@vger.kernel.org
 
-We sent you an email a while ago, because you qualified for a   
-much lower rate based on our records from a national database.   
-Why is this? Because currently it is a buyers market with the   
-lowest rates in years.
-   
-You can now get $325,000 for as little as $709 a month at as low as 3.75%!   
-We realize many homeowners struggle and that makes it difficult   
-to maintain good credit. But we specialize in poor credit cases- helping you   
-to refinance even with bad credt, helping you lower your monthly   
-burden and build back your credt.   
+Dear client.
 
-You will receive the lowest rate possible in your special circumstance   
-   
-You can fill out this quick form and be approved within 24 hours:  
 
-http://PSJX.cnf2e.com
+Let’s make our ejaculation like steel Do you wish to increase your volume by up to 500%? Lots of pleasure waits for you right after you take this medicine 
 
-=======================
-and bottle  of catsup were  ready  for him. Wait until he had slurped up all
-     "All  right," he said.  "Let's  say  that  the Golden Ball really--what
+Enter: http://nedsareas.com/gal/gsm/ 
+
+I think, yes.
+
+
+
+Chase Mullins
+
+
+
+
+The Gods Send Nuts to those who have no Teeth He who comes with a story to you will bring two away from youLightning never strikes twice in the same place They that dance must pay the fiddler
+
+  Silence is goldenHappy the bride who.. gets all the presents.
+
+ Life is like a good book, the more you get into it the more it makes sense Four things drive a man out of his house: too much smoke, a dripping roof, filthy air and a scolding wife
+
+
