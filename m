@@ -1,26 +1,30 @@
-From: "Spencer Ferguson" <darlene@rioting.com>
-Subject: shame of sex? we can change it
-Date: Sun, 13 Aug 2006 21:31:42 -0700
-Message-ID: <53371809355374.19869B61C5__49895.1762718663$1155524402$gmane$org@BEIJV>
+From: "Jayson" <allergicbuttercup@arcticmail.com>
+Subject: =?ISO-8859-1?Q?=20New=92n=92hot?= Rock hard manhood, multiple explosions and several times more semen volume
+Date: Mon, 14 Aug 2006 14:04:35 +0800
+Message-ID: <66267595233784.EA20071457@1XYL>
 Mime-Version: 1.0
 Content-Type: text/plain;
         charset="Windows-1252"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from c-69-244-42-28.hsd1.ar.comcast.net ([69.244.42.28]:53775 "EHLO
-	JTS-UT48MI1L92A") by vger.kernel.org with ESMTP id S1751817AbWHNC64
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 13 Aug 2006 22:58:56 -0400
+Received: from [61.138.107.252] ([61.138.107.252]:33164 "EHLO
+	LB-8A3BRG996BP6.bi83d9e.org") by vger.kernel.org with ESMTP
+	id S1751886AbWHNGED (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 14 Aug 2006 02:04:03 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-raid-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Cialis Soft Tabs is the new impotence treatment drug that everyone is talking about. It has benefits over Viagra and other ED treatment solutions. Here goes some reasons to choose Cialis Soft Tabs: 
-1. You can mix alcohol drinks with Cialis Soft Tabs without any undesired effects. 
-2.Cialis Soft Tabs does not make you feel dizzy or make vision blurred, so you can easily drive a car or operate heavy machinery. 
-3.Cialis soft tabs works much faster than any known ED treatment solution. Cialis Soft Tabs enters the bloodstream directly instead of going through the stomach, thus you need only 15 minutes till you feel the effect. Just look at the graph below 
-If you are interested ? Just click here and Read more about it 
-http://b9y.cancanwieldy.com/ct
-AND ALSO 
-Cialis Soft Tabs formula is effective for 95% of the patients. If this treatment is not effective for you, we will refund you for every unopened pack. All you have to do is send them back, and we will immediatley refund your account! 
+Happy day to you! ;)
+ Masculine performance has never been so easy to increase with these productsBoost your manhood to astonishing levels Everything a real man would ever need.
+
+Achieve astounding results in bed with these products designed to make any man a winner
+
+ All you need is here: http://www.pianistme.com
+
+Jayson Wilson
+
+
+Empty sacks will never stand uprightBetter safe than sorry Let bygones be bygones
+But whoso committeth adultery with a woman lacketh understanding: he that doeth it destroyeth his own soul.
 
