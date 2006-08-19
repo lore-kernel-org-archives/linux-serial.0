@@ -1,26 +1,27 @@
-From: "Abel" <citroenacquit@rotopacking.com>
-Subject: Be delighted with  This is what you always needed to lead a happier, more fulfilling life.
-Date: Sat, 19 Aug 2006 09:56:49 +0900
-Message-ID: <27276077581224.0FF7313BCC__22471.011154312$1155949019$gmane$org@PL2P2MG2>
+From: "Earline" <circumferentialdesolater@rozeboom.nl>
+Subject: Be delighted with  You don't need to spend huge money on luxury items - it all will be worthless without decent physical equipment.
+Date: Sat, 19 Aug 2006 16:33:46 +0600
+Message-ID: <41257136696366.2291B6C717@JDGN617E>
 Mime-Version: 1.0
 Content-Type: text/plain;
         charset="Windows-1252"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ZE102069.ppp.dion.ne.jp ([220.217.102.69]:3078 "EHLO
-	FM-9594D04FB77F") by vger.kernel.org with ESMTP id S1751618AbWHSA4m
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 18 Aug 2006 20:56:42 -0400
+Received: from [220.247.223.63] ([220.247.223.63]:47877 "EHLO CPU10.duiqys.com")
+	by vger.kernel.org with ESMTP id S1161104AbWHSKfE (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 19 Aug 2006 06:35:04 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-smp@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Hot'n'new
+Enjoy the newest
 
- Unlike other products, this one gives you permanent gains in size - and loads of pleasure! Up to 3-4 inches of extra length and more pleasure in bed in just a few days!
+ You don't need to spend huge money on luxury items - it all will be worthless without decent physical equipment. You are about to gain inches in months or even less - get ready to have more fun!
 
- She certainly has fantasies about a large-sized man pleasing her to the full. Just imagine your new happy life with more size, more adoration from females and more self-assurance. Find what you need here: http://www.ilmestelv.com/gal/ms/ 
-You won't increase your most important muscle in gyms - so this is what you have to try!
+ Some intimate experiences are available only to men with big equipment. Get ready to be stopped by women in the street. Your entire image will emanate increased size! Come on in here: http://www.posadroft.com/gal/ms/ 
+If you thought getting more size and girth was impossible, take a look at this.
 
- A man is known by the company he keeps.  Many people know how to say nothing; few know when A proverb never lies, it is only its meaning which deceives. When Mumma dead family done. An apple a day keeps the doctor at bay The grass is always greener on the other side of the fence.
+
+ Rain before seven, fine before eleven  Once in a while, right in the middle of an ordinary life, love gives us a fairy tale A scalded cat fears cold water. The older the fiddler, the sweeter the tune. Divide and rule
 
