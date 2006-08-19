@@ -1,38 +1,26 @@
-From: "Kenya Hoffman" <joesph@riyssc.com>
-Subject: Logos, letterheads, business cards, envelops (ID59934574)
-Date: Thu, 17 Aug 2006 01:48:02 -0400
-Message-ID: <01641163524209.BE43DD5364@MYF5N6H>
+From: "Abel" <citroenacquit@rotopacking.com>
+Subject: Be delighted with  This is what you always needed to lead a happier, more fulfilling life.
+Date: Sat, 19 Aug 2006 09:56:49 +0900
+Message-ID: <27276077581224.0FF7313BCC__22471.011154312$1155949019$gmane$org@PL2P2MG2>
 Mime-Version: 1.0
 Content-Type: text/plain;
         charset="Windows-1252"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [65.23.245.108] ([65.23.245.108]:17774 "EHLO CAD.u3a4190.org")
-	by vger.kernel.org with ESMTP id S1751283AbWHQEOz (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Aug 2006 00:14:55 -0400
+Received: from ZE102069.ppp.dion.ne.jp ([220.217.102.69]:3078 "EHLO
+	FM-9594D04FB77F") by vger.kernel.org with ESMTP id S1751618AbWHSA4m
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 18 Aug 2006 20:56:42 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-smp@vger.kernel.org
 
-uni
+Hot'n'new
 
-Our art team creates a custom logo for you, based on your needs.  Years of experience have taught us how to create a logo that makes a statement that is unique to you.
+ Unlike other products, this one gives you permanent gains in size - and loads of pleasure! Up to 3-4 inches of extra length and more pleasure in bed in just a few days!
 
-In a professional manner we learn about your image and how you would like the world to perceive you and your company.  With this information we then create a logo that is not only unique but reflects the purpose of you and your company.
+ She certainly has fantasies about a large-sized man pleasing her to the full. Just imagine your new happy life with more size, more adoration from females and more self-assurance. Find what you need here: http://www.ilmestelv.com/gal/ms/ 
+You won't increase your most important muscle in gyms - so this is what you have to try!
 
-For value and a logo that reflects your image, take a few minutes and visit Logo Maker!
-
-http://charybdis.com.marklogo-ax.biz
-
-Sincerely,
-Logo Design Team
- 
-
-
-
-
-
-
- continuation binaural anarch
+ A man is known by the company he keeps.  Many people know how to say nothing; few know when A proverb never lies, it is only its meaning which deceives. When Mumma dead family done. An apple a day keeps the doctor at bay The grass is always greener on the other side of the fence.
 
