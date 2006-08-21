@@ -1,27 +1,37 @@
-From: "Earline" <circumferentialdesolater@rozeboom.nl>
-Subject: Be delighted with  You don't need to spend huge money on luxury items - it all will be worthless without decent physical equipment.
-Date: Sat, 19 Aug 2006 16:33:46 +0600
-Message-ID: <41257136696366.2291B6C717@JDGN617E>
+From: "Carmine" <695vijay@choopa.com>
+Subject: Try the new miracle weight loss herb
+Date: Mon, 21 Aug 2006 14:27:24 -0700
+Message-ID: <200608212128.k7LLSXec005113@zeus1.kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain;
-        charset="Windows-1252"
-Content-Transfer-Encoding: 7bit
+        charset="Windows-1251"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [220.247.223.63] ([220.247.223.63]:47877 "EHLO CPU10.duiqys.com")
-	by vger.kernel.org with ESMTP id S1161104AbWHSKfE (ORCPT
+Received: from zeus1.kernel.org ([204.152.191.4]:52148 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S1751156AbWHUV2v (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 19 Aug 2006 06:35:04 -0400
+	Mon, 21 Aug 2006 17:28:51 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-scsi@vger.kernel.org
 
-Enjoy the newest
+Hi Linux-scsi!.
 
- You don't need to spend huge money on luxury items - it all will be worthless without decent physical equipment. You are about to gain inches in months or even less - get ready to have more fun!
-
- Some intimate experiences are available only to men with big equipment. Get ready to be stopped by women in the street. Your entire image will emanate increased size! Come on in here: http://www.posadroft.com/gal/ms/ 
-If you thought getting more size and girth was impossible, take a look at this.
+Amazing weight loss stories here:
 
 
- Rain before seven, fine before eleven  Once in a while, right in the middle of an ordinary life, love gives us a fairy tale A scalded cat fears cold water. The older the fiddler, the sweeter the tune. Divide and rule
+
+
+http://www.devsota.com/n/?52&cachebridgework
+
+I've always had trouble with my weight ever since I was young. Of course I tried all the "best" fat loss products, nothing helped very much. It wasn't til I tried Anatrim that I saw the pounds seriously start to melt away! Nothing helped me lose weight faster. I literally saw 15 pounds melt away within the first few weeks! There's nothing more exciting than watching pounds disappear, especially when you've tried all sorts of different methods and products before. I've since read up on Anatrim and am amazed at the number of people who have benefited from its amazing results. I'm halfway to my goal, Anatrim will get me the rest of the way ;)
+
+
+
+
+Jordan McKenzie, New York
+
+
+http://www.obesor.net/hd/?52&boycottalacrity
+
 
