@@ -1,31 +1,28 @@
-From: Ted Bravo <supergraphicsjzxp@prevue.net>
-Subject: The Industries leading enhancement product, now on sale!
-Date: Mon, 21 Aug 2006 20:39:49 -0500
-Message-ID: <171287018865.987967968373@prevue.net>
-Reply-To: Ted Bravo <supergraphicsjzxp@prevue.net>
+From: "John" <bloodstaincasket@rotary-tooling.com>
+Subject: Feel Pleasure from Just imagine how wonderful your life would become with a bigger size and increased duration.
+Date: Tue, 22 Aug 2006 08:11:13 -0300
+Message-ID: <59875433727688.284649AC8C@AHY1>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain;
+        charset="Windows-1252"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from S010600c026c0c17b.vc.shawcable.net ([24.84.131.183]:41488 "HELO
-	S010600c026c0c17b.vc.shawcable.net") by vger.kernel.org with SMTP
-	id S1751262AbWHVGhi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 22 Aug 2006 02:37:38 -0400
-Received: from cdmx01.nni.com (cdmx01.nni.com [216.107.0.178])
-	by S010600c026c0c17b.vc.shawcable.net (8.9.3/8.9.3) with ESMTP id GCOMC7tEdMW1
-	for <linux-serial@vger.kernel.org>; Mon, 21 Aug 2006 20:39:49 -0500
-Received: from 54.61.22.104
-	by cdmx01.nni.com via HTTP
-	for <linux-serial@vger.kernel.org>; Mon, 21 Aug 2006 20:39:49 -0500
+Received: from www1.copiapo.cl ([200.68.10.242]:1427 "EHLO RODRIGOC.a1ke.com")
+	by vger.kernel.org with ESMTP id S932189AbWHVMNS (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 22 Aug 2006 08:13:18 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Hey man,  check out this sweet site I found, I wasn't sure if it was real at first, but it is! I tried them out and these patches are awesome !!!
-Check out  the special discounts they have too, I got a real good deal access.
-He has conferred on the practice of vacillation the aura of statesmanship.
-Later!
+New and hot
 
-http://www.neroplaresampit.com/
+ Unlike other products, this one gives you permanent gains in size - and loads of pleasure! Bigger, stronger and eventually better - this is what you will have in just a couple of months.
 
+ Stop taking that size-does-not-matter crap from girls! They just don't want to hurt you! Get ready to be stopped by women in the street. Your entire image will emanate increased size! Enter here:  http://www.davgarnet.com/gall/ms/ 
+
+Just imagine how wonderful your life would become with a bigger size and increased duration.
+
+
+ There is more than one way to skin a cat Be kind to people on the way up, you may need them when you are on your way down When one shears the sheep, the skin on the ram trembles  Many are called but few are chosen The Fairest Rose at Last is Withered
 
