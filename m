@@ -1,35 +1,52 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+From: Russell King <rmk+lkml@arm.linux.org.uk>
 Subject: Re: Serial custom speed deprecated?
-Date: Thu, 24 Aug 2006 23:11:41 +0100
-Message-ID: <1156457501.3007.193.camel@localhost.localdomain>
-References: <028a01c6c6fc$e792be90$294b82ce@stuartm>
-	 <1156411101.3012.15.camel@pmac.infradead.org>
-	 <m3bqqap09a.fsf@defiant.localdomain>
-	 <1156441293.3007.184.camel@localhost.localdomain>
-	 <m31wr6otlr.fsf@defiant.localdomain>
-	 <Pine.LNX.4.61.0608241635090.13499@chaos.analogic.com>
+Date: Thu, 24 Aug 2006 23:05:35 +0100
+Message-ID: <20060824220535.GC21439@flint.arm.linux.org.uk>
+References: <028a01c6c6fc$e792be90$294b82ce@stuartm> <1156411101.3012.15.camel@pmac.infradead.org> <m3bqqap09a.fsf@defiant.localdomain> <1156441293.3007.184.camel@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from outpipe-village-512-1.bc.nu ([81.2.110.250]:25053 "EHLO
-	lxorguk.ukuu.org.uk") by vger.kernel.org with ESMTP
-	id S1030481AbWHXVut (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 24 Aug 2006 17:50:49 -0400
-In-Reply-To: <Pine.LNX.4.61.0608241635090.13499@chaos.analogic.com>
+Received: from caramon.arm.linux.org.uk ([217.147.92.249]:27411 "EHLO
+	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
+	id S1422735AbWHXWFv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 24 Aug 2006 18:05:51 -0400
+Content-Disposition: inline
+In-Reply-To: <1156441293.3007.184.camel@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "linux-os (Dick Johnson)" <linux-os@analogic.com>
-Cc: Krzysztof Halasa <khc@pm.waw.pl>, David Woodhouse <dwmw2@infradead.org>, Stuart MacDonald <stuartm@connecttech.com>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Krzysztof Halasa <khc@pm.waw.pl>, David Woodhouse <dwmw2@infradead.org>, Stuart MacDonald <stuartm@connecttech.com>, linux-serial@vger.kernel.org, 'LKML' <linux-kernel@vger.kernel.org>
 
-Ar Iau, 2006-08-24 am 16:43 -0400, ysgrifennodd linux-os (Dick Johnson):
-> at 75 and increases by powers-of-two. This is because the hardware
-> always had fixed clocks with dividers that divided by powers-of-two.
-> What is the claim for the requirement of strange baud-rates set
-> as an integer of dimension "baud?" Where does this requirement
-> come from and what devices use these?
+On Thu, Aug 24, 2006 at 06:41:33PM +0100, Alan Cox wrote:
+> We would need a driver ->set_speed method for the cases where
+> - ioctl is called to set specific board rate
+> - OR termios values for tty speed change
+> - While we are at it we might want to make ->set_termios also allowed to
+> fail
 
-A lot of chips will do all sorts of interesting speeds such as 31.5Kbit
-because today the clocks are themselves quite configurable.
+That's a little dodgy, from my reading of POSIX.  ISTR POSIX prefers
+a behaviour of "set what you can" from this, and when you read back
+the termios settings, you get the actual settings in use.
 
+So, eg, if you don't support CS5 but the previous setting was CS8,
+tcsetattr should not return an error.  The device itself should set
+the other changed parameters but remain at CS8 and tcgetattr should
+report CS8.
 
+stty already knows about this, and issues warnings when you attempt
+to set stuff which aren't supportted by the driver (assuming you have
+a correctly behaving driver in this respect.)  I've been a little
+scared to push the implementation for these in the serial drivers.
+
+> Anyone got any problems with this before I go and implement it ?
+
+Only as long as we can end up with a numeric baud rate at the end of
+the day (which is what serial has always been after.)
+
+This represents a major improvement to the tty interface, thanks for
+looking in to making it happen.
+
+-- 
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:  2.6 Serial core
