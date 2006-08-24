@@ -1,26 +1,20 @@
-From: "Mari" <bandstopbetony@royalgazebo.com>
-Subject: Be delighted with  Put aside any doubts and stuff, this terrific product for smart males really does what you need!
-Date: Thu, 24 Aug 2006 07:30:04 +0900
-Message-ID: <33355764911125.C3D1C08A50@3IES1>
+From: "Lilian Mcwilliams" <cxx@0733.com>
+Subject: re:Hi
+Date: Thu, 24 Aug 2006 01:26:38 +0000 (UTC)
+Message-ID: <662161c80604gdj2melgdukop524s9iyac8npy6elja9w5@mail.0733.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="Windows-1252"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from pool-71-109-69-18.lsanca.dsl-w.verizon.net ([71.109.69.18]:29382
-	"EHLO v5uo7j.iijace1i.optonline.net") by vger.kernel.org with ESMTP
-	id S965262AbWHWW0s (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 23 Aug 2006 18:26:48 -0400
+Received: from 81-208-83-214.fastres.net ([81.208.83.214]:31024 "EHLO
+	81-208-83-214.fastres.net") by vger.kernel.org with ESMTP
+	id S965322AbWHXB0Z convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 23 Aug 2006 21:26:25 -0400
+Date: Thu, 24 Aug 2006 01:26:29 -0060
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-The newest
- Had doubts that these things really work? Check this out and join the thousands of happy men! You will love watching it, feeling it and of course using it - just several weeks to go!
-
- She certainly has fantasies about a large-sized man pleasing her to the full. You can start thinking about the awesome fun you're about to have in bed. Come on in: http://www.sedeji.com/gal/xl/ 
-
-Unlike other products, this one gives you permanent gains in size - and loads of pleasure!
-
- To receive the instruction of wisdom, justice, and judgment, and equity. Too much sit down ah bruck trousers. Good friends are hard to find, harder to leave, and impossible to forget Work expands so as to fill the time available
-
+The young and perspective financial company employs young experts. It is your unique chance to start your career in the company with a world name. We have some kinds of vacancies. You can work freelance or work in office. With us you can achieve new horizons in your career. You can earn up to 3000-4000$ per month. The basic requirements to the candidates are: knowledge of PC and bases of accounts department, honesty, clearness and efficiency in work. If you are interested in the given offer, please send your CV to USA@direct-goldusa1.biz
