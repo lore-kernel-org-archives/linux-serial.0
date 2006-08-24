@@ -1,47 +1,68 @@
-From: David Woodhouse <dwmw2@infradead.org>
-Subject: RE: Serial custom speed deprecated?
-Date: Thu, 24 Aug 2006 14:03:30 +0100
-Message-ID: <1156424610.3012.29.camel@pmac.infradead.org>
-References: <033001c6c77a$a7d8ab10$294b82ce@stuartm>
-	 <1156425568.3007.138.camel@localhost.localdomain>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: Serial custom speed deprecated?
+Date: Thu, 24 Aug 2006 18:41:33 +0100
+Message-ID: <1156441293.3007.184.camel@localhost.localdomain>
+References: <028a01c6c6fc$e792be90$294b82ce@stuartm>
+	 <1156411101.3012.15.camel@pmac.infradead.org>
+	 <m3bqqap09a.fsf@defiant.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from pentafluge.infradead.org ([213.146.154.40]:3762 "EHLO
-	pentafluge.infradead.org") by vger.kernel.org with ESMTP
-	id S1751317AbWHXNDe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 24 Aug 2006 09:03:34 -0400
-In-Reply-To: <1156425568.3007.138.camel@localhost.localdomain>
+Received: from outpipe-village-512-1.bc.nu ([81.2.110.250]:48064 "EHLO
+	lxorguk.ukuu.org.uk") by vger.kernel.org with ESMTP
+	id S1030403AbWHXRUW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 24 Aug 2006 13:20:22 -0400
+In-Reply-To: <m3bqqap09a.fsf@defiant.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Stuart MacDonald <stuartm@connecttech.com>, 'LKML' <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+To: Krzysztof Halasa <khc@pm.waw.pl>
+Cc: David Woodhouse <dwmw2@infradead.org>, Stuart MacDonald <stuartm@connecttech.com>, linux-serial@vger.kernel.org, 'LKML' <linux-kernel@vger.kernel.org>
 
-On Thu, 2006-08-24 at 14:19 +0100, Alan Cox wrote:
-> Actually to do this right we have to make a decision or two
+Ar Iau, 2006-08-24 am 18:27 +0200, ysgrifennodd Krzysztof Halasa:
+> David Woodhouse <dwmw2@infradead.org> writes:
 > 
-> The POSIX way of handling this requires the speeds are in the termios
-> structure "somewhere". We can't easily implement cfgetispeed/cfgetospeed
-> unless we grow the termios structure in the kernel and issue 3 new
-> ioctls (keeping the others as trivial translations) and then bumping
-> glibc and the kernel to do the right thing.
+> >> If custom speeds are deprecated, what's the new method for setting
+> >> them? Specifically, how can the SPD_CUST functionality be accomplished
+> >> without that flag? I've checked 2.5.64 and 2.6.17, and don't see how
+> >> it is possible. 
+> >
+> > We need a way to set the baud rate as an _integer_ instead of the Bxxxx
+> > flags.
 > 
-> The alternative is that we provide an extra pair of speed ioctls and
-> glibc does the magic to hide this lot while providing a termios with the
-> new fields itself.
-> 
-> Whichever way we go glibc already has the fields present and the
-> libc<->application API appears to be unchanged by this.
-> 
-> I'd rather we went the way of extending our termios to include c_ispeed,
-> c_ospeed values. The code isn't hard for the remapping of the old ones
-> and it avoids extra ioctls and the corner case races between two speed
-> sets that occur if they are two ioctls.
+> Does that mean that standard things like termios will use:
+> #define B9600   9600
+> #define B19200 19200
 
-Agreed. Some architectures have c_[io]speed in their struct termios
-already, in fact, but others would need new ioctls for it.
+That would have been very smart when Linus did Linux 0.12, unfortunately
+he didn't and we've also got no spare bits. Worse still if we exported
+them that way glibc has now way to map new speeds onto the old ones for
+applications.
 
--- 
-dwmw2
+The speed_t values in the termios struct are also Bfoo encoded so it
+turns out don't help.
+
+At this point I think we need
+
+-	An ioctl to set/get the actual baud rate input/output
+-	Some kind of termios flag to indicate they are being used (as we have
+CBAUDEX now). [We could "borrow" the 4Mbit one and dual use it IMHO]
+
+For drivers tty_get_baud_rate would return the actual speed as before.
+
+We would need a driver ->set_speed method for the cases where
+- ioctl is called to set specific board rate
+- OR termios values for tty speed change
+- While we are at it we might want to make ->set_termios also allowed to
+fail
+
+[and if you had no ->set_speed method non standard speeds would be
+refused by the tty layer for back compat]
+
+Anyone got any problems with this before I go and implement it ?
+
+
+
+
+
 
