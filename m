@@ -1,68 +1,51 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+From: Krzysztof Halasa <khc@pm.waw.pl>
 Subject: Re: Serial custom speed deprecated?
-Date: Thu, 24 Aug 2006 18:41:33 +0100
-Message-ID: <1156441293.3007.184.camel@localhost.localdomain>
+Date: Thu, 24 Aug 2006 20:51:12 +0200
+Message-ID: <m31wr6otlr.fsf@defiant.localdomain>
 References: <028a01c6c6fc$e792be90$294b82ce@stuartm>
-	 <1156411101.3012.15.camel@pmac.infradead.org>
-	 <m3bqqap09a.fsf@defiant.localdomain>
+	<1156411101.3012.15.camel@pmac.infradead.org>
+	<m3bqqap09a.fsf@defiant.localdomain>
+	<1156441293.3007.184.camel@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from outpipe-village-512-1.bc.nu ([81.2.110.250]:48064 "EHLO
-	lxorguk.ukuu.org.uk") by vger.kernel.org with ESMTP
-	id S1030403AbWHXRUW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 24 Aug 2006 13:20:22 -0400
-In-Reply-To: <m3bqqap09a.fsf@defiant.localdomain>
+Received: from khc.piap.pl ([195.187.100.11]:59776 "EHLO khc.piap.pl")
+	by vger.kernel.org with ESMTP id S1030448AbWHXSvO (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 24 Aug 2006 14:51:14 -0400
+In-Reply-To: <1156441293.3007.184.camel@localhost.localdomain> (Alan Cox's message of "Thu, 24 Aug 2006 18:41:33 +0100")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Krzysztof Halasa <khc@pm.waw.pl>
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Cc: David Woodhouse <dwmw2@infradead.org>, Stuart MacDonald <stuartm@connecttech.com>, linux-serial@vger.kernel.org, 'LKML' <linux-kernel@vger.kernel.org>
 
-Ar Iau, 2006-08-24 am 18:27 +0200, ysgrifennodd Krzysztof Halasa:
-> David Woodhouse <dwmw2@infradead.org> writes:
-> 
-> >> If custom speeds are deprecated, what's the new method for setting
-> >> them? Specifically, how can the SPD_CUST functionality be accomplished
-> >> without that flag? I've checked 2.5.64 and 2.6.17, and don't see how
-> >> it is possible. 
-> >
-> > We need a way to set the baud rate as an _integer_ instead of the Bxxxx
-> > flags.
-> 
-> Does that mean that standard things like termios will use:
-> #define B9600   9600
-> #define B19200 19200
+Alan Cox <alan@lxorguk.ukuu.org.uk> writes:
 
-That would have been very smart when Linus did Linux 0.12, unfortunately
-he didn't and we've also got no spare bits. Worse still if we exported
-them that way glibc has now way to map new speeds onto the old ones for
-applications.
+>> Does that mean that standard things like termios will use:
+>> #define B9600   9600
+>> #define B19200 19200
+>
+> That would have been very smart when Linus did Linux 0.12, unfortunately
+> he didn't and we've also got no spare bits. Worse still if we exported
+> them that way glibc has now way to map new speeds onto the old ones for
+> applications.
 
-The speed_t values in the termios struct are also Bfoo encoded so it
-turns out don't help.
+Hmm... I'm not sure if I understand this correctly. Can't we just
+create the 3 new ioctls in the kernel and teach glibc to use it?
 
-At this point I think we need
+The compatibility ioctls would talk to new ioctls only and translate
+things. Anything (userspace) wanting non-traditional speeds would
+have to use new interface (i.e., be compiled against the new glibc)
+and the speeds would show as EXTA or EXTB or something when queried
+using old ioctl.
 
--	An ioctl to set/get the actual baud rate input/output
--	Some kind of termios flag to indicate they are being used (as we have
-CBAUDEX now). [We could "borrow" the 4Mbit one and dual use it IMHO]
+Yes, the binary interface between glibc and userland would change
+(with compatibility calls translated by glibc to new ioctls, or to
+old ones on older kernels).
 
-For drivers tty_get_baud_rate would return the actual speed as before.
+The old ioctls would be optional in the kernel (and perhaps in glibc,
+sometime).
 
-We would need a driver ->set_speed method for the cases where
-- ioctl is called to set specific board rate
-- OR termios values for tty speed change
-- While we are at it we might want to make ->set_termios also allowed to
-fail
-
-[and if you had no ->set_speed method non standard speeds would be
-refused by the tty layer for back compat]
-
-Anyone got any problems with this before I go and implement it ?
-
-
-
-
-
-
+Not sure if we want int, uint, or long long for speed values :-)
+-- 
+Krzysztof Halasa
