@@ -1,52 +1,54 @@
-From: Russell King <rmk+lkml@arm.linux.org.uk>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Subject: Re: Serial custom speed deprecated?
-Date: Thu, 24 Aug 2006 23:05:35 +0100
-Message-ID: <20060824220535.GC21439@flint.arm.linux.org.uk>
-References: <028a01c6c6fc$e792be90$294b82ce@stuartm> <1156411101.3012.15.camel@pmac.infradead.org> <m3bqqap09a.fsf@defiant.localdomain> <1156441293.3007.184.camel@localhost.localdomain>
+Date: Thu, 24 Aug 2006 23:43:07 +0100
+Message-ID: <1156459387.3007.218.camel@localhost.localdomain>
+References: <028a01c6c6fc$e792be90$294b82ce@stuartm> 	 <1156411101.3012.15.camel@pmac.infradead.org> 	 <m3bqqap09a.fsf@defiant.localdomain> 	 <1156441293.3007.184.camel@localhost.localdomain> 	 <m31wr6otlr.fsf@defiant.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([217.147.92.249]:27411 "EHLO
-	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
-	id S1422735AbWHXWFv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 24 Aug 2006 18:05:51 -0400
-Content-Disposition: inline
-In-Reply-To: <1156441293.3007.184.camel@localhost.localdomain>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+Return-path: <libc-alpha-return-19322-glibc-alpha=m.gmane.org@sourceware.org>
+In-Reply-To: <m31wr6otlr.fsf@defiant.localdomain>
+List-Unsubscribe: <mailto:libc-alpha-unsubscribe-glibc-alpha=m.gmane.org@sourceware.org>
+List-Subscribe: <mailto:libc-alpha-subscribe@sourceware.org>
+List-Archive: <http://sourceware.org/ml/libc-alpha/>
+List-Post: <mailto:libc-alpha@sourceware.org>
+List-Help: <mailto:libc-alpha-help@sourceware.org>, <http://sourceware.org/ml/#faqs>
+Sender: libc-alpha-owner@sourceware.org
+To: Krzysztof Halasa <khc@pm.waw.pl>
+Cc: linux-serial@vger.kernel.org, 'LKML' <linux-kernel@vger.kernel.org>, libc-alpha@sources.redhat.com
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Krzysztof Halasa <khc@pm.waw.pl>, David Woodhouse <dwmw2@infradead.org>, Stuart MacDonald <stuartm@connecttech.com>, linux-serial@vger.kernel.org, 'LKML' <linux-kernel@vger.kernel.org>
 
-On Thu, Aug 24, 2006 at 06:41:33PM +0100, Alan Cox wrote:
-> We would need a driver ->set_speed method for the cases where
-> - ioctl is called to set specific board rate
-> - OR termios values for tty speed change
-> - While we are at it we might want to make ->set_termios also allowed to
-> fail
+Ar Iau, 2006-08-24 am 20:51 +0200, ysgrifennodd Krzysztof Halasa:
+> Hmm... I'm not sure if I understand this correctly. Can't we just
+> create the 3 new ioctls in the kernel and teach glibc to use it?
 
-That's a little dodgy, from my reading of POSIX.  ISTR POSIX prefers
-a behaviour of "set what you can" from this, and when you read back
-the termios settings, you get the actual settings in use.
+We could implement an entirely new TCSETS/TCGETS/TCSETSA/SAW which used
+different B* values so B9600 was 9600 etc and the data was stored in
+c_ospeed/c_ispeed type separate fields and we'd support arbitary speeds
+for input and output once and for all, shoot all the multiplier hacks
+etc. As it happens the kernel code for this is easy owing to some
+fortuitous good design long ago in the tty layer.
 
-So, eg, if you don't support CS5 but the previous setting was CS8,
-tcsetattr should not return an error.  The device itself should set
-the other changed parameters but remain at CS8 and tcgetattr should
-report CS8.
+We could also implement a Linux "improved" TCSET* new set of ioctls that
+had sensible speed fields, utf-8 characters for the _cc[] array and new
+flags for all the utf-8 handling and the like. That would be less
+compatible though.
 
-stty already knows about this, and issues warnings when you attempt
-to set stuff which aren't supportted by the driver (assuming you have
-a correctly behaving driver in this respect.)  I've been a little
-scared to push the implementation for these in the serial drivers.
+Or we could just add a standardised extra set of speed ioctls, but then
+we need to decide what occurs if I set the speed and then issue a
+termios call - does it override or not.
 
-> Anyone got any problems with this before I go and implement it ?
+> The old ioctls would be optional in the kernel (and perhaps in glibc,
+> sometime).
 
-Only as long as we can end up with a numeric baud rate at the end of
-the day (which is what serial has always been after.)
+The kernel side translation is thankfully really trivial.
 
-This represents a major improvement to the tty interface, thanks for
-looking in to making it happen.
+> Not sure if we want int, uint, or long long for speed values :-)
 
--- 
-Russell King
- Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
- maintainer of:  2.6 Serial core
+You want speed_t according to POSIX.
+
+I've no idea what the glibc impact of this kind of thing would be
+(consider new glibc, old kernel etc).  I've cc'd the libc folks but I am
+not sure it is practical to do.
+
+Alan
