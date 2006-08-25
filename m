@@ -1,93 +1,79 @@
-From: "abriel fabian" <TaparGroup@yahoo.com>
-Subject: JOB OFFER
-Date: Fri, 25 Aug 2006 10:24:50 +0000
-Message-ID: <trmJScdTWC$196.207.231.139$.44eed149.d446e.a89.3014@yuma.onspeed.com>
-Reply-To: abriel_fabian@mixmail.com
+From: Krzysztof Halasa <khc@pm.waw.pl>
+Subject: Re: Serial custom speed deprecated?
+Date: Fri, 25 Aug 2006 12:58:57 +0200
+Message-ID: <m34pw1cc9a.fsf@defiant.localdomain>
+References: <028a01c6c6fc$e792be90$294b82ce@stuartm>
+	<1156411101.3012.15.camel@pmac.infradead.org>
+	<m3bqqap09a.fsf@defiant.localdomain>
+	<1156441293.3007.184.camel@localhost.localdomain>
+	<m31wr6otlr.fsf@defiant.localdomain>
+	<1156459387.3007.218.camel@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lb2.onspeed.com ([72.3.137.84]:33494 "EHLO yuma.onspeed.com")
-	by vger.kernel.org with ESMTP id S932430AbWHYKaf convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Aug 2006 06:30:35 -0400
-Received: from ok62488.com (localhost [127.0.0.1])
-	by yuma.onspeed.com (8.12.11.20060308/8.12.11) with SMTP id k7PAUSs0014836
-	for <linux-serial@vger.kernel.org>; Fri, 25 Aug 2006 05:30:31 -0500
+Received: from khc.piap.pl ([195.187.100.11]:28368 "EHLO khc.piap.pl")
+	by vger.kernel.org with ESMTP id S1751450AbWHYK7A (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 25 Aug 2006 06:59:00 -0400
+In-Reply-To: <1156459387.3007.218.camel@localhost.localdomain> (Alan Cox's message of "Thu, 24 Aug 2006 23:43:07 +0100")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: linux-serial@vger.kernel.org, 'LKML' <linux-kernel@vger.kernel.org>, libc-alpha@sources.redhat.com
 
-ABRIEL FABIAN,
-Managing director=20
-Tapar Group,=20
-Office address:77,=20
-Bd du g=E9n=E9ral de Gaule
-B13 Dakar,Senegal.
+Alan Cox <alan@lxorguk.ukuu.org.uk> writes:
 
+> We could implement an entirely new TCSETS/TCGETS/TCSETSA/SAW which used
+> different B* values so B9600 was 9600 etc and the data was stored in
+> c_ospeed/c_ispeed type separate fields and we'd support arbitary speeds
+> for input and output once and for all, shoot all the multiplier hacks
+> etc. As it happens the kernel code for this is easy owing to some
+> fortuitous good design long ago in the tty layer.
 
- ATTN:
- Tapar Group, is in search of a book-keeper/company representatives in =
-the United States,canada=20
-and the UK.This project has been developed in a way not to affect your =
-present job nor bring you any=20
-form of stress but in order to help take care of those extra costs whil=
-e you work for us.
- Tapar Group is a company thats deals in the production and supplies of=
- Batik,Assorted African fabrics,
-various clothing materials,African art materials and all kinds of furni=
-tures for exporting to the wolrd.Presently=20
-our website is under construction and should be ready soon.
- Recently It came to my knowledge that there are a lot of lapses in han=
-dling funds coming from our clients=20
-in the USA,Canada and UK which come in forms of Cashiers checks,Company=
- checks and Money Orders=20
-which are not readily cashable outside the United States,Canada and UK,=
-So we need someone in the US,
-Canada and UK to work as our representatives and assist us in processin=
-g the payments from our various=20
-clients which come in on a weekly,monthly and annual basis.This is why =
-we decided to employ a=20
-representatives over in the US,Canada and UK to help us receive our pay=
-ments at your contact address=20
-you shall be providing us,in order to process our payment from our clie=
-nts.=20
-   All you need to do is receive these payments from our clients in you=
-r country, get it deposited at your bank,
-Cash it then deduct your percentage( 15% of each payment) plus transfer=
- charges and forward the=20
-balance funds to one of company's representatives via Moneygram/Western=
- Union.
-      Our payments will be issued out in your name as we would inform o=
-ur clients to do.Therefore=20
-the following details would be needed: I would require you to send me a=
-n email with the following details:
-1)Your Fullname
-2)Your Residential Address
-3)Your Phone number
-4)Your Age
-5)Your Occupation=20
- We would forward these informations to our clients and they will start=
- making payments to you as the
- company's representative in the states,Canada or UK.Once we have all y=
-our details in our records,We=20
-would notify you as soon as we confirm that one of our cleints is maili=
-ng payment across to you.=20
- I await your urgent response.=20
+I think it makes most sense.
 
-Warmest Regards,=20
-ABRIEL FABIAN
-Managing director=20
-Tapar Group=20
-abriel_fabian@mixmail.com
-Office address:77, Bd du g=E9n=E9ral de Gaule
-B13 Dakar,Senegal
+> We could also implement a Linux "improved" TCSET* new set of ioctls that
+> had sensible speed fields, utf-8 characters for the _cc[] array and new
+> flags for all the utf-8 handling and the like. That would be less
+> compatible though.
 
+I think compatibility at the source level is good here. UTF-8 looks
+nice, though.
 
+I think it could remain compatible - c_cc[] could grow into array of
+multibyte characters with:
+#define VINTR 0
+#define VQUIT (1 * n)
+#define VERASE (2 * n)
+#define VKILL (3 * n)
 
+where n is max number of UTF-8 bytes (5 for 32-bit UCS?)
 
--
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+I'm not sure if UTF-8 control codes are needed in practice, though
+(I mean I just don't know).
+
+> Or we could just add a standardised extra set of speed ioctls, but then
+> we need to decide what occurs if I set the speed and then issue a
+> termios call - does it override or not.
+
+A bit messy I think. I think the first way is much better. Especially
+when we have multiple changes (speed and UTF-8, for example).
+
+>> Not sure if we want int, uint, or long long for speed values :-)
+>
+> You want speed_t according to POSIX.
+
+Sure, I meant what does speed_t resolve to.
+
+> I've no idea what the glibc impact of this kind of thing would be
+> (consider new glibc, old kernel etc).  I've cc'd the libc folks but I am
+> not sure it is practical to do.
+
+While obviously I'm not glibc (nor termios) expert I don't think
+we should expect problems. New glibc would just issue the old ioctl
+if the new one isn't available. I think similar things are already
+in place.
+Glibc could be compiled with minimum kernel version = 2.6.20 or so
+to assume the new ioctls are always present.
+-- 
+Krzysztof Halasa
