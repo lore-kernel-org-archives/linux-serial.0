@@ -1,52 +1,46 @@
-From: Theodore Tso <tytso@mit.edu>
-Subject: Re: Serial custom speed deprecated?
-Date: Fri, 25 Aug 2006 16:39:29 -0400
-Message-ID: <20060825203929.GB25595@thunk.org>
-References: <1156459387.3007.218.camel@localhost.localdomain> <043501c6c85a$1eb09a60$294b82ce@stuartm> <20060825193203.GB725@flint.arm.linux.org.uk>
+From: "linux-os \(Dick Johnson\)" <linux-os@analogic.com>
+Subject: RE: Serial custom speed deprecated?
+Date: Fri, 25 Aug 2006 16:54:02 -0400
+Message-ID: <Pine.LNX.4.61.0608251653180.20746@chaos.analogic.com>
+References: <046701c6c884$1a1638a0$294b82ce@stuartm>
+Reply-To: "linux-os \(Dick Johnson\)" <linux-os@analogic.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from thunk.org ([69.25.196.29]:23461 "EHLO thunker.thunk.org")
-	by vger.kernel.org with ESMTP id S1422897AbWHYUjn (ORCPT
+Received: from odyssey.analogic.com ([204.178.40.5]:43276 "EHLO
+	odyssey.analogic.com") by vger.kernel.org with ESMTP
+	id S1422900AbWHYUyL convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Aug 2006 16:39:43 -0400
-Content-Disposition: inline
-In-Reply-To: <20060825193203.GB725@flint.arm.linux.org.uk>
+	Fri, 25 Aug 2006 16:54:11 -0400
+Content-class: urn:content-classes:message
+In-Reply-To: <046701c6c884$1a1638a0$294b82ce@stuartm>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Stuart MacDonald <stuartm@connecttech.com>, 'Alan Cox' <alan@lxorguk.ukuu.org.uk>, 'Krzysztof Halasa' <khc@pm.waw.pl>, linux-serial@vger.kernel.org, 'LKML' <linux-kernel@vger.kernel.org>, libc-alpha@sources.redhat.com
+To: Stuart MacDonald <stuartm@connecttech.com>
+Cc: Russell King <rmk+lkml@arm.linux.org.uk>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Krzysztof Halasa <khc@pm.waw.pl>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, libc-alpha@sources.redhat.com
 
-On Fri, Aug 25, 2006 at 08:32:03PM +0100, Russell King wrote:
-> On Fri, Aug 25, 2006 at 11:21:21AM -0400, Stuart MacDonald wrote:
-> > From: On Behalf Of Alan Cox
-> > > We could implement an entirely new TCSETS/TCGETS/TCSETSA/SAW 
-> > > which used
-> > > different B* values so B9600 was 9600 etc and the data was stored in
-> > 
-> > I think if a numeric baud rate is going to be supported, getting away
-> > from the B* cruft is important. Just use a number.
-> 
-> The "B* cruft" is part of POSIX so needs to be retained.  These are
-> used in conjunction with with cfgetispeed(), cfgetospeed(), cfsetispeed()
-> and cfsetospeed() to alter the baud rate settings in the termios
-> structure in an implementation defined manner.
 
-The B* cruft has to be maintained.
+On Fri, 25 Aug 2006, Stuart MacDonald wrote:
 
-But it would be POSIX complaint for B9600 to be #defined to B9600, and
-B19200 to be #defined to B19200.
+> From: On Behalf Of Russell King
+>> The "B* cruft" is part of POSIX so needs to be retained.  These are
+>
+> Ah, ok. Didn't know that.
+>
+> ..Stu
 
-What would scare me though about doing something like would be
-potential for the ABI changes.  Not only do you have to worry about a
-consistent set of ioctl's, structure definitions, and B* defines, but
-you also have to worry about userspace libraries that use B* as part
-of their interface, and expect user programs to pass B* constants to
-the userspace library.  (Say, some kind of conveience dialout library,
-for example.)
+... and why "B0" is important as well.
 
-In that case, the application could have been compiled with the
-new-style termios.h, but the userspace library could have been
-compiled with the old-style termios.h, and hence the old-style ioctl
-definitions, and the opportunities for mischief are endless.
 
-					- Ted
+Cheers,
+Dick Johnson
+Penguin : Linux version 2.6.16.24 on an i686 machine (5592.62 BogoMips).
+New book: http://www.AbominableFirebug.com/
+_
+
+
+****************************************************************
+The information transmitted in this message is confidential and may be privileged.  Any review, retransmission, dissemination, or other use of this information by persons or entities other than the intended recipient is prohibited.  If you are not the intended recipient, please notify Analogic Corporation immediately - by replying to this message or by sending an email to DeliveryErrors@analogic.com - and destroy all copies of this information, including any attachments, without reading or disclosing them.
+
+Thank you.
