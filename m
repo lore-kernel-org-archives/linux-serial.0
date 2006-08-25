@@ -1,39 +1,36 @@
 From: Russell King <rmk+lkml@arm.linux.org.uk>
-Subject: Re: New serial speed handling: First implementation
-Date: Fri, 25 Aug 2006 18:41:31 +0100
-Message-ID: <20060825174131.GA725@flint.arm.linux.org.uk>
-References: <1156518953.3007.247.camel@localhost.localdomain>
+Subject: Re: Serial custom speed deprecated?
+Date: Fri, 25 Aug 2006 20:32:03 +0100
+Message-ID: <20060825193203.GB725@flint.arm.linux.org.uk>
+References: <1156459387.3007.218.camel@localhost.localdomain> <043501c6c85a$1eb09a60$294b82ce@stuartm>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([217.147.92.249]:4877 "EHLO
-	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
-	id S1750830AbWHYRlh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Aug 2006 13:41:37 -0400
+Return-path: <libc-alpha-return-19326-glibc-alpha=m.gmane.org@sourceware.org>
 Content-Disposition: inline
-In-Reply-To: <1156518953.3007.247.camel@localhost.localdomain>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <043501c6c85a$1eb09a60$294b82ce@stuartm>
+List-Unsubscribe: <mailto:libc-alpha-unsubscribe-glibc-alpha=m.gmane.org@sourceware.org>
+List-Subscribe: <mailto:libc-alpha-subscribe@sourceware.org>
+List-Archive: <http://sourceware.org/ml/libc-alpha/>
+List-Post: <mailto:libc-alpha@sourceware.org>
+List-Help: <mailto:libc-alpha-help@sourceware.org>, <http://sourceware.org/ml/#faqs>
+Sender: libc-alpha-owner@sourceware.org
+To: Stuart MacDonald <stuartm@connecttech.com>
+Cc: 'Alan Cox' <alan@lxorguk.ukuu.org.uk>, 'Krzysztof Halasa' <khc@pm.waw.pl>, linux-serial@vger.kernel.org, 'LKML' <linux-kernel@vger.kernel.org>, libc-alpha@sources.redhat.com
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Fri, Aug 25, 2006 at 04:15:53PM +0100, Alan Cox wrote:
-> diff -u --new-file --recursive --exclude-from /usr/src/exclude linux.vanilla-2.6.18-rc4-mm2/include/asm-i386/ioctls.h linux-2.6.18-rc4-mm2/include/asm-i386/ioctls.h
-> --- linux.vanilla-2.6.18-rc4-mm2/include/asm-i386/ioctls.h	2006-08-21 14:17:52.000000000 +0100
-> +++ linux-2.6.18-rc4-mm2/include/asm-i386/ioctls.h	2006-08-25 11:23:20.000000000 +0100
-> @@ -47,6 +47,12 @@
->  #define TIOCSBRK	0x5427  /* BSD compatibility */
->  #define TIOCCBRK	0x5428  /* BSD compatibility */
->  #define TIOCGSID	0x5429  /* Return the session ID of FD */
-> +
-> +#define TCGETS2		0x542A
-> +#define TCSETS2		0x542B
-> +#define TCSETSW2	0x542C
-> +#define TCSETSF2	0x542D
-> +
+On Fri, Aug 25, 2006 at 11:21:21AM -0400, Stuart MacDonald wrote:
+> From: On Behalf Of Alan Cox
+> > We could implement an entirely new TCSETS/TCGETS/TCSETSA/SAW 
+> > which used
+> > different B* values so B9600 was 9600 etc and the data was stored in
+> 
+> I think if a numeric baud rate is going to be supported, getting away
+> from the B* cruft is important. Just use a number.
 
-Wouldn't it be better to use the _IO* macros to define these new ioctls?
-Ditto for other architectures.
+The "B* cruft" is part of POSIX so needs to be retained.  These are
+used in conjunction with with cfgetispeed(), cfgetospeed(), cfsetispeed()
+and cfsetospeed() to alter the baud rate settings in the termios
+structure in an implementation defined manner.
 
 -- 
 Russell King
