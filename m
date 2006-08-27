@@ -1,59 +1,44 @@
-From: Rogier Wolff <R.E.Wolff@BitWizard.nl>
+From: Russell King <rmk+lkml@arm.linux.org.uk>
 Subject: Re: Serial custom speed deprecated?
-Date: Sun, 27 Aug 2006 08:52:11 +0200
-Message-ID: <20060827065210.GA6932@bitwizard.nl>
-References: <028a01c6c6fc$e792be90$294b82ce@stuartm> <1156411101.3012.15.camel@pmac.infradead.org> <m3bqqap09a.fsf@defiant.localdomain> <1156441293.3007.184.camel@localhost.localdomain> <m31wr6otlr.fsf@defiant.localdomain> <Pine.LNX.4.61.0608241635090.13499@chaos.analogic.com> <1156457501.3007.193.camel@localhost.localdomain>
+Date: Sun, 27 Aug 2006 11:00:13 +0100
+Message-ID: <20060827100013.GA25333@flint.arm.linux.org.uk>
+References: <028a01c6c6fc$e792be90$294b82ce@stuartm> <1156411101.3012.15.camel@pmac.infradead.org> <m3bqqap09a.fsf@defiant.localdomain> <1156441293.3007.184.camel@localhost.localdomain> <m31wr6otlr.fsf@defiant.localdomain> <Pine.LNX.4.61.0608241635090.13499@chaos.analogic.com> <1156457501.3007.193.camel@localhost.localdomain> <20060827065210.GA6932@bitwizard.nl>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from dtp.xs4all.nl ([80.126.206.180]:56138 "HELO abra2.bitwizard.nl")
-	by vger.kernel.org with SMTP id S1750755AbWH0GwN (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 27 Aug 2006 02:52:13 -0400
+Received: from caramon.arm.linux.org.uk ([217.147.92.249]:39696 "EHLO
+	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
+	id S932080AbWH0KA2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 27 Aug 2006 06:00:28 -0400
 Content-Disposition: inline
-In-Reply-To: <1156457501.3007.193.camel@localhost.localdomain>
+In-Reply-To: <20060827065210.GA6932@bitwizard.nl>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: "linux-os (Dick Johnson)" <linux-os@analogic.com>, Krzysztof Halasa <khc@pm.waw.pl>, David Woodhouse <dwmw2@infradead.org>, Stuart MacDonald <stuartm@connecttech.com>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+To: Rogier Wolff <R.E.Wolff@BitWizard.nl>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Krzysztof Halasa <khc@pm.waw.pl>, David Woodhouse <dwmw2@infradead.org>, Stuart MacDonald <stuartm@connecttech.com>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 
-On Thu, Aug 24, 2006 at 11:11:41PM +0100, Alan Cox wrote:
-> Ar Iau, 2006-08-24 am 16:43 -0400, ysgrifennodd linux-os (Dick Johnson):
-> > at 75 and increases by powers-of-two. This is because the hardware
-> > always had fixed clocks with dividers that divided by powers-of-two.
-> > What is the claim for the requirement of strange baud-rates set
-> > as an integer of dimension "baud?" Where does this requirement
-> > come from and what devices use these?
+On Sun, Aug 27, 2006 at 08:52:11AM +0200, Rogier Wolff wrote:
+> Once this is in place, you lose a lot of "figure out the baud rate
+> integer from the B_xxx settings" code in all the drivers, as well as
+> that we get to provide a new interface to userspace without having to
+> change ALL drivers at the same time. This decouples the drivers from
+> the kernel<->userspace interface.
 
-> A lot of chips will do all sorts of interesting speeds such as
-> 31.5Kbit because today the clocks are themselves quite configurable.
+This has been helped along by serial_core - drivers have helper
+functions which they call (along with their min/max baud rate)
+which handles all this stuff.
 
-More importantly, the base-clocks are getting higher and higher, and
-the division is no longer a "power-of-two". Thus 9600 is no longer
-2.456MHz / 2^8, but something like 33MHz / 3438. This allows modern
-hardware to run much faster baud rates, as well as custom slower baud
-rates.
+The one thing your idea is missing is how to handle the "user
+requested 15mbaud but I can only do 115200baud" case - POSIX
+prefers you to report back what you actually selected rather
+than error out.  If you merely pass an integer to the drivers,
+they can't do that.
 
-Note that IMHO, we should have started hiding this mess from /drivers/
-a long time ago. The tty layer should convert the B_9600 thingies to
-"9600", the integer, and then call the set_termios function. The
-driver should be prohibited from looking at how the the baud rate came
-to be 9600, and attempt to approach the requested baud rate as good as
-possible. It might return a flag somewhere: Not exact. In the example
-above, the resulting baud rate is about 1.4 baud off: 9598.6. This is
-not a problem in very many cases.
-
-Once this is in place, you lose a lot of "figure out the baud rate
-integer from the B_xxx settings" code in all the drivers, as well as
-that we get to provide a new interface to userspace without having to
-change ALL drivers at the same time. This decouples the drivers from
-the kernel<->userspace interface.
-
-	Roger. 
+Note also that some drivers effectively have run-time configurable
+max baud rates, so you can't pass a fixed set of capabilities to
+the tty layer on driver initialisation.
 
 -- 
-** R.E.Wolff@BitWizard.nl ** http://www.BitWizard.nl/ ** +31-15-2600998 **
-*-- BitWizard writes Linux device drivers for any device you may have! --*
-Q: It doesn't work. A: Look buddy, doesn't work is an ambiguous statement. 
-Does it sit on the couch all day? Is it unemployed? Please be specific! 
-Define 'it' and what it isn't doing. --------- Adapted from lxrbot FAQ
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:  2.6 Serial core
