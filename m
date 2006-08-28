@@ -1,42 +1,68 @@
-From: "birdseed" <birdseed.configure@rossimarco.net>
-Subject: Express home credit
-Date: Mon, 28 Aug 2006 11:37:40 -0400
-Message-ID: <88956889545726.D30147CE7C@MG06>
+From: Russell King <rmk+lkml@arm.linux.org.uk>
+Subject: Re: Serial custom speed deprecated?
+Date: Mon, 28 Aug 2006 21:09:18 +0100
+Message-ID: <20060828200918.GA959@flint.arm.linux.org.uk>
+References: <20060827065210.GA6932@bitwizard.nl> <000901c6caac$478bfca0$294b82ce@stuartm>
 Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="Windows-1252"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 70-90-12-177-BusName-hershey.pa.panjde.hfc.comcastbusiness.net ([70.90.12.177]:15379 "EHLO o0cpce.iuuxn3ji.ameritech.net")
-	by vger.kernel.org with ESMTP id S1750903AbWH1Ph5 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 28 Aug 2006 11:37:57 -0400
+Received: from caramon.arm.linux.org.uk ([217.147.92.249]:17679 "EHLO
+	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
+	id S1751167AbWH1UJ1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 28 Aug 2006 16:09:27 -0400
+Content-Disposition: inline
+In-Reply-To: <000901c6caac$478bfca0$294b82ce@stuartm>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Stuart MacDonald <stuartm@connecttech.com>
+Cc: 'Rogier Wolff' <R.E.Wolff@BitWizard.nl>, 'Alan Cox' <alan@lxorguk.ukuu.org.uk>, "'linux-os (Dick Johnson)'" <linux-os@analogic.com>, 'Krzysztof Halasa' <khc@pm.waw.pl>, 'David Woodhouse' <dwmw2@infradead.org>, linux-serial@vger.kernel.org, 'LKML' <linux-kernel@vger.kernel.org>
 
-Good day to you Sir! 
+On Mon, Aug 28, 2006 at 10:14:30AM -0400, Stuart MacDonald wrote:
+> From: On Behalf Of Rogier Wolff
+> > Note that IMHO, we should have started hiding this mess from /drivers/
+> > a long time ago. The tty layer should convert the B_9600 thingies to
+> > "9600", the integer, and then call the set_termios function. The
+> > driver should be prohibited from looking at how the the baud rate came
+> > to be 9600, and attempt to approach the requested baud rate as good as
+> > possible. It might return a flag somewhere: Not exact. In the example
+> > above, the resulting baud rate is about 1.4 baud off: 9598.6. This is
+> > not a problem in very many cases.
+> > 
+> > Once this is in place, you lose a lot of "figure out the baud rate
+> > integer from the B_xxx settings" code in all the drivers, as well as
+> > that we get to provide a new interface to userspace without having to
+> > change ALL drivers at the same time. This decouples the drivers from
+> > the kernel<->userspace interface.
+> 
+> I'll second the motion. :-)
 
-Your credit doesn't matter to us!
-If you OWN real estate and want IMMEDIATE cash to spend ANY way you 
-like, or simply wish to LOWER your monthly payments by a third or more, here are the deals we have TODAY:
+You might do, but it's incompatible with the POSIX standard.  As I
+explained to Rogier (he took it off list) there's no need for "inexact"
+flags.
 
-$488,000.00 at a 3.67% fixed-rate
-$372,000.00 at a 3.90% variable-rate
-$492,000.00 at a 3.21% interest-only
-$248,000.00 at a 3.36% fixed-rate
-$198,000.00 at a 3.55% variable-rate
+If we pass a baud rate via tcsetattr() (or ioctl), you should set what
+ever settings you can.  If you can set _no_ settings, you return an
+error.  If you can set at least one setting, you do not return an error,
+and you only set those settings you can do.
 
-Hurry, we have requests limits, so when these deals are gone, they are 
-gone!
+When you subsequently read the settings via tcgetattr(), POSIX requires
+that the returned information be what the port is _actually_ doing.
 
-We have one-mimute form to apply the request,
-please CLICK HERE
+So, this means that if you can only do 9599 baud and not 9600 baud,
+maybe you should be returning 9599 baud.
 
-http://KGHG1.yourcreditpartner.biz/?ncache=103920
+On the same subject, if you don't support RTS/CTS flow control, and
+userland requests CRTSCTS, you shouldn't be allowing CRTSCTS to be set.
+And indeed, if you don't allow that in the kernel today, stty will
+correctly issue a warning that it was "unable to perform all requested
+operations".
 
-Don't worry about approval, your credit will not disqualify you!
+So, while I whole heartedly agree with passing baud rates numerically,
+I do not think we need any of this inexact flagging nonsense provided
+we implement something as userland programs expect - iow, the POSIX
+behaviour.
 
-Approval Manager.
-
-
+-- 
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:  2.6 Serial core
