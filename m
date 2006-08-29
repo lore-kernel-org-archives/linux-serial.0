@@ -1,68 +1,52 @@
-From: Russell King <rmk+lkml@arm.linux.org.uk>
+From: Rogier Wolff <R.E.Wolff@BitWizard.nl>
 Subject: Re: Serial custom speed deprecated?
-Date: Mon, 28 Aug 2006 21:09:18 +0100
-Message-ID: <20060828200918.GA959@flint.arm.linux.org.uk>
-References: <20060827065210.GA6932@bitwizard.nl> <000901c6caac$478bfca0$294b82ce@stuartm>
+Date: Tue, 29 Aug 2006 08:20:49 +0200
+Message-ID: <20060829062049.GA18752@bitwizard.nl>
+References: <20060827065210.GA6932@bitwizard.nl> <000901c6caac$478bfca0$294b82ce@stuartm> <20060828200918.GA959@flint.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([217.147.92.249]:17679 "EHLO
-	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
-	id S1751167AbWH1UJ1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 28 Aug 2006 16:09:27 -0400
+Received: from dtp.xs4all.nl ([80.126.206.180]:29432 "HELO abra2.bitwizard.nl")
+	by vger.kernel.org with SMTP id S1751239AbWH2GUv (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 29 Aug 2006 02:20:51 -0400
 Content-Disposition: inline
-In-Reply-To: <000901c6caac$478bfca0$294b82ce@stuartm>
+In-Reply-To: <20060828200918.GA959@flint.arm.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Stuart MacDonald <stuartm@connecttech.com>
-Cc: 'Rogier Wolff' <R.E.Wolff@BitWizard.nl>, 'Alan Cox' <alan@lxorguk.ukuu.org.uk>, "'linux-os (Dick Johnson)'" <linux-os@analogic.com>, 'Krzysztof Halasa' <khc@pm.waw.pl>, 'David Woodhouse' <dwmw2@infradead.org>, linux-serial@vger.kernel.org, 'LKML' <linux-kernel@vger.kernel.org>
+To: Stuart MacDonald <stuartm@connecttech.com>, 'Rogier Wolff' <R.E.Wolff@BitWizard.nl>, 'Alan Cox' <alan@lxorguk.ukuu.org.uk>, "'linux-os (Dick Johnson)'" <linux-os@analogic.com>, 'Krzysztof Halasa' <khc@pm.waw.pl>, 'David Woodhouse' <dwmw2@infradead.org>, linux-serial@vger.kernel.org, 'LKML' <linux-kernel@vger.kernel.org>
 
-On Mon, Aug 28, 2006 at 10:14:30AM -0400, Stuart MacDonald wrote:
-> From: On Behalf Of Rogier Wolff
-> > Note that IMHO, we should have started hiding this mess from /drivers/
-> > a long time ago. The tty layer should convert the B_9600 thingies to
-> > "9600", the integer, and then call the set_termios function. The
-> > driver should be prohibited from looking at how the the baud rate came
-> > to be 9600, and attempt to approach the requested baud rate as good as
-> > possible. It might return a flag somewhere: Not exact. In the example
-> > above, the resulting baud rate is about 1.4 baud off: 9598.6. This is
-> > not a problem in very many cases.
-> > 
-> > Once this is in place, you lose a lot of "figure out the baud rate
-> > integer from the B_xxx settings" code in all the drivers, as well as
-> > that we get to provide a new interface to userspace without having to
-> > change ALL drivers at the same time. This decouples the drivers from
-> > the kernel<->userspace interface.
-> 
-> I'll second the motion. :-)
+On Mon, Aug 28, 2006 at 09:09:18PM +0100, Russell King wrote:
 
-You might do, but it's incompatible with the POSIX standard.  As I
-explained to Rogier (he took it off list) there's no need for "inexact"
-flags.
+> So, while I whole heartedly agree with passing baud rates
+> numerically, I do not think we need any of this inexact flagging
+> nonsense provided we implement something as userland programs expect
+> - iow, the POSIX behaviour.
 
-If we pass a baud rate via tcsetattr() (or ioctl), you should set what
-ever settings you can.  If you can set _no_ settings, you return an
-error.  If you can set at least one setting, you do not return an error,
-and you only set those settings you can do.
+I fully agree we should implement Posix behaviour. Wether that specifies
+what userland programmers expect is where I disagree. 
 
-When you subsequently read the settings via tcgetattr(), POSIX requires
-that the returned information be what the port is _actually_ doing.
+If you happen to change RTS/CTS at the same time as you change baud,
+the call will return succes, even though the most important part (for
+you) of your call failed. Note that if the succes of the call depends
+on the previous state of RTS/CTS. Thus the error will depend on
+whatever happened before. This creates difficult-to-diagnose problems
+for sysadmins. 
 
-So, this means that if you can only do 9599 baud and not 9600 baud,
-maybe you should be returning 9599 baud.
+Anyway, this would not happen if the programmer had read the full text
+of the POSIX spec. IMHO, most programmers have a good idea of the
+filosopy, and program against that: If some call fails it returns
+error.
 
-On the same subject, if you don't support RTS/CTS flow control, and
-userland requests CRTSCTS, you shouldn't be allowing CRTSCTS to be set.
-And indeed, if you don't allow that in the kernel today, stty will
-correctly issue a warning that it was "unable to perform all requested
-operations".
+Anyway, here I am again rambling against the Posix spec. But again:
+we should implement POSIX as good as we can. Alan already did the
+most important footwork. Good job!
 
-So, while I whole heartedly agree with passing baud rates numerically,
-I do not think we need any of this inexact flagging nonsense provided
-we implement something as userland programs expect - iow, the POSIX
-behaviour.
+	Roger. 
 
 -- 
-Russell King
- Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
- maintainer of:  2.6 Serial core
+** R.E.Wolff@BitWizard.nl ** http://www.BitWizard.nl/ ** +31-15-2600998 **
+*-- BitWizard writes Linux device drivers for any device you may have! --*
+Q: It doesn't work. A: Look buddy, doesn't work is an ambiguous statement. 
+Does it sit on the couch all day? Is it unemployed? Please be specific! 
+Define 'it' and what it isn't doing. --------- Adapted from lxrbot FAQ
