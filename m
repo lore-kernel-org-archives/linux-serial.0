@@ -1,42 +1,48 @@
-From: "cartel" <cartel.deliquesce@rpsbowling.com>
-Subject: New home its simple
-Date: Tue, 29 Aug 2006 23:11:38 +0200
-Message-ID: <57880155048866.6783AE55A1__28049.7410837144$1156885905$gmane$org@BMVCR9H>
+From: Thomas Koeller <thomas.koeller@baslerweb.com>
+Subject: Re: [PATCH] RM9000 serial driver
+Date: Wed, 30 Aug 2006 01:05:26 +0200
+Message-ID: <200608300105.26921.thomas.koeller@baslerweb.com>
+References: <200608102318.52143.thomas.koeller@baslerweb.com> <200608222227.20181.thomas.koeller@baslerweb.com> <44F459DD.8060902@ru.mvista.com>
 Mime-Version: 1.0
 Content-Type: text/plain;
-        charset="Windows-1252"
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 196.Red-81-34-48.dynamicIP.rima-tde.net ([81.34.48.196]:15877
-	"EHLO PC-MZ.6a2w1v0.com") by vger.kernel.org with ESMTP
-	id S965384AbWH2VKg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 Aug 2006 17:10:36 -0400
+Received: from mail01.hansenet.de ([213.191.73.61]:27049 "EHLO
+	webmail.hansenet.de") by vger.kernel.org with ESMTP id S965039AbWH2XGy
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 29 Aug 2006 19:06:54 -0400
+In-Reply-To: <44F459DD.8060902@ru.mvista.com>
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Sergei Shtylyov <sshtylyov@ru.mvista.com>
+Cc: Yoichi Yuasa <yoichi_yuasa@tripeaks.co.jp>, rmk+serial@arm.linux.org.uk, linux-serial@vger.kernel.org, ralf@linux-mips.org, linux-mips@linux-mips.org, Thomas =?iso-8859-1?q?K=F6ller?= <thomas@koeller.dyndns.org>
 
-Hi Bro, 
+On Tuesday 29 August 2006 17:14, Sergei Shtylyov wrote:
+> > Also, it seems to me that the whole register-mapping stuff conflicts with
+> > autodetection, because autoconfig() uses serial_inp() and serial_outp()
+> > before the port types, and hence the mapping requirements, are known.
+>
+>     Port types have nothing to do with this. Or at least they hadn't until
+> your recent patch. :-)
+>     iotype was used to identify the addressing scheme, and it's alsready
+> known beforehand.
 
-Your credit doesn't matter to us!
-If you OWN real estate and want IMMEDIATE cash to spend ANY way you 
-like, or simply wish to LOWER your monthly payments by a third or more, here are the deals we have TODAY:
+How so? If I do not yet know which hardware I am dealing with, how can I know
+the iotype?
 
-$488,000.00 at a 3.67% fixed-rate
-$372,000.00 at a 3.90% variable-rate
-$492,000.00 at a 3.21% interest-only
-$248,000.00 at a 3.36% fixed-rate
-$198,000.00 at a 3.55% variable-rate
+Thomas 
+-- 
+Thomas Koeller, Software Development
 
-Hurry, we have requests limits, so when these deals are gone, they are 
-gone!
+Basler Vision Technologies
+An der Strusbek 60-62
+22926 Ahrensburg
+Germany
 
-We have one-mimute form to apply the request,
-please CLICK HERE
+Tel +49 (4102) 463-390
+Fax +49 (4102) 463-46390
 
-http://KZP.yourcreditpartner.us/?ncache=10510736
-
-Don't worry about approval, your credit will not disqualify you!
-
-Approval Manager.
-
-
+mailto:thomas.koeller@baslerweb.com
+http://www.baslerweb.com
