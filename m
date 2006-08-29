@@ -1,62 +1,82 @@
-From: Sergei Shtylyov <sshtylyov@ru.mvista.com>
+From: Russell King <rmk@arm.linux.org.uk>
 Subject: Re: [PATCH] RM9000 serial driver
-Date: Tue, 29 Aug 2006 19:14:37 +0400
-Message-ID: <44F459DD.8060902@ru.mvista.com>
-References: <200608102318.52143.thomas.koeller@baslerweb.com> <200608220057.52213.thomas.koeller@baslerweb.com> <20060822095942.4663a4cd.yoichi_yuasa@tripeaks.co.jp> <200608222227.20181.thomas.koeller@baslerweb.com>
+Date: Tue, 29 Aug 2006 20:04:27 +0100
+Message-ID: <20060829190426.GA20606@flint.arm.linux.org.uk>
+References: <200608102318.52143.thomas.koeller@baslerweb.com> <200608220057.52213.thomas.koeller@baslerweb.com> <20060822095942.4663a4cd.yoichi_yuasa@tripeaks.co.jp> <200608260038.13662.thomas.koeller@baslerweb.com> <44F441F3.8050301@ru.mvista.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gateway-1237.mvista.com ([63.81.120.155]:2219 "EHLO
-	imap.sh.mvista.com") by vger.kernel.org with ESMTP id S965018AbWH2PNc
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 Aug 2006 11:13:32 -0400
-In-Reply-To: <200608222227.20181.thomas.koeller@baslerweb.com>
+Received: from caramon.arm.linux.org.uk ([217.147.92.249]:273 "EHLO
+	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
+	id S965137AbWH2TEj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 29 Aug 2006 15:04:39 -0400
+Content-Disposition: inline
+In-Reply-To: <44F441F3.8050301@ru.mvista.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Thomas Koeller <thomas.koeller@baslerweb.com>
-Cc: Yoichi Yuasa <yoichi_yuasa@tripeaks.co.jp>, rmk+serial@arm.linux.org.uk, linux-serial@vger.kernel.org, ralf@linux-mips.org, linux-mips@linux-mips.org, =?ISO-8859-1?Q?Thomas_?= =?ISO-8859-1?Q?K=F6ller?= <thomas@koeller.dyndns.org>
+To: Sergei Shtylyov <sshtylyov@ru.mvista.com>
+Cc: Thomas Koeller <thomas.koeller@baslerweb.com>, Yoichi Yuasa <yoichi_yuasa@tripeaks.co.jp>, linux-serial@vger.kernel.org, ralf@linux-mips.org, linux-mips@linux-mips.org
 
-Hello.
+On Tue, Aug 29, 2006 at 05:32:35PM +0400, Sergei Shtylyov wrote:
+> >@@ -576,22 +626,17 @@ static int size_fifo(struct uart_8250_po
+> >  */
+> > static unsigned int autoconfig_read_divisor_id(struct uart_8250_port *p)
+> > {
+> >-	unsigned char old_dll, old_dlm, old_lcr;
+> >-	unsigned int id;
+> >+	unsigned char old_lcr;
+> >+	unsigned int id, old_dl;
+> > 
+> > 	old_lcr = serial_inp(p, UART_LCR);
+> > 	serial_outp(p, UART_LCR, UART_LCR_DLAB);
+> >+	old_dl = _serial_dl_read(p);
+> > 
+> >-	old_dll = serial_inp(p, UART_DLL);
+> >-	old_dlm = serial_inp(p, UART_DLM);
+> >-
+> >-	serial_outp(p, UART_DLL, 0);
+> >-	serial_outp(p, UART_DLM, 0);
+> >-
+> >-	id = serial_inp(p, UART_DLL) | serial_inp(p, UART_DLM) << 8;
+> >+	serial_dl_write(p, 0);
+> >+	id = serial_dl_read(p);
+> > 
+> >-	serial_outp(p, UART_DLL, old_dll);
+> >-	serial_outp(p, UART_DLM, old_dlm);
+> >+	serial_dl_write(p, old_dl);
+> > 	serial_outp(p, UART_LCR, old_lcr);
+> > 
+> > 	return id;
+> 
+>    Not sure the autoconfig code was intended for half-compatible UARTs. 
+>    Note that it sets up->port.type as its result. However, your change seems 
+> correct, it just have nothing to do with RM9000.
 
-Thomas Koeller wrote:
+It's worse than that - this code is there to read the ID from the divisor
+registers implemented in some UARTs.  If it isn't one of those UARTs, it's
+expected to return zero.
 
->>If you have an another standard 8250 port. this driver cannot support it
->>You should do as well as AU1X00.
+So we don't actually want to be prodding some other random registers on
+differing UARTs.
 
-> The AU1X00 code obviously assumes that every port that is not an AU1X00 is
-> a standard port requiring no register mapping. However, this is of course
-> not necessarily true in the most general case. There could be platforms
-> with multiple ports, all non-standard, but in different ways. Handling this
+>    As a side note, I think that the code that sets DLAB before and resets it
+> after the divisor latch read/write should be part of serial_dl_read() and
+> serial_dl_write() actually. In the Alchemy UARTs this bit is reserved.
 
-    The key word here is *could*. So far, this case is purely speculative. The 
-"half-compatible" UARTs seem to only reside in some SOCs for which case the 
-current scheme is still adequate.
-    I think I understand why such "half- compatible" hardware has appeared at 
-all -- the weird 8250 addressing scheme with several registers mapped to the 
-single address may be hard to implement...
+Not really, for two reasons.
 
-> would require per-port mapping functions, which could be achieved by adding
-> function pointers to struct uart_8250_port. However, this would add the
-> overhead of a real, non-inlined function call to every register access.
+1. We end up with additional pointless writes to undo what serial_dl_*
+   did.
+2. setting DLAB might work for a subset of ports, but others require
+   different magic numbers written to LCR to access the divisor.
+3. other ports have additional properties when DLAB is set, to the
+   extent that you must not write other registers when it's reset to
+   avoid clearing some features you want to enable.
 
-> Also, it seems to me that the whole register-mapping stuff conflicts with
-> autodetection, because autoconfig() uses serial_inp() and serial_outp()
-> before the port types, and hence the mapping requirements, are known.
+So, really, Moving that stuff into serial_dl_* ends up adding additional
+code and complexity where it isn't needed.
 
-    Port types have nothing to do with this. Or at least they hadn't until 
-your recent patch. :-)
-    iotype was used to identify the addressing scheme, and it's alsready known 
-beforehand.
-
-> This is not a problem for me, however, since the correct port type is
-> set up by the platform using early_serial_setup().
-
-    There actually may be some other (and more valid than your case :-) issues 
-preventing autoconfure from use with SOC UARTs. I guess autoconfigure code 
-wan't intended for the case of SOC chips -- their UARTs' charactarestics are 
-usually known beforehand, and the correct PORT_* might be pre-set by the 
-platform setup code.
-
-WBR, Sergei
-
+-- 
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:  2.6 Serial core
