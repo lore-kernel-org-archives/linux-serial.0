@@ -1,122 +1,76 @@
-From: Helge Deller <deller@gmx.de>
-Subject: [PATCH] constify some serial structs
-Date: Tue, 29 Aug 2006 21:57:29 +0200
-Message-ID: <200608292157.29355.deller@gmx.de>
+From: Russell King <rmk@arm.linux.org.uk>
+Subject: Re: [PATCH] RM9000 serial driver
+Date: Tue, 29 Aug 2006 20:59:06 +0100
+Message-ID: <20060829195906.GA22913@flint.arm.linux.org.uk>
+References: <200608102318.52143.thomas.koeller@baslerweb.com> <200608220057.52213.thomas.koeller@baslerweb.com> <20060822095942.4663a4cd.yoichi_yuasa@tripeaks.co.jp> <200608260038.13662.thomas.koeller@baslerweb.com> <44F441F3.8050301@ru.mvista.com> <20060829190426.GA20606@flint.arm.linux.org.uk> <44F4976E.7020702@ru.mvista.com>
 Mime-Version: 1.0
-Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_pwJ9ECGeyeil/1t"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.gmx.de ([213.165.64.20]:51121 "HELO mail.gmx.net")
-	by vger.kernel.org with SMTP id S1751347AbWH2T5d (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 Aug 2006 15:57:33 -0400
+Received: from caramon.arm.linux.org.uk ([217.147.92.249]:61197 "EHLO
+	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
+	id S1750846AbWH2T7M (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 29 Aug 2006 15:59:12 -0400
+Content-Disposition: inline
+In-Reply-To: <44F4976E.7020702@ru.mvista.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, rmk+serial@arm.linux.org.uk
+To: Sergei Shtylyov <sshtylyov@ru.mvista.com>
+Cc: Thomas Koeller <thomas.koeller@baslerweb.com>, linux-serial@vger.kernel.org, linux-mips@linux-mips.org
 
---Boundary-00=_pwJ9ECGeyeil/1t
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+On Tue, Aug 29, 2006 at 11:37:18PM +0400, Sergei Shtylyov wrote:
+> >>  Not sure the autoconfig code was intended for half-compatible UARTs. 
+> >>  Note that it sets up->port.type as its result. However, your change 
+> >>  seems correct, it just have nothing to do with RM9000.
+> 
+> >It's worse than that - this code is there to read the ID from the divisor
+> >registers implemented in some UARTs.  If it isn't one of those UARTs, it's
+> >expected to return zero.
+> 
+>    Well, I guess it should still return 0 (or revision) if we use 
+>    serial_dl_*()?
 
-- some const- ification and usage of ARRAY_SIZE() in serial drivers
+Not sure.  Does this code actually even get reached?
 
-Signed-off-by: Helge Deller <deller@gmx.de>
+> >>  As a side note, I think that the code that sets DLAB before and resets 
+> >>  it
+> >>after the divisor latch read/write should be part of serial_dl_read() and
+> >>serial_dl_write() actually. In the Alchemy UARTs this bit is reserved.
+> 
+> >Not really, for two reasons.
+> 
+> >1. We end up with additional pointless writes to undo what serial_dl_*
+> >   did.
+> 
+>    Yes, sometimes.
+> 
+> >2. setting DLAB might work for a subset of ports, but others require
+> >   different magic numbers written to LCR to access the divisor.
+> 
+>    Indeed, I've spotted one such case. But we could possible RMW the line 
+> control reg. so that serial_dl_*() "cleanup" after themselves?
 
+Not really - writing 0xEF is one such magic number, and it doesn't
+change the current settings.  If you then clear DLAB (iow, 0x6F),
+there's no guarantee that it won't change the settings on you, and,
+eg start sending a break condition.  Why?  0xEF is defined to be a
+magic number to access additional features, and 0x6f has no such
+meaning.
 
---Boundary-00=_pwJ9ECGeyeil/1t
-Content-Type: text/plain;
-  charset="us-ascii";
-  name="diff"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename="diff"
+> >3. other ports have additional properties when DLAB is set, to the
+> >   extent that you must not write other registers when it's reset to
+> >   avoid clearing some features you want to enable.
+> 
+> >So, really, Moving that stuff into serial_dl_* ends up adding additional
+> >code and complexity where it isn't needed.
+> 
+> Well, alternatively, the checks might be added to the places where DLAB 
+> is written preventing the write for UARTs that don't have the bit. Or even 
+> such check and LCR masking or even write skipping might be added to 
+> serial_out()?
 
-diff --git a/drivers/serial/8250_pci.c b/drivers/serial/8250_pci.c
-index cd1979d..851e483 100644
---- a/drivers/serial/8250_pci.c
-+++ b/drivers/serial/8250_pci.c
-@@ -458,11 +458,11 @@ static int pci_siig_setup(struct serial_
-  * growing *huge*, we use this function to collapse some 70 entries
-  * in the PCI table into one, for sanity's and compactness's sake.
-  */
--static unsigned short timedia_single_port[] = {
-+static const unsigned short timedia_single_port[] = {
- 	0x4025, 0x4027, 0x4028, 0x5025, 0x5027, 0
- };
- 
--static unsigned short timedia_dual_port[] = {
-+static const unsigned short timedia_dual_port[] = {
- 	0x0002, 0x4036, 0x4037, 0x4038, 0x4078, 0x4079, 0x4085,
- 	0x4088, 0x4089, 0x5037, 0x5078, 0x5079, 0x5085, 0x6079, 
- 	0x7079, 0x8079, 0x8137, 0x8138, 0x8237, 0x8238, 0x9079, 
-@@ -470,35 +470,34 @@ static unsigned short timedia_dual_port[
- 	0xD079, 0
- };
- 
--static unsigned short timedia_quad_port[] = {
-+static const unsigned short timedia_quad_port[] = {
- 	0x4055, 0x4056, 0x4095, 0x4096, 0x5056, 0x8156, 0x8157, 
- 	0x8256, 0x8257, 0x9056, 0x9156, 0x9157, 0x9158, 0x9159, 
- 	0x9256, 0x9257, 0xA056, 0xA157, 0xA158, 0xA159, 0xB056,
- 	0xB157, 0
- };
- 
--static unsigned short timedia_eight_port[] = {
-+static const unsigned short timedia_eight_port[] = {
- 	0x4065, 0x4066, 0x5065, 0x5066, 0x8166, 0x9066, 0x9166, 
- 	0x9167, 0x9168, 0xA066, 0xA167, 0xA168, 0
- };
- 
- static const struct timedia_struct {
- 	int num;
--	unsigned short *ids;
-+	const unsigned short *ids;
- } timedia_data[] = {
- 	{ 1, timedia_single_port },
- 	{ 2, timedia_dual_port },
- 	{ 4, timedia_quad_port },
--	{ 8, timedia_eight_port },
--	{ 0, NULL }
-+	{ 8, timedia_eight_port }
- };
- 
- static int pci_timedia_init(struct pci_dev *dev)
- {
--	unsigned short *ids;
-+	const unsigned short *ids;
- 	int i, j;
- 
--	for (i = 0; timedia_data[i].num; i++) {
-+	for (i = 0; i < ARRAY_SIZE(timedia_data); i++) {
- 		ids = timedia_data[i].ids;
- 		for (j = 0; ids[j]; j++)
- 			if (dev->subsystem_device == ids[j])
-diff --git a/drivers/serial/mcfserial.c b/drivers/serial/mcfserial.c
-index 832abd3..df2154c 100644
---- a/drivers/serial/mcfserial.c
-+++ b/drivers/serial/mcfserial.c
-@@ -118,17 +118,16 @@ static struct mcf_serial mcfrs_table[] =
- };
- 
- 
--#define	NR_PORTS	(sizeof(mcfrs_table) / sizeof(struct mcf_serial))
-+#define	NR_PORTS		ARRAY_SIZE(mcfrs_table)
- 
- /*
-  * This is used to figure out the divisor speeds and the timeouts.
-  */
--static int mcfrs_baud_table[] = {
-+static const int mcfrs_baud_table[] = {
- 	0, 50, 75, 110, 134, 150, 200, 300, 600, 1200, 1800, 2400, 4800,
- 	9600, 19200, 38400, 57600, 115200, 230400, 460800, 0
- };
--#define MCFRS_BAUD_TABLE_SIZE \
--			(sizeof(mcfrs_baud_table)/sizeof(mcfrs_baud_table[0]))
-+#define MCFRS_BAUD_TABLE_SIZE	ARRAY_SIZE(mcfrs_baud_table)
- 
- 
- #ifdef CONFIG_MAGIC_SYSRQ
+In a similar way to the TSI ports?  Yes, that'd work.
 
---Boundary-00=_pwJ9ECGeyeil/1t--
+-- 
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:  2.6 Serial core
