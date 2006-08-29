@@ -1,34 +1,42 @@
-From: Pavel Machek <pavel@ucw.cz>
-Subject: Re: [RFC][PATCH -mm] Make it possible to disable serial console suspend
-Date: Tue, 29 Aug 2006 23:03:18 +0200
-Message-ID: <20060829210318.GA21678@elf.ucw.cz>
-References: <200608292152.43915.rjw@sisk.pl>
+From: "cartel" <cartel.deliquesce@rpsbowling.com>
+Subject: New home its simple
+Date: Tue, 29 Aug 2006 23:11:38 +0200
+Message-ID: <57880155048866.6783AE55A1__28049.7410837144$1156885905$gmane$org@BMVCR9H>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+        charset="Windows-1252"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gprs189-60.eurotel.cz ([160.218.189.60]:8583 "EHLO amd.ucw.cz")
-	by vger.kernel.org with ESMTP id S965323AbWH2VDa (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 Aug 2006 17:03:30 -0400
-Content-Disposition: inline
-In-Reply-To: <200608292152.43915.rjw@sisk.pl>
+Received: from 196.Red-81-34-48.dynamicIP.rima-tde.net ([81.34.48.196]:15877
+	"EHLO PC-MZ.6a2w1v0.com") by vger.kernel.org with ESMTP
+	id S965384AbWH2VKg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 29 Aug 2006 17:10:36 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Rafael J. Wysocki" <rjw@sisk.pl>
-Cc: LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Andrew Morton <akpm@osdl.org>
+To: linux-serial@vger.kernel.org
 
-On Tue 2006-08-29 21:52:43, Rafael J. Wysocki wrote:
-> Hack uart_suspend_port() and uart_resume_port() so that serial console ports
-> are not suspended if CONFIG_DISABLE_CONSOLE_SUSPEND is set.
-> 
-> This makes it possible to debug the suspend and resume routines of all device
-> drivers as well as the lowest-level swsusp code with the help of the serial
-> console.
-> 
-> Signed-off-by: Rafael J. Wysocki <rjw@sisk.pl>
+Hi Bro, 
 
-Looks good to me, ACK.
+Your credit doesn't matter to us!
+If you OWN real estate and want IMMEDIATE cash to spend ANY way you 
+like, or simply wish to LOWER your monthly payments by a third or more, here are the deals we have TODAY:
 
--- 
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
+$488,000.00 at a 3.67% fixed-rate
+$372,000.00 at a 3.90% variable-rate
+$492,000.00 at a 3.21% interest-only
+$248,000.00 at a 3.36% fixed-rate
+$198,000.00 at a 3.55% variable-rate
+
+Hurry, we have requests limits, so when these deals are gone, they are 
+gone!
+
+We have one-mimute form to apply the request,
+please CLICK HERE
+
+http://KZP.yourcreditpartner.us/?ncache=10510736
+
+Don't worry about approval, your credit will not disqualify you!
+
+Approval Manager.
+
+
