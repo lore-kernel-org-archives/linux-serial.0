@@ -1,51 +1,61 @@
-From: list@feamane.org
-Subject: Stallion ONboard multiport serial card on 2.4 without devfs?
-Date: Thu, 31 Aug 2006 01:52:01 -0500
-Message-ID: <OF432470F5.F29643FB-ON862571DB.0023DE27@feamane.org>
+From: Sergei Shtylyov <sshtylyov@ru.mvista.com>
+Subject: Re: [PATCH] RM9000 serial driver
+Date: Thu, 31 Aug 2006 11:24:55 +0400
+Message-ID: <44F68EC7.5080205@ru.mvista.com>
+References: <200608102318.52143.thomas.koeller@baslerweb.com> <200608300100.32836.thomas.koeller@baslerweb.com> <20060830121216.GA25699@flint.arm.linux.org.uk> <200608302328.47944.thomas.koeller@baslerweb.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from h-72-245-221-18.chcgilgm.covad.net ([72.245.221.18]:14536 "EHLO
-	sun1.feamane.org") by vger.kernel.org with ESMTP id S1750824AbWHaGwD
+Received: from gateway-1237.mvista.com ([63.81.120.155]:50155 "EHLO
+	imap.sh.mvista.com") by vger.kernel.org with ESMTP id S1751044AbWHaHXz
 	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 31 Aug 2006 02:52:03 -0400
-Received: from library.feamane.org ([192.168.0.42])
-	by sun1.feamane.org with esmtp (Exim 4.50 #1 (Debian))
-	id 1GIgPB-0000CM-8L
-	for <linux-serial@vger.kernel.org>; Thu, 31 Aug 2006 01:52:01 -0500
+	Thu, 31 Aug 2006 03:23:55 -0400
+In-Reply-To: <200608302328.47944.thomas.koeller@baslerweb.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Thomas Koeller <thomas.koeller@baslerweb.com>
+Cc: Russell King <rmk@arm.linux.org.uk>, Yoichi Yuasa <yoichi_yuasa@tripeaks.co.jp>, linux-serial@vger.kernel.org, ralf@linux-mips.org, linux-mips@linux-mips.org, =?ISO-8859-1?Q?Thomas_K=F6ller?= <thomas@koeller.dyndns.org>
 
-Hi,
+Hello.
 
-I've been trying to figure this out for several weeks with no luck.  I 
-changed over from Redhat with 2.2 kernel to Sarge with 2.4.  But my 
-hardware includes a Stallion ONboard ISA card.  This worked fine before, 
-but now I get:
+Thomas Koeller wrote:
 
-devfs_register(cue): could not append to parent, err: -17
+>>iotype is all about the access method used to access the registers of
+>>the device, be it by byte or word, and it also takes account of any
+>>variance in the addressing of the registers.
 
-...when I try to load the istallion.o module.
+>>It does not refer to features or bugs in any particular implementation.
 
-If I've done my homework well the difference seems to be that the new 
-istallion.o uses devfs, while the old one used /dev/cuaE* & ttyS* files. I 
-don't have devfs installed on my system, and it seems too complicated to 
-install just to get this one driver to work (plus it's going away anyway).
+> That's what I assumed, too - it seemed obvious. And it seemed equally
+> obvious that it is the port type that encodes the the implementation's
+> peculiarities. Among these are the register offset mapping requirements,
+> so I assumed these should depend on the port type as well.
 
-I'd much rather get a istallion.o or .c that works with 2.4 without devfs. 
- I tried to compile the old istallion.c with the kernel-source for Sarge, 
-but no surprise that didn't work.  Not a coder so hacking the istallion.c 
-and .h that comes with the kernel-source is way over my head.
+    Different mapping requirements actually put the device beyond 8250 
+compatibility, so it seems quite natural they're addressed by the different 
+entity.
+    RM9000 UART is, strictly speaking, *not* 8250 compatible and needs some 
+trickery for the 8250 driver to support it (historically, Alchemy UARTs were 
+driven by the distinct driver, au1x00_uart.c -- however, its code was for the 
+most part copied over from 8250.c).
 
-I've been searching like crazy, is there someplace I can look in hopes of 
-finding the istallion driver for 2.4 that just uses the old /dev 
-devices???  The company that bought Stallion doesn't support it anymore, 
-but somebody out there has been updating the driver for newer kernels -- 
-I've seen the names James Nelson, Herbert Xu, and Adrian Bunk associated 
-with this but I don't know if they are the right people anymore.
+> Now Sergei strongly insist that it's the iotype that should be checked
+> whenever to get to the hardware type. I still do not quite understand how
+> that is supposed to work. If I have a PCI device, for example, then the
+> iotype will always be either UPIO_MEM or UPIO_PORT, so how could I learn
+> something about the hardware implementation by looking at these values?
 
-Any point in the right direction would be greatly appreciated.
+    I think it's determined by the value of the programming interface register 
+of the PCI device. The values 0 to 6 imply full backward compatibility to 8250 
+WRT the addressing scheme, IIUC.
 
-Regards,
-DJ
+> Or is the assumption that devices on a standard bus will always be of
+> a standard type?
+
+    For the PCI bus, it is.
+
+> Thomas
+
+WBR, Sergei
+
