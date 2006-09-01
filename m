@@ -1,31 +1,27 @@
-From: "Rosetta Rollins" <tkowalski@dansexc.com>
-Subject: select bestseller action
-Date: Fri, 1 Sep 2006 09:20:21 +0000 (UTC)
-Message-ID: <6871834648.20060506091750__7006.90909657187$1157102421$gmane$org@dansexc.com>
-Reply-To: "Rosetta Rollins" <tkowalski@dansexc.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+From: "Larry Cornelius" <AVSQRHO@hotmail.com>
+Subject: 10 Hours E-rections
+Date: Fri, 01 Sep 2006 22:49:46 +0600
+Message-ID: <LAW28.OE649yfB4mvo653053d5__2983.86150175265$1157125841$gmane$org@motmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:23944 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S1751346AbWIAJTf (ORCPT
+Received: from 171.102.98-84.rev.gaoland.net ([84.98.102.171]:6673 "HELO
+	369B3D20") by vger.kernel.org with SMTP id S1751681AbWIAPt7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 1 Sep 2006 05:19:35 -0400
-Date: Sat, 6 May 2006 09:17:50 -0060
+	Fri, 1 Sep 2006 11:49:59 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-net@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Have you ever wondered how it would feel to wear a $10,000 watch
-or a $9,000 necklace. Well now is you chance. We have a complete
-line of high quailty replicated products. No one will ever notice
-the difference. Only you will know. So why wait.
- 
-Come visit us online and see for your self.
 
-www.demandroll.com 
+Suffering from short penniss?
+Introduce revolution "Penis-Patch" formula which
+gauranteees sizes increase or moneey baack.
 
-If you do like the quiality of the product in the first 30day
-Return it for a full re fund minus the shiipng costs.
-So wha t do you have to loose.
+Users reported:
+- increase in length, girth and vascularity
+- harder and long-lasting E rection
+- 3x increase in sex drive
+
+Why waiting?
+
+http://www.domtoms.com/a/?159
 
