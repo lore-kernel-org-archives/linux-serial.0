@@ -1,35 +1,31 @@
-From: "Deann Fitzpatrick" <Kaylarc@msn.com>
-Subject: Wow...Nice Body Figure
-Date: Fri, 01 Sep 2006 12:25:03 +0600
-Message-ID: <68BM87FE.0Z24.Kaylarc__22235.5082085871$1157088873$gmane$org@msn.com>
+From: "Rosetta Rollins" <tkowalski@dansexc.com>
+Subject: select bestseller action
+Date: Fri, 1 Sep 2006 09:20:21 +0000 (UTC)
+Message-ID: <6871834648.20060506091750__7006.90909657187$1157102421$gmane$org@dansexc.com>
+Reply-To: "Rosetta Rollins" <tkowalski@dansexc.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from softbank219171225068.bbtec.net ([219.171.225.68]:48401 "HELO
-	softbank219171225068.bbtec.net") by vger.kernel.org with SMTP
-	id S932314AbWIAFeF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 1 Sep 2006 01:34:05 -0400
+Received: from zeus1.kernel.org ([204.152.191.4]:23944 "EHLO zeus1.kernel.org")
+	by vger.kernel.org with ESMTP id S1751346AbWIAJTf (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 1 Sep 2006 05:19:35 -0400
+Date: Sat, 6 May 2006 09:17:50 -0060
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org
+To: linux-net@vger.kernel.org
 
+Have you ever wondered how it would feel to wear a $10,000 watch
+or a $9,000 necklace. Well now is you chance. We have a complete
+line of high quailty replicated products. No one will ever notice
+the difference. Only you will know. So why wait.
+ 
+Come visit us online and see for your self.
 
+www.demandroll.com 
 
-The exciting new diet breakthrough =93Anatrim Cactus=94,=20
-a phenomenal new product that=92s taking the fat loss industry=20
-by a storm!=20
+If you do like the quiality of the product in the first 30day
+Return it for a full re fund minus the shiipng costs.
+So wha t do you have to loose.
 
-- Promotes safe, rapid fat loss
-- Watch the pounds melt away and the new you emerge!
-- Makes you feel and look incredible!
-
-Losing weight has become a lot easier.
-
-http://www.kaldok.com/n/?159
-
--
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
