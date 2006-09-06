@@ -1,27 +1,68 @@
-From: "Larry Cornelius" <AVSQRHO@hotmail.com>
-Subject: 10 Hours E-rections
-Date: Fri, 01 Sep 2006 22:49:46 +0600
-Message-ID: <LAW28.OE649yfB4mvo653053d5__2983.86150175265$1157125841$gmane$org@motmail.com>
+From: Josef Whiter <jwhiter@redhat.com>
+Subject: [PATCH] RFE: add io= option to 8250 serial console
+Date: Wed, 6 Sep 2006 17:22:37 -0400
+Message-ID: <20060906212236.GC6841@korben.rdu.redhat.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 171.102.98-84.rev.gaoland.net ([84.98.102.171]:6673 "HELO
-	369B3D20") by vger.kernel.org with SMTP id S1751681AbWIAPt7 (ORCPT
+Received: from mx1.redhat.com ([66.187.233.31]:36818 "EHLO mx1.redhat.com")
+	by vger.kernel.org with ESMTP id S1751636AbWIFVV4 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 1 Sep 2006 11:49:59 -0400
+	Wed, 6 Sep 2006 17:21:56 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
+Cc: rmk+serial@arm.linux.org.uk, linux-kernel@vger.kernel.org
+
+Hello,
+
+This patch is against a recent git clone of Linus's tree.  This patch adds the
+ability to set the iobase for the serial port being used when you specify a
+serial device for the console on bootup, ie
+
+console=ttyS0,io=0x3f8
+
+this is requested because boxes that use HP's iLo interface will usually
+redirect any output to ttyS0 to the iLo interface, which has a certain amount of
+latency associated with it.  This option allows users to set the iobase for the
+port to the iLo's iobase which removes the need for the bios to do it's
+indirection.  This has been tested by myself and HP and it works.  Thank you,
+
+Josef
 
 
-Suffering from short penniss?
-Introduce revolution "Penis-Patch" formula which
-gauranteees sizes increase or moneey baack.
-
-Users reported:
-- increase in length, girth and vascularity
-- harder and long-lasting E rection
-- 3x increase in sex drive
-
-Why waiting?
-
-http://www.domtoms.com/a/?159
-
+--- linux-2.6/drivers/serial/8250.c.josef	2006-09-04 11:44:48.000000000 -0400
++++ linux-2.6/drivers/serial/8250.c	2006-09-06 14:22:26.000000000 -0400
+@@ -2304,6 +2304,31 @@ static int serial8250_console_setup(stru
+ 	if (!port->iobase && !port->membase)
+ 		return -ENODEV;
+ 
++	/*
++	 * if an io address is specified set the port's iobase to the 
++	 * specified port.  Parses the following option setups
++	 *	console=ttyS0,io=0x3f8
++	 *	console=ttyS0,115200n8,io=0x3f8
++	 *	console=ttyS0,io=0x3f8,115200n8
++	 */
++	if (options) {
++		char *ioptr;
++		unsigned long iobase = 0;
++		if ((ioptr = strstr(options, "io=")) != NULL) {
++			iobase = simple_strtoul(ioptr+3, NULL, 16);
++			if (ioptr == options) {
++				if((ioptr = strstr(options, ",")) != NULL)
++					options = ioptr+1;
++				else
++					options = (char *)0;
++			} else
++				*(ioptr-1) = '\0';
++		}
++
++		if (iobase)
++			port->iobase = iobase;
++	}
++
+ 	if (options)
+ 		uart_parse_options(options, &baud, &parity, &bits, &flow);
+ 
