@@ -1,68 +1,42 @@
-From: Josef Whiter <jwhiter@redhat.com>
-Subject: [PATCH] RFE: add io= option to 8250 serial console
-Date: Wed, 6 Sep 2006 17:22:37 -0400
-Message-ID: <20060906212236.GC6841@korben.rdu.redhat.com>
+From: Russell King <rmk+lkml@arm.linux.org.uk>
+Subject: Re: [PATCH] RFE: add io= option to 8250 serial console
+Date: Wed, 6 Sep 2006 23:39:22 +0100
+Message-ID: <20060906223922.GA28943@flint.arm.linux.org.uk>
+References: <20060906212236.GC6841@korben.rdu.redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([66.187.233.31]:36818 "EHLO mx1.redhat.com")
-	by vger.kernel.org with ESMTP id S1751636AbWIFVV4 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 6 Sep 2006 17:21:56 -0400
+Received: from caramon.arm.linux.org.uk ([217.147.92.249]:5900 "EHLO
+	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
+	id S964854AbWIFWj2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 6 Sep 2006 18:39:28 -0400
 Content-Disposition: inline
+In-Reply-To: <20060906212236.GC6841@korben.rdu.redhat.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: rmk+serial@arm.linux.org.uk, linux-kernel@vger.kernel.org
+To: Josef Whiter <jwhiter@redhat.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hello,
+On Wed, Sep 06, 2006 at 05:22:37PM -0400, Josef Whiter wrote:
+> This patch is against a recent git clone of Linus's tree.  This patch adds
+> the ability to set the iobase for the serial port being used when you
+> specify a serial device for the console on bootup, ie
+> 
+> console=ttyS0,io=0x3f8
 
-This patch is against a recent git clone of Linus's tree.  This patch adds the
-ability to set the iobase for the serial port being used when you specify a
-serial device for the console on bootup, ie
+Have you looked at 8250_early.c already in the kernel?
 
-console=ttyS0,io=0x3f8
+        console=        [KNL] Output console device and options.
 
-this is requested because boxes that use HP's iLo interface will usually
-redirect any output to ttyS0 to the iLo interface, which has a certain amount of
-latency associated with it.  This option allows users to set the iobase for the
-port to the iLo's iobase which removes the need for the bios to do it's
-indirection.  This has been tested by myself and HP and it works.  Thank you,
+                uart,io,<addr>[,options]
+                uart,mmio,<addr>[,options]
+                        Start an early, polled-mode console on the 8250/16550
+                        UART at the specified I/O port or MMIO address,
+                        switching to the matching ttyS device later.  The
+                        options are the same as for ttyS, above.
 
-Josef
+-- 
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:  2.6 Serial core
 
-
---- linux-2.6/drivers/serial/8250.c.josef	2006-09-04 11:44:48.000000000 -0400
-+++ linux-2.6/drivers/serial/8250.c	2006-09-06 14:22:26.000000000 -0400
-@@ -2304,6 +2304,31 @@ static int serial8250_console_setup(stru
- 	if (!port->iobase && !port->membase)
- 		return -ENODEV;
- 
-+	/*
-+	 * if an io address is specified set the port's iobase to the 
-+	 * specified port.  Parses the following option setups
-+	 *	console=ttyS0,io=0x3f8
-+	 *	console=ttyS0,115200n8,io=0x3f8
-+	 *	console=ttyS0,io=0x3f8,115200n8
-+	 */
-+	if (options) {
-+		char *ioptr;
-+		unsigned long iobase = 0;
-+		if ((ioptr = strstr(options, "io=")) != NULL) {
-+			iobase = simple_strtoul(ioptr+3, NULL, 16);
-+			if (ioptr == options) {
-+				if((ioptr = strstr(options, ",")) != NULL)
-+					options = ioptr+1;
-+				else
-+					options = (char *)0;
-+			} else
-+				*(ioptr-1) = '\0';
-+		}
-+
-+		if (iobase)
-+			port->iobase = iobase;
-+	}
-+
- 	if (options)
- 		uart_parse_options(options, &baud, &parity, &bits, &flow);
- 
