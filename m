@@ -1,96 +1,75 @@
-From: Sergei Shtylyov <sshtylyov@ru.mvista.com>
-Subject: [PATCH] 8250 resourse management fixes
-Date: Sat, 09 Sep 2006 22:23:56 +0400
-Message-ID: <450306BC.8050408@ru.mvista.com>
+From: Olof Johansson <olof@lixom.net>
+Subject: Re: [RFC][PATCH] Xilinx uartlite serial driver
+Date: Tue, 12 Sep 2006 09:33:01 -0500
+Message-ID: <20060912093301.77f75bfb@localhost.localdomain>
+References: <87ac9o3ak3.fsf@sleipner.barco.com>
+	<878xlgercm.fsf@slug.be.48ers.dk>
 Mime-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="------------020004020301010005000402"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gateway-1237.mvista.com ([63.81.120.155]:30459 "EHLO
-	imap.sh.mvista.com") by vger.kernel.org with ESMTP id S1751359AbWIISVn
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 9 Sep 2006 14:21:43 -0400
+Received: from lixom.net ([66.141.50.11]:1949 "EHLO mail.lixom.net")
+	by vger.kernel.org with ESMTP id S965260AbWILOel (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 12 Sep 2006 10:34:41 -0400
+In-Reply-To: <878xlgercm.fsf@slug.be.48ers.dk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: rmk+serial@arm.linux.org.uk
-Cc: tie-fei.zang@freescale.com, linux-serial@vger.kernel.org
+To: Peter Korsgaard <jacmet@sunsite.dk>
+Cc: rmk+serial@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------020004020301010005000402
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
+On Tue, 22 Aug 2006 17:13:13 +0200 Peter Korsgaard <jacmet@sunsite.dk> wrote:
 
-I think register ranges obviously need to be claimed/released for all UARTs
-including those with UPIO_MEM32 and UPIO_TSI iotype.
+> >>>>> "Peter" == Peter Korsgaard <jacmet@sunsite.dk> writes:
+> 
+> Hi,
+> 
+>  Peter> The following patch adds a driver for the Xilinx uartlite serial
+>  Peter> controller used in boards with the PPC405 core in the Xilinx V2P/V4
+>  Peter> fpgas.
+> 
+>  Peter> The hardware is very simple (baudrate/start/stopbits fixed and
+>  Peter> no break support). See the datasheet for details:
+> 
+>  Peter> http://www.xilinx.com/bvdocs/ipcenter/data_sheet/opb_uartlite.pdf
+> 
+>  Peter> Comments and suggestions are welcome. I'm especially wondering about
+>  Peter> the fact that I'm hijacking the device nodes used by the mpc52xx_uart
+>  Peter> driver ..
+> 
+> Ok, I now got a chunk of the 204 major range from LANANA. That afaik
+> solves the last remaining issue with this..
 
-Also, serial8250_request_rsa_resources() returns false positives with
-UPIO_MEM32, UPIO_AU, and UPIO_TSI iotype -- I don't think this makes any sense.
+Hi,
 
-Signed-off-by: Sergei Shtylyov <sshtylyov@ru.mvista.com>
+I've been working on getting this running smoothly over the last few days.
+In my opinion there's a few pieces missing:
 
+1. There's no early boot console support for PPC. There's another
+uartlite patch that's floating around that has this, very useful for
+early bringup tasks. I'd like to see this expanded to include that as
+well (the regular part of the other driver seems more or less broken
+though, so this is a better base driver). That shouldn't stop this part
+of the driver to go in though, just possible future work.
 
+2. There seems to be some timeout issues with tx_empty. If I boot a
+regular distro with getty, etc, I get veeeery slow console output right
+when init starts up. Adding a small default timeout in the init of the
+uart code seems to help -- the hanging thread seems to be sleeping in
+uart_wait_until_sent(). I picked a value of '5', seems ok. (Also,
+without this fix, getty won't start on the port for some reason, it
+sits in the same timeout forever, or at least for a very long time).
 
---------------020004020301010005000402
-Content-Type: text/plain;
- name="8250-resource-management-fixes.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="8250-resource-management-fixes.patch"
+3. It would be useful to demonstrate how to hook up the device all the
+way through to the board port (i.e. add a config option and include it
+in the ml403 platform code or similar). It's not hard, but it'd make it
+easier for whomever comes next. Of course, with 4xx hopefully soon
+moving over to arch/powerpc, this would be taken care of through the
+device tree instead.
 
-Index: linux-mips/drivers/serial/8250.c
-===================================================================
---- linux-mips.orig/drivers/serial/8250.c
-+++ linux-mips/drivers/serial/8250.c
-@@ -1949,6 +1949,8 @@ static int serial8250_request_std_resour
- 	case UPIO_AU:
- 		size = 0x100000;
- 		/* fall thru */
-+	case UPIO_TSI:
-+	case UPIO_MEM32:
- 	case UPIO_MEM:
- 		if (!up->port.mapbase)
- 			break;
-@@ -1984,6 +1986,8 @@ static void serial8250_release_std_resou
- 	case UPIO_AU:
- 		size = 0x100000;
- 		/* fall thru */
-+	case UPIO_TSI:
-+	case UPIO_MEM32:
- 	case UPIO_MEM:
- 		if (!up->port.mapbase)
- 			break;
-@@ -2007,17 +2011,15 @@ static int serial8250_request_rsa_resour
- {
- 	unsigned long start = UART_RSA_BASE << up->port.regshift;
- 	unsigned int size = 8 << up->port.regshift;
--	int ret = 0;
-+	int ret = -EINVAL;
- 
- 	switch (up->port.iotype) {
--	case UPIO_MEM:
--		ret = -EINVAL;
--		break;
--
- 	case UPIO_HUB6:
- 	case UPIO_PORT:
- 		start += up->port.iobase;
--		if (!request_region(start, size, "serial-rsa"))
-+		if (request_region(start, size, "serial-rsa"))
-+			ret = 0;
-+		else
- 			ret = -EBUSY;
- 		break;
- 	}
-@@ -2031,9 +2033,6 @@ static void serial8250_release_rsa_resou
- 	unsigned int size = 8 << up->port.regshift;
- 
- 	switch (up->port.iotype) {
--	case UPIO_MEM:
--		break;
--
- 	case UPIO_HUB6:
- 	case UPIO_PORT:
- 		release_region(up->port.iobase + offset, size);
+So, (2) is really the only thing that's needed (IMHO) before this goes
+in, but the rest would be useful as well.
 
 
---------------020004020301010005000402--
+-Olof
+
