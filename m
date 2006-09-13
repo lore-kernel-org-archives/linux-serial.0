@@ -1,273 +1,64 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH] serial: Fix up offenders peering at baud bits directly,
-	corrected
-Date: Tue, 12 Sep 2006 17:21:15 +0100
-Message-ID: <1158078075.6780.52.camel@localhost.localdomain>
+From: Peter Korsgaard <jacmet@sunsite.dk>
+Subject: Re: [RFC][PATCH] Xilinx uartlite serial driver
+Date: Wed, 13 Sep 2006 07:56:03 +0200
+Message-ID: <87ejugxqbw.fsf@slug.be.48ers.dk>
+References: <87ac9o3ak3.fsf@sleipner.barco.com>
+	<878xlgercm.fsf@slug.be.48ers.dk>
+	<20060912093301.77f75bfb@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1030236AbWILP60@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, akpm@osdl.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from europa.telenet-ops.be ([195.130.137.75]:11208 "EHLO
+	europa.telenet-ops.be") by vger.kernel.org with ESMTP
+	id S1751585AbWIMF4S (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 13 Sep 2006 01:56:18 -0400
+In-Reply-To: <20060912093301.77f75bfb@localhost.localdomain> (Olof Johansson's
+	message of "Tue, 12 Sep 2006 09:33:01 -0500")
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Olof Johansson <olof@lixom.net>
+Cc: rmk+serial@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Stop some other people peering into the baud bits on their own and make
-them use the tty_get_baud_rate() helper as a preperation for the move to
-the new termios. Corrected dependancy previous one had on new termios
-structs
+>>>>> "Olof" == Olof Johansson <olof@lixom.net> writes:
 
-Signed-off-by: Alan Cox <alan@redhat.com>
+Hi Olof, thanks for looking into the driver..
 
-diff -u --new-file --recursive --exclude-from /usr/src/exclude linux.vanilla-2.6.18-rc6-mm1/drivers/char/moxa.c linux-2.6.18-rc6-mm1/drivers/char/moxa.c
---- linux.vanilla-2.6.18-rc6-mm1/drivers/char/moxa.c	2006-09-11 17:00:09.000000000 +0100
-+++ linux-2.6.18-rc6-mm1/drivers/char/moxa.c	2006-09-11 17:18:31.000000000 +0100
-@@ -260,7 +260,7 @@
- static void MoxaPortDisable(int);
- static long MoxaPortGetMaxBaud(int);
- static long MoxaPortSetBaud(int, long);
--static int MoxaPortSetTermio(int, struct termios *);
-+static int MoxaPortSetTermio(int, struct termios *, speed_t);
- static int MoxaPortGetLineOut(int, int *, int *);
- static void MoxaPortLineCtrl(int, int, int);
- static void MoxaPortFlowCtrl(int, int, int, int, int, int);
-@@ -986,7 +988,7 @@
- 	if (ts->c_iflag & IXANY)
- 		xany = 1;
- 	MoxaPortFlowCtrl(ch->port, rts, cts, txflow, rxflow, xany);
--	MoxaPortSetTermio(ch->port, ts);
-+	MoxaPortSetTermio(ch->port, ts, tty_get_baud_rate(tty));
- }
- 
- static int block_till_ready(struct tty_struct *tty, struct file *filp,
-@@ -1900,9 +1902,10 @@
-  *
-  *      Function 12:    Configure the port.
-  *      Syntax:
-- *      int  MoxaPortSetTermio(int port, struct termios *termio);
-+ *      int  MoxaPortSetTermio(int port, struct termios *termio, speed_t baud);
-  *           int port           : port number (0 - 127)
-  *           struct termios * termio : termio structure pointer
-+ *	     speed_t baud	: baud rate
-  *
-  *           return:    -1      : this port is invalid or termio == NULL
-  *                      0       : setting O.K.
-@@ -2182,11 +2185,10 @@
- 	return (baud);
- }
- 
--int MoxaPortSetTermio(int port, struct termios *termio)
-+int MoxaPortSetTermio(int port, struct termios *termio, speed_t baud)
- {
- 	void __iomem *ofsAddr;
- 	tcflag_t cflag;
--	long baud;
- 	tcflag_t mode = 0;
- 
- 	if (moxaChkPort[port] == 0 || termio == 0)
-@@ -2221,78 +2223,10 @@
- 		mode |= MX_PARNONE;
- 
- 	moxafunc(ofsAddr, FC_SetDataMode, (ushort) mode);
--
--	cflag &= (CBAUD | CBAUDEX);
--#ifndef B921600
--#define	B921600	(B460800+1)
--#endif
--	switch (cflag) {
--	case B921600:
--		baud = 921600L;
--		break;
--	case B460800:
--		baud = 460800L;
--		break;
--	case B230400:
--		baud = 230400L;
--		break;
--	case B115200:
--		baud = 115200L;
--		break;
--	case B57600:
--		baud = 57600L;
--		break;
--	case B38400:
--		baud = 38400L;
--		break;
--	case B19200:
--		baud = 19200L;
--		break;
--	case B9600:
--		baud = 9600L;
--		break;
--	case B4800:
--		baud = 4800L;
--		break;
--	case B2400:
--		baud = 2400L;
--		break;
--	case B1800:
--		baud = 1800L;
--		break;
--	case B1200:
--		baud = 1200L;
--		break;
--	case B600:
--		baud = 600L;
--		break;
--	case B300:
--		baud = 300L;
--		break;
--	case B200:
--		baud = 200L;
--		break;
--	case B150:
--		baud = 150L;
--		break;
--	case B134:
--		baud = 134L;
--		break;
--	case B110:
--		baud = 110L;
--		break;
--	case B75:
--		baud = 75L;
--		break;
--	case B50:
--		baud = 50L;
--		break;
--	default:
--		baud = 0;
--	}
-+	
- 	if ((moxa_boards[port / MAX_PORTS_PER_BOARD].boardType == MOXA_BOARD_C320_ISA) ||
- 	    (moxa_boards[port / MAX_PORTS_PER_BOARD].boardType == MOXA_BOARD_C320_PCI)) {
--		if (baud == 921600L)
-+		if (baud >= 921600L)
- 			return (-1);
- 	}
- 	MoxaPortSetBaud(port, baud);
-diff -u --new-file --recursive --exclude-from /usr/src/exclude linux.vanilla-2.6.18-rc6-mm1/drivers/char/mxser.c linux-2.6.18-rc6-mm1/drivers/char/mxser.c
---- linux.vanilla-2.6.18-rc6-mm1/drivers/char/mxser.c	2006-09-11 17:00:09.000000000 +0100
-+++ linux-2.6.18-rc6-mm1/drivers/char/mxser.c	2006-09-11 17:18:38.000000000 +0100
-@@ -2540,71 +2542,7 @@
- #define B921600 (B460800 +1)
- #endif
- 	if (mxser_set_baud_method[info->port] == 0) {
--		switch (cflag & (CBAUD | CBAUDEX)) {
--		case B921600:
--			baud = 921600;
--			break;
--		case B460800:
--			baud = 460800;
--			break;
--		case B230400:
--			baud = 230400;
--			break;
--		case B115200:
--			baud = 115200;
--			break;
--		case B57600:
--			baud = 57600;
--			break;
--		case B38400:
--			baud = 38400;
--			break;
--		case B19200:
--			baud = 19200;
--			break;
--		case B9600:
--			baud = 9600;
--			break;
--		case B4800:
--			baud = 4800;
--			break;
--		case B2400:
--			baud = 2400;
--			break;
--		case B1800:
--			baud = 1800;
--			break;
--		case B1200:
--			baud = 1200;
--			break;
--		case B600:
--			baud = 600;
--			break;
--		case B300:
--			baud = 300;
--			break;
--		case B200:
--			baud = 200;
--			break;
--		case B150:
--			baud = 150;
--			break;
--		case B134:
--			baud = 134;
--			break;
--		case B110:
--			baud = 110;
--			break;
--		case B75:
--			baud = 75;
--			break;
--		case B50:
--			baud = 50;
--			break;
--		default:
--			baud = 0;
--			break;
--		}
-+		baud = tty_get_baud_rate(info->tty);
- 		mxser_set_baud(info, baud);
- 	}
- 
-diff -u --new-file --recursive --exclude-from /usr/src/exclude linux.vanilla-2.6.18-rc6-mm1/drivers/char/riscom8.c linux-2.6.18-rc6-mm1/drivers/char/riscom8.c
---- linux.vanilla-2.6.18-rc6-mm1/drivers/char/riscom8.c	2006-09-11 17:00:09.000000000 +0100
-+++ linux-2.6.18-rc6-mm1/drivers/char/riscom8.c	2006-09-11 17:18:45.000000000 +0100
-@@ -675,26 +675,12 @@
- 	port->COR2 = 0;
- 	port->MSVR = MSVR_RTS;
- 	
--	baud = C_BAUD(tty);
--	
--	if (baud & CBAUDEX) {
--		baud &= ~CBAUDEX;
--		if (baud < 1 || baud > 2) 
--			port->tty->termios->c_cflag &= ~CBAUDEX;
--		else
--			baud += 15;
--	}
--	if (baud == 15)  {
--		if ((port->flags & ASYNC_SPD_MASK) == ASYNC_SPD_HI)
--			baud ++;
--		if ((port->flags & ASYNC_SPD_MASK) == ASYNC_SPD_VHI)
--			baud += 2;
--	}
-+	baud = tty_get_baud_rate(tty);
- 	
- 	/* Select port on the board */
- 	rc_out(bp, CD180_CAR, port_No(port));
- 	
--	if (!baud_table[baud])  {
-+	if (!baud)  {
- 		/* Drop DTR & exit */
- 		bp->DTR |= (1u << port_No(port));
- 		rc_out(bp, RC_DTR, bp->DTR);
-@@ -710,7 +696,7 @@
- 	 */
- 	
- 	/* Set baud rate for port */
--	tmp = (((RC_OSCFREQ + baud_table[baud]/2) / baud_table[baud] +
-+	tmp = (((RC_OSCFREQ + baud/2) / baud +
- 		CD180_TPC/2) / CD180_TPC);
- 
- 	rc_out(bp, CD180_RBPRH, (tmp >> 8) & 0xff); 
-@@ -718,7 +704,7 @@
- 	rc_out(bp, CD180_RBPRL, tmp & 0xff); 
- 	rc_out(bp, CD180_TBPRL, tmp & 0xff);
- 	
--	baud = (baud_table[baud] + 5) / 10;   /* Estimated CPS */
-+	baud = (baud + 5) / 10;   /* Estimated CPS */
- 	
- 	/* Two timer ticks seems enough to wakeup something like SLIP driver */
- 	tmp = ((baud + HZ/2) / HZ) * 2 - CD180_NFIFO;		
+ Olof> In my opinion there's a few pieces missing:
+
+ Olof> 1. There's no early boot console support for PPC. There's another
+ Olof> uartlite patch that's floating around that has this, very useful for
+ Olof> early bringup tasks. I'd like to see this expanded to include that as
+ Olof> well (the regular part of the other driver seems more or less broken
+ Olof> though, so this is a better base driver). That shouldn't stop this part
+ Olof> of the driver to go in though, just possible future work.
+
+True. The board I have an uartlite on also has a 8250 so it hasn't
+been an issue for me so far - But it would indeed be a nice
+addition. Adding new stuff to arch/ppc at this moment isn't that
+sensible, so perhaps it makes most sense to wait til 4xx is supported
+under arch/powerpc?
+
+ Olof> 2. There seems to be some timeout issues with tx_empty. If I boot a
+ Olof> regular distro with getty, etc, I get veeeery slow console output right
+ Olof> when init starts up. Adding a small default timeout in the init of the
+ Olof> uart code seems to help -- the hanging thread seems to be sleeping in
+ Olof> uart_wait_until_sent(). I picked a value of '5', seems ok. (Also,
+ Olof> without this fix, getty won't start on the port for some reason, it
+ Olof> sits in the same timeout forever, or at least for a very long time).
+
+Huh, that's odd - I haven't noticed that. I'll test it again and get
+back to you.
+
+ Olof> 3. It would be useful to demonstrate how to hook up the device all the
+ Olof> way through to the board port (i.e. add a config option and include it
+ Olof> in the ml403 platform code or similar). It's not hard, but it'd make it
+ Olof> easier for whomever comes next. Of course, with 4xx hopefully soon
+ Olof> moving over to arch/powerpc, this would be taken care of through the
+ Olof> device tree instead.
+
+Yes - Afaik none of the Xilinx boards comes with uartlites
+configured so it's not usable out-of-the-box, but you can ofcause do a
+setup with the proper #ifdefs like the 8250 stuff in virtex.c.
+
+-- 
+Bye, Peter Korsgaard
