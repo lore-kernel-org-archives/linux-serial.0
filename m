@@ -1,16 +1,16 @@
 From: "David H. Lynch Jr." <dhlii@dlasys.net>
 Subject: Re: [RFC][PATCH] Xilinx uartlite serial driver
-Date: Fri, 29 Sep 2006 15:57:51 -0400
-Message-ID: <451D7ABF.1010103@dlasys.net>
+Date: Sat, 30 Sep 2006 05:25:31 -0400
+Message-ID: <451E380B.5000401@dlasys.net>
 References: <87ac9o3ak3.fsf@sleipner.barco.com>	<878xlgercm.fsf@slug.be.48ers.dk>	<20060912093301.77f75bfb@localhost.localdomain>	<87ejugxqbw.fsf@slug.be.48ers.dk>	<871wqfyjgi.fsf@slug.be.48ers.dk> <20060913100110.1e33d885@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 24.152.213.223.res-cmts.eph.ptd.net ([24.152.213.223]:6354 "EHLO
-	mx.dlasys.net") by vger.kernel.org with ESMTP id S1422710AbWI2UDF
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 29 Sep 2006 16:03:05 -0400
+Received: from 24.152.213.223.res-cmts.eph.ptd.net ([24.152.213.223]:34446
+	"EHLO mx.dlasys.net") by vger.kernel.org with ESMTP
+	id S1751191AbWI3J2J (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 30 Sep 2006 05:28:09 -0400
 In-Reply-To: <20060913100110.1e33d885@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -35,35 +35,26 @@ Olof Johansson wrote:
 >   
 
 Peter;
-	I am trying to switch from my driver to yours - as it appears yours is
-on the way to getting accepted.
 	
-	I have been dropping my issues/comments as I go onto the list as I
-encounter problems.
+	I have been working to move from my UartLite driver to yours.
 
+	Aside from the missing early_serial_setup() routine which was fairly
+easy to add, as well as adding a timer to poll IO to keep things working
+if there was no UartLite interrupt, I have encounter a few other issues.
 
-	You need an "early_serial_setup()" routine inside the
-CONFIG_SERIAL_UARTLITE_CONSOLE code.
+	Your ulite_console_write performance is pretty slow - almost an order
+of magnitude slower than what I am seeing in my driver. I beleive it is
+because you are waiting for the Tx FIFO to be empty before and after
+sending each character rather than only waiting while the Tx FIFO is full.
 
-
-#if defined(CONFIG_SERIAL_UARTLITE_CONSOLE)
-int __init
-early_serial_setup(struct uart_port *port)
-{
+	That may also be an issue in the rest of the driver but I have been
+unable to get it to through registering the driver.
+	I suspect that is because your driver is a platform driver, but you did
+not provide patches to the arch/ppc/platforms/4xx/virtex.* or
+xilinx_ml???.* to setup the platform device structure.
+	If you could provide a copy I would appreciate it.
 	
-	if (port->line >= ARRAY_SIZE(ulite_ports))
-		return -ENODEV;
-
-	ulite_init_ports();
-	ulite_ports[port->line].port	= *port;
-	ulite_ports[port->line].port.ops	= &ulite_pops;
-	return 0;
-}
-#endif
-
-ulite_init_ports() loops through all the ports in ulite_ports and sets
-up the port data - similiar to your code in ulite_probe().
-
+	
 
 
 
@@ -79,5 +70,6 @@ numerous to list.
 takes a touch of genius - and a lot of courage to move in the opposite
 direction."
 Albert Einstein
+
 
 
