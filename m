@@ -1,75 +1,56 @@
-From: "David H. Lynch Jr." <dhlii@dlasys.net>
-Subject: Re: [RFC][PATCH] Xilinx uartlite serial driver
-Date: Sat, 30 Sep 2006 05:25:31 -0400
-Message-ID: <451E380B.5000401@dlasys.net>
-References: <87ac9o3ak3.fsf@sleipner.barco.com>	<878xlgercm.fsf@slug.be.48ers.dk>	<20060912093301.77f75bfb@localhost.localdomain>	<87ejugxqbw.fsf@slug.be.48ers.dk>	<871wqfyjgi.fsf@slug.be.48ers.dk> <20060913100110.1e33d885@localhost.localdomain>
+From: Matthew Garrett <mjg59@srcf.ucam.org>
+Subject: [PATCH] - add PNP IDs for FPI based touchscreens
+Date: Sun, 1 Oct 2006 19:27:38 +0100
+Message-ID: <20061001182738.GA17124@srcf.ucam.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 24.152.213.223.res-cmts.eph.ptd.net ([24.152.213.223]:34446
-	"EHLO mx.dlasys.net") by vger.kernel.org with ESMTP
-	id S1751191AbWI3J2J (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 30 Sep 2006 05:28:09 -0400
-In-Reply-To: <20060913100110.1e33d885@localhost.localdomain>
+Received: from cavan.codon.org.uk ([217.147.92.49]:36289 "EHLO
+	vavatch.codon.org.uk") by vger.kernel.org with ESMTP
+	id S932164AbWJAS1m (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 1 Oct 2006 14:27:42 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, jacmet@sunsite.dk
+To: linux-serial@vger.kernel.org, rmk+serial@arm.linux.org.uk, linux-kernel@vger.kernel.org
 
-Olof Johansson wrote:
-> On Wed, 13 Sep 2006 15:39:09 +0200 Peter Korsgaard <jacmet@sunsite.dk> wrote:
->
->   
->>>>>>> "Peter" == Peter Korsgaard <jacmet@sunsite.dk> writes:
->>>>>>>               
->>  Olof> 2. There seems to be some timeout issues with tx_empty.
->>
->>  Peter> Huh, that's odd - I haven't noticed that. I'll test it again and get
->>  Peter> back to you.
->>
->> Ahh, found it - I didn't update the uart timeout in set_termios so it
->> used a very long timeout. Please give the updated patch a try.
->>     
->
-> Looks good. Thanks.
->   
+The Compaq TC1000 and Fujitsu Stylistic range of tablet machines use 
+touchscreens from FPI. These are implemented as serial interfaces, 
+generally exposed in the ACPIPNP information on the system. This patch 
+adds them to the 8250_pnp driver tables, avoiding the need to mess 
+around with setserial to set them up.
 
-Peter;
-	
-	I have been working to move from my UartLite driver to yours.
+I haven't been able to confirm what FUJ02B5, FUJ02BA and FUJ02BB are. 
+FUJ02B1 refers to the controller for the system hotkeys. FUJ02BC appears 
+to be the last in the range - after this, they moved to Wacom-based 
+systems.
 
-	Aside from the missing early_serial_setup() routine which was fairly
-easy to add, as well as adding a timer to poll IO to keep things working
-if there was no UartLite interrupt, I have encounter a few other issues.
+Signed-off-by: Matthew Garrett <mjg59@srcf.ucam.org>
 
-	Your ulite_console_write performance is pretty slow - almost an order
-of magnitude slower than what I am seeing in my driver. I beleive it is
-because you are waiting for the Tx FIFO to be empty before and after
-sending each character rather than only waiting while the Tx FIFO is full.
-
-	That may also be an issue in the rest of the driver but I have been
-unable to get it to through registering the driver.
-	I suspect that is because your driver is a platform driver, but you did
-not provide patches to the arch/ppc/platforms/4xx/virtex.* or
-xilinx_ml???.* to setup the platform device structure.
-	If you could provide a copy I would appreciate it.
-	
-	
-
-
+diff --git a/drivers/serial/8250_pnp.c b/drivers/serial/8250_pnp.c
+index 632f62d..71d907c 100644
+--- a/drivers/serial/8250_pnp.c
++++ b/drivers/serial/8250_pnp.c
+@@ -327,6 +327,19 @@ static const struct pnp_device_id pnp_de
+ 	{	"WACF004",		0	},
+ 	{	"WACF005",		0	},
+ 	{       "WACF006",              0       },
++	/* Compaq touchscreen */
++	{       "FPI2002",              0 },
++	/* Fujitsu Stylistic touchscreens */
++	{       "FUJ02B2",              0 },
++	{       "FUJ02B3",              0 },
++	/* Fujitsu Stylistic LT touchscreens */
++	{       "FUJ02B4",              0 },
++	/* Passive Fujitsu Stylistic touchscreens */
++	{       "FUJ02B6",              0 },
++	{       "FUJ02B7",              0 },
++	{       "FUJ02B8",              0 },
++	{       "FUJ02B9",              0 },
++	{       "FUJ02BC",              0 },
+ 	/* Rockwell's (PORALiNK) 33600 INT PNP */
+ 	{	"WCI0003",		0	},
+ 	/* Unkown PnP modems */
 
 -- 
-Dave Lynch 					  	    DLA Systems
-Software Development:  				         Embedded Linux
-717.627.3770 	       dhlii@dlasys.net 	  http://www.dlasys.net
-fax: 1.253.369.9244 			           Cell: 1.717.587.7774
-Over 25 years' experience in platforms, languages, and technologies too
-numerous to list.
-
-"Any intelligent fool can make things bigger and more complex... It
-takes a touch of genius - and a lot of courage to move in the opposite
-direction."
-Albert Einstein
-
-
-
+Matthew Garrett | mjg59@srcf.ucam.org
