@@ -1,58 +1,125 @@
-From: "Dale Farnsworth" <dale@farnsworth.org>
-Subject: Xscale UART detection false positive
-Date: Fri, 6 Oct 2006 04:36:45 -0700
-Message-ID: <20061006113645.GA20513@xyzzy.farnsworth.org>
+From: "Karl Kamysek" <karl.kamysek@gmail.com>
+Subject: Serial Port Woes - Blocked From Sending?
+Date: Fri, 6 Oct 2006 08:40:55 -0400
+Message-ID: <9248506a0610060540k3972d2b4k33e6d02ab1a81b2b@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from xyzzy.farnsworth.org ([65.39.95.219]:48397 "HELO farnsworth.org")
-	by vger.kernel.org with SMTP id S1751215AbWJFLgs (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 6 Oct 2006 07:36:48 -0400
+Received: from wx-out-0506.google.com ([66.249.82.234]:16619 "EHLO
+	wx-out-0506.google.com") by vger.kernel.org with ESMTP
+	id S1751258AbWJFMk4 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 6 Oct 2006 08:40:56 -0400
+Received: by wx-out-0506.google.com with SMTP id s14so825242wxc
+        for <linux-serial@vger.kernel.org>; Fri, 06 Oct 2006 05:40:55 -0700 (PDT)
 Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-The following code from autoconfig_16550a() incorrectly determines that
-the UARTS in the Tundra TSI108 are Xscale UARTS and misconfigures them.
+Hi, hope someone can help me out here, I'm a linux noob with a serial
+port issue :)
 
->	/*
->	 * Try writing and reading the UART_IER_UUE bit (b6).
->	 * If it works, this is probably one of the Xscale platform's
->	 * internal UARTs.
->	 * We're going to explicitly set the UUE bit to 0 before
->	 * trying to write and read a 1 just to make sure it's not
->	 * already a 1 and maybe locked there before we even start start.
->	 */
->	iersave = serial_in(up, UART_IER);
->	serial_outp(up, UART_IER, iersave & ~UART_IER_UUE);
->	if (!(serial_in(up, UART_IER) & UART_IER_UUE)) {
->		/*
->		 * OK it's in a known zero state, try writing and reading
->		 * without disturbing the current state of the other bits.
->		 */
->		serial_outp(up, UART_IER, iersave | UART_IER_UUE);
->		if (serial_in(up, UART_IER) & UART_IER_UUE) {
->			/*
->			 * It's an Xscale.
->			 * We'll leave the UART_IER_UUE bit set to 1 (enabled).
->			 */
->			DEBUG_AUTOCONF("Xscale ");
->			up->port.type = PORT_XSCALE;
->			up->capabilities |= UART_CAP_UUE;
->			return;
->		}
->	} else {
->		/*
->		 * If we got here we couldn't force the IER_UUE bit to 0.
->		 * Log it and continue.
->		 */
->		DEBUG_AUTOCONF("Couldn't force IER_UUE to 0 ");
->	}
->	serial_outp(up, UART_IER, iersave);
+I'm running a distro called KnoppMyth R5D1.  It's a Knoppix based
+distro designed specifically for running MythTV, a pvr program in case
+you need to know.
 
-Right now, I work around this by ifdeffing out that code.
-Any ideas on alternative methods for autodetecting Xscale UARTS?
+I need to send a signal out the serial port (via a script) to change
+the channel on my digital cable box.  It worked fine on previous
+versions but not at all on this build.
 
-Dale Farnsworth
+I have already determined all of the hardware involved does work (
+e.g. cable box accepts input through serial port, cable is good, etc.)
+
+Here's the info on my serial ports;
+
+root@mythtv:/# dmesg | grep tty
+serial8250: ttyS0 at I/O 0x3f8 (irq = 4) is a 16550A
+serial8250: ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
+00:09: ttyS0 at I/O 0x3f8 (irq = 4) is a 16550A
+00:0a: ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
+
+root@mythtv:/# setserial -g /dev/ttyS[01]
+/dev/ttyS0, UART: 16550A, Port: 0x03f8, IRQ: 4
+/dev/ttyS1, UART: 16550A, Port: 0x02f8, IRQ: 3
+
+Now following along with this howto
+
+http://www.linux.org/docs/ldp/howto/Serial-HOWTO-11.html
+
+I checked the serial port and find it appears to be blocked from
+sending according to this:
+
+"The transmit pin should go from several volts negative to a voltage
+fluctuating around zero after you start sending the bytes. If it
+doesn't (but the DTR went positive) then you've got the right port but
+it's blocked from sending. This may be due to a wrong IRQ, -clocal
+being set, etc. The command "stty -F /dev/ttyS1 -a" should show clocal
+(and not -clocal). If not, change it to clocal."
+
+Well, my signal went to about 10-12 volts positive so I'm assuming the
+port is blocked from sending.  Checking for -clocal vice clocal shows;
+
+root@mythtv:/# stty -F /dev/ttyS0 -a
+speed 9600 baud; rows 0; columns 0; line = 0;
+intr = <undef>; quit = <undef>; erase = <undef>; kill = <undef>; eof =
+<undef>; eol = <undef>; eol2 = <undef>;
+start = <undef>; stop = <undef>; susp = <undef>; rprnt = <undef>;
+werase = <undef>; lnext = <undef>; flush = <undef>;
+min = 1; time = 0;
+-parenb -parodd cs8 -hupcl -cstopb cread clocal -crtscts
+ignbrk -brkint ignpar -parmrk -inpck -istrip -inlcr -igncr -icrnl
+-ixon -ixoff -iuclc -ixany -imaxbel
+-opost -olcuc -ocrnl -onlcr -onocr -onlret -ofill -ofdel nl0 cr0 tab0
+bs0 vt0 ff0
+-isig -icanon -iexten -echo -echoe -echok -echonl -noflsh -xcase
+-tostop -echoprt -echoctl -echoke
+
+It does show clocal not -clocal.  What else could then be blocking the
+port from sending a signal out?
+
+ The source for the channel change script can be seen here,
+http://www.cuymedia.net/doxygen-dev-docs/html/channel_8c-source.html
+
+Here is the specific error I get when running my channel change script;
+
+root@mythtv:/home/mythtv/tmp/mythtv
+/contrib/channel_changers/dct-channel# ./channel -v 10
+ Attempting to initialize DCT
+ No response to packet
+ No response to init_1; trying to continue
+ No response to packet
+ No response to initialize_2
+ Initialization failed
+ Attempting to initialize DCT
+ No response to packet
+ No response to init_1; trying to continue
+ No response to packet
+ No response to initialize_2
+ Initialization failed
+ Attempting to initialize DCT
+ No response to packet
+ No response to init_1; trying to continue
+ No response to packet
+ No response to initialize_2
+ Initialization failed
+ Attempting to initialize DCT
+ No response to packet
+ No response to init_1; trying to continue
+ No response to packet
+ No response to initialize_2
+ Initialization failed
+ Attempting to initialize DCT
+ No response to packet
+ No response to init_1; trying to continue
+ No response to packet
+ No response to initialize_2
+ Initialization failed
+ Communication failed after 5 tries
+ 0
+ root@mythtv:/home/mythtv/tmp/mythtv/contrib/channel_changers/dct-channel#
+
+Thanks much, If anyone can help I'd really appreciate it, and if you
+need any more info just ask!
+
+Kamy
