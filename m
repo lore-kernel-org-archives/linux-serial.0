@@ -1,58 +1,130 @@
-From: "George G. Davis" <gdavis@mvista.com>
-Subject: Re: [RFC][PATCH] Make sure UART is powered up when dumping MCTRL status
-Date: Thu, 5 Oct 2006 20:30:53 -0400
-Message-ID: <20061006003053.GC26318@mvista.com>
-References: <20060505221537.GK14872@mvista.com> <20060510163919.GF32632@flint.arm.linux.org.uk> <20060628142346.GK9261@mvista.com>
+From: "David H. Lynch Jr." <dhlii@dlasys.net>
+Subject: Re: [RFC][PATCH] Xilinx uartlite serial driver
+Date: Fri, 06 Oct 2006 00:13:40 -0400
+Message-ID: <4525D7F4.1000200@dlasys.net>
+References: <87ac9o3ak3.fsf@sleipner.barco.com> <878xlgercm.fsf@slug.be.48ers.dk> <20060912093301.77f75bfb@localhost.localdomain> <87ejugxqbw.fsf@slug.be.48ers.dk> <871wqfyjgi.fsf@slug.be.48ers.dk> <20060913100110.1e33d885@localhost.localdomain> <451CDA3D.2060109@dlasys.net> <87hcykkrzu.fsf@slug.be.48ers.dk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gateway-1237.mvista.com ([63.81.120.158]:425 "EHLO
-	gateway-1237.mvista.com") by vger.kernel.org with ESMTP
-	id S1751541AbWJFAcI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 5 Oct 2006 20:32:08 -0400
-Content-Disposition: inline
-In-Reply-To: <20060628142346.GK9261@mvista.com>
+Received: from 24.152.213.223.res-cmts.eph.ptd.net ([24.152.213.223]:60377
+	"EHLO mx.dlasys.net") by vger.kernel.org with ESMTP
+	id S1751774AbWJFESr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 6 Oct 2006 00:18:47 -0400
+Received: from l-dhlii.dlasys.net ([206.223.20.247]:1232)
+	by mx.dlasys.net with esmtpa (Exim 4.62 #1 (Debian))
+	id 1GVh0H-0001ae-FW by authid <dhlii> with plain_server
+	for <linux-serial@vger.kernel.org>; Fri, 06 Oct 2006 00:08:05 -0400
+In-Reply-To: <87hcykkrzu.fsf@slug.be.48ers.dk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <rmk@arm.linux.org.uk>
-Cc: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Ping,
+Peter Korsgaard wrote:
+>>>>>> "David" == David H Lynch <dhlii@dlasys.net> writes:
+>>>>>>             
+>
+> Hi,
+>
+>  David>     You force the port regshift value to 2 in your init code,
+>  David> but then you ignore it and hard code the register offsets
+>  David> preshifted.
+>
+> Yes, the regshift value is not used by the driver, I just kept the
+> initialization as documentation. The Xilinx IP block afaik cannot be
+> configured with a different regshift value than 2, so I hardcoded
+> it.
+>
+> We can change that if it would ever be a problem, but there's
+> unfortunately no clean way of representing this in the
+> device/ressource data, so I would prefer to leave that out unless it's
+> needed.
+>   
+    That is actually one of my more major issues. I am NOT the right 
+person to speak for what direction things are going.
+    But the majority of drivers - platform device based or otherwise, 
+pass arround a uart_port structure with the irq, addresses, etc.
+    the uart_port struct has provisions for a regshift - as well as 
+other things.
 
-On Wed, Jun 28, 2006 at 10:23:46AM -0400, George G. Davis wrote:
-> On Wed, May 10, 2006 at 05:39:19PM +0100, Russell King wrote:
-> > On Fri, May 05, 2006 at 06:15:37PM -0400, George G. Davis wrote:
-> > > @@ -2068,6 +2076,10 @@ uart_configure_port(struct uart_driver *
-> > >  
-> > >  		uart_report_port(drv, port);
-> > >  
-> > > +		/* Power up port for set_mctrl() */
-> > > +		if (!uart_console(port))
-> > > +			uart_change_pm(state, 0);
-> > > +
-> > 
-> > If it's possible for uarts to be powered down here, wouldn't it be a
-> > good idea to ensure that the console is also powered up?
-> 
-> Apologies for the delay...  Here's an update which insures all serial
-> ports are powered up prior to accessing device registers.
-> 
-> Since serial devices are powered down when not in use and some of those
-> devices cannot be accessed when powered down, we need to enable power
-> around calls to get_mcrtl() when dumping port state via uart_line_info().
-> This resolves hangs observed on some machines while reading serial device
-> registers when a port is powered off.
-> 
-> Signed-off-by: George G. Davis <gdavis@mvista.com>
+    DCR is another issue. I have never personally seen a UartLite DCR 
+implimentation, but I have a driver from somebody else that started from 
+mine, that assumes
+    DCR instead of memory mapped ports. I think the Xilinx Gigabit 
+Reference System Design connects the UartLite via DCR.
+   
+    I think DCR has to be a consideration. I do not KNOW that there is a 
+UartLite implimentation with a regshift other than 2.
+    But I have seen occasional code that uses different values - The 
+GreenHills Integrity UartLite driver
+    has it as a configurable parameter.
 
-Any chance of this getting committed?  The Freescale i.MX31 shuts off clocks
-when ports are not in use and the kernel hangs without this change.  It's
-likely other targets may start managing clocks in this way too.  So this
-may be required for others at some point. In the meantime, it should be
-harmless for those targets which don't manage device clocks, no?
+ 
 
-TIA!
+     If your driver is going to become the officail UartLite driver, 
+even if it does not already work with every UartLite implimentation, it 
+still should not start with assumptions that
+    are going to make supporting others difficult.
+   
+      Given:
 
---
-Regards,
-George
+         1). a resolution to the configuration issues - reconciling the 
+IORESOURCE_MEM/IRQ stuff with the uart_port passing of 
+early_serial_setup() and other drivers, as well as passing
+    additional parameters such as a dcr option and a regshift - and I am 
+NOT claiming to know that answer, only recognizing there is an issue.
+
+         2). figuring out why your driver drops outbound characters and 
+fails to receive anything on my hardware.
+
+    I would be happy to provide patches to your driver to deal with the 
+regshift issue, the early serial issue, and operating polled without an 
+IRQ - the latter of which is critical atleast for my board,
+    or you can pull them out of the patch I posted on linuxppc-embedded 
+in January,
+    or I will send you a current copy
+
+    But I spent 4 days trying to find just the dropped xmit character 
+problem, without success. My driver works on my hardware doing polled IO 
+- whether the firmware supports interrupts or not, and  I the stock 
+GreenHills integrity driver works interrupt driven on my hardware (with 
+interrupt enabled firmware).
+
+    I would like to see a driver get into the kernel distribution that 
+has boot-bash serial support, and polled IO, and works on my hardware.
+    And I will provide my code as a resource and whatever time I can 
+come up with to help get that.
+   
+    But anything less requires me to yank whatever is in the kernel and 
+replace it with my driver.
+    I have a real production board, with live clients, that uses the 
+UartLite as the sole serial device, one way or another I have to have 
+something that works for me.
+
+    Interrupt driven support, DCR, and regshift support are extras - but 
+I am sure they matter to someone else.
+
+>  David> Also there is no provision for running the UartLite without
+>  David> using interrupts.  The Pico E12/E14 frequently use FPGA
+>  David> firmare that does not include a PIC.  Some implimentations of
+>  David> the UartLite use dcr instead of memory mapped ports.
+>    
+> No - again like the early serial stuff that's something that can be
+> added once the base driver is mainlined if there's demand.
+>
+> Does polling even work decently with the small fifo size of the
+> uartlite?
+>
+>   
+
+
+-- 
+Dave Lynch 					  	    DLA Systems
+Software Development:  				         Embedded Linux
+717.627.3770 	       dhlii@dlasys.net 	  http://www.dlasys.net
+fax: 1.253.369.9244 			           Cell: 1.717.587.7774
+Over 25 years' experience in platforms, languages, and technologies too numerous to list.
+
+"Any intelligent fool can make things bigger and more complex... It takes a touch of genius - and a lot of courage to move in the opposite direction."
+Albert Einstein
+
