@@ -1,21 +1,21 @@
 From: "David H. Lynch Jr." <dhlii@dlasys.net>
 Subject: Re: [RFC][PATCH] Xilinx uartlite serial driver
-Date: Fri, 06 Oct 2006 00:13:40 -0400
-Message-ID: <4525D7F4.1000200@dlasys.net>
-References: <87ac9o3ak3.fsf@sleipner.barco.com> <878xlgercm.fsf@slug.be.48ers.dk> <20060912093301.77f75bfb@localhost.localdomain> <87ejugxqbw.fsf@slug.be.48ers.dk> <871wqfyjgi.fsf@slug.be.48ers.dk> <20060913100110.1e33d885@localhost.localdomain> <451CDA3D.2060109@dlasys.net> <87hcykkrzu.fsf@slug.be.48ers.dk>
+Date: Fri, 06 Oct 2006 00:15:11 -0400
+Message-ID: <4525D84F.9090506@dlasys.net>
+References: <87ac9o3ak3.fsf@sleipner.barco.com> <878xlgercm.fsf@slug.be.48ers.dk> <20060912093301.77f75bfb@localhost.localdomain> <87ejugxqbw.fsf@slug.be.48ers.dk> <871wqfyjgi.fsf@slug.be.48ers.dk> <20060913100110.1e33d885@localhost.localdomain> <451E380B.5000401@dlasys.net> <878xjwkr2n.fsf@slug.be.48ers.dk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 24.152.213.223.res-cmts.eph.ptd.net ([24.152.213.223]:60377
+Received: from 24.152.213.223.res-cmts.eph.ptd.net ([24.152.213.223]:62425
 	"EHLO mx.dlasys.net") by vger.kernel.org with ESMTP
-	id S1751774AbWJFESr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 6 Oct 2006 00:18:47 -0400
-Received: from l-dhlii.dlasys.net ([206.223.20.247]:1232)
+	id S1751778AbWJFESx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 6 Oct 2006 00:18:53 -0400
+Received: from l-dhlii.dlasys.net ([206.223.20.247]:1237)
 	by mx.dlasys.net with esmtpa (Exim 4.62 #1 (Debian))
-	id 1GVh0H-0001ae-FW by authid <dhlii> with plain_server
-	for <linux-serial@vger.kernel.org>; Fri, 06 Oct 2006 00:08:05 -0400
-In-Reply-To: <87hcykkrzu.fsf@slug.be.48ers.dk>
+	id 1GVh1k-0001bh-9J by authid <dhlii> with plain_server
+	for <linux-serial@vger.kernel.org>; Fri, 06 Oct 2006 00:09:36 -0400
+In-Reply-To: <878xjwkr2n.fsf@slug.be.48ers.dk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
@@ -26,94 +26,133 @@ Peter Korsgaard wrote:
 >
 > Hi,
 >
->  David>     You force the port regshift value to 2 in your init code,
->  David> but then you ignore it and hard code the register offsets
->  David> preshifted.
+>  David> 	Your ulite_console_write performance is pretty slow -
+>  David> almost an order of magnitude slower than what I am seeing in
+>  David> my driver. I beleive it is because you are waiting for the Tx
+>  David> FIFO to be empty before and after sending each character
+>  David> rather than only waiting while the Tx FIFO is full.
 >
-> Yes, the regshift value is not used by the driver, I just kept the
-> initialization as documentation. The Xilinx IP block afaik cannot be
-> configured with a different regshift value than 2, so I hardcoded
-> it.
+> Really? The implementation is basically a copy of 8250.c, so I would
+> imagine that would get similar performance. Perhaps it's related to
+> your specific setup?
 >
-> We can change that if it would ever be a problem, but there's
-> unfortunately no clean way of representing this in the
-> device/ressource data, so I would prefer to leave that out unless it's
-> needed.
+> The driver only waits before sending a character, not afterwards.
 >   
-    That is actually one of my more major issues. I am NOT the right 
-person to speak for what direction things are going.
-    But the majority of drivers - platform device based or otherwise, 
-pass arround a uart_port structure with the irq, addresses, etc.
-    the uart_port struct has provisions for a regshift - as well as 
-other things.
 
-    DCR is another issue. I have never personally seen a UartLite DCR 
-implimentation, but I have a driver from somebody else that started from 
-mine, that assumes
-    DCR instead of memory mapped ports. I think the Xilinx Gigabit 
-Reference System Design connects the UartLite via DCR.
-   
-    I think DCR has to be a consideration. I do not KNOW that there is a 
-UartLite implimentation with a regshift other than 2.
-    But I have seen occasional code that uses different values - The 
-GreenHills Integrity UartLite driver
-    has it as a configurable parameter.
+    From your code:
+    there is a call to ulite_console_wait_tx() in each call to 
+ulite_console_putchar() and a call after uart_console_write()
+    However as I later determined that is NOT the problem. Either 
+uart_console_write() is very slow, or there is a parameter wrong - 
+probably in uart_port.
+    But if you have something wrong there. So do I because when I switch 
+my code to uase uart_console_write() instead of the a manual 
+implimentation of puts (what older drivers use, including older 8250's)
+    I get the same problem. I think my driver using uart_console_write() 
+may be faster - but that may be wishful thinking. Both are abysmal 
+compared to a simple puts loop. The difference is dramatic.
 
- 
++#ifdef CONFIG_SERIAL_UARTLITE_CONSOLE
++static void ulite_console_wait_tx(struct uart_port *port)
++{
++	int i;
++
++	/* wait up to 10ms for the character(s) to be sent */
++	for (i=0; i<10000; i++) {
++		if (readb(port->membase + ULITE_STATUS) & ULITE_STATUS_TXEMPTY)
++			break;
++		udelay(1);
++	}
++}
++
++static void ulite_console_putchar(struct uart_port *port, int ch)
++{
++	ulite_console_wait_tx(port);
++	writeb(ch, port->membase + ULITE_TX);
++}
++
++static void ulite_console_write(struct console *co, const char *s,
++				unsigned int count)
++{
++	struct uart_port *port = &ports[co->index];
++	unsigned long flags;
++	unsigned int ier;
++	int locked = 1;
++
++	if (oops_in_progress) {
++		locked = spin_trylock_irqsave(&port->lock, flags);
++	} else
++		spin_lock_irqsave(&port->lock, flags);
++
++	/* save and disable interrupt */
++	ier = readb(port->membase + ULITE_STATUS) & ULITE_STATUS_IE;
++	writeb(0, port->membase + ULITE_CONTROL);
++
++	uart_console_write(port, s, count, ulite_console_putchar);
++
++	ulite_console_wait_tx(port);
++
++	/* restore interrupt state */
++	if (ier)
++		writeb(ULITE_CONTROL_IE, port->membase + ULITE_CONTROL);
++
++	if (locked)
++		spin_unlock_irqrestore(&port->lock, flags);
++}
++
 
-     If your driver is going to become the officail UartLite driver, 
-even if it does not already work with every UartLite implimentation, it 
-still should not start with assumptions that
-    are going to make supporting others difficult.
-   
-      Given:
 
-         1). a resolution to the configuration issues - reconciling the 
-IORESOURCE_MEM/IRQ stuff with the uart_port passing of 
-early_serial_setup() and other drivers, as well as passing
-    additional parameters such as a dcr option and a regshift - and I am 
-NOT claiming to know that answer, only recognizing there is an issue.
 
-         2). figuring out why your driver drops outbound characters and 
-fails to receive anything on my hardware.
 
-    I would be happy to provide patches to your driver to deal with the 
-regshift issue, the early serial issue, and operating polled without an 
-IRQ - the latter of which is critical atleast for my board,
-    or you can pull them out of the patch I posted on linuxppc-embedded 
-in January,
-    or I will send you a current copy
-
-    But I spent 4 days trying to find just the dropped xmit character 
-problem, without success. My driver works on my hardware doing polled IO 
-- whether the firmware supports interrupts or not, and  I the stock 
-GreenHills integrity driver works interrupt driven on my hardware (with 
-interrupt enabled firmware).
-
-    I would like to see a driver get into the kernel distribution that 
-has boot-bash serial support, and polled IO, and works on my hardware.
-    And I will provide my code as a resource and whatever time I can 
-come up with to help get that.
-   
-    But anything less requires me to yank whatever is in the kernel and 
-replace it with my driver.
-    I have a real production board, with live clients, that uses the 
-UartLite as the sole serial device, one way or another I have to have 
-something that works for me.
-
-    Interrupt driven support, DCR, and regshift support are extras - but 
-I am sure they matter to someone else.
-
->  David> Also there is no provision for running the UartLite without
->  David> using interrupts.  The Pico E12/E14 frequently use FPGA
->  David> firmare that does not include a PIC.  Some implimentations of
->  David> the UartLite use dcr instead of memory mapped ports.
->    
-> No - again like the early serial stuff that's something that can be
-> added once the base driver is mainlined if there's demand.
+>  David> 	That may also be an issue in the rest of the driver but I have been
+>  David> unable to get it to through registering the driver.
+>  David> 	I suspect that is because your driver is a platform driver, but you did
+>  David> not provide patches to the arch/ppc/platforms/4xx/virtex.* or
+>  David> xilinx_ml???.* to setup the platform device structure.
 >
-> Does polling even work decently with the small fifo size of the
-> uartlite?
+> No, because the Xilinx boards don't have any uartlite devices.
+>
+>  David> 	If you could provide a copy I would appreciate it.
+>
+> Sure, just add something like this to your board code (with your base
+> address/irq ofcause):
+> 	
+> static struct resource uartlite_resources[] = {
+>        [0] = {
+>            .start  = 0xa1000003,
+>            .end    = 0xa1000012,
+>            .flags  = IORESOURCE_MEM,
+>        },
+>        [1] = {
+>            .start  = 2,
+>            .end    = 2,
+>            .flags  = IORESOURCE_IRQ,
+>        },
+> };
+>
+> static struct platform_device uartlite = {
+>        .name              = "uartlite",
+>        .id                = 0,
+>        .num_resources     = ARRAY_SIZE(uartlite_resources),
+>        .resource          = uartlite_resources,
+>        .dev.platform_data = 0,
+> };
+>
+> static struct platform_device *my_devices[] __initdata = {
+>        &uartlite,
+>        .
+>        .
+>        .
+> };
+>
+> static int __init
+> my_platform_add_devices(void)
+> {
+>         return platform_add_devices(my_devices, ARRAY_SIZE(my_devices));
+>
+> }
+>
+> arch_initcall(my_platform_add_devices);
 >
 >   
 
