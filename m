@@ -1,20 +1,20 @@
 From: "David H. Lynch Jr." <dhlii@dlasys.net>
 Subject: Re: [RFC][PATCH] Xilinx uartlite serial driver
-Date: Fri, 06 Oct 2006 00:14:36 -0400
-Message-ID: <4525D82C.7090200@dlasys.net>
+Date: Fri, 06 Oct 2006 00:14:03 -0400
+Message-ID: <4525D80B.3090305@dlasys.net>
 References: <87ac9o3ak3.fsf@sleipner.barco.com> <878xlgercm.fsf@slug.be.48ers.dk> <20060912093301.77f75bfb@localhost.localdomain> <87ejugxqbw.fsf@slug.be.48ers.dk> <871wqfyjgi.fsf@slug.be.48ers.dk> <20060913100110.1e33d885@localhost.localdomain> <451CDA3D.2060109@dlasys.net> <87hcykkrzu.fsf@slug.be.48ers.dk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 24.152.213.223.res-cmts.eph.ptd.net ([24.152.213.223]:60121
+Received: from 24.152.213.223.res-cmts.eph.ptd.net ([24.152.213.223]:61657
 	"EHLO mx.dlasys.net") by vger.kernel.org with ESMTP
-	id S1751774AbWJFESq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 6 Oct 2006 00:18:46 -0400
-Received: from l-dhlii.dlasys.net ([206.223.20.247]:1235)
+	id S1751775AbWJFESv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 6 Oct 2006 00:18:51 -0400
+Received: from l-dhlii.dlasys.net ([206.223.20.247]:1233)
 	by mx.dlasys.net with esmtpa (Exim 4.62 #1 (Debian))
-	id 1GVh1A-0001az-Rw by authid <dhlii> with plain_server
-	for <linux-serial@vger.kernel.org>; Fri, 06 Oct 2006 00:09:00 -0400
+	id 1GVh0e-0001as-8z by authid <dhlii> with plain_server
+	for <linux-serial@vger.kernel.org>; Fri, 06 Oct 2006 00:08:28 -0400
 In-Reply-To: <87hcykkrzu.fsf@slug.be.48ers.dk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -59,15 +59,50 @@ UartLite implimentation with a regshift other than 2.
 GreenHills Integrity UartLite driver
     has it as a configurable parameter.
 
+ 
+
      If your driver is going to become the officail UartLite driver, 
 even if it does not already work with every UartLite implimentation, it 
 still should not start with assumptions that
     are going to make supporting others difficult.
    
-  
+      Given:
 
+         1). a resolution to the configuration issues - reconciling the 
+IORESOURCE_MEM/IRQ stuff with the uart_port passing of 
+early_serial_setup() and other drivers, as well as passing
+    additional parameters such as a dcr option and a regshift - and I am 
+NOT claiming to know that answer, only recognizing there is an issue.
 
+         2). figuring out why your driver drops outbound characters and 
+fails to receive anything on my hardware.
 
+    I would be happy to provide patches to your driver to deal with the 
+regshift issue, the early serial issue, and operating polled without an 
+IRQ - the latter of which is critical atleast for my board,
+    or you can pull them out of the patch I posted on linuxppc-embedded 
+in January,
+    or I will send you a current copy
+
+    But I spent 4 days trying to find just the dropped xmit character 
+problem, without success. My driver works on my hardware doing polled IO 
+- whether the firmware supports interrupts or not, and  I the stock 
+GreenHills integrity driver works interrupt driven on my hardware (with 
+interrupt enabled firmware).
+
+    I would like to see a driver get into the kernel distribution that 
+has boot-bash serial support, and polled IO, and works on my hardware.
+    And I will provide my code as a resource and whatever time I can 
+come up with to help get that.
+   
+    But anything less requires me to yank whatever is in the kernel and 
+replace it with my driver.
+    I have a real production board, with live clients, that uses the 
+UartLite as the sole serial device, one way or another I have to have 
+something that works for me.
+
+    Interrupt driven support, DCR, and regshift support are extras - but 
+I am sure they matter to someone else.
 
 >  David> Also there is no provision for running the UartLite without
 >  David> using interrupts.  The Pico E12/E14 frequently use FPGA
