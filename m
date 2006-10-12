@@ -1,26 +1,47 @@
-From: "Sheldon" <yorijo@copyserve.com>
-Subject: This Watch is in spades
-Date: Wed, 11 Oct 2006 08:33:18 -0800
-Message-ID: <200601178273.s2KVtvom577061@ipswtt7104pzr14.copyserve.com>
+From: Jeff Garzik <jeff@garzik.org>
+Subject: [PATCH] serial: handle pci_enable_device() failure upon resume
+Date: Wed, 11 Oct 2006 21:47:20 -0400
+Message-ID: <20061012014720.GA12935@havoc.gtf.org>
 Mime-Version: 1.0
-Content-Type: text/plain;
-Content-Transfer-Encoding: 7Bit
-	boundary="--OMXKGJ75218"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 24-176-96-94.dhcp.jcsn.tn.charter.com ([24.176.96.94]:21773
-	"EHLO copyserve.com") by vger.kernel.org with ESMTP id S965223AbWJKPEf
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 11 Oct 2006 11:04:35 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1422687AbWJLBrV@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org, Andrew Morton <akpm@osdl.org>, LKML <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
 
-I just received my watch yesterday. It looks exactly like the picture on your website, no difference at all. This was actually 
-my first time ordering from the internet, and I've heard so many bad things about online companies, but ordering from you 
-and receiving my watch was a great first time experience. I really wish all internet companies were like yours.
 
-Signed,
-Wade M.
 
-Just go to http://www.slmercury.com 
-<-*->S[8n*Z=FA[dSiN FA0]FA8FS0sA <-*->
+Signed-off-by: Jeff Garzik <jeff@garzik.org>
+
+---
+
+ drivers/serial/8250_pci.c    |    8 ++++++--
+
+diff --git a/drivers/serial/8250_pci.c b/drivers/serial/8250_pci.c
+index 4d0ff8f..aa96e94 100644
+--- a/drivers/serial/8250_pci.c
++++ b/drivers/serial/8250_pci.c
+@@ -1810,16 +1810,20 @@ static int pciserial_resume_one(struct p
+ 	pci_restore_state(dev);
+ 
+ 	if (priv) {
++		int rc;
++
+ 		/*
+ 		 * The device may have been disabled.  Re-enable it.
+ 		 */
+-		pci_enable_device(dev);
++		rc = pci_enable_device(dev);
++		if (rc)
++			return rc;
+ 
+ 		pciserial_resume_ports(priv);
+ 	}
+ 	return 0;
+ }
+-#endif
++#endif /* CONFIG_PM */
+ 
+ static struct pci_device_id serial_pci_tbl[] = {
+ 	{	PCI_VENDOR_ID_V3, PCI_DEVICE_ID_V3_V960,
