@@ -1,47 +1,36 @@
-From: Jeff Garzik <jeff@garzik.org>
-Subject: [PATCH] serial: handle pci_enable_device() failure upon resume
-Date: Wed, 11 Oct 2006 21:47:20 -0400
-Message-ID: <20061012014720.GA12935@havoc.gtf.org>
+From: Russell King <rmk+lkml@arm.linux.org.uk>
+Subject: Re: [PATCH] serial: handle pci_enable_device() failure upon resume
+Date: Fri, 13 Oct 2006 08:59:53 +0100
+Message-ID: <20061013075953.GC28654@flint.arm.linux.org.uk>
+References: <20061012014720.GA12935@havoc.gtf.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1422687AbWJLBrV@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from caramon.arm.linux.org.uk ([217.147.92.249]:3081 "EHLO
+	caramon.arm.linux.org.uk") by vger.kernel.org with ESMTP
+	id S1750818AbWJMIAA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 13 Oct 2006 04:00:00 -0400
 Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, Andrew Morton <akpm@osdl.org>, LKML <linux-kernel@vger.kernel.org>
+In-Reply-To: <20061012014720.GA12935@havoc.gtf.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Jeff Garzik <jeff@garzik.org>
+Cc: linux-serial@vger.kernel.org, Andrew Morton <akpm@osdl.org>, LKML <linux-kernel@vger.kernel.org>
 
+On Wed, Oct 11, 2006 at 09:47:20PM -0400, Jeff Garzik wrote:
+> Signed-off-by: Jeff Garzik <jeff@garzik.org>
 
+NAK.  What happens to the ports if pci_enable_device() fails and someone
+has them open?
 
-Signed-off-by: Jeff Garzik <jeff@garzik.org>
+It's far better to leave the must_check warning behind until it can be
+_correctly_ solved, rather than papering over the problem with bogus
+patches to return errors without taking an appropriate additional action.
 
----
+IOW, the warnings serve as a reminder that *proper* error handling needs
+to be implemented.
 
- drivers/serial/8250_pci.c    |    8 ++++++--
-
-diff --git a/drivers/serial/8250_pci.c b/drivers/serial/8250_pci.c
-index 4d0ff8f..aa96e94 100644
---- a/drivers/serial/8250_pci.c
-+++ b/drivers/serial/8250_pci.c
-@@ -1810,16 +1810,20 @@ static int pciserial_resume_one(struct p
- 	pci_restore_state(dev);
- 
- 	if (priv) {
-+		int rc;
-+
- 		/*
- 		 * The device may have been disabled.  Re-enable it.
- 		 */
--		pci_enable_device(dev);
-+		rc = pci_enable_device(dev);
-+		if (rc)
-+			return rc;
- 
- 		pciserial_resume_ports(priv);
- 	}
- 	return 0;
- }
--#endif
-+#endif /* CONFIG_PM */
- 
- static struct pci_device_id serial_pci_tbl[] = {
- 	{	PCI_VENDOR_ID_V3, PCI_DEVICE_ID_V3_V960,
+-- 
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:  2.6 Serial core
