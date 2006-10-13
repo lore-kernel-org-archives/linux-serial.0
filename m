@@ -1,50 +1,36 @@
-From: Andrew Morton <akpm@osdl.org>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Subject: Re: [PATCH] serial: handle pci_enable_device() failure upon resume
-Date: Fri, 13 Oct 2006 13:15:16 -0700
-Message-ID: <20061013131516.227e99ee.akpm@osdl.org>
+Date: Sat, 14 Oct 2006 00:15:43 +0100
+Message-ID: <1160781343.25218.89.camel@localhost.localdomain>
 References: <20061012014720.GA12935@havoc.gtf.org>
-	<20061013075953.GC28654@flint.arm.linux.org.uk>
+	 <20061013075953.GC28654@flint.arm.linux.org.uk>
+	 <20061013131516.227e99ee.akpm@osdl.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.osdl.org ([65.172.181.4]:49347 "EHLO smtp.osdl.org")
-	by vger.kernel.org with ESMTP id S1751865AbWJMUP5 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 13 Oct 2006 16:15:57 -0400
-In-Reply-To: <20061013075953.GC28654@flint.arm.linux.org.uk>
+Received: from outpipe-village-512-1.bc.nu ([81.2.110.250]:44165 "EHLO
+	lxorguk.ukuu.org.uk") by vger.kernel.org with ESMTP
+	id S1751959AbWJMWuS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 13 Oct 2006 18:50:18 -0400
+In-Reply-To: <20061013131516.227e99ee.akpm@osdl.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <rmk+lkml@arm.linux.org.uk>
-Cc: Jeff Garzik <jeff@garzik.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+To: Andrew Morton <akpm@osdl.org>
+Cc: Russell King <rmk+lkml@arm.linux.org.uk>, Jeff Garzik <jeff@garzik.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 
-On Fri, 13 Oct 2006 08:59:53 +0100
-Russell King <rmk+lkml@arm.linux.org.uk> wrote:
+Ar Gwe, 2006-10-13 am 13:15 -0700, ysgrifennodd Andrew Morton:
+> Right now, we get silent failure *and* a compile-time warning.  It's hard
+> to see how that situation could be made worse.
 
-> On Wed, Oct 11, 2006 at 09:47:20PM -0400, Jeff Garzik wrote:
-> > Signed-off-by: Jeff Garzik <jeff@garzik.org>
-> 
-> NAK.  What happens to the ports if pci_enable_device() fails and someone
-> has them open?
+I support Russells NAK but for another reason. You can't use printk in
+the paths of a serial driver that may be the console. There is already a
+whole ordering issue here and I'm not convinced it is handled correctly
+reviewing the diff. Printks will make it worse in any driver (and waste
+memory on handling impossible untestable situations that don't appen)
 
-They're screwed either way.
+The printk case and serial first ordering want fixing correctly because
+serial console is about the only sane way to debug resume in the first
+place.
 
-> It's far better to leave the must_check warning behind until it can be
-> _correctly_ solved, rather than papering over the problem with bogus
-> patches to return errors without taking an appropriate additional action.
-> 
-> IOW, the warnings serve as a reminder that *proper* error handling needs
-> to be implemented.
-
-What would that error handling do?
-
-Until that has been implemented, it would be good if we could at least spit
-a printk telling people what failed, so when the machine later goes kaput
-we know why it happened.
-
-An appropriate place in which to perform that reporting is up in the
-high-level resume code, so Jeff's patch is appropriate.
-
-Right now, we get silent failure *and* a compile-time warning.  It's hard
-to see how that situation could be made worse.
-
+Alan
