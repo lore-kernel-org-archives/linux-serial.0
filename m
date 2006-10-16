@@ -1,13 +1,51 @@
-From: upcajxhkb@betcoequip.com
-Subject: (unknown)
-Date: Sun, 15 Oct 2006 14:20:49 GMT
-Message-ID: <200610151420.k9FEKaZ4003266__38008.3486008973$1160922084$gmane$org@zeus1.kernel.org>
+From: Corey Minyard <cminyard@mvista.com>
+Subject: [PATCH] Add the ability to layer another driver over the serial driver
+Date: Mon, 16 Oct 2006 11:53:15 -0500
+Message-ID: <4533B8FB.5080108@mvista.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus1.kernel.org ([204.152.191.4]:41365 "EHLO zeus1.kernel.org")
-	by vger.kernel.org with ESMTP id S1750788AbWJOOUx (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 15 Oct 2006 10:20:53 -0400
+Received: from gateway-1237.mvista.com ([63.81.120.158]:59441 "EHLO
+	gateway-1237.mvista.com") by vger.kernel.org with ESMTP
+	id S1161012AbWJPQu7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 16 Oct 2006 12:50:59 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, Linux Kernel <linux-kernel@vger.kernel.org>
 
-BOUNDARY_OUTLOOK
+This is a set of three patches to allow adding another driver on top of
+the current serial driver without too much change to the serial code.
+This is more for comments right now, it is probably not ready for real
+use yet.
+
+The patches are too big to post here, so I'm putting them on
+http://home.comcast.net/~minyard
+
+The three patches are:
+
+    * serial-remove-tty-struct-from-driver.patch - A general patch to
+      remove the tty includes from the low-level serial drivers. Only
+      fixes the 8250 for now.
+
+    * serial-allow-in-kernel-users.patch - The actual patch that adds
+      the layered driver to the serial core.
+
+    * serial-8250-cleanup.patch - Add support for the layered driver
+      and poll to the 8250 uart.
+
+This is for a serial interface to an IPMI controller.  Note that I
+don't really like this very much for a number of reasons, but the IPMI
+driver has features that only work in-kernel, like extending the
+watchdog timer on a panic to allow kdump to operate without a reboot
+and storing panic information in the IPMI event log.  So you really
+can't write a userland-only interface for this and keep those
+features.
+
+It is also not really possible to add this on top of the tty code
+because it has to be able to run at panic time, and the tty code
+doesn't have a clean place to interface this from what I could
+tell.
+
+-Corey
+
