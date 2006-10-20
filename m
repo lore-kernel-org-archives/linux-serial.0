@@ -1,51 +1,34 @@
-From: Olof Johansson <olof@lixom.net>
+From: Peter Korsgaard <jacmet@sunsite.dk>
 Subject: Re: [RFC][PATCH] Xilinx uartlite serial driver
-Date: Thu, 19 Oct 2006 18:06:59 -0500
-Message-ID: <20061019180659.200d7763@pb15>
+Date: Fri, 20 Oct 2006 14:22:58 +0200
+Message-ID: <87ac3ryy59.fsf@slug.be.48ers.dk>
 References: <87ac9o3ak3.fsf@sleipner.barco.com>
 	<878xlgercm.fsf@slug.be.48ers.dk>
 	<20060912093301.77f75bfb@localhost.localdomain>
-	<87ejugxqbw.fsf@slug.be.48ers.dk>
-	<871wqfyjgi.fsf@slug.be.48ers.dk>
+	<87ejugxqbw.fsf@slug.be.48ers.dk> <871wqfyjgi.fsf@slug.be.48ers.dk>
+	<20061019180659.200d7763@pb15>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lixom.net ([66.141.50.11]:50133 "EHLO mail.lixom.net")
-	by vger.kernel.org with ESMTP id S1946632AbWJSXIF (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 19 Oct 2006 19:08:05 -0400
-In-Reply-To: <871wqfyjgi.fsf@slug.be.48ers.dk>
+Received: from europa.telenet-ops.be ([195.130.137.75]:5332 "EHLO
+	europa.telenet-ops.be") by vger.kernel.org with ESMTP
+	id S964795AbWJTMXN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 20 Oct 2006 08:23:13 -0400
+In-Reply-To: <20061019180659.200d7763@pb15> (Olof Johansson's message of "Thu,
+	19 Oct 2006 18:06:59 -0500")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Korsgaard <jacmet@sunsite.dk>
+To: Olof Johansson <olof@lixom.net>
 Cc: rmk+serial@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Wed, 13 Sep 2006 15:39:09 +0200 Peter Korsgaard <jacmet@sunsite.dk> wrote:
+>>>>> "Olof" == Olof Johansson <olof@lixom.net> writes:
 
-> +static int __devinit ulite_probe(struct platform_device *pdev)
-[...]
-> +	port = &ports[pdev->id];
-> +
-> +	port->fifosize	= 16;
-> +	port->regshift	= 2;
-> +	port->iotype	= UPIO_MEM;
-> +	port->iobase	= 1; /* mark port in use */
-> +	port->mapbase	= res->start;
-> +	port->membase	= 0;
-> +	port->ops	= &ulite_ops;
-> +	port->irq	= res2->start;
-> +	port->flags	= UPF_BOOT_AUTOCONF;
-> +	port->dev	= &pdev->dev;
-> +	port->type	= PORT_UNKNOWN;
+ >> +static int __devinit ulite_probe(struct platform_device *pdev)
 
-Hi Peter,
+ Olof> You never fill in the 'line' member here, so probing of a second
+ Olof> uartlite port will fail.
 
-You never fill in the 'line' member here, so probing of a second
-uartlite port will fail.
+Ah yes, sorry about that. I'll send a patch to Andrew.
 
-Add:
-	port->line	 = pdev->id;
-
-
--Olof
+-- 
+Bye, Peter Korsgaard
