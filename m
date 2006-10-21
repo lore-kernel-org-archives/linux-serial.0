@@ -1,34 +1,42 @@
-From: Peter Korsgaard <jacmet@sunsite.dk>
-Subject: Re: [RFC][PATCH] Xilinx uartlite serial driver
-Date: Fri, 20 Oct 2006 14:22:58 +0200
-Message-ID: <87ac3ryy59.fsf@slug.be.48ers.dk>
-References: <87ac9o3ak3.fsf@sleipner.barco.com>
-	<878xlgercm.fsf@slug.be.48ers.dk>
-	<20060912093301.77f75bfb@localhost.localdomain>
-	<87ejugxqbw.fsf@slug.be.48ers.dk> <871wqfyjgi.fsf@slug.be.48ers.dk>
-	<20061019180659.200d7763@pb15>
+From: "Yani" <allenldeckeryahoo.de@btinternet.com>
+Subject: Re[3]:  from me
+Date: Sat, 21 Oct 2006 16:00:48 +0300
+Message-ID: <00a501c6f510$eb252600$f300000a__40088.6463503868$1161437951$gmane$org@201.64.72.216>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+	charset="windows-1251"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from europa.telenet-ops.be ([195.130.137.75]:5332 "EHLO
-	europa.telenet-ops.be") by vger.kernel.org with ESMTP
-	id S964795AbWJTMXN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 20 Oct 2006 08:23:13 -0400
-In-Reply-To: <20061019180659.200d7763@pb15> (Olof Johansson's message of "Thu,
-	19 Oct 2006 18:06:59 -0500")
+Received: from [201.64.72.216] ([201.64.72.216]:29195 "EHLO 201.64.72.216")
+	by vger.kernel.org with ESMTP id S2993015AbWJUNiz (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 21 Oct 2006 09:38:55 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Olof Johansson <olof@lixom.net>
-Cc: rmk+serial@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Wolfgang <linux-msdos@vger.kernel.org>
 
->>>>> "Olof" == Olof Johansson <olof@lixom.net> writes:
+Hello, Wolfgang
 
- >> +static int __devinit ulite_probe(struct platform_device *pdev)
+I think we had correspondence a long time ago if it was not you I am sorry.
+If it was I could not answer you because my Mozilla mail manager was down for a 
+long time and I could not fix it only with my friend's help I got the emails 
+address out for me ..:)
+I hope it was whom we were corresponded with you are still interested, as I am, 
+though I realize much time has passed since then...
+I really don't know where to start ....
+Maybe you could tell me a little about yourself since I lost our early letters, 
+your appearance,age , hobbies, and are you still in the search?
+If it was you I wrote to and you are interested to get to know me better, I have 
+a profile at :
+http://findsomelove.com/myhoney
 
- Olof> You never fill in the 'line' member here, so probing of a second
- Olof> uartlite port will fail.
+Don't really know what else to say for now I hope this is the right address
 
-Ah yes, sorry about that. I'll send a patch to Andrew.
+Let me know if you are interested, And I hope
+you won't run when you see my picture :-)
 
--- 
-Bye, Peter Korsgaard
+cheerie-bye:)
+
+Yani
+
+
