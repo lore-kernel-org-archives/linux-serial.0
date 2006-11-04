@@ -1,26 +1,75 @@
-From: "Mable Groves" <xjatyskfdtewc@hotmail.com>
-Subject: Multiple The Sexual Pleasure
-Date: Thu, 26 Oct 2006 19:02:20 +0500
-Message-ID: <LAW89.OE649yfB4mvo999453d5@motmail.com>
+From: Adrian Bunk <bunk@stusta.de>
+Subject: 2.6.19-rc <-> ThinkPads, summary
+Date: Sat, 4 Nov 2006 04:49:07 +0100
+Message-ID: <20061104034906.GO13381@stusta.de>
+References: <20061029231358.GI27968@stusta.de> <20061030135625.GB1601@mellanox.co.il> <20061101030126.GE27968@stusta.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [66.185.126.112] ([66.185.126.112]:13581 "HELO 221A1DD4")
-	by vger.kernel.org with SMTP id S1423487AbWJZNHP (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 26 Oct 2006 09:07:15 -0400
+Received: from emailhub.stusta.mhn.de ([141.84.69.5]:60677 "HELO
+	mailout.stusta.mhn.de") by vger.kernel.org with SMTP
+	id S1752638AbWKDDtH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 3 Nov 2006 22:49:07 -0500
+Content-Disposition: inline
+In-Reply-To: <20061101030126.GE27968@stusta.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org
+To: Hugh Dickins <hugh@veritas.com>, "Michael S. Tsirkin" <mst@mellanox.co.il>, Pavel Machek <pavel@suse.cz>, Linus Torvalds <torvalds@osdl.org>, Andrew Morton <akpm@osdl.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, len.brown@intel.com, linux-acpi@vger.kernel.org, linux-pm@osdl.org, Martin Lorenz <martin@lorenz.eu.org>, Andi Kleen <ak@suse.de>, discuss@x86-64.org, Russell King <rmk@dyn-67.arm.linux.org.uk>, linux-serial@vger.kernel.org, linux-thinkpad@linux-thinkpad.org, Ernst Herzberg <earny@net4u.de>
+
+As far as I can see, the 2.6.19-rc ThinkPad situation is still 
+confusing and we don't even know how many different bugs we are 
+chasing...
+
+Below is all the information I have found, plus some questions for the 
+four people who reported problems that might hopefully bring us nearer 
+to solutions.
 
 
-Suffering from short penniss?
-Introduce revolution "ManXL" formula which
-gauranteees sizes increase or moneey baack.
+Michael S. Tsirkin:
+- ThinkPad T60 not coming out of suspend to RAM
+- broken by commit cf4c6a2f27f5db810b69dcb1da7f194489e8ff88
+  ("i386: Factor out common io apic routing entry access")
+- question: Did the post -rc4 arch/i386/kernel/io_apic.c changes fix it?
 
-Users reported:
-- 2 inches extra in size
-- 3x pleasurable orgasms
-- 27% thicker
 
-Why waiting?
+Ernst Herzberg:
+- ThinkPad R50p: boot fail with (lapic && on_battery)
+- kernel compiled without cardbus support works
+- question: Does reverting  the bisected
+            commit 1fbbac4bcb03033d325c71fc7273aa0b9c1d9a03 
+            ("serial_cs: convert multi-port table to quirk table")
+            fix the problem?
+- question: Does reverting commit cf4c6a2f27f5db810b69dcb1da7f194489e8ff88
+            ("i386: Factor out common io apic routing entry access") help?
+- question: If yes, did the post -rc4 arch/i386/kernel/io_apic.c changes
+            fix it?
 
-http://kalfroutl.com/mxl/
+
+Hugh Dickins:
+- ThinkPad T43p
+- booting with "noapic nolapic" didn't make any difference
+- reverting commit cf4c6a2f27f5db810b69dcb1da7f194489e8ff88
+  ("i386: Factor out common io apic routing entry access") didn't help
+- question: Was your bisecting successful?
+
+
+Martin Lorenz:
+- ThinkPad X60: lose ACPI events after suspend/resume
+                not every time, but roughly 3 out of 4 times
+- question: Does reverting commit cf4c6a2f27f5db810b69dcb1da7f194489e8ff88
+            ("i386: Factor out common io apic routing entry access")
+            in -rc4 help?
+- question: If yes, did the post -rc4 arch/i386/kernel/io_apic.c changes
+            fix it?
+
+
+cu
+Adrian
+
+-- 
+
+       "Is there not promise of rain?" Ling Tan asked suddenly out
+        of the darkness. There had been need of rain for many days.
+       "Only a promise," Lao Er said.
+                                       Pearl S. Buck - Dragon Seed
+
