@@ -1,43 +1,31 @@
-From: Peter Astrand <astrand@cendio.se>
-Subject: Re: [TEST SUITE] termios: basic test set for the new termios code
-Date: Fri, 10 Nov 2006 16:13:55 +0100 (CET)
-Message-ID: <Pine.LNX.4.64.0611101543001.17788@maggie.lkpg.cendio.se>
-References: <1163018206.23956.85.camel@localhost.localdomain>
+From: "Priscilla Kemp" <ettaafnrqm@hotmail.com>
+Subject: Please Her Tonite
+Date: Fri, 10 Nov 2006 20:09:39 -0200
+Message-ID: <2A907EE3.7684.6715C2D5__37215.4199089438$1163196803$gmane$org@localhost>
 Mime-Version: 1.0
-Content-Type: MULTIPART/MIXED; BOUNDARY="789237761-770076304-1163169866=:17788"
+Content-Type: text/plain; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.cendio.se ([193.12.253.69]:47351 "EHLO mail.cendio.se")
-	by vger.kernel.org with ESMTP id S1946704AbWKJPN5 (ORCPT
+Received: from [84.54.209.45] ([84.54.209.45]:48902 "HELO 3C69FCA8")
+	by vger.kernel.org with SMTP id S966126AbWKJWM7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Nov 2006 10:13:57 -0500
-In-Reply-To: <1163018206.23956.85.camel@localhost.localdomain>
-Content-ID: <Pine.LNX.4.64.0611101607310.17788@maggie.lkpg.cendio.se>
+	Fri, 10 Nov 2006 17:12:59 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: linux-scsi@vger.kernel.org, sparclinux@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-serial@vger.kernel.org, linux-newbie@vger.kernel.org, linux-gcc@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
 
---789237761-770076304-1163169866=:17788
-Content-Type: TEXT/PLAIN; CHARSET=UTF-8
-Content-Transfer-Encoding: 8BIT
-Content-ID: <Pine.LNX.4.64.0611101607311.17788@maggie.lkpg.cendio.se>
 
-On Wed, 8 Nov 2006, Alan Cox wrote:
 
->  *	Test suite for the new termios functions
+Suffering from short penniss?
+Introduce revolution "ManXL" formula which
+gauranteees sizes increase or moneey baack.
 
-Thanks, test suites are great. Are you planning on submitting this piece 
-of code to any Git/CVS/SVN repository, or something like that? 
+Users reported:
+- 2 inches extra in size
+- 3x pleasurable orgasms
+- 27% thicker
 
-When time permits, I'll try this test with sercd + cyclades-serial-client. 
+Why waiting?
 
-Regards, 
--- 
-Peter Åstrand		ThinLinc Chief Developer
-Cendio AB		http://www.cendio.se
-Teknikringen 3
-583 30 Linköping	Phone: +46-13-21 46 00
---789237761-770076304-1163169866=:17788--
+http://kalfroutl.com/mxl/
