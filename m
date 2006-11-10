@@ -1,353 +1,43 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [TEST SUITE] termios: basic test set for the new termios code
-Date: Wed, 08 Nov 2006 20:36:46 +0000
-Message-ID: <1163018206.23956.85.camel@localhost.localdomain>
+From: Peter Astrand <astrand@cendio.se>
+Subject: Re: [TEST SUITE] termios: basic test set for the new termios code
+Date: Fri, 10 Nov 2006 16:13:55 +0100 (CET)
+Message-ID: <Pine.LNX.4.64.0611101543001.17788@maggie.lkpg.cendio.se>
+References: <1163018206.23956.85.camel@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Type: MULTIPART/MIXED; BOUNDARY="789237761-770076304-1163169866=:17788"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from outpipe-village-512-1.bc.nu ([81.2.110.250]:5556 "EHLO
-	lxorguk.ukuu.org.uk") by vger.kernel.org with ESMTP
-	id S1423165AbWKHUcD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 8 Nov 2006 15:32:03 -0500
+Received: from mail.cendio.se ([193.12.253.69]:47351 "EHLO mail.cendio.se")
+	by vger.kernel.org with ESMTP id S1946704AbWKJPN5 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 10 Nov 2006 10:13:57 -0500
+In-Reply-To: <1163018206.23956.85.camel@localhost.localdomain>
+Content-ID: <Pine.LNX.4.64.0611101607310.17788@maggie.lkpg.cendio.se>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org, akpm@osdl.org, linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: linux-serial@vger.kernel.org
 
-Please send any updates/extra test cases to me.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-/*
- *	Test suite for the new termios functions
- *
- *	gcc -iquote kernel-src/include/asm-x86_64 test-suite.c -o ./ts
- */
- 
-#include "termbits.h"
-#include "termios.h"
-#include "ioctls.h"
+--789237761-770076304-1163169866=:17788
+Content-Type: TEXT/PLAIN; CHARSET=UTF-8
+Content-Transfer-Encoding: 8BIT
+Content-ID: <Pine.LNX.4.64.0611101607311.17788@maggie.lkpg.cendio.se>
 
-#define TCGETS2         _IOR('T',0x2A, struct termios2)
-#define TCSETS2         _IOW('T',0x2B, struct termios2)
-#define TCSETSW2        _IOW('T',0x2C, struct termios2)
-#define TCSETSF2        _IOW('T',0x2D, struct termios2)
+On Wed, 8 Nov 2006, Alan Cox wrote:
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
+>  *	Test suite for the new termios functions
 
-static int compare_termios_11(struct termios *a, struct termios *b)
-{
-  int diff = 0;
-  
-  if(a->c_iflag != b->c_iflag) {
-    printf("Iflag change of %04X\n", a->c_iflag ^ b->c_iflag);
-    diff = 1;
-  }
-  if(a->c_oflag != b->c_oflag) {
-    printf("Oflag change of %04X\n", a->c_oflag ^ b->c_oflag);
-    diff = 1;
-  }
-  if(a->c_cflag != b->c_cflag) {
-    printf("Iflag change of %04X\n", a->c_cflag ^ b->c_cflag);
-    diff = 1;
-  }
-  if(a->c_lflag != b->c_lflag) {
-    printf("Iflag change of %04X\n", a->c_lflag ^ b->c_lflag);
-    diff = 1;
-  }
-  if(a->c_line != b->c_line) {
-    printf("Line differs %02X v %02X\n", a->c_line, b->c_line);
-    diff = 1;
-  }
-#ifdef NCC_V1  
-  if(memcmp(a->c_cc, b->c_cc, NCC_V1)) {
-#else
-  if(memcmp(a->c_cc, b->c_cc, NCC)) {
-#endif  
-    printf("CC differs.\n");
-    diff = 1;
-  }
-  return diff;
-}
+Thanks, test suites are great. Are you planning on submitting this piece 
+of code to any Git/CVS/SVN repository, or something like that? 
 
-static int compare_termios_12(struct termios *a, struct termios2 *b)
-{
-  int diff = 0;
-  
-  if(a->c_iflag != b->c_iflag) {
-    printf("Iflag change of %04X\n", a->c_iflag ^ b->c_iflag);
-    diff = 1;
-  }
-  if(a->c_oflag != b->c_oflag) {
-    printf("Oflag change of %04X\n", a->c_oflag ^ b->c_oflag);
-    diff = 1;
-  }
-  if(a->c_cflag != b->c_cflag) {
-    printf("Iflag change of %04X\n", a->c_cflag ^ b->c_cflag);
-    diff = 1;
-  }
-  if(a->c_lflag != b->c_lflag) {
-    printf("Iflag change of %04X\n", a->c_lflag ^ b->c_lflag);
-    diff = 1;
-  }
-  if(a->c_line != b->c_line) {
-    printf("Line differs %02X v %02X\n", a->c_line, b->c_line);
-    diff = 1;
-  }
-#ifdef NCC_V1  
-  if(memcmp(a->c_cc, b->c_cc, NCC_V1)) {
-#else
-  if(memcmp(a->c_cc, b->c_cc, NCC)) {
-#endif  
-    printf("CC differs.\n");
-    diff = 1;
-  }
-  return diff;
-}
+When time permits, I'll try this test with sercd + cyclades-serial-client. 
 
-static int compare_termios_22(struct termios2 *a, struct termios2 *b)
-{
-  int diff = 0;
-  
-  if(a->c_iflag != b->c_iflag) {
-    printf("Iflag change of %04X\n", a->c_iflag ^ b->c_iflag);
-    diff = 1;
-  }
-  if(a->c_oflag != b->c_oflag) {
-    printf("Oflag change of %04X\n", a->c_oflag ^ b->c_oflag);
-    diff = 1;
-  }
-  if(a->c_cflag != b->c_cflag) {
-    printf("Iflag change of %04X\n", a->c_cflag ^ b->c_cflag);
-    diff = 1;
-  }
-  if(a->c_lflag != b->c_lflag) {
-    printf("Iflag change of %04X\n", a->c_lflag ^ b->c_lflag);
-    diff = 1;
-  }
-  if(a->c_line != b->c_line) {
-    printf("Line differs %02X v %02X\n", a->c_line, b->c_line);
-    diff = 1;
-  }
-  if(memcmp(a->c_cc, b->c_cc, NCC)) {
-    printf("CC differs.\n");
-    diff = 1;
-  }
-  if(a->c_ispeed != b->c_ispeed) {
-    printf("Ispeed differs %d v %d\n", a->c_ispeed, b->c_ispeed);
-    diff = 1;
-  }
-  if(a->c_ospeed != b->c_ospeed) {
-    printf("Ospeed differs %d v %d\n", a->c_ospeed, b->c_ospeed);
-    diff = 1;
-  }
-  return diff;
-}
-
-
-struct padcheck1
-{
-  struct termios a;
-  unsigned int cookie;
-};
-
-struct padcheck2
-{
-  struct termios2 a;
-  unsigned int cookie;
-};
-
-
-static void do_check_no_overrun(int fd, unsigned int cookie)
-{
-  static struct padcheck1 t1;
-  static struct padcheck2 t2;
-
-  t1.cookie = cookie;
-  t2.cookie = cookie;
-  t2.a.c_ospeed = cookie;
-  
-  if(ioctl(fd, TCGETS, &t1) < 0) {
-    perror("ioctl");
-    exit(1);
-  }
-  
-  if(t1.cookie != cookie) {
-   printf("FAIL: TCGETS scribbled on cookie.\n");
-    exit(1);
-  }
-
-  if(ioctl(fd, TCGETS2, &t2) < 0) {
-    perror("ioctl");
-    fprintf(stderr, "This kernel does not appear to support extended termios.\n");
-    exit(1);
-  }
-  
-  if(t2.cookie != cookie) {
-   printf("FAIL: TCGETS2 scribbled on cookie.\n");
-    exit(1);
-  }
-  
-  if(t2.a.c_ospeed == cookie) {
-    printf("FAIL: TCGETS2 read appears short.\n");
-    exit(1);
-  }
-  
-  if(compare_termios_12(&t1.a, &t2.a)) {
-    printf("FAIL: TCGETS and TCGETS2 disagree on common data.\n");
-    exit(1);
-  }
-  printf("PASS: Basic scribble test.\n");
-}
-
-static void test_functions(int fd)
-{
-  struct termios2 t1;
-  struct termios2 t2;
-  struct termios t1_v1;
-  
-  if(ioctl(fd, TCGETS2, &t1) < 0) {
-    perror("ioctl");
-    exit(1);
-  }
-  printf("Initial ospeed %d\n", t1.c_ospeed);
-  t1.c_ospeed = 12345;
-  t1.c_cflag &= ~CBAUD;
-  t1.c_cflag |= BOTHER;
-  
-  if(ioctl(fd, TCSETS2, &t1) < 0) {
-    perror("ioctl");
-    printf("FAIL: unsupported speed should not error\n");
-    exit(1);
-  }
-  
-  /* Get the actual values set: May differ */
-  if(ioctl(fd, TCGETS2, &t2) < 0) {
-    perror("ioctl");
-    exit(1);
-  }
-  
-  /* May be differences to report but are ok */
-  compare_termios_22(&t1, &t2);
-  
-  if(ioctl(fd, TCGETS2, &t1) < 0) {
-    perror("ioctl");
-    exit(1);
-  }
-
-  if(compare_termios_22(&t1, &t2)) {
-    printf("FAIL: Repeating TCGETS gives different result.\n");
-    exit(1);
-  }
-
-  if(ioctl(fd, TCGETS, &t1_v1) < 0) {
-    perror("ioctl");
-    exit(1);
-  }
-
-  if(compare_termios_12(&t1_v1, &t2)) {
-    printf("FAIL: Repeating TCGETS in old form gives different result.\n");
-    exit(1);
-  }
-
-  if(ioctl(fd, TCSETS2, &t1) < 0) {
-    perror("ioctl");
-    printf("FAIL: settings provided by terminal should not fail on set.\n");
-    exit(1);
-  }
-
-  if(ioctl(fd, TCGETS, &t1_v1) < 0) {
-    perror("ioctl");
-    exit(1);
-  }
-
-  if(ioctl(fd, TCGETS2, &t2) < 0) {
-    perror("ioctl");
-    exit(1);
-  }
-
-  /* Differences are bad because this is using the settings the tty said were ok */  
-  if (compare_termios_22(&t1, &t2)) {
-    printf("FAIL: fetched settings differ from set ones yet were tty provided.\n");
-    exit(1);
-  }  
-
-  if (compare_termios_12(&t1_v1, &t1)) {
-    printf("FAIL: old ioctl settings differ from set ones yet were tty provided and new setting agreed.\n");
-    exit(1);
-  }  
-
-  if(t1.c_ospeed != 12345) {
-    printf("SKIP: Tests that may need a pty.\n");
-    return;
-  }
-  
-  if(t1_v1.c_cflag & BOTHER)
-    printf("t1_v1 BOTHER - OK");
-  /* Now see what occurs if we set an old style and get new style, speed should
-     be preserved. */
-     
-  if(ioctl(fd, TCSETS, &t1_v1) < 0) {
-    perror("ioctl");
-    exit(1);
-  }
-  
-  if(ioctl(fd, TCGETS2, &t2) < 0) {
-    perror("ioctl");
-    exit(1);
-  }
-  
-  if(t2.c_ospeed != 12345) {
-    printf("FAIL: setting old style termios disturbed extended speed.\n");
-    printf("SPEED: %d\n", t2.c_ospeed);
-    exit(1);
-  }
-  
-  /* Now try the reverse */
-  
-  t1_v1.c_cflag &= ~CBAUD;
-  t1_v1.c_cflag |= B9600;
-  
-  if(ioctl(fd, TCSETS, &t1_v1) < 0) {
-    perror("ioctl");
-    exit(1);
-  }
-  
-  if(ioctl(fd, TCGETS2, &t2) < 0) {
-    perror("ioctl");
-    exit(1);
-  }
-  
-  if(t2.c_ospeed != 9600) {
-    printf("FAIL: speed was not reset by old style termios set.\n");
-    exit(1);
-  }
-  
-}
-
-
-int main(int argc, char *argv[])
-{
-  int fd;
-  if(argc != 2) {
-    fprintf(stderr, "%s: [ttypath].\n", argv[0]);
-    exit(1);
-  }
-  
-  fd = open(argv[1], O_RDWR);
-  if(fd == -1) {
-    perror(argv[1]);
-    exit(1);
-  }
-  
-  do_check_no_overrun(fd, 0xA5A5A5A5);
-  do_check_no_overrun(fd, 0x5A5A5A5A);
-  test_functions(fd);
-  
-  printf("PASS\n");
-  exit(0);
-}
-
+Regards, 
+-- 
+Peter Åstrand		ThinLinc Chief Developer
+Cendio AB		http://www.cendio.se
+Teknikringen 3
+583 30 Linköping	Phone: +46-13-21 46 00
+--789237761-770076304-1163169866=:17788--
