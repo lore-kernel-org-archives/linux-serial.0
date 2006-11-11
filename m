@@ -1,17 +1,17 @@
 From: Joe Ordnung <joeordnung@yahoo.de>
 Subject: Re: Please Her Tonite
-Date: Sat, 11 Nov 2006 14:03:34 +0100
-Message-ID: <4555CA26.6010000__21822.7571495392$1163250450$gmane$org@yahoo.de>
+Date: Sat, 11 Nov 2006 15:59:44 +0100
+Message-ID: <4555E560.6020106@yahoo.de>
 References: <2A907EE3.7684.6715C2D5@localhost>
 Reply-To: joeordnung@yahoo.de
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp006.mail.ukl.yahoo.com ([217.12.11.95]:38255 "HELO
-	smtp006.mail.ukl.yahoo.com") by vger.kernel.org with SMTP
-	id S1947215AbWKKNGy (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 11 Nov 2006 08:06:54 -0500
+Received: from smtp007.mail.ukl.yahoo.com ([217.12.11.96]:58241 "HELO
+	smtp007.mail.ukl.yahoo.com") by vger.kernel.org with SMTP
+	id S1423979AbWKKPDG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 11 Nov 2006 10:03:06 -0500
 In-Reply-To: <2A907EE3.7684.6715C2D5@localhost>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
