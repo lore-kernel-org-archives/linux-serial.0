@@ -1,50 +1,41 @@
-From: Joe Ordnung <joeordnung@yahoo.de>
-Subject: Re: Please Her Tonite
-Date: Sat, 11 Nov 2006 15:59:44 +0100
-Message-ID: <4555E560.6020106@yahoo.de>
-References: <2A907EE3.7684.6715C2D5@localhost>
-Reply-To: joeordnung@yahoo.de
+From: Peter Korsgaard <jacmet@sunsite.dk>
+Subject: [PATCH] Fix serial-uartlite after global pt_regs
+Date: Wed, 15 Nov 2006 21:10:45 +0100
+Message-ID: <87psbobhdm.fsf@slug.be.48ers.dk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp007.mail.ukl.yahoo.com ([217.12.11.96]:58241 "HELO
-	smtp007.mail.ukl.yahoo.com") by vger.kernel.org with SMTP
-	id S1423979AbWKKPDG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 11 Nov 2006 10:03:06 -0500
-In-Reply-To: <2A907EE3.7684.6715C2D5@localhost>
+Received: from outmx004.isp.belgacom.be ([195.238.4.101]:58346 "EHLO
+	outmx004.isp.belgacom.be") by vger.kernel.org with ESMTP
+	id S1030919AbWKOULU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 15 Nov 2006 15:11:20 -0500
+Received: from outmx004.isp.belgacom.be (localhost [127.0.0.1])
+        by outmx004.isp.belgacom.be (8.12.11.20060308/8.12.11/Skynet-OUT-2.22) with ESMTP id kAFKBB0P007957
+        for <linux-serial@vger.kernel.org>; Wed, 15 Nov 2006 21:11:12 +0100
+        (envelope-from <jacmet@sunsite.dk>)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Priscilla Kemp <ettaafnrqm@hotmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org, sparclinux@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-serial@vger.kernel.org, linux-newbie@vger.kernel.org, linux-gcc@vger.kernel.org
+To: akpm@osdl.org
+Cc: linux-serial@vger.kernel.org
 
-Spam!
+Hi Andrew,
 
+This little patch updates the serial uartlite driver in -mm for the
+global pt_regs in 2.6.19-rc2+.
 
-Priscilla Kemp schrieb:
->
-> Suffering from short penniss?
-> Introduce revolution "ManXL" formula which
-> gauranteees sizes increase or moneey baack.
->
-> Users reported:
-> - 2 inches extra in size
-> - 3x pleasurable orgasms
-> - 27% thicker
->
-> Why waiting?
->
-> http://kalfroutl.com/mxl/
-> -
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
->
->   
+Signed-off-by: Peter Korsgaard <jacmet@sunsite.dk>
 
+--- linux-mm.orig/drivers/serial/uartlite.c
++++ linux-mm/drivers/serial/uartlite.c
+@@ -126,7 +126,7 @@
+ 	return 1;
+ }
+ 
+-static irqreturn_t ulite_isr(int irq, void *dev_id, struct pt_regs *regs)
++static irqreturn_t ulite_isr(int irq, void *dev_id)
+ {
+ 	struct uart_port *port = (struct uart_port *)dev_id;
+ 	int busy;
 
-		
-___________________________________________________________ 
-Telefonate ohne weitere Kosten vom PC zum PC: http://messenger.yahoo.de
-
+-- 
+Bye, Peter Korsgaard
