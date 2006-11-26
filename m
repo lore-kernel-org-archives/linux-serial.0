@@ -1,29 +1,24 @@
-From: "Valya" <allenmeyahoo.de@btinternet.com>
-Subject: Re[2]:I want to build my life with you!
-Date: Fri, 24 Nov 2006 23:51:44 +0200
-Message-ID: <005e01c71012$b70eba80$5a1a000a__15106.8885963925$1164407370$gmane$org@mKwcN>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="windows-1252"
-Content-Transfer-Encoding: 7bit
+From: "Elena Waller" <omfuegu@msn.com>
+Subject: We Guuaranteees Bigger Pen-nis
+Date: Sun, 26 Nov 2006 19:59:39 +0300
+Message-ID: <68LI87FE.0N24.omfuegu__21151.5504787259$1164560396$gmane$org@msn.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from router-224-ip-89-34-224-214.tennet.ro ([89.34.224.214]:50440
-	"EHLO router-224-ip-89-34-224-214.tennet.ro") by vger.kernel.org
-	with ESMTP id S934423AbWKXW25 (ORCPT
+Received: from ppp85-140-33-236.pppoe.mtu-net.ru ([85.140.33.236]:60172 "HELO
+	3C9796C8") by vger.kernel.org with SMTP id S1755448AbWKZQ7k (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 24 Nov 2006 17:28:57 -0500
+	Sun, 26 Nov 2006 11:59:40 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-net-owner <linux-net-owner@vger.kernel.org>
-
-Hi to you!
-
-I am just a little girl in this big big world. I desire love and I try to find it.
-Do you want to learn more a pretty foreign lady who has intensions to create a happy family? 
-If yes, you can find me here http://bestthelove.com/myhoney
-
-Kiss-kiss
-
-Valya
+To: linux-kernel@vger.kernel.org
 
 
+
+Here's latest "ManXL" formula has been proven
+to add inches to the sizes while multiplying
+orgasms like never had before. 
+Our products is light years ahead of our competitors
+which has millions of happy users.
+
+Check us out..You won't regret.
+
+http://hauntedyou.biz/size/
