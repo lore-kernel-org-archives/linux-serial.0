@@ -1,24 +1,22 @@
-From: "Elena Waller" <omfuegu@msn.com>
-Subject: We Guuaranteees Bigger Pen-nis
-Date: Sun, 26 Nov 2006 19:59:39 +0300
-Message-ID: <68LI87FE.0N24.omfuegu__21151.5504787259$1164560396$gmane$org@msn.com>
+From: Grant Likely <grant.likely@secretlab.ca>
+Subject: [PATCH 0/2] arch/powerpc support for MPC52xx serial driver
+Date: Mon, 27 Nov 2006 14:21:00 -0700
+Message-ID: <1164662462514-git-send-email-grant.likely@secretlab.ca>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ppp85-140-33-236.pppoe.mtu-net.ru ([85.140.33.236]:60172 "HELO
-	3C9796C8") by vger.kernel.org with SMTP id S1755448AbWKZQ7k (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 26 Nov 2006 11:59:40 -0500
+Received: from S01060016b61d1226.cg.shawcable.net ([68.147.191.145]:42125 "EHLO
+	sandbox.secretlab.ca") by vger.kernel.org with ESMTP
+	id S933685AbWK0VVP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 27 Nov 2006 16:21:15 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org
+To: linuxppc-dev@ozlabs.org, Paul Mackerras <paulus@samba.org>, linux-serial@vger.kernel.org
+Cc: Sylvain Munaut <tnt@246tNt.com>, Nicolas DET <nd@bplan-gmbh.de>
+
+Here are the serial driver changes required for mpc52xx support in
+arch/powerpc.  First patch takes the opportunity to do a whitespace
+cleanup seeing as the patch is undergoing heavy change anyway.
+
+Cheers,
+g.
 
 
-
-Here's latest "ManXL" formula has been proven
-to add inches to the sizes while multiplying
-orgasms like never had before. 
-Our products is light years ahead of our competitors
-which has millions of happy users.
-
-Check us out..You won't regret.
-
-http://hauntedyou.biz/size/
