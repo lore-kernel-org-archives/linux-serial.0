@@ -1,88 +1,63 @@
-From: Corey Minyard <cminyard@mvista.com>
+From: Tilman Schmidt <tilman@imap.cc>
 Subject: Re: [PATCH] Add the ability to layer another driver over the serial
  driver
-Date: Mon, 11 Dec 2006 10:29:31 -0600
-Message-ID: <457D876B.9000508@mvista.com>
-References: <4533B8FB.5080108@mvista.com>	<20061210201438.tilman@imap.cc>	<Pine.LNX.4.60.0612102117590.9993@poirot.grange>	<457CB32A.2060804@mvista.com>	<20061211102016.43e76da2@localhost.localdomain>	<457D70A4.1000000@mvista.com> <20061211151943.2bbc720e@localhost.localdomain>
+Date: Mon, 11 Dec 2006 17:58:29 +0100
+Message-ID: <457D8E35.9050706@imap.cc>
+References: <4533B8FB.5080108@mvista.com>	<20061210201438.tilman@imap.cc>	<Pine.LNX.4.60.0612102117590.9993@poirot.grange>	<457CB32A.2060804@mvista.com> <20061211102016.43e76da2@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="------------enig5FED70519E560178E0B0D693"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gateway-1237.mvista.com ([63.81.120.158]:50560 "EHLO
-	gateway-1237.mvista.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S936922AbWLKQ3d (ORCPT
+Received: from posthamster.phnxsoft.com ([195.227.45.4]:2781 "EHLO
+	posthamster.phnxsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S937341AbWLKQ64 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 11 Dec 2006 11:29:33 -0500
-In-Reply-To: <20061211151943.2bbc720e@localhost.localdomain>
+	Mon, 11 Dec 2006 11:58:56 -0500
+In-Reply-To: <20061211102016.43e76da2@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Alan <alan@lxorguk.ukuu.org.uk>
-Cc: Guennadi Liakhovetski <g.liakhovetski@gmx.de>, Tilman Schmidt <tilman@imap.cc>, linux-serial@vger.kernel.org, Linux Kernel <linux-kernel@vger.kernel.org>, Hansjoerg Lipp <hjlipp@web.de>, Russell Doty <rdoty@redhat.com>
+Cc: Corey Minyard <cminyard@mvista.com>, Guennadi Liakhovetski <g.liakhovetski@gmx.de>, linux-serial@vger.kernel.org, Linux Kernel <linux-kernel@vger.kernel.org>, Hansjoerg Lipp <hjlipp@web.de>, Russell Doty <rdoty@redhat.com>
 
-Alan wrote:
-> On Mon, 11 Dec 2006 08:52:20 -0600
-> Corey Minyard <cminyard@mvista.com> wrote:
->   
->> So here's the start of discussion:
->>
->> 1) The IPMI driver needs to run at panic time to modify watchdog
->> timers and store panic information in the event log.  So no work
->> queues, no delayed work, and the need for some type of poll
->> operation on the device.
->>     
->
-> That would be the existing serial console interface. For things like USB
-> serial you are probably out of luck. At the moment we have a single
-> "console" attached to a specific serial console interface. The code is
-> almost all there for allowing other parties to create new synchronous
-> serial logging devices by opening open as the console driver does.
->   
-I don't think the console interface really helps.  Input processing is also
-needed, and the output blocks until the character is sent.  A poll routine
-is a better way to accomplish this, IMHO.
->   
->> 2) The IPMI driver needs to get messages through even when
->> the system is very busy.  Since a watchdog runs over the driver,
->> it needs to be able to get messages through to avoid a system
->> reset as long as something is pinging the watchdog from userland.
->>     
->
-> You have a high priority character output function which jumps existing
-> data. Not all hardware implements this, and some of the modern hardware
-> in particular simply doesn't physically support such behaviour. Also if
-> you are the sole user of the port you *know* nobody else will be queuing
-> data to it anyway.
->   
-That's not really the issue.  The input processing is again the
-issue.
->   
->> Currently there are mutexes, lock_kernel() calls, and work queues
->> that cause trouble for these.
->>
->> There is also a comment that you can't set low_latency and call
->> tty_flip_buffer_push from IRQ context.  This seems to be due to a
->> lack of anything in flush_to_ldisc to handle reentrancy, and perhaps
->> because disc->receive_buf can block, but I couldn't tell easily.
->>     
->
-> The entire tty side locking, scheduling and design is based upon the idea
-> that input processing is deferred. Otherwise you get long chains of
-> recursion from the worst cases.
->   
-I was actually wrong, flush_to_ldisc does handle reentrancy.
-It can only have one caller to disc->receive_buf() at a time.  So
-long chains of recursion don't seem to be possible, even if called
-from IRQ context.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig5FED70519E560178E0B0D693
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-And studying the way ppp does writing, it can bypass the tty_write()
-call and directly call the drivers.  So that bypasses the transmit
-locking problems I saw.
+On Mon, 11 Dec 2006 10:20:16 +0000, Alan wrote:
+> This looks wrong. You already have a kernel interface to serial drivers=
+=2E
+> It is called a line discipline. We use it for ppp, we use it for slip, =
+we
+> use it for a few other things such as attaching sync drivers to some
+> devices.
 
-This is going to require some more thought.  But I believe it can be
-done with adding a poll routine to the tty_operations structure and
-perhaps some minor changes around tty_flip_buffer_push.
+I was under the impression that line disciplines need a user space
+process to open the serial device and push them onto it. Is there
+a way for a driver to attach to a serial port through the line
+discipline interface from kernel space, eg. from an initialization,
+module load, or probe function?
 
-Thanks for your help.
+--=20
+Tilman Schmidt                    E-Mail: tilman@imap.cc
+Bonn, Germany
+Diese Nachricht besteht zu 100% aus wiederverwerteten Bits.
+Unge=F6ffnet mindestens haltbar bis: (siehe R=FCckseite)
 
--Corey
 
+--------------enig5FED70519E560178E0B0D693
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.4 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFfY41MdB4Whm86/kRAtrLAJ9wacG36Ydk1OsrwI7di97LZhYvFwCeI8pb
+B8tRHDr9hF8/zwEMCuk+SxE=
+=Yd6s
+-----END PGP SIGNATURE-----
+
+--------------enig5FED70519E560178E0B0D693--
