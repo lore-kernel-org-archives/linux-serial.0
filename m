@@ -1,42 +1,55 @@
-From: Alan <alan@lxorguk.ukuu.org.uk>
+From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
 Subject: Re: [PATCH] Add the ability to layer another driver over the serial
  driver
-Date: Mon, 11 Dec 2006 17:40:04 +0000
-Message-ID: <20061211174004.5605fb47@localhost.localdomain>
-References: <4533B8FB.5080108@mvista.com>
-	<20061210201438.tilman@imap.cc>
-	<Pine.LNX.4.60.0612102117590.9993@poirot.grange>
-	<457CB32A.2060804@mvista.com>
-	<20061211102016.43e76da2@localhost.localdomain>
-	<457D8E35.9050706@imap.cc>
+Date: Mon, 11 Dec 2006 20:01:10 +0100 (CET)
+Message-ID: <Pine.LNX.4.60.0612111954120.4039@poirot.grange>
+References: <4533B8FB.5080108@mvista.com> <20061210201438.tilman@imap.cc>
+ <Pine.LNX.4.60.0612102117590.9993@poirot.grange> <457CB32A.2060804@mvista.com>
+ <20061211102016.43e76da2@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from outpipe-village-512-1.bc.nu ([81.2.110.250]:41181 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1762988AbWLKRcZ (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 11 Dec 2006 12:32:25 -0500
-In-Reply-To: <457D8E35.9050706@imap.cc>
+Received: from mail.gmx.net ([213.165.64.20]:58267 "HELO mail.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
+	id S937559AbWLKTBv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 11 Dec 2006 14:01:51 -0500
+In-Reply-To: <20061211102016.43e76da2@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tilman Schmidt <tilman@imap.cc>
-Cc: Corey Minyard <cminyard@mvista.com>, Guennadi Liakhovetski <g.liakhovetski@gmx.de>, linux-serial@vger.kernel.org, Linux Kernel <linux-kernel@vger.kernel.org>, Hansjoerg Lipp <hjlipp@web.de>, Russell Doty <rdoty@redhat.com>
+To: Alan <alan@lxorguk.ukuu.org.uk>
+Cc: Corey Minyard <cminyard@mvista.com>, Tilman Schmidt <tilman@imap.cc>, linux-serial@vger.kernel.org, Linux Kernel <linux-kernel@vger.kernel.org>, Hansjoerg Lipp <hjlipp@web.de>, Russell Doty <rdoty@redhat.com>
 
-On Mon, 11 Dec 2006 17:58:29 +0100
-Tilman Schmidt <tilman@imap.cc> wrote:
+On Mon, 11 Dec 2006, Alan wrote:
 
-> On Mon, 11 Dec 2006 10:20:16 +0000, Alan wrote:
-> > This looks wrong. You already have a kernel interface to serial drivers.
-> > It is called a line discipline. We use it for ppp, we use it for slip, we
-> > use it for a few other things such as attaching sync drivers to some
-> > devices.
+> On Sun, 10 Dec 2006 19:23:54 -0600
+> Corey Minyard <cminyard@mvista.com> wrote:
 > 
-> I was under the impression that line disciplines need a user space
-> process to open the serial device and push them onto it. 
+> > Nothing has come of this yet.  But we have these two requests and a 
+> > request from Russell Doty at Redhat.
+> > 
+> > It would be nice to know if this type of thing was acceptable or not, 
+> > and the problems with the patch.  The patch is at 
+> > http://home.comcast.net/~minyard
+> 
+> This looks wrong. You already have a kernel interface to serial drivers.
+> It is called a line discipline. We use it for ppp, we use it for slip, we
+> use it for a few other things such as attaching sync drivers to some
+> devices.
 
-Yes that is correct. You need a way for the user to tell you which port
-to use and to the permission and usage management for it anyway (as well
-as load the module and configure settings), so this seems quite
-reasonable.
+Alan, my understanding might be wrong, but, I think, line disciplines are 
+there as "protocols" for user-tty interfaces, i.e., you need a user, that 
+opens a tty, sets a line discipline to it, and does io (read/write) over 
+it, and NOT to be completely initialised and driven from the kernel. 
+Whereas, what some users need is a complete in-kernel interface, when 
+either another driver (like in case with the previous poster), or the 
+platform code (linkstation) know that there's a device attached to this 
+UART, know how and WHEN to operate it, and the user doesn't care about it 
+at all. Think of it as about, say, i2c devices, that have user device 
+interface and in-kernel interface, to which you can connect rtc, USB 
+transceivers, that get controlled completely from the kernel TRANSPARENTLY 
+for the user.
+
+Thanks
+Guennadi
+---
+Guennadi Liakhovetski
