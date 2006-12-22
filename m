@@ -1,21 +1,21 @@
 From: Peter Korsgaard <jacmet@sunsite.dk>
 Subject: [PATCH] serial/uartlite: Only enable port if request_port succeeded
-Date: Fri, 22 Dec 2006 15:56:33 +0100
-Message-ID: <87bqlwf07y.fsf@vps.korsgaard.com>
+Date: Fri, 22 Dec 2006 16:38:40 +0100
+Message-ID: <87r6usgcu7.fsf@vps.korsgaard.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from vps.korsgaard.com ([64.79.194.204]:54503 "EHLO
+Received: from vps.korsgaard.com ([64.79.194.204]:60242 "EHLO
 	vps.korsgaard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1030188AbWLVPe5 (ORCPT
+	with ESMTP id S1422893AbWLVQE4 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 22 Dec 2006 10:34:57 -0500
+	Fri, 22 Dec 2006 11:04:56 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: torvalds@osdl.org
 Cc: linux-serial@vger.kernel.org
 
-The uartlite driver would happily enable the port even if request_port
+The uartlite driver used to always enable the port even if request_port
 failed causing havoc. This patch fixes it.
 
 Signed-off-by: Peter Korsgaard <jacmet@sunsite.dk>
