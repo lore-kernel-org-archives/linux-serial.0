@@ -1,174 +1,159 @@
-From: Tilman Schmidt <tilman@imap.cc>
-Subject: [Patch][RfC] Update to Documentation/tty.txt on line disciplines
-Date: Sun, 24 Dec 2006 01:28:41 +0100
-Message-ID: <20061223223138.tilman@imap.cc>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lx1.pxnet.com ([195.227.45.3]:38945 "EHLO lx1.pxnet.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754066AbWLXD2y (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 23 Dec 2006 22:28:54 -0500
-Sender: linux-serial-owner@vger.kernel.org
+From: Sergei Organov <osv@javad.com>
+Subject: irq 4: nobody cared and I/O errors on serial ports.
+Date: Fri, 29 Dec 2006 12:41:50 +0300
+Message-ID: <874prfm42p.fsf@javad.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S965025AbWL2JmD@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-While trying to develop a line discipline I found a couple of
-things worth mentioning in Documentation/tty.txt which weren't,
-so I decided to add them. It would be nice if someone more
-knowledgeable than me in that area would look over them, in
-case I got something wrong.
+Hello,
 
-Thanks
-Tilman
+It seems that the kernel has some problems/races in opening/closing of
+serial ports. Simple C program below just opens/closes a port in a loop:
+
+#include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
+#include <fcntl.h>
+
+int main()
+{
+  while(1) {
+    int fd = open("/dev/ttyS0", O_RDONLY | O_NOCTTY);
+    if(fd < 0)
+      fprintf(stderr, "%s\n", strerror(errno));
+    else
+      close(fd);
+  }
+}
+
+I've noticed 2 problems running this program. I run 2.6.19.1 smp kernel
+(I've also tested Debian 2.6.18.3 kernel, and it has the same issues) on
+hyper-threaded Pentium 4 CPU.
+
+1. When I run the program, I begin to get "irq 4: nobody cared" in dmesg even
+   though the port is not connected (idle). Please find relevant part of dmesg
+   below.
+
+2. When two copies of this program are run simultaneously, each of
+   copies start to randomly fail to open the port with errno=5
+   (Input/output error).
+
+Note that I've tested this both with standard PC port ttyS0 and with
+serial ports of MOXA multi-port serial board (ttyM*), and [mis]behavior
+is the same. Also note that opening /dev/null instead of serial port
+doesn't have any problems.
+
+Here are relevant parts from dmesg when open/close ttyS0:
+
+irq 4: nobody cared (try booting with the "irqpoll" option)
+ [<c0144ef2>] __report_bad_irq+0x36/0x7d
+ [<c01450f4>] note_interrupt+0x1bb/0x1f7
+ [<c0144665>] handle_IRQ_event+0x1a/0x3f
+ [<c01458fd>] handle_edge_irq+0xde/0x109
+ [<c010537d>] do_IRQ+0x7d/0xa4
+ [<c01036ee>] common_interrupt+0x1a/0x20
+ [<c01036ee>] common_interrupt+0x1a/0x20
+ [<c021b63e>] serial_out+0x73/0x77
+ [<c021cbb1>] serial8250_shutdown+0x71/0x148
+ [<c0219c57>] uart_shutdown+0x83/0xad
+ [<c021b16b>] uart_close+0x113/0x1a9
+ [<c0209bf9>] tty_fasync+0x3a/0xaa
+ [<c0209e48>] release_dev+0x1df/0x61e
+ [<c016286d>] chrdev_open+0x12d/0x141
+ [<c0162740>] chrdev_open+0x0/0x141
+ [<c015ed34>] nameidata_to_filp+0x24/0x33
+ [<c015ed75>] do_filp_open+0x32/0x39
+ [<c01c1fa4>] __next_cpu+0x12/0x21
+ [<c02964a3>] __sched_text_start+0x5a3/0x90a
+ [<c020a296>] tty_release+0xf/0x18
+ [<c0160f29>] __fput+0x96/0x16a
+ [<c015ea56>] filp_close+0x52/0x59
+ [<c015fa2b>] sys_close+0x65/0x99
+ [<c0102cfd>] sysenter_past_esp+0x56/0x79
+ =======================
+handlers:
+[<c021d9d4>] (serial8250_interrupt+0x0/0xdc)
+Disabling IRQ #4
+irq 4: nobody cared (try booting with the "irqpoll" option)
+ [<c0144ef2>] __report_bad_irq+0x36/0x7d
+ [<c01450f4>] note_interrupt+0x1bb/0x1f7
+ [<c0144665>] handle_IRQ_event+0x1a/0x3f
+ [<c01458fd>] handle_edge_irq+0xde/0x109
+ [<c010537d>] do_IRQ+0x7d/0xa4
+ [<c01036ee>] common_interrupt+0x1a/0x20
+ [<c0101235>] mwait_idle_with_hints+0x3b/0x3f
+ [<c0101245>] mwait_idle+0xc/0x1b
+ [<c0101c7f>] cpu_idle+0x9f/0xb9
+ [<c0333753>] start_kernel+0x39f/0x3a7
+ [<c03331ae>] unknown_bootoption+0x0/0x206
+ =======================
+handlers:
+Disabling IRQ #4
+irq 4: nobody cared (try booting with the "irqpoll" option)
+ [<c0144ef2>] __report_bad_irq+0x36/0x7d
+ [<c01450f4>] note_interrupt+0x1bb/0x1f7
+ [<c0144665>] handle_IRQ_event+0x1a/0x3f
+ [<c01458fd>] handle_edge_irq+0xde/0x109
+ [<c010537d>] do_IRQ+0x7d/0xa4
+ [<c01036ee>] common_interrupt+0x1a/0x20
+ [<c0101235>] mwait_idle_with_hints+0x3b/0x3f
+ [<c0101245>] mwait_idle+0xc/0x1b
+ [<c0101c7f>] cpu_idle+0x9f/0xb9
+ [<c0333753>] start_kernel+0x39f/0x3a7
+ [<c03331ae>] unknown_bootoption+0x0/0x206
+ =======================
+handlers:
+Disabling IRQ #4
+irq 4: nobody cared (try booting with the "irqpoll" option)
+ [<c0144ef2>] __report_bad_irq+0x36/0x7d
+ [<c01450f4>] note_interrupt+0x1bb/0x1f7
+ [<c0144665>] handle_IRQ_event+0x1a/0x3f
+ [<c01458fd>] handle_edge_irq+0xde/0x109
+ [<c010537d>] do_IRQ+0x7d/0xa4
+ [<c01036ee>] common_interrupt+0x1a/0x20
+ [<c01036ee>] common_interrupt+0x1a/0x20
+ [<c021b63e>] serial_out+0x73/0x77
+ [<c021cbcb>] serial8250_shutdown+0x8b/0x148
+ [<c0219c57>] uart_shutdown+0x83/0xad
+ [<c021b16b>] uart_close+0x113/0x1a9
+ [<c0209bf9>] tty_fasync+0x3a/0xaa
+ [<c0209e48>] release_dev+0x1df/0x61e
+ [<c016286d>] chrdev_open+0x12d/0x141
+ [<c0162740>] chrdev_open+0x0/0x141
+ [<c015ed34>] nameidata_to_filp+0x24/0x33
+ [<c015ed75>] do_filp_open+0x32/0x39
+ [<c01c1fa4>] __next_cpu+0x12/0x21
+ [<c02964a3>] __sched_text_start+0x5a3/0x90a
+ [<c020a296>] tty_release+0xf/0x18
+ [<c0160f29>] __fput+0x96/0x16a
+ [<c015ea56>] filp_close+0x52/0x59
+ [<c015fa2b>] sys_close+0x65/0x99
+ [<c0102cfd>] sysenter_past_esp+0x56/0x79
+ =======================
+handlers:
+[<c021d9d4>] (serial8250_interrupt+0x0/0xdc)
+Disabling IRQ #4
+irq 4: nobody cared (try booting with the "irqpoll" option)
+ [<c0144ef2>] __report_bad_irq+0x36/0x7d
+ [<c01450f4>] note_interrupt+0x1bb/0x1f7
+ [<c0144665>] handle_IRQ_event+0x1a/0x3f
+ [<c01458fd>] handle_edge_irq+0xde/0x109
+ [<c010537d>] do_IRQ+0x7d/0xa4
+ [<c01036ee>] common_interrupt+0x1a/0x20
+ [<c0101235>] mwait_idle_with_hints+0x3b/0x3f
+ [<c0101245>] mwait_idle+0xc/0x1b
+ [<c0101c7f>] cpu_idle+0x9f/0xb9
+ [<c0333753>] start_kernel+0x39f/0x3a7
+ [<c03331ae>] unknown_bootoption+0x0/0x206
+ =======================
+handlers:
+Disabling IRQ #4
 
 
-From: Tilman Schmidt <tilman@imap.cc>
-
-Update to Documentation/tty.txt on line disciplines.
-
-Signed-off-by: Tilman Schmidt <tilman@imap.cc>
----
-
- tty.txt |  115 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------
- 1 files changed, 103 insertions(+), 12 deletions(-)
-
---- linux-2.6.20-rc1-work/Documentation/tty.txt	2006-11-29 22:57:37.000000000 +0100
-+++ local/Documentation/tty.txt	2006-12-23 21:11:17.000000000 +0100
-@@ -39,28 +39,37 @@
- 
- TTY side interfaces:
- 
-+open()		-	Called when the line discipline is attached to
-+			the terminal. No other call into the line
-+			discipline for this tty will occur until it
-+			completes successfully. Can sleep.
-+
- close()		-	This is called on a terminal when the line
- 			discipline is being unplugged. At the point of
- 			execution no further users will enter the
- 			ldisc code for this tty. Can sleep.
- 
--open()		-	Called when the line discipline is attached to
--			the terminal. No other call into the line
--			discipline for this tty will occur until it
--			completes successfully. Can sleep.
-+hangup()	-	Called when the tty line is hung up.
-+			The line discipline should cease I/O to the tty.
-+			No further calls into the ldisc code will occur.
-+			Can sleep.
- 
- write()		-	A process is writing data through the line
- 			discipline.  Multiple write calls are serialized
- 			by the tty layer for the ldisc.  May sleep. 
- 
--flush_buffer()	-	May be called at any point between open and close.
--
--chars_in_buffer() -	Report the number of bytes in the buffer.
--
--set_termios()	-	Called on termios structure changes. The caller
--			passes the old termios data and the current data
--			is in the tty. Called under the termios semaphore so
--			allowed to sleep. Serialized against itself only.
-+flush_buffer()	-	(optional) May be called at any point between
-+			open and close, and instructs the line discipline
-+			to empty its input buffer.
-+
-+chars_in_buffer() -	(optional) Report the number of bytes in the input
-+			buffer.
-+
-+set_termios()	-	(optional) Called on termios structure changes.
-+			The caller passes the old termios data and the
-+			current data is in the tty. Called under the
-+			termios semaphore so allowed to sleep. Serialized
-+			against itself only.
- 
- read()		-	Move data from the line discipline to the user.
- 			Multiple read calls may occur in parallel and the
-@@ -92,6 +101,88 @@
- 			this function. In such a situation defer it.
- 
- 
-+Driver Access
-+
-+Line discipline methods can call the following methods of the underlying
-+hardware driver through the function pointers within the tty->driver
-+structure:
-+
-+write()			Write a block of characters to the tty device.
-+			Returns the number of characters accepted.
-+
-+put_char()		Queues a character for writing to the tty device.
-+			If there is no room in the queue, the character is
-+			ignored.
-+
-+flush_chars()		(Optional) If defined, must be called after
-+			queueing characters with put_char() in order to
-+			start transmission.
-+
-+write_room()		Returns the numbers of characters the tty driver
-+			will accept for queueing to be written.
-+
-+ioctl()			Invoke device specific ioctl.
-+			Expects data pointers to refer to userspace.
-+			Returns ENOIOCTLCMD for unrecognized ioctl numbers.
-+
-+set_termios()		Notify the tty driver that the device's termios
-+			settings have changed. New settings are in
-+			tty->termios. Previous settings should be passed in
-+			the "old" argument.
-+
-+throttle()		Notify the tty driver that input buffers for the
-+			line discipline are close to full, and it should
-+			somehow signal that no more characters should be
-+			sent to the tty.
-+
-+unthrottle()		Notify the tty driver that characters can now be
-+			sent to the tty without fear of overrunning the
-+			input buffers of the line disciplines.
-+
-+stop()			Ask the tty driver to stop outputting characters
-+			to the tty device.  
-+
-+start()			Ask the tty driver to resume sending characters
-+			to the tty device.
-+
-+hangup()		Ask the tty driver to hang up the tty device.
-+
-+break_ctl()		(Optional) Ask the tty driver to turn on or off
-+			BREAK status on the RS-232 port.  If state is -1,
-+			then the BREAK status should be turned on; if
-+			state is 0, then BREAK should be turned off.
-+			If this routine is not implemented, use ioctls
-+			TIOCSBRK / TIOCCBRK instead.
-+
-+wait_until_sent()	Waits until the device has written out all of the
-+			characters in its transmitter FIFO.
-+
-+send_xchar()		Send a high-priority XON/XOFF character to the device.
-+
-+
-+Flags
-+
-+Line discipline methods have access to tty->flags field containing the
-+following interesting flags:
-+
-+TTY_THROTTLED		Driver input is throttled. The ldisc should call
-+			tty->driver->unthrottle() in order to resume
-+			reception when it is ready to process more data.
-+
-+TTY_DO_WRITE_WAKEUP	If set, causes the driver to call the ldisc's
-+			write_wakeup() method in order to resume
-+			transmission when it can accept more data
-+			to transmit.
-+
-+TTY_IO_ERROR		If set, causes all subsequent userspace read/write
-+			calls on the tty to fail, returning -EIO.
-+
-+TTY_OTHER_CLOSED	Device is a pty and the other side has closed.
-+
-+TTY_NO_WRITE_SPLIT	Prevent driver from splitting up writes into
-+			smaller chunks.
-+
-+
- Locking
- 
- Callers to the line discipline functions from the tty layer are required to
+-- 
+Sergei Organov.
