@@ -1,49 +1,80 @@
-From: Jan Engelhardt <jengelh@linux01.gwdg.de>
-Subject: Re: irq 4: nobody cared and I/O errors on serial ports.
-Date: Fri, 29 Dec 2006 18:13:11 +0100 (MET)
-Message-ID: <Pine.LNX.4.61.0612291808220.9799@yvahk01.tjqt.qr>
-References: <874prfm42p.fsf@javad.com>
+From: dann frazier <dannf@debian.org>
+Subject: missing fix for CVE-2005-0504 in moxa
+Date: Tue, 2 Jan 2007 18:38:30 -0700
+Message-ID: <20070103013830.GM17404@krebs.dannf>
+References: <20060816225742.GD11954@krebs.dannf>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from tmailer.gwdg.de ([134.76.10.23]:57310 "EHLO tmailer.gwdg.de"
+Received: from atlrel9.hp.com ([156.153.255.214]:51055 "EHLO atlrel9.hp.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755042AbWL2ROA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 29 Dec 2006 12:14:00 -0500
-In-Reply-To: <874prfm42p.fsf@javad.com>
+	id S1753238AbXACBwG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 2 Jan 2007 20:52:06 -0500
+Content-Disposition: inline
+In-Reply-To: <20060816225742.GD11954@krebs.dannf>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sergei Organov <osv@javad.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: support@moxa.com.tw, dilinger@debian.org
+
+hey,
+  I noticed that the moxa input checking security bug described by
+CVE-2005-0504 appears to remain unfixed upstream.
+ 
+The issue is described here:
+  http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2005-0504
+
+Debian has been shipping the following patch from Andres Salomon. I
+tried contacting the listed maintainer a few months ago but received
+no response.
+
+I've tested that this still applies to and compiles against
+2.6.20-rc3.
+
+Signed-off-by: dann frazier <dannf@debian.org>
+
+diff --git a/drivers/char/moxa.c b/drivers/char/moxa.c
+index f391a24..4388791 100644
+--- a/drivers/char/moxa.c
++++ b/drivers/char/moxa.c
+@@ -1669,7 +1669,7 @@ int MoxaDriverIoctl(unsigned int cmd, unsigned long arg, int port)
+ 
+ 	if(copy_from_user(&dltmp, argp, sizeof(struct dl_str)))
+ 		return -EFAULT;
+-	if(dltmp.cardno < 0 || dltmp.cardno >= MAX_BOARDS)
++	if(dltmp.cardno < 0 || dltmp.cardno >= MAX_BOARDS || dltmp.len < 0)
+ 		return -EINVAL;
+ 
+ 	switch(cmd)
+@@ -2711,6 +2711,8 @@ static int moxaloadbios(int cardno, unsigned char __user *tmp, int len)
+ 	void __iomem *baseAddr;
+ 	int i;
+ 
++	if(len < 0 || len > sizeof(moxaBuff))
++		return -EINVAL;
+ 	if(copy_from_user(moxaBuff, tmp, len))
+ 		return -EFAULT;
+ 	baseAddr = moxaBaseAddr[cardno];
+@@ -2758,7 +2760,7 @@ static int moxaload320b(int cardno, unsigned char __user *tmp, int len)
+ 	void __iomem *baseAddr;
+ 	int i;
+ 
+-	if(len > sizeof(moxaBuff))
++	if(len < 0 || len > sizeof(moxaBuff))
+ 		return -EINVAL;
+ 	if(copy_from_user(moxaBuff, tmp, len))
+ 		return -EFAULT;
+@@ -2778,6 +2780,8 @@ static int moxaloadcode(int cardno, unsigned char __user *tmp, int len)
+ 	void __iomem *baseAddr, *ofsAddr;
+ 	int retval, port, i;
+ 
++	if(len < 0 || len > sizeof(moxaBuff))
++		return -EINVAL;
+ 	if(copy_from_user(moxaBuff, tmp, len))
+ 		return -EFAULT;
+ 	baseAddr = moxaBaseAddr[cardno];
 
 
-On Dec 29 2006 12:41, Sergei Organov wrote:
->
->It seems that the kernel has some problems/races in opening/closing of
->serial ports. Simple C program below just opens/closes a port in a loop:
->[..]
->I've noticed 2 problems running this program. I run 2.6.19.1 smp kernel
->(I've also tested Debian 2.6.18.3 kernel, and it has the same issues) on
->hyper-threaded Pentium 4 CPU.
 
-Also happens on 2.6.18.5 on AMD AXP2000 (UP, CONFIG_SMP=y), standard 
-x86 pc serial port
-serial8250: ttyS0 at I/O 0x3f8 (irq = 4) is a 16550A
-00:09: ttyS0 at I/O 0x3f8 (irq = 4) is a 16550A
-
->1. When I run the program, I begin to get "irq 4: nobody cared" in dmesg even
->   though the port is not connected (idle). Please find relevant part of dmesg
->   below.
-
-Running said program repeatedly produces one stack trace every 4 
-seconds (CONFIG_HZ=100). Maybe knowing this interval helps finding the 
-problem.
-[ 9545.167750] Disabling IRQ #4
-[ 9549.599704] Disabling IRQ #4
-[ 9554.034803] Disabling IRQ #4
-[ 9558.455093] Disabling IRQ #4
-[ 9562.876508] Disabling IRQ #4
-
-
-	-`J'
 -- 
+dann frazier | HP Open Source and Linux Organization
