@@ -1,290 +1,108 @@
-From: Sergei Shtylyov <sshtylyov@ru.mvista.com>
-Subject: Re: [PATCH] serial driver PMC MSP71xx, kernel linux-mips.git mast
- er
-Date: Mon, 22 Jan 2007 23:23:56 +0300
-Message-ID: <45B51D5C.207@ru.mvista.com>
-References: <5C1FD43E5F1B824E83985A74F396286E03AD7632@bby1exm08.pmc_nt.nt.pmc-sierra.bc.ca>
+From: Stefan Althoefer <as@janz.de>
+Subject: ioctl(tiocsserial) for devices which need ioremapping
+Date: Tue, 23 Jan 2007 08:26:35 +0100
+Message-ID: <45B5B8AB.9020200@janz.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-15;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from h155.mvista.com ([63.81.120.155]:36724 "EHLO imap.sh.mvista.com"
-	rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751966AbXAVUX6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 22 Jan 2007 15:23:58 -0500
-In-Reply-To: <5C1FD43E5F1B824E83985A74F396286E03AD7632@bby1exm08.pmc_nt.nt.pmc-sierra.bc.ca>
+Received: from mr01.hansenet.de ([213.191.74.10]:36666 "EHLO mr01.hansenet.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932852AbXAWHYf convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 23 Jan 2007 02:24:35 -0500
+Received: from mail1.janzag.de (213.39.240.49) by mr01.hansenet.de (7.2.074)
+        id 45AE38A1000510DC for linux-serial@vger.kernel.org; Tue, 23 Jan 2007 08:24:34 +0100
+Received: from localhost (localhost [127.0.0.1])
+	by mail1.janzag.de (Postfix) with ESMTP id 89CE910667
+	for <linux-serial@vger.kernel.org>; Tue, 23 Jan 2007 08:24:34 +0100 (CET)
+Received: from mail1.janzag.de ([127.0.0.1])
+ by localhost (mail1 [127.0.0.1]) (amavisd-new, port 10024) with ESMTP
+ id 20517-06-2 for <linux-serial@vger.kernel.org>;
+ Tue, 23 Jan 2007 08:24:30 +0100 (CET)
+Received: from [192.168.0.63] (pc-as007.janzag.de [192.168.0.63])
+	by mail1.janzag.de (Postfix) with ESMTP id 8DD2C1AEA7
+	for <linux-serial@vger.kernel.org>; Tue, 23 Jan 2007 08:24:21 +0100 (CET)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Marc St-Jean <Marc_St-Jean@pmc-sierra.com>
-Cc: linux-mips@linux-mips.org, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Hello.
+hi,
 
-Marc St-Jean wrote:
+I'm using the linux serial 8250 driver for an IXP425 based ARM
+device. The two on-chip serial ports work with no problem.
 
-    Your maile is strange: it line-wraps quotes but not your own text... :-/
+However, depending on the configuration of my system I have
+some more 8250 based serial ports, which I want to register to
+the driver after the system has booted (after I have detected
+how many ports are available).
+=46or this I have written a tool to configure the serial port base
+address and interrupt with the TIOCSSERIAL ioctl.
 
->>>Here is a serial driver patch for the PMC-Sierra MSP71xx device.
+Unfortunately, there is a problem with this: The new serial ports
+require that the memory mapped address must be remapped. Although
+there is a member in the serial_struct to specify this, the driver
+does not pay attention to the UPF_IOREMAP bit in serial_struct.flags.
 
->>>There are three different fixes:
->>>1. Fix for THRE errata
->>>2. Fix for Busy Detect on LCR write
->>>3. Workaround for interrupt/data concurrency issue
+The same appears to the UPF_SHARE_IRQ flag.
 
->>>The first fix is handled cleanly using a UART_BUG_* flag.
->>    Hm, I wouldn't call it clean...
+Is there any way to handle this (to attach my serial port and have
+the address relocation take place)?
 
-> Relative to the other two. Any recommended improvements on this one?
+To solve this problem, I have created the following patch. It checks
+for the UPF_IOREMAP and UPF_SHARE_IRQ flags when it detects that
+either port or interrupt are changed. Is it possible to integrate
+this into the kernel?
 
-    I already told: runtime check.
+-----%<------------
+diff -r -N -u linux-2.6.18.1/drivers/serial/serial_core.c
+linux-2.6.18.1-xscale-fordiff/drivers/serial/serial_core.c
+--- linux-2.6.18.1/drivers/serial/serial_core.c 2006-10-14 05:34:03.000=
+000000 +0200
++++ linux-2.6.18.1-xscale-fordiff/drivers/serial/serial_core.c  2006-11=
+-02 11:52:46.000000000 +0100
+@@ -706,6 +706,22 @@
+                 goto check_and_exit;
+         }
 
->>>Thanks,
->>>Marc
++       /* FIXME: as@janz.de
++        *
++        * If we change port and IOREMAP is requested, then we push it =
+in.
++        * If we change irq  and SHARE_IRQ is requested, then we push i=
+t in.
++        */
++       if( change_port ){
++           if( (new_serial.flags & UPF_IOREMAP) && !(port->flags & UPF=
+_IOREMAP) ){
++               port->flags |=3D UPF_IOREMAP;
++           }
++       }
++       if( change_irq ){
++           if( (new_serial.flags & UPF_SHARE_IRQ) && !(port->flags & U=
+PF_SHARE_IRQ) ){
++               port->flags |=3D UPF_SHARE_IRQ;
++           }
++       }
++
+         /*
+          * Ask the low level driver to verify the settings.
+          */
+---------------------
 
->>>Signed-off-by: Marc St-Jean <Marc_St-Jean@pmc-sierra.com>
+--=20
+----------------------
+Stefan Alth=F6fer (stefan.althoefer@janz.de)
+Janz Automationssysteme AG
+   - Automation Intelligence -
+Member of the Janz company group
+Im Doerener Feld 8
+33100 Paderborn - Germany
 
->>>Index: linux_2_6/drivers/serial/8250.c 
->>>===================================================================
->>>RCS file: linux_2_6/drivers/serial/8250.c,v retrieving revision 
->>>1.1.1.7 retrieving revision 1.9 diff -u -r1.1.1.7 -r1.9
->>>--- linux_2_6/drivers/serial/8250.c	19 Oct 2006 21:00:58 
->>
->>-0000	1.1.1.7
->>
->>>+++ linux_2_6/drivers/serial/8250.c	19 Oct 2006 22:08:15 
->>
->>-0000	1.9
->>
->>>@@ -44,6 +44,10 @@
->>>  #include <asm/io.h>
->>>  #include <asm/irq.h>
->>>
->>>+#ifdef CONFIG_PMC_MSP
->>>+#include <msp_regs.h>
->>>+#endif
->>>+
->>>  #include "8250.h"
 
->>>  /*
->>>@@ -130,6 +134,9 @@
->>>  	unsigned char		mcr_mask;	/* mask of user bits */
->>>  	unsigned char		mcr_force;	/* mask of forced bits */
-
->>>  	unsigned char		lsr_break_flag;
->>>+#ifdef CONFIG_PMC_MSP
->>>+	int					dwapb_lcr;	
-
->>/* saved LCR for DW APB WAR */
-
->>>+#endif
-
->>    There was already 'lcr' field there, couldn't it be used?
-
-> Possibly but the current driver doesn't always save the LCR value before trying to write it. For example see serial8250_set_termios()
-> 	serial_outp(up, UART_LCR, cval);		/* reset DLAB */
-> 	up->lcr = cval;					/* Save LCR */
-
-    This certainly may be fixed.
-
-> It's impossible to ensure that going foward the driver will always save the value before writing it.
-> We need to have it saved before since the write will cause an interrupt, hence the save in serial_out.
-
-    You may rework driver to always save it on write to 'lcr' field (in case 
-of your UART).  I don't think it's going to spoil something there...
-
-> If that's not acceptable I can audit the driver and ensure all LCR writes are first saved.
-
-    What's *certainly* undesirable is #ifdef mess. :-)
-
->>>@@ -333,6 +340,10 @@
->>>  static void
->>>  serial_out(struct uart_8250_port *up, int offset, int value)
->>>  {
->>>+#ifdef CONFIG_PMC_MSP
->>>+	/* Save the offset before it's remapped */
->>>+	int dwapb_offset = offset;
->>>+#endif
->>>  	offset = map_8250_out_reg(up, offset) << up->port.regshift;
->>>
->>>  	switch (up->port.iotype) {
->>>@@ -342,7 +353,19 @@
->>>  		break;
->>>
->>>  	case UPIO_MEM:
->>>+#ifdef CONFIG_PMC_MSP
->>>+		/* Save the LCR value so it can be re-written when a
->>>+		 * Busy Detect interrupt occurs. */
->>>+		if (dwapb_offset == UART_LCR)
->>>+			up->dwapb_lcr = value;
->>>+#endif
->>>  		writeb(value, up->port.membase + offset);
->>>+#ifdef CONFIG_PMC_MSP
->>>+		/* Re-read the IER to ensure any interrupt disabling has
->>>+		 * completed before proceeding with ISR. */
->>>+		if (dwapb_offset == UART_IER)
->>>+			value = serial_in(up, dwapb_offset); #endif
->>>  		break;
-
->>    Hm, was there really a need for #ifdef mess here?
->>    I'd vote for introducing new UPIO_* here, like was done 
->>for TSi10x UARTs just for the same reason.
-
-> I'm willing to do this, however IIRC there was a thread in late Sept. which came
-> to the conclusion that UPIO were to be used for different access methods  and not UART types.
-
-    AFAIR, almost every participant was left with his own opinion. I myself 
-changed it twice during the discussion, to finalyl mostly agree with Russell. :-D
-
-> Do you see this as an exception?
-
-    Well, there's already an incident of using this to work around the 
-register access errata (that UPIO_TSI I mentioned) -- and I must note that 
-this is certainly cleaner than #ifdef's, which should be avoided at all costs. :-)
-
-> In the second #ifdef CONFIG_PMC_MSP above the workaround is required because of SoC
- > interrupt design which is out-of-band with respect to r/w of UART 
-registers, it's not
-> specific to the DesignWare UART.
-
-    Erm... so why is this under #ifdef?
-
->>>-1141,6 +1175,12 @@
->>>  			iir = serial_in(up, UART_IIR);
->>>  			if (lsr & UART_LSR_TEMT && iir & 
->>
->>UART_IIR_NO_INT)
->>
->>>  				transmit_chars(up);
->>>+		} else if (up->bugs & UART_BUG_DWTHRE) {
->>>+			unsigned char lsr, iir;
->>>+			lsr = serial_in(up, UART_LSR);
->>>+			iir = serial_in(up, UART_IIR);
->>>+			if (lsr & UART_LSR_THRE)
->>>+				transmit_chars(up);
-
->>    I don't see how this *really* differs from the UART_BUG_TXEN case.
->>    Have you tried *that* workaround? 
-
-> I didn't write the code so I haven't tried it personally but I believe it was investigated.
-
-> It looks like the results of the bugs are similar but the causes are different. In the UART_BUG_TXEN case,
-> if I understand the comment correctly, NO interrupt is generated on enabling THRI.
-> This is verified by looking for Transmitter Empty (0x40) and no interrupt.
-
-    I must note that "transmitter empty" condition in *not* the cause of the 
-THRI interrupt -- it signifies that the TX shift register is empty, not the TX 
-holding register.
-
-> In the UART_BUG_DWTHRE case an interrupt IS generated on enabling THRI.
-
-    If there was no prior sent characters, how it's generated?
-
- > However no new THRE interupts will occur until a new character is written 
-to the THR and it's sent.
-> This is verified by looking for Transmit-Hold-Register Empty (0x20). 
-
-    Again, THRE condition doesn't mean that the charecter is actually sent. I 
-only means that it's been stored to the shift register and so, the 
-transmission started...
-
->>	In any case, looks like this errata is auto-detectable just like UART_BUG_TXEN.
-
-> I don't know how we would be able to test this without sending junk test characters
-> to the console port.
-
-    IIUC, you must *not* send characters to detect it. :-)
-
-> We currently enable the bug flag in our platform setup code when we know the bug is present from the SoC version.
-> Is that not acceptable?
-
-    Well, if that errata is indeed not readily detectable at runtime (or even 
-effectively the same as already handled),
-this seems like the only option indeed...
-
->>>@@ -1366,6 +1406,31 @@
->>>  			handled = 1;
->>>
->>>  			end = NULL;
->>>+#ifdef CONFIG_PMC_MSP
->>>+		} else if ((iir & UART_IER_BUSY) == UART_IER_BUSY) {
-
->>    Hm, masking IIR with IER mask, is this correct? Doubt it.
-
-> I agree, that was badly named. I've changed it to UART_IIR_BUSY for the next spin.
-
->>>+			/*
->>>+			 * The MSP (DesignWare APB UART) serial subsystem has a
->>>+			 * non-standard interrupt condition (0x7) which means
->>>+			 * that the LCR was written while the UART was busy, so
->>>+			 * the LCR was not actually written.  It is cleared by
->>>+			 * reading the special non-standard extended UART status
->>>+			 * register.
->>>+			 */
->>>+			unsigned int tmp;
->>>+			if( up->port.line == 0 )
->>>+				tmp = *UART0_STATUS_REG;
->>>+			else
->>>+				tmp = *UART1_STATUS_REG;
->>>+			
->>>+			/* Check if saved on LCR write */
->>>+			if( up->dwapb_lcr != -1 )
->>>+				serial_outp(up, UART_LCR, up->dwapb_lcr);
->>>+			else
->>>+				printk(KERN_ERR "serial8250: UART BUSY, no LCR write!\n" );
->>>+
->>>+			handled = 1;
->>>+			end = NULL;
->>>+#endif
-
->>    Not sure if this also shouldn't be handled in other 
->>places which check for interrupt status, like serial8250_timeout()...
-
-> I can move the code to a function but I still see two issues:
-> A) We could move the code the a new function. We could also check for a new UART_BUG_* flag before calling the function,
-> but in reality this is a feature of the UART not a bug.
-
-    May also check for certain UPIO_* once it's introduced...
-
-> B) How to eliminate the platform #ifdef. How to pass in the address of the UARTx_STATUS_REG in a platform independent way?
-
-    I'd consider defining the UART status reg. in serial_reg.h and also doing 
-reads via serial_in(),
-again under a new UPIO_* case...
-
-> We could add it to one of the data structures like uart_port, but it would need an #ifdef in the header file.
-
-    Add what, register?
-
->>>Index: linux_2_6/include/linux/serial_reg.h
->>>===================================================================
->>>RCS file: linux_2_6/include/linux/serial_reg.h,v
->>>retrieving revision 1.1.1.2
->>>retrieving revision 1.3
->>>diff -u -r1.1.1.2 -r1.3
->>>--- linux_2_6/include/linux/serial_reg.h	19 Oct 2006 18:29:50 -0000	1.1.1.2
->>>+++ linux_2_6/include/linux/serial_reg.h	19 Oct 2006 19:45:04 -0000	1.3
->>>@@ -218,6 +218,10 @@
->>>  #define UART_FCR_PXAR16	0x80	/* receive FIFO treshold = 16 */
->>>  #define UART_FCR_PXAR32	0xc0	/* receive FIFO treshold = 32 */
-
->>>+/*
->>>+ * DesignWare APB UART
->>>+ */
->>>+#define UART_IER_BUSY		0x07	/* Busy Detect */
-
->>    Are you sure it's not *IIR* value?  Doesn't look like 
->>interrupt mask for IER. And IIR value of 7 already means 
->>something else, namely, no interrupt and receiver status. Hm...
-
-> As mentioned earlier I have now renamed this UART_IIR_BUSY.
-
-> From serial_reg.h, the receiver status is 0x06 and no interrupt is 0x01. I thought these couldn't both be set at the same time?
-> In any case this is how DesignWare implemented the status so we can't change it now.
-
-    Well, bits 1-2 have no meaning when bit 0 is set. Probably, chip designers 
-decided to abuse this. :-)
-
-> Thanks for the feedback,
-> Marc
-
-MBR, Sergei
+-
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
