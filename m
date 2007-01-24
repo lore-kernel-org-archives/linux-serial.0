@@ -1,70 +1,89 @@
-From: Sergei Shtylyov <sshtylyov@ru.mvista.com>
+From: Marc St-Jean <Marc_St-Jean@pmc-sierra.com>
 Subject: Re: [PATCH] serial driver PMC MSP71xx, kernel linux-mips.git mast
-  er
-Date: Wed, 24 Jan 2007 23:38:38 +0300
-Message-ID: <45B7C3CE.2050301@ru.mvista.com>
-References: <45B78DF5.9000203@pmc-sierra.com>
+	 er
+Date: Wed, 24 Jan 2007 13:10:12 -0800
+Message-ID: <45B7CB34.60209@pmc-sierra.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="iso-8859-1"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from homer.mvista.com ([63.81.120.155]:57313 "EHLO
-	imap.sh.mvista.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752040AbXAXUiu (ORCPT
+Received: from mother.pmc-sierra.com ([216.241.224.12]:45541 "HELO
+	mother.pmc-sierra.bc.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1752066AbXAXVKZ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 24 Jan 2007 15:38:50 -0500
-In-Reply-To: <45B78DF5.9000203@pmc-sierra.com>
+	Wed, 24 Jan 2007 16:10:25 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Marc St-Jean <Marc_St-Jean@pmc-sierra.com>
+To: Sergei Shtylyov <sshtylyov@ru.mvista.com>
 Cc: Alan <alan@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-mips@linux-mips.org
 
-Hello.
+Sergei Shtylyov wrote:
+> Hello.
+> 
+> Marc St-Jean wrote:
+> 
+>  >> >>This I would hope you can hide in the platform specific
+>  >> >>serial_in/serial_out functions. If you write the UART_LCR save it in
+>  >> >>serial_out(), if you read IER etc.
+> 
+>  >> > I couldn't find hooks for platform specific serial_in/out functions.
+> 
+>  >>    It's because there are none. :-)
+> 
+>  >> > Do you mean using the up->port.iotype's in serial_in/out from 8250.c?
+> 
+>  >>    Not sure what Alan meant, but this seems the only option for now.
+> 
+>  > That's the conclusion I came to. I've rewritten the patch to use 
+> port.type
+>  > instead of iotype since one of the fix is SoC and not UART specific. 
+> I guess
+> 
+>     I failed to folkow your logic. :-)
 
-Marc St-Jean wrote:
+No longer matters as I can't use port.type. See next comment.
 
->> >>This I would hope you can hide in the platform specific
->> >>serial_in/serial_out functions. If you write the UART_LCR save it in
->> >>serial_out(), if you read IER etc.
+>  > I could use both iotype and type with a test on each for the appropriate
+>  > bug, what do you recommend?
+> 
+>     I think iotype would be enough. You can't pass type for platform 
+> devices
+> anyway, IIRC (the thing I don't quite like).
 
->> > I couldn't find hooks for platform specific serial_in/out functions.
+I just found that out the hard way, it get's overwritten during autoconfig* and
+ends up back at PORT_16550A.
 
->>    It's because there are none. :-)
+I'm now trying to use my own iotype = UPIO_DWAPB and I've added it to all cases
+that check for UPIO_MEM. However at boot time I'm getting:
+	"serial8250: ttyS0 at *unknown* (irq = 27) is a 16550A".
+It looks like something outside of 8250.c must be checking for UPIO_MEM, I'm
+looking into it.
 
->> > Do you mean using the up->port.iotype's in serial_in/out from 8250.c?
+> 
+>  >>  >>And we might want to add a void * for board specific insanity to 
+> the 8250
+>  >> >>structures if we really have to so you can hang your brain damage
+>  >> >>privately off that ?
+> 
+>  >> > Sounds good to me, it would give us a location to store the 
+> address of the
+>  >> > UART_STATUS_REG required by this UART variant.
+> 
+>  >>    I doubt we really need to *store* it somewhere. Isn't it an fixed 
+> offset
+>  >>from UART's base (I haven't seen the header)?
+> 
+>  > Unfortunately it's not a constant offset from the UART in the SoC 
+> register
+> 
+>     Hm...
+> 
+>  > space. I've used Alan suggestion and added a classic, on some other 
+> OSes %-|,
+>  > void "user" pointer.
+> 
+>     Only do not do it under #ifdef.
 
->>    Not sure what Alan meant, but this seems the only option for now.
+Understood, getting rid of them is why I started this thread.
 
-> That's the conclusion I came to. I've rewritten the patch to use port.type
-> instead of iotype since one of the fix is SoC and not UART specific. I guess
-
-    I failed to folkow your logic. :-)
-
-> I could use both iotype and type with a test on each for the appropriate
-> bug, what do you recommend?
-
-    I think iotype would be enough. You can't pass type for platform devices 
-anyway, IIRC (the thing I don't quite like).
-
->>  >>And we might want to add a void * for board specific insanity to the 8250
->> >>structures if we really have to so you can hang your brain damage
->> >>privately off that ?
-
->> > Sounds good to me, it would give us a location to store the address of the
->> > UART_STATUS_REG required by this UART variant.
-
->>    I doubt we really need to *store* it somewhere. Isn't it an fixed offset
->>from UART's base (I haven't seen the header)?
-
-> Unfortunately it's not a constant offset from the UART in the SoC register
-
-    Hm...
-
-> space. I've used Alan suggestion and added a classic, on some other OSes %-|,
-> void "user" pointer.
-
-    Only do not do it under #ifdef.
-
-> Marc
-
-WBR, Sergei
+Marc
