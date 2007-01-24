@@ -1,68 +1,57 @@
-From: Sergei Shtylyov <sshtylyov@ru.mvista.com>
+From: Marc St-Jean <Marc_St-Jean@pmc-sierra.com>
 Subject: Re: [PATCH] serial driver PMC MSP71xx, kernel linux-mips.git mast
- er
-Date: Wed, 24 Jan 2007 18:33:03 +0300
-Message-ID: <45B77C2F.7010007@ru.mvista.com>
-References: <45B68E23.7080800@pmc-sierra.com>
+	 er
+Date: Wed, 24 Jan 2007 08:40:57 -0800
+Message-ID: <45B78C19.4030408@pmc-sierra.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="iso-8859-1"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from h155.mvista.com ([63.81.120.155]:55551 "EHLO imap.sh.mvista.com"
-	rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751154AbXAXPdO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 24 Jan 2007 10:33:14 -0500
-In-Reply-To: <45B68E23.7080800@pmc-sierra.com>
+Received: from mother.pmc-sierra.com ([216.241.224.12]:54846 "HELO
+	mother.pmc-sierra.bc.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1752014AbXAXQlG (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 24 Jan 2007 11:41:06 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Marc St-Jean <Marc_St-Jean@pmc-sierra.com>
-Cc: Alan <alan@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-mips@linux-mips.org
+To: Sergei Shtylyov <sshtylyov@ru.mvista.com>
+Cc: linux-mips@linux-mips.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hello.
 
-Marc St-Jean wrote:
 
->> > 2. Fix for Busy Detect on LCR write
->> > 3. Workaround for interrupt/data concurrency issue
+Sergei Shtylyov wrote:
+> Hello, I wrote:
+> 
+>  >>>> Here is a serial driver patch for the PMC-Sierra MSP71xx device.
+> 
+>  >>>> There are three different fixes:
+>  >>>> 1. Fix for THRE errata
+>  >>>> 2. Fix for Busy Detect on LCR write
+>  >>>> 3. Workaround for interrupt/data concurrency issue
+> 
+>  >>>> The first fix is handled cleanly using a UART_BUG_* flag.
+> 
+>  >>>    Hm, I wouldn't call it clean...
+> 
+>  >> Relative to the other two. Any recommended improvements on this one?
+> 
+>  >    I already told: runtime check.
+> 
+>     BTW, I've just came accross 2 patches in the -mm tree related to the
+> transmitter bug:
+> 
+> http://www.kernel.org/pub/linux/kernel/people/akpm/patches/2.6/2.6.20-rc4/2.6.20-rc4-mm1/broken-out/8250-make-probing-for-txen-bug-a-config-option.patch
 
->> >       case UPIO_MEM:
->> > +#ifdef CONFIG_PMC_MSP
->> > +             /* Save the LCR value so it can be re-written when a
->> > +              * Busy Detect interrupt occurs. */
->> > +             if (dwapb_offset == UART_LCR)
->> > +                     up->dwapb_lcr = value;
->> > +#endif
->> >               writeb(value, up->port.membase + offset);
->> > +#ifdef CONFIG_PMC_MSP
->> > +             /* Re-read the IER to ensure any interrupt disabling has
->> > +              * completed before proceeding with ISR. */
->> > +             if (dwapb_offset == UART_IER)
->> > +                     value = serial_in(up, dwapb_offset);
->> > +#endif
->> >               break;
+Thanks. The first of these is not at all what we are seeing. However I guess
+there could be a remote chance it's triggering our THRE errata as it did for
+the pnx4008 boards.
 
->>This I would hope you can hide in the platform specific
->>serial_in/serial_out functions. If you write the UART_LCR save it in
->>serial_out(), if you read IER etc.
+> http://www.kernel.org/pub/linux/kernel/people/akpm/patches/2.6/2.6.20-rc4/2.6.20-rc4-mm1/broken-out/8250-uart-backup-timer.patch
 
-> I couldn't find hooks for platform specific serial_in/out functions.
+This second patch failure description is identical to what we are seeing without
+the THRE work-around. This must be the timer patch Alan mentioned but it's not
+in the linux.git at l-m.o.
 
-    It's because there are none. :-)
+Could you please explain what you mean by and where I can find the "-mm tree"?
 
-> Do you mean using the up->port.iotype's in serial_in/out from 8250.c?
-
-    Not sure what Alan meant, but this seems the only option for now.
-
-  >>And we might want to add a void * for board specific insanity to the 8250
->>structures if we really have to so you can hang your brain damage
->>privately off that ?
-
-> Sounds good to me, it would give us a location to store the address of the
-> UART_STATUS_REG required by this UART variant.
-
-    I doubt we really need to *store* it somewhere. Isn't it an fixed offset 
-from UART's base (I haven't seen the header)?
-
-> Marc
-
-MBR, Sergei
+Marc
