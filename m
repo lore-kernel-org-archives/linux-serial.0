@@ -1,242 +1,166 @@
-From: Sergei Shtylyov <sshtylyov@ru.mvista.com>
-Subject: Re: [PATCH] serial driver PMC MSP71xx, kernel linux-mips.git master
-Date: Thu, 25 Jan 2007 17:50:34 +0300
-Message-ID: <45B8C3BA.4060106@ru.mvista.com>
-References: <45B7F32E.1030208@pmc-sierra.com>
+From: Dominique Larchey-Wendling <Dominique.Larchey-Wendling@loria.fr>
+Subject: New IOCTL for Modem Control Lines monitoring
+Date: Thu, 25 Jan 2007 18:09:33 +0100
+Message-ID: <45B8E44D.5050005@loria.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gateway-1237.mvista.com ([63.81.120.155]:1328 "EHLO
-	imap.sh.mvista.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-	with ESMTP id S965007AbXAYOuh (ORCPT
+Received: from mailironport.loria.fr ([152.81.144.100]:31983 "EHLO
+	mailironport.loria.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1030470AbXAYRTb (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 25 Jan 2007 09:50:37 -0500
-In-Reply-To: <45B7F32E.1030208@pmc-sierra.com>
+	Thu, 25 Jan 2007 12:19:31 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Marc St-Jean <Marc_St-Jean@pmc-sierra.com>
-Cc: linux-mips@linux-mips.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Marc St-Jean wrote:
-> Here is my second attempt at the serial driver patch for the
-> PMC-Sierra MSP71xx device.
-> 
-> There are three different fixes:
-> 1. Fix for THRE errata
-> - I verified the UART_BUG_TXEN fix does not help with this erratum.
-> - I left our current fix in until I get our platform booting on
-> 2.6.20-rc4 to try the mm tree "8250-uart-backup-timer.patch".
-> Feel free to ignore for now.
-> 
-> 2. Fix for Busy Detect on LCR write
-> - Moved to new UPIO_DWAPB iotype. Because the new type is a memory
-> mapped device and there are several tests for UPIO_MEM, this involved
-> updating serial_core.c and 8250_early.c in addition to 8250.c.
-> - I tried implementing this totally in serial_in as suggested, but
-> it can't be done because of bit overlap between UART_IIR_NO_INT and
-> UART_IIR_BUSY. Also there is no way to set the interrupt "handled = 1"
-> from serial_in.
-> 
-> 3. Workaround for interrupt/data concurrency issue
-> - Moved to new UPIO_DWAPB iotype.
+In kernel 2.6 (file drivers/serial/serial_core.c), there exists 2 IOCTL
+for receiving signals over the modem control lines
 
-> Index: linux_2_6/drivers/serial/8250.c
-> ===================================================================
-> RCS file: linux_2_6/drivers/serial/8250.c,v
-> retrieving revision 1.1.1.7
-> diff -u -r1.1.1.7 8250.c
-> --- linux_2_6/drivers/serial/8250.c	19 Oct 2006 21:00:58 -0000	1.1.1.7
-> +++ linux_2_6/drivers/serial/8250.c	24 Jan 2007 23:55:27 -0000
-[...]
-> @@ -333,6 +334,8 @@
->   static void
->   serial_out(struct uart_8250_port *up, int offset, int value)
+TIOCMIWAIT  (function uart_wait_modem_status) for waiting for a change
+             on the modem status lines.
 
-   Your patch is clearly garbled again, something added an extra space to all 
-lines stating with space... :-/
+TIOCGICOUNT (uart_get_count) to get the current state of the modem
+              status lines.
 
->   {
-> +	/* Save the offset before it's remapped */
-> +	int save_offset = offset;
+While these IOCTL may be helpful to use the serial port as a general
+serial communication device over modem control lines like in
+the following (and quite old) discussion
 
-    Is there real need to save this? What regshift equals for this UART?
+http://www.mail-archive.com/linux-serial@vger.rutgers.edu/msg00407.html
 
->   	offset = map_8250_out_reg(up, offset) << up->port.regshift;
+I find a kind of "design" flaw with the 2 IOCTL for such a goal.
 
->   	switch (up->port.iotype) {
-> @@ -359,6 +362,19 @@
->   			writeb(value, up->port.membase + offset);
->   		break;
-> 
-> +	case UPIO_DWAPB:
-> +		/* Save the LCR value so it can be re-written when a
-> +		 * Busy Detect interrupt occurs. */
-> +		if (save_offset == UART_LCR)
-> +			up->lcr = value;
-> +		writeb(value, up->port.membase + offset);
-> +		/* Read the IER to ensure any interrupt is cleared before
-> +		 * returning from ISR. */
-> +		if ((save_offset == UART_TX || save_offset == UART_IER) &&
+Indeed, it is possible that a modem status change occurs in between
+ioctl(TIOCGICOUNT) and ioctl(TIOCMIWAIT) possibly locking a
+communication because the last call would miss the status change
+necessary to trigger a response. Indeed ioctl(TIOCMIWAIT) cannot
+detect a change occurring before its call.
 
-    Not sure how an IER read ensures that...
+Even tough such an event would have a low probability to occur
+if the 2 ioctl are close enough, it is still possible. This is
+a race condition (outside the kernel but possibly locking some
+process).
 
-> +				in_irq())
+I propose the introduction of a new ioctl to solve this race,
+implemented through the NEW function uart_wait_new_status associated
+to a NEW ioctl.
 
-    I'd suggest to either indent this line right (start below 2ns paren of if 
-stmt) or keep on the same line.
+The idea is that this new call would detect a change not compared
+to the status at the beginning of the call but compared to some
+previously recorded state. This way, the new ioctl would not
+miss a status change, even if it occurs before the call to the
+ioctl.
 
-> +			value = serial_in(up, UART_IER);
-> +		break;
-> +		
->   	default:
->   		outb(value, up->port.iobase + offset);
->   	}
-> @@ -1016,6 +1032,17 @@
->   		up->bugs |= UART_BUG_NOMSR;
->   #endif
-> 
-> +	/* Workaround:
-> +	 * The DesignWare SoC UART part has a bug for all
-> +	 * versions before 3.03a (2005-07-18)
-> +	 * In brief, this is a non-standard 16550 in that the THRE interrupt
-> +	 * will not re-assert itself simply by disabling and re-enabling the
-> +	 * THRI bit in the IER, it is only re-enabled if a character is actually
-> +	 * sent out.
-> +	 */
-> +	if( up->port.flags & UPF_DW_THRE_BUG )
-> +		up->bugs |= UART_BUG_DWTHRE;
-> +
->   	serial_outp(up, UART_LCR, save_lcr);
-> 
->   	if (up->capabilities != uart_config[up->port.type].flags) {
-> @@ -1141,6 +1168,12 @@
->   			iir = serial_in(up, UART_IIR);
->   			if (lsr & UART_LSR_TEMT && iir & UART_IIR_NO_INT)
->   				transmit_chars(up);
-> +		} else if (up->bugs & UART_BUG_DWTHRE) {
-> +			unsigned char lsr, iir;
-> +			lsr = serial_in(up, UART_LSR);
-> +			iir = serial_in(up, UART_IIR);
-> +			if (lsr & UART_LSR_THRE)
+Could it be considered for inclusion in the kernel ?
+It does not change any existing behavior. However it
+does need a new ioctl name/number.
 
-    Why read IIR if you don't check it?
+Thanks in advance for any comment
 
-> @@ -2352,9 +2402,12 @@
-> 
->   	add_preferred_console("ttyS", line, options);
->   	printk("Adding console on ttyS%d at %s 0x%lx (options '%s')\n",
-> -		line, port->iotype == UPIO_MEM ? "MMIO" : "I/O port",
-> -		port->iotype == UPIO_MEM ? (unsigned long) port->mapbase :
-> -		    (unsigned long) port->iobase, options);
-> +		line,
-> +		(port->iotype == UPIO_MEM || port->iotype == UPIO_DWAPB)
-> +			? "MMIO" : "I/O port",
-> +		(port->iotype == UPIO_MEM || port->iotype == UPIO_DWAPB)
-> +			? (unsigned long) port->mapbase : (unsigned long) port->iobase,
-> +		options);
->   	if (!(serial8250_console.flags & CON_ENABLED)) {
->   		serial8250_console.flags &= ~CON_PRINTBUFFER;
->   		register_console(&serial8250_console);
-[...]
-> Index: linux_2_6/drivers/serial/8250_early.c
-> ===================================================================
-> RCS file: linux_2_6/drivers/serial/8250_early.c,v
-> retrieving revision 1.1.1.3
-> diff -u -r1.1.1.3 8250_early.c
-> --- linux_2_6/drivers/serial/8250_early.c	19 Oct 2006 20:08:20 -0000	1.1.1.3
-> +++ linux_2_6/drivers/serial/8250_early.c	24 Jan 2007 23:55:27 -0000
-> @@ -46,7 +46,7 @@
-> 
->   static unsigned int __init serial_in(struct uart_port *port, int offset)
->   {
-> -	if (port->iotype == UPIO_MEM)
-> +	if (port->iotype == UPIO_MEM || port->iotype == UPIO_DWAPB)
->   		return readb(port->membase + offset);
->   	else
->   		return inb(port->iobase + offset);
-> @@ -54,7 +54,7 @@
-> 
->   static void __init serial_out(struct uart_port *port, int offset, int value)
->   {
-> -	if (port->iotype == UPIO_MEM)
-> +	if (port->iotype == UPIO_MEM || port->iotype == UPIO_DWAPB)
->   		writeb(value, port->membase + offset);
->   	else
->   		outb(value, port->iobase + offset);
-> @@ -233,7 +233,7 @@
->   		return 0;
-> 
->   	/* Try to start the normal driver on a matching line.  */
-> -	mmio = (port->iotype == UPIO_MEM);
-> +	mmio = (port->iotype == UPIO_MEM || port->iotype == UPIO_DWAPB);
->   	line = serial8250_start_console(port, device->options);
->   	if (line < 0)
->   		printk("No ttyS device at %s 0x%lx for console\n",
+Dominique Larchey-Wendling
+CNRS, France
 
-    From your 8250_eraly.c changes I can conclude regshift == 1 (it doesn't 
-currently support other cases). So, serial_pot() doesn't need save_offset. :-)
+-------------------------------------------------
+Code to include in drivers/serial/serial_core.c
+-------------------------------------------------
 
-> Index: linux_2_6/drivers/serial/serial_core.c
-> ===================================================================
-> RCS file: linux_2_6/drivers/serial/serial_core.c,v
-> retrieving revision 1.1.1.7
-> diff -u -r1.1.1.7 serial_core.c
-> --- linux_2_6/drivers/serial/serial_core.c	19 Oct 2006 21:00:58 -0000	1.1.1.7
-> +++ linux_2_6/drivers/serial/serial_core.c	24 Jan 2007 23:55:28 -0000
-> @@ -1669,9 +1669,10 @@
-> 
->   	ret = sprintf(buf, "%d: uart:%s %s%08lX irq:%d",
->   			port->line, uart_type(port),
-> -			port->iotype == UPIO_MEM ? "mmio:0x" : "port:",
-> -			port->iotype == UPIO_MEM ? port->mapbase :
-> -						(unsigned long) port->iobase,
-> +			(port->iotype == UPIO_MEM || port->iotype == UPIO_DWAPB)
-> +				? "mmio:0x" : "port:",
-> +			(port->iotype == UPIO_MEM || port->iotype == UPIO_DWAPB)
-> +				? port->mapbase : (unsigned long) port->iobase,
->   			port->irq);
->   	if (port->type == PORT_UNKNOWN) {
+/*
+  * Wait until any NEW signal is received on some selected
+  * modem inputs lines (DCD,RI,DSR,CTS), compared to some
+  * previously considered state.
+  * If asked to wait on none, simply returns the current
+  * status
+  */
 
-    Needless change. My patch that fixes this function is in Linus' tree since 
-September, not sure why you don't have it:
+static int
+uart_wait_new_status(struct uart_state *state, struct 
+serial_icounter_struct __user *icnt)
+{
+	struct uart_port *port = state->port;
+	DECLARE_WAITQUEUE(wait, current);
+         struct serial_icounter_struct icount;
+	struct uart_icount cstart, cnow;
+         unsigned int mask, mctrl;
+	int ret;
 
-http://www2.kernel.org/git/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commit;h=6c6a2334a1e8af7c3eaab992732825fa9ade77cf
+         if (copy_from_user(&icount, icnt, sizeof(icount)))
+                 return -EFAULT;
 
-> Index: linux_2_6/include/linux/serial_core.h
-> ===================================================================
-> RCS file: linux_2_6/include/linux/serial_core.h,v
-> retrieving revision 1.1.1.7
-> diff -u -r1.1.1.7 serial_core.h
-> --- linux_2_6/include/linux/serial_core.h	19 Oct 2006 21:01:02 -0000	1.1.1.7
-> +++ linux_2_6/include/linux/serial_core.h	24 Jan 2007 23:55:28 -0000
-[...]
-> @@ -274,6 +277,7 @@
->   	struct device		*dev;			/* parent device */
->   	unsigned char		hub6;			/* this should be in the 8250 driver */
->   	unsigned char		unused[3];
-> +	void				*user;			/* generic platform 'user' pointer */
+         cstart.cts         = icount.cts;
+         cstart.dsr         = icount.dsr;
+         cstart.rng         = icount.rng;
+         cstart.dcd         = icount.dcd;
+         cstart.rx          = icount.rx;
+         cstart.tx          = icount.tx;
+         cstart.frame       = icount.frame;
+         cstart.overrun     = icount.overrun;
+         cstart.parity      = icount.parity;
+         cstart.buf_overrun = icount.buf_overrun;
 
-    Erm, 'private' or 'data' would've sounded better in the kernel context, 
-IMHO... :-)
+         /* if mask == 0 just simulate behavior of TIOCGICOUNT
+          */
 
-> Index: linux_2_6/include/linux/serial_reg.h
-> ===================================================================
-> RCS file: linux_2_6/include/linux/serial_reg.h,v
-> retrieving revision 1.1.1.2
-> diff -u -r1.1.1.2 serial_reg.h
-> --- linux_2_6/include/linux/serial_reg.h	19 Oct 2006 18:29:50 -0000	1.1.1.2
-> +++ linux_2_6/include/linux/serial_reg.h	24 Jan 2007 23:55:29 -0000
-> @@ -218,6 +218,10 @@
->   #define UART_FCR_PXAR16	0x80	/* receive FIFO treshold = 16 */
->   #define UART_FCR_PXAR32	0xc0	/* receive FIFO treshold = 32 */
-> 
-> +/*
-> + * DesignWare APB UART
-> + */
-> +#define UART_IIR_BUSY		0x07	/* Busy Detect */
+         mask = (unsigned) icount.reserved[0];
 
-    I'd suggest keeping this with other UART_IIR_* #defines, separated by the 
-more elaborate comment.
+         /* enable Modem Status Interrupts in case not already done
+          */
 
-WBR, Sergei
+	spin_lock_irq(&port->lock);
+	port->ops->enable_ms(port);
+	spin_unlock_irq(&port->lock);
+
+	add_wait_queue(&state->info->delta_msr_wait, &wait);
+
+	for (;;) {
+		spin_lock_irq(&port->lock);
+                 mctrl = port->ops->get_mctrl(port);
+		memcpy(&cnow, &port->icount, sizeof(struct uart_icount));
+		spin_unlock_irq(&port->lock);
+
+		set_current_state(TASK_INTERRUPTIBLE);
+
+		if (((mask & TIOCM_RNG) && (cnow.rng != cstart.rng)) ||
+		    ((mask & TIOCM_DSR) && (cnow.dsr != cstart.dsr)) ||
+		    ((mask & TIOCM_CAR) && (cnow.dcd != cstart.dcd)) ||
+		    ((mask & TIOCM_CTS) && (cnow.cts != cstart.cts)) ||
+                      (mask == 0))
+                 {
+		    	ret = 0;
+		    	break;
+		}
+
+		schedule();
+
+		/* see if a signal did it */
+		if (signal_pending(current)) {
+			ret = -ERESTARTSYS;
+			break;
+		}
+
+	}
+
+	current->state = TASK_RUNNING;
+	remove_wait_queue(&state->info->delta_msr_wait, &wait);
+
+         if (ret < 0) return ret;
+
+         /* we got our (new) state, transfer to user space
+          */
+
+         icount.cts         = cnow.cts;
+	icount.dsr         = cnow.dsr;
+	icount.rng         = cnow.rng;
+	icount.dcd         = cnow.dcd;
+	icount.rx          = cnow.rx;
+	icount.tx          = cnow.tx;
+	icount.frame       = cnow.frame;
+	icount.overrun     = cnow.overrun;
+	icount.parity      = cnow.parity;
+	icount.brk         = cnow.brk;
+	icount.buf_overrun = cnow.buf_overrun;
+         icount.reserved[0] = mctrl;
+
+         return copy_to_user(icnt, &icount, sizeof(icount)) ? -EFAULT : 0;
+}
