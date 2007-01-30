@@ -1,176 +1,56 @@
-From: Marc St-Jean <Marc_St-Jean@pmc-sierra.com>
-Subject: Re: [PATCH] serial driver PMC MSP71xx, kernel linux-mips.git mast
-	 er
-Date: Fri, 26 Jan 2007 16:28:13 -0800
-Message-ID: <45BA9C9D.7060302@pmc-sierra.com>
+From: Theodore Tso <tytso@mit.edu>
+Subject: Re: New IOCTL for Modem Control Lines monitoring
+Date: Mon, 29 Jan 2007 21:39:02 -0500
+Message-ID: <20070130023902.GB28035@thunk.org>
+References: <45B8E44D.5050005@loria.fr>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from father.pmc-sierra.com ([216.241.224.13]:61499 "HELO
-	father.pmc-sierra.bc.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1751727AbXA0A2U (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 26 Jan 2007 19:28:20 -0500
+Received: from thunk.org ([69.25.196.29]:54240 "EHLO thunker.thunk.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S965236AbXA3EvU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 29 Jan 2007 23:51:20 -0500
+Content-Disposition: inline
+In-Reply-To: <45B8E44D.5050005@loria.fr>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sergei Shtylyov <sshtylyov@ru.mvista.com>
-Cc: linux-mips@linux-mips.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Dominique Larchey-Wendling <Dominique.Larchey-Wendling@loria.fr>
+Cc: linux-serial@vger.kernel.org
 
+On Thu, Jan 25, 2007 at 06:09:33PM +0100, Dominique Larchey-Wendling wrote:
+> Even tough such an event would have a low probability to occur
+> if the 2 ioctl are close enough, it is still possible. This is
+> a race condition (outside the kernel but possibly locking some
+> process).
+> 
+> I propose the introduction of a new ioctl to solve this race,
+> implemented through the NEW function uart_wait_new_status associated
+> to a NEW ioctl.
+> 
+> The idea is that this new call would detect a change not compared
+> to the status at the beginning of the call but compared to some
+> previously recorded state. This way, the new ioctl would not
+> miss a status change, even if it occurs before the call to the
+> ioctl.
 
+You're right that this is a technical flaw in TIOCMIWAIT.  When it was
+originally implemented, it was done to retain compatibility with older
+implementations in other OS's.
 
-Sergei Shtylyov wrote:
-> Hello.
-> 
-> Marc St-Jean wrote:
-> 
->  >> > Index: linux_2_6/drivers/serial/8250.c
->  >> > ===================================================================
->  >> > RCS file: linux_2_6/drivers/serial/8250.c,v
->  >> > retrieving revision 1.1.1.7
->  >> > diff -u -r1.1.1.7 8250.c
->  >> > --- linux_2_6/drivers/serial/8250.c   19 Oct 2006 21:00:58 -0000     
->  >>1.1.1.7
->  >> > +++ linux_2_6/drivers/serial/8250.c   24 Jan 2007 23:55:27 -0000
->  >>[...]
->  >> > @@ -333,6 +334,8 @@
->  >> >   static void
->  >> >   serial_out(struct uart_8250_port *up, int offset, int value)
-> 
->  >>   Your patch is clearly garbled again, something added an extra space
->  >>to all
->  >>lines stating with space... :-/
-> 
->  > I see that but was under the impression cvs diff did that so all lines
->  > lineup correctly whether they have a +, -, or neither.
-> 
->     Yes. And your mailer has probably added another space to lines already
-> begginign with space. Some mailers tend to do it, don't know sure why... 
-> :-/
+The question is why do you need such functionality?  The only way to
+implement what you propose would be pass a structure containing the
+previous counts into your proposed new ioctl(), which won't be well
+received by the folks who have to maintain 32/64-bit translation
+tables for ioctl's for use by supporting architectures that have to
+support 32 and 64 bit ABI's simultaneously.  Because of this issue
+some folks have proposed killing off ioctl's entirely, which is
+probably not the right answer, but the fact remains that adding new
+ioctl's that require passing in pointers to arbitrary data structures
+is definitely not going to be well received.
 
-I'll look into it for the next patch.
+So what are you actually trying to *do*?  Is this just to fix a
+theoretical shortcoming?  What does your application really need to
+do, and perhaps there's a another way we can address it with perhaps a
+cleaner interface.
 
-
->  > It doesn't affect applying the patches for me, did you try?
-> 
->     I hadn't but I had no doubts it'll fail... just tried, not a single 
-> hunk
-> applied. :-]
-> 
->  >> >   {
->  >> > +     /* Save the offset before it's remapped */
->  >> > +     int save_offset = offset;
-> 
->  >>    Is there real need to save this? What regshift equals for this UART?
-> 
->  > Yes, we have a regshift of 2 on this SoC and it could be different on 
-> other
->  > SoCs which reuse the UART IP.
-> 
->     Agreed then (though still seems avoidable).
-> 
->  >> >       offset = map_8250_out_reg(up, offset) << up->port.regshift;
-> 
->  >> >       switch (up->port.iotype) {
->  >> > @@ -359,6 +362,19 @@
->  >> >                       writeb(value, up->port.membase + offset);
->  >> >               break;
->  >> >
->  >> > +     case UPIO_DWAPB:
->  >> > +             /* Save the LCR value so it can be re-written when a
->  >> > +              * Busy Detect interrupt occurs. */
->  >> > +             if (save_offset == UART_LCR)
->  >> > +                     up->lcr = value;
->  >> > +             writeb(value, up->port.membase + offset);
->  >> > +             /* Read the IER to ensure any interrupt is cleared 
-> before
->  >> > +              * returning from ISR. */
->  >> > +             if ((save_offset == UART_TX || save_offset == 
-> UART_IER) &&
-> 
->  >>    Not sure how an IER read ensures that...
-> 
->  > It's just a dummy read to ensure that any writes which clear 
-> interrupts have
->  > reached the device before returning from the IRQ.
-> 
->     Hm, isn't it CPU write buffer flush? Shouldn't this be handled more
-> generically?
-
-No because this peripheral is across an internal SoC bus. Only a read
-accessing it will ensure the write is complete. We must insure the
-interrupt source is cleared to avoid spurious interrupts.
-
-
-> [...]
->  >> > Index: linux_2_6/drivers/serial/8250_early.c
->  >> > ===================================================================
->  >> > RCS file: linux_2_6/drivers/serial/8250_early.c,v
->  >> > retrieving revision 1.1.1.3
->  >> > diff -u -r1.1.1.3 8250_early.c
->  >> > --- linux_2_6/drivers/serial/8250_early.c     19 Oct 2006 20:08:20
->  >>-0000      1.1.1.3
->  >> > +++ linux_2_6/drivers/serial/8250_early.c     24 Jan 2007 23:55:27 
-> -0000
->  >> > @@ -46,7 +46,7 @@
->  >> >
->  >> >   static unsigned int __init serial_in(struct uart_port *port, int
->  >>offset)
->  >> >   {
->  >> > -     if (port->iotype == UPIO_MEM)
->  >> > +     if (port->iotype == UPIO_MEM || port->iotype == UPIO_DWAPB)
->  >> >               return readb(port->membase + offset);
->  >> >       else
->  >> >               return inb(port->iobase + offset);
->  >> > @@ -54,7 +54,7 @@
->  >> >
->  >> >   static void __init serial_out(struct uart_port *port, int offset,
->  >>int value)
->  >> >   {
->  >> > -     if (port->iotype == UPIO_MEM)
->  >> > +     if (port->iotype == UPIO_MEM || port->iotype == UPIO_DWAPB)
->  >> >               writeb(value, port->membase + offset);
->  >> >       else
->  >> >               outb(value, port->iobase + offset);
->  >> > @@ -233,7 +233,7 @@
->  >> >               return 0;
->  >> >
->  >> >       /* Try to start the normal driver on a matching line.  */
->  >> > -     mmio = (port->iotype == UPIO_MEM);
->  >> > +     mmio = (port->iotype == UPIO_MEM || port->iotype == 
-> UPIO_DWAPB);
->  >> >       line = serial8250_start_console(port, device->options);
->  >> >       if (line < 0)
->  >> >               printk("No ttyS device at %s 0x%lx for console\n",
-> 
->  >>    From your 8250_eraly.c changes I can conclude regshift == 1 (it 
-> doesn't
->  >>currently support other cases). So, serial_pot() doesn't need
->  >>save_offset. :-)
-> 
->  > Our regshift is definitely 2 on this SoC and we don't have any 
-> problems with
->  > console output before the serial driver opens. So assuming it's using
->  > 8250_early.c for initial console output I can only conclude that it 
-> works
-> 
->     It comes into action only if you specify console=uart,... kernel option
-> for the eraly console support.  The "plain" 8250 console driver is 
-> containded
-> within 8250.c itself.
-> 
->  > because UART_TX is offset 0 and the port was left configured from our
->  > ROM monitor.
-> 
->     Well, this part of the patch can't be considered complete then (how LSR
-> polling is going to work?), so should either be removed or the proper 
-> regshift
-> support added.
-
-Since we don't require it I will drop the 8250_early.c changes from the patch.
-
-I've tested the "mm tree" patch for the backup timer and it works, although
-the output seems a little choppy at times. I'll drop the UART_BUG_DWTHRE flag
-and associated code.
-
-Marc
+					- Ted
