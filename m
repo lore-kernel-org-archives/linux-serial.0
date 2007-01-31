@@ -1,51 +1,33 @@
-From: "Aubrey Li" <aubreylee@gmail.com>
-Subject: [BUG]: 2.6.19.2: Weird serial core issue
-Date: Wed, 31 Jan 2007 18:49:25 +0800
-Message-ID: <6d6a94c50701310249o2b2c8024i4d3f28ec1601246a@mail.gmail.com>
+From: Alan <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [BUG]: 2.6.19.2: Weird serial core issue
+Date: Wed, 31 Jan 2007 16:21:23 +0000
+Message-ID: <20070131162123.67e22e23@localhost.localdomain>
+References: <6d6a94c50701310249o2b2c8024i4d3f28ec1601246a@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from wx-out-0506.google.com ([66.249.82.231]:22323 "EHLO
-	wx-out-0506.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932996AbXAaKt0 (ORCPT
+Received: from outpipe-village-512-1.bc.nu ([81.2.110.250]:46552 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1030212AbXAaQJF (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 31 Jan 2007 05:49:26 -0500
-Received: by wx-out-0506.google.com with SMTP id h31so169336wxd
-        for <linux-serial@vger.kernel.org>; Wed, 31 Jan 2007 02:49:25 -0800 (PST)
-Content-Disposition: inline
+	Wed, 31 Jan 2007 11:09:05 -0500
+In-Reply-To: <6d6a94c50701310249o2b2c8024i4d3f28ec1601246a@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org
+To: Aubrey Li <aubreylee@gmail.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-I insert one printk into drivers/serial/serial_core.c:
-uart_set_termios() to describe the issue.
-static void uart_set_termios(struct tty_struct *tty, struct termios
-*old_termios)
-{
- ----snip----
-        unsigned int cflag = tty->termios->c_cflag;
+> When I telnet my board and run the following command:
+> ---- root:~> stty -F /dev/ttyS0 -crtscts
+> 
+> I got the following result from the console of my board:
+> ---- root:~>new_termios flag: 0x1cb1, old_termios flag: 0x80001cb1
+> 
+> That's correct. CRTSCTS flag is clear
+> 
+> But when I type "ENTER" key on the console, I got:
+> ----root:~>new_termios flag: 0x80001cb1, old_termios flag: 0x1cb1
 
-        BUG_ON(!kernel_locked());
-+++printk("new_termios flag: 0x%x, old_termios flag: 0x%x\n");
-+++             cflag, old_termios->c_cflag);
-
-----snip ----
-}
-
-When I telnet my board and run the following command:
----- root:~> stty -F /dev/ttyS0 -crtscts
-
-I got the following result from the console of my board:
----- root:~>new_termios flag: 0x1cb1, old_termios flag: 0x80001cb1
-
-That's correct. CRTSCTS flag is clear
-
-But when I type "ENTER" key on the console, I got:
-----root:~>new_termios flag: 0x80001cb1, old_termios flag: 0x1cb1
-
-The CRTSCTS flag is set back. But I didn't set it back, I just type "ENTER".
-I guess, Is it a serial core bug?
-
--Aubrey
+What code is running on that console at the time. Most likely that user
+code is also saving/restoring terminal settings so overwrite yours
