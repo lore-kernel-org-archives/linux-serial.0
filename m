@@ -1,98 +1,51 @@
-From: Dominique Larchey-Wendling <Dominique.Larchey-Wendling@loria.fr>
-Subject: Re: New IOCTL for Modem Control Lines monitoring
-Date: Tue, 30 Jan 2007 18:19:29 +0100
-Message-ID: <45BF7E21.5040400@loria.fr>
-References: <45B8E44D.5050005@loria.fr> <20070130023902.GB28035@thunk.org>
+From: "Aubrey Li" <aubreylee@gmail.com>
+Subject: [BUG]: 2.6.19.2: Weird serial core issue
+Date: Wed, 31 Jan 2007 18:49:25 +0800
+Message-ID: <6d6a94c50701310249o2b2c8024i4d3f28ec1601246a@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailironport.loria.fr ([152.81.144.100]:29342 "EHLO
-	mailironport.loria.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965636AbXA3RTe (ORCPT
+Received: from wx-out-0506.google.com ([66.249.82.231]:22323 "EHLO
+	wx-out-0506.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932996AbXAaKt0 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 30 Jan 2007 12:19:34 -0500
-In-Reply-To: <20070130023902.GB28035@thunk.org>
+	Wed, 31 Jan 2007 05:49:26 -0500
+Received: by wx-out-0506.google.com with SMTP id h31so169336wxd
+        for <linux-serial@vger.kernel.org>; Wed, 31 Jan 2007 02:49:25 -0800 (PST)
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Theodore Tso <tytso@mit.edu>
+To: linux-kernel@vger.kernel.org
 Cc: linux-serial@vger.kernel.org
 
- > The question is why do you need such functionality?  The only way to
- > implement what you propose would be pass a structure containing the
- > previous counts into your proposed new ioctl(), which won't be well
- > received by the folks who have to maintain 32/64-bit translation
- > tables for ioctl's for use by supporting architectures that have to
- > support 32 and 64 bit ABI's simultaneously.
+I insert one printk into drivers/serial/serial_core.c:
+uart_set_termios() to describe the issue.
+static void uart_set_termios(struct tty_struct *tty, struct termios
+*old_termios)
+{
+ ----snip----
+        unsigned int cflag = tty->termios->c_cflag;
 
-Well I do not clearly understand the problem you refer to because
-it seems to me that the new function uart_wait_new_status would not
-need extra structure compared to function uart_get_count (ioctl 
-TIOCGICOUNT) for example. As shown in my previous mail, the profile
-of the function would be :
+        BUG_ON(!kernel_locked());
++++printk("new_termios flag: 0x%x, old_termios flag: 0x%x\n");
++++             cflag, old_termios->c_cflag);
 
-static int
-uart_wait_new_status(struct uart_state *state, struct 
-serial_icounter_struct __user *icnt)
+----snip ----
+}
 
-the "icnt" argument serving as an input as well as an output.
-The mask could be in icount.reserved[0]
+When I telnet my board and run the following command:
+---- root:~> stty -F /dev/ttyS0 -crtscts
 
-But maybe the folks (32/64 porters and ioctl haters) you refer
-to already do not like the existing ioctls and do not want to
-add a new one, even if its interface is similar to TIOCGICOUNT.
+I got the following result from the console of my board:
+---- root:~>new_termios flag: 0x1cb1, old_termios flag: 0x80001cb1
 
- > So what are you actually trying to *do*?  Is this just to fix a
- > theoretical shortcoming?  What does your application really need to
- > do, and perhaps there's a another way we can address it with perhaps a
- > cleaner interface.
+That's correct. CRTSCTS flag is clear
 
-Well the application I want to improve is a "serial" (userspace) driver
-for a Lacrosse Weatherstation WS 8610, communicating only through modem 
-control lines. There exists a usable driver but it uses polling and
-so grabs all the cpu for its processing.
+But when I type "ENTER" key on the console, I got:
+----root:~>new_termios flag: 0x80001cb1, old_termios flag: 0x1cb1
 
-- Dominique
+The CRTSCTS flag is set back. But I didn't set it back, I just type "ENTER".
+I guess, Is it a serial core bug?
 
-Theodore Tso wrote:
-> On Thu, Jan 25, 2007 at 06:09:33PM +0100, Dominique Larchey-Wendling wrote:
->> Even tough such an event would have a low probability to occur
->> if the 2 ioctl are close enough, it is still possible. This is
->> a race condition (outside the kernel but possibly locking some
->> process).
->>
->> I propose the introduction of a new ioctl to solve this race,
->> implemented through the NEW function uart_wait_new_status associated
->> to a NEW ioctl.
->>
->> The idea is that this new call would detect a change not compared
->> to the status at the beginning of the call but compared to some
->> previously recorded state. This way, the new ioctl would not
->> miss a status change, even if it occurs before the call to the
->> ioctl.
-> 
-> You're right that this is a technical flaw in TIOCMIWAIT.  When it was
-> originally implemented, it was done to retain compatibility with older
-> implementations in other OS's.
-> 
-> The question is why do you need such functionality?  The only way to
-> implement what you propose would be pass a structure containing the
-> previous counts into your proposed new ioctl(), which won't be well
-> received by the folks who have to maintain 32/64-bit translation
-> tables for ioctl's for use by supporting architectures that have to
-> support 32 and 64 bit ABI's simultaneously.  Because of this issue
-> some folks have proposed killing off ioctl's entirely, which is
-> probably not the right answer, but the fact remains that adding new
-> ioctl's that require passing in pointers to arbitrary data structures
-> is definitely not going to be well received.
-> 
-> So what are you actually trying to *do*?  Is this just to fix a
-> theoretical shortcoming?  What does your application really need to
-> do, and perhaps there's a another way we can address it with perhaps a
-> cleaner interface.
-> 
-> 					- Ted
-> -
-> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+-Aubrey
