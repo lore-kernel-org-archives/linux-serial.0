@@ -1,37 +1,34 @@
-From: Alan <alan@lxorguk.ukuu.org.uk>
+From: Paul Fulghum <paulkf@microgate.com>
 Subject: Re: [BUG]: 2.6.19.2: Weird serial core issue
-Date: Thu, 1 Feb 2007 12:02:08 +0000
-Message-ID: <20070201120208.36ccb530@localhost.localdomain>
-References: <6d6a94c50701310249o2b2c8024i4d3f28ec1601246a@mail.gmail.com>
-	<20070131162123.67e22e23@localhost.localdomain>
-	<6d6a94c50701311833m5952c6fdn8e1f0db28d674e79@mail.gmail.com>
+Date: Thu, 01 Feb 2007 09:19:19 -0600
+Message-ID: <45C204F7.9060303@microgate.com>
+References: <6d6a94c50701311833m5952c6fdn8e1f0db28d674e79@mail.gmail.com>	 <000201c745d9$4577fe20$2e01a8c0@acksys.local> <6d6a94c50702010238p7866f5a5m8824d2ca518eb704@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from outpipe-village-512-1.bc.nu ([81.2.110.250]:46886 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1422825AbXBALto (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 1 Feb 2007 06:49:44 -0500
-In-Reply-To: <6d6a94c50701311833m5952c6fdn8e1f0db28d674e79@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1030588AbXBAPT2@vger.kernel.org>
+In-Reply-To: <6d6a94c50702010238p7866f5a5m8824d2ca518eb704@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Aubrey Li <aubreylee@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Tosoni <jp.tosoni@acksys.fr>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alan <alan@lxorguk.ukuu.org.uk>
+List-Id: linux-serial@vger.kernel.org
 
-> I implemented the serial driver by myself, :). See the attachment.
-> I didn't save/restore terminal setting in the my_set_termios().
+Aubrey Li wrote:
+> But When I type "ENTER" key,
+> 
+> I got
+> ------------
+> cflag = 0x1cb1, old = 0x80001cb1
+> cflag = 0x1cb1, old = 0x1cb1
+> ------------
+> That means terminal setting is back to crtscts disabled. But here I
+> didn't do anything to disable it, I just type "ENTER", crtscts setting
+> should keep enabled. What makes it back to disabled? Now I guess there
+> must be something wrong with serial core.
 
-Driver looks fine. 
+Is there an mgetty or similar program monitoring
+the same serial port?
 
-> I trace this back till tty_tioctl(..., unsigned long arg), everytime I
-> type "ENTER" key,
-> the argument "arg" passed into tty_ioctl() is the address of a termios
-> structure, which include wrong c_cflag. It seems once the flag is
-> assigned by uart_set_options the first time, it's never changed. So
-> even userspace application changed the flag, it will be set back soon.
-> I'll dig into it. But I still think it's a bug.
-
-Which application (see from current->pid) seems to be calling the
-tty_ioctl with the "wrong flag" ?
+-- 
+Paul Fulghum
+Microgate Systems, Ltd.
