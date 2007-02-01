@@ -1,70 +1,62 @@
-From: "Aubrey Li" <aubreylee@gmail.com>
+From: Russell King <rmk+lkml@arm.linux.org.uk>
 Subject: Re: [BUG]: 2.6.19.2: Weird serial core issue
-Date: Thu, 1 Feb 2007 18:38:20 +0800
-Message-ID: <6d6a94c50702010238p7866f5a5m8824d2ca518eb704@mail.gmail.com>
-References: <6d6a94c50701311833m5952c6fdn8e1f0db28d674e79@mail.gmail.com>
-	 <000201c745d9$4577fe20$2e01a8c0@acksys.local>
+Date: Thu, 1 Feb 2007 11:16:18 +0000
+Message-ID: <20070201111618.GA3462@flint.arm.linux.org.uk>
+References: <6d6a94c50701310249o2b2c8024i4d3f28ec1601246a@mail.gmail.com> <20070131162123.67e22e23@localhost.localdomain> <6d6a94c50701311833m5952c6fdn8e1f0db28d674e79@mail.gmail.com> <20070201094522.GA24608@flint.arm.linux.org.uk> <6d6a94c50702010209t94964ew1aebfad2677aa315@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from wx-out-0506.google.com ([66.249.82.239]:40525 "EHLO
-	wx-out-0506.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1422751AbXBAKiV (ORCPT
+Received: from caramon.arm.linux.org.uk ([217.147.92.249]:3903 "EHLO
+	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1422806AbXBALQd (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 1 Feb 2007 05:38:21 -0500
-Received: by wx-out-0506.google.com with SMTP id h31so505662wxd
-        for <linux-serial@vger.kernel.org>; Thu, 01 Feb 2007 02:38:20 -0800 (PST)
-In-Reply-To: <000201c745d9$4577fe20$2e01a8c0@acksys.local>
+	Thu, 1 Feb 2007 06:16:33 -0500
 Content-Disposition: inline
+In-Reply-To: <6d6a94c50702010209t94964ew1aebfad2677aa315@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tosoni <jp.tosoni@acksys.fr>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alan <alan@lxorguk.ukuu.org.uk>
+To: Aubrey Li <aubreylee@gmail.com>
+Cc: Alan <alan@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On 2/1/07, Tosoni <jp.tosoni@acksys.fr> wrote:
-> If I understand Alan'answer correctly:
->
-> You appear to use a *shell* on that console. The shell gets your ENTER key
-> and in the succeeding processing the shell resets the crtscts flag to what
-> the shell thinks is right for him.
->
-> The shell must make some tty tweaking in order to allow you to edit the
-> commands.
->
-> You must disable login, shell and anything on that port in order to make a
-> significant test. But beware that in this case you will close and reopen the
-> port each time you run your test.
->
+On Thu, Feb 01, 2007 at 06:09:24PM +0800, Aubrey Li wrote:
+> On 2/1/07, Russell King <rmk+lkml@arm.linux.org.uk> wrote:
+> >On Thu, Feb 01, 2007 at 10:33:40AM +0800, Aubrey Li wrote:
+> >> On 2/1/07, Alan <alan@lxorguk.ukuu.org.uk> wrote:
+> >> >What code is running on that console at the time. Most likely that user
+> >> >code is also saving/restoring terminal settings so overwrite yours
+> >> >
+> >>
+> >> I implemented the serial driver by myself, :). See the attachment.
+> >> I didn't save/restore terminal setting in the my_set_termios().
+> >>
+> >> I trace this back till tty_tioctl(..., unsigned long arg), everytime I
+> >> type "ENTER" key,
+> >> the argument "arg" passed into tty_ioctl() is the address of a termios
+> >> structure, which include wrong c_cflag.
+> >
+> >If userspace is issuing an ioctl to re-enable crtscts, and the kernel
+> >is obliging, how can this be a kernel bug?
+> 
+> But the fact is not.
+> 1) kernel boot up and enable crtscts by default
+> 2) issue an ioctl to disable crtscts.
+> 3) not do anything but type "ENTER", kernel re-enable crtscts.
+> 
+> That's wrong. Terminal setting seems not be recorded by the serial core.
 
-But the problem seems not like you said.
-if enable crtscts by default, your thoughts makes sense.
-But if disable crtscts by default, the fact is not as your thoughts.
-The following is the test result on my side.
-===================================
-root:~> cflag = 0x80001cb1, old = 0x1cb1
+serial core does not and should not "record" the terminal settings.
+That's the job of the tty layer.
 
-cflag = 0x1cb1, old = 0x80001cb1
-cflag = 0x1cb1, old = 0x1cb1
-===================================
-When run "stty -F /dev/ttyS0 crtscts",
-I got
-------------
-root:~> cflag = 0x80001cb1, old = 0x1cb1
-------------
-That means crtscts in the old terminal setting is disabled. Now it's enabled.
+> Is it clear?
 
+No.  You haven't analysed the call path causing tty_ioctl() to be
+invoked, so you have no basis to point the finger *anywhere* at the
+moment.
 
-But When I type "ENTER" key,
+Find out from where tty_ioctl() is called - maybe by adding a call
+to dump_stack().  I think you'll find it is coming from userspace.
 
-I got
-------------
-cflag = 0x1cb1, old = 0x80001cb1
-cflag = 0x1cb1, old = 0x1cb1
-------------
-That means terminal setting is back to crtscts disabled. But here I
-didn't do anything to disable it, I just type "ENTER", crtscts setting
-should keep enabled. What makes it back to disabled? Now I guess there
-must be something wrong with serial core.
-
--Aubrey
+-- 
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:
