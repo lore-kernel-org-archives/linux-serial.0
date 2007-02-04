@@ -1,184 +1,103 @@
-From: Tilman Schmidt <tilman@imap.cc>
+From: Andrew Morton <akpm@linux-foundation.org>
 Subject: Re: [PATCH] drivers/isdn/gigaset: new M101 driver
-Date: Sun, 04 Feb 2007 02:32:41 +0100
-Message-ID: <45C537B9.7080704@imap.cc>
-References: <200702012112.l11LCOO4016557@lx1.pxnet.com> <20070201171345.bd98ce30.akpm@osdl.org>
+Date: Sat, 3 Feb 2007 17:56:23 -0800
+Message-ID: <20070203175623.72a171a1.akpm@linux-foundation.org>
+References: <200702012112.l11LCOO4016557@lx1.pxnet.com>
+	<20070201171345.bd98ce30.akpm@osdl.org>
+	<45C537B9.7080704@imap.cc>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature";
- boundary="------------enigD1BB0E0E990685E4A47B9D73"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out4.smtp.messagingengine.com ([66.111.4.28]:35702 "EHLO
-	out4.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751865AbXBDBcO (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 3 Feb 2007 20:32:14 -0500
-In-Reply-To: <20070201171345.bd98ce30.akpm@osdl.org>
+Received: from smtp.osdl.org ([65.172.181.24]:56075 "EHLO smtp.osdl.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751886AbXBDB4h (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 3 Feb 2007 20:56:37 -0500
+In-Reply-To: <45C537B9.7080704@imap.cc>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>
+To: Tilman Schmidt <tilman@imap.cc>
 Cc: Karsten Keil <kkeil@suse.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, i4ldeveloper@listserv.isdn4linux.de, linux-serial@vger.kernel.org, Hansjoerg Lipp <hjlipp@web.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Greg KH <greg@kroah.com>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD1BB0E0E990685E4A47B9D73
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+On Sun, 04 Feb 2007 02:32:41 +0100 Tilman Schmidt <tilman@imap.cc> wrote:
 
-Thanks, Andrew, for your review. Some replies:
+> >> +	spin_lock_irqsave(&cs->cmdlock, flags);
+> >> +	cb = cs->cmdbuf;
+> >> +	spin_unlock_irqrestore(&cs->cmdlock, flags);
+> > 
+> > It is doubtful if the locking here does anything useful.
+> 
+> It assures atomicity when reading the cs->cmdbuf pointer.
 
-Am 02.02.2007 02:13 schrieb Andrew Morton:
-> On Thu, 1 Feb 2007 22:12:24 +0100
-> Tilman Schmidt <tilman@imap.cc> wrote:
->=20
->> +/* Kbuild sometimes doesn't set this */
->> +#ifndef KBUILD_MODNAME
->> +#define KBUILD_MODNAME "asy_gigaset"
->> +#endif
->=20
-> That's a subtle way of reporting a kbuild bug ;)
->=20
-> What's the story here?
+I think it's bogus.  If the quantity being copied here is more than 32-bits
+then yes, a lock is appropriate.  But if it's a single word then it's
+unlikely that the locking does anything useful.  Or there might be a bug
+here.
 
-If an object file is linked into more than one module (like
-asyncdata.o which is linked into both ser_gigaset and usb_gigaset)
-then Kbuild compiles it only once but cannot decide which of the
-module names to put into KBUILD_MODNAME, so it takes the easy way
-out and doesn't define KBUILD_MODNAME at all. I'm not sure if
-that qualifies as a kbuild bug. I'd rather call it a limitation.
+> >> +	spin_lock_irqsave(&cs->cmdlock, flags);
+> >> +	cb->prev = cs->lastcmdbuf;
+> >> +	if (cs->lastcmdbuf)
+> >> +		cs->lastcmdbuf->next = cb;
+> >> +	else {
+> >> +		cs->cmdbuf = cb;
+> >> +		cs->curlen = len;
+> >> +	}
+> >> +	cs->cmdbytes += len;
+> >> +	cs->lastcmdbuf = cb;
+> >> +	spin_unlock_irqrestore(&cs->cmdlock, flags);
+> > 
+> > Would the use of list_heads simplify things here?
+> 
+> I don't think so. The operations in list.h do not keep track of
+> the total byte count, and adding that in a race-free way appears
+> non-trivial.
 
->> +static int write_modem(struct cardstate *cs)
->> +{
->> +	struct tty_struct *tty =3D cs->hw.ser->tty;
->> +	struct bc_state *bcs =3D &cs->bcs[0];	/* only one channel */
->> +	struct sk_buff *skb =3D bcs->tx_skb;
->> +	int sent;
->> +
->> +	if (!tty || !tty->driver || !skb)
->> +		return -EFAULT;
->=20
-> Is EFAULT appropriate?
+Maintaining a byte count isn't related to maintaining a list.
 
-It hardly matters, as it isn't propagated anywhere. -1 would
-work just as well.
+> >> +			down(&cs->hw.ser->dead_sem);
+> > 
+> > Does this actually use the semaphore's counting feature?  If not, can we
+> > switch it to a mutex?
+> 
+> I stole that code from the PPP line discipline. It is to assure all
+> other ldisc methods have completed before the close method proceeds.
+> This doesn't look like a case for a mutex to me, but I'm open to
+> suggestions if it's important to avoid a semaphore here.
 
-> Can all these things happen?
+If a sleeping lock is being used as a mutex, please use a mutex.  We prefer
+that semaphores only be used in those situations where their counting
+feature is being used.
 
-Theoretically no, but this is called from a tasklet and I have
-already traced a bug which made one of these disappear. Not
-having the kernel crash completely in such an event considerably
-helps debugging.
+Reasons: a) mutexes have better runtime debugging support and b) Ingo had
+some plans to reimplement semaphores in an arch-neutral way and for some
+reason reducing the number of callers would help that.  I forget what the
+reason was, actually.
 
->> +	set_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
->=20
-> Is a client of the tty interface supposed to be diddling tty flags like=
- this?
+> >> +	tail = atomic_read(&inbuf->tail);
+> >> +	head = atomic_read(&inbuf->head);
+> >> +	gig_dbg(DEBUG_INTR, "buffer state: %u -> %u, receive %u bytes",
+> >> +		head, tail, count);
+> >> +
+> >> +	if (head <= tail) {
+> >> +		n = RBUFSIZE - tail;
+> >> +		if (count >= n) {
+> >> +			/* buffer wraparound */
+> >> +			memcpy(inbuf->data + tail, buf, n);
+> >> +			tail = 0;
+> >> +			buf += n;
+> >> +			count -= n;
+> >> +		} else {
+> >> +			memcpy(inbuf->data + tail, buf, count);
+> >> +			tail += count;
+> >> +			buf += count;
+> >> +			count = 0;
+> >> +		}
+> >> +	}
+> > 
+> > Perhaps the (fairly revolting) circ_buf.h can be used for this stuff.
+> 
+> It probably could, but IMHO readability would suffer rather than improve.
+> 
 
-Documentation/tty.txt says so. (Yes, I wrote that part myself,
-but nobody protested. ;-) Also, the PPP line discipline does
-the same.
+How about kernel/kfifo.c?
 
->> +	spin_lock_irqsave(&cs->cmdlock, flags);
->> +	cb =3D cs->cmdbuf;
->> +	spin_unlock_irqrestore(&cs->cmdlock, flags);
->=20
-> It is doubtful if the locking here does anything useful.
-
-It assures atomicity when reading the cs->cmdbuf pointer.
-
->> +	spin_lock_irqsave(&cs->cmdlock, flags);
->> +	cb->prev =3D cs->lastcmdbuf;
->> +	if (cs->lastcmdbuf)
->> +		cs->lastcmdbuf->next =3D cb;
->> +	else {
->> +		cs->cmdbuf =3D cb;
->> +		cs->curlen =3D len;
->> +	}
->> +	cs->cmdbytes +=3D len;
->> +	cs->lastcmdbuf =3D cb;
->> +	spin_unlock_irqrestore(&cs->cmdlock, flags);
->=20
-> Would the use of list_heads simplify things here?
-
-I don't think so. The operations in list.h do not keep track of
-the total byte count, and adding that in a race-free way appears
-non-trivial.
-
->> +/*
->> + * Free hardware specific device data
->> + * This will be called by "gigaset_freecs" in common.c
->> + */
->> +static void gigaset_freecshw(struct cardstate *cs)
->> +{
->> +	tasklet_kill(&cs->write_tasklet);
->=20
-> Does tasklet kill() wait for the tasklet to stop running on a different=
-
-> CPU?  I thing so, but it was written in the days before we commented co=
-de.
-
-Its description in LDD3 ch. 7 seems to imply that it does.
-
->> +			down(&cs->hw.ser->dead_sem);
->=20
-> Does this actually use the semaphore's counting feature?  If not, can w=
-e
-> switch it to a mutex?
-
-I stole that code from the PPP line discipline. It is to assure all
-other ldisc methods have completed before the close method proceeds.
-This doesn't look like a case for a mutex to me, but I'm open to
-suggestions if it's important to avoid a semaphore here.
-
->> +	tail =3D atomic_read(&inbuf->tail);
->> +	head =3D atomic_read(&inbuf->head);
->> +	gig_dbg(DEBUG_INTR, "buffer state: %u -> %u, receive %u bytes",
->> +		head, tail, count);
->> +
->> +	if (head <=3D tail) {
->> +		n =3D RBUFSIZE - tail;
->> +		if (count >=3D n) {
->> +			/* buffer wraparound */
->> +			memcpy(inbuf->data + tail, buf, n);
->> +			tail =3D 0;
->> +			buf +=3D n;
->> +			count -=3D n;
->> +		} else {
->> +			memcpy(inbuf->data + tail, buf, count);
->> +			tail +=3D count;
->> +			buf +=3D count;
->> +			count =3D 0;
->> +		}
->> +	}
->=20
-> Perhaps the (fairly revolting) circ_buf.h can be used for this stuff.
-
-It probably could, but IMHO readability would suffer rather than improve.=
-
-
-Thanks,
-Tilman
-
-PS: My patch hasn't appeared on LKML so far. Any idea why?
-
---=20
-Tilman Schmidt                          E-Mail: tilman@imap.cc
-Bonn, Germany
-Diese Nachricht besteht zu 100% aus wiederverwerteten Bits.
-Unge=F6ffnet mindestens haltbar bis: (siehe R=FCckseite)
-
-
---------------enigD1BB0E0E990685E4A47B9D73
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.3rc1 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFxTfCMdB4Whm86/kRAjnyAJ9y/eQM3AQZI2oz73dhvoUMZTA+/gCdH5bV
-PIxeoXKOYClf/K9JwHppQFk=
-=0g/o
------END PGP SIGNATURE-----
-
---------------enigD1BB0E0E990685E4A47B9D73--
