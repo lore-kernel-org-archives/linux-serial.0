@@ -1,43 +1,54 @@
-From: Alan <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] serial driver PMC MSP71xx, kernel linux-mips.git master
-Date: Mon, 5 Feb 2007 21:59:01 +0000
-Message-ID: <20070205215901.7344c954@localhost.localdomain>
-References: <45C77B61.1080209@pmc-sierra.com>
+From: Marc St-Jean <Marc_St-Jean@pmc-sierra.com>
+Subject: Re: [PATCH] serial driver PMC MSP71xx, kernel linux-mips.git mast
+	er
+Date: Tue, 6 Feb 2007 08:52:27 -0800
+Message-ID: <45C8B24B.1000204@pmc-sierra.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="iso-8859-1"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from outpipe-village-512-1.bc.nu ([81.2.110.250]:42534 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-	with ESMTP id S933478AbXBEVs0 (ORCPT
+Received: from father.pmc-sierra.com ([216.241.224.13]:52659 "HELO
+	father.pmc-sierra.bc.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1752215AbXBFQwv (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 5 Feb 2007 16:48:26 -0500
-In-Reply-To: <45C77B61.1080209@pmc-sierra.com>
+	Tue, 6 Feb 2007 11:52:51 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Marc St-Jean <Marc_St-Jean@pmc-sierra.com>
+To: Alan <alan@lxorguk.ukuu.org.uk>
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org
 
->   	unsigned char		hub6;			/* this should be in the 8250 driver */
->   	unsigned char		unused[3];
-> +	void				*data;			/* generic platform data pointer */
->   };
+Thank Alan. I made the changes yesterday but I'll wait another day
+before reposting, in case other interested people have more comments.
 
-Convention is "private_data"
+Marc
 
->
->   /*
-> diff --git a/include/linux/serial_reg.h b/include/linux/serial_reg.h
-> index 3c8a6aa..b3550cc 100644
-> --- a/include/linux/serial_reg.h
-> +++ b/include/linux/serial_reg.h
-> @@ -37,6 +37,7 @@ #define UART_IIR_MSI		0x00 /* Modem stat
->   #define UART_IIR_THRI		0x02 /* Transmitter holding register empty */
->   #define UART_IIR_RDI		0x04 /* Receiver data interrupt */
->   #define UART_IIR_RLSI		0x06 /* Receiver line status interrupt */
-> +#define UART_IIR_BUSY		0x07 /* DesignWare APB Busy Detect */
-
-Please move this down a line to break it from "official" values and call
-it DESIGNWARE_UART_IIR_BUSY, so it is obviously designware specific.
-
-Otherwise looks much less invasive and messy
+Alan wrote:
+>  >       unsigned char           hub6;                   /* this should 
+> be in the 8250 driver */
+>  >       unsigned char           unused[3];
+>  > +     void                            *data;                  /* 
+> generic platform data pointer */
+>  >   };
+> 
+> Convention is "private_data"
+> 
+>  >
+>  >   /*
+>  > diff --git a/include/linux/serial_reg.h b/include/linux/serial_reg.h
+>  > index 3c8a6aa..b3550cc 100644
+>  > --- a/include/linux/serial_reg.h
+>  > +++ b/include/linux/serial_reg.h
+>  > @@ -37,6 +37,7 @@ #define UART_IIR_MSI                0x00 /* Modem stat
+>  >   #define UART_IIR_THRI               0x02 /* Transmitter holding 
+> register empty */
+>  >   #define UART_IIR_RDI                0x04 /* Receiver data interrupt */
+>  >   #define UART_IIR_RLSI               0x06 /* Receiver line status 
+> interrupt */
+>  > +#define UART_IIR_BUSY                0x07 /* DesignWare APB Busy 
+> Detect */
+> 
+> Please move this down a line to break it from "official" values and call
+> it DESIGNWARE_UART_IIR_BUSY, so it is obviously designware specific.
+> 
+> Otherwise looks much less invasive and messy
+> 
