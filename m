@@ -1,27 +1,127 @@
-From: Roman Zippel <zippel@linux-m68k.org>
-Subject: Re: [PATCH 00/34] __initdata cleanup
-Date: Fri, 9 Feb 2007 18:37:34 +0100 (CET)
-Message-ID: <Pine.LNX.4.64.0702091831150.14457@scrub.home>
-References: <200702091711.34441.alon.barlev@gmail.com> <20070209170005.GA8500@osiris.ibm.com>
+From: Marc St-Jean <Marc_St-Jean@pmc-sierra.com>
+Subject: Re: [PATCH] serial driver PMC MSP71xx, kernel linux-mips.git mast
+	er
+Date: Fri, 9 Feb 2007 11:39:00 -0800
+Message-ID: <45CCCDD4.7030104@pmc-sierra.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1946629AbXBIRlV@vger.kernel.org>
-In-Reply-To: <20070209170005.GA8500@osiris.ibm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Heiko Carstens <heiko.carstens@de.ibm.com>
-Cc: Alon Bar-Lev <alon.barlev@gmail.com>, linux-kernel@vger.kernel.org, akpm@osdl.org, bwalle@suse.de, rmk+lkml@arm.linux.org.uk, spyro@f2s.com, davej@codemonkey.org.uk, hpa@zytor.com, Riley@williams.name, tony.luck@intel.com, geert@linux-m68k.org, ralf@linux-mips.org, matthew@wil.cx, grundler@parisc-linux.org, kyle@parisc-linux.org, paulus@samba.org, schwidefsky@de.ibm.com, lethal@linux-sh.org, davem@davemloft.net, uclinux-v850@lsi.nec.co.jp, ak@muc.de, vojtech@suse.cz, chris@zankel.net, len.brown@intel.com, lenb@kernel.org, herbert@gondor.apana.org.au, viro@zeniv.linux.org.uk, bzolnier@gmail.com, dmitry.torokhov@gmail.com, dtor@mail.ru, jgarzik@pobox.com, linux-mm@kvack.org, dwmw2@infradead.org, patrick@tykepenguin.com, kuznet@ms2.inr.ac.ru, pekkas@netcore.fi, jmorris@namei.org, philb@gnu.org, tim@cyberelk.net, andrea@suse.de, ambx1@neo.rr.com, James.Bottomley@steeleye.co
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from father.pmc-sierra.com ([216.241.224.13]:50452 "HELO
+	father.pmc-sierra.bc.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S2992774AbXBITjN (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 9 Feb 2007 14:39:13 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Sergei Shtylyov <sshtylyov@ru.mvista.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org
 
-Hi,
+Sergei Shtylyov wrote:
+> Marc St-Jean wrote:
+>  > Fourth attempt at the serial driver patch for the PMC-Sierra MSP71xx 
+> device.
+>  >
+>  > There are three different fixes:
+>  > 1. Fix for DesignWare THRE errata
+>  > - Dropped our fix since the "8250-uart-backup-timer.patch" in the "mm"
+>  > tree also fixes it. This patch needs to be applied on top of "mm" patch.
+>  >
+>  > 2. Fix for Busy Detect on LCR write
+>  > - Changed the ordering of test in serial8250_interrupt().
+>  > - Combined test for UPIO_DWAPB with UPIO_MEM in 
+> serial8250_start_console().
+>  > - Renamed new uart_8250_port member to private_data.
+>  >
+>  > 3. Workaround for interrupt/data concurrency issue
+>  > - No changes since last patch.
+> 
+>  > @@ -1383,6 +1399,19 @@ static irqreturn_t serial8250_interrupt(
+>  >                       handled = 1;
+>  >
+>  >                       end = NULL;
+>  > +             } else if (up->port.iotype == UPIO_DWAPB &&
+>  > +                             (iir & UART_IIR_BUSY) == UART_IIR_BUSY) {
+> 
+>      Worth aligning this line with the opening paren of if... but's that's
+> nitpicking. :-)
 
-On Fri, 9 Feb 2007, Heiko Carstens wrote:
+No problem I'll change it. I just usually align to the closest tab stop to
+the opening parenthesis.
 
-> And indeed all the __initdata annotated local and global variables on
-> s390 are in the init.data section. So I'm wondering what this patch
-> series is about. Or I must have missed something.
 
-I think it reaches back to times when gcc 2.7.* was still supported, which 
-does behave as described in the documentation. gcc 2.95 and newer don't 
-require explicit initialization anymore, so this has become a non-issue.
+>  > +                     /* The DesignWare APB UART has an Busy Detect 
+> (0x07)
+>  > +                      * interrupt meaning an LCR write attempt 
+> occured while the
+>  > +                      * UART was busy. The interrupt must be cleared 
+> by reading
+>  > +                      * the UART status register (USR) and the LCR 
+> re-written. */
+>  > +                     unsigned int status;
+>  > +                     status = *(volatile u32 *)up->port.private_data;
+>  > +                     serial_out(up, UART_LCR, up->lcr);
+>  > +
+>  > +                     handled = 1;
+>  > +
+>  > +                     end = NULL;
+>  >               } else if (end == NULL)
+>  >                       end = l;
+>  >
+>  >       return 0;
+> 
+>     Still, shouldn't you be doing this in serial8250_timeout()
 
-bye, Roman
+No, the serial8250_timeout is for issue 1 at the top, this is for
+issue 2.
+
+
+> also?
+> What IRQ numbers this UART is using, BTW?
+
+For the ports on the device they are 27 and 42. Is there any significance
+that I'm not aware of?
+
+
+>  > diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+>  > index cf23813..bd9711a 100644
+>  > --- a/include/linux/serial_core.h
+>  > +++ b/include/linux/serial_core.h
+>  > @@ -276,6 +277,7 @@ #define UPF_USR_MASK              ((__force upf_t) (
+>  >       struct device           *dev;                   /* parent 
+> device */
+>  >       unsigned char           hub6;                   /* this should 
+> be in the 8250 driver */
+>  >       unsigned char           unused[3];
+>  > +     void                            *private_data;          /* 
+> generic platform data pointer */
+> 
+>     One tab to many before *private_data...
+
+In my editor using 4 columns per tab it lines up with everything. Is there
+some convention that patches should be made assuming 8 columns?
+
+
+>  > diff --git a/include/linux/serial_reg.h b/include/linux/serial_reg.h
+>  > index 3c8a6aa..1c5ed7d 100644
+>  > --- a/include/linux/serial_reg.h
+>  > +++ b/include/linux/serial_reg.h
+>  > @@ -38,6 +38,8 @@ #define UART_IIR_THRI               0x02 /* Transmitt
+>  >   #define UART_IIR_RDI                0x04 /* Receiver data interrupt */
+>  >   #define UART_IIR_RLSI               0x06 /* Receiver line status 
+> interrupt */
+>  >
+>  > +#define UART_IIR_BUSY                0x07 /* DesignWare APB Busy 
+> Detect */
+>  > +
+>  >   #define UART_FCR    2       /* Out: FIFO Control Register */
+>  >   #define UART_FCR_ENABLE_FIFO        0x01 /* Enable the FIFO */
+>  >   #define UART_FCR_CLEAR_RCVR 0x02 /* Clear the RCVR FIFO */
+> 
+>     Oops, your mailer went and did it again. :-)
+
+I'm completely giving up on Thunderbird,unless someone can point out
+the specific internal configuration items which needs a kick!
+
+Thanks,
+Marc
