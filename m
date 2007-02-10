@@ -1,49 +1,97 @@
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH 00/34] __initdata cleanup
-Date: Fri, 9 Feb 2007 13:33:55 -0800
-Message-ID: <20070209133355.d5df1ab5.akpm@linux-foundation.org>
-References: <200702091711.34441.alon.barlev@gmail.com>
-	<20070209170005.GA8500@osiris.ibm.com>
-	<Pine.LNX.4.64.0702091831150.14457@scrub.home>
+From: Thomas Koeller <thomas@koeller.dyndns.org>
+Subject: Re: [PATCH] RM9000 serial driver
+Date: Sat, 10 Feb 2007 17:11:46 +0100
+Message-ID: <200702101711.46826.thomas@koeller.dyndns.org>
+References: <200608102318.52143.thomas.koeller@baslerweb.com> <20060830121216.GA25699@flint.arm.linux.org.uk> <44F5C1BB.7010205@ru.mvista.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.osdl.org ([65.172.181.24]:48689 "EHLO smtp.osdl.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752637AbXBIVvZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 9 Feb 2007 16:51:25 -0500
-In-Reply-To: <Pine.LNX.4.64.0702091831150.14457@scrub.home>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-mips-bounce@linux-mips.org>
+In-Reply-To: <44F5C1BB.7010205@ru.mvista.com>
+Content-Disposition: inline
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+To: Sergei Shtylyov <sshtylyov@ru.mvista.com>
+Cc: Russell King <rmk@arm.linux.org.uk>, linux-serial@vger.kernel.org, ralf@linux-mips.org, linux-mips@linux-mips.org
 List-Id: linux-serial@vger.kernel.org
-To: Roman Zippel <zippel@linux-m68k.org>
-Cc: Heiko Carstens <heiko.carstens@de.ibm.com>, Alon Bar-Lev <alon.barlev@gmail.com>, linux-kernel@vger.kernel.org, bwalle@suse.de, rmk+lkml@arm.linux.org.uk, spyro@f2s.com, davej@codemonkey.org.uk, hpa@zytor.com, Riley@williams.name, tony.luck@intel.com, geert@linux-m68k.org, ralf@linux-mips.org, matthew@wil.cx, grundler@parisc-linux.org, kyle@parisc-linux.org, paulus@samba.org, schwidefsky@de.ibm.com, lethal@linux-sh.org, davem@davemloft.net, uclinux-v850@lsi.nec.co.jp, ak@muc.de, vojtech@suse.cz, chris@zankel.net, len.brown@intel.com, lenb@kernel.org, herbert@gondor.apana.org.au, viro@zeniv.linux.org.uk, bzolnier@gmail.com, dmitry.torokhov@gmail.com, dtor@mail.ru, jgarzik@pobox.com, linux-mm@kvack.org, dwmw2@infradead.org, patrick@tykepenguin.com, kuznet@ms2.inr.ac.ru, pekkas@netcore.fi, jmorris@namei.org, philb@gnu.org, tim@cyberelk.net, andrea@suse.de, ambx1@neo.rr.co
 
-On Fri, 9 Feb 2007 18:37:34 +0100 (CET)
-Roman Zippel <zippel@linux-m68k.org> wrote:
+On Mittwoch, 30. August 2006, Sergei Shtylyov wrote:
+>
+> Russell King wrote:
+> >>I would like to return to the port type vs. iotype  stuff once again.
+> >
+> >From what you wrote I seem to understand that the iotype is not just
+> >
+> >>a method of accessing device registers, but also the primary means of
+> >>discrimination between different h/w implementations, and hence every
+> >>code to support a nonstandard device must define an iotype of its own,
+> >>even though one of the existing iotypes would work just fine?
+> >
+> > iotype is all about the access method used to access the registers of
+> > the device, be it by byte or word, and it also takes account of any
+> > variance in the addressing of the registers.
+> >
+> > It does not refer to features or bugs in any particular implementation.
+>
+>     Well, the introduction of the UPIO_TSI case seems to contradict this --
+> it's exactly about the bugs in the particular UART implementation
+> (otherwise well described by UPIO_MEM). Its only function was to mask 2
+> hardware issues. And the UUE bit workaround seems like an abuse to me. The
+> driver could just skip the UUE test altogether based on iotype == UPIO_TSI
+> (or at least not to ignore writes with UUE set completely like it does but
+> just mask off UUE bit). With no provision to pass the implicit UART type
+> for platform devices (and skip the autoconfiguation), the introduction of
+> UPIO_TSI seems again the necessary evil. Otherwise, we could have this
+> handled with a distinct TSI UART type...
+>
+> WBR, Sergei
 
-> Hi,
-> 
-> On Fri, 9 Feb 2007, Heiko Carstens wrote:
-> 
-> > And indeed all the __initdata annotated local and global variables on
-> > s390 are in the init.data section. So I'm wondering what this patch
-> > series is about. Or I must have missed something.
-> 
-> I think it reaches back to times when gcc 2.7.* was still supported, which 
-> does behave as described in the documentation. gcc 2.95 and newer don't 
-> require explicit initialization anymore, so this has become a non-issue.
-> 
+Hi,
 
-Yes, nobody's been observing any problems arising from this, and if this
-memory was really uninitialised, people would be hitting problems.
+after a long delay (for which I apologize) I would like to return to
+this topic. Since so much time has passed since the discussion ceased, I
+think I should summarize its state at that point:
 
-I don't want to have to require that all __attribute__((section)) storage
-be initialised - people will surely forget to do it and things will slip
-through.
+1. In the RM9000 serial driver patch I submitted, I had introduced a new
+   port type PORT_RM9000. I set the iotype to UPIO_MEM32. Wherever I
+   needed to handle any peculiarities of the RM9000 h/w, I did so based
+   upon the port type. AFAICT this is in agreement with Russel's view as
+   quoted above.
 
-If we really do have a problem here it'd be better to fix it in some
-central and global fashion: either by ensuring that each architecture's
-startup code will zero this memory or by some compiler/linker option such
-as -fno-common.
+2. Sergei says this is wrong, I need to introduce a new iotype instead,
+   and make the code conditional upon that, like the AU1000 does (UPIO_AU).
+   The reason he gives (see quote above) is that there is no way to pass
+   the port type along with a platform device. Is this argument still valid?
+   What about including the port type in the information attached to
+   platform_device.platform_data?
 
+Btw., I had a look ath the existing code dealing with platform
+devices. Is there a particular reason for not using the standard
+platform_device.resource mechanism of passing mem/io/irq resources from
+the platform to the driver?
+
+Another topic discussed was the use (or abuse) of dl_serial_read()/
+dl_serial_write() to get/set the divisor registers.
+
+3. Russel says (qoute from an earlier mail),
+   > It's worse than that - this code is there to read the ID from the divisor
+   > registers implemented in some UARTs. If it isn't one of those UARTs,
+   > it's expected to return zero.
+
+4. I followed the AU1X00 code in this case, using the functions to read/write
+   the divisor value. My hardware has its UART_DLL and UART_DLM registers at
+   nonstandard addresses, and so the only other option would have been to
+   monitor every write to the LCR register for setting or clearing the DLAB
+   bit, and to switch between different mapping tables accordingly. In the
+   light of this, would it still be unacceptable to use the dl_*() functions
+   tho access the divisor registers?
+
+Once these issues have been resolved, I will submit an updated version of
+my patch.
+
+tk
+
+-- 
+Thomas Koeller
+thomas@koeller.dyndns.org
