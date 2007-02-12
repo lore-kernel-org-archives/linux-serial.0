@@ -1,106 +1,186 @@
-From: Sergei Shtylyov <sshtylyov@ru.mvista.com>
-Subject: Re: [PATCH] serial driver PMC MSP71xx, kernel linux-mips.git mast
-  er
-Date: Mon, 12 Feb 2007 20:56:25 +0300
-Message-ID: <45D0AA49.8060006@ru.mvista.com>
-References: <45D0A7DA.1040305@pmc-sierra.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Marc St-Jean <stjeanma@pmc-sierra.com>
+Subject: [PATCH] serial driver PMC MSP71xx, kernel linux-mips.git master
+Date: Mon, 12 Feb 2007 12:04:08 -0600
+Message-ID: <200702121804.l1CI488t024555@pasqua.pmc-sierra.bc.ca>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gateway-1237.mvista.com ([63.81.120.155]:9057 "EHLO
-	imap.sh.mvista.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-	with ESMTP id S965035AbXBLR4e (ORCPT
+Received: from father.pmc-sierra.com ([216.241.224.13]:65337 "HELO
+	father.pmc-sierra.bc.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S965239AbXBLSEL (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 12 Feb 2007 12:56:34 -0500
-In-Reply-To: <45D0A7DA.1040305@pmc-sierra.com>
+	Mon, 12 Feb 2007 13:04:11 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Marc St-Jean <Marc_St-Jean@pmc-sierra.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org
+To: akpm@osdl.org
+Cc: linux-serial@vger.kernel.org
 
-Hello.
+Sixth attempt at the serial driver patch for the PMC-Sierra MSP71xx device.
+Identical to last patch but respun for 8 character tabs.
 
-Marc St-Jean wrote:
+There are three different fixes:
+1. Fix for DesignWare THRE errata
+- Dropped our fix since the "8250-uart-backup-timer.patch" in the "mm"
+tree also fixes it. This patch needs to be applied on top of "mm" patch.
 
->> >> > Fourth attempt at the serial driver patch for the PMC-Sierra MSP71xx
->> >>device.
+2. Fix for Busy Detect on LCR write
+- No changes since last patch.
 
->>    I think you need to submit your patch to Andrew Morton since it 
->>requires a patch from his tree.
+3. Workaround for interrupt/data concurrency issue
+- No changes since last patch.
 
-> OK, will do.
+Andrew, I'm emailing directly as suggested on the l-m.o list. Please let
+me know if all requirements are met.
 
-    In fact, since the serial drivers are not maintained anymore, this seems 
-the only option.
+Thanks,
+Marc
 
->> >> > +                     /* The DesignWare APB UART has an Busy Detect
->> >>(0x07)
->> >> > +                      * interrupt meaning an LCR write attempt
->> >>occured while the
->> >> > +                      * UART was busy. The interrupt must be cleared
->> >>by reading
->> >> > +                      * the UART status register (USR) and the LCR
->> >>re-written. */
->> >> > +                     unsigned int status;
->> >> > +                     status = *(volatile u32 
->>*)up->port.private_data;
->> >> > +                     serial_out(up, UART_LCR, up->lcr);
->> >> > +
->> >> > +                     handled = 1;
->> >> > +
->> >> > +                     end = NULL;
->> >> >               } else if (end == NULL)
->> >> >                       end = l;
+Signed-off-by: Marc St-Jean <Marc_St-Jean@pmc-sierra.com>
 
->> >> >       return 0;
-
->> >>    Still, shouldn't you be doing this in serial8250_timeout()
-
->> > No, the serial8250_timeout is for issue 1 at the top, this is for
->> > issue 2.
-
->>    It's for lost interrupts, IIUC. They use anothe timeout handler for the
->>workaround...
-
-> This issue (2) is a completely new type of interrupt generated but the
-> DesignWare APB uart, it has nothing to do with lost interrupts.
-
-    Yeah, I just thought that the lost interrupts might be a "generic" issue.
-
->> >>also?
->> >>What IRQ numbers this UART is using, BTW?
-
->> > For the ports on the device they are 27 and 42. Is there any 
->>significance
->> > that I'm not aware of?
-
->>    Yeah, IRQ0 is treated as no IRQ by 8250, and in this case it falls 
->>back to using serial8250_timeout() to handle "interrupts".
-
-> Good to know. It won't be affecting us then.
-
-    This may be overriden anyway...
-
->> >>    Oops, your mailer went and did it again. :-)
-
->> > I'm completely giving up on Thunderbird,unless someone can point out
-
->>    Ypu should have long ago. :-)
-
->> > the specific internal configuration items which needs a kick!
-
->>    Only the attachments will work in the Mozilla kind mailer, AFAIK.
->>The last patch looked OK at last. :-)
-
-> The attachemnents appear to be MIME which is a no-no according the
-
-    The text/plain type attachments seem to be acceptable for the most 
-maintainers.  This Mozilla can do, at least. :-)
-
-> linux FAQ at kernel.org. I guess I'll stick with /bin/mail.
-
-> Thanks,
-> Marc
-
-WBR, Sergei
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index 3d91bfc..2f89dc4 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -308,6 +308,7 @@ static unsigned int serial_in(struct uar
+ 		return inb(up->port.iobase + 1);
+ 
+ 	case UPIO_MEM:
++	case UPIO_DWAPB:
+ 		return readb(up->port.membase + offset);
+ 
+ 	case UPIO_MEM32:
+@@ -333,6 +334,8 @@ #endif
+ static void
+ serial_out(struct uart_8250_port *up, int offset, int value)
+ {
++	/* Save the offset before it's remapped */
++	int save_offset = offset;
+ 	offset = map_8250_out_reg(up, offset) << up->port.regshift;
+ 
+ 	switch (up->port.iotype) {
+@@ -359,6 +362,18 @@ #endif
+ 			writeb(value, up->port.membase + offset);
+ 		break;
+ 
++	case UPIO_DWAPB:
++		/* Save the LCR value so it can be re-written when a
++		 * Busy Detect interrupt occurs. */
++		if (save_offset == UART_LCR)
++			up->lcr = value;
++		writeb(value, up->port.membase + offset);
++		/* Read the IER to ensure any interrupt is cleared before
++		 * returning from ISR. */
++		if ((save_offset == UART_TX || save_offset == UART_IER) && in_irq())
++			value = serial_in(up, UART_IER);
++		break;
++		
+ 	default:
+ 		outb(value, up->port.iobase + offset);
+ 	}
+@@ -373,6 +388,7 @@ serial_out_sync(struct uart_8250_port *u
+ #ifdef CONFIG_SERIAL_8250_AU1X00
+ 	case UPIO_AU:
+ #endif
++	case UPIO_DWAPB:
+ 		serial_out(up, offset, value);
+ 		(void)serial_in(up, UART_LCR); /* safe, no side-effects */
+ 		break;
+@@ -1383,6 +1399,19 @@ static irqreturn_t serial8250_interrupt(
+ 			handled = 1;
+ 
+ 			end = NULL;
++		} else if (up->port.iotype == UPIO_DWAPB &&
++			  (iir & UART_IIR_BUSY) == UART_IIR_BUSY) {
++			/* The DesignWare APB UART has an Busy Detect (0x07)
++			 * interrupt meaning an LCR write attempt occured while the
++			 * UART was busy. The interrupt must be cleared by reading
++			 * the UART status register (USR) and the LCR re-written. */
++			unsigned int status;
++			status = *(volatile u32 *)up->port.private_data;
++			serial_out(up, UART_LCR, up->lcr);
++
++			handled = 1;
++
++			end = NULL;
+ 		} else if (end == NULL)
+ 			end = l;
+ 
+@@ -2085,6 +2114,7 @@ static int serial8250_request_std_resour
+ 	case UPIO_TSI:
+ 	case UPIO_MEM32:
+ 	case UPIO_MEM:
++	case UPIO_DWAPB:
+ 		if (!up->port.mapbase)
+ 			break;
+ 
+@@ -2122,6 +2152,7 @@ static void serial8250_release_std_resou
+ 	case UPIO_TSI:
+ 	case UPIO_MEM32:
+ 	case UPIO_MEM:
++	case UPIO_DWAPB:
+ 		if (!up->port.mapbase)
+ 			break;
+ 
+@@ -2454,8 +2485,8 @@ int __init serial8250_start_console(stru
+ 
+ 	add_preferred_console("ttyS", line, options);
+ 	printk("Adding console on ttyS%d at %s 0x%lx (options '%s')\n",
+-		line, port->iotype == UPIO_MEM ? "MMIO" : "I/O port",
+-		port->iotype == UPIO_MEM ? (unsigned long) port->mapbase :
++		line, port->iotype >= UPIO_MEM ? "MMIO" : "I/O port",
++		port->iotype >= UPIO_MEM ? (unsigned long) port->mapbase :
+ 		    (unsigned long) port->iobase, options);
+ 	if (!(serial8250_console.flags & CON_ENABLED)) {
+ 		serial8250_console.flags &= ~CON_PRINTBUFFER;
+diff --git a/drivers/serial/8250.h b/drivers/serial/8250.h
+diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
+index f84982e..f5b6036 100644
+--- a/drivers/serial/serial_core.c
++++ b/drivers/serial/serial_core.c
+@@ -2057,6 +2057,7 @@ uart_report_port(struct uart_driver *drv
+ 	case UPIO_MEM32:
+ 	case UPIO_AU:
+ 	case UPIO_TSI:
++	case UPIO_DWAPB:
+ 		snprintf(address, sizeof(address),
+ 			 "MMIO 0x%lx", port->mapbase);
+ 		break;
+@@ -2401,6 +2402,7 @@ int uart_match_port(struct uart_port *po
+ 	case UPIO_MEM32:
+ 	case UPIO_AU:
+ 	case UPIO_TSI:
++	case UPIO_DWAPB:
+ 		return (port1->mapbase == port2->mapbase);
+ 	}
+ 	return 0;
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index cf23813..8cdd326 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -230,6 +230,7 @@ #define UPIO_MEM		(2)
+ #define UPIO_MEM32		(3)
+ #define UPIO_AU			(4)			/* Au1x00 type IO */
+ #define UPIO_TSI		(5)			/* Tsi108/109 type IO */
++#define UPIO_DWAPB		(6)			/* DesignWare APB UART */
+ 
+ 	unsigned int		read_status_mask;	/* driver specific */
+ 	unsigned int		ignore_status_mask;	/* driver specific */
+@@ -276,6 +277,7 @@ #define UPF_USR_MASK		((__force upf_t) (
+ 	struct device		*dev;			/* parent device */
+ 	unsigned char		hub6;			/* this should be in the 8250 driver */
+ 	unsigned char		unused[3];
++	void			*private_data;		/* generic platform data pointer */
+ };
+ 
+ /*
+diff --git a/include/linux/serial_reg.h b/include/linux/serial_reg.h
+index 3c8a6aa..1c5ed7d 100644
+--- a/include/linux/serial_reg.h
++++ b/include/linux/serial_reg.h
+@@ -38,6 +38,8 @@ #define UART_IIR_THRI		0x02 /* Transmitt
+ #define UART_IIR_RDI		0x04 /* Receiver data interrupt */
+ #define UART_IIR_RLSI		0x06 /* Receiver line status interrupt */
+ 
++#define UART_IIR_BUSY		0x07 /* DesignWare APB Busy Detect */
++
+ #define UART_FCR	2	/* Out: FIFO Control Register */
+ #define UART_FCR_ENABLE_FIFO	0x01 /* Enable the FIFO */
+ #define UART_FCR_CLEAR_RCVR	0x02 /* Clear the RCVR FIFO */
