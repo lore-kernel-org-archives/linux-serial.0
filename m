@@ -1,46 +1,37 @@
-From: Stefano Brivio <stefano.brivio@polimi.it>
-Subject: [PATCH] fix error management in 8250_pci.c pciserial_resume_one
-Date: Tue, 13 Feb 2007 11:30:10 +0100
-Message-ID: <20070213113010.27125d53@localhost>
+From: Russell King <rmk+lkml@arm.linux.org.uk>
+Subject: Re: [PATCH] fix error management in 8250_pci.c pciserial_resume_one
+Date: Tue, 13 Feb 2007 10:54:11 +0000
+Message-ID: <20070213105411.GA6883@flint.arm.linux.org.uk>
+References: <20070213113010.27125d53@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mfe1.polimi.it ([131.175.12.23]:43273 "EHLO polimi.it"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751257AbXBMKvH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 13 Feb 2007 05:51:07 -0500
+Received: from caramon.arm.linux.org.uk ([217.147.92.249]:4938 "EHLO
+	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750922AbXBMKyT (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 13 Feb 2007 05:54:19 -0500
+Content-Disposition: inline
+In-Reply-To: <20070213113010.27125d53@localhost>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Stefano Brivio <stefano.brivio@polimi.it>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-  CC      drivers/serial/8250_pci.o
-drivers/serial/8250_pci.c: In function 'pciserial_resume_one':
-drivers/serial/8250_pci.c:1830: warning: ignoring return value of 'pci_enable_device', declared with attribute warn_unused_result
+On Tue, Feb 13, 2007 at 11:30:10AM +0100, Stefano Brivio wrote:
+>   CC      drivers/serial/8250_pci.o
+> drivers/serial/8250_pci.c: In function 'pciserial_resume_one':
+> drivers/serial/8250_pci.c:1830: warning: ignoring return value of 'pci_enable_device', declared with attribute warn_unused_result
+> 
+> This patch fixes it.
 
-This patch fixes it.
+Oh for god sake, this does not fix anything.  It creates more problems
+than it solves.
 
-Signed-off-by: Stefano Brivio <stefano.brivio@polimi.it>
----
+Next time, check the mailing list archives and you'll see this is not
+the first time this has come up.
 
---- drivers/serial/8250_pci.c.orig	2007-02-13 11:04:03.579805618 +0100
-+++ drivers/serial/8250_pci.c	2007-02-13 11:12:52.128454010 +0100
-@@ -1819,6 +1819,7 @@
- static int pciserial_resume_one(struct pci_dev *dev)
- {
- 	struct serial_private *priv = pci_get_drvdata(dev);
-+	int rc;
- 
- 	pci_set_power_state(dev, PCI_D0);
- 	pci_restore_state(dev);
-@@ -1827,7 +1828,9 @@
- 		/*
- 		 * The device may have been disabled.  Re-enable it.
- 		 */
--		pci_enable_device(dev);
-+		rc = pci_enable_device(dev);
-+		if (rc)
-+			return rc;
- 
- 		pciserial_resume_ports(priv);
- 	}
+-- 
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:
