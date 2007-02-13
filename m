@@ -1,258 +1,145 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH] Open Firmware serial port driver
-Date: Tue, 13 Feb 2007 21:35:38 +0100
-Message-ID: <200702132135.39056.arnd@arndb.de>
+From: Marc St-Jean <Marc_St-Jean@pmc-sierra.com>
+Subject: Re: [PATCH] serial driver PMC MSP71xx, kernel linux-mips.git mast
+	er
+Date: Tue, 13 Feb 2007 14:11:17 -0800
+Message-ID: <45D23785.6060502@pmc-sierra.com>
 Mime-Version: 1.0
 Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+	charset="iso-8859-1"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.126.183]:49852 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751048AbXBMUf5 (ORCPT
+Received: from mother.pmc-sierra.com ([216.241.224.12]:61833 "HELO
+	mother.pmc-sierra.bc.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1751318AbXBMWLc (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 13 Feb 2007 15:35:57 -0500
-Content-Disposition: inline
+	Tue, 13 Feb 2007 17:11:32 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Andrew Morton <akpm@linux-foundation.org>
-Cc: paulus@samba.org, linuxppc-dev@ozlabs.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-mips@linux-mips.org
 
-This can be used for serial ports that are connected to an
-OF platform bus but are not autodetected by the lecacy
-serial support.
-It will automatically take over devices that come from the
-legacy serial detection, which usually is only one device.
+Andrew Morton wrote:
+> On Mon, 12 Feb 2007 12:04:08 -0600 Marc St-Jean 
+> <stjeanma@pmc-sierra.com> wrote:
+> 
+>  > There are three different fixes:
+>  > 1. Fix for DesignWare THRE errata
+>  > - Dropped our fix since the "8250-uart-backup-timer.patch" in the "mm"
+>  > tree also fixes it. This patch needs to be applied on top of "mm" patch.
+>  >
+>  > 2. Fix for Busy Detect on LCR write
+>  > - No changes since last patch.
+>  >
+>  > 3. Workaround for interrupt/data concurrency issue
+>  > - No changes since last patch.
+> 
+> A couple of things.
+> 
+> - When preparing a changelog, please just tell us what the patch does.
+>   The information about how this patch differes from a previous version of
+>   the patch is irrelevant when the patch hits the mainline repository hence
+>   I must edit it all.
+> 
+>   It's OK to add the what-i-changed-since-last-time details, but please 
+> make
+>   that separate and remember that it will be removed for when the patch 
+> goes
+>   upstream.
+> 
+> - When fixing a bug, please tell us in detail what that bug *is*.  None
+>   of the above three items tell us any of this, which is essential
+>   information for those who are to review the change.
 
-In some cases, rtas may be set up to use the serial port
-in the firmware, which allows easier debugging before probing
-the serial ports. In this case, the "used-by-rtas" property
-must be set by the firmware. This patch also adds code to the
-legacy serial driver to check for this.
+Understood, I'm adding the original description here and I'll add to the
+next patch update.
 
-Signed-off-by: Arnd Bergmann <arnd.bergmann@de.ibm.com>
+1. Fix for DesignWare APB THRE errata:
+In brief, this is a non-standard 16550 in that the THRE interrupt
+will not re-assert itself simply by disabling and re-enabling the
+THRI bit in the IER, it is only re-enabled if a character is actually
+sent out.
+It appears that the "8250-uart-backup-timer.patch" in the "mm" tree also
+fixes it so we have dropped our initial workaround.
+This patch now needs to be applied on top of that "mm" patch.
 
----
+2. Fix for Busy Detect on LCR write:
+The DesignWare APB UART has a feature which causes a new Busy Detect
+interrupt to be generated if it's busy when the LCR is written. This
+fix saves the value of the LCR and rewrites it after clearing the
+interrupt.
 
-Who will handle this driver? It is powerpc specific and
-hooks into powerpc code at one place, but it's also a 
-new driver for the (orphaned) serial layer.
+3. Workaround for interrupt/data concurrency issue:
+The SoC needs to ensure that writes that can cause interrupts to be
+cleared reach the UART before returning from the ISR. This fix reads
+a non-destructive register on the UART so the read transaction
+completion ensures the previously queued write transaction has
+also completed.
 
-Could either Paul or Andrew merge this, or whoever
-else feels responsible?
 
- arch/powerpc/kernel/legacy_serial.c |   15 +
- drivers/serial/Kconfig              |   10 +
- drivers/serial/Makefile             |    1
- drivers/serial/of_serial.c          |  143 ++++++++++++++++
- 4 files changed, 169 insertions(+)
+>  > 
+>  > +     case UPIO_DWAPB:
+>  > +             /* Save the LCR value so it can be re-written when a
+>  > +              * Busy Detect interrupt occurs. */
+>  > +             if (save_offset == UART_LCR)
+>  > +                     up->lcr = value;
+>  > +             writeb(value, up->port.membase + offset);
+>  > +             /* Read the IER to ensure any interrupt is cleared before
+>  > +              * returning from ISR. */
+>  > +             if ((save_offset == UART_TX || save_offset == UART_IER) 
+> && in_irq())
+> 
+> The in_irq() is a worry.  If the serial driver is used as the system
+> console, then it can be called from _any_ interrupt handler.  eg a printk()
+> in the sata code.
+> 
+> What happens then?
 
-Index: linux-2.6/drivers/serial/Makefile
-===================================================================
---- linux-2.6.orig/drivers/serial/Makefile
-+++ linux-2.6/drivers/serial/Makefile
-@@ -58,3 +58,4 @@ obj-$(CONFIG_SERIAL_SGI_IOC3) += ioc3_se
- obj-$(CONFIG_SERIAL_ATMEL) += atmel_serial.o
- obj-$(CONFIG_SERIAL_UARTLITE) += uartlite.o
- obj-$(CONFIG_SERIAL_NETX) += netx-serial.o
-+obj-$(CONFIG_SERIAL_OF_PLATFORM) += of_serial.o
-Index: linux-2.6/drivers/serial/of_serial.c
-===================================================================
---- /dev/null
-+++ linux-2.6/drivers/serial/of_serial.c
-@@ -0,0 +1,143 @@
-+/*
-+ *  Serial Port driver for Open Firmware platform devices
-+ *
-+ *    Copyright (C) 2006 Arnd Bergmann <arnd@arndb.de>, IBM Corp.
-+ *
-+ *  This program is free software; you can redistribute it and/or
-+ *  modify it under the terms of the GNU General Public License
-+ *  as published by the Free Software Foundation; either version
-+ *  2 of the License, or (at your option) any later version.
-+ *
-+ */
-+#include <linux/init.h>
-+#include <linux/module.h>
-+#include <linux/serial_core.h>
-+#include <linux/serial_8250.h>
-+
-+#include <asm/of_platform.h>
-+#include <asm/prom.h>
-+
-+/*
-+ * Fill a struct uart_port for a given device node
-+ */
-+static int __devinit of_platform_serial_setup(struct of_device *ofdev,
-+					int type, struct uart_port *port)
-+{
-+	struct resource resource;
-+	struct device_node *np = ofdev->node;
-+	const unsigned int *clk, *spd;
-+	int ret;
-+
-+	memset(port, 0, sizeof *port);
-+	spd = get_property(np, "current-speed", NULL);
-+	clk = get_property(np, "clock-frequency", NULL);
-+	if (!clk) {
-+		dev_warn(&ofdev->dev, "no clock-frequency property set\n");
-+		return -ENODEV;
-+	}
-+
-+	ret = of_address_to_resource(np, 0, &resource);
-+	if (ret) {
-+		dev_warn(&ofdev->dev, "invalid address\n");
-+		return ret;
-+	}
-+
-+	spin_lock_init(&port->lock);
-+	port->mapbase = resource.start;
-+	port->irq = irq_of_parse_and_map(np, 0);
-+	port->iotype = UPIO_MEM;
-+	port->type = type;
-+	port->uartclk = *clk;
-+	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP;
-+	port->dev = &ofdev->dev;
-+	port->custom_divisor = *clk / (16 * (*spd));
-+
-+	return 0;
-+}
-+
-+/*
-+ * Try to register a serial port
-+ */
-+static int __devinit of_platform_serial_probe(struct of_device *ofdev,
-+						const struct of_device_id *id)
-+{
-+	struct uart_port port;
-+	int port_type;
-+	int ret;
-+
-+	if (of_find_property(ofdev->node, "used-by-rtas", NULL))
-+		return -EBUSY;
-+
-+	port_type = (unsigned long)id->data;
-+	ret = of_platform_serial_setup(ofdev, port_type, &port);
-+	if (ret)
-+		goto out;
-+
-+	switch (port_type) {
-+	case PORT_UNKNOWN:
-+		dev_info(&ofdev->dev, "Unknown serial port found, "
-+			"attempting to use 8250 driver\n");
-+		/* fallthrough */
-+	case PORT_8250 ... PORT_MAX_8250:
-+		ret = serial8250_register_port(&port);
-+		break;
-+	default:
-+		/* need to add code for these */
-+		ret = -ENODEV;
-+		break;
-+	}
-+	if (ret < 0)
-+		goto out;
-+
-+	ofdev->dev.driver_data = (void *)(unsigned long)ret;
-+	return 0;
-+out:
-+	irq_dispose_mapping(port.irq);
-+	return ret;
-+}
-+
-+/*
-+ * Release a line
-+ */
-+static int of_platform_serial_remove(struct of_device *ofdev)
-+{
-+	int line = (unsigned long)ofdev->dev.driver_data;
-+	serial8250_unregister_port(line);
-+	return 0;
-+}
-+
-+/*
-+ * A few common types, add more as needed.
-+ */
-+static struct of_device_id __devinitdata of_platform_serial_table[] = {
-+	{ .type = "serial", .compatible = "ns8250",   .data = (void *)PORT_8250, },
-+	{ .type = "serial", .compatible = "ns16450",  .data = (void *)PORT_16450, },
-+	{ .type = "serial", .compatible = "ns16550",  .data = (void *)PORT_16550, },
-+	{ .type = "serial", .compatible = "ns16750",  .data = (void *)PORT_16750, },
-+	{ .type = "serial",			      .data = (void *)PORT_UNKNOWN, },
-+	{ /* end of list */ },
-+};
-+
-+static struct of_platform_driver __devinitdata of_platform_serial_driver = {
-+	.owner = THIS_MODULE,
-+	.name = "of_serial",
-+	.probe = of_platform_serial_probe,
-+	.remove = of_platform_serial_remove,
-+	.match_table = of_platform_serial_table,
-+};
-+
-+static int __init of_platform_serial_init(void)
-+{
-+	return of_register_platform_driver(&of_platform_serial_driver);
-+}
-+module_init(of_platform_serial_init);
-+
-+static void __exit of_platform_serial_exit(void)
-+{
-+	return of_unregister_platform_driver(&of_platform_serial_driver);
-+};
-+module_exit(of_platform_serial_exit);
-+
-+MODULE_AUTHOR("Arnd Bergmann <arnd@arndb.de>");
-+MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("Serial Port driver for Open Firmware platform devices");
-Index: linux-2.6/drivers/serial/Kconfig
-===================================================================
---- linux-2.6.orig/drivers/serial/Kconfig
-+++ linux-2.6/drivers/serial/Kconfig
-@@ -999,4 +999,14 @@ config SERIAL_NETX_CONSOLE
- 	  If you have enabled the serial port on the Motorola IMX
- 	  CPU you can make it the console by answering Y to this option.
- 
-+config SERIAL_OF_PLATFORM
-+	tristate "Serial port on Open Firmware platform bus"
-+	depends on PPC_OF
-+	depends on SERIAL_8250
-+	help
-+	  If you have a PowerPC based system that has serial ports
-+	  on a platform specific bus, you should enable this option.
-+	  Currently, only 8250 compatible ports are supported, but
-+	  others can easily be added.
-+
- endmenu
-Index: linux-2.6/arch/powerpc/kernel/legacy_serial.c
-===================================================================
---- linux-2.6.orig/arch/powerpc/kernel/legacy_serial.c
-+++ linux-2.6/arch/powerpc/kernel/legacy_serial.c
-@@ -124,6 +124,10 @@ static int __init add_legacy_soc_port(st
- 	if (get_property(np, "clock-frequency", NULL) == NULL)
- 		return -1;
- 
-+	/* if rtas uses this device, don't try to use it as well */
-+	if (get_property(np, "used-by-rtas", NULL) != NULL)
-+		return -1;
-+
- 	/* Get the address */
- 	addrp = of_get_address(soc_dev, 0, NULL, NULL);
- 	if (addrp == NULL)
-@@ -334,6 +338,17 @@ void __init find_legacy_serial_ports(voi
- 		of_node_put(tsi);
- 	}
- 
-+	/* First fill our array with opb bus ports */
-+	for (np = NULL; (np = of_find_compatible_node(np, "serial", "ns16750")) != NULL;) {
-+		struct device_node *opb = of_get_parent(np);
-+		if (opb && !strcmp(opb->type, "opb")) {
-+			index = add_legacy_soc_port(np, np);
-+			if (index >= 0 && np == stdout)
-+				legacy_serial_console = index;
-+		}
-+		of_node_put(opb);
-+	}
-+
- #ifdef CONFIG_PCI
- 	/* Next, try to locate PCI ports */
- 	for (np = NULL; (np = of_find_all_nodes(np));) {
+The in_irq() is there to improve performance. The logic being that
+writing to registers outside the interrupt context will not require
+the fix for issue 3.
+There should be no issues if called from other interrupt context
+as the read is non-destructive. I can remove the call to in_irq() if
+you prefer.
+
+
+>  > @@ -1383,6 +1399,19 @@ static irqreturn_t serial8250_interrupt(
+>  >                       handled = 1;
+>  > 
+>  >                       end = NULL;
+>  > +             } else if (up->port.iotype == UPIO_DWAPB &&
+>  > +                       (iir & UART_IIR_BUSY) == UART_IIR_BUSY) {
+>  > +                     /* The DesignWare APB UART has an Busy Detect 
+> (0x07)
+>  > +                      * interrupt meaning an LCR write attempt 
+> occured while the
+>  > +                      * UART was busy. The interrupt must be cleared 
+> by reading
+>  > +                      * the UART status register (USR) and the LCR 
+> re-written. */
+>  > +                     unsigned int status;
+>  > +                     status = *(volatile u32 *)up->port.private_data;
+> 
+> Are you sure this is right?  The use of volatile is generally discouraged
+> and is a sign that something is wrong.  What is the driver attempting to
+> read here?  Should it be using readl()?
+
+The driver is reading the UART's USR (UART Status Register) which is
+a non-standard register at a non-fixed offset, hence the need for
+private_data. This was discussed in detail in the patch thread and the
+goal was to avoid using platform specific #ifdefs as part of the fix
+
+The register is accessed in kseg1 (unmapped on the mips architecture) so
+readl is not needed. The register definitions in this space are all marked
+volatile but since it's now accessed through private_data, the read had
+to be made explicitly volatile.
+
+
+> Also, the newly-added private_data field is not being initialised to
+> anything anywhere in this patch.
+
+private_data is initialized in the platform specific initialization code
+which will be submitted to the l-m.o That patch contains only code which
+lives in arch/mips and include/asm-mips so I was not planning on
+submitting to the main kernel list. This level of procedural detail is
+not in the maillist FAQ, I'm assuming that is normal procedure?
+
+Marc
