@@ -1,71 +1,87 @@
-From: Tilman Schmidt <tilman@imap.cc>
-Subject: Re: [PATCH] drivers/isdn/gigaset: new M101 driver
-Date: Tue, 13 Feb 2007 00:49:58 +0100
-Message-ID: <45D0FD26.9030804@imap.cc>
-References: <200702012112.l11LCOO4016557@lx1.pxnet.com> <20070201171345.bd98ce30.akpm@osdl.org> <20070203160932.GA32523@kroah.com> <45C52848.50705@imap.cc> <20070212184712.GC32607@kroah.com>
+From: Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH] serial driver PMC MSP71xx, kernel linux-mips.git master
+Date: Mon, 12 Feb 2007 23:36:56 -0800
+Message-ID: <20070212233656.3b4550dd.akpm@linux-foundation.org>
+References: <200702121804.l1CI488t024555@pasqua.pmc-sierra.bc.ca>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature";
- boundary="------------enig416C1B2D87FC86DBF3955FA2"
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1030531AbXBLXtQ@vger.kernel.org>
-In-Reply-To: <20070212184712.GC32607@kroah.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <greg@kroah.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Karsten Keil <kkeil@suse.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, i4ldeveloper@listserv.isdn4linux.de, linux-serial@vger.kernel.org, Hansjoerg Lipp <hjlipp@web.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp.osdl.org ([65.172.181.24]:57751 "EHLO smtp.osdl.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751163AbXBMHhC (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 13 Feb 2007 02:37:02 -0500
+In-Reply-To: <200702121804.l1CI488t024555@pasqua.pmc-sierra.bc.ca>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Marc St-Jean <stjeanma@pmc-sierra.com>
+Cc: linux-serial@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig416C1B2D87FC86DBF3955FA2
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+On Mon, 12 Feb 2007 12:04:08 -0600 Marc St-Jean <stjeanma@pmc-sierra.com> wrote:
 
-Am 12.02.2007 19:47 schrieb Greg KH:
+> Sixth attempt at the serial driver patch for the PMC-Sierra MSP71xx device.
+> Identical to last patch but respun for 8 character tabs.
+> 
+> There are three different fixes:
+> 1. Fix for DesignWare THRE errata
+> - Dropped our fix since the "8250-uart-backup-timer.patch" in the "mm"
+> tree also fixes it. This patch needs to be applied on top of "mm" patch.
+> 
+> 2. Fix for Busy Detect on LCR write
+> - No changes since last patch.
+> 
+> 3. Workaround for interrupt/data concurrency issue
+> - No changes since last patch.
 
->>>>> +static void gigaset_device_release(struct device *dev)
->>>>> +{
->>>>> +	//FIXME anything to do? cf. platform_device_release()
->>>>> +}
+A couple of things.
 
-> The memory of the platform device itself needs to be freed here,
-> otherwise, to do it earlier would cause race conditions and oopses.
+- When preparing a changelog, please just tell us what the patch does. 
+  The information about how this patch differes from a previous version of
+  the patch is irrelevant when the patch hits the mainline repository hence
+  I must edit it all.
 
-I don't do it earlier. I do it later. My platform_device structure
-is part of my driver's device state structure which is freed
-explicitly later after the call to platform_device_unregister().
-Is that bad?
+  It's OK to add the what-i-changed-since-last-time details, but please make
+  that separate and remember that it will be removed for when the patch goes
+  upstream.
 
-> Look at how the other platform drivers do things.
+- When fixing a bug, please tell us in detail what that bug *is*.  None
+  of the above three items tell us any of this, which is essential
+  information for those who are to review the change.
 
-They do things differently from each other as well as from mine.
-block/floppy.c, for example, just has a call to complete() there.
+>  
+> +	case UPIO_DWAPB:
+> +		/* Save the LCR value so it can be re-written when a
+> +		 * Busy Detect interrupt occurs. */
+> +		if (save_offset == UART_LCR)
+> +			up->lcr = value;
+> +		writeb(value, up->port.membase + offset);
+> +		/* Read the IER to ensure any interrupt is cleared before
+> +		 * returning from ISR. */
+> +		if ((save_offset == UART_TX || save_offset == UART_IER) && in_irq())
 
-Anyway, in the latest version of my driver, its platform_device
-release function finally does something, too: it frees
-dev->platform_data and pdev->resource just in case something
-might have materialized there. I hope that's ok.
+The in_irq() is a worry.  If the serial driver is used as the system
+console, then it can be called from _any_ interrupt handler.  eg a printk()
+in the sata code.
 
-Regards,
-Tilman
+What happens then?
 
---=20
-Tilman Schmidt                          E-Mail: tilman@imap.cc
-Bonn, Germany
-Diese Nachricht besteht zu 100% aus wiederverwerteten Bits.
-Unge=F6ffnet mindestens haltbar bis: (siehe R=FCckseite)
+> @@ -1383,6 +1399,19 @@ static irqreturn_t serial8250_interrupt(
+>  			handled = 1;
+>  
+>  			end = NULL;
+> +		} else if (up->port.iotype == UPIO_DWAPB &&
+> +			  (iir & UART_IIR_BUSY) == UART_IIR_BUSY) {
+> +			/* The DesignWare APB UART has an Busy Detect (0x07)
+> +			 * interrupt meaning an LCR write attempt occured while the
+> +			 * UART was busy. The interrupt must be cleared by reading
+> +			 * the UART status register (USR) and the LCR re-written. */
+> +			unsigned int status;
+> +			status = *(volatile u32 *)up->port.private_data;
 
+Are you sure this is right?  The use of volatile is generally discouraged
+and is a sign that something is wrong.  What is the driver attempting to
+read here?  Should it be using readl()?
 
---------------enig416C1B2D87FC86DBF3955FA2
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Also, the newly-added private_data field is not being initialised to
+anything anywhere in this patch.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.3rc1 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFF0P0uMdB4Whm86/kRAtUuAJ4/66YsinszZR3vd9tjFQD5xKzJigCdHE9w
-lBfcHwSZT9mBjjsUgBBmShQ=
-=q1e5
------END PGP SIGNATURE-----
-
---------------enig416C1B2D87FC86DBF3955FA2--
