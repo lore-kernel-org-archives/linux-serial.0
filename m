@@ -1,47 +1,33 @@
-From: Robin Getz <rgetz@blackfin.uclinux.org>
+From: Russell King <rmk+lkml@arm.linux.org.uk>
 Subject: Re: should RTS init in serial core be tied to CRTSCTS
-Date: Sun, 4 Mar 2007 11:20:44 -0500
-Message-ID: <200703041120.45211.rgetz@blackfin.uclinux.org>
+Date: Sun, 4 Mar 2007 19:46:32 +0000
+Message-ID: <20070304194632.GC30345@flint.arm.linux.org.uk>
 References: <8bd0f97a0703011603m794e00f5x875eb68ad0db05de@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S933010AbXCDQUE@vger.kernel.org>
-In-Reply-To: <8bd0f97a0703011603m794e00f5x875eb68ad0db05de@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from caramon.arm.linux.org.uk ([217.147.92.249]:2334 "EHLO
+	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751044AbXCDTqp (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 4 Mar 2007 14:46:45 -0500
 Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Mike Frysinger <vapier.adi@gmail.com>
-Cc: rmk@arm.linux.org.uk, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+In-Reply-To: <8bd0f97a0703011603m794e00f5x875eb68ad0db05de@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Mike Frysinger <vapier.adi@gmail.com>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Robin Getz <rgetz@blackfin.uclinux.org>
 
-On Thu 1 Mar 2007 19:03, Mike Frysinger pondered:
+On Thu, Mar 01, 2007 at 07:03:02PM -0500, Mike Frysinger wrote:
 > the console= bootcmd allows for controlling of the initial state of
-> flow control by adding/omitting the 'r' suffix ... however, the
-> uart_startup() function in serial_core.c always calls down into the
-> serial driver with TIOCM_RTS:
-> static int uart_startup(...) {
-> ...
->             /*
->              * Setup the RTS and DTR signals once the
->              * port is open and ready to respond.
->              */
->             if (info->tty->termios->c_cflag & CBAUD)
->                 uart_set_mctrl(port, TIOCM_RTS | TIOCM_DTR);
-> ...
->
-> shouldnt TIOCM_RTS be passed down only when the 'r' is appended to the
-> boot cmdline ?  perhaps like this:
-> uart_set_mctrl(port, (info->flags & UIF_CTS_FLOW ? TIOCM_RTS : 0) |
-> TIOCM_DTR); assuming too that TIOCM_DTR should always be set ...
+> flow control by adding/omitting the 'r' suffix ...
 
-This would help a similar problem I am having. Simply using a serial console 
-with Flow control enabled, turns flow control on. 
+The console command *only* sets the state for the kernel's use of one
+serial port.  It does not affect any other serial port, so tying
+random RTS behaviours into that command line option is absolutely
+silly.
 
-If the application wants the capability to turn Flow control on later, without 
-booting with it on, the current code does not allow this...
-
-Was this the intended use the the 'console=...r'?
-
-Thanks
--Robin
+-- 
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:
