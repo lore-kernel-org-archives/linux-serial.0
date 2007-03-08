@@ -1,58 +1,51 @@
-From: "Oleksiy Kebkal" <lesha@evologics.de>
+From: Krzysztof Halasa <khc@pm.waw.pl>
 Subject: Re: should RTS init in serial core be tied to CRTSCTS
-Date: Thu, 8 Mar 2007 15:40:15 +0100
-Message-ID: <57354eff0703080640h65ebf6eay69e5eab048812aab@mail.gmail.com>
+Date: Thu, 08 Mar 2007 17:51:28 +0100
+Message-ID: <m3r6rz3chb.fsf@maximus.localdomain>
 References: <8bd0f97a0703011603m794e00f5x875eb68ad0db05de@mail.gmail.com>
-	 <200703071019.55896.rgetz@blackfin.uclinux.org>
-	 <57354eff0703071330k2395e9c8n58e12f2111dcb25a@mail.gmail.com>
-	 <200703080844.32157.rgetz@blackfin.uclinux.org>
-	 <20070308134800.GA30023@flint.arm.linux.org.uk>
-	 <57354eff0703080623r2f7f88c3r7ddf6381061cbd73@mail.gmail.com>
-	 <20070308142849.GC30023@flint.arm.linux.org.uk>
+	<200703071019.55896.rgetz@blackfin.uclinux.org>
+	<57354eff0703071330k2395e9c8n58e12f2111dcb25a@mail.gmail.com>
+	<200703080844.32157.rgetz@blackfin.uclinux.org>
+	<20070308134800.GA30023@flint.arm.linux.org.uk>
+	<45F01AA8.7010608@gmx.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nf-out-0910.google.com ([64.233.182.187]:44977 "EHLO
-	nf-out-0910.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751982AbXCHOkS (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 8 Mar 2007 09:40:18 -0500
-Received: by nf-out-0910.google.com with SMTP id o25so658335nfa
-        for <linux-serial@vger.kernel.org>; Thu, 08 Mar 2007 06:40:16 -0800 (PST)
-In-Reply-To: <20070308142849.GC30023@flint.arm.linux.org.uk>
-Content-Disposition: inline
+Received: from khc.piap.pl ([195.187.100.11]:39350 "EHLO khc.piap.pl"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752546AbXCHQvf (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 8 Mar 2007 11:51:35 -0500
+In-Reply-To: <45F01AA8.7010608@gmx.net> (Carl-Daniel Hailfinger's message of "Thu, 08 Mar 2007 15:16:08 +0100")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Robin Getz <rgetz@blackfin.uclinux.org>, Krzysztof Halasa <khc@pm.waw.pl>, Mike Frysinger <vapier.adi@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+To: Carl-Daniel Hailfinger <c-d.hailfinger.devel.2006@gmx.net>
+Cc: Robin Getz <rgetz@blackfin.uclinux.org>, Oleksiy Kebkal <kebkal@gmail.com>, Mike Frysinger <vapier.adi@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 
-2007/3/8, Russell King <rmk+lkml@arm.linux.org.uk>:
-> On Thu, Mar 08, 2007 at 03:23:49PM +0100, Oleksiy Kebkal wrote:
-> > Ok. I understand now one of the sources of misunderstanding. I don't
-> > want to mix console and application serial port.
->
-> It's not a misunderstanding if you realise that email is threaded and
-> you _follow_ the individual threads.  Robin has a similar concern to
-> you but _additionally_ wants something that you don't.
->
-> So really to remove the "confusion" from this discussion you should
-> avoid trying to correct replies to Robin's emails.
+Carl-Daniel Hailfinger <c-d.hailfinger.devel.2006@gmx.net> writes:
 
-On some stages it was very close... Anyway, sorry...
+> Unless you want two machines to monitor each other via serial console and
+> each of them has only one serial port. It's not perfect, but it works well
+> enough despite all claims to the contrary.
 
-> > The other problem is how to open serial port with correct settings
-> > _after_ booting. In this case /proc could be applicable, isn't it?
->
-> Doubt it with todays opinions about /proc contents.  Probably more
-> appropriate in sysfs, if someone can be bothered to do the work
-> required to properly integrate tty and sysfs.
->
-> Don't look at me; I'm not doing very much with serial anymore.
+Sure, if you don't need "input" (only "console logger" function and
+not "initial input/output terminal"). It has nothing to do with the
+RTS "problem", though.
 
-I don't. :) Surely I'm not experienced kernel developer, but I would
-like to do it. :)
-The only purpose of my remarks and questions was to find the best
-origin of force
-to solve this problem. And all remarks in this thread are very valuable for me.
+BTW: reasonably working, standard-compliant USB-RS232 converters
+cost $15 or so. Unfortunately not that all machines have USB ports.
 
--Oleksiy
+I agree with Russell - mixing kernel console and application's
+port is asking for trouble.
+
+OTOH I wonder what does the device in question require WRT the
+serial port and WRT RTS line in particular.
+I know there are some half-duplex converters which drive RTS only
+while sending and which require CTS to send. They are perhaps a bit
+broken and require some CSMA-alike retransmissions etc.
+
+I don't know if one can expect RTS to stay low all the time. Even
+a simple /sbin/setserial from /etc/rc.* would drive it high for
+a moment. I'm afraid the only way which makes sense may be using
+a customized plug.
+-- 
+Krzysztof Halasa
