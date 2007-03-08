@@ -1,47 +1,42 @@
-From: "Tosoni" <jp.tosoni@acksys.fr>
-Subject: RE: should RTS init in serial core be tied to CRTSCTS
-Date: Thu, 8 Mar 2007 19:43:15 +0100
-Message-ID: <000201c761b1$a281cdf0$2e01a8c0@acksys.local>
-References: <m3r6rz3chb.fsf@maximus.localdomain>
+From: Robin Getz <rgetz@blackfin.uclinux.org>
+Subject: Re: should RTS init in serial core be tied to CRTSCTS
+Date: Thu, 8 Mar 2007 15:23:39 -0500
+Message-ID: <200703081523.39698.rgetz@blackfin.uclinux.org>
+References: <8bd0f97a0703011603m794e00f5x875eb68ad0db05de@mail.gmail.com> <200703080844.32157.rgetz@blackfin.uclinux.org> <20070308134800.GA30023@flint.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain;
-	charset="us-ascii"
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp22.msg.oleane.net ([62.161.4.22]:34695 "EHLO
-	smtp22.msg.oleane.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933079AbXCHTNS (ORCPT
+Received: from nwd2mail10.analog.com ([137.71.25.55]:46045 "EHLO
+	nwd2mail10.analog.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933231AbXCHUWk (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 8 Mar 2007 14:13:18 -0500
-In-Reply-To: <m3r6rz3chb.fsf@maximus.localdomain>
+	Thu, 8 Mar 2007 15:22:40 -0500
+In-Reply-To: <20070308134800.GA30023@flint.arm.linux.org.uk>
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Krzysztof Halasa' <khc@pm.waw.pl>, 'Carl-Daniel Hailfinger' <c-d.hailfinger.devel.2006@gmx.net>
-Cc: 'Robin Getz' <rgetz@blackfin.uclinux.org>, 'Oleksiy Kebkal' <kebkal@gmail.com>, 'Mike Frysinger' <vapier.adi@gmail.com>, 'Linux Kernel Mailing List' <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+To: Russell King <rmk+lkml@arm.linux.org.uk>
+Cc: Oleksiy Kebkal <kebkal@gmail.com>, Krzysztof Halasa <khc@pm.waw.pl>, Mike Frysinger <vapier.adi@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 
-Krzysztof Halasa wrote:
-
-> OTOH I wonder what does the device in question require WRT the
-> serial port and WRT RTS line in particular.
-> I know there are some half-duplex converters which drive RTS only
-> while sending and which require CTS to send.
-
-As far as I know in the old times this was the *standard* way to use a modem
-(per CCITT V24), and even nowadays many modems can handle this method for
-transmit, to stay compatible with the standard.
-
-Think of radio modems. Some are inherently half duplex.
-
-> They are perhaps a bit broken <snip>
-No, no, they apply an old standard. Probably they are old as well.
+On Thu 8 Mar 2007 08:48, Russell King pondered:
+> On Thu, Mar 08, 2007 at 08:44:31AM -0500, Robin Getz wrote:
+> > That would let you change things are run time, but the problem is at
+> > boot time. A default setting needs to be set, so when things initialize,
+> > and proc does not exist yet, it is still set properly...
 >
-> I don't know if one can expect RTS to stay low all the time. Even
-> a simple /sbin/setserial from /etc/rc.* would drive it high for
-> a moment. I'm afraid the only way which makes sense may be using
-> a customized plug.
+> I disagree.  "proc does not exist yet" - the only time that applies is
+> long before userspace as active.
 
-It's a pity that Linux (or Unixes) never handled RTS this way.
-I feel that the /proc or sysfs solutions are the best to alter this well
-established default in this driver. It would not break existing installed
-hardware.
+Right - We both agree - And setting console=/dev/null in the bootargs still 
+does not help.
 
+When the kernel initializes the UART Port, it asserts RTS - which confuses the 
+host it is attached to (in this case, the Linux system is the serial 
+peripheral).
+
+How about adding a module_param to serial core, which the default is to assert 
+RTS (as is today), and someone (like me) can override with serial_core.RTS=0
+
+-Robin
