@@ -1,51 +1,59 @@
-From: "Oleksiy Kebkal" <kebkal@gmail.com>
+From: Krzysztof Halasa <khc@pm.waw.pl>
 Subject: Re: should RTS init in serial core be tied to CRTSCTS
-Date: Fri, 9 Mar 2007 15:18:48 +0100
-Message-ID: <57354eff0703090618q17d80f53p25b904d552fc30c@mail.gmail.com>
-References: <8bd0f97a0703011603m794e00f5x875eb68ad0db05de@mail.gmail.com>
-	 <200703080844.32157.rgetz@blackfin.uclinux.org>
-	 <20070308134800.GA30023@flint.arm.linux.org.uk>
-	 <200703081523.39698.rgetz@blackfin.uclinux.org>
-	 <20070308204020.GE30023@flint.arm.linux.org.uk>
+Date: Fri, 09 Mar 2007 21:39:14 +0100
+Message-ID: <m3irdaywwd.fsf@maximus.localdomain>
+References: <000201c761b1$a281cdf0$2e01a8c0@acksys.local>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nf-out-0910.google.com ([64.233.182.185]:46105 "EHLO
-	nf-out-0910.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1767314AbXCIOSv (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 9 Mar 2007 09:18:51 -0500
-Received: by nf-out-0910.google.com with SMTP id o25so1082549nfa
-        for <linux-serial@vger.kernel.org>; Fri, 09 Mar 2007 06:18:49 -0800 (PST)
-In-Reply-To: <20070308204020.GE30023@flint.arm.linux.org.uk>
-Content-Disposition: inline
+Received: from khc.piap.pl ([195.187.100.11]:37145 "EHLO khc.piap.pl"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752444AbXCIUjR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 9 Mar 2007 15:39:17 -0500
+In-Reply-To: <000201c761b1$a281cdf0$2e01a8c0@acksys.local> (Tosoni's message of "Thu, 8 Mar 2007 19:43:15 +0100")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Robin Getz <rgetz@blackfin.uclinux.org>, Oleksiy Kebkal <kebkal@gmail.com>, Krzysztof Halasa <khc@pm.waw.pl>, Mike Frysinger <vapier.adi@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+To: Tosoni <jp.tosoni@acksys.fr>
+Cc: 'Carl-Daniel Hailfinger' <c-d.hailfinger.devel.2006@gmx.net>, 'Robin Getz' <rgetz@blackfin.uclinux.org>, 'Oleksiy Kebkal' <kebkal@gmail.com>, 'Mike Frysinger' <vapier.adi@gmail.com>, 'Linux Kernel Mailing List' <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 
-2007/3/8, Russell King <rmk+lkml@arm.linux.org.uk>:
-> ... which occurs /after/ userspace is up and running, when sysfs is
-> available.  So putting it in sysfs is reasonable.
+"Tosoni" <jp.tosoni@acksys.fr> writes:
 
-Is it right place for serial settings?
-/sys/class/tty/ttySN/
+>> OTOH I wonder what does the device in question require WRT the
+>> serial port and WRT RTS line in particular.
+>> I know there are some half-duplex converters which drive RTS only
+>> while sending and which require CTS to send.
+>
+> As far as I know in the old times this was the *standard* way to use a modem
+> (per CCITT V24), and even nowadays many modems can handle this method for
+> transmit, to stay compatible with the standard.
 
-How far is it reasonable to split termios settings to the attributes?
-1)
-/sys/class/tty/ttyS0/termios
-2)
-/sys/class/tty/ttyS0/c_iflag
-/sys/class/tty/ttyS0/c_oflag
-/sys/class/tty/ttyS0/c_cflag
-/sys/class/tty/ttyS0/c_lflag
-/sys/class/tty/ttyS0/c_cc
-3)
-/sys/class/tty/ttyS0/speed
-/sys/class/tty/ttyS0/eof
-/sys/class/tty/ttyS0/eon
-/sys/class/tty/ttyS0/erase
-.... and so on
+I think it wasn't standard for real modems as they were full-duplex
+(even these 1200/75 or what was that) but it was for other devices
+such as current loops (which were frequently half-duplex).
 
+I've seen such devices quite recently, perhaps ~ 10 years ago.
+OTOH I think even "current" PC BIOSes use such signaling.
 
--Oleksiy
+> Think of radio modems. Some are inherently half duplex.
+
+Sure. But /dev/ttyS* ports are full-duplex, with CRTSCTS or without,
+so they don't use such handshaking.
+
+>> They are perhaps a bit broken <snip>
+> No, no, they apply an old standard. Probably they are old as well.
+
+I was thinking of a particular piece of hardware and it was definitely
+broken a bit. "Selective compliance", maybe.
+
+> It's a pity that Linux (or Unixes) never handled RTS this way.
+> I feel that the /proc or sysfs solutions are the best to alter this well
+> established default in this driver. It would not break existing installed
+> hardware.
+
+/proc is probably no-no.
+
+For such signaling, it would perhaps be better to invent another flag,
+similar to CRTSCTS. The driver would, of course, need some real code
+for that.
+-- 
+Krzysztof Halasa
