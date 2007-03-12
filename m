@@ -1,59 +1,70 @@
-From: Krzysztof Halasa <khc@pm.waw.pl>
-Subject: Re: should RTS init in serial core be tied to CRTSCTS
-Date: Fri, 09 Mar 2007 21:39:14 +0100
-Message-ID: <m3irdaywwd.fsf@maximus.localdomain>
-References: <000201c761b1$a281cdf0$2e01a8c0@acksys.local>
+From: "Tosoni" <jp.tosoni@acksys.fr>
+Subject: RE: should RTS init in serial core be tied to CRTSCTS
+Date: Mon, 12 Mar 2007 10:22:33 +0100
+Message-ID: <000001c76487$f7efd100$2e01a8c0@acksys.local>
+References: <m3irdaywwd.fsf@maximus.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from khc.piap.pl ([195.187.100.11]:37145 "EHLO khc.piap.pl"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752444AbXCIUjR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 9 Mar 2007 15:39:17 -0500
-In-Reply-To: <000201c761b1$a281cdf0$2e01a8c0@acksys.local> (Tosoni's message of "Thu, 8 Mar 2007 19:43:15 +0100")
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
-To: Tosoni <jp.tosoni@acksys.fr>
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S965441AbXCLJXk@vger.kernel.org>
+In-Reply-To: <m3irdaywwd.fsf@maximus.localdomain>
+Sender: linux-kernel-owner@vger.kernel.org
+To: 'Krzysztof Halasa' <khc@pm.waw.pl>, Jean-Pierre TOSONI <TOSONI@acksys.local>
 Cc: 'Carl-Daniel Hailfinger' <c-d.hailfinger.devel.2006@gmx.net>, 'Robin Getz' <rgetz@blackfin.uclinux.org>, 'Oleksiy Kebkal' <kebkal@gmail.com>, 'Mike Frysinger' <vapier.adi@gmail.com>, 'Linux Kernel Mailing List' <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 
-"Tosoni" <jp.tosoni@acksys.fr> writes:
+Krzysztof Halasa wrote:
 
->> OTOH I wonder what does the device in question require WRT the
->> serial port and WRT RTS line in particular.
->> I know there are some half-duplex converters which drive RTS only
->> while sending and which require CTS to send.
+> "Tosoni" <jp.tosoni@acksys.fr> writes:
+> > As far as I know in the old times this was the *standard*
+> way to use a modem
+> > (per CCITT V24), and even nowadays many modems can handle
+> this method for
+> > transmit, to stay compatible with the standard.
 >
-> As far as I know in the old times this was the *standard* way to use a modem
-> (per CCITT V24), and even nowadays many modems can handle this method for
-> transmit, to stay compatible with the standard.
+> I think it wasn't standard for real modems as they were full-duplex
+> (even these 1200/75 or what was that) but it was for other devices
+> such as current loops (which were frequently half-duplex).
+>
 
-I think it wasn't standard for real modems as they were full-duplex
-(even these 1200/75 or what was that) but it was for other devices
-such as current loops (which were frequently half-duplex).
+It has always been the standard for all modems. The mistake comes from the
+fact that the serial ports has been used extensively to drive things which
+are *not* modems (say, printers and VT100 consoles on Unix systems). Such
+devices did not need the standard-specified RTS function.
 
-I've seen such devices quite recently, perhaps ~ 10 years ago.
-OTOH I think even "current" PC BIOSes use such signaling.
+CCITT V24 says about RTS: "...this signal drives the DCE and sets it to
+transmit data..." (translated from french)
+CCITT V24 does not constraint the DCE to being half or full duplex.
+CCITT V24 says nothing about using RTS to handle flow control.
 
-> Think of radio modems. Some are inherently half duplex.
+> I've seen such devices quite recently, perhaps ~ 10 years ago.
+> OTOH I think even "current" PC BIOSes use such signaling.
 
-Sure. But /dev/ttyS* ports are full-duplex, with CRTSCTS or without,
-so they don't use such handshaking.
+Even Windows implements the CCITT view of RTS, via a flag named "RTS_TOGGLE"
 
->> They are perhaps a bit broken <snip>
-> No, no, they apply an old standard. Probably they are old as well.
+>
+> > Think of radio modems. Some are inherently half duplex.
+>
+> Sure. But /dev/ttyS* ports are full-duplex, with CRTSCTS or without,
+> so they don't use such handshaking.
 
-I was thinking of a particular piece of hardware and it was definitely
-broken a bit. "Selective compliance", maybe.
+A full duplex port can be used for both full- and half- duplex. A half
+duplex modem cannot be used on a full-duplex-only port. So Linux should be
+adapted to the standard, since we cannot adapt the standard to Linux.
 
-> It's a pity that Linux (or Unixes) never handled RTS this way.
-> I feel that the /proc or sysfs solutions are the best to alter this well
-> established default in this driver. It would not break existing installed
-> hardware.
+> /proc is probably no-no.
 
-/proc is probably no-no.
+Then sysfs sounds good to me.
 
-For such signaling, it would perhaps be better to invent another flag,
-similar to CRTSCTS. The driver would, of course, need some real code
-for that.
--- 
-Krzysztof Halasa
+>
+> For such signaling, it would perhaps be better to invent another flag,
+> similar to CRTSCTS. The driver would, of course, need some real code
+> for that.
+
+Another flag would help to drive modems, yes. But it would not help keeping
+RTS low at open, because we need to open the port (which raises RTS) in
+order to set the flag. Hence the need for an extra parameter in sysfs.
+
+Best regards,
+Jean-Pierre Tosoni
