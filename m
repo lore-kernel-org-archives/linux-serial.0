@@ -1,99 +1,76 @@
-From: Andrey Panin <pazke@donpac.ru>
+From: Russell King <rmk+lkml@arm.linux.org.uk>
 Subject: Re: [PATCH] Add support for ITE887x serial chipsets
-Date: Tue, 27 Mar 2007 00:17:05 +0400
-Message-ID: <20070326201705.GA14403@pazke.donpac.ru>
+Date: Mon, 26 Mar 2007 22:14:41 +0100
+Message-ID: <20070326211441.GA12690@flint.arm.linux.org.uk>
 References: <20070326141702.GA28306@deexvs01.wincor-nixdorf.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="sdtB3X0nJg68CQEu"
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S932212AbXCZURO@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from caramon.arm.linux.org.uk ([217.147.92.249]:2067 "EHLO
+	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753252AbXCZVOu (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 26 Mar 2007 17:14:50 -0400
 Content-Disposition: inline
 In-Reply-To: <20070326141702.GA28306@deexvs01.wincor-nixdorf.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Niels de Vos <niels.devos@wincor-nixdorf.com>
-Cc: rmk+serial@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Niels de Vos <niels.devos@wincor-nixdorf.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-
---sdtB3X0nJg68CQEu
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On 085, 03 26, 2007 at 04:17:02PM +0200, Niels de Vos wrote:
-> Hi,
->=20
-> the Super I/O 887x-chipsets of ITE, are currently not completely
-> supported. Only parport_pc has the ability to activate the (optional)
-> parallel port. This patch adds support for the serial ports.
->=20
-> Signed-off-by: Niels de Vos <niels.devos@wincor-nixdorf.com>
->=20
-> --- linux-2.6.20.3/drivers/serial/8250_pci.c.orig	2007-03-13 19:27:08.000=
-000000 +0100
-> +++ linux-2.6.20.3/drivers/serial/8250_pci.c	2007-03-26 15:42:17.00000000=
-0 +0200
-> @@ -581,6 +581,174 @@ static int pci_netmos_init(struct pci_de
->  	return num_serial;
->  }
-> =20
+On Mon, Mar 26, 2007 at 04:17:02PM +0200, Niels de Vos wrote:
 > +/*
 > + * ITE support by Niels de Vos <niels.devos@wincor-nixdorf.com>
 > + */
-
-I think we need a comment here describing how ugly these chips are :)
-
 > +
 > +static int __devinit pci_ite887x_init(struct pci_dev *dev)
 > +{
 > +	/* inta_addr are the configuration addresses of the ITE */
-> +	short inta_addr[] =3D { 0x2a0, 0x2c0, 0x220, 0x240, 0x1E0, 0x200,
+> +	short inta_addr[] = { 0x2a0, 0x2c0, 0x220, 0x240, 0x1E0, 0x200,
 > +								0x280, 0 };
-
-static const, please.
-
 > +	int ret, i, type;
 > +	struct resource *iobase;
 > +
 > +	/* search for the base-ioport */
-> +	i =3D 0;
-> +	while (inta_addr[i] && dev->dev.driver_data !=3D NULL) {
-> +		dev->dev.driver_data =3D request_region(inta_addr[i], 32,
+> +	i = 0;
+> +	while (inta_addr[i] && dev->dev.driver_data != NULL) {
+> +		dev->dev.driver_data = request_region(inta_addr[i], 32,
 > +								"ite887x");
-> +		if (dev->dev.driver_data !=3D NULL) {
+> +		if (dev->dev.driver_data != NULL) {
 > +			/* write POSIO0R - speed | size | ioport */
 > +			pci_write_config_dword(dev, 0x60,
 > +						0xe5000000 | inta_addr[i]);
 > +			/* write INTCBAR - ioport */
 > +			pci_write_config_dword(dev, 0x78, inta_addr[i]);
-> +			ret =3D inb(inta_addr[i]);
-> +			if (ret !=3D 0xff) {
+> +			ret = inb(inta_addr[i]);
+> +			if (ret != 0xff) {
 > +				/* ioport connected */
 > +				break;
 > +			}
 > +			release_resource(dev->dev.driver_data);
-> +			dev->dev.driver_data =3D NULL;
+> +			dev->dev.driver_data = NULL;
+
+This doesn't free the memory allocated by request_region.  Always
+pair release_region() with request_region().  Ditto for all of your
+other uses of "release_resource()".
+
+Might also be cleaner to avoid touching dev->dev.driver_data at all
+until you've identified a working resource.
+
 > +		}
 > +		i++;
 > +	}
 > +
 > +	if (! inta_addr[i]) {
-	     ^
-Please remove space after !
-
 > +		printk(KERN_ERR "ite887x: could not find iobase\n");
 > +		return -ENODEV;
 > +	}
 > +
-> +	iobase =3D dev->dev.driver_data;
+> +	iobase = dev->dev.driver_data;
 > +
 > +	/* start of undocumented type checking (see parport_pc.c) */
-> +	type =3D inb(iobase->start + 0x18);
-> +	type &=3D 0x0f;
-
-Why not:
-type =3D inb(iobase->start + 0x18) & 0x0f;
-
+> +	type = inb(iobase->start + 0x18);
+> +	type &= 0x0f;
 > +
 > +	switch (type) {
 > +	case 0x2:
@@ -114,13 +91,10 @@ type =3D inb(iobase->start + 0x18) & 0x0f;
 > +	default:
 > +		moan_device("unknown ITE887x", dev);
 > +	}
-
-These printk's are not needed IMHO.
-
 > +
 > +	/* the device has no UARTs if we get here */
 > +	release_resource(iobase);
-> +	dev->dev.driver_data =3D NULL;
+> +	dev->dev.driver_data = NULL;
 > +	return -ENODEV;
 > +}
 > +
@@ -128,198 +102,106 @@ These printk's are not needed IMHO.
 > + * activate the UART in the MISCR
 > + */
 > +static int
-> +pci_ite887x_setup(struct serial_private *priv, struct pciserial_board *b=
-oard,
+> +pci_ite887x_setup(struct serial_private *priv, struct pciserial_board *board,
 > +		  struct uart_port *port, int idx)
 > +{
 > +	int ret;
-> +	struct pci_dev *dev =3D priv->dev;
+> +	struct pci_dev *dev = priv->dev;
 > +	u32 miscr, uartbar, ioport;
 > +	/* iobase is the private driver_data */
 > +	struct resource *iobase;
 > +	/* registers */
-> +	unsigned short MISCR =3D 0x9c, UARTBAR =3D 0x7c;
-> +	unsigned short PS1BAR =3D 0x14, POSIO1 =3D 0x64;
+> +	unsigned short MISCR = 0x9c, UARTBAR = 0x7c;
+> +	unsigned short PS1BAR = 0x14, POSIO1 = 0x64;
 > +
 > +	/* enable IO_Space bit */
-> +	u32 POSIO_ENABLE =3D 1 << 31;
-> +	/* Decoding speed (1 =3D slow, 2 =3D medium, 3 =3D fast) */
-> +	u32 POSIO_SPEED =3D 3 << 29;=09
+> +	u32 POSIO_ENABLE = 1 << 31;
+> +	/* Decoding speed (1 = slow, 2 = medium, 3 = fast) */
+> +	u32 POSIO_SPEED = 3 << 29;	
+
+#define all of these?  They're constants.
+
 > +
-> +	iobase =3D (struct resource*) dev->dev.driver_data;
-> +	if (iobase =3D=3D NULL) {
+> +	iobase = (struct resource*) dev->dev.driver_data;
+> +	if (iobase == NULL) {
 > +		printk(KERN_ERR "ite887x: iobase is not available\n");
 > +		return -ENODEV;
 > +	}
-
-Is this check really needed ? I can't see how you can enter this function
-with dev->dev.driver_data =3D=3D NULL.
-
 > +
 > +	/* read the I/O port from the device */
-> +	ret =3D pci_read_config_dword(dev, PS1BAR + (0x4 * idx), &ioport);
+> +	ret = pci_read_config_dword(dev, PS1BAR + (0x4 * idx), &ioport);
 > +	if (ret) {
-
-Checking return value of pci_read_config_XXX/pci_write_config_XXX is (almos=
-t ?)
-useless and only complicates things.
-
 > +		printk(KERN_ERR "ite887x: read error PS%dBAR\n", idx + 1);
-> +		ret =3D -ENODEV;
+> +		ret = -ENODEV;
 > +		goto release_inta;
 > +	}
 > +
-> +	ioport &=3D 0x0000FF00;	/* the actual I/O space base address */
-> +	ret =3D pci_write_config_dword(dev, POSIO1 + (0x4 * idx),
+> +	ioport &= 0x0000FF00;	/* the actual I/O space base address */
+> +	ret = pci_write_config_dword(dev, POSIO1 + (0x4 * idx),
 > +				POSIO_ENABLE | POSIO_SPEED | ioport);
 > +	if (ret) {
 > +		printk(KERN_ERR "ite887x: write error PSIO%d+\n", idx + 1);
-> +		ret =3D -ENODEV;
+> +		ret = -ENODEV;
 > +		goto release_inta;
 > +	}
 > +
 > +	/* write the ioport to the UARTBAR */
-> +	ret =3D pci_read_config_dword(dev, UARTBAR, &uartbar);
+> +	ret = pci_read_config_dword(dev, UARTBAR, &uartbar);
 > +	if (ret) {
 > +		printk(KERN_ERR "ite887x: read error UARTBAR\n");
-> +		ret =3D -ENODEV;
+> +		ret = -ENODEV;
 > +		goto release_inta;
 > +	}
-> +	uartbar &=3D ~(15 << (4 * idx));		/* clear half the reg */
-> +	uartbar |=3D ioport << (16 * idx);	/* set the ioport */
-> +	ret =3D pci_write_config_dword(dev, UARTBAR, uartbar);
+> +	uartbar &= ~(15 << (4 * idx));		/* clear half the reg */
+> +	uartbar |= ioport << (16 * idx);	/* set the ioport */
+> +	ret = pci_write_config_dword(dev, UARTBAR, uartbar);
 > +	if (ret) {
 > +		printk(KERN_ERR "ite887x: write error UARTBAR\n");
-> +		ret =3D -ENODEV;
+> +		ret = -ENODEV;
 > +		goto release_inta;
 > +	}
 > +
 > +	/* get current config */
-> +	ret =3D pci_read_config_dword(dev, MISCR, &miscr);
+> +	ret = pci_read_config_dword(dev, MISCR, &miscr);
 > +	if (ret) {
 > +		printk(KERN_ERR "ite887x: read error MISCR\n");
-> +		ret =3D -ENODEV;
+> +		ret = -ENODEV;
 > +		goto release_inta;
 > +	}
 > +
 > +	/* disable interrupts (UARTx_Routing[3:0]) */
-> +	miscr &=3D ~(0xf << (12 - 4 * idx));
+> +	miscr &= ~(0xf << (12 - 4 * idx));
 > +	/* activate the UART (UARTx_En) */
-> +	miscr |=3D 1 << (23 - idx);
+> +	miscr |= 1 << (23 - idx);
 > +
 > +	/* write new config with activated UART */
-> +	ret =3D pci_write_config_dword(dev, MISCR, miscr);
+> +	ret = pci_write_config_dword(dev, MISCR, miscr);
 > +	if (ret) {
 > +		printk(KERN_ERR "ite887x: write error MISCR\n");
-> +		ret =3D -ENODEV;
+> +		ret = -ENODEV;
 > +		goto release_inta;
 > +	}
+
+I think all of the above can be done in the init function, which'll be
+a _lot_ clearer.  That also means...
+
 > +
 > +	/* idx + 1: using POSIO1 and up */
 > +	return setup_port(priv, port, idx + 1, board->first_offset, 0);
-> +
-> +release_inta:
-> +	/* release region again if we get here */
-> +	release_resource(iobase);
-> +	dev->dev.driver_data =3D NULL;
-> +	return ret;
-> +}
-> +
-> +static void __devexit pci_ite887x_exit(struct pci_dev *dev)
-> +{
-> +	/* free the private driver data */
-> +	release_resource(((struct resource*) dev->dev.driver_data));
-> +}
-> +
->  static int
->  pci_default_setup(struct serial_private *priv, struct pciserial_board *b=
-oard,
->  		  struct uart_port *port, int idx)
-> @@ -654,6 +822,18 @@ static struct pci_serial_quirk pci_seria
->  		.setup		=3D pci_default_setup,
->  	},
->  	/*
-> +	 * ITE
-> +	 */
-> +	{
-> +		.vendor		=3D PCI_VENDOR_ID_ITE,
-> +		.device		=3D PCI_DEVICE_ID_ITE_8872,
-> +		.subvendor	=3D PCI_ANY_ID,
-> +		.subdevice	=3D PCI_ANY_ID,
-> +		.init		=3D pci_ite887x_init,
-> +		.setup		=3D pci_ite887x_setup,
-> +		.exit		=3D __devexit_p(pci_ite887x_exit),
-> +	},
-> +	/*
->  	 * Panacom
->  	 */
->  	{
+
+that you can (usefully) add pbn_b1_bt_1_115200 and completely avoid
+this hack.
+
 > @@ -968,6 +1148,7 @@ enum pci_board_num_t {
 >  	pbn_plx_romulus,
 >  	pbn_oxsemi,
 >  	pbn_intel_i960,
 > +	pbn_ite_887x,
->  	pbn_sgi_ioc3,
->  	pbn_nec_nile4,
->  	pbn_computone_4,
-> @@ -1430,6 +1611,15 @@ static struct pciserial_board pci_boards
->  	},
-> =20
->  	/*
-> +	 * ITE
-> +	 */
-> +	[pbn_ite_887x] =3D {
-> +                .flags          =3D FL_BASE0 | FL_BASE_BARS,
-> +                .base_baud      =3D 115200,
-> +                .uart_offset    =3D 8,
-> +        },
 
-IMHO this is not needed. You can use pbn_b0_bt_2_115200 or pbn_b0_bt_1_1152=
-00,
-since quirks will be used anyway.
+Always avoid chipset specific definitions if there's another way to
+work around them (as suggested above).
 
-> +
-> +	/*
->  	 * NEC Vrc-5074 (Nile 4) builtin UART.
->  	 */
->  	[pbn_nec_nile4] =3D {
-> @@ -2370,6 +2560,13 @@ static struct pci_device_id serial_pci_t
->  	{	PCI_VENDOR_ID_TOPIC, PCI_DEVICE_ID_TOPIC_TP560,
->  		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
->  		pbn_b0_1_115200 },
-> +	/*
-> +	 * ITE
-> +	 */
-> +	{	PCI_VENDOR_ID_ITE, PCI_DEVICE_ID_ITE_8872,
-> +		PCI_ANY_ID, PCI_ANY_ID,
-> +		0, 0,
-> +		pbn_ite_887x },=09
-> =20
->  	/*
->  	 * IntaShield IS-200
->=20
-> -
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
->=20
-
---=20
-Andrey Panin		| Linux and UNIX system administrator
-pazke@donpac.ru		| PGP key: wwwkeys.pgp.net
-
---sdtB3X0nJg68CQEu
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (GNU/Linux)
-
-iD8DBQFGCCpBIWZCBzwS8mkRAmpRAJ9On7u6KsddOcPS1SQPaHQX7hin4gCgmGEt
-tE17bgFhh7r9GlybAG9a9qk=
-=5oLQ
------END PGP SIGNATURE-----
-
---sdtB3X0nJg68CQEu--
+-- 
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:
