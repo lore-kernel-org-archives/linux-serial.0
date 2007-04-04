@@ -1,40 +1,32 @@
-From: Niels de Vos <niels.devos@wincor-nixdorf.com>
-Subject: Re: [PATCH] Add support for ITE887x serial chipsets
-Date: Wed, 28 Mar 2007 11:08:52 +0200
-Message-ID: <1175072932.3065.8.camel@wsa115.wincor-nixdorf.com>
-References: <20070327183031.9989.qmail@science.horizon.com>
-Mime-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+From: Bjorn Helgaas <bjorn.helgaas@hp.com>
+Subject: [patch 0/5] PNP: convert x86 legacy serial to platform devs, add SMC IR PNP probe
+Date: Wed, 04 Apr 2007 16:45:36 -0600
+Message-ID: <20070404224536.337573000@ldl.fc.hp.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from truxi.wincor-nixdorf.com ([217.115.67.78]:50402 "EHLO
-	truxi.wincor-nixdorf.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752795AbXC1JJc (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 28 Mar 2007 05:09:32 -0400
-In-Reply-To: <20070327183031.9989.qmail@science.horizon.com>
+Received: from atlrel9.hp.com ([156.153.255.214]:47102 "EHLO atlrel9.hp.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752443AbXDDWqX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 4 Apr 2007 18:46:23 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux@horizon.com
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Keith Owens <kaos@ocs.com.au>, Len Brown <lenb@kernel.org>, Adam Belay <ambx1@neo.rr.com>, Matthieu CASTET <castet.matthieu@free.fr>, Jean Tourrilhes <jt@hpl.hp.com>, Matthew Garrett <mjg59@srcf.ucam.org>, Ville Syrjala <syrjala@sci.fi>, Russell King <rmk+serial@arm.linux.org.uk>, linux-serial@vger.kernel.org, Samuel Ortiz <samuel@sortiz.org>, linux-kernel@vger.kernel.org
 
-On Tue, 2007-03-27 at 14:30 -0400, linux@horizon.com wrote:
-> Minor point: the chip part numbers are actually IT887x, not ITE887x.
+This series converts i386 and x86_64 legacy serial ports to be platform
+devices and prevents probing for them if we have PNP.
 
-You are correct. Vendor is ITE, product IT887x (id=8872). What is the
-advised naming convention for something like this?
+This prevents double discovery, where a device was found both by the
+legacy probe and by 8250_pnp.
 
-> I STFW for a data sheet, but didn't have immediate luck.  Does anyone know where to find
-> documentation?
+This also prevents the serial driver from claiming IRDA devices (unless
+they have a UART PNP ID).  The serial legacy probe sometimes assumed the
+wrong IRQ, so the user had to use "setserial" to fix it.
 
-I can't even find the product on the official ITE site... The sheets I
-have come from our BIOS development team. I've uploaded them on our FTP
-server. The files will be deleted automatically in a few days.
+Removing the need for setserial to make IRDA devices work seems good,
+but it does break some things.  In particular, you may need to keep
+setserial from poking legacy UART stuff back in by doing something like
+"dpkg-reconfigure setserial" with the "kernel" option.  Otherwise, the
+setserial-discovered "UART" will claim resources and prevent the IRDA
+driver from loading.
 
-- <ftp://ftp.wincor-nixdorf.com/outgoing/IT8872_v0.2_07182000.PDF>
-- <ftp://ftp.wincor-nixdorf.com/outgoing/IT8874F_V0.1_09202001.PDF>
-
--- 
-Niels de Vos <niels.devos@wincor-nixdorf.com>
-Wincor Nixdorf International GmbH
-
+--
