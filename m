@@ -1,73 +1,87 @@
 From: Bjorn Helgaas <bjorn.helgaas@hp.com>
-Subject: [patch 3/5] smsc-ircc2: tidy up module parameter checking
-Date: Wed, 04 Apr 2007 16:45:39 -0600
-Message-ID: <20070404224608.828386000@ldl.fc.hp.com>
+Subject: [patch 1/5] PNP: notice whether we have PNP devices (PNPBIOS or PNPACPI)
+Date: Wed, 04 Apr 2007 16:45:37 -0600
+Message-ID: <20070404224608.371449000@ldl.fc.hp.com>
 References: <20070404224536.337573000@ldl.fc.hp.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from atlrel6.hp.com ([156.153.255.205]:37954 "EHLO atlrel6.hp.com"
+Received: from atlrel8.hp.com ([156.153.255.206]:42547 "EHLO atlrel8.hp.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752445AbXDDWqY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	id S1752456AbXDDWqY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
 	Wed, 4 Apr 2007 18:46:24 -0400
-Content-Disposition: inline; filename=smsc-ircc2-tidy-module-param-checking.patch
+Content-Disposition: inline; filename=pnp-platform-devs.patch
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Andrew Morton <akpm@linux-foundation.org>
 Cc: Keith Owens <kaos@ocs.com.au>, Len Brown <lenb@kernel.org>, Adam Belay <ambx1@neo.rr.com>, Matthieu CASTET <castet.matthieu@free.fr>, Jean Tourrilhes <jt@hpl.hp.com>, Matthew Garrett <mjg59@srcf.ucam.org>, Ville Syrjala <syrjala@sci.fi>, Russell King <rmk+serial@arm.linux.org.uk>, linux-serial@vger.kernel.org, Samuel Ortiz <samuel@sortiz.org>, linux-kernel@vger.kernel.org
 
-To determine whether the user specified a module parameter, use some #defines
-instead of checking for bare magic numbers.
+If we can discover devices using PNP, we can skip some legacy probes.
+This flag ("pnp_platform_devices") indicates that PNPBIOS or PNPACPI
+is enabled and should tell us about builtin devices.
 
 Signed-off-by: Bjorn Helgaas <bjorn.helgaas@hp.com>
 
-Index: w/drivers/net/irda/smsc-ircc2.c
+Index: work/drivers/pnp/core.c
 ===================================================================
---- w.orig/drivers/net/irda/smsc-ircc2.c	2007-04-04 13:38:30.000000000 -0600
-+++ w/drivers/net/irda/smsc-ircc2.c	2007-04-04 13:45:18.000000000 -0600
-@@ -79,11 +79,13 @@
- MODULE_DESCRIPTION("SMC IrCC SIR/FIR controller driver");
- MODULE_LICENSE("GPL");
+--- work.orig/drivers/pnp/core.c	2007-03-27 13:05:23.000000000 -0600
++++ work/drivers/pnp/core.c	2007-03-27 16:12:54.000000000 -0600
+@@ -23,6 +23,14 @@
+ LIST_HEAD(pnp_global);
+ DEFINE_SPINLOCK(pnp_lock);
  
--static int ircc_dma = 255;
-+#define DMA_INVAL 255
-+static int ircc_dma = DMA_INVAL;
- module_param(ircc_dma, int, 0);
- MODULE_PARM_DESC(ircc_dma, "DMA channel");
++/*
++ * ACPI or PNPBIOS should tell us about all platform devices, so we can
++ * skip some blind probes.  ISAPNP typically enumerates only plug-in ISA
++ * devices, not built-in things like COM ports.
++ */
++int pnp_platform_devices;
++EXPORT_SYMBOL(pnp_platform_devices);
++
+ void *pnp_alloc(long size)
+ {
+ 	void *result;
+Index: work/drivers/pnp/pnpacpi/core.c
+===================================================================
+--- work.orig/drivers/pnp/pnpacpi/core.c	2007-03-27 13:05:23.000000000 -0600
++++ work/drivers/pnp/pnpacpi/core.c	2007-03-27 14:44:05.000000000 -0600
+@@ -247,6 +247,7 @@
+ 	pnp_register_protocol(&pnpacpi_protocol);
+ 	acpi_get_devices(NULL, pnpacpi_add_device_handler, NULL, NULL);
+ 	pnp_info("PnP ACPI: found %d devices", num);
++	pnp_platform_devices = 1;
+ 	return 0;
+ }
+ subsys_initcall(pnpacpi_init);
+Index: work/drivers/pnp/pnpbios/core.c
+===================================================================
+--- work.orig/drivers/pnp/pnpbios/core.c	2007-03-27 13:05:23.000000000 -0600
++++ work/drivers/pnp/pnpbios/core.c	2007-03-27 14:44:05.000000000 -0600
+@@ -574,6 +574,7 @@
+ 	/* scan for pnpbios devices */
+ 	build_devlist();
  
--static int ircc_irq = 255;
-+#define IRQ_INVAL 255
-+static int ircc_irq = IRQ_INVAL;
- module_param(ircc_irq, int, 0);
- MODULE_PARM_DESC(ircc_irq, "IRQ line");
++	pnp_platform_devices = 1;
+ 	return 0;
+ }
  
-@@ -646,7 +648,7 @@
- 	self->io.fifo_size = SMSC_IRCC2_FIFO_SIZE;
- 	self->io.speed = SMSC_IRCC2_C_IRDA_FALLBACK_SPEED;
+Index: work/include/linux/pnp.h
+===================================================================
+--- work.orig/include/linux/pnp.h	2007-03-27 13:05:23.000000000 -0600
++++ work/include/linux/pnp.h	2007-03-27 14:44:05.000000000 -0600
+@@ -364,6 +364,7 @@
+ int pnp_device_attach(struct pnp_dev *pnp_dev);
+ void pnp_device_detach(struct pnp_dev *pnp_dev);
+ extern struct list_head pnp_global;
++extern int pnp_platform_devices;
  
--	if (irq < 255) {
-+	if (irq != IRQ_INVAL) {
- 		if (irq != chip_irq)
- 			IRDA_MESSAGE("%s, Overriding IRQ - chip says %d, using %d\n",
- 				     driver_name, chip_irq, irq);
-@@ -654,7 +656,7 @@
- 	} else
- 		self->io.irq = chip_irq;
+ /* multidevice card support */
+ int pnp_add_card(struct pnp_card *card);
+@@ -411,6 +412,7 @@
+ static inline int pnp_add_device(struct pnp_dev *dev) { return -ENODEV; }
+ static inline int pnp_device_attach(struct pnp_dev *pnp_dev) { return -ENODEV; }
+ static inline void pnp_device_detach(struct pnp_dev *pnp_dev) { ; }
++#define pnp_platform_devices 0
  
--	if (dma < 255) {
-+	if (dma != DMA_INVAL) {
- 		if (dma != chip_dma)
- 			IRDA_MESSAGE("%s, Overriding DMA - chip says %d, using %d\n",
- 				     driver_name, chip_dma, dma);
-@@ -2836,9 +2838,9 @@
- 					tmpconf.fir_io = ircc_fir;
- 				if (ircc_sir != 0)
- 					tmpconf.sir_io = ircc_sir;
--				if (ircc_dma != 0xff)
-+				if (ircc_dma != DMA_INVAL)
- 					tmpconf.fir_dma = ircc_dma;
--				if (ircc_irq != 0xff)
-+				if (ircc_irq != IRQ_INVAL)
- 					tmpconf.fir_irq = ircc_irq;
- 
- 				IRDA_MESSAGE("Detected unconfigured %s SMSC IrDA chip, pre-configuring device.\n", conf->name);
+ /* multidevice card support */
+ static inline int pnp_add_card(struct pnp_card *card) { return -ENODEV; }
 
 --
