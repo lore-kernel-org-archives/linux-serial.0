@@ -1,42 +1,38 @@
-From: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+From: Mikhail Zolotaryov <lebon@faust.net.ua>
 Subject: Re: [PATCH] PPC4xx UART0 (8250) problem
-Date: Sat, 07 Apr 2007 15:12:36 +1000
-Message-ID: <1175922756.7407.46.camel@localhost.localdomain>
-References: <46171C50.3020104@faust.net.ua>
+Date: Sat, 07 Apr 2007 11:41:38 +0300
+Message-ID: <46175942.7080707@faust.net.ua>
+References: <46171C50.3020104@faust.net.ua> <1175922756.7407.46.camel@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gate.crashing.org ([63.228.1.57]:55976 "EHLO gate.crashing.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752069AbXDGFMo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 7 Apr 2007 01:12:44 -0400
-In-Reply-To: <46171C50.3020104@faust.net.ua>
+Received: from mail.faust.net.ua ([195.68.202.98]:32967 "EHLO
+	mail.faust.net.ua" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S965635AbXDGIgO (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 7 Apr 2007 04:36:14 -0400
+In-Reply-To: <1175922756.7407.46.camel@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Mikhail Zolotaryov <lebon@faust.net.ua>
+To: Benjamin Herrenschmidt <benh@kernel.crashing.org>
 Cc: mporter@kernel.crashing.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Sat, 2007-04-07 at 07:21 +0300, Mikhail Zolotaryov wrote:
-> On PPC4xx embedded we often have UART0 on IRQ0 but 8250 UART driver
-> uses IRQ0 as "no irq" hack. It's suggested that platforms with UART
-> on IRQ0 will redefine is_real_interrupt(irq) macro but 8250 code
-> anyway overrides that. As the result, serial line on UART0 works
-> on polling-way and we have character loss on high baud rates.
+Benjamin Herrenschmidt wrote: 
+> This is an old problem. The proper fix is already implemented for
+> arch/powerpc and consist of having virtual irq numbers (which helps for
+> many other things anyway).
 > 
-> In patch I added check if UART0 is on IRQ0, if so we define
-> is_real_interrupt macro to be 1 (true). Also, check if
-> is_real_interrupt macro is already defined added to 8250 UART
-> driver.
+> Support for 4xx platforms in arch/powerpc is starting to get in, pop on
+> linuxppc-dev@ozlabs.org where the patches are being posted and you are
+> welcome to give a hand porting more platforms over :-)
 
-This is an old problem. The proper fix is already implemented for
-arch/powerpc and consist of having virtual irq numbers (which helps for
-many other things anyway).
+First, thanks for response.
 
-Support for 4xx platforms in arch/powerpc is starting to get in, pop on
-linuxppc-dev@ozlabs.org where the patches are being posted and you are
-welcome to give a hand porting more platforms over :-)
+Ok, I see IRQ0 mapping to virtual number is good solution but I know the
+problem from the times of 2.4 kernel. It was very surprising while moving to
+2.6 kernel - serial driver was changed, but we have the same problem there.
 
-Ben.
-
-
+Maybe it's good idea to create unofficial ppc linux branch repository
+(or it already exists ?) where we can put patches that work (as above) but
+not in pretty good way linux community expects.
