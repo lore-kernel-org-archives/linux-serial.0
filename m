@@ -1,62 +1,64 @@
-From: "Stuart MacDonald" <stuartm@connecttech.com>
-Subject: RE: TIOCSERGETLSR
-Date: Wed, 11 Apr 2007 10:11:52 -0400
-Message-ID: <063201c77c43$5aeb1f80$294b82ce@stuartm>
-References: <a754e89f0704110633m495d8fa3y433d925c6a0279c0@mail.gmail.com>
+From: pradeep pradeep <asnvpradeep@yahoo.com>
+Subject: Setting Different Hardware modes
+Date: Mon, 16 Apr 2007 04:55:31 -0700 (PDT)
+Message-ID: <157040.4082.qm@web51807.mail.re2.yahoo.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from inetc.connecttech.com ([64.7.140.42]:4868 "EHLO
-	inetc.connecttech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752852AbXDKOaX (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 11 Apr 2007 10:30:23 -0400
-In-Reply-To: <a754e89f0704110633m495d8fa3y433d925c6a0279c0@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: multipart/alternative; boundary="0-1043040557-1176724531=:4082"
+Return-path: <kernelnewbies-bounce@nl.linux.org>
+Sender: kernelnewbies-bounce@nl.linux.org
+Errors-to: kernelnewbies-bounce@nl.linux.org
+List-help: <mailto:ecartis@nl.linux.org?Subject=help>
+List-unsubscribe: <mailto:kernelnewbies-request@nl.linux.org?Subject=unsubscribe>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:kernelnewbies-request@nl.linux.org?Subject=subscribe>
+List-owner: <mailto:ecartis-owner@nl.linux.org>
+List-post: <mailto:kernelnewbies@nl.linux.org>
+List-archive: <http://mail.nl.linux.org/kernelnewbies/>
+To: linux-serial@vger.kernel.org, kernelnewbies@nl.linux.org, linux-newbie@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'kees schoenmakers' <kees3328@gmail.com>, linux-serial@vger.kernel.org
 
-From: On Behalf Of kees schoenmakers
-> I have noticed difference in return "value" of ioctl(port,
-> TIOCSERGETLSR, &value) between different chips(hardware).
-> Kernel is Linux version 2.6.20.4 (root@pc_develop02.fluidwell.local)
-> (gcc version 4.1.2 20061115 (prerelease) (Debian 4.1.1-21)) #1 SMP
-> PREEMPT Fri Apr 6 13:41:02 CEST 2007 (build from source)
-> My mobo is from recent date and has an on-board serial port (ttyS0).
-> An extra PCI board with 2 serial ports is added:
-> 07:00.0 Serial controller: NetMos Technology PCI 9835 
-> Multi-I/O Controller (rev 01) (prog-if 02 [16550])
+--0-1043040557-1176724531=:4082
+Content-Type: text/plain; charset=ascii
 
-If this
-http://www.moschip.com/html/MCS9835.html
-is your board, the data sheet is
-http://www.moschip.com/data/products/NM9835/Data%20Sheet_9835.pdf
+Hi,
+ 
+    I am writing a serial driver for my coustom serial hardware which supports different modes.
+    like 550,550ex,750,850 and 950 mode. How can i set the hardware to different modes at run time.
+    In 8250 the driver identifies the type of the hardware and initialises it in the respective mode.
+    But I want to do the hardware setting based upon the users requirement.
+    Is there is a property sheet(windows) equivalent.
 
-I looked it over quickly. The UART is contained within a chip they
-make. The LSR looks good from the documentation. **
+Pradeep Annavarapu
+Hyderabad
 
-> My application uses a simplex modem connection over the low-speed
-> serial port, therefore I need to know for sure that all chararcters
-> have been written out before changing over from xmit to receive. I use
-> the TIOCSERGETLSR to check if this is the case. My problem is that for
-> the on board serial port the ioctl returns that situation OK but it is
-> wrong for the 9835 ports. There the TIOCSERGETLSR returns empty almost
-> after the first/second character is written which is not correct
-> (verified with scope). It may be a bug in the 9835 controller.  Do
-> others have similar findings?
+__________________________________________________
+Do You Yahoo!?
+Tired of spam?  Yahoo! Mail has the best spam protection around 
+http://mail.yahoo.com 
+--0-1043040557-1176724531=:4082
+Content-Type: text/html; charset=ascii
 
-** I don't have one of these boards, but I'm suspecting a hardware
-error as well, based on your description. (I'm assuming that you do
-see the proper bits go high briefly, and then go off too quickly.)
+<html><head><style type="text/css"><!-- DIV {margin:0px;} --></style></head><body><div style="font-family:times new roman, new york, times, serif;font-size:12pt"><DIV></DIV>
+<DIV><FONT face=Arial size=2>Hi,</FONT></DIV>
+<DIV><FONT face=Arial size=2></FONT>&nbsp;</DIV>
+<DIV><FONT face=Arial size=2>&nbsp;&nbsp;&nbsp; I am writing a serial driver for my coustom serial hardware which supports different modes.</FONT></DIV>
+<DIV><FONT face=Arial size=2>&nbsp;&nbsp;&nbsp; like 550,550ex,750,850 and 950 mode. How can i set the hardware to different modes at run time.</FONT></DIV>
+<DIV><FONT face=Arial size=2>&nbsp;&nbsp;&nbsp; In 8250 the driver identifies the type of the hardware and initialises it in the respective mode.</FONT></DIV>
+<DIV>&nbsp;&nbsp;&nbsp; But I want to do the hardware setting based upon the users requirement.</DIV>
+<DIV><FONT face=Arial size=2>&nbsp;&nbsp;&nbsp; Is&nbsp;there is a property sheet(windows) equivalent.</FONT></DIV>
+<DIV>
+<DIV>&nbsp;</DIV>
+<DIV>Pradeep Annavarapu<BR>Hyderabad</DIV></DIV>
+<DIV></DIV></div><br>
 
-I'd try contacting the OEM or Moschip.
 
-..Stu
 
--- 
-We make multiport serial products.
-http://www.connecttech.com/
-(800) 426-8979
+      <hr size=1>Ahhh...imagining that irresistible "new car" smell?<br> Check out
+<a href="http://us.rd.yahoo.com/evt=48245/*http://autos.yahoo.com/new_cars.html;_ylc=X3oDMTE1YW1jcXJ2BF9TAzk3MTA3MDc2BHNlYwNtYWlsdGFncwRzbGsDbmV3LWNhcnM-">new cars at Yahoo! Autos.</a>
+</body></html>
+--0-1043040557-1176724531=:4082--
 
+--
+To unsubscribe from this list: send an email with
+"unsubscribe kernelnewbies" to ecartis@nl.linux.org
+Please read the FAQ at http://kernelnewbies.org/FAQ
