@@ -1,56 +1,44 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] Provide better abstraction for the serial drivers to
- xmit buf and tty
-Date: Wed, 18 Apr 2007 20:12:05 +0100
-Message-ID: <20070418201205.60afc606@the-village.bc.nu>
-References: <20070418045423.GA12136@localdomain>
-	<20070418102027.0e1edb2b@the-village.bc.nu>
-	<4626442B.5050708@acm.org>
+From: Russell King <rmk+lkml@arm.linux.org.uk>
+Subject: Re: [PATCH][BUG] Fix possible NULL pointer access in 8250 serial driver
+Date: Wed, 18 Apr 2007 20:18:12 +0100
+Message-ID: <20070418191812.GA21211@flint.arm.linux.org.uk>
+References: <46242DD2.7030207@soft.fujitsu.com> <20070416225206.cf7d8cd2.akpm@linux-foundation.org> <1176884513.3945.54.camel@kane-linux>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from outpipe-village-512-1.bc.nu ([81.2.110.250]:54357 "EHLO
-	the-village.bc.nu" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-	with ESMTP id S2993045AbXDRTIn (ORCPT
+Received: from caramon.arm.linux.org.uk ([217.147.92.249]:4660 "EHLO
+	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S2993059AbXDRTSX (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 18 Apr 2007 15:08:43 -0400
-In-Reply-To: <4626442B.5050708@acm.org>
+	Wed, 18 Apr 2007 15:18:23 -0400
+Content-Disposition: inline
+In-Reply-To: <1176884513.3945.54.camel@kane-linux>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Corey Minyard <minyard@acm.org>
-Cc: Linux Kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+To: Kenji Kaneshige <kaneshige.kenji@jp.fujitsu.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, izumi <izumi2005@soft.fujitsu.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-> Currently the uart_info structure is allocated on an open, so it's not
-> available until that point in time.  The trouble is that console_init() is
-> called before memory is set up, so you can't allocate the uart_info
-> until it's too late for the console or a debugger that wants to work
-> early, though it's ok for IPMI.
+On Wed, Apr 18, 2007 at 05:21:53PM +0900, Kenji Kaneshige wrote:
+> > I'd imagine that other serial drivers might get upset having their
+> > ->get_mcrtl() called prior to being opened.  Perhaps we should be fixing
+> > this in uart_read_proc()?
+> > 
+> 
+> I looked at other serial drivers and I could not find any other
+> drivers which accesses port->info in their ->get_mctrl(). This 
+> is why we fix this problem in 8250 driver. But if there is a
+> possibility that other drivers accesses port->info in their
+> ->get_mctrl(), we should be fixing this in uart_read_proc(), as
+> you said.
 
-A debugger can provide a pre-existing uart_info and buffer. The
-initialisation is only done if the uart_state->info pointer is NULL.
+NAK.  This means that you change the list of ports available on the
+machine to be limited to only those which are currently open.  Utterly
+useless for debugging, where you normally want people to dump the
+contents of /proc/tty/driver/*.
 
-> The uart_info struct is not very big, maybe it would be best to pull that
-> into uart_port?  But the circ buffer might still be a problem, since it
-> would need to be dynamically allocated and it might need to be
-> checked instead.
+The original patch was better.
 
-How about this (untested idea in the finest Linux tradition)
-
-Add
-
-uart_console_prepare(struct uart_port *port, struct uart_info
-*info, void *buffer)
-{
-	port->info = info;
-	info->xmit.buf = buffer;
-	... etc ...
-	info->flags |= UPF_BOOTALLOCATED;
-}
-
-
-in uart_shutdown() check UPF_BOOTALLOCATED and don't free xmit.buf if so.
-
-ditto in uart_remove_one_port for info itself
-
-
+-- 
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:
