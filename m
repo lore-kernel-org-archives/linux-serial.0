@@ -1,73 +1,56 @@
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH][BUG] Fix possible NULL pointer access in 8250 serial
- driver
-Date: Wed, 18 Apr 2007 09:16:26 -0700
-Message-ID: <20070418091626.925f2d72.akpm@linux-foundation.org>
-References: <46242DD2.7030207@soft.fujitsu.com>
-	<20070416225206.cf7d8cd2.akpm@linux-foundation.org>
-	<1176884513.3945.54.camel@kane-linux>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] Provide better abstraction for the serial drivers to
+ xmit buf and tty
+Date: Wed, 18 Apr 2007 20:12:05 +0100
+Message-ID: <20070418201205.60afc606@the-village.bc.nu>
+References: <20070418045423.GA12136@localdomain>
+	<20070418102027.0e1edb2b@the-village.bc.nu>
+	<4626442B.5050708@acm.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.osdl.org ([65.172.181.24]:37039 "EHLO smtp.osdl.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S2992800AbXDRQQp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 18 Apr 2007 12:16:45 -0400
-In-Reply-To: <1176884513.3945.54.camel@kane-linux>
+Received: from outpipe-village-512-1.bc.nu ([81.2.110.250]:54357 "EHLO
+	the-village.bc.nu" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+	with ESMTP id S2993045AbXDRTIn (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 18 Apr 2007 15:08:43 -0400
+In-Reply-To: <4626442B.5050708@acm.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kenji Kaneshige <kaneshige.kenji@jp.fujitsu.com>
-Cc: izumi2005@soft.fujitsu.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, rmk@arm.linux.org.uk
+To: Corey Minyard <minyard@acm.org>
+Cc: Linux Kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 
-> On Wed, 18 Apr 2007 17:21:53 +0900 Kenji Kaneshige <kaneshige.kenji@jp.fujitsu.com> wrote:
-> > I'd imagine that other serial drivers might get upset having their
-> > ->get_mcrtl() called prior to being opened.  Perhaps we should be fixing
-> > this in uart_read_proc()?
-> > 
-> 
-> I looked at other serial drivers and I could not find any other
-> drivers which accesses port->info in their ->get_mctrl(). This 
-> is why we fix this problem in 8250 driver. But if there is a
-> possibility that other drivers accesses port->info in their
-> ->get_mctrl(), we should be fixing this in uart_read_proc(), as
-> you said.
+> Currently the uart_info structure is allocated on an open, so it's not
+> available until that point in time.  The trouble is that console_init() is
+> called before memory is set up, so you can't allocate the uart_info
+> until it's too late for the console or a debugger that wants to work
+> early, though it's ok for IPMI.
 
-OK.  But port->info might not be the only state which is initialised
-in open() which is used in get_mctrl().
+A debugger can provide a pre-existing uart_info and buffer. The
+initialisation is only done if the uart_state->info pointer is NULL.
 
-> How about the following patch? We've also confirmed the problem
-> is fixed by it.
-> 
+> The uart_info struct is not very big, maybe it would be best to pull that
+> into uart_port?  But the circ buffer might still be a problem, since it
+> would need to be dynamically allocated and it might need to be
+> checked instead.
 
-Thanks.  Or we could just avoid calling into ->get_mctrl() if the port isn't
-opened.  Russell?  Any preferences?
+How about this (untested idea in the finest Linux tradition)
 
-> 
-> 
-> This patch fixes the problem that uninitialized (NULL) 'info' member
-> of uart_port structure can be accessed if serial driver is accessed
-> through /proc filesystem before uart_open(), which initializes the
-> 'info' member', is called.
-> 
-> Signed-off-by: Kenji Kaneshige <kaneshige.kenji@jp.fujitsu.com>
-> Signed-off-by: Taku Izumi <izumi2005@soft.fujitsu.com>
-> 
-> ---
->  drivers/serial/serial_core.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> Index: linux-2.6.21-rc5/drivers/serial/serial_core.c
-> ===================================================================
-> --- linux-2.6.21-rc5.orig/drivers/serial/serial_core.c
-> +++ linux-2.6.21-rc5/drivers/serial/serial_core.c
-> @@ -1665,7 +1665,7 @@ static int uart_line_info(char *buf, str
->  	unsigned int status;
->  	int mmio, ret;
->  
-> -	if (!port)
-> +	if (!port || !port->info)
->  		return 0;
->  
->  	mmio = port->iotype >= UPIO_MEM;
-> 
+Add
+
+uart_console_prepare(struct uart_port *port, struct uart_info
+*info, void *buffer)
+{
+	port->info = info;
+	info->xmit.buf = buffer;
+	... etc ...
+	info->flags |= UPF_BOOTALLOCATED;
+}
+
+
+in uart_shutdown() check UPF_BOOTALLOCATED and don't free xmit.buf if so.
+
+ditto in uart_remove_one_port for info itself
+
+
