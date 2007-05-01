@@ -1,44 +1,53 @@
-From: Russell King <rmk+lkml@arm.linux.org.uk>
+From: Corey Minyard <minyard@acm.org>
 Subject: Re: Serial 8250: clear the lsr_break_flag at open
-Date: Tue, 1 May 2007 10:29:33 +0100
-Message-ID: <20070501092933.GB18233@flint.arm.linux.org.uk>
-References: <20070430220858.GA28890@localdomain>
+Date: Tue, 01 May 2007 08:23:14 -0500
+Message-ID: <46373F42.4080305@acm.org>
+References: <20070430220858.GA28890@localdomain> <20070501092933.GB18233@flint.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([217.147.92.249]:3926 "EHLO
-	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1031615AbXEAJ3n (ORCPT
+Received: from mta8.adelphia.net ([68.168.78.196]:40392 "EHLO
+	mta8.adelphia.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1031694AbXEAN0Y (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 1 May 2007 05:29:43 -0400
-Content-Disposition: inline
-In-Reply-To: <20070430220858.GA28890@localdomain>
+	Tue, 1 May 2007 09:26:24 -0400
+In-Reply-To: <20070501092933.GB18233@flint.arm.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Corey Minyard <minyard@acm.org>
-Cc: Linux Kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+To: Russell King <rmk+lkml@arm.linux.org.uk>, Linux Kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 
-On Mon, Apr 30, 2007 at 05:08:59PM -0500, Corey Minyard wrote:
-> I think I've spotted a bug in the 8250 code, but I'm not really
-> sure.
+Russell King wrote:
+> On Mon, Apr 30, 2007 at 05:08:59PM -0500, Corey Minyard wrote:
+>   
+>> I'm having a hard time understanding why the lsr_break_flag
+>> is necessary.
+>>     
+>
+> Merely reading the LSR clears status bits.  We read the LSR repeatedly
+> so that we can monitor the transmit FIFO when outputting serial console
+> messages.
+>
+> This means that if you have a busy serial console, and you want to send
+> it a sysrq request, there's a chance that the break flag in the LSR will
+> be cleared by the transmit FIFO status polling code thereby being lost.
+>
+> So, we need to remember that status, and we do this via the lsr_break_flag.
+>   
+I should have said a little more.  I couldn't find anywhere in any docs
+for this that said it was a destructive read.  I've done some experiments
+and that seems to be the case, though.
 
-Yes, clearing lsr_break_flag prior to opening the port is probably a good
-thing.
+So two things:
 
-> I'm having a hard time understanding why the lsr_break_flag
-> is necessary.
+There are other bits in this register that also appear to be destroyed on
+read: framing, parity, and overrun.  Should those be saved, too?
 
-Merely reading the LSR clears status bits.  We read the LSR repeatedly
-so that we can monitor the transmit FIFO when outputting serial console
-messages.
+There are several places where the LSR is read and nothing is done
+for this, in serial8250_start_tx, serial8250_backup_timeout, and
+serial8250_tx_empty.  It seems like these would need to be handled,
+too.
 
-This means that if you have a busy serial console, and you want to send
-it a sysrq request, there's a chance that the break flag in the LSR will
-be cleared by the transmit FIFO status polling code thereby being lost.
+If this is really a problem, I'd be glad to generate another patch.
 
-So, we need to remember that status, and we do this via the lsr_break_flag.
-
--- 
-Russell King
- Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
- maintainer of:
+-corey
