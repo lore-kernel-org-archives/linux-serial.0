@@ -1,441 +1,365 @@
-From: Yoichi Yuasa <yoichi_yuasa@tripeaks.co.jp>
-Subject: [PATCH][MIPS] separate platform_device registration for VR41xx
- serial interface
-Date: Wed, 9 May 2007 00:03:02 +0900
-Message-ID: <20070509000302.21879fa9.yoichi_yuasa@tripeaks.co.jp>
+From: Mark Fortescue <mark@mtfhpc.demon.co.uk>
+Subject: [PATCH] drivers/serial/sunzilog: Interrupt enable before ISR handler
+ installed
+Date: Wed, 9 May 2007 19:17:29 +0100 (BST)
+Message-ID: <Pine.LNX.4.61.0705091858490.29173@mtfhpc.demon.co.uk>
+References: <Pine.LNX.4.61.0704281529090.8157@mtfhpc.demon.co.uk>
+ <20070428.210147.111207684.davem@davemloft.net>
+ <Pine.LNX.4.61.0704292250290.1747@mtfhpc.demon.co.uk>
+ <20070507.162042.38710851.davem@davemloft.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mips-bounce@linux-mips.org>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-To: Ralf Baechle <ralf@linux-mips.org>
-Cc: yoichi_yuasa@tripeaks.co.jp, linux-mips <linux-mips@linux-mips.org>, linux-serial@vger.kernel.org
+Content-Type: MULTIPART/MIXED; BOUNDARY="1750305931-1575535797-1178734649=:29173"
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from anchor-post-32.mail.demon.net ([194.217.242.90]:1245 "EHLO
+	anchor-post-32.mail.demon.net" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1756613AbXEISRf (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 9 May 2007 14:17:35 -0400
+In-Reply-To: <20070507.162042.38710851.davem@davemloft.net>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: David Miller <davem@davemloft.net>
+Cc: wli@holomorphy.com, linux-kernel@vger.kernel.org, sparclinux@vger.kernel.org, linux-serial@vger.kernel.org
 
-Hi Ralf,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-This patch has separated platform_device registration for VR41xx serial interface.
+--1750305931-1575535797-1178734649=:29173
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
 
-Yoichi
+Hi all,
 
-Signed-off-by: Yoichi Yuasa <yoichi_yuasa@tripeaks.co.jp>
+I have added a from line, comment and signed-off-by line to the attached 
+patch file.
 
-diff -pruN -X siu/Documentation/dontdiff siu-orig/arch/mips/vr41xx/common/Makefile siu/arch/mips/vr41xx/common/Makefile
---- siu-orig/arch/mips/vr41xx/common/Makefile	2007-05-08 16:54:57.796693000 +0900
-+++ siu/arch/mips/vr41xx/common/Makefile	2007-05-08 18:39:19.640910500 +0900
-@@ -2,4 +2,4 @@
- # Makefile for common code of the NEC VR4100 series.
- #
- 
--obj-y	+= bcu.o cmu.o icu.o init.o irq.o pmu.o type.o
-+obj-y	+= bcu.o cmu.o icu.o init.o irq.o pmu.o siu.o type.o
-diff -pruN -X siu/Documentation/dontdiff siu-orig/arch/mips/vr41xx/common/siu.c siu/arch/mips/vr41xx/common/siu.c
---- siu-orig/arch/mips/vr41xx/common/siu.c	1970-01-01 09:00:00.000000000 +0900
-+++ siu/arch/mips/vr41xx/common/siu.c	2007-05-08 23:48:32.000598250 +0900
-@@ -0,0 +1,120 @@
-+/*
-+ *  NEC VR4100 series SIU platform device.
-+ *
-+ *  Copyright (C) 2007  Yoichi Yuasa <yoichi_yuasa@tripeaks.co.jp>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License as published by
-+ *  the Free Software Foundation; either version 2 of the License, or
-+ *  (at your option) any later version.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program; if not, write to the Free Software
-+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-+ */
-+#include <linux/errno.h>
-+#include <linux/init.h>
-+#include <linux/ioport.h>
-+#include <linux/platform_device.h>
-+#include <linux/serial_core.h>
-+
-+#include <asm/cpu.h>
-+#include <asm/vr41xx/siu.h>
-+
-+static unsigned int siu_type1_ports[SIU_PORTS_MAX] __initdata = {
-+	PORT_VR41XX_SIU,
-+	PORT_UNKNOWN,
-+};
-+
-+static struct resource siu_type1_resource[] __initdata = {
-+	{
-+		.start	= 0x0c000000,
-+		.end	= 0x0c00000a,
-+		.flags	= IORESOURCE_MEM,
-+	},
-+	{
-+		.start	= SIU_IRQ,
-+		.end	= SIU_IRQ,
-+		.flags	= IORESOURCE_IRQ,
-+	},
-+};
-+
-+static unsigned int siu_type2_ports[SIU_PORTS_MAX] __initdata = {
-+	PORT_VR41XX_SIU,
-+	PORT_VR41XX_DSIU,
-+};
-+
-+static struct resource siu_type2_resource[] __initdata = {
-+	{
-+		.start	= 0x0f000800,
-+		.end	= 0x0f00080a,
-+		.flags	= IORESOURCE_MEM,
-+	},
-+	{
-+		.start	= 0x0f000820,
-+		.end	= 0x0f000829,
-+		.flags	= IORESOURCE_MEM,
-+	},
-+	{
-+		.start	= SIU_IRQ,
-+		.end	= SIU_IRQ,
-+		.flags	= IORESOURCE_IRQ,
-+	},
-+	{
-+		.start	= DSIU_IRQ,
-+		.end	= DSIU_IRQ,
-+		.flags	= IORESOURCE_IRQ,
-+	},
-+};
-+
-+static int __init vr41xx_siu_add(void)
-+{
-+	struct platform_device *pdev;
-+	struct resource *res;
-+	unsigned int num;
-+	int retval;
-+
-+	pdev = platform_device_alloc("SIU", -1);
-+	if (!pdev)
-+		return -ENOMEM;
-+
-+	switch (current_cpu_data.cputype) {
-+	case CPU_VR4111:
-+	case CPU_VR4121:
-+		pdev->dev.platform_data = siu_type1_ports;
-+		res = siu_type1_resource;
-+		num = ARRAY_SIZE(siu_type1_resource);
-+		break;
-+	case CPU_VR4122:
-+	case CPU_VR4131:
-+	case CPU_VR4133:
-+		pdev->dev.platform_data = siu_type2_ports;
-+		res = siu_type2_resource;
-+		num = ARRAY_SIZE(siu_type2_resource);
-+		break;
-+	default:
-+		retval = -ENODEV;
-+		goto err_free_device;
-+	}
-+
-+	retval = platform_device_add_resources(pdev, res, num);
-+	if (retval)
-+		goto err_free_device;
-+
-+	retval = platform_device_add(pdev);
-+	if (retval)
-+		goto err_free_device;
-+
-+	return 0;
-+
-+err_free_device:
-+	platform_device_put(pdev);
-+
-+	return retval;
-+}
-+device_initcall(vr41xx_siu_add);
-diff -pruN -X siu/Documentation/dontdiff siu-orig/drivers/serial/vr41xx_siu.c siu/drivers/serial/vr41xx_siu.c
---- siu-orig/drivers/serial/vr41xx_siu.c	2007-05-08 16:56:25.746189500 +0900
-+++ siu/drivers/serial/vr41xx_siu.c	2007-05-08 19:25:01.199921000 +0900
-@@ -1,7 +1,7 @@
- /*
-  *  Driver for NEC VR4100 series Serial Interface Unit.
-  *
-- *  Copyright (C) 2004-2005  Yoichi Yuasa <yoichi_yuasa@tripeaks.co.jp>
-+ *  Copyright (C) 2004-2007  Yoichi Yuasa <yoichi_yuasa@tripeaks.co.jp>
-  *
-  *  Based on drivers/serial/8250.c, by Russell King.
-  *
-@@ -25,12 +25,12 @@
- #endif
- 
- #include <linux/console.h>
--#include <linux/platform_device.h>
--#include <linux/err.h>
--#include <linux/ioport.h>
-+#include <linux/errno.h>
- #include <linux/init.h>
- #include <linux/interrupt.h>
-+#include <linux/ioport.h>
- #include <linux/module.h>
-+#include <linux/platform_device.h>
- #include <linux/serial.h>
- #include <linux/serial_core.h>
- #include <linux/serial_reg.h>
-@@ -38,11 +38,9 @@
- #include <linux/tty_flip.h>
- 
- #include <asm/io.h>
--#include <asm/vr41xx/irq.h>
- #include <asm/vr41xx/siu.h>
- #include <asm/vr41xx/vr41xx.h>
- 
--#define SIU_PORTS_MAX	2
- #define SIU_BAUD_BASE	1152000
- #define SIU_MAJOR	204
- #define SIU_MINOR_BASE	82
-@@ -60,32 +58,13 @@
-  #define IRUSESEL	0x02
-  #define SIRSEL		0x01
- 
--struct siu_port {
--	unsigned int type;
--	unsigned int irq;
--	unsigned long start;
--};
--
--static const struct siu_port siu_type1_ports[] = {
--	{	.type		= PORT_VR41XX_SIU,
--		.irq		= SIU_IRQ,
--		.start		= 0x0c000000UL,		},
--};
--
--#define SIU_TYPE1_NR_PORTS	(sizeof(siu_type1_ports) / sizeof(struct siu_port))
--
--static const struct siu_port siu_type2_ports[] = {
--	{	.type		= PORT_VR41XX_SIU,
--		.irq		= SIU_IRQ,
--		.start		= 0x0f000800UL,		},
--	{	.type		= PORT_VR41XX_DSIU,
--		.irq		= DSIU_IRQ,
--		.start		= 0x0f000820UL,		},
-+static struct uart_port siu_uart_ports[SIU_PORTS_MAX] = {
-+	[0 ... SIU_PORTS_MAX-1] = {
-+		.lock	= __SPIN_LOCK_UNLOCKED(siu_uart_ports->lock),
-+		.irq	= -1,
-+	},
- };
- 
--#define SIU_TYPE2_NR_PORTS	(sizeof(siu_type2_ports) / sizeof(struct siu_port))
--
--static struct uart_port siu_uart_ports[SIU_PORTS_MAX];
- static uint8_t lsr_break_flag[SIU_PORTS_MAX];
- 
- #define siu_read(port, offset)		readb((port)->membase + (offset))
-@@ -110,7 +89,6 @@ void vr41xx_select_siu_interface(siu_int
- 
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
--
- EXPORT_SYMBOL_GPL(vr41xx_select_siu_interface);
- 
- void vr41xx_use_irda(irda_use_t use)
-@@ -132,7 +110,6 @@ void vr41xx_use_irda(irda_use_t use)
- 
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
--
- EXPORT_SYMBOL_GPL(vr41xx_use_irda);
- 
- void vr41xx_select_irda_module(irda_module_t module, irda_speed_t speed)
-@@ -166,7 +143,6 @@ void vr41xx_select_irda_module(irda_modu
- 
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
--
- EXPORT_SYMBOL_GPL(vr41xx_select_irda_module);
- 
- static inline void siu_clear_fifo(struct uart_port *port)
-@@ -177,21 +153,6 @@ static inline void siu_clear_fifo(struct
- 	siu_write(port, UART_FCR, 0);
- }
- 
--static inline int siu_probe_ports(void)
--{
--	switch (current_cpu_data.cputype) {
--	case CPU_VR4111:
--	case CPU_VR4121:
--		return SIU_TYPE1_NR_PORTS;
--	case CPU_VR4122:
--	case CPU_VR4131:
--	case CPU_VR4133:
--		return SIU_TYPE2_NR_PORTS;
--	}
--
--	return 0;
--}
--
- static inline unsigned long siu_port_size(struct uart_port *port)
- {
- 	switch (port->type) {
-@@ -206,21 +167,10 @@ static inline unsigned long siu_port_siz
- 
- static inline unsigned int siu_check_type(struct uart_port *port)
- {
--	switch (current_cpu_data.cputype) {
--	case CPU_VR4111:
--	case CPU_VR4121:
--		if (port->line == 0)
--			return PORT_VR41XX_SIU;
--		break;
--	case CPU_VR4122:
--	case CPU_VR4131:
--	case CPU_VR4133:
--		if (port->line == 0)
--			return PORT_VR41XX_SIU;
--		else if (port->line == 1)
--			return PORT_VR41XX_DSIU;
--		break;
--	}
-+	if (port->line == 0)
-+		return PORT_VR41XX_SIU;
-+	if (port->line == 1 && port->irq != -1)
-+		return PORT_VR41XX_DSIU;
- 
- 	return PORT_UNKNOWN;
- }
-@@ -751,44 +701,34 @@ static struct uart_ops siu_uart_ops = {
- 	.verify_port	= siu_verify_port,
- };
- 
--static int siu_init_ports(void)
-+static int siu_init_ports(struct platform_device *pdev)
- {
--	const struct siu_port *siu;
- 	struct uart_port *port;
--	int i, num;
-+	struct resource *res;
-+	int *type = pdev->dev.platform_data;
-+	int i;
- 
--	switch (current_cpu_data.cputype) {
--	case CPU_VR4111:
--	case CPU_VR4121:
--		siu = siu_type1_ports;
--		break;
--	case CPU_VR4122:
--	case CPU_VR4131:
--	case CPU_VR4133:
--		siu = siu_type2_ports;
--		break;
--	default:
-+	if (!type)
- 		return 0;
--	}
- 
- 	port = siu_uart_ports;
--	num = siu_probe_ports();
--	for (i = 0; i < num; i++) {
--		spin_lock_init(&port->lock);
--		port->irq = siu->irq;
-+	for (i = 0; i < SIU_PORTS_MAX; i++) {
-+		port->type = type[i];
-+		if (port->type == PORT_UNKNOWN)
-+			continue;
-+		port->irq = platform_get_irq(pdev, i);
- 		port->uartclk = SIU_BAUD_BASE * 16;
- 		port->fifosize = 16;
- 		port->regshift = 0;
- 		port->iotype = UPIO_MEM;
- 		port->flags = UPF_IOREMAP | UPF_BOOT_AUTOCONF;
--		port->type = siu->type;
- 		port->line = i;
--		port->mapbase = siu->start;
--		siu++;
-+		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
-+		port->mapbase = res->start;
- 		port++;
- 	}
- 
--	return num;
-+	return i;
- }
- 
- #ifdef CONFIG_SERIAL_VR41XX_CONSOLE
-@@ -883,13 +823,9 @@ static struct console siu_console = {
- static int __devinit siu_console_init(void)
- {
- 	struct uart_port *port;
--	int num, i;
--
--	num = siu_init_ports();
--	if (num <= 0)
--		return -ENODEV;
-+	int i;
- 
--	for (i = 0; i < num; i++) {
-+	for (i = 0; i < SIU_PORTS_MAX; i++) {
- 		port = &siu_uart_ports[i];
- 		port->ops = &siu_uart_ops;
- 	}
-@@ -920,7 +856,7 @@ static int __devinit siu_probe(struct pl
- 	struct uart_port *port;
- 	int num, i, retval;
- 
--	num = siu_init_ports();
-+	num = siu_init_ports(dev);
- 	if (num <= 0)
- 		return -ENODEV;
- 
-@@ -998,8 +934,6 @@ static int siu_resume(struct platform_de
- 	return 0;
- }
- 
--static struct platform_device *siu_platform_device;
--
- static struct platform_driver siu_device_driver = {
- 	.probe		= siu_probe,
- 	.remove		= __devexit_p(siu_remove),
-@@ -1013,29 +947,12 @@ static struct platform_driver siu_device
- 
- static int __init vr41xx_siu_init(void)
- {
--	int retval;
--
--	siu_platform_device = platform_device_alloc("SIU", -1);
--	if (!siu_platform_device)
--		return -ENOMEM;
--
--	retval = platform_device_add(siu_platform_device);
--	if (retval < 0) {
--		platform_device_put(siu_platform_device);
--		return retval;
--	}
--
--	retval = platform_driver_register(&siu_device_driver);
--	if (retval < 0)
--		platform_device_unregister(siu_platform_device);
--
--	return retval;
-+	return platform_driver_register(&siu_device_driver);
- }
- 
- static void __exit vr41xx_siu_exit(void)
- {
- 	platform_driver_unregister(&siu_device_driver);
--	platform_device_unregister(siu_platform_device);
- }
- 
- module_init(vr41xx_siu_init);
-diff -pruN -X siu/Documentation/dontdiff siu-orig/include/asm-mips/vr41xx/siu.h siu/include/asm-mips/vr41xx/siu.h
---- siu-orig/include/asm-mips/vr41xx/siu.h	2007-05-08 16:57:23.021769000 +0900
-+++ siu/include/asm-mips/vr41xx/siu.h	2007-05-08 16:54:45.507925000 +0900
-@@ -20,6 +20,8 @@
- #ifndef __NEC_VR41XX_SIU_H
- #define __NEC_VR41XX_SIU_H
- 
-+#define SIU_PORTS_MAX 2
-+
- typedef enum {
- 	SIU_INTERFACE_RS232C,
- 	SIU_INTERFACE_IRDA,
+Regards
+ 	Mark Fortescue.
+
+On Mon, 7 May 2007, David Miller wrote:
+
+Regards
+ 	Mark Fortescue.
+
+> From: Mark Fortescue <mark@mtfhpc.demon.co.uk>
+> Date: Sun, 29 Apr 2007 23:00:29 +0100 (BST)
+>
+>> I have altered the patch as advised and I have attached it to prevent my
+>> email client from making a mess of it.
+>>
+>> The attached patch changes the interrupt enable sequence for the sunzilog
+>> driver so that interrupts are not enabled untill after the interrupt
+>> handler has been installed. If this is not done, some SS1 and SS2 sun4c
+>> systems panic on un-handled interrupt before the handler gets installed
+>> preventing boot.
+>>
+>> It also adds in support for the ESCC version of the zilog chips. The ESCC
+>> detection works but the FIFO enable may cause issues with modem and
+>> receive character status. My interpretation of the SCC manual and the code
+>> is that it sould be OK.
+>
+> Your patch looks good, thanks for working on this.  As other's
+> have mentioned you should provide a proper "Signed-off-by: "
+> line with your patch changelog as describe in
+> linux/Documentation/SubmittingPatches.
+>
+> I wonder if there is a way to get rid of all of that MIE twiddling
+> logic during the probe.
+>
+> The chicken-and-egg problem in this driver is that we need to get
+> all the chips mostly functional before we let the IRQ handler get
+> at the chips in the sunzilog_irq_chain.  That list is setup very
+> early, so it isn't a datastructure problem.
+>
+> One thing we could do is check in the IRQ handler is skip chips
+> which don't have their registers mapped yet.
+>
+> But that'd put silly logic in the fast path of this driver, whereas
+> your solution does all of this out-of-line.  So your patch is
+> probably the best.
+>
+> Please resubmit with the proper "Signed-off-by: " line and I will
+> apply your patch, thanks!
+>
+> -
+> To unsubscribe from this list: send the line "unsubscribe sparclinux" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
+--1750305931-1575535797-1178734649=:29173
+Content-Type: TEXT/PLAIN; charset=US-ASCII; name="sunzilog.patch"
+Content-Transfer-Encoding: BASE64
+Content-ID: <Pine.LNX.4.61.0705091917270.29173@mtfhpc.demon.co.uk>
+Content-Description: 
+Content-Disposition: attachment; filename="sunzilog.patch"
+
+RnJvbTogTWFyayBGb3J0ZXNjdWUgPG1hcmtAbXRmaHBjLmRlbW9uLmNvLnVr
+Pg0KDQpUaGlzIHBhdGNoIGNoYW5nZXMgdGhlIGludGVycnVwdCBlbmFibGUg
+c2VxdWVuY2UgZm9yIHRoZSBzdW56aWxvZyBkcml2ZXIgDQpzbyB0aGF0IGlu
+dGVycnVwdHMgYXJlIG5vdCBlbmFibGVkIHVudGlsbCBhZnRlciB0aGUgaW50
+ZXJydXB0IGhhbmRsZXIgaGFzIA0KYmVlbiBpbnN0YWxsZWQuIElmIHRoaXMg
+aXMgbm90IGRvbmUsIHNvbWUgU1MxIGFuZCBTUzIgc3VuNGMgc3lzdGVtcyBw
+YW5pYyANCm9uIHVuLWhhbmRsZWQgaW50ZXJydXB0IGJlZm9yZSB0aGUgaGFu
+ZGxlciBnZXRzIGluc3RhbGxlZCBwcmV2ZW50aW5nIGJvb3QuDQoNCkl0IGFs
+c28gYWRkcyBpbiBzdXBwb3J0IGZvciB0aGUgRVNDQyB2ZXJzaW9uIG9mIHRo
+ZSB6aWxvZyBjaGlwcy4gVGhlDQpjaGFuZ2VzIG1lYW4gdGhhdCB0aGUgRklG
+TyB3aWxsIGJlIGVuYWJsZWQgZm9yIEVTQ0MgdmVyc2lvbnMgb2YgdGhlDQpT
+Q0MgVUFSVC4gTXkgaW50ZXJwcmV0YXRpb24gb2YgdGhlIFNDQyBtYW51YWwg
+YW5kIHRoZSBleGlzdGluZyBpbnRlcnJ1cHQNCmhhbmRsZXIgY29kZSBpcyB0
+aGF0IGl0IHNvdWxkIGJlIGFibGUgdG8gbWFrZSBnb29kIHVzZSBvZiB0aGUg
+RklGTyB3aXRob3V0DQppc3N1ZXMuDQoNClNpZ25lZC1vZmYtYnk6IE1hcmsg
+Rm9ydGVzY3VlIDxtYXJrQG10ZmhwYy5kZW1vbi5jby51az4NCi0tLQ0KZGlm
+ZiAtcnVOcGQgbGludXgtMi42LjIwLjkvZHJpdmVycy9zZXJpYWwvc3Vuemls
+b2cuYyBsaW51eC10ZXN0L2RyaXZlcnMvc2VyaWFsL3N1bnppbG9nLmMNCi0t
+LSBsaW51eC0yLjYuMjAuOS9kcml2ZXJzL3NlcmlhbC9zdW56aWxvZy5jCTIw
+MDctMDQtMjggMTU6MDI6MzkuMDAwMDAwMDAwICswMTAwDQorKysgbGludXgt
+dGVzdC9kcml2ZXJzL3NlcmlhbC9zdW56aWxvZy5jCTIwMDctMDQtMjggMTQ6
+NTQ6NDkuMDAwMDAwMDAwICswMTAwDQpAQCAtOTMsNiArMTAwLDggQEAgc3Ry
+dWN0IHVhcnRfc3Vuemlsb2dfcG9ydCB7DQogI2RlZmluZSBTVU5aSUxPR19G
+TEFHX1JFR1NfSEVMRAkJMHgwMDAwMDA0MA0KICNkZWZpbmUgU1VOWklMT0df
+RkxBR19UWF9TVE9QUEVECTB4MDAwMDAwODANCiAjZGVmaW5lIFNVTlpJTE9H
+X0ZMQUdfVFhfQUNUSVZFCQkweDAwMDAwMTAwDQorI2RlZmluZSBTVU5aSUxP
+R19GTEFHX0VTQ0MJCTB4MDAwMDAyMDANCisjZGVmaW5lIFNVTlpJTE9HX0ZM
+QUdfSVNSX0hBTkRMRVIJMHgwMDAwMDQwMA0KIA0KIAl1bnNpZ25lZCBpbnQg
+Y2ZsYWc7DQogDQpAQCAtMTc1LDkgKzE4NCwxMSBAQCBzdGF0aWMgdm9pZCBz
+dW56aWxvZ19jbGVhcl9maWZvKHN0cnVjdCB6DQogLyogVGhpcyBmdW5jdGlv
+biBtdXN0IG9ubHkgYmUgY2FsbGVkIHdoZW4gdGhlIFRYIGlzIG5vdCBidXN5
+LiAgVGhlIFVBUlQNCiAgKiBwb3J0IGxvY2sgbXVzdCBiZSBoZWxkIGFuZCBs
+b2NhbCBpbnRlcnJ1cHRzIGRpc2FibGVkLg0KICAqLw0KLXN0YXRpYyB2b2lk
+IF9fbG9hZF96c3JlZ3Moc3RydWN0IHppbG9nX2NoYW5uZWwgX19pb21lbSAq
+Y2hhbm5lbCwgdW5zaWduZWQgY2hhciAqcmVncykNCitzdGF0aWMgaW50IF9f
+bG9hZF96c3JlZ3Moc3RydWN0IHppbG9nX2NoYW5uZWwgX19pb21lbSAqY2hh
+bm5lbCwgdW5zaWduZWQgY2hhciAqcmVncykNCiB7DQogCWludCBpOw0KKwlp
+bnQgZXNjYzsNCisJdW5zaWduZWQgY2hhciByMTU7DQogDQogCS8qIExldCBw
+ZW5kaW5nIHRyYW5zbWl0cyBmaW5pc2guICAqLw0KIAlmb3IgKGkgPSAwOyBp
+IDwgMTAwMDsgaSsrKSB7DQpAQCAtMjMwLDExICsyNDEsMjUgQEAgc3RhdGlj
+IHZvaWQgX19sb2FkX3pzcmVncyhzdHJ1Y3Qgemlsb2dfYw0KIAl3cml0ZV96
+c3JlZyhjaGFubmVsLCBSMTQsIHJlZ3NbUjE0XSk7DQogDQogCS8qIEV4dGVy
+bmFsIHN0YXR1cyBpbnRlcnJ1cHQgY29udHJvbC4gICovDQotCXdyaXRlX3pz
+cmVnKGNoYW5uZWwsIFIxNSwgcmVnc1tSMTVdKTsNCisJd3JpdGVfenNyZWco
+Y2hhbm5lbCwgUjE1LCAocmVnc1tSMTVdIHwgV1I3cEVOKSAmIH5GSUZPRU4p
+Ow0KKw0KKwkvKiBFU0NDIEV4dGVuc2lvbiBSZWdpc3RlciAqLw0KKwlyMTUg
+PSByZWFkX3pzcmVnKGNoYW5uZWwsIFIxNSk7DQorCWlmIChyMTUgJiAweDAx
+KQl7DQorCQl3cml0ZV96c3JlZyhjaGFubmVsLCBSNywgIHJlZ3NbUjdwXSk7
+DQorDQorCQkvKiBFeHRlcm5hbCBzdGF0dXMgaW50ZXJydXB0IGFuZCBGSUZP
+IGNvbnRyb2wuICAqLw0KKwkJd3JpdGVfenNyZWcoY2hhbm5lbCwgUjE1LCBy
+ZWdzW1IxNV0gJiB+V1I3cEVOKTsNCisJCWVzY2MgPSAxOw0KKwl9IGVsc2Ug
+ew0KKwkJIC8qIENsZWFyIEZJRk8gYml0IGNhc2UgaXQgaXMgYW4gaXNzdWUg
+Ki8NCisJCXJlZ3NbUjE1XSAmPSB+RklGT0VOOw0KKwkJZXNjYyA9IDA7DQor
+CX0NCiANCiAJLyogUmVzZXQgZXh0ZXJuYWwgc3RhdHVzIGludGVycnVwdHMu
+ICAqLw0KLQl3cml0ZV96c3JlZyhjaGFubmVsLCBSMCwgUkVTX0VYVF9JTlQp
+Ow0KLQl3cml0ZV96c3JlZyhjaGFubmVsLCBSMCwgUkVTX0VYVF9JTlQpOw0K
+Kwl3cml0ZV96c3JlZyhjaGFubmVsLCBSMCwgUkVTX0VYVF9JTlQpOyAvKiBG
+aXJzdCBMYXRjaCAgKi8NCisJd3JpdGVfenNyZWcoY2hhbm5lbCwgUjAsIFJF
+U19FWFRfSU5UKTsgLyogU2Vjb25kIExhdGNoICovDQogDQogCS8qIFJld3Jp
+dGUgUjMvUjUsIHRoaXMgdGltZSB3aXRob3V0IGVuYWJsZXMgbWFza2VkLiAg
+Ki8NCiAJd3JpdGVfenNyZWcoY2hhbm5lbCwgUjMsIHJlZ3NbUjNdKTsNCkBA
+IC0yNDIsNiArMjY3LDggQEAgc3RhdGljIHZvaWQgX19sb2FkX3pzcmVncyhz
+dHJ1Y3Qgemlsb2dfYw0KIA0KIAkvKiBSZXdyaXRlIFIxLCB0aGlzIHRpbWUg
+d2l0aG91dCBJUlEgZW5hYmxlZCBtYXNrZWQuICAqLw0KIAl3cml0ZV96c3Jl
+ZyhjaGFubmVsLCBSMSwgcmVnc1tSMV0pOw0KKw0KKwlyZXR1cm4gZXNjYzsN
+CiB9DQogDQogLyogUmVwcm9ncmFtIHRoZSBaaWxvZyBjaGFubmVsIEhXIHJl
+Z2lzdGVycyB3aXRoIHRoZSBjb3BpZXMgZm91bmQgaW4gdGhlDQpAQCAtNzMy
+LDcgKzc1OSw3IEBAIHN0YXRpYyB2b2lkIHN1bnppbG9nX2VuYWJsZV9tcyhz
+dHJ1Y3QgdWENCiAJCXVwLT5jdXJyZWdzW1IxNV0gPSBuZXdfcmVnOw0KIA0K
+IAkJLyogTk9URTogTm90IHN1YmplY3QgdG8gJ3RyYW5zbWl0dGVyIGFjdGl2
+ZScgcnVsZS4gICovIA0KLQkJd3JpdGVfenNyZWcoY2hhbm5lbCwgUjE1LCB1
+cC0+Y3VycmVnc1tSMTVdKTsNCisJCXdyaXRlX3pzcmVnKGNoYW5uZWwsIFIx
+NSwgdXAtPmN1cnJlZ3NbUjE1XSAmIH5XUjdwRU4pOw0KIAl9DQogfQ0KIA0K
+QEAgLTg2Miw0NCArODg5LDQ0IEBAIHN1bnppbG9nX2NvbnZlcnRfdG9fenMo
+c3RydWN0IHVhcnRfc3VuemkNCiAJdXAtPmN1cnJlZ3NbUjE0XSA9IEJSU1JD
+IHwgQlJFTkFCOw0KIA0KIAkvKiBDaGFyYWN0ZXIgc2l6ZSwgc3RvcCBiaXRz
+LCBhbmQgcGFyaXR5LiAqLw0KLQl1cC0+Y3VycmVnc1szXSAmPSB+UnhOX01B
+U0s7DQotCXVwLT5jdXJyZWdzWzVdICY9IH5UeE5fTUFTSzsNCisJdXAtPmN1
+cnJlZ3NbUjNdICY9IH5SeE5fTUFTSzsNCisJdXAtPmN1cnJlZ3NbUjVdICY9
+IH5UeE5fTUFTSzsNCiAJc3dpdGNoIChjZmxhZyAmIENTSVpFKSB7DQogCWNh
+c2UgQ1M1Og0KLQkJdXAtPmN1cnJlZ3NbM10gfD0gUng1Ow0KLQkJdXAtPmN1
+cnJlZ3NbNV0gfD0gVHg1Ow0KKwkJdXAtPmN1cnJlZ3NbUjNdIHw9IFJ4NTsN
+CisJCXVwLT5jdXJyZWdzW1I1XSB8PSBUeDU7DQogCQl1cC0+cGFyaXR5X21h
+c2sgPSAweDFmOw0KIAkJYnJlYWs7DQogCWNhc2UgQ1M2Og0KLQkJdXAtPmN1
+cnJlZ3NbM10gfD0gUng2Ow0KLQkJdXAtPmN1cnJlZ3NbNV0gfD0gVHg2Ow0K
+KwkJdXAtPmN1cnJlZ3NbUjNdIHw9IFJ4NjsNCisJCXVwLT5jdXJyZWdzW1I1
+XSB8PSBUeDY7DQogCQl1cC0+cGFyaXR5X21hc2sgPSAweDNmOw0KIAkJYnJl
+YWs7DQogCWNhc2UgQ1M3Og0KLQkJdXAtPmN1cnJlZ3NbM10gfD0gUng3Ow0K
+LQkJdXAtPmN1cnJlZ3NbNV0gfD0gVHg3Ow0KKwkJdXAtPmN1cnJlZ3NbUjNd
+IHw9IFJ4NzsNCisJCXVwLT5jdXJyZWdzW1I1XSB8PSBUeDc7DQogCQl1cC0+
+cGFyaXR5X21hc2sgPSAweDdmOw0KIAkJYnJlYWs7DQogCWNhc2UgQ1M4Og0K
+IAlkZWZhdWx0Og0KLQkJdXAtPmN1cnJlZ3NbM10gfD0gUng4Ow0KLQkJdXAt
+PmN1cnJlZ3NbNV0gfD0gVHg4Ow0KKwkJdXAtPmN1cnJlZ3NbUjNdIHw9IFJ4
+ODsNCisJCXVwLT5jdXJyZWdzW1I1XSB8PSBUeDg7DQogCQl1cC0+cGFyaXR5
+X21hc2sgPSAweGZmOw0KIAkJYnJlYWs7DQogCX07DQotCXVwLT5jdXJyZWdz
+WzRdICY9IH4weDBjOw0KKwl1cC0+Y3VycmVnc1tSNF0gJj0gfjB4MGM7DQog
+CWlmIChjZmxhZyAmIENTVE9QQikNCi0JCXVwLT5jdXJyZWdzWzRdIHw9IFNC
+MjsNCisJCXVwLT5jdXJyZWdzW1I0XSB8PSBTQjI7DQogCWVsc2UNCi0JCXVw
+LT5jdXJyZWdzWzRdIHw9IFNCMTsNCisJCXVwLT5jdXJyZWdzW1I0XSB8PSBT
+QjE7DQogCWlmIChjZmxhZyAmIFBBUkVOQikNCi0JCXVwLT5jdXJyZWdzWzRd
+IHw9IFBBUl9FTkFCOw0KKwkJdXAtPmN1cnJlZ3NbUjRdIHw9IFBBUl9FTkFC
+Ow0KIAllbHNlDQotCQl1cC0+Y3VycmVnc1s0XSAmPSB+UEFSX0VOQUI7DQor
+CQl1cC0+Y3VycmVnc1tSNF0gJj0gflBBUl9FTkFCOw0KIAlpZiAoIShjZmxh
+ZyAmIFBBUk9ERCkpDQotCQl1cC0+Y3VycmVnc1s0XSB8PSBQQVJfRVZFTjsN
+CisJCXVwLT5jdXJyZWdzW1I0XSB8PSBQQVJfRVZFTjsNCiAJZWxzZQ0KLQkJ
+dXAtPmN1cnJlZ3NbNF0gJj0gflBBUl9FVkVOOw0KKwkJdXAtPmN1cnJlZ3Nb
+UjRdICY9IH5QQVJfRVZFTjsNCiANCiAJdXAtPnBvcnQucmVhZF9zdGF0dXNf
+bWFzayA9IFJ4X09WUjsNCiAJaWYgKGlmbGFnICYgSU5QQ0spDQpAQCAtOTUz
+LDcgKzk4MCw5IEBAIHN1bnppbG9nX3NldF90ZXJtaW9zKHN0cnVjdCB1YXJ0
+X3BvcnQgKnANCiANCiBzdGF0aWMgY29uc3QgY2hhciAqc3Vuemlsb2dfdHlw
+ZShzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQ0KIHsNCi0JcmV0dXJuICJ6cyI7
+DQorCXN0cnVjdCB1YXJ0X3N1bnppbG9nX3BvcnQgKnVwID0gVUFSVF9aSUxP
+Ryhwb3J0KTsNCisNCisJcmV0dXJuICh1cC0+ZmxhZ3MgJiBTVU5aSUxPR19G
+TEFHX0VTQ0MpID8gInpzIChFU0NDKSIgOiAienMiOw0KIH0NCiANCiAvKiBX
+ZSBkbyBub3QgcmVxdWVzdC9yZWxlYXNlIG1hcHBpbmdzIG9mIHRoZSByZWdp
+c3RlcnMgaGVyZSwgdGhpcw0KQEAgLTExNzEsNyArMTIwMCw3IEBAIHN0YXRp
+YyBpbnQgX19pbml0IHN1bnppbG9nX2NvbnNvbGVfc2V0dXANCiANCiAJc3Bp
+bl9sb2NrX2lycXNhdmUoJnVwLT5wb3J0LmxvY2ssIGZsYWdzKTsNCiANCi0J
+dXAtPmN1cnJlZ3NbUjE1XSA9IEJSS0lFOw0KKwl1cC0+Y3VycmVnc1tSMTVd
+IHw9IEJSS0lFOw0KIAlzdW56aWxvZ19jb252ZXJ0X3RvX3pzKHVwLCBjb24t
+PmNmbGFnLCAwLCBicmcpOw0KIA0KIAlzdW56aWxvZ19zZXRfbWN0cmwoJnVw
+LT5wb3J0LCBUSU9DTV9EVFIgfCBUSU9DTV9SVFMpOw0KQEAgLTEyMzAsNyAr
+MTI1OSw3IEBAIHN0YXRpYyB2b2lkIF9faW5pdCBzdW56aWxvZ19pbml0X2ti
+ZG1zKHMNCiAJCWJhdWQgPSA0ODAwOw0KIAl9DQogDQotCXVwLT5jdXJyZWdz
+W1IxNV0gPSBCUktJRTsNCisJdXAtPmN1cnJlZ3NbUjE1XSB8PSBCUktJRTsN
+CiAJYnJnID0gQlBTX1RPX0JSRyhiYXVkLCBaU19DTE9DSyAvIFpTX0NMT0NL
+X0RJVklTT1IpOw0KIAlzdW56aWxvZ19jb252ZXJ0X3RvX3pzKHVwLCB1cC0+
+Y2ZsYWcsIDAsIGJyZyk7DQogCXN1bnppbG9nX3NldF9tY3RybCgmdXAtPnBv
+cnQsIFRJT0NNX0RUUiB8IFRJT0NNX1JUUyk7DQpAQCAtMTI4NCw4ICsxMzEz
+LDE4IEBAIHN0YXRpYyB2b2lkIF9fZGV2aW5pdCBzdW56aWxvZ19pbml0X2h3
+KHMNCiANCiAJaWYgKHVwLT5mbGFncyAmIChTVU5aSUxPR19GTEFHX0NPTlNf
+S0VZQiB8DQogCQkJIFNVTlpJTE9HX0ZMQUdfQ09OU19NT1VTRSkpIHsNCisJ
+CXVwLT5jdXJyZWdzW1IxXSA9IEVYVF9JTlRfRU5BQiB8IElOVF9BTExfUngg
+fCBUeElOVF9FTkFCOw0KKwkJdXAtPmN1cnJlZ3NbUjRdID0gUEFSX0VWRU4g
+fCBYMTZDTEsgfCBTQjE7DQorCQl1cC0+Y3VycmVnc1tSM10gPSBSeEVOQUIg
+fCBSeDg7DQorCQl1cC0+Y3VycmVnc1tSNV0gPSBUeEVOQUIgfCBUeDg7DQor
+CQl1cC0+Y3VycmVnc1tSNl0gPSAweDAwOyAvKiBTRExDIEFkZHJlc3MgKi8N
+CisJCXVwLT5jdXJyZWdzW1I3XSA9IDB4N0U7IC8qIFNETEMgRmxhZyAgICAq
+Lw0KKwkJdXAtPmN1cnJlZ3NbUjldID0gTlY7DQorCQl1cC0+Y3VycmVnc1tS
+N3BdID0gMHgwMDsNCiAJCXN1bnppbG9nX2luaXRfa2JkbXModXAsIHVwLT5w
+b3J0LmxpbmUpOw0KLQkJdXAtPmN1cnJlZ3NbUjldIHw9IChOViB8IE1JRSk7
+DQorCQkvKiBPbmx5IGVuYWJsZSBpbnRlcnJ1cHRzIGlmIGFuIElTUiBoYW5k
+bGVyIGF2YWlsYWJsZSAqLw0KKwkJaWYgKHVwLT5mbGFncyAmIFNVTlpJTE9H
+X0ZMQUdfSVNSX0hBTkRMRVIpDQorCQkJdXAtPmN1cnJlZ3NbUjldIHw9IE1J
+RTsNCiAJCXdyaXRlX3pzcmVnKGNoYW5uZWwsIFI5LCB1cC0+Y3VycmVnc1tS
+OV0pOw0KIAl9IGVsc2Ugew0KIAkJLyogTm9ybWFsIHNlcmlhbCBUVFkuICov
+DQpAQCAtMTI5NCw3ICsxMzMzLDkgQEAgc3RhdGljIHZvaWQgX19kZXZpbml0
+IHN1bnppbG9nX2luaXRfaHcocw0KIAkJdXAtPmN1cnJlZ3NbUjRdID0gUEFS
+X0VWRU4gfCBYMTZDTEsgfCBTQjE7DQogCQl1cC0+Y3VycmVnc1tSM10gPSBS
+eEVOQUIgfCBSeDg7DQogCQl1cC0+Y3VycmVnc1tSNV0gPSBUeEVOQUIgfCBU
+eDg7DQotCQl1cC0+Y3VycmVnc1tSOV0gPSBOViB8IE1JRTsNCisJCXVwLT5j
+dXJyZWdzW1I2XSA9IDB4MDA7IC8qIFNETEMgQWRkcmVzcyAqLw0KKwkJdXAt
+PmN1cnJlZ3NbUjddID0gMHg3RTsgLyogU0RMQyBGbGFnICAgICovDQorCQl1
+cC0+Y3VycmVnc1tSOV0gPSBOVjsNCiAJCXVwLT5jdXJyZWdzW1IxMF0gPSBO
+Ulo7DQogCQl1cC0+Y3VycmVnc1tSMTFdID0gVENCUiB8IFJDQlI7DQogCQli
+YXVkID0gOTYwMDsNCkBAIC0xMzAyLDcgKzEzNDMsMTQgQEAgc3RhdGljIHZv
+aWQgX19kZXZpbml0IHN1bnppbG9nX2luaXRfaHcocw0KIAkJdXAtPmN1cnJl
+Z3NbUjEyXSA9IChicmcgJiAweGZmKTsNCiAJCXVwLT5jdXJyZWdzW1IxM10g
+PSAoYnJnID4+IDgpICYgMHhmZjsNCiAJCXVwLT5jdXJyZWdzW1IxNF0gPSBC
+UlNSQyB8IEJSRU5BQjsNCi0JCV9fbG9hZF96c3JlZ3MoY2hhbm5lbCwgdXAt
+PmN1cnJlZ3MpOw0KKwkJdXAtPmN1cnJlZ3NbUjE1XSA9IEZJRk9FTjsgLyog
+VXNlIEZJRk8gaWYgb24gRVNDQyAqLw0KKwkJdXAtPmN1cnJlZ3NbUjdwXSA9
+IFR4RklGT19MVkwgfCBSeEZJRk9fTFZMOw0KKwkJaWYgKF9fbG9hZF96c3Jl
+Z3MoY2hhbm5lbCwgdXAtPmN1cnJlZ3MpKSB7DQorCQkJdXAtPmZsYWdzIHw9
+IFNVTlpJTE9HX0ZMQUdfRVNDQzsNCisJCX0NCisJCS8qIE9ubHkgZW5hYmxl
+IGludGVycnVwdHMgaWYgYW4gSVNSIGhhbmRsZXIgYXZhaWxhYmxlICovDQor
+CQlpZiAodXAtPmZsYWdzICYgU1VOWklMT0dfRkxBR19JU1JfSEFORExFUikN
+CisJCQl1cC0+Y3VycmVnc1tSOV0gfD0gTUlFOw0KIAkJd3JpdGVfenNyZWco
+Y2hhbm5lbCwgUjksIHVwLT5jdXJyZWdzW1I5XSk7DQogCX0NCiANCkBAIC0x
+MzkxLDEyICsxNDM5LDE0IEBAIHN0YXRpYyBpbnQgX19kZXZpbml0IHpzX3By
+b2JlKHN0cnVjdCBvZl8NCiAJCQlyZXR1cm4gZXJyOw0KIAkJfQ0KIAl9IGVs
+c2Ugew0KLQkJcHJpbnRrKEtFUk5fSU5GTyAiJXM6IEtleWJvYXJkIGF0IE1N
+SU8gJWx4IChpcnEgPSAlZCkgIg0KLQkJICAgICAgICJpcyBhIHpzXG4iLA0K
+LQkJICAgICAgIG9wLT5kZXYuYnVzX2lkLCB1cFswXS5wb3J0Lm1hcGJhc2Us
+IG9wLT5pcnFzWzBdKTsNCi0JCXByaW50ayhLRVJOX0lORk8gIiVzOiBNb3Vz
+ZSBhdCBNTUlPICVseCAoaXJxID0gJWQpICINCi0JCSAgICAgICAiaXMgYSB6
+c1xuIiwNCi0JCSAgICAgICBvcC0+ZGV2LmJ1c19pZCwgdXBbMV0ucG9ydC5t
+YXBiYXNlLCBvcC0+aXJxc1swXSk7DQorCQlwcmludGsoS0VSTl9JTkZPICIl
+czogS2V5Ym9hcmQgYXQgTU1JTyAweCVseCAoaXJxID0gJWQpICINCisJCSAg
+ICAgICAiaXMgYSAlc1xuIiwNCisJCSAgICAgICBvcC0+ZGV2LmJ1c19pZCwg
+dXBbMF0ucG9ydC5tYXBiYXNlLCBvcC0+aXJxc1swXSwNCisJCSAgICAgICBz
+dW56aWxvZ190eXBlICgmdXBbMF0ucG9ydCkpOw0KKwkJcHJpbnRrKEtFUk5f
+SU5GTyAiJXM6IE1vdXNlIGF0IE1NSU8gMHglbHggKGlycSA9ICVkKSAiDQor
+CQkgICAgICAgImlzIGEgJXNcbiIsDQorCQkgICAgICAgb3AtPmRldi5idXNf
+aWQsIHVwWzFdLnBvcnQubWFwYmFzZSwgb3AtPmlycXNbMF0sDQorCQkgICAg
+ICAgc3Vuemlsb2dfdHlwZSAoJnVwWzFdLnBvcnQpKTsNCiAJfQ0KIA0KIAlk
+ZXZfc2V0X2RydmRhdGEoJm9wLT5kZXYsICZ1cFswXSk7DQpAQCAtMTQ4OCwx
+MCArMTUzOCwyMyBAQCBzdGF0aWMgaW50IF9faW5pdCBzdW56aWxvZ19pbml0
+KHZvaWQpDQogCQlnb3RvIG91dF91bnJlZ2lzdGVyX3VhcnQ7DQogDQogCWlm
+ICh6aWxvZ19pcnEgIT0gLTEpIHsNCisJCXN0cnVjdCB1YXJ0X3N1bnppbG9n
+X3BvcnQgKnVwID0gc3Vuemlsb2dfaXJxX2NoYWluOw0KIAkJZXJyID0gcmVx
+dWVzdF9pcnEoemlsb2dfaXJxLCBzdW56aWxvZ19pbnRlcnJ1cHQsIElSUUZf
+U0hBUkVELA0KIAkJCQkgICJ6cyIsIHN1bnppbG9nX2lycV9jaGFpbik7DQog
+CQlpZiAoZXJyKQ0KIAkJCWdvdG8gb3V0X3VucmVnaXN0ZXJfZHJpdmVyOw0K
+Kw0KKwkJLyogRW5hYmxlIEludGVycnVwdHMgKi8NCisJCXdoaWxlICh1cCkg
+ew0KKwkJCXN0cnVjdCB6aWxvZ19jaGFubmVsIF9faW9tZW0gKmNoYW5uZWw7
+DQorDQorCQkJLyogcHJpbnRrIChLRVJOX0lORk8gIkVuYWJsZSBJUlEgZm9y
+IFpJTE9HIEhhcmR3YXJlICVwXG4iLCB1cCk7ICovDQorCQkJY2hhbm5lbCAg
+ICAgICAgICA9IFpJTE9HX0NIQU5ORUxfRlJPTV9QT1JUKCZ1cC0+cG9ydCk7
+DQorCQkJdXAtPmZsYWdzICAgICAgIHw9IFNVTlpJTE9HX0ZMQUdfSVNSX0hB
+TkRMRVI7DQorCQkJdXAtPmN1cnJlZ3NbUjldIHw9IE1JRTsNCisJCQl3cml0
+ZV96c3JlZyhjaGFubmVsLCBSOSwgdXAtPmN1cnJlZ3NbUjldKTsNCisJCQl1
+cCA9IHVwLT5uZXh0Ow0KKwkJfQ0KIAl9DQogDQogb3V0Og0KQEAgLTE1MTYs
+NiArMTU3OSwyMCBAQCBzdGF0aWMgdm9pZCBfX2V4aXQgc3Vuemlsb2dfZXhp
+dCh2b2lkKQ0KIAlvZl91bnJlZ2lzdGVyX2RyaXZlcigmenNfZHJpdmVyKTsN
+CiANCiAJaWYgKHppbG9nX2lycSAhPSAtMSkgew0KKwkJc3RydWN0IHVhcnRf
+c3Vuemlsb2dfcG9ydCAqdXAgPSBzdW56aWxvZ19pcnFfY2hhaW47DQorDQor
+CQkvKiBEaXNhYmxlIEludGVycnVwdHMgKi8NCisJCXdoaWxlICh1cCkgew0K
+KwkJCXN0cnVjdCB6aWxvZ19jaGFubmVsIF9faW9tZW0gKmNoYW5uZWw7DQor
+DQorCQkJLyogcHJpbnRrIChLRVJOX0lORk8gIkRpc2FibGUgSVJRIGZvciBa
+SUxPRyBIYXJkd2FyZSAlcFxuIiwgdXApOyAqLw0KKwkJCWNoYW5uZWwgICAg
+ICAgICAgPSBaSUxPR19DSEFOTkVMX0ZST01fUE9SVCgmdXAtPnBvcnQpOw0K
+KwkJCXVwLT5mbGFncyAgICAgICAmPSB+U1VOWklMT0dfRkxBR19JU1JfSEFO
+RExFUjsNCisJCQl1cC0+Y3VycmVnc1tSOV0gJj0gfk1JRTsNCisJCQl3cml0
+ZV96c3JlZyhjaGFubmVsLCBSOSwgdXAtPmN1cnJlZ3NbUjldKTsNCisJCQl1
+cCA9IHVwLT5uZXh0Ow0KKwkJfQ0KKw0KIAkJZnJlZV9pcnEoemlsb2dfaXJx
+LCBzdW56aWxvZ19pcnFfY2hhaW4pOw0KIAkJemlsb2dfaXJxID0gLTE7DQog
+CX0NCmRpZmYgLXJ1TnBkIGxpbnV4LTIuNi4yMC45L2RyaXZlcnMvc2VyaWFs
+L3N1bnppbG9nLmggbGludXgtdGVzdC9kcml2ZXJzL3NlcmlhbC9zdW56aWxv
+Zy5oDQotLS0gbGludXgtMi42LjIwLjkvZHJpdmVycy9zZXJpYWwvc3Vuemls
+b2cuaAkyMDA0LTA4LTE0IDExOjU0OjQ2LjAwMDAwMDAwMCArMDEwMA0KKysr
+IGxpbnV4LXRlc3QvZHJpdmVycy9zZXJpYWwvc3Vuemlsb2cuaAkyMDA3LTA0
+LTI4IDA0OjMxOjA0LjAwMDAwMDAwMCArMDEwMA0KQEAgLTEzLDcgKzEzLDgg
+QEAgc3RydWN0IHppbG9nX2xheW91dCB7DQogCXN0cnVjdCB6aWxvZ19jaGFu
+bmVsIGNoYW5uZWxBOw0KIH07DQogDQotI2RlZmluZSBOVU1fWlNSRUdTICAg
+IDE2DQorI2RlZmluZQlOVU1fWlNSRUdTCTE3DQorI2RlZmluZQlSN3AJCTE2
+IC8qIFdyaXR0ZW4gYXMgUjcgd2l0aCBQMTUgYml0IDAgc2V0ICovDQogDQog
+LyogQ29udmVyc2lvbiByb3V0aW5lcyB0by9mcm9tIGJyZyB0aW1lIGNvbnN0
+YW50cyBmcm9tL3RvIGJpdHMNCiAgKiBwZXIgc2Vjb25kLg0KQEAgLTEyNyw2
+ICsxMjgsMTUgQEAgc3RydWN0IHppbG9nX2xheW91dCB7DQogDQogLyogV3Jp
+dGUgUmVnaXN0ZXIgNyAoU3luYyBiaXRzIDgtMTUvU0RMQyAwMTExMTExMCkg
+Ki8NCiANCisvKiBXcml0ZSBSZWdpc3RlciA3JyAoRVNDQyBPbmx5KSAqLw0K
+KyNkZWZpbmUJQVVUT19UeEZMQUcJMQkvKiBBdXRvbWF0aWMgVHggU0RMQyBG
+bGFnICovDQorI2RlZmluZQlBVVRPX0VPTV9SU1QJMgkvKiBBdXRvbWF0aWMg
+RU9NIFJlc2V0ICovDQorI2RlZmluZQlBVVRPblJUUwk0CS8qIEF1dG9tYXRp
+YyAvUlRTIHBpbiBkZWFjdGl2YXRpb24gKi8NCisjZGVmaW5lCVJ4RklGT19M
+VkwJOAkvKiBSZWNlaXZlIEZJRk8gaW50ZXJydXB0IGxldmVsICovDQorI2Rl
+ZmluZQluRFRSblJFUQkweDEwCS8qIC9EVFIvUkVRIHRpbWluZyAqLw0KKyNk
+ZWZpbmUJVHhGSUZPX0xWTAkweDIwCS8qIFRyYW5zbWl0IEZJRk8gaW50ZXJy
+dXB0IGxldmVsICovDQorI2RlZmluZQlFWFRfUkRfRU4JMHg0MAkvKiBFeHRl
+bmRlZCByZWFkIHJlZ2lzdGVyIGVuYWJsZSAqLw0KKw0KIC8qIFdyaXRlIFJl
+Z2lzdGVyIDggKHRyYW5zbWl0IGJ1ZmZlcikgKi8NCiANCiAvKiBXcml0ZSBS
+ZWdpc3RlciA5IChNYXN0ZXIgaW50ZXJydXB0IGNvbnRyb2wpICovDQpAQCAt
+MTM1LDYgKzE0NSw3IEBAIHN0cnVjdCB6aWxvZ19sYXlvdXQgew0KICNkZWZp
+bmUJRExDCTQJLyogRGlzYWJsZSBMb3dlciBDaGFpbiAqLw0KICNkZWZpbmUJ
+TUlFCTgJLyogTWFzdGVyIEludGVycnVwdCBFbmFibGUgKi8NCiAjZGVmaW5l
+CVNUQVRISQkweDEwCS8qIFN0YXR1cyBoaWdoICovDQorI2RlZmluZQlTV0lB
+Q0sgIDB4MjAgICAgLyogU29mdHdhcmUgSW50ZXJydXB0IEFjayAobm90IG9u
+IE5NT1MpICovDQogI2RlZmluZQlOT1JFU0VUCTAJLyogTm8gcmVzZXQgb24g
+d3JpdGUgdG8gUjkgKi8NCiAjZGVmaW5lCUNIUkIJMHg0MAkvKiBSZXNldCBj
+aGFubmVsIEIgKi8NCiAjZGVmaW5lCUNIUkEJMHg4MAkvKiBSZXNldCBjaGFu
+bmVsIEEgKi8NCkBAIC0xODcsNyArMTk4LDkgQEAgc3RydWN0IHppbG9nX2xh
+eW91dCB7DQogI2RlZmluZQlTTlJaSQkweGUwCS8qIFNldCBOUlpJIG1vZGUg
+Ki8NCiANCiAvKiBXcml0ZSBSZWdpc3RlciAxNSAoZXh0ZXJuYWwvc3RhdHVz
+IGludGVycnVwdCBjb250cm9sKSAqLw0KKyNkZWZpbmUJV1I3cEVOCTEJLyog
+V1I3JyBFbmFibGUgKEVTQ0Mgb25seSkgKi8NCiAjZGVmaW5lCVpDSUUJMgkv
+KiBaZXJvIGNvdW50IElFICovDQorI2RlZmluZQlGSUZPRU4JNAkvKiBGSUZP
+IEVuYWJsZSAoRVNDQyBvbmx5KSAqLw0KICNkZWZpbmUJRENESUUJOAkvKiBE
+Q0QgSUUgKi8NCiAjZGVmaW5lCVNZTkNJRQkweDEwCS8qIFN5bmMvaHVudCBJ
+RSAqLw0KICNkZWZpbmUJQ1RTSUUJMHgyMAkvKiBDVFMgSUUgKi8NCkBAIC0y
+NDEsNiArMjU0LDEwIEBAIHN0cnVjdCB6aWxvZ19sYXlvdXQgew0KICNkZWZp
+bmUJQ0hBVHhJUAkweDEwCQkvKiBDaGFubmVsIEEgVHggSVAgKi8NCiAjZGVm
+aW5lCUNIQVJ4SVAJMHgyMAkJLyogQ2hhbm5lbCBBIFJ4IElQICovDQogDQor
+LyogUmVhZCBSZWdpc3RlciA2IChMU0IgZnJhbWUgYnl0ZSBjb3VudCBbTm90
+IG9uIE5NT1NdKSAqLw0KKw0KKy8qIFJlYWQgUmVnaXN0ZXIgNyAoTVNCIGZy
+YW1lIGJ5dGUgY291bnQgYW5kIEZJRk8gc3RhdHVzIFtOb3Qgb24gTk1PU10p
+ICovDQorDQogLyogUmVhZCBSZWdpc3RlciA4IChyZWNlaXZlIGRhdGEgcmVn
+aXN0ZXIpICovDQogDQogLyogUmVhZCBSZWdpc3RlciAxMCAgKG1pc2Mgc3Rh
+dHVzIGJpdHMpICovDQo=
+
+--1750305931-1575535797-1178734649=:29173--
