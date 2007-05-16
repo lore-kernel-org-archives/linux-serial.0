@@ -1,121 +1,74 @@
-From: kees <kees@schoen.mine.nu>
-Subject: port operation
-Date: Thu, 10 May 2007 12:17:01 +0200 (CEST)
-Message-ID: <Pine.LNX.4.64.0705101146150.3020@schoen3.schoen.mine.nu>
+From: Jan Engelhardt <jengelh@linux01.gwdg.de>
+Subject: ark3116: receive returns negative
+Date: Wed, 16 May 2007 18:04:45 +0200 (MEST)
+Message-ID: <Pine.LNX.4.61.0705161743250.9570@yvahk01.tjqt.qr>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Content-Transfer-Encoding: 7BIT
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp13.wxs.nl ([195.121.247.4]:34073 "EHLO smtp13.wxs.nl"
+Received: from mailer.gwdg.de ([134.76.10.26]:51189 "EHLO mailer.gwdg.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1761292AbXEJKQw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 10 May 2007 06:16:52 -0400
-Received: from schoen3.schoen.mine.nu
- (ip5457f49a.direct-adsl.nl [84.87.244.154])
- by smtp13.wxs.nl (iPlanet Messaging Server 5.2 HotFix 2.15 (built Nov 14
- 2006)) with ESMTP id <0JHT00CIDLW281@smtp13.wxs.nl> for
- linux-serial@vger.kernel.org; Thu, 10 May 2007 12:16:51 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])	by schoen3.schoen.mine.nu
- (Postfix on SuSE Linux 7.2 (i386)) with ESMTP id 998663546A	for
- <linux-serial@vger.kernel.org>; Thu, 10 May 2007 12:17:01 +0200 (CEST)
+	id S1756413AbXEPQGV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 May 2007 12:06:21 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: ark3116_driver@auctionant.de
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, linux-usb-devel@lists.sourceforge.net
 
-Hi,
-
-I have a Debian system,
-Linux version 2.6.20.4 (root@pc_develop02.fluidwell.local) (gcc version 
-4.1.2 20061115 (prerelease) (Debian 4.1.1-21)) #1 SMP PREEMPT Fri Apr 6 
-13:41:02 CEST 2007
-
-The motherboard has one serial port and the pci card (PCI 9835 Multi-I/O 
-Controller) has another two. When autoconfig is set for setserial we get:
-
-/dev/ttyS0 at 0x03f8 (irq = 4) is a 16550A
-/dev/ttyS1 at 0x1030 (irq = 20) is a 16550A
-/dev/ttyS2 at 0x1028 (irq = 20) is a 16550A
-
-I have an application that works well if I use ttyS0 but not from ttyS1 or 
-ttyS2. I loose characters in the latter case. It looks if only the last 
-character is outputted on the port...
-
-I have the assumption that it must be possible to "set" the ports with 
-setserial as a 16450.
-
-/dev/ttyS0 at 0x03f8 (irq = 4) is a 16450
-/dev/ttyS1 at 0x1030 (irq = 20) is a 16450
-/dev/ttyS2 at 0x1028 (irq = 20) is a 16450
-
-Doing that makes ttyS0 not longer work, here only the last character is 
-output. This is similar to ttyS1/ttyS2 in 16550A mode.   ???
+Hello,
 
 
+I seem to have problems with the ark3116 driver from 2.6.18.8. This is a 
+USB-RS232 cable. Just opening the /dev/ttyUSB0 device 
+gives (this is the 
+debug output enabled by `modprobe ark3116 debug=1`).
 
-If I modify the application like:
+The lines that look suspicious are
+/serial/ark3116.c: 124 < 1 bytes [0xFFFFFFB0]
+and
+/serial/ark3116.c: ark3116_ioctl cmd 0x5401 not supported
 
-#ifdef _NORMAL_SERIAL_OUT
-     write(hartfd.fd, &odbuf, pcnt);
-#else
+I have also seen things like "id here < -62 [0x10]", which would 
+indicate that usb_control_msg() returned something very negative 
+(-ETIME!?).
 
-int fd;
-#define PORT_ADDR 0x3f8
-unsigned char cc= 0x00;
-    fd=open("/dev/port", O_RDWR);
+Issuing a write() on an open fd to ttyUSB does not generate any further 
+debug output. Is the driver even complete/functional?
+I do not know where to go from here, please advise.
 
-    for( i =0 ; i<= pcnt; i++){
-       do {
-          lseek(fd, PORT_ADDR+5, 0);  // LSR
-          read(fd, &cc, 1);
-  fprintf(stderr,  "read LSR=%02x\n", cc);
-       } while (!(cc & 0x20));
-         lseek(fd, PORT_ADDR, 0);       // THR
-         write(fd, &odbuf[i], 1);
-  fprintf(stderr,  "write THR=%02x\n",odbuf[i]);
-     }
-     close(fd);
-#endif
 
-Everything is output on ttyS0, ttyS1 and ttyS2 (If I set the PORT_ADDR 
-correct)
-So the _device_ works well.
+Full output:
+/serial/ark3116.c: ark3116_open - port 0
+/serial/ark3116.c: 111 < 1 bytes [0x03]
+/serial/ark3116.c: 112 > ok
+/serial/ark3116.c: 113 > ok
+/serial/ark3116.c: 114 > ok
+/serial/ark3116.c: 115 > ok
+/serial/ark3116.c: 116 < 1 bytes [0x03]
+/serial/ark3116.c: 117 > ok
+/serial/ark3116.c: 118 < 1 bytes [0x02]
+/serial/ark3116.c: 119 > ok
+/serial/ark3116.c: 120 < 1 bytes [0x00]
+/serial/ark3116.c: 121 > ok
+/serial/ark3116.c: 122 < 1 bytes [0x01]
+/serial/ark3116.c: 123 > ok
+/serial/ark3116.c: 124 < 1 bytes [0xFFFFFFB0]
+/serial/ark3116.c: ark3116_set_termios - port 0
+/serial/ark3116.c: setting CS8
+/serial/ark3116.c: setting parity to NONE
+/serial/ark3116.c: setting 1 stop bit
+/serial/ark3116.c: 000 < 1 bytes [0x02]
+/serial/ark3116.c: setting baudrate to 9600 (->reg=312)
+/serial/ark3116.c: 147 > ok
+/serial/ark3116.c: 148 > ok
+/serial/ark3116.c: 149 > ok
+/serial/ark3116.c: 150 > ok
+/serial/ark3116.c: 151 < 1 bytes [0x03]
+/serial/ark3116.c: 152 > ok
+/serial/ark3116.c: updating bit count, stop bit or parity (cfg=0x03)
+/serial/ark3116.c: 153 < 1 bytes [0x00]
+/serial/ark3116.c: 154 > ok
+/serial/ark3116.c: ark3116_ioctl cmd 0x5401 not supported
 
-I noticed though that for port ttyS0 the stderr(log) shows
-read LSR=60  <--
-write THR=ff
-read LSR=00  <--
-...
-read LSR=20  <--
-write THR=ff
-read LSR=00
-...
 
-which looks OK but for the NMOS chip I get
-
-For ttyS1/ttyS2 I get
-read LSR=60  <--
-write THR=ff
-read LSR=40 <-- (repeat 24 times)
-...
-read LSR=00 <--
-...
-read LSR=20 <--
-write THR=ff
-read LSR=00
-...
-
-So this chip does not clear XMIT Empty right away but it took time before 
-it was cleared.
-
-I feel that somewhere the driver is confused by this. But I find it 
-difficult to follow the flow of the data in the serial 
-driver in the kernel.
-
-I'm able and willing to do more detailed tests (even in the driver source) 
-if one asks for it.
-
-Any clue?
-
-regards
-
-Kees
+	Jan
+-- 
