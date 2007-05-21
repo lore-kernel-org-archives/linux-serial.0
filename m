@@ -1,70 +1,58 @@
-From: Jan Engelhardt <jengelh@linux01.gwdg.de>
-Subject: [PATCH] Re: [linux-usb-devel] ark3116: receive returns negative
-Date: Thu, 17 May 2007 17:16:44 +0200 (MEST)
-Message-ID: <Pine.LNX.4.61.0705171704230.3231@yvahk01.tjqt.qr>
-References: <Pine.LNX.4.61.0705161743250.9570@yvahk01.tjqt.qr>
- <20070517124525.GC20055@kroah.com> <Pine.LNX.4.61.0705171529570.3231@yvahk01.tjqt.qr>
- <Pine.LNX.4.61.0705171646130.3231@yvahk01.tjqt.qr> <20070517145849.GA3282@kroah.com>
+From: Martin Michlmayr <tbm@cyrius.com>
+Subject: Update zilog timeout
+Date: Mon, 21 May 2007 11:11:11 +0200
+Message-ID: <20070521091111.GA31429@deprecation.cyrius.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailer.gwdg.de ([134.76.10.26]:58915 "EHLO mailer.gwdg.de"
+Received: from sorrow.cyrius.com ([65.19.161.204]:3147 "EHLO sorrow.cyrius.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753863AbXEQPTS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 May 2007 11:19:18 -0400
-In-Reply-To: <20070517145849.GA3282@kroah.com>
+	id S1754512AbXEUJa6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 21 May 2007 05:30:58 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <greg@kroah.com>
-Cc: ark3116_driver@auctionant.de, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, linux-usb-devel@lists.sourceforge.net
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-serial@vger.kernel.org, rmk+serial@arm.linux.org.uk, Peter Fuerst <pf@net.alphadv.de>
+
+The following patch has been in the linux-mips tree July 2005 and has
+been in Debian for quite a while.  Can it be added to mainline?
 
 
-On May 17 2007 07:58, Greg KH wrote:
->On Thu, May 17, 2007 at 04:51:09PM +0200, Jan Engelhardt wrote:
->> On May 17 2007 16:10, Jan Engelhardt wrote:
->> >Hi Greg,
->> >
->> >>But does the driver seem to work properly?
->> >>Do you get data through the device properly?
->> 
->> I have taken a voltmeter and an appropriate testcase program - and yes,
->> at least transmit works.
->> 
->> >USB-RS232-GenderChanger-RS232-USB.
->> 
->> A faulty setup that is. My bad.
->
->You forgot the NULL modem inverter :)
+From: Thiemo Seufer <ths@networkno.de>
+Date: Sun, 3 Jul 2005 18:00:33 +0000 (+0000)
+Subject: Update zilog timeout, thanks Peter Fuerst.
+X-Git-Tag: linux-2.6.12~42
+X-Git-Url: http://www.linux-mips.org/git?p=linux.git;a=commitdiff_plain;h=105487b1c7b5e84023725790d0c9383490d7d8a0;hp=89829912fe22a77f71e4d0a0fffad230d8de4fad
 
-Yeah I figured. Screw this legacy tech... Anyway here is the patch
-for that printk:
+Update zilog timeout, thanks Peter Fuerst.
+
+Signed-off-by: Thiemo Seufer <ths@networkno.de>
 
 ---
 
-Subject: Fix debug output of ark3116
-
-Fix debug output. Previously, it would output "0xFFFFFFB0" on 32-bit 
-archs (and probably "0xFFFFFFFFFFFFFFB0" on 64-bits), because buf is 
-taken as signed char, which is promoted to signed int, while %x always 
-expects an unsigned int.
-
-Signed-off-by: Jan Engelhardt <jengelh@gmx.de>
-
----
- drivers/usb/serial/ark3116.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-Index: linux-2.6/drivers/usb/serial/ark3116.c
-===================================================================
---- linux-2.6.orig/drivers/usb/serial/ark3116.c
-+++ linux-2.6/drivers/usb/serial/ark3116.c
-@@ -63,7 +63,8 @@ static inline void ARK3116_RCV(struct us
- 				 request, requesttype, value, index,
- 				 buf, 0x0000001, 1000);
- 	if (result)
--		dbg("%03d < %d bytes [0x%02X]", seq, result, buf[0]);
-+		dbg("%03d < %d bytes [0x%02X]", seq, result,
-+		    ((unsigned char *)buf)[0]);
- 	else
- 		dbg("%03d < 0 bytes", seq);
+diff --git a/drivers/serial/ip22zilog.c b/drivers/serial/ip22zilog.c
+index 3ea46c0..907ccf7 100644
+--- a/drivers/serial/ip22zilog.c
++++ b/drivers/serial/ip22zilog.c
+@@ -881,6 +881,7 @@ ip22zilog_set_termios(struct uart_port *port, struct termios *termios,
+ 	up->cflag = termios->c_cflag;
+ 
+ 	ip22zilog_maybe_update_regs(up, ZILOG_CHANNEL_FROM_PORT(port));
++	uart_update_timeout(port, termios->c_cflag, baud);
+ 
+ 	spin_unlock_irqrestore(&up->port.lock, flags);
  }
+@@ -1047,6 +1048,8 @@ ip22serial_console_termios(struct console *con, char *options)
+ 	}
+ 
+ 	con->cflag = cflag | CS8;			/* 8N1 */
++
++	uart_update_timeout(&ip22zilog_port_table[con->index].port, cflag, baud);
+ }
+ 
+ static int __init ip22zilog_console_setup(struct console *con, char *options)
+
+-- 
+Martin Michlmayr
+http://www.cyrius.com/
