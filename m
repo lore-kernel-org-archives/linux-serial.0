@@ -1,58 +1,131 @@
-From: Martin Michlmayr <tbm@cyrius.com>
-Subject: Update zilog timeout
-Date: Mon, 21 May 2007 11:11:11 +0200
-Message-ID: <20070521091111.GA31429@deprecation.cyrius.com>
+From: kees <kees@schoen.mine.nu>
+Subject: [PATCH]  drivers/serial
+Date: Thu, 24 May 2007 20:31:59 +0200 (CEST)
+Message-ID: <Pine.LNX.4.64.0705242019320.16298@schoen3.schoen.mine.nu>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from sorrow.cyrius.com ([65.19.161.204]:3147 "EHLO sorrow.cyrius.com"
+Received: from smtp14.wxs.nl ([195.121.247.5]:65287 "EHLO smtp14.wxs.nl"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754512AbXEUJa6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 21 May 2007 05:30:58 -0400
-Content-Disposition: inline
+	id S1750760AbXEXSbv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 24 May 2007 14:31:51 -0400
+Received: from schoen3.schoen.mine.nu
+ (ip5457f49a.direct-adsl.nl [84.87.244.154])
+ by smtp14.wxs.nl (iPlanet Messaging Server 5.2 HotFix 2.15 (built Nov 14
+ 2006)) with ESMTP id <0JIK00CD9652BU@smtp14.wxs.nl> for
+ linux-serial@vger.kernel.org; Thu, 24 May 2007 20:31:50 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])	by schoen3.schoen.mine.nu
+ (Postfix on SuSE Linux 7.2 (i386)) with ESMTP id 9C5972CEDE	for
+ <linux-serial@vger.kernel.org>; Thu, 24 May 2007 20:31:59 +0200 (CEST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-serial@vger.kernel.org, rmk+serial@arm.linux.org.uk, Peter Fuerst <pf@net.alphadv.de>
+To: linux-serial@vger.kernel.org
 
-The following patch has been in the linux-mips tree July 2005 and has
-been in Debian for quite a while.  Can it be added to mainline?
+Hi,
+
+I have been hit by bugs in the serialdriver _and_ some chipsets
+Some chips (NETMOS 9835) hold their TEMT bit in the LSR somewhat longer
+after data is written in the THR. This patch solves that for all.
+
+Furthermore the setserial does not pass tx_loadsz properly the the driver
+settings. This patch solves that for the 8250/165xx type devices.
+
+There is still a serious problem in serial_core.c with respect to the 
+setserial functionality. It does not properly update the tx_loadsz and the 
+fifosize parameters for the new setting. It _does_ update the type 
+correctly.
 
 
-From: Thiemo Seufer <ths@networkno.de>
-Date: Sun, 3 Jul 2005 18:00:33 +0000 (+0000)
-Subject: Update zilog timeout, thanks Peter Fuerst.
-X-Git-Tag: linux-2.6.12~42
-X-Git-Url: http://www.linux-mips.org/git?p=linux.git;a=commitdiff_plain;h=105487b1c7b5e84023725790d0c9383490d7d8a0;hp=89829912fe22a77f71e4d0a0fffad230d8de4fad
+ioctl(hartfd.fd,TIOCSERGETLSR , &parm);
 
-Update zilog timeout, thanks Peter Fuerst.
+return the proper status.
 
-Signed-off-by: Thiemo Seufer <ths@networkno.de>
 
----
 
-diff --git a/drivers/serial/ip22zilog.c b/drivers/serial/ip22zilog.c
-index 3ea46c0..907ccf7 100644
---- a/drivers/serial/ip22zilog.c
-+++ b/drivers/serial/ip22zilog.c
-@@ -881,6 +881,7 @@ ip22zilog_set_termios(struct uart_port *port, struct termios *termios,
- 	up->cflag = termios->c_cflag;
- 
- 	ip22zilog_maybe_update_regs(up, ZILOG_CHANNEL_FROM_PORT(port));
-+	uart_update_timeout(port, termios->c_cflag, baud);
- 
- 	spin_unlock_irqrestore(&up->port.lock, flags);
- }
-@@ -1047,6 +1048,8 @@ ip22serial_console_termios(struct console *con, char *options)
- 	}
- 
- 	con->cflag = cflag | CS8;			/* 8N1 */
-+
-+	uart_update_timeout(&ip22zilog_port_table[con->index].port, cflag, baud);
- }
- 
- static int __init ip22zilog_console_setup(struct console *con, char *options)
+--- drivers/serial/8250.c.org   2007-05-11 13:24: 42.000000000 +0200
++++ drivers/serial/8250.c       2007-05-16 13:37:57.000000000 +0200
+@@ -108,6 +108,7 @@ static const struct old_serial_port old_
+  };
 
--- 
-Martin Michlmayr
-http://www.cyrius.com/
+  #define UART_NR        CONFIG_SERIAL_8250_NR_UARTS
++#define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
+
+  #ifdef CONFIG_SERIAL_8250_RSA
+
+@@ -1139,7 +1140,7 @@ static void serial8250_start_tx(struct u
+                         unsigned char lsr, iir;
+                         lsr = serial_in(up, UART_LSR);
+                         iir = serial_in(up, UART_IIR);
+-                       if (lsr & UART_LSR_TEMT && iir & UART_IIR_NO_INT)
++                       if (((lsr & BOTH_EMPTY) == BOTH_EMPTY) && iir & 
+UART_IIR
+_NO_INT)
+                                 transmit_chars(up);
+                 }
+         }
+@@ -1267,7 +1268,7 @@ static void transmit_chars(struct uart_8
+                 return;
+         }
+
+-       count = up->tx_loadsz;
++       count = uart_config[up->port.type].tx_loadsz;
+         do {
+                 serial_out(up, UART_TX, xmit->buf[xmit->tail]);
+                 xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+@@ -1475,7 +1476,7 @@ static unsigned int serial8250_tx_empty(
+         unsigned int ret;
+
+         spin_lock_irqsave(&up-> port.lock, flags);
+-       ret = serial_in(up, UART_LSR) & UART_LSR_TEMT ? TIOCSER_TEMT : 0;
++       ret = ((serial_in(up, UART_LSR) & BOTH_EMPTY) == BOTH_EMPTY) ? 
+TIOCSER_T
+EMT : 0;
+         spin_unlock_irqrestore(&up-> port.lock, flags);
+
+         return ret;
+@@ -1654,7 +1655,7 @@ static int serial8250_startup(struct uar
+         iir = serial_in(up, UART_IIR);
+         serial_outp(up, UART_IER, 0);
+
+-       if (lsr & UART_LSR_TEMT && iir & UART_IIR_NO_INT) {
++       if (((lsr & BOTH_EMPTY) == BOTH_EMPTY) && iir & UART_IIR_NO_INT) {
+                 if (!(up->bugs & UART_BUG_TXEN)) {
+                         up->bugs |= UART_BUG_TXEN;
+                         pr_debug("ttyS%d - enabling bad tx status 
+workarounds\n"
+,
+@@ -1810,7 +1811,8 @@ serial8250_set_termios(struct uart_port
+         if (up->bugs & UART_BUG_QUOT && (quot & 0xff) == 0)
+                 quot ++;
+
+-       if (up->capabilities & UART_CAP_FIFO && up-> port.fifosize > 1) {
++       if (up->capabilities & UART_CAP_FIFO &&
++               uart_config[up->port.type].fifo_size > 1) {
+                 if (baud < 2400)
+                         fcr = UART_FCR_ENABLE_FIFO | UART_FCR_TRIGGER_1;
+                 else
+@@ -1825,7 +1827,8 @@ serial8250_set_termios(struct uart_port
+          * have sufficient FIFO entries for the latency of the remote
+          * UART to respond.  IOW, at least 32 bytes of FIFO.
+          */
+-       if (up->capabilities & UART_CAP_AFE && up->port.fifosize >= 32) {
++       if (up->capabilities & UART_CAP_AFE &&
++               uart_config[up->port.type ].fifo_size >= 32) {
+                 up->mcr &= ~UART_MCR_AFE;
+                 if (termios->c_cflag & CRTSCTS)
+                         up->mcr |= UART_MCR_AFE;
+@@ -2208,7 +2211,6 @@ serial8250_register_ports(struct uart_dr
+
+  #ifdef CONFIG_SERIAL_8250_CONSOLE
+
+-#define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
+
+  /*
+   *     Wait for transmitter & holding register to empty
+
+
+
+regards
+
+Kees
