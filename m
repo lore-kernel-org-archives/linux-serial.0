@@ -1,43 +1,73 @@
-From: Andy Whitcroft <apw@shadowen.org>
+From: Russell King <rmk+lkml@arm.linux.org.uk>
 Subject: Re: [PATCH] zs: Move to the serial subsystem
-Date: Wed, 30 May 2007 10:54:59 +0100
-Message-ID: <465D49F3.7010005@shadowen.org>
+Date: Wed, 30 May 2007 11:09:35 +0100
+Message-ID: <20070530100935.GC19552@flint.arm.linux.org.uk>
 References: <Pine.LNX.4.64N.0705291258390.14456@blysk.ds.pg.gda.pl> <20070530011224.bf36d2df.akpm@linux-foundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from hellhawk.shadowen.org ([80.68.90.175]:3513 "EHLO
-	hellhawk.shadowen.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751104AbXE3Jyz (ORCPT
+Received: from caramon.arm.linux.org.uk ([217.147.92.249]:2299 "EHLO
+	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751473AbXE3KJr (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 30 May 2007 05:54:55 -0400
+	Wed, 30 May 2007 06:09:47 -0400
+Content-Disposition: inline
 In-Reply-To: <20070530011224.bf36d2df.akpm@linux-foundation.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Andrew Morton <akpm@linux-foundation.org>
-Cc: "Maciej W. Rozycki" <macro@linux-mips.org>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: "Maciej W. Rozycki" <macro@linux-mips.org>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andy Whitcroft <apw@shadowen.org>
 
-Andrew Morton wrote:
-> On Tue, 29 May 2007 14:03:54 +0100 (BST) "Maciej W. Rozycki" <macro@linux-mips.org> wrote:
-
-> Hey, you have volatiles and checkpatch.pl didn't complain.  Andy, a
-> reference to Documentation/volatile-considered-harmful.txt would suit.
+On Wed, May 30, 2007 at 01:12:24AM -0700, Andrew Morton wrote:
+> > +			if (status & (Rx_SYS | Rx_BRK))
+> > +				icount->brk++;
+> > +			else if (status & FRM_ERR)
+> > +				icount->frame++;
+> > +			else if (status & PAR_ERR)
+> > +				icount->parity++;
 > 
-> (That's
-> ftp://ftp.kernel.org/pub/linux/kernel/people/akpm/patches/2.6/2.6.22-rc2/2.6.22-rc2-mm1/broken-out/volatile-considered-harmful-take-3.patch)
+> FRM_ERR and PAR_ERR are mutually exclusive, and cannot be set if either
+> Rx_SYS or Rx_BRK are set?
 
-Added ...
+That's actually fairly normal.  A break condition is by definition
+a framing error, and possibly a parity error as well.  Also, a break
+condition is not an error per-se.
 
-Use of volatile is usually wrong: see
-Documentation/volatile-considered-harmful.txt
-PATCH: XXX.eml:374:
-FILE: linux-2.6.22-rc2/drivers/serial/zs.c:131:
-+       volatile void __iomem *control = zport->port.membase +
+Also, if you do add in the associated framing or parity errors, you're
+likely to get different results from different hardware - some hardware
+mask off the framing and parity errors when detecting a break condition.
+Others don't.
 
-[...]
+> > +/*
+> > + * Finally, routines used to initialize the serial port.
+> > + */
+> > +static int zs_startup(struct uart_port *uport)
+> > +{
+> > +	struct zs_port *zport = to_zport(uport);
+> > +	struct zs_scc *scc = zport->scc;
+> > +	unsigned long flags;
+> > +	int ret;
+> > +
+> > +	if (!scc->irq_guard) {
+> > +		ret = request_irq(zport->port.irq, zs_interrupt,
+> > +				  IRQF_SHARED, "scc", scc);
+> > +		if (ret) {
+> > +			printk(KERN_ERR "zs: can't get irq %d\n",
+> > +			       zport->port.irq);
+> > +			return ret;
+> > +		}
+> > +	}
+> > +	scc->irq_guard++;
+> 
+> The ->irq_guard handling looks a little racy?
+> 
+> Perhaps higher-level locks prevent this.  If so, a comment explaining this
+> would be reassuring.
 
-I will batch up any changes to checkpatch.pl and send you them as a blob
-when they get "interesting" if that suits.
+Does look racy if "scc" is shared between several ports.  The locking
+here is only per-port, so this is racy.
 
--apw
+-- 
+Russell King
+ Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+ maintainer of:
