@@ -1,45 +1,37 @@
-From: Paul Mackerras <paulus@samba.org>
+From: Chris Snook <csnook@redhat.com>
 Subject: Re: [PATCH TRIVIAL] icom whitespace cleanups
-Date: Wed, 6 Jun 2007 07:44:48 +1000
-Message-ID: <18021.55632.359206.105260@cargo.ozlabs.ibm.com>
-References: <4665D3EC.60404@redhat.com>
+Date: Tue, 05 Jun 2007 19:00:17 -0400
+Message-ID: <4665EB01.5040508@redhat.com>
+References: <4665D3EC.60404@redhat.com> <18021.55632.359206.105260@cargo.ozlabs.ibm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ozlabs.org ([203.10.76.45]:48597 "EHLO ozlabs.org"
+Received: from mx1.redhat.com ([66.187.233.31]:39533 "EHLO mx1.redhat.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1765761AbXFEWjl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Jun 2007 18:39:41 -0400
-In-Reply-To: <4665D3EC.60404@redhat.com>
+	id S932822AbXFEXAu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 5 Jun 2007 19:00:50 -0400
+In-Reply-To: <18021.55632.359206.105260@cargo.ozlabs.ibm.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Chris Snook <csnook@redhat.com>
+To: Paul Mackerras <paulus@samba.org>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Andrew Morton <akpm@osdl.org>
 
-Chris Snook writes:
+Paul Mackerras wrote:
+> Chris Snook writes:
+> 
+>> Clean up whitespace and comments in drivers/serial/icom.c
+> 
+> These changes seem totally unnecessary, as the existing indentation is
+> according to a commonly-accepted style and is quite reasonable:
 
-> Clean up whitespace and comments in drivers/serial/icom.c
+There are actually a few different indentation styles used inconsistently 
+throughout, which I personally find annoying, and there's lots of whitespace 
+damage.  If I've really overstepped the bounds, I'll resubmit a somewhat smaller 
+patch, but I'm inclined to make it look pretty while I've got the hood up.
 
-These changes seem totally unnecessary, as the existing indentation is
-according to a commonly-accepted style and is quite reasonable:
+> Also you don't seem to have cc'd the driver author.
 
-> @@ -149,23 +149,23 @@ static void free_port_memory(struct icom
->  	trace(icom_port, "RET_PORT_MEM", 0);
->  	if (icom_port->recv_buf) {
->  		pci_free_consistent(dev, 4096, icom_port->recv_buf,
-> -				    icom_port->recv_buf_pci);
-> +			icom_port->recv_buf_pci);
->  		icom_port->recv_buf = NULL;
->  	}
->  	if (icom_port->xmit_buf) {
->  		pci_free_consistent(dev, 4096, icom_port->xmit_buf,
-> -				    icom_port->xmit_buf_pci);
-> +			icom_port->xmit_buf_pci);
+Can't find any contact info.  Care to enlighten me?
 
-etc. etc.  The comment changes I agree on but not most of the other
-whitespace changes.
-
-Also you don't seem to have cc'd the driver author.
-
-Paul.
+	-- Chris
