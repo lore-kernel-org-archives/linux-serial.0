@@ -1,77 +1,61 @@
-From: "Maciej W. Rozycki" <macro@linux-mips.org>
-Subject: [PATCH] zs.c: Drain the transmission line
-Date: Wed, 6 Jun 2007 10:07:34 +0100 (BST)
-Message-ID: <Pine.LNX.4.64N.0706051145260.15653@blysk.ds.pg.gda.pl>
+From: "V. Ananda Krishnan" <mansarov@linux.vnet.ibm.com>
+Subject: Re: [PATCH TRIVIAL] icom whitespace cleanups
+Date: Wed, 06 Jun 2007 09:16:11 -0500
+Message-ID: <4666C1AB.2070209@linux.vnet.ibm.com>
+References: <4665D3EC.60404@redhat.com> <18021.55632.359206.105260@cargo.ozlabs.ibm.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from pollux.ds.pg.gda.pl ([153.19.208.7]:1581 "EHLO
-	pollux.ds.pg.gda.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752274AbXFFJHi (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 6 Jun 2007 05:07:38 -0400
+Received: from e3.ny.us.ibm.com ([32.97.182.143]:52869 "EHLO e3.ny.us.ibm.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1761681AbXFFOVA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 6 Jun 2007 10:21:00 -0400
+In-Reply-To: <18021.55632.359206.105260@cargo.ozlabs.ibm.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-mips@linux-mips.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Chris Snook <csnook@redhat.com>, linux-kernel@vger.kernel.org, Andrew Morton <akpm@osdl.org>
 
- This is an update to the zs.c driver to make it wait for the transmission 
-line to become idle before disabling the transmitter or resetting the 
-chip.  This way the character that is on the way at the time one of these 
-actions is about to be performed does not get corrupted.
+Paul Mackerras wrote:
+> Chris Snook writes:
+> 
+>> Clean up whitespace and comments in drivers/serial/icom.c
+> 
+> These changes seem totally unnecessary, as the existing indentation is
+> according to a commonly-accepted style and is quite reasonable:
+> 
+I agree with Paul.
 
- Plus a change to reset the index/data pointer first before issuing a chip 
-reset just in case the state is wrong when control of the chip is taken 
-the first time.
+>> @@ -149,23 +149,23 @@ static void free_port_memory(struct icom
+>>  	trace(icom_port, "RET_PORT_MEM", 0);
+>>  	if (icom_port->recv_buf) {
+>>  		pci_free_consistent(dev, 4096, icom_port->recv_buf,
+>> -				    icom_port->recv_buf_pci);
+>> +			icom_port->recv_buf_pci);
+>>  		icom_port->recv_buf = NULL;
+>>  	}
+>>  	if (icom_port->xmit_buf) {
+>>  		pci_free_consistent(dev, 4096, icom_port->xmit_buf,
+>> -				    icom_port->xmit_buf_pci);
+>> +			icom_port->xmit_buf_pci);
+> 
+> etc. etc.  The comment changes I agree on but not most of the other
+> whitespace changes.
+The comment changes are fine with me too.
+> 
+> Also you don't seem to have cc'd the driver author.
+> 
+Current contacts for the driver are: Ananda (mansarov@us.ibm.com) and 
+Wendy (wenxiong@us.ibm.com)
 
-Signed-off-by: Maciej W. Rozycki <macro@linux-mips.org>
----
- These are almost obvious, but I have run-time tested them just in case.  
-They make the switch from the initial (early printk) PROM-based console 
-less disruptive.  The change to load_zsregs() also affects set_termios().
+:- Ananda
 
- Please apply,
+> Paul.
+> -
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
+> 
 
-  Maciej
-
-patch-mips-2.6.21-20070502-zs-serial-drain-3
-diff -up --recursive --new-file linux-mips-2.6.21-20070502.macro/drivers/serial/zs.c linux-mips-2.6.21-20070502/drivers/serial/zs.c
---- linux-mips-2.6.21-20070502.macro/drivers/serial/zs.c	2007-06-05 11:08:24.000000000 +0000
-+++ linux-mips-2.6.21-20070502/drivers/serial/zs.c	2007-06-05 11:08:57.000000000 +0000
-@@ -240,10 +240,24 @@ static int zs_transmit_drain(struct zs_p
- 	return loops;
- }
- 
-+static int zs_line_drain(struct zs_port *zport, int irq)
-+{
-+	struct zs_scc *scc = zport->scc;
-+	int loops = 10000;
-+
-+	while (!(read_zsreg(zport, R1) & ALL_SNT) && loops--) {
-+		zs_spin_unlock_cond_irq(&scc->zlock, irq);
-+		udelay(2);
-+		zs_spin_lock_cond_irq(&scc->zlock, irq);
-+	}
-+	return loops;
-+}
-+
- 
- static void load_zsregs(struct zs_port *zport, u8 *regs, int irq)
- {
--	zs_transmit_drain(zport, irq);
-+	/* Let the current transmission finish.  */
-+	zs_line_drain(zport, irq);
- 	/* Load 'em up.  */
- 	write_zsreg(zport, R3, regs[3] & ~RxENABLE);
- 	write_zsreg(zport, R5, regs[5] & ~TxENAB);
-@@ -814,6 +828,10 @@ static void zs_reset(struct zs_port *zpo
- 	spin_lock_irqsave(&scc->zlock, flags);
- 	irq = !irqs_disabled_flags(flags);
- 	if (!scc->initialised) {
-+		/* Reset the pointer first, just in case...  */
-+		read_zsreg(zport, R0);
-+		/* And let the current transmission finish.  */
-+		zs_line_drain(zport, irq);
- 		write_zsreg(zport, R9, FHWRES);
- 		udelay(10);
- 		write_zsreg(zport, R9, 0);
