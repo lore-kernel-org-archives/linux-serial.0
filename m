@@ -1,100 +1,81 @@
-From: "Christian P. Schmidt" <charlie@digadd.de>
-Subject: [patch] Add blacklisting capability to serial_pci to avoid misdetection
- of serial ports
-Date: Sun, 08 Jul 2007 12:38:17 +0300
-Message-ID: <4690B089.2050908@digadd.de>
+From: Bjorn Helgaas <bjorn.helgaas@hp.com>
+Subject: Re: [PATCH] Enable legacy support for serial ports when SERIAL_8250_PNP is disabled
+Date: Mon, 9 Jul 2007 09:46:32 -0600
+Message-ID: <200707090946.33101.bjorn.helgaas@hp.com>
+References: <20070707233300.GA3267@dreamland.darkstar.lan>
 Mime-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="------------000302070009000305000000"
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from echo.digadd.de ([195.47.195.234]:35556 "EHLO mx2.digadd.de"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1755101AbXGHKDR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 8 Jul 2007 06:03:17 -0400
-Received: from [192.168.255.30]
-	by mx2.digadd.de with esmtp (Exim 4.67)
-	(envelope-from <charlie@digadd.de>)
-	id 1I7TAa-0001sZ-DA
-	for linux-serial@vger.kernel.org; Sun, 08 Jul 2007 11:35:10 +0200
+Received: from atlrel6.hp.com ([156.153.255.205]:45360 "EHLO atlrel6.hp.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753707AbXGIPq4 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 9 Jul 2007 11:46:56 -0400
+In-Reply-To: <20070707233300.GA3267@dreamland.darkstar.lan>
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Luca Tettamanti <kronos.it@gmail.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------000302070009000305000000
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+On Saturday 07 July 2007 05:33:00 pm Luca Tettamanti wrote:
+> your patch:
+> 
+> commit 7e92b4fc345f5b6f57585fbe5ffdb0f24d7c9b26
+> Author: Bjorn Helgaas <bjorn.helgaas@hp.com>
+> Date:   Tue May 8 00:36:07 2007 -0700
+> 
+>     x86, serial: convert legacy COM ports to platform devices
+> 
+> disables probing using legacy code in favour of ACPI/PNP to avoid double
+> discovery.
+> 
+> However if SERIAL_8250_PNP is not enabled the user is left without
+> serial ports (been there, done that - my kernel config suddenly wasn't
+> working anymore). So:
 
-[Resend, originally sent to the lkml]
+Yes, that's true.  Kconfig should automatically turn on SERIAL_8250_PNP
+if PNP and SERIAL_8250 are selected, but it does give you a choice if
+you have EMBEDDED set.  So I guess you must have this:
 
-The serial_pci driver tries to guess serial ports on unknown devices
-based on the PCI class (modem or serial). On certain softmodems (AC'97
-modems) this can lead to the recognition of non-existing serial ports
-like this:
+  CONFIG_EMBEDDED=y
+  CONFIG_PNP=y
+  CONFIG_SERIAL_8250=y
+  CONFIG_SERIAL_8250_PNP=n
 
-0000:00:08.0: ttyS1 at I/O 0x8828 (irq = 3) is a 8250
-0000:00:08.0: ttyS2 at I/O 0x8840 (irq = 3) is a 8250
-0000:00:08.0: ttyS3 at I/O 0x8850 (irq = 3) is a 8250
-0000:00:08.0: ttyS4 at I/O 0x8860 (irq = 3) is a 8250
-0000:00:08.0: ttyS5 at I/O 0x8870 (irq = 3) is a 8250
+Why do you want PNP support, but not 8250_PNP support?  If you turn off
+PNP completely, you will have "pnp_platform_devices == 0", and the
+existing code will do what you need.
 
-This actually disables the use of the hsfmodem 3rd party driver if 8250
-is compiled into the kernel e.g. to provide a boot-time serial console.
-
-This patch adds a blacklist of PCI IDs that are to be ignored by the driver.
-
-The patch applies against both 2.6.21.5 and 2.6.22-rc7.
-
-Signed-off-by: Christian Schmidt <schmidt@digadd.de>
-
-
-
---------------000302070009000305000000
-Content-Type: text/plain;
- name="8250_pci.blacklist.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="8250_pci.blacklist.patch"
-
---- linux-2.6.21.5.orig/drivers/serial/8250_pci.c	2007-04-26 06:08:32.000000000 +0300
-+++ linux-2.6.21.5/drivers/serial/8250_pci.c	2007-07-05 17:26:32.000000000 +0300
-@@ -1513,6 +1513,11 @@
- 	},
- };
- 
-+static const struct pci_device_id softmodem_blacklist[] = {
-+     { PCI_VDEVICE ( AL, 0x5457 ), }, /* ALi Corporation M5457 AC'97 Modem */
-+     { }
-+};
-+
- /*
-  * Given a complete unknown PCI device, try to use some heuristics to
-  * guess what the configuration might be, based on the pitiful PCI
-@@ -1521,6 +1526,7 @@
- static int __devinit
- serial_pci_guess_board(struct pci_dev *dev, struct pciserial_board *board)
- {
-+        const struct pci_device_id * blacklist;
- 	int num_iomem, num_port, first_port = -1, i;
- 	
- 	/*
-@@ -1535,6 +1541,16 @@
- 	    (dev->class & 0xff) > 6)
- 		return -ENODEV;
- 
-+	/*
-+	 * Do not access blacklisted devices that are known not to
-+	 * feature serial ports.
-+	 */
-+	for (blacklist = softmodem_blacklist; blacklist->vendor; blacklist++) {
-+	        if ((dev->vendor == blacklist->vendor) &&
-+	            (dev->device == blacklist->device))
-+		        return -ENODEV;
-+	}
-+	
- 	num_iomem = num_port = 0;
- 	for (i = 0; i < PCI_NUM_BAR_RESOURCES; i++) {
- 		if (pci_resource_flags(dev, i) & IORESOURCE_IO) {
+> Enable probing of serial ports using legacy code when PNP code
+> (SERIAL_8250_PNP) is not enabled.
+> 
+> Signed-off-by: Luca Tettamanti <kronos.it@gmail.com>
+> 
+> ---
+> 
+>  arch/i386/kernel/legacy_serial.c |    4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/arch/i386/kernel/legacy_serial.c b/arch/i386/kernel/legacy_serial.c
+> index 2151011..457d307 100644
+> --- a/arch/i386/kernel/legacy_serial.c
+> +++ b/arch/i386/kernel/legacy_serial.c
+> @@ -48,7 +48,11 @@ static struct platform_device x86_com_device = {
+>  	},
+>  };
+>  
+> +#ifndef CONFIG_SERIAL_8250_PNP
+> +static int force_legacy_probe = 1;
+> +#else
+>  static int force_legacy_probe;
+> +#endif
+>  module_param_named(force, force_legacy_probe, bool, 0);
+>  MODULE_PARM_DESC(force, "Force legacy serial port probe");
+>  
+> 
+> 
+> Luca
 
 
---------------000302070009000305000000--
