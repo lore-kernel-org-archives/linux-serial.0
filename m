@@ -1,83 +1,188 @@
 From: "Frantisek Rysanek" <Frantisek.Rysanek@post.cz>
-Subject: a few tiny patches suggested
-Date: Tue, 10 Jul 2007 23:23:07 +0200
-Message-ID: <469414DB.2513.1275391A@Frantisek.Rysanek.post.cz>
+Subject: Re: Adding new driver - looking for suggestions
+Date: Tue, 10 Jul 2007 23:35:02 +0200
+Message-ID: <469417A6.24982.128022FD@Frantisek.Rysanek.post.cz>
 Mime-Version: 1.0
-Content-Type: Multipart/Mixed; boundary=Message-Boundary-20171
+Content-Type: Multipart/Mixed; boundary=Message-Boundary-9834
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.seznam.cz ([212.80.76.43]:37630 "HELO smtp.seznam.cz"
+Received: from smtp.seznam.cz ([212.80.76.43]:59383 "HELO smtp.seznam.cz"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
-	id S1757399AbXGJVXI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 10 Jul 2007 17:23:08 -0400
+	id S1754977AbXGJVfE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 10 Jul 2007 17:35:04 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
 
---Message-Boundary-20171
-Content-type: text/plain; charset=US-ASCII
-Content-transfer-encoding: 7BIT
+--Message-Boundary-9834
+Content-type: text/plain; charset=ISO-8859-2
+Content-transfer-encoding: Quoted-printable
 Content-description: Mail message body
 
-Dear everyone,
+On 9 Jul 2007 at 19:37, Chris Dor=E9 wrote: 
+> 
+> A current patch can be found here:  
+> ftp://ftp.connecttech.com/pub/misc/bhbltnptm-2.6.21.patch  
+> 
+I'm just another by-stander, I don't have any vote, let me just 
+present my opinion... 
 
-maybe I'd like to suggest one or two slight changes to the serial subsytem.
 
-1.) make struct uart_8250_port public, i.e. move it to some header file,
-such as drivers/serial/8250.h or include/linux/serial_8250.h .
-I need to access its "acr" member from my own translation unit
-(for the purposes of 16C950 TEMT-based RS485 RX/TX steering).
++++ linux-2.6.21-cti/include/linux/serial_core.h2007-07-06 
+03:44:52.000000000 - 0400 
+@@ -274,6 +274,9 @@ struct uart_port { 
+unsigned 
+intline;/* port index */ 
+unsigned longmapbase;/* for 
+ioremap */ 
+struct 
+device*dev;/* parent device 
+*/ 
++intlmode; 
++int(*lmode_fn)(struct 
+uart_port *port, int ioctl, unsigned int *value); 
++int(*ptm_fn)(struct uart_port 
+*port, int ioctl, unsigned int *value); 
 
-2.) consider removing some unnecessary init stuff related to the 16C950
-from 8250.c. It harms my 16C950 RX/TX steering setup, by resetting the
-acr register and the acr member within the struct uart_8250_port.
-See the attached small patch.
-It also turns "struct uart_8250_port serial8250_ports[]" into a public symbol, 
-to make the structs accessible from other translation units.
 
-If you've read this far, thanks for your kind attention...
+As far as patching the vanilla kernel is concerned: 
+You seem to suggest an addition of rather proprietary data (members) 
+to the neatly generic struct uart_port. I'd suggest adding something 
+like 
 
-Frank Rysanek
+void* priv; // device-specific driver private data 
 
---Message-Boundary-20171
-Content-type: text/plain; charset=US-ASCII
-Content-disposition: inline
-Content-description: Attachment information.
+to the generic struct uart_port of the vanilla kernel, which you 
+could then use to hook your own private data struct, regardless of 
+whether the rest of your driver lives in 8250_pci.c or in a stand-
+alone module. This is the way it's done in a number of other generic 
+device structs (or maybe the more modern way is to use a nested 
+struct with "parent struct decoding").
 
-The following section of this message contains a file attachment
-prepared for transmission using the Internet MIME message format.
-If you are using Pegasus Mail, or any other MIME-compliant system,
-you should be able to save it or view it from within your mailer.
-If you cannot, please ask your system administrator for assistance.
+Frank Rysanek 
 
-   ---- File information -----------
-     File:  8250.c.patch
-     Date:  10 Jul 2007, 23:15
-     Size:  931 bytes.
-     Type:  Unknown
 
---Message-Boundary-20171
-Content-type: Application/Octet-stream; name="8250.c.patch"; type=Unknown
-Content-disposition: attachment; filename="8250.c.patch"
+--Message-Boundary-9834
+Content-type: Application/Octet-stream; name="WPM$0431.PM$"; type=Plain text
+Content-description: Mail message body
+Content-disposition: attachment; filename="WPM$0431.PM$"
 Content-transfer-encoding: BASE64
 
-LS0tIGRyaXZlcnMvc2VyaWFsLzgyNTAuYy5vbGQJMjAwNi0wOC0yOCAxNTo1NToxMC4wMDAw
-MDAwMDAgKzAyMDANCisrKyBkcml2ZXJzL3NlcmlhbC84MjUwLmMJMjAwNi0wOC0yOCAxNjow
-MzozNi4wMDAwMDAwMDAgKzAyMDANCkBAIC0xNTA3LDE1ICsxNTA3LDE3IEBADQogDQogCWlm
-ICh1cC0+cG9ydC50eXBlID09IFBPUlRfMTZDOTUwKSB7DQogCQkvKiBXYWtlIHVwIGFuZCBp
-bml0aWFsaXplIFVBUlQgKi8NCi0JCXVwLT5hY3IgPSAwOw0KKwkJLy91cC0+YWNyID0gMDsN
-CiAJCXNlcmlhbF9vdXRwKHVwLCBVQVJUX0xDUiwgMHhCRik7DQogCQlzZXJpYWxfb3V0cCh1
-cCwgVUFSVF9FRlIsIFVBUlRfRUZSX0VDQik7DQogCQlzZXJpYWxfb3V0cCh1cCwgVUFSVF9J
-RVIsIDApOw0KIAkJc2VyaWFsX291dHAodXAsIFVBUlRfTENSLCAwKTsNCisjaWYgMA0KIAkJ
-c2VyaWFsX2ljcl93cml0ZSh1cCwgVUFSVF9DU1IsIDApOyAvKiBSZXNldCB0aGUgVUFSVCAq
-Lw0KIAkJc2VyaWFsX291dHAodXAsIFVBUlRfTENSLCAweEJGKTsNCiAJCXNlcmlhbF9vdXRw
-KHVwLCBVQVJUX0VGUiwgVUFSVF9FRlJfRUNCKTsNCiAJCXNlcmlhbF9vdXRwKHVwLCBVQVJU
-X0xDUiwgMCk7DQorI2VuZGlmDQogCX0NCiANCiAjaWZkZWYgQ09ORklHX1NFUklBTF84MjUw
-X1JTQQ0KQEAgLTIwODksNyArMjA5MSw4IEBADQogCS52ZXJpZnlfcG9ydAk9IHNlcmlhbDgy
-NTBfdmVyaWZ5X3BvcnQsDQogfTsNCiANCi1zdGF0aWMgc3RydWN0IHVhcnRfODI1MF9wb3J0
-IHNlcmlhbDgyNTBfcG9ydHNbVUFSVF9OUl07DQorc3RydWN0IHVhcnRfODI1MF9wb3J0IHNl
-cmlhbDgyNTBfcG9ydHNbVUFSVF9OUl07DQorRVhQT1JUX1NZTUJPTChzZXJpYWw4MjUwX3Bv
-cnRzKTsNCiANCiBzdGF0aWMgdm9pZCBfX2luaXQgc2VyaWFsODI1MF9pc2FfaW5pdF9wb3J0
-cyh2b2lkKQ0KIHsNCg==
+PCFET0NUWVBFIGh0bWwgUFVCTElDICItLy9XM0MvL0RURCBYSFRNTCAxLjAgVHJhbnNpdGlv
+bmFsLy9FTiINCiAgICAgICAgICAiaHR0cDovL3d3dy53My5vcmcvVFIveGh0bWwxL0RURC94
+aHRtbDEtdHJhbnNpdGlvbmFsLmR0ZCI+DQo8aHRtbCAgeG1sbnM9Imh0dHA6Ly93d3cudzMu
+b3JnLzE5OTkveGh0bWwiIHhtbDpsYW5nPSJlbiIgbGFuZz0iZW4iPjxoZWFkPg0KPHRpdGxl
+PjwvdGl0bGU+DQo8bWV0YSBodHRwLWVxdWl2PSJjb250ZW50LXR5cGUiIGNvbnRlbnQ9InRl
+eHQvaHRtbDtjaGFyc2V0PXV0Zi04Ii8+DQo8bWV0YSBodHRwLWVxdWl2PSJDb250ZW50LVN0
+eWxlLVR5cGUiIGNvbnRlbnQ9InRleHQvY3NzIi8+DQo8L2hlYWQ+DQo8Ym9keT4NCjxkaXYg
+YWxpZ249ImxlZnQiPg0KPGZvbnQgZmFjZT0iQXJpYWwiPg0KPHNwYW4gc3R5bGU9IiBmb250
+LXNpemU6MTBwdCI+DQpPbiA5IEp1bCAyMDA3IGF0IDE5OjM3LCBDaHJpcyBEb3ImIzIzMzsg
+d3JvdGU6PC9zcGFuPjwvZm9udD4NCjwvZGl2Pg0KPGRpdiBhbGlnbj0ibGVmdCI+DQo8Zm9u
+dCBmYWNlPSJBcmlhbCIgY29sb3I9IiM3ZjAwMDAiPg0KPHNwYW4gc3R5bGU9IiBmb250LXNp
+emU6MTBwdCI+DQomZ3Q7IDwvc3Bhbj48L2ZvbnQ+DQo8L2Rpdj4NCjxkaXYgYWxpZ249Imxl
+ZnQiPg0KPGZvbnQgZmFjZT0iQXJpYWwiIGNvbG9yPSIjN2YwMDAwIj4NCjxzcGFuIHN0eWxl
+PSIgZm9udC1zaXplOjEwcHQiPg0KJmd0OyBBIGN1cnJlbnQgcGF0Y2ggY2FuIGJlIGZvdW5k
+IGhlcmU6PC9zcGFuPjwvZm9udD4NCjxmb250IGZhY2U9IkFyaWFsIj4NCjxzcGFuIHN0eWxl
+PSIgZm9udC1zaXplOjEwcHQiPg0KJiMxNjA7PC9zcGFuPjwvZm9udD4NCjwvZGl2Pg0KPGRp
+diBhbGlnbj0ibGVmdCI+DQo8Zm9udCBmYWNlPSJBcmlhbCIgY29sb3I9IiM3ZjAwMDAiPg0K
+PHNwYW4gc3R5bGU9IiBmb250LXNpemU6MTBwdCI+DQomZ3Q7IGZ0cDovL2Z0cC5jb25uZWN0
+dGVjaC5jb20vcHViL21pc2MvYmhibHRucHRtLTIuNi4yMS5wYXRjaDwvc3Bhbj48L2ZvbnQ+
+DQo8Zm9udCBmYWNlPSJBcmlhbCI+DQo8c3BhbiBzdHlsZT0iIGZvbnQtc2l6ZToxMHB0Ij4N
+CiYjMTYwOzwvc3Bhbj48L2ZvbnQ+DQo8L2Rpdj4NCjxkaXYgYWxpZ249ImxlZnQiPg0KPGZv
+bnQgZmFjZT0iQXJpYWwiPg0KPHNwYW4gc3R5bGU9IiBmb250LXNpemU6MTBwdCI+DQomZ3Q7
+IDwvc3Bhbj48L2ZvbnQ+DQo8L2Rpdj4NCjxkaXYgYWxpZ249ImxlZnQiPg0KPGZvbnQgZmFj
+ZT0iQXJpYWwiPg0KPHNwYW4gc3R5bGU9IiBmb250LXNpemU6MTBwdCI+DQpJJ20ganVzdCBh
+bm90aGVyIGJ5LXN0YW5kZXIsIEkgZG9uJ3QgaGF2ZSBhbnkgdm90ZSwgbGV0IG1lIGp1c3Qg
+cHJlc2VudCBteSBvcGluaW9uLi4uIDwvc3Bhbj48L2ZvbnQ+DQo8L2Rpdj4NCjxkaXYgYWxp
+Z249ImxlZnQiPg0KPGZvbnQgZmFjZT0iQXJpYWwiPg0KPHNwYW4gc3R5bGU9IiBmb250LXNp
+emU6MTBwdCI+DQo8YnIgLz4NCjwvc3Bhbj4NCjwvZm9udD4NCjwvZGl2Pg0KPGRpdiBhbGln
+bj0ibGVmdCI+DQo8Zm9udCBmYWNlPSJBcmlhbCI+DQo8c3BhbiBzdHlsZT0iIGZvbnQtc2l6
+ZToxMHB0Ij4NCjxiciAvPg0KPC9zcGFuPg0KPC9mb250Pg0KPC9kaXY+DQo8ZGl2IGFsaWdu
+PSJsZWZ0Ij4NCjxmb250IGZhY2U9IkFyaWFsIj4NCjxzcGFuIHN0eWxlPSIgZm9udC1zaXpl
+OjEwcHQiPg0KKysrIGxpbnV4LTIuNi4yMS1jdGkvaW5jbHVkZS9saW51eC9zZXJpYWxfY29y
+ZS5oJiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMx
+NjA7JiMxNjA7JiMxNjA7MjAwNy0wNy0wNiAwMzo0NDo1Mi4wMDAwMDAwMDAgLSANCjA0MDAg
+PC9zcGFuPjwvZm9udD4NCjwvZGl2Pg0KPGRpdiBhbGlnbj0ibGVmdCI+DQo8Zm9udCBmYWNl
+PSJBcmlhbCI+DQo8c3BhbiBzdHlsZT0iIGZvbnQtc2l6ZToxMHB0Ij4NCkBAIC0yNzQsNiAr
+Mjc0LDkgQEAgc3RydWN0IHVhcnRfcG9ydCB7IDwvc3Bhbj48L2ZvbnQ+DQo8L2Rpdj4NCjxk
+aXYgYWxpZ249ImxlZnQiPg0KPGZvbnQgZmFjZT0iQXJpYWwiPg0KPHNwYW4gc3R5bGU9IiBm
+b250LXNpemU6MTBwdCI+DQomIzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsm
+IzE2MDsmIzE2MDsmIzE2MDsmIzE2MDt1bnNpZ25lZCBpbnQmIzE2MDsmIzE2MDsmIzE2MDsm
+IzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsm
+IzE2MDsmIzE2MDsmIzE2MDsmIzE2MDtsaW5lOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYj
+MTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYj
+MTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYj
+MTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOy8qIA0KcG9ydCBpbmRleCAqLyA8
+L3NwYW4+PC9mb250Pg0KPC9kaXY+DQo8ZGl2IGFsaWduPSJsZWZ0Ij4NCjxmb250IGZhY2U9
+IkFyaWFsIj4NCjxzcGFuIHN0eWxlPSIgZm9udC1zaXplOjEwcHQiPg0KJiMxNjA7JiMxNjA7
+JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7dW5zaWdu
+ZWQgbG9uZyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYw
+OyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwO21hcGJhc2U7JiMxNjA7JiMxNjA7JiMx
+NjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMx
+NjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7LyogZm9yIGlv
+cmVtYXAgKi8gPC9zcGFuPjwvZm9udD4NCjwvZGl2Pg0KPGRpdiBhbGlnbj0ibGVmdCI+DQo8
+Zm9udCBmYWNlPSJBcmlhbCI+DQo8c3BhbiBzdHlsZT0iIGZvbnQtc2l6ZToxMHB0Ij4NCiYj
+MTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYj
+MTYwO3N0cnVjdCBkZXZpY2UmIzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsm
+IzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsq
+ZGV2OyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYj
+MTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYj
+MTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOy8q
+IHBhcmVudCANCmRldmljZSAqLyA8L3NwYW4+PC9mb250Pg0KPC9kaXY+DQo8ZGl2IGFsaWdu
+PSJsZWZ0Ij4NCjxmb250IGZhY2U9IkFyaWFsIj4NCjxzcGFuIHN0eWxlPSIgZm9udC1zaXpl
+OjEwcHQiPg0KKyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYj
+MTYwO2ludCYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYw
+OyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYw
+OyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYw
+OyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwO2xtb2RlOyA8L3NwYW4+PC9mb250Pg0KPC9kaXY+
+DQo8ZGl2IGFsaWduPSJsZWZ0Ij4NCjxmb250IGZhY2U9IkFyaWFsIj4NCjxzcGFuIHN0eWxl
+PSIgZm9udC1zaXplOjEwcHQiPg0KKyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYj
+MTYwOyYjMTYwOyYjMTYwO2ludCYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYw
+OyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYw
+OyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYw
+OyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOygqbG1vZGVfZm4pKHN0cnVj
+dCB1YXJ0X3BvcnQgKnBvcnQsIGludCBpb2N0bCwgdW5zaWduZWQgaW50ICp2YWx1ZSk7IDwv
+c3Bhbj48L2ZvbnQ+DQo8L2Rpdj4NCjxkaXYgYWxpZ249ImxlZnQiPg0KPGZvbnQgZmFjZT0i
+QXJpYWwiPg0KPHNwYW4gc3R5bGU9IiBmb250LXNpemU6MTBwdCI+DQorJiMxNjA7JiMxNjA7
+JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7aW50JiMxNjA7JiMxNjA7JiMx
+NjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMx
+NjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMx
+NjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMx
+NjA7KCpwdG1fZm4pKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQsIGludCBpb2N0bCwgdW5zaWdu
+ZWQgaW50ICp2YWx1ZSk7IDwvc3Bhbj48L2ZvbnQ+DQo8L2Rpdj4NCjxkaXYgYWxpZ249Imxl
+ZnQiPg0KPGZvbnQgZmFjZT0iQXJpYWwiPg0KPHNwYW4gc3R5bGU9IiBmb250LXNpemU6MTBw
+dCI+DQo8YnIgLz4NCjwvc3Bhbj4NCjwvZm9udD4NCjwvZGl2Pg0KPGRpdiBhbGlnbj0ibGVm
+dCI+DQo8Zm9udCBmYWNlPSJBcmlhbCI+DQo8c3BhbiBzdHlsZT0iIGZvbnQtc2l6ZToxMHB0
+Ij4NCjxiciAvPg0KPC9zcGFuPg0KPC9mb250Pg0KPC9kaXY+DQo8ZGl2IGFsaWduPSJsZWZ0
+Ij4NCjxmb250IGZhY2U9IkFyaWFsIj4NCjxzcGFuIHN0eWxlPSIgZm9udC1zaXplOjEwcHQi
+Pg0KQXMgZmFyIGFzIHBhdGNoaW5nIHRoZSB2YW5pbGxhIGtlcm5lbCBpcyBjb25jZXJuZWQ6
+IDwvc3Bhbj48L2ZvbnQ+DQo8L2Rpdj4NCjxkaXYgYWxpZ249ImxlZnQiPg0KPGZvbnQgZmFj
+ZT0iQXJpYWwiPg0KPHNwYW4gc3R5bGU9IiBmb250LXNpemU6MTBwdCI+DQpZb3Ugc2VlbSB0
+byBzdWdnZXN0IGFuIGFkZGl0aW9uIG9mIHJhdGhlciBwcm9wcmlldGFyeSBkYXRhIChtZW1i
+ZXJzKSB0byB0aGUgbmVhdGx5IGdlbmVyaWMgPC9zcGFuPjwvZm9udD4NCjwvZGl2Pg0KPGRp
+diBhbGlnbj0ibGVmdCI+DQo8Zm9udCBmYWNlPSJBcmlhbCI+DQo8c3BhbiBzdHlsZT0iIGZv
+bnQtc2l6ZToxMHB0Ij4NCnN0cnVjdCB1YXJ0X3BvcnQuIEknZCBzdWdnZXN0IGFkZGluZyBz
+b21ldGhpbmcgbGlrZSA8L3NwYW4+PC9mb250Pg0KPC9kaXY+DQo8ZGl2IGFsaWduPSJsZWZ0
+Ij4NCjxmb250IGZhY2U9IkFyaWFsIj4NCjxzcGFuIHN0eWxlPSIgZm9udC1zaXplOjEwcHQi
+Pg0KPGJyIC8+DQo8L3NwYW4+DQo8L2ZvbnQ+DQo8L2Rpdj4NCjxkaXYgYWxpZ249ImxlZnQi
+Pg0KPGZvbnQgZmFjZT0iQXJpYWwiPg0KPHNwYW4gc3R5bGU9IiBmb250LXNpemU6MTBwdCI+
+DQomIzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsmIzE2MDsmIzE2
+MDsmIzE2MDt2b2lkKiBwcml2OyYjMTYwOyAvLyBkZXZpY2Utc3BlY2lmaWMgZHJpdmVyIHBy
+aXZhdGUgZGF0YSA8L3NwYW4+PC9mb250Pg0KPC9kaXY+DQo8ZGl2IGFsaWduPSJsZWZ0Ij4N
+Cjxmb250IGZhY2U9IkFyaWFsIj4NCjxzcGFuIHN0eWxlPSIgZm9udC1zaXplOjEwcHQiPg0K
+PGJyIC8+DQo8L3NwYW4+DQo8L2ZvbnQ+DQo8L2Rpdj4NCjxkaXYgYWxpZ249ImxlZnQiPg0K
+PGZvbnQgZmFjZT0iQXJpYWwiPg0KPHNwYW4gc3R5bGU9IiBmb250LXNpemU6MTBwdCI+DQp0
+byB0aGUgZ2VuZXJpYyBzdHJ1Y3QgdWFydF9wb3J0IG9mIHRoZSB2YW5pbGxhIGtlcm5lbCwg
+d2hpY2ggeW91IGNvdWxkIHRoZW4gdXNlIHRvIGhvb2sgeW91ciANCm93biBwcml2YXRlIGRh
+dGEgc3RydWN0LCByZWdhcmRsZXNzIG9mIHdoZXRoZXIgdGhlIHJlc3Qgb2YgeW91ciBkcml2
+ZXIgbGl2ZXMgaW4gODI1MF9wY2kuYyBvciBpbiANCmEgc3RhbmQtYWxvbmUgbW9kdWxlLiBU
+aGlzIGlzIHRoZSB3YXkgaXQncyBkb25lIGluIGEgbnVtYmVyIG9mIG90aGVyIGdlbmVyaWMg
+ZGV2aWNlIHN0cnVjdHMuIDwvc3Bhbj48L2ZvbnQ+DQo8L2Rpdj4NCjxkaXYgYWxpZ249Imxl
+ZnQiPg0KPGZvbnQgZmFjZT0iQXJpYWwiPg0KPHNwYW4gc3R5bGU9IiBmb250LXNpemU6MTBw
+dCI+DQo8YnIgLz4NCjwvc3Bhbj4NCjwvZm9udD4NCjwvZGl2Pg0KPGRpdiBhbGlnbj0ibGVm
+dCI+DQo8Zm9udCBmYWNlPSJBcmlhbCI+DQo8c3BhbiBzdHlsZT0iIGZvbnQtc2l6ZToxMHB0
+Ij4NCkZyYW5rIFJ5c2FuZWsgPC9zcGFuPjwvZm9udD4NCjwvZGl2Pg0KPGRpdiBhbGlnbj0i
+bGVmdCI+DQombmJzcDs8L2Rpdj4NCjwvYm9keT4NCjwvaHRtbD4NCg0KQXR0YWNobWVudHM6
+DQogIEM6XERPQ1VNRX4xXEZhbm91Y2hcTE9DQUxTfjFcVGVtcFxXUE0kMjUyRS5QTSQNCg==
 
---Message-Boundary-20171--
+--Message-Boundary-9834--
