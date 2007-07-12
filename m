@@ -1,24 +1,25 @@
-From: Andy Whitcroft <apw@shadowen.org>
+From: Ralf Baechle <ralf@linux-mips.org>
 Subject: Re: [PATCH] sb1250-duart.c: SB1250 DUART serial support
-Date: Thu, 12 Jul 2007 18:50:45 +0100
-Message-ID: <469669F5.6070906@shadowen.org>
+Date: Thu, 12 Jul 2007 18:43:20 +0100
+Message-ID: <20070712174320.GA22332@linux-mips.org>
 References: <Pine.LNX.4.64N.0707121745010.3029@blysk.ds.pg.gda.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from hellhawk.shadowen.org ([80.68.90.175]:4870 "EHLO
-	hellhawk.shadowen.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752878AbXGLRyQ (ORCPT
+Received: from ftp.linux-mips.org ([194.74.144.162]:40565 "EHLO
+	ftp.linux-mips.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755499AbXGLR6a (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 12 Jul 2007 13:54:16 -0400
+	Thu, 12 Jul 2007 13:58:30 -0400
+Content-Disposition: inline
 In-Reply-To: <Pine.LNX.4.64N.0707121745010.3029@blysk.ds.pg.gda.pl>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: "Maciej W. Rozycki" <macro@linux-mips.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Ralf Baechle <ralf@linux-mips.org>, Mark Mason <mason@broadcom.com>, Randy Dunlap <rdunlap@xenotime.net>, Joel Schopp <jschopp@austin.ibm.com>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Andrew Morton <akpm@linux-foundation.org>, Mark Mason <mason@broadcom.com>, Andy Whitcroft <apw@shadowen.org>, Randy Dunlap <rdunlap@xenotime.net>, Joel Schopp <jschopp@austin.ibm.com>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Maciej W. Rozycki wrote:
+On Thu, Jul 12, 2007 at 06:39:00PM +0100, Maciej W. Rozycki wrote:
+
 >  This is a driver for the SB1250 DUART, a dual serial port implementation 
 > included in the Broadcom family of SOCs descending from the SiByte SB1250 
 > MIPS64 chip multiprocessor.  It is a new implementation replacing the 
@@ -31,93 +32,11 @@ Maciej W. Rozycki wrote:
 > SysRq.  The receive FIFO threshold is not maintained though.
 > 
 > Signed-off-by: Maciej W. Rozycki <macro@linux-mips.org>
-> ---
-> Hi,
-> 
->  The driver was tested with a SWARM board which uses a BCM1250 SOC (which 
-> is dual MIPS64 CMP) and has both ports of the single DUART implemented 
-> wired externally.  Both were tested.  Testing included using the ports as 
-> terminal lines at 1200bps (which is the ports minimum), 115200bps and a 
-> couple of random speeds inbetween.  The modem lines were verified to 
-> operate correctly.  No testing was performed with a use as a network 
-> interface, like with SLIP or PPP.
-> 
->  The driver builds succesfully and without warnings both as integrated and 
-> as modular.  There are a couple of -W warnings, but they are results of 
-> some inconsistencies (signedness mismatches) in the serial core.  It 
-> produces no sparse warnings.  There are a few benign warnings from 
-> patchcheck.pl, one of which is, I believe, a bug in the script itself 
-> (maintainers cc-ed):
-> 
-> printk() should include KERN_ facility level
-> #750: FILE: drivers/serial/sb1250-duart.c:675:
-> +		printk(err);
 
-Heh, yeah Ingo pointed this style out.  This is a wrapper where the
-facility will be supplied by the caller (I assume).  The thought there
-was that only complain on printks which had a string literal as their
-first arguement.  That gets us very high accuracy and eliminates these
-falsies.
+I'm all in favor of this patch sine the old drivers/char/ serial driver
+has been slowly decaying while the kernel around it is changing.  It would
+also make the kernel.org kernel finally usable for the Sibyte machines, so
+it's an improvment even if it doesn't have half a decade of testing under
+the belt, thus ACK.
 
-> 
-> The <asm/io.h> warning is, I gather, not a problem and warnings about the 
-> _SB_MAKEMASK() macro should be addressed as a separate change.
-
-I think I tend to agree that the MAKEMASK ones are separate.  Good to
-see someone using their common sense in the face of whinging by the tool.
-
-You will be pleased to know that the latest version of the tool is
-throwing a new batch of errors on your patch :)  Included at the end of
-the email.
-
->  The driver runs correctly with a 64-bit SMP kernel in a big- and 
-> little-endian configuration (with spinlock debugging enabled).  Modular 
-> configuration was not tested at the run time.  UP configuration was not 
-> tested at all, but is not expected to give any troubles.
-> 
->  I have asked for testing at the linux-mips list, but rather than results 
-> I have received some pressure to push the patch regardless.  So here it 
-> goes. ;-)
-
--apw
-
-WARNING: declaring multiple variables together should be avoided
-#372: FILE: drivers/serial/sb1250-duart.c:246:
-+	unsigned int mctrl, status;
-
-WARNING: declaring multiple variables together should be avoided
-#386: FILE: drivers/serial/sb1250-duart.c:260:
-+	unsigned int clr = 0, set = 0, mode2;
-
-WARNING: declaring multiple variables together should be avoided
-#464: FILE: drivers/serial/sb1250-duart.c:338:
-+	unsigned int status, ch, flag;
-
-WARNING: declaring multiple variables together should be avoided
-#667: FILE: drivers/serial/sb1250-duart.c:541:
-+	unsigned int mode1 = 0, mode2 = 0, aux = 0;
-
-WARNING: declaring multiple variables together should be avoided
-#668: FILE: drivers/serial/sb1250-duart.c:542:
-+	unsigned int mode1mask = 0, mode2mask = 0, auxmask = 0;
-
-WARNING: declaring multiple variables together should be avoided
-#669: FILE: drivers/serial/sb1250-duart.c:543:
-+	unsigned int oldmode1, oldmode2, oldaux;
-
-WARNING: declaring multiple variables together should be avoided
-#670: FILE: drivers/serial/sb1250-duart.c:544:
-+	unsigned int baud, brg;
-
-WARNING: declaring multiple variables together should be avoided
-#907: FILE: drivers/serial/sb1250-duart.c:781:
-+	int chip, side;
-
-WARNING: declaring multiple variables together should be avoided
-#908: FILE: drivers/serial/sb1250-duart.c:782:
-+	int max_lines, line;
-
-WARNING: declaring multiple variables together should be avoided
-#1060: FILE: drivers/serial/sb1250-duart.c:934:
-+	int i, ret;
-
+  Ralf
