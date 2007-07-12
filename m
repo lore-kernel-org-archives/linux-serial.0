@@ -1,93 +1,52 @@
-From: Andrew Morton <akpm@linux-foundation.org>
+From: Alistair John Strachan <alistair@devzero.co.uk>
 Subject: Re: [PATCH] sb1250-duart.c: SB1250 DUART serial support
-Date: Thu, 12 Jul 2007 11:47:12 -0700
-Message-ID: <20070712114712.de5d6c9d.akpm@linux-foundation.org>
-References: <Pine.LNX.4.64N.0707121745010.3029@blysk.ds.pg.gda.pl>
+Date: Thu, 12 Jul 2007 20:15:11 +0100
+Message-ID: <200707122015.12078.alistair@devzero.co.uk>
+References: <Pine.LNX.4.64N.0707121745010.3029@blysk.ds.pg.gda.pl> <469669F5.6070906@shadowen.org> <Pine.LNX.4.64N.0707121904211.3029@blysk.ds.pg.gda.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <Pine.LNX.4.64N.0707121745010.3029@blysk.ds.pg.gda.pl>
+In-Reply-To: <Pine.LNX.4.64N.0707121904211.3029@blysk.ds.pg.gda.pl>
+Content-Disposition: inline
 Sender: linux-mips-bounce@linux-mips.org
 Errors-to: linux-mips-bounce@linux-mips.org
 To: "Maciej W. Rozycki" <macro@linux-mips.org>
-Cc: Ralf Baechle <ralf@linux-mips.org>, Mark Mason <mason@broadcom.com>, Andy Whitcroft <apw@shadowen.org>, Randy Dunlap <rdunlap@xenotime.net>, Joel Schopp <jschopp@austin.ibm.com>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Andy Whitcroft <apw@shadowen.org>, Andrew Morton <akpm@linux-foundation.org>, Ralf Baechle <ralf@linux-mips.org>, Mark Mason <mason@broadcom.com>, Randy Dunlap <rdunlap@xenotime.net>, Joel Schopp <jschopp@austin.ibm.com>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 12 Jul 2007 18:39:00 +0100 (BST)
-"Maciej W. Rozycki" <macro@linux-mips.org> wrote:
-
->  This is a driver for the SB1250 DUART, a dual serial port implementation 
-> included in the Broadcom family of SOCs descending from the SiByte SB1250 
-> MIPS64 chip multiprocessor.  It is a new implementation replacing the 
-> old-fashioned driver currently present in the linux-mips.org tree.  It 
-> supports all the usual features one would expect from a(n asynchronous) 
-> serial driver, including modem line control (as far as hardware supports 
-> it -- there is edge detection logic missing from the DCD and RI lines and 
-> the driver does not implement polling of these lines at the moment), the 
-> serial console, BREAK transmission and reception, including the magic 
-> SysRq.  The receive FIFO threshold is not maintained though.
-> 
-> ...
+On Thursday 12 July 2007 19:16:20 Maciej W. Rozycki wrote:
+> On Thu, 12 Jul 2007, Andy Whitcroft wrote:
+[snip]
+> > WARNING: declaring multiple variables together should be avoided
+> > #372: FILE: drivers/serial/sb1250-duart.c:246:
+> > +	unsigned int mctrl, status;
 >
-> +
-> +#if defined(CONFIG_SIBYTE_BCM1x55) || defined(CONFIG_SIBYTE_BCM1x80)
-> +#include <asm/sibyte/bcm1480_regs.h>
-> +#include <asm/sibyte/bcm1480_int.h>
-> +
-> +#define SBD_CHANREGS(line)	A_BCM1480_DUART_CHANREG((line), 0)
-> +#define SBD_CTRLREGS(line)	A_BCM1480_DUART_CTRLREG((line), 0)
-> +#define SBD_INT(line)		(K_BCM1480_INT_UART_0 + (line))
-> +
-> +#elif defined(CONFIG_SIBYTE_SB1250) || defined(CONFIG_SIBYTE_BCM112X)
-> +#include <asm/sibyte/sb1250_regs.h>
-> +#include <asm/sibyte/sb1250_int.h>
-> +
-> +#define SBD_CHANREGS(line)	A_DUART_CHANREG((line), 0)
-> +#define SBD_CTRLREGS(line)	A_DUART_CTRLREG(0)
-> +#define SBD_INT(line)		(K_INT_UART_0 + (line))
-> +
-> +#else
-> +#error invalid SB1250 UART configuration
-> +
-> +#endif
-
-If the #error can trigger, the Kconfig is broken, yes?  (No action is
-required though - it's always good to have checks)
-
-> +#define to_sport(uport) container_of(uport, struct sbd_port, port)
-
-That didn't need to be implemented as a macro.
-
-> +#define __unused __attribute__((__unused__))
-
-Please use the generic implementations here.  `grep unused
-include/linux/compiler*.h'.
-
-> +/*
-> + * In bug 1956, we get glitches that can mess up uart registers.  This
-> + * "read-mode-reg after any register access" is an accepted workaround.
-> + */
-
-<looks in bugzilla.kernel.org>
-
-<wonders how a uart driver can fix an smbfs bug>
-
-Perhaps a reference to where that bug number came from?
-
-> +static void __war_sbd1956(struct sbd_port *sport)
-> +{
-> +	__read_sbdchn(sport, R_DUART_MODE_REG_1);
-> +	__read_sbdchn(sport, R_DUART_MODE_REG_2);
-> +}
+>  Well, this is probably superfluous -- why would anyone prefer:
 >
-> ...
+> 	int r0;
+> 	int r1;
+> 	int r2;
+> 	int r3;
+> 	int r4;
 >
-> +static struct uart_ops sbd_ops = {
+> to:
+>
+> 	int r0, r1, r2, r3, r4;
+>
+> unconditionally?
 
-I suppose if we made this const, something would blow up.
+Imagine you're working on a piece of kernel code that has a lot of parallel 
+churn. Conflicts on lines like "int a,b,c,d;" are more likely to cause Andrew 
+et al pain, which I guess is the rationale for discouraging it. Conversely, 
+if the variables are kept separate, diff handles it fine.
 
+I think as long as the variables are logically grouped, the pain is minimised, 
+but there's a few good reasons for the verbose style.
 
+-- 
+Cheers,
+Alistair.
 
-
-There is no power management support in this driver.
+137/1 Warrender Park Road, Edinburgh, UK.
