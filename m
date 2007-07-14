@@ -1,49 +1,36 @@
 From: Yoichi Yuasa <yoichi_yuasa@tripeaks.co.jp>
-Subject: [PATCH][2/3] serial: fix vr41xx_siu serial console support
-Date: Sat, 14 Jul 2007 21:27:35 +0900
-Message-ID: <20070714212735.4f733eb7.yoichi_yuasa@tripeaks.co.jp>
-References: <20070714211904.13d0a53b.yoichi_yuasa@tripeaks.co.jp>
-	<20070714212415.4a44aae9.yoichi_yuasa@tripeaks.co.jp>
+Subject: [PATCH][1/3] serial: fix section mismatch vr41xx_siu
+Date: Sat, 14 Jul 2007 21:19:04 +0900
+Message-ID: <20070714211904.13d0a53b.yoichi_yuasa@tripeaks.co.jp>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mfo30.po.2iij.NET ([210.128.50.51]:6214 "EHLO mfo30.po.2iij.net"
+Received: from mfo31.po.2iij.NET ([210.128.50.52]:8384 "EHLO mfo31.po.2iij.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1758608AbXGNMeA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 14 Jul 2007 08:34:00 -0400
-In-Reply-To: <20070714212415.4a44aae9.yoichi_yuasa@tripeaks.co.jp>
+	id S1758238AbXGNMd6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 14 Jul 2007 08:33:58 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial <linux-serial@vger.kernel.org>
-Cc: yoichi_yuasa@tripeaks.co.jp, akpm@linux-foundation.org, ralf@linux-mips.org
+Cc: yoichi_yuasa@tripeaks.co.jp, Andrew Morton <akpm@linux-foundation.org>, Ralf Baechle <ralf@linux-mips.org>
 
-The serial console can select only SERIAL_VR41XX=y.
+Fix section mismatch vr41xx_siu.
+
+WARNING: drivers/built-in.o(.text+0x2ce4c): Section mismatch: reference to .init.text:uart_parse_options (between 'siu_console_setup' and 'siu_request_port')
+WARNING: drivers/built-in.o(.text+0x2ce70): Section mismatch: reference to .init.text:uart_set_options (between 'siu_console_setup' and 'siu_request_port')
 
 Signed-off-by: Yoichi Yuasa <yoichi_yuasa@tripeaks.co.jp>
 
-diff -pruN -X generic/Documentation/dontdiff generic-orig/drivers/serial/Kconfig generic/drivers/serial/Kconfig
---- generic-orig/drivers/serial/Kconfig	2007-07-13 10:01:18.452615000 +0900
-+++ generic/drivers/serial/Kconfig	2007-07-13 10:01:01.791573750 +0900
-@@ -1123,7 +1123,7 @@ config SERIAL_VR41XX
+diff -pruN -X siu/Documentation/dontdiff siu-orig/drivers/serial/vr41xx_siu.c siu/drivers/serial/vr41xx_siu.c
+--- siu-orig/drivers/serial/vr41xx_siu.c	2007-05-29 10:12:55.803195750 +0900
++++ siu/drivers/serial/vr41xx_siu.c	2007-05-29 10:11:07.752443000 +0900
+@@ -782,7 +782,7 @@ static void siu_console_write(struct con
+ 	siu_write(port, UART_IER, ier);
+ }
  
- config SERIAL_VR41XX_CONSOLE
- 	bool "Enable NEC VR4100 series Serial Interface Unit console"
--	depends on SERIAL_VR41XX
-+	depends on SERIAL_VR41XX=y
- 	select SERIAL_CORE_CONSOLE
- 	help
- 	  If you have a NEC VR4100 series processor and you want to use
-diff -pruN -X generic/Documentation/dontdiff generic-orig/drivers/serial/vr41xx_siu.c generic/drivers/serial/vr41xx_siu.c
---- generic-orig/drivers/serial/vr41xx_siu.c	2007-07-13 10:42:04.473481750 +0900
-+++ generic/drivers/serial/vr41xx_siu.c	2007-07-13 10:01:01.795574000 +0900
-@@ -65,7 +65,9 @@ static struct uart_port siu_uart_ports[S
- 	},
- };
- 
-+#ifdef CONFIG_SERIAL_VR41XX_CONSOLE
- static uint8_t lsr_break_flag[SIU_PORTS_MAX];
-+#endif
- 
- #define siu_read(port, offset)		readb((port)->membase + (offset))
- #define siu_write(port, offset, value)	writeb((value), (port)->membase + (offset))
+-static int siu_console_setup(struct console *con, char *options)
++static int __init siu_console_setup(struct console *con, char *options)
+ {
+ 	struct uart_port *port;
+ 	int baud = 9600;
