@@ -1,37 +1,44 @@
-From: Yoichi Yuasa <yoichi_yuasa@tripeaks.co.jp>
-Subject: [PATCH][2/3] serial: fix vr41xx_siu interface select
-Date: Sat, 14 Jul 2007 21:24:15 +0900
-Message-ID: <20070714212415.4a44aae9.yoichi_yuasa@tripeaks.co.jp>
-References: <20070714211904.13d0a53b.yoichi_yuasa@tripeaks.co.jp>
+From: "=?windows-1251?B?TWlrZQk=?=" <www.anna1887@mail.ru>
+Subject: =?windows-1251?B?Sm9iIE9mZmVyLiAxMTAwLTE0MDAgQVVEIGEgV0VFSyEgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgR2ltaw==?=
+Date: Sat, 14 Jul 2007 14:08:08 +0200
+Message-ID: <003301c7c672$c7c3d79e$3146ca04__45044.8017138571$1184426425$gmane$org@iqlpyiv>
+Reply-To: "=?windows-1251?B?TWlrZQk=?=" <ras-zhenya@yandex.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain;
+	charset="windows-1251"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mfo30.po.2iij.NET ([210.128.50.51]:19448 "EHLO
-	mfo30.po.2iij.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757767AbXGNMfB (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 14 Jul 2007 08:35:01 -0400
-In-Reply-To: <20070714211904.13d0a53b.yoichi_yuasa@tripeaks.co.jp>
+Received: from smtp19.orange.fr ([80.12.242.1]:51444 "EHLO smtp19.orange.fr"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755813AbXGNPUK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 14 Jul 2007 11:20:10 -0400
+Received: from smtp19.orange.fr (mwinf1902 [172.22.129.24])
+	by mwinf1905.orange.fr (SMTP Server) with ESMTP id 60B655C35193
+	for <linux-serial@vger.kernel.org>; Sat, 14 Jul 2007 14:08:23 +0200 (CEST)
+Received: from me-wanadoo.net (localhost [127.0.0.1])
+	by mwinf1902.orange.fr (SMTP Server) with ESMTP id 4B5C91C0082E
+	for <linux-serial@vger.kernel.org>; Sat, 14 Jul 2007 14:08:23 +0200 (CEST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial <linux-serial@vger.kernel.org>
-Cc: yoichi_yuasa@tripeaks.co.jp, akpm@linux-foundation.org, ralf@linux-mips.org
+To: linux-request@lists.iinet.net.au, linux-request@www.sci.usq.edu.au, linux-router@linuxrouter.org, linux-scsi-owner@vger.kernel.org, linux-scsi-request@vger.rutgers.edu, linux-scsi@vger.kernel.org, linux-scsi@vger.rutgers.edu, linux-secnews@securityfocus.com, linux-security-request@redhat.com, linux-security@redhat.com, linux-select@openitx.com, linux-serial@vger.kernel.org, linux-sh-admin@m17n.org, linux-sh-ctl@m17n.org, linux-sh@m17n.org, linux-sound@vger.kernel.org, linux-subscribe@kwister.com, linux-support@earthlink.net, linux-support@ruhr-uni-bochum.de, linux-tape@vger.rutgers.edu, linux-thinkpad@topica.com, linux-tr@emissary.aus-etc.com, linux-tr@linuxtr.net, linux-uk-discuss@mailbase.ac.uk, linux-usb-devel@lists.sourceforge.net
 
-only PORT_VR41XX_SIU can select interface.
+Sensation! Outrageous Offer! Have you ever been making 1200-1400 AUD a week?
 
-Signed-off-by: Yoichi Yuasa <yoichi_yuasa@tripeaks.co.jp>
+HCC Sales Group from Norway steps into Australia for a new session of "Summer Sale".
 
-diff -pruN -X siu/Documentation/dontdiff siu-orig/drivers/serial/vr41xx_siu.c siu/drivers/serial/vr41xx_siu.c
---- siu-orig/drivers/serial/vr41xx_siu.c	2007-05-29 10:22:07.753690500 +0900
-+++ siu/drivers/serial/vr41xx_siu.c	2007-05-29 10:21:47.776442000 +0900
-@@ -800,7 +800,8 @@ static int __init siu_console_setup(stru
- 		port->membase = ioremap(port->mapbase, siu_port_size(port));
- 	}
- 
--	vr41xx_select_siu_interface(SIU_INTERFACE_RS232C);
-+	if (port->type == PORT_VR41XX_SIU)
-+		vr41xx_select_siu_interface(SIU_INTERFACE_RS232C);
- 
- 	if (options != NULL)
- 		uart_parse_options(options, &baud, &parity, &bits, &flow);
+And Glad to Announce Job Position - "Transaction Handling Agent". 
+
+Who Can Apply? ANYBODY. Position is easy to handle as one-two-three. A greatest opportunity ever, two different countries created one benefit.
+
+Requirements:
+
+18 years old and older.
+Located in Australia. 
+Have access to internet and be able to check e-mail and reply.
+Have 1-2 hours Monday-Thursday to spend on this position.
+
+1200-1400 AUD a week Guaranteed! A genuine offer, cannot miss. For more information send e-mail to: HCC.SalesGroup@gmail.com . Good Luck!
+
+-----------------
+QxrGvEhFDLmlbq
+
