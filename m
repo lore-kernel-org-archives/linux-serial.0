@@ -1,30 +1,49 @@
-From: Ralf Baechle <ralf@linux-mips.org>
-Subject: Re: [PATCH] sb1250-duart.c: SB1250 DUART serial support
-Date: Fri, 13 Jul 2007 15:48:18 +0100
-Message-ID: <20070713144818.GC8190@linux-mips.org>
-References: <Pine.LNX.4.64N.0707121745010.3029@blysk.ds.pg.gda.pl> <20070712114712.de5d6c9d.akpm@linux-foundation.org>
+From: Yoichi Yuasa <yoichi_yuasa@tripeaks.co.jp>
+Subject: [PATCH][2/3] serial: fix vr41xx_siu serial console support
+Date: Sat, 14 Jul 2007 21:27:35 +0900
+Message-ID: <20070714212735.4f733eb7.yoichi_yuasa@tripeaks.co.jp>
+References: <20070714211904.13d0a53b.yoichi_yuasa@tripeaks.co.jp>
+	<20070714212415.4a44aae9.yoichi_yuasa@tripeaks.co.jp>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ftp.linux-mips.org ([194.74.144.162]:58624 "EHLO
-	ftp.linux-mips.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1761270AbXGMOsY (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 13 Jul 2007 10:48:24 -0400
-Content-Disposition: inline
-In-Reply-To: <20070712114712.de5d6c9d.akpm@linux-foundation.org>
+Received: from mfo30.po.2iij.NET ([210.128.50.51]:6214 "EHLO mfo30.po.2iij.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1758608AbXGNMeA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 14 Jul 2007 08:34:00 -0400
+In-Reply-To: <20070714212415.4a44aae9.yoichi_yuasa@tripeaks.co.jp>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: "Maciej W. Rozycki" <macro@linux-mips.org>, Mark Mason <mason@broadcom.com>, Andy Whitcroft <apw@shadowen.org>, Randy Dunlap <rdunlap@xenotime.net>, Joel Schopp <jschopp@austin.ibm.com>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-serial <linux-serial@vger.kernel.org>
+Cc: yoichi_yuasa@tripeaks.co.jp, akpm@linux-foundation.org, ralf@linux-mips.org
 
-On Thu, Jul 12, 2007 at 11:47:12AM -0700, Andrew Morton wrote:
+The serial console can select only SERIAL_VR41XX=y.
 
-> There is no power management support in this driver.
+Signed-off-by: Yoichi Yuasa <yoichi_yuasa@tripeaks.co.jp>
 
-There is hardly anything software could do to safe power on Sibyte SOCs.
-Just like most other MIPS SOCs power managment is mostly left to the
-hardware which does it by using extensive clockgating and other design
-techniques.  As a SW person I can't protest that approach :-)
-
-  Ralf
+diff -pruN -X generic/Documentation/dontdiff generic-orig/drivers/serial/Kconfig generic/drivers/serial/Kconfig
+--- generic-orig/drivers/serial/Kconfig	2007-07-13 10:01:18.452615000 +0900
++++ generic/drivers/serial/Kconfig	2007-07-13 10:01:01.791573750 +0900
+@@ -1123,7 +1123,7 @@ config SERIAL_VR41XX
+ 
+ config SERIAL_VR41XX_CONSOLE
+ 	bool "Enable NEC VR4100 series Serial Interface Unit console"
+-	depends on SERIAL_VR41XX
++	depends on SERIAL_VR41XX=y
+ 	select SERIAL_CORE_CONSOLE
+ 	help
+ 	  If you have a NEC VR4100 series processor and you want to use
+diff -pruN -X generic/Documentation/dontdiff generic-orig/drivers/serial/vr41xx_siu.c generic/drivers/serial/vr41xx_siu.c
+--- generic-orig/drivers/serial/vr41xx_siu.c	2007-07-13 10:42:04.473481750 +0900
++++ generic/drivers/serial/vr41xx_siu.c	2007-07-13 10:01:01.795574000 +0900
+@@ -65,7 +65,9 @@ static struct uart_port siu_uart_ports[S
+ 	},
+ };
+ 
++#ifdef CONFIG_SERIAL_VR41XX_CONSOLE
+ static uint8_t lsr_break_flag[SIU_PORTS_MAX];
++#endif
+ 
+ #define siu_read(port, offset)		readb((port)->membase + (offset))
+ #define siu_write(port, offset, value)	writeb((value), (port)->membase + (offset))
