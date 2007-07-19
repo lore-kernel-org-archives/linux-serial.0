@@ -1,50 +1,38 @@
-From: Paul Fulghum <paulkf@microgate.com>
-Subject: Re: build #306 failed for 2.6.22-g8d9107e in undefined reference
-	to `netif_carrier_on'
-Date: Mon, 16 Jul 2007 14:35:23 -0500
-Message-ID: <1184614523.10967.1.camel@x2.microgate.com>
-References: <200707152350.49174.toralf.foerster@gmx.de>
+From: "Voldemar" <diorit-expert@mail.ru>
+Subject: Come on! Enter! The surprise is waiting!                                                aawgth
+Date: Thu, 19 Jul 2007 07:30:40 +0200
+Message-ID: <000c01c7ca2a$aba52d6c$c9f2e827@kbuzgzgbukrwy>
+Reply-To: "Voldemar" <vostok6@mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain;
+	format=flowed;
+	charset="utf-8";
+	reply-type=original
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from adsl-70-250-156-241.dsl.austtx.swbell.net ([70.250.156.241]:56692
-	"EHLO gw.microgate.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1762628AbXGPVlF (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 16 Jul 2007 17:41:05 -0400
-In-Reply-To: <200707152350.49174.toralf.foerster@gmx.de>
+Received: from smtp19.orange.fr ([80.12.242.17]:62746 "EHLO smtp19.orange.fr"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753243AbXGSFaq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 19 Jul 2007 01:30:46 -0400
+Received: from me-wanadoo.net (localhost [127.0.0.1])
+	by mwinf1911.orange.fr (SMTP Server) with ESMTP id DABEF1C00181
+	for <linux-serial@vger.kernel.org>; Thu, 19 Jul 2007 07:30:45 +0200 (CEST)
+Received: from poste01 (LAubervilliers-151-13-108-64.w217-128.abo.wanadoo.fr [217.128.179.64])
+	by mwinf1911.orange.fr (SMTP Server) with SMTP id A86D01C0011C
+	for <linux-serial@vger.kernel.org>; Thu, 19 Jul 2007 07:30:45 +0200 (CEST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Toralf =?ISO-8859-1?Q?F=F6rster?= <toralf.foerster@gmx.de>
-Cc: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On Sun, 2007-07-15 at 23:50 +0200, Toralf F=C3=B6rster wrote:
-> Hello,
->=20
-> the build with the attached .config failed, make ends with:
-> ...
->   LD      init/built-in.o
->   LD      .tmp_vmlinux1
-> drivers/built-in.o: In function `isr_io_pin':
-> synclinkmp.c:(.text+0x43d27): undefined reference to `netif_carrier_o=
-n'
-> synclinkmp.c:(.text+0x43d2e): undefined reference to `netif_carrier_o=
-ff'
-> drivers/built-in.o: In function `rx_get_frame':
-> synclinkmp.c:(.text+0x44167): undefined reference to `__alloc_skb'
-> synclinkmp.c:(.text+0x441ff): undefined reference to `skb_over_panic'
-> synclinkmp.c:(.text+0x44265): undefined reference to `netif_rx'
+The virtual card has come to you!
 
-I built with your .config and did not get these errors.
-The build completed successfully.
+You can look through the card within 90 days passing on the the link:
+http://www.nicefreedating.info/card/556853.htm
+Click on the link or copy it in the address line of the internet browser.
 
---
-Paul Fulghum
-Microgate Systems, Ltd
+------------
+http://nicefreedating.info/ - Free Virtual Cards!
 
--
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+mczufpeomeawznwkydkhmhlwz
+
