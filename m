@@ -1,95 +1,68 @@
-From: "Maciej W. Rozycki" <macro@linux-mips.org>
-Subject: [PATCH] sb1250-duart: __maybe_unused, etc. fixes
-Date: Fri, 20 Jul 2007 13:23:06 +0100 (BST)
-Message-ID: <Pine.LNX.4.64N.0707201314300.7402@blysk.ds.pg.gda.pl>
+From: Lee Howard <faxguy@howardsilvan.com>
+Subject: serial flow control appears broken
+Date: Wed, 25 Jul 2007 18:52:42 -0700
+Message-ID: <46A7FE6A.4030309@howardsilvan.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from pollux.ds.pg.gda.pl ([153.19.208.7]:2764 "EHLO
-	pollux.ds.pg.gda.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752764AbXGTMXJ (ORCPT
+Received: from gateway.howardsilvan.com ([64.146.212.27]:38287 "EHLO
+	mail.howardsilvan.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754269AbXGZCNs (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 20 Jul 2007 08:23:09 -0400
+	Wed, 25 Jul 2007 22:13:48 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Ralf Baechle <ralf@linux-mips.org>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, sibyte-users@bitmover.com
+To: linux-serial@vger.kernel.org, tytso@mit.edu, rmk@arm.linux.org.uk, linux-kernel@vger.kernel.org
 
- This is a set of small fixes addressing points raised with the original 
-driver submission.  In particular, __maybe_unused is used rather than a 
-local hack and sbd_ops is made const.  Additionally I have made two local 
-string variables automatic as rodata space was wasted for pointers 
-unnecessarily.
+Hello.
 
-Signed-off-by: Maciej W. Rozycki <macro@linux-mips.org>
----
-Hi,
+I have fax modems that will, in their proper behavior with certain 
+features, send up to 64 kilobytes of data to the host DTE all at once.  
+(So, the fax modem handles an incoming fax and periodically will send 
+between 256 bytes and 64 kilobytes of data in bursts.)
 
- This should be obvious.  It builds.  Please apply.
+When the DCE-DTE (modem-to-host) communication rate is established at 
+115200 bps data loss occurs systems using at least Linux kernels 2.6.5 
+and 2.6.18 (and probably everything in-beween and then some more).  This 
+is because the modem overflows the host's buffer.  This is evidenced in 
+kernel logging:
 
-  Maciej
+Jul 23 14:01:30 gollum kernel: ttyS1: 1 input overrun(s)
+Jul 23 17:09:45 gollum kernel: ttyS1: 1 input overrun(s)
 
-patch-mips-2.6.22-20070710-serial-sb1250-duart-fix-0
-diff -up --recursive --new-file linux-mips-2.6.22-20070710.macro/drivers/serial/sb1250-duart.c linux-mips-2.6.22-20070710/drivers/serial/sb1250-duart.c
---- linux-mips-2.6.22-20070710.macro/drivers/serial/sb1250-duart.c	2007-07-11 02:21:42.000000000 +0000
-+++ linux-mips-2.6.22-20070710/drivers/serial/sb1250-duart.c	2007-07-19 23:46:33.000000000 +0000
-@@ -25,6 +25,7 @@
- #define SUPPORT_SYSRQ
- #endif
- 
-+#include <linux/compiler.h>
- #include <linux/console.h>
- #include <linux/delay.h>
- #include <linux/errno.h>
-@@ -103,8 +104,6 @@ struct sbd_duart {
- 
- static struct sbd_duart sbd_duarts[DUART_MAX_CHIP];
- 
--#define __unused __attribute__((__unused__))
--
- 
- /*
-  * Reading and writing SB1250 DUART registers.
-@@ -204,12 +203,12 @@ static int sbd_receive_drain(struct sbd_
- 	return loops;
- }
- 
--static int __unused sbd_transmit_ready(struct sbd_port *sport)
-+static int __maybe_unused sbd_transmit_ready(struct sbd_port *sport)
- {
- 	return read_sbdchn(sport, R_DUART_STATUS) & M_DUART_TX_RDY;
- }
- 
--static int __unused sbd_transmit_drain(struct sbd_port *sport)
-+static int __maybe_unused sbd_transmit_drain(struct sbd_port *sport)
- {
- 	int loops = 10000;
- 
-@@ -664,7 +663,7 @@ static void sbd_release_port(struct uart
- 
- static int sbd_map_port(struct uart_port *uport)
- {
--	static const char *err = KERN_ERR "sbd: Cannot map MMIO\n";
-+	const char *err = KERN_ERR "sbd: Cannot map MMIO\n";
- 	struct sbd_port *sport = to_sport(uport);
- 	struct sbd_duart *duart = sport->duart;
- 
-@@ -691,8 +690,7 @@ static int sbd_map_port(struct uart_port
- 
- static int sbd_request_port(struct uart_port *uport)
- {
--	static const char *err = KERN_ERR
--				 "sbd: Unable to reserve MMIO resource\n";
-+	const char *err = KERN_ERR "sbd: Unable to reserve MMIO resource\n";
- 	struct sbd_duart *duart = to_sport(uport)->duart;
- 	int map_guard;
- 	int ret = 0;
-@@ -755,7 +753,7 @@ static int sbd_verify_port(struct uart_p
- }
- 
- 
--static struct uart_ops sbd_ops = {
-+static const struct uart_ops sbd_ops = {
- 	.tx_empty	= sbd_tx_empty,
- 	.set_mctrl	= sbd_set_mctrl,
- 	.get_mctrl	= sbd_get_mctrl,
+Normally I would blame the modem itself for not honoring the host's flow 
+control signals.  However, I have worked with the modem manufacturer 
+closely on this matter for over three months now.  In that process they 
+have improved the responsiveness of the modem and have fixed other 
+problems, but the end result is that it truly does appear that the 
+serial tty driver is not using flow control.  Whether software flow 
+control (XON/XOFF) or hardware flow control (RTS/CTS) is used the result 
+is the same.
+
+This is evidenced in hardware flow control by a little LED labeled "RTS" 
+that is on the external modem.  This LED lights up when pin 7 of the DB9 
+serial connection is given +12Vdc current (signalling "RTS" is on - that 
+the host can accept data).  The LED goes dark when the current is 
+removed (signalling that the host cannot accept data).  This "RTS" LED 
+never flickers at all, as it should, when receiving these bursts of data 
+- the LED stays lit as long as the serial cable is connected to the 
+host... and yet I will see those "input overrun" messages.  Thus, it 
+seems quite clear that the Linux serial tty driver is not deasserting 
+RTS as it should in hardware flow control.  (And probably the analogous 
+problem exists in software flow control, too.)
+
+Please tell me what I can do to help you resove and/or remedy this 
+matter.  Also, please let me know if I have contacted the wrong people.  
+(I have cross-posted to linux-kernel as a catch-all.  I am not 
+subscribed to either linux-serial or linux-kernel mailing lists.  So 
+please CC me in any list responses.)
+
+If it is of any value to know (perhaps they have common code?), the same 
+error occurs on FreeBSD 6.2 as well.   The problem does not occur on 
+Windows.  The problem does not occur on RedHat 6.0 (kernel 2.2.5).
+
+Thanks,
+
+Lee.
+
