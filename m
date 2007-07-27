@@ -1,53 +1,50 @@
-From: "Maciej W. Rozycki" <macro@linux-mips.org>
+From: Lee Howard <faxguy@howardsilvan.com>
 Subject: Re: serial flow control appears broken
-Date: Fri, 27 Jul 2007 18:53:11 +0100 (BST)
-Message-ID: <Pine.LNX.4.64N.0707271825220.425@blysk.ds.pg.gda.pl>
-References: <fa.Z6O0xFRT69zes0Mg+agt3Uiwux4@ifi.uio.no> <46A84B4A.6070902@shaw.ca>
- <46A8C6F1.4080309@howardsilvan.com> <Pine.LNX.4.64N.0707271216410.425@blysk.ds.pg.gda.pl>
- <46AA2748.80703@howardsilvan.com>
+Date: Fri, 27 Jul 2007 11:00:37 -0700
+Message-ID: <46AA32C5.9080705@howardsilvan.com>
+References: <46A7FE6A.4030309@howardsilvan.com>	<20070726123420.GA14163@informatik.uni-freiburg.de>	<46A8CB96.1010501@howardsilvan.com>	<20070726174150.4ffcabd4@the-village.bc.nu>	<46A98DFE.3050304@howardsilvan.com> <20070727125655.6a71ab77@the-village.bc.nu>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from pollux.ds.pg.gda.pl ([153.19.208.7]:1611 "EHLO
-	pollux.ds.pg.gda.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756911AbXG0RxN (ORCPT
+Received: from gateway.howardsilvan.com ([64.146.212.27]:42721 "EHLO
+	mail.howardsilvan.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752410AbXG0SBw (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 27 Jul 2007 13:53:13 -0400
-In-Reply-To: <46AA2748.80703@howardsilvan.com>
+	Fri, 27 Jul 2007 14:01:52 -0400
+In-Reply-To: <20070727125655.6a71ab77@the-village.bc.nu>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Lee Howard <faxguy@howardsilvan.com>
-Cc: Robert Hancock <hancockr@shaw.ca>, linux-serial@vger.kernel.org, tytso@mit.edu, rmk@arm.linux.org.uk, linux-kernel@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: =?ISO-8859-1?Q?Uwe_Kleine-K=F6nig?= <ukleinek@informatik.uni-freiburg.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Fri, 27 Jul 2007, Lee Howard wrote:
+Alan Cox wrote:
 
-> Okay, so let's say we've got a loop around a blocking read on the modem file
-> descriptor...
-> 
->  for (;;) {
->      read some data from modem
->      process data from modem
->      if (end-of-data detected) break;
->  }
-> 
-> Are you suggesting that the application should be using deasserting RTS after
-> the read and asserting it before?
+>As the flow control is driven by software on most 16x50 chips (there are
+>a couple of exceptions) if we fail to empty the fifo fast enough then any
+>flow control will be asserted too late to save the day.
+>
+>If you stop the application and do the following
+>
+>	cat /dev/ttywhatever
+>	^Z
+>	[stopped]
+>
+>(so you are asking the OS to buffer data but not ever reading it)
+>
+>and then fire data at it does the flow control eventually occur ?
+>
 
- It certainly could -- you were asking how it would know. ;-)
+Yes it does appear to.  I told the application to simply sleep(300) at 
+the appropriate moment, and I watched the application and when it began 
+the sleep I ran:
 
-> I had previously thought that the control of RTS was something that the
-> serial/tty driver was supposed to do independently based on the buffer fill.
+  cat /dev/ttyS1
+  (lots of "garbage" began spewing forth)
+  ^Z
+  (about 2 or 3 seconds and the RTS light goes dark)
 
- The TTY line discipline driver could do that based on the amount of 
-received data present in its buffer.  And it should if asked to (a brief 
-look at drivers/char/n_tty.c reveals it does; obviously there may be a bug 
-somewhere though).  So could e.g. the SLIP and PPP line discipline 
-drivers, though the criteria might be different (apparently they do not, 
-which is a shame).
+Thanks,
 
- The serial drivers have nothing to do about it -- all they can do is 
-pushing data upstream, to the discipline driver.  They can provide an 
-interface to hardware flow control features though, if implemented by a 
-given UART.
+Lee.
 
-  Maciej
