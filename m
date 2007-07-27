@@ -1,58 +1,33 @@
-From: Lee Howard <faxguy@howardsilvan.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Subject: Re: serial flow control appears broken
-Date: Fri, 27 Jul 2007 10:11:36 -0700
-Message-ID: <46AA2748.80703@howardsilvan.com>
-References: <fa.Z6O0xFRT69zes0Mg+agt3Uiwux4@ifi.uio.no> <46A84B4A.6070902@shaw.ca> <46A8C6F1.4080309@howardsilvan.com> <Pine.LNX.4.64N.0707271216410.425@blysk.ds.pg.gda.pl>
+Date: Fri, 27 Jul 2007 18:41:38 +0100
+Message-ID: <20070727184138.0490bf89@the-village.bc.nu>
+References: <fa.Z6O0xFRT69zes0Mg+agt3Uiwux4@ifi.uio.no>
+	<46A84B4A.6070902@shaw.ca>
+	<46A8C6F1.4080309@howardsilvan.com>
+	<Pine.LNX.4.64N.0707271216410.425@blysk.ds.pg.gda.pl>
+	<46AA2748.80703@howardsilvan.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gateway.howardsilvan.com ([64.146.212.27]:48016 "EHLO
-	mail.howardsilvan.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S936061AbXG0RMu (ORCPT
+Received: from outpipe-village-512-1.bc.nu ([81.2.110.250]:32963 "EHLO
+	the-village.bc.nu" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1757080AbXG0RgL (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 27 Jul 2007 13:12:50 -0400
-In-Reply-To: <Pine.LNX.4.64N.0707271216410.425@blysk.ds.pg.gda.pl>
+	Fri, 27 Jul 2007 13:36:11 -0400
+In-Reply-To: <46AA2748.80703@howardsilvan.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Maciej W. Rozycki" <macro@linux-mips.org>
-Cc: Robert Hancock <hancockr@shaw.ca>, linux-serial@vger.kernel.org, tytso@mit.edu, rmk@arm.linux.org.uk, linux-kernel@vger.kernel.org
+To: Lee Howard <faxguy@howardsilvan.com>
+Cc: "Maciej W. Rozycki" <macro@linux-mips.org>, Robert Hancock <hancockr@shaw.ca>, linux-serial@vger.kernel.org, tytso@mit.edu, rmk@arm.linux.org.uk, linux-kernel@vger.kernel.org
 
-Maciej W. Rozycki wrote:
+> I had previously thought that the control of RTS was something that the 
+> serial/tty driver was supposed to do independently based on the buffer 
+> fill.  Was I wrong?
 
->On Thu, 26 Jul 2007, Lee Howard wrote:
->
->  
->
->>If the application were to use TIOCM_RTS how would it know when to apply it or
->>not?  Is there some approach that the application could take to manage flow
->>control on the serial port?  What about software flow control?  Does the
->>    
->>
->
-> Well, an application could negate RTS when it receives a character and 
->is running out of resources for further processing of incoming data.
->
-> Smarter UARTs may be able to negate RTS themselves based on the amount of 
->data in their receive FIFO.  The threshold may be configurable.
->
+If the kernel is asked to do CRTSCTS then the kernel handles the flow
+control. It uses it when the internal buffers are nearly full.
 
-Okay, so let's say we've got a loop around a blocking read on the modem 
-file descriptor...
-
-  for (;;) {
-      read some data from modem
-      process data from modem
-      if (end-of-data detected) break;
-  }
-
-Are you suggesting that the application should be using deasserting RTS 
-after the read and asserting it before?
-
-I had previously thought that the control of RTS was something that the 
-serial/tty driver was supposed to do independently based on the buffer 
-fill.  Was I wrong?
-
-Thanks,
-
-Lee.
+The direct access to the lines is normally only used by special drivers
+such as half duplex radio modem drivers.
