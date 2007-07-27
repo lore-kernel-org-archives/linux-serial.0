@@ -1,33 +1,47 @@
 From: Paul Fulghum <paulkf@microgate.com>
 Subject: Re: serial flow control appears broken
-Date: Fri, 27 Jul 2007 14:14:51 -0500
-Message-ID: <1185563691.23486.12.camel@x2.microgate.com>
-References: <fa.Z6O0xFRT69zes0Mg+agt3Uiwux4@ifi.uio.no>
-	 <46A84B4A.6070902@shaw.ca> <46A8C6F1.4080309@howardsilvan.com>
-	 <Pine.LNX.4.64N.0707271216410.425@blysk.ds.pg.gda.pl>
-	 <46AA2748.80703@howardsilvan.com>
-	 <Pine.LNX.4.64N.0707271825220.425@blysk.ds.pg.gda.pl>
-	 <46AA3801.7090204@shaw.ca>
+Date: Fri, 27 Jul 2007 19:34:01 +0000 (UTC)
+Message-ID: <46D33636.7070200@microgate.com>
+References: <fa.Z6O0xFRT69zes0Mg+agt3Uiwux4@ifi.uio.no>	<46A84B4A.6070902@shaw.ca>	<46A8C6F1.4080309@howardsilvan.com> <20070726173121.70088a92@the-village.bc.nu> <46A98845.8010806@howardsilvan.com> <46A9F712.70706@imap.cc>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from adsl-70-250-156-241.dsl.austtx.swbell.net ([70.250.156.241]:44351
+Received: from adsl-70-250-156-241.dsl.austtx.swbell.net ([70.250.156.241]:57241
 	"EHLO gw.microgate.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1763283AbXG0TPL (ORCPT
+	with ESMTP id S1758338AbXG0Tdv (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 27 Jul 2007 15:15:11 -0400
-In-Reply-To: <46AA3801.7090204@shaw.ca>
+	Fri, 27 Jul 2007 15:33:51 -0400
+Date: Mon, 27 Aug 2007 14:38:14 -0600
+In-Reply-To: <46A9F712.70706@imap.cc>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Robert Hancock <hancockr@shaw.ca>
-Cc: "Maciej W. Rozycki" <macro@linux-mips.org>, Lee Howard <faxguy@howardsilvan.com>, linux-serial@vger.kernel.org, tytso@mit.edu, rmk@arm.linux.org.uk, linux-kernel@vger.kernel.org
+To: Tilman Schmidt <tilman@imap.cc>
+Cc: Lee Howard <faxguy@howardsilvan.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Robert Hancock <hancockr@shaw.ca>, linux-serial@vger.kernel.org, tytso@mit.edu, rmk@arm.linux.org.uk, linux-kernel@vger.kernel.org
 
-OK, I see where TTY_OVERRUN is set:
-include/linux/serial_core.h:uart_insert_char()
+Tilman Schmidt wrote:
+> Could this be related?
+> 
+> http://lkml.org/lkml/2007/7/18/245
+> 
+> Quote:
+> "I've recently found (using 2.6.21.4) that configuring a serial ports
+> (ST16654) which use the 8250 driver using setserial results in the
+> UART's FIFOs being disabled (unless you specify autoconfig)."
+
+That would make sense.
+
+Lee's error is a hardware FIFO overrun which could occur
+if the FIFO is being disabled as described in your
+link (by trying to set the uart type with setserial).
+
+Since the tty flow control is only triggered
+by the line discipline in response to ldisc
+buffer levels and not hardware FIFO overruns,
+you would never see any flow control action
+as reported by Lee.
 
 
---
+-- 
 Paul Fulghum
-Microgate Systems, Ltd
-
+Microgate Systems, Ltd.
