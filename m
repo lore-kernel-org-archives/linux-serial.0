@@ -1,31 +1,40 @@
 From: "Maciej W. Rozycki" <macro@linux-mips.org>
 Subject: Re: serial flow control appears broken
-Date: Mon, 30 Jul 2007 10:39:20 +0100 (BST)
-Message-ID: <Pine.LNX.4.64N.0707301037090.12082@blysk.ds.pg.gda.pl>
-References: <fa.Z6O0xFRT69zes0Mg+agt3Uiwux4@ifi.uio.no>  <46A84B4A.6070902@shaw.ca>
- <46A8C6F1.4080309@howardsilvan.com>  <Pine.LNX.4.64N.0707271216410.425@blysk.ds.pg.gda.pl>
-  <46AA2748.80703@howardsilvan.com>  <Pine.LNX.4.64N.0707271825220.425@blysk.ds.pg.gda.pl>
-  <46AA3801.7090204@shaw.ca> <1185563133.23486.5.camel@x2.microgate.com>
+Date: Mon, 30 Jul 2007 10:45:19 +0100 (BST)
+Message-ID: <Pine.LNX.4.64N.0707301040320.12082@blysk.ds.pg.gda.pl>
+References: <fa.Z6O0xFRT69zes0Mg+agt3Uiwux4@ifi.uio.no> <46A84B4A.6070902@shaw.ca>
+ <46A8C6F1.4080309@howardsilvan.com> <Pine.LNX.4.64N.0707271216410.425@blysk.ds.pg.gda.pl>
+ <46AA2748.80703@howardsilvan.com> <Pine.LNX.4.64N.0707271825220.425@blysk.ds.pg.gda.pl>
+ <46AA3801.7090204@shaw.ca> <20070728092842.GC26443@flint.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from pollux.ds.pg.gda.pl ([153.19.208.7]:1720 "EHLO
+Received: from pollux.ds.pg.gda.pl ([153.19.208.7]:4557 "EHLO
 	pollux.ds.pg.gda.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755879AbXG3JjX (ORCPT
+	with ESMTP id S1765986AbXG3JpV (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 30 Jul 2007 05:39:23 -0400
-In-Reply-To: <1185563133.23486.5.camel@x2.microgate.com>
+	Mon, 30 Jul 2007 05:45:21 -0400
+In-Reply-To: <20070728092842.GC26443@flint.arm.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Paul Fulghum <paulkf@microgate.com>
-Cc: Robert Hancock <hancockr@shaw.ca>, Lee Howard <faxguy@howardsilvan.com>, linux-serial@vger.kernel.org, tytso@mit.edu, rmk@arm.linux.org.uk, linux-kernel@vger.kernel.org
+To: Russell King <rmk+lkml@arm.linux.org.uk>
+Cc: Robert Hancock <hancockr@shaw.ca>, Lee Howard <faxguy@howardsilvan.com>, linux-serial@vger.kernel.org, tytso@mit.edu, linux-kernel@vger.kernel.org
 
-On Fri, 27 Jul 2007, Paul Fulghum wrote:
+On Sat, 28 Jul 2007, Russell King wrote:
 
-> I can't see anyplace in serial_core.c or 8250.c that sets TTY_OVERRUN.
+> Essentially, any complex interrupt handler (such as an IDE interrupt
+> doing a multi-sector PIO transfer _in interrupt context_) can cause this
+> kind of starvation.  That's why Linux 1.x had bottom halves - so that
+> the time consuming work could be moved out of the interrupt handler,
+> thereby causing minimal the blockage of other interrupts.
+> 
+> Unfortunately, that kind of design has been long since forgotten.
+> Apparantly modern machines are fast enough that it doesn't have to be
+> worried about anymore...  Or are they?
 
- Look for UART_LSR_OE in 8250.c -- the serial core accepts any bit that 
-has been defined by the low-level driver and sets TTY_OVERRUN in 
-uart_insert_char().
+ I would guess it is not that the machines are fast enough, but that this 
+two-level processing makes things more complicated.  Enough that most 
+people would not bother digging into it unless really forced.  Only 
+occasional latency problems are probably not enough of a force.
 
   Maciej
