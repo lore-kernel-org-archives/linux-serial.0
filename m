@@ -1,40 +1,49 @@
-From: "Ray Lee" <ray-lk@madrabbit.org>
+From: "Maciej W. Rozycki" <macro@linux-mips.org>
 Subject: Re: serial flow control appears broken
-Date: Sat, 28 Jul 2007 09:41:20 -0700
-Message-ID: <2c0942db0707280941n1b9e1f7i9c0de332286e8aac@mail.gmail.com>
-References: <fa.Z6O0xFRT69zes0Mg+agt3Uiwux4@ifi.uio.no>
-	 <46A84B4A.6070902@shaw.ca> <46A8C6F1.4080309@howardsilvan.com>
-	 <20070726173121.70088a92@the-village.bc.nu>
-	 <46A98845.8010806@howardsilvan.com> <46A9F712.70706@imap.cc>
-	 <46D33636.7070200@microgate.com> <46AA5A0E.1050600@howardsilvan.com>
-	 <1185578908.2989.15.camel@x2> <46AACB4D.7080004@howardsilvan.com>
+Date: Mon, 30 Jul 2007 10:34:36 +0100 (BST)
+Message-ID: <Pine.LNX.4.64N.0707301023150.12082@blysk.ds.pg.gda.pl>
+References: <fa.Z6O0xFRT69zes0Mg+agt3Uiwux4@ifi.uio.no> <46A84B4A.6070902@shaw.ca>
+ <46A8C6F1.4080309@howardsilvan.com> <Pine.LNX.4.64N.0707271216410.425@blysk.ds.pg.gda.pl>
+ <46AA2748.80703@howardsilvan.com> <Pine.LNX.4.64N.0707271825220.425@blysk.ds.pg.gda.pl>
+ <46AA3801.7090204@shaw.ca>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ug-out-1314.google.com ([66.249.92.174]:27972 "EHLO
-	ug-out-1314.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753349AbXG1QlV (ORCPT
+Received: from pollux.ds.pg.gda.pl ([153.19.208.7]:1554 "EHLO
+	pollux.ds.pg.gda.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S939288AbXG3Jel (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 28 Jul 2007 12:41:21 -0400
-Received: by ug-out-1314.google.com with SMTP id j3so847990ugf
-        for <linux-serial@vger.kernel.org>; Sat, 28 Jul 2007 09:41:20 -0700 (PDT)
-In-Reply-To: <46AACB4D.7080004@howardsilvan.com>
-Content-Disposition: inline
+	Mon, 30 Jul 2007 05:34:41 -0400
+In-Reply-To: <46AA3801.7090204@shaw.ca>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Lee Howard <faxguy@howardsilvan.com>
-Cc: Paul Fulghum <paulkf@microgate.com>, Tilman Schmidt <tilman@imap.cc>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Robert Hancock <hancockr@shaw.ca>, linux-serial@vger.kernel.org, tytso@mit.edu, rmk@arm.linux.org.uk, linux-kernel@vger.kernel.org
+To: Robert Hancock <hancockr@shaw.ca>
+Cc: Lee Howard <faxguy@howardsilvan.com>, linux-serial@vger.kernel.org, tytso@mit.edu, rmk@arm.linux.org.uk, linux-kernel@vger.kernel.org
 
-On 7/27/07, Lee Howard <faxguy@howardsilvan.com> wrote:
-> Curiously, the session at 38400 bps that skipped 858 bytes... coincided,
-> not just in sequence but also in precice timing within the session, with
-> a small but noticeable disk load that I caused by grepping through a
-> hundred session logs.  (I can't reproduce it easily, though, because of
-> disk caching.)
+On Fri, 27 Jul 2007, Robert Hancock wrote:
 
-`echo 1 > /proc/sys/vm/drop_caches` will clear out most (all?) of what
-the kernel has cached from the drive. It's there just for this kind of
-repeatability of tests...
+> > The TTY line discipline driver could do that based on the amount of received
+> > data present in its buffer.  And it should if asked to (a brief look at
+> > drivers/char/n_tty.c reveals it does; obviously there may be a bug 
+> 
+> Really, where? In my look through the code I haven't found any mechanism that
+> would result in RTS being lowered based on TTY buffers filling up, at least
+> not in the 8250 case.
 
-Ray
+ Look for calls to ->throttle() and ->unthrottle().  XON and XOFF might be 
+used instead as a result of these calls though, depending on terminal 
+settings.
+
+> In this situation, though, it appears it's not the TTY buffers that are
+> filling but the UART's own buffer. I would think this must be caused by some
+> kind of interrupt latency that results in not draining the FIFO in time.
+
+ Well, the UART only has its FIFO which is rather small, so automatic flow 
+control would be useful.  Though, admittedly, tty_insert_flip_char() might 
+return some kind of a status related to how much space is left in the 
+receive buffer which would indicate that there is a lag in data stream 
+processing -- which in turn may relate to the system being loaded, so that 
+the receive ISR could decide whether to negate RTS itself for the less 
+capable UARTs (i.e. ones with no autoflow and a tiny or no FIFO).
+
+  Maciej
