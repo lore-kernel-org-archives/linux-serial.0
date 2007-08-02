@@ -1,78 +1,60 @@
-From: "Frantisek Rysanek" <Frantisek.Rysanek@post.cz>
+From: Mark Lord <lkml@rtr.ca>
 Subject: Re: serial flow control appears broken
-Date: Wed, 01 Aug 2007 23:54:23 +0200
-Message-ID: <46B11D2F.31852.34529AEB@Frantisek.Rysanek.post.cz>
-References: <fa.Z6O0xFRT69zes0Mg+agt3Uiwux4@ifi.uio.no>, <20070728130009.43ea9e14@the-village.bc.nu>, <46AB631B.6070109@howardsilvan.com>
+Date: Thu, 02 Aug 2007 10:57:15 -0400
+Message-ID: <46B1F0CB.9060106@rtr.ca>
+References: <fa.Z6O0xFRT69zes0Mg+agt3Uiwux4@ifi.uio.no> <46A84B4A.6070902@shaw.ca> <46A8C6F1.4080309@howardsilvan.com> <Pine.LNX.4.64N.0707271216410.425@blysk.ds.pg.gda.pl> <46AA2748.80703@howardsilvan.com> <Pine.LNX.4.64N.0707271825220.425@blysk.ds.pg.gda.pl> <46AA3801.7090204@shaw.ca> <20070728092842.GC26443@flint.arm.linux.org.uk> <Pine.LNX.4.64N.0707301040320.12082@blysk.ds.pg.gda.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.seznam.cz ([212.80.76.43]:46289 "HELO smtp.seznam.cz"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
-	id S1751486AbXHAVy1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 1 Aug 2007 17:54:27 -0400
-In-reply-to: <46AB631B.6070109@howardsilvan.com>
-Content-description: Mail message body
+Received: from rtr.ca ([64.26.128.89]:3190 "EHLO mail.rtr.ca"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750742AbXHBO5T (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 2 Aug 2007 10:57:19 -0400
+In-Reply-To: <Pine.LNX.4.64N.0707301040320.12082@blysk.ds.pg.gda.pl>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: "Maciej W. Rozycki" <macro@linux-mips.org>
+Cc: Russell King <rmk+lkml@arm.linux.org.uk>, Robert Hancock <hancockr@shaw.ca>, Lee Howard <faxguy@howardsilvan.com>, linux-serial@vger.kernel.org, tytso@mit.edu, linux-kernel@vger.kernel.org
 
-On 28 Jul 2007 at 17:39, Lee Howard wrote:
-> >>Curiously, the session at 38400 bps that skipped 858 bytes... coincided, 
-> >>not just in sequence but also in precice timing within the session, with 
-> >>a small but noticeable disk load that I caused by grepping through a 
-> >>hundred session logs.  
->
-> I've attached dmesg output.
->
-I'd like to summarize a few points that have appeared in this long 
-thread.
+Maciej W. Rozycki wrote:
+> On Sat, 28 Jul 2007, Russell King wrote:
+> 
+>> Essentially, any complex interrupt handler (such as an IDE interrupt
+>> doing a multi-sector PIO transfer _in interrupt context_) can cause this
+>> kind of starvation.  That's why Linux 1.x had bottom halves - so that
+>> the time consuming work could be moved out of the interrupt handler,
+>> thereby causing minimal the blockage of other interrupts.
+>>
+>> Unfortunately, that kind of design has been long since forgotten.
+>> Apparantly modern machines are fast enough that it doesn't have to be
+>> worried about anymore...  Or are they?
+> 
+>  I would guess it is not that the machines are fast enough, but that this 
+> two-level processing makes things more complicated.  Enough that most 
+> people would not bother digging into it unless really forced.  Only 
+> occasional latency problems are probably not enough of a force.
 
-Someone else has mentioned interrupt latency.
-I seem to recall that the RTAI people can measure that. 
-http://issaris.org/rtai/list.php
-They report that some P4-class Intel chipsets (i845/865 for example) 
-that are using message-signaled interrupt passing across the HubLink 
-(serialized PCI) from the South Bridge to the North Bridge, exhibit 
-interrupt latencies on the order of milliseconds, if the HubLink is 
-loaded by some heavy PCI transfers, such as intensive disk IO. 
-Reportedly this is because the interrupt messages are competing for 
-the "right of the way" with the DMA-driven PCI transactions that 
-carry the bulk of the disk IO payload, where a single PCI transaction 
-can take that long.
+I don't believe the speed of the machine has much to do with it,
+as IDE PIO is always at pretty much the same speed (or slower)
+regardless of the CPU speed.
 
-Now: you've quoted a Shuttle HOT-661. That's an older chipset, i440 
-class. That one was still using the traditional out-of-band interrupt 
-delivery mechanism, using the INTR signal + vector reading over the 
-ISA bus. Yet, come to think of that, the native PCI interconnect 
-between the MCH and the PIIX4 can still present a bottleneck to IRQ 
-processing. The AT PIC is located in the PIIX4 (south bridge). After 
-the INTR signal, in order to access the AT-PIC (to read the vector), 
-the CPU has to reach out across that PCI bus. Now if the bus is busy 
-with some lengthy PCI DMA transfer, what happens to the interrupt 
-delivery?
-I don't know for sure, but possibly the CPU gets stalled by the north 
-bridge, until the PCI DMA transfer is over. The same would be true 
-about any ISA read/write, such as legacy ISA-based serial UART 
-access. If anyone knows for sure, please comment on this...
+Best case is about .120 usec per 16-bit word, but that doesn't often pan out
+in practice.  More typical is something closer to 1 usec per 16-bit word.
 
-I mean to say that this may be unrelated to some other driver 
-disabling interrupts explicitly. The latency may occur even with 
-interrupts enabled, due to the PCI bottleneck.
+So, for multcount=16 (very common), best case is 16 * 256 * .120 = 491 usec,
+plus extra overhead for reading the IDE status register (another usec or so),
+and other stuff.  Figure maybe 500usec total per interrupt for multcount=16
+in the best case, or 4000usec in the worst case.
 
-Based on your dmesg listing, your disk drive and chipset have settled 
-on using UDMA33. The maximum disk transfer size is 128 kB. Cannot say 
-how this translates to PCI transactions. If this implied that a 
-single PCI transaction could be 128 kB long, that would be almost a 
-millisecond at 132 MBps (PCI speed) or some 4 ms at 33 MBps (disk 
-drive speed). Again, can't say for sure if this implies a stall, or 
-if the data dribbles in such a way that the 33 MBps data flow is 
-interleaved with other transactions (IRQ related or not).
-Mr. Fulghum has quoted 694us of slack (at 115200 bps and an 
-8-Byte trigger level).
+At 115200bps, we get a byte every 86 usec or so.  Assuming the UART FIFO
+is set to interrupt (warn) us at 12/16 full, we have 4*86 = 344 usec to
+respond and de-assert RTS.  Less than that in practice.
 
-I've never seen this happen, but possibly I wasn't stressing my 
-machines enough :-)
+Conclusion:  using IDE multisector PIO is not a good idea with high speed
+serial transfers happening, since we cannot respond quickly enough.
 
-Frank Rysanek
+It might be possible to set the buffer underrun threshold lower in the UART (?).
 
+All that said, I doubt that his system is using IDE PIO in the first place.
+Dunno how long IDE DMA interrupts take, but it's probably in the 20-50 usec range.
