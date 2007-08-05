@@ -1,38 +1,47 @@
-From: Paul Fulghum <paulkf@microgate.com>
-Subject: Re: serial flow control appears broken
-Date: Sun, 05 Aug 2007 09:52:06 -0500
-Message-ID: <1186325526.3209.5.camel@x2>
-References: <fa.Z6O0xFRT69zes0Mg+agt3Uiwux4@ifi.uio.no>
-	 <46A84B4A.6070902@shaw.ca> <46A8C6F1.4080309@howardsilvan.com>
-	 <20070726173121.70088a92@the-village.bc.nu>
-	 <46A98845.8010806@howardsilvan.com> <46A9F712.70706@imap.cc>
-	 <46D33636.7070200@microgate.com> <46AA5A0E.1050600@howardsilvan.com>
-	 <1185578908.2989.15.camel@x2> <46AACB4D.7080004@howardsilvan.com>
-	 <2c0942db0707280941n1b9e1f7i9c0de332286e8aac@mail.gmail.com>
-	 <46B4C393.4020506@howardsilvan.com> <46B4F8AD.3000405@microgate.com>
-	 <46B51308.4010402@howardsilvan.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: 8250.c::autoconfig() fails loopback test on MPC824[15]
+Date: Sun, 5 Aug 2007 18:41:16 +0200
+Message-ID: <200708051841.17471.arnd@arndb.de>
+References: <Pine.LNX.4.60.0708050106270.4299@poirot.grange> <200708050135.07753.arnd@arndb.de> <Pine.LNX.4.60.0708051600550.4120@poirot.grange>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from adsl-70-250-156-241.dsl.austtx.swbell.net ([70.250.156.241]:57307
-	"EHLO gw.microgate.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751658AbXHEOyG (ORCPT
+Received: from moutng.kundenserver.de ([212.227.126.188]:55483 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755924AbXHEQla (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 5 Aug 2007 10:54:06 -0400
-In-Reply-To: <46B51308.4010402@howardsilvan.com>
+	Sun, 5 Aug 2007 12:41:30 -0400
+In-Reply-To: <Pine.LNX.4.60.0708051600550.4120@poirot.grange>
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Lee Howard <faxguy@howardsilvan.com>
-Cc: Ray Lee <ray-lk@madrabbit.org>, Tilman Schmidt <tilman@imap.cc>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Robert Hancock <hancockr@shaw.ca>, linux-serial@vger.kernel.org, tytso@mit.edu, rmk@arm.linux.org.uk, linux-kernel@vger.kernel.org
+To: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Cc: linuxppc-dev@ozlabs.org, linux-serial@vger.kernel.org
 
-2.2.5 is using the same UART setup (trigger level of 8) as
-the current code. There is no obvious difference in the
-interrupt setup (same devices on the same interrupts).
+On Sunday 05 August 2007, Guennadi Liakhovetski wrote:
+> That would be a possibility, but that would mean all 8241/8245 have to 
+> adjust their .dts. Ok, there are not so many of them in the mainline now 
+> (in fact, hardly any apart from linkstation:-)), still. Cannot we use 
+> something already available to just check if we're running on such a CPU? 
+> Worst case - find and parse cpu node, or maybe using some cpu_feature?
 
-So I have no helpful suggestions :-(
+It's fundamentally a property of the serial controller implementation,
+not of the processor, so the cpu_features are the wrong place to put
+this. There should at least be a generic way to define thsi in the device
+tree so that _future_ trees can just mark the port as compatible with
+one that has this bug.
 
---
-Paul
+If you want to work around existing systems that don't mention this
+in the device_tree, you could perhaps use machine_is(foo) to test
+for it.
 
+Another option altogether would be to allow the device node to
+specify the linux specific serial port flags in a separate property,
+like "linux,uart-port-flags" that contains the same flags that
+setserial can set from user space. That would also be useful
+if you want to specify UPF_MAGIC_MULTIPLIER on certain high-speed
+ports, because it cannot be autoprobed.
 
+	Arnd <><
