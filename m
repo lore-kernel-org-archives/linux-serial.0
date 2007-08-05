@@ -1,83 +1,48 @@
-From: Lee Howard <faxguy@howardsilvan.com>
-Subject: Re: serial flow control appears broken
-Date: Sat, 04 Aug 2007 17:00:08 -0700
-Message-ID: <46B51308.4010402@howardsilvan.com>
-References: <fa.Z6O0xFRT69zes0Mg+agt3Uiwux4@ifi.uio.no>	 <46A84B4A.6070902@shaw.ca> <46A8C6F1.4080309@howardsilvan.com>	 <20070726173121.70088a92@the-village.bc.nu>	 <46A98845.8010806@howardsilvan.com> <46A9F712.70706@imap.cc>	 <46D33636.7070200@microgate.com> <46AA5A0E.1050600@howardsilvan.com>	 <1185578908.2989.15.camel@x2> <46AACB4D.7080004@howardsilvan.com> <2c0942db0707280941n1b9e1f7i9c0de332286e8aac@mail.gmail.com> <46B4C393.4020506@howardsilvan.com> <46B4F8AD.3000405@microgate.com>
+From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Subject: Re: 8250.c::autoconfig() fails loopback test on MPC824[15]
+Date: Sun, 5 Aug 2007 16:06:02 +0200 (CEST)
+Message-ID: <Pine.LNX.4.60.0708051600550.4120@poirot.grange>
+References: <Pine.LNX.4.60.0708050106270.4299@poirot.grange>
+ <200708050135.07753.arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gateway.howardsilvan.com ([64.146.212.27]:38681 "EHLO
-	mail.howardsilvan.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757300AbXHEAAP (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 4 Aug 2007 20:00:15 -0400
-In-Reply-To: <46B4F8AD.3000405@microgate.com>
+Received: from mail.gmx.net ([213.165.64.20]:49420 "HELO mail.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
+	id S1751164AbXHEOF6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 5 Aug 2007 10:05:58 -0400
+In-Reply-To: <200708050135.07753.arnd@arndb.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Paul Fulghum <paulkf@microgate.com>
-Cc: Ray Lee <ray-lk@madrabbit.org>, Tilman Schmidt <tilman@imap.cc>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Robert Hancock <hancockr@shaw.ca>, linux-serial@vger.kernel.org, tytso@mit.edu, rmk@arm.linux.org.uk, linux-kernel@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: linuxppc-dev@ozlabs.org, linux-serial@vger.kernel.org
 
-Paul Fulghum wrote:
+On Sun, 5 Aug 2007, Arnd Bergmann wrote:
 
-> Lee Howard wrote:
->
->> And in repeat tests it is quite evident that IDE disk activity is, 
->> indeed, at least part of the problem.  As IDE disk activity increases 
->> an increased amount of data coming in on the serial port goes missing.
->
->
-> Lee, you mentioned 2.2.x kernels did not exhibit this problem.
->
-> Was this on the same hardware you are currently testing?
+> On Sunday 05 August 2007, Guennadi Liakhovetski wrote:
+> > I tried using of_serial.c on a (PPC) MPC8241 based system, which has a 
+> > "16650A" compatible double UART built into the SoC. Using of_serial.c 
+> > causes the ports to be autoconfigured, and this fails. The loopback test 
+> > fails, because the MSR register on 824[15] doesn't implement the 
+> > UART_MSR_DCD bit. Question: what's better, teach 8250.c to handle UARTs 
+> > without this bit, or set the UPF_SKIP_TEST bit in of_serial.c for these 
+> > SOCs to skip the loopback test altogether? The latter is certainly easier 
+> > and affects much fewer systems, so, I'd go for that.
+> 
+> Yes, that sounds good. Just make sure you test the "compatible" property
+> in the device node for something appropriate. In of_platform_serial_probe(),
+> you can then do something like
+> 
+> 	if (of_device_is_compatible(ofdev, "mpc8241-serial"))
+> 		flags |= UPF_SKIP_TEST;
 
+That would be a possibility, but that would mean all 8241/8245 have to 
+adjust their .dts. Ok, there are not so many of them in the mainline now 
+(in fact, hardly any apart from linkstation:-)), still. Cannot we use 
+something already available to just check if we're running on such a CPU? 
+Worst case - find and parse cpu node, or maybe using some cpu_feature?
 
-Yes it was... except for the hard drive.  I have different installs of 
-different operating systems on different hard drives.  I change the hard 
-drive when switching between 2.2.5 and 2.6.5.
-
-> Which 2.2.x version were you using?
-
-
-The default 2.2.5 kernel that comes with RedHat 6.0.
-
-> Was the 2.2.x serial driver also identifying the UART as a 16550A?
-
-
-Yes it does.
-
-> Can you get /proc/interrupts output
-> from both the current setup and the 2.2.x setup?
-
-
-Current (2.6.5):
-
-           CPU0
-  0:   14660696          XT-PIC  timer
-  1:          8          XT-PIC  i8042
-  2:          0          XT-PIC  cascade
-  3:    1240314          XT-PIC  serial
-  4:     778901          XT-PIC  serial
-  8:          1          XT-PIC  rtc
- 10:     111647          XT-PIC  eth0
- 14:     221202          XT-PIC  ide0
- 15:         34          XT-PIC  ide1
-NMI:          0
-ERR:          5
-
-(2.2.5):
-
-           CPU0
-  0:       5908          XT-PIC  timer
-  1:         88          XT-PIC  i8042
-  2:          0          XT-PIC  cascade
-  8:          2          XT-PIC  rtc
- 10:        38          XT-PIC  Intel EtherExpress Pro 10/100 Ethernet
- 13:          1          XT-PIC fpu
- 14:        36637        XT-PIC  ide0
- 15:         4          XT-PIC  ide1
-NMI:          0
-
-Thanks,
-
-Lee.
+Thanks
+Guennadi
+---
+Guennadi Liakhovetski
