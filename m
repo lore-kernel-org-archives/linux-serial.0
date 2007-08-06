@@ -1,43 +1,32 @@
-From: Arnd Bergmann <arnd@arndb.de>
+From: Segher Boessenkool <segher@kernel.crashing.org>
 Subject: Re: 8250.c::autoconfig() fails loopback test on MPC824[15]
-Date: Sun, 5 Aug 2007 23:57:32 +0200
-Message-ID: <200708052357.32650.arnd@arndb.de>
-References: <Pine.LNX.4.60.0708050106270.4299@poirot.grange>
-	<E1IHnhY-0008PO-IZ@jdl.com>
-	<Pine.LNX.4.60.0708052336360.4120@poirot.grange>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Date: Mon, 6 Aug 2007 21:15:34 +0200
+Message-ID: <e8ffca0a9f533e4685f0573e72b90239@kernel.crashing.org>
+References: <Pine.LNX.4.60.0708050106270.4299@poirot.grange> <200708050135.07753.arnd@arndb.de> <Pine.LNX.4.60.0708051600550.4120@poirot.grange> <200708051841.17471.arnd@arndb.de>
+Mime-Version: 1.0 (Apple Message framework v623)
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane.org@ozlabs.org>
-In-Reply-To: <Pine.LNX.4.60.0708052336360.4120@poirot.grange>
-Content-Disposition: inline
-List-Unsubscribe: <https://ozlabs.org/mailman/listinfo/linuxppc-dev>,
-	<mailto:linuxppc-dev-request@ozlabs.org?subject=unsubscribe>
-List-Archive: <http://ozlabs.org/pipermail/linuxppc-dev>
-List-Post: <mailto:linuxppc-dev@ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@ozlabs.org?subject=help>
-List-Subscribe: <https://ozlabs.org/mailman/listinfo/linuxppc-dev>,
-	<mailto:linuxppc-dev-request@ozlabs.org?subject=subscribe>
-Sender: linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane.org@ozlabs.org
-Errors-To: linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane.org@ozlabs.org
-To: linuxppc-dev@ozlabs.org
-Cc: Jon Loeliger <jdl@jdl.com>, Guennadi Liakhovetski <g.liakhovetski@gmx.de>, linux-serial@vger.kernel.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from gate.crashing.org ([63.228.1.57]:47368 "EHLO gate.crashing.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754063AbXHFTPv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 6 Aug 2007 15:15:51 -0400
+In-Reply-To: <200708051841.17471.arnd@arndb.de>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Guennadi Liakhovetski <g.liakhovetski@gmx.de>, linuxppc-dev@ozlabs.org, linux-serial@vger.kernel.org
 
-On Sunday 05 August 2007, Guennadi Liakhovetski wrote:
-> 
-> > I supect it will have the same issue in the end, right?
-> 
-> ...if you choose to use of_serial.c, yes, if you don't use it and just use 
-> legacy_serial.c, then you're fine.
+> Another option altogether would be to allow the device node to
+> specify the linux specific serial port flags in a separate property,
+> like "linux,uart-port-flags" that contains the same flags that
+> setserial can set from user space. That would also be useful
+> if you want to specify UPF_MAGIC_MULTIPLIER on certain high-speed
+> ports, because it cannot be autoprobed.
 
-But of_serial can be a loadable module, which means you still get into
-trouble if you load it, even if the port was originally initialized
-by legacy_serial.
+Such high-speed ports should simply use a proper "compatible"
+entry.  Similarly with the problem at hand.
 
-Maybe the best solution would be for 824[15] to not claim compatibility
-with 8250 at all then. If the device tree contains an entry that matches
-what the generic driver looks for, it better be something that can
-be handled by that driver.
 
-	Arnd <><
+Segher
+
