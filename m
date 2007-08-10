@@ -1,77 +1,44 @@
-From: akpm@linux-foundation.org
-Subject: [patch 6/6] Add blacklisting capability to serial_pci to avoid misdetection of serial ports
-Date: Fri, 10 Aug 2007 14:38:45 -0700
-Message-ID: <200708102138.l7ALcj4R010831@imap1.linux-foundation.org>
+From: Michael Mauch <michael.mauch@gmx.de>
+Subject: Serial ports rearranged in 2.6.22?
+Date: Fri, 10 Aug 2007 23:39:25 +0200
+Message-ID: <20070810213925.GB10855@elmicha>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp2.linux-foundation.org ([207.189.120.14]:41100 "EHLO
-	smtp2.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751355AbXHJVjN (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Aug 2007 17:39:13 -0400
+Received: from mail.gmx.net ([213.165.64.20]:46122 "HELO mail.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
+	id S1752842AbXHJVj2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 10 Aug 2007 17:39:28 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, akpm@linux-foundation.org, schmidt@digadd.de, alan@lxorguk.ukuu.org.uk, bjorn.helgaas@hp.com, rmk+lkml@arm.linux.org.uk, yinghai.lu@sun.com
+To: linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
 
-From: Christian Schmidt <schmidt@digadd.de>
+Hi,
 
-The serial_pci driver tries to guess serial ports on unknown devices based
-on the PCI class (modem or serial).  On certain softmodems (AC'97 modems)
-this can lead to the recognition of non-existing serial ports.
+until 2.6.21, I had the normal assignments for ttyS0 and ttyS1:
 
-This patch adds a blacklist of PCI IDs that are to be ignored by the driver.
+00:08: ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
+00:09: ttyS0 at I/O 0x3f8 (irq = 4) is a 16550A
 
-[akpm@linux-foundation.org: cleanups]
-Signed-off-by: Christian Schmidt <schmidt@digadd.de>
-Cc: Bjorn Helgaas <bjorn.helgaas@hp.com>
-Cc: Russell King <rmk+lkml@arm.linux.org.uk>
-Cc: Yinghai Lu <yinghai.lu@sun.com>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
----
+With 2.6.22 I get the names <-> ports/irqs the other way around:
 
- drivers/serial/8250_pci.c |   17 +++++++++++++++++
- 1 files changed, 17 insertions(+)
+00:08: ttyS0 at I/O 0x2f8 (irq = 3) is a 16550A
+00:09: ttyS1 at I/O 0x3f8 (irq = 4) is a 16550A
 
-diff -puN drivers/serial/8250_pci.c~add-blacklisting-capability-to-serial_pci-to-avoid-misdetection drivers/serial/8250_pci.c
---- a/drivers/serial/8250_pci.c~add-blacklisting-capability-to-serial_pci-to-avoid-misdetection
-+++ a/drivers/serial/8250_pci.c
-@@ -1652,6 +1652,10 @@ static struct pciserial_board pci_boards
- 	},
- };
- 
-+static const struct pci_device_id softmodem_blacklist[] = {
-+	{ PCI_VDEVICE ( AL, 0x5457 ), }, /* ALi Corporation M5457 AC'97 Modem */
-+};
-+
- /*
-  * Given a complete unknown PCI device, try to use some heuristics to
-  * guess what the configuration might be, based on the pitiful PCI
-@@ -1660,6 +1664,7 @@ static struct pciserial_board pci_boards
- static int __devinit
- serial_pci_guess_board(struct pci_dev *dev, struct pciserial_board *board)
- {
-+	const struct pci_device_id *blacklist;
- 	int num_iomem, num_port, first_port = -1, i;
- 	
- 	/*
-@@ -1674,6 +1679,18 @@ serial_pci_guess_board(struct pci_dev *d
- 	    (dev->class & 0xff) > 6)
- 		return -ENODEV;
- 
-+	/*
-+	 * Do not access blacklisted devices that are known not to
-+	 * feature serial ports.
-+	 */
-+	for (blacklist = softmodem_blacklist;
-+	     blacklist < softmodem_blacklist + ARRAY_SIZE(softmodem_blacklist);
-+	     blacklist++) {
-+		if (dev->vendor == blacklist->vendor &&
-+		    dev->device == blacklist->device)
-+			return -ENODEV;
-+	}
-+
- 	num_iomem = num_port = 0;
- 	for (i = 0; i < PCI_NUM_BAR_RESOURCES; i++) {
- 		if (pci_resource_flags(dev, i) & IORESOURCE_IO) {
-_
+Is this supposed to be that way? Should we reassign these names with
+udev? udev-114 doesn't seem to have built-in rules to assign the
+traditional names.
+
+Or could it be related to some brokeness in my BIOS (ACPI/PNP)? 
+
+I'm using the 8250_pnp module (and it's the same with builtin serial
+modules). I made sure that I did not accidentally change the BIOS
+settings for the serial ports.
+
+I'm using Gentoo, but on the lirc list was a Fedora user with the same
+symptoms.
+
+Regards...
+		Michael
