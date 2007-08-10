@@ -1,47 +1,77 @@
 From: akpm@linux-foundation.org
-Subject: [patch 4/6] serial_txx9: cleanup includes
-Date: Fri, 10 Aug 2007 14:38:44 -0700
-Message-ID: <200708102138.l7ALcilP010825@imap1.linux-foundation.org>
+Subject: [patch 6/6] Add blacklisting capability to serial_pci to avoid misdetection of serial ports
+Date: Fri, 10 Aug 2007 14:38:45 -0700
+Message-ID: <200708102138.l7ALcj4R010831@imap1.linux-foundation.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp2.linux-foundation.org ([207.189.120.14]:44903 "EHLO
+Received: from smtp2.linux-foundation.org ([207.189.120.14]:41100 "EHLO
 	smtp2.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754886AbXHJVjF (ORCPT
+	by vger.kernel.org with ESMTP id S1751355AbXHJVjN (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Aug 2007 17:39:05 -0400
+	Fri, 10 Aug 2007 17:39:13 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, akpm@linux-foundation.org, anemo@mba.ocn.ne.jp, ralf@linux-mips.org
+Cc: linux-kernel@vger.kernel.org, akpm@linux-foundation.org, schmidt@digadd.de, alan@lxorguk.ukuu.org.uk, bjorn.helgaas@hp.com, rmk+lkml@arm.linux.org.uk, yinghai.lu@sun.com
 
-From: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
+From: Christian Schmidt <schmidt@digadd.de>
 
-Do not include some header files already indluded by serial_core.h.
+The serial_pci driver tries to guess serial ports on unknown devices based
+on the PCI class (modem or serial).  On certain softmodems (AC'97 modems)
+this can lead to the recognition of non-existing serial ports.
 
-Signed-off-by: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
-Cc: Ralf Baechle <ralf@linux-mips.org>
+This patch adds a blacklist of PCI IDs that are to be ignored by the driver.
+
+[akpm@linux-foundation.org: cleanups]
+Signed-off-by: Christian Schmidt <schmidt@digadd.de>
+Cc: Bjorn Helgaas <bjorn.helgaas@hp.com>
+Cc: Russell King <rmk+lkml@arm.linux.org.uk>
+Cc: Yinghai Lu <yinghai.lu@sun.com>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 ---
 
- drivers/serial/serial_txx9.c |    4 ----
- 1 files changed, 4 deletions(-)
+ drivers/serial/8250_pci.c |   17 +++++++++++++++++
+ 1 files changed, 17 insertions(+)
 
-diff -puN drivers/serial/serial_txx9.c~serial_txx9-cleanup-includes drivers/serial/serial_txx9.c
---- a/drivers/serial/serial_txx9.c~serial_txx9-cleanup-includes
-+++ a/drivers/serial/serial_txx9.c
-@@ -25,15 +25,11 @@
- #include <linux/ioport.h>
- #include <linux/init.h>
- #include <linux/console.h>
--#include <linux/sysrq.h>
- #include <linux/delay.h>
- #include <linux/platform_device.h>
- #include <linux/pci.h>
--#include <linux/tty.h>
--#include <linux/tty_flip.h>
- #include <linux/serial_core.h>
- #include <linux/serial.h>
--#include <linux/mutex.h>
+diff -puN drivers/serial/8250_pci.c~add-blacklisting-capability-to-serial_pci-to-avoid-misdetection drivers/serial/8250_pci.c
+--- a/drivers/serial/8250_pci.c~add-blacklisting-capability-to-serial_pci-to-avoid-misdetection
++++ a/drivers/serial/8250_pci.c
+@@ -1652,6 +1652,10 @@ static struct pciserial_board pci_boards
+ 	},
+ };
  
- #include <asm/io.h>
++static const struct pci_device_id softmodem_blacklist[] = {
++	{ PCI_VDEVICE ( AL, 0x5457 ), }, /* ALi Corporation M5457 AC'97 Modem */
++};
++
+ /*
+  * Given a complete unknown PCI device, try to use some heuristics to
+  * guess what the configuration might be, based on the pitiful PCI
+@@ -1660,6 +1664,7 @@ static struct pciserial_board pci_boards
+ static int __devinit
+ serial_pci_guess_board(struct pci_dev *dev, struct pciserial_board *board)
+ {
++	const struct pci_device_id *blacklist;
+ 	int num_iomem, num_port, first_port = -1, i;
+ 	
+ 	/*
+@@ -1674,6 +1679,18 @@ serial_pci_guess_board(struct pci_dev *d
+ 	    (dev->class & 0xff) > 6)
+ 		return -ENODEV;
  
++	/*
++	 * Do not access blacklisted devices that are known not to
++	 * feature serial ports.
++	 */
++	for (blacklist = softmodem_blacklist;
++	     blacklist < softmodem_blacklist + ARRAY_SIZE(softmodem_blacklist);
++	     blacklist++) {
++		if (dev->vendor == blacklist->vendor &&
++		    dev->device == blacklist->device)
++			return -ENODEV;
++	}
++
+ 	num_iomem = num_port = 0;
+ 	for (i = 0; i < PCI_NUM_BAR_RESOURCES; i++) {
+ 		if (pci_resource_flags(dev, i) & IORESOURCE_IO) {
 _
