@@ -1,52 +1,60 @@
-From: Bjorn Helgaas <bjorn.helgaas@hp.com>
+From: Michael Mauch <michael.mauch@gmx.de>
 Subject: Re: Serial ports rearranged in 2.6.22?
-Date: Mon, 13 Aug 2007 15:34:14 -0600
-Message-ID: <200708131534.15235.bjorn.helgaas@hp.com>
-References: <20070810213925.GB10855@elmicha> <86802c440708102154r59e1acbj90fa0d5b73197fb9@mail.gmail.com> <20070811154925.GA9618@elmicha>
+Date: Tue, 14 Aug 2007 00:28:00 +0200
+Message-ID: <20070813222800.GB25159@elmicha>
+References: <20070810213925.GB10855@elmicha> <86802c440708102154r59e1acbj90fa0d5b73197fb9@mail.gmail.com> <20070811154925.GA9618@elmicha> <200708131534.15235.bjorn.helgaas@hp.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from atlrel9.hp.com ([156.153.255.214]:56977 "EHLO atlrel9.hp.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752582AbXHMVgo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 13 Aug 2007 17:36:44 -0400
-In-Reply-To: <20070811154925.GA9618@elmicha>
+Received: from mail.gmx.net ([213.165.64.20]:43568 "HELO mail.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
+	id S1760696AbXHMW2E (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 13 Aug 2007 18:28:04 -0400
 Content-Disposition: inline
+In-Reply-To: <200708131534.15235.bjorn.helgaas@hp.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Michael Mauch <michael.mauch@gmx.de>
+To: Bjorn Helgaas <bjorn.helgaas@hp.com>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Yinghai Lu <yhlu.kernel@gmail.com>
 
-On Saturday 11 August 2007 09:49:25 am Michael Mauch wrote:
-> Yinghai Lu wrote:
+Bjorn Helgaas wrote:
+
+> On Saturday 11 August 2007 09:49:25 am Michael Mauch wrote:
+> > Yinghai Lu wrote:
+> > 
+> > > On 8/10/07, Michael Mauch <michael.mauch@gmx.de> wrote:
+> > > >
+> > > > With 2.6.22 I get the names <-> ports/irqs the other way around:
+> > > >
+> > > > 00:08: ttyS0 at I/O 0x2f8 (irq = 3) is a 16550A
+> > > > 00:09: ttyS1 at I/O 0x3f8 (irq = 4) is a 16550A
+> > > > ...
+> > > http://lkml.org/lkml/2007/7/25/455
+> > 
+> > Thanks - I applied that patch and the names are back to normal again:
+> > 
+> > 00:06: ttyS0 at I/O 0x3f8 (irq = 4) is a 16550A
+> > 00:07: ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
 > 
-> > On 8/10/07, Michael Mauch <michael.mauch@gmx.de> wrote:
-> > > until 2.6.21, I had the normal assignments for ttyS0 and ttyS1:
-> > >
-> > > 00:08: ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
-> > > 00:09: ttyS0 at I/O 0x3f8 (irq = 4) is a 16550A
-> > >
-> > > With 2.6.22 I get the names <-> ports/irqs the other way around:
-> > >
-> > > 00:08: ttyS0 at I/O 0x2f8 (irq = 3) is a 16550A
-> > > 00:09: ttyS1 at I/O 0x3f8 (irq = 4) is a 16550A
-> > > ...
-> > http://lkml.org/lkml/2007/7/25/455
+> Just FYI, the patch Yinghai mentioned above was experimental, and
+> we decided it was the wrong solution.
 > 
-> Thanks - I applied that patch and the names are back to normal again:
-> 
-> 00:06: ttyS0 at I/O 0x3f8 (irq = 4) is a 16550A
-> 00:07: ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
+> For 2.6.22, the easiest workaround is to boot with the 
+> "legacy_serial.force" option.
 
-Just FYI, the patch Yinghai mentioned above was experimental, and
-we decided it was the wrong solution.
+Ah, ok, and load the legacy_serial module. Going from built-in serial to
+modules I was already challenged to find serial_core, 8250, 8250_pnp
+and/or 8250_pci (the help in "make menuconfig" does not seem to show the
+help that is written in the Kconfig file for 8250_pnp and 8250_pci).
 
-For 2.6.22, the easiest workaround is to boot with the 
-"legacy_serial.force" option.
+> For 2.6.23, we reverted my patch that caused the names to be swapped:
+>   http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commitdiff;h=57d4810ea0d9ca58a7bcc1336607f0cede0a2abf
 
-For 2.6.23, we reverted my patch that caused the names to be swapped:
-  http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commitdiff;h=57d4810ea0d9ca58a7bcc1336607f0cede0a2abf
+Thanks for the information - I wondered how you decided. 
 
-Bjorn
+What about 2.6.22.x? Or should the distro kernels use that revert patch
+for their stable 2.6.22 kernels?
+
+Regards...
+		Michael
+
