@@ -1,67 +1,84 @@
-From: Bjorn Helgaas <bjorn.helgaas@hp.com>
-Subject: Re: Serial ports rearranged in 2.6.22?
-Date: Mon, 13 Aug 2007 16:33:56 -0600
-Message-ID: <200708131633.56908.bjorn.helgaas@hp.com>
-References: <20070810213925.GB10855@elmicha> <200708131534.15235.bjorn.helgaas@hp.com> <20070813222800.GB25159@elmicha>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH, RFC] wake up from a serial port
+Date: Mon, 13 Aug 2007 15:28:58 -0700
+Message-ID: <20070813222858.GA16748@kroah.com>
+References: <Pine.LNX.4.60.0708130015430.3895@poirot.grange> <20070813155734.GB17535@ld0162-tx32.am.freescale.net> <Pine.LNX.4.60.0708132207530.5643@poirot.grange> <46C0C419.6060009@freescale.com> <Pine.LNX.4.60.0708132307200.5643@poirot.grange>
 Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from atlrel7.hp.com ([156.153.255.213]:45012 "EHLO atlrel7.hp.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753943AbXHMWeO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 13 Aug 2007 18:34:14 -0400
-In-Reply-To: <20070813222800.GB25159@elmicha>
+Received: from pentafluge.infradead.org ([213.146.154.40]:53112 "EHLO
+	pentafluge.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751424AbXHMWo6 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 13 Aug 2007 18:44:58 -0400
 Content-Disposition: inline
+In-Reply-To: <Pine.LNX.4.60.0708132307200.5643@poirot.grange>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Michael Mauch <michael.mauch@gmx.de>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Yinghai Lu <yhlu.kernel@gmail.com>
+To: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Cc: Scott Wood <scottwood@freescale.com>, linux-serial@vger.kernel.org, linuxppc-dev@ozlabs.org
 
-On Monday 13 August 2007 04:28:00 pm Michael Mauch wrote:
-> Bjorn Helgaas wrote:
+On Mon, Aug 13, 2007 at 11:14:22PM +0200, Guennadi Liakhovetski wrote:
+> On Mon, 13 Aug 2007, Scott Wood wrote:
 > 
-> > On Saturday 11 August 2007 09:49:25 am Michael Mauch wrote:
-> > > Yinghai Lu wrote:
+> > Guennadi Liakhovetski wrote:
 > > > 
-> > > > On 8/10/07, Michael Mauch <michael.mauch@gmx.de> wrote:
-> > > > >
-> > > > > With 2.6.22 I get the names <-> ports/irqs the other way around:
-> > > > >
-> > > > > 00:08: ttyS0 at I/O 0x2f8 (irq = 3) is a 16550A
-> > > > > 00:09: ttyS1 at I/O 0x3f8 (irq = 4) is a 16550A
-> > > > > ...
-> > > > http://lkml.org/lkml/2007/7/25/455
+> > > # ls -l /sys/devices/platform/serial8250.0/tty*
+> > > lrwxrwxrwx 1 root root 0 Aug 13 22:05
+> > > /sys/devices/platform/serial8250.0/tty:ttyS0 -> ../../../class/tty/ttyS0
+> > > lrwxrwxrwx 1 root root 0 Aug 13 22:05
+> > > /sys/devices/platform/serial8250.0/tty:ttyS1 -> ../../../class/tty/ttyS1
 > > > 
-> > > Thanks - I applied that patch and the names are back to normal again:
-> > > 
-> > > 00:06: ttyS0 at I/O 0x3f8 (irq = 4) is a 16550A
-> > > 00:07: ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
+> > > And placing some wakeup file under the class/tty/ directory doesn't seem
+> > > very consistent with the current policy - until now they only live under
+> > > devices/... (Greg added to cc:).
 > > 
-> > Just FYI, the patch Yinghai mentioned above was experimental, and
-> > we decided it was the wrong solution.
-> > 
-> > For 2.6.22, the easiest workaround is to boot with the 
-> > "legacy_serial.force" option.
-> 
-> Ah, ok, and load the legacy_serial module. Going from built-in serial to
-> modules I was already challenged to find serial_core, 8250, 8250_pnp
-> and/or 8250_pci (the help in "make menuconfig" does not seem to show the
-> help that is written in the Kconfig file for 8250_pnp and 8250_pci).
+> > Hmm... I'd assumed each port would have its own device directory.  Would
+> > anything break horribly if it were changed so that each tty:ttySx is a
+> > directory, which contains both a wakeup file and the symlink?
 
-Yes, I messed up the legacy_serial module stuff.
+No, you are already in the tty device directory in the first place, the
+tty:ttyS1 is just a symlink to the class in case you need the thing.
 
-> > For 2.6.23, we reverted my patch that caused the names to be swapped:
-> >   http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commitdiff;h=57d4810ea0d9ca58a7bcc1336607f0cede0a2abf
-> 
-> Thanks for the information - I wondered how you decided. 
-> 
-> What about 2.6.22.x? Or should the distro kernels use that revert patch
-> for their stable 2.6.22 kernels?
+Let's follow things around:
 
-I would not recommend the experimental patch (http://lkml.org/lkml/2007/7/25/455).
-Using the revert patch is probably safest, since it also avoids
-the module load issues.
+	~ $ cd /sys/class/tty
+	/sys/class/tty $ ls -l | grep ttyS
+	lrwxrwxrwx 1 root root 0 Aug 12 20:12 ttyS0 -> ../../devices/platform/serial8250/tty/ttyS0
+	lrwxrwxrwx 1 root root 0 Aug 12 20:12 ttyS1 -> ../../devices/platform/serial8250/tty/ttyS1
+	lrwxrwxrwx 1 root root 0 Aug 12 20:12 ttyS2 -> ../../devices/platform/serial8250/tty/ttyS2
+	lrwxrwxrwx 1 root root 0 Aug 12 20:12 ttyS3 -> ../../devices/platform/serial8250/tty/ttyS3
+	/sys/class/tty $ cd ../../devices/platform/serial8250/tty/ttyS0
+	/sys/devices/platform/serial8250/tty/ttyS0 $ ls
+	dev  device  power  subsystem  uevent
+	/sys/devices/platform/serial8250/tty/ttyS0 $ cd ..
+	/sys/devices/platform/serial8250/tty $ $ ls -l
+	total 0
+	drwxr-xr-x 3 root root 0 Aug 12 20:12 ttyS0
+	drwxr-xr-x 3 root root 0 Aug 12 20:12 ttyS1
+	drwxr-xr-x 3 root root 0 Aug 12 20:12 ttyS2
+	drwxr-xr-x 3 root root 0 Aug 12 20:12 ttyS3
+	/sys/devices/platform/serial8250/tty $ cd ..
+	gregkh@mini /sys/devices/platform/serial8250 $ ls -l
+	total 0
+	lrwxrwxrwx 1 root root    0 Aug 12 20:13 driver -> ../../../bus/platform/drivers/serial8250
+	-r--r--r-- 1 root root 4096 Aug 13 15:24 modalias
+	drwxr-xr-x 2 root root    0 Aug 13 15:24 power
+	lrwxrwxrwx 1 root root    0 Aug 12 20:13 subsystem -> ../../../bus/platform
+	drwxr-xr-x 6 root root    0 Aug 12 20:12 tty
+	-rw-r--r-- 1 root root 4096 Aug 12 20:12 uevent
 
-Bjorn
+So, the serial8250 device is the "bridge" for the 4 different serial
+ports in my machine.  You have the tty:ttyS? symlinks in that directory
+as you have CONFIG_SYSFS_DEPRECATED still enabled, but the directory
+structure should all still be the same for you.
+
+So, if you want to put things into the tty device's directory, you can,
+they will just show up in the proper place, under
+/sys/devices/platform/serial8250/tty/ttyS0 for the first serial port.
+
+Does that make sense?
+
+thanks,
+
+greg k-h
