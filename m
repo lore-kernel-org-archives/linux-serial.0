@@ -1,32 +1,38 @@
-From: joe@perches.com
-Subject: [PATCH] [547/2many] MAINTAINERS - XILINX UARTLITE SERIAL DRIVER
-Date: Sun, 12 Aug 2007 23:39:53 -0700
-Message-ID: <46bffcb9.DiGt/lxDU9Y5bBxR%joe@perches.com>
+From: Scott Wood <scottwood@freescale.com>
+Subject: Re: [PATCH, RFC] wake up from a serial port
+Date: Mon, 13 Aug 2007 10:57:34 -0500
+Message-ID: <20070813155734.GB17535@ld0162-tx32.am.freescale.net>
+References: <Pine.LNX.4.60.0708130015430.3895@poirot.grange>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from DSL022.labridge.com ([206.117.136.22]:2492 "EHLO perches.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S967471AbXHMGkN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 13 Aug 2007 02:40:13 -0400
+Received: from de01egw01.freescale.net ([192.88.165.102]:42252 "EHLO
+	de01egw01.freescale.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S937108AbXHMP5r (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 13 Aug 2007 11:57:47 -0400
+Content-Disposition: inline
+In-Reply-To: <Pine.LNX.4.60.0708130015430.3895@poirot.grange>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: torvalds@linux-foundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jacmet@sunsite.dk, akpm@linux-foundation.org
+To: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Cc: linux-serial@vger.kernel.org, linuxppc-dev@ozlabs.org
 
-Add file pattern to MAINTAINER entry
+On Mon, Aug 13, 2007 at 12:27:30AM +0200, Guennadi Liakhovetski wrote:
+> A number of Linkstation models from Buffalo Technology with PPC, ARM, and 
+> also MIPS (I think) CPUs have a power-management controller connected to a 
+> UART. Among other things that chip controlls power and reset buttons. 
+> Working on a standby support for one of these systems (ppc mpc8241 based), 
+> the only suitable wakeup source there is the power button, which means, I 
+> have to configure one of the two system UARTs to not be suspendsd. Using 
+> the device_*_wakeup API doesn't quite work because both serial ports share 
+> one device. The below patch proposes a new port flag UPF_MAY_WAKEUP to 
+> configure such UARTs. It also adds support for a new "can-wakeup" serial 
+> node property to the legacy_serial driver.
 
-Signed-off-by: Joe Perches <joe@perches.com>
+Shouldn't the ability to wakeup be configured through sysfs, rather than
+encoded into the device tree?  I'm assuming this is just a matter of
+configuration, and not that the hardware supports waking from one and not
+the other.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index e400d13..14de518 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -5175,6 +5175,7 @@ P:	Peter Korsgaard
- M:	jacmet@sunsite.dk
- L:	linux-serial@vger.kernel.org
- S:	Maintained
-+F:	drivers/serial/uartlite.c
- 
- X86 3-LEVEL PAGING (PAE) SUPPORT
- P:	Ingo Molnar
+-Scott
