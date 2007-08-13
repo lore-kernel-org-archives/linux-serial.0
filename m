@@ -1,71 +1,52 @@
-From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Subject: Re: [PATCH, RFC] wake up from a serial port
-Date: Mon, 13 Aug 2007 23:14:22 +0200 (CEST)
-Message-ID: <Pine.LNX.4.60.0708132307200.5643@poirot.grange>
-References: <Pine.LNX.4.60.0708130015430.3895@poirot.grange>
- <20070813155734.GB17535@ld0162-tx32.am.freescale.net>
- <Pine.LNX.4.60.0708132207530.5643@poirot.grange> <46C0C419.6060009@freescale.com>
+From: Bjorn Helgaas <bjorn.helgaas@hp.com>
+Subject: Re: Serial ports rearranged in 2.6.22?
+Date: Mon, 13 Aug 2007 15:34:14 -0600
+Message-ID: <200708131534.15235.bjorn.helgaas@hp.com>
+References: <20070810213925.GB10855@elmicha> <86802c440708102154r59e1acbj90fa0d5b73197fb9@mail.gmail.com> <20070811154925.GA9618@elmicha>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.gmx.net ([213.165.64.20]:34300 "HELO mail.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
-	id S946592AbXHMVOY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 13 Aug 2007 17:14:24 -0400
-In-Reply-To: <46C0C419.6060009@freescale.com>
+Received: from atlrel9.hp.com ([156.153.255.214]:56977 "EHLO atlrel9.hp.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752582AbXHMVgo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 13 Aug 2007 17:36:44 -0400
+In-Reply-To: <20070811154925.GA9618@elmicha>
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Scott Wood <scottwood@freescale.com>
-Cc: linux-serial@vger.kernel.org, linuxppc-dev@ozlabs.org, Greg KH <greg@kroah.com>
+To: Michael Mauch <michael.mauch@gmx.de>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Yinghai Lu <yhlu.kernel@gmail.com>
 
-On Mon, 13 Aug 2007, Scott Wood wrote:
-
-> Guennadi Liakhovetski wrote:
-> > 
-> > # ls -l /sys/devices/platform/serial8250.0/tty*
-> > lrwxrwxrwx 1 root root 0 Aug 13 22:05
-> > /sys/devices/platform/serial8250.0/tty:ttyS0 -> ../../../class/tty/ttyS0
-> > lrwxrwxrwx 1 root root 0 Aug 13 22:05
-> > /sys/devices/platform/serial8250.0/tty:ttyS1 -> ../../../class/tty/ttyS1
-> > 
-> > And placing some wakeup file under the class/tty/ directory doesn't seem
-> > very consistent with the current policy - until now they only live under
-> > devices/... (Greg added to cc:).
+On Saturday 11 August 2007 09:49:25 am Michael Mauch wrote:
+> Yinghai Lu wrote:
 > 
-> Hmm... I'd assumed each port would have its own device directory.  Would
-> anything break horribly if it were changed so that each tty:ttySx is a
-> directory, which contains both a wakeup file and the symlink?
+> > On 8/10/07, Michael Mauch <michael.mauch@gmx.de> wrote:
+> > > until 2.6.21, I had the normal assignments for ttyS0 and ttyS1:
+> > >
+> > > 00:08: ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
+> > > 00:09: ttyS0 at I/O 0x3f8 (irq = 4) is a 16550A
+> > >
+> > > With 2.6.22 I get the names <-> ports/irqs the other way around:
+> > >
+> > > 00:08: ttyS0 at I/O 0x2f8 (irq = 3) is a 16550A
+> > > 00:09: ttyS1 at I/O 0x3f8 (irq = 4) is a 16550A
+> > > ...
+> > http://lkml.org/lkml/2007/7/25/455
+> 
+> Thanks - I applied that patch and the names are back to normal again:
+> 
+> 00:06: ttyS0 at I/O 0x3f8 (irq = 4) is a 16550A
+> 00:07: ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
 
-Yeah, I'd love to know the answer too:-) As you see, atm it is one 
-platform device as defined in arch/powerpc/kernel/legacy_serial.c:
+Just FYI, the patch Yinghai mentioned above was experimental, and
+we decided it was the wrong solution.
 
-static struct platform_device serial_device = {
-	.name	= "serial8250",
-	.id	= PLAT8250_DEV_PLATFORM,
-	.dev	= {
-		.platform_data = legacy_serial_ports,
-	},
-};
+For 2.6.22, the easiest workaround is to boot with the 
+"legacy_serial.force" option.
 
-with a list of ports in platform data:
+For 2.6.23, we reverted my patch that caused the names to be swapped:
+  http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commitdiff;h=57d4810ea0d9ca58a7bcc1336607f0cede0a2abf
 
-static struct plat_serial8250_port legacy_serial_ports[MAX_LEGACY_SERIAL_PORTS+1];
-
-Hence one device directory. Same on a PC
-
-$ ls -l /sys/devices/platform/serial8250/tty*
-lrwxrwxrwx  1 root root 0 Aug 13 23:10 /sys/devices/platform/serial8250/tty:ttyS0 -> ../../../class/tty/ttyS0
-lrwxrwxrwx  1 root root 0 Aug 13 23:10 /sys/devices/platform/serial8250/tty:ttyS1 -> ../../../class/tty/ttyS1
-lrwxrwxrwx  1 root root 0 Aug 13 23:10 /sys/devices/platform/serial8250/tty:ttyS2 -> ../../../class/tty/ttyS2
-lrwxrwxrwx  1 root root 0 Aug 13 23:10 /sys/devices/platform/serial8250/tty:ttyS3 -> ../../../class/tty/ttyS3
-
-> You should get the interrupt, but not until after the PM code enables IRQs.
-> Are you saying that the interrupt handler runs before then?
-
-Great, it is working correctly then! Don't think the ISR runs return from 
-PM, no.
-
-Thanks
-Guennadi
----
-Guennadi Liakhovetski
+Bjorn
