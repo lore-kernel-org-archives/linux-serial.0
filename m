@@ -1,56 +1,40 @@
-From: Mark Hindley <mark@hindley.org.uk>
-Subject: [PATCH] check return of pci_enable_device in 8250_pci.c
-Date: Sat, 18 Aug 2007 21:35:39 +0100
-Message-ID: <20070818203539.GB7607@hindley.org.uk>
+From: Bjorn Helgaas <bjorn.helgaas@hp.com>
+Subject: Re: [2.6.23-rc3 possible regression] 8250 claims nonexisting device blocking IO port
+Date: Sun, 19 Aug 2007 21:47:47 -0600
+Message-ID: <200708192147.47433.bjorn.helgaas@hp.com>
+References: <200708181107.56087.arvidjaar@mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 83-216-141-215.markhi700.adsl.metronet.co.uk ([83.216.141.215]:3075
-	"EHLO mx.hindley.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754915AbXHRVWk (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 18 Aug 2007 17:22:40 -0400
-Received: from apollo.hindleynet ([192.168.1.3] ident=Debian-exim)
-	by mx.hindley.org.uk with esmtp (Exim 4.50)
-	id 1IMV1I-0003WW-4J
-	for linux-serial@vger.kernel.org; Sat, 18 Aug 2007 21:35:40 +0100
-Received: from mark by apollo.hindleynet with local (Exim 4.63)
-	(envelope-from <mark@hindley.org.uk>)
-	id 1IMV1H-00029G-Hs
-	for linux-serial@vger.kernel.org; Sat, 18 Aug 2007 21:35:39 +0100
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1759107AbXHTDsN@vger.kernel.org>
+In-Reply-To: <200708181107.56087.arvidjaar@mail.ru>
 Content-Disposition: inline
-Sender: linux-serial-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andrey Borzenkov <arvidjaar@mail.ru>
+Cc: linux-serial@vger.kernel.org, Michal Piotrowski <michal.k.k.piotrowski@gmail.com>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
 
-commit 3c1263b4dc81bceef4cd919c804906809e80b8b0
-Author: Mark Hindley <mark@hindley.org.uk>
-Date:   Sat Aug 18 21:20:26 2007 +0100
+On Saturday 18 August 2007 01:07:55 am Andrey Borzenkov wrote:
+> This is related to thread "2.6.22-rc: regression: no irda0 interface (2.6.21 
+> was OK), smsc does not find chip" but it is already way too overloaded.
+> 
+> In 2.6.23 smsc-ircc2 fails to initialize IrDA controller. Apparently because 
+> it by default is using the same IO port as ttyS3 and this is now claimed by 
+> 8250.
 
-    8250_pci.c: Check return of pci_enable_device in pciserial_resume_one.
-    
-    Signed-off-by: Mark Hindley <mark@hindley.org.uk>
+8250 should have claimed ttyS3 in 2.6.21 and earlier.  So from
+the 8250 point of view, 2.6.21 and 2.6.23 should behave the same.
 
-diff --git a/drivers/serial/8250_pci.c b/drivers/serial/8250_pci.c
-index 5e48587..d0baeac 100644
---- a/drivers/serial/8250_pci.c
-+++ b/drivers/serial/8250_pci.c
-@@ -1802,6 +1802,7 @@ static int pciserial_suspend_one(struct pci_dev *dev, pm_message_t state)
- static int pciserial_resume_one(struct pci_dev *dev)
- {
- 	struct serial_private *priv = pci_get_drvdata(dev);
-+	int err;
- 
- 	pci_set_power_state(dev, PCI_D0);
- 	pci_restore_state(dev);
-@@ -1810,7 +1811,9 @@ static int pciserial_resume_one(struct pci_dev *dev)
- 		/*
- 		 * The device may have been disabled.  Re-enable it.
- 		 */
--		pci_enable_device(dev);
-+		err = pci_enable_device(dev);
-+		if (err)
-+			return err;
- 
- 		pciserial_resume_ports(priv);
- 	}
+>From the smsc-ircc2 point of view, 2.6.21 and 2.6.23 should work
+the same except for the additional quirk_smc_enable().  If
+2.6.23 is worse than 2.6.21, please try removing the body of
+quirk_smc_enable() and see whether that makes 2.6.23 as good
+as 2.6.21.
+
+For smsc-ircc2, 2.6.23 is definitely a regression from 2.6.22,
+because 8250 stayed out of the way in 2.6.22.  But we had to
+revert 8250 back to the 2.6.21 behavior because the change
+swapped ttyS0 and ttyS1 on some machines, so we just have to
+live with that 8250/smsc-ircc2 conflict for the time being.
+
+Bjorn
