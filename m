@@ -1,154 +1,88 @@
-From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Subject: Re: [PATCH, RFC] wake up from a serial port
-Date: Mon, 20 Aug 2007 23:53:36 +0200 (CEST)
-Message-ID: <Pine.LNX.4.60.0708202342060.4694@poirot.grange>
-References: <Pine.LNX.4.60.0708130015430.3895@poirot.grange>
-	<20070813155734.GB17535@ld0162-tx32.am.freescale.net>
-	<Pine.LNX.4.60.0708132207530.5643@poirot.grange>
-	<46C0C419.6060009@freescale.com>
-	<Pine.LNX.4.60.0708132307200.5643@poirot.grange>
-	<20070813222858.GA16748@kroah.com>
+From: Andrey Borzenkov <arvidjaar@mail.ru>
+Subject: Re: [2.6.23-rc3 possible regression] 8250 claims nonexisting device blocking IO port
+Date: Tue, 21 Aug 2007 22:28:49 +0400
+Message-ID: <200708212228.50877.arvidjaar@mail.ru>
+References: <200708181107.56087.arvidjaar@mail.ru> <200708202028.22806.arvidjaar@mail.ru> <200708201111.19023.bjorn.helgaas@hp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: multipart/signed;
+  boundary="nextPart3276310.YK32pzLCBs";
+  protocol="application/pgp-signature";
+  micalg=pgp-sha1
 Content-Transfer-Encoding: 7bit
-Return-path: <linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane.org@ozlabs.org>
-In-Reply-To: <20070813222858.GA16748@kroah.com>
-List-Unsubscribe: <https://ozlabs.org/mailman/listinfo/linuxppc-dev>,
-	<mailto:linuxppc-dev-request@ozlabs.org?subject=unsubscribe>
-List-Archive: <http://ozlabs.org/pipermail/linuxppc-dev>
-List-Post: <mailto:linuxppc-dev@ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@ozlabs.org?subject=help>
-List-Subscribe: <https://ozlabs.org/mailman/listinfo/linuxppc-dev>,
-	<mailto:linuxppc-dev-request@ozlabs.org?subject=subscribe>
-Sender: linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane.org@ozlabs.org
-Errors-To: linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane.org@ozlabs.org
-To: Greg KH <greg@kroah.com>
-Cc: linuxppc-dev@ozlabs.org, linux-serial@vger.kernel.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mx34.mail.ru ([194.67.23.200]:11954 "EHLO mx34.mail.ru"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1760790AbXHUS2y (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 21 Aug 2007 14:28:54 -0400
+In-Reply-To: <200708201111.19023.bjorn.helgaas@hp.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Bjorn Helgaas <bjorn.helgaas@hp.com>
+Cc: linux-serial@vger.kernel.org, Michal Piotrowski <michal.k.k.piotrowski@gmail.com>, linux-kernel@vger.kernel.org
 
-Enable wakeup from serial ports, make it run-time configurable over sysfs, 
-e.g.,
+--nextPart3276310.YK32pzLCBs
+Content-Type: text/plain;
+  charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-echo enabled > /sys/devices/platform/serial8250.0/tty/ttyS0/power/wakeup
+On Monday 20 August 2007, Bjorn Helgaas wrote:
+> On Monday 20 August 2007 10:28:22 am Andrey Borzenkov wrote:
+> > This worked in 2.6.22 with the same quirks. I will test without later b=
+ut
+> > I fail to see how they are related.
+>
+> OK, let me know what happens.  The way it's related is that the quirk
+> fiddles with the IRDA device, and it probably changes the SIR config
+> so that it starts responding at the ttyS3 address.
 
-Requires
+You are probably right. Disabling quirk makes it work again (with pnp off i=
+n=20
+smsc-ircc2 of course).
 
-# CONFIG_SYSFS_DEPRECATED is not set
+Hmm ... is there any reason why this quirk is in PnP core in the first plac=
+e?=20
+Would not it be more logical to have it in (PnP) part of smsc-ircc2? This w=
+ay=20
+it could share code with legacy detection; and it even may have chance to=20
+work - assuming BIOS is aware that 0x100 is claimed by PCMCIA it could=20
+allocate different port when we try to activate device after that ... shoul=
+d=20
+I give it a try?
 
-Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+> In your 2.6.23=20
+> log, I see this:
+>
+> [  512.476243] pnp: Device 00:0a activated.
+> [  512.476301]  00:0a: SMCf010 not responding at SIR 0x100, FIR 0x2e8;
+> auto-configuring [  512.477861] pnp: Device 00:0a disabled.
+> [  512.483492] pnp: Device 00:0a activated.
+> [  512.483520]  00:0a: not responding at SIR 0x100, FIR 0x2e8; swapping
+> SIR/FIR and reconfiguring [  512.485056] pnp: Device 00:0a disabled.
+> [  512.491652] pnp: Device 00:0a activated.
+> [  512.491679]  00:0a: responds at SIR 0x2e8, FIR 0x100
+>
+> After the quirk, the FIR part is enabled at 0x100 and we assume (the
+> quirk doesn't actually check) the SIR part is enabled at 0x2e8.  The
+> 8250 driver will claim a SIR device at 0x2e8 as ttyS3.
+>
+> Without the quirk, the SIR device seems to be either at 0x100 (where
+> the 8250 driver will not look) or is not enabled at all.
+>
+> Bjorn
 
----
 
-(I still find it strange having to put a formal patch description above 
-and its discussion below, anyway)
 
-On Mon, 13 Aug 2007, Greg KH wrote:
+--nextPart3276310.YK32pzLCBs
+Content-Type: application/pgp-signature; name=signature.asc 
+Content-Description: This is a digitally signed message part.
 
-> So, the serial8250 device is the "bridge" for the 4 different serial
-> ports in my machine.  You have the tty:ttyS? symlinks in that directory
-> as you have CONFIG_SYSFS_DEPRECATED still enabled, but the directory
-> structure should all still be the same for you.
-> 
-> So, if you want to put things into the tty device's directory, you can,
-> they will just show up in the proper place, under
-> /sys/devices/platform/serial8250/tty/ttyS0 for the first serial port.
-> 
-> Does that make sense?
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (GNU/Linux)
 
-I think it does... Following this, and a suggestion from Scott to switch 
-wakeup-enable on and off at run-time over sysfs, here's another attempt... 
-Well, easy to see I'm out in the wild here in this area (pm/sysfs/tty), 
-so, this might well be way off... Please, comment.
+iD8DBQBGyy7iR6LMutpd94wRAhm0AJ99m5OU8XmfnfLembjDrZQXhvqugACfZ4Dc
+HLoSrpNSL1PcciWe1de6oqM=
+=gMS8
+-----END PGP SIGNATURE-----
 
-Thanks
-Guennadi
-
-diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index 0b3ec38..5118914 100644
---- a/drivers/serial/8250.c
-+++ b/drivers/serial/8250.c
-@@ -130,6 +130,7 @@ struct uart_8250_port {
- 	unsigned char		mcr_mask;	/* mask of user bits */
- 	unsigned char		mcr_force;	/* mask of forced bits */
- 	unsigned char		lsr_break_flag;
-+	char			suspended;
- 
- 	/*
- 	 * We provide a per-port pm hook.
-@@ -2673,6 +2674,14 @@ static int __devexit serial8250_remove(struct platform_device *dev)
- 	return 0;
- }
- 
-+static int serial8250_match_port(struct device *dev, void *data)
-+{
-+	struct uart_port *port = data;
-+	dev_t devt = MKDEV(serial8250_reg.major, serial8250_reg.minor) + port->line;
-+
-+	return dev->devt == devt; /* Actually, only one tty per port */
-+}
-+
- static int serial8250_suspend(struct platform_device *dev, pm_message_t state)
- {
- 	int i;
-@@ -2680,8 +2689,16 @@ static int serial8250_suspend(struct platform_device *dev, pm_message_t state)
- 	for (i = 0; i < UART_NR; i++) {
- 		struct uart_8250_port *up = &serial8250_ports[i];
- 
--		if (up->port.type != PORT_UNKNOWN && up->port.dev == &dev->dev)
--			uart_suspend_port(&serial8250_reg, &up->port);
-+		if (up->port.type != PORT_UNKNOWN && up->port.dev == &dev->dev) {
-+			struct device *tty_dev = device_find_child(up->port.dev, &up->port,
-+								   serial8250_match_port);
-+			if (device_may_wakeup(tty_dev))
-+				enable_irq_wake(up->port.irq);
-+			else {
-+				uart_suspend_port(&serial8250_reg, &up->port);
-+				up->suspended = 1;
-+			}
-+		}
- 	}
- 
- 	return 0;
-@@ -2694,8 +2711,13 @@ static int serial8250_resume(struct platform_device *dev)
- 	for (i = 0; i < UART_NR; i++) {
- 		struct uart_8250_port *up = &serial8250_ports[i];
- 
--		if (up->port.type != PORT_UNKNOWN && up->port.dev == &dev->dev)
--			serial8250_resume_port(i);
-+		if (up->port.type != PORT_UNKNOWN && up->port.dev == &dev->dev) {
-+			if (up->suspended) {
-+				serial8250_resume_port(i);
-+				up->suspended = 0;
-+			} else
-+				disable_irq_wake(up->port.irq);
-+		}
- 	}
- 
- 	return 0;
-diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
-index 9c57486..716fbe2 100644
---- a/drivers/serial/serial_core.c
-+++ b/drivers/serial/serial_core.c
-@@ -2266,6 +2266,7 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *port)
- {
- 	struct uart_state *state;
- 	int ret = 0;
-+	struct device *tty_dev;
- 
- 	BUG_ON(in_interrupt());
- 
-@@ -2301,7 +2302,13 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *port)
- 	 * Register the port whether it's detected or not.  This allows
- 	 * setserial to be used to alter this ports parameters.
- 	 */
--	tty_register_device(drv->tty_driver, port->line, port->dev);
-+	tty_dev = tty_register_device(drv->tty_driver, port->line, port->dev);
-+	if (likely(!IS_ERR(tty_dev))) {
-+		device_can_wakeup(tty_dev) = 1;
-+		device_set_wakeup_enable(tty_dev, 0);
-+	} else
-+		printk(KERN_ERR "Cannot register tty device on line %d\n",
-+		       port->line);
- 
- 	/*
- 	 * If this driver supports console, and it hasn't been
+--nextPart3276310.YK32pzLCBs--
