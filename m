@@ -1,21 +1,43 @@
 From: "Michael Langford" <mlangford@tieronedesign.com>
-Subject: ttyS read/write errors after setting up memory mapped 16550A uart
-Date: Wed, 22 Aug 2007 12:56:21 -0400
-Message-ID: <3547473BFF99D74F875EEE3E38BCDDFF23A46F@tieroneserver.tier1design.com>
+Subject: RE: ttyS read/write errors after setting up memory mapped 16550A uart
+Date: Wed, 22 Aug 2007 17:48:27 -0400
+Message-ID: <3547473BFF99D74F875EEE3E38BCDDFF23A48A@tieroneserver.tier1design.com>
 Mime-Version: 1.0
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from www.tier1design.com ([68.16.98.218]:24788 "EHLO
+Received: from www.tier1design.com ([68.16.98.218]:28110 "EHLO
 	tieroneserver.tier1design.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751526AbXHVQ4i convert rfc822-to-8bit
+	by vger.kernel.org with ESMTP id S1763154AbXHVVtH convert rfc822-to-8bit
 	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 22 Aug 2007 12:56:38 -0400
+	Wed, 22 Aug 2007 17:49:07 -0400
 Content-class: urn:content-classes:message
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linux Serial Mailing List <linux-serial@vger.kernel.org>
+To: Michael Langford <mlangford@tieronedesign.com>, Linux Serial Mailing List <linux-serial@vger.kernel.org>
+
+-----Original Message-----
+
+echo foo > /dev/ttyS3
+-sh: /dev/ttyS3: Is a directory
+
+cat /dev/ttyS3
+cat: read error: Input/output error
+
+These error messages were caused by an accidental line deletion during
+instrumentation. The "correct" errors are:
+
+echo foo > /dev/ttyS3
+-sh: echo: write error: Input/output error
+
+cat /dev/ttyS3
+cat: read error: Input/output error
+
+Which is much more sane, but the rest of the fundamental problem
+remains:
+
+=================================
 
 Thank you in advance for those who are looking at this. 
 
