@@ -1,162 +1,41 @@
-From: "Michael Langford" <mlangford@tieronedesign.com>
-Subject: RE: ttyS read/write errors after setting up memory mapped 16550A uart
-Date: Wed, 22 Aug 2007 17:48:27 -0400
-Message-ID: <3547473BFF99D74F875EEE3E38BCDDFF23A48A@tieroneserver.tier1design.com>
+From: Ralf Baechle <ralf@linux-mips.org>
+Subject: [SERIAL] Fix modpost warning in serial driver.
+Date: Thu, 23 Aug 2007 15:13:39 +0100
+Message-ID: <20070823141339.GA2419@linux-mips.org>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from www.tier1design.com ([68.16.98.218]:28110 "EHLO
-	tieroneserver.tier1design.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1763154AbXHVVtH convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 22 Aug 2007 17:49:07 -0400
-Content-class: urn:content-classes:message
+Received: from ftp.linux-mips.org ([194.74.144.162]:41347 "EHLO
+	ftp.linux-mips.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758830AbXHWONm (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 23 Aug 2007 10:13:42 -0400
+Received: from localhost.localdomain ([127.0.0.1]:64929 "EHLO
+	dl5rb.ham-radio-op.net") by ftp.linux-mips.org with ESMTP
+	id S20023786AbXHWONl (ORCPT <rfc822;linux-serial@vger.kernel.org>
+	+ 1 other); Thu, 23 Aug 2007 15:13:41 +0100
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Michael Langford <mlangford@tieronedesign.com>, Linux Serial Mailing List <linux-serial@vger.kernel.org>
+To: linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, linux-serial@vger.kernel.org, Russell King <rmk@arm.linux.org.uk>
 
------Original Message-----
+This is triggered if PCI && !HOTPLUG.
 
-echo foo > /dev/ttyS3
--sh: /dev/ttyS3: Is a directory
+  MODPOST vmlinux.o
+WARNING: vmlinux.o(.data+0xc910): Section mismatch: reference to .init.text:pci_ite887x_init (between 'pci_serial_quirks' and 'serial_pci_tbl')
 
-cat /dev/ttyS3
-cat: read error: Input/output error
+Signed-off-by: Ralf Baechle <ralf@linux-mips.org>
 
-These error messages were caused by an accidental line deletion during
-instrumentation. The "correct" errors are:
-
-echo foo > /dev/ttyS3
--sh: echo: write error: Input/output error
-
-cat /dev/ttyS3
-cat: read error: Input/output error
-
-Which is much more sane, but the rest of the fundamental problem
-remains:
-
-=================================
-
-Thank you in advance for those who are looking at this. 
-
-I'm creating/configuring drivers for and otherwise bringing up a board
-we have made. 
-
-I believe my configuration of the driver for the 16550 external uart
-chip on my board is off. I can see the 8250 driver get loaded in driver
-init, as well as see the individual ports get added/configured in the
-port registration routines in the 8250 driver, but when I attempt to
-interact with the device file, I get the following two (somewhat
-bizarre) errors:
-
-echo foo > /dev/ttyS3
--sh: /dev/ttyS3: Is a directory
-
-cat /dev/ttyS3
-cat: read error: Input/output error
-
-
-Using a simple userspace test program that calls getc and fprintf, I get
-the following output from perror:
-
-Can't write to the port: Bad file descriptor
-Can't read from the port: Input/output error
-
-(The FILE* is a non-zero entity before making these calls)
-
-
-Here is how specify the memory IO regions and other settings for the
-uart:
-
-#define T1IXUART2 0xc000000
-#define T1IXUART3 0xc000010
-#define T1IXUART4 0xc000020
-#define T1IXUART5 0xc000030
-
-#define T1IXUART2_IRQ IRQ_GPIO(98)
-#define T1IXUART3_IRQ IRQ_GPIO(99)
-#define T1IXUART4_IRQ IRQ_GPIO(100)
-#define T1IXUART5_IRQ IRQ_GPIO(101)
-
-static struct plat_serial8250_port the_ports[] = {
-     [0] = {
-     .mapbase = (unsigned long) T1IXUART2,
-     .irq  = T1IXUART2_IRQ,
-     .flags  = UPF_BOOT_AUTOCONF | UPF_IOREMAP,
-     .iotype  = UPIO_MEM,
-     .regshift = 1,
-     .iobase = 0,
-     .uartclk = 3686400,
-     },
-     [1] = {
-     .mapbase = (unsigned long) T1IXUART3,
-     .irq  = T1IXUART3_IRQ,
-     .iobase= 0,
-     .flags  = UPF_BOOT_AUTOCONF | UPF_IOREMAP,
-     .iotype  = UPIO_MEM,
-     .regshift = 1,
-     .uartclk = 3686400,
-     },
-     [2] = {
-     .mapbase = (unsigned long) T1IXUART4,
-     .irq  = T1IXUART4_IRQ,
-     .flags  = UPF_BOOT_AUTOCONF | UPF_IOREMAP,
-     .iotype  = UPIO_MEM,
-     .regshift = 1,
-     .uartclk = 3686400,
-     },
-     [3] = {
-     .mapbase = (unsigned long) T1IXUART5,
-     .irq  = T1IXUART5_IRQ,
-     .flags  = UPF_BOOT_AUTOCONF | UPF_IOREMAP,
-     .iotype  = UPIO_MEM,
-     .regshift = 1,
-     .uartclk = 3686400,
-     },
-     {},
-    };
-
-static struct platform_device serial_device = {
-     .name   = "serial8250.%d",
-     .id    = -1,
-     .dev   = {
-     .platform_data = the_ports,
-     },
-    };
-
-static int __init ext_uart_init(void)
-    {
-     return platform_device_register(&serial_device);
-    }
-
-
-arch_initcall(ext_uart_init);
-
-
-I am running kernel version 2.6.20.11 on a pxa270 arm chip. I've applied
-the alternate serial port patch (which does not touch the 8250 driver or
-config) to move the arm specific serial ports to major number 204 using
-the ttySA* namespace. These ports are working fine (and are what I'm
-using to debug the system). I'm displaying the console on these ports. 
-
-In addition, the IO addresses, regshift and uartclk appear to be what
-our chip/board layout requires. Additionally, I see the open call at
-least propagating down to the serial driver.
-
-Is there anything  obviously wrong with these settings?
-
-References:
-Google cache of the patch (main server isn't responding right now):
-http://tinyurl.com/2gf8sh
-
-     --Michael Langford
-
-
-Ps: I apologize if this is a repost, I'd not properly beat outlook into
-shape yet, and originally sent HTML mail.
---
-Tier One Design
-www.TierOneDesign.com
-
+diff --git a/drivers/serial/8250_pci.c b/drivers/serial/8250_pci.c
+index bd66339..1ea1ed8 100644
+--- a/drivers/serial/8250_pci.c
++++ b/drivers/serial/8250_pci.c
+@@ -610,7 +610,7 @@ static int pci_netmos_init(struct pci_dev *dev)
+ /* enable IO_Space bit */
+ #define ITE_887x_POSIO_ENABLE		(1 << 31)
+ 
+-static int __devinit pci_ite887x_init(struct pci_dev *dev)
++static int pci_ite887x_init(struct pci_dev *dev)
+ {
+ 	/* inta_addr are the configuration addresses of the ITE */
+ 	static const short inta_addr[] = { 0x2a0, 0x2c0, 0x220, 0x240, 0x1e0,
