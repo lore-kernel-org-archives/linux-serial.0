@@ -1,71 +1,53 @@
-From: Bjorn Helgaas <bjorn.helgaas@hp.com>
-Subject: Re: [2.6.23-rc3 possible regression] 8250 claims nonexisting device blocking IO port
-Date: Fri, 24 Aug 2007 12:33:55 -0600
-Message-ID: <200708241233.55698.bjorn.helgaas@hp.com>
-References: <200708181107.56087.arvidjaar@mail.ru> <200708211334.58157.bjorn.helgaas@hp.com> <200708242142.37001.arvidjaar@mail.ru>
+From: Adrian Bunk <bunk@kernel.org>
+Subject: [2.6 patch] fix SERIAL_CORE_CONSOLE driver dependencies
+Date: Mon, 27 Aug 2007 23:27:56 +0200
+Message-ID: <20070827212756.GQ4121@stusta.de>
 Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-15"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from atlrel7.hp.com ([156.153.255.213]:57541 "EHLO atlrel7.hp.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756732AbXHXSeS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 24 Aug 2007 14:34:18 -0400
-In-Reply-To: <200708242142.37001.arvidjaar@mail.ru>
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S933094AbXH0Vby@vger.kernel.org>
 Content-Disposition: inline
-Sender: linux-serial-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Bryan Wu <bryan.wu@analog.com>
 List-Id: linux-serial@vger.kernel.org
-To: Andrey Borzenkov <arvidjaar@mail.ru>
-Cc: linux-serial@vger.kernel.org, Michal Piotrowski <michal.k.k.piotrowski@gmail.com>, linux-kernel@vger.kernel.org
 
-On Friday 24 August 2007 11:42:36 am Andrey Borzenkov wrote:
-> On Tuesday 21 August 2007, Bjorn Helgaas wrote:
-> > On Tuesday 21 August 2007 12:28:49 pm Andrey Borzenkov wrote:
-> > > On Monday 20 August 2007, Bjorn Helgaas wrote:
-> > > > On Monday 20 August 2007 10:28:22 am Andrey Borzenkov wrote:
-> > > > > This worked in 2.6.22 with the same quirks. I will test without later
-> > > > > but I fail to see how they are related.
-> > > >
-> > > > OK, let me know what happens.  The way it's related is that the quirk
-> > > > fiddles with the IRDA device, and it probably changes the SIR config
-> > > > so that it starts responding at the ttyS3 address.
-> > >
-> > > You are probably right. Disabling quirk makes it work again (with pnp off
-> > > in smsc-ircc2 of course).
-> >
-> > I think pnp is off in smsc-ircc2 by default, right?
-> >
-> > > Hmm ... is there any reason why this quirk is in PnP core in the first
-> > > place? Would not it be more logical to have it in (PnP) part of
-> > > smsc-ircc2? This way it could share code with legacy detection; and it
-> > > even may have chance to work - assuming BIOS is aware that 0x100 is
-> > > claimed by PCMCIA it could allocate different port when we try to
-> > > activate device after that ... should I give it a try?
-> >
-> > I agree it would make sense to put the quirk in smsc-ircc2, since
-> > we only need it if we want to use the smsc-ircc2 driver.  But I don't
-> > think we have a mechanism for calling quirks at module load-time, so
-> > it has to be part of the static kernel.  And we don't have anything
-> > like DECLARE_PCI_FIXUP_SECTION, so it really has to be in quirks.c for
-> > now.
-> >
-> > How does the following patch look?
-> >
-> I am fine with any patch that works. Of course, it would be better to fix 8250 
-> to respect PnP (it does load 8250_pnp in the first place).
+SERIAL_BFIN=m or SERIAL_MUX=m shouldn't allow SERIAL_CORE_CONSOLE=y.
 
-I agree.  8250_pnp is actually fine -- it won't claim SMCf010 devices.
-The problem is that we have the legacy addresses (including the SMCf010
-SIR range) in SERIAL_PORT_DFNS, so 8250.c claims the SIR range in
-serial8250_isa_init_ports().
+Additionally, this patch fixes whitespaceinstead of tabs at the 
+SERIAL_MUX_CONSOLE option.
 
-I'm still hoping to fix that bit of 8250, but it's going to take some
-work.
+Signed-off-by: Adrian Bunk <bunk@kernel.org>
 
-I'll post the SMCf010 quirk removal as a fix for the 2.6.23-rc3
-regression.
+---
 
-Bjorn
+ drivers/serial/Kconfig |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-
+d07b60e6784eb178d4ba7dd8ff9923f2e54d3ef1 
+diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
+index 4e28992..7780d76 100644
+--- a/drivers/serial/Kconfig
++++ b/drivers/serial/Kconfig
+@@ -611,7 +611,7 @@ config SERIAL_BFIN
+ 
+ config SERIAL_BFIN_CONSOLE
+ 	bool "Console on Blackfin serial port"
+-	depends on SERIAL_BFIN
++	depends on SERIAL_BFIN=y
+ 	select SERIAL_CORE_CONSOLE
+ 
+ choice
+@@ -832,10 +832,10 @@ config SERIAL_MUX
+ 	    4. Change the kernel command console parameter to: console=ttyB0
+ 
+ config SERIAL_MUX_CONSOLE
+-        bool "Support for console on serial MUX"
+-        depends on SERIAL_MUX
++	bool "Support for console on serial MUX"
++	depends on SERIAL_MUX=y
+ 	select SERIAL_CORE_CONSOLE
+-        default y
++	default y
+ 
+ config PDC_CONSOLE
+ 	bool "PDC software console support"
