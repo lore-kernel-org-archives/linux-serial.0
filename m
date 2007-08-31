@@ -1,53 +1,73 @@
-From: Adrian Bunk <bunk@kernel.org>
-Subject: [2.6 patch] fix SERIAL_CORE_CONSOLE driver dependencies
-Date: Mon, 27 Aug 2007 23:27:56 +0200
-Message-ID: <20070827212756.GQ4121@stusta.de>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Heads Up: Next Batch Of Serial/TTY Changes
+Date: Fri, 31 Aug 2007 22:11:05 +0100
+Message-ID: <20070831221105.2fce9023@the-village.bc.nu>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S933094AbXH0Vby@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Bryan Wu <bryan.wu@analog.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from outpipe-village-512-1.bc.nu ([81.2.110.250]:35498 "EHLO
+	the-village.bc.nu" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+	with ESMTP id S964849AbXHaVCf (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 31 Aug 2007 17:02:35 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, linux-serial@vger.kernel.org
 
-SERIAL_BFIN=m or SERIAL_MUX=m shouldn't allow SERIAL_CORE_CONSOLE=y.
 
-Additionally, this patch fixes whitespaceinstead of tabs at the 
-SERIAL_MUX_CONSOLE option.
+Firstly some architecture maintainers still haven't updated their
+platform for arbitary tty speeds. The kernel is going to start whining
+and issuing warnings on your platform if you don't keep up with the
+programme (its been 6 months).
 
-Signed-off-by: Adrian Bunk <bunk@kernel.org>
+Secondly a lot of driver level code for termios methods is very very wrong
+indeed. I've been trawling through and fixing the USB stuff in part but
+some of it will need maintainer attention once the next changes go in.
 
----
+- The termios interface says that you hand back the actual mode you set.
+This means that if your driver sets a different speed, can't do the
+selected parity etc you *MUST* update the passed tty->termios to reflect
+your hardware. Mostly this seems to be the lack of support for mark/space
+parity but if you've got a very limited specialist device you may need to
+write a lot more (indeed the empeg effectively writes the entire termios)
 
- drivers/serial/Kconfig |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+- If your hardware has no termios features don't provide a dummy handler
+just don't provide one. In that case the kernel will (as of updates) do
+the right thing and preserve the previous speed and other hardware
+parameters while updating the software ones.
 
-d07b60e6784eb178d4ba7dd8ff9923f2e54d3ef1 
-diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
-index 4e28992..7780d76 100644
---- a/drivers/serial/Kconfig
-+++ b/drivers/serial/Kconfig
-@@ -611,7 +611,7 @@ config SERIAL_BFIN
- 
- config SERIAL_BFIN_CONSOLE
- 	bool "Console on Blackfin serial port"
--	depends on SERIAL_BFIN
-+	depends on SERIAL_BFIN=y
- 	select SERIAL_CORE_CONSOLE
- 
- choice
-@@ -832,10 +832,10 @@ config SERIAL_MUX
- 	    4. Change the kernel command console parameter to: console=ttyB0
- 
- config SERIAL_MUX_CONSOLE
--        bool "Support for console on serial MUX"
--        depends on SERIAL_MUX
-+	bool "Support for console on serial MUX"
-+	depends on SERIAL_MUX=y
- 	select SERIAL_CORE_CONSOLE
--        default y
-+	default y
- 
- config PDC_CONSOLE
- 	bool "PDC software console support"
+- We now support seperate input and output speeds. Hardware that does
+this wants updating accordingly
+
+- If your hardware is initializing termios structures or copying and
+editing them itself it is responsible for encoding c_ispeed/c_ospeed.
+Right now there are some hacks to do it for you if you forget in most
+cases, they will go away.
+
+- The new code will add two types of helper to deal with the more horrible
+bits of all this
+
+	tty_encode_baud_rate(tty, inputbaud, outputbaud)
+	tty_termios_encode_baudrate(termios, inputbaud, outputbaud)
+
+and also
+
+	tty_termios_copy_hw(new, old)
+
+which will copy all the hardware implemented bits and speed from old to
+new, which may be useful if your hardware needs to copy the old state
+over and implements very little.
+
+The speed encoding routines know about Bfoo encoding, arbitary rates and
+also provide error tolerances so that programs using the Bfoo style speed
+setup generally get Bfoo not BOTHER responses. Please don't put hacks for
+this in drivers - if a case breaks then let me know and I'll fix the
+encoder centrally.
+
+Once all this is in the kernel will then acquire correct POSIX semantics
+and error the ioctl if no requested change can be made.
+
+Next stop after that is likely to be the open/close/hangup path.
+
+Alan
