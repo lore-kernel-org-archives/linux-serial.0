@@ -1,19 +1,19 @@
 From: Matteo Croce <technoboy85@gmail.com>
 Subject: [PATCH][MIPS][6/7] AR7: serial
-Date: Thu, 6 Sep 2007 17:33:04 +0200
-Message-ID: <200709061733.04978.technoboy85@gmail.com>
-References: <200708201704.11529.technoboy85@gmail.com>
+Date: Sat, 8 Sep 2007 02:22:05 +0200
+Message-ID: <200709080222.05575.technoboy85@gmail.com>
+References: <200709080143.12345.technoboy85@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain;
   charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <200708201704.11529.technoboy85@gmail.com>
+In-Reply-To: <200709080143.12345.technoboy85@gmail.com>
 Content-Disposition: inline
 Sender: linux-mips-bounce@linux-mips.org
 Errors-to: linux-mips-bounce@linux-mips.org
 To: linux-mips@linux-mips.org
-Cc: Florian Fainelli <florian@openwrt.org>, Felix Fietkau <nbd@openwrt.org>, Nicolas Thill <nico@openwrt.org>, linux-serial@vger.kernel.org
+Cc: Florian Fainelli <florian@openwrt.org>, Felix Fietkau <nbd@openwrt.org>, Nicolas Thill <nico@openwrt.org>, linux-serial@vger.kernel.org, openwrt-devel@lists.openwrt.org, Andrew Morton <akpm@linux-foundation.org>
 List-Id: linux-serial@vger.kernel.org
 
 Serial support, should not broke other archs
