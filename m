@@ -1,81 +1,139 @@
-From: Matteo Croce <technoboy85@gmail.com>
-Subject: [PATCH][MIPS][6/7] AR7: serial
-Date: Sat, 8 Sep 2007 02:22:05 +0200
-Message-ID: <200709080222.05575.technoboy85@gmail.com>
-References: <200709080143.12345.technoboy85@gmail.com>
+From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Subject: [PATCH] wake up from a serial port
+Date: Wed, 12 Sep 2007 20:50:10 +0200 (CEST)
+Message-ID: <Pine.LNX.4.60.0709122019100.5909@poirot.grange>
+References: <200709100831.l8A8VUH6015446@imap1.linux-foundation.org>
+ <20070910132703.2dd92485@the-village.bc.nu> <Pine.LNX.4.60.0709102251250.5200@poirot.grange>
+ <20070911081220.GA20847@flint.arm.linux.org.uk> <Pine.LNX.4.60.0709111217470.19259@poirot.grange>
+ <20070911121057.34b9e066@the-village.bc.nu>
 Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <200709080143.12345.technoboy85@gmail.com>
-Content-Disposition: inline
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-To: linux-mips@linux-mips.org
-Cc: Florian Fainelli <florian@openwrt.org>, Felix Fietkau <nbd@openwrt.org>, Nicolas Thill <nico@openwrt.org>, linux-serial@vger.kernel.org, openwrt-devel@lists.openwrt.org, Andrew Morton <akpm@linux-foundation.org>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.gmx.net ([213.165.64.20]:55537 "HELO mail.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
+	id S967610AbXILSuM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 12 Sep 2007 14:50:12 -0400
+In-Reply-To: <20070911121057.34b9e066@the-village.bc.nu>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Russell King <rmk@arm.linux.org.uk>, akpm@linux-foundation.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Serial support, should not broke other archs
+Enable wakeup from serial ports, make it run-time configurable over sysfs, 
+e.g.,
 
-Signed-off-by: Matteo Croce <technoboy85@gmail.com>
-Signed-off-by: Florian Fainelli <florian@openwrt.org>
-Signed-off-by: Felix Fietkau <nbd@openwrt.org>
-Signed-off-by: Nicolas Thill <nico@openwrt.org>
+echo enabled > /sys/devices/platform/serial8250.0/tty/ttyS0/power/wakeup
 
-diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index f94109c..94253b7 100644
---- a/drivers/serial/8250.c
-+++ b/drivers/serial/8250.c
-@@ -267,6 +267,13 @@ static const struct serial8250_config uart_config[] = {
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
- 		.flags		= UART_CAP_FIFO,
- 	},
-+	[PORT_AR7] = {
-+		.name		= "TI-AR7",
-+		.fifo_size	= 16,
-+		.tx_loadsz	= 16,
-+		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_00,
-+		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
-+	},
- };
- 
- #if defined (CONFIG_SERIAL_8250_AU1X00)
-@@ -2453,7 +2460,11 @@ static void serial8250_console_putchar(struct uart_port *port, int ch)
- {
- 	struct uart_8250_port *up = (struct uart_8250_port *)port;
- 
-+#ifdef CONFIG_AR7
-+	wait_for_xmitr(up, BOTH_EMPTY);
-+#else
- 	wait_for_xmitr(up, UART_LSR_THRE);
-+#endif
- 	serial_out(up, UART_TX, ch);
+Requires
+
+# CONFIG_SYSFS_DEPRECATED is not set
+
+Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+
+---
+
+Following suggestions from Alan and Russell moved the may_wake_up checks 
+to serial_core.c. This time actually tested - it does even work. Could 
+someone, please, verify, that put_device after device_find_child is 
+correct? Also would be nice to test with a Natsemi UART, that can wake up 
+the system, if such systems exist.
+
+Thanks
+Guennadi
+
+diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
+index 9c57486..8a3d6ea 100644
+--- a/drivers/serial/serial_core.c
++++ b/drivers/serial/serial_core.c
+@@ -1934,9 +1934,24 @@ static void uart_change_pm(struct uart_state *state, int pm_state)
+ 	}
  }
  
-diff --git a/include/linux/serialP.h b/include/linux/serialP.h
-index e811a61..ba5734a 100644
---- a/include/linux/serialP.h
-+++ b/include/linux/serialP.h
-@@ -135,6 +135,9 @@ struct rs_multiport_struct {
-  * the interrupt line _up_ instead of down, so if we register the IRQ
-  * while the UART is in that state, we die in an IRQ storm. */
- #define ALPHA_KLUDGE_MCR (UART_MCR_OUT2)
-+#elif defined(CONFIG_AR7)
-+/* This is how it is set up by bootloader... */
-+#define ALPHA_KLUDGE_MCR (UART_MCR_OUT2|UART_MCR_OUT1|UART_MCR_RTS|UART_MCR_DTR)
- #else
- #define ALPHA_KLUDGE_MCR 0
++struct uart_match {
++	struct uart_port *port;
++	struct uart_driver *driver;
++};
++
++static int serial_match_port(struct device *dev, void *data)
++{
++	struct uart_match *match = data;
++	dev_t devt = MKDEV(match->driver->major, match->driver->minor) + match->port->line;
++
++	return dev->devt == devt; /* Actually, only one tty per port */
++}
++
+ int uart_suspend_port(struct uart_driver *drv, struct uart_port *port)
+ {
+ 	struct uart_state *state = drv->state + port->line;
++	struct device *tty_dev;
++	struct uart_match match = {port, drv};
+ 
+ 	mutex_lock(&state->mutex);
+ 
+@@ -1947,6 +1962,15 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *port)
+ 	}
  #endif
+ 
++	tty_dev = device_find_child(port->dev, &match, serial_match_port);
++	if (device_may_wakeup(tty_dev)) {
++		enable_irq_wake(port->irq);
++		put_device(tty_dev);
++		mutex_unlock(&state->mutex);
++		return 0;
++	}
++	port->suspended = 1;
++
+ 	if (state->info && state->info->flags & UIF_INITIALIZED) {
+ 		const struct uart_ops *ops = port->ops;
+ 
+@@ -1995,6 +2019,13 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *port)
+ 	}
+ #endif
+ 
++	if (!port->suspended) {
++		disable_irq_wake(port->irq);
++		mutex_unlock(&state->mutex);
++		return 0;
++	}
++	port->suspended = 0;
++
+ 	uart_change_pm(state, 0);
+ 
+ 	/*
+@@ -2266,6 +2297,7 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *port)
+ {
+ 	struct uart_state *state;
+ 	int ret = 0;
++	struct device *tty_dev;
+ 
+ 	BUG_ON(in_interrupt());
+ 
+@@ -2301,7 +2333,13 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *port)
+ 	 * Register the port whether it's detected or not.  This allows
+ 	 * setserial to be used to alter this ports parameters.
+ 	 */
+-	tty_register_device(drv->tty_driver, port->line, port->dev);
++	tty_dev = tty_register_device(drv->tty_driver, port->line, port->dev);
++	if (likely(!IS_ERR(tty_dev))) {
++		device_can_wakeup(tty_dev) = 1;
++		device_set_wakeup_enable(tty_dev, 0);
++	} else
++		printk(KERN_ERR "Cannot register tty device on line %d\n",
++		       port->line);
+ 
+ 	/*
+ 	 * If this driver supports console, and it hasn't been
 diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 09d17b0..8ad2c3b 100644
+index 773d8d8..60dedc0 100644
 --- a/include/linux/serial_core.h
 +++ b/include/linux/serial_core.h
-@@ -40,6 +40,7 @@
- #define PORT_NS16550A	14
- #define PORT_XSCALE	15
- #define PORT_RM9000	16	/* PMC-Sierra RM9xxx internal UART */
-+#define PORT_AR7	16
- #define PORT_MAX_8250	16	/* max port ID */
+@@ -291,7 +291,8 @@ struct uart_port {
+ 	unsigned long		mapbase;		/* for ioremap */
+ 	struct device		*dev;			/* parent device */
+ 	unsigned char		hub6;			/* this should be in the 8250 driver */
+-	unsigned char		unused[3];
++	unsigned char		suspended;
++	unsigned char		unused[2];
+ 	void			*private_data;		/* generic platform data pointer */
+ };
  
- /*
