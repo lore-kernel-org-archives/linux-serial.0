@@ -1,88 +1,83 @@
-From: Matteo Croce <technoboy85@gmail.com>
-Subject: [PATCH][MIPS][6/7] AR7: serial hack
-Date: Thu, 20 Sep 2007 18:11:10 +0200
-Message-ID: <200709201811.10447.technoboy85@gmail.com>
-References: <200709201728.10866.technoboy85@gmail.com>
+From: "Maciej W. Rozycki" <macro@linux-mips.org>
+Subject: [PATCH] kernel/printk.c: Concerns about the console handover
+Date: Thu, 20 Sep 2007 18:28:49 +0100 (BST)
+Message-ID: <Pine.LNX.4.64N.0709201749240.30788@blysk.ds.pg.gda.pl>
 Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from an-out-0708.google.com ([209.85.132.241]:5382 "EHLO
-	an-out-0708.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756575AbXITQLS (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 20 Sep 2007 12:11:18 -0400
-Received: by an-out-0708.google.com with SMTP id d31so87802and
-        for <linux-serial@vger.kernel.org>; Thu, 20 Sep 2007 09:11:17 -0700 (PDT)
-In-Reply-To: <200709201728.10866.technoboy85@gmail.com>
-Content-Disposition: inline
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1758937AbXITR3Q@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Gerd Hoffmann <kraxel@suse.de>, Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-mips@linux-mips.org
-Cc: Florian Fainelli <florian@openwrt.org>, Felix Fietkau <nbd@openwrt.org>, Nicolas Thill <nico@openwrt.org>, linux-serial@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
 
-Hack to use serial in the way the bootloader wants to.
+ Move the hadover message to after the boot console has been released to 
+avoid bad interactions between it and the real console.
 
-Signed-off-by: Matteo Croce <technoboy85@gmail.com>
-Signed-off-by: Florian Fainelli <florian@openwrt.org>
-Signed-off-by: Felix Fietkau <nbd@openwrt.org>
-Signed-off-by: Nicolas Thill <nico@openwrt.org>
+Signed-off-by: Maciej W. Rozycki <macro@linux-mips.org>
+---
+ The 69331af79cf29e26d1231152a172a1a10c2df511 commit of May 8th added a 
+"console handover: ..." message to register_console() that is output 
+during the short period when both the boot and the newly-registered 
+console are registered.
 
-diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index f94109c..94253b7 100644
---- a/drivers/serial/8250.c
-+++ b/drivers/serial/8250.c
-@@ -267,6 +267,13 @@ static const struct serial8250_config uart_config[] = {
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
- 		.flags		= UART_CAP_FIFO,
- 	},
-+	[PORT_AR7] = {
-+		.name		= "TI-AR7",
-+		.fifo_size	= 16,
-+		.tx_loadsz	= 16,
-+		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_00,
-+		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
-+	},
- };
+ This is presumably fine for boot consoles implemented entirely by Linux 
+as they are fully controlled.  But it may produce problems when the boot 
+console is actually implemented as a call to the firmware which may not be 
+quite happy about how the OS driver for the piece of hardware involved 
+controls it.
+
+ I hit this problem with the DECstation.  Depending on the configuration 
+the fimrware uses a graphics adapter or a predefined serial port for 
+console output -- which device actually that is cannot be reliably 
+determined by Linux, though an approximation may be possible.  Now if the 
+firmware uses the serial port and Linux is asked to use the same serial 
+port for the real console, then this printk() hangs forever in the 
+firmware.  The driver used is drivers/serial/zs.c.
+
+ The reason is by the time the ->write() call is issued for the boot 
+console as a result of this printk(), the zs.c driver has been initialised 
+and because at the moment the serial port has not been opened, the serial 
+transmitter is disabled.  The firmware polls for the transmit buffer empty 
+condition, but does not enable the module, presumably under the assumption 
+it will not be called once an OS driver has taken control of the device 
+(the register containing the enable bit is write-only anyway, so it would 
+be hard to restore the previous value).  This causes a hang, because once 
+a single character is put into the transmit buffer it will not become 
+empty until the transmitter has been enabled.
+
+ The serial console as implemented by zs.c handles the case correctly, by 
+enabling the transmitter, outputting what should be output, waiting for 
+the transmit shift register to drain and restoring the state of the 
+transmitter enable (which is held in a shadow variable).
+
+ I feel a bit uneasy about keeping serial transmitters enabled for lines 
+that have not been opened; I gather others may agree as for example while 
+not explicitly mentioned, I believe it is implied by what is said in 
+Documentation/serial/driver referring to the ->shutdown() call: "Disable 
+the port, [...]" -- with the transmitter enabled a port can hardly be 
+considered fully disabled.  Below is a change which makes the problem 
+disappear for me, but I suppose there was a deliberate reason for placing 
+the printk() where it is now and nowhere else.
+
+ Any suggestions will be appreciated.
+
+  Maciej
+
+patch-mips-2.6.23-rc5-20070904-printk-handover-0
+diff -up --recursive --new-file linux-mips-2.6.23-rc5-20070904.macro/kernel/printk.c linux-mips-2.6.23-rc5-20070904/kernel/printk.c
+--- linux-mips-2.6.23-rc5-20070904.macro/kernel/printk.c	2007-09-04 04:56:21.000000000 +0000
++++ linux-mips-2.6.23-rc5-20070904/kernel/printk.c	2007-09-19 21:10:16.000000000 +0000
+@@ -1014,11 +1014,11 @@ void register_console(struct console *co
+ 		return;
  
- #if defined (CONFIG_SERIAL_8250_AU1X00)
-@@ -2453,7 +2460,11 @@ static void serial8250_console_putchar(struct uart_port *port, int ch)
- {
- 	struct uart_8250_port *up = (struct uart_8250_port *)port;
- 
-+#ifdef CONFIG_AR7
-+	wait_for_xmitr(up, BOTH_EMPTY);
-+#else
- 	wait_for_xmitr(up, UART_LSR_THRE);
-+#endif
- 	serial_out(up, UART_TX, ch);
- }
- 
-diff --git a/include/linux/serialP.h b/include/linux/serialP.h
-index e811a61..cf71de9 100644
---- a/include/linux/serialP.h
-+++ b/include/linux/serialP.h
-@@ -135,6 +135,10 @@ struct rs_multiport_struct {
-  * the interrupt line _up_ instead of down, so if we register the IRQ
-  * while the UART is in that state, we die in an IRQ storm. */
- #define ALPHA_KLUDGE_MCR (UART_MCR_OUT2)
-+#elif defined(CONFIG_AR7)
-+/* This is how it is set up by bootloader... */
-+#define ALPHA_KLUDGE_MCR (UART_MCR_OUT2 | UART_MCR_OUT1 \
-+			| UART_MCR_RTS | UART_MCR_DTR)
- #else
- #define ALPHA_KLUDGE_MCR 0
- #endif
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 09d17b0..8ad2c3b 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -40,6 +40,7 @@
- #define PORT_NS16550A	14
- #define PORT_XSCALE	15
- #define PORT_RM9000	16	/* PMC-Sierra RM9xxx internal UART */
-+#define PORT_AR7	16
- #define PORT_MAX_8250	16	/* max port ID */
- 
- /*
+ 	if (bootconsole && (console->flags & CON_CONSDEV)) {
++		unregister_console(bootconsole);
++		console->flags &= ~CON_PRINTBUFFER;
+ 		printk(KERN_INFO "console handover: boot [%s%d] -> real [%s%d]\n",
+ 		       bootconsole->name, bootconsole->index,
+ 		       console->name, console->index);
+-		unregister_console(bootconsole);
+-		console->flags &= ~CON_PRINTBUFFER;
+ 	} else {
+ 		printk(KERN_INFO "console [%s%d] enabled\n",
+ 		       console->name, console->index);
