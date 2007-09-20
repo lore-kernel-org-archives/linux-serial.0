@@ -1,83 +1,52 @@
-From: "Maciej W. Rozycki" <macro@linux-mips.org>
-Subject: [PATCH] kernel/printk.c: Concerns about the console handover
-Date: Thu, 20 Sep 2007 18:28:49 +0100 (BST)
-Message-ID: <Pine.LNX.4.64N.0709201749240.30788@blysk.ds.pg.gda.pl>
+From: Matthew Wilcox <matthew@wil.cx>
+Subject: Don't cross the (tty) streams
+Date: Thu, 20 Sep 2007 15:02:22 -0600
+Message-ID: <20070920210221.GC10625@parisc-linux.org>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1758937AbXITR3Q@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Gerd Hoffmann <kraxel@suse.de>, Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from palinux.external.hp.com ([192.25.206.14]:37850 "EHLO
+	mail.parisc-linux.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751938AbXITVCX (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 20 Sep 2007 17:02:23 -0400
+Content-Disposition: inline
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org
 
- Move the hadover message to after the boot console has been released to 
-avoid bad interactions between it and the real console.
 
-Signed-off-by: Maciej W. Rozycki <macro@linux-mips.org>
----
- The 69331af79cf29e26d1231152a172a1a10c2df511 commit of May 8th added a 
-"console handover: ..." message to register_console() that is output 
-during the short period when both the boot and the newly-registered 
-console are registered.
+Connect two machines with a serial cable.  On the victim:
 
- This is presumably fine for boot consoles implemented entirely by Linux 
-as they are fully controlled.  But it may produce problems when the boot 
-console is actually implemented as a call to the firmware which may not be 
-quite happy about how the OS driver for the piece of hardware involved 
-controls it.
+willy@rowlf:~$ cat </dev/ttyS1
 
- I hit this problem with the DECstation.  Depending on the configuration 
-the fimrware uses a graphics adapter or a predefined serial port for 
-console output -- which device actually that is cannot be reliably 
-determined by Linux, though an approximation may be possible.  Now if the 
-firmware uses the serial port and Linux is asked to use the same serial 
-port for the real console, then this printk() hangs forever in the 
-firmware.  The driver used is drivers/serial/zs.c.
+Now, let's find out which ttyS on the other machine is connected ...
 
- The reason is by the time the ->write() call is issued for the boot 
-console as a result of this printk(), the zs.c driver has been initialised 
-and because at the moment the serial port has not been opened, the serial 
-transmitter is disabled.  The firmware polls for the transmit buffer empty 
-condition, but does not enable the module, presumably under the assumption 
-it will not be called once an OS driver has taken control of the device 
-(the register containing the enable bit is write-only anyway, so it would 
-be hard to restore the previous value).  This causes a hang, because once 
-a single character is put into the transmit buffer it will not become 
-empty until the transmitter has been enabled.
+willy@teeth:~$ echo foo >/dev/ttyS1
+-bash: echo: write error: Input/output error
 
- The serial console as implemented by zs.c handles the case correctly, by 
-enabling the transmitter, outputting what should be output, waiting for 
-the transmit shift register to drain and restoring the state of the 
-transmitter enable (which is held in a shadow variable).
+Oops, that's not a serial port.  No output on rowlf, as expected.
+OK, carrying on ...
 
- I feel a bit uneasy about keeping serial transmitters enabled for lines 
-that have not been opened; I gather others may agree as for example while 
-not explicitly mentioned, I believe it is implied by what is said in 
-Documentation/serial/driver referring to the ->shutdown() call: "Disable 
-the port, [...]" -- with the transmitter enabled a port can hardly be 
-considered fully disabled.  Below is a change which makes the problem 
-disappear for me, but I suppose there was a deliberate reason for placing 
-the printk() where it is now and nowhere else.
+willy@teeth:~$ echo bar >/dev/ttyS0
 
- Any suggestions will be appreciated.
+And yet on rowlf, we now see:
 
-  Maciej
+foo
+bar
 
-patch-mips-2.6.23-rc5-20070904-printk-handover-0
-diff -up --recursive --new-file linux-mips-2.6.23-rc5-20070904.macro/kernel/printk.c linux-mips-2.6.23-rc5-20070904/kernel/printk.c
---- linux-mips-2.6.23-rc5-20070904.macro/kernel/printk.c	2007-09-04 04:56:21.000000000 +0000
-+++ linux-mips-2.6.23-rc5-20070904/kernel/printk.c	2007-09-19 21:10:16.000000000 +0000
-@@ -1014,11 +1014,11 @@ void register_console(struct console *co
- 		return;
- 
- 	if (bootconsole && (console->flags & CON_CONSDEV)) {
-+		unregister_console(bootconsole);
-+		console->flags &= ~CON_PRINTBUFFER;
- 		printk(KERN_INFO "console handover: boot [%s%d] -> real [%s%d]\n",
- 		       bootconsole->name, bootconsole->index,
- 		       console->name, console->index);
--		unregister_console(bootconsole);
--		console->flags &= ~CON_PRINTBUFFER;
- 	} else {
- 		printk(KERN_INFO "console [%s%d] enabled\n",
- 		       console->name, console->index);
+Looks like there's an error path that doesn't throw away data on -EIO.
+
+This bug exists on at least these two kernels (because I tested it in
+both directions:
+Linux rowlf 2.6.19-rc6-g70d6673f #1 SMP Thu Nov 16 20:49:15 EST 2006 ia64 GNU/Linux
+Linux teeth 2.6.23-rc3-g68dba7a9-dirty #209 SMP PREEMPT Thu Sep 20 15:57:42 EDT 2007 i686 GNU/Linux
+
+Neither kernel has any modifications to its serial code.
+
+-- 
+Intel are signing my paycheques ... these opinions are still mine
+"Bill, look, we understand that you're interested in selling us this
+operating system, but compare it to ours.  We can't possibly take such
+a retrograde step."
