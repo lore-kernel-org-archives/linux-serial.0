@@ -1,41 +1,93 @@
-From: "Michael Langford" <mlangford@tieronedesign.com>
-Subject: sub-serial devices being created as block devices
-Date: Fri, 14 Sep 2007 11:56:43 -0400
-Message-ID: <3547473BFF99D74F875EEE3E38BCDDFF23A70A@tieroneserver.tier1design.com>
+From: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
+Subject: [PATCH] serial_txx9: Use UPF_FIXED_PORT
+Date: Thu, 20 Sep 2007 14:45:15 +0900 (JST)
+Message-ID: <20070920.144515.126142885.nemoto@toshiba-tops.co.jp>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from www.tier1design.com ([68.16.98.218]:14917 "EHLO
-	tieroneserver.tier1design.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751438AbXINP4D convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 14 Sep 2007 11:56:03 -0400
-Content-class: urn:content-classes:message
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1758001AbXITFph@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: akpm@linux-foundation.org, ralf@linux-mips.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linux Serial Mailing List <linux-serial@vger.kernel.org>
 
-When the kernel creates devices for usb-serial drivers in version
-2.6.20.11, it creates them as block devices in the system:
+The UPF_FIXED_PORT flags was introduced in 2.6.22 and it can be used
+instead of the driver specific verify_port routine.
 
-[root@uclibc ~]# ls -la  /dev/ttyUSB0
-brw-rw----    1 root     root     188,   0 Dec 31 17:00 /dev/ttyUSB0
+Signed-off-by: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
+---
+ drivers/serial/serial_txx9.c |   26 +++++---------------------
+ 1 files changed, 5 insertions(+), 21 deletions(-)
 
-This is happening for both prolific (pl2303) usb serial devices and our
-custom one that we're developing.  
-
-Any ideas on how to make this default to the correct type of device
-node? 
-
-I'm currently able to fix it with udev (as I'm really using a completely
-different name for these), but I'd by and large prefer it not being
-wrong in the first place.
-
-           --Michael
-
--- 
-Michael Langford
-www.TierOneDesign.com
-
+diff --git a/drivers/serial/serial_txx9.c b/drivers/serial/serial_txx9.c
+index 0930e2a..c25c9a5 100644
+--- a/drivers/serial/serial_txx9.c
++++ b/drivers/serial/serial_txx9.c
+@@ -37,7 +37,7 @@
+ 
+ #include <asm/io.h>
+ 
+-static char *serial_version = "1.10";
++static char *serial_version = "1.11";
+ static char *serial_name = "TX39/49 Serial driver";
+ 
+ #define PASS_LIMIT	256
+@@ -68,8 +68,6 @@ static char *serial_name = "TX39/49 Serial driver";
+  */
+ #define UART_NR  CONFIG_SERIAL_TXX9_NR_UARTS
+ 
+-#define HIGH_BITS_OFFSET	((sizeof(long)-sizeof(int))*8)
+-
+ struct uart_txx9_port {
+ 	struct uart_port	port;
+ 	/* No additional info for now */
+@@ -756,21 +754,6 @@ static void serial_txx9_config_port(struct uart_port *port, int uflags)
+ 	serial_txx9_initialize(port);
+ }
+ 
+-static int
+-serial_txx9_verify_port(struct uart_port *port, struct serial_struct *ser)
+-{
+-	unsigned long new_port = ser->port;
+-	if (HIGH_BITS_OFFSET)
+-		new_port += (unsigned long)ser->port_high << HIGH_BITS_OFFSET;
+-	if (ser->type != port->type ||
+-	    ser->irq != port->irq ||
+-	    ser->io_type != port->iotype ||
+-	    new_port != port->iobase ||
+-	    (unsigned long)ser->iomem_base != port->mapbase)
+-		return -EINVAL;
+-	return 0;
+-}
+-
+ static const char *
+ serial_txx9_type(struct uart_port *port)
+ {
+@@ -794,7 +777,6 @@ static struct uart_ops serial_txx9_pops = {
+ 	.release_port	= serial_txx9_release_port,
+ 	.request_port	= serial_txx9_request_port,
+ 	.config_port	= serial_txx9_config_port,
+-	.verify_port	= serial_txx9_verify_port,
+ };
+ 
+ static struct uart_txx9_port serial_txx9_ports[UART_NR];
+@@ -950,7 +932,8 @@ int __init early_serial_txx9_setup(struct uart_port *port)
+ 
+ 	serial_txx9_ports[port->line].port = *port;
+ 	serial_txx9_ports[port->line].port.ops = &serial_txx9_pops;
+-	serial_txx9_ports[port->line].port.flags |= UPF_BOOT_AUTOCONF;
++	serial_txx9_ports[port->line].port.flags |=
++		UPF_BOOT_AUTOCONF | UPF_FIXED_PORT;
+ 	return 0;
+ }
+ 
+@@ -995,7 +978,8 @@ static int __devinit serial_txx9_register_port(struct uart_port *port)
+ 		uart->port.irq      = port->irq;
+ 		uart->port.uartclk  = port->uartclk;
+ 		uart->port.iotype   = port->iotype;
+-		uart->port.flags    = port->flags | UPF_BOOT_AUTOCONF;
++		uart->port.flags    = port->flags
++			| UPF_BOOT_AUTOCONF | UPF_FIXED_PORT;
+ 		uart->port.mapbase  = port->mapbase;
+ 		if (port->dev)
+ 			uart->port.dev = port->dev;
