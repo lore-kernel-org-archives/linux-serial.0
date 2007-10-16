@@ -1,43 +1,85 @@
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH 3/3] Blackfin serial driver: this driver enable SPORTs
- on Blackfin emulate UART
-Date: Mon, 15 Oct 2007 15:22:45 -0700
-Message-ID: <20071015152245.12d29f8b.akpm@linux-foundation.org>
-References: <1192098220-25828-1-git-send-email-bryan.wu@analog.com>
-	<1192098220-25828-4-git-send-email-bryan.wu@analog.com>
-	<20071015133326.995a4f38.akpm@linux-foundation.org>
-	<8bd0f97a0710151503u4b57dd4aoc4b50d936e17adb0@mail.gmail.com>
+From: "Maciej W. Rozycki" <macro@linux-mips.org>
+Subject: [PATCH] tty_ioctl: Fix the baud_table check in encode_baud_rate
+Date: Tue, 16 Oct 2007 19:12:11 +0100 (BST)
+Message-ID: <Pine.LNX.4.64N.0710161857280.22596@blysk.ds.pg.gda.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp2.linux-foundation.org ([207.189.120.14]:45209 "EHLO
-	smtp2.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751413AbXJOWWz (ORCPT
+Received: from cerber.ds.pg.gda.pl ([153.19.208.18]:46094 "EHLO
+	cerber.ds.pg.gda.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S934844AbXJPSMW (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 15 Oct 2007 18:22:55 -0400
-In-Reply-To: <8bd0f97a0710151503u4b57dd4aoc4b50d936e17adb0@mail.gmail.com>
+	Tue, 16 Oct 2007 14:12:22 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Mike Frysinger <vapier.adi@gmail.com>
-Cc: bryan.wu@analog.com, dmitry.torokhov@gmail.com, linux-input@atrey.karlin.mff.cuni.cz, linux-joystick@atrey.karlin.mff.cuni.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Mon, 15 Oct 2007 18:03:35 -0400
-"Mike Frysinger" <vapier.adi@gmail.com> wrote:
+ The tty_termios_encode_baud_rate() function as defined by tty_ioctl.c has 
+a problem with the baud_table within.  The comparison operators are 
+reversed and as a result this table's entries never match and BOTHER is 
+always used.
 
-> > It is not a good idea to create files in /proc which have spaces in their
-> > names.  Yes, userspace _should_ be able to cope with that in all cases, but
-> > all software sucks, even including userspace ;)
-> >
-> > I'd suggest that we be defensive here, and avoid using spaces in filenames.
-> 
-> i'm not sure i follow ... these are the names given to request_irq()
-> which means this is what shows up in /proc/interrupts ... does this
-> function also create an actual file somewhere in /proc that i am not
-> aware of ?
+ Additionally this function's prototype is not exported unlike the 
+function itself.
 
-err, umm, yeah.  But the same argument applies: it is imprudent to have
-space-containing records in /proc/interrupts.
+ This fix addresses both issues.
 
-However it seems that we've already done that in several places so I guess
-any /proc/interrupts-parsing programs are already coping with it OK.
+Signed-off-by: Maciej W. Rozycki <macro@linux-mips.org>
+---
+ It has been tested with checkpatch.pl and at the run time, with a serial 
+driver (dz) for which I have a change to be submitted soon that will make 
+it use the function.  The hardware being handled only supports some 
+discrete baud rates (a choice of 15 fixed settings plus an external rate 
+input), which is why it wants to adjust termios settings according to the 
+rate setting actually chosen.
+
+ Please apply,
+
+  Maciej
+
+patch-mips-2.6.23-rc5-20070904-termios-baud-rate-0
+diff -up --recursive --new-file linux-mips-2.6.23-rc5-20070904.macro/drivers/char/tty_ioctl.c linux-mips-2.6.23-rc5-20070904/drivers/char/tty_ioctl.c
+--- linux-mips-2.6.23-rc5-20070904.macro/drivers/char/tty_ioctl.c	2007-09-04 04:55:31.000000000 +0000
++++ linux-mips-2.6.23-rc5-20070904/drivers/char/tty_ioctl.c	2007-10-13 23:07:27.000000000 +0000
+@@ -227,7 +227,8 @@ EXPORT_SYMBOL(tty_termios_input_baud_rat
+  *	when calling this function from the driver termios handler.
+  */
+ 
+-void tty_termios_encode_baud_rate(struct ktermios *termios, speed_t ibaud, speed_t obaud)
++void tty_termios_encode_baud_rate(struct ktermios *termios,
++				  speed_t ibaud, speed_t obaud)
+ {
+ 	int i = 0;
+ 	int ifound = -1, ofound = -1;
+@@ -251,12 +252,15 @@ void tty_termios_encode_baud_rate(struct
+ 	termios->c_cflag &= ~CBAUD;
+ 
+ 	do {
+-		if (obaud - oclose >= baud_table[i] && obaud + oclose <= baud_table[i]) {
++		if (obaud - oclose <= baud_table[i] &&
++		    obaud + oclose >= baud_table[i]) {
+ 			termios->c_cflag |= baud_bits[i];
+ 			ofound = i;
+ 		}
+-		if (ibaud - iclose >= baud_table[i] && ibaud + iclose <= baud_table[i]) {
+-			/* For the case input == output don't set IBAUD bits if the user didn't do so */
++		if (ibaud - iclose <= baud_table[i] &&
++		    ibaud + iclose >= baud_table[i]) {
++			/* For the case input == output don't set IBAUD bits
++			   if the user didn't do so */
+ 			if (ofound != i || ibinput)
+ 				termios->c_cflag |= (baud_bits[i] << IBSHIFT);
+ 			ifound = i;
+diff -up --recursive --new-file linux-mips-2.6.23-rc5-20070904.macro/include/linux/tty.h linux-mips-2.6.23-rc5-20070904/include/linux/tty.h
+--- linux-mips-2.6.23-rc5-20070904.macro/include/linux/tty.h	2007-09-04 04:56:20.000000000 +0000
++++ linux-mips-2.6.23-rc5-20070904/include/linux/tty.h	2007-10-13 22:06:06.000000000 +0000
+@@ -322,6 +322,8 @@ extern void tty_flip_buffer_push(struct 
+ extern speed_t tty_get_baud_rate(struct tty_struct *tty);
+ extern speed_t tty_termios_baud_rate(struct ktermios *termios);
+ extern speed_t tty_termios_input_baud_rate(struct ktermios *termios);
++extern void tty_termios_encode_baud_rate(struct ktermios *termios,
++					 speed_t ibaud, speed_t obaud);
+ 
+ extern struct tty_ldisc *tty_ldisc_ref(struct tty_struct *);
+ extern void tty_ldisc_deref(struct tty_ldisc *);
