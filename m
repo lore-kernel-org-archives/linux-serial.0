@@ -1,38 +1,61 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] tty_ioctl: Fix the baud_table check in encode_baud_rate
-Date: Wed, 17 Oct 2007 11:43:58 +0100
-Message-ID: <20071017114358.3d2b166f@the-village.bc.nu>
-References: <Pine.LNX.4.64N.0710161857280.22596@blysk.ds.pg.gda.pl>
+From: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
+Subject: [PATCH] serial: do not call ->pm() on initialization for console
+ port
+Date: Fri, 19 Oct 2007 01:13:55 +0900 (JST)
+Message-ID: <20071019.011355.39154656.anemo@mba.ocn.ne.jp>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from outpipe-village-512-1.bc.nu ([81.2.110.250]:42263 "EHLO
-	the-village.bc.nu" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1757190AbXJQKk2 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 17 Oct 2007 06:40:28 -0400
-In-Reply-To: <Pine.LNX.4.64N.0710161857280.22596@blysk.ds.pg.gda.pl>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1764570AbXJRQM0@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: rmk+kernel@arm.linux.org.uk
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, akpm@linux-foundation.org
 List-Id: linux-serial@vger.kernel.org
-To: "Maciej W. Rozycki" <macro@linux-mips.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Tue, 16 Oct 2007 19:12:11 +0100 (BST)
-"Maciej W. Rozycki" <macro@linux-mips.org> wrote:
+This commit in current git tree broke serial console for serial_txx9 driver.
 
->  The tty_termios_encode_baud_rate() function as defined by tty_ioctl.c has 
-> a problem with the baud_table within.  The comparison operators are 
-> reversed and as a result this table's entries never match and BOTHER is 
-> always used.
+> commit 97d97224ff361e08777fb33e0fd193ca877dac28
+> Author: Russell King <rmk@dyn-67.arm.linux.org.uk>
+> Date:   Sat Sep 1 21:25:09 2007 +0100
+> 
+>     [SERIAL] Fix console initialisation ordering
 
-Oops. I thought I'd fixed that one. Bit bothersome its been in -mm that
-long before anyone noticed. 
+The serial_txx9 driver initialize its port entirely on its ->pm()
+method if new state was 0.  With the commit, serial_core calls ->pm()
+even if the port was used for console.
 
-ACK the first bit.
+Attached patch fixes this problem.  Is this a right way?
+If not, I will fix the serial_txx9 driver to skip the initialization in
+->pm() if oldstate was -1.
 
->  Additionally this function's prototype is not exported unlike the 
-> function itself.
 
-That bit seems out of date and a prototype was added later in -mm
+------------------------------------------------------
+Subject: serial: do not call ->pm() on initialization for console port
+From: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
 
+If the port was already enabled as a serial console, there is no need
+to call pm callback to power it up.  This patch fixes serial console
+initialization on serial_txx9 driver.
+
+Signed-off-by: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
+---
+diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
+index 68aa4da..5a38076 100644
+--- a/drivers/serial/serial_core.c
++++ b/drivers/serial/serial_core.c
+@@ -2326,7 +2326,6 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *port)
+ 	}
+ 
+ 	state->port = port;
+-	state->pm_state = -1;
+ 
+ 	port->cons = drv->cons;
+ 	port->info = state->info;
+@@ -2336,6 +2335,7 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *port)
+ 	 * initialised.
+ 	 */
+ 	if (!(uart_console(port) && (port->cons->flags & CON_ENABLED))) {
++		state->pm_state = -1;
+ 		spin_lock_init(&port->lock);
+ 		lockdep_set_class(&port->lock, &port_lock_key);
+ 	}
