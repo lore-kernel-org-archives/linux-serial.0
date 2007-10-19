@@ -1,59 +1,68 @@
 From: "Maciej W. Rozycki" <macro@linux-mips.org>
-Subject: [PATCH] dz.c: Always check if it is safe to console_putchar()
-Date: Fri, 19 Oct 2007 21:18:03 +0100 (BST)
-Message-ID: <Pine.LNX.4.64N.0710192059530.13279@blysk.ds.pg.gda.pl>
+Subject: [PATCH] dz.c: Don't panic() when request_irq() fails
+Date: Fri, 19 Oct 2007 21:24:16 +0100 (BST)
+Message-ID: <Pine.LNX.4.64N.0710192119360.13279@blysk.ds.pg.gda.pl>
 Mime-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cerber.ds.pg.gda.pl ([153.19.208.18]:59495 "EHLO
+Received: from cerber.ds.pg.gda.pl ([153.19.208.18]:41858 "EHLO
 	cerber.ds.pg.gda.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758914AbXJSUSJ (ORCPT
+	with ESMTP id S1756827AbXJSUYX (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 19 Oct 2007 16:18:09 -0400
+	Fri, 19 Oct 2007 16:24:23 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Andrew Morton <akpm@linux-foundation.org>
 Cc: linux-mips@linux-mips.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
- Polled transmission is tricky enough with the DZ11 design.  While "loop" 
-is set to a high value, conceptually you are not allowed to transmit 
-without checking whether the device offers the right transmission line 
-(yes, it is the device that selects the line -- the driver has no control 
-over it other than disabling the transmitter offered if it is the wrong 
-one), so the loop has to be run at least once.
-
- Well, the '1977 or PDP11 view of how serial lines should be handled...  
-Except that the serial interface used to be quite an impressive board back 
-then rather than chip.
+ Well, panic() is a little bit undue if request_irq() fails; there is 
+probably no need to justify it any further.  Handle the case gracefully, 
+by unregistering the driver.
 
 Signed-off-by: Maciej W. Rozycki <macro@linux-mips.org>
 ---
- Tested with checkpatch.pl and at the run-time -- MIPS/Linux on a 
+ Tested with checkpatch.pl and at the run-time -- MIPS/Linux on a
 DECstation 5000/200.
 
  Please apply,
 
   Maciej
 
-patch-mips-2.6.18-20060920-dz-putchar-0
+patch-mips-2.6.18-20060920-dz-init-0
 diff -up --recursive --new-file linux-mips-2.6.18-20060920.macro/drivers/serial/dz.c linux-mips-2.6.18-20060920/drivers/serial/dz.c
 --- linux-mips-2.6.18-20060920.macro/drivers/serial/dz.c	2006-11-23 05:17:01.000000000 +0000
-+++ linux-mips-2.6.18-20060920/drivers/serial/dz.c	2007-01-14 00:07:02.000000000 +0000
-@@ -686,7 +686,7 @@ static void dz_console_putchar(struct ua
- 	iob();
- 	spin_unlock_irqrestore(&dport->port.lock, flags);
++++ linux-mips-2.6.18-20060920/drivers/serial/dz.c	2007-01-14 00:39:20.000000000 +0000
+@@ -795,18 +795,28 @@ static int __init dz_init(void)
+ 	dz_reset(&dz_ports[0]);
+ #endif
  
--	while (loops--) {
-+	do {
- 		trdy = dz_in(dport, DZ_CSR);
- 		if (!(trdy & DZ_TRDY))
- 			continue;
-@@ -697,7 +697,7 @@ static void dz_console_putchar(struct ua
- 		dz_out(dport, DZ_TCR, mask);
- 		iob();
- 		udelay(2);
--	}
-+	} while (loops--);
+-	if (request_irq(dz_ports[0].port.irq, dz_interrupt,
+-			IRQF_DISABLED, "DZ", &dz_ports[0]))
+-		panic("Unable to register DZ interrupt");
+-
+ 	ret = uart_register_driver(&dz_reg);
+ 	if (ret != 0)
+-		return ret;
++		goto out;
++
++	ret = request_irq(dz_ports[0].port.irq, dz_interrupt, IRQF_DISABLED,
++			  "DZ", &dz_ports[0]);
++	if (ret != 0) {
++		printk(KERN_ERR "dz: Cannot get IRQ %d!\n",
++		       dz_ports[0].port.irq);
++		goto out_unregister;
++	}
  
- 	if (loops)				/* Cannot send otherwise. */
- 		dz_out(dport, DZ_TDR, ch);
+ 	for (i = 0; i < DZ_NB_PORT; i++)
+ 		uart_add_one_port(&dz_reg, &dz_ports[i].port);
+ 
+ 	return ret;
++
++out_unregister:
++	uart_unregister_driver(&dz_reg);
++
++out:
++	return ret;
+ }
+ 
+ module_init(dz_init);
