@@ -1,63 +1,60 @@
 From: "Maciej W. Rozycki" <macro@linux-mips.org>
-Subject: [PATCH] dz: Update Kconfig description
-Date: Fri, 19 Oct 2007 21:34:41 +0100 (BST)
-Message-ID: <Pine.LNX.4.64N.0710192130060.13279@blysk.ds.pg.gda.pl>
+Subject: [PATCH] dz.c: Rename the serial console structure
+Date: Fri, 19 Oct 2007 21:38:33 +0100 (BST)
+Message-ID: <Pine.LNX.4.64N.0710192135440.13279@blysk.ds.pg.gda.pl>
 Mime-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cerber.ds.pg.gda.pl ([153.19.208.18]:42530 "EHLO
+Received: from cerber.ds.pg.gda.pl ([153.19.208.18]:46824 "EHLO
 	cerber.ds.pg.gda.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1762792AbXJSUes (ORCPT
+	with ESMTP id S1764506AbXJSUii (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 19 Oct 2007 16:34:48 -0400
+	Fri, 19 Oct 2007 16:38:38 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Andrew Morton <akpm@linux-foundation.org>
 Cc: linux-mips@linux-mips.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
- Reformat the Kconfig entries and update descriptions for accuracy.  
-Select the driver by default for configurations of interest.  For the 
-curious: 32BIT means only 32-bit DECstations support the device, not that 
-the driver is not 64-bit clean; I have not checked that either though.
+ Rename the serial console structure so that `modpost' does not complain 
+about a reference to an "init" section -- "_console" is magic.
 
 Signed-off-by: Maciej W. Rozycki <macro@linux-mips.org>
 ---
+ Tested with checkpatch.pl and at the run-time -- MIPS/Linux on a 
+DECstation 5000/200.
+
  Please apply,
 
   Maciej
 
-patch-mips-2.6.18-20060920-dz-kconfig-2
-diff -up --recursive --new-file linux-mips-2.6.18-20060920.macro/drivers/serial/Kconfig linux-mips-2.6.18-20060920/drivers/serial/Kconfig
---- linux-mips-2.6.18-20060920.macro/drivers/serial/Kconfig	2006-06-29 05:03:07.000000000 +0000
-+++ linux-mips-2.6.18-20060920/drivers/serial/Kconfig	2007-02-04 20:18:36.000000000 +0000
-@@ -385,20 +385,24 @@ config SERIAL_DZ
- 	bool "DECstation DZ serial driver"
- 	depends on MACH_DECSTATION && 32BIT
- 	select SERIAL_CORE
--	help
--	  DZ11-family serial controllers for VAXstations, including the
--	  DC7085, M7814, and M7819.
-+	default y
-+	---help---
-+	  DZ11-family serial controllers for DECstations and VAXstations,
-+	  including the DC7085, M7814, and M7819.
+patch-mips-2.6.23-rc5-20070904-serial-dz-console-0
+diff -up --recursive --new-file linux-mips-2.6.23-rc5-20070904.macro/drivers/serial/dz.c linux-mips-2.6.23-rc5-20070904/drivers/serial/dz.c
+--- linux-mips-2.6.23-rc5-20070904.macro/drivers/serial/dz.c	2007-05-02 04:56:10.000000000 +0000
++++ linux-mips-2.6.23-rc5-20070904/drivers/serial/dz.c	2007-09-18 23:07:54.000000000 +0000
+@@ -741,7 +741,7 @@ static int __init dz_console_setup(struc
+ }
  
- config SERIAL_DZ_CONSOLE
- 	bool "Support console on DECstation DZ serial driver"
- 	depends on SERIAL_DZ=y
- 	select SERIAL_CORE_CONSOLE
--	help
-+	default y
-+	---help---
- 	  If you say Y here, it will be possible to use a serial port as the
- 	  system console (the system console is the device which receives all
- 	  kernel messages and warnings and which allows logins in single user
--	  mode).  Note that the firmware uses ttyS0 as the serial console on
--	  the Maxine and ttyS2 on the others.
-+	  mode).
-+
-+	  Note that the firmware uses ttyS3 as the serial console on
-+	  DECstations that use this driver.
+ static struct uart_driver dz_reg;
+-static struct console dz_sercons = {
++static struct console dz_console = {
+ 	.name	= "ttyS",
+ 	.write	= dz_console_print,
+ 	.device	= uart_console_device,
+@@ -755,7 +755,7 @@ static int __init dz_serial_console_init
+ {
+ 	if (!IOASIC) {
+ 		dz_init_ports();
+-		register_console(&dz_sercons);
++		register_console(&dz_console);
+ 		return 0;
+ 	} else
+ 		return -ENXIO;
+@@ -763,7 +763,7 @@ static int __init dz_serial_console_init
  
- 	  If unsure, say Y.
+ console_initcall(dz_serial_console_init);
  
+-#define SERIAL_DZ_CONSOLE	&dz_sercons
++#define SERIAL_DZ_CONSOLE	&dz_console
+ #else
+ #define SERIAL_DZ_CONSOLE	NULL
+ #endif /* CONFIG_SERIAL_DZ_CONSOLE */
