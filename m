@@ -1,98 +1,40 @@
-From: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
-Subject: Re: [PATCH] serial: do not call ->pm() on initialization for
- console port
-Date: Fri, 19 Oct 2007 01:42:48 +0900 (JST)
-Message-ID: <20071019.014248.126760868.anemo@mba.ocn.ne.jp>
-References: <20071019.011355.39154656.anemo@mba.ocn.ne.jp>
-	<20071018161827.GB16244@flint.arm.linux.org.uk>
+From: "Maciej W. Rozycki" <macro@linux-mips.org>
+Subject: [PATCH] dz.h: Remove useless unused module junk
+Date: Fri, 19 Oct 2007 20:57:53 +0100 (BST)
+Message-ID: <Pine.LNX.4.64N.0710192055090.13279@blysk.ds.pg.gda.pl>
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mba.ocn.ne.jp ([122.1.235.107]:63309 "EHLO smtp.mba.ocn.ne.jp"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756776AbXJRQlC (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 18 Oct 2007 12:41:02 -0400
-In-Reply-To: <20071018161827.GB16244@flint.arm.linux.org.uk>
+Received: from cerber.ds.pg.gda.pl ([153.19.208.18]:48184 "EHLO
+	cerber.ds.pg.gda.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758396AbXJST6B (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 19 Oct 2007 15:58:01 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: rmk+lkml@arm.linux.org.uk
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, akpm@linux-foundation.org
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-mips@linux-mips.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Thu, 18 Oct 2007 17:18:27 +0100, Russell King <rmk+lkml@arm.linux.org.uk> wrote:
-> > Attached patch fixes this problem.  Is this a right way?
-> > If not, I will fix the serial_txx9 driver to skip the initialization in
-> > ->pm() if oldstate was -1.
-> 
-> I'll have to investigate further to refresh myself with what's going
-> on here, but your patch looks wrong.
+ Remove unused module function prototypes that would not even build if
+enabled.
 
-Thanks.  JFYI, here is some patches I tried before changing
-serial_core.  Both fixes the serial console problem.
-
-Patch 1:
-
-diff --git a/drivers/serial/serial_txx9.c b/drivers/serial/serial_txx9.c
-index 6846a6c..7ad2192 100644
---- a/drivers/serial/serial_txx9.c
-+++ b/drivers/serial/serial_txx9.c
-@@ -657,7 +657,15 @@ static void
- serial_txx9_pm(struct uart_port *port, unsigned int state,
- 	      unsigned int oldstate)
- {
--	if (state == 0)
-+	/*
-+	 * If oldstate was -1 this is called from
-+	 * uart_configure_port().  In this case do not initialize the
-+	 * port now, because the port was already initialized (for
-+	 * non-console port) or should not be initialized here (for
-+	 * console port).  If we initialized the port here we lose
-+	 * serial console settings.
-+	 */
-+	if (state == 0 && oldstate != -1)
- 		serial_txx9_initialize(port);
- }
-
-
-Patch 2:
-
-diff --git a/drivers/serial/serial_txx9.c b/drivers/serial/serial_txx9.c
-index 6846a6c..167c3a7 100644
---- a/drivers/serial/serial_txx9.c
-+++ b/drivers/serial/serial_txx9.c
-@@ -657,6 +657,15 @@ static void
- serial_txx9_pm(struct uart_port *port, unsigned int state,
- 	      unsigned int oldstate)
- {
-+	/*
-+	 * If oldstate was -1 this is called from
-+	 * uart_configure_port().  If we initialized the port here we
-+	 * lose serial console settings.
-+	 */
-+#ifdef CONFIG_SERIAL_TXX9_CONSOLE
-+	if (port->line == port->cons->index && oldstate == -1)
-+		return;
-+#endif
- 	if (state == 0)
- 		serial_txx9_initialize(port);
- }
-@@ -742,12 +751,7 @@ static void serial_txx9_config_port(struct uart_port *port, int uflags)
- 		return;
- 	port->type = PORT_TXX9;
- 	up->port.fifosize = TXX9_SIO_TX_FIFO;
--
--#ifdef CONFIG_SERIAL_TXX9_CONSOLE
--	if (up->port.line == up->port.cons->index)
--		return;
--#endif
--	serial_txx9_initialize(port);
-+	/* This port will be initialized in subsequent serial_txx9_pm() */
- }
- 
- static const char *
-
-
-Hope these patches help your refreshing.
-
+Signed-off-by: Maciej W. Rozycki <macro@linux-mips.org>
 ---
-Atsushi Nemoto
+ Please apply under the obviously-correct rule.
+
+  Maciej
+
+patch-mips-2.6.18-20060920-dz-junk-0
+diff -up --recursive --new-file linux-mips-2.6.18-20060920.macro/drivers/serial/dz.h linux-mips-2.6.18-20060920/drivers/serial/dz.h
+--- linux-mips-2.6.18-20060920.macro/drivers/serial/dz.h	2003-06-11 23:26:46.000000000 +0000
++++ linux-mips-2.6.18-20060920/drivers/serial/dz.h	2007-01-07 19:06:02.000000000 +0000
+@@ -110,9 +110,4 @@
+ #define DZ_XMIT_SIZE   4096                 /* buffer size */
+ #define DZ_WAKEUP_CHARS   DZ_XMIT_SIZE/4
+ 
+-#ifdef MODULE
+-int init_module (void)
+-void cleanup_module (void)
+-#endif
+-
+ #endif /* DZ_SERIAL_H */
