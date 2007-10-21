@@ -1,98 +1,148 @@
-From: sathesh babu <sathesh_edara2003-/E1597aS9LQxFYw1CcD5bw@public.gmane.org>
-Subject: MIPS Crosstoolchain for MIPS24K with dsp amd 24k
-	compiler options
-Date: Sat, 20 Oct 2007 09:07:07 +0100 (BST)
-Message-ID: <712862.82132.qm@web7908.mail.in.yahoo.com>
-References: <Pine.LNX.4.64N.0710192135440.13279@blysk.ds.pg.gda.pl>
-Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0976479810=="
-Return-path: <buildroot-bounces-2zL2ArBv0bUdnm+yROfE0A@public.gmane.org>
-In-Reply-To: <Pine.LNX.4.64N.0710192135440.13279-ZLUVCuZeNS790TmaoATp/9Ui29CwQgaX@public.gmane.org>
-List-Unsubscribe: <http://busybox.net/mailman/listinfo/buildroot>,
-	<mailto:buildroot-request-2zL2ArBv0bUdnm+yROfE0A@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://busybox.net/lists/buildroot>
-List-Post: <mailto:buildroot-2zL2ArBv0bUdnm+yROfE0A@public.gmane.org>
-List-Help: <mailto:buildroot-request-2zL2ArBv0bUdnm+yROfE0A@public.gmane.org?subject=help>
-List-Subscribe: <http://busybox.net/mailman/listinfo/buildroot>,
-	<mailto:buildroot-request-2zL2ArBv0bUdnm+yROfE0A@public.gmane.org?subject=subscribe>
-Mime-version: 1.0
-Sender: buildroot-bounces-2zL2ArBv0bUdnm+yROfE0A@public.gmane.org
-Errors-To: buildroot-bounces-2zL2ArBv0bUdnm+yROfE0A@public.gmane.org
-To: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, buildroot-2zL2ArBv0bUdnm+yROfE0A@public.gmane.org
+From: Jeff Garzik <jeff@garzik.org>
+Subject: [PATCH 1/17] various irq handler cleanups
+Date: Sun, 21 Oct 2007 03:52:10 -0400 (EDT)
+Message-ID: <20071021075210.04E1919041A@havoc.gtf.org>
+References: <lkjvxcz09835mnsdfv0983q4m1234m@havoc.gtf.org>
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1752291AbXJUHwg@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: LKML <linux-kernel@vger.kernel.org>
+Cc: acme@ghostprotocols.net, chas@cmf.nrl.navy.mil, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
---===============0976479810==
-Content-Type: multipart/alternative; boundary="0-1611430905-1192867627=:82132"
-Content-Transfer-Encoding: 7bit
+commit a33c4b813fea228053f6e6747bc9786f3e3db58d
+Author: Jeff Garzik <jeff@garzik.org>
+Date:   Fri Oct 19 15:10:54 2007 -0400
 
---0-1611430905-1192867627=:82132
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
+    [IRQ ARG CLEANUP] more driver cleanups
 
-Hi,=20
-  =20
-  I would like to build cross toolchain for MIPS24K processor with "-mdsp=
-" and
-   "-m24k" compile flag options for linux-2.6.18.8 kernel.
-  =20
-  I tried with below combinations of
-  - GCC-4.2.1,GCC-4.0.1, GCC-4.1.0
-  - binutils-2.15, binutil-2.17,binutil-2.18=20
-  -  uClibc-0.9.27=20
-  but i couldn't succeed any of the above combinations.
-  =20
-  I checked the mailing list and it is mentioned that GCC-4.2.x version o=
-f gcc has problems.
-  =20
-  Could you please guide me the, the exact versions of
-   - GCC=20
-   - binutils
-   - ucLibc
-  to be used to build toolchain with "-mdsp" and "-m24k" compiler options=
- for linux-2.6.18.8 kernel version.
-  =20
-  Thanks.=20
-  =20
-  Regards,
-  Sathesh
+ drivers/atm/ambassador.c     |    7 ++++---
+ drivers/char/cyclades.c      |   17 +----------------
+ drivers/char/mwave/tp3780i.c |   14 ++++++++++----
+ drivers/serial/8250.c        |    1 +
+ 5 files changed, 17 insertions(+), 25 deletions(-)
 
-      =20
----------------------------------
- Bollywood, fun, friendship, sports and more. You name it,  we have it.
---0-1611430905-1192867627=:82132
-Content-Type: text/html; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<div>Hi, </div>  <div>&nbsp;</div>  <div>I would like to build cross tool=
-chain for MIPS24K processor with "-mdsp" and</div>  <div>&nbsp;"-m24k" co=
-mpile flag options for linux-2.6.18.8 kernel.</div>  <div>&nbsp;</div>  <=
-div>I tried&nbsp;with below combinations of</div>  <div>- GCC-4.2.1,GCC-4=
-.0.1, GCC-4.1.0</div>  <div>- binutils-2.15, binutil-2.17,binutil-2.18&nb=
-sp;</div>  <div>- &nbsp;uClibc-0.9.27 </div>  <div>but i couldn't succeed=
- any of the above combinations.</div>  <div>&nbsp;</div>  <div>I checked =
-the mailing list and it is mentioned that GCC-4.2.x version of gcc has pr=
-oblems.</div>  <div>&nbsp;</div>  <div>Could you please guide me the, the=
- exact versions of</div>  <div>&nbsp;- GCC&nbsp;</div>  <div>&nbsp;- binu=
-tils</div>  <div>&nbsp;- ucLibc</div>  <div>to be used to build toolchain=
- with "-mdsp" and "-m24k"&nbsp;compiler options for linux-2.6.18.8 kernel=
- version.</div>  <div>&nbsp;</div>  <div>Thanks.&nbsp;</div>  <div>&nbsp;=
-</div>  <div>Regards,</div>=20
- <div>Sathesh</div><p>&#32;
-
-
-      <!--1--><hr size=3D1></hr> Bollywood, fun, friendship, sports and m=
-ore. You name it, <a href=3D"http://in.rd.yahoo.com/tagline_groups_1/*htt=
-p://in.promos.yahoo.com/groups"> we have it.</a>
---0-1611430905-1192867627=:82132--
-
---===============0976479810==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-buildroot mailing list
-buildroot-2zL2ArBv0bUdnm+yROfE0A@public.gmane.org
-http://busybox.net/mailman/listinfo/buildroot
---===============0976479810==--
+a33c4b813fea228053f6e6747bc9786f3e3db58d
+diff --git a/drivers/atm/ambassador.c b/drivers/atm/ambassador.c
+index c2b9464..da0895e 100644
+--- a/drivers/atm/ambassador.c
++++ b/drivers/atm/ambassador.c
+@@ -862,8 +862,9 @@ static inline void interrupts_off (amb_dev * dev) {
+ 
+ /********** interrupt handling **********/
+ 
+-static irqreturn_t interrupt_handler(int irq, void *dev_id) {
+-  amb_dev * dev = dev_id;
++static irqreturn_t interrupt_handler(int irq, void *dev_id)
++{
++  amb_dev *dev = dev_id;
+   
+   PRINTD (DBG_IRQ|DBG_FLOW, "interrupt_handler: %p", dev_id);
+   
+@@ -872,7 +873,7 @@ static irqreturn_t interrupt_handler(int irq, void *dev_id) {
+   
+     // for us or someone else sharing the same interrupt
+     if (!interrupt) {
+-      PRINTD (DBG_IRQ, "irq not for me");
++      PRINTD (DBG_IRQ, "no irq events pending");
+       return IRQ_NONE;
+     }
+     
+diff --git a/drivers/char/cyclades.c b/drivers/char/cyclades.c
+index d1bd0f0..b1b5799 100644
+--- a/drivers/char/cyclades.c
++++ b/drivers/char/cyclades.c
+@@ -1318,13 +1318,6 @@ static irqreturn_t cyy_interrupt(int irq, void *dev_id)
+ 	unsigned int chip, too_many, had_work;
+ 	int index;
+ 
+-	if (unlikely(cinfo == NULL)) {
+-#ifdef CY_DEBUG_INTERRUPTS
+-		printk(KERN_DEBUG "cyy_interrupt: spurious interrupt %d\n",irq);
+-#endif
+-		return IRQ_NONE;	/* spurious interrupt */
+-	}
+-
+ 	card_base_addr = cinfo->base_addr;
+ 	index = cinfo->bus_index;
+ 
+@@ -1730,17 +1723,9 @@ static irqreturn_t cyz_interrupt(int irq, void *dev_id)
+ {
+ 	struct cyclades_card *cinfo = dev_id;
+ 
+-	if (unlikely(cinfo == NULL)) {
+-#ifdef CY_DEBUG_INTERRUPTS
+-		printk(KERN_DEBUG "cyz_interrupt: spurious interrupt %d\n",irq);
+-#endif
+-		return IRQ_NONE;	/* spurious interrupt */
+-	}
+-
+ 	if (unlikely(!ISZLOADED(*cinfo))) {
+ #ifdef CY_DEBUG_INTERRUPTS
+-		printk(KERN_DEBUG "cyz_interrupt: board not yet loaded "
+-				"(IRQ%d).\n", irq);
++		printk(KERN_DEBUG "cyz_interrupt: board not yet loaded\n");
+ #endif
+ 		return IRQ_NONE;
+ 	}
+diff --git a/drivers/char/mwave/tp3780i.c b/drivers/char/mwave/tp3780i.c
+index f282976..37fe80d 100644
+--- a/drivers/char/mwave/tp3780i.c
++++ b/drivers/char/mwave/tp3780i.c
+@@ -97,20 +97,24 @@ static void EnableSRAM(THINKPAD_BD_DATA * pBDData)
+ 
+ static irqreturn_t UartInterrupt(int irq, void *dev_id)
+ {
++	int irqno = (int)(unsigned long) dev_id;
++
+ 	PRINTK_3(TRACE_TP3780I,
+-		"tp3780i::UartInterrupt entry irq %x dev_id %p\n", irq, dev_id);
++		"tp3780i::UartInterrupt entry irq %x dev_id %p\n", irqno, dev_id);
+ 	return IRQ_HANDLED;
+ }
+ 
+ static irqreturn_t DspInterrupt(int irq, void *dev_id)
+ {
++	int irqno = (int)(unsigned long) dev_id;
++
+ 	pMWAVE_DEVICE_DATA pDrvData = &mwave_s_mdd;
+ 	DSP_3780I_CONFIG_SETTINGS *pSettings = &pDrvData->rBDData.rDspSettings;
+ 	unsigned short usDspBaseIO = pSettings->usDspBaseIO;
+ 	unsigned short usIPCSource = 0, usIsolationMask, usPCNum;
+ 
+ 	PRINTK_3(TRACE_TP3780I,
+-		"tp3780i::DspInterrupt entry irq %x dev_id %p\n", irq, dev_id);
++		"tp3780i::DspInterrupt entry irq %x dev_id %p\n", irqno, dev_id);
+ 
+ 	if (dsp3780I_GetIPCSource(usDspBaseIO, &usIPCSource) == 0) {
+ 		PRINTK_2(TRACE_TP3780I,
+@@ -361,14 +365,16 @@ int tp3780I_EnableDSP(THINKPAD_BD_DATA * pBDData)
+ 	pSettings->bPllBypass = TP_CFG_PllBypass;
+ 	pSettings->usChipletEnable = TP_CFG_ChipletEnable;
+ 
+-	if (request_irq(pSettings->usUartIrq, &UartInterrupt, 0, "mwave_uart", NULL)) {
++	if (request_irq(pSettings->usUartIrq, &UartInterrupt, 0, "mwave_uart",
++			(void *)(unsigned long) pSettings->usUartIrq)) {
+ 		PRINTK_ERROR(KERN_ERR_MWAVE "tp3780i::tp3780I_EnableDSP: Error: Could not get UART IRQ %x\n", pSettings->usUartIrq);
+ 		goto exit_cleanup;
+ 	} else {		/* no conflict just release */
+ 		free_irq(pSettings->usUartIrq, NULL);
+ 	}
+ 
+-	if (request_irq(pSettings->usDspIrq, &DspInterrupt, 0, "mwave_3780i", NULL)) {
++	if (request_irq(pSettings->usDspIrq, &DspInterrupt, 0, "mwave_3780i",
++			(void *)(unsigned long) pSettings->usDspIrq)) {
+ 		PRINTK_ERROR("tp3780i::tp3780I_EnableDSP: Error: Could not get 3780i IRQ %x\n", pSettings->usDspIrq);
+ 		goto exit_cleanup;
+ 	} else {
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index f94109c..0d661ba 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -40,6 +40,7 @@
+ #include <linux/serial_8250.h>
+ #include <linux/nmi.h>
+ #include <linux/mutex.h>
++#include <linux/interrupt.h>
+ 
+ #include <asm/io.h>
+ #include <asm/irq.h>
