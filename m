@@ -1,30 +1,61 @@
-From: "Maciej W. Rozycki" <macro@linux-mips.org>
-Subject: Re: [PATCH] tty_ioctl: Fix the baud_table check in encode_baud_rate
-Date: Tue, 23 Oct 2007 18:32:59 +0100 (BST)
-Message-ID: <Pine.LNX.4.64N.0710231828180.8693@blysk.ds.pg.gda.pl>
-References: <Pine.LNX.4.64N.0710161857280.22596@blysk.ds.pg.gda.pl>
- <471543C3.3050502@tiscali.nl>
+From: Jean Delvare <khali@linux-fr.org>
+Subject: [PATCH] serial/8250_pci: Fix a warning in pciserial_resume_one
+Date: Wed, 24 Oct 2007 12:17:33 +0200
+Message-ID: <20071024121733.023f962d@hyperion.delvare>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cerber.ds.pg.gda.pl ([153.19.208.18]:33268 "EHLO
-	cerber.ds.pg.gda.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752563AbXJWRdG (ORCPT
+Received: from smtp-dmz-233-wednesday.dmz.nerim.net ([195.5.254.233]:57358
+	"EHLO kellthuzad.dmz.nerim.net" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751237AbXJXKks (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 23 Oct 2007 13:33:06 -0400
-In-Reply-To: <471543C3.3050502@tiscali.nl>
+	Wed, 24 Oct 2007 06:40:48 -0400
+Received: from mallaury.nerim.net (smtp-103-wednesday.noc.nerim.net [62.4.17.103])
+	by kellthuzad.dmz.nerim.net (Postfix) with ESMTP id 69C0D230F7
+	for <linux-serial@vger.kernel.org>; Wed, 24 Oct 2007 12:19:30 +0200 (CEST)
+Received: from hyperion.delvare (jdelvare.pck.nerim.net [62.212.121.182])
+	by mallaury.nerim.net (Postfix) with ESMTP id 321464F3E5
+	for <linux-serial@vger.kernel.org>; Wed, 24 Oct 2007 12:17:27 +0200 (CEST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Roel Kluin <12o3l@tiscali.nl>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On Wed, 17 Oct 2007, Roel Kluin wrote:
+Fix the following warning:
+drivers/serial/8250_pci.c: In function "pciserial_resume_one":
+drivers/serial/8250_pci.c:1998: warning: ignoring return value of "pci_enable_device", declared with attribute warn_unused_result
 
-> 		if (oclose >= abs(obaud - baud_table[i])) {
-> 
-> should work as well
+Signed-off-by: Jean Delvare <khali@linux-fr.org>
+---
+As a side note, I'm curious why the call to pci_enable_device() is
+conditioned by priv being set. I'm also not sure if additional cleanups
+should be performed if an error occurs.
 
- Hmm, I am not sure if it is clearer or produces better code, but send a 
-patch -- I will not object.
+ drivers/serial/8250_pci.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-  Maciej
+--- linux-2.6.24-rc1.orig/drivers/serial/8250_pci.c	2007-10-24 09:59:47.000000000 +0200
++++ linux-2.6.24-rc1/drivers/serial/8250_pci.c	2007-10-24 12:03:26.000000000 +0200
+@@ -1987,6 +1987,7 @@ static int pciserial_suspend_one(struct 
+ static int pciserial_resume_one(struct pci_dev *dev)
+ {
+ 	struct serial_private *priv = pci_get_drvdata(dev);
++	int rc;
+ 
+ 	pci_set_power_state(dev, PCI_D0);
+ 	pci_restore_state(dev);
+@@ -1995,7 +1996,9 @@ static int pciserial_resume_one(struct p
+ 		/*
+ 		 * The device may have been disabled.  Re-enable it.
+ 		 */
+-		pci_enable_device(dev);
++		rc = pci_enable_device(dev);
++		if (rc)
++			return rc;
+ 
+ 		pciserial_resume_ports(priv);
+ 	}
+
+
+-- 
+Jean Delvare
