@@ -1,35 +1,30 @@
-From: "Maciej W. Rozycki" <macro@linux-mips.org>
-Subject: Re: [PATCH] serial: fix au1xxx UART0 irq setup
-Date: Thu, 25 Oct 2007 15:57:01 +0100 (BST)
-Message-ID: <Pine.LNX.4.64N.0710251548080.24086@blysk.ds.pg.gda.pl>
-References: <4720A11E.5060101@gmail.com> <20071025140940.GC23398@linux-mips.org>
+From: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
+Subject: Re: [PATCH] serial: do not call ->pm() on initialization for
+ console port
+Date: Fri, 26 Oct 2007 01:05:10 +0900 (JST)
+Message-ID: <20071026.010510.59032545.anemo@mba.ocn.ne.jp>
+References: <20071019.011355.39154656.anemo@mba.ocn.ne.jp>
+	<20071018161827.GB16244@flint.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cerber.ds.pg.gda.pl ([153.19.208.18]:37147 "EHLO
-	cerber.ds.pg.gda.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754621AbXJYO5J (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 25 Oct 2007 10:57:09 -0400
-In-Reply-To: <20071025140940.GC23398@linux-mips.org>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1756177AbXJYQDa@vger.kernel.org>
+In-Reply-To: <20071018161827.GB16244@flint.arm.linux.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: rmk+lkml@arm.linux.org.uk
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, akpm@linux-foundation.org
 List-Id: linux-serial@vger.kernel.org
-To: Ralf Baechle <ralf@linux-mips.org>
-Cc: Jan Nikitenko <jan.nikitenko@gmail.com>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org
 
-On Thu, 25 Oct 2007, Ralf Baechle wrote:
+On Thu, 18 Oct 2007 17:18:27 +0100, Russell King <rmk+lkml@arm.linux.org.uk> wrote:
+> > Attached patch fixes this problem.  Is this a right way?
+> > If not, I will fix the serial_txx9 driver to skip the initialization in
+> > ->pm() if oldstate was -1.
+> 
+> I'll have to investigate further to refresh myself with what's going
+> on here, but your patch looks wrong.
 
-> That said, irq 0 is imho totally valid (take the good old PIT timer
-> interrupt of the PC as the classic example) and treating it as an invalid 
-> interrupt number is broken.
+Now rc1 is released.  Any chances for this patch?
+If none, I should push other workaround to fix this issue on 2.6.24.
 
- I would rather -1 stood for the invalid IRQ number -- unlike with 0 
-chances are nobody will need 4G of interrupt lines or vectors (as 
-applicable) in a single system.  We sort of escape the problem with the 
-MIPS processors because the IP0 bit of the Cause register is a software 
-interrupt that is not used by devices, but still some platforms bypass the 
-built-in interrupt "controller" as only a single source is used in the 
-Cause register and want to start the numbering of lines in the external 
-controller from 0.
-
-  Maciej
+---
+Atsushi Nemoto
