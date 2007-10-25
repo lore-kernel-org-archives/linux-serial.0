@@ -1,39 +1,39 @@
-From: Ralf Baechle <ralf@linux-mips.org>
-Subject: Re: [PATCH] serial: fix au1xxx UART0 irq setup
-Date: Thu, 25 Oct 2007 17:41:03 +0100
-Message-ID: <20071025164103.GA25206@linux-mips.org>
-References: <4720A11E.5060101@gmail.com> <20071025140940.GC23398@linux-mips.org> <Pine.LNX.4.64N.0710251548080.24086@blysk.ds.pg.gda.pl>
+From: Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH] serial: do not call ->pm() on initialization for
+ console port
+Date: Thu, 25 Oct 2007 13:40:44 -0700
+Message-ID: <20071025134044.58ca9d35.akpm@linux-foundation.org>
+References: <20071019.011355.39154656.anemo@mba.ocn.ne.jp>
+	<20071018161827.GB16244@flint.arm.linux.org.uk>
+	<20071026.010510.59032545.anemo@mba.ocn.ne.jp>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-mips-bounce@linux-mips.org>
-Content-Disposition: inline
-In-Reply-To: <Pine.LNX.4.64N.0710251548080.24086@blysk.ds.pg.gda.pl>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-To: "Maciej W. Rozycki" <macro@linux-mips.org>
-Cc: Jan Nikitenko <jan.nikitenko@gmail.com>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp2.linux-foundation.org ([207.189.120.14]:32797 "EHLO
+	smtp2.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753301AbXJYUlA (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 25 Oct 2007 16:41:00 -0400
+In-Reply-To: <20071026.010510.59032545.anemo@mba.ocn.ne.jp>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
+Cc: rmk+lkml@arm.linux.org.uk, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Thu, Oct 25, 2007 at 03:57:01PM +0100, Maciej W. Rozycki wrote:
+On Fri, 26 Oct 2007 01:05:10 +0900 (JST)
+Atsushi Nemoto <anemo@mba.ocn.ne.jp> wrote:
 
-> > That said, irq 0 is imho totally valid (take the good old PIT timer
-> > interrupt of the PC as the classic example) and treating it as an invalid 
-> > interrupt number is broken.
+> On Thu, 18 Oct 2007 17:18:27 +0100, Russell King <rmk+lkml@arm.linux.org.uk> wrote:
+> > > Attached patch fixes this problem.  Is this a right way?
+> > > If not, I will fix the serial_txx9 driver to skip the initialization in
+> > > ->pm() if oldstate was -1.
+> > 
+> > I'll have to investigate further to refresh myself with what's going
+> > on here, but your patch looks wrong.
 > 
->  I would rather -1 stood for the invalid IRQ number -- unlike with 0 
-> chances are nobody will need 4G of interrupt lines or vectors (as 
-> applicable) in a single system.  We sort of escape the problem with the 
-> MIPS processors because the IP0 bit of the Cause register is a software 
-> interrupt that is not used by devices, but still some platforms bypass the 
-> built-in interrupt "controller" as only a single source is used in the 
-> Cause register and want to start the numbering of lines in the external 
-> controller from 0.
+> Now rc1 is released.  Any chances for this patch?
+> If none, I should push other workaround to fix this issue on 2.6.24.
 
-Time to convert those platforms to irq_cpu.c as well.
-
-Anyway, I recall there was an argument against using -1 as the invalid
-irq number - but since -1 is not a valid index into the irq_desc array
-for example I would consider such use broken.  But does anybody recall
-the details?
-
-  Ralf
+I don't know what patch you're referring to.  I don't appear to have
+whatever-patch-this-is queued up anywhere?
