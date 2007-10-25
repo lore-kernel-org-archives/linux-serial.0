@@ -1,148 +1,61 @@
-From: "Maciej W. Rozycki" <macro@linux-mips.org>
-Subject: [PATCH] dz.c: Use a helper to cast from "struct uart_port *"
-Date: Thu, 25 Oct 2007 15:09:35 +0100 (BST)
-Message-ID: <Pine.LNX.4.64N.0710251458190.24086@blysk.ds.pg.gda.pl>
+From: Ralf Baechle <ralf@linux-mips.org>
+Subject: Re: [PATCH] serial: fix au1xxx UART0 irq setup
+Date: Thu, 25 Oct 2007 15:09:40 +0100
+Message-ID: <20071025140940.GC23398@linux-mips.org>
+References: <4720A11E.5060101@gmail.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cerber.ds.pg.gda.pl ([153.19.208.18]:43398 "EHLO
-	cerber.ds.pg.gda.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754886AbXJYOJo (ORCPT
+Received: from ftp.linux-mips.org ([194.74.144.162]:49364 "EHLO
+	ftp.linux-mips.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757883AbXJYOJw (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 25 Oct 2007 10:09:44 -0400
+	Thu, 25 Oct 2007 10:09:52 -0400
+Received: from localhost.localdomain ([127.0.0.1]:61576 "EHLO
+	dl5rb.ham-radio-op.net") by ftp.linux-mips.org with ESMTP
+	id S20022627AbXJYOJv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 25 Oct 2007 15:09:51 +0100
+Content-Disposition: inline
+In-Reply-To: <4720A11E.5060101@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-mips@linux-mips.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Jan Nikitenko <jan.nikitenko@gmail.com>
+Cc: linux-mips@linux-mips.org, linux-serial@vger.kernel.org
 
- Replace all casts from "struct uart_port *" to "struct dz_port *" with a 
-construct based on container_of().  This makes the conversion work 
-irrespective of where the former struct is located within the latter.
+On Thu, Oct 25, 2007 at 03:58:54PM +0200, Jan Nikitenko wrote:
 
- By popular request I have implemented it as an inline function rather 
-than a macro this time.
+> UART0 on Alchemy mips platforms (au1xxx) does not use real uart's hw
+> irq, causing 'ttyS0: 1 input overrun(s)' kernel message with data loss,
+> when more characters than uart's fifo size were to be received by the uart.
+> 
+> This problem can be experienced for example when uart0 is used as a
+> serial console on au1550 and more than 16 characters are pasted from
+> clipboard to the console.
+> 
+> The is_real_interrupt(irq) macro is defined in drivers/serial/8250.c as
+> a check, if the irq number is other than zero.
+> Because UART0 on au1xxx platforms uses irq number 0, the
+> is_real_interrupt() check fails and serial8250_backup_timeout() is used
+> instead of uart's hw irq.
+> 
+> The patch redefines the is_real_interrupt(irq) macro, as suggested in
+> the comment above the macro definition in 8250.c, in the
+> asm-mips/serial.h to be always true for CONFIG_SERIAL_8250_AU1X00.
+> This allows the irq number 0 to be used as hw irq for the alchemy uart0
+> and fixes the overrun problem.
+> 
+> Signed-off-by: Jan Nikitenko <jan.nikitenko@gmail.com>
 
-Signed-off-by: Maciej W. Rozycki <macro@linux-mips.org>
----
- Tested with checkpatch.pl and at the run-time -- MIPS/Linux on a
-DECstation 5000/200.
+Fairly unelegent imho but anyway, for 2.6.24 I've added support for
+tickless to MIPS which in turn required a bit of a cleanup on the Alchemy
+code so I renumbered the Alchemy interrupt numbers, so what used to be
+IRQ 0 is now IRQ 8 which means your patch is no longer needed for master.
 
- Please apply,
+That said, irq 0 is imho totally valid (take the good old PIT timer
+interrupt of the PC as the classic example) and treating it as an invalid 
+interrupt number is broken.
 
-  Maciej
+It's however equally pretty crude hack to undefine a symbol in a file other
+than the one defining it ...
 
-patch-mips-2.6.23-rc5-20070904-dz-to_dport-2
-diff -up --recursive --new-file linux-mips-2.6.23-rc5-20070904.macro/drivers/serial/dz.c linux-mips-2.6.23-rc5-20070904/drivers/serial/dz.c
---- linux-mips-2.6.23-rc5-20070904.macro/drivers/serial/dz.c	2007-10-13 12:57:52.000000000 +0000
-+++ linux-mips-2.6.23-rc5-20070904/drivers/serial/dz.c	2007-10-13 19:48:07.000000000 +0000
-@@ -65,6 +65,11 @@ struct dz_port {
- 
- static struct dz_port dz_ports[DZ_NB_PORT];
- 
-+static inline struct dz_port *to_dport(struct uart_port *uport)
-+{
-+	return container_of(uport, struct dz_port, port);
-+}
-+
- /*
-  * ------------------------------------------------------------
-  * dz_in () and dz_out ()
-@@ -103,7 +108,7 @@ static inline void dz_out(struct dz_port
- 
- static void dz_stop_tx(struct uart_port *uport)
- {
--	struct dz_port *dport = (struct dz_port *)uport;
-+	struct dz_port *dport = to_dport(uport);
- 	unsigned short tmp, mask = 1 << dport->port.line;
- 
- 	tmp = dz_in(dport, DZ_TCR);	/* read the TX flag */
-@@ -113,7 +118,7 @@ static void dz_stop_tx(struct uart_port 
- 
- static void dz_start_tx(struct uart_port *uport)
- {
--	struct dz_port *dport = (struct dz_port *)uport;
-+	struct dz_port *dport = to_dport(uport);
- 	unsigned short tmp, mask = 1 << dport->port.line;
- 
- 	tmp = dz_in(dport, DZ_TCR);	/* read the TX flag */
-@@ -123,7 +128,7 @@ static void dz_start_tx(struct uart_port
- 
- static void dz_stop_rx(struct uart_port *uport)
- {
--	struct dz_port *dport = (struct dz_port *)uport;
-+	struct dz_port *dport = to_dport(uport);
- 
- 	dport->cflag &= ~DZ_CREAD;
- 	dz_out(dport, DZ_LPR, dport->cflag | dport->port.line);
-@@ -347,7 +352,7 @@ static unsigned int dz_get_mctrl(struct 
- 	/*
- 	 * FIXME: Handle the 3100/5000 as appropriate. --macro
- 	 */
--	struct dz_port *dport = (struct dz_port *)uport;
-+	struct dz_port *dport = to_dport(uport);
- 	unsigned int mctrl = TIOCM_CAR | TIOCM_DSR | TIOCM_CTS;
- 
- 	if (dport->port.line == DZ_MODEM) {
-@@ -363,7 +368,7 @@ static void dz_set_mctrl(struct uart_por
- 	/*
- 	 * FIXME: Handle the 3100/5000 as appropriate. --macro
- 	 */
--	struct dz_port *dport = (struct dz_port *)uport;
-+	struct dz_port *dport = to_dport(uport);
- 	unsigned short tmp;
- 
- 	if (dport->port.line == DZ_MODEM) {
-@@ -385,7 +390,7 @@ static void dz_set_mctrl(struct uart_por
-  */
- static int dz_startup(struct uart_port *uport)
- {
--	struct dz_port *dport = (struct dz_port *)uport;
-+	struct dz_port *dport = to_dport(uport);
- 	unsigned long flags;
- 	unsigned short tmp;
- 
-@@ -411,7 +416,7 @@ static int dz_startup(struct uart_port *
-  */
- static void dz_shutdown(struct uart_port *uport)
- {
--	struct dz_port *dport = (struct dz_port *)uport;
-+	struct dz_port *dport = to_dport(uport);
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&dport->port.lock, flags);
-@@ -433,7 +438,7 @@ static void dz_shutdown(struct uart_port
-  */
- static unsigned int dz_tx_empty(struct uart_port *uport)
- {
--	struct dz_port *dport = (struct dz_port *)uport;
-+	struct dz_port *dport = to_dport(uport);
- 	unsigned short tmp, mask = 1 << dport->port.line;
- 
- 	tmp = dz_in(dport, DZ_TCR);
-@@ -448,7 +453,7 @@ static void dz_break_ctl(struct uart_por
- 	 * FIXME: Can't access BREAK bits in TDR easily;
- 	 * reuse the code for polled TX. --macro
- 	 */
--	struct dz_port *dport = (struct dz_port *)uport;
-+	struct dz_port *dport = to_dport(uport);
- 	unsigned long flags;
- 	unsigned short tmp, mask = 1 << dport->port.line;
- 
-@@ -465,7 +470,7 @@ static void dz_break_ctl(struct uart_por
- static void dz_set_termios(struct uart_port *uport, struct ktermios *termios,
- 			   struct ktermios *old_termios)
- {
--	struct dz_port *dport = (struct dz_port *)uport;
-+	struct dz_port *dport = to_dport(uport);
- 	unsigned long flags;
- 	unsigned int cflag, baud;
- 
-@@ -672,7 +677,7 @@ static void dz_reset(struct dz_port *dpo
-  */
- static void dz_console_putchar(struct uart_port *uport, int ch)
- {
--	struct dz_port *dport = (struct dz_port *)uport;
-+	struct dz_port *dport = to_dport(uport);
- 	unsigned long flags;
- 	unsigned short csr, tcr, trdy, mask;
- 	int loops = 10000;
+  Ralf
