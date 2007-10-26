@@ -1,20 +1,24 @@
-From: Holger Schurig <hs4233-x6+DxXLjN1AJvtFkdXX2Hg4jNU5vUVPG@public.gmane.org>
+From: Lennert Buytenhek <buytenh@wantstofly.org>
 Subject: Re: [PATCH] Remove pointless casts from void pointers,
-Date: Fri, 26 Oct 2007 16:55:07 +0200
-Message-ID: <200710261655.07757.hs4233@mail.mn-solutions.de>
+Date: Fri, 26 Oct 2007 23:58:05 +0200
+Message-ID: <20071026215805.GD32372@xi.wantstofly.org>
 References: <9799624f63e093aa915947aea8fb1b8a5df959a1.1193390973.git.jeff@garzik.org>
 Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-15"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-wireless-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <9799624f63e093aa915947aea8fb1b8a5df959a1.1193390973.git.jeff-o2qLIJkoznsdnm+yROfE0A@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <netdev-owner@vger.kernel.org>
 Content-Disposition: inline
-Sender: linux-wireless-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Jeff Garzik <jeff-o2qLIJkoznsdnm+yROfE0A@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, rmk-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, kernel-OLH4Qvv75CYX/NnBR394Jw@public.gmane.org, tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jwboyer-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org, dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bryan.wu-OyLXuOCK7orQT0dZR+AlfA@public.gmane.org, adaplas-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+In-Reply-To: <9799624f63e093aa915947aea8fb1b8a5df959a1.1193390973.git.jeff@garzik.org>
+Sender: netdev-owner@vger.kernel.org
+To: Jeff Garzik <jeff@garzik.org>
+Cc: LKML <linux-kernel@vger.kernel.org>, akpm@linux-foundation.org, rmk@arm.linux.org.uk, kernel@wantstofly.org, tony.luck@intel.com, jwboyer@linux.vnet.ibm.com, benh@kernel.crashing.org, paulus@samba.org, dmitry.torokhov@gmail.com, netdev@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, linux-wireless@vger.kernel.org, bryan.wu@analog.com, adaplas@gmail.com
 List-Id: linux-serial@vger.kernel.org
 
->  drivers/net/wireless/libertas/if_cs.c      |    2 +-
+On Fri, Oct 26, 2007 at 05:40:22AM -0400, Jeff Garzik wrote:
 
-ACK
+>  arch/arm/mach-pxa/ssp.c                    |    2 +-
+>  arch/arm/mach-s3c2410/usb-simtec.c         |    2 +-
+>  arch/arm/plat-omap/mailbox.c               |    2 +-
+
+FWIW
+
+Acked-by: Lennert Buytenhek <buytenh@wantstofly.org>
