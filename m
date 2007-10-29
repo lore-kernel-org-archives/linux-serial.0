@@ -1,46 +1,51 @@
-From: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
-Subject: [PATCH 2.6.24-rc1] serial: Fix serial_txx9 console initialization
-Date: Mon, 29 Oct 2007 23:00:08 +0900 (JST)
-Message-ID: <20071029.230008.74389661.anemo@mba.ocn.ne.jp>
+From: Ralf Baechle <ralf@linux-mips.org>
+Subject: Re: [PATCH] serial: fix au1xxx UART0 irq setup
+Date: Mon, 29 Oct 2007 15:28:25 +0000
+Message-ID: <20071029152824.GB3953@linux-mips.org>
+References: <4720A11E.5060101@gmail.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mba.ocn.ne.jp ([122.1.235.107]:57661 "EHLO smtp.mba.ocn.ne.jp"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752302AbXJ2N6N (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 29 Oct 2007 09:58:13 -0400
+Received: from ftp.linux-mips.org ([194.74.144.162]:52594 "EHLO
+	ftp.linux-mips.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755441AbXJ2P3J (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 29 Oct 2007 11:29:09 -0400
+Received: from localhost.localdomain ([127.0.0.1]:15753 "EHLO
+	dl5rb.ham-radio-op.net") by ftp.linux-mips.org with ESMTP
+	id S20022687AbXJ2P3I (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 29 Oct 2007 15:29:08 +0000
+Content-Disposition: inline
+In-Reply-To: <4720A11E.5060101@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: rmk+kernel@arm.linux.org.uk
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, akpm@linux-foundation.org
+To: Jan Nikitenko <jan.nikitenko@gmail.com>
+Cc: linux-mips@linux-mips.org, linux-serial@vger.kernel.org
 
-Since commit 97d97224ff361e08777fb33e0fd193ca877dac28, serial_core
-calls ->pm() on initialization even if the port was used for console.
-This behaviour breaks serial_txx9 console since The serial_txx9 driver
-initialize its port entirely on its ->pm() method if new state was 0.
-This patch adds checking for oldstate value to fix this probelm.
+On Thu, Oct 25, 2007 at 03:58:54PM +0200, Jan Nikitenko wrote:
 
-Signed-off-by: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
----
-diff --git a/drivers/serial/serial_txx9.c b/drivers/serial/serial_txx9.c
-index 6846a6c..7ad2192 100644
---- a/drivers/serial/serial_txx9.c
-+++ b/drivers/serial/serial_txx9.c
-@@ -657,7 +657,15 @@ static void
- serial_txx9_pm(struct uart_port *port, unsigned int state,
- 	      unsigned int oldstate)
- {
--	if (state == 0)
-+	/*
-+	 * If oldstate was -1 this is called from
-+	 * uart_configure_port().  In this case do not initialize the
-+	 * port now, because the port was already initialized (for
-+	 * non-console port) or should not be initialized here (for
-+	 * console port).  If we initialized the port here we lose
-+	 * serial console settings.
-+	 */
-+	if (state == 0 && oldstate != -1)
- 		serial_txx9_initialize(port);
- }
+> UART0 on Alchemy mips platforms (au1xxx) does not use real uart's hw
+> irq, causing 'ttyS0: 1 input overrun(s)' kernel message with data loss,
+> when more characters than uart's fifo size were to be received by the uart.
+> 
+> This problem can be experienced for example when uart0 is used as a
+> serial console on au1550 and more than 16 characters are pasted from
+> clipboard to the console.
+> 
+> The is_real_interrupt(irq) macro is defined in drivers/serial/8250.c as
+> a check, if the irq number is other than zero.
+> Because UART0 on au1xxx platforms uses irq number 0, the
+> is_real_interrupt() check fails and serial8250_backup_timeout() is used
+> instead of uart's hw irq.
+> 
+> The patch redefines the is_real_interrupt(irq) macro, as suggested in
+> the comment above the macro definition in 8250.c, in the
+> asm-mips/serial.h to be always true for CONFIG_SERIAL_8250_AU1X00.
+> This allows the irq number 0 to be used as hw irq for the alchemy uart0
+> and fixes the overrun problem.
+> 
+> Signed-off-by: Jan Nikitenko <jan.nikitenko@gmail.com>
 
+So applied to all of lmo's -stable branches.
+
+  Ralf
