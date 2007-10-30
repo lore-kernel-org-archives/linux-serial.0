@@ -1,19 +1,32 @@
-From: Jesper Nilsson <jesper.nilsson@axis.com>
-Subject: [PATCH 10/16] CRIS architecture: Correct compile errors
-Date: Tue, 30 Oct 2007 10:33:28 +0100
-Message-ID: <20071030093328.GM11960@axis.com>
+From: "Mikael Starvik" <mikael.starvik@axis.com>
+Subject: RE: [PATCH 10/16] CRIS architecture: Correct compile errors
+Date: Tue, 30 Oct 2007 12:18:27 +0100
+Message-ID: <BFECAF9E178F144FAEF2BF4CE739C66804C4014C@exmail1.se.axis.com>
+References: <BFECAF9E178F144FAEF2BF4CE739C6680549C7E9@exmail1.se.axis.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from miranda.se.axis.com ([193.13.178.8]:36633 "EHLO
+Received: from miranda.se.axis.com ([193.13.178.8]:38447 "EHLO
 	miranda.se.axis.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754898AbXJ3Jdn (ORCPT
+	with ESMTP id S1752154AbXJ3L06 convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 30 Oct 2007 05:33:43 -0400
-Content-Disposition: inline
+	Tue, 30 Oct 2007 07:26:58 -0400
+In-Reply-To: <BFECAF9E178F144FAEF2BF4CE739C6680549C7E9@exmail1.se.axis.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>, Mikael Starvik <mikael.starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Jesper Nilsson <Jesper.Nilsson@axis.com>, 'Andrew Morton' <akpm@linux-foundation.org>, linux-serial@vger.kernel.org
+
+Signed-off-by: Mikael Starvik <starvik@axis.com>
+
+-----Original Message-----
+From: Jesper Nilsson [mailto:jespern@axis.com] 
+Sent: Tuesday, October 30, 2007 10:33 AM
+To: Andrew Morton; Mikael Starvik; Jesper Nilsson;
+linux-kernel@vger.kernel.org; linux-serial@vger.kernel.org
+Subject: [PATCH 10/16] CRIS architecture: Correct compile errors
+
 
 New and improved serial driver for cris v10.
 
@@ -21,17 +34,23 @@ Signed-off-by: Jesper Nilsson <jesper.nilsson@axis.com>
 
 ---
  linux-2.6.23-mod/drivers/serial/crisv10.h |  151 +++++
- linux-2.6.23/drivers/serial/crisv10.c     |  797 +++++++++++++-----------------
+ linux-2.6.23/drivers/serial/crisv10.c     |  797
++++++++++++++-----------------
  2 files changed, 520 insertions(+), 428 deletions(-)
 
-diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv10.c linux-2.6.23/drivers/serial/crisv10.c
---- clean_linux-2.6.23/drivers/serial/crisv10.c	2007-10-09 22:31:38.000000000 +0200
-+++ linux-2.6.23/drivers/serial/crisv10.c	2007-10-23 10:49:53.000000000 +0200
+diff -urBb -X /h/jespern/.exclude_files
+clean_linux-2.6.23/drivers/serial/crisv10.c
+linux-2.6.23/drivers/serial/crisv10.c
+--- clean_linux-2.6.23/drivers/serial/crisv10.c	2007-10-09
+22:31:38.000000000 +0200
++++ linux-2.6.23/drivers/serial/crisv10.c	2007-10-23
+10:49:53.000000000 +0200
 @@ -2,7 +2,7 @@
   *
   * Serial port driver for the ETRAX 100LX chip
   *
-- *    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003  Axis Communications AB
+- *    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003  Axis Communications
+AB
 + *    Copyright (C) 1998-2007  Axis Communications AB
   *
   *    Many, many authors. Based once upon a time on serial.c for 16x50.
@@ -65,7 +84,8 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
  #ifdef CONFIG_ETRAX_RS485
 -static int e100_write_rs485(struct tty_struct * tty, int from_user,
 -                            const unsigned char *buf, int count);
-+static int e100_write_rs485(struct tty_struct * tty, const unsigned char *buf, int count);
++static int e100_write_rs485(struct tty_struct * tty, const unsigned char
+*buf, int count);
  #endif
  static int get_lsr_info(struct e100_serial * info, unsigned int *value);
  
@@ -247,7 +267,8 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 +		local_irq_save(flags);
  		*e100_modem_pins[info->line].dtr_shadow &= ~mask;
  		*e100_modem_pins[info->line].dtr_shadow |= (set ? 0 : mask);
- 		*e100_modem_pins[info->line].dtr_port = *e100_modem_pins[info->line].dtr_shadow;
+ 		*e100_modem_pins[info->line].dtr_port =
+*e100_modem_pins[info->line].dtr_shadow;
 -		restore_flags(flags);
 +		local_irq_restore(flags);
  	}
@@ -277,7 +298,8 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 +		local_irq_save(flags);
  		*e100_modem_pins[info->line].ri_shadow &= ~mask;
  		*e100_modem_pins[info->line].ri_shadow |= (set ? 0 : mask);
- 		*e100_modem_pins[info->line].ri_port = *e100_modem_pins[info->line].ri_shadow;
+ 		*e100_modem_pins[info->line].ri_port =
+*e100_modem_pins[info->line].ri_shadow;
 -		restore_flags(flags);
 +		local_irq_restore(flags);
  	}
@@ -292,7 +314,8 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 +		local_irq_save(flags);
  		*e100_modem_pins[info->line].cd_shadow &= ~mask;
  		*e100_modem_pins[info->line].cd_shadow |= (set ? 0 : mask);
- 		*e100_modem_pins[info->line].cd_port = *e100_modem_pins[info->line].cd_shadow;
+ 		*e100_modem_pins[info->line].cd_port =
+*e100_modem_pins[info->line].cd_shadow;
 -		restore_flags(flags);
 +		local_irq_restore(flags);
  	}
@@ -305,7 +328,8 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 -	save_flags(flags);
 -	cli();
 +	local_irq_save(flags);
- 	DFLOW(DEBUG_LOG(info->line, "disable_txdma_channel %i\n", info->line));
+ 	DFLOW(DEBUG_LOG(info->line, "disable_txdma_channel %i\n",
+info->line));
  	if (info->line == 0) {
  		if ((genconfig_shadow & IO_MASK(R_GEN_CONFIG, dma6)) ==
 @@ -1587,7 +1664,7 @@
@@ -324,7 +348,8 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 -	save_flags(flags);
 -	cli();
 +	local_irq_save(flags);
- 	DFLOW(DEBUG_LOG(info->line, "enable_txdma_channel %i\n", info->line));
+ 	DFLOW(DEBUG_LOG(info->line, "enable_txdma_channel %i\n",
+info->line));
  	/* Enable output DMA channel for the serial port in question */
  	if (info->line == 0) {
 @@ -1613,7 +1689,7 @@
@@ -400,7 +425,8 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 +		local_irq_save(flags);
  		DFLOW(DEBUG_LOG(info->line, "XOFF rs_stop xmit %i\n",
  				CIRC_CNT(info->xmit.head,
- 					 info->xmit.tail,SERIAL_XMIT_SIZE)));
+ 
+info->xmit.tail,SERIAL_XMIT_SIZE)));
 @@ -1846,7 +1920,7 @@
  		}
  
@@ -418,7 +444,8 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 +		local_irq_save(flags);
  		DFLOW(DEBUG_LOG(info->line, "XOFF rs_start xmit %i\n",
  				CIRC_CNT(info->xmit.head,
- 					 info->xmit.tail,SERIAL_XMIT_SIZE)));
+ 
+info->xmit.tail,SERIAL_XMIT_SIZE)));
 @@ -1873,7 +1947,7 @@
  		    info->xmit.head != info->xmit.tail && info->xmit.buf)
  			e100_enable_serial_tx_ready_irq(info);
@@ -440,12 +467,14 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
      TIMERD(DEBUG_LOG(info->line, "start_timer %i ", info->line)); \
 @@ -2068,7 +2141,7 @@
    else { \
-     TIMERD(DEBUG_LOG(info->line, "timer %i already running\n", info->line)); \
+     TIMERD(DEBUG_LOG(info->line, "timer %i already running\n",
+info->line)); \
    } \
 -  restore_flags(timer_flags); \
 +  local_irq_restore(timer_flags); \
  }
- #define START_FLUSH_FAST_TIMER(info, string) START_FLUSH_FAST_TIMER_TIME(info, string, info->flush_time_usec)
+ #define START_FLUSH_FAST_TIMER(info, string)
+START_FLUSH_FAST_TIMER_TIME(info, string, info->flush_time_usec)
  
 @@ -2097,8 +2170,7 @@
  {
@@ -512,7 +541,8 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
  
 -	length = tty->flip.count;
 -	/* Don't flip more than the ldisc has room for.
--	 * The return value from ldisc.receive_room(tty) - might not be up to
+-	 * The return value from ldisc.receive_room(tty) - might not be up
+to
 -	 * date, the previous flip of up to TTY_FLIPBUF_SIZE might be on the
 -	 * processed and not accounted for yet.
 -	 * Since we use DMA, 1 SERIAL_DESCR_BUF_SIZE could be on the way.
@@ -523,21 +553,30 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 -	max_flip_size = tty->ldisc.receive_room(tty);
 -	if (max_flip_size < 0)
 -		max_flip_size = 0;
--	if (max_flip_size <= (TTY_FLIPBUF_SIZE +         /* Maybe not accounted for */
--			      length + info->recv_cnt +  /* We have this queued */
--			      2*SERIAL_DESCR_BUF_SIZE +    /* This could be on the way */
+-	if (max_flip_size <= (TTY_FLIPBUF_SIZE +         /* Maybe not
+accounted for */
+-			      length + info->recv_cnt +  /* We have this
+queued */
+-			      2*SERIAL_DESCR_BUF_SIZE +    /* This could be
+on the way */
 -			      TTY_THRESHOLD_THROTTLE)) { /* Some slack */
 -		/* check TTY_THROTTLED first so it indicates our state */
 -		if (!test_and_set_bit(TTY_THROTTLED, &tty->flags)) {
--			DFLOW(DEBUG_LOG(info->line,"flush_to_flip throttles room %lu\n", max_flip_size));
+-			DFLOW(DEBUG_LOG(info->line,"flush_to_flip throttles
+room %lu\n", max_flip_size));
 -			rs_throttle(tty);
 -		}
 -#if 0
--		else if (max_flip_size <= (TTY_FLIPBUF_SIZE +         /* Maybe not accounted for */
--					   length + info->recv_cnt +  /* We have this queued */
--					   SERIAL_DESCR_BUF_SIZE +    /* This could be on the way */
--					   TTY_THRESHOLD_THROTTLE)) { /* Some slack */
--			DFLOW(DEBUG_LOG(info->line,"flush_to_flip throttles again! %lu\n", max_flip_size));
+-		else if (max_flip_size <= (TTY_FLIPBUF_SIZE +         /*
+Maybe not accounted for */
+-					   length + info->recv_cnt +  /* We
+have this queued */
+-					   SERIAL_DESCR_BUF_SIZE +    /*
+This could be on the way */
+-					   TTY_THRESHOLD_THROTTLE)) { /*
+Some slack */
+-			DFLOW(DEBUG_LOG(info->line,"flush_to_flip throttles
+again! %lu\n", max_flip_size));
 -			rs_throttle(tty);
 -		}
 -#endif
@@ -546,14 +585,16 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 -	if (max_flip_size > TTY_FLIPBUF_SIZE)
 -		max_flip_size = TTY_FLIPBUF_SIZE;
 -
--	while ((buffer = info->first_recv_buffer) && length < max_flip_size) {
+-	while ((buffer = info->first_recv_buffer) && length < max_flip_size)
+{
 +	while ((buffer = info->first_recv_buffer)) {
  		unsigned int count = buffer->length;
  
 -		if (length + count > max_flip_size)
 -			count = max_flip_size - length;
 -
--		memcpy(tty->flip.char_buf_ptr + length, buffer->buffer, count);
+-		memcpy(tty->flip.char_buf_ptr + length, buffer->buffer,
+count);
 -		memset(tty->flip.flag_buf_ptr + length, TTY_NORMAL, count);
 -		tty->flip.flag_buf_ptr[length] = buffer->error;
 -
@@ -581,8 +622,10 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 -	DFLIP(
 -	  if (1) {
 -		  DEBUG_LOG(info->line, "*** rxtot %i\n", info->icount.rx);
--		  DEBUG_LOG(info->line, "ldisc %lu\n", tty->ldisc.chars_in_buffer(tty));
--		  DEBUG_LOG(info->line, "room  %lu\n", tty->ldisc.receive_room(tty));
+-		  DEBUG_LOG(info->line, "ldisc %lu\n",
+tty->ldisc.chars_in_buffer(tty));
+-		  DEBUG_LOG(info->line, "room  %lu\n",
+tty->ldisc.receive_room(tty));
 -	  }
 -
 -	);
@@ -597,7 +640,8 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 -	if (tty->flip.count >= TTY_FLIPBUF_SIZE - TTY_THRESHOLD_THROTTLE) {
 -		/* check TTY_THROTTLED first so it indicates our state */
 -		if (!test_and_set_bit(TTY_THROTTLED, &tty->flags)) {
--			DFLOW(DEBUG_LOG(info->line, "rs_throttle flip.count: %i\n", tty->flip.count));
+-			DFLOW(DEBUG_LOG(info->line, "rs_throttle flip.count:
+%i\n", tty->flip.count));
 -			rs_throttle(tty);
 -		}
 -	}
@@ -605,8 +649,10 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 -		DEBUG_LOG(info->line, "force FLIP! %i\n", tty->flip.count);
 -		tty->flip.work.func((void *) tty);
 -		if (tty->flip.count >= TTY_FLIPBUF_SIZE) {
--			DEBUG_LOG(info->line, "FLIP FULL! %i\n", tty->flip.count);
--			return info;		/* if TTY_DONT_FLIP is set */
+-			DEBUG_LOG(info->line, "FLIP FULL! %i\n",
+tty->flip.count);
+-			return info;		/* if TTY_DONT_FLIP is set
+*/
 -		}
 -	}
 +
@@ -614,12 +660,15 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
  	data_read = *((unsigned long *)&info->port[REG_DATA_STATUS32]);
  more_data:
 @@ -2789,27 +2776,25 @@
- 				DEBUG_LOG(info->line, "EBRK %i\n", info->break_detected_cnt);
+ 				DEBUG_LOG(info->line, "EBRK %i\n",
+info->break_detected_cnt);
  				info->errorcode = ERRCODE_INSERT_BREAK;
  			} else {
-+				unsigned char data = IO_EXTRACT(R_SERIAL0_READ, data_in, data_read);
++				unsigned char data =
+IO_EXTRACT(R_SERIAL0_READ, data_in, data_read);
 +				char flag = TTY_NORMAL;
- 				if (info->errorcode == ERRCODE_INSERT_BREAK) {
+ 				if (info->errorcode == ERRCODE_INSERT_BREAK)
+{
 -					info->icount.brk++;
 -					*tty->flip.char_buf_ptr = 0;
 -					*tty->flip.flag_buf_ptr = TTY_BREAK;
@@ -630,17 +679,23 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 +					tty_insert_flip_char(tty, 0, flag);
  					info->icount.rx++;
  				}
--				*tty->flip.char_buf_ptr = IO_EXTRACT(R_SERIAL0_READ, data_in, data_read);
+-				*tty->flip.char_buf_ptr =
+IO_EXTRACT(R_SERIAL0_READ, data_in, data_read);
  
- 				if (data_read & IO_MASK(R_SERIAL0_READ, par_err)) {
+ 				if (data_read & IO_MASK(R_SERIAL0_READ,
+par_err)) {
  					info->icount.parity++;
--					*tty->flip.flag_buf_ptr = TTY_PARITY;
+-					*tty->flip.flag_buf_ptr =
+TTY_PARITY;
 +					flag = TTY_PARITY;
- 				} else if (data_read & IO_MASK(R_SERIAL0_READ, overrun)) {
+ 				} else if (data_read &
+IO_MASK(R_SERIAL0_READ, overrun)) {
  					info->icount.overrun++;
--					*tty->flip.flag_buf_ptr = TTY_OVERRUN;
+-					*tty->flip.flag_buf_ptr =
+TTY_OVERRUN;
 +					flag = TTY_OVERRUN;
- 				} else if (data_read & IO_MASK(R_SERIAL0_READ, framing_err)) {
+ 				} else if (data_read &
+IO_MASK(R_SERIAL0_READ, framing_err)) {
  					info->icount.frame++;
 -					*tty->flip.flag_buf_ptr = TTY_FRAME;
 +					flag = TTY_FRAME;
@@ -653,11 +708,14 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
  			log_int(rdpc(), 0, 0);
  		}
  		);
--		*tty->flip.char_buf_ptr = IO_EXTRACT(R_SERIAL0_READ, data_in, data_read);
+-		*tty->flip.char_buf_ptr = IO_EXTRACT(R_SERIAL0_READ,
+data_in, data_read);
 -		*tty->flip.flag_buf_ptr = 0;
-+		tty_insert_flip_char(tty, IO_EXTRACT(R_SERIAL0_READ, data_in, data_read), TTY_NORMAL);
++		tty_insert_flip_char(tty, IO_EXTRACT(R_SERIAL0_READ,
+data_in, data_read), TTY_NORMAL);
  	} else {
- 		DEBUG_LOG(info->line, "ser_rx int but no data_avail  %08lX\n", data_read);
+ 		DEBUG_LOG(info->line, "ser_rx int but no data_avail
+%08lX\n", data_read);
  	}
  
  
@@ -670,7 +728,8 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 @@ -2972,7 +2953,7 @@
  	if (info->x_char) {
  		unsigned char rstat;
- 		DFLOW(DEBUG_LOG(info->line, "tx_int: xchar 0x%02X\n", info->x_char));
+ 		DFLOW(DEBUG_LOG(info->line, "tx_int: xchar 0x%02X\n",
+info->x_char));
 -		save_flags(flags); cli();
 +		local_irq_save(flags);
  		rstat = info->port[REG_STATUS];
@@ -705,7 +764,8 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
  	/* Normal char-by-char interrupt */
 @@ -3016,7 +2997,7 @@
  	}
- 	DINTR2(DEBUG_LOG(info->line, "tx_int %c\n", info->xmit.buf[info->xmit.tail]));
+ 	DINTR2(DEBUG_LOG(info->line, "tx_int %c\n",
+info->xmit.buf[info->xmit.tail]));
  	/* Send a byte, rs485 timing is critical so turn of ints */
 -	save_flags(flags); cli();
 +	local_irq_save(flags);
@@ -732,7 +792,8 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
  	info = rs_table;
 @@ -3110,7 +3091,7 @@
  			/* Unblock the serial interrupt */
- 			*R_VECT_MASK_SET = IO_STATE(R_VECT_MASK_SET, serial, set);
+ 			*R_VECT_MASK_SET = IO_STATE(R_VECT_MASK_SET, serial,
+set);
  
 -			sti();
 +			local_irq_enable();
@@ -742,7 +803,8 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 @@ -3123,11 +3104,11 @@
  				ready_mask <<= 2;
  			}
- 			/* handle_ser_tx_interrupt enables tr_ready interrupts */
+ 			/* handle_ser_tx_interrupt enables tr_ready
+interrupts */
 -			cli();
 +			local_irq_disable();
  			/* Handle reentered TX interrupt */
@@ -823,8 +885,10 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
  
  
 @@ -3454,7 +3435,6 @@
- 				DBAUD(printk("using external baudrate: %lu\n", CONFIG_ETRAX_EXTERN_PB6CLK_FREQ/8));
- 				info->baud = CONFIG_ETRAX_EXTERN_PB6CLK_FREQ/8;
+ 				DBAUD(printk("using external baudrate:
+%lu\n", CONFIG_ETRAX_EXTERN_PB6CLK_FREQ/8));
+ 				info->baud =
+CONFIG_ETRAX_EXTERN_PB6CLK_FREQ/8;
  			}
 -		}
  #endif
@@ -873,11 +937,13 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 -	save_flags(flags);
 +	local_save_flags(flags);
  	DFLOW(DEBUG_LOG(info->line, "write count %i ", count));
- 	DFLOW(DEBUG_LOG(info->line, "ldisc %i\n", tty->ldisc.chars_in_buffer(tty)));
+ 	DFLOW(DEBUG_LOG(info->line, "ldisc %i\n",
+tty->ldisc.chars_in_buffer(tty)));
  
  
 -	/* the cli/restore_flags pairs below are needed because the
-+	/* the local_irq_disable/restore_flags pairs below are needed because the
++	/* the local_irq_disable/restore_flags pairs below are needed
+because the
  	 * DMA interrupt handler moves the info->xmit values. the memcpy
  	 * needs to be in the critical region unfortunately, because we
  	 * need to read xmit values, memcpy, write xmit values in one
@@ -908,7 +974,8 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 -					       SERIAL_XMIT_SIZE);
 -			if (c1 < c)
 -				c = c1;
--			memcpy(info->xmit.buf + info->xmit.head, tmp_buf, c);
+-			memcpy(info->xmit.buf + info->xmit.head, tmp_buf,
+c);
 -			info->xmit.head = ((info->xmit.head + c) &
 -					   (SERIAL_XMIT_SIZE-1));
 -			restore_flags(flags);
@@ -995,7 +1062,8 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 -	/* Polarity isn't verified */
 -#if 0 /*def SERIAL_DEBUG_IO  */
 -
--	printk("get_modem_info: RTS: %i DTR: %i CD: %i RI: %i DSR: %i CTS: %i\n",
+-	printk("get_modem_info: RTS: %i DTR: %i CD: %i RI: %i DSR: %i CTS:
+%i\n",
 -	       E100_RTS_GET(info),
 -	       E100_DTR_GET(info),
 -	       E100_CD_GET(info),
@@ -1026,9 +1094,11 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 +	local_irq_save(flags);
 +	if (break_state == -1) {
 +		/* Go to manual mode and set the txd pin to 0 */
-+		info->tx_ctrl &= 0x3F; /* Clear bit 7 (txd) and 6 (tr_enable) */
++		info->tx_ctrl &= 0x3F; /* Clear bit 7 (txd) and 6
+(tr_enable) */
 +	} else {
-+		info->tx_ctrl |= (0x80 | 0x40); /* Set bit 7 (txd) and 6 (tr_enable) */
++		info->tx_ctrl |= (0x80 | 0x40); /* Set bit 7 (txd) and 6
+(tr_enable) */
  	}
 -#endif
 -	if (copy_to_user(value, &result, sizeof(int)))
@@ -1042,7 +1112,8 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
  static int
 -set_modem_info(struct e100_serial * info, unsigned int cmd,
 -	       unsigned int *value)
-+rs_tiocmset(struct tty_struct *tty, struct file * file, unsigned int set, unsigned int clear)
++rs_tiocmset(struct tty_struct *tty, struct file * file, unsigned int set,
+unsigned int clear)
  {
 -	unsigned int arg;
 -
@@ -1134,11 +1205,14 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 -	cli();
 -	if (break_state == -1) {
 -		/* Go to manual mode and set the txd pin to 0 */
--		info->tx_ctrl &= 0x3F; /* Clear bit 7 (txd) and 6 (tr_enable) */
+-		info->tx_ctrl &= 0x3F; /* Clear bit 7 (txd) and 6
+(tr_enable) */
 -	} else {
--		info->tx_ctrl |= (0x80 | 0x40); /* Set bit 7 (txd) and 6 (tr_enable) */
+-		info->tx_ctrl |= (0x80 | 0x40); /* Set bit 7 (txd) and 6
+(tr_enable) */
 +#ifdef SERIAL_DEBUG_IO
-+	printk("ser%i: modem state: %i 0x%08X\n", info->line, result, result);
++	printk("ser%i: modem state: %i 0x%08X\n", info->line, result,
+result);
 +	{
 +		char s[100];
 +
@@ -1165,16 +1239,21 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 -		case TIOCMBIS:
 -		case TIOCMBIC:
 -		case TIOCMSET:
--			return set_modem_info(info, cmd, (unsigned int *) arg);
+-			return set_modem_info(info, cmd, (unsigned int *)
+arg);
  		case TIOCGSERIAL:
  			return get_serial_info(info,
- 					       (struct serial_struct *) arg);
+ 					       (struct serial_struct *)
+arg);
 @@ -4204,7 +4109,7 @@
- 			if (copy_from_user(&rs485wr, (struct rs485_write*)arg, sizeof(rs485wr)))
+ 			if (copy_from_user(&rs485wr, (struct
+rs485_write*)arg, sizeof(rs485wr)))
  				return -EFAULT;
  
--			return e100_write_rs485(tty, 1, rs485wr.outc, rs485wr.outc_size);
-+			return e100_write_rs485(tty, rs485wr.outc, rs485wr.outc_size);
+-			return e100_write_rs485(tty, 1, rs485wr.outc,
+rs485wr.outc_size);
++			return e100_write_rs485(tty, rs485wr.outc,
+rs485wr.outc_size);
  		}
  #endif
  
@@ -1185,11 +1264,13 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 -/* In debugport.c - register a console write function that uses the normal
 - * serial driver
 - */
--typedef int (*debugport_write_function)(int i, const char *buf, unsigned int len);
+-typedef int (*debugport_write_function)(int i, const char *buf, unsigned
+int len);
 -
 -extern debugport_write_function debug_write_function;
 -
--static int rs_debug_write_function(int i, const char *buf, unsigned int len)
+-static int rs_debug_write_function(int i, const char *buf, unsigned int
+len)
 -{
 -	int cnt;
 -	int written = 0;
@@ -1266,21 +1347,25 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 +	 * Release any allocated DMA irq's.
 +	 */
 +	if (info->dma_in_enabled) {
-+		cris_free_dma(info->dma_in_nbr, info->dma_in_irq_description);
++		cris_free_dma(info->dma_in_nbr,
+info->dma_in_irq_description);
 +		free_irq(info->dma_in_irq_nbr,
 +			 info);
 +		info->uses_dma_in = 0;
 +#ifdef SERIAL_DEBUG_OPEN
-+		printk("DMA irq '%s' freed\n", info->dma_in_irq_description);
++		printk("DMA irq '%s' freed\n",
+info->dma_in_irq_description);
 +#endif
 +	}
 +	if (info->dma_out_enabled) {
 +		free_irq(info->dma_out_irq_nbr,
 +			 info);
-+		cris_free_dma(info->dma_out_nbr, info->dma_out_irq_description);
++		cris_free_dma(info->dma_out_nbr,
+info->dma_out_irq_description);
 +		info->uses_dma_out = 0;
 +#ifdef SERIAL_DEBUG_OPEN
-+		printk("DMA irq '%s' freed\n", info->dma_out_irq_description);
++		printk("DMA irq '%s' freed\n",
+info->dma_out_irq_description);
 +#endif
 +	}
  }
@@ -1355,42 +1440,54 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 +					info->dma_in_irq_flags,
 +					info->dma_in_irq_description,
 +					info)) {
-+				printk(KERN_WARNING "DMA irq '%s' busy; falling back to non-DMA mode\n", info->dma_in_irq_description);
-+				/* Make sure we never try to use DMA in for the port again. */
++				printk(KERN_WARNING "DMA irq '%s' busy;
+falling back to non-DMA mode\n", info->dma_in_irq_description);
++				/* Make sure we never try to use DMA in for
+the port again. */
 +				info->dma_in_enabled = 0;
 +			} else if (cris_request_dma(info->dma_in_nbr,
-+						    info->dma_in_irq_description,
++
+info->dma_in_irq_description,
 +						    DMA_VERBOSE_ON_ERROR,
 +						    info->dma_owner)) {
 +				free_irq(info->dma_in_irq_nbr, info);
-+				printk(KERN_WARNING "DMA '%s' busy; falling back to non-DMA mode\n", info->dma_in_irq_description);
-+				/* Make sure we never try to use DMA in for the port again. */
++				printk(KERN_WARNING "DMA '%s' busy; falling
+back to non-DMA mode\n", info->dma_in_irq_description);
++				/* Make sure we never try to use DMA in for
+the port again. */
 +				info->dma_in_enabled = 0;
 +			}
 +#ifdef SERIAL_DEBUG_OPEN
-+			else printk("DMA irq '%s' allocated\n", info->dma_in_irq_description);
++			else printk("DMA irq '%s' allocated\n",
+info->dma_in_irq_description);
 +#endif
 +		}
 +		if (info->dma_out_enabled) {
 +			if (request_irq(info->dma_out_irq_nbr,
 +					       tr_interrupt,
 +					       info->dma_out_irq_flags,
-+					       info->dma_out_irq_description,
++
+info->dma_out_irq_description,
 +					       info)) {
-+				printk(KERN_WARNING "DMA irq '%s' busy; falling back to non-DMA mode\n", info->dma_out_irq_description);
-+				/* Make sure we never try to use DMA out for the port again. */
++				printk(KERN_WARNING "DMA irq '%s' busy;
+falling back to non-DMA mode\n", info->dma_out_irq_description);
++				/* Make sure we never try to use DMA out for
+the port again. */
 +				info->dma_out_enabled = 0;
 +			} else if (cris_request_dma(info->dma_out_nbr,
 +					     info->dma_out_irq_description,
 +					     DMA_VERBOSE_ON_ERROR,
 +					     info->dma_owner)) {
 +				free_irq(info->dma_out_irq_nbr, info);
-+				printk(KERN_WARNING "DMA '%s' busy; falling back to non-DMA mode\n", info->dma_out_irq_description);
-+				/* Make sure we never try to use DMA in for the port again. */
++				printk(KERN_WARNING "DMA '%s' busy; falling
+back to non-DMA mode\n", info->dma_out_irq_description);
++				/* Make sure we never try to use DMA in for
+the port again. */
 +				info->dma_out_enabled = 0;
 +			}
 +#ifdef SERIAL_DEBUG_OPEN
-+			else printk("DMA irq '%s' allocated\n", info->dma_out_irq_description);
++			else printk("DMA irq '%s' allocated\n",
+info->dma_out_irq_description);
 +#endif
 +		}
 +	}
@@ -1404,12 +1501,14 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 +	if (retval) {
 +		if (allocated_resources) {
 +			if (info->dma_out_enabled) {
-+				cris_free_dma(info->dma_out_nbr, info->dma_out_irq_description);
++				cris_free_dma(info->dma_out_nbr,
+info->dma_out_irq_description);
 +				free_irq(info->dma_out_irq_nbr,
 +					 info);
 +			}
 +			if (info->dma_in_enabled) {
-+				cris_free_dma(info->dma_in_nbr, info->dma_in_irq_description);
++				cris_free_dma(info->dma_in_nbr,
+info->dma_in_irq_description);
 +				free_irq(info->dma_in_irq_nbr,
 +					 info);
 +			}
@@ -1428,12 +1527,14 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
  #endif
 +		if (allocated_resources) {
 +			if (info->dma_out_enabled) {
-+				cris_free_dma(info->dma_out_nbr, info->dma_out_irq_description);
++				cris_free_dma(info->dma_out_nbr,
+info->dma_out_irq_description);
 +				free_irq(info->dma_out_irq_nbr,
 +					 info);
 +			}
 +			if (info->dma_in_enabled) {
-+				cris_free_dma(info->dma_in_nbr, info->dma_in_irq_description);
++				cris_free_dma(info->dma_in_nbr,
+info->dma_in_irq_description);
 +				free_irq(info->dma_in_irq_nbr,
 +					 info);
 +			}
@@ -1455,20 +1556,25 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
  #if !defined(CONFIG_ETRAX_SERIAL_FAST_TIMER)
  	init_timer(&flush_timer);
  	flush_timer.function = timed_flush_handler;
--	mod_timer(&flush_timer, jiffies + CONFIG_ETRAX_SERIAL_RX_TIMEOUT_TICKS);
+-	mod_timer(&flush_timer, jiffies +
+CONFIG_ETRAX_SERIAL_RX_TIMEOUT_TICKS);
 +	mod_timer(&flush_timer, jiffies + 5);
 +#endif
 +
 +#if defined(CONFIG_ETRAX_RS485)
 +#if defined(CONFIG_ETRAX_RS485_ON_PA)
-+	if (cris_io_interface_allocate_pins(if_ser0, 'a', rs485_pa_bit, rs485_pa_bit)) {
-+ 		printk(KERN_CRIT "ETRAX100LX serial: Could not allocate RS485 pin\n");
++	if (cris_io_interface_allocate_pins(if_ser0, 'a', rs485_pa_bit,
+rs485_pa_bit)) {
++ 		printk(KERN_CRIT "ETRAX100LX serial: Could not allocate
+RS485 pin\n");
 +		return -EBUSY;
 +	}
 +#endif
 +#if defined(CONFIG_ETRAX_RS485_ON_PORT_G)
-+	if (cris_io_interface_allocate_pins(if_ser0, 'g', rs485_pa_bit, rs485_port_g_bit)) {
-+ 		printk(KERN_CRIT "ETRAX100LX serial: Could not allocate RS485 pin\n");
++	if (cris_io_interface_allocate_pins(if_ser0, 'g', rs485_pa_bit,
+rs485_port_g_bit)) {
++ 		printk(KERN_CRIT "ETRAX100LX serial: Could not allocate
+RS485 pin\n");
 +		return -EBUSY;
 +	}
 +#endif
@@ -1480,8 +1586,10 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
  
  	for (i = 0, info = rs_table; i < NR_PORTS; i++,info++) {
 +		if (info->enabled) {
-+			if (cris_request_io_interface(info->io_if, info->io_if_description)) {
-+				printk(KERN_CRIT "ETRAX100LX async serial: Could not allocate IO pins for %s, port %d\n",
++			if (cris_request_io_interface(info->io_if,
+info->io_if_description)) {
++				printk(KERN_CRIT "ETRAX100LX async serial:
+Could not allocate IO pins for %s, port %d\n",
 +				       info->io_if_description,
 +				       i);
 +				info->enabled = 0;
@@ -1498,66 +1606,79 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 +		INIT_WORK(&info->work, do_softint);
  
  		if (info->enabled) {
- 			printk(KERN_INFO "%s%d at 0x%x is a builtin UART with DMA\n",
+ 			printk(KERN_INFO "%s%d at 0x%x is a builtin UART
+with DMA\n",
 @@ -4933,64 +4922,16 @@
  #endif
  
  #ifndef CONFIG_SVINTO_SIM
 +#ifndef CONFIG_ETRAX_KGDB
  	/* Not needed in simulator.  May only complicate stuff. */
- 	/* hook the irq's for DMA channel 6 and 7, serial output and input, and some more... */
+ 	/* hook the irq's for DMA channel 6 and 7, serial output and input,
+and some more... */
  
--	if (request_irq(SERIAL_IRQ_NBR, ser_interrupt, IRQF_SHARED | IRQF_DISABLED, "serial ", NULL))
+-	if (request_irq(SERIAL_IRQ_NBR, ser_interrupt, IRQF_SHARED |
+IRQF_DISABLED, "serial ", NULL))
 -		panic("irq8");
 -
 -#ifdef CONFIG_ETRAX_SERIAL_PORT0
 -#ifdef CONFIG_ETRAX_SERIAL_PORT0_DMA6_OUT
--	if (request_irq(SER0_DMA_TX_IRQ_NBR, tr_interrupt, IRQF_DISABLED, "serial 0 dma tr", NULL))
+-	if (request_irq(SER0_DMA_TX_IRQ_NBR, tr_interrupt, IRQF_DISABLED,
+"serial 0 dma tr", NULL))
 -		panic("irq22");
 -#endif
 -#ifdef CONFIG_ETRAX_SERIAL_PORT0_DMA7_IN
--	if (request_irq(SER0_DMA_RX_IRQ_NBR, rec_interrupt, IRQF_DISABLED, "serial 0 dma rec", NULL))
+-	if (request_irq(SER0_DMA_RX_IRQ_NBR, rec_interrupt, IRQF_DISABLED,
+"serial 0 dma rec", NULL))
 -		panic("irq23");
 -#endif
 -#endif
 -
 -#ifdef CONFIG_ETRAX_SERIAL_PORT1
 -#ifdef CONFIG_ETRAX_SERIAL_PORT1_DMA8_OUT
--	if (request_irq(SER1_DMA_TX_IRQ_NBR, tr_interrupt, IRQF_DISABLED, "serial 1 dma tr", NULL))
+-	if (request_irq(SER1_DMA_TX_IRQ_NBR, tr_interrupt, IRQF_DISABLED,
+"serial 1 dma tr", NULL))
 -		panic("irq24");
 -#endif
 -#ifdef CONFIG_ETRAX_SERIAL_PORT1_DMA9_IN
--	if (request_irq(SER1_DMA_RX_IRQ_NBR, rec_interrupt, IRQF_DISABLED, "serial 1 dma rec", NULL))
+-	if (request_irq(SER1_DMA_RX_IRQ_NBR, rec_interrupt, IRQF_DISABLED,
+"serial 1 dma rec", NULL))
 -		panic("irq25");
 -#endif
 -#endif
 -#ifdef CONFIG_ETRAX_SERIAL_PORT2
 -	/* DMA Shared with par0 (and SCSI0 and ATA) */
 -#ifdef CONFIG_ETRAX_SERIAL_PORT2_DMA2_OUT
--	if (request_irq(SER2_DMA_TX_IRQ_NBR, tr_interrupt, IRQF_SHARED | IRQF_DISABLED, "serial 2 dma tr", NULL))
+-	if (request_irq(SER2_DMA_TX_IRQ_NBR, tr_interrupt, IRQF_SHARED |
+IRQF_DISABLED, "serial 2 dma tr", NULL))
 -		panic("irq18");
 -#endif
 -#ifdef CONFIG_ETRAX_SERIAL_PORT2_DMA3_IN
--	if (request_irq(SER2_DMA_RX_IRQ_NBR, rec_interrupt, IRQF_SHARED | IRQF_DISABLED, "serial 2 dma rec", NULL))
+-	if (request_irq(SER2_DMA_RX_IRQ_NBR, rec_interrupt, IRQF_SHARED |
+IRQF_DISABLED, "serial 2 dma rec", NULL))
 -		panic("irq19");
 -#endif
 -#endif
 -#ifdef CONFIG_ETRAX_SERIAL_PORT3
 -	/* DMA Shared with par1 (and SCSI1 and Extern DMA 0) */
 -#ifdef CONFIG_ETRAX_SERIAL_PORT3_DMA4_OUT
--	if (request_irq(SER3_DMA_TX_IRQ_NBR, tr_interrupt, IRQF_SHARED | IRQF_DISABLED, "serial 3 dma tr", NULL))
+-	if (request_irq(SER3_DMA_TX_IRQ_NBR, tr_interrupt, IRQF_SHARED |
+IRQF_DISABLED, "serial 3 dma tr", NULL))
 -		panic("irq20");
 -#endif
 -#ifdef CONFIG_ETRAX_SERIAL_PORT3_DMA5_IN
--	if (request_irq(SER3_DMA_RX_IRQ_NBR, rec_interrupt, IRQF_SHARED | IRQF_DISABLED, "serial 3 dma rec", NULL))
+-	if (request_irq(SER3_DMA_RX_IRQ_NBR, rec_interrupt, IRQF_SHARED |
+IRQF_DISABLED, "serial 3 dma rec", NULL))
 -		panic("irq21");
 -#endif
 -#endif
-+	if (request_irq(SERIAL_IRQ_NBR, ser_interrupt, IRQF_SHARED | IRQF_DISABLED, "serial ", driver))
++	if (request_irq(SERIAL_IRQ_NBR, ser_interrupt, IRQF_SHARED |
+IRQF_DISABLED, "serial ", driver))
 +		panic("%s: Failed to request irq8", __FUNCTION__);
  
 -#ifdef CONFIG_ETRAX_SERIAL_FLUSH_DMA_FAST
--	if (request_irq(TIMER1_IRQ_NBR, timeout_interrupt, IRQF_SHARED | IRQF_DISABLED,
+-	if (request_irq(TIMER1_IRQ_NBR, timeout_interrupt, IRQF_SHARED |
+IRQF_DISABLED,
 -		       "fast serial dma timeout", NULL)) {
 -		printk(KERN_CRIT "err: timer1 irq\n");
 -	}
@@ -1569,7 +1690,8 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
  }
  
 --- /dev/null	2007-10-06 06:38:38.348072750 +0200
-+++ linux-2.6.23-mod/drivers/serial/crisv10.h	2007-10-26 14:14:00.000000000 +0200
++++ linux-2.6.23-mod/drivers/serial/crisv10.h	2007-10-26
+14:14:00.000000000 +0200
 @@ -0,0 +1,151 @@
 +/*
 + * serial.h: Arch-dep definitions for the Etrax100 serial driver.
@@ -1611,16 +1733,19 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 +struct e100_serial {
 +	int			baud;
 +	volatile u8		*port; /* R_SERIALx_CTRL */
-+	u32			irq;  /* bitnr in R_IRQ_MASK2 for dmaX_descr */
++	u32			irq;  /* bitnr in R_IRQ_MASK2 for dmaX_descr
+*/
 +
 +	/* Output registers */
-+	volatile u8		*oclrintradr; /* adr to R_DMA_CHx_CLR_INTR */
++	volatile u8		*oclrintradr; /* adr to R_DMA_CHx_CLR_INTR
+*/
 +	volatile u32		*ofirstadr;   /* adr to R_DMA_CHx_FIRST */
 +	volatile u8		*ocmdadr;     /* adr to R_DMA_CHx_CMD */
 +	const volatile u8	*ostatusadr;  /* adr to R_DMA_CHx_STATUS */
 +
 +	/* Input registers */
-+	volatile u8		*iclrintradr; /* adr to R_DMA_CHx_CLR_INTR */
++	volatile u8		*iclrintradr; /* adr to R_DMA_CHx_CLR_INTR
+*/
 +	volatile u32		*ifirstadr;   /* adr to R_DMA_CHx_FIRST */
 +	volatile u8		*icmdadr;     /* adr to R_DMA_CHx_CMD */
 +	volatile u32		*idescradr;   /* adr to R_DMA_CHx_DESCR */
@@ -1629,11 +1754,15 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 +
 +	u8			rx_ctrl; /* shadow for R_SERIALx_REC_CTRL */
 +	u8			tx_ctrl; /* shadow for R_SERIALx_TR_CTRL */
-+	u8			iseteop; /* bit number for R_SET_EOP for the input dma */
-+	int			enabled; /* Set to 1 if the port is enabled in HW config */
++	u8			iseteop; /* bit number for R_SET_EOP for the
+input dma */
++	int			enabled; /* Set to 1 if the port is enabled
+in HW config */
 +
-+	u8		dma_out_enabled:1; /* Set to 1 if DMA should be used */
-+	u8		dma_in_enabled:1;  /* Set to 1 if DMA should be used */
++	u8		dma_out_enabled:1; /* Set to 1 if DMA should be used
+*/
++	u8		dma_in_enabled:1;  /* Set to 1 if DMA should be used
+*/
 +
 +	/* end of fields defined in rs_table[] in .c-file */
 +	int		dma_owner;
@@ -1691,12 +1820,18 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 +	struct wait_queue	*close_wait;
 +#endif
 +
-+	unsigned long		char_time_usec;       /* The time for 1 char, in usecs */
-+	unsigned long		flush_time_usec;      /* How often we should flush */
-+	unsigned long		last_tx_active_usec;  /* Last tx usec in the jiffies */
-+	unsigned long		last_tx_active;       /* Last tx time in jiffies */
-+	unsigned long		last_rx_active_usec;  /* Last rx usec in the jiffies */
-+	unsigned long		last_rx_active;       /* Last rx time in jiffies */
++	unsigned long		char_time_usec;       /* The time for 1
+char, in usecs */
++	unsigned long		flush_time_usec;      /* How often we should
+flush */
++	unsigned long		last_tx_active_usec;  /* Last tx usec in the
+jiffies */
++	unsigned long		last_tx_active;       /* Last tx time in
+jiffies */
++	unsigned long		last_rx_active_usec;  /* Last rx usec in the
+jiffies */
++	unsigned long		last_rx_active;       /* Last rx time in
+jiffies */
 +
 +	int			break_detected_cnt;
 +	int			errorcode;
@@ -1726,3 +1861,4 @@ diff -urBb -X /h/jespern/.exclude_files clean_linux-2.6.23/drivers/serial/crisv1
 /^JN - Jesper Nilsson
 --
                Jesper Nilsson -- jesper.nilsson@axis.com
+
