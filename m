@@ -1,41 +1,85 @@
-From: Bjorn Helgaas <bjorn.helgaas@hp.com>
-Subject: serial: add PNP ID for Davicom ISA 33.6K modem
-Date: Wed, 7 Nov 2007 15:43:33 -0600
-Message-ID: <200711071443.34291.bjorn.helgaas@hp.com>
+From: Frank Lichtenheld <frank@lichtenheld.de>
+Subject: [PATCH][SERIAL] serial_core.h: Fix compilation error
+Date: Thu,  8 Nov 2007 23:45:52 +0100
+Message-ID: <1194561952-18175-1-git-send-email-frank@lichtenheld.de>
 Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from palrel10.hp.com ([156.153.255.245]:52880 "EHLO palrel10.hp.com"
+Received: from v32413.1blu.de ([88.84.155.73]:59482 "EHLO mail.lenk.info"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1759461AbXKGWCv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 7 Nov 2007 17:02:51 -0500
-Content-Disposition: inline
+	id S1750872AbXKHXE0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 8 Nov 2007 18:04:26 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-serial@vger.kernel.org, Russell King <rmk+serial@arm.linux.org.uk>, Alan Cox <alan@lxorguk.ukuu.org.uk>, vavilov@ihep.ru
+To: linux-serial@vger.kernel.org
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Frank Lichtenheld <frank@lichtenheld.de>
 
-This should resolve these bug reports of the modem not working:
-    http://bugzilla.kernel.org/show_bug.cgi?id=4355
-    http://www.linuxquestions.org/questions/linux-newbie-8/connect-script-failed-on-ppp-go-123975/
+struct uart_port only has a sysrq member if SERIAL_CORE_CONSOLE is defi=
+ned, so
+don't try to use it if it isn't (e.g. if using allmodconfig).
 
-I don't have hardware to test this, but the initial report in the kernel
-bugzilla indicates that this change fixed the problem.
+  CC [M]  drivers/serial/mux.o
+In file included from drivers/serial/mux.c:37:
+include/linux/serial_core.h: In function =E2=80=98uart_handle_sysrq_cha=
+r=E2=80=99:
+include/linux/serial_core.h:438: error: =E2=80=98struct uart_port=E2=80=
+=99 has no member named =E2=80=98sysrq=E2=80=99
+include/linux/serial_core.h:439: error: =E2=80=98struct uart_port=E2=80=
+=99 has no member named =E2=80=98sysrq=E2=80=99
+include/linux/serial_core.h:439: warning: type defaults to =E2=80=98int=
+=E2=80=99 in declaration of =E2=80=98__dummy2=E2=80=99
+include/linux/serial_core.h:439: warning: comparison of distinct pointe=
+r types lacks a cast
+include/linux/serial_core.h:439: error: =E2=80=98struct uart_port=E2=80=
+=99 has no member named =E2=80=98sysrq=E2=80=99
+include/linux/serial_core.h:441: error: =E2=80=98struct uart_port=E2=80=
+=99 has no member named =E2=80=98sysrq=E2=80=99
+include/linux/serial_core.h:444: error: =E2=80=98struct uart_port=E2=80=
+=99 has no member named =E2=80=98sysrq=E2=80=99
+include/linux/serial_core.h: In function =E2=80=98uart_handle_break=E2=80=
+=99:
+include/linux/serial_core.h:461: error: =E2=80=98struct uart_port=E2=80=
+=99 has no member named =E2=80=98sysrq=E2=80=99
+include/linux/serial_core.h:462: error: =E2=80=98struct uart_port=E2=80=
+=99 has no member named =E2=80=98sysrq=E2=80=99
+include/linux/serial_core.h:465: error: =E2=80=98struct uart_port=E2=80=
+=99 has no member named =E2=80=98sysrq=E2=80=99
 
-Signed-off-by: Bjorn Helgaas <bjorn.helgaas@hp.com>
+Signed-off-by: Frank Lichtenheld <frank@lichtenheld.de>
+---
+ include/linux/serial_core.h |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
-Index: w/drivers/serial/8250_pnp.c
-===================================================================
---- w.orig/drivers/serial/8250_pnp.c	2007-11-06 10:27:52.000000000 -0700
-+++ w/drivers/serial/8250_pnp.c	2007-11-06 10:30:16.000000000 -0700
-@@ -69,6 +69,8 @@
- 	{	"CTL3001",		0	},
- 	/* Creative Labs Modem Blaster 28.8 DSVD PnP Voice */
- 	{	"CTL3011",		0	},
-+	/* Davicom ISA 33.6K Modem */
-+	{	"DAV0336",		0	},
- 	/* Creative */
- 	/* Creative Modem Blaster Flash56 DI5601-1 */
- 	{	"DMB1032",		0	},
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 6a5203f..e2233a8 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -434,7 +434,7 @@ int uart_resume_port(struct uart_driver *reg, struc=
+t uart_port *port);
+ static inline int
+ uart_handle_sysrq_char(struct uart_port *port, unsigned int ch)
+ {
+-#ifdef SUPPORT_SYSRQ
++#if defined(SUPPORT_SYSRQ) && defined(CONFIG_SERIAL_CORE_CONSOLE)
+ 	if (port->sysrq) {
+ 		if (ch && time_before(jiffies, port->sysrq)) {
+ 			handle_sysrq(ch, port->info->tty);
+@@ -456,7 +456,7 @@ uart_handle_sysrq_char(struct uart_port *port, unsi=
+gned int ch)
+ static inline int uart_handle_break(struct uart_port *port)
+ {
+ 	struct uart_info *info =3D port->info;
+-#ifdef SUPPORT_SYSRQ
++#if defined(SUPPORT_SYSRQ) && defined(CONFIG_SERIAL_CORE_CONSOLE)
+ 	if (port->cons && port->cons->index =3D=3D port->line) {
+ 		if (!port->sysrq) {
+ 			port->sysrq =3D jiffies + HZ*5;
+--=20
+1.5.3.4
+
+-
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
