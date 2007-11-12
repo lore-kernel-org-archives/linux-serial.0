@@ -1,46 +1,134 @@
 From: Aristeu Rozanski <aris@ruivo.org>
-Subject: [PATCH] usb_serial_console: fix command line parsing
-Date: Mon, 12 Nov 2007 15:14:49 -0500
-Message-ID: <20071112201449.GH407@cathedrallabs.org>
+Subject: [PATCH] usb_serial: clean tty reference in the last close
+Date: Mon, 12 Nov 2007 15:15:02 -0500
+Message-ID: <20071112201502.GI407@cathedrallabs.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lobo.ruivo.org ([66.92.68.119]:56941 "EHLO lobo.ruivo.org"
+Received: from lobo.ruivo.org ([66.92.68.119]:56940 "EHLO lobo.ruivo.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751250AbXKLUmW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 12 Nov 2007 15:42:22 -0500
+	id S1750986AbXKLUmX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 12 Nov 2007 15:42:23 -0500
 Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: Greg KH <greg@kroah.com>
 
-Currently usb serial console support ignores the device and always use
-ttyUSB0.
+When a usb serial adapter is used as console, the usb serial console
+driver bumps the open_count on the port struct used but doesn't attach
+a real tty to it (only a fake one temporaly). If this port is opened later
+using the regular character device interface, the open method won't
+initialize the port, which is the expected, and will receive a brand new
+tty struct created by tty layer, which will be stored in port->tty.
+
+When the last close is issued, open_count won't be 0 because of the
+console usage and the port->tty will still contain the old tty value. This
+is the last ttyUSB<n> close so the allocated tty will be freed by the
+tty layer. The usb_serial and usb_serial_port are still in use by the
+console, so port_free() won't be called (serial_close() ->
+usb_serial_put() -> destroy_serial() -> port_free()), so the scheduled
+work (port->work, usb_serial_port_work()) will still run. And
+usb_serial_port_work() does:
+(...)
+        tty = port->tty;
+        if (!tty)
+                return;
+
+        tty_wakeup(tty);
+which causes (manually copied):
+
+Faulting instruction address: 0x6b6b6b68
+Oops: Kernel access of bad area, sig: 11 [#1]
+PREEMPT PowerMac
+Modules linked in: binfmt_misc ipv6 nfs lockd nfs_acl sunrpc dm_snapshot dm_mirror dm_mod hfsplus uinput ams input_polldev genrtc cpufreq_powersave i2c_powermac therm_adt746x snd_aoa_codec_tas snd_aoa_fabric_layout snd_aoa joydev snd_aoa_i2sbus snd_pcm_oss snd_mixer_oss snd_pcm snd_timer snd_page_alloc pmac_zilog serial_core evdev ide_cd cdrom snd appletouch soundcore snd_aoa_soundbus bcm43xx firmware_class usbhid ieee80211softmac ff_memless firewire_ohci firewire_core ieee80211 ieee80211_crypt crc_itu_t sungem sungem_phy uninorth_agp agpart ssb
+NIP: 6b6b6b68 LR: c01b2108 CTR: 6b6b6b6b
+REGS: c106de80 TRAP: 0400   Not tainted  (2.6.24-rc2)
+MSR: 40009032 <EE,ME,IR,DR>  CR: 82004024  XER: 00000000
+TASK = c106b4c0[5] 'events/0' THREAD: c106c000
+GPR00: 6b6b6b6b c106df30 c106b4c0 c2d613a0 00009032 00000001 00001a00 00000001
+GPR08: 00000008 00000000 00000000 c106c000 42004028 00000000 016ffbe0 0171a724
+GPR16: 016ffcf4 00240e24 00240e70 016fee68 016ff9a4 c03046c4 c0327f50 c03046fc
+GPR24: c106b6b9 c106b4c0 c101d610 c106c000 c02160fc c1eac1dc c2d613ac c2d613a0
+NIP [6b6b6b68] 0x6b6b6b68
+LR [c01b2108] tty_wakeup+0x6c/0x9c
+Call Trace:
+[c106df30] [c01b20e8] tty_wakeup+0x4c/0x9c (unreliable)
+[c106df40] [c0216138] usb_serial_port_work+0x3c/0x78
+[c106df50] [c00432e8] run_workqueue+0xc4/0x15c
+[c106df90] [c0043798] worker_thread+0xa0/0x124
+[c106dfd0] [c0048224] kthread+0x48/0x84
+[c106dff0] [c00129bc] kernel_thread+0x44/0x60
+Instruction dump:
+XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX
+XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX
+Slab corruption: size-2048 start=c2d613a0, len=2048
+Redzone: 0x9f911029d74e35b/0x9f911029d74e35b.
+Last user: [<c01b16d8>](release_one_tty+0xbc/0xf4)
+050: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b
+Prev obj: start=c2d60b88, len=2048
+Redzone: 0x9f911029d74e35b/0x9f911029d74e35b.
+Last user: [<c00f30ec>](show_stat+0x410/0x428)
+000: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b
+010: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b
+
+This patch avoids this, clearing port->tty considering if the port is
+used as serial console or not
 
 Signed-off-by: Aristeu Rozanski <arozansk@redhat.com>
 
 ---
- drivers/usb/serial/console.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/usb/serial/console.c    |    3 ++-
+ drivers/usb/serial/usb-serial.c |    6 ++++--
+ include/linux/usb/serial.h      |    1 +
+ 3 files changed, 7 insertions(+), 3 deletions(-)
 
---- upstream.orig/drivers/usb/serial/console.c	2007-11-12 11:56:02.000000000 -0500
-+++ upstream/drivers/usb/serial/console.c	2007-11-12 14:38:12.000000000 -0500
-@@ -133,11 +133,14 @@ static int usb_console_setup(struct cons
+--- upstream.orig/drivers/usb/serial/console.c	2007-11-12 14:38:12.000000000 -0500
++++ upstream/drivers/usb/serial/console.c	2007-11-12 15:04:35.000000000 -0500
+@@ -192,8 +192,9 @@ static int usb_console_setup(struct cons
+ 		kfree (termios);
+ 		kfree (tty);
  	}
- 	co->cflag = cflag;
++	port->console = 1;
  
--	/* grab the first serial port that happens to be connected */
--	serial = usb_serial_get_by_index(0);
-+	/*
-+	 * no need to check the index here: if the index is wrong, console
-+	 * code won't call us
-+	 */
-+	serial = usb_serial_get_by_index(co->index);
- 	if (serial == NULL) {
- 		/* no device is connected yet, sorry :( */
--		err ("No USB device connected to ttyUSB0");
-+		err ("No USB device connected to ttyUSB%i", co->index);
- 		return -ENODEV;
+-	return retval;
++	return 0;
+ }
+ 
+ static void usb_console_write(struct console *co, const char *buf, unsigned count)
+--- upstream.orig/drivers/usb/serial/usb-serial.c	2007-11-12 14:37:28.000000000 -0500
++++ upstream/drivers/usb/serial/usb-serial.c	2007-11-12 14:42:38.000000000 -0500
+@@ -264,19 +264,21 @@ static void serial_close(struct tty_stru
  	}
  
+ 	--port->open_count;
+-	if (port->open_count == 0) {
++	if (port->open_count == 0)
+ 		/* only call the device specific close if this 
+ 		 * port is being closed by the last owner */
+ 		port->serial->type->close(port, filp);
+ 
++	if (port->open_count == (port->console? 1 : 0)) {
+ 		if (port->tty) {
+ 			if (port->tty->driver_data)
+ 				port->tty->driver_data = NULL;
+ 			port->tty = NULL;
+ 		}
++	}
+ 
++	if (port->open_count == 0)
+ 		module_put(port->serial->type->driver.owner);
+-	}
+ 
+ 	mutex_unlock(&port->mutex);
+ 	usb_serial_put(port->serial);
+--- upstream.orig/include/linux/usb/serial.h	2007-11-12 14:37:28.000000000 -0500
++++ upstream/include/linux/usb/serial.h	2007-11-12 14:42:38.000000000 -0500
+@@ -92,6 +92,7 @@ struct usb_serial_port {
+ 	int			open_count;
+ 	char			throttled;
+ 	char			throttle_req;
++	char			console;
+ 	struct device		dev;
+ };
+ #define to_usb_serial_port(d) container_of(d, struct usb_serial_port, dev)
