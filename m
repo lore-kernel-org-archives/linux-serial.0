@@ -1,134 +1,151 @@
 From: Aristeu Rozanski <aris@ruivo.org>
-Subject: [PATCH] usb_serial: clean tty reference in the last close
-Date: Mon, 12 Nov 2007 15:15:02 -0500
-Message-ID: <20071112201502.GI407@cathedrallabs.org>
+Subject: [PATCH] usb_serial_console: allocate fake tty and termios before
+	calling driver open() method
+Date: Tue, 13 Nov 2007 17:22:07 -0500
+Message-ID: <20071113222207.GM407@cathedrallabs.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lobo.ruivo.org ([66.92.68.119]:56940 "EHLO lobo.ruivo.org"
+Received: from lobo.ruivo.org ([66.92.68.119]:33473 "EHLO lobo.ruivo.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750986AbXKLUmX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 12 Nov 2007 15:42:23 -0500
+	id S1754150AbXKMWWU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 13 Nov 2007 17:22:20 -0500
 Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: Greg KH <greg@kroah.com>
 
-When a usb serial adapter is used as console, the usb serial console
-driver bumps the open_count on the port struct used but doesn't attach
-a real tty to it (only a fake one temporaly). If this port is opened later
-using the regular character device interface, the open method won't
-initialize the port, which is the expected, and will receive a brand new
-tty struct created by tty layer, which will be stored in port->tty.
+The usb serial method set_termios() is called for the first time from
+open() method in order to set up the termios structure with the default
+device's settings, ignoring the current settings. Once it's initialized,
+the next set_termios() calls will update the device with the
+tty->termios settings.
+Currently USB serial console code calls the driver open() method without
+a tty and after that will allocate a fake tty and termios so the command
+line arguments can be applied to the device
+(console=ttyUSB0,115200,...). This makes the driver overwrite the
+termios with the default settings and not applying the command line
+options.
 
-When the last close is issued, open_count won't be 0 because of the
-console usage and the port->tty will still contain the old tty value. This
-is the last ttyUSB<n> close so the allocated tty will be freed by the
-tty layer. The usb_serial and usb_serial_port are still in use by the
-console, so port_free() won't be called (serial_close() ->
-usb_serial_put() -> destroy_serial() -> port_free()), so the scheduled
-work (port->work, usb_serial_port_work()) will still run. And
-usb_serial_port_work() does:
-(...)
-        tty = port->tty;
-        if (!tty)
-                return;
+This patch changes usb_console_setup() to allocate the fake tty and
+termios before the open() method is called.
 
-        tty_wakeup(tty);
-which causes (manually copied):
-
-Faulting instruction address: 0x6b6b6b68
-Oops: Kernel access of bad area, sig: 11 [#1]
-PREEMPT PowerMac
-Modules linked in: binfmt_misc ipv6 nfs lockd nfs_acl sunrpc dm_snapshot dm_mirror dm_mod hfsplus uinput ams input_polldev genrtc cpufreq_powersave i2c_powermac therm_adt746x snd_aoa_codec_tas snd_aoa_fabric_layout snd_aoa joydev snd_aoa_i2sbus snd_pcm_oss snd_mixer_oss snd_pcm snd_timer snd_page_alloc pmac_zilog serial_core evdev ide_cd cdrom snd appletouch soundcore snd_aoa_soundbus bcm43xx firmware_class usbhid ieee80211softmac ff_memless firewire_ohci firewire_core ieee80211 ieee80211_crypt crc_itu_t sungem sungem_phy uninorth_agp agpart ssb
-NIP: 6b6b6b68 LR: c01b2108 CTR: 6b6b6b6b
-REGS: c106de80 TRAP: 0400   Not tainted  (2.6.24-rc2)
-MSR: 40009032 <EE,ME,IR,DR>  CR: 82004024  XER: 00000000
-TASK = c106b4c0[5] 'events/0' THREAD: c106c000
-GPR00: 6b6b6b6b c106df30 c106b4c0 c2d613a0 00009032 00000001 00001a00 00000001
-GPR08: 00000008 00000000 00000000 c106c000 42004028 00000000 016ffbe0 0171a724
-GPR16: 016ffcf4 00240e24 00240e70 016fee68 016ff9a4 c03046c4 c0327f50 c03046fc
-GPR24: c106b6b9 c106b4c0 c101d610 c106c000 c02160fc c1eac1dc c2d613ac c2d613a0
-NIP [6b6b6b68] 0x6b6b6b68
-LR [c01b2108] tty_wakeup+0x6c/0x9c
-Call Trace:
-[c106df30] [c01b20e8] tty_wakeup+0x4c/0x9c (unreliable)
-[c106df40] [c0216138] usb_serial_port_work+0x3c/0x78
-[c106df50] [c00432e8] run_workqueue+0xc4/0x15c
-[c106df90] [c0043798] worker_thread+0xa0/0x124
-[c106dfd0] [c0048224] kthread+0x48/0x84
-[c106dff0] [c00129bc] kernel_thread+0x44/0x60
-Instruction dump:
-XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX
-XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX
-Slab corruption: size-2048 start=c2d613a0, len=2048
-Redzone: 0x9f911029d74e35b/0x9f911029d74e35b.
-Last user: [<c01b16d8>](release_one_tty+0xbc/0xf4)
-050: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b
-Prev obj: start=c2d60b88, len=2048
-Redzone: 0x9f911029d74e35b/0x9f911029d74e35b.
-Last user: [<c00f30ec>](show_stat+0x410/0x428)
-000: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b
-010: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b
-
-This patch avoids this, clearing port->tty considering if the port is
-used as serial console or not
+Tested successfully with a pl2303
 
 Signed-off-by: Aristeu Rozanski <arozansk@redhat.com>
 
 ---
- drivers/usb/serial/console.c    |    3 ++-
- drivers/usb/serial/usb-serial.c |    6 ++++--
- include/linux/usb/serial.h      |    1 +
- 3 files changed, 7 insertions(+), 3 deletions(-)
+ drivers/usb/serial/console.c |   82 +++++++++++++++++++++++++------------------
+ 1 file changed, 48 insertions(+), 34 deletions(-)
 
---- upstream.orig/drivers/usb/serial/console.c	2007-11-12 14:38:12.000000000 -0500
-+++ upstream/drivers/usb/serial/console.c	2007-11-12 15:04:35.000000000 -0500
-@@ -192,8 +192,9 @@ static int usb_console_setup(struct cons
- 		kfree (termios);
- 		kfree (tty);
- 	}
-+	port->console = 1;
+--- upstream.orig/drivers/usb/serial/console.c	2007-11-13 10:59:56.000000000 -0500
++++ upstream/drivers/usb/serial/console.c	2007-11-13 11:54:03.000000000 -0500
+@@ -64,8 +64,8 @@ static int usb_console_setup(struct cons
+ 	struct usb_serial *serial;
+ 	struct usb_serial_port *port;
+ 	int retval = 0;
+-	struct tty_struct *tty;
+-	struct ktermios *termios;
++	struct tty_struct *tty = NULL;
++	struct ktermios *termios = NULL, dummy;
  
--	return retval;
-+	return 0;
+ 	dbg ("%s", __FUNCTION__);
+ 
+@@ -151,50 +151,64 @@ static int usb_console_setup(struct cons
+ 	 
+ 	++port->open_count;
+ 	if (port->open_count == 1) {
++		if (serial->type->set_termios) {
++			/*
++			 * allocate a fake tty so the driver can initialize
++			 * the termios structure, then later call set_termios to
++			 * configure according to command line arguments
++			 */
++			tty = kzalloc(sizeof(*tty), GFP_KERNEL);
++			if (!tty) {
++				retval = -ENOMEM;
++				err("no more memory");
++				goto reset_open_count;
++			}
++			termios = kzalloc(sizeof(*termios), GFP_KERNEL);
++			if (!termios) {
++				retval = -ENOMEM;
++				err("no more memory");
++				goto free_tty;
++			}
++			memset(&dummy, 0, sizeof(struct ktermios));
++			tty->termios = termios;
++			port->tty = tty;
++		}
++
+ 		/* only call the device specific open if this 
+ 		 * is the first time the port is opened */
+ 		if (serial->type->open)
+ 			retval = serial->type->open(port, NULL);
+ 		else
+ 			retval = usb_serial_generic_open(port, NULL);
+-		if (retval)
+-			port->open_count = 0;
+-	}
+ 
+-	if (retval) {
+-		err ("could not open USB console port");
+-		return retval;
+-	}
+-
+-	if (serial->type->set_termios) {
+-		struct ktermios dummy;
+-		/* build up a fake tty structure so that the open call has something
+-		 * to look at to get the cflag value */
+-		tty = kzalloc(sizeof(*tty), GFP_KERNEL);
+-		if (!tty) {
+-			err ("no more memory");
+-			return -ENOMEM;
++		if (retval) {
++			err("could not open USB console port");
++			goto free_termios;
+ 		}
+-		termios = kzalloc(sizeof(*termios), GFP_KERNEL);
+-		if (!termios) {
+-			err ("no more memory");
+-			kfree (tty);
+-			return -ENOMEM;
++
++		if (serial->type->set_termios) {
++			termios->c_cflag = cflag;
++			serial->type->set_termios(port, &dummy);
++
++			port->tty = NULL;
++			kfree(termios);
++			kfree(tty);
+ 		}
+-		memset(&dummy, 0, sizeof(struct ktermios));
+-		termios->c_cflag = cflag;
+-		tty->termios = termios;
+-		port->tty = tty;
+-
+-		/* set up the initial termios settings */
+-		serial->type->set_termios(port, &dummy);
+-		port->tty = NULL;
+-		kfree (termios);
+-		kfree (tty);
+ 	}
++
+ 	port->console = 1;
++	retval = 0;
+ 
+-	return 0;
++out:
++	return retval;
++free_termios:
++	kfree(termios);
++	port->tty = NULL;
++free_tty:
++	kfree(tty);
++reset_open_count:
++	port->open_count = 0;
++goto out;
  }
  
  static void usb_console_write(struct console *co, const char *buf, unsigned count)
---- upstream.orig/drivers/usb/serial/usb-serial.c	2007-11-12 14:37:28.000000000 -0500
-+++ upstream/drivers/usb/serial/usb-serial.c	2007-11-12 14:42:38.000000000 -0500
-@@ -264,19 +264,21 @@ static void serial_close(struct tty_stru
- 	}
- 
- 	--port->open_count;
--	if (port->open_count == 0) {
-+	if (port->open_count == 0)
- 		/* only call the device specific close if this 
- 		 * port is being closed by the last owner */
- 		port->serial->type->close(port, filp);
- 
-+	if (port->open_count == (port->console? 1 : 0)) {
- 		if (port->tty) {
- 			if (port->tty->driver_data)
- 				port->tty->driver_data = NULL;
- 			port->tty = NULL;
- 		}
-+	}
- 
-+	if (port->open_count == 0)
- 		module_put(port->serial->type->driver.owner);
--	}
- 
- 	mutex_unlock(&port->mutex);
- 	usb_serial_put(port->serial);
---- upstream.orig/include/linux/usb/serial.h	2007-11-12 14:37:28.000000000 -0500
-+++ upstream/include/linux/usb/serial.h	2007-11-12 14:42:38.000000000 -0500
-@@ -92,6 +92,7 @@ struct usb_serial_port {
- 	int			open_count;
- 	char			throttled;
- 	char			throttle_req;
-+	char			console;
- 	struct device		dev;
- };
- #define to_usb_serial_port(d) container_of(d, struct usb_serial_port, dev)
