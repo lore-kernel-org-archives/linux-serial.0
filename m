@@ -1,151 +1,99 @@
-From: Aristeu Rozanski <aris@ruivo.org>
-Subject: [PATCH] usb_serial_console: allocate fake tty and termios before
-	calling driver open() method
-Date: Tue, 13 Nov 2007 17:22:07 -0500
-Message-ID: <20071113222207.GM407@cathedrallabs.org>
+From: Jesper Nilsson <jesper.nilsson@axis.com>
+Subject: [PATCH] CRISv10 fasttimer: Scrap INLINE and name timeval_cmp better
+Date: Wed, 14 Nov 2007 18:08:50 +0100
+Message-ID: <20071114170850.GR6347@axis.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lobo.ruivo.org ([66.92.68.119]:33473 "EHLO lobo.ruivo.org"
+Received: from nic2.axis.se ([193.13.178.10]:56826 "EHLO krynn.se.axis.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754150AbXKMWWU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 13 Nov 2007 17:22:20 -0500
+	id S1753129AbXKNRJB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 14 Nov 2007 12:09:01 -0500
 Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Greg KH <greg@kroah.com>
+To: Andrew Morton <akpm@linux-foundation.org>, Mikael Starvik <mikael.starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-The usb serial method set_termios() is called for the first time from
-open() method in order to set up the termios structure with the default
-device's settings, ignoring the current settings. Once it's initialized,
-the next set_termios() calls will update the device with the
-tty->termios settings.
-Currently USB serial console code calls the driver open() method without
-a tty and after that will allocate a fake tty and termios so the command
-line arguments can be applied to the device
-(console=ttyUSB0,115200,...). This makes the driver overwrite the
-termios with the default settings and not applying the command line
-options.
+Scrap the local __INLINE__ macro, and rename timeval_cmp to fasttime_cmp.
 
-This patch changes usb_console_setup() to allocate the fake tty and
-termios before the open() method is called.
+Inline macro was completely unnecessary since the macro was defined
+locally to be inline.
+timeval_cmp was inaccurately named since it does comparison on
+struct fasttimer_t and not on struct timeval.
 
-Tested successfully with a pl2303
-
-Signed-off-by: Aristeu Rozanski <arozansk@redhat.com>
-
+Signed-off-by: Jesper Nilsson <jesper.nilsson@axis.com>
 ---
- drivers/usb/serial/console.c |   82 +++++++++++++++++++++++++------------------
- 1 file changed, 48 insertions(+), 34 deletions(-)
+ fasttimer.c |   16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
 
---- upstream.orig/drivers/usb/serial/console.c	2007-11-13 10:59:56.000000000 -0500
-+++ upstream/drivers/usb/serial/console.c	2007-11-13 11:54:03.000000000 -0500
-@@ -64,8 +64,8 @@ static int usb_console_setup(struct cons
- 	struct usb_serial *serial;
- 	struct usb_serial_port *port;
- 	int retval = 0;
--	struct tty_struct *tty;
--	struct ktermios *termios;
-+	struct tty_struct *tty = NULL;
-+	struct ktermios *termios = NULL, dummy;
+diff --git a/arch/cris/arch-v10/kernel/fasttimer.c b/arch/cris/arch-v10/kernel/fasttimer.c
+index 645d705..c1a3a21 100644
+--- a/arch/cris/arch-v10/kernel/fasttimer.c
++++ b/arch/cris/arch-v10/kernel/fasttimer.c
+@@ -46,8 +46,6 @@ static int sanity_failed;
+ #define D2(x)
+ #define DP(x)
  
- 	dbg ("%s", __FUNCTION__);
- 
-@@ -151,50 +151,64 @@ static int usb_console_setup(struct cons
- 	 
- 	++port->open_count;
- 	if (port->open_count == 1) {
-+		if (serial->type->set_termios) {
-+			/*
-+			 * allocate a fake tty so the driver can initialize
-+			 * the termios structure, then later call set_termios to
-+			 * configure according to command line arguments
-+			 */
-+			tty = kzalloc(sizeof(*tty), GFP_KERNEL);
-+			if (!tty) {
-+				retval = -ENOMEM;
-+				err("no more memory");
-+				goto reset_open_count;
-+			}
-+			termios = kzalloc(sizeof(*termios), GFP_KERNEL);
-+			if (!termios) {
-+				retval = -ENOMEM;
-+				err("no more memory");
-+				goto free_tty;
-+			}
-+			memset(&dummy, 0, sizeof(struct ktermios));
-+			tty->termios = termios;
-+			port->tty = tty;
-+		}
-+
- 		/* only call the device specific open if this 
- 		 * is the first time the port is opened */
- 		if (serial->type->open)
- 			retval = serial->type->open(port, NULL);
- 		else
- 			retval = usb_serial_generic_open(port, NULL);
--		if (retval)
--			port->open_count = 0;
--	}
- 
--	if (retval) {
--		err ("could not open USB console port");
--		return retval;
--	}
+-#define __INLINE__ inline
 -
--	if (serial->type->set_termios) {
--		struct ktermios dummy;
--		/* build up a fake tty structure so that the open call has something
--		 * to look at to get the cflag value */
--		tty = kzalloc(sizeof(*tty), GFP_KERNEL);
--		if (!tty) {
--			err ("no more memory");
--			return -ENOMEM;
-+		if (retval) {
-+			err("could not open USB console port");
-+			goto free_termios;
- 		}
--		termios = kzalloc(sizeof(*termios), GFP_KERNEL);
--		if (!termios) {
--			err ("no more memory");
--			kfree (tty);
--			return -ENOMEM;
-+
-+		if (serial->type->set_termios) {
-+			termios->c_cflag = cflag;
-+			serial->type->set_termios(port, &dummy);
-+
-+			port->tty = NULL;
-+			kfree(termios);
-+			kfree(tty);
- 		}
--		memset(&dummy, 0, sizeof(struct ktermios));
--		termios->c_cflag = cflag;
--		tty->termios = termios;
--		port->tty = tty;
--
--		/* set up the initial termios settings */
--		serial->type->set_termios(port, &dummy);
--		port->tty = NULL;
--		kfree (termios);
--		kfree (tty);
- 	}
-+
- 	port->console = 1;
-+	retval = 0;
+ static unsigned int fast_timer_running;
+ static unsigned int fast_timers_added;
+ static unsigned int fast_timers_started;
+@@ -118,13 +116,13 @@ int timer_freq_settings[NUM_TIMER_STATS];
+ int timer_delay_settings[NUM_TIMER_STATS];
  
--	return 0;
-+out:
-+	return retval;
-+free_termios:
-+	kfree(termios);
-+	port->tty = NULL;
-+free_tty:
-+	kfree(tty);
-+reset_open_count:
-+	port->open_count = 0;
-+goto out;
+ /* Not true gettimeofday, only checks the jiffies (uptime) + useconds */
+-void __INLINE__ do_gettimeofday_fast(struct fasttime_t *tv)
++inline void do_gettimeofday_fast(struct fasttime_t *tv)
+ {
+ 	tv->tv_jiff = jiffies;
+ 	tv->tv_usec = GET_JIFFIES_USEC();
  }
  
- static void usb_console_write(struct console *co, const char *buf, unsigned count)
+-int __INLINE__ timeval_cmp(struct fasttime_t *t0, struct fasttime_t *t1)
++inline int fasttime_cmp(struct fasttime_t *t0, struct fasttime_t *t1)
+ {
+ 	/* Compare jiffies. Takes care of wrapping */
+ 	if (time_before(t0->tv_jiff, t1->tv_jiff))
+@@ -140,7 +138,7 @@ int __INLINE__ timeval_cmp(struct fasttime_t *t0, struct fasttime_t *t1)
+ 	return 0;
+ }
+ 
+-void __INLINE__ start_timer1(unsigned long delay_us)
++inline void start_timer1(unsigned long delay_us)
+ {
+   int freq_index = 0; /* This is the lowest resolution */
+   unsigned long upper_limit = MAX_DELAY_US;
+@@ -264,7 +262,7 @@ void start_one_shot_timer(struct fast_timer *t,
+   fast_timers_added++;
+ 
+   /* Check if this should timeout before anything else */
+-  if (tmp == NULL || timeval_cmp(&t->tv_expires, &tmp->tv_expires) < 0)
++	if (tmp == NULL || fasttime_cmp(&t->tv_expires, &tmp->tv_expires) < 0)
+   {
+     /* Put first in list and modify the timer value */
+     t->prev = NULL;
+@@ -280,8 +278,8 @@ void start_one_shot_timer(struct fast_timer *t,
+     start_timer1(delay_us);
+   } else {
+     /* Put in correct place in list */
+-    while (tmp->next &&
+-           timeval_cmp(&t->tv_expires, &tmp->next->tv_expires) > 0)
++		while (tmp->next && fasttime_cmp(&t->tv_expires,
++				&tmp->next->tv_expires) > 0)
+     {
+       tmp = tmp->next;
+     }
+@@ -382,7 +380,7 @@ timer1_handler(int irq, void *dev_id)
+ 		D1(printk(KERN_DEBUG "t: %is %06ius\n",
+ 			tv.tv_jiff, tv.tv_usec));
+ 
+-    if (timeval_cmp(&t->tv_expires, &tv) <= 0)
++		if (fasttime_cmp(&t->tv_expires, &tv) <= 0)
+     {
+       /* Yes it has expired */
+ #ifdef FAST_TIMER_LOG
+
+/^JN - Jesper Nilsson
+--
+               Jesper Nilsson -- jesper.nilsson@axis.com
