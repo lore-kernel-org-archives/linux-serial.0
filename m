@@ -1,81 +1,60 @@
-From: Andrey Borzenkov <arvidjaar@mail.ru>
-Subject: Re: 2.6.24: Serial disabled in BIOS but serial modules still loaded (probably PnP related)
-Date: Sun, 25 Nov 2007 23:01:33 +0300
-Message-ID: <200711252301.34503.arvidjaar@mail.ru>
-References: <fa.P01QcmUf2f3DN4etI8KJYFdaLnE@ifi.uio.no> <4749C15C.6020805@shaw.ca>
+From: Javier Herrero <jherrero@hvsistemas.es>
+Subject: 8250 driver patch for Blackfin platforms
+Date: Mon, 26 Nov 2007 03:00:43 +0100
+Message-ID: <474A28CB.5070902@hvsistemas.es>
 Mime-Version: 1.0
-Content-Type: multipart/signed;
-  boundary="nextPart25451413.2so2eWPT9s";
-  protocol="application/pgp-signature";
-  micalg=pgp-sha1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1756761AbXKYUBv@vger.kernel.org>
-In-Reply-To: <4749C15C.6020805@shaw.ca>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robert Hancock <hancockr@shaw.ca>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from zm1.veloxia.com ([213.149.227.2]:42384 "HELO zm1.veloxia.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
+	id S1753640AbXKZCH0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 25 Nov 2007 21:07:26 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
---nextPart25451413.2so2eWPT9s
-Content-Type: text/plain;
-  charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hello,
 
-On Sunday 25 November 2007, Robert Hancock wrote:
-> Andrey Borzenkov wrote:
-> > I have no COM port on notebook (without port replicator which I do not =
-have)
-> > so COM is disabled in BIOS. No ttyS* is detected during boot (and no de=
-vice
-> > created) but I just noticed that serial modules are still loaded. Well,=
- this
-> > partially defeats the purpose of disabling COM port - the intention was=
- to
-> > free resources by *not* loading unneeded modules ...
-> >=20
-> > This may have something to do with (ACPI) PnP which apparently believes=
- COM is alive.
-> > Notebook is Toshiba Portege 4000.
->=20
-> Probably a BIOS bug. It still lists the port in PnP data even though the=
-=20
-> hardware is disabled, so the kernel still tries to load the serial=20
-> driver for it, which finds there's no port there.
->=20
+I had modified the 8250.c driver as follows for Blackfin uClinux. Robin 
+Getz had suggested me that this patch should be sumitted upstream. I 
+hope that this is is the right way.
 
-Here is what we get from _STA:
+Regards,
 
-[ 1689.988245] HID=3DPNP0501 flags=3D0d
+Javier
 
-If I read specs correctly, if bit 1 is cleared it means, device is not able
-to access its hardware resources, so it makes no sense to even try to
-load driver for it.
+--- trunk/drivers/serial/8250.c	2007-11-25 22:05:33 UTC (rev 3932)
+ +++ trunk/drivers/serial/8250.c	2007-11-25 22:08:02 UTC (rev 3933)
+ @@ -92,7 +92,9 @@
+   */
+  #define CONFIG_HUB6 1
+  
+ +#ifndef CONFIG_BLACKFIN
+  #include <asm/serial.h>
+ +#endif
+  
+  /*
+   * SERIAL_PORT_DFNS tells us about built-in ports that have no
+ @@ -1544,6 +1546,10 @@
+  		i->head = &up->list;
+  		spin_unlock_irq(&i->lock);
+  
+ +#ifdef CONFIG_BLACKFIN
+ +		irq_flags |= IRQF_TRIGGER_HIGH;
+ +#endif
+ +
+  		ret = request_irq(up->port.irq, serial8250_interrupt,
+  				  irq_flags, "serial", i);
+  		if (ret < 0)
 
-And of course it makes PnP output completely bogus:
 
-00:09 PNP0501 16550A-compatible serial port
-    state =3D active
-    allocated resources:
-        io 0x3f8-0x3ff
-        irq 5
-=20
-So two questions:
 
-1. why device got enabled when ACPI explicitly stated it cannot be?
-2. can we get information about _STA result in user space so we do not try
-to autoload driver for device that can't work?
 
---nextPart25451413.2so2eWPT9s
-Content-Type: application/pgp-signature; name=signature.asc 
-Content-Description: This is a digitally signed message part.
+-- 
+------------------------------------------------------------------------
+Javier Herrero                            EMAIL: jherrero@hvsistemas.com
+HV Sistemas S.L.                          PHONE:         +34 949 336 806
+Los Charcones, 17A                        FAX:           +34 949 336 792
+19170 El Casar - Guadalajara - Spain      WEB: http://www.hvsistemas.com 
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (GNU/Linux)
-
-iD8DBQBHSdSeR6LMutpd94wRAuH2AKDCNpLNXWltEqNkZQ+X/Osp7K0rDACgzUpj
-UI6hGdKn3gbLoX75kTHETfE=
-=dPVc
------END PGP SIGNATURE-----
-
---nextPart25451413.2so2eWPT9s--
