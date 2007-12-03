@@ -1,37 +1,38 @@
-From: "Maciej W. Rozycki" <macro@linux-mips.org>
-Subject: Re: Rename Sibyte duart devices?
-Date: Mon, 3 Dec 2007 14:30:47 +0000 (GMT)
-Message-ID: <Pine.LNX.4.64N.0712031430050.19235@blysk.ds.pg.gda.pl>
+From: "Kaz Kylheku" <kaz@zeugmasystems.com>
+Subject: RE: Rename Sibyte duart devices?
+Date: Mon, 3 Dec 2007 13:41:09 -0800
+Message-ID: <DDFD17CC94A9BD49A82147DDF7D545C552E883@exchange.ZeugmaSystems.local>
 References: <20071203130818.GA6466@linux-mips.org>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cerber.ds.pg.gda.pl ([153.19.208.18]:35749 "EHLO
-	cerber.ds.pg.gda.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751882AbXLCOa7 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 3 Dec 2007 09:30:59 -0500
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-mips-bounce@linux-mips.org>
+Content-class: urn:content-classes:message
 In-Reply-To: <20071203130818.GA6466@linux-mips.org>
-Sender: linux-serial-owner@vger.kernel.org
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+To: Ralf Baechle <ralf@linux-mips.org>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ralf Baechle <ralf@linux-mips.org>
-Cc: linux-mips@linux-mips.org, linux-serial@vger.kernel.org
 
-On Mon, 3 Dec 2007, Ralf Baechle wrote:
-
+Ralf Baechle wrote:
 > Devices created by udev have been named duart? instead of the common
 > ttyS?.  This is a nuisance because it requires changes to all sorts of
-> config files such as /etc/inittab, /etc/securetty etc. to work.  I
+> config files such as /etc/inittab, /etc/securetty etc. to work.
 > suggest to kill the problem by the root by something like the below
-> patch.  Comments?
+> patch.  Comments? 
 
- Well, there is no problem with naming your device nodes in the filesystem
-however you like and the only place that only cares is the "console="
-command line option.  I think the root is ttyS devices should really be
-only used for 8250-based devices and if you plug a standard PC serial
-option card into one of the PCI slots, then all the hell will break loose.
-I might be wrong though and the issue I am referring to may have gone now.
+I can see this kind of a change being somewhat sneaky; some Linux users
+on SiByte systems have already worked around for the duart naming not by
+patching the kernel but by modifying their text configurations to use
+the duart naming. After they figure out why, after upgrading to a new
+kernel, their system doesn't work any more, they will still have the
+problem that the newer and older kernel require different text
+configuration in the file system with respect to the tty devices. It's
+nice to be able to pull out an older kernel and boot with it, without
+having to remember a list of things to tweak.
 
- [Sent twice to reach linux-serial.]
+To be forward and backward compatible, the kernel should perhaps offer
+the device under both aliases: /etc/TTYSx and /etc/duartx.
 
-  Maciej
+Kaz "Kompatibility Kurmudgeon" Kylheku
