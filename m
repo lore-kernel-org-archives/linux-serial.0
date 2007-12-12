@@ -1,75 +1,34 @@
-From: "Antti S. Lankila" <alankila@bel.fi>
-Subject: Individual Computers' Catweasel card incorrectly detected by serial
- driver
-Date: Sat, 08 Dec 2007 17:08:17 +0200
-Message-ID: <475AB361.5010404@bel.fi>
+From: Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH 06/47] Add serial driver for CRISv32.
+Date: Wed, 12 Dec 2007 03:14:11 -0800
+Message-ID: <20071212031411.e8b00037.akpm@linux-foundation.org>
+References: <ca13018bb45763422de40e6109171637091a312e.1196848533.git.jesper.nilsson@axis.com>
+	<198a9a1fad3830f89aa033f38c7600ec512d1947.1196848533.git.jesper.nilsson@axis.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zeus.bel.fi ([83.145.195.130]:54623 "EHLO zeus.bel.fi"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751473AbXLHQCn (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 8 Dec 2007 11:02:43 -0500
-Received: from bacchus.bel.fi ([83.145.195.129] helo=[192.168.10.30])
-	by zeus.bel.fi with esmtpsa (TLS-1.0:DHE_RSA_AES_256_CBC_SHA1:32)
-	(Exim 4.67)
-	(envelope-from <alankila@bel.fi>)
-	id 1J11Jp-0007kC-GA
-	for linux-serial@vger.kernel.org; Sat, 08 Dec 2007 17:10:22 +0200
+Received: from smtp2.linux-foundation.org ([207.189.120.14]:48302 "EHLO
+	smtp2.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754403AbXLLLOR (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 12 Dec 2007 06:14:17 -0500
+In-Reply-To: <198a9a1fad3830f89aa033f38c7600ec512d1947.1196848533.git.jesper.nilsson@axis.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Jesper Nilsson <jesper.nilsson@axis.com>
+Cc: Mikael Starvik <mikael.starvik@axis.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Hi everyone,
+On Thu, 29 Nov 2007 17:23:14 +0100 Jesper Nilsson <jesper.nilsson@axis.com> wrote:
 
-Individual Computers is basically a single-man company, which 
-manufacturers some boards for old Amiga and C64 enthusiasts. There are a 
-few hundred of these boards in circulation.
+> +static void serial_cris_set_mctrl(struct uart_port *port, unsigned int mctrl)
+> +{
+> +	struct uart_cris_port *up = (struct uart_cris_port *)port;
 
-The board I have, the Catweasel Mk4, has PCI ID e159:0001. (This 
-unfortunately belongs to TigerJet 300 ISDN device, because the 
-Individual Computers is not registered.) It has ports for things like 
-Amiga mice and keyboards, and I'm guessing these may be serial in 
-nature. Whatever the reason, it classes itself as a serial 
-communications controller.
+use container_of() here
 
-I have a custom driver for this hardware, which used to work some half a 
-year ago, probably on 2.6.20. It seems that with 2.6.22, the custom 
-driver does not probe the Catweasel card any longer. Upon investigation, 
-I found out that the serial driver has claimed it: it contains a 
-guessing logic that will claim almost any serial communications 
-controller for itself.
+> +static irqreturn_t dma_tr_interrupt(int irq, void *dev_id)
+> +{
+> +	struct uart_cris_port *up = (struct uart_cris_port *)dev_id;
 
-I'm looking for a way to make serial driver give that one device up. 
-Which one of these solutions would seem most acceptable, on the level 
-that a small patch could be placed in 8250_pci.c or elsewhere:
-
-1) during generic probe, immediately return if the dev->vendor == 
-PCI_VENDOR_ID_TIGERJET and dev->device == PCI_VENDOR_ID_TIGERJET_300 
-with comment that explains that this really targets Individual 
-Computer's Catweasel line of cards. There should be no harm to TigerJet 
-300 because it is an ISDN device with its own driver.
-
-2) have a kernel commandline option or module option that says "do not 
-attempt generic serial probe on this system". This could be defensible 
-on the grounds that generic probes can't always work, so there should be 
-a way to fix things up when they don't.
-
-3) Some userland way to make the driver give up particular device. Rmmod 
-doesn't work for me, because the driver is linked in the kernel on 
-Ubuntu G, but if there could be a way to somehow deregister the driver, 
-that could be quite useful to me. Blacklisting? Command line parameter 
-to tell kernel to skip "serial" driver completely? Anything at all?
-
-As possibility 3) implies, I can live without the serial driver. I'm 
-unfortunately somewhat ignorant about available ways to accomplish this.
-
-3) also results in a side question: how does the kernel resolve 
-situations where two drivers look capable of driving the same hardware? 
-Does it priorize the drivers by insertion order, alphabetic sorting by 
-name, or by most specific match in the pci id table, or any other 
-explicit rule like that which I could exploit?
-
-With regards,
-Antti
+This driver is a somewhat depressing read too.
