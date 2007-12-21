@@ -1,35 +1,56 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] Support specifying DW APB UARTSs in device
- platform_data
-Date: Thu, 20 Dec 2007 21:39:19 +0000
-Message-ID: <20071220213919.79ff17f1@the-village.bc.nu>
-References: <87a5b0800712200648o7cc48af9ic38d7d568affdbc8@mail.gmail.com>
+From: Thomas Koeller <thomas@koeller.dyndns.org>
+Subject: RM9000 code broken in 8250.c
+Date: Fri, 21 Dec 2007 12:50:17 +0100
+Message-ID: <200712211250.18002.thomas@koeller.dyndns.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from outpipe-village-512-1.bc.nu ([81.2.110.250]:52677 "EHLO
-	the-village.bc.nu" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752656AbXLTVqd (ORCPT
+Received: from mx02.hansenet.de ([213.191.73.26]:54898 "EHLO
+	webmail.hansenet.de" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1750918AbXLULuo (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 20 Dec 2007 16:46:33 -0500
-In-Reply-To: <87a5b0800712200648o7cc48af9ic38d7d568affdbc8@mail.gmail.com>
+	Fri, 21 Dec 2007 06:50:44 -0500
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Will Newton <will.newton@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Alex Williamson <alex.williamson@hp.com>
+Cc: linux-serial@vger.kernel.org, Aristeu Sergio Rozanski Filho <aris@cathedrallabs.org>
 
-On Thu, 20 Dec 2007 14:48:45 +0000
-"Will Newton" <will.newton@gmail.com> wrote:
+Hi,
 
-> This patch allows the private_data field to be specified in
-> platform_data for the standard 8250/16550 UART. This field is used by
-> DW APB type UARTs and without this patch it's only possible to set
-> this field when registering the port by hand. If private_data is not
-> set then the
-> driver will potentially oops with a NULL pointer dereference.
+while investigating breakage of the RM9000 code in
+drivers/serial/8250.c, I found that my problems are
+caused by commit 40b36daad0ac704e6d5c1b75789f371ef5b053c1.
+My device has the characteristic of not generating a
+'transmitter empty' interrupt immediately if interrupts
+are enabled while the transmitter is empty, it needs to
+be kicked by transmitting a character first. Before
+commit 40b36daad0ac704e6d5c1b75789f371ef5b053c1 this was
+taken care of by code in serial8250_startup() that probed
+the hardware for this bug an set the UART_BUG_TXEN flag,
+which then modified the behavior of serial8250_start_tx()
+to take the bug into account. This used to work well for
+my device.
 
+The commit introduced another check for the same condition
+which is done earlier in serial8250_startup(), and causes
+the driver to use a periodic timer instead of the hardware
+interrupt. Now my device uses that timer, while it was
+perfectly capable of using the serial port transmit
+interrupt before.
 
-Fine by me. 
+I wonder why a new workaround has been introduced for a
+problem for which there had already been a (far superior)
+solution. Didn't this existing solution solve the problem
+for the hardware in question? If so, wouldn't it have been
+possible to modify the existing solution instead of adding
+another one that conflicts with existing code that depends
+on the old code?
 
-Alan
+regards,
+Thomas
+-- 
+Thomas Koeller
+thomas@koeller.dyndns.org
