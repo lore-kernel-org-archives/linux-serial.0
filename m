@@ -1,103 +1,46 @@
-From: JZabalza@cemitec.com
-Subject: Handling RTS
-Date: Wed, 9 Jan 2008 19:17:55 +0100
-Message-ID: <OFAF597FC5.42D5FDAE-ONC12573CB.0060EF59-C12573CB.00648213@cemitec.com>
+From: =?iso-8859-1?Q?Chris_Dor=E9?= <cdore@connecttech.com>
+Subject: RE: Handling RTS
+Date: Wed, 9 Jan 2008 15:35:43 -0500
+Message-ID: <008101c852ff$36201730$a2604590$@com>
+References: <OFAF597FC5.42D5FDAE-ONC12573CB.0060EF59-C12573CB.00648213@cemitec.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cliente-24411.iberbanda.es ([83.230.159.89]:2510 "EHLO
-	Morondo.cemitec.local" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1750720AbYAISeo convert rfc822-to-8bit (ORCPT
+Received: from inetc.connecttech.com ([64.7.140.42]:4770 "EHLO
+	inetc.connecttech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753447AbYAIVId (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 9 Jan 2008 13:34:44 -0500
+	Wed, 9 Jan 2008 16:08:33 -0500
+Received: from connecttech.com (cti2.connecttech.com [206.130.75.42])
+	by inetc.connecttech.com (8.13.3P/8.13.3) with ESMTP id m09Ka8rD096566
+	for <linux-serial@vger.kernel.org>; Wed, 9 Jan 2008 15:36:08 -0500 (EST)
+	(envelope-from cdore@connecttech.com)
+Received: from cdore ([206.130.75.122]) by connecttech.com (8.10.1/UW7.1.1-NSCd) with ESMTP id m09KZk023268 for <linux-serial@vger.kernel.org>; Wed, 9 Jan 2008 15:35:46 -0500 (EST)
+In-Reply-To: <OFAF597FC5.42D5FDAE-ONC12573CB.0060EF59-C12573CB.00648213@cemitec.com>
+Content-Language: en-ca
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-serial <linux-serial@vger.kernel.org>
 
-Hello list
+> -----Original Message-----
+> From: linux-serial-owner@vger.kernel.org [mailto:linux-serial-
+> owner@vger.kernel.org] On Behalf Of JZabalza@cemitec.com
+> Sent: January 9, 2008 1:18 PM
+> 
+> If there is not another way, which shall be the best strategy to implement
+> this (activate RTS when uart is transmiting data and deactivate when
+> transmision is finish. It would be another protocol different but similar
+> to RTS/CTS protocol) on linux driver (modifying serial_core.c  to accept a
+> new CFLAG?) ?
 
-I have a RS485 device connect to a PC serial port.  To handle half dupl=
-ex=20
-transmision I must activate/deactivate RTS line. I think this is a very=
-=20
-common practice.To do this I have these functions
-
-int set_to_write( int _port)=20
-{=20
-int nStatus;=20
-
-    if ( ioctl( _port, TIOCMGET, &nStatus ) < 0)=20
-    {=20
-        return -1;=20
-    }=20
-    else=20
-    {=20
-        nStatus |=3D TIOCM_RTS;=20
-        if ( ioctl( _port, TIOCMSET, &nStatus ) < 0)=20
-        {=20
-            return -2;=20
-        }=20
-    }=20
-=20
-    return 0;=20
-}=20
-
-int set_to_read( int _port )=20
-{=20
-int nStatus;=20
-
-    if ( ioctl( _port, TIOCMGET, &nStatus ) < 0)=20
-    {=20
-        return -1;=20
-    }=20
-    else=20
-    {=20
-
-        nStatus &=3D ~TIOCM_RTS;=20
-        if ( ioctl( _port, TIOCMSET, &nStatus ) < 0)=20
-        {=20
-            return -2;=20
-        }=20
-    }=20
-
-    return 0;=20
-}
-=20
-
-To send bytes I have this code
-
-set_to_write(port);
-write(port,"bytes to send",len);
-tcdrain(port)
-set_to_read(port);
-
-All is running succesfully but when I put oscilloscope I can see 10 mS =
-(or=20
-more) latency time from set_to_write() to write() begin to send=20
-characters. I know this is a Linux userland issue but, is there another=
-=20
-way to do this from driver, similar a cflag CRTSCTS to activate RTS/CTS=
-=20
-protocol?.
-
-If there is not another way, which shall be the best strategy to implem=
-ent=20
-this (activate RTS when uart is transmiting data and deactivate when=20
-transmision is finish. It would be another protocol different but simil=
-ar=20
-to RTS/CTS protocol) on linux driver (modifying serial_core.c  to accep=
-t a=20
-new CFLAG?) ?
+What UART are you using?  Some newer UARTs have built-in capabilities for
+the RTS framing.  So instead of having to toggle RTS manually, you can flip
+a bit and let the UART do it for you whenever it transmits...unless that
+won't work for you.
 
 
-thank you very munch for your help.
+.Chris
 
 
-Jos=E9 Luis Zabalza
-
--
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
