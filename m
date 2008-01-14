@@ -1,45 +1,52 @@
-From: Pavel Machek <pavel@ucw.cz>
-Subject: Re: [PATCH] serial: remove "too much work for irq" printk
-Date: Sun, 13 Jan 2008 23:03:27 +0100
-Message-ID: <20080113220327.GB5128@elf.ucw.cz>
-References: <20080112201543.GB12775@kvack.org> <20080112212457.3bf534af@lxorguk.ukuu.org.uk>
+From: =?iso-8859-1?Q?Chris_Dor=E9?= <cdore@connecttech.com>
+Subject: RE: Handling RTS
+Date: Mon, 14 Jan 2008 10:05:03 -0500
+Message-ID: <005401c856be$d8db3a00$8a91ae00$@com>
+References: <008101c852ff$36201730$a2604590$@com> <OF13421728.28514CCE-ONC12573CC.002D2F04-C12573CC.002E6D4E@cemitec.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gprs189-60.eurotel.cz ([160.218.189.60]:33110 "EHLO amd.ucw.cz"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1753885AbYAMWDb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 13 Jan 2008 17:03:31 -0500
-Content-Disposition: inline
-In-Reply-To: <20080112212457.3bf534af@lxorguk.ukuu.org.uk>
+Received: from inetc.connecttech.com ([64.7.140.42]:4463 "EHLO
+	inetc.connecttech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750810AbYANPFW (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 14 Jan 2008 10:05:22 -0500
+Received: from connecttech.com (cti2.connecttech.com [206.130.75.42])
+	by inetc.connecttech.com (8.13.3P/8.13.3) with ESMTP id m0EF5LUO018644
+	for <linux-serial@vger.kernel.org>; Mon, 14 Jan 2008 10:05:21 -0500 (EST)
+	(envelope-from cdore@connecttech.com)
+Received: from cdore ([206.130.75.122]) by connecttech.com (8.10.1/UW7.1.1-NSCd) with ESMTP id m0EF55V02939 for <linux-serial@vger.kernel.org>; Mon, 14 Jan 2008 10:05:05 -0500 (EST)
+In-Reply-To: <OF13421728.28514CCE-ONC12573CC.002D2F04-C12573CC.002E6D4E@cemitec.com>
+Content-Language: en-ca
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Benjamin LaHaise <bcrl@kvack.org>, akpm@osdl.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-serial <linux-serial@vger.kernel.org>
 
-On Sat 2008-01-12 21:24:57, Alan Cox wrote:
-> On Sat, 12 Jan 2008 15:15:43 -0500
-> Benjamin LaHaise <bcrl@kvack.org> wrote:
+> From: linux-serial-owner@vger.kernel.org [mailto:linux-serial-
+> owner@vger.kernel.org] On Behalf Of JZabalza@cemitec.com
+> Sent: January 10, 2008 3:27 AM
+> To: linux-serial
+> Subject: RE: Handling RTS
 > 
-> > When using kvm with a serial console, the serial driver will print out 
-> > "too much work for irq4" on any heavy activity (ie vi on a file repainting 
-> > the terminal).  This message is entirely spurious, as output continues to 
-> > work fine.  Remove the message as it corrupts screen output and is far too 
-> > easy to trigger.
+>         Thanks for your response. I have a PC, so dmesg said
 > 
-> NAK. This is a qemu/kvm emulation bug. The real check is there to catched
-> jammed IRQs and combined with the IRQ bug handling nowdays does actually
-> do the intended job.
+>                 serial8250: ttyS0 at I/O 0x3f8 (irq = 4) is a 16550A
 > 
-> Our serial port code (correctly) interprets a continuous stream of bytes
-> at an impossible bit rate as an error. KVM should be emulating to some
-> extent at least the timing on serial interfaces or using a virtualised
-> interface.
+>         How I said, I just handle RTS but from userland. This means a big
+> latency between RTS activation and begin out data. I want only reduce this
+> latency activating RTS on driver. My question is, is this *protocol*
+> implemented actually or I must implement them.
 
-How can you tell apart impossible bit rate from really slow CPU, or
-maybe just an SMI storm, or heavy busmaster DMA?
+I'm not an expert on the current 8250 driver, but I believe you will have to
+implement your 485 control.
 
-									Pavel
--- 
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
+We may have done this in one of our drivers, but in my quick search I can't
+find one that doesn't take advantage of the extra features supplied by the
+UARTs we use.
+
+
+Best of luck, Chris
+
+
