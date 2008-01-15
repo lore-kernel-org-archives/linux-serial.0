@@ -1,162 +1,71 @@
-From: Kumar Gala <galak@kernel.crashing.org>
-Subject: Re: [PATCH] [SERIAL] qe-uart: add support for Freescale QUICCEngine UART
-Date: Tue, 15 Jan 2008 08:21:24 -0600
-Message-ID: <1CFD37C9-F06C-4C7E-836D-31C94EF464DF@kernel.crashing.org>
-References: <11999217062265-git-send-email-timur@freescale.com> <11999217072674-git-send-email-timur@freescale.com> <119992170854-git-send-email-timur@freescale.com>
-Mime-Version: 1.0 (Apple Message framework v915)
-Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
+From: Timur Tabi <timur@freescale.com>
+Subject: Re: [PATCH] [SERIAL] qe-uart: add support for Freescale QUICCEngine
+ UART
+Date: Tue, 15 Jan 2008 09:03:32 -0600
+Message-ID: <478CCB44.3000805@freescale.com>
+References: <11999217062265-git-send-email-timur@freescale.com> <11999217072674-git-send-email-timur@freescale.com> <119992170854-git-send-email-timur@freescale.com> <1CFD37C9-F06C-4C7E-836D-31C94EF464DF@kernel.crashing.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gate.crashing.org ([63.228.1.57]:53522 "EHLO gate.crashing.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750791AbYAOOVg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 15 Jan 2008 09:21:36 -0500
-In-Reply-To: <119992170854-git-send-email-timur@freescale.com>
+Received: from az33egw02.freescale.net ([192.88.158.103]:44804 "EHLO
+	az33egw02.freescale.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750852AbYAOPEY (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 15 Jan 2008 10:04:24 -0500
+In-Reply-To: <1CFD37C9-F06C-4C7E-836D-31C94EF464DF@kernel.crashing.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Timur Tabi <timur@freescale.com>
+To: Kumar Gala <galak@kernel.crashing.org>
 Cc: linuxppc-dev@ozlabs.org, linux-serial@vger.kernel.org
 
+Kumar Gala wrote:
 
-On Jan 9, 2008, at 5:35 PM, Timur Tabi wrote:
+> what is the define for?  you commented all the others :)
 
-> Add file ucc_uart.c, a serial device driver for the Freescale  
-> QUICCEngine.
-> Update the Kconfig and Makefile accordingly.
->
-> Signed-off-by: Timur Tabi <timur@freescale.com>
-> ---
-> drivers/serial/Kconfig    |   10 +
-> drivers/serial/Makefile   |    1 +
-> drivers/serial/ucc_uart.c | 1507 ++++++++++++++++++++++++++++++++++++ 
-> +++++++++
-> 3 files changed, 1518 insertions(+), 0 deletions(-)
-> create mode 100644 drivers/serial/ucc_uart.c
->
+I thought you said there were no more issues? :-)
+
+>> +#define UCC_WAIT_CLOSING 100
+
+This is how long to wait after receiving a close request for characters to be 
+sent out before actually closing the device.  I just used the same value as the 
+CPM serial driver.
 
 
->
-> diff --git a/drivers/serial/ucc_uart.c b/drivers/serial/ucc_uart.c
-> new file mode 100644
-> index 0000000..6fe4cfc
-> --- /dev/null
-> +++ b/drivers/serial/ucc_uart.c
-> @@ -0,0 +1,1507 @@
-> +/*
-> + * Freescale QUICC Engine UART device driver
-> + *
-> + * Author: Timur Tabi <timur@freescale.com>
-> + *
-> + * Copyright 2007 Freescale Semiconductor, Inc.  This file is  
-> licensed under
-> + * the terms of the GNU General Public License version 2.  This  
-> program
-> + * is licensed "as is" without any warranty of any kind, whether  
-> express
-> + * or implied.
-> + *
-> + * This driver adds support for UART devices via Freescale's QUICC  
-> Engine
-> + * found on some Freescale SOCs.
-> + *
-> + * If Soft-UART support is needed but not already present, then  
-> this driver
-> + * will request and upload the "Soft-UART" microcode upon probe.  The
-> + * filename of the microcode should be fsl_qe_ucode_uart_X_YZ.bin,  
-> where "X"
-> + * is the name of the SOC (e.g. 8323), and YZ is the revision of  
-> the SOC,
-> + * (e.g. "11" for 1.1).
-> + */
-> +
+>> +    u16 tx_state;       /* 0xC6, TX state */
+> 
+> __be16?
 
+Oops.
 
-what is the define for?  you commented all the others :)
->
-> +#define UCC_WAIT_CLOSING 100
-> +
-> +struct ucc_uart_pram {
-> +	struct ucc_slow_pram common;
-> +	u8 res1[8];     	/* reserved */
-> +	__be16 maxidl;  	/* Maximum idle chars */
-> +	__be16 idlc;    	/* temp idle counter */
-> +	__be16 brkcr;   	/* Break count register */
-> +	__be16 parec;   	/* receive parity error counter */
-> +	__be16 frmec;   	/* receive framing error counter */
-> +	__be16 nosec;   	/* receive noise counter */
-> +	__be16 brkec;   	/* receive break condition counter */
-> +	__be16 brkln;   	/* last received break length */
-> +	__be16 uaddr[2];	/* UART address character 1 & 2 */
-> +	__be16 rtemp;   	/* Temp storage */
-> +	__be16 toseq;   	/* Transmit out of sequence char */
-> +	__be16 cchars[8];       /* control characters 1-8 */
-> +	__be16 rccm;    	/* receive control character mask */
-> +	__be16 rccr;    	/* receive control character register */
-> +	__be16 rlbc;    	/* receive last break character */
-> +	__be16 res2;    	/* reserved */
-> +	__be32 res3;    	/* reserved, should be cleared */
-> +	u8 res4;		/* reserved, should be cleared */
-> +	u8 res5[3];     	/* reserved, should be cleared */
-> +	__be32 res6;    	/* reserved, should be cleared */
-> +	__be32 res7;    	/* reserved, should be cleared */
-> +	__be32 res8;    	/* reserved, should be cleared */
-> +	__be32 res9;    	/* reserved, should be cleared */
-> +	__be32 res10;   	/* reserved, should be cleared */
-> +	__be32 res11;   	/* reserved, should be cleared */
-> +	__be32 res12;   	/* reserved, should be cleared */
-> +	__be32 res13;   	/* reserved, should be cleared */
-> +/* The rest is for Soft-UART only */
-> +	__be16 supsmr;  	/* 0x90, Shadow UPSMR */
-> +	__be16 res92;   	/* 0x92, reserved, initialize to 0 */
-> +	__be32 rx_state;	/* 0x94, RX state, initialize to 0 */
-> +	__be32 rx_cnt;  	/* 0x98, RX count, initialize to 0 */
-> +	u8 rx_length;   	/* 0x9C, Char length, set to 1+CL+PEN+1+SL */
-> +	u8 rx_bitmark;  	/* 0x9D, reserved, initialize to 0 */
-> +	u8 rx_temp_dlst_qe;     /* 0x9E, reserved, initialize to 0 */
-> +	u8 res14[0xBC - 0x9F];  /* reserved */
-> +	__be32 dump_ptr;	/* 0xBC, Dump pointer */
-> +	__be32 rx_frame_rem;    /* 0xC0, reserved, initialize to 0 */
-> +	u8 rx_frame_rem_size;   /* 0xC4, reserved, initialize to 0 */
-> +	u8 tx_mode;     	/* 0xC5, mode, 0=AHDLC, 1=UART */
-> +	u16 tx_state;   	/* 0xC6, TX state */
+>> +/*
+>> + * Set the modem control lines
+>> + *
+>> + * We currently don't support setting modem control lines, but this 
+>> function
+>> + * needs to exist, otherwise the kernel will panic.
+>> + */
+>> +void qe_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
+>> +{
+>> +}
+> 
+> What's the issue w/support of this?  (maybe a comment related to why its 
+> not supported -- if not here in the git commit message)
 
-__be16?
+I didn't want to add any serial functionality that wasn't in the CPM serial 
+driver, mostly because I don't really understand the technical details of serial 
+communication at this level.  I figured if it's okay for the CPM driver not to 
+handle modem control, then the QE driver doesn't have to do it either.
 
->
-> +	u8 res15[0xD0 - 0xC8];  /* reserved */
-> +	__be32 resD0;   	/* 0xD0, reserved, initialize to 0 */
-> +	u8 resD4;       	/* 0xD4, reserved, initialize to 0 */
-> +	__be16 resD5;   	/* 0xD5, reserved, initialize to 0 */
-> +} __attribute__ ((packed));
-> +
->
->
+>> +static void qe_uart_enable_ms(struct uart_port *port)
+>> +{
+> 
+> same question as above.
 
+Same answer!
 
-> +/*
-> + * Set the modem control lines
-> + *
-> + * We currently don't support setting modem control lines, but this  
-> function
-> + * needs to exist, otherwise the kernel will panic.
-> + */
-> +void qe_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
-> +{
-> +}
+I suppose you want me to post another version of this patch?
 
-What's the issue w/support of this?  (maybe a comment related to why  
-its not supported -- if not here in the git commit message)
-
-> +/*
-> + * Enable status change interrupts
-> + *
-> + * We don't support status change interrupts, but we need to define  
-> this
-> + * function otherwise the kernel will panic.
-> + */
-> +static void qe_uart_enable_ms(struct uart_port *port)
-> +{
-
-same question as above.
-
-- k
+-- 
+Timur Tabi
+Linux kernel developer at Freescale
