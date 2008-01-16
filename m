@@ -1,40 +1,43 @@
-From: Bjorn Helgaas <bjorn.helgaas@hp.com>
-Subject: Re: [patch 0/2] serial: explicitly request ttyS0-3 for COM1-4
-Date: Wed, 16 Jan 2008 12:59:27 -0700
-Message-ID: <200801161259.28723.bjorn.helgaas@hp.com>
-References: <20080116170541.511233227@ldl.fc.hp.com> <20080116183933.GB23371@flint.arm.linux.org.uk>
+From: "H. Peter Anvin" <hpa@zytor.com>
+Subject: Re: [patch 2/2] 8250_pnp: register x86 COM ports at the conventional
+ ttyS names
+Date: Wed, 16 Jan 2008 14:49:44 -0500
+Message-ID: <478E5FD8.5060906@zytor.com>
+References: <20080116170541.511233227@ldl.fc.hp.com> <20080116170914.959390017@ldl.fc.hp.com> <478E5095.2020803@zytor.com> <200801161247.34821.bjorn.helgaas@hp.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from g4t0016.houston.hp.com ([15.201.24.19]:10197 "EHLO
-	g4t0016.houston.hp.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750884AbYAPT7E (ORCPT
+Received: from terminus.zytor.com ([198.137.202.10]:40295 "EHLO
+	terminus.zytor.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752708AbYAPT7N (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Jan 2008 14:59:04 -0500
-In-Reply-To: <20080116183933.GB23371@flint.arm.linux.org.uk>
-Content-Disposition: inline
+	Wed, 16 Jan 2008 14:59:13 -0500
+In-Reply-To: <200801161247.34821.bjorn.helgaas@hp.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <rmk+lkml@arm.linux.org.uk>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jeff Garzik <jeff@garzik.org>, Andrew Morton <akpm@linux-foundation.org>
+To: Bjorn Helgaas <bjorn.helgaas@hp.com>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Russell King <rmk+serial@arm.linux.org.uk>, Jeff Garzik <jeff@garzik.org>, Andrew Morton <akpm@linux-foundation.org>
 
-On Wednesday 16 January 2008 11:39:34 am Russell King wrote:
-> On Wed, Jan 16, 2008 at 10:05:41AM -0700, Bjorn Helgaas wrote:
-> > When 8250_pnp discovers COM ports, we only get the correct ttyS names
-> > by accident -- we rely on serial8250_isa_init_ports(), which discovers
-> > the COM ports earlier using the addresses in SERIAL_PORT_DFNS.
+Bjorn Helgaas wrote:
+>>> +
+>> Arguably, the right thing is to use the addresses present in the array 
+>> at address 0x400.  In particular, COM3 and COM4 aren't always at those 
+>> addresses.
 > 
-> It's not by accident but by design.  It's quite intentional that it
-> remembers the addresses of serial ports, and if another port is
-> registered later with the same base address, it gets the same name.
+> Wow.  I bow before your storehouse of x86 arcana :-)
+> 
+> I guess you're referring to the "BIOS data area," which I'd never
+> heard of before (but fortunately, Google knows).
+> 
+> What would you think about doing this only for COM1 and COM2?  The
+> only real value for doing this in the first place is so "console=ttyS0"
+> always goes to COM1, even if we don't have SERIAL_PORT_DFNS.  User-
+> space ought to use some sort of udev magic if it cares about persistent
+> naming.
+> 
 
-It's certainly by design that if we register a port twice, it gets
-the same name both times.
+Well, there are four ports that the BIOS have slots for, and if so, we 
+probably should use them.
 
-But that's not quite what I was referring to.  I meant that I don't
-think 8250_pnp should depend on the fact that COM1-4 have been
-previously discovered to get the right names.
-
-Bjorn
+	-hpa
