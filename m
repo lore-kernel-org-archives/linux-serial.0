@@ -1,24 +1,38 @@
-From: Russell King <rmk+lkml@arm.linux.org.uk>
-Subject: Re: [patch 2/2] 8250_pnp: register x86 COM ports at the conventional ttyS names
-Date: Wed, 16 Jan 2008 18:42:06 +0000
-Message-ID: <20080116184206.GC23371@flint.arm.linux.org.uk>
+From: "H. Peter Anvin" <hpa@zytor.com>
+Subject: Re: [patch 2/2] 8250_pnp: register x86 COM ports at the conventional
+ ttyS names
+Date: Wed, 16 Jan 2008 13:44:37 -0500
+Message-ID: <478E5095.2020803@zytor.com>
 References: <20080116170541.511233227@ldl.fc.hp.com> <20080116170914.959390017@ldl.fc.hp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([78.32.30.218]:55401 "EHLO
-	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752455AbYAPSmV (ORCPT
+Received: from terminus.zytor.com ([198.137.202.10]:59837 "EHLO
+	terminus.zytor.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751360AbYAPSyq (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Jan 2008 13:42:21 -0500
-Content-Disposition: inline
+	Wed, 16 Jan 2008 13:54:46 -0500
 In-Reply-To: <20080116170914.959390017@ldl.fc.hp.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Bjorn Helgaas <bjorn.helgaas@hp.com>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jeff Garzik <jeff@garzik.org>, Andrew Morton <akpm@linux-foundation.org>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Russell King <rmk+serial@arm.linux.org.uk>, Jeff Garzik <jeff@garzik.org>, Andrew Morton <akpm@linux-foundation.org>
 
-On Wed, Jan 16, 2008 at 10:05:43AM -0700, Bjorn Helgaas wrote:
+Bjorn Helgaas wrote:
+> x86 users expect COM1-COM4 ports at the conventional ioport addresses
+> to be named ttyS0-ttyS3.  For PNP devices, the BIOS determines the
+> order we discover them, so we might discover COM2 before COM1.
+> 
+> We currently always get the correct names, even without this patch.
+> But that's only because serial8250_isa_init_ports() first registers
+> the hard-coded list of COM port addresses from SERIAL_PORT_DFNS.  When
+> PNP rediscovers one of those ports, it gets the already-established
+> line.
+> 
+> This patch removes the implicit dependency on SERIAL_PORT_DFNS by
+> requesting the names we desire.
+>  
 >  static int __devinit
 > +serial_pnp_line(struct uart_port *port)
 > +{
@@ -30,11 +44,10 @@ On Wed, Jan 16, 2008 at 10:05:43AM -0700, Bjorn Helgaas wrote:
 > +	case 0x2e8:	return 3;	/* COM4 -> ttyS3 */
 > +	}
 > +#endif
+> +
 
-So what if someone intentionally modifies SERIAL_DEFN_PORTS to point
-ttyS[0-3] somewhere else?  They also have to modify this code as well.
+Arguably, the right thing is to use the addresses present in the array 
+at address 0x400.  In particular, COM3 and COM4 aren't always at those 
+addresses.
 
--- 
-Russell King
- Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
- maintainer of:
+	-hpa
