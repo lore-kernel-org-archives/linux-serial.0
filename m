@@ -1,47 +1,66 @@
-From: Rene Herman <rene.herman@keyaccess.nl>
-Subject: Re: [patch 2/2] 8250_pnp: register x86 COM ports at the conventional
- ttyS names
-Date: Thu, 17 Jan 2008 00:34:05 +0100
-Message-ID: <478E946D.9040105@keyaccess.nl>
-References: <9MjWa-VI-9@gated-at.bofh.it> <9MjWb-VI-11@gated-at.bofh.it> <9MlEG-3Mx-13@gated-at.bofh.it> <9Mmra-56f-29@gated-at.bofh.it> <E1JFEwb-0000zs-2q@be1.7eggert.dyndns.org> <478E6C20.2030005@zytor.com>
+From: Bjorn Helgaas <bjorn.helgaas@hp.com>
+Subject: Re: [patch 0/2] serial: explicitly request ttyS0-3 for COM1-4
+Date: Thu, 17 Jan 2008 09:07:29 -0700
+Message-ID: <200801170907.31162.bjorn.helgaas@hp.com>
+References: <20080116170541.511233227@ldl.fc.hp.com> <200801161259.28723.bjorn.helgaas@hp.com> <20080116201438.GD23371@flint.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtpq1.tilbu1.nb.home.nl ([213.51.146.200]:50016 "EHLO
-	smtpq1.tilbu1.nb.home.nl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751903AbYAPXhh (ORCPT
+Received: from g5t0008.atlanta.hp.com ([15.192.0.45]:37781 "EHLO
+	g5t0008.atlanta.hp.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751557AbYAQQHA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Jan 2008 18:37:37 -0500
-In-Reply-To: <478E6C20.2030005@zytor.com>
+	Thu, 17 Jan 2008 11:07:00 -0500
+In-Reply-To: <20080116201438.GD23371@flint.arm.linux.org.uk>
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "H. Peter Anvin" <hpa@zytor.com>
-Cc: 7eggert@gmx.de, Bjorn Helgaas <bjorn.helgaas@hp.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Russell King <rmk+serial@arm.linux.org.uk>, Jeff Garzik <jeff@garzik.org>, Andrew Morton <akpm@linux-foundation.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+To: Russell King <rmk+lkml@arm.linux.org.uk>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jeff Garzik <jeff@garzik.org>, Andrew Morton <akpm@linux-foundation.org>
 
-On 16-01-08 21:42, H. Peter Anvin wrote:
-
-> Bodo Eggert wrote:
->> 
->> BTW1: These addresses may be used to detect ports on non-standard 
->> addresses, but unfortunately they don't tell the IRQ.
->> 
->> BTW2: When I submitted a patch using the BIOS data area, I was told 
->> that it might not exist on systems booting from non-PC firmware. This 
->> claim was not yet backed with any knowledge, nor did anybody suggest a 
->> way to detect this situation.
+On Wednesday 16 January 2008 01:14:38 pm Russell King wrote:
+> On Wed, Jan 16, 2008 at 12:59:27PM -0700, Bjorn Helgaas wrote:
+> > On Wednesday 16 January 2008 11:39:34 am Russell King wrote:
+> > > On Wed, Jan 16, 2008 at 10:05:41AM -0700, Bjorn Helgaas wrote:
+> > > > When 8250_pnp discovers COM ports, we only get the correct ttyS names
+> > > > by accident -- we rely on serial8250_isa_init_ports(), which discovers
+> > > > the COM ports earlier using the addresses in SERIAL_PORT_DFNS.
+> > > 
+> > > It's not by accident but by design.  It's quite intentional that it
+> > > remembers the addresses of serial ports, and if another port is
+> > > registered later with the same base address, it gets the same name.
+> > 
+> > It's certainly by design that if we register a port twice, it gets
+> > the same name both times.
 > 
-> This is, of course, true.  It doesn't exactly help that some (most?) 
-> non-PC firmware at least mimic the BIOS data area.
+> Incorrect - if it's not detected first time around (eg, the port isn't
+> accessible at that time), its slot will still be reserved due to the
+> way slots are given out.
 > 
-> In this particular case, there is some minor sanity-checking that can be
-> done: the values should be nonzero and aligned 8.
+> Slots are given to users in order of:
+> 
+> 1. does the IO type and base address of a previously known port match
+>    the new port?  If so, use that.
+> 2. do we have a slot which has never been used - use that.
+> 3. find the first slot which is not currently in use.
+> 
+> So, the only way we'd get the first set of ttyS slots used is if all of
+> the following are true:
+> 
+> a) the ISA probe doesn't detect them
+> b) some other driver registers many ports which don't correspond with any
+>    of the ISA listed addresses and we run out of empty slots
+> c) 8250_pnp initialises after this driver
+> 
+> (c) is unlikely, except in the modular case - we explicitly list 8250_pnp
+> immediately after the 8250 driver so that it gets first call on the
+> slots during initialisation time, before we probe for PCI devices.
 
-The number of places expected to contain something sensible should I believe 
-first be verified at 0x410 -- the equipment word. Bits 11-9 (0x0e00) should 
-be the number of serial ports, 0 to 4 (so 5-7 is also a sanity check) and if 
-BIOSes can be expected to zero out the non-used base-addresses (at 0x400, 
-0x402, 0x404, 0x406) that's another sanity check. Don't know if they can 
-though...
+Let me back up a minute.  I was merely trying to make the point that
+if we skip the ISA probe (which uses SERIAL_PORT_DFNS), the 8250_pnp
+probe will discover the COM ports but won't necessarily name them the
+way we expect (e.g., http://lkml.org/lkml/2007/8/10/409).
 
-Rene.
+Bjorn
