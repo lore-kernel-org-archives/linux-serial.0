@@ -1,102 +1,97 @@
-From: "Tosoni" <jp.tosoni@acksys.fr>
+From: JZabalza@cemitec.com
 Subject: RE: Handling RTS
-Date: Thu, 24 Jan 2008 14:42:14 +0100
-Message-ID: <014501c85e8e$edfc21b0$2e01a8c0@acksys.local>
-References: <OF09424E34.A1A575E5-ONC12573D7.00406A86-C12573D7.0041A4D2@cemitec.com>
+Date: Fri, 25 Jan 2008 10:37:42 +0100
+Message-ID: <OFB4416C24.6CC7E961-ONC12573DB.002E41AD-C12573DB.0034DD9C@cemitec.com>
+References: <014501c85e8e$edfc21b0$2e01a8c0@acksys.local>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp02.msg.oleane.net ([62.161.4.2]:58707 "EHLO
-	smtp02.msg.oleane.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751636AbYAXOEm (ORCPT
+Received: from cliente-24411.iberbanda.es ([83.230.159.89]:4126 "EHLO
+	Morondo.cemitec.local" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1754415AbYAYJgF convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 24 Jan 2008 09:04:42 -0500
-In-Reply-To: <OF09424E34.A1A575E5-ONC12573D7.00406A86-C12573D7.0041A4D2@cemitec.com>
+	Fri, 25 Jan 2008 04:36:05 -0500
+In-Reply-To: <014501c85e8e$edfc21b0$2e01a8c0@acksys.local>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: JZabalza@cemitec.com, 'linux-serial' <linux-serial@vger.kernel.org>, linux-serial-owner@vger.kernel.org
+To: 'linux-serial' <linux-serial@vger.kernel.org>
+Cc: Tosoni <jp.tosoni@acksys.fr>
 
-It has been known since long ago that this behaviour (which is required=
- to
-properly handle many RS485 devices) is not implemented by the serial dr=
-iver.
+linux-serial-owner@vger.kernel.org escribi=F3 el 24/01/2008 14:42:14:
 
-So yes, you will have to implement it.
-There are several ways to do it, by creating a new line discipline as
-suggested by Russell King, or a new termios behaviour, or a new serial
-ioctl.
+Thank you very munch for your response Jean-Pierre. I think you underst=
+and=20
+me.
 
-In any case you will also need to add support for this in the 8250 driv=
-er
-itself. You can do this
- - by using special features of 82950 uarts (I did this once),
- - or by implementing RTS toggleing in software, which
-    (1) is more difficult because there is no UART interrupt
-        at the end of the byte serialization process,
-    (2) is more flexible because you may want to handle a
-        configurable delay between RTS rise/data/RTS fall,
-    (3) is the only way with the 16C550 and earlier devices.
+> It has been known since long ago that this behaviour (which is requir=
+ed=20
+to
+> properly handle many RS485 devices) is not implemented by the serial=20
+driver.
+>=20
+> So yes, you will have to implement it.
+> There are several ways to do it, by creating a new line discipline as
+> suggested by Russell King, or a new termios behaviour, or a new seria=
+l
+> ioctl.
 
-Jean-Pierre Tosoni
 
-> -----Original Message-----
-> From: linux-serial-owner@vger.kernel.org
-> [mailto:linux-serial-owner@vger.kernel.org]On Behalf Of
-> JZabalza@cemitec.com
-> Sent: Monday, January 21, 2008 12:57 PM
-> To: linux-serial; linux-serial-owner@vger.kernel.org
-> Subject: RE: Handling RTS
->
->
-> linux-serial-owner@vger.kernel.org escribi=F3 el 14/01/2008 16:05:03:
->
-> > > From: linux-serial-owner@vger.kernel.org [mailto:linux-serial-
-> > > owner@vger.kernel.org] On Behalf Of JZabalza@cemitec.com
-> > > Sent: January 10, 2008 3:27 AM
-> > > To: linux-serial
-> > > Subject: RE: Handling RTS
-> > >
-> > >         Thanks for your response. I have a PC, so dmesg said
-> > >
-> > >                 serial8250: ttyS0 at I/O 0x3f8 (irq =3D 4)
-> is a 16550A
-> > >
-> > >         How I said, I just handle RTS but from userland.
-> This means a
-> big
-> > > latency between RTS activation and begin out data. I want
-> only reduce
-> this
-> > > latency activating RTS on driver. My question is, is this
-> *protocol*
-> > > implemented actually or I must implement them.
-> >
-> > I'm not an expert on the current 8250 driver, but I believe
-> you will
-> have to
-> > implement your 485 control.
-> >
->
->         I'm not an expert too, but my question is, if is
-> posible and good
-> idea modify common layer of serial linux driver (serial_core.c) to
-> implement a **walky-talky** protocol with RTS line, this is,
-> activate RTS
-> when there are chars to transmit and deactivate when there is not any
-> character.
->
-> Thanks.
->
->
-> Jos=E9 Luis Zabalza
->
-> -
-> To unsubscribe from this list: send the line "unsubscribe
-> linux-serial" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+Yes, but, I am confused.  A line discipline is oriented to translate da=
+ta=20
+not to handle flow control protocol , isn't It?=20
+
+
+>=20
+> In any case you will also need to add support for this in the 8250=20
+driver
+> itself. You can do this
+>  - by using special features of 82950 uarts (I did this once),
+>  - or by implementing RTS toggleing in software, which
+>     (1) is more difficult because there is no UART interrupt
+>         at the end of the byte serialization process,
+>     (2) is more flexible because you may want to handle a
+>         configurable delay between RTS rise/data/RTS fall,
+>     (3) is the only way with the 16C550 and earlier devices.
+>=20
+
+Yes, but it's only for 8250 uart. I think that all uarts have RTS pin. =
+I=20
+know it's not true, but
+
+=46or example this code snipet from serial_core.c
+
+static void __uart_start(struct tty_struct *tty)
+{
+        struct uart_state *state =3D tty->driver_data;
+        struct uart_port *port =3D state->port;
+
+        if (!uart_circ_empty(&state->info->xmit) && state->info->xmit.b=
+uf=20
+&&
+            !tty->stopped && !tty->hw_stopped)
+                port->ops->start_tx(port);
+}
+
+is it posible activate RTS just before start_tx() call using=20
+uart_update_mctrl() function?
+
+This shall be used by all uarts, isn't it?
+
+Is it posible implement RTS handling on serial_core.c module to be comm=
+on=20
+to all uarts?
+
+Thanks in avance
+
+
+
+
+
+
+
+
+Jos=E9 Luis Zabalza
 
 -
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
