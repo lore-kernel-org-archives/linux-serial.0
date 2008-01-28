@@ -1,90 +1,249 @@
-From: "Kohne, Mike" <mike.kohne@gilbarco.com>
-Subject: Problems with serial hardware under newer kernels
-Date: Sun, 27 Jan 2008 18:40:56 -0800
-Message-ID: <BD6105C44DDDF84AB07C23F6A35AE54E0170A3C4@dhrseasvxb03.messaging.danaherad.com>
+From: "Tosoni" <jp.tosoni@acksys.fr>
+Subject: RE: Handling RTS
+Date: Mon, 28 Jan 2008 10:27:05 +0100
+Message-ID: <008601c8618f$f3643f30$2e01a8c0@acksys.local>
+References: <OFB4416C24.6CC7E961-ONC12573DB.002E41AD-C12573DB.0034DD9C@cemitec.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from dhreinsvgw01.danahermail.com ([193.221.156.12]:4410 "EHLO
-	dhreinsvgw01.danahermail.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750774AbYA1ClA convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 27 Jan 2008 21:41:00 -0500
-Received: from dhreinsvxf02.messaging.danaherad.com (unknown [172.29.216.76])
-	by dhreinsvgw01.danahermail.com (BorderWare MXtreme Mail Firewall) with ESMTP id B9B41BD0DV
-	for <linux-serial@vger.kernel.org>; Mon, 28 Jan 2008 03:42:14 +0100 (CET)
-Content-class: urn:content-classes:message
+Received: from smtp06.msg.oleane.net ([62.161.4.6]:52018 "EHLO
+	smtp06.msg.oleane.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757226AbYA1J1Q (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 28 Jan 2008 04:27:16 -0500
+In-Reply-To: <OFB4416C24.6CC7E961-ONC12573DB.002E41AD-C12573DB.0034DD9C@cemitec.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: JZabalza@cemitec.com, 'linux-serial' <linux-serial@vger.kernel.org>
+Cc: Jean-Pierre TOSONI <TOSONI@acksys.local>
 
-OK, it's been a few years, but I'm back to fooling with serial ports
-again.
-Our system runs on a semi-customized box from Advantec. Motherboard is
-PCM9380, extra serial ports are on an Advantec board based on the
-SCH3116 (an I/O chip from SMSC) (I have no docs on this board yet, I
-just opened up the case and had a look). This chip provides a number of
-functions, but the only one we seem to use it for is extra serial ports.
-They show up as NS16550 at various addresss:
-0x3E8/IRQ7
-0x2E8/IRQ7
-0x3E0/IRQ7
-0x2E0/IRQ7
-0x4E8/IRQ7
- 
-Various setserial commands are issued by a file in rcN.d to get the
-ports properly configured at startup.
- 
-Now this board was originally developed while we were still using Fedora
-Core 1 as our base system, and all ports work just fine under FC1
-(that's kernel 2.4.22). 
-I fired the whole thing up under Ubuntu 7.04 and no love - none of the
-ports work (as in, I can't get them to transmit bytes). If I play around
-with the setserial commands and set the IRQs to 0 instead of 7, I can
-get bytes to flow, but it's obvious from the timing that the port
-interrupts aren't being obeyed. Changing the selected interrupt in the
-BIOS (to 3,4, or 5, for instance, making sure that nothing is using the
-selected interrupt) has no effect.
- 
-Now, I did some playing around with various distros that I had on hand
-and found that Fedora Core 4 works (kernel 2.6.11) and that Fedora Core
-5 doesn't (kernel 2.6.15). 
- 
-I did check the config files on the default kernels and IRQ sharing IS
-turned on. I also tested with all but one port of the serial card
-disabled in the BIOS.
- 
-I'm presently setting up a system where I can do kernel builds (the
-system with the serial ports has very limited disk space, and thus can't
-do a build). As soon as I get that setup, I will grab the 2.6.13 tarball
-from kernel.org and start trying to figure out exactly what changes are
-killing me.
- 
-In the meantime, does anyone have any good ideas where I ought to be
-looking? Obviously there is something wierd about our serial board that
-the latest kernels don't like. I believe it must have something to do
-with the interrupt routing, but I don't have the foggiest clue where
-it's all going south. I'm trying to get in touch with our contacts at
-the manufacturer to see if they know what's up, but I'm not sure how
-fast they'll be able to figure it out either.
- 
-Any suggestions for directions to look in would be greatfully accepted.
- 
-Thanks! 
- 
-Michael Kohne
-Gilbarco Veeder-Root
-336-510-4372
-Mike.Kohne@gilbarco.com
+Please note that the subject has been discussed in deep several times :
+http://www.spinics.net/lists/linux-serial/msg00303.html
+http://www.mail-archive.com/linux-serial@vger.rutgers.edu/msg00407.html
+Also the driver CRISV10.C once had some provision for RTS toggle (at le=
+ast
+this was true three years ago).
+I gave you some of my code below, which diverts from the CRISV10 ioctl =
+in a
+compatible way. I can send you all the code offline if you wish (not su=
+re it
+will help more although).
 
-This message (including any attachments) contains confidential 
-and/or proprietary information intended only for the addressee.  
-Any unauthorized disclosure, copying, distribution or reliance on 
-the contents of this information is strictly prohibited and may 
-constitute a violation of law.  If you are not the intended 
-recipient, please notify the sender immediately by responding to 
-this e-mail, and delete the message from your system.  If you 
-have any questions about this e-mail please notify the sender 
-immediately.
+> Yes, but, I am confused.  A line discipline is oriented to translate =
+data
+> not to handle flow control protocol , isn't It?
+>
+- A line discipline defines a way to manage the transmission line, not
+merely data translation but mainly the protocol. So it is a good place =
+to
+enforce half duplex for example.
+
+> Is it posible implement RTS handling on serial_core.c module to be co=
+mmon
+to all uarts?
+> This shall be used by all uarts, isn't it?
+>
+- Well, yes. But some people won't want the feature, so it must be
+configurable in some way. hence the need for an ioctl (callable from us=
+er
+space or from a line discipline, whatever).
+
+> is it posible activate RTS just before start_tx() call using
+uart_update_mctrl() function?
+>
+- I am not familiar with this part of the driver, but there is a proble=
+m
+mainly with the RTS drop, because we don't know for sure when the UART
+serializer is empty. So the implementation on the 8250 requires to star=
+t a
+timer when the driver's buffer becomes empty. It's no easy because some
+uarts have fifo's of their own.
+
+- Also, I have encountered cases where a parametrized delay was needed
+between RTS and data, so it would be great if your new IOCTL has parame=
+ters
+to do this (even if you only implement the 'zero delay' case) just like=
+ I
+have done in my own implementation, and the CRISV10 driver does the ful=
+l
+implementation.
+
+- Also, pay attention to this use of RTS that may go in the way of flow
+control by RTS (CRTSCTS flag), you may want to disable flow control whe=
+n you
+activate RTS toggling.
+
+Here is what I am using for a 82950 device. The ioctl can be used for a=
+ny
+UART but my implementation applies only to the 82950, so, I don't need =
+to
+change the RTS in the transmission data path:
+
+///// in 8250.c: ////////////////////
+added in uart_ops serial8250_pops:
+	.ioctl		=3D serial8250_ioctl,
+then:
+static int
+serial8250_ioctl(struct uart_port *port, unsigned int cmd, unsigned lon=
+g
+arg)
+{
+	struct uart_8250_port *up =3D (struct uart_8250_port *)port;
+	int ret =3D -ENOIOCTLCMD;
+
+	switch (cmd) {
+	case TIOCSERSETRS485:
+		if (up->port.type =3D=3D PORT_16C950) {
+			// arg may be 1 or struct rs485_control *
+			// in order to be crisv10 compatible
+
+			/* HERE, STUFF to activate built-in 16C950 RTS toggle */
+			...
+			return 0;
+		}
+		// else, it may be the RTS-TOGGLE kind of RS485 device, needs
+		// more work to support. See crisv10.c.
+		break;
+
+	default:
+		break;
+	}
+	return ret;
+}
+///// misc defines which should be included in linux standard headers
+////////
+
+/* in asm-i386/ioctls.h */
+#ifndef TIOCSERSETRS485
+#define TIOCSERSETRS485 0x5461  /* enable rs-485 */
+#define TIOCSERWRRS485  0x5462  /* write rs-485 */
+#endif
+
+///////////// sample use /////////////////////
+#include <stdio.h>
+//#include "ioctls.h"
+#include <linux/termios.h>
+//#include <sys/ioctl.h>
+#ifndef TIOCSERSETRS485
+#define TIOCSERSETRS485 0x5461  /* enable rs-485 */
+#define TIOCSERWRRS485  0x5462  /* write rs-485 */
+#endif
+main(int c,char **v)
+{
+	int fd,i;
+	char t[1000];
+
+	if (c !=3D 3) {
+		fprintf(stderr,"usage: %s /dev/ttySxxx 0-or-1\n",v[0]);
+		exit(1);
+	}
+	fd =3D open(v[1],2);
+	if(fd < 0) {
+		perror(v[1]);
+		exit(1);
+	}
+	i =3D ioctl(fd,TIOCSERSETRS485,atoi(v[2]));
+	if(i < 0) {
+		perror("TIOCRS485");
+	}
+	printf("%s set to %s\n",v[1],atoi(v[2])
+			? "RS485 auto turnaround using DTR"
+			: "normal full-duplex mode");
+	close(fd);
+}
+
+
+
+> -----Original Message-----
+> From: JZabalza@cemitec.com [mailto:JZabalza@cemitec.com]
+> Sent: Friday, January 25, 2008 10:38 AM
+> To: 'linux-serial'
+> Cc: Tosoni
+> Subject: RE: Handling RTS
+>
+>
+> linux-serial-owner@vger.kernel.org escribi=F3 el 24/01/2008 14:42:14:
+>
+> Thank you very munch for your response Jean-Pierre. I think
+> you understand
+> me.
+>
+> > It has been known since long ago that this behaviour (which
+> is required
+> to
+> > properly handle many RS485 devices) is not implemented by
+> the serial
+> driver.
+> >
+> > So yes, you will have to implement it.
+> > There are several ways to do it, by creating a new line
+> discipline as
+> > suggested by Russell King, or a new termios behaviour, or a
+> new serial
+> > ioctl.
+>
+>
+> Yes, but, I am confused.  A line discipline is oriented to
+> translate data
+> not to handle flow control protocol , isn't It?
+>
+>
+> >
+> > In any case you will also need to add support for this in the 8250
+> driver
+> > itself. You can do this
+> >  - by using special features of 82950 uarts (I did this once),
+> >  - or by implementing RTS toggleing in software, which
+> >     (1) is more difficult because there is no UART interrupt
+> >         at the end of the byte serialization process,
+> >     (2) is more flexible because you may want to handle a
+> >         configurable delay between RTS rise/data/RTS fall,
+> >     (3) is the only way with the 16C550 and earlier devices.
+> >
+>
+> Yes, but it's only for 8250 uart. I think that all uarts have
+> RTS pin. I
+> know it's not true, but
+>
+> For example this code snipet from serial_core.c
+>
+> static void __uart_start(struct tty_struct *tty)
+> {
+>         struct uart_state *state =3D tty->driver_data;
+>         struct uart_port *port =3D state->port;
+>
+>         if (!uart_circ_empty(&state->info->xmit) &&
+> state->info->xmit.buf
+> &&
+>             !tty->stopped && !tty->hw_stopped)
+>                 port->ops->start_tx(port);
+> }
+>
+> is it posible activate RTS just before start_tx() call using
+> uart_update_mctrl() function?
+>
+> This shall be used by all uarts, isn't it?
+>
+> Is it posible implement RTS handling on serial_core.c module
+> to be common
+> to all uarts?
+>
+> Thanks in avance
+>
+>
+>
+>
+>
+>
+>
+>
+> Jos=E9 Luis Zabalza
+>
+>
+
+-
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
