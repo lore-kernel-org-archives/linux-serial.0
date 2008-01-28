@@ -1,24 +1,38 @@
-From: "Kohne, Mike" <mike.kohne@gilbarco.com>
+From: "Kevin Wilson" <Kevin.Wilson@comtrol.com>
 Subject: RE: Problems with serial hardware under newer kernels
-Date: Mon, 28 Jan 2008 11:06:26 -0800
-Message-ID: <BD6105C44DDDF84AB07C23F6A35AE54E0170A6B6@dhrseasvxb03.messaging.danaherad.com>
-References: <BD6105C44DDDF84AB07C23F6A35AE54E0170A3C4@dhrseasvxb03.messaging.danaherad.com> <B1F576FE19C55C43B8D2E31F061B50C04E60E9@exchange.comtrol.com>
+Date: Mon, 28 Jan 2008 14:56:06 -0600
+Message-ID: <B1F576FE19C55C43B8D2E31F061B50C04E60EB@exchange.comtrol.com>
+References: <BD6105C44DDDF84AB07C23F6A35AE54E0170A6B6@dhrseasvxb03.messaging.danaherad.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from dhreinsvgw01.danahermail.com ([193.221.156.12]:3400 "EHLO
-	dhreinsvgw01.danahermail.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751458AbYA1TGb convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 28 Jan 2008 14:06:31 -0500
+Received: from exchange.comtrol.com ([204.73.219.163]:54648 "EHLO
+	Exchange.comtrol.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752597AbYA1U4H convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 28 Jan 2008 15:56:07 -0500
 Content-class: urn:content-classes:message
-In-Reply-To: <B1F576FE19C55C43B8D2E31F061B50C04E60E9@exchange.comtrol.com>
+In-Reply-To: <BD6105C44DDDF84AB07C23F6A35AE54E0170A6B6@dhrseasvxb03.messaging.danaherad.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kevin Wilson <Kevin.Wilson@comtrol.com>
+To: linux-serial@vger.kernel.org
+
+The funniest thing is that we create all our own distinct tty devices when registering the driver (ttySI[0-N]) which in turn automatically populate /dev/ with ttySI[0-N] which we use to exercise the hardware. Some of our stuff has more the 8 ports so (and this is what makes it funny) whenever we register > 8 ports the ports 0-6 and 8-N open just fine, *only* port 7 freaks and tries to use another port's device number. An ethereal trace of outbound traffic shows it. I have noticed it trying to open device ttySI2 and ttySI6 fairly regular.
+
+As far as I know this didn't occur until 2.6.21. I'm trying to get a tech here to test 2.6.20 to see if it doesn't wig out on ttySI7. Thanks for the tip on setserial. I'll try it on ttyS7 just to see what happens. Maybe it will free it and I'll have something to investigate since (I think) vcs & hvc also use MINOR 0-7 but do have unique majors.
+
+Cheers,
+
+Kevin
+
+-----Original Message-----
+From: Kohne, Mike [mailto:mike.kohne@gilbarco.com]
+Sent: Monday, January 28, 2008 13:06
+To: Kevin Wilson
 Cc: linux-serial@vger.kernel.org
+Subject: RE: Problems with serial hardware under newer kernels
+
 
 Thanks for the info. 
 I think I have a clue on the 'device or resource busy' thing. I believe
