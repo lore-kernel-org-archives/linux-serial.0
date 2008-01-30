@@ -1,14 +1,14 @@
 From: Bryan Wu <bryan.wu@analog.com>
-Subject: [PATCH 02/12] [Blackfin] Serial driver: Fix bug - serial driver in PIO mode cant handle input very quickly
-Date: Wed, 30 Jan 2008 17:30:02 +0800
-Message-ID: <1201685412-29095-3-git-send-email-bryan.wu@analog.com>
+Subject: [PATCH 03/12] [Blackfin] serial driver: Clean up UART DMA code.
+Date: Wed, 30 Jan 2008 17:30:03 +0800
+Message-ID: <1201685412-29095-4-git-send-email-bryan.wu@analog.com>
 References: <1201685412-29095-1-git-send-email-bryan.wu@analog.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nwd2mail10.analog.com ([137.71.25.55]:40869 "EHLO
-	nwd2mail10.analog.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754444AbYA3JaQ (ORCPT
+Received: from nwd2mail11.analog.com ([137.71.25.57]:63088 "EHLO
+	nwd2mail11.analog.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755330AbYA3JaS (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 30 Jan 2008 04:30:16 -0500
+	Wed, 30 Jan 2008 04:30:18 -0500
 In-Reply-To: <1201685412-29095-1-git-send-email-bryan.wu@analog.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -17,144 +17,91 @@ Cc: linux-kernel@vger.kernel.org, Sonic Zhang <sonic.zhang@analog.com>, Bryan Wu
 
 From: Sonic Zhang <sonic.zhang@analog.com>
 
-Output as many bytes as possible in PIO tx handler.
-This reduce the number of tx interrupts and shorten the delay to handle
-rx interrupt. So, rx overrun disappears.
+Start next TX DMA in tx dma handler instead of rx timer handler.
 
 Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
 Signed-off-by: Bryan Wu <bryan.wu@analog.com>
 ---
- drivers/serial/bfin_5xx.c |   62 ++++++++++----------------------------------
- 1 files changed, 14 insertions(+), 48 deletions(-)
+ drivers/serial/bfin_5xx.c |   25 ++++++++++---------------
+ 1 files changed, 10 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
-index ac2a3ef..e059475 100644
+index e059475..3a2aa7e 100644
 --- a/drivers/serial/bfin_5xx.c
 +++ b/drivers/serial/bfin_5xx.c
-@@ -74,7 +74,6 @@ static void bfin_serial_dma_tx_chars(struct bfin_serial_port *uart);
- #else
- static void bfin_serial_do_work(struct work_struct *work);
- static void bfin_serial_tx_chars(struct bfin_serial_port *uart);
--static void local_put_char(struct bfin_serial_port *uart, char ch);
- #endif
- 
- static void bfin_serial_mctrl_check(struct bfin_serial_port *uart);
-@@ -85,6 +84,9 @@ static void bfin_serial_mctrl_check(struct bfin_serial_port *uart);
+@@ -84,7 +84,7 @@ static void bfin_serial_mctrl_check(struct bfin_serial_port *uart);
  static void bfin_serial_stop_tx(struct uart_port *port)
  {
  	struct bfin_serial_port *uart = (struct bfin_serial_port *)port;
-+#ifndef CONFIG_BF54x
-+	unsigned short ier;
-+#endif
- 
- 	while (!(UART_GET_LSR(uart) & TEMT))
- 		continue;
-@@ -100,8 +102,6 @@ static void bfin_serial_stop_tx(struct uart_port *port)
- 	UART_PUT_LSR(uart, TFI);
- 	UART_CLEAR_IER(uart, ETBEI);
- #else
--	unsigned short ier;
--
- 	ier = UART_GET_IER(uart);
- 	ier &= ~ETBEI;
- 	UART_PUT_IER(uart, ier);
-@@ -210,23 +210,6 @@ int kgdb_get_debug_char(void)
+-#ifndef CONFIG_BF54x
++#if !defined(CONFIG_BF54x) && !defined(CONFIG_SERIAL_BFIN_DMA)
+ 	unsigned short ier;
  #endif
  
- #ifdef CONFIG_SERIAL_BFIN_PIO
--static void local_put_char(struct bfin_serial_port *uart, char ch)
--{
--	unsigned short status;
--	int flags = 0;
--
--	spin_lock_irqsave(&uart->port.lock, flags);
--
--	do {
--		status = UART_GET_LSR(uart);
--	} while (!(status & THRE));
--
--	UART_PUT_CHAR(uart, ch);
--	SSYNC();
--
--	spin_unlock_irqrestore(&uart->port.lock, flags);
--}
--
- static void bfin_serial_rx_chars(struct bfin_serial_port *uart)
- {
- 	struct tty_struct *tty = uart->port.info->tty;
-@@ -236,8 +219,8 @@ static void bfin_serial_rx_chars(struct bfin_serial_port *uart)
- 	struct pt_regs *regs = get_irq_regs();
- #endif
+@@ -307,7 +307,6 @@ static void bfin_serial_tx_chars(struct bfin_serial_port *uart)
+ 		UART_PUT_CHAR(uart, uart->port.x_char);
+ 		uart->port.icount.tx++;
+ 		uart->port.x_char = 0;
+-		return;
+ 	}
+ 	/*
+ 	 * Check the modem control lines before
+@@ -376,28 +375,26 @@ static void bfin_serial_dma_tx_chars(struct bfin_serial_port *uart)
  
--	status = UART_GET_LSR(uart);
-  	ch = UART_GET_CHAR(uart);
-+	status = UART_GET_LSR(uart);
-  	uart->port.icount.rx++;
- 
- #ifdef CONFIG_KGDB_UART
-@@ -337,9 +320,12 @@ static void bfin_serial_tx_chars(struct bfin_serial_port *uart)
+ 	if (!uart->tx_done)
  		return;
+-
+ 	uart->tx_done = 0;
+ 
++	if (uart_circ_empty(xmit) || uart_tx_stopped(&uart->port)) {
++		bfin_serial_stop_tx(&uart->port);
++		uart->tx_done = 1;
++		return;
++	}
++
+ 	if (uart->port.x_char) {
+ 		UART_PUT_CHAR(uart, uart->port.x_char);
+ 		uart->port.icount.tx++;
+ 		uart->port.x_char = 0;
+-		uart->tx_done = 1;
+-		return;
+ 	}
++
+ 	/*
+ 	 * Check the modem control lines before
+ 	 * transmitting anything.
+ 	 */
+ 	bfin_serial_mctrl_check(uart);
+ 
+-	if (uart_circ_empty(xmit) || uart_tx_stopped(&uart->port)) {
+-		bfin_serial_stop_tx(&uart->port);
+-		uart->tx_done = 1;
+-		return;
+-	}
+-
+ 	spin_lock_irqsave(&uart->port.lock, flags);
+ 	uart->tx_count = CIRC_CNT(xmit->head, xmit->tail, UART_XMIT_SIZE);
+ 	if (uart->tx_count > (UART_XMIT_SIZE - xmit->tail))
+@@ -471,8 +468,6 @@ void bfin_serial_rx_dma_timeout(struct bfin_serial_port *uart)
+ 	int x_pos, pos;
+ 	int flags = 0;
+ 
+-	bfin_serial_dma_tx_chars(uart);
+-
+ 	spin_lock_irqsave(&uart->port.lock, flags);
+ 	x_pos = DMA_RX_XCOUNT - get_dma_curr_xcount(uart->rx_dma_channel);
+ 	if (x_pos == DMA_RX_XCOUNT)
+@@ -513,9 +508,9 @@ static irqreturn_t bfin_serial_dma_tx_int(int irq, void *dev_id)
+ 		if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 			uart_write_wakeup(&uart->port);
+ 
+-		if (uart_circ_empty(xmit))
+-			bfin_serial_stop_tx(&uart->port);
+ 		uart->tx_done = 1;
++
++		bfin_serial_dma_tx_chars(uart);
  	}
  
--	local_put_char(uart, xmit->buf[xmit->tail]);
--	xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
--	uart->port.icount.tx++;
-+	while ((UART_GET_LSR(uart) & THRE) && xmit->tail != xmit->head) {
-+		UART_PUT_CHAR(uart, xmit->buf[xmit->tail]);
-+		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-+		uart->port.icount.tx++;
-+		SSYNC();
-+	}
- 
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(&uart->port);
-@@ -352,21 +338,11 @@ static irqreturn_t bfin_serial_rx_int(int irq, void *dev_id)
- {
- 	struct bfin_serial_port *uart = dev_id;
- 
--#ifdef CONFIG_BF54x
--	unsigned short status;
- 	spin_lock(&uart->port.lock);
--	status = UART_GET_LSR(uart);
--	while ((UART_GET_IER(uart) & ERBFI) && (status & DR)) {
-+	while ((UART_GET_IER(uart) & ERBFI) && (UART_GET_LSR(uart) & DR))
- 		bfin_serial_rx_chars(uart);
--		status = UART_GET_LSR(uart);
--	}
  	spin_unlock(&uart->port.lock);
--#else
--	spin_lock(&uart->port.lock);
--	while ((UART_GET_IIR(uart) & IIR_STATUS) == IIR_RX_READY)
--		bfin_serial_rx_chars(uart);
--	spin_unlock(&uart->port.lock);
--#endif
-+
- 	return IRQ_HANDLED;
- }
- 
-@@ -374,21 +350,11 @@ static irqreturn_t bfin_serial_tx_int(int irq, void *dev_id)
- {
- 	struct bfin_serial_port *uart = dev_id;
- 
--#ifdef CONFIG_BF54x
--	unsigned short status;
- 	spin_lock(&uart->port.lock);
--	status = UART_GET_LSR(uart);
--	while ((UART_GET_IER(uart) & ETBEI) && (status & THRE)) {
-+	if ((UART_GET_IER(uart) & ETBEI) && (UART_GET_LSR(uart) & THRE))
- 		bfin_serial_tx_chars(uart);
--		status = UART_GET_LSR(uart);
--	}
- 	spin_unlock(&uart->port.lock);
--#else
--	spin_lock(&uart->port.lock);
--	while ((UART_GET_IIR(uart) & IIR_STATUS) == IIR_TX_READY)
--		bfin_serial_tx_chars(uart);
--	spin_unlock(&uart->port.lock);
--#endif
-+
- 	return IRQ_HANDLED;
- }
- 
 -- 
 1.5.3.4
