@@ -1,33 +1,74 @@
-From: "Kevin Wilson" <Kevin.Wilson@comtrol.com>
+From: "Kohne, Mike" <mike.kohne@gilbarco.com>
 Subject: RE: Problems with serial hardware under newer kernels
-Date: Thu, 31 Jan 2008 06:58:58 -0600
-Message-ID: <B1F576FE19C55C43B8D2E31F061B50C04E60EE@exchange.comtrol.com>
-References: <BD6105C44DDDF84AB07C23F6A35AE54E017398CB@dhrseasvxb03.messaging.danaherad.com>
+Date: Thu, 31 Jan 2008 08:13:22 -0800
+Message-ID: <BD6105C44DDDF84AB07C23F6A35AE54E0175DF39@dhrseasvxb03.messaging.danaherad.com>
+References: <BD6105C44DDDF84AB07C23F6A35AE54E017398CB@dhrseasvxb03.messaging.danaherad.com> <B1F576FE19C55C43B8D2E31F061B50C04E60EE@exchange.comtrol.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from exchange.comtrol.com ([204.73.219.163]:23376 "EHLO
-	Exchange.comtrol.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1764705AbYAaM67 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 31 Jan 2008 07:58:59 -0500
+Received: from dhreinsvgw01.danahermail.com ([193.221.156.12]:3127 "EHLO
+	dhreinsvgw01.danahermail.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1757261AbYAaQN0 convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 31 Jan 2008 11:13:26 -0500
 Content-class: urn:content-classes:message
-In-Reply-To: <BD6105C44DDDF84AB07C23F6A35AE54E017398CB@dhrseasvxb03.messaging.danaherad.com>
+In-Reply-To: <B1F576FE19C55C43B8D2E31F061B50C04E60EE@exchange.comtrol.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Kohne, Mike" <mike.kohne@gilbarco.com>
+To: Kevin Wilson <Kevin.Wilson@comtrol.com>
 Cc: linux-serial@vger.kernel.org
 
-Could you post (or point us to) your driver code so we can take a peak at the critter?
+I'm using the stock serial port drivers - nothing funny or custom at all
+(well, I've got one minor patch in place, but that is unrelated to the
+serial ports working or not).
 
-***************************************************************************
-Also, I figured out what our driver's problem was when we were running in (psuedo) hdlc mode (bypassing the tcp/ip stack) for our own tty ports 7 & 23. The original implementer of this particular driver decided to use skb->pkt_type for his own purposes before sending the packet out on the wire. 
+I've posted that patch as a seperate message to the list, so that it
+shows up in the archives for future searchers.
 
-When the sk_buff is created I know the pkt_type is 0 (PACKET_HOST) but at some point in time during processing the pkt_type bits are set to 111 (pkt_type is only 3 bits wide) which is not a defined type. No big deal unless the implementer wrongly uses pkt_type for their own purposes. Originally, the pkt_type would house the port number for the current set of commands being added to the skb. A test he had would check pkt_type to see if the port number had already been set and kick out of a particular function if it was. Well this is where stuff went goofy. Since the lower bits of 7 & 23 are 1s, and the skb was somehow (not in our code but, I believe, somewhere inside linux) getting pkt_type changed from 000 to 111 after creation. The test would then pass thus kicking us out and not getting 
- a critical port open command bits added to the packet. This caused a "device or resource busy" message when trying to open. After placing our port tracking into skb->cb[] which is there just for us driver folks to house our own goodies and set pkt_type properly the problem took a long walk down a short pier.
+Otherwise, my system is using the stock serial drivers (8250.c).
 
-Interesting enough, using pkt_type doesn't cause any issues on older UP kernels (2.6.13) but load that same driver on a SMP kernel and it gets flaky. 
+Thanks!
+
+-----Original Message-----
+From: Kevin Wilson [mailto:Kevin.Wilson@comtrol.com] 
+Sent: Thursday, January 31, 2008 7:59 AM
+To: Kohne, Mike
+Cc: linux-serial@vger.kernel.org
+Subject: RE: Problems with serial hardware under newer kernels
+
+Could you post (or point us to) your driver code so we can take a peak
+at the critter?
+
+************************************************************************
+***
+Also, I figured out what our driver's problem was when we were running
+in (psuedo) hdlc mode (bypassing the tcp/ip stack) for our own tty ports
+7 & 23. The original implementer of this particular driver decided to
+use skb->pkt_type for his own purposes before sending the packet out on
+the wire. 
+
+When the sk_buff is created I know the pkt_type is 0 (PACKET_HOST) but
+at some point in time during processing the pkt_type bits are set to 111
+(pkt_type is only 3 bits wide) which is not a defined type. No big deal
+unless the implementer wrongly uses pkt_type for their own purposes.
+Originally, the pkt_type would house the port number for the current set
+of commands being added to the skb. A test he had would check pkt_type
+to see if the port number had already been set and kick out of a
+particular function if it was. Well this is where stuff went goofy.
+Since the lower bits of 7 & 23 are 1s, and the skb was somehow (not in
+our code but, I believe, somewhere inside linux) getting pkt_type
+changed from 000 to 111 after creation. The test would then pass thus
+kicking us out and not getting a critical port open command bits added
+to the packet. This caused a "device or resource busy" message when
+trying to open. After placing our port tracking into skb->cb[] which is
+there just for us driver folks to house our own goodies and set pkt_type
+properly the problem took a long walk down a short pier.
+
+Interesting enough, using pkt_type doesn't cause any issues on older UP
+kernels (2.6.13) but load that same driver on a SMP kernel and it gets
+flaky. 
 
 -----Original Message-----
 From: Kohne, Mike [mailto:mike.kohne@gilbarco.com]
@@ -224,6 +265,16 @@ please notify the sender immediately.
 To unsubscribe from this list: send the line "unsubscribe linux-serial"
 in the body of a message to majordomo@vger.kernel.org More majordomo
 info at  http://vger.kernel.org/majordomo-info.html
+
+
+This message (including any attachments) contains confidential and/or
+proprietary information intended only for the addressee.  
+Any unauthorized disclosure, copying, distribution or reliance on the
+contents of this information is strictly prohibited and may constitute a
+violation of law.  If you are not the intended recipient, please notify
+the sender immediately by responding to this e-mail, and delete the
+message from your system.  If you have any questions about this e-mail
+please notify the sender immediately.
 
 
 This message (including any attachments) contains confidential 
