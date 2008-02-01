@@ -1,78 +1,54 @@
-From: Jeff Garzik <jgarzik@pobox.com>
-Subject: Re: [PATCH] [POWERPC][NET][SERIAL] UCCs: replace device-id with cell-index
-Date: Fri, 01 Feb 2008 12:52:38 -0500
-Message-ID: <47A35C66.80008@pobox.com>
-References: <20080201150126.GB26545@localhost.localdomain> <72B60725-FB4A-42FA-832D-8FD5434B9042@kernel.crashing.org> <20080201173331.GA8020@localhost.localdomain>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <20080201173331.GA8020@localhost.localdomain>
-Sender: netdev-owner@vger.kernel.org
-To: avorontsov@ru.mvista.com
-Cc: Kumar Gala <galak@kernel.crashing.org>, Timur Tabi <timur@freescale.com>, Grant Likely <grant.likely@secretlab.ca>, Li Yang <leoli@freescale.com>, linuxppc-dev@ozlabs.org, linux-serial@vger.kernel.org, netdev@vger.kernel.org
+From: Sam Ravnborg <sam@ravnborg.org>
+Subject: [PATCH] serial: silence section mismatch warnings in 8250_pci
+Date: Fri,  1 Feb 2008 21:01:24 +0100
+Message-ID: <1201896087-15867-1-git-send-email-sam@ravnborg.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from pasmtpa.tele.dk ([80.160.77.114]:51830 "EHLO pasmtpA.tele.dk"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755589AbYBAUB1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 1 Feb 2008 15:01:27 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: LKML <linux-kernel@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>
+Cc: Sam Ravnborg <sam@ravnborg.org>, Russell King <rmk+kernel@arm.linux.org.uk>, linux-serial@vger.kernel.org
 
-Anton Vorontsov wrote:
-> On Fri, Feb 01, 2008 at 09:32:38AM -0600, Kumar Gala wrote:
->> On Feb 1, 2008, at 9:01 AM, Anton Vorontsov wrote:
->>
->>> It isn't used anywhere, so remove it. If we'll ever need something
->>> like this, we'll use compatible property instead.
->>>
->>> Signed-off-by: Anton Vorontsov <avorontsov@ru.mvista.com>
->>> ---
->>>
->>> Rebased on top of recent tree.
->>>
->>> Documentation/powerpc/booting-without-of.txt |    1 -
->>> arch/powerpc/boot/dts/mpc832x_mds.dts        |    3 ---
->>> arch/powerpc/boot/dts/mpc832x_rdb.dts        |    2 --
->>> arch/powerpc/boot/dts/mpc836x_mds.dts        |    2 --
->>> arch/powerpc/boot/dts/mpc8568mds.dts         |    2 --
->>> 5 files changed, 0 insertions(+), 10 deletions(-)
->>>
->>> diff --git a/Documentation/powerpc/booting-without-of.txt b/ 
->>> Documentation/powerpc/booting-without-of.txt
->>> index 410c847..dcf9758 100644
->>> --- a/Documentation/powerpc/booting-without-of.txt
->>> +++ b/Documentation/powerpc/booting-without-of.txt
->>> @@ -1675,7 +1675,6 @@ platforms are moved over to use the flattened- 
->>> device-tree model.
->>> 	ucc@2000 {
->>> 		device_type = "network";
->>> 		compatible = "ucc_geth";
->>> -		model = "UCC";
->>> 		device-id = <1>;
->> can we change device-id to cell-index?
-> 
-> Sure. But let's do this in the separate patch? Because this change
-> actually touches the code in the two subsystems: net and serial.
-> 
-> I hope everybody will agree to pass it through powerpc tree..?
-> 
-> - - - -
-> From: Anton Vorontsov <avorontsov@ru.mvista.com>
-> Subject: [POWERPC][NET][SERIAL] UCCs: replace device-id with cell-index
-> 
-> device-id is worse than cell-index. Probably cell-index isn't
-> good either, but device-id is worse anyway.
-> 
-> Drivers are modified for backward compatibility's sake.
-> 
-> Signed-off-by: Anton Vorontsov <avorontsov@ru.mvista.com>
-> ---
->  Documentation/powerpc/booting-without-of.txt |    4 ++--
->  arch/powerpc/boot/dts/mpc832x_mds.dts        |    4 +---
->  arch/powerpc/boot/dts/mpc832x_rdb.dts        |    2 --
->  arch/powerpc/boot/dts/mpc836x_mds.dts        |    2 --
->  arch/powerpc/boot/dts/mpc836x_rdk.dts        |   12 ++++++------
->  arch/powerpc/boot/dts/mpc8568mds.dts         |    2 --
->  drivers/net/ucc_geth.c                       |    8 +++++++-
->  drivers/net/ucc_geth_mii.c                   |   11 ++++++++---
->  drivers/serial/ucc_uart.c                    |   16 ++++++++++++----
->  9 files changed, 36 insertions(+), 25 deletions(-)
+Fix following warnings:
+WARNING: drivers/serial/built-in.o(.data+0x5b8): Section mismatch in reference from the variable pci_serial_quirks to the function .devexit.text:pci_ite887x_exit()
+WARNING: drivers/serial/built-in.o(.data+0x5e0): Section mismatch in reference from the variable pci_serial_quirks to the function .devexit.text:pci_plx9050_exit()
+WARNING: drivers/serial/built-in.o(.data+0x608): Section mismatch in reference from the variable pci_serial_quirks to the function .devexit.text:pci_plx9050_exit()
+WARNING: drivers/serial/built-in.o(.data+0x658): Section mismatch in reference from the variable pci_serial_quirks to the function .devexit.text:pci_plx9050_exit()
+WARNING: drivers/serial/built-in.o(.data+0x680): Section mismatch in reference from the variable pci_serial_quirks to the function .devexit.text:pci_plx9050_exit()
+WARNING: drivers/serial/built-in.o(.data+0x6a8): Section mismatch in reference from the variable pci_serial_quirks to the function .devexit.text:pci_plx9050_exit()
+WARNING: drivers/serial/built-in.o(.data+0x6d0): Section mismatch in reference from the variable pci_serial_quirks to the function .devexit.text:sbs_exit()
+WARNING: drivers/serial/built-in.o(.data+0x6f8): Section mismatch in reference from the variable pci_serial_quirks to the function .devexit.text:sbs_exit()
+WARNING: drivers/serial/built-in.o(.data+0x720): Section mismatch in reference from the variable pci_serial_quirks to the function .devexit.text:sbs_exit()
+WARNING: drivers/serial/built-in.o(.data+0x748): Section mismatch in reference from the variable pci_serial_quirks to the function .devexit.text:sbs_exit()
 
-ACK drivers/net
+pci_serial_quirks contains a number of function pointers
+where the referenced function is annotated __devexit.
+This is OK so we annotate pci_serial_quirks with
+__refdata to ignore the __devexit references
 
+Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
+Cc: Russell King <rmk+kernel@arm.linux.org.uk>
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/serial/8250_pci.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/serial/8250_pci.c b/drivers/serial/8250_pci.c
+index ceb03c9..d6c99c0 100644
+--- a/drivers/serial/8250_pci.c
++++ b/drivers/serial/8250_pci.c
+@@ -750,7 +750,7 @@ pci_default_setup(struct serial_private *priv, struct pciserial_board *board,
+  * This list is ordered alphabetically by vendor then device.
+  * Specific entries must come before more generic entries.
+  */
+-static struct pci_serial_quirk pci_serial_quirks[] = {
++static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 	/*
+ 	 * AFAVLAB cards - these may be called via parport_serial
+ 	 *  It is not clear whether this applies to all products.
+-- 
+1.5.4.rc3.14.g44397
 
