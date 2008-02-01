@@ -1,288 +1,321 @@
-From: "Kohne, Mike" <mike.kohne@gilbarco.com>
-Subject: RE: Problems with serial hardware under newer kernels
-Date: Thu, 31 Jan 2008 08:13:22 -0800
-Message-ID: <BD6105C44DDDF84AB07C23F6A35AE54E0175DF39@dhrseasvxb03.messaging.danaherad.com>
-References: <BD6105C44DDDF84AB07C23F6A35AE54E017398CB@dhrseasvxb03.messaging.danaherad.com> <B1F576FE19C55C43B8D2E31F061B50C04E60EE@exchange.comtrol.com>
+From: Anton Vorontsov <avorontsov@ru.mvista.com>
+Subject: [PATCH] [POWERPC][NET][SERIAL] UCCs: replace device-id with cell-index (was: Re: [PATCH] [POWERPC] get rid of `model = "UCC"' in the ucc nodes)
+Date: Fri, 1 Feb 2008 20:33:31 +0300
+Message-ID: <20080201173331.GA8020@localhost.localdomain>
+References: <20080201150126.GB26545@localhost.localdomain> <72B60725-FB4A-42FA-832D-8FD5434B9042@kernel.crashing.org>
+Reply-To: avorontsov@ru.mvista.com
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=utf8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from dhreinsvgw01.danahermail.com ([193.221.156.12]:3127 "EHLO
-	dhreinsvgw01.danahermail.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1757261AbYAaQN0 convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 31 Jan 2008 11:13:26 -0500
-Content-class: urn:content-classes:message
-In-Reply-To: <B1F576FE19C55C43B8D2E31F061B50C04E60EE@exchange.comtrol.com>
+Received: from rtsoft3.corbina.net ([85.21.88.6]:34330 "EHLO
+	buildserver.ru.mvista.com" rhost-flags-OK-FAIL-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1756811AbYBARdb (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 1 Feb 2008 12:33:31 -0500
+Content-Disposition: inline
+In-Reply-To: <72B60725-FB4A-42FA-832D-8FD5434B9042@kernel.crashing.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kevin Wilson <Kevin.Wilson@comtrol.com>
-Cc: linux-serial@vger.kernel.org
+To: Kumar Gala <galak@kernel.crashing.org>
+Cc: Jeff Garzik <jgarzik@pobox.com>, Timur Tabi <timur@freescale.com>, Grant Likely <grant.likely@secretlab.ca>, Li Yang <leoli@freescale.com>, linuxppc-dev@ozlabs.org, linux-serial@vger.kernel.org, netdev@vger.kernel.org
 
-I'm using the stock serial port drivers - nothing funny or custom at all
-(well, I've got one minor patch in place, but that is unrelated to the
-serial ports working or not).
+On Fri, Feb 01, 2008 at 09:32:38AM -0600, Kumar Gala wrote:
+> On Feb 1, 2008, at 9:01 AM, Anton Vorontsov wrote:
+> 
+> >It isn't used anywhere, so remove it. If we'll ever need something
+> >like this, we'll use compatible property instead.
+> >
+> >Signed-off-by: Anton Vorontsov <avorontsov@ru.mvista.com>
+> >---
+> >
+> >Rebased on top of recent tree.
+> >
+> >Documentation/powerpc/booting-without-of.txt |    1 -
+> >arch/powerpc/boot/dts/mpc832x_mds.dts        |    3 ---
+> >arch/powerpc/boot/dts/mpc832x_rdb.dts        |    2 --
+> >arch/powerpc/boot/dts/mpc836x_mds.dts        |    2 --
+> >arch/powerpc/boot/dts/mpc8568mds.dts         |    2 --
+> >5 files changed, 0 insertions(+), 10 deletions(-)
+> >
+> >diff --git a/Documentation/powerpc/booting-without-of.txt b/ 
+> >Documentation/powerpc/booting-without-of.txt
+> >index 410c847..dcf9758 100644
+> >--- a/Documentation/powerpc/booting-without-of.txt
+> >+++ b/Documentation/powerpc/booting-without-of.txt
+> >@@ -1675,7 +1675,6 @@ platforms are moved over to use the flattened- 
+> >device-tree model.
+> >	ucc@2000 {
+> >		device_type = "network";
+> >		compatible = "ucc_geth";
+> >-		model = "UCC";
+> >		device-id = <1>;
+> 
+> can we change device-id to cell-index?
 
-I've posted that patch as a seperate message to the list, so that it
-shows up in the archives for future searchers.
+Sure. But let's do this in the separate patch? Because this change
+actually touches the code in the two subsystems: net and serial.
 
-Otherwise, my system is using the stock serial drivers (8250.c).
+I hope everybody will agree to pass it through powerpc tree..?
 
-Thanks!
+- - - -
+From: Anton Vorontsov <avorontsov@ru.mvista.com>
+Subject: [POWERPC][NET][SERIAL] UCCs: replace device-id with cell-index
 
------Original Message-----
-From: Kevin Wilson [mailto:Kevin.Wilson@comtrol.com] 
-Sent: Thursday, January 31, 2008 7:59 AM
-To: Kohne, Mike
-Cc: linux-serial@vger.kernel.org
-Subject: RE: Problems with serial hardware under newer kernels
+device-id is worse than cell-index. Probably cell-index isn't
+good either, but device-id is worse anyway.
 
-Could you post (or point us to) your driver code so we can take a peak
-at the critter?
+Drivers are modified for backward compatibility's sake.
 
-************************************************************************
-***
-Also, I figured out what our driver's problem was when we were running
-in (psuedo) hdlc mode (bypassing the tcp/ip stack) for our own tty ports
-7 & 23. The original implementer of this particular driver decided to
-use skb->pkt_type for his own purposes before sending the packet out on
-the wire. 
+Signed-off-by: Anton Vorontsov <avorontsov@ru.mvista.com>
+---
+ Documentation/powerpc/booting-without-of.txt |    4 ++--
+ arch/powerpc/boot/dts/mpc832x_mds.dts        |    4 +---
+ arch/powerpc/boot/dts/mpc832x_rdb.dts        |    2 --
+ arch/powerpc/boot/dts/mpc836x_mds.dts        |    2 --
+ arch/powerpc/boot/dts/mpc836x_rdk.dts        |   12 ++++++------
+ arch/powerpc/boot/dts/mpc8568mds.dts         |    2 --
+ drivers/net/ucc_geth.c                       |    8 +++++++-
+ drivers/net/ucc_geth_mii.c                   |   11 ++++++++---
+ drivers/serial/ucc_uart.c                    |   16 ++++++++++++----
+ 9 files changed, 36 insertions(+), 25 deletions(-)
 
-When the sk_buff is created I know the pkt_type is 0 (PACKET_HOST) but
-at some point in time during processing the pkt_type bits are set to 111
-(pkt_type is only 3 bits wide) which is not a defined type. No big deal
-unless the implementer wrongly uses pkt_type for their own purposes.
-Originally, the pkt_type would house the port number for the current set
-of commands being added to the skb. A test he had would check pkt_type
-to see if the port number had already been set and kick out of a
-particular function if it was. Well this is where stuff went goofy.
-Since the lower bits of 7 & 23 are 1s, and the skb was somehow (not in
-our code but, I believe, somewhere inside linux) getting pkt_type
-changed from 000 to 111 after creation. The test would then pass thus
-kicking us out and not getting a critical port open command bits added
-to the packet. This caused a "device or resource busy" message when
-trying to open. After placing our port tracking into skb->cb[] which is
-there just for us driver folks to house our own goodies and set pkt_type
-properly the problem took a long walk down a short pier.
-
-Interesting enough, using pkt_type doesn't cause any issues on older UP
-kernels (2.6.13) but load that same driver on a SMP kernel and it gets
-flaky. 
-
------Original Message-----
-From: Kohne, Mike [mailto:mike.kohne@gilbarco.com]
-Sent: Wednesday, January 30, 2008 19:57
-To: Kevin Wilson
-Subject: RE: Problems with serial hardware under newer kernels
-
-
-Just in case you didn't see my post to the list: I've hunted my problem
-down to the SMP option in the kernel build. If I turn OFF SMP, then my
-serial ports work. Since I have a single core/single cpu box as my
-target, this is OK for me for the moment. If I learn anything else, I'll
-e-mail you and the list.
-
------Original Message-----
-From: linux-serial-owner@vger.kernel.org
-[mailto:linux-serial-owner@vger.kernel.org] On Behalf Of Kevin Wilson
-Sent: Monday, January 28, 2008 3:56 PM
-To: linux-serial@vger.kernel.org
-Subject: RE: Problems with serial hardware under newer kernels
-
-The funniest thing is that we create all our own distinct tty devices
-when registering the driver (ttySI[0-N]) which in turn automatically
-populate /dev/ with ttySI[0-N] which we use to exercise the hardware.
-Some of our stuff has more the 8 ports so (and this is what makes it
-funny) whenever we register > 8 ports the ports 0-6 and 8-N open just
-fine, *only* port 7 freaks and tries to use another port's device
-number. An ethereal trace of outbound traffic shows it. I have noticed
-it trying to open device ttySI2 and ttySI6 fairly regular.
-
-As far as I know this didn't occur until 2.6.21. I'm trying to get a
-tech here to test 2.6.20 to see if it doesn't wig out on ttySI7. Thanks
-for the tip on setserial. I'll try it on ttyS7 just to see what happens.
-Maybe it will free it and I'll have something to investigate since (I
-think) vcs & hvc also use MINOR 0-7 but do have unique majors.
-
-Cheers,
-
-Kevin
-
------Original Message-----
-From: Kohne, Mike [mailto:mike.kohne@gilbarco.com]
-Sent: Monday, January 28, 2008 13:06
-To: Kevin Wilson
-Cc: linux-serial@vger.kernel.org
-Subject: RE: Problems with serial hardware under newer kernels
-
-
-Thanks for the info. 
-I think I have a clue on the 'device or resource busy' thing. I believe
-that this has something to do with the kernel in general keeping better
-track of driver-requested resources. I'm not quite sure what, but I
-found that I could not do a setserial to change the ioports on my system
-(I wanted them numbered in an order to match the case silk-screen).
-What I finally had to do was
-
-setserial /dev/ttyS4 port 0x0 irq 0
-setserial /dev/ttyS4 port 0x2E8 irq 7
-
-The setting of the port to 0 seemed to get the kernel to give up
-whatever is locked down, and then the second call will work perfectly.
-
-I'll let you know about any further discoveries.
-
------Original Message-----
-From: linux-serial-owner@vger.kernel.org
-[mailto:linux-serial-owner@vger.kernel.org] On Behalf Of Kevin Wilson
-Sent: Monday, January 28, 2008 9:23 AM
-To: linux-serial@vger.kernel.org
-Subject: RE: Problems with serial hardware under newer kernels
-
-We have a similar problem with one of our networked-serial drivers in
-psuedo-hdlc mode. The only oddity there is that only device (port/line)
-7 always returns "device or resource busy" when issuing "setserial -g
-/dev/ttySI*" to check all ports are alive. All the other ports report
-back correctly. Since these devices all use a dynamic major, irq is 0
-(not set) and sharing is (supposed) to be enabled then something is
-blocking it but I haven't found what that item is.
-
-Since yours is not working at all then I would diff your driver against
-the likes of isicom.c, stallion.c and/or rocket.c to see some of the
-most recent implementation changes. Ours is missing the
-alloc_tty_driver(TOTAL_NUM_MINORS) which I will add today to see if it
-helps. Maybe our not reserving prior to registering is a no-no and we
-have just been lucky up to today. Dunno, I'm not an expert but with a
-little hard work maybe someday I will be.
-
-Let me know what your investigation turns up. I have a 2.6.13 kernel
-that our driver works with just fine. However, shortly after that
-(2.6.20 and on) is when changes in the kernel started to wreak havoc on
-our drivers and we have been scrambling since early November to
-troubleshoot what changes are affecting our implementation. Partly our
-fault for not keeping up with the times but some of the latest breakages
-observed with the .21 and later are difficult to track down.
-
-Good luck,
-
-Kevin
-
------Original Message-----
-From: linux-serial-owner@vger.kernel.org
-[mailto:linux-serial-owner@vger.kernel.org]On Behalf Of Kohne, Mike
-Sent: Sunday, January 27, 2008 20:41
-To: linux-serial@vger.kernel.org
-Subject: Problems with serial hardware under newer kernels
-
-
-OK, it's been a few years, but I'm back to fooling with serial ports
-again.
-Our system runs on a semi-customized box from Advantec. Motherboard is
-PCM9380, extra serial ports are on an Advantec board based on the
-SCH3116 (an I/O chip from SMSC) (I have no docs on this board yet, I
-just opened up the case and had a look). This chip provides a number of
-functions, but the only one we seem to use it for is extra serial ports.
-They show up as NS16550 at various addresss:
-0x3E8/IRQ7
-0x2E8/IRQ7
-0x3E0/IRQ7
-0x2E0/IRQ7
-0x4E8/IRQ7
+diff --git a/Documentation/powerpc/booting-without-of.txt b/Documentation/powerpc/booting-without-of.txt
+index dcf9758..7b30798 100644
+--- a/Documentation/powerpc/booting-without-of.txt
++++ b/Documentation/powerpc/booting-without-of.txt
+@@ -1618,7 +1618,7 @@ platforms are moved over to use the flattened-device-tree model.
+      "bisync", "atm", or "serial".
+    - compatible : could be "ucc_geth" or "fsl_atm" and so on.
+    - model : should be "UCC".
+-   - device-id : the ucc number(1-8), corresponding to UCCx in UM.
++   - cell-index : the ucc number(1-8), corresponding to UCCx in UM.
+    - reg : Offset and length of the register set for the device
+    - interrupts : <a b> where a is the interrupt number and b is a
+      field that represents an encoding of the sense and level
+@@ -1675,7 +1675,7 @@ platforms are moved over to use the flattened-device-tree model.
+ 	ucc@2000 {
+ 		device_type = "network";
+ 		compatible = "ucc_geth";
+-		device-id = <1>;
++		cell-index = <1>;
+ 		reg = <2000 200>;
+ 		interrupts = <a0 0>;
+ 		interrupt-parent = <700>;
+diff --git a/arch/powerpc/boot/dts/mpc832x_mds.dts b/arch/powerpc/boot/dts/mpc832x_mds.dts
+index f8b4a37..539e02f 100644
+--- a/arch/powerpc/boot/dts/mpc832x_mds.dts
++++ b/arch/powerpc/boot/dts/mpc832x_mds.dts
+@@ -256,7 +256,6 @@
+ 			device_type = "network";
+ 			compatible = "ucc_geth";
+ 			cell-index = <3>;
+-			device-id = <3>;
+ 			reg = <0x2200 0x200>;
+ 			interrupts = <34>;
+ 			interrupt-parent = <&qeic>;
+@@ -271,7 +270,6 @@
+ 			device_type = "network";
+ 			compatible = "ucc_geth";
+ 			cell-index = <4>;
+-			device-id = <4>;
+ 			reg = <0x3200 0x200>;
+ 			interrupts = <35>;
+ 			interrupt-parent = <&qeic>;
+@@ -285,7 +283,7 @@
+ 		ucc@2400 {
+ 			device_type = "serial";
+ 			compatible = "ucc_uart";
+-			device-id = <5>;	/* The UCC number, 1-7*/
++			cell-index = <5>;	/* The UCC number, 1-7*/
+ 			port-number = <0>;	/* Which ttyQEx device */
+ 			soft-uart;		/* We need Soft-UART */
+ 			reg = <0x2400 0x200>;
+diff --git a/arch/powerpc/boot/dts/mpc832x_rdb.dts b/arch/powerpc/boot/dts/mpc832x_rdb.dts
+index ea7fcbf..179c81c 100644
+--- a/arch/powerpc/boot/dts/mpc832x_rdb.dts
++++ b/arch/powerpc/boot/dts/mpc832x_rdb.dts
+@@ -209,7 +209,6 @@
+ 			device_type = "network";
+ 			compatible = "ucc_geth";
+ 			cell-index = <2>;
+-			device-id = <2>;
+ 			reg = <0x3000 0x200>;
+ 			interrupts = <33>;
+ 			interrupt-parent = <&qeic>;
+@@ -224,7 +223,6 @@
+ 			device_type = "network";
+ 			compatible = "ucc_geth";
+ 			cell-index = <3>;
+-			device-id = <3>;
+ 			reg = <0x2200 0x200>;
+ 			interrupts = <34>;
+ 			interrupt-parent = <&qeic>;
+diff --git a/arch/powerpc/boot/dts/mpc836x_mds.dts b/arch/powerpc/boot/dts/mpc836x_mds.dts
+index 525423c..8160ff2 100644
+--- a/arch/powerpc/boot/dts/mpc836x_mds.dts
++++ b/arch/powerpc/boot/dts/mpc836x_mds.dts
+@@ -258,7 +258,6 @@
+ 			device_type = "network";
+ 			compatible = "ucc_geth";
+ 			cell-index = <1>;
+-			device-id = <1>;
+ 			reg = <0x2000 0x200>;
+ 			interrupts = <32>;
+ 			interrupt-parent = <&qeic>;
+@@ -274,7 +273,6 @@
+ 			device_type = "network";
+ 			compatible = "ucc_geth";
+ 			cell-index = <2>;
+-			device-id = <2>;
+ 			reg = <0x3000 0x200>;
+ 			interrupts = <33>;
+ 			interrupt-parent = <&qeic>;
+diff --git a/arch/powerpc/boot/dts/mpc836x_rdk.dts b/arch/powerpc/boot/dts/mpc836x_rdk.dts
+index e35200a..cc56338 100644
+--- a/arch/powerpc/boot/dts/mpc836x_rdk.dts
++++ b/arch/powerpc/boot/dts/mpc836x_rdk.dts
+@@ -179,7 +179,7 @@
+ 			enet0: ucc@2000 {
+ 				device_type = "network";
+ 				compatible = "ucc_geth";
+-				device-id = <1>;
++				cell-index = <1>;
+ 				reg = <0x2000 0x200>;
+ 				interrupts = <32>;
+ 				interrupt-parent = <&qeic>;
+@@ -194,7 +194,7 @@
+ 			enet1: ucc@3000 {
+ 				device_type = "network";
+ 				compatible = "ucc_geth";
+-				device-id = <2>;
++				cell-index = <2>;
+ 				reg = <0x3000 0x200>;
+ 				interrupts = <33>;
+ 				interrupt-parent = <&qeic>;
+@@ -209,7 +209,7 @@
+ 			enet2: ucc@2600 {
+ 				device_type = "network";
+ 				compatible = "ucc_geth";
+-				device-id = <7>;
++				cell-index = <7>;
+ 				reg = <0x2600 0x200>;
+ 				interrupts = <42>;
+ 				interrupt-parent = <&qeic>;
+@@ -224,7 +224,7 @@
+ 			enet3: ucc@3200 {
+ 				device_type = "network";
+ 				compatible = "ucc_geth";
+-				device-id = <4>;
++				cell-index = <4>;
+ 				reg = <0x3200 0x200>;
+ 				interrupts = <35>;
+ 				interrupt-parent = <&qeic>;
+@@ -271,7 +271,7 @@
+ 				device_type = "serial";
+ 				compatible = "ucc_uart";
+ 				reg = <0x2400 0x200>;
+-				device-id = <5>;
++				cell-index = <5>;
+ 				port-number = <0>;
+ 				rx-clock-name = "brg7";
+ 				tx-clock-name = "brg8";
+@@ -284,7 +284,7 @@
+ 				device_type = "serial";
+ 				compatible = "ucc_uart";
+ 				reg = <0x3400 0x200>;
+-				device-id = <6>;
++				cell-index = <6>;
+ 				port-number = <1>;
+ 				rx-clock-name = "brg13";
+ 				tx-clock-name = "brg14";
+diff --git a/arch/powerpc/boot/dts/mpc8568mds.dts b/arch/powerpc/boot/dts/mpc8568mds.dts
+index 66087d5..df4b5e8 100644
+--- a/arch/powerpc/boot/dts/mpc8568mds.dts
++++ b/arch/powerpc/boot/dts/mpc8568mds.dts
+@@ -325,7 +325,6 @@
+ 			device_type = "network";
+ 			compatible = "ucc_geth";
+ 			cell-index = <1>;
+-			device-id = <1>;
+ 			reg = <2000 200>;
+ 			interrupts = <20>;
+ 			interrupt-parent = <&qeic>;
+@@ -341,7 +340,6 @@
+ 			device_type = "network";
+ 			compatible = "ucc_geth";
+ 			cell-index = <2>;
+-			device-id = <2>;
+ 			reg = <3000 200>;
+ 			interrupts = <21>;
+ 			interrupt-parent = <&qeic>;
+diff --git a/drivers/net/ucc_geth.c b/drivers/net/ucc_geth.c
+index fba0811..3a68b94 100644
+--- a/drivers/net/ucc_geth.c
++++ b/drivers/net/ucc_geth.c
+@@ -3852,7 +3852,13 @@ static int ucc_geth_probe(struct of_device* ofdev, const struct of_device_id *ma
  
-Various setserial commands are issued by a file in rcN.d to get the
-ports properly configured at startup.
+ 	ugeth_vdbg("%s: IN", __FUNCTION__);
  
-Now this board was originally developed while we were still using Fedora
-Core 1 as our base system, and all ports work just fine under FC1
-(that's kernel 2.4.22). 
-I fired the whole thing up under Ubuntu 7.04 and no love - none of the
-ports work (as in, I can't get them to transmit bytes). If I play around
-with the setserial commands and set the IRQs to 0 instead of 7, I can
-get bytes to flow, but it's obvious from the timing that the port
-interrupts aren't being obeyed. Changing the selected interrupt in the
-BIOS (to 3,4, or 5, for instance, making sure that nothing is using the
-selected interrupt) has no effect.
+-	prop = of_get_property(np, "device-id", NULL);
++	prop = of_get_property(np, "cell-index", NULL);
++	if (!prop) {
++		prop = of_get_property(np, "device-id", NULL);
++		if (!prop)
++			return -ENODEV;
++	}
++
+ 	ucc_num = *prop - 1;
+ 	if ((ucc_num < 0) || (ucc_num > 7))
+ 		return -ENODEV;
+diff --git a/drivers/net/ucc_geth_mii.c b/drivers/net/ucc_geth_mii.c
+index e3ba14a..e5b17d7 100644
+--- a/drivers/net/ucc_geth_mii.c
++++ b/drivers/net/ucc_geth_mii.c
+@@ -203,9 +203,14 @@ static int uec_mdio_probe(struct of_device *ofdev, const struct of_device_id *ma
+ 		if ((res.start >= tempres.start) &&
+ 		    (res.end <= tempres.end)) {
+ 			/* set this UCC to be the MII master */
+-			const u32 *id = of_get_property(tempnp, "device-id", NULL);
+-			if (id == NULL)
+-				goto bus_register_fail;
++			const u32 *id;
++
++			id = of_get_property(tempnp, "cell-index", NULL);
++			if (!id) {
++				id = of_get_property(tempnp, "device-id", NULL);
++				if (!id)
++					goto bus_register_fail;
++			}
  
-Now, I did some playing around with various distros that I had on hand
-and found that Fedora Core 4 works (kernel 2.6.11) and that Fedora Core
-5 doesn't (kernel 2.6.15). 
+ 			ucc_set_qe_mux_mii_mng(*id - 1);
  
-I did check the config files on the default kernels and IRQ sharing IS
-turned on. I also tested with all but one port of the serial card
-disabled in the BIOS.
+diff --git a/drivers/serial/ucc_uart.c b/drivers/serial/ucc_uart.c
+index e0994f0..5e4310c 100644
+--- a/drivers/serial/ucc_uart.c
++++ b/drivers/serial/ucc_uart.c
+@@ -1270,10 +1270,18 @@ static int ucc_uart_probe(struct of_device *ofdev,
  
-I'm presently setting up a system where I can do kernel builds (the
-system with the serial ports has very limited disk space, and thus can't
-do a build). As soon as I get that setup, I will grab the 2.6.13 tarball
-from kernel.org and start trying to figure out exactly what changes are
-killing me.
- 
-In the meantime, does anyone have any good ideas where I ought to be
-looking? Obviously there is something wierd about our serial board that
-the latest kernels don't like. I believe it must have something to do
-with the interrupt routing, but I don't have the foggiest clue where
-it's all going south. I'm trying to get in touch with our contacts at
-the manufacturer to see if they know what's up, but I'm not sure how
-fast they'll be able to figure it out either.
- 
-Any suggestions for directions to look in would be greatfully accepted.
- 
-Thanks! 
- 
-Michael Kohne
-Gilbarco Veeder-Root
-336-510-4372
-Mike.Kohne@gilbarco.com
+ 	/* Get the UCC number (device ID) */
+ 	/* UCCs are numbered 1-7 */
+-	iprop = of_get_property(np, "device-id", NULL);
+-	if (!iprop || (*iprop < 1) || (*iprop > UCC_MAX_NUM)) {
+-		dev_err(&ofdev->dev,
+-			"missing or invalid UCC specified in device tree\n");
++	iprop = of_get_property(np, "cell-index", NULL);
++	if (!iprop) {
++		iprop = of_get_property(np, "device-id", NULL);
++		if (!iprop) {
++			dev_err(&ofdev->dev, "UCC is unspecified in "
++				"device tree\n");
++			return -EINVAL;
++		}
++	}
++
++	if ((*iprop < 1) || (*iprop > UCC_MAX_NUM)) {
++		dev_err(&ofdev->dev, "no support for UCC%u\n", *iprop);
+ 		kfree(qe_port);
+ 		return -ENODEV;
+ 	}
+-- 
+1.5.2.2
 
-This message (including any attachments) contains confidential and/or
-proprietary information intended only for the addressee.  
-Any unauthorized disclosure, copying, distribution or reliance on the
-contents of this information is strictly prohibited and may constitute a
-violation of law.  If you are not the intended recipient, please notify
-the sender immediately by responding to this e-mail, and delete the
-message from your system.  If you have any questions about this e-mail
-please notify the sender immediately.
--
-To unsubscribe from this list: send the line "unsubscribe linux-serial"
-in the body of a message to majordomo@vger.kernel.org More majordomo
-info at  http://vger.kernel.org/majordomo-info.html
--
-To unsubscribe from this list: send the line "unsubscribe linux-serial"
-in the body of a message to majordomo@vger.kernel.org More majordomo
-info at  http://vger.kernel.org/majordomo-info.html
-
-
-This message (including any attachments) contains confidential and/or
-proprietary information intended only for the addressee.  
-Any unauthorized disclosure, copying, distribution or reliance on the
-contents of this information is strictly prohibited and may constitute a
-violation of law.  If you are not the intended recipient, please notify
-the sender immediately by responding to this e-mail, and delete the
-message from your system.  If you have any questions about this e-mail
-please notify the sender immediately.
--
-To unsubscribe from this list: send the line "unsubscribe linux-serial"
-in the body of a message to majordomo@vger.kernel.org More majordomo
-info at  http://vger.kernel.org/majordomo-info.html
-
-
-This message (including any attachments) contains confidential and/or
-proprietary information intended only for the addressee.  
-Any unauthorized disclosure, copying, distribution or reliance on the
-contents of this information is strictly prohibited and may constitute a
-violation of law.  If you are not the intended recipient, please notify
-the sender immediately by responding to this e-mail, and delete the
-message from your system.  If you have any questions about this e-mail
-please notify the sender immediately.
-
-
-This message (including any attachments) contains confidential 
-and/or proprietary information intended only for the addressee.  
-Any unauthorized disclosure, copying, distribution or reliance on 
-the contents of this information is strictly prohibited and may 
-constitute a violation of law.  If you are not the intended 
-recipient, please notify the sender immediately by responding to 
-this e-mail, and delete the message from your system.  If you 
-have any questions about this e-mail please notify the sender 
-immediately.
