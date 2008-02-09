@@ -1,17 +1,17 @@
 From: Jan Kiszka <jan.kiszka@web.de>
 Subject: Re: [PATCH][7/8] kgdb: exclusive use kgdb8250 uart I/O driver
-Date: Sat, 09 Feb 2008 15:53:53 +0100
-Message-ID: <47ADBE81.8000506@web.de>
+Date: Sat, 09 Feb 2008 17:40:02 +0100
+Message-ID: <47ADD762.1010206@web.de>
 References: <1202564114-18587-1-git-send-email-jason.wessel@windriver.com> <1202564114-18587-2-git-send-email-jason.wessel@windriver.com> <1202564114-18587-3-git-send-email-jason.wessel@windriver.com> <1202564114-18587-4-git-send-email-jason.wessel@windriver.com> <1202564114-18587-5-git-send-email-jason.wessel@windriver.com> <1202564114-18587-6-git-send-email-jason.wessel@windriver.com> <1202564114-18587-7-git-send-email-jason.wessel@windriver.com> <1202564114-18587-8-git-send-email-jason.wessel@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from fmmailgate03.web.de ([217.72.192.234]:43154 "EHLO
+Received: from fmmailgate03.web.de ([217.72.192.234]:47702 "EHLO
 	fmmailgate03.web.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751127AbYBIOxz (ORCPT
+	with ESMTP id S1753477AbYBIQkE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 9 Feb 2008 09:53:55 -0500
+	Sat, 9 Feb 2008 11:40:04 -0500
 In-Reply-To: <1202564114-18587-8-git-send-email-jason.wessel@windriver.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -19,76 +19,22 @@ To: jason.wessel@windriver.com
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Ingo Molnar <mingo@elte.hu>, Thomas Gleixner <tglx@linutronix.de>
 
 jason.wessel@windriver.com wrote:
-> From: Jason Wessel <jason.wessel@windriver.com>
-> 
-> This patch some small hooks into the normal serial core so that a uart
-> can be unregistered to be exclusively used for KGDB.  These changes
-> allow for registering and unregistering a port with a struct
-> uart_port. From that point on KGDB does raw accesses to the serial
-> IO ports it has taken over.
-> 
-> CC: linux-serial@vger.kernel.org
-> Signed-off-by: Jason Wessel <jason.wessel@windriver.com>
-> Signed-off-by: Jan Kiszka <jan.kiszka@web.de>
-> Signed-off-by: Ingo Molnar <mingo@elte.hu>
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> ---
->  Documentation/DocBook/kgdb.tmpl |   44 ++++
->  drivers/serial/8250.c           |   30 +++
->  drivers/serial/8250_kgdb.c      |  489 +++++++++++++++++++++++++++++++++++++++
->  drivers/serial/Kconfig          |    2 +-
->  drivers/serial/Makefile         |    1 +
->  drivers/serial/serial_core.c    |   18 ++-
->  include/linux/serial_8250.h     |    2 +
->  lib/Kconfig.kgdb                |   21 ++
->  8 files changed, 603 insertions(+), 4 deletions(-)
->  create mode 100644 drivers/serial/8250_kgdb.c
+> @@ -2175,9 +2187,9 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+>  
+>  		/*
+>  		 * Power down all ports by default, except the
+> -		 * console if we have one.
+> +		 * console (real or kgdb) if we have one.
+>  		 */
+> -		if (!uart_console(port))
+> +		if (!uart_console(port) && !uart_kgdb(port))
+>  			uart_change_pm(state, 3);
 
-There are a few things I missed in my last cleanup round, please fold
-them in, they reduce the changes outside kgdb. (I bet that membase
-dumping was related to mmio vs. mmap configuration, right?)
+Jason, thinking about this hunk again, it appears broken to me. If we
+needed it for 8250_kgdb, we would also need it without
+CONFIG_KGDB_CONSOLE. However, powering on the UART with a special dance
+after we took over with 8250_kgdb is a job that has to be done _there_,
+not by this hook here. So let's drop the whole serial_core.c hunk from
+this patch.
 
---- linux-2.6-kgdb.orig/drivers/serial/Kconfig
-+++ linux-2.6-kgdb/drivers/serial/Kconfig
-@@ -121,7 +121,7 @@ config SERIAL_8250_CS
- 
- config SERIAL_8250_NR_UARTS
- 	int "Maximum number of 8250/16550 serial ports"
--	depends on SERIAL_8250 || KGDB_8250
-+	depends on SERIAL_8250
- 	default "4"
- 	help
- 	  Set this to the number of serial ports you want the driver
---- linux-2.6-kgdb.orig/drivers/serial/serial_core.c
-+++ linux-2.6-kgdb/drivers/serial/serial_core.c
-@@ -1685,9 +1685,6 @@ static int uart_line_info(char *buf, str
- 			mmio ? (unsigned long long)port->mapbase
- 			     : (unsigned long long) port->iobase,
- 			port->irq);
--	if (port->iotype == UPIO_MEM)
--		ret += sprintf(buf+ret, " membase 0x%08lX",
--					   (unsigned long) port->membase);
- 
- 	if (port->type == PORT_UNKNOWN) {
- 		strcat(buf, "\n");
-@@ -2130,9 +2127,7 @@ uart_report_port(struct uart_driver *drv
- 	case UPIO_TSI:
- 	case UPIO_DWAPB:
- 		snprintf(address, sizeof(address),
--			 "MMIO 0x%llx mem 0x%p",
--			 (unsigned long long)port->mapbase,
--			 port->membase);
-+			 "MMIO 0x%llx", (unsigned long long)port->mapbase);
- 		break;
- 	default:
- 		strlcpy(address, "*unknown*", sizeof(address));
---- linux-2.6-kgdb.orig/include/linux/serial_8250.h
-+++ linux-2.6-kgdb/include/linux/serial_8250.h
-@@ -58,7 +58,6 @@ struct uart_port;
- 
- int serial8250_register_port(struct uart_port *);
- void serial8250_unregister_port(int line);
--void serial8250_unregister_by_port(struct uart_port *port);
- void serial8250_suspend_port(int line);
- void serial8250_resume_port(int line);
- int serial8250_get_port_def(struct uart_port *port, int line);
+Jan
