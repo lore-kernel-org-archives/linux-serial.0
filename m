@@ -1,80 +1,56 @@
-From: Alex Williamson <alex.williamson@hp.com>
-Subject: Re: RM9000 code broken in 8250.c
-Date: Sat, 16 Feb 2008 23:09:30 -0700
-Message-ID: <1203228570.7285.32.camel@bling>
-References: <200712211250.18002.thomas@koeller.dyndns.org>
-	 <1198246996.7091.17.camel@bling>
-	 <200802161818.16415.thomas@koeller.dyndns.org>
-Mime-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+From: Sam Ravnborg <sam@ravnborg.org>
+Subject: [PATCH 01/27] serial: silence section mismatch warnings in 8250_pci
+Date: Sun, 17 Feb 2008 13:22:38 +0100
+Message-ID: <1203250984-11285-1-git-send-email-sam@ravnborg.org>
+References: <20080217121255.GA10519@uranus.ravnborg.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from g4t0017.houston.hp.com ([15.201.24.20]:6999 "EHLO
-	g4t0017.houston.hp.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752283AbYBQGJe (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 17 Feb 2008 01:09:34 -0500
-In-Reply-To: <200802161818.16415.thomas@koeller.dyndns.org>
+Received: from pasmtpa.tele.dk ([80.160.77.114]:38368 "EHLO pasmtpA.tele.dk"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755486AbYBQMW7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 17 Feb 2008 07:22:59 -0500
+In-Reply-To: <20080217121255.GA10519@uranus.ravnborg.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Thomas Koeller <thomas@koeller.dyndns.org>
-Cc: linux-serial@vger.kernel.org, Aristeu Sergio Rozanski Filho <aris@cathedrallabs.org>
+To: LKML <linux-kernel@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>
+Cc: Sam Ravnborg <sam@ravnborg.org>, Russell King <rmk+kernel@arm.linux.org.uk>, linux-serial@vger.kernel.org
 
-Hi Thomas,
+Fix following warnings:
+WARNING: drivers/serial/built-in.o(.data+0x5b8): Section mismatch in reference from the variable pci_serial_quirks to the function .devexit.text:pci_ite887x_exit()
+WARNING: drivers/serial/built-in.o(.data+0x5e0): Section mismatch in reference from the variable pci_serial_quirks to the function .devexit.text:pci_plx9050_exit()
+WARNING: drivers/serial/built-in.o(.data+0x608): Section mismatch in reference from the variable pci_serial_quirks to the function .devexit.text:pci_plx9050_exit()
+WARNING: drivers/serial/built-in.o(.data+0x658): Section mismatch in reference from the variable pci_serial_quirks to the function .devexit.text:pci_plx9050_exit()
+WARNING: drivers/serial/built-in.o(.data+0x680): Section mismatch in reference from the variable pci_serial_quirks to the function .devexit.text:pci_plx9050_exit()
+WARNING: drivers/serial/built-in.o(.data+0x6a8): Section mismatch in reference from the variable pci_serial_quirks to the function .devexit.text:pci_plx9050_exit()
+WARNING: drivers/serial/built-in.o(.data+0x6d0): Section mismatch in reference from the variable pci_serial_quirks to the function .devexit.text:sbs_exit()
+WARNING: drivers/serial/built-in.o(.data+0x6f8): Section mismatch in reference from the variable pci_serial_quirks to the function .devexit.text:sbs_exit()
+WARNING: drivers/serial/built-in.o(.data+0x720): Section mismatch in reference from the variable pci_serial_quirks to the function .devexit.text:sbs_exit()
+WARNING: drivers/serial/built-in.o(.data+0x748): Section mismatch in reference from the variable pci_serial_quirks to the function .devexit.text:sbs_exit()
 
-On Sat, 2008-02-16 at 18:18 +0100, Thomas Koeller wrote:
-> >    Sorry this code is causing you trouble.  I tried the existing TXEN
-> > bug code, it seems to be fighting a similar, but still quite different
-> > bug.  The UART bug the backup timer code is trying to fix is more
-> > asynchronous.  It might need a kick in the middle of a transmit, not
-> > just at the beginning.
-> 
-> Is the test code you added really capable of detecting this kind of behavior?
-> To me it does not seem to be - it looks as if it only checks whether the
-> transmitter empty interrupt is raised when that interrupt is enabled
-> while the transmitter holding register is empty. That is the same
-> condition the UART_BUG_TXEN code checks for.
+pci_serial_quirks contains a number of function pointers
+where the referenced function is annotated __devexit.
+This is OK so we annotate pci_serial_quirks with
+__refdata to ignore the __devexit references
 
-   No, it's slightly different.  Note that the test code enables the
-transmit empty interrupt, reads the IIR to clear the interrupt, then
-disables and re-enables the transmit empty interrupt.  At this point a
-normal UART will re-assert the transmitter empty interrupt.  The UART
-I'm looking for doesn't.
+Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
+Cc: Russell King <rmk+kernel@arm.linux.org.uk>
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/serial/8250_pci.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-> > Can we re-arrange the tests such that they both 
-> > work?  It would be fine with me if we don't run the test for the backup
-> > timer on ports with UART_BUG_TXEN already enabled.  The easiest
-> > mechanism might be to test port.type for PORT_RM9000, and not test those
-> > for the backup timer.  Then we don't need to re-order the code too much.
-> 
-> I do not think that is an option. The UART_BUG_TXEN code has been there
-> before I added support for the RM9000, so it probably has more users.
-
-   If there are more TXEN bug users, I haven't heard complaints.  I'm
-really not sure what uses the TXEN bug code, which makes it difficult to
-test or modify it's behavior.  Why do you think it's not an option to
-have both tests?  Is your UART testing positive for both the backup
-timer and the TXEN bug?  If so, perhaps my test needs to store the first
-IIR we read and make sure NO_INT is only asserted on the second read.
-Maybe we could even combine the tests then.
-
-> Looking at your description of the bug you are trying to deal with
-> (interrupts cease to be generated randomly in the middle of a transmission),
-> I wonder if it is at all possible to write a runtime check that reliably
-> can detect it. Wouldn't a configuration option be more appropriate here?
-> This would also have the added advantage of being able to leave out your
-> code in cases where it is not needed, reducing bloat.
-
-   The existing test seems to be able to reliably distinguish between
-UARTs exhibiting normal transmitter interrupt behavior and those that
-can effectively drop an interrupt.  Even with a configuration option, we
-need a runtime test because these systems need to be supported by
-standard distribution kernels and we can't interfere with fully
-functional UARTs.  I'd much rather pursue an option that can allow both
-workarounds.  Thanks,
-
-	Alex
-
+diff --git a/drivers/serial/8250_pci.c b/drivers/serial/8250_pci.c
+index a8bec49..c4b77a5 100644
+--- a/drivers/serial/8250_pci.c
++++ b/drivers/serial/8250_pci.c
+@@ -775,7 +775,7 @@ pci_default_setup(struct serial_private *priv, struct pciserial_board *board,
+  * This list is ordered alphabetically by vendor then device.
+  * Specific entries must come before more generic entries.
+  */
+-static struct pci_serial_quirk pci_serial_quirks[] = {
++static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 	/*
+ 	* ADDI-DATA GmbH communication cards <info@addi-data.com>
+ 	*/
 -- 
-Alex Williamson                             HP Open Source & Linux Org.
+1.5.4.rc3.14.g44397
 
