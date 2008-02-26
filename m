@@ -1,38 +1,41 @@
-From: Bjorn Helgaas <bjorn.helgaas@hp.com>
-Subject: serial: add PNP ID GVC0303 for Archtek 3334BRV ISA modem
-Date: Mon, 25 Feb 2008 09:15:27 -0700
-Message-ID: <200802250915.27783.bjorn.helgaas@hp.com>
+From: Thomas Koeller <thomas@koeller.dyndns.org>
+Subject: Re: RM9000 code broken in 8250.c
+Date: Tue, 26 Feb 2008 01:59:08 +0100
+Message-ID: <200802260159.09182.thomas@koeller.dyndns.org>
+References: <200712211250.18002.thomas@koeller.dyndns.org> <200802171347.03312.thomas@koeller.dyndns.org> <1203530165.6754.11.camel@lappy>
 Mime-Version: 1.0
 Content-Type: text/plain;
-  charset="us-ascii"
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from g5t0008.atlanta.hp.com ([15.192.0.45]:9404 "EHLO
-	g5t0008.atlanta.hp.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753022AbYBYQN6 (ORCPT
+Received: from mx01.hansenet.de ([213.191.73.25]:48936 "EHLO
+	webmail.hansenet.de" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753249AbYBZA5y (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 25 Feb 2008 11:13:58 -0500
+	Mon, 25 Feb 2008 19:57:54 -0500
+In-Reply-To: <1203530165.6754.11.camel@lappy>
 Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, Andrew Morton <akpm@linux-foundation.org>
-Cc: Thomas Lehmann <thomas.lehmann@alumni.tu-berlin.de>, linux-kernel@vger.kernel.org
+To: Alex Williamson <alex.williamson@hp.com>
+Cc: linux-serial@vger.kernel.org, Aristeu Sergio Rozanski Filho <aris@cathedrallabs.org>
 
-Thomas Lehmann <thomas.lehmann@alumni.tu-berlin.de> verified that this
-entry works.
+On Mittwoch, 20. Februar 2008, Alex Williamson wrote:
+>
+>    The key is that I'm looking at the 2nd IIR read and expecting NO_INT.
+> My UART passes the TXEN bug test, so the first interrupt is generated
+> correctly.  Does this patch help at all?
 
-Signed-off-by: Bjorn Helgaas <bjorn.helgaas@hp.com>
+The patch seems to be good. After applying it, my UART passes the
+modified test. I never tried enabling the interrupt twice, as your
+modified test does, and was not aware that in this case my hardware
+would raise an interrupt. How did you know? Can we be sure that possible
+other UARTS affected by UART_BUG_TXEN will also do this?
 
-Index: work6/drivers/serial/8250_pnp.c
-===================================================================
---- work6.orig/drivers/serial/8250_pnp.c	2008-02-20 16:55:04.000000000 -0700
-+++ work6/drivers/serial/8250_pnp.c	2008-02-25 09:04:41.000000000 -0700
-@@ -91,6 +91,8 @@
- 	/* Archtek America Corp. */
- 	/* Archtek SmartLink Modem 3334BT Plug & Play */
- 	{	"GVC000F",		0	},
-+	/* Archtek SmartLink Modem 3334BRV 33.6K Data Fax Voice */
-+	{	"GVC0303",		0	},
- 	/* Hayes */
- 	/* Hayes Optima 288 V.34-V.FC + FAX + Voice Plug & Play */
- 	{	"HAY0001",		0	},
+thanks,
+Thomas
+
+
+-- 
+Thomas Koeller
+thomas@koeller.dyndns.org
