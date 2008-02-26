@@ -1,68 +1,93 @@
-From: Robin Getz <rgetz@blackfin.uclinux.org>
-Subject: Re: Inter-Character Delay
-Date: Tue, 26 Feb 2008 15:10:14 -0500
-Message-ID: <200802261510.14908.rgetz@blackfin.uclinux.org>
-References: <200802181336.26328.rgetz@blackfin.uclinux.org> <200802261321.18288.rgetz@blackfin.uclinux.org> <20080226191825.GA31527@flint.arm.linux.org.uk>
+From: =?iso-8859-1?Q?Chris_Dor=E9?= <cdore@connecttech.com>
+Subject: RE: Inter-Character Delay
+Date: Tue, 26 Feb 2008 15:59:41 -0500
+Message-ID: <010301c878ba$8365b4b0$8a311e10$@com>
+References: <200802181336.26328.rgetz@blackfin.uclinux.org>
 Mime-Version: 1.0
 Content-Type: text/plain;
-  charset="utf-8"
+	charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nwd2mail10.analog.com ([137.71.25.55]:22988 "EHLO
-	nwd2mail10.analog.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752547AbYBZUIi (ORCPT
+Received: from inetc.connecttech.com ([64.7.140.42]:1644 "EHLO
+	inetc.connecttech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753756AbYBZVJ1 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 26 Feb 2008 15:08:38 -0500
-In-Reply-To: <20080226191825.GA31527@flint.arm.linux.org.uk>
-Content-Disposition: inline
+	Tue, 26 Feb 2008 16:09:27 -0500
+Received: from connecttech.com (cti2.connecttech.com [206.130.75.42])
+	by inetc.connecttech.com (8.13.3P/8.13.3) with ESMTP id m1QL039t001939
+	for <linux-serial@vger.kernel.org>; Tue, 26 Feb 2008 16:00:03 -0500 (EST)
+	(envelope-from cdore@connecttech.com)
+Received: from cdore ([206.130.75.122]) by connecttech.com (8.10.1/UW7.1.1-NSCd) with ESMTP id m1QKxgE02114 for <linux-serial@vger.kernel.org>; Tue, 26 Feb 2008 15:59:43 -0500 (EST)
+In-Reply-To: <200802181336.26328.rgetz@blackfin.uclinux.org>
+Content-Language: en-ca
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <rmk@arm.linux.org.uk>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Haavard Skinnemoen <hskinnemoen@atmel.com>, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On Tue 26 Feb 2008 14:18, Russell King pondered:
-> On Tue, Feb 26, 2008 at 01:21:18PM -0500, Robin Getz wrote:
-> > On Tue 26 Feb 2008 12:11, Russell King pondered:
-> > > On Tue, Feb 26, 2008 at 11:11:58AM -0500, Robin Getz wrote:
-> > > > ping.
-> > > > 
-> > > > Comments appreciated.
-> > > 
-> > > ascii-xfr does inter-line and inter-character delays without
-> > > requiring any kernel modifications - used it with some dumb boot
-> > > loaders which required 'mem deposit <address> <word>' to be sent 
-> > > slowly to the target.
-> > 
-> > Thanks for the pointer.
-> > 
-> > Solving the problem in userspace (with tcdrain and udelay) when some
-> > hardware can do the same thing with zero overhead - doesn't seem like
-> > the most efficient way to do things....
+If I read this correctly, the summary is that you:
+
+1. Want to add functionality to the serial driver that supports an extra
+feature (the delay register).
+2. Would like to know what the best way is to expose this new functionality
+to a user app.
+3. Are NOT looking for a way to create the delay on hardware that does not
+natively support it.
+
+I don't have good answers for you, but perhaps this will help summarize and
+clear up what you are really after.
+
+
+..Chris
+
+> -----Original Message-----
+> From: linux-serial-owner@vger.kernel.org [mailto:linux-serial-
+> owner@vger.kernel.org] On Behalf Of Robin Getz
+> Sent: February 18, 2008 1:36 PM
+> To: linux-serial@vger.kernel.org
+> Subject: Inter-Character Delay
 > 
-> I know of no serial hardware which can insert arbitary delays inbetween
-> characters.
-
-In the original message I sent:
+> It is quite common on many industrial serial devices which do not support
+> either software or hardware flow control to require a Inter-Character
+delay
+> longer than than the standard one, one and a half, or two stop bits.
+> 
+> A device where this long inter character delay is required are devices
+like
+> Point of Sale terminals, and devices that are talking to Modbus (Honeywell
+> SI-FTA implements a check on the inter-character gap).
+> 
 > Some hardware manufactures have seen this need, and added it to their UART
 > controllers - Atmel's AT32AP7000 has added this and called it a
-> "Timeguard" (Don't ask me why). The "timeguard delay" is controlled between
-> 0 and 255 Bit Periods.
->
->  http://www.atmel.com/dyn/resources/prod_documents/doc32003.pdf
-
-Others have done the same - more will be doing soon - it is pretty trivial in 
-the hardware (counter which extends the stop bit, and a 8-bit register).
-
-> > It also lacks the ability to work with pre-existing user space
-> > applications.
+"Timeguard"
+> (Don't ask me why). The "timeguard delay" is controlled between 0 and 255
+Bit
+> Periods.
 > 
-> So one could say those applications are buggy.
+> http://www.atmel.com/dyn/resources/prod_documents/doc32003.pdf
+> 
+> I think I have seen similar things for some ARM devices, and other
+embedded
+> architectures. Today, we have done similar things in the driver (on
+hardware
+> that doesn't support it natively).
+> 
+> I'm not sure that bit periods are the best way to measure things, or
+> milliseconds. I guess it really doesn't matter, as long as everyone does
+it
+> the same way - which brings me to my next question:
+> 
+> Does anyone have a good idea of a standard way to expose this to
+userspace?
+>  - grabbing 8 bits in the termios_p c_oflag isn't going to fit
+>  - adding a new field in the termios structure seems like overkill
+>  - adding backdoor ioctls for serial drivers seems like a bad idea.
+> 
+> Thoughts?
+> 
+> Thanks
+> -Robin
+> -
+> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
-I'm not sure I understand - existing applications which don't support the 
-overhead of doing everything in userspace are buggy? 
-
-Which means that if you want to be able to receive console messages on these 
-older serial terminals - we need to put the delay in printk, rather than the 
-serial driver?
-
--Robin
