@@ -1,39 +1,37 @@
-From: Robin Getz <rgetz@blackfin.uclinux.org>
-Subject: Re: Inter-Character Delay
-Date: Wed, 27 Feb 2008 10:57:02 -0500
-Message-ID: <200802271057.02716.rgetz@blackfin.uclinux.org>
-References: <200802181336.26328.rgetz@blackfin.uclinux.org> <010301c878ba$8365b4b0$8a311e10$@com>
+From: Thomas Koeller <thomas@koeller.dyndns.org>
+Subject: Re: RM9000 code broken in 8250.c
+Date: Sun, 2 Mar 2008 17:03:12 +0100
+Message-ID: <200803021703.13105.thomas@koeller.dyndns.org>
+References: <200712211250.18002.thomas@koeller.dyndns.org> <200802260159.09182.thomas@koeller.dyndns.org> <1204040242.24352.32.camel@bling>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain;
+  charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nwd2mail11.analog.com ([137.71.25.57]:45962 "EHLO
-	nwd2mail11.analog.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753474AbYB0Pz0 convert rfc822-to-8bit (ORCPT
+Received: from mx02.hansenet.de ([213.191.73.26]:46720 "EHLO
+	webmail.hansenet.de" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753838AbYCBQCI (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 27 Feb 2008 10:55:26 -0500
-In-Reply-To: <010301c878ba$8365b4b0$8a311e10$@com>
+	Sun, 2 Mar 2008 11:02:08 -0500
+In-Reply-To: <1204040242.24352.32.camel@bling>
 Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Chris =?utf-8?q?Dor=C3=A9?= <cdore@connecttech.com>
-Cc: linux-serial@vger.kernel.org
+To: Alex Williamson <alex.williamson@hp.com>
+Cc: linux-serial@vger.kernel.org, Aristeu Sergio Rozanski Filho <aris@cathedrallabs.org>
 
-On Tue 26 Feb 2008 15:59, Chris Dor=C3=A9 pondered:
-> If I read this correctly, the summary is that you:
->=20
-> 1. Want to add functionality to the serial driver that supports an ex=
-tra
-> feature (the delay register).
-> 2. Would like to know what the best way is to expose this new functio=
-nality
-> to a user app.
+On Dienstag, 26. Februar 2008, Alex Williamson wrote:
+>    If your UART is detected correctly now and you don't have any
+> suggestions for further improvements, I'll go ahead and submit this.
+> Let me know.  Thanks,
 
-Yes - that about captures it.
+Yes, please go ahead and commit your changes. I ran some more tests
+and everything seemed to work as expected.
 
--Robin
--
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+thanks,
+Thomas
+
+
+-- 
+Thomas Koeller
+thomas@koeller.dyndns.org
