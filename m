@@ -1,57 +1,46 @@
-From: "Tosoni" <jp.tosoni@acksys.fr>
-Subject: RE: Inter-Character Delay
-Date: Mon, 3 Mar 2008 09:29:23 +0100
-Message-ID: <007301c87d09$65b8b2c0$2e01a8c0@acksys.local>
-References: <200802271057.02716.rgetz@blackfin.uclinux.org>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH] Fix of_serial section mismatch warnings
+Date: Wed, 5 Mar 2008 04:17:21 +0100
+Message-ID: <200803050417.21735.arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp02.msg.oleane.net ([62.161.4.2]:52059 "EHLO
-	smtp02.msg.oleane.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752360AbYCCIek convert rfc822-to-8bit (ORCPT
+Received: from moutng.kundenserver.de ([212.227.126.186]:52825 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751490AbYCEDRb (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 3 Mar 2008 03:34:40 -0500
-In-Reply-To: <200802271057.02716.rgetz@blackfin.uclinux.org>
+	Tue, 4 Mar 2008 22:17:31 -0500
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Robin Getz' <rgetz@blackfin.uclinux.org>
-Cc: linux-serial@vger.kernel.org
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-serial@vger.kernel.org, Josh Boyer <jwboyer@linux.vnet.ibm.com>
 
-Maybe a new parameter for the driver module, or a new entry in /proc wo=
-uld do it ?
+From: Josh Boyer <jwboyer@linux.vnet.ibm.com>
 
-> -----Original Message-----
-> From: linux-serial-owner@vger.kernel.org
-> [mailto:linux-serial-owner@vger.kernel.org]On Behalf Of Robin Getz
-> Sent: Wednesday, February 27, 2008 4:57 PM
-> To: Chris Dor=C3=A9
-> Cc: linux-serial@vger.kernel.org
-> Subject: Re: Inter-Character Delay
->=20
->=20
-> On Tue 26 Feb 2008 15:59, Chris Dor=C3=A9 pondered:
-> > If I read this correctly, the summary is that you:
-> >=20
-> > 1. Want to add functionality to the serial driver that=20
-> supports an extra
-> > feature (the delay register).
-> > 2. Would like to know what the best way is to expose this=20
-> new functionality
-> > to a user app.
->=20
-> Yes - that about captures it.
->=20
-> -Robin
-> -
-> To unsubscribe from this list: send the line "unsubscribe=20
-> linux-serial" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->=20
+Fix the following section mismatches:
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+WARNING: drivers/built-in.o(.exit.text+0x5a): Section mismatch in reference from the function of_platform_serial_exit() to the variable .devinit.data:of_platform_serial_driver
+The function __exit of_platform_serial_exit() references
+a variable __devinitdata of_platform_serial_driver.
+
+Signed-off-by: Josh Boyer <jwboyer@linux.vnet.ibm.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+
+---
+ drivers/serial/of_serial.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- linux-2.6.orig/drivers/serial/of_serial.c
++++ linux-2.6/drivers/serial/of_serial.c
+@@ -138,7 +138,7 @@ static struct of_device_id __devinitdata
+ 	{ /* end of list */ },
+ };
+ 
+-static struct of_platform_driver __devinitdata of_platform_serial_driver = {
++static struct of_platform_driver of_platform_serial_driver = {
+ 	.owner = THIS_MODULE,
+ 	.name = "of_serial",
+ 	.probe = of_platform_serial_probe,
