@@ -1,46 +1,82 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH] Fix of_serial section mismatch warnings
-Date: Wed, 5 Mar 2008 04:17:21 +0100
-Message-ID: <200803050417.21735.arnd@arndb.de>
+From: Matteo Croce <technoboy85@gmail.com>
+Subject: [PATCH][MIPS][5/6]: AR7: serial hack
+Date: Wed, 12 Mar 2008 02:30:06 +0100
+Message-ID: <200803120230.06420.technoboy85@gmail.com>
+References: <200803120221.25044.technoboy85@gmail.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
+Content-Type: text/plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.126.186]:52825 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751490AbYCEDRb (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 Mar 2008 22:17:31 -0500
+Return-path: <linux-mips-bounce@linux-mips.org>
+In-Reply-To: <200803120221.25044.technoboy85@gmail.com>
 Content-Disposition: inline
-Sender: linux-serial-owner@vger.kernel.org
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+To: linux-mips@linux-mips.org
+Cc: Florian Fainelli <florian@openwrt.org>, Felix Fietkau <nbd@openwrt.org>, Nicolas Thill <nico@openwrt.org>, linux-serial@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
 List-Id: linux-serial@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-serial@vger.kernel.org, Josh Boyer <jwboyer@linux.vnet.ibm.com>
 
-From: Josh Boyer <jwboyer@linux.vnet.ibm.com>
+Ugly but we need it
 
-Fix the following section mismatches:
+Signed-off-by: Matteo Croce <technoboy85@gmail.com>
+Signed-off-by: Florian Fainelli <florian@openwrt.org>
+Signed-off-by: Felix Fietkau <nbd@openwrt.org>
+Signed-off-by: Nicolas Thill <nico@openwrt.org>
 
-WARNING: drivers/built-in.o(.exit.text+0x5a): Section mismatch in reference from the function of_platform_serial_exit() to the variable .devinit.data:of_platform_serial_driver
-The function __exit of_platform_serial_exit() references
-a variable __devinitdata of_platform_serial_driver.
-
-Signed-off-by: Josh Boyer <jwboyer@linux.vnet.ibm.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-
----
- drivers/serial/of_serial.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- linux-2.6.orig/drivers/serial/of_serial.c
-+++ linux-2.6/drivers/serial/of_serial.c
-@@ -138,7 +138,7 @@ static struct of_device_id __devinitdata
- 	{ /* end of list */ },
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index 77f7a7f..a3a271d 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -267,6 +267,13 @@ static const struct serial8250_config uart_config[] = {
+ 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
+ 		.flags		= UART_CAP_FIFO,
+ 	},
++	[PORT_AR7] = {
++		.name		= "TI-AR7",
++		.fifo_size	= 16,
++		.tx_loadsz	= 16,
++		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_00,
++		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
++	},
  };
  
--static struct of_platform_driver __devinitdata of_platform_serial_driver = {
-+static struct of_platform_driver of_platform_serial_driver = {
- 	.owner = THIS_MODULE,
- 	.name = "of_serial",
- 	.probe = of_platform_serial_probe,
+ #if defined (CONFIG_SERIAL_8250_AU1X00)
+@@ -2455,7 +2462,11 @@ static void serial8250_console_putchar(struct uart_port *port, int ch)
+ {
+ 	struct uart_8250_port *up = (struct uart_8250_port *)port;
+ 
++#ifdef CONFIG_AR7
++	wait_for_xmitr(up, BOTH_EMPTY);
++#else
+ 	wait_for_xmitr(up, UART_LSR_THRE);
++#endif
+ 	serial_out(up, UART_TX, ch);
+ }
+ 
+diff --git a/include/linux/serialP.h b/include/linux/serialP.h
+index e811a61..cf71de9 100644
+--- a/include/linux/serialP.h
++++ b/include/linux/serialP.h
+@@ -135,6 +135,10 @@ struct rs_multiport_struct {
+  * the interrupt line _up_ instead of down, so if we register the IRQ
+  * while the UART is in that state, we die in an IRQ storm. */
+ #define ALPHA_KLUDGE_MCR (UART_MCR_OUT2)
++#elif defined(CONFIG_AR7)
++/* This is how it is set up by bootloader... */
++#define ALPHA_KLUDGE_MCR (UART_MCR_OUT2 | UART_MCR_OUT1 \
++			| UART_MCR_RTS | UART_MCR_DTR)
+ #else
+ #define ALPHA_KLUDGE_MCR 0
+ #endif
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 289942f..869b6df 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -40,6 +40,7 @@
+ #define PORT_NS16550A	14
+ #define PORT_XSCALE	15
+ #define PORT_RM9000	16	/* PMC-Sierra RM9xxx internal UART */
++#define PORT_AR7	16
+ #define PORT_MAX_8250	16	/* max port ID */
+ 
+ /*
