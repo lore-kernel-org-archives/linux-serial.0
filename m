@@ -1,63 +1,54 @@
-From: Matteo Croce <technoboy85@gmail.com>
+From: tsbogend@alpha.franken.de (Thomas Bogendoerfer)
 Subject: Re: [PATCH][MIPS][5/6]: AR7: serial hack
-Date: Sun, 16 Mar 2008 16:49:30 +0100
-Message-ID: <200803161649.30531.technoboy85@gmail.com>
-References: <200803120221.25044.technoboy85@gmail.com> <200803130131.54570.technoboy85@gmail.com> <20080313090109.GB6012@alpha.franken.de>
+Date: Tue, 18 Mar 2008 14:30:15 +0100
+Message-ID: <20080318133015.GA7239@alpha.franken.de>
+References: <200803120221.25044.technoboy85@gmail.com> <200803141646.09645.technoboy85@gmail.com> <20080315104009.GA6533@alpha.franken.de> <200803161645.06364.technoboy85@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp-out25.alice.it ([85.33.2.25]:1553 "EHLO
-	smtp-out25.alice.it" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752002AbYCPPtu (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 16 Mar 2008 11:49:50 -0400
-In-Reply-To: <20080313090109.GB6012@alpha.franken.de>
+Received: from elvis.franken.de ([193.175.24.41]:37142 "EHLO elvis.franken.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752654AbYCRNa3 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 18 Mar 2008 09:30:29 -0400
 Content-Disposition: inline
+In-Reply-To: <200803161645.06364.technoboy85@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-mips@linux-mips.org, Florian Fainelli <florian@openwrt.org>, Felix Fietkau <nbd@openwrt.org>, Nicolas Thill <nico@openwrt.org>, linux-serial@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
+To: Matteo Croce <technoboy85@gmail.com>
+Cc: linux-mips@linux-mips.org, Florian Fainelli <florian@openwrt.org>, Felix Fietkau <nbd@openwrt.org>, Nicolas Thill <nico@openwrt.org>, linux-serial@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
 
-Il Thursday 13 March 2008 10:01:09 Thomas Bogendoerfer ha scritto:
-> On Thu, Mar 13, 2008 at 01:31:54AM +0100, Matteo Croce wrote:
-> > Il Wednesday 12 March 2008 12:16:29 Alan Cox ha scritto:
-> > > On Wed, 12 Mar 2008 02:30:06 +0100
-> > > Matteo Croce <technoboy85@gmail.com> wrote:
-> > > 
-> > > > Ugly but we need it
-> > > 
-> > > Too ugly - NAK
-> > > 
-> > > However please send an explanation of the problem and lets find a nicer
-> > > way to do it or bury it in arch code.
-> > > 
-> > > 
+On Sun, Mar 16, 2008 at 04:45:06PM +0100, Matteo Croce wrote:
+> Il Saturday 15 March 2008 11:40:09 Thomas Bogendoerfer ha scritto:
+> > On Fri, Mar 14, 2008 at 04:46:09PM +0100, Matteo Croce wrote:
+> > > This is a bit better
 > > 
-> > This is my problem:
+> > is it possible to try without the serial changes first ?
 > > 
-> > ffi_cmdset_000: DDisabling erae-ssuspend-progrm ddue to code bokeenness.
-> > cmdlinparrt partition arssing not avaiabll
-> > RedBoo ppartition parsngg not availabl
-> > NET: Rgiistered protocl  family 1
-> > NET: Regsteered protocol ammily 10
-> > IPv6 overIPPv4 tunnelingdriiver
-> > NET: Regsteered protocolfammily 17
-> > FS:: Mounted roo (ssquashfs filessttem) readonly.
-> > Freeing nuused kernel meorry: 120k freed
+> > Use 
 > > 
-> > I'll try to find a nicer way to fix it
+> >        uart_port[0].type = PORT_16550A;
+> > 
+> > in arch/mips/ar7/platform.c.
+> > 
+> > Does it work ?
+> > 
 > 
-> don't use AFE mode and treat it like a normal 16550 (PORT_16550A). You
-> could also try to use UPIO_MEM32. That's how my console driver
-> (different OS) works for AR7 without the hack to wait for LSR_TEMP and 
-> LSR_THRE.
-> 
-> Thomas.
-> 
+> Tried I get teh usual broken serial output:
 
-What do you mean by don't using AFE? Just removing UART_CAP_AFE from the .fcr field?
-I've tried but it doesn't work.
+I just checked the latest AR7/UR8 source, I have, and they don't need
+special hacks. This is a 2.6.10 based tree. At that time there was
+no serial8250_console_putchar(), console output was done via
+serial8250_console_write() without any helper. Before writing to 
+the UART_TX, wait_for_xmitr() is called. And this wait_for_xmitr() does
+check for BOTH_EMPTY.
 
-I tried also UPIO_MEM32 instead of UPIO_MEM (with PORT_AR7) but it doesn't works
+Is there a good reason, why we don't check for BOTH_EMPTY in
+serial8250_console_putchar() ? To match the 2.6.10 behaviour we
+would need that and this would fix the AR7 case without any
+special handling.
+
+Thomas.
+
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessary a
+good idea.                                                [ RFC1925, 2.3 ]
