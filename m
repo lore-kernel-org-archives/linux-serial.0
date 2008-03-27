@@ -1,18 +1,18 @@
 From: Matteo Croce <technoboy85@gmail.com>
 Subject: Re: [PATCH][MIPS][5/6]: AR7: serial hack
-Date: Thu, 27 Mar 2008 22:14:21 +0100
-Message-ID: <200803272214.21456.technoboy85@gmail.com>
+Date: Thu, 27 Mar 2008 22:17:16 +0100
+Message-ID: <200803272217.16589.technoboy85@gmail.com>
 References: <200803120221.25044.technoboy85@gmail.com> <200803161645.06364.technoboy85@gmail.com> <20080321015540.GA30988@alpha.franken.de>
 Mime-Version: 1.0
 Content-Type: text/plain;
   charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp-out26.alice.it ([85.33.2.26]:3212 "EHLO
-	smtp-out26.alice.it" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753433AbYC0VOg (ORCPT
+Received: from smtp-OUT05A.alice.it ([85.33.3.5]:2818 "EHLO
+	smtp-OUT05A.alice.it" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757245AbYC0VRV (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 27 Mar 2008 17:14:36 -0400
+	Thu, 27 Mar 2008 17:17:21 -0400
 In-Reply-To: <20080321015540.GA30988@alpha.franken.de>
 Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
