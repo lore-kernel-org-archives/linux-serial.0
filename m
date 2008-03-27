@@ -1,42 +1,57 @@
-From: "Kevin Wilson" <Kevin.Wilson@comtrol.com>
-Subject: Nevermind -> (Baud rates > 460k)
-Date: Mon, 24 Mar 2008 09:37:37 -0500
-Message-ID: <B1F576FE19C55C43B8D2E31F061B50C0C4BC71@exchange.comtrol.com>
-References: <B1F576FE19C55C43B8D2E31F061B50C0C4BC6C@exchange.comtrol.com>
+From: Tilman Schmidt <tilman@imap.cc>
+Subject: struct termios/termios2 rationale and usage
+Date: Thu, 27 Mar 2008 12:23:08 +0100
+Message-ID: <47EB839C.8070605@imap.cc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from exchange.comtrol.com ([204.73.219.163]:22793 "EHLO
-	Exchange.comtrol.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758612AbYCXOgl convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 24 Mar 2008 10:36:41 -0400
-Content-class: urn:content-classes:message
-In-Reply-To: <B1F576FE19C55C43B8D2E31F061B50C0C4BC6C@exchange.comtrol.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="------------enig3F1510D7D1A7C5B57634EB22"
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1757005AbYC0LXW@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
 
-Found where the driver was attempting to determine the baud rate on its own instead of simply using the tty_get_baud_rate() api call. 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig3F1510D7D1A7C5B57634EB22
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
------Original Message-----
-From: linux-serial-owner@vger.kernel.org
-[mailto:linux-serial-owner@vger.kernel.org]On Behalf Of Kevin Wilson
-Sent: Friday, March 21, 2008 10:57
-To: linux-serial@vger.kernel.org
-Subject: Baud rates > 460k
+I'm currently trying to conceive of a way to portably use the "new"
+(relatively) way of setting serial line bit rates via BOTHER and
+c_ispeed/c_ospeed from a userspace utility. (ldattach(1), to be
+included in the next release of util_linux_ng, in case you're
+interested.) I notice that most architectures have introduced
+new ioctls (TCGETS2 etc.) and struct termios2 for that, while some
+(eg. powerpc) have integrated the c_ispeed/c_ospeed fields in
+struct termios and supposedly get/set them via the old "non-2"
+ioctls.
+
+What's the rationale behind this? What is the recommended usage
+for a Linux userspace program wanting to use the BOTHER speed
+setting mechanism on a variety of architectures?
+
+Thanks,
+Tilman
+
+--=20
+Tilman Schmidt                    E-Mail: tilman@imap.cc
+Bonn, Germany
+Diese Nachricht besteht zu 100% aus wiederverwerteten Bits.
+Unge=F6ffnet mindestens haltbar bis: (siehe R=FCckseite)
 
 
-The termios functions cfseti/ospeed map 500k & 921k to 150 & 300 respective. For some strange reason the 460k works but higher speeds do not. Is this a bug that hasn't surfaced yet or am I missing something basic?
+--------------enig3F1510D7D1A7C5B57634EB22
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.4 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-#define  B150	0000005
-#define  B300	0000007
-#define  B460800  0010004
-#define  B500000  0010005
-#define  B921600  0010007
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial" in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+iD8DBQFH64OcQ3+did9BuFsRAhX7AJ99jD9gZBfz4jMi6TyjeNwvJEtWvwCfd3iU
+EMveIuIZ8TDfqFl+VhiUpYE=
+=bd46
+-----END PGP SIGNATURE-----
+
+--------------enig3F1510D7D1A7C5B57634EB22--
