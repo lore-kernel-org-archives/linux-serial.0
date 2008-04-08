@@ -1,55 +1,31 @@
-From: Rogier Wolff <R.E.Wolff@BitWizard.nl>
-Subject: Re: [PATCH] drivers/char/specialix.c: stop inlining largish static functions
-Date: Tue, 8 Apr 2008 13:43:21 +0200
-Message-ID: <20080408114321.GB1236@bitwizard.nl>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] drivers/char/specialix.c: stop inlining largish static
+ functions
+Date: Tue, 8 Apr 2008 13:10:36 +0100
+Message-ID: <20080408131036.243fe896@core>
 References: <200804081244.53894.vda.linux@googlemail.com>
+	<20080408114321.GB1236@bitwizard.nl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from dtp.xs4all.nl ([80.126.206.180]:24683 "HELO abra2.bitwizard.nl"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with SMTP
-	id S1751583AbYDHLuD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 8 Apr 2008 07:50:03 -0400
-Content-Disposition: inline
-In-Reply-To: <200804081244.53894.vda.linux@googlemail.com>
+Received: from outpipe-village-512-1.bc.nu ([81.2.110.250]:55470 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751511AbYDHMS1 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 8 Apr 2008 08:18:27 -0400
+In-Reply-To: <20080408114321.GB1236@bitwizard.nl>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Denys Vlasenko <vda.linux@googlemail.com>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, R.E.Wolff@bitwizard.nl
+Cc: Denys Vlasenko <vda.linux@googlemail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, R.E.Wolff@BitWizard.nl
 
-On Tue, Apr 08, 2008 at 12:44:53PM +0200, Denys Vlasenko wrote:
-> Hi Alan,
+> > Signed-off-by: Denys Vlasenko <vda.linux@googlemail.com>
 > 
-> drivers/char/specialix.c has unusually large number
-> of static inline functions - 22.
+> Ack!
 > 
-> I looked through them. The file is positively inline-happy.
-> Inlines with udelay() calls. Inlines with complex loops.
-> Nested inlines. Rarely called inlines (e.g. with request_region
-> inside).
-> 
-> This patch removes "inline" from 15 static functions
-> (regardless of number of callsites - gcc nowadays auto-inlines
-> statics with one callsite).
-> 
-> Size difference for 32bit x86:
->    text    data     bss     dec     hex filename
->   21669     204    8780   30653    77bd linux-2.6-ALLYES/drivers/char/specialix.o
->   18470     204    8780   27454    6b3e linux-2.6.inline-ALLYES/drivers/char/specialix.o
-> 
-> 
-> Signed-off-by: Denys Vlasenko <vda.linux@googlemail.com>
+> Signed-off-by: Rogier Wolff <R.E.Wolff@BitWizard.nl> 
 
-Ack!
+Acked-by: Alan Cox <alan@redhat.com>
 
-Signed-off-by: Rogier Wolff <R.E.Wolff@BitWizard.nl> 
-
-	Roger. 
-
--- 
-** R.E.Wolff@BitWizard.nl ** http://www.BitWizard.nl/ ** +31-15-2600998 **
-**    Delftechpark 26 2628 XH  Delft, The Netherlands. KVK: 27239233    **
-*-- BitWizard writes Linux device drivers for any device you may have! --*
-Q: It doesn't work. A: Look buddy, doesn't work is an ambiguous statement. 
-Does it sit on the couch all day? Is it unemployed? Please be specific! 
-Define 'it' and what it isn't doing. --------- Adapted from lxrbot FAQ
+Works for me. I have other patches that touch the same file but nothing
+overlapping or that will be hard to resolve.
