@@ -1,18 +1,18 @@
 From: Timur Tabi <timur@freescale.com>
 Subject: Re: [PATCH 2/2] [POWERPC] UCC nodes cleanup
-Date: Fri, 11 Apr 2008 12:08:17 -0500
-Message-ID: <47FF9B01.7010207@freescale.com>
-References: <20080311171045.GB4684@localhost.localdomain> <82E8E38A-C159-4C23-BDE8-086D4429F366@kernel.crashing.org> <20080411160654.GA25506@polina.dev.rtsoft.ru> <47FF9665.7020403@freescale.com> <20080411170657.GA15270@polina.dev.rtsoft.ru>
+Date: Fri, 11 Apr 2008 12:08:48 -0500
+Message-ID: <47FF9B20.70207@freescale.com>
+References: <20080311171045.GB4684@localhost.localdomain>	<82E8E38A-C159-4C23-BDE8-086D4429F366@kernel.crashing.org> <20080411160654.GA25506@polina.dev.rtsoft.ru>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from az33egw01.freescale.net ([192.88.158.102]:47777 "EHLO
-	az33egw01.freescale.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1760122AbYDKRI4 (ORCPT
+Received: from az33egw02.freescale.net ([192.88.158.103]:65254 "EHLO
+	az33egw02.freescale.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1760235AbYDKRJU (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 11 Apr 2008 13:08:56 -0400
-In-Reply-To: <20080411170657.GA15270@polina.dev.rtsoft.ru>
+	Fri, 11 Apr 2008 13:09:20 -0400
+In-Reply-To: <20080411160654.GA25506@polina.dev.rtsoft.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: avorontsov@ru.mvista.com
@@ -20,17 +20,18 @@ Cc: Kumar Gala <galak@kernel.crashing.org>, linuxppc-dev@ozlabs.org, Jeff Garzik
 
 Anton Vorontsov wrote:
 
->> Do we want the first UCC to have a cell-index of 1?  Maybe we should fix this
->> off-by-one error once and for all, and number all UCCs from 0?
+> From: Anton Vorontsov <avorontsov@ru.mvista.com>
+> Subject: [POWERPC] UCC nodes cleanup
 > 
-> Isn't documentation numbers UCC from 1? 
+> - get rid of `model = "UCC"' in the ucc nodes
+>   It isn't used anywhere, so remove it. If we'll ever need something
+>   like this, we'll use compatible property instead.
+> - replace last occurrences of device-id with cell-index.
+>   Drivers are modified for backward compatibility's sake.
+> 
+> Signed-off-by: Anton Vorontsov <avorontsov@ru.mvista.com>
 
-Yes.
-
-> Then I believe we should stick
-> with it for device tree, since off by one is Linux implementation details.
-
-Fair enough.
+Acked-by: Timur Tabi <timur@freescale.com>
 
 -- 
 Timur Tabi
