@@ -1,46 +1,55 @@
-From: Peter Korsgaard <jacmet@sunsite.dk>
+From: David Brownell <david-b@pacbell.net>
 Subject: Re: [patch 2.6.25-rc9] serial: fix platform driver hotplug/coldplug
-Date: Sun, 13 Apr 2008 20:39:57 +0200
-Message-ID: <8763ulzjia.fsf@macbook.be.48ers.dk>
-References: <200804131115.26592.david-b@pacbell.net>
+Date: Sun, 13 Apr 2008 12:07:25 -0700
+Message-ID: <200804131207.25982.david-b@pacbell.net>
+References: <200804131115.26592.david-b@pacbell.net> <8763ulzjia.fsf@macbook.be.48ers.dk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ug-out-1314.google.com ([66.249.92.168]:35343 "EHLO
-	ug-out-1314.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752482AbYDMSkD (ORCPT
+Received: from smtp118.sbc.mail.sp1.yahoo.com ([69.147.64.91]:25869 "HELO
+	smtp118.sbc.mail.sp1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1751792AbYDMTH2 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 13 Apr 2008 14:40:03 -0400
-Received: by ug-out-1314.google.com with SMTP id z38so322877ugc.16
-        for <linux-serial@vger.kernel.org>; Sun, 13 Apr 2008 11:39:59 -0700 (PDT)
-In-Reply-To: <200804131115.26592.david-b@pacbell.net> (David Brownell's message of "Sun\, 13 Apr 2008 11\:15\:26 -0700")
+	Sun, 13 Apr 2008 15:07:28 -0400
+In-Reply-To: <8763ulzjia.fsf@macbook.be.48ers.dk>
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: David Brownell <david-b@pacbell.net>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-serial@vger.kernel.org, kay@ascent
+To: Peter Korsgaard <jacmet@sunsite.dk>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-serial@vger.kernel.org, kay@ascent.dsl.pltn13.pacbell.net
 
->>>>> "David" == David Brownell <david-b@pacbell.net> writes:
+On Sunday 13 April 2008, Peter Korsgaard wrote:
+>  David> +/* work with hotplug and coldplug */
+>  David> +MODULE_ALIAS("platform:uartlite");
+>  David> +
+> 
+> Why not stick this next to the other MODULE_ lines, like the other
+> drivers?
 
-Hi,
+Conceptually that's part of the driver struct ... it's not
+metadata like who wrote it, its version, and so on.  So I
+prefer to keep it with that driver.
 
- David>  MODULE_LICENSE("GPL");
- David> +MODULE_ALIAS("platform:sh-sci");
- David> --- g26.orig/drivers/serial/uartlite.c	2008-04-13 10:48:05.000000000 -0700
- David> +++ g26/drivers/serial/uartlite.c	2008-04-13 10:59:04.000000000 -0700
- David> @@ -561,6 +561,9 @@ static int __devexit ulite_remove(struct
- David>  	return ulite_release(&pdev->dev);
- David>  }
- 
- David> +/* work with hotplug and coldplug */
- David> +MODULE_ALIAS("platform:uartlite");
- David> +
+For example if the driver name changes that alias must change
+too.  And when the platform bus glue gets configured out -- with
+PPC_MERGE, where OpenFirmware bus glue aranges for any hotplug
+and coldplug suppoort, or in some other cases -- that alias must
+be made to vanish.
 
-Why not stick this next to the other MODULE_ lines, like the other
-drivers?
+So when I fix omissions in Kay's original patch, or otherwise
+write the code myself, that's how I do it.
 
-Other than that ..
+- Dave
 
-Acked-by: Peter Korsgaard <jacmet@sunsite.dk>
 
--- 
-Bye, Peter Korsgaard
+> Other than that ..
+> 
+> Acked-by: Peter Korsgaard <jacmet@sunsite.dk>
+> 
+> -- 
+> Bye, Peter Korsgaard
+> 
+
+
