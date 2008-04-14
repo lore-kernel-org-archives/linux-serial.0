@@ -1,43 +1,104 @@
-From: Kumar Gala <galak@kernel.crashing.org>
-Subject: Re: [PATCH 2/2] [POWERPC] UCC nodes cleanup
-Date: Mon, 14 Apr 2008 09:58:16 -0500
-Message-ID: <DFDD56A6-BDA5-40CA-9F85-032330B0ACDD@kernel.crashing.org>
-References: <20080311171045.GB4684@localhost.localdomain> <82E8E38A-C159-4C23-BDE8-086D4429F366@kernel.crashing.org> <20080411160654.GA25506@polina.dev.rtsoft.ru> <47FF9665.7020403@freescale.com> <20080411170657.GA15270@polina.dev.rtsoft.ru> <20080411171109.GA16119@polina.dev.rtsoft.ru> <47FF9BFE.5000201@freescale.com> <20080411172106.GA17786@polina.dev.rtsoft.ru> <20080411173100.GA20439@polina.dev.rtsoft.ru> <6B2293E0-BE5E-4C2E-9A48-4E91079A7422@kernel.crashing.org> <4803708B.1070009@freescale.com>
-Mime-Version: 1.0 (Apple Message framework v919.2)
-Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
-Content-Transfer-Encoding: 7bit
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <4803708B.1070009@freescale.com>
-Sender: netdev-owner@vger.kernel.org
-To: Timur Tabi <timur@freescale.com>
-Cc: avorontsov@ru.mvista.com, linuxppc-dev@ozlabs.org, Jeff Garzik <jgarzik@pobox.com>, linux-serial@vger.kernel.org, netdev@vger.kernel.org
+From: Adrian Bunk <bunk@kernel.org>
+Subject: [2.6 patch] avr32: add include/asm-avr32/serial.h
+Date: Mon, 14 Apr 2008 21:42:20 +0300
+Message-ID: <20080414184220.GC6695@cs181133002.pp.htv.fi>
+References: <20080414141721.GI6695@cs181133002.pp.htv.fi> <20080414153625.6150e999@core>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp4.pp.htv.fi ([213.243.153.38]:51157 "EHLO smtp4.pp.htv.fi"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S934360AbYDNSn1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 14 Apr 2008 14:43:27 -0400
+Content-Disposition: inline
+In-Reply-To: <20080414153625.6150e999@core>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: hskinnemoen@atmel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+
+On Mon, Apr 14, 2008 at 03:36:24PM +0100, Alan Cox wrote:
+> On Mon, 14 Apr 2008 17:17:21 +0300
+> Adrian Bunk <bunk@kernel.org> wrote:
+> 
+> > This patch fixes the following build error:
+> > 
+> > <--  snip  -->
+> > 
+> > ...
+> >   CC [M]  drivers/serial/8250.o
+> > /home/bunk/linux/kernel-2.6/git/linux-2.6/drivers/serial/8250.c:95:24: error: asm/serial.h: No such file or directory
+> > make[3]: *** [drivers/serial/8250.o] Error 1
+> > 
+> > <--  snip  -->
+> > 
+> > Signed-off-by: Adrian Bunk <bunk@kernel.org>
+> > 
+> > ---
+> > 3cb4ef80d75e118ccfd44f7006aea3db54afb31c diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
+> > index b1bbaa0..b0e216d 100644
+> > --- a/drivers/serial/Kconfig
+> > +++ b/drivers/serial/Kconfig
+> > @@ -11,7 +11,7 @@ menu "Serial drivers"
+> >  # The new 8250/16550 serial drivers
+> >  config SERIAL_8250
+> >  	tristate "8250/16550 and compatible serial support"
+> > -	depends on (BROKEN || !SPARC)
+> > +	depends on (BROKEN || !SPARC) && !AVR32
+> >  	select SERIAL_CORE
+> >  	---help---
+> 
+> NAK.
+> 
+> Add an asm/serial.h to the platform as it has PCI so will have 8250 PCI
+> devices available to it. A copy of the MIPS one should be right.
+
+Patch below.
+
+> Alan
+
+cu
+Adrian
 
 
-On Apr 14, 2008, at 9:56 AM, Timur Tabi wrote:
-> Kumar Gala wrote:
->
->> I say leave as you have it (UCC1 == cell-index = <1>).
->>
->> Changing it so cell-index = <0> is just more confusing w/regards to
->> the docs.
->
-> I don't see anything in booting-without-of.txt that requires cell- 
-> index to start
-> at 0, however, the only other device that starts at 1 is SATA.  Even  
-> the SSI
-> starts at 0:
->
->       - cell-index	  : the SSI, <0> = SSI1, <1> = SSI2, and so on
->
-> Although I don't want to make more work for Anton, my vote is to  
-> have cell-index
-> start at 0.  That is the convention.  It's too late to fix SATA, but  
-> at least we
-> can avoid making it worse.
+<--  snip  -->
 
-I use cell-index starting at 1 for PCI to match our docs.
 
-I'll take Anton's last patch.
+This patch fixes the following build error with CONFIG_SERIAL_8250:
 
-- k
+<--  snip  -->
+
+...
+  CC [M]  drivers/serial/8250.o
+/home/bunk/linux/kernel-2.6/git/linux-2.6/drivers/serial/8250.c:95:24: error: asm/serial.h: No such file or directory
+make[3]: *** [drivers/serial/8250.o] Error 1
+
+<--  snip  -->
+
+Signed-off-by: Adrian Bunk <bunk@kernel.org>
+
+---
+
+ include/asm-avr32/serial.h |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+7beddb9fe7aee73227a9796a039cee9583cecc0a diff --git a/include/asm-avr32/serial.h b/include/asm-avr32/serial.h
+new file mode 100644
+index 0000000..5ecaebc
+--- /dev/null
++++ b/include/asm-avr32/serial.h
+@@ -0,0 +1,13 @@
++#ifndef _ASM_SERIAL_H
++#define _ASM_SERIAL_H
++
++/*
++ * This assumes you have a 1.8432 MHz clock for your UART.
++ *
++ * It'd be nice if someone built a serial card with a 24.576 MHz
++ * clock, since the 16550A is capable of handling a top speed of 1.5
++ * megabits/second; but this requires the faster clock.
++ */
++#define BASE_BAUD (1843200 / 16)
++
++#endif /* _ASM_SERIAL_H */
+
