@@ -1,42 +1,38 @@
-From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Subject: Re: Change to serial_core.c .... causing my serial driver problem
- Help Request
-Date: Wed, 23 Apr 2008 11:09:11 +0200 (CEST)
-Message-ID: <Pine.LNX.4.64.0804231108170.5160@axis700.grange>
-References: <8CA6D5E4DEA920C-1128-2973@webmail-nb07.sysops.aol.com>
- <Pine.LNX.4.64.0804160046460.6851@axis700.grange>
- <8CA6D67D9E313CC-1128-35BB@webmail-nb07.sysops.aol.com>
- <8CA6D6D112DB4D4-1128-38B0@webmail-nb07.sysops.aol.com>
- <Pine.LNX.4.64.0804170103040.7335@axis700.grange>
- <8CA6E48B50204C0-15A8-47D0@webmail-nb06.sysops.aol.com>
- <Pine.LNX.4.64.0804171657320.6716@axis700.grange>
- <8CA6EC102F70775-15A8-8B4A@webmail-nb06.sysops.aol.com>
- <Pine.LNX.4.64.0804171915180.6716@axis700.grange>
- <8CA6EF5BC26E069-12A0-1888@webmail-nc13.sysops.aol.com>
- <Pine.LNX.4.64.0804181700300.5725@axis700.grange>
- <8CA6FF4B03B281A-E10-2E1C@webmail-nf05.sim.aol.com>
+From: Adrian Bunk <bunk@kernel.org>
+Subject: [2.6 patch] serial/8250_gsc.c: add MODULE_LICENSE
+Date: Wed, 23 Apr 2008 12:50:57 +0300
+Message-ID: <20080423095057.GU28933@cs181133002.pp.htv.fi>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.gmx.net ([213.165.64.20]:35009 "HELO mail.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
-	id S1753207AbYDWJJC (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 23 Apr 2008 05:09:02 -0400
-In-Reply-To: <8CA6FF4B03B281A-E10-2E1C@webmail-nf05.sim.aol.com>
+Received: from smtp5.pp.htv.fi ([213.243.153.39]:36862 "EHLO smtp5.pp.htv.fi"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755462AbYDWJvh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 23 Apr 2008 05:51:37 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: vcgandhi1@aol.com
-Cc: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Alan Cox <alan@redhat.com>
 
-On Sat, 19 Apr 2008, vcgandhi1@aol.com wrote:
+This patch adds the missing MODULE_LICENSE("GPL").
 
-> I have not had a chance to test it today, Sorry. The patches should solve the
-> problem, but I will confirm on the hardware this weekend.
+Signed-off-by: Adrian Bunk <bunk@kernel.org>
+Acked-by: Alan Cox <alan@redhat.com>
 
-Have you been able to test the patches? We need to know it if we want to 
-fix it in the mainline.
-
-Thanks
-Guennadi
 ---
-Guennadi Liakhovetski
+
+This patch has been sent on:
+- 14 Apr 2008
+
+c0d845566182db3fc650dcfa35700f84e82bbae7 diff --git a/drivers/serial/8250_gsc.c b/drivers/serial/8250_gsc.c
+index 4eb7437..0416ad3 100644
+--- a/drivers/serial/8250_gsc.c
++++ b/drivers/serial/8250_gsc.c
+@@ -119,3 +119,5 @@ int __init probe_serial_gsc(void)
+ }
+ 
+ module_init(probe_serial_gsc);
++
++MODULE_LICENSE("GPL");
+
