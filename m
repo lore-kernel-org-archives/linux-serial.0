@@ -1,349 +1,263 @@
-From: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 Subject: Re: [BUG] NULL pointer dereference in uart_write_room().
-Date: Fri, 02 May 2008 14:35:11 +0900
-Message-ID: <200805020535.m425ZBti070010@www262.sakura.ne.jp>
+Date: Sun, 4 May 2008 17:16:55 +0900
+Message-ID: <200805041716.DDG43279.JOSMHVFOFFQLOt@I-love.SAKURA.ne.jp>
+References: <261636618@web.de>
+	<200805022300.GIB30385.FJOVHQSMFtOOFL@I-love.SAKURA.ne.jp>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-2022-JP"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from www262.sakura.ne.jp ([202.181.97.72]:63586 "EHLO
-	www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750984AbYEBFf0 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 May 2008 01:35:26 -0400
+Received: from wine.ocn.ne.jp ([122.1.235.145]:52632 "EHLO smtp.wine.ocn.ne.jp"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754731AbYEDIQ7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 4 May 2008 04:16:59 -0400
+In-Reply-To: <200805022300.GIB30385.FJOVHQSMFtOOFL@I-love.SAKURA.ne.jp>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: alan@lxorguk.ukuu.org.uk, akpm@linux-foundation.org
-Cc: devzero@web.de, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: devzero@web.de, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
 Hello.
 
-Alan Cox wrote:
-> > > Also, I sent a bug report to linux-serial@vger.kernel.org , but no response.
-> > > http://lkml.org/lkml/2008/4/22/42
-> > > If you know, please tell me whom to report.
-> > 
-> > I discussed this with Alan (cc'ed here) and he said something forgettable
-> > which I forgot ;)
+First report: http://lkml.org/lkml/2008/4/22/42
+
+Second report: http://lkml.org/lkml/2008/5/2/22
+
+> > since this seems to get any attention - should we put this in kernel bugzilla at bugzilla.kernel.org ?
 > 
-> Yes I have looked at the traces and can make no sense of them.
-> 
-> > How repeatable is this?
-> 
-> and can you get a clear trace of where it blew up and what the trigger
-> is ?
-> 
-It is 100% repeatable on VMware Workstation 6 environment.
-I compiled kernel 2.6.25 while changing kernel config, and
-it turned out that CONFIG_SERIAL_8250_PNP=m triggers this bug.
-CONFIG_SERIAL_8250_PNP=y and CONFIG_SERIAL_8250_PNP=n do not trigger this bug,
-so I think something is wrong with initialization of 8250_pnp module.
+> Today, I found that this bug is triggered by CONFIG_SERIAL_8250_PNP=m .
+
+I know nothing about the serial code, so call chains shown below might contain errors.
+
+(1) The kernel sets up /dev/ttyS0 by "console=ttyS0,115200n8" boot parameter.
+
+(2) 8250_pnp.ko is loaded by "modprobe 8250_pnp".
+
+(3) serial_pnp_probe() is called by someone. I couldn't find who is calling.
+
+(4) serial8250_register_port() is called by serial_pnp_probe().
+
+(5) uart_remove_one_port() is called by serial8250_register_port()
+    since ttyS0 is already in use but it is requested to be once removed.
+
+(6) tty_vhangup() is called by uart_remove_one_port().
+    I used panic() to print tty_vhangup() is about to be called.
+
+(7) do_tty_hangup() is called by tty_vhangup().
+
+(8) tty_fasync() is called by do_tty_hangup() since
+    ttyS0 is in use by "console=ttyS0,115200n8" boot parameter.
+    But since tty_fasync() can't wait for completion of pending printk(),
+    a thread is created or an event is enqueued?
+
+(9) "state->info = NULL;" is performed by uart_remove_one_port().
+
+(10) Some thread attempts to call output routines such as uart_start(),
+     transmit_chars(), uart_write_room(). But it results in NULL pointer
+     dereferences because of (9).
+
+---------- first error ----------
+
+Starting udev : BUG: unable to handle kernel NULL pointer dereference at 00000008
+IP: [<c026bed2>] __uart_start+0x12/0x40
+Oops: 0000 [#1] SMP 
+Modules linked in: sr_mod cdrom piix ide_pci_generic evdev sg evbug container thermal ac psmouse processor serio_raw button 8250_pnp parport_pc parport ata_piix ata_generic pcnet32 libata mii intel_agp i2c_piix4 i2c_core agpgart dock ide_disk ide_core mptspi scsi_transport_spi mptscsih mptbase sd_mod scsi_mod
+
+Pid: 883, comm: start_udev Not tainted (2.6.25 #2)
+EIP: 0060:[<c026bed2>] EFLAGS: 00010046 CPU: 0
+EIP is at __uart_start+0x12/0x40
+EAX: df8503c0 EBX: c0488900 ECX: df3d8c00 EDX: 00000000
+ESI: df3d8c00 EDI: c0488900 EBP: ded0bec4 ESP: ded0bec0
+ DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068
+Process start_udev (pid: 883, ti=ded0a000 task=df2e50b0 task.ti=ded0a000)
+Stack: 00000296 ded0bed8 c026c3dc 00000001 00000001 df3d8c00 ded0bee0 c026c408 
+       ded0bf1c c025b024 dec3bc00 df398240 df3d8d18 dec3bc00 c025772f 00000000 
+       df2e50b0 c011f330 df3d8d1c df3d8d1c 00000001 df3d8c00 df398240 ded0bf50 
+Call Trace:
+ [<c026c3dc>] ? uart_start+0x2c/0x50
+ [<c026c408>] ? uart_flush_chars+0x8/0x10
+ [<c025b024>] ? write_chan+0x1d4/0x310
+ [<c025772f>] ? tty_ldisc_ref_wait+0xf/0xa0
+ [<c011f330>] ? default_wake_function+0x0/0x10
+ [<c02587b7>] ? tty_write+0x127/0x1c0
+ [<c025ae50>] ? write_chan+0x0/0x310
+ [<c025a194>] ? redirected_tty_write+0x74/0x80
+ [<c0180906>] ? vfs_write+0x96/0x130
+ [<c013030e>] ? recalc_sigpending+0xe/0x30
+ [<c025a120>] ? redirected_tty_write+0x0/0x80
+ [<c0180f9d>] ? sys_write+0x3d/0x70
+ [<c0105c4e>] ? sysenter_past_esp+0x5f/0x85
+ =======================
+Code: d0 d1 3d c0 e8 e0 1d ff ff 85 db 75 9c e9 4f ff ff ff 90 90 90 90 90 90 90 55 89 c1 89 e5 53 8b 80 44 01 00 00 8b 50 10 8b 58 14 <8b> 42 08 3b 42 0c 74 10 8b 42 04 85 c0 74 09 f6 81 c8 00 00 00 
+EIP: [<c026bed2>] __uart_start+0x12/0x40 SS:ESP 0068:ded0bec0
+---[ end trace a115fb9b8eb378b3 ]---
+
+---------- second error ----------
+
+Starting udev : BUG: unable to handle kernel NULL pointer dereference at 00000000
+IP: [<c026f447>] transmit_chars+0x17/0xe0
+Oops: 0000 [#1] SMP 
+Modules linked in: 8250_pnp(+) ac ata_piix(+) processor ata_generic button libata intel_agp pcnet32 i2c_piix4 mii agpgart i2c_core dock ide_disk ide_core mptspi mptscsih mptbase scsi_transport_spi sd_mod scsi_mod
+
+Pid: 1712, comm: modprobe Not tainted (2.6.25 #3)
+EIP: 0060:[<c026f447>] EFLAGS: 00010046 CPU: 0
+EIP is at transmit_chars+0x17/0xe0
+EAX: 00000000 EBX: c0488900 ECX: 00000000 EDX: 00000000
+ESI: c0488900 EDI: c0488220 EBP: df04df28 ESP: df04df1c
+ DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068
+Process modprobe (pid: 1712, ti=df04c000 task=dfa350b0 task.ti=df04c000)
+Stack: c0488900 c04889a4 c0488220 df04df5c c0271971 d1f58daf 00001000 00000004 
+       00000000 00000000 00000000 00000246 00000060 df36ab20 00000000 00000000 
+       df04df74 c0159f81 00000004 c03ec080 00000004 00000000 df04df8c c015b6df 
+Call Trace:
+ [<c0271971>] ? serial8250_interrupt+0x121/0x150
+ [<c0159f81>] ? handle_IRQ_event+0x31/0x60
+ [<c015b6df>] ? handle_level_irq+0x6f/0xe0
+ [<c01089cf>] ? do_IRQ+0x4f/0x90
+ [<c0180f2d>] ? sys_read+0x3d/0x70
+ [<c010665f>] ? common_interrupt+0x23/0x28
+ [<c0105bf2>] ? sysenter_past_esp+0x3/0x85
+ =======================
+Code: c2 89 c2 83 ca 20 83 e1 10 0f 45 c2 c3 8d b4 26 00 00 00 00 55 89 e5 57 56 89 c6 53 8b 50 24 0f b6 40 18 84 c0 0f 85 ae 00 00 00 <8b> 02 f6 80 c8 00 00 00 03 0f 85 93 00 00 00 8d 5a 04 8b 43 04 
+EIP: [<c026f447>] transmit_chars+0x17/0xe0 SS:ESP 0068:df04df1c
+Kernel panic - not syncing: Fatal exception in interrupt
+
+---------- third error ----------
+
+Starting udev : BUG: unable to handle kernel NULL pointer dereference at 0000000c
+IP: [<c026c03d>] uart_write_room+0xd/0x20
+Oops: 0000 [#1] SMP 
+Modules linked in: sr_mod cdrom piix ide_pci_generic container evdev sg evbug thermal ac button processor psmouse serio_raw parport_pc ata_piix 8250_pnp parport ata_generic libata intel_agp agpgart dock i2c_piix4 pcnet32 mii i2c_core ide_disk ide_core mptspi scsi_transport_spi mptscsih mptbase sd_mod scsi_mod
+
+Pid: 883, comm: start_udev Not tainted (2.6.25 #4)
+EIP: 0060:[<c026c03d>] EFLAGS: 00010202 CPU: 1
+EIP is at uart_write_room+0xd/0x20
+EAX: df850000 EBX: 00000001 ECX: df3f291c EDX: 00000000
+ESI: 00000001 EDI: df3f2800 EBP: dec49f1c ESP: dec49ee4
+ DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068
+Process start_udev (pid: 883, ti=dec48000 task=dec3b0b0 task.ti=dec48000)
+Stack: c025af4b df3b1000 df80f840 df3f2918 df3b1000 c025772f 00000000 dec3b0b0 
+       c011f330 df3f291c df3f291c 00000001 df3f2800 df80f840 dec49f50 c02587b7 
+       00000001 00000001 b7f7b000 c025ae50 df3f280c 00000000 00000001 00000000 
+Call Trace:
+ [<c025af4b>] ? write_chan+0xfb/0x310
+ [<c025772f>] ? tty_ldisc_ref_wait+0xf/0xa0
+ [<c011f330>] ? default_wake_function+0x0/0x10
+ [<c02587b7>] ? tty_write+0x127/0x1c0
+ [<c025ae50>] ? write_chan+0x0/0x310
+ [<c025a194>] ? redirected_tty_write+0x74/0x80
+ [<c0180906>] ? vfs_write+0x96/0x130
+ [<c013030e>] ? recalc_sigpending+0xe/0x30
+ [<c025a120>] ? redirected_tty_write+0x0/0x80
+ [<c0180f9d>] ? sys_write+0x3d/0x70
+ [<c0105c4e>] ? sysenter_past_esp+0x5f/0x85
+ =======================
+Code: 5d c3 8b 40 10 81 48 10 00 00 00 02 eb db 81 49 10 00 00 00 04 eb c2 8d b4 26 00 00 00 00 55 8b 80 44 01 00 00 89 e5 5d 8b 50 10 <8b> 42 0c 83 e8 01 2b 42 08 25 ff 0f 00 00 c3 8d 74 26 00 55 8b 
+EIP: [<c026c03d>] uart_write_room+0xd/0x20 SS:ESP 0068:dec49ee4
+---[ end trace fcd8e4a9aa582405 ]---
+
+
+
+
+
+The below is the patch which I used for analyzing this bug.
+This patch is NOT a correct fix.
+I can't go further, so please put this in kernel bugzilla if you want.
 
 Regards.
-------------------------------------------------------------
-Linux version 2.6.25 (root@tomoyo) (gcc version 4.1.3 20070929 (prerelease) (Ubuntu 4.1.2-16ubuntu2)) #1 SMP Fri May 2 12:42:57 JST 2008
-BIOS-provided physical RAM map:
- BIOS-e820: 0000000000000000 - 000000000009f800 (usable)
- BIOS-e820: 000000000009f800 - 00000000000a0000 (reserved)
- BIOS-e820: 00000000000ca000 - 00000000000cc000 (reserved)
- BIOS-e820: 00000000000dc000 - 0000000000100000 (reserved)
- BIOS-e820: 0000000000100000 - 000000001fef0000 (usable)
- BIOS-e820: 000000001fef0000 - 000000001feff000 (ACPI data)
- BIOS-e820: 000000001feff000 - 000000001ff00000 (ACPI NVS)
- BIOS-e820: 000000001ff00000 - 0000000020000000 (usable)
- BIOS-e820: 00000000fec00000 - 00000000fec10000 (reserved)
- BIOS-e820: 00000000fee00000 - 00000000fee01000 (reserved)
- BIOS-e820: 00000000fffe0000 - 0000000100000000 (reserved)
-0MB HIGHMEM available.
-512MB LOWMEM available.
-Scan SMP from c0000000 for 1024 bytes.
-Scan SMP from c009fc00 for 1024 bytes.
-Scan SMP from c00f0000 for 65536 bytes.
-found SMP MP-table at [c00f6cd0] 000f6cd0
-Zone PFN ranges:
-  DMA             0 ->     4096
-  Normal       4096 ->   131072
-  HighMem    131072 ->   131072
-Movable zone start PFN for each node
-early_node_map[1] active PFN ranges
-    0:        0 ->   131072
-DMI present.
-Using APIC driver default
-ACPI: RSDP 000F6C60, 0014 (r0 PTLTD )
-ACPI: RSDT 1FEFAB5A, 0030 (r1 PTLTD    RSDT    6040000  LTP        0)
-ACPI: FACP 1FEFEF06, 0074 (r1 INTEL  440BX     6040000 PTL     F4240)
-ACPI: DSDT 1FEFAB8A, 437C (r1 PTLTD  Custom    6040000 MSFT  100000D)
-ACPI: FACS 1FEFFFC0, 0040
-ACPI: APIC 1FEFEF7A, 005E (r1 PTLTD  	 APIC    6040000  LTP        0)
-ACPI: BOOT 1FEFEFD8, 0028 (r1 PTLTD  $SBFTBL$  6040000  LTP        1)
-ACPI: PM-Timer IO Port: 0x1008
-ACPI: LAPIC (acpi_id[0x00] lapic_id[0x00] enabled)
-Processor #0 6:15 APIC version 17
-ACPI: LAPIC (acpi_id[0x01] lapic_id[0x01] enabled)
-Processor #1 6:15 APIC version 17
-ACPI: LAPIC_NMI (acpi_id[0x00] high edge lint[0x1])
-ACPI: LAPIC_NMI (acpi_id[0x01] high edge lint[0x1])
-ACPI: IOAPIC (id[0x02] address[0xfec00000] gsi_base[0])
-IOAPIC[0]: apic_id 2, version 17, address 0xfec00000, GSI 0-23
-ACPI: INT_SRC_OVR (bus 0 bus_irq 0 global_irq 2 high edge)
-Enabling APIC mode:  Flat.  Using 1 I/O APICs
-Using ACPI (MADT) for SMP configuration information
-Allocating PCI resources starting at 30000000 (gap: 20000000:dec00000)
-PM: Registered nosave memory: 000000000009f000 - 00000000000a0000
-PM: Registered nosave memory: 00000000000a0000 - 00000000000ca000
-PM: Registered nosave memory: 00000000000ca000 - 00000000000cc000
-PM: Registered nosave memory: 00000000000cc000 - 00000000000dc000
-PM: Registered nosave memory: 00000000000dc000 - 0000000000100000
-PM: Registered nosave memory: 000000001fef0000 - 000000001feff000
-PM: Registered nosave memory: 000000001feff000 - 000000001ff00000
-Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 130048
-Kernel command line: root=UUID=bb7fd866-d530-4293-a666-009eca2d34ad ro console=ttyS0,115200n8
-Enabling fast FPU save and restore... done.
-Enabling unmasked SIMD FPU exception support... done.
-Initializing CPU#0
-PID hash table entries: 2048 (order: 11, 8192 bytes)
-Detected 1993.971 MHz processor.
-Console: colour VGA+ 80x25
-console [ttyS0] enabled
-Dentry cache hash table entries: 65536 (order: 6, 262144 bytes)
-Inode-cache hash table entries: 32768 (order: 5, 131072 bytes)
-Memory: 509084k/524288k available (2280k kernel code, 14484k reserved, 747k data, 276k init, 0k highmem)
-virtual kernel memory layout:
-    fixmap  : 0xffe14000 - 0xfffff000   (1964 kB)
-    pkmap   : 0xff800000 - 0xffc00000   (4096 kB)
-    vmalloc : 0xe0800000 - 0xff7fe000   ( 495 MB)
-    lowmem  : 0xc0000000 - 0xe0000000   ( 512 MB)
-      .init : 0xc03fe000 - 0xc0443000   ( 276 kB)
-      .data : 0xc033a10e - 0xc03f4d40   ( 747 kB)
-      .text : 0xc0100000 - 0xc033a10e   (2280 kB)
-Checking if this processor honours the WP bit even in supervisor mode...Ok.
-SLUB: Genslabs=12, HWalign=64, Order=0-1, MinObjects=4, CPUs=2, Nodes=1
-Calibrating delay using timer specific routine.. 3995.24 BogoMIPS (lpj=7990498)
-Security Framework initialized
-Capability LSM initialized
-Mount-cache hash table entries: 512
-CPU: L1 I cache: 32K, L1 D cache: 32K
-CPU: L2 cache: 4096K
-Intel machine check architecture supported.
-Intel machine check reporting enabled on CPU#0.
-Compat vDSO mapped to ffffe000.
-Checking 'hlt' instruction... OK.
-ACPI: Core revision 20070126
-CPU0: Intel(R) Core(TM)2 CPU         T7200  @ 2.00GHz stepping 08
-Booting processor 1/1 ip 4000
-Initializing CPU#1
-Calibrating delay using timer specific routine.. 3991.70 BogoMIPS (lpj=7983408)
-CPU: L1 I cache: 32K, L1 D cache: 32K
-CPU: L2 cache: 4096K
-Intel machine check architecture supported.
-Intel machine check reporting enabled on CPU#1.
-CPU1: Intel(R) Core(TM)2 CPU         T7200  @ 2.00GHz stepping 08
-Total of 2 processors activated (7986.95 BogoMIPS).
-ENABLING IO-APIC IRQs
-..TIMER: vector=0x31 apic1=0 pin1=2 apic2=-1 pin2=-1
-checking TSC synchronization [CPU#0 -> CPU#1]: passed.
-Brought up 2 CPUs
-net_namespace: 548 bytes
-NET: Registered protocol family 16
-ACPI: bus type pci registered
-PCI: PCI BIOS revision 2.10 entry at 0xfd9a0, last bus=2
-PCI: Using configuration type 1
-Setting up standard PCI resources
-ACPI: Interpreter enabled
-ACPI: (supports S0 S1 S4 S5)
-ACPI: Using IOAPIC for interrupt routing
-ACPI: PCI Root Bridge [PCI0] (0000:00)
-pci 0000:00:07.3: quirk: region 1000-103f claimed by PIIX4 ACPI
-pci 0000:00:07.3: quirk: region 1040-104f claimed by PIIX4 SMB
-PCI: Transparent bridge - 0000:00:11.0
-ACPI: PCI Interrupt Link [LNKA] (IRQs 3 4 5 6 7 9 10 11 14 15) *0, disabled.
-ACPI: PCI Interrupt Link [LNKB] (IRQs 3 4 5 6 7 *9 10 11 14 15)
-ACPI: PCI Interrupt Link [LNKC] (IRQs 3 4 5 6 7 9 10 *11 14 15)
-ACPI: PCI Interrupt Link [LNKD] (IRQs 3 4 5 6 7 9 10 11 14 15) *0, disabled.
-Linux Plug and Play Support v0.97 (c) Adam Belay
-pnp: PnP ACPI init
-ACPI: bus type pnp registered
-pnp: PnP ACPI: found 12 devices
-ACPI: ACPI bus type pnp unregistered
-usbcore: registered new interface driver usbfs
-usbcore: registered new interface driver hub
-usbcore: registered new device driver usb
-PCI: Using ACPI for IRQ routing
-PCI: If a device doesn't work, try "pci=routeirq".  If it helps, post a report
-system 00:01: ioport range 0x1000-0x103f has been reserved
-system 00:01: ioport range 0x1040-0x104f has been reserved
-PCI: Bridge: 0000:00:01.0
-  IO window: disabled.
-  MEM window: disabled.
-  PREFETCH window: disabled.
-PCI: Bridge: 0000:00:11.0
-  IO window: 2000-2fff
-  MEM window: disabled.
-  PREFETCH window: disabled.
-ACPI: PCI Interrupt 0000:00:11.0[A] -> GSI 18 (level, low) -> IRQ 18
-NET: Registered protocol family 2
-IP route cache hash table entries: 16384 (order: 4, 65536 bytes)
-TCP established hash table entries: 65536 (order: 7, 524288 bytes)
-TCP bind hash table entries: 65536 (order: 7, 524288 bytes)
-TCP: Hash tables configured (established 65536 bind 65536)
-TCP reno registered
-checking if image is initramfs... it is
-Freeing initrd memory: 6159k freed
-Simple Boot Flag at 0x36 set to 0x1
-apm: BIOS version 1.2 Flags 0x03 (Driver version 1.16ac)
-apm: disabled - APM is not SMP safe.
-audit: initializing netlink socket (disabled)
-type=2000 audit(1209732522.932:1): initialized
-Total HugeTLB memory allocated, 0
-VFS: Disk quotas dquot_6.5.1
-Dquot-cache hash table entries: 1024 (order 0, 4096 bytes)
-Block layer SCSI generic (bsg) driver version 0.4 loaded (major 254)
-io scheduler noop registered
-io scheduler anticipatory registered (default)
-pci 0000:00:00.0: Limiting direct PCI/PCI transfers
-isapnp: Scanning for PnP cards...
-isapnp: No Plug & Play device found
-Real Time Clock Driver v1.12ac
-Serial: 8250/16550 driver $Revision: 1.90 $ 4 ports, IRQ sharing enabled
-serial8250: ttyS0 at I/O 0x3f8 (irq = 4) is a 16550A
-serial8250: ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
-brd: module loaded
-loop: module loaded
-USB Universal Host Controller Interface driver v3.0
-PNP: PS/2 Controller [PNP0303:KBC,PNP0f13:MOUS] at 0x60,0x64 irq 1,12
-serio: i8042 KBD port at 0x60,0x64 irq 1
-serio: i8042 AUX port at 0x60,0x64 irq 12
-mice: PS/2 mouse device common for all mice
-input: PC Speaker as /class/input/input0
-input: AT Translated Set 2 keyboard as /class/input/input1
-md: raid1 personality registered for level 1
-cpuidle: using governor ladder
-cpuidle: using governor menu
-usbcore: registered new interface driver hiddev
-usbcore: registered new interface driver usbhid
-drivers/hid/usbhid/hid-core.c: v2.6:USB HID core driver
-NET: Registered protocol family 1
-NET: Registered protocol family 17
-Starting balanced_irq
-Using IPI No-Shortcut mode
-Freeing unused kernel memory: 276k freed
-Loading, please wait...
-Begin: Loading essential drivers... ...
-fuse init (API version 7.9)
-ACPI: ACPI0007:00 is registered as cooling_device0
-ACPI: Processor [CPU0] (supports 8 throttling states)
-ACPI: ACPI0007:01 is registered as cooling_device1
-ACPI: Processor [CPU1] (supports 8 throttling states)
-Done.
-Begin: Running /scripts/init-premount ...
-Done.
-Begin: Mounting root file system... ...
-Begin: Running /scripts/local-top ...
-Done.
-Begin: Waiting for root file system... ...
-Uniform Multi-Platform E-IDE driver
-ide: Assuming 33MHz system bus speed for PIO modes; override with idebus=xx
-PIIX4: IDE controller (0x8086:0x7111 rev 0x01) at  PCI slot 0000:00:07.1
-PIIX4: not 100% native mode: will probe irqs later
-PIIX4: IDE port disabled
-    ide1: BM-DMA at 0x1058-0x105f, BIOS settings: hdc:DMA, hdd:PIO
-SCSI subsystem initialized
-Fusion MPT base driver 3.04.06
-Copyright (c) 1999-2007 LSI Corporation
-Fusion MPT SPI Host driver 3.04.06
-pcnet32.c:v1.34 14.Aug.2007 tsbogend@alpha.franken.de
-Floppy drive(s): fd0 is 1.44M
-FDC 0 is a post-1991 82077
-hdc: VMware Virtual IDE CDROM Drive, ATAPI CD/DVD-ROM drive
-hdc: UDMA/33 mode selected
-ide1 at 0x170-0x177,0x376 on irq 15
-ACPI: PCI Interrupt 0000:02:00.0[A] -> GSI 18 (level, low) -> IRQ 18
-pcnet32: PCnet/PCI II 79C970A at 0x2000,<6>ACPI: PCI Interrupt 0000:00:10.0[A] -> GSI 17 (level, low) -> IRQ 17
-mptbase: ioc0: Initiating bringup
- 00:0c:29:91:8c:5a assigned IRQ 18.
-eth0: registered as PCnet/PCI II 79C970A
-pcnet32: 1 cards_found.
-No dock devices found.
-ioc0: LSI53C1030 B0: Capabilities={Initiator}
-scsi0 : ioc0: LSI53C1030 B0, FwRev=01032920h, Ports=1, MaxQ=128, IRQ=17
-scsi 0:0:0:0: Direct-Access     VMware,  VMware Virtual S 1.0  PQ: 0 ANSI: 2
- target0:0:0: Beginning Domain Validation
- target0:0:0: Domain Validation skipping write tests
- target0:0:0: Ending Domain Validation
- target0:0:0: FAST-40 WIDE SCSI 80.0 MB/s ST (25 ns, offset 127)
-hdc: ATAPI 1X CD-ROM drive, 32kB Cache
-Uniform CD-ROM driver Revision: 3.20
-Driver 'sd' needs updating - please use bus_type methods
-sd 0:0:0:0: [sda] 8388608 512-byte hardware sectors (4295 MB)
-sd 0:0:0:0: [sda] Write Protect is off
-sd 0:0:0:0: [sda] Cache data unavailable
-sd 0:0:0:0: [sda] Assuming drive cache: write through
-sd 0:0:0:0: [sda] 8388608 512-byte hardware sectors (4295 MB)
-sd 0:0:0:0: [sda] Write Protect is off
-sd 0:0:0:0: [sda] Cache data unavailable
-sd 0:0:0:0: [sda] Assuming drive cache: write through
- sda: sda1
-sd 0:0:0:0: [sda] Attached SCSI disk
-sd 0:0:0:0: Attached scsi generic sg0 type 0
-Done.
-Begin: Running /scripts/local-premount ...
-Done.
-kjournald starting.  Commit interval 5 seconds
-EXT3-fs: mounted filesystem with ordered data mode.
-Begin: Running /scripts/local-bottom ...
-Done.
-Done.
-Begin: Running /scripts/init-bottom ...
-Done.
- * Setting preliminary keymap...       [ OK ]
- * Preparing restricted drivers...     [ OK ]
- * Setting the system clock
- * Starting basic networking...        [ OK ]
- * Starting kernel event manager...    [ OK ]
- * Loading hardware drivers...         eth0: link up
-Linux agpgart interface v0.103
-agpgart: Detected an Intel 440BX Chipset.
-agpgart: AGP aperture is 256M @ 0x0
-warning: `dhclient3' uses 32-bit capabilities (legacy support in use)
-input: Power Button (FF) as /class/input/input2
-piix4_smbus 0000:00:07.3: Found 0000:00:07.3 device
-piix4_smbus 0000:00:07.3: Host SMBus controller not enabled!
-ACPI: Power Button (FF) [PWRF]
-ACPI: AC Adapter [ACAD] (on-line)
-00:09: ttyS0 at I/O 0x3f8 (irq = 4) is a 16550A
-00:0a: ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
-input: ImPS/2 Generic Wheel Mouse as /class/input/input3
-parport_pc 00:08: reported by Plug and Play ACPI
-parport0: PC-style at 0x378, irq 7 [PCSPP,TRISTATE]
-BUG: unable to handle kernel NULL pointer dereference at 00000008
-IP: [<c026bbcd>] uart_write_room+0xd/0x20
-*pde = 00000000 
-Oops: 0000 [#1] SMP 
-Modules linked in: 8250_pnp parport_pc parport container ac psmouse serio_raw i2c_piix4 i2c_core button intel_agp agpgart evdev sg sd_mod ide_cd_mod cdrom ata_generic ata_piix libata dock floppy pcnet32 mii mptspi mptscsih mptbase scsi_transport_spi scsi_mod piix ide_pci_generic ide_core thermal processor fan fuse
 
-Pid: 2444, comm: S10udev Not tainted (2.6.25 #1)
-EIP: 0060:[<c026bbcd>] EFLAGS: 00010202 CPU: 1
-EIP is at uart_write_room+0xd/0x20
-EAX: 00000000 EBX: 00000001 ECX: de394d1c EDX: de1dae00
-ESI: 00000001 EDI: de394c00 EBP: df89ff1c ESP: df89fee4
- DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068
-Process S10udev (pid: 2444, ti=df89e000 task=df9c2b20 task.ti=df89e000)
-Stack: c025a93b de1f4400 df83b0c0 de394d18 de1f4400 c025711f 00000000 df9c2b20 
-       c011f390 de394d1c de394d1c 00000001 de394c00 df83b0c0 df89ff50 c02581a7 
-       00000001 00000001 08064708 c025a840 de394c0c 00000000 00000001 00000000 
-Call Trace:
- [<c025a93b>] ? write_chan+0xfb/0x310
- [<c025711f>] ? tty_ldisc_ref_wait+0xf/0xa0
- [<c011f390>] ? default_wake_function+0x0/0x10
- [<c02581a7>] ? tty_write+0x127/0x1c0
- [<c025a840>] ? write_chan+0x0/0x310
- [<c0259b84>] ? redirected_tty_write+0x74/0x80
- [<c0180946>] ? vfs_write+0x96/0x130
- [<c0259b10>] ? redirected_tty_write+0x0/0x80
- [<c0180fcd>] ? sys_write+0x3d/0x70
- [<c0105bde>] ? sysenter_past_esp+0x5f/0x85
- =======================
-Code: 5d c3 8b 40 10 81 48 10 00 00 00 02 eb db 81 49 10 00 00 00 04 eb c2 8d b4 26 00 00 00 00 55 8b 80 44 01 00 00 89 e5 5d 8b 40 10 <8b> 50 08 8b 40 0c 83 c2 01 29 d0 25 ff 0f 00 00 c3 66 90 55 8b 
-EIP: [<c026bbcd>] uart_write_room+0xd/0x20 SS:ESP 0068:df89fee4
----[ end trace aaa0a39c3c6c7aac ]---
-------------------------------------------------------------
+---
+ drivers/serial/8250.c        |    9 ++++++++-
+ drivers/serial/8250_pnp.c    |    2 ++
+ drivers/serial/serial_core.c |   15 +++++++++++++--
+ 3 files changed, 23 insertions(+), 3 deletions(-)
+
+--- linux-2.6.25.orig/drivers/serial/8250.c
++++ linux-2.6.25/drivers/serial/8250.c
+@@ -1354,9 +1354,13 @@ ignore_char:
+ 
+ static void transmit_chars(struct uart_8250_port *up)
+ {
+-	struct circ_buf *xmit = &up->port.info->xmit;
++	struct circ_buf *xmit;
+ 	int count;
+ 
++	if (!up || !up->port.info)
++		return;
++	xmit = &up->port.info->xmit;
++
+ 	if (up->port.x_char) {
+ 		serial_outp(up, UART_TX, up->port.x_char);
+ 		up->port.icount.tx++;
+@@ -2813,6 +2817,8 @@ int serial8250_register_port(struct uart
+ 
+ 	uart = serial8250_find_match_or_unused(port);
+ 	if (uart) {
++		printk("********** about to call uart_remove_one_port **********\n");
++		dump_stack();
+ 		uart_remove_one_port(&serial8250_reg, &uart->port);
+ 
+ 		uart->port.iobase       = port->iobase;
+@@ -2828,6 +2834,7 @@ int serial8250_register_port(struct uart
+ 		if (port->dev)
+ 			uart->port.dev = port->dev;
+ 
++		printk("********** about to call uart_add_one_port **********\n");
+ 		ret = uart_add_one_port(&serial8250_reg, &uart->port);
+ 		if (ret == 0)
+ 			ret = uart->port.line;
+--- linux-2.6.25.orig/drivers/serial/serial_core.c
++++ linux-2.6.25/drivers/serial/serial_core.c
+@@ -92,7 +92,12 @@ static void uart_stop(struct tty_struct 
+ static void __uart_start(struct tty_struct *tty)
+ {
+ 	struct uart_state *state = tty->driver_data;
+-	struct uart_port *port = state->port;
++	struct uart_port *port;
++	if (!state || !state->info)
++		return;
++	port = state->port;
++	if (!port)
++		return;
+ 
+ 	if (!uart_circ_empty(&state->info->xmit) && state->info->xmit.buf &&
+ 	    !tty->stopped && !tty->hw_stopped)
+@@ -522,6 +527,8 @@ static int uart_write_room(struct tty_st
+ {
+ 	struct uart_state *state = tty->driver_data;
+ 
++	if (!state || !state->info)
++		return 1;
+ 	return uart_circ_chars_free(&state->info->xmit);
+ }
+ 
+@@ -2410,14 +2417,18 @@ int uart_remove_one_port(struct uart_dri
+ 	tty_unregister_device(drv->tty_driver, port->line);
+ 
+ 	info = state->info;
+-	if (info && info->tty)
++	if (info && info->tty) {
++		panic("********** about to call tty_vhangup **********\n");
++		dump_stack();
+ 		tty_vhangup(info->tty);
++	}
+ 
+ 	/*
+ 	 * All users of this port should now be disconnected from
+ 	 * this driver, and the port shut down.  We should be the
+ 	 * only thread fiddling with this port from now on.
+ 	 */
++	printk("********** about to set state->info = NULL; **********\n");
+ 	state->info = NULL;
+ 
+ 	/*
+--- linux-2.6.25.orig/drivers/serial/8250_pnp.c
++++ linux-2.6.25/drivers/serial/8250_pnp.c
+@@ -466,6 +466,8 @@ serial_pnp_probe(struct pnp_dev *dev, co
+ 	port.uartclk = 1843200;
+ 	port.dev = &dev->dev;
+ 
++	printk("********** about to call serial8250_register_port **********\n");
++	dump_stack();
+ 	line = serial8250_register_port(&port);
+ 	if (line < 0)
+ 		return -ENODEV;
