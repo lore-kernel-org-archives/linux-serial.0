@@ -1,71 +1,47 @@
 From: "David H. Lynch Jr." <dhlii@dlasys.net>
-Subject: Re: Uartlite driver
-Date: Thu, 15 May 2008 10:31:41 -0400
-Message-ID: <482C494D.2050306@dlasys.net>
+Subject: Re: Uartlite driver & CONFIG_CONSOLE_POLL
+Date: Thu, 15 May 2008 10:45:36 -0400
+Message-ID: <482C4C90.8060606@dlasys.net>
 References: <4826FC28.4090701@seznam.cz> <1210545557.5798.267.camel@localhost> <fa686aa40805112131td11daa7n6ba24c85a413b243@mail.gmail.com> <4827E073.9020301@seznam.cz>
 Reply-To: dhlii@dlasys.net
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from outbound-mail-09.bluehost.com ([69.89.17.209]:60666 "HELO
-	outbound-mail-09.bluehost.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with SMTP id S1752299AbYEOOio (ORCPT
+Received: from outbound-mail-101.bluehost.com ([69.89.22.11]:36379 "HELO
+	outbound-mail-101.bluehost.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1754446AbYEOOwh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 15 May 2008 10:38:44 -0400
+	Thu, 15 May 2008 10:52:37 -0400
 In-Reply-To: <4827E073.9020301@seznam.cz>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: monstr@seznam.cz
 Cc: Grant Likely <grant.likely@secretlab.ca>, John Williams <john.williams@petalogix.com>, Josh Boyer <jwboyer@linux.vnet.ibm.com>, linux-serial@vger.kernel.org, jacmet@sunsite.dk, Stephen Neuendorffer <stephen.neuendorffer@xilinx.com>
 
-Michal Simek wrote:
->>
->> I fully understand the reason for the +3.  What makes it 'magic' is
->> the fact that it is an undocumented value added to the base address
->> with no comment describing what it is for.
->>     
->
-> This is documented offset - look at uartlite manual - useful bits are 24-31.
-> On big endian systems with 32bit access is everything ok because the least
-> significant byte is the last in memory. But when you changed from 32bits to 8
-> bits access than you have to move your base address to +3 offset.
->
-> This is not undocumented value.
-    I do not buy that as any way documented.
-    Are there substantial numbers of other drivers for other devices
-    where  a +3  jumps in from nowhere ?
-    I am also not happy with the register definitions hard coded as 0,4,8,12
+    One of the key differences between my uartlite driver and Peter's
+is that like many other serial drivers I have a timer to support irqless
+use. Just like Peter has UartLite Like devices with 16bit datapaths,
+I have UartLites with no interrupts.
+
+   I have tried (unsuccessfully) several times to migrate my timer
+code into Peter's driver. This is probably the most fundimental
+remaining reason I can not use Peter's driver.
+
+    More recently I noticed a CONFIG_CONSOLE_POLL option show
+up. There are remarks that this is similar to NETPOLL - though
+it seems to be implimented using a getc and putc rather than a
+poll entry.
+
+    Is this a general serial facility, rather than just for consoles ?
+    If I create the polled getc/putc routines can I expect a serial driver
+to be functional without having to implement  my own  timer based
+polling ?
    
-    I have not read the Xilinx UartLite docs recently, but there was older
-    Xilinx code  that implied the registers could be 8, 16 or 32 bits.
-    There is also atleast one implimentation out there that accesses
-    the UartLite via DCR.
-
-     Can we just move all the in's and outs to something like:
-
-static unsigned int
-serial_in(struct uart_port *port, int offset) {
-    unsigned int value;
-
-    switch (port->iotype) {
-        case UPIO_PORT:
-            value = mfdcr(offset);
-            break;
-        default:
-            offset <<= port->regshift;
-            value = readb(port->membase + offset);
-    }
-    return value;
-}
-
-Then we can handle all the 8/16/32 BE/LE, DCR, .... in one place ?
-I think that is what is done in other drivers.
+    Is this the proper way to do this ?
 
 
 
-
-   
 
 
 -- 
