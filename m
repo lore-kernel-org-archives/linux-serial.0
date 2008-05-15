@@ -1,99 +1,80 @@
-From: =?ISO-8859-1?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@t2i.es>
-Subject: [2.6 patch] serial: support for InstaShield IS-400 four port RS-232
- PCI card.
-Date: Mon, 12 May 2008 18:11:42 +0200
-Message-ID: <48286C3E.90705@t2i.es>
+From: "David H. Lynch Jr." <dhlii@dlasys.net>
+Subject: Re: Uartlite driver
+Date: Thu, 15 May 2008 10:31:41 -0400
+Message-ID: <482C494D.2050306@dlasys.net>
+References: <4826FC28.4090701@seznam.cz> <1210545557.5798.267.camel@localhost> <fa686aa40805112131td11daa7n6ba24c85a413b243@mail.gmail.com> <4827E073.9020301@seznam.cz>
+Reply-To: dhlii@dlasys.net
 Mime-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="------------040602000400010704050503"
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from a0048.abansys.com ([86.109.162.218]:37267 "EHLO
-	a0048.abansys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753040AbYELQS3 (ORCPT
+Received: from outbound-mail-09.bluehost.com ([69.89.17.209]:60666 "HELO
+	outbound-mail-09.bluehost.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1752299AbYEOOio (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 12 May 2008 12:18:29 -0400
+	Thu, 15 May 2008 10:38:44 -0400
+In-Reply-To: <4827E073.9020301@seznam.cz>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: monstr@seznam.cz
+Cc: Grant Likely <grant.likely@secretlab.ca>, John Williams <john.williams@petalogix.com>, Josh Boyer <jwboyer@linux.vnet.ibm.com>, linux-serial@vger.kernel.org, jacmet@sunsite.dk, Stephen Neuendorffer <stephen.neuendorffer@xilinx.com>
 
-This is a multi-part message in MIME format.
---------------040602000400010704050503
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 8bit
+Michal Simek wrote:
+>>
+>> I fully understand the reason for the +3.  What makes it 'magic' is
+>> the fact that it is an undocumented value added to the base address
+>> with no comment describing what it is for.
+>>     
+>
+> This is documented offset - look at uartlite manual - useful bits are 24-31.
+> On big endian systems with 32bit access is everything ok because the least
+> significant byte is the last in memory. But when you changed from 32bits to 8
+> bits access than you have to move your base address to +3 offset.
+>
+> This is not undocumented value.
+    I do not buy that as any way documented.
+    Are there substantial numbers of other drivers for other devices
+    where  a +3  jumps in from nowhere ?
+    I am also not happy with the register definitions hard coded as 0,4,8,12
+   
+    I have not read the Xilinx UartLite docs recently, but there was older
+    Xilinx code  that implied the registers could be 8, 16 or 32 bits.
+    There is also atleast one implimentation out there that accesses
+    the UartLite via DCR.
 
-From: Ignacio García Pérez
+     Can we just move all the in's and outs to something like:
 
-Description:
-Adds support for the InstaShield IS-400 four port RS-232 PCI card.
+static unsigned int
+serial_in(struct uart_port *port, int offset) {
+    unsigned int value;
 
-Signed-off-by: Ignacio García Pérez <iggarpe@t2i.com>
+    switch (port->iotype) {
+        case UPIO_PORT:
+            value = mfdcr(offset);
+            break;
+        default:
+            offset <<= port->regshift;
+            value = readb(port->membase + offset);
+    }
+    return value;
+}
 
----
-
-The patch is pretty simple. No code, little more than just the PCI 
-vendor/product id.
-
-Thorougly tested and working.
-
-Applies to kernels 2.6.22, 2.6.23, 2.6.24 and 2.6.25.
-
----
-
-diff -pruN linux-2.6.24.6/drivers/serial/8250_pci.c 
-linux-2.6.24.6-modified/drivers/serial/8250_pci.c
---- linux-2.6.24.6/drivers/serial/8250_pci.c    2008-05-01 
-23:50:00.000000000 +0200
-+++ linux-2.6.24.6-modified/drivers/serial/8250_pci.c    2008-05-05 
-21:03:27.000000000 +0200
-@@ -2566,7 +2566,12 @@ static struct pci_device_id serial_pci_t
-     {    PCI_VENDOR_ID_INTASHIELD, PCI_DEVICE_ID_INTASHIELD_IS200,
-         PCI_ANY_ID, PCI_ANY_ID, 0, 0,    /* 135a.0811 */
-         pbn_b2_2_115200 },
--
-+    /*
-+     * IntaShield IS-400
-+     */
-+    {    PCI_VENDOR_ID_INTASHIELD, PCI_DEVICE_ID_INTASHIELD_IS400,
-+        PCI_ANY_ID, PCI_ANY_ID, 0, 0,    /* 135a.0dc0 */
-+        pbn_b2_4_115200 },
-     /*
-      * Perle PCI-RAS cards
-      */
-diff -pruN linux-2.6.24.6/include/linux/pci_ids.h 
-linux-2.6.24.6-modified/include/linux/pci_ids.h
---- linux-2.6.24.6/include/linux/pci_ids.h    2008-05-01 
-23:50:00.000000000 +0200
-+++ linux-2.6.24.6-modified/include/linux/pci_ids.h    2008-05-05 
-21:03:27.000000000 +0200
-@@ -1759,6 +1759,7 @@
- 
- #define PCI_VENDOR_ID_INTASHIELD    0x135a
- #define PCI_DEVICE_ID_INTASHIELD_IS200    0x0d80
-+#define PCI_DEVICE_ID_INTASHIELD_IS400    0x0dc0
- 
- #define PCI_VENDOR_ID_QUATECH        0x135C
- #define PCI_DEVICE_ID_QUATECH_QSC100    0x0010
+Then we can handle all the 8/16/32 BE/LE, DCR, .... in one place ?
+I think that is what is done in other drivers.
 
 
---------------040602000400010704050503
-Content-Type: text/x-vcard; charset=utf-8;
- name="iggarpe.vcf"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="iggarpe.vcf"
-
-begin:vcard
-fn;quoted-printable:Ignacio Garc=C3=ADa P=C3=A9rez
-n;quoted-printable:Garc=C3=ADa P=C3=A9rez;Ignacio
-org;quoted-printable:T2i, Ingenier=C3=ADa Integral en Tecnolog=C3=ADa y Telecomunicaciones
-adr;quoted-printable;quoted-printable:;;C/. Pur=C3=ADsima 23, puerta 3;B=C3=A9tera;Valencia;46117;SPAIN
-email;internet:iggarpe@t2i.es
-title:Director I+D+i
-tel;fax:+34 961602842
-tel;cell:+34 619311995
-url:www.t2i.es
-version:2.1
-end:vcard
 
 
---------------040602000400010704050503--
+   
+
+
+-- 
+Dave Lynch 					  	    DLA Systems
+Software Development:  				         Embedded Linux
+717.627.3770 	       dhlii@dlasys.net 	  http://www.dlasys.net
+fax: 1.253.369.9244 			           Cell: 1.717.587.7774
+Over 25 years' experience in platforms, languages, and technologies too numerous to list.
+
+"Any intelligent fool can make things bigger and more complex... It takes a touch of genius - and a lot of courage to move in the opposite direction."
+Albert Einstein
+
