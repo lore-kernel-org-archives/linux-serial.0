@@ -1,48 +1,29 @@
-From: Peter Korsgaard <jacmet@sunsite.dk>
-Subject: Re: Uartlite driver & CONFIG_CONSOLE_POLL
-Date: Fri, 16 May 2008 09:47:18 +0200
-Message-ID: <87ve1eg06x.fsf@macbook.be.48ers.dk>
-References: <4826FC28.4090701@seznam.cz> <1210545557.5798.267.camel@localhost>
-	<fa686aa40805112131td11daa7n6ba24c85a413b243@mail.gmail.com>
-	<4827E073.9020301@seznam.cz> <482C4C90.8060606@dlasys.net>
+From: Jay Cliburn <jacliburn@bellsouth.net>
+Subject: Re: 2.6.25.3: serial problem (minicom)
+Date: Fri, 16 May 2008 12:33:21 -0500
+Message-ID: <20080516123321.5674952c@osprey.hogchain.net>
+References: <7723.10156.qm@web52901.mail.re2.yahoo.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nf-out-0910.google.com ([64.233.182.187]:12462 "EHLO
-	nf-out-0910.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751763AbYEPHw2 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 16 May 2008 03:52:28 -0400
-Received: by nf-out-0910.google.com with SMTP id d3so308081nfc.21
-        for <linux-serial@vger.kernel.org>; Fri, 16 May 2008 00:52:26 -0700 (PDT)
-In-Reply-To: <482C4C90.8060606@dlasys.net> (David H. Lynch, Jr.'s message of "Thu\, 15 May 2008 10\:45\:36 -0400")
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1759518AbYEPRde@vger.kernel.org>
+In-Reply-To: <7723.10156.qm@web52901.mail.re2.yahoo.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Chris Rankin <rankincj@yahoo.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: dhlii@dlasys.net
-Cc: monstr@seznam.cz, Grant Likely <grant.likely@secretlab.ca>, John Williams <john.williams@petalogix.com>, Josh Boyer <jwboyer@linux.vnet.ibm.com>, linux-serial@vger.kernel.org, Stephen Neuendorffer <stephen.neuendorffer@xilinx.com>
 
->>>>> "David" == David H Lynch <dhlii@dlasys.net> writes:
+On Thu, 15 May 2008 20:06:23 +0100 (BST)
+Chris Rankin <rankincj@yahoo.com> wrote:
 
-Hi,
+> Specifically, with minicom running on 2.6.25.3, the console does not
+> accept keystrokes although it does receive the boot log from the
+> remote machine.
+> 
+> The serial console is being exported by a 2.6.25.3 kernel, and
+> appears to be working correctly.
 
- David>     One of the key differences between my uartlite driver and
- David> Peter's is that like many other serial drivers I have a timer
- David> to support irqless use. Just like Peter has UartLite Like
- David> devices with 16bit datapaths, I have UartLites with no
- David> interrupts.
+Serial console using minicom works fine for me under 2.6.25 and
+2.6.25.4.  Keystrokes are accepted normally.
 
-Many others? I think not.
-
-ls -l *.c|wc -l                     ~/source/linux-2.6/drivers/serial
-62
-git grep -l request_irq `git grep -l init_timer`|wc -l
-9
-
- David>    I have tried (unsuccessfully) several times to migrate my
- David> timer code into Peter's driver. This is probably the most
- David> fundimental remaining reason I can not use Peter's driver.
-
-unsuccessfully in what way? I afaik haven't seen any patches.
-
--- 
-Bye, Peter Korsgaard
+Jay
