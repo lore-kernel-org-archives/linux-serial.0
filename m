@@ -1,51 +1,45 @@
-From: "Bart Van Assche" <bart.vanassche@gmail.com>
-Subject: Re: 2.6.25.3: serial problem (minicom)
-Date: Sat, 17 May 2008 20:46:27 +0200
-Message-ID: <e2e108260805171146x196e89f0s28d20c52d85ab417@mail.gmail.com>
-References: <20080517082207.4b1e8556@osprey.hogchain.net>
-	 <543631.10570.qm@web52902.mail.re2.yahoo.com>
-	 <20080517101026.270a6f4e@osprey.hogchain.net>
+From: "David H. Lynch Jr." <dhlii@dlasys.net>
+Subject: CONFIG_CONSOLE_POLL
+Date: Sat, 17 May 2008 19:07:45 -0400
+Message-ID: <482F6541.8080702@dlasys.net>
+Reply-To: dhlii@dlasys.net
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from an-out-0708.google.com ([209.85.132.244]:49269 "EHLO
-	an-out-0708.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753454AbYEQSq2 (ORCPT
+Received: from outbound-mail-17.bluehost.com ([69.89.20.232]:59748 "HELO
+	outbound-mail-17.bluehost.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1754836AbYEQXOV (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 17 May 2008 14:46:28 -0400
-Received: by an-out-0708.google.com with SMTP id d40so312097and.103
-        for <linux-serial@vger.kernel.org>; Sat, 17 May 2008 11:46:27 -0700 (PDT)
-In-Reply-To: <20080517101026.270a6f4e@osprey.hogchain.net>
-Content-Disposition: inline
+	Sat, 17 May 2008 19:14:21 -0400
+Received: from [72.25.59.47] (helo=hp-dhlii.dlasys.lcl)
+	by host200.hostmonster.com with esmtpsa (TLSv1:AES256-SHA:256)
+	(Exim 4.68)
+	(envelope-from <dhlii@dlasys.net>)
+	id 1JxVV7-0001Zm-6Z
+	for linux-serial@vger.kernel.org; Sat, 17 May 2008 17:07:41 -0600
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jay Cliburn <jacliburn@bellsouth.net>
-Cc: Chris Rankin <rankincj@yahoo.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
+To: linux-serial@vger.kernel.org
 
-On Sat, May 17, 2008 at 5:10 PM, Jay Cliburn <jacliburn@bellsouth.net> wrote:
-> On Sat, 17 May 2008 15:49:08 +0100 (BST)
-> Chris Rankin <rankincj@yahoo.com> wrote:
->
->> Does yours still work if you raise the baud rate to 115200?
->
-> No, but I also get garbage characters and a generally unusable logging
-> device.  57600 is slightly better, but not much.  I remember going
-> through this progressive reduction in baud rate a long time ago,
-> trying to find a speed that works reliably, which is why I settled on
-> 38400. I get unpredictable results for anything higher.
+    One more try.
 
-If you have a digital oscilloscope available it would be very
-interesting to measure whether the timing of the signals sent out on
-the Tx line is correct. Small deviations between the frequency of the
-clock crystal that drives a UART and the value configured via
-setserial can cause trouble with serial communication (baud_base must
-be configured to UART clock crystal frequency / 16).
+    Is CONFIG_CONSOLE_POLL intended to be used to implement general
+irqless serial functionality,
+     such as for serial ports that have no irq,
+    or is it more narrowly intended just for serial IO inside of an IRQ
+or dduring debugging ?
 
-# setserial -g -a /dev/ttyS0
-/dev/ttyS0, Line 0, UART: 16550A, Port: 0x03f8, IRQ: 4
-        Baud_base: 115200, close_delay: 50, divisor: 0
-        closing_wait: 3000
-        Flags: spd_normal skip_test
 
-Bart.
+
+
+-- 
+Dave Lynch 					  	    DLA Systems
+Software Development:  				         Embedded Linux
+717.627.3770 	       dhlii@dlasys.net 	  http://www.dlasys.net
+fax: 1.253.369.9244 			           Cell: 1.717.587.7774
+Over 25 years' experience in platforms, languages, and technologies too numerous to list.
+
+"Any intelligent fool can make things bigger and more complex... It takes a touch of genius - and a lot of courage to move in the opposite direction."
+Albert Einstein
+
