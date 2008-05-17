@@ -1,40 +1,46 @@
-From: ian <spyro@f2s.com>
-Subject: serial on PXA2xx
-Date: Fri, 16 May 2008 22:01:21 +0100
-Message-ID: <1210971681.12142.38.camel@wirenth>
+From: Chris Rankin <rankincj@yahoo.com>
+Subject: Re: 2.6.25.3: serial problem (minicom)
+Date: Sat, 17 May 2008 13:29:31 +0100 (BST)
+Message-ID: <762763.57234.qm@web52903.mail.re2.yahoo.com>
+References: <20080516123321.5674952c@osprey.hogchain.net>
 Mime-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mk-outboundfilter-4.mail.uk.tiscali.com ([212.74.114.32]:62264
-	"EHLO mk-outboundfilter-4.mail.uk.tiscali.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752608AbYEPVLb (ORCPT
+Received: from web52903.mail.re2.yahoo.com ([206.190.49.13]:31439 "HELO
+	web52903.mail.re2.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1753157AbYEQM3g (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 16 May 2008 17:11:31 -0400
+	Sat, 17 May 2008 08:29:36 -0400
+In-Reply-To: <20080516123321.5674952c@osprey.hogchain.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Jay Cliburn <jacliburn@bellsouth.net>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Hi guys
+--- Jay Cliburn <jacliburn@bellsouth.net> wrote:
+> Serial console using minicom works fine for me under 2.6.25 and
+> 2.6.25.4.  Keystrokes are accepted normally.
 
-Im trying to get a SIR device working on a PDA, and having a lot of
-trouble with it. Not under linux but I cant find a better place to ask
-serial questions, and it is for a bootloader for linux :-)
+I have just replicated this problem between two Fedora 8 boxes; minicom reads the remote serial
+console fine, provided it is running on a 2.6.24.x kernel. (The serial console is from a 2.6.25.4
+machine.)
 
-I've managed to get the PXA2xx serial port up and running, and can see
-the IrTX LED light up on my digital camera, so I know the transceiver
-has power.
+My serial console is defined using the kernel parameters "console=ttyS0,115200n8", and my minicom
+session as:
 
-Further, I can receive data, however it is _all_ zeros, no matter what
-the host transmitted.
+pr port             /dev/ttyS1
+pu baudrate         115200
+pu bits             8
+pu parity           N
+pu stopbits         1
+#pu minit            ^M
 
-I cant see how this is a problem with the transceiver as I would have
-thought this would have resulted in me seeing no characters at all.
+Cheers,
+Chris
 
-It would be helpful if I had some way to snoop the hosts serial port, as
-I cant find a way to get the linux IrDA stack to show me the raw data as
-it arrived at the serial port (its a SIR dongle, so I cant just read
-ttyS0).
 
-irdadump is great but only shows valid packets, not the raw data.
 
+      __________________________________________________________
+Sent from Yahoo! Mail.
+A Smarter Email http://uk.docs.yahoo.com/nowyoucan.html
