@@ -1,60 +1,75 @@
-From: Paul Fulghum <paulkf@microgate.com>
-Subject: Re: Initialization Packet in Serial Communication?!
-Date: Thu, 22 May 2008 15:27:21 -0600
-Message-ID: <4835E539.2000501@microgate.com>
-References: <48358AB2.2070602@informatik.uni-hamburg.de>
+From: Anton Vorontsov <avorontsov@ru.mvista.com>
+Subject: [PATCH] [SERIAL] fix driver_name conflicts
+Date: Mon, 26 May 2008 21:23:40 +0400
+Message-ID: <20080526172340.GA17703@polina.dev.rtsoft.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from adsl-70-250-156-241.dsl.austtx.swbell.net ([70.250.156.241]:53137
-	"EHLO gw.microgate.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755158AbYEVUml (ORCPT
+Received: from rtsoft3.corbina.net ([85.21.88.6]:12692 "EHLO
+	buildserver.ru.mvista.com" rhost-flags-OK-FAIL-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1753916AbYEZRXl (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 22 May 2008 16:42:41 -0400
-In-Reply-To: <48358AB2.2070602@informatik.uni-hamburg.de>
+	Mon, 26 May 2008 13:23:41 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Daniel Kreischer <3kreisch@informatik.uni-hamburg.de>
-Cc: linux-serial@vger.kernel.org
+To: "Maciej W. Rozycki" <macro@linux-mips.org>, Timur Tabi <timur@freescale.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Daniel Kreischer wrote:
-> we are trying to make a small embedded sensor device (Crossbow's TelosB mote)[1] talk to a SmartCard reader
-> via a serial connection.
-> To do so, we checked which packets are being sent by a open source linux driver to the reader and successfully
-> replicated the behaviour manually with cutecom[2].
-> We then implemented a stripped down version of the driver on the mote, but when we attach the reader to it, it
-> won't answer to the commands sent by the mote.
-> 
-> We recognized a kind of initialization packet received by cutecom and even cat everytime we open a connection:
-> 	00 00 80 00 00 00 80 00 80 80 80 80 80 80 80 80 80 80 80
->         80 00 80 80 80 00 00 80 00 00 00 00 80 00 00 80 00 00
-> 
-> We don't seem to receive that packet when connecting the reader to the mote, though.
-> Connecting the mote via a null modem cable to the PC and imitating the reader's responses with cutecom does
-> work, so the driver on the mote is ok.
-> 
-> We have already debugged the 8250.c serial kernel driver with printk()s before every outb() and inb() to the
-> UART's registers and started writing a miniature user space driver to find out what causes the packet, but we
-> can't exactly replicate the behaviour manually, yet.
-> 
-> The question is: Does anybody of you know what that packet is about, and what triggers it?
+Some drivers are using too generic "serial" name for driver_name, this
+might cause issues, like this:
 
-If I understand you correctly, the card reader sends this
-init packet when connected to cutecom running on Linux
-but not when connected to mote?
+Freescale QUICC Engine UART device driver
+proc_dir_entry 'serial' already registered
+Call Trace:
+[cf82de50] [c0007f7c] show_stack+0x4c/0x1ac (unreliable)
+[cf82de90] [c00b03fc] proc_register+0xfc/0x1ac
+[cf82dec0] [c00b05c8] create_proc_entry+0x60/0xac
+[cf82dee0] [c00b23dc] proc_tty_register_driver+0x60/0x98
+[cf82def0] [c016dbd8] tty_register_driver+0x1b4/0x228
+[cf82df20] [c0184d70] uart_register_driver+0x144/0x194
+[cf82df40] [c030a378] ucc_uart_init+0x2c/0x94
+[cf82df50] [c02f21a0] kernel_init+0x98/0x27c
+[cf82dff0] [c000fa74] kernel_thread+0x44/0x60
 
-I don't know the meaning of that packet, but if it is
-sent by the reader when a connection is open but no
-data has been sent then the card reader is probably
-responding to a UART control signal (DTR or RTS) which is
-asserted when the tty device is opened.
+^^ The board is using ucc_uart.c and 8250.c, both registered as
+   "serial".
 
-If the mote does not drive or assert these signals then
-the card reader may ignore data sent by the mote.
-I would verify that the control signals from the mote
-are the same state as the control signals from the Linux box.
+This patch fixes two drivers that are using "serial" for driver_name and
+not "ttyS" for dev_name. Drivers that are using "ttyS" for dev_name, will
+conflict anyway, so we don't bother with these.
 
+Signed-off-by: Anton Vorontsov <avorontsov@ru.mvista.com>
+---
+ drivers/serial/sb1250-duart.c |    2 +-
+ drivers/serial/ucc_uart.c     |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/serial/sb1250-duart.c b/drivers/serial/sb1250-duart.c
+index 2d6c08b..f8e1447 100644
+--- a/drivers/serial/sb1250-duart.c
++++ b/drivers/serial/sb1250-duart.c
+@@ -924,7 +924,7 @@ console_initcall(sbd_serial_console_init);
+ 
+ static struct uart_driver sbd_reg = {
+ 	.owner		= THIS_MODULE,
+-	.driver_name	= "serial",
++	.driver_name	= "sb1250_duart",
+ 	.dev_name	= "duart",
+ 	.major		= TTY_MAJOR,
+ 	.minor		= SB1250_DUART_MINOR_BASE,
+diff --git a/drivers/serial/ucc_uart.c b/drivers/serial/ucc_uart.c
+index 01917c4..566a8b4 100644
+--- a/drivers/serial/ucc_uart.c
++++ b/drivers/serial/ucc_uart.c
+@@ -195,7 +195,7 @@ struct uart_qe_port {
+ 
+ static struct uart_driver ucc_uart_driver = {
+ 	.owner  	= THIS_MODULE,
+-	.driver_name    = "serial",
++	.driver_name    = "ucc_uart",
+ 	.dev_name       = "ttyQE",
+ 	.major  	= SERIAL_QE_MAJOR,
+ 	.minor  	= SERIAL_QE_MINOR,
 -- 
-Paul Fulghum
-Microgate Systems, Ltd.
+1.5.5.1
