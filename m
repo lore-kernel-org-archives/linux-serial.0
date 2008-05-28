@@ -1,29 +1,32 @@
-From: Timur Tabi <timur@freescale.com>
+From: "Maciej W. Rozycki" <macro@linux-mips.org>
 Subject: Re: [PATCH] [SERIAL] fix driver_name conflicts
-Date: Tue, 27 May 2008 09:43:52 -0500
-Message-ID: <483C1E28.7090104@freescale.com>
+Date: Wed, 28 May 2008 15:15:10 +0100 (BST)
+Message-ID: <Pine.LNX.4.55.0805281511160.29522@cliff.in.clinika.pl>
 References: <20080526172340.GA17703@polina.dev.rtsoft.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from de01egw01.freescale.net ([192.88.165.102]:57039 "EHLO
-	de01egw01.freescale.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755934AbYE0OtW (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 27 May 2008 10:49:22 -0400
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1752367AbYE1OUw@vger.kernel.org>
 In-Reply-To: <20080526172340.GA17703@polina.dev.rtsoft.ru>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Anton Vorontsov <avorontsov@ru.mvista.com>
-Cc: "Maciej W. Rozycki" <macro@linux-mips.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Timur Tabi <timur@freescale.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 
-Anton Vorontsov wrote:
+On Mon, 26 May 2008, Anton Vorontsov wrote:
 
+> This patch fixes two drivers that are using "serial" for driver_name and
+> not "ttyS" for dev_name. Drivers that are using "ttyS" for dev_name, will
+> conflict anyway, so we don't bother with these.
+> 
 > Signed-off-by: Anton Vorontsov <avorontsov@ru.mvista.com>
+> ---
+>  drivers/serial/sb1250-duart.c |    2 +-
+>  drivers/serial/ucc_uart.c     |    2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
 
-Acked-By: Timur Tabi <timur@freescale.com>
+ Not that it makes much sense to have both included in the same kernel,
+but for the purpose of purity:
 
--- 
-Timur Tabi
-Linux kernel developer at Freescale
+Acked-by: Maciej W. Rozycki <macro@linux-mips.org>
+
+  Maciej
