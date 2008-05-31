@@ -1,32 +1,84 @@
-From: "Maciej W. Rozycki" <macro@linux-mips.org>
-Subject: Re: [PATCH] [SERIAL] fix driver_name conflicts
-Date: Wed, 28 May 2008 15:15:10 +0100 (BST)
-Message-ID: <Pine.LNX.4.55.0805281511160.29522@cliff.in.clinika.pl>
-References: <20080526172340.GA17703@polina.dev.rtsoft.ru>
+From: vcgandhi1@aol.com
+Subject: Re: Change to serial_core.c .... causing my serial driver problem Help
+ Request
+Date: Sat, 31 May 2008 11:33:05 -0400
+Message-ID: <8CA914AC0F6817C-1684-368@webmail-nc03.sysops.aol.com>
+References: <8CA6D5E4DEA920C-1128-2973@webmail-nb07.sysops.aol.com> <Pine.LNX.4.64.0804160046460.6851@axis700.grange> <8CA6D67D9E313CC-1128-35BB@webmail-nb07.sysops.aol.com> <8CA6D6D112DB4D4-1128-38B0@webmail-nb07.sysops.aol.com> <Pine.LNX.4.64.0804170103040.7335@axis700.grange> <8CA6E48B50204C0-15A8-47D0@webmail-nb06.sysops.aol.com> <Pine.LNX.4.64.0804171657320.6716@axis700.grange> <8CA6EC102F70775-15A8-8B4A@webmail-nb06.sysops.aol.com> <Pine.LNX.4.64.0804171915180.6716@axis700.grange> <8CA6EF5BC26E069-12A0-1888@webmail-nc13.sysops.aol.com> <Pine.LNX.4.64.0804181700300.5725@axis700.grange> <8CA6FF4B03B281A-E10-2E1C@webmail-nf05.sim.aol.com> <Pine.LNX.4.64.0804231108170.5160@axis700.grange> <8CA73B83C791846-148-41B9@webmail-nb17.sysops.aol.com> <Pine.LNX.4.64.0804241557340.5283@axis700.gra
+ nge>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1752367AbYE1OUw@vger.kernel.org>
-In-Reply-To: <20080526172340.GA17703@polina.dev.rtsoft.ru>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Anton Vorontsov <avorontsov@ru.mvista.com>
-Cc: Timur Tabi <timur@freescale.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from imo-m25.mx.aol.com ([64.12.137.6]:38626 "EHLO
+	imo-m25.mx.aol.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752848AbYEaPdU (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 31 May 2008 11:33:20 -0400
+In-Reply-To: <Pine.LNX.4.64.0804241557340.5283@axis700.grange>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: g.liakhovetski@gmx.de
+Cc: linux-serial@vger.kernel.org
 
-On Mon, 26 May 2008, Anton Vorontsov wrote:
 
-> This patch fixes two drivers that are using "serial" for driver_name and
-> not "ttyS" for dev_name. Drivers that are using "ttyS" for dev_name, will
-> conflict anyway, so we don't bother with these.
-> 
-> Signed-off-by: Anton Vorontsov <avorontsov@ru.mvista.com>
-> ---
->  drivers/serial/sb1250-duart.c |    2 +-
->  drivers/serial/ucc_uart.c     |    2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
+This patch worked, sorry for the delay.
 
- Not that it makes much sense to have both included in the same kernel,
-but for the purpose of purity:
 
-Acked-by: Maciej W. Rozycki <macro@linux-mips.org>
+Tested-by:vcgandhi1@aol.com
 
-  Maciej
+
+Vipul Gandhi
+
+-----Original Message-----
+From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+To: vcgandhi1@aol.com
+Cc: linux-serial@vger.kernel.org
+Sent: Thu, 24 Apr 2008 7:02 am
+Subject: Re: Change to serial_core.c .... causing my serial driver 
+problem Help Request
+
+
+
+On Wed, 23 Apr 2008, vcgandhi1@aol.com wrote:
+
+> Yes that fixes the problem. Sorry for taking some time to test it, 
+but been
+> busy buying a house. The process is making me exhausted.
+>
+> Please do try to get the patch into the mainline, and thank you for 
+your time.
+
+Thanks for testing, I presume, you tested the generic patch, modifying
+drivers/serial/serial_core.c, not setting major and minor numbers in 
+your
+driver. However, on a second thought, I think, you probably were right,
+suggesting to use major and minor numbers from the tty device in
+serial_match_port. So, if you just could confirm that the patch below 
+also
+works for you, I'll submit it. Sorry for asking you again, I just 
+cannot
+easily test it myself ATM. And if it does work, please add your
+"Tested-by:" to it.
+
+Thanks
+Guennadi
+---
+Guennadi Liakhovetski
+
+diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
+index 0f5a179..593ae85 100644
+--- a/drivers/serial/serial_core.c
++++ b/drivers/serial/serial_core.c
+@@ -1949,7 +1949,9 @@ struct uart_match {
+ static int serial_match_port(struct device *dev, void *data)
+ {
+    struct uart_match *match = data;
+-   dev_t devt = MKDEV(match->driver->major, match->driver->minor) +
+match->port->line;
++   struct tty_driver *tty_drv = match->driver->tty_driver;
++   dev_t devt = MKDEV(tty_drv->major, tty_drv->minor_start) +
++       match->port->line;
+
+    return dev->devt == devt; /* Actually, only one tty per port */
+ }
+
