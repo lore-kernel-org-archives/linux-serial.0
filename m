@@ -1,82 +1,28 @@
-From: "Maciej W. Rozycki" <macro@linux-mips.org>
-Subject: [PATCH] serial: DZ11: Avoid a hang at console switch-over
-Date: Thu, 12 Jun 2008 23:43:47 +0100 (BST)
-Message-ID: <Pine.LNX.4.55.0806122328350.23634@cliff.in.clinika.pl>
+From: Manuel Lauss <mano@roarinelk.homelinux.net>
+Subject: serial8250 and platform port power management
+Date: Thu, 19 Jun 2008 14:32:14 +0200
+Message-ID: <20080619123214.GA21515@roarinelk.homelinux.net>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kirk.serum.com.pl ([213.77.9.205]:61200 "EHLO serum.com.pl"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1760833AbYFLWoT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 12 Jun 2008 18:44:19 -0400
+Received: from fnoeppeil48.netpark.at ([217.175.205.176]:39843 "EHLO
+	roarinelk.homelinux.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756102AbYFSMcS (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 19 Jun 2008 08:32:18 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-serial@vger.kernel.org, linux-mips@linux-mips.org, linux-kernel@vger.kernel.org
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
- Changes to the generic console support code that happened a while ago
-introduced a scenario where the initial console is used in parallel with
-the final console during a brief period when switching between the two is
-in progress.  During that time a message about the switch-over is printed.
+Hello,
 
- With some combinations of chips, firmware and drivers, such as the DEC
-DZ11 clone used with the DECstation, a hang may happen because the
-firmware used for the initial console may not expect the state of the chip
-after it has been initialised by the driver.
+struct uart_8250_port has a pm() callback for port powermanagement.
+Is there an existing way to assign this callback for a group of
+8250 ports registered as platform_devices?  Looking at the source 8250.c
+I actually couldn't find any users of it.
 
- This is a workaround for the DZ11 which reuses the power-management
-callback to keep the transmitter of the line associated with the console
-enabled.  It reflects the consensus reached in a discussion a while ago.
+Thanks,
+	Manuel Lauss
 
-Signed-off-by: Maciej W. Rozycki <macro@linux-mips.org>
----
-patch-mips-2.6.23-rc5-20070904-dz-pm-1
-diff -up --recursive --new-file linux-mips-2.6.23-rc5-20070904.macro/drivers/serial/dz.c linux-mips-2.6.23-rc5-20070904/drivers/serial/dz.c
---- linux-mips-2.6.23-rc5-20070904.macro/drivers/serial/dz.c	2007-10-14 00:49:58.000000000 +0000
-+++ linux-mips-2.6.23-rc5-20070904/drivers/serial/dz.c	2007-10-14 01:46:41.000000000 +0000
-@@ -637,6 +637,26 @@ static void dz_set_termios(struct uart_p
- 	spin_unlock_irqrestore(&dport->port.lock, flags);
- }
- 
-+/*
-+ * Hack alert!
-+ * Required solely so that the initial PROM-based console
-+ * works undisturbed in parallel with this one.
-+ */
-+static void dz_pm(struct uart_port *uport, unsigned int state,
-+		  unsigned int oldstate)
-+{
-+	struct dz_port *dport = to_dport(uport);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&dport->port.lock, flags);
-+	if (state < 3)
-+		dz_start_tx(&dport->port);
-+	else
-+		dz_stop_tx(&dport->port);
-+	spin_unlock_irqrestore(&dport->port.lock, flags);
-+}
-+
-+
- static const char *dz_type(struct uart_port *uport)
- {
- 	return "DZ";
-@@ -733,6 +753,7 @@ static struct uart_ops dz_ops = {
- 	.startup	= dz_startup,
- 	.shutdown	= dz_shutdown,
- 	.set_termios	= dz_set_termios,
-+	.pm		= dz_pm,
- 	.type		= dz_type,
- 	.release_port	= dz_release_port,
- 	.request_port	= dz_request_port,
-@@ -856,7 +877,10 @@ static int __init dz_console_setup(struc
- 	if (ret)
- 		return ret;
- 
-+	spin_lock_init(&dport->port.lock);	/* For dz_pm().  */
-+
- 	dz_reset(dport);
-+	dz_pm(uport, 0, -1);
- 
- 	if (options)
- 		uart_parse_options(options, &baud, &parity, &bits, &flow);
+
