@@ -1,48 +1,34 @@
-From: Glynn Clements <glynn@gclements.plus.com>
+From: "Josh Hammond" <jhammond-qGaTmy9+pjn8wb0/L2CcF0B+6BGkLq7r@public.gmane.org>
 Subject: Re: Accessing USB thermometer sensor
-Date: Fri, 20 Jun 2008 17:44:29 +0100
-Message-ID: <18523.56941.116797.23150@cerise.gclements.plus.com>
+Date: Fri, 20 Jun 2008 18:50:49 +0200 (CEST)
+Message-ID: <1f60185ec2ee200f67d7a12ee6cbf2fb.squirrel@webmail.vp44.net>
 References: <8b08c39f01286180748bbc0eeddc56cb.squirrel@webmail.vp44.net>
+    <18523.56941.116797.23150@cerise.gclements.plus.com>
+Reply-To: jhammond-qGaTmy9+pjn8wb0/L2CcF0B+6BGkLq7r@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-c-programming-owner@vger.kernel.org>
-In-Reply-To: <8b08c39f01286180748bbc0eeddc56cb.squirrel@webmail.vp44.net>
-Sender: linux-c-programming-owner@vger.kernel.org
-To: jhammond@external.fwmail.org
-Cc: linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, linux-c-programming@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <18523.56941.116797.23150-o3XtBhA/DwwNEGAfyhIZ+pATpRlcFRyyAL8bYrjMMd8@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Glynn Clements <glynn-yNl2PdEqlWR9KcvjrzN2WNBPR1lH4CV8@public.gmane.org>
+Cc: linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-c-programming-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
+On Fri, June 20, 2008 6:44 pm, Glynn Clements wrote:
+>
+> Josh Hammond wrote:
+>
+>> usb 1-2.2: pl2303 converter now attached to ttyUSB0
+>
+> Does "cat /dev/ttyUSB0" work?
+>
 
-Josh Hammond wrote:
+Nope. I get only blank
 
-> Hello to everybody.
-> I have recently purchased a USB thermometer from a chinese ebay store.
-> The sensor has no brand whatsoever and just carries the "TEMPer" label.
-> 
-> I plugged it to my debian unstable box (with a vanilla 2.6.24.4 kernel)
-> and it was detected as
-> 
-> 4348:5523 WinChipHead USB->RS 232 adapter with Prolifec PL 2303 chipset
-> 
-> I believe this means that it is, at least partly, accessible by a linux
-> system (although it seems to do some weird USB-serial emulation).
-> I am now trying to access the thermometer, and more specifically be able
-> to read the data it provides.
-> 
-> I realize this is a very broad question, but could somebody point me in
-> the right direction to be able to read the temperature from command
-> line?
-> The only serial experience I have is connecting to a switch's console and
-> configuring it with putty/minicom.
-> 
-> I pasted the outputs from syslog and lsusb but I dont' really see how
-> the latter relates to my problem.
-> Thanks to everyone that will respond, since now I feel quite lost.
+Josh
 
-> usb 1-2.2: pl2303 converter now attached to ttyUSB0
-
-Does "cat /dev/ttyUSB0" work?
-
--- 
-Glynn Clements <glynn@gclements.plus.com>
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
