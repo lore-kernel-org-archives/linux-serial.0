@@ -1,59 +1,56 @@
-From: Glynn Clements <glynn-yNl2PdEqlWR9KcvjrzN2WNBPR1lH4CV8@public.gmane.org>
-Subject: Re: Accessing USB thermometer sensor
-Date: Sat, 21 Jun 2008 10:02:35 +0100
-Message-ID: <18524.50091.552123.924329@cerise.gclements.plus.com>
-References: <8b08c39f01286180748bbc0eeddc56cb.squirrel@webmail.vp44.net>
-	<18523.56941.116797.23150@cerise.gclements.plus.com>
-	<1f60185ec2ee200f67d7a12ee6cbf2fb.squirrel@webmail.vp44.net>
+From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Subject: [PATCH] Fix serial_match_port() for dynamic major tty-device numbers
+Date: Sun, 22 Jun 2008 00:45:25 +0200 (CEST)
+Message-ID: <Pine.LNX.4.64.0806220037250.461@axis700.grange>
+References: <8CA6D5E4DEA920C-1128-2973@webmail-nb07.sysops.aol.com>
+ <Pine.LNX.4.64.0804160046460.6851@axis700.grange>
+ <8CA6D67D9E313CC-1128-35BB@webmail-nb07.sysops.aol.com>
+ <8CA6D6D112DB4D4-1128-38B0@webmail-nb07.sysops.aol.com>
+ <Pine.LNX.4.64.0804170103040.7335@axis700.grange>
+ <8CA6E48B50204C0-15A8-47D0@webmail-nb06.sysops.aol.com>
+ <Pine.LNX.4.64.0804171657320.6716@axis700.grange>
+ <8CA6EC102F70775-15A8-8B4A@webmail-nb06.sysops.aol.com>
+ <Pine.LNX.4.64.0804171915180.6716@axis700.grange>
+ <8CA6EF5BC26E069-12A0-1888@webmail-nc13.sysops.aol.com>
+ <Pine.LNX.4.64.0804181700300.5725@axis700.grange>
+ <8CA6FF4B03B281A-E10-2E1C@webmail-nf05.sim.aol.com>
+ <Pine.LNX.4.64.0804231108170.5160@axis700.grange>
+ <8CA73B83C791846-148-41B9@webmail-nb17.sysops.aol.com>
+ <Pine.LNX.4.64.0804241557340.5283@axis700.grange>
+ <8CA914AC0F6817C-1684-368@webmail-nc03.sysops.aol.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1f60185ec2ee200f67d7a12ee6cbf2fb.squirrel-2RFepEojUI3piBo0p4lDPw@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: jhammond-qGaTmy9+pjn8wb0/L2CcF0B+6BGkLq7r@public.gmane.org
-Cc: linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-c-programming-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.gmx.net ([213.165.64.20]:54778 "HELO mail.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
+	id S1751142AbYFUWp1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 21 Jun 2008 18:45:27 -0400
+In-Reply-To: <8CA914AC0F6817C-1684-368@webmail-nc03.sysops.aol.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: vcgandhi1@aol.com, linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
 
+As reported by Vipul Gandhi, the current serial_match_port() doesn't work 
+for tty-devices using dynamic major number allocation. Fix it.
 
-Josh Hammond wrote:
+Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Tested-by: Vipul Gandhi <vcgandhi1@aol.com>
 
-> >> usb 1-2.2: pl2303 converter now attached to ttyUSB0
-> >
-> > Does "cat /dev/ttyUSB0" work?
-> 
-> Nope. I get only blank
+---
 
-Thinking about it some more, if the device is outputting binary, the
-line buffering performed by the TTY driver and stdio will get in the
-way. How about:
-
-	stty raw < /dev/ttyUSB0
-	dd if=/dev/ttyUSB0 bs=1 | od -t x1 -w1
-
-Or, in C:
-
-	int fd;
-	struct termios t;
-
-	fd = open("/dev/ttyUSB0", O_RDONLY|O_NOCTTY);
-
-	tcgetattr(fd, &t);
-	cfmakeraw(&t);
-	tcsetattr(fd, TCSANOW, &t);
-
-	for (;;) {
-		unsigned char buf[1];
-		if (read(fd, buf, 1) <= 0)
-			break;
-		printf("%02x\n", *buf);
-	}
-
-	close(fd);
-
--- 
-Glynn Clements <glynn-yNl2PdEqlWR9KcvjrzN2WNBPR1lH4CV8@public.gmane.org>
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
+index 0f5a179..593ae85 100644
+--- a/drivers/serial/serial_core.c
++++ b/drivers/serial/serial_core.c
+@@ -1949,7 +1949,9 @@ struct uart_match {
+ static int serial_match_port(struct device *dev, void *data)
+ {
+ 	struct uart_match *match = data;
+-	dev_t devt = MKDEV(match->driver->major, match->driver->minor) + match->port->line;
++	struct tty_driver *tty_drv = match->driver->tty_driver;
++	dev_t devt = MKDEV(tty_drv->major, tty_drv->minor_start) +
++		match->port->line;
+ 
+ 	return dev->devt == devt; /* Actually, only one tty per port */
+ }
