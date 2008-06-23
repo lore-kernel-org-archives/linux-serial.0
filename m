@@ -1,76 +1,36 @@
-From: Grant Edwards <grante@visi.com>
-Subject: Re: Enhancing pty driver to act like a serial port?
-Date: Sun, 22 Jun 2008 20:02:22 +0000 (UTC)
-Message-ID: <g3mb4e$52v$1@ger.gmane.org>
-References: <Pine.LNX.4.64.0806221455410.18596@maggie.lkpg.cendio.se>
+From: "Tosoni" <jp.tosoni@acksys.fr>
+Subject: RE: Accessing USB thermometer sensor
+Date: Mon, 23 Jun 2008 09:20:27 +0200
+Message-ID: <003301c8d501$9cf1e040$2e01a8c0@acksys.local>
+References: <8b08c39f01286180748bbc0eeddc56cb.squirrel@webmail.vp44.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from main.gmane.org ([80.91.229.2]:32867 "EHLO ciao.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754121AbYFVUCj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 22 Jun 2008 16:02:39 -0400
-Received: from list by ciao.gmane.org with local (Exim 4.43)
-	id 1KAVlg-0000eN-6O
-	for linux-serial@vger.kernel.org; Sun, 22 Jun 2008 20:02:32 +0000
-Received: from 67.220.10.73 ([67.220.10.73])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Sun, 22 Jun 2008 20:02:32 +0000
-Received: from grante by 67.220.10.73 with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Sun, 22 Jun 2008 20:02:32 +0000
+Received: from smtp06.msg.oleane.net ([62.161.4.6]:38608 "EHLO
+	smtp06.msg.oleane.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752040AbYFWHt3 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 23 Jun 2008 03:49:29 -0400
+In-Reply-To: <8b08c39f01286180748bbc0eeddc56cb.squirrel@webmail.vp44.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: jhammond@external.fwmail.org, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, linux-c-programming@vger.kernel.org
 
-On 2008-06-22, Peter =C5strand <astrand@cendio.se> wrote:
+> the right direction to be able to read the temperature from command
+> line?
+> Josh
 >
->>The question of emulating a serial port in user-space has come
->>up a number of times in various contexts during the past few
->>years. =20
->>
->>The current pty driver isn't really sufficient when the
->>application actually expects to be connected to a physical
->>serial port:=20
->
-> A better userspace solution would be great. I'm maintaining=20
-> cyclades-serial-client. It relies on LD_PRELOAD, which is not
-> very elegant.=20
+Reading a serial device from the commannd line is not easy.
+First because each command you type closes the port after running and so it
+flushes buffers.
 
-I can imagine.   (I used a few Cyclades 8-port boards many
-years ago, and always liked Cyclades' product lines).
+I would suggest using shell parenthesis to group the commands
+Use stty to set the port to raw mode etc.
+Use 'echo' and 'dd' which is like 'cat' but much more configurable for
+buffer sizes
+something like:
+( stty 9600 raw; echo 'request'; dd bs=1 count=10 >response.out)
+</dev/serialusb >&0
 
->>you can't set parity or word length, and the modem
->>control/status ioctl() calls fail.
->
-> Oh. I was just investigating why it's not possible to set
-> "cs7" on the pty. stty fails with:
->
-> $ stty cs7 -F /my/pty
-> stty: /my/pty: unable to perform all requested operations
->
-> I guess this explains it.=20
-
-Yup.  It wouldn't be difficult at all to make the pty driver
-act like a serial device, but there's a huge difference between
-something being easy to change and getting those changes
-accepted.  Judging by the silence I got in response to my query
-the chances of such a change being accepted are pretty much
-zero.
-
---=20
-Grant Edwards                   grante             Yow!  The PINK SOCKS=
- were
-                                  at               ORIGINALLY from 1952=
-!! But
-                               visi.com            they went to MARS ar=
-ound
-                                                   1953!!
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
