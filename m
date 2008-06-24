@@ -1,67 +1,80 @@
-From: Andrew Morton <akpm@linux-foundation.org>
+From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
 Subject: Re: [PATCH] Fix serial_match_port() for dynamic major tty-device
  numbers
-Date: Tue, 24 Jun 2008 15:22:53 -0700
-Message-ID: <20080624152253.d9bd1da2.akpm@linux-foundation.org>
+Date: Wed, 25 Jun 2008 00:54:37 +0200 (CEST)
+Message-ID: <Pine.LNX.4.64.0806250045150.18748@axis700.grange>
 References: <8CA6D5E4DEA920C-1128-2973@webmail-nb07.sysops.aol.com>
-	<Pine.LNX.4.64.0804160046460.6851@axis700.grange>
-	<8CA6D67D9E313CC-1128-35BB@webmail-nb07.sysops.aol.com>
-	<8CA6D6D112DB4D4-1128-38B0@webmail-nb07.sysops.aol.com>
-	<Pine.LNX.4.64.0804170103040.7335@axis700.grange>
-	<8CA6E48B50204C0-15A8-47D0@webmail-nb06.sysops.aol.com>
-	<Pine.LNX.4.64.0804171657320.6716@axis700.grange>
-	<8CA6EC102F70775-15A8-8B4A@webmail-nb06.sysops.aol.com>
-	<Pine.LNX.4.64.0804171915180.6716@axis700.grange>
-	<8CA6EF5BC26E069-12A0-1888@webmail-nc13.sysops.aol.com>
-	<Pine.LNX.4.64.0804181700300.5725@axis700.grange>
-	<8CA6FF4B03B281A-E10-2E1C@webmail-nf05.sim.aol.com>
-	<Pine.LNX.4.64.0804231108170.5160@axis700.grange>
-	<8CA73B83C791846-148-41B9@webmail-nb17.sysops.aol.com>
-	<Pine.LNX.4.64.0804241557340.5283@axis700.grange>
-	<8CA914AC0F6817C-1684-368@webmail-nc03.sysops.aol.com>
-	<Pine.LNX.4.64.0806220037250.461@axis700.grange>
+ <Pine.LNX.4.64.0804160046460.6851@axis700.grange>
+ <8CA6D67D9E313CC-1128-35BB@webmail-nb07.sysops.aol.com>
+ <8CA6D6D112DB4D4-1128-38B0@webmail-nb07.sysops.aol.com>
+ <Pine.LNX.4.64.0804170103040.7335@axis700.grange>
+ <8CA6E48B50204C0-15A8-47D0@webmail-nb06.sysops.aol.com>
+ <Pine.LNX.4.64.0804171657320.6716@axis700.grange>
+ <8CA6EC102F70775-15A8-8B4A@webmail-nb06.sysops.aol.com>
+ <Pine.LNX.4.64.0804171915180.6716@axis700.grange>
+ <8CA6EF5BC26E069-12A0-1888@webmail-nc13.sysops.aol.com>
+ <Pine.LNX.4.64.0804181700300.5725@axis700.grange>
+ <8CA6FF4B03B281A-E10-2E1C@webmail-nf05.sim.aol.com>
+ <Pine.LNX.4.64.0804231108170.5160@axis700.grange>
+ <8CA73B83C791846-148-41B9@webmail-nb17.sysops.aol.com>
+ <Pine.LNX.4.64.0804241557340.5283@axis700.grange>
+ <8CA914AC0F6817C-1684-368@webmail-nc03.sysops.aol.com>
+ <Pine.LNX.4.64.0806220037250.461@axis700.grange>
+ <20080624152253.d9bd1da2.akpm@linux-foundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp1.linux-foundation.org ([140.211.169.13]:33034 "EHLO
-	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751829AbYFXWXd (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 24 Jun 2008 18:23:33 -0400
-In-Reply-To: <Pine.LNX.4.64.0806220037250.461@axis700.grange>
+Received: from mail.gmx.net ([213.165.64.20]:54791 "HELO mail.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
+	id S1753111AbYFXWyl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 24 Jun 2008 18:54:41 -0400
+In-Reply-To: <20080624152253.d9bd1da2.akpm@linux-foundation.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+To: Andrew Morton <akpm@linux-foundation.org>
 Cc: vcgandhi1@aol.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-On Sun, 22 Jun 2008 00:45:25 +0200 (CEST)
-Guennadi Liakhovetski <g.liakhovetski@gmx.de> wrote:
+On Tue, 24 Jun 2008, Andrew Morton wrote:
 
-> As reported by Vipul Gandhi, the current serial_match_port() doesn't work 
-> for tty-devices using dynamic major number allocation. Fix it.
+> On Sun, 22 Jun 2008 00:45:25 +0200 (CEST)
+> Guennadi Liakhovetski <g.liakhovetski@gmx.de> wrote:
 > 
-> Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-> Tested-by: Vipul Gandhi <vcgandhi1@aol.com>
+> > As reported by Vipul Gandhi, the current serial_match_port() doesn't work 
+> > for tty-devices using dynamic major number allocation. Fix it.
+> > 
+> > Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+> > Tested-by: Vipul Gandhi <vcgandhi1@aol.com>
+> > 
+> > ---
+> > 
+> > diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
+> > index 0f5a179..593ae85 100644
+> > --- a/drivers/serial/serial_core.c
+> > +++ b/drivers/serial/serial_core.c
+> > @@ -1949,7 +1949,9 @@ struct uart_match {
+> >  static int serial_match_port(struct device *dev, void *data)
+> >  {
+> >  	struct uart_match *match = data;
+> > -	dev_t devt = MKDEV(match->driver->major, match->driver->minor) + match->port->line;
+> > +	struct tty_driver *tty_drv = match->driver->tty_driver;
+> > +	dev_t devt = MKDEV(tty_drv->major, tty_drv->minor_start) +
+> > +		match->port->line;
+> >  
+> >  	return dev->devt == devt; /* Actually, only one tty per port */
 > 
-> ---
-> 
-> diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
-> index 0f5a179..593ae85 100644
-> --- a/drivers/serial/serial_core.c
-> +++ b/drivers/serial/serial_core.c
-> @@ -1949,7 +1949,9 @@ struct uart_match {
->  static int serial_match_port(struct device *dev, void *data)
->  {
->  	struct uart_match *match = data;
-> -	dev_t devt = MKDEV(match->driver->major, match->driver->minor) + match->port->line;
-> +	struct tty_driver *tty_drv = match->driver->tty_driver;
-> +	dev_t devt = MKDEV(tty_drv->major, tty_drv->minor_start) +
-> +		match->port->line;
->  
->  	return dev->devt == devt; /* Actually, only one tty per port */
+> Well that sounds bad.  We need to work out whether this fix is needed
+> in 2.6.25 and possibly eariler.
 
-Well that sounds bad.  We need to work out whether this fix is needed
-in 2.6.25 and possibly eariler.
+Not earlier, this code is only there since 2.6.25.
 
-What are the consequences of this error?
+> What are the consequences of this error?
+
+It Oopses, if you suspend a serial port with _dynamic_ major number. ATM, 
+I think, there's only the drivers/serial/jsm/jsm_driver.c driver, that 
+does it in-tree.
+
+Thanks
+Guennadi
+---
+Guennadi Liakhovetski, Ph.D.
+Freelance Open-Source Software Developer
