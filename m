@@ -1,48 +1,67 @@
-From: "Josh Hammond" <jhammond-qGaTmy9+pjn8wb0/L2CcF0B+6BGkLq7r@public.gmane.org>
-Subject: RE: Accessing USB thermometer sensor
-Date: Tue, 24 Jun 2008 09:18:01 +0200 (CEST)
-Message-ID: <c2b560bd4b1cb112f2ca096ee6858dc2.squirrel@webmail.vp44.net>
-Reply-To: jhammond-qGaTmy9+pjn8wb0/L2CcF0B+6BGkLq7r@public.gmane.org
+From: Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH] Fix serial_match_port() for dynamic major tty-device
+ numbers
+Date: Tue, 24 Jun 2008 15:22:53 -0700
+Message-ID: <20080624152253.d9bd1da2.akpm@linux-foundation.org>
+References: <8CA6D5E4DEA920C-1128-2973@webmail-nb07.sysops.aol.com>
+	<Pine.LNX.4.64.0804160046460.6851@axis700.grange>
+	<8CA6D67D9E313CC-1128-35BB@webmail-nb07.sysops.aol.com>
+	<8CA6D6D112DB4D4-1128-38B0@webmail-nb07.sysops.aol.com>
+	<Pine.LNX.4.64.0804170103040.7335@axis700.grange>
+	<8CA6E48B50204C0-15A8-47D0@webmail-nb06.sysops.aol.com>
+	<Pine.LNX.4.64.0804171657320.6716@axis700.grange>
+	<8CA6EC102F70775-15A8-8B4A@webmail-nb06.sysops.aol.com>
+	<Pine.LNX.4.64.0804171915180.6716@axis700.grange>
+	<8CA6EF5BC26E069-12A0-1888@webmail-nc13.sysops.aol.com>
+	<Pine.LNX.4.64.0804181700300.5725@axis700.grange>
+	<8CA6FF4B03B281A-E10-2E1C@webmail-nf05.sim.aol.com>
+	<Pine.LNX.4.64.0804231108170.5160@axis700.grange>
+	<8CA73B83C791846-148-41B9@webmail-nb17.sysops.aol.com>
+	<Pine.LNX.4.64.0804241557340.5283@axis700.grange>
+	<8CA914AC0F6817C-1684-368@webmail-nc03.sysops.aol.com>
+	<Pine.LNX.4.64.0806220037250.461@axis700.grange>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp1.linux-foundation.org ([140.211.169.13]:33034 "EHLO
+	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751829AbYFXWXd (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 24 Jun 2008 18:23:33 -0400
+In-Reply-To: <Pine.LNX.4.64.0806220037250.461@axis700.grange>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Cc: vcgandhi1@aol.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-On Mon, June 23, 2008 9:20 am, Tosoni wrote:
->> the right direction to be able to read the temperature from command line?
->> Josh
->>
-> Reading a serial device from the commannd line is not easy.
-> First because each command you type closes the port after running and so it
-> flushes buffers.
->
-> I would suggest using shell parenthesis to group the commands
-> Use stty to set the port to raw mode etc.
-> Use 'echo' and 'dd' which is like 'cat' but much more configurable for
-buffer sizes
-> something like:
-> ( stty 9600 raw; echo 'request'; dd bs=1 count=10 >response.out)
-</dev/serialusb >&0
->
->
+On Sun, 22 Jun 2008 00:45:25 +0200 (CEST)
+Guennadi Liakhovetski <g.liakhovetski@gmx.de> wrote:
 
-Unfortunately it doesn't seem to work.
-This is the general output (I tried several tty speeds):
+> As reported by Vipul Gandhi, the current serial_match_port() doesn't work 
+> for tty-devices using dynamic major number allocation. Fix it.
+> 
+> Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+> Tested-by: Vipul Gandhi <vcgandhi1@aol.com>
+> 
+> ---
+> 
+> diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
+> index 0f5a179..593ae85 100644
+> --- a/drivers/serial/serial_core.c
+> +++ b/drivers/serial/serial_core.c
+> @@ -1949,7 +1949,9 @@ struct uart_match {
+>  static int serial_match_port(struct device *dev, void *data)
+>  {
+>  	struct uart_match *match = data;
+> -	dev_t devt = MKDEV(match->driver->major, match->driver->minor) + match->port->line;
+> +	struct tty_driver *tty_drv = match->driver->tty_driver;
+> +	dev_t devt = MKDEV(tty_drv->major, tty_drv->minor_start) +
+> +		match->port->line;
+>  
+>  	return dev->devt == devt; /* Actually, only one tty per port */
 
-osmosis:/home/josh# ( stty 9600 raw; echo 'request'; dd bs=1 count=10
->response.out) < /dev/ttyUSB0 >&0
+Well that sounds bad.  We need to work out whether this fix is needed
+in 2.6.25 and possibly eariler.
 
-bash: echo: write error: Bad file descriptor
-0+0 records in
-0+0 records out
-0 bytes (0 B) copied, 32.3506 s, 0.0 kB/s
-
-
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+What are the consequences of this error?
