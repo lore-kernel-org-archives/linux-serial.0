@@ -1,80 +1,57 @@
-From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Subject: Re: [PATCH] Fix serial_match_port() for dynamic major tty-device
- numbers
-Date: Wed, 25 Jun 2008 00:54:37 +0200 (CEST)
-Message-ID: <Pine.LNX.4.64.0806250045150.18748@axis700.grange>
-References: <8CA6D5E4DEA920C-1128-2973@webmail-nb07.sysops.aol.com>
- <Pine.LNX.4.64.0804160046460.6851@axis700.grange>
- <8CA6D67D9E313CC-1128-35BB@webmail-nb07.sysops.aol.com>
- <8CA6D6D112DB4D4-1128-38B0@webmail-nb07.sysops.aol.com>
- <Pine.LNX.4.64.0804170103040.7335@axis700.grange>
- <8CA6E48B50204C0-15A8-47D0@webmail-nb06.sysops.aol.com>
- <Pine.LNX.4.64.0804171657320.6716@axis700.grange>
- <8CA6EC102F70775-15A8-8B4A@webmail-nb06.sysops.aol.com>
- <Pine.LNX.4.64.0804171915180.6716@axis700.grange>
- <8CA6EF5BC26E069-12A0-1888@webmail-nc13.sysops.aol.com>
- <Pine.LNX.4.64.0804181700300.5725@axis700.grange>
- <8CA6FF4B03B281A-E10-2E1C@webmail-nf05.sim.aol.com>
- <Pine.LNX.4.64.0804231108170.5160@axis700.grange>
- <8CA73B83C791846-148-41B9@webmail-nb17.sysops.aol.com>
- <Pine.LNX.4.64.0804241557340.5283@axis700.grange>
- <8CA914AC0F6817C-1684-368@webmail-nc03.sysops.aol.com>
- <Pine.LNX.4.64.0806220037250.461@axis700.grange>
- <20080624152253.d9bd1da2.akpm@linux-foundation.org>
+From: ZhangXiao <xiao.zhang@windriver.com>
+Subject: Output character lost with 8250 UART driver
+Date: Wed, 25 Jun 2008 16:06:42 +0800
+Message-ID: <1214381202.6938.76.camel@xzhang1-desktop>
+Reply-To: xiao.zhang@windriver.com
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.gmx.net ([213.165.64.20]:54791 "HELO mail.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
-	id S1753111AbYFXWyl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 24 Jun 2008 18:54:41 -0400
-In-Reply-To: <20080624152253.d9bd1da2.akpm@linux-foundation.org>
+Received: from mail.windriver.com ([147.11.1.11]:38051 "EHLO mail.wrs.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752034AbYFYIIk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 25 Jun 2008 04:08:40 -0400
+Received: from ALA-MAIL03.corp.ad.wrs.com (ala-mail03 [147.11.57.144])
+	by mail.wrs.com (8.13.6/8.13.6) with ESMTP id m5P88b33003177
+	for <linux-serial@vger.kernel.org>; Wed, 25 Jun 2008 01:08:37 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: vcgandhi1@aol.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
+To: linux-serial@vger.kernel.org
+Cc: xiao.zhang@windriver.com, Paul Gortmaker <paul.gortmaker@windriver.com>
 
-On Tue, 24 Jun 2008, Andrew Morton wrote:
+Hi,
 
-> On Sun, 22 Jun 2008 00:45:25 +0200 (CEST)
-> Guennadi Liakhovetski <g.liakhovetski@gmx.de> wrote:
-> 
-> > As reported by Vipul Gandhi, the current serial_match_port() doesn't work 
-> > for tty-devices using dynamic major number allocation. Fix it.
-> > 
-> > Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-> > Tested-by: Vipul Gandhi <vcgandhi1@aol.com>
-> > 
-> > ---
-> > 
-> > diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
-> > index 0f5a179..593ae85 100644
-> > --- a/drivers/serial/serial_core.c
-> > +++ b/drivers/serial/serial_core.c
-> > @@ -1949,7 +1949,9 @@ struct uart_match {
-> >  static int serial_match_port(struct device *dev, void *data)
-> >  {
-> >  	struct uart_match *match = data;
-> > -	dev_t devt = MKDEV(match->driver->major, match->driver->minor) + match->port->line;
-> > +	struct tty_driver *tty_drv = match->driver->tty_driver;
-> > +	dev_t devt = MKDEV(tty_drv->major, tty_drv->minor_start) +
-> > +		match->port->line;
-> >  
-> >  	return dev->devt == devt; /* Actually, only one tty per port */
-> 
-> Well that sounds bad.  We need to work out whether this fix is needed
-> in 2.6.25 and possibly eariler.
+When I boot one of my target I find the UART(8250) works improperly.
+Sometimes lost output characters. When I dig in the 8250.c I find
+something strange in function transmit_chars. 
 
-Not earlier, this code is only there since 2.6.25.
+Below is the very piece of this function:
 
-> What are the consequences of this error?
+...
+1	count = up->tx_loadsz;
+2	do {
+3		serial_out(up, UART_TX, xmit->buf[xmit->tail]);
+4		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+5		up->port.icount.tx++;
+6		if (uart_circ_empty(xmit))
+7			break;
+8	} while (--count > 0);
+...
 
-It Oopses, if you suspend a serial port with _dynamic_ major number. ATM, 
-I think, there's only the drivers/serial/jsm/jsm_driver.c driver, that 
-does it in-tree.
+Based on theses lines, characters should be written to the THR
+continuous, no matter if it had already move the character to the TSR. I
+think it is not safe in some cases so I add a line
 
-Thanks
-Guennadi
----
-Guennadi Liakhovetski, Ph.D.
-Freelance Open-Source Software Developer
+	wait_for_xmitr(up, UART_LSR_THRE);
+
+before line 3. And then the issue in my target was disappeared. This is
+a static function that was already exist in the same file. It just check
+and wait until the THR was empty.
+
+I noticed that in the same file (8250.c), in console part, all data
+written to THR was protected by the "wait_for_xmitr". So for the
+function "transmit_chars", does that a bug and should be resolved? Or
+there are any reasons that it needn't this protection?
+
+Thanks a lot
+Xiao
