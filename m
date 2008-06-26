@@ -1,48 +1,102 @@
-From: =?iso-8859-1?Q?Chris_Dor=E9?= <cdore@connecttech.com>
-Subject: RE: Output character lost with 8250 UART driver
-Date: Wed, 25 Jun 2008 10:00:15 -0400
-Message-ID: <005a01c8d6cb$ccd363d0$667a2b70$@com>
-References: <1214381202.6938.76.camel@xzhang1-desktop>
+From: Laurent Pinchart <laurentp@cse-semaphore.com>
+Subject: [RFC] cpm_uart: Fix break generation
+Date: Thu, 26 Jun 2008 13:38:14 +0200
+Message-ID: <200806261338.19358.laurentp@cse-semaphore.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
+Content-Type: multipart/signed;
+  boundary="nextPart12031472.ByL2JTWP1D";
+  protocol="application/pgp-signature";
+  micalg=pgp-sha1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from inetc.connecttech.com ([64.7.140.42]:4668 "EHLO
-	inetc.connecttech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756310AbYFYOAr (ORCPT
+Received: from mailrelay005.isp.belgacom.be ([195.238.6.171]:45579 "EHLO
+	mailrelay005.isp.belgacom.be" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755480AbYFZLiV (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 25 Jun 2008 10:00:47 -0400
-In-Reply-To: <1214381202.6938.76.camel@xzhang1-desktop>
-Content-Language: en-ca
+	Thu, 26 Jun 2008 07:38:21 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: 'Paul Gortmaker' <paul.gortmaker@windriver.com>
+To: linuxppc-dev@ozlabs.org, linux-serial@vger.kernel.org
+Cc: galak@kernel.crashing.org, scottwood@freescale.com
 
-> -----Original Message-----
-> From: ZhangXiao
-> Sent: June 25, 2008 4:07 AM
-> 
-> Based on theses lines, characters should be written to the THR
-> continuous, no matter if it had already move the character to the TSR. I
-> think it is not safe in some cases so I add a line
-> 
-> 	wait_for_xmitr(up, UART_LSR_THRE);
-> 
-> before line 3. And then the issue in my target was disappeared. This is
-> a static function that was already exist in the same file. It just check
-> and wait until the THR was empty.
+--nextPart12031472.ByL2JTWP1D
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Do you have the FIFO's disabled, but transmit_chars() thinks they are
-enabled?
-Sounds to me like that might be your problem and without the
-wait_for_xmitr() call you are overrunning the transmitter.  In other words,
-if you have FIFOs disabled, up->tx_loadsz should be 1.
+When generating a break condition on a serial port, the CPM must be told
+beforehand how long the break should be. Unfortunately, this information is
+not available through the current serial break handling API. This patch wor=
+ks
+around the problem by requesting a 32767 characters break followed by a 0
+characters break after the requested duration. The CPM will stop the first
+break when the second one is requested. This might not work with future CPM
+revisions.
 
-What UART are you using?
+An alternative would be to change the serial break handling API to pass the=
+=20
+break duration down to the serial drivers.
+
+=2D--
+ drivers/serial/cpm_uart/cpm_uart_core.c |    9 +++++++++
+ 1 files changed, 9 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/serial/cpm_uart/cpm_uart_core.c=20
+b/drivers/serial/cpm_uart/cpm_uart_core.c
+index c29d87d..aa0a284 100644
+=2D-- a/drivers/serial/cpm_uart/cpm_uart_core.c
++++ b/drivers/serial/cpm_uart/cpm_uart_core.c
+@@ -268,14 +268,23 @@ static void cpm_uart_break_ctl(struct uart_port *port=
+,=20
+int break_state)
+ static void cpm_uart_break_ctl(struct uart_port *port, int break_state)
+ {
+ 	struct uart_cpm_port *pinfo =3D (struct uart_cpm_port *)port;
++	volatile u16 *brkcr =3D IS_SMC(pinfo) ? &pinfo->smcup->smc_brkcr
++				: &pinfo->sccup->scc_brkcr;
+=20
+ 	pr_debug("CPM uart[%d]:break ctrl, break_state: %d\n", port->line,
+ 		break_state);
+=20
+ 	if (break_state)
++	{
++		*brkcr =3D 32767;
+ 		cpm_line_cr_cmd(pinfo, CPM_CR_STOP_TX);
++	}
+ 	else
++	{
++		*brkcr =3D 0;
++		cpm_line_cr_cmd(pinfo, CPM_CR_STOP_TX);
+ 		cpm_line_cr_cmd(pinfo, CPM_CR_RESTART_TX);
++	}
+ }
+=20
+ /*
+=2D-=20
+1.5.0
 
 
-..Chris
+=2D-=20
+Laurent Pinchart
+CSE Semaphore Belgium
 
+Chaussee de Bruxelles, 732A
+B-1410 Waterloo
+Belgium
 
+T +32 (2) 387 42 59
+=46 +32 (2) 387 42 75
+
+--nextPart12031472.ByL2JTWP1D
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (GNU/Linux)
+
+iD8DBQBIY3+r8y9gWxC9vpcRAnMtAJ4onySNqgrTNRYHA0ceYGjbQhnjwACg2jhP
+Yq0sa913L+cpVz6xkPJfByM=
+=wUFO
+-----END PGP SIGNATURE-----
+
+--nextPart12031472.ByL2JTWP1D--
