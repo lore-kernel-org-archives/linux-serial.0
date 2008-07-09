@@ -1,38 +1,89 @@
-From: Kumar Gala <galak@kernel.crashing.org>
-Subject: Re: [PATCHv2] cpm_uart: Support uart_wait_until_sent()
-Date: Wed, 2 Jul 2008 11:13:52 -0500
-Message-ID: <FF9F9674-03B4-4FD1-9B01-8DC0972F6899@kernel.crashing.org>
-References: <200806261355.09334.laurentp@cse-semaphore.com> <4768A00D-3C8B-4AF2-A2E1-DE9C9BD055E4@kernel.crashing.org> <200807021058.45619.laurentp@cse-semaphore.com>
-Mime-Version: 1.0 (Apple Message framework v924)
-Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
-Content-Transfer-Encoding: 7bit
+From: Anton Vorontsov <avorontsov@ru.mvista.com>
+Subject: Re: [PATCH v2] serial: 8250: fix shared interrupts issues with SMP
+	and RT kernels
+Date: Wed, 9 Jul 2008 23:29:43 +0400
+Message-ID: <20080709192943.GA12278@polina.dev.rtsoft.ru>
+References: <20080623232957.GA5111@polina.dev.rtsoft.ru> <20080624001221.GA20685@elte.hu> <20080701134343.GA1865@polina.dev.rtsoft.ru> <20080701144353.7285805d@lxorguk.ukuu.org.uk> <20080701150254.GA13390@polina.dev.rtsoft.ru>
+Reply-To: avorontsov@ru.mvista.com
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gate.crashing.org ([63.228.1.57]:39702 "EHLO gate.crashing.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754432AbYGBQOA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 2 Jul 2008 12:14:00 -0400
-In-Reply-To: <200807021058.45619.laurentp@cse-semaphore.com>
+Received: from rtsoft3.corbina.net ([85.21.88.6]:3315 "EHLO
+	buildserver.ru.mvista.com" rhost-flags-OK-FAIL-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751272AbYGIT3u (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 9 Jul 2008 15:29:50 -0400
+Content-Disposition: inline
+In-Reply-To: <20080701150254.GA13390@polina.dev.rtsoft.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Laurent Pinchart <laurentp@cse-semaphore.com>
-Cc: linuxppc-dev@ozlabs.org, linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Ingo Molnar <mingo@elte.hu>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Steven Rostedt <rostedt@goodmis.org>, Daniel Walker <dwalker@mvista.com>
 
-
-On Jul 2, 2008, at 3:58 AM, Laurent Pinchart wrote:
-
-> Set port->fifosize to the software FIFO size, and update the port  
-> timeout
-> when the baud rate is modified. SCC ports have an optional 32 byte  
-> hardware
-> FIFO which is currently not taken into account, as there is no  
-> documented way
-> to check when the FIFO becomes empty.
->
-> Signed-off-by: Laurent Pinchart <laurentp@cse-semaphore.com>
+On Tue, Jul 01, 2008 at 07:02:54PM +0400, Anton Vorontsov wrote:
+[...]
+> Signed-off-by: Anton Vorontsov <avorontsov@ru.mvista.com>
 > ---
-> drivers/serial/cpm_uart/cpm_uart_core.c |    6 ++++++
-> 1 files changed, 6 insertions(+), 0 deletions(-)
+> 
+> On Tue, Jul 01, 2008 at 02:43:53PM +0100, Alan Cox wrote:
+[...]
+> > It looks correct to me except that you cannot use spin_lock/disable_irq
+> > in that way safely. You must always disable_irq before taking the lock,
+> > or prove it is safe and use disable_irq_nosync
+> > 
+> > The reason:
+> > 		CPU#0 spin_lock_... [taken]
+> > 		CPU#1 IRQ
+> > 		CPU#1 spin_lock [waits]
+> > 		CPU#0 disable_irq (deadlock)
+> 
+> This deadlock possibility is interesting by itself, thanks for
+> mentioning it.
+> 
+> But this can't happen here. IRQ will not grab the up->port.lock,
+> because port isn't registered in the 8250 IRQ handling chain (yet).
 
-applied.
+Alan, are there any issues with the proof or the patch itself?
 
-- k
+Thanks,
+
+> As for _nosync, probably this is good idea indeed, and should be safe
+> AFAICS.
+> 
+>  drivers/serial/8250.c |    8 ++++++--
+>  1 files changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+> index 76ccef7..cad0c2d 100644
+> --- a/drivers/serial/8250.c
+> +++ b/drivers/serial/8250.c
+> @@ -1831,7 +1831,9 @@ static int serial8250_startup(struct uart_port *port)
+>  		 * the interrupt is enabled.  Delays are necessary to
+>  		 * allow register changes to become visible.
+>  		 */
+> -		spin_lock_irqsave(&up->port.lock, flags);
+> +		spin_lock(&up->port.lock);
+> +		if (up->port.flags & UPF_SHARE_IRQ)
+> +			disable_irq_nosync(up->port.irq);
+>  
+>  		wait_for_xmitr(up, UART_LSR_THRE);
+>  		serial_out_sync(up, UART_IER, UART_IER_THRI);
+> @@ -1843,7 +1845,9 @@ static int serial8250_startup(struct uart_port *port)
+>  		iir = serial_in(up, UART_IIR);
+>  		serial_out(up, UART_IER, 0);
+>  
+> -		spin_unlock_irqrestore(&up->port.lock, flags);
+> +		if (up->port.flags & UPF_SHARE_IRQ)
+> +			enable_irq(up->port.irq);
+> +		spin_unlock(&up->port.lock);
+>  
+>  		/*
+>  		 * If the interrupt is not reasserted, setup a timer to
+> -- 
+> 1.5.5.4
+> 
+
+-- 
+Anton Vorontsov
+email: cbouatmailru@gmail.com
+irc://irc.freenode.net/bd2
