@@ -1,57 +1,50 @@
-From: Grant Edwards <grante@visi.com>
-Subject: Re: Suggested patch for linux
-Date: Fri, 18 Jul 2008 13:55:38 +0000 (UTC)
-Message-ID: <g5q7cp$o4j$1@ger.gmane.org>
-References: <487546D5.8050908@freesurf.ch>
- <20080710095904.16dfdb08@the-village.bc.nu>
- <487619C8.7080509@commtech-fastcom.com>
- <200807181219.54170.laurentp@cse-semaphore.com>
+From: Dale Farnsworth <dale@farnsworth.org>
+Subject: [PATCH] serial: mpsc: release port lock on call to
+	tty_flip_buffer_push
+Date: Mon, 21 Jul 2008 17:03:31 -0700
+Message-ID: <20080722000331.GA9886@farnsworth.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from main.gmane.org ([80.91.229.2]:37518 "EHLO ciao.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753706AbYGRNzx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 18 Jul 2008 09:55:53 -0400
-Received: from list by ciao.gmane.org with local (Exim 4.43)
-	id 1KJqR1-0007R7-UJ
-	for linux-serial@vger.kernel.org; Fri, 18 Jul 2008 13:55:48 +0000
-Received: from 65.111.170.175 ([65.111.170.175])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Fri, 18 Jul 2008 13:55:47 +0000
-Received: from grante by 65.111.170.175 with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Fri, 18 Jul 2008 13:55:47 +0000
+Received: from xyzzy.farnsworth.org ([65.39.95.219]:44727 "EHLO
+	xyzzy.farnsworth.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753580AbYGVAcO (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 21 Jul 2008 20:32:14 -0400
+Received: from dale by xyzzy.farnsworth.org with local (Exim 4.69)
+	(envelope-from <dale@farnsworth.org>)
+	id 1KL5Ln-0002Zj-Tu
+	for linux-serial@vger.kernel.org; Mon, 21 Jul 2008 17:03:36 -0700
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: linux-usb@vger.kernel.org
 
-On 2008-07-18, Laurent Pinchart <laurentp@cse-semaphore.com> wrote:
+We need to release the port lock when we call tty_flip_buffer_push()
+to avoid a deadlock when the serial-core routines try to acquire
+the same lock.  This deadlock has been observed on CONFIG_PREEMPT_RT
+configurations.
 
->> I believe that he is referring to something much simpler than
->> you are thinking.  He is talking about 2-wire RS485
->> transmissions in which the RTS signal is used to enable the
->> driver chips just before transmitting data and disabling
->> (tri-stating) them just after transmitting data.  There are
->> some UARTs that have this behavior built into them.
->
-> And that feature is currently not supported by Linux, even
-> with UARTs that have hardware support for "Auto RS485" mode,
-> such as the 8250-compatible XR16C2850.
->
-> The issue is that no flag is defined for the c_cflag field of
-> the termios structure to enable that feature. The following
-> patch is an example of what would be required.
+Signed-off-by: Dale Farnsworth <dale@farnsworth.org>
+Cc: <mgreer@mvista.com>
+---
+ drivers/serial/mpsc.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
 
-I'd definitely be in favor of such a flag. It sucks having to
-resort to various hacks to control support of that feature in
-Linux serial drivers.
-
+diff --git a/drivers/serial/mpsc.c b/drivers/serial/mpsc.c
+index c9f53e7..158d748 100644
+--- a/drivers/serial/mpsc.c
++++ b/drivers/serial/mpsc.c
+@@ -1065,7 +1065,9 @@ next_frame:
+ 	if ((readl(pi->sdma_base + SDMA_SDCM) & SDMA_SDCM_ERD) == 0)
+ 		mpsc_start_rx(pi);
+ 
++	spin_unlock(&pi->port.lock);
+ 	tty_flip_buffer_push(tty);
++	spin_lock(&pi->port.lock);
+ 	return rc;
+ }
+ 
 -- 
-Grant Edwards                   grante             Yow! In Newark the
-                                  at               laundromats are open 24
-                               visi.com            hours a day!
+1.5.6
 
