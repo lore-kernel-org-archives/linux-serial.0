@@ -1,35 +1,72 @@
-From: Matt Schulte <matts@commtech-fastcom.com>
-Subject: Re: [PATCH/RFC] 8250: Auto RS485 direction control
-Date: Thu, 24 Jul 2008 09:13:34 -0500
-Message-ID: <48888E0E.3050601@commtech-fastcom.com>
-References: <200807241347.33261.laurentp@cse-semaphore.com> <20080724125706.19844a96@lxorguk.ukuu.org.uk> <20080724122402.GC9327@flint.arm.linux.org.uk> <20080724132746.1a961584@lxorguk.ukuu.org.uk> <20080724125210.GD9327@flint.arm.linux.org.uk>
+From: Laurent Pinchart <laurentp@cse-semaphore.com>
+Subject: [PATCHv2] cpm_uart: Fix break generation
+Date: Thu, 24 Jul 2008 16:21:58 +0200
+Message-ID: <200807241621.58719.laurentp@cse-semaphore.com>
+References: <200806261338.19358.laurentp@cse-semaphore.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nf-out-0910.google.com ([64.233.182.184]:42946 "EHLO
-	nf-out-0910.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751414AbYGXONl (ORCPT
+Received: from mailrelay005.isp.belgacom.be ([195.238.6.171]:36024 "EHLO
+	mailrelay005.isp.belgacom.be" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751539AbYGXOWB (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 24 Jul 2008 10:13:41 -0400
-Received: by nf-out-0910.google.com with SMTP id d3so1079461nfc.21
-        for <linux-serial@vger.kernel.org>; Thu, 24 Jul 2008 07:13:40 -0700 (PDT)
-In-Reply-To: <20080724125210.GD9327@flint.arm.linux.org.uk>
+	Thu, 24 Jul 2008 10:22:01 -0400
+In-Reply-To: <200806261338.19358.laurentp@cse-semaphore.com>
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <rmk@arm.linux.org.uk>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Laurent Pinchart <laurentp@cse-semaphore.com>, linux-serial@vger.kernel.org
+To: linuxppc-dev@ozlabs.org
+Cc: linux-serial@vger.kernel.org, galak@kernel.crashing.org, scottwood@freescale.com
 
-Russell King wrote:
-> 
-> It's true of all 8250 compatibles which don't have hardware RS485
-> support.  I think that's all of them except 16850 and 16960.
-> 
+When generating a break condition on a serial port, the CPM must be told
+beforehand how long the break should be. Unfortunately, this information is
+not available through the current serial break handling API. This patch works
+around the problem by requesting a 32767 characters break followed by a 0
+characters break after the requested duration. The CPM will stop the first
+break when the second one is requested. This might not work with future CPM
+revisions.
+---
+ drivers/serial/cpm_uart/cpm_uart_core.c |    9 +++++++++
+ 1 files changed, 9 insertions(+), 0 deletions(-)
 
-Just for the sake of completeness, the Oxford Semi 16c950 also has 
-hardare 485 control, as do Exar's PCI based 17d15x UARTs.
+diff --git a/drivers/serial/cpm_uart/cpm_uart_core.c b/drivers/serial/cpm_uart/cpm_uart_core.c
+index c29d87d..aa0a284 100644
+--- a/drivers/serial/cpm_uart/cpm_uart_core.c
++++ b/drivers/serial/cpm_uart/cpm_uart_core.c
+@@ -269,13 +269,19 @@ static void cpm_uart_break_ctl(struct uart_port *port, int break_state)
+ {
+ 	struct uart_cpm_port *pinfo = (struct uart_cpm_port *)port;
++	u16 __iomem *brkcr = IS_SMC(pinfo) ? &pinfo->smcup->smc_brkcr
++				: &pinfo->sccup->scc_brkcr;
+ 
+ 	pr_debug("CPM uart[%d]:break ctrl, break_state: %d\n", port->line,
+ 		break_state);
+ 
+-	if (break_state)
++	if (break_state) {
++		out_be16(brkcr, 32767);
+ 		cpm_line_cr_cmd(pinfo, CPM_CR_STOP_TX);
+-	else
++	} else {
++		out_be16(brkcr, 0);
++		cpm_line_cr_cmd(pinfo, CPM_CR_STOP_TX);
+ 		cpm_line_cr_cmd(pinfo, CPM_CR_RESTART_TX);
++	}
+ }
+ 
+ /*
+-- 
+1.5.0
 
+-- 
+Laurent Pinchart
+CSE Semaphore Belgium
 
-Matt Schulte
-Commtech, Inc.
+Chaussee de Bruxelles, 732A
+B-1410 Waterloo
+Belgium
 
+T +32 (2) 387 42 59
+F +32 (2) 387 42 75
