@@ -1,37 +1,39 @@
-From: Russell King <rmk@arm.linux.org.uk>
-Subject: Re: [PATCH/RFC] 8250: Auto RS485 direction control
-Date: Thu, 24 Jul 2008 15:47:24 +0100
-Message-ID: <20080724144724.GE9327@flint.arm.linux.org.uk>
-References: <200807241347.33261.laurentp@cse-semaphore.com> <20080724125706.19844a96@lxorguk.ukuu.org.uk> <20080724122402.GC9327@flint.arm.linux.org.uk> <20080724132746.1a961584@lxorguk.ukuu.org.uk> <20080724125210.GD9327@flint.arm.linux.org.uk> <48888E0E.3050601@commtech-fastcom.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Kumar Gala <galak@kernel.crashing.org>
+Subject: Re: [PATCHv2] cpm_uart: Fix break generation
+Date: Thu, 24 Jul 2008 10:14:57 -0500
+Message-ID: <EFAF51F5-D2A4-4A8F-AB94-0A746B67E190@kernel.crashing.org>
+References: <200806261338.19358.laurentp@cse-semaphore.com> <200807241621.58719.laurentp@cse-semaphore.com>
+Mime-Version: 1.0 (Apple Message framework v926)
+Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([78.32.30.218]:38416 "EHLO
-	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758183AbYGXOrn (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 24 Jul 2008 10:47:43 -0400
-Content-Disposition: inline
-In-Reply-To: <48888E0E.3050601@commtech-fastcom.com>
+Received: from gate.crashing.org ([63.228.1.57]:59631 "EHLO gate.crashing.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751716AbYGXPPI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 24 Jul 2008 11:15:08 -0400
+In-Reply-To: <200807241621.58719.laurentp@cse-semaphore.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Matt Schulte <matts@commtech-fastcom.com>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Laurent Pinchart <laurentp@cse-semaphore.com>, linux-serial@vger.kernel.org
+To: Laurent Pinchart <laurentp@cse-semaphore.com>
+Cc: linuxppc-dev@ozlabs.org, linux-serial@vger.kernel.org, scottwood@freescale.com
 
-On Thu, Jul 24, 2008 at 09:13:34AM -0500, Matt Schulte wrote:
-> Russell King wrote:
-> >
-> >It's true of all 8250 compatibles which don't have hardware RS485
-> >support.  I think that's all of them except 16850 and 16960.
-> >
-> 
-> Just for the sake of completeness, the Oxford Semi 16c950 also has 
-> hardare 485 control, as do Exar's PCI based 17d15x UARTs.
 
-For the elimination of confusion, that '960' was a typo - it should've
-been 950, since it was the set of Oxford 950 devices I was referring to.
+On Jul 24, 2008, at 9:21 AM, Laurent Pinchart wrote:
 
--- 
-Russell King
- Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
- maintainer of:
+> When generating a break condition on a serial port, the CPM must be  
+> told
+> beforehand how long the break should be. Unfortunately, this  
+> information is
+> not available through the current serial break handling API. This  
+> patch works
+> around the problem by requesting a 32767 characters break followed  
+> by a 0
+> characters break after the requested duration. The CPM will stop the  
+> first
+> break when the second one is requested. This might not work with  
+> future CPM
+> revisions.
+
+What do you mean by future CPM revision?  Do you mean QE?
+
+- k
