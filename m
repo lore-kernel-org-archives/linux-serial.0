@@ -1,100 +1,50 @@
-From: Randy Dunlap <rdunlap@xenotime.net>
-Subject: Re: [RFC] [PATCH 1/7] pcmcia: add pcmcia_loop_config() helper
-Date: Tue, 29 Jul 2008 14:16:42 -0700
-Message-ID: <20080729141642.47c8d6ca.rdunlap@xenotime.net>
-References: <20080729071539.GB27385@comet.dominikbrodowski.net>
+From: Federico Tula Rovaletti <fedetula@gmail.com>
+Subject: function read() isn't quick enough for reading in ttyS*
+Date: Thu, 31 Jul 2008 03:17:21 -0300
+Message-ID: <489158F1.2030402@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from xenotime.net ([66.160.160.81]:47550 "HELO xenotime.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
-	id S1755188AbYG2VQq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 Jul 2008 17:16:46 -0400
-Received: from chimera.site ([96.225.228.12]) by xenotime.net for <linux-serial@vger.kernel.org>; Tue, 29 Jul 2008 14:16:43 -0700
-In-Reply-To: <20080729071539.GB27385@comet.dominikbrodowski.net>
+Received: from yw-out-2324.google.com ([74.125.46.28]:62399 "EHLO
+	yw-out-2324.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751915AbYGaGR1 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 31 Jul 2008 02:17:27 -0400
+Received: by yw-out-2324.google.com with SMTP id 9so213613ywe.1
+        for <linux-serial@vger.kernel.org>; Wed, 30 Jul 2008 23:17:25 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Dominik Brodowski <linux@dominikbrodowski.net>
-Cc: linux-pcmcia@lists.infradead.org, Tejun Heo <htejun@gmail.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-ide@vger.kernel.org, Marcel Holtmann <marcel@holtmann.org>, linux-bluetooth@vger.kernel.org, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, linux-scsi@vger.kernel.org, Karsten Keil <kkeil@suse.de>, isdn4linux@listserv.isdn4linux.de, Jeff Garzik <jgarzik@pobox.com>, netdev@vger.kernel.org, Harald Welte <laforge@gnumonks.org>, linux-parport@lists.infradead.org, Russell King <rmk+kernel@arm.linux.org.uk>, Ed Okerson <eokerson@quicknet.net>, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: alan@lxorguk.ukuu.org.uk
 
-On Tue, 29 Jul 2008 09:15:39 +0200 Dominik Brodowski wrote:
+Hi all! I'm a novice in Linux
 
-> By calling pcmcia_loop_config(), a pcmcia driver can iterate over all
-> available configuration options. During a driver's probe() phase, one
-> doesn't need to use pcmcia_get_{first,next}_tuple, pcmcia_get_tuple_data
-> and pcmcia_parse_tuple directly in most if not all cases.
-> 
-> Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
-> ---
->  Documentation/pcmcia/driver-changes.txt |    6 +++
->  drivers/pcmcia/pcmcia_resource.c        |   57 +++++++++++++++++++++++++++++++
->  include/pcmcia/cistpl.h                 |    6 +++
->  3 files changed, 69 insertions(+), 0 deletions(-)
-> 
-> By calling pcmcia_loop_config(), a pcmcia driver can iterate over all
-> available configuration options. During a driver's probe() phase, one
-> doesn't need to use pcmcia_get_{first,next}_tuple, pcmcia_get_tuple_data
-> and pcmcia_parse_tuple directly in most if not all cases.
-> 
-> Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
-> ---
->  Documentation/pcmcia/driver-changes.txt |    6 +++
->  drivers/pcmcia/pcmcia_resource.c        |   63 +++++++++++++++++++++++++++++++
->  include/pcmcia/cistpl.h                 |    6 +++
->  3 files changed, 75 insertions(+), 0 deletions(-)
-> 
-> diff --git a/drivers/pcmcia/pcmcia_resource.c b/drivers/pcmcia/pcmcia_resource.c
-> index 4884a18..0fa48aa 100644
-> --- a/drivers/pcmcia/pcmcia_resource.c
-> +++ b/drivers/pcmcia/pcmcia_resource.c
-> @@ -909,3 +909,66 @@ void pcmcia_disable_device(struct pcmcia_device *p_dev) {
->  		pcmcia_release_window(p_dev->win);
->  }
->  EXPORT_SYMBOL(pcmcia_disable_device);
-> +
-> +
+In a program I'm writing in c and, when I use the read() function for 
+reading a byte in the port serial with a configuration: 115200 bps, 8N2
 
-Hi,
+takes from 2ms to 6ms (aleatory, even if a read up to 10 bytes takes the 
+same time), which is  too long.
+(ioctl(fd, FIONREAD, &bytes) last the same)
 
-One more comment here (sorry I missed it earlier):
+This is the time is suppose to last:
+8 bits: data
+2 bits: stop
+1 bit: start
+time = ((8+2+1)bits/115200bps) = 0.095ms,
 
-The kernel-doc comment needs to immediately precede the function, so that
-struct pcmcia_cfg_mem needs to be moved to before the kernel-doc block...
+then when I read the byte with the function inb_p() takes ~ 0.1ms which 
+is perfect, what I'm needing for my project.
 
+The problem I'm having is that I use signals (with fcntl(fd, F_SETFL, 
+O_ASYNC) ) but this signals last the same time in occur that the read() 
+(unacceptable) so I guess that this is a problem of the driver that is 
+to slow.
 
-> +/**
-> + * pcmcia_loop_config() - loop over configuration options
-> + * @p_dev:	the struct pcmcia_device which we need to loop for.
-> + * @conf_check:	function to call for each configuration option.
-> + *		It gets passed the struct pcmcia_device, the CIS data
-> + *		describing the configuration option, and private data
-> + *		being passed to pcmcia_loop_config()
-> + * @priv_data:	private data to be passed to the conf_check function.
-> + *
-> + * pcmcia_loop_config() loops over all configuration options, and calls
-> + * the driver-specific conf_check() for each one, checking whether
-> + * it is a valid one.
-> + */
-> +
-> +struct pcmcia_cfg_mem {
-> +	tuple_t tuple;
-> +	cisparse_t parse;
-> +	u8 buf[256];
-> +};
-> +
-> +int pcmcia_loop_config(struct pcmcia_device *p_dev,
-> +		       int	(*conf_check)	(struct pcmcia_device *p_dev,
-> +						 cistpl_cftable_entry_t *cfg,
-> +						 void *priv_data),
-> +		       void *priv_data)
-> +{
-...
-> +}
-> +EXPORT_SYMBOL(pcmcia_loop_config);
+So the question is, is there any way to improve the performance of the 
+driver or using read? (doing inb_p is very nasty). Do I'm doing 
+something wrong?
 
+Thanks in advance!, I expect as soon as possible any answer
 
----
-~Randy
-Linux Plumbers Conference, 17-19 September 2008, Portland, Oregon USA
-http://linuxplumbersconf.org/
+PD: sorry for my English,
