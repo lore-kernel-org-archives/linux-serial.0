@@ -1,50 +1,96 @@
-From: Federico Tula Rovaletti <fedetula@gmail.com>
-Subject: function read() isn't quick enough for reading in ttyS*
-Date: Thu, 31 Jul 2008 03:17:21 -0300
-Message-ID: <489158F1.2030402@gmail.com>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: [RFC] suggested fix for 83xx/85xx PowerPC UART break bug
+Date: Thu, 31 Jul 2008 11:26:30 -0400
+Message-ID: <20080731152616.GA14248@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from yw-out-2324.google.com ([74.125.46.28]:62399 "EHLO
-	yw-out-2324.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751915AbYGaGR1 (ORCPT
+Received: from [128.224.252.2] ([128.224.252.2]:15688 "EHLO
+	yow-pgortmak-d1.corp.ad.wrs.com" rhost-flags-FAIL-FAIL-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752737AbYGaPcs (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 31 Jul 2008 02:17:27 -0400
-Received: by yw-out-2324.google.com with SMTP id 9so213613ywe.1
-        for <linux-serial@vger.kernel.org>; Wed, 30 Jul 2008 23:17:25 -0700 (PDT)
+	Thu, 31 Jul 2008 11:32:48 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: alan@lxorguk.ukuu.org.uk
+Cc: linux-kernel@vger.kernel.org
 
-Hi all! I'm a novice in Linux
 
-In a program I'm writing in c and, when I use the read() function for 
-reading a byte in the port serial with a configuration: 115200 bps, 8N2
+This is something I'd tripped over earlier, and wanted to follow up on
+to get an acceptable fix in for everyone's benefit before it falls through
+the cracks again.
 
-takes from 2ms to 6ms (aleatory, even if a read up to 10 bytes takes the 
-same time), which is  too long.
-(ioctl(fd, FIONREAD, &bytes) last the same)
+There seems to be an issue with recent 83xx/85xx SOC UARTs, in which a break
+triggers a short lived IRQ storm (hence killing any hope of using SysRQ).
+The only fix I found to work was to just ignore the bogus events that
+had the associated signature bit set.
 
-This is the time is suppose to last:
-8 bits: data
-2 bits: stop
-1 bit: start
-time = ((8+2+1)bits/115200bps) = 0.095ms,
+This fix is what I was using against earlier kernels, but I hate to add more
+board/arch specific ifdefs to files like 8250.c, so I'm wondering if
+anyone has any other suggestions before I simply end up cleaning up the
+boardlist (now ppc is dead) and respinning the patch much as it is now
+and resending.
 
-then when I read the byte with the function inb_p() takes ~ 0.1ms which 
-is perfect, what I'm needing for my project.
+Thanks,
+Paul.
 
-The problem I'm having is that I use signals (with fcntl(fd, F_SETFL, 
-O_ASYNC) ) but this signals last the same time in occur that the read() 
-(unacceptable) so I guess that this is a problem of the driver that is 
-to slow.
+-----------------
 
-So the question is, is there any way to improve the performance of the 
-driver or using read? (doing inb_p is very nasty). Do I'm doing 
-something wrong?
+Variation/update of version1 of the patch -- orig. discussion at:
 
-Thanks in advance!, I expect as soon as possible any answer
+http://patchwork.ozlabs.org/linuxppc/patch?id=15986
 
-PD: sorry for my English,
+Update is: Don't use MPC8540 as a selector for the 8548 boards,
+since testing on a genuine (older) MPC8540ADS board shows that
+it doesn't have the issue.  This will get coverage on the 
+sbc8349, fsl_mpc8349_mitx, fsl_mpc832xe (and the similar 8323RDB)
+and the sbc8548 and the fsl_8548cds. (i.e all the boards where
+the problem has been demonstrated to exist so far.)
+
+    Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+
+---
+ drivers/serial/8250.c      |   17 +++++++++++++++++
+ include/linux/serial_reg.h |    1 +
+ 2 files changed, 18 insertions(+)
+
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -1347,6 +1347,25 @@ serial8250_handle_port(struct uart_8250_
+ 
+ 	status = serial_inp(up, UART_LSR);
+ 
++#if defined(CONFIG_MPC834x) || defined(CONFIG_MPC85xx_CDS) || \
++	defined(CONFIG_SBC8548) || defined (CONFIG_PPC_MPC832x)
++	/*
++	 * There appears to be a quirk in the implementation on some 8xxx
++	 * where after a break is rec'd (UART_LSR_BI), the UART generates
++	 * a short duration burst of bogus IRQ events with the signature
++	 * of RFE set (along with "normal" bits set) in the LSR.
++	 */
++
++#define RFE_8xxx_ERR_BITS (	UART_LSR_RFE	| UART_LSR_TEMT	| \
++				UART_LSR_THRE	| UART_LSR_BI	| \
++				UART_LSR_DR	)
++
++	if (status == RFE_8xxx_ERR_BITS) {
++		spin_unlock(&up->port.lock);
++		return;
++	}
++#endif
++
+ 	DEBUG_INTR("status = %x...", status);
+ 
+ 	if (status & UART_LSR_DR) {
+--- a/include/linux/serial_reg.h
++++ b/include/linux/serial_reg.h
+@@ -109,6 +109,7 @@
+ #define UART_MCR_DTR		0x01 /* DTR complement */
+ 
+ #define UART_LSR	5	/* In:  Line Status Register */
++#define UART_LSR_RFE		0x80 /* Rx FIFO Error (BE, FE, or PE) */
+ #define UART_LSR_TEMT		0x40 /* Transmitter empty */
+ #define UART_LSR_THRE		0x20 /* Transmit-hold-register empty */
+ #define UART_LSR_BI		0x10 /* Break interrupt indicator */
+
