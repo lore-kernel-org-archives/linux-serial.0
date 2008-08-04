@@ -1,50 +1,77 @@
-From: Grant Edwards <grante@visi.com>
+From: Laurent Pinchart <laurentp@cse-semaphore.com>
 Subject: Re: [PATCH/RFC] 8250: Auto RS485 direction control
-Date: Mon, 4 Aug 2008 14:22:30 +0000 (UTC)
-Message-ID: <g773b6$edj$1@ger.gmane.org>
-References: <200807241347.33261.laurentp@cse-semaphore.com>
- <014e01c8f63c$6d03dee0$2e01a8c0@acksys.local>
+Date: Mon, 4 Aug 2008 16:36:59 +0200
+Message-ID: <200808041637.02058.laurentp@cse-semaphore.com>
+References: <014e01c8f63c$6d03dee0$2e01a8c0@acksys.local>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed;
+  boundary="nextPart2242724.WUIrsUdxRV";
+  protocol="application/pgp-signature";
+  micalg=pgp-sha1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from main.gmane.org ([80.91.229.2]:52593 "EHLO ciao.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752998AbYHDOW4 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 4 Aug 2008 10:22:56 -0400
-Received: from list by ciao.gmane.org with local (Exim 4.43)
-	id 1KQ0xS-0001Tn-Oy
-	for linux-serial@vger.kernel.org; Mon, 04 Aug 2008 14:22:49 +0000
-Received: from 64.251.14.41 ([64.251.14.41])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Mon, 04 Aug 2008 14:22:41 +0000
-Received: from grante by 64.251.14.41 with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Mon, 04 Aug 2008 14:22:41 +0000
+Received: from mailrelay005.isp.belgacom.be ([195.238.6.171]:12030 "EHLO
+	mailrelay005.isp.belgacom.be" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755608AbYHDOhH (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 4 Aug 2008 10:37:07 -0400
+In-Reply-To: <014e01c8f63c$6d03dee0$2e01a8c0@acksys.local>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Tosoni <jp.tosoni@acksys.fr>
+Cc: linux-serial@vger.kernel.org
 
-On 2008-08-04, Tosoni <jp.tosoni@acksys.fr> wrote:
+--nextPart2242724.WUIrsUdxRV
+Content-Type: text/plain;
+  charset="ansi_x3.4-1968"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+On Monday 04 August 2008, Tosoni wrote:
 > About the flags names -- CARTS, UART_FCTR_RS485
->
+>=20
 > May I suggest CRTSTOGGLE since it is known by that kind of name in other
 > OS's :-)
 
-RTS toggle is what the feature is called in the products I work
-on.  I assume that's a microsoftism, but it seems to be in
-commmon usage.
+I like Russell's proposal of sticking to CRTSCTS and adding options to sets=
+erial:
 
-> And further, it says was RTS will do, instead of why. Maybe
-> someone could use it for something other than RS485?
+> Should CRTSCTS be a global "enable some kind of flow control" bit and
+> setserial be used to configure the actual flow control method
+> (conventional RTS/CTS, DTR/DSR, alternate RTS/CTS, RS485 on RTS,
+> RS485 on DTR) ?
 
-Sure.  It's also used for half-duplex modems (e.g. Bell-202,
-various RF comm modules) and other sorts of line drivers (e.g.
-optical stuff).
+Any opinion on that ?
 
--- 
-Grant Edwards                   grante             Yow! I want to kill
-                                  at               everyone here with a cute
-                               visi.com            colorful Hydrogen Bomb!!
+> And further, it says was RTS will do, instead of why. Maybe someone could
+> use it for something other than RS485 ?
 
+I agree with you here. The name should reflect that RTS is used in 'envelop=
+e' mode (asserted during data transmission, idle between frames).
+
+Best regards,
+
+=2D-=20
+Laurent Pinchart
+CSE Semaphore Belgium
+
+Chaussee de Bruxelles, 732A
+B-1410 Waterloo
+Belgium
+
+T +32 (2) 387 42 59
+=46 +32 (2) 387 42 75
+
+--nextPart2242724.WUIrsUdxRV
+Content-Type: application/pgp-signature; name=signature.asc 
+Content-Description: This is a digitally signed message part.
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+
+iEYEABECAAYFAkiXFA4ACgkQ8y9gWxC9vpftFACcCkZCfXHLbOO1O8uPPHbUmwix
+kk0An294Jt62FxeMaib1wZ5UiTI07wnL
+=kLPT
+-----END PGP SIGNATURE-----
+
+--nextPart2242724.WUIrsUdxRV--
