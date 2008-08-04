@@ -1,60 +1,134 @@
 From: "Tosoni" <jp.tosoni@acksys.fr>
-Subject: RE: Suggested patch for linux
-Date: Mon, 4 Aug 2008 15:28:05 +0200
-Message-ID: <014d01c8f635$ee178ec0$2e01a8c0@acksys.local>
-References: <g557er$c32$1@ger.gmane.org>
+Subject: RE: [PATCH/RFC] 8250: Auto RS485 direction control
+Date: Mon, 4 Aug 2008 16:14:35 +0200
+Message-ID: <014e01c8f63c$6d03dee0$2e01a8c0@acksys.local>
+References: <200807241347.33261.laurentp@cse-semaphore.com>
 Mime-Version: 1.0
 Content-Type: text/plain;
 	charset="US-ASCII"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp01.msg.oleane.net ([62.161.4.1]:45011 "EHLO
+Received: from smtp01.msg.oleane.net ([62.161.4.1]:36097 "EHLO
 	smtp01.msg.oleane.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753377AbYHDNzc (ORCPT
+	with ESMTP id S1753556AbYHDOQa (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 4 Aug 2008 09:55:32 -0400
-In-Reply-To: <g557er$c32$1@ger.gmane.org>
+	Mon, 4 Aug 2008 10:16:30 -0400
+In-Reply-To: <200807241347.33261.laurentp@cse-semaphore.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Grant Edwards' <grante@visi.com>, linux-serial@vger.kernel.org
+To: 'Laurent Pinchart' <laurentp@cse-semaphore.com>, linux-serial@vger.kernel.org
 
-> -----Original Message-----
-> From: Grant Edwards
-> Sent: Thursday, July 10, 2008 4:48 PM
+About the flags names -- CARTS, UART_FCTR_RS485
 
-...
->
-> On 2008-07-10, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
-...
-> > Do we really benefit from having this in kernel ?
->
-> People who do industrial communications sure would.  I maintain
-> a couple serial drivers that support half-duplex mode exactly
-> as described by the OP, and we have to control that feature via
-> non-standard hacks.
-...
+May I suggest CRTSTOGGLE since it is known by that kind of name in other
+OS's :-)
 
-I fully agree with Grant Edwards. I, as well, have been myself maintaining
-two serial drivers that support half-duplex mode exactly as described, and I
-have to control that feature via non-standard hacks !!!
-I have been porting them over and over again with each Linux version and
-subversion, since Linux 2.2, and there IS a demand for it.
+And further, it says was RTS will do, instead of why. Maybe someone could
+use it for something other than RS485 ?
 
-About the benefit to have this in the kernel: well, we would be enabled to
-implement it for any UART, not just the 16550 series !
-
-Now, about Linux RT and response times: The TXD-to-RTS delay must be as
-short as possible. To do this, several UARTS i.e. (Ox950) have a special
-mode. How could you do this in a user land program for any baud rate ? I
-speak about baud rates up to 2 Mbps, they are in use nowadays on
-RS2422/RS485 lines.
-
-Really, I would like AT LEAST some commonly defined way to activate this
-behaviour. Russell King once suggested to create a line discipline to handle
-the RTS, but even like this we need a way (an ioctl) to activate the
-behaviour in the UART driver, to make it independent from the specific UART.
+Regards
 
 JP Tosoni
-Acksys
 
+> -----Original Message-----
+> From: linux-serial-owner@vger.kernel.org
+> [mailto:linux-serial-owner@vger.kernel.org]On Behalf Of
+> Laurent Pinchart
+> Sent: Thursday, July 24, 2008 1:47 PM
+> To: linux-serial@vger.kernel.org
+> Cc: Alan Cox; rmk@arm.linux.org.uk
+> Subject: [PATCH/RFC] 8250: Auto RS485 direction control
+>
+>
+> This patch adds support for the automatic RS485 direction
+> control feature
+> present in 16850 UARTs.
+>
+> A new termios c_cflag, CARTS, is introduced to configure
+> automatic direction
+> control from userspace.
+>
+> This is a first proposal. I'm open to suggestions regarding
+> the CARTS name.
+> I assume the CARTS flag will have to be added to all
+> asm/termbits.h headers.
+> Why are the termios bits definitions platform specific ?
+>
+> ---
+>  drivers/serial/8250.c          |   14 ++++++++++++++
+>  include/asm-powerpc/termbits.h |    1 +
+>  include/linux/serial_reg.h     |    1 +
+>  3 files changed, 16 insertions(+), 0 deletions(-)
+>
+> diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+> index 62a2e49..a1351d5 100644
+> --- a/drivers/serial/8250.c
+> +++ b/drivers/serial/8250.c
+> @@ -2071,6 +2071,20 @@ serial8250_set_termios(struct
+> uart_port *port, struct ktermios *termios,
+>  	if (up->port.type == PORT_16750)
+>  		serial_outp(up, UART_FCR, fcr);
+>
+> +#ifdef CARTS
+> +	/* Auto RS485 Direction Control on 16850 UARTs */
+> +	if (up->port.type == PORT_16850) {
+> +		unsigned char fctr;
+> +
+> +		serial_outp(up, UART_LCR, 0xbf);
+> +		fctr = serial_inp(up, UART_FCTR) & ~UART_FCTR_RS485;
+> +		if (termios->c_cflag & CARTS)
+> +			fctr |= UART_FCTR_RS485;
+> +		serial_outp(up, UART_FCTR, fctr);
+> +		serial_outp(up, UART_LCR, 0);
+> +	}
+> +#endif
+> +
+>  	serial_outp(up, UART_LCR, cval);		/* reset DLAB */
+>  	up->lcr = cval;					/* Save LCR */
+>  	if (up->port.type != PORT_16750) {
+> diff --git a/include/asm-powerpc/termbits.h
+> b/include/asm-powerpc/termbits.h
+> index 5e79198..7b7ee27 100644
+> --- a/include/asm-powerpc/termbits.h
+> +++ b/include/asm-powerpc/termbits.h
+> @@ -166,6 +166,7 @@ struct ktermios {
+>  #define HUPCL	00040000
+>
+>  #define CLOCAL	00100000
+> +#define CARTS	  004000000000		/* auto RTS control */
+>  #define CMSPAR	  010000000000		/* mark or
+> space (stick) parity */
+>  #define CRTSCTS	  020000000000		/* flow control */
+>
+> diff --git a/include/linux/serial_reg.h b/include/linux/serial_reg.h
+> index 3c8a6aa..3db78cc 100644
+> --- a/include/linux/serial_reg.h
+> +++ b/include/linux/serial_reg.h
+> @@ -188,6 +188,7 @@
+>  #define UART_FCTR_RTS_8DELAY	0x03
+>  #define UART_FCTR_IRDA		0x04  /* IrDa data
+> encode select */
+>  #define UART_FCTR_TX_INT	0x08  /* Tx interrupt type select */
+> +#define UART_FCTR_RS485		0x08  /* Auto RS485
+> direction control */
+>  #define UART_FCTR_TRGA		0x00  /* Tx/Rx 550
+> trigger table select */
+>  #define UART_FCTR_TRGB		0x10  /* Tx/Rx 650
+> trigger table select */
+>  #define UART_FCTR_TRGC		0x20  /* Tx/Rx 654
+> trigger table select */
+> --
+> 1.5.0
+>
+> --
+> Laurent Pinchart
+> CSE Semaphore Belgium
+>
+> Chaussee de Bruxelles, 732A
+> B-1410 Waterloo
+> Belgium
+>
+> T +32 (2) 387 42 59
+> F +32 (2) 387 42 75
+>
 
