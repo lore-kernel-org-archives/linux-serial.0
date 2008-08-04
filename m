@@ -1,36 +1,60 @@
-From: "=?BIG5?B?p/Ww6qxQ?=" <egx5l1y542w@gmail.com>
-Subject: =?BIG5?B?UEhQwcqqq6iuuOquxq53uvSvuLFNrtc=?=
-Date: Sun, 3 Aug 2008 06:03:28 +0800
-Message-ID: <97923a2a0808021503w4b393addj9bc04d5bca080367__22632.0121474147$1217714694$gmane$org@mail.gmail.com>
+From: "Tosoni" <jp.tosoni@acksys.fr>
+Subject: RE: Suggested patch for linux
+Date: Mon, 4 Aug 2008 15:28:05 +0200
+Message-ID: <014d01c8f635$ee178ec0$2e01a8c0@acksys.local>
+References: <g557er$c32$1@ger.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=BIG5
-Content-Transfer-Encoding: base64
+Content-Type: text/plain;
+	charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from po-out-1718.google.com ([72.14.252.157]:20669 "EHLO
-	po-out-1718.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754162AbYHBWDb (ORCPT
+Received: from smtp01.msg.oleane.net ([62.161.4.1]:45011 "EHLO
+	smtp01.msg.oleane.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753377AbYHDNzc (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 2 Aug 2008 18:03:31 -0400
-Received: by po-out-1718.google.com with SMTP id c31so2587472poi.1
-        for <linux-serial@vger.kernel.org>; Sat, 02 Aug 2008 15:03:31 -0700 (PDT)
-Content-Disposition: inline
+	Mon, 4 Aug 2008 09:55:32 -0400
+In-Reply-To: <g557er$c32$1@ger.gmane.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-ppp@vger.kernel.org
+To: 'Grant Edwards' <grante@visi.com>, linux-serial@vger.kernel.org
 
-pHPgvqzsp9669K22s12tcAoKp9qtzKq6qXamrqFHq8ik4aq6qEOjuKXzpHCoxrGhoUGzo6xPpHPg
-vqq6pGqoxrGhCgqn2q3MpmKxwKVYpfi3fqfOtki69K+4pV2ndKtlpXi69K22rPykdSur4aV4ut6y
-erV7pqEKCq2trsmtrbZxsU2u17v5IKV1rW4kMjksOTAwCgoopmKwZaO4pn4xMDBNQqSjra2sebZx
-uvSvuKrFtqEpCgqn2q3MsLWquqSjpXWsT7r0r7ihQabTrE+xeqX4t36quqRKpGYKCqO4rdOmbqq6
-pfi3frr0r7i46q7Gp1muyafzt3OqurN0q9esT6vcrautbqq6Cgql+Ld+ou2kxqq6sKqrfr3ouc62
-pKFBpbSzebF6qrq69Lj0qvmtsQoKv+++3KRz4L6mqLROsXqqurnat1EKCqHjoeOh46HjoeOh46Hj
-oeOh46HjoeOh46HjoeOh46HjoeOh46HjoeOh46HjoeOh46HjoeMKUFM6IL11pFfByqqruvSvuKfa
-rczB2aVptKOo0ajqpWS+96juoUEKoUChQLtQvXWkV6ZDpkyxYrPmpf6s2bZXsNMrtmynvcO6tk8u
-Li4uLi61par3rHmqQbDIvveo7gqh46HjoeOh46HjoeOh46HjoeOh46HjoeOh46HjoeOh46HjoeOh
-46HjoeOh46HjoeOh46HjCgrFd6rvqNO5cayiuN+2wLFNrfuhXVNhbaFeoUcwOTgwMTE5ODEyIC8g
-MDkzODc2NDM5NQoKpFe69LdqtE2heaFApHPgvqzsp96kvaVxuvSvuKFAoXqnWaVpp+So7KfarcwK
-CqHjoeOh46HjoeOh46HjoeOh46HjoeOh46HjoeOh46HjoeOh46HjoeOh46HjoeOh46HjoeMKpbuk
-vaVxpXSlfrSjqNHD9sHkpnJTRU+xxqfHqkGwyAqrT8PSsU6xeqq6uvSvuKZiWXggLyBHeCAuLi6x
-xqZissSkQK22CqFAoUChQKFAoUChQKFAoUChQKFAoUChQKFAoUChQKFAoUChQCDFd6rvqNO5cbjf
-sN0hISEKoeOh46HjoeOh46HjoeOh46HjoeOh46HjoeOh46HjoeOh46HjoeOh46HjoeOh46HjoeOh
-4wo=
+> -----Original Message-----
+> From: Grant Edwards
+> Sent: Thursday, July 10, 2008 4:48 PM
+
+...
+>
+> On 2008-07-10, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
+...
+> > Do we really benefit from having this in kernel ?
+>
+> People who do industrial communications sure would.  I maintain
+> a couple serial drivers that support half-duplex mode exactly
+> as described by the OP, and we have to control that feature via
+> non-standard hacks.
+...
+
+I fully agree with Grant Edwards. I, as well, have been myself maintaining
+two serial drivers that support half-duplex mode exactly as described, and I
+have to control that feature via non-standard hacks !!!
+I have been porting them over and over again with each Linux version and
+subversion, since Linux 2.2, and there IS a demand for it.
+
+About the benefit to have this in the kernel: well, we would be enabled to
+implement it for any UART, not just the 16550 series !
+
+Now, about Linux RT and response times: The TXD-to-RTS delay must be as
+short as possible. To do this, several UARTS i.e. (Ox950) have a special
+mode. How could you do this in a user land program for any baud rate ? I
+speak about baud rates up to 2 Mbps, they are in use nowadays on
+RS2422/RS485 lines.
+
+Really, I would like AT LEAST some commonly defined way to activate this
+behaviour. Russell King once suggested to create a line discipline to handle
+the RTS, but even like this we need a way (an ioctl) to activate the
+behaviour in the UART driver, to make it independent from the specific UART.
+
+JP Tosoni
+Acksys
+
+
