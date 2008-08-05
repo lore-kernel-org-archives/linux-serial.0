@@ -1,107 +1,176 @@
-From: Laurent Pinchart <laurentp@cse-semaphore.com>
-Subject: Re: [PATCH/RFC] 8250: Auto RS485 direction control
-Date: Tue, 5 Aug 2008 11:41:04 +0200
-Message-ID: <200808051141.07707.laurentp@cse-semaphore.com>
-References: <014e01c8f63c$6d03dee0$2e01a8c0@acksys.local> <200808041637.02058.laurentp@cse-semaphore.com> <g779ul$7ih$1@ger.gmane.org>
+From: "Will Newton" <will.newton@gmail.com>
+Subject: Re: [PATCH] serial 8250: tighten test for using backup timer
+Date: Tue, 5 Aug 2008 12:44:58 +0100
+Message-ID: <87a5b0800808050444t49480549t758f954c40139c4a@mail.gmail.com>
+References: <1205945437.6881.13.camel@lappy>
 Mime-Version: 1.0
-Content-Type: multipart/signed;
-  boundary="nextPart2100273.fbbF8nW5Ab";
-  protocol="application/pgp-signature";
-  micalg=pgp-sha1
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed;
+	boundary="----=_Part_2907_21877159.1217936698367"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailrelay005.isp.belgacom.be ([195.238.6.171]:5325 "EHLO
-	mailrelay005.isp.belgacom.be" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752808AbYHEJlK (ORCPT
+Received: from yw-out-2324.google.com ([74.125.46.31]:22285 "EHLO
+	yw-out-2324.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755052AbYHELo7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Aug 2008 05:41:10 -0400
-In-Reply-To: <g779ul$7ih$1@ger.gmane.org>
+	Tue, 5 Aug 2008 07:44:59 -0400
+Received: by yw-out-2324.google.com with SMTP id 9so1428582ywe.1
+        for <linux-serial@vger.kernel.org>; Tue, 05 Aug 2008 04:44:58 -0700 (PDT)
+In-Reply-To: <1205945437.6881.13.camel@lappy>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Grant Edwards <grante@visi.com>
-Cc: linux-serial@vger.kernel.org, Russell King <rmk@arm.linux.org.uk>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+To: Alex Williamson <alex.williamson@hp.com>
+Cc: linux-serial <linux-serial@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, Thomas Koeller <thomas@koeller.dyndns.org>
 
---nextPart2100273.fbbF8nW5Ab
-Content-Type: text/plain;
-  charset="ansi_x3.4-1968"
-Content-Transfer-Encoding: quoted-printable
+------=_Part_2907_21877159.1217936698367
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
-On Monday 04 August 2008, Grant Edwards wrote:
-> On 2008-08-04, Laurent Pinchart <laurentp@cse-semaphore.com> wrote:
-> > On Monday 04 August 2008, Tosoni wrote:
-> >> About the flags names -- CARTS, UART_FCTR_RS485
-> >>=20
-> >> May I suggest CRTSTOGGLE since it is known by that kind of name in oth=
-er
-> >> OS's :-)
-> >
-> > I like Russell's proposal of sticking to CRTSCTS and adding options to
-> > setserial:
-> >
-> >> Should CRTSCTS be a global "enable some kind of flow control" bit and
-> >> setserial be used to configure the actual flow control method
-> >> (conventional RTS/CTS, DTR/DSR, alternate RTS/CTS, RS485 on RTS,
-> >> RS485 on DTR) ?
-> >
-> > Any opinion on that ?
->=20
-> Opposed.
->=20
->  1) CRTSCTS means something quite specific.
+On Wed, Mar 19, 2008 at 5:50 PM, Alex Williamson <alex.williamson@hp.com> wrote:
+> Hi,
+>
+>   Thomas Koeller had reported an issue where a device that had been
+> making use of the UART_BUG_TXEN code in the 8250 driver was mistakenly
+> being caught by the backup timer test, causing the device to work
+> improperly.  To fix this, the patch below tightens the test requirements
+> to enable the backup timer workaround.  The backup timer is really meant
+> to catch UARTs that don't re-assert the THRE interrupt.  The expectation
+> is that they do initially assert THRE.  This patch clarifies the test.
+> Thanks,
 
-That's right, and this is my main concern.
+Hi,
 
->     Rather than overload that name for something unrelated, create a new
->     mode bit for the new mode.
+Sorry to not have picked up on this earlier, but this change seems to
+break an old DesignWare UART I have in an SoC here. It has a number of
+known issues, one of which is it does not appropriately reassert THRE.
 
-We already have 3 distinct modes for RTS/CTS (see my mail from today 11:23:=
-36 in this thread). If we add DSR/DTR hardware support we can easily get 5 =
-or 6 modes. We will run out of bits in c_cflags.
+What seems to happen is that the first time the port is opened the
+code tests for incorrect reassertion of THRE and correctly sets up the
+backup timer. The port is closed and subsequently reopened and this
+time around the new logic prevents the backup timer from being
+enabled. I'm not 100% sure of the details of the bug that is being
+worked around here, but it appears that the second time the port is
+opened it is not possible to detect the bug because the previous THRE
+condition has already been acknowledged.
 
->  2) Most of what's in setserial is useless and irrelevent to
->     non-PC-motherboard-16550-uart serial ports (the drivers for
->     which often don't support setserial).
->=20
-> Let's just suck it up and do it the right way.
+The attached patch fixes the problem for me and attempts to preserve
+the new behaviour at the same time. Comments?
 
-As the number of bits in c_cflags is not infinite we will need an ioctl to =
-configure the desired hardware handshake mode (as most modes don't control =
-the data flow I'd rather talk about hardware handshake which is a more gene=
-ric name). We can either use one of the struct serial_struct reserved field=
-s with TIOCSSERIAL, or create another ioctl.
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index 342e12f..e2eacdf 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -1908,14 +1908,18 @@ static int serial8250_startup(struct uart_port *port)
+ 		 * kick the UART on a regular basis.
+ 		 */
+ 		if (!(iir1 & UART_IIR_NO_INT) && (iir & UART_IIR_NO_INT)) {
++			up->bugs |= UART_BUG_THRE;
+ 			pr_debug("ttyS%d - using backup timer\n", port->line);
+-			up->timer.function = serial8250_backup_timeout;
+-			up->timer.data = (unsigned long)up;
+-			mod_timer(&up->timer, jiffies +
+-				poll_timeout(up->port.timeout) + HZ / 5);
+ 		}
+ 	}
 
-> >> And further, it says was RTS will do, instead of why. Maybe
-> >> someone could use it for something other than RS485 ?
-> >
-> > I agree with you here. The name should reflect that RTS is
-> > used in 'envelope' mode (asserted during data transmission,
-> > idle between frames).
->=20
-> I don't really care what the name is.  "RTS toggle" or
-> "half-duplex" is what everybody I know calls it.
++	if (up->bugs & UART_BUG_THRE) {
++		up->timer.function = serial8250_backup_timeout;
++		up->timer.data = (unsigned long)up;
++		mod_timer(&up->timer, jiffies +
++			  poll_timeout(up->port.timeout) + HZ / 5);
++	}
++
+ 	/*
+ 	 * If the "interrupt" for this port doesn't correspond with any
+ 	 * hardware interrupt, we use a timer-based system.  The original
+diff --git a/drivers/serial/8250.h b/drivers/serial/8250.h
+index 78c0016..5202603 100644
+--- a/drivers/serial/8250.h
++++ b/drivers/serial/8250.h
+@@ -47,6 +47,7 @@ struct serial8250_config {
+ #define UART_BUG_QUOT	(1 << 0)	/* UART has buggy quot LSB */
+ #define UART_BUG_TXEN	(1 << 1)	/* UART has buggy TX IIR status */
+ #define UART_BUG_NOMSR	(1 << 2)	/* UART has buggy MSR status bits (Au1x00) */
++#define UART_BUG_THRE	(1 << 3)	/* UART has buggy THRE reassertion */
 
-=2D-=20
-Laurent Pinchart
-CSE Semaphore Belgium
+ #define PROBE_RSA	(1 << 0)
+ #define PROBE_ANY	(~0)
 
-Chaussee de Bruxelles, 732A
-B-1410 Waterloo
-Belgium
 
-T +32 (2) 387 42 59
-=46 +32 (2) 387 42 75
+>        Alex
+>
+> Signed-off-by: Alex Williamson <alex.williamson@hp.com>
+> ---
+>
+> diff -r 2202c155b8c3 drivers/serial/8250.c
+> --- a/drivers/serial/8250.c     Tue Mar 18 21:34:48 2008 -0700
+> +++ b/drivers/serial/8250.c     Wed Mar 19 10:32:40 2008 -0600
+> @@ -1814,6 +1814,7 @@ static int serial8250_startup(struct uar
+>        }
+>
+>        if (is_real_interrupt(up->port.irq)) {
+> +               unsigned char iir1;
+>                /*
+>                 * Test for UARTs that do not reassert THRE when the
+>                 * transmitter is idle and the interrupt has already
+> @@ -1827,7 +1828,7 @@ static int serial8250_startup(struct uar
+>                wait_for_xmitr(up, UART_LSR_THRE);
+>                serial_out_sync(up, UART_IER, UART_IER_THRI);
+>                udelay(1); /* allow THRE to set */
+> -               serial_in(up, UART_IIR);
+> +               iir1 = serial_in(up, UART_IIR);
+>                serial_out(up, UART_IER, 0);
+>                serial_out_sync(up, UART_IER, UART_IER_THRI);
+>                udelay(1); /* allow a working UART time to re-assert THRE */
+> @@ -1840,7 +1841,7 @@ static int serial8250_startup(struct uar
+>                 * If the interrupt is not reasserted, setup a timer to
+>                 * kick the UART on a regular basis.
+>                 */
+> -               if (iir & UART_IIR_NO_INT) {
+> +               if (!(iir1 & UART_IIR_NO_INT) && (iir & UART_IIR_NO_INT)) {
+>                        pr_debug("ttyS%d - using backup timer\n", port->line);
+>                        up->timer.function = serial8250_backup_timeout;
+>                        up->timer.data = (unsigned long)up;
+>
+>
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
+>
 
---nextPart2100273.fbbF8nW5Ab
-Content-Type: application/pgp-signature; name=signature.asc 
-Content-Description: This is a digitally signed message part.
+------=_Part_2907_21877159.1217936698367
+Content-Type: text/x-patch; name=serial-thre.patch
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_fjifzyrj0
+Content-Disposition: attachment; filename=serial-thre.patch
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-
-iEYEABECAAYFAkiYIDMACgkQ8y9gWxC9vpem3ACfQt2FE3e7NKkbICohmtaVf6gW
-zawAoKRBNXuo0dHa4wcvL/owivrNTO0V
-=kbcY
------END PGP SIGNATURE-----
-
---nextPart2100273.fbbF8nW5Ab--
+ZGlmZiAtLWdpdCBhL2RyaXZlcnMvc2VyaWFsLzgyNTAuYyBiL2RyaXZlcnMvc2VyaWFsLzgyNTAu
+YwppbmRleCAzNDJlMTJmLi5lMmVhY2RmIDEwMDY0NAotLS0gYS9kcml2ZXJzL3NlcmlhbC84MjUw
+LmMKKysrIGIvZHJpdmVycy9zZXJpYWwvODI1MC5jCkBAIC0xOTA4LDE0ICsxOTA4LDE4IEBAIHN0
+YXRpYyBpbnQgc2VyaWFsODI1MF9zdGFydHVwKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpCiAJCSAq
+IGtpY2sgdGhlIFVBUlQgb24gYSByZWd1bGFyIGJhc2lzLgogCQkgKi8KIAkJaWYgKCEoaWlyMSAm
+IFVBUlRfSUlSX05PX0lOVCkgJiYgKGlpciAmIFVBUlRfSUlSX05PX0lOVCkpIHsKKwkJCXVwLT5i
+dWdzIHw9IFVBUlRfQlVHX1RIUkU7CiAJCQlwcl9kZWJ1ZygidHR5UyVkIC0gdXNpbmcgYmFja3Vw
+IHRpbWVyXG4iLCBwb3J0LT5saW5lKTsKLQkJCXVwLT50aW1lci5mdW5jdGlvbiA9IHNlcmlhbDgy
+NTBfYmFja3VwX3RpbWVvdXQ7Ci0JCQl1cC0+dGltZXIuZGF0YSA9ICh1bnNpZ25lZCBsb25nKXVw
+OwotCQkJbW9kX3RpbWVyKCZ1cC0+dGltZXIsIGppZmZpZXMgKwotCQkJCXBvbGxfdGltZW91dCh1
+cC0+cG9ydC50aW1lb3V0KSArIEhaIC8gNSk7CiAJCX0KIAl9CiAKKwlpZiAodXAtPmJ1Z3MgJiBV
+QVJUX0JVR19USFJFKSB7CisJCXVwLT50aW1lci5mdW5jdGlvbiA9IHNlcmlhbDgyNTBfYmFja3Vw
+X3RpbWVvdXQ7CisJCXVwLT50aW1lci5kYXRhID0gKHVuc2lnbmVkIGxvbmcpdXA7CisJCW1vZF90
+aW1lcigmdXAtPnRpbWVyLCBqaWZmaWVzICsKKwkJCSAgcG9sbF90aW1lb3V0KHVwLT5wb3J0LnRp
+bWVvdXQpICsgSFogLyA1KTsKKwl9CisKIAkvKgogCSAqIElmIHRoZSAiaW50ZXJydXB0IiBmb3Ig
+dGhpcyBwb3J0IGRvZXNuJ3QgY29ycmVzcG9uZCB3aXRoIGFueQogCSAqIGhhcmR3YXJlIGludGVy
+cnVwdCwgd2UgdXNlIGEgdGltZXItYmFzZWQgc3lzdGVtLiAgVGhlIG9yaWdpbmFsCmRpZmYgLS1n
+aXQgYS9kcml2ZXJzL3NlcmlhbC84MjUwLmggYi9kcml2ZXJzL3NlcmlhbC84MjUwLmgKaW5kZXgg
+NzhjMDAxNi4uNTIwMjYwMyAxMDA2NDQKLS0tIGEvZHJpdmVycy9zZXJpYWwvODI1MC5oCisrKyBi
+L2RyaXZlcnMvc2VyaWFsLzgyNTAuaApAQCAtNDcsNiArNDcsNyBAQCBzdHJ1Y3Qgc2VyaWFsODI1
+MF9jb25maWcgewogI2RlZmluZSBVQVJUX0JVR19RVU9UCSgxIDw8IDApCS8qIFVBUlQgaGFzIGJ1
+Z2d5IHF1b3QgTFNCICovCiAjZGVmaW5lIFVBUlRfQlVHX1RYRU4JKDEgPDwgMSkJLyogVUFSVCBo
+YXMgYnVnZ3kgVFggSUlSIHN0YXR1cyAqLwogI2RlZmluZSBVQVJUX0JVR19OT01TUgkoMSA8PCAy
+KQkvKiBVQVJUIGhhcyBidWdneSBNU1Igc3RhdHVzIGJpdHMgKEF1MXgwMCkgKi8KKyNkZWZpbmUg
+VUFSVF9CVUdfVEhSRQkoMSA8PCAzKQkvKiBVQVJUIGhhcyBidWdneSBUSFJFIHJlYXNzZXJ0aW9u
+ICovCiAKICNkZWZpbmUgUFJPQkVfUlNBCSgxIDw8IDApCiAjZGVmaW5lIFBST0JFX0FOWQkofjAp
+Cg==
+------=_Part_2907_21877159.1217936698367--
