@@ -1,76 +1,129 @@
-From: "Tosoni" <jp.tosoni@acksys.fr>
-Subject: RE: [PATCH/RFC] 8250: Auto RS485 direction control
-Date: Tue, 5 Aug 2008 14:55:42 +0200
-Message-ID: <002101c8f6fa$9273ab10$2e01a8c0@acksys.local>
-References: <200808051141.07707.laurentp@cse-semaphore.com>
+From: "Will Newton" <will.newton@gmail.com>
+Subject: [PATCH] 8250: Remove a few inlines of dubious value.
+Date: Tue, 5 Aug 2008 15:13:55 +0100
+Message-ID: <87a5b0800808050713y520bdc00t7a48aa46473bae44@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed;
+	boundary="----=_Part_5086_25585491.1217945635982"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp01.msg.oleane.net ([62.161.4.1]:43573 "EHLO
-	smtp01.msg.oleane.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1762507AbYHEM5l (ORCPT
+Received: from yx-out-2324.google.com ([74.125.44.29]:7577 "EHLO
+	yx-out-2324.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754082AbYHEON5 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Aug 2008 08:57:41 -0400
-In-Reply-To: <200808051141.07707.laurentp@cse-semaphore.com>
+	Tue, 5 Aug 2008 10:13:57 -0400
+Received: by yx-out-2324.google.com with SMTP id 8so211218yxm.1
+        for <linux-serial@vger.kernel.org>; Tue, 05 Aug 2008 07:13:56 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Laurent Pinchart' <laurentp@cse-semaphore.com>, 'Grant Edwards' <grante@visi.com>
-Cc: linux-serial@vger.kernel.org
+To: linux-kernel <linux-kernel@vger.kernel.org>
+Cc: linux-serial <linux-serial@vger.kernel.org>
 
-> -----Original Message-----
-> From: Laurent Pinchart
->
-> On Monday 04 August 2008, Grant Edwards wrote:
-> > On 2008-08-04, Laurent Pinchart <laurentp@cse-semaphore.com> wrote:
+------=_Part_5086_25585491.1217945635982
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-(...)
+This patch removes some inlines from various functions that are called once,
+are too big to inline, or are called only from slow path code. This saves
+around 300 bytes of code for me.
 
-> We already have 3 distinct modes for RTS/CTS (see my mail
-> from today 11:23:36 in this thread). If we add DSR/DTR
-> hardware support we can easily get 5 or 6 modes. We will run
-> out of bits in c_cflags.
->
-The three modes which you identify are
-(A) bus direction
-(B) send data request (well... RTS=Request To Send :-)) which should be
-acknowledged by CTS
-(C) input flow control
-but, the RTS is widely used for (A)=bus direction BECAUSE it is the same
-behaviour than (B)=request to send... because RTS was initially made to set
-the "bus direction" in the attached modem.
-So the three modes are really 2.
+Signed-off-by: Will Newton <will.newton@gmail.com>
+---
+ drivers/serial/8250.c |    9 ++++-----
+ 1 files changed, 4 insertions(+), 5 deletions(-)
 
-People require the (A+B) usage because is in the RS232 and also in V24
-specs. But DTR+DSR handshake, really, it's not standardized in any way nor
-in broad use. I don't think this is a real need (my personal opinion). My
-company once had a card implementing DTR/DSR flow control, nobody used it
-and it has been dropped from newer cards.
-If we really want it we could resort to a setserial flag to say "RTS/CTS
-flow is implemented with DTR/DSR", but then, why not swapping the pin
-cabling on the connector then ?
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index 342e12f..153e3c1 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -536,7 +536,7 @@ static unsigned int serial_icr_read(struct
+uart_8250_port *up, int offset)
+ /*
+  * FIFO support.
+  */
+-static inline void serial8250_clear_fifos(struct uart_8250_port *p)
++static void serial8250_clear_fifos(struct uart_8250_port *p)
+ {
+ 	if (p->capabilities & UART_CAP_FIFO) {
+ 		serial_outp(p, UART_FCR, UART_FCR_ENABLE_FIFO);
+@@ -551,7 +551,7 @@ static inline void serial8250_clear_fifos(struct
+uart_8250_port *p)
+  * capability" bit enabled.  Note that on XR16C850s, we need to
+  * reset LCR to write to IER.
+  */
+-static inline void serial8250_set_sleep(struct uart_8250_port *p, int sleep)
++static void serial8250_set_sleep(struct uart_8250_port *p, int sleep)
+ {
+ 	if (p->capabilities & UART_CAP_SLEEP) {
+ 		if (p->capabilities & UART_CAP_EFR) {
+@@ -1424,8 +1424,7 @@ static unsigned int check_modem_status(struct
+uart_8250_port *up)
+ /*
+  * This handles the interrupt from one port.
+  */
+-static inline void
+-serial8250_handle_port(struct uart_8250_port *up)
++static void serial8250_handle_port(struct uart_8250_port *up)
+ {
+ 	unsigned int status;
+ 	unsigned long flags;
+@@ -1719,7 +1718,7 @@ static void serial8250_break_ctl(struct
+uart_port *port, int break_state)
+ /*
+  *	Wait for transmitter & holding register to empty
+  */
+-static inline void wait_for_xmitr(struct uart_8250_port *up, int bits)
++static void wait_for_xmitr(struct uart_8250_port *up, int bits)
+ {
+ 	unsigned int status, tmout = 10000;
 
-My conclusion: only one bit is needed in c_cflags.
-BUT: think of all the upper APIs (termio, termios, tcset/get... and people
-using directly TCSET/TCGET ioctls. I am afraid that changing a single bit in
-such a widely used API might break a lot of existing apps.
+-- 
+1.5.5.2
 
-(...)
->
-> As the number of bits in c_cflags is not infinite we will
-> need an ioctl to configure the desired hardware handshake
-> mode (as most modes don't control the data flow I'd rather
-> talk about hardware handshake which is a more generic name).
-> We can either use one of the struct serial_struct reserved
-> fields with TIOCSSERIAL, or create another ioctl.
->
-In the Linux CRIS architecture I've seen an IOCTL doing exactly this, with
-extra parameters to set the delays RTS-to-Tx and /Tx-to-/RTS. It sounds like
-a non intrusive way of adding the feature.
+------=_Part_5086_25585491.1217945635982
+Content-Type: text/x-patch;
+ name=0001-8250-Remove-a-few-inlines-of-dubious-value.patch
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_fjilc7cg0
+Content-Disposition: attachment;
+ filename=0001-8250-Remove-a-few-inlines-of-dubious-value.patch
 
-This would definitely be my preferred way of doing (it's the one which I use
-in my 16C950 driver).
-
-JP Tosoni
-
+RnJvbSA1MWUwYjM4ZTY1MzQwMjRlODY3MmIzMDhjYTAzZGQ2MmQzZmUxZWZiIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBXaWxsIE5ld3RvbiA8d2lsbC5uZXd0b25AZ21haWwuY29tPgpE
+YXRlOiBUdWUsIDUgQXVnIDIwMDggMTU6MDY6MjQgKzAxMDAKU3ViamVjdDogW1BBVENIXSA4MjUw
+OiBSZW1vdmUgYSBmZXcgaW5saW5lcyBvZiBkdWJpb3VzIHZhbHVlLgoKVGhpcyBwYXRjaCByZW1v
+dmVzIHNvbWUgaW5saW5lcyBmcm9tIHZhcmlvdXMgZnVuY3Rpb25zIHRoYXQgYXJlIGNhbGxlZCBv
+bmNlLAphcmUgdG9vIGJpZyB0byBpbmxpbmUsIG9yIGFyZSBjYWxsZWQgb25seSBmcm9tIHNsb3cg
+cGF0aCBjb2RlLiBUaGlzIHNhdmVzCmFyb3VuZCAzMDAgYnl0ZXMgb2YgY29kZSBmb3IgbWUuCgpT
+aWduZWQtb2ZmLWJ5OiBXaWxsIE5ld3RvbiA8d2lsbC5uZXd0b25AZ21haWwuY29tPgotLS0KIGRy
+aXZlcnMvc2VyaWFsLzgyNTAuYyB8ICAgIDkgKysrKy0tLS0tCiAxIGZpbGVzIGNoYW5nZWQsIDQg
+aW5zZXJ0aW9ucygrKSwgNSBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3Nlcmlh
+bC84MjUwLmMgYi9kcml2ZXJzL3NlcmlhbC84MjUwLmMKaW5kZXggMzQyZTEyZi4uMTUzZTNjMSAx
+MDA2NDQKLS0tIGEvZHJpdmVycy9zZXJpYWwvODI1MC5jCisrKyBiL2RyaXZlcnMvc2VyaWFsLzgy
+NTAuYwpAQCAtNTM2LDcgKzUzNiw3IEBAIHN0YXRpYyB1bnNpZ25lZCBpbnQgc2VyaWFsX2ljcl9y
+ZWFkKHN0cnVjdCB1YXJ0XzgyNTBfcG9ydCAqdXAsIGludCBvZmZzZXQpCiAvKgogICogRklGTyBz
+dXBwb3J0LgogICovCi1zdGF0aWMgaW5saW5lIHZvaWQgc2VyaWFsODI1MF9jbGVhcl9maWZvcyhz
+dHJ1Y3QgdWFydF84MjUwX3BvcnQgKnApCitzdGF0aWMgdm9pZCBzZXJpYWw4MjUwX2NsZWFyX2Zp
+Zm9zKHN0cnVjdCB1YXJ0XzgyNTBfcG9ydCAqcCkKIHsKIAlpZiAocC0+Y2FwYWJpbGl0aWVzICYg
+VUFSVF9DQVBfRklGTykgewogCQlzZXJpYWxfb3V0cChwLCBVQVJUX0ZDUiwgVUFSVF9GQ1JfRU5B
+QkxFX0ZJRk8pOwpAQCAtNTUxLDcgKzU1MSw3IEBAIHN0YXRpYyBpbmxpbmUgdm9pZCBzZXJpYWw4
+MjUwX2NsZWFyX2ZpZm9zKHN0cnVjdCB1YXJ0XzgyNTBfcG9ydCAqcCkKICAqIGNhcGFiaWxpdHki
+IGJpdCBlbmFibGVkLiAgTm90ZSB0aGF0IG9uIFhSMTZDODUwcywgd2UgbmVlZCB0bwogICogcmVz
+ZXQgTENSIHRvIHdyaXRlIHRvIElFUi4KICAqLwotc3RhdGljIGlubGluZSB2b2lkIHNlcmlhbDgy
+NTBfc2V0X3NsZWVwKHN0cnVjdCB1YXJ0XzgyNTBfcG9ydCAqcCwgaW50IHNsZWVwKQorc3RhdGlj
+IHZvaWQgc2VyaWFsODI1MF9zZXRfc2xlZXAoc3RydWN0IHVhcnRfODI1MF9wb3J0ICpwLCBpbnQg
+c2xlZXApCiB7CiAJaWYgKHAtPmNhcGFiaWxpdGllcyAmIFVBUlRfQ0FQX1NMRUVQKSB7CiAJCWlm
+IChwLT5jYXBhYmlsaXRpZXMgJiBVQVJUX0NBUF9FRlIpIHsKQEAgLTE0MjQsOCArMTQyNCw3IEBA
+IHN0YXRpYyB1bnNpZ25lZCBpbnQgY2hlY2tfbW9kZW1fc3RhdHVzKHN0cnVjdCB1YXJ0XzgyNTBf
+cG9ydCAqdXApCiAvKgogICogVGhpcyBoYW5kbGVzIHRoZSBpbnRlcnJ1cHQgZnJvbSBvbmUgcG9y
+dC4KICAqLwotc3RhdGljIGlubGluZSB2b2lkCi1zZXJpYWw4MjUwX2hhbmRsZV9wb3J0KHN0cnVj
+dCB1YXJ0XzgyNTBfcG9ydCAqdXApCitzdGF0aWMgdm9pZCBzZXJpYWw4MjUwX2hhbmRsZV9wb3J0
+KHN0cnVjdCB1YXJ0XzgyNTBfcG9ydCAqdXApCiB7CiAJdW5zaWduZWQgaW50IHN0YXR1czsKIAl1
+bnNpZ25lZCBsb25nIGZsYWdzOwpAQCAtMTcxOSw3ICsxNzE4LDcgQEAgc3RhdGljIHZvaWQgc2Vy
+aWFsODI1MF9icmVha19jdGwoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwgaW50IGJyZWFrX3N0YXRl
+KQogLyoKICAqCVdhaXQgZm9yIHRyYW5zbWl0dGVyICYgaG9sZGluZyByZWdpc3RlciB0byBlbXB0
+eQogICovCi1zdGF0aWMgaW5saW5lIHZvaWQgd2FpdF9mb3JfeG1pdHIoc3RydWN0IHVhcnRfODI1
+MF9wb3J0ICp1cCwgaW50IGJpdHMpCitzdGF0aWMgdm9pZCB3YWl0X2Zvcl94bWl0cihzdHJ1Y3Qg
+dWFydF84MjUwX3BvcnQgKnVwLCBpbnQgYml0cykKIHsKIAl1bnNpZ25lZCBpbnQgc3RhdHVzLCB0
+bW91dCA9IDEwMDAwOwogCi0tIAoxLjUuNS4yCgo=
+------=_Part_5086_25585491.1217945635982--
