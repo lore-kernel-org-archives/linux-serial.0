@@ -1,79 +1,59 @@
-From: "Jaswinder Singh" <jaswinderlinux@gmail.com>
-Subject: BUG: parport_serial in 2.6.27-rc1 for NetMos Technology PCI 9835
-Date: Tue, 5 Aug 2008 20:30:10 +0530
-Message-ID: <3f9a31f40808050800h7073b82al1342f7e23cf1e1b3@mail.gmail.com>
+From: Alex Williamson <alex.williamson@hp.com>
+Subject: Re: [PATCH] serial 8250: tighten test for using backup timer
+Date: Tue, 05 Aug 2008 14:06:43 -0600
+Message-ID: <1217966803.17091.72.camel@2710p.home>
+References: <1205945437.6881.13.camel@lappy>
+	 <87a5b0800808050444t49480549t758f954c40139c4a@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from wa-out-1112.google.com ([209.85.146.177]:61280 "EHLO
-	wa-out-1112.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759821AbYHEPAM (ORCPT
+Received: from g5t0007.atlanta.hp.com ([15.192.0.44]:8355 "EHLO
+	g5t0007.atlanta.hp.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758395AbYHEUGr (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Aug 2008 11:00:12 -0400
-Received: by wa-out-1112.google.com with SMTP id j37so1814904waf.23
-        for <linux-serial@vger.kernel.org>; Tue, 05 Aug 2008 08:00:10 -0700 (PDT)
-Content-Disposition: inline
+	Tue, 5 Aug 2008 16:06:47 -0400
+In-Reply-To: <87a5b0800808050444t49480549t758f954c40139c4a@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+To: Will Newton <will.newton@gmail.com>
+Cc: linux-serial <linux-serial@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, Thomas Koeller <thomas@koeller.dyndns.org>
 
-/dev/ttyS1 and /dev/ttyS2 of NetMos Technology PCI 9835 is giving Junk
-characters in minicom but /dev/tyS0 is working perfectly.
+Hi Will,
 
-01:01.0 Communication controller: NetMos Technology PCI 9835 Multi-I/O
-Controller (rev 01)
-	Subsystem: LSI Logic / Symbios Logic 1P2S
-	Control: I/O+ Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr-
-Stepping- SERR+ FastB2B- DisINTx-
-	Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-
-<TAbort- <MAbort- >SERR- <PERR- INTx-
-	Interrupt: pin A routed to IRQ 22
-	Region 0: I/O ports at dc00 [size=8]
-	Region 1: I/O ports at d480 [size=8]
-	Region 2: I/O ports at d400 [size=8]
-	Region 3: I/O ports at d080 [size=8]
-	Region 4: I/O ports at d000 [size=8]
-	Region 5: I/O ports at df00 [size=16]
-	Kernel driver in use: parport_serial
+On Tue, 2008-08-05 at 12:44 +0100, Will Newton wrote:
+> Hi,
+> 
+> Sorry to not have picked up on this earlier, but this change seems to
+> break an old DesignWare UART I have in an SoC here. It has a number of
+> known issues, one of which is it does not appropriately reassert THRE.
+> 
+> What seems to happen is that the first time the port is opened the
+> code tests for incorrect reassertion of THRE and correctly sets up the
+> backup timer. The port is closed and subsequently reopened and this
+> time around the new logic prevents the backup timer from being
+> enabled. I'm not 100% sure of the details of the bug that is being
+> worked around here, but it appears that the second time the port is
+> opened it is not possible to detect the bug because the previous THRE
+> condition has already been acknowledged.
+> 
+> The attached patch fixes the problem for me and attempts to preserve
+> the new behaviour at the same time. Comments?
 
-[jsr@jaswinder 0000:01:01.0]$ setserial /dev/ttyS0 -a
-/dev/ttyS0, Line 0, UART: 16550A, Port: 0x03f8, IRQ: 4
-	Baud_base: 115200, close_delay: 50, divisor: 0
-	closing_wait: 3000
-	Flags: spd_normal skip_test
+It would be nice if there was a simple procedure we could do on the UART
+to reset it to a state so the test works repeatedly.  However, with all
+the buggy UARTs out there, that could end up disturbing someone else.
 
-[jsr@jaswinder 0000:01:01.0]$ setserial /dev/ttyS1 -a
-/dev/ttyS1, Line 1, UART: 16550A, Port: 0xdc00, IRQ: 22
-	Baud_base: 115200, close_delay: 50, divisor: 0
-	closing_wait: 3000
-	Flags: spd_normal skip_test
+This change works for me, though it is using up a bit in the bugs field;
+not that we seem to be allocating them at any great rate.  I think it
+would be worthy of a comment in the code to understand why this new
+block exists outside the test so we don't need to refer back to the
+commit changeset.
 
-[jsr@jaswinder 0000:01:01.0]$ setserial /dev/ttyS2 -a
-/dev/ttyS2, Line 2, UART: 16550A, Port: 0xd480, IRQ: 22
-	Baud_base: 115200, close_delay: 50, divisor: 0
-	closing_wait: 3000
-	Flags: spd_normal skip_test
+Acked-by: Alex Williamson <alex.williamson@hp.com>
 
-[jsr@jaswinder 0000:01:01.0]$ setserial /dev/ttyS3 -a
-/dev/ttyS3, Line 3, UART: unknown, Port: 0x02e8, IRQ: 3
-	Baud_base: 115200, close_delay: 50, divisor: 0
-	closing_wait: 3000
-	Flags: spd_normal auto_irq
+Thanks, Alex
 
-from dmesg :
-Serial: 8250/16550 driver4 ports, IRQ sharing enabled
-Switched to high resolution mode on CPU 0
-serial8250: ttyS0 at I/O 0x3f8 (irq = 4) is a 16550A
-00:08: ttyS0 at I/O 0x3f8 (irq = 4) is a 16550A
-parport_pc 00:09: reported by Plug and Play ACPI
-parport0: PC-style at 0x378, irq 7 [PCSPP(,...)]
-parport_serial 0000:01:01.0: PCI INT A -> GSI 22 (level, low) -> IRQ 22
-parport1: PC-style at 0xd400 [PCSPP(,...)]
-0000:01:01.0: ttyS1 at I/O 0xdc00 (irq = 22) is a 16550A
-0000:01:01.0: ttyS2 at I/O 0xd480 (irq = 22) is a 16550A
+-- 
+Alex Williamson                             HP Open Source & Linux Org.
 
-
-Thank you,
-
-Jaswinder Singh.
