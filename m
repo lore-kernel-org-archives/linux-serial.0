@@ -1,138 +1,221 @@
-From: Andreas Helmcke <ahnews01@ela-soft.com>
-Subject: Faster read response / Improved low latency in RS-485 communication
-Date: Thu, 07 Aug 2008 14:49:20 +0200
-Message-ID: <gj7rm5xpqe.ln2@mail.ela-soft.com>
+From: "Tosoni" <jp.tosoni@acksys.fr>
+Subject: RE: [PATCH v1] 8250: add support for DTR/DSR hardware flow control
+Date: Thu, 7 Aug 2008 14:54:05 +0200
+Message-ID: <000f01c8f88c$ad29d950$2e01a8c0@acksys.local>
+References: <200808071032.16709.laurentp@cse-semaphore.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed;
+	boundary="----=_NextPart_000_0010_01C8F89D.70B2A950"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from main.gmane.org ([80.91.229.2]:43035 "EHLO ciao.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752952AbYHGMzJ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 7 Aug 2008 08:55:09 -0400
-Received: from root by ciao.gmane.org with local (Exim 4.43)
-	id 1KR51C-0002il-Lk
-	for linux-serial@vger.kernel.org; Thu, 07 Aug 2008 12:55:03 +0000
-Received: from mail.ela-soft.com ([213.23.49.162])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Thu, 07 Aug 2008 12:55:02 +0000
-Received: from ahnews01 by mail.ela-soft.com with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Thu, 07 Aug 2008 12:55:02 +0000
+Received: from smtp05.msg.oleane.net ([62.161.4.5]:45304 "EHLO
+	smtp05.msg.oleane.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751245AbYHGM4i (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 7 Aug 2008 08:56:38 -0400
+In-Reply-To: <200808071032.16709.laurentp@cse-semaphore.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: 'Laurent Pinchart' <laurentp@cse-semaphore.com>, 'Aristeu Rozanski' <arozansk@redhat.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-I am at the point of connecting a multidrop RS485 bus to a linux system
-and ran into two problems.
+This is a multi-part message in MIME format.
 
-Since the first problem (RS-485 direction control) is currently discussed
-and will result hopefully in an kernel patch, which will avoid some nasty
-non standard hacking in the future, I would like to bring the second
-problem back into attention, which has been described very well by
-Michael Kohne back in 2003:
+------=_NextPart_000_0010_01C8F89D.70B2A950
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-On 18.11.2003 16:28, Michael Kohne wrote:
-> ...
-> Background:
-> My company (Gasboy LLC) builds fuel management systems. Among other things
-> our systems talk via RS-422/485 lines to a variety of devices. Our newest
-> product is linux based and uses an 8 port serial board based on Exar 16654
-> quad uarts. A single serial port may be used to talk to up 32 devices on a
-> 422 or 485 loop. The linux system is the master and polls the devices for
-> status information. When we poll a device, we send a small message out
-> including the device's address and expect the device to respond. If the
-> device does not respond in X milliseconds, we go on to the next. It is
-> important to minimize the timeout (X) so that we can talk to as many
-> devices as possible in as short a time as possible (the devices are gas
-> pumps, card readers, etc). Minimizing X becomes especially important when
-> devices are disabled or the system is mis-configured to talk to more
-> devices than exist (we don't want to hold up operations on live devices
-> waiting for dead ones). Timeouts are thus specified in terms of when the
-> FIRST character (STX) comes back from the device. If the STX is not
-> received in time, the device is assumed to be not present. The timeouts
-> are VERY short (on the order of 20-30 milliseconds).
+In my opinion, DSR/DTR is another (wrong) way to do RTS/CTS flow control, so
+I would have it implemented in setserial as a modifier to the CRTSCTS flag.
+
+About a RS485 ioctl: could you consider the attached files which are already
+in the Linux kernel (in include/asm-cris).
+They define a TIOCSERSETRS485 (ioctl.h), and the data structure (rs485.h)
+with allows to specify timings. Sounds just like what we want ?
+
+JP Tosoni
+
+> -----Original Message-----
+> From: linux-serial-owner@vger.kernel.org
+> [mailto:linux-serial-owner@vger.kernel.org]On Behalf Of
+> Laurent Pinchart
+> Sent: Thursday, August 07, 2008 10:32 AM
+> To: Aristeu Rozanski
+> Cc: linux-serial@vger.kernel.org; linux-kernel@vger.kernel.org
+> Subject: Re: [PATCH v1] 8250: add support for DTR/DSR hardware flow
+> control
 >
-> The problem:
-> The old system hardware had uarts with no FIFO. Therefore, getting the STX
-> immediately after it hit the uart was no problem. The new system has 64
-> byte fifos. Since the linux serial drivers set the fifo to 56 bytes (a
-> good choice for high-bandwidth communications), the response packet (22
-> bytes) fits entirely in the fifo without hitting the trigger. The uart
-> will wait for 4 empty character times before it triggers the interrupt. At
-> 9600 baud (about 1 millisecond per character) that's about 26 milliseconds
-> after the STX came in before the application sees it. Since the remote
-> device DOES take some time to respond, adding 26 milliseconds to the
-> response time causes our system to believe the device is gone and try to
-> recover appropriately.
 >
-> Attempted solutions:
-> I have played with our timeouts, but significantly extending them (to the
-> point that they cover the fifo latency) causes user-visible delays when
-> large numbers of devices are configured on the loop, but missing.
-> I tried forcing the system to treat the relevant uarts as 16450 instead of
-> 16654, but then we start dropping characters on a regular basis
-> (especially when heavy ethernet or ppp traffic occurs), thus slowing the
-> loops down again.
-> I do have the low_latency flag set, but that of course only changes how
-> data moves around AFTER it's received from the uart. It does nothing to
-> speed data in from the uart.
+> Hi,
 >
-> The proposed solution:
-> An optimal solution to the problem seems (to me) to be reducing the FIFO
-> trigger levels whenever low_latency is set on the port. This minimizes the
-> amount of time from when a character is received to when the application
-> layer sees it (which I believe to be the point of the low_latency flag
-> already).
+> On Wednesday 06 August 2008, Aristeu Rozanski wrote:
+> > This patch adds support for DTR/DSR hardware flow control
+> on 8250 driver on
+> > x86 machines. It's done by adding a CDTRDSR flag to work
+> just like CRTSCTS,
+> > which is not done on other architectures on purpose (so
+> each maintainer can
+> > allocate it).
 >
-> Problems with this solution:
-> 1) By reducing the receive fifo trigger level, we significantly increase
-> the interrupt rate of the uart, and therefore the overhead in servicing
-> it. I'm OK with this because the low_latency flag already specifies that
-> you are trading CPU overhead for latency.
+> It's funny, serial flow control hasn't been discussed for a
+> long time, and you're the third person to start a flow
+> control related thread on this mailing list in a few days.
 >
-> 2) Conflating the trigger level changes with the established behaviour of
-> low_latency seems appropriate to me, but better-informed persons might
-> well disagree. The alternative (to maintain a seperate flag) seems worse.
+> > This patch was tested with success with a serial printer
+> configured with a
+> > small buffer and DTR/DSR flow control.
+> >
+> > This is based on the work of Michael Westermann
+> > (http://lkml.org/lkml/2007/8/31/133)
+> >
+> > Comments more than welcome.
+>
+> Please read the '[PATCH/RFC] 8250: Auto RS485 direction
+> control' thread for background information. In a nutshell we
+> need more than just CTS/RTS and DTR/DSR, and we don't have
+> enough c_cflags bits. We will probably have to create a new ioctl.
+>
+> Best regards,
+>
+> --
+> Laurent Pinchart
+> CSE Semaphore Belgium
+>
+> Chaussee de Bruxelles, 732A
+> B-1410 Waterloo
+> Belgium
+>
+> T +32 (2) 387 42 59
+> F +32 (2) 387 42 75
 >
 
-Full Post including his proposed patch:
-http://osdir.com/ml/serial/2004-04/msg00001.html
+------=_NextPart_000_0010_01C8F89D.70B2A950
+Content-Type: text/plain;
+	name="ioctls.h"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+	filename="ioctls.h"
 
+#ifndef __ARCH_CRIS_IOCTLS_H__=0A=
+#define __ARCH_CRIS_IOCTLS_H__=0A=
+=0A=
+/* verbatim copy of asm-i386/ioctls.h */=0A=
+=0A=
+#include <asm/ioctl.h>=0A=
+=0A=
+/* 0x54 is just a magic number to make these relatively unique ('T') */=0A=
+=0A=
+#define TCGETS		0x5401=0A=
+#define TCSETS		0x5402=0A=
+#define TCSETSW		0x5403=0A=
+#define TCSETSF		0x5404=0A=
+#define TCGETA		0x5405=0A=
+#define TCSETA		0x5406=0A=
+#define TCSETAW		0x5407=0A=
+#define TCSETAF		0x5408=0A=
+#define TCSBRK		0x5409=0A=
+#define TCXONC		0x540A=0A=
+#define TCFLSH		0x540B=0A=
+#define TIOCEXCL	0x540C=0A=
+#define TIOCNXCL	0x540D=0A=
+#define TIOCSCTTY	0x540E=0A=
+#define TIOCGPGRP	0x540F=0A=
+#define TIOCSPGRP	0x5410=0A=
+#define TIOCOUTQ	0x5411=0A=
+#define TIOCSTI		0x5412=0A=
+#define TIOCGWINSZ	0x5413=0A=
+#define TIOCSWINSZ	0x5414=0A=
+#define TIOCMGET	0x5415=0A=
+#define TIOCMBIS	0x5416=0A=
+#define TIOCMBIC	0x5417=0A=
+#define TIOCMSET	0x5418=0A=
+#define TIOCGSOFTCAR	0x5419=0A=
+#define TIOCSSOFTCAR	0x541A=0A=
+#define FIONREAD	0x541B=0A=
+#define TIOCINQ		FIONREAD=0A=
+#define TIOCLINUX	0x541C=0A=
+#define TIOCCONS	0x541D=0A=
+#define TIOCGSERIAL	0x541E=0A=
+#define TIOCSSERIAL	0x541F=0A=
+#define TIOCPKT		0x5420=0A=
+#define FIONBIO		0x5421=0A=
+#define TIOCNOTTY	0x5422=0A=
+#define TIOCSETD	0x5423=0A=
+#define TIOCGETD	0x5424=0A=
+#define TCSBRKP		0x5425	/* Needed for POSIX tcsendbreak() */=0A=
+#define TIOCSBRK	0x5427  /* BSD compatibility */=0A=
+#define TIOCCBRK	0x5428  /* BSD compatibility */=0A=
+#define TIOCGSID	0x5429  /* Return the session ID of FD */=0A=
+#define TCGETS2		_IOR('T',0x2A, struct termios2)=0A=
+#define TCSETS2		_IOW('T',0x2B, struct termios2)=0A=
+#define TCSETSW2	_IOW('T',0x2C, struct termios2)=0A=
+#define TCSETSF2	_IOW('T',0x2D, struct termios2)=0A=
+#define TIOCGPTN	_IOR('T',0x30, unsigned int) /* Get Pty Number (of =
+pty-mux device) */=0A=
+#define TIOCSPTLCK	_IOW('T',0x31, int)  /* Lock/unlock Pty */=0A=
+=0A=
+#define FIONCLEX	0x5450  /* these numbers need to be adjusted. */=0A=
+#define FIOCLEX		0x5451=0A=
+#define FIOASYNC	0x5452=0A=
+#define TIOCSERCONFIG	0x5453=0A=
+#define TIOCSERGWILD	0x5454=0A=
+#define TIOCSERSWILD	0x5455=0A=
+#define TIOCGLCKTRMIOS	0x5456=0A=
+#define TIOCSLCKTRMIOS	0x5457=0A=
+#define TIOCSERGSTRUCT	0x5458 /* For debugging only */=0A=
+#define TIOCSERGETLSR   0x5459 /* Get line status register */=0A=
+#define TIOCSERGETMULTI 0x545A /* Get multiport config  */=0A=
+#define TIOCSERSETMULTI 0x545B /* Set multiport config */=0A=
+=0A=
+#define TIOCMIWAIT	0x545C	/* wait for a change on serial input line(s) */=0A=
+#define TIOCGICOUNT	0x545D	/* read serial port inline interrupt counts */=0A=
+#define TIOCGHAYESESP   0x545E  /* Get Hayes ESP configuration */=0A=
+#define TIOCSHAYESESP   0x545F  /* Set Hayes ESP configuration */=0A=
+#define FIOQSIZE	0x5460=0A=
+=0A=
+#define TIOCSERSETRS485 0x5461  /* enable rs-485 */=0A=
+#define TIOCSERWRRS485  0x5462  /* write rs-485 */=0A=
+=0A=
+/* Used for packet mode */=0A=
+#define TIOCPKT_DATA		 0=0A=
+#define TIOCPKT_FLUSHREAD	 1=0A=
+#define TIOCPKT_FLUSHWRITE	 2=0A=
+#define TIOCPKT_STOP		 4=0A=
+#define TIOCPKT_START		 8=0A=
+#define TIOCPKT_NOSTOP		16=0A=
+#define TIOCPKT_DOSTOP		32=0A=
+=0A=
+#define TIOCSER_TEMT    0x01	/* Transmitter physically empty */=0A=
+=0A=
+#endif=0A=
 
-The very same problem (only shorter timeouts and faster baudrate) we have
-with our RS485 bus.
+------=_NextPart_000_0010_01C8F89D.70B2A950
+Content-Type: text/plain;
+	name="rs485.h"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+	filename="rs485.h"
 
-Quick and dirty patch to solve this problem when using 16C950 UARTS by
-setting the 950 trigger level registers:
+/* RS-485 structures */=0A=
+=0A=
+/* RS-485 support */=0A=
+/* Used with ioctl() TIOCSERSETRS485 */=0A=
+struct rs485_control {=0A=
+        unsigned short rts_on_send;=0A=
+        unsigned short rts_after_sent;=0A=
+        unsigned long delay_rts_before_send;=0A=
+        unsigned short enabled;=0A=
+#ifdef __KERNEL__=0A=
+        int disable_serial_loopback;=0A=
+#endif=0A=
+};=0A=
+=0A=
+/* Used with ioctl() TIOCSERWRRS485 */=0A=
+struct rs485_write {=0A=
+        unsigned short outc_size;=0A=
+        unsigned char *outc;=0A=
+};=0A=
+=0A=
 
---- /src/linux-2.6.18.i686/drivers/serial/8250.c	2008-07-14
-14:48:56.000000000 +0200
-+++ ./8250.c	2008-07-25 09:00:39.000000000 +0200
-@@ -2073,6 +2073,19 @@
- 		}
- 		serial_outp(up, UART_FCR, fcr);		/* set fcr */
- 	}
-+
-+	/*
-+	 * 16C950: if LOW_LATENCY flag is set, set trigger levels to 1
-+	 */
-+	if (up->port.type == PORT_16C950) {
-+		if (up->port.flags & UPF_LOW_LATENCY) 	{
-+			up->acr |= UART_ACR_TLENB;
-+			serial_icr_write(up, UART_ACR, up->acr);
-+			serial_icr_write(up, UART_RTL, 1);
-+			serial_icr_write(up, UART_TTL, 1);
-+		}
-+	}
-+
- 	serial8250_set_mctrl(&up->port, up->port.mctrl);
- 	spin_unlock_irqrestore(&up->port.lock, flags);
- }
-
-
-Any comments are very welcome.
-
-Andreas
+------=_NextPart_000_0010_01C8F89D.70B2A950--
 
