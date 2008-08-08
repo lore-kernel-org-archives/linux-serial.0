@@ -1,59 +1,47 @@
-From: Grant Edwards <grante@visi.com>
-Subject: Re: [PATCH/RFC] 8250: Auto RS485 direction control
-Date: Thu, 7 Aug 2008 13:50:28 +0000 (UTC)
-Message-ID: <g7euj4$db9$1@ger.gmane.org>
-References: <002101c8f6fa$9273ab10$2e01a8c0@acksys.local>
- <1218033008.6275.86.camel@thetriton.toftronix.com.au>
- <200808071050.35380.laurentp@cse-semaphore.com>
+From: Jeff DeFouw <jeffd@i2k.com>
+Subject: 8250 misses interrupt, stalls
+Date: Fri, 8 Aug 2008 01:27:27 -0400
+Message-ID: <20080808052727.GB23330@blorp.plorb.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from main.gmane.org ([80.91.229.2]:38606 "EHLO ciao.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752231AbYHGNui (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 7 Aug 2008 09:50:38 -0400
-Received: from list by ciao.gmane.org with local (Exim 4.43)
-	id 1KR5sx-0005ME-V6
-	for linux-serial@vger.kernel.org; Thu, 07 Aug 2008 13:50:35 +0000
-Received: from 65.111.170.175 ([65.111.170.175])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Thu, 07 Aug 2008 13:50:35 +0000
-Received: from grante by 65.111.170.175 with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Thu, 07 Aug 2008 13:50:35 +0000
+Received: from qmta03.westchester.pa.mail.comcast.net ([76.96.62.32]:46993
+	"EHLO QMTA03.westchester.pa.mail.comcast.net" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751614AbYHHF13 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 8 Aug 2008 01:27:29 -0400
+Received: from localhost (localhost [127.0.0.1])
+	by blorp.plorb.com (Postfix) with ESMTP id 9DA3A16DD98
+	for <linux-serial@vger.kernel.org>; Fri,  8 Aug 2008 01:27:27 -0400 (EDT)
+Received: from blorp.plorb.com ([127.0.0.1])
+	by localhost (blorp.plorb.com [127.0.0.1]) (amavisd-new, port 10024)
+	with LMTP id IuyEJigZUSo2 for <linux-serial@vger.kernel.org>;
+	Fri,  8 Aug 2008 01:27:27 -0400 (EDT)
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-On 2008-08-07, Laurent Pinchart <laurentp@cse-semaphore.com> wrote:
-
->> From what I can gather through the man pages it seems inappropriate to
->> add this to termios cflag, though the CRTSCTS flag does set a precedent.
->> I'm an advocate of the idea of introducing a new IOCTL for setting up
->> non standard hand-shaking settings.  I would suggest that things that
->> should be considered in the interface are settings for lead-in and
->> lead-out timing on the direction line (for the use of radio modems for
->> example) and means to specify if it's appropriate to have the CPU spin
->> on the shift register empty flag on the last byte of a block, if RTS
->> timing really is that critical.
->
-> I don't think we want to introduce software emulation, but
-> feel free to prove me wrong.
-
-I think that should be left up to the author of the driver.  It
-seems to me that it would be pretty difficult to do a decent
-job of it at the line-discipline layer.  If the author of the
-driver for a particular UART wants to do SW emulation of
-auto-RTS, then I think that's where it belongs.  Only the UART
-driver knows whether there's a shift-register empty interrupt
-(and whether that interrupt happens before or after that final
-stop bit has been transmitted).
+I have a Celeron ETX processor module with a Winbond W83627HF SuperIO 
+chip, providing two 16550A compatible UARTs, which connects over LPC to 
+an 82801DB south bridge.  I'm only using the first serial port at the 
+moment.  The modules 8250 and 8250_pnp are loaded, and the serial port 
+is on standard resources (irq 4).  After one of my complex applications 
+at work runs for a few minutes, the serial port suddenly stops.  The 
+UART IIR indicates an interrupt is pending, and the LSR indicates data 
+is waiting to be received (as well as sent), but the interrupt handler 
+is not being called.  If while it's stuck I reset the enabled interrupts 
+(save IER, clear IER, restore IER) the I/O resumes.  I don't see 
+anything wrong with the way the UART is being serviced.  The kernel is 
+patched to 2.6.25.11, configured by Debian as SMP, no PREEMPT, shared 
+IRQ (nothing else is on irq 4) and without any external modules loaded.  
+It's a Celeron without any HT or multiple cores, so it's uniprocessor.  
+I haven't been able to make a simple test case.  The real program is 
+kind of a loopback that's continuously receiving and sending data at 
+115200 8N1 with no flow control.  The full data rate isn't being used, 
+and I'm not getting any overruns (until it stalls).  A simple loopback 
+program doesn't demonstrate the problem, but the real application runs 
+into it every time within 10 minutes (usually under 5).
 
 -- 
-Grant Edwards                   grante             Yow! I KAISER ROLL?!
-                                  at               What good is a Kaiser Roll
-                               visi.com            without a little COLE SLAW
-                                                   on the SIDE?
-
+Jeff DeFouw <jeffd@i2k.com>
