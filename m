@@ -1,128 +1,122 @@
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] serial 8250: tighten test for using backup timer
-Date: Mon, 11 Aug 2008 14:32:08 -0700
-Message-ID: <20080811143208.8cc89478.akpm@linux-foundation.org>
-References: <1205945437.6881.13.camel@lappy>
-	<87a5b0800808050444t49480549t758f954c40139c4a@mail.gmail.com>
-	<1217966803.17091.72.camel@2710p.home>
-	<87a5b0800808060353v505c4957wbd26aaa9a2624786@mail.gmail.com>
+From: Kevin Hilman <khilman@deeprootsystems.com>
+Subject: Re: [PATCH 1/1] Serial: DaVinci: Revert double IIR test
+Date: Mon, 11 Aug 2008 14:47:01 -0700
+Message-ID: <87tzdr5ine.fsf@deeprootsystems.com>
+References: <48A04E34.9040306@acdstar.com>
+	<87y733eb7n.fsf@deeprootsystems.com> <48A077D6.1090205@balister.org>
+	<48A09655.3020009@acdstar.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp1.linux-foundation.org ([140.211.169.13]:60937 "EHLO
-	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752113AbYHKVdL (ORCPT
+Received: from wf-out-1314.google.com ([209.85.200.168]:62176 "EHLO
+	wf-out-1314.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752478AbYHKVrH (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 11 Aug 2008 17:33:11 -0400
-In-Reply-To: <87a5b0800808060353v505c4957wbd26aaa9a2624786@mail.gmail.com>
+	Mon, 11 Aug 2008 17:47:07 -0400
+Received: by wf-out-1314.google.com with SMTP id 27so4298628wfd.4
+        for <linux-serial@vger.kernel.org>; Mon, 11 Aug 2008 14:47:06 -0700 (PDT)
+In-Reply-To: <48A09655.3020009@acdstar.com> (Mark Lokowich's message of "Mon\, 11 Aug 2008 14\:43\:17 -0500")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Will Newton <will.newton@gmail.com>
-Cc: alex.williamson@hp.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, thomas@koeller.dyndns.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
+To: Mark Lokowich <lokowich@acdstar.com>
+Cc: davinci-linux-open-source <davinci-linux-open-source@linux.davincidsp.com>, linux-serial@vger.kernel.org
 
-On Wed, 6 Aug 2008 11:53:13 +0100
-"Will Newton" <will.newton@gmail.com> wrote:
+Mark Lokowich <lokowich@acdstar.com> writes:
 
-> >From 36ac82a231498247ada098d31e8d12e735eb34f2 Mon Sep 17 00:00:00 2001
-> From: Will Newton <will.newton@gmail.com>
-> Date: Wed, 6 Aug 2008 11:48:29 +0100
-> Subject: [PATCH] 8250: Improve workaround for UARTs that don't
-> re-assert THRE correctly.
-> 
-> Recent changes to tighten the check for UARTs that don't correctly
-> re-assert THRE caused problems when such a UART was opened for the second
-> time - the bug could only successfully be detected at first initialization.
-> This patch stores the information about the bug in the bugs field of the
-> port structure when the port is first started up so subsequent opens can
-> check this bit even if the test for the bug fails.
-> 
-> Signed-off-by: Will Newton <will.newton@gmail.com>
-> Acked-by: Alex Williamson <alex.williamson@hp.com>
+> Philip Balister wrote:
+>> Kevin Hilman wrote:
+>>> Mark Lokowich <lokowich@acdstar.com> writes:
+>>>
+>>>> Revert double IIR test in 8250 driver
+>>>>
+>>>
+>>> Can you give a more detailed description of what the problem is that
+>>> is being fixed?
+>>
+>> Without this patch, serial console behavior is strange. You type and
+>> nothing is echoed and you hit return and things happen. It feels
+>> like two processes are grabbing input.
+>>
+>> I think someone posted a more technical description, but I couldn't
+>> find it quickly.
+>>
+>> Philip
+>>
+>    This section of the driver is a test for faulty 16650
+>    implementations that require a backup timer.  The patch reverts the
+>    change that compares two states (instead of one, as in 2.6.25.2) of
+>    the IIR to determine if the workaround is required.  The DaVinci
+>    UART does not need the backup timer, but the double conditional
+>    passed, enabling the timer and causing interrupt handling errors on
+>    the console and other UARTS.
+>
 
-What are the "recent changes" to which you refer?  I had a quick look
-and didn't spot any THRE-related changes this year?
+Thanks Mark,
 
+Do you have any recommendations for ways to conditionalize this code
+so the test still works on other platforms.  Maybe via a new flag in
+platform data?
 
-> ---
->  drivers/serial/8250.c |   16 ++++++++++++----
->  drivers/serial/8250.h |    1 +
->  2 files changed, 13 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-> index 342e12f..9ccc563 100644
-> --- a/drivers/serial/8250.c
-> +++ b/drivers/serial/8250.c
-> @@ -1908,15 +1908,23 @@ static int serial8250_startup(struct uart_port *port)
->  		 * kick the UART on a regular basis.
->  		 */
->  		if (!(iir1 & UART_IIR_NO_INT) && (iir & UART_IIR_NO_INT)) {
-> +			up->bugs |= UART_BUG_THRE;
->  			pr_debug("ttyS%d - using backup timer\n", port->line);
-> -			up->timer.function = serial8250_backup_timeout;
-> -			up->timer.data = (unsigned long)up;
-> -			mod_timer(&up->timer, jiffies +
-> -				poll_timeout(up->port.timeout) + HZ / 5);
->  		}
->  	}
-> 
->  	/*
-> +	 * The above check will only give an accurate result the first time
-> +	 * the port is opened so this value needs to be preserved.
-> +	 */
-> +	if (up->bugs & UART_BUG_THRE) {
-> +		up->timer.function = serial8250_backup_timeout;
-> +		up->timer.data = (unsigned long)up;
-> +		mod_timer(&up->timer, jiffies +
-> +			  poll_timeout(up->port.timeout) + HZ / 5);
-> +	}
-> +
-> +	/*
->  	 * If the "interrupt" for this port doesn't correspond with any
->  	 * hardware interrupt, we use a timer-based system.  The original
->  	 * driver used to do this with IRQ0.
-> diff --git a/drivers/serial/8250.h b/drivers/serial/8250.h
-> index 78c0016..5202603 100644
-> --- a/drivers/serial/8250.h
-> +++ b/drivers/serial/8250.h
-> @@ -47,6 +47,7 @@ struct serial8250_config {
->  #define UART_BUG_QUOT	(1 << 0)	/* UART has buggy quot LSB */
->  #define UART_BUG_TXEN	(1 << 1)	/* UART has buggy TX IIR status */
->  #define UART_BUG_NOMSR	(1 << 2)	/* UART has buggy MSR status bits (Au1x00) */
-> +#define UART_BUG_THRE	(1 << 3)	/* UART has buggy THRE reassertion */
-> 
->  #define PROBE_RSA	(1 << 0)
->  #define PROBE_ANY	(~0)
+I want to be sure there is a mainline-acceptable fix here, so we are
+not divirging from mainline in generic code.
 
-Also, how serious is the problem which is being fixed here?  It
-_sounds_ like it's of the "fatal for people who have that hardware"
-variety, in which case we should get this into 2.6.27 and probably
-2.6.26.x.  Not sure about 2.5.26.x though - the patch doesn't apply
-there, but I didn't check whether this is due to functional changes.
+Kevin
 
 
-Also2, we should officially use setup_timer(), like this:
 
---- a/drivers/serial/8250.c~serial-8250-tighten-test-for-using-backup-timer-fix
-+++ a/drivers/serial/8250.c
-@@ -1964,8 +1964,8 @@ static int serial8250_startup(struct uar
- 	 * the port is opened so this value needs to be preserved.
- 	 */
- 	if (up->bugs & UART_BUG_THRE) {
--		up->timer.function = serial8250_backup_timeout;
--		up->timer.data = (unsigned long)up;
-+		setup_timer(&up->timer, serial8250_backup_timeout,
-+				(unsigned long)up);
- 		mod_timer(&up->timer, jiffies +
- 			  poll_timeout(up->port.timeout) + HZ / 5);
- 	}
-
-but that is a functional change - setup_timer() runs init_timer(),
-whereas the code you have there does not.
-
-We _do_ have an init_timer(&up->timer) all the way over in
-serial8250_isa_init_ports().  It's all a bit weird.  Could you please
-double-check that we're being sensible about the initialisation of this
-timer?
-
-Thanks.
+>
+>>
+>>> This is in the generic 8250 driver so will affect all platforms.  For
+>>> this to be accepted, it should be discussed on linux-serial[1]
+>>>
+>>> Kevin
+>>>
+>>>> Acked-by: Jaswinder Singh <jaswinder@embedio.com>
+>>>> ---
+>>>> --- linux-2.6/drivers/serial/8250.c
+>>>> +++ linux-2.6-vanilla/drivers/serial/8250.c
+>>>> @@ -1867,7 +1867,6 @@
+>>>>     }
+>>>>
+>>>>     if (is_real_interrupt(up->port.irq)) {
+>>>> -        unsigned char iir1;
+>>>>         /*
+>>>>          * Test for UARTs that do not reassert THRE when the
+>>>>          * transmitter is idle and the interrupt has already
+>>>> @@ -1881,7 +1880,7 @@
+>>>>         wait_for_xmitr(up, UART_LSR_THRE);
+>>>>         serial_out_sync(up, UART_IER, UART_IER_THRI);
+>>>>         udelay(1); /* allow THRE to set */
+>>>> -        iir1 = serial_in(up, UART_IIR);
+>>>> +        serial_in(up, UART_IIR);
+>>>>         serial_out(up, UART_IER, 0);
+>>>>         serial_out_sync(up, UART_IER, UART_IER_THRI);
+>>>>         udelay(1); /* allow a working UART time to re-assert THRE */
+>>>> @@ -1894,7 +1893,7 @@
+>>>>          * If the interrupt is not reasserted, setup a timer to
+>>>>          * kick the UART on a regular basis.
+>>>>          */
+>>>> -        if (!(iir1 & UART_IIR_NO_INT) && (iir & UART_IIR_NO_INT)) {
+>>>> +        if (iir & UART_IIR_NO_INT) {
+>>>>             pr_debug("ttyS%d - using backup timer\n", port->line);
+>>>>             up->timer.function = serial8250_backup_timeout;
+>>>>             up->timer.data = (unsigned long)up;
+>>>>
+>>>>
+>>>> _______________________________________________
+>>>> Davinci-linux-open-source mailing list
+>>>> Davinci-linux-open-source@linux.davincidsp.com
+>>>> http://linux.davincidsp.com/mailman/listinfo/davinci-linux-open-source
+>>>
+>>>
+>>> [1] From MAINTAINERS:
+>>>
+>>> 8250/16?50 (AND CLONE UARTS) SERIAL DRIVER
+>>> L:    linux-serial@vger.kernel.org
+>>> W:    http://serial.sourceforge.net
+>>> S:    Orphan
+>>> _______________________________________________
+>>> Davinci-linux-open-source mailing list
+>>> Davinci-linux-open-source@linux.davincidsp.com
+>>> http://linux.davincidsp.com/mailman/listinfo/davinci-linux-open-source
+>>>
