@@ -1,57 +1,32 @@
-From: "Andrew Dyer" <amdyer@gmail.com>
-Subject: Re: [PATCH] serial: imx: add console polling routines for kgdboc
-Date: Fri, 15 Aug 2008 10:10:03 -0500
-Message-ID: <c166aa9f0808150810r6aba0889w5ceef50d7b6d6b73@mail.gmail.com>
-References: <48A29AFB.9070502@tripeaks.co.jp>
+From: Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: BUG: parport_serial in 2.6.27-rc1 for NetMos Technology PCI
+ 9835
+Date: Fri, 15 Aug 2008 17:13:49 -0700
+Message-ID: <20080815171349.fbebd261.akpm@linux-foundation.org>
+References: <3f9a31f40808050800h7073b82al1342f7e23cf1e1b3@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from wr-out-0506.google.com ([64.233.184.237]:31590 "EHLO
-	wr-out-0506.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753599AbYHOPKE (ORCPT
+Received: from smtp1.linux-foundation.org ([140.211.169.13]:58977 "EHLO
+	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751368AbYHPANv (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 15 Aug 2008 11:10:04 -0400
-Received: by wr-out-0506.google.com with SMTP id 69so1074085wri.5
-        for <linux-serial@vger.kernel.org>; Fri, 15 Aug 2008 08:10:03 -0700 (PDT)
-In-Reply-To: <48A29AFB.9070502@tripeaks.co.jp>
-Content-Disposition: inline
+	Fri, 15 Aug 2008 20:13:51 -0400
+In-Reply-To: <3f9a31f40808050800h7073b82al1342f7e23cf1e1b3@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Atsuo Igarashi <atsuo_igarashi@tripeaks.co.jp>
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.arm.linux.org.uk, kernel@pengutronix.de
+To: Jaswinder Singh <jaswinderlinux@gmail.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Wed, Aug 13, 2008 at 3:27 AM, Atsuo Igarashi
-<atsuo_igarashi@tripeaks.co.jp> wrote:
-> Add console polling routines for the imx uart with kgdboc.
->
-> Signed-off-by Atsuo Igarashi <atsuo_igarashi@tripeaks.co.jp>
->
+On Tue, 5 Aug 2008 20:30:10 +0530
+"Jaswinder Singh" <jaswinderlinux@gmail.com> wrote:
 
-In imx_get_poll_char() the code returns the result of reading the urxd
-register.  That register has the 8 bits of receive data in it, but in
-the next byte up also has 4 bits of error flags (overrun, frame,
-break, parity) and an error summary bit which are being ignored.
-Maybe something like this?
+> /dev/ttyS1 and /dev/ttyS2 of NetMos Technology PCI 9835 is giving Junk
+> characters in minicom but /dev/tyS0 is working perfectly.
 
-static int imx_get_poll_char(struct uart_port *port)
-{
-	struct imx_port *sport = (struct imx_port *)port;
-	int ch;
+Is this still the case in 2.6.27-rc3?
 
-	while (1) {
-                while (!(readl(sport->port.membase + USR2) & USR2_RDR));
+Was the same bug present in 2.6.26?  2.6.25?
 
-	        ch = readl(sport->port.membase + URXD0);
-
-                if (!(ch & URXD_ERR))
-                        return(ch & 0xff);
-                /* else throw away the char with the error and try
-again (or return an error value?) */
-        }
-}
-
-
--- 
-Hardware, n.:
- The parts of a computer system that can be kicked.
+Thanks.
