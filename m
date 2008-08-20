@@ -1,45 +1,35 @@
-From: Jeff DeFouw <jeffd@i2k.com>
-Subject: Re: 8250 misses interrupt, stalls
-Date: Wed, 20 Aug 2008 11:29:38 -0400
-Message-ID: <20080820152938.GA10530@blorp.plorb.com>
-References: <20080808052727.GB23330@blorp.plorb.com> <BD6105C44DDDF84AB07C23F6A35AE54E01E99F6D@dhrseasvxb03.messaging.danaherad.com>
+From: Aristeu Rozanski <aris@ruivo.org>
+Subject: Re: [PATCH v1] 8250: add support for DTR/DSR hardware flow control
+Date: Wed, 20 Aug 2008 17:43:36 -0400
+Message-ID: <20080820214336.GN17926@cathedrallabs.org>
+References: <200808071032.16709.laurentp@cse-semaphore.com> <000f01c8f88c$ad29d950$2e01a8c0@acksys.local> <20080818162526.1975dace@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from qmta05.emeryville.ca.mail.comcast.net ([76.96.30.48]:49685 "EHLO
-	QMTA05.emeryville.ca.mail.comcast.net" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752956AbYHTP3l (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 20 Aug 2008 11:29:41 -0400
+Received: from lobo.ruivo.org ([66.92.68.119]:59306 "EHLO lobo.ruivo.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751101AbYHTWOI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 20 Aug 2008 18:14:08 -0400
 Content-Disposition: inline
-In-Reply-To: <BD6105C44DDDF84AB07C23F6A35AE54E01E99F6D@dhrseasvxb03.messaging.danaherad.com>
+In-Reply-To: <20080818162526.1975dace@lxorguk.ukuu.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Kohne, Mike" <mike.kohne@gilbarco.com>
-Cc: linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Tosoni <jp.tosoni@acksys.fr>, 'Laurent Pinchart' <laurentp@cse-semaphore.com>, 'Aristeu Rozanski' <arozansk@redhat.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Fri, Aug 08, 2008 at 05:36:58AM -0700, Kohne, Mike wrote:
-> I have a system (single core CPU, Winbond 83627HF, but with extra serial
-> ports provided by a SCH3116 - another superio chip). In my box, the
-> extra serial ports refuse to work (I never see interrupts) when I use
-> SMP kernels. If I rebuild the kernel without SMP, my serial ports work
-> fine. I've never gotten a sufficient explaination as to why turning on
-> an SMP kernel would screw up these serial ports. We don't have the heavy
-> (continuous) use that you do, so we would never have noticed the kind of
-> errors you see.
+> > About a RS485 ioctl: could you consider the attached files which are already
+> > in the Linux kernel (in include/asm-cris).
+> > They define a TIOCSERSETRS485 (ioctl.h), and the data structure (rs485.h)
+> > with allows to specify timings. Sounds just like what we want ?
 > 
-> Now obviously there's a wide difference between my behavior (they never
-> work) and yours (they work for a while), but you might want to try
-> building a non-SMP kernel (I took the distributed kernel config as my
-> starting point, and just turned off SMP using make menuconfig). 
+> I had a deeper look at this for RS485 and the answer is "sort of". I've
+> reworked the structure to keep it the same size irrespective of 32/64bit
+> systems, and to make stuff flags that can be, plus add some extra u32
+> words in case we need to (.. when we need to ;)) add stuff later.
 > 
-> I'd be interested to know if this had any effect on your problem. 
-
-I tried a stripped down UP kernel, but it didn't fix the problem.  It 
-took about an hour to fail, compared to the usual under 10 minutes.  I 
-also tried adding counters all over the interrupt paths and couldn't 
-find any interrupts getting lost in the kernel.  It's looking like 
-hardware for me.  I'll have to do some sort of workaround with timers.
+> Comments, thoughts - will this do what people in the RS485 world need ?
+as for DTR/DSR patch, will be used the same approach?
 
 -- 
-Jeff DeFouw <jeffd@i2k.com>
+Aristeu
+
