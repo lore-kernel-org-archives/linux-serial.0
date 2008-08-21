@@ -1,48 +1,62 @@
-From: "'Aristeu Rozanski'" <arozansk@redhat.com>
-Subject: Re: [PATCH v1] 8250: add support for DTR/DSR hardware flow control
-Date: Thu, 21 Aug 2008 14:59:39 -0400
-Message-ID: <20080821185938.GG7154@redhat.com>
-References: <200808071032.16709.laurentp@cse-semaphore.com> <000f01c8f88c$ad29d950$2e01a8c0@acksys.local> <20080818162526.1975dace@lxorguk.ukuu.org.uk> <20080820214336.GN17926@cathedrallabs.org> <20080821112309.6519c29f@lxorguk.ukuu.org.uk>
+From: Bjorn Helgaas <bjorn.helgaas-VXdhtT5mjnY@public.gmane.org>
+Subject: Re: [Bug #11272] BUG: parport_serial in 2.6.27-rc1 for NetMos Technology PCI 9835
+Date: Thu, 21 Aug 2008 15:34:16 -0600
+Message-ID: <200808211534.16465.bjorn.helgaas@hp.com>
+References: <VYYCiQF4qDI.A.BPH.KCjnIB@albercik> <cX_-nNkxKaF.A.F6.BDjnIB@albercik> <3f9a31f40808092354s3d057effm6ed1d2f506fb4637@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([66.187.233.31]:51834 "EHLO mx1.redhat.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754012AbYHUS7k (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 21 Aug 2008 14:59:40 -0400
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Return-path: <kernel-testers-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <3f9a31f40808092354s3d057effm6ed1d2f506fb4637-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20080821112309.6519c29f@lxorguk.ukuu.org.uk>
-Sender: linux-serial-owner@vger.kernel.org
+Sender: kernel-testers-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jaswinder Singh <jaswinderlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "Rafael J. Wysocki" <rjw-KKrjLPT3xs0@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kernel Testers List <kernel-testers-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Tosoni <jp.tosoni@acksys.fr>, 'Laurent Pinchart' <laurentp@cse-semaphore.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-> > > > About a RS485 ioctl: could you consider the attached files which are already
-> > > > in the Linux kernel (in include/asm-cris).
-> > > > They define a TIOCSERSETRS485 (ioctl.h), and the data structure (rs485.h)
-> > > > with allows to specify timings. Sounds just like what we want ?
-> > > 
-> > > I had a deeper look at this for RS485 and the answer is "sort of". I've
-> > > reworked the structure to keep it the same size irrespective of 32/64bit
-> > > systems, and to make stuff flags that can be, plus add some extra u32
-> > > words in case we need to (.. when we need to ;)) add stuff later.
-> > > 
-> > > Comments, thoughts - will this do what people in the RS485 world need ?
-> > as for DTR/DSR patch, will be used the same approach?
+On Sunday 10 August 2008 12:54:14 am Jaswinder Singh wrote:
+> > Bug-Entry       : http://bugzilla.kernel.org/show_bug.cgi?id=11272
+> > Subject         : BUG: parport_serial in 2.6.27-rc1 for NetMos Technology PCI 9835
+> > Submitter       : Jaswinder Singh <jaswinderlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> > Date            : 2008-08-05 15:12 (5 days old)
+> > References      : http://marc.info/?l=linux-kernel&m=121794900319776&w=4
 > 
-> I'm still trying to get a sensible answer on how other Unixes handle it
-I did some research on that:
-Solaris and AIX:
-	TC{G,S}ETX for extended options and only input flow control (DTRXOFF)
-SCO:
-	{S,G}ETFLOW for configuring flow control, TXHARD, RXHARD for DTRDSR
-FreeBSD:
-	cflags has 'dtrflow' and 'dsrflow'
+> This problem still exists on 2.6.27-rc2
+> 
+> When I connect  development boads to /dev/ttyS1 and /dev/ttyS2:
+> bootloader still prints Junk (Garbage Characters) but when Linux
+> starts then it becomes readable and normal.
+> 
+> So I thought problem is in bootloader so I connected different kind of
+> develepment boards and all shows junk characters during boot-loading.
+> 
+> But when I connect  development boads to /dev/ttyS0 : bootloader
+> messages are readable and normal with same settings.
 
-Having the option to set individually which pins to use for input and output
-flow control and which ones should be on/off all the time seem to be a powerful
-way to do it, instead of having a "CDTRDSR".
+This sounds like a problem with the port configuration, e.g.,
+baud rate, data bits, etc.
 
--- 
-Aristeu
+I'm a little confused about what's connected to what.
 
+I assume you have the consoles of various development boards ("targets")
+connected to a NetMos card in the host, and you're running conserver
+or something on the host.  And the target bootloader output is garbled,
+but after the target boots Linux, the output from the target becomes
+normal?
+
+If that's the case, nothing should be changing on the host side that
+could account for the change from garbled to normal.
+
+I notice you're running at 115200.  Does the same thing happen if
+you run at 9600 baud?  I'm wondering if the bootloader programs the
+UART with a divisor that results in a baud rate that's enough different
+to cause garbling, and when Linux boots, it reprograms the UART with
+something that matches the NetMos more closely.  The builtin ttyS0
+and the NetMos ports probably use different clocks, which could
+explain why it works on one but not the other.
+
+There were no changes in parport_serial between 2.6.26 and 2.6.27-rc2.
+Please confirm whether this is a regression from 2.6.26 or not.
+
+Bjorn
