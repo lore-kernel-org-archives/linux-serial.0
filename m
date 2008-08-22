@@ -1,62 +1,156 @@
-From: Bjorn Helgaas <bjorn.helgaas-VXdhtT5mjnY@public.gmane.org>
-Subject: Re: [Bug #11272] BUG: parport_serial in 2.6.27-rc1 for NetMos Technology PCI 9835
-Date: Thu, 21 Aug 2008 15:34:16 -0600
-Message-ID: <200808211534.16465.bjorn.helgaas@hp.com>
-References: <VYYCiQF4qDI.A.BPH.KCjnIB@albercik> <cX_-nNkxKaF.A.F6.BDjnIB@albercik> <3f9a31f40808092354s3d057effm6ed1d2f506fb4637@mail.gmail.com>
+From: "Tony Murray" <murraytony@gmail.com>
+Subject: Patch: Correct Sierra Wireless USB EVDO Modem Device ID
+Date: Fri, 22 Aug 2008 17:30:44 -0500
+Message-ID: <2f5034170808221530h6bea5dc9hcb63a839a9589d2e@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <kernel-testers-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <3f9a31f40808092354s3d057effm6ed1d2f506fb4637-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from ik-out-1112.google.com ([66.249.90.179]:53325 "EHLO
+	ik-out-1112.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755241AbYHVWaq (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 22 Aug 2008 18:30:46 -0400
+Received: by ik-out-1112.google.com with SMTP id c28so464252ika.5
+        for <linux-serial@vger.kernel.org>; Fri, 22 Aug 2008 15:30:44 -0700 (PDT)
 Content-Disposition: inline
-Sender: kernel-testers-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Jaswinder Singh <jaswinderlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "Rafael J. Wysocki" <rjw-KKrjLPT3xs0@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kernel Testers List <kernel-testers-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: klloyd@sierrawireless.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
 
-On Sunday 10 August 2008 12:54:14 am Jaswinder Singh wrote:
-> > Bug-Entry       : http://bugzilla.kernel.org/show_bug.cgi?id=11272
-> > Subject         : BUG: parport_serial in 2.6.27-rc1 for NetMos Technology PCI 9835
-> > Submitter       : Jaswinder Singh <jaswinderlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> > Date            : 2008-08-05 15:12 (5 days old)
-> > References      : http://marc.info/?l=linux-kernel&m=121794900319776&w=4
-> 
-> This problem still exists on 2.6.27-rc2
-> 
-> When I connect  development boads to /dev/ttyS1 and /dev/ttyS2:
-> bootloader still prints Junk (Garbage Characters) but when Linux
-> starts then it becomes readable and normal.
-> 
-> So I thought problem is in bootloader so I connected different kind of
-> develepment boards and all shows junk characters during boot-loading.
-> 
-> But when I connect  development boads to /dev/ttyS0 : bootloader
-> messages are readable and normal with same settings.
+I was trying to figure out why my device wasn't supported by the
+drivers/usb/serial/sierra.c driver, while looking throught the device
+IDs I spotted what I believe to be a typo in the device IDs.  Please
+apply the following patch:
 
-This sounds like a problem with the port configuration, e.g.,
-baud rate, data bits, etc.
+--- drivers/usb/serial/sierra.c.orig    2008-08-22 16:55:00.000000000 -0500
++++ drivers/usb/serial/sierra.c 2008-08-22 17:08:55.000000000 -0500
+@@ -185,7 +185,7 @@
+        { USB_DEVICE(0x1199, 0x0017) }, /* Sierra Wireless EM5625 */
+        { USB_DEVICE(0x1199, 0x0018) }, /* Sierra Wireless MC5720 */
+        { USB_DEVICE(0x1199, 0x0218) }, /* Sierra Wireless MC5720 */
+-       { USB_DEVICE(0x0f30, 0x1b1d) }, /* Sierra Wireless MC5720 */
++       { USB_DEVICE(0x03f0, 0x1b1d) }, /* HP ev2200 a.k.a MC5720 */
+        { USB_DEVICE(0x1199, 0x0020) }, /* Sierra Wireless MC5725 */
+        { USB_DEVICE(0x1199, 0x0220) }, /* Sierra Wireless MC5725 */
+        { USB_DEVICE(0x1199, 0x0019) }, /* Sierra Wireless AirCard 595 */
 
-I'm a little confused about what's connected to what.
 
-I assume you have the consoles of various development boards ("targets")
-connected to a NetMos card in the host, and you're running conserver
-or something on the host.  And the target bootloader output is garbled,
-but after the target boots Linux, the output from the target becomes
-normal?
+If you look down further, there is another HP wireless broadband card,
+which has a vendor ID of 03f0, like my device.  Below is my "lsusb -v
+-d 03f0:1b1d".
 
-If that's the case, nothing should be changing on the host side that
-could account for the change from garbled to normal.
+Bus 001 Device 005: ID 03f0:1b1d Hewlett-Packard
+Device Descriptor:
+  bLength                18
+  bDescriptorType         1
+  bcdUSB               1.10
+  bDeviceClass            0 (Defined at Interface level)
+  bDeviceSubClass         0
+  bDeviceProtocol         0
+  bMaxPacketSize0        64
+  idVendor           0x03f0 Hewlett-Packard
+  idProduct          0x1b1d
+  bcdDevice            0.01
+  iManufacturer           1 HP
+  iProduct                2 HP ev2200 1xEV-DO Broadband Wireless Module
+  iSerial                 0
+  bNumConfigurations      1
+  Configuration Descriptor:
+    bLength                 9
+    bDescriptorType         2
+    wTotalLength           67
+    bNumInterfaces          1
+    bConfigurationValue     1
+    iConfiguration          0
+    bmAttributes         0xe0
+      Self Powered
+      Remote Wakeup
+    MaxPower                0mA
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        0
+      bAlternateSetting       0
+      bNumEndpoints           7
+      bInterfaceClass       255 Vendor Specific Class
+      bInterfaceSubClass    255 Vendor Specific Subclass
+      bInterfaceProtocol    255 Vendor Specific Protocol
+      iInterface              3 Data Interface
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x81  EP 1 IN
+        bmAttributes            3
+          Transfer Type            Interrupt
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0010  1x 16 bytes
+        bInterval             128
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x82  EP 2 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x02  EP 2 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x84  EP 4 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x04  EP 4 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x85  EP 5 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x05  EP 5 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+Device Status:     0x0000
+  (Bus Powered)
 
-I notice you're running at 115200.  Does the same thing happen if
-you run at 9600 baud?  I'm wondering if the bootloader programs the
-UART with a divisor that results in a baud rate that's enough different
-to cause garbling, and when Linux boots, it reprograms the UART with
-something that matches the NetMos more closely.  The builtin ttyS0
-and the NetMos ports probably use different clocks, which could
-explain why it works on one but not the other.
 
-There were no changes in parport_serial between 2.6.26 and 2.6.27-rc2.
-Please confirm whether this is a regression from 2.6.26 or not.
+Tony Murray
 
-Bjorn
+PS: Sorry about the multi-list spam, but I was unsure exactly to send this.
