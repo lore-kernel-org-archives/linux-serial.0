@@ -1,58 +1,65 @@
-From: Robert Richter <robert.richter@amd.com>
-Subject: [PATCH] 8250 serial: add OXCB950 chip
-Date: Wed, 10 Sep 2008 10:37:11 +0200
-Message-ID: <1221035831-12660-1-git-send-email-robert.richter@amd.com>
+From: David Miller <davem@davemloft.net>
+Subject: [PATCH 0/2]: Allow 8250 to work on sparc.
+Date: Fri, 12 Sep 2008 21:18:54 -0700 (PDT)
+Message-ID: <20080912.211854.102505246.davem@davemloft.net>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1753573AbYIJIir@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: LKML <linux-kernel@vger.kernel.org>, Andre Przywara <andre.przywara@amd.com>, Robert Richter <robert.richter@amd.com>
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from 74-93-104-97-Washington.hfc.comcastbusiness.net ([74.93.104.97]:34978
+	"EHLO sunset.davemloft.net" rhost-flags-OK-FAIL-OK-OK)
+	by vger.kernel.org with ESMTP id S1750981AbYIMETA (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 13 Sep 2008 00:19:00 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, sparclinux@vger.kernel.org, joy@entuzijast.net
 
-From: Andre Przywara <andre.przywara@amd.com>
 
-This patch adds the OXCB950 chip to the 8250 PCI driver.
+Currently there is a "BROKEN || SPARC" dependency for CONFIG_SERIAL_8250
+in drivers/serial/Kconfig.  These changes try to eliminate that restriction
+so that Sparc users can use add-on PCI cards with 8250 serial controllers.
 
-----------
-Chip: Oxford Semiconductor OXCB950 for PCI Cardbus interface
-http://www.transdimension.com/products/serial/OXCB950.html
+The core issue that prevents this from working is that all of the onboard
+Sun specific serial drivers use the major=TTY_MAJOR, minor=64,65,66,...
+driver major/minor namespace, just like 8250.
 
-on this card:
-ExSys EX-1370 1 port high-speed serial card for ExpressCard/34 slot
-----------
+They coordinate amongst themselves using an internal allocator for the
+minor number space.  This is contained in drivers/serial/suncore.c
 
-Signed-off-by: Robert Richter <robert.richter@amd.com>
----
- drivers/serial/8250_pci.c |    3 +++
- include/linux/pci_ids.h   |    1 +
- 2 files changed, 4 insertions(+), 0 deletions(-)
+This presents two problems:
 
-diff --git a/drivers/serial/8250_pci.c b/drivers/serial/8250_pci.c
-index c2f2393..eec0620 100644
---- a/drivers/serial/8250_pci.c
-+++ b/drivers/serial/8250_pci.c
-@@ -2293,6 +2293,9 @@ static struct pci_device_id serial_pci_tbl[] = {
- 	{	PCI_VENDOR_ID_OXSEMI, 0x950a,
- 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
- 		pbn_b0_2_1130000 },
-+	{	PCI_VENDOR_ID_OXSEMI, PCI_DEVICE_ID_OXSEMI_C950,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b0_1_921600 },
- 	{	PCI_VENDOR_ID_OXSEMI, PCI_DEVICE_ID_OXSEMI_16PCI954,
- 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
- 		pbn_b0_4_115200 },
-diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
-index f1624b3..1d08fbe 100644
---- a/include/linux/pci_ids.h
-+++ b/include/linux/pci_ids.h
-@@ -1930,6 +1930,7 @@
- #define PCI_VENDOR_ID_OXSEMI		0x1415
- #define PCI_DEVICE_ID_OXSEMI_12PCI840	0x8403
- #define PCI_DEVICE_ID_OXSEMI_16PCI954	0x9501
-+#define PCI_DEVICE_ID_OXSEMI_C950	0x950B
- #define PCI_DEVICE_ID_OXSEMI_16PCI95N	0x9511
- #define PCI_DEVICE_ID_OXSEMI_16PCI954PP	0x9513
- #define PCI_DEVICE_ID_OXSEMI_16PCI952	0x9521
--- 
-1.6.0.1
+1) We have to make sure the Sun drivers register first, so that their
+   device indexes don't change and thus people get broken serial consoles
+   and stuff like that.
+
+2) Also, it is necessary for 8250 to partake in this minor number
+   allocation scheme, otherwise it cannot register because it'll try
+   to use '64' as it's base minor number and one of the Sun serial drivers
+   will have taken over that minor already.
+
+Working on this and testing it also uncovered another portability bug.
+The uart_port structure uses an "unsigned int" for the "ioport" member,
+but even I/O ports in PCI devices are 64-bit on sparc64, so the high
+bits were being chopped off when 8250 PCI cards were tested.  The fix
+is to use "unsigned long" for this type and that's what the first patch
+does.
+
+The second patch removes the !SPARC dependency for 8250 and adds the hooks
+to use the Sun serial minor number allocator when registering serial8250_reg
+with the UART layer.
+
+Yes, I know, this part is a bit ugly but I can't think of any workable
+alternative.  I could change all the major/minor numbers all the Sun
+serial drivers use, to get out of the way of 8250's space.  But that
+will break every single Sparc system out there, all the serial device
+names will change as will the serial console device.  I did write a patch
+which does such a set of changes, but I can't see any way in which we can
+consider it seriously.
+
+If there are no objections I'd like to toss this into my sparc-next-2.6
+tree for 2.6.28 inclusion.  Is that OK with everyone?
+
+I'd like to thank Josip Rodin for bringing this to my attention, and
+testing various revisions of these patches.
