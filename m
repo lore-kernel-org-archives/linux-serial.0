@@ -1,50 +1,124 @@
-From: Mark Fortescue <mark@mtfhpc.demon.co.uk>
-Subject: Re: Allow 8250 to work on sparc.
-Date: Mon, 15 Sep 2008 15:26:06 +0100 (BST)
-Message-ID: <Pine.LNX.4.61.0809151507250.23201@mtfhpc.demon.co.uk>
-References: <20080912.211854.102505246.davem@davemloft.net>
+From: Eran Liberty <liberty@extricom.com>
+Subject: [PATCH 2.6.26] SERIAL DRIVER: Handle Multiple consecutive sysrq from
+ the serial
+Date: Mon, 15 Sep 2008 19:30:05 +0300
+Message-ID: <48CE8D8D.1070407@extricom.com>
+References: <48591941.4070408@extricom.com>	<48A92E15.2080709@extricom.com>	<48A9901B.1080900@redhat.com>	<20080818154746.GA26835@Krystal>	<48A9AFA7.8080508@freescale.com>	<alpine.DEB.1.10.0808181425090.796@gandalf.stny.rr.com>	<1219110814.8062.2.camel@pasglop>	<alpine.DEB.1.10.0808182208110.13401@gandalf.stny.rr.com>	<1219113549.8062.13.camel@pasglop>	<1219114600.8062.15.camel@pasglop>	<alpine.DEB.1.10.0808182304300.13401@gandalf.stny.rr.com>	<1219119431.8062.35.camel@pasglop>	<1219216705.21386.46.camel@pasglop>	<alpine.DEB.1.10.0808200913070.13132@gandalf.stny.rr.com>	<1219241819.26429.24.camel@jdub.homelinux.org>	<alpine.DEB.1.10.0808201022080.23571@gandalf.stny.rr.com> <20080820105035.49f29509@zod.rchland.ibm.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from anchor-post-34.mail.demon.net ([194.217.242.92]:2307 "EHLO
-	anchor-post-34.mail.demon.net" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753425AbYIOOfk (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 15 Sep 2008 10:35:40 -0400
-In-Reply-To: <20080912.211854.102505246.davem@davemloft.net>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: multipart/mixed;
+ boundary="------------090102090004080506090501"
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1755981AbYIOQaL@vger.kernel.org>
+In-Reply-To: <20080820105035.49f29509@zod.rchland.ibm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: David Miller <davem@davemloft.net>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, sparclinux@vger.kernel.org, joy@entuzijast.net
 
-On Fri, 12 Sep 2008, David Miller wrote:
-> Working on this and testing it also uncovered another portability bug.
-> The uart_port structure uses an "unsigned int" for the "ioport" member,
-> but even I/O ports in PCI devices are 64-bit on sparc64, so the high
-> bits were being chopped off when 8250 PCI cards were tested.  The fix
-> is to use "unsigned long" for this type and that's what the first patch
-> does.
->
+This is a multi-part message in MIME format.
+--------------090102090004080506090501
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-In the long term, should a generic serial port minor number allocater be 
-used by all serial ports?
+Dear Penguins,
 
-At the user level, there is no difference between a sun zilog serial port, 
-an 8250 serial port or a USB serial port so these should be allocated 
-using the same allocation system.
+Let me start of by saying my particular hardware must be buggy in some 
+way. When I issue a sysrq (Ctrl A+ F from minicom) I get a lot of sysrq 
+triggers.
 
-Would this not remove many of the issues of portability that the current 
-structure apears to have built into it?
+I have worked around the problem and I think this workaround is a viable 
+patch even for platforms which do not exhibit this peculiar behavior.
 
-For me, it would also simplify the issue of trying to work what devive to 
-look for when I plug in a new USB serial port device. It would be the new 
-/dev/ttyS<x> to appear in /dev.
+upon getting numerous interrupts which request sysrq the function 
+uart_handle_break in include/linux/serial_core.h is hit multiple times.
+The current code which looks like this:
 
-For serial ports with additional functionality (SDLC, HDLC etc.) a 
-seperate IOCTL could be provided to indicate the presense of this 
-extra functionality to programs that require it or a separate device 
-major/minor could be allocated for this extra functionality (this may 
-have some comatibility/maintanence benifits over an IOCTL).
+static inline int uart_handle_break(struct uart_port *port)
+ {
+        struct uart_info *info = port->info;
+ #ifdef SUPPORT_SYSRQ
+        if (port->cons && port->cons->index == port->line) {
+               if (!port->sysrq) {
+                       port->sysrq = jiffies + HZ*5;
+                       return 1;
+               }
+               port->sysrq = 0;
+        }
+ #endif
+        if (port->flags & UPF_SAK)
+                do_SAK(info->tty);
+       return 0;
+}
 
-Regards
- 	Mark Fortescue.
+Will basicly toggle port->sysrq between a timeout value and zero. If you 
+are lucky this penguin rullet will stop on timeout and the next 
+character hit will trigger the sysrq in the function 
+"uart_handle_sysrq_char". But if you are not so lucky the last sysrq 
+interupt will toggle port->sysrq to zero and the next char hit will be 
+ignored (not trigger sysrq).
+
+The suggested patch will do the next few things:
+
+1. "port->sysrq" is now the time when the last sysrq was triggered and 
+not the timeout for the the next char
+2. Stamped "port->sysrq" every time there is a sysrq rather then toggled 
+it up and down.
+3. Always continue to consider UPF_SAK.
+4. "port->sysrq" is toggled back to zero only in uart_handle_break() and 
+only if the a char has been accepted after the sysrq timeout (5 sec)
+5. uart_handle_break() will ignore extra chars received in super human 
+speed after the last sysrq (0.01 sec)
+
+Liberty
+
+Signed-off-by: Eran Liberty <liberty@extricom.org>
+---
+
+
+
+--------------090102090004080506090501
+Content-Type: text/x-patch;
+ name="sysrq.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="sysrq.patch"
+
+Index: include/linux/serial_core.h
+===================================================================
+--- include/linux/serial_core.h	(revision 119)
++++ include/linux/serial_core.h	(revision 120)
+@@ -447,8 +447,8 @@
+ uart_handle_sysrq_char(struct uart_port *port, unsigned int ch)
+ {
+ #ifdef SUPPORT_SYSRQ
+-	if (port->sysrq) {
+-		if (ch && time_before(jiffies, port->sysrq)) {
++	if (port->sysrq && time_after(jiffies, port->sysrq + (unsigned long)(HZ*0.01))) {
++		if (ch && time_before(jiffies, port->sysrq + HZ*5)) {
+ 			handle_sysrq(ch, port->info ? port->info->tty : NULL);
+ 			port->sysrq = 0;
+ 			return 1;
+@@ -467,19 +467,17 @@
+  */
+ static inline int uart_handle_break(struct uart_port *port)
+ {
++	int ret = 0;
+ 	struct uart_info *info = port->info;
+ #ifdef SUPPORT_SYSRQ
+ 	if (port->cons && port->cons->index == port->line) {
+-		if (!port->sysrq) {
+-			port->sysrq = jiffies + HZ*5;
+-			return 1;
+-		}
+-		port->sysrq = 0;
++		port->sysrq = jiffies;
++		ret = 1;
+ 	}
+ #endif
+ 	if (port->flags & UPF_SAK)
+ 		do_SAK(info->tty);
+-	return 0;
++	return ret;
+ }
+ 
+ /**
+
+--------------090102090004080506090501--
