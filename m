@@ -1,53 +1,52 @@
-From: Mark Fortescue <mark@mtfhpc.demon.co.uk>
-Subject: Re: Allow 8250 to work on sparc.
-Date: Tue, 16 Sep 2008 14:15:43 +0100 (BST)
-Message-ID: <Pine.LNX.4.61.0809161343450.25955@mtfhpc.demon.co.uk>
-References: <20080912.211854.102505246.davem@davemloft.net>
- <Pine.LNX.4.61.0809151507250.23201@mtfhpc.demon.co.uk>
- <20080915172211.6751bb17@the-village.bc.nu> <Pine.LNX.4.61.0809151934040.23817@mtfhpc.demon.co.uk>
- <20080916115400.31522d77@lxorguk.ukuu.org.uk>
+From: "Jaswinder Singh" <jaswinderlinux@gmail.com>
+Subject: Re: [Bug #11272] BUG: parport_serial in 2.6.27-rc1 for NetMos Technology PCI 9835
+Date: Tue, 16 Sep 2008 20:55:22 +0530
+Message-ID: <3f9a31f40809160825s4bd0f950td2b29107113e79e0@mail.gmail.com>
+References: <j3zWxt-CgYL.A.WTF.bbsyIB@albercik>
+	 <SpS7rta8n4.A.17.FfsyIB@albercik>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from anchor-post-31.mail.demon.net ([194.217.242.89]:3543 "EHLO
-	anchor-post-31.mail.demon.net" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751561AbYIPNPr (ORCPT
+Received: from yw-out-2324.google.com ([74.125.46.28]:19573 "EHLO
+	yw-out-2324.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753730AbYIPPZY (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 16 Sep 2008 09:15:47 -0400
-In-Reply-To: <20080916115400.31522d77@lxorguk.ukuu.org.uk>
+	Tue, 16 Sep 2008 11:25:24 -0400
+Received: by yw-out-2324.google.com with SMTP id 9so807805ywe.1
+        for <linux-serial@vger.kernel.org>; Tue, 16 Sep 2008 08:25:23 -0700 (PDT)
+In-Reply-To: <SpS7rta8n4.A.17.FfsyIB@albercik>
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: David Miller <davem@davemloft.net>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, sparclinux@vger.kernel.org, joy@entuzijast.net
+To: "Rafael J. Wysocki" <rjw@sisk.pl>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Kernel Testers List <kernel-testers@vger.kernel.org>, linux-serial@vger.kernel.org
 
-Hi Alan,
+Hello all,
 
-On Tue, 16 Sep 2008, Alan Cox wrote:
+I am sorry for delay.
 
->> I am intrigued. Other than the valid baud rates what differences are
->> visible at the user level?
+On Sat, Sep 13, 2008 at 12:36 AM, Rafael J. Wysocki <rjw@sisk.pl> wrote:
 >
-> There are lots of variations between hardware of all kinds but the big
-> one with USB devices is generally latency.
+> Bug-Entry       : http://bugzilla.kernel.org/show_bug.cgi?id=11272
+> Subject         : BUG: parport_serial in 2.6.27-rc1 for NetMos Technology PCI 9835
+> Submitter       : Jaswinder Singh <jaswinderlinux@gmail.com>
+> Date            : 2008-08-05 15:12 (39 days old)
+> References      : http://marc.info/?l=linux-kernel&m=121794900319776&w=4
 >
 
-At the driver level there are lots of varients but I was under the 
-impression that at the user level, the interface is common for async 
-serial ports.
+I have tested parport_pc and also tried with pcmcia_cs, only thing I
+get is disappointment. So I give up :-(
 
-Latency can be an issue, but can it be read/changed via the user <-> 
-kernel interface in a way that is not common to all async serial ports?
+Now I switched to usbserial.
+usbserial drivers are working great !!
 
-If not, it is transparent at the programming interface for user level code 
-so the USB serial ports are no different at this level to classic PC AT 
-serial ports and as such I see no reason why, in the long run, they should 
-not share minor number space.
+Now I do not want to use parport_pc and pcmcia_cs atleast for 2 years,
+I hope in 2 years this will be solved ;)
 
-Taking the argument to its logical conclusion, all devices that have a 
-common user <-> kernel interface should have device drivers that are 
-capable of sharing minor device number space.
+In the mean time, If you think my problem is solved just ping to me I
+will test and let you know the results.
 
-I am sure this discusion will crop up again in the future :).
+Thank you for all your support and help.
 
-Regards
- 	Mark.
+Jaswinder Singh.
