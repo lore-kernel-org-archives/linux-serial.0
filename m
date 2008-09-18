@@ -1,53 +1,86 @@
-From: Rick Bolen <rickbolgm@gmail.com>
-Subject: serial port being reset at top of every hour?
-Date: Thu, 18 Sep 2008 08:14:16 -0400
-Message-ID: <48D24618.1040605@gmail.com>
-Reply-To: rickbolgm@gmail.com
+From: Matthieu CASTET <matthieu.castet@parrot.com>
+Subject: s3c24xx : TIOCM_CTS handling problem
+Date: Thu, 18 Sep 2008 14:00:28 +0200
+Message-ID: <48D242DC.30102@parrot.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed;
+ boundary="------------060704010706020709070609"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from wx-out-0506.google.com ([66.249.82.239]:41341 "EHLO
-	wx-out-0506.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751580AbYIRMOw (ORCPT
+Received: from co203.xi-lite.net ([149.6.83.203]:40466 "EHLO
+	toronto.xi-lite.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751588AbYIRMV2 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 18 Sep 2008 08:14:52 -0400
-Received: by wx-out-0506.google.com with SMTP id h27so1445890wxd.4
-        for <linux-serial@vger.kernel.org>; Thu, 18 Sep 2008 05:14:51 -0700 (PDT)
+	Thu, 18 Sep 2008 08:21:28 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
+Cc: Ben Dooks <ben-linux@fluff.org>
 
-Hello all,
+This is a multi-part message in MIME format.
+--------------060704010706020709070609
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-I've been trying to chase down an issue for about one month now.
+Hi,
 
-Config:
-Debian Etch (4.04a) w/xfce, kernel 2.6.18-6-686, VIA PC2500E mobo, Moxa 
-Smartio C168H/PCI (rev 01)
+there is a problem in samsung soc serial driver with the report of
+TIOCM_CTS in get_mctrl.
 
-Symptoms:
-I run a Perl based home automation software package, Misterhouse (been 
-running it on various versions of Debian since ~'98). It interfaces to 
-numerous serial devices through the mobo's ttyS0 and the Moxa ttyMx 
-ports. It uses the SerialPort.pm PERL module (POSIX) for initializing 
-and utilizing ports.
+The uart layer check the status of the TIOCM_CTS in the open or
+set_termios function and cache the result in the tty->hw_stopped flag.
 
-At the top of the hour, some [other] process resets either ttyM0 or 
-ttyS0 (randomly determined at boot?) which causes the home automation 
-software to lose communication to the device.
-
-Question:
-How can I determine what process is resetting the port? Is there any 
-logging available to list PIDs that access a port? ...or a way to attach 
-a debugger to "the system" so I can identify the process?
-
-I used strace on the home automation process to verify that it wasn't 
-clobbering itself, but I have no idea what other processes may be 
-"candidates", so I need to watch this from the system level.
-
-Thank you,
-
-Rick Bolen
+Then when sending data, in the function uart_start, it check
+tty->hw_stopped flag before calling the start_tx uart driver callback.
 
 
+For the samsung uart driver it means :
+- if the other side is not connected or in a reset state, then CTS
+signal is not activated
+- we open and configure the uart. get_mctrl don't report TIOCM_CTS flag.
+uart layer set tty->hw_stopped flag.
+- we connect or start the other side. CTS signal become activated.
+- we send some characters on the uart. This call uart_write which fill
+uart tx queue and call uart_start. uart_start doesn't call driver
+start_tx because tty->hw_stopped flag is set.
+- because driver start_tx is never call, the data is never send on the uart.
+
+>From what I see, working driver managing TIOCM_CTS flag (amba-pl011,
+8250), call uart_handle_cts_change when the uart driver detect a CTS
+signal change (via a interrupt).
+
+Because the samsung controller doesn't generate an interrupt when CTS
+signal change, we can't call uart_handle_cts_change.
+
+And easy fix could be to always report TIOCM_CTS.
+
+I believe this bug is tricky and can affect other drivers.
+Can this be documented in Documentation/serial/driver like the attached
+patch ?
+
+
+Matthieu
+
+--------------060704010706020709070609
+Content-Type: text/plain;
+ name="uart_doc"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="uart_doc"
+
+diff --git a/Documentation/serial/driver b/Documentation/serial/driver
+index 77ba0af..8395d5a 100644
+--- a/Documentation/serial/driver
++++ b/Documentation/serial/driver
+@@ -109,6 +109,10 @@ hardware.
+ 	the port does not support CTS, DCD or DSR, the driver should
+ 	indicate that the signal is permanently active.  If RI is
+ 	not available, the signal should not be indicated as active.
++	If the port does not support automatic detection of change of
++	CTS or DCD (and report via uart_handle_cts_change or 
++	uart_handle_dcd_change) the driver should indicate that the
++	signal is permanently active.
+ 
+ 	Locking: port->lock taken.
+ 	Interrupts: locally disabled.
+
+--------------060704010706020709070609--
