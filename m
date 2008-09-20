@@ -1,52 +1,48 @@
-From: Haavard Skinnemoen <haavard.skinnemoen@atmel.com>
-Subject: Re: [PATCH] atmel_serial: update the powersave handler to match
- serial core
-Date: Sat, 20 Sep 2008 15:01:56 +0200
-Message-ID: <20080920150156.1de8f901@hskinnemo-gx745.norway.atmel.com>
-References: <866907.89401.qm@web26206.mail.ukl.yahoo.com>
-	<20080919203520.2969dffd@hskinnemo-gx745.norway.atmel.com>
-	<48D41E69.8050308@artecdesign.ee>
+From: Arjan van de Ven <arjan@infradead.org>
+Subject: Re: [PATCH] max3100 driver
+Date: Sat, 20 Sep 2008 06:56:52 -0700
+Message-ID: <20080920065652.11d76780@infradead.org>
+References: <1221895208650-git-send-email-chripell@gmail.com>
+	<20080920012454.e40f03cc.akpm@linux-foundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtpeu1.atmel.com ([195.65.72.27]:39302 "EHLO bagnes.atmel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751627AbYITNCH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 20 Sep 2008 09:02:07 -0400
-In-Reply-To: <48D41E69.8050308@artecdesign.ee>
+Received: from casper.infradead.org ([85.118.1.10]:44285 "EHLO
+	casper.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751162AbYITN5F (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 20 Sep 2008 09:57:05 -0400
+In-Reply-To: <20080920012454.e40f03cc.akpm@linux-foundation.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Anti Sullin <anti.sullin@artecdesign.ee>
-Cc: Michael Trimarchi <trimarchimichael@yahoo.it>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andrew Victor <linux@maxim.org.za>
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Christian Pellegrin <chripell@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Christian Pellegrin <chripell@fsfe.org>
 
-Anti Sullin <anti.sullin@artecdesign.ee> wrote:
-> Haavard Skinnemoen wrote:
-> > I don't think the gpio layer is supposed to touch the portmux. David
-> > has always been very clear about that. But if we somehow manage to get
-> > the pin configured as a GPIO, we can use the GPIO layer to request a
-> > pin change interrupt.
-> >
-> > It _might_ work even if you don't reconfigure the pin as a GPIO...but
-> > then I think we'd be relying on undocumented behaviour.
-> >   
-> I believe that you don't need to reconfigure the pin. The gpio hw does
-> not require the pin to be multiplexed to any given state, so does not request_irq (correct?).
-> I did this trick in my [2/3] MCI driver patch I sent to arm-linux-kernel at 18.03.2008 (the
-> e-mail subject line was wrong, [1/3], though) and I'm using that patch still on my
-> production devices to avoid some rare but critical SD data corruption (mainline kernel still 
-> screws up the filesystem on SD sometimes). The same should be easily usable on serial port, too.
+\> > +	int rx_enabled:1;	/* if we should rx chars */
+> > +
+> > +	int irq;		/* irq assigned to the max3100 */
+> > +
+> > +	int minor;		/* minor number */
+> > +	int crystal:1;		/* 1 if 3.6864Mhz crystal 0
+> > for 1.8432 */
+> > +	int loopback:1;		/* 1 if we are in loopback
+> > mode */
+> > +	int only_edge_irq:1;	/* 1 if we have only edge irqs
+> > (like PXA) */
+> 
+> Lots of dittoes.
+> 
+> These bitfields perhaps could be reordered to save a bit of space, but
+> that depends on the implicit locking rules for them.
+> 
 
-You're right. It works, and it's documented. I don't think it's
-guaranteed by the GPIO API, but as long as it's guaranteed on AT91 and
-AVR32, we should be fine.
+I do have a question though: what does a signed bitfield of 1 mean?
+I mean.. the variables are "int", so signed.... where will the compiler
+store the sign bit???
 
-> So in many applications we could not use this. But this might still come handy
-> in a lot of cases we can poll and find out what caused the data on the serial
-> port etc. Or on applications, where this loss of data does not matter (like debug
-> console where the resume is usable even if it does not wake up on the first byte).
 
-Yes, as long as you have some sort of timeout/retry mechanism in place,
-it might be useful.
-
-Haavard
+-- 
+Arjan van de Ven 	Intel Open Source Technology Centre
+For development, discussion and tips for power savings, 
+visit http://www.lesswatts.org
