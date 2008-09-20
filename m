@@ -1,394 +1,155 @@
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] max3100 driver
-Date: Sat, 20 Sep 2008 01:24:54 -0700
-Message-ID: <20080920012454.e40f03cc.akpm@linux-foundation.org>
-References: <1221895208650-git-send-email-chripell@gmail.com>
+From: Michael Trimarchi <trimarchimichael@yahoo.it>
+Subject: Re: [PATCH] atmel_serial: update the powersave handler to match serial core
+Date: Sat, 20 Sep 2008 09:31:23 +0000 (GMT)
+Message-ID: <332452.26141.qm@web26208.mail.ukl.yahoo.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp1.linux-foundation.org ([140.211.169.13]:36415 "EHLO
-	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750957AbYITIZO (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 20 Sep 2008 04:25:14 -0400
-In-Reply-To: <1221895208650-git-send-email-chripell@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1752985AbYITJbg@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Anti Sullin <anti.sullin@artecdesign.ee>, Haavard Skinnemoen <haavard.skinnemoen@atmel.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andrew Victor <linux@maxim.org.za>
 List-Id: linux-serial@vger.kernel.org
-To: Christian Pellegrin <chripell@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Christian Pellegrin <chripell@fsfe.org>
 
-On Sat, 20 Sep 2008 09:20:08 +0200 Christian Pellegrin <chripell@gmail.com> wrote:
+Hi,
 
-> This patch adds support for the MAX3100 SPI UART.
-> 
->
-> ...
->
-> + * The initial minor number is 128 in the low-density serial port:
-> + * mknod /dev/ttyMAX0 c 204 128
-> + */
-> +
-> +#define MAX3100_MAJOR 204
-
-Allocating a new major is a Big Deal.  It involves getting the major
-registered by contacting device@lanana.org.
-
-It's better to dynamically allocate it - let udev handle it.
-
-> +#define MAX3100_MINOR 128
-> +/* 4 MAX3100s should be enough for everyone */
-> +#define MAX_MAX3100 4
-> +
-> +#include <linux/bitops.h>
-> +#include <linux/console.h>
-> +#include <linux/delay.h>
-> +#include <linux/device.h>
-> +#include <linux/errno.h>
-> +#include <linux/fcntl.h>
-> +#include <linux/init.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/io.h>
-> +#include <linux/irq.h>
-> +#include <linux/kernel.h>
-> +#include <linux/keyboard.h>
-> +#include <linux/major.h>
-> +#include <linux/mm.h>
-> +#include <linux/module.h>
-> +#include <linux/mutex.h>
-> +#include <linux/pm.h>
-> +#include <linux/reboot.h>
-> +#include <linux/sched.h>
-> +#include <linux/serial_core.h>
-> +#include <linux/serial.h>
-> +#include <linux/signal.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/string.h>
-> +#include <linux/timer.h>
-> +#include <linux/tty.h>
-> +#include <linux/tty_flip.h>
-> +#include <linux/uaccess.h>
-> +#include <linux/workqueue.h>
-> +#include <linux/freezer.h>
-
-Gad. Are all those includes needed?
-
-> +#include <asm/system.h>
-> +
-> +#include <linux/serial_max3100.h>
-> +
->
-> ...
->
-> +/* the following simulate a status reg for ignore_status_mask */
-> +#define MAX3100_STATUS_PE 1
-> +#define MAX3100_STATUS_FE 2
-> +#define MAX3100_STATUS_OE 4
-> +
-> +struct max3100_port_s {
-
-`struct max3100_port' is sufficient, and would be more typical.
-
-> +	struct uart_port port;
-> +	struct spi_device *spi;
-> +
-> +	int cts:1;	        /* last CTS received for flow ctrl */
-> +	int tx_empty:1;		/* last TX empty bit */
-
-These two bits will share a word and hence locking is needed to prevent
-modifications to one from trashing modifications to the other on SMP.
-
-That's OK, but it would be best to document that locking right here, and
-to check that it is adhered to.
-
-> +	spinlock_t conf_lock;	/* shared data */
-> +	int conf_commit:1;	/* need to make changes */
-> +	int conf;		/* configuration for the MAX31000
-> +				 * (bits 0-7, bits 8-11 are irqs) */
-> +	int rts_commit:1;	/* need to change rts */
-> +	int rts:1;		/* rts status */
-> +
-> +	int parity:3;		/* keeps track if we should send parity */
-> +#define MAX3100_PARITY_ON 1
-> +#define MAX3100_PARITY_ODD 2
-> +#define MAX3100_7BIT 4
-> +	int rx_enabled:1;	/* if we should rx chars */
-> +
-> +	int irq;		/* irq assigned to the max3100 */
-> +
-> +	int minor;		/* minor number */
-> +	int crystal:1;		/* 1 if 3.6864Mhz crystal 0 for 1.8432 */
-> +	int loopback:1;		/* 1 if we are in loopback mode */
-> +	int only_edge_irq:1;	/* 1 if we have only edge irqs (like PXA) */
-
-Lots of dittoes.
-
-These bitfields perhaps could be reordered to save a bit of space, but
-that depends on the implicit locking rules for them.
-
-> +	/* for handling irqs: need workqueue since we do spi_sync */
-> +	struct workqueue_struct *workqueue;
-> +	struct work_struct work;
-> +	/* set to 1 to make the workhandler exit as soon as possible */
-> +	int  force_end_work:1;
-> +	/* need to know we are suspending to avoid deadlock on workqueue */
-> +	int suspending:1;
-> +
-> +	/* these are for IRQ on/off counting */
-> +	int irq_status;
-> +	/* avoid race condition on irq_status */
-> +	spinlock_t irq_lock;
-> +
-> +	/* hook for suspending MAX3100 via dedicated pin */
-> +	void (*max3100_hw_suspend) (int suspend);
-> +
-> +	/* poll time (in ms) for ctrl lines */
-> +	int poll_time;
-> +	/* and it's timer */
-
-s/it's/its/
-
-> +	struct timer_list	timer;
-> +};
-> +
-> +static struct max3100_port_s *max3100s[MAX_MAX3100]; /* the chips */
-> +
-> +static void irq_state(struct max3100_port_s *s, int on)
-> +{
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&s->irq_lock, flags);
-> +	if (s->irq_status != on) {
-> +		if (on)
-> +			enable_irq(s->irq);
-> +		else
-> +			disable_irq(s->irq);
-> +		s->irq_status = on;
-> +	}
-> +	spin_unlock_irqrestore(&s->irq_lock, flags);
-> +}
-> +
-> +static int max3100_do_parity(struct max3100_port_s *s, u16 c)
-> +{
-> +	int parity;
-> +	int i, n;
-> +
-> +	if (s->parity & MAX3100_PARITY_ODD)
-> +		parity = 0;
-> +	else
-> +		parity = 1;
-> +
-> +	if (s->parity & MAX3100_7BIT)
-> +		n = 7;
-> +	else
-> +		n = 8;
-> +
-> +	for (i = 0; i < n; i++)
-> +		parity = parity ^ ((c>>i) & 1);
-
-hrmpf.  Don't we have a library function for that?
-
-Perhaps you could use hweight8(c)&1.
-
-> +	return parity;
-> +}
-> +
-> +static int max3100_check_parity(struct max3100_port_s *s, u16 c)
-> +{
-> +	return max3100_do_parity(s, c) ==
-> +	  ((c >> (s->parity & MAX3100_7BIT ? 7 : 8)) & 1);
-
-<checks his C precedence table>
-
-OK...
-
-> +}
-> +
-> +static void max3100_calc_parity(struct max3100_port_s *s, u16 *c)
-> +{
-> +	*c &=  ~MAX3100_PT;
-
-s/  / /
-
-> +	if (s->parity & MAX3100_PARITY_ON)
-> +		*c |= max3100_do_parity(s, *c)<<8;
-
-Most people put spaces around <<, but checkpatch pets this through.
-
-> +}
-> +
-> +static void max3100_work(struct work_struct *w);
-> +
-> +static void max3100_dowork(struct max3100_port_s *s)
-> +{
-> +	if (!s->force_end_work && !work_pending(&s->work)) {
-> +		PREPARE_WORK(&s->work, max3100_work);
-
-This is a strange place to run PREPARE_WORK().  Normally it would be
-done during driver/device initialsiation, and I think that can be done
-here.
-
-> +		queue_work(s->workqueue, &s->work);
-> +	}
-> +}
-> +
-> +static void max3100_timeout(unsigned long data)
-> +{
-> +	struct max3100_port_s *s = (struct max3100_port_s *)data;
-> +
-> +	if (s->port.info) {
-> +		max3100_dowork(s);
-> +		mod_timer(&s->timer, jiffies + s->poll_time);
-> +	}
-> +}
-> +
-> +static int max3100_sr(struct max3100_port_s *s, u16 tx, u16 *rx)
-> +{
-> +	struct spi_message message;
-> +	struct spi_transfer tran;
-> +	u16 etx, erx;
-> +	int status;
-> +
-> +	etx = htons(tx);
-> +	spi_message_init(&message);
-> +	memset(&tran, 0, sizeof(tran));
-> +	tran.tx_buf = &etx;
-> +	tran.rx_buf = &erx;
-> +	tran.len = 2;
-
-could do
-
-	struct spi_transfer tran = {
-		.tx_buf = &etx,
-		.rx_buf = &erx
-		.len = 2,
-	};
-
-and the compiler will zero out the rest.  Minor point.
-		
-> +	spi_message_add_tail(&tran, &message);
-> +	status = spi_sync(s->spi, &message);
-> +	if (status) {
-> +		dev_warn(&s->spi->dev, "error while calling spi_sync\n");
-> +		return -EIO;
-> +	}
-> +	*rx = ntohs(erx);
-> +	s->tx_empty = (*rx & MAX3100_T) > 0;
-> +	dev_dbg(&s->spi->dev, "%04x - %04x\n", tx, *rx);
-> +	return 0;
-> +}
-> +
->
-> ...
->
-> +static unsigned int max3100_get_mctrl(struct uart_port *port)
-> +{
-> +	struct max3100_port_s *s = container_of(port,
-> +						struct max3100_port_s,
-> +						port);
-> +
-> +	dev_dbg(&s->spi->dev, "%s\n", __func__);
-> +
-> +	/* may not be truely up-to-date */
-
-s/truely/truly/
-
-> +	max3100_dowork(s);
-> +	/* always assert DCD and DSR since these lines are not wired */
-> +	return (s->cts ? TIOCM_CTS : 0) | TIOCM_DSR | TIOCM_CAR;
-> +}
-> +
->
-> ...
->
-> +static int max3100_startup(struct uart_port *port)
-> +{
-> +	struct max3100_port_s *s = container_of(port,
-> +						struct max3100_port_s,
-> +						port);
-> +	char b[10];
-> +	int irq_type;
-> +
-> +	dev_dbg(&s->spi->dev, "%s\n", __func__);
-> +
-> +	s->conf = MAX3100_RM;
-> +	s->rx_enabled = 1;
-> +
-> +	if (s->suspending)
-> +		return 0;
-> +
-> +	s->force_end_work = 0;
-> +	s->parity = 0;
-> +	s->rts = 0;
-> +
-> +	sprintf(b, "max3100-%d", s->minor);
-
-hm.  This will go nasty if s->minor > 9.  I'd suggest that b[] be made
-larger.
-
-> +	s->workqueue = create_freezeable_workqueue(b);
-> +	if (!s->workqueue) {
-> +		dev_warn(&s->spi->dev, "cannot create workqueue\n");
-> +		return -EBUSY;
-> +	}
-> +	INIT_WORK(&s->work, max3100_work);
-> +
-> +	s->irq_status = 1;	/* IRQS are on after request */
-> +	if (s->only_edge_irq)
-> +		irq_type = IRQF_TRIGGER_FALLING;
-> +	else
-> +		irq_type = IRQF_TRIGGER_LOW;
-> +	if (request_irq(s->irq, max3100_irq, irq_type, "max3100", s) < 0) {
-> +		dev_warn(&s->spi->dev, "cannot allocate irq %d\n", s->irq);
-> +		s->irq = 0;
-
-Shouldn't we tear down that workqueue before returning?
-
-> +		return -EBUSY;
-> +	}
-> +
-> +	if (s->loopback) {
-> +		u16 tx, rx;
-> +		tx = 0x4001;
-> +		max3100_sr(s, tx, &rx);
-> +	}
-> +
-> +	if (s->max3100_hw_suspend)
-> +		s->max3100_hw_suspend(0);
-> +	s->conf_commit = 1;
-> +	max3100_dowork(s);
-> +	/* wait for clock to settle */
-> +	msleep(50);
-> +
-> +	max3100_enable_ms(&s->port);
-> +
-> +	return 0;
-> +}
-> +
-> +static const char *max3100_type(struct uart_port *port)
-> +{
-> +	struct max3100_port_s *s = container_of(port,
-> +						struct max3100_port_s,
-> +						port);
-> +
-> +	dev_dbg(&s->spi->dev, "%s\n", __func__);
-> +
-> +	return s->port.type == PORT_MAX3100 ? "MAX3100" : NULL;
-> +}
-> +
-> +static void max3100_release_port(struct uart_port *port)
-> +{
-> +	struct max3100_port_s *s = (struct max3100_port_s *)port;
-
-container_of()
-
-> +	dev_dbg(&s->spi->dev, "%s\n", __func__);
-> +}
-> +
->
-> ...
+----- Messaggio originale -----
+> Da: Anti Sullin <anti.sullin@artecdesign.ee>
+> A: Haavard Skinnemoen <haavard.skinnemoen@atmel.com>
+> Cc: Michael Trimarchi <trimarchimichael@yahoo.it>; linux-serial@vger.=
+kernel.org; linux-kernel@vger.kernel.org; Andrew Victor <linux@maxim.or=
+g.za>
+> Inviato: Venerd=EC 19 settembre 2008, 23:49:29
+> Oggetto: Re: [PATCH] atmel_serial: update the powersave handler to ma=
+tch serial core
+>=20
+> Haavard Skinnemoen wrote:
+> > Michael Trimarchi wrote:
+> > =20
+> >>> I agree it would be useful. It would require changing the port mu=
+x
+> >>> configuration from the driver though, and there's no standardized
+> >>> interface for doing that. Maybe this is a good motivation to come=
+ up
+> >>> with one?
+> >>> =20
+> >>>     =20
+> >> I think that a driver can do the request to a the gpio layer (may =
+can be=20
+> implemented
+> >> by the gpio-lib ) and give it only the gpio. The "gpio-lib" can sa=
+ve and=20
+> restore
+> >> the status of the gpio, and request the handler, passing the gpio-=
+id as=20
+> >> a data. So when the handler fire, we can now which peripheral is
+> >> interested on the wake-up event.
+> >>   =20
+> >
+> > I don't think the gpio layer is supposed to touch the portmux. Davi=
+d
+> > has always been very clear about that. But if we somehow manage to =
+get
+> > the pin configured as a GPIO, we can use the GPIO layer to request =
+a
+> > pin change interrupt.
+> >
+> > It _might_ work even if you don't reconfigure the pin as a GPIO...b=
+ut
+> > then I think we'd be relying on undocumented behaviour.
+> > =20
+> I believe that you don't need to reconfigure the pin. The gpio hw doe=
+s
+> not require the pin to be multiplexed to any given state, so does not=
+=20
+> request_irq (correct?).
+> I did this trick in my [2/3] MCI driver patch I sent to arm-linux-ker=
+nel at=20
+> 18.03.2008 (the
+> e-mail subject line was wrong, [1/3], though) and I'm using that patc=
+h still on=20
+> my
+> production devices to avoid some rare but critical SD data corruption=
+ (mainline=20
+> kernel still=20
+> screws up the filesystem on SD sometimes). The same should be easily =
+usable on=20
+> serial port, too.
 >
 
-Please cc Alan Cox for the tty things and perhaps
-spi-devel-general@lists.sourceforge.net for the SPI bits.
+I must to check this point. I do it few months ago, and if I remember I=
+ change
+the serial configuration on rx line to a gpio and request and interrupt=
+=2E I don't
+have the hardware to recheck.
 
+> > =20
+> >>> Btw, I assume the first character you receive will be lost when y=
+ou do
+> >>> this, right?
+> >>> =20
+> >>>     =20
+> >> Yes, I haven't done a lot of test to see how many chars are lost (=
+sure one I=20
+> think).=20
+> >> Depends on the time spent after
+> >>
+> >>  /* Wait for interrupt to wake us up */=20
+> >>   mcr p15, 0, r0, c7, c0, 4=20
+> >>   =20
+> >
+> > Yes, we need to reach the atmel_serial resume handler before the UA=
+RT
+> > gets any chance to recognize the character. It's probably too late =
+for
+> > the first one, but it may catch the next one assuming the baud rate
+> > isn't too high.
+> > =20
+> I believe, that we loose quite many characters. We are running at 32/=
+16kHz
+> (switching the master clock divider /2 off proved unstable) and
+> this is not enough to even receive 9600 baud until we have the fast c=
+lock
+> running again.
+>=20
+> Some quick calculations:
+> For waking up, we need to switch on the main oscillator, wait until i=
+t
+> stabilizes (default should be max: ~60ms), switch on plla, wait until=
+ it
+> locks (2ms), switch on pllb, wait until it locks (2ms), switch system=
+ to PLLA...
+> And then set up the drivers again... On 115200 baud, this is almost 1=
+kB!
+>=20
+> So in many applications we could not use this. But this might still c=
+ome handy
+> in a lot of cases we can poll and find out what caused the data on th=
+e serial
+> port etc. Or on applications, where this loss of data does not matter=
+ (like=20
+> debug
+> console where the resume is usable even if it does not wake up on the=
+ first=20
+> byte).
+
+Of course, but it is the same for all devices when you do a suspend wit=
+h a=20
+slow clock.
+=20
+>=20
+>=20
+> --=20
+> Anti Sullin
+> Embedded Software Engineer
+> Artec Design LLC
+> Akadeemia tee 23A, 12618, Tallinn, Estonia
+> http://www.artecdesign.ee=20
+
+Regards Michael
+
+__________________________________________________
+Do You Yahoo!?
+Poco spazio e tanto spam? Yahoo! Mail ti protegge dallo spam e ti da ta=
+nto spazio gratuito per i tuoi file e i messaggi=20
+http://mail.yahoo.it=20
