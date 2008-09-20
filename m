@@ -1,48 +1,94 @@
-From: Arjan van de Ven <arjan@infradead.org>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Subject: Re: [PATCH] max3100 driver
-Date: Sat, 20 Sep 2008 06:56:52 -0700
-Message-ID: <20080920065652.11d76780@infradead.org>
+Date: Sat, 20 Sep 2008 15:11:49 +0100
+Message-ID: <20080920151149.21dbad1d@lxorguk.ukuu.org.uk>
 References: <1221895208650-git-send-email-chripell@gmail.com>
-	<20080920012454.e40f03cc.akpm@linux-foundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from casper.infradead.org ([85.118.1.10]:44285 "EHLO
-	casper.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751162AbYITN5F (ORCPT
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:36098 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1754402AbYITOL4 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 20 Sep 2008 09:57:05 -0400
-In-Reply-To: <20080920012454.e40f03cc.akpm@linux-foundation.org>
+	Sat, 20 Sep 2008 10:11:56 -0400
+In-Reply-To: <1221895208650-git-send-email-chripell@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Christian Pellegrin <chripell@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Christian Pellegrin <chripell@fsfe.org>
+To: Christian Pellegrin <chripell@gmail.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Christian Pellegrin <chripell@fsfe.org>
 
-\> > +	int rx_enabled:1;	/* if we should rx chars */
-> > +
-> > +	int irq;		/* irq assigned to the max3100 */
-> > +
-> > +	int minor;		/* minor number */
-> > +	int crystal:1;		/* 1 if 3.6864Mhz crystal 0
-> > for 1.8432 */
-> > +	int loopback:1;		/* 1 if we are in loopback
-> > mode */
-> > +	int only_edge_irq:1;	/* 1 if we have only edge irqs
-> > (like PXA) */
-> 
-> Lots of dittoes.
-> 
-> These bitfields perhaps could be reordered to save a bit of space, but
-> that depends on the implicit locking rules for them.
-> 
+> +#define MAX3100_MAJOR 204
+> +#define MAX3100_MINOR 128
+> +/* 4 MAX3100s should be enough for everyone */
+> +#define MAX_MAX3100 4
 
-I do have a question though: what does a signed bitfield of 1 mean?
-I mean.. the variables are "int", so signed.... where will the compiler
-store the sign bit???
+These need to be officially allocated if you need constant numbers
+
+> +static int max3100_sr(struct max3100_port_s *s, u16 tx, u16 *rx)
+> +{
+> +	struct spi_message message;
+> +	struct spi_transfer tran;
+> +	u16 etx, erx;
+> +	int status;
+> +
+> +	etx = htons(tx);
+
+Use cpu_to_le/be or le/be_to_cpu functions, these make the intended
+endianness clear.
+
+> +	*rx = ntohs(erx);
+
+Ditto
+
+> +		if (rxchars > 0)
+> +			tty_flip_buffer_push(s->port.info->port.tty);
+> +		if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+
+If there has been a hangup the port.tty will be NULL...
+
+> +static void
+> +max3100_set_termios(struct uart_port *port, struct ktermios *termios,
+> +		   struct ktermios *old)
+> +{
+> +	struct max3100_port_s *s = container_of(port,
+> +						struct max3100_port_s,
+
+> +	if (!old || (termios->c_cflag != old->c_cflag)) {
+
+This optimisation is wrong and not worth doing anyway
+
+> +		i = cflag & CBAUD;
+> +		switch (i) {
+
+Use tty_get_baud_rate() to get the actual baud rate requested which is an
+arbitary value.
+
+> +		default:
+> +			param_new = 1;
+> +			dev_warn(&s->spi->dev, "invalid baudrate\n");
+
+Shouldn't warn on these, just be sure to use tty_encode_baud_rate to pass
+back the actual rate the user ends up with.
+
+> +		if (termios->c_iflag & IGNPAR)
+> +			s->port.ignore_status_mask |=
+> +				MAX3100_STATUS_PE | MAX3100_STATUS_FE |
+> +				MAX3100_STATUS_OE;
+
+Bits you don't support should also be cleared in the tty->termios struct
+(eg markspace you don't seem to do)
 
 
--- 
-Arjan van de Ven 	Intel Open Source Technology Centre
-For development, discussion and tips for power savings, 
-visit http://www.lesswatts.org
+> +	max3100s[i] = kzalloc(sizeof(struct max3100_port_s), GFP_KERNEL);
+> +	if (!max3100s[i]) {
+> +		dev_warn(&spi->dev,
+> +			 "kmalloc for max3100 structure %d failed!\n", i);
+
+Does this not then need to unregister the driver ?
+
+
+
+Looks basically sound to me - just some minor cleanups needed.
+
+Alan
