@@ -1,62 +1,48 @@
-From: chri <chripell@gmail.com>
-Subject: Re: [PATCH] max3100 driver
-Date: Sat, 20 Sep 2008 16:37:52 +0200
-Message-ID: <cabda6420809200737r7750878x3e013e177ca23304@mail.gmail.com>
-References: <1221895208650-git-send-email-chripell@gmail.com>
-	 <20080920151149.21dbad1d@lxorguk.ukuu.org.uk>
+From: Alexander Beregalov <a.beregalov@gmail.com>
+Subject: [PATCH] serial_core: fix printk format warnings
+Date: Sun, 21 Sep 2008 05:11:31 +0400
+Message-ID: <20080921011131.GA16153@orion>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ug-out-1314.google.com ([66.249.92.168]:43753 "EHLO
-	ug-out-1314.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753717AbYITOhy (ORCPT
+Received: from mu-out-0910.google.com ([209.85.134.190]:3686 "EHLO
+	mu-out-0910.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751583AbYIUBLn (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 20 Sep 2008 10:37:54 -0400
-Received: by ug-out-1314.google.com with SMTP id k3so1151892ugf.37
-        for <linux-serial@vger.kernel.org>; Sat, 20 Sep 2008 07:37:52 -0700 (PDT)
-In-Reply-To: <20080920151149.21dbad1d@lxorguk.ukuu.org.uk>
+	Sat, 20 Sep 2008 21:11:43 -0400
+Received: by mu-out-0910.google.com with SMTP id g7so846775muf.1
+        for <linux-serial@vger.kernel.org>; Sat, 20 Sep 2008 18:11:41 -0700 (PDT)
 Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, alan@lxorguk.ukuu.org.uk
 
-On Sat, Sep 20, 2008 at 4:11 PM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
->> +#define MAX3100_MAJOR 204
->> +#define MAX3100_MINOR 128
->> +/* 4 MAX3100s should be enough for everyone */
->> +#define MAX_MAX3100 4
->
-> These need to be officially allocated if you need constant numbers
->
+drivers/serial/serial_core.c:2158: warning: format '%x' expects type
+'unsigned int', but argument 4 has type 'long unsigned int'
+drivers/serial/serial_core.c:2162: warning: format '%x' expects type
+'unsigned int', but argument 4 has type 'long unsigned int
 
-OK, I'll try to mail device@lanana.org
+Signed-off-by: Alexander Beregalov <a.beregalov@gmail.com>
+---
 
+ drivers/serial/serial_core.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
->
->> +             if (rxchars > 0)
->> +                     tty_flip_buffer_push(s->port.info->port.tty);
->> +             if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
->
-> If there has been a hangup the port.tty will be NULL...
->
-
-I didn't notice an explicit test for port.tty being non-NULL in some
-drivers. I took as an example sa1100 driver (since it needs polling of
-control signals too). I'm missing the way these drivers take care to
-not cause an access of a NULL pointer?
-
->
-> Looks basically sound to me - just some minor cleanups needed.
->
-
-Thanks, I will fix them and resubmitt
-
-
--- 
-Christian Pellegrin, see http://www.evolware.org/chri/
-"Real Programmers don't play tennis, or any other sport which requires
-you to change clothes. Mountain climbing is OK, and Real Programmers
-wear their climbing boots to work in case a mountain should suddenly
-spring up in the middle of the computer room."
+diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
+index effd0bd..d531ae9 100644
+--- a/drivers/serial/serial_core.c
++++ b/drivers/serial/serial_core.c
+@@ -2155,11 +2155,11 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
+ 	switch (port->iotype) {
+ 	case UPIO_PORT:
+ 		snprintf(address, sizeof(address),
+-			 "I/O 0x%x", port->iobase);
++			 "I/O 0x%lx", port->iobase);
+ 		break;
+ 	case UPIO_HUB6:
+ 		snprintf(address, sizeof(address),
+-			 "I/O 0x%x offset 0x%x", port->iobase, port->hub6);
++			 "I/O 0x%lx offset 0x%x", port->iobase, port->hub6);
+ 		break;
+ 	case UPIO_MEM:
+ 	case UPIO_MEM32:
