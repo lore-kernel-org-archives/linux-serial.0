@@ -1,115 +1,178 @@
 From: Aristeu Rozanski <aris@ruivo.org>
-Subject: [PATCH RFC 5/6] serial_core: dont assert DTR pin when its being used for flow control
-Date: Tue, 30 Sep 2008 14:42:00 -0400
-Message-ID: <20080930184157.507877099@ruivo.org>
+Subject: [PATCH RFC 6/6] serial: convert drivers to use uart_flow_output_allowed()
+Date: Tue, 30 Sep 2008 14:42:01 -0400
+Message-ID: <20080930184157.796569534@ruivo.org>
 References: <20080930184155.944902515@ruivo.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lobo.ruivo.org ([66.92.68.119]:54582 "EHLO lobo.ruivo.org"
+Received: from lobo.ruivo.org ([66.92.68.119]:54580 "EHLO lobo.ruivo.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753168AbYI3Smm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 30 Sep 2008 14:42:42 -0400
+	id S1752842AbYI3Sml (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 30 Sep 2008 14:42:41 -0400
 Received: from jake.ruivo.org (gw.qemu.cathedral [192.168.72.1])
-	by lobo.ruivo.org (Postfix) with ESMTP id 90E07526EB
+	by lobo.ruivo.org (Postfix) with ESMTP id 97FF3526F7
 	for <linux-serial@vger.kernel.org>; Tue, 30 Sep 2008 14:41:56 -0400 (EDT)
-Content-Disposition: inline; filename=serial_core-isolate_dtr_use.patch
+Content-Disposition: inline; filename=serial-generalize_wait_for_xmitr.patch
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-By default, serial_core will assert DTR for compatibility. In the case DTR is
-being used for flow control this should not happen.
+This patch modifies serial drivers to use uart_flow_output_allowed() making
+the flow control decision to serial_core.
 
 Signed-off-by: Aristeu Rozanski <aris@redhat.com>
 
 ---
- drivers/serial/serial_core.c |   25 ++++++++++++++++++-------
- include/linux/serial_core.h  |   10 +++++++---
- 2 files changed, 25 insertions(+), 10 deletions(-)
+ drivers/serial/8250.c        |   18 +++++++-----------
+ drivers/serial/pxa.c         |   12 ++++++------
+ drivers/serial/samsung.c     |    6 +++---
+ drivers/serial/serial_txx9.c |   12 ++++++------
+ drivers/serial/sunsu.c       |   12 ++++++------
+ drivers/serial/vr41xx_siu.c  |   15 ++++++---------
+ 6 files changed, 34 insertions(+), 41 deletions(-)
 
---- linux-next.orig/drivers/serial/serial_core.c	2008-09-25 11:56:00.000000000 -0400
-+++ linux-next/drivers/serial/serial_core.c	2008-09-25 12:02:43.000000000 -0400
-@@ -227,7 +227,9 @@ static int uart_startup(struct uart_stat
- 			 * port is open and ready to respond.
- 			 */
- 			if (info->port.tty->termios->c_cflag & CBAUD) {
--				uart_set_mctrl(port, TIOCM_DTR);
-+				if (!(info->port.tty->termiox->x_cflag &
-+								 DTRXOFF))
-+					uart_set_mctrl(port, TIOCM_DTR);
- 				uart_flow_input_start(port);
- 			}
- 		}
-@@ -1249,7 +1251,12 @@ static void uart_set_termios(struct tty_
+--- linux-next.orig/drivers/serial/8250.c	2008-09-24 13:30:30.000000000 -0400
++++ linux-next/drivers/serial/8250.c	2008-09-24 13:30:54.000000000 -0400
+@@ -1779,17 +1779,13 @@ static void wait_for_xmitr(struct uart_8
+ 	} while ((status & bits) != bits);
  
- 	/* Handle transition away from B0 status */
- 	if (!(old_termios->c_cflag & CBAUD) && (cflag & CBAUD)) {
--		uart_set_mctrl(state->port, TIOCM_DTR);
-+		/*
-+		 * by default, we keep DTR on all the time, except
-+		 * when DTR is being used for flow control
-+		 */
-+		if (!(tty->termiox->x_cflag & DTRXOFF))
-+			uart_set_mctrl(state->port, TIOCM_DTR);
- 		if (!test_bit(TTY_THROTTLED, &tty->flags))
- 			uart_flow_input_start(state->port);
- 	}
-@@ -1506,7 +1513,8 @@ static void uart_update_termios(struct u
- 		 * And finally enable the DTR signal.
- 		 */
- 		if (tty->termios->c_cflag & CBAUD) {
--			uart_set_mctrl(port, TIOCM_DTR);
-+			if (!(tty->termiox->x_cflag & DTRXOFF))
-+				uart_set_mctrl(port, TIOCM_DTR);
- 			uart_flow_input_start(port);
- 		}
- 	}
-@@ -1562,7 +1570,8 @@ uart_block_til_ready(struct file *filp, 
- 		 * not set RTS here - we want to make sure we catch
- 		 * the data from the modem.
- 		 */
--		if (info->port.tty->termios->c_cflag & CBAUD)
-+		if (info->port.tty->termios->c_cflag & CBAUD &&
-+		    !(info->port.tty->termiox->x_cflag & DTRXOFF))
- 			uart_set_mctrl(port, TIOCM_DTR);
+ 	/* Wait up to 1s for flow control if necessary */
+-	if (up->port.flags & UPF_CONS_FLOW) {
+-		unsigned int tmout;
+-		for (tmout = 1000000; tmout; tmout--) {
+-			unsigned int msr = serial_in(up, UART_MSR);
+-			up->msr_saved_flags |= msr & MSR_SAVE_FLAGS;
+-			if (msr & UART_MSR_CTS)
+-				break;
+-			udelay(1);
+-			touch_nmi_watchdog();
+-		}
+-	}
++	tmout = 1000000;
++	do {
++		if (uart_flow_output_allowed(&up->port))
++			break;
++		udelay(1);
++		touch_nmi_watchdog();
++	} while(tmout--);
+ }
  
- 		/*
-@@ -2268,9 +2277,11 @@ uart_configure_port(struct uart_driver *
- 		 * keep the DTR setting that is set in uart_set_options()
- 		 * We probably don't need a spinlock around this, but
- 		 */
--		spin_lock_irqsave(&port->lock, flags);
--		port->ops->set_mctrl(port, port->mctrl & TIOCM_DTR);
--		spin_unlock_irqrestore(&port->lock, flags);
-+		if (!(port->flags & UPF_FLOW_DTRXOFF)) {
-+			spin_lock_irqsave(&port->lock, flags);
-+			port->ops->set_mctrl(port, port->mctrl & TIOCM_DTR);
-+			spin_unlock_irqrestore(&port->lock, flags);
-+		}
+ #ifdef CONFIG_CONSOLE_POLL
+--- linux-next.orig/drivers/serial/pxa.c	2008-09-24 13:30:30.000000000 -0400
++++ linux-next/drivers/serial/pxa.c	2008-09-24 13:30:54.000000000 -0400
+@@ -617,12 +617,12 @@ static inline void wait_for_xmitr(struct
+ 	} while ((status & BOTH_EMPTY) != BOTH_EMPTY);
  
- 		/*
- 		 * If this driver supports console, and it hasn't been
---- linux-next.orig/include/linux/serial_core.h	2008-09-25 12:00:55.000000000 -0400
-+++ linux-next/include/linux/serial_core.h	2008-09-25 12:02:43.000000000 -0400
-@@ -581,12 +581,16 @@ uart_insert_char(struct uart_port *port,
+ 	/* Wait up to 1s for flow control if necessary */
+-	if (up->port.flags & UPF_CONS_FLOW) {
+-		tmout = 1000000;
+-		while (--tmout &&
+-		       ((serial_in(up, UART_MSR) & UART_MSR_CTS) == 0))
+-			udelay(1);
+-	}
++	tmout = 1000000;
++	do {
++		if (uart_flow_output_allowed(&up->port))
++			break;
++		udelay(1);
++	} while(tmout--);
+ }
  
- int uart_flow_output_allowed(struct uart_port *port);
+ static void serial_pxa_console_putchar(struct uart_port *port, int ch)
+--- linux-next.orig/drivers/serial/serial_txx9.c	2008-09-24 13:30:30.000000000 -0400
++++ linux-next/drivers/serial/serial_txx9.c	2008-09-24 13:30:54.000000000 -0400
+@@ -475,12 +475,12 @@ static void wait_for_xmitr(struct uart_t
+ 		udelay(1);
  
-+#define uart_has_hw_flow_control(p) ((p)->flags & (UPF_FLOW_DTRXOFF | \
-+						   UPF_FLOW_RTSXOFF | \
-+						   UPF_FLOW_DSRXON | \
-+						   UPF_FLOW_CTSXON))
- /*
-  *	UART_ENABLE_MS - determine if port should enable modem status irqs
-  */
--#define UART_ENABLE_MS(port,cflag)	((port)->flags & UPF_HARDPPS_CD || \
--					 (cflag) & CRTSCTS || \
--					 !((cflag) & CLOCAL))
-+#define UART_ENABLE_MS(p,cflag)	((p)->flags & UPF_HARDPPS_CD || \
-+				 uart_has_hw_flow_control(p) || \
-+				 !((cflag) & CLOCAL))
- 
+ 	/* Wait up to 1s for flow control if necessary */
+-	if (up->port.flags & UPF_CONS_FLOW) {
+-		tmout = 1000000;
+-		while (--tmout &&
+-		       (sio_in(up, TXX9_SICISR) & TXX9_SICISR_CTSS))
+-			udelay(1);
+-	}
++	tmout = 1000000;
++	do {
++		if (uart_flow_output_allowed(&up->port))
++			break;
++		udelay(1);
++	} while(tmout--);
+ }
  #endif
  
+--- linux-next.orig/drivers/serial/sunsu.c	2008-09-24 13:30:30.000000000 -0400
++++ linux-next/drivers/serial/sunsu.c	2008-09-24 13:30:54.000000000 -0400
+@@ -1265,12 +1265,12 @@ static __inline__ void wait_for_xmitr(st
+ 	} while ((status & BOTH_EMPTY) != BOTH_EMPTY);
+ 
+ 	/* Wait up to 1s for flow control if necessary */
+-	if (up->port.flags & UPF_CONS_FLOW) {
+-		tmout = 1000000;
+-		while (--tmout &&
+-		       ((serial_in(up, UART_MSR) & UART_MSR_CTS) == 0))
+-			udelay(1);
+-	}
++	tmout = 1000000;
++	do {
++		if (uart_flow_output_allowed(&up->port))
++			break;
++		udelay(1);
++	} while(tmout--);
+ }
+ 
+ static void sunsu_console_putchar(struct uart_port *port, int ch)
+--- linux-next.orig/drivers/serial/vr41xx_siu.c	2008-09-24 13:30:30.000000000 -0400
++++ linux-next/drivers/serial/vr41xx_siu.c	2008-09-24 13:30:54.000000000 -0400
+@@ -751,15 +751,12 @@ static void wait_for_xmitr(struct uart_p
+ 			break;
+ 	} while (timeout-- > 0);
+ 
+-	if (port->flags & UPF_CONS_FLOW) {
+-		timeout = 1000000;
+-
+-		do {
+-			msr = siu_read(port, UART_MSR);
+-			if ((msr & UART_MSR_CTS) != 0)
+-				break;
+-		} while (timeout-- > 0);
+-	}
++	timeout = 1000000;
++	do {
++		if (uart_flow_output_allowed(port))
++			break;
++		udelay(1);
++	} while(timeout--);
+ }
+ 
+ static void siu_console_putchar(struct uart_port *port, int ch)
+--- linux-next.orig/drivers/serial/samsung.c	2008-09-24 13:30:30.000000000 -0400
++++ linux-next/drivers/serial/samsung.c	2008-09-24 13:30:54.000000000 -0400
+@@ -139,7 +139,7 @@ static void s3c24xx_serial_stop_tx(struc
+ 	if (tx_enabled(port)) {
+ 		disable_irq(TX_IRQ(port));
+ 		tx_enabled(port) = 0;
+-		if (port->flags & UPF_CONS_FLOW)
++		if (uart_has_hw_flow_control(port))
+ 			s3c24xx_serial_rx_enable(port);
+ 	}
+ }
+@@ -147,7 +147,7 @@ static void s3c24xx_serial_stop_tx(struc
+ static void s3c24xx_serial_start_tx(struct uart_port *port)
+ {
+ 	if (!tx_enabled(port)) {
+-		if (port->flags & UPF_CONS_FLOW)
++		if (uart_has_hw_flow_control(port))
+ 			s3c24xx_serial_rx_disable(port);
+ 
+ 		enable_irq(TX_IRQ(port));
+@@ -216,7 +216,7 @@ s3c24xx_serial_rx_chars(int irq, void *d
+ 		uerstat = rd_regl(port, S3C2410_UERSTAT);
+ 		ch = rd_regb(port, S3C2410_URXH);
+ 
+-		if (port->flags & UPF_CONS_FLOW) {
++		if (uart_has_hw_flow_control(port)) {
+ 			int txe = s3c24xx_serial_txempty_nofifo(port);
+ 
+ 			if (rx_enabled(port)) {
 
 -- 
 Aristeu
