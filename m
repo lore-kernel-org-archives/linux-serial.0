@@ -1,31 +1,43 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] serial: Add Cavium OCTEON UART definitions.
-Date: Tue, 7 Oct 2008 11:29:32 +0100
-Message-ID: <20081007112932.165fce27@lxorguk.ukuu.org.uk>
-References: <48EAAF97.8050307@caviumnetworks.com>
+From: David Daney <ddaney@caviumnetworks.com>
+Subject: [PATCH 0/4] serial: 8250 driver improvements & Cavium OCTEON serial
+ support
+Date: Tue, 07 Oct 2008 16:43:34 -0700
+Message-ID: <48EBF426.9080500@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:59483 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751081AbYJGK3g (ORCPT
+Received: from mail3.caviumnetworks.com ([12.108.191.235]:31456 "EHLO
+	mail3.caviumnetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755672AbYJGXnr (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 7 Oct 2008 06:29:36 -0400
-In-Reply-To: <48EAAF97.8050307@caviumnetworks.com>
+	Tue, 7 Oct 2008 19:43:47 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: David Daney <ddaney@caviumnetworks.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, "Paoletti, Tomaso" <Tomaso.Paoletti@caviumnetworks.com>
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org
+Cc: "Paoletti, Tomaso" <Tomaso.Paoletti@caviumnetworks.com>
 
-> +#ifdef CONFIG_CPU_CAVIUM_OCTEON
-> +	/* UPF_FIXED_PORT indicates an internal UART.  */
-> +	if (up->port.flags & UPF_FIXED_PORT)
-> +		up->port.type = PORT_OCTEON;
-> +	else
-> +#endif
+This is a follow up to the 'Allow for replaceable I/O functions in
+8250 driver' patch I sent yesterday.  I hope it addresses the issues
+raised by Alan Cox and Arnd Bergmann.
 
-Not nice. Please keep CPU specific ifdefs out of the 8250 core code. Can
-you not set a port flag for UPF_BROKEN_OCTEON or similar to clean that up
-and also make the other tests that need things doing (eg the always
-calling IRQ code use port flags of a more generic nature ?)
+The four parts of the patch are as follows:
+
+1/4) Add replaceable I/O functions to the 8250 driver.  This allows
+     platform specific register access code to be moved out of the
+     driver into the platform support files.
+
+2/4) Add a new port flag UPF_FIXED_TYPE that allows callers of
+     serial8250_register_port() to specify the port type and disables
+     probing.
+
+3/4) Add a 'bugs' field to the serial8250_config.  Used in conjunction
+     with 2/4, this allows the bugs flags to be set without probing.
+
+4/4) Add an entry to uart_config for PORT_OCTEON describing the
+     OCTEON's internal UARTs.  Two new bug flags are defined to
+     account for PORT_OCTEON's peculiarities.
+
+Comments welcome,
+
+David Daney
