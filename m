@@ -1,213 +1,150 @@
 From: David Daney <ddaney@caviumnetworks.com>
-Subject: Re: [PATCH 2/2] serial: Move UPIO_TSI register access to processor
- specific file.
-Date: Mon, 06 Oct 2008 16:36:41 -0700
-Message-ID: <48EAA109.10509@caviumnetworks.com>
-References: <48EA9DB8.1000309@caviumnetworks.com>
+Subject: [PATCH] serial: Add Cavium OCTEON UART definitions.
+Date: Mon, 06 Oct 2008 17:38:47 -0700
+Message-ID: <48EAAF97.8050307@caviumnetworks.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail3.caviumnetworks.com ([12.108.191.235]:55374 "EHLO
+Received: from mail3.caviumnetworks.com ([12.108.191.235]:6270 "EHLO
 	mail3.caviumnetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752106AbYJFXgt (ORCPT
+	with ESMTP id S1752389AbYJGAi7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 6 Oct 2008 19:36:49 -0400
-In-Reply-To: <48EA9DB8.1000309@caviumnetworks.com>
+	Mon, 6 Oct 2008 20:38:59 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org
 Cc: "Paoletti, Tomaso" <Tomaso.Paoletti@caviumnetworks.com>
 
-This is a completely untested example of how the processor specific
-code could be removed from the 8250 UART driver if the first part of
-the patch were accepted.
+cavium: 8250 serial driver changes
 
-The register access code is moved from drivers/serial/8250.c to
-arch/powerpc/kernel/legacy_serial.c
+As mentioned in '[PATCH 1/2] serial: Allow for replaceable I/O
+functions in 8250 driver.', we are in the process of preparing kernel
+support for the Cavium Networks OCTEON processor for inclusion in the
+main-line kernel sources.
 
+The OCTEON's UART differs from the existing uart_configs, so we add a
+new uart_config and check for it in several places.
+
+This patch depends on the aforementioned 'Allow for replaceable I/O
+functions in 8250 driver' patch.
+
+Since this patch is part of the Cavium OCTEON processor port, we don't
+expect that it would be committed until the rest of the port is
+accepted.  However we would like feedback so that it might be
+adjusted if necessary.
+
+Signed-off-by: Tomaso Paoletti <tpaoletti@caviumnetworks.com>
 Signed-off-by: David Daney <ddaney@caviumnetworks.com>
 ---
- arch/powerpc/kernel/legacy_serial.c |   35 +++++++++++++++++++++++++++--------
- drivers/serial/8250.c               |   25 -------------------------
- drivers/serial/serial_core.c        |    2 --
- include/linux/serial_core.h         |    5 ++---
- 4 files changed, 29 insertions(+), 38 deletions(-)
+ drivers/serial/8250.c       |   30 +++++++++++++++++++++++++++---
+ include/linux/serial_core.h |    3 ++-
+ include/linux/serial_reg.h  |    6 ++++++
+ 3 files changed, 35 insertions(+), 4 deletions(-)
 
-diff --git a/arch/powerpc/kernel/legacy_serial.c b/arch/powerpc/kernel/legacy_serial.c
-index 9ddfaef..3a56fc1 100644
---- a/arch/powerpc/kernel/legacy_serial.c
-+++ b/arch/powerpc/kernel/legacy_serial.c
-@@ -46,10 +46,27 @@ static struct __initdata of_device_id legacy_serial_parents[] = {
- static unsigned int legacy_serial_count;
- static int legacy_serial_console = -1;
- 
-+static unsigned int tsi_serial_in(struct uart_port *up, int offset)
-+{
-+	unsigned int tmp;
-+	if (offset == UART_IIR) {
-+		tmp = readl(p->membase + (UART_IIR & ~3));
-+		return (tmp >> 16) & 0xff; /* UART_IIR % 4 == 2 */
-+	} else
-+		return readb(p->membase + offset);
-+}
-+
-+static void tsi_serial_out(struct uart_port *up, int offset, int value)
-+{
-+	if (!((offset == UART_IER) && (value & UART_IER_UUE)))
-+		writeb(value, p->membase + offset);
-+}
-+
- static int __init add_legacy_port(struct device_node *np, int want_index,
- 				  int iotype, phys_addr_t base,
- 				  phys_addr_t taddr, unsigned long irq,
--				  upf_t flags, int irq_check_parent)
-+				  upf_t flags, int irq_check_parent,
-+				  int tsi_war)
- {
- 	const u32 *clk, *spd;
- 	u32 clock = BASE_BAUD * 16;
-@@ -105,6 +122,10 @@ static int __init add_legacy_port(struct device_node *np, int want_index,
- 	legacy_serial_ports[index].uartclk = clock;
- 	legacy_serial_ports[index].irq = irq;
- 	legacy_serial_ports[index].flags = flags;
-+	if (tsi_war) {
-+		legacy_serial_ports[index].serial_in_fn = tsi_serial_in;
-+		legacy_serial_ports[index].serial_out_fn = tsi_serial_out;
-+	}
- 	legacy_serial_infos[index].taddr = taddr;
- 	legacy_serial_infos[index].np = of_node_get(np);
- 	legacy_serial_infos[index].clock = clock;
-@@ -158,10 +179,8 @@ static int __init add_legacy_soc_port(struct device_node *np,
- 	/* Add port, irq will be dealt with later. We passed a translated
- 	 * IO port value. It will be fixed up later along with the irq
- 	 */
--	if (tsi && !strcmp(tsi->type, "tsi-bridge"))
--		return add_legacy_port(np, -1, UPIO_TSI, addr, addr, NO_IRQ, flags, 0);
--	else
--		return add_legacy_port(np, -1, UPIO_MEM, addr, addr, NO_IRQ, flags, 0);
-+	return add_legacy_port(np, -1, UPIO_MEM, addr, addr, NO_IRQ, flags, 0,
-+			       tsi && !strcmp(tsi->type, "tsi-bridge"));
- }
- 
- static int __init add_legacy_isa_port(struct device_node *np,
-@@ -202,7 +221,7 @@ static int __init add_legacy_isa_port(struct device_node *np,
- 
- 	/* Add port, irq will be dealt with later */
- 	return add_legacy_port(np, index, UPIO_PORT, reg[1], taddr,
--			       NO_IRQ, UPF_BOOT_AUTOCONF, 0);
-+			NO_IRQ, UPF_BOOT_AUTOCONF, 0, 0);
- 
- }
- 
-@@ -275,7 +294,7 @@ static int __init add_legacy_pci_port(struct device_node *np,
- 	 * IO port value. It will be fixed up later along with the irq
- 	 */
- 	return add_legacy_port(np, index, iotype, base, addr, NO_IRQ,
--			       UPF_BOOT_AUTOCONF, np != pci_dev);
-+			UPF_BOOT_AUTOCONF, np != pci_dev, 0);
- }
- #endif
- 
-@@ -482,7 +501,7 @@ static int __init serial_dev_init(void)
- 			fixup_port_irq(i, np, port);
- 		if (port->iotype == UPIO_PORT)
- 			fixup_port_pio(i, np, port);
--		if ((port->iotype == UPIO_MEM) || (port->iotype == UPIO_TSI))
-+		if (port->iotype == UPIO_MEM)
- 			fixup_port_mmio(i, np, port);
- 	}
- 
 diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index 2ef79e9..24cff9a 100644
+index 02771d6..2ef79e9 100644
 --- a/drivers/serial/8250.c
 +++ b/drivers/serial/8250.c
-@@ -407,24 +407,6 @@ static void au_serial_out_fn(struct uart_port *p, int offset, int value)
- }
- #endif
+@@ -264,6 +264,13 @@ static const struct serial8250_config uart_config[] = {
+ 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
+ 		.flags		= UART_CAP_FIFO,
+ 	},
++	[PORT_OCTEON] = {
++		.name		= "OCTEON",
++		.fifo_size	= 64,
++		.tx_loadsz	= 64,
++		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
++		.flags		= UART_CAP_FIFO,
++	},
+ };
  
--static unsigned int tsi_serial_in_fn(struct uart_port *p, int offset)
--{
--	unsigned int tmp;
--	offset = map_8250_in_reg(p, offset) << p->regshift;
--	if (offset == UART_IIR) {
--		tmp = readl(p->membase + (UART_IIR & ~3));
--		return (tmp >> 16) & 0xff; /* UART_IIR % 4 == 2 */
--	} else
--		return readb(p->membase + offset);
--}
--
--static void tsi_serial_out_fn(struct uart_port *p, int offset, int value)
--{
--	offset = map_8250_out_reg(p, offset) << p->regshift;
--	if (!((offset == UART_IER) && (value & UART_IER_UUE)))
--		writeb(value, p->membase + offset);
--}
--
- static void dwapb_serial_out_fn(struct uart_port *p, int offset, int value)
- {
- 	int save_offset = offset;
-@@ -479,11 +461,6 @@ static void set_io_fns_from_upio(struct uart_port *p)
- 		p->serial_out_fn = au_serial_out_fn;
- 		break;
- #endif
--	case UPIO_TSI:
--		p->serial_in_fn = tsi_serial_in_fn;
--		p->serial_out_fn = tsi_serial_out_fn;
--		break;
--
- 	case UPIO_DWAPB:
- 		p->serial_in_fn = mem_serial_in_fn;
- 		p->serial_out_fn = dwapb_serial_out_fn;
-@@ -2364,7 +2341,6 @@ static int serial8250_request_std_resource(struct uart_8250_port *up)
- 	case UPIO_AU:
- 		size = 0x100000;
- 		/* fall thru */
--	case UPIO_TSI:
- 	case UPIO_MEM32:
- 	case UPIO_MEM:
- 	case UPIO_DWAPB:
-@@ -2403,7 +2379,6 @@ static void serial8250_release_std_resource(struct uart_8250_port *up)
- 	case UPIO_AU:
- 		size = 0x100000;
- 		/* fall thru */
--	case UPIO_TSI:
- 	case UPIO_MEM32:
- 	case UPIO_MEM:
- 	case UPIO_DWAPB:
-diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
-index f977c98..14e051d 100644
---- a/drivers/serial/serial_core.c
-+++ b/drivers/serial/serial_core.c
-@@ -2164,7 +2164,6 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
- 	case UPIO_MEM:
- 	case UPIO_MEM32:
- 	case UPIO_AU:
--	case UPIO_TSI:
- 	case UPIO_DWAPB:
- 		snprintf(address, sizeof(address),
- 			 "MMIO 0x%llx", (unsigned long long)port->mapbase);
-@@ -2578,7 +2577,6 @@ int uart_match_port(struct uart_port *port1, struct uart_port *port2)
- 	case UPIO_MEM:
- 	case UPIO_MEM32:
- 	case UPIO_AU:
--	case UPIO_TSI:
- 	case UPIO_DWAPB:
- 		return (port1->mapbase == port2->mapbase);
+ #if defined (CONFIG_SERIAL_8250_AU1X00)
+@@ -902,7 +909,14 @@ static void autoconfig_16550a(struct uart_8250_port *up)
+ 	unsigned char status1, status2;
+ 	unsigned int iersave;
+ 
+-	up->port.type = PORT_16550A;
++#ifdef CONFIG_CPU_CAVIUM_OCTEON
++	/* UPF_FIXED_PORT indicates an internal UART.  */
++	if (up->port.flags & UPF_FIXED_PORT)
++		up->port.type = PORT_OCTEON;
++	else
++#endif
++		up->port.type = PORT_16550A;
++
+ 	up->capabilities |= UART_CAP_FIFO;
+ 
+ 	/*
+@@ -948,7 +962,8 @@ static void autoconfig_16550a(struct uart_8250_port *up)
+ 
+ 	if (!((status2 ^ status1) & UART_MCR_LOOP)) {
+ 		serial_outp(up, UART_LCR, 0);
+-		serial_outp(up, UART_MCR, status1 ^ UART_MCR_LOOP);
++		if (up->port.type != PORT_OCTEON)
++			serial_outp(up, UART_MCR, status1 ^ UART_MCR_LOOP);
+ 		serial_outp(up, UART_LCR, 0xE0);
+ 		status2 = serial_in(up, 0x02); /* EXCR1 */
+ 		serial_outp(up, UART_LCR, 0);
+@@ -1002,6 +1017,9 @@ static void autoconfig_16550a(struct uart_8250_port *up)
+ 		return;
  	}
+ 
++	if (up->port.type == PORT_OCTEON)
++		return;
++
+ 	/*
+ 	 * Try writing and reading the UART_IER_UUE bit (b6).
+ 	 * If it works, this is probably one of the Xscale platform's
+@@ -1539,6 +1557,12 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
+ 		up = list_entry(l, struct uart_8250_port, list);
+ 
+ 		iir = serial_in(up, UART_IIR);
++		if (up->port.type == PORT_OCTEON && (iir & 0xf) == 7) {
++			/* Busy interrupt */
++			serial_in(up, UART_OCTEON_USR);
++			iir = serial_in(up, UART_IIR);
++		}
++
+ 		if (!(iir & UART_IIR_NO_INT)) {
+ 			serial8250_handle_port(up);
+ 
+@@ -1657,7 +1681,7 @@ static void serial8250_timeout(unsigned long data)
+ 	unsigned int iir;
+ 
+ 	iir = serial_in(up, UART_IIR);
+-	if (!(iir & UART_IIR_NO_INT))
++	if (!(iir & UART_IIR_NO_INT) || up->port.type == PORT_OCTEON)
+ 		serial8250_handle_port(up);
+ 	mod_timer(&up->timer, jiffies + poll_timeout(up->port.timeout));
+ }
 diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 6f49385..60c8bf8 100644
+index 3a4afcf..6f49385 100644
 --- a/include/linux/serial_core.h
 +++ b/include/linux/serial_core.h
-@@ -259,9 +259,8 @@ struct uart_port {
- #define UPIO_MEM		(2)
- #define UPIO_MEM32		(3)
- #define UPIO_AU			(4)			/* Au1x00 type IO */
--#define UPIO_TSI		(5)			/* Tsi108/109 type IO */
--#define UPIO_DWAPB		(6)			/* DesignWare APB UART */
--#define UPIO_RM9000		(7)			/* RM9000 type IO */
-+#define UPIO_DWAPB		(5)			/* DesignWare APB UART */
-+#define UPIO_RM9000		(6)			/* RM9000 type IO */
+@@ -40,7 +40,8 @@
+ #define PORT_NS16550A	14
+ #define PORT_XSCALE	15
+ #define PORT_RM9000	16	/* PMC-Sierra RM9xxx internal UART */
+-#define PORT_MAX_8250	16	/* max port ID */
++#define PORT_OCTEON	17	/* Cavium OCTEON internal UART */
++#define PORT_MAX_8250	17	/* max port ID */
  
- 	unsigned int		read_status_mask;	/* driver specific */
- 	unsigned int		ignore_status_mask;	/* driver specific */
+ /*
+  * ARM specific type numbers.  These are not currently guaranteed
+diff --git a/include/linux/serial_reg.h b/include/linux/serial_reg.h
+index 96c0d93..a96bd50 100644
+--- a/include/linux/serial_reg.h
++++ b/include/linux/serial_reg.h
+@@ -324,5 +324,11 @@
+ #define UART_OMAP_SYSC		0x15	/* System configuration register */
+ #define UART_OMAP_SYSS		0x16	/* System status register */
+ 
++/*
++ * Extra serial register definitions for the internal UARTs in Cavium
++ * Networks OCTEON processors.
++ */
++#define UART_OCTEON_USR		0x27	/* UART Status Register */
++
+ #endif /* _LINUX_SERIAL_REG_H */
+ 
