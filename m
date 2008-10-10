@@ -1,46 +1,57 @@
-From: Alan Cox <alan@redhat.com>
-Subject: [PATCH 27/27] serial_8250: pci_enable_device fail is not fully handled
-Date: Fri, 10 Oct 2008 11:52:00 +0100
-Message-ID: <20081010105135.31597.44955.stgit@localhost.localdomain>
-References: <20081010103447.31597.42992.stgit@localhost.localdomain>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+From: Christian Pellegrin <chripell@gmail.com>
+Subject: [PATCH] max3100 driver
+Date: Fri, 10 Oct 2008 14:08:58 +0200
+Message-ID: <12236405383272-git-send-email-chripell@gmail.com>
+References: <20080920012454.e40f03cc.akpm@linux-foundation.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:47625 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1760116AbYJJKwE (ORCPT
+Received: from ug-out-1314.google.com ([66.249.92.173]:16209 "EHLO
+	ug-out-1314.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752942AbYJJMI7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Oct 2008 06:52:04 -0400
-In-Reply-To: <20081010103447.31597.42992.stgit@localhost.localdomain>
+	Fri, 10 Oct 2008 08:08:59 -0400
+Received: by ug-out-1314.google.com with SMTP id k3so1276295ugf.37
+        for <linux-serial@vger.kernel.org>; Fri, 10 Oct 2008 05:08:57 -0700 (PDT)
+In-Reply-To: <20080920012454.e40f03cc.akpm@linux-foundation.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: torvalds@osdl.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: akpm@linux-foundation.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-<rmk> talking about leaks - I noticed that the 'check return of
-pci_enable_dev()' in the 8250 pci resume function finally made it in, 
-inspite my objections against it (causing stuff in higher levels to leak).
 
-Signed-off-by: Alan Cox <alan@redhat.com>
+Hi,
+
+This patch fixes a problem about PM in my code that I found when testing
+patches that went in -mm. The full patch against the Linus tree can be
+found at http://www.evolware.org/chri/paciugo/
+
 ---
-
- drivers/serial/8250_pci.c |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/serial/8250_pci.c b/drivers/serial/8250_pci.c
-index c2f2393..c014ffb 100644
---- a/drivers/serial/8250_pci.c
-+++ b/drivers/serial/8250_pci.c
-@@ -2041,9 +2041,9 @@ static int pciserial_resume_one(struct pci_dev *dev)
- 		 * The device may have been disabled.  Re-enable it.
- 		 */
- 		err = pci_enable_device(dev);
-+		/* FIXME: We cannot simply error out here */
- 		if (err)
--			return err;
--
-+			printk(KERN_ERR "pciserial: Unable to re-enable ports, trying to continue.\n");
- 		pciserial_resume_ports(priv);
+diff --git a/drivers/serial/max3100.c b/drivers/serial/max3100.c
+index 7a269a6..462d6a4 100644
+--- a/drivers/serial/max3100.c
++++ b/drivers/serial/max3100.c
+@@ -566,6 +566,7 @@ static void max3100_shutdown(struct uart_port *port)
+ 	if (s->workqueue) {
+ 		flush_workqueue(s->workqueue);
+ 		destroy_workqueue(s->workqueue);
++		s->workqueue = NULL;
  	}
+ 	if (s->irq)
+ 		free_irq(s->irq, s);
+@@ -614,6 +615,7 @@ static int max3100_startup(struct uart_port *port)
+ 		dev_warn(&s->spi->dev, "cannot allocate irq %d\n", s->irq);
+ 		s->irq = 0;
+ 		destroy_workqueue(s->workqueue);
++		s->workqueue = NULL;
+ 		return -EBUSY;
+ 	}
+ 
+@@ -884,7 +886,8 @@ static int max3100_resume(struct spi_device *spi)
+ 	enable_irq(s->irq);
+ 
+ 	s->conf_commit = 1;
+-	max3100_dowork(s);
++	if (s->workqueue)
++		max3100_dowork(s);
+ 
  	return 0;
-
+ }
