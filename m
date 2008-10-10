@@ -1,45 +1,44 @@
-From: David Miller <davem@davemloft.net>
-Subject: Re: [PATCH 22/27] serial: Make uart_port's ioport "unsigned long".
-Date: Fri, 10 Oct 2008 09:19:25 -0700 (PDT)
-Message-ID: <20081010.091925.120612769.davem@davemloft.net>
-References: <20081010103447.31597.42992.stgit@localhost.localdomain>
-	<20081010105052.31597.41476.stgit@localhost.localdomain>
-	<20081010125434.GB8590@yoda.jdub.homelinux.org>
+From: Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+Subject: Re: Regarding Serial consloe
+Date: Fri, 10 Oct 2008 09:26:54 -0700
+Message-ID: <20081010162654.GA2498@kroah.com>
+References: <241b8f7b0810072221s1c84a45cgb21443fd717d625d@mail.gmail.com> <241b8f7b0810072253l57f0fc0bm8356798972089b10@mail.gmail.com> <241b8f7b0810072256lb3611b3x49966d2d1782789b@mail.gmail.com> <20081008143227.GU5387@cathedrallabs.org> <241b8f7b0810091945w12725f3di4a8bab043d3a1bdc@mail.gmail.com> <241b8f7b0810100258u4a393c96s21d491d62a05e50c@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 74-93-104-97-Washington.hfc.comcastbusiness.net ([74.93.104.97]:58905
-	"EHLO sunset.davemloft.net" rhost-flags-OK-FAIL-OK-OK)
-	by vger.kernel.org with ESMTP id S1758774AbYJJQTt (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Oct 2008 12:19:49 -0400
-In-Reply-To: <20081010125434.GB8590@yoda.jdub.homelinux.org>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <241b8f7b0810100258u4a393c96s21d491d62a05e50c-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Prabhu Chawandi <prabhu.chavandi-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Aristeu Rozanski <aris-moeOTchvdi7YtjvyW6yDsg@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: jwboyer@gmail.com
-Cc: alan@redhat.com, torvalds@osdl.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-From: Josh Boyer <jwboyer@gmail.com>
-Date: Fri, 10 Oct 2008 08:54:34 -0400
 
-> On Fri, Oct 10, 2008 at 11:50:56AM +0100, Alan Cox wrote:
-> >From: David Miller <davem@davemloft.net>
-> >
-> >Otherwise the top 32-bits of the resource value get chopped
-> >off on 64-bit systems, and the resulting I/O accesses go to
-> >random places.
-> >
-> >Thanks to testing and debugging by Josip Rodin, which helped
-> >track this down.
-> >
-> >Signed-off-by: David S. Miller <davem@davemloft.net>
-> >Signed-off-by: Alan Cox <alan@redhat.com>
-> 
-> I emailed on an earlier posting of this about using resource_size_t
-> instead as we have 32-bit CPUs with 64-bit address spaces.  If I'm
-> totally wrong, that's fine but I'm still wondering if that would be
-> a better general solution.
+A: No.
+Q: Should I include quotations after my reply?
 
-That seems like a fine idea to me, please post a follow-on patch
-if you like :-)
+On Fri, Oct 10, 2008 at 03:28:56PM +0530, Prabhu Chawandi wrote:
+> On 10/10/08, Prabhu Chawandi <prabhu.chavandi-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> > Yeah...   I did all the configurations.
+> >
+> > Still not getting the logs :(
+> >
+> > I feel I am missing the part where USB- serial  will be registered to
+> > the tty layer.
+> >
+> > or Do I need to insert the code where we will be opening the device
+> > and performimg the write/read  operations.
+
+No code needs to be added.
+
+Please let us know what errors you are seeing, what does your kernel log
+messages show, and so on.  It should work properly if you tell the boot
+command line to use the usb-serial port for console messages.
+
+thanks,
+
+greg k-h
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
