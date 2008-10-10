@@ -1,51 +1,85 @@
 From: Alan Cox <alan@redhat.com>
-Subject: [PATCH 13/27] Fix oti6858 debug level
-Date: Fri, 10 Oct 2008 11:49:36 +0100
-Message-ID: <20081010104928.31597.32630.stgit@localhost.localdomain>
+Subject: [PATCH 17/27] ip2, cleanup globals
+Date: Fri, 10 Oct 2008 11:50:10 +0100
+Message-ID: <20081010105007.31597.1747.stgit@localhost.localdomain>
 References: <20081010103447.31597.42992.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:47569 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:47585 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1757879AbYJJKtj (ORCPT
+	with ESMTP id S1759428AbYJJKuO (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Oct 2008 06:49:39 -0400
+	Fri, 10 Oct 2008 06:50:14 -0400
 In-Reply-To: <20081010103447.31597.42992.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: torvalds@osdl.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-From: Scott Ashcroft <scott.ashcroft@talk21.com>
+From: Jiri Slaby <jirislaby@gmail.com>
 
-For some reason the oti6858 driver undefines and redefines the dbg
-macro. This makes it spew debugging messages at KERN_INFO instead of
-KERN_DEBUG.
+- do not init .bss zeroed data to zero again (by memset or
+  explicit assignment)
+- use char [] instead of char * for string constants
 
-This patch removes the undef and define making the driver log like every
-other USB serial driver.
-
-Signed-off-by: Scott Ashcroft <scott.ashcroft@talk21.com>
+Signed-off-by: Jiri Slaby <jirislaby@gmail.com>
 Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
- drivers/usb/serial/oti6858.c |    4 ----
- 1 files changed, 0 insertions(+), 4 deletions(-)
+ drivers/char/ip2/ip2main.c |   18 +++++++-----------
+ 1 files changed, 7 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/usb/serial/oti6858.c b/drivers/usb/serial/oti6858.c
-index 81db571..42f9281 100644
---- a/drivers/usb/serial/oti6858.c
-+++ b/drivers/usb/serial/oti6858.c
-@@ -224,10 +224,6 @@ struct oti6858_private {
- 	struct usb_serial_port *port;   /* USB port with which associated */
- };
+diff --git a/drivers/char/ip2/ip2main.c b/drivers/char/ip2/ip2main.c
+index 79bca61..1d46284 100644
+--- a/drivers/char/ip2/ip2main.c
++++ b/drivers/char/ip2/ip2main.c
+@@ -150,12 +150,12 @@ static int ip2_read_proc(char *, char **, off_t, int, int *, void * );
+ /*************/
  
--#undef dbg
--/* #define dbg(format, arg...) printk(KERN_INFO "%s: " format "\n", __FILE__, ## arg) */
--#define dbg(format, arg...) printk(KERN_INFO "" format "\n", ## arg)
+ /* String constants to identify ourselves */
+-static char *pcName    = "Computone IntelliPort Plus multiport driver";
+-static char *pcVersion = "1.2.14";
++static const char pcName[] = "Computone IntelliPort Plus multiport driver";
++static const char pcVersion[] = "1.2.14";
+ 
+ /* String constants for port names */
+-static char *pcDriver_name   = "ip2";
+-static char *pcIpl    		 = "ip2ipl";
++static const char pcDriver_name[] = "ip2";
++static const char pcIpl[] = "ip2ipl";
+ 
+ /***********************/
+ /* Function Prototypes */
+@@ -237,8 +237,8 @@ static const struct file_operations ip2_ipl = {
+ 	.open		= ip2_ipl_open,
+ }; 
+ 
+-static unsigned long irq_counter = 0;
+-static unsigned long bh_counter = 0;
++static unsigned long irq_counter;
++static unsigned long bh_counter;
+ 
+ // Use immediate queue to service interrupts
+ #define USE_IQI
+@@ -286,7 +286,7 @@ MODULE_AUTHOR("Doug McNash");
+ MODULE_DESCRIPTION("Computone IntelliPort Plus Driver");
+ MODULE_LICENSE("GPL");
+ 
+-static int poll_only = 0;
++static int poll_only;
+ 
+ static int Eisa_irq;
+ static int Eisa_slot;
+@@ -615,10 +615,6 @@ static int ip2_loadmain(void)
+ 	/* Initialise the iiEllis subsystem. */
+ 	iiEllisInit();
+ 
+-	/* Initialize arrays. */
+-	memset( i2BoardPtrTable, 0, sizeof i2BoardPtrTable );
+-	memset( DevTable, 0, sizeof DevTable );
 -
- static void setup_line(struct work_struct *work)
- {
- 	struct oti6858_private *priv = container_of(work,
+ 	/* Initialise all the boards we can find (up to the maximum). */
+ 	for ( i = 0; i < IP2_MAX_BOARDS; ++i ) {
+ 		switch ( ip2config.addr[i] ) { 
 
