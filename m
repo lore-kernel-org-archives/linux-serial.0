@@ -1,36 +1,61 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] max3100 driver
-Date: Thu, 9 Oct 2008 10:18:22 +0100
-Message-ID: <20081009101822.54acd701@lxorguk.ukuu.org.uk>
-References: <1221895208650-git-send-email-chripell@gmail.com>
-	<20080920151149.21dbad1d@lxorguk.ukuu.org.uk>
-	<cabda6420810082330i6d013e18o72eac3cb869b1e4e@mail.gmail.com>
+From: "Prabhu Chawandi" <prabhu.chavandi@gmail.com>
+Subject: Re: Regarding Serial consloe
+Date: Fri, 10 Oct 2008 08:15:14 +0530
+Message-ID: <241b8f7b0810091945w12725f3di4a8bab043d3a1bdc@mail.gmail.com>
+References: <241b8f7b0810072221s1c84a45cgb21443fd717d625d@mail.gmail.com>
+	 <241b8f7b0810072253l57f0fc0bm8356798972089b10@mail.gmail.com>
+	 <241b8f7b0810072256lb3611b3x49966d2d1782789b@mail.gmail.com>
+	 <20081008143227.GU5387@cathedrallabs.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:34231 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1753468AbYJIJSY (ORCPT
+Received: from rv-out-0506.google.com ([209.85.198.230]:36166 "EHLO
+	rv-out-0506.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750735AbYJJCpO (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 9 Oct 2008 05:18:24 -0400
-In-Reply-To: <cabda6420810082330i6d013e18o72eac3cb869b1e4e@mail.gmail.com>
+	Thu, 9 Oct 2008 22:45:14 -0400
+Received: by rv-out-0506.google.com with SMTP id k40so339343rvb.1
+        for <linux-serial@vger.kernel.org>; Thu, 09 Oct 2008 19:45:14 -0700 (PDT)
+In-Reply-To: <20081008143227.GU5387@cathedrallabs.org>
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: chri <chripell@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Aristeu Rozanski <aris@ruivo.org>
+Cc: linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
 
-> > If there has been a hangup the port.tty will be NULL...
+Yeah...   I did all the configurations.
+
+Still not getting the logs :(
+
+I feel I am missing the part where USB- serial  will be registered to
+the tty layer.
+
+or Do I need to insert the code where we will be opening the device
+and performimg the write/read  operations.
+
+please comment on this ...
+
+
+Thanks in advance
+Prabhu
+
+On 10/8/08, Aristeu Rozanski <aris@ruivo.org> wrote:
+> >   I am using currnetly take the log messages on 8250 serial comsole...
 > >
-> 
-> I check against NULL. But let me ask again: the other drivers (for
-> example SA1100) don't do it. How they avoid the nasty NULL pointer
-> dereference?
-
-Some drives keep the tty pointer and deliver data to closed ttys wrongly,
-others do careful locking, others are just broken.
-
-
-> Sorry again for not having replied before resending the patch.
-
-No problem
+> > I am usinf minicom for that ...
+> >
+> > I got PL2303 device with me,  I am trying to route all  the debug
+> > messages to this USB - serial device .. I have tried modifying
+> > configurations ..
+> > i am not able to attain it,,
+> >
+> > can anybody help me on this ...
+> do you have the PL2303 and USB host controller you're using compiled
+> built-in? also, you have to add console=ttyUSB0,<config options> as
+> kernel parameter.
+>
+> --
+> Aristeu
+>
+>
