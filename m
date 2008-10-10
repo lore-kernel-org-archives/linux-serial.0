@@ -1,106 +1,69 @@
 From: Alan Cox <alan@redhat.com>
-Subject: [PATCH 06/27] Blackfin Serial Driver: Fix bug - should
-	suspend/resume/remove all uart ports.
-Date: Fri, 10 Oct 2008 11:48:34 +0100
-Message-ID: <20081010104828.31597.39146.stgit@localhost.localdomain>
+Subject: [PATCH 07/27] Blackfin Serial Driver: trim trailing whitespace -- no
+	functional changes
+Date: Fri, 10 Oct 2008 11:48:40 +0100
+Message-ID: <20081010104839.31597.61799.stgit@localhost.localdomain>
 References: <20081010103447.31597.42992.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:47541 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:47545 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1756897AbYJJKsh (ORCPT
+	with ESMTP id S1758012AbYJJKsn (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Oct 2008 06:48:37 -0400
+	Fri, 10 Oct 2008 06:48:43 -0400
 In-Reply-To: <20081010103447.31597.42992.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: torvalds@osdl.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-From: Sonic Zhang <sonic.zhang@analog.com>
+From: Mike Frysinger <vapier.adi@gmail.com>
 
-Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+Signed-off-by: Mike Frysinger <vapier.adi@gmail.com>
 Signed-off-by: Bryan Wu <cooloney@kernel.org>
 Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
- drivers/serial/bfin_5xx.c |   39 ++++++++++++++++++++++-----------------
- 1 files changed, 22 insertions(+), 17 deletions(-)
+ drivers/serial/bfin_5xx.c |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
-index 4a023c6..04eeef0 100644
+index 04eeef0..976de91 100644
 --- a/drivers/serial/bfin_5xx.c
 +++ b/drivers/serial/bfin_5xx.c
-@@ -1100,20 +1100,26 @@ static struct uart_driver bfin_serial_reg = {
- 
- static int bfin_serial_suspend(struct platform_device *dev, pm_message_t state)
+@@ -1,7 +1,7 @@
+ /*
+  * Blackfin On-Chip Serial Driver
+  *
+- * Copyright 2006-2007 Analog Devices Inc.
++ * Copyright 2006-2008 Analog Devices Inc.
+  *
+  * Enter bugs at http://blackfin.uclinux.org/
+  *
+@@ -126,13 +126,13 @@ static int kgdb_entry_state;
+ void kgdb_put_debug_char(int chr)
  {
--	struct bfin_serial_port *uart = platform_get_drvdata(dev);
-+	int i;
- 
--	if (uart)
--		uart_suspend_port(&bfin_serial_reg, &uart->port);
-+	for (i = 0; i < nr_ports; i++) {
-+		if (bfin_serial_ports[i].port.dev != &dev->dev)
-+			continue;
-+		uart_suspend_port(&bfin_serial_reg, &bfin_serial_ports[i].port);
-+	}
- 
- 	return 0;
- }
- 
- static int bfin_serial_resume(struct platform_device *dev)
- {
--	struct bfin_serial_port *uart = platform_get_drvdata(dev);
-+	int i;
- 
--	if (uart)
--		uart_resume_port(&bfin_serial_reg, &uart->port);
-+	for (i = 0; i < nr_ports; i++) {
-+		if (bfin_serial_ports[i].port.dev != &dev->dev)
-+			continue;
-+		uart_resume_port(&bfin_serial_reg, &bfin_serial_ports[i].port);
-+	}
- 
- 	return 0;
- }
-@@ -1133,27 +1139,26 @@ static int bfin_serial_probe(struct platform_device *dev)
- 				continue;
- 			bfin_serial_ports[i].port.dev = &dev->dev;
- 			uart_add_one_port(&bfin_serial_reg, &bfin_serial_ports[i].port);
--			platform_set_drvdata(dev, &bfin_serial_ports[i]);
- 		}
+ 	struct bfin_serial_port *uart;
+-	
++
+ 	if (CONFIG_KGDB_UART_PORT < 0
+ 		|| CONFIG_KGDB_UART_PORT >= BFIN_UART_NR_PORTS)
+ 		uart = &bfin_serial_ports[0];
+ 	else
+ 		uart = &bfin_serial_ports[CONFIG_KGDB_UART_PORT];
+-	
++
+ 	while (!(UART_GET_LSR(uart) & THRE)) {
+ 		SSYNC();
  	}
- 
- 	return 0;
- }
- 
--static int bfin_serial_remove(struct platform_device *pdev)
-+static int bfin_serial_remove(struct platform_device *dev)
- {
--	struct bfin_serial_port *uart = platform_get_drvdata(pdev);
--
-+	int i;
- 
-+	for (i = 0; i < nr_ports; i++) {
-+		if (bfin_serial_ports[i].port.dev != &dev->dev)
-+			continue;
-+		uart_remove_one_port(&bfin_serial_reg, &bfin_serial_ports[i].port);
-+		bfin_serial_ports[i].port.dev = NULL;
- #ifdef CONFIG_SERIAL_BFIN_CTSRTS
--	gpio_free(uart->cts_pin);
--	gpio_free(uart->rts_pin);
-+		gpio_free(bfin_serial_ports[i].cts_pin);
-+		gpio_free(bfin_serial_ports[i].rts_pin);
- #endif
--
--	platform_set_drvdata(pdev, NULL);
--
--	if (uart)
--		uart_remove_one_port(&bfin_serial_reg, &uart->port);
-+	}
- 
- 	return 0;
- }
+@@ -152,7 +152,7 @@ int kgdb_get_debug_char(void)
+ 		uart = &bfin_serial_ports[0];
+ 	else
+ 		uart = &bfin_serial_ports[CONFIG_KGDB_UART_PORT];
+-	
++
+ 	while(!(UART_GET_LSR(uart) & DR)) {
+ 		SSYNC();
+ 	}
 
