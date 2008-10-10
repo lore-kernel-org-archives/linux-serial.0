@@ -1,129 +1,50 @@
 From: Alan Cox <alan@redhat.com>
-Subject: [PATCH 11/27] Blackfin Serial Driver: Fix bug - ircp fails on sir
-	over Blackfin UART
-Date: Fri, 10 Oct 2008 11:49:15 +0100
-Message-ID: <20081010104911.31597.88428.stgit@localhost.localdomain>
+Subject: [PATCH 10/27] Blackfin Serial Driver: Fix bug - Don't call tx_stop in
+	tx_transfer.
+Date: Fri, 10 Oct 2008 11:49:06 +0100
+Message-ID: <20081010104903.31597.94354.stgit@localhost.localdomain>
 References: <20081010103447.31597.42992.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:47561 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:47557 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1756526AbYJJKtS (ORCPT
+	with ESMTP id S1756205AbYJJKtJ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Oct 2008 06:49:18 -0400
+	Fri, 10 Oct 2008 06:49:09 -0400
 In-Reply-To: <20081010103447.31597.42992.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: torvalds@osdl.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-From: Graf Yang <graf.yang@analog.com>
+From: Sonic Zhang <sonic.zhang@analog.com>
 
-We now use the sir_dev/irtty_sir/uart/bfin_serial drivers framework
-to monitor the TX status.
+Disable irq and return immediately.
 
-Signed-off-by: Graf Yang <graf.yang@analog.com>
+Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
 Signed-off-by: Bryan Wu <cooloney@kernel.org>
 Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
- .../mach-bf527/include/mach/bfin_serial_5xx.h      |    3 +++
- .../mach-bf533/include/mach/bfin_serial_5xx.h      |    2 ++
- .../mach-bf537/include/mach/bfin_serial_5xx.h      |    3 +++
- .../mach-bf548/include/mach/bfin_serial_5xx.h      |    3 +++
- .../mach-bf561/include/mach/bfin_serial_5xx.h      |    2 ++
- drivers/serial/bfin_5xx.c                          |    4 ++++
- 6 files changed, 17 insertions(+), 0 deletions(-)
+ drivers/serial/bfin_5xx.c |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
 
-diff --git a/arch/blackfin/mach-bf527/include/mach/bfin_serial_5xx.h b/arch/blackfin/mach-bf527/include/mach/bfin_serial_5xx.h
-index a23d047..75722d6 100644
---- a/arch/blackfin/mach-bf527/include/mach/bfin_serial_5xx.h
-+++ b/arch/blackfin/mach-bf527/include/mach/bfin_serial_5xx.h
-@@ -78,6 +78,9 @@
- #  define CONFIG_UART1_RTS_PIN -1
- # endif
- #endif
-+
-+#define BFIN_UART_TX_FIFO_SIZE	2
-+
- /*
-  * The pin configuration is different from schematic
-  */
-diff --git a/arch/blackfin/mach-bf533/include/mach/bfin_serial_5xx.h b/arch/blackfin/mach-bf533/include/mach/bfin_serial_5xx.h
-index 20471cd..815bfe5 100644
---- a/arch/blackfin/mach-bf533/include/mach/bfin_serial_5xx.h
-+++ b/arch/blackfin/mach-bf533/include/mach/bfin_serial_5xx.h
-@@ -69,6 +69,8 @@
- # endif
- #endif
- 
-+#define BFIN_UART_TX_FIFO_SIZE	2
-+
- struct bfin_serial_port {
-         struct uart_port        port;
-         unsigned int            old_status;
-diff --git a/arch/blackfin/mach-bf537/include/mach/bfin_serial_5xx.h b/arch/blackfin/mach-bf537/include/mach/bfin_serial_5xx.h
-index 08dfe30..b3f87e1 100644
---- a/arch/blackfin/mach-bf537/include/mach/bfin_serial_5xx.h
-+++ b/arch/blackfin/mach-bf537/include/mach/bfin_serial_5xx.h
-@@ -78,6 +78,9 @@
- #  define CONFIG_UART1_RTS_PIN -1
- # endif
- #endif
-+
-+#define BFIN_UART_TX_FIFO_SIZE	2
-+
- /*
-  * The pin configuration is different from schematic
-  */
-diff --git a/arch/blackfin/mach-bf548/include/mach/bfin_serial_5xx.h b/arch/blackfin/mach-bf548/include/mach/bfin_serial_5xx.h
-index 76976b1..e4cf35e 100644
---- a/arch/blackfin/mach-bf548/include/mach/bfin_serial_5xx.h
-+++ b/arch/blackfin/mach-bf548/include/mach/bfin_serial_5xx.h
-@@ -82,6 +82,9 @@
- #  define CONFIG_UART1_RTS_PIN -1
- # endif
- #endif
-+
-+#define BFIN_UART_TX_FIFO_SIZE	2
-+
- /*
-  * The pin configuration is different from schematic
-  */
-diff --git a/arch/blackfin/mach-bf561/include/mach/bfin_serial_5xx.h b/arch/blackfin/mach-bf561/include/mach/bfin_serial_5xx.h
-index 6cddca4..e0ce0c1 100644
---- a/arch/blackfin/mach-bf561/include/mach/bfin_serial_5xx.h
-+++ b/arch/blackfin/mach-bf561/include/mach/bfin_serial_5xx.h
-@@ -69,6 +69,8 @@
- # endif
- #endif
- 
-+#define BFIN_UART_TX_FIFO_SIZE	2
-+
- struct bfin_serial_port {
-         struct uart_port        port;
-         unsigned int            old_status;
 diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
-index 5e20f50..a5cf0e7 100644
+index 8d2d757..5e20f50 100644
 --- a/drivers/serial/bfin_5xx.c
 +++ b/drivers/serial/bfin_5xx.c
-@@ -761,6 +761,9 @@ bfin_serial_set_termios(struct uart_port *port, struct ktermios *termios,
- 	val |= UCEN;
- 	UART_PUT_GCTL(uart, val);
+@@ -301,7 +301,11 @@ static void bfin_serial_tx_chars(struct bfin_serial_port *uart)
+ 	bfin_serial_mctrl_check(uart);
  
-+	/* Port speed changed, update the per-port timeout. */
-+	uart_update_timeout(port, termios->c_cflag, baud);
-+
- 	spin_unlock_irqrestore(&uart->port.lock, flags);
- }
+ 	if (uart_circ_empty(xmit) || uart_tx_stopped(&uart->port)) {
+-		bfin_serial_stop_tx(&uart->port);
++#ifdef CONFIG_BF54x
++		/* Clear TFI bit */
++		UART_PUT_LSR(uart, TFI);
++#endif
++		UART_CLEAR_IER(uart, ETBEI);
+ 		return;
+ 	}
  
-@@ -865,6 +868,7 @@ static void __init bfin_serial_init_ports(void)
- 
- 	for (i = 0; i < nr_active_ports; i++) {
- 		bfin_serial_ports[i].port.uartclk   = get_sclk();
-+		bfin_serial_ports[i].port.fifosize  = BFIN_UART_TX_FIFO_SIZE;
- 		bfin_serial_ports[i].port.ops       = &bfin_serial_pops;
- 		bfin_serial_ports[i].port.line      = i;
- 		bfin_serial_ports[i].port.iotype    = UPIO_MEM;
 
