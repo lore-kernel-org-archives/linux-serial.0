@@ -1,94 +1,99 @@
 From: Alan Cox <alan@redhat.com>
-Subject: [PATCH 20/27] ip2: avoid add_timer with pending timer
-Date: Fri, 10 Oct 2008 11:50:37 +0100
-Message-ID: <20081010105035.31597.27051.stgit@localhost.localdomain>
+Subject: [PATCH 14/27] Char: cyclades. remove bogus iomap
+Date: Fri, 10 Oct 2008 11:49:46 +0100
+Message-ID: <20081010104941.31597.64869.stgit@localhost.localdomain>
 References: <20081010103447.31597.42992.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:47597 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:47573 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1759482AbYJJKul (ORCPT
+	with ESMTP id S1759237AbYJJKtu (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Oct 2008 06:50:41 -0400
+	Fri, 10 Oct 2008 06:49:50 -0400
 In-Reply-To: <20081010103447.31597.42992.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: torvalds@osdl.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-From: Akinobu Mita <akinobu.mita@gmail.com>
+From: Jiri Slaby <jirislaby@gmail.com>
 
-add_timer() is not suppose to be called when the timer is pending.
-ip2 driver attempts to avoid that condition by setting and resetting
-a flag (TimerOn) in timer function. But there is some gap between
-add_timer() and setting TimerOn.
+readl/writel are not expected to accept iomap return value. Replace
+bogus mapping by standard ioremap.
 
-This patch fix this problem by using mod_timer() and remove TimerOn
-which has been unnecessary by this change.
-
-Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
 Signed-off-by: Jiri Slaby <jirislaby@gmail.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
- drivers/char/ip2/ip2main.c |   19 ++++---------------
- 1 files changed, 4 insertions(+), 15 deletions(-)
+ drivers/char/cyclades.c |   21 ++++++++++++---------
+ 1 files changed, 12 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/char/ip2/ip2main.c b/drivers/char/ip2/ip2main.c
-index 39269d1..66f52a2 100644
---- a/drivers/char/ip2/ip2main.c
-+++ b/drivers/char/ip2/ip2main.c
-@@ -249,7 +249,6 @@ static unsigned long bh_counter;
-  */
- #define  POLL_TIMEOUT   (jiffies + 1)
- static DEFINE_TIMER(PollTimer, ip2_poll, 0, 0);
--static char  TimerOn;
+diff --git a/drivers/char/cyclades.c b/drivers/char/cyclades.c
+index fe6d774..5e5b1dc 100644
+--- a/drivers/char/cyclades.c
++++ b/drivers/char/cyclades.c
+@@ -4993,12 +4993,14 @@ static int __devinit cy_pci_probe(struct pci_dev *pdev,
+ 			device_id == PCI_DEVICE_ID_CYCLOM_Y_Hi) {
+ 		card_name = "Cyclom-Y";
  
- #ifdef IP2DEBUG_TRACE
- /* Trace (debug) buffer data */
-@@ -374,11 +373,7 @@ static void __exit ip2_cleanup_module(void)
- 	int err;
- 	int i;
- 
--	/* Stop poll timer if we had one. */
--	if (TimerOn) {
--		del_timer(&PollTimer);
--		TimerOn = 0;
--	}
-+	del_timer_sync(&PollTimer);
- 
- 	/* Reset the boards we have. */
- 	for (i = 0; i < IP2_MAX_BOARDS; i++)
-@@ -774,10 +769,8 @@ static int __init ip2_loadmain(void)
+-		addr0 = pci_iomap(pdev, 0, CyPCI_Yctl);
++		addr0 = ioremap_nocache(pci_resource_start(pdev, 0),
++				CyPCI_Yctl);
+ 		if (addr0 == NULL) {
+ 			dev_err(&pdev->dev, "can't remap ctl region\n");
+ 			goto err_reg;
  		}
- 		if (ip2config.irq[i] == CIR_POLL) {
- retry:
--			if (!TimerOn) {
--				PollTimer.expires = POLL_TIMEOUT;
--				add_timer(&PollTimer);
--				TimerOn = 1;
-+			if (!timer_pending(&PollTimer)) {
-+				mod_timer(&PollTimer, POLL_TIMEOUT);
- 				printk(KERN_INFO "IP2: polling\n");
- 			}
- 		} else {
-@@ -1283,16 +1276,12 @@ ip2_poll(unsigned long arg)
- {
- 	ip2trace (ITRC_NO_PORT, ITRC_INTR, 100, 0 );
+-		addr2 = pci_iomap(pdev, 2, CyPCI_Ywin);
++		addr2 = ioremap_nocache(pci_resource_start(pdev, 2),
++				CyPCI_Ywin);
+ 		if (addr2 == NULL) {
+ 			dev_err(&pdev->dev, "can't remap base region\n");
+ 			goto err_unmap;
+@@ -5013,7 +5015,8 @@ static int __devinit cy_pci_probe(struct pci_dev *pdev,
+ 	} else if (device_id == PCI_DEVICE_ID_CYCLOM_Z_Hi) {
+ 		struct RUNTIME_9060 __iomem *ctl_addr;
  
--	TimerOn = 0; // it's the truth but not checked in service
--
- 	// Just polled boards, IRQ = 0 will hit all non-interrupt boards.
- 	// It will NOT poll boards handled by hard interrupts.
- 	// The issue of queued BH interrupts is handled in ip2_interrupt().
- 	ip2_polled_interrupt();
+-		ctl_addr = addr0 = pci_iomap(pdev, 0, CyPCI_Zctl);
++		ctl_addr = addr0 = ioremap_nocache(pci_resource_start(pdev, 0),
++				CyPCI_Zctl);
+ 		if (addr0 == NULL) {
+ 			dev_err(&pdev->dev, "can't remap ctl region\n");
+ 			goto err_reg;
+@@ -5026,8 +5029,8 @@ static int __devinit cy_pci_probe(struct pci_dev *pdev,
  
--	PollTimer.expires = POLL_TIMEOUT;
--	add_timer( &PollTimer );
--	TimerOn = 1;
-+	mod_timer(&PollTimer, POLL_TIMEOUT);
+ 		mailbox = (u32)readl(&ctl_addr->mail_box_0);
  
- 	ip2trace (ITRC_NO_PORT, ITRC_INTR, ITRC_RETURN, 0 );
- }
+-		addr2 = pci_iomap(pdev, 2, mailbox == ZE_V1 ?
+-				CyPCI_Ze_win : CyPCI_Zwin);
++		addr2 = ioremap_nocache(pci_resource_start(pdev, 2),
++				mailbox == ZE_V1 ? CyPCI_Ze_win : CyPCI_Zwin);
+ 		if (addr2 == NULL) {
+ 			dev_err(&pdev->dev, "can't remap base region\n");
+ 			goto err_unmap;
+@@ -5159,9 +5162,9 @@ err_null:
+ 	cy_card[card_no].base_addr = NULL;
+ 	free_irq(irq, &cy_card[card_no]);
+ err_unmap:
+-	pci_iounmap(pdev, addr0);
++	iounmap(addr0);
+ 	if (addr2)
+-		pci_iounmap(pdev, addr2);
++		iounmap(addr2);
+ err_reg:
+ 	pci_release_regions(pdev);
+ err_dis:
+@@ -5186,9 +5189,9 @@ static void __devexit cy_pci_remove(struct pci_dev *pdev)
+ 		cy_writew(cinfo->ctl_addr + 0x68,
+ 				readw(cinfo->ctl_addr + 0x68) & ~0x0900);
+ 
+-	pci_iounmap(pdev, cinfo->base_addr);
++	iounmap(cinfo->base_addr);
+ 	if (cinfo->ctl_addr)
+-		pci_iounmap(pdev, cinfo->ctl_addr);
++		iounmap(cinfo->ctl_addr);
+ 	if (cinfo->irq
+ #ifndef CONFIG_CYZ_INTR
+ 		&& !IS_CYC_Z(*cinfo)
 
