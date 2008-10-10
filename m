@@ -1,99 +1,51 @@
 From: Alan Cox <alan@redhat.com>
-Subject: [PATCH 14/27] Char: cyclades. remove bogus iomap
-Date: Fri, 10 Oct 2008 11:49:46 +0100
-Message-ID: <20081010104941.31597.64869.stgit@localhost.localdomain>
+Subject: [PATCH 13/27] Fix oti6858 debug level
+Date: Fri, 10 Oct 2008 11:49:36 +0100
+Message-ID: <20081010104928.31597.32630.stgit@localhost.localdomain>
 References: <20081010103447.31597.42992.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:47573 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:47569 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1759237AbYJJKtu (ORCPT
+	with ESMTP id S1757879AbYJJKtj (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Oct 2008 06:49:50 -0400
+	Fri, 10 Oct 2008 06:49:39 -0400
 In-Reply-To: <20081010103447.31597.42992.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: torvalds@osdl.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-From: Jiri Slaby <jirislaby@gmail.com>
+From: Scott Ashcroft <scott.ashcroft@talk21.com>
 
-readl/writel are not expected to accept iomap return value. Replace
-bogus mapping by standard ioremap.
+For some reason the oti6858 driver undefines and redefines the dbg
+macro. This makes it spew debugging messages at KERN_INFO instead of
+KERN_DEBUG.
 
-Signed-off-by: Jiri Slaby <jirislaby@gmail.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+This patch removes the undef and define making the driver log like every
+other USB serial driver.
+
+Signed-off-by: Scott Ashcroft <scott.ashcroft@talk21.com>
 Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
- drivers/char/cyclades.c |   21 ++++++++++++---------
- 1 files changed, 12 insertions(+), 9 deletions(-)
+ drivers/usb/serial/oti6858.c |    4 ----
+ 1 files changed, 0 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/char/cyclades.c b/drivers/char/cyclades.c
-index fe6d774..5e5b1dc 100644
---- a/drivers/char/cyclades.c
-+++ b/drivers/char/cyclades.c
-@@ -4993,12 +4993,14 @@ static int __devinit cy_pci_probe(struct pci_dev *pdev,
- 			device_id == PCI_DEVICE_ID_CYCLOM_Y_Hi) {
- 		card_name = "Cyclom-Y";
+diff --git a/drivers/usb/serial/oti6858.c b/drivers/usb/serial/oti6858.c
+index 81db571..42f9281 100644
+--- a/drivers/usb/serial/oti6858.c
++++ b/drivers/usb/serial/oti6858.c
+@@ -224,10 +224,6 @@ struct oti6858_private {
+ 	struct usb_serial_port *port;   /* USB port with which associated */
+ };
  
--		addr0 = pci_iomap(pdev, 0, CyPCI_Yctl);
-+		addr0 = ioremap_nocache(pci_resource_start(pdev, 0),
-+				CyPCI_Yctl);
- 		if (addr0 == NULL) {
- 			dev_err(&pdev->dev, "can't remap ctl region\n");
- 			goto err_reg;
- 		}
--		addr2 = pci_iomap(pdev, 2, CyPCI_Ywin);
-+		addr2 = ioremap_nocache(pci_resource_start(pdev, 2),
-+				CyPCI_Ywin);
- 		if (addr2 == NULL) {
- 			dev_err(&pdev->dev, "can't remap base region\n");
- 			goto err_unmap;
-@@ -5013,7 +5015,8 @@ static int __devinit cy_pci_probe(struct pci_dev *pdev,
- 	} else if (device_id == PCI_DEVICE_ID_CYCLOM_Z_Hi) {
- 		struct RUNTIME_9060 __iomem *ctl_addr;
- 
--		ctl_addr = addr0 = pci_iomap(pdev, 0, CyPCI_Zctl);
-+		ctl_addr = addr0 = ioremap_nocache(pci_resource_start(pdev, 0),
-+				CyPCI_Zctl);
- 		if (addr0 == NULL) {
- 			dev_err(&pdev->dev, "can't remap ctl region\n");
- 			goto err_reg;
-@@ -5026,8 +5029,8 @@ static int __devinit cy_pci_probe(struct pci_dev *pdev,
- 
- 		mailbox = (u32)readl(&ctl_addr->mail_box_0);
- 
--		addr2 = pci_iomap(pdev, 2, mailbox == ZE_V1 ?
--				CyPCI_Ze_win : CyPCI_Zwin);
-+		addr2 = ioremap_nocache(pci_resource_start(pdev, 2),
-+				mailbox == ZE_V1 ? CyPCI_Ze_win : CyPCI_Zwin);
- 		if (addr2 == NULL) {
- 			dev_err(&pdev->dev, "can't remap base region\n");
- 			goto err_unmap;
-@@ -5159,9 +5162,9 @@ err_null:
- 	cy_card[card_no].base_addr = NULL;
- 	free_irq(irq, &cy_card[card_no]);
- err_unmap:
--	pci_iounmap(pdev, addr0);
-+	iounmap(addr0);
- 	if (addr2)
--		pci_iounmap(pdev, addr2);
-+		iounmap(addr2);
- err_reg:
- 	pci_release_regions(pdev);
- err_dis:
-@@ -5186,9 +5189,9 @@ static void __devexit cy_pci_remove(struct pci_dev *pdev)
- 		cy_writew(cinfo->ctl_addr + 0x68,
- 				readw(cinfo->ctl_addr + 0x68) & ~0x0900);
- 
--	pci_iounmap(pdev, cinfo->base_addr);
-+	iounmap(cinfo->base_addr);
- 	if (cinfo->ctl_addr)
--		pci_iounmap(pdev, cinfo->ctl_addr);
-+		iounmap(cinfo->ctl_addr);
- 	if (cinfo->irq
- #ifndef CONFIG_CYZ_INTR
- 		&& !IS_CYC_Z(*cinfo)
+-#undef dbg
+-/* #define dbg(format, arg...) printk(KERN_INFO "%s: " format "\n", __FILE__, ## arg) */
+-#define dbg(format, arg...) printk(KERN_INFO "" format "\n", ## arg)
+-
+ static void setup_line(struct work_struct *work)
+ {
+ 	struct oti6858_private *priv = container_of(work,
 
