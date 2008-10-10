@@ -1,117 +1,100 @@
 From: Alan Cox <alan@redhat.com>
-Subject: [PATCH 00/27] First block of the tty backlog
-Date: Fri, 10 Oct 2008 11:36:31 +0100
-Message-ID: <20081010103447.31597.42992.stgit@localhost.localdomain>
+Subject: [PATCH 02/27] drivers/char/hvc_console.c: adjust call to
+	put_tty_driver
+Date: Fri, 10 Oct 2008 11:36:48 +0100
+Message-ID: <20081010103646.31597.30349.stgit@localhost.localdomain>
+References: <20081010103447.31597.42992.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:42510 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:42515 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1753690AbYJJKgq (ORCPT
+	with ESMTP id S1758622AbYJJKgv (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Oct 2008 06:36:46 -0400
+	Fri, 10 Oct 2008 06:36:51 -0400
+In-Reply-To: <20081010103447.31597.42992.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: torvalds@osdl.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-This series of patches implements the various corrections, removals and fixups
-that do not form part of the core tty updates. It also omits some 8250 patches
-which have a dependancy on Ingo's upcoming submission to remove NR_IRQ.
+From: Julia Lawall <julia@diku.dk>
 
-These have been sitting in linux-next for quite some time
+The call to put_tty_driver is out of place and is applied to the wrong
+argument.
 
-Alan
+The function enclosing the patched code calls alloc_tty_driver and stores
+the result in drv.  Subsequently, there are two occurrences of error
+handling code, one making a goto to put_tty and one making a goto to
+stop_thread.  At the point of the first one the assignment hvc_driver = drv
+has not yet been executed, and from inspecting the rest of the file it
+seems that hvc_driver would be NULL.  Thus the current call to
+put_tty_driver is useless, and one applied to drv is needed.  The goto
+stop_thread is in the error handling code for a call to
+tty_register_driver, but the error cases in tty_register_driver do not free
+its argument, so it should be done here.  Thus, I have moved the put_tty
+label after the stop_thread label, so that put_tty_driver is called in both
+cases.
+
+The semantic match that finds this problem is as follows:
+(http://www.emn.fr/x-info/coccinelle/)
+
+// <smpl>
+@r exists@
+local idexpression x;
+expression E,f;
+position p1,p2,p3;
+identifier l;
+statement S;
+@@
+
+x = alloc_tty_driver@p1(...)
+...
+if (x == NULL) S
+... when != E = x
+    when != put_tty_driver(x)
+goto@p2 l;
+... when != E = x
+    when != f(...,x,...)
+    when any
+(
+return \(0\|x\);
+|
+return@p3 ...;
+)
+
+@script:python@
+p1 << r.p1;
+p2 << r.p2;
+p3 << r.p3;
+@@
+
+print "%s: call on line %s not freed or saved before return on line %s via line %s" % (p1[0].file,p1[0].line,p3[0].line,p2[0].line)
+// </smpl>
+
+Signed-off-by: Julia Lawall <julia@diku.dk>
+Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
-Adrian Bunk (1):
-      coldfire: scheduled SERIAL_COLDFIRE removal
+ drivers/char/hvc_console.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
-Akinobu Mita (1):
-      ip2: avoid add_timer with pending timer
+diff --git a/drivers/char/hvc_console.c b/drivers/char/hvc_console.c
+index fd64137..ec7aded 100644
+--- a/drivers/char/hvc_console.c
++++ b/drivers/char/hvc_console.c
+@@ -819,11 +819,11 @@ static int hvc_init(void)
+ 	hvc_driver = drv;
+ 	return 0;
+ 
+-put_tty:
+-	put_tty_driver(hvc_driver);
+ stop_thread:
+ 	kthread_stop(hvc_task);
+ 	hvc_task = NULL;
++put_tty:
++	put_tty_driver(drv);
+ out:
+ 	return err;
+ }
 
-Alan Cox (4):
-      serial_8250: pci_enable_device fail is not fully handled
-      ftdi: A few errors are err() that should be debug which causes much spewage
-      nozomi: Fix close on error
-      epca: call tty_port_init
-
-Andrew Morton (1):
-      serial-make-uart_ports-ioport-unsigned-long-fix
-
-David Miller (1):
-      serial: Make uart_port's ioport "unsigned long".
-
-Graf Yang (1):
-      Blackfin Serial Driver: Fix bug - ircp fails on sir over Blackfin UART
-
-Jason Wessel (1):
-      usb: fix pl2303 initialization
-
-Jiri Slaby (6):
-      ip2, init/deinit cleanup
-      ip2, fix sparse warnings
-      ip2, cleanup globals
-      Char: merge ip2main and ip2base
-      Char: sx, fix io unmapping
-      Char: cyclades. remove bogus iomap
-
-Julia Lawall (2):
-      drivers/char/hvc_console.c: adjust call to put_tty_driver
-      drivers/serial/crisv10.c: add missing put_tty_driver
-
-Mike Frysinger (3):
-      Blackfin Serial Driver: move common variables out of serial headers and into the serial driver
-      Blackfin Serial Driver: trim trailing whitespace -- no functional changes
-      Blackfin Serial Driver: use __initdata for data, not __init
-
-Miloslav Trmac (1):
-      audit: Handle embedded NUL in TTY input auditing
-
-Scott Ashcroft (1):
-      Fix oti6858 debug level
-
-Sonic Zhang (4):
-      Blackfin Serial Driver: Fix bug - request UART2/3 peripheral mapped interrupts in PIO mode
-      Blackfin Serial Driver: Fix bug - Don't call tx_stop in tx_transfer.
-      Blackfin Serial Driver: Remove useless stop
-      Blackfin Serial Driver: Fix bug - should suspend/resume/remove all uart ports.
-
-
- Documentation/feature-removal-schedule.txt         |    8 
- arch/blackfin/kernel/bfin_dma_5xx.c                |   13 
- .../mach-bf527/include/mach/bfin_serial_5xx.h      |    6 
- .../mach-bf533/include/mach/bfin_serial_5xx.h      |    4 
- .../mach-bf537/include/mach/bfin_serial_5xx.h      |    6 
- .../mach-bf548/include/mach/bfin_serial_5xx.h      |    6 
- .../mach-bf561/include/mach/bfin_serial_5xx.h      |    4 
- drivers/char/cyclades.c                            |   21 
- drivers/char/epca.c                                |    5 
- drivers/char/hvc_console.c                         |    4 
- drivers/char/ip2/Makefile                          |    2 
- drivers/char/ip2/i2ellis.c                         |   32 
- drivers/char/ip2/i2ellis.h                         |    2 
- drivers/char/ip2/ip2base.c                         |  108 -
- drivers/char/ip2/ip2main.c                         |  544 +++---
- drivers/char/nozomi.c                              |    5 
- drivers/char/sx.c                                  |    4 
- drivers/char/tty_audit.c                           |    2 
- drivers/serial/8250_pci.c                          |    4 
- drivers/serial/Kconfig                             |   16 
- drivers/serial/Makefile                            |    1 
- drivers/serial/bfin_5xx.c                          |  123 +
- drivers/serial/crisv10.c                           |    2 
- drivers/serial/mcfserial.c                         | 1965 --------------------
- drivers/serial/mcfserial.h                         |   74 -
- drivers/serial/serial_core.c                       |    5 
- drivers/usb/serial/ftdi_sio.c                      |    6 
- drivers/usb/serial/oti6858.c                       |    4 
- drivers/usb/serial/pl2303.c                        |   11 
- include/linux/serial_core.h                        |    2 
- 30 files changed, 430 insertions(+), 2559 deletions(-)
- delete mode 100644 drivers/char/ip2/ip2base.c
- delete mode 100644 drivers/serial/mcfserial.c
- delete mode 100644 drivers/serial/mcfserial.h
-
--- 
-Signature
