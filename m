@@ -1,18 +1,17 @@
 From: Alan Cox <alan@redhat.com>
-Subject: [PATCH 10/27] Blackfin Serial Driver: Fix bug - Don't call tx_stop in
-	tx_transfer.
-Date: Fri, 10 Oct 2008 11:49:06 +0100
-Message-ID: <20081010104903.31597.94354.stgit@localhost.localdomain>
+Subject: [PATCH 09/27] Blackfin Serial Driver: Remove useless stop
+Date: Fri, 10 Oct 2008 11:48:57 +0100
+Message-ID: <20081010104853.31597.37963.stgit@localhost.localdomain>
 References: <20081010103447.31597.42992.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:47557 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:47553 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1756205AbYJJKtJ (ORCPT
+	with ESMTP id S1758713AbYJJKtB (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Oct 2008 06:49:09 -0400
+	Fri, 10 Oct 2008 06:49:01 -0400
 In-Reply-To: <20081010103447.31597.42992.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -20,31 +19,26 @@ To: torvalds@osdl.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.or
 
 From: Sonic Zhang <sonic.zhang@analog.com>
 
-Disable irq and return immediately.
-
 Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
 Signed-off-by: Bryan Wu <cooloney@kernel.org>
 Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
- drivers/serial/bfin_5xx.c |    6 +++++-
- 1 files changed, 5 insertions(+), 1 deletions(-)
+ drivers/serial/bfin_5xx.c |    3 ---
+ 1 files changed, 0 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
-index 8d2d757..5e20f50 100644
+index 382fb8d..8d2d757 100644
 --- a/drivers/serial/bfin_5xx.c
 +++ b/drivers/serial/bfin_5xx.c
-@@ -301,7 +301,11 @@ static void bfin_serial_tx_chars(struct bfin_serial_port *uart)
- 	bfin_serial_mctrl_check(uart);
+@@ -320,9 +320,6 @@ static void bfin_serial_tx_chars(struct bfin_serial_port *uart)
  
- 	if (uart_circ_empty(xmit) || uart_tx_stopped(&uart->port)) {
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		uart_write_wakeup(&uart->port);
+-
+-	if (uart_circ_empty(xmit))
 -		bfin_serial_stop_tx(&uart->port);
-+#ifdef CONFIG_BF54x
-+		/* Clear TFI bit */
-+		UART_PUT_LSR(uart, TFI);
-+#endif
-+		UART_CLEAR_IER(uart, ETBEI);
- 		return;
- 	}
+ }
  
+ static irqreturn_t bfin_serial_rx_int(int irq, void *dev_id)
 
