@@ -1,57 +1,41 @@
-From: Christian Pellegrin <chripell@gmail.com>
-Subject: [PATCH] max3100 driver
-Date: Fri, 10 Oct 2008 14:08:58 +0200
-Message-ID: <12236405383272-git-send-email-chripell@gmail.com>
-References: <20080920012454.e40f03cc.akpm@linux-foundation.org>
+From: Josh Boyer <jwboyer@gmail.com>
+Subject: Re: [PATCH 22/27] serial: Make uart_port's ioport "unsigned long".
+Date: Fri, 10 Oct 2008 08:54:34 -0400
+Message-ID: <20081010125434.GB8590@yoda.jdub.homelinux.org>
+References: <20081010103447.31597.42992.stgit@localhost.localdomain> <20081010105052.31597.41476.stgit@localhost.localdomain>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ug-out-1314.google.com ([66.249.92.173]:16209 "EHLO
-	ug-out-1314.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752942AbYJJMI7 (ORCPT
+Received: from yw-out-2324.google.com ([74.125.46.31]:17962 "EHLO
+	yw-out-2324.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755767AbYJJMzz (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Oct 2008 08:08:59 -0400
-Received: by ug-out-1314.google.com with SMTP id k3so1276295ugf.37
-        for <linux-serial@vger.kernel.org>; Fri, 10 Oct 2008 05:08:57 -0700 (PDT)
-In-Reply-To: <20080920012454.e40f03cc.akpm@linux-foundation.org>
+	Fri, 10 Oct 2008 08:55:55 -0400
+Received: by yw-out-2324.google.com with SMTP id 9so170930ywe.1
+        for <linux-serial@vger.kernel.org>; Fri, 10 Oct 2008 05:55:54 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <20081010105052.31597.41476.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: akpm@linux-foundation.org
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Alan Cox <alan@redhat.com>
+Cc: torvalds@osdl.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
+On Fri, Oct 10, 2008 at 11:50:56AM +0100, Alan Cox wrote:
+>From: David Miller <davem@davemloft.net>
+>
+>Otherwise the top 32-bits of the resource value get chopped
+>off on 64-bit systems, and the resulting I/O accesses go to
+>random places.
+>
+>Thanks to testing and debugging by Josip Rodin, which helped
+>track this down.
+>
+>Signed-off-by: David S. Miller <davem@davemloft.net>
+>Signed-off-by: Alan Cox <alan@redhat.com>
 
-Hi,
+I emailed on an earlier posting of this about using resource_size_t
+instead as we have 32-bit CPUs with 64-bit address spaces.  If I'm
+totally wrong, that's fine but I'm still wondering if that would be
+a better general solution.
 
-This patch fixes a problem about PM in my code that I found when testing
-patches that went in -mm. The full patch against the Linus tree can be
-found at http://www.evolware.org/chri/paciugo/
-
----
-diff --git a/drivers/serial/max3100.c b/drivers/serial/max3100.c
-index 7a269a6..462d6a4 100644
---- a/drivers/serial/max3100.c
-+++ b/drivers/serial/max3100.c
-@@ -566,6 +566,7 @@ static void max3100_shutdown(struct uart_port *port)
- 	if (s->workqueue) {
- 		flush_workqueue(s->workqueue);
- 		destroy_workqueue(s->workqueue);
-+		s->workqueue = NULL;
- 	}
- 	if (s->irq)
- 		free_irq(s->irq, s);
-@@ -614,6 +615,7 @@ static int max3100_startup(struct uart_port *port)
- 		dev_warn(&s->spi->dev, "cannot allocate irq %d\n", s->irq);
- 		s->irq = 0;
- 		destroy_workqueue(s->workqueue);
-+		s->workqueue = NULL;
- 		return -EBUSY;
- 	}
- 
-@@ -884,7 +886,8 @@ static int max3100_resume(struct spi_device *spi)
- 	enable_irq(s->irq);
- 
- 	s->conf_commit = 1;
--	max3100_dowork(s);
-+	if (s->workqueue)
-+		max3100_dowork(s);
- 
- 	return 0;
- }
+josh
