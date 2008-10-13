@@ -1,30 +1,35 @@
-From: "Prabhu Chawandi" <prabhu.chavandi@gmail.com>
-Subject: Serial Routing In the Kernel
-Date: Mon, 13 Oct 2008 16:21:43 +0530
-Message-ID: <241b8f7b0810130351v572730d8mb43e6df856e37f0b@mail.gmail.com>
+From: "Prabhu Chawandi" <prabhu.chavandi-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: USB -Serial
+Date: Mon, 13 Oct 2008 16:36:10 +0530
+Message-ID: <241b8f7b0810130406uf41888ct90bec7b08196eff6@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from wa-out-1112.google.com ([209.85.146.182]:47129 "EHLO
-	wa-out-1112.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752112AbYJMKvn (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 13 Oct 2008 06:51:43 -0400
-Received: by wa-out-1112.google.com with SMTP id v27so817298wah.21
-        for <linux-serial@vger.kernel.org>; Mon, 13 Oct 2008 03:51:43 -0700 (PDT)
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-Sender: linux-serial-owner@vger.kernel.org
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hi All,
+Hi Greg,
 
-  I wanted to know where exactly, in which file int the kernel, debug
-messages are routed to the serial console driver...
+  In v 2.6.12 , whether routing Kernel debug messages was enabled ?
 
-Please let me know .. will be a great help
+Or it was enabled in the later versions?
+
+I did all the configurations even then i could not get the dubug
+messages on USB -serial.  Even if I commneted console=ttyS0 and wrote
+console=ttyUSB0, all the logs are routed to ttyS0...
+
+
+Do you have any comments on this ..
+
+Please have your words ..
 
 
 Thanks
 Prabhu
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
