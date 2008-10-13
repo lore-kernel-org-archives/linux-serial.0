@@ -1,947 +1,164 @@
 From: Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: [PATCH 09/49] pcmcia: use pcmcia_loop_config in misc pcmcia drivers
-Date: Mon, 13 Oct 2008 19:47:54 +0200
-Message-ID: <1223920114-19788-9-git-send-email-linux@dominikbrodowski.net>
+Subject: [PATCH 32/49] pcmcia: deprecate CS_NO_MORE_ITEMS
+Date: Mon, 13 Oct 2008 19:48:17 +0200
+Message-ID: <1223920114-19788-32-git-send-email-linux@dominikbrodowski.net>
 References: <20081013173803.GA18569@comet.dominikbrodowski.net>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from isilmar.linta.de ([213.133.102.198]:58595 "EHLO linta.de"
+Received: from isilmar.linta.de ([213.133.102.198]:58594 "EHLO linta.de"
 	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1753118AbYJMRvQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 13 Oct 2008 13:51:16 -0400
+	id S1753225AbYJMRvP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 13 Oct 2008 13:51:15 -0400
 In-Reply-To: <20081013173803.GA18569@comet.dominikbrodowski.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-pcmcia@lists.infradead.org
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>, Harald Welte <laforge@gnumonks.org>, linux-parport@lists.infradead.org, Russell King <rmk+kernel@arm.linux.org.uk>, Ed Okerson <eokerson@quicknet.net>, linux-serial@vger.kernel.org, boti@rocketmail.com, linux-usb@vger.kernel.org
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>, Russell King <rmk+kernel@arm.linux.org.uk>, linux-serial@vger.kernel.org, Michael Buesch <mb@bu3sch.de>
 
-Use the config loop helper in misc pcmcia drivers.
+CS_NO_MORE_ITEMS is returned by the CIS tuple reading and parsing code if
+the end of a tuple chain is reached. As at least one PCMCIA driver relies
+on matching this return value, replace it with -ENOSPC which is now
+uniquely used for this purpose within the in-kernel pcmcia subsystem.
 
-CC: Harald Welte <laforge@gnumonks.org>
-CC: <linux-parport@lists.infradead.org>
 CC: Russell King <rmk+kernel@arm.linux.org.uk>
-CC: Ed Okerson <eokerson@quicknet.net>
 CC: linux-serial@vger.kernel.org
-CC: boti@rocketmail.com
-CC: linux-usb@vger.kernel.org
+CC: Michael Buesch <mb@bu3sch.de>
 Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
 ---
- drivers/char/pcmcia/cm4000_cs.c |   73 ++++-------
- drivers/char/pcmcia/cm4040_cs.c |   76 +++++-------
- drivers/parport/parport_cs.c    |   73 +++++------
- drivers/serial/serial_cs.c      |  262 ++++++++++++++++-----------------------
- drivers/telephony/ixj_pcmcia.c  |   76 +++++------
- drivers/usb/host/sl811_cs.c     |  140 ++++++++++-----------
- 6 files changed, 299 insertions(+), 401 deletions(-)
+ drivers/pcmcia/cistpl.c          |   10 +++++-----
+ drivers/pcmcia/ds.c              |    2 +-
+ drivers/pcmcia/pcmcia_ioctl.c    |    2 +-
+ drivers/pcmcia/pcmcia_resource.c |    2 +-
+ drivers/serial/serial_cs.c       |    2 +-
+ drivers/ssb/pcmcia.c             |    2 +-
+ include/pcmcia/cs.h              |    2 +-
+ 7 files changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/char/pcmcia/cm4000_cs.c b/drivers/char/pcmcia/cm4000_cs.c
-index f070ae7..47adec4 100644
---- a/drivers/char/pcmcia/cm4000_cs.c
-+++ b/drivers/char/pcmcia/cm4000_cs.c
-@@ -1759,65 +1759,40 @@ static void cmm_cm4000_release(struct pcmcia_device * link)
- 
- /*==== Interface to PCMCIA Layer =======================================*/
- 
-+static int cm4000_config_check(struct pcmcia_device *p_dev,
-+			       cistpl_cftable_entry_t *cfg,
-+			       void *priv_data)
-+{
-+	p_dev->conf.ConfigIndex = cfg->index;
-+
-+	if (!cfg->io.nwin)
-+		return -ENODEV;
-+
-+	/* Get the IOaddr */
-+	p_dev->io.BasePort1 = cfg->io.win[0].base;
-+	p_dev->io.NumPorts1 = cfg->io.win[0].len;
-+	p_dev->io.Attributes1 = IO_DATA_PATH_WIDTH_AUTO;
-+	if (!(cfg->io.flags & CISTPL_IO_8BIT))
-+		p_dev->io.Attributes1 = IO_DATA_PATH_WIDTH_16;
-+	if (!(cfg->io.flags & CISTPL_IO_16BIT))
-+		p_dev->io.Attributes1 = IO_DATA_PATH_WIDTH_8;
-+	p_dev->io.IOAddrLines = cfg->io.flags & CISTPL_IO_LINES_MASK;
-+
-+	return pcmcia_request_io(p_dev, &p_dev->io);
-+}
-+
- static int cm4000_config(struct pcmcia_device * link, int devno)
- {
- 	struct cm4000_dev *dev;
--	tuple_t tuple;
--	cisparse_t parse;
--	u_char buf[64];
--	int fail_fn, fail_rc;
--	int rc;
- 
- 	/* read the config-tuples */
--	tuple.Attributes = 0;
--	tuple.TupleData = buf;
--	tuple.TupleDataMax = sizeof(buf);
--	tuple.TupleOffset = 0;
--
--	link->io.BasePort2 = 0;
--	link->io.NumPorts2 = 0;
--	link->io.Attributes2 = 0;
--	tuple.DesiredTuple = CISTPL_CFTABLE_ENTRY;
--	for (rc = pcmcia_get_first_tuple(link, &tuple);
--	     rc == CS_SUCCESS; rc = pcmcia_get_next_tuple(link, &tuple)) {
--
--		rc = pcmcia_get_tuple_data(link, &tuple);
--		if (rc != CS_SUCCESS)
--			continue;
--		rc = pcmcia_parse_tuple(link, &tuple, &parse);
--		if (rc != CS_SUCCESS)
--			continue;
--
--		link->conf.ConfigIndex = parse.cftable_entry.index;
--
--		if (!parse.cftable_entry.io.nwin)
--			continue;
--
--		/* Get the IOaddr */
--		link->io.BasePort1 = parse.cftable_entry.io.win[0].base;
--		link->io.NumPorts1 = parse.cftable_entry.io.win[0].len;
--		link->io.Attributes1 = IO_DATA_PATH_WIDTH_AUTO;
--		if (!(parse.cftable_entry.io.flags & CISTPL_IO_8BIT))
--			link->io.Attributes1 = IO_DATA_PATH_WIDTH_16;
--		if (!(parse.cftable_entry.io.flags & CISTPL_IO_16BIT))
--			link->io.Attributes1 = IO_DATA_PATH_WIDTH_8;
--		link->io.IOAddrLines = parse.cftable_entry.io.flags
--		    & CISTPL_IO_LINES_MASK;
--
--		rc = pcmcia_request_io(link, &link->io);
--		if (rc == CS_SUCCESS)
--			break;	/* we are done */
--	}
--	if (rc != CS_SUCCESS)
-+	if (pcmcia_loop_config(link, cm4000_config_check, NULL))
- 		goto cs_release;
- 
- 	link->conf.IntType = 00000002;
- 
--	if ((fail_rc =
--	     pcmcia_request_configuration(link, &link->conf)) != CS_SUCCESS) {
--		fail_fn = RequestConfiguration;
-+	if (pcmcia_request_configuration(link, &link->conf))
- 		goto cs_release;
--	}
- 
- 	dev = link->priv;
- 	sprintf(dev->node.dev_name, DEVICE_NAME "%d", devno);
-diff --git a/drivers/char/pcmcia/cm4040_cs.c b/drivers/char/pcmcia/cm4040_cs.c
-index 0b5934b..e0f5d8c 100644
---- a/drivers/char/pcmcia/cm4040_cs.c
-+++ b/drivers/char/pcmcia/cm4040_cs.c
-@@ -526,65 +526,49 @@ static void cm4040_reader_release(struct pcmcia_device *link)
- 	return;
- }
- 
--static int reader_config(struct pcmcia_device *link, int devno)
-+static int cm4040_config_check(struct pcmcia_device *p_dev,
-+			       cistpl_cftable_entry_t *cfg,
-+			       void *priv_data)
- {
--	struct reader_dev *dev;
--	tuple_t tuple;
--	cisparse_t parse;
--	u_char buf[64];
--	int fail_fn, fail_rc;
- 	int rc;
-+	p_dev->conf.ConfigIndex = cfg->index;
-+
-+	if (!cfg->io.nwin)
-+		return -ENODEV;
- 
--	tuple.Attributes = 0;
--	tuple.TupleData = buf;
--	tuple.TupleDataMax = sizeof(buf);
-- 	tuple.TupleOffset = 0;
-+	/* Get the IOaddr */
-+	p_dev->io.BasePort1 = cfg->io.win[0].base;
-+	p_dev->io.NumPorts1 = cfg->io.win[0].len;
-+	p_dev->io.Attributes1 = IO_DATA_PATH_WIDTH_AUTO;
-+	if (!(cfg->io.flags & CISTPL_IO_8BIT))
-+		p_dev->io.Attributes1 = IO_DATA_PATH_WIDTH_16;
-+	if (!(cfg->io.flags & CISTPL_IO_16BIT))
-+		p_dev->io.Attributes1 = IO_DATA_PATH_WIDTH_8;
-+	p_dev->io.IOAddrLines = cfg->io.flags & CISTPL_IO_LINES_MASK;
-+
-+	rc = pcmcia_request_io(p_dev, &p_dev->io);
-+	dev_printk(KERN_INFO, &handle_to_dev(p_dev),
-+		   "pcmcia_request_io returned 0x%x\n", rc);
-+	return rc;
-+}
-+
-+
-+static int reader_config(struct pcmcia_device *link, int devno)
-+{
-+	struct reader_dev *dev;
-+	int fail_rc;
- 
- 	link->io.BasePort2 = 0;
- 	link->io.NumPorts2 = 0;
- 	link->io.Attributes2 = 0;
--	tuple.DesiredTuple = CISTPL_CFTABLE_ENTRY;
--	for (rc = pcmcia_get_first_tuple(link, &tuple);
--	     rc == CS_SUCCESS;
--	     rc = pcmcia_get_next_tuple(link, &tuple)) {
--		rc = pcmcia_get_tuple_data(link, &tuple);
--		if (rc != CS_SUCCESS)
--			continue;
--		rc = pcmcia_parse_tuple(link, &tuple, &parse);
--		if (rc != CS_SUCCESS)
--			continue;
--
--		link->conf.ConfigIndex = parse.cftable_entry.index;
--
--		if (!parse.cftable_entry.io.nwin)
--			continue;
--
--		link->io.BasePort1 = parse.cftable_entry.io.win[0].base;
--		link->io.NumPorts1 = parse.cftable_entry.io.win[0].len;
--		link->io.Attributes1 = IO_DATA_PATH_WIDTH_AUTO;
--		if (!(parse.cftable_entry.io.flags & CISTPL_IO_8BIT))
--			link->io.Attributes1 = IO_DATA_PATH_WIDTH_16;
--		if (!(parse.cftable_entry.io.flags & CISTPL_IO_16BIT))
--			link->io.Attributes1 = IO_DATA_PATH_WIDTH_8;
--		link->io.IOAddrLines = parse.cftable_entry.io.flags
--						& CISTPL_IO_LINES_MASK;
--		rc = pcmcia_request_io(link, &link->io);
--
--		dev_printk(KERN_INFO, &handle_to_dev(link), "foo");
--		if (rc == CS_SUCCESS)
--			break;
--		else
--			dev_printk(KERN_INFO, &handle_to_dev(link),
--				   "pcmcia_request_io failed 0x%x\n", rc);
--	}
--	if (rc != CS_SUCCESS)
-+
-+	if (pcmcia_loop_config(link, cm4040_config_check, NULL))
- 		goto cs_release;
- 
- 	link->conf.IntType = 00000002;
- 
- 	if ((fail_rc = pcmcia_request_configuration(link,&link->conf))
- 								!=CS_SUCCESS) {
--		fail_fn = RequestConfiguration;
- 		dev_printk(KERN_INFO, &handle_to_dev(link),
- 			   "pcmcia_request_configuration failed 0x%x\n",
- 			   fail_rc);
-diff --git a/drivers/parport/parport_cs.c b/drivers/parport/parport_cs.c
-index 00e1d96..6362317 100644
---- a/drivers/parport/parport_cs.c
-+++ b/drivers/parport/parport_cs.c
-@@ -149,52 +149,49 @@ static void parport_detach(struct pcmcia_device *link)
- #define CS_CHECK(fn, ret) \
- do { last_fn = (fn); if ((last_ret = (ret)) != 0) goto cs_failed; } while (0)
- 
-+static int parport_config_check(struct pcmcia_device *p_dev,
-+				cistpl_cftable_entry_t *cfg,
-+				void *priv_data)
-+{
-+	cistpl_cftable_entry_t *dflt = priv_data;
-+	if ((cfg->io.nwin > 0) || (dflt->io.nwin > 0)) {
-+		cistpl_io_t *io = (cfg->io.nwin) ? &cfg->io : &dflt->io;
-+		p_dev->conf.ConfigIndex = cfg->index;
-+		if (epp_mode)
-+			p_dev->conf.ConfigIndex |= FORCE_EPP_MODE;
-+		p_dev->io.BasePort1 = io->win[0].base;
-+		p_dev->io.NumPorts1 = io->win[0].len;
-+		p_dev->io.IOAddrLines = io->flags & CISTPL_IO_LINES_MASK;
-+		if (io->nwin == 2) {
-+			p_dev->io.BasePort2 = io->win[1].base;
-+			p_dev->io.NumPorts2 = io->win[1].len;
-+		}
-+		if (pcmcia_request_io(p_dev, &p_dev->io) != 0)
-+			goto next_entry;
-+		return 0;
-+	}
-+
-+next_entry:
-+	if (cfg->flags & CISTPL_CFTABLE_DEFAULT)
-+		*dflt = *cfg;
-+	return -ENODEV;
-+}
-+
- static int parport_config(struct pcmcia_device *link)
- {
-     parport_info_t *info = link->priv;
--    tuple_t tuple;
--    u_short buf[128];
--    cisparse_t parse;
--    cistpl_cftable_entry_t *cfg = &parse.cftable_entry;
-     cistpl_cftable_entry_t dflt = { 0 };
-     struct parport *p;
-     int last_ret, last_fn;
--    
-+
-     DEBUG(0, "parport_config(0x%p)\n", link);
--    
--    tuple.TupleData = (cisdata_t *)buf;
--    tuple.TupleOffset = 0; tuple.TupleDataMax = 255;
--    tuple.DesiredTuple = CISTPL_CFTABLE_ENTRY;
--    tuple.Attributes = 0;
--    CS_CHECK(GetFirstTuple, pcmcia_get_first_tuple(link, &tuple));
--    while (1) {
--	if (pcmcia_get_tuple_data(link, &tuple) != 0 ||
--		pcmcia_parse_tuple(link, &tuple, &parse) != 0)
--	    goto next_entry;
--
--	if ((cfg->io.nwin > 0) || (dflt.io.nwin > 0)) {
--	    cistpl_io_t *io = (cfg->io.nwin) ? &cfg->io : &dflt.io;
--	    link->conf.ConfigIndex = cfg->index;
--	    if (epp_mode)
--		link->conf.ConfigIndex |= FORCE_EPP_MODE;
--	    link->io.BasePort1 = io->win[0].base;
--	    link->io.NumPorts1 = io->win[0].len;
--	    link->io.IOAddrLines = io->flags & CISTPL_IO_LINES_MASK;
--	    if (io->nwin == 2) {
--		link->io.BasePort2 = io->win[1].base;
--		link->io.NumPorts2 = io->win[1].len;
--	    }
--	    if (pcmcia_request_io(link, &link->io) != 0)
--		goto next_entry;
--	    /* If we've got this far, we're done */
--	    break;
--	}
--	
--    next_entry:
--	if (cfg->flags & CISTPL_CFTABLE_DEFAULT) dflt = *cfg;
--	CS_CHECK(GetNextTuple, pcmcia_get_next_tuple(link, &tuple));
-+
-+    last_ret = pcmcia_loop_config(link, parport_config_check, &dflt);
-+    if (last_ret) {
-+	    cs_error(link, RequestIO, last_ret);
-+	    goto failed;
+diff --git a/drivers/pcmcia/cistpl.c b/drivers/pcmcia/cistpl.c
+index 660e162..a59e09d 100644
+--- a/drivers/pcmcia/cistpl.c
++++ b/drivers/pcmcia/cistpl.c
+@@ -450,7 +450,7 @@ int pccard_get_first_tuple(struct pcmcia_socket *s, unsigned int function, tuple
+ 	if (pccard_get_next_tuple(s, function, tuple) == 0) {
+ 	    tuple->DesiredTuple = CISTPL_LINKTARGET;
+ 	    if (pccard_get_next_tuple(s, function, tuple) != 0)
+-		return CS_NO_MORE_ITEMS;
++		return -ENOSPC;
+ 	} else
+ 	    tuple->CISOffset = tuple->TupleLink = 0;
+ 	tuple->DesiredTuple = req;
+@@ -526,7 +526,7 @@ int pccard_get_next_tuple(struct pcmcia_socket *s, unsigned int function, tuple_
+ 	/* End of chain?  Follow long link if possible */
+ 	if (link[0] == CISTPL_END) {
+ 	    if ((ofs = follow_link(s, tuple)) < 0)
+-		return CS_NO_MORE_ITEMS;
++		return -ENOSPC;
+ 	    attr = SPACE(tuple->Flags);
+ 	    read_cis_cache(s, attr, ofs, 2, link);
+ 	}
+@@ -584,7 +584,7 @@ int pccard_get_next_tuple(struct pcmcia_socket *s, unsigned int function, tuple_
      }
--    
-+
-     CS_CHECK(RequestIRQ, pcmcia_request_irq(link, &link->irq));
-     CS_CHECK(RequestConfiguration, pcmcia_request_configuration(link, &link->conf));
+     if (i == MAX_TUPLES) {
+ 	cs_dbg(s, 1, "cs: overrun in pcmcia_get_next_tuple\n");
+-	return CS_NO_MORE_ITEMS;
++	return -ENOSPC;
+     }
+     
+     tuple->TupleCode = link[0];
+@@ -606,7 +606,7 @@ int pccard_get_tuple_data(struct pcmcia_socket *s, tuple_t *tuple)
+ 	return -EINVAL;
  
+     if (tuple->TupleLink < tuple->TupleOffset)
+-	return CS_NO_MORE_ITEMS;
++	return -ENOSPC;
+     len = tuple->TupleLink - tuple->TupleOffset;
+     tuple->TupleDataLen = tuple->TupleLink;
+     if (len == 0)
+@@ -1490,7 +1490,7 @@ int pccard_validate_cis(struct pcmcia_socket *s, unsigned int function, unsigned
+        cards have only a broken VERS_2 tuple; hence the bogus test. */
+     if ((pccard_read_tuple(s, function, CISTPL_MANFID, p) == 0) ||
+ 	(pccard_read_tuple(s, function, CISTPL_VERS_1, p) == 0) ||
+-	(pccard_read_tuple(s, function, CISTPL_VERS_2, p) != CS_NO_MORE_ITEMS))
++	(pccard_read_tuple(s, function, CISTPL_VERS_2, p) != -ENOSPC))
+ 	ident_ok++;
+ 
+     if (!dev_ok && !ident_ok)
+diff --git a/drivers/pcmcia/ds.c b/drivers/pcmcia/ds.c
+index 7f38eb0..591d962 100644
+--- a/drivers/pcmcia/ds.c
++++ b/drivers/pcmcia/ds.c
+@@ -88,7 +88,7 @@ static const lookup_t error_table[] = {
+     { CS_BAD_ARGS,		"Bad arguments" },
+     { -EACCES,			"Configuration locked" },
+     { CS_IN_USE,		"Resource in use" },
+-    { CS_NO_MORE_ITEMS,		"No more items" },
++    { -ENOSPC,			"No more items" },
+     { CS_OUT_OF_RESOURCE,	"Out of resource" },
+     { CS_BAD_TUPLE,		"Bad CIS tuple" }
+ };
+diff --git a/drivers/pcmcia/pcmcia_ioctl.c b/drivers/pcmcia/pcmcia_ioctl.c
+index ed8c4fb..a6289e5 100644
+--- a/drivers/pcmcia/pcmcia_ioctl.c
++++ b/drivers/pcmcia/pcmcia_ioctl.c
+@@ -973,7 +973,7 @@ static int ds_ioctl(struct inode * inode, struct file * file,
+ 	    err = -EBUSY; break;
+ 	case CS_OUT_OF_RESOURCE:
+ 	    err = -ENOSPC; break;
+-	case CS_NO_MORE_ITEMS:
++	case -ENOSPC:
+ 	    err = -ENODATA; break;
+ 	case -ENOSYS:
+ 	    err = -ENOSYS; break;
+diff --git a/drivers/pcmcia/pcmcia_resource.c b/drivers/pcmcia/pcmcia_resource.c
+index 670465d..8f2c805 100644
+--- a/drivers/pcmcia/pcmcia_resource.c
++++ b/drivers/pcmcia/pcmcia_resource.c
+@@ -211,7 +211,7 @@ int pcmcia_get_window(struct pcmcia_socket *s, window_handle_t *handle,
+ 		if (s->state & SOCKET_WIN_REQ(w))
+ 			break;
+ 	if (w == MAX_WIN)
+-		return CS_NO_MORE_ITEMS;
++		return -EINVAL;
+ 	win = &s->win[w];
+ 	req->Base = win->ctl.res->start;
+ 	req->Size = win->ctl.res->end - win->ctl.res->start + 1;
 diff --git a/drivers/serial/serial_cs.c b/drivers/serial/serial_cs.c
-index 164d2a4..ac60cd2 100644
+index ea7e3c0..dbb3bf3 100644
 --- a/drivers/serial/serial_cs.c
 +++ b/drivers/serial/serial_cs.c
-@@ -439,43 +439,55 @@ first_tuple(struct pcmcia_device *handle, tuple_t * tuple, cisparse_t * parse)
- 	return pcmcia_parse_tuple(handle, tuple, parse);
- }
- 
--static int
--next_tuple(struct pcmcia_device *handle, tuple_t * tuple, cisparse_t * parse)
-+/*====================================================================*/
-+
-+static int simple_config_check(struct pcmcia_device *p_dev,
-+			       cistpl_cftable_entry_t *cf,
-+			       void *priv_data)
- {
--	int i;
--	i = pcmcia_get_next_tuple(handle, tuple);
--	if (i != CS_SUCCESS)
+@@ -432,7 +432,7 @@ first_tuple(struct pcmcia_device *handle, tuple_t * tuple, cisparse_t * parse)
+ 	int i;
+ 	i = pcmcia_get_first_tuple(handle, tuple);
+ 	if (i != 0)
 -		return CS_NO_MORE_ITEMS;
--	i = pcmcia_get_tuple_data(handle, tuple);
--	if (i != CS_SUCCESS)
--		return i;
--	return pcmcia_parse_tuple(handle, tuple, parse);
-+	static const int size_table[2] = { 8, 16 };
-+	int *try = priv_data;
-+
-+	if (cf->vpp1.present & (1 << CISTPL_POWER_VNOM))
-+		p_dev->conf.Vpp =
-+			cf->vpp1.param[CISTPL_POWER_VNOM] / 10000;
-+
-+	if ((cf->io.nwin > 0) && (cf->io.win[0].len == size_table[(*try >> 1)])
-+	    && (cf->io.win[0].base != 0)) {
-+		p_dev->conf.ConfigIndex = cf->index;
-+		p_dev->io.BasePort1 = cf->io.win[0].base;
-+		p_dev->io.IOAddrLines = ((*try & 0x1) == 0) ?
-+			16 : cf->io.flags & CISTPL_IO_LINES_MASK;
-+		if (!pcmcia_request_io(p_dev, &p_dev->io))
-+			return 0;
-+	}
-+	return -EINVAL;
- }
- 
--/*====================================================================*/
-+static int simple_config_check_notpicky(struct pcmcia_device *p_dev,
-+					cistpl_cftable_entry_t *cf,
-+					void *priv_data)
-+{
-+	static const unsigned int base[5] = { 0x3f8, 0x2f8, 0x3e8, 0x2e8, 0x0 };
-+	int j;
-+
-+	if ((cf->io.nwin > 0) && ((cf->io.flags & CISTPL_IO_LINES_MASK) <= 3)) {
-+		p_dev->conf.ConfigIndex = cf->index;
-+		for (j = 0; j < 5; j++) {
-+			p_dev->io.BasePort1 = base[j];
-+			p_dev->io.IOAddrLines = base[j] ? 16 : 3;
-+			if (!pcmcia_request_io(p_dev, &p_dev->io))
-+				return 0;
-+		}
-+	}
-+	return -ENODEV;
-+}
- 
- static int simple_config(struct pcmcia_device *link)
- {
--	static const unsigned int base[5] = { 0x3f8, 0x2f8, 0x3e8, 0x2e8, 0x0 };
--	static const int size_table[2] = { 8, 16 };
- 	struct serial_info *info = link->priv;
--	struct serial_cfg_mem *cfg_mem;
--	tuple_t *tuple;
--	u_char *buf;
--	cisparse_t *parse;
--	cistpl_cftable_entry_t *cf;
- 	config_info_t config;
--	int i, j, try;
--	int s;
--
--	cfg_mem = kmalloc(sizeof(struct serial_cfg_mem), GFP_KERNEL);
--	if (!cfg_mem)
--		return -1;
--
--	tuple = &cfg_mem->tuple;
--	parse = &cfg_mem->parse;
--	cf = &parse->cftable_entry;
--	buf = cfg_mem->buf;
-+	int i, try;
- 
- 	/* If the card is already configured, look up the port and irq */
- 	i = pcmcia_get_configuration_info(link, &config);
-@@ -490,70 +502,28 @@ static int simple_config(struct pcmcia_device *link)
- 			info->slave = 1;
++		return i;
+ 	i = pcmcia_get_tuple_data(handle, tuple);
+ 	if (i != 0)
+ 		return i;
+diff --git a/drivers/ssb/pcmcia.c b/drivers/ssb/pcmcia.c
+index 9699308..fbfadba 100644
+--- a/drivers/ssb/pcmcia.c
++++ b/drivers/ssb/pcmcia.c
+@@ -733,7 +733,7 @@ int ssb_pcmcia_get_invariants(struct ssb_bus *bus,
+ 			break;
  		}
- 		if (info->slave) {
--			kfree(cfg_mem);
- 			return setup_serial(link, info, port, config.AssignedIRQ);
- 		}
- 	}
- 
--	/* First pass: look for a config entry that looks normal. */
--	tuple->TupleData = (cisdata_t *) buf;
--	tuple->TupleOffset = 0;
--	tuple->TupleDataMax = 255;
--	tuple->Attributes = 0;
--	tuple->DesiredTuple = CISTPL_CFTABLE_ENTRY;
--	/* Two tries: without IO aliases, then with aliases */
--	for (s = 0; s < 2; s++) {
--		for (try = 0; try < 2; try++) {
--			i = first_tuple(link, tuple, parse);
--			while (i != CS_NO_MORE_ITEMS) {
--				if (i != CS_SUCCESS)
--					goto next_entry;
--				if (cf->vpp1.present & (1 << CISTPL_POWER_VNOM))
--					link->conf.Vpp =
--					    cf->vpp1.param[CISTPL_POWER_VNOM] / 10000;
--				if ((cf->io.nwin > 0) && (cf->io.win[0].len == size_table[s]) &&
--					    (cf->io.win[0].base != 0)) {
--					link->conf.ConfigIndex = cf->index;
--					link->io.BasePort1 = cf->io.win[0].base;
--					link->io.IOAddrLines = (try == 0) ?
--					    16 : cf->io.flags & CISTPL_IO_LINES_MASK;
--					i = pcmcia_request_io(link, &link->io);
--					if (i == CS_SUCCESS)
--						goto found_port;
--				}
--next_entry:
--				i = next_tuple(link, tuple, parse);
--			}
--		}
--	}
-+	/* First pass: look for a config entry that looks normal.
-+	 * Two tries: without IO aliases, then with aliases */
-+	for (try = 0; try < 4; try++)
-+		if (!pcmcia_loop_config(link, simple_config_check, &try))
-+			goto found_port;
-+
- 	/* Second pass: try to find an entry that isn't picky about
- 	   its base address, then try to grab any standard serial port
- 	   address, and finally try to get any free port. */
--	i = first_tuple(link, tuple, parse);
--	while (i != CS_NO_MORE_ITEMS) {
--		if ((i == CS_SUCCESS) && (cf->io.nwin > 0) &&
--		    ((cf->io.flags & CISTPL_IO_LINES_MASK) <= 3)) {
--			link->conf.ConfigIndex = cf->index;
--			for (j = 0; j < 5; j++) {
--				link->io.BasePort1 = base[j];
--				link->io.IOAddrLines = base[j] ? 16 : 3;
--				i = pcmcia_request_io(link, &link->io);
--				if (i == CS_SUCCESS)
--					goto found_port;
--			}
--		}
--		i = next_tuple(link, tuple, parse);
--	}
-+	if (!pcmcia_loop_config(link, simple_config_check_notpicky, NULL))
-+		goto found_port;
- 
--      found_port:
--	if (i != CS_SUCCESS) {
--		printk(KERN_NOTICE
--		       "serial_cs: no usable port range found, giving up\n");
--		cs_error(link, RequestIO, i);
--		kfree(cfg_mem);
--		return -1;
--	}
-+	printk(KERN_NOTICE
-+	       "serial_cs: no usable port range found, giving up\n");
-+	cs_error(link, RequestIO, i);
-+	return -1;
- 
-+found_port:
- 	i = pcmcia_request_irq(link, &link->irq);
- 	if (i != CS_SUCCESS) {
- 		cs_error(link, RequestIRQ, i);
-@@ -571,86 +541,72 @@ next_entry:
- 	i = pcmcia_request_configuration(link, &link->conf);
- 	if (i != CS_SUCCESS) {
- 		cs_error(link, RequestConfiguration, i);
--		kfree(cfg_mem);
- 		return -1;
- 	}
--	kfree(cfg_mem);
- 	return setup_serial(link, info, link->io.BasePort1, link->irq.AssignedIRQ);
- }
- 
--static int multi_config(struct pcmcia_device * link)
-+static int multi_config_check(struct pcmcia_device *p_dev,
-+			      cistpl_cftable_entry_t *cf,
-+			      void *priv_data)
- {
--	struct serial_info *info = link->priv;
--	struct serial_cfg_mem *cfg_mem;
--	tuple_t *tuple;
--	u_char *buf;
--	cisparse_t *parse;
--	cistpl_cftable_entry_t *cf;
--	int i, rc, base2 = 0;
-+	int *base2 = priv_data;
-+
-+	/* The quad port cards have bad CIS's, so just look for a
-+	   window larger than 8 ports and assume it will be right */
-+	if ((cf->io.nwin == 1) && (cf->io.win[0].len > 8)) {
-+		p_dev->conf.ConfigIndex = cf->index;
-+		p_dev->io.BasePort1 = cf->io.win[0].base;
-+		p_dev->io.IOAddrLines = cf->io.flags & CISTPL_IO_LINES_MASK;
-+		if (!pcmcia_request_io(p_dev, &p_dev->io)) {
-+			*base2 = p_dev->io.BasePort1 + 8;
-+			return 0;
-+		}
-+	}
-+	return -ENODEV;
-+}
- 
--	cfg_mem = kmalloc(sizeof(struct serial_cfg_mem), GFP_KERNEL);
--	if (!cfg_mem)
--		return -1;
--	tuple = &cfg_mem->tuple;
--	parse = &cfg_mem->parse;
--	cf = &parse->cftable_entry;
--	buf = cfg_mem->buf;
-+static int multi_config_check_notpicky(struct pcmcia_device *p_dev,
-+				       cistpl_cftable_entry_t *cf,
-+				       void *priv_data)
-+{
-+	int *base2 = priv_data;
-+
-+	if (cf->io.nwin == 2) {
-+		p_dev->conf.ConfigIndex = cf->index;
-+		p_dev->io.BasePort1 = cf->io.win[0].base;
-+		p_dev->io.BasePort2 = cf->io.win[1].base;
-+		p_dev->io.IOAddrLines = cf->io.flags & CISTPL_IO_LINES_MASK;
-+		if (!pcmcia_request_io(p_dev, &p_dev->io)) {
-+			*base2 = p_dev->io.BasePort2;
-+			return 0;
-+		}
-+	}
-+	return -ENODEV;
-+}
- 
--	tuple->TupleData = (cisdata_t *) buf;
--	tuple->TupleOffset = 0;
--	tuple->TupleDataMax = 255;
--	tuple->Attributes = 0;
--	tuple->DesiredTuple = CISTPL_CFTABLE_ENTRY;
-+static int multi_config(struct pcmcia_device *link)
-+{
-+	struct serial_info *info = link->priv;
-+	int i, base2 = 0;
- 
- 	/* First, look for a generic full-sized window */
- 	link->io.NumPorts1 = info->multi * 8;
--	i = first_tuple(link, tuple, parse);
--	while (i != CS_NO_MORE_ITEMS) {
--		/* The quad port cards have bad CIS's, so just look for a
--		   window larger than 8 ports and assume it will be right */
--		if ((i == CS_SUCCESS) && (cf->io.nwin == 1) &&
--		    (cf->io.win[0].len > 8)) {
--			link->conf.ConfigIndex = cf->index;
--			link->io.BasePort1 = cf->io.win[0].base;
--			link->io.IOAddrLines =
--			    cf->io.flags & CISTPL_IO_LINES_MASK;
--			i = pcmcia_request_io(link, &link->io);
--			base2 = link->io.BasePort1 + 8;
--			if (i == CS_SUCCESS)
--				break;
--		}
--		i = next_tuple(link, tuple, parse);
--	}
--
--	/* If that didn't work, look for two windows */
--	if (i != CS_SUCCESS) {
-+	if (pcmcia_loop_config(link, multi_config_check, &base2)) {
-+		/* If that didn't work, look for two windows */
- 		link->io.NumPorts1 = link->io.NumPorts2 = 8;
- 		info->multi = 2;
--		i = first_tuple(link, tuple, parse);
--		while (i != CS_NO_MORE_ITEMS) {
--			if ((i == CS_SUCCESS) && (cf->io.nwin == 2)) {
--				link->conf.ConfigIndex = cf->index;
--				link->io.BasePort1 = cf->io.win[0].base;
--				link->io.BasePort2 = cf->io.win[1].base;
--				link->io.IOAddrLines =
--				    cf->io.flags & CISTPL_IO_LINES_MASK;
--				i = pcmcia_request_io(link, &link->io);
--				base2 = link->io.BasePort2;
--				if (i == CS_SUCCESS)
--					break;
--			}
--			i = next_tuple(link, tuple, parse);
-+		if (pcmcia_loop_config(link, multi_config_check_notpicky,
-+				       &base2)) {
-+			printk(KERN_NOTICE "serial_cs: no usable port range"
-+			       "found, giving up\n");
-+			return -ENODEV;
- 		}
- 	}
- 
--	if (i != CS_SUCCESS) {
--		cs_error(link, RequestIO, i);
--		rc = -1;
--		goto free_cfg_mem;
--	}
--
- 	i = pcmcia_request_irq(link, &link->irq);
- 	if (i != CS_SUCCESS) {
-+		/* FIXME: comment does not fit, error handling does not fit */
- 		printk(KERN_NOTICE
- 		       "serial_cs: no usable port range found, giving up\n");
- 		cs_error(link, RequestIRQ, i);
-@@ -666,8 +622,7 @@ static int multi_config(struct pcmcia_device * link)
- 	i = pcmcia_request_configuration(link, &link->conf);
- 	if (i != CS_SUCCESS) {
- 		cs_error(link, RequestConfiguration, i);
--		rc = -1;
--		goto free_cfg_mem;
-+		return -ENODEV;
- 	}
- 
- 	/* The Oxford Semiconductor OXCF950 cards are in fact single-port:
-@@ -678,7 +633,8 @@ static int multi_config(struct pcmcia_device * link)
- 				info->prodid == PRODID_POSSIO_GCC)) {
- 		int err;
- 
--		if (cf->index == 1 || cf->index == 3) {
-+		if (link->conf.ConfigIndex == 1 ||
-+		    link->conf.ConfigIndex == 3) {
- 			err = setup_serial(link, info, base2,
- 					link->irq.AssignedIRQ);
- 			base2 = link->io.BasePort1;
-@@ -695,18 +651,14 @@ static int multi_config(struct pcmcia_device * link)
- 		if (info->quirk && info->quirk->wakeup)
- 			info->quirk->wakeup(link);
- 
--		rc = 0;
--		goto free_cfg_mem;
-+		return 0;
- 	}
- 
- 	setup_serial(link, info, link->io.BasePort1, link->irq.AssignedIRQ);
- 	for (i = 0; i < info->multi - 1; i++)
- 		setup_serial(link, info, base2 + (8 * i),
- 				link->irq.AssignedIRQ);
--	rc = 0;
--free_cfg_mem:
--	kfree(cfg_mem);
--	return rc;
-+	return 0;
- }
- 
- /*======================================================================
-diff --git a/drivers/telephony/ixj_pcmcia.c b/drivers/telephony/ixj_pcmcia.c
-index ff9a29b..89c5e40 100644
---- a/drivers/telephony/ixj_pcmcia.c
-+++ b/drivers/telephony/ixj_pcmcia.c
-@@ -124,65 +124,57 @@ static void ixj_get_serial(struct pcmcia_device * link, IXJ * j)
- 	return;
- }
- 
-+static int ixj_config_check(struct pcmcia_device *p_dev,
-+			    cistpl_cftable_entry_t *cfg,
-+			    void *priv_data)
-+{
-+	cistpl_cftable_entry_t *dflt = priv_data;
-+
-+	if ((cfg->io.nwin > 0) || (dflt->io.nwin > 0)) {
-+		cistpl_io_t *io = (cfg->io.nwin) ? &cfg->io : &dflt->io;
-+		p_dev->conf.ConfigIndex = cfg->index;
-+		p_dev->io.BasePort1 = io->win[0].base;
-+		p_dev->io.NumPorts1 = io->win[0].len;
-+		if (io->nwin == 2) {
-+			p_dev->io.BasePort2 = io->win[1].base;
-+			p_dev->io.NumPorts2 = io->win[1].len;
-+		}
-+		if (pcmcia_request_io(p_dev, &p_dev->io)) {
-+			if (cfg->flags & CISTPL_CFTABLE_DEFAULT)
-+				*dflt = *cfg;
-+		} else
-+			return 0;
-+	}
-+	return -ENODEV;
-+}
-+
- static int ixj_config(struct pcmcia_device * link)
- {
- 	IXJ *j;
- 	ixj_info_t *info;
--	tuple_t tuple;
--	u_short buf[128];
--	cisparse_t parse;
--	cistpl_cftable_entry_t *cfg = &parse.cftable_entry;
--	cistpl_cftable_entry_t dflt =
--	{
--		0
--	};
--	int last_ret, last_fn;
-+	cistpl_cftable_entry_t dflt = { 0 };
-+
- 	info = link->priv;
- 	DEBUG(0, "ixj_config(0x%p)\n", link);
--	tuple.TupleData = (cisdata_t *) buf;
--	tuple.TupleOffset = 0;
--	tuple.TupleDataMax = 255;
--	tuple.DesiredTuple = CISTPL_CFTABLE_ENTRY;
--	tuple.Attributes = 0;
--	CS_CHECK(GetFirstTuple, pcmcia_get_first_tuple(link, &tuple));
--	while (1) {
--		if (pcmcia_get_tuple_data(link, &tuple) != 0 ||
--				pcmcia_parse_tuple(link, &tuple, &parse) != 0)
--			goto next_entry;
--		if ((cfg->io.nwin > 0) || (dflt.io.nwin > 0)) {
--			cistpl_io_t *io = (cfg->io.nwin) ? &cfg->io : &dflt.io;
--			link->conf.ConfigIndex = cfg->index;
--			link->io.BasePort1 = io->win[0].base;
--			link->io.NumPorts1 = io->win[0].len;
--			if (io->nwin == 2) {
--				link->io.BasePort2 = io->win[1].base;
--				link->io.NumPorts2 = io->win[1].len;
--			}
--			if (pcmcia_request_io(link, &link->io) != 0)
--				goto next_entry;
--			/* If we've got this far, we're done */
--			break;
--		}
--	      next_entry:
--		if (cfg->flags & CISTPL_CFTABLE_DEFAULT)
--			dflt = *cfg;
--		CS_CHECK(GetNextTuple, pcmcia_get_next_tuple(link, &tuple));
--	}
- 
--	CS_CHECK(RequestConfiguration, pcmcia_request_configuration(link, &link->conf));
-+	if (pcmcia_loop_config(link, ixj_config_check, &dflt))
-+		goto cs_failed;
-+
-+	if (pcmcia_request_configuration(link, &link->conf))
-+		goto cs_failed;
- 
- 	/*
-  	 *	Register the card with the core.
-- 	 */	
--	j=ixj_pcmcia_probe(link->io.BasePort1,link->io.BasePort1 + 0x10);
-+	 */
-+	j = ixj_pcmcia_probe(link->io.BasePort1, link->io.BasePort1 + 0x10);
- 
- 	info->ndev = 1;
- 	info->node.major = PHONE_MAJOR;
- 	link->dev_node = &info->node;
- 	ixj_get_serial(link, j);
- 	return 0;
-+
-       cs_failed:
--	cs_error(link, last_fn, last_ret);
- 	ixj_cs_release(link);
- 	return -ENODEV;
- }
-diff --git a/drivers/usb/host/sl811_cs.c b/drivers/usb/host/sl811_cs.c
-index 5da63f5..9773601 100644
---- a/drivers/usb/host/sl811_cs.c
-+++ b/drivers/usb/host/sl811_cs.c
-@@ -155,88 +155,84 @@ static void sl811_cs_release(struct pcmcia_device * link)
- 	platform_device_unregister(&platform_dev);
- }
- 
-+struct sl811_css_cfg {
-+	cistpl_cftable_entry_t	dflt;
-+	config_info_t		conf;
-+};
-+
-+static int sl811_cs_config_check(struct pcmcia_device *p_dev,
-+				 cistpl_cftable_entry_t *cfg,
-+				 void *priv_data)
-+{
-+	struct sl811_css_cfg	*cfg_mem = priv_data;
-+
-+	if (cfg->flags & CISTPL_CFTABLE_DEFAULT)
-+		memcpy(&cfg_mem->dflt, cfg, sizeof(cistpl_cftable_entry_t));
-+
-+	if (cfg->index == 0)
-+		return -ENODEV;
-+
-+	p_dev->conf.ConfigIndex = cfg->index;
-+
-+	/* Use power settings for Vcc and Vpp if present */
-+	/*  Note that the CIS values need to be rescaled */
-+	if (cfg->vcc.present & (1<<CISTPL_POWER_VNOM)) {
-+		if (cfg->vcc.param[CISTPL_POWER_VNOM]/10000 !=
-+		    cfg_mem->conf.Vcc)
-+			return -ENODEV;
-+	} else if (cfg_mem->dflt.vcc.present & (1<<CISTPL_POWER_VNOM)) {
-+		if (cfg_mem->dflt.vcc.param[CISTPL_POWER_VNOM]/10000
-+		    != cfg_mem->conf.Vcc)
-+			return -ENODEV;
-+		}
-+
-+	if (cfg->vpp1.present & (1<<CISTPL_POWER_VNOM))
-+		p_dev->conf.Vpp =
-+			cfg->vpp1.param[CISTPL_POWER_VNOM]/10000;
-+	else if (cfg_mem->dflt.vpp1.present & (1<<CISTPL_POWER_VNOM))
-+		p_dev->conf.Vpp =
-+			cfg_mem->dflt.vpp1.param[CISTPL_POWER_VNOM]/10000;
-+
-+	/* we need an interrupt */
-+	if (cfg->irq.IRQInfo1 || cfg_mem->dflt.irq.IRQInfo1)
-+		p_dev->conf.Attributes |= CONF_ENABLE_IRQ;
-+
-+	/* IO window settings */
-+	p_dev->io.NumPorts1 = p_dev->io.NumPorts2 = 0;
-+	if ((cfg->io.nwin > 0) || (cfg_mem->dflt.io.nwin > 0)) {
-+		cistpl_io_t *io = (cfg->io.nwin) ? &cfg->io : &cfg_mem->dflt.io;
-+
-+		p_dev->io.Attributes1 = IO_DATA_PATH_WIDTH_8;
-+		p_dev->io.IOAddrLines = io->flags & CISTPL_IO_LINES_MASK;
-+		p_dev->io.BasePort1 = io->win[0].base;
-+		p_dev->io.NumPorts1 = io->win[0].len;
-+
-+		return pcmcia_request_io(p_dev, &p_dev->io);
-+	}
-+	pcmcia_disable_device(p_dev);
-+	return -ENODEV;
-+}
-+
-+
- static int sl811_cs_config(struct pcmcia_device *link)
- {
- 	struct device		*parent = &handle_to_dev(link);
- 	local_info_t		*dev = link->priv;
--	tuple_t			tuple;
--	cisparse_t		parse;
- 	int			last_fn, last_ret;
--	u_char			buf[64];
--	config_info_t		conf;
--	cistpl_cftable_entry_t	dflt = { 0 };
-+	struct sl811_css_cfg	*cfg_mem;
- 
- 	DBG(0, "sl811_cs_config(0x%p)\n", link);
- 
-+	cfg_mem = kzalloc(sizeof(struct sl811_css_cfg), GFP_KERNEL);
-+	if (!cfg_mem)
-+		return -ENOMEM;
-+
- 	/* Look up the current Vcc */
- 	CS_CHECK(GetConfigurationInfo,
--			pcmcia_get_configuration_info(link, &conf));
--
--	tuple.Attributes = 0;
--	tuple.TupleData = buf;
--	tuple.TupleDataMax = sizeof(buf);
--	tuple.TupleOffset = 0;
--	tuple.DesiredTuple = CISTPL_CFTABLE_ENTRY;
--	CS_CHECK(GetFirstTuple, pcmcia_get_first_tuple(link, &tuple));
--	while (1) {
--		cistpl_cftable_entry_t	*cfg = &(parse.cftable_entry);
--
--		if (pcmcia_get_tuple_data(link, &tuple) != 0
--				|| pcmcia_parse_tuple(link, &tuple, &parse)
--						!= 0)
--			goto next_entry;
--
--		if (cfg->flags & CISTPL_CFTABLE_DEFAULT) {
--			dflt = *cfg;
--		}
-+			pcmcia_get_configuration_info(link, &cfg_mem->conf));
- 
--		if (cfg->index == 0)
--			goto next_entry;
--
--		link->conf.ConfigIndex = cfg->index;
--
--		/* Use power settings for Vcc and Vpp if present */
--		/*  Note that the CIS values need to be rescaled */
--		if (cfg->vcc.present & (1<<CISTPL_POWER_VNOM)) {
--			if (cfg->vcc.param[CISTPL_POWER_VNOM]/10000
--					!= conf.Vcc)
--				goto next_entry;
--		} else if (dflt.vcc.present & (1<<CISTPL_POWER_VNOM)) {
--			if (dflt.vcc.param[CISTPL_POWER_VNOM]/10000
--					!= conf.Vcc)
--				goto next_entry;
--		}
--
--		if (cfg->vpp1.present & (1<<CISTPL_POWER_VNOM))
--			link->conf.Vpp =
--				cfg->vpp1.param[CISTPL_POWER_VNOM]/10000;
--		else if (dflt.vpp1.present & (1<<CISTPL_POWER_VNOM))
--			link->conf.Vpp =
--				dflt.vpp1.param[CISTPL_POWER_VNOM]/10000;
--
--		/* we need an interrupt */
--		if (cfg->irq.IRQInfo1 || dflt.irq.IRQInfo1)
--			link->conf.Attributes |= CONF_ENABLE_IRQ;
--
--		/* IO window settings */
--		link->io.NumPorts1 = link->io.NumPorts2 = 0;
--		if ((cfg->io.nwin > 0) || (dflt.io.nwin > 0)) {
--			cistpl_io_t *io = (cfg->io.nwin) ? &cfg->io : &dflt.io;
--
--			link->io.Attributes1 = IO_DATA_PATH_WIDTH_8;
--			link->io.IOAddrLines = io->flags & CISTPL_IO_LINES_MASK;
--			link->io.BasePort1 = io->win[0].base;
--			link->io.NumPorts1 = io->win[0].len;
--
--			if (pcmcia_request_io(link, &link->io) != 0)
--				goto next_entry;
--		}
--		break;
--
--next_entry:
--		pcmcia_disable_device(link);
--		last_ret = pcmcia_get_next_tuple(link, &tuple);
--	}
-+	if (pcmcia_loop_config(link, sl811_cs_config_check, cfg_mem))
-+		return -ENODEV;
- 
- 	/* require an IRQ and two registers */
- 	if (!link->io.NumPorts1 || link->io.NumPorts1 < 2)
-@@ -269,8 +265,10 @@ cs_failed:
- 		printk("sl811_cs_config failed\n");
- 		cs_error(link, last_fn, last_ret);
- 		sl811_cs_release(link);
-+		kfree(cfg_mem);
- 		return  -ENODEV;
- 	}
-+	kfree(cfg_mem);
- 	return 0;
- }
+ 		res = pcmcia_get_next_tuple(bus->host_pcmcia, &tuple);
+-		if (res == CS_NO_MORE_ITEMS)
++		if (res == -ENOSPC)
+ 			break;
+ 		GOTO_ERROR_ON(res != 0, "VEN next tpl");
+ 		res = pcmcia_get_tuple_data(bus->host_pcmcia, &tuple);
+diff --git a/include/pcmcia/cs.h b/include/pcmcia/cs.h
+index 2dc1411..20440de 100644
+--- a/include/pcmcia/cs.h
++++ b/include/pcmcia/cs.h
+@@ -315,7 +315,7 @@ typedef struct error_info_t {
+ #define CS_BAD_ARGS		0x1c
+ #define CS_CONFIGURATION_LOCKED	-EACCES
+ #define CS_IN_USE		-EBUSY
+-#define CS_NO_MORE_ITEMS	0x1f
++#define CS_NO_MORE_ITEMS	-ENOSPC
+ #define CS_OUT_OF_RESOURCE	-ENOMEM
+ #define CS_BAD_HANDLE		-EINVAL
  
 -- 
 1.5.4.3
