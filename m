@@ -1,187 +1,330 @@
-From: "Gupta, Ajay Kumar" <ajay.gupta-l0cyMroinI0@public.gmane.org>
-Subject: RE: Regarding Serial consloe
-Date: Mon, 13 Oct 2008 13:56:47 +0530
-Message-ID: <19F8576C6E063C45BE387C64729E739403DC2222CB@dbde02.ent.ti.com>
-References: <241b8f7b0810072221s1c84a45cgb21443fd717d625d@mail.gmail.com>
-	 <241b8f7b0810091945w12725f3di4a8bab043d3a1bdc@mail.gmail.com>
-	 <241b8f7b0810100258u4a393c96s21d491d62a05e50c@mail.gmail.com>
-	 <20081010162654.GA2498@kroah.com>
-	 <241b8f7b0810122108v6b1e0212m99dd2644a997eb6d@mail.gmail.com>
-	 <241b8f7b0810122120v3020ffb7m1c5574e98ea54c1e@mail.gmail.com>
-	 <241b8f7b0810122125j53253073pa7a2f5d13becff1e@mail.gmail.com>
-	 <19F8576C6E063C45BE387C64729E739403DC2221DD@dbde02.ent.ti.com>
-	 <241b8f7b0810122357vc234c5qe824165194afa4bf@mail.gmail.com>
-	 <19F8576C6E063C45BE387C64729E739403DC222237@dbde02.ent.ti.com>
- <241b8f7b0810130113m6e93d127ldd8b8f95cf6aa109@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <241b8f7b0810130113m6e93d127ldd8b8f95cf6aa109-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-US
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Prabhu Chawandi <prabhu.chavandi-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, Aristeu Rozanski <aris-moeOTchvdi7YtjvyW6yDsg@public.gmane.org>, "linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "mangoo-Nem3ZqsbT/g@public.gmane.org" <mangoo-Nem3ZqsbT/g@public.gmane.org>
+From: Bryan Wu <cooloney@kernel.org>
+Subject: [PATCH 1/6] Blackfin Serial Driver: updates kgdb over Blackfin serial driver with kgdb framework
+Date: Mon, 13 Oct 2008 17:46:20 +0800
+Message-ID: <1223891185-13924-2-git-send-email-cooloney@kernel.org>
+References: <1223891185-13924-1-git-send-email-cooloney@kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from nwd2mail11.analog.com ([137.71.25.57]:33171 "EHLO
+	nwd2mail11.analog.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1763269AbYJMJpu (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 13 Oct 2008 05:45:50 -0400
+In-Reply-To: <1223891185-13924-1-git-send-email-cooloney@kernel.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: alan@redhat.com
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Sonic Zhang <sonic.zhang@analog.com>, Bryan Wu <cooloney@kernel.org>
 
-> -----Original Message-----
-> From: Prabhu Chawandi [mailto:prabhu.chavandi-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org]
-> Sent: Monday, October 13, 2008 1:43 PM
-> To: Gupta, Ajay Kumar
-> Cc: Greg KH; Aristeu Rozanski; linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> mangoo-Nem3ZqsbT/g@public.gmane.org
-> Subject: Re: Regarding Serial consloe
-> 
-> Ajay,
->   Here is the link, where same issue is raised ...
-> 
-> And for that Greg has told ..  no kernel messages can be loggen on USB-serial.
-> 
-> Is that hold good today ? or can we produce logs on uSB serial console..
+From: Sonic Zhang <sonic.zhang@analog.com>
 
-I tried it on v2.6.18 with prolific-2303 and it did work for me. I was able
-to get console on usb serial.
+Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+Signed-off-by: Bryan Wu <cooloney@kernel.org>
+---
+ drivers/serial/bfin_5xx.c |  187 +++++++++++++++++++++-----------------------
+ 1 files changed, 89 insertions(+), 98 deletions(-)
 
-Some of the bootup message didn't come on usb serial till usb serial part
-got initialized.
-
-Regards,
-Ajay
+diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
+index 569f0e2..d63fad7 100644
+--- a/drivers/serial/bfin_5xx.c
++++ b/drivers/serial/bfin_5xx.c
+@@ -22,7 +22,8 @@
+ #include <linux/tty_flip.h>
+ #include <linux/serial_core.h>
  
-> 
-> 
-> link:
-> http://marc.info/?l=linux-usb-devel&m=119384398314558&q=raw
-> 
-> Thanks
-> Prabhu
-> 
-> On 10/13/08, Gupta, Ajay Kumar <ajay.gupta-l0cyMroinI0@public.gmane.org> wrote:
-> > >   Is USB fs not an auto fs ... ?
-> > > I mean as we put the device we get the /dev/<device_id> created auto...
-> > >
-> > > I can see the /dev/ttyUSB0 entry.
-> >
-> >
-> > If it is auto created then that entry is not required. Another thing that can
-> > be tried is using default baudrate of 9600 as below.
-> >
-> > CONFIG_CMDLINE="rw console=ttyUSB0, 9600 mem =128M"
-> > and in inittab
-> > ttyUSB0::respawn:/bin/getty  -L ttyUSB0 9600 vt102
-> >
-> > Regards,
-> > Ajay
-> >
-> > >
-> > > Thanks
-> > > Prabhu
-> > >
-> > > On 10/13/08, Gupta, Ajay Kumar <ajay.gupta-l0cyMroinI0@public.gmane.org> wrote:
-> > > >
-> > > > > CONFIG_CMDLINE="rw console=ttyUSB0, 115200 mem =128M"
-> > > > >
-> > > > > and in inittab
-> > > > >
-> > > > > ttyUSB0::respawn:/bin/getty  -L ttyUSB0 115200 vt102
-> > > >
-> > > > Apart from this add "mknod /dev/ttyUSB0 c 188 0" in "filesystem/etc/init.d/rcS"
-> > > >
-> > > > This is required if this node is not created during bootup and usb serial
-> > > > device detection.
-> > > >
-> > > > Regards,
-> > > > Ajay
-> > > > >
-> > > > >
-> > > > > --Prabhu
-> > > > >
-> > > > > On 10/13/08, Prabhu Chawandi <prabhu.chavandi-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> > > > > > Some more updates :
-> > > > > >
-> > > > > >   I am using kernel 2.6.12.4.
-> > > > > >
-> > > > > > It was Tomasz Chmielewski who said that  boot messages cant be logged
-> > > > > > on USB-serial. soory for the mistake Aristeu Rozanski .
-> > > > > >
-> > > > > > On 10/13/08, Prabhu Chawandi <prabhu.chavandi-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> > > > > > > Hi,
-> > > > > > >
-> > > > > > >   I am not getting any errors ....
-> > > > > > >
-> > > > > > > I have set the command line parameter. I am booting through  CFE ,
-> > > > > > > This time I am using Serial console while booting I am changing to USB
-> > > > > > > serial...
-> > > > > > >
-> > > > > > > Once the USB -serial driver is loaded I am expecting the rest of the
-> > > > > > > logs on the console but I am getting AT command and no more
-> > > > > > > messages...
-> > > > > > >
-> > > > > > > Later I changed inittab file for the login prompt...
-> > > > > > >
-> > > > > > > I have the other serial connection through which I can control the
-> > > > > > > application. When I close that application, through the normal serial,
-> > > > > > > I am getting login prompt on both USB-serial and normal Serial.
-> > > > > > >
-> > > > > > > If I run the application again I am getting logs now on both serials...
-> > > > > > >
-> > > > > > > I am consfused why I am not getting the boot log messages...
-> > > > > > >
-> > > > > > > I am sure that I have set commandline parameter properly....
-> > > > > > >
-> > > > > > > Aristeu Rozanski has said above that ,,, it is not possoble to log
-> > > > > > > boot messages on the USB-serial ... what might be the techincal reason
-> > > > > > > ?
-> > > > > > >
-> > > > > > > Thanks
-> > > > > > > Prabhu
-> > > > > > >
-> > > > > > >
-> > > > > > >
-> > > > > > >
-> > > > > > >
-> > > > > > >
-> > > > > > >
-> > > > > > >
-> > > > > > > On 10/10/08, Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org> wrote:
-> > > > > > > >
-> > > > > > > > A: No.
-> > > > > > > > Q: Should I include quotations after my reply?
-> > > > > > > >
-> > > > > > > > On Fri, Oct 10, 2008 at 03:28:56PM +0530, Prabhu Chawandi wrote:
-> > > > > > > > > On 10/10/08, Prabhu Chawandi <prabhu.chavandi-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> > > > > > > > > > Yeah...   I did all the configurations.
-> > > > > > > > > >
-> > > > > > > > > > Still not getting the logs :(
-> > > > > > > > > >
-> > > > > > > > > > I feel I am missing the part where USB- serial  will be registered to
-> > > > > > > > > > the tty layer.
-> > > > > > > > > >
-> > > > > > > > > > or Do I need to insert the code where we will be opening the device
-> > > > > > > > > > and performimg the write/read  operations.
-> > > > > > > >
-> > > > > > > > No code needs to be added.
-> > > > > > > >
-> > > > > > > > Please let us know what errors you are seeing, what does your kernel log
-> > > > > > > > messages show, and so on.  It should work properly if you tell the boot
-> > > > > > > > command line to use the usb-serial port for console messages.
-> > > > > > > >
-> > > > > > > > thanks,
-> > > > > > > >
-> > > > > > > > greg k-h
-> > > > > > > >
-> > > > > > >
-> > > > > >
-> > > > > --
-> > > > > To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-> > > > > the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > > > > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> > > >
-> > > >
-> >
-> >
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+-#ifdef CONFIG_KGDB_UART
++#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
++	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
+ #include <linux/kgdb.h>
+ #include <asm/irq_regs.h>
+ #endif
+@@ -45,6 +46,16 @@
+ static struct bfin_serial_port bfin_serial_ports[BFIN_UART_NR_PORTS];
+ static int nr_active_ports = ARRAY_SIZE(bfin_serial_resource);
+ 
++#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
++	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
++
++# ifndef CONFIG_SERIAL_BFIN_PIO
++#  error KGDB only support UART in PIO mode.
++# endif
++
++static int kgdboc_port_line;
++static int kgdboc_break_enabled;
++#endif
+ /*
+  * Setup for console. Argument comes from the menuconfig
+  */
+@@ -110,9 +121,7 @@ static void bfin_serial_start_tx(struct uart_port *port)
+ static void bfin_serial_stop_rx(struct uart_port *port)
+ {
+ 	struct bfin_serial_port *uart = (struct bfin_serial_port *)port;
+-#ifdef CONFIG_KGDB_UART
+-	if (uart->port.line != CONFIG_KGDB_UART_PORT)
+-#endif
++
+ 	UART_CLEAR_IER(uart, ERBFI);
+ }
+ 
+@@ -123,49 +132,6 @@ static void bfin_serial_enable_ms(struct uart_port *port)
+ {
+ }
+ 
+-#ifdef CONFIG_KGDB_UART
+-static int kgdb_entry_state;
+-
+-void kgdb_put_debug_char(int chr)
+-{
+-	struct bfin_serial_port *uart;
+-
+-	if (CONFIG_KGDB_UART_PORT < 0
+-		|| CONFIG_KGDB_UART_PORT >= BFIN_UART_NR_PORTS)
+-		uart = &bfin_serial_ports[0];
+-	else
+-		uart = &bfin_serial_ports[CONFIG_KGDB_UART_PORT];
+-
+-	while (!(UART_GET_LSR(uart) & THRE)) {
+-		SSYNC();
+-	}
+-
+-	UART_CLEAR_DLAB(uart);
+-	UART_PUT_CHAR(uart, (unsigned char)chr);
+-	SSYNC();
+-}
+-
+-int kgdb_get_debug_char(void)
+-{
+-	struct bfin_serial_port *uart;
+-	unsigned char chr;
+-
+-	if (CONFIG_KGDB_UART_PORT < 0
+-		|| CONFIG_KGDB_UART_PORT >= BFIN_UART_NR_PORTS)
+-		uart = &bfin_serial_ports[0];
+-	else
+-		uart = &bfin_serial_ports[CONFIG_KGDB_UART_PORT];
+-
+-	while(!(UART_GET_LSR(uart) & DR)) {
+-		SSYNC();
+-	}
+-	UART_CLEAR_DLAB(uart);
+-	chr = UART_GET_CHAR(uart);
+-	SSYNC();
+-
+-	return chr;
+-}
+-#endif
+ 
+ #if ANOMALY_05000363 && defined(CONFIG_SERIAL_BFIN_PIO)
+ # define UART_GET_ANOMALY_THRESHOLD(uart)    ((uart)->anomaly_threshold)
+@@ -178,7 +144,7 @@ int kgdb_get_debug_char(void)
+ #ifdef CONFIG_SERIAL_BFIN_PIO
+ static void bfin_serial_rx_chars(struct bfin_serial_port *uart)
+ {
+-	struct tty_struct *tty = uart->port.info->port.tty;
++	struct tty_struct *tty = NULL;
+ 	unsigned int status, ch, flg;
+ 	static struct timeval anomaly_start = { .tv_sec = 0 };
+ 
+@@ -188,27 +154,18 @@ static void bfin_serial_rx_chars(struct bfin_serial_port *uart)
+  	ch = UART_GET_CHAR(uart);
+  	uart->port.icount.rx++;
+ 
+-#ifdef CONFIG_KGDB_UART
+-	if (uart->port.line == CONFIG_KGDB_UART_PORT) {
+-		struct pt_regs *regs = get_irq_regs();
+-		if (uart->port.cons->index == CONFIG_KGDB_UART_PORT && ch == 0x1) { /* Ctrl + A */
+-			kgdb_breakkey_pressed(regs);
+-			return;
+-		} else if (kgdb_entry_state == 0 && ch == '$') {/* connection from KGDB */
+-			kgdb_entry_state = 1;
+-		} else if (kgdb_entry_state == 1 && ch == 'q') {
+-			kgdb_entry_state = 0;
+-			kgdb_breakkey_pressed(regs);
++#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
++	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
++	if (kgdb_connected && kgdboc_port_line == uart->port.line)
++		if (ch == 0x3) {/* Ctrl + C */
++			kgdb_breakpoint();
+ 			return;
+-		} else if (ch == 0x3) {/* Ctrl + C */
+-			kgdb_entry_state = 0;
+-			kgdb_breakkey_pressed(regs);
+-			return;
+-		} else {
+-			kgdb_entry_state = 0;
+ 		}
+-	}
++
++	if (!uart->port.info || !uart->port.info->tty)
++		return;
+ #endif
++	tty = uart->port.info->tty;
+ 
+ 	if (ANOMALY_05000363) {
+ 		/* The BF533 (and BF561) family of processors have a nice anomaly
+@@ -630,16 +587,16 @@ static int bfin_serial_startup(struct uart_port *port)
+ 	uart->rx_dma_timer.expires = jiffies + DMA_RX_FLUSH_JIFFIES;
+ 	add_timer(&(uart->rx_dma_timer));
+ #else
++#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
++	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
++	if (kgdboc_port_line == uart->port.line && kgdboc_break_enabled)
++		kgdboc_break_enabled = 0;
++	else {
++# endif
+ 	if (request_irq(uart->port.irq, bfin_serial_rx_int, IRQF_DISABLED,
+ 	     "BFIN_UART_RX", uart)) {
+-# ifdef	CONFIG_KGDB_UART
+-		if (uart->port.line != CONFIG_KGDB_UART_PORT) {
+-# endif
+ 		printk(KERN_NOTICE "Unable to attach BlackFin UART RX interrupt\n");
+ 		return -EBUSY;
+-# ifdef	CONFIG_KGDB_UART
+-		}
+-# endif
+ 	}
+ 
+ 	if (request_irq
+@@ -685,6 +642,10 @@ static int bfin_serial_startup(struct uart_port *port)
+ 		}
+ 	}
+ # endif
++#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
++	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
++	}
++# endif
+ #endif
+ 	UART_SET_IER(uart, ERBFI);
+ 	return 0;
+@@ -716,9 +677,6 @@ static void bfin_serial_shutdown(struct uart_port *port)
+ 		break;
+ 	};
+ #endif
+-#ifdef	CONFIG_KGDB_UART
+-	if (uart->port.line != CONFIG_KGDB_UART_PORT)
+-#endif
+ 	free_irq(uart->port.irq, uart);
+ 	free_irq(uart->port.irq+1, uart);
+ #endif
+@@ -887,6 +845,51 @@ static void bfin_serial_set_ldisc(struct uart_port *port)
+ 	}
+ }
+ 
++#ifdef CONFIG_CONSOLE_POLL
++static void bfin_serial_poll_put_char(struct uart_port *port, unsigned char chr)
++{
++	struct bfin_serial_port *uart = (struct bfin_serial_port *)port;
++
++	while (!(UART_GET_LSR(uart) & THRE))
++		cpu_relax();
++
++	UART_CLEAR_DLAB(uart);
++	UART_PUT_CHAR(uart, (unsigned char)chr);
++}
++
++static int bfin_serial_poll_get_char(struct uart_port *port)
++{
++	struct bfin_serial_port *uart = (struct bfin_serial_port *)port;
++	unsigned char chr;
++
++	while (!(UART_GET_LSR(uart) & DR))
++		cpu_relax();
++
++	UART_CLEAR_DLAB(uart);
++	chr = UART_GET_CHAR(uart);
++
++	return chr;
++}
++#endif
++
++#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
++	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
++static void bfin_kgdboc_port_shutdown(struct uart_port *port)
++{
++	if (kgdboc_break_enabled) {
++		kgdboc_break_enabled = 0;
++		bfin_serial_shutdown(port);
++	}
++}
++
++static int bfin_kgdboc_port_startup(struct uart_port *port)
++{
++	kgdboc_port_line = port->line;
++	kgdboc_break_enabled = !bfin_serial_startup(port);
++	return 0;
++}
++#endif
++
+ static struct uart_ops bfin_serial_pops = {
+ 	.tx_empty	= bfin_serial_tx_empty,
+ 	.set_mctrl	= bfin_serial_set_mctrl,
+@@ -905,6 +908,15 @@ static struct uart_ops bfin_serial_pops = {
+ 	.request_port	= bfin_serial_request_port,
+ 	.config_port	= bfin_serial_config_port,
+ 	.verify_port	= bfin_serial_verify_port,
++#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
++	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
++	.kgdboc_port_startup	= bfin_kgdboc_port_startup,
++	.kgdboc_port_shutdown	= bfin_kgdboc_port_shutdown,
++#endif
++#ifdef CONFIG_CONSOLE_POLL
++	.poll_put_char	= bfin_serial_poll_put_char,
++	.poll_get_char	= bfin_serial_poll_get_char,
++#endif
+ };
+ 
+ static void __init bfin_serial_init_ports(void)
+@@ -1076,10 +1088,7 @@ static int __init bfin_serial_rs_console_init(void)
+ {
+ 	bfin_serial_init_ports();
+ 	register_console(&bfin_serial_console);
+-#ifdef CONFIG_KGDB_UART
+-	kgdb_entry_state = 0;
+-	init_kgdb_uart();
+-#endif
++
+ 	return 0;
+ }
+ console_initcall(bfin_serial_rs_console_init);
+@@ -1235,10 +1244,6 @@ static struct platform_driver bfin_serial_driver = {
+ static int __init bfin_serial_init(void)
+ {
+ 	int ret;
+-#ifdef CONFIG_KGDB_UART
+-	struct bfin_serial_port *uart = &bfin_serial_ports[CONFIG_KGDB_UART_PORT];
+-	struct ktermios t;
+-#endif
+ 
+ 	pr_info("Serial: Blackfin serial driver\n");
+ 
+@@ -1252,21 +1257,6 @@ static int __init bfin_serial_init(void)
+ 			uart_unregister_driver(&bfin_serial_reg);
+ 		}
+ 	}
+-#ifdef CONFIG_KGDB_UART
+-	if (uart->port.cons->index != CONFIG_KGDB_UART_PORT) {
+-		request_irq(uart->port.irq, bfin_serial_rx_int,
+-			IRQF_DISABLED, "BFIN_UART_RX", uart);
+-		pr_info("Request irq for kgdb uart port\n");
+-		UART_SET_IER(uart, ERBFI);
+-		SSYNC();
+-		t.c_cflag = CS8|B57600;
+-		t.c_iflag = 0;
+-		t.c_oflag = 0;
+-		t.c_lflag = ICANON;
+-		t.c_line = CONFIG_KGDB_UART_PORT;
+-		bfin_serial_set_termios(&uart->port, &t, &t);
+-	}
+-#endif
+ 	return ret;
+ }
+ 
+@@ -1276,6 +1266,7 @@ static void __exit bfin_serial_exit(void)
+ 	uart_unregister_driver(&bfin_serial_reg);
+ }
+ 
++
+ module_init(bfin_serial_init);
+ module_exit(bfin_serial_exit);
+ 
+-- 
+1.5.6
