@@ -1,93 +1,99 @@
 From: Bryan Wu <cooloney@kernel.org>
-Subject: [PATCH 4/6] Blackfin Serial Driver: Clean serial console and early prink code`
-Date: Mon, 13 Oct 2008 17:46:23 +0800
-Message-ID: <1223891185-13924-5-git-send-email-cooloney@kernel.org>
+Subject: [PATCH 2/6] Blackfin Serial Driver: Add a debug function to serial driver.
+Date: Mon, 13 Oct 2008 17:46:21 +0800
+Message-ID: <1223891185-13924-3-git-send-email-cooloney@kernel.org>
 References: <1223891185-13924-1-git-send-email-cooloney@kernel.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nwd2mail11.analog.com ([137.71.25.57]:45891 "EHLO
+Received: from nwd2mail11.analog.com ([137.71.25.57]:3133 "EHLO
 	nwd2mail11.analog.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1761244AbYJMJpw (ORCPT
+	with ESMTP id S1763271AbYJMJpu (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 13 Oct 2008 05:45:52 -0400
+	Mon, 13 Oct 2008 05:45:50 -0400
 In-Reply-To: <1223891185-13924-1-git-send-email-cooloney@kernel.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: alan@redhat.com
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Sonic Zhang <sonic.zhang@analog.com>, Bryan Wu <cooloney@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Graf Yang <graf.yang@analog.com>, Bryan Wu <cooloney@kernel.org>
 
-From: Sonic Zhang <sonic.zhang@analog.com>
+From: Graf Yang <graf.yang@analog.com>
 
-Singed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+Signed-off-by: Graf Yang <graf.yang@analog.com>
 Signed-off-by: Bryan Wu <cooloney@kernel.org>
 ---
- drivers/serial/bfin_5xx.c |   16 ++++------------
- 1 files changed, 4 insertions(+), 12 deletions(-)
+ drivers/serial/bfin_5xx.c |   47 ++++++++++++++++++++++++++++++++++++++++++++-
+ 1 files changed, 46 insertions(+), 1 deletions(-)
 
 diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
-index 3cc7b98..44a0855 100644
+index d63fad7..aea3a53 100644
 --- a/drivers/serial/bfin_5xx.c
 +++ b/drivers/serial/bfin_5xx.c
-@@ -987,7 +987,7 @@ static void __init bfin_serial_init_ports(void)
+@@ -21,6 +21,7 @@
+ #include <linux/tty.h>
+ #include <linux/tty_flip.h>
+ #include <linux/serial_core.h>
++#include <stdarg.h>
  
+ #if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
+ 	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
+@@ -1106,7 +1107,8 @@ static __init void early_serial_putc(struct uart_port *port, int ch)
+ 	struct bfin_serial_port *uart = (struct bfin_serial_port *)port;
+ 
+ 	while ((!(UART_GET_LSR(uart) & THRE)) && --timeout)
+-		cpu_relax();
++		barrier();
++
+ 	UART_PUT_CHAR(uart, ch);
  }
  
--#ifdef CONFIG_SERIAL_BFIN_CONSOLE
-+#if defined(CONFIG_SERIAL_BFIN_CONSOLE) || defined(CONFIG_EARLY_PRINTK)
- /*
-  * If the port was already initialised (eg, by a boot loader),
-  * try to determine the current setup.
-@@ -1031,24 +1031,20 @@ bfin_serial_console_get_options(struct bfin_serial_port *uart, int *baud,
- 	}
- 	pr_debug("%s:baud = %d, parity = %c, bits= %d\n", __func__, *baud, *parity, *bits);
- }
--#endif
+@@ -1155,6 +1157,49 @@ struct console __init *bfin_earlyserial_init(unsigned int port,
  
--#if defined(CONFIG_SERIAL_BFIN_CONSOLE) || defined(CONFIG_EARLY_PRINTK)
- static struct uart_driver bfin_serial_reg;
+ #endif /* CONFIG_SERIAL_BFIN_CONSOLE */
  
- static int __init
- bfin_serial_console_setup(struct console *co, char *options)
- {
- 	struct bfin_serial_port *uart;
--# ifdef CONFIG_SERIAL_BFIN_CONSOLE
- 	int baud = 57600;
- 	int bits = 8;
- 	int parity = 'n';
--#  ifdef CONFIG_SERIAL_BFIN_CTSRTS
-+# ifdef CONFIG_SERIAL_BFIN_CTSRTS
- 	int flow = 'r';
--#  else
-+# else
- 	int flow = 'n';
--#  endif
- # endif
- 
- 	/*
-@@ -1060,16 +1056,12 @@ bfin_serial_console_setup(struct console *co, char *options)
- 		co->index = 0;
- 	uart = &bfin_serial_ports[co->index];
- 
--# ifdef CONFIG_SERIAL_BFIN_CONSOLE
- 	if (options)
- 		uart_parse_options(options, &baud, &parity, &bits, &flow);
- 	else
- 		bfin_serial_console_get_options(uart, &baud, &parity, &bits);
- 
- 	return uart_set_options(&uart->port, co, baud, parity, bits, flow);
--# else
--	return 0;
--# endif
- }
- #endif /* defined (CONFIG_SERIAL_BFIN_CONSOLE) ||
- 				 defined (CONFIG_EARLY_PRINTK) */
-@@ -1179,7 +1171,7 @@ struct console __init *bfin_earlyserial_init(unsigned int port,
- 	return &bfin_early_serial_console;
- }
- 
--#endif /* CONFIG_SERIAL_BFIN_CONSOLE */
-+#endif /* CONFIG_EARLY_PRINTK */
- 
- #ifdef CONFIG_DEBUG_KERNEL
- void bfin_serial_debug(const char *fmt, ...)
++#ifdef CONFIG_DEBUG_KERNEL
++void bfin_serial_debug(const char *fmt, ...)
++{
++	struct bfin_serial_port *uart = &bfin_serial_ports[0];
++	unsigned short status, tmp;
++	int flags, i, count;
++	char buf[128];
++	va_list ap;
++
++	if (bfin_serial_console.index < 0)
++		return;		/* Too early. */
++
++	va_start(ap, fmt);
++	vsprintf(buf, fmt, ap);
++	va_end(ap);
++	count = strlen(buf);
++
++	spin_lock_irqsave(&uart->port.lock, flags);
++
++	for (i = 0; i < count; i++) {
++		do {
++			status = UART_GET_LSR(uart);
++		} while (!(status & THRE));
++
++#ifndef CONFIG_BF54x
++		tmp = UART_GET_LCR(uart);
++		tmp &= ~DLAB;
++		UART_PUT_LCR(uart, tmp);
++#endif
++		UART_PUT_CHAR(uart, buf[i]);
++		if (buf[i] == '\n') {
++			do {
++				status = UART_GET_LSR(uart);
++			} while (!(status & THRE));
++			UART_PUT_CHAR(uart, '\r');
++		}
++	}
++
++	spin_unlock_irqrestore(&uart->port.lock, flags);
++}
++EXPORT_SYMBOL(bfin_serial_debug);
++#endif
++
+ static struct uart_driver bfin_serial_reg = {
+ 	.owner			= THIS_MODULE,
+ 	.driver_name		= "bfin-uart",
 -- 
 1.5.6
