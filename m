@@ -1,32 +1,30 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 0/6] Blackfin Serial Driver updates for 2.6.28
-Date: Mon, 13 Oct 2008 11:16:41 +0100
-Message-ID: <20081013111641.100eea07@lxorguk.ukuu.org.uk>
-References: <1223891185-13924-1-git-send-email-cooloney@kernel.org>
+From: "Prabhu Chawandi" <prabhu.chavandi@gmail.com>
+Subject: Serial Routing In the Kernel
+Date: Mon, 13 Oct 2008 16:21:43 +0530
+Message-ID: <241b8f7b0810130351v572730d8mb43e6df856e37f0b@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:54294 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S932692AbYJMKRA (ORCPT
+Received: from wa-out-1112.google.com ([209.85.146.182]:47129 "EHLO
+	wa-out-1112.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752112AbYJMKvn (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 13 Oct 2008 06:17:00 -0400
-In-Reply-To: <1223891185-13924-1-git-send-email-cooloney@kernel.org>
+	Mon, 13 Oct 2008 06:51:43 -0400
+Received: by wa-out-1112.google.com with SMTP id v27so817298wah.21
+        for <linux-serial@vger.kernel.org>; Mon, 13 Oct 2008 03:51:43 -0700 (PDT)
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Bryan Wu <cooloney@kernel.org>
-Cc: alan@redhat.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Mon, 13 Oct 2008 17:46:19 +0800
-Bryan Wu <cooloney@kernel.org> wrote:
+Hi All,
 
-> 
-> Hi Alan,
-> 
-> This is Blackfin serial driver updates:
-> 
->  - rewrite kgdb over serial supporting
->  - some bug fixing
+  I wanted to know where exactly, in which file int the kernel, debug
+messages are routed to the serial console driver...
 
-Queued for once the current tty patches have appeared in Linus tree.
+Please let me know .. will be a great help
+
+
+Thanks
+Prabhu
