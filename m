@@ -1,164 +1,136 @@
 From: Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: [PATCH 32/49] pcmcia: deprecate CS_NO_MORE_ITEMS
-Date: Mon, 13 Oct 2008 19:48:17 +0200
-Message-ID: <1223920114-19788-32-git-send-email-linux@dominikbrodowski.net>
+Subject: [PATCH 19/49] pcmcia: remove remaining in-kernel pcmcia_get_configuration_info() users
+Date: Mon, 13 Oct 2008 19:48:04 +0200
+Message-ID: <1223920114-19788-19-git-send-email-linux@dominikbrodowski.net>
 References: <20081013173803.GA18569@comet.dominikbrodowski.net>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from isilmar.linta.de ([213.133.102.198]:58594 "EHLO linta.de"
+Received: from isilmar.linta.de ([213.133.102.198]:58644 "EHLO linta.de"
 	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1753225AbYJMRvP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 13 Oct 2008 13:51:15 -0400
+	id S1753534AbYJMRvW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 13 Oct 2008 13:51:22 -0400
 In-Reply-To: <20081013173803.GA18569@comet.dominikbrodowski.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-pcmcia@lists.infradead.org
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>, Russell King <rmk+kernel@arm.linux.org.uk>, linux-serial@vger.kernel.org, Michael Buesch <mb@bu3sch.de>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>, linux-serial@vger.kernel.org, Russell King <rmk+kernel@arm.linux.org.uk>
 
-CS_NO_MORE_ITEMS is returned by the CIS tuple reading and parsing code if
-the end of a tuple chain is reached. As at least one PCMCIA driver relies
-on matching this return value, replace it with -ENOSPC which is now
-uniquely used for this purpose within the in-kernel pcmcia subsystem.
+Remove the three remaining pcmcia_get_configuration_info() users:
+- pcmciamtd is marked broken anyway.
+- serial_cs.c can access the relevant structs directly
+- ipwireless didn't use the output
 
-CC: Russell King <rmk+kernel@arm.linux.org.uk>
 CC: linux-serial@vger.kernel.org
-CC: Michael Buesch <mb@bu3sch.de>
+CC: Russell King <rmk+kernel@arm.linux.org.uk>
+Acked-by: David Sterba <dsterba@suse.cz>
 Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
 ---
- drivers/pcmcia/cistpl.c          |   10 +++++-----
- drivers/pcmcia/ds.c              |    2 +-
- drivers/pcmcia/pcmcia_ioctl.c    |    2 +-
- drivers/pcmcia/pcmcia_resource.c |    2 +-
- drivers/serial/serial_cs.c       |    2 +-
- drivers/ssb/pcmcia.c             |    2 +-
- include/pcmcia/cs.h              |    2 +-
- 7 files changed, 11 insertions(+), 11 deletions(-)
+ drivers/char/pcmcia/ipwireless/main.c |   10 ----------
+ drivers/mtd/maps/pcmciamtd.c          |   12 +-----------
+ drivers/serial/serial_cs.c            |   18 +++++++++---------
+ 3 files changed, 10 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/pcmcia/cistpl.c b/drivers/pcmcia/cistpl.c
-index 660e162..a59e09d 100644
---- a/drivers/pcmcia/cistpl.c
-+++ b/drivers/pcmcia/cistpl.c
-@@ -450,7 +450,7 @@ int pccard_get_first_tuple(struct pcmcia_socket *s, unsigned int function, tuple
- 	if (pccard_get_next_tuple(s, function, tuple) == 0) {
- 	    tuple->DesiredTuple = CISTPL_LINKTARGET;
- 	    if (pccard_get_next_tuple(s, function, tuple) != 0)
--		return CS_NO_MORE_ITEMS;
-+		return -ENOSPC;
- 	} else
- 	    tuple->CISOffset = tuple->TupleLink = 0;
- 	tuple->DesiredTuple = req;
-@@ -526,7 +526,7 @@ int pccard_get_next_tuple(struct pcmcia_socket *s, unsigned int function, tuple_
- 	/* End of chain?  Follow long link if possible */
- 	if (link[0] == CISTPL_END) {
- 	    if ((ofs = follow_link(s, tuple)) < 0)
--		return CS_NO_MORE_ITEMS;
-+		return -ENOSPC;
- 	    attr = SPACE(tuple->Flags);
- 	    read_cis_cache(s, attr, ofs, 2, link);
+diff --git a/drivers/char/pcmcia/ipwireless/main.c b/drivers/char/pcmcia/ipwireless/main.c
+index 5eca7a9..1f520e5 100644
+--- a/drivers/char/pcmcia/ipwireless/main.c
++++ b/drivers/char/pcmcia/ipwireless/main.c
+@@ -83,7 +83,6 @@ static int config_ipwireless(struct ipw_dev *ipw)
+ {
+ 	struct pcmcia_device *link = ipw->link;
+ 	int ret;
+-	config_info_t conf;
+ 	tuple_t tuple;
+ 	unsigned short buf[64];
+ 	cisparse_t parse;
+@@ -297,15 +296,6 @@ static int config_ipwireless(struct ipw_dev *ipw)
+ 		goto exit3;
  	}
-@@ -584,7 +584,7 @@ int pccard_get_next_tuple(struct pcmcia_socket *s, unsigned int function, tuple_
-     }
-     if (i == MAX_TUPLES) {
- 	cs_dbg(s, 1, "cs: overrun in pcmcia_get_next_tuple\n");
--	return CS_NO_MORE_ITEMS;
-+	return -ENOSPC;
-     }
-     
-     tuple->TupleCode = link[0];
-@@ -606,7 +606,7 @@ int pccard_get_tuple_data(struct pcmcia_socket *s, tuple_t *tuple)
- 	return -EINVAL;
  
-     if (tuple->TupleLink < tuple->TupleOffset)
--	return CS_NO_MORE_ITEMS;
-+	return -ENOSPC;
-     len = tuple->TupleLink - tuple->TupleOffset;
-     tuple->TupleDataLen = tuple->TupleLink;
-     if (len == 0)
-@@ -1490,7 +1490,7 @@ int pccard_validate_cis(struct pcmcia_socket *s, unsigned int function, unsigned
-        cards have only a broken VERS_2 tuple; hence the bogus test. */
-     if ((pccard_read_tuple(s, function, CISTPL_MANFID, p) == 0) ||
- 	(pccard_read_tuple(s, function, CISTPL_VERS_1, p) == 0) ||
--	(pccard_read_tuple(s, function, CISTPL_VERS_2, p) != CS_NO_MORE_ITEMS))
-+	(pccard_read_tuple(s, function, CISTPL_VERS_2, p) != -ENOSPC))
- 	ident_ok++;
+-	/* Look up current Vcc */
+-
+-	ret = pcmcia_get_configuration_info(link, &conf);
+-
+-	if (ret != CS_SUCCESS) {
+-		cs_error(link, GetConfigurationInfo, ret);
+-		goto exit4;
+-	}
+-
+ 	printk(KERN_INFO IPWIRELESS_PCCARD_NAME ": Card type %s\n",
+ 			ipw->is_v2_card ? "V2/V3" : "V1");
+ 	printk(KERN_INFO IPWIRELESS_PCCARD_NAME
+diff --git a/drivers/mtd/maps/pcmciamtd.c b/drivers/mtd/maps/pcmciamtd.c
+index 90924fb..8861ca4 100644
+--- a/drivers/mtd/maps/pcmciamtd.c
++++ b/drivers/mtd/maps/pcmciamtd.c
+@@ -493,7 +493,6 @@ static int pcmciamtd_config(struct pcmcia_device *link)
+ 	int last_ret = 0, last_fn = 0;
+ 	int ret;
+ 	int i;
+-	config_info_t t;
+ 	static char *probes[] = { "jedec_probe", "cfi_probe" };
+ 	int new_name = 0;
  
-     if (!dev_ok && !ident_ok)
-diff --git a/drivers/pcmcia/ds.c b/drivers/pcmcia/ds.c
-index 7f38eb0..591d962 100644
---- a/drivers/pcmcia/ds.c
-+++ b/drivers/pcmcia/ds.c
-@@ -88,7 +88,7 @@ static const lookup_t error_table[] = {
-     { CS_BAD_ARGS,		"Bad arguments" },
-     { -EACCES,			"Configuration locked" },
-     { CS_IN_USE,		"Resource in use" },
--    { CS_NO_MORE_ITEMS,		"No more items" },
-+    { -ENOSPC,			"No more items" },
-     { CS_OUT_OF_RESOURCE,	"Out of resource" },
-     { CS_BAD_TUPLE,		"Bad CIS tuple" }
- };
-diff --git a/drivers/pcmcia/pcmcia_ioctl.c b/drivers/pcmcia/pcmcia_ioctl.c
-index ed8c4fb..a6289e5 100644
---- a/drivers/pcmcia/pcmcia_ioctl.c
-+++ b/drivers/pcmcia/pcmcia_ioctl.c
-@@ -973,7 +973,7 @@ static int ds_ioctl(struct inode * inode, struct file * file,
- 	    err = -EBUSY; break;
- 	case CS_OUT_OF_RESOURCE:
- 	    err = -ENOSPC; break;
--	case CS_NO_MORE_ITEMS:
-+	case -ENOSPC:
- 	    err = -ENODATA; break;
- 	case -ENOSYS:
- 	    err = -ENOSYS; break;
-diff --git a/drivers/pcmcia/pcmcia_resource.c b/drivers/pcmcia/pcmcia_resource.c
-index 670465d..8f2c805 100644
---- a/drivers/pcmcia/pcmcia_resource.c
-+++ b/drivers/pcmcia/pcmcia_resource.c
-@@ -211,7 +211,7 @@ int pcmcia_get_window(struct pcmcia_socket *s, window_handle_t *handle,
- 		if (s->state & SOCKET_WIN_REQ(w))
- 			break;
- 	if (w == MAX_WIN)
--		return CS_NO_MORE_ITEMS;
-+		return -EINVAL;
- 	win = &s->win[w];
- 	req->Base = win->ctl.res->start;
- 	req->Size = win->ctl.res->end - win->ctl.res->start + 1;
+@@ -571,10 +570,7 @@ static int pcmciamtd_config(struct pcmcia_device *link)
+ 	dev->pcmcia_map.map_priv_1 = (unsigned long)dev;
+ 	dev->pcmcia_map.map_priv_2 = (unsigned long)link->win;
+ 
+-	DEBUG(2, "Getting configuration");
+-	CS_CHECK(GetConfigurationInfo, pcmcia_get_configuration_info(link, &t));
+-	DEBUG(2, "Vcc = %d Vpp1 = %d Vpp2 = %d", t.Vcc, t.Vpp1, t.Vpp2);
+-	dev->vpp = (vpp) ? vpp : t.Vpp1;
++	dev->vpp = (vpp) ? vpp : link->socket.socket.Vpp;
+ 	link->conf.Attributes = 0;
+ 	if(setvpp == 2) {
+ 		link->conf.Vpp = dev->vpp;
+@@ -583,13 +579,7 @@ static int pcmciamtd_config(struct pcmcia_device *link)
+ 	}
+ 
+ 	link->conf.IntType = INT_MEMORY;
+-	link->conf.ConfigBase = t.ConfigBase;
+-	link->conf.Status = t.Status;
+-	link->conf.Pin = t.Pin;
+-	link->conf.Copy = t.Copy;
+-	link->conf.ExtStatus = t.ExtStatus;
+ 	link->conf.ConfigIndex = 0;
+-	link->conf.Present = t.Present;
+ 	DEBUG(2, "Setting Configuration");
+ 	ret = pcmcia_request_configuration(link, &link->conf);
+ 	if(ret != CS_SUCCESS) {
 diff --git a/drivers/serial/serial_cs.c b/drivers/serial/serial_cs.c
-index ea7e3c0..dbb3bf3 100644
+index 7e00e67..344e570 100644
 --- a/drivers/serial/serial_cs.c
 +++ b/drivers/serial/serial_cs.c
-@@ -432,7 +432,7 @@ first_tuple(struct pcmcia_device *handle, tuple_t * tuple, cisparse_t * parse)
- 	int i;
- 	i = pcmcia_get_first_tuple(handle, tuple);
- 	if (i != 0)
--		return CS_NO_MORE_ITEMS;
-+		return i;
- 	i = pcmcia_get_tuple_data(handle, tuple);
- 	if (i != 0)
- 		return i;
-diff --git a/drivers/ssb/pcmcia.c b/drivers/ssb/pcmcia.c
-index 9699308..fbfadba 100644
---- a/drivers/ssb/pcmcia.c
-+++ b/drivers/ssb/pcmcia.c
-@@ -733,7 +733,7 @@ int ssb_pcmcia_get_invariants(struct ssb_bus *bus,
- 			break;
+@@ -488,23 +488,23 @@ static int simple_config_check_notpicky(struct pcmcia_device *p_dev,
+ static int simple_config(struct pcmcia_device *link)
+ {
+ 	struct serial_info *info = link->priv;
+-	config_info_t config;
+-	int i, try;
++	int i = -ENODEV, try;
+ 
+ 	/* If the card is already configured, look up the port and irq */
+-	i = pcmcia_get_configuration_info(link, &config);
+-	if ((i == CS_SUCCESS) && (config.Attributes & CONF_VALID_CLIENT)) {
++	if (link->function_config) {
+ 		unsigned int port = 0;
+-		if ((config.BasePort2 != 0) && (config.NumPorts2 == 8)) {
+-			port = config.BasePort2;
++		if ((link->io.BasePort2 != 0) &&
++		    (link->io.NumPorts2 == 8)) {
++			port = link->io.BasePort2;
+ 			info->slave = 1;
+ 		} else if ((info->manfid == MANFID_OSITECH) &&
+-			   (config.NumPorts1 == 0x40)) {
+-			port = config.BasePort1 + 0x28;
++			   (link->io.NumPorts1 == 0x40)) {
++			port = link->io.BasePort1 + 0x28;
+ 			info->slave = 1;
  		}
- 		res = pcmcia_get_next_tuple(bus->host_pcmcia, &tuple);
--		if (res == CS_NO_MORE_ITEMS)
-+		if (res == -ENOSPC)
- 			break;
- 		GOTO_ERROR_ON(res != 0, "VEN next tpl");
- 		res = pcmcia_get_tuple_data(bus->host_pcmcia, &tuple);
-diff --git a/include/pcmcia/cs.h b/include/pcmcia/cs.h
-index 2dc1411..20440de 100644
---- a/include/pcmcia/cs.h
-+++ b/include/pcmcia/cs.h
-@@ -315,7 +315,7 @@ typedef struct error_info_t {
- #define CS_BAD_ARGS		0x1c
- #define CS_CONFIGURATION_LOCKED	-EACCES
- #define CS_IN_USE		-EBUSY
--#define CS_NO_MORE_ITEMS	0x1f
-+#define CS_NO_MORE_ITEMS	-ENOSPC
- #define CS_OUT_OF_RESOURCE	-ENOMEM
- #define CS_BAD_HANDLE		-EINVAL
+ 		if (info->slave) {
+-			return setup_serial(link, info, port, config.AssignedIRQ);
++			return setup_serial(link, info, port,
++					    link->irq.AssignedIRQ);
+ 		}
+ 	}
  
 -- 
 1.5.4.3
