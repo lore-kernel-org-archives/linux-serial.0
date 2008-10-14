@@ -1,27 +1,73 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 2/6] Blackfin Serial Driver: Add a debug function to
- serial driver.
-Date: Tue, 14 Oct 2008 14:27:01 +0100
-Message-ID: <20081014142701.72090868@lxorguk.ukuu.org.uk>
-References: <1223891185-13924-1-git-send-email-cooloney@kernel.org>
-	<1223891185-13924-3-git-send-email-cooloney@kernel.org>
+From: David Daney <ddaney@caviumnetworks.com>
+Subject: [PATCH] serial: Initialize spinlocks in 8250 and don't clobber them.
+Date: Tue, 14 Oct 2008 14:37:24 -0700
+Message-ID: <48F51114.2010105@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:34330 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1750722AbYJNN1X (ORCPT
+Received: from mail3.caviumnetworks.com ([12.108.191.235]:63165 "EHLO
+	mail3.caviumnetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751007AbYJNVhg (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 14 Oct 2008 09:27:23 -0400
-In-Reply-To: <1223891185-13924-3-git-send-email-cooloney@kernel.org>
+	Tue, 14 Oct 2008 17:37:36 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-Cc: alan@redhat.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Graf Yang <graf.yang@analog.com>, Bryan Wu <cooloney@kernel.org>
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: linux-mips@linux-mips.org, "Paoletti, Tomaso" <Tomaso.Paoletti@caviumnetworks.com>
 
-> -		cpu_relax();
-> +		barrier();
-> +
+Initialize spinlocks in 8250 and don't clobber them.
 
-Seems to be an odd unrelated change ?
+Spinlock debugging fails in 8250.c because the lock fields in
+irq_lists are not initialized.  Initialize them.
 
+In serial8250_isa_init_ports(), the port's lock is initialized.  We
+should not overwrite it.  Only copy in the fields we need.
+
+Signed-off-by: David Daney <ddaney@caviumnetworks.com>
+Signed-off-by: Tomaso Paoletti <tpaoletti@caviumnetworks.com>
+---
+ drivers/serial/8250.c |   19 +++++++++++++++++--
+ 1 files changed, 17 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index d4104a3..0688799 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -2494,6 +2494,9 @@ static void __init serial8250_isa_init_ports(void)
+ 		return;
+ 	first = 0;
+ 
++	for (i = 0; i < ARRAY_SIZE(irq_lists); i++)
++		spin_lock_init(&irq_lists[i].lock);
++
+ 	for (i = 0; i < nr_uarts; i++) {
+ 		struct uart_8250_port *up = &serial8250_ports[i];
+ 
+@@ -2699,12 +2702,24 @@ static struct uart_driver serial8250_reg = {
+  */
+ int __init early_serial_setup(struct uart_port *port)
+ {
++	struct uart_port *p;
++
+ 	if (port->line >= ARRAY_SIZE(serial8250_ports))
+ 		return -ENODEV;
+ 
+ 	serial8250_isa_init_ports();
+-	serial8250_ports[port->line].port	= *port;
+-	serial8250_ports[port->line].port.ops	= &serial8250_pops;
++	p = &serial8250_ports[port->line].port;
++	p->iobase       = port->iobase;
++	p->membase      = port->membase;
++	p->irq          = port->irq;
++	p->uartclk      = port->uartclk;
++	p->fifosize     = port->fifosize;
++	p->regshift     = port->regshift;
++	p->iotype       = port->iotype;
++	p->flags        = port->flags;
++	p->mapbase      = port->mapbase;
++	p->private_data = port->private_data;
++	p->ops		= &serial8250_pops;
+ 	return 0;
+ }
+ 
