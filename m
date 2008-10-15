@@ -1,31 +1,60 @@
-From: Alan Cox <alan@redhat.com>
-Subject: Re: [PATCH 2/6] Blackfin Serial Driver: Add a debug function to serial driver.
-Date: Wed, 15 Oct 2008 04:38:11 -0400
-Message-ID: <20081015083811.GA21237@shell.devel.redhat.com>
-References: <1223891185-13924-1-git-send-email-cooloney@kernel.org> <1223891185-13924-3-git-send-email-cooloney@kernel.org> <20081014142701.72090868@lxorguk.ukuu.org.uk> <1224037421.6284.40.camel@dyang>
+From: David Daney <ddaney@caviumnetworks.com>
+Subject: [PATCH] 8250: Don't clobber spinlocks in 8250.
+Date: Wed, 15 Oct 2008 09:51:18 -0700
+Message-ID: <48F61F86.5020108@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([66.187.233.31]:58488 "EHLO mx1.redhat.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751030AbYJOIie (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 15 Oct 2008 04:38:34 -0400
-Content-Disposition: inline
-In-Reply-To: <1224037421.6284.40.camel@dyang>
+Received: from mail3.caviumnetworks.com ([12.108.191.235]:48525 "EHLO
+	mail3.caviumnetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752118AbYJOQvd (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 15 Oct 2008 12:51:33 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gyang <graf.yang@analog.com>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Bryan Wu <cooloney@kernel.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, "Paoletti, Tomaso" <Tomaso.Paoletti@caviumnetworks.com>
 
-On Wed, Oct 15, 2008 at 10:23:41AM +0800, gyang wrote:
-> We are making a SMP like patch to blackfin, cpu_relax() is replaced by a
-> data cache flush function which will count it to a per-cpu counter.
-> If this serial function is called too early, the per-cpu data area have
-> not been initialized, this call will cause crash.
-> So we'd like to use barrier() instead of cpu_relax().
+Don't clobber spinlocks in 8250.
 
-Can you split that out as a separate change and include the explanation in
-the patch then.
+In serial8250_isa_init_ports(), the port's lock is initialized.  We
+should not overwrite it.  Only copy in the fields we need.
 
-Thanks
-Alan
+Signed-off-by: David Daney <ddaney@caviumnetworks.com>
+Signed-off-by: Tomaso Paoletti <tpaoletti@caviumnetworks.com>
+---
+ drivers/serial/8250.c |   16 ++++++++++++++--
+ 1 files changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index d3ca7d3..da65fea 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -2699,12 +2699,24 @@ static struct uart_driver serial8250_reg = {
+  */
+ int __init early_serial_setup(struct uart_port *port)
+ {
++	struct uart_port *p;
++
+ 	if (port->line >= ARRAY_SIZE(serial8250_ports))
+ 		return -ENODEV;
+ 
+ 	serial8250_isa_init_ports();
+-	serial8250_ports[port->line].port	= *port;
+-	serial8250_ports[port->line].port.ops	= &serial8250_pops;
++	p = &serial8250_ports[port->line].port;
++	p->iobase       = port->iobase;
++	p->membase      = port->membase;
++	p->irq          = port->irq;
++	p->uartclk      = port->uartclk;
++	p->fifosize     = port->fifosize;
++	p->regshift     = port->regshift;
++	p->iotype       = port->iotype;
++	p->flags        = port->flags;
++	p->mapbase      = port->mapbase;
++	p->private_data = port->private_data;
++	p->ops		= &serial8250_pops;
+ 	return 0;
+ }
+ 
