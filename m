@@ -1,48 +1,27 @@
-From: Bryan Wu <cooloney@kernel.org>
-Subject: [PATCH 8/9] Blackfin Serial Driver: fix a in dma circle rx buffer handling
-Date: Fri, 17 Oct 2008 01:44:06 +0800
-Message-ID: <1224179047-13073-9-git-send-email-cooloney@kernel.org>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 1/9] Blackfin Serial Driver: updates kgdb over Blackfin
+ serial driver with kgdb framework
+Date: Fri, 17 Oct 2008 18:41:55 +0100
+Message-ID: <20081017184155.4143a88a@lxorguk.ukuu.org.uk>
 References: <1224179047-13073-1-git-send-email-cooloney@kernel.org>
+	<1224179047-13073-2-git-send-email-cooloney@kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ti-out-0910.google.com ([209.85.142.191]:21761 "EHLO
-	ti-out-0910.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758564AbYJPRpU (ORCPT
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:60914 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1754701AbYJQRmR (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 16 Oct 2008 13:45:20 -0400
-Received: by ti-out-0910.google.com with SMTP id b6so49515tic.23
-        for <linux-serial@vger.kernel.org>; Thu, 16 Oct 2008 10:45:20 -0700 (PDT)
-In-Reply-To: <1224179047-13073-1-git-send-email-cooloney@kernel.org>
+	Fri, 17 Oct 2008 13:42:17 -0400
+In-Reply-To: <1224179047-13073-2-git-send-email-cooloney@kernel.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: alan@redhat.com
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Sonic Zhang <sonic.zhang@analog.com>, Bryan Wu <cooloney@kernel.org>
+Cc: alan@redhat.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Sonic Zhang <sonic.zhang@analog.com>, Bryan Wu <cooloney@kernel.org>
 
-From: Sonic Zhang <sonic.zhang@analog.com>
+The previous set are already merged/reviewed in the ttydev tree (barring
+the cpu_relax mystery item) so I'd much rather get patches versus the
+ttydev tree so I can see what has actually changed this time not
+re-review the entire collection again.
 
-Reported-by: Qian Zhang <zhangq@sansitech.com>
-Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
-Signed-off-by: Bryan Wu <cooloney@kernel.org>
----
- drivers/serial/bfin_5xx.c |    4 +++-
- 1 files changed, 3 insertions(+), 1 deletions(-)
-
-diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
-index 350bfc4..1e027e3 100644
---- a/drivers/serial/bfin_5xx.c
-+++ b/drivers/serial/bfin_5xx.c
-@@ -402,9 +402,11 @@ static void bfin_serial_dma_rx_chars(struct bfin_serial_port *uart)
- 	else
- 		flg = TTY_NORMAL;
- 
--	for (i = uart->rx_dma_buf.tail; i != uart->rx_dma_buf.head; i++) {
-+	for (i = uart->rx_dma_buf.tail; ; i++) {
- 		if (i >= UART_XMIT_SIZE)
- 			i = 0;
-+		if (i == uart->rx_dma_buf.head)
-+			break;
- 		if (!uart_handle_sysrq_char(&uart->port, uart->rx_dma_buf.buf[i]))
- 			uart_insert_char(&uart->port, status, OE,
- 				uart->rx_dma_buf.buf[i], flg);
--- 
-1.5.6
-
+Alan
