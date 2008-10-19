@@ -1,27 +1,47 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 1/9] Blackfin Serial Driver: updates kgdb over Blackfin
- serial driver with kgdb framework
-Date: Fri, 17 Oct 2008 18:41:55 +0100
-Message-ID: <20081017184155.4143a88a@lxorguk.ukuu.org.uk>
-References: <1224179047-13073-1-git-send-email-cooloney@kernel.org>
-	<1224179047-13073-2-git-send-email-cooloney@kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:60914 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1754701AbYJQRmR (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 17 Oct 2008 13:42:17 -0400
-In-Reply-To: <1224179047-13073-2-git-send-email-cooloney@kernel.org>
-Sender: linux-serial-owner@vger.kernel.org
+From: Maxime Bizon <mbizon@freebox.fr>
+Subject: [PATCH/RFC v1 00/12] Support for Broadcom 63xx SOCs
+Date: Sun, 19 Oct 2008 04:07:02 +0200
+Message-ID: <1224382022-24173-1-git-send-email-mbizon@freebox.fr>
+Return-path: <linux-mips-bounce@linux-mips.org>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+To: ralf@linux-mips.org
+Cc: netdev@vger.kernel.org, afleming@freescale.com, jgarzik@pobox.com, linux-usb@vger.kernel.org, dbrownell@users.sourceforge.net, linux-pcmcia@lists.infradead.org, linux-serial@vger.kernel.org, linux-mips@linux-mips.org, Maxime Bizon <mbizon@freebox.fr>
 List-Id: linux-serial@vger.kernel.org
-Cc: alan@redhat.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Sonic Zhang <sonic.zhang@analog.com>, Bryan Wu <cooloney@kernel.org>
 
-The previous set are already merged/reviewed in the ttydev tree (barring
-the cpu_relax mystery item) so I'd much rather get patches versus the
-ttydev tree so I can see what has actually changed this time not
-re-review the entire collection again.
+[first try at patch series mailing, if you're in to/cc list by mistake
+please tell me]
 
-Alan
+
+Hello everyone,
+
+This is a set of patches that add support for the Broadcom 63xx series
+of CPUs and  (some) integrated devices. These are  popular MIPS32 SOCs
+found in a lot of DSL modems.
+
+CPUs supported are  6348 and 6358. Support is  provided for integrated
+UART,  USB OHCI  and  EHCI, PCI  controller,  ethernet MAC  & PHY  and
+PCMCIA/Cardbus controller.
+
+Board support is still rough, each vendor seems to have its own way of
+identifying the board  type in nvram, that's why  it will probably not
+work out of  the box.  So DON'T FLASH IT BLINDLY  on your modem unless
+you have a serial cable, prefer tftpboot/nfsroot for testing.
+
+I used linux-mips git tree  master to generate theses patches, this is
+probably  inappropriate considering  they  touch multiple  subsystems.
+Since all patches  depends on first two of the series  I wonder how to
+submit this properly for inclusion in one merge window (if that's even
+do-able).
+
+Patches are also available here in case they were too big:
+http://88.191.35.171/bcm63xx/patches/linux-mips-bcm63xx/v1/
+
+
+I would like to thank my company for letting me release this (hi
+boss), and also Broadcom who gave its blessing.
+
+Happy hacking !
+
+-- 
+Maxime
