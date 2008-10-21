@@ -1,91 +1,80 @@
-From: David Daney <ddaney@caviumnetworks.com>
-Subject: Re: [PATCH] serial: Initialize spinlocks in 8250 and don't clobber
- them.
-Date: Mon, 20 Oct 2008 14:37:50 -0700
-Message-ID: <48FCFA2E.6040608@caviumnetworks.com>
-References: <48F51114.2010105@caviumnetworks.com> <20081020141750.d0610586.akpm@linux-foundation.org>
+From: Arjan van de Ven <arjan@infradead.org>
+Subject: [PATCH] pci: use pci_ioremap_bar() in drivers/serial
+Date: Mon, 20 Oct 2008 22:01:58 -0700
+Message-ID: <20081020220158.5244f99c@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail3.caviumnetworks.com ([12.108.191.235]:31352 "EHLO
-	mail3.caviumnetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756056AbYJTViU (ORCPT
+Received: from casper.infradead.org ([85.118.1.10]:33001 "EHLO
+	casper.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750763AbYJUFBz convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 20 Oct 2008 17:38:20 -0400
-In-Reply-To: <20081020141750.d0610586.akpm@linux-foundation.org>
+	Tue, 21 Oct 2008 01:01:55 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, Tomaso.Paoletti@caviumnetworks.com
+To: linux-serial@vger.kernel.org, akpm@linux-foundation.org
 
-Andrew Morton wrote:
-[...]
-> OK..  But serial8250_isa_init_ports() has so many callsites that I'd
-> worry that we end up running this initialisation multiple times.  Say,
-> if the right combination of boot options is provided?  This is probably
-> a benign thing, but it's not desirable.
-> 
-> A simple "fix" would be
-> 
-> static void __init irq_lists_init(void)
-> {
-> 	static unsigned long done;
-> 
-> 	if (!test_and_set_bit(0, &done)) {
-> 		int i;
-> 
-> 		for (i = 0; i < ARRAY_SIZE(irq_lists); i++)
-> 			spin_lock_init(&irq_lists[i].lock);
-> 	}
-> }
-> 
-> A better fix would be to initialise all those spinlocks at compile
-> time.  But given the need to pass the address of each lock into each
-> lock's initialiser, that could be tricky.
-> 
+>From a7ba162fcd65b21f78143e82bf26bd18ef2c836b Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Sun, 28 Sep 2008 16:18:21 -0700
+Subject: [PATCH] pci: use pci_ioremap_bar() in drivers/serial
 
-Alan Cox already fixed this part different way.
+Use the newly introduced pci_ioremap_bar() function in drivers/serial.
+pci_ioremap_bar() just takes a pci device and a bar number, with the goal
+of making it really hard to get wrong, while also having a central place
+to stick sanity checks.
 
->>  	for (i = 0; i < nr_uarts; i++) {
->>  		struct uart_8250_port *up = &serial8250_ports[i];
->>  
->> @@ -2699,12 +2702,24 @@ static struct uart_driver serial8250_reg = {
->>   */
->>  int __init early_serial_setup(struct uart_port *port)
->>  {
->> +	struct uart_port *p;
->> +
->>  	if (port->line >= ARRAY_SIZE(serial8250_ports))
->>  		return -ENODEV;
->>  
->>  	serial8250_isa_init_ports();
->> -	serial8250_ports[port->line].port	= *port;
->> -	serial8250_ports[port->line].port.ops	= &serial8250_pops;
->> +	p = &serial8250_ports[port->line].port;
->> +	p->iobase       = port->iobase;
->> +	p->membase      = port->membase;
->> +	p->irq          = port->irq;
->> +	p->uartclk      = port->uartclk;
->> +	p->fifosize     = port->fifosize;
->> +	p->regshift     = port->regshift;
->> +	p->iotype       = port->iotype;
->> +	p->flags        = port->flags;
->> +	p->mapbase      = port->mapbase;
->> +	p->private_data = port->private_data;
->> +	p->ops		= &serial8250_pops;
->>  	return 0;
->>  }
-> 
-> Having to spell out each member like this is pretty nasty from a
-> maintainability point of view.  If new fields are added to uart_port,
-> we surely will forget to update this code.
-> 
-> But yes, copying a spinlock by value is quite wrong.  Perhaps we could
-> retain the struct assigment and then run spin_lock_init() to get the
-> spinlock into a sane state?
+Signed-off-by: Arjan van de Ven <arjan@linux.intel.com>
+---
+ drivers/serial/8250_pci.c |    6 ++----
+ drivers/serial/icom.c     |    3 +--
+ 2 files changed, 3 insertions(+), 6 deletions(-)
 
-It is ugly, I will think about this part more.
+diff --git a/drivers/serial/8250_pci.c b/drivers/serial/8250_pci.c
+index c014ffb..e5d6836 100644
+--- a/drivers/serial/8250_pci.c
++++ b/drivers/serial/8250_pci.c
+@@ -339,8 +339,7 @@ static int sbs_init(struct pci_dev *dev)
+ {
+ 	u8 __iomem *p;
+ 
+-	p = ioremap_nocache(pci_resource_start(dev, 0),
+-						pci_resource_len(dev, 0));
++	p = pci_ioremap_bar(dev, 0);
+ 
+ 	if (p == NULL)
+ 		return -ENOMEM;
+@@ -364,8 +363,7 @@ static void __devexit sbs_exit(struct pci_dev *dev)
+ {
+ 	u8 __iomem *p;
+ 
+-	p = ioremap_nocache(pci_resource_start(dev, 0),
+-					pci_resource_len(dev, 0));
++	p = pci_ioremap_bar(dev, 0);
+ 	/* FIXME: What if resource_len < OCT_REG_CR_OFF */
+ 	if (p != NULL)
+ 		writeb(0, p + OCT_REG_CR_OFF);
+diff --git a/drivers/serial/icom.c b/drivers/serial/icom.c
+index 2b7531d..d0085ea 100644
+--- a/drivers/serial/icom.c
++++ b/drivers/serial/icom.c
+@@ -1553,8 +1553,7 @@ static int __devinit icom_probe(struct pci_dev *dev,
+ 		goto probe_exit1;
+ 	}
+ 
+-	 icom_adapter->base_addr = ioremap(icom_adapter->base_addr_pci,
+-						pci_resource_len(dev, 0));
++	 icom_adapter->base_addr = pci_ioremap_bar(dev, 0);
+ 
+ 	if (!icom_adapter->base_addr)
+ 		goto probe_exit1;
+-- 
+1.5.5.1
 
-Thanks,
-David Daney
+
+
+-- 
+Arjan van de Ven 	Intel Open Source Technology Centre
+For development, discussion and tips for power savings, 
+visit http://www.lesswatts.org
