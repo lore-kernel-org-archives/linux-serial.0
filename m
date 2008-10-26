@@ -1,65 +1,61 @@
-From: Florian Fainelli <florian@openwrt.org>
+From: Ralf Baechle <ralf@linux-mips.org>
 Subject: Re: [PATCH/RFC v1 00/12] Support for Broadcom 63xx SOCs
-Date: Wed, 22 Oct 2008 15:58:23 +0200
-Message-ID: <200810221558.27338.florian@openwrt.org>
+Date: Sun, 26 Oct 2008 11:26:01 +0000
+Message-ID: <20081026112601.GA9364@linux-mips.org>
 References: <1224382022-24173-1-git-send-email-mbizon@freebox.fr>
 Mime-Version: 1.0
-Content-Type: multipart/signed;
-  boundary="nextPart2962902.4p7LAVTyHT";
-  protocol="application/pgp-signature";
-  micalg=pgp-sha1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-gx0-f16.google.com ([209.85.217.16]:54134 "EHLO
-	mail-gx0-f16.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751712AbYJVN6m (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 22 Oct 2008 09:58:42 -0400
-Received: by gxk9 with SMTP id 9so7346798gxk.13
-        for <linux-serial@vger.kernel.org>; Wed, 22 Oct 2008 06:58:40 -0700 (PDT)
-In-Reply-To: <1224382022-24173-1-git-send-email-mbizon@freebox.fr>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
-To: Maxime Bizon <mbizon@freebox.fr>
-Cc: ralf@linux-mips.org, netdev@vger.kernel.org, afleming@freescale.com, jgarzik@pobox.com, linux-usb@vger.kernel.org, dbrownell@users.sourceforge.net, linux-pcmcia@lists.infradead.org, linux-serial@vger.kernel.org, linux-mips@linux-mips.org
-
---nextPart2962902.4p7LAVTyHT
-Content-Type: text/plain;
-  charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-mips-bounce@linux-mips.org>
 Content-Disposition: inline
+In-Reply-To: <1224382022-24173-1-git-send-email-mbizon@freebox.fr>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+To: Maxime Bizon <mbizon@freebox.fr>
+Cc: netdev@vger.kernel.org, afleming@freescale.com, jgarzik@pobox.com, linux-usb@vger.kernel.org, dbrownell@users.sourceforge.net, linux-pcmcia@lists.infradead.org, linux-serial@vger.kernel.org, linux-mips@linux-mips.org
+List-Id: linux-serial@vger.kernel.org
 
-Hello,
+On Sun, Oct 19, 2008 at 04:07:02AM +0200, Maxime Bizon wrote:
 
-Le Sunday 19 October 2008 04:07:02 Maxime Bizon, vous avez =E9crit=A0:
+> [first try at patch series mailing, if you're in to/cc list by mistake
+> please tell me]
+
+In the Linux world people more complain about email they do not receive
+than they receive unnecessarily.
+
+Looks ok - the only thing that's a bit strange about this email is that
+git-send-email which you seem to have used normally sends out all emails
+as reply either to the one preceeding in the series or or the first of
+all - but yours arrived without reply headers.
+
+This means the receiver has to be careful to apply things in the right
+order since the mail client probably will display them in the order of
+arrival, if emails get reordered in transmission.
+
+> This is a set of patches that add support for the Broadcom 63xx series
+> of CPUs and  (some) integrated devices. These are  popular MIPS32 SOCs
+> found in a lot of DSL modems.
+> 
 > CPUs supported are  6348 and 6358. Support is  provided for integrated
 > UART,  USB OHCI  and  EHCI, PCI  controller,  ethernet MAC  & PHY  and
 > PCMCIA/Cardbus controller.
+> 
+> Board support is still rough, each vendor seems to have its own way of
+> identifying the board  type in nvram, that's why  it will probably not
+> work out of  the box.  So DON'T FLASH IT BLINDLY  on your modem unless
+> you have a serial cable, prefer tftpboot/nfsroot for testing.
+> 
+> I used linux-mips git tree  master to generate theses patches, this is
+> probably  inappropriate considering  they  touch multiple  subsystems.
+> Since all patches  depends on first two of the series  I wonder how to
+> submit this properly for inclusion in one merge window (if that's even
+> do-able).
 
-I got some pending patches on top of yours to add support for earlier : 633=
-8=20
-and 6345, as well as newer revisions of the SoC : 6368 and 6816.=20
-Additionnaly, the cable version (BCM3348/BCM3349) should be fairly well=20
-supported now, for which I need to have a serious try.
+As agreed earlier I've setup a git tree on linux-mips.org at
+/pub/scm/linux-bcm63xx.git which also is visible on.
+http://www.linux-mips.org/git.
 
-I prefer you get some feedback on your patches first before submitting my=20
-changes.
-=2D-=20
-Best regards, Florian Fainelli
-Email : florian@openwrt.org
-http://openwrt.org
-=2D------------------------------
+If you want to send me any updates then it's also ok to send me a patch
+relative to an earlier patch.  I'll then just fold it into that earlier
+patch.
 
---nextPart2962902.4p7LAVTyHT
-Content-Type: application/pgp-signature; name=signature.asc 
-Content-Description: This is a digitally signed message part.
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.9 (GNU/Linux)
-
-iEYEABECAAYFAkj/MYEACgkQlyvkmBGtjyamHwCggOIQTTLwf5Y2y0CH7tme3706
-CssAnRZXTrJJgdZrFmSwCuVctVowUk15
-=PSMQ
------END PGP SIGNATURE-----
-
---nextPart2962902.4p7LAVTyHT--
+  Ralf
