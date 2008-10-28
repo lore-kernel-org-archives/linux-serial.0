@@ -1,86 +1,64 @@
 From: David Daney <ddaney@caviumnetworks.com>
-Subject: [PATCH 32/36] Allow port type to be specified when calling serial8250_register_port.
-Date: Mon, 27 Oct 2008 17:04:09 -0700
-Message-ID: <1225152251-3367-3-git-send-email-ddaney@caviumnetworks.com>
+Subject: [PATCH 33/36] Allow port type to specify bugs that are not probed for.
+Date: Mon, 27 Oct 2008 17:04:10 -0700
+Message-ID: <1225152251-3367-4-git-send-email-ddaney@caviumnetworks.com>
 References: <490655B6.4030406@caviumnetworks.com>
  <1225152251-3367-1-git-send-email-ddaney@caviumnetworks.com>
  <1225152251-3367-2-git-send-email-ddaney@caviumnetworks.com>
+ <1225152251-3367-3-git-send-email-ddaney@caviumnetworks.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail3.caviumnetworks.com ([12.108.191.235]:5579 "EHLO
+Received: from mail3.caviumnetworks.com ([12.108.191.235]:5558 "EHLO
 	mail3.caviumnetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751978AbYJ1AFM (ORCPT
+	with ESMTP id S1751369AbYJ1AFK (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 27 Oct 2008 20:05:12 -0400
-In-Reply-To: <1225152251-3367-2-git-send-email-ddaney@caviumnetworks.com>
+	Mon, 27 Oct 2008 20:05:10 -0400
+In-Reply-To: <1225152251-3367-3-git-send-email-ddaney@caviumnetworks.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-mips@linux-mips.org
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, akpm@linux-foundation.org, David Daney <ddaney@caviumnetworks.com>
 
-Add flag value UPF_FIXED_TYPE which specifies that the UART type is
-known and should not be probed.  For this case the UARTs properties
-are just copied out of the uart_config entry.
+Add a bugs field to the serial8250_config and propagate it to the
+port's bugs field when the port is registered and configured.
 
 Signed-off-by: David Daney <ddaney@caviumnetworks.com>
 ---
- drivers/serial/8250.c        |    8 ++++++++
- drivers/serial/serial_core.c |    7 +++++--
- include/linux/serial_core.h  |    2 ++
- 3 files changed, 15 insertions(+), 2 deletions(-)
+ drivers/serial/8250.c |    2 ++
+ drivers/serial/8250.h |    1 +
+ 2 files changed, 3 insertions(+), 0 deletions(-)
 
 diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index 410478f..9d16abb 100644
+index 9d16abb..474ab89 100644
 --- a/drivers/serial/8250.c
 +++ b/drivers/serial/8250.c
-@@ -3056,6 +3056,14 @@ int serial8250_register_port(struct uart_port *port)
- 		uart->port.private_data = port->private_data;
- 		if (port->dev)
- 			uart->port.dev = port->dev;
-+
-+		if (port->flags & UPF_FIXED_TYPE) {
-+			uart->port.type = port->type;
-+			uart->port.fifosize = uart_config[port->type].fifo_size;
-+			uart->capabilities = uart_config[port->type].flags;
-+			uart->tx_loadsz = uart_config[port->type].tx_loadsz;
-+		}
-+
- 		set_io_fns_from_upio(&uart->port);
- 		/* Possibly override default I/O functions.  */
- 		if (port->serial_in_fn)
-diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
-index 874786a..7fef45e 100644
---- a/drivers/serial/serial_core.c
-+++ b/drivers/serial/serial_core.c
-@@ -2198,11 +2198,14 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
- 	 * Now do the auto configuration stuff.  Note that config_port
- 	 * is expected to claim the resources and map the port for us.
- 	 */
--	flags = UART_CONFIG_TYPE;
-+	flags = 0;
- 	if (port->flags & UPF_AUTO_IRQ)
- 		flags |= UART_CONFIG_IRQ;
- 	if (port->flags & UPF_BOOT_AUTOCONF) {
--		port->type = PORT_UNKNOWN;
-+		if (!(port->flags & UPF_FIXED_TYPE)) {
-+			port->type = PORT_UNKNOWN;
-+			flags |= UART_CONFIG_TYPE;
-+		}
- 		port->ops->config_port(port, flags);
- 	}
+@@ -1212,6 +1212,7 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
+ 	up->port.fifosize = uart_config[up->port.type].fifo_size;
+ 	up->capabilities = uart_config[up->port.type].flags;
+ 	up->tx_loadsz = uart_config[up->port.type].tx_loadsz;
++	up->bugs |= uart_config[up->port.type].bugs;
  
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 40509b0..54e0dce 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -290,6 +290,8 @@ struct uart_port {
- #define UPF_MAGIC_MULTIPLIER	((__force upf_t) (1 << 16))
- #define UPF_CONS_FLOW		((__force upf_t) (1 << 23))
- #define UPF_SHARE_IRQ		((__force upf_t) (1 << 24))
-+/* The exact UART type is known and should not be probed.  */
-+#define UPF_FIXED_TYPE		((__force upf_t) (1 << 27))
- #define UPF_BOOT_AUTOCONF	((__force upf_t) (1 << 28))
- #define UPF_FIXED_PORT		((__force upf_t) (1 << 29))
- #define UPF_DEAD		((__force upf_t) (1 << 30))
+ 	if (up->port.type == PORT_UNKNOWN)
+ 		goto out;
+@@ -3062,6 +3063,7 @@ int serial8250_register_port(struct uart_port *port)
+ 			uart->port.fifosize = uart_config[port->type].fifo_size;
+ 			uart->capabilities = uart_config[port->type].flags;
+ 			uart->tx_loadsz = uart_config[port->type].tx_loadsz;
++			uart->bugs = uart_config[port->type].bugs;
+ 		}
+ 
+ 		set_io_fns_from_upio(&uart->port);
+diff --git a/drivers/serial/8250.h b/drivers/serial/8250.h
+index 5202603..c9b3002 100644
+--- a/drivers/serial/8250.h
++++ b/drivers/serial/8250.h
+@@ -34,6 +34,7 @@ struct serial8250_config {
+ 	const char	*name;
+ 	unsigned short	fifo_size;
+ 	unsigned short	tx_loadsz;
++	unsigned short	bugs;
+ 	unsigned char	fcr;
+ 	unsigned int	flags;
+ };
 -- 
 1.5.6.5
 
