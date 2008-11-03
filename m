@@ -1,48 +1,40 @@
-From: Daniel J Laird <daniel.j.laird@nxp.com>
-Subject: [PATCH] Enabling PNX8XXX serial for NXP devices other than PNX8550.
-Date: Mon, 3 Nov 2008 16:28:06 +0100
-Message-ID: <C13DBBE85AD6974B85C118C35890CA5F13B22CBA46@EU1RDCRDC1WX029.exi.nxp.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-mips-bounce@linux-mips.org>
-Content-Language: en-US
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Cc: "linux-mips@linux-mips.org" <linux-mips@linux-mips.org>
+From: Mike Frysinger <vapier@gentoo.org>
+Subject: [PATCH] linux/serial.h: touchup for userspace
+Date: Mon,  3 Nov 2008 14:00:09 -0500
+Message-ID: <1225738809-13253-1-git-send-email-vapier@gentoo.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp.gentoo.org ([140.211.166.183]:46167 "EHLO smtp.gentoo.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752205AbYKCTAL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 3 Nov 2008 14:00:11 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: akpm@linux-foundation.org, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, alan@redhat.com
 
-NXP PNX83XX SOCs use the same serial IP block as PNX8550 yet cannot select it
-due to KConfig dependencies.  This patch enables support for PNX8550 and PNX83XX SoCs.
+The linux/serial.h header has __u32 in some structs it exports to userspace,
+so make sure we pull in linux/types.h all the time.
 
-Kconfig |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+---
+ include/linux/serial.h |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
-Signed-off-by: daniel.j.laird <daniel.j.laird@nxp.com>
-
-diff -urN linux.git.orig/drivers/serial/Kconfig linux.git.new/drivers/serial/Kconfig
---- linux.git.orig/drivers/serial/Kconfig	2008-10-27 14:40:31.000000000 +0000
-+++ linux.git.new/drivers/serial/Kconfig	2008-11-03 15:01:54.000000000 +0000
-@@ -959,10 +959,10 @@
+diff --git a/include/linux/serial.h b/include/linux/serial.h
+index 1ea8d92..9136cc5 100644
+--- a/include/linux/serial.h
++++ b/include/linux/serial.h
+@@ -10,8 +10,9 @@
+ #ifndef _LINUX_SERIAL_H
+ #define _LINUX_SERIAL_H
  
- config SERIAL_PNX8XXX
- 	bool "Enable PNX8XXX SoCs' UART Support"
--	depends on MIPS && SOC_PNX8550
-+	depends on MIPS && (SOC_PNX8550 || SOC_PNX833X)
- 	select SERIAL_CORE
- 	help
--	  If you have a MIPS-based Philips SoC such as PNX8550 or PNX8330
-+	  If you have a MIPS-based NXP SoC such as PNX8550 or PNX8330/2/5
- 	  and you want to use serial ports, say Y.  Otherwise, say N.
+-#ifdef __KERNEL__
+ #include <linux/types.h>
++
++#ifdef __KERNEL__
+ #include <asm/page.h>
  
- config SERIAL_PNX8XXX_CONSOLE
-@@ -970,7 +970,7 @@
- 	depends on SERIAL_PNX8XXX
- 	select SERIAL_CORE_CONSOLE
- 	help
--	  If you have a MIPS-based Philips SoC such as PNX8550 or PNX8330
-+	  If you have a MIPS-based NXP SoC such as PNX8550 or PNX8330/2/5
- 	  and you want to use serial console, say Y. Otherwise, say N.
- 
- config SERIAL_CORE
+ /*
+-- 
+1.6.0.3
+
