@@ -1,37 +1,46 @@
-From: "Maciej W. Rozycki" <macro@linux-mips.org>
-Subject: Re: [PATCH 00/36] Add Cavium OCTEON processor support (v2).
-Date: Tue, 4 Nov 2008 14:48:47 +0000 (GMT)
-Message-ID: <alpine.LFD.1.10.0811041446280.7233@ftp.linux-mips.org>
-References: <490655B6.4030406@caviumnetworks.com> <alpine.LFD.1.10.0810291905020.13373@ftp.linux-mips.org> <4909CC40.1010106@nortel.com>
+From: KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
+Subject: [PATCH] serial/8250: fix uninitialized warnings
+Date: Wed, 5 Nov 2008 02:26:00 +0900 (JST)
+Message-ID: <20081105022353.7CB0.KOSAKI.MOTOHIRO@jp.fujitsu.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset="ISO-2022-JP"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ftp.linux-mips.org ([213.58.128.207]:60820 "EHLO
-	ftp.linux-mips.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751154AbYKDOss (ORCPT
+Received: from fgwmail7.fujitsu.co.jp ([192.51.44.37]:50670 "EHLO
+	fgwmail7.fujitsu.co.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754604AbYKDR0F (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 Nov 2008 09:48:48 -0500
-In-Reply-To: <4909CC40.1010106@nortel.com>
+	Tue, 4 Nov 2008 12:26:05 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Chris Friesen <cfriesen@nortel.com>
-Cc: David Daney <ddaney@caviumnetworks.com>, linux-mips <linux-mips@linux-mips.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, "Paoletti, Tomaso" <Tomaso.Paoletti@caviumnetworks.com>
+To: linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Cc: kosaki.motohiro@jp.fujitsu.com
 
-On Thu, 30 Oct 2008, Chris Friesen wrote:
 
-> >  Well, in the context of a technical mailing list there isn't much more
-> > information available at the link you've quoted; although I do understand
-> > you might not be the most appropriate person to point it to.  Honestly,
-> > stating: "The family comprises SOC devices built around MIPS64 cores" would
-> > provide about as much (little) information as the web site does. :(
-> 
-> You can register for free at www.cnusers.org and they have a bit more
-> information there as well as existing SDKs with full linux source for older
-> versions.  However, it looks like the really gory details are available only
-> after signing an NDA.
+fix following warnings.
 
- Thanks.  However I am not *that* desperate yet and registering for access 
-to all the chips released out there just in case it might be useful for 
-something does not seem terribly attractive to me.
+drivers/serial/8250.c: In function ‘serial8250_shutdown’:
+drivers/serial/8250.c:1612: warnings: ‘i’ may be used uninitialized in this function
 
-  Maciej
+
+Signed-off-by: KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
+CC: linux-serial@vger.kernel.org
+---
+ drivers/serial/8250.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: b/drivers/serial/8250.c
+===================================================================
+--- a/drivers/serial/8250.c	2008-11-05 01:10:11.000000000 +0900
++++ b/drivers/serial/8250.c	2008-11-05 01:38:39.000000000 +0900
+@@ -1609,7 +1609,7 @@ static int serial_link_irq_chain(struct 
+ 
+ static void serial_unlink_irq_chain(struct uart_8250_port *up)
+ {
+-	struct irq_info *i;
++	struct irq_info *i = NULL;
+ 	struct hlist_node *n;
+ 	struct hlist_head *h;
+ 
+
+
