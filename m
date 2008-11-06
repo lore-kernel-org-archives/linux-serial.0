@@ -1,248 +1,212 @@
-From: =?ISO-8859-15?Q?Ren=E9_B=FCrgel?= <r.buergel@unicontrol.de>
-Subject: Re: [PATCH V4] workaround for mpc52xx erratum #364 (serial may not
-	be reset in break state)
-Date: Thu, 06 Nov 2008 09:11:07 +0100
-Message-ID: <4912A69B.6020707@unicontrol.de>
-References: <490F51E7.3020309@unicontrol.de>
-	<fa686aa40811031255w3d9a065dgb0eb7ad4b26c9651@mail.gmail.com>
-	<4910274E.5030305@unicontrol.de>
-	<20081104111545.GB17864@pengutronix.de>
-	<4910A519.3030701@unicontrol.de>
-	<20081104212152.GC28064@pengutronix.de>
+From: David Daney <ddaney@caviumnetworks.com>
+Subject: [PATCH 00/29] Add Cavium OCTEON processor support (v3).
+Date: Thu, 06 Nov 2008 12:52:05 -0800
+Message-ID: <491358F5.7040002@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------070305050703010104030901"
-Return-path: <linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane.org@ozlabs.org>
-In-Reply-To: <20081104212152.GC28064@pengutronix.de>
-List-Unsubscribe: <https://ozlabs.org/mailman/options/linuxppc-dev>,
-	<mailto:linuxppc-dev-request@ozlabs.org?subject=unsubscribe>
-List-Archive: <http://ozlabs.org/pipermail/linuxppc-dev>
-List-Post: <mailto:linuxppc-dev@ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@ozlabs.org?subject=help>
-List-Subscribe: <https://ozlabs.org/mailman/listinfo/linuxppc-dev>,
-	<mailto:linuxppc-dev-request@ozlabs.org?subject=subscribe>
-Sender: linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane.org@ozlabs.org
-Errors-To: linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane.org@ozlabs.org
-To: Wolfram Sang <w.sang@pengutronix.de>, linuxppc-dev@ozlabs.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail3.caviumnetworks.com ([12.108.191.235]:38456 "EHLO
+	mail3.caviumnetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751164AbYKFUwS (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 6 Nov 2008 15:52:18 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-mips <linux-mips@linux-mips.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
 
-This is a multi-part message in MIME format.
---------------070305050703010104030901
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: quoted-printable
+This patch set introduces preliminary support for Cavium Networks'
+OCTEON processor family.  More (but not detailed) information about
+these processors may be obtained here:
 
-This patch is a workaround for bug #364 found in the MPC52xx processor.
-The errata document can be found under=20
-http://www.freescale.com/files/32bit/doc/errata/MPC5200E.pdf?fpsp=3D1&WT_=
-TYPE=3DErrata&WT_VENDOR=3DFREESCALE&WT_FILE_FORMAT=3Dpdf&WT_ASSET=3DDocum=
-entation=20
+http://www.caviumnetworks.com/OCTEON_MIPS64.html
 
+This initial patch set adds support for booting an initramfs to a
+serial console.  Follow-on patch sets will add support for the on-chip
+ethernet, USB, PCI, PCIe, I2c and other peripherals.
 
-When a device with a low baudrate is connected to the serial port, but=20
-the processor "listens" on a higher baudrate, it might falsely receive=20
-breaks from the controller. During a break, the serial controller may=20
-not be reset. The appended patch provides a workaround for that=20
-situation by lowering the baudrate without resetting the controller and=20
-waiting until no break is received anymore.
+With this third version of the patches I think we have fixed or
+removed most of the parts flagged as objectionable in the first two
+rounds of reviews.  There was extensive rearrangement of some of the
+chip and board support files as well as cleanup of cache, dma, and
+interrupt code.  Ralf already merged or made equivalent changes for
+six of the patches so the set is getting smaller.
 
-This is v4 if the patch, just reformatted to fit the linux kernel coding=20
-style without functional changes.
+I am sending 23 - 27 to linux-serial and linux-kernel and akpm in
+hopes that these non-MIPS patches might be reviewed thus enabling the
+entire set to eventually be merged.
 
-Wolfram Sang schrieb:
-> Hi Ren=E9,
->
-> On Tue, Nov 04, 2008 at 08:40:09PM +0100, Ren=E9 B=FCrgel wrote
->> But there's still one thing, that bothers me a bit - if there is REALL=
-Y =20
->> a break on the line, closing the driver may take until it's gone. I =20
->> don't know whether this is really satisfying, but i think it's better =
-=20
->> than the alternative: no serial connection until the next reboot.
->>    =20
->
-> I think we should CC linux-serial to get some opinions about this. At
-> least, if it stays like this, it should be mentioned in the source.
+29 patches to follow as replies (I hope).
 
-What's the opinion from the linux-serial folks about this issue?
+David Daney (29):
+  01 - MIPS: Add Cavium OCTEON processor support files to
+    arch/mips/cavium-octeon.
+  02 - MIPS: Add Cavium OCTEON files to
+    arch/mips/include/asm/mach-cavium-octeon
+  03 - MIPS: Add Cavium OCTEON processor support files to arch/mips/kernel.
+  04 - MIPS: Add Cavium OCTEON processor support files to arch/mips/mm.
+  05 - MIPS: Add Cavium OCTEON processor support files to
+    arch/mips/cavium-octeon/executive and asm/octeon.
+  06 - MIPS: For Cavium OCTEON handle hazards as per the R10000 handling.
+  07 - MIPS: For Cavium OCTEON set hwrena and lazily restore CP2 state.
+  08 - MIPS: Add Cavium OCTEON to arch/mips/Kconfig
+  09 - MIPS: Add Cavium OCTEON processor constants.
+  10 - MIPS: Add Cavium OCTEON specific register definitions to mipsregs.h
+  11 - MIPS: Override assembler target architecture for octeon.
+  12 - MIPS: Probe for Cavium OCTEON CPUs.
+  13 - MIPS: Hook Cavium OCTEON cache init into cache.c
+  14 - MIPS: Hook up Cavium OCTEON in arch/mips.
+  15 - MIPS: Modify core io.h macros to account for the Octeon Errata
+    Core-301.
+  16 - MIPS: Add Cavium OCTEON cop2/cvmseg state entries to processor.h.
+  17 - MIPS: Add Cavium OCTEON specific registers to ptrace.h and
+    asm-offsets.c
+  18 - MIPS: Add SMP_ICACHE_FLUSH for the Cavium CPU family.
+  19 - MIPS: Cavium OCTEON: PT vs MFC0 reorder, multiplier state
+    preservation.
+  20 - MIPS: Add Cavium OCTEON irq hazard in asmmacro.h.
+  21 - MIPS:  Compute branch returns for Cavium OCTEON specific branch
+    instructions.
+  22 - MIPS: Add Cavium OCTEON slot into proper tlb category.
+  23 - 8250: Don't clobber spinlocks.
+  24 - 8250: Serial driver changes to support future Cavium OCTEON serial
+    patches.
+  25 - Serial: Allow port type to be specified when calling
+    serial8250_register_port.
+  26 - 8250: Allow port type to specify bugs that are not probed for.
+  27 - Serial: UART driver changes for Cavium OCTEON.
+  28 - MIPS:  Adjust the dma-common.c platform hooks.
+  29 - MIPS: Add defconfig for Cavium OCTEON.
 
---=20
-Ren=E9 B=FCrgel
-Software Engineer
-Unicontrol Systemtechnik GmbH
-OT Dittersbach
-Sachsenburger Weg 34
-09669 Frankenberg
-=20
-Tel.: 03 72 06/ 88 73 - 19
-Fax: 03 72 06/ 88 73 - 60
-E-Mail: r.buergel@unicontrol.de
-Internet: www.unicontrol.de
-=20
-Unicontrol Systemtechnik GmbH
-Gesch=E4ftsf=FChrer: Dipl.-Ing. Siegfried Heinze
-Sitz der Gesellschaft: Frankenberg
-Registergericht: Amtsgericht Chemnitz, HRB 15 475
-=20
-Wichtiger Hinweis: Diese E-Mail und etwaige Anlagen k=F6nnen Betriebs- un=
-d Gesch=E4ftsgeheimnisse, dem Anwaltsgeheimnis unterliegende oder sonstig=
-e vertrauliche Informationen=20
-enthalten. Sollten Sie diese E-Mail irrt=FCmlich erhalten haben, ist Ihne=
-n der Status dieser E-Mail bekannt. Bitte benachrichtigen Sie uns in dies=
-em Falle sofort durch=20
-Antwort-Mail und l=F6schen Sie diese E-Mail nebst etwaigen Anlagen aus Ih=
-rem System. Ebenso d=FCrfen Sie diese E-Mail oder ihre Anlagen nicht kopi=
-eren oder an Dritte=20
-weitergeben. Vielen Dank!
-=20
-Important Note: This e-mail and any attachments are confidential, may con=
-tain trade secrets and may well also be legally privileged or otherwise p=
-rotected from disclosure.=20
-If you have received it in error, you are on notice of its status. Please=
- notify us immediately by reply e-mail and then delete this e-mail and an=
-y attachment from your=20
-system. If you are not the intended recipient please understand that you =
-must not copy this e-mail or any attachments or disclose the contents to =
-any other person. Thank=20
-you.
+ arch/mips/Kconfig                                  |   65 +-
+ arch/mips/Makefile                                 |   16 +
+ arch/mips/cavium-octeon/Kconfig                    |   85 +
+ arch/mips/cavium-octeon/Makefile                   |   20 +
+ arch/mips/cavium-octeon/dma-octeon.c               |   31 +
+ arch/mips/cavium-octeon/executive/Makefile         |   24 +
+ arch/mips/cavium-octeon/executive/cvmx-bootmem.c   |  929 +++++++++
+ arch/mips/cavium-octeon/executive/cvmx-l2c.c       |  736 +++++++
+ arch/mips/cavium-octeon/executive/cvmx-sysinfo.c   |  117 ++
+ arch/mips/cavium-octeon/executive/octeon-model.c   |  346 ++++
+ arch/mips/cavium-octeon/flash_setup.c              |   77 +
+ arch/mips/cavium-octeon/octeon-irq.c               |  498 +++++
+ arch/mips/cavium-octeon/octeon-memcpy.S            |  521 +++++
+ arch/mips/cavium-octeon/serial.c                   |  187 ++
+ arch/mips/cavium-octeon/setup.c                    |  710 +++++++
+ arch/mips/cavium-octeon/smp.c                      |  225 +++
+ arch/mips/cavium-octeon/userio.c                   |  155 ++
+ arch/mips/configs/cavium-octeon_defconfig          | 1146 +++++++++++
+ arch/mips/include/asm/asmmacro.h                   |   10 +
+ arch/mips/include/asm/cpu-features.h               |    3 +
+ arch/mips/include/asm/cpu.h                        |   14 +
+ arch/mips/include/asm/hazards.h                    |    4 +-
+ arch/mips/include/asm/io.h                         |   14 +
+ .../asm/mach-cavium-octeon/cpu-feature-overrides.h |   62 +
+ .../include/asm/mach-cavium-octeon/dma-coherence.h |   64 +
+ arch/mips/include/asm/mach-cavium-octeon/irq.h     |  244 +++
+ .../asm/mach-cavium-octeon/kernel-entry-init.h     |  140 ++
+ arch/mips/include/asm/mach-cavium-octeon/war.h     |   26 +
+ arch/mips/include/asm/mach-generic/dma-coherence.h |   26 +-
+ arch/mips/include/asm/mach-ip27/dma-coherence.h    |   26 +-
+ arch/mips/include/asm/mach-ip32/dma-coherence.h    |   26 +-
+ arch/mips/include/asm/mach-jazz/dma-coherence.h    |   26 +-
+ arch/mips/include/asm/mach-lemote/dma-coherence.h  |   26 +-
+ arch/mips/include/asm/mipsregs.h                   |   22 +
+ arch/mips/include/asm/module.h                     |    2 +
+ arch/mips/include/asm/octeon/cvmx-asm.h            |  446 +++++
+ arch/mips/include/asm/octeon/cvmx-bootinfo.h       |  238 +++
+ arch/mips/include/asm/octeon/cvmx-bootmem.h        |  403 ++++
+ arch/mips/include/asm/octeon/cvmx-ciu-defs.h       | 1615 ++++++++++++++++
+ arch/mips/include/asm/octeon/cvmx-gpio-defs.h      |  218 +++
+ arch/mips/include/asm/octeon/cvmx-iob-defs.h       |  529 +++++
+ arch/mips/include/asm/octeon/cvmx-ipd-defs.h       |  861 +++++++++
+ arch/mips/include/asm/octeon/cvmx-l2c-defs.h       |  958 +++++++++
+ arch/mips/include/asm/octeon/cvmx-l2c.h            |  328 ++++
+ arch/mips/include/asm/octeon/cvmx-l2d-defs.h       |  368 ++++
+ arch/mips/include/asm/octeon/cvmx-l2t-defs.h       |  140 ++
+ arch/mips/include/asm/octeon/cvmx-led-defs.h       |  239 +++
+ arch/mips/include/asm/octeon/cvmx-mio-defs.h       | 2028 ++++++++++++++++++++
+ arch/mips/include/asm/octeon/cvmx-packet.h         |   64 +
+ arch/mips/include/asm/octeon/cvmx-platform.h       |   56 +
+ arch/mips/include/asm/octeon/cvmx-pow-defs.h       |  697 +++++++
+ arch/mips/include/asm/octeon/cvmx-spinlock.h       |  376 ++++
+ arch/mips/include/asm/octeon/cvmx-sysinfo.h        |  144 ++
+ arch/mips/include/asm/octeon/cvmx-warn.h           |   40 +
+ arch/mips/include/asm/octeon/cvmx.h                |  776 ++++++++
+ arch/mips/include/asm/octeon/octeon-feature.h      |  120 ++
+ arch/mips/include/asm/octeon/octeon-model.h        |  225 +++
+ arch/mips/include/asm/octeon/octeon.h              |  238 +++
+ arch/mips/include/asm/processor.h                  |   69 +
+ arch/mips/include/asm/ptrace.h                     |    4 +
+ arch/mips/include/asm/smp.h                        |    3 +
+ arch/mips/include/asm/stackframe.h                 |   46 +
+ arch/mips/kernel/Makefile                          |    1 +
+ arch/mips/kernel/asm-offsets.c                     |   31 +
+ arch/mips/kernel/branch.c                          |   33 +
+ arch/mips/kernel/cpu-probe.c                       |   25 +
+ arch/mips/kernel/genex.S                           |    4 +
+ arch/mips/kernel/octeon_switch.S                   |  506 +++++
+ arch/mips/kernel/traps.c                           |   21 +
+ arch/mips/lib/Makefile                             |    1 +
+ arch/mips/mm/Makefile                              |    1 +
+ arch/mips/mm/c-octeon.c                            |  307 +++
+ arch/mips/mm/cache.c                               |    6 +
+ arch/mips/mm/cex-oct.S                             |   70 +
+ arch/mips/mm/dma-default.c                         |   24 +-
+ arch/mips/mm/tlbex.c                               |    1 +
+ drivers/serial/8250.c                              |  233 ++-
+ drivers/serial/8250.h                              |    3 +
+ drivers/serial/serial_core.c                       |    7 +-
+ include/linux/serial_8250.h                        |    2 +
+ include/linux/serial_core.h                        |    7 +-
+ include/linux/serial_reg.h                         |    6 +
+ 82 files changed, 19055 insertions(+), 86 deletions(-)
+ create mode 100644 arch/mips/cavium-octeon/Kconfig
+ create mode 100644 arch/mips/cavium-octeon/Makefile
+ create mode 100644 arch/mips/cavium-octeon/dma-octeon.c
+ create mode 100644 arch/mips/cavium-octeon/executive/Makefile
+ create mode 100644 arch/mips/cavium-octeon/executive/cvmx-bootmem.c
+ create mode 100644 arch/mips/cavium-octeon/executive/cvmx-l2c.c
+ create mode 100644 arch/mips/cavium-octeon/executive/cvmx-sysinfo.c
+ create mode 100644 arch/mips/cavium-octeon/executive/octeon-model.c
+ create mode 100644 arch/mips/cavium-octeon/flash_setup.c
+ create mode 100644 arch/mips/cavium-octeon/octeon-irq.c
+ create mode 100644 arch/mips/cavium-octeon/octeon-memcpy.S
+ create mode 100644 arch/mips/cavium-octeon/serial.c
+ create mode 100644 arch/mips/cavium-octeon/setup.c
+ create mode 100644 arch/mips/cavium-octeon/smp.c
+ create mode 100644 arch/mips/cavium-octeon/userio.c
+ create mode 100644 arch/mips/configs/cavium-octeon_defconfig
+ create mode 100644 arch/mips/include/asm/mach-cavium-octeon/cpu-feature-overrides.h
+ create mode 100644 arch/mips/include/asm/mach-cavium-octeon/dma-coherence.h
+ create mode 100644 arch/mips/include/asm/mach-cavium-octeon/irq.h
+ create mode 100644 arch/mips/include/asm/mach-cavium-octeon/kernel-entry-init.h
+ create mode 100644 arch/mips/include/asm/mach-cavium-octeon/war.h
+ create mode 100644 arch/mips/include/asm/octeon/cvmx-asm.h
+ create mode 100644 arch/mips/include/asm/octeon/cvmx-bootinfo.h
+ create mode 100644 arch/mips/include/asm/octeon/cvmx-bootmem.h
+ create mode 100644 arch/mips/include/asm/octeon/cvmx-ciu-defs.h
+ create mode 100644 arch/mips/include/asm/octeon/cvmx-gpio-defs.h
+ create mode 100644 arch/mips/include/asm/octeon/cvmx-iob-defs.h
+ create mode 100644 arch/mips/include/asm/octeon/cvmx-ipd-defs.h
+ create mode 100644 arch/mips/include/asm/octeon/cvmx-l2c-defs.h
+ create mode 100644 arch/mips/include/asm/octeon/cvmx-l2c.h
+ create mode 100644 arch/mips/include/asm/octeon/cvmx-l2d-defs.h
+ create mode 100644 arch/mips/include/asm/octeon/cvmx-l2t-defs.h
+ create mode 100644 arch/mips/include/asm/octeon/cvmx-led-defs.h
+ create mode 100644 arch/mips/include/asm/octeon/cvmx-mio-defs.h
+ create mode 100644 arch/mips/include/asm/octeon/cvmx-packet.h
+ create mode 100644 arch/mips/include/asm/octeon/cvmx-platform.h
+ create mode 100644 arch/mips/include/asm/octeon/cvmx-pow-defs.h
+ create mode 100644 arch/mips/include/asm/octeon/cvmx-spinlock.h
+ create mode 100644 arch/mips/include/asm/octeon/cvmx-sysinfo.h
+ create mode 100644 arch/mips/include/asm/octeon/cvmx-warn.h
+ create mode 100644 arch/mips/include/asm/octeon/cvmx.h
+ create mode 100644 arch/mips/include/asm/octeon/octeon-feature.h
+ create mode 100644 arch/mips/include/asm/octeon/octeon-model.h
+ create mode 100644 arch/mips/include/asm/octeon/octeon.h
+ create mode 100644 arch/mips/kernel/octeon_switch.S
+ create mode 100644 arch/mips/mm/c-octeon.c
+ create mode 100644 arch/mips/mm/cex-oct.S
 
-
-
---------------070305050703010104030901
-Content-Type: text/plain;
- name="127-mpc52xx_erratum_364.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="127-mpc52xx_erratum_364.patch"
-
-diff --git a/drivers/serial/mpc52xx_uart.c b/drivers/serial/mpc52xx_uart.c
-index 6117d3d..ae539b5 100644
---- a/drivers/serial/mpc52xx_uart.c
-+++ b/drivers/serial/mpc52xx_uart.c
-@@ -496,6 +496,74 @@ mpc52xx_uart_break_ctl(struct uart_port *port, int ctl)
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
- 
-+/*
-+ * This is a workaround for processor bug #364
-+ * described in MPC5200 (L25R) Errata.
-+ * The bug is still present in MPC5200B,
-+ * but currently not listed in its errata sheet.
-+ *
-+ * The workaround resets the baudrate to the slowest possible,
-+ * waits for a stable state and resets break state repeatedly if necessary.
-+ * Optionally it can release the lock while waiting.
-+ *
-+ * That baudrate is roughly port->uartclk / (1000 * 1000)
-+ * The minimum wait time for the first try has to include
-+ * the time to wait for stop-bits and a character.
-+ * We wait for 2 chars to be sure.
-+ * Consecutive waits must just receive one character.
-+ */
-+
-+#ifdef CONFIG_PPC_MPC52xx
-+static void reset_errors_and_wait(struct uart_port *port, bool unlock,
-+				  unsigned long flags, unsigned int delay)
-+{
-+	struct mpc52xx_psc __iomem *psc = PSC(port);
-+	out_8(&psc->command, MPC52xx_PSC_RST_ERR_STAT);
-+	if (unlock) {
-+		disable_irq(port->irq);
-+		spin_unlock_irqrestore(&port->lock, flags);
-+	}
-+	mdelay(delay);
-+	if (unlock) {
-+		spin_lock_irqsave(&port->lock, flags);
-+		enable_irq(port->irq);
-+	}
-+}
-+#endif
-+
-+static void mpc52xx_uart_reset_rx(struct uart_port *port, bool unlock,
-+				  unsigned long flags)
-+{
-+#ifdef CONFIG_PPC_MPC52xx
-+	struct mpc52xx_psc __iomem *psc = PSC(port);
-+
-+	/*
-+	 * One character on the serial port may consist of up to 12 bits.
-+	 * So the time to receive one char is
-+	 * 12  / (port->uartclk / (1000 * 1000) ) * 1000,
-+	 * (bits)                 (MHz -> Hz)      (s -> ms)
-+	 */
-+	unsigned int one_char_receive_duration =
-+			(12 * 1000) / (port->uartclk / (1000 * 1000));
-+
-+	/*
-+	 * CT=0xFFFF sets the serial line to the minimal possible baudrate
-+	 * (depending on the uartclk).
-+	 */
-+	out_8(&psc->ctur, 0xFF);
-+	out_8(&psc->ctlr, 0xFF);
-+
-+	reset_errors_and_wait(port, unlock, flags,
-+			      one_char_receive_duration * 2);
-+
-+	while ((in_be16(&psc->mpc52xx_psc_status)) & MPC52xx_PSC_SR_RB) {
-+		reset_errors_and_wait(port, unlock, flags,
-+				      one_char_receive_duration);
-+	}
-+#endif
-+	out_8(&psc->command, MPC52xx_PSC_RST_RX);
-+}
-+
- static int
- mpc52xx_uart_startup(struct uart_port *port)
- {
-@@ -510,7 +578,7 @@ mpc52xx_uart_startup(struct uart_port *port)
- 		return ret;
- 
- 	/* Reset/activate the port, clear and enable interrupts */
--	out_8(&psc->command, MPC52xx_PSC_RST_RX);
-+	mpc52xx_uart_reset_rx(port, false, 0);
- 	out_8(&psc->command, MPC52xx_PSC_RST_TX);
- 
- 	out_be32(&psc->sicr, 0);	/* UART mode DCD ignored */
-@@ -529,7 +597,7 @@ mpc52xx_uart_shutdown(struct uart_port *port)
- 	struct mpc52xx_psc __iomem *psc = PSC(port);
- 
- 	/* Shut down the port.  Leave TX active if on a console port */
--	out_8(&psc->command, MPC52xx_PSC_RST_RX);
-+	mpc52xx_uart_reset_rx(port, false, 0);
- 	if (!uart_console(port))
- 		out_8(&psc->command, MPC52xx_PSC_RST_TX);
- 
-@@ -588,9 +656,6 @@ mpc52xx_uart_set_termios(struct uart_port *port, struct ktermios *new,
- 	/* Get the lock */
- 	spin_lock_irqsave(&port->lock, flags);
- 
--	/* Update the per-port timeout */
--	uart_update_timeout(port, new->c_cflag, baud);
--
- 	/* Do our best to flush TX & RX, so we don't loose anything */
- 	/* But we don't wait indefinitly ! */
- 	j = 5000000;	/* Maximum wait */
-@@ -607,9 +672,12 @@ mpc52xx_uart_set_termios(struct uart_port *port, struct ktermios *new,
- 			"Some chars may have been lost.\n");
- 
- 	/* Reset the TX & RX */
--	out_8(&psc->command, MPC52xx_PSC_RST_RX);
-+	mpc52xx_uart_reset_rx(port, true, flags);
- 	out_8(&psc->command, MPC52xx_PSC_RST_TX);
- 
-+	/* Update the per-port timeout */
-+	uart_update_timeout(port, new->c_cflag, baud);
-+
- 	/* Send new mode settings */
- 	out_8(&psc->command, MPC52xx_PSC_SEL_MODE_REG_1);
- 	out_8(&psc->mode, mr1);
-
---------------070305050703010104030901
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-Linuxppc-dev mailing list
-Linuxppc-dev@ozlabs.org
-https://ozlabs.org/mailman/listinfo/linuxppc-dev
---------------070305050703010104030901--
