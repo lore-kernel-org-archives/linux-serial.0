@@ -1,86 +1,70 @@
-From: David Daney <ddaney@caviumnetworks.com>
-Subject: [PATCH 25/29] Serial: Allow port type to be specified when calling serial8250_register_port.
-Date: Thu,  6 Nov 2008 12:57:03 -0800
-Message-ID: <1226005025-27804-3-git-send-email-ddaney@caviumnetworks.com>
-References: <491358F5.7040002@caviumnetworks.com>
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1754081AbYKFU6d@vger.kernel.org>
-In-Reply-To: <491358F5.7040002@caviumnetworks.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-mips@linux-mips.org
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, akpm@linux-foundation.org, David Daney <ddaney@caviumnetworks.com>
+From: Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH] serial/8250: fix uninitialized warnings
+Date: Mon, 10 Nov 2008 14:30:39 -0800
+Message-ID: <20081110143039.6f21fdc3.akpm@linux-foundation.org>
+References: <20081105022353.7CB0.KOSAKI.MOTOHIRO@jp.fujitsu.com>
+	<20081104174142.360a964a@lxorguk.ukuu.org.uk>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp1.linux-foundation.org ([140.211.169.13]:48093 "EHLO
+	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754676AbYKJWaw (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 10 Nov 2008 17:30:52 -0500
+In-Reply-To: <20081104174142.360a964a@lxorguk.ukuu.org.uk>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: kosaki.motohiro@jp.fujitsu.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Add flag value UPF_FIXED_TYPE which specifies that the UART type is
-known and should not be probed.  For this case the UARTs properties
-are just copied out of the uart_config entry.
+On Tue, 4 Nov 2008 17:41:42 +0000
+Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
 
-This allows us to keep SOC specific 8250 probe code out of 8250.c.  In
-this case we know the serial hardware will not be changing as it is on
-the same silicon as the CPU, and we can specify it with certainty in
-the board/cpu setup code.
+> On Wed, 5 Nov 2008 02:26:00 +0900 (JST)
+> KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com> wrote:
+> 
+> > 
+> > fix following warnings.
+> > 
+> > drivers/serial/8250.c: In function ___serial8250_shutdown___:
+> > drivers/serial/8250.c:1612: warnings: ___i___ may be used uninitialized in this function
+> 
+> NAK
+> 
+> This is an incorrect compiler warning. It's also one that current gcc
+> does not emit warnings for.
+> 
 
-The alternative is to load up 8250.c with a bunch of OCTEON specific
-special cases in the probing code.
+That's a regression in current gcc, surely?
 
-Signed-off-by: David Daney <ddaney@caviumnetworks.com>
----
- drivers/serial/8250.c        |    8 ++++++++
- drivers/serial/serial_core.c |    7 +++++--
- include/linux/serial_core.h  |    2 ++
- 3 files changed, 15 insertions(+), 2 deletions(-)
+static void serial_unlink_irq_chain(struct uart_8250_port *up)
+{
+	struct irq_info *i;
+	struct hlist_node *n;
+	struct hlist_head *h;
 
-diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index 410478f..9d16abb 100644
---- a/drivers/serial/8250.c
-+++ b/drivers/serial/8250.c
-@@ -3056,6 +3056,14 @@ int serial8250_register_port(struct uart_port *port)
- 		uart->port.private_data = port->private_data;
- 		if (port->dev)
- 			uart->port.dev = port->dev;
-+
-+		if (port->flags & UPF_FIXED_TYPE) {
-+			uart->port.type = port->type;
-+			uart->port.fifosize = uart_config[port->type].fifo_size;
-+			uart->capabilities = uart_config[port->type].flags;
-+			uart->tx_loadsz = uart_config[port->type].tx_loadsz;
-+		}
-+
- 		set_io_fns_from_upio(&uart->port);
- 		/* Possibly override default I/O functions.  */
- 		if (port->serial_in_fn)
-diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
-index 874786a..7fef45e 100644
---- a/drivers/serial/serial_core.c
-+++ b/drivers/serial/serial_core.c
-@@ -2198,11 +2198,14 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
- 	 * Now do the auto configuration stuff.  Note that config_port
- 	 * is expected to claim the resources and map the port for us.
- 	 */
--	flags = UART_CONFIG_TYPE;
-+	flags = 0;
- 	if (port->flags & UPF_AUTO_IRQ)
- 		flags |= UART_CONFIG_IRQ;
- 	if (port->flags & UPF_BOOT_AUTOCONF) {
--		port->type = PORT_UNKNOWN;
-+		if (!(port->flags & UPF_FIXED_TYPE)) {
-+			port->type = PORT_UNKNOWN;
-+			flags |= UART_CONFIG_TYPE;
-+		}
- 		port->ops->config_port(port, flags);
- 	}
- 
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 40509b0..54e0dce 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -290,6 +290,8 @@ struct uart_port {
- #define UPF_MAGIC_MULTIPLIER	((__force upf_t) (1 << 16))
- #define UPF_CONS_FLOW		((__force upf_t) (1 << 23))
- #define UPF_SHARE_IRQ		((__force upf_t) (1 << 24))
-+/* The exact UART type is known and should not be probed.  */
-+#define UPF_FIXED_TYPE		((__force upf_t) (1 << 27))
- #define UPF_BOOT_AUTOCONF	((__force upf_t) (1 << 28))
- #define UPF_FIXED_PORT		((__force upf_t) (1 << 29))
- #define UPF_DEAD		((__force upf_t) (1 << 30))
--- 
-1.5.6.5
+	mutex_lock(&hash_mutex);
+
+	h = &irq_lists[up->port.irq % NR_IRQ_HASH];
+
+	hlist_for_each(n, h) {
+		i = hlist_entry(n, struct irq_info, node);
+		if (i->irq == up->port.irq)
+			break;
+	}
+
+	BUG_ON(n == NULL);
+	BUG_ON(i->head == NULL);
+
+
+#define hlist_for_each(pos, head) \
+	for (pos = (head)->first; pos && ({ prefetch(pos->next); 1; }); \
+	     pos = pos->next)
+
+hlist_for_each() can execute that loop zero times, in which case
+serial_unlink_irq_chain will dereference an uninitialised variable.
+
+Presumably the list shouldn't be empty at this stage, but this
+is not particularly robust behaviour if that should happen..
