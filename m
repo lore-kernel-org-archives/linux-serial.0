@@ -1,30 +1,55 @@
-From: David Miller <davem@davemloft.net>
-Subject: Re: [PATCH] serial/8250: fix uninitialized warnings
-Date: Mon, 10 Nov 2008 16:19:55 -0800 (PST)
-Message-ID: <20081110.161955.22624662.davem@davemloft.net>
-References: <20081110143039.6f21fdc3.akpm@linux-foundation.org>
-	<20081110234843.0fba9f16@lxorguk.ukuu.org.uk>
-	<20081110155808.a4d94ee7.akpm@linux-foundation.org>
+From: "George Spelvin" <linux@horizon.com>
+Subject: serial8250_interrupt idea
+Date: Thu, 13 Nov 2008 10:03:08 -0500
+Message-ID: <20081113150308.3590.qmail@science.horizon.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 74-93-104-97-Washington.hfc.comcastbusiness.net ([74.93.104.97]:44078
-	"EHLO sunset.davemloft.net" rhost-flags-OK-FAIL-OK-OK)
-	by vger.kernel.org with ESMTP id S1751759AbYKKAT4 (ORCPT
+Received: from science.horizon.com ([192.35.100.1]:10862 "HELO
+	science.horizon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1751129AbYKMPJu (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 10 Nov 2008 19:19:56 -0500
-In-Reply-To: <20081110155808.a4d94ee7.akpm@linux-foundation.org>
+	Thu, 13 Nov 2008 10:09:50 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: akpm@linux-foundation.org
-Cc: alan@lxorguk.ukuu.org.uk, kosaki.motohiro@jp.fujitsu.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: alan@lxorguk.ukuu.org.uk, linux@horizon.com
 
-From: Andrew Morton <akpm@linux-foundation.org>
-Date: Mon, 10 Nov 2008 15:58:08 -0800
+When ISA-style edge-sensitive interrupts are shared (as is commonly done
+on multi-serial cards), it's essential that all interrupt sources are
+quieted before returning from the interrupt handler, so there will be
+an inactive-to-active edge to trigger on next time.
 
-> On about half the architectures, BUG is not considered to be no-return.
+This requires repeatedly polling all of the ports sharing one IRQ until
+you've done a full pass during which nobody had an interrupt pending.
+That ensures that there was an interval (between emptying the last
+busy port and checking the status of the first empty port in the final
+all-empty pass) during which the interrupt line was not asserted.
 
-Right, it ought to be, whether implicitly (__builtin_trap() is something
-GCC considers no-return) or explicitly (if the arch uses inline
-asm or the generic bug.h code)
+The current code keeps all the ports in a linked list and polls them
+in a loop, remembering the position of the last busy port, until that
+position has been reached again without seeing a non-empty port.
+
+However, it seems to me that it's possible to improve on this.
+Which would be valuable, given that ISA I/O port reads (usually on a
+super-IO chip via an LPC bus these days) are quite time-consuming.
+
+If you could predict which ports were going to be busy, you could check
+them first on the first pass, allowing you to start the final verification
+pass as early as possible.
+
+This could be done very easily via a self-organizing list.  When a
+port is polled busy, move it up to the front of the list so it will be
+checked earlier next time.  The inactive ports would migrate to the end
+of the list.  The struct uart_8250_port list is already locked for the
+duration of the interrupt, so there is no need for additional locking.
+
+
+I was thinking about preparing a patch to do this, but I have one style
+question: it would be easier to do the list rearrangement if the
+list were singly-linked.  Removing a port would require walking the
+whole list, but we already do that each interrupt so it's hardly
+a frightening cost.
+
+Is there any reason to preserve the "struct list" configuration?
