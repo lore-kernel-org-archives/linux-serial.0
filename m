@@ -1,102 +1,91 @@
-From: "Tosoni" <jp.tosoni@acksys.fr>
-Subject: RE: serial8250_interrupt idea
-Date: Mon, 17 Nov 2008 16:25:45 +0100
-Message-ID: <D0393E26DEF64A21B3FA255589AC9A54@acksys.local>
-References: <20081117134504.22912.qmail@science.horizon.com>
+From: Helge Deller <deller@gmx.de>
+Subject: struct uart_port has no member named 'sysrq'   (was: linux-next: parisc build failure)
+Date: Tue, 18 Nov 2008 20:24:24 +0100
+Message-ID: <200811182024.24781.deller@gmx.de>
+References: <20081116231342.0cd747bd.sfr@canb.auug.org.au>
 Mime-Version: 1.0
 Content-Type: text/plain;
-	charset="US-ASCII"
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp03.msg.oleane.net ([62.161.4.3]:60578 "EHLO
-	smtp03.msg.oleane.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751515AbYKQP1j (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 17 Nov 2008 10:27:39 -0500
-In-Reply-To: <20081117134504.22912.qmail@science.horizon.com>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-parisc-owner@vger.kernel.org>
+In-Reply-To: <20081116231342.0cd747bd.sfr@canb.auug.org.au>
+Content-Disposition: inline
+Sender: linux-parisc-owner@vger.kernel.org
+To: Stephen Rothwell <sfr@canb.auug.org.au>, linux-serial@vger.kernel.org
+Cc: Kyle McMartin <kyle@mcmartin.ca>, linux-parisc@vger.kernel.org, linux-next@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>
 List-Id: linux-serial@vger.kernel.org
-To: 'George Spelvin' <linux@horizon.com>
-Cc: linux-serial@vger.kernel.org
 
-Hi again,
+On Sunday 16 November 2008, Stephen Rothwell wrote:
+> Hi Kyle,
+> 
+> Today's linux-next build (parisc allmodconfig) failed like this:
+> 
+> In file included from drivers/serial/mux.c:38:
+> include/linux/serial_core.h: In function 'uart_handle_sysrq_char':
+> include/linux/serial_core.h:450: error: 'struct uart_port' has no member named 'sysrq'
+> include/linux/serial_core.h:451: error: 'struct uart_port' has no member named 'sysrq'
+> include/linux/serial_core.h:451: error: 'struct uart_port' has no member named 'sysrq'
+> include/linux/serial_core.h:453: error: 'struct uart_port' has no member named 'sysrq'
+> include/linux/serial_core.h:456: error: 'struct uart_port' has no member named 'sysrq'
+> include/linux/serial_core.h:473: error: 'struct uart_port' has no member named 'sysrq'
+> include/linux/serial_core.h:474: error: 'struct uart_port' has no member named 'sysrq'
+> include/linux/serial_core.h:477: error: 'struct uart_port' has no member named 'sysrq'
+> 
+> This is happening in mainline as well. In fact, this has been happening
+> back as far as I have results (Aug 27).  The sysrq element of struct
+> uart_port is dependent on CONFIG_SERIAL_CORE_CONSOLE while the references
+> failing above are dependent on SUPPORT_SYSRQ which is defined if
+> CONFIG_MAGIC_SYSRQ is defined in mux.c.
 
-I read your code more carefully and I believe that it does not
-exhibit the problem I talked about. Sorry for argueing.
+I assume you don't have CONFIG_SERIAL_CORE_CONSOLE set in your config, which is probably why this build failure shows up.
+Looking at other serial drivers, which all seem to have similiar coding like mux.c, I'm wondering that it only shows up on parisc.
 
-Please note however that these chips can be - and have been indeed -
-used at much higher baudrates than the 115200 you mention. Once, I
-have been using 1.8 Mbps on 2 ports, over RS422 links.
+Anyway, since I assume we can't make the sysrq element of struct uart_port depended on SUPPORT_SYSRQ (since it depends on each serial driver if it wants to support the sysrq feature and we need to keep the size of struct uart_port constant), I think we need to add an additional check for CONFIG_SERIAL_CORE_CONSOLE to where we already check for SUPPORT_SYSRQ. 
+Proposed patch and RFC below.
 
-> I don't see how this means that "one of them gets served much
-> more often than the others"; both get served equally often.
+-------
+
+[RFC] [PATCH] check for SUPPORT_SYSRQ and CONFIG_SERIAL_CORE_CONSOLE before accessing the "sysrq" member of struct uart_port.
+
+Serial drivers (like mux.c) can #define SUPPORT_SYSRQ to tell the core serial functions that they want to have SYSRQ-support built-in.
+If SUPPORT_SYSRQ is defined, the functions uart_handle_sysrq_char() and uart_handle_break() in include/linux/serial_core.h unconditionally access the "sysrq" member of struct uart_port.
+Since the "sysrq" member of struct uart_port is only compiled into the kernel if CONFIG_SERIAL_CORE_CONSOLE is defined, builds will break if
+SUPPORT_SYSRQ is defined and CONFIG_SERIAL_CORE_CONSOLE is not defined.
+
+This patch works around the problem by checking for SUPPORT_SYSRQ _and_ CONFIG_SERIAL_CORE_CONSOLE before accessing the "sysrq" member of struct uart_port.
+
+Signed-off-by: Helge Deller <deller@gmx.de>
+
+
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 4e4f127..b9d79f1 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -446,7 +446,7 @@ int uart_resume_port(struct uart_driver *reg, struct uart_port *port);
+ static inline int
+ uart_handle_sysrq_char(struct uart_port *port, unsigned int ch)
+ {
+-#ifdef SUPPORT_SYSRQ
++#if defined(SUPPORT_SYSRQ) && defined(CONFIG_SERIAL_CORE_CONSOLE)
+ 	if (port->sysrq) {
+ 		if (ch && time_before(jiffies, port->sysrq)) {
+ 			handle_sysrq(ch, port->info ? port->info->port.tty : NULL);
+@@ -458,9 +458,6 @@ uart_handle_sysrq_char(struct uart_port *port, unsigned int ch)
+ #endif
+ 	return 0;
+ }
+-#ifndef SUPPORT_SYSRQ
+-#define uart_handle_sysrq_char(port,ch) uart_handle_sysrq_char(port, 0)
+-#endif
  
-My wording was wrong, sorry. I rather meant "one of them gets served
-before the others can get a chance to be served" so the first one, if
-it is continually receiving, many delay service to the next ones, thus
-loosing data.
-
-Regards
-
-> -----Original Message-----
-> From: linux-serial-owner@vger.kernel.org
-> [mailto:linux-serial-owner@vger.kernel.org]On Behalf Of George Spelvin
-> Sent: Monday, November 17, 2008 2:45 PM
-> To: jp.tosoni@acksys.fr
-> Cc: linux@horizon.com; linux-serial@vger.kernel.org
-> Subject: Re: serial8250_interrupt idea
-> 
-> 
-> "Tosoni" <jp.tosoni@acksys.fr> wrote:
-> 
-> > I am talking about serial ports sharing the same interrupt.
-> > Here are more details.
-> >
-> > Let's say that you have N ports sharing the same interrupt. 
-> When the data
-> > rate is very high, or the processor is slow, the following 
-> may happen
-> > depending on how you prioritize the ports:
-> >
-> > say that high-speed frames of 150 chars arrive on ports X and Y.
-> >
-> > 1/ enter ISR
-> > 2/ test port X => process reception of a char, put it ahead of list
-> > 3/ during processing of 2/ another char arrived on X ; goto 2
-> > 4/ during processing of loop 2/ and 3/ many chars arrived 
-> on port Y, some
-> > were lost
-> > 4/ process Y and other ports
-> > 5/ All N ports are now quiet; exit ISR
-> >
-> > Now you have lost data on port Y because you prioritized X over Y.
-> >
-> > Got it ?
-> 
-> I see how some port has to be checked first, so if others share the
-> same interrupt, they have to be checked second.  I don't see how this
-> means that "one of them gets served much more often than the others";
-> both get served equally often.
-> 
-> I also don't understand how the above can be a serious problem.
-> Although slow relative to CPU speeds, the I/O port accesses 
-> are extremely
-> fast relative to serial data transmission rates.  Even at 
-> 115,200 baud,
-> characters arrive every 86.8 us.  Once the interrupt handler 
-> is executing,
-> bytes are removed from the serial FIFO at around 1 per us.  
-> So not even
-> a full character can arrive at port Y in the time it takes to 
-> completely
-> empty 64 bytes out of port X's FIFO.
-> 
-> In other words, your step 4/ cannot actually happen.  If one more
-> character is enough to cause port Y to overflow, it's perilously close
-> to overflowing without port X.
-> --
-> To unsubscribe from this list: send the line "unsubscribe 
-> linux-serial" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+ /*
+  * We do the SysRQ and SAK checking like this...
+@@ -468,7 +465,7 @@ uart_handle_sysrq_char(struct uart_port *port, unsigned int ch)
+ static inline int uart_handle_break(struct uart_port *port)
+ {
+ 	struct uart_info *info = port->info;
+-#ifdef SUPPORT_SYSRQ
++#if defined(SUPPORT_SYSRQ) && defined(CONFIG_SERIAL_CORE_CONSOLE)
+ 	if (port->cons && port->cons->index == port->line) {
+ 		if (!port->sysrq) {
+ 			port->sysrq = jiffies + HZ*5;
