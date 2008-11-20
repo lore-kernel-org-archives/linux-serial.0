@@ -1,28 +1,35 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 23/26] Serial: UART driver changes for Cavium OCTEON.
-Date: Thu, 20 Nov 2008 20:06:30 +0000
-Message-ID: <20081120200630.33111a2f@lxorguk.ukuu.org.uk>
-References: <49233FDE.3010404@caviumnetworks.com>
-	<1227047057-4911-5-git-send-email-ddaney@caviumnetworks.com>
+From: David Daney <ddaney@caviumnetworks.com>
+Subject: Re: [PATCH 21/26] Serial: Allow port type to be specified when calling
+ serial8250_register_port.
+Date: Thu, 20 Nov 2008 13:00:47 -0800
+Message-ID: <4925CFFF.9010502@caviumnetworks.com>
+References: <49233FDE.3010404@caviumnetworks.com>	<1227047057-4911-3-git-send-email-ddaney@caviumnetworks.com> <20081120200256.73f98e09@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:53102 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1753458AbYKTUGZ (ORCPT
+Received: from mail3.caviumnetworks.com ([12.108.191.235]:54772 "EHLO
+	mail3.caviumnetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755067AbYKTVE7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 20 Nov 2008 15:06:25 -0500
-In-Reply-To: <1227047057-4911-5-git-send-email-ddaney@caviumnetworks.com>
+	Thu, 20 Nov 2008 16:04:59 -0500
+In-Reply-To: <20081120200256.73f98e09@lxorguk.ukuu.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-Cc: linux-mips@linux-mips.org, linux-serial@vger.kernel.org, akpm@linux-foundation.org, linux-kernel@vger.kernel.org, David Daney <ddaney@caviumnetworks.com>, Tomaso Paoletti <tpaoletti@caviumnetworks.com>
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-mips <linux-mips@linux-mips.org>, linux-serial@vger.kernel.org
 
-> +		if ((up->bugs & UART_BUG_OCTEON_IIR) && (iir & 0xf) == 7) {
-> +			/* Busy interrupt */
-> +			serial_in(up, UART_OCTEON_USR);
-> +			iir = serial_in(up, UART_IIR);
-> +		}
+Alan Cox wrote:
+> On Tue, 18 Nov 2008 14:24:15 -0800
+> David Daney <ddaney@caviumnetworks.com> wrote:
+> 
+>> Add flag value UPF_FIXED_TYPE which specifies that the UART type is
+>> known and should not be probed.  For this case the UARTs properties
+>> are just copied out of the uart_config entry.
+> 
+> Looks fine to me
 
-Could this not be hidden in the register read method for the octeon and
-thus kept out of core code ?
+Re-adding the lists...
+
+Does that mean I an add Acked-by you to this patch?
+
+David Daney
