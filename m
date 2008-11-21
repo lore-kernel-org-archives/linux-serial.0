@@ -1,35 +1,34 @@
-From: David Daney <ddaney@caviumnetworks.com>
-Subject: Re: [PATCH 21/26] Serial: Allow port type to be specified when calling
- serial8250_register_port.
-Date: Thu, 20 Nov 2008 13:00:47 -0800
-Message-ID: <4925CFFF.9010502@caviumnetworks.com>
-References: <49233FDE.3010404@caviumnetworks.com>	<1227047057-4911-3-git-send-email-ddaney@caviumnetworks.com> <20081120200256.73f98e09@lxorguk.ukuu.org.uk>
+From: David Gibson <david@gibson.dropbear.id.au>
+Subject: Re: [PATCH] Add support for the nwp serial device
+Date: Fri, 21 Nov 2008 11:35:45 +1100
+Message-ID: <20081121003545.GC13049@yookeroo.seuss>
+References: <200811201501.24000.arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail3.caviumnetworks.com ([12.108.191.235]:54772 "EHLO
-	mail3.caviumnetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755067AbYKTVE7 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 20 Nov 2008 16:04:59 -0500
-In-Reply-To: <20081120200256.73f98e09@lxorguk.ukuu.org.uk>
+Received: from ozlabs.org ([203.10.76.45]:38160 "EHLO ozlabs.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753670AbYKUAfv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 20 Nov 2008 19:35:51 -0500
+Content-Disposition: inline
+In-Reply-To: <200811201501.24000.arnd@arndb.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-mips <linux-mips@linux-mips.org>, linux-serial@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-serial@vger.kernel.org, Benjamin Krill <ben@codiert.org>, linuxppc-dev@ozlabs.org, Andrew Morton <akpm@linux-foundation.org>
 
-Alan Cox wrote:
-> On Tue, 18 Nov 2008 14:24:15 -0800
-> David Daney <ddaney@caviumnetworks.com> wrote:
+On Thu, Nov 20, 2008 at 03:01:23PM +0100, Arnd Bergmann wrote:
+> From: Benjamin Krill <ben@codiert.org>
 > 
->> Add flag value UPF_FIXED_TYPE which specifies that the UART type is
->> known and should not be probed.  For this case the UARTs properties
->> are just copied out of the uart_config entry.
-> 
-> Looks fine to me
+> This patch adds support for the nwp serial device which is connected to
+> a DCR bus. It uses the of_serial device driver to determine necessary
+> properties from the device tree. The supported device is added as serial
+> port number 84.
 
-Re-adding the lists...
+Uh.. registers as port number 84??  What's this random number about?
 
-Does that mean I an add Acked-by you to this patch?
-
-David Daney
+-- 
+David Gibson			| I'll have my music baroque, and my code
+david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
+				| _way_ _around_!
+http://www.ozlabs.org/~dgibson
