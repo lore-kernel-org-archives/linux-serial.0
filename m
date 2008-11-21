@@ -1,35 +1,48 @@
-From: David Gibson <david@gibson.dropbear.id.au>
+From: Andrew Morton <akpm@linux-foundation.org>
 Subject: Re: [PATCH] Add support for the nwp serial device
-Date: Fri, 21 Nov 2008 18:29:28 +1100
-Message-ID: <20081121072928.GA14179@yookeroo.seuss>
-References: <200811201501.24000.arnd@arndb.de> <20081121003545.GC13049@yookeroo.seuss> <20081121072101.GP24487@codiert.org>
+Date: Fri, 21 Nov 2008 13:22:44 -0800
+Message-ID: <20081121132244.e9e9fd74.akpm@linux-foundation.org>
+References: <200811201501.24000.arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ozlabs.org ([203.10.76.45]:40084 "EHLO ozlabs.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751445AbYKUH3j (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Nov 2008 02:29:39 -0500
-Content-Disposition: inline
-In-Reply-To: <20081121072101.GP24487@codiert.org>
+Received: from smtp1.linux-foundation.org ([140.211.169.13]:51055 "EHLO
+	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752005AbYKUVW5 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 21 Nov 2008 16:22:57 -0500
+In-Reply-To: <200811201501.24000.arnd@arndb.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Benjamin Krill <ben@codiert.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org, linuxppc-dev@ozlabs.org, Andrew Morton <akpm@linux-foundation.org>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-serial@vger.kernel.org, ben@codiert.org, linuxppc-dev@ozlabs.org
 
-On Fri, Nov 21, 2008 at 08:21:02AM +0100, Benjamin Krill wrote:
-> * David Gibson | 2008-11-21 11:35:45 [+1100]:
-> 
-> >
-> >Uh.. registers as port number 84??  What's this random number about?
-> >
-> It's just the next free number in serial_core.h.
+On Thu, 20 Nov 2008 15:01:23 +0100
+Arnd Bergmann <arnd@arndb.de> wrote:
 
-Ah, right, sorry, those are type codes.  Thought you meant it was
-registering as /dev/ttyS84 or something similarly strange.
+> This patch adds support for the nwp serial device which is connected to
+> a DCR bus. It uses the of_serial device driver to determine necessary
+> properties from the device tree. The supported device is added as serial
+> port number 84.
 
--- 
-David Gibson			| I'll have my music baroque, and my code
-david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
-				| _way_ _around_!
-http://www.ozlabs.org/~dgibson
+checkpatch has a decent whine over this.  Some of those things you
+might decide to ignore, other things tell me that you never ran it
+anyway...
+
+I'd suggest that nwpserial_pops and nwpserial_reg be marked const, as
+they don't need to be in read/write storage.  Except that doesn't work
+because the kernel isn't very const-competent.  Ho hum.
+
+
+(does a powerpc allmodconfig)
+
+drivers/serial/nwpserial.c:443: warning: data definition has no type or storage class
+drivers/serial/nwpserial.c:443: warning: type defaults to 'int' in declaration of 'console_initcall'
+drivers/serial/nwpserial.c:443: warning: parameter names (without types) in function declaration
+drivers/serial/nwpserial.c:400: warning: 'nwpserial_console_init' defined but not used
+
+The file fails to include linux/init.h.  It should do so, but that
+doesn't fix the above.
+
+Apparently it hasn't been tested as a kernel module...
