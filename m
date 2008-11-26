@@ -1,51 +1,56 @@
-From: Florian Fainelli <florian@openwrt.org>
-Subject: Re: [PATCH/RFC v1 00/12] Support for Broadcom 63xx SOCs
-Date: Tue, 25 Nov 2008 18:44:26 +0100
-Message-ID: <200811251844.27405.florian@openwrt.org>
-References: <1224382022-24173-1-git-send-email-mbizon@freebox.fr> <200810221558.27338.florian@openwrt.org>
+From: David Daney <ddaney@caviumnetworks.com>
+Subject: [PATCH 0/5] serial: Patches for OCTEON CPU support.
+Date: Tue, 25 Nov 2008 16:14:52 -0800
+Message-ID: <492C94FC.9070906@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from rn-out-0910.google.com ([64.233.170.189]:44524 "EHLO
-	rn-out-0910.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752588AbYKYRpP convert rfc822-to-8bit (ORCPT
+Received: from mail3.caviumnetworks.com ([12.108.191.235]:19415 "EHLO
+	mail3.caviumnetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752401AbYKZAPE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 25 Nov 2008 12:45:15 -0500
-Received: by rn-out-0910.google.com with SMTP id k40so80202rnd.17
-        for <linux-serial@vger.kernel.org>; Tue, 25 Nov 2008 09:45:14 -0800 (PST)
-In-Reply-To: <200810221558.27338.florian@openwrt.org>
-Content-Disposition: inline
+	Tue, 25 Nov 2008 19:15:04 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Maxime Bizon <mbizon@freebox.fr>
-Cc: ralf@linux-mips.org, netdev@vger.kernel.org, afleming@freescale.com, jgarzik@pobox.com, linux-usb@vger.kernel.org, dbrownell@users.sourceforge.net, linux-pcmcia@lists.infradead.org, linux-serial@vger.kernel.org, linux-mips@linux-mips.org
+To: linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-mips <linux-mips@linux-mips.org>
 
-Hi again,
+Previously I have posted these five patches as part of the larger CPU
+support patch set.  I am separating them out now as I have
+incorporated changes as suggested by Alan Cox, and these are ready for
+review now.
 
-Le Wednesday 22 October 2008 15:58:23 Florian Fainelli, vous avez =E9cr=
-it=A0:
-> I prefer you get some feedback on your patches first before submittin=
-g my
-> changes.
+Changes from previous version:
 
-So the OpenWrt community did the following succesful tests :
+* I/O functions now called serial_{in,out}.
 
-- Inventel Livebox Pro (Need the OpenWrt patches plus some glue code to=
-=20
-retrieve the MAC address) (6348)
-- Neufbox 4 (6358)
-- Comtrend CT536+ (6348)
-- A custom design based on a BCM6348
+* UART_BUG_OCTEON_IIR workaround moved to OCTEON serial_in function
+   and out of this patch set.
 
-There might be other successful reports as well.
---=20
-Best regards, Florian Fainelli
-Email : florian@openwrt.org
-http://openwrt.org
--------------------------------
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Since these are the only non-mips specific patches required for OCTEON
+cpu support, it is necessary to get these Signed-off-by before the
+full OCTEON patch set can proceed.  Also since serial is lacking
+active maintainers, I am sending directly to akpm and Alan in hopes
+that one or more of them will review the patches.
+
+
+Five patches to follow.
+
+David Daney (5):
+   8250: Don't clobber spinlocks.
+   8250: Serial driver changes to support future Cavium OCTEON serial
+     patches.
+   Serial: Allow port type to be specified when calling
+     serial8250_register_port.
+   8250: Allow port type to specify bugs that are not probed for.
+   Serial: UART driver changes for Cavium OCTEON.
+
+  drivers/serial/8250.c        |  230 
++++++++++++++++++++++++++++++++-----------
+  drivers/serial/8250.h        |    2 +
+  drivers/serial/serial_core.c |    7 +-
+  include/linux/serial_8250.h  |    3 +
+  include/linux/serial_core.h  |    7 +-
+  5 files changed, 185 insertions(+), 64 deletions(-)
+
