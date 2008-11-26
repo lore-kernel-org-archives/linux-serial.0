@@ -1,113 +1,153 @@
-From: David Daney <ddaney@caviumnetworks.com>
-Subject: [PATCH 3/5] Serial: Allow port type to be specified when calling serial8250_register_port.
-Date: Tue, 25 Nov 2008 16:18:37 -0800
-Message-ID: <1227658719-18297-3-git-send-email-ddaney@caviumnetworks.com>
-References: <492C94FC.9070906@caviumnetworks.com>
+From: Wolfram Sang <w.sang@pengutronix.de>
+Subject: [PATCH] mpc52xx/serial: add rts/cts handling
+Date: Wed, 26 Nov 2008 16:04:54 +0100
+Message-ID: <1227711894-28874-1-git-send-email-w.sang@pengutronix.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail3.caviumnetworks.com ([12.108.191.235]:20491 "EHLO
-	mail3.caviumnetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751281AbYKZATX (ORCPT
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:40838 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754274AbYKZPE5 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 25 Nov 2008 19:19:23 -0500
-In-Reply-To: <492C94FC.9070906@caviumnetworks.com>
+	Wed, 26 Nov 2008 10:04:57 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, akpm@linux-foundation.org, alan@lxorguk.ukuu.org.uk
-Cc: linux-mips@linux-mips.org, David Daney <ddaney@caviumnetworks.com>
+To: grant.likely@secretlab.ca
+Cc: linuxppc-dev@ozlabs.org, linux-serial@vger.kernel.org, Wolfram Sang <w.sang@pengutronix.de>
 
-Add flag value UPF_FIXED_TYPE which specifies that the UART type is
-known and should not be probed.  For this case the UARTs properties
-are just copied out of the uart_config entry.
+Add RTS/CTS-support for the PSC of the MPC5200B. Tested with a Phytec
+MPC5200B-IO.
 
-This allows us to keep SOC specific 8250 probe code out of 8250.c.  In
-this case we know the serial hardware will not be changing as it is on
-the same silicon as the CPU, and we can specify it with certainty in
-the board/cpu setup code.
-
-The alternative is to load up 8250.c with a bunch of OCTEON specific
-special cases in the probing code.
-
-Signed-off-by: David Daney <ddaney@caviumnetworks.com>
+Signed-off-by: Wolfram Sang <w.sang@pengutronix.de>
 ---
- drivers/serial/8250.c        |    9 +++++++++
- drivers/serial/serial_core.c |    7 +++++--
- include/linux/serial_8250.h  |    1 +
- include/linux/serial_core.h  |    2 ++
- 4 files changed, 17 insertions(+), 2 deletions(-)
+ arch/powerpc/include/asm/mpc52xx_psc.h |   11 +++++++-
+ drivers/serial/mpc52xx_uart.c          |   41 ++++++++++++++++++++++++++++---
+ 2 files changed, 47 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index 849af9d..3ae4974 100644
---- a/drivers/serial/8250.c
-+++ b/drivers/serial/8250.c
-@@ -2903,6 +2903,7 @@ static int __devinit serial8250_probe(struct platform_device *dev)
- 		port.mapbase		= p->mapbase;
- 		port.hub6		= p->hub6;
- 		port.private_data	= p->private_data;
-+		port.type		= p->type;
- 		port.serial_in		= p->serial_in;
- 		port.serial_out		= p->serial_out;
- 		port.dev		= &dev->dev;
-@@ -3058,6 +3059,14 @@ int serial8250_register_port(struct uart_port *port)
- 		uart->port.private_data = port->private_data;
- 		if (port->dev)
- 			uart->port.dev = port->dev;
-+
-+		if (port->flags & UPF_FIXED_TYPE) {
-+			uart->port.type = port->type;
-+			uart->port.fifosize = uart_config[port->type].fifo_size;
-+			uart->capabilities = uart_config[port->type].flags;
-+			uart->tx_loadsz = uart_config[port->type].tx_loadsz;
-+		}
-+
- 		set_io_from_upio(&uart->port);
- 		/* Possibly override default I/O functions.  */
- 		if (port->serial_in)
-diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
-index 874786a..7fef45e 100644
---- a/drivers/serial/serial_core.c
-+++ b/drivers/serial/serial_core.c
-@@ -2198,11 +2198,14 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
- 	 * Now do the auto configuration stuff.  Note that config_port
- 	 * is expected to claim the resources and map the port for us.
- 	 */
--	flags = UART_CONFIG_TYPE;
-+	flags = 0;
- 	if (port->flags & UPF_AUTO_IRQ)
- 		flags |= UART_CONFIG_IRQ;
- 	if (port->flags & UPF_BOOT_AUTOCONF) {
--		port->type = PORT_UNKNOWN;
-+		if (!(port->flags & UPF_FIXED_TYPE)) {
-+			port->type = PORT_UNKNOWN;
-+			flags |= UART_CONFIG_TYPE;
-+		}
- 		port->ops->config_port(port, flags);
- 	}
+diff --git a/arch/powerpc/include/asm/mpc52xx_psc.h b/arch/powerpc/include/asm/mpc52xx_psc.h
+index 8917ed6..a218da6 100644
+--- a/arch/powerpc/include/asm/mpc52xx_psc.h
++++ b/arch/powerpc/include/asm/mpc52xx_psc.h
+@@ -68,12 +68,20 @@
+ #define MPC52xx_PSC_IMR_ORERR		0x1000
+ #define MPC52xx_PSC_IMR_IPC		0x8000
  
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index 77d83d9..d4d2a78 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -28,6 +28,7 @@ struct plat_serial8250_port {
- 	unsigned char	iotype;		/* UPIO_* */
- 	unsigned char	hub6;
- 	upf_t		flags;		/* UPF_* flags */
-+	unsigned int	type;		/* If UPF_FIXED_TYPE */
- 	unsigned int	(*serial_in)(struct uart_port *, int);
- 	void		(*serial_out)(struct uart_port *, int, int);
- };
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 2d22c67..b9e7756 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -293,6 +293,8 @@ struct uart_port {
- #define UPF_MAGIC_MULTIPLIER	((__force upf_t) (1 << 16))
- #define UPF_CONS_FLOW		((__force upf_t) (1 << 23))
- #define UPF_SHARE_IRQ		((__force upf_t) (1 << 24))
-+/* The exact UART type is known and should not be probed.  */
-+#define UPF_FIXED_TYPE		((__force upf_t) (1 << 27))
- #define UPF_BOOT_AUTOCONF	((__force upf_t) (1 << 28))
- #define UPF_FIXED_PORT		((__force upf_t) (1 << 29))
- #define UPF_DEAD		((__force upf_t) (1 << 30))
+-/* PSC input port change bit */
++/* PSC input port change bits */
+ #define MPC52xx_PSC_CTS			0x01
+ #define MPC52xx_PSC_DCD			0x02
+ #define MPC52xx_PSC_D_CTS		0x10
+ #define MPC52xx_PSC_D_DCD		0x20
+ 
++/* PSC acr bits */
++#define MPC52xx_PSC_IEC_CTS		0x01
++#define MPC52xx_PSC_IEC_DCD		0x02
++
++/* PSC output port bits */
++#define MPC52xx_PSC_OP_RTS		0x01
++#define MPC52xx_PSC_OP_RES		0x02
++
+ /* PSC mode fields */
+ #define MPC52xx_PSC_MODE_5_BITS			0x00
+ #define MPC52xx_PSC_MODE_6_BITS			0x01
+@@ -91,6 +99,7 @@
+ #define MPC52xx_PSC_MODE_ONE_STOP_5_BITS	0x00
+ #define MPC52xx_PSC_MODE_ONE_STOP		0x07
+ #define MPC52xx_PSC_MODE_TWO_STOP		0x0f
++#define MPC52xx_PSC_MODE_TXCTS			0x10
+ 
+ #define MPC52xx_PSC_RFNUM_MASK	0x01ff
+ 
+diff --git a/drivers/serial/mpc52xx_uart.c b/drivers/serial/mpc52xx_uart.c
+index 6117d3d..3234100 100644
+--- a/drivers/serial/mpc52xx_uart.c
++++ b/drivers/serial/mpc52xx_uart.c
+@@ -429,14 +429,24 @@ mpc52xx_uart_tx_empty(struct uart_port *port)
+ static void
+ mpc52xx_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
+-	/* Not implemented */
++	if (mctrl & TIOCM_RTS)
++		out_8(&PSC(port)->op1, MPC52xx_PSC_OP_RTS);
++	else
++		out_8(&PSC(port)->op0, MPC52xx_PSC_OP_RTS);
+ }
+ 
+ static unsigned int
+ mpc52xx_uart_get_mctrl(struct uart_port *port)
+ {
+-	/* Not implemented */
+-	return TIOCM_CTS | TIOCM_DSR | TIOCM_CAR;
++	unsigned int ret = TIOCM_DSR;
++	u8 status = in_8(&PSC(port)->mpc52xx_psc_ipcr);
++
++	if (!(status & MPC52xx_PSC_CTS))
++		ret |= TIOCM_CTS;
++	if (!(status & MPC52xx_PSC_DCD))
++		ret |= TIOCM_CAR;
++
++	return ret;
+ }
+ 
+ static void
+@@ -479,7 +489,15 @@ mpc52xx_uart_stop_rx(struct uart_port *port)
+ static void
+ mpc52xx_uart_enable_ms(struct uart_port *port)
+ {
+-	/* Not implemented */
++	struct mpc52xx_psc __iomem *psc = PSC(port);
++
++	/* clear D_*-bits by reading them */
++	in_8(&psc->mpc52xx_psc_ipcr);
++	/* enable CTS and DCD as IPC interrupts */
++	out_8(&psc->mpc52xx_psc_acr, MPC52xx_PSC_IEC_CTS | MPC52xx_PSC_IEC_DCD);
++
++	port->read_status_mask |= MPC52xx_PSC_IMR_IPC;
++	out_be16(&psc->mpc52xx_psc_imr, port->read_status_mask);
+ }
+ 
+ static void
+@@ -580,6 +598,10 @@ mpc52xx_uart_set_termios(struct uart_port *port, struct ktermios *new,
+ 			MPC52xx_PSC_MODE_ONE_STOP_5_BITS :
+ 			MPC52xx_PSC_MODE_ONE_STOP;
+ 
++	if (new->c_cflag & CRTSCTS) {
++		mr1 |= MPC52xx_PSC_MODE_RXRTS;
++		mr2 |= MPC52xx_PSC_MODE_TXCTS;
++	}
+ 
+ 	baud = uart_get_baud_rate(port, new, old, 0, port->uartclk/16);
+ 	quot = uart_get_divisor(port, baud);
+@@ -617,6 +639,9 @@ mpc52xx_uart_set_termios(struct uart_port *port, struct ktermios *new,
+ 	out_8(&psc->ctur, ctr >> 8);
+ 	out_8(&psc->ctlr, ctr & 0xff);
+ 
++	if (UART_ENABLE_MS(port, new->c_cflag))
++		mpc52xx_uart_enable_ms(port);
++
+ 	/* Reenable TX & RX */
+ 	out_8(&psc->command, MPC52xx_PSC_TX_ENABLE);
+ 	out_8(&psc->command, MPC52xx_PSC_RX_ENABLE);
+@@ -826,6 +851,7 @@ mpc52xx_uart_int(int irq, void *dev_id)
+ 	struct uart_port *port = dev_id;
+ 	unsigned long pass = ISR_PASS_LIMIT;
+ 	unsigned int keepgoing;
++	u8 status;
+ 
+ 	spin_lock(&port->lock);
+ 
+@@ -842,6 +868,13 @@ mpc52xx_uart_int(int irq, void *dev_id)
+ 		if (psc_ops->tx_rdy(port))
+ 			keepgoing |= mpc52xx_uart_int_tx_chars(port);
+ 
++		status = in_8(&PSC(port)->mpc52xx_psc_ipcr);
++		if (status & MPC52xx_PSC_D_DCD)
++			uart_handle_dcd_change(port, !(status & MPC52xx_PSC_DCD));
++
++		if (status & MPC52xx_PSC_D_CTS)
++			uart_handle_cts_change(port, !(status & MPC52xx_PSC_CTS));
++
+ 		/* Limit number of iteration */
+ 		if (!(--pass))
+ 			keepgoing = 0;
 -- 
 1.5.6.5
 
