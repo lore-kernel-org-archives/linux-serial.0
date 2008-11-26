@@ -1,68 +1,87 @@
 From: David Daney <ddaney@caviumnetworks.com>
-Subject: [PATCH 4/5] 8250: Allow port type to specify bugs that are not probed for.
-Date: Tue, 25 Nov 2008 16:18:38 -0800
-Message-ID: <1227658719-18297-4-git-send-email-ddaney@caviumnetworks.com>
+Subject: [PATCH 5/5] Serial: UART driver changes for Cavium OCTEON.
+Date: Tue, 25 Nov 2008 16:18:39 -0800
+Message-ID: <1227658719-18297-5-git-send-email-ddaney@caviumnetworks.com>
 References: <492C94FC.9070906@caviumnetworks.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail3.caviumnetworks.com ([12.108.191.235]:20385 "EHLO
+Received: from mail3.caviumnetworks.com ([12.108.191.235]:20392 "EHLO
 	mail3.caviumnetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751519AbYKZASr (ORCPT
+	with ESMTP id S1752324AbYKZASt (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 25 Nov 2008 19:18:47 -0500
+	Tue, 25 Nov 2008 19:18:49 -0500
 In-Reply-To: <492C94FC.9070906@caviumnetworks.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org, akpm@linux-foundation.org, alan@lxorguk.ukuu.org.uk
-Cc: linux-mips@linux-mips.org, David Daney <ddaney@caviumnetworks.com>
+Cc: linux-mips@linux-mips.org, David Daney <ddaney@caviumnetworks.com>, Tomaso Paoletti <tpaoletti@caviumnetworks.com>
 
-Add a bugs field to the serial8250_config and propagate it to the
-port's bugs field when the port is registered and configured.
+Cavium UART implementation won't work with the standard 8250 driver
+as-is.  Define a new uart_config (PORT_OCTEON) and use it to enable
+special handling required by the OCTEON's serial port.  Two new bug
+types are defined.
 
-This is a follow on to the previous patch.  Now that we can specify
-the port type and don't have to probe for it, we can avoid probing for
-bugs if they are known with certainty to exist.
-
-The alternative is to load up 8250.c with a bunch of OCTEON specific
-special cases in the probing code.
-
+Signed-off-by: Tomaso Paoletti <tpaoletti@caviumnetworks.com>
 Signed-off-by: David Daney <ddaney@caviumnetworks.com>
 ---
- drivers/serial/8250.c |    2 ++
- drivers/serial/8250.h |    1 +
- 2 files changed, 3 insertions(+), 0 deletions(-)
+ drivers/serial/8250.c       |   10 +++++++++-
+ drivers/serial/8250.h       |    1 +
+ include/linux/serial_core.h |    3 ++-
+ 3 files changed, 12 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index 3ae4974..3bb8e30 100644
+index 3bb8e30..63dbbb6 100644
 --- a/drivers/serial/8250.c
 +++ b/drivers/serial/8250.c
-@@ -1212,6 +1212,7 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
- 	up->port.fifosize = uart_config[up->port.type].fifo_size;
- 	up->capabilities = uart_config[up->port.type].flags;
- 	up->tx_loadsz = uart_config[up->port.type].tx_loadsz;
-+	up->bugs |= uart_config[up->port.type].bugs;
+@@ -279,6 +279,14 @@ static const struct serial8250_config uart_config[] = {
+ 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
+ 		.flags		= UART_CAP_FIFO,
+ 	},
++	[PORT_OCTEON] = {
++		.name		= "OCTEON",
++		.fifo_size	= 64,
++		.tx_loadsz	= 64,
++		.bugs		= UART_BUG_TIMEOUT,
++		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
++		.flags		= UART_CAP_FIFO,
++	},
+ };
  
- 	if (up->port.type == PORT_UNKNOWN)
- 		goto out;
-@@ -3065,6 +3066,7 @@ int serial8250_register_port(struct uart_port *port)
- 			uart->port.fifosize = uart_config[port->type].fifo_size;
- 			uart->capabilities = uart_config[port->type].flags;
- 			uart->tx_loadsz = uart_config[port->type].tx_loadsz;
-+			uart->bugs = uart_config[port->type].bugs;
- 		}
+ #if defined (CONFIG_SERIAL_8250_AU1X00)
+@@ -1714,7 +1722,7 @@ static void serial8250_timeout(unsigned long data)
+ 	unsigned int iir;
  
- 		set_io_from_upio(&uart->port);
+ 	iir = serial_in(up, UART_IIR);
+-	if (!(iir & UART_IIR_NO_INT))
++	if (!(iir & UART_IIR_NO_INT) || (up->bugs & UART_BUG_TIMEOUT))
+ 		serial8250_handle_port(up);
+ 	mod_timer(&up->timer, jiffies + poll_timeout(up->port.timeout));
+ }
 diff --git a/drivers/serial/8250.h b/drivers/serial/8250.h
-index 5202603..c9b3002 100644
+index c9b3002..17dc459 100644
 --- a/drivers/serial/8250.h
 +++ b/drivers/serial/8250.h
-@@ -34,6 +34,7 @@ struct serial8250_config {
- 	const char	*name;
- 	unsigned short	fifo_size;
- 	unsigned short	tx_loadsz;
-+	unsigned short	bugs;
- 	unsigned char	fcr;
- 	unsigned int	flags;
- };
+@@ -49,6 +49,7 @@ struct serial8250_config {
+ #define UART_BUG_TXEN	(1 << 1)	/* UART has buggy TX IIR status */
+ #define UART_BUG_NOMSR	(1 << 2)	/* UART has buggy MSR status bits (Au1x00) */
+ #define UART_BUG_THRE	(1 << 3)	/* UART has buggy THRE reassertion */
++#define UART_BUG_TIMEOUT (1 << 4)	/* UART should always handle timeout */
+ 
+ #define PROBE_RSA	(1 << 0)
+ #define PROBE_ANY	(~0)
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index b9e7756..fd772b5 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -40,7 +40,8 @@
+ #define PORT_NS16550A	14
+ #define PORT_XSCALE	15
+ #define PORT_RM9000	16	/* PMC-Sierra RM9xxx internal UART */
+-#define PORT_MAX_8250	16	/* max port ID */
++#define PORT_OCTEON	17	/* Cavium OCTEON internal UART */
++#define PORT_MAX_8250	17	/* max port ID */
+ 
+ /*
+  * ARM specific type numbers.  These are not currently guaranteed
 -- 
 1.5.6.5
 
