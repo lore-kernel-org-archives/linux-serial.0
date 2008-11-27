@@ -1,153 +1,83 @@
-From: Wolfram Sang <w.sang@pengutronix.de>
-Subject: [PATCH] mpc52xx/serial: add rts/cts handling
-Date: Wed, 26 Nov 2008 16:04:54 +0100
-Message-ID: <1227711894-28874-1-git-send-email-w.sang@pengutronix.de>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:40838 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754274AbYKZPE5 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Nov 2008 10:04:57 -0500
-Sender: linux-serial-owner@vger.kernel.org
+From: Kevin Hilman <khilman@deeprootsystems.com>
+Subject: [PATCH] 8250: Allow platform to register PM hook
+Date: Wed, 26 Nov 2008 16:25:22 -0800
+Message-ID: <1227745523-5408-1-git-send-email-khilman@deeprootsystems.com>
+Return-path: <linux-omap-owner@vger.kernel.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-omap@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: grant.likely@secretlab.ca
-Cc: linuxppc-dev@ozlabs.org, linux-serial@vger.kernel.org, Wolfram Sang <w.sang@pengutronix.de>
 
-Add RTS/CTS-support for the PSC of the MPC5200B. Tested with a Phytec
-MPC5200B-IO.
+Allow platform code to register a PM hook with the 8250 driver.  This
+enables platform specific code to be run for suspend/resume events.
 
-Signed-off-by: Wolfram Sang <w.sang@pengutronix.de>
+Since the per-port PM hook is local to the 8250 driver ('struct
+uart_port' doesn't have a PM hook) I pass the pm hook from the
+platform probe via serial8250_register_port().
+
+Signed-off-by: Kevin Hilman <khilman@deeprootsystems.com>
 ---
- arch/powerpc/include/asm/mpc52xx_psc.h |   11 +++++++-
- drivers/serial/mpc52xx_uart.c          |   41 ++++++++++++++++++++++++++++---
- 2 files changed, 47 insertions(+), 5 deletions(-)
+ drivers/serial/8250.c       |    7 +++++--
+ include/linux/serial_8250.h |    7 ++++++-
+ 2 files changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/arch/powerpc/include/asm/mpc52xx_psc.h b/arch/powerpc/include/asm/mpc52xx_psc.h
-index 8917ed6..a218da6 100644
---- a/arch/powerpc/include/asm/mpc52xx_psc.h
-+++ b/arch/powerpc/include/asm/mpc52xx_psc.h
-@@ -68,12 +68,20 @@
- #define MPC52xx_PSC_IMR_ORERR		0x1000
- #define MPC52xx_PSC_IMR_IPC		0x8000
- 
--/* PSC input port change bit */
-+/* PSC input port change bits */
- #define MPC52xx_PSC_CTS			0x01
- #define MPC52xx_PSC_DCD			0x02
- #define MPC52xx_PSC_D_CTS		0x10
- #define MPC52xx_PSC_D_DCD		0x20
- 
-+/* PSC acr bits */
-+#define MPC52xx_PSC_IEC_CTS		0x01
-+#define MPC52xx_PSC_IEC_DCD		0x02
-+
-+/* PSC output port bits */
-+#define MPC52xx_PSC_OP_RTS		0x01
-+#define MPC52xx_PSC_OP_RES		0x02
-+
- /* PSC mode fields */
- #define MPC52xx_PSC_MODE_5_BITS			0x00
- #define MPC52xx_PSC_MODE_6_BITS			0x01
-@@ -91,6 +99,7 @@
- #define MPC52xx_PSC_MODE_ONE_STOP_5_BITS	0x00
- #define MPC52xx_PSC_MODE_ONE_STOP		0x07
- #define MPC52xx_PSC_MODE_TWO_STOP		0x0f
-+#define MPC52xx_PSC_MODE_TXCTS			0x10
- 
- #define MPC52xx_PSC_RFNUM_MASK	0x01ff
- 
-diff --git a/drivers/serial/mpc52xx_uart.c b/drivers/serial/mpc52xx_uart.c
-index 6117d3d..3234100 100644
---- a/drivers/serial/mpc52xx_uart.c
-+++ b/drivers/serial/mpc52xx_uart.c
-@@ -429,14 +429,24 @@ mpc52xx_uart_tx_empty(struct uart_port *port)
- static void
- mpc52xx_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index 5f383d8..993a242 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -2842,7 +2842,7 @@ static int __devinit serial8250_probe(struct platform_device *dev)
+ 		port.dev		= &dev->dev;
+ 		if (share_irqs)
+ 			port.flags |= UPF_SHARE_IRQ;
+-		ret = serial8250_register_port(&port);
++		ret = serial8250_register_port(&port, p->pm);
+ 		if (ret < 0) {
+ 			dev_err(&dev->dev, "unable to register port at index %d "
+ 				"(IO%lx MEM%llx IRQ%d): %d\n", i,
+@@ -2966,7 +2966,9 @@ static struct uart_8250_port *serial8250_find_match_or_unused(struct uart_port *
+  *
+  *	On success the port is ready to use and the line number is returned.
+  */
+-int serial8250_register_port(struct uart_port *port)
++int serial8250_register_port(struct uart_port *port,
++			     void (*pm)(struct uart_port *, unsigned int state,
++					unsigned int oldstate))
  {
--	/* Not implemented */
-+	if (mctrl & TIOCM_RTS)
-+		out_8(&PSC(port)->op1, MPC52xx_PSC_OP_RTS);
-+	else
-+		out_8(&PSC(port)->op0, MPC52xx_PSC_OP_RTS);
- }
+ 	struct uart_8250_port *uart;
+ 	int ret = -ENOSPC;
+@@ -2990,6 +2992,7 @@ int serial8250_register_port(struct uart_port *port)
+ 		uart->port.flags        = port->flags | UPF_BOOT_AUTOCONF;
+ 		uart->port.mapbase      = port->mapbase;
+ 		uart->port.private_data = port->private_data;
++		uart->pm = pm;
+ 		if (port->dev)
+ 			uart->port.dev = port->dev;
  
- static unsigned int
- mpc52xx_uart_get_mctrl(struct uart_port *port)
- {
--	/* Not implemented */
--	return TIOCM_CTS | TIOCM_DSR | TIOCM_CAR;
-+	unsigned int ret = TIOCM_DSR;
-+	u8 status = in_8(&PSC(port)->mpc52xx_psc_ipcr);
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index 3d37c94..97723c5 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -28,6 +28,9 @@ struct plat_serial8250_port {
+ 	unsigned char	iotype;		/* UPIO_* */
+ 	unsigned char	hub6;
+ 	upf_t		flags;		/* UPF_* flags */
 +
-+	if (!(status & MPC52xx_PSC_CTS))
-+		ret |= TIOCM_CTS;
-+	if (!(status & MPC52xx_PSC_DCD))
-+		ret |= TIOCM_CAR;
-+
-+	return ret;
- }
++	void		(*pm)(struct uart_port *, unsigned int state,
++			      unsigned int oldstate);
+ };
  
- static void
-@@ -479,7 +489,15 @@ mpc52xx_uart_stop_rx(struct uart_port *port)
- static void
- mpc52xx_uart_enable_ms(struct uart_port *port)
- {
--	/* Not implemented */
-+	struct mpc52xx_psc __iomem *psc = PSC(port);
-+
-+	/* clear D_*-bits by reading them */
-+	in_8(&psc->mpc52xx_psc_ipcr);
-+	/* enable CTS and DCD as IPC interrupts */
-+	out_8(&psc->mpc52xx_psc_acr, MPC52xx_PSC_IEC_CTS | MPC52xx_PSC_IEC_DCD);
-+
-+	port->read_status_mask |= MPC52xx_PSC_IMR_IPC;
-+	out_be16(&psc->mpc52xx_psc_imr, port->read_status_mask);
- }
+ /*
+@@ -57,7 +60,9 @@ enum {
+  */
+ struct uart_port;
  
- static void
-@@ -580,6 +598,10 @@ mpc52xx_uart_set_termios(struct uart_port *port, struct ktermios *new,
- 			MPC52xx_PSC_MODE_ONE_STOP_5_BITS :
- 			MPC52xx_PSC_MODE_ONE_STOP;
- 
-+	if (new->c_cflag & CRTSCTS) {
-+		mr1 |= MPC52xx_PSC_MODE_RXRTS;
-+		mr2 |= MPC52xx_PSC_MODE_TXCTS;
-+	}
- 
- 	baud = uart_get_baud_rate(port, new, old, 0, port->uartclk/16);
- 	quot = uart_get_divisor(port, baud);
-@@ -617,6 +639,9 @@ mpc52xx_uart_set_termios(struct uart_port *port, struct ktermios *new,
- 	out_8(&psc->ctur, ctr >> 8);
- 	out_8(&psc->ctlr, ctr & 0xff);
- 
-+	if (UART_ENABLE_MS(port, new->c_cflag))
-+		mpc52xx_uart_enable_ms(port);
-+
- 	/* Reenable TX & RX */
- 	out_8(&psc->command, MPC52xx_PSC_TX_ENABLE);
- 	out_8(&psc->command, MPC52xx_PSC_RX_ENABLE);
-@@ -826,6 +851,7 @@ mpc52xx_uart_int(int irq, void *dev_id)
- 	struct uart_port *port = dev_id;
- 	unsigned long pass = ISR_PASS_LIMIT;
- 	unsigned int keepgoing;
-+	u8 status;
- 
- 	spin_lock(&port->lock);
- 
-@@ -842,6 +868,13 @@ mpc52xx_uart_int(int irq, void *dev_id)
- 		if (psc_ops->tx_rdy(port))
- 			keepgoing |= mpc52xx_uart_int_tx_chars(port);
- 
-+		status = in_8(&PSC(port)->mpc52xx_psc_ipcr);
-+		if (status & MPC52xx_PSC_D_DCD)
-+			uart_handle_dcd_change(port, !(status & MPC52xx_PSC_DCD));
-+
-+		if (status & MPC52xx_PSC_D_CTS)
-+			uart_handle_cts_change(port, !(status & MPC52xx_PSC_CTS));
-+
- 		/* Limit number of iteration */
- 		if (!(--pass))
- 			keepgoing = 0;
+-int serial8250_register_port(struct uart_port *);
++int serial8250_register_port(struct uart_port *,
++			     void (*pm)(struct uart_port *, unsigned int state,
++					unsigned int oldstate));
+ void serial8250_unregister_port(int line);
+ void serial8250_suspend_port(int line);
+ void serial8250_resume_port(int line);
 -- 
-1.5.6.5
+1.6.0.3
 
