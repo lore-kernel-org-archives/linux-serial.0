@@ -1,123 +1,139 @@
-From: Shinya Kuribayashi <shinya.kuribayashi@necel.com>
-Subject: Re: [PATCH 5/5] Serial: UART driver changes for Cavium OCTEON.
-Date: Fri, 28 Nov 2008 12:27:33 +0900
-Message-ID: <492F6525.9010308@necel.com>
-References: <492C94FC.9070906@caviumnetworks.com> <1227658719-18297-5-git-send-email-ddaney@caviumnetworks.com>
+From: Lawrence Rust <lawrence@softsystem.co.uk>
+Subject: BUG REPORT: 8250 serial driver tcsetattr / TIOCMIWAIT interaction
+Date: Fri, 28 Nov 2008 11:05:26 +0100
+Message-ID: <200811281105.26477.lawrence@softsystem.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from TYO202.gate.nec.co.jp ([202.32.8.206]:59169 "EHLO
-	tyo202.gate.nec.co.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752541AbYK1D2A (ORCPT
+Received: from asmtp1.iomartmail.com ([62.128.201.248]:47174 "EHLO
+	asmtp1.iomartmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750912AbYK1KqJ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 27 Nov 2008 22:28:00 -0500
-In-Reply-To: <1227658719-18297-5-git-send-email-ddaney@caviumnetworks.com>
+	Fri, 28 Nov 2008 05:46:09 -0500
+Received: from asmtp1.iomartmail.com (localhost.localdomain [127.0.0.1])
+	by asmtp1.iomartmail.com (8.12.11.20060308/8.12.8) with ESMTP id mASA5cLi031760
+	for <linux-serial@vger.kernel.org>; Fri, 28 Nov 2008 10:05:39 GMT
+Received: from collins.softsystem.co.uk (149.79.193-77.rev.gaoland.net [77.193.79.149])
+	(authenticated bits=0)
+	by asmtp1.iomartmail.com (8.12.11.20060308/8.12.11) with ESMTP id mASA5c2t031754
+	for <linux-serial@vger.kernel.org>; Fri, 28 Nov 2008 10:05:38 GMT
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: David Daney <ddaney@caviumnetworks.com>
-Cc: linux-serial@vger.kernel.org, akpm@linux-foundation.org, alan@lxorguk.ukuu.org.uk, linux-mips@linux-mips.org, Tomaso Paoletti <tpaoletti@caviumnetworks.com>
+To: linux-serial@vger.kernel.org
 
-Hi David,
+[1.] Calling tcsetattr prevents any thread suspended in ioctl TIOCMIWAIT from 
+ever resuming.
 
-David Daney wrote:
-> Cavium UART implementation won't work with the standard 8250 driver
-> as-is.  Define a new uart_config (PORT_OCTEON) and use it to enable
-> special handling required by the OCTEON's serial port.  Two new bug
-> types are defined.
+[2.] If a thread is suspended inside a call to ioctl TIOCMIWAIT, waiting for a 
+modem status change, the 8250 driver enables modem status interrupts.  The 
+modem status interrupt service routine resumes the suspended thread on the 
+next modem status irq.
 
-You just added one new bug type, not two. ;-)
+If in the mean time, another thread calls tcsetattr then the 8250 driver 
+disables modem status interrupts (unless CTS/RTS handshaking is enabled).  
+This prevents the suspended thread from ever being resumed.
 
-> diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-> index 3bb8e30..63dbbb6 100644
-> --- a/drivers/serial/8250.c
-> +++ b/drivers/serial/8250.c
-> @@ -279,6 +279,14 @@ static const struct serial8250_config uart_config[] = {
->  		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
->  		.flags		= UART_CAP_FIFO,
->  	},
-> +	[PORT_OCTEON] = {
-> +		.name		= "OCTEON",
-> +		.fifo_size	= 64,
-> +		.tx_loadsz	= 64,
-> +		.bugs		= UART_BUG_TIMEOUT,
-> +		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
-> +		.flags		= UART_CAP_FIFO,
-> +	},
->  };
->  
->  #if defined (CONFIG_SERIAL_8250_AU1X00)
+[3.] Keywords serial, 8250
 
-I see your point.  Then let's look at this commit:
+[4.] Kernel 2.6.24-21
 
-|commit 40b36daad0ac704e6d5c1b75789f371ef5b053c1
-|Author: Alex Williamson <alex.williamson@hp.com>
-|Date:   Wed Feb 14 00:33:04 2007 -0800
-|
-|    [PATCH] 8250 UART backup timer
-|
-|    The patch below works around a minor bug found in the UART of the remote
-|    management card used in many HP ia64 and parisc servers (aka the Diva
-|    UARTs).  The problem is that the UART does not reassert the THRE interrupt
-|    if it has been previously cleared and the IIR THRI bit is re-enabled.  This
-|    can produce a very annoying failure mode when used as a serial console,
-|    allowing a boot/reboot to hang indefinitely until an RX interrupt kicks it
-|    into working again (ie.  an unattended reboot could stall).
-|
-|    To solve this problem, a backup timer is introduced that runs alongside the
-|    standard interrupt driven mechanism.  This timer wakes up periodically,
-|    checks for a hang condition and gets characters moving again.  This backup
-|    mechanism is only enabled if the UART is detected as having this problem,
-|    so systems without these UARTs will have no additional overhead.
-|
-|    This version of the patch incorporates previous comments from Pavel and
-|    removes races in the bug detection code.  The test is now done before the
-|    irq linking to prevent races with interrupt handler clearing the THRE
-|    interrupt.  Short delays and syncs are also added to ensure the device is
-|    able to update register state before the result is tested.
-|
-|    Aristeu says:
-|
-|      this was tested on the following HP machines and solved the problem:
-|      rx2600, rx2620, rx1600 and rx1620s.
-|
-|    hpa says:
-|
-|      I have seen this same bug in soft UART IP from "a major vendor."
-|
-|    Signed-off-by: Alex Williamson <alex.williamson@hp.com>
-|    Cc: "H. Peter Anvin" <hpa@zytor.com>
-|    Cc: Russell King <rmk@arm.linux.org.uk>
-|    Acked-by: Aristeu Sergio Rozanski Filho <aris@cathedrallabs.org>
-|    Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-|    Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+[4.1.] cat /proc/version: Linux version 2.6.24-21-lvr (root@Collins) (gcc 
+version 4.2.3 (Ubuntu 4.2.3-2ubuntu7)) #2 Wed Oct 22 19:42:04 CEST 2008
 
-AFAICS this patch tries to handle the same problem, and added reasonable
-framework with serial8250_backup_timeout, etc.  And now we have UART_BUG
-_THRE for this issue.  Then it might be better to use existing codes as
-much as possible.
+[7.] Example C program to demonstrate:
+/* gcc -o test test.c -l pthread */
+#include <stdio.h>
+#include <errno.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <pthread.h>
+#include <termios.h>
+#include <sys/ioctl.h>
+#include <linux/serial.h>
 
-Just random thoughts,
+static void* monitor( void* pv);
+static int s_fd;
 
-- could we dynamically probe this bug in serial8250_startup as well?
+int main( void)
+  {
+  const char kszDev[] = "/dev/ttyS0";
+  pthread_t t;
+  struct termios tio;
 
-- is there any possibility this hardware works with an existing
-  serial8250_backup_timeout, not doing this below:
+  s_fd = open( kszDev, O_RDWR | O_NONBLOCK);
+  if ( s_fd < 0)
+    return fprintf( stderr, "Error(%d) opening %s: %s\n", errno, kszDev, 
+strerror( errno)), 1;
 
-> @@ -1714,7 +1722,7 @@ static void serial8250_timeout(unsigned long data)
->  	unsigned int iir;
->  
->  	iir = serial_in(up, UART_IIR);
-> -	if (!(iir & UART_IIR_NO_INT))
-> +	if (!(iir & UART_IIR_NO_INT) || (up->bugs & UART_BUG_TIMEOUT))
->  		serial8250_handle_port(up);
->  	mod_timer(&up->timer, jiffies + poll_timeout(up->port.timeout));
->  }
+  pthread_create( &t, NULL, &monitor, NULL);
 
-I'm not an UART expert, any feedback is highly appreciated.
+  /* Modem status changes seen here */
+  sleep( 5);
 
-Thanks,
+  tcgetattr( s_fd, &tio);
+  tio.c_cflag ^= CSTOPB;
 
--- 
-Shinya Kuribayashi
-NEC Electronics
+  /* But not after here */
+  puts( "Main: tcsetattr");
+  tcsetattr( s_fd, TCSANOW, &tio);
+
+  for (;;)
+    sleep( 1);
+  }
+
+static void* monitor( void* pv)
+  {
+  (void)pv;
+  for(;;)
+    {
+    unsigned uModem;
+    struct serial_icounter_struct cnt;
+
+    if ( ioctl( s_fd, TIOCMGET, &uModem) < 0)
+      fprintf( stderr, "Error(%d) in TIOCMGET: %s\n", errno, strerror( 
+errno));
+    printf( "Modem status:%s%s%s%s%s%s\n",
+      (uModem & TIOCM_RTS) ? " RTS" : "",
+      (uModem & TIOCM_DTR) ? " DTR" : "",
+      (uModem & TIOCM_CTS) ? " CTS" : "",
+      (uModem & TIOCM_DSR) ? " DSR" : "",
+      (uModem & TIOCM_CD) ? " CD" : "",
+      (uModem & TIOCM_RI) ? " RI" : ""
+    );
+
+    if ( ioctl( s_fd, TIOCGICOUNT, &cnt) < 0)
+      fprintf( stderr, "Error(%d) in TIOCGICOUNT: %s\n", errno, strerror( 
+errno));
+    printf( "Irqs: CTS:%d DSR:%d RNG:%d DCD:%d Rx:%d Tx:%d Frame:%d Orun:%d 
+Par:%d Brk:%d Oflow:%d\n",
+      cnt.cts, cnt.dsr, cnt.rng, cnt.dcd,
+      cnt.rx, cnt.tx, cnt.frame, cnt.overrun, cnt.parity,
+      cnt.brk, cnt.buf_overrun
+    );
+
+    fputs( "Waiting...", stdout), fflush( stdout);
+    if ( 0 > ioctl( s_fd, TIOCMIWAIT, (unsigned long)(TIOCM_CAR | TIOCM_RNG | 
+TIOCM_DSR | TIOCM_CTS)))
+      fprintf( stderr, "\nError(%d) in TIOCMIWAIT: %s\n", errno, strerror( 
+errno));
+    fputs( "\n", stdout);
+    }
+  return NULL;
+  }
+
+[8.] 8250.c line 2112:
+	/*
+	 * CTS flow control flag and modem status interrupts
+	 */
+	up->ier &= ~UART_IER_MSI;
+	if (!(up->bugs & UART_BUG_NOMSR) &&
+			UART_ENABLE_MS(&up->port, termios->c_cflag))
+		up->ier |= UART_IER_MSI;
+
+This code disables the MS irq.  Should take into account if 
+up->port.info->delta_msr_wait is in use.
+
+-- Lawrence Rust
