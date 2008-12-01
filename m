@@ -1,114 +1,63 @@
 From: David Daney <ddaney@caviumnetworks.com>
-Subject: [PATCH 3/4] Serial: Allow port type to be specified when calling serial8250_register_port.
-Date: Mon,  1 Dec 2008 15:49:27 -0800
-Message-ID: <1228175368-5536-3-git-send-email-ddaney@caviumnetworks.com>
+Subject: [PATCH 4/4] Serial: UART driver changes for Cavium OCTEON.
+Date: Mon,  1 Dec 2008 15:49:28 -0800
+Message-ID: <1228175368-5536-4-git-send-email-ddaney@caviumnetworks.com>
 References: <4934774E.6080805@caviumnetworks.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail3.caviumnetworks.com ([12.108.191.235]:48103 "EHLO
+Received: from mail3.caviumnetworks.com ([12.108.191.235]:48178 "EHLO
 	mail3.caviumnetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752269AbYLAXth (ORCPT
+	with ESMTP id S1752500AbYLAXtp (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 1 Dec 2008 18:49:37 -0500
+	Mon, 1 Dec 2008 18:49:45 -0500
 In-Reply-To: <4934774E.6080805@caviumnetworks.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org, akpm@linux-foundation.org, alan@lxorguk.ukuu.org.uk
-Cc: linux-mips@linux-mips.org, David Daney <ddaney@caviumnetworks.com>
+Cc: linux-mips@linux-mips.org, David Daney <ddaney@caviumnetworks.com>, Tomaso Paoletti <tpaoletti@caviumnetworks.com>
 
-Add flag value UPF_FIXED_TYPE which specifies that the UART type is
-known and should not be probed.  For this case the UARTs properties
-are just copied out of the uart_config entry.
+Cavium UART implementation is not covered by existing uart_configS.
+Define a new uart_config (PORT_OCTEON) which is specified by OCTEON
+platform device registration code.
 
-This allows us to keep SOC specific 8250 probe code out of 8250.c.  In
-this case we know the serial hardware will not be changing as it is on
-the same silicon as the CPU, and we can specify it with certainty in
-the board/cpu setup code.
-
-The alternative is to load up 8250.c with a bunch of OCTEON specific
-special cases in the probing code.
-
+Signed-off-by: Tomaso Paoletti <tpaoletti@caviumnetworks.com>
 Signed-off-by: David Daney <ddaney@caviumnetworks.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 ---
- drivers/serial/8250.c        |    9 +++++++++
- drivers/serial/serial_core.c |    7 +++++--
- include/linux/serial_8250.h  |    1 +
- include/linux/serial_core.h  |    2 ++
- 4 files changed, 17 insertions(+), 2 deletions(-)
+ drivers/serial/8250.c       |    7 +++++++
+ include/linux/serial_core.h |    3 ++-
+ 2 files changed, 9 insertions(+), 1 deletions(-)
 
 diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index 849af9d..3ae4974 100644
+index 3ae4974..daa0056 100644
 --- a/drivers/serial/8250.c
 +++ b/drivers/serial/8250.c
-@@ -2903,6 +2903,7 @@ static int __devinit serial8250_probe(struct platform_device *dev)
- 		port.mapbase		= p->mapbase;
- 		port.hub6		= p->hub6;
- 		port.private_data	= p->private_data;
-+		port.type		= p->type;
- 		port.serial_in		= p->serial_in;
- 		port.serial_out		= p->serial_out;
- 		port.dev		= &dev->dev;
-@@ -3058,6 +3059,14 @@ int serial8250_register_port(struct uart_port *port)
- 		uart->port.private_data = port->private_data;
- 		if (port->dev)
- 			uart->port.dev = port->dev;
-+
-+		if (port->flags & UPF_FIXED_TYPE) {
-+			uart->port.type = port->type;
-+			uart->port.fifosize = uart_config[port->type].fifo_size;
-+			uart->capabilities = uart_config[port->type].flags;
-+			uart->tx_loadsz = uart_config[port->type].tx_loadsz;
-+		}
-+
- 		set_io_from_upio(&uart->port);
- 		/* Possibly override default I/O functions.  */
- 		if (port->serial_in)
-diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
-index 874786a..7fef45e 100644
---- a/drivers/serial/serial_core.c
-+++ b/drivers/serial/serial_core.c
-@@ -2198,11 +2198,14 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
- 	 * Now do the auto configuration stuff.  Note that config_port
- 	 * is expected to claim the resources and map the port for us.
- 	 */
--	flags = UART_CONFIG_TYPE;
-+	flags = 0;
- 	if (port->flags & UPF_AUTO_IRQ)
- 		flags |= UART_CONFIG_IRQ;
- 	if (port->flags & UPF_BOOT_AUTOCONF) {
--		port->type = PORT_UNKNOWN;
-+		if (!(port->flags & UPF_FIXED_TYPE)) {
-+			port->type = PORT_UNKNOWN;
-+			flags |= UART_CONFIG_TYPE;
-+		}
- 		port->ops->config_port(port, flags);
- 	}
- 
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index 77d83d9..d4d2a78 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -28,6 +28,7 @@ struct plat_serial8250_port {
- 	unsigned char	iotype;		/* UPIO_* */
- 	unsigned char	hub6;
- 	upf_t		flags;		/* UPF_* flags */
-+	unsigned int	type;		/* If UPF_FIXED_TYPE */
- 	unsigned int	(*serial_in)(struct uart_port *, int);
- 	void		(*serial_out)(struct uart_port *, int, int);
+@@ -279,6 +279,13 @@ static const struct serial8250_config uart_config[] = {
+ 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
+ 		.flags		= UART_CAP_FIFO,
+ 	},
++	[PORT_OCTEON] = {
++		.name		= "OCTEON",
++		.fifo_size	= 64,
++		.tx_loadsz	= 64,
++		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
++		.flags		= UART_CAP_FIFO,
++	},
  };
+ 
+ #if defined (CONFIG_SERIAL_8250_AU1X00)
 diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 2d22c67..b9e7756 100644
+index b9e7756..fd772b5 100644
 --- a/include/linux/serial_core.h
 +++ b/include/linux/serial_core.h
-@@ -293,6 +293,8 @@ struct uart_port {
- #define UPF_MAGIC_MULTIPLIER	((__force upf_t) (1 << 16))
- #define UPF_CONS_FLOW		((__force upf_t) (1 << 23))
- #define UPF_SHARE_IRQ		((__force upf_t) (1 << 24))
-+/* The exact UART type is known and should not be probed.  */
-+#define UPF_FIXED_TYPE		((__force upf_t) (1 << 27))
- #define UPF_BOOT_AUTOCONF	((__force upf_t) (1 << 28))
- #define UPF_FIXED_PORT		((__force upf_t) (1 << 29))
- #define UPF_DEAD		((__force upf_t) (1 << 30))
+@@ -40,7 +40,8 @@
+ #define PORT_NS16550A	14
+ #define PORT_XSCALE	15
+ #define PORT_RM9000	16	/* PMC-Sierra RM9xxx internal UART */
+-#define PORT_MAX_8250	16	/* max port ID */
++#define PORT_OCTEON	17	/* Cavium OCTEON internal UART */
++#define PORT_MAX_8250	17	/* max port ID */
+ 
+ /*
+  * ARM specific type numbers.  These are not currently guaranteed
 -- 
 1.5.6.5
 
