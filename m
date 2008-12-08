@@ -1,57 +1,55 @@
-From: Jiri Slaby <jirislaby@gmail.com>
-Subject: [PATCH 2/2 #2] 8250_pci: add support for netmos 9835
-Date: Mon,  8 Dec 2008 16:24:33 +0100
-Message-ID: <1228749873-21823-1-git-send-email-jirislaby@gmail.com>
-References: <1228749555-21363-2-git-send-email-jirislaby@gmail.com>
+From: Russell Shaw <rjshaw@netspace.net.au>
+Subject: Onboard COM of P5E-V-HDMI
+Date: Tue, 09 Dec 2008 03:34:02 +1100
+Message-ID: <493D4C7A.3050409@netspace.net.au>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.wellnetcz.com ([212.24.148.102]:50785 "EHLO
-	smtp.wellnetcz.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752134AbYLHPZI (ORCPT
+Received: from mail-out5.netspace.net.au ([203.10.110.92]:64508 "EHLO
+	mail.netspace.net.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753343AbYLHQzF (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 8 Dec 2008 10:25:08 -0500
-In-Reply-To: <1228749555-21363-2-git-send-email-jirislaby@gmail.com>
+	Mon, 8 Dec 2008 11:55:05 -0500
+Received: from [192.168.0.10] (220-253-23-156.VIC.netspace.net.au [220.253.23.156])
+	by mail.netspace.net.au (Postfix) with ESMTP id 73E131717F3
+	for <linux-serial@vger.kernel.org>; Tue,  9 Dec 2008 03:34:01 +1100 (EST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: akpm@linux-foundation.org
-Cc: linux-serial@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@gmail.com>
+To: linux-serial@vger.kernel.org
 
-Most of netmos 9835 hardware is handled by parport-serial.
-IBM introduces a device which doesn't have any parallel ports and
-have screwed subdevice PCI id (not corresponding to port numbers).
+Hi,
 
-Handle this device (9710:9835 1014:0299) properly.
+I'm running 2.6.24 on debian/unstable.
 
-Signed-off-by: Jiri Slaby <jirislaby@gmail.com>
----
- drivers/serial/8250_pci.c |    8 ++++++++
- 1 files changed, 8 insertions(+), 0 deletions(-)
+I have an Asus P5E-V-HDMI (Intel G35 chipset) with on-board rs232 serial port.
 
-diff --git a/drivers/serial/8250_pci.c b/drivers/serial/8250_pci.c
-index 1948c81..766cfac 100644
---- a/drivers/serial/8250_pci.c
-+++ b/drivers/serial/8250_pci.c
-@@ -600,6 +600,10 @@ static int pci_netmos_init(struct pci_dev *dev)
- 	/* subdevice 0x00PS means <P> parallel, <S> serial */
- 	unsigned int num_serial = dev->subsystem_device & 0xf;
- 
-+	if (dev->subsystem_vendor == PCI_VENDOR_ID_IBM &&
-+			dev->subsystem_device == 0x0299)
-+		return 0;
-+
- 	if (num_serial == 0)
- 		return -ENODEV;
- 	return num_serial;
-@@ -3091,6 +3095,10 @@ static struct pci_device_id serial_pci_tbl[] = {
- 		0,
- 		pbn_b0_8_115200 },
- 
-+	{	PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9835,
-+		PCI_VENDOR_ID_IBM, 0x0299,
-+		0, 0, pbn_b0_bt_2_115200 },
-+
- 	/*
- 	 * These entries match devices with class COMMUNICATION_SERIAL,
- 	 * COMMUNICATION_MODEM or COMMUNICATION_MULTISERIAL
--- 
-1.6.0.5
+http://www.asus.com/products.aspx?l1=3&l2=11&l3=584&l4=0&model=1929&modelmenu=1
+
+
+With an LED breakout box connected, i get these signals asserted
+when doing: cat random.txt > /dev/ttyS0:
+
+TD   faint green
+RD   flickering red and green
+RTS  red
+DTR  red
+
+When i'm not sending anything i get:
+
+TD  red
+RD  green
+RTS green
+CTS red
+DSR red
+DCD red
+DTR red
+
+
+IIRC, RD should not be asserted red or green at all because it
+should be an input.
+
+My other serial cards behave ok.
+
+I checked the cable between the motherboard and breakout box.
 
