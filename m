@@ -1,76 +1,67 @@
-From: Chris Gibson <chris@toftronix.com.au>
-Subject: Re: Onboard COM of P5E-V-HDMI
-Date: Wed, 10 Dec 2008 21:17:56 +1100
-Message-ID: <1228904276.3664.20.camel@thewinkle.toftronix.com.au>
-References: <493D4C7A.3050409@netspace.net.au>
+From: Matthieu CASTET <matthieu.castet@parrot.com>
+Subject: Re: s3c24xx : TIOCM_CTS handling problem
+Date: Tue, 16 Dec 2008 14:43:01 +0100
+Message-ID: <4947B065.5080405@parrot.com>
+References: <48D242DC.30102@parrot.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from toftronix.com.au ([60.241.205.236]:40983 "EHLO
-	thetriton.toftronix.com.au" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1755161AbYLJKOy (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Dec 2008 05:14:54 -0500
-In-Reply-To: <493D4C7A.3050409@netspace.net.au>
+Received: from co203.xi-lite.net ([149.6.83.203]:46725 "EHLO co203.xi-lite.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755432AbYLPOKt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 16 Dec 2008 09:10:49 -0500
+In-Reply-To: <48D242DC.30102@parrot.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell Shaw <rjshaw@netspace.net.au>
-Cc: linux-serial@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, Ben Dooks <ben-linux@fluff.org>, linux-kernel@vger.kernel.org
 
-Could be a fault with the Mother board.  Could be a grounding fault.
-
-First thing that I would check is continuity on the RS232 port ground
-pin to the motherboard earth with a multimeter (say one of the black
-leads from the power supply).
-
-It's my first guess that the port has a bad ground connection, and that
-you are seeing a current flow out of the output signals back through the
-input signals down to ground via input pull down resistors on the
-motherboard, or in the chip-set.
-
-If you have access to a CRO I would say that it would be worth looking
-at the serial port wave forms. 
-
-On Tue, 2008-12-09 at 03:34 +1100, Russell Shaw wrote:
+Matthieu CASTET a =E9crit :
 > Hi,
-> 
-> I'm running 2.6.24 on debian/unstable.
-> 
-> I have an Asus P5E-V-HDMI (Intel G35 chipset) with on-board rs232 serial port.
-> 
-> http://www.asus.com/products.aspx?l1=3&l2=11&l3=584&l4=0&model=1929&modelmenu=1
-> 
-> 
-> With an LED breakout box connected, i get these signals asserted
-> when doing: cat random.txt > /dev/ttyS0:
-> 
-> TD   faint green
-> RD   flickering red and green
-> RTS  red
-> DTR  red
-> 
-> When i'm not sending anything i get:
-> 
-> TD  red
-> RD  green
-> RTS green
-> CTS red
-> DSR red
-> DCD red
-> DTR red
-> 
-> 
-> IIRC, RD should not be asserted red or green at all because it
-> should be an input.
-> 
-> My other serial cards behave ok.
-> 
-> I checked the cable between the motherboard and breakout box.
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+>=20
+> there is a problem in samsung soc serial driver with the report of
+> TIOCM_CTS in get_mctrl.
+>=20
+> The uart layer check the status of the TIOCM_CTS in the open or
+> set_termios function and cache the result in the tty->hw_stopped flag=
+=2E
+>=20
+> Then when sending data, in the function uart_start, it check
+> tty->hw_stopped flag before calling the start_tx uart driver callback=
+=2E
+>=20
+>=20
+> For the samsung uart driver it means :
+> - if the other side is not connected or in a reset state, then CTS
+> signal is not activated
+> - we open and configure the uart. get_mctrl don't report TIOCM_CTS fl=
+ag.
+> uart layer set tty->hw_stopped flag.
+> - we connect or start the other side. CTS signal become activated.
+> - we send some characters on the uart. This call uart_write which fil=
+l
+> uart tx queue and call uart_start. uart_start doesn't call driver
+> start_tx because tty->hw_stopped flag is set.
+> - because driver start_tx is never call, the data is never send on th=
+e uart.
+>=20
+>>From what I see, working driver managing TIOCM_CTS flag (amba-pl011,
+> 8250), call uart_handle_cts_change when the uart driver detect a CTS
+> signal change (via a interrupt).
+>=20
+> Because the samsung controller doesn't generate an interrupt when CTS
+> signal change, we can't call uart_handle_cts_change.
+>=20
+> And easy fix could be to always report TIOCM_CTS.
+>=20
+Ping ?
 
+The bug is still present on git tree and I have got no replies.
+
+
+Matthieu
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
