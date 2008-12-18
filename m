@@ -1,50 +1,43 @@
-From: Matthias Fuchs <mfuchs@ma-fu.de>
-Subject: Enabling auto RS485 half-duplex control
-Date: Wed, 17 Dec 2008 22:24:13 +0100
-Message-ID: <200812172224.13608.mfuchs@ma-fu.de>
+From: Theodore Tso <tytso@mit.edu>
+Subject: Re: Enabling auto RS485 half-duplex control
+Date: Wed, 17 Dec 2008 22:32:00 -0500
+Message-ID: <20081218033200.GB9871@mit.edu>
+References: <200812172224.13608.mfuchs@ma-fu.de>
 Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-in-05.arcor-online.net ([151.189.21.45]:58927 "EHLO
-	mail-in-05.arcor-online.net" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751460AbYLQVYU (ORCPT
+Received: from www.church-of-our-saviour.org ([69.25.196.31]:46283 "EHLO
+	thunker.thunk.org" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751994AbYLRDcE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 17 Dec 2008 16:24:20 -0500
-Received: from mail-in-10-z2.arcor-online.net (mail-in-10-z2.arcor-online.net [151.189.8.27])
-	by mail-in-05.arcor-online.net (Postfix) with ESMTP id 64801183613
-	for <linux-serial@vger.kernel.org>; Wed, 17 Dec 2008 22:24:18 +0100 (CET)
-Received: from mail-in-04.arcor-online.net (mail-in-04.arcor-online.net [151.189.21.44])
-	by mail-in-10-z2.arcor-online.net (Postfix) with ESMTP id 4CE4C23D2F3
-	for <linux-serial@vger.kernel.org>; Wed, 17 Dec 2008 22:24:18 +0100 (CET)
-Received: from bunny.home (dslb-088-070-062-165.pools.arcor-ip.net [88.70.62.165])
-	by mail-in-04.arcor-online.net (Postfix) with ESMTP id 2D35A1BF572
-	for <linux-serial@vger.kernel.org>; Wed, 17 Dec 2008 22:24:15 +0100 (CET)
-Received: from fox.localnet (fox.home [192.168.2.13])
-	by bunny.home (Postfix) with ESMTPS id 4E66525104CB
-	for <linux-serial@vger.kernel.org>; Wed, 17 Dec 2008 22:24:11 +0100 (CET)
+	Wed, 17 Dec 2008 22:32:04 -0500
 Content-Disposition: inline
+In-Reply-To: <200812172224.13608.mfuchs@ma-fu.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Matthias Fuchs <mfuchs@ma-fu.de>
+Cc: linux-serial@vger.kernel.org
 
-Hi,
+On Wed, Dec 17, 2008 at 10:24:13PM +0100, Matthias Fuchs wrote:
+> Hi,
+> 
+> some Exar UARTs like the XR16C2850 support a feature
+> called auto RS485 half-duplex control. In this mode the
+> RTS line has a special role when using the UART for 
+> RS485 communication.
 
-some Exar UARTs like the XR16C2850 support a feature
-called auto RS485 half-duplex control. In this mode the
-RTS line has a special role when using the UART for 
-RS485 communication.
+So I haven't maintained the serial driver for a long time, but when I
+did, I refused to try to implement hardware half-duplex control
+because there was absolutely no standards in this space.  Which RS-232
+lines are involved wasn't standardized, and there was often very
+strange timing restrictions as well.  Some devices required there to
+be a minimum delay of XX milliseconds between when RTS is raised
+and when DTR is raised.  Other devices have a maximum time between
+when one side raises RTS and the others side raises DTR.
 
-I did not find a way to enable this mode through the 
-standard serial driver. The UART is is detected correctly
-but there seems to be no way to enable this mode
-out of the box.
+So the challenge is designing an interface for half-duplex which is
+sufficiently general that it will actually work for all/most of the
+half-dozen people in the world who still care about half-ruplex RS-232
+communications.  :-)
 
-So what's the best way to implement this?
-A new ioctl? Any idea?
-
-Matthias
-
-
-
+						- Ted
