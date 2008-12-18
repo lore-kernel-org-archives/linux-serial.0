@@ -1,63 +1,62 @@
-From: Matthias Fuchs <mfuchs@ma-fu.de>
+From: Wolfram Sang <w.sang@pengutronix.de>
 Subject: Re: Enabling auto RS485 half-duplex control
-Date: Thu, 18 Dec 2008 06:59:32 +0100
-Message-ID: <200812180659.32771.mfuchs@ma-fu.de>
-References: <200812172224.13608.mfuchs@ma-fu.de> <20081218033200.GB9871@mit.edu>
+Date: Thu, 18 Dec 2008 10:35:14 +0100
+Message-ID: <20081218093514.GA3400@pengutronix.de>
+References: <200812172224.13608.mfuchs@ma-fu.de>
 Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="6c2NcOVqGQ03X4Wi"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-in-02.arcor-online.net ([151.189.21.42]:43071 "EHLO
-	mail-in-02.arcor-online.net" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751750AbYLRF7i (ORCPT
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:42371 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751971AbYLRJfQ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 18 Dec 2008 00:59:38 -0500
-In-Reply-To: <20081218033200.GB9871@mit.edu>
+	Thu, 18 Dec 2008 04:35:16 -0500
 Content-Disposition: inline
+In-Reply-To: <200812172224.13608.mfuchs@ma-fu.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Theodore Tso <tytso@mit.edu>
+To: Matthias Fuchs <mfuchs@ma-fu.de>
 Cc: linux-serial@vger.kernel.org
 
-Hi Ted,
 
-you missunderstood me. This special UART does all the required stuff
-in hardware. You only have to enable this mode once by writing some
-magic to a UART register. From that time on the UART will automatically
-assert the RTS# line when transmitting.
+--6c2NcOVqGQ03X4Wi
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I am not talking about a software implementation. Your arguments
-deal with a software implementation where you have to do it all by hand,
-which will not work safely as you mentioned.
+Hi Matthias,
 
-Matthias
+> I did not find a way to enable this mode through the=20
+> standard serial driver. The UART is is detected correctly
+> but there seems to be no way to enable this mode
+> out of the box.
+>=20
+> So what's the best way to implement this?
+> A new ioctl? Any idea?
 
+See commmit c26c56c0f40e200e61d1390629c806f6adaffbcc. I think any
+solution to activate RS485 should be based on this.
 
-> On Wed, Dec 17, 2008 at 10:24:13PM +0100, Matthias Fuchs wrote:
-> > Hi,
-> >
-> > some Exar UARTs like the XR16C2850 support a feature
-> > called auto RS485 half-duplex control. In this mode the
-> > RTS line has a special role when using the UART for
-> > RS485 communication.
->
-> So I haven't maintained the serial driver for a long time, but when I
-> did, I refused to try to implement hardware half-duplex control
-> because there was absolutely no standards in this space.  Which RS-232
-> lines are involved wasn't standardized, and there was often very
-> strange timing restrictions as well.  Some devices required there to
-> be a minimum delay of XX milliseconds between when RTS is raised
-> and when DTR is raised.  Other devices have a maximum time between
-> when one side raises RTS and the others side raises DTR.
->
-> So the challenge is designing an interface for half-duplex which is
-> sufficiently general that it will actually work for all/most of the
-> half-dozen people in the world who still care about half-ruplex RS-232
-> communications.  :-)
->
-> 						- Ted
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Regards,
+
+   Wolfram
+
+--=20
+  Dipl.-Ing. Wolfram Sang | http://www.pengutronix.de
+ Pengutronix - Linux Solutions for Science and Industry
+
+--6c2NcOVqGQ03X4Wi
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (GNU/Linux)
+
+iEYEARECAAYFAklKGVIACgkQD27XaX1/VRvowwCfetdpSS6jivyXZvizETlrSdHw
+JXYAnj8pIQNymPmR3HR40vvnhVJdmflO
+=aBA3
+-----END PGP SIGNATURE-----
+
+--6c2NcOVqGQ03X4Wi--
