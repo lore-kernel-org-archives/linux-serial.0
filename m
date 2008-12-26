@@ -1,62 +1,74 @@
-From: Christopher Gibson <chris@toftronix.com.au>
-Subject: Re: [PATCH/RFC] serial: Add ioctl to enable auto rs485 mode with
-	some Exar UARTs
-Date: Wed, 24 Dec 2008 01:03:32 +1100
-Message-ID: <1230041012.17555.85.camel@thetriton.toftronix.com.au>
-References: <200812190048.35249.mfuchs@ma-fu.de>
-	 <200812191613.29657.laurentp@cse-semaphore.com>
-	 <1229853004.3216.14.camel@thewinkle.toftronix.com.au>
-	 <20081222155956.GA13526@pengutronix.de>
+From: Julia Lawall <julia@diku.dk>
+Subject: [PATCH 5/7] drivers/serial/jsm: Move a dereference below a NULL test
+Date: Fri, 26 Dec 2008 08:28:34 +0100 (CET)
+Message-ID: <Pine.LNX.4.64.0812260828110.25450@ask.diku.dk>
 Mime-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from toftronix.com.au ([60.241.205.236]:38141 "EHLO
-	thetriton.toftronix.com.au" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1750997AbYLWNwO (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 23 Dec 2008 08:52:14 -0500
-In-Reply-To: <20081222155956.GA13526@pengutronix.de>
+Received: from mgw2.diku.dk ([130.225.96.92]:56462 "EHLO mgw2.diku.dk"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752843AbYLZH2g (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 26 Dec 2008 02:28:36 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Wolfram Sang <w.sang@pengutronix.de>
-Cc: Laurent Pinchart <laurentp@cse-semaphore.com>, Matthias Fuchs <mfuchs@ma-fu.de>, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
 
-On Mon, 2008-12-22 at 16:59 +0100, Wolfram Sang wrote:
-> Hello Chris,
-> 
-> On Sun, Dec 21, 2008 at 08:50:04PM +1100, Chris Gibson wrote:
-> > Two and a half weeks ago I submitted a patch to implement RS485 auto
-> > direction control on either (or both) the RTS and the DTR lines with
-> > varying pre and post delay settings that would work for _all_ uarts that
-> > support mctrl.
-> 
-> Just observing the case, I assume that this concern about software RS485
-> is still valid:
-> 
-> http://article.gmane.org/gmane.linux.serial/2568
+From: Julia Lawall <julia@diku.dk>
 
-Thank you for the reply.
+If the NULL test is necessary, then the dereference should be moved below
+the NULL test.
 
-In answer to the above thread - the implementation in the patch I
-provided addresses some of the concerned mentioned.  The polling of the
-shift empty register is done with a timer, so the loss of CPU time is
-minimal.  The ioctl's provide a mechanism for which the driver
-turnaround delay, and jitter can be established, allowing a user
-application the ability to determine the suitability of a particular
-direction control implementation to fulfil its timing requirements.
+The semantic patch that makes this change is as follows:
+(http://www.emn.fr/x-info/coccinelle/).
 
-The short fall of the implementation is that it's timing is only as good
-as the Linux system timer.  This is less of a limitation with the latter
-kernels with higher speed system timers.
+// <smpl>
+@disable is_null@
+identifier f;
+expression E;
+identifier fld;
+statement S;
+@@
 
-My main concern though is not whether or not this software
-implementation of auto direction control is adopted into the kernel,
-(though I guess I would feel proud if it was :) but rather that the
-ioctl that has gone into V2.6.28-rc1 is only part way toward what it
-should be, and this is starting to be used already.
++ if (E == NULL) S
+  f(...,E->fld,...);
+- if (E == NULL) S
 
-best regards
--- 
-Christopher Gibson <chris@toftronix.com.au>
+@@
+identifier f;
+expression E;
+identifier fld;
+statement S;
+@@
 
++ if (!E) S
+  f(...,E->fld,...);
+- if (!E) S
+// </smpl>
+
+Signed-off-by: Julia Lawall <julia@diku.dk>
+
+---
+ drivers/serial/jsm/jsm_neo.c        |    7 ++++---
+ 1 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/serial/jsm/jsm_neo.c b/drivers/serial/jsm/jsm_neo.c
+index b7584ca..0119d9a 100644
+--- a/drivers/serial/jsm/jsm_neo.c
++++ b/drivers/serial/jsm/jsm_neo.c
+@@ -574,12 +574,13 @@ static void neo_parse_modem(struct jsm_channel *ch, u8 signals)
+ {
+ 	u8 msignals = signals;
+ 
+-	jsm_printk(MSIGS, INFO, &ch->ch_bd->pci_dev,
+-			"neo_parse_modem: port: %d msignals: %x\n", ch->ch_portnum, msignals);
+-
+ 	if (!ch)
+ 		return;
+ 
++	jsm_printk(MSIGS, INFO, &ch->ch_bd->pci_dev,
++			"neo_parse_modem: port: %d msignals: %x\n",
++			ch->ch_portnum, msignals);
++
+ 	/* Scrub off lower bits. They signify delta's, which I don't care about */
+ 	/* Keep DDCD and DDSR though */
+ 	msignals &= 0xf8;
