@@ -1,74 +1,58 @@
-From: Julia Lawall <julia@diku.dk>
-Subject: [PATCH 5/7] drivers/serial/jsm: Move a dereference below a NULL test
-Date: Fri, 26 Dec 2008 08:28:34 +0100 (CET)
-Message-ID: <Pine.LNX.4.64.0812260828110.25450@ask.diku.dk>
+From: Matthias Fuchs <mfuchs@ma-fu.de>
+Subject: [PATCH] serial: Add 16850 uart type support to of uart driver
+Date: Sun, 28 Dec 2008 18:47:35 +0100
+Message-ID: <200812281847.35811.mfuchs@ma-fu.de>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mgw2.diku.dk ([130.225.96.92]:56462 "EHLO mgw2.diku.dk"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752843AbYLZH2g (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 26 Dec 2008 02:28:36 -0500
+Received: from mail-in-09.arcor-online.net ([151.189.21.49]:39900 "EHLO
+	mail-in-09.arcor-online.net" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752774AbYL1Rrm (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 28 Dec 2008 12:47:42 -0500
+Received: from mail-in-20-z2.arcor-online.net (mail-in-20-z2.arcor-online.net [151.189.8.85])
+	by mail-in-09.arcor-online.net (Postfix) with ESMTP id 846F9302A21
+	for <linux-serial@vger.kernel.org>; Sun, 28 Dec 2008 18:47:38 +0100 (CET)
+Received: from mail-in-07.arcor-online.net (mail-in-07.arcor-online.net [151.189.21.47])
+	by mail-in-20-z2.arcor-online.net (Postfix) with ESMTP id 744A3107D8E
+	for <linux-serial@vger.kernel.org>; Sun, 28 Dec 2008 18:47:37 +0100 (CET)
+Received: from bunny.home (dslb-088-070-063-182.pools.arcor-ip.net [88.70.63.182])
+	by mail-in-07.arcor-online.net (Postfix) with ESMTP id F2F732C29E3
+	for <linux-serial@vger.kernel.org>; Sun, 28 Dec 2008 18:47:36 +0100 (CET)
+Received: from fox.localnet (fox.home [192.168.2.13])
+	by bunny.home (Postfix) with ESMTPS id 6EAE8251054B
+	for <linux-serial@vger.kernel.org>; Sun, 28 Dec 2008 18:47:36 +0100 (CET)
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-From: Julia Lawall <julia@diku.dk>
+This patch adds support for "ns16850" as supported value
+of the compatible node in flat device tree uart descriptions.
 
-If the NULL test is necessary, then the dereference should be moved below
-the NULL test.
+This is needed for example when you have a XR16C2850 uart
+connected to a PPC405's external bus controller.
 
-The semantic patch that makes this change is as follows:
-(http://www.emn.fr/x-info/coccinelle/).
-
-// <smpl>
-@disable is_null@
-identifier f;
-expression E;
-identifier fld;
-statement S;
-@@
-
-+ if (E == NULL) S
-  f(...,E->fld,...);
-- if (E == NULL) S
-
-@@
-identifier f;
-expression E;
-identifier fld;
-statement S;
-@@
-
-+ if (!E) S
-  f(...,E->fld,...);
-- if (!E) S
-// </smpl>
-
-Signed-off-by: Julia Lawall <julia@diku.dk>
-
+Signed-off-by: Matthias Fuchs <mfuchs@ma-fu.de>
 ---
- drivers/serial/jsm/jsm_neo.c        |    7 ++++---
- 1 files changed, 4 insertions(+), 3 deletions(-)
+ drivers/serial/of_serial.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/serial/jsm/jsm_neo.c b/drivers/serial/jsm/jsm_neo.c
-index b7584ca..0119d9a 100644
---- a/drivers/serial/jsm/jsm_neo.c
-+++ b/drivers/serial/jsm/jsm_neo.c
-@@ -574,12 +574,13 @@ static void neo_parse_modem(struct jsm_channel *ch, u8 signals)
- {
- 	u8 msignals = signals;
- 
--	jsm_printk(MSIGS, INFO, &ch->ch_bd->pci_dev,
--			"neo_parse_modem: port: %d msignals: %x\n", ch->ch_portnum, msignals);
--
- 	if (!ch)
- 		return;
- 
-+	jsm_printk(MSIGS, INFO, &ch->ch_bd->pci_dev,
-+			"neo_parse_modem: port: %d msignals: %x\n",
-+			ch->ch_portnum, msignals);
-+
- 	/* Scrub off lower bits. They signify delta's, which I don't care about */
- 	/* Keep DDCD and DDSR though */
- 	msignals &= 0xf8;
+diff --git a/drivers/serial/of_serial.c b/drivers/serial/of_serial.c
+index 8fa0ff5..f71f94d 100644
+--- a/drivers/serial/of_serial.c
++++ b/drivers/serial/of_serial.c
+@@ -148,6 +148,7 @@ static struct of_device_id __devinitdata of_platform_serial_table[] = {
+ 	{ .type = "serial", .compatible = "ns16450",  .data = (void *)PORT_16450, },
+ 	{ .type = "serial", .compatible = "ns16550",  .data = (void *)PORT_16550, },
+ 	{ .type = "serial", .compatible = "ns16750",  .data = (void *)PORT_16750, },
++	{ .type = "serial", .compatible = "ns16850",  .data = (void *)PORT_16850, },
+ 	{ .type = "serial",			      .data = (void *)PORT_UNKNOWN, },
+ 	{ /* end of list */ },
+ };
+-- 
+1.5.6.3
+
+
