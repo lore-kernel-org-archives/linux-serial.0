@@ -1,37 +1,48 @@
-From: "Mike Frysinger" <vapier.adi@gmail.com>
-Subject: Re: [PATCH 1/1] serial: RS485 ioctl structure uses __u32 include linux/types.h
-Date: Mon, 29 Dec 2008 07:37:04 -0500
-Message-ID: <8bd0f97a0812290437m75b7b7f8rf472c5f98870572d@mail.gmail.com>
-References: <1228215625-18317-1-git-send-email-apw@canonical.com>
+From: Matthias Fuchs <mfuchs@ma-fu.de>
+Subject: [PATCH] powerpc: add ioctls for RS485 mode control of serial drivers
+Date: Tue, 30 Dec 2008 11:59:38 +0100
+Message-ID: <200812301159.38832.mfuchs@ma-fu.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from rv-out-0506.google.com ([209.85.198.232]:38677 "EHLO
-	rv-out-0506.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750705AbYL2MhF (ORCPT
+Received: from mail-in-07.arcor-online.net ([151.189.21.47]:45341 "EHLO
+	mail-in-07.arcor-online.net" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751629AbYL3K7o (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 29 Dec 2008 07:37:05 -0500
-In-Reply-To: <1228215625-18317-1-git-send-email-apw@canonical.com>
+	Tue, 30 Dec 2008 05:59:44 -0500
 Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Andy Whitcroft <apw@canonical.com>
-Cc: Alan Cox <alan@redhat.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linuxppc-dev@ozlabs.org
+Cc: linux-serial@vger.kernel.org
 
-On Tue, Dec 2, 2008 at 06:00, Andy Whitcroft <apw@canonical.com> wrote:
-> In the commit below a new struct serial_rs485 was introduced for a new
-> ioctl:
->
->    commit c26c56c0f40e200e61d1390629c806f6adaffbcc
->    Author: Alan Cox <alan@redhat.com>
->    Date:   Mon Oct 13 10:37:48 2008 +0100
->
->        tty: Cris has a nice RS485 ioctl so we should steal it
->
-> This structure uses the __u32 types for some of its members, which leads
-> to the following compile error:
+These ioctls take a struct serial_rs485
+(see linux/serial.h) as argument. They are already available
+on x86. This patch adds them for the powerpc architecture.
 
-looks like this was posted on Nov 3 already ...
-http://lkml.org/lkml/2008/11/3/240
--mike
+Signed-off-by: Matthias Fuchs <mfuchs@ma-fu.de>
+---
+ arch/powerpc/include/asm/ioctls.h |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+diff --git a/arch/powerpc/include/asm/ioctls.h 
+b/arch/powerpc/include/asm/ioctls.h
+index 279a622..1842186 100644
+--- a/arch/powerpc/include/asm/ioctls.h
++++ b/arch/powerpc/include/asm/ioctls.h
+@@ -89,6 +89,8 @@
+ #define TIOCSBRK	0x5427  /* BSD compatibility */
+ #define TIOCCBRK	0x5428  /* BSD compatibility */
+ #define TIOCGSID	0x5429  /* Return the session ID of FD */
++#define TIOCGRS485	0x542e
++#define TIOCSRS485	0x542f
+ #define TIOCGPTN	_IOR('T',0x30, unsigned int) /* Get Pty Number (of pty-mux 
+device) */
+ #define TIOCSPTLCK	_IOW('T',0x31, int)  /* Lock/unlock Pty */
+ 
+-- 
+1.5.6.3
+
+
