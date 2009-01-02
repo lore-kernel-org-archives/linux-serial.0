@@ -1,173 +1,133 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 16/75] Document usage of multiple-instances of devpts
-Date: Fri, 02 Jan 2009 13:42:34 +0000
-Message-ID: <20090102134232.13472.78221.stgit@localhost.localdomain>
+Subject: [PATCH 17/75] devpts: Coding style clean up
+Date: Fri, 02 Jan 2009 13:42:48 +0000
+Message-ID: <20090102134239.13472.3197.stgit@localhost.localdomain>
 References: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:60311 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:60314 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1755837AbZABNmU (ORCPT
+	with ESMTP id S1755847AbZABNme (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Jan 2009 08:42:20 -0500
+	Fri, 2 Jan 2009 08:42:34 -0500
 In-Reply-To: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: torvalds@osdl.org, linux-serial@vger.kernel.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.vnet.ibm.com>
+From: Alan Cox <alan@redhat.com>
 
-Changelog [v2]:
-	- Add note indicating strict isolation is not possible unless all
-	  mounts of devpts use the 'newinstance' mount option.
+Just nail the oddments now while this code is being touched
 
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.vnet.ibm.com>
 Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
- Documentation/filesystems/devpts.txt |  132 ++++++++++++++++++++++++++++++++++
- 1 files changed, 132 insertions(+), 0 deletions(-)
- create mode 100644 Documentation/filesystems/devpts.txt
+ fs/devpts/inode.c |   53 ++++++++++++++++++++++++++---------------------------
+ 1 files changed, 26 insertions(+), 27 deletions(-)
 
 
-diff --git a/Documentation/filesystems/devpts.txt b/Documentation/filesystems/devpts.txt
-new file mode 100644
-index 0000000..68dffd8
---- /dev/null
-+++ b/Documentation/filesystems/devpts.txt
-@@ -0,0 +1,132 @@
+diff --git a/fs/devpts/inode.c b/fs/devpts/inode.c
+index b4a89fa..b02c243 100644
+--- a/fs/devpts/inode.c
++++ b/fs/devpts/inode.c
+@@ -311,7 +311,7 @@ devpts_fill_super(struct super_block *s, void *data, int silent)
+ 	if (s->s_root)
+ 		return 0;
+ 
+-	printk("devpts: get root dentry failed\n");
++	printk(KERN_ERR "devpts: get root dentry failed\n");
+ 	iput(inode);
+ 
+ free_fsi:
+@@ -444,25 +444,25 @@ static int is_new_instance_mount(void *data)
+ static int get_init_pts_sb(struct file_system_type *fs_type, int flags,
+ 		void *data, struct vfsmount *mnt)
+ {
+-        struct super_block *s;
+-        int error;
+-
+-        s = sget(fs_type, compare_init_pts_sb, set_anon_super, NULL);
+-        if (IS_ERR(s))
+-                return PTR_ERR(s);
+-
+-        if (!s->s_root) {
+-                s->s_flags = flags;
+-                error = devpts_fill_super(s, data, flags & MS_SILENT ? 1 : 0);
+-                if (error) {
+-                        up_write(&s->s_umount);
+-                        deactivate_super(s);
+-                        return error;
+-                }
+-                s->s_flags |= MS_ACTIVE;
+-        }
+-        do_remount_sb(s, flags, data, 0);
+-        return simple_set_mnt(mnt, s);
++	struct super_block *s;
++	int error;
 +
-+To support containers, we now allow multiple instances of devpts filesystem,
-+such that indices of ptys allocated in one instance are independent of indices
-+allocated in other instances of devpts.
++	s = sget(fs_type, compare_init_pts_sb, set_anon_super, NULL);
++	if (IS_ERR(s))
++		return PTR_ERR(s);
 +
-+To preserve backward compatibility, this support for multiple instances is
-+enabled only if:
-+
-+	- CONFIG_DEVPTS_MULTIPLE_INSTANCES=y, and
-+	- '-o newinstance' mount option is specified while mounting devpts
-+
-+IOW, devpts now supports both single-instance and multi-instance semantics.
-+
-+If CONFIG_DEVPTS_MULTIPLE_INSTANCES=n, there is no change in behavior and
-+this referred to as the "legacy" mode. In this mode, the new mount options
-+(-o newinstance and -o ptmxmode) will be ignored with a 'bogus option' message
-+on console.
-+
-+If CONFIG_DEVPTS_MULTIPLE_INSTANCES=y and devpts is mounted without the
-+'newinstance' option (as in current start-up scripts) the new mount binds
-+to the initial kernel mount of devpts. This mode is referred to as the
-+'single-instance' mode and the current, single-instance semantics are
-+preserved, i.e PTYs are common across the system.
-+
-+The only difference between this single-instance mode and the legacy mode
-+is the presence of new, '/dev/pts/ptmx' node with permissions 0000, which
-+can safely be ignored.
-+
-+If CONFIG_DEVPTS_MULTIPLE_INSTANCES=y and 'newinstance' option is specified,
-+the mount is considered to be in the multi-instance mode and a new instance
-+of the devpts fs is created. Any ptys created in this instance are independent
-+of ptys in other instances of devpts. Like in the single-instance mode, the
-+/dev/pts/ptmx node is present. To effectively use the multi-instance mode,
-+open of /dev/ptmx must be a redirected to '/dev/pts/ptmx' using a symlink or
-+bind-mount.
-+
-+Eg: A container startup script could do the following:
-+
-+	$ chmod 0666 /dev/pts/ptmx
-+	$ rm /dev/ptmx
-+	$ ln -s pts/ptmx /dev/ptmx
-+	$ ns_exec -cm /bin/bash
-+
-+	# We are now in new container
-+
-+	$ umount /dev/pts
-+	$ mount -t devpts -o newinstance lxcpts /dev/pts
-+	$ sshd -p 1234
-+
-+where 'ns_exec -cm /bin/bash' calls clone() with CLONE_NEWNS flag and execs
-+/bin/bash in the child process.  A pty created by the sshd is not visible in
-+the original mount of /dev/pts.
-+
-+User-space changes
-+------------------
-+
-+In multi-instance mode (i.e '-o newinstance' mount option is specified at least
-+once), following user-space issues should be noted.
-+
-+1. If -o newinstance mount option is never used, /dev/pts/ptmx can be ignored
-+   and no change is needed to system-startup scripts.
-+
-+2. To effectively use multi-instance mode (i.e -o newinstance is specified)
-+   administrators or startup scripts should "redirect" open of /dev/ptmx to
-+   /dev/pts/ptmx using either a bind mount or symlink.
-+
-+	$ mount -t devpts -o newinstance devpts /dev/pts
-+
-+   followed by either
-+
-+	$ rm /dev/ptmx
-+	$ ln -s pts/ptmx /dev/ptmx
-+	$ chmod 666 /dev/pts/ptmx
-+   or
-+	$ mount -o bind /dev/pts/ptmx /dev/ptmx
-+
-+3. The '/dev/ptmx -> pts/ptmx' symlink is the preferred method since it
-+   enables better error-reporting and treats both single-instance and
-+   multi-instance mounts similarly.
-+
-+   But this method requires that system-startup scripts set the mode of
-+   /dev/pts/ptmx correctly (default mode is 0000). The scripts can set the
-+   mode by, either
-+
-+   	- adding ptmxmode mount option to devpts entry in /etc/fstab, or
-+	- using 'chmod 0666 /dev/pts/ptmx'
-+
-+4. If multi-instance mode mount is needed for containers, but the system
-+   startup scripts have not yet been updated, container-startup scripts
-+   should bind mount /dev/ptmx to /dev/pts/ptmx to avoid breaking single-
-+   instance mounts.
-+
-+   Or, in general, container-startup scripts should use:
-+
-+	mount -t devpts -o newinstance -o ptmxmode=0666 devpts /dev/pts
-+	if [ ! -L /dev/ptmx ]; then
-+		mount -o bind /dev/pts/ptmx /dev/ptmx
-+	fi
-+
-+   When all devpts mounts are multi-instance, /dev/ptmx can permanently be
-+   a symlink to pts/ptmx and the bind mount can be ignored.
-+
-+5. A multi-instance mount that is not accompanied by the /dev/ptmx to
-+   /dev/pts/ptmx redirection would result in an unusable/unreachable pty.
-+
-+	mount -t devpts -o newinstance lxcpts /dev/pts
-+
-+   immediately followed by:
-+
-+	open("/dev/ptmx")
-+
-+    would create a pty, say /dev/pts/7, in the initial kernel mount.
-+    But /dev/pts/7 would be invisible in the new mount.
-+
-+6. The permissions for /dev/pts/ptmx node should be specified when mounting
-+   /dev/pts, using the '-o ptmxmode=%o' mount option (default is 0000).
-+
-+	mount -t devpts -o newinstance -o ptmxmode=0644 devpts /dev/pts
-+
-+   The permissions can be later be changed as usual with 'chmod'.
-+
-+	chmod 666 /dev/pts/ptmx
-+
-+7. A mount of devpts without the 'newinstance' option results in binding to
-+   initial kernel mount.  This behavior while preserving legacy semantics,
-+   does not provide strict isolation in a container environment. i.e by
-+   mounting devpts without the 'newinstance' option, a container could
-+   get visibility into the 'host' or root container's devpts.
-+   
-+   To workaround this and have strict isolation, all mounts of devpts,
-+   including the mount in the root container, should use the newinstance
-+   option.
++	if (!s->s_root) {
++		s->s_flags = flags;
++		error = devpts_fill_super(s, data, flags & MS_SILENT ? 1 : 0);
++		if (error) {
++			up_write(&s->s_umount);
++			deactivate_super(s);
++			return error;
++		}
++		s->s_flags |= MS_ACTIVE;
++	}
++	do_remount_sb(s, flags, data, 0);
++	return simple_set_mnt(mnt, s);
+ }
+ 
+ /*
+@@ -477,7 +477,7 @@ static int init_pts_mount(struct file_system_type *fs_type, int flags,
+ 
+ 	err = get_init_pts_sb(fs_type, flags, data, mnt);
+ 	if (err)
+-		 return err;
++		return err;
+ 
+ 	err = mknod_ptmx(mnt->mnt_sb);
+ 	if (err) {
+@@ -542,9 +542,8 @@ int devpts_new_index(struct inode *ptmx_inode)
+ 	int ida_ret;
+ 
+ retry:
+-	if (!ida_pre_get(&fsi->allocated_ptys, GFP_KERNEL)) {
++	if (!ida_pre_get(&fsi->allocated_ptys, GFP_KERNEL))
+ 		return -ENOMEM;
+-	}
+ 
+ 	mutex_lock(&allocated_ptys_lock);
+ 	ida_ret = ida_get_new(&fsi->allocated_ptys, &index);
+@@ -576,7 +575,8 @@ void devpts_kill_index(struct inode *ptmx_inode, int idx)
+ 
+ int devpts_pty_new(struct inode *ptmx_inode, struct tty_struct *tty)
+ {
+-	int number = tty->index; /* tty layer puts index from devpts_new_index() in here */
++	/* tty layer puts index from devpts_new_index() in here */
++	int number = tty->index;
+ 	struct tty_driver *driver = tty->driver;
+ 	dev_t device = MKDEV(driver->major, driver->minor_start+number);
+ 	struct dentry *dentry;
+@@ -644,11 +644,10 @@ void devpts_pty_kill(struct tty_struct *tty)
+ 	if (dentry) {
+ 		inode->i_nlink--;
+ 		d_delete(dentry);
+-		dput(dentry);	// d_alloc_name() in devpts_pty_new()
++		dput(dentry);	/* d_alloc_name() in devpts_pty_new() */
+ 	}
+ 
+-	dput(dentry);		// d_find_alias above
+-
++	dput(dentry);		/* d_find_alias above */
+ out:
+ 	mutex_unlock(&root->d_inode->i_mutex);
+ }
 
