@@ -1,493 +1,423 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 53/75] tty: Modem functions for the HSO driver
-Date: Fri, 02 Jan 2009 13:47:52 +0000
-Message-ID: <20090102134751.13472.78191.stgit@localhost.localdomain>
+Subject: [PATCH 54/75] tty: relock epca
+Date: Fri, 02 Jan 2009 13:47:58 +0000
+Message-ID: <20090102134757.13472.77849.stgit@localhost.localdomain>
 References: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:37634 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:37638 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1758434AbZABNrj (ORCPT
+	with ESMTP id S1757335AbZABNrp (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Jan 2009 08:47:39 -0500
+	Fri, 2 Jan 2009 08:47:45 -0500
 In-Reply-To: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: torvalds@osdl.org, linux-serial@vger.kernel.org
 
-From: Denis Joseph Barrow <D.Barow@option.com>
+From: Alan Cox <alan@redhat.com>
 
-Makes TIOCM ioctls for Data Carrier Detect & related functions
-work like /drivers/serial/serial-core.c potentially needed
-for pppd & similar user programs.
+Bring epca into line with the port locking.
 
-Signed-off-by: Denis Joseph Barrow <D.Barow@option.com>
 Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
- drivers/net/usb/hso.c |  331 +++++++++++++++++++++++++++++++++++++++++++++++--
- 1 files changed, 318 insertions(+), 13 deletions(-)
+ drivers/char/epca.c |  195 +++++++++++++++++++++++++++------------------------
+ 1 files changed, 104 insertions(+), 91 deletions(-)
 
 
-diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
-index 7373fb6..d974d97 100644
---- a/drivers/net/usb/hso.c
-+++ b/drivers/net/usb/hso.c
-@@ -39,8 +39,11 @@
-  *		port is opened, as this have a huge impact on the network port
-  *		throughput.
-  *
-- * Interface 2:	Standard modem interface - circuit switched interface, should
-- *		not be used.
-+ * Interface 2:	Standard modem interface - circuit switched interface, this
-+ *		can be used to make a standard ppp connection however it
-+ *              should not be used in conjunction with the IP network interface
-+ *              enabled for USB performance reasons i.e. if using this set
-+ *              ideally disable_net=1.
-  *
-  *****************************************************************************/
+diff --git a/drivers/char/epca.c b/drivers/char/epca.c
+index da2d2cf..e07d792 100644
+--- a/drivers/char/epca.c
++++ b/drivers/char/epca.c
+@@ -69,7 +69,9 @@ static int invalid_lilo_config;
  
-@@ -63,6 +66,8 @@
- #include <linux/usb/cdc.h>
- #include <net/arp.h>
- #include <asm/byteorder.h>
-+#include <linux/serial_core.h>
-+#include <linux/serial.h>
+ /*
+  * The ISA boards do window flipping into the same spaces so its only sane with
+- * a single lock. It's still pretty efficient.
++ * a single lock. It's still pretty efficient. This lock guards the hardware
++ * and the tty_port lock guards the kernel side stuff like use counts. Take
++ * this lock inside the port lock if you must take both.
+  */
+ static DEFINE_SPINLOCK(epca_lock);
  
+@@ -156,7 +158,7 @@ static struct channel *verifyChannel(struct tty_struct *);
+ static void pc_sched_event(struct channel *, int);
+ static void epca_error(int, char *);
+ static void pc_close(struct tty_struct *, struct file *);
+-static void shutdown(struct channel *);
++static void shutdown(struct channel *, struct tty_struct *tty);
+ static void pc_hangup(struct tty_struct *);
+ static int pc_write_room(struct tty_struct *);
+ static int pc_chars_in_buffer(struct tty_struct *);
+@@ -419,76 +421,78 @@ static void epca_error(int line, char *msg)
+ static void pc_close(struct tty_struct *tty, struct file *filp)
+ {
+ 	struct channel *ch;
++	struct tty_port *port;
+ 	unsigned long flags;
+ 	/*
+ 	 * verifyChannel returns the channel from the tty struct if it is
+ 	 * valid. This serves as a sanity check.
+ 	 */
+ 	ch = verifyChannel(tty);
+-	if (ch != NULL) {
+-		spin_lock_irqsave(&epca_lock, flags);
+-		if (tty_hung_up_p(filp)) {
+-			spin_unlock_irqrestore(&epca_lock, flags);
+-			return;
+-		}
+-		if (ch->port.count-- > 1)  {
+-			/* Begin channel is open more than once */
+-			/*
+-			 * Return without doing anything. Someone might still
+-			 * be using the channel.
+-			 */
+-			spin_unlock_irqrestore(&epca_lock, flags);
+-			return;
+-		}
+-		/* Port open only once go ahead with shutdown & reset */
+-		BUG_ON(ch->port.count < 0);
++	if (ch == NULL)
++		return;
++	port = &ch->port;
  
- #define DRIVER_VERSION			"1.2"
-@@ -182,6 +187,41 @@ enum rx_ctrl_state{
- 	RX_PENDING
- };
- 
-+#define BM_REQUEST_TYPE (0xa1)
-+#define B_NOTIFICATION  (0x20)
-+#define W_VALUE         (0x0)
-+#define W_INDEX         (0x2)
-+#define W_LENGTH        (0x2)
-+
-+#define B_OVERRUN       (0x1<<6)
-+#define B_PARITY        (0x1<<5)
-+#define B_FRAMING       (0x1<<4)
-+#define B_RING_SIGNAL   (0x1<<3)
-+#define B_BREAK         (0x1<<2)
-+#define B_TX_CARRIER    (0x1<<1)
-+#define B_RX_CARRIER    (0x1<<0)
-+
-+struct hso_serial_state_notification {
-+	u8 bmRequestType;
-+	u8 bNotification;
-+	u16 wValue;
-+	u16 wIndex;
-+	u16 wLength;
-+	u16 UART_state_bitmap;
-+} __attribute__((packed));
-+
-+struct hso_tiocmget {
-+	struct mutex mutex;
-+	wait_queue_head_t waitq;
-+	int    intr_completed;
-+	struct usb_endpoint_descriptor *endp;
-+	struct urb *urb;
-+	struct hso_serial_state_notification serial_state_notification;
-+	u16    prev_UART_state_bitmap;
-+	struct uart_icount icount;
-+};
-+
-+
- struct hso_serial {
- 	struct hso_device *parent;
- 	int magic;
-@@ -219,6 +259,7 @@ struct hso_serial {
- 	spinlock_t serial_lock;
- 
- 	int (*write_data) (struct hso_serial *serial);
-+	struct hso_tiocmget  *tiocmget;
- 	/* Hacks required to get flow control
- 	 * working on the serial receive buffers
- 	 * so as not to drop characters on the floor.
-@@ -305,7 +346,7 @@ static void async_get_intf(struct work_struct *data);
- static void async_put_intf(struct work_struct *data);
- static int hso_put_activity(struct hso_device *hso_dev);
- static int hso_get_activity(struct hso_device *hso_dev);
++	spin_lock_irqsave(&port->lock, flags);
++	if (tty_hung_up_p(filp)) {
++		spin_unlock_irqrestore(&port->lock, flags);
++		return;
++	}
++	if (port->count-- > 1)  {
++		/* Begin channel is open more than once */
+ 		/*
+-		 * Let the rest of the driver know the channel is being closed.
+-		 * This becomes important if an open is attempted before close
+-		 * is finished.
++		 * Return without doing anything. Someone might still
++		 * be using the channel.
+ 		 */
+-		ch->port.flags |= ASYNC_CLOSING;
+-		tty->closing = 1;
 -
-+static void tiocmget_intr_callback(struct urb *urb);
- /*****************************************************************************/
- /* Helping functions                                                         */
- /*****************************************************************************/
-@@ -1419,25 +1460,217 @@ static int hso_serial_chars_in_buffer(struct tty_struct *tty)
+-		spin_unlock_irqrestore(&epca_lock, flags);
+-
+-		if (ch->port.flags & ASYNC_INITIALIZED)  {
+-			/* Setup an event to indicate when the
+-			   transmit buffer empties */
+-			setup_empty_event(tty, ch);
+-			/* 30 seconds timeout */
+-			tty_wait_until_sent(tty, 3000);
+-		}
+-		pc_flush_buffer(tty);
++		spin_unlock_irqrestore(&port->lock, flags);
++		return;
++	}
++	/* Port open only once go ahead with shutdown & reset */
++	WARN_ON(port->count < 0);
  
- 	return chars;
- }
-+int tiocmget_submit_urb(struct hso_serial *serial,
-+			struct hso_tiocmget  *tiocmget,
-+			struct usb_device *usb)
-+{
-+	int result;
-+
-+	if (serial->parent->usb_gone)
-+		return -ENODEV;
-+	usb_fill_int_urb(tiocmget->urb, usb,
-+			 usb_rcvintpipe(usb,
-+					tiocmget->endp->
-+					bEndpointAddress & 0x7F),
-+			 &tiocmget->serial_state_notification,
-+			 sizeof(struct hso_serial_state_notification),
-+			 tiocmget_intr_callback, serial,
-+			 tiocmget->endp->bInterval);
-+	result = usb_submit_urb(tiocmget->urb, GFP_ATOMIC);
-+	if (result) {
-+		dev_warn(&usb->dev, "%s usb_submit_urb failed %d\n", __func__,
-+			 result);
-+	}
-+	return result;
-+
-+}
-+
-+static void tiocmget_intr_callback(struct urb *urb)
-+{
-+	struct hso_serial *serial = urb->context;
-+	struct hso_tiocmget *tiocmget;
-+	int status = urb->status;
-+	u16 UART_state_bitmap, prev_UART_state_bitmap;
-+	struct uart_icount *icount;
-+	struct hso_serial_state_notification *serial_state_notification;
-+	struct usb_device *usb;
-+
-+	/* Sanity checks */
-+	if (!serial)
-+		return;
-+	if (status) {
-+		log_usb_status(status, __func__);
-+		return;
-+	}
-+	tiocmget = serial->tiocmget;
-+	if (!tiocmget)
-+		return;
-+	usb = serial->parent->usb;
-+	serial_state_notification = &tiocmget->serial_state_notification;
-+	if (serial_state_notification->bmRequestType != BM_REQUEST_TYPE ||
-+	    serial_state_notification->bNotification != B_NOTIFICATION ||
-+	    le16_to_cpu(serial_state_notification->wValue) != W_VALUE ||
-+	    le16_to_cpu(serial_state_notification->wIndex) != W_INDEX ||
-+	    le16_to_cpu(serial_state_notification->wLength) != W_LENGTH) {
-+		dev_warn(&usb->dev,
-+			 "hso received invalid serial state notification\n");
-+		DUMP(serial_state_notification,
-+		     sizeof(hso_serial_state_notifation))
-+	} else {
-+
-+		UART_state_bitmap = le16_to_cpu(serial_state_notification->
-+						UART_state_bitmap);
-+		prev_UART_state_bitmap = tiocmget->prev_UART_state_bitmap;
-+		icount = &tiocmget->icount;
-+		spin_lock(&serial->serial_lock);
-+		if ((UART_state_bitmap & B_OVERRUN) !=
-+		   (prev_UART_state_bitmap & B_OVERRUN))
-+			icount->parity++;
-+		if ((UART_state_bitmap & B_PARITY) !=
-+		   (prev_UART_state_bitmap & B_PARITY))
-+			icount->parity++;
-+		if ((UART_state_bitmap & B_FRAMING) !=
-+		   (prev_UART_state_bitmap & B_FRAMING))
-+			icount->frame++;
-+		if ((UART_state_bitmap & B_RING_SIGNAL) &&
-+		   !(prev_UART_state_bitmap & B_RING_SIGNAL))
-+			icount->rng++;
-+		if ((UART_state_bitmap & B_BREAK) !=
-+		   (prev_UART_state_bitmap & B_BREAK))
-+			icount->brk++;
-+		if ((UART_state_bitmap & B_TX_CARRIER) !=
-+		   (prev_UART_state_bitmap & B_TX_CARRIER))
-+			icount->dsr++;
-+		if ((UART_state_bitmap & B_RX_CARRIER) !=
-+		   (prev_UART_state_bitmap & B_RX_CARRIER))
-+			icount->dcd++;
-+		tiocmget->prev_UART_state_bitmap = UART_state_bitmap;
-+		spin_unlock(&serial->serial_lock);
-+		tiocmget->intr_completed = 1;
-+		wake_up_interruptible(&tiocmget->waitq);
-+	}
-+	memset(serial_state_notification, 0,
-+	       sizeof(struct hso_serial_state_notification));
-+	tiocmget_submit_urb(serial,
-+			    tiocmget,
-+			    serial->parent->usb);
-+}
-+
-+/*
-+ * next few functions largely stolen from drivers/serial/serial_core.c
-+ */
-+/* Wait for any of the 4 modem inputs (DCD,RI,DSR,CTS) to change
-+ * - mask passed in arg for lines of interest
-+ *   (use |'ed TIOCM_RNG/DSR/CD/CTS for masking)
-+ * Caller should use TIOCGICOUNT to see which one it was
-+ */
-+static int
-+hso_wait_modem_status(struct hso_serial *serial, unsigned long arg)
-+{
-+	DECLARE_WAITQUEUE(wait, current);
-+	struct uart_icount cprev, cnow;
-+	struct hso_tiocmget  *tiocmget;
-+	int ret;
-+
-+	tiocmget = serial->tiocmget;
-+	if (!tiocmget)
-+		return -ENOENT;
+-		tty_ldisc_flush(tty);
+-		shutdown(ch);
 +	/*
-+	 * note the counters on entry
++	 * Let the rest of the driver know the channel is being closed.
++	 * This becomes important if an open is attempted before close
++	 * is finished.
 +	 */
-+	spin_lock_irq(&serial->serial_lock);
-+	memcpy(&cprev, &tiocmget->icount, sizeof(struct uart_icount));
-+	spin_unlock_irq(&serial->serial_lock);
-+	add_wait_queue(&tiocmget->waitq, &wait);
-+	for (;;) {
-+		spin_lock_irq(&serial->serial_lock);
-+		memcpy(&cnow, &tiocmget->icount, sizeof(struct uart_icount));
-+		spin_unlock_irq(&serial->serial_lock);
-+		set_current_state(TASK_INTERRUPTIBLE);
-+		if (((arg & TIOCM_RNG) && (cnow.rng != cprev.rng)) ||
-+		    ((arg & TIOCM_DSR) && (cnow.dsr != cprev.dsr)) ||
-+		    ((arg & TIOCM_CD)  && (cnow.dcd != cprev.dcd))) {
-+			ret = 0;
-+			break;
-+		}
-+		schedule();
-+		/* see if a signal did it */
-+		if (signal_pending(current)) {
-+			ret = -ERESTARTSYS;
-+			break;
-+		}
-+		cprev = cnow;
++	port->flags |= ASYNC_CLOSING;
++	tty->closing = 1;
+ 
+-		spin_lock_irqsave(&epca_lock, flags);
+-		tty->closing = 0;
+-		ch->event = 0;
+-		ch->port.tty = NULL;
+-		spin_unlock_irqrestore(&epca_lock, flags);
++	spin_unlock_irqrestore(&port->lock, flags);
+ 
+-		if (ch->port.blocked_open) {
+-			if (ch->close_delay)
+-				msleep_interruptible(jiffies_to_msecs(ch->close_delay));
+-			wake_up_interruptible(&ch->port.open_wait);
+-		}
+-		ch->port.flags &= ~(ASYNC_NORMAL_ACTIVE | ASYNC_INITIALIZED |
+-					ASYNC_CLOSING);
+-		wake_up_interruptible(&ch->port.close_wait);
++	if (port->flags & ASYNC_INITIALIZED)  {
++		/* Setup an event to indicate when the
++		   transmit buffer empties */
++		setup_empty_event(tty, ch);
++		/* 30 seconds timeout */
++		tty_wait_until_sent(tty, 3000);
 +	}
-+	current->state = TASK_RUNNING;
-+	remove_wait_queue(&tiocmget->waitq, &wait);
++	pc_flush_buffer(tty);
++	tty_ldisc_flush(tty);
++	shutdown(ch, tty);
 +
-+	return ret;
-+}
++	spin_lock_irqsave(&port->lock, flags);
++	tty->closing = 0;
++	ch->event = 0;
++	port->tty = NULL;
++	spin_unlock_irqrestore(&port->lock, flags);
 +
-+/*
-+ * Get counter of input serial line interrupts (DCD,RI,DSR,CTS)
-+ * Return: write counters to the user passed counter struct
-+ * NB: both 1->0 and 0->1 transitions are counted except for
-+ *     RI where only 0->1 is counted.
-+ */
-+static int hso_get_count(struct hso_serial *serial,
-+			  struct serial_icounter_struct __user *icnt)
-+{
-+	struct serial_icounter_struct icount;
-+	struct uart_icount cnow;
-+	struct hso_tiocmget  *tiocmget = serial->tiocmget;
-+
-+	if (!tiocmget)
-+		 return -ENOENT;
-+	spin_lock_irq(&serial->serial_lock);
-+	memcpy(&cnow, &tiocmget->icount, sizeof(struct uart_icount));
-+	spin_unlock_irq(&serial->serial_lock);
-+
-+	icount.cts         = cnow.cts;
-+	icount.dsr         = cnow.dsr;
-+	icount.rng         = cnow.rng;
-+	icount.dcd         = cnow.dcd;
-+	icount.rx          = cnow.rx;
-+	icount.tx          = cnow.tx;
-+	icount.frame       = cnow.frame;
-+	icount.overrun     = cnow.overrun;
-+	icount.parity      = cnow.parity;
-+	icount.brk         = cnow.brk;
-+	icount.buf_overrun = cnow.buf_overrun;
-+
-+	return copy_to_user(icnt, &icount, sizeof(icount)) ? -EFAULT : 0;
-+}
-+
- 
- static int hso_serial_tiocmget(struct tty_struct *tty, struct file *file)
- {
--	unsigned int value;
-+	int retval;
- 	struct hso_serial *serial = get_serial_by_tty(tty);
--	unsigned long flags;
-+	struct hso_tiocmget  *tiocmget;
-+	u16 UART_state_bitmap;
- 
- 	/* sanity check */
- 	if (!serial) {
- 		D1("no tty structures");
- 		return -EINVAL;
++	if (port->blocked_open) {
++		if (ch->close_delay)
++			msleep_interruptible(jiffies_to_msecs(ch->close_delay));
++		wake_up_interruptible(&port->open_wait);
  	}
--
--	spin_lock_irqsave(&serial->serial_lock, flags);
--	value = ((serial->rts_state) ? TIOCM_RTS : 0) |
-+	spin_lock_irq(&serial->serial_lock);
-+	retval = ((serial->rts_state) ? TIOCM_RTS : 0) |
- 	    ((serial->dtr_state) ? TIOCM_DTR : 0);
--	spin_unlock_irqrestore(&serial->serial_lock, flags);
--
--	return value;
-+	tiocmget = serial->tiocmget;
-+	if (tiocmget) {
-+
-+		UART_state_bitmap = le16_to_cpu(
-+			tiocmget->prev_UART_state_bitmap);
-+		if (UART_state_bitmap & B_RING_SIGNAL)
-+			retval |=  TIOCM_RNG;
-+		if (UART_state_bitmap & B_RX_CARRIER)
-+			retval |=  TIOCM_CD;
-+		if (UART_state_bitmap & B_TX_CARRIER)
-+			retval |=  TIOCM_DSR;
-+	}
-+	spin_unlock_irq(&serial->serial_lock);
-+	return retval;
++	port->flags &= ~(ASYNC_NORMAL_ACTIVE | ASYNC_INITIALIZED |
++							ASYNC_CLOSING);
++	wake_up_interruptible(&port->close_wait);
  }
  
- static int hso_serial_tiocmset(struct tty_struct *tty, struct file *file,
-@@ -1479,6 +1712,32 @@ static int hso_serial_tiocmset(struct tty_struct *tty, struct file *file,
- 			       USB_CTRL_SET_TIMEOUT);
- }
- 
-+static int hso_serial_ioctl(struct tty_struct *tty, struct file *file,
-+			    unsigned int cmd, unsigned long arg)
-+{
-+	struct hso_serial *serial =  get_serial_by_tty(tty);
-+	void __user *uarg = (void __user *)arg;
-+	int ret = 0;
-+	D4("IOCTL cmd: %d, arg: %ld", cmd, arg);
-+
-+	if (!serial)
-+		return -ENODEV;
-+	switch (cmd) {
-+	case TIOCMIWAIT:
-+		ret = hso_wait_modem_status(serial, arg);
-+		break;
-+
-+	case TIOCGICOUNT:
-+		ret = hso_get_count(serial, uarg);
-+		break;
-+	default:
-+		ret = -ENOIOCTLCMD;
-+		break;
-+	}
-+	return ret;
-+}
-+
-+
- /* starts a transmit */
- static void hso_kick_transmit(struct hso_serial *serial)
+-static void shutdown(struct channel *ch)
++static void shutdown(struct channel *ch, struct tty_struct *tty)
  {
-@@ -1956,7 +2215,10 @@ static int hso_start_serial_device(struct hso_device *hso_dev, gfp_t flags)
- 		serial->shared_int->use_count++;
- 		mutex_unlock(&serial->shared_int->shared_int_lock);
+ 	unsigned long flags;
+-	struct tty_struct *tty;
+ 	struct board_chan __iomem *bc;
++	struct tty_port *port = &ch->port;
+ 
+-	if (!(ch->port.flags & ASYNC_INITIALIZED))
++	if (!(port->flags & ASYNC_INITIALIZED))
+ 		return;
+ 
+ 	spin_lock_irqsave(&epca_lock, flags);
+@@ -503,7 +507,6 @@ static void shutdown(struct channel *ch)
+ 	 */
+ 	if (bc)
+ 		writeb(0, &bc->idata);
+-	tty = ch->port.tty;
+ 
+ 	/* If we're a modem control device and HUPCL is on, drop RTS & DTR. */
+ 	if (tty->termios->c_cflag & HUPCL)  {
+@@ -517,13 +520,15 @@ static void shutdown(struct channel *ch)
+ 	 * will have to reinitialized. Set a flag to indicate this.
+ 	 */
+ 	/* Prevent future Digi programmed interrupts from coming active */
+-	ch->port.flags &= ~ASYNC_INITIALIZED;
++	port->flags &= ~ASYNC_INITIALIZED;
+ 	spin_unlock_irqrestore(&epca_lock, flags);
+ }
+ 
+ static void pc_hangup(struct tty_struct *tty)
+ {
+ 	struct channel *ch;
++	struct tty_port *port;
++
+ 	/*
+ 	 * verifyChannel returns the channel from the tty struct if it is
+ 	 * valid. This serves as a sanity check.
+@@ -531,18 +536,19 @@ static void pc_hangup(struct tty_struct *tty)
+ 	ch = verifyChannel(tty);
+ 	if (ch != NULL) {
+ 		unsigned long flags;
++		port = &ch->port;
+ 
+ 		pc_flush_buffer(tty);
+ 		tty_ldisc_flush(tty);
+-		shutdown(ch);
+-
+-		spin_lock_irqsave(&epca_lock, flags);
+-		ch->port.tty   = NULL;
+-		ch->event = 0;
+-		ch->port.count = 0;
+-		ch->port.flags &= ~(ASYNC_NORMAL_ACTIVE | ASYNC_INITIALIZED);
+-		spin_unlock_irqrestore(&epca_lock, flags);
+-		wake_up_interruptible(&ch->port.open_wait);
++		shutdown(ch, tty);
++
++		spin_lock_irqsave(&port->lock, flags);
++		port->tty = NULL;
++		ch->event = 0;	/* FIXME: review locking of ch->event */
++		port->count = 0;
++		port->flags &= ~(ASYNC_NORMAL_ACTIVE | ASYNC_INITIALIZED);
++		spin_unlock_irqrestore(&port->lock, flags);
++		wake_up_interruptible(&port->open_wait);
  	}
--
-+	if (serial->tiocmget)
-+		tiocmget_submit_urb(serial,
-+				    serial->tiocmget,
-+				    serial->parent->usb);
- 	return result;
  }
  
-@@ -1964,6 +2226,7 @@ static int hso_stop_serial_device(struct hso_device *hso_dev)
- {
- 	int i;
- 	struct hso_serial *serial = dev2ser(hso_dev);
-+	struct hso_tiocmget  *tiocmget;
+@@ -792,9 +798,10 @@ static int block_til_ready(struct tty_struct *tty,
+ 	DECLARE_WAITQUEUE(wait, current);
+ 	int retval, do_clocal = 0;
+ 	unsigned long flags;
++	struct tty_port *port = &ch->port;
  
- 	if (!serial)
- 		return -ENODEV;
-@@ -1992,6 +2255,11 @@ static int hso_stop_serial_device(struct hso_device *hso_dev)
+ 	if (tty_hung_up_p(filp)) {
+-		if (ch->port.flags & ASYNC_HUP_NOTIFY)
++		if (port->flags & ASYNC_HUP_NOTIFY)
+ 			retval = -EAGAIN;
+ 		else
+ 			retval = -ERESTARTSYS;
+@@ -805,10 +812,10 @@ static int block_til_ready(struct tty_struct *tty,
+ 	 * If the device is in the middle of being closed, then block until
+ 	 * it's done, and then try again.
+ 	 */
+-	if (ch->port.flags & ASYNC_CLOSING) {
+-		interruptible_sleep_on(&ch->port.close_wait);
++	if (port->flags & ASYNC_CLOSING) {
++		interruptible_sleep_on(&port->close_wait);
+ 
+-		if (ch->port.flags & ASYNC_HUP_NOTIFY)
++		if (port->flags & ASYNC_HUP_NOTIFY)
+ 			return -EAGAIN;
+ 		else
+ 			return -ERESTARTSYS;
+@@ -819,7 +826,7 @@ static int block_til_ready(struct tty_struct *tty,
+ 		 * If non-blocking mode is set, then make the check up front
+ 		 * and then exit.
+ 		 */
+-		ch->port.flags |= ASYNC_NORMAL_ACTIVE;
++		port->flags |= ASYNC_NORMAL_ACTIVE;
+ 		return 0;
+ 	}
+ 	if (tty->termios->c_cflag & CLOCAL)
+@@ -827,31 +834,31 @@ static int block_til_ready(struct tty_struct *tty,
+ 	/* Block waiting for the carrier detect and the line to become free */
+ 
+ 	retval = 0;
+-	add_wait_queue(&ch->port.open_wait, &wait);
++	add_wait_queue(&port->open_wait, &wait);
+ 
+-	spin_lock_irqsave(&epca_lock, flags);
++	spin_lock_irqsave(&port->lock, flags);
+ 	/* We dec count so that pc_close will know when to free things */
+ 	if (!tty_hung_up_p(filp))
+-		ch->port.count--;
+-	ch->port.blocked_open++;
++		port->count--;
++	port->blocked_open++;
+ 	while (1) {
+ 		set_current_state(TASK_INTERRUPTIBLE);
+ 		if (tty_hung_up_p(filp) ||
+-				!(ch->port.flags & ASYNC_INITIALIZED)) {
+-			if (ch->port.flags & ASYNC_HUP_NOTIFY)
++				!(port->flags & ASYNC_INITIALIZED)) {
++			if (port->flags & ASYNC_HUP_NOTIFY)
+ 				retval = -EAGAIN;
+ 			else
+ 				retval = -ERESTARTSYS;
+ 			break;
  		}
- 		mutex_unlock(&serial->shared_int->shared_int_lock);
+-		if (!(ch->port.flags & ASYNC_CLOSING) &&
++		if (!(port->flags & ASYNC_CLOSING) &&
+ 			  (do_clocal || (ch->imodem & ch->dcd)))
+ 			break;
+ 		if (signal_pending(current)) {
+ 			retval = -ERESTARTSYS;
+ 			break;
+ 		}
+-		spin_unlock_irqrestore(&epca_lock, flags);
++		spin_unlock_irqrestore(&port->lock, flags);
+ 		/*
+ 		 * Allow someone else to be scheduled. We will occasionally go
+ 		 * through this loop until one of the above conditions change.
+@@ -859,27 +866,28 @@ static int block_til_ready(struct tty_struct *tty,
+ 		 * and prevent this loop from hogging the cpu.
+ 		 */
+ 		schedule();
+-		spin_lock_irqsave(&epca_lock, flags);
++		spin_lock_irqsave(&port->lock, flags);
  	}
-+	tiocmget = serial->tiocmget;
-+	if (tiocmget) {
-+		wake_up_interruptible(&tiocmget->waitq);
-+		usb_kill_urb(tiocmget->urb);
-+	}
  
+ 	__set_current_state(TASK_RUNNING);
+-	remove_wait_queue(&ch->port.open_wait, &wait);
++	remove_wait_queue(&port->open_wait, &wait);
+ 	if (!tty_hung_up_p(filp))
+-		ch->port.count++;
+-	ch->port.blocked_open--;
++		port->count++;
++	port->blocked_open--;
+ 
+-	spin_unlock_irqrestore(&epca_lock, flags);
++	spin_unlock_irqrestore(&port->lock, flags);
+ 
+ 	if (retval)
+ 		return retval;
+ 
+-	ch->port.flags |= ASYNC_NORMAL_ACTIVE;
++	port->flags |= ASYNC_NORMAL_ACTIVE;
  	return 0;
  }
-@@ -2338,6 +2606,20 @@ exit:
- 	return NULL;
- }
  
-+static void hso_free_tiomget(struct hso_serial *serial)
-+{
-+	struct hso_tiocmget *tiocmget = serial->tiocmget;
-+	if (tiocmget) {
-+		kfree(tiocmget);
-+		if (tiocmget->urb) {
-+			usb_free_urb(tiocmget->urb);
-+			tiocmget->urb = NULL;
-+		}
-+		serial->tiocmget = NULL;
-+
-+	}
-+}
-+
- /* Frees an AT channel ( goes for both mux and non-mux ) */
- static void hso_free_serial_device(struct hso_device *hso_dev)
+ static int pc_open(struct tty_struct *tty, struct file *filp)
  {
-@@ -2356,6 +2638,7 @@ static void hso_free_serial_device(struct hso_device *hso_dev)
- 		else
- 			mutex_unlock(&serial->shared_int->shared_int_lock);
+ 	struct channel *ch;
++	struct tty_port *port;
+ 	unsigned long flags;
+ 	int line, retval, boardnum;
+ 	struct board_chan __iomem *bc;
+@@ -890,6 +898,7 @@ static int pc_open(struct tty_struct *tty, struct file *filp)
+ 		return -ENODEV;
+ 
+ 	ch = &digi_channels[line];
++	port = &ch->port;
+ 	boardnum = ch->boardnum;
+ 
+ 	/* Check status of board configured in system.  */
+@@ -926,22 +935,24 @@ static int pc_open(struct tty_struct *tty, struct file *filp)
+ 		return -ENODEV;
  	}
-+	hso_free_tiomget(serial);
- 	kfree(serial);
- 	hso_free_device(hso_dev);
+ 
+-	spin_lock_irqsave(&epca_lock, flags);
++	spin_lock_irqsave(&port->lock, flags);
+ 	/*
+ 	 * Every time a channel is opened, increment a counter. This is
+ 	 * necessary because we do not wish to flush and shutdown the channel
+ 	 * until the last app holding the channel open, closes it.
+ 	 */
+-	ch->port.count++;
++	port->count++;
+ 	/*
+ 	 * Set a kernel structures pointer to our local channel structure. This
+ 	 * way we can get to it when passed only a tty struct.
+ 	 */
+ 	tty->driver_data = ch;
++	port->tty = tty;
+ 	/*
+ 	 * If this is the first time the channel has been opened, initialize
+ 	 * the tty->termios struct otherwise let pc_close handle it.
+ 	 */
++	spin_lock(&epca_lock);
+ 	globalwinon(ch);
+ 	ch->statusflags = 0;
+ 
+@@ -956,16 +967,16 @@ static int pc_open(struct tty_struct *tty, struct file *filp)
+ 	writew(head, &bc->rout);
+ 
+ 	/* Set the channels associated tty structure */
+-	ch->port.tty = tty;
+ 
+ 	/*
+ 	 * The below routine generally sets up parity, baud, flow control
+ 	 * issues, etc.... It effect both control flags and input flags.
+ 	 */
+ 	epcaparam(tty, ch);
+-	ch->port.flags |= ASYNC_INITIALIZED;
+ 	memoff(ch);
+-	spin_unlock_irqrestore(&epca_lock, flags);
++	spin_unlock(&epca_lock);
++	port->flags |= ASYNC_INITIALIZED;
++	spin_unlock_irqrestore(&port->lock, flags);
+ 
+ 	retval = block_til_ready(tty, filp, ch);
+ 	if (retval)
+@@ -974,13 +985,15 @@ static int pc_open(struct tty_struct *tty, struct file *filp)
+ 	 * Set this again in case a hangup set it to zero while this open() was
+ 	 * waiting for the line...
+ 	 */
+-	spin_lock_irqsave(&epca_lock, flags);
+-	ch->port.tty = tty;
++	spin_lock_irqsave(&port->lock, flags);
++	port->tty = tty;
++	spin_lock(&epca_lock);
+ 	globalwinon(ch);
+ 	/* Enable Digi Data events */
+ 	writeb(1, &bc->idata);
+ 	memoff(ch);
+-	spin_unlock_irqrestore(&epca_lock, flags);
++	spin_unlock(&epca_lock);
++	spin_unlock_irqrestore(&port->lock, flags);
+ 	return 0;
  }
-@@ -2367,6 +2650,7 @@ static struct hso_device *hso_create_bulk_serial_device(
- 	struct hso_device *hso_dev;
- 	struct hso_serial *serial;
- 	int num_urbs;
-+	struct hso_tiocmget *tiocmget;
  
- 	hso_dev = hso_create_device(interface, port);
- 	if (!hso_dev)
-@@ -2379,8 +2663,27 @@ static struct hso_device *hso_create_bulk_serial_device(
- 	serial->parent = hso_dev;
- 	hso_dev->port_data.dev_serial = serial;
- 
--	if (port & HSO_PORT_MODEM)
-+	if (port & HSO_PORT_MODEM) {
- 		num_urbs = 2;
-+		serial->tiocmget = kzalloc(sizeof(struct hso_tiocmget),
-+					   GFP_KERNEL);
-+		/* it isn't going to break our heart if serial->tiocmget
-+		 *  allocation fails don't bother checking this.
-+		 */
-+		if (serial->tiocmget) {
-+			tiocmget = serial->tiocmget;
-+			tiocmget->urb = usb_alloc_urb(0, GFP_KERNEL);
-+			if (tiocmget->urb) {
-+				mutex_init(&tiocmget->mutex);
-+				init_waitqueue_head(&tiocmget->waitq);
-+				tiocmget->endp = hso_get_ep(
-+					interface,
-+					USB_ENDPOINT_XFER_INT,
-+					USB_DIR_IN);
-+			} else
-+				hso_free_tiomget(serial);
-+		}
-+	}
- 	else
- 		num_urbs = 1;
- 
-@@ -2416,6 +2719,7 @@ static struct hso_device *hso_create_bulk_serial_device(
- exit2:
- 	hso_serial_common_free(serial);
- exit:
-+	hso_free_tiomget(serial);
- 	kfree(serial);
- 	hso_free_device(hso_dev);
- 	return NULL;
-@@ -2926,6 +3230,7 @@ static const struct tty_operations hso_serial_ops = {
- 	.close = hso_serial_close,
- 	.write = hso_serial_write,
- 	.write_room = hso_serial_write_room,
-+	.ioctl = hso_serial_ioctl,
- 	.set_termios = hso_serial_set_termios,
- 	.chars_in_buffer = hso_serial_chars_in_buffer,
- 	.tiocmget = hso_serial_tiocmget,
 
