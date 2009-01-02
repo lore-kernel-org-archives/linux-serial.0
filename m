@@ -1,68 +1,48 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 70/75] Serial: UART driver changes for Cavium OCTEON.
-Date: Fri, 02 Jan 2009 13:50:00 +0000
-Message-ID: <20090102134959.13472.84720.stgit@localhost.localdomain>
+Subject: [PATCH 71/75] drivers/char/cyclades.c: cy_pci_probe: fix error path
+Date: Fri, 02 Jan 2009 13:50:07 +0000
+Message-ID: <20090102135005.13472.64200.stgit@localhost.localdomain>
 References: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:37689 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:37692 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1757512AbZABNtp (ORCPT
+	with ESMTP id S1755837AbZABNtw (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Jan 2009 08:49:45 -0500
+	Fri, 2 Jan 2009 08:49:52 -0500
 In-Reply-To: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: torvalds@osdl.org, linux-serial@vger.kernel.org
 
-From: David Daney <ddaney@caviumnetworks.com>
+From: Andrew Morton <akpm@linux-foundation.org>
 
-Cavium UART implementation is not covered by existing uart_configS.
-Define a new uart_config (PORT_OCTEON) which is specified by OCTEON
-platform device registration code.
+We forgot to release resources in one case.
 
-Signed-off-by: Tomaso Paoletti <tpaoletti@caviumnetworks.com>
-Signed-off-by: David Daney <ddaney@caviumnetworks.com>
+Addresses http://bugzilla.kernel.org/show_bug.cgi?id=12137
+
+Reported-by: Florian Lohoff <flo@rfc822.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
- drivers/serial/8250.c       |    7 +++++++
- include/linux/serial_core.h |    3 ++-
- 2 files changed, 9 insertions(+), 1 deletions(-)
+ drivers/char/cyclades.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
 
-diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index 3ae4974..daa0056 100644
---- a/drivers/serial/8250.c
-+++ b/drivers/serial/8250.c
-@@ -279,6 +279,13 @@ static const struct serial8250_config uart_config[] = {
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
- 		.flags		= UART_CAP_FIFO,
- 	},
-+	[PORT_OCTEON] = {
-+		.name		= "OCTEON",
-+		.fifo_size	= 64,
-+		.tx_loadsz	= 64,
-+		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
-+		.flags		= UART_CAP_FIFO,
-+	},
- };
- 
- #if defined (CONFIG_SERIAL_8250_AU1X00)
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index f155252..b419984 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -40,7 +40,8 @@
- #define PORT_NS16550A	14
- #define PORT_XSCALE	15
- #define PORT_RM9000	16	/* PMC-Sierra RM9xxx internal UART */
--#define PORT_MAX_8250	16	/* max port ID */
-+#define PORT_OCTEON	17	/* Cavium OCTEON internal UART */
-+#define PORT_MAX_8250	17	/* max port ID */
- 
- /*
-  * ARM specific type numbers.  These are not currently guaranteed
+diff --git a/drivers/char/cyclades.c b/drivers/char/cyclades.c
+index 5e5b1dc..6a59f72 100644
+--- a/drivers/char/cyclades.c
++++ b/drivers/char/cyclades.c
+@@ -5010,7 +5010,7 @@ static int __devinit cy_pci_probe(struct pci_dev *pdev,
+ 		if (nchan == 0) {
+ 			dev_err(&pdev->dev, "Cyclom-Y PCI host card with no "
+ 					"Serial-Modules\n");
+-			return -EIO;
++			goto err_unmap;
+ 		}
+ 	} else if (device_id == PCI_DEVICE_ID_CYCLOM_Z_Hi) {
+ 		struct RUNTIME_9060 __iomem *ctl_addr;
 
