@@ -1,17 +1,17 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 09/75] Per-mount allocated_ptys
-Date: Fri, 02 Jan 2009 13:41:21 +0000
-Message-ID: <20090102134117.13472.80831.stgit@localhost.localdomain>
+Subject: [PATCH 10/75] Per-mount 'config' object
+Date: Fri, 02 Jan 2009 13:41:33 +0000
+Message-ID: <20090102134126.13472.47524.stgit@localhost.localdomain>
 References: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:60290 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:60293 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1754930AbZABNlG (ORCPT
+	with ESMTP id S1754760AbZABNlT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Jan 2009 08:41:06 -0500
+	Fri, 2 Jan 2009 08:41:19 -0500
 In-Reply-To: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -19,156 +19,135 @@ To: torvalds@osdl.org, linux-serial@vger.kernel.org
 
 From: Sukadev Bhattiprolu <sukadev@linux.vnet.ibm.com>
 
-To enable multiple mounts of devpts, 'allocated_ptys' must be a per-mount
-variable rather than a global variable.  Move 'allocated_ptys' into the
-super_block's s_fs_info.
-
-Changelog[v2]:
-	Define and use DEVPTS_SB() wrapper.
+With support for multiple mounts of devpts, the 'config' structure really
+represents per-mount options rather than config parameters. Rename 'config'
+structure to 'pts_mount_opts' and store it in the super-block.
 
 Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.vnet.ibm.com>
 Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
- fs/devpts/inode.c |   55 ++++++++++++++++++++++++++++++++++++++++++++++-------
- 1 files changed, 48 insertions(+), 7 deletions(-)
+ fs/devpts/inode.c |   45 +++++++++++++++++++++++++++------------------
+ 1 files changed, 27 insertions(+), 18 deletions(-)
 
 
 diff --git a/fs/devpts/inode.c b/fs/devpts/inode.c
-index f96e10a..49d879d 100644
+index 49d879d..b793e6e 100644
 --- a/fs/devpts/inode.c
 +++ b/fs/devpts/inode.c
-@@ -30,7 +30,6 @@
- #define PTMX_MINOR	2
- 
- extern int pty_limit;			/* Config limit on Unix98 ptys */
--static DEFINE_IDA(allocated_ptys);
- static DEFINE_MUTEX(allocated_ptys_lock);
+@@ -34,13 +34,13 @@ static DEFINE_MUTEX(allocated_ptys_lock);
  
  static struct vfsmount *devpts_mnt;
-@@ -55,6 +54,15 @@ static const match_table_t tokens = {
- 	{Opt_err, NULL}
- };
  
-+struct pts_fs_info {
-+	struct ida allocated_ptys;
+-static struct {
++struct pts_mount_opts {
+ 	int setuid;
+ 	int setgid;
+ 	uid_t   uid;
+ 	gid_t   gid;
+ 	umode_t mode;
+-} config = {.mode = DEVPTS_DEFAULT_MODE};
 +};
-+
-+static inline struct pts_fs_info *DEVPTS_SB(struct super_block *sb)
-+{
-+	return sb->s_fs_info;
-+}
-+
- static inline struct super_block *pts_sb_from_inode(struct inode *inode)
- {
- 	if (inode->i_sb->s_magic == DEVPTS_SUPER_MAGIC)
-@@ -126,6 +134,19 @@ static const struct super_operations devpts_sops = {
- 	.show_options	= devpts_show_options,
+ 
+ enum {
+ 	Opt_uid, Opt_gid, Opt_mode,
+@@ -56,6 +56,7 @@ static const match_table_t tokens = {
+ 
+ struct pts_fs_info {
+ 	struct ida allocated_ptys;
++	struct pts_mount_opts mount_opts;
  };
  
-+static void *new_pts_fs_info(void)
-+{
-+	struct pts_fs_info *fsi;
-+
-+	fsi = kzalloc(sizeof(struct pts_fs_info), GFP_KERNEL);
-+	if (!fsi)
-+		return NULL;
-+
-+	ida_init(&fsi->allocated_ptys);
-+
-+	return fsi;
-+}
-+
- static int
- devpts_fill_super(struct super_block *s, void *data, int silent)
+ static inline struct pts_fs_info *DEVPTS_SB(struct super_block *sb)
+@@ -74,12 +75,14 @@ static inline struct super_block *pts_sb_from_inode(struct inode *inode)
+ static int devpts_remount(struct super_block *sb, int *flags, char *data)
  {
-@@ -137,9 +158,13 @@ devpts_fill_super(struct super_block *s, void *data, int silent)
- 	s->s_op = &devpts_sops;
- 	s->s_time_gran = 1;
+ 	char *p;
++	struct pts_fs_info *fsi = DEVPTS_SB(sb);
++	struct pts_mount_opts *opts = &fsi->mount_opts;
  
-+	s->s_fs_info = new_pts_fs_info();
-+	if (!s->s_fs_info)
-+		goto fail;
+-	config.setuid  = 0;
+-	config.setgid  = 0;
+-	config.uid     = 0;
+-	config.gid     = 0;
+-	config.mode    = DEVPTS_DEFAULT_MODE;
++	opts->setuid  = 0;
++	opts->setgid  = 0;
++	opts->uid     = 0;
++	opts->gid     = 0;
++	opts->mode    = DEVPTS_DEFAULT_MODE;
+ 
+ 	while ((p = strsep(&data, ",")) != NULL) {
+ 		substring_t args[MAX_OPT_ARGS];
+@@ -94,19 +97,19 @@ static int devpts_remount(struct super_block *sb, int *flags, char *data)
+ 		case Opt_uid:
+ 			if (match_int(&args[0], &option))
+ 				return -EINVAL;
+-			config.uid = option;
+-			config.setuid = 1;
++			opts->uid = option;
++			opts->setuid = 1;
+ 			break;
+ 		case Opt_gid:
+ 			if (match_int(&args[0], &option))
+ 				return -EINVAL;
+-			config.gid = option;
+-			config.setgid = 1;
++			opts->gid = option;
++			opts->setgid = 1;
+ 			break;
+ 		case Opt_mode:
+ 			if (match_octal(&args[0], &option))
+ 				return -EINVAL;
+-			config.mode = option & S_IALLUGO;
++			opts->mode = option & S_IALLUGO;
+ 			break;
+ 		default:
+ 			printk(KERN_ERR "devpts: called with bogus options\n");
+@@ -119,11 +122,14 @@ static int devpts_remount(struct super_block *sb, int *flags, char *data)
+ 
+ static int devpts_show_options(struct seq_file *seq, struct vfsmount *vfs)
+ {
+-	if (config.setuid)
+-		seq_printf(seq, ",uid=%u", config.uid);
+-	if (config.setgid)
+-		seq_printf(seq, ",gid=%u", config.gid);
+-	seq_printf(seq, ",mode=%03o", config.mode);
++	struct pts_fs_info *fsi = DEVPTS_SB(vfs->mnt_sb);
++	struct pts_mount_opts *opts = &fsi->mount_opts;
 +
- 	inode = new_inode(s);
- 	if (!inode)
--		goto fail;
-+		goto free_fsi;
- 	inode->i_ino = 1;
++	if (opts->setuid)
++		seq_printf(seq, ",uid=%u", opts->uid);
++	if (opts->setgid)
++		seq_printf(seq, ",gid=%u", opts->gid);
++	seq_printf(seq, ",mode=%03o", opts->mode);
+ 
+ 	return 0;
+ }
+@@ -143,6 +149,7 @@ static void *new_pts_fs_info(void)
+ 		return NULL;
+ 
+ 	ida_init(&fsi->allocated_ptys);
++	fsi->mount_opts.mode = DEVPTS_DEFAULT_MODE;
+ 
+ 	return fsi;
+ }
+@@ -262,6 +269,8 @@ int devpts_pty_new(struct inode *ptmx_inode, struct tty_struct *tty)
+ 	struct super_block *sb = pts_sb_from_inode(ptmx_inode);
+ 	struct inode *inode = new_inode(sb);
+ 	struct dentry *root = sb->s_root;
++	struct pts_fs_info *fsi = DEVPTS_SB(sb);
++	struct pts_mount_opts *opts = &fsi->mount_opts;
+ 	char s[12];
+ 
+ 	/* We're supposed to be given the slave end of a pty */
+@@ -275,7 +284,7 @@ int devpts_pty_new(struct inode *ptmx_inode, struct tty_struct *tty)
+ 	inode->i_uid = config.setuid ? config.uid : current_fsuid();
+ 	inode->i_gid = config.setgid ? config.gid : current_fsgid();
  	inode->i_mtime = inode->i_atime = inode->i_ctime = CURRENT_TIME;
- 	inode->i_blocks = 0;
-@@ -155,6 +180,9 @@ devpts_fill_super(struct super_block *s, void *data, int silent)
- 	
- 	printk("devpts: get root dentry failed\n");
- 	iput(inode);
-+
-+free_fsi:
-+	kfree(s->s_fs_info);
- fail:
- 	return -ENOMEM;
- }
-@@ -165,11 +193,19 @@ static int devpts_get_sb(struct file_system_type *fs_type,
- 	return get_sb_single(fs_type, flags, data, devpts_fill_super, mnt);
- }
- 
-+static void devpts_kill_sb(struct super_block *sb)
-+{
-+	struct pts_fs_info *fsi = DEVPTS_SB(sb);
-+
-+	kfree(fsi);
-+	kill_anon_super(sb);
-+}
-+
- static struct file_system_type devpts_fs_type = {
- 	.owner		= THIS_MODULE,
- 	.name		= "devpts",
- 	.get_sb		= devpts_get_sb,
--	.kill_sb	= kill_anon_super,
-+	.kill_sb	= devpts_kill_sb,
- };
- 
- /*
-@@ -179,16 +215,18 @@ static struct file_system_type devpts_fs_type = {
- 
- int devpts_new_index(struct inode *ptmx_inode)
- {
-+	struct super_block *sb = pts_sb_from_inode(ptmx_inode);
-+	struct pts_fs_info *fsi = DEVPTS_SB(sb);
- 	int index;
- 	int ida_ret;
- 
- retry:
--	if (!ida_pre_get(&allocated_ptys, GFP_KERNEL)) {
-+	if (!ida_pre_get(&fsi->allocated_ptys, GFP_KERNEL)) {
- 		return -ENOMEM;
- 	}
- 
- 	mutex_lock(&allocated_ptys_lock);
--	ida_ret = ida_get_new(&allocated_ptys, &index);
-+	ida_ret = ida_get_new(&fsi->allocated_ptys, &index);
- 	if (ida_ret < 0) {
- 		mutex_unlock(&allocated_ptys_lock);
- 		if (ida_ret == -EAGAIN)
-@@ -197,7 +235,7 @@ retry:
- 	}
- 
- 	if (index >= pty_limit) {
--		ida_remove(&allocated_ptys, index);
-+		ida_remove(&fsi->allocated_ptys, index);
- 		mutex_unlock(&allocated_ptys_lock);
- 		return -EIO;
- 	}
-@@ -207,8 +245,11 @@ retry:
- 
- void devpts_kill_index(struct inode *ptmx_inode, int idx)
- {
-+	struct super_block *sb = pts_sb_from_inode(ptmx_inode);
-+	struct pts_fs_info *fsi = DEVPTS_SB(sb);
-+
- 	mutex_lock(&allocated_ptys_lock);
--	ida_remove(&allocated_ptys, idx);
-+	ida_remove(&fsi->allocated_ptys, idx);
- 	mutex_unlock(&allocated_ptys_lock);
- }
+-	init_special_inode(inode, S_IFCHR|config.mode, device);
++	init_special_inode(inode, S_IFCHR|opts->mode, device);
+ 	inode->i_private = tty;
+ 	tty->driver_data = inode;
  
 
