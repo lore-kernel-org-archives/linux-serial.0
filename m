@@ -1,79 +1,52 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 24/75] tty: Fix close races in USB serial
-Date: Fri, 02 Jan 2009 13:44:04 +0000
-Message-ID: <20090102134346.13472.85567.stgit@localhost.localdomain>
+Subject: [PATCH 25/75] devpts: fix unused function warning
+Date: Fri, 02 Jan 2009 13:44:12 +0000
+Message-ID: <20090102134409.13472.83966.stgit@localhost.localdomain>
 References: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:60335 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:60338 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1756125AbZABNnt (ORCPT
+	with ESMTP id S1756102AbZABNn6 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Jan 2009 08:43:49 -0500
+	Fri, 2 Jan 2009 08:43:58 -0500
 In-Reply-To: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: torvalds@osdl.org, linux-serial@vger.kernel.org
 
-From: Alan Cox <alan@redhat.com>
+From: Andrew Morton <akpm@linux-foundation.org>
 
-USB serial has always had races where the tty port usage count can hit zero
-during a receive event. The internal locking is a mutex so we can't use
-that in the IRQ handlers.
+fs/devpts/inode.c:324: warning: 'compare_init_pts_sb' defined but not used
 
-With krefs we can tackle this differently but we still need to be careful.
-
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
- drivers/usb/serial/usb-serial.c |   15 ++++++++++-----
- 1 files changed, 10 insertions(+), 5 deletions(-)
+ fs/devpts/inode.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
 
-diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-serial.c
-index 794b5ff..aafa684 100644
---- a/drivers/usb/serial/usb-serial.c
-+++ b/drivers/usb/serial/usb-serial.c
-@@ -269,15 +269,19 @@ static void serial_close(struct tty_struct *tty, struct file *filp)
- 		return;
- 	}
+diff --git a/fs/devpts/inode.c b/fs/devpts/inode.c
+index b02c243..3f309f1 100644
+--- a/fs/devpts/inode.c
++++ b/fs/devpts/inode.c
+@@ -320,6 +320,7 @@ fail:
+ 	return -ENOMEM;
+ }
  
--	--port->port.count;
--	if (port->port.count == 0)
-+	if (port->port.count == 1)
- 		/* only call the device specific close if this
--		 * port is being closed by the last owner */
-+		 * port is being closed by the last owner. Ensure we do
-+		 * this before we drop the port count. The call is protected
-+		 * by the port mutex
-+		 */
- 		port->serial->type->close(tty, port, filp);
++#ifdef CONFIG_DEVPTS_MULTIPLE_INSTANCES
+ static int compare_init_pts_sb(struct super_block *s, void *p)
+ {
+ 	if (devpts_mnt)
+@@ -327,7 +328,6 @@ static int compare_init_pts_sb(struct super_block *s, void *p)
+ 	return 0;
+ }
  
--	if (port->port.count == (port->console? 1 : 0)) {
-+	if (port->port.count == (port->console ? 2 : 1)) {
- 		struct tty_struct *tty = tty_port_tty_get(&port->port);
- 		if (tty) {
-+			/* We must do this before we drop the port count to
-+			   zero. */
- 			if (tty->driver_data)
- 				tty->driver_data = NULL;
- 			tty_port_tty_set(&port->port, NULL);
-@@ -285,13 +289,14 @@ static void serial_close(struct tty_struct *tty, struct file *filp)
- 		}
- 	}
- 
--	if (port->port.count == 0) {
-+	if (port->port.count == 1) {
- 		mutex_lock(&port->serial->disc_mutex);
- 		if (!port->serial->disconnected)
- 			usb_autopm_put_interface(port->serial->interface);
- 		mutex_unlock(&port->serial->disc_mutex);
- 		module_put(port->serial->type->driver.owner);
- 	}
-+	--port->port.count;
- 
- 	mutex_unlock(&port->mutex);
- 	usb_serial_put(port->serial);
+-#ifdef CONFIG_DEVPTS_MULTIPLE_INSTANCES
+ /*
+  * Safely parse the mount options in @data and update @opts.
+  *
 
