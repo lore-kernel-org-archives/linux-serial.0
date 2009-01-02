@@ -1,56 +1,67 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 66/75] fix for tty-serial-move-port
-Date: Fri, 02 Jan 2009 13:49:32 +0000
-Message-ID: <20090102134926.13472.19157.stgit@localhost.localdomain>
+Subject: [PATCH 67/75] 8250: Don't clobber spinlocks.
+Date: Fri, 02 Jan 2009 13:49:41 +0000
+Message-ID: <20090102134937.13472.86389.stgit@localhost.localdomain>
 References: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:37677 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:37680 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1757326AbZABNtR (ORCPT
+	with ESMTP id S1755740AbZABNt0 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Jan 2009 08:49:17 -0500
+	Fri, 2 Jan 2009 08:49:26 -0500
 In-Reply-To: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: torvalds@osdl.org, linux-serial@vger.kernel.org
 
-From: Alexander Beregalov <a.beregalov@gmail.com>
+From: David Daney <ddaney@caviumnetworks.com>
 
-Hi Alan
+In serial8250_isa_init_ports(), the port's lock is initialized.  We
+should not overwrite it.  In early_serial_setup(), only copy in the
+fields we need.  Since the early console code only uses a subset of
+the fields, these are sufficient.
 
-next-20081204 crashes with the following message:
-
-BUG: unable to handle kernel paging request at ffff88007d320248
-IP: [<ffffffff803de934>] uart_remove_one_port+0xef/0x111
-                kfree(info);
-     393:       49 8d 7d 10             lea    0x10(%r13),%rdi
-     397:       e8 00 00 00 00          callq  39c <uart_remove_one_port+0xef>
-
-Signed-off-by: Alexander Beregalov <a.beregalov@gmail.com>
+Signed-off-by: David Daney <ddaney@caviumnetworks.com>
+Signed-off-by: Tomaso Paoletti <tpaoletti@caviumnetworks.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
- drivers/serial/serial_core.c |    4 +---
- 1 files changed, 1 insertions(+), 3 deletions(-)
+ drivers/serial/8250.c |   15 +++++++++++++--
+ 1 files changed, 13 insertions(+), 2 deletions(-)
 
 
-diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
-index daeba1c..9425ed6 100644
---- a/drivers/serial/serial_core.c
-+++ b/drivers/serial/serial_core.c
-@@ -2530,10 +2530,8 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *port)
- 	/*
- 	 * Kill the tasklet, and free resources.
- 	 */
--	if (info) {
-+	if (info)
- 		tasklet_kill(&info->tlet);
--		kfree(info);
--	}
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index 303272a..8e28750 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -2752,12 +2752,23 @@ static struct uart_driver serial8250_reg = {
+  */
+ int __init early_serial_setup(struct uart_port *port)
+ {
++	struct uart_port *p;
++
+ 	if (port->line >= ARRAY_SIZE(serial8250_ports))
+ 		return -ENODEV;
  
- 	state->port = NULL;
- 	mutex_unlock(&port_mutex);
+ 	serial8250_isa_init_ports();
+-	serial8250_ports[port->line].port	= *port;
+-	serial8250_ports[port->line].port.ops	= &serial8250_pops;
++	p = &serial8250_ports[port->line].port;
++	p->iobase       = port->iobase;
++	p->membase      = port->membase;
++	p->irq          = port->irq;
++	p->uartclk      = port->uartclk;
++	p->fifosize     = port->fifosize;
++	p->regshift     = port->regshift;
++	p->iotype       = port->iotype;
++	p->flags        = port->flags;
++	p->mapbase      = port->mapbase;
++	p->private_data = port->private_data;
+ 	return 0;
+ }
+ 
 
