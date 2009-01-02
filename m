@@ -1,205 +1,335 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 00/75] TTY updates for 2.6.29-rc
-Date: Fri, 02 Jan 2009 13:40:06 +0000
-Message-ID: <20090102133822.13472.53912.stgit@localhost.localdomain>
+Subject: [PATCH 01/75] Blackfin Serial Driver: updates kgdb over Blackfin
+	serial driver with kgdb framework
+Date: Fri, 02 Jan 2009 13:40:14 +0000
+Message-ID: <20090102134012.13472.24299.stgit@localhost.localdomain>
+References: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:46132 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:46135 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752215AbZABNj4 (ORCPT
+	with ESMTP id S1752431AbZABNkA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Jan 2009 08:39:56 -0500
+	Fri, 2 Jan 2009 08:40:00 -0500
+In-Reply-To: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: torvalds@osdl.org, linux-serial@vger.kernel.org
 
-There are several chunks to this. The main thrust is extracting common code
-into the tty layer and tidying up. Further lock_kernel removal is done (notably
-Joe Peterson has removed in from most of n_tty now). Ptys get namespaces for
-container usage.
+From: Sonic Zhang <sonic.zhang@analog.com>
 
+Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+Signed-off-by: Bryan Wu <cooloney@kernel.org>
+Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
-Alan Cox (37):
-      tty: Fix an ircomm warning and note another bug
-      tty: We want the port object to be persistent
-      tty: Drop the lock_kernel in the private ioctl hook
-      synclink_cs: Convert to tty_port
-      tty: use port methods for the rocket driver
-      tty: kref the rocket driver
-      tty: make rocketport use standard port->flags
-      tty: Redo the rocket driver locking
-      tty: Make epca use the port helpers
-      tty: refcount the epca driver
-      tty: relock epca
-      tty: Fix the HSO termios handling a bit
-      hso: net driver using tty without locking
-      tty: kref nozomi
-      tty: Remove some pointless casts
-      tty: PTYs set TTY_DO_WRITE_WAKEUP when they don't need to
-      tty: USB tty devices can block in tcdrain when unplugged
-      tty: Introduce some close helpers for ports
-      tty: tty port zero baud open
-      tty: ESP has been broken for locking etc forver
-      tty: rework stallion to use the tty_port bits
-      tty: Rework istallion to use the tty port changes
-      tty: Introduce a tty_port generic block_til_ready
-      tty: relock the mxser driver
-      tty: relock riscom8 using port locks
-      tty: rocketport uses different port flags to everyone else
-      tty: relock generic_serial
-      isicom: redo locking to use tty port locks
-      tty: Pull the dtr raise into tty port
-      rio: Kill off ckmalloc
-      tty_port: Add a port level carrier detect operation
-      tty: Fix PPP hang under load
-      tty: Fix close races in USB serial
-      pty: simplify resize
-      sierra: Fix formatting
-      devpts: Coding style clean up
-      n_tty: clean up coding style
-
-Alexander Beregalov (1):
-      fix for tty-serial-move-port
-
-Andrew Morton (2):
-      drivers/char/cyclades.c: cy_pci_probe: fix error path
-      devpts: fix unused function warning
-
-Andy Whitcroft (1):
-      serial: RS485 ioctl structure uses __u32 include linux/types.h
-
-David Daney (4):
-      Serial: UART driver changes for Cavium OCTEON.
-      Serial: Allow port type to be specified when calling serial8250_register_port.
-      8250: Serial driver changes to support future Cavium OCTEON serial patches.
-      8250: Don't clobber spinlocks.
-
-David Howells (1):
-      CRED: Wrap task credential accesses in the devpts filesystem
-
-Denis Joseph Barrow (3):
-      hso maintainers update patch
-      hso modem detect fix patch against Alan Cox'es tty tree
-      tty: Modem functions for the HSO driver
-
-Flavio Leitner (1):
-      serial_8250: support for Sealevel Systems Model 7803 COMM+8
-
-Graf Yang (1):
-      Blackfin Serial Driver: fix bug - SIR driver stop receiving randomly
-
-Harvey Harrison (1):
-      __FUNCTION__ is gcc-specific, use __func__
-
-Jason Wessel (1):
-      tty: Fix sparse static warning for tty_driver_lookup_tty
-
-Joe Peterson (4):
-      n_tty: Output bells immediately on a full buffer
-      n_tty: Fix hanfling of buffer full corner cases
-      n_tty: Fix handling of control characters and continuations
-      n_tty: Fix loss of echoed characters and remove bkl from n_tty
-
-Kevin Hao (1):
-      Add device function for USB serial console
-
-Niels de Vos (1):
-      serial: set correct baud_base for Oxford Semiconductor Ltd EXSYS EX-41092 Dual 16950 Serial adapter
-
-Russell King (2):
-      And here's a patch (to be applied on top of the last) which prevents
-      Convert the oxsemi tornado special cases to use the quirk interface and not
-
-Sonic Zhang (4):
-      Blackfin Serial Driver: Remove BI status for known_good_char
-      Blackfin Serial Driver: Fix bug - BF527-EZKIT unable to receive large files over UART in DMA mode
-      Blackfin Serial Driver: Clean serial console and early prink code.
-      Blackfin Serial Driver: updates kgdb over Blackfin serial driver with kgdb framework
-
-Sukadev Bhattiprolu (9):
-      Document usage of multiple-instances of devpts
-      Enable multiple instances of devpts
-      Define get_init_pts_sb()
-      Define mknod_ptmx()
-      Add DEVPTS_MULTIPLE_INSTANCES config token
-      Extract option parsing to new function
-      Per-mount 'config' object
-      Per-mount allocated_ptys
-      Remove devpts_root global
-
-Thomas Pfaff (1):
-      tty: N_TTY SIGIO only works for read
+ drivers/serial/bfin_5xx.c |  187 +++++++++++++++++++++------------------------
+ 1 files changed, 89 insertions(+), 98 deletions(-)
 
 
- Documentation/filesystems/devpts.txt |  132 ++++++
- MAINTAINERS                          |    6 
- drivers/char/Kconfig                 |   13 +
- drivers/char/amiserial.c             |   34 +
- drivers/char/cyclades.c              |    2 
- drivers/char/epca.c                  |  265 +++--------
- drivers/char/esp.c                   |   61 ++-
- drivers/char/generic_serial.c        |   76 ++-
- drivers/char/hvc_console.c           |    2 
- drivers/char/hvsi.c                  |   12 -
- drivers/char/isicom.c                |  166 +------
- drivers/char/istallion.c             |  221 +++------
- drivers/char/moxa.c                  |   26 +
- drivers/char/mxser.c                 |  150 +-----
- drivers/char/n_r3964.c               |   12 -
- drivers/char/n_tty.c                 |  792 +++++++++++++++++++++++++++-------
- drivers/char/nozomi.c                |   85 ++--
- drivers/char/pcmcia/synclink_cs.c    |  479 ++++++++-------------
- drivers/char/pty.c                   |   57 ++
- drivers/char/rio/rio_linux.c         |   35 +-
- drivers/char/riscom8.c               |  194 ++------
- drivers/char/rocket.c                |  320 ++++----------
- drivers/char/rocket.h                |    2 
- drivers/char/rocket_int.h            |    5 
- drivers/char/selection.c             |    2 
- drivers/char/ser_a2232.c             |   23 +
- drivers/char/serial167.c             |   32 +
- drivers/char/specialix.c             |   34 +
- drivers/char/stallion.c              |  169 ++-----
- drivers/char/sx.c                    |   31 +
- drivers/char/synclink.c              |  177 +++-----
- drivers/char/synclink_gt.c           |  120 ++---
- drivers/char/synclinkmp.c            |  171 +++----
- drivers/char/tty_io.c                |   39 +-
- drivers/char/tty_ldisc.c             |   30 +
- drivers/char/tty_port.c              |  225 ++++++++++
- drivers/char/vme_scc.c               |   27 +
- drivers/char/vt.c                    |   16 -
- drivers/char/vt_ioctl.c              |    2 
- drivers/net/usb/hso.c                |  434 +++++++++++++++++--
- drivers/serial/8250.c                |  225 +++++++---
- drivers/serial/8250_pci.c            |  134 +++---
- drivers/serial/bfin_5xx.c            |  239 +++++-----
- drivers/serial/bfin_sport_uart.c     |   60 +--
- drivers/serial/jsm/jsm_tty.c         |    2 
- drivers/serial/serial_core.c         |  155 +++----
- drivers/usb/serial/console.c         |   13 +
- drivers/usb/serial/ftdi_sio.c        |    9 
- drivers/usb/serial/kl5kusb105.c      |    1 
- drivers/usb/serial/mct_u232.c        |    2 
- drivers/usb/serial/mos7840.c         |    3 
- drivers/usb/serial/sierra.c          |    2 
- drivers/usb/serial/usb-serial.c      |   26 +
- fs/devpts/inode.c                    |  472 ++++++++++++++++++--
- include/linux/8250_pci.h             |    2 
- include/linux/generic_serial.h       |    1 
- include/linux/istallion.h            |    2 
- include/linux/pci_ids.h              |    2 
- include/linux/serial.h               |    3 
- include/linux/serial_8250.h          |    3 
- include/linux/serial_core.h          |   69 ++-
- include/linux/tty.h                  |   27 +
- include/linux/tty_driver.h           |    6 
- net/irda/ircomm/ircomm_tty.c         |    5 
- 64 files changed, 3538 insertions(+), 2604 deletions(-)
- create mode 100644 Documentation/filesystems/devpts.txt
-
---
+diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
+index 569f0e2..d63fad7 100644
+--- a/drivers/serial/bfin_5xx.c
++++ b/drivers/serial/bfin_5xx.c
+@@ -22,7 +22,8 @@
+ #include <linux/tty_flip.h>
+ #include <linux/serial_core.h>
+ 
+-#ifdef CONFIG_KGDB_UART
++#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
++	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
+ #include <linux/kgdb.h>
+ #include <asm/irq_regs.h>
+ #endif
+@@ -45,6 +46,16 @@
+ static struct bfin_serial_port bfin_serial_ports[BFIN_UART_NR_PORTS];
+ static int nr_active_ports = ARRAY_SIZE(bfin_serial_resource);
+ 
++#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
++	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
++
++# ifndef CONFIG_SERIAL_BFIN_PIO
++#  error KGDB only support UART in PIO mode.
++# endif
++
++static int kgdboc_port_line;
++static int kgdboc_break_enabled;
++#endif
+ /*
+  * Setup for console. Argument comes from the menuconfig
+  */
+@@ -110,9 +121,7 @@ static void bfin_serial_start_tx(struct uart_port *port)
+ static void bfin_serial_stop_rx(struct uart_port *port)
+ {
+ 	struct bfin_serial_port *uart = (struct bfin_serial_port *)port;
+-#ifdef CONFIG_KGDB_UART
+-	if (uart->port.line != CONFIG_KGDB_UART_PORT)
+-#endif
++
+ 	UART_CLEAR_IER(uart, ERBFI);
+ }
+ 
+@@ -123,49 +132,6 @@ static void bfin_serial_enable_ms(struct uart_port *port)
+ {
+ }
+ 
+-#ifdef CONFIG_KGDB_UART
+-static int kgdb_entry_state;
+-
+-void kgdb_put_debug_char(int chr)
+-{
+-	struct bfin_serial_port *uart;
+-
+-	if (CONFIG_KGDB_UART_PORT < 0
+-		|| CONFIG_KGDB_UART_PORT >= BFIN_UART_NR_PORTS)
+-		uart = &bfin_serial_ports[0];
+-	else
+-		uart = &bfin_serial_ports[CONFIG_KGDB_UART_PORT];
+-
+-	while (!(UART_GET_LSR(uart) & THRE)) {
+-		SSYNC();
+-	}
+-
+-	UART_CLEAR_DLAB(uart);
+-	UART_PUT_CHAR(uart, (unsigned char)chr);
+-	SSYNC();
+-}
+-
+-int kgdb_get_debug_char(void)
+-{
+-	struct bfin_serial_port *uart;
+-	unsigned char chr;
+-
+-	if (CONFIG_KGDB_UART_PORT < 0
+-		|| CONFIG_KGDB_UART_PORT >= BFIN_UART_NR_PORTS)
+-		uart = &bfin_serial_ports[0];
+-	else
+-		uart = &bfin_serial_ports[CONFIG_KGDB_UART_PORT];
+-
+-	while(!(UART_GET_LSR(uart) & DR)) {
+-		SSYNC();
+-	}
+-	UART_CLEAR_DLAB(uart);
+-	chr = UART_GET_CHAR(uart);
+-	SSYNC();
+-
+-	return chr;
+-}
+-#endif
+ 
+ #if ANOMALY_05000363 && defined(CONFIG_SERIAL_BFIN_PIO)
+ # define UART_GET_ANOMALY_THRESHOLD(uart)    ((uart)->anomaly_threshold)
+@@ -178,7 +144,7 @@ int kgdb_get_debug_char(void)
+ #ifdef CONFIG_SERIAL_BFIN_PIO
+ static void bfin_serial_rx_chars(struct bfin_serial_port *uart)
+ {
+-	struct tty_struct *tty = uart->port.info->port.tty;
++	struct tty_struct *tty = NULL;
+ 	unsigned int status, ch, flg;
+ 	static struct timeval anomaly_start = { .tv_sec = 0 };
+ 
+@@ -188,27 +154,18 @@ static void bfin_serial_rx_chars(struct bfin_serial_port *uart)
+  	ch = UART_GET_CHAR(uart);
+  	uart->port.icount.rx++;
+ 
+-#ifdef CONFIG_KGDB_UART
+-	if (uart->port.line == CONFIG_KGDB_UART_PORT) {
+-		struct pt_regs *regs = get_irq_regs();
+-		if (uart->port.cons->index == CONFIG_KGDB_UART_PORT && ch == 0x1) { /* Ctrl + A */
+-			kgdb_breakkey_pressed(regs);
+-			return;
+-		} else if (kgdb_entry_state == 0 && ch == '$') {/* connection from KGDB */
+-			kgdb_entry_state = 1;
+-		} else if (kgdb_entry_state == 1 && ch == 'q') {
+-			kgdb_entry_state = 0;
+-			kgdb_breakkey_pressed(regs);
++#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
++	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
++	if (kgdb_connected && kgdboc_port_line == uart->port.line)
++		if (ch == 0x3) {/* Ctrl + C */
++			kgdb_breakpoint();
+ 			return;
+-		} else if (ch == 0x3) {/* Ctrl + C */
+-			kgdb_entry_state = 0;
+-			kgdb_breakkey_pressed(regs);
+-			return;
+-		} else {
+-			kgdb_entry_state = 0;
+ 		}
+-	}
++
++	if (!uart->port.info || !uart->port.info->tty)
++		return;
+ #endif
++	tty = uart->port.info->tty;
+ 
+ 	if (ANOMALY_05000363) {
+ 		/* The BF533 (and BF561) family of processors have a nice anomaly
+@@ -630,16 +587,16 @@ static int bfin_serial_startup(struct uart_port *port)
+ 	uart->rx_dma_timer.expires = jiffies + DMA_RX_FLUSH_JIFFIES;
+ 	add_timer(&(uart->rx_dma_timer));
+ #else
++#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
++	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
++	if (kgdboc_port_line == uart->port.line && kgdboc_break_enabled)
++		kgdboc_break_enabled = 0;
++	else {
++# endif
+ 	if (request_irq(uart->port.irq, bfin_serial_rx_int, IRQF_DISABLED,
+ 	     "BFIN_UART_RX", uart)) {
+-# ifdef	CONFIG_KGDB_UART
+-		if (uart->port.line != CONFIG_KGDB_UART_PORT) {
+-# endif
+ 		printk(KERN_NOTICE "Unable to attach BlackFin UART RX interrupt\n");
+ 		return -EBUSY;
+-# ifdef	CONFIG_KGDB_UART
+-		}
+-# endif
+ 	}
+ 
+ 	if (request_irq
+@@ -685,6 +642,10 @@ static int bfin_serial_startup(struct uart_port *port)
+ 		}
+ 	}
+ # endif
++#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
++	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
++	}
++# endif
+ #endif
+ 	UART_SET_IER(uart, ERBFI);
+ 	return 0;
+@@ -716,9 +677,6 @@ static void bfin_serial_shutdown(struct uart_port *port)
+ 		break;
+ 	};
+ #endif
+-#ifdef	CONFIG_KGDB_UART
+-	if (uart->port.line != CONFIG_KGDB_UART_PORT)
+-#endif
+ 	free_irq(uart->port.irq, uart);
+ 	free_irq(uart->port.irq+1, uart);
+ #endif
+@@ -887,6 +845,51 @@ static void bfin_serial_set_ldisc(struct uart_port *port)
+ 	}
+ }
+ 
++#ifdef CONFIG_CONSOLE_POLL
++static void bfin_serial_poll_put_char(struct uart_port *port, unsigned char chr)
++{
++	struct bfin_serial_port *uart = (struct bfin_serial_port *)port;
++
++	while (!(UART_GET_LSR(uart) & THRE))
++		cpu_relax();
++
++	UART_CLEAR_DLAB(uart);
++	UART_PUT_CHAR(uart, (unsigned char)chr);
++}
++
++static int bfin_serial_poll_get_char(struct uart_port *port)
++{
++	struct bfin_serial_port *uart = (struct bfin_serial_port *)port;
++	unsigned char chr;
++
++	while (!(UART_GET_LSR(uart) & DR))
++		cpu_relax();
++
++	UART_CLEAR_DLAB(uart);
++	chr = UART_GET_CHAR(uart);
++
++	return chr;
++}
++#endif
++
++#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
++	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
++static void bfin_kgdboc_port_shutdown(struct uart_port *port)
++{
++	if (kgdboc_break_enabled) {
++		kgdboc_break_enabled = 0;
++		bfin_serial_shutdown(port);
++	}
++}
++
++static int bfin_kgdboc_port_startup(struct uart_port *port)
++{
++	kgdboc_port_line = port->line;
++	kgdboc_break_enabled = !bfin_serial_startup(port);
++	return 0;
++}
++#endif
++
+ static struct uart_ops bfin_serial_pops = {
+ 	.tx_empty	= bfin_serial_tx_empty,
+ 	.set_mctrl	= bfin_serial_set_mctrl,
+@@ -905,6 +908,15 @@ static struct uart_ops bfin_serial_pops = {
+ 	.request_port	= bfin_serial_request_port,
+ 	.config_port	= bfin_serial_config_port,
+ 	.verify_port	= bfin_serial_verify_port,
++#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
++	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
++	.kgdboc_port_startup	= bfin_kgdboc_port_startup,
++	.kgdboc_port_shutdown	= bfin_kgdboc_port_shutdown,
++#endif
++#ifdef CONFIG_CONSOLE_POLL
++	.poll_put_char	= bfin_serial_poll_put_char,
++	.poll_get_char	= bfin_serial_poll_get_char,
++#endif
+ };
+ 
+ static void __init bfin_serial_init_ports(void)
+@@ -1076,10 +1088,7 @@ static int __init bfin_serial_rs_console_init(void)
+ {
+ 	bfin_serial_init_ports();
+ 	register_console(&bfin_serial_console);
+-#ifdef CONFIG_KGDB_UART
+-	kgdb_entry_state = 0;
+-	init_kgdb_uart();
+-#endif
++
+ 	return 0;
+ }
+ console_initcall(bfin_serial_rs_console_init);
+@@ -1235,10 +1244,6 @@ static struct platform_driver bfin_serial_driver = {
+ static int __init bfin_serial_init(void)
+ {
+ 	int ret;
+-#ifdef CONFIG_KGDB_UART
+-	struct bfin_serial_port *uart = &bfin_serial_ports[CONFIG_KGDB_UART_PORT];
+-	struct ktermios t;
+-#endif
+ 
+ 	pr_info("Serial: Blackfin serial driver\n");
+ 
+@@ -1252,21 +1257,6 @@ static int __init bfin_serial_init(void)
+ 			uart_unregister_driver(&bfin_serial_reg);
+ 		}
+ 	}
+-#ifdef CONFIG_KGDB_UART
+-	if (uart->port.cons->index != CONFIG_KGDB_UART_PORT) {
+-		request_irq(uart->port.irq, bfin_serial_rx_int,
+-			IRQF_DISABLED, "BFIN_UART_RX", uart);
+-		pr_info("Request irq for kgdb uart port\n");
+-		UART_SET_IER(uart, ERBFI);
+-		SSYNC();
+-		t.c_cflag = CS8|B57600;
+-		t.c_iflag = 0;
+-		t.c_oflag = 0;
+-		t.c_lflag = ICANON;
+-		t.c_line = CONFIG_KGDB_UART_PORT;
+-		bfin_serial_set_termios(&uart->port, &t, &t);
+-	}
+-#endif
+ 	return ret;
+ }
+ 
+@@ -1276,6 +1266,7 @@ static void __exit bfin_serial_exit(void)
+ 	uart_unregister_driver(&bfin_serial_reg);
+ }
+ 
++
+ module_init(bfin_serial_init);
+ module_exit(bfin_serial_exit);
+ 
 
