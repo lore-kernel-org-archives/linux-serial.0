@@ -1,65 +1,119 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 28/75] Add device function for USB serial console
-Date: Fri, 02 Jan 2009 13:44:34 +0000
-Message-ID: <20090102134432.13472.31269.stgit@localhost.localdomain>
+Subject: [PATCH 30/75] tty: Fix PPP hang under load
+Date: Fri, 02 Jan 2009 13:44:56 +0000
+Message-ID: <20090102134454.13472.37484.stgit@localhost.localdomain>
 References: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:60347 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:37577 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1757952AbZABNoU (ORCPT
+	with ESMTP id S1751808AbZABNqD (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Jan 2009 08:44:20 -0500
+	Fri, 2 Jan 2009 08:46:03 -0500
 In-Reply-To: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: torvalds@osdl.org, linux-serial@vger.kernel.org
 
-From: Kevin Hao <kexin.hao@windriver.com>
+From: Alan Cox <alan@redhat.com>
 
-Add device funtion for usb serial console, so we can open /dev/console
-when we use a usb serial device as console.
-
-(Typecast removed as noted by Sergei Shtylyov)
-
-Signed-off-by: Kevin Hao <kexin.hao@windriver.com>
 Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
- drivers/usb/serial/console.c |   13 +++++++++++++
- 1 files changed, 13 insertions(+), 0 deletions(-)
+ drivers/char/tty_ldisc.c |   30 +++++++++++++++++++++---------
+ include/linux/tty.h      |    1 +
+ 2 files changed, 22 insertions(+), 9 deletions(-)
 
 
-diff --git a/drivers/usb/serial/console.c b/drivers/usb/serial/console.c
-index 5b95009..19e2404 100644
---- a/drivers/usb/serial/console.c
-+++ b/drivers/usb/serial/console.c
-@@ -241,12 +241,25 @@ static void usb_console_write(struct console *co,
- 	}
+diff --git a/drivers/char/tty_ldisc.c b/drivers/char/tty_ldisc.c
+index f307f13..7a84b40 100644
+--- a/drivers/char/tty_ldisc.c
++++ b/drivers/char/tty_ldisc.c
+@@ -316,8 +316,7 @@ struct tty_ldisc *tty_ldisc_ref_wait(struct tty_struct *tty)
+ {
+ 	/* wait_event is a macro */
+ 	wait_event(tty_ldisc_wait, tty_ldisc_try(tty));
+-	if (tty->ldisc.refcount == 0)
+-		printk(KERN_ERR "tty_ldisc_ref_wait\n");
++	WARN_ON(tty->ldisc.refcount == 0);
+ 	return &tty->ldisc;
  }
  
-+static struct tty_driver *usb_console_device(struct console *co, int *index)
-+{
-+	struct tty_driver **p = (struct tty_driver **)co->data;
-+
-+	if (!*p)
-+		return NULL;
-+
-+	*index = co->index;
-+	return *p;
-+}
-+
- static struct console usbcons = {
- 	.name =		"ttyUSB",
- 	.write =	usb_console_write,
-+	.device =	usb_console_device,
- 	.setup =	usb_console_setup,
- 	.flags =	CON_PRINTBUFFER,
- 	.index =	-1,
-+	.data = 	&usb_serial_tty_driver,
- };
+@@ -376,15 +375,17 @@ EXPORT_SYMBOL_GPL(tty_ldisc_deref);
+  *	@tty: terminal to activate ldisc on
+  *
+  *	Set the TTY_LDISC flag when the line discipline can be called
+- *	again. Do necessary wakeups for existing sleepers.
++ *	again. Do necessary wakeups for existing sleepers. Clear the LDISC
++ *	changing flag to indicate any ldisc change is now over.
+  *
+- *	Note: nobody should set this bit except via this function. Clearing
+- *	directly is allowed.
++ *	Note: nobody should set the TTY_LDISC bit except via this function.
++ *	Clearing directly is allowed.
+  */
  
- void usb_serial_console_disconnect(struct usb_serial *serial)
+ void tty_ldisc_enable(struct tty_struct *tty)
+ {
+ 	set_bit(TTY_LDISC, &tty->flags);
++	clear_bit(TTY_LDISC_CHANGING, &tty->flags);
+ 	wake_up(&tty_ldisc_wait);
+ }
+ 
+@@ -496,7 +497,14 @@ restart:
+ 	 *	reference to the line discipline. The TTY_LDISC bit
+ 	 *	prevents anyone taking a reference once it is clear.
+ 	 *	We need the lock to avoid racing reference takers.
++	 *
++	 *	We must clear the TTY_LDISC bit here to avoid a livelock
++	 *	with a userspace app continually trying to use the tty in
++	 *	parallel to the change and re-referencing the tty.
+ 	 */
++	clear_bit(TTY_LDISC, &tty->flags);
++	if (o_tty)
++		clear_bit(TTY_LDISC, &o_tty->flags);
+ 
+ 	spin_lock_irqsave(&tty_ldisc_lock, flags);
+ 	if (tty->ldisc.refcount || (o_tty && o_tty->ldisc.refcount)) {
+@@ -528,7 +536,7 @@ restart:
+ 	 *	If the TTY_LDISC bit is set, then we are racing against
+ 	 *	another ldisc change
+ 	 */
+-	if (!test_bit(TTY_LDISC, &tty->flags)) {
++	if (test_bit(TTY_LDISC_CHANGING, &tty->flags)) {
+ 		struct tty_ldisc *ld;
+ 		spin_unlock_irqrestore(&tty_ldisc_lock, flags);
+ 		tty_ldisc_put(new_ldisc.ops);
+@@ -536,10 +544,14 @@ restart:
+ 		tty_ldisc_deref(ld);
+ 		goto restart;
+ 	}
+-
+-	clear_bit(TTY_LDISC, &tty->flags);
++	/*
++	 *	This flag is used to avoid two parallel ldisc changes. Once
++	 *	open and close are fine grained locked this may work better
++	 *	as a mutex shared with the open/close/hup paths
++	 */
++	set_bit(TTY_LDISC_CHANGING, &tty->flags);
+ 	if (o_tty)
+-		clear_bit(TTY_LDISC, &o_tty->flags);
++		set_bit(TTY_LDISC_CHANGING, &o_tty->flags);
+ 	spin_unlock_irqrestore(&tty_ldisc_lock, flags);
+ 	
+ 	/*
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index f881697..bbbeaef 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -301,6 +301,7 @@ struct tty_struct {
+ #define TTY_PUSH 		6	/* n_tty private */
+ #define TTY_CLOSING 		7	/* ->close() in progress */
+ #define TTY_LDISC 		9	/* Line discipline attached */
++#define TTY_LDISC_CHANGING 	10	/* Line discipline changing */
+ #define TTY_HW_COOK_OUT 	14	/* Hardware can do output cooking */
+ #define TTY_HW_COOK_IN 		15	/* Hardware can do input cooking */
+ #define TTY_PTY_LOCK 		16	/* pty private */
 
