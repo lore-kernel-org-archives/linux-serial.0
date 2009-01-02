@@ -1,17 +1,17 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 57/75] tty: Redo the rocket driver locking
-Date: Fri, 02 Jan 2009 13:48:17 +0000
-Message-ID: <20090102134816.13472.35452.stgit@localhost.localdomain>
+Subject: [PATCH 59/75] tty: kref the rocket driver
+Date: Fri, 02 Jan 2009 13:48:30 +0000
+Message-ID: <20090102134829.13472.72723.stgit@localhost.localdomain>
 References: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:37650 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:37658 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1757405AbZABNsD (ORCPT
+	with ESMTP id S1757289AbZABNsY (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Jan 2009 08:48:03 -0500
+	Fri, 2 Jan 2009 08:48:24 -0500
 In-Reply-To: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -19,171 +19,263 @@ To: torvalds@osdl.org, linux-serial@vger.kernel.org
 
 From: Alan Cox <alan@redhat.com>
 
-Bring this driver into the port locking model
+We will need this kref fitted to make full use of the port operations.
 
 Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
- drivers/char/epca.c   |    9 ++-------
- drivers/char/rocket.c |   35 ++++++++++++++++++-----------------
- 2 files changed, 20 insertions(+), 24 deletions(-)
+ drivers/char/rocket.c |   78 ++++++++++++++++++++++++++-----------------------
+ 1 files changed, 41 insertions(+), 37 deletions(-)
 
 
-diff --git a/drivers/char/epca.c b/drivers/char/epca.c
-index 71225d1..39ad820 100644
---- a/drivers/char/epca.c
-+++ b/drivers/char/epca.c
-@@ -164,8 +164,6 @@ static int pc_write_room(struct tty_struct *);
- static int pc_chars_in_buffer(struct tty_struct *);
- static void pc_flush_buffer(struct tty_struct *);
- static void pc_flush_chars(struct tty_struct *);
--static int block_til_ready(struct tty_struct *, struct file *,
--			struct channel *);
- static int pc_open(struct tty_struct *, struct file *);
- static void post_fep_init(unsigned int crd);
- static void epcapoll(unsigned long);
-@@ -422,7 +420,6 @@ static void pc_close(struct tty_struct *tty, struct file *filp)
- {
- 	struct channel *ch;
- 	struct tty_port *port;
--	unsigned long flags;
- 	/*
- 	 * verifyChannel returns the channel from the tty struct if it is
- 	 * valid. This serves as a sanity check.
-@@ -491,8 +488,6 @@ static void pc_hangup(struct tty_struct *tty)
- 	 */
- 	ch = verifyChannel(tty);
- 	if (ch != NULL) {
--		unsigned long flags;
--
- 		pc_flush_buffer(tty);
- 		tty_ldisc_flush(tty);
- 		shutdown(ch, tty);
-@@ -750,7 +745,7 @@ static int epca_carrier_raised(struct tty_port *port)
- 	return 0;
- }
- 
--static void epca_raise_dtr_rts(struct tty_port *port0
-+static void epca_raise_dtr_rts(struct tty_port *port)
- {
- }
- 
-@@ -1268,7 +1263,7 @@ static void post_fep_init(unsigned int crd)
- 		u16 tseg, rseg;
- 
- 		tty_port_init(&ch->port);
--		ch->port.ops - &epca_port_ops;
-+		ch->port.ops = &epca_port_ops;
- 		ch->brdchan = bc;
- 		ch->mailbox = gd;
- 		INIT_WORK(&ch->tqueue, do_softint);
 diff --git a/drivers/char/rocket.c b/drivers/char/rocket.c
-index 1e68cc2..efc3e5c 100644
+index ca6fcdc..b5e5e77 100644
 --- a/drivers/char/rocket.c
 +++ b/drivers/char/rocket.c
-@@ -920,7 +920,7 @@ static int block_til_ready(struct tty_struct *tty, struct file *filp,
- #ifdef ROCKET_DEBUG_OPEN
- 	printk(KERN_INFO "block_til_ready before block: ttyR%d, count = %d\n", info->line, port->count);
+@@ -436,15 +436,15 @@ static void rp_do_transmit(struct r_port *info)
  #endif
--	spin_lock_irqsave(&info->slock, flags);
-+	spin_lock_irqsave(&port->lock, flags);
+ 	if (!info)
+ 		return;
+-	if (!info->port.tty) {
+-		printk(KERN_WARNING "rp: WARNING %s called with "
+-				"info->port.tty==NULL\n", __func__);
++	tty = tty_port_tty_get(&info->port);
++
++	if (tty == NULL) {
++		printk(KERN_WARNING "rp: WARNING %s called with tty==NULL\n", __func__);
+ 		clear_bit((info->aiop * 8) + info->chan, (void *) &xmit_flags[info->board]);
+ 		return;
+ 	}
  
- #ifdef ROCKET_DISABLE_SIMUSAGE
- 	info->flags |= ASYNC_NORMAL_ACTIVE;
-@@ -932,7 +932,7 @@ static int block_til_ready(struct tty_struct *tty, struct file *filp,
+ 	spin_lock_irqsave(&info->slock, flags);
+-	tty = info->port.tty;
+ 	info->xmit_fifo_room = TXFIFO_SIZE - sGetTxCnt(cp);
+ 
+ 	/*  Loop sending data to FIFO until done or FIFO full */
+@@ -478,6 +478,7 @@ static void rp_do_transmit(struct r_port *info)
+ 	}
+ 
+ 	spin_unlock_irqrestore(&info->slock, flags);
++	tty_kref_put(tty);
+ 
+ #ifdef ROCKET_DEBUG_INTR
+ 	printk(KERN_DEBUG "(%d,%d,%d,%d)...\n", info->xmit_cnt, info->xmit_head,
+@@ -504,13 +505,13 @@ static void rp_handle_port(struct r_port *info)
+ 				"info->flags & NOT_INIT\n");
+ 		return;
+ 	}
+-	if (!info->port.tty) {
++	tty = tty_port_tty_get(&info->port);
++	if (!tty) {
+ 		printk(KERN_WARNING "rp: WARNING: rp_handle_port called with "
+-				"info->port.tty==NULL\n");
++				"tty==NULL\n");
+ 		return;
+ 	}
+ 	cp = &info->channel;
+-	tty = info->port.tty;
+ 
+ 	IntMask = sGetChanIntID(cp) & info->intmask;
+ #ifdef ROCKET_DEBUG_INTR
+@@ -542,6 +543,7 @@ static void rp_handle_port(struct r_port *info)
+ 		printk(KERN_INFO "DSR change...\n");
+ 	}
  #endif
- 	port->blocked_open++;
++	tty_kref_put(tty);
+ }
  
--	spin_unlock_irqrestore(&info->slock, flags);
-+	spin_unlock_irqrestore(&port->lock, flags);
- 
- 	while (1) {
- 		if (tty->termios->c_cflag & CBAUD)
-@@ -961,13 +961,13 @@ static int block_til_ready(struct tty_struct *tty, struct file *filp,
- 	__set_current_state(TASK_RUNNING);
- 	remove_wait_queue(&port->open_wait, &wait);
- 
--	spin_lock_irqsave(&info->slock, flags);
-+	spin_lock_irqsave(&port->lock, flags);
- 
- 	if (extra_count)
- 		port->count++;
- 	port->blocked_open--;
- 
--	spin_unlock_irqrestore(&info->slock, flags);
-+	spin_unlock_irqrestore(&port->lock, flags);
- 
- #ifdef ROCKET_DEBUG_OPEN
- 	printk(KERN_INFO "block_til_ready after blocking: ttyR%d, count = %d\n",
-@@ -1095,6 +1095,7 @@ static int rp_open(struct tty_struct *tty, struct file *filp)
- static void rp_close(struct tty_struct *tty, struct file *filp)
+ /*
+@@ -710,7 +712,7 @@ static void init_r_port(int board, int aiop, int chan, struct pci_dev *pci_dev)
+  *  Configures a rocketport port according to its termio settings.  Called from 
+  *  user mode into the driver (exception handler).  *info CD manipulation is spinlock protected.
+  */
+-static void configure_r_port(struct r_port *info,
++static void configure_r_port(struct tty_struct *tty, struct r_port *info,
+ 			     struct ktermios *old_termios)
  {
- 	struct r_port *info = tty->driver_data;
-+	struct tty_port *port = &info->port;
- 	unsigned long flags;
- 	int timeout;
+ 	unsigned cflag;
+@@ -718,7 +720,7 @@ static void configure_r_port(struct r_port *info,
+ 	unsigned rocketMode;
+ 	int bits, baud, divisor;
  	CHANNEL_t *cp;
-@@ -1108,9 +1109,9 @@ static void rp_close(struct tty_struct *tty, struct file *filp)
+-	struct ktermios *t = info->port.tty->termios;
++	struct ktermios *t = tty->termios;
  
- 	if (tty_hung_up_p(filp))
- 		return;
--	spin_lock_irqsave(&info->slock, flags);
-+	spin_lock_irqsave(&port->lock, flags);
+ 	cp = &info->channel;
+ 	cflag = t->c_cflag;
+@@ -751,7 +753,7 @@ static void configure_r_port(struct r_port *info,
+ 	}
  
--	if ((tty->count == 1) && (info->port.count != 1)) {
-+	if (tty->count == 1 && port->count != 1) {
+ 	/* baud rate */
+-	baud = tty_get_baud_rate(info->port.tty);
++	baud = tty_get_baud_rate(tty);
+ 	if (!baud)
+ 		baud = 9600;
+ 	divisor = ((rp_baud_base[info->board] + (baud >> 1)) / baud) - 1;
+@@ -769,7 +771,7 @@ static void configure_r_port(struct r_port *info,
+ 	sSetBaud(cp, divisor);
+ 
+ 	/* FIXME: Should really back compute a baud rate from the divisor */
+-	tty_encode_baud_rate(info->port.tty, baud, baud);
++	tty_encode_baud_rate(tty, baud, baud);
+ 
+ 	if (cflag & CRTSCTS) {
+ 		info->intmask |= DELTA_CTS;
+@@ -794,15 +796,15 @@ static void configure_r_port(struct r_port *info,
+ 	 * Handle software flow control in the board
+ 	 */
+ #ifdef ROCKET_SOFT_FLOW
+-	if (I_IXON(info->port.tty)) {
++	if (I_IXON(tty)) {
+ 		sEnTxSoftFlowCtl(cp);
+-		if (I_IXANY(info->port.tty)) {
++		if (I_IXANY(tty)) {
+ 			sEnIXANY(cp);
+ 		} else {
+ 			sDisIXANY(cp);
+ 		}
+-		sSetTxXONChar(cp, START_CHAR(info->port.tty));
+-		sSetTxXOFFChar(cp, STOP_CHAR(info->port.tty));
++		sSetTxXONChar(cp, START_CHAR(tty));
++		sSetTxXOFFChar(cp, STOP_CHAR(tty));
+ 	} else {
+ 		sDisTxSoftFlowCtl(cp);
+ 		sDisIXANY(cp);
+@@ -814,24 +816,24 @@ static void configure_r_port(struct r_port *info,
+ 	 * Set up ignore/read mask words
+ 	 */
+ 	info->read_status_mask = STMRCVROVRH | 0xFF;
+-	if (I_INPCK(info->port.tty))
++	if (I_INPCK(tty))
+ 		info->read_status_mask |= STMFRAMEH | STMPARITYH;
+-	if (I_BRKINT(info->port.tty) || I_PARMRK(info->port.tty))
++	if (I_BRKINT(tty) || I_PARMRK(tty))
+ 		info->read_status_mask |= STMBREAKH;
+ 
+ 	/*
+ 	 * Characters to ignore
+ 	 */
+ 	info->ignore_status_mask = 0;
+-	if (I_IGNPAR(info->port.tty))
++	if (I_IGNPAR(tty))
+ 		info->ignore_status_mask |= STMFRAMEH | STMPARITYH;
+-	if (I_IGNBRK(info->port.tty)) {
++	if (I_IGNBRK(tty)) {
+ 		info->ignore_status_mask |= STMBREAKH;
  		/*
- 		 * Uh, oh.  tty->count is 1, which means that the tty
- 		 * structure will be freed.  Info->count should always
-@@ -1120,19 +1121,19 @@ static void rp_close(struct tty_struct *tty, struct file *filp)
+ 		 * If we're ignoring parity and break indicators,
+ 		 * ignore overruns too.  (For real raw support).
  		 */
- 		printk(KERN_WARNING "rp_close: bad serial port count; "
- 			"tty->count is 1, info->port.count is %d\n", info->port.count);
--		info->port.count = 1;
-+		port->count = 1;
+-		if (I_IGNPAR(info->port.tty))
++		if (I_IGNPAR(tty))
+ 			info->ignore_status_mask |= STMRCVROVRH;
  	}
--	if (--info->port.count < 0) {
-+	if (--port->count < 0) {
- 		printk(KERN_WARNING "rp_close: bad serial port count for "
- 				"ttyR%d: %d\n", info->line, info->port.count);
--		info->port.count = 0;
-+		port->count = 0;
- 	}
--	if (info->port.count) {
--		spin_unlock_irqrestore(&info->slock, flags);
-+	if (port->count) {
-+		spin_unlock_irqrestore(&port->lock, flags);
- 		return;
- 	}
- 	info->flags |= ASYNC_CLOSING;
--	spin_unlock_irqrestore(&info->slock, flags);
-+	spin_unlock_irqrestore(&port->lock, flags);
+ 
+@@ -1015,7 +1017,7 @@ static int rp_open(struct tty_struct *tty, struct file *filp)
+ 		info->xmit_buf = (unsigned char *) page;
+ 
+ 	tty->driver_data = info;
+-	info->port.tty = tty;
++	tty_port_tty_set(&info->port, tty);
+ 
+ 	if (info->port.count++ == 0) {
+ 		atomic_inc(&rp_num_ports_open);
+@@ -1062,15 +1064,15 @@ static int rp_open(struct tty_struct *tty, struct file *filp)
+ 		 * Set up the tty->alt_speed kludge
+ 		 */
+ 		if ((info->flags & ROCKET_SPD_MASK) == ROCKET_SPD_HI)
+-			info->port.tty->alt_speed = 57600;
++			tty->alt_speed = 57600;
+ 		if ((info->flags & ROCKET_SPD_MASK) == ROCKET_SPD_VHI)
+-			info->port.tty->alt_speed = 115200;
++			tty->alt_speed = 115200;
+ 		if ((info->flags & ROCKET_SPD_MASK) == ROCKET_SPD_SHI)
+-			info->port.tty->alt_speed = 230400;
++			tty->alt_speed = 230400;
+ 		if ((info->flags & ROCKET_SPD_MASK) == ROCKET_SPD_WARP)
+-			info->port.tty->alt_speed = 460800;
++			tty->alt_speed = 460800;
+ 
+-		configure_r_port(info, NULL);
++		configure_r_port(tty, info, NULL);
+ 		if (tty->termios->c_cflag & CBAUD) {
+ 			sSetDTR(cp);
+ 			sSetRTS(cp);
+@@ -1227,7 +1229,7 @@ static void rp_set_termios(struct tty_struct *tty,
+ 	/* Or CMSPAR */
+ 	tty->termios->c_cflag &= ~CMSPAR;
+ 
+-	configure_r_port(info, old_termios);
++	configure_r_port(tty, info, old_termios);
  
  	cp = &info->channel;
  
-@@ -1152,7 +1153,7 @@ static void rp_close(struct tty_struct *tty, struct file *filp)
- 	 * Wait for the transmit buffer to clear
- 	 */
- 	if (info->port.closing_wait != ASYNC_CLOSING_WAIT_NONE)
--		tty_wait_until_sent(tty, info->port.closing_wait);
-+		tty_wait_until_sent(tty, port->closing_wait);
- 	/*
- 	 * Before we drop DTR, make sure the UART transmitter
- 	 * has completely drained; this is especially
-@@ -1181,11 +1182,11 @@ static void rp_close(struct tty_struct *tty, struct file *filp)
+@@ -1352,7 +1354,8 @@ static int get_config(struct r_port *info, struct rocket_config __user *retinfo)
+ 	return 0;
+ }
  
- 	clear_bit((info->aiop * 8) + info->chan, (void *) &xmit_flags[info->board]);
+-static int set_config(struct r_port *info, struct rocket_config __user *new_info)
++static int set_config(struct tty_struct *tty, struct r_port *info,
++					struct rocket_config __user *new_info)
+ {
+ 	struct rocket_config new_serial;
  
--	if (info->port.blocked_open) {
--		if (info->port.close_delay) {
--			msleep_interruptible(jiffies_to_msecs(info->port.close_delay));
-+	if (port->blocked_open) {
-+		if (port->close_delay) {
-+			msleep_interruptible(jiffies_to_msecs(port->close_delay));
- 		}
--		wake_up_interruptible(&info->port.open_wait);
-+		wake_up_interruptible(&port->open_wait);
- 	} else {
- 		if (info->xmit_buf) {
- 			free_page((unsigned long) info->xmit_buf);
+@@ -1364,7 +1367,7 @@ static int set_config(struct r_port *info, struct rocket_config __user *new_info
+ 		if ((new_serial.flags & ~ROCKET_USR_MASK) != (info->flags & ~ROCKET_USR_MASK))
+ 			return -EPERM;
+ 		info->flags = ((info->flags & ~ROCKET_USR_MASK) | (new_serial.flags & ROCKET_USR_MASK));
+-		configure_r_port(info, NULL);
++		configure_r_port(tty, info, NULL);
+ 		return 0;
+ 	}
+ 
+@@ -1373,15 +1376,15 @@ static int set_config(struct r_port *info, struct rocket_config __user *new_info
+ 	info->port.closing_wait = new_serial.closing_wait;
+ 
+ 	if ((info->flags & ROCKET_SPD_MASK) == ROCKET_SPD_HI)
+-		info->port.tty->alt_speed = 57600;
++		tty->alt_speed = 57600;
+ 	if ((info->flags & ROCKET_SPD_MASK) == ROCKET_SPD_VHI)
+-		info->port.tty->alt_speed = 115200;
++		tty->alt_speed = 115200;
+ 	if ((info->flags & ROCKET_SPD_MASK) == ROCKET_SPD_SHI)
+-		info->port.tty->alt_speed = 230400;
++		tty->alt_speed = 230400;
+ 	if ((info->flags & ROCKET_SPD_MASK) == ROCKET_SPD_WARP)
+-		info->port.tty->alt_speed = 460800;
++		tty->alt_speed = 460800;
+ 
+-	configure_r_port(info, NULL);
++	configure_r_port(tty, info, NULL);
+ 	return 0;
+ }
+ 
+@@ -1466,7 +1469,7 @@ static int rp_ioctl(struct tty_struct *tty, struct file *file,
+ 		ret = get_config(info, argp);
+ 		break;
+ 	case RCKP_SET_CONFIG:
+-		ret = set_config(info, argp);
++		ret = set_config(tty, info, argp);
+ 		break;
+ 	case RCKP_GET_PORTS:
+ 		ret = get_ports(info, argp);
+@@ -1658,7 +1661,7 @@ static void rp_hangup(struct tty_struct *tty)
+ 
+ 	info->port.count = 0;
+ 	info->port.flags &= ~ASYNC_NORMAL_ACTIVE;
+-	info->port.tty = NULL;
++	tty_port_tty_set(&info->port, NULL);
+ 
+ 	cp = &info->channel;
+ 	sDisRxFIFO(cp);
+@@ -1778,7 +1781,8 @@ static int rp_write(struct tty_struct *tty,
+ 
+ 	/*  Write remaining data into the port's xmit_buf */
+ 	while (1) {
+-		if (!info->port.tty)		/* Seemingly obligatory check... */
++		/* Hung up ? */
++		if (!test_bit(ASYNC_NORMAL_ACTIVE, &info->port.flags))
+ 			goto end;
+ 		c = min(count, XMIT_BUF_SIZE - info->xmit_cnt - 1);
+ 		c = min(c, XMIT_BUF_SIZE - info->xmit_head);
 
