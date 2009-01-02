@@ -1,17 +1,17 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 11/75] Extract option parsing to new function
-Date: Fri, 02 Jan 2009 13:41:47 +0000
-Message-ID: <20090102134139.13472.70794.stgit@localhost.localdomain>
+Subject: [PATCH 12/75] Add DEVPTS_MULTIPLE_INSTANCES config token
+Date: Fri, 02 Jan 2009 13:41:54 +0000
+Message-ID: <20090102134152.13472.85810.stgit@localhost.localdomain>
 References: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:60296 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:60299 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1754930AbZABNlc (ORCPT
+	with ESMTP id S1755373AbZABNlj (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Jan 2009 08:41:32 -0500
+	Fri, 2 Jan 2009 08:41:39 -0500
 In-Reply-To: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -19,47 +19,34 @@ To: torvalds@osdl.org, linux-serial@vger.kernel.org
 
 From: Sukadev Bhattiprolu <sukadev@linux.vnet.ibm.com>
 
-Move code to parse mount options into a separate function so it can
-(later) be shared between mount and remount operations.
-
 Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.vnet.ibm.com>
 Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
- fs/devpts/inode.c |   12 +++++++++---
- 1 files changed, 9 insertions(+), 3 deletions(-)
+ drivers/char/Kconfig |   11 +++++++++++
+ 1 files changed, 11 insertions(+), 0 deletions(-)
 
 
-diff --git a/fs/devpts/inode.c b/fs/devpts/inode.c
-index b793e6e..00530e8 100644
---- a/fs/devpts/inode.c
-+++ b/fs/devpts/inode.c
-@@ -72,11 +72,9 @@ static inline struct super_block *pts_sb_from_inode(struct inode *inode)
- 	return devpts_mnt->mnt_sb;
- }
+diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
+index c602b54..c52a167 100644
+--- a/drivers/char/Kconfig
++++ b/drivers/char/Kconfig
+@@ -443,6 +443,17 @@ config UNIX98_PTYS
+ 	  All modern Linux systems use the Unix98 ptys.  Say Y unless
+ 	  you're on an embedded system and want to conserve memory.
  
--static int devpts_remount(struct super_block *sb, int *flags, char *data)
-+static int parse_mount_options(char *data, struct pts_mount_opts *opts)
- {
- 	char *p;
--	struct pts_fs_info *fsi = DEVPTS_SB(sb);
--	struct pts_mount_opts *opts = &fsi->mount_opts;
- 
- 	opts->setuid  = 0;
- 	opts->setgid  = 0;
-@@ -120,6 +118,14 @@ static int devpts_remount(struct super_block *sb, int *flags, char *data)
- 	return 0;
- }
- 
-+static int devpts_remount(struct super_block *sb, int *flags, char *data)
-+{
-+	struct pts_fs_info *fsi = DEVPTS_SB(sb);
-+	struct pts_mount_opts *opts = &fsi->mount_opts;
++config DEVPTS_MULTIPLE_INSTANCES
++	bool "Support multiple instances of devpts"
++	depends on UNIX98_PTYS
++	default n
++	---help---
++	  Enable support for multiple instances of devpts filesystem.
++	  If you want to have isolated PTY namespaces (eg: in containers),
++	  say Y here.  Otherwise, say N. If enabled, each mount of devpts
++	  filesystem with the '-o newinstance' option will create an
++	  independent PTY namespace.
 +
-+	return parse_mount_options(data, opts);
-+}
-+
- static int devpts_show_options(struct seq_file *seq, struct vfsmount *vfs)
- {
- 	struct pts_fs_info *fsi = DEVPTS_SB(vfs->mnt_sb);
+ config LEGACY_PTYS
+ 	bool "Legacy (BSD) PTY support"
+ 	default y
 
