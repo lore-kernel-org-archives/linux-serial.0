@@ -1,56 +1,47 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 72/75] tty: Fix an ircomm warning and note another bug
-Date: Fri, 02 Jan 2009 13:50:20 +0000
-Message-ID: <20090102135012.13472.40889.stgit@localhost.localdomain>
+Subject: [PATCH 73/75] hso modem detect fix patch against Alan Cox'es tty tree
+Date: Fri, 02 Jan 2009 13:50:29 +0000
+Message-ID: <20090102135026.13472.63459.stgit@localhost.localdomain>
 References: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:50527 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:50530 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1757594AbZABNuF (ORCPT
+	with ESMTP id S1757596AbZABNuQ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Jan 2009 08:50:05 -0500
+	Fri, 2 Jan 2009 08:50:16 -0500
 In-Reply-To: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: torvalds@osdl.org, linux-serial@vger.kernel.org
 
-From: Alan Cox <alan@redhat.com>
+From: Denis Joseph Barrow <D.Barow@option.com>
 
-Roel Kluin noted that line is unsigned so one test is unneccessary. Also
-add a warning for another flaw I noticed while making this change.
+Fixed incorrect check for the modem port, this prevents
+crashes caused by issueing a tiocmget_submit_urb
+on endpoints which don't exist for non modem devices.
 
+Signed-off-by: Denis Joseph Barrow <D.Barow@option.com>
 Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
- net/irda/ircomm/ircomm_tty.c |    5 +++--
- 1 files changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/usb/hso.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
 
-diff --git a/net/irda/ircomm/ircomm_tty.c b/net/irda/ircomm/ircomm_tty.c
-index e4e2cae..086d5ef 100644
---- a/net/irda/ircomm/ircomm_tty.c
-+++ b/net/irda/ircomm/ircomm_tty.c
-@@ -371,9 +371,8 @@ static int ircomm_tty_open(struct tty_struct *tty, struct file *filp)
- 	IRDA_DEBUG(2, "%s()\n", __func__ );
+diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
+index d974d97..148af34 100644
+--- a/drivers/net/usb/hso.c
++++ b/drivers/net/usb/hso.c
+@@ -2663,7 +2663,7 @@ static struct hso_device *hso_create_bulk_serial_device(
+ 	serial->parent = hso_dev;
+ 	hso_dev->port_data.dev_serial = serial;
  
- 	line = tty->index;
--	if ((line < 0) || (line >= IRCOMM_TTY_PORTS)) {
-+	if (line >= IRCOMM_TTY_PORTS)
- 		return -ENODEV;
--	}
- 
- 	/* Check if instance already exists */
- 	self = hashbin_lock_find(ircomm_tty, line, NULL);
-@@ -405,6 +404,8 @@ static int ircomm_tty_open(struct tty_struct *tty, struct file *filp)
- 		 * Force TTY into raw mode by default which is usually what
- 		 * we want for IrCOMM and IrLPT. This way applications will
- 		 * not have to twiddle with printcap etc.
-+		 *
-+		 * Note this is completely usafe and doesn't work properly
- 		 */
- 		tty->termios->c_iflag = 0;
- 		tty->termios->c_oflag = 0;
+-	if (port & HSO_PORT_MODEM) {
++	if ((port & HSO_PORT_MASK) == HSO_PORT_MODEM) {
+ 		num_urbs = 2;
+ 		serial->tiocmget = kzalloc(sizeof(struct hso_tiocmget),
+ 					   GFP_KERNEL);
 
