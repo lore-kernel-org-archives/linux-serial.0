@@ -1,15 +1,15 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 39/75] tty: Introduce a tty_port generic block_til_ready
-Date: Fri, 02 Jan 2009 13:46:10 +0000
-Message-ID: <20090102134603.13472.34571.stgit@localhost.localdomain>
+Subject: [PATCH 33/75] tty: Pull the dtr raise into tty port
+Date: Fri, 02 Jan 2009 13:45:19 +0000
+Message-ID: <20090102134517.13472.96978.stgit@localhost.localdomain>
 References: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:37583 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:37581 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1756207AbZABNqG (ORCPT
+	with ESMTP id S1756187AbZABNqG (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
 	Fri, 2 Jan 2009 08:46:06 -0500
 In-Reply-To: <20090102133822.13472.53912.stgit@localhost.localdomain>
@@ -19,476 +19,283 @@ To: torvalds@osdl.org, linux-serial@vger.kernel.org
 
 From: Alan Cox <alan@redhat.com>
 
-Start sucking more commonality out of the drivers into a single piece of
-core code.
+This moves another per device special out of what should be shared open
+wait paths into private methods
 
 Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
- drivers/char/isicom.c   |   79 +----------------------------------
- drivers/char/mxser.c    |   71 --------------------------------
- drivers/char/riscom8.c  |   86 --------------------------------------
- drivers/char/synclink.c |    1 
- drivers/char/tty_port.c |  105 +++++++++++++++++++++++++++++++++++++++++++++++
- drivers/char/vme_scc.c  |    6 +--
- include/linux/tty.h     |    2 +
- 7 files changed, 115 insertions(+), 235 deletions(-)
+ drivers/char/isicom.c      |   13 ++++++++-----
+ drivers/char/mxser.c       |   17 +++++++++++++----
+ drivers/char/rocket.c      |   14 ++++++++++----
+ drivers/char/synclink.c    |   21 +++++++++++++++------
+ drivers/char/synclink_gt.c |   21 +++++++++++++++------
+ drivers/char/tty_port.c    |   16 ++++++++++++++++
+ include/linux/tty.h        |    2 ++
+ 7 files changed, 79 insertions(+), 25 deletions(-)
 
 
 diff --git a/drivers/char/isicom.c b/drivers/char/isicom.c
-index db53db9..bac55cf 100644
+index b3da485..a449449 100644
 --- a/drivers/char/isicom.c
 +++ b/drivers/char/isicom.c
-@@ -838,82 +838,6 @@ static int isicom_carrier_raised(struct tty_port *port)
- 	return (ip->status & ISI_DCD)?1 : 0;
+@@ -328,11 +328,13 @@ static inline void drop_rts(struct isi_port *port)
  }
  
--static int block_til_ready(struct tty_struct *tty, struct file *filp,
--	struct isi_port *ip)
--{
--	struct tty_port *port = &ip->port;
--	int do_clocal = 0, retval;
--	unsigned long flags;
--	DECLARE_WAITQUEUE(wait, current);
--	int cd;
--
--	/* block if port is in the process of being closed */
--
--	if (tty_hung_up_p(filp) || port->flags & ASYNC_CLOSING) {
--		pr_dbg("block_til_ready: close in progress.\n");
--		interruptible_sleep_on(&port->close_wait);
--		if (port->flags & ASYNC_HUP_NOTIFY)
--			return -EAGAIN;
--		else
--			return -ERESTARTSYS;
--	}
--
--	/* if non-blocking mode is set ... */
--
--	if ((filp->f_flags & O_NONBLOCK) ||
--			(tty->flags & (1 << TTY_IO_ERROR))) {
--		pr_dbg("block_til_ready: non-block mode.\n");
--		port->flags |= ASYNC_NORMAL_ACTIVE;
--		return 0;
--	}
--
--	if (C_CLOCAL(tty))
--		do_clocal = 1;
--
--	/* block waiting for DCD to be asserted, and while
--						callout dev is busy */
--	retval = 0;
--	add_wait_queue(&port->open_wait, &wait);
--
--	spin_lock_irqsave(&port->lock, flags);
--	if (!tty_hung_up_p(filp))
--		port->count--;
--	port->blocked_open++;
--	spin_unlock_irqrestore(&port->lock, flags);
--
--	while (1) {
--		tty_port_raise_dtr_rts(port);
--
--		set_current_state(TASK_INTERRUPTIBLE);
--		if (tty_hung_up_p(filp) || !(port->flags & ASYNC_INITIALIZED)) {
--			if (port->flags & ASYNC_HUP_NOTIFY)
--				retval = -EAGAIN;
--			else
--				retval = -ERESTARTSYS;
--			break;
--		}
--		cd = tty_port_carrier_raised(port);
--		if (!(port->flags & ASYNC_CLOSING) &&
--				(do_clocal || cd))
--			break;
--		if (signal_pending(current)) {
--			retval = -ERESTARTSYS;
--			break;
--		}
--		schedule();
--	}
--	set_current_state(TASK_RUNNING);
--	remove_wait_queue(&port->open_wait, &wait);
--	spin_lock_irqsave(&port->lock, flags);
--	if (!tty_hung_up_p(filp))
--		port->count++;
--	port->blocked_open--;
--	if (retval == 0)
--		port->flags |= ASYNC_NORMAL_ACTIVE;
--	spin_unlock_irqrestore(&port->lock, flags);
--	return 0;
--}
--
- static int isicom_open(struct tty_struct *tty, struct file *filp)
+ /* card->lock MUST NOT be held */
+-static inline void raise_dtr_rts(struct isi_port *port)
++
++static void isicom_raise_dtr_rts(struct tty_port *port)
  {
- 	struct isi_port *port;
-@@ -940,12 +864,13 @@ static int isicom_open(struct tty_struct *tty, struct file *filp)
+-	struct isi_board *card = port->card;
++	struct isi_port *ip = container_of(port, struct isi_port, port);
++	struct isi_board *card = ip->card;
+ 	unsigned long base = card->base;
+-	u16 channel = port->channel;
++	u16 channel = ip->channel;
  
- 	isicom_setup_board(card);
- 
-+	/* FIXME: locking on port.count etc */
- 	port->port.count++;
- 	tty->driver_data = port;
- 	tty_port_tty_set(&port->port, tty);
- 	error = isicom_setup_port(tty);
- 	if (error == 0)
--		error = block_til_ready(tty, filp, port);
-+		error = tty_port_block_til_ready(&port->port, tty, filp);
- 	return error;
+ 	if (!lock_card(card))
+ 		return;
+@@ -340,7 +342,7 @@ static inline void raise_dtr_rts(struct isi_port *port)
+ 	outw(0x8000 | (channel << card->shift_count) | 0x02, base);
+ 	outw(0x0f04, base);
+ 	InterruptTheCard(base);
+-	port->status |= (ISI_DTR | ISI_RTS);
++	ip->status |= (ISI_DTR | ISI_RTS);
+ 	unlock_card(card);
  }
  
+@@ -881,7 +883,7 @@ static int block_til_ready(struct tty_struct *tty, struct file *filp,
+ 	spin_unlock_irqrestore(&card->card_lock, flags);
+ 
+ 	while (1) {
+-		raise_dtr_rts(ip);
++		tty_port_raise_dtr_rts(port);
+ 
+ 		set_current_state(TASK_INTERRUPTIBLE);
+ 		if (tty_hung_up_p(filp) || !(port->flags & ASYNC_INITIALIZED)) {
+@@ -1462,6 +1464,7 @@ static const struct tty_operations isicom_ops = {
+ 
+ static const struct tty_port_operations isicom_port_ops = {
+ 	.carrier_raised		= isicom_carrier_raised,
++	.raise_dtr_rts		= isicom_raise_dtr_rts,
+ };
+ 
+ static int __devinit reset_card(struct pci_dev *pdev,
 diff --git a/drivers/char/mxser.c b/drivers/char/mxser.c
-index e2471cf..08ba6eb 100644
+index eafbbcf..ff5ff61 100644
 --- a/drivers/char/mxser.c
 +++ b/drivers/char/mxser.c
-@@ -558,75 +558,6 @@ static void mxser_raise_dtr_rts(struct tty_port *port)
+@@ -547,6 +547,17 @@ static int mxser_carrier_raised(struct tty_port *port)
+ 	return (inb(mp->ioaddr + UART_MSR) & UART_MSR_DCD)?1:0;
+ }
+ 
++static void mxser_raise_dtr_rts(struct tty_port *port)
++{
++	struct mxser_port *mp = container_of(port, struct mxser_port, port);
++	unsigned long flags;
++
++	spin_lock_irqsave(&mp->slock, flags);
++	outb(inb(mp->ioaddr + UART_MCR) |
++		UART_MCR_DTR | UART_MCR_RTS, mp->ioaddr + UART_MCR);
++	spin_unlock_irqrestore(&mp->slock, flags);
++}
++
+ static int mxser_block_til_ready(struct tty_struct *tty, struct file *filp,
+ 		struct mxser_port *mp)
+ {
+@@ -586,10 +597,7 @@ static int mxser_block_til_ready(struct tty_struct *tty, struct file *filp,
  	spin_unlock_irqrestore(&mp->slock, flags);
+ 	port->blocked_open++;
+ 	while (1) {
+-		spin_lock_irqsave(&mp->slock, flags);
+-		outb(inb(mp->ioaddr + UART_MCR) |
+-			UART_MCR_DTR | UART_MCR_RTS, mp->ioaddr + UART_MCR);
+-		spin_unlock_irqrestore(&mp->slock, flags);
++		tty_port_raise_dtr_rts(port);
+ 		set_current_state(TASK_INTERRUPTIBLE);
+ 		if (tty_hung_up_p(filp) || !(port->flags & ASYNC_INITIALIZED)) {
+ 			if (port->flags & ASYNC_HUP_NOTIFY)
+@@ -2458,6 +2466,7 @@ static const struct tty_operations mxser_ops = {
+ 
+ struct tty_port_operations mxser_port_ops = {
+ 	.carrier_raised = mxser_carrier_raised,
++	.raise_dtr_rts = mxser_raise_dtr_rts,
+ };
+ 
+ /*
+diff --git a/drivers/char/rocket.c b/drivers/char/rocket.c
+index 4a4110e..f4d9c39 100644
+--- a/drivers/char/rocket.c
++++ b/drivers/char/rocket.c
+@@ -870,6 +870,13 @@ static int carrier_raised(struct tty_port *port)
+ 	return (sGetChanStatusLo(&info->channel) & CD_ACT) ? 1 : 0;
  }
  
--static int mxser_block_til_ready(struct tty_struct *tty, struct file *filp,
--		struct mxser_port *mp)
--{
--	DECLARE_WAITQUEUE(wait, current);
--	int retval;
--	int do_clocal = 0;
--	unsigned long flags;
--	int cd;
--	struct tty_port *port = &mp->port;
--
--	/*
--	 * If non-blocking mode is set, or the port is not enabled,
--	 * then make the check up front and then exit.
--	 */
--	if ((filp->f_flags & O_NONBLOCK) ||
--			test_bit(TTY_IO_ERROR, &tty->flags)) {
--		port->flags |= ASYNC_NORMAL_ACTIVE;
--		return 0;
--	}
--
--	if (tty->termios->c_cflag & CLOCAL)
--		do_clocal = 1;
--
--	/*
--	 * Block waiting for the carrier detect and the line to become
--	 * free (i.e., not in use by the callout).  While we are in
--	 * this loop, port->count is dropped by one, so that
--	 * mxser_close() knows when to free things.  We restore it upon
--	 * exit, either normal or abnormal.
--	 */
--	retval = 0;
--	add_wait_queue(&port->open_wait, &wait);
--
--	spin_lock_irqsave(&port->lock, flags);
--	if (!tty_hung_up_p(filp))
--		port->count--;
--	port->blocked_open++;
--	spin_unlock_irqrestore(&port->lock, flags);
--	while (1) {
--		tty_port_raise_dtr_rts(port);
--		set_current_state(TASK_INTERRUPTIBLE);
--		if (tty_hung_up_p(filp) || !(port->flags & ASYNC_INITIALIZED)) {
--			if (port->flags & ASYNC_HUP_NOTIFY)
--				retval = -EAGAIN;
--			else
--				retval = -ERESTARTSYS;
--			break;
++static void raise_dtr_rts(struct tty_port *port)
++{
++	struct r_port *info = container_of(port, struct r_port, port);
++	sSetDTR(&info->channel);
++	sSetRTS(&info->channel);
++}
++
+ /*  info->port.count is considered critical, protected by spinlocks.  */
+ static int block_til_ready(struct tty_struct *tty, struct file *filp,
+ 			   struct r_port *info)
+@@ -928,10 +935,8 @@ static int block_til_ready(struct tty_struct *tty, struct file *filp,
+ 	spin_unlock_irqrestore(&info->slock, flags);
+ 
+ 	while (1) {
+-		if (tty->termios->c_cflag & CBAUD) {
+-			sSetDTR(&info->channel);
+-			sSetRTS(&info->channel);
 -		}
--		cd = tty_port_carrier_raised(port);
--		if (!(port->flags & ASYNC_CLOSING) && (do_clocal || cd))
--			break;
--		if (signal_pending(current)) {
--			retval = -ERESTARTSYS;
--			break;
--		}
--		schedule();
--	}
--	set_current_state(TASK_RUNNING);
--	remove_wait_queue(&port->open_wait, &wait);
--	spin_lock_irqsave(&port->lock, flags);
--	if (!tty_hung_up_p(filp))
--		port->count++;
--	port->blocked_open--;
--	if (retval == 0)
--		port->flags |= ASYNC_NORMAL_ACTIVE;
--	spin_unlock_irqrestore(&port->lock, flags);
--	return 0;
--}
--
- static int mxser_set_baud(struct tty_struct *tty, long newspd)
- {
- 	struct mxser_port *info = tty->driver_data;
-@@ -1110,7 +1041,7 @@ static int mxser_open(struct tty_struct *tty, struct file *filp)
- 	if (retval)
- 		return retval;
++		if (tty->termios->c_cflag & CBAUD)
++			tty_port_raise_dtr_rts(port);
+ 		set_current_state(TASK_INTERRUPTIBLE);
+ 		if (tty_hung_up_p(filp) || !(info->flags & ROCKET_INITIALIZED)) {
+ 			if (info->flags & ROCKET_HUP_NOTIFY)
+@@ -2381,6 +2386,7 @@ static const struct tty_operations rocket_ops = {
  
--	retval = mxser_block_til_ready(tty, filp, info);
-+	retval = tty_port_block_til_ready(&info->port, tty, filp);
- 	if (retval)
- 		return retval;
+ static const struct tty_port_operations rocket_port_ops = {
+ 	.carrier_raised = carrier_raised,
++	.raise_dtr_rts = raise_dtr_rts,
+ };
  
-diff --git a/drivers/char/riscom8.c b/drivers/char/riscom8.c
-index 14662d7..af34c20 100644
---- a/drivers/char/riscom8.c
-+++ b/drivers/char/riscom8.c
-@@ -874,90 +874,6 @@ static int carrier_raised(struct tty_port *port)
- 	return CD;
- }
- 
--static int block_til_ready(struct tty_struct *tty, struct file *filp,
--			   struct riscom_port *rp)
--{
--	DECLARE_WAITQUEUE(wait, current);
--	int    retval;
--	int    do_clocal = 0;
--	int    CD;
--	unsigned long flags;
--	struct tty_port *port = &rp->port;
--
--	/*
--	 * If the device is in the middle of being closed, then block
--	 * until it's done, and then try again.
--	 */
--	if (tty_hung_up_p(filp) || port->flags & ASYNC_CLOSING) {
--		interruptible_sleep_on(&port->close_wait);
--		if (port->flags & ASYNC_HUP_NOTIFY)
--			return -EAGAIN;
--		else
--			return -ERESTARTSYS;
--	}
--
--	/*
--	 * If non-blocking mode is set, or the port is not enabled,
--	 * then make the check up front and then exit.
--	 */
--	if ((filp->f_flags & O_NONBLOCK) ||
--	    (tty->flags & (1 << TTY_IO_ERROR))) {
--		port->flags |= ASYNC_NORMAL_ACTIVE;
--		return 0;
--	}
--
--	if (C_CLOCAL(tty))
--		do_clocal = 1;
--
--	/*
--	 * Block waiting for the carrier detect and the line to become
--	 * free (i.e., not in use by the callout).  While we are in
--	 * this loop, info->count is dropped by one, so that
--	 * rs_close() knows when to free things.  We restore it upon
--	 * exit, either normal or abnormal.
--	 */
--	retval = 0;
--	add_wait_queue(&port->open_wait, &wait);
--
--	spin_lock_irqsave(&port->lock, flags);
--	if (!tty_hung_up_p(filp))
--		port->count--;
--	port->blocked_open++;
--	spin_unlock_irqrestore(&port->lock, flags);
--
--	while (1) {
--
--		CD = tty_port_carrier_raised(port);
--		set_current_state(TASK_INTERRUPTIBLE);
--		if (tty_hung_up_p(filp) ||
--		    !(port->flags & ASYNC_INITIALIZED)) {
--			if (port->flags & ASYNC_HUP_NOTIFY)
--				retval = -EAGAIN;
--			else
--				retval = -ERESTARTSYS;
--			break;
--		}
--		if (!(port->flags & ASYNC_CLOSING) &&
--		    (do_clocal || CD))
--			break;
--		if (signal_pending(current)) {
--			retval = -ERESTARTSYS;
--			break;
--		}
--		schedule();
--	}
--	__set_current_state(TASK_RUNNING);
--	remove_wait_queue(&port->open_wait, &wait);
--	spin_lock_irqsave(&port->lock, flags);
--	if (!tty_hung_up_p(filp))
--		port->count++;
--	port->blocked_open--;
--	if (retval == 0)
--		port->flags |= ASYNC_NORMAL_ACTIVE;
--	spin_unlock_irqrestore(&port->lock, flags);
--	return 0;
--}
--
- static int rc_open(struct tty_struct *tty, struct file *filp)
- {
- 	int board;
-@@ -984,7 +900,7 @@ static int rc_open(struct tty_struct *tty, struct file *filp)
- 
- 	error = rc_setup_port(bp, port);
- 	if (error == 0)
--		error = block_til_ready(tty, filp, port);
-+		error = tty_port_block_til_ready(&port->port, tty, filp);
- 	return error;
- }
- 
+ /*
 diff --git a/drivers/char/synclink.c b/drivers/char/synclink.c
-index ac9f21e..0ded4ed 100644
+index fb2e6b5..ac9f21e 100644
 --- a/drivers/char/synclink.c
 +++ b/drivers/char/synclink.c
-@@ -3401,6 +3401,7 @@ static int block_til_ready(struct tty_struct *tty, struct file * filp,
- 	set_current_state(TASK_RUNNING);
- 	remove_wait_queue(&port->open_wait, &wait);
+@@ -3298,6 +3298,18 @@ static int carrier_raised(struct tty_port *port)
+ 	return (info->serial_signals & SerialSignal_DCD) ? 1 : 0;
+ }
+ 
++static void raise_dtr_rts(struct tty_port *port)
++{
++	struct mgsl_struct *info = container_of(port, struct mgsl_struct, port);
++	unsigned long flags;
++
++	spin_lock_irqsave(&info->irq_spinlock,flags);
++	info->serial_signals |= SerialSignal_RTS + SerialSignal_DTR;
++ 	usc_set_serial_signals(info);
++	spin_unlock_irqrestore(&info->irq_spinlock,flags);
++}
++
++
+ /* block_til_ready()
+  * 
+  * 	Block the current process until the specified port
+@@ -3358,12 +3370,8 @@ static int block_til_ready(struct tty_struct *tty, struct file * filp,
+ 	port->blocked_open++;
  	
-+	/* FIXME: Racy on hangup during close wait */
- 	if (extra_count)
- 		port->count++;
- 	port->blocked_open--;
+ 	while (1) {
+-		if (tty->termios->c_cflag & CBAUD) {
+-			spin_lock_irqsave(&info->irq_spinlock,flags);
+-			info->serial_signals |= SerialSignal_RTS + SerialSignal_DTR;
+-		 	usc_set_serial_signals(info);
+-			spin_unlock_irqrestore(&info->irq_spinlock,flags);
+-		}
++		if (tty->termios->c_cflag & CBAUD)
++			tty_port_raise_dtr_rts(port);
+ 		
+ 		set_current_state(TASK_INTERRUPTIBLE);
+ 		
+@@ -4321,6 +4329,7 @@ static void mgsl_add_device( struct mgsl_struct *info )
+ 
+ static const struct tty_port_operations mgsl_port_ops = {
+ 	.carrier_raised = carrier_raised,
++	.raise_dtr_rts = raise_dtr_rts,
+ };
+ 
+ 
+diff --git a/drivers/char/synclink_gt.c b/drivers/char/synclink_gt.c
+index 39ccaba..625c9bd 100644
+--- a/drivers/char/synclink_gt.c
++++ b/drivers/char/synclink_gt.c
+@@ -3143,6 +3143,18 @@ static int carrier_raised(struct tty_port *port)
+ 	return (info->signals & SerialSignal_DCD) ? 1 : 0;
+ }
+ 
++static void raise_dtr_rts(struct tty_port *port)
++{
++	unsigned long flags;
++	struct slgt_info *info = container_of(port, struct slgt_info, port);
++
++	spin_lock_irqsave(&info->lock,flags);
++	info->signals |= SerialSignal_RTS + SerialSignal_DTR;
++ 	set_signals(info);
++	spin_unlock_irqrestore(&info->lock,flags);
++}
++
++
+ /*
+  *  block current process until the device is ready to open
+  */
+@@ -3187,12 +3199,8 @@ static int block_til_ready(struct tty_struct *tty, struct file *filp,
+ 	port->blocked_open++;
+ 
+ 	while (1) {
+-		if ((tty->termios->c_cflag & CBAUD)) {
+-			spin_lock_irqsave(&info->lock,flags);
+-			info->signals |= SerialSignal_RTS + SerialSignal_DTR;
+-		 	set_signals(info);
+-			spin_unlock_irqrestore(&info->lock,flags);
+-		}
++		if ((tty->termios->c_cflag & CBAUD))
++			tty_port_raise_dtr_rts(port);
+ 
+ 		set_current_state(TASK_INTERRUPTIBLE);
+ 
+@@ -3455,6 +3463,7 @@ static void add_device(struct slgt_info *info)
+ 
+ static const struct tty_port_operations slgt_port_ops = {
+ 	.carrier_raised = carrier_raised,
++	.raise_dtr_rts = raise_dtr_rts,
+ };
+ 
+ /*
 diff --git a/drivers/char/tty_port.c b/drivers/char/tty_port.c
-index 9f418bc..ff94182 100644
+index f54e40c..0557b63 100644
 --- a/drivers/char/tty_port.c
 +++ b/drivers/char/tty_port.c
-@@ -151,3 +151,108 @@ void tty_port_raise_dtr_rts(struct tty_port *port)
- 		port->ops->raise_dtr_rts(port);
+@@ -111,3 +111,19 @@ int tty_port_carrier_raised(struct tty_port *port)
+ 	return port->ops->carrier_raised(port);
  }
- EXPORT_SYMBOL(tty_port_raise_dtr_rts);
+ EXPORT_SYMBOL(tty_port_carrier_raised);
 +
 +/**
-+ *	tty_port_block_til_ready	-	Waiting logic for tty open
-+ *	@port: the tty port being opened
-+ *	@tty: the tty device being bound
-+ *	@filp: the file pointer of the opener
++ *	tty_port_raise_dtr_rts	-	Riase DTR/RTS
++ *	@port: tty port
 + *
-+ *	Implement the core POSIX/SuS tty behaviour when opening a tty device.
-+ *	Handles:
-+ *		- hangup (both before and during)
-+ *		- non blocking open
-+ *		- rts/dtr/dcd
-+ *		- signals
-+ *		- port flags and counts
-+ *
-+ *	The passed tty_port must implement the carrier_raised method if it can
-+ *	do carrier detect and the raise_dtr_rts method if it supports software
-+ *	management of these lines. Note that the dtr/rts raise is done each
-+ *	iteration as a hangup may have previously dropped them while we wait.
++ *	Wrapper for the DTR/RTS raise logic. For the moment this is used
++ *	to hide some internal details. This will eventually become entirely
++ *	internal to the tty port.
 + */
-+ 
-+int tty_port_block_til_ready(struct tty_port *port,
-+				struct tty_struct *tty, struct file *filp)
++
++void tty_port_raise_dtr_rts(struct tty_port *port)
 +{
-+	int do_clocal = 0, retval;
-+	unsigned long flags;
-+	DECLARE_WAITQUEUE(wait, current);
-+	int cd;
-+
-+	/* block if port is in the process of being closed */
-+	if (tty_hung_up_p(filp) || port->flags & ASYNC_CLOSING) {
-+		interruptible_sleep_on(&port->close_wait);
-+		if (port->flags & ASYNC_HUP_NOTIFY)
-+			return -EAGAIN;
-+		else
-+			return -ERESTARTSYS;
-+	}
-+
-+	/* if non-blocking mode is set we can pass directly to open unless
-+	   the port has just hung up or is in another error state */
-+	if ((filp->f_flags & O_NONBLOCK) ||
-+			(tty->flags & (1 << TTY_IO_ERROR))) {
-+		port->flags |= ASYNC_NORMAL_ACTIVE;
-+		return 0;
-+	}
-+
-+	if (C_CLOCAL(tty))
-+		do_clocal = 1;
-+
-+	/* Block waiting until we can proceed. We may need to wait for the
-+	   carrier, but we must also wait for any close that is in progress
-+	   before the next open may complete */
-+
-+	retval = 0;
-+	add_wait_queue(&port->open_wait, &wait);
-+
-+	/* The port lock protects the port counts */
-+	spin_lock_irqsave(&port->lock, flags);
-+	if (!tty_hung_up_p(filp))
-+		port->count--;
-+	port->blocked_open++;
-+	spin_unlock_irqrestore(&port->lock, flags);
-+
-+	while (1) {
-+		/* Indicate we are open */
-+		tty_port_raise_dtr_rts(port);
-+
-+		set_current_state(TASK_INTERRUPTIBLE);
-+		/* Check for a hangup or uninitialised port. Return accordingly */
-+		if (tty_hung_up_p(filp) || !(port->flags & ASYNC_INITIALIZED)) {
-+			if (port->flags & ASYNC_HUP_NOTIFY)
-+				retval = -EAGAIN;
-+			else
-+				retval = -ERESTARTSYS;
-+			break;
-+		}
-+		/* Probe the carrier. For devices with no carrier detect this
-+		   will always return true */
-+		cd = tty_port_carrier_raised(port);
-+		if (!(port->flags & ASYNC_CLOSING) &&
-+				(do_clocal || cd))
-+			break;
-+		if (signal_pending(current)) {
-+			retval = -ERESTARTSYS;
-+			break;
-+		}
-+		schedule();
-+	}
-+	set_current_state(TASK_RUNNING);
-+	remove_wait_queue(&port->open_wait, &wait);
-+
-+	/* Update counts. A parallel hangup will have set count to zero and
-+	   we must not mess that up further */
-+	spin_lock_irqsave(&port->lock, flags);
-+	if (!tty_hung_up_p(filp))
-+		port->count++;
-+	port->blocked_open--;
-+	if (retval == 0)
-+		port->flags |= ASYNC_NORMAL_ACTIVE;
-+	spin_unlock_irqrestore(&port->lock, flags);
-+	return 0;
-+	
++	if (port->ops->raise_dtr_rts)
++		port->ops->raise_dtr_rts(port);
 +}
-+EXPORT_SYMBOL(tty_port_block_til_ready);
-+
-diff --git a/drivers/char/vme_scc.c b/drivers/char/vme_scc.c
-index d4e1534..2d9242a 100644
---- a/drivers/char/vme_scc.c
-+++ b/drivers/char/vme_scc.c
-@@ -631,8 +631,8 @@ static void scc_enable_rx_interrupts(void *ptr)
- 
- static int scc_carrier_raised(struct tty_port *port)
- {
--	struct scc_port *scc = container_of(port, struct scc_port, gs.port);
--	unsigned channel = port->channel;
-+	struct scc_port *sc = container_of(port, struct scc_port, gs.port);
-+	unsigned channel = sc->channel;
- 
- 	return !!(scc_last_status_reg[channel] & SR_DCD);
- }
-@@ -643,7 +643,7 @@ static void scc_shutdown_port(void *ptr)
- 	struct scc_port *port = ptr;
- 
- 	port->gs.port.flags &= ~ GS_ACTIVE;
--	if (port->gs.port.tty && port->gs.port.tty->termios->c_cflag & HUPCL) {
-+	if (port->gs.port.tty && (port->gs.port.tty->termios->c_cflag & HUPCL)) {
- 		scc_setsignals (port, 0, 0);
- 	}
- }
++EXPORT_SYMBOL(tty_port_raise_dtr_rts);
 diff --git a/include/linux/tty.h b/include/linux/tty.h
-index a1a9314..61a0ab3 100644
+index bc7bae7..5001bbc 100644
 --- a/include/linux/tty.h
 +++ b/include/linux/tty.h
-@@ -439,6 +439,8 @@ extern void tty_port_tty_set(struct tty_port *port, struct tty_struct *tty);
+@@ -185,6 +185,7 @@ struct tty_port;
+ struct tty_port_operations {
+ 	/* Return 1 if the carrier is raised */
+ 	int (*carrier_raised)(struct tty_port *port);
++	void (*raise_dtr_rts)(struct tty_port *port);
+ };
+ 	
+ struct tty_port {
+@@ -436,6 +437,7 @@ extern void tty_port_free_xmit_buf(struct tty_port *port);
+ extern struct tty_struct *tty_port_tty_get(struct tty_port *port);
+ extern void tty_port_tty_set(struct tty_port *port, struct tty_struct *tty);
  extern int tty_port_carrier_raised(struct tty_port *port);
- extern void tty_port_raise_dtr_rts(struct tty_port *port);
- extern void tty_port_hangup(struct tty_port *port);
-+extern int tty_port_block_til_ready(struct tty_port *port,
-+				struct tty_struct *tty, struct file *filp);
++extern void tty_port_raise_dtr_rts(struct tty_port *port);
  
  extern int tty_register_ldisc(int disc, struct tty_ldisc_ops *new_ldisc);
  extern int tty_unregister_ldisc(int disc);
