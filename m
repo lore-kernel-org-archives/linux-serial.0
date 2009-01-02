@@ -1,75 +1,285 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 63/75] serial: RS485 ioctl structure uses __u32 include
-	linux/types.h
-Date: Fri, 02 Jan 2009 13:49:04 +0000
-Message-ID: <20090102134902.13472.99440.stgit@localhost.localdomain>
+Subject: [PATCH 64/75] __FUNCTION__ is gcc-specific, use __func__
+Date: Fri, 02 Jan 2009 13:49:13 +0000
+Message-ID: <20090102134909.13472.36883.stgit@localhost.localdomain>
 References: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:37668 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:37671 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1755428AbZABNst (ORCPT
+	with ESMTP id S1755618AbZABNtI (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Jan 2009 08:48:49 -0500
+	Fri, 2 Jan 2009 08:49:08 -0500
 In-Reply-To: <20090102133822.13472.53912.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: torvalds@osdl.org, linux-serial@vger.kernel.org
 
-=46rom: Andy Whitcroft <apw@canonical.com>
+From: Harvey Harrison <harvey.harrison@gmail.com>
 
-In the commit below a new struct serial_rs485 was introduced for a new
-ioctl:
-
-    commit c26c56c0f40e200e61d1390629c806f6adaffbcc
-    Author: Alan Cox <alan@redhat.com>
-    Date:   Mon Oct 13 10:37:48 2008 +0100
-
-	tty: Cris has a nice RS485 ioctl so we should steal it
-
-This structure uses the __u32 types for some of its members, which lead=
-s
-to the following compile error:
-
-    $ cc -I.../include -c X.c
-    In file included from X.c:2: .../include/linux/serial.h:185:
-		error: expected specifier-qualifier-list before =E2=80=98__u32=E2=80=99
-    $
-
-It seems that these types are appropriate for this structure as it is
-to be exposed to userspace.  These types are available via linux/types.=
-h
-so move the include of that outside the __KERNEL__ section.
-
-Signed-off-by: Andy Whitcroft <apw@canonical.com>
+Signed-off-by: Harvey Harrison <harvey.harrison@gmail.com>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
- include/linux/serial.h |    3 ++-
- 1 files changed, 2 insertions(+), 1 deletions(-)
+ drivers/serial/bfin_sport_uart.c |   60 +++++++++++++++++++-------------------
+ 1 files changed, 30 insertions(+), 30 deletions(-)
 
 
-diff --git a/include/linux/serial.h b/include/linux/serial.h
-index 1ea8d92..9136cc5 100644
---- a/include/linux/serial.h
-+++ b/include/linux/serial.h
-@@ -10,8 +10,9 @@
- #ifndef _LINUX_SERIAL_H
- #define _LINUX_SERIAL_H
-=20
--#ifdef __KERNEL__
- #include <linux/types.h>
-+
-+#ifdef __KERNEL__
- #include <asm/page.h>
-=20
- /*
+diff --git a/drivers/serial/bfin_sport_uart.c b/drivers/serial/bfin_sport_uart.c
+index dd8564d..529c0ff 100644
+--- a/drivers/serial/bfin_sport_uart.c
++++ b/drivers/serial/bfin_sport_uart.c
+@@ -99,7 +99,7 @@ static void sport_stop_tx(struct uart_port *port);
+ 
+ static inline void tx_one_byte(struct sport_uart_port *up, unsigned int value)
+ {
+-	pr_debug("%s value:%x\n", __FUNCTION__, value);
++	pr_debug("%s value:%x\n", __func__, value);
+ 	/* Place a Start and Stop bit */
+ 	__asm__ volatile (
+ 		"R2 = b#01111111100;\n\t"
+@@ -110,7 +110,7 @@ static inline void tx_one_byte(struct sport_uart_port *up, unsigned int value)
+ 		:"=r"(value)
+ 		:"0"(value)
+ 		:"R2", "R3");
+-	pr_debug("%s value:%x\n", __FUNCTION__, value);
++	pr_debug("%s value:%x\n", __func__, value);
+ 
+ 	SPORT_PUT_TX(up, value);
+ }
+@@ -120,7 +120,7 @@ static inline unsigned int rx_one_byte(struct sport_uart_port *up)
+ 	unsigned int value, extract;
+ 
+ 	value = SPORT_GET_RX32(up);
+-	pr_debug("%s value:%x\n", __FUNCTION__, value);
++	pr_debug("%s value:%x\n", __func__, value);
+ 
+ 	/* Extract 8 bits data */
+ 	__asm__ volatile (
+@@ -151,12 +151,12 @@ static int sport_uart_setup(struct sport_uart_port *up, int sclk, int baud_rate)
+ 	/* Set TCR1 and TCR2 */
+ 	SPORT_PUT_TCR1(up, (LTFS | ITFS | TFSR | TLSBIT | ITCLK));
+ 	SPORT_PUT_TCR2(up, 10);
+-	pr_debug("%s TCR1:%x, TCR2:%x\n", __FUNCTION__, SPORT_GET_TCR1(up), SPORT_GET_TCR2(up));
++	pr_debug("%s TCR1:%x, TCR2:%x\n", __func__, SPORT_GET_TCR1(up), SPORT_GET_TCR2(up));
+ 
+ 	/* Set RCR1 and RCR2 */
+ 	SPORT_PUT_RCR1(up, (RCKFE | LARFS | LRFS | RFSR | IRCLK));
+ 	SPORT_PUT_RCR2(up, 28);
+-	pr_debug("%s RCR1:%x, RCR2:%x\n", __FUNCTION__, SPORT_GET_RCR1(up), SPORT_GET_RCR2(up));
++	pr_debug("%s RCR1:%x, RCR2:%x\n", __func__, SPORT_GET_RCR1(up), SPORT_GET_RCR2(up));
+ 
+ 	tclkdiv = sclk/(2 * baud_rate) - 1;
+ 	tfsdiv = 12;
+@@ -166,7 +166,7 @@ static int sport_uart_setup(struct sport_uart_port *up, int sclk, int baud_rate)
+ 	SPORT_PUT_RCLKDIV(up, rclkdiv);
+ 	SSYNC();
+ 	pr_debug("%s sclk:%d, baud_rate:%d, tclkdiv:%d, tfsdiv:%d, rclkdiv:%d\n",
+-			__FUNCTION__, sclk, baud_rate, tclkdiv, tfsdiv, rclkdiv);
++			__func__, sclk, baud_rate, tclkdiv, tfsdiv, rclkdiv);
+ 
+ 	return 0;
+ }
+@@ -231,7 +231,7 @@ static int sport_startup(struct uart_port *port)
+ 	char buffer[20];
+ 	int retval;
+ 
+-	pr_debug("%s enter\n", __FUNCTION__);
++	pr_debug("%s enter\n", __func__);
+ 	memset(buffer, 20, '\0');
+ 	snprintf(buffer, 20, "%s rx", up->name);
+ 	retval = request_irq(up->rx_irq, sport_uart_rx_irq, IRQF_SAMPLE_RANDOM, buffer, up);
+@@ -320,7 +320,7 @@ static unsigned int sport_tx_empty(struct uart_port *port)
+ 	unsigned int stat;
+ 
+ 	stat = SPORT_GET_STAT(up);
+-	pr_debug("%s stat:%04x\n", __FUNCTION__, stat);
++	pr_debug("%s stat:%04x\n", __func__, stat);
+ 	if (stat & TXHRE) {
+ 		return TIOCSER_TEMT;
+ 	} else
+@@ -329,13 +329,13 @@ static unsigned int sport_tx_empty(struct uart_port *port)
+ 
+ static unsigned int sport_get_mctrl(struct uart_port *port)
+ {
+-	pr_debug("%s enter\n", __FUNCTION__);
++	pr_debug("%s enter\n", __func__);
+ 	return (TIOCM_CTS | TIOCM_CD | TIOCM_DSR);
+ }
+ 
+ static void sport_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
+-	pr_debug("%s enter\n", __FUNCTION__);
++	pr_debug("%s enter\n", __func__);
+ }
+ 
+ static void sport_stop_tx(struct uart_port *port)
+@@ -343,7 +343,7 @@ static void sport_stop_tx(struct uart_port *port)
+ 	struct sport_uart_port *up = (struct sport_uart_port *)port;
+ 	unsigned int stat;
+ 
+-	pr_debug("%s enter\n", __FUNCTION__);
++	pr_debug("%s enter\n", __func__);
+ 
+ 	stat = SPORT_GET_STAT(up);
+ 	while(!(stat & TXHRE)) {
+@@ -366,21 +366,21 @@ static void sport_start_tx(struct uart_port *port)
+ {
+ 	struct sport_uart_port *up = (struct sport_uart_port *)port;
+ 
+-	pr_debug("%s enter\n", __FUNCTION__);
++	pr_debug("%s enter\n", __func__);
+ 	/* Write data into SPORT FIFO before enable SPROT to transmit */
+ 	sport_uart_tx_chars(up);
+ 
+ 	/* Enable transmit, then an interrupt will generated */
+ 	SPORT_PUT_TCR1(up, (SPORT_GET_TCR1(up) | TSPEN));
+ 	SSYNC();
+-	pr_debug("%s exit\n", __FUNCTION__);
++	pr_debug("%s exit\n", __func__);
+ }
+ 
+ static void sport_stop_rx(struct uart_port *port)
+ {
+ 	struct sport_uart_port *up = (struct sport_uart_port *)port;
+ 
+-	pr_debug("%s enter\n", __FUNCTION__);
++	pr_debug("%s enter\n", __func__);
+ 	/* Disable sport to stop rx */
+ 	SPORT_PUT_RCR1(up, (SPORT_GET_RCR1(up) & ~RSPEN));
+ 	SSYNC();
+@@ -388,19 +388,19 @@ static void sport_stop_rx(struct uart_port *port)
+ 
+ static void sport_enable_ms(struct uart_port *port)
+ {
+-	pr_debug("%s enter\n", __FUNCTION__);
++	pr_debug("%s enter\n", __func__);
+ }
+ 
+ static void sport_break_ctl(struct uart_port *port, int break_state)
+ {
+-	pr_debug("%s enter\n", __FUNCTION__);
++	pr_debug("%s enter\n", __func__);
+ }
+ 
+ static void sport_shutdown(struct uart_port *port)
+ {
+ 	struct sport_uart_port *up = (struct sport_uart_port *)port;
+ 
+-	pr_debug("%s enter\n", __FUNCTION__);
++	pr_debug("%s enter\n", __func__);
+ 
+ 	/* Disable sport */
+ 	SPORT_PUT_TCR1(up, (SPORT_GET_TCR1(up) & ~TSPEN));
+@@ -421,7 +421,7 @@ static void sport_shutdown(struct uart_port *port)
+ static void sport_set_termios(struct uart_port *port,
+ 		struct termios *termios, struct termios *old)
+ {
+-	pr_debug("%s enter, c_cflag:%08x\n", __FUNCTION__, termios->c_cflag);
++	pr_debug("%s enter, c_cflag:%08x\n", __func__, termios->c_cflag);
+ 	uart_update_timeout(port, CS8 ,port->uartclk);
+ }
+ 
+@@ -429,18 +429,18 @@ static const char *sport_type(struct uart_port *port)
+ {
+ 	struct sport_uart_port *up = (struct sport_uart_port *)port;
+ 
+-	pr_debug("%s enter\n", __FUNCTION__);
++	pr_debug("%s enter\n", __func__);
+ 	return up->name;
+ }
+ 
+ static void sport_release_port(struct uart_port *port)
+ {
+-	pr_debug("%s enter\n", __FUNCTION__);
++	pr_debug("%s enter\n", __func__);
+ }
+ 
+ static int sport_request_port(struct uart_port *port)
+ {
+-	pr_debug("%s enter\n", __FUNCTION__);
++	pr_debug("%s enter\n", __func__);
+ 	return 0;
+ }
+ 
+@@ -448,13 +448,13 @@ static void sport_config_port(struct uart_port *port, int flags)
+ {
+ 	struct sport_uart_port *up = (struct sport_uart_port *)port;
+ 
+-	pr_debug("%s enter\n", __FUNCTION__);
++	pr_debug("%s enter\n", __func__);
+ 	up->port.type = PORT_BFIN_SPORT;
+ }
+ 
+ static int sport_verify_port(struct uart_port *port, struct serial_struct *ser)
+ {
+-	pr_debug("%s enter\n", __FUNCTION__);
++	pr_debug("%s enter\n", __func__);
+ 	return 0;
+ }
+ 
+@@ -527,7 +527,7 @@ static int sport_uart_suspend(struct platform_device *dev, pm_message_t state)
+ {
+ 	struct sport_uart_port *sport = platform_get_drvdata(dev);
+ 
+-	pr_debug("%s enter\n", __FUNCTION__);
++	pr_debug("%s enter\n", __func__);
+ 	if (sport)
+ 		uart_suspend_port(&sport_uart_reg, &sport->port);
+ 
+@@ -538,7 +538,7 @@ static int sport_uart_resume(struct platform_device *dev)
+ {
+ 	struct sport_uart_port *sport = platform_get_drvdata(dev);
+ 
+-	pr_debug("%s enter\n", __FUNCTION__);
++	pr_debug("%s enter\n", __func__);
+ 	if (sport)
+ 		uart_resume_port(&sport_uart_reg, &sport->port);
+ 
+@@ -547,7 +547,7 @@ static int sport_uart_resume(struct platform_device *dev)
+ 
+ static int sport_uart_probe(struct platform_device *dev)
+ {
+-	pr_debug("%s enter\n", __FUNCTION__);
++	pr_debug("%s enter\n", __func__);
+ 	sport_uart_ports[dev->id].port.dev = &dev->dev;
+ 	uart_add_one_port(&sport_uart_reg, &sport_uart_ports[dev->id].port);
+ 	platform_set_drvdata(dev, &sport_uart_ports[dev->id]);
+@@ -559,7 +559,7 @@ static int sport_uart_remove(struct platform_device *dev)
+ {
+ 	struct sport_uart_port *sport = platform_get_drvdata(dev);
+ 
+-	pr_debug("%s enter\n", __FUNCTION__);
++	pr_debug("%s enter\n", __func__);
+ 	platform_set_drvdata(dev, NULL);
+ 
+ 	if (sport)
+@@ -582,7 +582,7 @@ static int __init sport_uart_init(void)
+ {
+ 	int ret;
+ 
+-	pr_debug("%s enter\n", __FUNCTION__);
++	pr_debug("%s enter\n", __func__);
+ 	ret = uart_register_driver(&sport_uart_reg);
+ 	if (ret != 0) {
+ 		printk(KERN_ERR "Failed to register %s:%d\n",
+@@ -597,13 +597,13 @@ static int __init sport_uart_init(void)
+ 	}
+ 
+ 
+-	pr_debug("%s exit\n", __FUNCTION__);
++	pr_debug("%s exit\n", __func__);
+ 	return ret;
+ }
+ 
+ static void __exit sport_uart_exit(void)
+ {
+-	pr_debug("%s enter\n", __FUNCTION__);
++	pr_debug("%s enter\n", __func__);
+ 	platform_driver_unregister(&sport_uart_driver);
+ 	uart_unregister_driver(&sport_uart_reg);
+ }
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
