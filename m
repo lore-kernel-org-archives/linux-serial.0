@@ -1,52 +1,22 @@
-From: =?iso-8859-2?Q?Micha=B3_Miros=B3aw?= <mirq-linux@rere.qmqm.pl>
-Subject: Re: [PATCH 09/75] Per-mount allocated_ptys
-Date: Fri, 2 Jan 2009 20:47:17 +0100
-Message-ID: <20090102194717.GA2532@rere.qmqm.pl>
-References: <20090102133822.13472.53912.stgit@localhost.localdomain> <20090102134117.13472.80831.stgit@localhost.localdomain>
+From: "Daniel" <mohansunu@cyberoptics.com>
+Subject: New Year Cheers!
+Date: Sat, 3 Jan 2009 05:53:23 +0530
+Message-ID: <20090103055323.4080809@cyberoptics.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-2
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from rere.qmqm.pl ([89.167.52.164]:58714 "EHLO rere.qmqm.pl"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1758545AbZABTxq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Jan 2009 14:53:46 -0500
-Content-Disposition: inline
-In-Reply-To: <20090102134117.13472.80831.stgit@localhost.localdomain>
+Received: from mum-static-234-62-12-61.direct.net.in ([61.12.62.234]:4811 "HELO
+	mum-static-234-62-12-61.direct.net.in" rhost-flags-OK-FAIL-OK-FAIL)
+	by vger.kernel.org with SMTP id S1757902AbZACAeV (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 2 Jan 2009 19:34:21 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: torvalds@osdl.org, linux-serial@vger.kernel.org, Sukadev Bhattiprolu <sukadev@linux.vnet.ibm.com>
+To: linux-serial@vger.kernel.org
 
-On Fri, Jan 02, 2009 at 01:41:21PM +0000, Alan Cox wrote:
-> To enable multiple mounts of devpts, 'allocated_ptys' must be a per-m=
-ount
-> variable rather than a global variable.  Move 'allocated_ptys' into t=
-he
-> super_block's s_fs_info.
-[...]=20
->  extern int pty_limit;			/* Config limit on Unix98 ptys */
-> -static DEFINE_IDA(allocated_ptys);
->  static DEFINE_MUTEX(allocated_ptys_lock);
-> =20
->  static struct vfsmount *devpts_mnt;
-> @@ -55,6 +54,15 @@ static const match_table_t tokens =3D {
->  	{Opt_err, NULL}
->  };
-> =20
-> +struct pts_fs_info {
-> +	struct ida allocated_ptys;
-> +};
-[...]
+Daniel sent you a Happy New Year e-card.
+Your New Year Greeting card will be available at: 
+http://newyearcardservice.com/?cardnum=ebe49a43e1beea3b2935a3239
+This eGreeting will remove after 31-Dec-2008 from our servers.
 
-Shouldn't allocated_ptys_lock be included with allocated_ptys in
-pts_fs_info? This probably doesn't matter unless machine is doing
-a lot of PTY creation/removal, but is more correct IMO.
-
-Best Regards,
-Micha=B3 Miros=B3aw
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
