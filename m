@@ -1,88 +1,100 @@
-From: Christian Gagneraud <cgagneraud@techworks.ie>
-Subject: Re: CMUX / ts710 serial multiplex driver for x86_64 architecture
-Date: Sun, 04 Jan 2009 23:22:18 +0000
-Message-ID: <496144AA.8000506@techworks.ie>
-References: <200901042310.22171.wrosner@tirnet.de>
+From: Wolfram Sang <w.sang@pengutronix.de>
+Subject: Re: [PATCH 72/75] tty: Fix an ircomm warning and note another bug
+Date: Mon, 5 Jan 2009 18:42:37 +0100
+Message-ID: <20090105174237.GA5675@pengutronix.de>
+References: <20090102133822.13472.53912.stgit@localhost.localdomain> <20090102135012.13472.40889.stgit@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="x+6KMIRAuhnl3hBn"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 133.155.reserved.hosting365.ie ([82.195.155.133]:35248 "EHLO
-	mail.techworks.ie" rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org
-	with ESMTP id S1752123AbZADX4L (ORCPT
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:32785 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753735AbZAERmr (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 4 Jan 2009 18:56:11 -0500
-In-Reply-To: <200901042310.22171.wrosner@tirnet.de>
+	Mon, 5 Jan 2009 12:42:47 -0500
+Content-Disposition: inline
+In-Reply-To: <20090102135012.13472.40889.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Wolfgang Rosner <wrosner@tirnet.de>
-Cc: linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: torvalds@osdl.org, linux-serial@vger.kernel.org
 
-Wolfgang Rosner wrote:
-> Dear kernel professionals,
-> 
-> I'm dealing with a mobile unit development kit that requires multiplexing of 
-> several virtual serial lines over one single physical serial.
-> The protocol is supposed to follow GSM 07.10 standard and outlined in detail 
-> here:
-> http://www.roundsolutions.com/techdocs/docs/30268st10299a_CMUX_User_Guide_r2.pdf
-> 
-> The supplier only supports WIN :-( drivers.
-> There appear to be kernel modules around for embedded linux.
-> I tried to download one
-> http://svn.openezx.org/trunk/src/kernel-2.6/mux/
-> but could not manage to build it in my x86_64 environment.
-> 
-> At the moment, I have no idea whether this module might fulfil my purpose at 
-> all.
-> Maybe it only implements the module side (i.e. pretending a mobile device), 
-> not the application side (the controlling PC).
-> What I expect is to load this (presumably with some userspace action and 
-> synchronisation commands to the controlled device) ontop of an existing 
-> serial connection. As a result, there should be some additional serial 
-> devices, where the demux'ed traffic can be piped in and out.
-> 
-> I find clues that this type of multiplexing is done e.g in some mobile connect 
-> utilities, but nowhere (apart from the link given above) I find a dedicated 
-> kernel module for right that purpose.
-> 
-> 
-> So here my questions:
-> - Is there a version of the above mentioned mux / mux_river / ts0710 / mux_cli 
-> for x86_64 available?
-> - or could this one from be adapted?
-> - is there another implementation of GSM 07.10 MUXing?
-> - is there any documentation around?
 
-Hi Wolfgang,
+--x+6KMIRAuhnl3hBn
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-These links might help you:
-http://wiki.openmoko.org/wiki/Roadmap/Telephony
-http://developer.berlios.de/projects/gsmmux/
+Hello Alan,
 
-Chris
+On Fri, Jan 02, 2009 at 01:50:20PM +0000, Alan Cox wrote:
 
-> 
-> Although the issue is not core critical for my project, I'd like to contribute 
-> if I can. No problem with testing and supplying docs, I think.
-> Simple userspace config tool (e.g. some perl script writing/reading some bits 
-> to /proc/whats/o/ever) should still be within my capabilities.
-> 
-> In some ancient time (2.0 or 2.2 kernel as far as I can remember) I have even 
-> managed to adopt and build a kernel module for some LC display from a book 
-> template, but that's years ago. But I'm not really firm in C, and things 
-> might not have become less complex since that days... 
-> But if I get help (some pointers where to start, caveats to look for) I might 
-> try it, provided there is a chance of success.
-> 
-> Any help appreciated.
-> 
-> Yours
-> Wolfgang Rosner
-> 
-> 
+> From: Alan Cox <alan@redhat.com>
+>=20
+> Roel Kluin noted that line is unsigned so one test is unneccessary. Also
+> add a warning for another flaw I noticed while making this change.
+>=20
+> Signed-off-by: Alan Cox <alan@redhat.com>
+> ---
+>=20
+>  net/irda/ircomm/ircomm_tty.c |    5 +++--
+>  1 files changed, 3 insertions(+), 2 deletions(-)
+>=20
+>=20
+> diff --git a/net/irda/ircomm/ircomm_tty.c b/net/irda/ircomm/ircomm_tty.c
+> index e4e2cae..086d5ef 100644
+> --- a/net/irda/ircomm/ircomm_tty.c
+> +++ b/net/irda/ircomm/ircomm_tty.c
+> @@ -371,9 +371,8 @@ static int ircomm_tty_open(struct tty_struct *tty, st=
+ruct file *filp)
+>  	IRDA_DEBUG(2, "%s()\n", __func__ );
+> =20
+>  	line =3D tty->index;
+> -	if ((line < 0) || (line >=3D IRCOMM_TTY_PORTS)) {
+> +	if (line >=3D IRCOMM_TTY_PORTS)
+>  		return -ENODEV;
+> -	}
+> =20
+>  	/* Check if instance already exists */
+>  	self =3D hashbin_lock_find(ircomm_tty, line, NULL);
+> @@ -405,6 +404,8 @@ static int ircomm_tty_open(struct tty_struct *tty, st=
+ruct file *filp)
+>  		 * Force TTY into raw mode by default which is usually what
+>  		 * we want for IrCOMM and IrLPT. This way applications will
+>  		 * not have to twiddle with printcap etc.
+> +		 *
+> +		 * Note this is completely usafe and doesn't work properly
+
+Do you mean "unsafe"?
+
+>  		 */
+>  		tty->termios->c_iflag =3D 0;
+>  		tty->termios->c_oflag =3D 0;
+>=20
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-serial" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
+Kind regards,
+
+   Wolfram
+
+--=20
+  Dipl.-Ing. Wolfram Sang | http://www.pengutronix.de
+ Pengutronix - Linux Solutions for Science and Industry
+
+--x+6KMIRAuhnl3hBn
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (GNU/Linux)
+
+iEYEARECAAYFAkliRo0ACgkQD27XaX1/VRsvFQCgzPQjo9KwS5oWRaGpvt1gG+W9
+nskAoLdUMNK9DZwuutGt2F8imRaJdnpM
+=gsgy
+-----END PGP SIGNATURE-----
+
+--x+6KMIRAuhnl3hBn--
