@@ -1,123 +1,57 @@
-From: Oleg Kravchenko <oleg@kaa.org.ua>
-Subject: pxa serial and gps
-Date: Fri, 09 Jan 2009 17:03:24 +0200
-Message-ID: <4967673C.7090008@kaa.org.ua>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: akpm@linux-foundation.org
+Subject: [patch 3/3] 8250_pci: add support for netmos 9835
+Date: Fri, 09 Jan 2009 14:17:43 -0800
+Message-ID: <200901092217.n09MHhUE021228@imap1.linux-foundation.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kaa.org.ua ([193.178.146.73]:52270 "EHLO kaa.org.ua"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751391AbZAIPD2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 9 Jan 2009 10:03:28 -0500
-Received: from [10.7.0.100] (unknown [10.7.0.100])
-	(using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by kaa.org.ua (Postfix) with ESMTPSA id A432BC1589
-	for <linux-serial@vger.kernel.org>; Fri,  9 Jan 2009 16:54:22 +0200 (EET)
+Received: from smtp1.linux-foundation.org ([140.211.169.13]:51766 "EHLO
+	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1759593AbZAIWSX (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 9 Jan 2009 17:18:23 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: alan@lxorguk.ukuu.org.uk
+Cc: linux-serial@vger.kernel.org, akpm@linux-foundation.org, jirislaby@gmail.com
 
-Hello! Sorry for my English  ;)  I am a very newbie in kernel developing.
-I am porting linux to Asus P535 (details on
-http://www.kaa.org.ua/ru/asus-p535/hardware.html)
+From: Jiri Slaby <jirislaby@gmail.com>
 
-I have a GPS-device on COM-port. It switches on after supplying the
-electricity (I know the commands sequence for making it). I should call
-"open()" function to open the port of this device.
+Most of netmos 9835 hardware is handled by parport-serial.  IBM introduces
+a device which doesn't have any parallel ports and have screwed subdevice
+PCI id (not corresponding to port numbers).
 
-My goal is to create the clear switching on of the GPS-device. I mean,
-when "open()" function is called for the GPS-port, the commands for
-switching GRP-device on shold be additionally executed. I.e. I should
-hang the system hook to the "open()" function and analyze the port, for
-which "open()" function was called. If it is the GPS-device port I
-should call the function of GPS switching on and after that call the
-"open()" function by default. Otherwise, I should just call the "open()"
-function by default.
+Handle this device (9710:9835 1014:0299) properly.
 
-I have gps device on /dev/ttyS1 but to use them need enable it by i2c-tools,
-I want write some layer code to auto enable gps device when open()
-function executing and shutdown gps when close() called
+Signed-off-by: Jiri Slaby <jirislaby@gmail.com>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+---
 
-How make it? What function and structures use me?                 
-           
+ drivers/serial/8250_pci.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-I am try to use tty_register_ldisc() but having kernel panic  :-) 
-
-------------------------------------------------------------------------
-
-#include <linux/module.h>
-#include <linux/kernel.h>
-#include <linux/skbuff.h>
-#include <linux/tty.h>
-#include <linux/netdevice.h>
-#include <linux/poll.h>
-#include <linux/ppp_defs.h>
-#include <linux/if_ppp.h>
-#include <linux/ppp_channel.h>
-#include <linux/spinlock.h>
-#include <linux/completion.h>
-#include <linux/init.h>
-#include <asm/uaccess.h>
-#include <mach/asusp535.h>
-
-static int asusp535_gps_open(struct tty_struct *tty)
-{
-	printk("asusp535_gps_open() %s\n", tty->name);
-
-	gpio_set_value(GPIO_ASUSP535_GPS_PWR1, 1);
-	gpio_set_value(GPIO_ASUSP535_GPS_PWR2, 1);
-
-	return(0);
-}
-
-static void asusp535_gps_close(struct tty_struct *tty)
-{
-	printk("asusp535_gps_close() %s\n", tty->name);
-
-	gpio_set_value(GPIO_ASUSP535_GPS_PWR2, 0);
-	gpio_set_value(GPIO_ASUSP535_GPS_PWR1, 0);
-}
-
-static int asusp535_gps_hangup(struct tty_struct *tty)
-{
-	printk("asusp535_gps_hangup() %s\n", tty->name);
-
-	return(0);
-}
-
-static struct tty_ldisc_ops asusp535_gps_ldisc = {
-	.owner	= THIS_MODULE,
-	.magic	= TTY_LDISC_MAGIC,
-	.name	= "gps",
-	.open	= asusp535_gps_open,
-	.close	= asusp535_gps_close,
-	.hangup	= asusp535_gps_hangup,
-};
-
-static int __init asusp535_gps_init(void)
-{
-	int err = tty_register_ldisc(N_TTY, &asusp535_gps_ldisc);
-
-	printk("asusp535_gps_init()\n");
-
-	if(err)
-		printk(KERN_ERR "asusp535_gps: error %d registering line disc.\n", err);
-
-	return(err);
-}
-
-static void __exit asusp535_gps_cleanup(void)
-{
-	printk("asusp535_gps_cleanup()\n");
-
-	if(tty_unregister_ldisc(N_TTY))
-		printk(KERN_ERR "asusp535_gps: failed to unregister line discipline\n");
-}
-
-module_init(asusp535_gps_init);
-module_exit(asusp535_gps_cleanup);
-
-MODULE_LICENSE("GPL");
-
+diff -puN drivers/serial/8250_pci.c~8250_pci-add-support-for-netmos-9835 drivers/serial/8250_pci.c
+--- a/drivers/serial/8250_pci.c~8250_pci-add-support-for-netmos-9835
++++ a/drivers/serial/8250_pci.c
+@@ -600,6 +600,10 @@ static int pci_netmos_init(struct pci_de
+ 	/* subdevice 0x00PS means <P> parallel, <S> serial */
+ 	unsigned int num_serial = dev->subsystem_device & 0xf;
+ 
++	if (dev->subsystem_vendor == PCI_VENDOR_ID_IBM &&
++			dev->subsystem_device == 0x0299)
++		return 0;
++
+ 	if (num_serial == 0)
+ 		return -ENODEV;
+ 	return num_serial;
+@@ -3094,6 +3098,10 @@ static struct pci_device_id serial_pci_t
+ 		0,
+ 		pbn_b0_8_115200 },
+ 
++	{	PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9835,
++		PCI_VENDOR_ID_IBM, 0x0299,
++		0, 0, pbn_b0_bt_2_115200 },
++
+ 	/*
+ 	 * These entries match devices with class COMMUNICATION_SERIAL,
+ 	 * COMMUNICATION_MODEM or COMMUNICATION_MULTISERIAL
+_
