@@ -1,68 +1,66 @@
 From: akpm@linux-foundation.org
-Subject: [patch 1/3] pci: use pci_ioremap_bar() in drivers/serial
-Date: Fri, 09 Jan 2009 14:17:40 -0800
-Message-ID: <200901092217.n09MHeh2021121@imap1.linux-foundation.org>
+Subject: [patch 2/3] atmel_serial might lose modem status change
+Date: Fri, 09 Jan 2009 14:17:41 -0800
+Message-ID: <200901092217.n09MHfmS021131@imap1.linux-foundation.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp1.linux-foundation.org ([140.211.169.13]:40526 "EHLO
+Received: from smtp1.linux-foundation.org ([140.211.169.13]:40709 "EHLO
 	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1759511AbZAIWSR (ORCPT
+	by vger.kernel.org with ESMTP id S932207AbZAIWTy (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 9 Jan 2009 17:18:17 -0500
+	Fri, 9 Jan 2009 17:19:54 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: alan@lxorguk.ukuu.org.uk
-Cc: linux-serial@vger.kernel.org, akpm@linux-foundation.org, arjan@linux.intel.com
+Cc: linux-serial@vger.kernel.org, akpm@linux-foundation.org, anemo@mba.ocn.ne.jp, hskinnemoen@atmel.com, linux@bohmer.net, marc.pignat@hevs.ch
 
-From: Arjan van de Ven <arjan@linux.intel.com>
+From: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
 
-Use the newly introduced pci_ioremap_bar() function in drivers/serial. 
-pci_ioremap_bar() just takes a pci device and a bar number, with the goal
-of making it really hard to get wrong, while also having a central place
-to stick sanity checks.
+I found a problem of handling of modem status of atmel_serial driver.
 
-Signed-off-by: Arjan van de Ven <arjan@linux.intel.com>
-Acked-by: Alan Cox <alan@lxorguk.ukuu.org.uk>
+With the commit 1ecc26 ("atmel_serial: split the interrupt handler"),
+handling of modem status signal was splitted into two parts.  The
+atmel_tasklet_func() compares new status with irq_status_prev, but
+irq_status_prev is not correct if signal status was changed while the port
+is closed.
+
+Here is a sequence to cause problem:
+
+1. Remote side sets CTS (and DSR).
+2. Local side close the port.
+3. Local side clears RTS and DTR.
+4. Remote side clears CTS and DSR.
+5. Local side reopen the port.  hw_stopped becomes 1.
+6. Local side sets RTS and DTR.
+7. Remote side sets CTS and DSR.
+
+Then CTS change interrupt can be received, but since CTS bit in
+irq_status_prev and new status is same, uart_handle_cts_change() will not
+be called (so hw_stopped will not be cleared, i.e.  cannot send any data).
+
+I suppose irq_status_prev should be initialized at somewhere in open
+sequence.
+
+Acked-by: Remy Bohmer <linux@bohmer.net>
+Cc: Haavard Skinnemoen <hskinnemoen@atmel.com>
+Cc: Marc Pignat <marc.pignat@hevs.ch>
+Signed-off-by: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 ---
 
- drivers/serial/8250_pci.c |    6 ++----
- drivers/serial/icom.c     |    3 +--
- 2 files changed, 3 insertions(+), 6 deletions(-)
+ drivers/serial/atmel_serial.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff -puN drivers/serial/8250_pci.c~pci-use-pci_ioremap_bar-in-drivers-serial drivers/serial/8250_pci.c
---- a/drivers/serial/8250_pci.c~pci-use-pci_ioremap_bar-in-drivers-serial
-+++ a/drivers/serial/8250_pci.c
-@@ -341,8 +341,7 @@ static int sbs_init(struct pci_dev *dev)
- {
- 	u8 __iomem *p;
- 
--	p = ioremap_nocache(pci_resource_start(dev, 0),
--						pci_resource_len(dev, 0));
-+	p = pci_ioremap_bar(dev, 0);
- 
- 	if (p == NULL)
- 		return -ENOMEM;
-@@ -366,8 +365,7 @@ static void __devexit sbs_exit(struct pc
- {
- 	u8 __iomem *p;
- 
--	p = ioremap_nocache(pci_resource_start(dev, 0),
--					pci_resource_len(dev, 0));
-+	p = pci_ioremap_bar(dev, 0);
- 	/* FIXME: What if resource_len < OCT_REG_CR_OFF */
- 	if (p != NULL)
- 		writeb(0, p + OCT_REG_CR_OFF);
-diff -puN drivers/serial/icom.c~pci-use-pci_ioremap_bar-in-drivers-serial drivers/serial/icom.c
---- a/drivers/serial/icom.c~pci-use-pci_ioremap_bar-in-drivers-serial
-+++ a/drivers/serial/icom.c
-@@ -1553,8 +1553,7 @@ static int __devinit icom_probe(struct p
- 		goto probe_exit1;
+diff -puN drivers/serial/atmel_serial.c~atmel_serial-might-lose-modem-status-change drivers/serial/atmel_serial.c
+--- a/drivers/serial/atmel_serial.c~atmel_serial-might-lose-modem-status-change
++++ a/drivers/serial/atmel_serial.c
+@@ -877,6 +877,9 @@ static int atmel_startup(struct uart_por
+ 		}
  	}
  
--	 icom_adapter->base_addr = ioremap(icom_adapter->base_addr_pci,
--						pci_resource_len(dev, 0));
-+	 icom_adapter->base_addr = pci_ioremap_bar(dev, 0);
- 
- 	if (!icom_adapter->base_addr)
- 		goto probe_exit1;
++	/* Save current CSR for comparison in atmel_tasklet_func() */
++	atmel_port->irq_status_prev = UART_GET_CSR(port);
++
+ 	/*
+ 	 * Finally, enable the serial port
+ 	 */
 _
