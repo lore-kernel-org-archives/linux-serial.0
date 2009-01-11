@@ -1,55 +1,47 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 0/6] Series short description
-Date: Sun, 11 Jan 2009 19:48:17 +0000
-Message-ID: <20090111194656.16074.14975.stgit@localhost.localdomain>
+Subject: [PATCH 2/6] neo: Remove a bogus NULL check
+Date: Sun, 11 Jan 2009 19:48:34 +0000
+Message-ID: <20090111194830.16074.84119.stgit@localhost.localdomain>
+References: <20090111194656.16074.14975.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:41716 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:41713 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751836AbZAKTs3 (ORCPT
+	with ESMTP id S1752150AbZAKTsT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 11 Jan 2009 14:48:29 -0500
+	Sun, 11 Jan 2009 14:48:19 -0500
+In-Reply-To: <20090111194656.16074.14975.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: torvalds@osdl.org, linux-serial@vger.kernel.org
 
-These are some small fixes that didn't quite make the window. Nothing big here
-except in file size. The ti_usb_3410 changes fix a bug in the id handling
-code and add support for the mts chips - the handling of the rest isn't changed.
+From: Alan Cox <alan@redhat.com>
 
-The other bits remove two bogus NULL checks and fix the pty kerneldoc before
-Randy Dunlap notices ;)
+Julia Lawall found an un-needed check in the neo driver. Her patch moves
+the check to cover the code dereferencing it, however it cannot be NULL
+anyway so remove the NULL check instead.
 
-
+Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
-Alan Cox (3):
-      usb-serial: remove NULL check
-      neo: Remove a bogus NULL check
-      pty: Fix documentation
-
-Chris Adams (3):
-      ti_usb_3410_5052: add Multi-Tech firmware
-      ti_usb_3410_5052: add Multi-Tech modem support
-      ti_usb_3410_5052: support alternate firmware
+ drivers/serial/jsm/jsm_neo.c |    3 ---
+ 1 files changed, 0 insertions(+), 3 deletions(-)
 
 
- drivers/char/pty.c                    |    4 
- drivers/serial/jsm/jsm_neo.c          |    3 
- drivers/usb/serial/ti_usb_3410_5052.c |   73 ++-
- drivers/usb/serial/ti_usb_3410_5052.h |    8 
- drivers/usb/serial/usb-serial.c       |    3 
- firmware/Makefile                     |    3 
- firmware/WHENCE                       |   16 +
- firmware/mts_cdma.fw.ihex             |  867 ++++++++++++++++++++++++++++++++
- firmware/mts_edge.fw.ihex             |  881 +++++++++++++++++++++++++++++++++
- firmware/mts_gsm.fw.ihex              |  867 ++++++++++++++++++++++++++++++++
- 10 files changed, 2699 insertions(+), 26 deletions(-)
- create mode 100644 firmware/mts_cdma.fw.ihex
- create mode 100644 firmware/mts_edge.fw.ihex
- create mode 100644 firmware/mts_gsm.fw.ihex
+diff --git a/drivers/serial/jsm/jsm_neo.c b/drivers/serial/jsm/jsm_neo.c
+index b7584ca..e6390d0 100644
+--- a/drivers/serial/jsm/jsm_neo.c
++++ b/drivers/serial/jsm/jsm_neo.c
+@@ -577,9 +577,6 @@ static void neo_parse_modem(struct jsm_channel *ch, u8 signals)
+ 	jsm_printk(MSIGS, INFO, &ch->ch_bd->pci_dev,
+ 			"neo_parse_modem: port: %d msignals: %x\n", ch->ch_portnum, msignals);
+ 
+-	if (!ch)
+-		return;
+-
+ 	/* Scrub off lower bits. They signify delta's, which I don't care about */
+ 	/* Keep DDCD and DDSR though */
+ 	msignals &= 0xf8;
 
--- 
-Signature
