@@ -1,17 +1,17 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 2/6] neo: Remove a bogus NULL check
-Date: Sun, 11 Jan 2009 19:48:34 +0000
-Message-ID: <20090111194830.16074.84119.stgit@localhost.localdomain>
+Subject: [PATCH 1/6] pty: Fix documentation
+Date: Sun, 11 Jan 2009 19:48:25 +0000
+Message-ID: <20090111194822.16074.93976.stgit@localhost.localdomain>
 References: <20090111194656.16074.14975.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:41713 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:41719 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752150AbZAKTsT (ORCPT
+	with ESMTP id S1752178AbZAKTsj (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 11 Jan 2009 14:48:19 -0500
+	Sun, 11 Jan 2009 14:48:39 -0500
 In-Reply-To: <20090111194656.16074.14975.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -19,29 +19,29 @@ To: torvalds@osdl.org, linux-serial@vger.kernel.org
 
 From: Alan Cox <alan@redhat.com>
 
-Julia Lawall found an un-needed check in the neo driver. Her patch moves
-the check to cover the code dereferencing it, however it cannot be NULL
-anyway so remove the NULL check instead.
+The pty changes and updates for window sizing forgot to correct the
+kerneldoc
 
 Signed-off-by: Alan Cox <alan@redhat.com>
 ---
 
- drivers/serial/jsm/jsm_neo.c |    3 ---
- 1 files changed, 0 insertions(+), 3 deletions(-)
+ drivers/char/pty.c |    4 +---
+ 1 files changed, 1 insertions(+), 3 deletions(-)
 
 
-diff --git a/drivers/serial/jsm/jsm_neo.c b/drivers/serial/jsm/jsm_neo.c
-index b7584ca..e6390d0 100644
---- a/drivers/serial/jsm/jsm_neo.c
-+++ b/drivers/serial/jsm/jsm_neo.c
-@@ -577,9 +577,6 @@ static void neo_parse_modem(struct jsm_channel *ch, u8 signals)
- 	jsm_printk(MSIGS, INFO, &ch->ch_bd->pci_dev,
- 			"neo_parse_modem: port: %d msignals: %x\n", ch->ch_portnum, msignals);
- 
--	if (!ch)
--		return;
--
- 	/* Scrub off lower bits. They signify delta's, which I don't care about */
- 	/* Keep DDCD and DDSR though */
- 	msignals &= 0xf8;
+diff --git a/drivers/char/pty.c b/drivers/char/pty.c
+index 146c976..31038a0 100644
+--- a/drivers/char/pty.c
++++ b/drivers/char/pty.c
+@@ -230,9 +230,7 @@ static void pty_set_termios(struct tty_struct *tty,
+ /**
+  *	pty_do_resize		-	resize event
+  *	@tty: tty being resized
+- *	@real_tty: real tty (not the same as tty if using a pty/tty pair)
+- *	@rows: rows (character)
+- *	@cols: cols (character)
++ *	@ws: window size being set.
+  *
+  *	Update the termios variables and send the neccessary signals to
+  *	peform a terminal resize correctly
 
