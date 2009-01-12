@@ -1,115 +1,122 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 5/6] ti_usb_3410_5052: add Multi-Tech modem support
-Date: Sun, 11 Jan 2009 19:49:00 +0000
-Message-ID: <20090111194858.16074.95907.stgit@localhost.localdomain>
-References: <20090111194656.16074.14975.stgit@localhost.localdomain>
+From: Haavard Skinnemoen <haavard.skinnemoen@atmel.com>
+Subject: Re: [patch 2/3] atmel_serial might lose modem status change
+Date: Mon, 12 Jan 2009 10:42:02 +0100
+Message-ID: <20090112104202.5ea628f6@hskinnemoen-d830>
+References: <200901092217.n09MHfmS021131@imap1.linux-foundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:41726 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752529AbZAKTtN (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 11 Jan 2009 14:49:13 -0500
-In-Reply-To: <20090111194656.16074.14975.stgit@localhost.localdomain>
+Received: from nat-132.atmel.no ([80.232.32.132]:63733 "EHLO relay.atmel.no"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1753234AbZALKBU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 12 Jan 2009 05:01:20 -0500
+In-Reply-To: <200901092217.n09MHfmS021131@imap1.linux-foundation.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: torvalds@osdl.org, linux-serial@vger.kernel.org
+Cc: alan@lxorguk.ukuu.org.uk, linux-serial@vger.kernel.org, akpm@linux-foundation.org, anemo@mba.ocn.ne.jp, linux@bohmer.net, marc.pignat@hevs.ch, Itai Levi <itai.levi.devel@gmail.com>
 
-From: Chris Adams <cmadams@hiwaay.net>
+akpm@linux-foundation.org wrote:
+> From: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
+> 
+> I found a problem of handling of modem status of atmel_serial driver.
+> 
+> With the commit 1ecc26 ("atmel_serial: split the interrupt handler"),
+> handling of modem status signal was splitted into two parts.  The
+> atmel_tasklet_func() compares new status with irq_status_prev, but
+> irq_status_prev is not correct if signal status was changed while the port
+> is closed.
+> 
+> Here is a sequence to cause problem:
+> 
+> 1. Remote side sets CTS (and DSR).
+> 2. Local side close the port.
+> 3. Local side clears RTS and DTR.
+> 4. Remote side clears CTS and DSR.
+> 5. Local side reopen the port.  hw_stopped becomes 1.
+> 6. Local side sets RTS and DTR.
+> 7. Remote side sets CTS and DSR.
+> 
+> Then CTS change interrupt can be received, but since CTS bit in
+> irq_status_prev and new status is same, uart_handle_cts_change() will not
+> be called (so hw_stopped will not be cleared, i.e.  cannot send any data).
+> 
+> I suppose irq_status_prev should be initialized at somewhere in open
+> sequence.
+> 
+> Acked-by: Remy Bohmer <linux@bohmer.net>
+> Cc: Haavard Skinnemoen <hskinnemoen@atmel.com>
+> Cc: Marc Pignat <marc.pignat@hevs.ch>
+> Signed-off-by: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
+> Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 
-Add Multi-Tech cellular modem support to the ti_usb_3410_5052 driver.
+I think I already ACKed this. However...
 
-Signed-off-by: Chris Adams <cmadams@hiwaay.net>
-Signed-off-by: Alan Cox <alan@redhat.com>
----
+> diff -puN drivers/serial/atmel_serial.c~atmel_serial-might-lose-modem-status-change drivers/serial/atmel_serial.c
+> --- a/drivers/serial/atmel_serial.c~atmel_serial-might-lose-modem-status-change
+> +++ a/drivers/serial/atmel_serial.c
+> @@ -877,6 +877,9 @@ static int atmel_startup(struct uart_por
+>  		}
+>  	}
+>  
+> +	/* Save current CSR for comparison in atmel_tasklet_func() */
+> +	atmel_port->irq_status_prev = UART_GET_CSR(port);
+> +
 
- drivers/usb/serial/ti_usb_3410_5052.c |   36 ++++++++++++++++++++++++++++-----
- drivers/usb/serial/ti_usb_3410_5052.h |    8 +++++++
- 2 files changed, 39 insertions(+), 5 deletions(-)
+...Itai Levi pointed out that we need to initialize
+atmel_port->irq_status as well here. His analysis is as follows:
 
+> Regarding the second part of the patch (which resets irq_status_prev),
+> it turns out that both versions of the patch (mine and Atsushi's)
+> still leave enough room for faulty behavior when opening the port.
+> 
+> This is because we are not resetting both irq_status_prev and
+> irq_status in atmel_startup() to CSR, which leads faulty behavior in
+> the following sequences:
+> 
+> First case:
+> 1. closing the port while CTS line = 1 (TX not allowed)
+> 2. setting CTS line = 0 (TX allowed)
+> 3. opening the port
+> 4. transmitting one char
+> 5. Cannot transmit more chars, although CTS line is 0
+> 
+> Second case:
+> 1. closing the port while CTS line = 0 (TX allowed)
+> 2. setting CTS line = 1 (TX not allowed)
+> 3. opening the port
+> 4. receiving some chars
+> 5. Now we can transmit, although CTS line is 1
+> 
+> This reason for this is that the tasklet is scheduled as a result of
+> TX or RX interrupts (not a status change!), in steps 4 above. Inside
+> the tasklet, the atmel_port->irq_status (which holds the value from
+> the previous session) is compared to atmel_port->irq_status_prev.
+> Hence, a status-change of the CTS line is faultily detected.
+> 
+> Both cases were verified on 9260 hardware.
+> 
+> The solution for this, is to reset both irq_status_prev and irq_status
+> to the value of CSR in atmel_startup().
+> 
+> Here is my updated patch (you can ignore the first part which you
+> already accepted):
 
-diff --git a/drivers/usb/serial/ti_usb_3410_5052.c b/drivers/usb/serial/ti_usb_3410_5052.c
-index 1cdb151..dbae994 100644
---- a/drivers/usb/serial/ti_usb_3410_5052.c
-+++ b/drivers/usb/serial/ti_usb_3410_5052.c
-@@ -176,9 +176,14 @@ static unsigned int product_5052_count;
- /* the array dimension is the number of default entries plus */
- /* TI_EXTRA_VID_PID_COUNT user defined entries plus 1 terminating */
- /* null entry */
--static struct usb_device_id ti_id_table_3410[2+TI_EXTRA_VID_PID_COUNT+1] = {
-+static struct usb_device_id ti_id_table_3410[7+TI_EXTRA_VID_PID_COUNT+1] = {
- 	{ USB_DEVICE(TI_VENDOR_ID, TI_3410_PRODUCT_ID) },
- 	{ USB_DEVICE(TI_VENDOR_ID, TI_3410_EZ430_ID) },
-+	{ USB_DEVICE(MTS_VENDOR_ID, MTS_GSM_NO_FW_PRODUCT_ID) },
-+	{ USB_DEVICE(MTS_VENDOR_ID, MTS_CDMA_NO_FW_PRODUCT_ID) },
-+	{ USB_DEVICE(MTS_VENDOR_ID, MTS_CDMA_PRODUCT_ID) },
-+	{ USB_DEVICE(MTS_VENDOR_ID, MTS_GSM_PRODUCT_ID) },
-+	{ USB_DEVICE(MTS_VENDOR_ID, MTS_EDGE_PRODUCT_ID) },
- };
- 
- static struct usb_device_id ti_id_table_5052[4+TI_EXTRA_VID_PID_COUNT+1] = {
-@@ -191,6 +196,11 @@ static struct usb_device_id ti_id_table_5052[4+TI_EXTRA_VID_PID_COUNT+1] = {
- static struct usb_device_id ti_id_table_combined[6+2*TI_EXTRA_VID_PID_COUNT+1] = {
- 	{ USB_DEVICE(TI_VENDOR_ID, TI_3410_PRODUCT_ID) },
- 	{ USB_DEVICE(TI_VENDOR_ID, TI_3410_EZ430_ID) },
-+	{ USB_DEVICE(MTS_VENDOR_ID, MTS_GSM_NO_FW_PRODUCT_ID) },
-+	{ USB_DEVICE(MTS_VENDOR_ID, MTS_CDMA_NO_FW_PRODUCT_ID) },
-+	{ USB_DEVICE(MTS_VENDOR_ID, MTS_CDMA_PRODUCT_ID) },
-+	{ USB_DEVICE(MTS_VENDOR_ID, MTS_GSM_PRODUCT_ID) },
-+	{ USB_DEVICE(MTS_VENDOR_ID, MTS_EDGE_PRODUCT_ID) },
- 	{ USB_DEVICE(TI_VENDOR_ID, TI_5052_BOOT_PRODUCT_ID) },
- 	{ USB_DEVICE(TI_VENDOR_ID, TI_5152_BOOT_PRODUCT_ID) },
- 	{ USB_DEVICE(TI_VENDOR_ID, TI_5052_EEPROM_PRODUCT_ID) },
-@@ -1689,10 +1699,26 @@ static int ti_download_firmware(struct ti_device *tdev)
- 	sprintf(buf, "ti_usb-v%04x-p%04x.fw", dev->descriptor.idVendor,
- 	    dev->descriptor.idProduct);
- 	if ((status = request_firmware(&fw_p, buf, &dev->dev)) != 0) {
--		if (tdev->td_is_3410)
--			strcpy(buf, "ti_3410.fw");
--		else
--			strcpy(buf, "ti_5052.fw");
-+		buf[0] = '\0';
-+		if (dev->descriptor.idVendor == MTS_VENDOR_ID) {
-+			switch (dev->descriptor.idProduct) {
-+			case MTS_CDMA_PRODUCT_ID:
-+				strcpy(buf, "mts_cdma.fw");
-+				break;
-+			case MTS_GSM_PRODUCT_ID:
-+				strcpy(buf, "mts_gsm.fw");
-+				break;
-+			case MTS_EDGE_PRODUCT_ID:
-+				strcpy(buf, "mts_edge.fw");
-+				break;
-+			}
-+		}
-+		if (buf[0] == '\0') {
-+			if (tdev->td_is_3410)
-+				strcpy(buf, "ti_3410.fw");
-+			else
-+				strcpy(buf, "ti_5052.fw");
-+		}
- 		status = request_firmware(&fw_p, buf, &dev->dev);
- 	}
- 	if (status) {
-diff --git a/drivers/usb/serial/ti_usb_3410_5052.h b/drivers/usb/serial/ti_usb_3410_5052.h
-index b5541bf..7e4752f 100644
---- a/drivers/usb/serial/ti_usb_3410_5052.h
-+++ b/drivers/usb/serial/ti_usb_3410_5052.h
-@@ -34,6 +34,14 @@
- #define TI_5052_EEPROM_PRODUCT_ID	0x505A	/* EEPROM, no firmware */
- #define TI_5052_FIRMWARE_PRODUCT_ID	0x505F	/* firmware is running */
- 
-+/* Multi-Tech vendor and product ids */
-+#define MTS_VENDOR_ID			0x06E0
-+#define MTS_GSM_NO_FW_PRODUCT_ID	0xF108
-+#define MTS_CDMA_NO_FW_PRODUCT_ID	0xF109
-+#define MTS_CDMA_PRODUCT_ID		0xF110
-+#define MTS_GSM_PRODUCT_ID		0xF111
-+#define MTS_EDGE_PRODUCT_ID		0xF112
+--- linux-2.6.27.6/drivers/serial/atmel_serial.c	2008-11-13 19:56:21.000000000 +0200
++++ my/drivers/serial/atmel_serial.c	2009-01-08 11:32:50.000000000 +0200
+@@ -579,7 +579,7 @@ static void atmel_tx_dma(struct uart_por
+-	if (!uart_circ_empty(xmit)) {
++	if (!uart_circ_empty(xmit) && !uart_tx_stopped(port)) {
+ 		dma_sync_single_for_device(port->dev,
+ 					   pdc->dma_addr,
+ 					   pdc->dma_size,
+@@ -805,6 +805,9 @@ static int atmel_startup(struct uart_por
+ 	 */
+ 	UART_PUT_IDR(port, -1);
+
++	atmel_port->irq_status_prev = UART_GET_CSR(port);
++	atmel_port->irq_status = atmel_port->irq_status_prev;
 +
- /* Commands */
- #define TI_GET_VERSION			0x01
- #define TI_GET_PORT_STATUS		0x02
-
+ 	/*
+ 	 * Allocate the IRQ
+ 	 */
