@@ -1,35 +1,69 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] serial: pnx8xxx_uart: Fix break signal handling
-Date: Tue, 13 Jan 2009 13:48:12 +0000
-Message-ID: <20090113134812.0ff43e4e@lxorguk.ukuu.org.uk>
-References: <200901131109.n0DB9DRJ010712@pc67243907.ddns.nl-htc01.nxp.com>
-	<20090113121135.5565b302@lxorguk.ukuu.org.uk>
-	<4142f31c0901130522n5273fb67j41cf1aaf7b32853c@mail.gmail.com>
+From: Helge Deller <deller@gmx.de>
+Subject: [PATCH] fix early_serial_setup() regression
+Date: Tue, 13 Jan 2009 22:51:07 +0100
+Message-ID: <496D0CCB.1020706__46557.7861214571$1231883635$gmane$org@gmx.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:53200 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752956AbZAMNry (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 13 Jan 2009 08:47:54 -0500
-In-Reply-To: <4142f31c0901130522n5273fb67j41cf1aaf7b32853c@mail.gmail.com>
+Received: from mail.gmx.net ([213.165.64.20]:39147 "HELO mail.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
+	id S1753706AbZAMVwM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 13 Jan 2009 16:52:12 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Mischa Jonker <m.d.s.x.jonker@gmail.com>
-Cc: "Jonker M.D.S.X." <nlv14114@e3.nl-htc01.nxp.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: David Daney <ddaney@caviumnetworks.com>, Tomaso Paoletti <tpaoletti@caviumnetworks.com>, Andrew Morton <akpm@linux-foundation.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Linus
+Cc: linux-parisc@vger.kernel.org
 
-> > This appears to be unrelated.
-> >
-> 
-> Correct, you can look to it as two separate bugs:
-> a) the next character is not ignored while it should;
-> b) the status bits 31-8 are copied to the 'ch' variable while they shouldn't.
-> 
-> Both bugs prevent correct break signal handling (and therefore correct
-> behaviour of the magic SysRq key). Bug b didn't cause too much trouble
-> earlier because in most situations the status bits are all zero; for
-> this case they unfortunately aren't.
+commit b430428a188e8a434325e251d0704af4b88b4711,
+	"8250: Don't clobber spinlocks."
+introduced a regression on the parisc architecture, which
+broke the handover to the serial port at boottime.
 
-Ok that makes sense - no need to split them.
+early_serial_setup() was changed to only copy a subset of the
+uart_port fields, and sadly the "type" and "line" fields
+were forgotten and thus the serial port was not initialized
+and could not be used for a handover.
+This patch fixes this by copying the missing fields.
+
+As this change to early_serial_setup() doesn't need an 
+initialized spinlock in the uart_port struct any longer, we
+can drop the spinlock initialization in the superio driver.
+
+CC: David Daney <ddaney@caviumnetworks.com>
+CC: Tomaso Paoletti <tpaoletti@caviumnetworks.com>
+CC: Andrew Morton <akpm@linux-foundation.org>
+CC: Alan Cox <alan@lxorguk.ukuu.org.uk>
+CC: Linus Torvalds <torvalds@linux-foundation.org>
+CC: Kyle McMartin <kyle@mcmartin.ca>
+CC: linux-parisc@vger.kernel.org
+
+Signed-off-by: Helge Deller <deller@gmx.de>
+
+
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index 1889a63..0d934bf 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -2839,6 +2839,8 @@ int __init early_serial_setup(struct uart_port *port)
+ 	p->flags        = port->flags;
+ 	p->mapbase      = port->mapbase;
+ 	p->private_data = port->private_data;
++	p->type		= port->type;
++	p->line		= port->line;
+ 
+ 	set_io_from_upio(p);
+ 	if (port->serial_in)
+diff --git a/drivers/parisc/superio.c b/drivers/parisc/superio.c
+index 1e93c83..4fa3bb2 100644
+--- a/drivers/parisc/superio.c
++++ b/drivers/parisc/superio.c
+@@ -405,7 +405,6 @@ static void __init superio_serial_init(void)
+ 	serial_port.type	= PORT_16550A;
+ 	serial_port.uartclk	= 115200*16;
+ 	serial_port.fifosize	= 16;
+-	spin_lock_init(&serial_port.lock);
+ 
+ 	/* serial port #1 */
+ 	serial_port.iobase	= sio_dev.sp1_base;
+
