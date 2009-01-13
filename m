@@ -1,122 +1,75 @@
-From: Haavard Skinnemoen <haavard.skinnemoen@atmel.com>
-Subject: Re: [patch 2/3] atmel_serial might lose modem status change
-Date: Mon, 12 Jan 2009 10:42:02 +0100
-Message-ID: <20090112104202.5ea628f6@hskinnemoen-d830>
-References: <200901092217.n09MHfmS021131@imap1.linux-foundation.org>
+From: "Jonker M.D.S.X." <nlv14114@e3.nl-htc01.nxp.com>
+Subject: [PATCH] serial: pnx8xxx_uart: Fix break signal handling
+Date: Tue, 13 Jan 2009 12:09:13 +0100
+Message-ID: <200901131109.n0DB9DRJ010712@pc67243907.ddns.nl-htc01.nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nat-132.atmel.no ([80.232.32.132]:63733 "EHLO relay.atmel.no"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1753234AbZALKBU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 12 Jan 2009 05:01:20 -0500
-In-Reply-To: <200901092217.n09MHfmS021131@imap1.linux-foundation.org>
+Received: from be1ssnxpe1.nxp.com ([57.67.164.69]:53552 "EHLO
+	be1ssnxpe1.nxp.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752564AbZAMLOd (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 13 Jan 2009 06:14:33 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-Cc: alan@lxorguk.ukuu.org.uk, linux-serial@vger.kernel.org, akpm@linux-foundation.org, anemo@mba.ocn.ne.jp, linux@bohmer.net, marc.pignat@hevs.ch, Itai Levi <itai.levi.devel@gmail.com>
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, m.d.s.x.jonker@gmail.com
 
-akpm@linux-foundation.org wrote:
-> From: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
-> 
-> I found a problem of handling of modem status of atmel_serial driver.
-> 
-> With the commit 1ecc26 ("atmel_serial: split the interrupt handler"),
-> handling of modem status signal was splitted into two parts.  The
-> atmel_tasklet_func() compares new status with irq_status_prev, but
-> irq_status_prev is not correct if signal status was changed while the port
-> is closed.
-> 
-> Here is a sequence to cause problem:
-> 
-> 1. Remote side sets CTS (and DSR).
-> 2. Local side close the port.
-> 3. Local side clears RTS and DTR.
-> 4. Remote side clears CTS and DSR.
-> 5. Local side reopen the port.  hw_stopped becomes 1.
-> 6. Local side sets RTS and DTR.
-> 7. Remote side sets CTS and DSR.
-> 
-> Then CTS change interrupt can be received, but since CTS bit in
-> irq_status_prev and new status is same, uart_handle_cts_change() will not
-> be called (so hw_stopped will not be cleared, i.e.  cannot send any data).
-> 
-> I suppose irq_status_prev should be initialized at somewhere in open
-> sequence.
-> 
-> Acked-by: Remy Bohmer <linux@bohmer.net>
-> Cc: Haavard Skinnemoen <hskinnemoen@atmel.com>
-> Cc: Marc Pignat <marc.pignat@hevs.ch>
-> Signed-off-by: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
-> Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+From: Mischa Jonker <mischa.jonker@nxp.com>
 
-I think I already ACKed this. However...
+When a break signal is detected, the next character should be ignored.
+This was not implemented correctly for the pnx8xxx_uart driver.
 
-> diff -puN drivers/serial/atmel_serial.c~atmel_serial-might-lose-modem-status-change drivers/serial/atmel_serial.c
-> --- a/drivers/serial/atmel_serial.c~atmel_serial-might-lose-modem-status-change
-> +++ a/drivers/serial/atmel_serial.c
-> @@ -877,6 +877,9 @@ static int atmel_startup(struct uart_por
->  		}
->  	}
->  
-> +	/* Save current CSR for comparison in atmel_tasklet_func() */
-> +	atmel_port->irq_status_prev = UART_GET_CSR(port);
-> +
+Signed-off-by: Mischa Jonker <mischa.jonker@nxp.com>
+---
 
-...Itai Levi pointed out that we need to initialize
-atmel_port->irq_status as well here. His analysis is as follows:
+diff --git a/drivers/serial/pnx8xxx_uart.c b/drivers/serial/pnx8xxx_uart.c
+index 22e30d2..1bb8f1b 100644
+--- a/drivers/serial/pnx8xxx_uart.c
++++ b/drivers/serial/pnx8xxx_uart.c
+@@ -187,7 +187,7 @@ static void pnx8xxx_rx_chars(struct pnx8xxx_port *sport)
+ 	status = FIFO_TO_SM(serial_in(sport, PNX8XXX_FIFO)) |
+ 		 ISTAT_TO_SM(serial_in(sport, PNX8XXX_ISTAT));
+ 	while (status & FIFO_TO_SM(PNX8XXX_UART_FIFO_RXFIFO)) {
+-		ch = serial_in(sport, PNX8XXX_FIFO);
++		ch = serial_in(sport, PNX8XXX_FIFO) & 0xff;
+ 
+ 		sport->port.icount.rx++;
+ 
+@@ -198,9 +198,16 @@ static void pnx8xxx_rx_chars(struct pnx8xxx_port *sport)
+ 		 * out of the main execution path
+ 		 */
+ 		if (status & (FIFO_TO_SM(PNX8XXX_UART_FIFO_RXFE |
+-					PNX8XXX_UART_FIFO_RXPAR) |
++					PNX8XXX_UART_FIFO_RXPAR |
++					PNX8XXX_UART_FIFO_RXBRK) |
+ 			      ISTAT_TO_SM(PNX8XXX_UART_INT_RXOVRN))) {
+-			if (status & FIFO_TO_SM(PNX8XXX_UART_FIFO_RXPAR))
++			if (status & FIFO_TO_SM(PNX8XXX_UART_FIFO_RXBRK)) {
++				status &= ~(FIFO_TO_SM(PNX8XXX_UART_FIFO_RXFE) |
++					FIFO_TO_SM(PNX8XXX_UART_FIFO_RXPAR));
++				sport->port.icount.brk++;
++				if (uart_handle_break(&sport->port))
++					goto ignore_char;
++			} else if (status & FIFO_TO_SM(PNX8XXX_UART_FIFO_RXPAR))
+ 				sport->port.icount.parity++;
+ 			else if (status & FIFO_TO_SM(PNX8XXX_UART_FIFO_RXFE))
+ 				sport->port.icount.frame++;
+@@ -284,14 +291,8 @@ static irqreturn_t pnx8xxx_int(int irq, void *dev_id)
+ 	/* Get the interrupts */
+ 	status  = serial_in(sport, PNX8XXX_ISTAT) & serial_in(sport, PNX8XXX_IEN);
+ 
+-	/* Break signal received */
+-	if (status & PNX8XXX_UART_INT_BREAK) {
+-		sport->port.icount.brk++;
+-		uart_handle_break(&sport->port);
+-	}
+-
+-	/* Byte received */
+-	if (status & PNX8XXX_UART_INT_RX)
++	/* Byte or break signal received */
++	if (status & (PNX8XXX_UART_INT_RX | PNX8XXX_UART_INT_BREAK))
+ 		pnx8xxx_rx_chars(sport);
+ 
+ 	/* TX holding register empty - transmit a byte */
 
-> Regarding the second part of the patch (which resets irq_status_prev),
-> it turns out that both versions of the patch (mine and Atsushi's)
-> still leave enough room for faulty behavior when opening the port.
-> 
-> This is because we are not resetting both irq_status_prev and
-> irq_status in atmel_startup() to CSR, which leads faulty behavior in
-> the following sequences:
-> 
-> First case:
-> 1. closing the port while CTS line = 1 (TX not allowed)
-> 2. setting CTS line = 0 (TX allowed)
-> 3. opening the port
-> 4. transmitting one char
-> 5. Cannot transmit more chars, although CTS line is 0
-> 
-> Second case:
-> 1. closing the port while CTS line = 0 (TX allowed)
-> 2. setting CTS line = 1 (TX not allowed)
-> 3. opening the port
-> 4. receiving some chars
-> 5. Now we can transmit, although CTS line is 1
-> 
-> This reason for this is that the tasklet is scheduled as a result of
-> TX or RX interrupts (not a status change!), in steps 4 above. Inside
-> the tasklet, the atmel_port->irq_status (which holds the value from
-> the previous session) is compared to atmel_port->irq_status_prev.
-> Hence, a status-change of the CTS line is faultily detected.
-> 
-> Both cases were verified on 9260 hardware.
-> 
-> The solution for this, is to reset both irq_status_prev and irq_status
-> to the value of CSR in atmel_startup().
-> 
-> Here is my updated patch (you can ignore the first part which you
-> already accepted):
 
---- linux-2.6.27.6/drivers/serial/atmel_serial.c	2008-11-13 19:56:21.000000000 +0200
-+++ my/drivers/serial/atmel_serial.c	2009-01-08 11:32:50.000000000 +0200
-@@ -579,7 +579,7 @@ static void atmel_tx_dma(struct uart_por
--	if (!uart_circ_empty(xmit)) {
-+	if (!uart_circ_empty(xmit) && !uart_tx_stopped(port)) {
- 		dma_sync_single_for_device(port->dev,
- 					   pdc->dma_addr,
- 					   pdc->dma_size,
-@@ -805,6 +805,9 @@ static int atmel_startup(struct uart_por
- 	 */
- 	UART_PUT_IDR(port, -1);
-
-+	atmel_port->irq_status_prev = UART_GET_CSR(port);
-+	atmel_port->irq_status = atmel_port->irq_status_prev;
-+
- 	/*
- 	 * Allocate the IRQ
- 	 */
