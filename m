@@ -1,50 +1,40 @@
-From: Haavard Skinnemoen <haavard.skinnemoen@atmel.com>
-Subject: Re: [patch 2/3] atmel_serial might lose modem status change
-Date: Wed, 14 Jan 2009 16:42:58 +0100
-Message-ID: <20090114164258.6373db9d@hskinnemoen-d830>
-References: <200901092217.n09MHfmS021131@imap1.linux-foundation.org>
-	<20090112104202.5ea628f6@hskinnemoen-d830>
-	<20090114.121339.118371076.nemoto@toshiba-tops.co.jp>
+From: Denis Joseph Barrow <D.Barow-x9gZzRpC1QbQT0dZR+AlfA@public.gmane.org>
+Subject: the linux-2.6.29-rc1 hso driver with all our patches is still broken
+Date: Wed, 14 Jan 2009 18:16:02 +0100
+Message-ID: <496E1DD2.3090900@option.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nat-132.atmel.no ([80.232.32.132]:62510 "EHLO relay.atmel.no"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751268AbZANPpQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 14 Jan 2009 10:45:16 -0500
-In-Reply-To: <20090114.121339.118371076.nemoto@toshiba-tops.co.jp>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alan Cox <alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
+Cc: Linux USB kernel mailing list <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux netdev Mailing list <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Serial <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
-Cc: akpm@linux-foundation.org, alan@lxorguk.ukuu.org.uk, linux-serial@vger.kernel.org, linux@bohmer.net, marc.pignat@hevs.ch, itai.levi.devel@gmail.com
 
-Atsushi Nemoto wrote:
-> > @@ -805,6 +805,9 @@ static int atmel_startup(struct uart_por
-> >  	 */
-> >  	UART_PUT_IDR(port, -1);
-> > 
-> > +	atmel_port->irq_status_prev = UART_GET_CSR(port);
-> > +	atmel_port->irq_status = atmel_port->irq_status_prev;
-> > +
-> >  	/*
-> >  	 * Allocate the IRQ
-> >  	 */  
-> 
-> Looks correct for me too.  Then, what is preffered final fix?
-> 
-> Put irq_status initialization into my patch, or replace with Itai's
-> patch?  These patch put initialization in another place.  Any comments
-> for preferred place to fix?
+Hi Alan,
+When running diagnostics with a few serial ports opened
+& flood pinging, the drivers module usage count doesn't
+go to zero & cant be unloaded.
 
-I don't think it matters as long as it happens before the interrupts
-are enabled. But it's probably enough to do it once ;-)
+This doesn't happen in our internal driver without the
+tty_kref_get/put patches.
 
-So the easiest solution is probably to drop your patch
-(atmel_serial-might-lose-modem-status-change.patch) and keep Itai's
-patch (atmel_serial-might-lose-modem-status-change-fix.patch).
 
-Andrew, if it makes things easier, feel free to drop both patches and
-I'll send you a new one.
+-- 
+best regards,
+D.J. Barrow
 
-Haavard
+Linux Kernel Developer
+Option NV, Gaston Geenslaan 14, 3001 Leuven, Belgium
+ 
+T: +32 16 311 621
+F: +32 16 207 164
+d.barow-x9gZzRpC1QbQT0dZR+AlfA@public.gmane.org
+www.option.com
+
+Disclaimer:
+http://www.option.com/company/disclaimer.shtml
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
