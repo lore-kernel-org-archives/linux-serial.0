@@ -1,84 +1,31 @@
-From: Denis Joseph Barrow <D.Barow@option.com>
-Subject: [PATCH] hso serial throttled tty kref fix.
-Date: Thu, 15 Jan 2009 13:10:33 +0100
-Message-ID: <496F27B9.3030802@option.com>
+From: Alan Cox <alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
+Subject: Re: [PATCH] hso serial throttled tty kref fix.
+Date: Thu, 15 Jan 2009 13:17:40 +0000
+Message-ID: <20090115131740.5dab50ea@lxorguk.ukuu.org.uk>
+References: <496F27B9.3030802@option.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="------------060800070907040203060102"
-Return-path: <netdev-owner@vger.kernel.org>
-Sender: netdev-owner@vger.kernel.org
-To: Linux Serial <linux-serial@vger.kernel.org>, Linux USB kernel mailing list <linux-usb@vger.kernel.org>, Linux netdev Mailing list <netdev@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <496F27B9.3030802-x9gZzRpC1QbQT0dZR+AlfA@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Denis Joseph Barrow <D.Barow-x9gZzRpC1QbQT0dZR+AlfA@public.gmane.org>
+Cc: Linux Serial <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux USB kernel mailing list <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux netdev Mailing list <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------060800070907040203060102
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+On Thu, 15 Jan 2009 13:10:33 +0100
+Denis Joseph Barrow <D.Barow-x9gZzRpC1QbQT0dZR+AlfA@public.gmane.org> wrote:
 
-Hi,
-This patch is for Alan Cox as it related to the tty layer.
-Hopefully the hso driver is again relatively stable with this fix.
+> Hi,
+> This patch is for Alan Cox as it related to the tty layer.
+> Hopefully the hso driver is again relatively stable with this fix.
 
-Signed-off-by: Denis Joseph Barrow <D.Barow@option.com>
----
-Index: linux-2.6/drivers/net/usb/hso.c
-===================================================================
---- linux-2.6.orig/drivers/net/usb/hso.c	2009-01-15 12:45:09.000000000 +0100
-+++ linux-2.6/drivers/net/usb/hso.c	2009-01-15 12:46:18.000000000 +0100
-@@ -2040,8 +2040,10 @@
- 			serial->curr_rx_urb_offset;
- 		D1("data to push to tty");
- 		while (write_length_remaining) {
--			if (test_bit(TTY_THROTTLED, &tty->flags))
-+			if (test_bit(TTY_THROTTLED, &tty->flags)) {
-+				tty_kref_put(tty);
- 				return -1;
-+			}
- 			curr_write_len =  tty_insert_flip_string
- 				(tty, urb->transfer_buffer +
- 				 serial->curr_rx_urb_offset,
--- 
-best regards,
-D.J. Barrow
+ACK - hso conversion does not seem to have been my finest hour
 
-Linux Kernel Developer
-Option NV, Gaston Geenslaan 14, 3001 Leuven, Belgium
- 
-T: +32 16 311 621
-F: +32 16 207 164
-d.barow@option.com
-www.option.com
+Sorry about that.
 
-Disclaimer:
-http://www.option.com/company/disclaimer.shtml
-
---------------060800070907040203060102
-Content-Type: text/x-diff;
- name="hso_tty_kref_fix.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="hso_tty_kref_fix.patch"
-
-Fixes a missed tty_kref_put which is caused the driver
-to fail to unloading when rmmoded if the hso serial port
-ever gets throttled. 
-Signed-off-by: Denis Joseph Barrow <D.Barow@option.com>
----
-Index: linux-2.6/drivers/net/usb/hso.c
-===================================================================
---- linux-2.6.orig/drivers/net/usb/hso.c	2009-01-15 12:45:09.000000000 +0100
-+++ linux-2.6/drivers/net/usb/hso.c	2009-01-15 12:46:18.000000000 +0100
-@@ -2040,8 +2040,10 @@
- 			serial->curr_rx_urb_offset;
- 		D1("data to push to tty");
- 		while (write_length_remaining) {
--			if (test_bit(TTY_THROTTLED, &tty->flags))
-+			if (test_bit(TTY_THROTTLED, &tty->flags)) {
-+				tty_kref_put(tty);
- 				return -1;
-+			}
- 			curr_write_len =  tty_insert_flip_string
- 				(tty, urb->transfer_buffer +
- 				 serial->curr_rx_urb_offset,
-
---------------060800070907040203060102--
+Alan
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
