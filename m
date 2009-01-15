@@ -1,31 +1,114 @@
-From: Alan Cox <alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
-Subject: Re: [PATCH] hso serial throttled tty kref fix.
-Date: Thu, 15 Jan 2009 13:17:40 +0000
-Message-ID: <20090115131740.5dab50ea@lxorguk.ukuu.org.uk>
-References: <496F27B9.3030802@option.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <496F27B9.3030802-x9gZzRpC1QbQT0dZR+AlfA@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Denis Joseph Barrow <D.Barow-x9gZzRpC1QbQT0dZR+AlfA@public.gmane.org>
-Cc: Linux Serial <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux USB kernel mailing list <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux netdev Mailing list <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+From: Haavard Skinnemoen <haavard.skinnemoen@atmel.com>
+Subject: [PATCH v2] atmel_serial might lose modem status change
+Date: Thu, 15 Jan 2009 16:43:00 +0100
+Message-ID: <1232034180-829-1-git-send-email-haavard.skinnemoen@atmel.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from relay.atmel.no ([80.232.32.139]:52253 "EHLO relay.atmel.no"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754723AbZAOPuv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 15 Jan 2009 10:50:51 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: akpm@linux-foundation.org
+Cc: linux-serial@vger.kernel.org, alan@lxorguk.ukuu.org.uk, Atsushi Nemoto <anemo@mba.ocn.ne.jp>, Remy Bohmer <linux@bohmer.net>, Marc Pignat <marc.pignat@hevs.ch>, Itai Levi <itai.levi.devel@gmail.com>, Haavard Skinnemoen <haavard.skinnemoen@atmel.com>
 
-On Thu, 15 Jan 2009 13:10:33 +0100
-Denis Joseph Barrow <D.Barow-x9gZzRpC1QbQT0dZR+AlfA@public.gmane.org> wrote:
+From: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
 
-> Hi,
-> This patch is for Alan Cox as it related to the tty layer.
-> Hopefully the hso driver is again relatively stable with this fix.
+I found a problem of handling of modem status of atmel_serial driver.
 
-ACK - hso conversion does not seem to have been my finest hour
+With the commit 1ecc26 ("atmel_serial: split the interrupt handler"),
+handling of modem status signal was splitted into two parts.  The
+atmel_tasklet_func() compares new status with irq_status_prev, but
+irq_status_prev is not correct if signal status was changed while the port
+is closed.
 
-Sorry about that.
+Here is a sequence to cause problem:
 
-Alan
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+1. Remote side sets CTS (and DSR).
+2. Local side close the port.
+3. Local side clears RTS and DTR.
+4. Remote side clears CTS and DSR.
+5. Local side reopen the port.  hw_stopped becomes 1.
+6. Local side sets RTS and DTR.
+7. Remote side sets CTS and DSR.
+
+Then CTS change interrupt can be received, but since CTS bit in
+irq_status_prev and new status is same, uart_handle_cts_change() will not
+be called (so hw_stopped will not be cleared, i.e.  cannot send any data).
+
+I suppose irq_status_prev should be initialized at somewhere in open
+sequence.
+
+Itai Levi pointed out that we need to initialize atmel_port->irq_status
+as well here. His analysis is as follows:
+
+> Regarding the second part of the patch (which resets irq_status_prev),
+> it turns out that both versions of the patch (mine and Atsushi's)
+> still leave enough room for faulty behavior when opening the port.
+>
+> This is because we are not resetting both irq_status_prev and
+> irq_status in atmel_startup() to CSR, which leads faulty behavior in
+> the following sequences:
+>
+> First case:
+> 1. closing the port while CTS line = 1 (TX not allowed)
+> 2. setting CTS line = 0 (TX allowed)
+> 3. opening the port
+> 4. transmitting one char
+> 5. Cannot transmit more chars, although CTS line is 0
+>
+> Second case:
+> 1. closing the port while CTS line = 0 (TX allowed)
+> 2. setting CTS line = 1 (TX not allowed)
+> 3. opening the port
+> 4. receiving some chars
+> 5. Now we can transmit, although CTS line is 1
+>
+> This reason for this is that the tasklet is scheduled as a result of
+> TX or RX interrupts (not a status change!), in steps 4 above. Inside
+> the tasklet, the atmel_port->irq_status (which holds the value from
+> the previous session) is compared to atmel_port->irq_status_prev.
+> Hence, a status-change of the CTS line is faultily detected.
+>
+> Both cases were verified on 9260 hardware.
+
+Cc: Remy Bohmer <linux@bohmer.net>
+Cc: Marc Pignat <marc.pignat@hevs.ch>
+Cc: Itai Levi <itai.levi.devel@gmail.com>
+Signed-off-by: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
+[haavard.skinnemoen@atmel.com: folded with patch from Itai Levi]
+Signed-off-by: Haavard Skinnemoen <haavard.skinnemoen@atmel.com>
+---
+Ok, I hope I got everything right...
+
+I put Atsushi as the author since there can only be one, and he fixed it
+first.  Itai is credited with the additional fix in the commit message.
+
+I removed Remy's Ack since it's strictly speaking not the same patch
+anymore...please let me know if that was the wrong thing to do.
+
+The commit-message-to-actual-patch ratio is pretty insane, but I believe
+the tricky part here is the analysis leading to the fix, not the fix in
+itself, so it's not necessarily such a bad thing.
+
+ drivers/serial/atmel_serial.c |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/serial/atmel_serial.c b/drivers/serial/atmel_serial.c
+index 89362d7..8f58f7f 100644
+--- a/drivers/serial/atmel_serial.c
++++ b/drivers/serial/atmel_serial.c
+@@ -877,6 +877,10 @@ static int atmel_startup(struct uart_port *port)
+ 		}
+ 	}
+ 
++	/* Save current CSR for comparison in atmel_tasklet_func() */
++	atmel_port->irq_status_prev = UART_GET_CSR(port);
++	atmel_port->irq_status = atmel_port->irq_status_prev;
++
+ 	/*
+ 	 * Finally, enable the serial port
+ 	 */
+-- 
+1.5.6.3
+
