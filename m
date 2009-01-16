@@ -1,150 +1,126 @@
-From: Laurent Pinchart <laurentp@cse-semaphore.com>
-Subject: Re: [PATCH V3] serial: Add ioctl to enable auto rs485 mode with some Exar UARTs
-Date: Fri, 16 Jan 2009 10:54:10 +0100
-Message-ID: <200901161054.10642.laurentp@cse-semaphore.com>
-References: <200901152023.15352.mfuchs@ma-fu.de>
+From: Denis Joseph Barrow <D.Barow@option.com>
+Subject: [PATCH]l gdb serial debugging appears be broken since at least 2.6.28-rc6
+ by tty layer now hopefully fixed
+Date: Fri, 16 Jan 2009 16:58:49 +0100
+Message-ID: <4970AEB9.5080702@option.com>
+References: <48D10A70.8050202@option.com> <48D10C43.90605@windriver.com> <48D1122F.6080101@option.com> <48D26B64.5080605@windriver.com> <48D39B9F.8010404@option.com> <48D3A1B4.8000505@windriver.com> <48D3AAB0.3010504@option.com> <48D3FFC9.5080701@windriver.com> <49708E50.8080103@option.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed;
+ boundary="------------060807040507050404060405"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailrelay005.isp.belgacom.be ([195.238.6.171]:8865 "EHLO
-	mailrelay005.isp.belgacom.be" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1756897AbZAPJyN (ORCPT
+Received: from mailer2.option.com ([81.246.70.163]:20698 "EHLO
+	mailer2.option.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753412AbZAPP6w (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 16 Jan 2009 04:54:13 -0500
-In-Reply-To: <200901152023.15352.mfuchs@ma-fu.de>
-Content-Disposition: inline
+	Fri, 16 Jan 2009 10:58:52 -0500
+In-Reply-To: <49708E50.8080103@option.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Matthias Fuchs <mfuchs@ma-fu.de>
-Cc: linux-serial@vger.kernel.org
+To: Jason Wessel <jason.wessel@windriver.com>, KGDB Mailing List <kgdb-bugreport@lists.sourceforge.net>, gareth@valinux.com, markus.t.metzger@intel.com, Linux Serial <linux-serial@vger.kernel.org>
+Cc: Filip Aben <f.aben@option.com>
 
-On Thursday 15 January 2009 20:23:15 Matthias Fuchs wrote:
-> Some Exar UARTs support an auto rs485 mode. In this mode
-> the UART's RTS# pin is activated during transmitting and
-> can be used to enable a rs485 line driver. This has nothing
-> to do with attempts to do this by manually asserting/
-> deasserting handshake lines in software.
->
-> Signed-off-by: Matthias Fuchs <mfuchs@ma-fu.de>
+This is a multi-part message in MIME format.
+--------------060807040507050404060405
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-Acked-by: Laurent Pinchart <laurentp@cse-semaphore.com>
+Hi all,
+I changed the code back to something it was like in 2.6.27-rc6 & it now works again.
 
-> ---
->  drivers/serial/8250.c      |   70
-> ++++++++++++++++++++++++++++++++++++++++++++ include/linux/serial_reg.h |  
->  1 +
->  2 files changed, 71 insertions(+), 0 deletions(-)
->
-> diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-> index 0d934bf..9c986bd 100644
-> --- a/drivers/serial/8250.c
-> +++ b/drivers/serial/8250.c
-> @@ -2580,6 +2580,75 @@ serial8250_type(struct uart_port *port)
->  	return uart_config[type].name;
->  }
->
-> +static int
-> +serial8250_ioctl_port(struct uart_port *port,
-> +		      unsigned int cmd, unsigned long arg)
-> +{
-> +	struct uart_8250_port *up = (struct uart_8250_port *)port;
-> +	unsigned long flags;
-> +
-> +	switch (cmd) {
-> +	case TIOCSRS485:
-> +	{
-> +		struct serial_rs485 rs485ctrl;
-> +		unsigned char fctr, lcr;
-> +
-> +		if (port->type != PORT_16850)
-> +			return -ENOTTY;
-> +
-> +		if (copy_from_user(&rs485ctrl,
-> +				   (struct serial_rs485 *)arg,
-> +				   sizeof(rs485ctrl)))
-> +			return -EFAULT;
-> +
-> +		spin_lock_irqsave(&up->port.lock, flags);
-> +		lcr = serial_inp(up, UART_LCR);
-> +		serial_outp(up, UART_LCR, 0xbf);
-> +		fctr = serial_inp(up, UART_FCTR);
-> +		if (rs485ctrl.flags & SER_RS485_ENABLED)
-> +			fctr |= UART_FCTR_RS485;
-> +		else
-> +			fctr &= ~UART_FCTR_RS485;
-> +		serial_outp(up, UART_FCTR, fctr);
-> +		serial_outp(up, UART_LCR, lcr);
-> +		spin_unlock_irqrestore(&up->port.lock, flags);
-> +		return 0;
-> +	}
-> +
-> +	case TIOCGRS485:
-> +	{
-> +		struct serial_rs485 rs485ctrl;
-> +		unsigned char lcr;
-> +
-> +		if (port->type != PORT_16850)
-> +			return -ENOTTY;
-> +
-> +		memset(&rs485ctrl, 0, sizeof(rs485ctrl));
-> +
-> +		spin_lock_irqsave(&up->port.lock, flags);
-> +		lcr = serial_inp(up, UART_LCR);
-> +		serial_outp(up, UART_LCR, 0xbf);
-> +		if (serial_inp(up, UART_FCTR) & UART_FCTR_RS485)
-> +			rs485ctrl.flags = SER_RS485_ENABLED;
-> +		else
-> +			rs485ctrl.flags = 0;
-> +		serial_outp(up, UART_LCR, lcr);
-> +		spin_unlock_irqrestore(&up->port.lock, flags);
-> +
-> +		if (copy_to_user((struct serial_rs485 *)arg,
-> +				 &rs485ctrl,
-> +				 sizeof(rs485ctrl)))
-> +			return -EFAULT;
-> +		return 0;
-> +	}
-> +
-> +	default:
-> +		return -ENOIOCTLCMD;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  static struct uart_ops serial8250_pops = {
->  	.tx_empty	= serial8250_tx_empty,
->  	.set_mctrl	= serial8250_set_mctrl,
-> @@ -2598,6 +2667,7 @@ static struct uart_ops serial8250_pops = {
->  	.request_port	= serial8250_request_port,
->  	.config_port	= serial8250_config_port,
->  	.verify_port	= serial8250_verify_port,
-> +	.ioctl		= serial8250_ioctl_port,
->  #ifdef CONFIG_CONSOLE_POLL
->  	.poll_get_char = serial8250_get_poll_char,
->  	.poll_put_char = serial8250_put_poll_char,
-> diff --git a/include/linux/serial_reg.h b/include/linux/serial_reg.h
-> index 96c0d93..086c3e2 100644
-> --- a/include/linux/serial_reg.h
-> +++ b/include/linux/serial_reg.h
-> @@ -191,6 +191,7 @@
->  #define UART_FCTR_RTS_8DELAY	0x03
->  #define UART_FCTR_IRDA		0x04  /* IrDa data encode select */
->  #define UART_FCTR_TX_INT	0x08  /* Tx interrupt type select */
-> +#define UART_FCTR_RS485		0x08  /* Auto RS485 mode */
->  #define UART_FCTR_TRGA		0x00  /* Tx/Rx 550 trigger table select */
->  #define UART_FCTR_TRGB		0x10  /* Tx/Rx 650 trigger table select */
->  #define UART_FCTR_TRGC		0x20  /* Tx/Rx 654 trigger table select */
+Changed tty_find_polling driver back to something
+close to 2.6.27-rc6 the new stuff broke kgdb when
+used with the usual kgdboc=/dev/ttyS0,115200 parameter & similar.
+Signed-off-by: Denis Joseph Barrow <D.Barow@option.com>
+---Index: linux-2.6/drivers/char/tty_io.c
+===================================================================
+Index: linux-2.6/drivers/char/tty_io.c
+===================================================================
+--- linux-2.6.orig/drivers/char/tty_io.c	2009-01-16 16:41:41.000000000 +0100
++++ linux-2.6/drivers/char/tty_io.c	2009-01-16 16:43:59.000000000 +0100
+@@ -294,23 +294,13 @@
+ {
+ 	struct tty_driver *p, *res = NULL;
+ 	int tty_line = 0;
+-	int len;
+ 	char *str;
+ 
+-	for (str = name; *str; str++)
+-		if ((*str >= '0' && *str <= '9') || *str == ',')
+-			break;
+-	if (!*str)
+-		return NULL;
+-
+-	len = str - name;
+-	tty_line = simple_strtoul(str, &str, 10);
+-
+ 	mutex_lock(&tty_mutex);
+ 	/* Search through the tty devices to look for a match */
+ 	list_for_each_entry(p, &tty_drivers, tty_drivers) {
+-		if (strncmp(name, p->name, len) != 0)
+-			continue;
++		str = name + strlen(p->name);
++		tty_line = simple_strtoul(str, &str, 10);
+ 		if (*str == ',')
+ 			str++;
+ 		if (*str == '\0')
 
--- 
-Laurent Pinchart
-CSE Semaphore Belgium
 
-Chaussee de Bruxelles, 732A
-B-1410 Waterloo
-Belgium
+best regards,
+D.J. Barrow
 
-T +32 (2) 387 42 59
-F +32 (2) 387 42 75
+Linux Kernel Developer
+Option NV, Gaston Geenslaan 14, 3001 Leuven, Belgium
+ 
+T: +32 16 311 621
+F: +32 16 207 164
+d.barow@option.com
+www.option.com
+
+Disclaimer:
+http://www.option.com/company/disclaimer.shtml
+
+--------------060807040507050404060405
+Content-Type: text/x-diff;
+ name="tty_io_kgdbdoc_fix.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="tty_io_kgdbdoc_fix.patch"
+
+Changed tty_find_polling driver back to something
+close to 2.6.27-rc6 the new stuff broke kgdb when
+used with the usual kgdboc=/dev/ttyS0,115200 parameter & similar.
+Signed-off-by: Denis Joseph Barrow <D.Barow@option.com>
+---Index: linux-2.6/drivers/char/tty_io.c
+===================================================================
+Index: linux-2.6/drivers/char/tty_io.c
+===================================================================
+--- linux-2.6.orig/drivers/char/tty_io.c	2009-01-16 16:41:41.000000000 +0100
++++ linux-2.6/drivers/char/tty_io.c	2009-01-16 16:43:59.000000000 +0100
+@@ -294,23 +294,13 @@
+ {
+ 	struct tty_driver *p, *res = NULL;
+ 	int tty_line = 0;
+-	int len;
+ 	char *str;
+ 
+-	for (str = name; *str; str++)
+-		if ((*str >= '0' && *str <= '9') || *str == ',')
+-			break;
+-	if (!*str)
+-		return NULL;
+-
+-	len = str - name;
+-	tty_line = simple_strtoul(str, &str, 10);
+-
+ 	mutex_lock(&tty_mutex);
+ 	/* Search through the tty devices to look for a match */
+ 	list_for_each_entry(p, &tty_drivers, tty_drivers) {
+-		if (strncmp(name, p->name, len) != 0)
+-			continue;
++		str = name + strlen(p->name);
++		tty_line = simple_strtoul(str, &str, 10);
+ 		if (*str == ',')
+ 			str++;
+ 		if (*str == '\0')
+
+--------------060807040507050404060405--
