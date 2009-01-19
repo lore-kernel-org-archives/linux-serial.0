@@ -1,258 +1,91 @@
-From: Denis Joseph Barrow <D.Barow@option.com>
-Subject: [PATCH] hso set tty->low_latency to 0
-Date: Mon, 19 Jan 2009 16:46:59 +0100
-Message-ID: <4974A073.3060102@option.com>
+From: Michael Bramer <michael@debsupport.de>
+Subject: Re: [PATCH] drivers/serial/8250_pci.c (add support for '8-port RS-232 MIC-3620 from advantech'
+Date: Mon, 19 Jan 2009 23:51:22 +0000
+Message-ID: <20090119235122.GE21026@deb-support.de>
+References: <20090118135359.GA3087@deb-support.de> <20090119145101.GA16732@ports.donpac.ru>
 Mime-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="------------080503000109070901020205"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailer2.option.com ([81.246.70.163]:27297 "EHLO
-	mailer2.option.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750783AbZASPrO (ORCPT
+Received: from h4320.serverkompetenz.net ([81.169.172.102]:46167 "EHLO
+	www.deb-support.de" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752127AbZASXvZ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Jan 2009 10:47:14 -0500
+	Mon, 19 Jan 2009 18:51:25 -0500
+Content-Disposition: inline
+In-Reply-To: <20090119145101.GA16732@ports.donpac.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linux Serial <linux-serial@vger.kernel.org>, Linux USB kernel mailing list <linux-usb@vger.kernel.org>, Linux netdev Mailing list <netdev@vger.kernel.org>
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------080503000109070901020205
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+On Mon, Jan 19, 2009 at 05:51:01PM +0300, Andrey Panin wrote:
+> On 018, 01 18, 2009 at 01:53:59PM +0000, Michael Bramer wrote:
+> > Hello
+> >=20
+> > This is my first mail to this list... sorry for all my mistakes
+> >=20
+> > We use a 8-port RS-232 MIC-3620 from advantech (see
+> > http://www.advantech.com/products/8-port-RS-232-Communication-CPCI-=
+Card/mod_1-2MLG80.aspx)
+> > and need linux support for this card.
+> >=20
+> > This patch add is:
+> > -------------------------------------
+> > --- a/drivers/serial/8250_pci.c
+> > +++ b/drivers/serial/8250_pci.c
+> > @@ -768,6 +769,8 @@
+> >  #define PCI_SUBDEVICE_ID_OCTPRO422      0x0208
+> >  #define PCI_SUBDEVICE_ID_POCTAL232      0x0308
+> >  #define PCI_SUBDEVICE_ID_POCTAL422      0x0408
+> > +#define PCI_VENDOR_ID_ADVANTECH         0x13fe
+> > +#define PCI_DEVICE_ID_ADVANTECH_PCI3620 0x3620
+> >=20
+> >  /*
+> >   * Master list of serial port init/setup/exit quirks.
+> > @@ -789,6 +792,16 @@
+> >                 .setup          =3D addidata_apci7800_setup,
+> >         },
+> >         /*
+> > +        * ADVANTECH
+> > +        */
+> > +       {
+> > +               .vendor         =3D PCI_VENDOR_ID_ADVANTECH,
+> > +               .device         =3D PCI_DEVICE_ID_ADVANTECH_PCI3620=
+,
+> > +               .subvendor      =3D PCI_DEVICE_ID_ADVANTECH_PCI3620=
+,
+> > +               .subdevice      =3D PCI_ANY_ID,
+> > +               .setup          =3D pci_default_setup,
+> > +       },
+> > +       /*
+> >          * AFAVLAB cards - these may be called via parport_serial
+> >          *  It is not clear whether this applies to all products.
+> >          */
+>=20
+> This part is not needed at all, pci_default_setup() will be used by d=
+efault.
 
-Hi all,
-Alan Cox wanted low_latency set to 0,
-this I believe does the job & throttling & unthrottling.
-Let me know if there are any problems.
+ok. I don't test this. But you are right. The last entry in
+pci_serial_quirks should catch it.=20
 
-Sets tty->low_latency to 0 gets rid of the unthrottle
-tasklet which is no longer neccessary with low_latency=0
-& infinite loops which would manifest themselves in
-put_rxbuf_data as a result of setting low_latency to 0.
-Signed-off-by: Denis Joseph Barrow <D.Barow@option.com>
----
-Index: linux-2.6/drivers/net/usb/hso.c
-===================================================================
---- linux-2.6.orig/drivers/net/usb/hso.c	2009-01-19 16:30:59.000000000 +0100
-+++ linux-2.6/drivers/net/usb/hso.c	2009-01-19 16:31:20.000000000 +0100
-@@ -269,7 +269,6 @@
- 	int  curr_rx_urb_idx;
- 	u16  curr_rx_urb_offset;
- 	u8   rx_urb_filled[MAX_RX_URBS];
--	struct tasklet_struct unthrottle_tasklet;
- };
- 
- struct hso_device {
-@@ -1240,27 +1239,17 @@
- 	}
- }
- 
--/*
-- * This needs to be a tasklet otherwise we will
-- * end up recursively calling this function.
-- */
--void hso_unthrottle_tasklet(struct hso_serial *serial)
-+
-+static	void hso_unthrottle(struct tty_struct *tty)
- {
--	unsigned long flags;
-+	struct hso_serial *serial = get_serial_by_tty(tty);
- 
--	spin_lock_irqsave(&serial->serial_lock, flags);
-+	spin_lock_irq(&serial->serial_lock);
- 	if ((serial->parent->port_spec & HSO_INTF_MUX))
- 		put_rxbuf_data_and_resubmit_ctrl_urb(serial);
- 	else
- 		put_rxbuf_data_and_resubmit_bulk_urb(serial);
--	spin_unlock_irqrestore(&serial->serial_lock, flags);
--}
--
--static	void hso_unthrottle(struct tty_struct *tty)
--{
--	struct hso_serial *serial = get_serial_by_tty(tty);
--
--	tasklet_hi_schedule(&serial->unthrottle_tasklet);
-+	spin_unlock_irq(&serial->serial_lock);
- }
- 
- /* open the requested serial port */
-@@ -1295,13 +1284,9 @@
- 	/* check for port already opened, if not set the termios */
- 	serial->open_count++;
- 	if (serial->open_count == 1) {
--		tty->low_latency = 1;
- 		serial->rx_state = RX_IDLE;
- 		/* Force default termio settings */
- 		_hso_serial_set_termios(tty, NULL);
--		tasklet_init(&serial->unthrottle_tasklet,
--			     (void (*)(unsigned long))hso_unthrottle_tasklet,
--			     (unsigned long)serial);
- 		result = hso_start_serial_device(serial->parent, GFP_KERNEL);
- 		if (result) {
- 			hso_stop_serial_device(serial->parent);
-@@ -1355,7 +1340,6 @@
- 		spin_unlock_irq(&serial->serial_lock);
- 		if (!usb_gone)
- 			hso_stop_serial_device(serial->parent);
--		tasklet_kill(&serial->unthrottle_tasklet);
- 	}
- 
- 	if (!usb_gone)
-@@ -1885,12 +1869,11 @@
- 				if (serial->rx_state == RX_IDLE) {
- 					/* Setup and send a ctrl req read on
- 					 * port i */
--				if (!serial->rx_urb_filled[0]) {
-+					if (!serial->rx_urb_filled[0]) {
- 						serial->rx_state = RX_SENT;
- 						hso_mux_serial_read(serial);
- 					} else
- 						serial->rx_state = RX_PENDING;
--
- 				} else {
- 					D1("Already pending a read on "
- 					   "port %d\n", i);
-@@ -2048,6 +2031,15 @@
- 				(tty, urb->transfer_buffer +
- 				 serial->curr_rx_urb_offset,
- 				 write_length_remaining);
-+			if (curr_write_len == 0) {
-+				/* Setting TTY_THROTTLED is ugly but
-+				   we need a the hso_unthrottle callback
-+				   to say we can start resubmitting URBS.
-+				*/
-+				set_bit(TTY_THROTTLED, &tty->flags);
-+				tty_kref_put(tty);
-+				return -1;
-+			}
- 			serial->curr_rx_urb_offset += curr_write_len;
- 			write_length_remaining -= curr_write_len;
- 			tty_flip_buffer_push(tty);
+This make the patch to a 'add only 5 lines for support of 8
+Ports'-Patch. :-)
 
--- 
-best regards,
-D.J. Barrow
+Should I post a new patch, without this 10 lines?
 
-Linux Kernel Developer
-Option NV, Gaston Geenslaan 14, 3001 Leuven, Belgium
- 
-T: +32 16 311 621
-F: +32 16 207 164
-d.barow@option.com
-www.option.com
-
-Disclaimer:
-http://www.option.com/company/disclaimer.shtml
-
---------------080503000109070901020205
-Content-Type: text/x-diff;
- name="hso_low_latency_fix.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="hso_low_latency_fix.patch"
-
-Sets tty->low_latency to 0 gets rid of the unthrottle
-tasklet which is no longer neccessary with low_latency=0
-& infinite loops which would manifest themselves in
-put_rxbuf_data as a result of setting low_latency to 0.
-Signed-off-by: Denis Joseph Barrow <D.Barow@option.com>
----
-Index: linux-2.6/drivers/net/usb/hso.c
-===================================================================
---- linux-2.6.orig/drivers/net/usb/hso.c	2009-01-19 16:30:59.000000000 +0100
-+++ linux-2.6/drivers/net/usb/hso.c	2009-01-19 16:31:20.000000000 +0100
-@@ -269,7 +269,6 @@
- 	int  curr_rx_urb_idx;
- 	u16  curr_rx_urb_offset;
- 	u8   rx_urb_filled[MAX_RX_URBS];
--	struct tasklet_struct unthrottle_tasklet;
- };
- 
- struct hso_device {
-@@ -1240,27 +1239,17 @@
- 	}
- }
- 
--/*
-- * This needs to be a tasklet otherwise we will
-- * end up recursively calling this function.
-- */
--void hso_unthrottle_tasklet(struct hso_serial *serial)
-+
-+static	void hso_unthrottle(struct tty_struct *tty)
- {
--	unsigned long flags;
-+	struct hso_serial *serial = get_serial_by_tty(tty);
- 
--	spin_lock_irqsave(&serial->serial_lock, flags);
-+	spin_lock_irq(&serial->serial_lock);
- 	if ((serial->parent->port_spec & HSO_INTF_MUX))
- 		put_rxbuf_data_and_resubmit_ctrl_urb(serial);
- 	else
- 		put_rxbuf_data_and_resubmit_bulk_urb(serial);
--	spin_unlock_irqrestore(&serial->serial_lock, flags);
--}
--
--static	void hso_unthrottle(struct tty_struct *tty)
--{
--	struct hso_serial *serial = get_serial_by_tty(tty);
--
--	tasklet_hi_schedule(&serial->unthrottle_tasklet);
-+	spin_unlock_irq(&serial->serial_lock);
- }
- 
- /* open the requested serial port */
-@@ -1295,13 +1284,9 @@
- 	/* check for port already opened, if not set the termios */
- 	serial->open_count++;
- 	if (serial->open_count == 1) {
--		tty->low_latency = 1;
- 		serial->rx_state = RX_IDLE;
- 		/* Force default termio settings */
- 		_hso_serial_set_termios(tty, NULL);
--		tasklet_init(&serial->unthrottle_tasklet,
--			     (void (*)(unsigned long))hso_unthrottle_tasklet,
--			     (unsigned long)serial);
- 		result = hso_start_serial_device(serial->parent, GFP_KERNEL);
- 		if (result) {
- 			hso_stop_serial_device(serial->parent);
-@@ -1355,7 +1340,6 @@
- 		spin_unlock_irq(&serial->serial_lock);
- 		if (!usb_gone)
- 			hso_stop_serial_device(serial->parent);
--		tasklet_kill(&serial->unthrottle_tasklet);
- 	}
- 
- 	if (!usb_gone)
-@@ -1885,12 +1869,11 @@
- 				if (serial->rx_state == RX_IDLE) {
- 					/* Setup and send a ctrl req read on
- 					 * port i */
--				if (!serial->rx_urb_filled[0]) {
-+					if (!serial->rx_urb_filled[0]) {
- 						serial->rx_state = RX_SENT;
- 						hso_mux_serial_read(serial);
- 					} else
- 						serial->rx_state = RX_PENDING;
--
- 				} else {
- 					D1("Already pending a read on "
- 					   "port %d\n", i);
-@@ -2048,6 +2031,15 @@
- 				(tty, urb->transfer_buffer +
- 				 serial->curr_rx_urb_offset,
- 				 write_length_remaining);
-+			if (curr_write_len == 0) {
-+				/* Setting TTY_THROTTLED is ugly but
-+				   we need a the hso_unthrottle callback
-+				   to say we can start resubmitting URBS.
-+				*/
-+				set_bit(TTY_THROTTLED, &tty->flags);
-+				tty_kref_put(tty);
-+				return -1;
-+			}
- 			serial->curr_rx_urb_offset += curr_write_len;
- 			write_length_remaining -= curr_write_len;
- 			tty_flip_buffer_push(tty);
-
---------------080503000109070901020205--
+BTW: there are one other card's with a part like this:
+ - PCI_DEVICE_ID_PLX_9030
+ =20
+Gruss
+Grisu
+--=20
+Michael Bramer  -- http://www.feuerwehr.kreuzau.de/wiki/
+PGP: finger grisu@db.debian.org  -- Linux Sysadmin   -- Use Debian Linu=
+x
+"Wenn ich die Folgen geahnt h=E4tte, w=E4re ich Uhrmacher geworden!"
+                                                 --- Albert Einstein
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
