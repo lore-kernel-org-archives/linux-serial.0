@@ -1,44 +1,85 @@
-From: Ihar Hrachyshka <ihar.hrachyshka@gmail.com>
-Subject: [PATCH] MIPS: enable serial UART support on PNX833X devices.
-Date: Tue, 20 Jan 2009 17:08:45 +0200
-Message-ID: <1232464125.6247.1.camel@EPBYMINW0568>
+From: Andrey Panin <pazke@donpac.ru>
+Subject: Re: [PATCH] drivers/serial/8250_pci.c (add support for '8-port RS-232 MIC-3620 from advantech'
+Date: Tue, 20 Jan 2009 18:12:16 +0300
+Message-ID: <20090120151216.GB16732@ports.donpac.ru>
+References: <20090118135359.GA3087@deb-support.de> <20090119145101.GA16732@ports.donpac.ru> <20090119235122.GE21026@deb-support.de>
 Mime-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from yw-out-2324.google.com ([74.125.46.31]:6719 "EHLO
-	yw-out-2324.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754776AbZATPIv (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 20 Jan 2009 10:08:51 -0500
-Received: by yw-out-2324.google.com with SMTP id 9so1508618ywe.1
-        for <linux-serial@vger.kernel.org>; Tue, 20 Jan 2009 07:08:50 -0800 (PST)
+Received: from ports.donpac.ru ([80.254.111.81]:33615 "EHLO ports.donpac.ru"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754977AbZATPMU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 20 Jan 2009 10:12:20 -0500
+Content-Disposition: inline
+In-Reply-To: <20090119235122.GE21026@deb-support.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: alan@lxorguk.ukuu.org.uk
-Cc: linux-serial@vger.kernel.org
+To: Michael Bramer <michael@debsupport.de>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Enabled serial UART driver for PNX833X devices.
+On 019, 01 19, 2009 at 11:51:22PM +0000, Michael Bramer wrote:
+> On Mon, Jan 19, 2009 at 05:51:01PM +0300, Andrey Panin wrote:
+> > On 018, 01 18, 2009 at 01:53:59PM +0000, Michael Bramer wrote:
+> > > Hello
+> > > 
+> > > This is my first mail to this list... sorry for all my mistakes
+> > > 
+> > > We use a 8-port RS-232 MIC-3620 from advantech (see
+> > > http://www.advantech.com/products/8-port-RS-232-Communication-CPCI-Card/mod_1-2MLG80.aspx)
+> > > and need linux support for this card.
+> > > 
+> > > This patch add is:
+> > > -------------------------------------
+> > > --- a/drivers/serial/8250_pci.c
+> > > +++ b/drivers/serial/8250_pci.c
+> > > @@ -768,6 +769,8 @@
+> > >  #define PCI_SUBDEVICE_ID_OCTPRO422      0x0208
+> > >  #define PCI_SUBDEVICE_ID_POCTAL232      0x0308
+> > >  #define PCI_SUBDEVICE_ID_POCTAL422      0x0408
+> > > +#define PCI_VENDOR_ID_ADVANTECH         0x13fe
+> > > +#define PCI_DEVICE_ID_ADVANTECH_PCI3620 0x3620
+> > > 
+> > >  /*
+> > >   * Master list of serial port init/setup/exit quirks.
+> > > @@ -789,6 +792,16 @@
+> > >                 .setup          = addidata_apci7800_setup,
+> > >         },
+> > >         /*
+> > > +        * ADVANTECH
+> > > +        */
+> > > +       {
+> > > +               .vendor         = PCI_VENDOR_ID_ADVANTECH,
+> > > +               .device         = PCI_DEVICE_ID_ADVANTECH_PCI3620,
+> > > +               .subvendor      = PCI_DEVICE_ID_ADVANTECH_PCI3620,
+> > > +               .subdevice      = PCI_ANY_ID,
+> > > +               .setup          = pci_default_setup,
+> > > +       },
+> > > +       /*
+> > >          * AFAVLAB cards - these may be called via parport_serial
+> > >          *  It is not clear whether this applies to all products.
+> > >          */
+> > 
+> > This part is not needed at all, pci_default_setup() will be used by default.
+> 
+> ok. I don't test this. But you are right. The last entry in
+> pci_serial_quirks should catch it. 
+> 
+> This make the patch to a 'add only 5 lines for support of 8
+> Ports'-Patch. :-)
+> 
+> Should I post a new patch, without this 10 lines?
 
-Signed-off-by: Ihar Hrachyshka <ihar.hrachyshka@gmail.com>
----
- drivers/serial/Kconfig |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+Yes and add Signed-off-by: line please.
 
-diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
-index 3e525e3..7d7f576 100644
---- a/drivers/serial/Kconfig
-+++ b/drivers/serial/Kconfig
-@@ -982,7 +982,7 @@ config SERIAL_SH_SCI_CONSOLE
- 
- config SERIAL_PNX8XXX
- 	bool "Enable PNX8XXX SoCs' UART Support"
--	depends on MIPS && SOC_PNX8550
-+	depends on MIPS && (SOC_PNX8550 || SOC_PNX833X)
- 	select SERIAL_CORE
- 	help
- 	  If you have a MIPS-based Philips SoC such as PNX8550 or PNX8330
--- 
-1.5.6.3
+> BTW: there are one other card's with a part like this:
+>  - PCI_DEVICE_ID_PLX_9030
 
+We can safely remove it.
 
+> Gruss
+> Grisu
+> -- 
+> Michael Bramer  -- http://www.feuerwehr.kreuzau.de/wiki/
+> PGP: finger grisu@db.debian.org  -- Linux Sysadmin   -- Use Debian Linux
+> "Wenn ich die Folgen geahnt h?tte, w?re ich Uhrmacher geworden!"
+>                                                  --- Albert Einstein
