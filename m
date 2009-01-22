@@ -1,96 +1,83 @@
-From: Michael Bramer <michael@debsupport.de>
-Subject: Re: [PATCH] drivers/serial/8250_pci.c (add support for '8-port RS-232 MIC-3620 from advantech'
-Date: Thu, 22 Jan 2009 11:00:04 +0000
-Message-ID: <20090122110003.GA24450@deb-support.de>
-References: <6E0880DF84464BF2AA0275ABFFCCDAF2@acksys.local> <49783679.8010005@wincor-nixdorf.com>
+From: Paulius Zaleckas <paulius.zaleckas@teltonika.lt>
+Subject: Re: [PATCH] drivers/serial/8250_pci.c (add support for '8-port RS-232
+ MIC-3620 from advantech'
+Date: Thu, 22 Jan 2009 13:47:35 +0200
+Message-ID: <49785CD7.6020800@teltonika.lt>
+References: <6E0880DF84464BF2AA0275ABFFCCDAF2@acksys.local> <49783679.8010005@wincor-nixdorf.com> <20090122110003.GA24450@deb-support.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from h4320.serverkompetenz.net ([81.169.172.102]:35631 "EHLO
-	www.deb-support.de" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1753333AbZAVLAL (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 22 Jan 2009 06:00:11 -0500
-Content-Disposition: inline
-In-Reply-To: <49783679.8010005@wincor-nixdorf.com>
+Received: from 81-7-68-229.static.zebra.lt ([81.7.68.229]:47828 "EHLO
+	teltonika.lt" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1750767AbZAVLrl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 22 Jan 2009 06:47:41 -0500
+In-Reply-To: <20090122110003.GA24450@deb-support.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Niels de Vos <niels.devos@wincor-nixdorf.com>
-Cc: Tosoni <jp.tosoni@acksys.fr>, 'Alan Cox' <alan@lxorguk.ukuu.org.uk>, 'Paulius Zaleckas' <paulius.zaleckas@teltonika.lt>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Michael Bramer <michael@debsupport.de>
+Cc: Niels de Vos <niels.devos@wincor-nixdorf.com>, Tosoni <jp.tosoni@acksys.fr>, 'Alan Cox' <alan@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Thu, Jan 22, 2009 at 10:03:53AM +0100, Niels de Vos wrote:
-> Tosoni wrote:
-> >> On Wed, Jan 21, 2009 at 12:32:15PM +0000, Alan Cox wrote:
-> >>>>>>  static struct pci_device_id serial_pci_tbl[] =3D {
-> >>>>>> +       {       PCI_VENDOR_ID_ADVANTECH,
-> >> PCI_DEVICE_ID_ADVANTECH_PCI3620,
-> >>>>>> +               0x3620, PCI_ANY_ID, 0, 0,
-> >>>> Why not use PCI_VENDOR_ID_ADVANTECH as PCI_SUBVENDOR_ID too?
-> >>> The Advantech vendor id is not 0x3620. This confused me as
-> >> well which is
-> >>> why I asked for an lspci. Advantech has stuck the device id in th=
-e
-> >>> subvendor bits and '1' in the subdevice (so it should be 1 not
-> >>> PCI_ANY_ID).
-> >> is this better?
-> >>
-> >> +       {       PCI_VENDOR_ID_ADVANTECH,
-> >> PCI_DEVICE_ID_ADVANTECH_PCI3620,
-> >> +               PCI_DEVICE_ID_ADVANTECH_PCI3620, 1, 0, 0,
-> >=20
-> > Since the name describes a device id where it should be a (sub)vend=
-or id,
-> > I would suggest that you add a line of comment to explain the case.
-> > So that no one will be tempted to change it back to PCI_VENDOR_ID_A=
-DVANTECH
-> > in the future.
->=20
-> Definitely!
+Michael Bramer wrote:
+> On Thu, Jan 22, 2009 at 10:03:53AM +0100, Niels de Vos wrote:
+>> Tosoni wrote:
+>>>> On Wed, Jan 21, 2009 at 12:32:15PM +0000, Alan Cox wrote:
+>>>>>>>>  static struct pci_device_id serial_pci_tbl[] = {
+>>>>>>>> +       {       PCI_VENDOR_ID_ADVANTECH,
+>>>> PCI_DEVICE_ID_ADVANTECH_PCI3620,
+>>>>>>>> +               0x3620, PCI_ANY_ID, 0, 0,
+>>>>>> Why not use PCI_VENDOR_ID_ADVANTECH as PCI_SUBVENDOR_ID too?
+>>>>> The Advantech vendor id is not 0x3620. This confused me as
+>>>> well which is
+>>>>> why I asked for an lspci. Advantech has stuck the device id in the
+>>>>> subvendor bits and '1' in the subdevice (so it should be 1 not
+>>>>> PCI_ANY_ID).
+>>>> is this better?
+>>>>
+>>>> +       {       PCI_VENDOR_ID_ADVANTECH,
+>>>> PCI_DEVICE_ID_ADVANTECH_PCI3620,
+>>>> +               PCI_DEVICE_ID_ADVANTECH_PCI3620, 1, 0, 0,
+>>> Since the name describes a device id where it should be a (sub)vendor id,
+>>> I would suggest that you add a line of comment to explain the case.
+>>> So that no one will be tempted to change it back to PCI_VENDOR_ID_ADVANTECH
+>>> in the future.
+>> Definitely!
+> 
+> Is the patch now ok?
 
-Is the patch now ok?
+No :)
 
-----
-This Patch add the device information for the
-MIC-3620 8-port RS-232 cPCI card from Advantech Co. Ltd.
+> ----
+> This Patch add the device information for the
+> MIC-3620 8-port RS-232 cPCI card from Advantech Co. Ltd.
+> 
+> Signed-off-by: Michael Bramer <grisu@deb-support.de>
+> --- a/drivers/serial/8250_pci.c	2008-07-13 23:51:29.000000000 +0200
+> +++ b/drivers/serial/8250_pci.c	2009-01-17 21:37:37.000000000 +0100
+> @@ -769,6 +768,8 @@
+>  #define PCI_SUBDEVICE_ID_OCTPRO422	0x0208
+>  #define PCI_SUBDEVICE_ID_POCTAL232	0x0308
+>  #define PCI_SUBDEVICE_ID_POCTAL422	0x0408
+> +#define PCI_VENDOR_ID_ADVANTECH         0x13fe
+> +#define PCI_DEVICE_ID_ADVANTECH_PCI3620 0x3620
 
-Signed-off-by: Michael Bramer <grisu@deb-support.de>
---- a/drivers/serial/8250_pci.c	2008-07-13 23:51:29.000000000 +0200
-+++ b/drivers/serial/8250_pci.c	2009-01-17 21:37:37.000000000 +0100
-@@ -769,6 +768,8 @@
- #define PCI_SUBDEVICE_ID_OCTPRO422	0x0208
- #define PCI_SUBDEVICE_ID_POCTAL232	0x0308
- #define PCI_SUBDEVICE_ID_POCTAL422	0x0408
-+#define PCI_VENDOR_ID_ADVANTECH         0x13fe
-+#define PCI_DEVICE_ID_ADVANTECH_PCI3620 0x3620
-=20
- /*
-  * Master list of serial port init/setup/exit quirks.
-@@ -2054,6 +2041,10 @@
- #endif
-=20
- static struct pci_device_id serial_pci_tbl[] =3D {
-+	// Advantech use PCI_DEVICE_ID_ADVANTECH_PCI3620 (0x3620) as 'PCI_SUB=
-VENDOR_ID'
-+	{	PCI_VENDOR_ID_ADVANTECH, PCI_DEVICE_ID_ADVANTECH_PCI3620,
-+		PCI_DEVICE_ID_ADVANTECH_PCI3620, 1, 0, 0,
-+		pbn_b2_8_921600 },
- 	{	PCI_VENDOR_ID_V3, PCI_DEVICE_ID_V3_V960,
- 		PCI_SUBVENDOR_ID_CONNECT_TECH,
- 		PCI_SUBDEVICE_ID_CONNECT_TECH_BH8_232, 0, 0,
-----
+Use TABs for indentation here.
 
-
-Gruss
-Grisu
---=20
-Michael Bramer  -- http://www.feuerwehr.kreuzau.de/wiki/
-PGP: finger grisu@db.debian.org  -- Linux Sysadmin   -- Use Debian Linu=
-x
-"Wenn ich die Folgen geahnt h=E4tte, w=E4re ich Uhrmacher geworden!"
-                                                 --- Albert Einstein
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>  /*
+>   * Master list of serial port init/setup/exit quirks.
+> @@ -2054,6 +2041,10 @@
+>  #endif
+>  
+>  static struct pci_device_id serial_pci_tbl[] = {
+> +	// Advantech use PCI_DEVICE_ID_ADVANTECH_PCI3620 (0x3620) as 'PCI_SUBVENDOR_ID'
+> +	{	PCI_VENDOR_ID_ADVANTECH, PCI_DEVICE_ID_ADVANTECH_PCI3620,
+> +		PCI_DEVICE_ID_ADVANTECH_PCI3620, 1, 0, 0,
+> +		pbn_b2_8_921600 },
+>  	{	PCI_VENDOR_ID_V3, PCI_DEVICE_ID_V3_V960,
+>  		PCI_SUBVENDOR_ID_CONNECT_TECH,
+>  		PCI_SUBDEVICE_ID_CONNECT_TECH_BH8_232, 0, 0,
+> ----
+> 
+> 
+> Gruss
+> Grisu
