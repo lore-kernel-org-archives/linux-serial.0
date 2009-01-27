@@ -1,45 +1,46 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 2/4] MIPS: enable serial UART support on PNX833X devices.
-Date: Tue, 27 Jan 2009 11:50:46 +0000
-Message-ID: <20090127115043.6236.66320.stgit@localhost.localdomain>
-References: <20090127114820.6236.67019.stgit@localhost.localdomain>
+Subject: [PATCH 0/4] Further small serial/tty fixups
+Date: Tue, 27 Jan 2009 11:50:22 +0000
+Message-ID: <20090127114820.6236.67019.stgit@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:37022 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:37018 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1755583AbZA0Lug (ORCPT
+	with ESMTP id S1753461AbZA0LuW (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 27 Jan 2009 06:50:36 -0500
-In-Reply-To: <20090127114820.6236.67019.stgit@localhost.localdomain>
+	Tue, 27 Jan 2009 06:50:22 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: torvalds@linux-foundation.org, linux-serial@vger.kernel.org
 
-From: Ihar Hrachyshka <ihar.hrachyshka@gmail.com>
 
-Enabled serial UART driver for PNX833X devices.
+Eric Paris (1):
+      tty_open can return to userspace holding tty_mutex
 
-Signed-off-by: Ihar Hrachyshka <ihar.hrachyshka@gmail.com>
-Signed-off-by: Alan Cox <number6@the-village.bc.nu>
----
+Ihar Hrachyshka (1):
+      MIPS: enable serial UART support on PNX833X devices.
 
- drivers/serial/Kconfig |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+Michael Bramer (1):
+      Add support for '8-port RS-232 MIC-3620 from advantech'
+
+Uwe Kleine-K=C3=B6nig (1):
+      Move jsm_remove_one to .devexit.text
 
 
-diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
-index 3e525e3..7d7f576 100644
---- a/drivers/serial/Kconfig
-+++ b/drivers/serial/Kconfig
-@@ -982,7 +982,7 @@ config SERIAL_SH_SCI_CONSOLE
- 
- config SERIAL_PNX8XXX
- 	bool "Enable PNX8XXX SoCs' UART Support"
--	depends on MIPS && SOC_PNX8550
-+	depends on MIPS && (SOC_PNX8550 || SOC_PNX833X)
- 	select SERIAL_CORE
- 	help
- 	  If you have a MIPS-based Philips SoC such as PNX8550 or PNX8330
+ drivers/char/tty_io.c           |    4 +++-
+ drivers/serial/8250_pci.c       |    6 ++++++
+ drivers/serial/Kconfig          |    2 +-
+ drivers/serial/jsm/jsm_driver.c |    2 +-
+ 4 files changed, 11 insertions(+), 3 deletions(-)
 
+--=20
+The early bird who catches the worm works for someone who comes in late
+and owns the worm farm.
+                -- Travis McGee
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
