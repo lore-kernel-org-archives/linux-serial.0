@@ -1,38 +1,53 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] MIPS: enable serial UART support on PNX833X devices.
-Date: Mon, 26 Jan 2009 22:53:21 +0000
-Message-ID: <20090126225321.4e907573@lxorguk.ukuu.org.uk>
-References: <fce2a370901141726p520c6b2aw7c6e69e11c923b25@mail.gmail.com>
-	<20090120113839.5c7e57ab@lxorguk.ukuu.org.uk>
-	<fce2a370901261432p2453deecj33912c154c611b1e@mail.gmail.com>
+Subject: [PATCH 1/4] tty_open can return to userspace holding tty_mutex
+Date: Tue, 27 Jan 2009 11:50:37 +0000
+Message-ID: <20090127115028.6236.27498.stgit@localhost.localdomain>
+References: <20090127114820.6236.67019.stgit@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:33033 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:37021 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752623AbZAZWxD (ORCPT
+	with ESMTP id S1755529AbZA0Lu3 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 26 Jan 2009 17:53:03 -0500
-In-Reply-To: <fce2a370901261432p2453deecj33912c154c611b1e@mail.gmail.com>
+	Tue, 27 Jan 2009 06:50:29 -0500
+In-Reply-To: <20090127114820.6236.67019.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ihar Hrachyshka <ihar.hrachyshka@gmail.com>
-Cc: linux-serial@vger.kernel.org
+To: torvalds@linux-foundation.org, linux-serial@vger.kernel.org
 
-On Tue, 27 Jan 2009 00:32:04 +0200
-Ihar Hrachyshka <ihar.hrachyshka@gmail.com> wrote:
+From: Eric Paris <eparis@redhat.com>
 
-> On Tue, Jan 20, 2009 at 1:38 PM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
-> > On Thu, 15 Jan 2009 03:26:38 +0200
-> > Ihar Hrachyshka <ihar.hrachyshka@gmail.com> wrote:
-> >
-> >> pnx833x_uart driver works good for PNX833X boards too.
-> >
-> > Needs a signed off by line otherwise ok
-> >
-> 
-> I resent the patch with a signed of by line but it seems that it was -
-> again - lost. See on Jan 20.
+__tty_open could return (to userspace) holding the tty_mutex thanks to a
+regression introduced by 4a2b5fddd53b80efcb3266ee36e23b8de28e761a.  This was
+found by bisecting an fsfuzzer problem.  Admittedly I have no idea how it
+managed to tickle this 100% reliably, but it is clearly a regression and
+when hit leaves the box in a completely unusable state.  This patch lets
+the fsfuzzer test complete every time.
 
-Its in the ttydev queue for linux-next
+Signed-off-by: Eric Paris <eparis@redhat.com>
+Signed-off-by: Alan Cox <alan@lxorguk.ukuu.org.uk>
+---
+
+ drivers/char/tty_io.c |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
+
+
+diff --git a/drivers/char/tty_io.c b/drivers/char/tty_io.c
+index d33e5ab..bc84e12 100644
+--- a/drivers/char/tty_io.c
++++ b/drivers/char/tty_io.c
+@@ -1817,8 +1817,10 @@ got_driver:
+ 		/* check whether we're reopening an existing tty */
+ 		tty = tty_driver_lookup_tty(driver, inode, index);
+ 
+-		if (IS_ERR(tty))
++		if (IS_ERR(tty)) {
++			mutex_unlock(&tty_mutex);
+ 			return PTR_ERR(tty);
++		}
+ 	}
+ 
+ 	if (tty) {
+
