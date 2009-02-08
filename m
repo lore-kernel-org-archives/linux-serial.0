@@ -1,74 +1,30 @@
-From: Komuro <komurojun-mbn@nifty.com>
-Subject: [PATCH] serial_cs:  support 3com 3C562 lan&modem multi-function
- card
-Date: Sat, 7 Feb 2009 16:02:50 +0900
-Message-ID: <20090207160250.bdebfb66.komurojun-mbn@nifty.com>
+From: Jiri Slaby <jirislaby@gmail.com>
+Subject: Re: [PATCH 1/2] PCI: quirks, don't mark one netmos as class other
+Date: Sun, 08 Feb 2009 22:58:39 +0100
+Message-ID: <498F558F.109@gmail.com>
+References: <1228749555-21363-1-git-send-email-jirislaby@gmail.com> <200812091453.32105.jbarnes@virtuousgeek.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from defg501.nifty.com ([202.248.238.128]:61307 "EHLO
-	defg501.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752430AbZBGHQJ (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 7 Feb 2009 02:16:09 -0500
-Received: from userg500.nifty.com (userg500p.nifty.com [172.22.128.80])by defg501.nifty.com with ESMTP id n1778jEn007496
-	for <linux-serial@vger.kernel.org>; Sat, 7 Feb 2009 16:08:45 +0900
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <200812091453.32105.jbarnes@virtuousgeek.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Jesse Barnes <jbarnes@virtuousgeek.org>
+Cc: akpm@linux-foundation.org, linux-serial@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: komurojun-mbn@nifty.com
 
+Jesse Barnes wrote:
+> On Monday, December 08, 2008 7:19 am Jiri Slaby wrote:
+>> Let it as serial, since it doesn't have subdevice in the form of 0x00PS.
+>>
+>> Signed-off-by: Jiri Slaby <jirislaby@gmail.com>
+>> Cc: Jesse Barnes <jbarnes@virtuousgeek.org>
+> 
+> Applied to my linux-next branch, thanks.
 
-serial_cs:
-  	fix serial_cs to support 3com 3C562 lan&modem multi-function
-        pcmcia-card again.
+Hi, did this get lost by a chance? I don't see it in your -next branch
+anymore. Neither in any other branch nor upstream.
 
-        This code was deleted by Dominik(2006/12/05),
-	  but actually it is necessary for this card
-        to get the correct configuration register information.
-
-Signed-off-by: Komuro <komurojun-mbn@nifty.com>
-
----
-
---- linux-2.6.28-stock/drivers/serial/serial_cs.c.orig	2009-01-01 08:03:42.000000000 +0900
-+++ linux-2.6.28-stock/drivers/serial/serial_cs.c	2009-01-01 09:55:37.000000000 +0900
-@@ -681,7 +681,7 @@ static int serial_config(struct pcmcia_d
- 	u_char *buf;
- 	cisparse_t *parse;
- 	cistpl_cftable_entry_t *cf;
--	int i;
-+	int i, last_ret, last_fn;
- 
- 	DEBUG(0, "serial_config(0x%p)\n", link);
- 
-@@ -699,6 +699,17 @@ static int serial_config(struct pcmcia_d
- 	tuple->TupleDataMax = 255;
- 	tuple->Attributes = 0;
- 
-+	/* Get configuration register information */
-+	tuple->DesiredTuple = CISTPL_CONFIG;
-+	last_ret = first_tuple(link, tuple, parse);
-+	if (last_ret != 0) {
-+		last_fn = ParseTuple;
-+		goto cs_failed;
-+   	}
-+    	link->conf.ConfigBase = parse->config.base;
-+   	link->conf.Present = parse->config.rmask[0];
-+
-+
- 	/* Is this a compliant multifunction card? */
- 	tuple->DesiredTuple = CISTPL_LONGLINK_MFC;
- 	tuple->Attributes = TUPLE_RETURN_COMMON | TUPLE_RETURN_LINK;
-@@ -761,7 +772,9 @@ static int serial_config(struct pcmcia_d
- 	kfree(cfg_mem);
- 	return 0;
- 
-- failed:
-+cs_failed:
-+	cs_error(link, last_fn, last_ret);
-+failed:
- 	serial_remove(link);
- 	kfree(cfg_mem);
- 	return -ENODEV;
+BTW I got:
+This patch was dropped because it was merged into mainline or a subsystem tree
+from Andrew, so it had to be somewhere, I suppose...
