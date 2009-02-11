@@ -1,182 +1,103 @@
 From: akpm@linux-foundation.org
-Subject: [patch for 2.6.29? 2/2] 8250: fix boot hang with serial console when using with Serial Over Lan port
-Date: Wed, 11 Feb 2009 13:14:38 -0800
-Message-ID: <200902112114.n1BLEccf013575@imap1.linux-foundation.org>
+Subject: [patch for 2.6.29? 1/2] atmel_serial might lose modem status change
+Date: Wed, 11 Feb 2009 13:14:36 -0800
+Message-ID: <200902112114.n1BLEa02013569@imap1.linux-foundation.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp1.linux-foundation.org ([140.211.169.13]:57422 "EHLO
+Received: from smtp1.linux-foundation.org ([140.211.169.13]:46514 "EHLO
 	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1757989AbZBKVPK (ORCPT
+	by vger.kernel.org with ESMTP id S1757611AbZBKVP1 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 11 Feb 2009 16:15:10 -0500
+	Wed, 11 Feb 2009 16:15:27 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: alan@lxorguk.ukuu.org.uk
-Cc: linux-serial@vger.kernel.org, akpm@linux-foundation.org, mchehab@redhat.com, stable@kernel.org
+Cc: linux-serial@vger.kernel.org, akpm@linux-foundation.org, anemo@mba.ocn.ne.jp, haavard.skinnemoen@atmel.com, itai.levi.devel@gmail.com, linux@bohmer.net, marc.pignat@hevs.ch
 
-From: Mauro Carvalho Chehab <mchehab@redhat.com>
+From: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
 
-Intel 8257x Ethernet boards have a feature called Serial Over Lan.
+I found a problem of handling of modem status of atmel_serial driver.
 
-This feature works by emulating a serial port, and it is detected by
-kernel as a normal 8250 port.  However, this emulation is not perfect, as
-also noticed on changeset 7500b1f602aad75901774a67a687ee985d85893f.
+With the commit 1ecc26 ("atmel_serial: split the interrupt handler"),
+handling of modem status signal was splitted into two parts.  The
+atmel_tasklet_func() compares new status with irq_status_prev, but
+irq_status_prev is not correct if signal status was changed while the port
+is closed.
 
-Before this patch, the kernel were trying to check if the serial TX is
-capable of work using IRQ's.
+Here is a sequence to cause problem:
 
-This were done with a code similar this:
+1. Remote side sets CTS (and DSR).
+2. Local side close the port.
+3. Local side clears RTS and DTR.
+4. Remote side clears CTS and DSR.
+5. Local side reopen the port.  hw_stopped becomes 1.
+6. Local side sets RTS and DTR.
+7. Remote side sets CTS and DSR.
 
-        serial_outp(up, UART_IER, UART_IER_THRI);
-        lsr = serial_in(up, UART_LSR);
-        iir = serial_in(up, UART_IIR);
-        serial_outp(up, UART_IER, 0);
+Then CTS change interrupt can be received, but since CTS bit in
+irq_status_prev and new status is same, uart_handle_cts_change() will not
+be called (so hw_stopped will not be cleared, i.e.  cannot send any data).
 
-        if (lsr & UART_LSR_TEMT && iir & UART_IIR_NO_INT)
-		up->bugs |= UART_BUG_TXEN;
+I suppose irq_status_prev should be initialized at somewhere in open
+sequence.
 
-This works fine for other 8250 ports, but, on 8250-emulated SoL port, the
-chip is a little lazy to down UART_IIR_NO_INT at UART_IIR register.
+Itai Levi pointed out that we need to initialize atmel_port->irq_status
+as well here. His analysis is as follows:
 
-Due to that, UART_BUG_TXEN is sometimes enabled.  However, as TX IRQ keeps
-working, and the TX polling is now enabled, the driver miss-interprets the
-IRQ received later, hanging up the machine until a key is pressed at the
-serial console.
+> Regarding the second part of the patch (which resets irq_status_prev),
+> it turns out that both versions of the patch (mine and Atsushi's)
+> still leave enough room for faulty behavior when opening the port.
+>
+> This is because we are not resetting both irq_status_prev and
+> irq_status in atmel_startup() to CSR, which leads faulty behavior in
+> the following sequences:
+>
+> First case:
+> 1. closing the port while CTS line = 1 (TX not allowed)
+> 2. setting CTS line = 0 (TX allowed)
+> 3. opening the port
+> 4. transmitting one char
+> 5. Cannot transmit more chars, although CTS line is 0
+>
+> Second case:
+> 1. closing the port while CTS line = 0 (TX allowed)
+> 2. setting CTS line = 1 (TX not allowed)
+> 3. opening the port
+> 4. receiving some chars
+> 5. Now we can transmit, although CTS line is 1
+>
+> This reason for this is that the tasklet is scheduled as a result of
+> TX or RX interrupts (not a status change!), in steps 4 above. Inside
+> the tasklet, the atmel_port->irq_status (which holds the value from
+> the previous session) is compared to atmel_port->irq_status_prev.
+> Hence, a status-change of the CTS line is faultily detected.
+>
+> Both cases were verified on 9260 hardware.
 
-This is the 6 version of this patch.  Previous versions were trying to
-introduce a large enough delay between serial_outp and serial_in(up,
-UART_IIR), but not taking forever.  However, the needed delay couldn't be
-safely determined.
-
-At the experimental tests, a delay of 1us solves most of the cases, but
-still hangs sometimes.  Increasing the delay to 5us was better, but still
-doesn't solve.  A very high delay of 50 ms seemed to work every time.
-
-However, poking around with delays and pray for it to be enough doesn't
-seem to be a good approach, even for a quirk.
-
-So, instead of playing with random large arbitrary delays, let's just
-disable UART_BUG_TXEN for all SoL ports.
-
-[akpm@linux-foundation.org: fix warnings]
-Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+[haavard.skinnemoen@atmel.com: folded with patch from Itai Levi]
+Signed-off-by: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
+Signed-off-by: Haavard Skinnemoen <haavard.skinnemoen@atmel.com>
+Cc: Remy Bohmer <linux@bohmer.net>
+Cc: Marc Pignat <marc.pignat@hevs.ch>
+Cc: Itai Levi <itai.levi.devel@gmail.com>
 Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: <stable@kernel.org>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 ---
 
- drivers/serial/8250.c       |   15 ++++++++++++++
- drivers/serial/8250_pci.c   |   36 ++++++++++++++++++++++++++++++++++
- include/linux/pci_ids.h     |    3 ++
- include/linux/serial_core.h |    1 
- 4 files changed, 55 insertions(+)
+ drivers/serial/atmel_serial.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff -puN drivers/serial/8250.c~8250-fix-boot-hang-with-serial-console-when-using-with-serial-over-lan-port drivers/serial/8250.c
---- a/drivers/serial/8250.c~8250-fix-boot-hang-with-serial-console-when-using-with-serial-over-lan-port
-+++ a/drivers/serial/8250.c
-@@ -2083,6 +2083,20 @@ static int serial8250_startup(struct uar
- 
- 	serial8250_set_mctrl(&up->port, up->port.mctrl);
- 
-+	/* Serial over Lan (SoL) hack:
-+	   Intel 8257x Gigabit ethernet chips have a
-+	   16550 emulation, to be used for Serial Over Lan.
-+	   Those chips take a longer time than a normal
-+	   serial device to signalize that a transmission
-+	   data was queued. Due to that, the above test generally
-+	   fails. One solution would be to delay the reading of
-+	   iir. However, this is not reliable, since the timeout
-+	   is variable. So, let's just don't test if we receive
-+	   TX irq. This way, we'll never enable UART_BUG_TXEN.
-+	 */
-+	if (up->port.flags & UPF_NO_TXEN_TEST)
-+		goto dont_test_tx_en;
-+
- 	/*
- 	 * Do a quick test to see if we receive an
- 	 * interrupt when we enable the TX irq.
-@@ -2102,6 +2116,7 @@ static int serial8250_startup(struct uar
- 		up->bugs &= ~UART_BUG_TXEN;
+diff -puN drivers/serial/atmel_serial.c~atmel_serial-might-lose-modem-status-change drivers/serial/atmel_serial.c
+--- a/drivers/serial/atmel_serial.c~atmel_serial-might-lose-modem-status-change
++++ a/drivers/serial/atmel_serial.c
+@@ -877,6 +877,10 @@ static int atmel_startup(struct uart_por
+ 		}
  	}
  
-+dont_test_tx_en:
- 	spin_unlock_irqrestore(&up->port.lock, flags);
- 
- 	/*
-diff -puN drivers/serial/8250_pci.c~8250-fix-boot-hang-with-serial-console-when-using-with-serial-over-lan-port drivers/serial/8250_pci.c
---- a/drivers/serial/8250_pci.c~8250-fix-boot-hang-with-serial-console-when-using-with-serial-over-lan-port
-+++ a/drivers/serial/8250_pci.c
-@@ -798,6 +798,21 @@ pci_default_setup(struct serial_private 
- 	return setup_port(priv, port, bar, offset, board->reg_shift);
- }
- 
-+static int skip_tx_en_setup(struct serial_private *priv,
-+			const struct pciserial_board *board,
-+			struct uart_port *port, int idx)
-+{
-+	port->flags |= UPF_NO_TXEN_TEST;
-+	printk(KERN_DEBUG "serial8250: skipping TxEn test for device "
-+			  "[%04x:%04x] subsystem [%04x:%04x]\n",
-+			  priv->dev->vendor,
-+			  priv->dev->device,
-+			  priv->dev->subsystem_vendor,
-+			  priv->dev->subsystem_device);
++	/* Save current CSR for comparison in atmel_tasklet_func() */
++	atmel_port->irq_status_prev = UART_GET_CSR(port);
++	atmel_port->irq_status = atmel_port->irq_status_prev;
 +
-+	return pci_default_setup(priv, board, port, idx);
-+}
-+
- /* This should be in linux/pci_ids.h */
- #define PCI_VENDOR_ID_SBSMODULARIO	0x124B
- #define PCI_SUBVENDOR_ID_SBSMODULARIO	0x124B
-@@ -864,6 +879,27 @@ static struct pci_serial_quirk pci_seria
- 		.init		= pci_inteli960ni_init,
- 		.setup		= pci_default_setup,
- 	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTEL,
-+		.device		= PCI_DEVICE_ID_INTEL_8257X_SOL,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.setup		= skip_tx_en_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTEL,
-+		.device		= PCI_DEVICE_ID_INTEL_82573L_SOL,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.setup		= skip_tx_en_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTEL,
-+		.device		= PCI_DEVICE_ID_INTEL_82573E_SOL,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.setup		= skip_tx_en_setup,
-+	},
  	/*
- 	 * ITE
+ 	 * Finally, enable the serial port
  	 */
-diff -puN include/linux/pci_ids.h~8250-fix-boot-hang-with-serial-console-when-using-with-serial-over-lan-port include/linux/pci_ids.h
---- a/include/linux/pci_ids.h~8250-fix-boot-hang-with-serial-console-when-using-with-serial-over-lan-port
-+++ a/include/linux/pci_ids.h
-@@ -2340,6 +2340,9 @@
- #define PCI_DEVICE_ID_INTEL_82378	0x0484
- #define PCI_DEVICE_ID_INTEL_I960	0x0960
- #define PCI_DEVICE_ID_INTEL_I960RM	0x0962
-+#define PCI_DEVICE_ID_INTEL_8257X_SOL	0x1062
-+#define PCI_DEVICE_ID_INTEL_82573E_SOL	0x1085
-+#define PCI_DEVICE_ID_INTEL_82573L_SOL	0x108F
- #define PCI_DEVICE_ID_INTEL_82815_MC	0x1130
- #define PCI_DEVICE_ID_INTEL_82815_CGC	0x1132
- #define PCI_DEVICE_ID_INTEL_82092AA_0	0x1221
-diff -puN include/linux/serial_core.h~8250-fix-boot-hang-with-serial-console-when-using-with-serial-over-lan-port include/linux/serial_core.h
---- a/include/linux/serial_core.h~8250-fix-boot-hang-with-serial-console-when-using-with-serial-over-lan-port
-+++ a/include/linux/serial_core.h
-@@ -299,6 +299,7 @@ struct uart_port {
- #define UPF_HARDPPS_CD		((__force upf_t) (1 << 11))
- #define UPF_LOW_LATENCY		((__force upf_t) (1 << 13))
- #define UPF_BUGGY_UART		((__force upf_t) (1 << 14))
-+#define UPF_NO_TXEN_TEST	((__force upf_t) (1 << 15))
- #define UPF_MAGIC_MULTIPLIER	((__force upf_t) (1 << 16))
- #define UPF_CONS_FLOW		((__force upf_t) (1 << 23))
- #define UPF_SHARE_IRQ		((__force upf_t) (1 << 24))
 _
