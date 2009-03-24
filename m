@@ -1,47 +1,54 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 09/30] blackfin: Explain why we cannot cpu_relax() in early
-	serial code
-Date: Tue, 24 Mar 2009 14:03:16 +0000
-Message-ID: <20090324140313.12735.24344.stgit@localhost.localdomain>
+Subject: [PATCH 03/30] serial: Update PNP IDs
+Date: Tue, 24 Mar 2009 14:02:12 +0000
+Message-ID: <20090324140208.12735.29637.stgit@localhost.localdomain>
 References: <20090324135930.12735.7827.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:48946 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1758075AbZCXOCy (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 24 Mar 2009 10:02:54 -0400
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1757736AbZCXOCq@vger.kernel.org>
 In-Reply-To: <20090324135930.12735.7827.stgit@localhost.localdomain>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, torvalds@linux-foundation.org
+List-Id: linux-serial@vger.kernel.org
 
-From: Mike Frysinger <vapier.adi@gmail.com>
+From: Matthew Garrett <mjg59@srcf.ucam.org>
 
-Signed-off-by: Mike Frysinger <vapier.adi@gmail.com>
-Signed-off-by: Bryan Wu <cooloney@kernel.org>
-Signed-off-by: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Add new Wacom device IDs to the 8250_pnp serial driver, to support
+autoconfig on some newer tablet PCs.  Also add a comment to clarify that
+the FUJ02E6 device is a custom protocol, not a Wacom tablet.
+
+Signed-off-by: Matthew Garrett <mjg@redhat.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Alan Cox <alan@etchedpixels.co.uk>
 ---
 
- drivers/serial/bfin_5xx.c |    4 ++++
- 1 files changed, 4 insertions(+), 0 deletions(-)
+ drivers/serial/8250_pnp.c |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
 
 
-diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
-index d46d764..c7c0c1b 100644
---- a/drivers/serial/bfin_5xx.c
-+++ b/drivers/serial/bfin_5xx.c
-@@ -1127,6 +1127,10 @@ static __init void early_serial_putc(struct uart_port *port, int ch)
- 	unsigned timeout = 0xffff;
- 	struct bfin_serial_port *uart = (struct bfin_serial_port *)port;
- 
-+	/* We cannot cpu_relax() here as doing so on the BF561 relies
-+	 * on the per-cpu region being setup, and since this is early
-+	 * serial code, it may not yet be usable ...
-+	 */
- 	while ((!(UART_GET_LSR(uart) & THRE)) && --timeout)
- 		barrier();
- 
-
+diff --git a/drivers/serial/8250_pnp.c b/drivers/serial/8250_pnp.c
+index 6db9f13..d71dfe3 100644
+--- a/drivers/serial/8250_pnp.c
++++ b/drivers/serial/8250_pnp.c
+@@ -334,6 +334,9 @@ static const struct pnp_device_id pnp_dev_table[] = {
+ 	{       "WACF007",              0       },
+ 	{       "WACF008",              0       },
+ 	{       "WACF009",              0       },
++	{       "WACF00A",              0       },
++	{       "WACF00B",              0       },
++	{       "WACF00C",              0       },
+ 	/* Compaq touchscreen */
+ 	{       "FPI2002",              0 },
+ 	/* Fujitsu Stylistic touchscreens */
+@@ -347,8 +350,9 @@ static const struct pnp_device_id pnp_dev_table[] = {
+ 	{       "FUJ02B8",              0 },
+ 	{       "FUJ02B9",              0 },
+ 	{       "FUJ02BC",              0 },
+-	/* Fujitsu Wacom Tablet PC devices */
++	/* Fujitsu Wacom Tablet PC device */
+ 	{	"FUJ02E5",		0	},
++	/* Fujitsu P-series tablet PC device */
+ 	{	"FUJ02E6",		0	},
+ 	/*
+ 	 * LG C1 EXPRESS DUAL (C1-PB11A3) touch screen (actually a FUJ02E6 in
