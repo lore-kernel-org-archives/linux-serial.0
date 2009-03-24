@@ -1,46 +1,47 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 10/30] blackfin: BF538/9 serial uart support
-Date: Tue, 24 Mar 2009 14:03:23 +0000
-Message-ID: <20090324140321.12735.55366.stgit@localhost.localdomain>
+Subject: [PATCH 09/30] blackfin: Explain why we cannot cpu_relax() in early
+	serial code
+Date: Tue, 24 Mar 2009 14:03:16 +0000
+Message-ID: <20090324140313.12735.24344.stgit@localhost.localdomain>
 References: <20090324135930.12735.7827.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:48949 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:48946 "EHLO
 	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1758098AbZCXOC7 (ORCPT
+	with ESMTP id S1758075AbZCXOCy (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 24 Mar 2009 10:02:59 -0400
+	Tue, 24 Mar 2009 10:02:54 -0400
 In-Reply-To: <20090324135930.12735.7827.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, torvalds@linux-foundation.org
 
-From: Michael Hennerich <michael.hennerich@analog.com>
+From: Mike Frysinger <vapier.adi@gmail.com>
 
-Enable third UART on BF538/9
-
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Signed-off-by: Mike Frysinger <vapier.adi@gmail.com>
 Signed-off-by: Bryan Wu <cooloney@kernel.org>
 Signed-off-by: Alan Cox <alan@lxorguk.ukuu.org.uk>
 ---
 
- drivers/serial/Kconfig |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ drivers/serial/bfin_5xx.c |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
 
 
-diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
-index 451b64f..46d4321 100644
---- a/drivers/serial/Kconfig
-+++ b/drivers/serial/Kconfig
-@@ -770,7 +770,7 @@ config UART1_RTS_PIN
+diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
+index d46d764..c7c0c1b 100644
+--- a/drivers/serial/bfin_5xx.c
++++ b/drivers/serial/bfin_5xx.c
+@@ -1127,6 +1127,10 @@ static __init void early_serial_putc(struct uart_port *port, int ch)
+ 	unsigned timeout = 0xffff;
+ 	struct bfin_serial_port *uart = (struct bfin_serial_port *)port;
  
- config SERIAL_BFIN_UART2
- 	bool "Enable UART2"
--	depends on SERIAL_BFIN && (BF54x)
-+	depends on SERIAL_BFIN && (BF54x || BF538 || BF539)
- 	help
- 	  Enable UART2
++	/* We cannot cpu_relax() here as doing so on the BF561 relies
++	 * on the per-cpu region being setup, and since this is early
++	 * serial code, it may not yet be usable ...
++	 */
+ 	while ((!(UART_GET_LSR(uart) & THRE)) && --timeout)
+ 		barrier();
  
 
