@@ -1,72 +1,112 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 25/30] tty: moxa, fix refcounting in moxa_poll_port
-Date: Tue, 24 Mar 2009 14:06:01 +0000
-Message-ID: <20090324140557.12735.48589.stgit@localhost.localdomain>
+Subject: [PATCH 23/30] icom: remove unused variables
+Date: Tue, 24 Mar 2009 14:05:43 +0000
+Message-ID: <20090324140540.12735.47482.stgit@localhost.localdomain>
 References: <20090324135930.12735.7827.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:48996 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:48988 "EHLO
 	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1755980AbZCXOGH (ORCPT
+	with ESMTP id S1756282AbZCXOFX (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 24 Mar 2009 10:06:07 -0400
+	Tue, 24 Mar 2009 10:05:23 -0400
 In-Reply-To: <20090324135930.12735.7827.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, torvalds@linux-foundation.org
 
-From: Jiri Slaby <jirislaby@gmail.com>
+From: Breno Leitao <leitao@linux.vnet.ibm.com>
 
-There is missing tty_kref_put on some paths in moxa_poll_port,
-although the reference is always taken. Fix it.
-
-Signed-off-by: Jiri Slaby <jirislaby@gmail.com>
-Reported-by: Jan 'Yenya' Kasprzak <kas@fi.muni.cz>
+Signed-off-by: Breno Leitao <leitao@linux.vnet.ibm.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Alan Cox <alan@lxorguk.ukuu.org.uk>
 ---
 
- drivers/char/moxa.c |    9 +++++----
- 1 files changed, 5 insertions(+), 4 deletions(-)
+ drivers/serial/icom.c |   14 ++------------
+ 1 files changed, 2 insertions(+), 12 deletions(-)
 
 
-diff --git a/drivers/char/moxa.c b/drivers/char/moxa.c
-index 8b0da97..4a4cab7 100644
---- a/drivers/char/moxa.c
-+++ b/drivers/char/moxa.c
-@@ -1486,11 +1486,11 @@ static int moxa_poll_port(struct moxa_port *p, unsigned int handle,
+diff --git a/drivers/serial/icom.c b/drivers/serial/icom.c
+index 2b7531d..6579e2b 100644
+--- a/drivers/serial/icom.c
++++ b/drivers/serial/icom.c
+@@ -1098,7 +1098,6 @@ static void icom_set_termios(struct uart_port *port,
+ {
+ 	int baud;
+ 	unsigned cflag, iflag;
+-	int bits;
+ 	char new_config2;
+ 	char new_config3 = 0;
+ 	char tmp_byte;
+@@ -1119,34 +1118,27 @@ static void icom_set_termios(struct uart_port *port,
+ 	switch (cflag & CSIZE) {
+ 	case CS5:		/* 5 bits/char */
+ 		new_config2 |= ICOM_ACFG_5BPC;
+-		bits = 7;
+ 		break;
+ 	case CS6:		/* 6 bits/char */
+ 		new_config2 |= ICOM_ACFG_6BPC;
+-		bits = 8;
+ 		break;
+ 	case CS7:		/* 7 bits/char */
+ 		new_config2 |= ICOM_ACFG_7BPC;
+-		bits = 9;
+ 		break;
+ 	case CS8:		/* 8 bits/char */
+ 		new_config2 |= ICOM_ACFG_8BPC;
+-		bits = 10;
+ 		break;
+ 	default:
+-		bits = 10;
+ 		break;
+ 	}
+ 	if (cflag & CSTOPB) {
+ 		/* 2 stop bits */
+ 		new_config2 |= ICOM_ACFG_2STOP_BIT;
+-		bits++;
+ 	}
+ 	if (cflag & PARENB) {
+ 		/* parity bit enabled */
+ 		new_config2 |= ICOM_ACFG_PARITY_ENAB;
+ 		trace(ICOM_PORT, "PARENB", 0);
+-		bits++;
+ 	}
+ 	if (cflag & PARODD) {
+ 		/* odd parity */
+@@ -1322,7 +1314,6 @@ static struct uart_driver icom_uart_driver = {
+ static int __devinit icom_init_ports(struct icom_adapter *icom_adapter)
+ {
+ 	u32 subsystem_id = icom_adapter->subsystem_id;
+-	int retval = 0;
+ 	int i;
+ 	struct icom_port *icom_port;
+ 
+@@ -1368,7 +1359,7 @@ static int __devinit icom_init_ports(struct icom_adapter *icom_adapter)
+ 		}
  	}
  
- 	if (!handle) /* nothing else to do */
--		return 0;
-+		goto put;
- 
- 	intr = readw(ip); /* port irq status */
- 	if (intr == 0)
--		return 0;
-+		goto put;
- 
- 	writew(0, ip); /* ACK port */
- 	ofsAddr = p->tableAddr;
-@@ -1499,16 +1499,17 @@ static int moxa_poll_port(struct moxa_port *p, unsigned int handle,
- 				ofsAddr + HostStat);
- 
- 	if (!inited)
--		return 0;
-+		goto put;
- 
- 	if (tty && (intr & IntrBreak) && !I_IGNBRK(tty)) { /* BREAK */
- 		tty_insert_flip_char(tty, 0, TTY_BREAK);
- 		tty_schedule_flip(tty);
- 	}
--	tty_kref_put(tty);
- 
- 	if (intr & IntrLine)
- 		moxa_new_dcdstate(p, readb(ofsAddr + FlagStat) & DCD_state);
-+put:
-+	tty_kref_put(tty);
- 
- 	return 0;
+-	return retval;
++	return 0;
  }
+ 
+ static void icom_port_active(struct icom_port *icom_port, struct icom_adapter *icom_adapter, int port_num)
+@@ -1391,7 +1382,6 @@ static int __devinit icom_load_ports(struct icom_adapter *icom_adapter)
+ {
+ 	struct icom_port *icom_port;
+ 	int port_num;
+-	int retval;
+ 
+ 	for (port_num = 0; port_num < icom_adapter->numb_ports; port_num++) {
+ 
+@@ -1405,7 +1395,7 @@ static int __devinit icom_load_ports(struct icom_adapter *icom_adapter)
+ 			icom_port->adapter = icom_adapter;
+ 
+ 			/* get port memory */
+-			if ((retval = get_port_memory(icom_port)) != 0) {
++			if (get_port_memory(icom_port) != 0) {
+ 				dev_err(&icom_port->adapter->pci_dev->dev,
+ 					"Memory allocation for port FAILED\n");
+ 			}
 
