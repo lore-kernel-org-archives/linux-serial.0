@@ -1,55 +1,51 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 06/30] devpts: must release s_umount on error
-Date: Tue, 24 Mar 2009 14:02:40 +0000
-Message-ID: <20090324140237.12735.87068.stgit@localhost.localdomain>
+Subject: [PATCH 08/30] Use barrier instead of cpu_relax for early blackfin boot
+Date: Tue, 24 Mar 2009 14:03:07 +0000
+Message-ID: <20090324140257.12735.75468.stgit@localhost.localdomain>
 References: <20090324135930.12735.7827.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:48935 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:48944 "EHLO
 	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1757628AbZCXOCQ (ORCPT
+	with ESMTP id S1755195AbZCXOCr (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 24 Mar 2009 10:02:16 -0400
+	Tue, 24 Mar 2009 10:02:47 -0400
 In-Reply-To: <20090324135930.12735.7827.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, torvalds@linux-foundation.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.vnet.ibm.com>
+From: Graf Yang <graf.yang@analog.com>
 
-We should drop the ->s_umount mutex if an error occurs after the
-sget()/grab_super() call. This was introduced when adding support
-for multiple instances of devpts and noticed during a code review/reorg.
+We are making a SMP like patch to blackfin, cpu_relax() is replaced by a
+data cache flush function which will count it to a per-cpu counter.
+If this serial function is called too early, the per-cpu data area have
+not been initialized, this call will cause crash.
+So we'd like to use barrier() instead of cpu_relax().
 
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.vnet.ibm.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Alan Cox <alan@etchedpixels.co.uk>
+Signed-off-by: Graf Yang <graf.yang@analog.com>
+Signed-off-by: Bryan Wu <cooloney@kernel.org>
+Signed-off-by: Alan Cox <alan@lxorguk.ukuu.org.uk>
 ---
 
- fs/devpts/inode.c |    2 ++
- 1 files changed, 2 insertions(+), 0 deletions(-)
+ drivers/serial/bfin_5xx.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
 
-diff --git a/fs/devpts/inode.c b/fs/devpts/inode.c
-index bff4052..140b431 100644
---- a/fs/devpts/inode.c
-+++ b/fs/devpts/inode.c
-@@ -385,6 +385,7 @@ static int new_pts_mount(struct file_system_type *fs_type, int flags,
+diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
+index 318d69d..d46d764 100644
+--- a/drivers/serial/bfin_5xx.c
++++ b/drivers/serial/bfin_5xx.c
+@@ -1128,7 +1128,8 @@ static __init void early_serial_putc(struct uart_port *port, int ch)
+ 	struct bfin_serial_port *uart = (struct bfin_serial_port *)port;
  
- fail:
- 	dput(mnt->mnt_sb->s_root);
-+	up_write(&mnt->mnt_sb->s_umount);
- 	deactivate_super(mnt->mnt_sb);
- 	return err;
+ 	while ((!(UART_GET_LSR(uart) & THRE)) && --timeout)
+-		cpu_relax();
++		barrier();
++
+ 	UART_PUT_CHAR(uart, ch);
  }
-@@ -473,6 +474,7 @@ static int init_pts_mount(struct file_system_type *fs_type, int flags,
- 	err = mknod_ptmx(mnt->mnt_sb);
- 	if (err) {
- 		dput(mnt->mnt_sb->s_root);
-+		up_write(&mnt->mnt_sb->s_umount);
- 		deactivate_super(mnt->mnt_sb);
- 	}
  
 
