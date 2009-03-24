@@ -1,333 +1,59 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 30/30] 8250_pci: ni8420 support
-Date: Tue, 24 Mar 2009 14:07:55 +0000
-Message-ID: <20090324140702.12735.53908.stgit@localhost.localdomain>
+Subject: [PATCH 12/30] blackfin: Fix tty compile error in PIO mode
+Date: Tue, 24 Mar 2009 14:03:47 +0000
+Message-ID: <20090324140340.12735.44126.stgit@localhost.localdomain>
 References: <20090324135930.12735.7827.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:34008 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:48953 "EHLO
 	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1758401AbZCXOIB (ORCPT
+	with ESMTP id S1755346AbZCXOD0 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 24 Mar 2009 10:08:01 -0400
+	Tue, 24 Mar 2009 10:03:26 -0400
 In-Reply-To: <20090324135930.12735.7827.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, torvalds@linux-foundation.org
 
-From: Will Page <will.page@ni.com>
+From: Sonic Zhang <sonic.zhang@analog.com>
 
-Signed-off-by: Will Page <will.page@ni.com>
-Signed-off-by: Shawn Bohrer <shawn.bohrer@ni.com>
+drivers/serial/bfin_5xx.c: In function bfin_serial_rx_chars:
+drivers/serial/bfin_5xx.c:178: error: struct uart_info has no
+member
+named tty
+make[3]: *** [drivers/serial/bfin_5xx.o] Error 1
+make[2]: *** [drivers/serial] Error 2
+make[1]: *** [drivers] Error 2
+make[1]: *** Waiting for unfinished jobs....
+make[1]: Leaving directory `/root/projects/uClinux-dist/linux-2.6.x'
+make: *** [linux] Error 1
+
+Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+Signed-off-by: Bryan Wu <cooloney@kernel.org>
 Signed-off-by: Alan Cox <alan@lxorguk.ukuu.org.uk>
 ---
 
- drivers/serial/8250_pci.c |  218 +++++++++++++++++++++++++++++++++++++++++++++
- include/linux/pci_ids.h   |   12 ++
- 2 files changed, 230 insertions(+), 0 deletions(-)
+ drivers/serial/bfin_5xx.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
 
-diff --git a/drivers/serial/8250_pci.c b/drivers/serial/8250_pci.c
-index 2f570c7..5b0e80d 100644
---- a/drivers/serial/8250_pci.c
-+++ b/drivers/serial/8250_pci.c
-@@ -306,6 +306,33 @@ static void __devexit pci_plx9050_exit(struct pci_dev *dev)
- 	}
- }
+diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
+index 6bd9016..1e08e36 100644
+--- a/drivers/serial/bfin_5xx.c
++++ b/drivers/serial/bfin_5xx.c
+@@ -174,10 +174,10 @@ static void bfin_serial_rx_chars(struct bfin_serial_port *uart)
+ 			return;
+ 		}
  
-+#define NI8420_INT_ENABLE_REG	0x38
-+#define NI8420_INT_ENABLE_BIT	0x2000
-+
-+static void __devexit pci_ni8420_exit(struct pci_dev *dev)
-+{
-+	void __iomem *p;
-+	unsigned long base, len;
-+	unsigned int bar = 0;
-+
-+	if ((pci_resource_flags(dev, bar) & IORESOURCE_MEM) == 0) {
-+		moan_device("no memory in bar", dev);
-+		return;
-+	}
-+
-+	base = pci_resource_start(dev, bar);
-+	len =  pci_resource_len(dev, bar);
-+	p = ioremap_nocache(base, len);
-+	if (p == NULL)
-+		return;
-+
-+	/* Disable the CPU Interrupt */
-+	writel(readl(p + NI8420_INT_ENABLE_REG) & ~(NI8420_INT_ENABLE_BIT),
-+	       p + NI8420_INT_ENABLE_REG);
-+	iounmap(p);
-+}
-+
-+
- /* MITE registers */
- #define MITE_IOWBSR1	0xc4
- #define MITE_IOWCR1	0xf4
-@@ -627,6 +654,31 @@ static int pci_xircom_init(struct pci_dev *dev)
- 	return 0;
- }
+-	if (!uart->port.info || !uart->port.info->tty)
++	if (!uart->port.info || !uart->port.info->port.tty)
+ 		return;
+ #endif
+-	tty = uart->port.info->tty;
++	tty = uart->port.info->port.tty;
  
-+static int pci_ni8420_init(struct pci_dev *dev)
-+{
-+	void __iomem *p;
-+	unsigned long base, len;
-+	unsigned int bar = 0;
-+
-+	if ((pci_resource_flags(dev, bar) & IORESOURCE_MEM) == 0) {
-+		moan_device("no memory in bar", dev);
-+		return 0;
-+	}
-+
-+	base = pci_resource_start(dev, bar);
-+	len =  pci_resource_len(dev, bar);
-+	p = ioremap_nocache(base, len);
-+	if (p == NULL)
-+		return -ENOMEM;
-+
-+	/* Enable CPU Interrupt */
-+	writel(readl(p + NI8420_INT_ENABLE_REG) | NI8420_INT_ENABLE_BIT,
-+	       p + NI8420_INT_ENABLE_REG);
-+
-+	iounmap(p);
-+	return 0;
-+}
-+
- #define MITE_IOWBSR1_WSIZE	0xa
- #define MITE_IOWBSR1_WIN_OFFSET	0x800
- #define MITE_IOWBSR1_WENAB	(1 << 7)
-@@ -1023,6 +1075,114 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
- 	 */
- 	{
- 		.vendor		= PCI_VENDOR_ID_NI,
-+		.device		= PCI_DEVICE_ID_NI_PCI23216,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_ni8420_init,
-+		.setup		= pci_default_setup,
-+		.exit		= __devexit_p(pci_ni8420_exit),
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_NI,
-+		.device		= PCI_DEVICE_ID_NI_PCI2328,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_ni8420_init,
-+		.setup		= pci_default_setup,
-+		.exit		= __devexit_p(pci_ni8420_exit),
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_NI,
-+		.device		= PCI_DEVICE_ID_NI_PCI2324,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_ni8420_init,
-+		.setup		= pci_default_setup,
-+		.exit		= __devexit_p(pci_ni8420_exit),
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_NI,
-+		.device		= PCI_DEVICE_ID_NI_PCI2322,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_ni8420_init,
-+		.setup		= pci_default_setup,
-+		.exit		= __devexit_p(pci_ni8420_exit),
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_NI,
-+		.device		= PCI_DEVICE_ID_NI_PCI2324I,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_ni8420_init,
-+		.setup		= pci_default_setup,
-+		.exit		= __devexit_p(pci_ni8420_exit),
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_NI,
-+		.device		= PCI_DEVICE_ID_NI_PCI2322I,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_ni8420_init,
-+		.setup		= pci_default_setup,
-+		.exit		= __devexit_p(pci_ni8420_exit),
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_NI,
-+		.device		= PCI_DEVICE_ID_NI_PXI8420_23216,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_ni8420_init,
-+		.setup		= pci_default_setup,
-+		.exit		= __devexit_p(pci_ni8420_exit),
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_NI,
-+		.device		= PCI_DEVICE_ID_NI_PXI8420_2328,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_ni8420_init,
-+		.setup		= pci_default_setup,
-+		.exit		= __devexit_p(pci_ni8420_exit),
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_NI,
-+		.device		= PCI_DEVICE_ID_NI_PXI8420_2324,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_ni8420_init,
-+		.setup		= pci_default_setup,
-+		.exit		= __devexit_p(pci_ni8420_exit),
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_NI,
-+		.device		= PCI_DEVICE_ID_NI_PXI8420_2322,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_ni8420_init,
-+		.setup		= pci_default_setup,
-+		.exit		= __devexit_p(pci_ni8420_exit),
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_NI,
-+		.device		= PCI_DEVICE_ID_NI_PXI8422_2324,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_ni8420_init,
-+		.setup		= pci_default_setup,
-+		.exit		= __devexit_p(pci_ni8420_exit),
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_NI,
-+		.device		= PCI_DEVICE_ID_NI_PXI8422_2322,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_ni8420_init,
-+		.setup		= pci_default_setup,
-+		.exit		= __devexit_p(pci_ni8420_exit),
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_NI,
- 		.device		= PCI_ANY_ID,
- 		.subvendor	= PCI_ANY_ID,
- 		.subdevice	= PCI_ANY_ID,
-@@ -1334,6 +1494,7 @@ enum pci_board_num_t {
- 	pbn_b1_2_115200,
- 	pbn_b1_4_115200,
- 	pbn_b1_8_115200,
-+	pbn_b1_16_115200,
- 
- 	pbn_b1_1_921600,
- 	pbn_b1_2_921600,
-@@ -1343,6 +1504,9 @@ enum pci_board_num_t {
- 	pbn_b1_2_1250000,
- 
- 	pbn_b1_bt_1_115200,
-+	pbn_b1_bt_2_115200,
-+	pbn_b1_bt_4_115200,
-+
- 	pbn_b1_bt_2_921600,
- 
- 	pbn_b1_1_1382400,
-@@ -1609,6 +1773,12 @@ static struct pciserial_board pci_boards[] __devinitdata = {
- 		.base_baud	= 115200,
- 		.uart_offset	= 8,
- 	},
-+	[pbn_b1_16_115200] = {
-+		.flags		= FL_BASE1,
-+		.num_ports	= 16,
-+		.base_baud	= 115200,
-+		.uart_offset	= 8,
-+	},
- 
- 	[pbn_b1_1_921600] = {
- 		.flags		= FL_BASE1,
-@@ -1647,6 +1817,18 @@ static struct pciserial_board pci_boards[] __devinitdata = {
- 		.base_baud	= 115200,
- 		.uart_offset	= 8,
- 	},
-+	[pbn_b1_bt_2_115200] = {
-+		.flags		= FL_BASE1|FL_BASE_BARS,
-+		.num_ports	= 2,
-+		.base_baud	= 115200,
-+		.uart_offset	= 8,
-+	},
-+	[pbn_b1_bt_4_115200] = {
-+		.flags		= FL_BASE1|FL_BASE_BARS,
-+		.num_ports	= 4,
-+		.base_baud	= 115200,
-+		.uart_offset	= 8,
-+	},
- 
- 	[pbn_b1_bt_2_921600] = {
- 		.flags		= FL_BASE1|FL_BASE_BARS,
-@@ -3207,6 +3389,42 @@ static struct pci_device_id serial_pci_tbl[] = {
- 	/*
- 	 * National Instruments
- 	 */
-+	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PCI23216,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b1_16_115200 },
-+	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PCI2328,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b1_8_115200 },
-+	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PCI2324,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b1_bt_4_115200 },
-+	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PCI2322,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b1_bt_2_115200 },
-+	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PCI2324I,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b1_bt_4_115200 },
-+	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PCI2322I,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b1_bt_2_115200 },
-+	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8420_23216,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b1_16_115200 },
-+	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8420_2328,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b1_8_115200 },
-+	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8420_2324,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b1_bt_4_115200 },
-+	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8420_2322,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b1_bt_2_115200 },
-+	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8422_2324,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b1_bt_4_115200 },
-+	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8422_2322,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b1_bt_2_115200 },
- 	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8430_2322,
- 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
- 		pbn_ni8430_2 },
-diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
-index b3676fe..0e4f1ed 100644
---- a/include/linux/pci_ids.h
-+++ b/include/linux/pci_ids.h
-@@ -942,6 +942,18 @@
- #define PCI_DEVICE_ID_SUN_CASSINI	0xabba
- 
- #define PCI_VENDOR_ID_NI		0x1093
-+#define PCI_DEVICE_ID_NI_PCI2322	0xd130
-+#define PCI_DEVICE_ID_NI_PCI2324	0xd140
-+#define PCI_DEVICE_ID_NI_PCI2328	0xd150
-+#define PCI_DEVICE_ID_NI_PXI8422_2322	0xd190
-+#define PCI_DEVICE_ID_NI_PXI8422_2324	0xd1a0
-+#define PCI_DEVICE_ID_NI_PXI8420_2322	0xd1d0
-+#define PCI_DEVICE_ID_NI_PXI8420_2324	0xd1e0
-+#define PCI_DEVICE_ID_NI_PXI8420_2328	0xd1f0
-+#define PCI_DEVICE_ID_NI_PXI8420_23216	0xd1f1
-+#define PCI_DEVICE_ID_NI_PCI2322I	0xd250
-+#define PCI_DEVICE_ID_NI_PCI2324I	0xd270
-+#define PCI_DEVICE_ID_NI_PCI23216	0xd2b0
- #define PCI_DEVICE_ID_NI_PXI8430_2322	0x7080
- #define PCI_DEVICE_ID_NI_PCI8430_2322	0x70db
- #define PCI_DEVICE_ID_NI_PXI8430_2324	0x70dd
+ 	if (ANOMALY_05000363) {
+ 		/* The BF533 (and BF561) family of processors have a nice anomaly
 
