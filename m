@@ -1,40 +1,36 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+From: Matthew Garrett <mjg59@srcf.ucam.org>
 Subject: Re: [PATCH 01/30] disallow SERIAL_8250_PNP with SERIAL_8250_CONSOLE
-Date: Tue, 24 Mar 2009 21:26:53 +0000
-Message-ID: <20090324212653.77d6e70c@lxorguk.ukuu.org.uk>
-References: <20090324135930.12735.7827.stgit@localhost.localdomain>
-	<20090324140145.12735.29459.stgit@localhost.localdomain>
-	<20090324151034.GC6859@ports.donpac.ru>
-	<20090324152203.6a989d06@lxorguk.ukuu.org.uk>
-	<20090324205945.GA28394@srcf.ucam.org>
+Date: Tue, 24 Mar 2009 21:34:16 +0000
+Message-ID: <20090324213416.GA29507@srcf.ucam.org>
+References: <20090324135930.12735.7827.stgit@localhost.localdomain> <20090324140145.12735.29459.stgit@localhost.localdomain> <20090324151034.GC6859@ports.donpac.ru> <20090324152203.6a989d06@lxorguk.ukuu.org.uk> <20090324205945.GA28394@srcf.ucam.org> <20090324212653.77d6e70c@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:46168 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752232AbZCXV1u (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 24 Mar 2009 17:27:50 -0400
-In-Reply-To: <20090324205945.GA28394@srcf.ucam.org>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
-To: Matthew Garrett <mjg59@srcf.ucam.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1754243AbZCXVep@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20090324212653.77d6e70c@lxorguk.ukuu.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Cc: Andrey Panin <pazke@donpac.ru>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, torvalds@linux-foundation.org
+List-Id: linux-serial@vger.kernel.org
 
-On Tue, 24 Mar 2009 20:59:47 +0000
-Matthew Garrett <mjg59@srcf.ucam.org> wrote:
-
-> On Tue, Mar 24, 2009 at 03:22:03PM +0000, Alan Cox wrote:
-> > > This patch looks very controversial from my POV. Now distro people must decide
-> > > what to enable SERIAL_8250_PNP or SERIAL_8250_CONSOLE. And no matter what you 
-> > 
-> > They do already, otherwise your machine crashes at boot.
+On Tue, Mar 24, 2009 at 09:26:53PM +0000, Alan Cox wrote:
+> On Tue, 24 Mar 2009 20:59:47 +0000
+> Matthew Garrett <mjg59@srcf.ucam.org> wrote:
 > 
-> We don't. The effect of this patch would be to silently disable 8250_PNP 
-> (since we don't build with CONFIG_EMBEDDED) and cause a surprising 
-> reduction in hardware support. How long has this been broken for?
+> > On Tue, Mar 24, 2009 at 03:22:03PM +0000, Alan Cox wrote:
+> > > > This patch looks very controversial from my POV. Now distro people must decide
+> > > > what to enable SERIAL_8250_PNP or SERIAL_8250_CONSOLE. And no matter what you 
+> > > 
+> > > They do already, otherwise your machine crashes at boot.
+> > 
+> > We don't. The effect of this patch would be to silently disable 8250_PNP 
+> > (since we don't build with CONFIG_EMBEDDED) and cause a surprising 
+> > reduction in hardware support. How long has this been broken for?
+> 
+> Since the conversion to drivers/serial - so years.
 
-Since the conversion to drivers/serial - so years.
+So everyone using serial console with 8250_PNP enabled gets a crash on 
+boot, and has done for years? Really?
 
-Alan
+-- 
+Matthew Garrett | mjg59@srcf.ucam.org
