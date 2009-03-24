@@ -1,54 +1,67 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 03/30] serial: Update PNP IDs
-Date: Tue, 24 Mar 2009 14:02:12 +0000
-Message-ID: <20090324140208.12735.29637.stgit@localhost.localdomain>
+Subject: [PATCH 07/30] cpm_uart: fix non-console port startup bug
+Date: Tue, 24 Mar 2009 14:02:51 +0000
+Message-ID: <20090324140245.12735.29499.stgit@localhost.localdomain>
 References: <20090324135930.12735.7827.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1757736AbZCXOCq@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:48939 "EHLO
+	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1757421AbZCXOC3 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 24 Mar 2009 10:02:29 -0400
 In-Reply-To: <20090324135930.12735.7827.stgit@localhost.localdomain>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, torvalds@linux-foundation.org
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, torvalds@linux-foundation.org
 
-From: Matthew Garrett <mjg59@srcf.ucam.org>
+From: Xiaotian Feng <Xiaotian.Feng@windriver.com>
 
-Add new Wacom device IDs to the 8250_pnp serial driver, to support
-autoconfig on some newer tablet PCs.  Also add a comment to clarify that
-the FUJ02E6 device is a custom protocol, not a Wacom tablet.
+After UART interrupt handler is installed and rx is enabled, if an rx
+interrupt comes before hardware init, rx->cur will be updated. Then the
+hardware init will reset BD and make rx->cur out of sync, move the hardware
+init code before request_irq.
 
-Signed-off-by: Matthew Garrett <mjg@redhat.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Alan Cox <alan@etchedpixels.co.uk>
+Signed-off-by: Xiaotian Feng <xiaotian.feng@windriver.com>
+Signed-off-by: Alan Cox <alan@lxorguk.ukuu.org.uk>
 ---
 
- drivers/serial/8250_pnp.c |    6 +++++-
- 1 files changed, 5 insertions(+), 1 deletions(-)
+ drivers/serial/cpm_uart/cpm_uart_core.c |   14 ++++++++++++--
+ 1 files changed, 12 insertions(+), 2 deletions(-)
 
 
-diff --git a/drivers/serial/8250_pnp.c b/drivers/serial/8250_pnp.c
-index 6db9f13..d71dfe3 100644
---- a/drivers/serial/8250_pnp.c
-+++ b/drivers/serial/8250_pnp.c
-@@ -334,6 +334,9 @@ static const struct pnp_device_id pnp_dev_table[] = {
- 	{       "WACF007",              0       },
- 	{       "WACF008",              0       },
- 	{       "WACF009",              0       },
-+	{       "WACF00A",              0       },
-+	{       "WACF00B",              0       },
-+	{       "WACF00C",              0       },
- 	/* Compaq touchscreen */
- 	{       "FPI2002",              0 },
- 	/* Fujitsu Stylistic touchscreens */
-@@ -347,8 +350,9 @@ static const struct pnp_device_id pnp_dev_table[] = {
- 	{       "FUJ02B8",              0 },
- 	{       "FUJ02B9",              0 },
- 	{       "FUJ02BC",              0 },
--	/* Fujitsu Wacom Tablet PC devices */
-+	/* Fujitsu Wacom Tablet PC device */
- 	{	"FUJ02E5",		0	},
-+	/* Fujitsu P-series tablet PC device */
- 	{	"FUJ02E6",		0	},
- 	/*
- 	 * LG C1 EXPRESS DUAL (C1-PB11A3) touch screen (actually a FUJ02E6 in
+diff --git a/drivers/serial/cpm_uart/cpm_uart_core.c b/drivers/serial/cpm_uart/cpm_uart_core.c
+index bde4b4b..5c6ef51 100644
+--- a/drivers/serial/cpm_uart/cpm_uart_core.c
++++ b/drivers/serial/cpm_uart/cpm_uart_core.c
+@@ -406,6 +406,18 @@ static int cpm_uart_startup(struct uart_port *port)
+ 
+ 	pr_debug("CPM uart[%d]:startup\n", port->line);
+ 
++	/* If the port is not the console, make sure rx is disabled. */
++	if (!(pinfo->flags & FLAG_CONSOLE)) {
++		/* Disable UART rx */
++		if (IS_SMC(pinfo)) {
++			clrbits16(&pinfo->smcp->smc_smcmr, SMCMR_REN);
++			clrbits8(&pinfo->smcp->smc_smcm, SMCM_RX);
++		} else {
++			clrbits32(&pinfo->sccp->scc_gsmrl, SCC_GSMRL_ENR);
++			clrbits16(&pinfo->sccp->scc_sccm, UART_SCCM_RX);
++		}
++		cpm_line_cr_cmd(pinfo, CPM_CR_INIT_TRX);
++	}
+ 	/* Install interrupt handler. */
+ 	retval = request_irq(port->irq, cpm_uart_int, 0, "cpm_uart", port);
+ 	if (retval)
+@@ -420,8 +432,6 @@ static int cpm_uart_startup(struct uart_port *port)
+ 		setbits32(&pinfo->sccp->scc_gsmrl, (SCC_GSMRL_ENR | SCC_GSMRL_ENT));
+ 	}
+ 
+-	if (!(pinfo->flags & FLAG_CONSOLE))
+-		cpm_line_cr_cmd(pinfo, CPM_CR_INIT_TRX);
+ 	return 0;
+ }
+ 
+
