@@ -1,67 +1,52 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 07/30] cpm_uart: fix non-console port startup bug
-Date: Tue, 24 Mar 2009 14:02:51 +0000
-Message-ID: <20090324140245.12735.29499.stgit@localhost.localdomain>
+Subject: [PATCH 05/30] PCI: quirks, don't mark one netmos as class other
+Date: Tue, 24 Mar 2009 14:02:32 +0000
+Message-ID: <20090324140228.12735.2766.stgit@localhost.localdomain>
 References: <20090324135930.12735.7827.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:48939 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:48931 "EHLO
 	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1757421AbZCXOC3 (ORCPT
+	with ESMTP id S1757400AbZCXOCG (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 24 Mar 2009 10:02:29 -0400
+	Tue, 24 Mar 2009 10:02:06 -0400
 In-Reply-To: <20090324135930.12735.7827.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, torvalds@linux-foundation.org
 
-From: Xiaotian Feng <Xiaotian.Feng@windriver.com>
+From: Jiri Slaby <jirislaby@gmail.com>
 
-After UART interrupt handler is installed and rx is enabled, if an rx
-interrupt comes before hardware init, rx->cur will be updated. Then the
-hardware init will reset BD and make rx->cur out of sync, move the hardware
-init code before request_irq.
+Let it as serial, since it doesn't have subdevice in the form of 0x00PS.
 
-Signed-off-by: Xiaotian Feng <xiaotian.feng@windriver.com>
-Signed-off-by: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Signed-off-by: Jiri Slaby <jirislaby@gmail.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Alan Cox <alan@etchedpixels.co.uk>
 ---
 
- drivers/serial/cpm_uart/cpm_uart_core.c |   14 ++++++++++++--
- 1 files changed, 12 insertions(+), 2 deletions(-)
+ drivers/pci/quirks.c |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
 
 
-diff --git a/drivers/serial/cpm_uart/cpm_uart_core.c b/drivers/serial/cpm_uart/cpm_uart_core.c
-index bde4b4b..5c6ef51 100644
---- a/drivers/serial/cpm_uart/cpm_uart_core.c
-+++ b/drivers/serial/cpm_uart/cpm_uart_core.c
-@@ -406,6 +406,18 @@ static int cpm_uart_startup(struct uart_port *port)
- 
- 	pr_debug("CPM uart[%d]:startup\n", port->line);
- 
-+	/* If the port is not the console, make sure rx is disabled. */
-+	if (!(pinfo->flags & FLAG_CONSOLE)) {
-+		/* Disable UART rx */
-+		if (IS_SMC(pinfo)) {
-+			clrbits16(&pinfo->smcp->smc_smcmr, SMCMR_REN);
-+			clrbits8(&pinfo->smcp->smc_smcm, SMCM_RX);
-+		} else {
-+			clrbits32(&pinfo->sccp->scc_gsmrl, SCC_GSMRL_ENR);
-+			clrbits16(&pinfo->sccp->scc_sccm, UART_SCCM_RX);
-+		}
-+		cpm_line_cr_cmd(pinfo, CPM_CR_INIT_TRX);
-+	}
- 	/* Install interrupt handler. */
- 	retval = request_irq(port->irq, cpm_uart_int, 0, "cpm_uart", port);
- 	if (retval)
-@@ -420,8 +432,6 @@ static int cpm_uart_startup(struct uart_port *port)
- 		setbits32(&pinfo->sccp->scc_gsmrl, (SCC_GSMRL_ENR | SCC_GSMRL_ENT));
- 	}
- 
--	if (!(pinfo->flags & FLAG_CONSOLE))
--		cpm_line_cr_cmd(pinfo, CPM_CR_INIT_TRX);
- 	return 0;
- }
- 
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index 92b9efe..5aa2afb 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -1664,9 +1664,13 @@ static void __devinit quirk_netmos(struct pci_dev *dev)
+ 	 * of parallel ports and <S> is the number of serial ports.
+ 	 */
+ 	switch (dev->device) {
++	case PCI_DEVICE_ID_NETMOS_9835:
++		/* Well, this rule doesn't hold for the following 9835 device */
++		if (dev->subsystem_vendor == PCI_VENDOR_ID_IBM &&
++				dev->subsystem_device == 0x0299)
++			return;
+ 	case PCI_DEVICE_ID_NETMOS_9735:
+ 	case PCI_DEVICE_ID_NETMOS_9745:
+-	case PCI_DEVICE_ID_NETMOS_9835:
+ 	case PCI_DEVICE_ID_NETMOS_9845:
+ 	case PCI_DEVICE_ID_NETMOS_9855:
+ 		if ((dev->class >> 8) == PCI_CLASS_COMMUNICATION_SERIAL &&
 
