@@ -1,37 +1,64 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 01/30] disallow SERIAL_8250_PNP with SERIAL_8250_CONSOLE
-Date: Tue, 24 Mar 2009 15:22:03 +0000
-Message-ID: <20090324152203.6a989d06@lxorguk.ukuu.org.uk>
-References: <20090324135930.12735.7827.stgit@localhost.localdomain>
-	<20090324140145.12735.29459.stgit@localhost.localdomain>
-	<20090324151034.GC6859@ports.donpac.ru>
+From: Michal Simek <michal.simek@petalogix.com>
+Subject: Re: [PATCH 57/57] microblaze_v7: Uartlite for Microblaze
+Date: Tue, 24 Mar 2009 17:03:54 +0100
+Message-ID: <49C9046A.6060708@petalogix.com>
+References: <1237408284-8674-1-git-send-email-monstr@monstr.eu> <1e1dc8ccd5abc4e51272f52465c6b9e5f847f947.1237407249.git.monstr@monstr.eu> <14c123f2bae10a8b5fb76cd059ba105c212776ef.1237407249.git.monstr@monstr.eu> <4947b1131c14c1526b81493f461606018bd0f090.1237407249.git.monstr@monstr.eu> <46bc9a74719cb3c21dfdd558b93bec8c5b5675d8.1237407249.git.monstr@monstr.eu> <d3f49195b8f675db48d2eda4f09fddb51af6f946.1237407249.git.monstr@monstr.eu> <34c2f9e50610e147be556607e482b88fd674b887.1237407249.git.monstr@monstr.eu> <15f6f10873f7c6f4f3b06f9d4d5af3ee9714f873.1237407249.git.monstr@monstr.eu> <e5b88f50c39aa95431f5ecdb032c6676399ae198.1237407249.git.monstr@monstr.eu> <50253611a0770c1ae6a63702208cfb9f96cd1f1a.1237407249.git.monstr@monstr.eu> <28a81149bf51571cbc898a672efff4770fbc1efe.1237407249.git.mons
+ tr@monstr.eu> <55868bc389e07d10d00e92a1da65f31256a26f4c.1237407249.git.monstr@monstr.eu> <57d096a05c22f5b3dd1070e9ecd6e8e05b22e9b3.1237407249.git.monstr@monstr.eu>
+Reply-To: michal.simek@petalogix.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:54768 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1754482AbZCXPWR (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 24 Mar 2009 11:22:17 -0400
-In-Reply-To: <20090324151034.GC6859@ports.donpac.ru>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1762133AbZCXQEU@vger.kernel.org>
+In-Reply-To: <57d096a05c22f5b3dd1070e9ecd6e8e05b22e9b3.1237407249.git.monstr@monstr.eu>
+Sender: linux-kernel-owner@vger.kernel.org
+To: monstr@monstr.eu
+Cc: linux-kernel@vger.kernel.org, john.williams@petalogix.com, Peter Korsgaard <jacmet@sunsite.dk>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Andrey Panin <pazke@donpac.ru>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, torvalds@linux-foundation.org
 
-> This patch looks very controversial from my POV. Now distro people must decide
-> what to enable SERIAL_8250_PNP or SERIAL_8250_CONSOLE. And no matter what you 
+Hi all,
 
-They do already, otherwise your machine crashes at boot.
+Here is the small part of code which enable uartlite and serial of code
+driver for Microblaze cpu.
 
-> choose you'll get a regression, non-working serial console vs broken detection of
-> perfectly working hardware like additional serial ports on industrial computers,
-> notebook touchpads and finally old and dusty ISA PnP modems.
-> 
-> How widespread are these "known but hard to fix issues", to justify such drastic
-> change ?
+Peter: I got ack from you in past. I believe that I still have it. Could
+I keep your ACK there?
 
-Any situation where you have a serial console on an ISAPnP device
-explodes on boot. I do intend to find a better fix for this, but in the
-meantime it is best that the quick fix goes in IMHO.
+Thanks,
+Michal
+> From: Michal Simek <monstr@monstr.eu>
+>
+>
+> Signed-off-by: Michal Simek <monstr@monstr.eu>
+> ---
+>  drivers/serial/Kconfig |    4 ++--
+>  1 files changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
+> index 7d7f576..131901b 100644
+> --- a/drivers/serial/Kconfig
+> +++ b/drivers/serial/Kconfig
+> @@ -833,7 +833,7 @@ config SERIAL_IMX_CONSOLE
+>  
+>  config SERIAL_UARTLITE
+>  	tristate "Xilinx uartlite serial port support"
+> -	depends on PPC32
+> +	depends on PPC32 || MICROBLAZE
+>  	select SERIAL_CORE
+>  	help
+>  	  Say Y here if you want to use the Xilinx uartlite serial controller.
+> @@ -1319,7 +1319,7 @@ config SERIAL_NETX_CONSOLE
+>  
+>  config SERIAL_OF_PLATFORM
+>  	tristate "Serial port on Open Firmware platform bus"
+> -	depends on PPC_OF
+> +	depends on PPC_OF || MICROBLAZE
+>  	depends on SERIAL_8250 || SERIAL_OF_PLATFORM_NWPSERIAL
+>  	help
+>  	  If you have a PowerPC based system that has serial ports
+>   
+
+
+-- 
+Michal Simek, Ing. (M.Eng)
+PetaLogix - Linux Solutions for a Reconfigurable World
+w: www.petalogix.com p: +61-7-30090663,+42-0-721842854 f: +61-7-30090663
