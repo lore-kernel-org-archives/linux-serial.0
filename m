@@ -1,37 +1,58 @@
-From: Matthew Garrett <mjg@redhat.com>
+From: Clark Williams <williams@redhat.com>
 Subject: Re: [PATCH 01/30] disallow SERIAL_8250_PNP with SERIAL_8250_CONSOLE
-Date: Tue, 24 Mar 2009 22:58:12 +0000
-Message-ID: <20090324225812.GA30827@srcf.ucam.org>
-References: <20090324151034.GC6859@ports.donpac.ru> <20090324152203.6a989d06@lxorguk.ukuu.org.uk> <20090324205945.GA28394@srcf.ucam.org> <20090324212653.77d6e70c@lxorguk.ukuu.org.uk> <20090324213416.GA29507@srcf.ucam.org> <20090324213841.59d6b299@lxorguk.ukuu.org.uk> <20090324214321.GA29671@srcf.ucam.org> <20090324221816.50e7ccc2@lxorguk.ukuu.org.uk> <20090324222934.GA30503@srcf.ucam.org> <20090324223632.66680ebd@lxorguk.ukuu.org.uk>
+Date: Wed, 25 Mar 2009 09:22:03 -0500
+Message-ID: <20090325092203.139bb144@torg>
+References: <20090324151034.GC6859@ports.donpac.ru>
+	<20090324152203.6a989d06@lxorguk.ukuu.org.uk>
+	<20090324205945.GA28394@srcf.ucam.org>
+	<20090324212653.77d6e70c@lxorguk.ukuu.org.uk>
+	<20090324213416.GA29507@srcf.ucam.org>
+	<20090324213841.59d6b299@lxorguk.ukuu.org.uk>
+	<20090324214321.GA29671@srcf.ucam.org>
+	<20090324221816.50e7ccc2@lxorguk.ukuu.org.uk>
+	<20090324222934.GA30503@srcf.ucam.org>
+	<20090324223632.66680ebd@lxorguk.ukuu.org.uk>
+	<20090324225812.GA30827@srcf.ucam.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cavan.codon.org.uk ([93.93.128.6]:53082 "EHLO
-	vavatch.codon.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753739AbZCXW6W (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 24 Mar 2009 18:58:22 -0400
-Content-Disposition: inline
-In-Reply-To: <20090324223632.66680ebd@lxorguk.ukuu.org.uk>
+Received: from mx2.redhat.com ([66.187.237.31]:47263 "EHLO mx2.redhat.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756923AbZCYOX6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 25 Mar 2009 10:23:58 -0400
+In-Reply-To: <20090324225812.GA30827@srcf.ucam.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Andrey Panin <pazke@donpac.ru>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, torvalds@linux-foundation.org, williams@redhat.com
+To: Matthew Garrett <mjg@redhat.com>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Andrey Panin <pazke@donpac.ru>, linux-serial@vger.kernel.org, torvalds@linux-foundation.org
 
-On Tue, Mar 24, 2009 at 10:36:32PM +0000, Alan Cox wrote:
-> On Tue, 24 Mar 2009 22:29:34 +0000
-> Matthew Garrett <mjg59@srcf.ucam.org> wrote:
-> > I'd prefer not to go with this approach unless we've got a convincing 
-> > number of bugs filed. It's guaranteed to reduce hardware support in 
-> > favour of fixing an unknown number of machines.
-> 
-> I get a regular stream of complaints. But as I said Red Hat is the patch
-> originator, Red Hat has the distro bugzilla so perhaps Red Hat folks can
-> comment ?
-
-I've had a dig through Bugzilla but couldn't find it, and it doesn't 
-seem to be in anything we're shipping right now. Clark, do you have a 
-pointer to a bug that this patch came from?
-
--- 
-Matthew Garrett | mjg59@srcf.ucam.org
+LS0tLS1CRUdJTiBQR1AgU0lHTkVEIE1FU1NBR0UtLS0tLQ0KSGFzaDogU0hBMQ0KDQpPbiBUdWUs
+IDI0IE1hciAyMDA5IDIyOjU4OjEyICswMDAwDQpNYXR0aGV3IEdhcnJldHQgPG1qZ0ByZWRoYXQu
+Y29tPiB3cm90ZToNCg0KPiBPbiBUdWUsIE1hciAyNCwgMjAwOSBhdCAxMDozNjozMlBNICswMDAw
+LCBBbGFuIENveCB3cm90ZToNCj4gPiBPbiBUdWUsIDI0IE1hciAyMDA5IDIyOjI5OjM0ICswMDAw
+DQo+ID4gTWF0dGhldyBHYXJyZXR0IDxtamc1OUBzcmNmLnVjYW0ub3JnPiB3cm90ZToNCj4gPiA+
+IEknZCBwcmVmZXIgbm90IHRvIGdvIHdpdGggdGhpcyBhcHByb2FjaCB1bmxlc3Mgd2UndmUgZ290
+IGEgY29udmluY2luZyANCj4gPiA+IG51bWJlciBvZiBidWdzIGZpbGVkLiBJdCdzIGd1YXJhbnRl
+ZWQgdG8gcmVkdWNlIGhhcmR3YXJlIHN1cHBvcnQgaW4gDQo+ID4gPiBmYXZvdXIgb2YgZml4aW5n
+IGFuIHVua25vd24gbnVtYmVyIG9mIG1hY2hpbmVzLg0KPiA+IA0KPiA+IEkgZ2V0IGEgcmVndWxh
+ciBzdHJlYW0gb2YgY29tcGxhaW50cy4gQnV0IGFzIEkgc2FpZCBSZWQgSGF0IGlzIHRoZSBwYXRj
+aA0KPiA+IG9yaWdpbmF0b3IsIFJlZCBIYXQgaGFzIHRoZSBkaXN0cm8gYnVnemlsbGEgc28gcGVy
+aGFwcyBSZWQgSGF0IGZvbGtzIGNhbg0KPiA+IGNvbW1lbnQgPw0KPiANCj4gSSd2ZSBoYWQgYSBk
+aWcgdGhyb3VnaCBCdWd6aWxsYSBidXQgY291bGRuJ3QgZmluZCBpdCwgYW5kIGl0IGRvZXNuJ3Qg
+DQo+IHNlZW0gdG8gYmUgaW4gYW55dGhpbmcgd2UncmUgc2hpcHBpbmcgcmlnaHQgbm93LiBDbGFy
+aywgZG8geW91IGhhdmUgYSANCj4gcG9pbnRlciB0byBhIGJ1ZyB0aGF0IHRoaXMgcGF0Y2ggY2Ft
+ZSBmcm9tPw0KPiANCg0KTm8gQlogb24gdGhpcyBvbmUuIEkgd2FzIHRyeWluZyB0byBicmluZyB1
+cCBhIG5ldyB2ZXJzaW9uIG9mIHRoZSBSVA0Ka2VybmVsIG9uIHNvbWUgb2YgbXkgbGFiIGgvdyAo
+bW9zdGx5IHdoaXRlYm94ZXMsIGFsbCB3L3NlcmlhbCBjb25zb2xlKQ0KYW5kIGtlcHQgcGFuaWMn
+aW5nIGR1cmluZyBib290LiBJIGV2ZW50dWFsbHkgc3R1bWJsZWQgdXBvbiBQTlAgc2VyaWFsDQph
+cyBhIGxpa2VseSBjdWxwcml0LCB0dXJuZWQgaXQgb2ZmIGFuZCB0aGUgcHJvYmxlbSB3ZW50IGF3
+YXkuIFNvIEkgc2VudA0KdGhlIHBhdGNoIHRvIEFsYW4uIA0KDQpNeSAqZ3Vlc3MqIGlzIHRoYXQg
+dGhlIFJUIGtlcm5lbCBsb2NraW5nIGNoYW5nZXMgKHNwaW5sb2NrIC0+IHJ0X211dGV4KQ0Kb3Bl
+bmVkIHVwIGEgcmFjZSB3aW5kb3cuIFRoaXMgd2FzIG9uIHRoZSAyLjYuMjYvMjcgc2VyaWVzOyBJ
+IGRvbid0IHNlZW0NCnRvIHNlZSB0aGlzIG9uIC4yOS4gDQoNClNvLCBubyBjb21wbGFpbnQgZnJv
+bSBtZSBpZiB5b3UgZHJvcCBpdC4gDQoNCkNsYXJrDQotLS0tLUJFR0lOIFBHUCBTSUdOQVRVUkUt
+LS0tLQ0KVmVyc2lvbjogR251UEcgdjIuMC45IChHTlUvTGludXgpDQoNCmlFWUVBUkVDQUFZRkFr
+bktQaE1BQ2drUUh5dWovK1RURXAwbVVnQ2ZXVXlSWnVRUkFGc0NDT2hYSFd0dy9FZEYNCnJkTUFu
+alNQZkZMYlhpb1NTd1I2WTE3VTJjM2EvTFpxDQo9WHNOWg0KLS0tLS1FTkQgUEdQIFNJR05BVFVS
+RS0tLS0tDQo=
