@@ -1,42 +1,19 @@
-From: "Robert P. J. Day" <rpjday@crashcourse.ca>
-Subject: a couple unused serial config vars?
-Date: Sat, 18 Apr 2009 08:54:59 -0400 (EDT)
-Message-ID: <alpine.LFD.2.00.0904180854040.30846@localhost.localdomain>
+From: "Teddy Lott" <btp-vacancesr.oueslati@hppigpo.com>
+Subject: Nice prices for quality time spendings.
+Date: Fri, 1 May 2009 12:45:25 +0300
+Message-ID: <20090501124525.6000702@hppigpo.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from astoria.ccjclearline.com ([64.235.106.9]:53499 "EHLO
-	astoria.ccjclearline.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753795AbZDRNPh (ORCPT
+Received: from ppp78-37-15-17.pppoe.avangarddsl.ru ([78.37.15.17]:4555 "HELO
+	ppp78-37-15-17.pppoe.avangarddsl.ru" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1752901AbZEAIzh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 18 Apr 2009 09:15:37 -0400
-Received: from [174.113.191.234] (helo=crashcourse.ca)
-	by astoria.ccjclearline.com with esmtpsa (TLSv1:AES256-SHA:256)
-	(Exim 4.69)
-	(envelope-from <rpjday@crashcourse.ca>)
-	id 1LvA5J-000472-FY
-	for linux-serial@vger.kernel.org; Sat, 18 Apr 2009 08:55:53 -0400
+	Fri, 1 May 2009 04:55:37 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
+Shy of small measurments http://lwookj.ugcacopce.com/
 
-===== UART3_CTS_PIN
-drivers/serial/Kconfig:818:config UART3_CTS_PIN
-===== UART3_RTS_PIN
-drivers/serial/Kconfig:825:config UART3_RTS_PIN
-
-  neither of these appear to be referenced from anywhere.
-
-rday
---
-
-========================================================================
-Robert P. J. Day                               Waterloo, Ontario, CANADA
-
-        Linux Consulting, Training and Annoying Kernel Pedantry.
-
-Web page:                                          http://crashcourse.ca
-Linked In:                             http://www.linkedin.com/in/rpjday
-Twitter:                                       http://twitter.com/rpjday
-========================================================================
