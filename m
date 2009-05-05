@@ -1,53 +1,35 @@
-From: Benjamin Krill <ben@codiert.org>
-Subject: [PATCH] Fix wrong register read address and add interrupt acknowledge.
-Date: Tue, 5 May 2009 21:11:16 +0200
-Message-ID: <20090505191116.GA7267@codiert.org>
+From: Timur Tabi <timur@freescale.com>
+Subject: Re: [PATCH] Fix wrong register read address and add interrupt
+	acknowledge.
+Date: Tue, 5 May 2009 14:24:04 -0500
+Message-ID: <ed82fe3e0905051224j30a54ef3s3d5e6c88987ea65a@mail.gmail.com>
+References: <20090505191116.GA7267@codiert.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@ozlabs.org>
-Content-Disposition: inline
-List-Unsubscribe: <https://ozlabs.org/mailman/options/linuxppc-dev>,
-	<mailto:linuxppc-dev-request@ozlabs.org?subject=unsubscribe>
-List-Archive: <http://ozlabs.org/pipermail/linuxppc-dev>
-List-Post: <mailto:linuxppc-dev@ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@ozlabs.org?subject=help>
-List-Subscribe: <https://ozlabs.org/mailman/listinfo/linuxppc-dev>,
-	<mailto:linuxppc-dev-request@ozlabs.org?subject=subscribe>
-Sender: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@ozlabs.org
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@ozlabs.org
-To: linuxppc-dev@ozlabs.org, linux-serial@vger.kernel.org
-Cc: arnd@arndb.de
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-qy0-f133.google.com ([209.85.221.133]:48066 "EHLO
+	mail-qy0-f133.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753149AbZEETYF (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 5 May 2009 15:24:05 -0400
+Received: by qyk39 with SMTP id 39so1670899qyk.33
+        for <linux-serial@vger.kernel.org>; Tue, 05 May 2009 12:24:04 -0700 (PDT)
+In-Reply-To: <20090505191116.GA7267@codiert.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Benjamin Krill <ben@codiert.org>
+Cc: linuxppc-dev@ozlabs.org, linux-serial@vger.kernel.org, arnd@arndb.de
 
-The receive interrupt routine checks the wrong register if the
-receive fifo is empty. Further an explicit interrupt acknowledge
-write is introduced. In some circumstances another interrupt was
-issued.
+On Tue, May 5, 2009 at 2:11 PM, Benjamin Krill <ben@codiert.org> wrote:
+> The receive interrupt routine checks the wrong register if the
+> receive fifo is empty. Further an explicit interrupt acknowledge
+> write is introduced. In some circumstances another interrupt was
+> issued.
 
-Signed-off-by: Benjamin Krill <ben@codiert.org>
----
- drivers/serial/nwpserial.c |    4 +++-
- 1 files changed, 3 insertions(+), 1 deletions(-)
+The one-line summary of your patch is too vague.  It should mention
+the name of the driver somehow.
 
-diff --git a/drivers/serial/nwpserial.c b/drivers/serial/nwpserial.c
-index 32f3eaf..9e150b1 100644
---- a/drivers/serial/nwpserial.c
-+++ b/drivers/serial/nwpserial.c
-@@ -145,11 +145,13 @@ static irqreturn_t nwpserial_interrupt(int irq, void *dev_id)
- 		ch = dcr_read(up->dcr_host, UART_RX);
- 		if (up->port.ignore_status_mask != NWPSERIAL_STATUS_RXVALID)
- 			tty_insert_flip_char(tty, ch, TTY_NORMAL);
--	} while (dcr_read(up->dcr_host, UART_RX) & UART_LSR_DR);
-+	} while (dcr_read(up->dcr_host, UART_LSR) & UART_LSR_DR);
-
- 	tty_flip_buffer_push(tty);
- 	ret = IRQ_HANDLED;
-
-+	/* clear interrupt */
-+	dcr_write(up->dcr_host, UART_IIR, 1);
- out:
- 	spin_unlock(&up->port.lock);
- 	return ret;
---
-1.5.4.5
+-- 
+Timur Tabi
+Linux kernel developer at Freescale
