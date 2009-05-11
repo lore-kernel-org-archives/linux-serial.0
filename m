@@ -1,29 +1,27 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+From: Jiri Slaby <jirislaby@gmail.com>
 Subject: Re: [PATCH 1/3] Char/serial: refactor ASYNC_ flags
-Date: Mon, 11 May 2009 18:57:27 +0100
-Message-ID: <20090511185727.2a5bd4cb@lxorguk.ukuu.org.uk>
-References: <1242049860-29501-1-git-send-email-jirislaby@gmail.com>
+Date: Mon, 11 May 2009 23:51:57 +0200
+Message-ID: <4A089DFD.8060609@gmail.com>
+References: <1242049860-29501-1-git-send-email-jirislaby@gmail.com> <20090511185727.2a5bd4cb@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:44688 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1753184AbZEKR5y (ORCPT
+Received: from fk-out-0910.google.com ([209.85.128.187]:11307 "EHLO
+	fk-out-0910.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752494AbZEKVwQ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 11 May 2009 13:57:54 -0400
-In-Reply-To: <1242049860-29501-1-git-send-email-jirislaby@gmail.com>
+	Mon, 11 May 2009 17:52:16 -0400
+In-Reply-To: <20090511185727.2a5bd4cb@lxorguk.ukuu.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@gmail.com>, Ferenc Wagner <wferi@niif.hu>, Paul Fulghum <paulkf@microgate.com>
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Jiri Slaby <jirislaby@gmail.com>, Andrew Morton <akpm@linux-foundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ferenc Wagner <wferi@niif.hu>, Paul Fulghum <paulkf@microgate.com>
 
-On Mon, 11 May 2009 15:50:58 +0200
-Jiri Slaby <jirislaby@gmail.com> wrote:
+On 05/11/2009 07:57 PM, Alan Cox wrote:
+> Series all applied
 
-> Define ASYNCB_* flags which are bit numbers of the ASYNC_* flags.
-> This is useful for {test,set,clear}_bit.
-> 
-> Also convert each ASYNC_% to be (1 << ASYNCB_%) and define masks
-> with the macros, not constants.
+Thanks.
 
-Series all applied
+Ferenc, could you apply patches 1 and 2 and confirm that it fixes your
+problem?
