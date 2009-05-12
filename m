@@ -1,37 +1,91 @@
-From: Ferenc Wagner <wferi@niif.hu>
-Subject: Re: [PATCH 1/3] Char/serial: refactor ASYNC_ flags
-Date: Tue, 12 May 2009 22:52:18 +0200
-Message-ID: <87y6t2niwt.fsf@tac.ki.iif.hu>
-References: <1242049860-29501-1-git-send-email-jirislaby@gmail.com>
-	<20090511185727.2a5bd4cb@lxorguk.ukuu.org.uk>
-	<4A089DFD.8060609@gmail.com>
+From: Deepak Saxena <dsaxena@plexity.net>
+Subject: [PATCH] 8250: Don't restore NS16550 mode when console suspend is
+	disabled
+Date: Tue, 12 May 2009 21:00:16 +0000
+Message-ID: <20090512210015.GA25540@plexity.net>
+Reply-To: dsaxena@plexity.net
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from tac.ki.iif.hu ([193.6.222.43]:56017 "EHLO tac.ki.iif.hu"
+Received: from plexity.net ([206.123.115.38]:41392 "EHLO plexity.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752334AbZELUw2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 12 May 2009 16:52:28 -0400
-In-Reply-To: <4A089DFD.8060609@gmail.com> (Jiri Slaby's message of "Mon, 11
-	May 2009 23:51:57 +0200")
+	id S1752433AbZELVLR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 12 May 2009 17:11:17 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jirislaby@gmail.com>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Andrew Morton <akpm@linux-foundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Fulghum <paulkf@microgate.com>
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: torvalds@linux-foundation.org
 
-Jiri Slaby <jirislaby@gmail.com> writes:
 
-> On 05/11/2009 07:57 PM, Alan Cox wrote:
->
->> Series all applied
->
-> Thanks.
->
-> Ferenc, could you apply patches 1 and 2 and confirm that it fixes your
-> problem?
+Commit b5b82df6, from May 2007, breaks no_console_suspend on the OLPC 
+XO laptop. Basically what happens is that upon returning from resume, 
+serial8250_resume_port() will reconfigure the port for high speed
+mode and all console output will be garbled, making debug of the 
+resume path painful. This patch modifies serial8250_resume_port() to 
+not touch the port in the case where it is the console port and console 
+suspend is disabled.
 
-Yes, adding these two patches to 2.6.30-rc5 fixes my problem.
-Thank you very much!
+Signed-off-by: Deepak Saxena <dsaxena@laptop.org>
+
+---
+The OLPC tree has been carrying a workaround for about two years but
+this patch is not the version we've been using. That one can be
+found at http://dev.laptop.org/~dsaxena/patches/console_suspend_old.patch.
+I prefer the approach of handling this in the 8250 driver itself.
+
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index b4b3981..d4b6373 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -2887,7 +2887,8 @@ void serial8250_resume_port(int line)
+ {
+ 	struct uart_8250_port *up = &serial8250_ports[line];
+ 
+-	if (up->capabilities & UART_NATSEMI) {
++	if ((up->capabilities & UART_NATSEMI) && 
++	     (!uart_console(&up->port) && console_suspend_enabled)) {
+ 		unsigned char tmp;
+ 
+ 		/* Ensure it's still in high speed mode */
+diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
+index b0bb29d..05fd868 100644
+--- a/drivers/serial/serial_core.c
++++ b/drivers/serial/serial_core.c
+@@ -54,12 +54,6 @@ static struct lock_class_key port_lock_key;
+ 
+ #define uart_users(state)	((state)->count + (state)->info.port.blocked_open)
+ 
+-#ifdef CONFIG_SERIAL_CORE_CONSOLE
+-#define uart_console(port)	((port)->cons && (port)->cons->index == (port)->line)
+-#else
+-#define uart_console(port)	(0)
+-#endif
+-
+ static void uart_change_speed(struct uart_state *state,
+ 					struct ktermios *old_termios);
+ static void uart_wait_until_sent(struct tty_struct *tty, int timeout);
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 57a97e5..9fba77a 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -427,6 +427,12 @@ struct tty_driver *uart_console_device(struct console *co, int *index);
+ void uart_console_write(struct uart_port *port, const char *s,
+ 			unsigned int count,
+ 			void (*putchar)(struct uart_port *, int));
++#ifdef CONFIG_SERIAL_CORE_CONSOLE
++#define uart_console(port)	((port)->cons && (port)->cons->index == (port)->line)
++#else
++#define uart_console(port)	(0)
++#endif
++
+ 
+ /*
+  * Port/driver registration/removal
+
+
+
 -- 
-Regards,
-Feri.
+In the end, they will not say, "those were dark times,"  they will ask
+"why were their poets silent?" - Bertold Brecht
+
