@@ -1,27 +1,40 @@
-From: Jiri Slaby <jirislaby@gmail.com>
-Subject: Re: [PATCH 1/3] Char/serial: refactor ASYNC_ flags
-Date: Mon, 11 May 2009 23:51:57 +0200
-Message-ID: <4A089DFD.8060609@gmail.com>
-References: <1242049860-29501-1-git-send-email-jirislaby@gmail.com> <20090511185727.2a5bd4cb@lxorguk.ukuu.org.uk>
+From: Alexander Beregalov <a.beregalov@gmail.com>
+Subject: cpm_uart: build failure
+Date: Tue, 12 May 2009 19:56:14 +0400
+Message-ID: <a4423d670905120856w7c36fe01v949289342662b7be@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from fk-out-0910.google.com ([209.85.128.187]:11307 "EHLO
-	fk-out-0910.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752494AbZEKVwQ (ORCPT
+Received: from mail-fx0-f158.google.com ([209.85.220.158]:59746 "EHLO
+	mail-fx0-f158.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757618AbZELP4O (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 11 May 2009 17:52:16 -0400
-In-Reply-To: <20090511185727.2a5bd4cb@lxorguk.ukuu.org.uk>
+	Tue, 12 May 2009 11:56:14 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Jiri Slaby <jirislaby@gmail.com>, Andrew Morton <akpm@linux-foundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ferenc Wagner <wferi@niif.hu>, Paul Fulghum <paulkf@microgate.com>
+To: Jason Wessel <jason.wessel@windriver.com>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, kgdb-bugreport@lists.sourceforge.net
 
-On 05/11/2009 07:57 PM, Alan Cox wrote:
-> Series all applied
+Hi
 
-Thanks.
+I found this problem during randconfig tests for ppc64.
 
-Ferenc, could you apply patches 1 and 2 and confirm that it fixes your
-problem?
+drivers/serial/cpm_uart/cpm_uart_core.c: In function 'cpm_put_poll_char':
+drivers/serial/cpm_uart/cpm_uart_core.c:1002: error: implicit
+declaration of function 'cpm_uart_early_write'
+
+I cannot find any definition nor git-log history for cpm_uart_early_write().
+
+Is it really bug from Jul 23 11:30:16 2008?
+
+commit 8e21d04c077c50284bdad10fda8f8cea674458e1
+Author: Jason Wessel <jason.wessel@windriver.com>
+Date:   Wed Jul 23 11:30:16 2008 -0500
+
+    kgdb: kgdboc console poll hooks for cpm uart
+
+    Add in console polling hooks for the cpm uart for use with kgdb and
+    kgdboc.
+
+    Signed-off-by: Jason Wessel <jason.wessel@windriver.com>
+    CC: galak@kernel.crashing.org
