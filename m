@@ -1,40 +1,37 @@
-From: Alexander Beregalov <a.beregalov@gmail.com>
-Subject: cpm_uart: build failure
-Date: Tue, 12 May 2009 19:56:14 +0400
-Message-ID: <a4423d670905120856w7c36fe01v949289342662b7be@mail.gmail.com>
+From: Ferenc Wagner <wferi@niif.hu>
+Subject: Re: [PATCH 1/3] Char/serial: refactor ASYNC_ flags
+Date: Tue, 12 May 2009 22:52:18 +0200
+Message-ID: <87y6t2niwt.fsf@tac.ki.iif.hu>
+References: <1242049860-29501-1-git-send-email-jirislaby@gmail.com>
+	<20090511185727.2a5bd4cb@lxorguk.ukuu.org.uk>
+	<4A089DFD.8060609@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-fx0-f158.google.com ([209.85.220.158]:59746 "EHLO
-	mail-fx0-f158.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757618AbZELP4O (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 12 May 2009 11:56:14 -0400
+Received: from tac.ki.iif.hu ([193.6.222.43]:56017 "EHLO tac.ki.iif.hu"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752334AbZELUw2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 12 May 2009 16:52:28 -0400
+In-Reply-To: <4A089DFD.8060609@gmail.com> (Jiri Slaby's message of "Mon, 11
+	May 2009 23:51:57 +0200")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jason Wessel <jason.wessel@windriver.com>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, kgdb-bugreport@lists.sourceforge.net
+To: Jiri Slaby <jirislaby@gmail.com>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Andrew Morton <akpm@linux-foundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Fulghum <paulkf@microgate.com>
 
-Hi
+Jiri Slaby <jirislaby@gmail.com> writes:
 
-I found this problem during randconfig tests for ppc64.
+> On 05/11/2009 07:57 PM, Alan Cox wrote:
+>
+>> Series all applied
+>
+> Thanks.
+>
+> Ferenc, could you apply patches 1 and 2 and confirm that it fixes your
+> problem?
 
-drivers/serial/cpm_uart/cpm_uart_core.c: In function 'cpm_put_poll_char':
-drivers/serial/cpm_uart/cpm_uart_core.c:1002: error: implicit
-declaration of function 'cpm_uart_early_write'
-
-I cannot find any definition nor git-log history for cpm_uart_early_write().
-
-Is it really bug from Jul 23 11:30:16 2008?
-
-commit 8e21d04c077c50284bdad10fda8f8cea674458e1
-Author: Jason Wessel <jason.wessel@windriver.com>
-Date:   Wed Jul 23 11:30:16 2008 -0500
-
-    kgdb: kgdboc console poll hooks for cpm uart
-
-    Add in console polling hooks for the cpm uart for use with kgdb and
-    kgdboc.
-
-    Signed-off-by: Jason Wessel <jason.wessel@windriver.com>
-    CC: galak@kernel.crashing.org
+Yes, adding these two patches to 2.6.30-rc5 fixes my problem.
+Thank you very much!
+-- 
+Regards,
+Feri.
