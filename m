@@ -1,48 +1,38 @@
-From: Joe Perches <joe@perches.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Subject: Re: [PATCH] 8250: Don't restore NS16550 mode when console suspend
  is disabled
-Date: Tue, 12 May 2009 18:01:33 -0700
-Message-ID: <1242176493.9718.76.camel@Joe-AcerAspire>
+Date: Wed, 13 May 2009 09:44:09 +0100
+Message-ID: <20090513094409.50c2409f@lxorguk.ukuu.org.uk>
 References: <20090512210015.GA25540@plexity.net>
-	 <alpine.LFD.2.01.0905121452190.3343@localhost.localdomain>
-	 <20090513011842.22d9cd6c@lxorguk.ukuu.org.uk>
+	<alpine.LFD.2.01.0905121452190.3343@localhost.localdomain>
+	<20090513011842.22d9cd6c@lxorguk.ukuu.org.uk>
+	<20090513002850.GA28422@plexity.net>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 136-022.dsl.LABridge.com ([206.117.136.22]:1716 "EHLO
-	mail.perches.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751980AbZEMBCz (ORCPT
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:43873 "EHLO
+	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753868AbZEMIoH (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 12 May 2009 21:02:55 -0400
-In-Reply-To: <20090513011842.22d9cd6c@lxorguk.ukuu.org.uk>
+	Wed, 13 May 2009 04:44:07 -0400
+In-Reply-To: <20090513002850.GA28422@plexity.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Deepak Saxena <dsaxena@plexity.net>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: dsaxena@plexity.net
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Wed, 2009-05-13 at 01:18 +0100, Alan Cox wrote:
-> > Hmm. I already applied this, but then after looking closer, I undid that. 
-> > Why? It looks buggy:
+> > Surely if my console is at 230Kbits/sec then resuming it at a totally
+> > different speed is going to break things for people even if it happens to
+> > help XO debug ?
 > 
-> I'm a bit suprised that as tty and serial maintainer this is the first
-> time I see the patch.
+> The console is not in high speed mode when we suspend. The original 
+> commit (b5b82df6) just assumes that if it is a NATSEMI device, we 
+> should set it to high speed mode at resume w/o checking if that 
+> was the mode we were in when we suspended.
 
-Perhaps the MAINTAINERS entry for TTY should include
-file patterns?
+Then hard coding is no improvement either. It needs to restore the mode
+that was present at suspend.
 
-Would this be reasonable?
-
-TTY LAYER
-P:      Alan Cox
-M:      alan@lxorguk.ukuu.org.uk
-L:      linux-kernel@vger.kernel.org
-L:      linux-serial@vger.kernel.org
-S:      Maintained
-F:      drivers/char/tty_*
-F:      drivers/serial/serial_core.c
-F:      linux/serial_core.h
-F:      linux/serial.h
-F:      linux/tty.h
-
-
+I'll update the 8250 Maintainers entry I suppose, I seem to have been
+landed it as part of tty 8)
