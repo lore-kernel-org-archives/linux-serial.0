@@ -1,44 +1,42 @@
-From: =?iso-8859-2?Q?Micha=B3_Miros=B3aw?= <mirq-linux@rere.qmqm.pl>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Subject: Re: [PATCH] 8250: Don't restore NS16550 mode when console suspend
-	is disabled
-Date: Wed, 13 May 2009 00:08:07 +0200
-Message-ID: <20090512220807.GA26588@rere.qmqm.pl>
+ is disabled
+Date: Wed, 13 May 2009 01:18:42 +0100
+Message-ID: <20090513011842.22d9cd6c@lxorguk.ukuu.org.uk>
 References: <20090512210015.GA25540@plexity.net>
+	<alpine.LFD.2.01.0905121452190.3343@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-2
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1757105AbZELWIZ@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20090512210015.GA25540@plexity.net>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Deepak Saxena <dsaxena@plexity.net>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, torvalds@linux-foundation.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:46870 "EHLO
+	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1757718AbZEMASl (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 12 May 2009 20:18:41 -0400
+In-Reply-To: <alpine.LFD.2.01.0905121452190.3343@localhost.localdomain>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Deepak Saxena <dsaxena@plexity.net>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Tue, May 12, 2009 at 09:00:16PM +0000, Deepak Saxena wrote:
-> Commit b5b82df6, from May 2007, breaks no_console_suspend on the OLPC=
-=20
-> XO laptop. Basically what happens is that upon returning from resume,=
-=20
-> serial8250_resume_port() will reconfigure the port for high speed
-> mode and all console output will be garbled, making debug of the=20
-> resume path painful. This patch modifies serial8250_resume_port() to=20
-> not touch the port in the case where it is the console port and conso=
-le=20
-> suspend is disabled.
-[cut]
-> --- a/drivers/serial/8250.c
-> +++ b/drivers/serial/8250.c
-> @@ -2887,7 +2887,8 @@ void serial8250_resume_port(int line)
->  {
->  	struct uart_8250_port *up =3D &serial8250_ports[line];
-> =20
-> -	if (up->capabilities & UART_NATSEMI) {
-> +	if ((up->capabilities & UART_NATSEMI) &&=20
-> +	     (!uart_console(&up->port) && console_suspend_enabled)) {
+> Hmm. I already applied this, but then after looking closer, I undid that. 
+> Why? It looks buggy:
 
-Shouldn't this be || instead of && - as in: if it is NOT a console port
-OR console suspend is enabled?
+I'm a bit suprised that as tty and serial maintainer this is the first
+time I see the patch.
 
-Best Regards,
-Micha=B3 Miros=B3aw
+> Isn't that second test wrong? Should it not be
+> 
+> 	if ((up->capabilities & UART_NATSEMI) &&
+> 		(console_suspend_enabled || !uart_console(&up->port)) {
+> 
+> instead?
+
+The patch seems totally bogus anyway. If the console was in a high speed
+mode it should be resumed in a high speed mode. What are the actual
+details here.
+
+Surely if my console is at 230Kbits/sec then resuming it at a totally
+different speed is going to break things for people even if it happens to
+help XO debug ?
