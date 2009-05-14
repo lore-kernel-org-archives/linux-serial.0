@@ -1,35 +1,35 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] 8250: Don't restore NS16550 mode when console suspend
- is disabled
-Date: Wed, 13 May 2009 19:46:51 +0100
-Message-ID: <20090513194651.78e02ec2@lxorguk.ukuu.org.uk>
-References: <20090512210015.GA25540@plexity.net>
-	<alpine.LFD.2.01.0905121452190.3343@localhost.localdomain>
-	<20090513011842.22d9cd6c@lxorguk.ukuu.org.uk>
-	<20090513002850.GA28422@plexity.net>
-	<20090513094409.50c2409f@lxorguk.ukuu.org.uk>
-	<alpine.LFD.2.01.0905130755090.3343@localhost.localdomain>
-	<20090513163507.556c3832@lxorguk.ukuu.org.uk>
-	<20090513180436.GA5592@plexity.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From: Kevin Hilman <khilman@deeprootsystems.com>
+Subject: [PATCH] 8250: add OMAP wakeup-enable register
+Date: Thu, 14 May 2009 16:50:31 -0700
+Message-ID: <1242345031-26775-1-git-send-email-khilman@deeprootsystems.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:40020 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752957AbZEMSqj (ORCPT
+Received: from rv-out-0506.google.com ([209.85.198.235]:51554 "EHLO
+	rv-out-0506.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753698AbZENXuc (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 13 May 2009 14:46:39 -0400
-In-Reply-To: <20090513180436.GA5592@plexity.net>
+	Thu, 14 May 2009 19:50:32 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: dsaxena@plexity.net
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Kevin Hilman <khilman@deeprootsystems.com>
 
-> > So can we apply Deepak's original correct 2008 patch instead please ?
-> 
-> I've updated it with proper header and attached.
+Signed-off-by: Kevin Hilman <khilman@deeprootsystems.com>
+---
+ include/linux/serial_reg.h |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
-Thanks - much better approach.
+diff --git a/include/linux/serial_reg.h b/include/linux/serial_reg.h
+index 96c0d93..850db2e 100644
+--- a/include/linux/serial_reg.h
++++ b/include/linux/serial_reg.h
+@@ -323,6 +323,7 @@
+ #define UART_OMAP_MVER		0x14	/* Module version register */
+ #define UART_OMAP_SYSC		0x15	/* System configuration register */
+ #define UART_OMAP_SYSS		0x16	/* System status register */
++#define UART_OMAP_WER		0x17	/* Wake-up enable register */
+ 
+ #endif /* _LINUX_SERIAL_REG_H */
+ 
+-- 
+1.6.2.2
 
-Alan
