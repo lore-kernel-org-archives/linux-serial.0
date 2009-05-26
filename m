@@ -1,45 +1,67 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] 8250: Don't restore NS16550 mode when console suspend
- is disabled
-Date: Mon, 18 May 2009 20:07:02 +0100
-Message-ID: <20090518200702.328f8664@lxorguk.ukuu.org.uk>
-References: <20090512210015.GA25540@plexity.net>
-	<alpine.LFD.2.01.0905121452190.3343@localhost.localdomain>
-	<20090513011842.22d9cd6c@lxorguk.ukuu.org.uk>
-	<20090513002850.GA28422@plexity.net>
-	<20090513094409.50c2409f@lxorguk.ukuu.org.uk>
-	<alpine.LFD.2.01.0905130755090.3343@localhost.localdomain>
-	<20090513163507.556c3832@lxorguk.ukuu.org.uk>
-	<20090513180436.GA5592@plexity.net>
-	<20090513194651.78e02ec2@lxorguk.ukuu.org.uk>
-	<20090518182454.GA13297@plexity.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From: Peter Korsgaard <jacmet@sunsite.dk>
+Subject: [PATCH] uartlite: support shared interrupt lines
+Date: Tue, 26 May 2009 14:09:10 +0200
+Message-ID: <1243339750-29757-1-git-send-email-jacmet@sunsite.dk>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:48176 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751450AbZERTF6 (ORCPT
+Received: from mail-bw0-f222.google.com ([209.85.218.222]:52535 "EHLO
+	mail-bw0-f222.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752611AbZEZMJR (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 May 2009 15:05:58 -0400
-In-Reply-To: <20090518182454.GA13297@plexity.net>
+	Tue, 26 May 2009 08:09:17 -0400
+Received: by bwz22 with SMTP id 22so3740413bwz.37
+        for <linux-serial@vger.kernel.org>; Tue, 26 May 2009 05:09:17 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: dsaxena@plexity.net
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org, alan@lxorguk.ukuu.org.uk
+Cc: Peter Korsgaard <jacmet@sunsite.dk>
 
-On Mon, 18 May 2009 18:24:54 +0000
-Deepak Saxena <dsaxena@plexity.net> wrote:
+Adapt isr to work with shared interrupt lines.
 
-> On May 13 2009, at 19:46, Alan Cox was caught saying:
-> > > > So can we apply Deepak's original correct 2008 patch instead please ?
-> > > 
-> > > I've updated it with proper header and attached.
-> > 
-> > Thanks - much better approach.
-> 
-> Alan, is this queued up for .31?
+Signed-off-by: Peter Korsgaard <jacmet@sunsite.dk>
+---
+ drivers/serial/uartlite.c |   15 ++++++++++-----
+ 1 files changed, 10 insertions(+), 5 deletions(-)
 
-I thought Linus was dealing with it directly ? If not I'll queue it.
+diff --git a/drivers/serial/uartlite.c b/drivers/serial/uartlite.c
+index 3317148..beb6632 100644
+--- a/drivers/serial/uartlite.c
++++ b/drivers/serial/uartlite.c
+@@ -154,17 +154,22 @@ static int ulite_transmit(struct uart_port *port, int stat)
+ static irqreturn_t ulite_isr(int irq, void *dev_id)
+ {
+ 	struct uart_port *port = dev_id;
+-	int busy;
++	int busy, n = 0;
+ 
+ 	do {
+ 		int stat = readb(port->membase + ULITE_STATUS);
+ 		busy  = ulite_receive(port, stat);
+ 		busy |= ulite_transmit(port, stat);
++		n++;
+ 	} while (busy);
+ 
+-	tty_flip_buffer_push(port->info->port.tty);
+-
+-	return IRQ_HANDLED;
++	/* work done? */
++	if (n > 1) {
++		tty_flip_buffer_push(port->info->port.tty);
++		return IRQ_HANDLED;
++	} else {
++		return IRQ_NONE;
++	}
+ }
+ 
+ static unsigned int ulite_tx_empty(struct uart_port *port)
+@@ -221,7 +226,7 @@ static int ulite_startup(struct uart_port *port)
+ 	int ret;
+ 
+ 	ret = request_irq(port->irq, ulite_isr,
+-			  IRQF_DISABLED | IRQF_SAMPLE_RANDOM, "uartlite", port);
++			  IRQF_SHARED | IRQF_SAMPLE_RANDOM, "uartlite", port);
+ 	if (ret)
+ 		return ret;
+ 
+-- 
+1.6.2
 
-Alan
