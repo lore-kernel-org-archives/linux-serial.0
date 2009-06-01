@@ -1,67 +1,55 @@
-From: Peter Korsgaard <jacmet@sunsite.dk>
-Subject: [PATCH] uartlite: support shared interrupt lines
-Date: Tue, 26 May 2009 14:09:10 +0200
-Message-ID: <1243339750-29757-1-git-send-email-jacmet@sunsite.dk>
+From: Florian Fainelli <florian@openwrt.org>
+Subject: [PATCH 5/9] serial: add support for the TI AR7 internal UART
+Date: Mon, 1 Jun 2009 14:00:35 +0200
+Message-ID: <200906011400.35997.florian@openwrt.org>
+Mime-Version: 1.0
+Content-Type: text/plain;
+  charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bw0-f222.google.com ([209.85.218.222]:52535 "EHLO
-	mail-bw0-f222.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752611AbZEZMJR (ORCPT
+Received: from ey-out-2122.google.com ([74.125.78.27]:18622 "EHLO
+	ey-out-2122.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755339AbZFAMAh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 26 May 2009 08:09:17 -0400
-Received: by bwz22 with SMTP id 22so3740413bwz.37
-        for <linux-serial@vger.kernel.org>; Tue, 26 May 2009 05:09:17 -0700 (PDT)
+	Mon, 1 Jun 2009 08:00:37 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, alan@lxorguk.ukuu.org.uk
-Cc: Peter Korsgaard <jacmet@sunsite.dk>
+To: linux-kernel@vger.kernel.org, akpm <akpm@linux-foundation.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org
 
-Adapt isr to work with shared interrupt lines.
+This patch adds support for the TI AR7 internal UART.
 
-Signed-off-by: Peter Korsgaard <jacmet@sunsite.dk>
+Signed-off-by: Florian Fainelli <florian@openwrt.org>
 ---
- drivers/serial/uartlite.c |   15 ++++++++++-----
- 1 files changed, 10 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/serial/uartlite.c b/drivers/serial/uartlite.c
-index 3317148..beb6632 100644
---- a/drivers/serial/uartlite.c
-+++ b/drivers/serial/uartlite.c
-@@ -154,17 +154,22 @@ static int ulite_transmit(struct uart_port *port, int stat)
- static irqreturn_t ulite_isr(int irq, void *dev_id)
- {
- 	struct uart_port *port = dev_id;
--	int busy;
-+	int busy, n = 0;
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index b4b3981..03376b0 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -286,6 +286,13 @@ static const struct serial8250_config uart_config[] = {
+ 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
+ 		.flags		= UART_CAP_FIFO,
+ 	},
++	[PORT_AR7] = {
++		.name		= "AR7",
++		.fifo_size	= 16,
++		.tx_loadsz	= 16,
++		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_00,
++		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
++	},
+ };
  
- 	do {
- 		int stat = readb(port->membase + ULITE_STATUS);
- 		busy  = ulite_receive(port, stat);
- 		busy |= ulite_transmit(port, stat);
-+		n++;
- 	} while (busy);
+ #if defined (CONFIG_SERIAL_8250_AU1X00)
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 57a97e5..48766ea 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -41,7 +41,8 @@
+ #define PORT_XSCALE	15
+ #define PORT_RM9000	16	/* PMC-Sierra RM9xxx internal UART */
+ #define PORT_OCTEON	17	/* Cavium OCTEON internal UART */
+-#define PORT_MAX_8250	17	/* max port ID */
++#define PORT_AR7	18	/* Texas Instruments AR7 internal UART */
++#define PORT_MAX_8250	18	/* max port ID */
  
--	tty_flip_buffer_push(port->info->port.tty);
--
--	return IRQ_HANDLED;
-+	/* work done? */
-+	if (n > 1) {
-+		tty_flip_buffer_push(port->info->port.tty);
-+		return IRQ_HANDLED;
-+	} else {
-+		return IRQ_NONE;
-+	}
- }
- 
- static unsigned int ulite_tx_empty(struct uart_port *port)
-@@ -221,7 +226,7 @@ static int ulite_startup(struct uart_port *port)
- 	int ret;
- 
- 	ret = request_irq(port->irq, ulite_isr,
--			  IRQF_DISABLED | IRQF_SAMPLE_RANDOM, "uartlite", port);
-+			  IRQF_SHARED | IRQF_SAMPLE_RANDOM, "uartlite", port);
- 	if (ret)
- 		return ret;
- 
--- 
-1.6.2
-
+ /*
+  * ARM specific type numbers.  These are not currently guaranteed
