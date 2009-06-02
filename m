@@ -1,107 +1,91 @@
 From: Mike Frysinger <vapier@gentoo.org>
-Subject: [PATCH 03/11] Blackfin SPORT UART: rewrite inline assembly
-Date: Tue,  2 Jun 2009 03:11:32 -0400
-Message-ID: <1243926700-30485-3-git-send-email-vapier@gentoo.org>
+Subject: [PATCH 05/11] Blackfin Serial Driver: fix error while transferring large files
+Date: Tue,  2 Jun 2009 03:11:34 -0400
+Message-ID: <1243926700-30485-5-git-send-email-vapier@gentoo.org>
 References: <1243926700-30485-1-git-send-email-vapier@gentoo.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.gentoo.org ([140.211.166.183]:46608 "EHLO smtp.gentoo.org"
+Received: from smtp.gentoo.org ([140.211.166.183]:46624 "EHLO smtp.gentoo.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755044AbZFBHLp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 2 Jun 2009 03:11:45 -0400
+	id S1757238AbZFBHLr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 2 Jun 2009 03:11:47 -0400
 In-Reply-To: <1243926700-30485-1-git-send-email-vapier@gentoo.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: uclinux-dist-devel@blackfin.uclinux.org, Bryan Wu <cooloney@kernel.org>
+Cc: uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>, Bryan Wu <cooloney@kernel.org>
 
-Hopefuly the new version is easier to read, but in the process it declares
-proper clobber lists and better constraints so that GCC can do a better
-job at allocating free registers.
+From: Sonic Zhang <sonic.zhang@analog.com>
 
+Ignore receiving data if new position is in the same line of current
+buffer tail and is small.  This should decrease overruns.
+
+Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
 Signed-off-by: Mike Frysinger <vapier@gentoo.org>
-Acked-by: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Signed-off-by: Bryan Wu <cooloney@kernel.org>
 ---
- drivers/serial/bfin_sport_uart.c |   54 ++++++++++++++++++++-----------------
- 1 files changed, 29 insertions(+), 25 deletions(-)
+ drivers/serial/bfin_5xx.c |   31 +++++++++++++++++++++++++++++--
+ 1 files changed, 29 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/serial/bfin_sport_uart.c b/drivers/serial/bfin_sport_uart.c
-index 6687ccd..34b4ae0 100644
---- a/drivers/serial/bfin_sport_uart.c
-+++ b/drivers/serial/bfin_sport_uart.c
-@@ -101,15 +101,16 @@ static inline void tx_one_byte(struct sport_uart_port *up, unsigned int value)
+diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
+index d86123e..65a4c07 100644
+--- a/drivers/serial/bfin_5xx.c
++++ b/drivers/serial/bfin_5xx.c
+@@ -477,6 +477,15 @@ void bfin_serial_rx_dma_timeout(struct bfin_serial_port *uart)
+ 
+ 	spin_lock_irqsave(&uart->port.lock, flags);
+ 
++	/* 2D DMA RX buffer ring is used. Because curr_y_count and
++	 * curr_x_count can't be read as an atomic operation,
++	 * curr_y_count should be read before curr_x_count. When
++	 * curr_x_count is read, curr_y_count may already indicate
++	 * next buffer line. But, the position calculated here is
++	 * still indicate the old line. The wrong position data may
++	 * be smaller than current buffer tail, which cause garbages
++	 * are received if it is not prohibit.
++	 */
+ 	uart->rx_dma_nrows = get_dma_curr_ycount(uart->rx_dma_channel);
+ 	x_pos = get_dma_curr_xcount(uart->rx_dma_channel);
+ 	uart->rx_dma_nrows = DMA_RX_YCOUNT - uart->rx_dma_nrows;
+@@ -487,7 +496,11 @@ void bfin_serial_rx_dma_timeout(struct bfin_serial_port *uart)
+ 		x_pos = 0;
+ 
+ 	pos = uart->rx_dma_nrows * DMA_RX_XCOUNT + x_pos;
+-	if (pos != uart->rx_dma_buf.tail) {
++	/* Ignore receiving data if new position is in the same line of
++	 * current buffer tail and small.
++	 */
++	if (pos > uart->rx_dma_buf.tail ||
++		uart->rx_dma_nrows < (uart->rx_dma_buf.tail/DMA_RX_XCOUNT)) {
+ 		uart->rx_dma_buf.head = pos;
+ 		bfin_serial_dma_rx_chars(uart);
+ 		uart->rx_dma_buf.tail = uart->rx_dma_buf.head;
+@@ -532,11 +545,25 @@ static irqreturn_t bfin_serial_dma_rx_int(int irq, void *dev_id)
  {
- 	pr_debug("%s value:%x\n", __func__, value);
- 	/* Place a Start and Stop bit */
--	__asm__ volatile (
--		"R2 = b#01111111100;\n\t"
--		"R3 = b#10000000001;\n\t"
--		"%0 <<= 2;\n\t"
--		"%0 = %0 & R2;\n\t"
--		"%0 = %0 | R3;\n\t"
--		:"=r"(value)
--		:"0"(value)
--		:"R2", "R3");
-+	__asm__ __volatile__ (
-+		"R2 = b#01111111100;"
-+		"R3 = b#10000000001;"
-+		"%0 <<= 2;"
-+		"%0 = %0 & R2;"
-+		"%0 = %0 | R3;"
-+		: "=d"(value)
-+		: "d"(value)
-+		: "ASTAT", "R2", "R3"
-+	);
- 	pr_debug("%s value:%x\n", __func__, value);
+ 	struct bfin_serial_port *uart = dev_id;
+ 	unsigned short irqstat;
++	int pos;
  
- 	SPORT_PUT_TX(up, value);
-@@ -118,27 +119,30 @@ static inline void tx_one_byte(struct sport_uart_port *up, unsigned int value)
- static inline unsigned int rx_one_byte(struct sport_uart_port *up)
- {
- 	unsigned int value, extract;
-+	u32 tmp_mask1, tmp_mask2, tmp_shift, tmp;
+ 	spin_lock(&uart->port.lock);
+ 	irqstat = get_dma_curr_irqstat(uart->rx_dma_channel);
+ 	clear_dma_irqstat(uart->rx_dma_channel);
+-	bfin_serial_dma_rx_chars(uart);
++
++	uart->rx_dma_nrows = get_dma_curr_ycount(uart->rx_dma_channel);
++	uart->rx_dma_nrows = DMA_RX_YCOUNT - uart->rx_dma_nrows;
++	if (uart->rx_dma_nrows == DMA_RX_YCOUNT)
++		uart->rx_dma_nrows = 0;
++
++	pos = uart->rx_dma_nrows * DMA_RX_XCOUNT;
++	if (pos > uart->rx_dma_buf.tail ||
++		uart->rx_dma_nrows < (uart->rx_dma_buf.tail/DMA_RX_XCOUNT)) {
++		uart->rx_dma_buf.head = pos;
++		bfin_serial_dma_rx_chars(uart);
++		uart->rx_dma_buf.tail = uart->rx_dma_buf.head;
++	}
++
+ 	spin_unlock(&uart->port.lock);
  
- 	value = SPORT_GET_RX32(up);
- 	pr_debug("%s value:%x\n", __func__, value);
- 
- 	/* Extract 8 bits data */
--	__asm__ volatile (
--		"R5 = 0;\n\t"
--		"P0 = 8;\n\t"
--		"R1 = 0x1801(Z);\n\t"
--		"R3 = 0x0300(Z);\n\t"
--		"R4 = 0;\n\t"
--		"LSETUP(loop_s, loop_e) LC0 = P0;\nloop_s:\t"
--		"R2 = extract(%1, R1.L)(Z);\n\t"
--		"R2 <<= R4;\n\t"
--		"R5 = R5 | R2;\n\t"
--		"R1 = R1 - R3;\nloop_e:\t"
--		"R4 += 1;\n\t"
--		"%0 = R5;\n\t"
--		:"=r"(extract)
--		:"r"(value)
--		:"P0", "R1", "R2","R3","R4", "R5");
-+	__asm__ __volatile__ (
-+		"%[extr] = 0;"
-+		"%[mask1] = 0x1801(Z);"
-+		"%[mask2] = 0x0300(Z);"
-+		"%[shift] = 0;"
-+		"LSETUP(.Lloop_s, .Lloop_e) LC0 = %[lc];"
-+		".Lloop_s:"
-+		"%[tmp] = extract(%[val], %[mask1].L)(Z);"
-+		"%[tmp] <<= %[shift];"
-+		"%[extr] = %[extr] | %[tmp];"
-+		"%[mask1] = %[mask1] - %[mask2];"
-+		".Lloop_e:"
-+		"%[shift] += 1;"
-+		: [val]"=d"(value), [extr]"=d"(extract), [shift]"=d"(tmp_shift), [tmp]"=d"(tmp),
-+		  [mask1]"=d"(tmp_mask1), [mask2]"=d"(tmp_mask2)
-+		: "d"(value), [lc]"a"(8)
-+		: "ASTAT", "LB0", "LC0", "LT0"
-+	);
- 
- 	pr_debug("	extract:%x\n", extract);
- 	return extract;
+ 	return IRQ_HANDLED;
 -- 
 1.6.3.1
 
