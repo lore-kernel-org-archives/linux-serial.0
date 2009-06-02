@@ -1,42 +1,51 @@
-From: Florian Fainelli <florian@openwrt.org>
-Subject: [PATCH 6/9] serial: workaround TI AR7 silicon bug
-Date: Mon, 1 Jun 2009 14:01:15 +0200
-Message-ID: <200906011401.15991.florian@openwrt.org>
-Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
+From: Mike Frysinger <vapier@gentoo.org>
+Subject: [PATCH 02/11] Blackfin SPORT UART: fix data misses while using transmit frame sync
+Date: Tue,  2 Jun 2009 03:11:31 -0400
+Message-ID: <1243926700-30485-2-git-send-email-vapier@gentoo.org>
+References: <1243926700-30485-1-git-send-email-vapier@gentoo.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ew0-f176.google.com ([209.85.219.176]:39412 "EHLO
-	mail-ew0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756190AbZFAMBR (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 1 Jun 2009 08:01:17 -0400
-Content-Disposition: inline
+Received: from smtp.gentoo.org ([140.211.166.183]:46603 "EHLO smtp.gentoo.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754929AbZFBHLp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 2 Jun 2009 03:11:45 -0400
+In-Reply-To: <1243926700-30485-1-git-send-email-vapier@gentoo.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, akpm <akpm@linux-foundation.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: uclinux-dist-devel@blackfin.uclinux.org, Michael Hennerich <michael.hennerich@analog.com>, Bryan Wu <cooloney@kernel.org>
 
-This patch make the serial8250_console_putchar work
-on TI AR7 hardware which has a hardware bug clobbering
-serial characters resulting in an almost unusable
-kernel console.
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-Signed-off-by: Florian Fainelli <florian@openwrt.org>
+SPORT transmit frame sync (TFS) isn't used as an electrical signal during
+normal SPORT UART emulation.  However, it is useful in EIA RS-485
+emulation as RS-485 Transceiver Driver Enable DE strobe.
+
+This patch configures:
+TFS to be active high in order to drive an DE strobe of
+an eventually connected RS-485 Transceiver.
+
+Late frame sync mode (LATFS) gating the entire TX shift cycle.
+
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+Signed-off-by: Bryan Wu <cooloney@kernel.org>
 ---
-diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index 03376b0..16b5a7e 100644
---- a/drivers/serial/8250.c
-+++ b/drivers/serial/8250.c
-@@ -2694,7 +2694,11 @@ static void serial8250_console_putchar(struct uart_port *port, int ch)
- {
- 	struct uart_8250_port *up = (struct uart_8250_port *)port;
+ drivers/serial/bfin_sport_uart.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/serial/bfin_sport_uart.c b/drivers/serial/bfin_sport_uart.c
+index fd5cb95..6687ccd 100644
+--- a/drivers/serial/bfin_sport_uart.c
++++ b/drivers/serial/bfin_sport_uart.c
+@@ -149,7 +149,7 @@ static int sport_uart_setup(struct sport_uart_port *up, int sclk, int baud_rate)
+ 	int tclkdiv, tfsdiv, rclkdiv;
  
-+#ifdef CONFIG_AR7
-+	wait_for_xmitr(up, BOTH_EMPTY);
-+#else
- 	wait_for_xmitr(up, UART_LSR_THRE);
-+#endif
- 	serial_out(up, UART_TX, ch);
- }
+ 	/* Set TCR1 and TCR2 */
+-	SPORT_PUT_TCR1(up, (LTFS | ITFS | TFSR | TLSBIT | ITCLK));
++	SPORT_PUT_TCR1(up, (LATFS | ITFS | TFSR | TLSBIT | ITCLK));
+ 	SPORT_PUT_TCR2(up, 10);
+ 	pr_debug("%s TCR1:%x, TCR2:%x\n", __func__, SPORT_GET_TCR1(up), SPORT_GET_TCR2(up));
  
+-- 
+1.6.3.1
+
