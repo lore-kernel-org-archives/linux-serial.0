@@ -1,91 +1,67 @@
 From: Mike Frysinger <vapier@gentoo.org>
-Subject: [PATCH 05/11] Blackfin Serial Driver: fix error while transferring large files
-Date: Tue,  2 Jun 2009 03:11:34 -0400
-Message-ID: <1243926700-30485-5-git-send-email-vapier@gentoo.org>
+Subject: [PATCH 08/11] Blackfin Serial Driver: handle irregular DMA register status in auto start mode
+Date: Tue,  2 Jun 2009 03:11:37 -0400
+Message-ID: <1243926700-30485-8-git-send-email-vapier@gentoo.org>
 References: <1243926700-30485-1-git-send-email-vapier@gentoo.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.gentoo.org ([140.211.166.183]:46624 "EHLO smtp.gentoo.org"
+Received: from smtp.gentoo.org ([140.211.166.183]:46633 "EHLO smtp.gentoo.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757238AbZFBHLr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 2 Jun 2009 03:11:47 -0400
+	id S1755044AbZFBHLu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 2 Jun 2009 03:11:50 -0400
 In-Reply-To: <1243926700-30485-1-git-send-email-vapier@gentoo.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>, Bryan Wu <cooloney@kernel.org>
+Cc: uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
 
 From: Sonic Zhang <sonic.zhang@analog.com>
 
-Ignore receiving data if new position is in the same line of current
-buffer tail and is small.  This should decrease overruns.
+This bug is caused by irregular behavior of DMA register CURR_X_COUNT
+and CURR_Y_COUNT when an auto restart uart rx DMA run to last byte in
+DMA buffer, trigger the interrupt and stay at this possiton. The status
+of current x and y is 0:7 instead of 512:8 or 0:8. The driver doesn't
+take care of this case when calculating the position.
 
+URL: http://blackfin.uclinux.org/gf/tracker/5063
 Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
 Signed-off-by: Mike Frysinger <vapier@gentoo.org>
-Signed-off-by: Bryan Wu <cooloney@kernel.org>
+Reported-by: Tomasz Motylewski <t.motylewski@bfad.de>
 ---
- drivers/serial/bfin_5xx.c |   31 +++++++++++++++++++++++++++++--
- 1 files changed, 29 insertions(+), 2 deletions(-)
+ drivers/serial/bfin_5xx.c |    7 ++++---
+ 1 files changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
-index d86123e..65a4c07 100644
+index 676efda..854e96d 100644
 --- a/drivers/serial/bfin_5xx.c
 +++ b/drivers/serial/bfin_5xx.c
-@@ -477,6 +477,15 @@ void bfin_serial_rx_dma_timeout(struct bfin_serial_port *uart)
- 
- 	spin_lock_irqsave(&uart->port.lock, flags);
- 
-+	/* 2D DMA RX buffer ring is used. Because curr_y_count and
-+	 * curr_x_count can't be read as an atomic operation,
-+	 * curr_y_count should be read before curr_x_count. When
-+	 * curr_x_count is read, curr_y_count may already indicate
-+	 * next buffer line. But, the position calculated here is
-+	 * still indicate the old line. The wrong position data may
-+	 * be smaller than current buffer tail, which cause garbages
-+	 * are received if it is not prohibit.
-+	 */
+@@ -490,7 +490,7 @@ void bfin_serial_rx_dma_timeout(struct bfin_serial_port *uart)
  	uart->rx_dma_nrows = get_dma_curr_ycount(uart->rx_dma_channel);
  	x_pos = get_dma_curr_xcount(uart->rx_dma_channel);
  	uart->rx_dma_nrows = DMA_RX_YCOUNT - uart->rx_dma_nrows;
-@@ -487,7 +496,11 @@ void bfin_serial_rx_dma_timeout(struct bfin_serial_port *uart)
- 		x_pos = 0;
- 
- 	pos = uart->rx_dma_nrows * DMA_RX_XCOUNT + x_pos;
--	if (pos != uart->rx_dma_buf.tail) {
-+	/* Ignore receiving data if new position is in the same line of
-+	 * current buffer tail and small.
-+	 */
-+	if (pos > uart->rx_dma_buf.tail ||
-+		uart->rx_dma_nrows < (uart->rx_dma_buf.tail/DMA_RX_XCOUNT)) {
- 		uart->rx_dma_buf.head = pos;
- 		bfin_serial_dma_rx_chars(uart);
- 		uart->rx_dma_buf.tail = uart->rx_dma_buf.head;
-@@ -532,11 +545,25 @@ static irqreturn_t bfin_serial_dma_rx_int(int irq, void *dev_id)
+-	if (uart->rx_dma_nrows == DMA_RX_YCOUNT)
++	if (uart->rx_dma_nrows == DMA_RX_YCOUNT || x_pos == 0)
+ 		uart->rx_dma_nrows = 0;
+ 	x_pos = DMA_RX_XCOUNT - x_pos;
+ 	if (x_pos == DMA_RX_XCOUNT)
+@@ -546,15 +546,16 @@ static irqreturn_t bfin_serial_dma_rx_int(int irq, void *dev_id)
  {
  	struct bfin_serial_port *uart = dev_id;
  	unsigned short irqstat;
-+	int pos;
+-	int pos;
++	int x_pos, pos;
  
  	spin_lock(&uart->port.lock);
  	irqstat = get_dma_curr_irqstat(uart->rx_dma_channel);
  	clear_dma_irqstat(uart->rx_dma_channel);
--	bfin_serial_dma_rx_chars(uart);
-+
-+	uart->rx_dma_nrows = get_dma_curr_ycount(uart->rx_dma_channel);
-+	uart->rx_dma_nrows = DMA_RX_YCOUNT - uart->rx_dma_nrows;
-+	if (uart->rx_dma_nrows == DMA_RX_YCOUNT)
-+		uart->rx_dma_nrows = 0;
-+
-+	pos = uart->rx_dma_nrows * DMA_RX_XCOUNT;
-+	if (pos > uart->rx_dma_buf.tail ||
-+		uart->rx_dma_nrows < (uart->rx_dma_buf.tail/DMA_RX_XCOUNT)) {
-+		uart->rx_dma_buf.head = pos;
-+		bfin_serial_dma_rx_chars(uart);
-+		uart->rx_dma_buf.tail = uart->rx_dma_buf.head;
-+	}
-+
- 	spin_unlock(&uart->port.lock);
  
- 	return IRQ_HANDLED;
+ 	uart->rx_dma_nrows = get_dma_curr_ycount(uart->rx_dma_channel);
++	x_pos = get_dma_curr_xcount(uart->rx_dma_channel);
+ 	uart->rx_dma_nrows = DMA_RX_YCOUNT - uart->rx_dma_nrows;
+-	if (uart->rx_dma_nrows == DMA_RX_YCOUNT)
++	if (uart->rx_dma_nrows == DMA_RX_YCOUNT || x_pos == 0)
+ 		uart->rx_dma_nrows = 0;
+ 
+ 	pos = uart->rx_dma_nrows * DMA_RX_XCOUNT;
 -- 
 1.6.3.1
 
