@@ -1,44 +1,58 @@
 From: Mike Frysinger <vapier@gentoo.org>
-Subject: [PATCH 07/11] Blackfin Serial Driver: fix missing new lines when under load
-Date: Tue,  2 Jun 2009 03:11:36 -0400
-Message-ID: <1243926700-30485-7-git-send-email-vapier@gentoo.org>
+Subject: [PATCH 11/11] Blackfin Serial Driver: disable dma rx interrupt only rather than all irqs
+Date: Tue,  2 Jun 2009 03:11:40 -0400
+Message-ID: <1243926700-30485-11-git-send-email-vapier@gentoo.org>
 References: <1243926700-30485-1-git-send-email-vapier@gentoo.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.gentoo.org ([140.211.166.183]:46630 "EHLO smtp.gentoo.org"
+Received: from smtp.gentoo.org ([140.211.166.183]:46644 "EHLO smtp.gentoo.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757996AbZFBHLt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 2 Jun 2009 03:11:49 -0400
+	id S1759358AbZFBHLw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 2 Jun 2009 03:11:52 -0400
 In-Reply-To: <1243926700-30485-1-git-send-email-vapier@gentoo.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: uclinux-dist-devel@blackfin.uclinux.org, Graf Yang <graf.yang@analog.com>, Bryan Wu <cooloney@kernel.org>
+Cc: uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
 
-From: Graf Yang <graf.yang@analog.com>
+From: Sonic Zhang <sonic.zhang@analog.com>
 
-Add a SSYNC() into bfin_serial_dma_tx_chars() to ensure DMA registers are
-written with new data otherwise we might miss a byte or two when the
-system is under load.  PIO mode is OK though.
+The UART RX handling code isn't exactly speeding, so don't go disabling
+all interrupts when processing the buffer.  Just disable the relevant DMA
+interrupt.  This greatly improves latency of the system when utilizing the
+UART.
 
-Signed-off-by: Graf Yang <graf.yang@analog.com>
+Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
 Signed-off-by: Mike Frysinger <vapier@gentoo.org>
-Signed-off-by: Bryan Wu <cooloney@kernel.org>
 ---
- drivers/serial/bfin_5xx.c |    1 +
- 1 files changed, 1 insertions(+), 0 deletions(-)
+ drivers/serial/bfin_5xx.c |    7 ++++---
+ 1 files changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
-index dfae22d..676efda 100644
+index 64603f5..e2f6b1b 100644
 --- a/drivers/serial/bfin_5xx.c
 +++ b/drivers/serial/bfin_5xx.c
-@@ -415,6 +415,7 @@ static void bfin_serial_dma_tx_chars(struct bfin_serial_port *uart)
- 	set_dma_start_addr(uart->tx_dma_channel, (unsigned long)(xmit->buf+xmit->tail));
- 	set_dma_x_count(uart->tx_dma_channel, uart->tx_count);
- 	set_dma_x_modify(uart->tx_dma_channel, 1);
-+	SSYNC();
- 	enable_dma(uart->tx_dma_channel);
+@@ -479,9 +479,9 @@ static void bfin_serial_dma_rx_chars(struct bfin_serial_port *uart)
+ void bfin_serial_rx_dma_timeout(struct bfin_serial_port *uart)
+ {
+ 	int x_pos, pos;
+-	unsigned long flags;
  
- 	UART_SET_IER(uart, ETBEI);
+-	spin_lock_irqsave(&uart->port.lock, flags);
++	dma_disable_irq(uart->rx_dma_channel);
++	spin_lock_bh(&uart->port.lock);
+ 
+ 	/* 2D DMA RX buffer ring is used. Because curr_y_count and
+ 	 * curr_x_count can't be read as an atomic operation,
+@@ -512,7 +512,8 @@ void bfin_serial_rx_dma_timeout(struct bfin_serial_port *uart)
+ 		uart->rx_dma_buf.tail = uart->rx_dma_buf.head;
+ 	}
+ 
+-	spin_unlock_irqrestore(&uart->port.lock, flags);
++	spin_unlock_bh(&uart->port.lock);
++	dma_enable_irq(uart->rx_dma_channel);
+ 
+ 	mod_timer(&(uart->rx_dma_timer), jiffies + DMA_RX_FLUSH_JIFFIES);
+ }
 -- 
 1.6.3.1
 
