@@ -1,54 +1,57 @@
 From: Mike Frysinger <vapier@gentoo.org>
-Subject: [PATCH 10/11] Blackfin Serial Driver: handle anomaly 05000231
-Date: Tue,  2 Jun 2009 03:11:39 -0400
-Message-ID: <1243926700-30485-10-git-send-email-vapier@gentoo.org>
+Subject: [PATCH 06/11] Blackfin Serial Driver: fix baudrate for early_printk
+Date: Tue,  2 Jun 2009 03:11:35 -0400
+Message-ID: <1243926700-30485-6-git-send-email-vapier@gentoo.org>
 References: <1243926700-30485-1-git-send-email-vapier@gentoo.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.gentoo.org ([140.211.166.183]:46642 "EHLO smtp.gentoo.org"
+Received: from smtp.gentoo.org ([140.211.166.183]:46629 "EHLO smtp.gentoo.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1758565AbZFBHLw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 2 Jun 2009 03:11:52 -0400
+	id S1757336AbZFBHLs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 2 Jun 2009 03:11:48 -0400
 In-Reply-To: <1243926700-30485-1-git-send-email-vapier@gentoo.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
+Cc: uclinux-dist-devel@blackfin.uclinux.org, Robin Getz <rgetz@blackfin.uclinux.org>, Bryan Wu <cooloney@kernel.org>
 
-From: Sonic Zhang <sonic.zhang@analog.com>
+From: Robin Getz <rgetz@blackfin.uclinux.org>
 
-05000231 - UART STB Bit Incorrectly Affects Receiver Setting
-For processors affected by this, we cannot safely allow CSTOPB to be set
-as the UART will then be unable to properly clock in bytes.
+Since we already setup the early console UART in
+arch/blackfin/kernel/early_printk.c, and common functions which are
+enabled from the .setup will override the proper settings later, don't
+fill in these structures.  Otherwise we get mangled baudrate settings when
+using early_printk.
 
-Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+Signed-off-by: Robin Getz <rgetz@blackfin.uclinux.org>
 Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+Signed-off-by: Bryan Wu <cooloney@kernel.org>
 ---
- drivers/serial/bfin_5xx.c |   12 ++++++++++--
- 1 files changed, 10 insertions(+), 2 deletions(-)
+ drivers/serial/bfin_5xx.c |    7 ++++++-
+ 1 files changed, 6 insertions(+), 1 deletions(-)
 
 diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
-index ab583ef..64603f5 100644
+index 65a4c07..dfae22d 100644
 --- a/drivers/serial/bfin_5xx.c
 +++ b/drivers/serial/bfin_5xx.c
-@@ -828,8 +828,16 @@ bfin_serial_set_termios(struct uart_port *port, struct ktermios *termios,
- 			__func__);
+@@ -1272,12 +1272,17 @@ static __init void early_serial_write(struct console *con, const char *s,
  	}
+ }
  
--	if (termios->c_cflag & CSTOPB)
--		lcr |= STB;
-+	/* Anomaly notes:
-+	 *  05000231 -  STOP bit is always set to 1 whatever the user is set.
-+	 */
-+	if (termios->c_cflag & CSTOPB) {
-+		if (ANOMALY_05000231)
-+			printk(KERN_WARNING "STOP bits other than 1 is not "
-+				"supported in case of anomaly 05000231.\n");
-+		else
-+			lcr |= STB;
-+	}
- 	if (termios->c_cflag & PARENB)
- 		lcr |= PEN;
- 	if (!(termios->c_cflag & PARODD))
++/*
++ * This should have a .setup or .early_setup in it, but then things get called
++ * without the command line options, and the baud rate gets messed up - so
++ * don't let the common infrastructure play with things. (see calls to setup
++ * & earlysetup in ./kernel/printk.c:register_console()
++ */
+ static struct __initdata console bfin_early_serial_console = {
+ 	.name = "early_BFuart",
+ 	.write = early_serial_write,
+ 	.device = uart_console_device,
+ 	.flags = CON_PRINTBUFFER,
+-	.setup = bfin_serial_console_setup,
+ 	.index = -1,
+ 	.data  = &bfin_serial_reg,
+ };
 -- 
 1.6.3.1
 
