@@ -1,38 +1,64 @@
-From: Mike Frysinger <vapier.adi@gmail.com>
-Subject: Re: [PATCH 04/11] Blackfin SPORT UART: fix overrun errors
-Date: Wed, 3 Jun 2009 06:15:14 -0400
-Message-ID: <8bd0f97a0906030315l60214ff1n7f5d7a7203dd4547@mail.gmail.com>
-References: <1243926700-30485-1-git-send-email-vapier@gentoo.org>
-	 <1243926700-30485-4-git-send-email-vapier@gentoo.org>
-	 <20090602100018.415b1dfc@lxorguk.ukuu.org.uk>
-	 <8bd0f97a0906030103i64bc1a9duc5aeaea7bd3f8365@mail.gmail.com>
-	 <20090603095346.64c874b1@lxorguk.ukuu.org.uk>
-	 <8bd0f97a0906030247ueeb9320k30e794109ca51758@mail.gmail.com>
-	 <20090603105716.341244fc@lxorguk.ukuu.org.uk>
+From: Florian Fainelli <florian@openwrt.org>
+Subject: [PATCH 8/8] 8250: add Texas Instruments AR7 internal UART
+Date: Thu, 4 Jun 2009 16:22:46 +0200
+Message-ID: <200906041622.47591.florian@openwrt.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-gx0-f166.google.com ([209.85.217.166]:45672 "EHLO
-	mail-gx0-f166.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752635AbZFCKPN (ORCPT
+Received: from fg-out-1718.google.com ([72.14.220.152]:56714 "EHLO
+	fg-out-1718.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750787AbZFDOWu (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 3 Jun 2009 06:15:13 -0400
-In-Reply-To: <20090603105716.341244fc@lxorguk.ukuu.org.uk>
+	Thu, 4 Jun 2009 10:22:50 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org, Cliff Cai <cliff.cai@analog.com>, Bryan Wu <cooloney@kernel.org>
+To: Linux-MIPS <linux-mips@linux-mips.org>, Ralf Baechle <ralf@linux-mips.org>, linux-kernel@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org
 
-On Wed, Jun 3, 2009 at 05:57, Alan Cox wrote:
->> since the serial stuff is in a bit of orphaned state (going by
->> MAINTAINERS), should i merge the other changes through the Blackfin
->> tree ?
->
-> The other bits are all merged into the ttydev tree
+Hi Alan,
 
-ah, ok.  i'm guessing that is this:
-http://www.linux.org.uk/~alan/ttydev/
+We discussed that in private, there are a couple of things
+to fix in order to get 8250 working properly with TI AR7 HW.
+If you can still merge that bit, this would ease future work, thanks !
+--
+From: Florian Fainelli <florian@openwrt.org>
 
-useful to add to MAINTAINERS ?
--mike
+This patch adds support for Texas Instruments AR7 internal
+UART.
+
+Signed-off-by: Florian Fainelli <florian@openwrt.org>
+---
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index a0127e9..fb867a9 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -287,6 +287,13 @@ static const struct serial8250_config uart_config[] = {
+ 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
+ 		.flags		= UART_CAP_FIFO,
+ 	},
++	[PORT_AR7] = {
++		.name		= "AR7",
++		.fifo_size	= 16,
++		.tx_loadsz	= 16,
++		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_00,
++		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
++	},
+ };
+ 
+ #if defined (CONFIG_SERIAL_8250_AU1X00)
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 57a97e5..48766ea 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -41,7 +41,8 @@
+ #define PORT_XSCALE	15
+ #define PORT_RM9000	16	/* PMC-Sierra RM9xxx internal UART */
+ #define PORT_OCTEON	17	/* Cavium OCTEON internal UART */
+-#define PORT_MAX_8250	17	/* max port ID */
++#define PORT_AR7	18	/* Texas Instruments AR7 internal UART */
++#define PORT_MAX_8250	18	/* max port ID */
+ 
+ /*
+  * ARM specific type numbers.  These are not currently guaranteed
