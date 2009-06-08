@@ -1,45 +1,93 @@
-From: Florian Fainelli <florian@openwrt.org>
-Subject: Re: [PATCH 8/8] 8250: add Texas Instruments AR7 internal UART
-Date: Sat, 6 Jun 2009 19:25:52 +0200
-Message-ID: <200906061925.53839.florian@openwrt.org>
-References: <200906041622.47591.florian@openwrt.org> <20090604222020.GA14843@alpha.franken.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Dave Liu <daveliu@freescale.com>
+Subject: [PATCH] serial: Fix bug of ucc_uart
+Date: Mon,  8 Jun 2009 22:24:36 +0800
+Message-ID: <1244471076-25905-1-git-send-email-daveliu@freescale.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from fg-out-1718.google.com ([72.14.220.152]:45527 "EHLO
-	fg-out-1718.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752974AbZFFRZ4 convert rfc822-to-8bit (ORCPT
+Received: from az33egw02.freescale.net ([192.88.158.103]:58162 "EHLO
+	az33egw02.freescale.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756177AbZFHOas (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 6 Jun 2009 13:25:56 -0400
-In-Reply-To: <20090604222020.GA14843@alpha.franken.de>
-Content-Disposition: inline
+	Mon, 8 Jun 2009 10:30:48 -0400
+Received: from de01smr01.freescale.net (de01smr01.freescale.net [10.208.0.31])
+	by az33egw02.freescale.net (8.14.3/az33egw02) with ESMTP id n58EUajc028684
+	for <linux-serial@vger.kernel.org>; Mon, 8 Jun 2009 07:30:36 -0700 (MST)
+Received: from zch01exm21.fsl.freescale.net (zch01exm21.ap.freescale.net [10.192.129.205])
+	by de01smr01.freescale.net (8.13.1/8.13.0) with ESMTP id n58EUYBp006574
+	for <linux-serial@vger.kernel.org>; Mon, 8 Jun 2009 09:30:34 -0500 (CDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: Linux-MIPS <linux-mips@linux-mips.org>, Ralf Baechle <ralf@linux-mips.org>, linux-kernel@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, linuxppc-dev@ozlabs.org
+Cc: timur@freescale.com, galak@kernel.crashing.org, Dave Liu <daveliu@freescale.com>
 
-Le Friday 05 June 2009 00:20:20 Thomas Bogendoerfer, vous avez =E9crit=A0=
-:
-> On Thu, Jun 04, 2009 at 04:22:46PM +0200, Florian Fainelli wrote:
-> > We discussed that in private, there are a couple of things
-> > to fix in order to get 8250 working properly with TI AR7 HW.
-> > If you can still merge that bit, this would ease future work, thank=
-s !
->
-> I still have a tree here, which works without any changes to the 8250
-> serial driver on a TNETD7300 device.
+Current ucc_uart driver doesn't work at UART mode,
+The TxBD[READY] is not cleared by H/W (RISC engine)
+when user send characters to Tx buffer of QE UART.
+so, these characters stay on the QE forever, never
+go to UART line.
 
-Got to test with defining the UART type as a PORT_16550 and use UPIO_ME=
-M32=20
-instead of UPIO_MEM.
---=20
-Best regards, Florian Fainelli
-Email : florian@openwrt.org
-http://openwrt.org
--------------------------------
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+The patch is fixing th bug.
+
+Signed-off-by: Dave Liu <daveliu@freescale.com>
+---
+ drivers/serial/ucc_uart.c |   19 ++++++++++++++-----
+ 1 files changed, 14 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/serial/ucc_uart.c b/drivers/serial/ucc_uart.c
+index 7de66c0..e945e78 100644
+--- a/drivers/serial/ucc_uart.c
++++ b/drivers/serial/ucc_uart.c
+@@ -681,22 +681,27 @@ static void qe_uart_init_ucc(struct uart_qe_port *qe_port)
+ 	out_be16(&uccup->rccm, 0xc0ff);
+ 
+ 	/* Configure the GUMR registers for UART */
+-	if (soft_uart)
++	if (soft_uart) {
+ 		/* Soft-UART requires a 1X multiplier for TX */
+ 		clrsetbits_be32(&uccp->gumr_l,
+ 			UCC_SLOW_GUMR_L_MODE_MASK | UCC_SLOW_GUMR_L_TDCR_MASK |
+ 			UCC_SLOW_GUMR_L_RDCR_MASK,
+ 			UCC_SLOW_GUMR_L_MODE_UART | UCC_SLOW_GUMR_L_TDCR_1 |
+ 			UCC_SLOW_GUMR_L_RDCR_16);
+-	else
++
++		clrsetbits_be32(&uccp->gumr_h, UCC_SLOW_GUMR_H_RFW,
++			UCC_SLOW_GUMR_H_TRX | UCC_SLOW_GUMR_H_TTX);
++	} else {
+ 		clrsetbits_be32(&uccp->gumr_l,
+ 			UCC_SLOW_GUMR_L_MODE_MASK | UCC_SLOW_GUMR_L_TDCR_MASK |
+ 			UCC_SLOW_GUMR_L_RDCR_MASK,
+ 			UCC_SLOW_GUMR_L_MODE_UART | UCC_SLOW_GUMR_L_TDCR_16 |
+ 			UCC_SLOW_GUMR_L_RDCR_16);
+ 
+-	clrsetbits_be32(&uccp->gumr_h, UCC_SLOW_GUMR_H_RFW,
+-		UCC_SLOW_GUMR_H_TRX | UCC_SLOW_GUMR_H_TTX);
++		clrsetbits_be32(&uccp->gumr_h,
++			UCC_SLOW_GUMR_H_TRX | UCC_SLOW_GUMR_H_TTX,
++			UCC_SLOW_GUMR_H_RFW);
++	}
+ 
+ #ifdef LOOPBACK
+ 	clrsetbits_be32(&uccp->gumr_l, UCC_SLOW_GUMR_L_DIAG_MASK,
+@@ -706,7 +711,7 @@ static void qe_uart_init_ucc(struct uart_qe_port *qe_port)
+ 		UCC_SLOW_GUMR_H_CDS);
+ #endif
+ 
+-	/* Enable rx interrupts  and clear all pending events.  */
++	/* Disable rx interrupts  and clear all pending events.  */
+ 	out_be16(&uccp->uccm, 0);
+ 	out_be16(&uccp->ucce, 0xffff);
+ 	out_be16(&uccp->udsr, 0x7e7e);
+@@ -765,6 +770,10 @@ static void qe_uart_init_ucc(struct uart_qe_port *qe_port)
+ 		cecr_subblock = ucc_slow_get_qe_cr_subblock(qe_port->ucc_num);
+ 		qe_issue_cmd(QE_INIT_TX_RX, cecr_subblock,
+ 			QE_CR_PROTOCOL_UNSPECIFIED, 0);
++	} else {
++		cecr_subblock = ucc_slow_get_qe_cr_subblock(qe_port->ucc_num);
++		qe_issue_cmd(QE_INIT_TX_RX, cecr_subblock,
++			QE_CR_PROTOCOL_UART, 0);
+ 	}
+ }
+ 
+-- 
+1.5.4
+
