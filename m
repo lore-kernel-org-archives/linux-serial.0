@@ -1,93 +1,87 @@
-From: Dave Liu <daveliu@freescale.com>
-Subject: [PATCH] serial: Fix bug of ucc_uart
-Date: Mon,  8 Jun 2009 22:24:36 +0800
-Message-ID: <1244471076-25905-1-git-send-email-daveliu@freescale.com>
+From: Krzysztof Halasa <khc@pm.waw.pl>
+Subject: Oxford 16954 UART capabilities
+Date: Tue, 09 Jun 2009 14:55:37 +0200
+Message-ID: <m3eittlg6u.fsf@intrepid.localdomain>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from az33egw02.freescale.net ([192.88.158.103]:58162 "EHLO
-	az33egw02.freescale.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756177AbZFHOas (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 8 Jun 2009 10:30:48 -0400
-Received: from de01smr01.freescale.net (de01smr01.freescale.net [10.208.0.31])
-	by az33egw02.freescale.net (8.14.3/az33egw02) with ESMTP id n58EUajc028684
-	for <linux-serial@vger.kernel.org>; Mon, 8 Jun 2009 07:30:36 -0700 (MST)
-Received: from zch01exm21.fsl.freescale.net (zch01exm21.ap.freescale.net [10.192.129.205])
-	by de01smr01.freescale.net (8.13.1/8.13.0) with ESMTP id n58EUYBp006574
-	for <linux-serial@vger.kernel.org>; Mon, 8 Jun 2009 09:30:34 -0500 (CDT)
+Received: from khc.piap.pl ([195.187.100.11]:39223 "EHLO khc.piap.pl"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1757620AbZFIMzi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 9 Jun 2009 08:55:38 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, linuxppc-dev@ozlabs.org
-Cc: timur@freescale.com, galak@kernel.crashing.org, Dave Liu <daveliu@freescale.com>
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Lee Howard <lee.howard@mainpine.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-Current ucc_uart driver doesn't work at UART mode,
-The TxBD[READY] is not cleared by H/W (RISC engine)
-when user send characters to Tx buffer of QE UART.
-so, these characters stay on the QE forever, never
-go to UART line.
+Hi,
 
-The patch is fixing th bug.
+I'm using a quadruple UART card based on Oxford's OX16PCI954 chip. There
+is a message about a capability mismatch for which I no longer have
+enough patience to ignore:
 
-Signed-off-by: Dave Liu <daveliu@freescale.com>
----
- drivers/serial/ucc_uart.c |   19 ++++++++++++++-----
- 1 files changed, 14 insertions(+), 5 deletions(-)
+Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+serial 0000:04:00.0: PCI INT A -> GSI 16 (level, low) -> IRQ 16
+ttyS0: detected caps 00000700 should be 00000100
+0000:04:00.0: ttyS0 at I/O 0xec00 (irq = 16) is a 16C950/954
+ttyS1: detected caps 00000700 should be 00000100
+0000:04:00.0: ttyS1 at I/O 0xec08 (irq = 16) is a 16C950/954
+ttyS2: detected caps 00000700 should be 00000100
+0000:04:00.0: ttyS2 at I/O 0xec10 (irq = 16) is a 16C950/954
+ttyS3: detected caps 00000700 should be 00000100
+0000:04:00.0: ttyS3 at I/O 0xec18 (irq = 16) is a 16C950/954
 
-diff --git a/drivers/serial/ucc_uart.c b/drivers/serial/ucc_uart.c
-index 7de66c0..e945e78 100644
---- a/drivers/serial/ucc_uart.c
-+++ b/drivers/serial/ucc_uart.c
-@@ -681,22 +681,27 @@ static void qe_uart_init_ucc(struct uart_qe_port *qe_port)
- 	out_be16(&uccup->rccm, 0xc0ff);
- 
- 	/* Configure the GUMR registers for UART */
--	if (soft_uart)
-+	if (soft_uart) {
- 		/* Soft-UART requires a 1X multiplier for TX */
- 		clrsetbits_be32(&uccp->gumr_l,
- 			UCC_SLOW_GUMR_L_MODE_MASK | UCC_SLOW_GUMR_L_TDCR_MASK |
- 			UCC_SLOW_GUMR_L_RDCR_MASK,
- 			UCC_SLOW_GUMR_L_MODE_UART | UCC_SLOW_GUMR_L_TDCR_1 |
- 			UCC_SLOW_GUMR_L_RDCR_16);
--	else
-+
-+		clrsetbits_be32(&uccp->gumr_h, UCC_SLOW_GUMR_H_RFW,
-+			UCC_SLOW_GUMR_H_TRX | UCC_SLOW_GUMR_H_TTX);
-+	} else {
- 		clrsetbits_be32(&uccp->gumr_l,
- 			UCC_SLOW_GUMR_L_MODE_MASK | UCC_SLOW_GUMR_L_TDCR_MASK |
- 			UCC_SLOW_GUMR_L_RDCR_MASK,
- 			UCC_SLOW_GUMR_L_MODE_UART | UCC_SLOW_GUMR_L_TDCR_16 |
- 			UCC_SLOW_GUMR_L_RDCR_16);
- 
--	clrsetbits_be32(&uccp->gumr_h, UCC_SLOW_GUMR_H_RFW,
--		UCC_SLOW_GUMR_H_TRX | UCC_SLOW_GUMR_H_TTX);
-+		clrsetbits_be32(&uccp->gumr_h,
-+			UCC_SLOW_GUMR_H_TRX | UCC_SLOW_GUMR_H_TTX,
-+			UCC_SLOW_GUMR_H_RFW);
-+	}
- 
- #ifdef LOOPBACK
- 	clrsetbits_be32(&uccp->gumr_l, UCC_SLOW_GUMR_L_DIAG_MASK,
-@@ -706,7 +711,7 @@ static void qe_uart_init_ucc(struct uart_qe_port *qe_port)
- 		UCC_SLOW_GUMR_H_CDS);
- #endif
- 
--	/* Enable rx interrupts  and clear all pending events.  */
-+	/* Disable rx interrupts  and clear all pending events.  */
- 	out_be16(&uccp->uccm, 0);
- 	out_be16(&uccp->ucce, 0xffff);
- 	out_be16(&uccp->udsr, 0x7e7e);
-@@ -765,6 +770,10 @@ static void qe_uart_init_ucc(struct uart_qe_port *qe_port)
- 		cecr_subblock = ucc_slow_get_qe_cr_subblock(qe_port->ucc_num);
- 		qe_issue_cmd(QE_INIT_TX_RX, cecr_subblock,
- 			QE_CR_PROTOCOL_UNSPECIFIED, 0);
-+	} else {
-+		cecr_subblock = ucc_slow_get_qe_cr_subblock(qe_port->ucc_num);
-+		qe_issue_cmd(QE_INIT_TX_RX, cecr_subblock,
-+			QE_CR_PROTOCOL_UART, 0);
- 	}
- }
- 
+I'm not sure what's the problem:
+
+8250.h:
+#define UART_CAP_FIFO  (1 << 8)        /* UART has FIFO */
+#define UART_CAP_EFR   (1 << 9)        /* UART has EFR */
+#define UART_CAP_SLEEP (1 << 10)       /* UART has IER sleep */
+
+8250.c (uart_config[]):
+
+        [PORT_16C950] = {
+                .name           = "16C950/954",
+                .fifo_size      = 128,
+                .tx_loadsz      = 128,
+                .fcr            = UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
+                .flags          = UART_CAP_FIFO,
+        },
+
+...
+
+/*
+ * This is a helper routine to autodetect StarTech/Exar/Oxsemi UART's.
+ * When this function is called we know it is at least a StarTech
+ * 16650 V2, but it might be one of several StarTech UARTs, or one of
+ * its clones.  (We treat the broken original StarTech 16650 V1 as a
+ * 16550, and why not?  Startech doesn't seem to even acknowledge its
+ * existence.)
+ *
+ * What evil have men's minds wrought...
+ */
+static void autoconfig_has_efr(struct uart_8250_port *up)
+{
+        unsigned int id1, id2, id3, rev;
+
+        /*
+         * Everything with an EFR has SLEEP
+         */
+        up->capabilities |= UART_CAP_EFR | UART_CAP_SLEEP;
+
+then for OX 16950 it does:
+        up->port.type = PORT_16C950;
+        return;
+
+so the above CAP_EFR | CAP_SLEEP stay set.
+
+Should autoconfig_has_efr() clear these bits, or are the caps in
+uart_config[] incorrect?
+
+The datasheet lists bit 4 of IER register as "sleep mode". The EFR is
+enabled by writing 0xBF to LCR which seem consistent with the driver
+code.
+
+Should we just add UART_CAP_EFR and _SLEEP to uart_config[PORT_16C950]?
 -- 
-1.5.4
-
+Krzysztof Halasa
