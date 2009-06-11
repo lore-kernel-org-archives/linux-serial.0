@@ -1,87 +1,40 @@
-From: Krzysztof Halasa <khc@pm.waw.pl>
-Subject: Oxford 16954 UART capabilities
-Date: Tue, 09 Jun 2009 14:55:37 +0200
-Message-ID: <m3eittlg6u.fsf@intrepid.localdomain>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Kumar Gala <galak@kernel.crashing.org>
+Subject: Re: [PATCH] serial: Fix bug of ucc_uart
+Date: Wed, 10 Jun 2009 22:39:08 -0500
+Message-ID: <1A5D98E1-9A5A-4A4E-AA02-BB999CDC559C@kernel.crashing.org>
+References: <1244471076-25905-1-git-send-email-daveliu@freescale.com>
+Mime-Version: 1.0 (Apple Message framework v935.3)
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from khc.piap.pl ([195.187.100.11]:39223 "EHLO khc.piap.pl"
+Received: from gate.crashing.org ([63.228.1.57]:50196 "EHLO gate.crashing.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757620AbZFIMzi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 9 Jun 2009 08:55:38 -0400
+	id S1756968AbZFKDlP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 10 Jun 2009 23:41:15 -0400
+In-Reply-To: <1244471076-25905-1-git-send-email-daveliu@freescale.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Lee Howard <lee.howard@mainpine.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+To: Dave Liu <daveliu@freescale.com>
+Cc: linux-serial@vger.kernel.org, linuxppc-dev@ozlabs.org, timur@freescale.com
 
-Hi,
 
-I'm using a quadruple UART card based on Oxford's OX16PCI954 chip. There
-is a message about a capability mismatch for which I no longer have
-enough patience to ignore:
+On Jun 8, 2009, at 9:24 AM, Dave Liu wrote:
 
-Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
-serial 0000:04:00.0: PCI INT A -> GSI 16 (level, low) -> IRQ 16
-ttyS0: detected caps 00000700 should be 00000100
-0000:04:00.0: ttyS0 at I/O 0xec00 (irq = 16) is a 16C950/954
-ttyS1: detected caps 00000700 should be 00000100
-0000:04:00.0: ttyS1 at I/O 0xec08 (irq = 16) is a 16C950/954
-ttyS2: detected caps 00000700 should be 00000100
-0000:04:00.0: ttyS2 at I/O 0xec10 (irq = 16) is a 16C950/954
-ttyS3: detected caps 00000700 should be 00000100
-0000:04:00.0: ttyS3 at I/O 0xec18 (irq = 16) is a 16C950/954
+> Current ucc_uart driver doesn't work at UART mode,
+> The TxBD[READY] is not cleared by H/W (RISC engine)
+> when user send characters to Tx buffer of QE UART.
+> so, these characters stay on the QE forever, never
+> go to UART line.
+>
+> The patch is fixing th bug.
+>
+> Signed-off-by: Dave Liu <daveliu@freescale.com>
+> ---
+> drivers/serial/ucc_uart.c |   19 ++++++++++++++-----
+> 1 files changed, 14 insertions(+), 5 deletions(-)
 
-I'm not sure what's the problem:
+applied to next.
 
-8250.h:
-#define UART_CAP_FIFO  (1 << 8)        /* UART has FIFO */
-#define UART_CAP_EFR   (1 << 9)        /* UART has EFR */
-#define UART_CAP_SLEEP (1 << 10)       /* UART has IER sleep */
+(Cleaned up the commit message a bit)
 
-8250.c (uart_config[]):
-
-        [PORT_16C950] = {
-                .name           = "16C950/954",
-                .fifo_size      = 128,
-                .tx_loadsz      = 128,
-                .fcr            = UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
-                .flags          = UART_CAP_FIFO,
-        },
-
-...
-
-/*
- * This is a helper routine to autodetect StarTech/Exar/Oxsemi UART's.
- * When this function is called we know it is at least a StarTech
- * 16650 V2, but it might be one of several StarTech UARTs, or one of
- * its clones.  (We treat the broken original StarTech 16650 V1 as a
- * 16550, and why not?  Startech doesn't seem to even acknowledge its
- * existence.)
- *
- * What evil have men's minds wrought...
- */
-static void autoconfig_has_efr(struct uart_8250_port *up)
-{
-        unsigned int id1, id2, id3, rev;
-
-        /*
-         * Everything with an EFR has SLEEP
-         */
-        up->capabilities |= UART_CAP_EFR | UART_CAP_SLEEP;
-
-then for OX 16950 it does:
-        up->port.type = PORT_16C950;
-        return;
-
-so the above CAP_EFR | CAP_SLEEP stay set.
-
-Should autoconfig_has_efr() clear these bits, or are the caps in
-uart_config[] incorrect?
-
-The datasheet lists bit 4 of IER register as "sleep mode". The EFR is
-enabled by writing 0xBF to LCR which seem consistent with the driver
-code.
-
-Should we just add UART_CAP_EFR and _SLEEP to uart_config[PORT_16C950]?
--- 
-Krzysztof Halasa
+- k
