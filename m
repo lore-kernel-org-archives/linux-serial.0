@@ -1,76 +1,99 @@
-From: Marc Zyngier <maz@misterjones.org>
-Subject: Re: [PATCH] serial: 8250: add IRQ trigger support
-Date: Fri, 12 Jun 2009 21:31:27 +0200
-Message-ID: <20090612213127.0f03e0c5@taxman.wild-wind.fr.eu.org>
-References: <1244827971-14981-1-git-send-email-vikram.pandita@ti.com>
+From: Florian Fainelli <florian@openwrt.org>
+Subject: Re: [PATCH 8/8] 8250: add Texas Instruments AR7 internal UART
+Date: Sun, 14 Jun 2009 13:18:36 +0200
+Message-ID: <200906141318.38376.florian@openwrt.org>
+References: <200906041622.47591.florian@openwrt.org> <200906111028.41222.florian@openwrt.org> <20090611093022.GA14510@alpha.franken.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1244827971-14981-1-git-send-email-vikram.pandita@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.arm.linux.org.uk, Vikram Pandita <vikram.pandita@ti.com>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ew0-f210.google.com ([209.85.219.210]:55529 "EHLO
+	mail-ew0-f210.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756075AbZFNLSm convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 14 Jun 2009 07:18:42 -0400
+In-Reply-To: <20090611093022.GA14510@alpha.franken.de>
+Content-Disposition: inline
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: Linux-MIPS <linux-mips@linux-mips.org>, Ralf Baechle <ralf@linux-mips.org>, linux-kernel@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org
 
-On Fri, 12 Jun 2009 12:32:51 -0500
-Vikram Pandita <vikram.pandita@ti.com> wrote:
+Le Thursday 11 June 2009 11:30:22 Thomas Bogendoerfer, vous avez =E9cri=
+t=A0:
+> On Thu, Jun 11, 2009 at 10:28:39AM +0200, Florian Fainelli wrote:
+> > Le Friday 05 June 2009 00:20:20 Thomas Bogendoerfer, vous avez =E9c=
+rit=A0:
+> > > On Thu, Jun 04, 2009 at 04:22:46PM +0200, Florian Fainelli wrote:
+> > > > We discussed that in private, there are a couple of things
+> > > > to fix in order to get 8250 working properly with TI AR7 HW.
+> > > > If you can still merge that bit, this would ease future work, t=
+hanks
+> > > > !
+> > >
+> > > I still have a tree here, which works without any changes to the =
+8250
+> > > serial driver on a TNETD7300 device.
+> >
+> > Could you show me how you register the 8250 driver ? Without the
+> > 8250-specific
+>
+> static struct plat_serial8250_port uart0_data =3D {
+>         .mapbase =3D AR7_REGS_UART0,
+>         .irq =3D AR7_IRQ_UART0,
+>         .regshift =3D 2,
+>         .iotype =3D UPIO_MEM,
+>         .flags =3D UPF_BOOT_AUTOCONF | UPF_IOREMAP,
+> };
+>
+>         uart_port[0].type =3D PORT_16550A;
+>         uart_port[0].line =3D 0;
+>         uart_port[0].irq =3D AR7_IRQ_UART0;
+>         uart_port[0].uartclk =3D ar7_bus_freq() / 2;
+>         uart_port[0].iotype =3D UPIO_MEM;
+>         uart_port[0].mapbase =3D AR7_REGS_UART0 + 3;
+>         uart_port[0].membase =3D ioremap(uart_port[0].mapbase, 256);
+>         uart_port[0].regshift =3D 2;
+>         res =3D early_serial_setup(&uart_port[0]);
+>         if (res)
+>                 return res;
+>
+>
+> the +3 comes from the fact, that this machine is configured to run bi=
+g
+> endian.
+>
+> Here is the boot log:
+>
+> Serial: 8250/16550 driver $Revision: 1.90 $ 2 ports, IRQ sharing disa=
+bled
+> serial8250: ttyS0 at MMIO 0x8610e03 (irq =3D 15) is a 16550A
+> console handover: boot [early0] -> real [ttyS0]
+> serial8250: ttyS1 at MMIO 0x8610f00 (irq =3D 19) is a 16550A
+> loop: module loaded
+> Fixed MDIO Bus: probed
+>
+>
+> ttyS1 uses the wrong address, but there is nothing connected to
+> that port on the box.
+>
+> Do you see the problem on TNETD7200 devices as well ?
 
-> There is currently no provision for passing IRQ trigger flags for
-> serial IRQs with triggering requirements (such as GPIO IRQs.)
-> 
-> This patch adds UPF_IRQ_TRIG_* flags which map on to IRQF_TRIGGER_*
-> flags.
-> 
-> Signed-off-by: Vikram Pandita <vikram.pandita@ti.com>
-> Acked-by: Kevin Hilman <khilman@deeprootsystems.com>
+I no longer have TNETD7200 devices to test on unfortunately.
 
-Note that this patch doesn't allow  the interrupt to trigger on both
-edges (not that I have ever seen a 8250 with this behavior, but this
-is a valid configuration from an interrupt point of view).
-
-Aside from this remark:
-Acked-by: Marc Zyngier <maz@misterjones.org>
-
-> ---
->  drivers/serial/8250.c       |   10 ++++++++++
->  include/linux/serial_core.h |    4 ++++
->  2 files changed, 14 insertions(+), 0 deletions(-)
-> 
-> diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-> index bab115e..8235ef5 100644
-> --- a/drivers/serial/8250.c
-> +++ b/drivers/serial/8250.c
-> @@ -1641,6 +1641,16 @@ static int serial_link_irq_chain(struct
-> uart_8250_port *up) struct irq_info *i;
->  	int ret, irq_flags = up->port.flags & UPF_SHARE_IRQ ?
-> IRQF_SHARED : 0; 
-> +	/* Get IRQ Trigger Flag */
-> +	if (up->port.flags & UPF_IRQ_TRIG_RISING)
-> +		irq_flags |= IRQF_TRIGGER_RISING;
-> +	else if (up->port.flags & UPF_IRQ_TRIG_FALLING)
-> +		irq_flags |= IRQF_TRIGGER_FALLING;
-> +	else if (up->port.flags & UPF_IRQ_TRIG_HIGH)
-> +		irq_flags |= IRQF_TRIGGER_HIGH;
-> +	else if (up->port.flags & UPF_IRQ_TRIG_LOW)
-> +		irq_flags |= IRQF_TRIGGER_LOW;
-> +
->  	mutex_lock(&hash_mutex);
->  
->  	h = &irq_lists[up->port.irq % NR_IRQ_HASH];
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index 57a97e5..07591d5 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -296,7 +296,11 @@ struct uart_port {
->  #define UPF_SPD_WARP		((__force upf_t) (0x1010))
->  #define UPF_SKIP_TEST		((__force upf_t) (1 << 6))
->  #define UPF_AUTO_IRQ		((__force upf_t) (1 << 7))
-> +#define UPF_IRQ_TRIG_RISING	((__force upf_t) (1 << 8))
-> +#define UPF_IRQ_TRIG_FALLING	((__force upf_t) (1 << 9))
-> +#define UPF_IRQ_TRIG_HIGH	((__force upf_t) (1 << 10))
->  #define UPF_HARDPPS_CD		((__force upf_t) (1 << 11))
-> +#define UPF_IRQ_TRIG_LOW	((__force upf_t) (1 << 12))
->  #define UPF_LOW_LATENCY		((__force upf_t) (1 << 13))
->  #define UPF_BUGGY_UART		((__force upf_t) (1 << 14))
->  #define UPF_NO_TXEN_TEST	((__force upf_t) (1 << 15))
-
+What I just found is that TNETD7300GDU revision 5 does not have this bu=
+g,=20
+while TNETD7300GDU revision 4 has. This seems to confirm the HW bug=20
+hypothesis. Let's just clean the serial console registration and we wil=
+l keep=20
+in OpenWrt the 8250 workaround for older TNETD7300 revisions.
+--=20
+Best regards, Florian Fainelli
+Email : florian@openwrt.org
+http://openwrt.org
+-------------------------------
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
