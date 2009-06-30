@@ -1,689 +1,93 @@
-From: Joe Perches <joe@perches.com>
-Subject: [PATCH 15/19] drivers/serial: Use PCI_VDEVICE
-Date: Wed, 24 Jun 2009 22:13:31 -0700
-Message-ID: <6d6909c3d459f2a19530ef33fae0e4d4f013c5d7.1245906153.git.joe@perches.com>
-References: <cover.1245906151.git.joe@perches.com>
+From: "HU TAO-TGHK48" <taohu@motorola.com>
+Subject: FW: [Help] Does HW flow contorl (auto RTS/CTS) in drivers/serial/8250.c work for OMAP34xx?
+Date: Tue, 30 Jun 2009 16:12:42 +0800
+Message-ID: <F12CE1A68F023D498A2691C7B539311503655225@ZMY16EXM66.ds.mot.com>
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 136-022.dsl.LABridge.com ([206.117.136.22]:1470 "EHLO
-	mail.perches.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752611AbZFYFOL (ORCPT
+Received: from mail119.messagelabs.com ([216.82.241.195]:56374 "EHLO
+	mail119.messagelabs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751718AbZF3INI convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 25 Jun 2009 01:14:11 -0400
-In-Reply-To: <cover.1245906151.git.joe@perches.com>
+	Tue, 30 Jun 2009 04:13:08 -0400
+Received: from il27exr04.cig.mot.com (il27exr04.mot.com [10.17.196.73])
+	by motgate2.mot.com (8.14.3/8.14.3) with ESMTP id n5U8D7VI020524
+	for <linux-serial@vger.kernel.org>; Tue, 30 Jun 2009 01:13:09 -0700 (MST)
+Received: from az10vts04.mot.com (il27vts04.cig.mot.com [10.17.196.88])
+	by il27exr04.cig.mot.com (8.13.1/Vontu) with SMTP id n5U8D7DZ004167
+	for <linux-serial@vger.kernel.org>; Tue, 30 Jun 2009 03:13:07 -0500 (CDT)
+Received: from ZMY16EXM66.ds.mot.com (zmy16exm66.ap.mot.com [10.179.4.26])
+	by il27exr04.cig.mot.com (8.13.1/8.13.0) with ESMTP id n5U8D5Hb004133
+	for <linux-serial@vger.kernel.org>; Tue, 30 Jun 2009 03:13:05 -0500 (CDT)
+Content-class: urn:content-classes:message
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Signed-off-by: Joe Perches <joe@perches.com>
----
- drivers/serial/8250_pci.c |  526 +++++++++++----------------------------------
- 1 files changed, 123 insertions(+), 403 deletions(-)
+ 
+See anyone from linux-serial list could help.
 
-diff --git a/drivers/serial/8250_pci.c b/drivers/serial/8250_pci.c
-index a07015d..831dd32 100644
---- a/drivers/serial/8250_pci.c
-+++ b/drivers/serial/8250_pci.c
-@@ -2647,46 +2647,22 @@ static struct pci_device_id serial_pci_tbl[] = {
- 		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_485, 0, 0,
- 		pbn_b0_8_1843200_200 },
- 
--	{	PCI_VENDOR_ID_SEALEVEL, PCI_DEVICE_ID_SEALEVEL_U530,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_bt_1_115200 },
--	{	PCI_VENDOR_ID_SEALEVEL, PCI_DEVICE_ID_SEALEVEL_UCOMM2,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_bt_2_115200 },
--	{	PCI_VENDOR_ID_SEALEVEL, PCI_DEVICE_ID_SEALEVEL_UCOMM422,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_bt_4_115200 },
--	{	PCI_VENDOR_ID_SEALEVEL, PCI_DEVICE_ID_SEALEVEL_UCOMM232,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_bt_2_115200 },
--	{	PCI_VENDOR_ID_SEALEVEL, PCI_DEVICE_ID_SEALEVEL_COMM4,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_bt_4_115200 },
--	{	PCI_VENDOR_ID_SEALEVEL, PCI_DEVICE_ID_SEALEVEL_COMM8,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_8_115200 },
--	{	PCI_VENDOR_ID_SEALEVEL, PCI_DEVICE_ID_SEALEVEL_7803,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_8_460800 },
--	{	PCI_VENDOR_ID_SEALEVEL, PCI_DEVICE_ID_SEALEVEL_UCOMM8,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_8_115200 },
--
--	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_GTEK_SERIAL2,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_bt_2_115200 },
--	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_SPCOM200,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_bt_2_921600 },
-+	{	PCI_VDEVICE(SEALEVEL, PCI_DEVICE_ID_SEALEVEL_U530), pbn_b2_bt_1_115200 },
-+	{	PCI_VDEVICE(SEALEVEL, PCI_DEVICE_ID_SEALEVEL_UCOMM2), pbn_b2_bt_2_115200 },
-+	{	PCI_VDEVICE(SEALEVEL, PCI_DEVICE_ID_SEALEVEL_UCOMM422), pbn_b2_bt_4_115200 },
-+	{	PCI_VDEVICE(SEALEVEL, PCI_DEVICE_ID_SEALEVEL_UCOMM232), pbn_b2_bt_2_115200 },
-+	{	PCI_VDEVICE(SEALEVEL, PCI_DEVICE_ID_SEALEVEL_COMM4), pbn_b2_bt_4_115200 },
-+	{	PCI_VDEVICE(SEALEVEL, PCI_DEVICE_ID_SEALEVEL_COMM8), pbn_b2_8_115200 },
-+	{	PCI_VDEVICE(SEALEVEL, PCI_DEVICE_ID_SEALEVEL_7803), pbn_b2_8_460800 },
-+	{	PCI_VDEVICE(SEALEVEL, PCI_DEVICE_ID_SEALEVEL_UCOMM8), pbn_b2_8_115200 },
-+
-+	{	PCI_VDEVICE(PLX, PCI_DEVICE_ID_PLX_GTEK_SERIAL2), pbn_b2_bt_2_115200 },
-+	{	PCI_VDEVICE(PLX, PCI_DEVICE_ID_PLX_SPCOM200), pbn_b2_bt_2_921600 },
- 	/*
- 	 * VScom SPCOM800, from sl@s.pl
- 	 */
--	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_SPCOM800,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_8_921600 },
--	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_1077,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_4_921600 },
-+	{	PCI_VDEVICE(PLX, PCI_DEVICE_ID_PLX_SPCOM800), pbn_b2_8_921600 },
-+	{	PCI_VDEVICE(PLX, PCI_DEVICE_ID_PLX_1077), pbn_b2_4_921600 },
- 	/* Unknown card - subdevice 0x1584 */
- 	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_9050,
- 		PCI_VENDOR_ID_PLX,
-@@ -2696,12 +2672,8 @@ static struct pci_device_id serial_pci_tbl[] = {
- 		PCI_SUBVENDOR_ID_KEYSPAN,
- 		PCI_SUBDEVICE_ID_KEYSPAN_SX2, 0, 0,
- 		pbn_panacom },
--	{	PCI_VENDOR_ID_PANACOM, PCI_DEVICE_ID_PANACOM_QUADMODEM,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_panacom4 },
--	{	PCI_VENDOR_ID_PANACOM, PCI_DEVICE_ID_PANACOM_DUALMODEM,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_panacom2 },
-+	{	PCI_VDEVICE(PANACOM, PCI_DEVICE_ID_PANACOM_QUADMODEM), pbn_panacom4 },
-+	{	PCI_VDEVICE(PANACOM, PCI_DEVICE_ID_PANACOM_DUALMODEM), pbn_panacom2 },
- 	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_9030,
- 		PCI_VENDOR_ID_ESDGMBH,
- 		PCI_DEVICE_ID_ESDGMBH_CPCIASIO4, 0, 0,
-@@ -2741,18 +2713,10 @@ static struct pci_device_id serial_pci_tbl[] = {
- 	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_ROMULUS,
- 		0x10b5, 0x106a, 0, 0,
- 		pbn_plx_romulus },
--	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_QSC100,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b1_4_115200 },
--	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_DSC100,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b1_2_115200 },
--	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_ESC100D,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b1_8_115200 },
--	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_ESC100M,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b1_8_115200 },
-+	{	PCI_VDEVICE(QUATECH, PCI_DEVICE_ID_QUATECH_QSC100), pbn_b1_4_115200 },
-+	{	PCI_VDEVICE(QUATECH, PCI_DEVICE_ID_QUATECH_DSC100), pbn_b1_2_115200 },
-+	{	PCI_VDEVICE(QUATECH, PCI_DEVICE_ID_QUATECH_ESC100D), pbn_b1_8_115200 },
-+	{	PCI_VDEVICE(QUATECH, PCI_DEVICE_ID_QUATECH_ESC100M), pbn_b1_8_115200 },
- 	{	PCI_VENDOR_ID_SPECIALIX, PCI_DEVICE_ID_OXSEMI_16PCI954,
- 		PCI_VENDOR_ID_SPECIALIX, PCI_SUBDEVICE_ID_SPECIALIX_SPEED4,
- 		0, 0,
-@@ -2771,18 +2735,12 @@ static struct pci_device_id serial_pci_tbl[] = {
- 	{	PCI_VENDOR_ID_OXSEMI, 0x950a,
- 		PCI_SUBVENDOR_ID_SIIG, PCI_SUBDEVICE_ID_SIIG_DUAL_SERIAL, 0, 0,
- 		pbn_b0_2_115200 },
--	{	PCI_VENDOR_ID_OXSEMI, 0x950a,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_2_1130000 },
-+	{	PCI_VDEVICE(OXSEMI, 0x950a), pbn_b0_2_1130000 },
- 	{	PCI_VENDOR_ID_OXSEMI, PCI_DEVICE_ID_OXSEMI_C950,
- 		PCI_VENDOR_ID_OXSEMI, PCI_SUBDEVICE_ID_OXSEMI_C950, 0, 0,
- 		pbn_b0_1_921600 },
--	{	PCI_VENDOR_ID_OXSEMI, PCI_DEVICE_ID_OXSEMI_16PCI954,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_4_115200 },
--	{	PCI_VENDOR_ID_OXSEMI, PCI_DEVICE_ID_OXSEMI_16PCI952,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_2_921600 },
-+	{	PCI_VDEVICE(OXSEMI, PCI_DEVICE_ID_OXSEMI_16PCI954), pbn_b0_4_115200 },
-+	{	PCI_VDEVICE(OXSEMI, PCI_DEVICE_ID_OXSEMI_16PCI952), pbn_b0_bt_2_921600 },
- 
- 	/*
- 	 * Oxford Semiconductor Inc. Tornado PCI express device range.
-@@ -2954,102 +2912,42 @@ static struct pci_device_id serial_pci_tbl[] = {
- 	/*
- 	 * Digitan DS560-558, from jimd@esoft.com
- 	 */
--	{	PCI_VENDOR_ID_ATT, PCI_DEVICE_ID_ATT_VENUS_MODEM,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b1_1_115200 },
-+	{	PCI_VDEVICE(ATT, PCI_DEVICE_ID_ATT_VENUS_MODEM), pbn_b1_1_115200 },
- 
- 	/*
- 	 * Titan Electronic cards
- 	 *  The 400L and 800L have a custom setup quirk.
- 	 */
--	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_100,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_1_921600 },
--	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_200,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_2_921600 },
--	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_400,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_4_921600 },
--	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_800B,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_4_921600 },
--	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_100L,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b1_1_921600 },
--	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_200L,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b1_bt_2_921600 },
--	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_400L,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_4_921600 },
--	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_800L,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_8_921600 },
--
--	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_1S_10x_550,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_1_460800 },
--	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_1S_10x_650,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_1_460800 },
--	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_1S_10x_850,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_1_460800 },
--	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_2S_10x_550,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_bt_2_921600 },
--	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_2S_10x_650,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_bt_2_921600 },
--	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_2S_10x_850,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_bt_2_921600 },
--	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_4S_10x_550,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_bt_4_921600 },
--	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_4S_10x_650,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_bt_4_921600 },
--	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_4S_10x_850,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_bt_4_921600 },
--	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_1S_20x_550,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_1_921600 },
--	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_1S_20x_650,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_1_921600 },
--	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_1S_20x_850,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_1_921600 },
--	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_2S_20x_550,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_2_921600 },
--	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_2S_20x_650,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_2_921600 },
--	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_2S_20x_850,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_2_921600 },
--	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_4S_20x_550,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_4_921600 },
--	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_4S_20x_650,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_4_921600 },
--	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_4S_20x_850,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_4_921600 },
--	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_8S_20x_550,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_8_921600 },
--	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_8S_20x_650,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_8_921600 },
--	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_8S_20x_850,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_8_921600 },
-+	{	PCI_VDEVICE(TITAN, PCI_DEVICE_ID_TITAN_100), pbn_b0_1_921600 },
-+	{	PCI_VDEVICE(TITAN, PCI_DEVICE_ID_TITAN_200), pbn_b0_2_921600 },
-+	{	PCI_VDEVICE(TITAN, PCI_DEVICE_ID_TITAN_400), pbn_b0_4_921600 },
-+	{	PCI_VDEVICE(TITAN, PCI_DEVICE_ID_TITAN_800B), pbn_b0_4_921600 },
-+	{	PCI_VDEVICE(TITAN, PCI_DEVICE_ID_TITAN_100L), pbn_b1_1_921600 },
-+	{	PCI_VDEVICE(TITAN, PCI_DEVICE_ID_TITAN_200L), pbn_b1_bt_2_921600 },
-+	{	PCI_VDEVICE(TITAN, PCI_DEVICE_ID_TITAN_400L), pbn_b0_bt_4_921600 },
-+	{	PCI_VDEVICE(TITAN, PCI_DEVICE_ID_TITAN_800L), pbn_b0_bt_8_921600 },
-+
-+	{	PCI_VDEVICE(SIIG, PCI_DEVICE_ID_SIIG_1S_10x_550), pbn_b2_1_460800 },
-+	{	PCI_VDEVICE(SIIG, PCI_DEVICE_ID_SIIG_1S_10x_650), pbn_b2_1_460800 },
-+	{	PCI_VDEVICE(SIIG, PCI_DEVICE_ID_SIIG_1S_10x_850), pbn_b2_1_460800 },
-+	{	PCI_VDEVICE(SIIG, PCI_DEVICE_ID_SIIG_2S_10x_550), pbn_b2_bt_2_921600 },
-+	{	PCI_VDEVICE(SIIG, PCI_DEVICE_ID_SIIG_2S_10x_650), pbn_b2_bt_2_921600 },
-+	{	PCI_VDEVICE(SIIG, PCI_DEVICE_ID_SIIG_2S_10x_850), pbn_b2_bt_2_921600 },
-+	{	PCI_VDEVICE(SIIG, PCI_DEVICE_ID_SIIG_4S_10x_550), pbn_b2_bt_4_921600 },
-+	{	PCI_VDEVICE(SIIG, PCI_DEVICE_ID_SIIG_4S_10x_650), pbn_b2_bt_4_921600 },
-+	{	PCI_VDEVICE(SIIG, PCI_DEVICE_ID_SIIG_4S_10x_850), pbn_b2_bt_4_921600 },
-+	{	PCI_VDEVICE(SIIG, PCI_DEVICE_ID_SIIG_1S_20x_550), pbn_b0_1_921600 },
-+	{	PCI_VDEVICE(SIIG, PCI_DEVICE_ID_SIIG_1S_20x_650), pbn_b0_1_921600 },
-+	{	PCI_VDEVICE(SIIG, PCI_DEVICE_ID_SIIG_1S_20x_850), pbn_b0_1_921600 },
-+	{	PCI_VDEVICE(SIIG, PCI_DEVICE_ID_SIIG_2S_20x_550), pbn_b0_bt_2_921600 },
-+	{	PCI_VDEVICE(SIIG, PCI_DEVICE_ID_SIIG_2S_20x_650), pbn_b0_bt_2_921600 },
-+	{	PCI_VDEVICE(SIIG, PCI_DEVICE_ID_SIIG_2S_20x_850), pbn_b0_bt_2_921600 },
-+	{	PCI_VDEVICE(SIIG, PCI_DEVICE_ID_SIIG_4S_20x_550), pbn_b0_bt_4_921600 },
-+	{	PCI_VDEVICE(SIIG, PCI_DEVICE_ID_SIIG_4S_20x_650), pbn_b0_bt_4_921600 },
-+	{	PCI_VDEVICE(SIIG, PCI_DEVICE_ID_SIIG_4S_20x_850), pbn_b0_bt_4_921600 },
-+	{	PCI_VDEVICE(SIIG, PCI_DEVICE_ID_SIIG_8S_20x_550), pbn_b0_bt_8_921600 },
-+	{	PCI_VDEVICE(SIIG, PCI_DEVICE_ID_SIIG_8S_20x_650), pbn_b0_bt_8_921600 },
-+	{	PCI_VDEVICE(SIIG, PCI_DEVICE_ID_SIIG_8S_20x_850), pbn_b0_bt_8_921600 },
- 
- 	/*
- 	 * Computone devices submitted by Doug McNash dmcnash@computone.com
-@@ -3064,9 +2962,7 @@ static struct pci_device_id serial_pci_tbl[] = {
- 		PCI_SUBVENDOR_ID_COMPUTONE, PCI_SUBDEVICE_ID_COMPUTONE_PG6,
- 		0, 0, pbn_computone_6 },
- 
--	{	PCI_VENDOR_ID_OXSEMI, PCI_DEVICE_ID_OXSEMI_16PCI95N,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_oxsemi },
-+	{	PCI_VDEVICE(OXSEMI, PCI_DEVICE_ID_OXSEMI_16PCI95N), pbn_oxsemi },
- 	{	PCI_VENDOR_ID_TIMEDIA, PCI_DEVICE_ID_TIMEDIA_1889,
- 		PCI_VENDOR_ID_TIMEDIA, PCI_ANY_ID, 0, 0,
- 		pbn_b0_bt_1_921600 },
-@@ -3074,43 +2970,19 @@ static struct pci_device_id serial_pci_tbl[] = {
- 	/*
- 	 * AFAVLAB serial card, from Harald Welte <laforge@gnumonks.org>
- 	 */
--	{	PCI_VENDOR_ID_AFAVLAB, PCI_DEVICE_ID_AFAVLAB_P028,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_8_115200 },
--	{	PCI_VENDOR_ID_AFAVLAB, PCI_DEVICE_ID_AFAVLAB_P030,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_8_115200 },
-+	{	PCI_VDEVICE(AFAVLAB, PCI_DEVICE_ID_AFAVLAB_P028), pbn_b0_bt_8_115200 },
-+	{	PCI_VDEVICE(AFAVLAB, PCI_DEVICE_ID_AFAVLAB_P030), pbn_b0_bt_8_115200 },
- 
--	{	PCI_VENDOR_ID_LAVA, PCI_DEVICE_ID_LAVA_DSERIAL,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_2_115200 },
--	{	PCI_VENDOR_ID_LAVA, PCI_DEVICE_ID_LAVA_QUATRO_A,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_2_115200 },
--	{	PCI_VENDOR_ID_LAVA, PCI_DEVICE_ID_LAVA_QUATRO_B,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_2_115200 },
--	{	PCI_VENDOR_ID_LAVA, PCI_DEVICE_ID_LAVA_OCTO_A,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_4_460800 },
--	{	PCI_VENDOR_ID_LAVA, PCI_DEVICE_ID_LAVA_OCTO_B,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_4_460800 },
--	{	PCI_VENDOR_ID_LAVA, PCI_DEVICE_ID_LAVA_PORT_PLUS,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_2_460800 },
--	{	PCI_VENDOR_ID_LAVA, PCI_DEVICE_ID_LAVA_QUAD_A,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_2_460800 },
--	{	PCI_VENDOR_ID_LAVA, PCI_DEVICE_ID_LAVA_QUAD_B,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_2_460800 },
--	{	PCI_VENDOR_ID_LAVA, PCI_DEVICE_ID_LAVA_SSERIAL,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_1_115200 },
--	{	PCI_VENDOR_ID_LAVA, PCI_DEVICE_ID_LAVA_PORT_650,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_bt_1_460800 },
-+	{	PCI_VDEVICE(LAVA, PCI_DEVICE_ID_LAVA_DSERIAL), pbn_b0_bt_2_115200 },
-+	{	PCI_VDEVICE(LAVA, PCI_DEVICE_ID_LAVA_QUATRO_A), pbn_b0_bt_2_115200 },
-+	{	PCI_VDEVICE(LAVA, PCI_DEVICE_ID_LAVA_QUATRO_B), pbn_b0_bt_2_115200 },
-+	{	PCI_VDEVICE(LAVA, PCI_DEVICE_ID_LAVA_OCTO_A), pbn_b0_bt_4_460800 },
-+	{	PCI_VDEVICE(LAVA, PCI_DEVICE_ID_LAVA_OCTO_B), pbn_b0_bt_4_460800 },
-+	{	PCI_VDEVICE(LAVA, PCI_DEVICE_ID_LAVA_PORT_PLUS), pbn_b0_bt_2_460800 },
-+	{	PCI_VDEVICE(LAVA, PCI_DEVICE_ID_LAVA_QUAD_A), pbn_b0_bt_2_460800 },
-+	{	PCI_VDEVICE(LAVA, PCI_DEVICE_ID_LAVA_QUAD_B), pbn_b0_bt_2_460800 },
-+	{	PCI_VDEVICE(LAVA, PCI_DEVICE_ID_LAVA_SSERIAL), pbn_b0_bt_1_115200 },
-+	{	PCI_VDEVICE(LAVA, PCI_DEVICE_ID_LAVA_PORT_650), pbn_b0_bt_1_460800 },
- 
- 	/*
- 	 * Korenix Jetcard F0/F1 cards (JC1204, JC1208, JC1404, JC1408).
-@@ -3139,23 +3011,17 @@ static struct pci_device_id serial_pci_tbl[] = {
- 	/*
- 	 * Dell Remote Access Card 4 - Tim_T_Murphy@Dell.com
- 	 */
--	{	PCI_VENDOR_ID_DELL, PCI_DEVICE_ID_DELL_RAC4,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b1_1_1382400 },
-+	{	PCI_VDEVICE(DELL, PCI_DEVICE_ID_DELL_RAC4), pbn_b1_1_1382400 },
- 
- 	/*
- 	 * Dell Remote Access Card III - Tim_T_Murphy@Dell.com
- 	 */
--	{	PCI_VENDOR_ID_DELL, PCI_DEVICE_ID_DELL_RACIII,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b1_1_1382400 },
-+	{	PCI_VDEVICE(DELL, PCI_DEVICE_ID_DELL_RACIII), pbn_b1_1_1382400 },
- 
- 	/*
- 	 * RAStel 2 port modem, gerg@moreton.com.au
- 	 */
--	{	PCI_VENDOR_ID_MORETON, PCI_DEVICE_ID_RASTEL_2PORT,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_bt_2_115200 },
-+	{	PCI_VDEVICE(MORETON, PCI_DEVICE_ID_RASTEL_2PORT), pbn_b2_bt_2_115200 },
- 
- 	/*
- 	 * EKF addition for i960 Boards form EKF with serial port
-@@ -3167,15 +3033,11 @@ static struct pci_device_id serial_pci_tbl[] = {
- 	/*
- 	 * Xircom Cardbus/Ethernet combos
- 	 */
--	{	PCI_VENDOR_ID_XIRCOM, PCI_DEVICE_ID_XIRCOM_X3201_MDM,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_1_115200 },
-+	{	PCI_VDEVICE(XIRCOM, PCI_DEVICE_ID_XIRCOM_X3201_MDM), pbn_b0_1_115200 },
- 	/*
- 	 * Xircom RBM56G cardbus modem - Dirk Arnold (temp entry)
- 	 */
--	{	PCI_VENDOR_ID_XIRCOM, PCI_DEVICE_ID_XIRCOM_RBM56G,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_1_115200 },
-+	{	PCI_VDEVICE(XIRCOM, PCI_DEVICE_ID_XIRCOM_RBM56G), pbn_b0_1_115200 },
- 
- 	/*
- 	 * Untested PCI modems, sent in from various folks...
-@@ -3198,64 +3060,38 @@ static struct pci_device_id serial_pci_tbl[] = {
- 	{	PCI_VENDOR_ID_HP, PCI_DEVICE_ID_HP_DIVA,
- 		PCI_VENDOR_ID_HP, PCI_DEVICE_ID_HP_DIVA_RMP3, 0, 0,
- 		pbn_b1_1_115200 },
--	{	PCI_VENDOR_ID_HP, PCI_DEVICE_ID_HP_DIVA,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_5_115200 },
--	{	PCI_VENDOR_ID_HP, PCI_DEVICE_ID_HP_DIVA_AUX,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b2_1_115200 },
-+	{	PCI_VDEVICE(HP, PCI_DEVICE_ID_HP_DIVA), pbn_b0_5_115200 },
-+	{	PCI_VDEVICE(HP, PCI_DEVICE_ID_HP_DIVA_AUX), pbn_b2_1_115200 },
- 
--	{	PCI_VENDOR_ID_DCI, PCI_DEVICE_ID_DCI_PCCOM2,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b3_2_115200 },
--	{	PCI_VENDOR_ID_DCI, PCI_DEVICE_ID_DCI_PCCOM4,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b3_4_115200 },
--	{	PCI_VENDOR_ID_DCI, PCI_DEVICE_ID_DCI_PCCOM8,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b3_8_115200 },
-+	{	PCI_VDEVICE(DCI, PCI_DEVICE_ID_DCI_PCCOM2), pbn_b3_2_115200 },
-+	{	PCI_VDEVICE(DCI, PCI_DEVICE_ID_DCI_PCCOM4), pbn_b3_4_115200 },
-+	{	PCI_VDEVICE(DCI, PCI_DEVICE_ID_DCI_PCCOM8), pbn_b3_8_115200 },
- 
- 	/*
- 	 * Exar Corp. XR17C15[248] Dual/Quad/Octal UART
- 	 */
--	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C152,
--		PCI_ANY_ID, PCI_ANY_ID,
--		0,
--		0, pbn_exar_XR17C152 },
--	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C154,
--		PCI_ANY_ID, PCI_ANY_ID,
--		0,
--		0, pbn_exar_XR17C154 },
--	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C158,
--		PCI_ANY_ID, PCI_ANY_ID,
--		0,
--		0, pbn_exar_XR17C158 },
-+	{	PCI_VDEVICE(EXAR, PCI_DEVICE_ID_EXAR_XR17C152), pbn_exar_XR17C152 },
-+	{	PCI_VDEVICE(EXAR, PCI_DEVICE_ID_EXAR_XR17C154), pbn_exar_XR17C154 },
-+	{	PCI_VDEVICE(EXAR, PCI_DEVICE_ID_EXAR_XR17C158), pbn_exar_XR17C158 },
- 
- 	/*
- 	 * Topic TP560 Data/Fax/Voice 56k modem (reported by Evan Clarke)
- 	 */
--	{	PCI_VENDOR_ID_TOPIC, PCI_DEVICE_ID_TOPIC_TP560,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b0_1_115200 },
-+	{	PCI_VDEVICE(TOPIC, PCI_DEVICE_ID_TOPIC_TP560), pbn_b0_1_115200 },
- 	/*
- 	 * ITE
- 	 */
--	{	PCI_VENDOR_ID_ITE, PCI_DEVICE_ID_ITE_8872,
--		PCI_ANY_ID, PCI_ANY_ID,
--		0, 0,
--		pbn_b1_bt_1_115200 },
-+	{	PCI_VDEVICE(ITE, PCI_DEVICE_ID_ITE_8872), pbn_b1_bt_1_115200 },
- 
- 	/*
- 	 * IntaShield IS-200
- 	 */
--	{	PCI_VENDOR_ID_INTASHIELD, PCI_DEVICE_ID_INTASHIELD_IS200,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,	/* 135a.0811 */
-+	{	PCI_VDEVICE(INTASHIELD, PCI_DEVICE_ID_INTASHIELD_IS200), /* 135a.0811 */
- 		pbn_b2_2_115200 },
- 	/*
- 	 * IntaShield IS-400
- 	 */
--	{	PCI_VENDOR_ID_INTASHIELD, PCI_DEVICE_ID_INTASHIELD_IS400,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,    /* 135a.0dc0 */
-+	{	PCI_VDEVICE(INTASHIELD, PCI_DEVICE_ID_INTASHIELD_IS400), /* 135a.0dc0 */
- 		pbn_b2_4_115200 },
- 	/*
- 	 * Perle PCI-RAS cards
-@@ -3382,176 +3218,60 @@ static struct pci_device_id serial_pci_tbl[] = {
- 	/*
- 	 * PA Semi PA6T-1682M on-chip UART
- 	 */
--	{	PCI_VENDOR_ID_PASEMI, 0xa004,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_pasemi_1682M },
-+	{	PCI_VDEVICE(PASEMI, 0xa004), pbn_pasemi_1682M },
- 
- 	/*
- 	 * National Instruments
- 	 */
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PCI23216,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b1_16_115200 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PCI2328,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b1_8_115200 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PCI2324,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b1_bt_4_115200 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PCI2322,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b1_bt_2_115200 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PCI2324I,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b1_bt_4_115200 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PCI2322I,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b1_bt_2_115200 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8420_23216,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b1_16_115200 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8420_2328,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b1_8_115200 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8420_2324,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b1_bt_4_115200 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8420_2322,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b1_bt_2_115200 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8422_2324,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b1_bt_4_115200 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8422_2322,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_b1_bt_2_115200 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8430_2322,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_ni8430_2 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PCI8430_2322,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_ni8430_2 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8430_2324,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_ni8430_4 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PCI8430_2324,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_ni8430_4 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8430_2328,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_ni8430_8 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PCI8430_2328,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_ni8430_8 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8430_23216,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_ni8430_16 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PCI8430_23216,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_ni8430_16 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8432_2322,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_ni8430_2 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PCI8432_2322,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_ni8430_2 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8432_2324,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_ni8430_4 },
--	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PCI8432_2324,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_ni8430_4 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PCI23216), pbn_b1_16_115200 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PCI2328), pbn_b1_8_115200 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PCI2324), pbn_b1_bt_4_115200 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PCI2322), pbn_b1_bt_2_115200 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PCI2324I), pbn_b1_bt_4_115200 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PCI2322I), pbn_b1_bt_2_115200 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PXI8420_23216), pbn_b1_16_115200 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PXI8420_2328), pbn_b1_8_115200 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PXI8420_2324), pbn_b1_bt_4_115200 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PXI8420_2322), pbn_b1_bt_2_115200 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PXI8422_2324), pbn_b1_bt_4_115200 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PXI8422_2322), pbn_b1_bt_2_115200 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PXI8430_2322), pbn_ni8430_2 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PCI8430_2322), pbn_ni8430_2 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PXI8430_2324), pbn_ni8430_4 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PCI8430_2324), pbn_ni8430_4 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PXI8430_2328), pbn_ni8430_8 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PCI8430_2328), pbn_ni8430_8 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PXI8430_23216), pbn_ni8430_16 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PCI8430_23216), pbn_ni8430_16 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PXI8432_2322), pbn_ni8430_2 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PCI8432_2322), pbn_ni8430_2 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PXI8432_2324), pbn_ni8430_4 },
-+	{	PCI_VDEVICE(NI, PCI_DEVICE_ID_NI_PCI8432_2324), pbn_ni8430_4 },
- 
- 	/*
- 	* ADDI-DATA GmbH communication cards <info@addi-data.com>
- 	*/
--	{	PCI_VENDOR_ID_ADDIDATA,
--		PCI_DEVICE_ID_ADDIDATA_APCI7500,
--		PCI_ANY_ID,
--		PCI_ANY_ID,
--		0,
--		0,
--		pbn_b0_4_115200 },
-+	{	PCI_VDEVICE(ADDIDATA, PCI_DEVICE_ID_ADDIDATA_APCI7500), pbn_b0_4_115200 },
- 
--	{	PCI_VENDOR_ID_ADDIDATA,
--		PCI_DEVICE_ID_ADDIDATA_APCI7420,
--		PCI_ANY_ID,
--		PCI_ANY_ID,
--		0,
--		0,
--		pbn_b0_2_115200 },
-+	{	PCI_VDEVICE(ADDIDATA, PCI_DEVICE_ID_ADDIDATA_APCI7420), pbn_b0_2_115200 },
- 
--	{	PCI_VENDOR_ID_ADDIDATA,
--		PCI_DEVICE_ID_ADDIDATA_APCI7300,
--		PCI_ANY_ID,
--		PCI_ANY_ID,
--		0,
--		0,
--		pbn_b0_1_115200 },
--
--	{	PCI_VENDOR_ID_ADDIDATA_OLD,
--		PCI_DEVICE_ID_ADDIDATA_APCI7800,
--		PCI_ANY_ID,
--		PCI_ANY_ID,
--		0,
--		0,
--		pbn_b1_8_115200 },
--
--	{	PCI_VENDOR_ID_ADDIDATA,
--		PCI_DEVICE_ID_ADDIDATA_APCI7500_2,
--		PCI_ANY_ID,
--		PCI_ANY_ID,
--		0,
--		0,
--		pbn_b0_4_115200 },
-+	{	PCI_VDEVICE(ADDIDATA, PCI_DEVICE_ID_ADDIDATA_APCI7300), pbn_b0_1_115200 },
- 
--	{	PCI_VENDOR_ID_ADDIDATA,
--		PCI_DEVICE_ID_ADDIDATA_APCI7420_2,
--		PCI_ANY_ID,
--		PCI_ANY_ID,
--		0,
--		0,
--		pbn_b0_2_115200 },
-+	{	PCI_VDEVICE(ADDIDATA_OLD, PCI_DEVICE_ID_ADDIDATA_APCI7800), pbn_b1_8_115200 },
- 
--	{	PCI_VENDOR_ID_ADDIDATA,
--		PCI_DEVICE_ID_ADDIDATA_APCI7300_2,
--		PCI_ANY_ID,
--		PCI_ANY_ID,
--		0,
--		0,
--		pbn_b0_1_115200 },
--
--	{	PCI_VENDOR_ID_ADDIDATA,
--		PCI_DEVICE_ID_ADDIDATA_APCI7500_3,
--		PCI_ANY_ID,
--		PCI_ANY_ID,
--		0,
--		0,
--		pbn_b0_4_115200 },
-+	{	PCI_VDEVICE(ADDIDATA, PCI_DEVICE_ID_ADDIDATA_APCI7500_2), pbn_b0_4_115200 },
- 
--	{	PCI_VENDOR_ID_ADDIDATA,
--		PCI_DEVICE_ID_ADDIDATA_APCI7420_3,
--		PCI_ANY_ID,
--		PCI_ANY_ID,
--		0,
--		0,
--		pbn_b0_2_115200 },
-+	{	PCI_VDEVICE(ADDIDATA, PCI_DEVICE_ID_ADDIDATA_APCI7420_2), pbn_b0_2_115200 },
-+
-+	{	PCI_VDEVICE(ADDIDATA, PCI_DEVICE_ID_ADDIDATA_APCI7300_2), pbn_b0_1_115200 },
-+
-+	{	PCI_VDEVICE(ADDIDATA, PCI_DEVICE_ID_ADDIDATA_APCI7500_3), pbn_b0_4_115200 },
-+
-+	{	PCI_VDEVICE(ADDIDATA, PCI_DEVICE_ID_ADDIDATA_APCI7420_3), pbn_b0_2_115200 },
-+
-+	{	PCI_VDEVICE(ADDIDATA, PCI_DEVICE_ID_ADDIDATA_APCI7300_3), pbn_b0_1_115200 },
- 
--	{	PCI_VENDOR_ID_ADDIDATA,
--		PCI_DEVICE_ID_ADDIDATA_APCI7300_3,
--		PCI_ANY_ID,
--		PCI_ANY_ID,
--		0,
--		0,
--		pbn_b0_1_115200 },
--
--	{	PCI_VENDOR_ID_ADDIDATA,
--		PCI_DEVICE_ID_ADDIDATA_APCI7800_3,
--		PCI_ANY_ID,
--		PCI_ANY_ID,
--		0,
--		0,
--		pbn_b0_8_115200 },
-+	{	PCI_VDEVICE(ADDIDATA, PCI_DEVICE_ID_ADDIDATA_APCI7800_3), pbn_b0_8_115200 },
- 
- 	{	PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9835,
- 		PCI_VENDOR_ID_IBM, 0x0299,
--- 
-1.6.3.1.10.g659a0.dirty
+-----Original Message-----
+From: linux-omap-owner@vger.kernel.org
+[mailto:linux-omap-owner@vger.kernel.org] On Behalf Of HU TAO-TGHK48
+Sent: Tuesday, June 23, 2009 3:18 PM
+To: linux-omap@vger.kernel.org
+Subject: FW: [Help] Does HW flow contorl (auto RTS/CTS) in
+drivers/serial/8250.c work for OMAP34xx?
 
+ 
+Instead of using below code in current drive, it seems we have to add
+code to follow the steps in OMAP34xx TRM to make it work.
+/*
+  * TI16C752/Startech hardware flow control.  FIXME:
+  * - TI16C752 requires control thresholds to be set.
+  * - UART_MCR_RTS is ineffective if auto-RTS mode is enabled.
+  */
+if (termios->c_cflag & CRTSCTS)
+		efr |= UART_EFR_CTS;
+
+Followings are copied from OMAP34xx TRM.
+
+To enable and configure hardware flow control, perform the following
+procedure:
+1. Switch to register configuration mode A to access the UARTi.MCR_REG
+register:
+a. Save the current UARTi.LCR_REG.
+b. Set UARTi.LCR_REG to 0x0080.
+2. Enable register submode TCR_TLR to access UARTi.TCR_REG (part 1 of
+2):
+a. Save the UARTi.MCR_REG[6] TCR_TLR value.
+b. Set UARTi.MCR_REG[6] TCR_TLR = 1.
+3. Switch to register configuration mode B to access the UARTi.EFR_REG
+register:
+Set UARTi.LCR_REG to 0x00BF.
+4. Enable register submode TCR_TLR to access the UARTi.TCR_REG register
+(part 2 of 2):
+a. Save the UARTi.EFR_REG[4] ENHANCED_EN value.
+b. Set the UARTi.EFR_REG[4] ENHANCED_EN bit to 1.
+5. Load the new start and halt trigger values for hardware flow control:
+Set the following bits to the desired values:
+* UARTi.TCR_REG[7:4] AUTO_RTS_START
+* UARTi.TCR_REG[3:0] AUTO_RTS_HALT
+6. Enable or disable receive and transmit hardware flow control mode and
+restore the UARTi.EFR_REG[4] ENHANCED_EN value saved in Step 4a.
+Set the following bits to the desired values:
+* UARTi.EFR_REG[7] AUTO_CTS_EN (0: Disable/1: Enable) * UARTi.EFR_REG[6]
+AUTO_RTS_EN (0: Disable/1: Enable) Restore UARTi.EFR_REG[4] ENHANCED_EN
+to the saved value.
+7. Switch to register configuration mode A to access UARTi.MCR_REG:
+Set UARTi.LCR_REG to 0x0080.
+8. Restore the UARTi.MCR_REG[6] TCR_TLR value saved in Step 2a.
+9. Restore the UARTi.LCR_REG value saved in Step 1a.
+See Section 17.4.4.1.3.2, Hardware Flow Control, to choose the following
+values:
+* UARTi.EFR_REG[7] AUTO_CTS_EN
+* UARTi.EFR_REG[6] AUTO_RTS_EN
+* UARTi.TCR_REG[7:4] AUTO_RTS_START
+* UARTi.TCR_REG[3:0] AUTO_RTS_HALT
+--
+To unsubscribe from this list: send the line "unsubscribe linux-omap" in
+the body of a message to majordomo@vger.kernel.org More majordomo info
+at  http://vger.kernel.org/majordomo-info.html
