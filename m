@@ -1,93 +1,58 @@
-From: "HU TAO-TGHK48" <taohu@motorola.com>
-Subject: FW: [Help] Does HW flow contorl (auto RTS/CTS) in drivers/serial/8250.c work for OMAP34xx?
-Date: Fri, 3 Jul 2009 01:42:00 +0800
-Message-ID: <F12CE1A68F023D498A2691C7B53931150365583F@ZMY16EXM66.ds.mot.com>
+From: Manuel Jander <manuel.jander@gmail.com>
+Subject: Serial loop back virtual device
+Date: Thu, 2 Jul 2009 22:08:52 +0200
+Message-ID: <21ed1c370907021308g18fb0ab5r895ee8871244a341@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail119.messagelabs.com ([216.82.241.195]:50279 "EHLO
-	mail119.messagelabs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752791AbZGBRmZ convert rfc822-to-8bit (ORCPT
+Received: from mail-fx0-f218.google.com ([209.85.220.218]:56604 "EHLO
+	mail-fx0-f218.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757377AbZGBUIv (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 2 Jul 2009 13:42:25 -0400
-Received: from il06exr04.mot.com (il06exr04.mot.com [129.188.137.134])
-	by motgate8.mot.com (8.14.3/8.14.3) with ESMTP id n62HgQlL027451
-	for <linux-serial@vger.kernel.org>; Thu, 2 Jul 2009 10:42:27 -0700 (MST)
-Received: from il06vts01.mot.com (il06vts01.mot.com [129.188.137.141])
-	by il06exr04.mot.com (8.13.1/Vontu) with SMTP id n62HgQns001859
-	for <linux-serial@vger.kernel.org>; Thu, 2 Jul 2009 12:42:26 -0500 (CDT)
-Received: from ZMY16EXM66.ds.mot.com (zmy16exm66.ap.mot.com [10.179.4.26])
-	by il06exr04.mot.com (8.13.1/8.13.0) with ESMTP id n62HgPoD001855
-	for <linux-serial@vger.kernel.org>; Thu, 2 Jul 2009 12:42:26 -0500 (CDT)
-Content-class: urn:content-classes:message
+	Thu, 2 Jul 2009 16:08:51 -0400
+Received: by fxm18 with SMTP id 18so1742520fxm.37
+        for <linux-serial@vger.kernel.org>; Thu, 02 Jul 2009 13:08:53 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
- 
-Resend for help
+Hi there,
 
------Original Message-----
-From: linux-omap-owner@vger.kernel.org
-[mailto:linux-omap-owner@vger.kernel.org] On Behalf Of HU TAO-TGHK48
-Sent: Tuesday, June 23, 2009 3:18 PM
-To: linux-omap@vger.kernel.org
-Subject: FW: [Help] Does HW flow contorl (auto RTS/CTS) in
-drivers/serial/8250.c work for OMAP34xx?
+hopefuly this message is going to the right people. I wrote a small
+virtual serial loop back driver and I have some questions in regard to
+that.
 
- 
-Instead of using below code in current drive, it seems we have to add
-code to follow the steps in OMAP34xx TRM to make it work.
-/*
-  * TI16C752/Startech hardware flow control.  FIXME:
-  * - TI16C752 requires control thresholds to be set.
-  * - UART_MCR_RTS is ineffective if auto-RTS mode is enabled.
-  */
-if (termios->c_cflag & CRTSCTS)
-		efr |= UART_EFR_CTS;
+First, the driver basically creates a set of serial port device pairs
+(/dev/ttySL0, /dev/ttySL1, etc) and if some programs talks to one of
+this ports, the counterpart port will receive all data and vice versa.
+This is usful for writing a simulator of a hardware device which has a
+serial port, without having to connect to real serial ports together
+with a null modem cable or something like that. I'm using to develop a
+simulator of Webasto W-Bus (ODB-II) car heating device. The driver can
+optionally do line echo, required for K-Line emulation.
 
-Followings are copied from OMAP34xx TRM.
+Now the questions:
 
-To enable and configure hardware flow control, perform the following
-procedure:
-1. Switch to register configuration mode A to access the UARTi.MCR_REG
-register:
-a. Save the current UARTi.LCR_REG.
-b. Set UARTi.LCR_REG to 0x0080.
-2. Enable register submode TCR_TLR to access UARTi.TCR_REG (part 1 of
-2):
-a. Save the UARTi.MCR_REG[6] TCR_TLR value.
-b. Set UARTi.MCR_REG[6] TCR_TLR = 1.
-3. Switch to register configuration mode B to access the UARTi.EFR_REG
-register:
-Set UARTi.LCR_REG to 0x00BF.
-4. Enable register submode TCR_TLR to access the UARTi.TCR_REG register
-(part 2 of 2):
-a. Save the UARTi.EFR_REG[4] ENHANCED_EN value.
-b. Set the UARTi.EFR_REG[4] ENHANCED_EN bit to 1.
-5. Load the new start and halt trigger values for hardware flow control:
-Set the following bits to the desired values:
-* UARTi.TCR_REG[7:4] AUTO_RTS_START
-* UARTi.TCR_REG[3:0] AUTO_RTS_HALT
-6. Enable or disable receive and transmit hardware flow control mode and
-restore the UARTi.EFR_REG[4] ENHANCED_EN value saved in Step 4a.
-Set the following bits to the desired values:
-* UARTi.EFR_REG[7] AUTO_CTS_EN (0: Disable/1: Enable) * UARTi.EFR_REG[6]
-AUTO_RTS_EN (0: Disable/1: Enable) Restore UARTi.EFR_REG[4] ENHANCED_EN
-to the saved value.
-7. Switch to register configuration mode A to access UARTi.MCR_REG:
-Set UARTi.LCR_REG to 0x0080.
-8. Restore the UARTi.MCR_REG[6] TCR_TLR value saved in Step 2a.
-9. Restore the UARTi.LCR_REG value saved in Step 1a.
-See Section 17.4.4.1.3.2, Hardware Flow Control, to choose the following
-values:
-* UARTi.EFR_REG[7] AUTO_CTS_EN
-* UARTi.EFR_REG[6] AUTO_RTS_EN
-* UARTi.TCR_REG[7:4] AUTO_RTS_START
-* UARTi.TCR_REG[3:0] AUTO_RTS_HALT
---
-To unsubscribe from this list: send the line "unsubscribe linux-omap" in
-the body of a message to majordomo@vger.kernel.org More majordomo info
-at  http://vger.kernel.org/majordomo-info.html
+- Did I really need to write a driver like this or are there any
+trivial tricks to accomplish this somehow else ? Note, that the
+software to talk to my simulator is a propietary windows executable
+(using wine), thus I can not modify it. And my computer has only one
+single serial port (and I would need to buy a second ODB-II hardware
+adapter anyway, software is way much cheaper).
+
+- Is this useful to anyone ? I think it is :) and it would be kind of
+stupid if anyone requiring this would have to either use 2 hardware
+ports or write another driver like this. But maybe I'm wrong, I dont
+know.
+
+- Is this driver worth to be part of the Linux mainline tree ?
+Probably some adjustment would be required...
+
+source code is available here:
+http://micro.homelinux.net/~mjander/serial_loop.zip
+
+It did built on  2.6.28, hopefuly it also does on the current vanilla tree.
+
+Best Regards,
+Manuel
