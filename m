@@ -1,100 +1,82 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Re: Serial loop back virtual device
-Date: Thu, 2 Jul 2009 20:55:49 +0000 (UTC)
-Message-ID: <h2j6sl$2k9$1@ger.gmane.org>
-References: <21ed1c370907021308g18fb0ab5r895ee8871244a341@mail.gmail.com>
+From: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
+Subject: [PATCH] [RFC] OMAP1: AMS_DELTA: add modem support
+Date: Sat, 4 Jul 2009 02:06:42 +0200
+Message-ID: <200907040206.42940.jkrzyszt@tis.icnet.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from main.gmane.org ([80.91.229.2]:51977 "EHLO ciao.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753350AbZGBVAE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 2 Jul 2009 17:00:04 -0400
-Received: from root by ciao.gmane.org with local (Exim 4.43)
-	id 1MMTNy-0000rB-Cy
-	for linux-serial@vger.kernel.org; Thu, 02 Jul 2009 21:00:02 +0000
-Received: from mn-69-34-67-62.sta.embarqhsd.net ([69.34.67.62])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Thu, 02 Jul 2009 21:00:02 +0000
-Received: from grant.b.edwards by mn-69-34-67-62.sta.embarqhsd.net with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Thu, 02 Jul 2009 21:00:02 +0000
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-omap-owner@vger.kernel.org
+To: Jonathan McDowell <noodles@earth.li>
+Cc: Tony Lindgren <tony@atomide.com>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.arm.linux.org.uk, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
 
-On 2009-07-02, Manuel Jander <manuel.jander@gmail.com> wrote:
+This patch adds support for modem device found on Amstrad E3 (Delta) board.
 
-> hopefuly this message is going to the right people. I wrote a
-> small virtual serial loop back driver and I have some
-> questions in regard to that.
->
-> First, the driver basically creates a set of serial port
-> device pairs (/dev/ttySL0, /dev/ttySL1, etc) and if some
-> programs talks to one of this ports, the counterpart port will
-> receive all data and vice versa.
+Patch created against linux-2.6.31-rc1.
 
-Interesting.  
+Based on earlier patch by Jonathan McDowell, available at 
+http://the.earth.li/pub/e3/2.6.19/ams-delta-modem.patch.
+Modified after Ladislav Michl's arch/arm/mach-omap1/board-voiceblue.c.
 
-Does your driver live in the layer below the line-discipline
-layer, or is it a "from-scratch" character device driver?
+Signed-off-by: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
+---
+Registering the modem platform device from a separate arch_initcall (and not from machine_init() callback) preserves serial console port 
+at ttyS0.
 
-Are changes in termios settings (e.g. parity, buad, flow, etc.)
-reflected between the two devices?
-
-How does it handle modem-control/status lines?
-
-> This is usful for writing a simulator of a hardware device
-> which has a serial port, without having to connect to real
-> serial ports together with a null modem cable or something
-> like that. I'm using to develop a simulator of Webasto W-Bus
-> (ODB-II) car heating device. The driver can optionally do line
-> echo, required for K-Line emulation.
->
-> Now the questions:
->
-> - Did I really need to write a driver like this or are there
->   any trivial tricks to accomplish this somehow else?
-
-Without looking at the details of your driver, it's hard to say.
-
-For some applications that expect to talk to a serial port, you
-can use a pty pair.  However, a pty only implements a subset of
-the serial port API Some applications that work with normal
-serial ports will fail if you point them at a pty instead of a
-"real" tty device.
-
-> Note, that the software to talk to my simulator is a
-> propietary windows executable (using wine), thus I can not
-> modify it. And my computer has only one single serial port
-> (and I would need to buy a second ODB-II hardware adapter
-> anyway, software is way much cheaper).
->
-> - Is this useful to anyone ? I think it is :) and it would be
->   kind of stupid if anyone requiring this would have to either
->   use 2 hardware ports or write another driver like this. But
->   maybe I'm wrong, I dont know.
->
-> - Is this driver worth to be part of the Linux mainline tree ?
->   Probably some adjustment would be required...
-
-On a couple occasions I offered (if it would be accepted) to
-fix up the pty driver so that it implements more of the serial
-port API, but I've never gotten any response.
-
-> source code is available here:
-> http://micro.homelinux.net/~mjander/serial_loop.zip
-
-Dude, a zip file?  That ruined your Unix street cred.  ;)
-
-> It did built on 2.6.28, hopefuly it also does on the current
-> vanilla tree.
-
-
--- 
-Grant Edwards                   grante             Yow! ... I want a COLOR
-                                  at               T.V. and a VIBRATING BED!!!
-                               visi.com            
-
+--- linux-2.6.31-rc1/arch/arm/mach-omap1/board-ams-delta.c.orig	2009-06-27 20:19:50.000000000 +0200
++++ linux-2.6.31-rc1/arch/arm/mach-omap1/board-ams-delta.c	2009-07-04 00:50:46.000000000 +0200
+@@ -15,8 +15,11 @@
+ #include <linux/kernel.h>
+ #include <linux/init.h>
+ #include <linux/input.h>
++#include <linux/irq.h>
+ #include <linux/platform_device.h>
++#include <linux/serial_8250.h>
+ 
++#include <asm/serial.h>
+ #include <mach/hardware.h>
+ #include <asm/mach-types.h>
+ #include <asm/mach/arch.h>
+@@ -233,7 +236,39 @@ static void __init ams_delta_init(void)
+ 
+ 	omap_usb_init(&ams_delta_usb_config);
+ 	platform_add_devices(ams_delta_devices, ARRAY_SIZE(ams_delta_devices));
++
++}
++
++static struct plat_serial8250_port ams_delta_modem_ports[] = {
++	{
++		.membase	= (void *) AMS_DELTA_MODEM_VIRT,
++		.mapbase	= AMS_DELTA_MODEM_PHYS,
++		.irq		= OMAP_GPIO_IRQ(2),
++		.flags		= UPF_BOOT_AUTOCONF,
++		.iotype		= UPIO_MEM,
++		.regshift	= 1,
++		.uartclk	= BASE_BAUD * 16,
++	},
++	{ },
++};
++
++static struct platform_device ams_delta_modem_device = {
++	.name	= "serial8250",
++	.id	= PLAT8250_DEV_PLATFORM1,
++	.dev		= {
++		.platform_data = ams_delta_modem_ports,
++	},
++};
++
++static int __init ams_delta_modem_init(void)
++{
++	set_irq_type(OMAP_GPIO_IRQ(2), IRQ_TYPE_EDGE_RISING);
++	ams_delta_latch2_write(
++		AMS_DELTA_LATCH2_MODEM_NRESET | AMS_DELTA_LATCH2_MODEM_CODEC,
++		AMS_DELTA_LATCH2_MODEM_NRESET | AMS_DELTA_LATCH2_MODEM_CODEC);
++	return platform_device_register(&ams_delta_modem_device);
+ }
++arch_initcall(ams_delta_modem_init);
+ 
+ static void __init ams_delta_map_io(void)
+ {
