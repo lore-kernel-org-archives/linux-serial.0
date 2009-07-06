@@ -1,59 +1,61 @@
-From: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
-Subject: Re: [alsa-devel] [RFC] Alsa mixer over serial port
-Date: Sun, 5 Jul 2009 22:55:21 +0200
-Message-ID: <200907052255.22846.jkrzyszt@tis.icnet.pl>
-References: <4A4CB5CF.2020703@tis.icnet.pl> <20090702133220.GA22321@sirena.org.uk>
+From: "Pandita, Vikram" <vikram.pandita@ti.com>
+Subject: RE: [PATCH v2] OMAP1: AMS_DELTA: add modem support
+Date: Mon, 6 Jul 2009 10:19:34 +0530
+Message-ID: <FCCFB4CDC6E5564B9182F639FC35608702F5568724@dbde02.ent.ti.com>
+References: <200907051601.49194.jkrzyszt@tis.icnet.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from d1.icnet.pl ([212.160.220.21]:44260 "EHLO d1.icnet.pl"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753771AbZGEUzt convert rfc822-to-8bit (ORCPT
+Received: from devils.ext.ti.com ([198.47.26.153]:44470 "EHLO
+	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750695AbZGFEuc convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 5 Jul 2009 16:55:49 -0400
-In-Reply-To: <20090702133220.GA22321@sirena.org.uk>
-Content-Disposition: inline
+	Mon, 6 Jul 2009 00:50:32 -0400
+In-Reply-To: <200907051601.49194.jkrzyszt@tis.icnet.pl>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Mark Brown <broonie@opensource.wolfsonmicro.com>
-Cc: "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>, linux-serial@vger.kernel.org
+To: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>, Jonathan McDowell <noodles@earth.li>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Tony Lindgren <tony@atomide.com>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.arm.linux.org.uk" <linux-arm-kernel@lists.arm.linux.org.uk>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-Thursday 02 July 2009 15:32:21 Mark Brown napisa=C5=82(a):
-> On Thu, Jul 02, 2009 at 03:27:43PM +0200, Janusz Krzysztofik wrote:
-> > I can see two ways of getting this working:
-> > 1) add a new line discipline that would take control over the seria=
-l
-> > line and convert it to an alsa mixer,
-> > 2) create a low level driver that would replace standard serial stu=
-ff
-> > completely (like snd-serial-u16550 does, for example).
-> >
-> > Please advise which one is better.
+Janusz/Alan 
+
+>-----Original Message-----
+>From: linux-omap-owner@vger.kernel.org [mailto:linux-omap-owner@vger.kernel.org] On Behalf Of Janusz
+>Krzysztofik
 >
-> ASoC doesn't really care for itself - it just needs the upper layer
-> interface, how exactly the driver ineteracts with the device is not
-> important to ASoC.
++static int __init ams_delta_modem_init(void)
+>+{
+>+	omap_cfg_reg(M14_1510_GPIO2);
+>+	ams_delta_modem_ports[0].irq = gpio_to_irq(2);
+>+	set_irq_type(gpio_to_irq(2), IRQ_TYPE_EDGE_RISING);
 
-Mark, thanks.
+There is a recent change on specifying irqflags as example:
+http://patchwork.kernel.org/patch/31888/
 
-As there are no other votes, I choose line discipline. Generic form of=20
-required userspace support is already provided with util-linux-ng and i=
-t=20
-seems much better to use established low level driver code than reinven=
-t a=20
-new one ;).
+There is a dependency for Alan Cox to push this patch first though:
+http://patchwork.kernel.org/patch/31884/
 
-I hope there will be no problem getting a new line discipline registere=
-d with=20
-include/linux/tty.h, even if it turns out that the code using it is ded=
-icated=20
-to a specific device not found on any other board than my Amstrad E3.
+Reference:
+http://lkml.indiana.edu/hypermail/linux/kernel/0906.2/02827.html
 
-Thanks,
-Janusz
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+>+
+>+	ams_delta_latch2_write(
+>+		AMS_DELTA_LATCH2_MODEM_NRESET | AMS_DELTA_LATCH2_MODEM_CODEC,
+>+		AMS_DELTA_LATCH2_MODEM_NRESET | AMS_DELTA_LATCH2_MODEM_CODEC);
+>+
+>+	return platform_device_register(&ams_delta_modem_device);
+>+}
+>+arch_initcall(ams_delta_modem_init);
+>+
+> static void __init ams_delta_map_io(void)
+> {
+> 	omap1_map_common_io();
+>
+>--
+>To unsubscribe from this list: send the line "unsubscribe linux-omap" in
+>the body of a message to majordomo@vger.kernel.org
+>More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
