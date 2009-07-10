@@ -1,91 +1,20 @@
-From: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
-Subject: [PATCH v3] OMAP1: AMS_DELTA: add modem support
-Date: Mon, 6 Jul 2009 12:24:27 +0200
-Message-ID: <200907061224.29292.jkrzyszt@tis.icnet.pl>
+From: "Gideon Webster" <ijyager@emerson.com>
+Subject: Restless sticking ability is true!
+Date: Thu, 9 Jul 2009 21:59:33 -0300
+Message-ID: <20090709215933.4080902@emerson.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1757574AbZGFKZV@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jonathan McDowell <noodles@earth.li>
-Cc: Tony Lindgren <tony@atomide.com>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.arm.linux.org.uk" <linux-arm-kernel@lists.arm.linux.org.uk>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from 35-24-247-190.fibertel.com.ar ([190.247.24.35]:62185 "HELO
+	35-24-247-190.fibertel.com.ar" rhost-flags-OK-FAIL-OK-FAIL)
+	by vger.kernel.org with SMTP id S1751426AbZGJBFn (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 9 Jul 2009 21:05:43 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-This patch adds support for modem device found on Amstrad E3 (Delta) board.
+Be careful. Dont put your healthat stake, we carry everything for your health. 
+http://xpxjs.djojoyih.cn/
 
-Based on earlier patch by Jonathan McDowell, available at 
-http://the.earth.li/pub/e3/2.6.19/ams-delta-modem.patch.
-Modified after Ladislav Michl's arch/arm/mach-omap1/board-voiceblue.c.
-
-This version, unlike v2, is dependent on 8250 driver changes getting accepted
-upstream:
-Refer: http://patchwork.kernel.org/patch/31884/
-
-Signed-off-by: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
----
-Registering the modem platform device from a separate arch_initcall (and not
-from init_machine() callback) preserves serial console port at ttyS0.
-
-OMAP mux pin set up just for case if Amstrad bootloader is ever replaced.
-
-Warning: 
-could cause compilation break if 8250 patch is not integrated first
-
---- linux-2.6.31-rc1/arch/arm/mach-omap1/board-ams-delta.c.orig	2009-07-04 16:39:37.000000000 +0200
-+++ linux-2.6.31-rc1/arch/arm/mach-omap1/board-ams-delta.c	2009-07-05 13:41:08.000000000 +0200
-@@ -15,8 +15,11 @@
- #include <linux/kernel.h>
- #include <linux/init.h>
- #include <linux/input.h>
-+#include <linux/interrupt.h>
- #include <linux/platform_device.h>
-+#include <linux/serial_8250.h>
- 
-+#include <asm/serial.h>
- #include <mach/hardware.h>
- #include <asm/mach-types.h>
- #include <asm/mach/arch.h>
-@@ -235,6 +238,41 @@ static void __init ams_delta_init(void)
- 	platform_add_devices(ams_delta_devices, ARRAY_SIZE(ams_delta_devices));
- }
- 
-+static struct plat_serial8250_port ams_delta_modem_ports[] = {
-+	{
-+		.membase	= (void *) AMS_DELTA_MODEM_VIRT,
-+		.mapbase	= AMS_DELTA_MODEM_PHYS,
-+		.irq		= -EINVAL, /* changed later */
-+		.flags		= UPF_BOOT_AUTOCONF,
-+		.irqflags	= IRQF_TRIGGER_RISING,
-+		.iotype		= UPIO_MEM,
-+		.regshift	= 1,
-+		.uartclk	= BASE_BAUD * 16,
-+	},
-+	{ },
-+};
-+
-+static struct platform_device ams_delta_modem_device = {
-+	.name	= "serial8250",
-+	.id	= PLAT8250_DEV_PLATFORM1,
-+	.dev		= {
-+		.platform_data = ams_delta_modem_ports,
-+	},
-+};
-+
-+static int __init ams_delta_modem_init(void)
-+{
-+	omap_cfg_reg(M14_1510_GPIO2);
-+	ams_delta_modem_ports[0].irq = gpio_to_irq(2);
-+
-+	ams_delta_latch2_write(
-+		AMS_DELTA_LATCH2_MODEM_NRESET | AMS_DELTA_LATCH2_MODEM_CODEC,
-+		AMS_DELTA_LATCH2_MODEM_NRESET | AMS_DELTA_LATCH2_MODEM_CODEC);
-+
-+	return platform_device_register(&ams_delta_modem_device);
-+}
-+arch_initcall(ams_delta_modem_init);
-+
- static void __init ams_delta_map_io(void)
- {
- 	omap1_map_common_io();
