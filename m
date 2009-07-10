@@ -1,20 +1,29 @@
-From: "Gideon Webster" <ijyager@emerson.com>
-Subject: Restless sticking ability is true!
-Date: Thu, 9 Jul 2009 21:59:33 -0300
-Message-ID: <20090709215933.4080902@emerson.com>
+From: "MITSUBISHI COMPANY UK" <info@mitsubishi.com>
+Subject: Your E-mail Attach To category\\"A\\" 870,000GBP&#8207;
+Date: Fri, 10 Jul 2009 20:30:03 +0800
+Message-ID: <20090710122911.M51719__2195.49461403421$1247227566$gmane$org@mitsubishi.com>
+Reply-To: infomitscombonanza@googlemail.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset=big5
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 35-24-247-190.fibertel.com.ar ([190.247.24.35]:62185 "HELO
-	35-24-247-190.fibertel.com.ar" rhost-flags-OK-FAIL-OK-FAIL)
-	by vger.kernel.org with SMTP id S1751426AbZGJBFn (ORCPT
+Received: from 220-128-130-175.HINET-IP.hinet.net ([220.128.130.175]:35973
+	"EHLO mail.hbhousing.com.tw" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750983AbZGJMFA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 9 Jul 2009 21:05:43 -0400
+	Fri, 10 Jul 2009 08:05:00 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
 
-Be careful. Dont put your healthat stake, we carry everything for your health. 
-http://xpxjs.djojoyih.cn/
+MITSUBISHI COMPANY UK.
+28 TANFIELD ROAD,LONDON, UK.
 
+You have just been awarded,the sum of  &pound;870.000.00 in the  MITSUBISHI COMPANY 
+Award 2009, Anniversary Bonanza. held in July.
+
+Names:............. Address:..............
+Country:................ Age:..........
+Phone Number............ Occupation.......Sex
+
+Regards.Felke Courtney.
+Online Co-ordinator.
