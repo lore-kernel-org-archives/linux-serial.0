@@ -1,65 +1,56 @@
-From: Don Alexander <e3-dev@roosoft.ltd.uk>
-Subject: Re: [E3-hacking] [RFC] [PATCH 0/3] Add support for Amstrad E3 (Delta)
- audio to ASoC
-Date: Wed, 22 Jul 2009 08:51:56 +0100
-Message-ID: <4A66C51C.7020900@roosoft.ltd.uk>
-References: <200907220522.15134.jkrzyszt@tis.icnet.pl>
-Reply-To: e3-dev@roosoft.ltd.uk
+From: Mark Brown <broonie@opensource.wolfsonmicro.com>
+Subject: Re: [RFC] [PATCH 1/3] ASoC: Add support for
+	Conexant	CX20442-11 voice modem codec
+Date: Wed, 22 Jul 2009 11:10:28 +0100
+Message-ID: <20090722101027.GA7622@sirena.org.uk>
+References: <200907220522.29221.jkrzyszt@tis.icnet.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lon1-post-2.mail.demon.net ([195.173.77.149]:63744 "EHLO
-	lon1-post-2.mail.demon.net" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754319AbZGVHwE (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 22 Jul 2009 03:52:04 -0400
-In-Reply-To: <200907220522.15134.jkrzyszt@tis.icnet.pl>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <alsa-devel-bounces@alsa-project.org>
+Content-Disposition: inline
+In-Reply-To: <200907220522.29221.jkrzyszt@tis.icnet.pl>
+List-Unsubscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
+	<mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
+	<mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Sender: alsa-devel-bounces@alsa-project.org
+Errors-To: alsa-devel-bounces@alsa-project.org
+To: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
+Cc: alsa-devel@alsa-project.org, Jonathan McDowell <noodles@earth.li>, Tony Lindgren <tony@atomide.com>, Peter Ujfalusi <peter.ujfalusi@nokia.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, e3-hacking@earth.li, Arun KS <arunks@mistralsolutions.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>
 List-Id: linux-serial@vger.kernel.org
-To: Discussion of the Amstrad E3 emailer hardware/software <e3-hacking@earth.li>
-Cc: Mark Brown <broonie@opensource.wolfsonmicro.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Tony Lindgren <tony@atomide.com>, alsa-devel@alsa-project.org, Jonathan McDowell <noodles@earth.li>, Peter Ujfalusi <peter.ujfalusi@nokia.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Arun KS <arunks@mistralsolutions.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jarkko Nikula <jhnikula@gmail.com>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
 
-Janusz Krzysztofik wrote:
-> This series of patches adds support for audio device found on Amstrad E3 
-> (Delta) videophone to ASoC.
->
-> 1/3:	ASoC: Add support for Conexant CX20442-11 voice modem codec
-> 2/3:	TTY: Add definition of a new line discipline required by Amstrad E3
-> 	(Delta) ASoC driver
-> 3/3:	ASoC: add support for Amstrad E3 (Delta) machine
-> 4/3:	OMAP1: Readd basic support for DSP initialization
->
-> Created and tested against linux-2.5.31-rc3.
-> Applies and works with linux-omap-2.6 commit 
-> 7c5cb7862d32cb344be7831d466535d5255e35ac as well
->
-> Patch 4/3 is a temporary solution that should help interested parties in 
-> testing the driver or even making use of it before an official DSP support 
-> gets back to the omap or mainline tree.
->
+On Wed, Jul 22, 2009 at 05:22:28AM +0200, Janusz Krzysztofik wrote:
+> This patch adds support for Conexant CX20442-11 voice modem codec, suitable
+> for use by the ASoC board driver for Amstrad E3 (Delta) videophone. Related
+> sound card driver will follow.
+
+> Created and tested against linux-2.6.31-rc3.
+> Applies and works with linux-omap-2.6 commit
+> 7c5cb7862d32cb344be7831d466535d5255e35ac as well.
+
 > Signed-off-by: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
->
-> _______________________________________________
-> e3-hacking mailing list
-> e3-hacking@earth.li
-> http://www.earth.li/cgi-bin/mailman/listinfo/e3-hacking
->
->   
-Good job Jarkko ! :) Busy with a few other things atm but will dust off
-the old E3 and take a poke at it when I can. It maybe boxed but it is
-not forgotten :)
 
-Cheers,
+This patch is basically fine from an ASoC point of view so I've applied
+it.
 
+You'll want to run checkpatch over it and send a followup fixing the
+issues it identifies.  Looking at this I suspect that it may be possible
+to refactor things so that more of the line discipline interaction is
+pushed down into the CODEC driver but that can also be done as a
+followup.
 
+Since this (and all the other descriptive text that follows it):
 
--- 
-==
+> This codec is an optional part of the Conexant SmartV three chip modem design.
+> As such, documentation for its proprietary digital audio interface is not
+> available. However, on Amstrad Delta board, thanks to Mark Underwood who
 
-Don Alexander
-
-E3 Development & tweaking ;)
-
-RooSoft Ltd
-
+...is useful documentation I've pulled it into the commit message.  It
+would also be nice to add some documentation somewhere explaining how
+the hw_write() function is expected to be set up since it's a little
+surprising (if the line discipline stuff were pushed down into the code
+that'd become a lot more obvious).
