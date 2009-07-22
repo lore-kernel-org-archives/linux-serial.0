@@ -1,26 +1,37 @@
-From: Samuel Thibault <samuel.thibault@ens-lyon.org>
-Subject: Re: [RFC] tty (or char) bus?
-Date: Sun, 19 Jul 2009 15:34:48 +0200
-Message-ID: <20090719133448.GA5328@const.famille.thibault.fr>
-References: <4A5CA4CB.8070500@tis.icnet.pl> <20090717175428.GB4852@const.linuxsymposium.org> <4A631D5A.3030105@imap.cc>
+From: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
+Subject: [RFC] [PATCH 0/3] Add support for Amstrad E3 (Delta) audio to ASoC
+Date: Wed, 22 Jul 2009 05:22:13 +0200
+Message-ID: <200907220522.15134.jkrzyszt@tis.icnet.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1754295AbZGSNew@vger.kernel.org>
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from d1.icnet.pl ([212.160.220.21]:39029 "EHLO d1.icnet.pl"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750804AbZGVDXg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 21 Jul 2009 23:23:36 -0400
 Content-Disposition: inline
-In-Reply-To: <4A631D5A.3030105@imap.cc>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tilman Schmidt <tilman@imap.cc>
-Cc: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Mark Brown <broonie@opensource.wolfsonmicro.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Tony Lindgren <tony@atomide.com>
+Cc: Arun KS <arunks@mistralsolutions.com>, Jarkko Nikula <jhnikula@gmail.com>, Jonathan McDowell <noodles@earth.li>, Peter Ujfalusi <peter.ujfalusi@nokia.com>, alsa-devel@alsa-project.org, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, e3-hacking@earth.li
 
-Tilman Schmidt, le Sun 19 Jul 2009 15:19:22 +0200, a =E9crit :
-> The only inconvenience is how LDs are loaded and attached to a serial
-> interface, via the TIOCSETD ioctl, because you need a userspace daemo=
-n
-> which keeps the tty device open so that the LD stays attached to it.
+This series of patches adds support for audio device found on Amstrad E3 
+(Delta) videophone to ASoC.
 
-Yes, that's a burden for me also, while I could just tell my module to
-use ttyS0 through parameters for instance.
+1/3:	ASoC: Add support for Conexant CX20442-11 voice modem codec
+2/3:	TTY: Add definition of a new line discipline required by Amstrad E3
+	(Delta) ASoC driver
+3/3:	ASoC: add support for Amstrad E3 (Delta) machine
+4/3:	OMAP1: Readd basic support for DSP initialization
 
-Samuel
+Created and tested against linux-2.5.31-rc3.
+Applies and works with linux-omap-2.6 commit 
+7c5cb7862d32cb344be7831d466535d5255e35ac as well
+
+Patch 4/3 is a temporary solution that should help interested parties in 
+testing the driver or even making use of it before an official DSP support 
+gets back to the omap or mainline tree.
+
+Signed-off-by: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
