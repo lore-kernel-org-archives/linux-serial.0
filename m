@@ -1,15 +1,15 @@
 From: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
-Subject: Re: [RFC] [PATCH 1/3] ASoC: Add support for Conexant
- CX20442-11 voice modem codec
-Date: Wed, 22 Jul 2009 16:01:43 +0200
-Message-ID: <4A671BC7.20300@tis.icnet.pl>
-References: <200907220522.29221.jkrzyszt@tis.icnet.pl>
-	<20090722101027.GA7622@sirena.org.uk>
+Subject: Re: [RFC] [PATCH 3/3] ASoC: add support for Amstrad E3
+ (Delta) machine
+Date: Wed, 22 Jul 2009 16:53:12 +0200
+Message-ID: <4A6727D8.5080808@tis.icnet.pl>
+References: <200907220523.01107.jkrzyszt@tis.icnet.pl>
+	<20090722110328.GB7622@sirena.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <alsa-devel-bounces@alsa-project.org>
-In-Reply-To: <20090722101027.GA7622@sirena.org.uk>
+In-Reply-To: <20090722110328.GB7622@sirena.org.uk>
 List-Unsubscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
 	<mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
 List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel>
@@ -20,51 +20,136 @@ List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
 Sender: alsa-devel-bounces@alsa-project.org
 Errors-To: alsa-devel-bounces@alsa-project.org
 To: Mark Brown <broonie@opensource.wolfsonmicro.com>
-Cc: alsa-devel@alsa-project.org, Jonathan McDowell <noodles@earth.li>, Tony Lindgren <tony@atomide.com>, Peter Ujfalusi <peter.ujfalusi@nokia.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, e3-hacking@earth.li, Arun KS <arunks@mistralsolutions.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: alsa-devel@alsa-project.org, Jonathan McDowell <noodles@earth.li>, Tony Lindgren <tony@atomide.com>, Peter Ujfalusi <peter.ujfalusi@nokia.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Takashi Iwai <tiwai@suse.de>, e3-hacking@earth.li, Arun KS <arunks@mistralsolutions.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>
 List-Id: linux-serial@vger.kernel.org
 
 Hi Mark,
 
 Mark Brown wrote:
-> On Wed, Jul 22, 2009 at 05:22:28AM +0200, Janusz Krzysztofik wrote:
->> This patch adds support for Conexant CX20442-11 voice modem codec, suitable
->> for use by the ASoC board driver for Amstrad E3 (Delta) videophone. Related
->> sound card driver will follow.
->> ...
-> This patch is basically fine from an ASoC point of view so I've applied
-> it.
+> On Wed, Jul 22, 2009 at 05:22:59AM +0200, Janusz Krzysztofik wrote:
+> 
+>> Signed-off-by: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
+>> ---
+>> CPU DAI parameters best matching the codec DAI has been selected out
+>> empirically for best user experience.
+> 
+> Again, all the documentation you've got here could quite happily go in
+> the commit message and there's a bunch of checkpatch issues.
 
-Thanks!
+OK, I promiss to remember about this for the future.
 
-> You'll want to run checkpatch over it and send a followup fixing the
+>> +#include <sound/soc-dapm.h>
+>> +#include <sound/jack.h>
+> 
+> ASoC will pull that one in for you, not that it really matters.
 
-Sorry for not doing this before submitting. Will send the followup soon.
+Maybe it should, but without <sound/jack.h> I get:
+sound/soc/omap/ams-delta.c:184: error: 'SND_JACK_MICROPHONE' undeclared 
+here (not in a function)
+sound/soc/omap/ams-delta.c:188: error: 'SND_JACK_HEADPHONE' undeclared 
+here (not in a function)
+sound/soc/omap/ams-delta.c: In function 'cx81801_close':
+sound/soc/omap/ams-delta.c:336: error: 'SND_JACK_HEADSET' undeclared 
+(first use in this function)
+...
 
-> issues it identifies.  Looking at this I suspect that it may be possible
-> to refactor things so that more of the line discipline interaction is
-> pushed down into the CODEC driver but that can also be done as a
-> followup.
+>> +static const struct snd_kcontrol_new ams_delta_audio_controls[] = {
+>> +	SOC_ENUM_EXT("Audio Function", ams_delta_audio_enum[0],
+>> +			ams_delta_get_audio_mode, ams_delta_set_audio_mode),
+>> +};
+> 
+> Is it possible to control all the functions of the audio mode
+> independantly or are only certain combinations possible?
 
-I have put the line discipline code into the machine driver for two reasons:
-1. For me, the actual code is much more machine than codec specific.
-2. It was much easier to update the codec structure instance with 
-machine's provided hw_write() rather than fiddle with adding a new 
-member to the structure definition for passing a machine callback to the 
-line discipline functions.
+Certain combinations only. For example, no way of turning on the 
+mouthpiece without turning on the earphone as well, turning on AGC 
+automatically selects the speakerphone and turns off the handset.
 
-If you think we can find any use cases for drivers supporting 
-codec/modem combination other than CX20442 on Amstrad Delta, I can agree 
-with you on moving the line discipline code out of the machine driver, 
-but instead of pushing it down to the codec I would rather se it as a 
-separate module.  Anyway, I think that some kind of support on the ASoC 
-top level for this case could be helpfull.
+>> +static struct snd_soc_jack_gpio ams_delta_hook_switch_gpios[];
+>> +static struct snd_soc_jack_pin ams_delta_hook_switch_pins[] = {
+>> +	{
+>> +		.pin = "Mouthpiece",
+>> +		.mask = SND_JACK_MICROPHONE,
+>> +	},
+>> +	{
+>> +		.pin = "Earphone",
+>> +		.mask = SND_JACK_HEADPHONE,
+>> +	},
+>> +	{
+>> +		.pin = "Speaker",
+>> +		.mask = SND_JACK_HEADPHONE,
+>> +		.invert = 1,
+>> +	},
+>> +	{
+>> +		.pin = "Microphone",
+>> +		.mask = SND_JACK_MICROPHONE,
+>> +		.invert = 1,
+>> +	},
+>> +};
+> 
+> I guess microphone and speaker are for speakerphone mode while
+> mouthpiece and earpiece are a headset?  Might be nice to come up with
 
-> would also be nice to add some documentation somewhere explaining how
-> the hw_write() function is expected to be set up since it's a little
-> surprising (if the line discipline stuff were pushed down into the code
-> that'd become a lot more obvious).
+Exactly.
 
-I'll add a few words to the followup.
+> names that make the paring a bit clearer, or possibly just put a comment
+> in there.
+
+With my limited English skills, I can only replace Earphone with 
+Earpiece and add a comment. Please someone suggest better namings if not 
+enough.
+
+>> +/* To actually apply any modem controlled configuration changes to the codec,
+>> + * we must connect codec DAI pins to the modem for a moment.  Be carefull
+>> + * not to interfere with digital mute function that shares the same hardware. */
+>> +static struct timer_list cx81801_timer;
+>> +static bool cx81801_cmd_pending = 0;
+>> +static bool ams_delta_muted;
+>> +
+>> +static void cx81801_timeout(unsigned long data)
+>> +{
+>> +	/* REVISIT - locking? */
+> 
+> Yeah, locking is probably a good idea :)
+
+I'll have to learn about locking first. Could somebody point me to an 
+example code?
+
+>> +	/* Add board specific DAPM controls */
+>> +	if (!snd_soc_dapm_new_controls(codec, ams_delta_dapm_widgets,
+>> +				ARRAY_SIZE(ams_delta_dapm_widgets))) {
+>> +		if (!snd_soc_dapm_add_routes(codec, ams_delta_audio_map,
+>> +					ARRAY_SIZE(ams_delta_audio_map))) {
+> 
+> The error handling here is a bit odd...
+
+Do you mean those negations? Would be better if replaced with "== 0"?
+I am not sure if this is acceptable, but I just tried to avoid giving up 
+with a partialy working driver in case of errors on optional parts.
+
+>> +	/* Add hook switch */
+>> +	if (!snd_soc_jack_new(&ams_delta_audio_card, "hook_switch",
+>> +				SND_JACK_HEADSET, &ams_delta_hook_switch)) {
+>> +		if (!snd_soc_jack_add_gpios(&ams_delta_hook_switch,
+>> +					ARRAY_SIZE(ams_delta_hook_switch_gpios),
+>> +					ams_delta_hook_switch_gpios)) {
+>> +#ifdef CONFIG_GPIO_SYSFS
+>> +			/* Expose hook switch over sysfs if configured */
+>> +			gpio_export(ams_delta_hook_switch_gpios[0].gpio, false);
+>> +#endif
+> 
+> The gpio_export() should be in the ASoC GPIO code rather than here, I'd
+> expect - care to cook up a patch?
+
+When I tried to push a similiar code into the gpio-keys dirver, Dmitry 
+said I was wrong because my application would be limited to gpio based 
+devices only. However, it looks like there are no jacks other than gpio 
+based in ASoC, so maybe that objection does not apply here. Or maybe the 
+ASoC framework could just provide its own sysfs file with actual jack 
+state, whether gpio based or not?
+
+BTW, I decided to reuse already existing jack/input event types instead 
+of inventing new. Anyway, should I CC: linux-input?
 
 Thanks,
 Janusz
