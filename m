@@ -1,41 +1,66 @@
-From: Mark Brown <broonie@opensource.wolfsonmicro.com>
-Subject: Re: [alsa-devel] [RFC] [PATCH 3/3] ASoC: add support for Amstrad
- E3 (Delta) machine
-Date: Thu, 23 Jul 2009 09:57:38 +0100
-Message-ID: <20090723085738.GC5744@rakim.wolfsonmicro.main>
-References: <200907220523.01107.jkrzyszt@tis.icnet.pl>
- <4A6727D8.5080808@tis.icnet.pl>
- <20090722150709.GB4987@rakim.wolfsonmicro.main>
- <200907222118.06396.jkrzyszt@tis.icnet.pl>
+From: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
+Subject: Re: [alsa-devel] [RFC] [PATCH 1/3] ASoC: Add support for Conexant CX20442-11 voice modem codec
+Date: Tue, 28 Jul 2009 16:59:33 +0200
+Message-ID: <200907281659.36000.jkrzyszt@tis.icnet.pl>
+References: <200907220522.29221.jkrzyszt@tis.icnet.pl> <20090722101027.GA7622@sirena.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from opensource.wolfsonmicro.com ([80.75.67.52]:33308 "EHLO
-	opensource2.wolfsonmicro.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751881AbZGWI5k (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 23 Jul 2009 04:57:40 -0400
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <20090722101027.GA7622@sirena.org.uk>
 Content-Disposition: inline
-In-Reply-To: <200907222118.06396.jkrzyszt@tis.icnet.pl>
-Sender: linux-serial-owner@vger.kernel.org
+Sender: linux-omap-owner@vger.kernel.org
+To: Mark Brown <broonie@opensource.wolfsonmicro.com>
+Cc: alsa-devel@alsa-project.org, Jonathan McDowell <noodles@earth.li>, Tony Lindgren <tony@atomide.com>, Peter Ujfalusi <peter.ujfalusi@nokia.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, e3-hacking@earth.li, Arun KS <arunks@mistralsolutions.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>
 List-Id: linux-serial@vger.kernel.org
-To: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
-Cc: alsa-devel@alsa-project.org, Jonathan McDowell <noodles@earth.li>, Tony Lindgren <tony@atomide.com>, Peter Ujfalusi <peter.ujfalusi@nokia.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, e3-hacking@earth.li, Arun KS <arunks@mistralsolutions.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Takashi Iwai <tiwai@suse.de>
 
-On Wed, Jul 22, 2009 at 09:18:05PM +0200, Janusz Krzysztofik wrote:
+Wednesday 22 July 2009 12:10:28 Mark Brown wrote:
+> On Wed, Jul 22, 2009 at 05:22:28AM +0200, Janusz Krzysztofik wrote:
+> > This patch adds support for Conexant CX20442-11 voice modem codec,
+> > suitable for use by the ASoC board driver for Amstrad E3 (Delta)
+> > videophone. Related sound card driver will follow.
+> >
+> You'll want to run checkpatch over it and send a followup fixing the
+> issues it identifies.  Looking at this I suspect that it may be possible
+> to refactor things so that more of the line discipline interaction is
+> pushed down into the CODEC driver but that can also be done as a
+> followup.
+>
+> would also be nice to add some documentation somewhere explaining how
+> the hw_write() function is expected to be set up since it's a little
+> surprising (if the line discipline stuff were pushed down into the code
+> that'd become a lot more obvious).
 
-> After all, I am not sure what your preferences finally are. If you still think 
-> that exporting gpio based jack state from ASoC framework over gpiolib sysfs 
-> doesn't hurt and can be usefull, I'll remove the code from my driver and 
-> provide a patch against sound/soc/soc-jack.c. But if you would rather prefere 
-> exposing jack state in a more general, not gpio limited way instead, or 
-> depend on input layer provided EVIOCGSW ioctl, as Dmitry suggested 
-> (unfortunatelly, unlike generic ldattach, there is no utility ready for 
-> use!), I'd rather keep this gpio_export() in my driver, let's say for 
-> diagnostic purposes, at least until that different option is ready for use in 
-> a convenient way.
+Mark,
+I am ready with a followup that corrects those minor issues, as well as with a 
+new, corrected version of the machine driver. However, before I submit them, 
+I'd like to discuss again your idea of pushing down the line discipline code 
+into the codec driver.
 
-Jack state is already exposed via the input layer by the ALSA jack core.
-Reporting of GPIO state via gpio_export() would be additional to that
-and would be purely for debug purposes, it would not be recommended for
-use by userspace applications.
+As you may have noticed, my codec driver was ready for adopting it to one or 
+more additional buses of different types, in a way similiar to those 
+implemented in other codec drivers. There was a room for a hypothetical 
+cx20442_xxx_probe() function, invoked by a hypothetical xxx bus driver after 
+the bus comes up or a device is detected on it. That function could then set 
+up its own codec->control_data and codec->hw_write pointers for talking to 
+the codec via a hypothetical xxx bus adapter using its write method. In 
+particular, that could be a line discipline provided acceess to the codec 
+assosociated modem.
+
+Following that model, the line discipline code didn't seam to belong to a 
+codec driver for me. If it could be recognized as a new bus dirver, it should 
+be pushed down probably into a separate module. However, if it was rather 
+some kind of a bus adapter driver, it seamed to belong to the machine code.
+
+As I had got no positive feedback to my RFC on inventing a new bus (votes were 
+rather neutral, and I agreed with them[1]), I decided to put the line 
+discipline code into the machine driver.
+
+If you see things somehow different, please let me know, I can try to follow 
+your ideas and rearrange the code.
+
+Cheers,
+Janusz
+
+[1] http://www.spinics.net/lists/linux-serial/msg01856.html
