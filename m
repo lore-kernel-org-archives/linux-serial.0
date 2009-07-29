@@ -1,17 +1,17 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
 Subject: Re: CTRL-C functionality.
-Date: Tue, 28 Jul 2009 23:08:00 -0700
-Message-ID: <4A6FE740.7020302@gmail.com>
+Date: Tue, 28 Jul 2009 23:13:43 -0700
+Message-ID: <4A6FE897.6010803@gmail.com>
 References: <241b8f7b0907282250k56807b83vba95ee9944d14edb@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pz0-f204.google.com ([209.85.222.204]:58753 "EHLO
-	mail-pz0-f204.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750974AbZG2GHx (ORCPT
+Received: from rv-out-0506.google.com ([209.85.198.239]:47724 "EHLO
+	rv-out-0506.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751701AbZG2GNf (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 29 Jul 2009 02:07:53 -0400
+	Wed, 29 Jul 2009 02:13:35 -0400
 In-Reply-To: <241b8f7b0907282250k56807b83vba95ee9944d14edb@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -41,7 +41,6 @@ Prabhu Chawandi wrote:
 > Please read the FAQ at  http://www.tux.org/lkml/
 >
 >    
-showkeys is the command for bash
-xev is for xserver.
+My bad, it's showkey not showkeys.
 
-Justin P. Matock
+Justin P. Mattock
