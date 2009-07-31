@@ -1,49 +1,22 @@
-From: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
-Subject: Re: [RFC] [PATCH 3/3 v2] ASoC: add support for Amstrad E3 (Delta) machine
-Date: Thu, 30 Jul 2009 11:12:52 +0200
-Message-ID: <200907301112.53525.jkrzyszt@tis.icnet.pl>
+From: Mark Brown <broonie@opensource.wolfsonmicro.com>
+Subject: Re: [RFC] [PATCH 3/3 v2] ASoC: add support for Amstrad E3 (Delta)
+ machine
+Date: Fri, 31 Jul 2009 10:52:34 +0100
+Message-ID: <20090731095234.GB10844@rakim.wolfsonmicro.main>
 References: <200907291318.54897.jkrzyszt@tis.icnet.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <200907291318.54897.jkrzyszt@tis.icnet.pl>
 Content-Disposition: inline
+In-Reply-To: <200907291318.54897.jkrzyszt@tis.icnet.pl>
 Sender: linux-omap-owner@vger.kernel.org
-To: Mark Brown <broonie@opensource.wolfsonmicro.com>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, alsa-devel@alsa-project.org, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Jarkko Nikula <jhnikula@gmail.com>, Jonathan McDowell <noodles@earth.li>, Peter Ujfalusi <peter.ujfalusi@nokia.com>, Tony Lindgren <tony@atomide.com>, alsa-devel@alsa-project.org, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, e3-hacking@earth.li, Arun KS <arunks@mistralsolutions.com>
 List-Id: linux-serial@vger.kernel.org
 
-Wednesday 29 July 2009 13:18:53 Janusz Krzysztofik napisa=C5=82(a):
-> This patch adds machine support for Amstrad E3 (Delta) videophone to =
-ASoC.
->
-> Created and tested against linux-2.6.31-rc3.
+On Wed, Jul 29, 2009 at 01:18:53PM +0200, Janusz Krzysztofik wrote:
 
-I am aware that I have forgot to correct one checkpatch indicated issue=
-=2E Sorry
-for this.  If there are no other changes to the locking bits suggested,=
- the
-issue will be corrected this way:
+> 2) patch 2/3 form this series: TTY: Add definition of a new line
+>    discipline required by Amstrad E3 (Delta) ASoC driver[2].
 
-Signed-off-by: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
----
-
---- linux-2.6.31-rc3/sound/soc/omap/ams-delta.c.orig    2009-07-30 11:0=
-1:37.000000000 +0200
-+++ linux-2.6.31-rc3/sound/soc/omap/ams-delta.c 2009-07-30 00:52:34.000=
-000000 +0200
-@@ -251,7 +251,7 @@ static struct snd_soc_jack_pin ams_delta
- static struct timer_list cx81801_timer;
- static bool cx81801_cmd_pending;
- static bool ams_delta_muted;
--static spinlock_t ams_delta_lock =3D SPIN_LOCK_UNLOCKED;
-+static DEFINE_SPINLOCK(ams_delta_lock);
-
- static void cx81801_timeout(unsigned long data)
- {
---
-To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+The ASoC parts of this all look OK - what's the status of the TTY patch?
