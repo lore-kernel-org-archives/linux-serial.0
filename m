@@ -1,38 +1,46 @@
-From: Mark Brown <broonie@opensource.wolfsonmicro.com>
-Subject: Re: [RFC] [PATCH 3/3 v2] ASoC: add support for Amstrad
- E3 (Delta) machine
-Date: Fri, 31 Jul 2009 22:38:12 +0100
-Message-ID: <20090731213812.GB6335@sirena.org.uk>
-References: <200907291318.54897.jkrzyszt@tis.icnet.pl>
-	<200907301112.53525.jkrzyszt@tis.icnet.pl>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <alsa-devel-bounces@alsa-project.org>
-Content-Disposition: inline
-In-Reply-To: <200907301112.53525.jkrzyszt@tis.icnet.pl>
-List-Unsubscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
-	<mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
-List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel>
-List-Post: <mailto:alsa-devel@alsa-project.org>
-List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
-List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
-	<mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
-Sender: alsa-devel-bounces@alsa-project.org
-Errors-To: alsa-devel-bounces@alsa-project.org
-To: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
-Cc: alsa-devel@alsa-project.org, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+From: Wolfram Sang <w.sang@pengutronix.de>
+Subject: [PATCH] serial/pcmcia: add ID for Advantech card
+Date: Sat,  1 Aug 2009 15:28:35 +0200
+Message-ID: <1249133315-21142-1-git-send-email-w.sang@pengutronix.de>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:33490 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751575AbZHAN2f (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 1 Aug 2009 09:28:35 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-pcmcia@lists.infradead.org, KMoorman@transy.edu, Wolfram Sang <w.sang@pengutronix.de>, Greg KH <gregkh@suse.de>
 
-On Thu, Jul 30, 2009 at 11:12:52AM +0200, Janusz Krzysztofik wrote:
+Add ID as reported in:
 
-> I am aware that I have forgot to correct one checkpatch indicated issue. Sorry
-> for this.  If there are no other changes to the locking bits suggested, the
-> issue will be corrected this way:
+http://lists.infradead.org/pipermail/linux-pcmcia/2009-May/006127.html
 
-I've applied this (squashed into the original patch), together with your
-other two ASoC patches and the TTY patch.  If you want to change the
-name of the line discipline please send a followup patch before the next
-merge window.
+Reported-by: Kenneth Moorman <KMoorman@transy.edu>
+Signed-off-by: Wolfram Sang <w.sang@pengutronix.de>
+Cc: Greg KH <gregkh@suse.de>
+---
 
-Thanks for your work on this, and on getting the OMAP1 support working.
+As this just adds an ID, it might be nice to have in 2.6.31 already. Greg, could
+you pick it up perhaps? Otherwise I'll queue it up in my pcmcia-l2-branch which
+Dominik hopefully pulls for 2.6.32.
+
+ drivers/serial/serial_cs.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/serial/serial_cs.c b/drivers/serial/serial_cs.c
+index 79c9c5f..6ecb51b 100644
+--- a/drivers/serial/serial_cs.c
++++ b/drivers/serial/serial_cs.c
+@@ -884,6 +884,7 @@ static struct pcmcia_device_id serial_ids[] = {
+ 	PCMCIA_DEVICE_CIS_MANF_CARD(0x0192, 0xa555, "SW_555_SER.cis"),  /* Sierra Aircard 555 CDMA 1xrtt Modem -- pre update */
+ 	PCMCIA_DEVICE_CIS_MANF_CARD(0x013f, 0xa555, "SW_555_SER.cis"),  /* Sierra Aircard 555 CDMA 1xrtt Modem -- post update */
+ 	PCMCIA_DEVICE_CIS_PROD_ID12("MultiTech", "PCMCIA 56K DataFax", 0x842047ee, 0xc2efcf03, "MT5634ZLX.cis"),
++	PCMCIA_DEVICE_CIS_PROD_ID12("ADVANTECH", "COMpad-32/85B-2", 0x96913a85, 0x27ab5437, "COMpad2.cis"),
+ 	PCMCIA_DEVICE_CIS_PROD_ID12("ADVANTECH", "COMpad-32/85B-4", 0x96913a85, 0xcec8f102, "COMpad4.cis"),
+ 	PCMCIA_DEVICE_CIS_PROD_ID123("ADVANTECH", "COMpad-32/85", "1.0", 0x96913a85, 0x8fbe92ae, 0x0877b627, "COMpad2.cis"),
+ 	PCMCIA_DEVICE_CIS_PROD_ID2("RS-COM 2P", 0xad20b156, "RS-COM-2P.cis"),
+-- 
+1.6.3.1
+
