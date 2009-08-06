@@ -1,182 +1,67 @@
 From: akpm@linux-foundation.org
-Subject: [patch 1/5] serial_txx9: use container_of() instead of direct cast
-Date: Thu, 06 Aug 2009 16:08:18 -0700
-Message-ID: <200908062308.n76N8ION009596@imap1.linux-foundation.org>
+Subject: [patch 5/5] serial: add parameter to force skipping the test for the TXEN bug
+Date: Thu, 06 Aug 2009 16:08:22 -0700
+Message-ID: <200908062308.n76N8MPr009780@imap1.linux-foundation.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp1.linux-foundation.org ([140.211.169.13]:41952 "EHLO
+Received: from smtp1.linux-foundation.org ([140.211.169.13]:55768 "EHLO
 	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1756495AbZHFXJI (ORCPT
+	by vger.kernel.org with ESMTP id S1756258AbZHFXJN (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Aug 2009 19:09:08 -0400
+	Thu, 6 Aug 2009 19:09:13 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: alan@lxorguk.ukuu.org.uk
-Cc: linux-serial@vger.kernel.org, akpm@linux-foundation.org, anemo@mba.ocn.ne.jp, ralf@linux-mips.org
+Cc: linux-serial@vger.kernel.org, akpm@linux-foundation.org, cebbert@redhat.com
 
-From: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
+From: Chuck Ebbert <cebbert@redhat.com>
 
-Signed-off-by: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
-Cc: Ralf Baechle <ralf@linux-mips.org>
+Allow users to force skipping the TXEN test at init time. Applies
+to all serial ports. Intended for debugging only.
+
+There is a blacklist for devices where we need to skip the test but the
+list is not complete.  This lets users force skipping the test so we can
+determine if they need to be added to the list.
+
+Some HP machines with weird serial consoles have this problem and there
+may be more.
+
+Signed-off-by: Chuck Ebbert <cebbert@redhat.com>
 Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 ---
 
- drivers/serial/serial_txx9.c |   39 ++++++++++++++++++---------------
- 1 file changed, 22 insertions(+), 17 deletions(-)
+ drivers/serial/8250.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff -puN drivers/serial/serial_txx9.c~serial_txx9-use-container_of-instead-of-direct-cast drivers/serial/serial_txx9.c
---- a/drivers/serial/serial_txx9.c~serial_txx9-use-container_of-instead-of-direct-cast
-+++ a/drivers/serial/serial_txx9.c
-@@ -221,21 +221,26 @@ sio_quot_set(struct uart_txx9_port *up, 
- 		sio_out(up, TXX9_SIBGR, 0xff | TXX9_SIBGR_BCLK_T6);
+diff -puN drivers/serial/8250.c~serial-add-parameter-to-force-skipping-the-test-for-the-txen-bug drivers/serial/8250.c
+--- a/drivers/serial/8250.c~serial-add-parameter-to-force-skipping-the-test-for-the-txen-bug
++++ a/drivers/serial/8250.c
+@@ -64,6 +64,8 @@ static int serial_index(struct uart_port
+ 	return (serial8250_reg.minor - 64) + port->line;
  }
  
-+static struct uart_txx9_port *to_uart_txx9_port(struct uart_port *port)
-+{
-+	return container_of(port, struct uart_txx9_port, port);
-+}
++static unsigned int skip_txen_test; /* force skip of txen test at init time */
 +
- static void serial_txx9_stop_tx(struct uart_port *port)
- {
--	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
-+	struct uart_txx9_port *up = to_uart_txx9_port(port);
- 	sio_mask(up, TXX9_SIDICR, TXX9_SIDICR_TIE);
- }
- 
- static void serial_txx9_start_tx(struct uart_port *port)
- {
--	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
-+	struct uart_txx9_port *up = to_uart_txx9_port(port);
- 	sio_set(up, TXX9_SIDICR, TXX9_SIDICR_TIE);
- }
- 
- static void serial_txx9_stop_rx(struct uart_port *port)
- {
--	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
-+	struct uart_txx9_port *up = to_uart_txx9_port(port);
- 	up->port.read_status_mask &= ~TXX9_SIDISR_RDIS;
- }
- 
-@@ -246,7 +251,7 @@ static void serial_txx9_enable_ms(struct
- 
- static void serial_txx9_initialize(struct uart_port *port)
- {
--	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
-+	struct uart_txx9_port *up = to_uart_txx9_port(port);
- 	unsigned int tmout = 10000;
- 
- 	sio_out(up, TXX9_SIFCR, TXX9_SIFCR_SWRST);
-@@ -414,7 +419,7 @@ static irqreturn_t serial_txx9_interrupt
- 
- static unsigned int serial_txx9_tx_empty(struct uart_port *port)
- {
--	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
-+	struct uart_txx9_port *up = to_uart_txx9_port(port);
- 	unsigned long flags;
- 	unsigned int ret;
- 
-@@ -427,7 +432,7 @@ static unsigned int serial_txx9_tx_empty
- 
- static unsigned int serial_txx9_get_mctrl(struct uart_port *port)
- {
--	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
-+	struct uart_txx9_port *up = to_uart_txx9_port(port);
- 	unsigned int ret;
- 
- 	/* no modem control lines */
-@@ -440,7 +445,7 @@ static unsigned int serial_txx9_get_mctr
- 
- static void serial_txx9_set_mctrl(struct uart_port *port, unsigned int mctrl)
- {
--	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
-+	struct uart_txx9_port *up = to_uart_txx9_port(port);
- 
- 	if (mctrl & TIOCM_RTS)
- 		sio_mask(up, TXX9_SIFLCR, TXX9_SIFLCR_RTSSC);
-@@ -450,7 +455,7 @@ static void serial_txx9_set_mctrl(struct
- 
- static void serial_txx9_break_ctl(struct uart_port *port, int break_state)
- {
--	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
-+	struct uart_txx9_port *up = to_uart_txx9_port(port);
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&up->port.lock, flags);
-@@ -494,7 +499,7 @@ static int serial_txx9_get_poll_char(str
- {
- 	unsigned int ier;
- 	unsigned char c;
--	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
-+	struct uart_txx9_port *up = to_uart_txx9_port(port);
+ /*
+  * Debugging.
+  */
+@@ -2108,7 +2110,7 @@ static int serial8250_startup(struct uar
+ 	   is variable. So, let's just don't test if we receive
+ 	   TX irq. This way, we'll never enable UART_BUG_TXEN.
+ 	 */
+-	if (up->port.flags & UPF_NO_TXEN_TEST)
++	if (skip_txen_test || up->port.flags & UPF_NO_TXEN_TEST)
+ 		goto dont_test_tx_en;
  
  	/*
- 	 *	First save the IER then disable the interrupts
-@@ -520,7 +525,7 @@ static int serial_txx9_get_poll_char(str
- static void serial_txx9_put_poll_char(struct uart_port *port, unsigned char c)
- {
- 	unsigned int ier;
--	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
-+	struct uart_txx9_port *up = to_uart_txx9_port(port);
+@@ -3248,6 +3250,9 @@ MODULE_PARM_DESC(share_irqs, "Share IRQs
+ module_param(nr_uarts, uint, 0644);
+ MODULE_PARM_DESC(nr_uarts, "Maximum number of UARTs supported. (1-" __MODULE_STRING(CONFIG_SERIAL_8250_NR_UARTS) ")");
  
- 	/*
- 	 *	First save the IER then disable the interrupts
-@@ -551,7 +556,7 @@ static void serial_txx9_put_poll_char(st
- 
- static int serial_txx9_startup(struct uart_port *port)
- {
--	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
-+	struct uart_txx9_port *up = to_uart_txx9_port(port);
- 	unsigned long flags;
- 	int retval;
- 
-@@ -596,7 +601,7 @@ static int serial_txx9_startup(struct ua
- 
- static void serial_txx9_shutdown(struct uart_port *port)
- {
--	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
-+	struct uart_txx9_port *up = to_uart_txx9_port(port);
- 	unsigned long flags;
- 
- 	/*
-@@ -636,7 +641,7 @@ static void
- serial_txx9_set_termios(struct uart_port *port, struct ktermios *termios,
- 		       struct ktermios *old)
- {
--	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
-+	struct uart_txx9_port *up = to_uart_txx9_port(port);
- 	unsigned int cval, fcr = 0;
- 	unsigned long flags;
- 	unsigned int baud, quot;
-@@ -814,19 +819,19 @@ static void serial_txx9_release_resource
- 
- static void serial_txx9_release_port(struct uart_port *port)
- {
--	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
-+	struct uart_txx9_port *up = to_uart_txx9_port(port);
- 	serial_txx9_release_resource(up);
- }
- 
- static int serial_txx9_request_port(struct uart_port *port)
- {
--	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
-+	struct uart_txx9_port *up = to_uart_txx9_port(port);
- 	return serial_txx9_request_resource(up);
- }
- 
- static void serial_txx9_config_port(struct uart_port *port, int uflags)
- {
--	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
-+	struct uart_txx9_port *up = to_uart_txx9_port(port);
- 	int ret;
- 
- 	/*
-@@ -897,7 +902,7 @@ static void __init serial_txx9_register_
- 
- static void serial_txx9_console_putchar(struct uart_port *port, int ch)
- {
--	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
-+	struct uart_txx9_port *up = to_uart_txx9_port(port);
- 
- 	wait_for_xmitr(up);
- 	sio_out(up, TXX9_SITFIFO, ch);
++module_param(skip_txen_test, uint, 0644);
++MODULE_PARM_DESC(skip_txen_test, "Skip checking for the TXEN bug at init time");
++
+ #ifdef CONFIG_SERIAL_8250_RSA
+ module_param_array(probe_rsa, ulong, &probe_rsa_count, 0444);
+ MODULE_PARM_DESC(probe_rsa, "Probe I/O ports for RSA");
 _
