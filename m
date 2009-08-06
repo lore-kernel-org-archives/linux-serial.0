@@ -1,48 +1,63 @@
-From: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
-Subject: [PATCH 2/2] ASoC: AMS_DELTA: Use updated line discipline name
-Date: Thu, 6 Aug 2009 13:08:51 +0200
-Message-ID: <200908061308.52693.jkrzyszt@tis.icnet.pl>
-Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+From: akpm@linux-foundation.org
+Subject: [patch 4/5] serial167: fix read buffer overflow
+Date: Thu, 06 Aug 2009 16:08:21 -0700
+Message-ID: <200908062308.n76N8LOV009723@imap1.linux-foundation.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from d1.icnet.pl ([212.160.220.21]:42621 "EHLO d1.icnet.pl"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751867AbZHFLJV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Aug 2009 07:09:21 -0400
-Content-Disposition: inline
+Received: from smtp1.linux-foundation.org ([140.211.169.13]:47593 "EHLO
+	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1756879AbZHFXIz (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 6 Aug 2009 19:08:55 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Mark Brown <broonie@opensource.wolfsonmicro.com>
-Cc: "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, e3-hacking@earth.li, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: alan@lxorguk.ukuu.org.uk
+Cc: linux-serial@vger.kernel.org, akpm@linux-foundation.org, roel.kluin@gmail.com, jirislaby@gmail.com
 
-This patch updates the tty line discipline name used in the Amstrad Delta
-machine driver.
+From: Roel Kluin <roel.kluin@gmail.com>
 
-Signed-off-by: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
+Check whether index is within bounds before grabbing the element.
 
+Also, since NR_PORTS is defined ARRAY_SIZE(cy_port), cy_port[NR_PORTS] is
+out of bounds as well.
+
+[akpm@linux-foundation.org: cleanup, remove (long) casts]
+Signed-off-by: Roel Kluin <roel.kluin@gmail.com>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Jiri Slaby <jirislaby@gmail.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 ---
---- linux-2.6.31-rc5/sound/soc/omap/ams-delta.c.orig	2009-08-05 21:44:35.000000000 +0200
-+++ linux-2.6.31-rc5/sound/soc/omap/ams-delta.c	2009-08-05 23:30:53.000000000 +0200
-@@ -519,7 +519,7 @@ static int ams_delta_cx20442_init(struct
+
+ drivers/char/serial167.c |    7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
+
+diff -puN drivers/char/serial167.c~serial167-fix-read-buffer-overflow drivers/char/serial167.c
+--- a/drivers/char/serial167.c~serial167-fix-read-buffer-overflow
++++ a/drivers/char/serial167.c
+@@ -221,8 +221,7 @@ static inline int serial_paranoia_check(
+ 		return 1;
  	}
  
- 	/* Register optional line discipline for over the modem control */
--	ret = tty_register_ldisc(N_AMSDELTA, &cx81801_ops);
-+	ret = tty_register_ldisc(N_V253, &cx81801_ops);
- 	if (ret) {
- 		dev_warn(card->dev,
- 				"Failed to register line discipline, "
-@@ -644,9 +644,9 @@ static void __exit ams_delta_module_exit
- 		}
+-	if ((long)info < (long)(&cy_port[0])
+-	    || (long)(&cy_port[NR_PORTS]) < (long)info) {
++	if (info < &cy_port[0] || info >= &cy_port[NR_PORTS]) {
+ 		printk("Warning: cyclades_port out of range for (%s) in %s\n",
+ 				name, routine);
+ 		return 1;
+@@ -521,15 +520,13 @@ static irqreturn_t cd2401_tx_interrupt(i
+ 		panic("TxInt on debug port!!!");
  	}
- 
--	if (tty_unregister_ldisc(N_AMSDELTA) != 0)
-+	if (tty_unregister_ldisc(N_V253) != 0)
- 		dev_warn(&ams_delta_audio_platform_device->dev,
--			"failed to unregister AMSDELTA line discipline\n");
-+			"failed to unregister V253 line discipline\n");
- 
- 	snd_soc_jack_free_gpios(&ams_delta_hook_switch,
- 			ARRAY_SIZE(ams_delta_hook_switch_gpios),
+ #endif
+-
+-	info = &cy_port[channel];
+-
+ 	/* validate the port number (as configured and open) */
+ 	if ((channel < 0) || (NR_PORTS <= channel)) {
+ 		base_addr[CyIER] &= ~(CyTxMpty | CyTxRdy);
+ 		base_addr[CyTEOIR] = CyNOTRANS;
+ 		return IRQ_HANDLED;
+ 	}
++	info = &cy_port[channel];
+ 	info->last_active = jiffies;
+ 	if (info->tty == 0) {
+ 		base_addr[CyIER] &= ~(CyTxMpty | CyTxRdy);
+_
