@@ -1,37 +1,39 @@
 From: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
-Subject: [PATCH 0/2] Give the N_AMSDELTA line discipline more generic name
-Date: Thu, 6 Aug 2009 13:06:26 +0200
-Message-ID: <200908061306.27639.jkrzyszt@tis.icnet.pl>
+Subject: [PATCH 1/2] TTY: Rename N_AMSDELTA line discipline to
+	N_V253
+Date: Thu, 6 Aug 2009 13:07:32 +0200
+Message-ID: <200908061307.33772.jkrzyszt@tis.icnet.pl>
 Mime-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from d1.icnet.pl ([212.160.220.21]:41978 "EHLO d1.icnet.pl"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751521AbZHFLG7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Aug 2009 07:06:59 -0400
+Return-path: <alsa-devel-bounces@alsa-project.org>
 Content-Disposition: inline
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+List-Unsubscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
+	<mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
+	<mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Sender: alsa-devel-bounces@alsa-project.org
+Errors-To: alsa-devel-bounces@alsa-project.org
 To: Mark Brown <broonie@opensource.wolfsonmicro.com>
-Cc: "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, e3-hacking@earth.li, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>, e3-hacking@earth.li, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+List-Id: linux-serial@vger.kernel.org
 
-This series of patches renames the N_AMSDELTA line discipline, used by the 
-Amstrad Delta ASoC machine driver and the CX20442 ASoC codec driver for 
-controlling the CX20442 voice codec over the CX81801 voice modem, giving it a 
-more generic name: N_V253. The name has been chosen after the voice modem 
-standard codename V.253.
+The patch changes the line discipline name registered in include/linux/tty.h
 
-I think that even if the code of the line discipline is currently implemented 
-inside those two specific drivers, the idea, if not the code, could be reused 
-with other similar hardware configurations, if necessary.
+Signed-off-by: Janusz Krzysztofik
 
-As the line discipline is conceived to be registered from a machine driver, 
-there should be no conflicts, even if used by several different drivers that 
-happen to be be built-in side-by-side.
-
-[PATCH 1/2] TTY: Rename N_AMSDELTA line discipline to N_V253
-[PATCH 2/2] ASoC: AMS_DELTA: Use updated line discipline name
-
-Signed-off-by: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
+---
+--- linux-2.6.31-rc5/include/linux/tty.h.orig	2009-08-05 21:44:33.000000000 +0200
++++ linux-2.6.31-rc5/include/linux/tty.h	2009-08-05 22:54:12.000000000 +0200
+@@ -47,7 +47,7 @@
+ #define N_SLCAN		17	/* Serial / USB serial CAN Adaptors */
+ #define N_PPS		18	/* Pulse per Second */
+ 
+-#define N_AMSDELTA	19	/* codec control over modem, board specific */
++#define N_V253		19	/* Codec control over voice modem */
+ 
+ /*
+  * This character is the same as _POSIX_VDISABLE: it cannot be used as
