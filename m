@@ -1,125 +1,83 @@
-From: =?ISO-8859-1?Q?Richard_R=F6jfors?=
-	<richard.rojfors@mocean-labs.com>
-Subject: [PATCH] timbuart: Support for beeing probed more than once
-Date: Wed, 19 Aug 2009 15:45:42 +0200
-Message-ID: <4A8C0206.8040905@mocean-labs.com>
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: Persistent problem with wait_until_sent timeout parameter type
+ mismatch
+Date: Fri, 21 Aug 2009 20:03:54 +0000 (UTC)
+Message-ID: <h6muja$6ol$1@ger.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from av7-1-sn3.vrr.skanova.net ([81.228.9.181]:52151 "EHLO
-	av7-1-sn3.vrr.skanova.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752180AbZHSOIU (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 Aug 2009 10:08:20 -0400
-Received: from smtp3-1-sn3.vrr.skanova.net (smtp3-1-sn3.vrr.skanova.net [81.228.9.101])
-	by av7-1-sn3.vrr.skanova.net (Postfix) with ESMTP id 8F9AF383E4
-	for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2009 15:12:24 +0200 (CEST)
-Received: from [10.0.1.10] (213-65-251-119-no35.business.telia.com [213.65.251.119])
-	by smtp3-1-sn3.vrr.skanova.net (Postfix) with ESMTP id 1D02937E60
-	for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2009 15:45:42 +0200 (CEST)
+Received: from lo.gmane.org ([80.91.229.12]:53137 "EHLO lo.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932200AbZHUUEZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 21 Aug 2009 16:04:25 -0400
+Received: from list by lo.gmane.org with local (Exim 4.50)
+	id 1MeaLX-00028x-RR
+	for linux-serial@vger.kernel.org; Fri, 21 Aug 2009 22:04:23 +0200
+Received: from mn-69-34-67-62.sta.embarqhsd.net ([69.34.67.62])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Fri, 21 Aug 2009 22:04:23 +0200
+Received: from grant.b.edwards by mn-69-34-67-62.sta.embarqhsd.net with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Fri, 21 Aug 2009 22:04:23 +0200
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-There was a problem in the current implementation where a global static
-uart_driver struct was used. The same struct was reused every time the
-driver got probed. Since the struct has a state within the serial core
-it can not be reused.
+I seem to have run into a problem which people have been
+pointing out for years, but never gets fixed.
 
-A uart_driver struct is added to the timbuart_port struct which is
-allocated per platform device.
+In tty_driver.h, the low-level driver routine wait_until_set()
+function takes an "int" as a timeout value:
 
-The probe and remove functions are declared __devinit and __devexit.
+   192	struct tty_operations {
+   193		int  (*open)(struct tty_struct * tty, struct file * filp);
+[...]
+   214		void (*wait_until_sent)(struct tty_struct *tty, int timeout);
+[...]
+   228	};
 
-Signed-off-by: Richard R=F6jfors <richard.rojfors.ext@mocean-labs.com>
----
-diff --git a/drivers/serial/timbuart.c b/drivers/serial/timbuart.c
-index 063a313..75a741b 100644
---- a/drivers/serial/timbuart.c
-+++ b/drivers/serial/timbuart.c
-@@ -31,6 +31,7 @@
+But, in tty_ioclt.c in the tty_wait_unti_sent() function, the
+timeout is a "long":
 
-  struct timbuart_port {
-  	struct uart_port	port;
-+	struct uart_driver	uart_driver;
-  	struct tasklet_struct	tasklet;
-  	int			usedma;
-  	u32			last_ier;
-@@ -410,7 +411,7 @@ static struct uart_ops timbuart_ops =3D {
-  	.verify_port =3D timbuart_verify_port
-  };
+    98	void tty_wait_until_sent(struct tty_struct *tty, long timeout)
+    99	{
+   100	#ifdef TTY_DEBUG_WAIT_UNTIL_SENT
+   101		char buf[64];
+   102	
+   103		printk(KERN_DEBUG "%s wait until sent...\n", tty_name(tty, buf));
+   104	#endif
+   105		if (!timeout)
+   106			timeout = MAX_SCHEDULE_TIMEOUT;
+   107		if (wait_event_interruptible_timeout(tty->write_wait,
+   108				!tty_chars_in_buffer(tty), timeout) >= 0) {
+   109			if (tty->ops->wait_until_sent)
+   110				tty->ops->wait_until_sent(tty, timeout);
+   111		}
+   112	}
+   113	EXPORT_SYMBOL(tty_wait_until_sent);
 
--static struct uart_driver timbuart_driver =3D {
-+static const __devinitconst struct uart_driver timbuart_driver_templat=
-e =3D {
-  	.owner =3D THIS_MODULE,
-  	.driver_name =3D "timberdale_uart",
-  	.dev_name =3D "ttyTU",
-@@ -419,7 +420,7 @@ static struct uart_driver timbuart_driver =3D {
-  	.nr =3D 1
-  };
+This is fine on 32-bit systems, where "int" and "long" are
+equivalent, but it results in breakage on 64-bit systems.  At
+line 106, timeout is set to MAX_SCHEDULE_TIMEOUT which is 
+7fffffffffffffff.  When that value is passed to the low-level
+driver routine at line 110, it gets truncated to ffffffff --
+which is -1.  That means that waiting until (jiffies+timeout)
+returns immediately when the caller's intent was to wait as
+long as possible.
 
--static int timbuart_probe(struct platform_device *dev)
-+static int __devinit timbuart_probe(struct platform_device *dev)
-  {
-  	int err;
-  	struct timbuart_port *uart;
-@@ -433,6 +434,8 @@ static int timbuart_probe(struct platform_device *d=
-ev)
-  		goto err_mem;
-  	}
+People have been pointing out that type mismatch for many years
+now.  What's the justification for the low-level driver routine
+parameter being "int" instead of "long"?
 
-+	uart->uart_driver =3D timbuart_driver_template;
-+
-  	uart->usedma =3D 0;
+Since this doesn't seem to be something that's going to be
+fixed, I guess a work-around for those of us who maintain
+serial drivers is to treat a timeout of -1 as a special value
+that means "forever"?  Is that the intent?
 
-  	uart->port.uartclk =3D 3250000 * 16;
-@@ -461,11 +464,11 @@ static int timbuart_probe(struct platform_device =
-*dev)
+-- 
+Grant Edwards                   grante             Yow! I feel like a wet
+                                  at               parking meter on Darvon!
+                               visi.com            
 
-  	tasklet_init(&uart->tasklet, timbuart_tasklet, (unsigned long)uart);
-
--	err =3D uart_register_driver(&timbuart_driver);
-+	err =3D uart_register_driver(&uart->uart_driver);
-  	if (err)
-  		goto err_register;
-
--	err =3D uart_add_one_port(&timbuart_driver, &uart->port);
-+	err =3D uart_add_one_port(&uart->uart_driver, &uart->port);
-  	if (err)
-  		goto err_add_port;
-
-@@ -474,7 +477,7 @@ static int timbuart_probe(struct platform_device *d=
-ev)
-  	return 0;
-
-  err_add_port:
--	uart_unregister_driver(&timbuart_driver);
-+	uart_unregister_driver(&uart->uart_driver);
-  err_register:
-  	kfree(uart);
-  err_mem:
-@@ -484,13 +487,13 @@ err_mem:
-  	return err;
-  }
-
--static int timbuart_remove(struct platform_device *dev)
-+static int __devexit timbuart_remove(struct platform_device *dev)
-  {
-  	struct timbuart_port *uart =3D platform_get_drvdata(dev);
-
-  	tasklet_kill(&uart->tasklet);
--	uart_remove_one_port(&timbuart_driver, &uart->port);
--	uart_unregister_driver(&timbuart_driver);
-+	uart_remove_one_port(&uart->uart_driver, &uart->port);
-+	uart_unregister_driver(&uart->uart_driver);
-  	kfree(uart);
-
-  	return 0;
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
