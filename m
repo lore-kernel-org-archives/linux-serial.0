@@ -1,80 +1,51 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [RFC][PATCH]: Adding support for omap-serail driver
-Date: Fri, 28 Aug 2009 15:05:45 +0100
-Message-ID: <20090828150545.5cf9dae5@lxorguk.ukuu.org.uk>
-References: <ce9ab5790908280649n77765dedm9161316a181b6a07@mail.gmail.com>
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: Re: Persistent problem with wait_until_sent timeout parameter type
+ mismatch
+Date: Fri, 28 Aug 2009 14:33:48 +0000 (UTC)
+Message-ID: <h78psc$9be$1@ger.gmane.org>
+References: <h6muja$6ol$1@ger.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1751229AbZH1OEh@vger.kernel.org>
-In-Reply-To: <ce9ab5790908280649n77765dedm9161316a181b6a07@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: vimal singh <vimal.newwork@gmail.com>
-Cc: linux-omap@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lo.gmane.org ([80.91.229.12]:45499 "EHLO lo.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751202AbZH1OeM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 28 Aug 2009 10:34:12 -0400
+Received: from list by lo.gmane.org with local (Exim 4.50)
+	id 1Mh2Wp-0001mr-Dg
+	for linux-serial@vger.kernel.org; Fri, 28 Aug 2009 16:34:11 +0200
+Received: from mn-69-34-67-62.sta.embarqhsd.net ([69.34.67.62])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Fri, 28 Aug 2009 16:34:11 +0200
+Received: from grant.b.edwards by mn-69-34-67-62.sta.embarqhsd.net with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Fri, 28 Aug 2009 16:34:11 +0200
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-> +#define UART_BASE(uart_no)		(uart_no == UART1) ? OMAP_UART1_BASE :\
-> +					(uart_no == UART2) ? OMAP_UART2_BASE :\
-> +					 OMAP_UART3_BASE
+On 2009-08-21, Grant Edwards <grant.b.edwards@gmail.com> wrote:
 
-Would be cleaner if this was simply an array (and probably faster)
+> I seem to have run into a problem which people have been
+> pointing out for years, but never gets fixed.
+>
+> In tty_driver.h, the low-level driver routine wait_until_set()
+> function takes an "int" as a timeout value:
+[...]
+> But, in tty_ioclt.c in the tty_wait_unti_sent() function, the
+> timeout is a "long":
+[...]
+> This is fine on 32-bit systems, where "int" and "long" are
+> equivalent, but it results in breakage on 64-bit systems.
 
-> +
-> +#define UART_MODULE_BASE(uart_no)	(UART1 == uart_no ? \
-> +						IO_ADDRESS(OMAP_UART1_BASE) :\
-> +					(UART2 == uart_no ? \
-> +						IO_ADDRESS(OMAP_UART2_BASE) :\
-> +						IO_ADDRESS(OMAP_UART3_BASE)))
+Is this not the correct forum in which to report bugs in the
+tty layer code?
 
-Ditto
+-- 
+Grant Edwards                   grante             Yow! How many retured
+                                  at               bricklayers from FLORIDA
+                               visi.com            are out purchasing PENCIL
+                                                   SHARPENERS right NOW??
 
-> +extern unsigned int fcr[MAX_UARTS];
-> +extern char *saved_command_line;
-
-We really don't wang globals floating around with names like fcr - and
-why is saved command line needed when we have module option parsing
-functions ?
-
-
-> +unsigned int fcr[MAX_UARTS];
-> +unsigned long up_activity;
-
-Not acceptable as global names - too big a risk of clashes
-
-
-
-> +static int serial_omap_startup(struct uart_port *port)
-> +{
-> +	struct uart_omap_port *up = (struct uart_omap_port *)port;
-> +	unsigned long flags;
-> +	int irq_flags = 0;
-> +	int retval;
-> +
-> +	/* Zoom2 has GPIO_102 connected to Serial device:
-> +	 * Active High
-> +	 */
-> +	if (up->port.flags & UPF_IOREMAP)
-> +		irq_flags |= IRQF_TRIGGER_HIGH;
-
-Don't hijack flags here - especially as a patch is pending that adds a
-separate field for IRQ flags to clean that up properly. Build on top of
-that fix instead
-
-
-
-> +	if (up->port.flags & UPF_FOURPORT) {
-> +		unsigned int icp;
-> +		/*
-> +		 * Enable interrupts on the AST Fourport board
-> +		 */
-> +		icp = (up->port.iobase & 0xfe0) | 0x01f;
-> +		outb_p(0x80, icp);
-> +		(void) inb_p(icp);
-> +	}
-
-Can you really have an AST 4port built into an OMAP - I think all the
-UPF_FOURPORT code can go
-
-
-
-Looks basically sound otherwise
