@@ -1,49 +1,20 @@
-From: Jiri Slaby <jirislaby@gmail.com>
-Subject: [PATCH 2/2] USB: serial/mct_u232, fix tty refcnt
-Date: Sun,  6 Sep 2009 23:10:10 +0200
-Message-ID: <1252271410-26080-2-git-send-email-jirislaby@gmail.com>
-References: <1252271410-26080-1-git-send-email-jirislaby@gmail.com>
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1758724AbZIFVKN@vger.kernel.org>
-In-Reply-To: <1252271410-26080-1-git-send-email-jirislaby@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@suse.de
-Cc: akpm@linux-foundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@gmail.com>
+From: "Edwin Lopez" <aidan.camilleri@orange.fr>
+Subject: Take her longer, harder and deeper!
+Date: Mon, 7 Sep 2009 20:07:32 -0600
+Message-ID: <20090907200732.7050409@orange.fr>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from 24-182-200-243.dhcp.ftwo.tx.charter.com ([24.182.200.243]:1711
+	"HELO 24-182-200-243.dhcp.ftwo.tx.charter.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1751257AbZIHBNt (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 7 Sep 2009 21:13:49 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Stanse found a tty refcnt leak in read_int_callback. In fact
-it's handled wrong altogether. tty_port_tty_get can return NULL
-and it's not checked in that manner.
+Reload your pant's hidden weapon. http://go.themwybziy.com/
 
-Fix that by checking the tty_port_tty_get retval and put tty kref
-properly.
 
-http://stanse.fi.muni.cz/
-
-Signed-off-by: Jiri Slaby <jirislaby@gmail.com>
----
- drivers/usb/serial/mct_u232.c |    9 ++++++---
- 1 files changed, 6 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/usb/serial/mct_u232.c b/drivers/usb/serial/mct_u232.c
-index d501aef..ad4998b 100644
---- a/drivers/usb/serial/mct_u232.c
-+++ b/drivers/usb/serial/mct_u232.c
-@@ -566,10 +566,13 @@ static void mct_u232_read_int_callback(struct urb *urb)
- 	 * Work-a-round: handle the 'usual' bulk-in pipe here
- 	 */
- 	if (urb->transfer_buffer_length > 2) {
--		tty = tty_port_tty_get(&port->port);
- 		if (urb->actual_length) {
--			tty_insert_flip_string(tty, data, urb->actual_length);
--			tty_flip_buffer_push(tty);
-+			tty = tty_port_tty_get(&port->port);
-+			if (tty) {
-+				tty_insert_flip_string(tty, data,
-+						urb->actual_length);
-+				tty_flip_buffer_push(tty);
-+			}
- 			tty_kref_put(tty);
- 		}
- 		goto exit;
--- 
-1.6.4.2
