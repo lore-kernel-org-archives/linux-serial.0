@@ -1,67 +1,57 @@
-From: Peter Korsgaard <jacmet@sunsite.dk>
-Subject: [PATCH-RESEND] uartlite: support shared interrupt lines
-Date: Wed,  9 Sep 2009 16:54:04 +0200
-Message-ID: <1252508044-20355-1-git-send-email-jacmet@sunsite.dk>
+From: Dick Hollenbeck <dick@softplc.com>
+Subject: remapping advice sought
+Date: Tue, 15 Sep 2009 16:35:44 -0500
+Message-ID: <4AB008B0.1020402@softplc.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-yw0-f175.google.com ([209.85.211.175]:59383 "EHLO
-	mail-yw0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752542AbZIIOyX (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 9 Sep 2009 10:54:23 -0400
-Received: by ywh5 with SMTP id 5so5942856ywh.4
-        for <linux-serial@vger.kernel.org>; Wed, 09 Sep 2009 07:54:26 -0700 (PDT)
+Received: from kcmailp02.birch.net ([216.212.0.97]:51188 "EHLO mx01.birch.net"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1758680AbZIOVmW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 15 Sep 2009 17:42:22 -0400
+Received: from unknown (HELO [192.100.100.10]) ([65.16.135.194])
+          (envelope-sender <dick@softplc.com>)
+          by mx01.birch.net (qmail-ldap-1.03) with SMTP
+          for <linux-serial@vger.kernel.org>; 15 Sep 2009 21:35:45 -0000
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: alan@lxorguk.ukuu.org.uk, gregkh@suse.de, linux-serial@vger.kernel.org
-Cc: Peter Korsgaard <jacmet@sunsite.dk>
+To: linux-serial@vger.kernel.org
 
-Adapt isr to work with shared interrupt lines.
 
-Signed-off-by: Peter Korsgaard <jacmet@sunsite.dk>
----
- drivers/serial/uartlite.c |   15 ++++++++++-----
- 1 files changed, 10 insertions(+), 5 deletions(-)
+I made an ARM board with 6 serial ports.  One port comes out on 
+/dev/ttyAM0 and 5 others come out on /dev/ttyS0 through /dev/ttyS4.
 
-diff --git a/drivers/serial/uartlite.c b/drivers/serial/uartlite.c
-index 3317148..beb6632 100644
---- a/drivers/serial/uartlite.c
-+++ b/drivers/serial/uartlite.c
-@@ -154,17 +154,22 @@ static int ulite_transmit(struct uart_port *port, int stat)
- static irqreturn_t ulite_isr(int irq, void *dev_id)
- {
- 	struct uart_port *port = dev_id;
--	int busy;
-+	int busy, n = 0;
- 
- 	do {
- 		int stat = readb(port->membase + ULITE_STATUS);
- 		busy  = ulite_receive(port, stat);
- 		busy |= ulite_transmit(port, stat);
-+		n++;
- 	} while (busy);
- 
--	tty_flip_buffer_push(port->info->port.tty);
--
--	return IRQ_HANDLED;
-+	/* work done? */
-+	if (n > 1) {
-+		tty_flip_buffer_push(port->info->port.tty);
-+		return IRQ_HANDLED;
-+	} else {
-+		return IRQ_NONE;
-+	}
- }
- 
- static unsigned int ulite_tx_empty(struct uart_port *port)
-@@ -221,7 +226,7 @@ static int ulite_startup(struct uart_port *port)
- 	int ret;
- 
- 	ret = request_irq(port->irq, ulite_isr,
--			  IRQF_DISABLED | IRQF_SAMPLE_RANDOM, "uartlite", port);
-+			  IRQF_SHARED | IRQF_SAMPLE_RANDOM, "uartlite", port);
- 	if (ret)
- 		return ret;
- 
--- 
-1.6.3.3
+The ttyAM0 is implemented by an ARM CPU specific driver, while the ttyS* 
+ports are implemented in an FPGA and use the 8250.c driver in a 
+multi-port fashion with a shared IRQ.
+
+Our userspace code likes to think of serial ports being at /dev/ttyS0 
+through /dev/ttyS5 but this naming convention has not yet been achieved.
+
+
+(1) Are there any good reason why not to do this:
+
+(A) change my copy of the kernel code so that 8250.c exposes its serial 
+ports at some other name than "ttyS".
+
+(B) use symlinks in /dev/ to map ttyS0 through ttyS5 onto ttyAM0 
+followed by the 8250 FPGA ports.
+
+
+
+(2) How hard and fast is the relationship between the name used in the 
+driver 8250.c, to the name in the /dev/ directory? Can they be different 
+without changing 8250.c source?
+
+
+
+(3) Is there a better way?
+
+
+
+Thanks,
+
+Dick
+
 
