@@ -1,57 +1,39 @@
-From: Dick Hollenbeck <dick@softplc.com>
-Subject: remapping advice sought
-Date: Tue, 15 Sep 2009 16:35:44 -0500
-Message-ID: <4AB008B0.1020402@softplc.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Grant Edwards <grante@visi.com>
+Subject: Re: Persistent problem with wait_until_sent timeout parameter type mismatch
+Date: Wed, 16 Sep 2009 05:57:02 +0000 (UTC)
+Message-ID: <h8pune$7ak$1@ger.gmane.org>
+References: <h6muja$6ol$1@ger.gmane.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kcmailp02.birch.net ([216.212.0.97]:51188 "EHLO mx01.birch.net"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1758680AbZIOVmW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 15 Sep 2009 17:42:22 -0400
-Received: from unknown (HELO [192.100.100.10]) ([65.16.135.194])
-          (envelope-sender <dick@softplc.com>)
-          by mx01.birch.net (qmail-ldap-1.03) with SMTP
-          for <linux-serial@vger.kernel.org>; 15 Sep 2009 21:35:45 -0000
+Received: from lo.gmane.org ([80.91.229.12]:40798 "EHLO lo.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755445AbZIPF5Z (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Sep 2009 01:57:25 -0400
+Received: from list by lo.gmane.org with local (Exim 4.50)
+	id 1MnnW8-0000qI-Kb
+	for linux-serial@vger.kernel.org; Wed, 16 Sep 2009 07:57:24 +0200
+Received: from 67-220-17-45.usiwireless.com ([67.220.17.45])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Wed, 16 Sep 2009 07:57:24 +0200
+Received: from grante by 67-220-17-45.usiwireless.com with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Wed, 16 Sep 2009 07:57:24 +0200
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
+On 2009-08-21, Grant Edwards <grant.b.edwards@gmail.com> wrote:
 
-I made an ARM board with 6 serial ports.  One port comes out on 
-/dev/ttyAM0 and 5 others come out on /dev/ttyS0 through /dev/ttyS4.
+> I seem to have run into a problem which people have been
+> pointing out for years, but never gets fixed.
+>
+> In tty_driver.h, the low-level driver routine wait_until_set()
+> function takes an "int" as a timeout value:
 
-The ttyAM0 is implemented by an ARM CPU specific driver, while the ttyS* 
-ports are implemented in an FPGA and use the 8250.c driver in a 
-multi-port fashion with a shared IRQ.
+Since this apparently isn't the place to discuss problems with
+the tty layer, can somebody suggest the proper forum?
 
-Our userspace code likes to think of serial ports being at /dev/ttyS0 
-through /dev/ttyS5 but this naming convention has not yet been achieved.
-
-
-(1) Are there any good reason why not to do this:
-
-(A) change my copy of the kernel code so that 8250.c exposes its serial 
-ports at some other name than "ttyS".
-
-(B) use symlinks in /dev/ to map ttyS0 through ttyS5 onto ttyAM0 
-followed by the 8250 FPGA ports.
-
-
-
-(2) How hard and fast is the relationship between the name used in the 
-driver 8250.c, to the name in the /dev/ directory? Can they be different 
-without changing 8250.c source?
-
-
-
-(3) Is there a better way?
-
-
-
-Thanks,
-
-Dick
+-- 
+Grant
 
 
