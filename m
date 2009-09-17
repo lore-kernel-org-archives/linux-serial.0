@@ -1,45 +1,40 @@
 From: Mike Frysinger <vapier@gentoo.org>
-Subject: [PATCH 2/4] serial: bfin_5xx: need to disable DMA TX interrupt too
-Date: Thu, 17 Sep 2009 17:52:26 -0400
-Message-ID: <1253224348-6996-2-git-send-email-vapier@gentoo.org>
+Subject: [PATCH 3/4] serial: bfin_5xx: kgdboc should accept gdb break only when it is active
+Date: Thu, 17 Sep 2009 17:52:27 -0400
+Message-ID: <1253224348-6996-3-git-send-email-vapier@gentoo.org>
 References: <1253224348-6996-1-git-send-email-vapier@gentoo.org>
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1752266AbZIQVxA@vger.kernel.org>
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1751894AbZIQVwe@vger.kernel.org>
 In-Reply-To: <1253224348-6996-1-git-send-email-vapier@gentoo.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-kernel@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org, Graf Yang <graf.yang@analog.com>
+Cc: linux-kernel@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Graf Yang <graf.yang@analog.com>
+From: Sonic Zhang <sonic.zhang@analog.com>
 
-If we don't disable the DMA TX channel, an inopportune timeout will
-trigger the interrupt handler and may cause a dead lock with the spin_lock.
+If we always check for gdb breaks even when it isn't active, we get false
+positives on normal code and the system panics.
 
-Signed-off-by: Graf Yang <graf.yang@analog.com>
+URL: http://blackfin.uclinux.org/gf/tracker/5277
+Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
 Signed-off-by: Mike Frysinger <vapier@gentoo.org>
 ---
- drivers/serial/bfin_5xx.c |    2 ++
- 1 files changed, 2 insertions(+), 0 deletions(-)
+ drivers/serial/bfin_5xx.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
 diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
-index 1b7fd62..663fec1 100644
+index 663fec1..67fa057 100644
 --- a/drivers/serial/bfin_5xx.c
 +++ b/drivers/serial/bfin_5xx.c
-@@ -484,6 +484,7 @@ void bfin_serial_rx_dma_timeout(struct bfin_serial_port *uart)
- {
- 	int x_pos, pos;
+@@ -233,7 +233,8 @@ static void bfin_serial_rx_chars(struct bfin_serial_port *uart)
  
-+	dma_disable_irq(uart->tx_dma_channel);
- 	dma_disable_irq(uart->rx_dma_channel);
- 	spin_lock_bh(&uart->port.lock);
- 
-@@ -517,6 +518,7 @@ void bfin_serial_rx_dma_timeout(struct bfin_serial_port *uart)
- 	}
- 
- 	spin_unlock_bh(&uart->port.lock);
-+	dma_enable_irq(uart->tx_dma_channel);
- 	dma_enable_irq(uart->rx_dma_channel);
- 
- 	mod_timer(&(uart->rx_dma_timer), jiffies + DMA_RX_FLUSH_JIFFIES);
+ #if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
+ 	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
+-	if (kgdb_connected && kgdboc_port_line == uart->port.line)
++	if (kgdb_connected && kgdboc_port_line == uart->port.line
++		&& kgdboc_break_enabled)
+ 		if (ch == 0x3) {/* Ctrl + C */
+ 			kgdb_breakpoint();
+ 			return;
 -- 
 1.6.5.rc1
