@@ -1,69 +1,36 @@
 From: Mike Frysinger <vapier@gentoo.org>
-Subject: [PATCH 1/4] serial: bfin_5xx: remove useless gpio handling with hard flow control
-Date: Thu, 17 Sep 2009 17:52:25 -0400
-Message-ID: <1253224348-6996-1-git-send-email-vapier@gentoo.org>
+Subject: [PATCH 4/4] serial: bfin_5xx: pull in linux/io.h for ioremap prototypes
+Date: Thu, 17 Sep 2009 17:52:28 -0400
+Message-ID: <1253224348-6996-4-git-send-email-vapier@gentoo.org>
+References: <1253224348-6996-1-git-send-email-vapier@gentoo.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.gentoo.org ([140.211.166.183]:49466 "EHLO smtp.gentoo.org"
+Received: from smtp.gentoo.org ([140.211.166.183]:49487 "EHLO smtp.gentoo.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751402AbZIQVwZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Sep 2009 17:52:25 -0400
+	id S1751636AbZIQVw2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 17 Sep 2009 17:52:28 -0400
+In-Reply-To: <1253224348-6996-1-git-send-email-vapier@gentoo.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-kernel@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
+Cc: linux-kernel@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org
 
-From: Sonic Zhang <sonic.zhang@analog.com>
-
-For UARTs that have dedicated hardware flow control support, there will be
-no gpios to request/free as they are part of the normal peripheral pins.
-
-Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
-Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+git-svn-id: svn://localhost/svn/linux-kernel/trunk@7305 526b6c2d-f592-4532-a319-5dd88ccb003d
 ---
- drivers/serial/bfin_5xx.c |   16 +---------------
- 1 files changed, 1 insertions(+), 15 deletions(-)
+ drivers/serial/bfin_5xx.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
 diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
-index b4a7650..1b7fd62 100644
+index 67fa057..c969a68 100644
 --- a/drivers/serial/bfin_5xx.c
 +++ b/drivers/serial/bfin_5xx.c
-@@ -742,15 +742,6 @@ static int bfin_serial_startup(struct uart_port *port)
- 			Status interrupt.\n");
- 	}
+@@ -14,6 +14,7 @@
  
--	if (uart->cts_pin >= 0) {
--		gpio_request(uart->cts_pin, DRIVER_NAME);
--		gpio_direction_output(uart->cts_pin, 1);
--	}
--	if (uart->rts_pin >= 0) {
--		gpio_request(uart->rts_pin, DRIVER_NAME);
--		gpio_direction_output(uart->rts_pin, 0);
--	}
--
- 	/* CTS RTS PINs are negative assertive. */
- 	UART_PUT_MCR(uart, ACTS);
- 	UART_SET_IER(uart, EDSSI);
-@@ -797,10 +788,6 @@ static void bfin_serial_shutdown(struct uart_port *port)
- 		gpio_free(uart->rts_pin);
- #endif
- #ifdef CONFIG_SERIAL_BFIN_HARD_CTSRTS
--	if (uart->cts_pin >= 0)
--		gpio_free(uart->cts_pin);
--	if (uart->rts_pin >= 0)
--		gpio_free(uart->rts_pin);
- 	if (UART_GET_IER(uart) && EDSSI)
- 		free_irq(uart->status_irq, uart);
- #endif
-@@ -1405,8 +1392,7 @@ static int bfin_serial_remove(struct platform_device *dev)
- 			continue;
- 		uart_remove_one_port(&bfin_serial_reg, &bfin_serial_ports[i].port);
- 		bfin_serial_ports[i].port.dev = NULL;
--#if defined(CONFIG_SERIAL_BFIN_CTSRTS) || \
--	defined(CONFIG_SERIAL_BFIN_HARD_CTSRTS)
-+#if defined(CONFIG_SERIAL_BFIN_CTSRTS)
- 		gpio_free(bfin_serial_ports[i].cts_pin);
- 		gpio_free(bfin_serial_ports[i].rts_pin);
- #endif
+ #include <linux/module.h>
+ #include <linux/ioport.h>
++#include <linux/io.h>
+ #include <linux/init.h>
+ #include <linux/console.h>
+ #include <linux/sysrq.h>
 -- 
 1.6.5.rc1
 
