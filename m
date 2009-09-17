@@ -1,31 +1,69 @@
-From: Pavan Savoy <pavan_savoy@yahoo.co.in>
-Subject: sharing UART
-Date: Thu, 17 Sep 2009 12:46:30 +0530 (IST)
-Message-ID: <751031.51650.qm@web94915.mail.in2.yahoo.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+From: Mike Frysinger <vapier@gentoo.org>
+Subject: [PATCH 1/4] serial: bfin_5xx: remove useless gpio handling with hard flow control
+Date: Thu, 17 Sep 2009 17:52:25 -0400
+Message-ID: <1253224348-6996-1-git-send-email-vapier@gentoo.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from web94915.mail.in2.yahoo.com ([203.104.17.192]:40908 "HELO
-	web94915.mail.in2.yahoo.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with SMTP id S1758582AbZIQHXP convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Sep 2009 03:23:15 -0400
+Received: from smtp.gentoo.org ([140.211.166.183]:49466 "EHLO smtp.gentoo.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751402AbZIQVwZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 17 Sep 2009 17:52:25 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: linux-kernel@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
 
-Hi,
-I have searched through the archives, but did not find any example or need to share a UART by 2 drivers.
+From: Sonic Zhang <sonic.zhang@analog.com>
 
-Basically there is a "hci_ldisc" line discipline driver which makes use of the UART which will be followed up by another driver with normal char dev exposed to user-space which needs to make use of UART as well.
+For UARTs that have dedicated hardware flow control support, there will be
+no gpios to request/free as they are part of the normal peripheral pins.
 
-So some-one somewhere would have wanted such an implementation right ?
-what should be done ? any suggestions are welcome.
+Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+---
+ drivers/serial/bfin_5xx.c |   16 +---------------
+ 1 files changed, 1 insertions(+), 15 deletions(-)
 
-regards,
-Pavan
+diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
+index b4a7650..1b7fd62 100644
+--- a/drivers/serial/bfin_5xx.c
++++ b/drivers/serial/bfin_5xx.c
+@@ -742,15 +742,6 @@ static int bfin_serial_startup(struct uart_port *port)
+ 			Status interrupt.\n");
+ 	}
+ 
+-	if (uart->cts_pin >= 0) {
+-		gpio_request(uart->cts_pin, DRIVER_NAME);
+-		gpio_direction_output(uart->cts_pin, 1);
+-	}
+-	if (uart->rts_pin >= 0) {
+-		gpio_request(uart->rts_pin, DRIVER_NAME);
+-		gpio_direction_output(uart->rts_pin, 0);
+-	}
+-
+ 	/* CTS RTS PINs are negative assertive. */
+ 	UART_PUT_MCR(uart, ACTS);
+ 	UART_SET_IER(uart, EDSSI);
+@@ -797,10 +788,6 @@ static void bfin_serial_shutdown(struct uart_port *port)
+ 		gpio_free(uart->rts_pin);
+ #endif
+ #ifdef CONFIG_SERIAL_BFIN_HARD_CTSRTS
+-	if (uart->cts_pin >= 0)
+-		gpio_free(uart->cts_pin);
+-	if (uart->rts_pin >= 0)
+-		gpio_free(uart->rts_pin);
+ 	if (UART_GET_IER(uart) && EDSSI)
+ 		free_irq(uart->status_irq, uart);
+ #endif
+@@ -1405,8 +1392,7 @@ static int bfin_serial_remove(struct platform_device *dev)
+ 			continue;
+ 		uart_remove_one_port(&bfin_serial_reg, &bfin_serial_ports[i].port);
+ 		bfin_serial_ports[i].port.dev = NULL;
+-#if defined(CONFIG_SERIAL_BFIN_CTSRTS) || \
+-	defined(CONFIG_SERIAL_BFIN_HARD_CTSRTS)
++#if defined(CONFIG_SERIAL_BFIN_CTSRTS)
+ 		gpio_free(bfin_serial_ports[i].cts_pin);
+ 		gpio_free(bfin_serial_ports[i].rts_pin);
+ #endif
+-- 
+1.6.5.rc1
 
-
-
-      Add whatever you love to the Yahoo! India homepage. Try now! http://in.yahoo.com/trynew
