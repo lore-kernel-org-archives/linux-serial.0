@@ -1,1156 +1,1092 @@
-From: sonic zhang <sonic.adi@gmail.com>
-Subject: [PATCH v5][bfin-sport-uart] fit blackfin uart over sport driver
-	into common uart inftrastructure
-Date: Fri, 18 Sep 2009 17:18:22 +0800
-Message-ID: <1253265502.22138.10.camel@eight.analog.com>
+From: Maxime Bizon <mbizon@freebox.fr>
+Subject: [PATCH] MIPS: BCM63xx: Add serial driver for bcm63xx integrated
+ UART.
+Date: Fri, 18 Sep 2009 13:04:58 +0200
+Message-ID: <1253271898.1627.272.camel@sakura.staff.proxad.net>
+Reply-To: mbizon@freebox.fr
 Mime-Version: 1.0
 Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nwd2mail10.analog.com ([137.71.25.55]:60943 "EHLO
-	nwd2mail10.analog.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750741AbZIRJRN (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 18 Sep 2009 05:17:13 -0400
+Received: from smtp6-g21.free.fr ([212.27.42.6]:38826 "EHLO smtp6-g21.free.fr"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751506AbZIRLFF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 18 Sep 2009 07:05:05 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux Serial <linux-serial@vger.kernel.org>, Mike <vapier.adi@gmail.com>
-
-Fit blackfin uart over sport driver into common uart inftrastructure.
-
-1. Enable sport uart driver to change uart baud, data bit, stop bit at
-runtime. Bind the index of uart device nodes to physical index of sports.
-
-2. Move most platform data into arch specific board files.
-
-3. Console is registered in sport uart driver as well.
-
-4. Remove 500 us block waiting in sport tx stop code by putting a dummy
-data into tx fifo to make sure the sport tx stops when all bytes are
-shifted out except for the dummy data.
-
-5. clean up a bit and fix up coding style.
+To: Greg Kroah-Hartman <gregkh@suse.de>
+Cc: linux-serial@vger.kernel.org, linux-mips@linux-mips.org, Ralf Baechle <ralf@linux-mips.org>
 
 
-Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+Hi Greg,
+
+This is a serial driver for the bcm63xx mips SOCs, it was already posted
+twice:
+
+one year ago: http://marc.info/?l=linux-serial&m=122438266322439&w=2
+three months ago: http://lkml.org/lkml/2009/7/1/370
+
+but got no review or ack.
+
+
+Linus merged the SOC support patch from Ralf tree yesterday, but without
+serial support.
+
+Could you please have a look at it ? Is it ok if it goes upstream
+through Ralf tree ?
+
+Thanks !
+
+
+
+Signed-off-by: Maxime Bizon <mbizon@freebox.fr>
+Signed-off-by: Ralf Baechle <ralf@linux-mips.org>
 ---
- drivers/serial/Kconfig           |   24 ++
- drivers/serial/bfin_sport_uart.c |  757 ++++++++++++++++++++++++++------------
- drivers/serial/bfin_sport_uart.h |   38 +-
- 3 files changed, 568 insertions(+), 251 deletions(-)
 
-diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
-index 03422ce..45f63a8 100644
---- a/drivers/serial/Kconfig
-+++ b/drivers/serial/Kconfig
-@@ -1451,6 +1451,30 @@ config SPORT_BAUD_RATE
- 	default 19200 if (SERIAL_SPORT_BAUD_RATE_19200)
- 	default 9600 if (SERIAL_SPORT_BAUD_RATE_9600)
+diff --git a/arch/mips/bcm63xx/Makefile b/arch/mips/bcm63xx/Makefile
+index aaa585c..cff75de 100644
+--- a/arch/mips/bcm63xx/Makefile
++++ b/arch/mips/bcm63xx/Makefile
+@@ -1,5 +1,5 @@
+ obj-y		+= clk.o cpu.o cs.o gpio.o irq.o prom.o setup.o timer.o \
+-		   dev-dsp.o dev-enet.o
++		   dev-dsp.o dev-enet.o dev-uart.o
+ obj-$(CONFIG_EARLY_PRINTK)	+= early_printk.o
  
-+config SERIAL_BFIN_SPORT0_UART
-+	bool "Enable UART over SPORT0"
-+	depends on SERIAL_BFIN_SPORT
-+	help
-+	  Enable UART over SPORT0
-+
-+config SERIAL_BFIN_SPORT1_UART
-+	bool "Enable UART over SPORT1"
-+	depends on SERIAL_BFIN_SPORT
-+	help
-+	  Enable UART over SPORT1
-+
-+config SERIAL_BFIN_SPORT2_UART
-+	bool "Enable UART over SPORT2"
-+	depends on SERIAL_BFIN_SPORT && (BF54x || BF538 || BF539)
-+	help
-+	  Enable UART over SPORT2
-+
-+config SERIAL_BFIN_SPORT3_UART
-+	bool "Enable UART over SPORT3"
-+	depends on SERIAL_BFIN_SPORT && (BF54x || BF538 || BF539)
-+	help
-+	  Enable UART over SPORT3
-+
- config SERIAL_TIMBERDALE
- 	tristate "Support for timberdale UART"
- 	depends on MFD_TIMBERDALE
-diff --git a/drivers/serial/bfin_sport_uart.c b/drivers/serial/bfin_sport_uart.c
-index c108b1a..3bbc00d 100644
---- a/drivers/serial/bfin_sport_uart.c
-+++ b/drivers/serial/bfin_sport_uart.c
-@@ -1,27 +1,11 @@
- /*
-- * File:	linux/drivers/serial/bfin_sport_uart.c
-+ * Blackfin On-Chip Sport Emulated UART Driver
-  *
-- * Based on:	drivers/serial/bfin_5xx.c by Aubrey Li.
-- * Author:	Roy Huang <roy.huang@analog.com>
-+ * Copyright 2006-2009 Analog Devices Inc.
-  *
-- * Created:	Nov 22, 2006
-- * Copyright:	(c) 2006-2007 Analog Devices Inc.
-- * Description: this driver enable SPORTs on Blackfin emulate UART.
-+ * Enter bugs at http://blackfin.uclinux.org/
-  *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License as published by
-- * the Free Software Foundation; either version 2 of the License, or
-- * (at your option) any later version.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-- *
-- * You should have received a copy of the GNU General Public License
-- * along with this program; if not, see the file COPYING, or write
-- * to the Free Software Foundation, Inc.,
-- * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-+ * Licensed under the GPL-2 or later.
-  */
+ obj-y		+= boards/
+diff --git a/arch/mips/bcm63xx/boards/board_bcm963xx.c b/arch/mips/bcm63xx/boards/board_bcm963xx.c
+index fd77f54..d3fdf27 100644
+--- a/arch/mips/bcm63xx/boards/board_bcm963xx.c
++++ b/arch/mips/bcm63xx/boards/board_bcm963xx.c
+@@ -24,6 +24,7 @@
+ #include <bcm63xx_dev_pci.h>
+ #include <bcm63xx_dev_enet.h>
+ #include <bcm63xx_dev_dsp.h>
++#include <bcm63xx_dev_uart.h>
+ #include <board_bcm963xx.h>
  
- /*
-@@ -29,39 +13,18 @@
-  * http://www.analog.com/UploadedFiles/Application_Notes/399447663EE191.pdf
-  * This application note describe how to implement a UART on a Sharc DSP,
-  * but this driver is implemented on Blackfin Processor.
-+ * Transmit Frame Sync is not used by this driver to transfer data out.
-  */
- 
--/* After reset, there is a prelude of low level pulse when transmit data first
-- * time. No addtional pulse in following transmit.
-- * According to document:
-- * The SPORTs are ready to start transmitting or receiving data no later than
-- * three serial clock cycles after they are enabled in the SPORTx_TCR1 or
-- * SPORTx_RCR1 register. No serial clock cycles are lost from this point on.
-- * The first internal frame sync will occur one frame sync delay after the
-- * SPORTs are ready. External frame syncs can occur as soon as the SPORT is
-- * ready.
-- */
-+/* #define DEBUG */
- 
--/* Thanks to Axel Alatalo <axel@rubico.se> for fixing sport rx bug. Sometimes
-- * sport receives data incorrectly. The following is Axel's words.
-- * As EE-191, sport rx samples 3 times of the UART baudrate and takes the
-- * middle smaple of every 3 samples as the data bit. For a 8-N-1 UART setting,
-- * 30 samples will be required for a byte. If transmitter sends a 1/3 bit short
-- * byte due to buadrate drift, then the 30th sample of a byte, this sample is
-- * also the third sample of the stop bit, will happens on the immediately
-- * following start bit which will be thrown away and missed. Thus since parts
-- * of the startbit will be missed and the receiver will begin to drift, the
-- * effect accumulates over time until synchronization is lost.
-- * If only require 2 samples of the stopbit (by sampling in total 29 samples),
-- * then a to short byte as in the case above will be tolerated. Then the 1/3
-- * early startbit will trigger a framesync since the last read is complete
-- * after only 2/3 stopbit and framesync is active during the last 1/3 looking
-- * for a possible early startbit. */
--
--//#define DEBUG
-+#define DRV_NAME "bfin-sport-uart"
-+#define DEVICE_NAME	"ttySS"
-+#define pr_fmt(fmt) DRV_NAME ": " fmt
- 
- #include <linux/module.h>
- #include <linux/ioport.h>
-+#include <linux/io.h>
- #include <linux/init.h>
- #include <linux/console.h>
- #include <linux/sysrq.h>
-@@ -75,23 +38,36 @@
- 
- #include "bfin_sport_uart.h"
- 
-+#ifdef CONFIG_SERIAL_BFIN_SPORT0_UART
- unsigned short bfin_uart_pin_req_sport0[] =
- 	{P_SPORT0_TFS, P_SPORT0_DTPRI, P_SPORT0_TSCLK, P_SPORT0_RFS, \
- 	 P_SPORT0_DRPRI, P_SPORT0_RSCLK, P_SPORT0_DRSEC, P_SPORT0_DTSEC, 0};
--
-+#endif
-+#ifdef CONFIG_SERIAL_BFIN_SPORT1_UART
- unsigned short bfin_uart_pin_req_sport1[] =
- 	{P_SPORT1_TFS, P_SPORT1_DTPRI, P_SPORT1_TSCLK, P_SPORT1_RFS, \
- 	P_SPORT1_DRPRI, P_SPORT1_RSCLK, P_SPORT1_DRSEC, P_SPORT1_DTSEC, 0};
--
--#define DRV_NAME "bfin-sport-uart"
-+#endif
-+#ifdef CONFIG_SERIAL_BFIN_SPORT2_UART
-+unsigned short bfin_uart_pin_req_sport2[] =
-+	{P_SPORT2_TFS, P_SPORT2_DTPRI, P_SPORT2_TSCLK, P_SPORT2_RFS, \
-+	P_SPORT2_DRPRI, P_SPORT2_RSCLK, P_SPORT2_DRSEC, P_SPORT2_DTSEC, 0};
-+#endif
-+#ifdef CONFIG_SERIAL_BFIN_SPORT3_UART
-+unsigned short bfin_uart_pin_req_sport3[] =
-+	{P_SPORT3_TFS, P_SPORT3_DTPRI, P_SPORT3_TSCLK, P_SPORT3_RFS, \
-+	P_SPORT3_DRPRI, P_SPORT3_RSCLK, P_SPORT3_DRSEC, P_SPORT3_DTSEC, 0};
-+#endif
- 
- struct sport_uart_port {
- 	struct uart_port	port;
--	char			*name;
--
--	int			tx_irq;
--	int			rx_irq;
- 	int			err_irq;
-+	unsigned short		csize;
-+	unsigned short		rxmask;
-+	unsigned short		txmask1;
-+	unsigned short		txmask2;
-+	unsigned char		stopb;
-+/*	unsigned char		parib; */
- };
- 
- static void sport_uart_tx_chars(struct sport_uart_port *up);
-@@ -99,36 +75,42 @@ static void sport_stop_tx(struct uart_port *port);
- 
- static inline void tx_one_byte(struct sport_uart_port *up, unsigned int value)
+ #define PFX	"board_bcm963xx: "
+@@ -793,6 +794,8 @@ int __init board_register_devices(void)
  {
--	pr_debug("%s value:%x\n", __func__, value);
--	/* Place a Start and Stop bit */
-+	pr_debug("%s value:%x, mask1=0x%x, mask2=0x%x\n", __func__, value,
-+		up->txmask1, up->txmask2);
+ 	u32 val;
+ 
++	bcm63xx_uart_register();
 +
-+	/* Place Start and Stop bits */
- 	__asm__ __volatile__ (
--		"R2 = b#01111111100;"
--		"R3 = b#10000000001;"
--		"%0 <<= 2;"
--		"%0 = %0 & R2;"
--		"%0 = %0 | R3;"
--		: "=d"(value)
--		: "d"(value)
--		: "ASTAT", "R2", "R3"
-+		"%[val] <<= 1;"
-+		"%[val] = %[val] & %[mask1];"
-+		"%[val] = %[val] | %[mask2];"
-+		: [val]"+d"(value)
-+		: [mask1]"d"(up->txmask1), [mask2]"d"(up->txmask2)
-+		: "ASTAT"
- 	);
- 	pr_debug("%s value:%x\n", __func__, value);
- 
- 	SPORT_PUT_TX(up, value);
- }
- 
--static inline unsigned int rx_one_byte(struct sport_uart_port *up)
-+static inline unsigned char rx_one_byte(struct sport_uart_port *up)
- {
--	unsigned int value, extract;
-+	unsigned int value;
-+	unsigned char extract;
- 	u32 tmp_mask1, tmp_mask2, tmp_shift, tmp;
- 
--	value = SPORT_GET_RX32(up);
--	pr_debug("%s value:%x\n", __func__, value);
-+	if ((up->csize + up->stopb) > 7)
-+		value = SPORT_GET_RX32(up);
-+	else
-+		value = SPORT_GET_RX(up);
+ 	if (board.has_enet0 &&
+ 	    !board_get_mac_address(board.enet0.mac_addr))
+ 		bcm63xx_enet_register(0, &board.enet0);
+diff --git a/arch/mips/bcm63xx/dev-uart.c b/arch/mips/bcm63xx/dev-uart.c
+new file mode 100644
+index 0000000..5f3d89c
+--- /dev/null
++++ b/arch/mips/bcm63xx/dev-uart.c
+@@ -0,0 +1,41 @@
++/*
++ * This file is subject to the terms and conditions of the GNU General Public
++ * License.  See the file "COPYING" in the main directory of this archive
++ * for more details.
++ *
++ * Copyright (C) 2008 Maxime Bizon <mbizon@freebox.fr>
++ */
 +
-+	pr_debug("%s value:%x, cs=%d, mask=0x%x\n", __func__, value,
-+		up->csize, up->rxmask);
- 
--	/* Extract 8 bits data */
-+	/* Extract data */
- 	__asm__ __volatile__ (
- 		"%[extr] = 0;"
--		"%[mask1] = 0x1801(Z);"
--		"%[mask2] = 0x0300(Z);"
-+		"%[mask1] = %[rxmask];"
-+		"%[mask2] = 0x0200(Z);"
- 		"%[shift] = 0;"
- 		"LSETUP(.Lloop_s, .Lloop_e) LC0 = %[lc];"
- 		".Lloop_s:"
-@@ -138,9 +120,9 @@ static inline unsigned int rx_one_byte(struct sport_uart_port *up)
- 		"%[mask1] = %[mask1] - %[mask2];"
- 		".Lloop_e:"
- 		"%[shift] += 1;"
--		: [val]"=d"(value), [extr]"=d"(extract), [shift]"=d"(tmp_shift), [tmp]"=d"(tmp),
--		  [mask1]"=d"(tmp_mask1), [mask2]"=d"(tmp_mask2)
--		: "d"(value), [lc]"a"(8)
-+		: [extr]"=&d"(extract), [shift]"=&d"(tmp_shift), [tmp]"=&d"(tmp),
-+		  [mask1]"=&d"(tmp_mask1), [mask2]"=&d"(tmp_mask2)
-+		: [val]"d"(value), [rxmask]"d"(up->rxmask), [lc]"a"(up->csize)
- 		: "ASTAT", "LB0", "LC0", "LT0"
- 	);
- 
-@@ -148,29 +130,28 @@ static inline unsigned int rx_one_byte(struct sport_uart_port *up)
- 	return extract;
- }
- 
--static int sport_uart_setup(struct sport_uart_port *up, int sclk, int baud_rate)
-+static int sport_uart_setup(struct sport_uart_port *up, int size, int baud_rate)
- {
--	int tclkdiv, tfsdiv, rclkdiv;
-+	int tclkdiv, rclkdiv;
-+	unsigned int sclk = get_sclk();
- 
--	/* Set TCR1 and TCR2 */
--	SPORT_PUT_TCR1(up, (LATFS | ITFS | TFSR | TLSBIT | ITCLK));
--	SPORT_PUT_TCR2(up, 10);
-+	/* Set TCR1 and TCR2, TFSR is not enabled for uart */
-+	SPORT_PUT_TCR1(up, (ITFS | TLSBIT | ITCLK));
-+	SPORT_PUT_TCR2(up, size + 1);
- 	pr_debug("%s TCR1:%x, TCR2:%x\n", __func__, SPORT_GET_TCR1(up), SPORT_GET_TCR2(up));
- 
- 	/* Set RCR1 and RCR2 */
- 	SPORT_PUT_RCR1(up, (RCKFE | LARFS | LRFS | RFSR | IRCLK));
--	SPORT_PUT_RCR2(up, 28);
-+	SPORT_PUT_RCR2(up, (size + 1) * 2 - 1);
- 	pr_debug("%s RCR1:%x, RCR2:%x\n", __func__, SPORT_GET_RCR1(up), SPORT_GET_RCR2(up));
- 
--	tclkdiv = sclk/(2 * baud_rate) - 1;
--	tfsdiv = 12;
--	rclkdiv = sclk/(2 * baud_rate * 3) - 1;
-+	tclkdiv = sclk / (2 * baud_rate) - 1;
-+	rclkdiv = sclk / (2 * baud_rate * 2) - 1;
- 	SPORT_PUT_TCLKDIV(up, tclkdiv);
--	SPORT_PUT_TFSDIV(up, tfsdiv);
- 	SPORT_PUT_RCLKDIV(up, rclkdiv);
- 	SSYNC();
--	pr_debug("%s sclk:%d, baud_rate:%d, tclkdiv:%d, tfsdiv:%d, rclkdiv:%d\n",
--			__func__, sclk, baud_rate, tclkdiv, tfsdiv, rclkdiv);
-+	pr_debug("%s sclk:%d, baud_rate:%d, tclkdiv:%d, rclkdiv:%d\n",
-+			__func__, sclk, baud_rate, tclkdiv, rclkdiv);
- 
- 	return 0;
- }
-@@ -181,23 +162,29 @@ static irqreturn_t sport_uart_rx_irq(int irq, void *dev_id)
- 	struct tty_struct *tty = up->port.info->port.tty;
- 	unsigned int ch;
- 
--	do {
-+	spin_lock(&up->port.lock);
++#include <linux/init.h>
++#include <linux/kernel.h>
++#include <linux/platform_device.h>
++#include <bcm63xx_cpu.h>
++#include <bcm63xx_dev_uart.h>
 +
-+	while (SPORT_GET_STAT(up) & RXNE) {
- 		ch = rx_one_byte(up);
- 		up->port.icount.rx++;
- 
--		if (uart_handle_sysrq_char(&up->port, ch))
--			;
--		else
-+		if (!uart_handle_sysrq_char(&up->port, ch))
- 			tty_insert_flip_char(tty, ch, TTY_NORMAL);
--	} while (SPORT_GET_STAT(up) & RXNE);
-+	}
- 	tty_flip_buffer_push(tty);
- 
-+	spin_unlock(&up->port.lock);
-+
- 	return IRQ_HANDLED;
- }
- 
- static irqreturn_t sport_uart_tx_irq(int irq, void *dev_id)
- {
--	sport_uart_tx_chars(dev_id);
-+	struct sport_uart_port *up = dev_id;
-+
-+	spin_lock(&up->port.lock);
-+	sport_uart_tx_chars(up);
-+	spin_unlock(&up->port.lock);
- 
- 	return IRQ_HANDLED;
- }
-@@ -208,6 +195,8 @@ static irqreturn_t sport_uart_err_irq(int irq, void *dev_id)
- 	struct tty_struct *tty = up->port.info->port.tty;
- 	unsigned int stat = SPORT_GET_STAT(up);
- 
-+	spin_lock(&up->port.lock);
-+
- 	/* Overflow in RX FIFO */
- 	if (stat & ROVF) {
- 		up->port.icount.overrun++;
-@@ -216,15 +205,16 @@ static irqreturn_t sport_uart_err_irq(int irq, void *dev_id)
- 	}
- 	/* These should not happen */
- 	if (stat & (TOVF | TUVF | RUVF)) {
--		printk(KERN_ERR "SPORT Error:%s %s %s\n",
--				(stat & TOVF)?"TX overflow":"",
--				(stat & TUVF)?"TX underflow":"",
--				(stat & RUVF)?"RX underflow":"");
-+		pr_err("SPORT Error:%s %s %s\n",
-+		       (stat & TOVF) ? "TX overflow" : "",
-+		       (stat & TUVF) ? "TX underflow" : "",
-+		       (stat & RUVF) ? "RX underflow" : "");
- 		SPORT_PUT_TCR1(up, SPORT_GET_TCR1(up) & ~TSPEN);
- 		SPORT_PUT_RCR1(up, SPORT_GET_RCR1(up) & ~RSPEN);
- 	}
- 	SSYNC();
- 
-+	spin_unlock(&up->port.lock);
- 	return IRQ_HANDLED;
- }
- 
-@@ -232,60 +222,37 @@ static irqreturn_t sport_uart_err_irq(int irq, void *dev_id)
- static int sport_startup(struct uart_port *port)
- {
- 	struct sport_uart_port *up = (struct sport_uart_port *)port;
--	char buffer[20];
--	int retval;
-+	int ret;
- 
- 	pr_debug("%s enter\n", __func__);
--	snprintf(buffer, 20, "%s rx", up->name);
--	retval = request_irq(up->rx_irq, sport_uart_rx_irq, IRQF_SAMPLE_RANDOM, buffer, up);
--	if (retval) {
--		printk(KERN_ERR "Unable to request interrupt %s\n", buffer);
--		return retval;
-+	ret = request_irq(up->port.irq, sport_uart_rx_irq, 0,
-+		"SPORT_UART_RX", up);
-+	if (ret) {
-+		dev_err(port->dev, "unable to request SPORT RX interrupt\n");
-+		return ret;
- 	}
- 
--	snprintf(buffer, 20, "%s tx", up->name);
--	retval = request_irq(up->tx_irq, sport_uart_tx_irq, IRQF_SAMPLE_RANDOM, buffer, up);
--	if (retval) {
--		printk(KERN_ERR "Unable to request interrupt %s\n", buffer);
-+	ret = request_irq(up->port.irq+1, sport_uart_tx_irq, 0,
-+		"SPORT_UART_TX", up);
-+	if (ret) {
-+		dev_err(port->dev, "unable to request SPORT TX interrupt\n");
- 		goto fail1;
- 	}
- 
--	snprintf(buffer, 20, "%s err", up->name);
--	retval = request_irq(up->err_irq, sport_uart_err_irq, IRQF_SAMPLE_RANDOM, buffer, up);
--	if (retval) {
--		printk(KERN_ERR "Unable to request interrupt %s\n", buffer);
-+	ret = request_irq(up->err_irq, sport_uart_err_irq, 0,
-+		"SPORT_UART_STATUS", up);
-+	if (ret) {
-+		dev_err(port->dev, "unable to request SPORT status interrupt\n");
- 		goto fail2;
- 	}
- 
--	if (port->line) {
--		if (peripheral_request_list(bfin_uart_pin_req_sport1, DRV_NAME))
--			goto fail3;
--	} else {
--		if (peripheral_request_list(bfin_uart_pin_req_sport0, DRV_NAME))
--			goto fail3;
--	}
--
--	sport_uart_setup(up, get_sclk(), port->uartclk);
--
--	/* Enable receive interrupt */
--	SPORT_PUT_RCR1(up, (SPORT_GET_RCR1(up) | RSPEN));
--	SSYNC();
--
- 	return 0;
-+ fail2:
-+	free_irq(up->port.irq+1, up);
-+ fail1:
-+	free_irq(up->port.irq, up);
- 
--
--fail3:
--	printk(KERN_ERR DRV_NAME
--		": Requesting Peripherals failed\n");
--
--	free_irq(up->err_irq, up);
--fail2:
--	free_irq(up->tx_irq, up);
--fail1:
--	free_irq(up->rx_irq, up);
--
--	return retval;
--
-+	return ret;
- }
- 
- static void sport_uart_tx_chars(struct sport_uart_port *up)
-@@ -344,20 +311,17 @@ static void sport_set_mctrl(struct uart_port *port, unsigned int mctrl)
- static void sport_stop_tx(struct uart_port *port)
- {
- 	struct sport_uart_port *up = (struct sport_uart_port *)port;
--	unsigned int stat;
- 
- 	pr_debug("%s enter\n", __func__);
- 
--	stat = SPORT_GET_STAT(up);
--	while(!(stat & TXHRE)) {
--		udelay(1);
--		stat = SPORT_GET_STAT(up);
--	}
- 	/* Although the hold register is empty, last byte is still in shift
--	 * register and not sent out yet. If baud rate is lower than default,
--	 * delay should be longer. For example, if the baud rate is 9600,
--	 * the delay must be at least 2ms by experience */
--	udelay(500);
-+	 * register and not sent out yet. So, put a dummy data into TX FIFO.
-+	 * Then, sport tx stops when last byte is shift out and the dummy
-+	 * data is moved into the shift register.
-+	 */
-+	SPORT_PUT_TX(up, 0xffff);
-+	while (!(SPORT_GET_STAT(up) & TXHRE))
-+		cpu_relax();
- 
- 	SPORT_PUT_TCR1(up, (SPORT_GET_TCR1(up) & ~TSPEN));
- 	SSYNC();
-@@ -370,6 +334,7 @@ static void sport_start_tx(struct uart_port *port)
- 	struct sport_uart_port *up = (struct sport_uart_port *)port;
- 
- 	pr_debug("%s enter\n", __func__);
-+
- 	/* Write data into SPORT FIFO before enable SPROT to transmit */
- 	sport_uart_tx_chars(up);
- 
-@@ -403,37 +368,24 @@ static void sport_shutdown(struct uart_port *port)
- {
- 	struct sport_uart_port *up = (struct sport_uart_port *)port;
- 
--	pr_debug("%s enter\n", __func__);
-+	dev_dbg(port->dev, "%s enter\n", __func__);
- 
- 	/* Disable sport */
- 	SPORT_PUT_TCR1(up, (SPORT_GET_TCR1(up) & ~TSPEN));
- 	SPORT_PUT_RCR1(up, (SPORT_GET_RCR1(up) & ~RSPEN));
- 	SSYNC();
- 
--	if (port->line) {
--		peripheral_free_list(bfin_uart_pin_req_sport1);
--	} else {
--		peripheral_free_list(bfin_uart_pin_req_sport0);
--	}
--
--	free_irq(up->rx_irq, up);
--	free_irq(up->tx_irq, up);
-+	free_irq(up->port.irq, up);
-+	free_irq(up->port.irq+1, up);
- 	free_irq(up->err_irq, up);
- }
- 
--static void sport_set_termios(struct uart_port *port,
--		struct ktermios *termios, struct ktermios *old)
--{
--	pr_debug("%s enter, c_cflag:%08x\n", __func__, termios->c_cflag);
--	uart_update_timeout(port, CS8 ,port->uartclk);
--}
--
- static const char *sport_type(struct uart_port *port)
- {
- 	struct sport_uart_port *up = (struct sport_uart_port *)port;
- 
- 	pr_debug("%s enter\n", __func__);
--	return up->name;
-+	return up->port.type == PORT_BFIN_SPORT ? "BFIN-SPORT-UART" : NULL;
- }
- 
- static void sport_release_port(struct uart_port *port)
-@@ -461,6 +413,110 @@ static int sport_verify_port(struct uart_port *port, struct serial_struct *ser)
- 	return 0;
- }
- 
-+static void sport_set_termios(struct uart_port *port,
-+		struct ktermios *termios, struct ktermios *old)
-+{
-+	struct sport_uart_port *up = (struct sport_uart_port *)port;
-+	unsigned long flags;
-+	int i;
-+
-+	pr_debug("%s enter, c_cflag:%08x\n", __func__, termios->c_cflag);
-+
-+	switch (termios->c_cflag & CSIZE) {
-+	case CS8:
-+		up->csize = 8;
-+		break;
-+	case CS7:
-+		up->csize = 7;
-+		break;
-+	case CS6:
-+		up->csize = 6;
-+		break;
-+	case CS5:
-+		up->csize = 5;
-+		break;
-+	default:
-+		pr_warning("requested word length not supported\n");
-+	}
-+
-+	if (termios->c_cflag & CSTOPB) {
-+		up->stopb = 1;
-+	}
-+	if (termios->c_cflag & PARENB) {
-+		pr_warning("PAREN bits is not supported yet\n");
-+		/* up->parib = 1; */
-+	}
-+
-+	port->read_status_mask = OE;
-+	if (termios->c_iflag & INPCK)
-+		port->read_status_mask |= (FE | PE);
-+	if (termios->c_iflag & (BRKINT | PARMRK))
-+		port->read_status_mask |= BI;
-+
-+	/*
-+	 * Characters to ignore
-+	 */
-+	port->ignore_status_mask = 0;
-+	if (termios->c_iflag & IGNPAR)
-+		port->ignore_status_mask |= FE | PE;
-+	if (termios->c_iflag & IGNBRK) {
-+		port->ignore_status_mask |= BI;
-+		/*
-+		 * If we're ignoring parity and break indicators,
-+		 * ignore overruns too (for real raw support).
-+		 */
-+		if (termios->c_iflag & IGNPAR)
-+			port->ignore_status_mask |= OE;
-+	}
-+
-+	/* RX extract mask */
-+	up->rxmask = 0x01 | (((up->csize + up->stopb) * 2 - 1) << 0x8);
-+	/* TX masks, 8 bit data and 1 bit stop for example:
-+	 * mask1 = b#0111111110
-+	 * mask2 = b#1000000000
-+	 */
-+	for (i = 0, up->txmask1 = 0; i < up->csize; i++)
-+		up->txmask1 |= (1<<i);
-+	up->txmask2 = (1<<i);
-+	if (up->stopb) {
-+		++i;
-+		up->txmask2 |= (1<<i);
-+	}
-+	up->txmask1 <<= 1;
-+	up->txmask2 <<= 1;
-+	/* uart baud rate */
-+	port->uartclk = uart_get_baud_rate(port, termios, old, 0, get_sclk()/16);
-+
-+	spin_lock_irqsave(&up->port.lock, flags);
-+
-+	/* Disable UART */
-+	SPORT_PUT_TCR1(up, SPORT_GET_TCR1(up) & ~TSPEN);
-+	SPORT_PUT_RCR1(up, SPORT_GET_RCR1(up) & ~RSPEN);
-+
-+	sport_uart_setup(up, up->csize + up->stopb, port->uartclk);
-+
-+	/* driver TX line high after config, one dummy data is
-+	 * necessary to stop sport after shift one byte
-+	 */
-+	SPORT_PUT_TX(up, 0xffff);
-+	SPORT_PUT_TX(up, 0xffff);
-+	SPORT_PUT_TCR1(up, (SPORT_GET_TCR1(up) | TSPEN));
-+	SSYNC();
-+	while (!(SPORT_GET_STAT(up) & TXHRE))
-+		cpu_relax();
-+	SPORT_PUT_TCR1(up, SPORT_GET_TCR1(up) & ~TSPEN);
-+	SSYNC();
-+
-+	/* Port speed changed, update the per-port timeout. */
-+	uart_update_timeout(port, termios->c_cflag, port->uartclk);
-+
-+	/* Enable sport rx */
-+	SPORT_PUT_RCR1(up, SPORT_GET_RCR1(up) | RSPEN);
-+	SSYNC();
-+
-+	spin_unlock_irqrestore(&up->port.lock, flags);
-+}
-+
- struct uart_ops sport_uart_ops = {
- 	.tx_empty	= sport_tx_empty,
- 	.set_mctrl	= sport_set_mctrl,
-@@ -480,104 +536,327 @@ struct uart_ops sport_uart_ops = {
- 	.verify_port	= sport_verify_port,
- };
- 
--static struct sport_uart_port sport_uart_ports[] = {
--	{ /* SPORT 0 */
--		.name	= "SPORT0",
--		.tx_irq = IRQ_SPORT0_TX,
--		.rx_irq = IRQ_SPORT0_RX,
--		.err_irq= IRQ_SPORT0_ERROR,
--		.port	= {
--			.type		= PORT_BFIN_SPORT,
--			.iotype		= UPIO_MEM,
--			.membase	= (void __iomem *)SPORT0_TCR1,
--			.mapbase	= SPORT0_TCR1,
--			.irq		= IRQ_SPORT0_RX,
--			.uartclk	= CONFIG_SPORT_BAUD_RATE,
--			.fifosize	= 8,
--			.ops		= &sport_uart_ops,
--			.line		= 0,
--		},
--	}, { /* SPORT 1 */
--		.name	= "SPORT1",
--		.tx_irq = IRQ_SPORT1_TX,
--		.rx_irq = IRQ_SPORT1_RX,
--		.err_irq= IRQ_SPORT1_ERROR,
--		.port	= {
--			.type		= PORT_BFIN_SPORT,
--			.iotype		= UPIO_MEM,
--			.membase	= (void __iomem *)SPORT1_TCR1,
--			.mapbase	= SPORT1_TCR1,
--			.irq		= IRQ_SPORT1_RX,
--			.uartclk	= CONFIG_SPORT_BAUD_RATE,
--			.fifosize	= 8,
--			.ops		= &sport_uart_ops,
--			.line		= 1,
--		},
-+#define BFIN_SPORT_UART_MAX_PORTS 4
-+
-+static struct sport_uart_port bfin_sport_uart_ports[BFIN_SPORT_UART_MAX_PORTS];
-+
-+static unsigned long bfin_sport_uart_console_base_addr[] = {
-+#ifdef CONFIG_SERIAL_BFIN_SPORT0_UART
-+		SPORT0_TCR1,
-+#else
-+		0,
-+#endif
-+#ifdef CONFIG_SERIAL_BFIN_SPORT1_UART
-+		SPORT1_TCR1,
-+#else
-+		0,
-+#endif
-+#ifdef CONFIG_SERIAL_BFIN_SPORT2_UART
-+		SPORT2_TCR1,
-+#else
-+		0,
-+#endif
-+#ifdef CONFIG_SERIAL_BFIN_SPORT3_UART
-+		SPORT3_TCR1,
-+#else
-+		0,
-+#endif
++static struct resource uart_resources[] = {
++	{
++		.start		= -1, /* filled at runtime */
++		.end		= -1, /* filled at runtime */
++		.flags		= IORESOURCE_MEM,
++	},
++	{
++		.start		= -1, /* filled at runtime */
++		.flags		= IORESOURCE_IRQ,
++	},
 +};
 +
-+static int __init sport_uart_init_ports(void)
++static struct platform_device bcm63xx_uart_device = {
++	.name		= "bcm63xx_uart",
++	.id		= 0,
++	.num_resources	= ARRAY_SIZE(uart_resources),
++	.resource	= uart_resources,
++};
++
++int __init bcm63xx_uart_register(void)
 +{
-+	static int first = 1;
-+	int i, ret;
++	uart_resources[0].start = bcm63xx_regset_address(RSET_UART0);
++	uart_resources[0].end = uart_resources[0].start;
++	uart_resources[0].end += RSET_UART_SIZE - 1;
++	uart_resources[1].start = bcm63xx_get_irq_number(IRQ_UART0);
++	return platform_device_register(&bcm63xx_uart_device);
++}
+diff --git a/arch/mips/include/asm/mach-bcm63xx/bcm63xx_dev_uart.h b/arch/mips/include/asm/mach-bcm63xx/bcm63xx_dev_uart.h
+new file mode 100644
+index 0000000..bf348f5
+--- /dev/null
++++ b/arch/mips/include/asm/mach-bcm63xx/bcm63xx_dev_uart.h
+@@ -0,0 +1,6 @@
++#ifndef BCM63XX_DEV_UART_H_
++#define BCM63XX_DEV_UART_H_
 +
-+	if (!first)
-+		return 0;
++int bcm63xx_uart_register(void);
 +
-+#ifdef CONFIG_SERIAL_BFIN_SPORT0_UART
-+	ret = peripheral_request_list(bfin_uart_pin_req_sport0, DRV_NAME);
-+	if (ret) {
-+		pr_err("requesting SPORT0 peripherals failed\n");
-+		goto err_out0;
-+	}
-+#endif
-+#ifdef CONFIG_SERIAL_BFIN_SPORT1_UART
-+	ret = peripheral_request_list(bfin_uart_pin_req_sport1, DRV_NAME);
-+	if (ret) {
-+		pr_err("requesting SPORT1 peripherals failed\n");
-+		goto err_out1;
-+	}
-+#endif
-+#ifdef CONFIG_SERIAL_BFIN_SPORT2_UART
-+	ret = peripheral_request_list(bfin_uart_pin_req_sport2, DRV_NAME);
-+	if (ret) {
-+		pr_err("requesting SPORT2 peripherals failed\n");
-+		goto err_out2;
-+	}
-+#endif
-+#ifdef CONFIG_SERIAL_BFIN_SPORT3_UART
-+	ret = peripheral_request_list(bfin_uart_pin_req_sport3, DRV_NAME);
-+	if (ret) {
-+		pr_err("requesting SPORT3 peripherals failed\n");
-+		goto err_out3;
-+	}
-+#endif
-+	for (i = 0; i < BFIN_SPORT_UART_MAX_PORTS; i++) {
-+		spin_lock_init(&bfin_sport_uart_ports[i].port.lock);
-+		bfin_sport_uart_ports[i].port.fifosize  = SPORT_TX_FIFO_SIZE,
-+		bfin_sport_uart_ports[i].port.ops       = &sport_uart_ops;
-+		bfin_sport_uart_ports[i].port.line      = i;
-+		bfin_sport_uart_ports[i].port.iotype    = UPIO_MEM;
-+		bfin_sport_uart_ports[i].port.flags     = UPF_BOOT_AUTOCONF;
-+		bfin_sport_uart_ports[i].port.membase   =
-+			(void __iomem *)bfin_sport_uart_console_base_addr[i];
-+	}
++#endif /* BCM63XX_DEV_UART_H_ */
+diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
+index 03422ce..e707120 100644
+--- a/drivers/serial/Kconfig
++++ b/drivers/serial/Kconfig
+@@ -1458,4 +1458,23 @@ config SERIAL_TIMBERDALE
+ 	---help---
+ 	Add support for UART controller on timberdale.
+ 
++config SERIAL_BCM63XX
++	tristate "bcm63xx serial port support"
++	select SERIAL_CORE
++	depends on BCM63XX
++	help
++	  If you have a bcm63xx CPU, you can enable its onboard
++	  serial port by enabling this options.
 +
-+	first = 0;
++          To compile this driver as a module, choose M here: the
++          module will be called bcm963xx_uart.
 +
-+	return 0;
-+#ifdef CONFIG_SERIAL_BFIN_SPORT3_UART
-+err_out3:
-+#endif
-+#ifdef CONFIG_SERIAL_BFIN_SPORT2_UART
-+	peripheral_free_list(bfin_uart_pin_req_sport2);
-+err_out2:
-+#endif
-+#ifdef CONFIG_SERIAL_BFIN_SPORT1_UART
-+	peripheral_free_list(bfin_uart_pin_req_sport1);
-+err_out1:
-+#endif
-+#ifdef CONFIG_SERIAL_BFIN_SPORT0_UART
-+	peripheral_free_list(bfin_uart_pin_req_sport0);
-+err_out0:
++config SERIAL_BCM63XX_CONSOLE
++	bool "Console on bcm63xx serial port"
++	depends on SERIAL_BCM63XX=y
++	select SERIAL_CORE_CONSOLE
++	help
++	  If you have enabled the serial port on the bcm63xx CPU
++	  you can make it the console by answering Y to this option.
++
+ endmenu
+diff --git a/drivers/serial/Makefile b/drivers/serial/Makefile
+index 97f6fcc..d21d5dd 100644
+--- a/drivers/serial/Makefile
++++ b/drivers/serial/Makefile
+@@ -34,6 +34,7 @@ obj-$(CONFIG_SERIAL_CLPS711X) += clps711x.o
+ obj-$(CONFIG_SERIAL_PXA) += pxa.o
+ obj-$(CONFIG_SERIAL_PNX8XXX) += pnx8xxx_uart.o
+ obj-$(CONFIG_SERIAL_SA1100) += sa1100.o
++obj-$(CONFIG_SERIAL_BCM63XX) += bcm63xx_uart.o
+ obj-$(CONFIG_SERIAL_BFIN) += bfin_5xx.o
+ obj-$(CONFIG_SERIAL_BFIN_SPORT) += bfin_sport_uart.o
+ obj-$(CONFIG_SERIAL_SAMSUNG) += samsung.o
+diff --git a/drivers/serial/bcm63xx_uart.c b/drivers/serial/bcm63xx_uart.c
+new file mode 100644
+index 0000000..beddaa6
+--- /dev/null
++++ b/drivers/serial/bcm63xx_uart.c
+@@ -0,0 +1,890 @@
++/*
++ * This file is subject to the terms and conditions of the GNU General Public
++ * License.  See the file "COPYING" in the main directory of this archive
++ * for more details.
++ *
++ * Derived from many drivers using generic_serial interface.
++ *
++ * Copyright (C) 2008 Maxime Bizon <mbizon@freebox.fr>
++ *
++ *  Serial driver for BCM63xx integrated UART.
++ *
++ * Hardware flow control was _not_ tested since I only have RX/TX on
++ * my board.
++ */
++
++#if defined(CONFIG_SERIAL_BCM63XX_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
++#define SUPPORT_SYSRQ
 +#endif
 +
-+	return ret;
++#include <linux/kernel.h>
++#include <linux/platform_device.h>
++#include <linux/init.h>
++#include <linux/delay.h>
++#include <linux/module.h>
++#include <linux/console.h>
++#include <linux/clk.h>
++#include <linux/tty.h>
++#include <linux/tty_flip.h>
++#include <linux/sysrq.h>
++#include <linux/serial.h>
++#include <linux/serial_core.h>
++
++#include <bcm63xx_clk.h>
++#include <bcm63xx_irq.h>
++#include <bcm63xx_regs.h>
++#include <bcm63xx_io.h>
++
++#define BCM63XX_NR_UARTS	1
++
++static struct uart_port ports[BCM63XX_NR_UARTS];
++
++/*
++ * rx interrupt mask / stat
++ *
++ * mask:
++ *  - rx fifo full
++ *  - rx fifo above threshold
++ *  - rx fifo not empty for too long
++ */
++#define UART_RX_INT_MASK	(UART_IR_MASK(UART_IR_RXOVER) |		\
++				UART_IR_MASK(UART_IR_RXTHRESH) |	\
++				UART_IR_MASK(UART_IR_RXTIMEOUT))
++
++#define UART_RX_INT_STAT	(UART_IR_STAT(UART_IR_RXOVER) |		\
++				UART_IR_STAT(UART_IR_RXTHRESH) |	\
++				UART_IR_STAT(UART_IR_RXTIMEOUT))
++
++/*
++ * tx interrupt mask / stat
++ *
++ * mask:
++ * - tx fifo empty
++ * - tx fifo below threshold
++ */
++#define UART_TX_INT_MASK	(UART_IR_MASK(UART_IR_TXEMPTY) |	\
++				UART_IR_MASK(UART_IR_TXTRESH))
++
++#define UART_TX_INT_STAT	(UART_IR_STAT(UART_IR_TXEMPTY) |	\
++				UART_IR_STAT(UART_IR_TXTRESH))
++
++/*
++ * external input interrupt
++ *
++ * mask: any edge on CTS, DCD
++ */
++#define UART_EXTINP_INT_MASK	(UART_EXTINP_IRMASK(UART_EXTINP_IR_CTS) | \
++				 UART_EXTINP_IRMASK(UART_EXTINP_IR_DCD))
++
++/*
++ * handy uart register accessor
++ */
++static inline unsigned int bcm_uart_readl(struct uart_port *port,
++					 unsigned int offset)
++{
++	return bcm_readl(port->membase + offset);
 +}
 +
-+#ifdef CONFIG_SERIAL_BFIN_SPORT_CONSOLE
-+static int __init
-+sport_uart_console_setup(struct console *co, char *options)
++static inline void bcm_uart_writel(struct uart_port *port,
++				  unsigned int value, unsigned int offset)
 +{
-+	struct sport_uart_port *up;
-+	int baud = 57600;
++	bcm_writel(value, port->membase + offset);
++}
++
++/*
++ * serial core request to check if uart tx fifo is empty
++ */
++static unsigned int bcm_uart_tx_empty(struct uart_port *port)
++{
++	unsigned int val;
++
++	val = bcm_uart_readl(port, UART_IR_REG);
++	return (val & UART_IR_STAT(UART_IR_TXEMPTY)) ? 1 : 0;
++}
++
++/*
++ * serial core request to set RTS and DTR pin state and loopback mode
++ */
++static void bcm_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
++{
++	unsigned int val;
++
++	val = bcm_uart_readl(port, UART_MCTL_REG);
++	val &= ~(UART_MCTL_DTR_MASK | UART_MCTL_RTS_MASK);
++	/* invert of written value is reflected on the pin */
++	if (!(mctrl & TIOCM_DTR))
++		val |= UART_MCTL_DTR_MASK;
++	if (!(mctrl & TIOCM_RTS))
++		val |= UART_MCTL_RTS_MASK;
++	bcm_uart_writel(port, val, UART_MCTL_REG);
++
++	val = bcm_uart_readl(port, UART_CTL_REG);
++	if (mctrl & TIOCM_LOOP)
++		val |= UART_CTL_LOOPBACK_MASK;
++	else
++		val &= ~UART_CTL_LOOPBACK_MASK;
++	bcm_uart_writel(port, val, UART_CTL_REG);
++}
++
++/*
++ * serial core request to return RI, CTS, DCD and DSR pin state
++ */
++static unsigned int bcm_uart_get_mctrl(struct uart_port *port)
++{
++	unsigned int val, mctrl;
++
++	mctrl = 0;
++	val = bcm_uart_readl(port, UART_EXTINP_REG);
++	if (val & UART_EXTINP_RI_MASK)
++		mctrl |= TIOCM_RI;
++	if (val & UART_EXTINP_CTS_MASK)
++		mctrl |= TIOCM_CTS;
++	if (val & UART_EXTINP_DCD_MASK)
++		mctrl |= TIOCM_CD;
++	if (val & UART_EXTINP_DSR_MASK)
++		mctrl |= TIOCM_DSR;
++	return mctrl;
++}
++
++/*
++ * serial core request to disable tx ASAP (used for flow control)
++ */
++static void bcm_uart_stop_tx(struct uart_port *port)
++{
++	unsigned int val;
++
++	val = bcm_uart_readl(port, UART_CTL_REG);
++	val &= ~(UART_CTL_TXEN_MASK);
++	bcm_uart_writel(port, val, UART_CTL_REG);
++
++	val = bcm_uart_readl(port, UART_IR_REG);
++	val &= ~UART_TX_INT_MASK;
++	bcm_uart_writel(port, val, UART_IR_REG);
++}
++
++/*
++ * serial core request to (re)enable tx
++ */
++static void bcm_uart_start_tx(struct uart_port *port)
++{
++	unsigned int val;
++
++	val = bcm_uart_readl(port, UART_IR_REG);
++	val |= UART_TX_INT_MASK;
++	bcm_uart_writel(port, val, UART_IR_REG);
++
++	val = bcm_uart_readl(port, UART_CTL_REG);
++	val |= UART_CTL_TXEN_MASK;
++	bcm_uart_writel(port, val, UART_CTL_REG);
++}
++
++/*
++ * serial core request to stop rx, called before port shutdown
++ */
++static void bcm_uart_stop_rx(struct uart_port *port)
++{
++	unsigned int val;
++
++	val = bcm_uart_readl(port, UART_IR_REG);
++	val &= ~UART_RX_INT_MASK;
++	bcm_uart_writel(port, val, UART_IR_REG);
++}
++
++/*
++ * serial core request to enable modem status interrupt reporting
++ */
++static void bcm_uart_enable_ms(struct uart_port *port)
++{
++	unsigned int val;
++
++	val = bcm_uart_readl(port, UART_IR_REG);
++	val |= UART_IR_MASK(UART_IR_EXTIP);
++	bcm_uart_writel(port, val, UART_IR_REG);
++}
++
++/*
++ * serial core request to start/stop emitting break char
++ */
++static void bcm_uart_break_ctl(struct uart_port *port, int ctl)
++{
++	unsigned long flags;
++	unsigned int val;
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	val = bcm_uart_readl(port, UART_CTL_REG);
++	if (ctl)
++		val |= UART_CTL_XMITBRK_MASK;
++	else
++		val &= ~UART_CTL_XMITBRK_MASK;
++	bcm_uart_writel(port, val, UART_CTL_REG);
++
++	spin_unlock_irqrestore(&port->lock, flags);
++}
++
++/*
++ * return port type in string format
++ */
++static const char *bcm_uart_type(struct uart_port *port)
++{
++	return (port->type == PORT_BCM63XX) ? "bcm63xx_uart" : NULL;
++}
++
++/*
++ * read all chars in rx fifo and send them to core
++ */
++static void bcm_uart_do_rx(struct uart_port *port)
++{
++	struct tty_struct *tty;
++	unsigned int max_count;
++
++	/* limit number of char read in interrupt, should not be
++	 * higher than fifo size anyway since we're much faster than
++	 * serial port */
++	max_count = 32;
++	tty = port->info->port.tty;
++	do {
++		unsigned int iestat, c, cstat;
++		char flag;
++
++		/* get overrun/fifo empty information from ier
++		 * register */
++		iestat = bcm_uart_readl(port, UART_IR_REG);
++		if (!(iestat & UART_IR_STAT(UART_IR_RXNOTEMPTY)))
++			break;
++
++		cstat = c = bcm_uart_readl(port, UART_FIFO_REG);
++		port->icount.rx++;
++		flag = TTY_NORMAL;
++		c &= 0xff;
++
++		if (unlikely((cstat & UART_FIFO_ANYERR_MASK))) {
++			/* do stats first */
++			if (cstat & UART_FIFO_BRKDET_MASK) {
++				port->icount.brk++;
++				if (uart_handle_break(port))
++					continue;
++			}
++
++			if (cstat & UART_FIFO_PARERR_MASK)
++				port->icount.parity++;
++			if (cstat & UART_FIFO_FRAMEERR_MASK)
++				port->icount.frame++;
++
++			/* update flag wrt read_status_mask */
++			cstat &= port->read_status_mask;
++			if (cstat & UART_FIFO_BRKDET_MASK)
++				flag = TTY_BREAK;
++			if (cstat & UART_FIFO_FRAMEERR_MASK)
++				flag = TTY_FRAME;
++			if (cstat & UART_FIFO_PARERR_MASK)
++				flag = TTY_PARITY;
++		}
++
++		if (uart_handle_sysrq_char(port, c))
++			continue;
++
++		if (unlikely(iestat & UART_IR_STAT(UART_IR_RXOVER))) {
++			port->icount.overrun++;
++			tty_insert_flip_char(tty, 0, TTY_OVERRUN);
++		}
++
++		if ((cstat & port->ignore_status_mask) == 0)
++			tty_insert_flip_char(tty, c, flag);
++
++	} while (--max_count);
++
++	tty_flip_buffer_push(tty);
++}
++
++/*
++ * fill tx fifo with chars to send, stop when fifo is about to be full
++ * or when all chars have been sent.
++ */
++static void bcm_uart_do_tx(struct uart_port *port)
++{
++	struct circ_buf *xmit;
++	unsigned int val, max_count;
++
++	if (port->x_char) {
++		bcm_uart_writel(port, port->x_char, UART_FIFO_REG);
++		port->icount.tx++;
++		port->x_char = 0;
++		return;
++	}
++
++	if (uart_tx_stopped(port)) {
++		bcm_uart_stop_tx(port);
++		return;
++	}
++
++	xmit = &port->info->xmit;
++	if (uart_circ_empty(xmit))
++		goto txq_empty;
++
++	val = bcm_uart_readl(port, UART_MCTL_REG);
++	val = (val & UART_MCTL_TXFIFOFILL_MASK) >> UART_MCTL_TXFIFOFILL_SHIFT;
++	max_count = port->fifosize - val;
++
++	while (max_count--) {
++		unsigned int c;
++
++		c = xmit->buf[xmit->tail];
++		bcm_uart_writel(port, c, UART_FIFO_REG);
++		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
++		port->icount.tx++;
++		if (uart_circ_empty(xmit))
++			break;
++	}
++
++	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
++		uart_write_wakeup(port);
++
++	if (uart_circ_empty(xmit))
++		goto txq_empty;
++	return;
++
++txq_empty:
++	/* nothing to send, disable transmit interrupt */
++	val = bcm_uart_readl(port, UART_IR_REG);
++	val &= ~UART_TX_INT_MASK;
++	bcm_uart_writel(port, val, UART_IR_REG);
++	return;
++}
++
++/*
++ * process uart interrupt
++ */
++static irqreturn_t bcm_uart_interrupt(int irq, void *dev_id)
++{
++	struct uart_port *port;
++	unsigned int irqstat;
++
++	port = dev_id;
++	spin_lock(&port->lock);
++
++	irqstat = bcm_uart_readl(port, UART_IR_REG);
++	if (irqstat & UART_RX_INT_STAT)
++		bcm_uart_do_rx(port);
++
++	if (irqstat & UART_TX_INT_STAT)
++		bcm_uart_do_tx(port);
++
++	if (irqstat & UART_IR_MASK(UART_IR_EXTIP)) {
++		unsigned int estat;
++
++		estat = bcm_uart_readl(port, UART_EXTINP_REG);
++		if (estat & UART_EXTINP_IRSTAT(UART_EXTINP_IR_CTS))
++			uart_handle_cts_change(port,
++					       estat & UART_EXTINP_CTS_MASK);
++		if (estat & UART_EXTINP_IRSTAT(UART_EXTINP_IR_DCD))
++			uart_handle_dcd_change(port,
++					       estat & UART_EXTINP_DCD_MASK);
++	}
++
++	spin_unlock(&port->lock);
++	return IRQ_HANDLED;
++}
++
++/*
++ * enable rx & tx operation on uart
++ */
++static void bcm_uart_enable(struct uart_port *port)
++{
++	unsigned int val;
++
++	val = bcm_uart_readl(port, UART_CTL_REG);
++	val |= (UART_CTL_BRGEN_MASK | UART_CTL_TXEN_MASK | UART_CTL_RXEN_MASK);
++	bcm_uart_writel(port, val, UART_CTL_REG);
++}
++
++/*
++ * disable rx & tx operation on uart
++ */
++static void bcm_uart_disable(struct uart_port *port)
++{
++	unsigned int val;
++
++	val = bcm_uart_readl(port, UART_CTL_REG);
++	val &= ~(UART_CTL_BRGEN_MASK | UART_CTL_TXEN_MASK |
++		 UART_CTL_RXEN_MASK);
++	bcm_uart_writel(port, val, UART_CTL_REG);
++}
++
++/*
++ * clear all unread data in rx fifo and unsent data in tx fifo
++ */
++static void bcm_uart_flush(struct uart_port *port)
++{
++	unsigned int val;
++
++	/* empty rx and tx fifo */
++	val = bcm_uart_readl(port, UART_CTL_REG);
++	val |= UART_CTL_RSTRXFIFO_MASK | UART_CTL_RSTTXFIFO_MASK;
++	bcm_uart_writel(port, val, UART_CTL_REG);
++
++	/* read any pending char to make sure all irq status are
++	 * cleared */
++	(void)bcm_uart_readl(port, UART_FIFO_REG);
++}
++
++/*
++ * serial core request to initialize uart and start rx operation
++ */
++static int bcm_uart_startup(struct uart_port *port)
++{
++	unsigned int val;
++	int ret;
++
++	/* mask all irq and flush port */
++	bcm_uart_disable(port);
++	bcm_uart_writel(port, 0, UART_IR_REG);
++	bcm_uart_flush(port);
++
++	/* clear any pending external input interrupt */
++	(void)bcm_uart_readl(port, UART_EXTINP_REG);
++
++	/* set rx/tx fifo thresh to fifo half size */
++	val = bcm_uart_readl(port, UART_MCTL_REG);
++	val &= ~(UART_MCTL_RXFIFOTHRESH_MASK | UART_MCTL_TXFIFOTHRESH_MASK);
++	val |= (port->fifosize / 2) << UART_MCTL_RXFIFOTHRESH_SHIFT;
++	val |= (port->fifosize / 2) << UART_MCTL_TXFIFOTHRESH_SHIFT;
++	bcm_uart_writel(port, val, UART_MCTL_REG);
++
++	/* set rx fifo timeout to 1 char time */
++	val = bcm_uart_readl(port, UART_CTL_REG);
++	val &= ~UART_CTL_RXTMOUTCNT_MASK;
++	val |= 1 << UART_CTL_RXTMOUTCNT_SHIFT;
++	bcm_uart_writel(port, val, UART_CTL_REG);
++
++	/* report any edge on dcd and cts */
++	val = UART_EXTINP_INT_MASK;
++	val |= UART_EXTINP_DCD_NOSENSE_MASK;
++	val |= UART_EXTINP_CTS_NOSENSE_MASK;
++	bcm_uart_writel(port, val, UART_EXTINP_REG);
++
++	/* register irq and enable rx interrupts */
++	ret = request_irq(port->irq, bcm_uart_interrupt, 0,
++			  bcm_uart_type(port), port);
++	if (ret)
++		return ret;
++	bcm_uart_writel(port, UART_RX_INT_MASK, UART_IR_REG);
++	bcm_uart_enable(port);
++	return 0;
++}
++
++/*
++ * serial core request to flush & disable uart
++ */
++static void bcm_uart_shutdown(struct uart_port *port)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&port->lock, flags);
++	bcm_uart_writel(port, 0, UART_IR_REG);
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	bcm_uart_disable(port);
++	bcm_uart_flush(port);
++	free_irq(port->irq, port);
++}
++
++/*
++ * serial core request to change current uart setting
++ */
++static void bcm_uart_set_termios(struct uart_port *port,
++				 struct ktermios *new,
++				 struct ktermios *old)
++{
++	unsigned int ctl, baud, quot, ier;
++	unsigned long flags;
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	/* disable uart while changing speed */
++	bcm_uart_disable(port);
++	bcm_uart_flush(port);
++
++	/* update Control register */
++	ctl = bcm_uart_readl(port, UART_CTL_REG);
++	ctl &= ~UART_CTL_BITSPERSYM_MASK;
++
++	switch (new->c_cflag & CSIZE) {
++	case CS5:
++		ctl |= (0 << UART_CTL_BITSPERSYM_SHIFT);
++		break;
++	case CS6:
++		ctl |= (1 << UART_CTL_BITSPERSYM_SHIFT);
++		break;
++	case CS7:
++		ctl |= (2 << UART_CTL_BITSPERSYM_SHIFT);
++		break;
++	default:
++		ctl |= (3 << UART_CTL_BITSPERSYM_SHIFT);
++		break;
++	}
++
++	ctl &= ~UART_CTL_STOPBITS_MASK;
++	if (new->c_cflag & CSTOPB)
++		ctl |= UART_CTL_STOPBITS_2;
++	else
++		ctl |= UART_CTL_STOPBITS_1;
++
++	ctl &= ~(UART_CTL_RXPAREN_MASK | UART_CTL_TXPAREN_MASK);
++	if (new->c_cflag & PARENB)
++		ctl |= (UART_CTL_RXPAREN_MASK | UART_CTL_TXPAREN_MASK);
++	ctl &= ~(UART_CTL_RXPAREVEN_MASK | UART_CTL_TXPAREVEN_MASK);
++	if (new->c_cflag & PARODD)
++		ctl |= (UART_CTL_RXPAREVEN_MASK | UART_CTL_TXPAREVEN_MASK);
++	bcm_uart_writel(port, ctl, UART_CTL_REG);
++
++	/* update Baudword register */
++	baud = uart_get_baud_rate(port, new, old, 0, port->uartclk / 16);
++	quot = uart_get_divisor(port, baud) - 1;
++	bcm_uart_writel(port, quot, UART_BAUD_REG);
++
++	/* update Interrupt register */
++	ier = bcm_uart_readl(port, UART_IR_REG);
++
++	ier &= ~UART_IR_MASK(UART_IR_EXTIP);
++	if (UART_ENABLE_MS(port, new->c_cflag))
++		ier |= UART_IR_MASK(UART_IR_EXTIP);
++
++	bcm_uart_writel(port, ier, UART_IR_REG);
++
++	/* update read/ignore mask */
++	port->read_status_mask = UART_FIFO_VALID_MASK;
++	if (new->c_iflag & INPCK) {
++		port->read_status_mask |= UART_FIFO_FRAMEERR_MASK;
++		port->read_status_mask |= UART_FIFO_PARERR_MASK;
++	}
++	if (new->c_iflag & (BRKINT))
++		port->read_status_mask |= UART_FIFO_BRKDET_MASK;
++
++	port->ignore_status_mask = 0;
++	if (new->c_iflag & IGNPAR)
++		port->ignore_status_mask |= UART_FIFO_PARERR_MASK;
++	if (new->c_iflag & IGNBRK)
++		port->ignore_status_mask |= UART_FIFO_BRKDET_MASK;
++	if (!(new->c_cflag & CREAD))
++		port->ignore_status_mask |= UART_FIFO_VALID_MASK;
++
++	uart_update_timeout(port, new->c_cflag, baud);
++	bcm_uart_enable(port);
++	spin_unlock_irqrestore(&port->lock, flags);
++}
++
++/*
++ * serial core request to claim uart iomem
++ */
++static int bcm_uart_request_port(struct uart_port *port)
++{
++	unsigned int size;
++
++	size = RSET_UART_SIZE;
++	if (!request_mem_region(port->mapbase, size, "bcm63xx")) {
++		dev_err(port->dev, "Memory region busy\n");
++		return -EBUSY;
++	}
++
++	port->membase = ioremap(port->mapbase, size);
++	if (!port->membase) {
++		dev_err(port->dev, "Unable to map registers\n");
++		release_mem_region(port->mapbase, size);
++		return -EBUSY;
++	}
++	return 0;
++}
++
++/*
++ * serial core request to release uart iomem
++ */
++static void bcm_uart_release_port(struct uart_port *port)
++{
++	release_mem_region(port->mapbase, RSET_UART_SIZE);
++	iounmap(port->membase);
++}
++
++/*
++ * serial core request to do any port required autoconfiguration
++ */
++static void bcm_uart_config_port(struct uart_port *port, int flags)
++{
++	if (flags & UART_CONFIG_TYPE) {
++		if (bcm_uart_request_port(port))
++			return;
++		port->type = PORT_BCM63XX;
++	}
++}
++
++/*
++ * serial core request to check that port information in serinfo are
++ * suitable
++ */
++static int bcm_uart_verify_port(struct uart_port *port,
++				struct serial_struct *serinfo)
++{
++	if (port->type != PORT_BCM63XX)
++		return -EINVAL;
++	if (port->irq != serinfo->irq)
++		return -EINVAL;
++	if (port->iotype != serinfo->io_type)
++		return -EINVAL;
++	if (port->mapbase != (unsigned long)serinfo->iomem_base)
++		return -EINVAL;
++	return 0;
++}
++
++/* serial core callbacks */
++static struct uart_ops bcm_uart_ops = {
++	.tx_empty	= bcm_uart_tx_empty,
++	.get_mctrl	= bcm_uart_get_mctrl,
++	.set_mctrl	= bcm_uart_set_mctrl,
++	.start_tx	= bcm_uart_start_tx,
++	.stop_tx	= bcm_uart_stop_tx,
++	.stop_rx	= bcm_uart_stop_rx,
++	.enable_ms	= bcm_uart_enable_ms,
++	.break_ctl	= bcm_uart_break_ctl,
++	.startup	= bcm_uart_startup,
++	.shutdown	= bcm_uart_shutdown,
++	.set_termios	= bcm_uart_set_termios,
++	.type		= bcm_uart_type,
++	.release_port	= bcm_uart_release_port,
++	.request_port	= bcm_uart_request_port,
++	.config_port	= bcm_uart_config_port,
++	.verify_port	= bcm_uart_verify_port,
++};
++
++
++
++#ifdef CONFIG_SERIAL_BCM63XX_CONSOLE
++static inline void wait_for_xmitr(struct uart_port *port)
++{
++	unsigned int tmout;
++
++	/* Wait up to 10ms for the character(s) to be sent. */
++	tmout = 10000;
++	while (--tmout) {
++		unsigned int val;
++
++		val = bcm_uart_readl(port, UART_IR_REG);
++		if (val & UART_IR_STAT(UART_IR_TXEMPTY))
++			break;
++		udelay(1);
++	}
++
++	/* Wait up to 1s for flow control if necessary */
++	if (port->flags & UPF_CONS_FLOW) {
++		tmout = 1000000;
++		while (--tmout) {
++			unsigned int val;
++
++			val = bcm_uart_readl(port, UART_EXTINP_REG);
++			if (val & UART_EXTINP_CTS_MASK)
++				break;
++			udelay(1);
++		}
++	}
++}
++
++/*
++ * output given char
++ */
++static void bcm_console_putchar(struct uart_port *port, int ch)
++{
++	wait_for_xmitr(port);
++	bcm_uart_writel(port, ch, UART_FIFO_REG);
++}
++
++/*
++ * console core request to output given string
++ */
++static void bcm_console_write(struct console *co, const char *s,
++			      unsigned int count)
++{
++	struct uart_port *port;
++	unsigned long flags;
++	int locked;
++
++	port = &ports[co->index];
++
++	local_irq_save(flags);
++	if (port->sysrq) {
++		/* bcm_uart_interrupt() already took the lock */
++		locked = 0;
++	} else if (oops_in_progress) {
++		locked = spin_trylock(&port->lock);
++	} else {
++		spin_lock(&port->lock);
++		locked = 1;
++	}
++
++	/* call helper to deal with \r\n */
++	uart_console_write(port, s, count, bcm_console_putchar);
++
++	/* and wait for char to be transmitted */
++	wait_for_xmitr(port);
++
++	if (locked)
++		spin_unlock(&port->lock);
++	local_irq_restore(flags);
++}
++
++/*
++ * console core request to setup given console, find matching uart
++ * port and setup it.
++ */
++static int bcm_console_setup(struct console *co, char *options)
++{
++	struct uart_port *port;
++	int baud = 9600;
 +	int bits = 8;
 +	int parity = 'n';
 +	int flow = 'n';
 +
-+	/* Check whether an invalid uart number has been specified */
-+	if (co->index == -1 || co->index >= BFIN_SPORT_UART_MAX_PORTS)
++	if (co->index < 0 || co->index >= BCM63XX_NR_UARTS)
++		return -EINVAL;
++	port = &ports[co->index];
++	if (!port->membase)
 +		return -ENODEV;
-+
-+	up = &bfin_sport_uart_ports[co->index];
-+
 +	if (options)
 +		uart_parse_options(options, &baud, &parity, &bits, &flow);
 +
-+	return uart_set_options(&up->port, co, baud, parity, bits, flow);
++	return uart_set_options(port, co, baud, parity, bits, flow);
 +}
 +
-+static void sport_uart_console_putchar(struct uart_port *port, int ch)
-+{
-+	struct sport_uart_port *up = (struct sport_uart_port *)port;
++static struct uart_driver bcm_uart_driver;
 +
-+	while (SPORT_GET_STAT(up) & TXF)
-+		barrier();
-+
-+	tx_one_byte(up, ch);
-+}
-+
-+/*
-+ * Interrupts are disabled on entering
-+ */
-+static void
-+sport_uart_console_write(struct console *co, const char *s, unsigned int count)
-+{
-+	struct sport_uart_port *up = &bfin_sport_uart_ports[co->index];
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&up->port.lock, flags);
-+
-+	if (SPORT_GET_TCR1(up) & TSPEN)
-+		uart_console_write(&up->port, s, count, sport_uart_console_putchar);
-+	else {
-+		/* dummy data to start sport */
-+		while (SPORT_GET_STAT(up) & TXF)
-+			barrier();
-+		SPORT_PUT_TX(up, 0xffff);
-+		/* Enable transmit, then an interrupt will generated */
-+		SPORT_PUT_TCR1(up, (SPORT_GET_TCR1(up) | TSPEN));
-+		SSYNC();
-+
-+		uart_console_write(&up->port, s, count, sport_uart_console_putchar);
-+
-+		/* Although the hold register is empty, last byte is still in shift
-+		 * register and not sent out yet. So, put a dummy data into TX FIFO.
-+		 * Then, sport tx stops when last byte is shift out and the dummy
-+		 * data is moved into the shift register.
-+		 */
-+		while (SPORT_GET_STAT(up) & TXF)
-+			barrier();
-+		SPORT_PUT_TX(up, 0xffff);
-+		while (!(SPORT_GET_STAT(up) & TXHRE))
-+			barrier();
-+
-+		/* Stop sport tx transfer */
-+		SPORT_PUT_TCR1(up, (SPORT_GET_TCR1(up) & ~TSPEN));
-+		SSYNC();
- 	}
-+
-+	spin_unlock_irqrestore(&up->port.lock, flags);
-+}
-+
-+static struct uart_driver sport_uart_reg;
-+
-+static struct console sport_uart_console = {
-+	.name		= DEVICE_NAME,
-+	.write		= sport_uart_console_write,
++static struct console bcm63xx_console = {
++	.name		= "ttyS",
++	.write		= bcm_console_write,
 +	.device		= uart_console_device,
-+	.setup		= sport_uart_console_setup,
++	.setup		= bcm_console_setup,
 +	.flags		= CON_PRINTBUFFER,
 +	.index		= -1,
-+	.data		= &sport_uart_reg,
- };
- 
-+static int __init sport_uart_rs_console_init(void)
++	.data		= &bcm_uart_driver,
++};
++
++static int __init bcm63xx_console_init(void)
 +{
-+	int ret = sport_uart_init_ports();
-+	if (ret)
-+		return ret;
-+
-+	register_console(&sport_uart_console);
-+
++	register_console(&bcm63xx_console);
 +	return 0;
 +}
-+console_initcall(sport_uart_rs_console_init);
 +
-+#define SPORT_UART_CONSOLE	(&sport_uart_console)
++console_initcall(bcm63xx_console_init);
++
++#define BCM63XX_CONSOLE	(&bcm63xx_console)
 +#else
-+#define SPORT_UART_CONSOLE	NULL
-+#endif /* CONFIG_SERIAL_BFIN_CONSOLE */
++#define BCM63XX_CONSOLE	NULL
++#endif /* CONFIG_SERIAL_BCM63XX_CONSOLE */
 +
-+
- static struct uart_driver sport_uart_reg = {
- 	.owner		= THIS_MODULE,
--	.driver_name	= "SPORT-UART",
--	.dev_name	= "ttySS",
-+	.driver_name	= DRV_NAME,
-+	.dev_name	= DEVICE_NAME,
- 	.major		= 204,
- 	.minor		= 84,
--	.nr		= ARRAY_SIZE(sport_uart_ports),
--	.cons		= NULL,
-+	.nr		= BFIN_SPORT_UART_MAX_PORTS,
-+	.cons		= SPORT_UART_CONSOLE,
- };
- 
--static int sport_uart_suspend(struct platform_device *dev, pm_message_t state)
-+#ifdef CONFIG_PM
-+static int sport_uart_suspend(struct device *dev)
- {
--	struct sport_uart_port *sport = platform_get_drvdata(dev);
-+	struct sport_uart_port *sport = dev_get_drvdata(dev);
- 
--	pr_debug("%s enter\n", __func__);
-+	dev_dbg(dev, "%s enter\n", __func__);
- 	if (sport)
- 		uart_suspend_port(&sport_uart_reg, &sport->port);
- 
- 	return 0;
- }
- 
--static int sport_uart_resume(struct platform_device *dev)
-+static int sport_uart_resume(struct device *dev)
- {
--	struct sport_uart_port *sport = platform_get_drvdata(dev);
-+	struct sport_uart_port *sport = dev_get_drvdata(dev);
- 
--	pr_debug("%s enter\n", __func__);
-+	dev_dbg(dev, "%s enter\n", __func__);
- 	if (sport)
- 		uart_resume_port(&sport_uart_reg, &sport->port);
- 
- 	return 0;
- }
- 
--static int sport_uart_probe(struct platform_device *dev)
-+static struct dev_pm_ops bfin_sport_uart_dev_pm_ops = {
-+	.suspend	= sport_uart_suspend,
-+	.resume		= sport_uart_resume,
++static struct uart_driver bcm_uart_driver = {
++	.owner		= THIS_MODULE,
++	.driver_name	= "bcm63xx_uart",
++	.dev_name	= "ttyS",
++	.major		= TTY_MAJOR,
++	.minor		= 64,
++	.nr		= 1,
++	.cons		= BCM63XX_CONSOLE,
 +};
-+#endif
 +
-+static int __devinit sport_uart_probe(struct platform_device *pdev)
- {
--	pr_debug("%s enter\n", __func__);
--	sport_uart_ports[dev->id].port.dev = &dev->dev;
--	uart_add_one_port(&sport_uart_reg, &sport_uart_ports[dev->id].port);
--	platform_set_drvdata(dev, &sport_uart_ports[dev->id]);
-+	struct resource *res;
-+	struct sport_uart_port *sport;
-+	int ret = 0;
-+	int index;
- 
--	return 0;
-+	dev_dbg(&pdev->dev, "%s enter\n", __func__);
++/*
++ * platform driver probe/remove callback
++ */
++static int __devinit bcm_uart_probe(struct platform_device *pdev)
++{
++	struct resource *res_mem, *res_irq;
++	struct uart_port *port;
++	struct clk *clk;
++	int ret;
 +
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (res == NULL) {
-+		dev_err(&pdev->dev, "Cannot get IORESOURCE_MEM\n");
-+		return -ENOENT;
++	if (pdev->id < 0 || pdev->id >= BCM63XX_NR_UARTS)
++		return -EINVAL;
++
++	if (ports[pdev->id].membase)
++		return -EBUSY;
++
++	res_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res_mem)
++		return -ENODEV;
++
++	res_irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
++	if (!res_irq)
++		return -ENODEV;
++
++	clk = clk_get(&pdev->dev, "periph");
++	if (IS_ERR(clk))
++		return -ENODEV;
++
++	port = &ports[pdev->id];
++	memset(port, 0, sizeof(*port));
++	port->iotype = UPIO_MEM;
++	port->mapbase = res_mem->start;
++	port->irq = res_irq->start;
++	port->ops = &bcm_uart_ops;
++	port->flags = UPF_BOOT_AUTOCONF;
++	port->dev = &pdev->dev;
++	port->fifosize = 16;
++	port->uartclk = clk_get_rate(clk) / 2;
++	clk_put(clk);
++
++	ret = uart_add_one_port(&bcm_uart_driver, port);
++	if (ret) {
++		kfree(port);
++		return ret;
 +	}
++	platform_set_drvdata(pdev, port);
++	return 0;
++}
 +
-+	for (index = 0; index < BFIN_SPORT_UART_MAX_PORTS; index++)
-+		if (res->start == bfin_sport_uart_console_base_addr[index])
-+			break;
++static int __devexit bcm_uart_remove(struct platform_device *pdev)
++{
++	struct uart_port *port;
 +
-+	if (index == BFIN_SPORT_UART_MAX_PORTS) {
-+		dev_err(&pdev->dev, "Wrong sport uart platform device\n");
-+		return -ENOENT;
-+	}
++	port = platform_get_drvdata(pdev);
++	uart_remove_one_port(&bcm_uart_driver, port);
++	platform_set_drvdata(pdev, NULL);
++	/* mark port as free */
++	ports[pdev->id].membase = 0;
++	return 0;
++}
 +
-+	sport = &bfin_sport_uart_ports[index];
++/*
++ * platform driver stuff
++ */
++static struct platform_driver bcm_uart_platform_driver = {
++	.probe	= bcm_uart_probe,
++	.remove	= __devexit_p(bcm_uart_remove),
++	.driver	= {
++		.owner = THIS_MODULE,
++		.name  = "bcm63xx_uart",
++	},
++};
 +
-+	sport->port.membase = ioremap(res->start, res->end - res->start);
-+	if (!sport->port.membase) {
-+		dev_err(&pdev->dev, "Cannot map sport IO\n");
-+		return -ENXIO;
-+	}
++static int __init bcm_uart_init(void)
++{
++	int ret;
 +
-+	sport->port.irq = platform_get_irq(pdev, 0);
-+	if (sport->port.irq < 0) {
-+		dev_err(&pdev->dev, "No sport RX/TX IRQ specified\n");
-+		ret = -ENOENT;
-+		goto out_error;
-+	}
-+
-+	sport->err_irq = platform_get_irq(pdev, 1);
-+	if (sport->err_irq < 0) {
-+		dev_err(&pdev->dev, "No sport status IRQ specified\n");
-+		ret = -ENOENT;
-+		goto out_error;
-+	}
-+
-+	sport->port.dev = &pdev->dev;
-+	dev_set_drvdata(&pdev->dev, sport);
-+	ret = uart_add_one_port(&sport_uart_reg, &sport->port);
-+	if (!ret)
-+		return 0;
-+
-+out_error:
-+	iounmap(sport->port.membase);
-+
-+	return ret;
- }
- 
--static int sport_uart_remove(struct platform_device *dev)
-+static int __devexit sport_uart_remove(struct platform_device *pdev)
- {
--	struct sport_uart_port *sport = platform_get_drvdata(dev);
-+	struct sport_uart_port *sport = platform_get_drvdata(pdev);
- 
--	pr_debug("%s enter\n", __func__);
--	platform_set_drvdata(dev, NULL);
-+	dev_dbg(&pdev->dev, "%s enter\n", __func__);
-+	dev_set_drvdata(&pdev->dev, NULL);
- 
- 	if (sport)
- 		uart_remove_one_port(&sport_uart_reg, &sport->port);
- 
-+	iounmap(sport->port.membase);
-+
- 	return 0;
- }
- 
- static struct platform_driver sport_uart_driver = {
- 	.probe		= sport_uart_probe,
--	.remove		= sport_uart_remove,
--	.suspend	= sport_uart_suspend,
--	.resume		= sport_uart_resume,
-+	.remove		= __devexit_p(sport_uart_remove),
- 	.driver		= {
- 		.name	= DRV_NAME,
-+#ifdef CONFIG_PM
-+		.pm	= &bfin_sport_uart_dev_pm_ops,
-+#endif
- 	},
- };
- 
-@@ -585,33 +864,49 @@ static int __init sport_uart_init(void)
- {
- 	int ret;
- 
--	pr_debug("%s enter\n", __func__);
-+	pr_info("Serial: Blackfin uart over sport driver\n");
-+
-+	ret = sport_uart_init_ports();
++	ret = uart_register_driver(&bcm_uart_driver);
 +	if (ret)
 +		return ret;
 +
- 	ret = uart_register_driver(&sport_uart_reg);
--	if (ret != 0) {
--		printk(KERN_ERR "Failed to register %s:%d\n",
-+	if (ret) {
-+		pr_err("failed to register %s:%d\n",
- 				sport_uart_reg.driver_name, ret);
- 		return ret;
- 	}
- 
- 	ret = platform_driver_register(&sport_uart_driver);
--	if (ret != 0) {
--		printk(KERN_ERR "Failed to register sport uart driver:%d\n", ret);
-+	if (ret) {
-+		pr_err("failed to register sport uart driver:%d\n", ret);
- 		uart_unregister_driver(&sport_uart_reg);
- 	}
- 
--
--	pr_debug("%s exit\n", __func__);
- 	return ret;
- }
-+module_init(sport_uart_init);
- 
- static void __exit sport_uart_exit(void)
- {
--	pr_debug("%s enter\n", __func__);
- 	platform_driver_unregister(&sport_uart_driver);
- 	uart_unregister_driver(&sport_uart_reg);
--}
- 
--module_init(sport_uart_init);
-+#ifdef CONFIG_SERIAL_BFIN_SPORT0_UART
-+	peripheral_free_list(bfin_uart_pin_req_sport0);
-+#endif
-+#ifdef CONFIG_SERIAL_BFIN_SPORT1_UART
-+	peripheral_free_list(bfin_uart_pin_req_sport1);
-+#endif
-+#ifdef CONFIG_SERIAL_BFIN_SPORT2_UART
-+	peripheral_free_list(bfin_uart_pin_req_sport2);
-+#endif
-+#ifdef CONFIG_SERIAL_BFIN_SPORT3_UART
-+	peripheral_free_list(bfin_uart_pin_req_sport3);
-+#endif
++	ret = platform_driver_register(&bcm_uart_platform_driver);
++	if (ret)
++		uart_unregister_driver(&bcm_uart_driver);
++
++	return ret;
 +}
- module_exit(sport_uart_exit);
- 
-+MODULE_AUTHOR("Sonic Zhang, Roy Huang");
-+MODULE_DESCRIPTION("Blackfin serial over SPORT driver");
- MODULE_LICENSE("GPL");
-diff --git a/drivers/serial/bfin_sport_uart.h b/drivers/serial/bfin_sport_uart.h
-index 46e793e..19d814f 100644
---- a/drivers/serial/bfin_sport_uart.h
-+++ b/drivers/serial/bfin_sport_uart.h
-@@ -1,29 +1,23 @@
- /*
-- * File:	linux/drivers/serial/bfin_sport_uart.h
-+ * Blackfin On-Chip Sport Emulated UART Driver
-  *
-- * Based on:	include/asm-blackfin/mach-533/bfin_serial_5xx.h
-- * Author:	Roy Huang <roy.huang>analog.com>
-+ * Copyright 2006-2008 Analog Devices Inc.
-  *
-- * Created:	Nov 22, 2006
-- * Copyright:	(C) Analog Device Inc.
-- * Description: this driver enable SPORTs on Blackfin emulate UART.
-+ * Enter bugs at http://blackfin.uclinux.org/
-  *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License as published by
-- * the Free Software Foundation; either version 2 of the License, or
-- * (at your option) any later version.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-- *
-- * You should have received a copy of the GNU General Public License
-- * along with this program; if not, see the file COPYING, or write
-- * to the Free Software Foundation, Inc.,
-- * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-+ * Licensed under the GPL-2 or later.
-  */
- 
-+/*
-+ * This driver and the hardware supported are in term of EE-191 of ADI.
-+ * http://www.analog.com/UploadedFiles/Application_Notes/399447663EE191.pdf
-+ * This application note describe how to implement a UART on a Sharc DSP,
-+ * but this driver is implemented on Blackfin Processor.
-+ * Transmit Frame Sync is not used by this driver to transfer data out.
-+ */
 +
-+#ifndef _BFIN_SPORT_UART_H
-+#define _BFIN_SPORT_UART_H
++static void __exit bcm_uart_exit(void)
++{
++	platform_driver_unregister(&bcm_uart_platform_driver);
++	uart_unregister_driver(&bcm_uart_driver);
++}
++
++module_init(bcm_uart_init);
++module_exit(bcm_uart_exit);
++
++MODULE_AUTHOR("Maxime Bizon <mbizon@freebox.fr>");
++MODULE_DESCRIPTION("Broadcom 63<xx integrated uart driver");
++MODULE_LICENSE("GPL");
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 23d2fb0..7abe73b 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -174,6 +174,9 @@
+ /* Qualcomm MSM SoCs */
+ #define PORT_MSM	88
  
- #define OFFSET_TCR1		0x00	/* Transmit Configuration 1 Register */
- #define OFFSET_TCR2		0x04	/* Transmit Configuration 2 Register */
-@@ -74,3 +68,7 @@
- #define SPORT_PUT_RCLKDIV(sport, v)	bfin_write16(((sport)->port.membase + OFFSET_RCLKDIV), v)
- #define SPORT_PUT_RFSDIV(sport, v)	bfin_write16(((sport)->port.membase + OFFSET_RFSDIV), v)
- #define SPORT_PUT_STAT(sport, v)	bfin_write16(((sport)->port.membase + OFFSET_STAT), v)
++/* BCM63xx family SoCs */
++#define PORT_BCM63XX	89
 +
-+#define SPORT_TX_FIFO_SIZE	8
-+
-+#endif /* _BFIN_SPORT_UART_H */
--- 
-1.6.0
+ #ifdef __KERNEL__
+ 
+ #include <linux/compiler.h>
 
+
+-- 
+Maxime
 
 
