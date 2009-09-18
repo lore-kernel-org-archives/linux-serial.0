@@ -1,171 +1,185 @@
 From: akpm@linux-foundation.org
-Subject: [patch 2/5] icom: convert space to tabs
+Subject: [patch 1/5] serial_txx9: use container_of() instead of direct cast
 Date: Fri, 18 Sep 2009 12:55:47 -0700
-Message-ID: <200909181955.n8IJtmDv031786@imap1.linux-foundation.org>
+Message-ID: <200909181955.n8IJtlF8031730@imap1.linux-foundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ANSI_X3.4-1968
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp1.linux-foundation.org ([140.211.169.13]:37050 "EHLO
+Received: from smtp1.linux-foundation.org ([140.211.169.13]:58109 "EHLO
 	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754134AbZIRT4N (ORCPT
+	by vger.kernel.org with ESMTP id S1754110AbZIRT4S (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 18 Sep 2009 15:56:13 -0400
+	Fri, 18 Sep 2009 15:56:18 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: alan@lxorguk.ukuu.org.uk
-Cc: linux-serial@vger.kernel.org, akpm@linux-foundation.org, leitao@linux.vnet.ibm.com, Scott.Kilau@digi.com, jirislaby@gmail.com
+Cc: linux-serial@vger.kernel.org, akpm@linux-foundation.org, anemo@mba.ocn.ne.jp, ralf@linux-mips.org
 
-From: Breno Leitao <leitao@linux.vnet.ibm.com>
+From: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
 
-Convert spaces to tabs and remove wrong spaces
-
-Signed-off-by: Breno Leitao <leitao@linux.vnet.ibm.com>
-Cc: Scott Kilau <Scott.Kilau@digi.com>
-Cc: Jiri Slaby <jirislaby@gmail.com>
+Signed-off-by: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
+Cc: Ralf Baechle <ralf@linux-mips.org>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 ---
 
- drivers/serial/icom.c |   54 +++++++++++++++++++---------------------
- 1 file changed, 26 insertions(+), 28 deletions(-)
+ drivers/serial/serial_txx9.c |   39 ++++++++++++++++++---------------
+ 1 file changed, 22 insertions(+), 17 deletions(-)
 
-diff -puN drivers/serial/icom.c~icom-converting-space-to-tabs drivers/serial/icom.c
---- a/drivers/serial/icom.c~icom-converting-space-to-tabs
-+++ a/drivers/serial/icom.c
-@@ -307,7 +307,7 @@ static void stop_processor(struct icom_p
- 	if (port < 4) {
- 		temp = readl(stop_proc[port].global_control_reg);
- 		temp =
--	    		(temp & ~start_proc[port].processor_id) | stop_proc[port].processor_id;
-+			(temp & ~start_proc[port].processor_id) | stop_proc[port].processor_id;
- 		writel(temp, stop_proc[port].global_control_reg);
- 
- 		/* write flush */
-@@ -336,7 +336,7 @@ static void start_processor(struct icom_
- 	if (port < 4) {
- 		temp = readl(start_proc[port].global_control_reg);
- 		temp =
--	    		(temp & ~stop_proc[port].processor_id) | start_proc[port].processor_id;
-+			(temp & ~stop_proc[port].processor_id) | start_proc[port].processor_id;
- 		writel(temp, start_proc[port].global_control_reg);
- 
- 		/* write flush */
-@@ -509,8 +509,8 @@ static void load_code(struct icom_port *
- 		dev_err(&icom_port->adapter->pci_dev->dev,"Port not opertional\n");
- 	}
- 
--      if (new_page != NULL)
--	      pci_free_consistent(dev, 4096, new_page, temp_pci);
-+	if (new_page != NULL)
-+		pci_free_consistent(dev, 4096, new_page, temp_pci);
+diff -puN drivers/serial/serial_txx9.c~serial_txx9-use-container_of-instead-of-direct-cast drivers/serial/serial_txx9.c
+--- a/drivers/serial/serial_txx9.c~serial_txx9-use-container_of-instead-of-direct-cast
++++ a/drivers/serial/serial_txx9.c
+@@ -221,21 +221,26 @@ sio_quot_set(struct uart_txx9_port *up, 
+ 		sio_out(up, TXX9_SIBGR, 0xff | TXX9_SIBGR_BCLK_T6);
  }
  
- static int startup(struct icom_port *icom_port)
-@@ -1493,15 +1493,15 @@ static int __devinit icom_probe(struct p
- 				const struct pci_device_id *ent)
++static struct uart_txx9_port *to_uart_txx9_port(struct uart_port *port)
++{
++	return container_of(port, struct uart_txx9_port, port);
++}
++
+ static void serial_txx9_stop_tx(struct uart_port *port)
  {
- 	int index;
--        unsigned int command_reg;
--        int retval;
--        struct icom_adapter *icom_adapter;
--        struct icom_port *icom_port;
-+	unsigned int command_reg;
-+	int retval;
-+	struct icom_adapter *icom_adapter;
-+	struct icom_port *icom_port;
- 
--        retval = pci_enable_device(dev);
--        if (retval) {
-+	retval = pci_enable_device(dev);
-+	if (retval) {
- 		dev_err(&dev->dev, "Device enable FAILED\n");
--                return retval;
-+		return retval;
- 	}
- 
- 	if ( (retval = pci_request_regions(dev, "icom"))) {
-@@ -1510,23 +1510,23 @@ static int __devinit icom_probe(struct p
- 		 return retval;
- 	 }
- 
--        pci_set_master(dev);
-+	pci_set_master(dev);
- 
--        if ( (retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg))) {
-+	if ( (retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg))) {
- 		dev_err(&dev->dev, "PCI Config read FAILED\n");
--                return retval;
--        }
-+		return retval;
-+	}
- 
- 	pci_write_config_dword(dev, PCI_COMMAND,
- 		command_reg | PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER
-  		| PCI_COMMAND_PARITY | PCI_COMMAND_SERR);
- 
--        if (ent->driver_data == ADAPTER_V1) {
-+	if (ent->driver_data == ADAPTER_V1) {
- 		pci_write_config_dword(dev, 0x44, 0x8300830A);
--	 } else {
-+	} else {
- 		pci_write_config_dword(dev, 0x44, 0x42004200);
- 		pci_write_config_dword(dev, 0x48, 0x42004200);
--         }
-+	}
- 
- 
- 	retval = icom_alloc_adapter(&icom_adapter);
-@@ -1536,10 +1536,10 @@ static int __devinit icom_probe(struct p
- 		 goto probe_exit0;
- 	}
- 
--	 icom_adapter->base_addr_pci = pci_resource_start(dev, 0);
--	 icom_adapter->pci_dev = dev;
--	 icom_adapter->version = ent->driver_data;
--	 icom_adapter->subsystem_id = ent->subdevice;
-+	icom_adapter->base_addr_pci = pci_resource_start(dev, 0);
-+	icom_adapter->pci_dev = dev;
-+	icom_adapter->version = ent->driver_data;
-+	icom_adapter->subsystem_id = ent->subdevice;
- 
- 
- 	retval = icom_init_ports(icom_adapter);
-@@ -1548,7 +1548,7 @@ static int __devinit icom_probe(struct p
- 		goto probe_exit1;
- 	}
- 
--	 icom_adapter->base_addr = pci_ioremap_bar(dev, 0);
-+	icom_adapter->base_addr = pci_ioremap_bar(dev, 0);
- 
- 	if (!icom_adapter->base_addr)
- 		goto probe_exit1;
-@@ -1562,7 +1562,7 @@ static int __devinit icom_probe(struct p
- 
- 	retval = icom_load_ports(icom_adapter);
- 
--        for (index = 0; index < icom_adapter->numb_ports; index++) {
-+	for (index = 0; index < icom_adapter->numb_ports; index++) {
- 		icom_port = &icom_adapter->port_info[index];
- 
- 		if (icom_port->status == ICOM_PORT_ACTIVE) {
-@@ -1579,7 +1579,7 @@ static int __devinit icom_probe(struct p
- 				icom_port->status = ICOM_PORT_OFF;
- 				dev_err(&dev->dev, "Device add failed\n");
- 			 } else
--			        dev_info(&dev->dev, "Device added\n");
-+				dev_info(&dev->dev, "Device added\n");
- 		}
- 	}
- 
-@@ -1595,9 +1595,7 @@ probe_exit0:
- 	pci_release_regions(dev);
- 	pci_disable_device(dev);
- 
--        return retval;
--
--
-+	return retval;
+-	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
++	struct uart_txx9_port *up = to_uart_txx9_port(port);
+ 	sio_mask(up, TXX9_SIDICR, TXX9_SIDICR_TIE);
  }
  
- static void __devexit icom_remove(struct pci_dev *dev)
+ static void serial_txx9_start_tx(struct uart_port *port)
+ {
+-	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
++	struct uart_txx9_port *up = to_uart_txx9_port(port);
+ 	sio_set(up, TXX9_SIDICR, TXX9_SIDICR_TIE);
+ }
+ 
+ static void serial_txx9_stop_rx(struct uart_port *port)
+ {
+-	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
++	struct uart_txx9_port *up = to_uart_txx9_port(port);
+ 	up->port.read_status_mask &= ~TXX9_SIDISR_RDIS;
+ }
+ 
+@@ -246,7 +251,7 @@ static void serial_txx9_enable_ms(struct
+ 
+ static void serial_txx9_initialize(struct uart_port *port)
+ {
+-	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
++	struct uart_txx9_port *up = to_uart_txx9_port(port);
+ 	unsigned int tmout = 10000;
+ 
+ 	sio_out(up, TXX9_SIFCR, TXX9_SIFCR_SWRST);
+@@ -414,7 +419,7 @@ static irqreturn_t serial_txx9_interrupt
+ 
+ static unsigned int serial_txx9_tx_empty(struct uart_port *port)
+ {
+-	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
++	struct uart_txx9_port *up = to_uart_txx9_port(port);
+ 	unsigned long flags;
+ 	unsigned int ret;
+ 
+@@ -427,7 +432,7 @@ static unsigned int serial_txx9_tx_empty
+ 
+ static unsigned int serial_txx9_get_mctrl(struct uart_port *port)
+ {
+-	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
++	struct uart_txx9_port *up = to_uart_txx9_port(port);
+ 	unsigned int ret;
+ 
+ 	/* no modem control lines */
+@@ -440,7 +445,7 @@ static unsigned int serial_txx9_get_mctr
+ 
+ static void serial_txx9_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
+-	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
++	struct uart_txx9_port *up = to_uart_txx9_port(port);
+ 
+ 	if (mctrl & TIOCM_RTS)
+ 		sio_mask(up, TXX9_SIFLCR, TXX9_SIFLCR_RTSSC);
+@@ -450,7 +455,7 @@ static void serial_txx9_set_mctrl(struct
+ 
+ static void serial_txx9_break_ctl(struct uart_port *port, int break_state)
+ {
+-	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
++	struct uart_txx9_port *up = to_uart_txx9_port(port);
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&up->port.lock, flags);
+@@ -494,7 +499,7 @@ static int serial_txx9_get_poll_char(str
+ {
+ 	unsigned int ier;
+ 	unsigned char c;
+-	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
++	struct uart_txx9_port *up = to_uart_txx9_port(port);
+ 
+ 	/*
+ 	 *	First save the IER then disable the interrupts
+@@ -520,7 +525,7 @@ static int serial_txx9_get_poll_char(str
+ static void serial_txx9_put_poll_char(struct uart_port *port, unsigned char c)
+ {
+ 	unsigned int ier;
+-	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
++	struct uart_txx9_port *up = to_uart_txx9_port(port);
+ 
+ 	/*
+ 	 *	First save the IER then disable the interrupts
+@@ -551,7 +556,7 @@ static void serial_txx9_put_poll_char(st
+ 
+ static int serial_txx9_startup(struct uart_port *port)
+ {
+-	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
++	struct uart_txx9_port *up = to_uart_txx9_port(port);
+ 	unsigned long flags;
+ 	int retval;
+ 
+@@ -596,7 +601,7 @@ static int serial_txx9_startup(struct ua
+ 
+ static void serial_txx9_shutdown(struct uart_port *port)
+ {
+-	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
++	struct uart_txx9_port *up = to_uart_txx9_port(port);
+ 	unsigned long flags;
+ 
+ 	/*
+@@ -636,7 +641,7 @@ static void
+ serial_txx9_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		       struct ktermios *old)
+ {
+-	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
++	struct uart_txx9_port *up = to_uart_txx9_port(port);
+ 	unsigned int cval, fcr = 0;
+ 	unsigned long flags;
+ 	unsigned int baud, quot;
+@@ -814,19 +819,19 @@ static void serial_txx9_release_resource
+ 
+ static void serial_txx9_release_port(struct uart_port *port)
+ {
+-	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
++	struct uart_txx9_port *up = to_uart_txx9_port(port);
+ 	serial_txx9_release_resource(up);
+ }
+ 
+ static int serial_txx9_request_port(struct uart_port *port)
+ {
+-	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
++	struct uart_txx9_port *up = to_uart_txx9_port(port);
+ 	return serial_txx9_request_resource(up);
+ }
+ 
+ static void serial_txx9_config_port(struct uart_port *port, int uflags)
+ {
+-	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
++	struct uart_txx9_port *up = to_uart_txx9_port(port);
+ 	int ret;
+ 
+ 	/*
+@@ -897,7 +902,7 @@ static void __init serial_txx9_register_
+ 
+ static void serial_txx9_console_putchar(struct uart_port *port, int ch)
+ {
+-	struct uart_txx9_port *up = (struct uart_txx9_port *)port;
++	struct uart_txx9_port *up = to_uart_txx9_port(port);
+ 
+ 	wait_for_xmitr(up);
+ 	sio_out(up, TXX9_SITFIFO, ch);
 _
