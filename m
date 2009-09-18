@@ -1,45 +1,66 @@
-From: Mike Frysinger <vapier.adi@gmail.com>
-Subject: Re: [PATCH v5][bfin-sport-uart] fit blackfin uart over sport driver
-	into common uart inftrastructure
-Date: Fri, 18 Sep 2009 11:17:59 -0400
-Message-ID: <8bd0f97a0909180817o3c0a80f9u3bf1f2cd95ef2192@mail.gmail.com>
-References: <1253265502.22138.10.camel@eight.analog.com>
+From: akpm@linux-foundation.org
+Subject: [patch 4/5] serial167: fix read buffer overflow
+Date: Fri, 18 Sep 2009 12:55:49 -0700
+Message-ID: <200909181955.n8IJtooH031833@imap1.linux-foundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=ANSI_X3.4-1968
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vw0-f195.google.com ([209.85.212.195]:55186 "EHLO
-	mail-vw0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752735AbZIRPSP convert rfc822-to-8bit (ORCPT
+Received: from smtp1.linux-foundation.org ([140.211.169.13]:49735 "EHLO
+	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753607AbZIRT4M (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 18 Sep 2009 11:18:15 -0400
-In-Reply-To: <1253265502.22138.10.camel@eight.analog.com>
+	Fri, 18 Sep 2009 15:56:12 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: sonic zhang <sonic.adi@gmail.com>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux Serial <linux-serial@vger.kernel.org>
+To: alan@lxorguk.ukuu.org.uk
+Cc: linux-serial@vger.kernel.org, akpm@linux-foundation.org, roel.kluin@gmail.com, jirislaby@gmail.com
 
-On Fri, Sep 18, 2009 at 05:18, sonic zhang wrote:
-> --- a/drivers/serial/Kconfig
-> +++ b/drivers/serial/Kconfig
-> @@ -1451,6 +1451,30 @@ config SPORT_BAUD_RATE
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0default 19200 if (SERIAL_SPORT_BAUD_RATE_1=
-9200)
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0default 9600 if (SERIAL_SPORT_BAUD_RATE_96=
-00)
+From: Roel Kluin <roel.kluin@gmail.com>
 
-are you sure this patch is coomplete ?  these Kconfig options should
-be here anymore
+Check whether index is within bounds before grabbing the element.
 
-> +config SERIAL_BFIN_SPORT0_UART
-> + =C2=A0 =C2=A0 =C2=A0 bool "Enable UART over SPORT0"
-> + =C2=A0 =C2=A0 =C2=A0 depends on SERIAL_BFIN_SPORT
+Also, since NR_PORTS is defined ARRAY_SIZE(cy_port), cy_port[NR_PORTS] is
+out of bounds as well.
 
-BF542/BF544 dont have a SPORT0.  another good reason for pushing to
-board resources.
--mike
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+[akpm@linux-foundation.org: cleanup, remove (long) casts]
+Signed-off-by: Roel Kluin <roel.kluin@gmail.com>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Jiri Slaby <jirislaby@gmail.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+---
+
+ drivers/char/serial167.c |    7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
+
+diff -puN drivers/char/serial167.c~serial167-fix-read-buffer-overflow drivers/char/serial167.c
+--- a/drivers/char/serial167.c~serial167-fix-read-buffer-overflow
++++ a/drivers/char/serial167.c
+@@ -220,8 +220,7 @@ static inline int serial_paranoia_check(
+ 		return 1;
+ 	}
+ 
+-	if ((long)info < (long)(&cy_port[0])
+-	    || (long)(&cy_port[NR_PORTS]) < (long)info) {
++	if (info < &cy_port[0] || info >= &cy_port[NR_PORTS]) {
+ 		printk("Warning: cyclades_port out of range for (%s) in %s\n",
+ 				name, routine);
+ 		return 1;
+@@ -520,15 +519,13 @@ static irqreturn_t cd2401_tx_interrupt(i
+ 		panic("TxInt on debug port!!!");
+ 	}
+ #endif
+-
+-	info = &cy_port[channel];
+-
+ 	/* validate the port number (as configured and open) */
+ 	if ((channel < 0) || (NR_PORTS <= channel)) {
+ 		base_addr[CyIER] &= ~(CyTxMpty | CyTxRdy);
+ 		base_addr[CyTEOIR] = CyNOTRANS;
+ 		return IRQ_HANDLED;
+ 	}
++	info = &cy_port[channel];
+ 	info->last_active = jiffies;
+ 	if (info->tty == 0) {
+ 		base_addr[CyIER] &= ~(CyTxMpty | CyTxRdy);
+_
