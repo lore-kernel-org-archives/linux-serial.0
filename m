@@ -1,53 +1,77 @@
-From: sonic zhang <sonic.adi@gmail.com>
-Subject: [PATCH] [bfin-sport-uart] The waiting loop to stop SPORT TX from
-	TX interrupt is too long
-Date: Mon, 21 Sep 2009 19:02:53 +0800
-Message-ID: <1253530973.22138.16.camel@eight.analog.com>
+From: Randy Dunlap <rdunlap@xenotime.net>
+Subject: [PATCH] serial core: fix new kernel-doc warnings
+Date: Mon, 21 Sep 2009 11:12:03 -0700
+Message-ID: <20090921111203.03558642.rdunlap@xenotime.net>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nwd2mail10.analog.com ([137.71.25.55]:32786 "EHLO
-	nwd2mail10.analog.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751779AbZIULCH (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 21 Sep 2009 07:02:07 -0400
+Received: from xenotime.net ([72.52.64.118]:53658 "HELO xenotime.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
+	id S1751227AbZIUSME (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 21 Sep 2009 14:12:04 -0400
+Received: from chimera.site ([96.253.169.185]) by xenotime.net for <linux-serial@vger.kernel.org>; Mon, 21 Sep 2009 11:12:04 -0700
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux Serial <linux-serial@vger.kernel.org>
+To: linux-serial@vger.kernel.org
+Cc: gregkh@suse.de, torvalds <torvalds@linux-foundation.org>
 
-The waiting loop to stop SPORT TX from TX interrupt is
-too long. This may block SPORT RX interrupts and cause
-RX FIFO overflow. So, do stop sport TX only after the last
-char in TX FIFO is moved into the shift register.
+From: Randy Dunlap <randy.dunlap@oracle.com>
 
+Fix new kernel-doc warnings in serial_core.[hc] files.
 
-Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+Warning(include/linux/serial_core.h:485): No description found for parameter 'uport'
+Warning(include/linux/serial_core.h:485): Excess function parameter 'port' description in 'uart_handle_dcd_change'
+Warning(include/linux/serial_core.h:511): No description found for parameter 'uport'
+Warning(include/linux/serial_core.h:511): Excess function parameter 'port' description in 'uart_handle_cts_change'
+Warning(drivers/serial/serial_core.c:2437): No description found for parameter 'uport'
+Warning(drivers/serial/serial_core.c:2437): Excess function parameter 'port' description in 'uart_add_one_port'
+Warning(drivers/serial/serial_core.c:2509): No description found for parameter 'uport'
+Warning(drivers/serial/serial_core.c:2509): Excess function parameter 'port' description in 'uart_remove_one_port'
+
+Signed-off-by: Randy Dunlap <randy.dunlap@oracle.com>
 ---
- drivers/serial/bfin_sport_uart.c |    8 +++++++-
- 1 files changed, 7 insertions(+), 1 deletions(-)
+ drivers/serial/serial_core.c |    4 ++--
+ include/linux/serial_core.h  |    4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/serial/bfin_sport_uart.c b/drivers/serial/bfin_sport_uart.c
-index c108b1a..fb9f7cd 100644
---- a/drivers/serial/bfin_sport_uart.c
-+++ b/drivers/serial/bfin_sport_uart.c
-@@ -303,7 +303,13 @@ static void sport_uart_tx_chars(struct sport_uart_port *up)
- 	}
+--- linux-2.6.31-git10.orig/drivers/serial/serial_core.c
++++ linux-2.6.31-git10/drivers/serial/serial_core.c
+@@ -2426,7 +2426,7 @@ struct tty_driver *uart_console_device(s
+ /**
+  *	uart_add_one_port - attach a driver-defined port structure
+  *	@drv: pointer to the uart low level driver structure for this port
+- *	@port: uart port structure to use for this port.
++ *	@uport: uart port structure to use for this port.
+  *
+  *	This allows the driver to register its own uart_port structure
+  *	with the core driver.  The main purpose is to allow the low
+@@ -2499,7 +2499,7 @@ int uart_add_one_port(struct uart_driver
+ /**
+  *	uart_remove_one_port - detach a driver defined port structure
+  *	@drv: pointer to the uart low level driver structure for this port
+- *	@port: uart port structure for this port
++ *	@uport: uart port structure for this port
+  *
+  *	This unhooks (and hangs up) the specified port structure from the
+  *	core driver.  No further calls will be made to the low-level code
+--- linux-2.6.31-git10.orig/include/linux/serial_core.h
++++ linux-2.6.31-git10/include/linux/serial_core.h
+@@ -477,7 +477,7 @@ static inline int uart_handle_break(stru
  
- 	if (uart_circ_empty(xmit) || uart_tx_stopped(&up->port)) {
--		sport_stop_tx(&up->port);
-+		/* The waiting loop to stop SPORT TX from TX interrupt is
-+		 * too long. This may block SPORT RX interrupts and cause
-+		 * RX FIFO overflow. So, do stop sport TX only after the last
-+		 * char in TX FIFO is moved into the shift register.
-+		 */
-+		if (SPORT_GET_STAT(up) & TXHRE)
-+			sport_stop_tx(&up->port);
- 		return;
- 	}
+ /**
+  *	uart_handle_dcd_change - handle a change of carrier detect state
+- *	@port: uart_port structure for the open port
++ *	@uport: uart_port structure for the open port
+  *	@status: new carrier detect status, nonzero if active
+  */
+ static inline void
+@@ -503,7 +503,7 @@ uart_handle_dcd_change(struct uart_port 
  
--- 
-1.6.0
-
-
-
+ /**
+  *	uart_handle_cts_change - handle a change of clear-to-send state
+- *	@port: uart_port structure for the open port
++ *	@uport: uart_port structure for the open port
+  *	@status: new clear to send status, nonzero if active
+  */
+ static inline void
