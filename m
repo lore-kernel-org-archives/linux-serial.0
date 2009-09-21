@@ -1,70 +1,60 @@
-From: akpm@linux-foundation.org
-Subject: [patch 5/5] serial: add parameter to force skipping the test for the TXEN bug
-Date: Fri, 18 Sep 2009 12:55:50 -0700
-Message-ID: <200909181955.n8IJtpGZ031836@imap1.linux-foundation.org>
+From: sonic zhang <sonic.adi@gmail.com>
+Subject: [PATCH v2][bfin-sport-uart] Walk around RX underflow hardware
+	issue in 32-bit SPORT RX reading
+Date: Mon, 21 Sep 2009 12:11:58 +0800
+Message-ID: <1253506318.22138.13.camel@eight.analog.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ANSI_X3.4-1968
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp1.linux-foundation.org ([140.211.169.13]:58653 "EHLO
-	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754668AbZIRT4Y (ORCPT
+Received: from nwd2mail11.analog.com ([137.71.25.57]:36451 "EHLO
+	nwd2mail11.analog.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750943AbZIUELO (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 18 Sep 2009 15:56:24 -0400
+	Mon, 21 Sep 2009 00:11:14 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: alan@lxorguk.ukuu.org.uk
-Cc: linux-serial@vger.kernel.org, akpm@linux-foundation.org, cebbert@redhat.com
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux Serial <linux-serial@vger.kernel.org>
 
-From: Chuck Ebbert <cebbert@redhat.com>
+If another interrupt fires while doing a 32-bit read from RX FIFO,
+a fake RX underflow error will be generated.  So disable interrupts
+to prevent interruption while reading the FIFO.
 
-Allow users to force skipping the TXEN test at init time. Applies
-to all serial ports. Intended for debugging only.
 
-There is a blacklist for devices where we need to skip the test but the
-list is not complete.  This lets users force skipping the test so we can
-determine if they need to be added to the list.
-
-Some HP machines with weird serial consoles have this problem and there
-may be more.
-
-Signed-off-by: Chuck Ebbert <cebbert@redhat.com>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
 ---
+ drivers/serial/bfin_sport_uart.h |   16 +++++++++++++++-
+ 1 files changed, 15 insertions(+), 1 deletions(-)
 
- drivers/serial/8250.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+diff --git a/drivers/serial/bfin_sport_uart.h b/drivers/serial/bfin_sport_uart.h
+index 671d41c..f4e5a83 100644
+--- a/drivers/serial/bfin_sport_uart.h
++++ b/drivers/serial/bfin_sport_uart.h
+@@ -43,7 +43,21 @@
+ #define SPORT_GET_TFSDIV(sport)		bfin_read16(((sport)->port.membase + OFFSET_TFSDIV))
+ #define SPORT_GET_TX(sport)		bfin_read16(((sport)->port.membase + OFFSET_TX))
+ #define SPORT_GET_RX(sport)		bfin_read16(((sport)->port.membase + OFFSET_RX))
+-#define SPORT_GET_RX32(sport)		bfin_read32(((sport)->port.membase + OFFSET_RX))
++/*
++ * If another interrupt fires while doing a 32-bit read from RX FIFO,
++ * a fake RX underflow error will be generated.  So disable interrupts
++ * to prevent interruption while reading the FIFO.
++ * Once hardware design can root cause and officially log this, we can
++ * update the code to use a standard ANOMALY_XXX define.
++ */
++#define SPORT_GET_RX32(sport)  \
++({                             \
++	unsigned int __ret;             \
++	local_irq_disable();    \
++	__ret = bfin_read32(((sport)->port.membase + OFFSET_RX));       \
++	local_irq_enable();     \
++	__ret;                  \
++})
+ #define SPORT_GET_RCR1(sport)		bfin_read16(((sport)->port.membase + OFFSET_RCR1))
+ #define SPORT_GET_RCR2(sport)		bfin_read16(((sport)->port.membase + OFFSET_RCR2))
+ #define SPORT_GET_RCLKDIV(sport)	bfin_read16(((sport)->port.membase + OFFSET_RCLKDIV))
+-- 
+1.6.0
 
-diff -puN drivers/serial/8250.c~serial-add-parameter-to-force-skipping-the-test-for-the-txen-bug drivers/serial/8250.c
---- a/drivers/serial/8250.c~serial-add-parameter-to-force-skipping-the-test-for-the-txen-bug
-+++ a/drivers/serial/8250.c
-@@ -64,6 +64,8 @@ static int serial_index(struct uart_port
- 	return (serial8250_reg.minor - 64) + port->line;
- }
- 
-+static unsigned int skip_txen_test; /* force skip of txen test at init time */
-+
- /*
-  * Debugging.
-  */
-@@ -2108,7 +2110,7 @@ static int serial8250_startup(struct uar
- 	   is variable. So, let's just don't test if we receive
- 	   TX irq. This way, we'll never enable UART_BUG_TXEN.
- 	 */
--	if (up->port.flags & UPF_NO_TXEN_TEST)
-+	if (skip_txen_test || up->port.flags & UPF_NO_TXEN_TEST)
- 		goto dont_test_tx_en;
- 
- 	/*
-@@ -3248,6 +3250,9 @@ MODULE_PARM_DESC(share_irqs, "Share IRQs
- module_param(nr_uarts, uint, 0644);
- MODULE_PARM_DESC(nr_uarts, "Maximum number of UARTs supported. (1-" __MODULE_STRING(CONFIG_SERIAL_8250_NR_UARTS) ")");
- 
-+module_param(skip_txen_test, uint, 0644);
-+MODULE_PARM_DESC(skip_txen_test, "Skip checking for the TXEN bug at init time");
-+
- #ifdef CONFIG_SERIAL_8250_RSA
- module_param_array(probe_rsa, ulong, &probe_rsa_count, 0444);
- MODULE_PARM_DESC(probe_rsa, "Probe I/O ports for RSA");
-_
+
+
