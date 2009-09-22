@@ -1,77 +1,119 @@
-From: Randy Dunlap <rdunlap@xenotime.net>
-Subject: [PATCH] serial core: fix new kernel-doc warnings
-Date: Mon, 21 Sep 2009 11:12:03 -0700
-Message-ID: <20090921111203.03558642.rdunlap@xenotime.net>
+From: =?ISO-8859-1?Q?Richard_R=F6jfors?=
+	<richard.rojfors@mocean-labs.com>
+Subject: [PATCH RESEND] timbuart: Support for beeing probed more than once
+Date: Tue, 22 Sep 2009 14:25:31 +0200
+Message-ID: <4AB8C23B.3020309@mocean-labs.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from xenotime.net ([72.52.64.118]:53658 "HELO xenotime.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
-	id S1751227AbZIUSME (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 21 Sep 2009 14:12:04 -0400
-Received: from chimera.site ([96.253.169.185]) by xenotime.net for <linux-serial@vger.kernel.org>; Mon, 21 Sep 2009 11:12:04 -0700
+Received: from av9-2-sn3.vrr.skanova.net ([81.228.9.186]:56633 "EHLO
+	av9-2-sn3.vrr.skanova.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755988AbZIVMZc (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 22 Sep 2009 08:25:32 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: gregkh@suse.de, torvalds <torvalds@linux-foundation.org>
+Cc: alan@lxorguk.ukuu.org.uk, Andrew Morton <akpm@linux-foundation.org>
 
-From: Randy Dunlap <randy.dunlap@oracle.com>
+There was a problem in the current implementation where a global static
+uart_driver struct was used. The same struct was reused every time the
+driver got probed. Since the struct has a state within the serial core
+it can not be reused.
 
-Fix new kernel-doc warnings in serial_core.[hc] files.
+A uart_driver struct is added to the timbuart_port struct which is
+allocated per platform device.
 
-Warning(include/linux/serial_core.h:485): No description found for parameter 'uport'
-Warning(include/linux/serial_core.h:485): Excess function parameter 'port' description in 'uart_handle_dcd_change'
-Warning(include/linux/serial_core.h:511): No description found for parameter 'uport'
-Warning(include/linux/serial_core.h:511): Excess function parameter 'port' description in 'uart_handle_cts_change'
-Warning(drivers/serial/serial_core.c:2437): No description found for parameter 'uport'
-Warning(drivers/serial/serial_core.c:2437): Excess function parameter 'port' description in 'uart_add_one_port'
-Warning(drivers/serial/serial_core.c:2509): No description found for parameter 'uport'
-Warning(drivers/serial/serial_core.c:2509): Excess function parameter 'port' description in 'uart_remove_one_port'
+The probe and remove functions are declared __devinit and __devexit.
 
-Signed-off-by: Randy Dunlap <randy.dunlap@oracle.com>
+Signed-off-by: Richard R=F6jfors <richard.rojfors@mocean-labs.com>
 ---
- drivers/serial/serial_core.c |    4 ++--
- include/linux/serial_core.h  |    4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+diff --git a/drivers/serial/timbuart.c b/drivers/serial/timbuart.c
+index 063a313..75a741b 100644
+--- a/drivers/serial/timbuart.c
++++ b/drivers/serial/timbuart.c
+@@ -31,6 +31,7 @@
 
---- linux-2.6.31-git10.orig/drivers/serial/serial_core.c
-+++ linux-2.6.31-git10/drivers/serial/serial_core.c
-@@ -2426,7 +2426,7 @@ struct tty_driver *uart_console_device(s
- /**
-  *	uart_add_one_port - attach a driver-defined port structure
-  *	@drv: pointer to the uart low level driver structure for this port
-- *	@port: uart port structure to use for this port.
-+ *	@uport: uart port structure to use for this port.
-  *
-  *	This allows the driver to register its own uart_port structure
-  *	with the core driver.  The main purpose is to allow the low
-@@ -2499,7 +2499,7 @@ int uart_add_one_port(struct uart_driver
- /**
-  *	uart_remove_one_port - detach a driver defined port structure
-  *	@drv: pointer to the uart low level driver structure for this port
-- *	@port: uart port structure for this port
-+ *	@uport: uart port structure for this port
-  *
-  *	This unhooks (and hangs up) the specified port structure from the
-  *	core driver.  No further calls will be made to the low-level code
---- linux-2.6.31-git10.orig/include/linux/serial_core.h
-+++ linux-2.6.31-git10/include/linux/serial_core.h
-@@ -477,7 +477,7 @@ static inline int uart_handle_break(stru
- 
- /**
-  *	uart_handle_dcd_change - handle a change of carrier detect state
-- *	@port: uart_port structure for the open port
-+ *	@uport: uart_port structure for the open port
-  *	@status: new carrier detect status, nonzero if active
-  */
- static inline void
-@@ -503,7 +503,7 @@ uart_handle_dcd_change(struct uart_port 
- 
- /**
-  *	uart_handle_cts_change - handle a change of clear-to-send state
-- *	@port: uart_port structure for the open port
-+ *	@uport: uart_port structure for the open port
-  *	@status: new clear to send status, nonzero if active
-  */
- static inline void
+ struct timbuart_port {
+ 	struct uart_port	port;
++	struct uart_driver	uart_driver;
+ 	struct tasklet_struct	tasklet;
+ 	int			usedma;
+ 	u32			last_ier;
+@@ -410,7 +411,7 @@ static struct uart_ops timbuart_ops =3D {
+ 	.verify_port =3D timbuart_verify_port
+ };
+
+-static struct uart_driver timbuart_driver =3D {
++static const __devinitconst struct uart_driver timbuart_driver_templat=
+e =3D {
+ 	.owner =3D THIS_MODULE,
+ 	.driver_name =3D "timberdale_uart",
+ 	.dev_name =3D "ttyTU",
+@@ -419,7 +420,7 @@ static struct uart_driver timbuart_driver =3D {
+ 	.nr =3D 1
+ };
+
+-static int timbuart_probe(struct platform_device *dev)
++static int __devinit timbuart_probe(struct platform_device *dev)
+ {
+ 	int err;
+ 	struct timbuart_port *uart;
+@@ -433,6 +434,8 @@ static int timbuart_probe(struct platform_device *d=
+ev)
+ 		goto err_mem;
+ 	}
+
++	uart->uart_driver =3D timbuart_driver_template;
++
+ 	uart->usedma =3D 0;
+
+ 	uart->port.uartclk =3D 3250000 * 16;
+@@ -461,11 +464,11 @@ static int timbuart_probe(struct platform_device =
+*dev)
+
+ 	tasklet_init(&uart->tasklet, timbuart_tasklet, (unsigned long)uart);
+
+-	err =3D uart_register_driver(&timbuart_driver);
++	err =3D uart_register_driver(&uart->uart_driver);
+ 	if (err)
+ 		goto err_register;
+
+-	err =3D uart_add_one_port(&timbuart_driver, &uart->port);
++	err =3D uart_add_one_port(&uart->uart_driver, &uart->port);
+ 	if (err)
+ 		goto err_add_port;
+
+@@ -474,7 +477,7 @@ static int timbuart_probe(struct platform_device *d=
+ev)
+ 	return 0;
+
+ err_add_port:
+-	uart_unregister_driver(&timbuart_driver);
++	uart_unregister_driver(&uart->uart_driver);
+ err_register:
+ 	kfree(uart);
+ err_mem:
+@@ -484,13 +487,13 @@ err_mem:
+ 	return err;
+ }
+
+-static int timbuart_remove(struct platform_device *dev)
++static int __devexit timbuart_remove(struct platform_device *dev)
+ {
+ 	struct timbuart_port *uart =3D platform_get_drvdata(dev);
+
+ 	tasklet_kill(&uart->tasklet);
+-	uart_remove_one_port(&timbuart_driver, &uart->port);
+-	uart_unregister_driver(&timbuart_driver);
++	uart_remove_one_port(&uart->uart_driver, &uart->port);
++	uart_unregister_driver(&uart->uart_driver);
+ 	kfree(uart);
+
+ 	return 0;
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
