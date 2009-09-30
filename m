@@ -1,61 +1,74 @@
-From: Yegor Yefremov <yegor_sub1@visionsystems.de>
-Subject: [atmel-serial] Fix compilation error caused by BUILD_BUG_ON() in
- 2.6.32-rc2 kernel
-Date: Wed, 30 Sep 2009 10:25:33 +0200
-Message-ID: <4AC315FD.4060408@visionsystems.de>
-Reply-To: yegor_sub1@visionsystems.de
+From: Pavan Savoy <pavan_savoy@yahoo.co.in>
+Subject: Re: sharing UART
+Date: Wed, 30 Sep 2009 18:22:19 +0530 (IST)
+Message-ID: <95388.82940.qm@web94902.mail.in2.yahoo.com>
+References: <751031.51650.qm@web94915.mail.in2.yahoo.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from hhlx01.vscom.de ([62.145.30.242]:58566 "EHLO
-	mail.visionsystems.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752777AbZI3IoO (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 30 Sep 2009 04:44:14 -0400
-Received: from localhost (localhost [127.0.0.1])
-	by mail.visionsystems.de (Postfix) with ESMTP id 116B31DB290
-	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2009 10:25:39 +0200 (CEST)
-Received: from mail.visionsystems.de ([127.0.0.1])
- by localhost (mail.visionsystems.de [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 24775-04 for <linux-serial@vger.kernel.org>;
- Wed, 30 Sep 2009 10:25:34 +0200 (CEST)
-Received: from visionsystems.de (kallisto.visionsystems.local [192.168.1.3])
-	by mail.visionsystems.de (Postfix) with ESMTP id A06AF1DB28B
-	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2009 10:25:34 +0200 (CEST)
+Received: from web94902.mail.in2.yahoo.com ([203.104.17.140]:42453 "HELO
+	web94902.mail.in2.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1752953AbZI3MwS convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 30 Sep 2009 08:52:18 -0400
+In-Reply-To: <751031.51650.qm@web94915.mail.in2.yahoo.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-Fix compilation error caused by BUILD_BUG_ON() in 2.6.32-rc2 kernel.
+Hi,
 
-Add ring buffer size requirements to the macro definition instead of calling
-BUILD_BUG_ON().
+So is it confirmed that no one as of now, had to use 1 UART for 2 purpo=
+ses?
+That is, say the UART had switch between working as a normal TTY and al=
+so as a Line discipline ?
 
-See the following thread for details:
-http://www.gossamer-threads.com/lists/linux/kernel/1118447?page=last
+No one had to send modem commands and some unique manufacturer specific=
+ commands to modem @ the same time ?
 
-Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
+regards,
+Pavan
 
-Index: linus2/drivers/serial/atmel_serial.c
-===================================================================
---- linus2.orig/drivers/serial/atmel_serial.c
-+++ linus2/drivers/serial/atmel_serial.c
-@@ -123,6 +123,7 @@ struct atmel_uart_char {
- 	u16		ch;
- };
- 
-+/* the ring buffer size must be the power of 2 */
- #define ATMEL_SERIAL_RINGSIZE 1024
- 
- /*
-@@ -1531,8 +1532,6 @@ static int __devinit atmel_serial_probe(
- 	void *data;
- 	int ret;
- 
--	BUILD_BUG_ON(!is_power_of_2(ATMEL_SERIAL_RINGSIZE));
--
- 	port = &atmel_ports[pdev->id];
- 	port->backup_imr = 0;
- 
 
+--- On Thu, 17/9/09, Pavan Savoy <pavan_savoy@yahoo.co.in> wrote:
+
+> From: Pavan Savoy <pavan_savoy@yahoo.co.in>
+> Subject: sharing UART
+> To: linux-serial@vger.kernel.org
+> Date: Thursday, 17 September, 2009, 12:46 PM
+> Hi,
+> I have searched through the archives, but did not find any
+> example or need to share a UART by 2 drivers.
+>=20
+> Basically there is a "hci_ldisc" line discipline driver
+> which makes use of the UART which will be followed up by
+> another driver with normal char dev exposed to user-space
+> which needs to make use of UART as well.
+>=20
+> So some-one somewhere would have wanted such an
+> implementation right ?
+> what should be done ? any suggestions are welcome.
+>=20
+> regards,
+> Pavan
+>=20
+>=20
+>=20
+> =A0 =A0 =A0 Add whatever you love to the Yahoo!
+> India homepage. Try now! http://in.yahoo.com/trynew
+> --
+> To unsubscribe from this list: send the line "unsubscribe
+> linux-serial" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at=A0 http://vger.kernel.org/majordomo-info.html
+>=20
+
+
+      Keep up with people you care about with Yahoo! India Mail. Learn =
+how. http://in.overview.mail.yahoo.com/connectmore
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
