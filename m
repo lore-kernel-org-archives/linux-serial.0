@@ -1,74 +1,40 @@
-From: Pavan Savoy <pavan_savoy@yahoo.co.in>
-Subject: Re: sharing UART
-Date: Wed, 30 Sep 2009 18:22:19 +0530 (IST)
-Message-ID: <95388.82940.qm@web94902.mail.in2.yahoo.com>
-References: <751031.51650.qm@web94915.mail.in2.yahoo.com>
+From: Jonathan McDowell <noodles@earth.li>
+Subject: Re: [PATCHv1 1/3] OMAP UART: Adds omap-serial driver support.
+Date: Fri, 2 Oct 2009 23:41:25 +0100
+Message-ID: <20091002224124.GY1133@earth.li>
+References: <65168.192.168.10.89.1253788033.squirrel@dbdmail.itg.ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from web94902.mail.in2.yahoo.com ([203.104.17.140]:42453 "HELO
-	web94902.mail.in2.yahoo.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with SMTP id S1752953AbZI3MwS convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 30 Sep 2009 08:52:18 -0400
-In-Reply-To: <751031.51650.qm@web94915.mail.in2.yahoo.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <65168.192.168.10.89.1253788033.squirrel@dbdmail.itg.ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: "Govindraj.R" <govindraj.raja@ti.com>
+Cc: linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
 
-Hi,
+On Thu, Sep 24, 2009 at 03:57:13PM +0530, Govindraj.R wrote:
+> From: Govindraj R <govindraj.raja@ti.com>
+> 
+> This patch adds support for OMAP3430-HIGH SPEED UART Controller.
+> 
+> Signed-off-by:	Govindraj R <govindraj.raja@ti.com>
+> Reviewed-by: Alan Cox <alan@lxorguk.ukuu.org.uk>
+> Reviewed-by: Tony Lindgren <tony@atomide.com>
+> ---
+ 
+> +config SERIAL_OMAP
+> +	bool "OMAP serial port support"
+> +	depends on ARM && ARCH_OMAP
+> +	select SERIAL_CORE
+> +	help
+> +	If you have a machine based on an Texas Instruments OMAP CPU you
+> +	can enable its onboard serial ports by enabling this option.
 
-So is it confirmed that no one as of now, had to use 1 UART for 2 purpo=
-ses?
-That is, say the UART had switch between working as a normal TTY and al=
-so as a Line discipline ?
+If it's OMAP3 hardware then should the "depends on" be ARCH_OMAP3 ||
+ARCH_OMAP4, rather than allowing it for OMAP1 + 2 as well?
 
-No one had to send modem commands and some unique manufacturer specific=
- commands to modem @ the same time ?
+J.
 
-regards,
-Pavan
-
-
---- On Thu, 17/9/09, Pavan Savoy <pavan_savoy@yahoo.co.in> wrote:
-
-> From: Pavan Savoy <pavan_savoy@yahoo.co.in>
-> Subject: sharing UART
-> To: linux-serial@vger.kernel.org
-> Date: Thursday, 17 September, 2009, 12:46 PM
-> Hi,
-> I have searched through the archives, but did not find any
-> example or need to share a UART by 2 drivers.
->=20
-> Basically there is a "hci_ldisc" line discipline driver
-> which makes use of the UART which will be followed up by
-> another driver with normal char dev exposed to user-space
-> which needs to make use of UART as well.
->=20
-> So some-one somewhere would have wanted such an
-> implementation right ?
-> what should be done ? any suggestions are welcome.
->=20
-> regards,
-> Pavan
->=20
->=20
->=20
-> =A0 =A0 =A0 Add whatever you love to the Yahoo!
-> India homepage. Try now! http://in.yahoo.com/trynew
-> --
-> To unsubscribe from this list: send the line "unsubscribe
-> linux-serial" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at=A0 http://vger.kernel.org/majordomo-info.html
->=20
-
-
-      Keep up with people you care about with Yahoo! India Mail. Learn =
-how. http://in.overview.mail.yahoo.com/connectmore
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+-- 
+Revd. Jonathan McDowell, ULC | If they can't take a joke....fuck 'em.
