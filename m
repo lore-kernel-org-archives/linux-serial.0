@@ -1,54 +1,101 @@
-From: Christian Gagneraud <cgagneraud@techworks.ie>
-Subject: setserial and ioremap
-Date: Wed, 07 Oct 2009 18:51:24 +0100
-Message-ID: <4ACCD51C.3020604@techworks.ie>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCHv1 1/3] OMAP UART: Adds omap-serial driver support.
+Date: Wed, 7 Oct 2009 14:51:17 -0700
+Message-ID: <20091007215116.GB29320@atomide.com>
+References: <65168.192.168.10.89.1253788033.squirrel@dbdmail.itg.ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 133.155.reserved.hosting365.ie ([82.195.155.133]:41781 "EHLO
-	mail.techworks.ie" rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org
-	with ESMTP id S1751051AbZJGSQi (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 7 Oct 2009 14:16:38 -0400
-Received: from archeopterix.techworks.local (unknown [86.43.120.173])
-	by mail.techworks.ie (Postfix) with ESMTP id AE845BC0C
-	for <linux-serial@vger.kernel.org>; Wed,  7 Oct 2009 18:49:16 +0100 (IST)
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1754525AbZJGVwG@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <65168.192.168.10.89.1253788033.squirrel@dbdmail.itg.ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Govindraj.R" <govindraj.raja@ti.com>
+Cc: linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
 
-Hi,
+* Govindraj.R <govindraj.raja@ti.com> [090924 03:29]:
+> From: Govindraj R <govindraj.raja@ti.com>
+> 
+> This patch adds support for OMAP3430-HIGH SPEED UART Controller.
+> 
+> Signed-off-by:	Govindraj R <govindraj.raja@ti.com>
+> Reviewed-by: Alan Cox <alan@lxorguk.ukuu.org.uk>
+> Reviewed-by: Tony Lindgren <tony@atomide.com>
 
-I'm using an ARM platform that has a PC104 bus.
-The vendor of the board provide a 2.6.21 kernel, and in it there's a 
-plethora of small kernel module to support each single expansion board 
-having a 16550 chip for each single supported platform (because the 
-PC104 bus is not always at the same address).
-These modules are very smal, they only fill up a uart_port struct and 
-call serial8250_register_port().
-The small detail is that they set the iotype to UPIO_MEM, set the 
-mapbase to the right physical address and set UPF_IOREMAP in the flags.
+You should only add Reviewed-by if Alan or me have replied with it.
 
-Instead of using these kernel modules, I would like to use setserial. 
-but it doesn't support both UPIO_MEM and UPF_IOREMAP.
-I've easily added the UPIO_MEM iotype to setserial but got unlucky 
-with UPF_IOREMAP. Even if I set UPF_IOREMAP in the flags, the kernel 
-refuse to ioremap the base address (I tried both with mapbase and 
-membase).
-I've spotted the code in 8250.c, and it should do the ioremap if the 
-flags contains UPF_IOREMAP. But I have the feeling that this flag is 
-cleared or ignored when coming from userspace.
+So far I've only replied with some comments that have not yet
+been fixed, so we're few more steps from being Reviewd-by.
 
-I've noticed that in the machine initialisation code the PC104 IO 
-space is not ioremap'ed, could it be the source of the problem?
-I remembered having seen a global ioremap of the PC104 on another 
-PC104 ARM board, but i wonder it that's the right strategy.
+<snip>
 
-if the PC104 IO space was ioremap'ed by defatult, then i could use 
-UPIO_PORT with an unmodified setserial.
+> diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
+> index 6553833..67a7129 100644
+> --- a/drivers/serial/Kconfig
+> +++ b/drivers/serial/Kconfig
+> @@ -1359,6 +1359,53 @@ config SERIAL_OF_PLATFORM
+>  	  Currently, only 8250 compatible ports are supported, but
+>  	  others can easily be added.
+> 
+> +config SERIAL_OMAP
+> +	bool "OMAP serial port support"
+> +	depends on ARM && ARCH_OMAP
+> +	select SERIAL_CORE
+> +	help
+> +	If you have a machine based on an Texas Instruments OMAP CPU you
+> +	can enable its onboard serial ports by enabling this option.
+> +
+> +config SERIAL_OMAP_CONSOLE
+> +	bool "Console on OMAP serial port"
+> +	depends on SERIAL_OMAP
+> +	select SERIAL_CORE_CONSOLE
+> +	help
+> +	If you have enabled the serial port on the Texas Instruments OMAP
+> +	CPU you can make it the console by answering Y to this option.
+> +
+> +	Even if you say Y here, the currently visible virtual console
+> +	(/dev/tty0) will still be used as the system console by default, but
+> +	you can alter that using a kernel command line option such as
+> +	"console=ttyS0". (Try "man bootparam" or see the documentation of
+> +	your boot loader (lilo or loadlin) about how to pass options to the
+> +	kernel at boot time.)
+> +
+> +config SERIAL_OMAP_DMA_UART1
+> +	bool "UART1 DMA support"
+> +	depends on SERIAL_OMAP
+> +	help
+> +	If you have enabled the serial port on the Texas Instruments OMAP
+> +	CPU you can enable the DMA transfer on UART 1 by answering
+> +	to this option.
+> +
+> +config SERIAL_OMAP_DMA_UART2
+> +	bool "UART2 DMA support"
+> +	depends on SERIAL_OMAP
+> +	help
+> +	If you have enabled the serial port on the Texas Instruments OMAP
+> +	CPU you can enable the DMA transfer on UART 2 by answering
+> +	to this option.
+> +
+> +config SERIAL_OMAP_DMA_UART3
+> +	bool "UART3 DMA support"
+> +	depends on SERIAL_OMAP
+> +	help
+> +	If you have enabled the serial port on the Texas Instruments OMAP
+> +	CPU you can enable the DMA transfer on UART 3 by answering
+> +	to this option.
+> +
+>  config SERIAL_OF_PLATFORM_NWPSERIAL
+>  	tristate "NWP serial port driver"
+>  	depends on PPC_OF && PPC_DCR
 
-Any thought about this?
+There's absolutely no need for having Kconfig options for the DMA
+support. Please pass that in platform_data from the board-*.c files.
+
+This is the third time I'm commenting on the same issue!
+
+What's the point of posting these patches for review if the issues
+don't get solved?
 
 Regards,
-Chris
+
+Tony
