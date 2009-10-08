@@ -1,101 +1,28 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCHv1 1/3] OMAP UART: Adds omap-serial driver support.
-Date: Wed, 7 Oct 2009 14:51:17 -0700
-Message-ID: <20091007215116.GB29320@atomide.com>
-References: <65168.192.168.10.89.1253788033.squirrel@dbdmail.itg.ti.com>
+From: Pavan Savoy <pavan_savoy@yahoo.co.in>
+Subject: installing line discipline from kernel
+Date: Thu, 8 Oct 2009 10:03:54 +0530 (IST)
+Message-ID: <430561.16988.qm@web94909.mail.in2.yahoo.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1754525AbZJGVwG@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <65168.192.168.10.89.1253788033.squirrel@dbdmail.itg.ti.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Govindraj.R" <govindraj.raja@ti.com>
-Cc: linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from web94909.mail.in2.yahoo.com ([203.104.17.168]:36603 "HELO
+	web94909.mail.in2.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1751584AbZJHEed convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 8 Oct 2009 00:34:33 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-* Govindraj.R <govindraj.raja@ti.com> [090924 03:29]:
-> From: Govindraj R <govindraj.raja@ti.com>
-> 
-> This patch adds support for OMAP3430-HIGH SPEED UART Controller.
-> 
-> Signed-off-by:	Govindraj R <govindraj.raja@ti.com>
-> Reviewed-by: Alan Cox <alan@lxorguk.ukuu.org.uk>
-> Reviewed-by: Tony Lindgren <tony@atomide.com>
+Hi,
 
-You should only add Reviewed-by if Alan or me have replied with it.
+Can I open up a serial device and install the line discipline from kernel space ?
+We have a situation where in an application would try and access a character device node, on "open" file op on such a char device node, a particular line discipline needs to be installed.
+[Can't change the application, but the line discipline driver which also exposes a character driver is subject to change]
 
-So far I've only replied with some comments that have not yet
-been fixed, so we're few more steps from being Reviewd-by.
+Thanks & Regards,
+Pavan Savoy
 
-<snip>
 
-> diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
-> index 6553833..67a7129 100644
-> --- a/drivers/serial/Kconfig
-> +++ b/drivers/serial/Kconfig
-> @@ -1359,6 +1359,53 @@ config SERIAL_OF_PLATFORM
->  	  Currently, only 8250 compatible ports are supported, but
->  	  others can easily be added.
-> 
-> +config SERIAL_OMAP
-> +	bool "OMAP serial port support"
-> +	depends on ARM && ARCH_OMAP
-> +	select SERIAL_CORE
-> +	help
-> +	If you have a machine based on an Texas Instruments OMAP CPU you
-> +	can enable its onboard serial ports by enabling this option.
-> +
-> +config SERIAL_OMAP_CONSOLE
-> +	bool "Console on OMAP serial port"
-> +	depends on SERIAL_OMAP
-> +	select SERIAL_CORE_CONSOLE
-> +	help
-> +	If you have enabled the serial port on the Texas Instruments OMAP
-> +	CPU you can make it the console by answering Y to this option.
-> +
-> +	Even if you say Y here, the currently visible virtual console
-> +	(/dev/tty0) will still be used as the system console by default, but
-> +	you can alter that using a kernel command line option such as
-> +	"console=ttyS0". (Try "man bootparam" or see the documentation of
-> +	your boot loader (lilo or loadlin) about how to pass options to the
-> +	kernel at boot time.)
-> +
-> +config SERIAL_OMAP_DMA_UART1
-> +	bool "UART1 DMA support"
-> +	depends on SERIAL_OMAP
-> +	help
-> +	If you have enabled the serial port on the Texas Instruments OMAP
-> +	CPU you can enable the DMA transfer on UART 1 by answering
-> +	to this option.
-> +
-> +config SERIAL_OMAP_DMA_UART2
-> +	bool "UART2 DMA support"
-> +	depends on SERIAL_OMAP
-> +	help
-> +	If you have enabled the serial port on the Texas Instruments OMAP
-> +	CPU you can enable the DMA transfer on UART 2 by answering
-> +	to this option.
-> +
-> +config SERIAL_OMAP_DMA_UART3
-> +	bool "UART3 DMA support"
-> +	depends on SERIAL_OMAP
-> +	help
-> +	If you have enabled the serial port on the Texas Instruments OMAP
-> +	CPU you can enable the DMA transfer on UART 3 by answering
-> +	to this option.
-> +
->  config SERIAL_OF_PLATFORM_NWPSERIAL
->  	tristate "NWP serial port driver"
->  	depends on PPC_OF && PPC_DCR
-
-There's absolutely no need for having Kconfig options for the DMA
-support. Please pass that in platform_data from the board-*.c files.
-
-This is the third time I'm commenting on the same issue!
-
-What's the point of posting these patches for review if the issues
-don't get solved?
-
-Regards,
-
-Tony
+      Keep up with people you care about with Yahoo! India Mail. Learn how. http://in.overview.mail.yahoo.com/connectmore
