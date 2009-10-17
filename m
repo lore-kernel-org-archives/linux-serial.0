@@ -1,178 +1,52 @@
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] serial: Add ADDI-DATA GmbH PCI-Express communication
- cards in 8250_pci.c and pci_ids.h
-Date: Tue, 13 Oct 2009 19:01:52 -0700
-Message-ID: <20091013190152.7132cd7b.akpm@linux-foundation.org>
-References: <DD0BA80209AFF04091B518EA708D0A0B013D20F0@ffserver>
+From: Julia Lawall <julia@diku.dk>
+Subject: question about drivers/serial/jsm/jsm_neo.c
+Date: Sat, 17 Oct 2009 15:05:21 +0200 (CEST)
+Message-ID: <Pine.LNX.4.64.0910171458110.8556@pc-004.diku.dk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp1.linux-foundation.org ([140.211.169.13]:60858 "EHLO
-	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754109AbZJNCCp (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 13 Oct 2009 22:02:45 -0400
-In-Reply-To: <DD0BA80209AFF04091B518EA708D0A0B013D20F0@ffserver>
+Received: from mgw2.diku.dk ([130.225.96.92]:38396 "EHLO mgw2.diku.dk"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751391AbZJQNFU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 17 Oct 2009 09:05:20 -0400
+Received: from localhost (localhost [127.0.0.1])
+	by mgw2.diku.dk (Postfix) with ESMTP id 8AE9219BC0C
+	for <linux-serial@vger.kernel.org>; Sat, 17 Oct 2009 15:05:23 +0200 (CEST)
+Received: from mgw2.diku.dk ([127.0.0.1])
+ by localhost (mgw2.diku.dk [127.0.0.1]) (amavisd-new, port 10024) with ESMTP
+ id 09096-16 for <linux-serial@vger.kernel.org>;
+ Sat, 17 Oct 2009 15:05:22 +0200 (CEST)
+Received: from nhugin.diku.dk (nhugin.diku.dk [130.225.96.140])
+	by mgw2.diku.dk (Postfix) with ESMTP id 3622719BBF4
+	for <linux-serial@vger.kernel.org>; Sat, 17 Oct 2009 15:05:22 +0200 (CEST)
+Received: from pc-004.diku.dk (pc-004.diku.dk [130.225.97.4])
+	by nhugin.diku.dk (Postfix) with ESMTP id 0348D6DF893
+	for <linux-serial@vger.kernel.org>; Sat, 17 Oct 2009 15:02:46 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by pc-004.diku.dk (Postfix) with ESMTP id D1E5E384E3
+	for <linux-serial@vger.kernel.org>; Sat, 17 Oct 2009 15:05:21 +0200 (CEST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Krauth.Julien" <Krauth.Julien@addi-data.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
+To: linux-serial@vger.kernel.org
 
-On Tue, 6 Oct 2009 16:21:19 +0200 "Krauth.Julien" <Krauth.Julien@addi-data.com> wrote:
+The file drivers/serial/jsm/jsm_neo.c contains the following code in the 
+function neo_parse_modem:
 
-> Add support for ADDI-DATA GmbH PCI-Express communication cards:
-> 
-> APCIe-7300
-> APCIe-7420
-> APCIe-7500
-> APCIe-7800
-> 
-> Warning: 8250_pci.c depends on pci_ids.h. 8250_pci.c
-> 
+	jsm_printk(MSIGS, INFO, &ch->ch_bd->pci_dev,
+			"Port: %d DTR: %d RTS: %d CTS: %d DSR: %d " "RI: %d CD: %d\n",
+		ch->ch_portnum,
+		!!((ch->ch_mistat | ch->ch_mostat) & UART_MCR_DTR),
+		!!((ch->ch_mistat | ch->ch_mostat) & UART_MCR_RTS),
+		!!((ch->ch_mistat | ch->ch_mostat) & UART_MSR_CTS),
+		!!((ch->ch_mistat | ch->ch_mostat) & UART_MSR_DSR),
+		!!((ch->ch_mistat | ch->ch_mostat) & UART_MSR_RI),
+		!!((ch->ch_mistat | ch->ch_mostat) & UART_MSR_DCD));
 
-I don't understand this warning.  Why are you telling us this?
+The whole function uses constants with the name "UART_MSR_..." except for 
+the first two lines of this print statement, which uses constants with the 
+name "UART_MCR_...".  Furthermore, UART_MCR_DTR is equivalent to 
+UART_MSR_DCTS and UART_MCR_RTS is equivalent to UART_MSR_DDSR.  Is this 
+intentional?
 
-> Signed-off-by: Krauth Julien <Krauth.Julien@addi-data.com>
-> ---
-> 
-> These patches applies on kernel 2.6.31.1
-> 
-> --- linux-2.6.31.1-vanilla/include/linux/pci_ids.h	2009-09-24
-> 17:45:25.000000000 +0200
-> +++ linux-2.6.31.1/include/linux/pci_ids.h	2009-09-29
-> 11:30:06.000000000 +0200
-
-Your email client wordwraps the patches, thus corrupting them.  Please
-fix that for next time.
-
-I fixed that up and queued the patch with 2.6.32 intent, thanks.
-
-
-From: "Krauth.Julien" <Krauth.Julien@addi-data.com>
-
-Add support for ADDI-DATA GmbH PCI-Express communication cards:
-
-APCIe-7300
-APCIe-7420
-APCIe-7500
-APCIe-7800
-
-Warning: 8250_pci.c depends on pci_ids.h. 8250_pci.c
-
-Signed-off-by: Krauth Julien <Krauth.Julien@addi-data.com>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
----
-
- drivers/serial/8250_pci.c |   67 ++++++++++++++++++++++++++++++++++++
- include/linux/pci_ids.h   |    4 ++
- 2 files changed, 71 insertions(+)
-
-diff -puN drivers/serial/8250_pci.c~serial-add-addi-data-gmbh-pci-express-communication-cards-in-8250_pcic-and-pci_idsh drivers/serial/8250_pci.c
---- a/drivers/serial/8250_pci.c~serial-add-addi-data-gmbh-pci-express-communication-cards-in-8250_pcic-and-pci_idsh
-+++ a/drivers/serial/8250_pci.c
-@@ -1566,6 +1566,10 @@ enum pci_board_num_t {
- 	pbn_ni8430_4,
- 	pbn_ni8430_8,
- 	pbn_ni8430_16,
-+	pbn_ADDIDATA_PCIe_1_3906250,
-+	pbn_ADDIDATA_PCIe_2_3906250,
-+	pbn_ADDIDATA_PCIe_4_3906250,
-+	pbn_ADDIDATA_PCIe_8_3906250,
- };
- 
- /*
-@@ -2185,6 +2189,37 @@ static struct pciserial_board pci_boards
- 		.uart_offset	= 0x10,
- 		.first_offset	= 0x800,
- 	},
-+	/*
-+	 * ADDI-DATA GmbH PCI-Express communication cards <info@addi-data.com>
-+	 */
-+	[pbn_ADDIDATA_PCIe_1_3906250] = {
-+		.flags		= FL_BASE0,
-+		.num_ports	= 1,
-+		.base_baud	= 3906250,
-+		.uart_offset	= 0x200,
-+		.first_offset	= 0x1000,
-+	},
-+	[pbn_ADDIDATA_PCIe_2_3906250] = {
-+		.flags		= FL_BASE0,
-+		.num_ports	= 2,
-+		.base_baud	= 3906250,
-+		.uart_offset	= 0x200,
-+		.first_offset	= 0x1000,
-+	},
-+	[pbn_ADDIDATA_PCIe_4_3906250] = {
-+		.flags		= FL_BASE0,
-+		.num_ports	= 4,
-+		.base_baud	= 3906250,
-+		.uart_offset	= 0x200,
-+		.first_offset	= 0x1000,
-+	},
-+	[pbn_ADDIDATA_PCIe_8_3906250] = {
-+		.flags		= FL_BASE0,
-+		.num_ports	= 8,
-+		.base_baud	= 3906250,
-+		.uart_offset	= 0x200,
-+		.first_offset	= 0x1000,
-+	},
- };
- 
- static const struct pci_device_id softmodem_blacklist[] = {
-@@ -3556,6 +3591,38 @@ static struct pci_device_id serial_pci_t
- 		0,
- 		pbn_b0_8_115200 },
- 
-+	{	PCI_VENDOR_ID_ADDIDATA,
-+		PCI_DEVICE_ID_ADDIDATA_APCIe7500,
-+		PCI_ANY_ID,
-+		PCI_ANY_ID,
-+		0,
-+		0,
-+		pbn_ADDIDATA_PCIe_4_3906250 },
-+
-+	{	PCI_VENDOR_ID_ADDIDATA,
-+		PCI_DEVICE_ID_ADDIDATA_APCIe7420,
-+		PCI_ANY_ID,
-+		PCI_ANY_ID,
-+		0,
-+		0,
-+		pbn_ADDIDATA_PCIe_2_3906250 },
-+
-+	{	PCI_VENDOR_ID_ADDIDATA,
-+		PCI_DEVICE_ID_ADDIDATA_APCIe7300,
-+		PCI_ANY_ID,
-+		PCI_ANY_ID,
-+		0,
-+		0,
-+		pbn_ADDIDATA_PCIe_1_3906250 },
-+
-+	{	PCI_VENDOR_ID_ADDIDATA,
-+		PCI_DEVICE_ID_ADDIDATA_APCIe7800,
-+		PCI_ANY_ID,
-+		PCI_ANY_ID,
-+		0,
-+		0,
-+		pbn_ADDIDATA_PCIe_8_3906250 },
-+
- 	{	PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9835,
- 		PCI_VENDOR_ID_IBM, 0x0299,
- 		0, 0, pbn_b0_bt_2_115200 },
-diff -puN include/linux/pci_ids.h~serial-add-addi-data-gmbh-pci-express-communication-cards-in-8250_pcic-and-pci_idsh include/linux/pci_ids.h
---- a/include/linux/pci_ids.h~serial-add-addi-data-gmbh-pci-express-communication-cards-in-8250_pcic-and-pci_idsh
-+++ a/include/linux/pci_ids.h
-@@ -2162,6 +2162,10 @@
- #define PCI_DEVICE_ID_ADDIDATA_APCI7420_3      0x700D
- #define PCI_DEVICE_ID_ADDIDATA_APCI7300_3      0x700E
- #define PCI_DEVICE_ID_ADDIDATA_APCI7800_3      0x700F
-+#define PCI_DEVICE_ID_ADDIDATA_APCIe7300       0x7010
-+#define PCI_DEVICE_ID_ADDIDATA_APCIe7420       0x7011
-+#define PCI_DEVICE_ID_ADDIDATA_APCIe7500       0x7012
-+#define PCI_DEVICE_ID_ADDIDATA_APCIe7800       0x7013
- 
- #define PCI_VENDOR_ID_PDC		0x15e9
- 
-_
-
+thanks,
+julia
