@@ -1,34 +1,42 @@
-From: Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: Re: [PATCH 1/9] serial_cs: use pcmcia_loop_config() and pre-determined values
-Date: Mon, 19 Oct 2009 14:37:40 +0200
-Message-ID: <20091019123739.GA23104@isilmar.linta.de>
-References: <1255907255-28297-1-git-send-email-linux@dominikbrodowski.net> <4012584.17381255954017391.komurojun-mbn@nifty.com>
+From: Komuro <komurojun-mbn@nifty.com>
+Subject: Re: Re: [PATCH 1/9] serial_cs: use pcmcia_loop_config() and
+	pre-determined values
+Date: Wed, 21 Oct 2009 21:30:20 +0900 (JST)
+Message-ID: <20949843.18491256128220708.komurojun-mbn@nifty.com>
+References: <20091019123739.GA23104@isilmar.linta.de>
+	<1255907255-28297-1-git-send-email-linux@dominikbrodowski.net>
+	<4012584.17381255954017391.komurojun-mbn@nifty.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from isilmar.linta.de ([213.133.102.198]:53804 "EHLO linta.de"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751248AbZJSMhh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Oct 2009 08:37:37 -0400
-Content-Disposition: inline
-In-Reply-To: <4012584.17381255954017391.komurojun-mbn@nifty.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pcmcia-bounces+glkpd-linux-pcmcia=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20091019123739.GA23104@isilmar.linta.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-pcmcia>,
+	<mailto:linux-pcmcia-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-pcmcia/>
+List-Post: <mailto:linux-pcmcia@lists.infradead.org>
+List-Help: <mailto:linux-pcmcia-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-pcmcia>,
+	<mailto:linux-pcmcia-request@lists.infradead.org?subject=subscribe>
+Sender: linux-pcmcia-bounces@lists.infradead.org
+Errors-To: linux-pcmcia-bounces+glkpd-linux-pcmcia=m.gmane.org@lists.infradead.org
+To: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Russell King <rmk+kernel@arm.linux.org.uk>, linux-pcmcia@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Komuro <komurojun-mbn@nifty.com>
-Cc: linux-pcmcia@lists.infradead.org, Russell King <rmk+kernel@arm.linux.org.uk>, linux-serial@vger.kernel.org
 
-Hey,
+Hi,
 
-On Mon, Oct 19, 2009 at 09:06:57PM +0900, Komuro wrote:
-> Please don't remove the code below.
-> This code loades the "2nd" ConfigBase of the multi-function card.
+>On Mon, Oct 19, 2009 at 09:06:57PM +0900, Komuro wrote:
+>> Please don't remove the code below.
+>> This code loades the "2nd" ConfigBase of the multi-function card.
+>
+>isn't this properly handled by the patch 
+>
+>pcmcia: pccard_read tuple and TUPLE_RETURN_COMMON cleanup
 
-isn't this properly handled by the patch 
 
-pcmcia: pccard_read tuple and TUPLE_RETURN_COMMON cleanup
+OK.
+works.
 
-http://git.kernel.org/?p=linux/kernel/git/brodo/pcmcia-2.6.git;a=commitdiff;h=84897fc0524d7cbfc81d0bdf9f92ade6e3c3816b
-?
-
-Best,
-	Dominik
+Best Regards
+Komuro
