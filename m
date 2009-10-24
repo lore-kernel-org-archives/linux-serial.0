@@ -1,173 +1,105 @@
 From: Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: [PATCH 12/16] pcmcia: use dynamic debug infrastructure, deprecate CS_CHECK (serial_cs)
-Date: Sat, 24 Oct 2009 21:43:02 +0200
-Message-ID: <1256413386-20501-12-git-send-email-linux@dominikbrodowski.net>
-References: <20091024194219.GA19546@comet.dominikbrodowski.net>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from isilmar.linta.de ([213.133.102.198]:55650 "EHLO linta.de"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751676AbZJXTnM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 24 Oct 2009 15:43:12 -0400
-In-Reply-To: <20091024194219.GA19546@comet.dominikbrodowski.net>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Subject: [RFC] more PCMCIA cleanup patches for 2.6.33
+Date: Sat, 24 Oct 2009 21:42:19 +0200
+Message-ID: <20091024194219.GA19546@comet.dominikbrodowski.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <netdev-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: netdev-owner@vger.kernel.org
 To: linux-pcmcia@lists.infradead.org
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>, linux-serial@vger.kernel.org, Russell King <rmk+kernel@arm.linux.org.uk>
+Cc: netdev@vger.kernel.org, linux-wireless@vger.kernel.org, linux-serial@vger.kernel.org, linux-ide@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 
-Convert PCMCIA drivers to use the dynamic debug infrastructure, instead of
-requiring manual settings of PCMCIA_DEBUG.
+Hej,
 
-Also, remove all usages of the CS_CHECK macro and replace them with proper
-Linux style calling and return value checking. The extra error reporting may
-be dropped, as the PCMCIA core already complains about any (non-driver-author)
-errors.
+In addition to the patches already submitted as RFC on Oct 19th, I'm
+interested in your input to this patch series. They'll be sent to the
+PCMCIA list shortly, with CC to other lists if deemed appropriate. If
+all goes well, I'll ask Linus to pull both patch series once 2.6.32
+is released.
 
-CC: linux-serial@vger.kernel.org
-CC: Russell King <rmk+kernel@arm.linux.org.uk>
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
----
- drivers/serial/serial_cs.c |   53 ++++++++++++++-----------------------------
- 1 files changed, 17 insertions(+), 36 deletions(-)
+      pcmcia: use dynamic debug instead of custom infrastructure
+      pcmcia: use dynamic debug in PCMCIA socket drivers
+      pcmcia: extend error reporting and debug messages in core
+      pcmcia: use dynamic debug infrastructure, deprecate CS_CHECK (ide)
+      pcmcia: deprecate CS_CHECK (bluetooth)
+      pcmcia: use dynamic debug infrastructure, deprecate CS_CHECK (char)
+      pcmcia: use dynamic debug infrastructure, deprecate CS_CHECK (isdn)
+      pcmcia: use dynamic debug infrastructure, deprecate CS_CHECK (net)
+      pcmcia: use dynamic debug infrastructure, deprecate CS_CHECK (ray-cs.c)
+      pcmcia: use dynamic debug infrastructure, deprecate CS_CHECK (wireless)
+      pcmcia: use dynamic debug infrastructure, deprecate CS_CHECK (scsi)
+      pcmcia: use dynamic debug infrastructure, deprecate CS_CHECK (serial_cs)
+      pcmcia: use dynamic debug infrastructure, deprecate CS_CHECK (sound)
+      pcmcia: use dynamic debug infrastructure, deprecate CS_CHECK (misc drivers)
+      pcmcia: remove now-defunct cs_error, pcmcia_error_{func,ret}
+      pcmcia: use dev_dbg and dev_print in pd6729.c
 
-diff --git a/drivers/serial/serial_cs.c b/drivers/serial/serial_cs.c
-index 7bf02cf..3b31bee 100644
---- a/drivers/serial/serial_cs.c
-+++ b/drivers/serial/serial_cs.c
-@@ -54,14 +54,6 @@
- 
- #include "8250.h"
- 
--#ifdef PCMCIA_DEBUG
--static int pc_debug = PCMCIA_DEBUG;
--module_param(pc_debug, int, 0644);
--#define DEBUG(n, args...) if (pc_debug>(n)) printk(KERN_DEBUG args)
--static char *version = "serial_cs.c 1.134 2002/05/04 05:48:53 (David Hinds)";
--#else
--#define DEBUG(n, args...)
--#endif
- 
- /*====================================================================*/
- 
-@@ -121,24 +113,20 @@ static void quirk_setup_brainboxes_0104(struct pcmcia_device *link, struct uart_
- static int quirk_post_ibm(struct pcmcia_device *link)
- {
- 	conf_reg_t reg = { 0, CS_READ, 0x800, 0 };
--	int last_ret, last_fn;
-+	int ret;
-+
-+	ret = pcmcia_access_configuration_register(link, &reg);
-+	if (ret)
-+		goto failed;
- 
--	last_ret = pcmcia_access_configuration_register(link, &reg);
--	if (last_ret) {
--		last_fn = AccessConfigurationRegister;
--		goto cs_failed;
--	}
- 	reg.Action = CS_WRITE;
- 	reg.Value = reg.Value | 1;
--	last_ret = pcmcia_access_configuration_register(link, &reg);
--	if (last_ret) {
--		last_fn = AccessConfigurationRegister;
--		goto cs_failed;
--	}
-+	ret = pcmcia_access_configuration_register(link, &reg);
-+	if (ret)
-+		goto failed;
- 	return 0;
- 
-- cs_failed:
--	cs_error(link, last_fn, last_ret);
-+ failed:
- 	return -ENODEV;
- }
- 
-@@ -283,7 +271,7 @@ static void serial_remove(struct pcmcia_device *link)
- 	struct serial_info *info = link->priv;
- 	int i;
- 
--	DEBUG(0, "serial_release(0x%p)\n", link);
-+	dev_dbg(&link->dev, "serial_release\n");
- 
- 	/*
- 	 * Recheck to see if the device is still configured.
-@@ -334,7 +322,7 @@ static int serial_probe(struct pcmcia_device *link)
- {
- 	struct serial_info *info;
- 
--	DEBUG(0, "serial_attach()\n");
-+	dev_dbg(&link->dev, "serial_attach()\n");
- 
- 	/* Create new serial device */
- 	info = kzalloc(sizeof (*info), GFP_KERNEL);
-@@ -370,7 +358,7 @@ static void serial_detach(struct pcmcia_device *link)
- {
- 	struct serial_info *info = link->priv;
- 
--	DEBUG(0, "serial_detach(0x%p)\n", link);
-+	dev_dbg(&link->dev, "serial_detach\n");
- 
- 	/*
- 	 * Ensure any outstanding scheduled tasks are completed.
-@@ -507,15 +495,13 @@ static int simple_config(struct pcmcia_device *link)
- 
- 	printk(KERN_NOTICE
- 	       "serial_cs: no usable port range found, giving up\n");
--	cs_error(link, RequestIO, i);
- 	return -1;
- 
- found_port:
- 	i = pcmcia_request_irq(link, &link->irq);
--	if (i != 0) {
--		cs_error(link, RequestIRQ, i);
-+	if (i != 0)
- 		link->irq.AssignedIRQ = 0;
--	}
-+
- 	if (info->multi && (info->manfid == MANFID_3COM))
- 		link->conf.ConfigIndex &= ~(0x08);
- 
-@@ -526,10 +512,8 @@ found_port:
- 		info->quirk->config(link);
- 
- 	i = pcmcia_request_configuration(link, &link->conf);
--	if (i != 0) {
--		cs_error(link, RequestConfiguration, i);
-+	if (i != 0)
- 		return -1;
--	}
- 	return setup_serial(link, info, link->io.BasePort1, link->irq.AssignedIRQ);
- }
- 
-@@ -598,7 +582,6 @@ static int multi_config(struct pcmcia_device *link)
- 		/* FIXME: comment does not fit, error handling does not fit */
- 		printk(KERN_NOTICE
- 		       "serial_cs: no usable port range found, giving up\n");
--		cs_error(link, RequestIRQ, i);
- 		link->irq.AssignedIRQ = 0;
- 	}
- 
-@@ -609,10 +592,8 @@ static int multi_config(struct pcmcia_device *link)
- 		info->quirk->config(link);
- 
- 	i = pcmcia_request_configuration(link, &link->conf);
--	if (i != 0) {
--		cs_error(link, RequestConfiguration, i);
-+	if (i != 0)
- 		return -ENODEV;
--	}
- 
- 	/* The Oxford Semiconductor OXCF950 cards are in fact single-port:
- 	 * 8 registers are for the UART, the others are extra registers.
-@@ -682,7 +663,7 @@ static int serial_config(struct pcmcia_device * link)
- 	struct serial_info *info = link->priv;
- 	int i;
- 
--	DEBUG(0, "serial_config(0x%p)\n", link);
-+	dev_dbg(&link->dev, "serial_config\n");
- 
- 	/* Is this a compliant multifunction card? */
- 	info->multi = (link->socket->functions > 1);
--- 
-1.6.0.4
+ Documentation/pcmcia/driver-changes.txt    |    5 +
+ drivers/ata/pata_pcmcia.c                  |   16 +-
+ drivers/bluetooth/bluecard_cs.c            |   12 +-
+ drivers/bluetooth/bt3c_cs.c                |    9 +-
+ drivers/bluetooth/btuart_cs.c              |    9 +-
+ drivers/bluetooth/dtl1_cs.c                |    8 +-
+ drivers/char/pcmcia/cm4000_cs.c            |   69 ++----
+ drivers/char/pcmcia/cm4040_cs.c            |   42 ++--
+ drivers/char/pcmcia/ipwireless/main.c      |   34 +--
+ drivers/char/pcmcia/synclink_cs.c          |   23 +-
+ drivers/ide/ide-cs.c                       |   32 +--
+ drivers/isdn/hardware/avm/avm_cs.c         |    2 -
+ drivers/isdn/hisax/avma1_cs.c              |   26 +--
+ drivers/isdn/hisax/elsa_cs.c               |   45 +---
+ drivers/isdn/hisax/sedlbauer_cs.c          |   58 ++---
+ drivers/isdn/hisax/teles_cs.c              |   37 +---
+ drivers/mtd/maps/pcmciamtd.c               |   14 +-
+ drivers/net/pcmcia/3c574_cs.c              |   66 +++---
+ drivers/net/pcmcia/3c589_cs.c              |   75 ++----
+ drivers/net/pcmcia/axnet_cs.c              |   53 ++---
+ drivers/net/pcmcia/com20020_cs.c           |   55 ++---
+ drivers/net/pcmcia/fmvj18x_cs.c            |  109 +++------
+ drivers/net/pcmcia/ibmtr_cs.c              |   54 ++---
+ drivers/net/pcmcia/nmclan_cs.c             |  148 +++++-------
+ drivers/net/pcmcia/pcnet_cs.c              |   67 ++----
+ drivers/net/pcmcia/smc91c92_cs.c           |   85 +++-----
+ drivers/net/pcmcia/xirc2ps_cs.c            |  111 ++++------
+ drivers/net/wireless/airo_cs.c             |   48 ++---
+ drivers/net/wireless/atmel_cs.c            |   46 ++---
+ drivers/net/wireless/hostap/hostap_cs.c    |   23 +--
+ drivers/net/wireless/netwave_cs.c          |   88 +++----
+ drivers/net/wireless/orinoco/orinoco_cs.c  |   27 +--
+ drivers/net/wireless/orinoco/spectrum_cs.c |   54 +++---
+ drivers/net/wireless/ray_cs.c              |  347 ++++++++++++++--------------
+ drivers/net/wireless/wavelan_cs.c          |   24 --
+ drivers/net/wireless/wl3501_cs.c           |   67 ++----
+ drivers/parport/parport_cs.c               |   37 +--
+ drivers/pcmcia/Kconfig                     |   36 ++--
+ drivers/pcmcia/cardbus.c                   |    4 +-
+ drivers/pcmcia/cistpl.c                    |   10 +-
+ drivers/pcmcia/cs.c                        |   60 +++---
+ drivers/pcmcia/cs_internal.h               |   22 --
+ drivers/pcmcia/ds.c                        |  188 +++------------
+ drivers/pcmcia/i82365.c                    |   37 +--
+ drivers/pcmcia/m32r_cfc.c                  |  105 ++++-----
+ drivers/pcmcia/m32r_pcc.c                  |   51 ++---
+ drivers/pcmcia/m8xx_pcmcia.c               |   40 ++--
+ drivers/pcmcia/pcmcia_ioctl.c              |   31 +--
+ drivers/pcmcia/pcmcia_resource.c           |  126 ++++++-----
+ drivers/pcmcia/pd6729.c                    |   69 +++---
+ drivers/pcmcia/pd6729.h                    |    7 -
+ drivers/pcmcia/tcic.c                      |   29 +--
+ drivers/scsi/pcmcia/aha152x_stub.c         |   40 ++--
+ drivers/scsi/pcmcia/fdomain_stub.c         |   43 ++---
+ drivers/scsi/pcmcia/qlogic_stub.c          |   44 ++---
+ drivers/scsi/pcmcia/sym53c500_cs.c         |   41 ++---
+ drivers/serial/serial_cs.c                 |   53 ++---
+ drivers/telephony/ixj_pcmcia.c             |   36 +--
+ drivers/usb/host/sl811_cs.c                |   46 +---
+ include/pcmcia/ds.h                        |   36 ---
+ sound/pcmcia/pdaudiocf/pdaudiocf.c         |   21 +-
+ sound/pcmcia/vx/vxpocket.c                 |   21 +-
+ 62 files changed, 1204 insertions(+), 2017 deletions(-)
 
+
+Best,
+	Dominik
