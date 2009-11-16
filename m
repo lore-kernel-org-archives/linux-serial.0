@@ -1,71 +1,76 @@
-From: Maxime Bizon <mbizon@freebox.fr>
-Subject: [PATCH] bcm63xx_uart: Fix serial driver compile breakage.
-Date: Sun, 15 Nov 2009 05:42:18 +0100
-Message-ID: <1258260138.2422.3.camel@kero>
-Reply-To: mbizon@freebox.fr
+From: "Feng, Xiaobing" <Xiaobing.Feng@windriver.com>
+Subject: [PATCH 1/2] Uart driver for ST Microelectronics ConneXt(STA2X11/STA2X10).
+Date: Mon, 16 Nov 2009 04:22:31 +0100
+Message-ID: <52CF90264091A14888078A031D780F4302F89334@ism-mail03.corp.ad.wrs.com>
+References: <52CF90264091A14888078A031D780F436EF0F9@ism-mail03.corp.ad.wrs.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp6-g21.free.fr ([212.27.42.6]:55686 "EHLO smtp6-g21.free.fr"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751611AbZKOEmW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 14 Nov 2009 23:42:22 -0500
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pci-owner@vger.kernel.org>
+Content-class: urn:content-classes:message
+In-Reply-To: <52CF90264091A14888078A031D780F436EF0F9@ism-mail03.corp.ad.wrs.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, linux-pci@vger.kernel.org, giancarlo.asnaghi@st.com, "Wallin, Anders" <Anders.Wallin@windriver.com>, "D'Agostino, Raffaele" <raffaele.dagostino@windriver.com>, "Li, Li" <Li.Li@windriver.com>
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@suse.de>
-Cc: linux-serial@vger.kernel.org
 
 
-Hi Greg,
+Hi
+	The  patch add VENDOR ID and DEVICE ID for all components on ST
+Microelectronics ConneXt board. It will be required by all drivers of
+ConneXt which will submit in the future monthes.
+  
+ST Microelectronics ConneXt(STA2X11/STA2X10), a PCI express
+multifunction chip that provides Input/Output capabilities.
 
-The recently merged bcm63xx uart driver does not compile on current
-linus' tree, could you please apply the attached patch and send it to
-linus ? Thanks !
+  	 This patch has been checked by scripts/checkpatch.pl .
 
 
 
-The driver missed a small API change while sitting in Ralf's tree, this
-patch makes it compile again.
+>From 562dced056963d0dae2cc17263a995acf51d3b01 Mon Sep 17 00:00:00 2001
+From: Billy <billy@billy-laptop.(none)>
+Date: Fri, 13 Nov 2009 18:07:26 +0800
+Subject: [PATCH] Add VENDOR ID and DEVICE ID for STMICRO's ConneXt board
+to include/linux/pci_ids.h
 
-Signed-off-by: Maxime Bizon <mbizon@freebox.fr>
+Signed-off-by: XiaoBing Feng (Billy Feng) <xiaobing.feng@windriver.com>
+Acked-by: Giancarlo Asnaghi <giancarlo.asnaghi@st.com>
 ---
- drivers/serial/bcm63xx_uart.c |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+ include/linux/pci_ids.h |   23 +++++++++++++++++++++++
+ 1 files changed, 23 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/serial/bcm63xx_uart.c b/drivers/serial/bcm63xx_uart.c
-index beddaa6..37ad0c4 100644
---- a/drivers/serial/bcm63xx_uart.c
-+++ b/drivers/serial/bcm63xx_uart.c
-@@ -242,7 +242,7 @@ static void bcm_uart_do_rx(struct uart_port *port)
- 	 * higher than fifo size anyway since we're much faster than
- 	 * serial port */
- 	max_count = 32;
--	tty = port->info->port.tty;
-+	tty = port->state->port.tty;
- 	do {
- 		unsigned int iestat, c, cstat;
- 		char flag;
-@@ -318,7 +318,7 @@ static void bcm_uart_do_tx(struct uart_port *port)
- 		return;
- 	}
+diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h index
+73b46b6..ff7b0ba 100644
+--- a/include/linux/pci_ids.h
++++ b/include/linux/pci_ids.h
+@@ -2664,3 +2664,26 @@
+ #define PCI_DEVICE_ID_RME_DIGI32       0x9896
+ #define PCI_DEVICE_ID_RME_DIGI32_PRO   0x9897
+ #define PCI_DEVICE_ID_RME_DIGI32_8     0x9898
++
++#define PCI_VENDOR_ID_STMICRO                  0x1862
++#define PCI_DEVICE_ID_STMICRO_USB_HOST         0xCC00
++#define PCI_DEVICE_ID_STMICRO_USB_OHCI         0xCC01
++#define PCI_DEVICE_ID_STMICRO_USB_OTG          0xCC02
++#define PCI_DEVICE_ID_STMICRO_UART_HWFC                0xCC03
++#define PCI_DEVICE_ID_STMICRO_UART_NO_HWFC     0xCC04
++#define PCI_DEVICE_ID_STMICRO_SOC_DMA          0xCC05
++#define PCI_DEVICE_ID_STMICRO_SATAII           0xCC06
++#define PCI_DEVICE_ID_STMICRO_I2C              0xCC07
++#define PCI_DEVICE_ID_STMICRO_SPI_HS           0xCC08
++#define PCI_DEVICE_ID_STMICRO_MAC              0xCC09
++#define PCI_DEVICE_ID_STMICRO_SDIO_EMMC                0xCC0A
++#define PCI_DEVICE_ID_STMICRO_SDIO             0xCC0B
++#define PCI_DEVICE_ID_STMICRO_GPIO             0xCC0C
++#define PCI_DEVICE_ID_STMICRO_ESRAM            0xCC0D
++#define PCI_DEVICE_ID_STMICRO_AUDIO_ROUTER_DMA 0xCC0E
++#define PCI_DEVICE_ID_STMICRO_AUDIO_ROUTER_SRCS        0xCC0F
++#define PCI_DEVICE_ID_STMICRO_AUDIO_ROUTER_MSPS        0xCC10
++#define PCI_DEVICE_ID_STMICRO_CAN              0xCC11
++#define PCI_DEVICE_ID_STMICRO_MLB              0xCC12
++#define PCI_DEVICE_ID_STMICRO_DBP              0xCC13
++#define PCI_DEVICE_ID_STMICRO_VIP              0xCC14
+--
+1.6.0.4
  
--	xmit = &port->info->xmit;
-+	xmit = &port->state->xmit;
- 	if (uart_circ_empty(xmit))
- 		goto txq_empty;
- 
--- 
-1.6.3.3
-
-
-
-
--- 
-Maxime
-
-
-
-
-
-
