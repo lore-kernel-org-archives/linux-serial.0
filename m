@@ -1,62 +1,63 @@
-From: "Pandita, Vikram" <vikram.pandita@ti.com>
-Subject: RE: [PATCH 1/2] serial: 8250: add UPF_NO_EMPTY_FIFO_READ flag
-Date: Wed, 18 Nov 2009 03:08:40 +0530
-Message-ID: <FCCFB4CDC6E5564B9182F639FC35608702FA689EB4@dbde02.ent.ti.com>
-References: <1258492615-15963-1-git-send-email-vikram.pandita@ti.com>
- <20091117212547.0a81fa46@lxorguk.ukuu.org.uk>
+From: Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH] Do not read IIR in serial8250_start_tx when UART_BUG_TXEN
+Date: Wed, 18 Nov 2009 11:08:11 +0100 (CET)
+Message-ID: <alpine.LSU.2.00.0911181101090.15039@wotan.suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:44187 "EHLO bear.ext.ti.com"
+Received: from cantor2.suse.de ([195.135.220.15]:42506 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752615AbZKQVi6 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 17 Nov 2009 16:38:58 -0500
-In-Reply-To: <20091117212547.0a81fa46@lxorguk.ukuu.org.uk>
-Content-Language: en-US
+	id S1752292AbZKRKIH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 18 Nov 2009 05:08:07 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "Shilimkar, Santosh" <santosh.shilimkar@ti.com>
+To: Alan Cox <alan@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Markus Armbruster <armbru@redhat.com>, Ian Jackson <ian.jackson@eu.citrix.com>, Michal Hocko <mhocko@suse.cz>
+
+The patch below has been lost several times (the last submission happened 
+probably on [1]). I am currently aware of a real hardware which triggers 
+this problem quite reliably, so we should rather have that really fixed.
+
+[1] http://lkml.org/lkml/2009/3/12/379
 
 
 
->-----Original Message-----
->From: Alan Cox [mailto:alan@lxorguk.ukuu.org.uk]
->Sent: Tuesday, November 17, 2009 3:26 PM
->To: Pandita, Vikram
->Cc: linux-serial@vger.kernel.org; akpm@linux-foundation.org; linux-omap@vger.kernel.org; Pandita,
->Vikram; Shilimkar, Santosh
->Subject: Re: [PATCH 1/2] serial: 8250: add UPF_NO_EMPTY_FIFO_READ flag
->
->On Tue, 17 Nov 2009 15:16:55 -0600
->Vikram Pandita <vikram.pandita@ti.com> wrote:
->
->> OMAP3630 and OMAP4430 UART IP blocks have a restriction wrt RX FIFO.
->> Empty RX fifo read causes an abort. OMAP1/2/3 do not have this restriction.
->
->Nothing wrong with the requirement but I think it would keep 8250.c a lot
->cleaner if you implemented that in the serial_in method for the
->OMAP3630/4430. It would also mean anyone adding a UART_RX or any cases
->you miss don't break in future
 
-Agree. Was contemplating this change in beginning, but lost that train of thought.
-Thx for your review time.
+From: Ian Jackson <ian.jackson@eu.citrix.com>
 
->
->This is especially true now as you can pass a private
->serial_in/serial_out method in the port register function.
+Do not read IIR in serial8250_start_tx when UART_BUG_TXEN
 
-Our requirement is to over-right the serial_in for now.
-Is it fine to just add serial_in over-load or do you suggest both in/out?
+Reading the IIR clears some oustanding interrupts so it is not safe.
+Instead, simply transmit immediately if the buffer is empty without
+regard to IIR.
 
->
->Care to submit an alternate patch doing it that way, or see any reason
->for not ?
+Signed-off-by: Ian Jackson <ian.jackson@eu.citrix.com>
+Reviewed-by: Markus Armbruster <armbru@redhat.com>
+Reviewed-by: Jiri Kosina <jkosina@suse.cz>
 
-Working on it right away. See my patch in an hours time.
+---
+ drivers/serial/8250.c |    8 +++-----
+ 1 files changed, 3 insertions(+), 5 deletions(-)
 
->
->Alan
-
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index 737b4c9..807042b 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -1339,14 +1339,12 @@ static void serial8250_start_tx(struct uart_port *port)
+ 		serial_out(up, UART_IER, up->ier);
+ 
+ 		if (up->bugs & UART_BUG_TXEN) {
+-			unsigned char lsr, iir;
++			unsigned char lsr;
+ 			lsr = serial_in(up, UART_LSR);
+ 			up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
+-			iir = serial_in(up, UART_IIR) & 0x0f;
+ 			if ((up->port.type == PORT_RM9000) ?
+-				(lsr & UART_LSR_THRE &&
+-				(iir == UART_IIR_NO_INT || iir == UART_IIR_THRI)) :
+-				(lsr & UART_LSR_TEMT && iir & UART_IIR_NO_INT))
++				(lsr & UART_LSR_THRE) :
++				(lsr & UART_LSR_TEMT))
+ 				transmit_chars(up);
+ 		}
+ 	}
