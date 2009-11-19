@@ -1,53 +1,89 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: Bug in drivers/serial/of_serial.c?
-Date: Thu, 19 Nov 2009 08:03:24 -0800
-Message-ID: <20091119160324.GA7492@kroah.com>
-References: <8B957E110B62714A84290A01A597805F05CA0AA0@Exchange.discretix.com>
- <200911191441.27581.arnd@arndb.de>
- <8B957E110B62714A84290A01A597805F05D2AE47@Exchange.discretix.com>
- <200911191509.31270.arnd@arndb.de>
+From: Jiri Kosina <jkosina@suse.cz>
+Subject: Re: [PATCH] Do not read IIR in serial8250_start_tx when
+ UART_BUG_TXEN
+Date: Thu, 19 Nov 2009 17:38:55 +0100 (CET)
+Message-ID: <alpine.LSU.2.00.0911191734570.15039@wotan.suse.de>
+References: <alpine.LSU.2.00.0911181101090.15039@wotan.suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:43470 "EHLO coco.kroah.org"
+Received: from cantor2.suse.de ([195.135.220.15]:35231 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755336AbZKSQDW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 19 Nov 2009 11:03:22 -0500
-Content-Disposition: inline
-In-Reply-To: <200911191509.31270.arnd@arndb.de>
+	id S1754175AbZKSQiu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 19 Nov 2009 11:38:50 -0500
+In-Reply-To: <alpine.LSU.2.00.0911181101090.15039@wotan.suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Alon Ziv <alonz@discretix.com>, linuxppc-dev@lists.ozlabs.org, benh@kernel.crashing.org, linux-serial@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Markus Armbruster <armbru@redhat.com>, Ian Jackson <ian.jackson@eu.citrix.com>, Michal Hocko <mhocko@suse.cz>
 
-On Thu, Nov 19, 2009 at 03:09:31PM +0100, Arnd Bergmann wrote:
-> On Thursday 19 November 2009, Alon Ziv wrote:
-> > On Thursday, November 19, 2009, Arnd Bergmann wrote:
-> > > I'd still add support for the compatible="ns16550a" property
-> > > so that we do the right thing for future systems.
-> > > 
-> > 
-> > OK...
-> > ---
-> > Xilinx 16550 UART is actually 16550A-compatible
-> > 
-> > Signed-off-by: Alon Ziv <alonz@discretix.com>
-> 
-> Acked-by: Arnd Bergmann <arnd@arndb.de>
-> 
-> Does this go through the powerpc or the tty tree?
-> I'd be happy if either Ben or Greg could pick this up.
-> 
-> I'm happy to keep maintaining the driver itself but it
-> would be nice to know a definite subsystem maintainer
-> responsible for it.
-> 
-> Greg, if you want to take patches for of_serial.c generally,
-> I'll start forwarding them to you as they come in and make
-> sure they apply to your tree.
+On Wed, 18 Nov 2009, Jiri Kosina wrote:
 
-Sure, I would be glad to do so, send them on.
+> The patch below has been lost several times (the last submission happened 
+> probably on [1]). I am currently aware of a real hardware which triggers 
+> this problem quite reliably, so we should rather have that really fixed.
+> 
+> [1] http://lkml.org/lkml/2009/3/12/379
+> 
+> 
+> 
+> 
+> From: Ian Jackson <ian.jackson@eu.citrix.com>
+> 
+> Do not read IIR in serial8250_start_tx when UART_BUG_TXEN
+> 
+> Reading the IIR clears some oustanding interrupts so it is not safe.
+> Instead, simply transmit immediately if the buffer is empty without
+> regard to IIR.
+> 
+> Signed-off-by: Ian Jackson <ian.jackson@eu.citrix.com>
+> Reviewed-by: Markus Armbruster <armbru@redhat.com>
+> Reviewed-by: Jiri Kosina <jkosina@suse.cz>
+> 
+> ---
+>  drivers/serial/8250.c |    8 +++-----
+>  1 files changed, 3 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+> index 737b4c9..807042b 100644
+> --- a/drivers/serial/8250.c
+> +++ b/drivers/serial/8250.c
+> @@ -1339,14 +1339,12 @@ static void serial8250_start_tx(struct uart_port *port)
+>  		serial_out(up, UART_IER, up->ier);
+>  
+>  		if (up->bugs & UART_BUG_TXEN) {
+> -			unsigned char lsr, iir;
+> +			unsigned char lsr;
+>  			lsr = serial_in(up, UART_LSR);
+>  			up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
+> -			iir = serial_in(up, UART_IIR) & 0x0f;
+>  			if ((up->port.type == PORT_RM9000) ?
+> -				(lsr & UART_LSR_THRE &&
+> -				(iir == UART_IIR_NO_INT || iir == UART_IIR_THRI)) :
+> -				(lsr & UART_LSR_TEMT && iir & UART_IIR_NO_INT))
+> +				(lsr & UART_LSR_THRE) :
+> +				(lsr & UART_LSR_TEMT))
+>  				transmit_chars(up);
+>  		}
+>  	}
 
-thanks,
+Does anyone have any comments about this please?
 
-greg k-h
+In a nutshell -- this is needed so that we make the UART_BUG_TXEN really 
+harmless (which I guess it originally inteded to be, but reading IIR has 
+some unwanted sideeffects and is in fact not needed).
+
+We need to have this in to handle properly the cases in which BUG_TXEN is 
+misdetected, and we can't blacklist such systems as we do for some SoL 
+hardware (see commit b6adea334c6c (" 8250: fix boot hang with serial 
+console when using with Serial Over Lan port"). Also there doesn't seem to 
+be any straightforward way to workaround the misdetection, so this seems 
+to be proper fix, unbreaking all the possible scenarios.
+
+Alan, Greg, any comments?
+
+Thanks,
+
+-- 
+Jiri Kosina
+SUSE Labs, Novell Inc.
