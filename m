@@ -1,115 +1,72 @@
-From: Joseph Pinkasfeld <jpinkasfeld@aldebaran-robotics.com>
-Subject: [PATCH 2/2] serial 16c950 : add preliminary support for 9-bit receive
-	and transmit
-Date: Wed, 18 Nov 2009 17:16:27 +0100
-Message-ID: <15447ab20911180816m45289649oa53e75a940e623f3@mail.gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: Bug in drivers/serial/of_serial.c?
+Date: Thu, 19 Nov 2009 15:09:31 +0100
+Message-ID: <200911191509.31270.arnd@arndb.de>
+References: <8B957E110B62714A84290A01A597805F05CA0AA0@Exchange.discretix.com> <200911191441.27581.arnd@arndb.de> <8B957E110B62714A84290A01A597805F05D2AE47@Exchange.discretix.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary=000e0cd6b34a9a50fa0478a79049
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-yx0-f187.google.com ([209.85.210.187]:42234 "EHLO
-	mail-yx0-f187.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757593AbZKRQQV (ORCPT
+Received: from moutng.kundenserver.de ([212.227.126.171]:51574 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752752AbZKSOK3 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 18 Nov 2009 11:16:21 -0500
-Received: by yxe17 with SMTP id 17so1127484yxe.33
-        for <linux-serial@vger.kernel.org>; Wed, 18 Nov 2009 08:16:27 -0800 (PST)
+	Thu, 19 Nov 2009 09:10:29 -0500
+In-Reply-To: <8B957E110B62714A84290A01A597805F05D2AE47@Exchange.discretix.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: akpm@linux-foundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vgver.kernel.org
+To: Alon Ziv <alonz@discretix.com>
+Cc: linuxppc-dev@lists.ozlabs.org, benh@kernel.crashing.org, linux-serial@vger.kernel.org, Greg KH <greg@kroah.com>
 
---000e0cd6b34a9a50fa0478a79049
-Content-Type: text/plain; charset=ISO-8859-1
+On Thursday 19 November 2009, Alon Ziv wrote:
+> On Thursday, November 19, 2009, Arnd Bergmann wrote:
+> > I'd still add support for the compatible="ns16550a" property
+> > so that we do the right thing for future systems.
+> > 
+> 
+> OK...
+> ---
+> Xilinx 16550 UART is actually 16550A-compatible
+> 
+> Signed-off-by: Alon Ziv <alonz@discretix.com>
+
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+
+Does this go through the powerpc or the tty tree?
+I'd be happy if either Ben or Greg could pick this up.
+
+I'm happy to keep maintaining the driver itself but it
+would be nice to know a definite subsystem maintainer
+responsible for it.
+
+Greg, if you want to take patches for of_serial.c generally,
+I'll start forwarding them to you as they come in and make
+sure they apply to your tree.
+
+	Arnd <><
+
+> diff --git a/drivers/serial/of_serial.c b/drivers/serial/of_serial.c
+> index 02406ba..241be77 100644
+> --- a/drivers/serial/of_serial.c
+> +++ b/drivers/serial/of_serial.c
+> @@ -161,7 +161,9 @@ static int of_platform_serial_remove(struct
+> of_device *ofdev)
+>  static struct of_device_id __devinitdata of_platform_serial_table[] = {
+>  	{ .type = "serial", .compatible = "ns8250",   .data = (void
+> *)PORT_8250, },
+>  	{ .type = "serial", .compatible = "ns16450",  .data = (void
+> *)PORT_16450, },
+> +	{ .type = "serial", .compatible = "xlnx,xps-uart16550-2.00.b",
+> .data = (void *)PORT_16550A, },
+>  	{ .type = "serial", .compatible = "ns16550",  .data = (void
+> *)PORT_16550, },
+> +	{ .type = "serial", .compatible = "ns16550a", .data = (void
+> *)PORT_16550A, },
+>  	{ .type = "serial", .compatible = "ns16750",  .data = (void
+> *)PORT_16750, },
+>  	{ .type = "serial", .compatible = "ns16850",  .data = (void
+> *)PORT_16850, },
+>  #ifdef CONFIG_SERIAL_OF_PLATFORM_NWPSERIAL
 
 
-
---000e0cd6b34a9a50fa0478a79049
-Content-Type: text/x-patch; charset=US-ASCII;
-	name="0002-serial-16c950-add-preliminary-support-for-9-bit-rece.patch"
-Content-Disposition: attachment;
-	filename="0002-serial-16c950-add-preliminary-support-for-9-bit-rece.patch"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_g26aowfc1
-
-RnJvbSBjNzA2MDMwY2EyMzc0ZmMzMjE5MDEwZmNkNDc5ZTBiNWRlMzZjYWJmIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBwaW5rYXNmZWxkIGpvc2VwaCA8anBpbmthc2ZlbGRAYWxkZWJh
-cmFuLXJvYm90aWNzLmNvbT4KRGF0ZTogV2VkLCAxOCBOb3YgMjAwOSAxNjozNToxNiArMDEwMApT
-dWJqZWN0OiBbUEFUQ0ggMi8yXSBzZXJpYWwgMTZjOTUwIDogYWRkIHByZWxpbWluYXJ5IHN1cHBv
-cnQgZm9yIDktYml0IHJlY2VpdmUgYW5kIHRyYW5zbWl0CiAyIGJ5dGVzIG11c3QgYmUgd3JpdHRl
-biBvciByZWFkIGZvciB0cmFuc21pdGluZyBvciByZWNlaXZpbmcgOS1iaXQgZGF0YQogZmlyc3Qg
-Ynl0ZSBMU0IgaXMgbmludGggYml0LCBzZWNvbmQgYnl0ZSBpcyBub3JtYWwgZGF0YQoKU2lnbmVk
-LW9mZi1ieTogcGlua2FzZmVsZCBqb3NlcGggPGpwaW5rYXNmZWxkQGFsZGViYXJhbi1yb2JvdGlj
-cy5jb20+Ci0tLQogZHJpdmVycy9zZXJpYWwvODI1MC5jIHwgICA1NCArKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0KIDEgZmlsZXMgY2hhbmdlZCwgNDkgaW5z
-ZXJ0aW9ucygrKSwgNSBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3NlcmlhbC84
-MjUwLmMgYi9kcml2ZXJzL3NlcmlhbC84MjUwLmMKaW5kZXggNzM3YjRjOS4uMWI0MTQzZiAxMDA2
-NDQKLS0tIGEvZHJpdmVycy9zZXJpYWwvODI1MC5jCisrKyBiL2RyaXZlcnMvc2VyaWFsLzgyNTAu
-YwpAQCAtMTM0LDYgKzEzNCw3IEBAIHN0cnVjdCB1YXJ0XzgyNTBfcG9ydCB7CiAJdW5zaWduZWQg
-c2hvcnQJCWJ1Z3M7CQkvKiBwb3J0IGJ1Z3MgKi8KIAl1bnNpZ25lZCBpbnQJCXR4X2xvYWRzejsJ
-LyogdHJhbnNtaXQgZmlmbyBsb2FkIHNpemUgKi8KIAl1bnNpZ25lZCBjaGFyCQlhY3I7CisJdW5z
-aWduZWQgY2hhcgkJbm1yOwogCXVuc2lnbmVkIGNoYXIJCWllcjsKIAl1bnNpZ25lZCBjaGFyCQls
-Y3I7CiAJdW5zaWduZWQgY2hhcgkJbWNyOwpAQCAtODM1LDYgKzgzNiw3IEBAIHN0YXRpYyB2b2lk
-IGF1dG9jb25maWdfaGFzX2VmcihzdHJ1Y3QgdWFydF84MjUwX3BvcnQgKnVwKQogCSAqIHJlY29t
-bWVuZGVkIGZvciBuZXcgZGVzaWducykuCiAJICovCiAJdXAtPmFjciA9IDA7CisJdXAtPm5tciA9
-IDA7CiAJc2VyaWFsX291dCh1cCwgVUFSVF9MQ1IsIDB4QkYpOwogCXNlcmlhbF9vdXQodXAsIFVB
-UlRfRUZSLCBVQVJUX0VGUl9FQ0IpOwogCXNlcmlhbF9vdXQodXAsIFVBUlRfTENSLCAweDAwKTsK
-QEAgLTEzODUsOCArMTM4Nyw4IEBAIHN0YXRpYyB2b2lkCiByZWNlaXZlX2NoYXJzKHN0cnVjdCB1
-YXJ0XzgyNTBfcG9ydCAqdXAsIHVuc2lnbmVkIGludCAqc3RhdHVzKQogewogCXN0cnVjdCB0dHlf
-c3RydWN0ICp0dHkgPSB1cC0+cG9ydC5zdGF0ZS0+cG9ydC50dHk7Ci0JdW5zaWduZWQgY2hhciBj
-aCwgbHNyID0gKnN0YXR1czsKLQlpbnQgbWF4X2NvdW50ID0gMjU2OworCXVuc2lnbmVkIGNoYXIg
-Y2gsIGNoOSwgbHNyID0gKnN0YXR1czsKKwlpbnQgZXJyb3JfYnJlYWsgPSAwLCBtYXhfY291bnQg
-PSAyNTY7CiAJY2hhciBmbGFnOwogCiAJZG8gewpAQCAtMTQwOCw3ICsxNDEwLDIwIEBAIHJlY2Vp
-dmVfY2hhcnMoc3RydWN0IHVhcnRfODI1MF9wb3J0ICp1cCwgdW5zaWduZWQgaW50ICpzdGF0dXMp
-CiAJCWxzciB8PSB1cC0+bHNyX3NhdmVkX2ZsYWdzOwogCQl1cC0+bHNyX3NhdmVkX2ZsYWdzID0g
-MDsKIAotCQlpZiAodW5saWtlbHkobHNyICYgVUFSVF9MU1JfQlJLX0VSUk9SX0JJVFMpKSB7CisJ
-CS8qCisJCSAqIER1ZSB0byBzaGFyaW5nIG9mIGJpdCAyIGluIExTUiBkZXBlbmRpbmcgb24gOSBi
-aXRzIG1vZGUKKwkJICogYml0IDIgcmlzZSBQYXJpdHkgRXJyb3Igb3IgOXRoIGJpdCByZWFkCisJ
-CSAqLworCQllcnJvcl9icmVhayA9IDAgOworCQlpZiAodXAtPm5tciAmIFVBUlRfTk1SXzlCRU5C
-KSB7CisJCQlpZiAobHNyICYgVUFSVF9MU1JfTkJNX0JSS19FUlJPUl9CSVRTKQorCQkJCWVycm9y
-X2JyZWFrID0gMTsKKwkJfSBlbHNlIHsKKwkJCWlmIChsc3IgJiBVQVJUX0xTUl9CUktfRVJST1Jf
-QklUUykKKwkJCQllcnJvcl9icmVhayA9IDE7CisJCX0KKworCQlpZiAodW5saWtlbHkoZXJyb3Jf
-YnJlYWspKSB7CiAJCQkvKgogCQkJICogRm9yIHN0YXRpc3RpY3Mgb25seQogCQkJICovCkBAIC0x
-NDIzLDcgKzE0MzgsOCBAQCByZWNlaXZlX2NoYXJzKHN0cnVjdCB1YXJ0XzgyNTBfcG9ydCAqdXAs
-IHVuc2lnbmVkIGludCAqc3RhdHVzKQogCQkJCSAqLwogCQkJCWlmICh1YXJ0X2hhbmRsZV9icmVh
-aygmdXAtPnBvcnQpKQogCQkJCQlnb3RvIGlnbm9yZV9jaGFyOwotCQkJfSBlbHNlIGlmIChsc3Ig
-JiBVQVJUX0xTUl9QRSkKKwkJCX0gZWxzZSBpZiAoKGxzciAmIFVBUlRfTFNSX1BFKSAmJgorCQkJ
-CSEodXAtPm5tciAmIFVBUlRfTk1SXzlCRU5CKSkKIAkJCQl1cC0+cG9ydC5pY291bnQucGFyaXR5
-Kys7CiAJCQllbHNlIGlmIChsc3IgJiBVQVJUX0xTUl9GRSkKIAkJCQl1cC0+cG9ydC5pY291bnQu
-ZnJhbWUrKzsKQEAgLTE0MzgsNyArMTQ1NCw4IEBAIHJlY2VpdmVfY2hhcnMoc3RydWN0IHVhcnRf
-ODI1MF9wb3J0ICp1cCwgdW5zaWduZWQgaW50ICpzdGF0dXMpCiAJCQlpZiAobHNyICYgVUFSVF9M
-U1JfQkkpIHsKIAkJCQlERUJVR19JTlRSKCJoYW5kbGluZyBicmVhay4uLi4iKTsKIAkJCQlmbGFn
-ID0gVFRZX0JSRUFLOwotCQkJfSBlbHNlIGlmIChsc3IgJiBVQVJUX0xTUl9QRSkKKwkJCX0gZWxz
-ZSBpZiAoKGxzciAmIFVBUlRfTFNSX1BFKSAmJgorCQkJCSEodXAtPm5tciAmIFVBUlRfTk1SXzlC
-RU5CKSkKIAkJCQlmbGFnID0gVFRZX1BBUklUWTsKIAkJCWVsc2UgaWYgKGxzciAmIFVBUlRfTFNS
-X0ZFKQogCQkJCWZsYWcgPSBUVFlfRlJBTUU7CkBAIC0xNDQ2LDYgKzE0NjMsMTYgQEAgcmVjZWl2
-ZV9jaGFycyhzdHJ1Y3QgdWFydF84MjUwX3BvcnQgKnVwLCB1bnNpZ25lZCBpbnQgKnN0YXR1cykK
-IAkJaWYgKHVhcnRfaGFuZGxlX3N5c3JxX2NoYXIoJnVwLT5wb3J0LCBjaCkpCiAJCQlnb3RvIGln
-bm9yZV9jaGFyOwogCisJCS8qCisJCSAqIEluIDliaXQgbW9kZSBQYXJpdHkgZXJyb3IgaXMgcmVw
-bGFjZSBieSA5dGggYml0CisJCSAqLworCQlpZiAodXAtPm5tciAmIFVBUlRfTk1SXzlCRU5CKSB7
-CisJCQlpZiAobHNyICYgVUFSVF9MU1JfOVRIX0JJVCkKKwkJCQljaDkgPSAxOworCQkJZWxzZQor
-CQkJCWNoOSA9IDA7CisJCQl1YXJ0X2luc2VydF9jaGFyKCZ1cC0+cG9ydCwgbHNyLCBVQVJUX0xT
-Ul9PRSwgY2g5LCBmbGFnKTsKKwkJfQogCQl1YXJ0X2luc2VydF9jaGFyKCZ1cC0+cG9ydCwgbHNy
-LCBVQVJUX0xTUl9PRSwgY2gsIGZsYWcpOwogCiBpZ25vcmVfY2hhcjoKQEAgLTE0NzksNiArMTUw
-NiwxMyBAQCBzdGF0aWMgdm9pZCB0cmFuc21pdF9jaGFycyhzdHJ1Y3QgdWFydF84MjUwX3BvcnQg
-KnVwKQogCiAJY291bnQgPSB1cC0+dHhfbG9hZHN6OwogCWRvIHsKKwkJLyogZmlyc3QgYnl0ZSBj
-b250YWluIDl0aCBiaXQgZm9yIDkgYml0IG1vZGUgKi8KKwkJaWYgKCh1cC0+bm1yICAmIFVBUlRf
-Tk1SXzlCRU5CKSAgJiYgKGNvdW50ID4gMSkgKXsKKwkJCXNlcmlhbF9vdXQodXAsIFVBUlRfU0NS
-LCAweDAxICYgeG1pdC0+YnVmW3htaXQtPnRhaWxdKTsKKwkJCXhtaXQtPnRhaWwgPSAoeG1pdC0+
-dGFpbCArIDEpICYgKFVBUlRfWE1JVF9TSVpFIC0gMSk7CisJCQlpZiAodWFydF9jaXJjX2VtcHR5
-KHhtaXQpKQorCQkJCWJyZWFrOworCQl9CiAJCXNlcmlhbF9vdXQodXAsIFVBUlRfVFgsIHhtaXQt
-PmJ1Zlt4bWl0LT50YWlsXSk7CiAJCXhtaXQtPnRhaWwgPSAoeG1pdC0+dGFpbCArIDEpICYgKFVB
-UlRfWE1JVF9TSVpFIC0gMSk7CiAJCXVwLT5wb3J0Lmljb3VudC50eCsrOwpAQCAtMTk1Niw2ICsx
-OTkwLDcgQEAgc3RhdGljIGludCBzZXJpYWw4MjUwX3N0YXJ0dXAoc3RydWN0IHVhcnRfcG9ydCAq
-cG9ydCkKIAlpZiAodXAtPnBvcnQudHlwZSA9PSBQT1JUXzE2Qzk1MCkgewogCQkvKiBXYWtlIHVw
-IGFuZCBpbml0aWFsaXplIFVBUlQgKi8KIAkJdXAtPmFjciA9IDA7CisJCXVwLT5ubXIgPSAwOwog
-CQlzZXJpYWxfb3V0cCh1cCwgVUFSVF9MQ1IsIDB4QkYpOwogCQlzZXJpYWxfb3V0cCh1cCwgVUFS
-VF9FRlIsIFVBUlRfRUZSX0VDQik7CiAJCXNlcmlhbF9vdXRwKHVwLCBVQVJUX0lFUiwgMCk7CkBA
-IC0yNDEyLDYgKzI0NDcsMTUgQEAgc2VyaWFsODI1MF9zZXRfdGVybWlvcyhzdHJ1Y3QgdWFydF9w
-b3J0ICpwb3J0LCBzdHJ1Y3Qga3Rlcm1pb3MgKnRlcm1pb3MsCiAJLyogRG9uJ3QgcmV3cml0ZSBC
-MCAqLwogCWlmICh0dHlfdGVybWlvc19iYXVkX3JhdGUodGVybWlvcykpCiAJCXR0eV90ZXJtaW9z
-X2VuY29kZV9iYXVkX3JhdGUodGVybWlvcywgYmF1ZCwgYmF1ZCk7CisKKwkvKgorCSAqIDktYml0
-IG1vZGUgY29udHJvbCBmbGFnIG9uIDE2Yzk1MAorCSAqLworCWlmICh0ZXJtaW9zLT5jX2NmbGFn
-ICYgQ05CRU5CKSB7CisJCXVwLT5ubXIgfD0gVUFSVF9OTVJfOUJFTkI7CisJCXNlcmlhbF9pY3Jf
-d3JpdGUodXAsIFVBUlRfTk1SLCB1cC0+bm1yKTsKKwl9CisKIH0KIAogc3RhdGljIHZvaWQKLS0g
-CjEuNi41LjIKCg==
---000e0cd6b34a9a50fa0478a79049--
