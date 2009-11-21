@@ -1,240 +1,385 @@
 From: Martin Fuzzey <mfuzzey@gmail.com>
-Subject: [RFC PATCH 9/9] Serial: sc26xx - introduce a structure for platform
-	data.
-Date: Sat, 21 Nov 2009 14:40:27 +0100
-Message-ID: <20091121134027.16090.86655.stgit@srv002.fuzzey.net>
+Subject: [RFC PATCH 8/9] Serial: sc26xx - add support for SC2892 chips
+Date: Sat, 21 Nov 2009 14:40:23 +0100
+Message-ID: <20091121134023.16090.61750.stgit@srv002.fuzzey.net>
 References: <20091121133951.16090.74411.stgit@srv002.fuzzey.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ey-out-2122.google.com ([74.125.78.24]:24671 "EHLO
-	ey-out-2122.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755024AbZKUNkX (ORCPT
+Received: from mail-ew0-f219.google.com ([209.85.219.219]:41031 "EHLO
+	mail-ew0-f219.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754999AbZKUNkT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 21 Nov 2009 08:40:23 -0500
+	Sat, 21 Nov 2009 08:40:19 -0500
 In-Reply-To: <20091121133951.16090.74411.stgit@srv002.fuzzey.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: tsbogend@alpha.franken.de, linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 
-Encapsulates the existing array of uint for signal mapping
-and adds baudrate group selection.
+
 
 Signed-off-by: Martin Fuzzey <mfuzzey@gmail.com>
 
 ---
 
- arch/mips/sni/a20r.c          |   15 ++++++++----
- drivers/serial/sc26xx.c       |   49 +++++++++++++++++++++++++++++++++++----
- include/linux/serial_sc2xxx.h |   52 +++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 107 insertions(+), 9 deletions(-)
- create mode 100644 include/linux/serial_sc2xxx.h
+ drivers/serial/sc26xx.c |  238 ++++++++++++++++++++++++++++++++++++++-=
+--------
+ 1 files changed, 193 insertions(+), 45 deletions(-)
 
-diff --git a/arch/mips/sni/a20r.c b/arch/mips/sni/a20r.c
-index 7dd76fb..6fac5b2 100644
---- a/arch/mips/sni/a20r.c
-+++ b/arch/mips/sni/a20r.c
-@@ -12,6 +12,7 @@
- #include <linux/interrupt.h>
- #include <linux/platform_device.h>
- #include <linux/serial_8250.h>
-+#include <linux/serial_sc2xxx.h>
- 
- #include <asm/sni.h>
- #include <asm/time.h>
-@@ -117,10 +118,14 @@ static struct resource sc26xx_rsrc[] = {
- 	}
- };
- 
--static unsigned int sc26xx_data[2] = {
--	/* DTR   |   RTS    |   DSR    |   CTS     |   DCD     |   RI    */
--	(8 << 0) | (4 << 4) | (6 << 8) | (0 << 12) | (6 << 16) | (0 << 20),
--	(3 << 0) | (2 << 4) | (1 << 8) | (2 << 12) | (3 << 16) | (4 << 20)
-+static struct plat_serial_sc2xxx sc26xx_data = {
-+	.signal_map = {
-+		/* DTR   |   RTS    |   DSR    |   CTS     |   DCD     |   RI    */
-+		(8 << 0) | (4 << 4) | (6 << 8) | (0 << 12) | (6 << 16) | (0 << 20),
-+		(3 << 0) | (2 << 4) | (1 << 8) | (2 << 12) | (3 << 16) | (4 << 20)
-+	},
-+	.baud_mode = 1,
-+	.baud_group = 2,
- };
- 
- static struct platform_device sc26xx_pdev = {
-@@ -128,7 +133,7 @@ static struct platform_device sc26xx_pdev = {
- 	.num_resources  = ARRAY_SIZE(sc26xx_rsrc),
- 	.resource       = sc26xx_rsrc,
- 	.dev			= {
--		.platform_data	= sc26xx_data,
-+		.platform_data	= &sc26xx_data,
- 	}
- };
- 
 diff --git a/drivers/serial/sc26xx.c b/drivers/serial/sc26xx.c
-index 6764082..842692f 100644
+index 69b7ae7..6764082 100644
 --- a/drivers/serial/sc26xx.c
 +++ b/drivers/serial/sc26xx.c
-@@ -22,6 +22,7 @@
- #include <linux/platform_device.h>
- #include <linux/irq.h>
- #include <linux/io.h>
-+#include <linux/serial_sc2xxx.h>
- 
- #if defined(CONFIG_MAGIC_SYSRQ)
- #define SUPPORT_SYSRQ
-@@ -170,6 +171,10 @@ static struct chip_def chip_2892 = {
- 	.init_mr1 = (1 << 6),
- };
- 
-+static const struct chip_def *chips[] = {
-+	&chip_26xx,
-+	&chip_2892
+@@ -1,7 +1,8 @@
+ /*
+- * SC268xx.c: Serial driver for Philiphs SC2681/SC2692 devices.
++ * SC26xx.c: Serial driver for Philips SC2681/SC2692/SC2892 devices.
+  *
+  * Copyright (C) 2006,2007 Thomas Bogend=C3=B6rfer (tsbogend@alpha.fra=
+nken.de)
++ * SC2892 support by Martin Fuzzey (mfuzzey@gmail.com)
+  */
+=20
+ #include <linux/module.h>
+@@ -32,15 +33,29 @@
+ #define SC26XX_MINOR_START   205
+ #define SC26XX_NR            2
+=20
++struct chip_def {
++	u8	has_mr0;
++	u8	init_mr0;
++	u8	init_mr1;
++	u8	max_baud_mode;
++	u8	default_baud_mode;
++	u8	default_baud_group;
++	const char *name;
 +};
- 
++
+ struct uart_sc26xx_port {
+ 	struct uart_port      port[2];
+-	u8     dsr_mask[2];
+-	u8     cts_mask[2];
+-	u8     dcd_mask[2];
+-	u8     ri_mask[2];
+-	u8     dtr_mask[2];
+-	u8     rts_mask[2];
+-	u8     imr;
++	u8	dsr_mask[2];
++	u8	cts_mask[2];
++	u8	dcd_mask[2];
++	u8	ri_mask[2];
++	u8	dtr_mask[2];
++	u8	rts_mask[2];
++	u8	imr;
++	u8	acr;
++	u8	mr0_baud;
++	const unsigned int *baud_rates;
++	const struct chip_def *chip;
+ };
+=20
+ /* register common to both ports */
+@@ -80,6 +95,7 @@ struct uart_sc26xx_port {
+ #define CR_RES_TX   (3 << 4)
+ #define CR_STRT_BRK (6 << 4)
+ #define CR_STOP_BRK (7 << 4)
++#define CR_SEL_MR0  (11 << 4)
+ #define CR_DIS_TX   (1 << 3)
+ #define CR_ENA_TX   (1 << 2)
+ #define CR_DIS_RX   (1 << 1)
+@@ -95,6 +111,66 @@ struct uart_sc26xx_port {
+ #define IMR_RXRDY   (1 << 1)
+ #define IMR_TXRDY   (1 << 0)
+=20
++/* MR0 bits (>=3D 28L92 only */
++#define MR0_WATCHDOG	(1 << 7)
++#define MR0_RXINT2	(1 << 6)
++#define MR0_TXINT(x)	((x) << 4)
++#define MR0_FIFO_SIZE	(1 << 3)
++#define MR0_BAUD_MODE	((1 << 2) + (1 << 0))
++
++
++#define NR_BAUD_GROUPS 2
++#define NR_BAUD_MODES 3
++#define NR_BAUDS 13
++#define DEFAULT_BAUD_INDEX 11
++static const unsigned baud_rates[NR_BAUD_MODES][NR_BAUD_GROUPS][NR_BAU=
+DS] =3D {
++	{
++		/* Normal mode ACR[7] =3D 0 */
++		{50, 110, 134, 200, 300, 600, 1200, 1050,
++			2400, 4800, 7200, 9600, 38400},
++
++		/* Normal mode ACR[7] =3D 1 */
++		{75, 110, 134, 150, 300, 600, 1200, 2000,
++			2400, 4800, 1800, 9600, 19200},
++	}, {
++		/* Extended mode 1 ACR[7] =3D 0 */
++		{300, 110, 134, 1200, 1800, 3600, 7200, 1050,
++			14400, 28800, 7200, 57600, 230400},
++
++		/* Extended mode 1 ACR[7] =3D 1 */
++		{450, 110, 134, 900, 1800, 3600, 72000, 2000,
++			14400, 28800, 1800, 57600, 115200},
++	}, {
++		/* Extended mode 2 ACR[7] =3D 0 */
++		{4800, 880, 1076, 19200, 28800, 57600, 115200, 1050,
++			57600, 4800, 57600, 9600, 38400},
++
++		/* Extended mode 2 ACR[7] =3D 1 */
++		{7200, 880, 1076, 14400, 28800, 57600, 115200, 2000,
++			57600, 4800, 14400, 9600, 19200},
++	}
++};
++
++static struct chip_def chip_26xx =3D {
++	.name =3D "SC26XX",
++	.max_baud_mode =3D 0,
++	.default_baud_mode =3D 0,
++	.default_baud_group =3D 1,
++	.has_mr0 =3D 0,
++	.init_mr1 =3D 0,
++};
++
++static struct chip_def chip_2892 =3D {
++	.name =3D "SC2892",
++	.max_baud_mode =3D 2,
++	.default_baud_mode =3D 2,
++	.default_baud_group =3D 0,
++	.has_mr0 =3D 1,
++	.init_mr0 =3D  MR0_WATCHDOG | MR0_FIFO_SIZE | MR0_TXINT(1),
++	.init_mr1 =3D (1 << 6),
++};
++
++
  static struct uart_sc26xx_port *driver_info(struct uart_port *port)
  {
-@@ -736,9 +741,17 @@ static void __devinit sc26xx_init_masks(struct uart_sc26xx_port *up,
- 
- static int __devinit init_baudgroup(struct uart_sc26xx_port *up)
- {
-+	struct plat_serial_sc2xxx *pdata = up->port[0].dev->platform_data;
-+
- 	u8 baud_mode = up->chip->default_baud_mode;
- 	u8 baud_group = up->chip->default_baud_group;
- 
-+	if (pdata->baud_mode > 0)
-+		baud_mode = pdata->baud_mode - 1;
-+
-+	if (pdata->baud_group > 0)
-+		baud_group = pdata->baud_group - 1;
-+
- 	if (baud_mode > up->chip->max_baud_mode) {
- 		printk(KERN_ERR "Baud mode %d not supported for %s\n",
- 			baud_mode, up->chip->name);
-@@ -762,6 +775,20 @@ static int __devinit init_baudgroup(struct uart_sc26xx_port *up)
- 	return 0;
+ 	port -=3D port->line;
+@@ -141,6 +217,19 @@ static inline void write_cmd_port(struct uart_port=
+ *port, u8 cmd)
+ 	write_cmd_line(port, port->line, cmd);
  }
- 
-+static const struct chip_def * __devinit chip_by_name(const char *name)
+=20
++
++static u8 read_mr0(struct uart_port *port, int line)
 +{
-+	int i;
-+	const struct chip_def *chip;
-+
-+	for (i = 0; i < ARRAY_SIZE(chips); i++) {
-+		chip = chips[i];
-+		if (!strcmp(chip->name, name))
-+			return chip;
-+	}
-+
-+	return NULL;
++	write_cmd_line(port, line, CR_SEL_MR0);
++	return read_sc_line(port, line, RD_PORT_MRx);
 +}
 +
- static const struct chip_def * __devinit detect_chip_type(
- 	struct uart_sc26xx_port *up)
++static void write_mr0(struct uart_port *port, int line, u8 val)
++{
++	write_cmd_line(port, line, CR_SEL_MR0);
++	write_sc_line(port, line, WR_PORT_MRx, val);
++}
++
+ static void sc26xx_enable_irq(struct uart_port *port, int mask)
  {
-@@ -792,9 +819,14 @@ static int __devinit sc26xx_probe(struct platform_device *dev)
+ 	struct uart_sc26xx_port *up =3D driver_info(port);
+@@ -371,6 +460,8 @@ static void sc26xx_break_ctl(struct uart_port *port=
+, int break_state)
+ /* port->lock is not held.  */
+ static int sc26xx_startup(struct uart_port *port)
  {
- 	struct resource *res, *irq_res;
- 	struct uart_sc26xx_port *up;
--	unsigned int *sc26xx_data = dev->dev.platform_data;
-+	struct plat_serial_sc2xxx *pdata = dev->dev.platform_data;
- 	int err;
- 
-+	if (!pdata) {
-+		dev_err(&dev->dev, "No platform data\n");
++	struct uart_sc26xx_port *up =3D driver_info(port);
++
+ 	sc26xx_disable_irq(port, IMR_TXRDY | IMR_RXRDY);
+ 	WRITE_SC(port, OPCR, 0);
+=20
+@@ -378,6 +469,9 @@ static int sc26xx_startup(struct uart_port *port)
+ 	write_cmd_port(port, CR_RES_RX);
+ 	write_cmd_port(port, CR_RES_TX);
+=20
++	if (up->chip->has_mr0)
++		write_mr0(port, port->line, up->chip->init_mr0);
++
+ 	/* start rx/tx */
+ 	WRITE_SC_PORT(port, CR, CR_ENA_TX | CR_ENA_RX);
+=20
+@@ -396,10 +490,32 @@ static void sc26xx_shutdown(struct uart_port *por=
+t)
+ 	WRITE_SC_PORT(port, CR, CR_DIS_TX | CR_DIS_RX);
+ }
+=20
++static u8 find_csr(struct uart_sc26xx_port *up, unsigned int baud)
++{
++	int i, found =3D -1;
++
++	for (i =3D 0; i < NR_BAUDS; i++) {
++		if (up->baud_rates[i] =3D=3D baud) {
++			found =3D i;
++			break;
++		}
++	}
++
++	if (found =3D=3D -1) {
++		found =3D DEFAULT_BAUD_INDEX;
++		dev_warn(up->port[0].dev,
++			"%d baud not available using %d\n",
++			baud, up->baud_rates[found]);
++	}
++
++	return (u8)found | ((u8)found << 4);
++}
++
+ /* port->lock is not held.  */
+ static void sc26xx_set_termios(struct uart_port *port, struct ktermios=
+ *termios,
+ 			      struct ktermios *old)
+ {
++	struct uart_sc26xx_port *up =3D driver_info(port);
+ 	unsigned int baud =3D uart_get_baud_rate(port, termios, old, 0, 40000=
+00);
+ 	unsigned int iflag, cflag;
+ 	unsigned long flags;
+@@ -452,48 +568,21 @@ static void sc26xx_set_termios(struct uart_port *=
+port, struct ktermios *termios,
+ 	} else
+ 		mr1 |=3D (2 << 3);
+=20
+-	switch (baud) {
+-	case 50:
+-		csr =3D 0x00;
+-		break;
+-	case 110:
+-		csr =3D 0x11;
+-		break;
+-	case 134:
+-		csr =3D 0x22;
+-		break;
+-	case 200:
+-		csr =3D 0x33;
+-		break;
+-	case 300:
+-		csr =3D 0x44;
+-		break;
+-	case 600:
+-		csr =3D 0x55;
+-		break;
+-	case 1200:
+-		csr =3D 0x66;
+-		break;
+-	case 2400:
+-		csr =3D 0x88;
+-		break;
+-	case 4800:
+-		csr =3D 0x99;
+-		break;
+-	default:
+-	case 9600:
+-		csr =3D 0xbb;
+-		break;
+-	case 19200:
+-		csr =3D 0xcc;
+-		break;
++	mr1 |=3D up->chip->init_mr1;
++	csr =3D find_csr(up, baud);
++
++	if (up->chip->has_mr0) {
++		u8 mr0a =3D read_mr0(port, 0);
++		mr0a &=3D ~MR0_BAUD_MODE;
++		mr0a |=3D up->mr0_baud;
++		write_mr0(port, 0, mr0a);
+ 	}
+=20
+ 	write_cmd_port(port, CR_RES_MR);
+ 	WRITE_SC_PORT(port, MRx, mr1);
+ 	WRITE_SC_PORT(port, MRx, mr2);
+=20
+-	WRITE_SC(port, ACR, 0x80);
++	WRITE_SC(port, ACR, up->acr);
+ 	WRITE_SC_PORT(port, CSR, csr);
+=20
+ 	/* reset tx and rx */
+@@ -511,7 +600,7 @@ static void sc26xx_set_termios(struct uart_port *po=
+rt, struct ktermios *termios,
+=20
+ static const char *sc26xx_type(struct uart_port *port)
+ {
+-	return "SC26XX";
++	return driver_info(port)->chip->name;
+ }
+=20
+ static void sc26xx_release_port(struct uart_port *port)
+@@ -645,6 +734,60 @@ static void __devinit sc26xx_init_masks(struct uar=
+t_sc26xx_port *up,
+ 	up->ri_mask[line]  =3D sc26xx_flags2mask(data, 20);
+ }
+=20
++static int __devinit init_baudgroup(struct uart_sc26xx_port *up)
++{
++	u8 baud_mode =3D up->chip->default_baud_mode;
++	u8 baud_group =3D up->chip->default_baud_group;
++
++	if (baud_mode > up->chip->max_baud_mode) {
++		printk(KERN_ERR "Baud mode %d not supported for %s\n",
++			baud_mode, up->chip->name);
 +		return -EINVAL;
 +	}
 +
- 	res = platform_get_resource(dev, IORESOURCE_MEM, 0);
- 	if (!res)
- 		return -ENODEV;
-@@ -819,16 +851,25 @@ static int __devinit sc26xx_probe(struct platform_device *dev)
- 
- 	up->port[0].dev = &dev->dev;
- 
--	sc26xx_init_masks(up, 0, sc26xx_data[0]);
-+	sc26xx_init_masks(up, 0, pdata->signal_map[0]);
- 
- 	sc26xx_port = &up->port[0];
- 
- 	memcpy(&up->port[1], &up->port[0], sizeof(up->port[0]));
- 	up->port[1].line = 1;
- 
--	sc26xx_init_masks(up, 1, sc26xx_data[1]);
-+	sc26xx_init_masks(up, 1, pdata->signal_map[1]);
++	up->acr =3D baud_group ? 0x80 : 0;
++	up->baud_rates =3D baud_rates[baud_mode][baud_group];
 +
-+	if (pdata->chip_name)
-+		up->chip = chip_by_name(pdata->chip_name);
-+	if (!up->chip) {
-+		if (pdata->chip_name)
-+			dev_warn(&dev->dev,
-+				"Unknown chip %s requested - use autodetect\n",
-+				pdata->chip_name);
-+		up->chip = detect_chip_type(up);
++	switch (baud_mode) {
++	case 0:
++		up->mr0_baud =3D 0;
++		break;
++	case 1:
++		up->mr0_baud =3D 1;
++		break;
++	case 2:
++		up->mr0_baud =3D 4;
++		break;
 +	}
- 
--	up->chip = detect_chip_type(up);
- 	err = init_baudgroup(up);
++	return 0;
++}
++
++static const struct chip_def * __devinit detect_chip_type(
++	struct uart_sc26xx_port *up)
++{
++	struct uart_port *port =3D &up->port[0];
++	struct chip_def *chip;
++	int i;
++	u8 mrx[3];
++
++	/* Code below needs to be tested on 26xx hardware
++	 * Idea is that 26xx will ignore SEL_MR0 so 2nd and 3rd reads
++	 * will return same data.*/
++	write_cmd_port(port, CR_RES_MR); /* MR1 */
++	write_cmd_port(port, CR_SEL_MR0); /* Ignored on 26xx */
++
++	for (i =3D 0; i < 3; i++)
++		mrx[i] =3D READ_SC_PORT(port, MRx);
++
++	if (mrx[1] =3D=3D mrx[2])
++		chip =3D &chip_26xx;
++	else
++		chip =3D &chip_2892;
++
++	dev_info(port->dev, "Autodetected %s\n", chip->name);
++	return chip;
++}
++
+ static int __devinit sc26xx_probe(struct platform_device *dev)
+ {
+ 	struct resource *res, *irq_res;
+@@ -685,6 +828,11 @@ static int __devinit sc26xx_probe(struct platform_=
+device *dev)
+=20
+ 	sc26xx_init_masks(up, 1, sc26xx_data[1]);
+=20
++	up->chip =3D detect_chip_type(up);
++	err =3D init_baudgroup(up);
++	if (err)
++		goto out_free_port;
++
+ 	err =3D uart_register_driver(&sc26xx_reg);
  	if (err)
  		goto out_free_port;
-diff --git a/include/linux/serial_sc2xxx.h b/include/linux/serial_sc2xxx.h
-new file mode 100644
-index 0000000..d93977f
---- /dev/null
-+++ b/include/linux/serial_sc2xxx.h
-@@ -0,0 +1,52 @@
-+/*
-+ *
-+ *  Copyright (C) 2009 Martin Fuzzey
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ */
-+
-+
-+#ifndef _LINUX_SERIAL_SC26XX_H
-+#define _LINUX_SERIAL_SC26XX_H 1
-+
-+
-+/**
-+ * struct plat_sc2xxx - Philips UART platform data
-+ * @signal_map:		Hardware signal mapping (see below)
-+ *
-+ * @chip_name:		One of "SC26xx", "SC2892" or NULL for autodetect
-+ *
-+ * @baud_mode:		Baudrate mode + 1 (1,2,3) must be 1 for SC26xx see
-+ *			datasheet or baud_rates[] in driver code for available
-+ * 			baudrates in each mode
-+ *			0 = use driver default
-+ *
-+ * @baud_group: 	Baudrate group + 1 (1, 2) within mode
-+ *			0 = use driver default
-+ *
-+ * For each port signal_map is a bitfield defined as follows:
-+ *	bits 0-3	DTR
-+ *	bits 4-7	RTS
-+ *	bits 8-11	DSR
-+ *	bits 12-15	CTS
-+ *	bits 16-19	DCD
-+ *	bits 20-23	RI
-+ *
-+ *	Value of each field is 1 + corresponding IP/OP pin or 0 if not connected
-+ *	Eg:
-+ *	(3 << 0) | (1 << 4) | (3 << 8) | (1 << 12) | (4 << 16) | (0 << 20),
-+ *	=>
-+ *		DTR=OP2, RTS=OP0, DSR=IP2, CTS=IP0, DCD=IP3, RI=NC
-+ *
-+ **/
-+struct plat_serial_sc2xxx {
-+	unsigned int signal_map[2];
-+	const char *chip_name;
-+	u8 baud_mode;
-+	u8 baud_group;
-+};
-+
-+#endif
 
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
