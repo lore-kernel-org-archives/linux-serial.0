@@ -1,53 +1,108 @@
 From: Martin Fuzzey <mfuzzey@gmail.com>
-Subject: [RFC PATCH 6/9] Serial: sc26xx simplify timeout calculation
-Date: Sat, 21 Nov 2009 14:40:15 +0100
-Message-ID: <20091121134015.16090.21264.stgit@srv002.fuzzey.net>
+Subject: [RFC PATCH 4/9] Serial: sc26xx - add accessor function for driver
+	data.
+Date: Sat, 21 Nov 2009 14:40:07 +0100
+Message-ID: <20091121134007.16090.92417.stgit@srv002.fuzzey.net>
 References: <20091121133951.16090.74411.stgit@srv002.fuzzey.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ew0-f219.google.com ([209.85.219.219]:41031 "EHLO
-	mail-ew0-f219.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754970AbZKUNkL (ORCPT
+Received: from ey-out-2122.google.com ([74.125.78.24]:24671 "EHLO
+	ey-out-2122.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754640AbZKUNkE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 21 Nov 2009 08:40:11 -0500
+	Sat, 21 Nov 2009 08:40:04 -0500
 In-Reply-To: <20091121133951.16090.74411.stgit@srv002.fuzzey.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: tsbogend@alpha.franken.de, linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 
-We already have the baud rate - no need to calculate it again.
+Extract container_of and port -= line to a helper function
+to avoid slightly opaque modification of port pointer.
 
 Signed-off-by: Martin Fuzzey <mfuzzey@gmail.com>
 
 ---
 
- drivers/serial/sc26xx.c |    5 +----
- 1 files changed, 1 insertions(+), 4 deletions(-)
+ drivers/serial/sc26xx.c |   31 ++++++++++++-------------------
+ 1 files changed, 12 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/serial/sc26xx.c b/drivers/serial/sc26xx.c
-index 1b47443..316d110 100644
+index ca74bf6..dc47d4f 100644
 --- a/drivers/serial/sc26xx.c
 +++ b/drivers/serial/sc26xx.c
-@@ -401,7 +401,6 @@ static void sc26xx_set_termios(struct uart_port *port, struct ktermios *termios,
- 			      struct ktermios *old)
+@@ -95,6 +95,12 @@ struct uart_sc26xx_port {
+ #define IMR_RXRDY   (1 << 1)
+ #define IMR_TXRDY   (1 << 0)
+ 
++static struct uart_sc26xx_port *driver_info(struct uart_port *port)
++{
++	port -= port->line;
++	return container_of(port, struct uart_sc26xx_port, port[0]);
++}
++
+ /* access port register */
+ static inline u8 read_sc_port(struct uart_port *p, u8 reg)
  {
- 	unsigned int baud = uart_get_baud_rate(port, termios, old, 0, 4000000);
--	unsigned int quot = uart_get_divisor(port, baud);
- 	unsigned int iflag, cflag;
- 	unsigned long flags;
- 	u8 mr1, mr2, csr;
-@@ -505,9 +504,7 @@ static void sc26xx_set_termios(struct uart_port *port, struct ktermios *termios,
- 	while ((READ_SC_PORT(port, SR) & ((1 << 3) | (1 << 2))) != 0xc)
- 		udelay(2);
+@@ -111,25 +117,17 @@ static inline void write_sc_port(struct uart_port *p, u8 reg, u8 val)
  
--	/* XXX */
--	uart_update_timeout(port, cflag,
--			    (port->uartclk / (16 * quot)));
-+	uart_update_timeout(port, cflag, baud);
+ static void sc26xx_enable_irq(struct uart_port *port, int mask)
+ {
+-	struct uart_sc26xx_port *up;
+-	int line = port->line;
+-
+-	port -= line;
+-	up = container_of(port, struct uart_sc26xx_port, port[0]);
++	struct uart_sc26xx_port *up = driver_info(port);
  
- 	spin_unlock_irqrestore(&port->lock, flags);
+-	up->imr |= mask << (line * 4);
++	up->imr |= mask << (port->line * 4);
+ 	WRITE_SC(port, IMR, up->imr);
  }
+ 
+ static void sc26xx_disable_irq(struct uart_port *port, int mask)
+ {
+-	struct uart_sc26xx_port *up;
+-	int line = port->line;
+-
+-	port -= line;
+-	up = container_of(port, struct uart_sc26xx_port, port[0]);
++	struct uart_sc26xx_port *up = driver_info(port);
+ 
+-	up->imr &= ~(mask << (line * 4));
++	up->imr &= ~(mask << (port->line * 4));
+ 	WRITE_SC(port, IMR, up->imr);
+ }
+ 
+@@ -257,12 +255,9 @@ static unsigned int sc26xx_tx_empty(struct uart_port *port)
+ /* port->lock held by caller.  */
+ static void sc26xx_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
+-	struct uart_sc26xx_port *up;
++	struct uart_sc26xx_port *up = driver_info(port);
+ 	int line = port->line;
+ 
+-	port -= line;
+-	up = container_of(port, struct uart_sc26xx_port, port[0]);
+-
+ 	if (up->dtr_mask[line]) {
+ 		if (mctrl & TIOCM_DTR)
+ 			WRITE_SC(port, OPR_SET, up->dtr_mask[line]);
+@@ -280,13 +275,11 @@ static void sc26xx_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ /* port->lock is held by caller and interrupts are disabled.  */
+ static unsigned int sc26xx_get_mctrl(struct uart_port *port)
+ {
+-	struct uart_sc26xx_port *up;
++	struct uart_sc26xx_port *up = driver_info(port);
+ 	int line = port->line;
+ 	unsigned int mctrl = TIOCM_DSR | TIOCM_CTS | TIOCM_CAR;
+ 	u8 ipr;
+ 
+-	port -= line;
+-	up = container_of(port, struct uart_sc26xx_port, port[0]);
+ 	ipr = READ_SC(port, IPR) ^ 0xff;
+ 
+ 	if (up->dsr_mask[line]) {
 
