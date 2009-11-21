@@ -1,38 +1,48 @@
 From: Martin Fuzzey <mfuzzey@gmail.com>
-Subject: [RFC PATCH 1/9] Serial: Enable build of sc26xx driver for embedded
-	platforms
-Date: Sat, 21 Nov 2009 14:39:55 +0100
-Message-ID: <20091121133955.16090.84664.stgit@srv002.fuzzey.net>
-References: <20091121133951.16090.74411.stgit@srv002.fuzzey.net>
+Subject: Serial: sc26xx device name
+Date: Sat, 21 Nov 2009 14:51:36 +0100
+Message-ID: <4B07F068.1090801@gmail.com>
+Reply-To: mfuzzey@gmail.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1755365AbZKUNpU@vger.kernel.org>
-In-Reply-To: <20091121133951.16090.74411.stgit@srv002.fuzzey.net>
-Sender: linux-kernel-owner@vger.kernel.org
-To: tsbogend@alpha.franken.de, linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from ey-out-2122.google.com ([74.125.78.24]:36402 "EHLO
+	ey-out-2122.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754410AbZKUNvk (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 21 Nov 2009 08:51:40 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, tsbogend@alpha.franken.de
+Cc: linux-kernel@vger.kernel.org
 
+Hi all,
+I noticed the sc26xx driver uses ttySC205 / ttySC206 for device name.
 
+grep ttySC Documentation/devices.txt gives
+          8 = /dev/ttySC0        SCI serial port (SuperH) - port 0
+          9 = /dev/ttySC1        SCI serial port (SuperH) - port 1
+         10 = /dev/ttySC2        SCI serial port (SuperH) - port 2
+         11 = /dev/ttySC3        SCI serial port (SuperH) - port 3
+         205 = /dev/ttySC0        SC26xx serial port 0
+         206 = /dev/ttySC1        SC26xx serial port 1
+         207 = /dev/ttySC2        SC26xx serial port 2
+         208 = /dev/ttySC3        SC26xx serial port 3
+          8 = /dev/cusc0        Callout device for ttySC0
+          9 = /dev/cusc1        Callout device for ttySC1
+         10 = /dev/cusc2        Callout device for ttySC2
+         11 = /dev/cusc3        Callout device for ttySC3
 
-Signed-off-by: Martin Fuzzey <mfuzzey@gmail.com>
+Removing the line:
+    sc26xx_reg.tty_driver->name_base = sc26xx_reg.minor;
+makes it revert to ttySC0
 
----
+So two questions:
+1) Who is right (the driver or devices.txt)?
+2) How are device name conflicts handled?
 
- drivers/serial/Kconfig |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+Cheers,
 
-diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
-index e522572..d9a98d4 100644
---- a/drivers/serial/Kconfig
-+++ b/drivers/serial/Kconfig
-@@ -1395,7 +1395,7 @@ config SERIAL_QE
- 
- config SERIAL_SC26XX
- 	tristate "SC2681/SC2692 serial port support"
--	depends on SNI_RM
-+	depends on SNI_RM || EMBEDDED
- 	select SERIAL_CORE
- 	help
- 	  This is a driver for the onboard serial ports of
+Martin
+
