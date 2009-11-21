@@ -1,32 +1,52 @@
 From: Martin Fuzzey <mfuzzey@gmail.com>
-Subject: [RFC PATCH  0/9] Serial : sc26xx - add SC2892 support
-Date: Sat, 21 Nov 2009 14:39:51 +0100
-Message-ID: <20091121133951.16090.74411.stgit@srv002.fuzzey.net>
+Subject: [RFC PATCH 2/9] Serial: sc26xx fix build errors.
+Date: Sat, 21 Nov 2009 14:39:59 +0100
+Message-ID: <20091121133959.16090.39414.stgit@srv002.fuzzey.net>
+References: <20091121133951.16090.74411.stgit@srv002.fuzzey.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
 Received: from mail-ew0-f219.google.com ([209.85.219.219]:41031 "EHLO
 	mail-ew0-f219.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754610AbZKUNjs (ORCPT
+	with ESMTP id S1754872AbZKUNj4 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 21 Nov 2009 08:39:48 -0500
+	Sat, 21 Nov 2009 08:39:56 -0500
+In-Reply-To: <20091121133951.16090.74411.stgit@srv002.fuzzey.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: tsbogend@alpha.franken.de, linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 
-This patch series adds support for the SC2892 DUART.
+Add missing include.
+Use __devexit rather than __exit to allow building in kernel.
 
-This chip is quite similar to the SC2692 but has more baud rates
-and bigger FIFOs.
+Signed-off-by: Martin Fuzzey <mfuzzey@gmail.com>
 
-The driver should probably be renamed (sc2xxx ??) but I haven't
-done that yet to keep the patches readable.
+---
 
-I also intend to add support for the 28202 chip.
+ drivers/serial/sc26xx.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
-Unfortunately not having SC2692 hardware I haven't been able
-to regression test this.
-
+diff --git a/drivers/serial/sc26xx.c b/drivers/serial/sc26xx.c
+index 75038ad..dc09682 100644
+--- a/drivers/serial/sc26xx.c
++++ b/drivers/serial/sc26xx.c
+@@ -20,6 +20,7 @@
+ #include <linux/init.h>
+ #include <linux/platform_device.h>
+ #include <linux/irq.h>
++#include <linux/io.h>
+ 
+ #if defined(CONFIG_MAGIC_SYSRQ)
+ #define SUPPORT_SYSRQ
+@@ -709,7 +710,7 @@ out_free_port:
+ }
+ 
+ 
+-static int __exit sc26xx_driver_remove(struct platform_device *dev)
++static int __devexit sc26xx_driver_remove(struct platform_device *dev)
+ {
+ 	struct uart_sc26xx_port *up = dev_get_drvdata(&dev->dev);
+ 
 
