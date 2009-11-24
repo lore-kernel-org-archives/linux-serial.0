@@ -1,20 +1,33 @@
-From: "Simmy Bean" <timj@zanlink.com>
-Subject: Seduce your wife like never before.
-Date: Tue, 24 Nov 2009 09:13:03 +0200
-Message-ID: <20091124091303.7060503@zanlink.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 62-90-7-210.barak.net.il ([62.90.7.210]:31748 "HELO
-	62-90-7-210.barak.net.il" rhost-flags-OK-FAIL-OK-FAIL)
-	by vger.kernel.org with SMTP id S1752419AbZKXHNw (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 24 Nov 2009 02:13:52 -0500
-Sender: linux-serial-owner@vger.kernel.org
+From: monstr@monstr.eu
+Subject: [PATCH] serial: 8250: Add ns16550a to OF compatible list
+Date: Tue, 24 Nov 2009 10:21:42 +0100
+Message-ID: <1259054502-28284-2-git-send-email-monstr@monstr.eu>
+References: <1259054502-28284-1-git-send-email-monstr@monstr.eu>
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S932468AbZKXJWU@vger.kernel.org>
+In-Reply-To: <1259054502-28284-1-git-send-email-monstr@monstr.eu>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, grant.likely@secretlab.ca, john.williams@petalogix.com, stable@kernel.org, chrisw@sous-sol.org, greg@kroah.com, Michal Simek <monstr@monstr.eu>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
 
-Drive your wife wild http://tqvez.habqultebo.net/
+From: Michal Simek <monstr@monstr.eu>
 
+Signed-off-by: Michal Simek <monstr@monstr.eu>
+---
+ drivers/serial/of_serial.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
+diff --git a/drivers/serial/of_serial.c b/drivers/serial/of_serial.c
+index 02406ba..b047c38 100644
+--- a/drivers/serial/of_serial.c
++++ b/drivers/serial/of_serial.c
+@@ -161,6 +161,7 @@ static int of_platform_serial_remove(struct of_device *ofdev)
+ static struct of_device_id __devinitdata of_platform_serial_table[] = {
+ 	{ .type = "serial", .compatible = "ns8250",   .data = (void *)PORT_8250, },
+ 	{ .type = "serial", .compatible = "ns16450",  .data = (void *)PORT_16450, },
++	{ .type = "serial", .compatible = "ns16550a",  .data = (void *)PORT_16550A, },
+ 	{ .type = "serial", .compatible = "ns16550",  .data = (void *)PORT_16550, },
+ 	{ .type = "serial", .compatible = "ns16750",  .data = (void *)PORT_16750, },
+ 	{ .type = "serial", .compatible = "ns16850",  .data = (void *)PORT_16850, },
+-- 
+1.5.5.1
