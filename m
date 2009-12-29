@@ -1,39 +1,54 @@
-From: Baruch Siach <baruch@tkos.co.il>
-Subject: Re: [spi-devel-general] [RFC][PATCH] serial: spi: add spi-uart
+From: "Tang, Feng" <feng.tang@intel.com>
+Subject: RE: [spi-devel-general] [RFC][PATCH] serial: spi: add spi-uart
  driver for Maxim 3110
-Date: Tue, 29 Dec 2009 16:59:53 +0200
-Message-ID: <20091229145953.GC27213@jasper.tkos.co.il>
+Date: Wed, 30 Dec 2009 00:05:05 +0800
+Message-ID: <73BDC2BA3DA0BD47BAAEE12383D407EF303E943D@shzsmsx502.ccr.corp.intel.com>
 References: <20091229222006.1ddb28a4@feng-desktop>
+ <20091229145953.GC27213@jasper.tkos.co.il>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from tango.tkos.co.il ([62.219.50.35]:45348 "EHLO tango.tkos.co.il"
+Received: from mga11.intel.com ([192.55.52.93]:63977 "EHLO mga11.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752383AbZL2Pqr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 Dec 2009 10:46:47 -0500
-Content-Disposition: inline
-In-Reply-To: <20091229222006.1ddb28a4@feng-desktop>
+	id S1752127AbZL2QFL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 29 Dec 2009 11:05:11 -0500
+In-Reply-To: <20091229145953.GC27213@jasper.tkos.co.il>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Feng Tang <feng.tang@intel.com>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, David Brownell <dbrownell@users.sourceforge.net>, Grant Likely <grant.likely@secretlab.ca>, spi-devel-list <spi-devel-general@lists.sourceforge.net>, linux-serial@vger.kernel.org, alan@lxorguk.ukuu.org.uk, Andrew Morton <akpm@linux-foundation.org>
+To: Baruch Siach <baruch@tkos.co.il>
+Cc: Greg Kroah-Hartman <gregkh@suse.de>, David Brownell <dbrownell@users.sourceforge.net>, Grant Likely <grant.likely@secretlab.ca>, spi-devel-list <spi-devel-general@lists.sourceforge.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "alan@lxorguk.ukuu.org.uk" <alan@lxorguk.ukuu.org.uk>, Andrew Morton <akpm@linux-foundation.org>
 
-Hi Feng,
-
-On Tue, Dec 29, 2009 at 10:20:06PM +0800, Feng Tang wrote:
-> Here is a driver for Maxim 3110 SPI-UART device, please help to review.
-
-Is this 3110 device so significantly different from the MAX3100 driver that's 
-already in the mainline kernel (drivers/serial/max3100.c), to require a whole 
-new driver? 
-
-> It has been validated with Designware SPI controller (drivers/spi: dw_spi.c 
-> & dw_spi_pci.c). It supports polling and IRQ mode, supports batch read, and
-> provides a console.
-
-baruch
-
--- 
-                                                     ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.2.679.5364, http://www.tkos.co.il -
+DQo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj5Gcm9tOiBCYXJ1Y2ggU2lhY2ggW21haWx0
+bzpiYXJ1Y2hAdGtvcy5jby5pbF0NCj5TZW50OiAyMDA5xOoxMtTCMjnI1SAyMzowMA0KPlRvOiBU
+YW5nLCBGZW5nDQo+Q2M6IEdyZWcgS3JvYWgtSGFydG1hbjsgRGF2aWQgQnJvd25lbGw7IEdyYW50
+IExpa2VseTsgc3BpLWRldmVsLWxpc3Q7DQo+bGludXgtc2VyaWFsQHZnZXIua2VybmVsLm9yZzsg
+YWxhbkBseG9yZ3VrLnVrdXUub3JnLnVrOyBBbmRyZXcgTW9ydG9uDQo+U3ViamVjdDogUmU6IFtz
+cGktZGV2ZWwtZ2VuZXJhbF0gW1JGQ11bUEFUQ0hdIHNlcmlhbDogc3BpOiBhZGQgc3BpLXVhcnQg
+ZHJpdmVyIGZvcg0KPk1heGltIDMxMTANCj4NCj5IaSBGZW5nLA0KPg0KPk9uIFR1ZSwgRGVjIDI5
+LCAyMDA5IGF0IDEwOjIwOjA2UE0gKzA4MDAsIEZlbmcgVGFuZyB3cm90ZToNCj4+IEhlcmUgaXMg
+YSBkcml2ZXIgZm9yIE1heGltIDMxMTAgU1BJLVVBUlQgZGV2aWNlLCBwbGVhc2UgaGVscCB0byBy
+ZXZpZXcuDQo+DQo+SXMgdGhpcyAzMTEwIGRldmljZSBzbyBzaWduaWZpY2FudGx5IGRpZmZlcmVu
+dCBmcm9tIHRoZSBNQVgzMTAwIGRyaXZlciB0aGF0J3MNCj5hbHJlYWR5IGluIHRoZSBtYWlubGlu
+ZSBrZXJuZWwgKGRyaXZlcnMvc2VyaWFsL21heDMxMDAuYyksIHRvIHJlcXVpcmUgYSB3aG9sZQ0K
+Pm5ldyBkcml2ZXI/DQoNClllcywgSSBrbm93IHRoaXMgcXVlc3Rpb24gd2lsbCBiZSBhc2tlZCA6
+KSBJIGRldmVsb3BlZCB0aGUgbWF4MzExMCBiZWZvcmUgbWF4MzEwMA0Kd2FzIHBvc3RlZCBpbiBw
+dWJsaWMsIHNvIHRoZSAyIGRlc2lnbnMgZGlmZmVycyBhIGxvdCBmcm9tIHRoZSBzdGFydC4gSSB0
+aGluayB0aGlzIGRyaXZlcg0KaGFzIDIgZ29vZCBwb2ludHM6DQoxLiBJdCBwcm92aWRlcyBhIGNv
+bnNvbGUsIHdoaWNoIGlzIHRoZSBtYWluIHJlYXNvbiB0aGF0IG91ciBwbGF0Zm9ybSB1c2UgbWF4
+MzExMA0KMi4gSXQgdXRpbGl6ZXMgdGhlIFJYIGJ1ZmZlciBvZiBtYXgzMTEwIHRoYXQgaXQgY2Fu
+IHJlYWRzIHVwIHRvIDggY2hhcmFjdGVycyBpbiBvbmUNCnNwaV90cmFuc2ZlciwgYW5kIGl0cyBU
+eCBmdW5jdGlvbiBjYW4gdHJhbnNtaXQgdXAgdG8gMTI4IGNoYXJzIGluIG9uZSBzcGlfdHJhbnNm
+ZXINCndoaWNoIHdpbGwgc2F2ZSBtdWNoIHN5c3RlbSBsb2FkIGNvbXBhcmluZyB0byAxIGNoYXIg
+cGVyIHNwaSB0cmFuc2Zlcg0KDQpDdXJyZW50IG1heDMxMDAuYyBhbHNvIGhhcyBpdHMgYWR2YW50
+YWdlLCBsaWtlIGdvb2Qgc3VwcG9ydCBpbiBDVFMvUlRTIGNvbnRyb2wsDQphbmQgSSB0aGluayB0
+aGVzZSAyIGNhbiBtZXJnZSBpbiB0aGUgZnV0dXJlLg0KDQpUaGFua3MsDQpGZW5nIA0KPg0KPj4g
+SXQgaGFzIGJlZW4gdmFsaWRhdGVkIHdpdGggRGVzaWdud2FyZSBTUEkgY29udHJvbGxlciAoZHJp
+dmVycy9zcGk6IGR3X3NwaS5jDQo+PiAmIGR3X3NwaV9wY2kuYykuIEl0IHN1cHBvcnRzIHBvbGxp
+bmcgYW5kIElSUSBtb2RlLCBzdXBwb3J0cyBiYXRjaCByZWFkLCBhbmQNCj4+IHByb3ZpZGVzIGEg
+Y29uc29sZS4NCj4NCj5iYXJ1Y2gNCj4NCj4tLQ0KPiAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgfi4gLn4gICBUayBPcGVuDQo+U3lzdGVtcw0KPj19
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tb29PLS1VLS1P
+b28tLS0tLS0tLS0tLS17PQ0KPiAgIC0gYmFydWNoQHRrb3MuY28uaWwgLSB0ZWw6ICs5NzIuMi42
+NzkuNTM2NCwgaHR0cDovL3d3dy50a29zLmNvLmlsIC0NCg==
