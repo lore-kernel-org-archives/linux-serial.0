@@ -1,91 +1,65 @@
-From: "Christian Magnusson" <mag@mag.cx>
-Subject: Auto RS485 half-duplex control
-Date: Sun, 3 Jan 2010 14:15:37 +0100
-Message-ID: <001801ca8c76$d7654bd0$862fe370$@cx>
+From: Alan Cox <alan@linux.intel.com>
+Subject: [PATCH] serial: Fix crash if the minimum rate of the device is > 9600
+	baud
+Date: Mon, 04 Jan 2010 16:26:21 +0000
+Message-ID: <20100104162557.17151.23761.stgit@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 1-1-8-44a.gsn.gbg.bostream.se ([82.183.171.139]:58807 "EHLO
-	server.mag.cx" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752570Ab0ACNPp (ORCPT
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:54914 "EHLO
+	bob.linux.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752392Ab0ADQte (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 3 Jan 2010 08:15:45 -0500
-Received: from server.mag.cx (localhost [127.0.0.1])
-	by server.mag.cx (Postfix) with ESMTP id EFC3A3230AA
-	for <linux-serial@vger.kernel.org>; Sun,  3 Jan 2010 14:15:43 +0100 (CET)
-Received: from maghp (router [192.168.3.1])
-	by server.mag.cx (Postfix) with ESMTPSA
-	for <linux-serial@vger.kernel.org>; Sun,  3 Jan 2010 14:15:43 +0100 (CET)
-Content-Language: en-us
+	Mon, 4 Jan 2010 11:49:34 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: greg@kroah.com, linux-serial@vger.kernel.org
 
-DQpJIGhhdmUgc2VhcmNoZWQgaW4gdGhlIGxpc3RzIGZvciBzb21lIGtlcm5lbCBzdXBwb3J0IHRv
-IGNvbnRyb2wgdGhlIFJUUy1waW4NCndoaWxlIHNlbmRpbmcgY2hhcmFjdGVycyB0byB0aHJvdWdo
-IGFuIGV4dGVybmFsIFJTMjMyLT5SUzQ4NSBhZGFwdGVyLg0KVGhlIFJTNDg1IGRldmljZSBJkm0g
-d3JpdGluZyB0bywgcmVzcG9uZCB3aXRoIGFuIGFuc3dlciB3aXRoaW4gYXBwcm94aW1hdGVseQ0K
-Mm1zIGFmdGVyIG15IGxhc3Qgc2VudCBjaGFyYWN0ZXIsIGFuZCB0aGVyZWZvcmUgSSBuZWVkIHRv
-IHJlbGVhc2UgdGhlDQpSVFMtcGluIGJlZm9yZSB0aGF0Lg0KSWYgbm90LCB0aGUgcmV0dXJuaW5n
-IGNoYXJhY3RlcnMgd2lsbCBiZSB1bnJlYWRhYmxlIGR1ZSB0byB0aGUNCnNlbmQtY29sbGlzaW9u
-Lg0KDQpXaWxsIHRoaXMgZmVhdHVyZSBiZSBpbXBsZW1lbnRlZCBpbiB0aGUgaTM4NiBhcmNoIChh
-cyBpdCBpcyBmb3IgY2hyaXMpLCBvcg0KaXMgdGhlcmUgYW55IHJlYXNvbiB0byBuZXZlciBpbmNs
-dWRlIGl0IGluIHRoZSBmdXR1cmU/DQoNCi9DaHJpc3RpYW4NCg0KDQoNClJpZ2h0IG5vdyBJIGhh
-dmUgaW1wbGVtZW50ZWQgdGhlIGZlYXR1cmUgaW4gbXkgYXBwbGljYXRpb24gd2l0aCBwcmV0dHkg
-Z29vZA0KcmVzdWx0LCBidXQgSSBkb26SdCBsaWtlIHRoZSBidXN5LXdoaWxlIGxvb3AgSSBuZWVk
-IHRvIGRvLg0KVGhpcyBpcyBhIHBhcnQgZnJvbSBteSBjb2RlIHdoZXJlIEkgd3JpdGUgdG8gdGhl
-IHNlcmlhbC1kZXZpY2UNCg0KoKCgoKCgoCBDT01fc2V0X1JUUyhpbi0+ZmlsZV9kZXNjcmlwdG9y
-LCAxKTsgLy8gVGVsbCBSUzQ4NSBjb252ZXJ0ZXIgdG8NCmFjdGl2YXRlIFRYLXBpbg0KoKAgoKCg
-oKBpID0gQ09NX3dyaXRlKHRtcCwgc2l6ZSwgaW4pOw0KI2lmZGVmIEhBVkVfVElPQ1NFUkdFVExT
-Ug0KoKCgoKCgoCAvLyA3OSBieXRlcyB0YWtlcyAxODAuODhtcyB0byBzZW5koCAoMi4yODk2bXMg
-LyBjaGFyIGF0IDQ4MDAgYmF1ZCkNCqCgoKCgoKAgLy8gKDIuMjg5KjQ4MDAgPSAxMDk5MCkNCqCg
-oKCgoKAgaWYoaSA9PSAwKSB7DQqgoKCgoKCgoKCgoCBzaWduZWQgaW50IGxzcjsNCqCgoKCgoKCg
-oKCgIGludCBsb29wcyA9IDA7DQqgoKCgoKCgoKCgoCBpbnQgcHJlX3NsZWVwID0gKChzaXplKjEw
-OTkwKS9DT01fQmF1ZFJhdGUoaW4tPmJhdWQpKSAtIDE7DQqgoKCgoKCgoKCgoCBpZihwcmVfc2xl
-ZXAgPiAzKSB7DQqgoKCgoKCgoKCgoKCgoKAgLy8gU2xlZXAgbW9zdCBvZiB0aGUgdGltZSBiZWZv
-cmUgdGhlIGJ1c3ktd2hpbGUgbG9vcC4NCqCgoKCgoKCgoKCgoKCgoCBMRVZFTF9ERUZBVUxUKCJQ
-cmUtc2xlZXAgJWQgbXMgKCVkIGJhdWQpXG4iLCBwcmVfc2xlZXAsDQpDT01fQmF1ZFJhdGUoaW4t
-PmJhdWQpKTsNCqCgoKCgoKCgoKCgoKCgoCBVVF9kZWxheShwcmVfc2xlZXApOw0KoKCgoKCgoKCg
-oKAgfQ0KoKCgoKCgoKCgoKAgZ2V0dGltZW9mZGF5KCZ0djIsIE5VTEwpOw0KoKCgoKCgoKCgoKAg
-ZG8gew0KoKCgoKCgoKCgoKCgoKCgIC8qIEJ1c3kgd2hpbGUgbG9vcCB1bnRpbCB0cmFuc21pdCBi
-dWZmZXIgaXMgZW1wdHkgKi8NCqCgoKCgoKCgoKCgoKCgoCBsb29wcysrOw0KoKCgoKCgoKCgoKCg
-oKCgIHJjID0gaW9jdGwoaW4tPmZpbGVfZGVzY3JpcHRvciwgVElPQ1NFUkdFVExTUiwgJmxzcik7
-DQqgoKCgoKCgoKCgoKCgoKAgaWYocmMgPCAwKSB7DQqgoKCgoKCgoKCgoKCgoKCgoKCgIExFVkVM
-X0NBTEwoIlRJT0NTRVJHRVRMU1IgZmFpbGVkXG4iKTsNCqCgoKCgoKCgoKCgoKCgoKCgoKAgYnJl
-YWs7DQqgoKCgoKCgoKAgoKCgoKCgfQ0KoKCgoKCgoKCgoKCgoKCgIGlmKGxzciAmIFRJT0NTRVJf
-VEVNVCkgew0KoKCgoKCgoKCgoKCgoKCgoKCgoCAvKiBUcmFuc21pdHRlciBlbXB0eSAqLw0KoKCg
-oKCgoKCgoKCgoKCgoKCgoCBicmVhazsNCqCgoKCgoKCgoKCgoKCgoCB9DQqgoKCgoKCgoKCgoKCg
-oKAgZ2V0dGltZW9mZGF5KCZ0djIsIE5VTEwpOw0KoKCgoKCgoKCgoKCgoKCgIHRpbWVyc3ViKCZ0
-djIsICZ0dl9zdGFydCwgJmRpZmYpOw0KoKCgoKCgoKCgoKCgoKCgIGlmKGRpZmYudHZfc2VjICE9
-IDApIHsNCqCgoKCgoKCgoKCgoKCgoKCgoKAgTEVWRUxfREVGQVVMVCgiVEVNVCBuZXZlciBzZXQg
-d2l0aGluIDEgc2VjXG4iKTsNCqCgoKCgoKCgoKCgoKCgoKCgoKAgYnJlYWs7DQqgoKCgoKCgoKCg
-oKCgoKAgfQ0KoKCgoKCgoKCgoKAgfSB3aGlsZSgxKTsNCg0KoKCgoKCgoKCgoKAgLy8gdGNkcmFp
-biBzaG91bGQgcmV0dXJuIGF0IG9uY2UgYWZ0ZXIgYWxsIGNoYXJzIGhhdmUgYmVlbiBzZW50DQqg
-oKCgoKCgoKCgoCBpZigocmMgPSB0Y2RyYWluKGluLT5maWxlX2Rlc2NyaXB0b3IpKSA8IDApIHsN
-CqCgoKCgoKCgoKCgoKCgoCBMRVZFTF9ERUZBVUxUKCJkcmFpbiBmYWlsZWQgcmM9JWRcbiIsIHJj
-KTsNCqCgoKCgoKCgoKCgIH0NCqCgoKCgoKCgoKCgIGdldHRpbWVvZmRheSgmdHZfZW5kLCBOVUxM
-KTsNCqCgoKCgoKCgoKCgIHRpbWVyc3ViKCZ0dl9lbmQsICZ0dl9zdGFydCwgJmRpZmYpOw0KoKCg
-oKCgoKCgoKAgTEVWRUxfQ0FMTCgiJWQgY2hhcnMgc2VudCBhZnRlciAlZC4lMDZsZCBzZWNzICgl
-ZCBsb29wcyArDQp0Y2RyYWluKVxuIiwgc2l6ZSwgZGlmZi50dl9zZWMsIGRpZmYudHZfdXNlYywg
-bG9vcHMpOw0KoKCgoKAgoKCgoKCgLy8gMjcuNW1zIC0gMjcuN21zIGZvciAxMiBjaGFycy4NCqCg
-oKCgoKCgoKCgIC8vIFdhaXRpbmcgZm9yIFRJT0NTRVJfVEVNVCBpcyByZWxpYWJsZSAmIHRjZHJh
-aW4gcmV0dXJuIGF0IG9uY2UNCqCgoKCgoKCgoKCgIC8vIENvbnN1bWVzIHNvbWUgQ1BVLXRpbWUg
-aW4gdGhlIGJ1c3ktd2hpbGUgbG9vcCB0aG91Z2guDQqgoKCgoKCgIH0NCiNlbHNlDQqgoKCgoKCg
-IGlmKGkgPT0gMCkgew0KoKCgoKCgoKCgoKAgLy8gSWYgYWxsIGJ5dGVzIHdlcmUgd3JpdHRlbiwg
-dGhlbiB3YWl0IHVudGlsIGFsbCBieXRlcyBhcmUgc2VudA0KoKCgoKCgoKCgoKAgLy8gU2VlbSB0
-byB3YWl0IGFib3V0IDNtcyBhZnRlciBsYXN0IGNoYXIgaXMgc2VudCwgYW5kIHRoYXQncw0KdG9v
-IGxvbmcgZGVsYXkNCqCgoKCgoKCgoKCgIGlmKChyYyA9IHRjZHJhaW4oaW4tPmZpbGVfZGVzY3Jp
-cHRvcikpIDwgMCkgew0KoKCgoKCgoKCgoKCgoKCgIExFVkVMX0RFRkFVTFQoImRyYWluIGZhaWxl
-ZCByYz0lZFxuIiwgcmMpOw0KoKCgoKCgoKCgoKAgfQ0KoKCgoKCgoCB9DQoNCqCgoKCgoKAgZ2V0
-dGltZW9mZGF5KCZ0djIsIE5VTEwpOw0KoKCgoKCgoCB0aW1lcnN1YigmdHYyLCAmdHZfc3RhcnQs
-ICZkaWZmKTsNCqCgoKCgoKAgLy8gMjguNi0zMi44bXMgZm9yIDEyIGNoYXJzoCAodGNkcmFpbiBp
-cyBub3QgdmVyeSByZWxpYWJsZSkNCqCgoKCgoKAgTEVWRUxfQ0FMTCgiJWQgY2hhcnMgc2VudCBh
-ZnRlciAlZC4lMDZsZCBzZWNzIChjYWxsZWQgdGNkcmFpbilcbiIsDQpzaXplLCBkaWZmLnR2X3Nl
-YywgZGlmZi50dl91c2VjKTsNCg0KI2VuZGlmDQoNCqCgoKCgoKAgLy8gVGVsbCBSUzQ4NSBjb252
-ZXJ0ZXIgdG8gZGVhY3RpdmF0ZSBUWC1waW4NCqCgoKCgoKAgQ09NX3NldF9SVFMoaW4tPmZpbGVf
-ZGVzY3JpcHRvciwgMCk7DQqgoKAgfQ0KDQoNCg0KIA0KDQpfX19fX19fX19fIEluZm9ybWF0aW9u
-IGZyb20gRVNFVCBOT0QzMiBBbnRpdmlydXMsIHZlcnNpb24gb2YgdmlydXMgc2lnbmF0dXJlDQpk
-YXRhYmFzZSA0NzM4ICgyMDEwMDEwMikgX19fX19fX19fXw0KDQpUaGUgbWVzc2FnZSB3YXMgY2hl
-Y2tlZCBieSBFU0VUIE5PRDMyIEFudGl2aXJ1cy4NCg0KaHR0cDovL3d3dy5lc2V0LmNvbQ0KIA0K
+
+(Resend for -next)
+
+In that situation if the old rate is invalid and the new rate is invalid
+and the chip cannot do 9600 baud we report zero, which makes all the
+drivers explode.
+
+Instead force the rate based on min/max
+
+Signed-off-by: Alan Cox <alan@linux.intel.com>
+---
+
+ drivers/serial/serial_core.c |   17 ++++++++++++-----
+ 1 files changed, 12 insertions(+), 5 deletions(-)
+
+
+diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
+index fa4f170..07fe320 100644
+--- a/drivers/serial/serial_core.c
++++ b/drivers/serial/serial_core.c
+@@ -385,13 +385,20 @@ uart_get_baud_rate(struct uart_port *port, struct ktermios *termios,
+ 		}
+ 
+ 		/*
+-		 * As a last resort, if the quotient is zero,
+-		 * default to 9600 bps
++		 * As a last resort, if the range cannot be met then clip to
++		 * the nearest chip supported rate.
+ 		 */
+-		if (!hung_up)
+-			tty_termios_encode_baud_rate(termios, 9600, 9600);
++		if (!hung_up) {
++			if (baud <= min)                
++				tty_termios_encode_baud_rate(termios,
++							min + 1, min + 1);
++			else
++				tty_termios_encode_baud_rate(termios,
++							max - 1, max - 1);
++		}
+ 	}
+-
++	/* Should never happen */
++	WARN_ON(1);
+ 	return 0;
+ }
+ 
+
