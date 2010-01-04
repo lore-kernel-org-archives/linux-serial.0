@@ -1,16 +1,13 @@
 From: Jamie Iles <jamie.iles@picochip.com>
-Subject: [PATCH] 8250: add a UPIO_DWAPB32 for 32 bit accesses (v2)
-Date: Mon,  4 Jan 2010 17:19:31 +0000
-Message-ID: <1262625571-23800-2-git-send-email-jamie.iles@picochip.com>
-References: <1262625116-22712-1-git-send-email-jamie.iles@picochip.com>
- <1262625571-23800-1-git-send-email-jamie.iles@picochip.com>
+Subject: [PATCH] 8250: add a UPIO_DWAPB32 for 32 bit accesses
+Date: Mon,  4 Jan 2010 17:11:56 +0000
+Message-ID: <1262625116-22712-1-git-send-email-jamie.iles@picochip.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail2.picochip.com ([82.111.145.34]:48561 "EHLO
+Received: from mail2.picochip.com ([82.111.145.34]:56174 "EHLO
 	thurne.picochip.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752833Ab0ADRSW (ORCPT
+	with ESMTP id S1752235Ab0ADRjp (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 4 Jan 2010 12:18:22 -0500
-In-Reply-To: <1262625571-23800-1-git-send-email-jamie.iles@picochip.com>
+	Mon, 4 Jan 2010 12:39:45 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
@@ -93,7 +90,7 @@ index c87f7bd..b03a8c8 100644
  			break;
  
 diff --git a/drivers/serial/8250_early.c b/drivers/serial/8250_early.c
-index f279745..e142463 100644
+index f279745..51a3497 100644
 --- a/drivers/serial/8250_early.c
 +++ b/drivers/serial/8250_early.c
 @@ -48,7 +48,9 @@ static struct early_serial8250_device early_device;
@@ -101,9 +98,9 @@ index f279745..e142463 100644
  static unsigned int __init serial_in(struct uart_port *port, int offset)
  {
 -	if (port->iotype == UPIO_MEM)
-+	if (port->iotype == UPIO_MEM32)
-+		return readl(port->membase + offset);
-+	else if (port->iotype == UPIO_MEM)
++        if (port->iotype == UPIO_MEM32)
++                return readl(port->membase + offset);
++        else if (port->iotype == UPIO_MEM)
  		return readb(port->membase + offset);
  	else
  		return inb(port->iobase + offset);
@@ -111,8 +108,8 @@ index f279745..e142463 100644
  
  static void __init serial_out(struct uart_port *port, int offset, int value)
  {
-+	if (port->iotype == UPIO_MEM32)
-+		writel(value, port->membase + offset);
++        if (port->iotype == UPIO_MEM32)
++                writel(value, port->membase + offset);
  	if (port->iotype == UPIO_MEM)
  		writeb(value, port->membase + offset);
  	else
