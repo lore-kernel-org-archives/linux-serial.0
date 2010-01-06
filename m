@@ -1,319 +1,215 @@
-From: Brian Murphy <brian@murphy.dk>
-Subject: [PATCH] 8250 interrupt handling redesign and consequent removal of
-	special bug handling
-Date: Tue, 5 Jan 2010 13:13:44 +0100
-Message-ID: <b41414a41001050413u7c0b2b91rd39de3f033589ff8@mail.gmail.com>
+From: =?ISO-8859-1?Q?Szigetv=E1ri_J=E1nos?= <jszigetvari@gmail.com>
+Subject: making an ibm bluetooth pc card work under linux
+Date: Wed, 6 Jan 2010 19:57:56 +0100
+Message-ID: <c66253311001061057t70ebca7dka55bc3de2fe62521@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ey-out-2122.google.com ([74.125.78.26]:50557 "EHLO
-	ey-out-2122.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751799Ab0AEMNr (ORCPT
+Received: from mail-ew0-f219.google.com ([209.85.219.219]:55466 "EHLO
+	mail-ew0-f219.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932416Ab0AFS57 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Jan 2010 07:13:47 -0500
-Received: by ey-out-2122.google.com with SMTP id 22so378956eye.19
-        for <linux-serial@vger.kernel.org>; Tue, 05 Jan 2010 04:13:45 -0800 (PST)
+	Wed, 6 Jan 2010 13:57:59 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-pcmcia@lists.infradead.org, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org
 
-This patch changes the standard 8250 serial driver which
-so that if the uart is not active filling the fifo begins
-immediately. This is the opposite of the current principal
-where the driver waits for the fifo empty interrupt before
-beginning transmission.
+Hi all!
 
-This change means that uarts which do not signal fifo empty
-on enabling interrupts work without any special handling.
-"Standard" uarts should still work fine.
+I really don't mean to spam the lists, but I have run into a problem,
+that is related to the subsystems covered by these list.
+The guys at the linux-pcmcia list have already helped me a lot.
 
-The patch removes the two UART_BUGs UART_BUG_TXEN and UART_BUG_THRE
-and replaces the code which handled them by a simple check on whether
-we have already started the transmit process and if not start writing
-directly to the fifo in all cases.
+So the basic facts are:
+I'm using Slackware Linux 13.0 with kernel 2.6.30.9 on an old laptop.
+I have an older IBM Bluetooth PC Card, that seems to be currently
+unsupported by Linux.
+This card is a rebranded version of a similar TDK Bluetooth PC Card.
 
-The patch also removes the no longer necessary fake interrupt/poll
-function serial8250_backup_timeout and the probe code for detecting
-the two bugs named above.
+# pccardctl info
+PRODID_1="IBM"
+PRODID_2="Bluetooth PC Card II"
+PRODID_3=""
+PRODID_4=""
+MANFID=0105,4254
+FUNCID=254
 
-Signed-off-by: Brian Murphy <brian@murphy.dk>
----
- drivers/serial/8250.c |  153 ++++++++++---------------------------------------
- drivers/serial/8250.h |    4 +-
- 2 files changed, 31 insertions(+), 126 deletions(-)
+There was a discussion about this card on the linux.pcmcia.devel
+newsgroup/mailing-list a while ago:
+http://osdir.com/ml/linux.pcmcia.devel/2003-04/msg00001.html
+There it was identified that this card is Oxford Semiconductor 16C950-based.
 
-diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index 737b4c9..ca2962c 100644
---- a/drivers/serial/8250.c
-+++ b/drivers/serial/8250.c
-@@ -150,6 +150,7 @@ struct uart_8250_port {
- 	unsigned char		lsr_saved_flags;
- #define MSR_SAVE_FLAGS UART_MSR_ANY_DELTA
- 	unsigned char		msr_saved_flags;
-+	unsigned char		tx_active;
+There also was a problem with the card, as it had a Card Information
+Structure, that contained incorrect information. Luckily I was able to
+correct the CIS, so now it looks like this:
 
- 	/*
- 	 * We provide a per-port pm hook.
-@@ -524,25 +525,6 @@ static void set_io_from_upio(struct uart_port *p)
- 	up->cur_iotype = p->iotype;
- }
+dev_info
+ NULL 0ns, 512b
+manfid 0x0105, 0x4254
+funcid serial_port [post]
+vers_1 7.1, "IBM", "Bluetooth PC Card II", "", ""
+config base 0x00f8 mask 0x000f last_index 0x03
+cftable_entry 0x03 [default]
+ [rdybsy]
+ Vcc Vnom 5V
+ io 0x01e0-0x01ef [lines=8] [8bit] [range]
+ irq mask 0xffff [level] [shared]
 
--static void
--serial_out_sync(struct uart_8250_port *up, int offset, int value)
--{
--	struct uart_port *p = &up->port;
--	switch (p->iotype) {
--	case UPIO_MEM:
--	case UPIO_MEM32:
--#ifdef CONFIG_SERIAL_8250_AU1X00
--	case UPIO_AU:
--#endif
--	case UPIO_DWAPB:
--		p->serial_out(p, offset, value);
--		p->serial_in(p, UART_LCR);	/* safe, no side-effects */
--		break;
--	default:
--		p->serial_out(p, offset, value);
--	}
--}
--
- #define serial_in(up, offset)		\
- 	(up->port.serial_in(&(up)->port, (offset)))
- #define serial_out(up, offset, value)	\
-@@ -1311,14 +1293,20 @@ static inline void __stop_tx(struct uart_8250_port *p)
- 		p->ier &= ~UART_IER_THRI;
- 		serial_out(p, UART_IER, p->ier);
+Using the info found in the list archive, and some help from Dominik
+Brodowski on the linux-pcmcia list, I was able to make a patch that
+(in most cases) is able to make this card work:
+
+diff -uNr a/drivers/serial/serial_cs.c b/drivers/serial/serial_cs.c
+--- a/drivers/serial/serial_cs.c	2009-10-05 17:38:08.000000000 +0200
++++ b/drivers/serial/serial_cs.c	2010-01-05 20:38:48.000000000 +0100
+@@ -212,6 +212,11 @@
+ 		.multi	= -1,
+ 		.post	= quirk_post_ibm,
+ 	}, {
++		.manfid	= MANFID_TDK,
++		.prodid	= PRODID_TDK_BTPC01,
++		.multi	= -1,
++		.wakeup	= quirk_wakeup_oxsemi,
++	}, {
+ 		.manfid	= MANFID_INTEL,
+ 		.prodid	= PRODID_INTEL_DUAL_RS232,
+ 		.multi	= 2,
+@@ -658,6 +663,19 @@
+ 		return 0;
  	}
-+	p->tx_active = 0;
- }
 
- static void serial8250_stop_tx(struct uart_port *port)
- {
- 	struct uart_8250_port *up = (struct uart_8250_port *)port;
-+	unsigned long flags;
++	if (info->manfid == MANFID_TDK && info->prodid == PRODID_TDK_BTPC01) {
++		/* The CIS for this card only has one config entry. */
++		setup_serial(link, info, link->io.BasePort1,
++					link->irq.AssignedIRQ);
++		info->c950ctrl = base2;
 +
-+	spin_lock_irqsave(&up->port.lock, flags);
-
- 	__stop_tx(up);
-
-+	spin_unlock_irqrestore(&up->port.lock, flags);
++		if (info->quirk && info->quirk->wakeup) {
++			info->quirk->wakeup(link);
++		}
 +
- 	/*
- 	 * We really want to stop the transmitter from sending.
- 	 */
-@@ -1333,24 +1321,23 @@ static void transmit_chars(struct uart_8250_port *up);
- static void serial8250_start_tx(struct uart_port *port)
- {
- 	struct uart_8250_port *up = (struct uart_8250_port *)port;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&up->port.lock, flags);
-
- 	if (!(up->ier & UART_IER_THRI)) {
- 		up->ier |= UART_IER_THRI;
- 		serial_out(up, UART_IER, up->ier);
++		return 0;
 +	}
-
--		if (up->bugs & UART_BUG_TXEN) {
--			unsigned char lsr, iir;
--			lsr = serial_in(up, UART_LSR);
--			up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
--			iir = serial_in(up, UART_IIR) & 0x0f;
--			if ((up->port.type == PORT_RM9000) ?
--				(lsr & UART_LSR_THRE &&
--				(iir == UART_IIR_NO_INT || iir == UART_IIR_THRI)) :
--				(lsr & UART_LSR_TEMT && iir & UART_IIR_NO_INT))
--				transmit_chars(up);
--		}
-+	if (!up->tx_active)
-+	{
-+		up->tx_active = 1;
-+		transmit_chars(up);
- 	}
-
-+	spin_unlock_irqrestore(&up->port.lock, flags);
 +
- 	/*
- 	 * Re-enable the transmitter if we disabled it.
- 	 */
-@@ -1490,9 +1477,6 @@ static void transmit_chars(struct uart_8250_port *up)
- 		uart_write_wakeup(&up->port);
+ 	setup_serial(link, info, link->io.BasePort1, link->irq.AssignedIRQ);
+ 	for (i = 0; i < info->multi - 1; i++)
+ 		setup_serial(link, info, base2 + (8 * i),
+@@ -871,6 +889,7 @@
+ 	PCMCIA_DEVICE_CIS_MANF_CARD(0x0192, 0x0710, "SW_7xx_SER.cis"),	/*
+Sierra Wireless AC710/AC750 GPRS Network Adapter R1 */
+ 	PCMCIA_DEVICE_CIS_MANF_CARD(0x0192, 0xa555, "SW_555_SER.cis"),  /*
+Sierra Aircard 555 CDMA 1xrtt Modem -- pre update */
+ 	PCMCIA_DEVICE_CIS_MANF_CARD(0x013f, 0xa555, "SW_555_SER.cis"),  /*
+Sierra Aircard 555 CDMA 1xrtt Modem -- post update */
++	PCMCIA_DEVICE_CIS_MANF_CARD(0x0105, 0x4254, "cis/IBMBT.cis"),	/* IBM
+Bluetooth PC Card II */
+ 	PCMCIA_DEVICE_CIS_PROD_ID12("MultiTech", "PCMCIA 56K DataFax",
+0x842047ee, 0xc2efcf03, "MT5634ZLX.cis"),
+ 	PCMCIA_DEVICE_CIS_PROD_ID12("ADVANTECH", "COMpad-32/85B-4",
+0x96913a85, 0xcec8f102, "COMpad4.cis"),
+ 	PCMCIA_DEVICE_CIS_PROD_ID123("ADVANTECH", "COMpad-32/85", "1.0",
+0x96913a85, 0x8fbe92ae, 0x0877b627, "COMpad2.cis"),
+diff -uNr a/include/pcmcia/ciscode.h b/include/pcmcia/ciscode.h
+--- a/include/pcmcia/ciscode.h	2009-10-05 17:38:08.000000000 +0200
++++ b/include/pcmcia/ciscode.h	2010-01-03 23:07:10.000000000 +0100
+@@ -116,6 +116,7 @@
+ #define PRODID_TDK_NP9610		0x0d0a
+ #define PRODID_TDK_MN3200		0x0e0a
+ #define PRODID_TDK_GN3410		0x4815
++#define PRODID_TDK_BTPC01		0x4254
 
- 	DEBUG_INTR("THRE...");
--
--	if (uart_circ_empty(xmit))
--		__stop_tx(up);
- }
+ #define MANFID_TOSHIBA			0x0098
 
- static unsigned int check_modem_status(struct uart_8250_port *up)
-@@ -1521,12 +1505,9 @@ static unsigned int check_modem_status(struct
-uart_8250_port *up)
- /*
-  * This handles the interrupt from one port.
-  */
--static void serial8250_handle_port(struct uart_8250_port *up)
-+static void __serial8250_handle_port(struct uart_8250_port *up)
- {
- 	unsigned int status;
--	unsigned long flags;
--
--	spin_lock_irqsave(&up->port.lock, flags);
+This is where I'm now.
+After compiling and installing the modified module, the card sometimes
+works, and sometimes it doesn't.
 
- 	status = serial_inp(up, UART_LSR);
+If everything is OK, and the HCI is registered, I get the following messages:
 
-@@ -1536,8 +1517,18 @@ static void serial8250_handle_port(struct
-uart_8250_port *up)
- 		receive_chars(up, &status);
- 	check_modem_status(up);
- 	if (status & UART_LSR_THRE)
-+	{
-+		up->tx_active = 1;
- 		transmit_chars(up);
-+	}
-+}
+root@orion:~# tail /var/log/messages
+Jan  5 10:39:09 orion kernel: pcmcia 1.0: firmware: requesting cis/IBMBT.cis
+Jan  5 10:39:09 orion kernel: 1.0: ttyS1 at I/O 0x1e0 (irq = 3) is a 16C950/954
+Jan  5 10:39:10 orion kernel: Bluetooth: HCI UART driver ver 2.2
+Jan  5 10:39:10 orion kernel: Bluetooth: HCI H4 protocol initialized
+Jan  5 10:39:10 orion kernel: Bluetooth: HCI BCSP protocol initialized
+Jan  5 10:39:10 orion kernel: Bluetooth: HCILL protocol initialized
+Jan  5 10:39:10 orion hcid[2462]: HCI dev 0 registered
+Jan  5 10:39:10 orion hcid[2462]: HCI dev 0 up
+Jan  5 10:39:10 orion hcid[2462]: Device hci0 has been added
+Jan  5 10:39:10 orion hcid[2462]: Starting security manager 0
+root@orion:~# tail /var/log/syslog
+Jan  5 10:39:09 orion kernel: ttyS1: detected caps 00000700 should be 00000100
+Jan  5 10:39:11 orion hcid[2462]: Can't read version info for hci0:
+Connection timed out (110)
+Jan  5 10:39:20 orion hcid[2605]: Can't set link policy on hci0:
+Connection timed out (110)
+Jan  5 10:39:20 orion kernel: hci_cmd_task: hci0 command tx timeout
 
-+static void serial8250_handle_port(struct uart_8250_port *up)
-+{
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&up->port.lock, flags);
-+	__serial8250_handle_port(up);
- 	spin_unlock_irqrestore(&up->port.lock, flags);
- }
+If the registration of the HCI fails, I get this:
 
-@@ -1574,7 +1565,7 @@ static irqreturn_t serial8250_interrupt(int irq,
-void *dev_id)
+root@orion:~# dmesg | tail
+Bluetooth: RFCOMM TTY layer initialized
+Bluetooth: RFCOMM ver 1.11
+Bluetooth: BNEP (Ethernet Emulation) ver 1.3
+Bluetooth: BNEP filters: protocol multicast
+pcmcia_socket pcmcia_socket1: pccard: PCMCIA card inserted into slot 1
+pcmcia_socket pcmcia_socket1: cs: memory probe 0xa0000000-0xa0ffffff: clean.
+pcmcia 1.0: pcmcia: registering new device pcmcia1.0
+pcmcia 1.0: firmware: requesting cis/IBMBT.cis
+ttyS1: detected caps 00000700 should be 00000100
+1.0: ttyS1 at I/O 0x1e0 (irq = 3) is a 16C950/954
+root@orion:~# tail /var/log/syslog
+Oct 25 00:40:07 orion hcid[2465]: Can't create GN bridge
+Jan  4 23:29:07 orion kernel: ttyS1: detected caps 00000700 should be 00000100
+root@orion:~# tail /var/log/messages
+Jan  4 23:29:07 orion kernel: pcmcia_socket pcmcia_socket1: pccard:
+PCMCIA card inserted into slot 1
+Jan  4 23:29:07 orion kernel: pcmcia_socket pcmcia_socket1: cs: memory
+probe 0xa0000000-0xa0ffffff: clean.
+Jan  4 23:29:07 orion kernel: pcmcia 1.0: pcmcia: registering new
+device pcmcia1.0
+Jan  4 23:29:07 orion kernel: pcmcia 1.0: firmware: requesting cis/IBMBT.cis
+Jan  4 23:29:07 orion kernel: 1.0: ttyS1 at I/O 0x1e0 (irq = 3) is a 16C950/954
+Jan  4 23:29:17 orion hciattach: BCSP initialization timed out
 
- 		iir = serial_in(up, UART_IIR);
- 		if (!(iir & UART_IIR_NO_INT)) {
--			serial8250_handle_port(up);
-+			__serial8250_handle_port(up);
+Another thing is that if I go through a suspend/resume cycle, then the
+HCI doesn't work afterwards, even though the HCI was  successfully
+registered before the suspension of the system. Of course this may
+also be a bug/deficiency of the pm-utils package, that Slackware makes
+use of.
+Anyway, the symptom of this is that any commands that I pass to the
+HCI reach a time out. (hciconfig hci0 reset for example.)
 
- 			handled = 1;
+As the HCI interface now works sometimes I was able to query the following info:
 
-@@ -1944,9 +1935,9 @@ static int serial8250_startup(struct uart_port *port)
- {
- 	struct uart_8250_port *up = (struct uart_8250_port *)port;
- 	unsigned long flags;
--	unsigned char lsr, iir;
- 	int retval;
+oot@orion:~/dev/kernel# hciconfig hci0 features
+hci0:   Type: UART
+       BD Address: 00:80:98:34:55:46 ACL MTU: 192:8 SCO MTU: 64:8
+       Features: 0xff 0xff 0x0d 0x00 0x00 0x00 0x00 0x00
+               <3-slot packets> <5-slot packets> <encryption> <slot offset>
+               <timing accuracy> <role switch> <hold mode> <sniff mode>
+               <park state> <RSSI> <channel quality> <SCO link> <HV2 packets>
+               <HV3 packets> <u-law log> <A-law log> <CVSD> <power control>
+               <transparent SCO>
+root@orion:~/dev/kernel# hciconfig hci0 commands
+Can't read support commands on hci0: Connection timed out (110)
+root@orion:~/dev/kernel# hciconfig hci0 revision
+hci0:   Type: UART
+       BD Address: 00:80:98:34:55:46 ACL MTU: 192:8 SCO MTU: 64:8
+       HCI 12.3
+       Chip version: BlueCore01b
+       SCO mapping:  HCI
+root@orion:~/dev/kernel# hciconfig hci0 version
+hci0:   Type: UART
+       BD Address: 00:80:98:34:55:46 ACL MTU: 192:8 SCO MTU: 64:8
+       HCI Ver: 1.1 (0x1) HCI Rev: 0x86 LMP Ver: 1.1 (0x1) LMP Subver: 0x86
+       Manufacturer: Cambridge Silicon Radio (10)
 
-+	up->tx_active = 0;
- 	up->capabilities = uart_config[up->port.type].flags;
- 	up->mcr = 0;
 
-@@ -2017,56 +2008,6 @@ static int serial8250_startup(struct uart_port *port)
- 		serial_outp(up, UART_LCR, 0);
- 	}
+I have run out of ideas where to look for the error that could cause
+these symptoms. So if you have any helping idea or input, please don't
+hesitate to to hit the reply button.
+Thanks!
 
--	if (is_real_interrupt(up->port.irq)) {
--		unsigned char iir1;
--		/*
--		 * Test for UARTs that do not reassert THRE when the
--		 * transmitter is idle and the interrupt has already
--		 * been cleared.  Real 16550s should always reassert
--		 * this interrupt whenever the transmitter is idle and
--		 * the interrupt is enabled.  Delays are necessary to
--		 * allow register changes to become visible.
--		 */
--		spin_lock_irqsave(&up->port.lock, flags);
--		if (up->port.irqflags & IRQF_SHARED)
--			disable_irq_nosync(up->port.irq);
--
--		wait_for_xmitr(up, UART_LSR_THRE);
--		serial_out_sync(up, UART_IER, UART_IER_THRI);
--		udelay(1); /* allow THRE to set */
--		iir1 = serial_in(up, UART_IIR);
--		serial_out(up, UART_IER, 0);
--		serial_out_sync(up, UART_IER, UART_IER_THRI);
--		udelay(1); /* allow a working UART time to re-assert THRE */
--		iir = serial_in(up, UART_IIR);
--		serial_out(up, UART_IER, 0);
--
--		if (up->port.irqflags & IRQF_SHARED)
--			enable_irq(up->port.irq);
--		spin_unlock_irqrestore(&up->port.lock, flags);
--
--		/*
--		 * If the interrupt is not reasserted, setup a timer to
--		 * kick the UART on a regular basis.
--		 */
--		if (!(iir1 & UART_IIR_NO_INT) && (iir & UART_IIR_NO_INT)) {
--			up->bugs |= UART_BUG_THRE;
--			pr_debug("ttyS%d - using backup timer\n",
--				 serial_index(port));
--		}
--	}
--
--	/*
--	 * The above check will only give an accurate result the first time
--	 * the port is opened so this value needs to be preserved.
--	 */
--	if (up->bugs & UART_BUG_THRE) {
--		up->timer.function = serial8250_backup_timeout;
--		up->timer.data = (unsigned long)up;
--		mod_timer(&up->timer, jiffies +
--			  poll_timeout(up->port.timeout) + HZ / 5);
--	}
--
- 	/*
- 	 * If the "interrupt" for this port doesn't correspond with any
- 	 * hardware interrupt, we use a timer-based system.  The original
-@@ -2099,40 +2040,6 @@ static int serial8250_startup(struct uart_port *port)
-
- 	serial8250_set_mctrl(&up->port, up->port.mctrl);
-
--	/* Serial over Lan (SoL) hack:
--	   Intel 8257x Gigabit ethernet chips have a
--	   16550 emulation, to be used for Serial Over Lan.
--	   Those chips take a longer time than a normal
--	   serial device to signalize that a transmission
--	   data was queued. Due to that, the above test generally
--	   fails. One solution would be to delay the reading of
--	   iir. However, this is not reliable, since the timeout
--	   is variable. So, let's just don't test if we receive
--	   TX irq. This way, we'll never enable UART_BUG_TXEN.
--	 */
--	if (skip_txen_test || up->port.flags & UPF_NO_TXEN_TEST)
--		goto dont_test_tx_en;
--
--	/*
--	 * Do a quick test to see if we receive an
--	 * interrupt when we enable the TX irq.
--	 */
--	serial_outp(up, UART_IER, UART_IER_THRI);
--	lsr = serial_in(up, UART_LSR);
--	iir = serial_in(up, UART_IIR);
--	serial_outp(up, UART_IER, 0);
--
--	if (lsr & UART_LSR_TEMT && iir & UART_IIR_NO_INT) {
--		if (!(up->bugs & UART_BUG_TXEN)) {
--			up->bugs |= UART_BUG_TXEN;
--			pr_debug("ttyS%d - enabling bad tx status workarounds\n",
--				 serial_index(port));
--		}
--	} else {
--		up->bugs &= ~UART_BUG_TXEN;
--	}
--
--dont_test_tx_en:
- 	spin_unlock_irqrestore(&up->port.lock, flags);
-
- 	/*
-diff --git a/drivers/serial/8250.h b/drivers/serial/8250.h
-index 6e19ea3..770a0e2 100644
---- a/drivers/serial/8250.h
-+++ b/drivers/serial/8250.h
-@@ -46,9 +46,7 @@ struct serial8250_config {
- #define UART_CAP_UUE	(1 << 12)	/* UART needs IER bit 6 set (Xscale) */
-
- #define UART_BUG_QUOT	(1 << 0)	/* UART has buggy quot LSB */
--#define UART_BUG_TXEN	(1 << 1)	/* UART has buggy TX IIR status */
--#define UART_BUG_NOMSR	(1 << 2)	/* UART has buggy MSR status bits (Au1x00) */
--#define UART_BUG_THRE	(1 << 3)	/* UART has buggy THRE reassertion */
-+#define UART_BUG_NOMSR	(1 << 1)	/* UART has buggy MSR status bits (Au1x00) */
-
- #define PROBE_RSA	(1 << 0)
- #define PROBE_ANY	(~0)
--- 
-1.6.5.3
+Best regards,
+Janos Szigetvari
