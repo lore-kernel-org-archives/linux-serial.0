@@ -1,132 +1,155 @@
-From: Mac Lin <mkl0301@hotmail.com>
-Subject: =?UTF-8?Q?SMP_issues_with_8250.c=E2=80=8F?=
-Date: Sat, 9 Jan 2010 09:03:43 -0800 (PST)
-Message-ID: <27090634.post@talk.nabble.com>
+From: =?UTF-8?B?TsOpbWV0aCBNw6FydG9u?= <nm127@freemail.hu>
+Subject: [PATCH 1/3] serial: make Open Firmware device id constant
+Date: Sun, 10 Jan 2010 17:59:30 +0100
+Message-ID: <4B4A0772.9070007@freemail.hu>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kuber.nabble.com ([216.139.236.158]:55611 "EHLO
-	kuber.nabble.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754725Ab0AIRDo (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 9 Jan 2010 12:03:44 -0500
-Received: from isper.nabble.com ([192.168.236.156])
-	by kuber.nabble.com with esmtp (Exim 4.63)
-	(envelope-from <lists@nabble.com>)
-	id 1NTej1-0006Q9-AX
-	for linux-serial@vger.kernel.org; Sat, 09 Jan 2010 09:03:43 -0800
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Return-path: <cocci-bounces@diku.dk>
+List-Unsubscribe: <http://lists.diku.dk/mailman/listinfo/cocci>,
+	<mailto:cocci-request@diku.dk?subject=unsubscribe>
+List-Archive: <http://lists.diku.dk/pipermail/cocci>
+List-Post: <mailto:cocci@diku.dk>
+List-Help: <mailto:cocci-request@diku.dk?subject=help>
+List-Subscribe: <http://lists.diku.dk/mailman/listinfo/cocci>,
+	<mailto:cocci-request@diku.dk?subject=subscribe>
+Sender: cocci-bounces@diku.dk
+Errors-To: cocci-bounces@diku.dk
 To: linux-serial@vger.kernel.org
+Cc: LKML <linux-kernel@vger.kernel.org>, cocci@diku.dk
+List-Id: linux-serial@vger.kernel.org
 
+From: M=C3=A1rton N=C3=A9meth <nm127@freemail.hu>
 
-hi,
+The match_table field of the struct of_device_id is constant in <linux/of=
+_platform.h>
+so it is worth to make the initialization data also constant.
 
-I had had an issue with serial console in SMP mode.
+The semantic match that finds this kind of pattern is as follows:
+(http://coccinelle.lip6.fr/)
 
-http://lists.infradead.org/pipermail/linux-arm-kernel/2009-December/006650.html
+// <smpl>
+@r@
+disable decl_init,const_decl_init;
+identifier I1, I2, x;
+@@
+	struct I1 {
+	  ...
+	  const struct I2 *x;
+	  ...
+	};
+@s@
+identifier r.I1, y;
+identifier r.x, E;
+@@
+	struct I1 y =3D {
+	  .x =3D E,
+	};
+@c@
+identifier r.I2;
+identifier s.E;
+@@
+	const struct I2 E[] =3D ... ;
+@depends on !c@
+identifier r.I2;
+identifier s.E;
+@@
++	const
+	struct I2 E[] =3D ...;
+// </smpl>
 
-I'm using ARM11 MPCore with 2 CPU, Linux-2.6.31.1, SMP enabled, L1 enabled,
-L2 disabled
+Signed-off-by: M=C3=A1rton N=C3=A9meth <nm127@freemail.hu>
+Cc: Julia Lawall <julia@diku.dk>
+Cc: cocci@diku.dk
+---
+diff -u -p a/drivers/serial/of_serial.c b/drivers/serial/of_serial.c
+--- a/drivers/serial/of_serial.c 2009-12-03 04:51:21.000000000 +0100
++++ b/drivers/serial/of_serial.c 2010-01-08 18:42:19.000000000 +0100
+@@ -158,7 +158,7 @@ static int of_platform_serial_remove(str
+ /*
+  * A few common types, add more as needed.
+  */
+-static struct of_device_id __devinitdata of_platform_serial_table[] =3D =
+{
++static const struct of_device_id of_platform_serial_table[] __devinitcon=
+st =3D {
+ 	{ .type =3D "serial", .compatible =3D "ns8250",   .data =3D (void *)POR=
+T_8250, },
+ 	{ .type =3D "serial", .compatible =3D "ns16450",  .data =3D (void *)POR=
+T_16450, },
+ 	{ .type =3D "serial", .compatible =3D "ns16550a", .data =3D (void *)POR=
+T_16550A, },
+diff -u -p a/drivers/serial/mpc52xx_uart.c b/drivers/serial/mpc52xx_uart.=
+c
+--- a/drivers/serial/mpc52xx_uart.c 2009-12-03 04:51:21.000000000 +0100
++++ b/drivers/serial/mpc52xx_uart.c 2010-01-08 18:45:41.000000000 +0100
+@@ -1088,7 +1088,7 @@ static struct uart_driver mpc52xx_uart_d
+ /* OF Platform Driver                                                   =
+    */
+ /* =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =
+*/
 
-Under SMP environment, I have observed following issues:
+-static struct of_device_id mpc52xx_uart_of_match[] =3D {
++static const struct of_device_id mpc52xx_uart_of_match[] =3D {
+ #ifdef CONFIG_PPC_MPC52xx
+ 	{ .compatible =3D "fsl,mpc5200-psc-uart", .data =3D &mpc52xx_psc_ops, }=
+,
+ 	/* binding used by old lite5200 device trees: */
+diff -u -p a/drivers/serial/uartlite.c b/drivers/serial/uartlite.c
+--- a/drivers/serial/uartlite.c 2009-12-03 04:51:21.000000000 +0100
++++ b/drivers/serial/uartlite.c 2010-01-08 18:47:33.000000000 +0100
+@@ -25,7 +25,7 @@
+ #include <linux/of_platform.h>
 
-   1. Sometimes, console became extremely slow, print 1 character for 1-2
-seconds
-      RVDS say that both CPU are idling. kernel seems find because messages
-response to inserting USB flash is quick and correct.
+ /* Match table for of_platform binding */
+-static struct of_device_id ulite_of_match[] __devinitdata =3D {
++static const struct of_device_id ulite_of_match[] __devinitconst =3D {
+ 	{ .compatible =3D "xlnx,opb-uartlite-1.00.b", },
+ 	{ .compatible =3D "xlnx,xps-uartlite-1.00.a", },
+ 	{}
+diff -u -p a/drivers/serial/cpm_uart/cpm_uart_core.c b/drivers/serial/cpm=
+_uart/cpm_uart_core.c
+--- a/drivers/serial/cpm_uart/cpm_uart_core.c 2009-12-03 04:51:21.0000000=
+00 +0100
++++ b/drivers/serial/cpm_uart/cpm_uart_core.c 2010-01-08 18:49:48.0000000=
+00 +0100
+@@ -1355,7 +1355,7 @@ static int __devexit cpm_uart_remove(str
+ 	return uart_remove_one_port(&cpm_reg, &pinfo->port);
+ }
 
-   2. Sometimes, the Linux console halt and canot accept any input.
-      RVDS say that both CPU are idling. kernel seems find because messages
-response to inserting USB flash is quick and correct.
+-static struct of_device_id cpm_uart_match[] =3D {
++static const struct of_device_id cpm_uart_match[] =3D {
+ 	{
+ 		.compatible =3D "fsl,cpm1-smc-uart",
+ 	},
+diff -u -p a/drivers/serial/ucc_uart.c b/drivers/serial/ucc_uart.c
+--- a/drivers/serial/ucc_uart.c 2010-01-07 19:08:45.000000000 +0100
++++ b/drivers/serial/ucc_uart.c 2010-01-08 18:50:15.000000000 +0100
+@@ -1475,7 +1475,7 @@ static int ucc_uart_remove(struct of_dev
+ 	return 0;
+ }
 
-In both cases kernel message seems fine, but user messages is broken.
+-static struct of_device_id ucc_uart_match[] =3D {
++static const struct of_device_id ucc_uart_match[] =3D {
+ 	{
+ 		.type =3D "serial",
+ 		.compatible =3D "ucc_uart",
+diff -u -p a/drivers/serial/apbuart.c b/drivers/serial/apbuart.c
+--- a/drivers/serial/apbuart.c 2010-01-07 19:08:45.000000000 +0100
++++ b/drivers/serial/apbuart.c 2010-01-08 18:51:23.000000000 +0100
+@@ -576,7 +576,7 @@ static int __devinit apbuart_probe(struc
 
-http://lists.infradead.org/pipermail/linux-arm-kernel/2010-January/007052.html
+ }
 
-Thanks for Russell's advice, after some tracing, I found that my IER
-(Interrupt Enable Register) of the serial port is 0 under case 1!!
-
-Case 2 is actually the same with case 1. Case 1 would come first, if I don't
-keep input things and let it finish its slow printing, it would then become
-case 2.
-
-UART_BUG_THRE are detected and enabled on my platform, causing
-serial8250_backup_timeout to be used.
-
-There are many places that do ( get IER, clear IER, restore IER ), like
-serial8250_console_write called by printk, and serial8250_backup_timeout.
-serial8250_backup_timeout is not protected by spinlock, causing the race
-condition, and result in wrong IER value.
-
-Following patch fix this issue. Case 3 and Case 4 are still often seen, but
-not case 1 and case 2.
-
-    diff --git a/kernels/linux-2.6.31.1-X/drivers/serial/8250.c
-b/kernels/linux-2.6.31.1-X/drivers/serial/8250.c
-    index 288a0e4..55602c3 100644
-    --- a/kernels/linux-2.6.31.1-cavm1/drivers/serial/8250.c
-    +++ b/kernels/linux-2.6.31.1-cavm1/drivers/serial/8250.c
-    @@ -1752,6 +1758,8 @@ static void serial8250_backup_timeout(unsigned
-long data)
-      unsigned int iir, ier = 0, lsr;
-      unsigned long flags;
-     
-    +
-    + spin_lock_irqsave(&up->port.lock, flags);
-      /*
-       * Must disable interrupts or else we risk racing with the interrupt
-       * based handler.
-    @@ -1769,10 +1777,8 @@ static void serial8250_backup_timeout(unsigned
-long data)
-       * the "Diva" UART used on the management processor on many HP
-       * ia64 and parisc boxes.
-       */
-    - spin_lock_irqsave(&up->port.lock, flags);
-      lsr = serial_in(up, UART_LSR);
-      up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
-    - spin_unlock_irqrestore(&up->port.lock, flags);
-      if ((iir & UART_IIR_NO_INT) && (up->ier & UART_IER_THRI) &&
-          (!uart_circ_empty(&up->port.info->xmit) || up->port.x_char) &&
-          (lsr & UART_LSR_THRE)) {
-    @@ -1780,12 +1786,14 @@ static void serial8250_backup_timeout(unsigned
-long data)
-       iir |= UART_IIR_THRI;
-      }
-     
-    - if (!(iir & UART_IIR_NO_INT))
-    -  serial8250_handle_port(up);
-    -
-      if (is_real_interrupt(up->port.irq))
-       serial_out(up, UART_IER, ier);
-     
-    + spin_unlock_irqrestore(&up->port.lock, flags);
-    +
-    + if (!(iir & UART_IIR_NO_INT))
-    +  serial8250_handle_port(up);
-    +
-      /* Standard timer interval plus 0.2s to keep the port running */
-      mod_timer(&up->timer,
-       jiffies + poll_timeout(up->port.timeout) + HZ / 5);
-
-Is there any concern of above patch?
-
-On the other hand, is it normal to have UART_BUG_THRE enabled? My console
-work just fine without this workaround (force UART_BUG_THRE disabled, only
-test once though, but it doesn't have issues above). If it shouldn't be, I
-doubt that somehow the interrupt is serviced, such that the detection of
-UART_BUG_THRE failed.
-
-But while I'm tracing, I cannot find where the driver clear the interrupt.
-If the driver didn't clear the interrupt, how does the hardware knows that
-it is serviced?
-
-Any advice appreciated.
-
-Best Regards,
-Mac Lin
--- 
-View this message in context: http://old.nabble.com/SMP-issues-with-8250.c%E2%80%8F-tp27090634p27090634.html
-Sent from the linux-serial mailing list archive at Nabble.com.
-
+-static struct of_device_id __initdata apbuart_match[] =3D {
++static const struct of_device_id apbuart_match[] __initconst =3D {
+ 	{
+ 	 .name =3D "GAISLER_APBUART",
+ 	 },
+_______________________________________________
+Cocci mailing list
+Cocci@diku.dk
+http://lists.diku.dk/mailman/listinfo/cocci
+(Web access from inside DIKUs LAN only)
