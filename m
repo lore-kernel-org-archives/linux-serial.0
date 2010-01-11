@@ -1,67 +1,62 @@
-From: =?ISO-8859-2?Q?N=E9meth_M=E1rton?= <nm127@freemail.hu>
-Subject: Re: [PATCH 3/3] serial: make PCI device id constant
-Date: Sun, 10 Jan 2010 20:43:51 +0100
-Message-ID: <4B4A2DF7.5020907@freemail.hu>
-References: <4B4A077C.7020406@freemail.hu>
-	<e2d7436a1001100951w4dd7139as96e5808872f5c926@mail.gmail.com>
+From: Ping <pinglinux@gmail.com>
+Subject: [PATCH 1/2] serial/8250_pnp: Add a new Fujitsu Wacom Tablet PC device
+Date: Mon, 11 Jan 2010 11:48:16 -0800
+Message-ID: <167e8a331001111148g303ca86bjf172d2d1d24df759@mail.gmail.com>
+References: <167e8a331001071649l3d8df335w2b2422984bb245e8@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-2
-Content-Transfer-Encoding: quoted-printable
-Return-path: <cocci-bounces@diku.dk>
-In-Reply-To: <e2d7436a1001100951w4dd7139as96e5808872f5c926@mail.gmail.com>
-List-Unsubscribe: <http://lists.diku.dk/mailman/listinfo/cocci>,
-	<mailto:cocci-request@diku.dk?subject=unsubscribe>
-List-Archive: <http://lists.diku.dk/pipermail/cocci>
-List-Post: <mailto:cocci@diku.dk>
-List-Help: <mailto:cocci-request@diku.dk?subject=help>
-List-Subscribe: <http://lists.diku.dk/mailman/listinfo/cocci>,
-	<mailto:cocci-request@diku.dk?subject=subscribe>
-Sender: cocci-bounces@diku.dk
-Errors-To: cocci-bounces@diku.dk
-To: =?ISO-8859-2?Q?Micha=B3_Miros=B3aw?= <mirqus@gmail.com>
-Cc: cocci@diku.dk, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pw0-f42.google.com ([209.85.160.42]:50020 "EHLO
+	mail-pw0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750702Ab0AKTsS convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 11 Jan 2010 14:48:18 -0500
+Received: by pwj9 with SMTP id 9so1587980pwj.21
+        for <linux-serial@vger.kernel.org>; Mon, 11 Jan 2010 11:48:17 -0800 (PST)
+In-Reply-To: <167e8a331001071649l3d8df335w2b2422984bb245e8@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Andrew Morton <akpm@linux-foundation.org>
 
-Micha=B3 Miros=B3aw wrote:
-> 2010/1/10 N=E9meth M=E1rton <nm127@freemail.hu>:
->> From: M=E1rton N=E9meth <nm127@freemail.hu>
->>
->> The id_table field of the struct pci_driver is constant in <linux/pci.=
-h>
->> so it is worth to make initialization data also constant.
-> [...]
->> diff -u -p a/drivers/serial/8250_pci.c b/drivers/serial/8250_pci.c
->> --- a/drivers/serial/8250_pci.c 2009-12-03 04:51:21.000000000 +0100
->> +++ b/drivers/serial/8250_pci.c 2010-01-08 18:40:05.000000000 +0100
->> @@ -2567,7 +2567,7 @@ static int pciserial_resume_one(struct p
->>  }
->>  #endif
->>
->> -static struct pci_device_id serial_pci_tbl[] =3D {
->> +static const struct pci_device_id serial_pci_tbl[] =3D {
->>        /* Advantech use PCI_DEVICE_ID_ADVANTECH_PCI3620 (0x3620) as 'P=
-CI_SUBVENDOR_ID' */
->>        {       PCI_VENDOR_ID_ADVANTECH, PCI_DEVICE_ID_ADVANTECH_PCI362=
-0,
->>                PCI_DEVICE_ID_ADVANTECH_PCI3620, 0x0001, 0, 0,
-> [...]
->=20
-> There was similar patch sent to netdev couple days ago. For PCI
-> devices it used DEFINE_PCI_DEVICE_TABLE() like this:
->=20
-> static DEFINE_PCI_DEVICE_TABLE(serial_pci_tbl) =3D {
->=20
-> so that the ID data went to the proper .ko section.
+Sending this patchset to the list.  Sorry for those who has got this
+one before.
 
-Thanks for the feedback. The DEFINE_PCI_DEVICE_TABLE() is also recommende=
-d
-by Documentation/PCI/pci.txt .
+Ping
 
-Regads,
+=46rom: Ping Cheng <pingc@wacom.com>
+Date: Thu, 7 Jan 2010 16:21:37 -0800
+Subject: [PATCH 1/2] Add a new Fujitsu Wacom Tablet PC device
 
-	M=E1rton N=E9meth
-_______________________________________________
-Cocci mailing list
-Cocci@diku.dk
-http://lists.diku.dk/mailman/listinfo/cocci
-(Web access from inside DIKUs LAN only)
+This is a new two finger touch Fujitsu Wacom Tablet PC
+
+Signed-off-by: Ping Cheng <pingc@wacom.com>
+---
+=A0drivers/serial/8250_pnp.c | =A0 =A02 ++
+=A01 files changed, 2 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/serial/8250_pnp.c b/drivers/serial/8250_pnp.c
+index 36ede02..b5496a1 100644
+--- a/drivers/serial/8250_pnp.c
++++ b/drivers/serial/8250_pnp.c
+@@ -354,6 +354,8 @@ static const struct pnp_device_id pnp_dev_table[] =3D=
+ {
+=A0 =A0 =A0 =A0{ =A0 =A0 =A0 "FUJ02E5", =A0 =A0 =A0 =A0 =A0 =A0 =A00 =A0=
+ =A0 =A0 },
+=A0 =A0 =A0 =A0/* Fujitsu P-series tablet PC device */
+=A0 =A0 =A0 =A0{ =A0 =A0 =A0 "FUJ02E6", =A0 =A0 =A0 =A0 =A0 =A0 =A00 =A0=
+ =A0 =A0 },
++ =A0 =A0 =A0 /* Fujitsu Wacom 2FGT Tablet PC device */
++ =A0 =A0 =A0 { =A0 =A0 =A0 "FUJ02E7", =A0 =A0 =A0 =A0 =A0 =A0 =A00 =A0=
+ =A0 =A0 },
+=A0 =A0 =A0 =A0/*
+=A0 =A0 =A0 =A0 * LG C1 EXPRESS DUAL (C1-PB11A3) touch screen (actually=
+ a FUJ02E6 in
+=A0 =A0 =A0 =A0 * disguise)
+--
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
