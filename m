@@ -1,172 +1,56 @@
-From: Chaithrika U S <chaithrika@ti.com>
-Subject: [PATCH] serial: 8250: Add cpufreq support
-Date: Wed, 13 Jan 2010 18:05:21 +0530
-Message-ID: <1263386121-6644-1-git-send-email-chaithrika@ti.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] serial: 8250: Add cpufreq support
+Date: Wed, 13 Jan 2010 13:44:45 +0000
+Message-ID: <20100113134445.010d4f1c@lxorguk.ukuu.org.uk>
+References: <1263386121-6644-1-git-send-email-chaithrika@ti.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:60372 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751347Ab0AMNDc (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 13 Jan 2010 08:03:32 -0500
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:43784 "EHLO
+	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1754965Ab0AMNle (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 13 Jan 2010 08:41:34 -0500
+In-Reply-To: <1263386121-6644-1-git-send-email-chaithrika@ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: davinci-linux-open-source@linux.davincidsp.com, khilman@deeprootsystems.com, akpm@linux-foundation.org, Chaithrika U S <chaithrika@ti.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, davinci-linux-open-source@linux.davincidsp.com, khilman@deeprootsystems.com, akpm@linux-foundation.org, Chaithrika U S <chaithrika@ti.com>
 
-On DA850/OMAP-L138 SoC, the PLL which supplies the clock to CPU also feeds the
-UART and the UART input frequency can change when the CPU frequency is scaled.
+> +static int serial8250_cpufreq_transition(struct notifier_block *nb,
+> +					     unsigned long val, void *data)
+> +{
+> +	struct uart_8250_port *p;
+> +	struct uart_port *uport;
+> +
+> +	p = container_of(nb, struct uart_8250_port, freq_transition);
+> +	uport = &p->port;
+> +
+> +	if (IS_ERR(p->clk))
+> +		goto cpu_freq_exit;
+> +
+> +	if (p->port.uartclk == clk_get_rate(p->clk))
+> +		goto cpu_freq_exit;
+> +
+> +	p->port.uartclk = clk_get_rate(p->clk);
+> +	if (val == CPUFREQ_POSTCHANGE) {
+> +		struct ktermios *termios;
+> +		struct tty_struct *tty;
+> +		if (uport->state == NULL)
+> +			goto cpu_freq_exit;
+> +
+> +		tty = uport->state->port.tty;
 
-This patch adds cpufreq support for 8250 serial driver. A clk structure member
-has been added to the platform and port data structures. This member is used by
-the cpufreq notifier callback to get the updated clock rate. The implementation
-is based on the cpufreq implementation for Samsung serial driver.
+Need locking on port->tty.
 
-Tested on TI DA850/OMAP-L138 EVM.
+> +		if (tty == NULL)
+> +			goto cpu_freq_exit;
+> +
 
-Signed-off-by: Chaithrika U S <chaithrika@ti.com>
----
-Applies to Linus' kernel tree.
+Need locking on tty->termios
 
- drivers/serial/8250.c       |   79 +++++++++++++++++++++++++++++++++++++++++++
- include/linux/serial_8250.h |    1 +
- 2 files changed, 80 insertions(+), 0 deletions(-)
+I'd say this is also probably at the wrong level - why not do it at the
+uart_port level instead (ie move the code you have into serial_core using
+uart_port) - you've made it all nicely generic already.
 
-diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index c3e37c8..a64d1de 100644
---- a/drivers/serial/8250.c
-+++ b/drivers/serial/8250.c
-@@ -38,6 +38,8 @@
- #include <linux/serial_8250.h>
- #include <linux/nmi.h>
- #include <linux/mutex.h>
-+#include <linux/cpufreq.h>
-+#include <linux/clk.h>
- 
- #include <asm/io.h>
- #include <asm/irq.h>
-@@ -156,6 +158,10 @@ struct uart_8250_port {
- 	 */
- 	void			(*pm)(struct uart_port *port,
- 				      unsigned int state, unsigned int old);
-+	struct clk		*clk;
-+#ifdef CONFIG_CPU_FREQ
-+	struct notifier_block	freq_transition;
-+#endif
- };
- 
- struct irq_info {
-@@ -2931,6 +2937,70 @@ void serial8250_resume_port(int line)
- 	uart_resume_port(&serial8250_reg, &up->port);
- }
- 
-+#ifdef CONFIG_CPU_FREQ
-+static int serial8250_cpufreq_transition(struct notifier_block *nb,
-+					     unsigned long val, void *data)
-+{
-+	struct uart_8250_port *p;
-+	struct uart_port *uport;
-+
-+	p = container_of(nb, struct uart_8250_port, freq_transition);
-+	uport = &p->port;
-+
-+	if (IS_ERR(p->clk))
-+		goto cpu_freq_exit;
-+
-+	if (p->port.uartclk == clk_get_rate(p->clk))
-+		goto cpu_freq_exit;
-+
-+	p->port.uartclk = clk_get_rate(p->clk);
-+	if (val == CPUFREQ_POSTCHANGE) {
-+		struct ktermios *termios;
-+		struct tty_struct *tty;
-+		if (uport->state == NULL)
-+			goto cpu_freq_exit;
-+
-+		tty = uport->state->port.tty;
-+		if (tty == NULL)
-+			goto cpu_freq_exit;
-+
-+		termios = tty->termios;
-+		if (termios == NULL) {
-+			printk(KERN_WARNING "%s: no termios?\n", __func__);
-+			goto cpu_freq_exit;
-+		}
-+
-+		serial8250_set_termios(uport, termios, NULL);
-+	}
-+
-+cpu_freq_exit:
-+	return 0;
-+}
-+
-+static inline int serial8250_cpufreq_register(struct uart_8250_port *p)
-+{
-+	p->freq_transition.notifier_call = serial8250_cpufreq_transition;
-+
-+	return cpufreq_register_notifier(&p->freq_transition,
-+					 CPUFREQ_TRANSITION_NOTIFIER);
-+}
-+
-+static inline void serial8250_cpufreq_deregister(struct uart_8250_port *p)
-+{
-+	cpufreq_unregister_notifier(&p->freq_transition,
-+				    CPUFREQ_TRANSITION_NOTIFIER);
-+}
-+#else
-+static inline int serial8250_cpufreq_register(struct uart_8250_port *p)
-+{
-+	return 0;
-+}
-+
-+static inline void serial8250_cpufreq_deregister(struct uart_8250_port *p)
-+{
-+}
-+#endif
-+
- /*
-  * Register a set of serial devices attached to a platform device.  The
-  * list is terminated with a zero flags entry, which means we expect
-@@ -2964,6 +3034,9 @@ static int __devinit serial8250_probe(struct platform_device *dev)
- 		port.serial_out		= p->serial_out;
- 		port.dev		= &dev->dev;
- 		port.irqflags		|= irqflag;
-+		if (p->clk)
-+			serial8250_ports[i].clk = p->clk;
-+
- 		ret = serial8250_register_port(&port);
- 		if (ret < 0) {
- 			dev_err(&dev->dev, "unable to register port at index %d "
-@@ -3133,6 +3206,11 @@ int serial8250_register_port(struct uart_port *port)
- 		ret = uart_add_one_port(&serial8250_reg, &uart->port);
- 		if (ret == 0)
- 			ret = uart->port.line;
-+
-+		ret = serial8250_cpufreq_register(uart);
-+		if (ret < 0)
-+			printk(KERN_ERR "Failed to add cpufreq notifier\n");
-+
- 	}
- 	mutex_unlock(&serial_mutex);
- 
-@@ -3152,6 +3230,7 @@ void serial8250_unregister_port(int line)
- 	struct uart_8250_port *uart = &serial8250_ports[line];
- 
- 	mutex_lock(&serial_mutex);
-+	serial8250_cpufreq_deregister(uart);
- 	uart_remove_one_port(&serial8250_reg, &uart->port);
- 	if (serial8250_isa_devs) {
- 		uart->port.flags &= ~UPF_BOOT_AUTOCONF;
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index fb46aba..57d6e69 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -23,6 +23,7 @@ struct plat_serial8250_port {
- 	resource_size_t	mapbase;	/* resource base */
- 	unsigned int	irq;		/* interrupt number */
- 	unsigned long	irqflags;	/* request_irq flags */
-+	struct clk	*clk;
- 	unsigned int	uartclk;	/* UART clock rate */
- 	void            *private_data;
- 	unsigned char	regshift;	/* register shift */
--- 
-1.5.6
-
+Alan
