@@ -1,68 +1,50 @@
-From: "Chaithrika U S" <chaithrika@ti.com>
-Subject: RE: [PATCH] serial: 8250: Add cpufreq support
-Date: Mon, 18 Jan 2010 18:47:49 +0530
-Message-ID: <000c01ca9840$a1fb99b0$e5f2cd10$@com>
-References: <1263386121-6644-1-git-send-email-chaithrika@ti.com> <20100113134445.010d4f1c@lxorguk.ukuu.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: Mike Frysinger <vapier@gentoo.org>
+Subject: [PATCH 2/4] serial: bfin_5xx: need to disable DMA TX interrupt too
+Date: Tue, 19 Jan 2010 06:13:11 -0500
+Message-ID: <1263899593-12178-2-git-send-email-vapier@gentoo.org>
+References: <1263899593-12178-1-git-send-email-vapier@gentoo.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:47435 "EHLO bear.ext.ti.com"
+Received: from smtp.gentoo.org ([140.211.166.183]:40538 "EHLO smtp.gentoo.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751118Ab0ARNVP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Jan 2010 08:21:15 -0500
-In-Reply-To: <20100113134445.010d4f1c@lxorguk.ukuu.org.uk>
-Content-Language: en-us
+	id S1755762Ab0ASLNF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 19 Jan 2010 06:13:05 -0500
+In-Reply-To: <1263899593-12178-1-git-send-email-vapier@gentoo.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Alan Cox' <alan@lxorguk.ukuu.org.uk>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, davinci-linux-open-source@linux.davincidsp.com, khilman@deeprootsystems.com, akpm@linux-foundation.org
+To: linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, Graf Yang <graf.yang@analog.com>
 
-On Wed, Jan 13, 2010 at 19:14:45, Alan Cox wrote:
-> > +static int serial8250_cpufreq_transition(struct notifier_block *nb,
-> > +					     unsigned long val, void *data)
-> > +{
-> > +	struct uart_8250_port *p;
-> > +	struct uart_port *uport;
-> > +
-> > +	p = container_of(nb, struct uart_8250_port, freq_transition);
-> > +	uport = &p->port;
-> > +
-> > +	if (IS_ERR(p->clk))
-> > +		goto cpu_freq_exit;
-> > +
-> > +	if (p->port.uartclk == clk_get_rate(p->clk))
-> > +		goto cpu_freq_exit;
-> > +
-> > +	p->port.uartclk = clk_get_rate(p->clk);
-> > +	if (val == CPUFREQ_POSTCHANGE) {
-> > +		struct ktermios *termios;
-> > +		struct tty_struct *tty;
-> > +		if (uport->state == NULL)
-> > +			goto cpu_freq_exit;
-> > +
-> > +		tty = uport->state->port.tty;
-> 
-> Need locking on port->tty.
-> 
-> > +		if (tty == NULL)
-> > +			goto cpu_freq_exit;
-> > +
-> 
-> Need locking on tty->termios
-> 
-> I'd say this is also probably at the wrong level - why not do it at the
-> uart_port level instead (ie move the code you have into serial_core using
-> uart_port) - you've made it all nicely generic already.
-> 
-> Alan
-> 	
-	
-Thank you for the review comments.
-I will submit an updated version of patch soon.
+From: Graf Yang <graf.yang@analog.com>
 
-Regards, 
-Chaithrika
+If we don't disable the DMA TX channel, an inopportune timeout will
+trigger the interrupt handler and may cause a dead lock with the spin_lock.
 
+Signed-off-by: Graf Yang <graf.yang@analog.com>
+Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+---
+ drivers/serial/bfin_5xx.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
+index 15843cc..b5a9b37 100644
+--- a/drivers/serial/bfin_5xx.c
++++ b/drivers/serial/bfin_5xx.c
+@@ -488,6 +488,7 @@ void bfin_serial_rx_dma_timeout(struct bfin_serial_port *uart)
+ {
+ 	int x_pos, pos;
+ 
++	dma_disable_irq(uart->tx_dma_channel);
+ 	dma_disable_irq(uart->rx_dma_channel);
+ 	spin_lock_bh(&uart->port.lock);
+ 
+@@ -521,6 +522,7 @@ void bfin_serial_rx_dma_timeout(struct bfin_serial_port *uart)
+ 	}
+ 
+ 	spin_unlock_bh(&uart->port.lock);
++	dma_enable_irq(uart->tx_dma_channel);
+ 	dma_enable_irq(uart->rx_dma_channel);
+ 
+ 	mod_timer(&(uart->rx_dma_timer), jiffies + DMA_RX_FLUSH_JIFFIES);
+-- 
+1.6.6
 
