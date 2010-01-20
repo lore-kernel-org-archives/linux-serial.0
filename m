@@ -1,40 +1,169 @@
-From: Mike Frysinger <vapier@gentoo.org>
-Subject: [PATCH 3/4] serial: bfin_5xx: kgdboc should accept gdb break only when it is active
-Date: Tue, 19 Jan 2010 06:13:12 -0500
-Message-ID: <1263899593-12178-3-git-send-email-vapier@gentoo.org>
-References: <1263899593-12178-1-git-send-email-vapier@gentoo.org>
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1756596Ab0ASLN4@vger.kernel.org>
-In-Reply-To: <1263899593-12178-1-git-send-email-vapier@gentoo.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, Sonic Zhang <sonic.zhang@analog.com>
+From: John Linn <john.linn@xilinx.com>
+Subject: [PATCH] uartlite: move from byte accesses to word accesses
+Date: Wed, 20 Jan 2010 09:45:21 -0700
+Message-ID: <28287b91-411c-4ae6-82b8-ec02a9d8e75d@SG2EHSMHS006.ehs.local>
+Mime-Version: 1.0
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from sg2ehsobe002.messaging.microsoft.com ([207.46.51.76]:17317 "EHLO
+	SG2EHSOBE002.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1753142Ab0ATRAn (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 20 Jan 2010 12:00:43 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, jacmet@sunsite.dk, grant.likely@secretlab.ca, michal.simek@petalogix.com, john.williams@petalogix.com
+Cc: "XAQ IP Librarian (none)" <abq_iplib@xaqiptest40>, John Linn <john.linn@xilinx.com>
 
-From: Sonic Zhang <sonic.zhang@analog.com>
+From: XAQ IP Librarian <abq_iplib@xaqiptest40.(none)>
 
-If we always check for gdb breaks even when it isn't active, we get false
-positives on normal code and the system panics.
+Byte accesses for I/O devices in Xilinx IP is going to be less
+desired in the future such that the driver is being changed to
+use 32 bit accesses.
 
-URL: http://blackfin.uclinux.org/gf/tracker/5277
-Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
-Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+Signed-off-by: John Linn <john.linn@xilinx.com>
 ---
- drivers/serial/bfin_5xx.c |    3 ++-
- 1 files changed, 2 insertions(+), 1 deletions(-)
+ drivers/serial/uartlite.c |   36 ++++++++++++++++++------------------
+ 1 files changed, 18 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
-index b5a9b37..6b87955 100644
---- a/drivers/serial/bfin_5xx.c
-+++ b/drivers/serial/bfin_5xx.c
-@@ -237,7 +237,8 @@ static void bfin_serial_rx_chars(struct bfin_serial_port *uart)
+diff --git a/drivers/serial/uartlite.c b/drivers/serial/uartlite.c
+index 377f271..9f83949 100644
+--- a/drivers/serial/uartlite.c
++++ b/drivers/serial/uartlite.c
+@@ -86,7 +86,7 @@ static int ulite_receive(struct uart_port *port, int stat)
+ 	/* stats */
+ 	if (stat & ULITE_STATUS_RXVALID) {
+ 		port->icount.rx++;
+-		ch = readb(port->membase + ULITE_RX);
++		ch = (u8)in_be32(port->membase + ULITE_RX);
  
- #if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
- 	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
--	if (kgdb_connected && kgdboc_port_line == uart->port.line)
-+	if (kgdb_connected && kgdboc_port_line == uart->port.line
-+		&& kgdboc_break_enabled)
- 		if (ch == 0x3) {/* Ctrl + C */
- 			kgdb_breakpoint();
- 			return;
+ 		if (stat & ULITE_STATUS_PARITY)
+ 			port->icount.parity++;
+@@ -131,7 +131,7 @@ static int ulite_transmit(struct uart_port *port, int stat)
+ 		return 0;
+ 
+ 	if (port->x_char) {
+-		writeb(port->x_char, port->membase + ULITE_TX);
++		out_be32(port->membase + ULITE_TX, (u32)port->x_char);
+ 		port->x_char = 0;
+ 		port->icount.tx++;
+ 		return 1;
+@@ -140,7 +140,7 @@ static int ulite_transmit(struct uart_port *port, int stat)
+ 	if (uart_circ_empty(xmit) || uart_tx_stopped(port))
+ 		return 0;
+ 
+-	writeb(xmit->buf[xmit->tail], port->membase + ULITE_TX);
++	out_be32(port->membase + ULITE_TX, (u32)xmit->buf[xmit->tail]);
+ 	xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE-1);
+ 	port->icount.tx++;
+ 
+@@ -157,7 +157,7 @@ static irqreturn_t ulite_isr(int irq, void *dev_id)
+ 	int busy, n = 0;
+ 
+ 	do {
+-		int stat = readb(port->membase + ULITE_STATUS);
++		int stat = in_be32(port->membase + ULITE_STATUS);
+ 		busy  = ulite_receive(port, stat);
+ 		busy |= ulite_transmit(port, stat);
+ 		n++;
+@@ -178,7 +178,7 @@ static unsigned int ulite_tx_empty(struct uart_port *port)
+ 	unsigned int ret;
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
+-	ret = readb(port->membase + ULITE_STATUS);
++	ret = in_be32(port->membase + ULITE_STATUS);
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ 
+ 	return ret & ULITE_STATUS_TXEMPTY ? TIOCSER_TEMT : 0;
+@@ -201,7 +201,7 @@ static void ulite_stop_tx(struct uart_port *port)
+ 
+ static void ulite_start_tx(struct uart_port *port)
+ {
+-	ulite_transmit(port, readb(port->membase + ULITE_STATUS));
++	ulite_transmit(port, (u8)in_be32(port->membase + ULITE_STATUS));
+ }
+ 
+ static void ulite_stop_rx(struct uart_port *port)
+@@ -230,17 +230,17 @@ static int ulite_startup(struct uart_port *port)
+ 	if (ret)
+ 		return ret;
+ 
+-	writeb(ULITE_CONTROL_RST_RX | ULITE_CONTROL_RST_TX,
+-	       port->membase + ULITE_CONTROL);
+-	writeb(ULITE_CONTROL_IE, port->membase + ULITE_CONTROL);
++	out_be32(port->membase + ULITE_CONTROL,
++			ULITE_CONTROL_RST_RX | ULITE_CONTROL_RST_TX);
++	out_be32(port->membase + ULITE_CONTROL, ULITE_CONTROL_IE);
+ 
+ 	return 0;
+ }
+ 
+ static void ulite_shutdown(struct uart_port *port)
+ {
+-	writeb(0, port->membase + ULITE_CONTROL);
+-	readb(port->membase + ULITE_CONTROL); /* dummy */
++	out_be32(port->membase + ULITE_CONTROL, 0);
++	in_be32(port->membase + ULITE_CONTROL); /* dummy */
+ 	free_irq(port->irq, port);
+ }
+ 
+@@ -348,11 +348,11 @@ static struct uart_ops ulite_ops = {
+ static void ulite_console_wait_tx(struct uart_port *port)
+ {
+ 	int i;
+-	u8 val;
++	u32 val;
+ 
+ 	/* Spin waiting for TX fifo to have space available */
+ 	for (i = 0; i < 100000; i++) {
+-		val = readb(port->membase + ULITE_STATUS);
++		val = in_be32(port->membase + ULITE_STATUS);
+ 		if ((val & ULITE_STATUS_TXFULL) == 0)
+ 			break;
+ 		cpu_relax();
+@@ -362,7 +362,7 @@ static void ulite_console_wait_tx(struct uart_port *port)
+ static void ulite_console_putchar(struct uart_port *port, int ch)
+ {
+ 	ulite_console_wait_tx(port);
+-	writeb(ch, port->membase + ULITE_TX);
++	out_be32(port->membase + ULITE_TX, (u32)ch);
+ }
+ 
+ static void ulite_console_write(struct console *co, const char *s,
+@@ -379,8 +379,8 @@ static void ulite_console_write(struct console *co, const char *s,
+ 		spin_lock_irqsave(&port->lock, flags);
+ 
+ 	/* save and disable interrupt */
+-	ier = readb(port->membase + ULITE_STATUS) & ULITE_STATUS_IE;
+-	writeb(0, port->membase + ULITE_CONTROL);
++	ier = in_be32(port->membase + ULITE_STATUS) & ULITE_STATUS_IE;
++	out_be32(port->membase + ULITE_CONTROL, 0);
+ 
+ 	uart_console_write(port, s, count, ulite_console_putchar);
+ 
+@@ -388,7 +388,7 @@ static void ulite_console_write(struct console *co, const char *s,
+ 
+ 	/* restore interrupt state */
+ 	if (ier)
+-		writeb(ULITE_CONTROL_IE, port->membase + ULITE_CONTROL);
++		out_be32(port->membase + ULITE_CONTROL, ULITE_CONTROL_IE);
+ 
+ 	if (locked)
+ 		spin_unlock_irqrestore(&port->lock, flags);
+@@ -601,7 +601,7 @@ ulite_of_probe(struct of_device *op, const struct of_device_id *match)
+ 
+ 	id = of_get_property(op->node, "port-number", NULL);
+ 
+-	return ulite_assign(&op->dev, id ? *id : -1, res.start+3, irq);
++	return ulite_assign(&op->dev, id ? *id : -1, res.start, irq);
+ }
+ 
+ static int __devexit ulite_of_remove(struct of_device *op)
 -- 
-1.6.6
+1.6.2.1
+
+
+
+This email and any attachments are intended for the sole use of the named recipient(s) and contain(s) confidential information that may be proprietary, privileged or copyrighted under applicable law. If you are not the intended recipient, do not read, copy, or forward this email message or any attachments. Delete this email message and any attachments immediately.
+
+
