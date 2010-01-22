@@ -1,68 +1,103 @@
 From: Wolfram Sang <w.sang@pengutronix.de>
 Subject: Re: [PATCH] serial imx.c: fix CTS trigger level lower to avoid
 	lost chars
-Date: Fri, 22 Jan 2010 12:49:35 +0100
-Message-ID: <20100122114934.GE4782@pengutronix.de>
-References: <1264109163-28739-1-git-send-email-valentin.longchamp@epfl.ch> <20100121220653.GA21010@pengutronix.de> <20100121221133.GA30419@n2100.arm.linux.org.uk> <4B597A82.4020906@epfl.ch> <20100122110701.GA15699@shareable.org> <20100122113130.GB10449@n2100.arm.linux.org.uk>
+Date: Fri, 22 Jan 2010 12:58:53 +0100
+Message-ID: <20100122115853.GF4782@pengutronix.de>
+References: <1264109163-28739-1-git-send-email-valentin.longchamp@epfl.ch>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="2qXFWqzzG3v1+95a"
+	protocol="application/pgp-signature"; boundary="5CUMAwwhRxlRszMD"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:47309 "EHLO
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:42497 "EHLO
 	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754857Ab0AVLtk (ORCPT
+	with ESMTP id S1752819Ab0AVL6z (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 22 Jan 2010 06:49:40 -0500
+	Fri, 22 Jan 2010 06:58:55 -0500
 Content-Disposition: inline
-In-Reply-To: <20100122113130.GB10449@n2100.arm.linux.org.uk>
+In-Reply-To: <1264109163-28739-1-git-send-email-valentin.longchamp@epfl.ch>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Jamie Lokier <jamie@shareable.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Valentin Longchamp <valentin.longchamp@epfl.ch>
+To: Valentin Longchamp <valentin.longchamp@epfl.ch>
+Cc: s.hauer@pengutronix.de, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
 
---2qXFWqzzG3v1+95a
-Content-Type: text/plain; charset=us-ascii
+--5CUMAwwhRxlRszMD
+Content-Type: text/plain; charset=iso-8859-15
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-> What you're assuming is that flow control was there to prevent overruns
-> on the hardware receiver.  That's not the way it works on these devices;
-> flow control is entirely managed in software - there is no hardware
-> assistance.
+On Thu, Jan 21, 2010 at 10:26:03PM +0100, Valentin Longchamp wrote:
+> The imx CTS trigger level is left at its reset value that is 32
+> chars. Since the RX FIFO has 32 entries, when CTS is raised, the
+> FIFO already is full. However, some serial port devices first empty
+> their TX FIFO before stopping when CTS is raised, resulting in lost
+> chars.
 >=20
-> The flow control implemented for non-FIFO and non-hardware assisted
-> UARTs is purely to do with preventing the software buffer behind the
-> UART from overflowing - it can't prevent the device's receiver buffering
-> from overrunning.  (Non-FIFO devices have the shift register and a
-> buffer register - complete reception of a second character before the
-> first is read causes an overrun condition.)
+> This patch sets the trigger level lower so that other chars arrive
+> after CTS is raised, there is still room for 16 of them.
 >=20
-> If you have overruns on the receiver, that's an interrupt latency
-> problem and its an error that's reported to the receiver side only.
->=20
-> Yes, later devices have the ability in hardware to deassert RTS when
-> the receiver FIFO gets above a certain threshold to /help/ prevent
-> overruns occuring when there's high interrupt latency - but normal
-> system operation should still ensure that the FIFO is emptied in a
-> timely manner.
->=20
-> They also gained the ability to stop the transmitter once CTS is
-> deasserted, mainly because the transmitter FIFOs in these devices
-> is soo large (maybe 32 to 128 bytes deep.)
+> Signed-off-by: Valentin Longchamp <valentin.longchamp@epfl.ch>
+> Tested-by: Philippe R=E9tornaz <philippe.retornaz@epfl.ch>
 
-Russell, thanks for this explanation. Patch seems principally OK to me, the=
-n.
+If you fix the comment, feel free to add my:
 
-Regards,
+Acked-by: Wolfram Sang <w.sang@pengutronix.de>
 
-   Wolfram
+> ---
+>  drivers/serial/imx.c |   10 +++++++++-
+>  1 files changed, 9 insertions(+), 1 deletions(-)
+>=20
+> diff --git a/drivers/serial/imx.c b/drivers/serial/imx.c
+> index 18130f1..f7d2da5 100644
+> --- a/drivers/serial/imx.c
+> +++ b/drivers/serial/imx.c
+> @@ -119,7 +119,8 @@
+>  #define  MX2_UCR3_RXDMUXSEL	 (1<<2)  /* RXD Muxed Input Select, on mx2/m=
+x3 */
+>  #define  UCR3_INVT  	 (1<<1)  /* Inverted Infrared transmission */
+>  #define  UCR3_BPEN  	 (1<<0)  /* Preset registers enable */
+> -#define  UCR4_CTSTL_32   (32<<10) /* CTS trigger level (32 chars) */
+> +#define  UCR4_CTSTL_SHF  10      /* CTS trigger level shift */
+> +#define  UCR4_CTSTL_MASK 0x3F    /* CTS trigger is 6 bits wide */
+>  #define  UCR4_INVR  	 (1<<9)  /* Inverted infrared reception */
+>  #define  UCR4_ENIRI 	 (1<<8)  /* Serial infrared interrupt enable */
+>  #define  UCR4_WKEN  	 (1<<7)  /* Wake interrupt enable */
+> @@ -590,6 +591,8 @@ static int imx_setup_ufcr(struct imx_port *sport, uns=
+igned int mode)
+>  	return 0;
+>  }
+> =20
+> +#define CTSTL 16
+> +
+
+Maybe a comment that it is set to half the buffer size? Dunno...
+
+>  static int imx_startup(struct uart_port *port)
+>  {
+>  	struct imx_port *sport =3D (struct imx_port *)port;
+> @@ -606,6 +609,11 @@ static int imx_startup(struct uart_port *port)
+>  	if (USE_IRDA(sport))
+>  		temp |=3D UCR4_IRSC;
+> =20
+> +	/* set the trigger level for CTS to 16 by default
+> +	 */
+
+Make this comment a one-liner. Also remove the "to 16 by default" part as t=
+his
+value is #defined and, who knows, it may change.
+
+> +	temp &=3D ~(UCR4_CTSTL_MASK << UCR4_CTSTL_SHF);
+> +	temp |=3D CTSTL << UCR4_CTSTL_SHF;
+> +
+>  	writel(temp & ~UCR4_DREN, sport->port.membase + UCR4);
+> =20
+>  	if (USE_IRDA(sport)) {
 
 --=20
 Pengutronix e.K.                           | Wolfram Sang                |
 Industrial Linux Solutions                 | http://www.pengutronix.de/  |
 
---2qXFWqzzG3v1+95a
+--5CUMAwwhRxlRszMD
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 Content-Disposition: inline
@@ -70,9 +105,9 @@ Content-Disposition: inline
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.9 (GNU/Linux)
 
-iEYEARECAAYFAktZkM4ACgkQD27XaX1/VRsLpwCfWd2ThQybpeRj9ruASx3/6OLY
-mWMAnjNEUD/l5/Pfi61TS6wpqcrArw5+
-=5eYo
+iEYEARECAAYFAktZkv0ACgkQD27XaX1/VRtOyQCffAW4rqCnG9CAb5M+4vBgH9ZC
+jAwAnR9qGPz012M9fxyVdsc59bT3e2X+
+=Dm/6
 -----END PGP SIGNATURE-----
 
---2qXFWqzzG3v1+95a--
+--5CUMAwwhRxlRszMD--
