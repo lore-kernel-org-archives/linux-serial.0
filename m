@@ -1,56 +1,63 @@
-From: Matthias Fuchs <mfuchs@ma-fu.de>
-Subject: Re: Auto RS485 half-duplex control
-Date: Sun, 24 Jan 2010 17:06:36 +0100
-Message-ID: <201001241706.37479.mfuchs@ma-fu.de>
-References: <001801ca8c76$d7654bd0$862fe370$@cx>
+From: Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH 3/4] serial: bfin_5xx: kgdboc should accept gdb break
+ only when it is active
+Date: Mon, 25 Jan 2010 16:11:20 -0800
+Message-ID: <20100125161120.74cea0d4.akpm@linux-foundation.org>
+References: <1263899593-12178-1-git-send-email-vapier@gentoo.org>
+	<1263899593-12178-3-git-send-email-vapier@gentoo.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mo-p00-ob.rzone.de ([81.169.146.162]:58566 "EHLO
-	mo-p00-ob.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753803Ab0AXQZi convert rfc822-to-8bit (ORCPT
+Received: from smtp1.linux-foundation.org ([140.211.169.13]:56263 "EHLO
+	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750833Ab0AZALa (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 24 Jan 2010 11:25:38 -0500
-In-Reply-To: <001801ca8c76$d7654bd0$862fe370$@cx>
-Content-Disposition: inline
+	Mon, 25 Jan 2010 19:11:30 -0500
+In-Reply-To: <1263899593-12178-3-git-send-email-vapier@gentoo.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Christian Magnusson <mag@mag.cx>
-Cc: linux-serial@vger.kernel.org
+To: Mike Frysinger <vapier@gentoo.org>
+Cc: linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, Sonic Zhang <sonic.zhang@analog.com>
 
-Christian,
+On Tue, 19 Jan 2010 06:13:12 -0500
+Mike Frysinger <vapier@gentoo.org> wrote:
 
->=20
-> I have searched in the lists for some kernel support to control the R=
-TS-pin
-> while sending characters to through an external RS232->RS485 adapter.
-> The RS485 device I=92m writing to, respond with an answer within appr=
-oximately
-> 2ms after my last sent character, and therefore I need to release the
-> RTS-pin before that.
-> If not, the returning characters will be unreadable due to the
-> send-collision.
->=20
-> Will this feature be implemented in the i386 arch (as it is for chris=
-), or
-> is there any reason to never include it in the future?
->=20
-manually controlling the RTS (or any other pin) pin for RS485 duplex
-control has been discussed here several time. Because it is not possibl=
-e
-to guarantee the correct timing in any situation this was always nack'd=
-=2E
+> From: Sonic Zhang <sonic.zhang@analog.com>
+> 
+> If we always check for gdb breaks even when it isn't active, we get false
+> positives on normal code and the system panics.
+> 
+> URL: http://blackfin.uclinux.org/gf/tracker/5277
+> Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+> Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+> ---
+>  drivers/serial/bfin_5xx.c |    3 ++-
+>  1 files changed, 2 insertions(+), 1 deletions(-)
+> 
+> diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
+> index b5a9b37..6b87955 100644
+> --- a/drivers/serial/bfin_5xx.c
+> +++ b/drivers/serial/bfin_5xx.c
+> @@ -237,7 +237,8 @@ static void bfin_serial_rx_chars(struct bfin_serial_port *uart)
+>  
+>  #if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
+>  	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
+> -	if (kgdb_connected && kgdboc_port_line == uart->port.line)
+> +	if (kgdb_connected && kgdboc_port_line == uart->port.line
+> +		&& kgdboc_break_enabled)
+>  		if (ch == 0x3) {/* Ctrl + C */
+>  			kgdb_breakpoint();
+>  			return;
 
-The only chance you have is to use a proper UART that is capable to do =
-this
-by hardware (e.g. some Exar UARTs or some UARTs that can be found on so=
-me
-SoCs that are used in the embedded world).
+I expect that we want
 
-Matthias
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+	[PATCH 2/4] serial: bfin_5xx: need to disable DMA TX interrupt too
+and
+	[PATCH 3/4] serial: bfin_5xx: kgdboc should accept gdb break only when it is active
+
+in 2.6.33 and the other two in 2.6.34?
+
+If so then should either of the above two also be backported into
+-stable?
+
