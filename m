@@ -1,40 +1,43 @@
-From: Samuel Thibault <samuel.thibault@ens-lyon.org>
-Subject: Re: request for assistance:  accessing ttys from kernel space
-Date: Thu, 28 Jan 2010 01:45:47 +0100
-Message-ID: <20100128004547.GQ4887@const.famille.thibault.fr>
-References: <20100126020203.GA23551@linux1> <20100126021306.16809e71@lxorguk.ukuu.org.uk> <20100126024049.GQ21492@const.famille.thibault.fr> <20100126133958.49e660a5@lxorguk.ukuu.org.uk>
+From: Peter Korsgaard <jacmet@sunsite.dk>
+Subject: Re: [PATCH] uartlite: Fix crash when using as console
+Date: Thu, 28 Jan 2010 14:32:43 +0100
+Message-ID: <87zl3ynymc.fsf@macbook.be.48ers.dk>
+References: <4B619100.5080602@pelagicore.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from solo.fdn.fr ([80.67.169.19]:53608 "EHLO solo.fdn.fr"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753434Ab0A1Apx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 27 Jan 2010 19:45:53 -0500
-Content-Disposition: inline
-In-Reply-To: <20100126133958.49e660a5@lxorguk.ukuu.org.uk>
+Received: from mail-ew0-f219.google.com ([209.85.219.219]:38550 "EHLO
+	mail-ew0-f219.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755475Ab0A1Ncs convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 28 Jan 2010 08:32:48 -0500
+Received: by ewy19 with SMTP id 19so745596ewy.21
+        for <linux-serial@vger.kernel.org>; Thu, 28 Jan 2010 05:32:47 -0800 (PST)
+In-Reply-To: <4B619100.5080602@pelagicore.com> ("Richard =?utf-8?Q?R=C3=B6?=
+ =?utf-8?Q?jfors=22's?= message of
+	"Thu, 28 Jan 2010 14:28:32 +0100")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: William Hubbs <w.d.hubbs@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, gregkh@suse.de, Chris Brannon <cmbrannon79@gmail.com>, Kirk Reiser <kirk@reisers.ca>
+To: Richard =?utf-8?Q?R=C3=B6jfors?= <richard.rojfors@pelagicore.com>
+Cc: linux-serial@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
 
-Alan Cox, le Tue 26 Jan 2010 13:39:58 +0000, a =E9crit :
-> > Is there another way to set up a line discipline from the kernel it=
-self
-> > without the need from userland intervention, even before any / is
-> > mounted?
->=20
-> There is no fundamental reason you can't do that once the tty object
-> itself exists.
+>>>>> "Richard" =3D=3D Richard R=C3=B6jfors <richard.rojfors@pelagicore=
+=2Ecom> writes:
 
-I know.
+ Richard> This patch moves the ulite_console_setup to the .devinit
+ Richard> section since it might be called on probe, which is in
+ Richard> devinit. Fixes the crash below where the uartlite hw is probe=
+d
+ Richard> after the .init section is freed from the kernel.
 
-> Currently there is no path for doing it in the kernel.
+Having the platform device for the console registerred so late doesn't
+strike me as very useful, but ok ..
 
-That's my concern :)
+Acked-by: Peter Korsgaard <jacmet@sunsite.dk>
 
-Thanks,
-Samuel
+--=20
+Bye, Peter Korsgaard
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
  in
