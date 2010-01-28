@@ -1,43 +1,110 @@
-From: Peter Korsgaard <jacmet@sunsite.dk>
-Subject: Re: [PATCH] uartlite: Fix crash when using as console
-Date: Thu, 28 Jan 2010 14:32:43 +0100
-Message-ID: <87zl3ynymc.fsf@macbook.be.48ers.dk>
-References: <4B619100.5080602@pelagicore.com>
+From: =?ISO-8859-1?Q?Richard_R=F6jfors?= <richard.rojfors@pelagicore.com>
+Subject: [PATCH] uartlite: Fix crash when using as console
+Date: Thu, 28 Jan 2010 14:28:32 +0100
+Message-ID: <4B619100.5080602@pelagicore.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ew0-f219.google.com ([209.85.219.219]:38550 "EHLO
-	mail-ew0-f219.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755475Ab0A1Ncs convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 28 Jan 2010 08:32:48 -0500
-Received: by ewy19 with SMTP id 19so745596ewy.21
-        for <linux-serial@vger.kernel.org>; Thu, 28 Jan 2010 05:32:47 -0800 (PST)
-In-Reply-To: <4B619100.5080602@pelagicore.com> ("Richard =?utf-8?Q?R=C3=B6?=
- =?utf-8?Q?jfors=22's?= message of
-	"Thu, 28 Jan 2010 14:28:32 +0100")
+Received: from relay.bearnet.nu ([80.252.223.222]:4860 "EHLO relay.bearnet.nu"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755179Ab0A1Nnh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 28 Jan 2010 08:43:37 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Richard =?utf-8?Q?R=C3=B6jfors?= <richard.rojfors@pelagicore.com>
-Cc: linux-serial@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
+To: linux-serial@vger.kernel.org
+Cc: Peter Korsgaard <jacmet@sunsite.dk>, Andrew Morton <akpm@linux-foundation.org>
 
->>>>> "Richard" =3D=3D Richard R=C3=B6jfors <richard.rojfors@pelagicore=
-=2Ecom> writes:
+This patch moves the ulite_console_setup to the .devinit section since =
+it might
+be called on probe, which is in devinit. Fixes the crash below where th=
+e
+uartlite hw is probed after the .init section is freed from the kernel.
 
- Richard> This patch moves the ulite_console_setup to the .devinit
- Richard> section since it might be called on probe, which is in
- Richard> devinit. Fixes the crash below where the uartlite hw is probe=
-d
- Richard> after the .init section is freed from the kernel.
+uartlite: ttyUL0 at MMIO 0xc8000100 (irq =3D 30) is a uartlite
+BUG: unable to handle kernel NULL pointer dereference at (null)
+IP: [<c176720e>] ulite_console_setup+0x6f/0xa8
+*pdpt =3D 0000000036fb0001 *pde =3D 0000000000000000
+Oops: 0000 [#1] PREEMPT SMP
+last sysfs file: /sys/devices/pci0000:00/0000:00:1f.1/host0/uevent
+Modules linked in: puffin(+) serio_raw
 
-Having the platform device for the console registerred so late doesn't
-strike me as very useful, but ok ..
+Pid: 151, comm: modprobe Not tainted (2.6.31.5-1.0.b1-b1 #1) POULSBO
+EIP: 0060:[<c176720e>] EFLAGS: 00010246 CPU: 0
+EIP is at ulite_console_setup+0x6f/0xa8
+EAX: c16ec824 EBX: c16ec824 ECX: c176719f EDX: 00000000
+ESI: 00000000 EDI: c17b42c4 EBP: f6fd1cf0 ESP: f6fd1cd8
+ DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068
+Process modprobe (pid: 151, ti=3Df6fd0000 task=3Df6fa1020 task.ti=3Df6f=
+d0000)
+Stack:
+ c1031f51 00000000 00000000 00000246 c182237c f7742000 f6fd1d5c c11fd31=
+6
+<0> c16ec85c f77420d4 0000001e 00000000 00000000 c1633e78 4f494d4d 6378=
+3020
+<0> 30303038 00303031 f6fd1d3c c10e0786 f6fd1d48 00000000 f6fd1d48 0000=
+0000
+Call Trace:
+ [<c1031f51>] ? register_console+0xf6/0x1fc
+ [<c11fd316>] ? uart_add_one_port+0x237/0x2bb
+ [<c10e0786>] ? sysfs_add_one+0x13/0xd3
+ [<c10e142f>] ? sysfs_do_create_link+0xba/0xfc
+ [<c146f200>] ? ulite_probe+0x198/0x1eb
+ [<c12064ee>] ? platform_drv_probe+0xc/0xe
+ [<c120597b>] ? driver_probe_device+0x79/0x105
+ [<c1205a8e>] ? __device_attach+0x28/0x30
+ [<c120511f>] ? bus_for_each_drv+0x3d/0x67
+ [<c1205af9>] ? device_attach+0x44/0x58
+ [<c1205a66>] ? __device_attach+0x0/0x30
+ [<c1204fb8>] ? bus_probe_device+0x1f/0x34
+ [<c1203e68>] ? device_add+0x385/0x4c0
+ [<c148491f>] ? _write_unlock+0x8/0x1f
+ [<c1206aac>] ? platform_device_add+0xd9/0x11c
+ [<c120c685>] ? mfd_add_devices+0x165/0x1bc
+ [<f831b378>] ? puffin_probe+0x2d0/0x390 [puffin]
+ [<c11a08ef>] ? pci_match_device+0xa0/0xa7
+ [<c11a07bc>] ? local_pci_probe+0xe/0x10
+ [<c11a11db>] ? pci_device_probe+0x43/0x66
+ [<c120597b>] ? driver_probe_device+0x79/0x105
+ [<c1205a4a>] ? __driver_attach+0x43/0x5f
+ [<c120535d>] ? bus_for_each_dev+0x3d/0x67
+ [<c1205852>] ? driver_attach+0x14/0x16
+ [<c1205a07>] ? __driver_attach+0x0/0x5f
+ [<c1204dea>] ? bus_add_driver+0xf9/0x220
+ [<c1205c8f>] ? driver_register+0x8b/0xeb
+ [<c11a1518>] ? __pci_register_driver+0x43/0x9f
+ [<c10477ef>] ? __blocking_notifier_call_chain+0x40/0x4c
+ [<f831f000>] ? puffin_init+0x0/0x48 [puffin]
+ [<f831f017>] ? puffin_init+0x17/0x48 [puffin]
+ [<c1001139>] ? do_one_initcall+0x4c/0x131
+ [<c105607b>] ? sys_init_module+0xa7/0x1b7
+ [<c1002a61>] ? syscall_call+0x7/0xb
+ Code: 6e 74 00 00 00 92 33 00 00 18 00 0e 01 73 79 6e 63 65 2d 72 65 6=
+7 69 73 74 72 79 0c 00 49 32
+00 00 14 00 09 01 61 6c 73 61 2d 69 <6e> 66 6f 00 00 00 42 37 00 00 10 =
+00 07 01 6b 69 6c 6c 61 6c 6c
+EIP: [<c176720e>] ulite_console_setup+0x6f/0xa8 SS:ESP 0068:f6fd1cd8
+CR2: 0000000000000000
 
-Acked-by: Peter Korsgaard <jacmet@sunsite.dk>
+Signed-off-by: Richard R=F6jfors <richard.rojfors@pelagicore.com>
+---
+diff --git a/drivers/serial/uartlite.c b/drivers/serial/uartlite.c
+index 377f271..ab2ab3c 100644
+--- a/drivers/serial/uartlite.c
++++ b/drivers/serial/uartlite.c
+@@ -394,7 +394,7 @@ static void ulite_console_write(struct console *co,=
+ const char *s,
+ 		spin_unlock_irqrestore(&port->lock, flags);
+ }
 
---=20
-Bye, Peter Korsgaard
+-static int __init ulite_console_setup(struct console *co, char *option=
+s)
++static int __devinit ulite_console_setup(struct console *co, char *opt=
+ions)
+ {
+ 	struct uart_port *port;
+ 	int baud =3D 9600;
+
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
  in
