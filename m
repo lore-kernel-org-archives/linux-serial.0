@@ -1,58 +1,54 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH 2/2] bcm63xx_uart: allow more than one uart to be
- registered.
-Date: Mon, 1 Feb 2010 14:29:19 -0800
-Message-ID: <20100201222919.GD19294@kroah.com>
-References: <1264873377-28479-1-git-send-email-mbizon@freebox.fr>
- <1264873377-28479-3-git-send-email-mbizon@freebox.fr>
- <20100130182343.GA6971@pengutronix.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: leitao@linux.vnet.ibm.com
+Subject: [PATCH 1/2] jsm: removing the uart structure and filename on error
+Date: Mon,  1 Feb 2010 20:34:35 -0500
+Message-ID: <ca4d83709f14810b7ae9a3d1567f0ae370eb9ad0.1265074258.git.root@devhv4e-phantom-lp3.austin.ibm.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:51043 "EHLO coco.kroah.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755475Ab0BAWhi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 1 Feb 2010 17:37:38 -0500
-Content-Disposition: inline
-In-Reply-To: <20100130182343.GA6971@pengutronix.de>
+Received: from e24smtp05.br.ibm.com ([32.104.18.26]:60121 "EHLO
+	e24smtp05.br.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751011Ab0BBBfx (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 1 Feb 2010 20:35:53 -0500
+Received: from mailhub1.br.ibm.com (mailhub1.br.ibm.com [9.18.232.109])
+	by e24smtp05.br.ibm.com (8.14.3/8.13.1) with ESMTP id o121Ol2X004483
+	for <linux-serial@vger.kernel.org>; Mon, 1 Feb 2010 23:24:47 -0200
+Received: from d24av04.br.ibm.com (d24av04.br.ibm.com [9.8.31.97])
+	by mailhub1.br.ibm.com (8.13.8/8.13.8/NCO v10.0) with ESMTP id o121cJD2733496
+	for <linux-serial@vger.kernel.org>; Mon, 1 Feb 2010 23:38:19 -0200
+Received: from d24av04.br.ibm.com (loopback [127.0.0.1])
+	by d24av04.br.ibm.com (8.14.3/8.13.1/NCO v10.0 AVout) with ESMTP id o121Zo03006049
+	for <linux-serial@vger.kernel.org>; Mon, 1 Feb 2010 23:35:50 -0200
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Wolfram Sang <w.sang@pengutronix.de>
-Cc: Maxime Bizon <mbizon@freebox.fr>, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>, linux-mips@linux-mips.org
+To: linux-serial@vger.kernel.org, scottk@digi.com
+Cc: Breno Leitao <leitao@linux.vnet.ibm.com>
 
-On Sat, Jan 30, 2010 at 07:23:43PM +0100, Wolfram Sang wrote:
-> On Sat, Jan 30, 2010 at 06:42:57PM +0100, Maxime Bizon wrote:
-> > The bcm6358 CPU has two uarts, make it possible to use the second one.
-> > 
-> > Signed-off-by: Maxime Bizon <mbizon@freebox.fr>
-> > ---
-> >  drivers/serial/bcm63xx_uart.c |    5 +++--
-> >  1 files changed, 3 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/serial/bcm63xx_uart.c b/drivers/serial/bcm63xx_uart.c
-> > index f78ede8..6ab959a 100644
-> > --- a/drivers/serial/bcm63xx_uart.c
-> > +++ b/drivers/serial/bcm63xx_uart.c
-> > @@ -35,7 +35,7 @@
-> >  #include <bcm63xx_regs.h>
-> >  #include <bcm63xx_io.h>
-> >  
-> > -#define BCM63XX_NR_UARTS	1
-> > +#define BCM63XX_NR_UARTS	2
-> >  
-> >  static struct uart_port ports[BCM63XX_NR_UARTS];
-> >  
-> > @@ -784,7 +784,7 @@ static struct uart_driver bcm_uart_driver = {
-> >  	.dev_name	= "ttyS",
-> >  	.major		= TTY_MAJOR,
-> >  	.minor		= 64,
-> > -	.nr		= 1,
-> > +	.nr		= 2,
-> 
-> Err, why not using the #define here?
+If jsm fails to load, then remove the uart stuff, otherwise,
+the things (as files), will be there forever (even when the module
+is unloaded). If you try to reload the module, the following message
+appears:
 
-Good idea, I've tweaked the patch to do that.
+kobject_add_internal failed for ttyn1 with -EEXIST, don't try to
+register things with the same name in the same directory.
 
-thanks,
+This patch remove the uart things when the driver fails.
 
-greg k-h
+Signed-off-by: Breno Leitao <leitao@linux.vnet.ibm.com>
+---
+ drivers/serial/jsm/jsm_driver.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/serial/jsm/jsm_driver.c b/drivers/serial/jsm/jsm_driver.c
+index 108c3e0..12cb5e4 100644
+--- a/drivers/serial/jsm/jsm_driver.c
++++ b/drivers/serial/jsm/jsm_driver.c
+@@ -179,6 +179,7 @@ static int __devinit jsm_probe_one(struct pci_dev *pdev, const struct pci_device
+ 
+ 	return 0;
+  out_free_irq:
++	jsm_remove_uart_port(brd);
+ 	free_irq(brd->irq, brd);
+  out_iounmap:
+ 	iounmap(brd->re_map_membase);
+-- 
+1.6.0.2
+
