@@ -1,78 +1,123 @@
-From: leitao@linux.vnet.ibm.com
-Subject: [PATCH 2/2] jsm: fixing error if the driver fails to load
-Date: Mon,  1 Feb 2010 20:34:36 -0500
-Message-ID: <ba4a13d8f4a93b5744cd10116d7e7e980920965e.1265074258.git.root@devhv4e-phantom-lp3.austin.ibm.com>
-References: <ca4d83709f14810b7ae9a3d1567f0ae370eb9ad0.1265074258.git.root@devhv4e-phantom-lp3.austin.ibm.com>
+From: Wolfram Sang <w.sang@pengutronix.de>
+Subject: Re: [PATCH] serial/mpc52xx_uart: Drop outdated comments
+Date: Tue, 2 Feb 2010 19:58:12 +0100
+Message-ID: <20100202185812.GM4757@pengutronix.de>
+References: <1262985569-29826-1-git-send-email-w.sang@pengutronix.de>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="M2Pxvdb9QxnGd/3e"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from e24smtp01.br.ibm.com ([32.104.18.85]:46106 "EHLO
-	e24smtp01.br.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751011Ab0BBBfy (ORCPT
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:40178 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756360Ab0BBS6N (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 1 Feb 2010 20:35:54 -0500
-Received: from mailhub3.br.ibm.com (mailhub3.br.ibm.com [9.18.232.110])
-	by e24smtp01.br.ibm.com (8.14.3/8.13.1) with ESMTP id o121hbU1016808
-	for <linux-serial@vger.kernel.org>; Mon, 1 Feb 2010 23:43:37 -0200
-Received: from d24av04.br.ibm.com (d24av04.br.ibm.com [9.8.31.97])
-	by mailhub3.br.ibm.com (8.13.8/8.13.8/NCO v10.0) with ESMTP id o121cNMP2224166
-	for <linux-serial@vger.kernel.org>; Mon, 1 Feb 2010 23:38:23 -0200
-Received: from d24av04.br.ibm.com (loopback [127.0.0.1])
-	by d24av04.br.ibm.com (8.14.3/8.13.1/NCO v10.0 AVout) with ESMTP id o121Zq4a006066
-	for <linux-serial@vger.kernel.org>; Mon, 1 Feb 2010 23:35:52 -0200
-In-Reply-To: <ca4d83709f14810b7ae9a3d1567f0ae370eb9ad0.1265074258.git.root@devhv4e-phantom-lp3.austin.ibm.com>
-In-Reply-To: <ca4d83709f14810b7ae9a3d1567f0ae370eb9ad0.1265074258.git.root@devhv4e-phantom-lp3.austin.ibm.com>
-References: <ca4d83709f14810b7ae9a3d1567f0ae370eb9ad0.1265074258.git.root@devhv4e-phantom-lp3.austin.ibm.com>
+	Tue, 2 Feb 2010 13:58:13 -0500
+Content-Disposition: inline
+In-Reply-To: <1262985569-29826-1-git-send-email-w.sang@pengutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, scottk@digi.com
-Cc: Breno Leitao <leitao@linux.vnet.ibm.com>
+To: linuxppc-dev@ozlabs.org
+Cc: linux-serial@vger.kernel.org, Grant Likely <grant.likely@secretlab.ca>
 
-Currently if the driver fails to register on port, the kernel
-crashes with the following stack:
 
-cpu 0x1: Vector: 300 (Data Access) at [c0000000e0303090]
-    pc: c00000000039aa74: .__mutex_lock_slowpath+0x44/0x10c
-    lr: c00000000039aa58: .__mutex_lock_slowpath+0x28/0x10c
-[c0000000e03033c0] c00000000026b074 .uart_remove_one_port+0xbc/0x16c
-[c0000000e0303460] d0000000000e0554 .jsm_remove_uart_port+0x8c/0x10c [jsm]
-[c0000000e03034f0] d0000000000dc034 .jsm_remove_one+0x34/0x108 [jsm]
-[c0000000e0303590] c0000000001f4aa0 .pci_device_remove+0x48/0x74
-...
+--M2Pxvdb9QxnGd/3e
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-This patch just fixes the code flow to abort the load when an
-error is detected.
+On Fri, Jan 08, 2010 at 10:19:29PM +0100, Wolfram Sang wrote:
+> Most things mentioned are either obsolete (platform-support) or wrong (de=
+vice
+> numbering, DCD spport) these days. The remaining rest is obvious.
+>=20
+> Signed-off-by: Wolfram Sang <w.sang@pengutronix.de>
+> Cc: Grant Likely <grant.likely@secretlab.ca>
 
-Signed-off-by: Breno Leitao <leitao@linux.vnet.ibm.com>
----
- drivers/serial/jsm/jsm_tty.c |    9 ++++++---
- 1 files changed, 6 insertions(+), 3 deletions(-)
+Ping. Anyone interested in this patch?
 
-diff --git a/drivers/serial/jsm/jsm_tty.c b/drivers/serial/jsm/jsm_tty.c
-index cd95e21..5673ca9 100644
---- a/drivers/serial/jsm/jsm_tty.c
-+++ b/drivers/serial/jsm/jsm_tty.c
-@@ -432,7 +432,7 @@ int __devinit jsm_tty_init(struct jsm_board *brd)
- 
- int jsm_uart_port_init(struct jsm_board *brd)
- {
--	int i;
-+	int i, rc;
- 	unsigned int line;
- 	struct jsm_channel *ch;
- 
-@@ -467,8 +467,11 @@ int jsm_uart_port_init(struct jsm_board *brd)
- 		} else
- 			set_bit(line, linemap);
- 		brd->channels[i]->uart_port.line = line;
--		if (uart_add_one_port (&jsm_uart_driver, &brd->channels[i]->uart_port))
--			printk(KERN_INFO "jsm: add device failed\n");
-+		rc = uart_add_one_port (&jsm_uart_driver, &brd->channels[i]->uart_port);
-+		if (rc){
-+			printk(KERN_INFO "jsm: Port %d failed. Aborting...\n", i);
-+			return rc;
-+		}
- 		else
- 			printk(KERN_INFO "jsm: Port %d added\n", i);
- 	}
--- 
-1.6.0.2
+> ---
+>  drivers/serial/mpc52xx_uart.c |   33 ---------------------------------
+>  1 files changed, 0 insertions(+), 33 deletions(-)
+>=20
+> diff --git a/drivers/serial/mpc52xx_uart.c b/drivers/serial/mpc52xx_uart.c
+> index 7ce9e9f..c7ec1a2 100644
+> --- a/drivers/serial/mpc52xx_uart.c
+> +++ b/drivers/serial/mpc52xx_uart.c
+> @@ -29,39 +29,6 @@
+>   * kind, whether express or implied.
+>   */
+> =20
+> -/* Platform device Usage :
+> - *
+> - * Since PSCs can have multiple function, the correct driver for each one
+> - * is selected by calling mpc52xx_match_psc_function(...). The function
+> - * handled by this driver is "uart".
+> - *
+> - * The driver init all necessary registers to place the PSC in uart mode=
+ without
+> - * DCD. However, the pin multiplexing aren't changed and should be set e=
+ither
+> - * by the bootloader or in the platform init code.
+> - *
+> - * The idx field must be equal to the PSC index (e.g. 0 for PSC1, 1 for =
+PSC2,
+> - * and so on). So the PSC1 is mapped to /dev/ttyPSC0, PSC2 to /dev/ttyPS=
+C1 and
+> - * so on. But be warned, it's an ABSOLUTE REQUIREMENT ! This is needed m=
+ainly
+> - * fpr the console code : without this 1:1 mapping, at early boot time, =
+when we
+> - * are parsing the kernel args console=3DttyPSC?, we wouldn't know which=
+ PSC it
+> - * will be mapped to.
+> - */
+> -
+> -/* OF Platform device Usage :
+> - *
+> - * This driver is only used for PSCs configured in uart mode.  The device
+> - * tree will have a node for each PSC with "mpc52xx-psc-uart" in the com=
+patible
+> - * list.
+> - *
+> - * By default, PSC devices are enumerated in the order they are found.  =
+However
+> - * a particular PSC number can be forces by adding 'device_no =3D <port#=
+>'
+> - * to the device node.
+> - *
+> - * The driver init all necessary registers to place the PSC in uart mode=
+ without
+> - * DCD. However, the pin multiplexing aren't changed and should be set e=
+ither
+> - * by the bootloader or in the platform init code.
+> - */
+> -
+>  #undef DEBUG
+> =20
+>  #include <linux/device.h>
+> --=20
+> 1.6.5
+>=20
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
+--=20
+Pengutronix e.K.                           | Wolfram Sang                |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+
+--M2Pxvdb9QxnGd/3e
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (GNU/Linux)
+
+iEYEARECAAYFAktodcQACgkQD27XaX1/VRtmjgCgwaGxdB1Cvxg1N/YGy9Cx0d2t
+IGwAnjFQf89kQIFuRjUdiEtHh6q3dD1j
+=9BM4
+-----END PGP SIGNATURE-----
+
+--M2Pxvdb9QxnGd/3e--
