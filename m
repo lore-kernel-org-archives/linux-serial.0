@@ -1,39 +1,242 @@
-From: Grant Likely <grant.likely@secretlab.ca>
-Subject: Re: [PATCH] serial/mpc52xx_uart: Drop outdated comments
-Date: Tue, 2 Feb 2010 12:06:12 -0700
-Message-ID: <fa686aa41002021106x785f1808o6a3dd5769cc8cb2f@mail.gmail.com>
-References: <1262985569-29826-1-git-send-email-w.sang@pengutronix.de>
-	<20100202185812.GM4757@pengutronix.de>
+From: "Vitaly V. Ch" <vitaly.v.ch-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Review and minor fixes for ftdi_sio.h
+Date: Fri, 5 Feb 2010 11:54:56 +0200
+Message-ID: <6efe08af1002050154k8ae2a9evff2971afce407b52@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-yw0-f198.google.com ([209.85.211.198]:32771 "EHLO
-	mail-yw0-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756480Ab0BBTGe (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 2 Feb 2010 14:06:34 -0500
-Received: by ywh36 with SMTP id 36so434993ywh.15
-        for <linux-serial@vger.kernel.org>; Tue, 02 Feb 2010 11:06:32 -0800 (PST)
-In-Reply-To: <20100202185812.GM4757@pengutronix.de>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: multipart/mixed; boundary=0016e6d78545a26bde047ed771fa
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: USB list <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, bryder-sJ/iWh9BUns@public.gmane.org, kuba-6OO/Rnbgvk2D7HvB/+pQRQ@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Wolfram Sang <w.sang@pengutronix.de>
-Cc: linuxppc-dev@ozlabs.org, linux-serial@vger.kernel.org
 
-On Tue, Feb 2, 2010 at 11:58 AM, Wolfram Sang <w.sang@pengutronix.de> wrote:
-> On Fri, Jan 08, 2010 at 10:19:29PM +0100, Wolfram Sang wrote:
->> Most things mentioned are either obsolete (platform-support) or wrong (device
->> numbering, DCD spport) these days. The remaining rest is obvious.
->>
->> Signed-off-by: Wolfram Sang <w.sang@pengutronix.de>
->> Cc: Grant Likely <grant.likely@secretlab.ca>
->
-> Ping. Anyone interested in this patch?
+--0016e6d78545a26bde047ed771fa
+Content-Type: text/plain; charset=ISO-8859-1
 
-I haven't forgotten, I just haven't gotten around to looking at it.
+Hi all!
 
-g.
+I'm find then ftdi_sio.c in 2.4.37.8 kernel have next bug: if I have
+three ftdi-232 simultaneously connected to middle-loaded host,
+application which use one of them will hung in driver, usually during
+few hour.
 
--- 
-Grant Likely, B.Sc., P.Eng.
-Secret Lab Technologies Ltd.
+At now i try to revise that driver and also I review driver in 2.6.32
+and do few minor fixes + found out possible buggy place.
+
+****************************************
+1) function ftdi_232am_baud_base_to_divisor() in 2.6.32 have next view:
+
+static unsigned short int ftdi_232am_baud_base_to_divisor(int baud, int base)
+{
+    unsigned short int divisor;
+    /* divisor shifted 3 bits to the left */
+    int divisor3 = base / 2 / baud;
+    if ((divisor3 & 0x7) == 7)
+        divisor3++; /* round x.7/8 up to x+1 */
+    divisor = divisor3 >> 3;
+    divisor3 &= 0x7;
+    if (divisor3 == 1)
+        divisor |= 0xc000; /* 0.125 */
+    else if (divisor3 >= 4)
+        divisor |= 0x4000; /* 0.5 */
+    else if (divisor3 != 0)
+        divisor |= 0x8000; /* 0.25 */
+    /// @warning possible at this place we have bug
+    else if (divisor == 1)
+        divisor = 0;    /* special case for maximum baud rate */
+    return divisor;
+}
+
+but POSSIBLE may be need:
+
+static unsigned short int ftdi_232am_baud_base_to_divisor(int baud, int base)
+{
+    unsigned short int divisor;
+    /* divisor shifted 3 bits to the left */
+    int divisor3 = base / 2 / baud;
+    if ((divisor3 & 0x7) == 7)
+        divisor3++; /* round x.7/8 up to x+1 */
+    divisor = divisor3 >> 3;
+    divisor3 &= 0x7;
+    if (divisor3 == 1)
+        divisor |= 0xc000; /* 0.125 */
+    else if (divisor3 >= 4)
+        divisor |= 0x4000; /* 0.5 */
+    else if (divisor3 != 0)
+        divisor |= 0x8000; /* 0.25 */
+
+    if (divisor == 1)
+        divisor = 0;    /* special case for maximum baud rate */
+    return divisor;
+}
+
+Can anyone guide me?
+
+*********************************************************
+2) In the attached patch I do few small fixes. About half of them must
+be merged into kernel trunk
+
+\\wbr Vitaly Chernookiy
+
+--0016e6d78545a26bde047ed771fa
+Content-Type: application/octet-stream; name="ftdi_sio.c.diff"
+Content-Disposition: attachment; filename="ftdi_sio.c.diff"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_g5asuin40
+
+PT09IG1vZGlmaWVkIGZpbGUgJ2Z0ZGlfc2lvLmMnCi0tLSBmdGRpX3Npby5jCTIwMTAtMDItMDMg
+MTY6MjA6MzUgKzAwMDAKKysrIGZ0ZGlfc2lvLmMJMjAxMC0wMi0wNSAwOTowODo1NyArMDAwMApA
+QCAtMTAwLDE0ICsxMDAsMTQgQEAKIAl2b2lkICgqcG9ydF9wcm9iZSkoc3RydWN0IGZ0ZGlfcHJp
+dmF0ZSAqKTsKIH07CiAKLXN0YXRpYyBpbnQgICBmdGRpX2p0YWdfcHJvYmUoc3RydWN0IHVzYl9z
+ZXJpYWwgKnNlcmlhbCk7CitzdGF0aWMgaW50ICAgZnRkaV9vbGltZXhfanRhZ19wcm9iZShzdHJ1
+Y3QgdXNiX3NlcmlhbCAqc2VyaWFsKTsKIHN0YXRpYyBpbnQgICBmdGRpX210eG9yYl9oYWNrX3Nl
+dHVwKHN0cnVjdCB1c2Jfc2VyaWFsICpzZXJpYWwpOwogc3RhdGljIGludCAgIGZ0ZGlfTkRJX2Rl
+dmljZV9zZXR1cChzdHJ1Y3QgdXNiX3NlcmlhbCAqc2VyaWFsKTsKIHN0YXRpYyB2b2lkICBmdGRp
+X1VTQl9VSVJUX3NldHVwKHN0cnVjdCBmdGRpX3ByaXZhdGUgKnByaXYpOwogc3RhdGljIHZvaWQg
+IGZ0ZGlfSEVfVElSQTFfc2V0dXAoc3RydWN0IGZ0ZGlfcHJpdmF0ZSAqcHJpdik7CiAKLXN0YXRp
+YyBzdHJ1Y3QgZnRkaV9zaW9fcXVpcmsgZnRkaV9qdGFnX3F1aXJrID0gewotCS5wcm9iZQk9IGZ0
+ZGlfanRhZ19wcm9iZSwKK3N0YXRpYyBzdHJ1Y3QgZnRkaV9zaW9fcXVpcmsgZnRkaV9vbGltZXhf
+anRhZ19xdWlyayA9IHsKKwkucHJvYmUJPSBmdGRpX29saW1leF9qdGFnX3Byb2JlLAogfTsKIAog
+c3RhdGljIHN0cnVjdCBmdGRpX3Npb19xdWlyayBmdGRpX210eG9yYl9oYWNrX3F1aXJrID0gewpA
+QCAtMTQ0LDcgKzE0NCw4IEBACiAKIAogCi1zdGF0aWMgc3RydWN0IHVzYl9kZXZpY2VfaWQgaWRf
+dGFibGVfY29tYmluZWQgW10gPSB7CitzdGF0aWMKK3N0cnVjdCB1c2JfZGV2aWNlX2lkIGlkX3Rh
+YmxlX2NvbWJpbmVkIFtdID0gewogCXsgVVNCX0RFVklDRShGVERJX1ZJRCwgRlRESV9BTUMyMzJf
+UElEKSB9LAogCXsgVVNCX0RFVklDRShGVERJX1ZJRCwgRlRESV9DQU5VU0JfUElEKSB9LAogCXsg
+VVNCX0RFVklDRShGVERJX1ZJRCwgRlRESV9DQU5EQVBURVJfUElEKSB9LApAQCAtNjgyLDE3ICs2
+ODMsMTcgQEAKIAl7IFVTQl9ERVZJQ0UoRlRESV9WSUQsIEZURElfRUxTVEVSX1VOSUNPTV9QSUQp
+IH0sCiAJeyBVU0JfREVWSUNFKEZURElfVklELCBGVERJX1BST1BPWF9KVEFHQ0FCTEVJSV9QSUQp
+IH0sCiAJeyBVU0JfREVWSUNFKE9MSU1FWF9WSUQsIE9MSU1FWF9BUk1fVVNCX09DRF9QSUQpLAot
+CQkuZHJpdmVyX2luZm8gPSAoa2VybmVsX3Vsb25nX3QpJmZ0ZGlfanRhZ19xdWlyayB9LAorCQku
+ZHJpdmVyX2luZm8gPSAoa2VybmVsX3Vsb25nX3QpJmZ0ZGlfb2xpbWV4X2p0YWdfcXVpcmsgfSwK
+IAl7IFVTQl9ERVZJQ0UoRklDX1ZJRCwgRklDX05FTzE5NzNfREVCVUdfUElEKSwKLQkJLmRyaXZl
+cl9pbmZvID0gKGtlcm5lbF91bG9uZ190KSZmdGRpX2p0YWdfcXVpcmsgfSwKKwkJLmRyaXZlcl9p
+bmZvID0gKGtlcm5lbF91bG9uZ190KSZmdGRpX29saW1leF9qdGFnX3F1aXJrIH0sCiAJeyBVU0Jf
+REVWSUNFKEZURElfVklELCBGVERJX09PQ0RMSU5LX1BJRCksCi0JCS5kcml2ZXJfaW5mbyA9IChr
+ZXJuZWxfdWxvbmdfdCkmZnRkaV9qdGFnX3F1aXJrIH0sCisJCS5kcml2ZXJfaW5mbyA9IChrZXJu
+ZWxfdWxvbmdfdCkmZnRkaV9vbGltZXhfanRhZ19xdWlyayB9LAogCXsgVVNCX0RFVklDRShGVERJ
+X1ZJRCwgTE1JX0xNM1NfREVWRUxfQk9BUkRfUElEKSwKLQkJLmRyaXZlcl9pbmZvID0gKGtlcm5l
+bF91bG9uZ190KSZmdGRpX2p0YWdfcXVpcmsgfSwKKwkJLmRyaXZlcl9pbmZvID0gKGtlcm5lbF91
+bG9uZ190KSZmdGRpX29saW1leF9qdGFnX3F1aXJrIH0sCiAJeyBVU0JfREVWSUNFKEZURElfVklE
+LCBMTUlfTE0zU19FVkFMX0JPQVJEX1BJRCksCi0JCS5kcml2ZXJfaW5mbyA9IChrZXJuZWxfdWxv
+bmdfdCkmZnRkaV9qdGFnX3F1aXJrIH0sCisJCS5kcml2ZXJfaW5mbyA9IChrZXJuZWxfdWxvbmdf
+dCkmZnRkaV9vbGltZXhfanRhZ19xdWlyayB9LAogCXsgVVNCX0RFVklDRShGVERJX1ZJRCwgRlRE
+SV9UVVJURUxJWkVSX1BJRCksCi0JCS5kcml2ZXJfaW5mbyA9IChrZXJuZWxfdWxvbmdfdCkmZnRk
+aV9qdGFnX3F1aXJrIH0sCisJCS5kcml2ZXJfaW5mbyA9IChrZXJuZWxfdWxvbmdfdCkmZnRkaV9v
+bGltZXhfanRhZ19xdWlyayB9LAogCXsgVVNCX0RFVklDRShSQVRPQ19WRU5ET1JfSUQsIFJBVE9D
+X1BST0RVQ1RfSURfVVNCNjBGKSB9LAogCXsgVVNCX0RFVklDRShGVERJX1ZJRCwgRlRESV9SRVVf
+VElOWV9QSUQpIH0sCiAJeyBVU0JfREVWSUNFKFBBUE9VQ0hfVklELCBQQVBPVUNIX1FVSURPNHg0
+X1BJRCkgfSwKQEAgLTcwNCwxNyArNzA1LDE3IEBACiAJeyBVU0JfREVWSUNFKERFX1ZJRCwgU1RC
+X1BJRCkgfSwKIAl7IFVTQl9ERVZJQ0UoREVfVklELCBXSFRfUElEKSB9LAogCXsgVVNCX0RFVklD
+RShBRElfVklELCBBRElfR05JQ0VfUElEKSwKLQkJLmRyaXZlcl9pbmZvID0gKGtlcm5lbF91bG9u
+Z190KSZmdGRpX2p0YWdfcXVpcmsgfSwKKwkJLmRyaXZlcl9pbmZvID0gKGtlcm5lbF91bG9uZ190
+KSZmdGRpX29saW1leF9qdGFnX3F1aXJrIH0sCiAJeyBVU0JfREVWSUNFKEFESV9WSUQsIEFESV9H
+TklDRVBMVVNfUElEKSwKLQkJLmRyaXZlcl9pbmZvID0gKGtlcm5lbF91bG9uZ190KSZmdGRpX2p0
+YWdfcXVpcmsgfSwKKwkJLmRyaXZlcl9pbmZvID0gKGtlcm5lbF91bG9uZ190KSZmdGRpX29saW1l
+eF9qdGFnX3F1aXJrIH0sCiAJeyBVU0JfREVWSUNFKEpFVElfVklELCBKRVRJX1NQQzEyMDFfUElE
+KSB9LAogCXsgVVNCX0RFVklDRShNQVJWRUxMX1ZJRCwgTUFSVkVMTF9TSEVFVkFQTFVHX1BJRCks
+Ci0JCS5kcml2ZXJfaW5mbyA9IChrZXJuZWxfdWxvbmdfdCkmZnRkaV9qdGFnX3F1aXJrIH0sCisJ
+CS5kcml2ZXJfaW5mbyA9IChrZXJuZWxfdWxvbmdfdCkmZnRkaV9vbGltZXhfanRhZ19xdWlyayB9
+LAogCXsgVVNCX0RFVklDRShMQVJTRU5CUlVTR0FBUkRfVklELCBMQl9BTFRJVFJBQ0tfUElEKSB9
+LAogCXsgVVNCX0RFVklDRShHTl9PVE9NRVRSSUNTX1ZJRCwgQVVSSUNBTF9VU0JfUElEKSB9LAog
+CXsgVVNCX0RFVklDRShCQVlFUl9WSUQsIEJBWUVSX0NPTlRPVVJfQ0FCTEVfUElEKSB9LAogCXsg
+VVNCX0RFVklDRShGVERJX1ZJRCwgTUFSVkVMTF9PUEVOUkRfUElEKSwKLQkJLmRyaXZlcl9pbmZv
+ID0gKGtlcm5lbF91bG9uZ190KSZmdGRpX2p0YWdfcXVpcmsgfSwKKwkJLmRyaXZlcl9pbmZvID0g
+KGtlcm5lbF91bG9uZ190KSZmdGRpX29saW1leF9qdGFnX3F1aXJrIH0sCiAJeyBVU0JfREVWSUNF
+KEZURElfVklELCBIQU1FR19ITzgyMF9QSUQpIH0sCiAJeyBVU0JfREVWSUNFKEZURElfVklELCBI
+QU1FR19ITzg3MF9QSUQpIH0sCiAJeyB9LAkJCQkJLyogT3B0aW9uYWwgcGFyYW1ldGVyIGVudHJ5
+ICovCkBAIC04NDIsMTEgKzg0MywxMiBAQAogCWRpdmlzb3IgPSBkaXZpc29yMyA+PiAzOwogCWRp
+dmlzb3IzICY9IDB4NzsKIAlpZiAoZGl2aXNvcjMgPT0gMSkKLQkJZGl2aXNvciB8PSAweGMwMDA7
+CisJCWRpdmlzb3IgfD0gMHhjMDAwOyAvKiAwLjEyNSAqLwogCWVsc2UgaWYgKGRpdmlzb3IzID49
+IDQpCi0JCWRpdmlzb3IgfD0gMHg0MDAwOworCQlkaXZpc29yIHw9IDB4NDAwMDsgLyogMC41ICov
+CiAJZWxzZSBpZiAoZGl2aXNvcjMgIT0gMCkKLQkJZGl2aXNvciB8PSAweDgwMDA7CisJCWRpdmlz
+b3IgfD0gMHg4MDAwOyAvKiAwLjI1ICovCisJLy8vIEB3YXJuaW5nIHBvc3NpYmxlIGF0IHRoaXMg
+cGFsY2Ugd2UgaGF2ZSBidWcKIAllbHNlIGlmIChkaXZpc29yID09IDEpCiAJCWRpdmlzb3IgPSAw
+OwkvKiBzcGVjaWFsIGNhc2UgZm9yIG1heGltdW0gYmF1ZCByYXRlICovCiAJcmV0dXJuIGRpdmlz
+b3I7CkBAIC04NjcsOSArODY5LDkgQEAKIAlkaXZpc29yIHw9IChfX3UzMilkaXZmcmFjW2Rpdmlz
+b3IzICYgMHg3XSA8PCAxNDsKIAkvKiBEZWFsIHdpdGggc3BlY2lhbCBjYXNlcyBmb3IgaGlnaGVz
+dCBiYXVkIHJhdGVzLiAqLwogCWlmIChkaXZpc29yID09IDEpCi0JCWRpdmlzb3IgPSAwOworCQlk
+aXZpc29yID0gMDsJLyogMS4wICovCiAJZWxzZSBpZiAoZGl2aXNvciA9PSAweDQwMDEpCi0JCWRp
+dmlzb3IgPSAxOworCQlkaXZpc29yID0gMTsJLyogMS41ICovCiAJcmV0dXJuIGRpdmlzb3I7CiB9
+CiAKQEAgLTg5MSw5ICs4OTMsOSBAQAogCWRpdmlzb3IgfD0gKF9fdTMyKWRpdmZyYWNbZGl2aXNv
+cjMgJiAweDddIDw8IDE0OwogCS8qIERlYWwgd2l0aCBzcGVjaWFsIGNhc2VzIGZvciBoaWdoZXN0
+IGJhdWQgcmF0ZXMuICovCiAJaWYgKGRpdmlzb3IgPT0gMSkKLQkJZGl2aXNvciA9IDA7CisJCWRp
+dmlzb3IgPSAwOyAvKiAxLjAgKi8KIAllbHNlIGlmIChkaXZpc29yID09IDB4NDAwMSkKLQkJZGl2
+aXNvciA9IDE7CisJCWRpdmlzb3IgPSAxOyAvKiAxLjUgKi8KIAkvKgogCSAqIFNldCB0aGlzIGJp
+dCB0byB0dXJuIG9mZiBhIGRpdmlkZSBieSAyLjUgb24gYmF1ZCByYXRlIGdlbmVyYXRvcgogCSAq
+IFRoaXMgZW5hYmxlcyBiYXVkIHJhdGVzIHVwIHRvIDEyTWJhdWQgYnV0IGNhbm5vdCByZWFjaCBi
+ZWxvdyAxMjAwCkBAIC05NDcsNyArOTQ5LDcgQEAKIAogCWtmcmVlKGJ1Zik7CiAJaWYgKHJ2IDwg
+MCkgewotCQlkYmcoIiVzIEVycm9yIGZyb20gTU9ERU1fQ1RSTCB1cmI6IERUUiAlcywgUlRTICVz
+IiwKKwkJZXJyKCIlcyBFcnJvciBmcm9tIE1PREVNX0NUUkwgdXJiOiBEVFIgJXMsIFJUUyAlcyIs
+CiAJCQkJX19GVU5DVElPTl9fLAogCQkJCShzZXQgJiBUSU9DTV9EVFIpID8gIkhJR0giIDoKIAkJ
+CQkoY2xlYXIgJiBUSU9DTV9EVFIpID8gIkxPVyIgOiAidW5jaGFuZ2VkIiwKQEAgLTk3NSw2ICs5
+NzcsOCBAQAogCWludCBiYXVkOwogCiAJLyoKKwkgKiBPYnRhaW5pbmcgdGhlIGFjdHVhbCBiYXVk
+IHJhdGUgaXMgYSBsaXR0bGUgdHJpY2t5IHNpbmNlIHVuaXggdHJhZGl0aW9uYWxseQorCSAqIHNv
+bWVob3cgaWdub3JlZCB0aGUgcG9zc2liaWxpdHkgdG8gc2V0IG5vbi1zdGFuZGFyZCBiYXVkIHJh
+dGVzLgogCSAqIFRoZSBsb2dpYyBpbnZvbHZlZCBpbiBzZXR0aW5nIHRoZSBiYXVkcmF0ZSBjYW4g
+YmUgY2xlYW5seSBzcGxpdCBpbnRvCiAJICogMyBzdGVwcy4KIAkgKiAxLiBTdGFuZGFyZCBiYXVk
+IHJhdGVzIGFyZSBzZXQgaW4gdHR5LT50ZXJtaW9zLT5jX2NmbGFnCkBAIC0xMjcwLDcgKzEyNzQs
+NyBAQAogCiAvKiBEZXRlcm1pbmUgdHlwZSBvZiBGVERJIGNoaXAgYmFzZWQgb24gVVNCIGNvbmZp
+ZyBhbmQgZGVzY3JpcHRvci4gKi8KIHN0YXRpYyB2b2lkIGZ0ZGlfZGV0ZXJtaW5lX3R5cGUoc3Ry
+dWN0IHVzYl9zZXJpYWxfcG9ydCAqcG9ydCkKLXsKK3sgLyogZnRkaV9kZXRlcm1pbmVfdHlwZSAq
+LwogCXN0cnVjdCBmdGRpX3ByaXZhdGUgKnByaXYgPSB1c2JfZ2V0X3NlcmlhbF9wb3J0X2RhdGEo
+cG9ydCk7CiAJc3RydWN0IHVzYl9zZXJpYWwgKnNlcmlhbCA9IHBvcnQtPnNlcmlhbDsKIAlzdHJ1
+Y3QgdXNiX2RldmljZSAqdWRldiA9IHNlcmlhbC0+ZGV2OwpAQCAtMTMzNSw3ICsxMzM5LDcgQEAK
+IAkJcHJpdi0+Y2hpcF90eXBlID0gRlQyMzJSTDsKIAl9CiAJZGV2X2luZm8oJnVkZXYtPmRldiwg
+IkRldGVjdGVkICVzXG4iLCBmdGRpX2NoaXBfbmFtZVtwcml2LT5jaGlwX3R5cGVdKTsKLX0KK30g
+LyogZnRkaV9kZXRlcm1pbmVfdHlwZSAqLwogCiAKIC8qIERldGVybWluZSB0aGUgbWF4aW11bSBw
+YWNrZXQgc2l6ZSBmb3IgdGhlIGRldmljZS4gIFRoaXMgZGVwZW5kcyBvbiB0aGUgY2hpcApAQCAt
+MTYzMyw3ICsxNjM3LDcgQEAKICAqIE5lbzE5NzMgRGVidWcgQm9hcmQgaXMgcmVzZXJ2ZWQgZm9y
+IEpUQUcgaW50ZXJmYWNlIGFuZCBjYW4gYmUgYWNjZXNzZWQgZnJvbQogICogdXNlcnNwYWNlIHVz
+aW5nIG9wZW5vY2QuCiAgKi8KLXN0YXRpYyBpbnQgZnRkaV9qdGFnX3Byb2JlKHN0cnVjdCB1c2Jf
+c2VyaWFsICpzZXJpYWwpCitzdGF0aWMgaW50IGZ0ZGlfb2xpbWV4X2p0YWdfcHJvYmUoc3RydWN0
+IHVzYl9zZXJpYWwgKnNlcmlhbCkKIHsKIAlzdHJ1Y3QgdXNiX2RldmljZSAqdWRldiA9IHNlcmlh
+bC0+ZGV2OwogCXN0cnVjdCB1c2JfaW50ZXJmYWNlICppbnRlcmZhY2UgPSBzZXJpYWwtPmludGVy
+ZmFjZTsKQEAgLTE2ODIsNiArMTY4NiwxMCBAQAogCiAJcmVtb3ZlX3N5c2ZzX2F0dHJzKHBvcnQp
+OwogCisJLyogYWxsIG9wZW4gcG9ydHMgYXJlIGNsb3NlZCBhdCB0aGlzIHBvaW50CisJICogICAg
+KGJ5IHVzYnNlcmlhbC5jOl9fc2VyaWFsX2Nsb3NlLCB3aGljaCBjYWxscyBmdGRpX2Nsb3NlKQor
+CSAqLworCiAJa3JlZl9wdXQoJnByaXYtPmtyZWYsIGZ0ZGlfc2lvX3ByaXZfcmVsZWFzZSk7CiAK
+IAlyZXR1cm4gMDsKQEAgLTE5OTIsMTAgKzIwMDAsMTAgQEAKIAl9CiAJc3Bpbl91bmxvY2tfaXJx
+cmVzdG9yZSgmcHJpdi0+dHhfbG9jaywgZmxhZ3MpOwogCXJldHVybiByb29tOwotfQorfSAvKiBm
+dGRpX3dyaXRlX3Jvb20gKi8KIAogc3RhdGljIGludCBmdGRpX2NoYXJzX2luX2J1ZmZlcihzdHJ1
+Y3QgdHR5X3N0cnVjdCAqdHR5KQoteworeyAvKiBmdGRpX2NoYXJzX2luX2J1ZmZlciAqLwogCXN0
+cnVjdCB1c2Jfc2VyaWFsX3BvcnQgKnBvcnQgPSB0dHktPmRyaXZlcl9kYXRhOwogCXN0cnVjdCBm
+dGRpX3ByaXZhdGUgKnByaXYgPSB1c2JfZ2V0X3NlcmlhbF9wb3J0X2RhdGEocG9ydCk7CiAJaW50
+IGJ1ZmZlcmVkOwpAQCAtMjAxMiw3ICsyMDIwLDcgQEAKIAkJYnVmZmVyZWQgPSAwOwogCX0KIAly
+ZXR1cm4gYnVmZmVyZWQ7Ci19Cit9IC8qIGZ0ZGlfY2hhcnNfaW5fYnVmZmVyICovCiAKIHN0YXRp
+YyBpbnQgZnRkaV9wcm9jZXNzX3BhY2tldChzdHJ1Y3QgdHR5X3N0cnVjdCAqdHR5LAogCQlzdHJ1
+Y3QgdXNiX3NlcmlhbF9wb3J0ICpwb3J0LCBzdHJ1Y3QgZnRkaV9wcml2YXRlICpwcml2LApAQCAt
+MjA4MSw3ICsyMDg5LDcgQEAKIH0KIAogc3RhdGljIHZvaWQgZnRkaV9wcm9jZXNzX3JlYWQoc3Ry
+dWN0IHVzYl9zZXJpYWxfcG9ydCAqcG9ydCkKLXsKK3sgLyogZnRkaV9wcm9jZXNzX3JlYWQgKi8K
+IAlzdHJ1Y3QgdXJiICp1cmIgPSBwb3J0LT5yZWFkX3VyYjsKIAlzdHJ1Y3QgdHR5X3N0cnVjdCAq
+dHR5OwogCXN0cnVjdCBmdGRpX3ByaXZhdGUgKnByaXYgPSB1c2JfZ2V0X3NlcmlhbF9wb3J0X2Rh
+dGEocG9ydCk7CkBAIC0yMTAyLDEwICsyMTEwLDEwIEBACiAJaWYgKGNvdW50KQogCQl0dHlfZmxp
+cF9idWZmZXJfcHVzaCh0dHkpOwogCXR0eV9rcmVmX3B1dCh0dHkpOwotfQorfSAvKiBmdGRpX3By
+b2Nlc3NfcmVhZCAqLwogCiBzdGF0aWMgdm9pZCBmdGRpX3JlYWRfYnVsa19jYWxsYmFjayhzdHJ1
+Y3QgdXJiICp1cmIpCi17Cit7IC8qIGZ0ZGlfcmVhZF9idWxrX2NhbGxiYWNrICovCiAJc3RydWN0
+IHVzYl9zZXJpYWxfcG9ydCAqcG9ydCA9IHVyYi0+Y29udGV4dDsKIAl1bnNpZ25lZCBsb25nIGZs
+YWdzOwogCkBAIC0yMTI4LDcgKzIxMzYsNyBAQAogCQlmdGRpX3N1Ym1pdF9yZWFkX3VyYihwb3J0
+LCBHRlBfQVRPTUlDKTsKIAl9IGVsc2UKIAkJc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmcG9ydC0+
+bG9jaywgZmxhZ3MpOwotfQorfSAvKiBmdGRpX3JlYWRfYnVsa19jYWxsYmFjayAqLwogCiBzdGF0
+aWMgdm9pZCBmdGRpX2JyZWFrX2N0bChzdHJ1Y3QgdHR5X3N0cnVjdCAqdHR5LCBpbnQgYnJlYWtf
+c3RhdGUpCiB7CkBAIC0yMzI5LDcgKzIzMzcsNyBAQAogCiAJfQogCXJldHVybjsKLX0KK30gLyog
+ZnRkaV90ZXJtaW9zICovCiAKIHN0YXRpYyBpbnQgZnRkaV90aW9jbWdldChzdHJ1Y3QgdHR5X3N0
+cnVjdCAqdHR5LCBzdHJ1Y3QgZmlsZSAqZmlsZSkKIHsKQEAgLTIzODMsNyArMjM5MSw2IEBACiBz
+dGF0aWMgaW50IGZ0ZGlfdGlvY21zZXQoc3RydWN0IHR0eV9zdHJ1Y3QgKnR0eSwgc3RydWN0IGZp
+bGUgKmZpbGUsCiAJCQl1bnNpZ25lZCBpbnQgc2V0LCB1bnNpZ25lZCBpbnQgY2xlYXIpCiB7Ci0J
+c3RydWN0IHVzYl9zZXJpYWxfcG9ydCAqcG9ydCA9IHR0eS0+ZHJpdmVyX2RhdGE7CiAJZGJnKCIl
+cyBUSU9DTVNFVCIsIF9fRlVOQ1RJT05fXyk7CiAJcmV0dXJuIHVwZGF0ZV9tY3RybChwb3J0LCBz
+ZXQsIGNsZWFyKTsKIH0KQEAgLTI0NDEsNyArMjQ0OCw3IEBACiAJCQkJfQogCQkJCS8qCiAJCQkJ
+ICogT3RoZXJ3aXNlIGNhbGxlciBjYW4ndCBjYXJlIGxlc3MgYWJvdXQgd2hhdAotCQkJCSAqIGhh
+cHBlbmVkLGFuZCBzbyB3ZSBjb250aW51ZSB0byB3YWl0IGZvciBtb3JlCisJCQkJICogaGFwcGVu
+ZWQsIGFuZCBzbyB3ZSBjb250aW51ZSB0byB3YWl0IGZvciBtb3JlCiAJCQkJICogZXZlbnRzLgog
+CQkJCSAqLwogCQkJfQpAQCAtMjQ1MCwxMiArMjQ1NywxMyBAQAogCWRlZmF1bHQ6CiAJCWJyZWFr
+OwogCX0KKwogCS8qIFRoaXMgaXMgbm90IG5lY2Vzc2FyaWx5IGFuIGVycm9yIC0gdHVybnMgb3V0
+IHRoZSBoaWdoZXIgbGF5ZXJzCiAJICogd2lsbCBkbyBzb21lIGlvY3RscyB0aGVtc2VsdmVzIChz
+ZWUgY29tbWVudCBhYm92ZSkKIAkgKi8KIAlkYmcoIiVzIGFyZyBub3Qgc3VwcG9ydGVkIC0gaXQg
+d2FzIDB4JTA0eCAtIGNoZWNrIC91c3IvaW5jbHVkZS9hc20vaW9jdGxzLmgiLCBfX0ZVTkNUSU9O
+X18sIGNtZCk7CiAJcmV0dXJuIC1FTk9JT0NUTENNRDsKLX0KK30gLyogZnRkaV9pb2N0bCAqLwog
+CiBzdGF0aWMgdm9pZCBmdGRpX3Rocm90dGxlKHN0cnVjdCB0dHlfc3RydWN0ICp0dHkpCiB7Cgo=
+--0016e6d78545a26bde047ed771fa--
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
