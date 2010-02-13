@@ -1,94 +1,242 @@
 From: Martin Fuzzey <mfuzzey@gmail.com>
-Subject: [PATCH 08/12] Serial: sc26xx - avoid endless loop with IRQs masked.
-Date: Sat, 13 Feb 2010 17:10:21 +0100
-Message-ID: <20100213161021.22311.49059.stgit@srv002.fuzzey.net>
+Subject: [PATCH 10/12] Serial: sc26xx - introduce a structure for platform
+	data.
+Date: Sat, 13 Feb 2010 17:10:29 +0100
+Message-ID: <20100213161029.22311.65543.stgit@srv002.fuzzey.net>
 References: <20100213160948.22311.27542.stgit@srv002.fuzzey.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ey-out-2122.google.com ([74.125.78.24]:50855 "EHLO
-	ey-out-2122.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755700Ab0BMQKY (ORCPT
+Received: from mail-ew0-f228.google.com ([209.85.219.228]:45000 "EHLO
+	mail-ew0-f228.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756425Ab0BMQKb (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 13 Feb 2010 11:10:24 -0500
-Received: by ey-out-2122.google.com with SMTP id d26so857312eyd.19
-        for <linux-serial@vger.kernel.org>; Sat, 13 Feb 2010 08:10:23 -0800 (PST)
+	Sat, 13 Feb 2010 11:10:31 -0500
+Received: by mail-ew0-f228.google.com with SMTP id 28so2648139ewy.28
+        for <linux-serial@vger.kernel.org>; Sat, 13 Feb 2010 08:10:31 -0800 (PST)
 In-Reply-To: <20100213160948.22311.27542.stgit@srv002.fuzzey.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: tsbogend@alpha.franken.de
 
-If hardware is in wierd state it is possible to lock the
-system while waiting for the TX flush to complete.
+Encapsulates the existing array of uint for signal mapping
+and adds baudrate group selection.
 
 Signed-off-by: Martin Fuzzey <mfuzzey@gmail.com>
 
 ---
 
- drivers/serial/sc26xx.c |   27 ++++++++++++++++++++++-----
- 1 files changed, 22 insertions(+), 5 deletions(-)
+ arch/mips/sni/a20r.c          |   15 ++++++++----
+ drivers/serial/sc26xx.c       |   49 +++++++++++++++++++++++++++++++++++----
+ include/linux/serial_sc2xxx.h |   52 +++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 107 insertions(+), 9 deletions(-)
+ create mode 100644 include/linux/serial_sc2xxx.h
 
+diff --git a/arch/mips/sni/a20r.c b/arch/mips/sni/a20r.c
+index e698089..2fbbb65 100644
+--- a/arch/mips/sni/a20r.c
++++ b/arch/mips/sni/a20r.c
+@@ -12,6 +12,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/platform_device.h>
+ #include <linux/serial_8250.h>
++#include <linux/serial_sc2xxx.h>
+ 
+ #include <asm/sni.h>
+ #include <asm/time.h>
+@@ -117,10 +118,14 @@ static struct resource sc26xx_rsrc[] = {
+ 	}
+ };
+ 
+-static unsigned int sc26xx_data[2] = {
+-	/* DTR   |   RTS    |   DSR    |   CTS     |   DCD     |   RI    */
+-	(8 << 0) | (4 << 4) | (6 << 8) | (0 << 12) | (6 << 16) | (0 << 20),
+-	(3 << 0) | (2 << 4) | (1 << 8) | (2 << 12) | (3 << 16) | (4 << 20)
++static struct plat_serial_sc2xxx sc26xx_data = {
++	.signal_map = {
++		/* DTR   |   RTS    |   DSR    |   CTS     |   DCD     |   RI    */
++		(8 << 0) | (4 << 4) | (6 << 8) | (0 << 12) | (6 << 16) | (0 << 20),
++		(3 << 0) | (2 << 4) | (1 << 8) | (2 << 12) | (3 << 16) | (4 << 20)
++	},
++	.baud_mode = 1,
++	.baud_group = 2,
+ };
+ 
+ static struct platform_device sc26xx_pdev = {
+@@ -128,7 +133,7 @@ static struct platform_device sc26xx_pdev = {
+ 	.num_resources  = ARRAY_SIZE(sc26xx_rsrc),
+ 	.resource       = sc26xx_rsrc,
+ 	.dev			= {
+-		.platform_data	= sc26xx_data,
++		.platform_data	= &sc26xx_data,
+ 	}
+ };
+ 
 diff --git a/drivers/serial/sc26xx.c b/drivers/serial/sc26xx.c
-index 69b7ae7..bc466ac 100644
+index 053520d..09e73a3 100644
 --- a/drivers/serial/sc26xx.c
 +++ b/drivers/serial/sc26xx.c
-@@ -72,6 +72,7 @@ struct uart_sc26xx_port {
- #define SR_FRAME    (1 << 6)
- #define SR_PARITY   (1 << 5)
- #define SR_OVERRUN  (1 << 4)
-+#define SR_TXEMT    (1 << 3)
- #define SR_TXRDY    (1 << 2)
- #define SR_RXRDY    (1 << 0)
+@@ -22,6 +22,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/irq.h>
+ #include <linux/io.h>
++#include <linux/serial_sc2xxx.h>
  
-@@ -396,6 +397,22 @@ static void sc26xx_shutdown(struct uart_port *port)
- 	WRITE_SC_PORT(port, CR, CR_DIS_TX | CR_DIS_RX);
+ #if defined(CONFIG_MAGIC_SYSRQ)
+ #define SUPPORT_SYSRQ
+@@ -171,6 +172,10 @@ static struct chip_def chip_2892 = {
+ 	.init_mr1 = (1 << 6),
+ };
+ 
++static const struct chip_def *chips[] = {
++	&chip_26xx,
++	&chip_2892
++};
+ 
+ static struct uart_sc26xx_port *driver_info(struct uart_port *port)
+ {
+@@ -753,9 +758,17 @@ static void __devinit sc26xx_init_masks(struct uart_sc26xx_port *up,
+ 
+ static int __devinit init_baudgroup(struct uart_sc26xx_port *up)
+ {
++	struct plat_serial_sc2xxx *pdata = up->port[0].dev->platform_data;
++
+ 	u8 baud_mode = up->chip->default_baud_mode;
+ 	u8 baud_group = up->chip->default_baud_group;
+ 
++	if (pdata->baud_mode > 0)
++		baud_mode = pdata->baud_mode - 1;
++
++	if (pdata->baud_group > 0)
++		baud_group = pdata->baud_group - 1;
++
+ 	if (baud_mode > up->chip->max_baud_mode) {
+ 		printk(KERN_ERR "Baud mode %d not supported for %s\n",
+ 			baud_mode, up->chip->name);
+@@ -779,6 +792,20 @@ static int __devinit init_baudgroup(struct uart_sc26xx_port *up)
+ 	return 0;
  }
  
-+static int wait_tx_empty(struct uart_port *port)
++static const struct chip_def * __devinit chip_by_name(const char *name)
 +{
 +	int i;
-+	u8 sr;
-+	u8 bits = SR_TXEMT | SR_TXRDY;
++	const struct chip_def *chip;
 +
-+	for (i = 0; i < 10000; i++) {
-+		sr = READ_SC_PORT(port, SR);
-+		if  ((sr & bits) == bits)
-+			return 0;
-+		udelay(2);
++	for (i = 0; i < ARRAY_SIZE(chips); i++) {
++		chip = chips[i];
++		if (!strcmp(chip->name, name))
++			return chip;
 +	}
-+	dev_warn(port->dev, "Timed out waiting for TX Empty sr=%02X\n", sr);
-+	return -1;
++
++	return NULL;
 +}
 +
- /* port->lock is not held.  */
- static void sc26xx_set_termios(struct uart_port *port, struct ktermios *termios,
- 			      struct ktermios *old)
-@@ -407,8 +424,8 @@ static void sc26xx_set_termios(struct uart_port *port, struct ktermios *termios,
+ static const struct chip_def * __devinit detect_chip_type(
+ 	struct uart_sc26xx_port *up)
+ {
+@@ -809,9 +836,14 @@ static int __devinit sc26xx_probe(struct platform_device *dev)
+ {
+ 	struct resource *res, *irq_res;
+ 	struct uart_sc26xx_port *up;
+-	unsigned int *sc26xx_data = dev->dev.platform_data;
++	struct plat_serial_sc2xxx *pdata = dev->dev.platform_data;
+ 	int err;
  
- 	spin_lock_irqsave(&port->lock, flags);
++	if (!pdata) {
++		dev_err(&dev->dev, "No platform data\n");
++		return -EINVAL;
++	}
++
+ 	res = platform_get_resource(dev, IORESOURCE_MEM, 0);
+ 	if (!res)
+ 		return -ENODEV;
+@@ -836,16 +868,25 @@ static int __devinit sc26xx_probe(struct platform_device *dev)
  
--	while ((READ_SC_PORT(port, SR) & ((1 << 3) | (1 << 2))) != 0xc)
--		udelay(2);
-+	if (wait_tx_empty(port))
-+		goto out;
+ 	up->port[0].dev = &dev->dev;
  
- 	WRITE_SC_PORT(port, CR, CR_DIS_TX | CR_DIS_RX);
+-	sc26xx_init_masks(up, 0, sc26xx_data[0]);
++	sc26xx_init_masks(up, 0, pdata->signal_map[0]);
  
-@@ -501,11 +518,11 @@ static void sc26xx_set_termios(struct uart_port *port, struct ktermios *termios,
- 	write_cmd_port(port, CR_RES_TX);
+ 	sc26xx_port = &up->port[0];
  
- 	WRITE_SC_PORT(port, CR, CR_ENA_TX | CR_ENA_RX);
--	while ((READ_SC_PORT(port, SR) & ((1 << 3) | (1 << 2))) != 0xc)
--		udelay(2);
-+	if (wait_tx_empty(port))
-+		goto out;
+ 	memcpy(&up->port[1], &up->port[0], sizeof(up->port[0]));
+ 	up->port[1].line = 1;
  
- 	uart_update_timeout(port, cflag, baud);
--
-+out:
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
+-	sc26xx_init_masks(up, 1, sc26xx_data[1]);
++	sc26xx_init_masks(up, 1, pdata->signal_map[1]);
++
++	if (pdata->chip_name)
++		up->chip = chip_by_name(pdata->chip_name);
++	if (!up->chip) {
++		if (pdata->chip_name)
++			dev_warn(&dev->dev,
++				"Unknown chip %s requested - use autodetect\n",
++				pdata->chip_name);
++		up->chip = detect_chip_type(up);
++	}
  
+-	up->chip = detect_chip_type(up);
+ 	err = init_baudgroup(up);
+ 	if (err)
+ 		goto out_free_port;
+diff --git a/include/linux/serial_sc2xxx.h b/include/linux/serial_sc2xxx.h
+new file mode 100644
+index 0000000..d93977f
+--- /dev/null
++++ b/include/linux/serial_sc2xxx.h
+@@ -0,0 +1,52 @@
++/*
++ *
++ *  Copyright (C) 2009 Martin Fuzzey
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ */
++
++
++#ifndef _LINUX_SERIAL_SC26XX_H
++#define _LINUX_SERIAL_SC26XX_H 1
++
++
++/**
++ * struct plat_sc2xxx - Philips UART platform data
++ * @signal_map:		Hardware signal mapping (see below)
++ *
++ * @chip_name:		One of "SC26xx", "SC2892" or NULL for autodetect
++ *
++ * @baud_mode:		Baudrate mode + 1 (1,2,3) must be 1 for SC26xx see
++ *			datasheet or baud_rates[] in driver code for available
++ * 			baudrates in each mode
++ *			0 = use driver default
++ *
++ * @baud_group: 	Baudrate group + 1 (1, 2) within mode
++ *			0 = use driver default
++ *
++ * For each port signal_map is a bitfield defined as follows:
++ *	bits 0-3	DTR
++ *	bits 4-7	RTS
++ *	bits 8-11	DSR
++ *	bits 12-15	CTS
++ *	bits 16-19	DCD
++ *	bits 20-23	RI
++ *
++ *	Value of each field is 1 + corresponding IP/OP pin or 0 if not connected
++ *	Eg:
++ *	(3 << 0) | (1 << 4) | (3 << 8) | (1 << 12) | (4 << 16) | (0 << 20),
++ *	=>
++ *		DTR=OP2, RTS=OP0, DSR=IP2, CTS=IP0, DCD=IP3, RI=NC
++ *
++ **/
++struct plat_serial_sc2xxx {
++	unsigned int signal_map[2];
++	const char *chip_name;
++	u8 baud_mode;
++	u8 baud_group;
++};
++
++#endif
 
