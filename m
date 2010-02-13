@@ -1,76 +1,46 @@
-From: sfabel <sfabel@hawaii.edu>
-Subject: Intel 82801 DB LPC / 6 serial ports, only 1 works
-Date: Fri, 12 Feb 2010 15:21:46 -0800 (PST)
-Message-ID: <27570741.post@talk.nabble.com>
+From: Martin Fuzzey <mfuzzey@gmail.com>
+Subject: [PATCH 01/12] Serial: Enable build of sc26xx driver for embedded
+	platforms
+Date: Sat, 13 Feb 2010 17:09:52 +0100
+Message-ID: <20100213160952.22311.23313.stgit@srv002.fuzzey.net>
+References: <20100213160948.22311.27542.stgit@srv002.fuzzey.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kuber.nabble.com ([216.139.236.158]:54567 "EHLO
-	kuber.nabble.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753264Ab0BLXVr (ORCPT
+Received: from mail-ew0-f228.google.com ([209.85.219.228]:45000 "EHLO
+	mail-ew0-f228.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752033Ab0BMQJz (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 12 Feb 2010 18:21:47 -0500
-Received: from isper.nabble.com ([192.168.236.156])
-	by kuber.nabble.com with esmtp (Exim 4.63)
-	(envelope-from <lists@nabble.com>)
-	id 1Ng4pW-0006G9-Bq
-	for linux-serial@vger.kernel.org; Fri, 12 Feb 2010 15:21:46 -0800
+	Sat, 13 Feb 2010 11:09:55 -0500
+Received: by ewy28 with SMTP id 28so2648139ewy.28
+        for <linux-serial@vger.kernel.org>; Sat, 13 Feb 2010 08:09:54 -0800 (PST)
+In-Reply-To: <20100213160948.22311.27542.stgit@srv002.fuzzey.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
+Cc: tsbogend@alpha.franken.de
 
 
-Hello,
 
-I've been banging my head on this issue for a couple of days now and would
-appreciate any help or pointers in the right direction. I've got an
-Intel-based motherboard with the above mentioned LPC bus integrated. There
-is one regular serial port included (DB 9), the rest is on the bus. I've got
-several motor controllers hanging on that bus. Under Windows, they are
-attached to COM4, 5 and 6.
+Signed-off-by: Martin Fuzzey <mfuzzey@gmail.com>
 
-Under Linux (2.6.31/Ubuntu stock kernel), I only get /dev/ttyS{0,1,2,3}
-initially. Ports 0-2 are dead, under ttyS3 I can access one motor. So I used
-the boot parameter 8250.nr_uarts=6 to try and see if that changes anything,
-and it does: I've got /dev/ttyS{4,5} now. However, the I/O ports are messed
-up.
+---
 
-A quick look in the BIOS revealed that serial port 5 lives at I/O 0x4e8 and
-port 6 at 0x4f8. 
+ drivers/serial/Kconfig |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-However, dmesg shows these ports in reverse:
------snip-----
-[    1.015356] serial8250: ttyS0 at I/O 0x3f8 (irq = 4) is a 16550A
-[    1.015479] serial8250: ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
-[    1.015619] serial8250: ttyS2 at I/O 0x3e8 (irq = 4) is a 16550A
-[    1.015729] serial8250: ttyS3 at I/O 0x2e8 (irq = 3) is a 16550A
-[    1.016355] 00:0c: ttyS0 at I/O 0x3f8 (irq = 4) is a 16550A
-[    1.016584] 00:10: ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
-[    1.016763] 00:11: ttyS2 at I/O 0x3e8 (irq = 3) is a 16550A
-[    1.016937] 00:12: ttyS3 at I/O 0x2e8 (irq = 4) is a 16550A
-[    1.017113] 00:13: ttyS4 at I/O 0x4f8 (irq = 5) is a 16550A 
-[    1.017289] 00:14: ttyS5 at I/O 0x4e8 (irq = 9) is a 16550A
------snip-----
-
-So I made sure I did not oversee anything; but I did not. Every time I
-change this in the BIOS, it shows up in reverse in dmesg; I cannot use
-setserial to change it, either. I should mention that the IRQs are set
-correctly and I've tried changing them (with one eye on the Serial-HOWTO),
-and these changes get accepted.
-
-Now the above only shows the first four as output from serial8250, and then
-lists them again, this time all 6 of them.
-
-What can I do? Is there a way to move /dev/ttyS{0-2} to wherever my motor
-controllers are? Do I recompile the kernel with some option enabled or
-changed? To I have to rewire the LPC port? Is support for the Intel 82801 DB
-LPC broken?
-
-Thanks for any help on this.
-
-Stephan
--- 
-View this message in context: http://old.nabble.com/Intel-82801-DB-LPC---6-serial-ports%2C-only-1-works-tp27570741p27570741.html
-Sent from the linux-serial mailing list archive at Nabble.com.
+diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
+index 9ff47db..10bd461 100644
+--- a/drivers/serial/Kconfig
++++ b/drivers/serial/Kconfig
+@@ -1395,7 +1395,7 @@ config SERIAL_QE
+ 
+ config SERIAL_SC26XX
+ 	tristate "SC2681/SC2692 serial port support"
+-	depends on SNI_RM
++	depends on SNI_RM || EMBEDDED
+ 	select SERIAL_CORE
+ 	help
+ 	  This is a driver for the onboard serial ports of
 
