@@ -1,90 +1,51 @@
 From: Alan Cox <alan@linux.intel.com>
-Subject: [PATCH 2/3] nozomi: Fix mutex handling
-Date: Wed, 17 Feb 2010 13:00:05 +0000
-Message-ID: <20100217125957.15264.4782.stgit@localhost.localdomain>
+Subject: [PATCH 3/3] nozomi: Tidy up the PCI table
+Date: Wed, 17 Feb 2010 13:00:14 +0000
+Message-ID: <20100217130010.15264.17190.stgit@localhost.localdomain>
 References: <20100217125940.15264.98701.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:46204 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:46210 "EHLO
 	bob.linux.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S932286Ab0BQNYE (ORCPT
+	with ESMTP id S932286Ab0BQNYM (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 17 Feb 2010 08:24:04 -0500
+	Wed, 17 Feb 2010 08:24:12 -0500
 In-Reply-To: <20100217125940.15264.98701.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: fseidel@suse.de, greg@kroah.com, linux-serial@vger.kernel.org
 
-The original author didn't realise the kernel lock was a drop while sleep
-lock so did clever (and wrong) things to work around the non need to avoid
-deadlocks. Remove the cleverness and the comment (as we don't hold the BKL
-now anyway in those paths)
-
 Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
 
- drivers/char/nozomi.c |   34 ++++++++++++----------------------
- 1 files changed, 12 insertions(+), 22 deletions(-)
+ drivers/char/nozomi.c |    6 +-----
+ 1 files changed, 1 insertions(+), 5 deletions(-)
 
 
 diff --git a/drivers/char/nozomi.c b/drivers/char/nozomi.c
-index cd405bc..fac9157 100644
+index fac9157..584910f 100644
 --- a/drivers/char/nozomi.c
 +++ b/drivers/char/nozomi.c
-@@ -1693,15 +1693,7 @@ static int ntty_write(struct tty_struct *tty, const unsigned char *buffer,
- 	if (!dc || !port)
- 		return -ENODEV;
+@@ -136,10 +136,6 @@ static int debug;
+ #define RECEIVE_BUF_MAX		4
  
--	if (unlikely(!mutex_trylock(&port->tty_sem))) {
--		/*
--		 * must test lock as tty layer wraps calls
--		 * to this function with BKL
--		 */
--		dev_err(&dc->pdev->dev, "Would have deadlocked - "
--			"return EAGAIN\n");
--		return -EAGAIN;
--	}
-+	mutex_lock(&port->tty_sem);
  
- 	if (unlikely(!port->port.count)) {
- 		DBG1(" ");
-@@ -1741,25 +1733,23 @@ exit:
-  * This method is called by the upper tty layer.
-  *   #according to sources N_TTY.c it expects a value >= 0 and
-  *    does not check for negative values.
-+ *
-+ * If the port is unplugged report lots of room and let the bits
-+ * dribble away so we don't block anything.
-  */
- static int ntty_write_room(struct tty_struct *tty)
- {
- 	struct port *port = tty->driver_data;
--	int room = 0;
-+	int room = 4096;
- 	const struct nozomi *dc = get_dc_by_tty(tty);
+-/* Define all types of vendors and devices to support */
+-#define VENDOR1		0x1931	/* Vendor Option */
+-#define DEVICE1		0x000c	/* HSDPA card */
+-
+ #define R_IIR		0x0000	/* Interrupt Identity Register */
+ #define R_FCR		0x0000	/* Flow Control Register */
+ #define R_IER		0x0004	/* Interrupt Enable Register */
+@@ -407,7 +403,7 @@ struct buffer {
  
--	if (!dc || !port)
--		return 0;
--	if (!mutex_trylock(&port->tty_sem))
--		return 0;
--
--	if (!port->port.count)
--		goto exit;
--
--	room = port->fifo_ul.size - kfifo_len(&port->fifo_ul);
--
--exit:
--	mutex_unlock(&port->tty_sem);
-+	if (dc) {
-+		mutex_lock(&port->tty_sem);
-+		if (port->port.count)
-+			room = port->fifo_ul.size -
-+					kfifo_len(&port->fifo_ul);
-+		mutex_unlock(&port->tty_sem);
-+	}
- 	return room;
- }
+ /*    Global variables */
+ static const struct pci_device_id nozomi_pci_tbl[] __devinitconst = {
+-	{PCI_DEVICE(VENDOR1, DEVICE1)},
++	{PCI_DEVICE(0x1931, 0x000c)},	/* Nozomi HSDPA */
+ 	{},
+ };
  
 
