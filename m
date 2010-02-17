@@ -1,253 +1,101 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: [PATCH] sdio_uart: Use kfifo instead of the messy circ stuff
-Date: Wed, 17 Feb 2010 13:00:50 +0000
-Message-ID: <20100217130047.15429.63815.stgit@localhost.localdomain>
+From: Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH 1/5] tty: Add a function to insert a string of characters with
+	the same flag
+Date: Wed, 17 Feb 2010 13:06:30 +0000
+Message-ID: <20100217130604.16008.86393.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:46215 "EHLO
-	bob.linux.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S932286Ab0BQNYs (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 17 Feb 2010 08:24:48 -0500
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: greg@kroah.com, linux-serial@vger.kernel.org
 
-Revised patch to use the new kfifo API
+The USB drivers often want to insert a series of bytes all with the same
+flag set - provide a helper for this case.
 
-Signed-off-by: Alan Cox <alan@linux.intel.com>
+Signed-off-by: Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
 
- drivers/mmc/card/sdio_uart.c |   93 ++++++++++++++----------------------------
- 1 files changed, 30 insertions(+), 63 deletions(-)
+ drivers/char/tty_buffer.c |   12 +++++++-----
+ include/linux/tty_flip.h  |    7 ++++++-
+ 2 files changed, 13 insertions(+), 6 deletions(-)
 
 
-diff --git a/drivers/mmc/card/sdio_uart.c b/drivers/mmc/card/sdio_uart.c
-index a4e3775..723e508 100644
---- a/drivers/mmc/card/sdio_uart.c
-+++ b/drivers/mmc/card/sdio_uart.c
-@@ -37,6 +37,7 @@
- #include <linux/gfp.h>
- #include <linux/tty.h>
- #include <linux/tty_flip.h>
-+#include <linux/kfifo.h>
- 
- #include <linux/mmc/core.h>
- #include <linux/mmc/card.h>
-@@ -47,19 +48,9 @@
- #define UART_NR		8	/* Number of UARTs this driver can handle */
- 
- 
--#define UART_XMIT_SIZE	PAGE_SIZE
-+#define FIFO_SIZE	PAGE_SIZE
- #define WAKEUP_CHARS	256
- 
--#define circ_empty(circ)	((circ)->head == (circ)->tail)
--#define circ_clear(circ)	((circ)->head = (circ)->tail = 0)
--
--#define circ_chars_pending(circ) \
--		(CIRC_CNT((circ)->head, (circ)->tail, UART_XMIT_SIZE))
--
--#define circ_chars_free(circ) \
--		(CIRC_SPACE((circ)->head, (circ)->tail, UART_XMIT_SIZE))
--
--
- struct uart_icount {
- 	__u32	cts;
- 	__u32	dsr;
-@@ -82,7 +73,7 @@ struct sdio_uart_port {
- 	struct mutex		func_lock;
- 	struct task_struct	*in_sdio_uart_irq;
- 	unsigned int		regs_offset;
--	struct circ_buf		xmit;
-+	struct kfifo		xmit_fifo;
- 	spinlock_t		write_lock;
- 	struct uart_icount	icount;
- 	unsigned int		uartclk;
-@@ -105,6 +96,8 @@ static int sdio_uart_add_port(struct sdio_uart_port *port)
- 	kref_init(&port->kref);
- 	mutex_init(&port->func_lock);
- 	spin_lock_init(&port->write_lock);
-+	if (kfifo_alloc(&port->xmit_fifo, FIFO_SIZE, GFP_KERNEL))
-+		return -ENOMEM;
- 
- 	spin_lock(&sdio_uart_table_lock);
- 	for (index = 0; index < UART_NR; index++) {
-@@ -140,6 +133,7 @@ static void sdio_uart_port_destroy(struct kref *kref)
- {
- 	struct sdio_uart_port *port =
- 		container_of(kref, struct sdio_uart_port, kref);
-+	kfifo_free(&port->xmit_fifo);
- 	kfree(port);
- }
- 
-@@ -456,9 +450,11 @@ static void sdio_uart_receive_chars(struct sdio_uart_port *port,
- 
- static void sdio_uart_transmit_chars(struct sdio_uart_port *port)
- {
--	struct circ_buf *xmit = &port->xmit;
-+	struct kfifo *xmit = &port->xmit_fifo;
- 	int count;
- 	struct tty_struct *tty;
-+	u8 iobuf[16];
-+	int len;
- 
- 	if (port->x_char) {
- 		sdio_out(port, UART_TX, port->x_char);
-@@ -469,27 +465,25 @@ static void sdio_uart_transmit_chars(struct sdio_uart_port *port)
- 
- 	tty = tty_port_tty_get(&port->port);
- 
--	if (tty == NULL || circ_empty(xmit) ||
-+	if (tty == NULL || !kfifo_len(xmit) ||
- 				tty->stopped || tty->hw_stopped) {
- 		sdio_uart_stop_tx(port);
- 		tty_kref_put(tty);
- 		return;
- 	}
- 
--	count = 16;
--	do {
--		sdio_out(port, UART_TX, xmit->buf[xmit->tail]);
--		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-+	len = kfifo_out_locked(xmit, iobuf, 16, &port->write_lock);
-+	for (count = 0; count < len; count++) {
-+		sdio_out(port, UART_TX, iobuf[count]);
- 		port->icount.tx++;
--		if (circ_empty(xmit))
--			break;
--	} while (--count > 0);
-+	}
- 
--	if (circ_chars_pending(xmit) < WAKEUP_CHARS)
-+	len = kfifo_len(xmit);
-+	if (len < WAKEUP_CHARS) {
- 		tty_wakeup(tty);
--
--	if (circ_empty(xmit))
--		sdio_uart_stop_tx(port);
-+		if (len == 0)
-+			sdio_uart_stop_tx(port);
-+	}
- 	tty_kref_put(tty);
- }
- 
-@@ -632,7 +626,6 @@ static int sdio_uart_activate(struct tty_port *tport, struct tty_struct *tty)
- {
- 	struct sdio_uart_port *port =
- 			container_of(tport, struct sdio_uart_port, port);
--	unsigned long page;
- 	int ret;
- 
- 	/*
-@@ -641,22 +634,17 @@ static int sdio_uart_activate(struct tty_port *tport, struct tty_struct *tty)
- 	 */
- 	set_bit(TTY_IO_ERROR, &tty->flags);
- 
--	/* Initialise and allocate the transmit buffer. */
--	page = __get_free_page(GFP_KERNEL);
--	if (!page)
--		return -ENOMEM;
--	port->xmit.buf = (unsigned char *)page;
--	circ_clear(&port->xmit);
-+	kfifo_reset(&port->xmit_fifo);
- 
- 	ret = sdio_uart_claim_func(port);
- 	if (ret)
--		goto err1;
-+		return ret;
- 	ret = sdio_enable_func(port->func);
- 	if (ret)
--		goto err2;
-+		goto err1;
- 	ret = sdio_claim_irq(port->func, sdio_uart_irq);
- 	if (ret)
--		goto err3;
-+		goto err2;
- 
- 	/*
- 	 * Clear the FIFO buffers and disable them.
-@@ -700,12 +688,10 @@ static int sdio_uart_activate(struct tty_port *tport, struct tty_struct *tty)
- 	sdio_uart_release_func(port);
- 	return 0;
- 
--err3:
--	sdio_disable_func(port->func);
- err2:
--	sdio_uart_release_func(port);
-+	sdio_disable_func(port->func);
- err1:
--	free_page((unsigned long)port->xmit.buf);
-+	sdio_uart_release_func(port);
- 	return ret;
- }
- 
-@@ -727,7 +713,7 @@ static void sdio_uart_shutdown(struct tty_port *tport)
- 
- 	ret = sdio_uart_claim_func(port);
- 	if (ret)
--		goto skip;
-+		return;
- 
- 	sdio_uart_stop_rx(port);
- 
-@@ -749,10 +735,6 @@ static void sdio_uart_shutdown(struct tty_port *tport)
- 	sdio_disable_func(port->func);
- 
- 	sdio_uart_release_func(port);
--
--skip:
--	/* Free the transmit buffer page. */
--	free_page((unsigned long)port->xmit.buf);
- }
+diff --git a/drivers/char/tty_buffer.c b/drivers/char/tty_buffer.c
+index 8402eda..af8d977 100644
+--- a/drivers/char/tty_buffer.c
++++ b/drivers/char/tty_buffer.c
+@@ -231,9 +231,10 @@ int tty_buffer_request_room(struct tty_struct *tty, size_t size)
+ EXPORT_SYMBOL_GPL(tty_buffer_request_room);
  
  /**
-@@ -822,27 +804,12 @@ static int sdio_uart_write(struct tty_struct *tty, const unsigned char *buf,
- 			   int count)
- {
- 	struct sdio_uart_port *port = tty->driver_data;
--	struct circ_buf *circ = &port->xmit;
--	int c, ret = 0;
-+	int ret;
+- *	tty_insert_flip_string	-	Add characters to the tty buffer
++ *	tty_insert_flip_string_fixed_flag - Add characters to the tty buffer
+  *	@tty: tty structure
+  *	@chars: characters
++ *	@flag: flag value for each character
+  *	@size: size
+  *
+  *	Queue a series of bytes to the tty buffering. All the characters
+@@ -242,18 +243,19 @@ EXPORT_SYMBOL_GPL(tty_buffer_request_room);
+  *	Locking: Called functions may take tty->buf.lock
+  */
  
- 	if (!port->func)
- 		return -ENODEV;
- 
--	spin_lock(&port->write_lock);
--	while (1) {
--		c = CIRC_SPACE_TO_END(circ->head, circ->tail, UART_XMIT_SIZE);
--		if (count < c)
--			c = count;
--		if (c <= 0)
--			break;
--		memcpy(circ->buf + circ->head, buf, c);
--		circ->head = (circ->head + c) & (UART_XMIT_SIZE - 1);
--		buf += c;
--		count -= c;
--		ret += c;
--	}
--	spin_unlock(&port->write_lock);
--
-+	ret = kfifo_in_locked(&port->xmit_fifo, buf, count, &port->write_lock);
- 	if (!(port->ier & UART_IER_THRI)) {
- 		int err = sdio_uart_claim_func(port);
- 		if (!err) {
-@@ -859,13 +826,13 @@ static int sdio_uart_write(struct tty_struct *tty, const unsigned char *buf,
- static int sdio_uart_write_room(struct tty_struct *tty)
+-int tty_insert_flip_string(struct tty_struct *tty, const unsigned char *chars,
+-				size_t size)
++int tty_insert_flip_string_fixed_flag(struct tty_struct *tty,
++		const unsigned char *chars, char flag, size_t size)
  {
- 	struct sdio_uart_port *port = tty->driver_data;
--	return port ? circ_chars_free(&port->xmit) : 0;
-+	return FIFO_SIZE - kfifo_len(&port->xmit_fifo);
+ 	int copied = 0;
+ 	do {
++		int goal = min(size - copied, TTY_BUFFER_PAGE);
+ 		int space = tty_buffer_request_room(tty, goal);
+ 		struct tty_buffer *tb = tty->buf.tail;
+ 		/* If there is no space then tb may be NULL */
+ 		if (unlikely(space == 0))
+ 			break;
+ 		memcpy(tb->char_buf_ptr + tb->used, chars, space);
+-		memset(tb->flag_buf_ptr + tb->used, TTY_NORMAL, space);
++		memset(tb->flag_buf_ptr + tb->used, flag, space);
+ 		tb->used += space;
+ 		copied += space;
+ 		chars += space;
+@@ -262,7 +264,7 @@ int tty_insert_flip_string(struct tty_struct *tty, const unsigned char *chars,
+ 	} while (unlikely(size > copied));
+ 	return copied;
+ }
+-EXPORT_SYMBOL(tty_insert_flip_string);
++EXPORT_SYMBOL(tty_insert_flip_string_fixed_flag);
+ 
+ /**
+  *	tty_insert_flip_string_flags	-	Add characters to the tty buffer
+diff --git a/include/linux/tty_flip.h b/include/linux/tty_flip.h
+index eb677cf..9239d03 100644
+--- a/include/linux/tty_flip.h
++++ b/include/linux/tty_flip.h
+@@ -2,8 +2,8 @@
+ #define _LINUX_TTY_FLIP_H
+ 
+ extern int tty_buffer_request_room(struct tty_struct *tty, size_t size);
+-extern int tty_insert_flip_string(struct tty_struct *tty, const unsigned char *chars, size_t size);
+ extern int tty_insert_flip_string_flags(struct tty_struct *tty, const unsigned char *chars, const char *flags, size_t size);
++extern int tty_insert_flip_string_fixed_flag(struct tty_struct *tty, const unsigned char *chars, char flag, size_t size);
+ extern int tty_prepare_flip_string(struct tty_struct *tty, unsigned char **chars, size_t size);
+ extern int tty_prepare_flip_string_flags(struct tty_struct *tty, unsigned char **chars, char **flags, size_t size);
+ void tty_schedule_flip(struct tty_struct *tty);
+@@ -20,4 +20,9 @@ static inline int tty_insert_flip_char(struct tty_struct *tty,
+ 	return tty_insert_flip_string_flags(tty, &ch, &flag, 1);
  }
  
- static int sdio_uart_chars_in_buffer(struct tty_struct *tty)
- {
- 	struct sdio_uart_port *port = tty->driver_data;
--	return port ? circ_chars_pending(&port->xmit) : 0;
-+	return kfifo_len(&port->xmit_fifo);
- }
- 
- static void sdio_uart_send_xchar(struct tty_struct *tty, char ch)
++static inline int tty_insert_flip_string(struct tty_struct *tty, const unsigned char *chars, size_t size)
++{
++	return tty_insert_flip_string_fixed_flag(tty, chars, TTY_NORMAL, size);
++}
++
+ #endif /* _LINUX_TTY_FLIP_H */
 
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
