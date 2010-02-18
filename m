@@ -1,99 +1,52 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: [PATCH 6/6] tty: Fix up char drivers request_room usage
-Date: Thu, 18 Feb 2010 16:44:23 +0000
-Message-ID: <20100218164421.31856.68348.stgit@localhost.localdomain>
-References: <20100218164104.31856.89546.stgit@localhost.localdomain>
+From: Paul Mundt <lethal@linux-sh.org>
+Subject: Re: [PATCH 1/2] sh: extend .device_terminate_all() to record partial transfer
+Date: Fri, 19 Feb 2010 03:08:07 +0900
+Message-ID: <20100218180807.GA12264@linux-sh.org>
+References: <Pine.LNX.4.64.1002181624190.4373@axis700.grange> <Pine.LNX.4.64.1002181722070.4373@axis700.grange>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:33892 "EHLO
-	bob.linux.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1755850Ab0BRRIX (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 18 Feb 2010 12:08:23 -0500
-In-Reply-To: <20100218164104.31856.89546.stgit@localhost.localdomain>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-sh-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <Pine.LNX.4.64.1002181722070.4373@axis700.grange>
+Sender: linux-sh-owner@vger.kernel.org
+To: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Cc: "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, Magnus Damm <damm@opensource.se>, Dan Williams <dan.j.williams@intel.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: greg@kroah.com, linux-serial@vger.kernel.org
 
-We can't change them all but quite a few misuse it.
+On Thu, Feb 18, 2010 at 05:30:02PM +0100, Guennadi Liakhovetski wrote:
+> This patch extends the .device_terminate_all() method of the shdma driver 
+> to return number of bytes transfered in the current descriptor.
+> 
+> Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+> ---
+> diff --git a/arch/sh/include/asm/dmaengine.h b/arch/sh/include/asm/dmaengine.h
+> index 9586e4a..bf2f30c 100644
+> --- a/arch/sh/include/asm/dmaengine.h
+> +++ b/arch/sh/include/asm/dmaengine.h
+> @@ -70,4 +73,21 @@ struct sh_dmae_slave {
+>  	struct sh_dmae_slave_config	*config;  /* Set by the driver */
+>  };
+>  
+> +struct sh_dmae_regs {
+> +	u32 sar; /* SAR / source address */
+> +	u32 dar; /* DAR / destination address */
+> +	u32 tcr; /* TCR / transfer count */
+> +};
+> +
+> +struct sh_desc {
+> +	struct sh_dmae_regs hw;
+> +	struct list_head node;
+> +	struct dma_async_tx_descriptor async_tx;
+> +	enum dma_data_direction direction;
+> +	dma_cookie_t cookie;
+> +	size_t partial;
+> +	int chunks;
+> +	int mark;
+> +};
+> +
+>  #endif
 
-Signed-off-by: Alan Cox <alan@linux.intel.com>
----
-
- drivers/char/nozomi.c        |    2 --
- drivers/char/serial167.c     |    3 +--
- drivers/char/specialix.c     |    2 --
- drivers/serial/icom.c        |    1 -
- drivers/serial/ioc3_serial.c |    3 +--
- 5 files changed, 2 insertions(+), 9 deletions(-)
-
-
-diff --git a/drivers/char/nozomi.c b/drivers/char/nozomi.c
-index 584910f..a3f32a1 100644
---- a/drivers/char/nozomi.c
-+++ b/drivers/char/nozomi.c
-@@ -853,8 +853,6 @@ static int receive_data(enum port_type index, struct nozomi *dc)
- 		goto put;
- 	}
- 
--	tty_buffer_request_room(tty, size);
--
- 	while (size > 0) {
- 		read_mem32((u32 *) buf, addr + offset, RECEIVE_BUF_MAX);
- 
-diff --git a/drivers/char/serial167.c b/drivers/char/serial167.c
-index aee3c0d..1ec3d5c 100644
---- a/drivers/char/serial167.c
-+++ b/drivers/char/serial167.c
-@@ -658,8 +658,7 @@ static irqreturn_t cd2401_rx_interrupt(int irq, void *dev_id)
- 			info->mon.char_max = char_count;
- 		info->mon.char_last = char_count;
- #endif
--		len = tty_buffer_request_room(tty, char_count);
--		while (len--) {
-+		while (char_count--) {
- 			data = base_addr[CyRDR];
- 			tty_insert_flip_char(tty, data, TTY_NORMAL);
- #ifdef CYCLOM_16Y_HACK
-diff --git a/drivers/char/specialix.c b/drivers/char/specialix.c
-index 268e17f..07ac14d 100644
---- a/drivers/char/specialix.c
-+++ b/drivers/char/specialix.c
-@@ -646,8 +646,6 @@ static void sx_receive(struct specialix_board *bp)
- 	dprintk(SX_DEBUG_RX, "port: %p: count: %d\n", port, count);
- 	port->hits[count > 8 ? 9 : count]++;
- 
--	tty_buffer_request_room(tty, count);
--
- 	while (count--)
- 		tty_insert_flip_char(tty, sx_in(bp, CD186x_RDR), TTY_NORMAL);
- 	tty_flip_buffer_push(tty);
-diff --git a/drivers/serial/icom.c b/drivers/serial/icom.c
-index 6e715b7..53a4682 100644
---- a/drivers/serial/icom.c
-+++ b/drivers/serial/icom.c
-@@ -751,7 +751,6 @@ static void recv_interrupt(u16 port_int_reg, struct icom_port *icom_port)
- 		trace(icom_port, "FID_STATUS", status);
- 		count = cpu_to_le16(icom_port->statStg->rcv[rcv_buff].leLength);
- 
--                count = tty_buffer_request_room(tty, count);
- 		trace(icom_port, "RCV_COUNT", count);
- 
- 		trace(icom_port, "REAL_COUNT", count);
-diff --git a/drivers/serial/ioc3_serial.c b/drivers/serial/ioc3_serial.c
-index 85dc041..23ba6b4 100644
---- a/drivers/serial/ioc3_serial.c
-+++ b/drivers/serial/ioc3_serial.c
-@@ -1411,8 +1411,7 @@ static int receive_chars(struct uart_port *the_port)
- 	read_count = do_read(the_port, ch, MAX_CHARS);
- 	if (read_count > 0) {
- 		flip = 1;
--		read_room = tty_buffer_request_room(tty, read_count);
--		tty_insert_flip_string(tty, ch, read_room);
-+		read_room = tty_insert_flip_string(tty, ch, read_count);
- 		the_port->icount.rx += read_count;
- 	}
- 	spin_unlock_irqrestore(&the_port->lock, pflags);
-
+If we're going to expose this to drivers, can we please come up with a
+better name than sh_desc? Even something as uninspired as sh_dmae_desc
+would be better. This can be done as a follow-up patch though, since this
+naming existed before these changes.
