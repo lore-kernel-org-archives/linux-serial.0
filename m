@@ -1,59 +1,42 @@
-From: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: Re: [PATCH  00/12] Serial : sc26xx - generalize and support SC2892
-Date: Mon, 22 Feb 2010 10:06:26 +0100
-Message-ID: <20100222090626.GA15242@alpha.franken.de>
-References: <20100213160948.22311.27542.stgit@srv002.fuzzey.net> <20100215170958.GA13994@alpha.franken.de> <4B802207.4080309@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Manuel Lauss <manuel.lauss@googlemail.com>
+Subject: [RFC PATCH 0/2] serial 8250 platform PM hooks
+Date: Tue, 23 Feb 2010 19:22:25 +0100
+Message-ID: <1266949347-12024-1-git-send-email-manuel.lauss@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from elvis.franken.de ([193.175.24.41]:58991 "EHLO elvis.franken.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752020Ab0BVJGg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 22 Feb 2010 04:06:36 -0500
-Content-Disposition: inline
-In-Reply-To: <4B802207.4080309@gmail.com>
+Received: from mail-bw0-f209.google.com ([209.85.218.209]:35726 "EHLO
+	mail-bw0-f209.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751564Ab0BWSVg (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 23 Feb 2010 13:21:36 -0500
+Received: by bwz1 with SMTP id 1so1240235bwz.21
+        for <linux-serial@vger.kernel.org>; Tue, 23 Feb 2010 10:21:29 -0800 (PST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Martin Fuzzey <mfuzzey@gmail.com>
-Cc: linux-serial@vger.kernel.org
+To: Linux Serial <linux-serial@vger.kernel.org>
+Cc: Linux-MIPS <linux-mips@linux-mips.org>, Manuel Lauss <manuel.lauss@gmail.com>
 
-On Sat, Feb 20, 2010 at 06:55:19PM +0100, Martin Fuzzey wrote:
-> Can I also have an Ack for this additional patch:
+The following 2 patches implement a PM hook for platform 8250
+UARTs and a sample PM implementation for a MIPS SoC.
 
-sure
+Patch #1 hooks a new .pm callback in struct plat_serial8250_port to
+the rest of serial_core's PM infrastructure,
 
-> Author: Martin Fuzzey <mfuzzey@gmail.com>
-> Date:   Sat Feb 20 18:47:06 2010 +0100
-> 
->     Serial: sc26xx - Use ttySC0 instead of ttySC205
->    
->     Use device name ttySC0 as per Documentation/devices.txt
-> 
-> diff --git a/drivers/serial/sc26xx.c b/drivers/serial/sc26xx.c
-> index 2e17bbc..9b0ede0 100644
-> --- a/drivers/serial/sc26xx.c
-> +++ b/drivers/serial/sc26xx.c
-> @@ -918,8 +918,6 @@ static int __devinit sc26xx_probe(struct
-> platform_device *dev)
->         if (err)
->                 goto out_free_port;
->  
-> -       sc26xx_reg.tty_driver->name_base = sc26xx_reg.minor;
-> -
->         err = uart_add_one_port(&sc26xx_reg, &up->port[0]);
->         if (err)
->                 goto out_unregister_driver;
-> 
+Patch #2 implements uart power gating for Alchemy line of mips socs.
 
-Acked-By: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+With these 2 patches serial console on my test system survives
+suspend/resume cycles without having to resort to platform-specific
+hacks in the PM code.
 
-> If this is OK with you I'll repost the whole series with your acks and a
-> rename patch to sc2xxx
+Thanks,
+     Manuel Lauss
 
-that's fine with me.
+Manuel Lauss (2):
+  8250: allow platform uarts to install PM callback.
+  Alchemy: UART PM through serial framework.
 
-Thomas.
+ arch/mips/alchemy/common/platform.c |   17 +++++++++++++++++
+ arch/mips/alchemy/common/power.c    |   35 -----------------------------------
+ drivers/serial/8250.c               |   31 ++++++++++++++++++++++++++++---
+ include/linux/serial_8250.h         |    6 ++++++
+ 4 files changed, 51 insertions(+), 38 deletions(-)
 
--- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessary a
-good idea.                                                [ RFC1925, 2.3 ]
