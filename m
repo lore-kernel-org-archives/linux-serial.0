@@ -1,52 +1,37 @@
-From: Feng Tang <feng.tang@intel.com>
-Subject: Re: [spi-devel-general] [RFC][PATCH] serial: spi: add spi-uart
- driver for Maxim 3110
-Date: Thu, 25 Feb 2010 15:49:06 +0800
-Message-ID: <20100225154906.7d3ac9f1@feng-i7>
-References: <20091229222006.1ddb28a4@feng-desktop>
-	<73BDC2BA3DA0BD47BAAEE12383D407EF303E943D@shzsmsx502.ccr.corp.intel.com>
-	<1262112228.28396.93.camel@justakiss.home.at>
-	<201002242047.14308.david-b@pacbell.net>
+From: David Brownell <david-b@pacbell.net>
+Subject: Re: [RFC][PATCH v3] serial: spi: add spi-uart driver for Maxim 3110
+Date: Thu, 25 Feb 2010 00:11:50 -0800
+Message-ID: <201002250011.51269.david-b@pacbell.net>
+References: <20091229222006.1ddb28a4@feng-desktop> <201002242043.15231.david-b@pacbell.net> <20100225154411.6d1ec4d0@feng-i7>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:15266 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753043Ab0BYHqs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 25 Feb 2010 02:46:48 -0500
-In-Reply-To: <201002242047.14308.david-b@pacbell.net>
+Received: from smtp126.sbc.mail.sp1.yahoo.com ([69.147.65.185]:40293 "HELO
+	smtp126.sbc.mail.sp1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1753319Ab0BYILw (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 25 Feb 2010 03:11:52 -0500
+In-Reply-To: <20100225154411.6d1ec4d0@feng-i7>
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: David Brownell <david-b@pacbell.net>
-Cc: Erwin Authried <eauth@softsys.co.at>, Baruch Siach <baruch@tkos.co.il>, Greg Kroah-Hartman <gregkh@suse.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, spi-devel-list <spi-devel-general@lists.sourceforge.net>, Andrew Morton <akpm@linux-foundation.org>, "alan@lxorguk.ukuu.org.uk" <alan@lxorguk.ukuu.org.uk>
+To: Feng Tang <feng.tang@intel.com>
+Cc: Greg KH <greg@kroah.com>, Grant Likely <grant.likely@secretlab.ca>, Andrew Morton <akpm@linux-foundation.org>, Greg Kroah-Hartman <gregkh@suse.de>, spi-devel-list <spi-devel-general@lists.sourceforge.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "alan@lxorguk.ukuu.org.uk" <alan@lxorguk.ukuu.org.uk>
 
-On Thu, 25 Feb 2010 12:47:13 +0800
-David Brownell <david-b@pacbell.net> wrote:
+On Wednesday 24 February 2010, Feng Tang wrote:
+> Good point about the DW controller specific data, I'll remove them.
 
-> On Tuesday 29 December 2009, Erwin Authried wrote:
-> > I think there's no need for a MAX3100 **and** a MAX3110 driver,
-> > this is just confusing. The MAX3110 driver is identical to the
-> > MAX3100 from the software view, it is simply a MAX3100 with
-> > transceivers added to the chip. If there's any improvement, that
-> > should be merged into the existing MAX3100 driver.
-> 
-> Assuming that's true ... who will resolve the issue?
-> 
-Hi David,
+Good.
 
-I've answered Erwin's comments before in v1 submission cycle, following
-is the quote:
 
-"I agree there should not be 2 drivers cover 1 family of HW, so this is a RFC.
-I've thinked about merge with current 3100 code, but it depends on one char
-per spi_transfer, while my driver relys on batch data transfer for efficiency.
-Another key point is the console, SPI UART can't be directly accessed by
-CPU, so every spi_transfer will go through tasklet/workqueue, which makes
-supporting printk a big part of my driver."
+> For those "bits_per_word" setting, I think we can put it here instead of
+> the board initialization code, as many types of boards can leverage the
+> setting here as it only works in 16b mode.
 
-I really did consider about that, but has no good clue, so I think better to
-shape my driver first.
+Yes.  The bits-per-word setting is mostly driver-specific, so
+that's appropriate as something the driver updates.
 
-Thanks,
-Feng
+- Dave
+
