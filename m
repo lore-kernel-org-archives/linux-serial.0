@@ -1,30 +1,45 @@
 From: Martin Fuzzey <mfuzzey@gmail.com>
-Subject: [PATCH  00/14] Serial : sc26xx - generalize and support SC2892
-Date: Thu, 25 Feb 2010 14:34:50 +0100
-Message-ID: <20100225133450.12331.94240.stgit@srv002.fuzzey.net>
+Subject: [PATCH V2 01/14] Serial: Enable build of sc26xx driver for embedded
+	platforms
+Date: Thu, 25 Feb 2010 14:34:55 +0100
+Message-ID: <20100225133455.12331.5073.stgit@srv002.fuzzey.net>
+References: <20100225133450.12331.94240.stgit@srv002.fuzzey.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ey-out-2122.google.com ([74.125.78.27]:33916 "EHLO
-	ey-out-2122.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932526Ab0BYNe5 (ORCPT
+Received: from mail-ew0-f212.google.com ([209.85.219.212]:34503 "EHLO
+	mail-ew0-f212.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932526Ab0BYNfA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 25 Feb 2010 08:34:57 -0500
-Received: by ey-out-2122.google.com with SMTP id 25so73164eya.19
-        for <linux-serial@vger.kernel.org>; Thu, 25 Feb 2010 05:34:55 -0800 (PST)
+	Thu, 25 Feb 2010 08:35:00 -0500
+Received: by ewy4 with SMTP id 4so1510191ewy.28
+        for <linux-serial@vger.kernel.org>; Thu, 25 Feb 2010 05:34:57 -0800 (PST)
+In-Reply-To: <20100225133450.12331.94240.stgit@srv002.fuzzey.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org, tsbogend@alpha.franken.de
 
-This patch series generalizes the SC26xx driver to all embedded platforms
-(in addition to the current SNI_RM) and adds support for the SC2892 DUART.
+Acked-By: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 
-This chip is quite similar to the SC2692 but has more baud rates
-and bigger FIFOs.
+Signed-off-by: Martin Fuzzey <mfuzzey@gmail.com>
 
-Changes since V1:
-    Add patch: Use device name ttySC0 as per Documentation/devices.txt
-    Add Acked-By: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-    Rename driver to sc2xxx
+---
+
+ drivers/serial/Kconfig |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
+index 9ff47db..10bd461 100644
+--- a/drivers/serial/Kconfig
++++ b/drivers/serial/Kconfig
+@@ -1395,7 +1395,7 @@ config SERIAL_QE
+ 
+ config SERIAL_SC26XX
+ 	tristate "SC2681/SC2692 serial port support"
+-	depends on SNI_RM
++	depends on SNI_RM || EMBEDDED
+ 	select SERIAL_CORE
+ 	help
+ 	  This is a driver for the onboard serial ports of
 
