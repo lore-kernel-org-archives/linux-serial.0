@@ -1,62 +1,36 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+From: Peter Korsgaard <jacmet@sunsite.dk>
 Subject: Re: [PATCH 1/2] serial: Add driver for the Altera JTAG UART
-Date: Thu, 25 Feb 2010 15:26:22 +0000
-Message-ID: <20100225152622.7eb479aa@lxorguk.ukuu.org.uk>
+Date: Thu, 25 Feb 2010 17:45:33 +0100
+Message-ID: <87ocjd5knm.fsf@macbook.be.48ers.dk>
 References: <1267108523-32767-1-git-send-email-tklauser@distanz.ch>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:33157 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1759202Ab0BYPWu (ORCPT
+Received: from ey-out-2122.google.com ([74.125.78.25]:13483 "EHLO
+	ey-out-2122.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758948Ab0BYQvh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 25 Feb 2010 10:22:50 -0500
-In-Reply-To: <1267108523-32767-1-git-send-email-tklauser@distanz.ch>
+	Thu, 25 Feb 2010 11:51:37 -0500
+In-Reply-To: <1267108523-32767-1-git-send-email-tklauser@distanz.ch> (Tobias
+	Klauser's message of "Thu, 25 Feb 2010 15:35:22 +0100")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Tobias Klauser <tklauser@distanz.ch>
 Cc: linux-serial@vger.kernel.org, nios2-dev@sopc.et.ntust.edu.tw, linux-kernel@vger.kernel.org
 
-> +static void altera_jtaguart_set_termios(struct uart_port *port,
-> +					struct ktermios *termios,
-> +					struct ktermios *old)
-> +{
-> +}
+>>>>> "Tobias" == Tobias Klauser <tklauser@distanz.ch> writes:
 
-Erm no .. it may be wrong in the code you are copying but please don't
-further that. The requirement is that the termios handed back reflects
-the actual settings not the requested ones.
+ Tobias> Add an UART driver for the JTAG UART component available as a SOPC
+ Tobias> (System on Programmable Chip) component for Altera FPGAs.
 
-Use tty_termios_copy_hw() to copy the old termios hardware settings back
-so that the caller sees it cannot set them.
+ Tobias> Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
+ 
+ Tobias> +config SERIAL_ALTERA_JTAGUART
+ Tobias> +	bool "Altera JTAG UART support"
+ Tobias> +	depends on EMBEDDED
 
-> +
-> +static void altera_jtaguart_rx_chars(struct altera_jtaguart *pp)
-> +{
-> +	struct uart_port *port = &pp->port;
-> +	unsigned char ch, flag;
-> +	unsigned long status;
-> +
-> +	while ((status = readl(port->membase + ALTERA_JTAGUART_DATA_REG)) &
-> +	       ALTERA_JTAGUART_DATA_RVALID_MSK) {
-> +		ch = status & ALTERA_JTAGUART_DATA_DATA_MSK;
-> +		flag = TTY_NORMAL;
-> +		port->icount.rx++;
-> +
-> +		if (uart_handle_sysrq_char(port, ch))
-> +			continue;
-> +		uart_insert_char(port, 0, 0, ch, flag);
-> +	}
-> +
-> +	tty_flip_buffer_push(port->state->port.tty);
+Don't depend on EMBEDDED - There's embedded devices not using
+CONFIG_EMBEDDED and kernel configs for PCs using it.
 
-port.tty needs to be protected here - you might race an unplug/hangup as
-far as I can see - I think you need to take the lock over a bigger area
-
-[I'm working on switching this to krefs in all the drivers currently so
-that will end up cleaner]
-
-Basically fine other than that. The proposed UART number clashes with
-some other pending patches but that will get sorted out when they get
-merged
+-- 
+Bye, Peter Korsgaard
