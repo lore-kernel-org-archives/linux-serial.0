@@ -1,77 +1,77 @@
-From: Scott Wood <scottwood@freescale.com>
-Subject: Re: [PATCH] 8250: add workaround for MPC8[356]xx UART break IRQ
-	storm
-Date: Fri, 26 Feb 2010 14:23:35 -0600
-Message-ID: <20100226202335.GA28844@loki.buserror.net>
-References: <1267212301-26851-1-git-send-email-paul.gortmaker@windriver.com> <EB2B2912-24C3-46C9-B894-0A84D593570F@kernel.crashing.org>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH 1/5] tty: Add a function to insert a string of
+ characters with the same flag
+Date: Fri, 26 Feb 2010 14:11:00 -0800
+Message-ID: <20100226221100.GA22352@kroah.com>
+References: <20100217130604.16008.86393.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from az33egw02.freescale.net ([192.88.158.103]:34415 "EHLO
-	az33egw02.freescale.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965955Ab0BZUX7 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 26 Feb 2010 15:23:59 -0500
+Received: from kroah.org ([198.145.64.141]:58126 "EHLO coco.kroah.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S966501Ab0BZXD0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 26 Feb 2010 18:03:26 -0500
 Content-Disposition: inline
-In-Reply-To: <EB2B2912-24C3-46C9-B894-0A84D593570F@kernel.crashing.org>
+In-Reply-To: <20100217130604.16008.86393.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kumar Gala <galak@kernel.crashing.org>
-Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
 
-On Fri, Feb 26, 2010 at 01:42:39PM -0600, Kumar Gala wrote:
+On Wed, Feb 17, 2010 at 01:06:30PM +0000, Alan Cox wrote:
+> The USB drivers often want to insert a series of bytes all with the same
+> flag set - provide a helper for this case.
 > 
-> On Feb 26, 2010, at 1:25 PM, Paul Gortmaker wrote:
+> Signed-off-by: Alan Cox <alan@linux.intel.com>
+> ---
 > 
-> > Sending a break on the SOC UARTs found in some MPC83xx/85xx/86xx
-> > chips seems to cause a short lived IRQ storm (/proc/interrupts
-> > typically shows somewhere between 300 and 1500 events).  Unfortunately
-> > this renders SysRQ over the serial console completely inoperable.
-> > Testing with obvious things like ACKing the event doesn't seem to
-> > change anything vs. a completely dumb approach of just ignoring
-> > it and waiting for it to stop, so that is what is implemented here.
-> > 
-> > Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
-> > ---
-> > 
-> > This is a refresh of a patch I'd done earlier -- I've tried to make
-> > the bug support as generic as possible to minimize having board
-> > specific ifdef crap in 8250.c -- any suggestions on how to further
-> > improve it are welcome.
-> > 
-> > drivers/serial/8250.c      |    6 ++++++
-> > drivers/serial/8250.h      |   20 ++++++++++++++++++++
-> > drivers/serial/Kconfig     |   14 ++++++++++++++
-> > include/linux/serial_reg.h |    2 ++
-> > 4 files changed, 42 insertions(+), 0 deletions(-)
-> > 
-> > diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-> > index e9b15c3..850b0e9 100644
-> > --- a/drivers/serial/8250.c
-> > +++ b/drivers/serial/8250.c
-> > @@ -1531,6 +1531,11 @@ static void serial8250_handle_port(struct uart_8250_port *up)
-> > 
-> > 	status = serial_inp(up, UART_LSR);
-> > 
-> > +	if ((up->bugs & UART_BUG_PPC) && (status == UART_LSR_RFE_ERROR_BITS)) {
-> > +		spin_unlock_irqrestore(&up->port.lock, flags);
-> > +		return;
-> > +	}
+>  drivers/char/tty_buffer.c |   12 +++++++-----
+>  include/linux/tty_flip.h  |    7 ++++++-
+>  2 files changed, 13 insertions(+), 6 deletions(-)
+> 
+> 
+> diff --git a/drivers/char/tty_buffer.c b/drivers/char/tty_buffer.c
+> index 8402eda..af8d977 100644
+> --- a/drivers/char/tty_buffer.c
+> +++ b/drivers/char/tty_buffer.c
+> @@ -231,9 +231,10 @@ int tty_buffer_request_room(struct tty_struct *tty, size_t size)
+>  EXPORT_SYMBOL_GPL(tty_buffer_request_room);
+>  
+>  /**
+> - *	tty_insert_flip_string	-	Add characters to the tty buffer
+> + *	tty_insert_flip_string_fixed_flag - Add characters to the tty buffer
+>   *	@tty: tty structure
+>   *	@chars: characters
+> + *	@flag: flag value for each character
+>   *	@size: size
+>   *
+>   *	Queue a series of bytes to the tty buffering. All the characters
+> @@ -242,18 +243,19 @@ EXPORT_SYMBOL_GPL(tty_buffer_request_room);
+>   *	Locking: Called functions may take tty->buf.lock
+>   */
+>  
+> -int tty_insert_flip_string(struct tty_struct *tty, const unsigned char *chars,
+> -				size_t size)
+> +int tty_insert_flip_string_fixed_flag(struct tty_struct *tty,
+> +		const unsigned char *chars, char flag, size_t size)
+>  {
+>  	int copied = 0;
+>  	do {
+> +		int goal = min(size - copied, TTY_BUFFER_PAGE);
 
-Will LSR always be 0xf1 when this problem hits?  At least the transmit bits
-shouldn't be relevant.
+This variable isn't used in this function.
 
-This has been listed as an erratum in some of the newer chips (e.g.
-mpc8568).
+>  		int space = tty_buffer_request_room(tty, goal);
+>  		struct tty_buffer *tb = tty->buf.tail;
+>  		/* If there is no space then tb may be NULL */
+>  		if (unlikely(space == 0))
+>  			break;
+>  		memcpy(tb->char_buf_ptr + tb->used, chars, space);
+> -		memset(tb->flag_buf_ptr + tb->used, TTY_NORMAL, space);
+> +		memset(tb->flag_buf_ptr + tb->used, flag, space);
 
-The suggested as workaround is to, upon seeing a break condition:
-- read RBR
-- delay at least one character period
-- read RBR again
+Should you have "goal" here instead of "space"?
 
-If I'm interpreting this correctly, it could be implemented by doing the
-normal break handling on the first interrupt, plus setting a flag so that the
-next interrupt simply reads RBR, clears the flag, and returns, without ever
-reading LSR.
+thanks,
 
--Scott
+greg k-h
