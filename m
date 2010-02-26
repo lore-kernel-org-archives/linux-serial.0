@@ -1,39 +1,51 @@
-From: Dan Carpenter <error27@gmail.com>
-Subject: Re: [RESEND PATCH 2/2] serial: Add driver for the Altera UART
-Date: Fri, 26 Feb 2010 22:50:22 +0300
-Message-ID: <20100226195022.GF8417@bicker>
-References: <1267108523-32767-1-git-send-email-tklauser@distanz.ch> <1267109261-752-1-git-send-email-tklauser@distanz.ch>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: Re: [PATCH] 8250: add workaround for MPC8[356]xx UART break IRQ storm
+Date: Fri, 26 Feb 2010 15:21:15 -0500
+Message-ID: <4B882D3B.5050003@windriver.com>
+References: <1267212301-26851-1-git-send-email-paul.gortmaker@windriver.com> <EB2B2912-24C3-46C9-B894-0A84D593570F@kernel.crashing.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pz0-f172.google.com ([209.85.222.172]:40331 "EHLO
-	mail-pz0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965902Ab0BZT6s (ORCPT
+Received: from mail.windriver.com ([147.11.1.11]:41592 "EHLO
+	mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S966031Ab0BZUVU (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 26 Feb 2010 14:58:48 -0500
-Content-Disposition: inline
-In-Reply-To: <1267109261-752-1-git-send-email-tklauser@distanz.ch>
+	Fri, 26 Feb 2010 15:21:20 -0500
+In-Reply-To: <EB2B2912-24C3-46C9-B894-0A84D593570F@kernel.crashing.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tobias Klauser <tklauser@distanz.ch>
-Cc: linux-serial@vger.kernel.org, nios2-dev@sopc.et.ntust.edu.tw, linux-kernel@vger.kernel.org
+To: Kumar Gala <galak@kernel.crashing.org>
+Cc: linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
 
-A couple smatch complaints.
+On 10-02-26 02:42 PM, Kumar Gala wrote:
+> 
+> On Feb 26, 2010, at 1:25 PM, Paul Gortmaker wrote:
+> 
 
-drivers/serial/altera_jtaguart.c
-   380          if (co->index >= 0 && co->index <= ALTERA_JTAGUART_MAXPORTS)
-   381                  co->index = 0;
-   382          port = &altera_jtaguart_ports[co->index].port;
+[...]
 
-This test seems backward.  co->index == -1 would be a buffer underflow.
+>>
+>> +	if ((up->bugs&  UART_BUG_PPC)&&  (status == UART_LSR_RFE_ERROR_BITS)) {
+>> +		spin_unlock_irqrestore(&up->port.lock, flags);
+>> +		return;
+>> +	}
+>> +
 
-drivers/serial/altera_uart.c
-   455          if ((co->index >= 0)
-   456              && (co->index <= CONFIG_SERIAL_ALTERA_UART_MAXPORTS))
-   457                  co->index = 0;
-   458          port = &altera_uart_ports[co->index].port;
+[...]
 
-Same here.
+> 
+> is there harm caused if we have SERIAL_8250_PPC_BUG set and dont need it?
 
-regards,
-dan carpenter
+In theory, no -- strip away all the window dressing and we are
+left with the above change.  So, you'd have to have some UART
+implementation that was setting those bits and still relying
+on its interrupt event to be processed normally.  But since
+there are so many different 8250 implementations out there,
+I was being cautious and taking the absolute safe approach.
+
+P.
+
+> 
+> - k
+
