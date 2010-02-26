@@ -1,65 +1,130 @@
-From: David Brownell <david-b@pacbell.net>
-Subject: Re: [PATCH v4] serial: spi: add spi-uart driver for Maxim 3110
-Date: Fri, 26 Feb 2010 11:41:42 -0800
-Message-ID: <201002261141.43002.david-b@pacbell.net>
-References: <20100224131130.61530b62@feng-i7> <20100226114729.679bb933@feng-i7> <201002260959.o1Q9xIVA021953@imail.sm.sony.co.jp>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Kumar Gala <galak@kernel.crashing.org>
+Subject: Re: [PATCH] 8250: add workaround for MPC8[356]xx UART break IRQ storm
+Date: Fri, 26 Feb 2010 13:42:39 -0600
+Message-ID: <EB2B2912-24C3-46C9-B894-0A84D593570F@kernel.crashing.org>
+References: <1267212301-26851-1-git-send-email-paul.gortmaker@windriver.com>
+Mime-Version: 1.0 (Apple Message framework v1077)
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp125.sbc.mail.sp1.yahoo.com ([69.147.65.184]:42073 "HELO
-	smtp125.sbc.mail.sp1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with SMTP id S965843Ab0BZTlo (ORCPT
+Received: from gate.crashing.org ([63.228.1.57]:57308 "EHLO gate.crashing.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S965824Ab0BZTmp convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 26 Feb 2010 14:41:44 -0500
-In-Reply-To: <201002260959.o1Q9xIVA021953@imail.sm.sony.co.jp>
-Content-Disposition: inline
+	Fri, 26 Feb 2010 14:42:45 -0500
+In-Reply-To: <1267212301-26851-1-git-send-email-paul.gortmaker@windriver.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Masakazu Mokuno <mokuno@sm.sony.co.jp>
-Cc: Feng Tang <feng.tang@intel.com>, Greg KH <greg@kroah.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, spi-devel-list <spi-devel-general@lists.sourceforge.net>, Andrew Morton <akpm@linux-foundation.org>, "alan@lxorguk.ukuu.org.uk" <alan@lxorguk.ukuu.org.uk>
+To: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
 
-On Friday 26 February 2010, Masakazu Mokuno wrote:
-> > +static int max3110_read_multi(struct uart_max3110 *max, u8 *buf)
-> > +{
-> > +=A0=A0=A0=A0=A0u16 obuf[M3110_RX_FIFO_DEPTH], ibuf[M3110_RX_FIFO_D=
-EPTH];
->=20
-> Doing I/O on stack is guaranteed safe for spi functions?
 
-Good catch ...  no it's not safe.
+On Feb 26, 2010, at 1:25 PM, Paul Gortmaker wrote:
 
-No DMA-enabled programming interface allows it, including SPI.
+> Sending a break on the SOC UARTs found in some MPC83xx/85xx/86xx
+> chips seems to cause a short lived IRQ storm (/proc/interrupts
+> typically shows somewhere between 300 and 1500 events).  Unfortunately
+> this renders SysRQ over the serial console completely inoperable.
+> Testing with obvious things like ACKing the event doesn't seem to
+> change anything vs. a completely dumb approach of just ignoring
+> it and waiting for it to stop, so that is what is implemented here.
+> 
+> Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+> ---
+> 
+> This is a refresh of a patch I'd done earlier -- I've tried to make
+> the bug support as generic as possible to minimize having board
+> specific ifdef crap in 8250.c -- any suggestions on how to further
+> improve it are welcome.
+> 
+> drivers/serial/8250.c      |    6 ++++++
+> drivers/serial/8250.h      |   20 ++++++++++++++++++++
+> drivers/serial/Kconfig     |   14 ++++++++++++++
+> include/linux/serial_reg.h |    2 ++
+> 4 files changed, 42 insertions(+), 0 deletions(-)
+> 
+> diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+> index e9b15c3..850b0e9 100644
+> --- a/drivers/serial/8250.c
+> +++ b/drivers/serial/8250.c
+> @@ -1531,6 +1531,11 @@ static void serial8250_handle_port(struct uart_8250_port *up)
+> 
+> 	status = serial_inp(up, UART_LSR);
+> 
+> +	if ((up->bugs & UART_BUG_PPC) && (status == UART_LSR_RFE_ERROR_BITS)) {
+> +		spin_unlock_irqrestore(&up->port.lock, flags);
+> +		return;
+> +	}
+> +
+> 	DEBUG_INTR("status = %x...", status);
+> 
+> 	if (status & (UART_LSR_DR | UART_LSR_BI))
+> @@ -1948,6 +1953,7 @@ static int serial8250_startup(struct uart_port *port)
+> 
+> 	up->capabilities = uart_config[up->port.type].flags;
+> 	up->mcr = 0;
+> +	up->bugs |= UART_KNOWN_BUGS;
+> 
+> 	if (up->port.iotype != up->cur_iotype)
+> 		set_io_from_upio(port);
+> diff --git a/drivers/serial/8250.h b/drivers/serial/8250.h
+> index 6e19ea3..2074ce1 100644
+> --- a/drivers/serial/8250.h
+> +++ b/drivers/serial/8250.h
+> @@ -49,6 +49,7 @@ struct serial8250_config {
+> #define UART_BUG_TXEN	(1 << 1)	/* UART has buggy TX IIR status */
+> #define UART_BUG_NOMSR	(1 << 2)	/* UART has buggy MSR status bits (Au1x00) */
+> #define UART_BUG_THRE	(1 << 3)	/* UART has buggy THRE reassertion */
+> +#define UART_BUG_PPC	(1 << 4)	/* UART has buggy PPC break IRQ storm */
+> 
+> #define PROBE_RSA	(1 << 0)
+> #define PROBE_ANY	(~0)
+> @@ -78,3 +79,22 @@ struct serial8250_config {
+> #else
+> #define ALPHA_KLUDGE_MCR 0
+> #endif
+> +
+> +/*
+> + * The following UART bugs are currently dynamically detected and not
+> + * required to be contingent on any particular compile time options.
+> + */
+> +#define HAS_BUG_QUOT	0	/* assign UART_BUG_QUOT to enable */
+> +#define HAS_BUG_TXEN	0	/* assign UART_BUG_TXEN to enable */
+> +#define HAS_BUG_NOMSR	0	/* assign UART_BUG_NOMSR to enable */
+> +#define HAS_BUG_THRE	0	/* assign UART_BUG_THRE to enable */
+> +
+> +#ifdef CONFIG_SERIAL_8250_PPC_BUG
+> +#define HAS_BUG_PPC	UART_BUG_PPC
+> +#else
+> +#define HAS_BUG_PPC	0
+> +#endif
+> +
+> +#define UART_KNOWN_BUGS (HAS_BUG_QUOT | HAS_BUG_TXEN | HAS_BUG_NOMSR | \
+> +			HAS_BUG_THRE | HAS_BUG_PPC)
+> +
+> diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
+> index 9ff47db..e01a411 100644
+> --- a/drivers/serial/Kconfig
+> +++ b/drivers/serial/Kconfig
+> @@ -70,6 +70,20 @@ config SERIAL_8250_CONSOLE
+> 
+> 	  If unsure, say N.
+> 
+> +config SERIAL_8250_PPC_BUG
+> +	bool "Fix 8250/16550 to handle IRQ storm after receipt of a break"
+> +	depends on SERIAL_8250 && PPC32
+> +	---help---
+> +	  If you say Y here, addional checks will be added in the handling of
+> +	  interrupts on the serial ports which will prevent ill effects of
+> +	  an interrupt storm triggered by a break on the serial line. Without
+> +	  this enabled, a Sysrq via the serial console can be unusable on
+> +	  some systems.
+> +
+> +	  This is commonly observed on PPC32 MPC83xx/85xx/86xx based boards.
+> +
+> +	  If unsure, say N.
+> +
 
-The Documentation/PCI/PCI-DMA-mapping.txt file has a section with
-the oddly punctuated title "What memory is DMA'able?".  That's
-generic to all uses of DMA.  When it was moved to the PCI area,
-that information became harder to find ... but no less true for
-non-PCI contexts (sigh).  One relevant paragraph being:
+is there harm caused if we have SERIAL_8250_PPC_BUG set and dont need it?
 
-  This rule also means that you may use neither kernel image addresses
-  (items in data/text/bss segments), nor module image addresses, nor
-  stack addresses for DMA.  These could all be mapped somewhere entirel=
-y
-  different than the rest of physical memory.  Even if those classes of
-  memory could physically work with DMA, you'd need to ensure the I/O
-  buffers were cacheline-aligned.  Without that, you'd see cacheline
-  sharing problems (data corruption) on CPUs with DMA-incoherent caches=
-=2E
-  (The CPU could write to one word, DMA would write to a different one
-  in the same cache line, and one of them could be overwritten.)
-
-Those cacheline sharing problems are particularly bad for the stack,
-since the data corruption often includes return addresses.
-
-In short, passing a stack-based I/O buffer could work on some machines,
-but cause perplexing data corruption issues on others.  So don't try
-to do it any driver that claims to be portable.
-
-- Dave
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+- k
