@@ -1,57 +1,38 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+From: Greg KH <greg@kroah.com>
 Subject: Re: [PATCH 1/5] tty: Add a function to insert a string of
  characters with the same flag
-Date: Sat, 27 Feb 2010 19:32:33 +0000
-Message-ID: <20100227193233.0aad1e5e@lxorguk.ukuu.org.uk>
+Date: Sat, 27 Feb 2010 15:37:07 -0800
+Message-ID: <20100227233707.GA10941@kroah.com>
 References: <20100217130604.16008.86393.stgit@localhost.localdomain>
-	<20100226221100.GA22352@kroah.com>
+ <20100226221100.GA22352@kroah.com>
+ <20100227190212.5958a7d5@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:45741 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1030715Ab0B0TcK (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 27 Feb 2010 14:32:10 -0500
-In-Reply-To: <20100226221100.GA22352@kroah.com>
+Received: from kroah.org ([198.145.64.141]:55058 "EHLO coco.kroah.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1030902Ab0B0Xhn (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 27 Feb 2010 18:37:43 -0500
+Content-Disposition: inline
+In-Reply-To: <20100227190212.5958a7d5@lxorguk.ukuu.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <greg@kroah.com>
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Cc: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
 
-Was it really the 17th I sent the second set out - apparently so - so
-ignore the first email, this is the correct patch set.
-
-> > +int tty_insert_flip_string_fixed_flag(struct tty_struct *tty,
-> > +		const unsigned char *chars, char flag, size_t size)
-> >  {
-> >  	int copied = 0;
-> >  	do {
-> > +		int goal = min(size - copied, TTY_BUFFER_PAGE);
+On Sat, Feb 27, 2010 at 07:02:12PM +0000, Alan Cox wrote:
+> On Fri, 26 Feb 2010 14:11:00 -0800
+> Greg KH <greg@kroah.com> wrote:
 > 
-> This variable isn't used in this function.
+> > On Wed, Feb 17, 2010 at 01:06:30PM +0000, Alan Cox wrote:
+> > > The USB drivers often want to insert a series of bytes all with the same
+> > > flag set - provide a helper for this case.
 > 
-> >  		int space = tty_buffer_request_room(tty, goal);
+> Thats the original set of patches I sent you - there was a second set
+> which cleaned up the stuff which leaked from one patch to the next or did
+> those vanish into the department of email oblivion somewhere ?
 
-Its used here. The logic basically is
+No, I saw them after writing this, and I applied that series instead.
+It should all be good now, sorry for the noise.
 
-goal =  {	I want a buffer to hold "size - copied" 
-	{	I want it to fit in one page
-
-space = 	what I get back
-
-we copy space and move on based on what we get back, so it looks correct
-to me.
-
-> >  		memcpy(tb->char_buf_ptr + tb->used, chars, space);
-> > -		memset(tb->flag_buf_ptr + tb->used, TTY_NORMAL, space);
-> > +		memset(tb->flag_buf_ptr + tb->used, flag, space);
-> 
-> Should you have "goal" here instead of "space"?
-
-No because we could ask for say 500 and get 250 back, we then want to
-copy 250.
-
-
-Alan
+greg k-h
