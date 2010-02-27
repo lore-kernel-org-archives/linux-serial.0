@@ -1,36 +1,57 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Subject: Re: [PATCH 1/5] tty: Add a function to insert a string of
  characters with the same flag
-Date: Sat, 27 Feb 2010 19:02:12 +0000
-Message-ID: <20100227190212.5958a7d5@lxorguk.ukuu.org.uk>
+Date: Sat, 27 Feb 2010 19:32:33 +0000
+Message-ID: <20100227193233.0aad1e5e@lxorguk.ukuu.org.uk>
 References: <20100217130604.16008.86393.stgit@localhost.localdomain>
 	<20100226221100.GA22352@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:38713 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:45741 "EHLO
 	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1030492Ab0B0S6b (ORCPT
+	with ESMTP id S1030715Ab0B0TcK (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 27 Feb 2010 13:58:31 -0500
+	Sat, 27 Feb 2010 14:32:10 -0500
 In-Reply-To: <20100226221100.GA22352@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg KH <greg@kroah.com>
 Cc: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
 
-On Fri, 26 Feb 2010 14:11:00 -0800
-Greg KH <greg@kroah.com> wrote:
+Was it really the 17th I sent the second set out - apparently so - so
+ignore the first email, this is the correct patch set.
 
-> On Wed, Feb 17, 2010 at 01:06:30PM +0000, Alan Cox wrote:
-> > The USB drivers often want to insert a series of bytes all with the same
-> > flag set - provide a helper for this case.
+> > +int tty_insert_flip_string_fixed_flag(struct tty_struct *tty,
+> > +		const unsigned char *chars, char flag, size_t size)
+> >  {
+> >  	int copied = 0;
+> >  	do {
+> > +		int goal = min(size - copied, TTY_BUFFER_PAGE);
+> 
+> This variable isn't used in this function.
+> 
+> >  		int space = tty_buffer_request_room(tty, goal);
 
-Thats the original set of patches I sent you - there was a second set
-which cleaned up the stuff which leaked from one patch to the next or did
-those vanish into the department of email oblivion somewhere ?
+Its used here. The logic basically is
 
-Will take a look at it when I get some time and see whats up.
+goal =  {	I want a buffer to hold "size - copied" 
+	{	I want it to fit in one page
+
+space = 	what I get back
+
+we copy space and move on based on what we get back, so it looks correct
+to me.
+
+> >  		memcpy(tb->char_buf_ptr + tb->used, chars, space);
+> > -		memset(tb->flag_buf_ptr + tb->used, TTY_NORMAL, space);
+> > +		memset(tb->flag_buf_ptr + tb->used, flag, space);
+> 
+> Should you have "goal" here instead of "space"?
+
+No because we could ask for say 500 and get 250 back, we then want to
+copy 250.
+
 
 Alan
