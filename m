@@ -1,63 +1,75 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCHv2 2/2] serial: Add driver for the Altera UART
-Date: Mon, 1 Mar 2010 18:19:20 +0000
-Message-ID: <20100301181920.3952c3e7@lxorguk.ukuu.org.uk>
-References: <cover.1267448534.git.klto@zhaw.ch>
-	<15dc056891fb785001073bab4f9a0d0f3bf99af1.1267448534.git.klto@zhaw.ch>
-	<afb4f2a75a6a35853774b10f34635a1d52d4cebd.1267448534.git.klto@zhaw.ch>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH] serial: Add OMAP high-speed UART driver.
+Date: Mon, 1 Mar 2010 10:46:00 -0800
+Message-ID: <20100301184600.GC3389@atomide.com>
+References: <41322.192.168.10.89.1267454612.squirrel@dbdmail.itg.ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:33668 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751087Ab0CASQA (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 1 Mar 2010 13:16:00 -0500
-In-Reply-To: <afb4f2a75a6a35853774b10f34635a1d52d4cebd.1267448534.git.klto@zhaw.ch>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <41322.192.168.10.89.1267454612.squirrel@dbdmail.itg.ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Govindraj.R" <govindraj.raja@ti.com>
+Cc: Greg KH <greg@kroah.com>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Hilman <khilman@deeprootsystems.com>, Olof Johansson <olof@lixom.net>
 List-Id: linux-serial@vger.kernel.org
-To: Tobias Klauser <tklauser@distanz.ch>
-Cc: linux-serial@vger.kernel.org, nios2-dev@sopc.et.ntust.edu.tw, linux-kernel@vger.kernel.org
 
-> + * Some boards implement the DTR/DCD lines using GPIO lines, most don't. Dummy
-> + * out the access macros for those that don't. Those that do should define these
-> + * macros somewhere in their board specific inlude files.
-> + */
-> +#if !defined(altera_uart_getppdcd)
-> +# define altera_uart_getppdcd(p)	(1)
-> +#endif
-> +#if !defined(altera_uart_getppdtr)
-> +# define altera_uart_getppdtr(p)	(1)
-> +#endif
-> +#if !defined(altera_uart_setppdtr)
-> +# define altera_uart_setppdtr(p, v)	do { } while (0)
-> +#endif
-
-Those ought to be in the board stuff only - the problem you have
-otherwise is that someone not noticing won't get an error.
-
-
-> +static void altera_uart_set_termios(struct uart_port *port,
-> +				    struct ktermios *termios,
-> +				    struct ktermios *old)
+* Govindraj.R <govindraj.raja@ti.com> [100301 06:40]:
+> --- /dev/null
+> +++ b/drivers/serial/omap-serial.c
+> +
+> +static void serial_omap_stop_tx(struct uart_port *port)
 > +{
-> +	unsigned long flags;
-> +	unsigned int baud, baudclk;
+> +	struct uart_omap_port *up = (struct uart_omap_port *)port;
 > +
-> +	baud = uart_get_baud_rate(port, termios, old, 0, 4000000);
-> +	baudclk = port->uartclk / baud;
+> +	if (up->use_dma &&
+> +		up->uart_dma.tx_dma_channel != OMAP_UART_DMA_CH_FREE) {
+> +		/*
+> +		 * Check if dma is still active . If yes do nothing,
+
+Looks like an extra space here before the period above.
+
+...
+
+> +static int serial_omap_start_rxdma(struct uart_omap_port *up)
+> +{
+> +	int ret = 0;
 > +
-> +	spin_lock_irqsave(&port->lock, flags);
-> +	writel(baudclk, port->membase + ALTERA_UART_DIVISOR_REG);
-> +	spin_unlock_irqrestore(&port->lock, flags);
+> +	if (up->uart_dma.rx_dma_channel == -1) {
+> +		ret = omap_request_dma(up->uart_dma.uart_dma_rx,
+> +				"UART Rx DMA",
+> +				(void *)uart_rx_dma_callback, up,
+> +				&(up->uart_dma.rx_dma_channel));
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		omap_set_dma_src_params(up->uart_dma.rx_dma_channel, 0,
+> +				OMAP_DMA_AMODE_CONSTANT,
+> +				up->uart_dma.uart_base, 0, 0);
+> +		omap_set_dma_dest_params(up->uart_dma.rx_dma_channel, 0,
+> +				OMAP_DMA_AMODE_POST_INC,
+> +				up->uart_dma.rx_buf_dma_phys, 0, 0);
+> +		omap_set_dma_transfer_params(up->uart_dma.rx_dma_channel,
+> +				OMAP_DMA_DATA_TYPE_S8,
+> +				up->uart_dma.rx_buf_size, 1,
+> +				OMAP_DMA_SYNC_ELEMENT,
+> +				up->uart_dma.uart_dma_rx, 0);
+> +	}
+> +	up->uart_dma.prev_rx_dma_pos = up->uart_dma.rx_buf_dma_phys;
+> +	if (cpu_is_omap44xx())
+> +		omap_writel(0, OMAP44XX_DMA4_BASE
+> +			+ OMAP_DMA4_CDAC(up->uart_dma.rx_dma_channel));
+> +	else
+> +		omap_writel(0, OMAP34XX_DMA4_BASE
+> +			+ OMAP_DMA4_CDAC(up->uart_dma.rx_dma_channel));
 
-If you only support board setting then copy the old termios back as in
-the other driver and the use tty_termios_encode_baud_rate() to report
-set the baud rate accordingly.
+NAK. Please don't use omap_read/write for for new code. And do not
+tinker with the omap hardware registers directly in the driver.
 
-Acked-by: Alan Cox <alan@linux.intel.com>
+This needs to be done properly in arch/arm/plat-omap/dma.c instead.
 
-As the oddments that want adjusting can be done post merge and I'd rather
-see this in now than later as there are some serial_core changes cooking
-that will need to touch all drivers.
+We really don't want drivers tinkering with the omap hardware
+registers directly except for the driver block registers.
+
+Regards,
+
+Tony
