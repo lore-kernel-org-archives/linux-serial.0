@@ -1,41 +1,26 @@
 From: Tobias Klauser <tklauser@distanz.ch>
-Subject: Re: [RESEND PATCH 2/2] serial: Add driver for the Altera UART
-Date: Mon, 1 Mar 2010 09:04:02 +0100
-Message-ID: <20100301080402.GD32296@distanz.ch>
-References: <1267108523-32767-1-git-send-email-tklauser@distanz.ch> <1267109261-752-1-git-send-email-tklauser@distanz.ch> <20100226195022.GF8417@bicker>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: [PATCHv2 0/2] serial: Drivers for Altera UARTs
+Date: Mon,  1 Mar 2010 14:31:01 +0100
+Message-ID: <cover.1267448534.git.klto@zhaw.ch>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from symlink.to.noone.org ([85.10.207.172]:58680 "EHLO sym.noone.org"
+Received: from mx2.zhaw.ch ([160.85.104.51]:60835 "EHLO mx2.zhaw.ch"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751341Ab0CAIEF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 1 Mar 2010 03:04:05 -0500
-Content-Disposition: inline
-In-Reply-To: <20100226195022.GF8417@bicker>
+	id S1750717Ab0CANbK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 1 Mar 2010 08:31:10 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Dan Carpenter <error27@gmail.com>, linux-serial@vger.kernel.org, nios2-dev@sopc.et.ntust.edu.tw, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: nios2-dev@sopc.et.ntust.edu.tw, linux-kernel@vger.kernel.org, Tobias Klauser <tklauser@distanz.ch>
 
-On 2010-02-26 at 20:50:22 +0100, Dan Carpenter <error27@gmail.com> wrote:
-> A couple smatch complaints.
-> 
-> drivers/serial/altera_jtaguart.c
->    380          if (co->index >= 0 && co->index <= ALTERA_JTAGUART_MAXPORTS)
->    381                  co->index = 0;
->    382          port = &altera_jtaguart_ports[co->index].port;
-> 
-> This test seems backward.  co->index == -1 would be a buffer underflow.
-> 
-> drivers/serial/altera_uart.c
->    455          if ((co->index >= 0)
->    456              && (co->index <= CONFIG_SERIAL_ALTERA_UART_MAXPORTS))
->    457                  co->index = 0;
->    458          port = &altera_uart_ports[co->index].port;
-> 
-> Same here.
+This is the second version of the patchset to add the serial drivers for the
+Altera UARTs. The following changes were made on top of the first version
+submitted on 25 Feb 2010:
 
-Yep, those look completely wrong. I'll post an updated patch (including
-the other changes suggested by Alan and Peter) later on.
+ - altera_jtaguart: Implement altera_jtaguart_set_termios
+ - altera_jtaguart: Protect port.tty in altera_jtaguart_rx_chars
+ - altera_uart, altera_jtaguart: Don't depend on EMBEDDED
+ - altera_jtaguart: Correct check for co->index
+ - altera_uart: Correct check for co->index
 
 Thanks,
 Tobias
