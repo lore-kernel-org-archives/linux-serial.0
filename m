@@ -1,75 +1,220 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH] serial: Add OMAP high-speed UART driver.
-Date: Mon, 1 Mar 2010 10:46:00 -0800
-Message-ID: <20100301184600.GC3389@atomide.com>
-References: <41322.192.168.10.89.1267454612.squirrel@dbdmail.itg.ti.com>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: Re: [PATCH] 8250: add workaround for MPC8[356]xx UART break IRQ
+ storm
+Date: Mon, 1 Mar 2010 16:23:24 -0500
+Message-ID: <20100301212324.GA1738@windriver.com>
+References: <1267212301-26851-1-git-send-email-paul.gortmaker@windriver.com>
+ <EB2B2912-24C3-46C9-B894-0A84D593570F@kernel.crashing.org>
+ <20100226202335.GA28844@loki.buserror.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.windriver.com ([147.11.1.11]:33686 "EHLO
+	mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752208Ab0CAVXs (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 1 Mar 2010 16:23:48 -0500
 Content-Disposition: inline
-In-Reply-To: <41322.192.168.10.89.1267454612.squirrel@dbdmail.itg.ti.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Govindraj.R" <govindraj.raja@ti.com>
-Cc: Greg KH <greg@kroah.com>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Hilman <khilman@deeprootsystems.com>, Olof Johansson <olof@lixom.net>
+In-Reply-To: <20100226202335.GA28844@loki.buserror.net>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Scott Wood <scottwood@freescale.com>
+Cc: Kumar Gala <galak@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
 
-* Govindraj.R <govindraj.raja@ti.com> [100301 06:40]:
-> --- /dev/null
-> +++ b/drivers/serial/omap-serial.c
-> +
-> +static void serial_omap_stop_tx(struct uart_port *port)
-> +{
-> +	struct uart_omap_port *up = (struct uart_omap_port *)port;
-> +
-> +	if (up->use_dma &&
-> +		up->uart_dma.tx_dma_channel != OMAP_UART_DMA_CH_FREE) {
-> +		/*
-> +		 * Check if dma is still active . If yes do nothing,
+[Re: [PATCH] 8250: add workaround for MPC8[356]xx UART break IRQ storm] On 26/02/2010 (Fri 14:23) Scott Wood wrote:
 
-Looks like an extra space here before the period above.
+> On Fri, Feb 26, 2010 at 01:42:39PM -0600, Kumar Gala wrote:
+> > 
+> > On Feb 26, 2010, at 1:25 PM, Paul Gortmaker wrote:
+> > 
+> > > Sending a break on the SOC UARTs found in some MPC83xx/85xx/86xx
+> > > chips seems to cause a short lived IRQ storm (/proc/interrupts
+> > > typically shows somewhere between 300 and 1500 events).  Unfortunately
+> > > this renders SysRQ over the serial console completely inoperable.
+> > > Testing with obvious things like ACKing the event doesn't seem to
+> > > change anything vs. a completely dumb approach of just ignoring
+> > > it and waiting for it to stop, so that is what is implemented here.
+> > > 
+> > > Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+> > > ---
+> > > 
+> > > This is a refresh of a patch I'd done earlier -- I've tried to make
+> > > the bug support as generic as possible to minimize having board
+> > > specific ifdef crap in 8250.c -- any suggestions on how to further
+> > > improve it are welcome.
+> > > 
+> > > drivers/serial/8250.c      |    6 ++++++
+> > > drivers/serial/8250.h      |   20 ++++++++++++++++++++
+> > > drivers/serial/Kconfig     |   14 ++++++++++++++
+> > > include/linux/serial_reg.h |    2 ++
+> > > 4 files changed, 42 insertions(+), 0 deletions(-)
+> > > 
+> > > diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+> > > index e9b15c3..850b0e9 100644
+> > > --- a/drivers/serial/8250.c
+> > > +++ b/drivers/serial/8250.c
+> > > @@ -1531,6 +1531,11 @@ static void serial8250_handle_port(struct uart_8250_port *up)
+> > > 
+> > > 	status = serial_inp(up, UART_LSR);
+> > > 
+> > > +	if ((up->bugs & UART_BUG_PPC) && (status == UART_LSR_RFE_ERROR_BITS)) {
+> > > +		spin_unlock_irqrestore(&up->port.lock, flags);
+> > > +		return;
+> > > +	}
+> 
+> Will LSR always be 0xf1 when this problem hits?  At least the transmit bits
+> shouldn't be relevant.
 
-...
+It was, based only on the emperical data I collected.  I agree that
+the Tx data shouldn't really matter.  But it is a moot point now that
+I know about the errata workaround...
 
-> +static int serial_omap_start_rxdma(struct uart_omap_port *up)
-> +{
-> +	int ret = 0;
-> +
-> +	if (up->uart_dma.rx_dma_channel == -1) {
-> +		ret = omap_request_dma(up->uart_dma.uart_dma_rx,
-> +				"UART Rx DMA",
-> +				(void *)uart_rx_dma_callback, up,
-> +				&(up->uart_dma.rx_dma_channel));
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		omap_set_dma_src_params(up->uart_dma.rx_dma_channel, 0,
-> +				OMAP_DMA_AMODE_CONSTANT,
-> +				up->uart_dma.uart_base, 0, 0);
-> +		omap_set_dma_dest_params(up->uart_dma.rx_dma_channel, 0,
-> +				OMAP_DMA_AMODE_POST_INC,
-> +				up->uart_dma.rx_buf_dma_phys, 0, 0);
-> +		omap_set_dma_transfer_params(up->uart_dma.rx_dma_channel,
-> +				OMAP_DMA_DATA_TYPE_S8,
-> +				up->uart_dma.rx_buf_size, 1,
-> +				OMAP_DMA_SYNC_ELEMENT,
-> +				up->uart_dma.uart_dma_rx, 0);
-> +	}
-> +	up->uart_dma.prev_rx_dma_pos = up->uart_dma.rx_buf_dma_phys;
-> +	if (cpu_is_omap44xx())
-> +		omap_writel(0, OMAP44XX_DMA4_BASE
-> +			+ OMAP_DMA4_CDAC(up->uart_dma.rx_dma_channel));
-> +	else
-> +		omap_writel(0, OMAP34XX_DMA4_BASE
-> +			+ OMAP_DMA4_CDAC(up->uart_dma.rx_dma_channel));
+> 
+> This has been listed as an erratum in some of the newer chips (e.g.
+> mpc8568).
+> 
+> The suggested as workaround is to, upon seeing a break condition:
+> - read RBR
+> - delay at least one character period
+> - read RBR again
+> 
+> If I'm interpreting this correctly, it could be implemented by doing the
+> normal break handling on the first interrupt, plus setting a flag so that the
+> next interrupt simply reads RBR, clears the flag, and returns, without ever
+> reading LSR.
 
-NAK. Please don't use omap_read/write for for new code. And do not
-tinker with the omap hardware registers directly in the driver.
+Thanks for the info -- that makes for a better fix (in that the storm
+gets averted completely) so your interpretation is on the money.
 
-This needs to be done properly in arch/arm/plat-omap/dma.c instead.
+The only question that remains is whether we:
+(a) deploy it everywhere, or
+(b) leave it as a config option and update Kconfig with select on
+   the boards of interest, or
+(c) implement dynamic enablement based on something like adding a
+   detect_arch_bugs() to 8250.c and then for powerpc, we iterate over
+   of_flat_dt_is_compatible(root, blacklist[i]) looking for a match.
 
-We really don't want drivers tinkering with the omap hardware
-registers directly except for the driver block registers.
+Paul.
 
-Regards,
+ From c77b1600975b5fc596b2baebf43e28b66969181f Mon Sep 17 00:00:00 2001
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Date: Fri, 26 Feb 2010 10:29:46 -0500
+Subject: [PATCH] 8250: add workaround for MPC8[356]xx UART break IRQ storm
 
-Tony
+Sending a break on the SOC UARTs found in some MPC83xx/85xx/86xx
+chips seems to cause a short lived IRQ storm (/proc/interrupts
+typically shows somewhere between 300 and 1500 events).  Unfortunately
+this renders SysRQ over the serial console completely inoperable.
+
+The suggested workaround in the errata is to read the Rx register,
+wait one character period, and then read the Rx register again.
+We achieve this by tracking the old LSR value, and on the subsequent
+interrupt event after a break, we don't read LSR, instead we just
+read the RBR again and return immediately.
+
+Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+---
+ drivers/serial/8250.c  |   11 ++++++++++-
+ drivers/serial/8250.h  |   20 ++++++++++++++++++++
+ drivers/serial/Kconfig |   14 ++++++++++++++
+ 3 files changed, 44 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index e9b15c3..645cf9b 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -143,6 +143,7 @@ struct uart_8250_port {
+ 	unsigned char		mcr_mask;	/* mask of user bits */
+ 	unsigned char		mcr_force;	/* mask of forced bits */
+ 	unsigned char		cur_iotype;	/* Running I/O type */
++	unsigned char		lsr_last;	/* LSR of last IRQ event */
+ 
+ 	/*
+ 	 * Some bits in registers are cleared on a read, so they must
+@@ -1529,7 +1530,14 @@ static void serial8250_handle_port(struct uart_8250_port *up)
+ 
+ 	spin_lock_irqsave(&up->port.lock, flags);
+ 
+-	status = serial_inp(up, UART_LSR);
++	if (unlikely(up->lsr_last & UART_LSR_BI && up->bugs & UART_BUG_PPC)) {
++		up->lsr_last &= ~UART_LSR_BI;
++		serial_inp(up, UART_RX);
++		spin_unlock_irqrestore(&up->port.lock, flags);
++		return;
++	}
++
++	status = up->lsr_last = serial_inp(up, UART_LSR);
+ 
+ 	DEBUG_INTR("status = %x...", status);
+ 
+@@ -1948,6 +1956,7 @@ static int serial8250_startup(struct uart_port *port)
+ 
+ 	up->capabilities = uart_config[up->port.type].flags;
+ 	up->mcr = 0;
++	up->bugs |= UART_KNOWN_BUGS;
+ 
+ 	if (up->port.iotype != up->cur_iotype)
+ 		set_io_from_upio(port);
+diff --git a/drivers/serial/8250.h b/drivers/serial/8250.h
+index 6e19ea3..2074ce1 100644
+--- a/drivers/serial/8250.h
++++ b/drivers/serial/8250.h
+@@ -49,6 +49,7 @@ struct serial8250_config {
+ #define UART_BUG_TXEN	(1 << 1)	/* UART has buggy TX IIR status */
+ #define UART_BUG_NOMSR	(1 << 2)	/* UART has buggy MSR status bits (Au1x00) */
+ #define UART_BUG_THRE	(1 << 3)	/* UART has buggy THRE reassertion */
++#define UART_BUG_PPC	(1 << 4)	/* UART has buggy PPC break IRQ storm */
+ 
+ #define PROBE_RSA	(1 << 0)
+ #define PROBE_ANY	(~0)
+@@ -78,3 +79,22 @@ struct serial8250_config {
+ #else
+ #define ALPHA_KLUDGE_MCR 0
+ #endif
++
++/*
++ * The following UART bugs are currently dynamically detected and not
++ * required to be contingent on any particular compile time options.
++ */
++#define HAS_BUG_QUOT	0	/* assign UART_BUG_QUOT to enable */
++#define HAS_BUG_TXEN	0	/* assign UART_BUG_TXEN to enable */
++#define HAS_BUG_NOMSR	0	/* assign UART_BUG_NOMSR to enable */
++#define HAS_BUG_THRE	0	/* assign UART_BUG_THRE to enable */
++
++#ifdef CONFIG_SERIAL_8250_PPC_BUG
++#define HAS_BUG_PPC	UART_BUG_PPC
++#else
++#define HAS_BUG_PPC	0
++#endif
++
++#define UART_KNOWN_BUGS (HAS_BUG_QUOT | HAS_BUG_TXEN | HAS_BUG_NOMSR | \
++			HAS_BUG_THRE | HAS_BUG_PPC)
++
+diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
+index 9ff47db..5e58a1a 100644
+--- a/drivers/serial/Kconfig
++++ b/drivers/serial/Kconfig
+@@ -70,6 +70,20 @@ config SERIAL_8250_CONSOLE
+ 
+ 	  If unsure, say N.
+ 
++config SERIAL_8250_PPC_BUG
++	bool "Fix 8250/16550 to handle IRQ storm after receipt of a break"
++	depends on SERIAL_8250 && PPC32
++	---help---
++	  If you say Y here, additional checks will be added to handling of
++	  interrupts on the serial ports which will prevent ill effects of
++	  an interrupt storm triggered by a break on the serial line. Without
++	  this enabled, a Sysrq via the serial console can be unusable on
++	  some systems.
++
++	  This is commonly observed on PPC32 MPC83xx/85xx/86xx based boards.
++
++	  If unsure, say N.
++
+ config FIX_EARLYCON_MEM
+ 	bool
+ 	depends on X86
+-- 
+1.6.5.2
+
