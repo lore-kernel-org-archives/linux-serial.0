@@ -1,85 +1,213 @@
-From: "Shilimkar, Santosh" <santosh.shilimkar@ti.com>
-Subject: RE: [PATCH] serial: Add OMAP high-speed UART driver.
-Date: Tue, 2 Mar 2010 20:43:24 +0530
-Message-ID: <EAF47CD23C76F840A9E7FCE10091EFAB02C44C2348__38348.5214472332$1267542850$gmane$org@dbde02.ent.ti.com>
-References: <41322.192.168.10.89.1267454612.squirrel@dbdmail.itg.ti.com>
-	 <20100301184600.GC3389@atomide.com>
-	 <E0D41E29EB0DAC4E9F3FF173962E9E94026ED95FC1@dbde02.ent.ti.com>
-	 <20100302060821.GI3389@atomide.com>
-	 <E0D41E29EB0DAC4E9F3FF173962E9E94026ED9600D@dbde02.ent.ti.com>
-	 <20100302065224.GL3389@atomide.com>
- <618f0c911003020546mb7c8412o2bac4e86a081332b@mail.gmail.com>
- <E0D41E29EB0DAC4E9F3FF173962E9E94026ED96358@dbde02.ent.ti.com>
- <EAF47CD23C76F840A9E7FCE10091EFAB02C44C22F6@dbde02.ent.ti.com>
- <E0D41E29EB0DAC4E9F3FF173962E9E94026ED963B1@dbde02.ent.ti.com>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: Re: [PATCH] 8250: add workaround for MPC8[356]xx UART break IRQ storm
+Date: Tue, 02 Mar 2010 11:27:05 -0500
+Message-ID: <4B8D3C59.4080504@windriver.com>
+References: <1267212301-26851-1-git-send-email-paul.gortmaker@windriver.com> <f608b67d1003011503h57b88742md889ba8d6da652bc@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:33514 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750808Ab0CBPNb convert rfc822-to-8bit (ORCPT
+Received: from mail.windriver.com ([147.11.1.11]:39615 "EHLO
+	mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753292Ab0CBQ1L (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 2 Mar 2010 10:13:31 -0500
-In-Reply-To: <E0D41E29EB0DAC4E9F3FF173962E9E94026ED963B1@dbde02.ent.ti.com>
-Content-Language: en-US
+	Tue, 2 Mar 2010 11:27:11 -0500
+In-Reply-To: <f608b67d1003011503h57b88742md889ba8d6da652bc@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "G, Manjunath Kondaiah" <manjugk@ti.com>, "S, Venkatraman" <svenkatr@ti.com>, Tony Lindgren <tony@atomide.com>, "Raja, Govindraj" <govindraj.raja@ti.com>, Greg KH <greg@kroah.com>
+To: vb@vsbe.com
+Cc: linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
 
-> -----Original Message-----
-> From: G, Manjunath Kondaiah
-> Sent: Tuesday, March 02, 2010 8:34 PM
-> To: Shilimkar, Santosh; S, Venkatraman; Tony Lindgren; Raja, Govindraj; Greg KH; linux-
-> serial@vger.kernel.org; linux-omap@vger.kernel.org; linux-kernel@vger.kernel.org; Kevin Hilman; Olof
-> Johansson
-> Subject: RE: [PATCH] serial: Add OMAP high-speed UART driver.
+On 10-03-01 06:03 PM, vb@vsbe.com wrote:
+> sounds very much like this issue:
 > 
-> 
-> Santosh,
-> 
-> > -----Original Message-----
-> > From: Shilimkar, Santosh
-> > Sent: Tuesday, March 02, 2010 7:34 PM
-> > To: G, Manjunath Kondaiah; S, Venkatraman; Tony Lindgren;
-> > Raja, Govindraj; Greg KH; linux-serial@vger.kernel.org;
-> > linux-omap@vger.kernel.org; linux-kernel@vger.kernel.org;
-> > Kevin Hilman; Olof Johansson
-> > Subject: RE: [PATCH] serial: Add OMAP high-speed UART driver.
-> >
-> > <snip snip>
-> > > > > --
-> > > > CDAC is a shadow register used for monitoring the DMA channel.
-> > > >  I think it would be a lot
-> > > > simpler if omap_start_dma() always resets CDAC to 0, and the
-> > > > UART driver
-> > > > just not set it explicitly.
-> > >
-> > > This seems to be better option than exposing CDAC read/write API
-> > > to other drivers since user need to write '0' before
-> > starting any DMA
-> > > transfer which can be be done in omap_start_dma().
-> > >
-> > > I am wondering how other drivers are using DMA transfer
-> > API's without
-> > > resetting CDAC to zero.
-> > >
-> > It's needed only if some one is interested in that count.
-> > UART seems to
-> > using this counter where as other driver don't.
-> >
-> > Why do you think drivers need to know about counter value ?
-> 
-> Reading of non zero value(after reset to zero and enabling dma channel)
-> from CDAC register indicates that, DMA transfer has started and user can
-> rely on DMA4_CCENi and DMA4_CCFNi element and frame counters.
-> 
-> If the CDAC value is zero even after starting DMA channel, indicates
-> error.
-Not necessary. The DMA can still wait for the hw sync signal and the CDAC
-can remain 0 if the hw sync in not received. This will be any way returned 
-by DMA error ( SYNC lost)
+> http://linux.derkeiler.com/Mailing-Lists/Kernel/2010-02/msg09470.html
 
-This register was mainly suppose to be used for debug purposes.
-Regards,
-Santosh
+Thanks for the link.
+
+> 
+> (interrupt storm on the second port which is hit with breaks).
+> 
+> It's not the uart driver problem per se, the below fixes it:
+
+Actually, it is a uart *hardware* problem -- see in this same
+thread where Scott Wood described an errata, and when I
+implemented his interpretation of what the fix should look
+like, things just worked.  You might want to try out that patch
+and see if it helps you, since from the link above, I see you
+are also on a powerpc board.
+
+Paul.
+
+> 
+> *** linux/drivers/serial/serial_core.c#1        Wed Feb 24 17:46:22 2010
+> ---  linux/drivers/serial/serial_core.c#2        Mon Mar  1 15:00:29 2010
+> ***************
+> *** 622,632 ****
+>          struct uart_port *port = state->port;
+> 
+>          if (I_IXOFF(tty)) {
+>                  if (port->x_char)
+>                          port->x_char = 0;
+> !               else
+>                          uart_send_xchar(tty, START_CHAR(tty));
+>          }
+> 
+>          if (tty->termios->c_cflag&  CRTSCTS)
+>                  uart_set_mctrl(port, TIOCM_RTS);
+> --- 622,632 ----
+>          struct uart_port *port = state->port;
+> 
+>          if (I_IXOFF(tty)) {
+>                  if (port->x_char)
+>                          port->x_char = 0;
+> !               else if (!(tty->flags&  (1<<  TTY_IO_ERROR)))
+>                          uart_send_xchar(tty, START_CHAR(tty));
+>          }
+> 
+>          if (tty->termios->c_cflag&  CRTSCTS)
+>                  uart_set_mctrl(port, TIOCM_RTS);
+> ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 
+> I did not get to trying to submit it, but it sure gets rid o the storm.
+> 
+> cheers,
+> /vb
+> 
+> On Fri, Feb 26, 2010 at 11:25 AM, Paul Gortmaker
+> <paul.gortmaker@windriver.com>  wrote:
+>> Sending a break on the SOC UARTs found in some MPC83xx/85xx/86xx
+>> chips seems to cause a short lived IRQ storm (/proc/interrupts
+>> typically shows somewhere between 300 and 1500 events).  Unfortunately
+>> this renders SysRQ over the serial console completely inoperable.
+>> Testing with obvious things like ACKing the event doesn't seem to
+>> change anything vs. a completely dumb approach of just ignoring
+>> it and waiting for it to stop, so that is what is implemented here.
+>>
+>> Signed-off-by: Paul Gortmaker<paul.gortmaker@windriver.com>
+>> ---
+>>
+>> This is a refresh of a patch I'd done earlier -- I've tried to make
+>> the bug support as generic as possible to minimize having board
+>> specific ifdef crap in 8250.c -- any suggestions on how to further
+>> improve it are welcome.
+>>
+>>   drivers/serial/8250.c      |    6 ++++++
+>>   drivers/serial/8250.h      |   20 ++++++++++++++++++++
+>>   drivers/serial/Kconfig     |   14 ++++++++++++++
+>>   include/linux/serial_reg.h |    2 ++
+>>   4 files changed, 42 insertions(+), 0 deletions(-)
+>>
+>> diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+>> index e9b15c3..850b0e9 100644
+>> --- a/drivers/serial/8250.c
+>> +++ b/drivers/serial/8250.c
+>> @@ -1531,6 +1531,11 @@ static void serial8250_handle_port(struct uart_8250_port *up)
+>>
+>>         status = serial_inp(up, UART_LSR);
+>>
+>> +       if ((up->bugs&  UART_BUG_PPC)&&  (status == UART_LSR_RFE_ERROR_BITS)) {
+>> +               spin_unlock_irqrestore(&up->port.lock, flags);
+>> +               return;
+>> +       }
+>> +
+>>         DEBUG_INTR("status = %x...", status);
+>>
+>>         if (status&  (UART_LSR_DR | UART_LSR_BI))
+>> @@ -1948,6 +1953,7 @@ static int serial8250_startup(struct uart_port *port)
+>>
+>>         up->capabilities = uart_config[up->port.type].flags;
+>>         up->mcr = 0;
+>> +       up->bugs |= UART_KNOWN_BUGS;
+>>
+>>         if (up->port.iotype != up->cur_iotype)
+>>                 set_io_from_upio(port);
+>> diff --git a/drivers/serial/8250.h b/drivers/serial/8250.h
+>> index 6e19ea3..2074ce1 100644
+>> --- a/drivers/serial/8250.h
+>> +++ b/drivers/serial/8250.h
+>> @@ -49,6 +49,7 @@ struct serial8250_config {
+>>   #define UART_BUG_TXEN  (1<<  1)        /* UART has buggy TX IIR status */
+>>   #define UART_BUG_NOMSR (1<<  2)        /* UART has buggy MSR status bits (Au1x00) */
+>>   #define UART_BUG_THRE  (1<<  3)        /* UART has buggy THRE reassertion */
+>> +#define UART_BUG_PPC   (1<<  4)        /* UART has buggy PPC break IRQ storm */
+>>
+>>   #define PROBE_RSA      (1<<  0)
+>>   #define PROBE_ANY      (~0)
+>> @@ -78,3 +79,22 @@ struct serial8250_config {
+>>   #else
+>>   #define ALPHA_KLUDGE_MCR 0
+>>   #endif
+>> +
+>> +/*
+>> + * The following UART bugs are currently dynamically detected and not
+>> + * required to be contingent on any particular compile time options.
+>> + */
+>> +#define HAS_BUG_QUOT   0       /* assign UART_BUG_QUOT to enable */
+>> +#define HAS_BUG_TXEN   0       /* assign UART_BUG_TXEN to enable */
+>> +#define HAS_BUG_NOMSR  0       /* assign UART_BUG_NOMSR to enable */
+>> +#define HAS_BUG_THRE   0       /* assign UART_BUG_THRE to enable */
+>> +
+>> +#ifdef CONFIG_SERIAL_8250_PPC_BUG
+>> +#define HAS_BUG_PPC    UART_BUG_PPC
+>> +#else
+>> +#define HAS_BUG_PPC    0
+>> +#endif
+>> +
+>> +#define UART_KNOWN_BUGS (HAS_BUG_QUOT | HAS_BUG_TXEN | HAS_BUG_NOMSR | \
+>> +                       HAS_BUG_THRE | HAS_BUG_PPC)
+>> +
+>> diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
+>> index 9ff47db..e01a411 100644
+>> --- a/drivers/serial/Kconfig
+>> +++ b/drivers/serial/Kconfig
+>> @@ -70,6 +70,20 @@ config SERIAL_8250_CONSOLE
+>>
+>>           If unsure, say N.
+>>
+>> +config SERIAL_8250_PPC_BUG
+>> +       bool "Fix 8250/16550 to handle IRQ storm after receipt of a break"
+>> +       depends on SERIAL_8250&&  PPC32
+>> +       ---help---
+>> +         If you say Y here, addional checks will be added in the handling of
+>> +         interrupts on the serial ports which will prevent ill effects of
+>> +         an interrupt storm triggered by a break on the serial line. Without
+>> +         this enabled, a Sysrq via the serial console can be unusable on
+>> +         some systems.
+>> +
+>> +         This is commonly observed on PPC32 MPC83xx/85xx/86xx based boards.
+>> +
+>> +         If unsure, say N.
+>> +
+>>   config FIX_EARLYCON_MEM
+>>         bool
+>>         depends on X86
+>> diff --git a/include/linux/serial_reg.h b/include/linux/serial_reg.h
+>> index cf9327c..010174f 100644
+>> --- a/include/linux/serial_reg.h
+>> +++ b/include/linux/serial_reg.h
+>> @@ -111,6 +111,7 @@
+>>   #define UART_MCR_DTR           0x01 /* DTR complement */
+>>
+>>   #define UART_LSR       5       /* In:  Line Status Register */
+>> +#define UART_LSR_RFE           0x80 /* Rx FIFO Error (BE, FE, or PE) */
+>>   #define UART_LSR_TEMT          0x40 /* Transmitter empty */
+>>   #define UART_LSR_THRE          0x20 /* Transmit-hold-register empty */
+>>   #define UART_LSR_BI            0x10 /* Break interrupt indicator */
+>> @@ -119,6 +120,7 @@
+>>   #define UART_LSR_OE            0x02 /* Overrun error indicator */
+>>   #define UART_LSR_DR            0x01 /* Receiver data ready */
+>>   #define UART_LSR_BRK_ERROR_BITS        0x1E /* BI, FE, PE, OE bits */
+>> +#define UART_LSR_RFE_ERROR_BITS        0xF1 /* RFE, TEMT, THRE, BI, DR bits */
+>>
+>>   #define UART_MSR       6       /* In:  Modem Status Register */
+>>   #define UART_MSR_DCD           0x80 /* Data Carrier Detect */
+>> --
+>> 1.6.5.2
+>>
+>> _______________________________________________
+>> Linuxppc-dev mailing list
+>> Linuxppc-dev@lists.ozlabs.org
+>> https://lists.ozlabs.org/listinfo/linuxppc-dev
+>>
+
