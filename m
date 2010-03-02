@@ -1,50 +1,94 @@
-From: Feng Tang <feng.tang@intel.com>
-Subject: Re: [PATCH v4] serial: spi: add spi-uart driver for Maxim 3110
-Date: Tue, 2 Mar 2010 11:38:17 +0800
-Message-ID: <20100302113817.155f78aa@feng-i7>
-References: <20100224131130.61530b62@feng-i7>
-	<20100226114729.679bb933@feng-i7>
-	<201002260959.o1Q9xIVA021953@imail.sm.sony.co.jp>
+From: "G, Manjunath Kondaiah" <manjugk@ti.com>
+Subject: RE: [PATCH] serial: Add OMAP high-speed UART driver.
+Date: Tue, 2 Mar 2010 11:21:13 +0530
+Message-ID: <E0D41E29EB0DAC4E9F3FF173962E9E94026ED95FC1@dbde02.ent.ti.com>
+References: <41322.192.168.10.89.1267454612.squirrel@dbdmail.itg.ti.com>
+ <20100301184600.GC3389@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:62233 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751231Ab0CBDgo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 1 Mar 2010 22:36:44 -0500
-In-Reply-To: <201002260959.o1Q9xIVA021953@imail.sm.sony.co.jp>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20100301184600.GC3389@atomide.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>, "Raja, Govindraj" <govindraj.raja@ti.com>
+Cc: Greg KH <greg@kroah.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Kevin Hilman <khilman@deeprootsystems.com>, Olof Johansson <olof@lixom.net>
 List-Id: linux-serial@vger.kernel.org
-To: Masakazu Mokuno <mokuno@sm.sony.co.jp>
-Cc: Greg KH <greg@kroah.com>, David Brownell <dbrownell@users.sourceforge.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, spi-devel-list <spi-devel-general@lists.sourceforge.net>, Andrew Morton <akpm@linux-foundation.org>, "alan@lxorguk.ukuu.org.uk" <alan@lxorguk.ukuu.org.uk>, Grant Likely <grant.likely@secretlab.ca>
 
-On Fri, 26 Feb 2010 17:59:38 +0800
-Masakazu Mokuno <mokuno@sm.sony.co.jp> wrote:
+Tony,
 
-> Hi,
+> -----Original Message-----
+> From: linux-omap-owner@vger.kernel.org 
+> [mailto:linux-omap-owner@vger.kernel.org] On Behalf Of Tony Lindgren
+> Sent: Tuesday, March 02, 2010 12:16 AM
+> To: Raja, Govindraj
+> Cc: Greg KH; linux-serial@vger.kernel.org; 
+> linux-omap@vger.kernel.org; linux-kernel@vger.kernel.org; 
+> Kevin Hilman; Olof Johansson
+> Subject: Re: [PATCH] serial: Add OMAP high-speed UART driver.
 > 
-> > +	u8 *pbuf, valid_str[M3110_RX_FIFO_DEPTH];
-> > +	int i, j;
+> * Govindraj.R <govindraj.raja@ti.com> [100301 06:40]:
+> > --- /dev/null
+> > +++ b/drivers/serial/omap-serial.c
 > > +
-> > +	memset(obuf, 0, sizeof(obuf));
-> > +	memset(obuf, 0, sizeof(ibuf));
+> > +static void serial_omap_stop_tx(struct uart_port *port)
+> > +{
+> > +	struct uart_omap_port *up = (struct uart_omap_port *)port;
+> > +
+> > +	if (up->use_dma &&
+> > +		up->uart_dma.tx_dma_channel != OMAP_UART_DMA_CH_FREE) {
+> > +		/*
+> > +		 * Check if dma is still active . If yes do nothing,
 > 
-> memset(ibuf, 0, sizeof(ibuf))?
+> Looks like an extra space here before the period above.
+> 
+> ...
+> 
+> > +static int serial_omap_start_rxdma(struct uart_omap_port *up)
+> > +{
+> > +	int ret = 0;
+> > +
+> > +	if (up->uart_dma.rx_dma_channel == -1) {
+> > +		ret = omap_request_dma(up->uart_dma.uart_dma_rx,
+> > +				"UART Rx DMA",
+> > +				(void *)uart_rx_dma_callback, up,
+> > +				&(up->uart_dma.rx_dma_channel));
+> > +		if (ret < 0)
+> > +			return ret;
+> > +
+> > +		omap_set_dma_src_params(up->uart_dma.rx_dma_channel, 0,
+> > +				OMAP_DMA_AMODE_CONSTANT,
+> > +				up->uart_dma.uart_base, 0, 0);
+> > +		omap_set_dma_dest_params(up->uart_dma.rx_dma_channel, 0,
+> > +				OMAP_DMA_AMODE_POST_INC,
+> > +				up->uart_dma.rx_buf_dma_phys, 0, 0);
+> > +		
+> omap_set_dma_transfer_params(up->uart_dma.rx_dma_channel,
+> > +				OMAP_DMA_DATA_TYPE_S8,
+> > +				up->uart_dma.rx_buf_size, 1,
+> > +				OMAP_DMA_SYNC_ELEMENT,
+> > +				up->uart_dma.uart_dma_rx, 0);
+> > +	}
+> > +	up->uart_dma.prev_rx_dma_pos = up->uart_dma.rx_buf_dma_phys;
+> > +	if (cpu_is_omap44xx())
+> > +		omap_writel(0, OMAP44XX_DMA4_BASE
+> > +			+ OMAP_DMA4_CDAC(up->uart_dma.rx_dma_channel));
+> > +	else
+> > +		omap_writel(0, OMAP34XX_DMA4_BASE
+> > +			+ OMAP_DMA4_CDAC(up->uart_dma.rx_dma_channel));
+> 
+> NAK. Please don't use omap_read/write for for new code. And do not
+> tinker with the omap hardware registers directly in the driver.
+> 
+> This needs to be done properly in arch/arm/plat-omap/dma.c instead.
 
-thanks for the catch, here is a follow on patch
+Thanks for the suggestion.
 
+Currently, dma_read/dma_write are #define's in dma.c which cannot be 
+accessed outside dma.c. I don't see any API's in dma.c for setting required 
+value for this register?
 
-diff --git a/drivers/serial/max3110.c b/drivers/serial/max3110.c
-index 3283ba6..3dd2082 100644
---- a/drivers/serial/max3110.c
-+++ b/drivers/serial/max3110.c
-@@ -142,7 +142,7 @@ static int max3110_read_multi(struct uart_max3110 *max, u8 *buf)
- 	int i, j;
- 
- 	memset(obuf, 0, sizeof(obuf));
--	memset(obuf, 0, sizeof(ibuf));
-+	memset(ibuf, 0, sizeof(ibuf));
- 
- 	if (max3110_write_then_read(max, obuf, ibuf,
- 				M3110_RX_FIFO_DEPTH * 2, 1))
+Can we move dma_read/dma_write to header file so that it can be global or 
+Is there alternate way to perform this operation with existing dma driver?
+
+-Manjunath
