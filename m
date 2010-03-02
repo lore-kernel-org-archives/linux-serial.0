@@ -1,49 +1,67 @@
-From: "Shilimkar, Santosh" <santosh.shilimkar@ti.com>
-Subject: RE: [PATCH] serial: Add OMAP high-speed UART driver.
-Date: Tue, 2 Mar 2010 19:34:06 +0530
-Message-ID: <EAF47CD23C76F840A9E7FCE10091EFAB02C44C22F6__40958.7665032179$1267538665$gmane$org@dbde02.ent.ti.com>
-References: <41322.192.168.10.89.1267454612.squirrel@dbdmail.itg.ti.com>
-	 <20100301184600.GC3389@atomide.com>
-	 <E0D41E29EB0DAC4E9F3FF173962E9E94026ED95FC1@dbde02.ent.ti.com>
-	 <20100302060821.GI3389@atomide.com>
-	 <E0D41E29EB0DAC4E9F3FF173962E9E94026ED9600D@dbde02.ent.ti.com>
-	 <20100302065224.GL3389@atomide.com>
- <618f0c911003020546mb7c8412o2bac4e86a081332b@mail.gmail.com>
- <E0D41E29EB0DAC4E9F3FF173962E9E94026ED96358@dbde02.ent.ti.com>
+From: Sergei Organov <osv@javad.com>
+Subject: [PATCH] tty: Char: mxser, add support for CP114EL
+Date: Tue, 02 Mar 2010 17:09:14 +0300
+Message-ID: <874okyerxx.fsf@osv.gnss.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:38173 "EHLO arroyo.ext.ti.com"
+Received: from javad.com ([205.178.136.214]:57540 "EHLO 02aef2d.netsolvps.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753056Ab0CBOEQ convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 2 Mar 2010 09:04:16 -0500
-In-Reply-To: <E0D41E29EB0DAC4E9F3FF173962E9E94026ED96358@dbde02.ent.ti.com>
-Content-Language: en-US
+	id S1753171Ab0CBOQe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 2 Mar 2010 09:16:34 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "G, Manjunath Kondaiah" <manjugk@ti.com>, "S, Venkatraman" <svenkatr@ti.com>, Tony Lindgren <tony@atomide.com>, "Raja, Govindraj" <govindraj.raja@ti.com>, Greg KH <greg@kroah.com>
+To: Jiri Slaby <jirislaby@gmail.com>
+Cc: linux-serial@vger.kernel.org
 
-<snip snip>
-> > > --
-> > CDAC is a shadow register used for monitoring the DMA channel.
-> >  I think it would be a lot
-> > simpler if omap_start_dma() always resets CDAC to 0, and the
-> > UART driver
-> > just not set it explicitly.
-> 
-> This seems to be better option than exposing CDAC read/write API
-> to other drivers since user need to write '0' before starting any DMA
-> transfer which can be be done in omap_start_dma().
-> 
-> I am wondering how other drivers are using DMA transfer API's without
-> resetting CDAC to zero.
->
-It's needed only if some one is interested in that count. UART seems to 
-using this counter where as other driver don't.
+Add support for MOXA:0x1144 pci device. It's a 4-port device and
+differs in no way from the others. So this turns out to be a trivial
+pci_device_id change.
 
-Why do you think drivers need to know about counter value ?
+Increase also the version number.
 
-Regards,
-Santosh
+Signed-off-by: Sergei Organov <osv@javad.com>
+---
+ drivers/char/mxser.c |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/char/mxser.c b/drivers/char/mxser.c
+index 3d92306..a7147c3 100644
+--- a/drivers/char/mxser.c
++++ b/drivers/char/mxser.c
+@@ -47,7 +47,7 @@
+ 
+ #include "mxser.h"
+ 
+-#define	MXSER_VERSION	"2.0.5"		/* 1.14 */
++#define	MXSER_VERSION	"2.0.6"
+ #define	MXSERMAJOR	 174
+ 
+ #define MXSER_BOARDS		4	/* Max. boards */
+@@ -71,6 +71,7 @@
+ #define PCI_DEVICE_ID_CP112UL	0x1120
+ #define PCI_DEVICE_ID_CB114	0x1142
+ #define PCI_DEVICE_ID_CP114UL	0x1143
++#define PCI_DEVICE_ID_CP114EL	0x1144
+ #define PCI_DEVICE_ID_CB134I	0x1341
+ #define PCI_DEVICE_ID_CP138U	0x1380
+ 
+@@ -141,6 +142,7 @@ static const struct mxser_cardinfo mxser_cards[] = {
+ 	{ "CP-114UL series",	4, },
+ /*30*/	{ "CP-102UF series",	2, },
+ 	{ "CP-112UL series",	2, },
++	{ "CP-114EL series",	4, },
+ };
+ 
+ /* driver_data correspond to the lines in the structure above
+@@ -172,6 +174,7 @@ static struct pci_device_id mxser_pcibrds[] = {
+ 	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_CP114UL),	.driver_data = 29 },
+ 	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_CP102UF),	.driver_data = 30 },
+ 	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_CP112UL),	.driver_data = 31 },
++	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_CP114EL),	.driver_data = 32 },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(pci, mxser_pcibrds);
+-- 
+1.7.0
+
