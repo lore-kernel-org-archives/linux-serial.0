@@ -1,54 +1,48 @@
-From: Sergei Organov <s.organov@javad.com>
-Subject: Re: Disregard: [PATCH] tty: Char: mxser, add support for CP114EL
-Date: Wed, 03 Mar 2010 14:11:52 +0300
-Message-ID: <873a0hek1z.fsf@osv.gnss.ru>
-References: <87bpf6esd7.fsf@osv.gnss.ru> <87r5o24efj.fsf@osv.gnss.ru>
-	<4B8D8477.8020003@gmail.com>
+From: Yegor Yefremov <yegor_sub1@visionsystems.de>
+Subject: KS8695: enable console
+Date: Wed, 03 Mar 2010 12:49:13 +0100
+Message-ID: <4B8E4CB9.1020403@visionsystems.de>
+Reply-To: yegor_sub1@visionsystems.de
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from javad.com ([205.178.136.214]:46505 "EHLO 02aef2d.netsolvps.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750768Ab0CCLMc (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 3 Mar 2010 06:12:32 -0500
-In-Reply-To: <4B8D8477.8020003@gmail.com> (Jiri Slaby's message of "Tue, 02
-	Mar 2010 22:34:47 +0100")
+Received: from hhlx01.visionsystems.de ([62.145.30.242]:45323 "EHLO
+	mail.visionsystems.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750939Ab0CCMQU (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 3 Mar 2010 07:16:20 -0500
+Received: from localhost (localhost [127.0.0.1])
+	by mail.visionsystems.de (Postfix) with ESMTP id DD19821035C
+	for <linux-serial@vger.kernel.org>; Wed,  3 Mar 2010 12:49:03 +0100 (CET)
+Received: from mail.visionsystems.de ([127.0.0.1])
+ by localhost (mail.visionsystems.de [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 15240-06 for <linux-serial@vger.kernel.org>;
+ Wed,  3 Mar 2010 12:48:58 +0100 (CET)
+Received: from visionsystems.de (kallisto.visionsystems.local [192.168.1.3])
+	by mail.visionsystems.de (Postfix) with ESMTP id 3083B21035B
+	for <linux-serial@vger.kernel.org>; Wed,  3 Mar 2010 12:48:58 +0100 (CET)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jirislaby@gmail.com>
-Cc: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Jiri Slaby <jirislaby@gmail.com> writes:
+KS8695: enable console
 
-> On 03/02/2010 10:11 PM, Sergei Organov wrote:
->> Sergei Organov <osv@javad.com> writes:
->>> Add support for MOXA:0x1144 pci device. It's a 4-port device and
->>> differs in no way from the others. So this turns out to be a trivial
->>> pci_device_id change.
->> 
->> Please disregard this patch for now. This board doesn't in fact work
->> properly with the driver and recognizing it by the driver might lead to
->> problems.
->> 
->> I'll be working on this, -- sorry for the noise.
->
-> Yeah, the device you have is handled by different driver which is not
-> upstream yet, If you really have the card, you can try to merge it and
-> cleanup e.g. through staging. Note that the driver provided by moxa is
-> ugly and needs cleanup before moving to drivers/char/. It might be worth
-> to merge it with mxser (I haven't look into how much similar/different
-> they are.).
+Add add_preferred_console() to ks8695_console_init() to
+enable the console
 
-Yeah, they seem to be similar, as I've almost got in-kernel driver to
-work by looking at lspci output and making wild guesses, but then trying
-to use /dev/ttyMI3 hang my PC.
+Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
 
-I now compiled the driver provided by moxa and it works, so I now have a
-code to refer to, and it has special-case for port 3 ;-) Unfortunately
-their driver only supports kernels up to 2.6.30, so it will take
-additional efforts to run it on recent.
+Index: linux-2.6/drivers/serial/serial_ks8695.c
+===================================================================
+--- linux-2.6.orig/drivers/serial/serial_ks8695.c
++++ linux-2.6/drivers/serial/serial_ks8695.c
+@@ -650,6 +650,7 @@ static struct console ks8695_console = {
+ 
+ static int __init ks8695_console_init(void)
+ {
++	add_preferred_console(SERIAL_KS8695_DEVNAME, 0, NULL);
+ 	register_console(&ks8695_console);
+ 	return 0;
+ }
 
-I'm going to try to make in-kernel mxser to work with this board, --
-will see how it goes.
-
--- Sergei.
