@@ -1,110 +1,54 @@
-From: "G, Manjunath Kondaiah" <manjugk@ti.com>
-Subject: RE: [PATCH] serial: Add OMAP high-speed UART driver.
-Date: Wed, 3 Mar 2010 10:56:15 +0530
-Message-ID: <E0D41E29EB0DAC4E9F3FF173962E9E94026ED965F2@dbde02.ent.ti.com>
-References: <41322.192.168.10.89.1267454612.squirrel@dbdmail.itg.ti.com>
-	 <20100301184600.GC3389@atomide.com>
-	 <E0D41E29EB0DAC4E9F3FF173962E9E94026ED95FC1@dbde02.ent.ti.com>
-	 <20100302060821.GI3389@atomide.com>
-	 <E0D41E29EB0DAC4E9F3FF173962E9E94026ED9600D@dbde02.ent.ti.com>
-	 <20100302065224.GL3389@atomide.com>
- <618f0c911003020546mb7c8412o2bac4e86a081332b@mail.gmail.com>
- <E0D41E29EB0DAC4E9F3FF173962E9E94026ED96358@dbde02.ent.ti.com>
- <EAF47CD23C76F840A9E7FCE10091EFAB02C44C22F6@dbde02.ent.ti.com>
- <E0D41E29EB0DAC4E9F3FF173962E9E94026ED963B1@dbde02.ent.ti.com>
- <EAF47CD23C76F840A9E7FCE10091EFAB02C44C2348@dbde02.ent.ti.com>
+From: Feng Tang <feng.tang@intel.com>
+Subject: Re: [PATCH v5] serial: spi: add spi-uart driver for Maxim 3110
+Date: Wed, 3 Mar 2010 13:52:05 +0800
+Message-ID: <20100303135205.4fc277c5@feng-i7>
+References: <20091229222006.1ddb28a4@feng-desktop>
+	<20100208165946.0e4dde83@feng-i7>
+	<20100303105744.1eec10d7@feng-i7>
+	<201003022051.58688.david-b@pacbell.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:39258 "EHLO bear.ext.ti.com"
+Received: from mga02.intel.com ([134.134.136.20]:19449 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751572Ab0CCF01 convert rfc822-to-8bit (ORCPT
+	id S1752395Ab0CCFsx convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 3 Mar 2010 00:26:27 -0500
-In-Reply-To: <EAF47CD23C76F840A9E7FCE10091EFAB02C44C2348@dbde02.ent.ti.com>
-Content-Language: en-US
+	Wed, 3 Mar 2010 00:48:53 -0500
+In-Reply-To: <201003022051.58688.david-b@pacbell.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Shilimkar, Santosh" <santosh.shilimkar@ti.com>, "S, Venkatraman" <svenkatr@ti.com>, Tony Lindgren <tony@atomide.com>, "Raja, Govindraj" <govindraj.raja@ti.com>, Greg KH <greg@kroah.>
+To: David Brownell <david-b@pacbell.net>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Greg KH <greg@kroah.com>, spi-devel-list <spi-devel-general@lists.sourceforge.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Grant Likely <grant.likely@secretlab.ca>, "alan@lxorguk.ukuu.org.uk" <alan@lxorguk.ukuu.org.uk>
 
+On Wed, 3 Mar 2010 12:51:58 +0800
+David Brownell <david-b@pacbell.net> wrote:
 
-
-> -----Original Message-----
-> From: Shilimkar, Santosh 
-> Sent: Tuesday, March 02, 2010 8:43 PM
-> To: G, Manjunath Kondaiah; S, Venkatraman; Tony Lindgren; 
-> Raja, Govindraj; Greg KH; linux-serial@vger.kernel.org; 
-> linux-omap@vger.kernel.org; linux-kernel@vger.kernel.org; 
-> Kevin Hilman; Olof Johansson
-> Subject: RE: [PATCH] serial: Add OMAP high-speed UART driver.
+> On Tuesday 02 March 2010, Feng Tang wrote:
+> > + * 3. This driver doesn't support work with a spi cotnroller in
+> > DMA mode, 
 > 
-> > -----Original Message-----
-> > From: G, Manjunath Kondaiah
-> > Sent: Tuesday, March 02, 2010 8:34 PM
-> > To: Shilimkar, Santosh; S, Venkatraman; Tony Lindgren; 
-> Raja, Govindraj; Greg KH; linux-
-> > serial@vger.kernel.org; linux-omap@vger.kernel.org; 
-> linux-kernel@vger.kernel.org; Kevin Hilman; Olof
-> > Johansson
-> > Subject: RE: [PATCH] serial: Add OMAP high-speed UART driver.
-> > 
-> > 
-> > Santosh,
-> > 
-> > > -----Original Message-----
-> > > From: Shilimkar, Santosh
-> > > Sent: Tuesday, March 02, 2010 7:34 PM
-> > > To: G, Manjunath Kondaiah; S, Venkatraman; Tony Lindgren;
-> > > Raja, Govindraj; Greg KH; linux-serial@vger.kernel.org;
-> > > linux-omap@vger.kernel.org; linux-kernel@vger.kernel.org;
-> > > Kevin Hilman; Olof Johansson
-> > > Subject: RE: [PATCH] serial: Add OMAP high-speed UART driver.
-> > >
-> > > <snip snip>
-> > > > > > --
-> > > > > CDAC is a shadow register used for monitoring the DMA channel.
-> > > > >  I think it would be a lot
-> > > > > simpler if omap_start_dma() always resets CDAC to 0, and the
-> > > > > UART driver
-> > > > > just not set it explicitly.
-> > > >
-> > > > This seems to be better option than exposing CDAC read/write API
-> > > > to other drivers since user need to write '0' before
-> > > starting any DMA
-> > > > transfer which can be be done in omap_start_dma().
-> > > >
-> > > > I am wondering how other drivers are using DMA transfer
-> > > API's without
-> > > > resetting CDAC to zero.
-> > > >
-> > > It's needed only if some one is interested in that count.
-> > > UART seems to
-> > > using this counter where as other driver don't.
-> > >
-> > > Why do you think drivers need to know about counter value ?
-> > 
-> > Reading of non zero value(after reset to zero and enabling 
-> dma channel)
-> > from CDAC register indicates that, DMA transfer has started 
-> and user can
-> > rely on DMA4_CCENi and DMA4_CCFNi element and frame counters.
-> > 
-> > If the CDAC value is zero even after starting DMA channel, indicates
-> > error.
-> Not necessary. The DMA can still wait for the hw sync signal 
-> and the CDAC
-> can remain 0 if the hw sync in not received. This will be any 
-> way returned 
-> by DMA error ( SYNC lost)
+> As Grant said:  That's a bug ... one that will randomly
+> kick in based on whether the underlying SPI controller driver
+> happens to use DMA for a given transaction.
 > 
-> This register was mainly suppose to be used for debug purposes.
+> 
+>From this perspective, yes, it's a bug that this driver use non DMA-safe
+IO buffer, which prevents it to be portable for all kinds of controllers,
+and I can make it DMA safe. 
 
-As per TRM, CDAC can also be used for monitoring synchroized data 
-transfer apart from hw sync signal monitoring.
+But I still don't think it's a good idea to use DMA for Max3110 for
+performance reason, I know there is some spi controller who only works in
+DMA mode. 
 
-Anyway, we have are aligned to set this register to zero in 
-omap_start_dma() which will over ride this patch.
+Here comes another idea, can we add a capability flag in struct spi_master
+indicating the master supporting poll or dma or both. Also we add similar
+bits in struct spi_transfer indicating the this transfer wants to be handled
+in poll or dma mode. For spi controller driver, it can claim its
+capability when registering as a spi_master, for a spi device driver, it can
+select the working mode based on spi_master's capability and set the working
+mode in struct spi_transfer. Then controller and device don't need to guess
+what the other is capable, and make the info public. Any thoughts?
 
-Regards,
-Manjunath
+Thanks,
+Feng
