@@ -1,1092 +1,1570 @@
-From: Feng Tang <feng.tang@intel.com>
-Subject: [PATCH v6] serial: spi: add spi-uart driver for Maxim 3110
-Date: Thu, 4 Mar 2010 15:25:24 +0800
-Message-ID: <20100304152524.56055828@feng-i7>
+From: "Govindraj.R" <govindraj.raja@ti.com>
+Subject: Reposting: [PATCH v1] serial: Add OMAP high-speed UART driver.
+Date: Thu, 4 Mar 2010 18:22:34 +0530 (IST)
+Message-ID: <40015.192.168.10.89.1267707154.squirrel@dbdmail.itg.ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:10665 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753602Ab0CDHWv convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 4 Mar 2010 02:22:51 -0500
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-omap-owner@vger.kernel.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Kevin Hilman <khilman@deeprootsystems.com>, Tony Lindgren <tony@atomide.com>, Olof Johansson <olof@lixom.net>, Alan Cox <alan@linux.intel.com>, Greg KH <greg@kroah.com>, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>, Greg KH <greg@kroah.com>, David Brownell <david-b@pacbell.net>, Grant Likely <grant.likely@secretlab.ca>, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-Hi All,
+This time CC'ing Linux-serial and LKML too, forgot last time.
 
-Here is a driver for Maxim 3110 SPI-UART device, please help to review.
-
-It has been validated with Designware SPI controller (drivers/spi: dw_spi.c &
-dw_spi_pci.c). It supports polling and IRQ mode, supports batch read, and
-provides a console.
-
-change log:
- since v5:
-        * Make the spi data buffer DMA safe, thanks to Mssakazu Mokuno, 
-          David Brownell and Grant Likely for pointing the bug out
- since v4:
-        * Add explanation why not using DMA
-        * Fix a bug in max3110_read_multi()
- since v3:
-        * Remove the Designware controller related stuff
-        * Remove some initialization code which should be done in the platform
-          setup code
-        * Add a missing change for drivers/serial/Makefile
- since v2:
-        * Address comments from Andrew Morton
-        * Use test/set_bit to avoid race condition for SMP/preempt case
-        * Fix bug related with endian order
- since v1:
-        * Address comments from Alan Cox
-        * Use a "use_irq" module parameter to runtime check whether
-          to use IRQ mode
-        * Add the suspend/resume implementation
-
-Thanks!
-Feng
+--
+Govindraj.R
 
 
->From 6ff1d75c34d9465d4ffce076350473bfaf5404a5 Mon Sep 17 00:00:00 2001
-From: Feng Tang <feng.tang@intel.com>
-Date: Fri, 26 Feb 2010 11:37:29 +0800
-Subject: [PATCH] serial: spi: add spi-uart driver for Maxim 3110
+This patch adds driver support for OMAP3/4 high speed UART.
 
-This is the driver for Max3110 SPI-UART device, which connect
-to host with SPI interface. It supports baud rates from 300 to
-230400, and supports both polling and IRQ mode, as well as
-providing a console for system use
+This driver is made separate from 8250 driver as we cannot
+over load 8250 driver with omap platform specific configuration for
+features like DMA, it makes easier to implement features like DMA and
+hardware flow control and software flow control configuration with
+this driver as required for the omap-platform.
 
-Its datasheet could be found here:
-http://datasheets.maxim-ic.com/en/ds/MAX3110E-MAX3111E.pdf
+This patch involves only the core driver and its dependent.
+This patch doesn't incorporate platform specific data as this will be
+posted from linux-omap tree and this driver was tested with Kevins PM
+branch which currently hosts the omap-serial platform data which utilises
+the omap-hwmod framework.
 
-Signed-off-by: Feng Tang <feng.tang@intel.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: David Brownell <david-b@pacbell.net>
-Cc: Greg KH <greg@kroah.com>
-Cc: Grant Likely <grant.likely@secretlab.ca>
-Acked-by: Alan Cox <alan@linux.intel.com>
+Cc: Tony Lindgren <tony@atomide.com>
+Cc: Olof Johansson <olof@lixom.net>
+Cc: Alan Cox <alan@linux.intel.com>
+Tested-by: Kevin Hilman <khilman@deeprootsystems.com>
+Signed-off-by: Govindraj R <govindraj.raja@ti.com>
 ---
- drivers/serial/Kconfig      |    8 +
- drivers/serial/Makefile     |    1 +
- drivers/serial/max3110.c    |  892 +++++++++++++++++++++++++++++++++++++++++++
- drivers/serial/max3110.h    |   61 +++
- include/linux/serial_core.h |    3 +
- 5 files changed, 965 insertions(+), 0 deletions(-)
- create mode 100644 drivers/serial/max3110.c
- create mode 100644 drivers/serial/max3110.h
+ arch/arm/plat-omap/include/plat/omap-serial.h |  128 +++
+ drivers/serial/Kconfig                        |   27 +
+ drivers/serial/Makefile                       |    1 +
+ drivers/serial/omap-serial.c                  | 1316 +++++++++++++++++++++++++
+ include/linux/serial_core.h                   |    3 +
+ 5 files changed, 1475 insertions(+), 0 deletions(-)
+ create mode 100644 arch/arm/plat-omap/include/plat/omap-serial.h
+ create mode 100644 drivers/serial/omap-serial.c
 
-diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
-index 9ff47db..94aa282 100644
---- a/drivers/serial/Kconfig
-+++ b/drivers/serial/Kconfig
-@@ -688,6 +688,14 @@ config SERIAL_SA1100_CONSOLE
- 	  your boot loader (lilo or loadlin) about how to pass options to the
- 	  kernel at boot time.)
- 
-+config SERIAL_MAX3110
-+	tristate "SPI UART driver for Max3110"
-+	depends on SPI_MASTER
-+	select SERIAL_CORE
-+	select SERIAL_CORE_CONSOLE
-+	help
-+	  This is the UART protocol driver for MAX3110 device
-+
- config SERIAL_BFIN
- 	tristate "Blackfin serial port support"
- 	depends on BLACKFIN
-diff --git a/drivers/serial/Makefile b/drivers/serial/Makefile
-index 5548fe7..b93d8a0 100644
---- a/drivers/serial/Makefile
-+++ b/drivers/serial/Makefile
-@@ -46,6 +46,7 @@ obj-$(CONFIG_SERIAL_S3C24A0) += s3c24a0.o
- obj-$(CONFIG_SERIAL_S3C6400) += s3c6400.o
- obj-$(CONFIG_SERIAL_S5PC100) += s3c6400.o
- obj-$(CONFIG_SERIAL_MAX3100) += max3100.o
-+obj-$(CONFIG_SERIAL_MAX3110) += max3110.o
- obj-$(CONFIG_SERIAL_IP22_ZILOG) += ip22zilog.o
- obj-$(CONFIG_SERIAL_MUX) += mux.o
- obj-$(CONFIG_SERIAL_68328) += 68328serial.o
-diff --git a/drivers/serial/max3110.c b/drivers/serial/max3110.c
+diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h
+b/arch/arm/plat-omap/include/plat/omap-serial.h
 new file mode 100644
-index 0000000..9b39914
+index 0000000..2a1e7f9
 --- /dev/null
-+++ b/drivers/serial/max3110.c
-@@ -0,0 +1,892 @@
++++ b/arch/arm/plat-omap/include/plat/omap-serial.h
+@@ -0,0 +1,128 @@
 +/*
-+ * max3110.c - spi uart protocol driver for Maxim 3110
++ * Driver for OMAP-UART controller.
++ * Based on drivers/serial/8250.c
 + *
-+ * Copyright (c) 2009, Intel Corporation.
++ * Copyright (C) 2010 Texas Instruments.
 + *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
++ * Authors:
++ *	Govindraj R	<govindraj.raja@ti.com>
++ *	Thara Gopinath	<thara@ti.com>
 + *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-+ * more details.
-+ *
-+ * You should have received a copy of the GNU General Public License along with
-+ * this program; if not, write to the Free Software Foundation, Inc.,
-+ * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
 + */
 +
++#ifndef __OMAP_SERIAL_H__
++#define __OMAP_SERIAL_H__
++
++#include <linux/serial_core.h>
++#include <linux/platform_device.h>
++
++#include <plat/control.h>
++#include <plat/mux.h>
++
++#define DRIVER_NAME	"omap-hsuart"
++
 +/*
-+ * Note:
-+ * 1. From Max3110 spec, the Rx FIFO has 8 words, while the Tx FIFO only has
-+ *    1 word. If SPI master controller doesn't support sclk frequency change,
-+ *    then the char need be sent out one by one with some delay
++ * Use tty device name as ttyO, [O -> OMAP]
++ * in bootargs we specify as console=ttyO0 if uart1
++ * is used as console uart.
++ */
++#define OMAP_SERIAL_NAME	"ttyO"
++
++#define OMAP_MDR1_DISABLE	0x07
++#define OMAP_MDR1_MODE13X	0x03
++#define OMAP_MDR1_MODE16X	0x00
++#define OMAP_MODE13X_SPEED	230400
++
++/*
++ * LCR = 0XBF: Switch to Configuration Mode B.
++ * In configuration mode b allow access
++ * to EFR,DLL,DLH.
++ * Reference OMAP TRM Chapter 17
++ * Section: 1.4.3 Mode Selection
++ */
++#define OMAP_UART_LCR_CONF_MDB	0XBF
++
++/* WER = 0x7F
++ * Enable module level wakeup in WER reg
++ */
++#define OMAP_UART_WER_MOD_WKUP	0X7F
++
++/* Enable XON/XOFF flow control on output */
++#define OMAP_UART_SW_TX		0x04
++
++/* Enable XON/XOFF flow control on input */
++#define OMAP_UART_SW_RX		0x04
++
++#define OMAP_UART_SYSC_RESET	0X07
++#define OMAP_UART_TCR_TRIG	0X0F
++#define OMAP_UART_SW_CLR	0XF0
++
++#define OMAP_UART_DMA_CH_FREE	-1
++
++#define RX_TIMEOUT		(3 * HZ)
++#define OMAP_MAX_HSUART_PORTS	4
++
++#define MSR_SAVE_FLAGS		UART_MSR_ANY_DELTA
++
++struct omap_uart_port_info {
++	bool			dma_enabled;	/* To specify DMA Mode */
++	unsigned int		uartclk;	/* UART clock rate */
++	void __iomem		*membase;	/* ioremap cookie or NULL */
++	resource_size_t		mapbase;	/* resource base */
++	unsigned long		irqflags;	/* request_irq flags */
++	upf_t			flags;		/* UPF_* flags */
++};
++
++struct uart_omap_dma {
++	u8			uart_dma_tx;
++	u8			uart_dma_rx;
++	int			rx_dma_channel;
++	int			tx_dma_channel;
++	dma_addr_t		rx_buf_dma_phys;
++	dma_addr_t		tx_buf_dma_phys;
++	unsigned int		uart_base;
++	/*
++	 * Buffer for rx dma.It is not required for tx because the buffer
++	 * comes from port structure.
++	 */
++	unsigned char		*rx_buf;
++	unsigned int		prev_rx_dma_pos;
++	int			tx_buf_size;
++	int			tx_dma_used;
++	int			rx_dma_used;
++	spinlock_t		tx_lock;
++	spinlock_t		rx_lock;
++	/* timer to poll activity on rx dma */
++	struct timer_list	rx_timer;
++	int			rx_buf_size;
++	int			rx_timeout;
++};
++
++struct uart_omap_port {
++	struct uart_port	port;
++	struct uart_omap_dma	uart_dma;
++	struct platform_device	*pdev;
++
++	unsigned char		ier;
++	unsigned char		lcr;
++	unsigned char		mcr;
++	unsigned char		fcr;
++	unsigned char		efr;
++
++	int			use_dma;
++	/*
++	 * Some bits in registers are cleared on a read, so they must
++	 * be saved whenever the register is read but the bits will not
++	 * be immediately processed.
++	 */
++	unsigned int		lsr_break_flag;
++	unsigned char		msr_saved_flags;
++	char			name[20];
++	unsigned long		port_activity;
++};
++
++#endif /* __OMAP_SERIAL_H__ */
+diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
+index 9ff47db..95055e7 100644
+--- a/drivers/serial/Kconfig
++++ b/drivers/serial/Kconfig
+@@ -1366,6 +1366,33 @@ config SERIAL_OF_PLATFORM
+ 	  Currently, only 8250 compatible ports are supported, but
+ 	  others can easily be added.
+
++config SERIAL_OMAP
++	tristate "OMAP serial port support"
++	depends on ARCH_OMAP3 || ARCH_OMAP4
++	select SERIAL_CORE
++	help
++	  If you have a machine based on an Texas Instruments OMAP CPU you
++	  can enable its onboard serial ports by enabling this option.
++
++	  By enabling this option you take advantage of dma feature available
++	  with the omap-serial driver. DMA support can be enabled from platform
++	  data.
++
++config SERIAL_OMAP_CONSOLE
++	bool "Console on OMAP serial port"
++	depends on SERIAL_OMAP
++	select SERIAL_CORE_CONSOLE
++	help
++	  Select this option if you would like to use omap serial port as
++	  console.
++
++	  Even if you say Y here, the currently visible virtual console
++	  (/dev/tty0) will still be used as the system console by default, but
++	  you can alter that using a kernel command line option such as
++	  "console=ttyOx". (Try "man bootparam" or see the documentation of
++	  your boot loader about how to pass options to the kernel at
++	  boot time.)
++
+ config SERIAL_OF_PLATFORM_NWPSERIAL
+ 	tristate "NWP serial port driver"
+ 	depends on PPC_OF && PPC_DCR
+diff --git a/drivers/serial/Makefile b/drivers/serial/Makefile
+index 5548fe7..42962b3 100644
+--- a/drivers/serial/Makefile
++++ b/drivers/serial/Makefile
+@@ -82,3 +82,4 @@ obj-$(CONFIG_KGDB_SERIAL_CONSOLE) += kgdboc.o
+ obj-$(CONFIG_SERIAL_QE) += ucc_uart.o
+ obj-$(CONFIG_SERIAL_TIMBERDALE)	+= timbuart.o
+ obj-$(CONFIG_SERIAL_GRLIB_GAISLER_APBUART) += apbuart.o
++obj-$(CONFIG_SERIAL_OMAP) += omap-serial.o
+diff --git a/drivers/serial/omap-serial.c b/drivers/serial/omap-serial.c
+new file mode 100644
+index 0000000..3e6d608
+--- /dev/null
++++ b/drivers/serial/omap-serial.c
+@@ -0,0 +1,1316 @@
++/*
++ * Driver for OMAP-UART controller.
++ * Based on drivers/serial/8250.c
 + *
-+ * 2. Currently only RX availabe interrrupt is used
++ * Copyright (C) 2010 Texas Instruments.
++ *
++ * Authors:
++ *	Govindraj R	<govindraj.raja@ti.com>
++ *	Thara Gopinath	<thara@ti.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * Note: This driver is made seperate from 8250 driver as we cannot
++ * over load 8250 driver with omap platform specific configuration for
++ * features like DMA, it makes easier to implement features like DMA and
++ * hardware flow control and software flow control configuration with
++ * this driver as required for the omap-platform.
 + */
 +
 +#include <linux/module.h>
-+#include <linux/ioport.h>
 +#include <linux/init.h>
 +#include <linux/console.h>
++#include <linux/serial_reg.h>
++#include <linux/delay.h>
 +#include <linux/tty.h>
 +#include <linux/tty_flip.h>
++#include <linux/io.h>
++#include <linux/dma-mapping.h>
++#include <linux/clk.h>
 +#include <linux/serial_core.h>
-+#include <linux/serial_reg.h>
-+#include <linux/kthread.h>
-+#include <linux/delay.h>
-+#include <linux/spi/spi.h>
 +
-+#include "max3110.h"
++#include <asm/irq.h>
++#include <plat/dma.h>
++#include <plat/dmtimer.h>
++#include <plat/omap-serial.h>
 +
-+#define PR_FMT	"max3110: "
++static struct uart_omap_port *ui[OMAP_MAX_HSUART_PORTS];
 +
-+struct uart_max3110 {
-+	struct uart_port port;
-+	struct spi_device *spi;
-+	char *name;
++/* Forward declaration of functions */
++static void uart_tx_dma_callback(int lch, u16 ch_status, void *data);
++static void serial_omap_rx_timeout(unsigned long uart_no);
++static int serial_omap_start_rxdma(struct uart_omap_port *up);
 +
-+	wait_queue_head_t wq;
-+	struct task_struct *main_thread;
-+	struct task_struct *read_thread;
-+	spinlock_t lock;
-+
-+	u32 baud;
-+	u16 cur_conf;
-+	u8 clock;
-+	u8 parity, word_7bits;
-+	u16 irq;
-+
-+	/* bit map for UART status */
-+	unsigned long flags;
-+#define M3110_CON_TX_NEED	0
-+#define M3110_UART_TX_NEED	1
-+#define M3110_IRQ_PENDING	2
-+	unsigned long mthread_up;
-+
-+	/* console buffer */
-+	struct circ_buf con_xmit;
-+};
-+
-+static struct uart_max3110 *pmax;
-+
-+static int use_irq = 1;
-+module_param(use_irq, int, 0444);
-+MODULE_PARM_DESC(use_irq, "Whether using Max3110's IRQ capability");
-+
-+static void receive_chars(struct uart_max3110 *max,
-+				unsigned char *str, int len);
-+static int max3110_read_multi(struct uart_max3110 *max, u8 *buf);
-+static void max3110_con_receive(struct uart_max3110 *max);
-+
-+static int max3110_write_then_read(struct uart_max3110 *max,
-+		const void *txbuf, void *rxbuf, unsigned len, int always_fast)
++static inline unsigned int serial_in(struct uart_omap_port *up, int offset)
 +{
-+	struct spi_device *spi = max->spi;
-+	struct spi_message	message;
-+	struct spi_transfer	x;
-+	int ret;
-+
-+	spi_message_init(&message);
-+	memset(&x, 0, sizeof x);
-+	x.len = len;
-+	x.tx_buf = txbuf;
-+	x.rx_buf = rxbuf;
-+	spi_message_add_tail(&x, &message);
-+
-+	if (always_fast)
-+		x.speed_hz = spi->max_speed_hz;
-+	else if (max->baud)
-+		x.speed_hz = max->baud;
-+
-+	/* Do the i/o */
-+	ret = spi_sync(spi, &message);
-+	return ret;
++	offset <<= up->port.regshift;
++	return readw(up->port.membase + offset);
 +}
 +
-+/* Write a 16b word to the device */
-+static int max3110_out(struct uart_max3110 *max, const u16 out)
++static inline void serial_out(struct uart_omap_port *up, int offset, int value)
 +{
-+	void *buf;
-+	u16 *obuf, *ibuf;
-+	u8  ch;
-+	int ret;
-+
-+	buf = kmalloc(8, GFP_KERNEL | GFP_DMA);
-+	if (!buf)
-+		return -ENOMEM;
-+
-+	obuf = buf;
-+	ibuf = buf + 4;
-+	*obuf = out;
-+	ret = max3110_write_then_read(max, obuf, ibuf, 2, 1);
-+	if (ret) {
-+		pr_warning(PR_FMT "%s(): get err msg %d when sending 0x%x\n",
-+				__func__, ret, out);
-+		goto exit;
-+	}
-+
-+	/* If some valid data is read back */
-+	if (*ibuf & MAX3110_READ_DATA_AVAILABLE) {
-+		ch = *ibuf & 0xff;
-+		receive_chars(max, &ch, 1);
-+	}
-+
-+exit:
-+	kfree(buf);
-+	return ret;
++	offset <<= up->port.regshift;
++	writew(value, up->port.membase + offset);
 +}
 +
-+/*
-+ * This is usually used to read data from SPIC RX FIFO, which doesn't
-+ * need any delay like flushing character out.
++static inline void serial_omap_clear_fifos(struct uart_omap_port *up)
++{
++	serial_out(up, UART_FCR, UART_FCR_ENABLE_FIFO);
++	serial_out(up, UART_FCR, UART_FCR_ENABLE_FIFO |
++		       UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
++	serial_out(up, UART_FCR, 0);
++}
++
++/**
++ * serial_omap_get_divisor() - calculate divisor value
++ * @port: uart port info
++ * @baud: baudrate for which divisor needs to be calculated.
 + *
-+ * Return how many valide bytes are read back
++ * We have written our own function to get the divisor so as to support
++ * 13x mode. 3Mbps Baudrate as an different divisor.
++ * Reference OMAP TRM Chapter 17:
++ * Table 17-1. UART Mode Baud Rates, Divisor Values, and Error Rates
++ * referring to oversampling - divisor value
++ * baudrate 460,800 to 3,686,400 all have divisor 13
++ * except 3,000,000 which has divisor value 16
 + */
-+static int max3110_read_multi(struct uart_max3110 *max, u8 *rxbuf)
++static unsigned int
++serial_omap_get_divisor(struct uart_port *port, unsigned int baud)
 +{
-+	void *buf;
-+	u16 *obuf, *ibuf;
-+	u8 *pbuf, valid_str[M3110_RX_FIFO_DEPTH];
-+	int i, j, blen;
++	unsigned int divisor;
 +
-+	blen = M3110_RX_FIFO_DEPTH * sizeof(u16);
-+	buf = kmalloc(blen * 2, GFP_KERNEL | GFP_DMA);
-+	if (!buf) {
-+		pr_warning(PR_FMT "%s(): fail to alloc dma buffer\n", __func__);
-+		return 0;
-+	}
-+
-+	/* tx/rx always have the same length */
-+	memset(buf, 0, blen * 2);
-+	obuf = buf;
-+	ibuf = buf + blen;
-+
-+	if (max3110_write_then_read(max, obuf, ibuf, blen, 1)) {
-+		kfree(buf);
-+		return 0;
-+	}
-+
-+	/* If caller doesn't provide a buffer, then handle received char */
-+	pbuf = rxbuf ? rxbuf : valid_str;
-+
-+	for (i = 0, j = 0; i < M3110_RX_FIFO_DEPTH; i++) {
-+		if (ibuf[i] & MAX3110_READ_DATA_AVAILABLE)
-+			pbuf[j++] = ibuf[i] & 0xff;
-+	}
-+
-+	if (j && (pbuf == valid_str))
-+		receive_chars(max, valid_str, j);
-+
-+	kfree(buf);
-+	return j;
++	if (baud > OMAP_MODE13X_SPEED && baud != 3000000)
++		divisor = 13;
++	else
++		divisor = 16;
++	return port->uartclk/(baud * divisor);
 +}
 +
-+static void serial_m3110_con_putchar(struct uart_port *port, int ch)
++static void serial_omap_stop_rxdma(struct uart_omap_port *up)
 +{
-+	struct uart_max3110 *max =
-+		container_of(port, struct uart_max3110, port);
-+	struct circ_buf *xmit = &max->con_xmit;
-+
-+	if (uart_circ_chars_free(xmit)) {
-+		xmit->buf[xmit->head] = (char)ch;
-+		xmit->head = (xmit->head + 1) & (PAGE_SIZE - 1);
++	if (up->uart_dma.rx_dma_used) {
++		del_timer_sync(&up->uart_dma.rx_timer);
++		omap_stop_dma(up->uart_dma.rx_dma_channel);
++		omap_free_dma(up->uart_dma.rx_dma_channel);
++		up->uart_dma.rx_dma_channel = OMAP_UART_DMA_CH_FREE;
++		up->uart_dma.rx_dma_used = false;
 +	}
 +}
 +
-+/*
-+ * Print a string to the serial port trying not to disturb
-+ * any possible real use of the port...
-+ *
-+ *	The console_lock must be held when we get here.
-+ */
-+static void serial_m3110_con_write(struct console *co,
-+				const char *s, unsigned int count)
++static void serial_omap_enable_ms(struct uart_port *port)
 +{
-+	if (!pmax)
++	struct uart_omap_port *up = (struct uart_omap_port *)port;
++
++	dev_dbg(up->port.dev, "serial_omap_enable_ms+%d\n", up->pdev->id);
++	up->ier |= UART_IER_MSI;
++	serial_out(up, UART_IER, up->ier);
++}
++
++static void serial_omap_stop_tx(struct uart_port *port)
++{
++	struct uart_omap_port *up = (struct uart_omap_port *)port;
++
++	if (up->use_dma &&
++		up->uart_dma.tx_dma_channel != OMAP_UART_DMA_CH_FREE) {
++		/*
++		 * Check if dma is still active. If yes do nothing,
++		 * return. Else stop dma
++		 */
++		if (omap_get_dma_active_status(up->uart_dma.tx_dma_channel))
++			return;
++		omap_stop_dma(up->uart_dma.tx_dma_channel);
++		omap_free_dma(up->uart_dma.tx_dma_channel);
++		up->uart_dma.tx_dma_channel = OMAP_UART_DMA_CH_FREE;
++	}
++
++	if (up->ier & UART_IER_THRI) {
++		up->ier &= ~UART_IER_THRI;
++		serial_out(up, UART_IER, up->ier);
++	}
++}
++
++static void serial_omap_stop_rx(struct uart_port *port)
++{
++	struct uart_omap_port *up = (struct uart_omap_port *)port;
++
++	if (up->use_dma)
++		serial_omap_stop_rxdma(up);
++	up->ier &= ~UART_IER_RLSI;
++	up->port.read_status_mask &= ~UART_LSR_DR;
++	serial_out(up, UART_IER, up->ier);
++}
++
++static inline void receive_chars(struct uart_omap_port *up, int *status)
++{
++	struct tty_struct *tty = up->port.state->port.tty;
++	unsigned int flag;
++	unsigned char ch, lsr = *status;
++	int max_count = 256;
++
++	do {
++		if (likely(lsr & UART_LSR_DR))
++			ch = serial_in(up, UART_RX);
++		flag = TTY_NORMAL;
++		up->port.icount.rx++;
++
++		if (unlikely(lsr & UART_LSR_BRK_ERROR_BITS)) {
++			/*
++			 * For statistics only
++			 */
++			if (lsr & UART_LSR_BI) {
++				lsr &= ~(UART_LSR_FE | UART_LSR_PE);
++				up->port.icount.brk++;
++				/*
++				 * We do the SysRQ and SAK checking
++				 * here because otherwise the break
++				 * may get masked by ignore_status_mask
++				 * or read_status_mask.
++				 */
++				if (uart_handle_break(&up->port))
++					goto ignore_char;
++			} else if (lsr & UART_LSR_PE)
++				up->port.icount.parity++;
++			else if (lsr & UART_LSR_FE)
++				up->port.icount.frame++;
++			if (lsr & UART_LSR_OE)
++				up->port.icount.overrun++;
++
++			/*
++			 * Mask off conditions which should be ignored.
++			 */
++			lsr &= up->port.read_status_mask;
++
++#ifdef CONFIG_SERIAL_OMAP_CONSOLE
++			if (up->port.line == up->port.cons->index) {
++				/* Recover the break flag from console xmit */
++				lsr |= up->lsr_break_flag;
++				up->lsr_break_flag = 0;
++			}
++#endif
++			if (lsr & UART_LSR_BI)
++				flag = TTY_BREAK;
++			else if (lsr & UART_LSR_PE)
++				flag = TTY_PARITY;
++			else if (lsr & UART_LSR_FE)
++				flag = TTY_FRAME;
++		}
++
++		if (uart_handle_sysrq_char(&up->port, ch))
++			goto ignore_char;
++		uart_insert_char(&up->port, lsr, UART_LSR_OE, ch, flag);
++ignore_char:
++		lsr = serial_in(up, UART_LSR);
++	} while ((lsr & (UART_LSR_DR | UART_LSR_BI)) && (max_count-- > 0));
++	spin_unlock(&up->port.lock);
++	tty_flip_buffer_push(tty);
++	spin_lock(&up->port.lock);
++}
++
++static void transmit_chars(struct uart_omap_port *up)
++{
++	struct circ_buf *xmit = &up->port.state->xmit;
++	int count;
++
++	if (up->port.x_char) {
++		serial_out(up, UART_TX, up->port.x_char);
++		up->port.icount.tx++;
++		up->port.x_char = 0;
++		return;
++	}
++	if (uart_circ_empty(xmit) || uart_tx_stopped(&up->port)) {
++		serial_omap_stop_tx(&up->port);
++		return;
++	}
++	count = up->port.fifosize / 4;
++	do {
++		serial_out(up, UART_TX, xmit->buf[xmit->tail]);
++		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
++		up->port.icount.tx++;
++		if (uart_circ_empty(xmit))
++			break;
++	} while (--count > 0);
++
++	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
++		uart_write_wakeup(&up->port);
++
++	if (uart_circ_empty(xmit))
++		serial_omap_stop_tx(&up->port);
++}
++
++static inline void serial_omap_enable_ier_thri(struct uart_omap_port *up)
++{
++	if (!(up->ier & UART_IER_THRI)) {
++		up->ier |= UART_IER_THRI;
++		serial_out(up, UART_IER, up->ier);
++	}
++}
++
++static void serial_omap_start_tx(struct uart_port *port)
++{
++	struct uart_omap_port *up = (struct uart_omap_port *)port;
++	struct circ_buf *xmit;
++	unsigned int start;
++	int ret = 0;
++
++	if (!up->use_dma || up->port.x_char) {
++		serial_omap_enable_ier_thri(up);
++		return;
++	}
++
++	xmit = &up->port.state->xmit;
++	if (uart_circ_empty(xmit) || up->uart_dma.tx_dma_used)
 +		return;
 +
-+	uart_console_write(&pmax->port, s, count, serial_m3110_con_putchar);
++	if (up->uart_dma.tx_dma_channel == OMAP_UART_DMA_CH_FREE)
++		ret = omap_request_dma(up->uart_dma.uart_dma_tx,
++				"UART Tx DMA",
++				(void *)uart_tx_dma_callback, up,
++				&(up->uart_dma.tx_dma_channel));
 +
-+	set_bit(M3110_CON_TX_NEED, &pmax->flags);
-+	if (!test_bit(0, &pmax->mthread_up))
-+		wake_up_process(pmax->main_thread);
++	if (ret < 0) {
++		serial_omap_enable_ier_thri(up);
++		return;
++	}
++
++	start = up->uart_dma.tx_buf_dma_phys +
++				(xmit->tail & (UART_XMIT_SIZE - 1));
++	spin_lock(&(up->uart_dma.tx_lock));
++	up->uart_dma.tx_dma_used = true;
++	spin_unlock(&(up->uart_dma.tx_lock));
++
++	up->uart_dma.tx_buf_size = uart_circ_chars_pending(xmit);
++	/*
++	 * It is a circular buffer. See if the buffer has wounded back.
++	 * If yes it will have to be transferred in two separate dma
++	 * transfers
++	 */
++	if (start + up->uart_dma.tx_buf_size >=
++			up->uart_dma.tx_buf_dma_phys + UART_XMIT_SIZE)
++		up->uart_dma.tx_buf_size =
++			(up->uart_dma.tx_buf_dma_phys +
++			UART_XMIT_SIZE) - start;
++
++	omap_set_dma_dest_params(up->uart_dma.tx_dma_channel, 0,
++				OMAP_DMA_AMODE_CONSTANT,
++				up->uart_dma.uart_base, 0, 0);
++	omap_set_dma_src_params(up->uart_dma.tx_dma_channel, 0,
++				OMAP_DMA_AMODE_POST_INC, start, 0, 0);
++	omap_set_dma_transfer_params(up->uart_dma.tx_dma_channel,
++				OMAP_DMA_DATA_TYPE_S8,
++				up->uart_dma.tx_buf_size, 1,
++				OMAP_DMA_SYNC_ELEMENT,
++				up->uart_dma.uart_dma_tx, 0);
++	/* FIXME: Cache maintenance needed here? */
++	omap_start_dma(up->uart_dma.tx_dma_channel);
++}
++
++static unsigned int check_modem_status(struct uart_omap_port *up)
++{
++	int status;
++	status = serial_in(up, UART_MSR);
++
++	status |= up->msr_saved_flags;
++	up->msr_saved_flags = 0;
++
++	if ((status & UART_MSR_ANY_DELTA) == 0)
++		return status;
++	if (status & UART_MSR_ANY_DELTA && up->ier & UART_IER_MSI &&
++	    up->port.state != NULL) {
++		if (status & UART_MSR_TERI)
++			up->port.icount.rng++;
++		if (status & UART_MSR_DDSR)
++			up->port.icount.dsr++;
++		if (status & UART_MSR_DDCD)
++			uart_handle_dcd_change
++				(&up->port, status & UART_MSR_DCD);
++		if (status & UART_MSR_DCTS)
++			uart_handle_cts_change
++				(&up->port, status & UART_MSR_CTS);
++		wake_up_interruptible(&up->port.state->port.delta_msr_wait);
++	}
++
++	return status;
++}
++
++/**
++ * serial_omap_irq() - This handles the interrupt from one port
++ * @irq: uart port irq number
++ * @dev_id: uart port info
++ */
++static inline irqreturn_t serial_omap_irq(int irq, void *dev_id)
++{
++	struct uart_omap_port *up = dev_id;
++	unsigned int iir, lsr;
++	unsigned long flags;
++
++	spin_lock_irqsave(&up->port.lock, flags);
++	iir = serial_in(up, UART_IIR);
++	if (iir & UART_IIR_NO_INT)
++		return IRQ_NONE;
++
++	lsr = serial_in(up, UART_LSR);
++	if (iir & UART_IER_RLSI) {
++		if (up->use_dma)
++			up->ier &= ~UART_IER_RDI;
++			serial_out(up, UART_IER, up->ier);
++		if (!up->use_dma ||
++				serial_omap_start_rxdma(up) != 0)
++			if (lsr & UART_LSR_DR)
++				receive_chars(up, &lsr);
++		}
++
++	check_modem_status(up);
++	if ((lsr & UART_LSR_THRE) && (iir & UART_IIR_THRI))
++		transmit_chars(up);
++
++	spin_unlock_irqrestore(&up->port.lock, flags);
++	up->port_activity = jiffies;
++	return IRQ_HANDLED;
++}
++
++static unsigned int serial_omap_tx_empty(struct uart_port *port)
++{
++	struct uart_omap_port *up = (struct uart_omap_port *)port;
++	unsigned long flags = 0;
++	unsigned int ret = 0;
++
++	dev_dbg(up->port.dev, "serial_omap_tx_empty+%d\n", up->pdev->id);
++	spin_lock_irqsave(&up->port.lock, flags);
++	ret = serial_in(up, UART_LSR) & UART_LSR_TEMT ? TIOCSER_TEMT : 0;
++	spin_unlock_irqrestore(&up->port.lock, flags);
++
++	return ret;
++}
++
++static unsigned int serial_omap_get_mctrl(struct uart_port *port)
++{
++	struct uart_omap_port *up = (struct uart_omap_port *)port;
++	unsigned char status;
++	unsigned int ret = 0;
++
++	status = check_modem_status(up);
++	dev_dbg(up->port.dev, "serial_omap_get_mctrl+%d\n", up->pdev->id);
++
++	if (status & UART_MSR_DCD)
++		ret |= TIOCM_CAR;
++	if (status & UART_MSR_RI)
++		ret |= TIOCM_RNG;
++	if (status & UART_MSR_DSR)
++		ret |= TIOCM_DSR;
++	if (status & UART_MSR_CTS)
++		ret |= TIOCM_CTS;
++	return ret;
++}
++
++static void serial_omap_set_mctrl(struct uart_port *port, unsigned int mctrl)
++{
++	struct uart_omap_port *up = (struct uart_omap_port *)port;
++	unsigned char mcr = 0;
++
++	dev_dbg(up->port.dev, "serial_omap_set_mctrl+%d\n", up->pdev->id);
++	if (mctrl & TIOCM_RTS)
++		mcr |= UART_MCR_RTS;
++	if (mctrl & TIOCM_DTR)
++		mcr |= UART_MCR_DTR;
++	if (mctrl & TIOCM_OUT1)
++		mcr |= UART_MCR_OUT1;
++	if (mctrl & TIOCM_OUT2)
++		mcr |= UART_MCR_OUT2;
++	if (mctrl & TIOCM_LOOP)
++		mcr |= UART_MCR_LOOP;
++
++	mcr |= up->mcr;
++	serial_out(up, UART_MCR, mcr);
++}
++
++static void serial_omap_break_ctl(struct uart_port *port, int break_state)
++{
++	struct uart_omap_port *up = (struct uart_omap_port *)port;
++	unsigned long flags = 0;
++
++	dev_dbg(up->port.dev, "serial_omap_break_ctl+%d\n", up->pdev->id);
++	spin_lock_irqsave(&up->port.lock, flags);
++	if (break_state == -1)
++		up->lcr |= UART_LCR_SBC;
++	else
++		up->lcr &= ~UART_LCR_SBC;
++	serial_out(up, UART_LCR, up->lcr);
++	spin_unlock_irqrestore(&up->port.lock, flags);
++}
++
++static int serial_omap_startup(struct uart_port *port)
++{
++	struct uart_omap_port *up = (struct uart_omap_port *)port;
++	unsigned long flags = 0;
++	int retval;
++
++	/*
++	 * Allocate the IRQ
++	 */
++	retval = request_irq(up->port.irq, serial_omap_irq, up->port.irqflags,
++				up->name, up);
++	if (retval)
++		return retval;
++
++	dev_dbg(up->port.dev, "serial_omap_startup+%d\n", up->pdev->id);
++
++	/*
++	 * Clear the FIFO buffers and disable them.
++	 * (they will be reenabled in set_termios())
++	 */
++	serial_omap_clear_fifos(up);
++	/* For Hardware flow control */
++	serial_out(up, UART_MCR, UART_MCR_RTS);
++
++	/*
++	 * Clear the interrupt registers.
++	 */
++	(void) serial_in(up, UART_LSR);
++	if (serial_in(up, UART_LSR) & UART_LSR_DR)
++		(void) serial_in(up, UART_RX);
++	(void) serial_in(up, UART_IIR);
++	(void) serial_in(up, UART_MSR);
++
++	/*
++	 * Now, initialize the UART
++	 */
++	serial_out(up, UART_LCR, UART_LCR_WLEN8);
++	spin_lock_irqsave(&up->port.lock, flags);
++	/*
++	 * Most PC uarts need OUT2 raised to enable interrupts.
++	 */
++	up->port.mctrl |= TIOCM_OUT2;
++	serial_omap_set_mctrl(&up->port, up->port.mctrl);
++	spin_unlock_irqrestore(&up->port.lock, flags);
++
++	up->msr_saved_flags = 0;
++	if (up->use_dma) {
++		free_page((unsigned long)up->port.state->xmit.buf);
++		up->port.state->xmit.buf = dma_alloc_coherent(NULL,
++			UART_XMIT_SIZE,
++			(dma_addr_t *)&(up->uart_dma.tx_buf_dma_phys),
++			0);
++		init_timer(&(up->uart_dma.rx_timer));
++		up->uart_dma.rx_timer.function = serial_omap_rx_timeout;
++		up->uart_dma.rx_timer.data = up->pdev->id;
++		/* Currently the buffer size is 4KB. Can increase it */
++		up->uart_dma.rx_buf = dma_alloc_coherent(NULL,
++			up->uart_dma.rx_buf_size,
++			(dma_addr_t *)&(up->uart_dma.rx_buf_dma_phys), 0);
++	}
++	/*
++	 * Finally, enable interrupts. Note: Modem status interrupts
++	 * are set via set_termios(), which will be occurring imminently
++	 * anyway, so we don't enable them here.
++	 */
++	up->ier = UART_IER_RLSI | UART_IER_RDI;
++	serial_out(up, UART_IER, up->ier);
++
++	up->port_activity = jiffies;
++	return 0;
++}
++
++static void serial_omap_shutdown(struct uart_port *port)
++{
++	struct uart_omap_port *up = (struct uart_omap_port *)port;
++	unsigned long flags = 0;
++
++	dev_dbg(up->port.dev, "serial_omap_shutdown+%d\n", up->pdev->id);
++	/*
++	 * Disable interrupts from this port
++	 */
++	up->ier = 0;
++	serial_out(up, UART_IER, 0);
++
++	spin_lock_irqsave(&up->port.lock, flags);
++	up->port.mctrl &= ~TIOCM_OUT2;
++	serial_omap_set_mctrl(&up->port, up->port.mctrl);
++	spin_unlock_irqrestore(&up->port.lock, flags);
++
++	/*
++	 * Disable break condition and FIFOs
++	 */
++	serial_out(up, UART_LCR, serial_in(up, UART_LCR) & ~UART_LCR_SBC);
++	serial_omap_clear_fifos(up);
++
++	/*
++	 * Read data port to reset things, and then free the irq
++	 */
++	if (serial_in(up, UART_LSR) & UART_LSR_DR)
++		(void) serial_in(up, UART_RX);
++	if (up->use_dma) {
++		int tmp;
++		dma_free_coherent(up->port.dev,
++			UART_XMIT_SIZE,	up->port.state->xmit.buf,
++			up->uart_dma.tx_buf_dma_phys);
++		up->port.state->xmit.buf = NULL;
++		serial_omap_stop_rx(port);
++		dma_free_coherent(up->port.dev,
++			up->uart_dma.rx_buf_size, up->uart_dma.rx_buf,
++			up->uart_dma.rx_buf_dma_phys);
++		up->uart_dma.rx_buf = NULL;
++		tmp = serial_in(up, UART_OMAP_SYSC) & OMAP_UART_SYSC_RESET;
++		serial_out(up, UART_OMAP_SYSC, tmp); /* force-idle */
++	}
++	free_irq(up->port.irq, up);
++}
++
++static inline void
++serial_omap_configure_xonxoff
++		(struct uart_omap_port *up, struct ktermios *termios)
++{
++	unsigned char efr = 0;
++
++	up->lcr = serial_in(up, UART_LCR);
++	serial_out(up, UART_LCR, OMAP_UART_LCR_CONF_MDB);
++	up->efr = serial_in(up, UART_EFR);
++	serial_out(up, UART_EFR, up->efr & ~UART_EFR_ECB);
++
++	serial_out(up, UART_XON1, termios->c_cc[VSTART]);
++	serial_out(up, UART_XOFF1, termios->c_cc[VSTOP]);
++
++	/* clear SW control mode bits */
++	efr = up->efr;
++	efr &= OMAP_UART_SW_CLR;
++
++	/*
++	 * IXON Flag:
++	 * Enable XON/XOFF flow control on output.
++	 * Transmit XON1, XOFF1
++	 */
++	if (termios->c_iflag & IXON)
++		efr |= OMAP_UART_SW_TX;
++
++	/*
++	 * IXOFF Flag:
++	 * Enable XON/XOFF flow control on input.
++	 * Receiver compares XON1, XOFF1.
++	 */
++	if (termios->c_iflag & IXOFF)
++		efr |= OMAP_UART_SW_RX;
++
++	serial_out(up, UART_EFR, up->efr | UART_EFR_ECB);
++	serial_out(up, UART_LCR, UART_LCR_DLAB);
++
++	up->mcr = serial_in(up, UART_MCR);
++
++	/*
++	 * IXANY Flag:
++	 * Enable any character to restart output.
++	 * Operation resumes after receiving any
++	 * character after recognition of the XOFF character
++	 */
++	if (termios->c_iflag & IXANY)
++		up->mcr |= UART_MCR_XONANY;
++
++	serial_out(up, UART_MCR, up->mcr | UART_MCR_TCRTLR);
++	serial_out(up, UART_LCR, OMAP_UART_LCR_CONF_MDB);
++	serial_out(up, UART_TI752_TCR, OMAP_UART_TCR_TRIG);
++	/* Enable special char function UARTi.EFR_REG[5] and
++	 * load the new software flow control mode IXON or IXOFF
++	 * and restore the UARTi.EFR_REG[4] ENHANCED_EN value.
++	 */
++	serial_out(up, UART_EFR, efr | UART_EFR_SCD);
++	serial_out(up, UART_LCR, UART_LCR_DLAB);
++
++	serial_out(up, UART_MCR, up->mcr & ~UART_MCR_TCRTLR);
++	serial_out(up, UART_LCR, up->lcr);
++}
++
++static void
++serial_omap_set_termios(struct uart_port *port, struct ktermios *termios,
++			struct ktermios *old)
++{
++	struct uart_omap_port *up = (struct uart_omap_port *)port;
++	unsigned char cval = 0;
++	unsigned char efr = 0;
++	unsigned long flags = 0;
++	unsigned int baud, quot;
++
++	switch (termios->c_cflag & CSIZE) {
++	case CS5:
++		cval = UART_LCR_WLEN5;
++		break;
++	case CS6:
++		cval = UART_LCR_WLEN6;
++		break;
++	case CS7:
++		cval = UART_LCR_WLEN7;
++		break;
++	default:
++	case CS8:
++		cval = UART_LCR_WLEN8;
++		break;
++	}
++
++	if (termios->c_cflag & CSTOPB)
++		cval |= UART_LCR_STOP;
++	if (termios->c_cflag & PARENB)
++		cval |= UART_LCR_PARITY;
++	if (!(termios->c_cflag & PARODD))
++		cval |= UART_LCR_EPAR;
++
++	/*
++	 * Ask the core to calculate the divisor for us.
++	 */
++
++	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/13);
++	quot = serial_omap_get_divisor(port, baud);
++
++	up->fcr = UART_FCR_R_TRIG_01 | UART_FCR_T_TRIG_01 |
++			UART_FCR_ENABLE_FIFO;
++	if (up->use_dma)
++		up->fcr |= UART_FCR_DMA_SELECT;
++
++	/*
++	 * Ok, we're now changing the port state. Do it with
++	 * interrupts disabled.
++	 */
++	spin_lock_irqsave(&up->port.lock, flags);
++
++	/*
++	 * Update the per-port timeout.
++	 */
++	uart_update_timeout(port, termios->c_cflag, baud);
++
++	up->port.read_status_mask = UART_LSR_OE | UART_LSR_THRE | UART_LSR_DR;
++	if (termios->c_iflag & INPCK)
++		up->port.read_status_mask |= UART_LSR_FE | UART_LSR_PE;
++	if (termios->c_iflag & (BRKINT | PARMRK))
++		up->port.read_status_mask |= UART_LSR_BI;
++
++	/*
++	 * Characters to ignore
++	 */
++	up->port.ignore_status_mask = 0;
++	if (termios->c_iflag & IGNPAR)
++		up->port.ignore_status_mask |= UART_LSR_PE | UART_LSR_FE;
++	if (termios->c_iflag & IGNBRK) {
++		up->port.ignore_status_mask |= UART_LSR_BI;
++		/*
++		 * If we're ignoring parity and break indicators,
++		 * ignore overruns too (for real raw support).
++		 */
++		if (termios->c_iflag & IGNPAR)
++			up->port.ignore_status_mask |= UART_LSR_OE;
++	}
++
++	/*
++	 * ignore all characters if CREAD is not set
++	 */
++	if ((termios->c_cflag & CREAD) == 0)
++		up->port.ignore_status_mask |= UART_LSR_DR;
++
++	/*
++	 * Modem status interrupts
++	 */
++	up->ier &= ~UART_IER_MSI;
++	if (UART_ENABLE_MS(&up->port, termios->c_cflag))
++		up->ier |= UART_IER_MSI;
++	serial_out(up, UART_IER, up->ier);
++	serial_out(up, UART_LCR, cval);		/* reset DLAB */
++
++	/* FIFOs and DMA Settings */
++
++	/* FCR can be changed only when the
++	 * baud clock is not running
++	 * DLL_REG and DLH_REG set to 0.
++	 */
++	serial_out(up, UART_LCR, UART_LCR_DLAB);
++	serial_out(up, UART_DLL, 0);
++	serial_out(up, UART_DLM, 0);
++	serial_out(up, UART_LCR, 0);
++
++	serial_out(up, UART_LCR, OMAP_UART_LCR_CONF_MDB);
++
++	up->efr = serial_in(up, UART_EFR);
++	serial_out(up, UART_EFR, up->efr | UART_EFR_ECB);
++
++	serial_out(up, UART_LCR, 0);
++	up->mcr = serial_in(up, UART_MCR);
++	serial_out(up, UART_MCR, up->mcr | UART_MCR_TCRTLR);
++	/* FIFO ENABLE, DMA MODE */
++	serial_out(up, UART_FCR, up->fcr);
++	serial_out(up, UART_LCR, OMAP_UART_LCR_CONF_MDB);
++
++	if (up->use_dma) {
++		serial_out(up, UART_TI752_TLR, 0);
++		serial_out(up, UART_OMAP_SCR,
++			(UART_FCR_TRIGGER_4 | UART_FCR_TRIGGER_8));
++	}
++
++	serial_out(up, UART_EFR, up->efr);
++	serial_out(up, UART_LCR, UART_LCR_DLAB);
++	serial_out(up, UART_MCR, up->mcr);
++
++	/* Protocol, Baud Rate, and Interrupt Settings */
++
++	serial_out(up, UART_OMAP_MDR1, OMAP_MDR1_DISABLE);
++	serial_out(up, UART_LCR, OMAP_UART_LCR_CONF_MDB);
++
++	up->efr = serial_in(up, UART_EFR);
++	serial_out(up, UART_EFR, up->efr | UART_EFR_ECB);
++
++	serial_out(up, UART_LCR, 0);
++	serial_out(up, UART_IER, 0);
++	serial_out(up, UART_LCR, OMAP_UART_LCR_CONF_MDB);
++
++	serial_out(up, UART_DLL, quot & 0xff);          /* LS of divisor */
++	serial_out(up, UART_DLM, quot >> 8);            /* MS of divisor */
++
++	serial_out(up, UART_LCR, 0);
++	serial_out(up, UART_IER, up->ier);
++	serial_out(up, UART_LCR, OMAP_UART_LCR_CONF_MDB);
++
++	serial_out(up, UART_EFR, up->efr);
++	serial_out(up, UART_LCR, cval);
++
++	if (baud > 230400 && baud != 3000000)
++		serial_out(up, UART_OMAP_MDR1, OMAP_MDR1_MODE13X);
++	else
++		serial_out(up, UART_OMAP_MDR1, OMAP_MDR1_MODE16X);
++
++	/* Hardware Flow Control Configuration */
++
++	if (termios->c_cflag & CRTSCTS) {
++		efr |= (UART_EFR_CTS | UART_EFR_RTS);
++		serial_out(up, UART_LCR, UART_LCR_DLAB);
++
++		up->mcr = serial_in(up, UART_MCR);
++		serial_out(up, UART_MCR, up->mcr | UART_MCR_TCRTLR);
++
++		serial_out(up, UART_LCR, OMAP_UART_LCR_CONF_MDB);
++		up->efr = serial_in(up, UART_EFR);
++		serial_out(up, UART_EFR, up->efr | UART_EFR_ECB);
++
++		serial_out(up, UART_TI752_TCR, OMAP_UART_TCR_TRIG);
++		serial_out(up, UART_EFR, efr); /* Enable AUTORTS and AUTOCTS */
++		serial_out(up, UART_LCR, UART_LCR_DLAB);
++		serial_out(up, UART_MCR, up->mcr | UART_MCR_RTS);
++		serial_out(up, UART_LCR, cval);
++	}
++
++	serial_omap_set_mctrl(&up->port, up->port.mctrl);
++	/* Software Flow Control Configuration */
++	if (termios->c_iflag & (IXON | IXOFF))
++		serial_omap_configure_xonxoff(up, termios);
++
++	spin_unlock_irqrestore(&up->port.lock, flags);
++	dev_dbg(up->port.dev, "serial_omap_set_termios+%d\n", up->pdev->id);
++}
++
++static void
++serial_omap_pm(struct uart_port *port, unsigned int state,
++	       unsigned int oldstate)
++{
++	struct uart_omap_port *up = (struct uart_omap_port *)port;
++	unsigned char efr;
++
++	dev_dbg(up->port.dev, "serial_omap_pm+%d\n", up->pdev->id);
++	efr = serial_in(up, UART_EFR);
++	serial_out(up, UART_LCR, OMAP_UART_LCR_CONF_MDB);
++	serial_out(up, UART_EFR, efr | UART_EFR_ECB);
++	serial_out(up, UART_LCR, 0);
++
++	serial_out(up, UART_IER, (state != 0) ? UART_IERX_SLEEP : 0);
++	serial_out(up, UART_LCR, OMAP_UART_LCR_CONF_MDB);
++	serial_out(up, UART_EFR, efr);
++	serial_out(up, UART_LCR, 0);
++	/* Enable module level wake up */
++	serial_out(up, UART_OMAP_WER,
++		(state != 0) ? OMAP_UART_WER_MOD_WKUP : 0);
++}
++
++static void serial_omap_release_port(struct uart_port *port)
++{
++	dev_dbg(port->dev, "serial_omap_release_port+\n");
++}
++
++static int serial_omap_request_port(struct uart_port *port)
++{
++	dev_dbg(port->dev, "serial_omap_request_port+\n");
++	return 0;
++}
++
++static void serial_omap_config_port(struct uart_port *port, int flags)
++{
++	struct uart_omap_port *up = (struct uart_omap_port *)port;
++
++	dev_dbg(up->port.dev, "serial_omap_config_port+%d\n",
++							up->pdev->id);
++	up->port.type = PORT_OMAP;
++}
++
++static int
++serial_omap_verify_port(struct uart_port *port, struct serial_struct *ser)
++{
++	/* we don't want the core code to modify any port params */
++	dev_dbg(port->dev, "serial_omap_verify_port+\n");
++	return -EINVAL;
++}
++
++static const char *
++serial_omap_type(struct uart_port *port)
++{
++	struct uart_omap_port *up = (struct uart_omap_port *)port;
++
++	dev_dbg(up->port.dev, "serial_omap_type+%d\n", up->pdev->id);
++	return up->name;
++}
++
++#ifdef CONFIG_SERIAL_OMAP_CONSOLE
++
++static struct uart_omap_port *serial_omap_console_ports[4];
++
++static struct uart_driver serial_omap_reg;
++
++#define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
++
++static inline void wait_for_xmitr(struct uart_omap_port *up)
++{
++	unsigned int status, tmout = 10000;
++
++	/* Wait up to 10ms for the character(s) to be sent. */
++	do {
++		status = serial_in(up, UART_LSR);
++
++		if (status & UART_LSR_BI)
++			up->lsr_break_flag = UART_LSR_BI;
++
++		if (--tmout == 0)
++			break;
++		udelay(1);
++	} while ((status & BOTH_EMPTY) != BOTH_EMPTY);
++
++	/* Wait up to 1s for flow control if necessary */
++	if (up->port.flags & UPF_CONS_FLOW) {
++		tmout = 1000000;
++		for (tmout = 1000000; tmout; tmout--) {
++			unsigned int msr = serial_in(up, UART_MSR);
++			up->msr_saved_flags |= msr & MSR_SAVE_FLAGS;
++			if (msr & UART_MSR_CTS)
++				break;
++			udelay(1);
++		}
++	}
++}
++
++static void serial_omap_console_putchar(struct uart_port *port, int ch)
++{
++	struct uart_omap_port *up = (struct uart_omap_port *)port;
++
++	wait_for_xmitr(up);
++	serial_out(up, UART_TX, ch);
++}
++
++static void
++serial_omap_console_write(struct console *co, const char *s,
++		unsigned int count)
++{
++	struct uart_omap_port *up = serial_omap_console_ports[co->index];
++	unsigned int ier;
++
++	/*
++	 * First save the IER then disable the interrupts
++	 */
++	ier = serial_in(up, UART_IER);
++	serial_out(up, UART_IER, 0);
++
++	uart_console_write(&up->port, s, count, serial_omap_console_putchar);
++
++	/*
++	 * Finally, wait for transmitter to become empty
++	 * and restore the IER
++	 */
++	wait_for_xmitr(up);
++	serial_out(up, UART_IER, ier);
++	/*
++	 * The receive handling will happen properly because the
++	 * receive ready bit will still be set; it is not cleared
++	 * on read.  However, modem control will not, we must
++	 * call it if we have saved something in the saved flags
++	 * while processing with interrupts off.
++	 */
++	if (up->msr_saved_flags)
++		check_modem_status(up);
 +}
 +
 +static int __init
-+serial_m3110_con_setup(struct console *co, char *options)
++serial_omap_console_setup(struct console *co, char *options)
 +{
-+	struct uart_max3110 *max = pmax;
++	struct uart_omap_port *up;
 +	int baud = 115200;
 +	int bits = 8;
 +	int parity = 'n';
 +	int flow = 'n';
++	int r;
 +
-+	pr_info(PR_FMT "setting up console\n");
-+
-+	if (!max) {
-+		pr_err(PR_FMT "pmax is NULL, return");
++	if (serial_omap_console_ports[co->index] == NULL)
 +		return -ENODEV;
-+	}
++	up = serial_omap_console_ports[co->index];
 +
 +	if (options)
 +		uart_parse_options(options, &baud, &parity, &bits, &flow);
 +
-+	return uart_set_options(&max->port, co, baud, parity, bits, flow);
++	r = uart_set_options(&up->port, co, baud, parity, bits, flow);
++
++	return r;
 +}
 +
-+static struct tty_driver *serial_m3110_con_device(struct console *co,
-+							int *index)
-+{
-+	struct uart_driver *p = co->data;
-+	*index = co->index;
-+	return p->tty_driver;
-+}
-+
-+static struct uart_driver serial_m3110_reg;
-+static struct console serial_m3110_console = {
-+	.name		= "ttyS",
-+	.write		= serial_m3110_con_write,
-+	.device		= serial_m3110_con_device,
-+	.setup		= serial_m3110_con_setup,
++static struct console serial_omap_console = {
++	.name		= OMAP_SERIAL_NAME,
++	.write		= serial_omap_console_write,
++	.device		= uart_console_device,
++	.setup		= serial_omap_console_setup,
 +	.flags		= CON_PRINTBUFFER,
 +	.index		= -1,
-+	.data		= &serial_m3110_reg,
++	.data		= &serial_omap_reg,
 +};
 +
-+
-+static unsigned int serial_m3110_tx_empty(struct uart_port *port)
++static void serial_omap_add_console_port(struct uart_omap_port *up)
 +{
-+	return 1;
++	serial_omap_console_ports[up->pdev->id] = up;
 +}
 +
-+static void serial_m3110_stop_tx(struct uart_port *port)
-+{
-+	return;
-+}
++#define OMAP_CONSOLE	(&serial_omap_console)
 +
-+static void serial_m3110_stop_rx(struct uart_port *port)
-+{
-+	return;
-+}
++#else
 +
-+#define WORDS_PER_XFER	128
-+static void send_circ_buf(struct uart_max3110 *max,
-+				struct circ_buf *xmit)
-+{
-+	void *buf;
-+	u16 *obuf, *ibuf;
-+	u8 valid_str[WORDS_PER_XFER];
-+	int i, j, len, blen, dma_size, left, ret = 0;
++#define OMAP_CONSOLE	NULL
 +
++static inline void serial_omap_add_console_port(struct uart_omap_port *up)
++{}
 +
-+	dma_size = WORDS_PER_XFER * sizeof(u16) * 2;
-+	buf = kmalloc(dma_size, GFP_KERNEL | GFP_DMA);
-+	if (!buf)
-+		return;
-+	obuf = buf;
-+	ibuf = buf + dma_size/2;
++#endif
 +
-+	while (!uart_circ_empty(xmit)) {
-+		left = uart_circ_chars_pending(xmit);
-+		while (left) {
-+			len = min(left, WORDS_PER_XFER);
-+			blen = len * sizeof(u16);
-+			memset(obuf, 0, blen);
-+			memset(ibuf, 0, blen);
++struct uart_ops serial_omap_pops = {
++	.tx_empty	= serial_omap_tx_empty,
++	.set_mctrl	= serial_omap_set_mctrl,
++	.get_mctrl	= serial_omap_get_mctrl,
++	.stop_tx	= serial_omap_stop_tx,
++	.start_tx	= serial_omap_start_tx,
++	.stop_rx	= serial_omap_stop_rx,
++	.enable_ms	= serial_omap_enable_ms,
++	.break_ctl	= serial_omap_break_ctl,
++	.startup	= serial_omap_startup,
++	.shutdown	= serial_omap_shutdown,
++	.set_termios	= serial_omap_set_termios,
++	.pm		= serial_omap_pm,
++	.type		= serial_omap_type,
++	.release_port	= serial_omap_release_port,
++	.request_port	= serial_omap_request_port,
++	.config_port	= serial_omap_config_port,
++	.verify_port	= serial_omap_verify_port,
++};
 +
-+			for (i = 0; i < len; i++) {
-+				obuf[i] = (u8)xmit->buf[xmit->tail] | WD_TAG;
-+				xmit->tail = (xmit->tail + 1) &
-+						(UART_XMIT_SIZE - 1);
-+			}
-+
-+			/* Fail to send msg to console is not very critical */
-+			ret = max3110_write_then_read(max, obuf, ibuf, blen, 0);
-+			if (ret)
-+				pr_warning(PR_FMT "%s(): get err msg %d\n",
-+						__func__, ret);
-+
-+			for (i = 0, j = 0; i < len; i++) {
-+				if (ibuf[i] & MAX3110_READ_DATA_AVAILABLE)
-+					valid_str[j++] = ibuf[i] & 0xff;
-+			}
-+
-+			if (j)
-+				receive_chars(max, valid_str, j);
-+
-+			max->port.icount.tx += len;
-+			left -= len;
-+		}
-+	}
-+
-+	kfree(buf);
-+}
-+
-+static void transmit_char(struct uart_max3110 *max)
-+{
-+	struct uart_port *port = &max->port;
-+	struct circ_buf *xmit = &port->state->xmit;
-+
-+	if (uart_circ_empty(xmit) || uart_tx_stopped(port))
-+		return;
-+
-+	send_circ_buf(max, xmit);
-+
-+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-+		uart_write_wakeup(port);
-+}
-+
-+/*
-+ * This will be called by uart_write() and tty_write, can't
-+ * go to sleep
-+ */
-+static void serial_m3110_start_tx(struct uart_port *port)
-+{
-+	struct uart_max3110 *max =
-+		container_of(port, struct uart_max3110, port);
-+
-+	set_bit(M3110_UART_TX_NEED, &max->flags);
-+	if (!test_bit(0, &max->mthread_up))
-+		wake_up_process(max->main_thread);
-+}
-+
-+static void receive_chars(struct uart_max3110 *max, unsigned char *str, int len)
-+{
-+	struct uart_port *port = &max->port;
-+	struct tty_struct *tty;
-+	int usable;
-+
-+	/* If uart is not opened, just return */
-+	if (!port->state)
-+		return;
-+
-+	tty = port->state->port.tty;
-+	if (!tty)
-+		return;
-+
-+	while (len) {
-+		usable = tty_buffer_request_room(tty, len);
-+		if (usable) {
-+			tty_insert_flip_string(tty, str, usable);
-+			str += usable;
-+			port->icount.rx += usable;
-+		}
-+		len -= usable;
-+	}
-+	tty_flip_buffer_push(tty);
-+}
-+
-+/*
-+ * This routine will be used in read_thread or RX IRQ handling,
-+ * it will first do one round buffer read(8 words), if there is some
-+ * valid RX data, will try to read 5 more rounds till all data
-+ * is read out.
-+ *
-+ * Use stack space as data buffer to save some system load, and chose
-+ * 504 Btyes as a threadhold to do a bulk push to upper tty layer when
-+ * receiving bulk data, a much bigger buffer may cause stack overflow
-+ */
-+static void max3110_con_receive(struct uart_max3110 *max)
-+{
-+	int loop = 1, num, total = 0;
-+	u8 recv_buf[512], *pbuf;
-+
-+	pbuf = recv_buf;
-+	do {
-+		num = max3110_read_multi(max, pbuf);
-+
-+		if (num) {
-+			loop = 5;
-+			pbuf += num;
-+			total += num;
-+
-+			if (total >= 504) {
-+				receive_chars(max, recv_buf, total);
-+				pbuf = recv_buf;
-+				total = 0;
-+			}
-+		}
-+	} while (--loop);
-+
-+	if (total)
-+		receive_chars(max, recv_buf, total);
-+}
-+
-+static int max3110_main_thread(void *_max)
-+{
-+	struct uart_max3110 *max = _max;
-+	wait_queue_head_t *wq = &max->wq;
-+	int ret = 0;
-+	struct circ_buf *xmit = &max->con_xmit;
-+
-+	init_waitqueue_head(wq);
-+	pr_info(PR_FMT "start main thread\n");
-+
-+	do {
-+		wait_event_interruptible(*wq,
-+				max->flags || kthread_should_stop());
-+		test_and_set_bit(0, &max->mthread_up);
-+
-+		if (use_irq && test_bit(M3110_IRQ_PENDING, &max->flags)) {
-+			max3110_con_receive(max);
-+			clear_bit(M3110_IRQ_PENDING, &max->flags);
-+		}
-+
-+		/* First handle console output */
-+		if (test_bit(M3110_CON_TX_NEED, &max->flags)) {
-+			send_circ_buf(max, xmit);
-+			clear_bit(M3110_CON_TX_NEED, &max->flags);
-+		}
-+
-+		/* Handle uart output */
-+		if (test_bit(M3110_UART_TX_NEED, &max->flags)) {
-+			transmit_char(max);
-+			clear_bit(M3110_UART_TX_NEED, &max->flags);
-+		}
-+		test_and_clear_bit(0, &max->mthread_up);
-+	} while (!kthread_should_stop());
-+
-+	return ret;
-+}
-+
-+static irqreturn_t serial_m3110_irq(int irq, void *dev_id)
-+{
-+	struct uart_max3110 *max = dev_id;
-+
-+	/* max3110's irq is a falling edge, not level triggered,
-+	 * so no need to disable the irq */
-+	set_bit(M3110_IRQ_PENDING, &max->flags);
-+
-+	if (!test_bit(0, &max->mthread_up))
-+		wake_up_process(max->main_thread);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+/* If don't use RX IRQ, then need a thread to polling read */
-+static int max3110_read_thread(void *_max)
-+{
-+	struct uart_max3110 *max = _max;
-+
-+	pr_info(PR_FMT "start read thread\n");
-+	do {
-+		if (!test_bit(0, &max->mthread_up))
-+			max3110_con_receive(max);
-+
-+		schedule_timeout_interruptible(HZ / 20);
-+	} while (!kthread_should_stop());
-+
-+	return 0;
-+}
-+
-+static int serial_m3110_startup(struct uart_port *port)
-+{
-+	struct uart_max3110 *max =
-+		container_of(port, struct uart_max3110, port);
-+	u16 config = 0;
-+	int ret = 0;
-+
-+	if (port->line != 0) {
-+		pr_err(PR_FMT "uart port startup failed\n");
-+		return -1;
-+	}
-+
-+	/* Disable all IRQ and config it to 115200, 8n1 */
-+	config = WC_TAG | WC_FIFO_ENABLE
-+			| WC_1_STOPBITS
-+			| WC_8BIT_WORD
-+			| WC_BAUD_DR2;
-+
-+	/* As we use thread to handle tx/rx, need set low latency */
-+	port->state->port.tty->low_latency = 1;
-+
-+	if (use_irq) {
-+		ret = request_irq(max->irq, serial_m3110_irq,
-+					IRQ_TYPE_EDGE_FALLING, "max3110", max);
-+		if (ret)
-+			return ret;
-+
-+		/* Enable RX IRQ only */
-+		config |= WC_RXA_IRQ_ENABLE;
-+	} else {
-+		/* If IRQ is disabled, start a read thread for input data */
-+		max->read_thread =
-+			kthread_run(max3110_read_thread, max, "max3110_read");
-+		if (IS_ERR(max->read_thread)) {
-+			ret = PTR_ERR(max->read_thread);
-+			max->read_thread = 0;
-+			pr_err(PR_FMT "Can't create read thread!");
-+			return ret;
-+		}
-+	}
-+
-+	ret = max3110_out(max, config);
-+	if (ret) {
-+		if (use_irq)
-+			free_irq(max->irq, max);
-+		else
-+			kthread_stop(max->read_thread);
-+
-+		return ret;
-+	}
-+
-+	max->cur_conf = config;
-+	return 0;
-+}
-+
-+static void serial_m3110_shutdown(struct uart_port *port)
-+{
-+	struct uart_max3110 *max =
-+		container_of(port, struct uart_max3110, port);
-+	u16 config;
-+
-+	if (max->read_thread) {
-+		kthread_stop(max->read_thread);
-+		max->read_thread = NULL;
-+	}
-+
-+	if (use_irq)
-+		free_irq(max->irq, max);
-+
-+	/* Disable interrupts from this port */
-+	config = WC_TAG | WC_SW_SHDI;
-+	max3110_out(max, config);
-+}
-+
-+static void serial_m3110_release_port(struct uart_port *port)
-+{
-+}
-+
-+static int serial_m3110_request_port(struct uart_port *port)
-+{
-+	return 0;
-+}
-+
-+static void serial_m3110_config_port(struct uart_port *port, int flags)
-+{
-+	port->type = PORT_MAX3110;
-+}
++static struct uart_driver serial_omap_reg = {
++	.owner		= THIS_MODULE,
++	.driver_name	= "OMAP-SERIAL",
++	.dev_name	= OMAP_SERIAL_NAME,
++	.nr		= OMAP_MAX_HSUART_PORTS,
++	.cons		= OMAP_CONSOLE,
++};
 +
 +static int
-+serial_m3110_verify_port(struct uart_port *port, struct serial_struct *ser)
++serial_omap_suspend(struct platform_device *pdev, pm_message_t state)
 +{
-+	/* We don't want the core code to modify any port params */
-+	return -EINVAL;
++	struct uart_omap_port *up = platform_get_drvdata(pdev);
++
++	if (up)
++		uart_suspend_port(&serial_omap_reg, &up->port);
++	return 0;
 +}
 +
-+
-+static const char *serial_m3110_type(struct uart_port *port)
++static int serial_omap_resume(struct platform_device *dev)
 +{
-+	struct uart_max3110 *max =
-+		container_of(port, struct uart_max3110, port);
-+	return max->name;
++	struct uart_omap_port *up = platform_get_drvdata(dev);
++
++	if (up)
++		uart_resume_port(&serial_omap_reg, &up->port);
++	return 0;
 +}
 +
-+static void
-+serial_m3110_set_termios(struct uart_port *port, struct ktermios *termios,
-+		       struct ktermios *old)
++static void serial_omap_rx_timeout(unsigned long uart_no)
 +{
-+	struct uart_max3110 *max =
-+		container_of(port, struct uart_max3110, port);
-+	unsigned char cval;
-+	unsigned int baud, parity = 0;
-+	int clk_div = -1;
-+	u16 new_conf = max->cur_conf;
++	struct uart_omap_port *up = ui[uart_no];
++	unsigned int curr_dma_pos, curr_transmitted_size;
++	unsigned int ret = 0;
 +
-+	switch (termios->c_cflag & CSIZE) {
-+	case CS7:
-+		cval = UART_LCR_WLEN7;
-+		new_conf |= WC_7BIT_WORD;
-+		break;
-+	default:
-+		/* We only support CS7 & CS8 */
-+		termios->c_cflag &= ~CSIZE;
-+		termios->c_cflag |= CS8;
-+	case CS8:
-+		cval = UART_LCR_WLEN8;
-+		new_conf |= WC_8BIT_WORD;
-+		break;
-+	}
-+
-+	baud = uart_get_baud_rate(port, termios, old, 0, 230400);
-+
-+	/* First calc the div for 1.8MHZ clock case */
-+	switch (baud) {
-+	case 300:
-+		clk_div = WC_BAUD_DR384;
-+		break;
-+	case 600:
-+		clk_div = WC_BAUD_DR192;
-+		break;
-+	case 1200:
-+		clk_div = WC_BAUD_DR96;
-+		break;
-+	case 2400:
-+		clk_div = WC_BAUD_DR48;
-+		break;
-+	case 4800:
-+		clk_div = WC_BAUD_DR24;
-+		break;
-+	case 9600:
-+		clk_div = WC_BAUD_DR12;
-+		break;
-+	case 19200:
-+		clk_div = WC_BAUD_DR6;
-+		break;
-+	case 38400:
-+		clk_div = WC_BAUD_DR3;
-+		break;
-+	case 57600:
-+		clk_div = WC_BAUD_DR2;
-+		break;
-+	case 115200:
-+		clk_div = WC_BAUD_DR1;
-+		break;
-+	case 230400:
-+		if (max->clock & MAX3110_HIGH_CLK)
-+			break;
-+	default:
-+		/* Pick the previous baud rate */
-+		baud = max->baud;
-+		clk_div = max->cur_conf & WC_BAUD_DIV_MASK;
-+		tty_termios_encode_baud_rate(termios, baud, baud);
-+	}
-+
-+	if (max->clock & MAX3110_HIGH_CLK) {
-+		clk_div += 1;
-+		/* High clk version max3110 doesn't support B300 */
-+		if (baud == 300)
-+			baud = 600;
-+		if (baud == 230400)
-+			clk_div = WC_BAUD_DR1;
-+		tty_termios_encode_baud_rate(termios, baud, baud);
-+	}
-+
-+	new_conf = (new_conf & ~WC_BAUD_DIV_MASK) | clk_div;
-+
-+	if (unlikely(termios->c_cflag & CMSPAR))
-+		termios->c_cflag &= ~CMSPAR;
-+
-+	if (termios->c_cflag & CSTOPB)
-+		new_conf |= WC_2_STOPBITS;
-+	else
-+		new_conf &= ~WC_2_STOPBITS;
-+
-+	if (termios->c_cflag & PARENB) {
-+		new_conf |= WC_PARITY_ENABLE;
-+		parity |= UART_LCR_PARITY;
-+	} else
-+		new_conf &= ~WC_PARITY_ENABLE;
-+
-+	if (!(termios->c_cflag & PARODD))
-+		parity |= UART_LCR_EPAR;
-+	max->parity = parity;
-+
-+	uart_update_timeout(port, termios->c_cflag, baud);
-+
-+	new_conf |= WC_TAG;
-+	if (new_conf != max->cur_conf) {
-+		if (!max3110_out(max, new_conf)) {
-+			max->cur_conf = new_conf;
-+			max->baud = baud;
++	curr_dma_pos = omap_get_dma_dst_pos(up->uart_dma.rx_dma_channel);
++	if ((curr_dma_pos == up->uart_dma.prev_rx_dma_pos) ||
++			     (curr_dma_pos == 0)) {
++		if (jiffies_to_msecs(jiffies - up->port_activity) <
++							RX_TIMEOUT) {
++			mod_timer(&up->uart_dma.rx_timer, jiffies +
++				usecs_to_jiffies(up->uart_dma.rx_timeout));
++		} else {
++			serial_omap_stop_rxdma(up);
++			up->ier |= UART_IER_RDI;
++			serial_out(up, UART_IER, up->ier);
 +		}
-+	}
-+}
-+
-+/* Don't handle hw handshaking */
-+static unsigned int serial_m3110_get_mctrl(struct uart_port *port)
-+{
-+	return TIOCM_DSR | TIOCM_CAR | TIOCM_DSR;
-+}
-+
-+static void serial_m3110_set_mctrl(struct uart_port *port, unsigned int mctrl)
-+{
-+}
-+
-+static void serial_m3110_break_ctl(struct uart_port *port, int break_state)
-+{
-+}
-+
-+static void serial_m3110_pm(struct uart_port *port, unsigned int state,
-+			unsigned int oldstate)
-+{
-+}
-+
-+static void serial_m3110_enable_ms(struct uart_port *port)
-+{
-+}
-+
-+struct uart_ops serial_m3110_ops = {
-+	.tx_empty	= serial_m3110_tx_empty,
-+	.set_mctrl	= serial_m3110_set_mctrl,
-+	.get_mctrl	= serial_m3110_get_mctrl,
-+	.stop_tx	= serial_m3110_stop_tx,
-+	.start_tx	= serial_m3110_start_tx,
-+	.stop_rx	= serial_m3110_stop_rx,
-+	.enable_ms	= serial_m3110_enable_ms,
-+	.break_ctl	= serial_m3110_break_ctl,
-+	.startup	= serial_m3110_startup,
-+	.shutdown	= serial_m3110_shutdown,
-+	.set_termios	= serial_m3110_set_termios,
-+	.pm		= serial_m3110_pm,
-+	.type		= serial_m3110_type,
-+	.release_port	= serial_m3110_release_port,
-+	.request_port	= serial_m3110_request_port,
-+	.config_port	= serial_m3110_config_port,
-+	.verify_port	= serial_m3110_verify_port,
-+};
-+
-+static struct uart_driver serial_m3110_reg = {
-+	.owner		= THIS_MODULE,
-+	.driver_name	= "Maxim 3110",
-+	.dev_name	= "ttyS",
-+	.major		= TTY_MAJOR,
-+	.minor		= 64,
-+	.nr		= 1,
-+	.cons		= &serial_m3110_console,
-+};
-+
-+#ifdef CONFIG_PM
-+static int serial_m3110_suspend(struct spi_device *spi, pm_message_t state)
-+{
-+	disable_irq(pmax->irq);
-+	uart_suspend_port(&serial_m3110_reg, &pmax->port);
-+	max3110_out(pmax, pmax->cur_conf | WC_SW_SHDI);
-+	return 0;
-+}
-+
-+static int serial_m3110_resume(struct spi_device *spi)
-+{
-+	max3110_out(pmax, pmax->cur_conf);
-+	uart_resume_port(&serial_m3110_reg, &pmax->port);
-+	enable_irq(pmax->irq);
-+	return 0;
-+}
-+#else
-+#define serial_m3110_suspend	NULL
-+#define serial_m3110_resume	NULL
-+#endif
-+
-+static int __devinit serial_m3110_probe(struct spi_device *spi)
-+{
-+	struct uart_max3110 *max;
-+	int ret;
-+	void *buffer;
-+
-+	max = kzalloc(sizeof(*max), GFP_KERNEL);
-+	if (!max)
-+		return -ENOMEM;
-+
-+	spi->bits_per_word = 16;
-+	spi_setup(spi);
-+
-+	max->clock = MAX3110_HIGH_CLK;
-+	max->port.type = PORT_MAX3110;
-+	max->port.fifosize = 2;		/* Only have 16b buffer */
-+	max->port.ops = &serial_m3110_ops;
-+	max->port.line = 0;
-+	max->port.dev = &spi->dev;
-+	max->port.uartclk = 115200;
-+
-+	max->spi = spi;
-+	max->name = spi->modalias;	/* Use spi name as the name */
-+	max->irq = (u16)spi->irq;
-+	spin_lock_init(&max->lock);
-+
-+	max->word_7bits = 0;
-+	max->parity = 0;
-+	max->baud = 0;
-+
-+	max->cur_conf = 0;
-+	max->flags = 0;
-+
-+	buffer = (void *)__get_free_page(GFP_KERNEL);
-+	if (!buffer) {
-+		ret = -ENOMEM;
-+		goto err_get_page;
-+	}
-+	max->con_xmit.buf = buffer;
-+	max->con_xmit.head = max->con_xmit.tail = 0;
-+
-+	max->main_thread = kthread_run(max3110_main_thread,
-+					max, "max3110_main");
-+	if (IS_ERR(max->main_thread)) {
-+		ret = PTR_ERR(max->main_thread);
-+		goto err_kthread;
++		return;
 +	}
 +
-+	pmax = max;
-+	/* Give membase a psudo value to pass serial_core's check */
-+	max->port.membase = buffer;
-+	uart_add_one_port(&serial_m3110_reg, &max->port);
-+
-+	return 0;
-+
-+err_kthread:
-+	free_page((unsigned long)buffer);
-+err_get_page:
-+	pmax = NULL;
-+	kfree(max);
-+	return ret;
++	curr_transmitted_size = curr_dma_pos -
++					up->uart_dma.prev_rx_dma_pos;
++	up->port.icount.rx += curr_transmitted_size;
++	tty_insert_flip_string(up->port.state->port.tty,
++			up->uart_dma.rx_buf +
++			(up->uart_dma.prev_rx_dma_pos -
++			up->uart_dma.rx_buf_dma_phys),
++			curr_transmitted_size);
++	tty_flip_buffer_push(up->port.state->port.tty);
++	up->uart_dma.prev_rx_dma_pos = curr_dma_pos;
++	if (up->uart_dma.rx_buf_size +
++			up->uart_dma.rx_buf_dma_phys == curr_dma_pos) {
++		ret = serial_omap_start_rxdma(up);
++		if (ret < 0) {
++			serial_omap_stop_rxdma(up);
++			up->ier |= UART_IER_RDI;
++			serial_out(up, UART_IER, up->ier);
++		}
++	} else  {
++		mod_timer(&up->uart_dma.rx_timer, jiffies +
++			usecs_to_jiffies(up->uart_dma.rx_timeout));
++	}
++	up->port_activity = jiffies;
 +}
 +
-+static int __devexit max3110_remove(struct spi_device *dev)
++static void uart_rx_dma_callback(int lch, u16 ch_status, void *data)
 +{
-+	struct uart_max3110 *max = pmax;
-+
-+	if (!pmax)
-+		return 0;
-+
-+	pmax = NULL;
-+	uart_remove_one_port(&serial_m3110_reg, &max->port);
-+
-+	free_page((unsigned long)max->con_xmit.buf);
-+
-+	if (max->main_thread)
-+		kthread_stop(max->main_thread);
-+
-+	kfree(max);
-+	return 0;
++	return;
 +}
 +
-+static struct spi_driver uart_max3110_driver = {
-+	.driver = {
-+			.name	= "spi_max3110",
-+			.bus	= &spi_bus_type,
-+			.owner	= THIS_MODULE,
-+	},
-+	.probe		= serial_m3110_probe,
-+	.remove		= __devexit_p(max3110_remove),
-+	.suspend	= serial_m3110_suspend,
-+	.resume		= serial_m3110_resume,
-+};
-+
-+static int __init serial_m3110_init(void)
++static int serial_omap_start_rxdma(struct uart_omap_port *up)
 +{
 +	int ret = 0;
 +
-+	ret = uart_register_driver(&serial_m3110_reg);
-+	if (ret)
-+		return ret;
++	if (up->uart_dma.rx_dma_channel == -1) {
++		ret = omap_request_dma(up->uart_dma.uart_dma_rx,
++				"UART Rx DMA",
++				(void *)uart_rx_dma_callback, up,
++				&(up->uart_dma.rx_dma_channel));
++		if (ret < 0)
++			return ret;
 +
-+	ret = spi_register_driver(&uart_max3110_driver);
-+	if (ret)
-+		uart_unregister_driver(&serial_m3110_reg);
-+
++		omap_set_dma_src_params(up->uart_dma.rx_dma_channel, 0,
++				OMAP_DMA_AMODE_CONSTANT,
++				up->uart_dma.uart_base, 0, 0);
++		omap_set_dma_dest_params(up->uart_dma.rx_dma_channel, 0,
++				OMAP_DMA_AMODE_POST_INC,
++				up->uart_dma.rx_buf_dma_phys, 0, 0);
++		omap_set_dma_transfer_params(up->uart_dma.rx_dma_channel,
++				OMAP_DMA_DATA_TYPE_S8,
++				up->uart_dma.rx_buf_size, 1,
++				OMAP_DMA_SYNC_ELEMENT,
++				up->uart_dma.uart_dma_rx, 0);
++	}
++	up->uart_dma.prev_rx_dma_pos = up->uart_dma.rx_buf_dma_phys;
++	/* FIXME: Cache maintenance needed here? */
++	omap_start_dma(up->uart_dma.rx_dma_channel);
++	mod_timer(&up->uart_dma.rx_timer, jiffies +
++				usecs_to_jiffies(up->uart_dma.rx_timeout));
++	up->uart_dma.rx_dma_used = true;
 +	return ret;
 +}
 +
-+static void __exit serial_m3110_exit(void)
++static void serial_omap_continue_tx(struct uart_omap_port *up)
 +{
-+	spi_unregister_driver(&uart_max3110_driver);
-+	uart_unregister_driver(&serial_m3110_reg);
++	struct circ_buf *xmit = &up->port.state->xmit;
++	int start = up->uart_dma.tx_buf_dma_phys
++			+ (xmit->tail & (UART_XMIT_SIZE - 1));
++
++	if (uart_circ_empty(xmit))
++		return;
++
++	up->uart_dma.tx_buf_size = uart_circ_chars_pending(xmit);
++	/*
++	 * It is a circular buffer. See if the buffer has wounded back.
++	 * If yes it will have to be transferred in two separate dma
++	 * transfers
++	 */
++	if (start + up->uart_dma.tx_buf_size >=
++			up->uart_dma.tx_buf_dma_phys + UART_XMIT_SIZE)
++		up->uart_dma.tx_buf_size =
++			(up->uart_dma.tx_buf_dma_phys + UART_XMIT_SIZE) - start;
++	omap_set_dma_dest_params(up->uart_dma.tx_dma_channel, 0,
++				OMAP_DMA_AMODE_CONSTANT,
++				up->uart_dma.uart_base, 0, 0);
++	omap_set_dma_src_params(up->uart_dma.tx_dma_channel, 0,
++				OMAP_DMA_AMODE_POST_INC, start, 0, 0);
++	omap_set_dma_transfer_params(up->uart_dma.tx_dma_channel,
++				OMAP_DMA_DATA_TYPE_S8,
++				up->uart_dma.tx_buf_size, 1,
++				OMAP_DMA_SYNC_ELEMENT,
++				up->uart_dma.uart_dma_tx, 0);
++	/* FIXME: Cache maintenance needed here? */
++	omap_start_dma(up->uart_dma.tx_dma_channel);
 +}
 +
-+module_init(serial_m3110_init);
-+module_exit(serial_m3110_exit);
++static void uart_tx_dma_callback(int lch, u16 ch_status, void *data)
++{
++	struct uart_omap_port *up = (struct uart_omap_port *)data;
++	struct circ_buf *xmit = &up->port.state->xmit;
 +
-+MODULE_LICENSE("GPL v2");
-+MODULE_ALIAS("max3110-uart");
-+MODULE_AUTHOR("Feng Tang <feng.tang@intel.com>");
-diff --git a/drivers/serial/max3110.h b/drivers/serial/max3110.h
-new file mode 100644
-index 0000000..4d58641
---- /dev/null
-+++ b/drivers/serial/max3110.h
-@@ -0,0 +1,61 @@
-+#ifndef _MAX3110_HEAD_FILE_
-+#define _MAX3110_HEAD_FILE_
++	xmit->tail = (xmit->tail + up->uart_dma.tx_buf_size) & \
++			(UART_XMIT_SIZE - 1);
++	up->port.icount.tx += up->uart_dma.tx_buf_size;
 +
-+#define MAX3110_HIGH_CLK	0x1	/* 3.6864 MHZ */
-+#define MAX3110_LOW_CLK		0x0	/* 1.8432 MHZ */
++	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
++		uart_write_wakeup(&up->port);
 +
-+/* Status bits for all 4 MAX3110 operate modes */
-+#define MAX3110_READ_DATA_AVAILABLE	(1 << 15)
-+#define MAX3110_WRITE_BUF_EMPTY		(1 << 14)
++	if (uart_circ_empty(xmit)) {
++		spin_lock(&(up->uart_dma.tx_lock));
++		serial_omap_stop_tx(&up->port);
++		up->uart_dma.tx_dma_used = false;
++		spin_unlock(&(up->uart_dma.tx_lock));
++	} else {
++		omap_stop_dma(up->uart_dma.tx_dma_channel);
++		serial_omap_continue_tx(up);
++	}
++	up->port_activity = jiffies;
++	return;
++}
 +
-+#define WC_TAG			(3 << 14)
-+#define RC_TAG			(1 << 14)
-+#define WD_TAG			(2 << 14)
-+#define RD_TAG			(0 << 14)
++static int serial_omap_probe(struct platform_device *pdev)
++{
++	struct uart_omap_port	*up;
++	struct resource		*mem, *irq, *dma_tx, *dma_rx;
++	struct omap_uart_port_info *omap_up_info = pdev->dev.platform_data;
++	int ret = -ENOSPC;
 +
-+/* Bits def for write configuration */
-+#define WC_FIFO_ENABLE_MASK	(1 << 13)
-+#define WC_FIFO_ENABLE		(0 << 13)
++	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!mem) {
++		dev_err(&pdev->dev, "no mem resource?\n");
++		return -ENODEV;
++	}
++	irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
++	if (!irq) {
++		dev_err(&pdev->dev, "no irq resource?\n");
++		return -ENODEV;
++	}
 +
-+#define WC_SW_SHDI		(1 << 12)
++	if (!request_mem_region(mem->start, (mem->end - mem->start) + 1,
++				     pdev->dev.driver->name)) {
++		dev_err(&pdev->dev, "memory region already claimed\n");
++		return -EBUSY;
++	}
 +
-+#define WC_IRQ_MASK		(0xF << 8)
-+#define WC_TXE_IRQ_ENABLE	(1 << 11)	/* TX empty irq */
-+#define WC_RXA_IRQ_ENABLE	(1 << 10)	/* RX availabe irq */
-+#define WC_PAR_HIGH_IRQ_ENABLE	(1 << 9)
-+#define WC_REC_ACT_IRQ_ENABLE	(1 << 8)
++	dma_tx = platform_get_resource(pdev, IORESOURCE_DMA, 0);
++	if (!dma_tx) {
++		ret = -EINVAL;
++		goto err;
++	}
 +
-+#define WC_IRDA_ENABLE		(1 << 7)
++	dma_rx = platform_get_resource(pdev, IORESOURCE_DMA, 1);
++	if (!dma_rx) {
++		ret = -EINVAL;
++		goto err;
++	}
 +
-+#define WC_STOPBITS_MASK	(1 << 6)
-+#define WC_2_STOPBITS		(1 << 6)
-+#define WC_1_STOPBITS		(0 << 6)
++	up = kzalloc(sizeof(*up), GFP_KERNEL);
++	if (up == NULL) {
++		ret = -ENOMEM;
++		goto do_release_region;
++	}
++	sprintf(up->name, "OMAP UART%d", pdev->id);
++	up->pdev = pdev;
++	up->port.dev = &pdev->dev;
++	up->port.type = PORT_OMAP;
++	up->port.iotype = UPIO_MEM;
++	up->port.irq = irq->start;
++	if (cpu_is_omap44xx())
++		up->port.irq += 32;
 +
-+#define WC_PARITY_ENABLE_MASK	(1 << 5)
-+#define WC_PARITY_ENABLE	(1 << 5)
++	up->port.regshift = 2;
++	up->port.fifosize = 64;
++	up->port.ops = &serial_omap_pops;
++	up->port.line = pdev->id;
 +
-+#define WC_WORDLEN_MASK		(1 << 4)
-+#define WC_7BIT_WORD		(1 << 4)
-+#define WC_8BIT_WORD		(0 << 4)
++	up->port.membase = omap_up_info->membase;
++	up->port.mapbase = omap_up_info->mapbase;
++	up->port.flags = omap_up_info->flags;
++	up->port.irqflags = omap_up_info->irqflags;
++	up->port.uartclk = omap_up_info->uartclk;
++	up->uart_dma.uart_base = mem->start;
 +
-+#define WC_BAUD_DIV_MASK	(0xF)
-+#define WC_BAUD_DR1		(0x0)
-+#define WC_BAUD_DR2		(0x1)
-+#define WC_BAUD_DR4		(0x2)
-+#define WC_BAUD_DR8		(0x3)
-+#define WC_BAUD_DR16		(0x4)
-+#define WC_BAUD_DR32		(0x5)
-+#define WC_BAUD_DR64		(0x6)
-+#define WC_BAUD_DR128		(0x7)
-+#define WC_BAUD_DR3		(0x8)
-+#define WC_BAUD_DR6		(0x9)
-+#define WC_BAUD_DR12		(0xA)
-+#define WC_BAUD_DR24		(0xB)
-+#define WC_BAUD_DR48		(0xC)
-+#define WC_BAUD_DR96		(0xD)
-+#define WC_BAUD_DR192		(0xE)
-+#define WC_BAUD_DR384		(0xF)
++	if (omap_up_info->dma_enabled) {
++		up->uart_dma.uart_dma_tx = dma_tx->start;
++		up->uart_dma.uart_dma_rx = dma_rx->start;
++		up->use_dma = 1;
++		up->uart_dma.rx_buf_size = 4096;
++		up->uart_dma.rx_timeout = 1;
++		spin_lock_init(&(up->uart_dma.tx_lock));
++		spin_lock_init(&(up->uart_dma.rx_lock));
++		up->uart_dma.tx_dma_channel = OMAP_UART_DMA_CH_FREE;
++		up->uart_dma.rx_dma_channel = OMAP_UART_DMA_CH_FREE;
++	}
 +
-+/* Maxim 3110 has 8 words RX FIFO and 1 word TX FIFO */
-+#define M3110_RX_FIFO_DEPTH	8
-+#endif
++	ui[pdev->id] = up;
++	serial_omap_add_console_port(up);
++
++	ret = uart_add_one_port(&serial_omap_reg, &up->port);
++	if (ret != 0)
++		goto do_release_region;
++
++	platform_set_drvdata(pdev, up);
++	return 0;
++err:
++	dev_err(&pdev->dev, "[UART%d]: failure [%s]: %d\n",
++				pdev->id, __func__, ret);
++do_release_region:
++	release_mem_region(mem->start, (mem->end - mem->start) + 1);
++	return ret;
++}
++
++static int serial_omap_remove(struct platform_device *dev)
++{
++	struct uart_omap_port *up = platform_get_drvdata(dev);
++
++	platform_set_drvdata(dev, NULL);
++	if (up) {
++		uart_remove_one_port(&serial_omap_reg, &up->port);
++		kfree(up);
++	}
++	return 0;
++}
++
++static struct platform_driver serial_omap_driver = {
++	.probe          = serial_omap_probe,
++	.remove         = serial_omap_remove,
++
++	.suspend	= serial_omap_suspend,
++	.resume		= serial_omap_resume,
++	.driver		= {
++		.name	= DRIVER_NAME,
++	},
++};
++
++int __init serial_omap_init(void)
++{
++	int ret;
++
++	ret = uart_register_driver(&serial_omap_reg);
++	if (ret != 0)
++		return ret;
++	ret = platform_driver_register(&serial_omap_driver);
++	if (ret != 0)
++		uart_unregister_driver(&serial_omap_reg);
++	return ret;
++}
++
++void __exit serial_omap_exit(void)
++{
++	platform_driver_unregister(&serial_omap_driver);
++	uart_unregister_driver(&serial_omap_reg);
++}
++
++module_init(serial_omap_init);
++module_exit(serial_omap_exit);
++
++MODULE_DESCRIPTION("OMAP High Speed UART driver");
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Texas Instruments Inc");
 diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 8c3dd36..119ba73 100644
+index 8c3dd36..e02b945 100644
 --- a/include/linux/serial_core.h
 +++ b/include/linux/serial_core.h
 @@ -182,6 +182,9 @@
  /* Aeroflex Gaisler GRLIB APBUART */
  #define PORT_APBUART    90
- 
-+/* Maxim M3110 */
-+#define PORT_MAX3110	91
+
++/* TI OMAP-UART */
++#define PORT_OMAP	91
 +
  #ifdef __KERNEL__
- 
+
  #include <linux/compiler.h>
 -- 
 1.6.3.3
+
+
