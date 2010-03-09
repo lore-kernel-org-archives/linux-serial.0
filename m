@@ -1,8 +1,8 @@
 From: Mike Frysinger <vapier-aBrp7R+bbdUdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 12/13] serial: bfin_sport_uart: drop
-	the experimental markings
-Date: Tue,  9 Mar 2010 12:25:39 -0500
-Message-ID: <1268155540-8241-13-git-send-email-vapier@gentoo.org>
+Subject: [PATCH 09/13] serial: bfin_sport_uart: drop
+	useless status masks
+Date: Tue,  9 Mar 2010 12:25:36 -0500
+Message-ID: <1268155540-8241-10-git-send-email-vapier@gentoo.org>
 References: <1268155540-8241-1-git-send-email-vapier@gentoo.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,27 +22,46 @@ To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alan Cox <alan-qBU/x9r
 Cc: uclinux-dist-devel-ZG0+EudsQA8dtHy/vicBwGD2FQJk+8+b@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Should be stable now ...
+These were all copied over from the Blackfin UART driver, but they don't
+make sense here because these bits are all specific to the Blackfin UART.
 
 Signed-off-by: Mike Frysinger <vapier-aBrp7R+bbdUdnm+yROfE0A@public.gmane.org>
 ---
- drivers/serial/Kconfig |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/serial/bfin_sport_uart.c |   17 +----------------
+ 1 files changed, 1 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
-index 0d95b5f..223a0e8 100644
---- a/drivers/serial/Kconfig
-+++ b/drivers/serial/Kconfig
-@@ -1413,8 +1413,8 @@ config SERIAL_SC26XX_CONSOLE
- 	  Support for Console on SC2681/SC2692 serial ports.
+diff --git a/drivers/serial/bfin_sport_uart.c b/drivers/serial/bfin_sport_uart.c
+index 871f6fd..1b22c59 100644
+--- a/drivers/serial/bfin_sport_uart.c
++++ b/drivers/serial/bfin_sport_uart.c
+@@ -499,27 +499,12 @@ static void sport_set_termios(struct uart_port *port,
  
- config SERIAL_BFIN_SPORT
--	tristate "Blackfin SPORT emulate UART (EXPERIMENTAL)"
--	depends on BLACKFIN && EXPERIMENTAL
-+	tristate "Blackfin SPORT emulate UART"
-+	depends on BLACKFIN
- 	select SERIAL_CORE
- 	help
- 	  Enable SPORT emulate UART on Blackfin series.
+ 	spin_lock_irqsave(&up->port.lock, flags);
+ 
+-	port->read_status_mask = OE;
+-	if (termios->c_iflag & INPCK)
+-		port->read_status_mask |= (FE | PE);
+-	if (termios->c_iflag & (BRKINT | PARMRK))
+-		port->read_status_mask |= BI;
++	port->read_status_mask = 0;
+ 
+ 	/*
+ 	 * Characters to ignore
+ 	 */
+ 	port->ignore_status_mask = 0;
+-	if (termios->c_iflag & IGNPAR)
+-		port->ignore_status_mask |= FE | PE;
+-	if (termios->c_iflag & IGNBRK) {
+-		port->ignore_status_mask |= BI;
+-		/*
+-		 * If we're ignoring parity and break indicators,
+-		 * ignore overruns too (for real raw support).
+-		 */
+-		if (termios->c_iflag & IGNPAR)
+-			port->ignore_status_mask |= OE;
+-	}
+ 
+ 	/* RX extract mask */
+ 	up->rxmask = 0x01 | (((up->csize + up->stopb) * 2 - 1) << 0x8);
 -- 
 1.7.0.2
