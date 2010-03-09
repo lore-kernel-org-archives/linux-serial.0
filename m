@@ -1,8 +1,8 @@
 From: Mike Frysinger <vapier-aBrp7R+bbdUdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 01/13] serial: bfin_sport_uart: work
-	around anomaly 05000473 (make 32bit fifo read atomic)
-Date: Tue,  9 Mar 2010 12:25:28 -0500
-Message-ID: <1268155540-8241-2-git-send-email-vapier@gentoo.org>
+Subject: [PATCH 05/13] serial: bfin_sport_uart: rename
+	early platform driver class string
+Date: Tue,  9 Mar 2010 12:25:32 -0500
+Message-ID: <1268155540-8241-6-git-send-email-vapier@gentoo.org>
 References: <1268155540-8241-1-git-send-email-vapier@gentoo.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,42 +24,46 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Sonic Zhang <sonic.zhang-OyLXuOCK7orQT0dZR+AlfA@public.gmane.org>
 
-We cannot let a 32-bit RX FIFO read be interrupted otherwise a fake RX
-underflow error might be generated.
+Clarifies command line set up for devices between consoles and early
+devices.
 
-URL: http://blackfin.uclinux.org/gf/tracker/5145
 Signed-off-by: Sonic Zhang <sonic.zhang-OyLXuOCK7orQT0dZR+AlfA@public.gmane.org>
 Signed-off-by: Mike Frysinger <vapier-aBrp7R+bbdUdnm+yROfE0A@public.gmane.org>
 ---
- drivers/serial/bfin_sport_uart.h |   16 +++++++++++++++-
- 1 files changed, 15 insertions(+), 1 deletions(-)
+ drivers/serial/bfin_sport_uart.c |    7 +++++--
+ 1 files changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/serial/bfin_sport_uart.h b/drivers/serial/bfin_sport_uart.h
-index abe0361..9791fcc 100644
---- a/drivers/serial/bfin_sport_uart.h
-+++ b/drivers/serial/bfin_sport_uart.h
-@@ -37,7 +37,21 @@
- #define SPORT_GET_TFSDIV(sport)		bfin_read16(((sport)->port.membase + OFFSET_TFSDIV))
- #define SPORT_GET_TX(sport)		bfin_read16(((sport)->port.membase + OFFSET_TX))
- #define SPORT_GET_RX(sport)		bfin_read16(((sport)->port.membase + OFFSET_RX))
--#define SPORT_GET_RX32(sport)		bfin_read32(((sport)->port.membase + OFFSET_RX))
-+/*
-+ * If another interrupt fires while doing a 32-bit read from RX FIFO,
-+ * a fake RX underflow error will be generated.  So disable interrupts
-+ * to prevent interruption while reading the FIFO.
-+ */
-+#define SPORT_GET_RX32(sport) \
-+({ \
-+	unsigned int __ret; \
-+	if (ANOMALY_05000473) \
-+		local_irq_disable(); \
-+	__ret = bfin_read32((sport)->port.membase + OFFSET_RX); \
-+	if (ANOMALY_05000473) \
-+		local_irq_enable(); \
-+	__ret; \
-+})
- #define SPORT_GET_RCR1(sport)		bfin_read16(((sport)->port.membase + OFFSET_RCR1))
- #define SPORT_GET_RCR2(sport)		bfin_read16(((sport)->port.membase + OFFSET_RCR2))
- #define SPORT_GET_RCLKDIV(sport)	bfin_read16(((sport)->port.membase + OFFSET_RCLKDIV))
+diff --git a/drivers/serial/bfin_sport_uart.c b/drivers/serial/bfin_sport_uart.c
+index 18bc4a3..5101e38 100644
+--- a/drivers/serial/bfin_sport_uart.c
++++ b/drivers/serial/bfin_sport_uart.c
+@@ -526,6 +526,8 @@ struct uart_ops sport_uart_ops = {
+ static struct sport_uart_port *bfin_sport_uart_ports[BFIN_SPORT_UART_MAX_PORTS];
+ 
+ #ifdef CONFIG_SERIAL_BFIN_SPORT_CONSOLE
++#define CLASS_BFIN_SPORT_CONSOLE	"bfin-sport-console"
++
+ static int __init
+ sport_uart_console_setup(struct console *co, char *options)
+ {
+@@ -787,7 +789,7 @@ static struct platform_driver sport_uart_driver = {
+ 
+ #ifdef CONFIG_SERIAL_BFIN_SPORT_CONSOLE
+ static __initdata struct early_platform_driver early_sport_uart_driver = {
+-	.class_str = DRV_NAME,
++	.class_str = CLASS_BFIN_SPORT_CONSOLE,
+ 	.pdrv = &sport_uart_driver,
+ 	.requested_id = EARLY_PLATFORM_ID_UNSET,
+ };
+@@ -796,7 +798,8 @@ static int __init sport_uart_rs_console_init(void)
+ {
+ 	early_platform_driver_register(&early_sport_uart_driver, DRV_NAME);
+ 
+-	early_platform_driver_probe(DRV_NAME, BFIN_SPORT_UART_MAX_PORTS, 0);
++	early_platform_driver_probe(CLASS_BFIN_SPORT_CONSOLE,
++		BFIN_SPORT_UART_MAX_PORTS, 0);
+ 
+ 	register_console(&sport_uart_console);
+ 
 -- 
 1.7.0.2
