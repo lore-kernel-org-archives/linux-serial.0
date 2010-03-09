@@ -1,54 +1,112 @@
-From: Mike Frysinger <vapier-aBrp7R+bbdUdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 08/13] serial: bfin_sport_uart: zero
-	sport_uart_port if allocated dynamically
-Date: Tue,  9 Mar 2010 12:25:35 -0500
-Message-ID: <1268155540-8241-9-git-send-email-vapier@gentoo.org>
+From: Mike Frysinger <vapier@gentoo.org>
+Subject: [PATCH 10/13] serial: bfin_sport_uart: only enable SPORT TX if data is to be sent
+Date: Tue,  9 Mar 2010 12:25:37 -0500
+Message-ID: <1268155540-8241-11-git-send-email-vapier@gentoo.org>
 References: <1268155540-8241-1-git-send-email-vapier@gentoo.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <uclinux-dist-devel-bounces-ZG0+EudsQA8dtHy/vicBwGD2FQJk+8+b@public.gmane.org>
-In-Reply-To: <1268155540-8241-1-git-send-email-vapier-aBrp7R+bbdUdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://blackfin.uclinux.org/mailman/options/uclinux-dist-devel>,
-	<mailto:uclinux-dist-devel-request-ZG0+EudsQA8dtHy/vicBwGD2FQJk+8+b@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://blackfin.uclinux.org/pipermail/uclinux-dist-devel>
-List-Post: <mailto:uclinux-dist-devel-ZG0+EudsQA8dtHy/vicBwGD2FQJk+8+b@public.gmane.org>
-List-Help: <mailto:uclinux-dist-devel-request-ZG0+EudsQA8dtHy/vicBwGD2FQJk+8+b@public.gmane.org?subject=help>
-List-Subscribe: <https://blackfin.uclinux.org/mailman/listinfo/uclinux-dist-devel>,
-	<mailto:uclinux-dist-devel-request-ZG0+EudsQA8dtHy/vicBwGD2FQJk+8+b@public.gmane.org?subject=subscribe>
-Sender: uclinux-dist-devel-bounces-ZG0+EudsQA8dtHy/vicBwGD2FQJk+8+b@public.gmane.org
-Errors-To: uclinux-dist-devel-bounces-ZG0+EudsQA8dtHy/vicBwGD2FQJk+8+b@public.gmane.org
-To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alan Cox <alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
-Cc: uclinux-dist-devel-ZG0+EudsQA8dtHy/vicBwGD2FQJk+8+b@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1268155540-8241-1-git-send-email-vapier@gentoo.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Sonic Zhang <sonic.zhang-OyLXuOCK7orQT0dZR+AlfA@public.gmane.org>
+From: Sonic Zhang <sonic.zhang@analog.com>
 
-Need to initialize the SPORT state rather than using random memory.
+Rather than always turn on the SPORT TX interrupt, only do it when we've
+actually queued up data for transmission.  This avoids useless interrupt
+processing.
 
-Signed-off-by: Sonic Zhang <sonic.zhang-OyLXuOCK7orQT0dZR+AlfA@public.gmane.org>
-Signed-off-by: Mike Frysinger <vapier-aBrp7R+bbdUdnm+yROfE0A@public.gmane.org>
+Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+Signed-off-by: Mike Frysinger <vapier@gentoo.org>
 ---
- drivers/serial/bfin_sport_uart.c |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/serial/bfin_sport_uart.c |   30 +++++++++++++++++++++---------
+ 1 files changed, 21 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/serial/bfin_sport_uart.c b/drivers/serial/bfin_sport_uart.c
-index ba5a8b7..871f6fd 100644
+index 1b22c59..9d777e4 100644
 --- a/drivers/serial/bfin_sport_uart.c
 +++ b/drivers/serial/bfin_sport_uart.c
-@@ -745,11 +745,11 @@ static int __devinit sport_uart_probe(struct platform_device *pdev)
+@@ -53,7 +53,7 @@ struct sport_uart_port {
+ #endif
+ };
  
- 	if (bfin_sport_uart_ports[pdev->id] == NULL) {
- 		bfin_sport_uart_ports[pdev->id] =
--			kmalloc(sizeof(struct sport_uart_port), GFP_KERNEL);
-+			kzalloc(sizeof(struct sport_uart_port), GFP_KERNEL);
- 		sport = bfin_sport_uart_ports[pdev->id];
- 		if (!sport) {
- 			dev_err(&pdev->dev,
--				"Fail to kmalloc sport_uart_port\n");
-+				"Fail to malloc sport_uart_port\n");
- 			return -ENOMEM;
- 		}
+-static void sport_uart_tx_chars(struct sport_uart_port *up);
++static int sport_uart_tx_chars(struct sport_uart_port *up);
+ static void sport_stop_tx(struct uart_port *port);
+ 
+ static inline void tx_one_byte(struct sport_uart_port *up, unsigned int value)
+@@ -306,18 +306,24 @@ static int sport_startup(struct uart_port *port)
+ 	return ret;
+ }
+ 
+-static void sport_uart_tx_chars(struct sport_uart_port *up)
++/*
++ * sport_uart_tx_chars
++ *
++ * ret 1 means need to enable sport.
++ * ret 0 means do nothing.
++ */
++static int sport_uart_tx_chars(struct sport_uart_port *up)
+ {
+ 	struct circ_buf *xmit = &up->port.state->xmit;
+ 
+ 	if (SPORT_GET_STAT(up) & TXF)
+-		return;
++		return 0;
+ 
+ 	if (up->port.x_char) {
+ 		tx_one_byte(up, up->port.x_char);
+ 		up->port.icount.tx++;
+ 		up->port.x_char = 0;
+-		return;
++		return 1;
+ 	}
+ 
+ 	if (uart_circ_empty(xmit) || uart_tx_stopped(&up->port)) {
+@@ -328,7 +334,7 @@ static void sport_uart_tx_chars(struct sport_uart_port *up)
+ 		 */
+ 		if (SPORT_GET_STAT(up) & TXHRE)
+ 			sport_stop_tx(&up->port);
+-		return;
++		return 0;
+ 	}
+ 
+ 	while(!(SPORT_GET_STAT(up) & TXF) && !uart_circ_empty(xmit)) {
+@@ -339,6 +345,8 @@ static void sport_uart_tx_chars(struct sport_uart_port *up)
+ 
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		uart_write_wakeup(&up->port);
++
++	return 1;
+ }
+ 
+ static unsigned int sport_tx_empty(struct uart_port *port)
+@@ -360,6 +368,9 @@ static void sport_stop_tx(struct uart_port *port)
+ 
+ 	pr_debug("%s enter\n", __func__);
+ 
++	if (!(SPORT_GET_TCR1(up) & TSPEN))
++		return;
++
+ 	/* Although the hold register is empty, last byte is still in shift
+ 	 * register and not sent out yet. So, put a dummy data into TX FIFO.
+ 	 * Then, sport tx stops when last byte is shift out and the dummy
+@@ -382,11 +393,12 @@ static void sport_start_tx(struct uart_port *port)
+ 	pr_debug("%s enter\n", __func__);
+ 
+ 	/* Write data into SPORT FIFO before enable SPROT to transmit */
+-	sport_uart_tx_chars(up);
++	if (sport_uart_tx_chars(up)) {
++		/* Enable transmit, then an interrupt will generated */
++		SPORT_PUT_TCR1(up, (SPORT_GET_TCR1(up) | TSPEN));
++		SSYNC();
++	}
+ 
+-	/* Enable transmit, then an interrupt will generated */
+-	SPORT_PUT_TCR1(up, (SPORT_GET_TCR1(up) | TSPEN));
+-	SSYNC();
+ 	pr_debug("%s exit\n", __func__);
+ }
  
 -- 
 1.7.0.2
