@@ -1,58 +1,50 @@
-From: Mike Frysinger <vapier-aBrp7R+bbdUdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 02/13] serial: bfin_sport_uart: shorten
-	the SPORT TX waiting loop
-Date: Tue,  9 Mar 2010 12:25:29 -0500
-Message-ID: <1268155540-8241-3-git-send-email-vapier@gentoo.org>
+From: Mike Frysinger <vapier@gentoo.org>
+Subject: [PATCH 04/13] serial: bfin_sport_uart: add missing mapbase initialization
+Date: Tue,  9 Mar 2010 12:25:31 -0500
+Message-ID: <1268155540-8241-5-git-send-email-vapier@gentoo.org>
 References: <1268155540-8241-1-git-send-email-vapier@gentoo.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <uclinux-dist-devel-bounces-ZG0+EudsQA8dtHy/vicBwGD2FQJk+8+b@public.gmane.org>
-In-Reply-To: <1268155540-8241-1-git-send-email-vapier-aBrp7R+bbdUdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://blackfin.uclinux.org/mailman/options/uclinux-dist-devel>,
-	<mailto:uclinux-dist-devel-request-ZG0+EudsQA8dtHy/vicBwGD2FQJk+8+b@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://blackfin.uclinux.org/pipermail/uclinux-dist-devel>
-List-Post: <mailto:uclinux-dist-devel-ZG0+EudsQA8dtHy/vicBwGD2FQJk+8+b@public.gmane.org>
-List-Help: <mailto:uclinux-dist-devel-request-ZG0+EudsQA8dtHy/vicBwGD2FQJk+8+b@public.gmane.org?subject=help>
-List-Subscribe: <https://blackfin.uclinux.org/mailman/listinfo/uclinux-dist-devel>,
-	<mailto:uclinux-dist-devel-request-ZG0+EudsQA8dtHy/vicBwGD2FQJk+8+b@public.gmane.org?subject=subscribe>
-Sender: uclinux-dist-devel-bounces-ZG0+EudsQA8dtHy/vicBwGD2FQJk+8+b@public.gmane.org
-Errors-To: uclinux-dist-devel-bounces-ZG0+EudsQA8dtHy/vicBwGD2FQJk+8+b@public.gmane.org
-To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alan Cox <alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
-Cc: uclinux-dist-devel-ZG0+EudsQA8dtHy/vicBwGD2FQJk+8+b@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp.gentoo.org ([140.211.166.183]:54678 "EHLO smtp.gentoo.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752547Ab0CIRW2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 9 Mar 2010 12:22:28 -0500
+In-Reply-To: <1268155540-8241-1-git-send-email-vapier@gentoo.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
 
-From: Sonic Zhang <sonic.zhang-OyLXuOCK7orQT0dZR+AlfA@public.gmane.org>
+From: Sonic Zhang <sonic.zhang@analog.com>
 
-The waiting loop to stop SPORT TX from TX interrupt is too long.  This may
-block the SPORT RX interrupts and cause the RX FIFO to overflow. So, do
-stop sport TX only after the last char in TX FIFO is moved into the shift
-register.
+The driver doesn't care about this, but the common serial core wants it.
 
-Signed-off-by: Sonic Zhang <sonic.zhang-OyLXuOCK7orQT0dZR+AlfA@public.gmane.org>
-Signed-off-by: Mike Frysinger <vapier-aBrp7R+bbdUdnm+yROfE0A@public.gmane.org>
+Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+Signed-off-by: Mike Frysinger <vapier@gentoo.org>
 ---
- drivers/serial/bfin_sport_uart.c |    8 +++++++-
- 1 files changed, 7 insertions(+), 1 deletions(-)
+ drivers/serial/bfin_sport_uart.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
 diff --git a/drivers/serial/bfin_sport_uart.c b/drivers/serial/bfin_sport_uart.c
-index 7c72888..c34f02c 100644
+index 8b0df19..18bc4a3 100644
 --- a/drivers/serial/bfin_sport_uart.c
 +++ b/drivers/serial/bfin_sport_uart.c
-@@ -270,7 +270,13 @@ static void sport_uart_tx_chars(struct sport_uart_port *up)
- 	}
+@@ -711,6 +711,7 @@ static int __devinit sport_uart_probe(struct platform_device *pdev)
+ 			ret = -ENXIO;
+ 			goto out_error_free_peripherals;
+ 		}
++		sport->port.mapbase = res->start;
  
- 	if (uart_circ_empty(xmit) || uart_tx_stopped(&up->port)) {
--		sport_stop_tx(&up->port);
-+		/* The waiting loop to stop SPORT TX from TX interrupt is
-+		 * too long. This may block SPORT RX interrupts and cause
-+		 * RX FIFO overflow. So, do stop sport TX only after the last
-+		 * char in TX FIFO is moved into the shift register.
-+		 */
-+		if (SPORT_GET_STAT(up) & TXHRE)
-+			sport_stop_tx(&up->port);
- 		return;
- 	}
+ 		sport->port.irq = platform_get_irq(pdev, 0);
+ 		if (sport->port.irq < 0) {
+@@ -808,7 +809,7 @@ static int __init sport_uart_init(void)
+ {
+ 	int ret;
  
+-	pr_info("Serial: Blackfin uart over sport driver\n");
++	pr_info("Blackfin uart over sport driver\n");
+ 
+ 	ret = uart_register_driver(&sport_uart_reg);
+ 	if (ret) {
 -- 
 1.7.0.2
+
