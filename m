@@ -1,8 +1,8 @@
 From: Mike Frysinger <vapier-aBrp7R+bbdUdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 07/13] serial: bfin_sport_uart: protect
-	changes to uart_port
-Date: Tue,  9 Mar 2010 12:25:34 -0500
-Message-ID: <1268155540-8241-8-git-send-email-vapier@gentoo.org>
+Subject: [PATCH 12/13] serial: bfin_sport_uart: drop
+	the experimental markings
+Date: Tue,  9 Mar 2010 12:25:39 -0500
+Message-ID: <1268155540-8241-13-git-send-email-vapier@gentoo.org>
 References: <1268155540-8241-1-git-send-email-vapier@gentoo.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,38 +22,27 @@ To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alan Cox <alan-qBU/x9r
 Cc: uclinux-dist-devel-ZG0+EudsQA8dtHy/vicBwGD2FQJk+8+b@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Sonic Zhang <sonic.zhang-OyLXuOCK7orQT0dZR+AlfA@public.gmane.org>
+Should be stable now ...
 
-Common serial API says we need to grab the port lock before modifying
-the port state to prevent inconsistent state between threads.
-
-Signed-off-by: Sonic Zhang <sonic.zhang-OyLXuOCK7orQT0dZR+AlfA@public.gmane.org>
 Signed-off-by: Mike Frysinger <vapier-aBrp7R+bbdUdnm+yROfE0A@public.gmane.org>
 ---
- drivers/serial/bfin_sport_uart.c |    4 ++--
+ drivers/serial/Kconfig |    4 ++--
  1 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/serial/bfin_sport_uart.c b/drivers/serial/bfin_sport_uart.c
-index a720e63..ba5a8b7 100644
---- a/drivers/serial/bfin_sport_uart.c
-+++ b/drivers/serial/bfin_sport_uart.c
-@@ -497,6 +497,8 @@ static void sport_set_termios(struct uart_port *port,
- 		/* up->parib = 1; */
- 	}
+diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
+index 0d95b5f..223a0e8 100644
+--- a/drivers/serial/Kconfig
++++ b/drivers/serial/Kconfig
+@@ -1413,8 +1413,8 @@ config SERIAL_SC26XX_CONSOLE
+ 	  Support for Console on SC2681/SC2692 serial ports.
  
-+	spin_lock_irqsave(&up->port.lock, flags);
-+
- 	port->read_status_mask = OE;
- 	if (termios->c_iflag & INPCK)
- 		port->read_status_mask |= (FE | PE);
-@@ -537,8 +539,6 @@ static void sport_set_termios(struct uart_port *port,
- 	/* uart baud rate */
- 	port->uartclk = uart_get_baud_rate(port, termios, old, 0, get_sclk()/16);
- 
--	spin_lock_irqsave(&up->port.lock, flags);
--
- 	/* Disable UART */
- 	SPORT_PUT_TCR1(up, SPORT_GET_TCR1(up) & ~TSPEN);
- 	SPORT_PUT_RCR1(up, SPORT_GET_RCR1(up) & ~RSPEN);
+ config SERIAL_BFIN_SPORT
+-	tristate "Blackfin SPORT emulate UART (EXPERIMENTAL)"
+-	depends on BLACKFIN && EXPERIMENTAL
++	tristate "Blackfin SPORT emulate UART"
++	depends on BLACKFIN
+ 	select SERIAL_CORE
+ 	help
+ 	  Enable SPORT emulate UART on Blackfin series.
 -- 
 1.7.0.2
