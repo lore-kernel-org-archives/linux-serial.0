@@ -1,50 +1,44 @@
-From: James Lamanna <jlamanna@gmail.com>
-Subject: Re: SIIG DP CyberSerial 4S PCIe Support
-Date: Tue, 9 Mar 2010 07:09:21 -0800
-Message-ID: <8DFD46FA-A938-41D6-97EC-F6E5324C9FAA@gmail.com>
-References: <aa4c40ff1003081107n78e9f052n2a754680e5491c68@mail.gmail.com> <aa4c40ff1003081313s7492513bk14a48c6097b90407@mail.gmail.com> <4B95B028.3050106@gmail.com> <aa4c40ff1003082115x3e9e1492je90e5afb826b3408@mail.gmail.com> <20100309141552.GD30538@centrinvest.ru>
-Mime-Version: 1.0 (iPhone Mail 7D11)
-Content-Type: text/plain;
-	charset=us-ascii;
-	format=flowed;
-	delsp=yes
-Content-Transfer-Encoding: 7bit
+From: Mike Frysinger <vapier@gentoo.org>
+Subject: [PATCH 00/13] Blackfin SPORT UART updates
+Date: Tue,  9 Mar 2010 12:25:27 -0500
+Message-ID: <1268155540-8241-1-git-send-email-vapier@gentoo.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-fx0-f227.google.com ([209.85.220.227]:50390 "EHLO
-	mail-fx0-f227.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752108Ab0CIPJb (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 9 Mar 2010 10:09:31 -0500
-In-Reply-To: <20100309141552.GD30538@centrinvest.ru>
+Received: from smtp.gentoo.org ([140.211.166.183]:54649 "EHLO smtp.gentoo.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751090Ab0CIRWY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 9 Mar 2010 12:22:24 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Andrey Panin <pazke@centrinvest.ru>
-Cc: Robert Hancock <hancockrwd@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org
 
-On Mar 9, 2010, at 6:15, "Andrey Panin" <pazke@centrinvest.ru> wrote:
+I was waiting for the mondo SPORT UART patch to be merged, so now that
+that's done, we can push up the rest.
 
-> On 067, 03 08, 2010 at 09:15:26PM -0800, James Lamanna wrote:
->
->> That's probably the case.
->> It looks like 8250 doesn't know about this PCIe device at all.
->> The Oxford PCI ID is not in pci_ids.h nor is the SIIG subsystem ID.
->> I'll see if I can maybe work up a patch to support this device,  
->> since I've found
->> the datasheet for the Oxford 4 port UART controller, but I may need  
->> some help.
->> Or if anyone else (who has more experience with this) wants to  
->> formulate one,
->> it would be greatly appreciated.
->
-> Looks like you card can use existing code for Oxford Semiconductor  
-> UARTs.
-> Can you test the attached patch for 2.6.33 ?
+All of this stuff is fine for 2.6.34 or 2.6.35.  I don't believe any of
+these are "really important" bugfixes.
 
-Hi Andrey,
-Coincidentally I found your patch for 2.6.28 that I was able to  
-backport to 2.6.24. The card seems to be working great!
-Is this patch in mainline now?
+Mike Frysinger (4):
+  serial: bfin_sport_uart: drop useless status masks
+  serial: bfin_sport_uart: pull in bfin_sport.h for SPORT defines
+  serial: bfin_sport_uart: drop the experimental markings
+  serial: bfin_sport_uart: drop redundant cpu depends
 
-Thanks.
+Sonic Zhang (9):
+  serial: bfin_sport_uart: work around anomaly 05000473 (make 32bit
+    fifo read atomic)
+  serial: bfin_sport_uart: shorten the SPORT TX waiting loop
+  serial: bfin_sport_uart: remove unused peripheral pin lists
+  serial: bfin_sport_uart: add missing mapbase initialization
+  serial: bfin_sport_uart: rename early platform driver class string
+  serial: bfin_sport_uart: add support for CTS/RTS via GPIOs
+  serial: bfin_sport_uart: protect changes to uart_port
+  serial: bfin_sport_uart: zero sport_uart_port if allocated
+    dynamically
+  serial: bfin_sport_uart: only enable SPORT TX if data is to be sent
 
--- James
+ drivers/serial/Kconfig           |   30 +++++-
+ drivers/serial/bfin_sport_uart.c |  206 ++++++++++++++++++++++++++------------
+ drivers/serial/bfin_sport_uart.h |   27 +++++-
+ 3 files changed, 194 insertions(+), 69 deletions(-)
+
