@@ -1,112 +1,50 @@
-From: Mike Frysinger <vapier@gentoo.org>
-Subject: [PATCH 10/13] serial: bfin_sport_uart: only enable SPORT TX if data is to be sent
-Date: Tue,  9 Mar 2010 12:25:37 -0500
-Message-ID: <1268155540-8241-11-git-send-email-vapier@gentoo.org>
-References: <1268155540-8241-1-git-send-email-vapier@gentoo.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1268155540-8241-1-git-send-email-vapier@gentoo.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
+From: rogerx@sdf.org
+Subject: 'struct uart_port' has no member named 'info
+Date: Wed, 10 Mar 2010 02:33:47 -0900
+Message-ID: <20100310113347.GA8342@localhost2.local>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from denali.acsalaska.net ([209.112.173.242]:54815 "EHLO
+	denali.acsalaska.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755842Ab0CJLkA (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 10 Mar 2010 06:40:00 -0500
+Received: from localhost2.local (66-230-101-204-rb1.fai.dsl.dynamic.acsalaska.net [66.230.101.204])
+	by denali.acsalaska.net (8.14.3/8.14.3) with ESMTP id o2ABXlIl072518
+	for <linux-serial@vger.kernel.org>; Wed, 10 Mar 2010 02:33:47 -0900 (AKST)
+	(envelope-from rogerx@sdf.org)
+Content-Disposition: inline
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-From: Sonic Zhang <sonic.zhang@analog.com>
+Upgraded from kernel-2.6.32 to kernel-2.6.33, and now get the following
+error when compiling ltmodem.
 
-Rather than always turn on the SPORT TX interrupt, only do it when we've
-actually queued up data for transmission.  This avoids useless interrupt
-processing.
+/var/tmp/portage/net-dialup/ltmodem-20090420/work/ltmodem/v8250.c: In
+function 'receive_chars':
+/var/tmp/portage/net-dialup/ltmodem-20090420/work/ltmodem/v8250.c:181:
+error: 'struct uart_port' has no member named 'info'
+/var/tmp/portage/net-dialup/ltmodem-20090420/work/ltmodem/v8250.c: In
+function 'transmit_chars':
+/var/tmp/portage/net-dialup/ltmodem-20090420/work/ltmodem/v8250.c:243:
+error: 'struct uart_port' has no member named 'info'
+/var/tmp/portage/net-dialup/ltmodem-20090420/work/ltmodem/v8250.c: In
+function 'check_modem_status':
+/var/tmp/portage/net-dialup/ltmodem-20090420/work/ltmodem/v8250.c:284:
+error: 'struct uart_port' has no member named 'info'
+/var/tmp/portage/net-dialup/ltmodem-20090420/work/ltmodem/v8250.c:294:
+error: 'struct uart_port' has no member named 'info'
+make[2]: ***
+[/var/tmp/portage/net-dialup/ltmodem-20090420/work/ltmodem/v8250.o]
+Error 1
 
-Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
-Signed-off-by: Mike Frysinger <vapier@gentoo.org>
----
- drivers/serial/bfin_sport_uart.c |   30 +++++++++++++++++++++---------
- 1 files changed, 21 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/serial/bfin_sport_uart.c b/drivers/serial/bfin_sport_uart.c
-index 1b22c59..9d777e4 100644
---- a/drivers/serial/bfin_sport_uart.c
-+++ b/drivers/serial/bfin_sport_uart.c
-@@ -53,7 +53,7 @@ struct sport_uart_port {
- #endif
- };
- 
--static void sport_uart_tx_chars(struct sport_uart_port *up);
-+static int sport_uart_tx_chars(struct sport_uart_port *up);
- static void sport_stop_tx(struct uart_port *port);
- 
- static inline void tx_one_byte(struct sport_uart_port *up, unsigned int value)
-@@ -306,18 +306,24 @@ static int sport_startup(struct uart_port *port)
- 	return ret;
- }
- 
--static void sport_uart_tx_chars(struct sport_uart_port *up)
-+/*
-+ * sport_uart_tx_chars
-+ *
-+ * ret 1 means need to enable sport.
-+ * ret 0 means do nothing.
-+ */
-+static int sport_uart_tx_chars(struct sport_uart_port *up)
- {
- 	struct circ_buf *xmit = &up->port.state->xmit;
- 
- 	if (SPORT_GET_STAT(up) & TXF)
--		return;
-+		return 0;
- 
- 	if (up->port.x_char) {
- 		tx_one_byte(up, up->port.x_char);
- 		up->port.icount.tx++;
- 		up->port.x_char = 0;
--		return;
-+		return 1;
- 	}
- 
- 	if (uart_circ_empty(xmit) || uart_tx_stopped(&up->port)) {
-@@ -328,7 +334,7 @@ static void sport_uart_tx_chars(struct sport_uart_port *up)
- 		 */
- 		if (SPORT_GET_STAT(up) & TXHRE)
- 			sport_stop_tx(&up->port);
--		return;
-+		return 0;
- 	}
- 
- 	while(!(SPORT_GET_STAT(up) & TXF) && !uart_circ_empty(xmit)) {
-@@ -339,6 +345,8 @@ static void sport_uart_tx_chars(struct sport_uart_port *up)
- 
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(&up->port);
-+
-+	return 1;
- }
- 
- static unsigned int sport_tx_empty(struct uart_port *port)
-@@ -360,6 +368,9 @@ static void sport_stop_tx(struct uart_port *port)
- 
- 	pr_debug("%s enter\n", __func__);
- 
-+	if (!(SPORT_GET_TCR1(up) & TSPEN))
-+		return;
-+
- 	/* Although the hold register is empty, last byte is still in shift
- 	 * register and not sent out yet. So, put a dummy data into TX FIFO.
- 	 * Then, sport tx stops when last byte is shift out and the dummy
-@@ -382,11 +393,12 @@ static void sport_start_tx(struct uart_port *port)
- 	pr_debug("%s enter\n", __func__);
- 
- 	/* Write data into SPORT FIFO before enable SPROT to transmit */
--	sport_uart_tx_chars(up);
-+	if (sport_uart_tx_chars(up)) {
-+		/* Enable transmit, then an interrupt will generated */
-+		SPORT_PUT_TCR1(up, (SPORT_GET_TCR1(up) | TSPEN));
-+		SSYNC();
-+	}
- 
--	/* Enable transmit, then an interrupt will generated */
--	SPORT_PUT_TCR1(up, (SPORT_GET_TCR1(up) | TSPEN));
--	SSYNC();
- 	pr_debug("%s exit\n", __func__);
- }
- 
+I checked for changes within drivers/serial/serial_core.c, but couldn't
+find the specific change.  (I did verify ltmodem compiles fine without
+error under 2.6.32.)
+
 -- 
-1.7.0.2
+Roger
+http://rogerx.freeshell.org/
