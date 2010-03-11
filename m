@@ -1,50 +1,32 @@
-From: "Andrey Panin" <pazke@centrinvest.ru>
-Subject: Re: SIIG DP CyberSerial 4S PCIe Support
-Date: Thu, 11 Mar 2010 16:45:08 +0300
-Message-ID: <20100311134508.GB29239@centrinvest.ru>
-References: <aa4c40ff1003081107n78e9f052n2a754680e5491c68@mail.gmail.com>
- <aa4c40ff1003081313s7492513bk14a48c6097b90407@mail.gmail.com>
- <4B95B028.3050106@gmail.com>
- <aa4c40ff1003082115x3e9e1492je90e5afb826b3408@mail.gmail.com>
- <20100309141552.GD30538@centrinvest.ru>
- <8DFD46FA-A938-41D6-97EC-F6E5324C9FAA@gmail.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: Reposting: [PATCH v1] serial: Add OMAP high-speed UART driver.
+Date: Thu, 11 Mar 2010 08:37:01 -0800
+Message-ID: <20100311163700.GC2900@atomide.com>
+References: <40015.192.168.10.89.1267707156.squirrel@dbdmail.itg.ti.com>
+ <38271.10.24.255.17.1268313278.squirrel@dbdmail.itg.ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from centrinvest.ru ([94.25.115.130]:36488 "EHLO centrinvest.ru"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756598Ab0CKNpM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 11 Mar 2010 08:45:12 -0500
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <8DFD46FA-A938-41D6-97EC-F6E5324C9FAA@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <38271.10.24.255.17.1268313278.squirrel@dbdmail.itg.ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Govindraj.R" <govindraj.raja@ti.com>
+Cc: Greg KH <greg@kroah.com>, linux-serial@vger.kernel.org, Kevin Hilman <khilman@deeprootsystems.com>, Olof Johansson <olof@lixom.net>, Alan Cox <alan@linux.intel.com>, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: James Lamanna <jlamanna@gmail.com>
-Cc: Robert Hancock <hancockrwd@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On 068, 03 09, 2010 at 07:09:21AM -0800, James Lamanna wrote:
-> On Mar 9, 2010, at 6:15, "Andrey Panin" <pazke@centrinvest.ru> wrote:
+* Govindraj.R <govindraj.raja@ti.com> [100311 05:11]:
 > 
-> >On 067, 03 08, 2010 at 09:15:26PM -0800, James Lamanna wrote:
-> >
-> >>That's probably the case.
-> >>It looks like 8250 doesn't know about this PCIe device at all.
-> >>The Oxford PCI ID is not in pci_ids.h nor is the SIIG subsystem ID.
-> >>I'll see if I can maybe work up a patch to support this device,
-> >>since I've found
-> >>the datasheet for the Oxford 4 port UART controller, but I may
-> >>need some help.
-> >>Or if anyone else (who has more experience with this) wants to
-> >>formulate one,
-> >>it would be greatly appreciated.
-> >
-> >Looks like you card can use existing code for Oxford Semiconductor
-> >UARTs.
-> >Can you test the attached patch for 2.6.33 ?
+> Hi Greg,
 > 
-> Hi Andrey,
-> Coincidentally I found your patch for 2.6.28 that I was able to
-> backport to 2.6.24. The card seems to be working great!
-> Is this patch in mainline now?
+> Could you please have this patch into your tty tree now?
+> 
+> As I do not see any further comment in community on this
+> for quite long time now.
 
-Now I'm confused, because I can't remember SIIG related patches for 2.6.28.
+There are still outstanding comments. I've commented several
+times that this patch needs to be posted with the related
+patches so people can actually try it out.
+
+Regards,
+
+Tony
