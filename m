@@ -1,36 +1,75 @@
 From: Simon Kagstrom <simon.kagstrom@netinsight.net>
-Subject: [PATCH 0/2]: x86: Honor IO_DELAY IO port settings
-Date: Wed, 17 Mar 2010 13:28:49 +0100
-Message-ID: <20100317132849.7d49939b@marrow.netinsight.se>
+Subject: [PATCH 1/2]: serial8250: Use native_io_delay on the x86
+Date: Wed, 17 Mar 2010 13:30:50 +0100
+Message-ID: <20100317133050.54851ff8@marrow.netinsight.se>
+References: <20100317132849.7d49939b@marrow.netinsight.se>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ernst.netinsight.se ([194.16.221.21]:52008 "HELO
+Received: from ernst.netinsight.se ([194.16.221.21]:40861 "HELO
 	ernst.netinsight.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1754722Ab0CQM2z (ORCPT
+	with SMTP id S1754722Ab0CQMaz (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 17 Mar 2010 08:28:55 -0400
+	Wed, 17 Mar 2010 08:30:55 -0400
+In-Reply-To: <20100317132849.7d49939b@marrow.netinsight.se>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: x86@kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc: mingo@redhat.com, tglx@linutronix.de, alan@linux.intel.com, akpm@linux-foundation.org, hpa@zytor.com
 
-Greetings!
+Port 0x80 is not safe to use on all x86 boards (see
+arch/x86/kernel/io_delay.c), so use native_io_delay instead.
 
-The kernel can be configured to use IO port 0xed instead of port 0x80
-for IO delay writes and some boards also require this to function
-properly. These two patches fix two places where port 0x80 is hardcoded.
+Signed-off-by: Simon Kagstrom <simon.kagstrom@netinsight.net>
+---
+ drivers/serial/8250.c |   12 +++++-------
+ 1 files changed, 5 insertions(+), 7 deletions(-)
 
-* Patch 1: Use native_io_delay for the serial/8250 driver instead of
-  always using 0x80.
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index c3db16b..b3007a4 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -38,6 +38,7 @@
+ #include <linux/serial_8250.h>
+ #include <linux/nmi.h>
+ #include <linux/mutex.h>
++#include <linux/io.h>
+ 
+ #include <asm/io.h>
+ #include <asm/irq.h>
+@@ -1109,11 +1110,8 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
+ 		 * Do a simple existence test first; if we fail this,
+ 		 * there's no point trying anything else.
+ 		 *
+-		 * 0x80 is used as a nonsense port to prevent against
+-		 * false positives due to ISA bus float.  The
+-		 * assumption is that 0x80 is a non-existent port;
+-		 * which should be safe since include/asm/io.h also
+-		 * makes this assumption.
++		 * The IO delay is used to prevent against false positives
++		 * due to ISA bus float.
+ 		 *
+ 		 * Note: this is safe as long as MCR bit 4 is clear
+ 		 * and the device is in "PC" mode.
+@@ -1121,7 +1119,7 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
+ 		scratch = serial_inp(up, UART_IER);
+ 		serial_outp(up, UART_IER, 0);
+ #ifdef __i386__
+-		outb(0xff, 0x080);
++		native_io_delay();
+ #endif
+ 		/*
+ 		 * Mask out IER[7:4] bits for test as some UARTs (e.g. TL
+@@ -1130,7 +1128,7 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
+ 		scratch2 = serial_inp(up, UART_IER) & 0x0f;
+ 		serial_outp(up, UART_IER, 0x0F);
+ #ifdef __i386__
+-		outb(0, 0x080);
++		native_io_delay();
+ #endif
+ 		scratch3 = serial_inp(up, UART_IER) & 0x0f;
+ 		serial_outp(up, UART_IER, scratch);
+-- 
+1.6.0.4
 
-* Patch 2: Honor CONFIG_IO_DELAY_0XED if set for real-mode boot code
-
-
-The board we have works fine with using 0x80, but we're debugging a
-BIOS issue and are logging writes to port 0x80 (BIOS post codes).
-Avoiding the extra port 0x80 writes makes it easier to weed out the
-important information.
-
-// Simon
