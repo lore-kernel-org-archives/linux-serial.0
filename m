@@ -1,42 +1,30 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+From: "H. Peter Anvin" <hpa@zytor.com>
 Subject: Re: [PATCH 1/2]: serial8250: Use native_io_delay on the x86
-Date: Wed, 17 Mar 2010 18:36:08 +0000
-Message-ID: <20100317183608.600bcdf0@lxorguk.ukuu.org.uk>
-References: <20100317132849.7d49939b@marrow.netinsight.se>
-	<20100317133050.54851ff8@marrow.netinsight.se>
-	<4BA11EAA.20506@zytor.com>
+Date: Wed, 17 Mar 2010 11:43:54 -0700
+Message-ID: <4BA122EA.9030305@zytor.com>
+References: <20100317132849.7d49939b@marrow.netinsight.se>	<20100317133050.54851ff8@marrow.netinsight.se>	<4BA11EAA.20506@zytor.com> <20100317183608.600bcdf0@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:46232 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1753242Ab0CQSgR (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 17 Mar 2010 14:36:17 -0400
-In-Reply-To: <4BA11EAA.20506@zytor.com>
+Received: from terminus.zytor.com ([198.137.202.10]:41731 "EHLO mail.zytor.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754132Ab0CQSos (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 17 Mar 2010 14:44:48 -0400
+In-Reply-To: <20100317183608.600bcdf0@lxorguk.ukuu.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "H. Peter Anvin" <hpa@zytor.com>
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Cc: Simon Kagstrom <simon.kagstrom@netinsight.net>, x86@kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, mingo@redhat.com, tglx@linutronix.de, alan@linux.intel.com, akpm@linux-foundation.org
 
-On Wed, 17 Mar 2010 11:25:46 -0700
-"H. Peter Anvin" <hpa@zytor.com> wrote:
+On 03/17/2010 11:36 AM, Alan Cox wrote:
+>
+> You just need a write to something on the ISA bus which is 'safe' so that
+> you don't end up reading back what you wrote to an non-existant port as
+> some old chipsets will return the last ISA result when you do this rather
+> than 0xff.
 
-> On 03/17/2010 05:30 AM, Simon Kagstrom wrote:
-> >   #ifdef __i386__
-> > -		outb(0xff, 0x080);
-> > +		native_io_delay();
-> >   #endif
-> 
-> There is something a lot more weird about this.  First of all, it's 
-> #ifdef'd out on all but __i386__ including x86-64; second, it looks like 
-> this is specific to synchronizing to the IER.
-> 
-> I'm wondering if the right thing isn't to add a dummy write to the SCR 
-> register (or similar.)
+Ah... floating bus syndrome.  So how about writing 0xff to the SCR 
+register in the same register range?
 
-You just need a write to something on the ISA bus which is 'safe' so that
-you don't end up reading back what you wrote to an non-existant port as
-some old chipsets will return the last ISA result when you do this rather
-than 0xff.
+	-hpa
