@@ -1,50 +1,38 @@
-From: Simon Kagstrom <simon.kagstrom@netinsight.net>
-Subject: [PATCH 2/2]: x86 real mode: Set delay port according to kernel
- config
-Date: Wed, 17 Mar 2010 13:30:56 +0100
-Message-ID: <20100317133056.289d8dc7@marrow.netinsight.se>
+From: Alan Cox <alan@linux.intel.com>
+Subject: Re: [PATCH 1/2]: serial8250: Use native_io_delay on the x86
+Date: Wed, 17 Mar 2010 13:01:59 +0000
+Message-ID: <20100317130159.23d1103f@linux.intel.com>
 References: <20100317132849.7d49939b@marrow.netinsight.se>
+	<20100317133050.54851ff8@marrow.netinsight.se>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ernst.netinsight.se ([194.16.221.21]:25818 "HELO
-	ernst.netinsight.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1754722Ab0CQMbA (ORCPT
+Received: from mga12.intel.com ([143.182.124.36]:4279 "EHLO
+	azsmga102.ch.intel.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751011Ab0CQN0t (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 17 Mar 2010 08:31:00 -0400
-In-Reply-To: <20100317132849.7d49939b@marrow.netinsight.se>
+	Wed, 17 Mar 2010 09:26:49 -0400
+In-Reply-To: <20100317133050.54851ff8@marrow.netinsight.se>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: x86@kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: mingo@redhat.com, tglx@linutronix.de, alan@linux.intel.com, akpm@linux-foundation.org, hpa@zytor.com
+To: Simon Kagstrom <simon.kagstrom@netinsight.net>
+Cc: x86@kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, mingo@redhat.com, tglx@linutronix.de, akpm@linux-foundation.org, hpa@zytor.com
 
-Port 0x80 is not safe to use on all x86 boards (see
-arch/x86/kernel/io_delay.c), so optionally use 0xed from the kernel
-config instead.
+On Wed, 17 Mar 2010 13:30:50 +0100
+Simon Kagstrom <simon.kagstrom@netinsight.net> wrote:
 
-Signed-off-by: Simon Kagstrom <simon.kagstrom@netinsight.net>
----
- arch/x86/boot/boot.h |    5 +++++
- 1 files changed, 5 insertions(+), 0 deletions(-)
+> Port 0x80 is not safe to use on all x86 boards (see
+> arch/x86/kernel/io_delay.c), so use native_io_delay instead.
+> 
+> Signed-off-by: Simon Kagstrom <simon.kagstrom@netinsight.net>
 
-diff --git a/arch/x86/boot/boot.h b/arch/x86/boot/boot.h
-index 98239d2..79880b1 100644
---- a/arch/x86/boot/boot.h
-+++ b/arch/x86/boot/boot.h
-@@ -73,7 +73,12 @@ static inline u32 inl(u32 port)
- 
- static inline void io_delay(void)
- {
-+#ifdef CONFIG_IO_DELAY_0XED
-+	const u16 DELAY_PORT = 0xed;
-+#else
- 	const u16 DELAY_PORT = 0x80;
-+#endif
-+
- 	asm volatile("outb %%al,%0" : : "dN" (DELAY_PORT));
- }
- 
--- 
-1.6.0.4
+native_io_delay() won't work if the system is being run with no delays.
+The I/O cycle isn't for the delay but to force the bus signals. So in
+various modes (paravirt, udelay, no delay) the native_io_delay won't
+actually do what is required.
+
+I'm actually surprised you hit this path and if anything the right fix
+is to avoid hitting this kind of probing in the first place.
+
 
