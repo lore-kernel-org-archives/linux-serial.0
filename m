@@ -1,121 +1,82 @@
-From: Simon Kagstrom <simon.kagstrom@netinsight.net>
-Subject: Re: [PATCH 1/2]: serial8250: Use native_io_delay on the x86
-Date: Wed, 17 Mar 2010 15:09:07 +0100
-Message-ID: <20100317150907.59d40834@marrow.netinsight.se>
-References: <20100317132849.7d49939b@marrow.netinsight.se>
-	<20100317133050.54851ff8@marrow.netinsight.se>
-	<20100317130159.23d1103f@linux.intel.com>
+From: John Linn <John.Linn@xilinx.com>
+Subject: RE: [PATCH] [V2] uartlite: move from byte accesses to word accesses
+Date: Wed, 17 Mar 2010 08:47:08 -0600
+Message-ID: <bfd3a43f-66f6-457b-8753-af7067f571ce@VA3EHSMHS031.ehs.local>
+References: <70e0020c-98ac-48d0-bfa6-1f2230ad2d0b@VA3EHSMHS026.ehs.local> <87tyuflv98.fsf@macbook.be.48ers.dk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ernst.netinsight.se ([194.16.221.21]:42251 "HELO
-	ernst.netinsight.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1754951Ab0CQOJO (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 17 Mar 2010 10:09:14 -0400
-In-Reply-To: <20100317130159.23d1103f@linux.intel.com>
+Received: from va3ehsobe003.messaging.microsoft.com ([216.32.180.13]:5731 "EHLO
+	VA3EHSOBE003.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1754432Ab0CQOrU convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 17 Mar 2010 10:47:20 -0400
+Content-Class: urn:content-classes:message
+In-Reply-To: <87tyuflv98.fsf@macbook.be.48ers.dk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: x86@kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, mingo@redhat.com, tglx@linutronix.de, akpm@linux-foundation.org, hpa@zytor.com
+To: Peter Korsgaard <jacmet@sunsite.dk>
+Cc: linux-serial@vger.kernel.org, grant.likely@secretlab.ca, michal.simek@petalogix.com, john.williams@petalogix.com
 
-On Wed, 17 Mar 2010 13:01:59 +0000
-Alan Cox <alan@linux.intel.com> wrote:
-
-> On Wed, 17 Mar 2010 13:30:50 +0100
-> Simon Kagstrom <simon.kagstrom@netinsight.net> wrote:
+> -----Original Message-----
+> From: Peter Korsgaard [mailto:jacmet@gmail.com] On Behalf Of Peter
+Korsgaard
+> Sent: Thursday, January 21, 2010 1:26 AM
+> To: John Linn
+> Cc: linux-serial@vger.kernel.org; grant.likely@secretlab.ca;
+michal.simek@petalogix.com;
+> john.williams@petalogix.com
+> Subject: Re: [PATCH] [V2] uartlite: move from byte accesses to word
+accesses
 > 
-> > Port 0x80 is not safe to use on all x86 boards (see
-> > arch/x86/kernel/io_delay.c), so use native_io_delay instead.
-> > 
-> > Signed-off-by: Simon Kagstrom <simon.kagstrom@netinsight.net>
+> >>>>> "John" == John Linn <john.linn@xilinx.com> writes:
 > 
-> native_io_delay() won't work if the system is being run with no delays.
-> The I/O cycle isn't for the delay but to force the bus signals. So in
-> various modes (paravirt, udelay, no delay) the native_io_delay won't
-> actually do what is required.
+>  John> Byte accesses for I/O devices in Xilinx IP are going to be less
+>  John> desired in the future such that the driver is being changed to
+>  John> use 32 bit accesses.
+> 
+>  John> This change facilitates using the uartlite IP over a PCIe bus
+>  John> which only allows 32 bit accesses.
+> 
+>  John> Signed-off-by: John Linn <john.linn@xilinx.com>
+>  John> ---
+>  John>  drivers/serial/uartlite.c |   36
+++++++++++++++++++------------------
+>  John>  1 files changed, 18 insertions(+), 18 deletions(-)
+> 
+>  John> diff --git a/drivers/serial/uartlite.c
+b/drivers/serial/uartlite.c
+>  John> index 377f271..9f83949 100644
+>  John> --- a/drivers/serial/uartlite.c
+>  John> +++ b/drivers/serial/uartlite.c
+>  John> @@ -86,7 +86,7 @@ static int ulite_receive(struct uart_port
+*port, int stat)
+>  John>  	/* stats */
+>  John>  	if (stat & ULITE_STATUS_RXVALID) {
+>  port-> icount.rx++;
+>  John> -		ch = readb(port->membase + ULITE_RX);
+>  John> +		ch = (u8)in_be32(port->membase + ULITE_RX);
+> 
+> 
+> I don't believe all those (u8) casts are needed (and they could
+> potentially mask away other problems in the future).
+> 
 
-You are right, I should have seen that.
+I'll send out a V3 for the patch.  Sorry I dropped the ball and didn't
+get this taken care of.
 
-Would something similar to the other patch be acceptable, i.e., like
-the diff below?
+Thanks,
+John
 
-> I'm actually surprised you hit this path and if anything the right fix
-> is to avoid hitting this kind of probing in the first place.
+> Other than that,
+> 
+> Acked-by: Peter Korsgaard <jacmet@sunsite.dk>
+> 
+> --
+> Bye, Peter Korsgaard
 
-But isn't this code path pretty much always being executed? If I read
-the code correct, unless we have a buggy UART it will be executed if
-UPF_BOOT_AUTOCONF is set.
 
-// Simon
+This email and any attachments are intended for the sole use of the named recipient(s) and contain(s) confidential information that may be proprietary, privileged or copyrighted under applicable law. If you are not the intended recipient, do not read, copy, or forward this email message or any attachments. Delete this email message and any attachments immediately.
 
-diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index 524f6ab..c5e3f9a 100644
---- a/drivers/serial/8250.c
-+++ b/drivers/serial/8250.c
-@@ -38,6 +38,7 @@
- #include <linux/serial_8250.h>
- #include <linux/nmi.h>
- #include <linux/mutex.h>
-+#include <linux/io.h>
- 
- #include <asm/io.h>
- #include <asm/irq.h>
-@@ -1071,6 +1072,19 @@ static void autoconfig_16550a(struct uart_8250_port *up)
-        serial_outp(up, UART_IER, iersave);
- }
- 
-+static void bus_delay(u8 val)
-+{
-+#ifdef __i386__
-+# ifdef CONFIG_IO_DELAY_TYPE_0XED
-+       const u16 io_port = 0xed;
-+# else
-+       const u16 io_port = 0x80;
-+#endif
-+
-+       outb(0xff, io_port);
-+#endif
-+}
-+
- /*
-  * This routine is called by rs_init() to initialize a specific serial
-  * port.  It determines what type of UART chip this serial port is
-@@ -1104,29 +1118,24 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
-                 * Do a simple existence test first; if we fail this,
-                 * there's no point trying anything else.
-                 *
--                * 0x80 is used as a nonsense port to prevent against
--                * false positives due to ISA bus float.  The
--                * assumption is that 0x80 is a non-existent port;
--                * which should be safe since include/asm/io.h also
--                * makes this assumption.
-+                * The IO delay is used to prevent against false positives
-+                * due to ISA bus float.
-                 *
-                 * Note: this is safe as long as MCR bit 4 is clear
-                 * and the device is in "PC" mode.
-                 */
-                scratch = serial_inp(up, UART_IER);
-                serial_outp(up, UART_IER, 0);
--#ifdef __i386__
--               outb(0xff, 0x080);
--#endif
-+               bus_delay(0xff);
-+
-                /*
-                 * Mask out IER[7:4] bits for test as some UARTs (e.g. TL
-                 * 16C754B) allow only to modify them if an EFR bit is set.
-                 */
-                scratch2 = serial_inp(up, UART_IER) & 0x0f;
-                serial_outp(up, UART_IER, 0x0F);
--#ifdef __i386__
--               outb(0, 0x080);
--#endif
-+               bus_delay(0x0);
-+
-                scratch3 = serial_inp(up, UART_IER) & 0x0f;
-                serial_outp(up, UART_IER, scratch);
-                if (scratch2 != 0 || scratch3 != 0x0F) {
-[simkag@marrow kernel]$ 
+
