@@ -1,69 +1,47 @@
-From: James Lamanna <jlamanna@gmail.com>
-Subject: Re: SIIG DP CyberSerial 4S PCIe Support
-Date: Fri, 19 Mar 2010 19:05:38 -0700
-Message-ID: <aa4c40ff1003191905v30b41899pc9ee07892fd56b97@mail.gmail.com>
-References: <aa4c40ff1003081107n78e9f052n2a754680e5491c68@mail.gmail.com>
-	 <aa4c40ff1003081313s7492513bk14a48c6097b90407@mail.gmail.com>
-	 <4B95B028.3050106@gmail.com>
-	 <aa4c40ff1003082115x3e9e1492je90e5afb826b3408@mail.gmail.com>
-	 <20100309141552.GD30538@centrinvest.ru>
-	 <8DFD46FA-A938-41D6-97EC-F6E5324C9FAA@gmail.com>
-	 <20100311134508.GB29239@centrinvest.ru>
-	 <20100318140630.f6768ee8.akpm@linux-foundation.org>
+From: christian pellegrin <chripell@fsfe.org>
+Subject: Re: [PATCH 1/3] max3100: added raise_threaded_irq
+Date: Sun, 21 Mar 2010 08:31:39 +0100
+Message-ID: <cabda6421003210031k65e9d195u90fc99888ca7633c@mail.gmail.com>
+References: <cabda6421003190139h344bc172h3556fca78e4b25cb@mail.gmail.com>
+	 <1268987934-22690-1-git-send-email-chripell@fsfe.org>
+	 <fa686aa41003191048s5c4c85ablc4588725a3d615ad@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20100318140630.f6768ee8.akpm@linux-foundation.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Andrey Panin <pazke@centrinvest.ru>, Robert Hancock <hancockrwd@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from fg-out-1718.google.com ([72.14.220.159]:50181 "EHLO
+	fg-out-1718.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751201Ab0CUHbl (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 21 Mar 2010 03:31:41 -0400
+In-Reply-To: <fa686aa41003191048s5c4c85ablc4588725a3d615ad@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Grant Likely <grant.likely@secretlab.ca>
+Cc: feng.tang@intel.com, akpm@linux-foundation.org, greg@kroah.com, david-b@pacbell.net, alan@lxorguk.ukuu.org.uk, spi-devel-general@lists.sourceforge.net, linux-serial@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@elte.hu>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 
-On Thu, Mar 18, 2010 at 2:06 PM, Andrew Morton
-<akpm@linux-foundation.org> wrote:
-> On Thu, 11 Mar 2010 16:45:08 +0300
-> "Andrey Panin" <pazke@centrinvest.ru> wrote:
+Hi,
+
+
+On Fri, Mar 19, 2010 at 6:48 PM, Grant Likely <grant.likely@secretlab.ca> wrote:
+
+> You should cc: Thomas and Ingo and lkml (which I just did) on patches
+> to the threaded interrupt code.
 >
->> On 068, 03 09, 2010 at 07:09:21AM -0800, James Lamanna wrote:
->> > On Mar 9, 2010, at 6:15, "Andrey Panin" <pazke@centrinvest.ru> wro=
-te:
->> >
->> > >On 067, 03 08, 2010 at 09:15:26PM -0800, James Lamanna wrote:
->> > >
->> > >>That's probably the case.
->> > >>It looks like 8250 doesn't know about this PCIe device at all.
->> > >>The Oxford PCI ID is not in pci_ids.h nor is the SIIG subsystem =
-ID.
->> > >>I'll see if I can maybe work up a patch to support this device,
->> > >>since I've found
->> > >>the datasheet for the Oxford 4 port UART controller, but I may
->> > >>need some help.
->> > >>Or if anyone else (who has more experience with this) wants to
->> > >>formulate one,
->> > >>it would be greatly appreciated.
->> > >
->> > >Looks like you card can use existing code for Oxford Semiconducto=
-r
->> > >UARTs.
->> > >Can you test the attached patch for 2.6.33 ?
->> >
->> > Hi Andrey,
->> > Coincidentally I found your patch for 2.6.28 that I was able to
->> > backport to 2.6.24. The card seems to be working great!
->> > Is this patch in mainline now?
->>
->> Now I'm confused, because I can't remember SIIG related patches for =
-2.6.28.
->
-> I'm confused too. =A0If someone had a patch which they think needs to=
- be
-> applied, please resend it?
 
-I believe this was the patch/diff that I saw:
-http://www.linuxhq.com/kernel/v2.6/28/drivers/serial/8250_pci.c
+ok, let me explain the reason for this function. The move from
+worqueues to the threaded interrupts was motivated by a reduction of
+latency in answering to RX buffer full interrupts. Threaded interrupts
+are SCHED_FIFO instead worqueues being SCHED_OTHER. In the case of
+MAX31x0 when we transmit a character we could have to receive one
+(this is efficient because SPI transfers are quite always
+bidirectional). The same routine is used both for tx and rx (an other
+things like changing parameters): this makes locking really simple.
+With this routine the thread interrupt handler could be the only kind
+of deferred work a driver for a simple hardware may ever need.
 
-So, from that, it looks like everything is in mainline. I had been
-working with 2.6.24, which didn't have support.
-
--- James
+-- 
+Christian Pellegrin, see http://www.evolware.org/chri/
+"Real Programmers don't play tennis, or any other sport which requires
+you to change clothes. Mountain climbing is OK, and Real Programmers
+wear their climbing boots to work in case a mountain should suddenly
+spring up in the middle of the computer room."
