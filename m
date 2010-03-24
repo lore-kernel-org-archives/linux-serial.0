@@ -1,130 +1,63 @@
-From: Manuel Lauss <manuel.lauss@googlemail.com>
-Subject: [RFC PATCH 1/2] 8250: allow platform uarts to install PM callback.
-Date: Wed, 24 Mar 2010 18:16:25 +0100
-Message-ID: <1269450986-3714-2-git-send-email-manuel.lauss@gmail.com>
-References: <1269450986-3714-1-git-send-email-manuel.lauss@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1269450986-3714-1-git-send-email-manuel.lauss@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: linux-mips@linux-mips.org, Manuel Lauss <manuel.lauss@gmail.com>
+From: Sergei Shtylyov <sshtylyov@mvista.com>
+Subject: Re: [RFC PATCH 2/2] Alchemy: UART PM through serial framework.
+Date: Wed, 24 Mar 2010 20:40:17 +0300
+Message-ID: <4BAA4E81.8070405@mvista.com>
+References: <1269450986-3714-1-git-send-email-manuel.lauss@gmail.com> <1269450986-3714-3-git-send-email-manuel.lauss@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-bw0-f209.google.com ([209.85.218.209]:47119 "EHLO
+	mail-bw0-f209.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932327Ab0CXRkq (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 24 Mar 2010 13:40:46 -0400
+In-Reply-To: <1269450986-3714-3-git-send-email-manuel.lauss@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Manuel Lauss <manuel.lauss@googlemail.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, Manuel Lauss <manuel.lauss@gmail.com>
 
-The 8250 UART driver provides rudimentary UART PM support and
-a callback for systems to do more sophisticated power management.
-However, there is no way yet for platform_device uarts to assign
-a function to this internal callback.
+Hello.
 
-This patch adds a callback to plat_8250_port and a function to
-register this callback with 8250 driver internals.
+Manuel Lauss wrote:
 
-Signed-off-by: Manuel Lauss <manuel.lauss@gmail.com>
----
- drivers/serial/8250.c       |   31 ++++++++++++++++++++++++++++---
- include/linux/serial_8250.h |    6 ++++++
- 2 files changed, 34 insertions(+), 3 deletions(-)
+> Hook up the Alchemy on-chip uarts with the platform 8250 PM callback
+> and enable/disable the uart blocks as needed.
+>
+> Tested on Au1200.
+>
+> Signed-off-by: Manuel Lauss <manuel.lauss@gmail.com>
+> ---
+>  arch/mips/alchemy/common/platform.c |   17 +++++++++++++++++
+>  arch/mips/alchemy/common/power.c    |   32 --------------------------------
+>  2 files changed, 17 insertions(+), 32 deletions(-)
+>
+> diff --git a/arch/mips/alchemy/common/platform.c b/arch/mips/alchemy/common/platform.c
+> index 2580e77..70f4abd 100644
+> --- a/arch/mips/alchemy/common/platform.c
+> +++ b/arch/mips/alchemy/common/platform.c
+> @@ -21,6 +21,22 @@
+>  #include <asm/mach-au1x00/au1100_mmc.h>
+>  #include <asm/mach-au1x00/au1xxx_eth.h>
+>  
+> +static void alchemy_8250_pm(struct uart_port *port, unsigned int state,
+> +			    unsigned int old_state)
+> +{
+> +	if (state == 0) {		/* power on */
+> +		__raw_writel(0, port->membase + UART_MOD_CNTRL);
+> +		wmb();
+> +		__raw_writel(1, port->membase + UART_MOD_CNTRL);
+> +		wmb();
+> +		__raw_writel(3, port->membase + UART_MOD_CNTRL);
+> +		wmb();
+> +	} else if (state == 3) {	/* power off */
+> +		__raw_writel(0, port->membase + UART_MOD_CNTRL);
+> +		wmb();
+> +	}
+> +}
 
-diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index c3db16b..c0c8e9b 100644
---- a/drivers/serial/8250.c
-+++ b/drivers/serial/8250.c
-@@ -2995,7 +2995,7 @@ static int __devinit serial8250_probe(struct platform_device *dev)
- 		port.serial_out		= p->serial_out;
- 		port.dev		= &dev->dev;
- 		port.irqflags		|= irqflag;
--		ret = serial8250_register_port(&port);
-+		ret = serial8250_register_port_with_pm(&port, p->pm);
- 		if (ret < 0) {
- 			dev_err(&dev->dev, "unable to register port at index %d "
- 				"(IO%lx MEM%llx IRQ%d): %d\n", i,
-@@ -3107,8 +3107,10 @@ static struct uart_8250_port *serial8250_find_match_or_unused(struct uart_port *
- }
- 
- /**
-- *	serial8250_register_port - register a serial port
-+ *	serial8250_register_port_with_pm - register a serial port and its
-+ *					   power management callback.
-  *	@port: serial port template
-+ *	@pm:   PM callback for this port, can be NULL.
-  *
-  *	Configure the serial port specified by the request. If the
-  *	port exists and is in use, it is hung up and unregistered
-@@ -3119,7 +3121,9 @@ static struct uart_8250_port *serial8250_find_match_or_unused(struct uart_port *
-  *
-  *	On success the port is ready to use and the line number is returned.
-  */
--int serial8250_register_port(struct uart_port *port)
-+int serial8250_register_port_with_pm(struct uart_port *port,
-+	void(*pm)(struct uart_port *port, unsigned int state,
-+		  unsigned int old))
- {
- 	struct uart_8250_port *uart;
- 	int ret = -ENOSPC;
-@@ -3144,6 +3148,7 @@ int serial8250_register_port(struct uart_port *port)
- 		uart->port.flags        = port->flags | UPF_BOOT_AUTOCONF;
- 		uart->port.mapbase      = port->mapbase;
- 		uart->port.private_data = port->private_data;
-+		uart->pm		= pm;
- 		if (port->dev)
- 			uart->port.dev = port->dev;
- 
-@@ -3165,6 +3170,26 @@ int serial8250_register_port(struct uart_port *port)
- 
- 	return ret;
- }
-+EXPORT_SYMBOL(serial8250_register_port_with_pm);
-+
-+/**
-+ *	serial8250_register_port - register a serial port
-+ *	@port: serial port template
-+ *
-+ *	Configure the serial port specified by the request. If the
-+ *	port exists and is in use, it is hung up and unregistered
-+ *	first.
-+ *
-+ *	The port is then probed and if necessary the IRQ is autodetected
-+ *	If this fails an error is returned.
-+ *
-+ *	On success the port is ready to use and the line number is returned.
-+ */
-+int serial8250_register_port(struct uart_port *port)
-+{
-+	return serial8250_register_port_with_pm(port, NULL);
-+}
-+
- EXPORT_SYMBOL(serial8250_register_port);
- 
- /**
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index fb46aba..25cc3fb 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -14,6 +14,9 @@
- #include <linux/serial_core.h>
- #include <linux/platform_device.h>
- 
-+typedef void(*plat8250_pm_func_t)(struct uart_port *port, unsigned int state,
-+				  unsigned int old_state);
-+
- /*
-  * This is the platform device platform_data structure
-  */
-@@ -32,6 +35,8 @@ struct plat_serial8250_port {
- 	unsigned int	type;		/* If UPF_FIXED_TYPE */
- 	unsigned int	(*serial_in)(struct uart_port *, int);
- 	void		(*serial_out)(struct uart_port *, int, int);
-+	void 		(*pm)(struct uart_port *port, unsigned int state,
-+			      unsigned int old_state);
- };
- 
- /*
-@@ -62,6 +67,7 @@ enum {
- struct uart_port;
- 
- int serial8250_register_port(struct uart_port *);
-+int serial8250_register_port_with_pm(struct uart_port *, plat8250_pm_func_t);
- void serial8250_unregister_port(int line);
- void serial8250_suspend_port(int line);
- void serial8250_resume_port(int line);
--- 
-1.7.0.2
+   A *switch* statement seems more fitting here...
+
+WBR, Sergei
+
