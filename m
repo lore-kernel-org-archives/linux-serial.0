@@ -1,61 +1,73 @@
-From: Toan Pham <tpham3783@gmail.com>
-Subject: 8250 wrong IRQs set after boot
-Date: Wed, 24 Mar 2010 11:38:18 -0400
-Message-ID: <ffb2c0281003240838k7e2642ahffffb058e57cb0f9@mail.gmail.com>
+From: Tobias Klauser <tklauser@distanz.ch>
+Subject: Re: [PATCHv3 2/2] serial: Add driver for the Altera UART
+Date: Wed, 24 Mar 2010 17:24:27 +0100
+Message-ID: <20100324162427.GQ21818@distanz.ch>
+References: <cover.1267807169.git.klto@zhaw.ch> <15dc056891fb785001073bab4f9a0d0f3bf99af1.1267807169.git.klto@zhaw.ch> <a596efa5dc6130a27d045ea24174c792ee2f0bb4.1267807169.git.klto@zhaw.ch> <20100323145459.9894b1e6.akpm@linux-foundation.org> <20100324064747.GP21818@distanz.ch> <20100324070527.86d0b9b6.akpm@linux-foundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from qw-out-2122.google.com ([74.125.92.27]:12480 "EHLO
-	qw-out-2122.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756428Ab0CXPiT (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 24 Mar 2010 11:38:19 -0400
-Received: by qw-out-2122.google.com with SMTP id 8so1911545qwh.37
-        for <linux-serial@vger.kernel.org>; Wed, 24 Mar 2010 08:38:18 -0700 (PDT)
+Received: from symlink.to.noone.org ([85.10.207.172]:42248 "EHLO sym.noone.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755550Ab0CXQYa (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 24 Mar 2010 12:24:30 -0400
+Content-Disposition: inline
+In-Reply-To: <20100324070527.86d0b9b6.akpm@linux-foundation.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-serial@vger.kernel.org, gregkh@suse.de, nios2-dev@sopc.et.ntust.edu.tw, linux-kernel@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-Hi,
+On 2010-03-24 at 12:05:27 +0100, Andrew Morton <akpm@linux-foundation.org> wrote:
+> On Wed, 24 Mar 2010 07:47:47 +0100 Tobias Klauser <tklauser@distanz.ch> wrote:
+> > On 2010-03-23 at 22:54:59 +0100, Andrew Morton <akpm@linux-foundation.org> wrote:
+> > > On Fri,  5 Mar 2010 17:52:23 +0100
+> > > Tobias Klauser <tklauser@distanz.ch> wrote:
+> > > 
+> > > > +	sigs |= (altera_uart_getppdcd(port->line) ? TIOCM_CD : 0);
+> > > > +	sigs |= (altera_uart_getppdtr(port->line) ? TIOCM_DTR : 0);
+> > > 
+> > > We seem to be missing a few things here.
+> > > 
+> > > drivers/serial/altera_uart.c: In function 'altera_uart_get_mctrl':
+> > > drivers/serial/altera_uart.c:100: error: implicit declaration of function 'altera_uart_getppdcd'
+> > > drivers/serial/altera_uart.c:101: error: implicit declaration of function 'altera_uart_getppdtr'
+> > > drivers/serial/altera_uart.c: In function 'altera_uart_set_mctrl':
+> > > drivers/serial/altera_uart.c:114: error: implicit declaration of function 'altera_uart_setppdtr'
+> > 
+> > These should usually be declared in a board specific header. There were
+> > compatibility macros in altera_uart.c which defined them to NOPs in case
+> > the board header did not properly define them. But I remove them as per
+> > request by Alan Cox (Message-ID: 20100301181920.3952c3e7@lxorguk.ukuu.org.uk).
+> > 
+> > Should we add them again (maybe to altera_uart.h)? Or would it be better
+> > to define a config symbol which is set in the board specific Kconfig and
+> > altera_uart depends on it?
+> 
+> I guess the latter.
+> 
+> There should have been a real implementation of these in the patchset -
+> otherwise the code can't be used or tested.  Confused.
 
-I built a linux from scrach distro and setserial is not installed.
+Sorry for the confusion.
 
-At boot up; all of the IRQ numbers for serial ports 1-4 are reported
-correctly (according to the bios setting) from the bootup log.  They
-are as followed.
+The last patchset I submitted (with the functions removed from
+altera_uart.c) was tested on a local branch, where I added the macros to
+a global board specific header. I didn't include that one in the patch.
 
-ttyS0 at 0x03f8 (irq = 4) is a 16550A
-ttyS1 at 0x02f8 (irq = 4) is a 16550A
-ttyS2 at 0x03e8 (irq = 11) is a 16550A
-ttyS3 at 0x02e8 (irq = 11) is a 16550A
+After looking at the code and it's history a bit closer (and also on the
+nios2 specific part) I realised that this macro was probably added
+because the driver was originally based on drivers/serial/mcf.c (the
+macros are present there too).
 
+Also there are currently no board configurations known to me that define
+these macros. So I'd suggest to remove the usage of these macros
+alltogether. We could still add them again (to the board specific part
+and with the config option then) in case there will be a board
+configuration implementing DTR/DCD lines on GPIOs.
 
-However, after bootup, i login and looked at /proc/tty/driver/serial,
-i noticed that all the IRQ for four serial ports
+Could anyone on nios2-dev verify that there are currently no such board
+configurations?
 
-are wrong, and they as as follow:
+I'd remove the usage of the macros then and post an updated patch.
 
-ttyS0 to IRQ 4
-ttyS1 to IRQ 3
-ttyS2 to IRQ 4
-ttyS3 to IRQ 3
-
-
-as expected, serial ports ttyS1, ttyS2, and ttyS3 did not function
-because the IRQs were reconfigured somehow.  I would like to know what
-reconfigured the
-
-IRQs since setserial is not installed in my distro.  I also checked
-all the startup scripts in userspace and noticed that nothing would
-have reconfigured
-these ports.  I am thinking about installing setserial to my distro to
-reconfigure the irqs back to the ones listed at bootup; however, I
-would like to know
-
-what caused them to change in the first place.
-
-
-Thank you,
-
-
-Toan
+  Tobias
