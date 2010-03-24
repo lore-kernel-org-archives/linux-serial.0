@@ -1,55 +1,61 @@
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCHv3 2/2] serial: Add driver for the Altera UART
-Date: Wed, 24 Mar 2010 07:05:27 -0400
-Message-ID: <20100324070527.86d0b9b6.akpm@linux-foundation.org>
-References: <cover.1267807169.git.klto@zhaw.ch>
-	<15dc056891fb785001073bab4f9a0d0f3bf99af1.1267807169.git.klto@zhaw.ch>
-	<a596efa5dc6130a27d045ea24174c792ee2f0bb4.1267807169.git.klto@zhaw.ch>
-	<20100323145459.9894b1e6.akpm@linux-foundation.org>
-	<20100324064747.GP21818@distanz.ch>
+From: Toan Pham <tpham3783@gmail.com>
+Subject: 8250 wrong IRQs set after boot
+Date: Wed, 24 Mar 2010 11:38:18 -0400
+Message-ID: <ffb2c0281003240838k7e2642ahffffb058e57cb0f9@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp1.linux-foundation.org ([140.211.169.13]:46573 "EHLO
-	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1756339Ab0CXOHF (ORCPT
+Received: from qw-out-2122.google.com ([74.125.92.27]:12480 "EHLO
+	qw-out-2122.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756428Ab0CXPiT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 24 Mar 2010 10:07:05 -0400
-In-Reply-To: <20100324064747.GP21818@distanz.ch>
+	Wed, 24 Mar 2010 11:38:19 -0400
+Received: by qw-out-2122.google.com with SMTP id 8so1911545qwh.37
+        for <linux-serial@vger.kernel.org>; Wed, 24 Mar 2010 08:38:18 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tobias Klauser <tklauser@distanz.ch>
-Cc: linux-serial@vger.kernel.org, gregkh@suse.de, nios2-dev@sopc.et.ntust.edu.tw, linux-kernel@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
+To: linux-serial@vger.kernel.org
 
-On Wed, 24 Mar 2010 07:47:47 +0100 Tobias Klauser <tklauser@distanz.ch> wrote:
+Hi,
 
-> On 2010-03-23 at 22:54:59 +0100, Andrew Morton <akpm@linux-foundation.org> wrote:
-> > On Fri,  5 Mar 2010 17:52:23 +0100
-> > Tobias Klauser <tklauser@distanz.ch> wrote:
-> > 
-> > > +	sigs |= (altera_uart_getppdcd(port->line) ? TIOCM_CD : 0);
-> > > +	sigs |= (altera_uart_getppdtr(port->line) ? TIOCM_DTR : 0);
-> > 
-> > We seem to be missing a few things here.
-> > 
-> > drivers/serial/altera_uart.c: In function 'altera_uart_get_mctrl':
-> > drivers/serial/altera_uart.c:100: error: implicit declaration of function 'altera_uart_getppdcd'
-> > drivers/serial/altera_uart.c:101: error: implicit declaration of function 'altera_uart_getppdtr'
-> > drivers/serial/altera_uart.c: In function 'altera_uart_set_mctrl':
-> > drivers/serial/altera_uart.c:114: error: implicit declaration of function 'altera_uart_setppdtr'
-> 
-> These should usually be declared in a board specific header. There were
-> compatibility macros in altera_uart.c which defined them to NOPs in case
-> the board header did not properly define them. But I remove them as per
-> request by Alan Cox (Message-ID: 20100301181920.3952c3e7@lxorguk.ukuu.org.uk).
-> 
-> Should we add them again (maybe to altera_uart.h)? Or would it be better
-> to define a config symbol which is set in the board specific Kconfig and
-> altera_uart depends on it?
+I built a linux from scrach distro and setserial is not installed.
 
-I guess the latter.
+At boot up; all of the IRQ numbers for serial ports 1-4 are reported
+correctly (according to the bios setting) from the bootup log.  They
+are as followed.
 
-There should have been a real implementation of these in the patchset -
-otherwise the code can't be used or tested.  Confused.
+ttyS0 at 0x03f8 (irq = 4) is a 16550A
+ttyS1 at 0x02f8 (irq = 4) is a 16550A
+ttyS2 at 0x03e8 (irq = 11) is a 16550A
+ttyS3 at 0x02e8 (irq = 11) is a 16550A
 
+
+However, after bootup, i login and looked at /proc/tty/driver/serial,
+i noticed that all the IRQ for four serial ports
+
+are wrong, and they as as follow:
+
+ttyS0 to IRQ 4
+ttyS1 to IRQ 3
+ttyS2 to IRQ 4
+ttyS3 to IRQ 3
+
+
+as expected, serial ports ttyS1, ttyS2, and ttyS3 did not function
+because the IRQs were reconfigured somehow.  I would like to know what
+reconfigured the
+
+IRQs since setserial is not installed in my distro.  I also checked
+all the startup scripts in userspace and noticed that nothing would
+have reconfigured
+these ports.  I am thinking about installing setserial to my distro to
+reconfigure the irqs back to the ones listed at bootup; however, I
+would like to know
+
+what caused them to change in the first place.
+
+
+Thank you,
+
+
+Toan
