@@ -1,85 +1,92 @@
-From: christian pellegrin <chripell@fsfe.org>
-Subject: Re: [PATCH v1 3/4] max3100: adds console support for MAX3100
-Date: Mon, 29 Mar 2010 14:55:51 +0200
-Message-ID: <cabda6421003290555k70d13168y4beba2c3ae6e2ece@mail.gmail.com>
-References: <1269340105-6503-1-git-send-email-chripell@fsfe.org>
-	 <1269340170-6558-1-git-send-email-chripell@fsfe.org>
-	 <20100329104838.49c18075@feng-i7>
-	 <cabda6421003282311x78051e1eq38ada68f2553609e@mail.gmail.com>
-	 <20100329150642.4a94e78a@feng-i7>
+From: Tobias Klauser <tklauser@distanz.ch>
+Subject: Re: [PATCHv3 2/2] serial: Add driver for the Altera UART
+Date: Mon, 29 Mar 2010 15:29:24 +0200
+Message-ID: <20100329132924.GA9489@distanz.ch>
+References: <cover.1267807169.git.klto@zhaw.ch> <15dc056891fb785001073bab4f9a0d0f3bf99af1.1267807169.git.klto@zhaw.ch> <a596efa5dc6130a27d045ea24174c792ee2f0bb4.1267807169.git.klto@zhaw.ch> <20100323145459.9894b1e6.akpm@linux-foundation.org> <20100324064747.GP21818@distanz.ch> <20100324070527.86d0b9b6.akpm@linux-foundation.org> <20100324162427.GQ21818@distanz.ch> <4BAAB431.3040202@wytron.com.tw>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-yw0-f198.google.com ([209.85.211.198]:49901 "EHLO
-	mail-yw0-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751109Ab0C2Mzy (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 29 Mar 2010 08:55:54 -0400
-In-Reply-To: <20100329150642.4a94e78a@feng-i7>
+Received: from symlink.to.noone.org ([85.10.207.172]:57342 "EHLO sym.noone.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750925Ab0C2N30 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 29 Mar 2010 09:29:26 -0400
+Content-Disposition: inline
+In-Reply-To: <4BAAB431.3040202@wytron.com.tw>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Feng Tang <feng.tang@intel.com>
-Cc: "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "greg@kroah.com" <greg@kroah.com>, "david-b@pacbell.net" <david-b@pacbell.net>, "grant.likely@secretlab.ca" <grant.likely@secretlab.ca>, "alan@lxorguk.ukuu.org.uk" <alan@lxorguk.ukuu.org.uk>, "spi-devel-general@lists.sourceforge.net" <spi-devel-general@lists.sourceforge.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Thomas Chou <thomas@wytron.com.tw>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-serial@vger.kernel.org, gregkh@suse.de, nios2-dev@sopc.et.ntust.edu.tw, linux-kernel@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-On Mon, Mar 29, 2010 at 9:06 AM, Feng Tang <feng.tang@intel.com> wrote:
-
-> Our platform is Intel Moorestown platform, and use a spi controller core
-> from Designware (drivers/spi/dw_*.c). I know the problem may probably be
-> caused by my setting, but the dw_spi driver works fine with our own
-> 3110 driver.
-
-I had a look at the dw_spi driver. The spi_transfer path queues some
-work to a worqueue that itself schedules a tasklet. I don't think this
-is good for latency, I won't bet that such an architecture could
-deliver good performance. Now I see why you needed to do only big fat
-SPI transfers. Anyway this doesn't justify the 2 seconds delay between
-chars coming in and going out through the max31x0 you are seeing. I
-will try to analyze what's going on. BTW is only input slow or output
-is sluggish too? The initial messages from the console are coming out
-fast? If you disable the MAX3110 for console but you use just as a
-normal terminal (set console=/dev/null in the kernel command line and
-add getty 115200 /dev/ttyMAX0 in iniitab) is the interaction with the
-system fine? Thanks for helping sorting out this.
-
+On 2010-03-25 at 01:54:09 +0100, Thomas Chou <thomas@wytron.com.tw> wrote:
+> On 03/25/2010 12:24 AM, Tobias Klauser wrote:
+>> On 2010-03-24 at 12:05:27 +0100, Andrew Morton<akpm@linux-foundation.org>  wrote:
+>>    
+>>> On Wed, 24 Mar 2010 07:47:47 +0100 Tobias Klauser<tklauser@distanz.ch>  wrote:
+>>>      
+>>>> On 2010-03-23 at 22:54:59 +0100, Andrew Morton<akpm@linux-foundation.org>  wrote:
+>>>>        
+>>>>> On Fri,  5 Mar 2010 17:52:23 +0100
+>>>>> Tobias Klauser<tklauser@distanz.ch>  wrote:
+>>>>>
+>>>>>          
+>>>>>> +	sigs |= (altera_uart_getppdcd(port->line) ? TIOCM_CD : 0);
+>>>>>> +	sigs |= (altera_uart_getppdtr(port->line) ? TIOCM_DTR : 0);
+>>>>>>            
+>>>>> We seem to be missing a few things here.
+>>>>>
+>>>>> drivers/serial/altera_uart.c: In function 'altera_uart_get_mctrl':
+>>>>> drivers/serial/altera_uart.c:100: error: implicit declaration of function 'altera_uart_getppdcd'
+>>>>> drivers/serial/altera_uart.c:101: error: implicit declaration of function 'altera_uart_getppdtr'
+>>>>> drivers/serial/altera_uart.c: In function 'altera_uart_set_mctrl':
+>>>>> drivers/serial/altera_uart.c:114: error: implicit declaration of function 'altera_uart_setppdtr'
+>>>>>          
+>>>> These should usually be declared in a board specific header. There were
+>>>> compatibility macros in altera_uart.c which defined them to NOPs in case
+>>>> the board header did not properly define them. But I remove them as per
+>>>> request by Alan Cox (Message-ID: 20100301181920.3952c3e7@lxorguk.ukuu.org.uk).
+>>>>
+>>>> Should we add them again (maybe to altera_uart.h)? Or would it be better
+>>>> to define a config symbol which is set in the board specific Kconfig and
+>>>> altera_uart depends on it?
+>>>>        
+>>> I guess the latter.
+>>>
+>>> There should have been a real implementation of these in the patchset -
+>>> otherwise the code can't be used or tested.  Confused.
+>>>      
+>> Sorry for the confusion.
 >>
->> yes but I think it's quite difficult to solve this problem in every
->> case. Console output is massively used only on boot when the user is
->> not supposed to type a lot.
->
-> It's difficult but not impossible, actually our driver checks every word
-> read back and handle it if it contains a valid data
->
-
-Of course it is possible, I just wanted to keep the max3100 a small
-clean driver. Unfortunately console and serial drivers are two
-different beings in the Linux kernel, but the max3100 implements the
-tx-rx in one indivisible instruction (that is slow compared to
-registers IO and has to be called in an preemptible contex for added
-fun).  To implement what you are saying we need:
-
-1) the console code has to check if the serial port associated to the
-same physical max3100 is up (console driver start their life much
-before serial ones).
-
-2) if yes send data to the tty associated to the serial driver.
-Locking is needed here.
-
-I will implement this ASAP.
-
->> Have you configured your SPI controller as LSB first somehow, haven't
->> you? BTW my platform is a quite usual ARM9 S3C2440 which is little
->> endian.
+>> The last patchset I submitted (with the functions removed from
+>> altera_uart.c) was tested on a local branch, where I added the macros to
+>> a global board specific header. I didn't include that one in the patch.
 >>
-> yeah, you hit the point that our spi controller is LSB naturally (not
-> configured to), here may need a check for whether to do a swap
->
+>> After looking at the code and it's history a bit closer (and also on the
+>> nios2 specific part) I realised that this macro was probably added
+>> because the driver was originally based on drivers/serial/mcf.c (the
+>> macros are present there too).
+>>
+>> Also there are currently no board configurations known to me that define
+>> these macros. So I'd suggest to remove the usage of these macros
+>> alltogether. We could still add them again (to the board specific part
+>> and with the config option then) in case there will be a board
+>> configuration implementing DTR/DCD lines on GPIOs.
+>>
+>> Could anyone on nios2-dev verify that there are currently no such board
+>> configurations?
+>>
+>> I'd remove the usage of the macros then and post an updated patch.
+>>    
+> Maybe we can add pointers to functions for the DCD/DTR in the struct  
+> altera_uart_platform_uart. Then board config file can define them if  
+> they implement these pins, NULL/0 otherwise.
 
-ok, I think the dw_spi driver has to be fixed.
+Unfortunately we then need to define them in struct altera_uart too and
+set them in the probe function using the platform data.
 
+For me that seems like a bit too much overhead just to support the
+possibility of someone defining these functions in the future. I'd
+prefer to get rid of the macros now for the mainline submission and then
+add it later if someone would actually use these DCD/DTR get/set
+functions. Hope that's OK for you too, Thomas.
 
--- 
-Christian Pellegrin, see http://www.evolware.org/chri/
-"Real Programmers don't play tennis, or any other sport which requires
-you to change clothes. Mountain climbing is OK, and Real Programmers
-wear their climbing boots to work in case a mountain should suddenly
-spring up in the middle of the computer room."
+-- Tobias
