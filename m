@@ -1,43 +1,94 @@
-From: Xiaofan Chen <xiaofanc@gmail.com>
-Subject: Re: Question in regard to generic USB Serial adapters
-Date: Mon, 29 Mar 2010 09:17:35 +0800
-Message-ID: <a276da401003281817w311c29cek772635357db17a88@mail.gmail.com>
-References: <21ed1c371003280630y15f55d7cja28f804b3c97fbf7@mail.gmail.com>
+From: Feng Tang <feng.tang@intel.com>
+Subject: Re: [PATCH v1 3/4] max3100: adds console support for MAX3100
+Date: Mon, 29 Mar 2010 10:48:38 +0800
+Message-ID: <20100329104838.49c18075@feng-i7>
+References: <1269340105-6503-1-git-send-email-chripell@fsfe.org>
+	<1269340170-6558-1-git-send-email-chripell@fsfe.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qy0-f188.google.com ([209.85.221.188]:59250 "EHLO
-	mail-qy0-f188.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755521Ab0C2BRh (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 28 Mar 2010 21:17:37 -0400
-Received: by qyk26 with SMTP id 26so596740qyk.19
-        for <linux-serial@vger.kernel.org>; Sun, 28 Mar 2010 18:17:35 -0700 (PDT)
-In-Reply-To: <21ed1c371003280630y15f55d7cja28f804b3c97fbf7@mail.gmail.com>
+Received: from mga09.intel.com ([134.134.136.24]:11185 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755553Ab0C2CoP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 28 Mar 2010 22:44:15 -0400
+In-Reply-To: <1269340170-6558-1-git-send-email-chripell@fsfe.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Manuel Jander <manuel.jander@gmail.com>
-Cc: linux-serial@vger.kernel.org
+Cc: "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "greg@kroah.com" <greg@kroah.com>, "david-b@pacbell.net" <david-b@pacbell.net>, "grant.likely@secretlab.ca" <grant.likely@secretlab.ca>, "alan@lxorguk.ukuu.org.uk" <alan@lxorguk.ukuu.org.uk>, "spi-devel-general@lists.sourceforge.net" <spi-devel-general@lists.sourceforge.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Christian Pellegrin <chripell@fsfe.org>
 
-On Sun, Mar 28, 2010 at 9:30 PM, Manuel Jander <manuel.jander@gmail.com> wrote:
-> Hi there,
->
-> I have an USB Analog to Digital converter which from the USB side
-> behaves like a generic USB serial device. I passed its Vendor and
-> Device ID as parameters to the generic USB Serial driver, and it
-> works. I would like to send a patch so that others can also use this
-> ADC device with Linux. Is this here the right place ? Or maybe an USB
-> related mailing list ?
+Hi,
 
->From what I see, people typically submit the patches to the linux-usb
-mailing list.
-http://vger.kernel.org/vger-lists.html#linux-usb
+I modified the code a little and run it on our HW platform, it really show
+some sigh of life: it can boots to console (the print format is not so good),
+I can input command and it execute correctly, but very slow, I type 3
+characters and it takes about 2 seconds to echo back on screen and start the
+execution, and after about 1 minute, the console hang there and input stopped
+to work.
 
-Eg: http://marc.info/?l=linux-usb&m=126901206619668&w=2
+I also have some comments inline.
 
-> The device is a "Conrad Electronic" Kit, manufactured by H-Tronic GmbH
+Thanks,
+Feng
 
 
+On Tue, 23 Mar 2010 18:29:30 +0800
+Christian Pellegrin <chripell@fsfe.org> wrote:
 
--- 
-Xiaofan http://mcuee.blogspot.com
+> This patch adds console support for the MAX3100 UART
+> (console=ttyMAX0,11500). The SPI subsystem and an
+
+115200?
+
+>  
+> +#ifdef CONFIG_SERIAL_MAX3100_CONSOLE
+> +
+> +static void max3100_console_work(struct work_struct *w)
+> +{
+> +	struct max3100_port *s = container_of(w, struct max3100_port,
+> +					      console_work);
+> +	unsigned long start;
+> +	u16 tx, rx;
+> +
+> +	while (s->console_head != s->console_tail &&
+> +	       (s->console_flags & MAX3100_SUSPENDING) == 0) {
+> +		start = jiffies;
+> +		do {
+> +			tx = MAX3100_RC;
+> +			max3100_sr(s, tx, &rx);
+> +		} while ((rx & MAX3100_T) == 0 &&
+> +			 !time_after(jiffies, start +
+> s->console_tout));
+> +		tx = s->console_buf[s->console_tail];
+> +		max3100_calc_parity(s, &tx);
+> +		tx |= MAX3100_WD | MAX3100_RTS;
+
+Does this imply to have to work with HW flow control? on my platform
+I have to remove the RTS bit to make it work.
+
+> +		max3100_sr(s, tx, &rx);
+
+It doesn't handle received characters here? If the console is printing out
+a bulk of message while user input some command, the command may be ignored.
+Myself have met the same problem in our driver.
+
+
+> +		s->console_tail = (s->console_tail + 1) %
+> CONSOLE_BUF_SIZE;
+> +	}
+> +}
+> +
+> +static void max3100_console_putchar(struct uart_port *port, int ch)
+> +{
+> +	struct max3100_port *s = to_max3100_port(port);
+> +	int next = (s->console_head + 1) % CONSOLE_BUF_SIZE;
+> +
+> +	if (next != s->console_tail) {
+> +		s->console_buf[next] = ch;
+> +		s->console_head = next;
+> +	}
+
+Also I saw max3100_sr() uses cpu_to_be16() and be16_to_cpu(), is it really
+necessary, our platform is little-endian(x86), and I have to disable them
+to make the code work. Is your test platform big-endian?
+
