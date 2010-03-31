@@ -1,688 +1,114 @@
-From: Tobias Klauser <tklauser@distanz.ch>
-Subject: [PATCH v4 2/2] serial: Add driver for the Altera UART
-Date: Tue, 30 Mar 2010 16:54:42 +0200
-Message-ID: <4aaf40955bf19f8dbf0afae5d1cb602fc6e8bf0b.1269960350.git.tklauser@distanz.ch>
-References: <cover.1269960350.git.tklauser@distanz.ch>
- <7ee8095973eb373d34a31ca3875fa7b726bdf552.1269960350.git.tklauser@distanz.ch>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <7ee8095973eb373d34a31ca3875fa7b726bdf552.1269960350.git.tklauser@distanz.ch>
-In-Reply-To: <cover.1269960350.git.tklauser@distanz.ch>
-References: <cover.1269960350.git.tklauser@distanz.ch>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
-Cc: Tobias Klauser <tklauser@distanz.ch>, gregkh@suse.de, nios2-dev@sopc.et.ntust.edu.tw, linux-kernel@vger.kernel.org
+From: Grant Likely <grant.likely@secretlab.ca>
+Subject: Re: [PATCH v1 3/4] max3100: adds console support for MAX3100
+Date: Wed, 31 Mar 2010 00:04:44 -0600
+Message-ID: <v2mfa686aa41003302304rd966efe0k204d78aef793f75c@mail.gmail.com>
+References: <1269340105-6503-1-git-send-email-chripell@fsfe.org>
+	<1269340170-6558-1-git-send-email-chripell@fsfe.org> <20100329104838.49c18075@feng-i7>
+	<cabda6421003282311x78051e1eq38ada68f2553609e@mail.gmail.com>
+	<20100329150642.4a94e78a@feng-i7> <cabda6421003290555k70d13168y4beba2c3ae6e2ece@mail.gmail.com>
+	<20100330101445.5c64dedb@feng-i7> <cabda6421003292349m2dd6125cp2bcc1060f5aa8741@mail.gmail.com>
+	<20100330094637.325d3fb9@lxorguk.ukuu.org.uk> <cabda6421003300503t4fc7d3c4tc51167611180fef9@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-gw0-f46.google.com ([74.125.83.46]:53969 "EHLO
+	mail-gw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932357Ab0CaGFF (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 31 Mar 2010 02:05:05 -0400
+Received: by gwaa18 with SMTP id a18so5201223gwa.19
+        for <linux-serial@vger.kernel.org>; Tue, 30 Mar 2010 23:05:04 -0700 (PDT)
+In-Reply-To: <cabda6421003300503t4fc7d3c4tc51167611180fef9@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: christian pellegrin <chripell@fsfe.org>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Feng Tang <feng.tang@intel.com>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "greg@kroah.com" <greg@kroah.com>, "david-b@pacbell.net" <david-b@pacbell.net>, "spi-devel-general@lists.sourceforge.net" <spi-devel-general@lists.sourceforge.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-Add an UART driver for the UART component available as a SOPC (System on
-Programmable Chip) component for Altera FPGAs.
+On Tue, Mar 30, 2010 at 6:03 AM, christian pellegrin <chripell@fsfe.org> wrote:
+> On Tue, Mar 30, 2010 at 10:46 AM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
+>>
+>> There I would partly disagree. Fixing the spi driver clearly makes sense
+>> but the serial driver should be batching better. Is there a reason the
+>> driver couldn't adjust the size based upon the tty speed when getting a
+>> termios request ?
+>
+> Just a small note for those who don't know max31x0. There are just 2
+> instructions to tx/rx data: simple data rx (in which we read one data
+> from the fifo (the data is valid if R status bit is set), control
+> lines (CTS) and status bits) and a combined tx/rx (like before but we
+> also send one byte (if the T status bit the char will be accepted) and
+> set control lines (RTS)). Every of these instructions is 2 bytes long.
+> It's a full SPI message (so you have to assert CS before and de-assert
+> it afterwards to make it work). TX buffer is just 1 byte deep, RX one
+> is 8 bytes.
 
-Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
----
- drivers/serial/Kconfig       |   31 +++
- drivers/serial/Makefile      |    1 +
- drivers/serial/altera_uart.c |  570 ++++++++++++++++++++++++++++++++++++++++++
- include/linux/altera_uart.h  |   14 +
- include/linux/serial_core.h  |    1 +
- 5 files changed, 617 insertions(+), 0 deletions(-)
- create mode 100644 drivers/serial/altera_uart.c
- create mode 100644 include/linux/altera_uart.h
+Is checking the T bit really necessary if Linux instead tracks the
+timing between bytes internally?  ie.  If the driver uses an hrtimer
+to schedule the submission of SPI transfers such that the time between
+SPI submissions is always greater than the time required for a serial
+character to be transmitted?
 
-diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
-index b584710..e17d6d1 100644
---- a/drivers/serial/Kconfig
-+++ b/drivers/serial/Kconfig
-@@ -1527,4 +1527,35 @@ config SERIAL_ALTERA_JTAGUART_CONSOLE_BYPASS
- 	  Bypass console output and keep going even if there is no
- 	  JTAG terminal connection with the host.
- 
-+config SERIAL_ALTERA_UART
-+	bool "Altera UART support"
-+	select SERIAL_CORE
-+	help
-+	  This driver supports the Altera softcore UART port.
-+
-+config SERIAL_ALTERA_UART_MAXPORTS
-+	int "Maximum number of Altera UART ports"
-+	depends on SERIAL_ALTERA_UART
-+	default 4
-+	help
-+	  This setting lets you define the maximum number of the Altera
-+	  UART ports. The usual default varies from board to board, and
-+	  this setting is a way of catering for that.
-+
-+config SERIAL_ALTERA_UART_BAUDRATE
-+	int "Default baudrate for Altera UART ports"
-+	depends on SERIAL_ALTERA_UART
-+	default 115200
-+	help
-+	  This setting lets you define what the default baudrate is for the
-+	  Altera UART ports. The usual default varies from board to board,
-+	  and this setting is a way of catering for that.
-+
-+config SERIAL_ALTERA_UART_CONSOLE
-+	bool "Altera UART console support"
-+	depends on SERIAL_ALTERA_UART
-+	select SERIAL_CORE_CONSOLE
-+	help
-+	  Enable a Altera UART port to be the system console.
-+
- endmenu
-diff --git a/drivers/serial/Makefile b/drivers/serial/Makefile
-index a4b748f..733a19a 100644
---- a/drivers/serial/Makefile
-+++ b/drivers/serial/Makefile
-@@ -84,3 +84,4 @@ obj-$(CONFIG_SERIAL_QE) += ucc_uart.o
- obj-$(CONFIG_SERIAL_TIMBERDALE)	+= timbuart.o
- obj-$(CONFIG_SERIAL_GRLIB_GAISLER_APBUART) += apbuart.o
- obj-$(CONFIG_SERIAL_ALTERA_JTAGUART) += altera_jtaguart.o
-+obj-$(CONFIG_SERIAL_ALTERA_UART) += altera_uart.o
-diff --git a/drivers/serial/altera_uart.c b/drivers/serial/altera_uart.c
-new file mode 100644
-index 0000000..bcee156
---- /dev/null
-+++ b/drivers/serial/altera_uart.c
-@@ -0,0 +1,570 @@
-+/*
-+ * altera_uart.c -- Altera UART driver
-+ *
-+ * Based on mcf.c -- Freescale ColdFire UART driver
-+ *
-+ * (C) Copyright 2003-2007, Greg Ungerer <gerg@snapgear.com>
-+ * (C) Copyright 2008, Thomas Chou <thomas@wytron.com.tw>
-+ * (C) Copyright 2010, Tobias Klauser <tklauser@distanz.ch>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/init.h>
-+#include <linux/interrupt.h>
-+#include <linux/module.h>
-+#include <linux/console.h>
-+#include <linux/tty.h>
-+#include <linux/tty_flip.h>
-+#include <linux/serial.h>
-+#include <linux/serial_core.h>
-+#include <linux/platform_device.h>
-+#include <linux/io.h>
-+#include <linux/altera_uart.h>
-+
-+#define DRV_NAME "altera_uart"
-+
-+/*
-+ * Altera UART register definitions according to the Nios UART datasheet:
-+ * http://www.altera.com/literature/ds/ds_nios_uart.pdf
-+ */
-+
-+#define ALTERA_UART_SIZE		32
-+
-+#define ALTERA_UART_RXDATA_REG		0
-+#define ALTERA_UART_TXDATA_REG		4
-+#define ALTERA_UART_STATUS_REG		8
-+#define ALTERA_UART_CONTROL_REG		12
-+#define ALTERA_UART_DIVISOR_REG		16
-+#define ALTERA_UART_EOP_REG		20
-+
-+#define ALTERA_UART_STATUS_PE_MSK	0x0001	/* parity error */
-+#define ALTERA_UART_STATUS_FE_MSK	0x0002	/* framing error */
-+#define ALTERA_UART_STATUS_BRK_MSK	0x0004	/* break */
-+#define ALTERA_UART_STATUS_ROE_MSK	0x0008	/* RX overrun error */
-+#define ALTERA_UART_STATUS_TOE_MSK	0x0010	/* TX overrun error */
-+#define ALTERA_UART_STATUS_TMT_MSK	0x0020	/* TX shift register state */
-+#define ALTERA_UART_STATUS_TRDY_MSK	0x0040	/* TX ready */
-+#define ALTERA_UART_STATUS_RRDY_MSK	0x0080	/* RX ready */
-+#define ALTERA_UART_STATUS_E_MSK	0x0100	/* exception condition */
-+#define ALTERA_UART_STATUS_DCTS_MSK	0x0400	/* CTS logic-level change */
-+#define ALTERA_UART_STATUS_CTS_MSK	0x0800	/* CTS logic state */
-+#define ALTERA_UART_STATUS_EOP_MSK	0x1000	/* EOP written/read */
-+
-+						/* Enable interrupt on... */
-+#define ALTERA_UART_CONTROL_PE_MSK	0x0001	/* ...parity error */
-+#define ALTERA_UART_CONTROL_FE_MSK	0x0002	/* ...framing error */
-+#define ALTERA_UART_CONTROL_BRK_MSK	0x0004	/* ...break */
-+#define ALTERA_UART_CONTROL_ROE_MSK	0x0008	/* ...RX overrun */
-+#define ALTERA_UART_CONTROL_TOE_MSK	0x0010	/* ...TX overrun */
-+#define ALTERA_UART_CONTROL_TMT_MSK	0x0020	/* ...TX shift register empty */
-+#define ALTERA_UART_CONTROL_TRDY_MSK	0x0040	/* ...TX ready */
-+#define ALTERA_UART_CONTROL_RRDY_MSK	0x0080	/* ...RX ready */
-+#define ALTERA_UART_CONTROL_E_MSK	0x0100	/* ...exception*/
-+
-+#define ALTERA_UART_CONTROL_TRBK_MSK	0x0200	/* TX break */
-+#define ALTERA_UART_CONTROL_DCTS_MSK	0x0400	/* Interrupt on CTS change */
-+#define ALTERA_UART_CONTROL_RTS_MSK	0x0800	/* RTS signal */
-+#define ALTERA_UART_CONTROL_EOP_MSK	0x1000	/* Interrupt on EOP */
-+
-+/*
-+ * Local per-uart structure.
-+ */
-+struct altera_uart {
-+	struct uart_port port;
-+	unsigned int sigs;	/* Local copy of line sigs */
-+	unsigned short imr;	/* Local IMR mirror */
-+};
-+
-+static unsigned int altera_uart_tx_empty(struct uart_port *port)
-+{
-+	return (readl(port->membase + ALTERA_UART_STATUS_REG) &
-+		ALTERA_UART_STATUS_TMT_MSK) ? TIOCSER_TEMT : 0;
-+}
-+
-+static unsigned int altera_uart_get_mctrl(struct uart_port *port)
-+{
-+	struct altera_uart *pp = container_of(port, struct altera_uart, port);
-+	unsigned long flags;
-+	unsigned int sigs;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	sigs =
-+	    (readl(port->membase + ALTERA_UART_STATUS_REG) &
-+	     ALTERA_UART_STATUS_CTS_MSK) ? TIOCM_CTS : 0;
-+	sigs |= (pp->sigs & TIOCM_RTS);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+
-+	return sigs;
-+}
-+
-+static void altera_uart_set_mctrl(struct uart_port *port, unsigned int sigs)
-+{
-+	struct altera_uart *pp = container_of(port, struct altera_uart, port);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	pp->sigs = sigs;
-+	if (sigs & TIOCM_RTS)
-+		pp->imr |= ALTERA_UART_CONTROL_RTS_MSK;
-+	else
-+		pp->imr &= ~ALTERA_UART_CONTROL_RTS_MSK;
-+	writel(pp->imr, port->membase + ALTERA_UART_CONTROL_REG);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
-+static void altera_uart_start_tx(struct uart_port *port)
-+{
-+	struct altera_uart *pp = container_of(port, struct altera_uart, port);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	pp->imr |= ALTERA_UART_CONTROL_TRDY_MSK;
-+	writel(pp->imr, port->membase + ALTERA_UART_CONTROL_REG);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
-+static void altera_uart_stop_tx(struct uart_port *port)
-+{
-+	struct altera_uart *pp = container_of(port, struct altera_uart, port);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	pp->imr &= ~ALTERA_UART_CONTROL_TRDY_MSK;
-+	writel(pp->imr, port->membase + ALTERA_UART_CONTROL_REG);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
-+static void altera_uart_stop_rx(struct uart_port *port)
-+{
-+	struct altera_uart *pp = container_of(port, struct altera_uart, port);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	pp->imr &= ~ALTERA_UART_CONTROL_RRDY_MSK;
-+	writel(pp->imr, port->membase + ALTERA_UART_CONTROL_REG);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
-+static void altera_uart_break_ctl(struct uart_port *port, int break_state)
-+{
-+	struct altera_uart *pp = container_of(port, struct altera_uart, port);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	if (break_state == -1)
-+		pp->imr |= ALTERA_UART_CONTROL_TRBK_MSK;
-+	else
-+		pp->imr &= ~ALTERA_UART_CONTROL_TRBK_MSK;
-+	writel(pp->imr, port->membase + ALTERA_UART_CONTROL_REG);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
-+static void altera_uart_enable_ms(struct uart_port *port)
-+{
-+}
-+
-+static void altera_uart_set_termios(struct uart_port *port,
-+				    struct ktermios *termios,
-+				    struct ktermios *old)
-+{
-+	unsigned long flags;
-+	unsigned int baud, baudclk;
-+
-+	baud = uart_get_baud_rate(port, termios, old, 0, 4000000);
-+	baudclk = port->uartclk / baud;
-+
-+	if (old)
-+		tty_termios_copy_hw(termios, old);
-+	tty_termios_encode_baud_rate(termios, baud, baud);
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	writel(baudclk, port->membase + ALTERA_UART_DIVISOR_REG);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
-+static void altera_uart_rx_chars(struct altera_uart *pp)
-+{
-+	struct uart_port *port = &pp->port;
-+	unsigned char ch, flag;
-+	unsigned short status;
-+
-+	while ((status = readl(port->membase + ALTERA_UART_STATUS_REG)) &
-+	       ALTERA_UART_STATUS_RRDY_MSK) {
-+		ch = readl(port->membase + ALTERA_UART_RXDATA_REG);
-+		flag = TTY_NORMAL;
-+		port->icount.rx++;
-+
-+		if (status & ALTERA_UART_STATUS_E_MSK) {
-+			writel(status, port->membase + ALTERA_UART_STATUS_REG);
-+
-+			if (status & ALTERA_UART_STATUS_BRK_MSK) {
-+				port->icount.brk++;
-+				if (uart_handle_break(port))
-+					continue;
-+			} else if (status & ALTERA_UART_STATUS_PE_MSK) {
-+				port->icount.parity++;
-+			} else if (status & ALTERA_UART_STATUS_ROE_MSK) {
-+				port->icount.overrun++;
-+			} else if (status & ALTERA_UART_STATUS_FE_MSK) {
-+				port->icount.frame++;
-+			}
-+
-+			status &= port->read_status_mask;
-+
-+			if (status & ALTERA_UART_STATUS_BRK_MSK)
-+				flag = TTY_BREAK;
-+			else if (status & ALTERA_UART_STATUS_PE_MSK)
-+				flag = TTY_PARITY;
-+			else if (status & ALTERA_UART_STATUS_FE_MSK)
-+				flag = TTY_FRAME;
-+		}
-+
-+		if (uart_handle_sysrq_char(port, ch))
-+			continue;
-+		uart_insert_char(port, status, ALTERA_UART_STATUS_ROE_MSK, ch,
-+				 flag);
-+	}
-+
-+	tty_flip_buffer_push(port->state->port.tty);
-+}
-+
-+static void altera_uart_tx_chars(struct altera_uart *pp)
-+{
-+	struct uart_port *port = &pp->port;
-+	struct circ_buf *xmit = &port->state->xmit;
-+
-+	if (port->x_char) {
-+		/* Send special char - probably flow control */
-+		writel(port->x_char, port->membase + ALTERA_UART_TXDATA_REG);
-+		port->x_char = 0;
-+		port->icount.tx++;
-+		return;
-+	}
-+
-+	while (readl(port->membase + ALTERA_UART_STATUS_REG) &
-+	       ALTERA_UART_STATUS_TRDY_MSK) {
-+		if (xmit->head == xmit->tail)
-+			break;
-+		writel(xmit->buf[xmit->tail],
-+		       port->membase + ALTERA_UART_TXDATA_REG);
-+		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-+		port->icount.tx++;
-+	}
-+
-+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-+		uart_write_wakeup(port);
-+
-+	if (xmit->head == xmit->tail) {
-+		pp->imr &= ~ALTERA_UART_CONTROL_TRDY_MSK;
-+		writel(pp->imr, port->membase + ALTERA_UART_CONTROL_REG);
-+	}
-+}
-+
-+static irqreturn_t altera_uart_interrupt(int irq, void *data)
-+{
-+	struct uart_port *port = data;
-+	struct altera_uart *pp = container_of(port, struct altera_uart, port);
-+	unsigned int isr;
-+
-+	isr = readl(port->membase + ALTERA_UART_STATUS_REG) & pp->imr;
-+	if (isr & ALTERA_UART_STATUS_RRDY_MSK)
-+		altera_uart_rx_chars(pp);
-+	if (isr & ALTERA_UART_STATUS_TRDY_MSK)
-+		altera_uart_tx_chars(pp);
-+	return IRQ_RETVAL(isr);
-+}
-+
-+static void altera_uart_config_port(struct uart_port *port, int flags)
-+{
-+	port->type = PORT_ALTERA_UART;
-+
-+	/* Clear mask, so no surprise interrupts. */
-+	writel(0, port->membase + ALTERA_UART_CONTROL_REG);
-+	/* Clear status register */
-+	writel(0, port->membase + ALTERA_UART_STATUS_REG);
-+}
-+
-+static int altera_uart_startup(struct uart_port *port)
-+{
-+	struct altera_uart *pp = container_of(port, struct altera_uart, port);
-+	unsigned long flags;
-+	int ret;
-+
-+	ret = request_irq(port->irq, altera_uart_interrupt, IRQF_DISABLED,
-+			DRV_NAME, port);
-+	if (ret) {
-+		pr_err(DRV_NAME ": unable to attach Altera UART %d "
-+		       "interrupt vector=%d\n", port->line, port->irq);
-+		return ret;
-+	}
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+
-+	/* Enable RX interrupts now */
-+	pp->imr = ALTERA_UART_CONTROL_RRDY_MSK;
-+	writel(pp->imr, port->membase + ALTERA_UART_CONTROL_REG);
-+
-+	spin_unlock_irqrestore(&port->lock, flags);
-+
-+	return 0;
-+}
-+
-+static void altera_uart_shutdown(struct uart_port *port)
-+{
-+	struct altera_uart *pp = container_of(port, struct altera_uart, port);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+
-+	/* Disable all interrupts now */
-+	pp->imr = 0;
-+	writel(pp->imr, port->membase + ALTERA_UART_CONTROL_REG);
-+
-+	spin_unlock_irqrestore(&port->lock, flags);
-+
-+	free_irq(port->irq, port);
-+}
-+
-+static const char *altera_uart_type(struct uart_port *port)
-+{
-+	return (port->type == PORT_ALTERA_UART) ? "Altera UART" : NULL;
-+}
-+
-+static int altera_uart_request_port(struct uart_port *port)
-+{
-+	/* UARTs always present */
-+	return 0;
-+}
-+
-+static void altera_uart_release_port(struct uart_port *port)
-+{
-+	/* Nothing to release... */
-+}
-+
-+static int altera_uart_verify_port(struct uart_port *port,
-+				   struct serial_struct *ser)
-+{
-+	if ((ser->type != PORT_UNKNOWN) && (ser->type != PORT_ALTERA_UART))
-+		return -EINVAL;
-+	return 0;
-+}
-+
-+/*
-+ *	Define the basic serial functions we support.
-+ */
-+static struct uart_ops altera_uart_ops = {
-+	.tx_empty	= altera_uart_tx_empty,
-+	.get_mctrl	= altera_uart_get_mctrl,
-+	.set_mctrl	= altera_uart_set_mctrl,
-+	.start_tx	= altera_uart_start_tx,
-+	.stop_tx	= altera_uart_stop_tx,
-+	.stop_rx	= altera_uart_stop_rx,
-+	.enable_ms	= altera_uart_enable_ms,
-+	.break_ctl	= altera_uart_break_ctl,
-+	.startup	= altera_uart_startup,
-+	.shutdown	= altera_uart_shutdown,
-+	.set_termios	= altera_uart_set_termios,
-+	.type		= altera_uart_type,
-+	.request_port	= altera_uart_request_port,
-+	.release_port	= altera_uart_release_port,
-+	.config_port	= altera_uart_config_port,
-+	.verify_port	= altera_uart_verify_port,
-+};
-+
-+static struct altera_uart altera_uart_ports[CONFIG_SERIAL_ALTERA_UART_MAXPORTS];
-+
-+#if defined(CONFIG_SERIAL_ALTERA_UART_CONSOLE)
-+
-+int __init early_altera_uart_setup(struct altera_uart_platform_uart *platp)
-+{
-+	struct uart_port *port;
-+	int i;
-+
-+	for (i = 0; i < CONFIG_SERIAL_ALTERA_UART_MAXPORTS && platp[i].mapbase; i++) {
-+		port = &altera_uart_ports[i].port;
-+
-+		port->line = i;
-+		port->type = PORT_ALTERA_UART;
-+		port->mapbase = platp[i].mapbase;
-+		port->membase = ioremap(port->mapbase, ALTERA_UART_SIZE);
-+		port->iotype = SERIAL_IO_MEM;
-+		port->irq = platp[i].irq;
-+		port->uartclk = platp[i].uartclk;
-+		port->flags = ASYNC_BOOT_AUTOCONF;
-+		port->ops = &altera_uart_ops;
-+	}
-+
-+	return 0;
-+}
-+
-+static void altera_uart_console_putc(struct console *co, const char c)
-+{
-+	struct uart_port *port = &(altera_uart_ports + co->index)->port;
-+	int i;
-+
-+	for (i = 0; i < 0x10000; i++) {
-+		if (readl(port->membase + ALTERA_UART_STATUS_REG) &
-+		    ALTERA_UART_STATUS_TRDY_MSK)
-+			break;
-+	}
-+	writel(c, port->membase + ALTERA_UART_TXDATA_REG);
-+	for (i = 0; i < 0x10000; i++) {
-+		if (readl(port->membase + ALTERA_UART_STATUS_REG) &
-+		    ALTERA_UART_STATUS_TRDY_MSK)
-+			break;
-+	}
-+}
-+
-+static void altera_uart_console_write(struct console *co, const char *s,
-+				      unsigned int count)
-+{
-+	for (; count; count--, s++) {
-+		altera_uart_console_putc(co, *s);
-+		if (*s == '\n')
-+			altera_uart_console_putc(co, '\r');
-+	}
-+}
-+
-+static int __init altera_uart_console_setup(struct console *co, char *options)
-+{
-+	struct uart_port *port;
-+	int baud = CONFIG_SERIAL_ALTERA_UART_BAUDRATE;
-+	int bits = 8;
-+	int parity = 'n';
-+	int flow = 'n';
-+
-+	if (co->index < 0 || co->index >= CONFIG_SERIAL_ALTERA_UART_MAXPORTS)
-+		return -EINVAL;
-+	port = &altera_uart_ports[co->index].port;
-+	if (port->membase == 0)
-+		return -ENODEV;
-+
-+	if (options)
-+		uart_parse_options(options, &baud, &parity, &bits, &flow);
-+
-+	return uart_set_options(port, co, baud, parity, bits, flow);
-+}
-+
-+static struct uart_driver altera_uart_driver;
-+
-+static struct console altera_uart_console = {
-+	.name	= "ttyS",
-+	.write	= altera_uart_console_write,
-+	.device	= uart_console_device,
-+	.setup	= altera_uart_console_setup,
-+	.flags	= CON_PRINTBUFFER,
-+	.index	= -1,
-+	.data	= &altera_uart_driver,
-+};
-+
-+static int __init altera_uart_console_init(void)
-+{
-+	register_console(&altera_uart_console);
-+	return 0;
-+}
-+
-+console_initcall(altera_uart_console_init);
-+
-+#define	ALTERA_UART_CONSOLE	(&altera_uart_console)
-+
-+#else
-+
-+#define	ALTERA_UART_CONSOLE	NULL
-+
-+#endif /* CONFIG_ALTERA_UART_CONSOLE */
-+
-+/*
-+ *	Define the altera_uart UART driver structure.
-+ */
-+static struct uart_driver altera_uart_driver = {
-+	.owner		= THIS_MODULE,
-+	.driver_name	= DRV_NAME,
-+	.dev_name	= "ttyS",
-+	.major		= TTY_MAJOR,
-+	.minor		= 64,
-+	.nr		= CONFIG_SERIAL_ALTERA_UART_MAXPORTS,
-+	.cons		= ALTERA_UART_CONSOLE,
-+};
-+
-+static int __devinit altera_uart_probe(struct platform_device *pdev)
-+{
-+	struct altera_uart_platform_uart *platp = pdev->dev.platform_data;
-+	struct uart_port *port;
-+	int i;
-+
-+	for (i = 0; i < CONFIG_SERIAL_ALTERA_UART_MAXPORTS && platp[i].mapbase; i++) {
-+		port = &altera_uart_ports[i].port;
-+
-+		port->line = i;
-+		port->type = PORT_ALTERA_UART;
-+		port->mapbase = platp[i].mapbase;
-+		port->membase = ioremap(port->mapbase, ALTERA_UART_SIZE);
-+		port->iotype = SERIAL_IO_MEM;
-+		port->irq = platp[i].irq;
-+		port->uartclk = platp[i].uartclk;
-+		port->ops = &altera_uart_ops;
-+		port->flags = ASYNC_BOOT_AUTOCONF;
-+
-+		uart_add_one_port(&altera_uart_driver, port);
-+	}
-+
-+	return 0;
-+}
-+
-+static int altera_uart_remove(struct platform_device *pdev)
-+{
-+	struct uart_port *port;
-+	int i;
-+
-+	for (i = 0; i < CONFIG_SERIAL_ALTERA_UART_MAXPORTS; i++) {
-+		port = &altera_uart_ports[i].port;
-+		if (port)
-+			uart_remove_one_port(&altera_uart_driver, port);
-+	}
-+
-+	return 0;
-+}
-+
-+static struct platform_driver altera_uart_platform_driver = {
-+	.probe	= altera_uart_probe,
-+	.remove	= __devexit_p(altera_uart_remove),
-+	.driver	= {
-+		.name	= DRV_NAME,
-+		.owner	= THIS_MODULE,
-+		.pm	= NULL,
-+	},
-+};
-+
-+static int __init altera_uart_init(void)
-+{
-+	int rc;
-+
-+	rc = uart_register_driver(&altera_uart_driver);
-+	if (rc)
-+		return rc;
-+	rc = platform_driver_register(&altera_uart_platform_driver);
-+	if (rc) {
-+		uart_unregister_driver(&altera_uart_driver);
-+		return rc;
-+	}
-+	return 0;
-+}
-+
-+static void __exit altera_uart_exit(void)
-+{
-+	platform_driver_unregister(&altera_uart_platform_driver);
-+	uart_unregister_driver(&altera_uart_driver);
-+}
-+
-+module_init(altera_uart_init);
-+module_exit(altera_uart_exit);
-+
-+MODULE_DESCRIPTION("Altera UART driver");
-+MODULE_AUTHOR("Thomas Chou <thomas@wytron.com.tw>");
-+MODULE_LICENSE("GPL");
-+MODULE_ALIAS("platform:" DRV_NAME);
-diff --git a/include/linux/altera_uart.h b/include/linux/altera_uart.h
-new file mode 100644
-index 0000000..8d44106
---- /dev/null
-+++ b/include/linux/altera_uart.h
-@@ -0,0 +1,14 @@
-+/*
-+ * altera_uart.h -- Altera UART driver defines.
-+ */
-+
-+#ifndef	__ALTUART_H
-+#define	__ALTUART_H
-+
-+struct altera_uart_platform_uart {
-+	unsigned long mapbase;	/* Physical address base */
-+	unsigned int irq;	/* Interrupt vector */
-+	unsigned int uartclk;	/* UART clock rate */
-+};
-+
-+#endif /* __ALTUART_H */
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index ade1536..09d0d2d 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -184,6 +184,7 @@
- 
- /* Altera UARTs */
- #define PORT_ALTERA_JTAGUART	91
-+#define PORT_ALTERA_UART	92
- 
- #ifdef __KERNEL__
- 
+You may be able to set this up into a free-running state machine.
+Submit the SPI transfers asynchronously, and use a callback to be
+notified when the transfer is completed.  In most cases, the transfer
+will be completed every time, but if it is not, then the state machine
+can just wait another time period before submitting.  By doing it this
+way, all the work can be handled at the atomic context without any
+workqueues or threaded IRQ handlers.
+
+Here's some draft )completely untested and uncompiled) code for the
+bottom half:  The time rate would be calculated when the baud rate is
+set.  I've glossed over a bunch of details and corner cases, but you
+get the idea...
+
+void max3100_spi_complete(void *__max3100)
+{
+  struct max3100_port *max3100 = __max3100;
+  spin_lock(&max3100->lock);
+  max3100->busy = 0;
+  /* Process received characters here.  Schedule a workqueue if
+needed.  A ring buffer would probably work well. */
+  spin_unlock(&max3100->lock);
+}
+
+enum hrtimer_restart max3100_hrtimer_callback( struct hrtimer *timer )
+{
+  struct max3100_port *max3100 = container_of(timer, struct
+max3100_port, hrtimer);
+
+  if (max3100->busy)
+    return HRTIMER_RESTART; /* still busy, try again later */
+
+  spin_lock(&max3100->lock);
+  /* The following 7 lines can probably actually be done once at
+driver probe time */
+  spi_message_init(&max3100->spi_msg);
+  spi_message_add_tail(&max3100->spi_tran);
+  max3100->spi_tran.tx_buf = mac3100->tx_buf;
+  max3100->spi_tran.rx_buf = mac3100->rx_buf;
+  max3100->spi_tran.len = 2;  /* can this be larger to receive
+multiple bytes in 1 transfer? */
+  max3100->spi_msg.complete = max3100_spi_complete;
+  max3100->spi_msg.context = max3100;
+  /* Alternately, a bunch of transfers could be queued up with only
+the first actual
+   * containing tx data.  The rest would be for RX */
+
+  if (&max3100->tx_pending) {
+    /* a ring buffer may be a better idea here */
+    max3100->tx_buf[0] = max3100->tx_pending_data;
+    max3100->tx_pending = 0;
+  }
+  spi_async(&max3100->spi_msg);
+  max3100->busy = 1;  /* cleared by the completion callback */
+
+  spin_unlock(&max3100->lock);
+
+  return HRTIMER_RESTART;
+}
+
+g.
+
 -- 
-1.6.3.3
+Grant Likely, B.Sc., P.Eng.
+Secret Lab Technologies Ltd.
