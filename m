@@ -1,60 +1,54 @@
-From: John Linn <John.Linn@xilinx.com>
-Subject: RE: [PATCH] [V4] uartlite: move from byte accesses to word accesses
-Date: Wed, 7 Apr 2010 13:44:42 -0600
-Message-ID: <eb425cb0-e380-4d2a-a43d-ef2996a01688@VA3EHSMHS024.ehs.local>
-References: <0c9c4833-e369-4c21-9def-b53100f885fa@SG2EHSMHS007.ehs.local> <874ojnqc9p.fsf@macbook.be.48ers.dk>
+From: christian pellegrin <chripell@fsfe.org>
+Subject: Re: [PATCH v1 3/4] max3100: adds console support for MAX3100
+Date: Thu, 8 Apr 2010 11:31:09 +0200
+Message-ID: <v2ocabda6421004080231r7b7a734ao9fce206a82bf944b@mail.gmail.com>
+References: <1269340105-6503-1-git-send-email-chripell@fsfe.org>
+	 <1269340170-6558-1-git-send-email-chripell@fsfe.org>
+	 <20100329104838.49c18075@feng-i7>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from va3ehsobe001.messaging.microsoft.com ([216.32.180.11]:6463 "EHLO
-	VA3EHSOBE001.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1750741Ab0DGTpm convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 7 Apr 2010 15:45:42 -0400
-Content-Class: urn:content-classes:message
-In-Reply-To: <874ojnqc9p.fsf@macbook.be.48ers.dk>
+Received: from mail-bw0-f209.google.com ([209.85.218.209]:60831 "EHLO
+	mail-bw0-f209.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751904Ab0DHJbL convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 8 Apr 2010 05:31:11 -0400
+In-Reply-To: <20100329104838.49c18075@feng-i7>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Korsgaard <jacmet@sunsite.dk>
-Cc: linux-serial@vger.kernel.org, grant.likely@secretlab.ca, michal.simek@petalogix.com, gregkh@suse.de, john.williams@petalogix.com
+To: Feng Tang <feng.tang@intel.com>
+Cc: "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "greg@kroah.com" <greg@kroah.com>, "david-b@pacbell.net" <david-b@pacbell.net>, "grant.likely@secretlab.ca" <grant.likely@secretlab.ca>, "alan@lxorguk.ukuu.org.uk" <alan@lxorguk.ukuu.org.uk>, "spi-devel-general@lists.sourceforge.net" <spi-devel-general@lists.sourceforge.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-> -----Original Message-----
-> From: Peter Korsgaard [mailto:jacmet@gmail.com] On Behalf Of Peter
-Korsgaard
-> Sent: Wednesday, April 07, 2010 1:44 PM
-> To: John Linn
-> Cc: linux-serial@vger.kernel.org; grant.likely@secretlab.ca;
-michal.simek@petalogix.com;
-> gregkh@suse.de; john.williams@petalogix.com
-> Subject: Re: [PATCH] [V4] uartlite: move from byte accesses to word
-accesses
-> 
-> >>>>> "John" == John Linn <john.linn@xilinx.com> writes:
-> 
->  John> Byte accesses for I/O devices in Xilinx IP is going to be less
->  John> desired in the future such that the driver is being changed to
->  John> use 32 bit accesses.
-> 
->  John> This change facilitates using the uartlite IP over a PCIe bus
->  John> which only allows 32 bit accesses.
-> 
->  John> Signed-off-by: John Linn <john.linn@xilinx.com>
->  John> Tested-by: Michal Simek <monstr@monstr.eu>
->  John> Acked-by: Grant Likely <grant.likely@secretlab.ca>
-> 
-> Looks good,
-> 
-> Acked-by: Peter Korsgaard <jacmet@sunsite.dk>
+On Mon, Mar 29, 2010 at 4:48 AM, Feng Tang <feng.tang@intel.com> wrote:
 
-Thanks Peter, appreciate the help.
+>> + =A0 =A0 =A0 =A0 =A0 =A0 tx |=3D MAX3100_WD | MAX3100_RTS;
+>
+> Does this imply to have to work with HW flow control? on my platform
+> I have to remove the RTS bit to make it work.
+>
 
+=46inally I had time to check this. If you compare the 8250 (or similar=
+)
+data-sheet with the MAX31x0 one you see that the handling of the
+RTX/CTS bits is exactly the same (8250 about RTS bit for example:
+"When any of these bits are cleared, the associated output is forced
+high." and MAX3110: "Request-to-Send Bit. Controls the state of the
+RTS output. This bit is reset on power-up (RTS
+bit =3D 0 sets the RTS pin =3D logic high)."). If you look at the 8250.=
+c
+driver (grep for UART_MCR_RTS) you notice that the bit is set on
+device open (together with DTR of course). So I think the driver is
+doing the right thing here.
 
-> 
-> --
-> Bye, Peter Korsgaard
-
-
-This email and any attachments are intended for the sole use of the named recipient(s) and contain(s) confidential information that may be proprietary, privileged or copyrighted under applicable law. If you are not the intended recipient, do not read, copy, or forward this email message or any attachments. Delete this email message and any attachments immediately.
-
-
+--=20
+Christian Pellegrin, see http://www.evolware.org/chri/
+"Real Programmers don't play tennis, or any other sport which requires
+you to change clothes. Mountain climbing is OK, and Real Programmers
+wear their climbing boots to work in case a mountain should suddenly
+spring up in the middle of the computer room."
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
