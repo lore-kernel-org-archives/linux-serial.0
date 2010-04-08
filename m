@@ -1,64 +1,33 @@
-From: christian pellegrin <chripell@fsfe.org>
-Subject: Re: [PATCH v1 3/4] max3100: adds console support for MAX3100
-Date: Thu, 8 Apr 2010 11:43:10 +0200
-Message-ID: <h2xcabda6421004080243ifd2a47e4u8033a187b415d031@mail.gmail.com>
-References: <1269340105-6503-1-git-send-email-chripell@fsfe.org>
-	 <1269340170-6558-1-git-send-email-chripell@fsfe.org>
-	 <20100329104838.49c18075@feng-i7>
-	 <v2ocabda6421004080231r7b7a734ao9fce206a82bf944b@mail.gmail.com>
+From: christian pellegrin <chripell@gmail.com>
+Subject: [PATCH -mm 0/1] max3100: Fixes for the MAX31x0 console
+Date: Thu, 8 Apr 2010 19:02:13 +0200
+Message-ID: <g2qcabda6421004081002o97fec27fx1cc4640164930608@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bw0-f209.google.com ([209.85.218.209]:62087 "EHLO
+Received: from mail-bw0-f209.google.com ([209.85.218.209]:51754 "EHLO
 	mail-bw0-f209.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756382Ab0DHJnM convert rfc822-to-8bit (ORCPT
+	with ESMTP id S932576Ab0DHRCc (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 8 Apr 2010 05:43:12 -0400
-In-Reply-To: <v2ocabda6421004080231r7b7a734ao9fce206a82bf944b@mail.gmail.com>
+	Thu, 8 Apr 2010 13:02:32 -0400
+Received: by bwz1 with SMTP id 1so1953017bwz.21
+        for <linux-serial@vger.kernel.org>; Thu, 08 Apr 2010 10:02:30 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Feng Tang <feng.tang@intel.com>
-Cc: "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "greg@kroah.com" <greg@kroah.com>, "david-b@pacbell.net" <david-b@pacbell.net>, "grant.likely@secretlab.ca" <grant.likely@secretlab.ca>, "alan@lxorguk.ukuu.org.uk" <alan@lxorguk.ukuu.org.uk>, "spi-devel-general@lists.sourceforge.net" <spi-devel-general@lists.sourceforge.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Andrew Morton <akpm@linux-foundation.org>, Feng Tang <feng.tang@intel.com>, Grant Likely <grant.likely@secretlab.ca>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.or
 
-On Thu, Apr 8, 2010 at 11:31 AM, christian pellegrin <chripell@fsfe.org=
-> wrote:
-> On Mon, Mar 29, 2010 at 4:48 AM, Feng Tang <feng.tang@intel.com> wrot=
-e:
->
->>> + =A0 =A0 =A0 =A0 =A0 =A0 tx |=3D MAX3100_WD | MAX3100_RTS;
->>
->> Does this imply to have to work with HW flow control? on my platform
->> I have to remove the RTS bit to make it work.
->>
->
-> Finally I had time to check this. If you compare the 8250 (or similar=
-)
-> data-sheet with the MAX31x0 one you see that the handling of the
-> RTX/CTS bits is exactly the same (8250 about RTS bit for example:
-> "When any of these bits are cleared, the associated output is forced
-> high." and MAX3110: "Request-to-Send Bit. Controls the state of the
-> RTS output. This bit is reset on power-up (RTS
-> bit =3D 0 sets the RTS pin =3D logic high)."). If you look at the 825=
-0.c
-> driver (grep for UART_MCR_RTS) you notice that the bit is set on
-> device open (together with DTR of course). So I think the driver is
-> doing the right thing here.
->
+This patch fixes the problems reported by Feng Tang in the console
+code. After this I intend to do a complete rework to apply the ideas
+outlined by Grant Likely to avoid the use of delayed work and, if I
+find a way, the batching of TX requests proposed by Feng Tang and Alan
+Cox (I guess I will have at least to add a new function to the SPI
+core to know the real bit/rate the system is using to make this work).
+The relevant patches from the -mm kernel were tested on a 2.6.34-rc2
+kernel on a S3C ARM machine. This patch ris based on them.
 
-anyway I'll set it to on only in case the flow control is enabled. So
-even if, for some reason, you have to keep it to off on your platform,
-it won't make troubles.
-
-
---=20
+-- 
 Christian Pellegrin, see http://www.evolware.org/chri/
 "Real Programmers don't play tennis, or any other sport which requires
 you to change clothes. Mountain climbing is OK, and Real Programmers
 wear their climbing boots to work in case a mountain should suddenly
 spring up in the middle of the computer room."
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
