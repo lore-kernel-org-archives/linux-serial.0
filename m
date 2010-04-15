@@ -1,58 +1,74 @@
-From: Manuel Lauss <manuel.lauss@googlemail.com>
-Subject: Re: [RFC PATCH 0/2] serial 8250 platform PM hooks
-Date: Wed, 14 Apr 2010 19:39:41 +0200
-Message-ID: <t2wf861ec6f1004141039kf25acdddrb1e4639c17ecc8f6@mail.gmail.com>
-References: <1269450986-3714-1-git-send-email-manuel.lauss@gmail.com>
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v1 1/4] max3100: added raise_threaded_irq
+Date: Fri, 16 Apr 2010 01:22:23 +0200 (CEST)
+Message-ID: <alpine.LFD.2.00.1004160110360.3625@localhost.localdomain>
+References: <cabda6421003230329w3fe596dbn8e4b37cc36118f9f@mail.gmail.com> <1269340105-6503-1-git-send-email-chripell@fsfe.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bw0-f225.google.com ([209.85.218.225]:39031 "EHLO
-	mail-bw0-f225.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756590Ab0DNRjo convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 14 Apr 2010 13:39:44 -0400
-In-Reply-To: <1269450986-3714-1-git-send-email-manuel.lauss@gmail.com>
+Received: from www.tglx.de ([62.245.132.106]:37464 "EHLO www.tglx.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751464Ab0DOXXJ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 15 Apr 2010 19:23:09 -0400
+In-Reply-To: <1269340105-6503-1-git-send-email-chripell@fsfe.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: linux-mips@linux-mips.org, Manuel Lauss <manuel.lauss@gmail.com>
+To: Christian Pellegrin <chripell@fsfe.org>
+Cc: feng.tang@intel.com, akpm@linux-foundation.org, greg@kroah.com, david-b@pacbell.net, grant.likely@secretlab.ca, alan@lxorguk.ukuu.org.uk, spi-devel-general@lists.sourceforge.net, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Ping?  Noone interested?
+On Tue, 23 Mar 2010, Christian Pellegrin wrote:
 
-On Wed, Mar 24, 2010 at 7:16 PM, Manuel Lauss
-<manuel.lauss@googlemail.com> wrote:
-> The following 2 patches implement a PM hook for platform 8250
-> UARTs and a sample PM implementation for a MIPS SoC.
->
-> Patch #1 hooks a new .pm callback in struct plat_serial8250_port to
-> the rest of serial_core's PM infrastructure,
->
-> Patch #2 implements uart power gating for Alchemy line of mips socs
-> using the new hook.
->
-> With these 2 patches serial console on my test system survives
-> suspend/resume cycles without having to resort to platform-specific
-> hacks in the PM code.
->
-> Thanks,
-> =A0 =A0 Manuel Lauss
->
-> Manuel Lauss (2):
-> =A08250: allow platform uarts to install PM callback.
-> =A0Alchemy: UART PM through serial framework.
->
-> =A0arch/mips/alchemy/common/platform.c | =A0 17 +++++++++++++++++
-> =A0arch/mips/alchemy/common/power.c =A0 =A0| =A0 32 -----------------=
----------------
-> =A0drivers/serial/8250.c =A0 =A0 =A0 =A0 =A0 =A0 =A0 | =A0 31 +++++++=
-+++++++++++++++++++++---
-> =A0include/linux/serial_8250.h =A0 =A0 =A0 =A0 | =A0 =A06 ++++++
-> =A04 files changed, 51 insertions(+), 35 deletions(-)
->
->
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> raise_threaded_irq schedules the execution of an interrupt thread
+
+I really have a hard time to understand _WHY_ we want to have that
+function.
+
+Interrupt threads are woken up either by the primary handler or by a
+interrupt demultiplexer and the code has all interfaces for that
+already.
+
+Can you please explain, what you are trying to achieve and why it
+can't be done with the existing interfaces ?
+
+> +
+> +/**
+> + *	raise_threaded_irq - triggers a threded interrupt
+> + *	@irq: Interrupt line to trigger
+> + */
+> +int raise_threaded_irq(unsigned int irq)
+> +{
+> +	struct irq_desc *desc = irq_to_desc(irq);
+> +	struct irqaction *action;
+> +
+> +	if (!desc)
+> +		return -ENOENT;
+> +	action = desc->action;
+
+That's racy. You cannot access desc->action w/o holding desc->lock or
+having set the IRQ_INPROGRESS flag in desc->status under desc->lock.
+
+> +	if (!action)
+> +		return -ENOENT;
+> +	if (unlikely(!action->thread_fn))
+> +		return -EINVAL;
+> +	if (likely(!test_bit(IRQTF_DIED,
+> +			     &action->thread_flags))) {
+> +		set_bit(IRQTF_RUNTHREAD, &action->thread_flags);
+> +		wake_up_process(action->thread);
+> +	} else {
+> +		return -ECHILD;
+> +	}
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(raise_threaded_irq);
+
+EXPORT_SYMBOL_GPL if at all.
+
+Aside of that the name of of the function sucks: irq_wake_thread()
+perhaps ?
+
+But I still have no idea why we would need it at all.
+
+Thanks,
+
+	tglx
