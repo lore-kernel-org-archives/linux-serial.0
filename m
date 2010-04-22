@@ -1,81 +1,49 @@
-From: Jeremy Kerr <jeremy.kerr@canonical.com>
-Subject: [PATCH] serial/imx: only parse for iomem resources once
-Date: Wed, 21 Apr 2010 16:33:58 +0800
-Message-ID: <1271838838.643120.804272014834.1.gpush@pororo>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] serial/imx: only parse for iomem resources once
+Date: Thu, 22 Apr 2010 16:33:43 +0200
+Message-ID: <20100422143343.GB32348@pengutronix.de>
+References: <1271838838.643120.804272014834.1.gpush@pororo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ozlabs.org ([203.10.76.45]:38001 "EHLO ozlabs.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752971Ab0DUIeL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 21 Apr 2010 04:34:11 -0400
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:54512 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755278Ab0DVOdq (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 22 Apr 2010 10:33:46 -0400
+Content-Disposition: inline
+In-Reply-To: <1271838838.643120.804272014834.1.gpush@pororo>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sascha Hauer <kernel@pengutronix.de>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Jeremy Kerr <jeremy.kerr@canonical.com>
+Cc: Sascha Hauer <kernel@pengutronix.de>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Currently, the iomem resources are parsed in serial_imx_probe, then
-again in imx_request_port and imx_release_port.
+On Wed, Apr 21, 2010 at 04:33:58PM +0800, Jeremy Kerr wrote:
+> Currently, the iomem resources are parsed in serial_imx_probe, then
+> again in imx_request_port and imx_release_port.
+>=20
+> This change uses the imx_port data to retrieve the start and size of =
+the
+> memory region, rather than re-parsing the resources through
+> platform_get_resource.
+>=20
+> Signed-off-by: Jeremy Kerr <jeremy.kerr@canonical.com>
+What are the effects for this regarding run time?  How often are
+request_port and release_port called?  I wonder if it's worth to save
+the value.  Or what else than run time is your concern?
 
-This change uses the imx_port data to retrieve the start and size of the
-memory region, rather than re-parsing the resources through
-platform_get_resource.
+Best regards
+Uwe
 
-Signed-off-by: Jeremy Kerr <jeremy.kerr@canonical.com>
-
----
- drivers/serial/imx.c |   18 ++++++------------
- 1 file changed, 6 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/serial/imx.c b/drivers/serial/imx.c
-index e579d7a..7de6bf7 100644
---- a/drivers/serial/imx.c
-+++ b/drivers/serial/imx.c
-@@ -192,6 +192,7 @@ struct imx_port {
- 	unsigned int		irda_inv_tx:1;
- 	unsigned short		trcv_delay; /* transceiver delay */
- 	struct clk		*clk;
-+	unsigned long		mapsize;
- };
- 
- #ifdef CONFIG_IRDA
-@@ -945,11 +946,8 @@ static const char *imx_type(struct uart_port *port)
-  */
- static void imx_release_port(struct uart_port *port)
- {
--	struct platform_device *pdev = to_platform_device(port->dev);
--	struct resource *mmres;
--
--	mmres = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	release_mem_region(mmres->start, mmres->end - mmres->start + 1);
-+	struct imx_port *imx_port = container_of(port, struct imx_port, port);
-+	release_mem_region(imx_port->port.mapbase, imx_port->mapsize);
- }
- 
- /*
-@@ -957,15 +955,10 @@ static void imx_release_port(struct uart_port *port)
-  */
- static int imx_request_port(struct uart_port *port)
- {
--	struct platform_device *pdev = to_platform_device(port->dev);
--	struct resource *mmres;
-+	struct imx_port *imx_port = container_of(port, struct imx_port, port);
- 	void *ret;
- 
--	mmres = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	if (!mmres)
--		return -ENODEV;
--
--	ret = request_mem_region(mmres->start, mmres->end - mmres->start + 1,
-+	ret = request_mem_region(imx_port->port.mapbase, imx_port->mapsize,
- 			"imx-uart");
- 
- 	return  ret ? 0 : -EBUSY;
-@@ -1245,6 +1238,7 @@ static int serial_imx_probe(struct platform_device *pdev)
- 	sport->port.dev = &pdev->dev;
- 	sport->port.mapbase = res->start;
- 	sport->port.membase = base;
-+	sport->mapsize = res->end - res->start + 1;
- 	sport->port.type = PORT_IMX,
- 	sport->port.iotype = UPIO_MEM;
- 	sport->port.irq = platform_get_irq(pdev, 0);
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
+    |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
