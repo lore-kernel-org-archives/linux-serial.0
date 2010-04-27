@@ -1,46 +1,76 @@
-From: Jeremy Kerr <jeremy.kerr@canonical.com>
-Subject: Re: [PATCH] serial/imx: only parse for iomem resources once
-Date: Fri, 23 Apr 2010 11:02:05 +0800
-Message-ID: <201004231102.06849.jeremy.kerr@canonical.com>
-References: <1271838838.643120.804272014834.1.gpush@pororo> <20100422143343.GB32348@pengutronix.de>
+From: Wolfram Sang <w.sang@pengutronix.de>
+Subject: [PATCH RESEND] serial/mpc52xx_uart: Drop outdated comments
+Date: Tue, 27 Apr 2010 11:25:27 +0200
+Message-ID: <1272360327-31425-1-git-send-email-w.sang@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from adelie.canonical.com ([91.189.90.139]:50675 "EHLO
-	adelie.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755372Ab0DWDCP (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 22 Apr 2010 23:02:15 -0400
-In-Reply-To: <20100422143343.GB32348@pengutronix.de>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+	<mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+	<mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Sender: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+To: linuxppc-dev@ozlabs.org
+Cc: linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Uwe =?iso-8859-1?q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Sascha Hauer <kernel@pengutronix.de>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Hi Uwe,
+Most things mentioned are either obsolete (platform-support) or wrong (device
+numbering, DCD spport) these days. The remaining rest is obvious.
 
-> What are the effects for this regarding run time?  How often are
-> request_port and release_port called?  I wonder if it's worth to save
-> the value.  Or what else than run time is your concern?
+Signed-off-by: Wolfram Sang <w.sang@pengutronix.de>
+Cc: Grant Likely <grant.likely@secretlab.ca>
+---
+ drivers/serial/mpc52xx_uart.c |   33 ---------------------------------
+ 1 files changed, 0 insertions(+), 33 deletions(-)
 
-I'm not too concerned with the reduction in run time here - I'd like to be 
-able to parse the UART config from the device tree, rather than using 
-platform_get_{irq,resource}.
-
-With this patch, all of the existing parsing is done in serial_imx_probe(). 
-This means we can just abstract the parsing once, rather than having to check 
-what parsing method (platform or devtree) we're using in request_port and 
-release_port as well.
-
-See serial_imx_probe_pdata and serial_imx_probe_dt in:
-
-http://kernel.ubuntu.com/git?p=jk/dt/linux-2.6.git;a=blob;f=drivers/serial/imx.c;h=a54f6464d35920a81fdcc9fd93de3283260ab839;hb=2610717ecacfba0db34ad5b28ed6379560108912
-
-for my intended (work-in-progress) approach.
-
-Cheers,
-
-
-Jeremy
+diff --git a/drivers/serial/mpc52xx_uart.c b/drivers/serial/mpc52xx_uart.c
+index 3119fdd..a176ab4 100644
+--- a/drivers/serial/mpc52xx_uart.c
++++ b/drivers/serial/mpc52xx_uart.c
+@@ -29,39 +29,6 @@
+  * kind, whether express or implied.
+  */
+ 
+-/* Platform device Usage :
+- *
+- * Since PSCs can have multiple function, the correct driver for each one
+- * is selected by calling mpc52xx_match_psc_function(...). The function
+- * handled by this driver is "uart".
+- *
+- * The driver init all necessary registers to place the PSC in uart mode without
+- * DCD. However, the pin multiplexing aren't changed and should be set either
+- * by the bootloader or in the platform init code.
+- *
+- * The idx field must be equal to the PSC index (e.g. 0 for PSC1, 1 for PSC2,
+- * and so on). So the PSC1 is mapped to /dev/ttyPSC0, PSC2 to /dev/ttyPSC1 and
+- * so on. But be warned, it's an ABSOLUTE REQUIREMENT ! This is needed mainly
+- * fpr the console code : without this 1:1 mapping, at early boot time, when we
+- * are parsing the kernel args console=ttyPSC?, we wouldn't know which PSC it
+- * will be mapped to.
+- */
+-
+-/* OF Platform device Usage :
+- *
+- * This driver is only used for PSCs configured in uart mode.  The device
+- * tree will have a node for each PSC with "mpc52xx-psc-uart" in the compatible
+- * list.
+- *
+- * By default, PSC devices are enumerated in the order they are found.  However
+- * a particular PSC number can be forces by adding 'device_no = <port#>'
+- * to the device node.
+- *
+- * The driver init all necessary registers to place the PSC in uart mode without
+- * DCD. However, the pin multiplexing aren't changed and should be set either
+- * by the bootloader or in the platform init code.
+- */
+-
+ #undef DEBUG
+ 
+ #include <linux/device.h>
+-- 
+1.7.0
