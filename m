@@ -1,182 +1,38 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: [PATCH 12/20] tty: serial - fix tty back references in termios
-Date: Wed, 05 May 2010 11:02:47 +0100
-Message-ID: <20100505100247.3595.48633.stgit@localhost.localdomain>
-References: <20100505100144.3595.65633.stgit@localhost.localdomain>
+From: Greg KH <gregkh@suse.de>
+Subject: Re: [PATCH] serial imx.c: fix CTS trigger level lower to avoid
+ lost chars
+Date: Wed, 5 May 2010 09:42:00 -0700
+Message-ID: <20100505164200.GA4157@suse.de>
+References: <20100122115853.GF4782@pengutronix.de>
+ <1264330095-32225-1-git-send-email-valentin.longchamp@epfl.ch>
+ <4BE13E9B.6050406@epfl.ch>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20100505100144.3595.65633.stgit@localhost.localdomain>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, arnd@arndb.de
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from cantor2.suse.de ([195.135.220.15]:58530 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932302Ab0EEQmR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 5 May 2010 12:42:17 -0400
+Content-Disposition: inline
+In-Reply-To: <4BE13E9B.6050406@epfl.ch>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Valentin Longchamp <valentin.longchamp@epfl.ch>
+Cc: Alan Cox <alan@linux.intel.com>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "w.sang@pengutronix.de" <w.sang@pengutronix.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-One or two drivers go poking back into the tty from the termios setting
-routine in unsafe ways. We don't need to pass the tty down because the
-[ab]users are just using it to get at things they can get at anyway.
+On Wed, May 05, 2010 at 11:47:07AM +0200, Valentin Longchamp wrote:
+> Hello,
+> 
+> I had sent this patch more than 3 months ago and noone has pushed it
+> into mainline. It is very important for our use and I think it may
+> affect other people later.
+> 
+> Is there a linux-serial tree where it could be added to be pulled
+> from for mainline then ? What is the usual path for serial patches ?
 
-This leaves low_latency setting to sort out along with set_ldisc use.
+I've been taking serial patches lately as-needed, so feel free to send
+them to me.  I'll go queue this one up.
 
-Signed-off-by: Alan Cox <alan@linux.intel.com>
----
+thanks,
 
- drivers/serial/21285.c       |   10 +++-------
- drivers/serial/imx.c         |   10 ++++------
- drivers/serial/ioc3_serial.c |    9 +++++----
- drivers/serial/ioc4_serial.c |    9 +++++----
- drivers/serial/max3100.c     |    7 ++-----
- 5 files changed, 19 insertions(+), 26 deletions(-)
-
-
-diff --git a/drivers/serial/21285.c b/drivers/serial/21285.c
-index 8681f13..d89aa38 100644
---- a/drivers/serial/21285.c
-+++ b/drivers/serial/21285.c
-@@ -216,7 +216,7 @@ serial21285_set_termios(struct uart_port *port, struct ktermios *termios,
- 			struct ktermios *old)
- {
- 	unsigned long flags;
--	unsigned int baud, quot, h_lcr;
-+	unsigned int baud, quot, h_lcr, b;
- 
- 	/*
- 	 * We don't support modem control lines.
-@@ -234,12 +234,8 @@ serial21285_set_termios(struct uart_port *port, struct ktermios *termios,
- 	 */
- 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
- 	quot = uart_get_divisor(port, baud);
--
--	if (port->state && port->state->port.tty) {
--		struct tty_struct *tty = port->state->port.tty;
--		unsigned int b = port->uartclk / (16 * quot);
--		tty_encode_baud_rate(tty, b, b);
--	}
-+	b = port->uartclk / (16 * quot);
-+	tty_termios_encode_baud_rate(termios, b, b);
- 
- 	switch (termios->c_cflag & CSIZE) {
- 	case CS5:
-diff --git a/drivers/serial/imx.c b/drivers/serial/imx.c
-index 4315b23..9504b44 100644
---- a/drivers/serial/imx.c
-+++ b/drivers/serial/imx.c
-@@ -901,13 +901,11 @@ imx_set_termios(struct uart_port *port, struct ktermios *termios,
- 	rational_best_approximation(16 * div * baud, sport->port.uartclk,
- 		1 << 16, 1 << 16, &num, &denom);
- 
--	if (port->state && port->state->port.tty) {
--		tdiv64 = sport->port.uartclk;
--		tdiv64 *= num;
--		do_div(tdiv64, denom * 16 * div);
--		tty_encode_baud_rate(sport->port.state->port.tty,
-+	tdiv64 = sport->port.uartclk;
-+	tdiv64 *= num;
-+	do_div(tdiv64, denom * 16 * div);
-+	tty_termios_encode_baud_rate(termios,
- 				(speed_t)tdiv64, (speed_t)tdiv64);
--	}
- 
- 	num -= 1;
- 	denom -= 1;
-diff --git a/drivers/serial/ioc3_serial.c b/drivers/serial/ioc3_serial.c
-index f164ba4..bd2e9e6 100644
---- a/drivers/serial/ioc3_serial.c
-+++ b/drivers/serial/ioc3_serial.c
-@@ -954,12 +954,13 @@ ioc3_change_speed(struct uart_port *the_port,
- 		  struct ktermios *new_termios, struct ktermios *old_termios)
- {
- 	struct ioc3_port *port = get_ioc3_port(the_port);
--	unsigned int cflag;
-+	unsigned int cflag, iflag;
- 	int baud;
- 	int new_parity = 0, new_parity_enable = 0, new_stop = 0, new_data = 8;
- 	struct uart_state *state = the_port->state;
- 
- 	cflag = new_termios->c_cflag;
-+	iflag = new_termios->c_iflag;
- 
- 	switch (cflag & CSIZE) {
- 	case CS5:
-@@ -1000,12 +1001,12 @@ ioc3_change_speed(struct uart_port *the_port,
- 
- 	state->port.tty->low_latency = 1;
- 
--	if (I_IGNPAR(state->port.tty))
-+	if (iflag & IGNPAR))
- 		the_port->ignore_status_mask &= ~(N_PARITY_ERROR
- 						  | N_FRAMING_ERROR);
--	if (I_IGNBRK(state->port.tty)) {
-+	if (iflag & IGNBRK) {
- 		the_port->ignore_status_mask &= ~N_BREAK;
--		if (I_IGNPAR(state->port.tty))
-+		if (iflag & IGNPAR)
- 			the_port->ignore_status_mask &= ~N_OVERRUN_ERROR;
- 	}
- 	if (!(cflag & CREAD)) {
-diff --git a/drivers/serial/ioc4_serial.c b/drivers/serial/ioc4_serial.c
-index 8ad28fc..2c30023 100644
---- a/drivers/serial/ioc4_serial.c
-+++ b/drivers/serial/ioc4_serial.c
-@@ -1685,11 +1685,12 @@ ioc4_change_speed(struct uart_port *the_port,
- {
- 	struct ioc4_port *port = get_ioc4_port(the_port, 0);
- 	int baud, bits;
--	unsigned cflag;
-+	unsigned cflag, iflag;
- 	int new_parity = 0, new_parity_enable = 0, new_stop = 0, new_data = 8;
- 	struct uart_state *state = the_port->state;
- 
- 	cflag = new_termios->c_cflag;
-+	iflag = new_termios->c_iflag;
- 
- 	switch (cflag & CSIZE) {
- 	case CS5:
-@@ -1741,12 +1742,12 @@ ioc4_change_speed(struct uart_port *the_port,
- 
- 	state->port.tty->low_latency = 1;
- 
--	if (I_IGNPAR(state->port.tty))
-+	if (iflag & IGNPAR)
- 		the_port->ignore_status_mask &= ~(N_PARITY_ERROR
- 						| N_FRAMING_ERROR);
--	if (I_IGNBRK(state->port.tty)) {
-+	if (iflag & IGNBRK) {
- 		the_port->ignore_status_mask &= ~N_BREAK;
--		if (I_IGNPAR(state->port.tty))
-+		if (iflag & IGNPAR))
- 			the_port->ignore_status_mask &= ~N_OVERRUN_ERROR;
- 	}
- 	if (!(cflag & CREAD)) {
-diff --git a/drivers/serial/max3100.c b/drivers/serial/max3100.c
-index 3351c3b..beb1afa 100644
---- a/drivers/serial/max3100.c
-+++ b/drivers/serial/max3100.c
-@@ -430,17 +430,14 @@ max3100_set_termios(struct uart_port *port, struct ktermios *termios,
- 	int baud = 0;
- 	unsigned cflag;
- 	u32 param_new, param_mask, parity = 0;
--	struct tty_struct *tty = s->port.state->port.tty;
- 
- 	dev_dbg(&s->spi->dev, "%s\n", __func__);
--	if (!tty)
--		return;
- 
- 	cflag = termios->c_cflag;
- 	param_new = 0;
- 	param_mask = 0;
- 
--	baud = tty_get_baud_rate(tty);
-+	baud = tty_termios_baud_rate(termios);
- 	param_new = s->conf & MAX3100_BAUD;
- 	switch (baud) {
- 	case 300:
-@@ -485,7 +482,7 @@ max3100_set_termios(struct uart_port *port, struct ktermios *termios,
- 	default:
- 		baud = s->baud;
- 	}
--	tty_encode_baud_rate(tty, baud, baud);
-+	tty_termios_encode_baud_rate(termios, baud, baud);
- 	s->baud = baud;
- 	param_mask |= MAX3100_BAUD;
- 
+greg k-h
