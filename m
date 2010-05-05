@@ -1,134 +1,58 @@
 From: Alan Cox <alan@linux.intel.com>
-Subject: [PATCH 20/20] serial: Use block_til_ready helper
-Date: Wed, 05 May 2010 11:03:33 +0100
-Message-ID: <20100505100332.3595.32453.stgit@localhost.localdomain>
+Subject: [PATCH 08/20] epca: Kill the big kernel lock
+Date: Wed, 05 May 2010 11:02:25 +0100
+Message-ID: <20100505100225.3595.67851.stgit@localhost.localdomain>
 References: <20100505100144.3595.65633.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:54830 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:54782 "EHLO
 	bob.linux.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S934639Ab0EEKl7 (ORCPT
+	with ESMTP id S934647Ab0EEKkv (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 May 2010 06:41:59 -0400
+	Wed, 5 May 2010 06:40:51 -0400
 In-Reply-To: <20100505100144.3595.65633.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, arnd@arndb.de
 
-Our code now rather closely resembles the helper, so switch to it.
+The lock is no longer needed for wait until sent paths so this can go
 
 Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
 
- drivers/serial/serial_core.c |   87 ------------------------------------------
- 1 files changed, 1 insertions(+), 86 deletions(-)
+ drivers/char/epca.c |    4 +---
+ 1 files changed, 1 insertions(+), 3 deletions(-)
 
 
-diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
-index 0603e0d..a55751a 100644
---- a/drivers/serial/serial_core.c
-+++ b/drivers/serial/serial_core.c
-@@ -1526,91 +1526,6 @@ static void uart_dtr_rts(struct tty_port *port, int onoff)
- 		uart_clear_mctrl(uport, TIOCM_DTR | TIOCM_RTS);
- }
- 
--/*
-- * Block the open until the port is ready.  We must be called with
-- * the per-port semaphore held.
-- */
--static int
--uart_block_til_ready(struct file *filp, struct uart_state *state)
--{
--	DECLARE_WAITQUEUE(wait, current);
--	struct tty_port *port = &state->port;
--	unsigned long flags;
--
--	spin_lock_irqsave(&port->lock, flags);
--	if (!tty_hung_up_p(filp))
--		port->count--;
--	port->blocked_open++;
--	spin_unlock_irqrestore(&port->lock, flags);
--
--	add_wait_queue(&port->open_wait, &wait);
--	while (1) {
--		set_current_state(TASK_INTERRUPTIBLE);
--
--		/*
--		 * If we have been hung up, tell userspace/restart open.
--		 */
--		if (tty_hung_up_p(filp) || port->tty == NULL)
--			break;
--
--		/*
--		 * If the port has been closed, tell userspace/restart open.
--		 */
--		if (!(port->flags & ASYNC_INITIALIZED))
--			break;
--
--		/*
--		 * If non-blocking mode is set, or CLOCAL mode is set,
--		 * we don't want to wait for the modem status lines to
--		 * indicate that the port is ready.
--		 *
--		 * Also, if the port is not enabled/configured, we want
--		 * to allow the open to succeed here.  Note that we will
--		 * have set TTY_IO_ERROR for a non-existant port.
--		 */
--		if ((filp->f_flags & O_NONBLOCK) ||
--		    (port->tty->termios->c_cflag & CLOCAL) ||
--		    (port->tty->flags & (1 << TTY_IO_ERROR)))
--			break;
--
--		/*
--		 * Set DTR to allow modem to know we're waiting.  Do
--		 * not set RTS here - we want to make sure we catch
--		 * the data from the modem.
--		 */
--		if (port->tty->termios->c_cflag & CBAUD)
--			tty_port_raise_dtr_rts(port);
--
--		/*
--		 * and wait for the carrier to indicate that the
--		 * modem is ready for us.
--		 */
--		if (tty_port_carrier_raised(port))
--			break;
--
--		schedule();
--
--		if (signal_pending(current))
--			break;
--	}
--	set_current_state(TASK_RUNNING);
--	remove_wait_queue(&port->open_wait, &wait);
--
--	spin_lock_irqsave(&port->lock, flags);
--	if (!tty_hung_up_p(filp))
--		port->count++;
--	port->blocked_open--;
--	spin_unlock_irqrestore(&port->lock, flags);
--
--	if (signal_pending(current))
--		return -ERESTARTSYS;
--
--	if (!port->tty || tty_hung_up_p(filp))
--		return -EAGAIN;
--
--	return 0;
--}
--
- static struct uart_state *uart_get(struct uart_driver *drv, int line)
- {
- 	struct uart_state *state;
-@@ -1719,7 +1634,7 @@ static int uart_open(struct tty_struct *tty, struct file *filp)
- 	 */
- 	mutex_unlock(&port->mutex);
- 	if (retval == 0)
--		retval = uart_block_til_ready(filp, state);
-+		retval = tty_port_block_til_ready(port, tty, filp);
- 
- 	/*
- 	 * If this is the first open to succeed, adjust things to suit.
+diff --git a/drivers/char/epca.c b/drivers/char/epca.c
+index 6f5ffe1..d9df46a 100644
+--- a/drivers/char/epca.c
++++ b/drivers/char/epca.c
+@@ -36,7 +36,7 @@
+ #include <linux/ctype.h>
+ #include <linux/tty.h>
+ #include <linux/tty_flip.h>
+-#include <linux/smp_lock.h>
++#include <linux/slab.h>
+ #include <linux/ioport.h>
+ #include <linux/interrupt.h>
+ #include <linux/uaccess.h>
+@@ -2105,7 +2105,6 @@ static int pc_ioctl(struct tty_struct *tty, struct file *file,
+ 		break;
+ 	case DIGI_SETAW:
+ 	case DIGI_SETAF:
+-		lock_kernel();
+ 		if (cmd == DIGI_SETAW) {
+ 			/* Setup an event to indicate when the transmit
+ 			   buffer empties */
+@@ -2118,7 +2117,6 @@ static int pc_ioctl(struct tty_struct *tty, struct file *file,
+ 			if (tty->ldisc->ops->flush_buffer)
+ 				tty->ldisc->ops->flush_buffer(tty);
+ 		}
+-		unlock_kernel();
+ 		/* Fall Thru */
+ 	case DIGI_SETA:
+ 		if (copy_from_user(&ch->digiext, argp, sizeof(digi_t)))
 
