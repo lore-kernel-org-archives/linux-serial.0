@@ -1,7 +1,7 @@
 From: Alan Cox <alan@linux.intel.com>
-Subject: [PATCH 02/20] istallion: use bit ops for the board flags
-Date: Wed, 05 May 2010 11:01:51 +0100
-Message-ID: <20100505100151.3595.1416.stgit@localhost.localdomain>
+Subject: [PATCH 05/20] rocket: kill BKL
+Date: Wed, 05 May 2010 11:02:08 +0100
+Message-ID: <20100505100207.3595.74716.stgit@localhost.localdomain>
 References: <20100505100144.3595.65633.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -12,173 +12,155 @@ Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, arnd@arndb.de
 List-Id: linux-serial@vger.kernel.org
 
-This lets us avoid problems with races on the flag changes
+We can use the port mutex for this and also for the hangup path so removing
+the problematic use of the hangup mutex in this driver. Fix up the locking
+on the various port flags while we are at it.
+
+Ultimately this driver needs to be using tty_port_ helpers which would sort
+this out far better.
 
 Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
 
- drivers/char/istallion.c  |   36 ++++++++++++++++++------------------
- include/linux/istallion.h |    2 +-
- 2 files changed, 19 insertions(+), 19 deletions(-)
+ drivers/char/rocket.c |   28 +++++++++++++++++++---------
+ 1 files changed, 19 insertions(+), 9 deletions(-)
 
 
-diff --git a/drivers/char/istallion.c b/drivers/char/istallion.c
-index 750650c..5e9a81d 100644
---- a/drivers/char/istallion.c
-+++ b/drivers/char/istallion.c
-@@ -14,7 +14,6 @@
-  *	the Free Software Foundation; either version 2 of the License, or
-  *	(at your option) any later version.
-  *
-- *	FIXME: brdp->state needs proper locking.
-  */
+diff --git a/drivers/char/rocket.c b/drivers/char/rocket.c
+index 0e29a23..79c3bc6 100644
+--- a/drivers/char/rocket.c
++++ b/drivers/char/rocket.c
+@@ -73,7 +73,6 @@
+ #include <linux/tty_driver.h>
+ #include <linux/tty_flip.h>
+ #include <linux/serial.h>
+-#include <linux/smp_lock.h>
+ #include <linux/string.h>
+ #include <linux/fcntl.h>
+ #include <linux/ptrace.h>
+@@ -1017,6 +1016,7 @@ static void rp_close(struct tty_struct *tty, struct file *filp)
+ 	if (tty_port_close_start(port, tty, filp) == 0)
+ 		return;
  
- /*****************************************************************************/
-@@ -204,9 +203,9 @@ static int		stli_shared;
-  *	the board has been detected, and whether it is actually running a slave
-  *	or not.
-  */
--#define	BST_FOUND	0x1
--#define	BST_STARTED	0x2
--#define	BST_PROBED	0x4
-+#define	BST_FOUND	0
-+#define	BST_STARTED	1
-+#define	BST_PROBED	2
- 
- /*
-  *	Define the set of port state flags. These are marked for internal
-@@ -817,7 +816,7 @@ static int stli_open(struct tty_struct *tty, struct file *filp)
- 	brdp = stli_brds[brdnr];
- 	if (brdp == NULL)
- 		return -ENODEV;
--	if ((brdp->state & BST_STARTED) == 0)
-+	if (!test_bit(BST_STARTED, &brdp->state))
- 		return -ENODEV;
- 	portnr = MINOR2PORT(minordev);
- 	if (portnr > brdp->nrports)
-@@ -1847,7 +1846,7 @@ static void stli_portinfo(struct seq_file *m, struct stlibrd *brdp, struct stlip
- 	rc = stli_portcmdstats(NULL, portp);
- 
- 	uart = "UNKNOWN";
--	if (brdp->state & BST_STARTED) {
-+	if (test_bit(BST_STARTED, &brdp->state)) {
- 		switch (stli_comstats.hwid) {
- 		case 0:	uart = "2681"; break;
- 		case 1:	uart = "SC26198"; break;
-@@ -1856,7 +1855,7 @@ static void stli_portinfo(struct seq_file *m, struct stlibrd *brdp, struct stlip
++	mutex_lock(&port->mutex);
+ 	cp = &info->channel;
+ 	/*
+ 	 * Before we drop DTR, make sure the UART transmitter
+@@ -1060,9 +1060,13 @@ static void rp_close(struct tty_struct *tty, struct file *filp)
+ 			info->xmit_buf = NULL;
+ 		}
  	}
- 	seq_printf(m, "%d: uart:%s ", portnr, uart);
++	spin_lock_irq(&port->lock);
+ 	info->port.flags &= ~(ASYNC_INITIALIZED | ASYNC_CLOSING | ASYNC_NORMAL_ACTIVE);
+ 	tty->closing = 0;
++	spin_unlock_irq(&port->lock);
++	mutex_unlock(&port->mutex);
+ 	tty_port_tty_set(port, NULL);
++
+ 	wake_up_interruptible(&port->close_wait);
+ 	complete_all(&info->close_wait);
+ 	atomic_dec(&rp_num_ports_open);
+@@ -1210,11 +1214,13 @@ static int get_config(struct r_port *info, struct rocket_config __user *retinfo)
+ 	if (!retinfo)
+ 		return -EFAULT;
+ 	memset(&tmp, 0, sizeof (tmp));
++	mutex_lock(&info->port.mutex);
+ 	tmp.line = info->line;
+ 	tmp.flags = info->flags;
+ 	tmp.close_delay = info->port.close_delay;
+ 	tmp.closing_wait = info->port.closing_wait;
+ 	tmp.port = rcktpt_io_addr[(info->line >> 5) & 3];
++	mutex_unlock(&info->port.mutex);
  
--	if ((brdp->state & BST_STARTED) && (rc >= 0)) {
-+	if (test_bit(BST_STARTED, &brdp->state) && rc >= 0) {
- 		char sep;
+ 	if (copy_to_user(retinfo, &tmp, sizeof (*retinfo)))
+ 		return -EFAULT;
+@@ -1229,10 +1235,13 @@ static int set_config(struct tty_struct *tty, struct r_port *info,
+ 	if (copy_from_user(&new_serial, new_info, sizeof (new_serial)))
+ 		return -EFAULT;
  
- 		seq_printf(m, "tx:%d rx:%d", (int) stli_comstats.txtotal,
-@@ -2356,7 +2355,7 @@ static void stli_poll(unsigned long arg)
- 		brdp = stli_brds[brdnr];
- 		if (brdp == NULL)
- 			continue;
--		if ((brdp->state & BST_STARTED) == 0)
-+		if (!test_bit(BST_STARTED, &brdp->state))
- 			continue;
++	mutex_lock(&info->port.mutex);
+ 	if (!capable(CAP_SYS_ADMIN))
+ 	{
+-		if ((new_serial.flags & ~ROCKET_USR_MASK) != (info->flags & ~ROCKET_USR_MASK))
++		if ((new_serial.flags & ~ROCKET_USR_MASK) != (info->flags & ~ROCKET_USR_MASK)) {
++			mutex_unlock(&info->port.mutex);
+ 			return -EPERM;
++		}
+ 		info->flags = ((info->flags & ~ROCKET_USR_MASK) | (new_serial.flags & ROCKET_USR_MASK));
+ 		configure_r_port(tty, info, NULL);
+ 		return 0;
+@@ -1250,6 +1259,7 @@ static int set_config(struct tty_struct *tty, struct r_port *info,
+ 		tty->alt_speed = 230400;
+ 	if ((info->flags & ROCKET_SPD_MASK) == ROCKET_SPD_WARP)
+ 		tty->alt_speed = 460800;
++	mutex_unlock(&info->port.mutex);
  
- 		spin_lock(&brd_lock);
-@@ -3141,7 +3140,7 @@ static int stli_initecp(struct stlibrd *brdp)
+ 	configure_r_port(tty, info, NULL);
+ 	return 0;
+@@ -1325,8 +1335,6 @@ static int rp_ioctl(struct tty_struct *tty, struct file *file,
+ 	if (cmd != RCKP_GET_PORTS && rocket_paranoia_check(info, "rp_ioctl"))
+ 		return -ENXIO;
+ 
+-	lock_kernel();
+-
+ 	switch (cmd) {
+ 	case RCKP_GET_STRUCT:
+ 		if (copy_to_user(argp, info, sizeof (struct r_port)))
+@@ -1350,7 +1358,6 @@ static int rp_ioctl(struct tty_struct *tty, struct file *file,
+ 	default:
+ 		ret = -ENOIOCTLCMD;
  	}
+-	unlock_kernel();
+ 	return ret;
+ }
  
+@@ -1471,7 +1478,6 @@ static void rp_wait_until_sent(struct tty_struct *tty, int timeout)
+ 	       jiffies);
+ 	printk(KERN_INFO "cps=%d...\n", info->cps);
+ #endif
+-	lock_kernel();
+ 	while (1) {
+ 		txcnt = sGetTxCnt(cp);
+ 		if (!txcnt) {
+@@ -1499,7 +1505,6 @@ static void rp_wait_until_sent(struct tty_struct *tty, int timeout)
+ 			break;
+ 	}
+ 	__set_current_state(TASK_RUNNING);
+-	unlock_kernel();
+ #ifdef ROCKET_DEBUG_WAIT_UNTIL_SENT
+ 	printk(KERN_INFO "txcnt = %d (jiff=%lu)...done\n", txcnt, jiffies);
+ #endif
+@@ -1512,6 +1517,7 @@ static void rp_hangup(struct tty_struct *tty)
+ {
+ 	CHANNEL_t *cp;
+ 	struct r_port *info = tty->driver_data;
++	unsigned long flags;
  
--	brdp->state |= BST_FOUND;
-+	set_bit(BST_FOUND, &brdp->state);
- 	return 0;
- err_unmap:
- 	iounmap(brdp->membase);
-@@ -3298,7 +3297,7 @@ static int stli_initonb(struct stlibrd *brdp)
- 	brdp->panels[0] = brdp->nrports;
+ 	if (rocket_paranoia_check(info, "rp_hangup"))
+ 		return;
+@@ -1520,11 +1526,15 @@ static void rp_hangup(struct tty_struct *tty)
+ 	printk(KERN_INFO "rp_hangup of ttyR%d...\n", info->line);
+ #endif
+ 	rp_flush_buffer(tty);
+-	if (info->port.flags & ASYNC_CLOSING)
++	spin_lock_irqsave(&info->port.lock, flags);
++	if (info->port.flags & ASYNC_CLOSING) {
++		spin_unlock_irqrestore(&info->port.lock, flags);
+ 		return;
++	}
+ 	if (info->port.count)
+ 		atomic_dec(&rp_num_ports_open);
+ 	clear_bit((info->aiop * 8) + info->chan, (void *) &xmit_flags[info->board]);
++	spin_unlock_irqrestore(&info->port.lock, flags);
  
+ 	tty_port_hangup(&info->port);
  
--	brdp->state |= BST_FOUND;
-+	set_bit(BST_FOUND, &brdp->state);
- 	return 0;
- err_unmap:
- 	iounmap(brdp->membase);
-@@ -3408,7 +3407,7 @@ stli_donestartup:
- 	spin_unlock_irqrestore(&brd_lock, flags);
+@@ -1535,7 +1545,7 @@ static void rp_hangup(struct tty_struct *tty)
+ 	sDisCTSFlowCtl(cp);
+ 	sDisTxSoftFlowCtl(cp);
+ 	sClrTxXOFF(cp);
+-	info->port.flags &= ~ASYNC_INITIALIZED;
++	clear_bit(ASYNCB_INITIALIZED, &info->port.flags);
  
- 	if (rc == 0)
--		brdp->state |= BST_STARTED;
-+		set_bit(BST_STARTED, &brdp->state);
- 
- 	if (! stli_timeron) {
- 		stli_timeron++;
-@@ -3711,7 +3710,7 @@ static int __devinit stli_pciprobe(struct pci_dev *pdev,
- 	if (retval)
- 		goto err_null;
- 
--	brdp->state |= BST_PROBED;
-+	set_bit(BST_PROBED, &brdp->state);
- 	pci_set_drvdata(pdev, brdp);
- 
- 	EBRDENABLE(brdp);
-@@ -3842,7 +3841,7 @@ static int __init stli_initbrds(void)
- 			brdp = stli_brds[i];
- 			if (brdp == NULL)
- 				continue;
--			if (brdp->state & BST_FOUND) {
-+			if (test_bit(BST_FOUND, &brdp->state)) {
- 				EBRDENABLE(brdp);
- 				brdp->enable = NULL;
- 				brdp->disable = NULL;
-@@ -4079,7 +4078,7 @@ static int stli_portcmdstats(struct tty_struct *tty, struct stliport *portp)
- 		return -ENODEV;
- 
- 	mutex_lock(&portp->port.mutex);
--	if (brdp->state & BST_STARTED) {
-+	if (test_bit(BST_STARTED, &brdp->state)) {
- 		if ((rc = stli_cmdwait(brdp, portp, A_GETSTATS,
- 		    &stli_cdkstats, sizeof(asystats_t), 1)) < 0) {
- 			mutex_unlock(&portp->port.mutex);
-@@ -4194,7 +4193,7 @@ static int stli_clrportstats(struct stliport *portp, comstats_t __user *cp)
- 
- 	mutex_lock(&portp->port.mutex);
- 
--	if (brdp->state & BST_STARTED) {
-+	if (test_bit(BST_STARTED, &brdp->state)) {
- 		if ((rc = stli_cmdwait(brdp, portp, A_CLEARSTATS, NULL, 0, 0)) < 0) {
- 			mutex_unlock(&portp->port.mutex);
- 			return rc;
-@@ -4323,10 +4322,10 @@ static long stli_memioctl(struct file *fp, unsigned int cmd, unsigned long arg)
- 		rc = stli_startbrd(brdp);
- 		break;
- 	case STL_BSTOP:
--		brdp->state &= ~BST_STARTED;
-+		clear_bit(BST_STARTED, &brdp->state);
- 		break;
- 	case STL_BRESET:
--		brdp->state &= ~BST_STARTED;
-+		clear_bit(BST_STARTED, &brdp->state);
- 		EBRDRESET(brdp);
- 		if (stli_shared == 0) {
- 			if (brdp->reenable != NULL)
-@@ -4382,7 +4381,8 @@ static void istallion_cleanup_isa(void)
- 	unsigned int j;
- 
- 	for (j = 0; (j < stli_nrbrds); j++) {
--		if ((brdp = stli_brds[j]) == NULL || (brdp->state & BST_PROBED))
-+		if ((brdp = stli_brds[j]) == NULL ||
-+				test_bit(BST_PROBED, &brdp->state))
- 			continue;
- 
- 		stli_cleanup_ports(brdp);
-diff --git a/include/linux/istallion.h b/include/linux/istallion.h
-index 7faca98..ad700a6 100644
---- a/include/linux/istallion.h
-+++ b/include/linux/istallion.h
-@@ -86,7 +86,7 @@ struct stlibrd {
- 	unsigned long	magic;
- 	unsigned int	brdnr;
- 	unsigned int	brdtype;
--	unsigned int	state;
-+	unsigned long	state;
- 	unsigned int	nrpanels;
- 	unsigned int	nrports;
- 	unsigned int	nrdevs;
+ 	wake_up_interruptible(&info->port.open_wait);
+ }
