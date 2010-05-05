@@ -1,7 +1,7 @@
 From: Alan Cox <alan@linux.intel.com>
-Subject: [PATCH 13/20] tty: serial - fix tty referencing in set_ldisc
-Date: Wed, 05 May 2010 11:02:53 +0100
-Message-ID: <20100505100253.3595.6394.stgit@localhost.localdomain>
+Subject: [PATCH 14/20] vc: Locking clean up
+Date: Wed, 05 May 2010 11:02:59 +0100
+Message-ID: <20100505100259.3595.90970.stgit@localhost.localdomain>
 References: <20100505100144.3595.65633.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -12,64 +12,76 @@ Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, arnd@arndb.de
 List-Id: linux-serial@vger.kernel.org
 
-Pass down the ldisc number so that the drivers don't have to peek into the
-tty object themselves. This lets us get rid of another case of back referencing
-port to tty which we don't want (because of races versus hangup/close).
+The virtual console layer uses the BKL for various things that don't really
+need it. Clean them out.
 
 Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
 
- drivers/serial/bfin_5xx.c    |    7 ++-----
- drivers/serial/serial_core.c |    2 +-
- include/linux/serial_core.h  |    2 +-
- 3 files changed, 4 insertions(+), 7 deletions(-)
+ drivers/char/selection.c |    4 ++++
+ drivers/char/vt.c        |    7 ++++---
+ 2 files changed, 8 insertions(+), 3 deletions(-)
 
 
-diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
-index 96f7e74..e0d25ca 100644
---- a/drivers/serial/bfin_5xx.c
-+++ b/drivers/serial/bfin_5xx.c
-@@ -952,15 +952,12 @@ bfin_serial_verify_port(struct uart_port *port, struct serial_struct *ser)
-  * Enable the IrDA function if tty->ldisc.num is N_IRDA.
-  * In other cases, disable IrDA function.
-  */
--static void bfin_serial_set_ldisc(struct uart_port *port)
-+static void bfin_serial_set_ldisc(struct uart_port *port, int ld)
- {
- 	int line = port->line;
- 	unsigned short val;
+diff --git a/drivers/char/selection.c b/drivers/char/selection.c
+index f97b9e8..6e79340 100644
+--- a/drivers/char/selection.c
++++ b/drivers/char/selection.c
+@@ -26,6 +26,7 @@
+ #include <linux/selection.h>
+ #include <linux/tiocl.h>
+ #include <linux/console.h>
++#include <linux/smp_lock.h>
  
--	if (line >= port->state->port.tty->driver->num)
--		return;
--
--	switch (port->state->port.tty->termios->c_line) {
-+	switch (ld) {
- 	case N_IRDA:
- 		val = UART_GET_GCTL(&bfin_serial_ports[line]);
- 		val |= (IREN | RPOLC);
-diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
-index 12ee7e0..570dca2 100644
---- a/drivers/serial/serial_core.c
-+++ b/drivers/serial/serial_core.c
-@@ -1194,7 +1194,7 @@ static void uart_set_ldisc(struct tty_struct *tty)
- 	struct uart_port *uport = state->uart_port;
+ /* Don't take this from <ctype.h>: 011-015 on the screen aren't spaces */
+ #define isspace(c)	((c) == ' ')
+@@ -312,6 +313,8 @@ int paste_selection(struct tty_struct *tty)
+ 	struct  tty_ldisc *ld;
+ 	DECLARE_WAITQUEUE(wait, current);
  
- 	if (uport->ops->set_ldisc)
--		uport->ops->set_ldisc(uport);
-+		uport->ops->set_ldisc(uport, tty->termios->c_line);
++	lock_kernel();
++
+ 	acquire_console_sem();
+ 	poke_blanked_console();
+ 	release_console_sem();
+@@ -335,5 +338,6 @@ int paste_selection(struct tty_struct *tty)
+ 	__set_current_state(TASK_RUNNING);
+ 
+ 	tty_ldisc_deref(ld);
++	unlock_kernel();
+ 	return 0;
+ }
+diff --git a/drivers/char/vt.c b/drivers/char/vt.c
+index bd1d116..c5e30e3 100644
+--- a/drivers/char/vt.c
++++ b/drivers/char/vt.c
+@@ -280,8 +280,12 @@ static inline unsigned short *screenpos(struct vc_data *vc, int offset, int view
+ 	return p;
  }
  
- static void uart_set_termios(struct tty_struct *tty,
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index ad83996..5c4cbe6 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -216,7 +216,7 @@ struct uart_ops {
- 	void		(*flush_buffer)(struct uart_port *);
- 	void		(*set_termios)(struct uart_port *, struct ktermios *new,
- 				       struct ktermios *old);
--	void		(*set_ldisc)(struct uart_port *);
-+	void		(*set_ldisc)(struct uart_port *, int new);
- 	void		(*pm)(struct uart_port *, unsigned int state,
- 			      unsigned int oldstate);
- 	int		(*set_wake)(struct uart_port *, unsigned int state);
++/* Called  from the keyboard irq path.. */
+ static inline void scrolldelta(int lines)
+ {
++	/* FIXME */
++	/* scrolldelta needs some kind of consistency lock, but the BKL was
++	   and still is not protecting versus the scheduled back end */
+ 	scrollback_delta += lines;
+ 	schedule_console_callback();
+ }
+@@ -2604,8 +2608,6 @@ int tioclinux(struct tty_struct *tty, unsigned long arg)
+ 		return -EFAULT;
+ 	ret = 0;
+ 
+-	lock_kernel();
+-
+ 	switch (type)
+ 	{
+ 		case TIOCL_SETSEL:
+@@ -2680,7 +2682,6 @@ int tioclinux(struct tty_struct *tty, unsigned long arg)
+ 			ret = -EINVAL;
+ 			break;
+ 	}
+-	unlock_kernel();
+ 	return ret;
+ }
+ 
