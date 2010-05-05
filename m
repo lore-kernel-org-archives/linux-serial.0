@@ -1,59 +1,127 @@
 From: Alan Cox <alan@linux.intel.com>
-Subject: [PATCH 15/20] tty: Make vt's have a tty_port
-Date: Wed, 05 May 2010 11:03:04 +0100
-Message-ID: <20100505100304.3595.26265.stgit@localhost.localdomain>
+Subject: [PATCH 18/20] serial: add port helpers
+Date: Wed, 05 May 2010 11:03:21 +0100
+Message-ID: <20100505100321.3595.41635.stgit@localhost.localdomain>
 References: <20100505100144.3595.65633.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:54822 "EHLO
+	bob.linux.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S934639Ab0EEKlt (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 5 May 2010 06:41:49 -0400
 In-Reply-To: <20100505100144.3595.65633.stgit@localhost.localdomain>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, arnd@arndb.de
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, arnd@arndb.de
 
-The vt layer isn't safely handling reference counts to tty object on the input
-side. Add a tty port structure to the vt layer in order to implement this using
-the standard helpers.
+We can make this the same as the ones that will be needed by the tty_port
+helper logic that we want to move to but still call them from the existing
+code base.
 
 Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
 
- drivers/char/vt.c              |    2 ++
- include/linux/console_struct.h |    2 ++
- 2 files changed, 4 insertions(+), 0 deletions(-)
+ drivers/serial/serial_core.c |   51 ++++++++++++++++++++++++++++++------------
+ 1 files changed, 37 insertions(+), 14 deletions(-)
 
 
-diff --git a/drivers/char/vt.c b/drivers/char/vt.c
-index c5e30e3..e5269cc 100644
---- a/drivers/char/vt.c
-+++ b/drivers/char/vt.c
-@@ -772,6 +772,7 @@ int vc_allocate(unsigned int currcons)	/* return 0 on success */
- 	    if (!vc)
- 		return -ENOMEM;
- 	    vc_cons[currcons].d = vc;
-+	    tty_port_init(&vc->port);
- 	    INIT_WORK(&vc_cons[currcons].SAK_work, vc_SAK);
- 	    visual_init(vc, currcons, 1);
- 	    if (!*vc->vc_uni_pagedir_loc)
-@@ -2909,6 +2910,7 @@ static int __init con_init(void)
- 	for (currcons = 0; currcons < MIN_NR_CONSOLES; currcons++) {
- 		vc_cons[currcons].d = vc = kzalloc(sizeof(struct vc_data), GFP_NOWAIT);
- 		INIT_WORK(&vc_cons[currcons].SAK_work, vc_SAK);
-+		tty_port_init(&vc->port);
- 		visual_init(vc, currcons, 1);
- 		vc->vc_screenbuf = kzalloc(vc->vc_screenbuf_size, GFP_NOWAIT);
- 		vc_init(vc, vc->vc_rows, vc->vc_cols,
-diff --git a/include/linux/console_struct.h b/include/linux/console_struct.h
-index 38fe59d..57e83f1 100644
---- a/include/linux/console_struct.h
-+++ b/include/linux/console_struct.h
-@@ -21,6 +21,8 @@ struct vt_struct;
- #define NPAR 16
+diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
+index 424b1c7..2379045 100644
+--- a/drivers/serial/serial_core.c
++++ b/drivers/serial/serial_core.c
+@@ -1501,6 +1501,34 @@ static void uart_update_termios(struct tty_struct *tty,
+ 	}
+ }
  
- struct vc_data {
-+	struct tty_port port;			/* Upper level data */
++static int uart_carrier_raised(struct tty_port *port)
++{
++	struct uart_state *state = container_of(port, struct uart_state, port);
++	struct uart_port *uport = state->uart_port;
++	int mctrl;
++	mutex_lock(&port->mutex);
++	spin_lock_irq(&uport->lock);
++	uport->ops->enable_ms(uport);
++	mctrl = uport->ops->get_mctrl(uport);
++	spin_unlock_irq(&uport->lock);
++	mutex_unlock(&port->mutex);
++	if (mctrl & TIOCM_CAR)
++		return 1;
++	return 0;
++}
 +
- 	unsigned short	vc_num;			/* Console number */
- 	unsigned int	vc_cols;		/* [#] Console size */
- 	unsigned int	vc_rows;
++static void uart_dtr_rts(struct tty_port *port, int onoff)
++{
++	struct uart_state *state = container_of(port, struct uart_state, port);
++	struct uart_port *uport = state->uart_port;
++	mutex_lock(&port->mutex);
++	if (onoff)
++		uart_set_mctrl(uport, TIOCM_DTR | TIOCM_RTS);
++	else
++		uart_clear_mctrl(uport, TIOCM_DTR | TIOCM_RTS);
++	mutex_unlock(&port->mutex);
++}
++
+ /*
+  * Block the open until the port is ready.  We must be called with
+  * the per-port semaphore held.
+@@ -1509,9 +1537,7 @@ static int
+ uart_block_til_ready(struct file *filp, struct uart_state *state)
+ {
+ 	DECLARE_WAITQUEUE(wait, current);
+-	struct uart_port *uport = state->uart_port;
+ 	struct tty_port *port = &state->port;
+-	unsigned int mctrl;
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
+@@ -1555,23 +1581,14 @@ uart_block_til_ready(struct file *filp, struct uart_state *state)
+ 		 * not set RTS here - we want to make sure we catch
+ 		 * the data from the modem.
+ 		 */
+-		if (port->tty->termios->c_cflag & CBAUD) {
+-			mutex_lock(&port->mutex);
+-			uart_set_mctrl(uport, TIOCM_DTR);
+-			mutex_unlock(&port->mutex);
+-		}
++		if (port->tty->termios->c_cflag & CBAUD)
++			tty_port_raise_dtr_rts(port);
+ 
+ 		/*
+ 		 * and wait for the carrier to indicate that the
+ 		 * modem is ready for us.
+ 		 */
+-		mutex_lock(&port->mutex);
+-		spin_lock_irq(&uport->lock);
+-		uport->ops->enable_ms(uport);
+-		mctrl = uport->ops->get_mctrl(uport);
+-		spin_unlock_irq(&uport->lock);
+-		mutex_unlock(&port->mutex);
+-		if (mctrl & TIOCM_CAR)
++		if (tty_port_carrier_raised(port))
+ 			break;
+ 
+ 		schedule();
+@@ -2349,6 +2366,11 @@ static const struct tty_operations uart_ops = {
+ #endif
+ };
+ 
++static const struct tty_port_operations uart_port_ops = {
++	.carrier_raised = uart_carrier_raised,
++	.dtr_rts	= uart_dtr_rts,
++};
++
+ /**
+  *	uart_register_driver - register a driver with the uart core layer
+  *	@drv: low level driver structure
+@@ -2405,6 +2427,7 @@ int uart_register_driver(struct uart_driver *drv)
+ 		struct tty_port *port = &state->port;
+ 
+ 		tty_port_init(port);
++		port->ops = &uart_port_ops;
+ 		port->close_delay     = 500;	/* .5 seconds */
+ 		port->closing_wait    = 30000;	/* 30 seconds */
+ 		tasklet_init(&state->tlet, uart_tasklet_action,
+
