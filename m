@@ -1,7 +1,7 @@
 From: Alan Cox <alan@linux.intel.com>
-Subject: [PATCH 04/20] isicom: kill off the BKL
-Date: Wed, 05 May 2010 11:02:02 +0100
-Message-ID: <20100505100202.3595.51706.stgit@localhost.localdomain>
+Subject: [PATCH 06/20] synclink: kill the big kernel lock
+Date: Wed, 05 May 2010 11:02:13 +0100
+Message-ID: <20100505100213.3595.45074.stgit@localhost.localdomain>
 References: <20100505100144.3595.65633.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -12,79 +12,367 @@ Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, arnd@arndb.de
 List-Id: linux-serial@vger.kernel.org
 
-As with the others we can use the port mutex to get the needed locking
-properties and fix the race with open.
+We don't need it while waiting and we can lock the ioctls using the port
+mutex. While at it eliminate use of the hangup mutex and switch to the port
+mutex.
 
 Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
 
- drivers/char/isicom.c |   13 +++++--------
- 1 files changed, 5 insertions(+), 8 deletions(-)
+ drivers/char/synclink.c    |   19 ++++++-----
+ drivers/char/synclink_gt.c |   78 +++++++++++++++++++-------------------------
+ drivers/char/synclinkmp.c  |   32 +++++++-----------
+ 3 files changed, 56 insertions(+), 73 deletions(-)
 
 
-diff --git a/drivers/char/isicom.c b/drivers/char/isicom.c
-index c1ab303..bfeaefc 100644
---- a/drivers/char/isicom.c
-+++ b/drivers/char/isicom.c
-@@ -124,7 +124,6 @@
- #include <linux/fs.h>
- #include <linux/sched.h>
- #include <linux/serial.h>
--#include <linux/smp_lock.h>
+diff --git a/drivers/char/synclink.c b/drivers/char/synclink.c
+index 0658fc5..4de1246 100644
+--- a/drivers/char/synclink.c
++++ b/drivers/char/synclink.c
+@@ -81,7 +81,6 @@
  #include <linux/mm.h>
- #include <linux/interrupt.h>
- #include <linux/timer.h>
-@@ -872,7 +871,6 @@ static struct tty_port *isicom_find_port(struct tty_struct *tty)
- static int isicom_open(struct tty_struct *tty, struct file *filp)
- {
- 	struct isi_port *port;
--	struct isi_board *card;
- 	struct tty_port *tport;
- 
- 	tport = isicom_find_port(tty);
-@@ -1118,8 +1116,7 @@ static int isicom_set_serial_info(struct tty_struct *tty,
- 	if (copy_from_user(&newinfo, info, sizeof(newinfo)))
+ #include <linux/seq_file.h>
+ #include <linux/slab.h>
+-#include <linux/smp_lock.h>
+ #include <linux/delay.h>
+ #include <linux/netdevice.h>
+ #include <linux/vmalloc.h>
+@@ -2436,7 +2435,9 @@ static int mgsl_get_stats(struct mgsl_struct * info, struct mgsl_icount __user *
+ 	if (!user_icount) {
+ 		memset(&info->icount, 0, sizeof(info->icount));
+ 	} else {
++		mutex_lock(&info->port.mutex);
+ 		COPY_TO_USER(err, user_icount, &info->icount, sizeof(struct mgsl_icount));
++		mutex_unlock(&info->port.mutex);
+ 		if (err)
+ 			return -EFAULT;
+ 	}
+@@ -2461,7 +2462,9 @@ static int mgsl_get_params(struct mgsl_struct * info, MGSL_PARAMS __user *user_p
+ 		printk("%s(%d):mgsl_get_params(%s)\n",
+ 			 __FILE__,__LINE__, info->device_name);
+ 			
++	mutex_lock(&info->port.mutex);
+ 	COPY_TO_USER(err,user_params, &info->params, sizeof(MGSL_PARAMS));
++	mutex_unlock(&info->port.mutex);
+ 	if (err) {
+ 		if ( debug_level >= DEBUG_LEVEL_INFO )
+ 			printk( "%s(%d):mgsl_get_params(%s) user buffer copy failed\n",
+@@ -2501,11 +2504,13 @@ static int mgsl_set_params(struct mgsl_struct * info, MGSL_PARAMS __user *new_pa
  		return -EFAULT;
+ 	}
+ 	
++	mutex_lock(&info->port.mutex);
+ 	spin_lock_irqsave(&info->irq_spinlock,flags);
+ 	memcpy(&info->params,&tmp_params,sizeof(MGSL_PARAMS));
+ 	spin_unlock_irqrestore(&info->irq_spinlock,flags);
+ 	
+  	mgsl_change_params(info);
++	mutex_unlock(&info->port.mutex);
+ 	
+ 	return 0;
+ 	
+@@ -2935,7 +2940,6 @@ static int mgsl_ioctl(struct tty_struct *tty, struct file * file,
+ 		    unsigned int cmd, unsigned long arg)
+ {
+ 	struct mgsl_struct * info = tty->driver_data;
+-	int ret;
+ 	
+ 	if (debug_level >= DEBUG_LEVEL_INFO)
+ 		printk("%s(%d):mgsl_ioctl %s cmd=%08X\n", __FILE__,__LINE__,
+@@ -2950,10 +2954,7 @@ static int mgsl_ioctl(struct tty_struct *tty, struct file * file,
+ 		    return -EIO;
+ 	}
+ 
+-	lock_kernel();
+-	ret = mgsl_ioctl_common(info, cmd, arg);
+-	unlock_kernel();
+-	return ret;
++	return mgsl_ioctl_common(info, cmd, arg);
+ }
+ 
+ static int mgsl_ioctl_common(struct mgsl_struct *info, unsigned int cmd, unsigned long arg)
+@@ -3109,12 +3110,14 @@ static void mgsl_close(struct tty_struct *tty, struct file * filp)
+ 
+ 	if (tty_port_close_start(&info->port, tty, filp) == 0)			 
+ 		goto cleanup;
+-			
++
++	mutex_lock(&info->port.mutex);			
+  	if (info->port.flags & ASYNC_INITIALIZED)
+  		mgsl_wait_until_sent(tty, info->timeout);
+ 	mgsl_flush_buffer(tty);
+ 	tty_ldisc_flush(tty);
+ 	shutdown(info);
++	mutex_unlock(&info->port.mutex);
+ 
+ 	tty_port_close_end(&info->port, tty);	
+ 	info->port.tty = NULL;
+@@ -3162,7 +3165,6 @@ static void mgsl_wait_until_sent(struct tty_struct *tty, int timeout)
+ 	 * Note: use tight timings here to satisfy the NIST-PCTS.
+ 	 */ 
+ 
+-	lock_kernel();
+ 	if ( info->params.data_rate ) {
+ 	       	char_time = info->timeout/(32 * 5);
+ 		if (!char_time)
+@@ -3192,7 +3194,6 @@ static void mgsl_wait_until_sent(struct tty_struct *tty, int timeout)
+ 				break;
+ 		}
+ 	}
+-	unlock_kernel();
+       
+ exit:
+ 	if (debug_level >= DEBUG_LEVEL_INFO)
+diff --git a/drivers/char/synclink_gt.c b/drivers/char/synclink_gt.c
+index 4561ce2..d0f81f5 100644
+--- a/drivers/char/synclink_gt.c
++++ b/drivers/char/synclink_gt.c
+@@ -40,8 +40,8 @@
+ #define DBGBH(fmt) if (debug_level >= DEBUG_LEVEL_BH) printk fmt
+ #define DBGISR(fmt) if (debug_level >= DEBUG_LEVEL_ISR) printk fmt
+ #define DBGDATA(info, buf, size, label) if (debug_level >= DEBUG_LEVEL_DATA) trace_block((info), (buf), (size), (label))
+-//#define DBGTBUF(info) dump_tbufs(info)
+-//#define DBGRBUF(info) dump_rbufs(info)
++/*#define DBGTBUF(info) dump_tbufs(info)*/
++/*#define DBGRBUF(info) dump_rbufs(info)*/
+ 
+ 
+ #include <linux/module.h>
+@@ -62,7 +62,6 @@
+ #include <linux/mm.h>
+ #include <linux/seq_file.h>
+ #include <linux/slab.h>
+-#include <linux/smp_lock.h>
+ #include <linux/netdevice.h>
+ #include <linux/vmalloc.h>
+ #include <linux/init.h>
+@@ -901,8 +900,6 @@ static void wait_until_sent(struct tty_struct *tty, int timeout)
+ 	 * Note: use tight timings here to satisfy the NIST-PCTS.
+ 	 */
  
 -	lock_kernel();
 -
-+	mutex_lock(&port->port.mutex);
- 	reconfig_port = ((port->port.flags & ASYNC_SPD_MASK) !=
- 		(newinfo.flags & ASYNC_SPD_MASK));
- 
-@@ -1128,7 +1125,7 @@ static int isicom_set_serial_info(struct tty_struct *tty,
- 				(newinfo.closing_wait != port->port.closing_wait) ||
- 				((newinfo.flags & ~ASYNC_USR_MASK) !=
- 				(port->port.flags & ~ASYNC_USR_MASK))) {
--			unlock_kernel();
-+			mutex_unlock(&port->port.mutex);
- 			return -EPERM;
- 		}
- 		port->port.flags = ((port->port.flags & ~ASYNC_USR_MASK) |
-@@ -1145,7 +1142,7 @@ static int isicom_set_serial_info(struct tty_struct *tty,
- 		isicom_config_port(tty);
- 		spin_unlock_irqrestore(&port->card->card_lock, flags);
+ 	if (info->params.data_rate) {
+ 	       	char_time = info->timeout/(32 * 5);
+ 		if (!char_time)
+@@ -920,8 +917,6 @@ static void wait_until_sent(struct tty_struct *tty, int timeout)
+ 		if (timeout && time_after(jiffies, orig_jiffies + timeout))
+ 			break;
  	}
 -	unlock_kernel();
-+	mutex_unlock(&port->port.mutex);
+-
+ exit:
+ 	DBGINFO(("%s wait_until_sent exit\n", info->device_name));
+ }
+@@ -1041,8 +1036,37 @@ static int ioctl(struct tty_struct *tty, struct file *file,
+ 		    return -EIO;
+ 	}
+ 
+-	lock_kernel();
+-
++	switch (cmd) {
++	case MGSL_IOCWAITEVENT:
++		return wait_mgsl_event(info, argp);
++	case TIOCMIWAIT:
++		return modem_input_wait(info,(int)arg);
++	case TIOCGICOUNT:
++		spin_lock_irqsave(&info->lock,flags);
++		cnow = info->icount;
++		spin_unlock_irqrestore(&info->lock,flags);
++		p_cuser = argp;
++		if (put_user(cnow.cts, &p_cuser->cts) ||
++		    put_user(cnow.dsr, &p_cuser->dsr) ||
++		    put_user(cnow.rng, &p_cuser->rng) ||
++		    put_user(cnow.dcd, &p_cuser->dcd) ||
++		    put_user(cnow.rx, &p_cuser->rx) ||
++		    put_user(cnow.tx, &p_cuser->tx) ||
++		    put_user(cnow.frame, &p_cuser->frame) ||
++		    put_user(cnow.overrun, &p_cuser->overrun) ||
++		    put_user(cnow.parity, &p_cuser->parity) ||
++		    put_user(cnow.brk, &p_cuser->brk) ||
++		    put_user(cnow.buf_overrun, &p_cuser->buf_overrun))
++			return -EFAULT;
++		return 0;
++	case MGSL_IOCSGPIO:
++		return set_gpio(info, argp);
++	case MGSL_IOCGGPIO:
++		return get_gpio(info, argp);
++	case MGSL_IOCWAITGPIO:
++		return wait_gpio(info, argp);
++	}
++	mutex_lock(&info->port.mutex);
+ 	switch (cmd) {
+ 	case MGSL_IOCGPARAMS:
+ 		ret = get_params(info, argp);
+@@ -1068,50 +1092,16 @@ static int ioctl(struct tty_struct *tty, struct file *file,
+ 	case MGSL_IOCGSTATS:
+ 		ret = get_stats(info, argp);
+ 		break;
+-	case MGSL_IOCWAITEVENT:
+-		ret = wait_mgsl_event(info, argp);
+-		break;
+-	case TIOCMIWAIT:
+-		ret = modem_input_wait(info,(int)arg);
+-		break;
+ 	case MGSL_IOCGIF:
+ 		ret = get_interface(info, argp);
+ 		break;
+ 	case MGSL_IOCSIF:
+ 		ret = set_interface(info,(int)arg);
+ 		break;
+-	case MGSL_IOCSGPIO:
+-		ret = set_gpio(info, argp);
+-		break;
+-	case MGSL_IOCGGPIO:
+-		ret = get_gpio(info, argp);
+-		break;
+-	case MGSL_IOCWAITGPIO:
+-		ret = wait_gpio(info, argp);
+-		break;
+-	case TIOCGICOUNT:
+-		spin_lock_irqsave(&info->lock,flags);
+-		cnow = info->icount;
+-		spin_unlock_irqrestore(&info->lock,flags);
+-		p_cuser = argp;
+-		if (put_user(cnow.cts, &p_cuser->cts) ||
+-		    put_user(cnow.dsr, &p_cuser->dsr) ||
+-		    put_user(cnow.rng, &p_cuser->rng) ||
+-		    put_user(cnow.dcd, &p_cuser->dcd) ||
+-		    put_user(cnow.rx, &p_cuser->rx) ||
+-		    put_user(cnow.tx, &p_cuser->tx) ||
+-		    put_user(cnow.frame, &p_cuser->frame) ||
+-		    put_user(cnow.overrun, &p_cuser->overrun) ||
+-		    put_user(cnow.parity, &p_cuser->parity) ||
+-		    put_user(cnow.brk, &p_cuser->brk) ||
+-		    put_user(cnow.buf_overrun, &p_cuser->buf_overrun))
+-			ret = -EFAULT;
+-		ret = 0;
+-		break;
+ 	default:
+ 		ret = -ENOIOCTLCMD;
+ 	}
+-	unlock_kernel();
++	mutex_unlock(&info->port.mutex);
+ 	return ret;
+ }
+ 
+diff --git a/drivers/char/synclinkmp.c b/drivers/char/synclinkmp.c
+index 2b18adc..8da976b 100644
+--- a/drivers/char/synclinkmp.c
++++ b/drivers/char/synclinkmp.c
+@@ -52,7 +52,6 @@
+ #include <linux/mm.h>
+ #include <linux/seq_file.h>
+ #include <linux/slab.h>
+-#include <linux/smp_lock.h>
+ #include <linux/netdevice.h>
+ #include <linux/vmalloc.h>
+ #include <linux/init.h>
+@@ -1062,9 +1061,7 @@ static void wait_until_sent(struct tty_struct *tty, int timeout)
+ 	if (sanity_check(info, tty->name, "wait_until_sent"))
+ 		return;
+ 
+-	lock_kernel();
+-
+-	if (!(info->port.flags & ASYNC_INITIALIZED))
++	if (!test_bit(ASYNCB_INITIALIZED, &info->port.flags))
+ 		goto exit;
+ 
+ 	orig_jiffies = jiffies;
+@@ -1094,8 +1091,10 @@ static void wait_until_sent(struct tty_struct *tty, int timeout)
+ 				break;
+ 		}
+ 	} else {
+-		//TODO: determine if there is something similar to USC16C32
+-		// 	TXSTATUS_ALL_SENT status
++		/*
++		 * TODO: determine if there is something similar to USC16C32
++		 * 	 TXSTATUS_ALL_SENT status
++		 */
+ 		while ( info->tx_active && info->tx_enabled) {
+ 			msleep_interruptible(jiffies_to_msecs(char_time));
+ 			if (signal_pending(current))
+@@ -1106,7 +1105,6 @@ static void wait_until_sent(struct tty_struct *tty, int timeout)
+ 	}
+ 
+ exit:
+-	unlock_kernel();
+ 	if (debug_level >= DEBUG_LEVEL_INFO)
+ 		printk("%s(%d):%s wait_until_sent() exit\n",
+ 			 __FILE__,__LINE__, info->device_name );
+@@ -1122,7 +1120,6 @@ static int write_room(struct tty_struct *tty)
+ 	if (sanity_check(info, tty->name, "write_room"))
+ 		return 0;
+ 
+-	lock_kernel();
+ 	if (info->params.mode == MGSL_MODE_HDLC) {
+ 		ret = (info->tx_active) ? 0 : HDLC_MAX_FRAME_SIZE;
+ 	} else {
+@@ -1130,7 +1127,6 @@ static int write_room(struct tty_struct *tty)
+ 		if (ret < 0)
+ 			ret = 0;
+ 	}
+-	unlock_kernel();
+ 
+ 	if (debug_level >= DEBUG_LEVEL_INFO)
+ 		printk("%s(%d):%s write_room()=%d\n",
+@@ -1251,7 +1247,7 @@ static void tx_release(struct tty_struct *tty)
+  *
+  * Return Value:	0 if success, otherwise error code
+  */
+-static int do_ioctl(struct tty_struct *tty, struct file *file,
++static int ioctl(struct tty_struct *tty, struct file *file,
+ 		 unsigned int cmd, unsigned long arg)
+ {
+ 	SLMP_INFO *info = tty->driver_data;
+@@ -1341,16 +1337,6 @@ static int do_ioctl(struct tty_struct *tty, struct file *file,
  	return 0;
  }
  
-@@ -1154,7 +1151,7 @@ static int isicom_get_serial_info(struct isi_port *port,
- {
- 	struct serial_struct out_info;
- 
+-static int ioctl(struct tty_struct *tty, struct file *file,
+-		 unsigned int cmd, unsigned long arg)
+-{
+-	int ret;
 -	lock_kernel();
-+	mutex_lock(&port->port.mutex);
- 	memset(&out_info, 0, sizeof(out_info));
- /*	out_info.type = ? */
- 	out_info.line = port - isi_ports;
-@@ -1164,7 +1161,7 @@ static int isicom_get_serial_info(struct isi_port *port,
- /*	out_info.baud_base = ? */
- 	out_info.close_delay = port->port.close_delay;
- 	out_info.closing_wait = port->port.closing_wait;
+-	ret = do_ioctl(tty, file, cmd, arg);
 -	unlock_kernel();
-+	mutex_unlock(&port->port.mutex);
- 	if (copy_to_user(info, &out_info, sizeof(out_info)))
+-	return ret;
+-}
+-
+ /*
+  * /proc fs routines....
+  */
+@@ -2883,7 +2869,9 @@ static int get_stats(SLMP_INFO * info, struct mgsl_icount __user *user_icount)
+ 	if (!user_icount) {
+ 		memset(&info->icount, 0, sizeof(info->icount));
+ 	} else {
++		mutex_lock(&info->port.mutex);
+ 		COPY_TO_USER(err, user_icount, &info->icount, sizeof(struct mgsl_icount));
++		mutex_unlock(&info->port.mutex);
+ 		if (err)
+ 			return -EFAULT;
+ 	}
+@@ -2898,7 +2886,9 @@ static int get_params(SLMP_INFO * info, MGSL_PARAMS __user *user_params)
+ 		printk("%s(%d):%s get_params()\n",
+ 			 __FILE__,__LINE__, info->device_name);
+ 
++	mutex_lock(&info->port.mutex);
+ 	COPY_TO_USER(err,user_params, &info->params, sizeof(MGSL_PARAMS));
++	mutex_unlock(&info->port.mutex);
+ 	if (err) {
+ 		if ( debug_level >= DEBUG_LEVEL_INFO )
+ 			printk( "%s(%d):%s get_params() user buffer copy failed\n",
+@@ -2926,11 +2916,13 @@ static int set_params(SLMP_INFO * info, MGSL_PARAMS __user *new_params)
  		return -EFAULT;
+ 	}
+ 
++	mutex_lock(&info->port.mutex);
+ 	spin_lock_irqsave(&info->lock,flags);
+ 	memcpy(&info->params,&tmp_params,sizeof(MGSL_PARAMS));
+ 	spin_unlock_irqrestore(&info->lock,flags);
+ 
+  	change_params(info);
++	mutex_unlock(&info->port.mutex);
+ 
  	return 0;
+ }
