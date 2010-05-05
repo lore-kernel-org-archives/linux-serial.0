@@ -1,56 +1,254 @@
-From: Sergei Shtylyov <sshtylyov@mvista.com>
-Subject: Re: [PATCH] serial/imx: only parse for iomem resources once
-Date: Wed, 05 May 2010 14:09:26 +0400
-Message-ID: <4BE143D6.5060502@ru.mvista.com>
-References: <1271838838.643120.804272014834.1.gpush@pororo>
+From: Alan Cox <alan@linux.intel.com>
+Subject: [PATCH 01/20] stallion: prune lock_kernel calls
+Date: Wed, 05 May 2010 11:01:45 +0100
+Message-ID: <20100505100144.3595.65633.stgit@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ew0-f222.google.com ([209.85.219.222]:44375 "EHLO
-	mail-ew0-f222.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751342Ab0EEKKJ (ORCPT
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:54754 "EHLO
+	bob.linux.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S934369Ab0EEKkN (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 May 2010 06:10:09 -0400
-Received: by ewy22 with SMTP id 22so1429182ewy.37
-        for <linux-serial@vger.kernel.org>; Wed, 05 May 2010 03:10:08 -0700 (PDT)
-In-Reply-To: <1271838838.643120.804272014834.1.gpush@pororo>
+	Wed, 5 May 2010 06:40:13 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jeremy Kerr <jeremy.kerr@canonical.com>
-Cc: Sascha Hauer <kernel@pengutronix.de>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, arnd@arndb.de
 
-Hello.
+Remove unneeded tty layer lock kernel bits. Relock the needed bits using the
+port mutex. The istallion still has brd state races but those are not new
+or introduced by the removal of the lock_kernel logic.
 
-Jeremy Kerr wrote:
+Signed-off-by: Alan Cox <alan@linux.intel.com>
+---
 
-> Currently, the iomem resources are parsed in serial_imx_probe, then
-> again in imx_request_port and imx_release_port.
->
-> This change uses the imx_port data to retrieve the start and size of the
-> memory region, rather than re-parsing the resources through
-> platform_get_resource.
->
-> Signed-off-by: Jeremy Kerr <jeremy.kerr@canonical.com>
->
-> ---
->  drivers/serial/imx.c |   18 ++++++------------
->  1 file changed, 6 insertions(+), 12 deletions(-)
->
-> diff --git a/drivers/serial/imx.c b/drivers/serial/imx.c
-> index e579d7a..7de6bf7 100644
-> --- a/drivers/serial/imx.c
-> +++ b/drivers/serial/imx.c
->   
-[...]
-> @@ -1245,6 +1238,7 @@ static int serial_imx_probe(struct platform_device *pdev)
->  	sport->port.dev = &pdev->dev;
->  	sport->port.mapbase = res->start;
->  	sport->port.membase = base;
-> +	sport->mapsize = res->end - res->start + 1;
->   
+ drivers/char/istallion.c |   22 +++++++++++++---------
+ drivers/char/stallion.c  |   20 ++++++++++++--------
+ 2 files changed, 25 insertions(+), 17 deletions(-)
 
-   There's resource_size() for this calculation.
 
-WBR, Sergei
+diff --git a/drivers/char/istallion.c b/drivers/char/istallion.c
+index 4e395c9..750650c 100644
+--- a/drivers/char/istallion.c
++++ b/drivers/char/istallion.c
+@@ -14,6 +14,7 @@
+  *	the Free Software Foundation; either version 2 of the License, or
+  *	(at your option) any later version.
+  *
++ *	FIXME: brdp->state needs proper locking.
+  */
+ 
+ /*****************************************************************************/
+@@ -4011,6 +4012,7 @@ static int stli_getbrdstats(combrd_t __user *bp)
+ 		return -ENODEV;
+ 
+ 	memset(&stli_brdstats, 0, sizeof(combrd_t));
++
+ 	stli_brdstats.brd = brdp->brdnr;
+ 	stli_brdstats.type = brdp->brdtype;
+ 	stli_brdstats.hwid = 0;
+@@ -4076,10 +4078,13 @@ static int stli_portcmdstats(struct tty_struct *tty, struct stliport *portp)
+ 	if (brdp == NULL)
+ 		return -ENODEV;
+ 
++	mutex_lock(&portp->port.mutex);
+ 	if (brdp->state & BST_STARTED) {
+ 		if ((rc = stli_cmdwait(brdp, portp, A_GETSTATS,
+-		    &stli_cdkstats, sizeof(asystats_t), 1)) < 0)
++		    &stli_cdkstats, sizeof(asystats_t), 1)) < 0) {
++			mutex_unlock(&portp->port.mutex);
+ 			return rc;
++		}
+ 	} else {
+ 		memset(&stli_cdkstats, 0, sizeof(asystats_t));
+ 	}
+@@ -4124,6 +4129,7 @@ static int stli_portcmdstats(struct tty_struct *tty, struct stliport *portp)
+ 	stli_comstats.modem = stli_cdkstats.dcdcnt;
+ 	stli_comstats.hwid = stli_cdkstats.hwid;
+ 	stli_comstats.signals = stli_mktiocm(stli_cdkstats.signals);
++	mutex_unlock(&portp->port.mutex);
+ 
+ 	return 0;
+ }
+@@ -4186,15 +4192,20 @@ static int stli_clrportstats(struct stliport *portp, comstats_t __user *cp)
+ 	if (!brdp)
+ 		return -ENODEV;
+ 
++	mutex_lock(&portp->port.mutex);
++
+ 	if (brdp->state & BST_STARTED) {
+-		if ((rc = stli_cmdwait(brdp, portp, A_CLEARSTATS, NULL, 0, 0)) < 0)
++		if ((rc = stli_cmdwait(brdp, portp, A_CLEARSTATS, NULL, 0, 0)) < 0) {
++			mutex_unlock(&portp->port.mutex);
+ 			return rc;
++		}
+ 	}
+ 
+ 	memset(&stli_comstats, 0, sizeof(comstats_t));
+ 	stli_comstats.brd = portp->brdnr;
+ 	stli_comstats.panel = portp->panelnr;
+ 	stli_comstats.port = portp->portnr;
++	mutex_unlock(&portp->port.mutex);
+ 
+ 	if (copy_to_user(cp, &stli_comstats, sizeof(comstats_t)))
+ 		return -EFAULT;
+@@ -4266,8 +4277,6 @@ static long stli_memioctl(struct file *fp, unsigned int cmd, unsigned long arg)
+ 	done = 0;
+ 	rc = 0;
+ 
+-	lock_kernel();
+-
+ 	switch (cmd) {
+ 	case COM_GETPORTSTATS:
+ 		rc = stli_getportstats(NULL, NULL, argp);
+@@ -4290,8 +4299,6 @@ static long stli_memioctl(struct file *fp, unsigned int cmd, unsigned long arg)
+ 		done++;
+ 		break;
+ 	}
+-	unlock_kernel();
+-
+ 	if (done)
+ 		return rc;
+ 
+@@ -4308,8 +4315,6 @@ static long stli_memioctl(struct file *fp, unsigned int cmd, unsigned long arg)
+ 	if (brdp->state == 0)
+ 		return -ENODEV;
+ 
+-	lock_kernel();
+-
+ 	switch (cmd) {
+ 	case STL_BINTR:
+ 		EBRDINTR(brdp);
+@@ -4332,7 +4337,6 @@ static long stli_memioctl(struct file *fp, unsigned int cmd, unsigned long arg)
+ 		rc = -ENOIOCTLCMD;
+ 		break;
+ 	}
+-	unlock_kernel();
+ 	return rc;
+ }
+ 
+diff --git a/drivers/char/stallion.c b/drivers/char/stallion.c
+index 6049fd7..f2167f8 100644
+--- a/drivers/char/stallion.c
++++ b/drivers/char/stallion.c
+@@ -807,7 +807,6 @@ static void stl_waituntilsent(struct tty_struct *tty, int timeout)
+ 		timeout = HZ;
+ 	tend = jiffies + timeout;
+ 
+-	lock_kernel();
+ 	while (stl_datastate(portp)) {
+ 		if (signal_pending(current))
+ 			break;
+@@ -815,7 +814,6 @@ static void stl_waituntilsent(struct tty_struct *tty, int timeout)
+ 		if (time_after_eq(jiffies, tend))
+ 			break;
+ 	}
+-	unlock_kernel();
+ }
+ 
+ /*****************************************************************************/
+@@ -1029,6 +1027,8 @@ static int stl_getserial(struct stlport *portp, struct serial_struct __user *sp)
+ 	pr_debug("stl_getserial(portp=%p,sp=%p)\n", portp, sp);
+ 
+ 	memset(&sio, 0, sizeof(struct serial_struct));
++
++	mutex_lock(&portp->port.mutex);
+ 	sio.line = portp->portnr;
+ 	sio.port = portp->ioaddr;
+ 	sio.flags = portp->port.flags;
+@@ -1048,6 +1048,7 @@ static int stl_getserial(struct stlport *portp, struct serial_struct __user *sp)
+ 	brdp = stl_brds[portp->brdnr];
+ 	if (brdp != NULL)
+ 		sio.irq = brdp->irq;
++	mutex_unlock(&portp->port.mutex);
+ 
+ 	return copy_to_user(sp, &sio, sizeof(struct serial_struct)) ? -EFAULT : 0;
+ }
+@@ -1069,12 +1070,15 @@ static int stl_setserial(struct tty_struct *tty, struct serial_struct __user *sp
+ 
+ 	if (copy_from_user(&sio, sp, sizeof(struct serial_struct)))
+ 		return -EFAULT;
++	mutex_lock(&portp->port.mutex);
+ 	if (!capable(CAP_SYS_ADMIN)) {
+ 		if ((sio.baud_base != portp->baud_base) ||
+ 		    (sio.close_delay != portp->close_delay) ||
+ 		    ((sio.flags & ~ASYNC_USR_MASK) !=
+-		    (portp->port.flags & ~ASYNC_USR_MASK)))
++		    (portp->port.flags & ~ASYNC_USR_MASK))) {
++			mutex_unlock(&portp->port.mutex);
+ 			return -EPERM;
++		}
+ 	} 
+ 
+ 	portp->port.flags = (portp->port.flags & ~ASYNC_USR_MASK) |
+@@ -1083,6 +1087,7 @@ static int stl_setserial(struct tty_struct *tty, struct serial_struct __user *sp
+ 	portp->close_delay = sio.close_delay;
+ 	portp->closing_wait = sio.closing_wait;
+ 	portp->custom_divisor = sio.custom_divisor;
++	mutex_unlock(&portp->port.mutex);
+ 	stl_setport(portp, tty->termios);
+ 	return 0;
+ }
+@@ -1147,8 +1152,6 @@ static int stl_ioctl(struct tty_struct *tty, struct file *file, unsigned int cmd
+ 
+ 	rc = 0;
+ 
+-	lock_kernel();
+-
+ 	switch (cmd) {
+ 	case TIOCGSERIAL:
+ 		rc = stl_getserial(portp, argp);
+@@ -1173,7 +1176,6 @@ static int stl_ioctl(struct tty_struct *tty, struct file *file, unsigned int cmd
+ 		rc = -ENOIOCTLCMD;
+ 		break;
+ 	}
+-	unlock_kernel();
+ 	return rc;
+ }
+ 
+@@ -2327,6 +2329,7 @@ static int stl_getportstats(struct tty_struct *tty, struct stlport *portp, comst
+ 			return -ENODEV;
+ 	}
+ 
++	mutex_lock(&portp->port.mutex);
+ 	portp->stats.state = portp->istate;
+ 	portp->stats.flags = portp->port.flags;
+ 	portp->stats.hwid = portp->hwid;
+@@ -2358,6 +2361,7 @@ static int stl_getportstats(struct tty_struct *tty, struct stlport *portp, comst
+ 		(STL_TXBUFSIZE - (tail - head));
+ 
+ 	portp->stats.signals = (unsigned long) stl_getsignals(portp);
++	mutex_unlock(&portp->port.mutex);
+ 
+ 	return copy_to_user(cp, &portp->stats,
+ 			    sizeof(comstats_t)) ? -EFAULT : 0;
+@@ -2382,10 +2386,12 @@ static int stl_clrportstats(struct stlport *portp, comstats_t __user *cp)
+ 			return -ENODEV;
+ 	}
+ 
++	mutex_lock(&portp->port.mutex);
+ 	memset(&portp->stats, 0, sizeof(comstats_t));
+ 	portp->stats.brd = portp->brdnr;
+ 	portp->stats.panel = portp->panelnr;
+ 	portp->stats.port = portp->portnr;
++	mutex_unlock(&portp->port.mutex);
+ 	return copy_to_user(cp, &portp->stats,
+ 			    sizeof(comstats_t)) ? -EFAULT : 0;
+ }
+@@ -2451,7 +2457,6 @@ static long stl_memioctl(struct file *fp, unsigned int cmd, unsigned long arg)
+ 		return -ENODEV;
+ 	rc = 0;
+ 
+-	lock_kernel();
+ 	switch (cmd) {
+ 	case COM_GETPORTSTATS:
+ 		rc = stl_getportstats(NULL, NULL, argp);
+@@ -2472,7 +2477,6 @@ static long stl_memioctl(struct file *fp, unsigned int cmd, unsigned long arg)
+ 		rc = -ENOIOCTLCMD;
+ 		break;
+ 	}
+-	unlock_kernel();
+ 	return rc;
+ }
+ 
 
