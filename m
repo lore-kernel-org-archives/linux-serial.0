@@ -1,34 +1,39 @@
-From: Ian Abbott <abbotti@mev.co.uk>
-Subject: Re: [Nios2-dev] [PATCH 2/2] serial: Add driver for the Altera UART
-Date: Thu, 6 May 2010 13:47:17 +0100
-Message-ID: <4BE2BA55.6060109@mev.co.uk>
-References: <cover.1273048151.git.tklauser@distanz.ch>	<095aab012b2a6b3bbf4c7bc04294bb9c19316318.1273048151.git.tklauser@distanz.ch> <1273142684.3477.22.camel@gentoo-ija64.mev.local> <4BE2B02B.4010209@zhaw.ch>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+From: Tobias Klauser <tklauser@distanz.ch>
+Subject: [PATCH] serial: bfin_sport_uart: Use resource size to fix off-by-one error
+Date: Tue, 11 May 2010 09:10:23 +0200
+Message-ID: <1273561823-4495-1-git-send-email-tklauser@distanz.ch>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.mev.co.uk ([62.49.15.74]:34123 "EHLO mail.mev.co.uk"
+Received: from mx1.zhaw.ch ([160.85.104.50]:53639 "EHLO mx1.zhaw.ch"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757988Ab0EFMr3 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 May 2010 08:47:29 -0400
-In-Reply-To: <4BE2B02B.4010209@zhaw.ch>
+	id S1752383Ab0EKHK0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 11 May 2010 03:10:26 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tobias Klauser <klto@zhaw.ch>
-Cc: Ian Abbott <ian.abbott@mev.co.uk>, "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>, "gregkh@suse.de" <gregkh@suse.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "alan@lxorguk.ukuu.org.uk" <alan@lxorguk.ukuu.org.uk>, "nios2-dev@sopc.et.ntust.edu.tw" <nios2-dev@sopc.et.ntust.edu.tw>
+To: vapier@gentoo.org, gregkh@suse.de, linux-serial@vger.kernel.org
+Cc: kernel-janitors@vger.kernel.org, Tobias Klauser <tklauser@distanz.ch>
 
-Hi Tobias,
+Use the resource_size function instead of manually calculating the
+resource size. This actually fixes an off-by-one error.
 
-On 06/05/10 13:03, Tobias Klauser wrote:
-> I also noticed, that altera_uart_break_ctl takes the lock which might be
-> not necessary as the caller in serial_core.c already takes port->mutex
-> which should be enough. Or am I wrong?
+Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
+---
+ drivers/serial/bfin_sport_uart.c |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
 
-It's not enough.  The spin lock is needed to protect modification of
-pp->imr and writing this modified value to the control register.  Not
-all paths that modify pp->imr and the control register grab port->mutex
-beforehand (for example, the interrupt routine doesn't and can't).
-
+diff --git a/drivers/serial/bfin_sport_uart.c b/drivers/serial/bfin_sport_uart.c
+index 66cda22..e57fb3d 100644
+--- a/drivers/serial/bfin_sport_uart.c
++++ b/drivers/serial/bfin_sport_uart.c
+@@ -774,8 +774,7 @@ static int __devinit sport_uart_probe(struct platform_device *pdev)
+ 			goto out_error_free_peripherals;
+ 		}
+ 
+-		sport->port.membase = ioremap(res->start,
+-			res->end - res->start);
++		sport->port.membase = ioremap(res->start, resource_size(res));
+ 		if (!sport->port.membase) {
+ 			dev_err(&pdev->dev, "Cannot map sport IO\n");
+ 			ret = -ENXIO;
 -- 
--=( Ian Abbott @ MEV Ltd.    E-mail: <abbotti@mev.co.uk>        )=-
--=( Tel: +44 (0)161 477 1898   FAX: +44 (0)161 718 3587         )=-
+1.6.3.3
+
