@@ -1,39 +1,81 @@
-From: Tobias Klauser <tklauser@distanz.ch>
-Subject: [PATCH] serial: bfin_sport_uart: Use resource size to fix off-by-one error
-Date: Tue, 11 May 2010 09:10:23 +0200
-Message-ID: <1273561823-4495-1-git-send-email-tklauser@distanz.ch>
+From: MAGARETH WILLIAMS <amadeus1@base.be>
+Subject: I WILL SEND YOU FURTHER DETAILS
+Date: Tue, 11 May 2010 13:11:00 +0200
+Message-ID: <96318d2a361a605be0d176d3364c4dab__15463.6074825705$1273579335$gmane$org@base.be>
+Reply-To: <bc101707bc@yahoo.co.jp>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx1.zhaw.ch ([160.85.104.50]:53639 "EHLO mx1.zhaw.ch"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752383Ab0EKHK0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 11 May 2010 03:10:26 -0400
+Received: from postbode01.c.iops.be ([212.53.5.91]:42370 "EHLO
+	postbode01.versateladsl.be" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752019Ab0EKMCF (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 11 May 2010 08:02:05 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: vapier@gentoo.org, gregkh@suse.de, linux-serial@vger.kernel.org
-Cc: kernel-janitors@vger.kernel.org, Tobias Klauser <tklauser@distanz.ch>
 
-Use the resource_size function instead of manually calculating the
-resource size. This actually fixes an off-by-one error.
 
-Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
----
- drivers/serial/bfin_sport_uart.c |    3 +--
- 1 files changed, 1 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/serial/bfin_sport_uart.c b/drivers/serial/bfin_sport_uart.c
-index 66cda22..e57fb3d 100644
---- a/drivers/serial/bfin_sport_uart.c
-+++ b/drivers/serial/bfin_sport_uart.c
-@@ -774,8 +774,7 @@ static int __devinit sport_uart_probe(struct platform_device *pdev)
- 			goto out_error_free_peripherals;
- 		}
- 
--		sport->port.membase = ioremap(res->start,
--			res->end - res->start);
-+		sport->port.membase = ioremap(res->start, resource_size(res));
- 		if (!sport->port.membase) {
- 			dev_err(&pdev->dev, "Cannot map sport IO\n");
- 			ret = -ENXIO;
--- 
-1.6.3.3
+Dearest,
 
+I am Ms Magareth Williams,now undergoing medical treatment for cancer i=
+n
+Malaysia. Before I took ill, I was the, Principal Assurance manager of =
+BNP
+Paribas Private Bank.I am getting in touch with you regarding the estat=
+e of
+one Mr. Goudie  and an investment placed under my management 7 years ag=
+o.=20
+He instructed that we liquidate the principal sum (18,350,000.00 Millio=
+n
+United State Dollars) because he needed to make an urgent investment th=
+at
+requires cash payment in Europe. We got in touch with his nominated
+financial institution  in Europe, who agreed to receive this money for =
+a
+fee and make cash available to Mr. Goudie  for his business operations.
+
+To my surprise, the corresponding bank in Europe got in touch with us l=
+ast
+year that nobody has come forward to claim the money and it has reached=
+ the
+threshold for the bank to declare it to the government as unclaimed
+deposit. On further enquiry, I found that, Mr. Goudie  was involved in =
+an
+accident in Mainland China and that he died intestate. Because he has n=
+o
+next of kin all his assets in Europe are about to go to the government.=
+ I
+write you to makes you  to stand as his next of kin and surviving heir =
+to
+his assets and the beneficiary of the deposit valued 18,350,000.00 Mill=
+ion
+United State Dollars
+
+My condition has become hopeless, my Doctor recently told me that my
+cancer has spread and that I have a few months to live. Having known th=
+e
+hopelessness of my health condition, and the urgency to act, I am
+compelled to seek your assistance to get this money out by standing as =
+the
+beneficiary and using part of these funds to help the poor and sick peo=
+ple
+in society. I have exclusive access to Mr. Goudie=E2=80=99s file and al=
+l his
+investment record.  I hope you are somebody that can be trusted.
+
+If we can be of one accord, we should act swiftly on this. If you are
+interested in this deal, kindly get back to me quickly with your full
+details and I will proceed to give you full modalities on how this can =
+be
+acheived.
+
+I await your response
+
+Ms Magareth Williams
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
