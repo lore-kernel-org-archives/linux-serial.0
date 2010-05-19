@@ -1,71 +1,256 @@
 From: Alan Cox <alan@linux.intel.com>
-Subject: [PATCH 01/11] tty: Fix the digi acceleport driver NULL checks
-Date: Wed, 19 May 2010 13:01:56 +0100
-Message-ID: <20100519120148.16717.1135.stgit@localhost.localdomain>
+Subject: [PATCH 02/11] stallion: prune lock_kernel calls
+Date: Wed, 19 May 2010 13:02:07 +0100
+Message-ID: <20100519120202.16717.24068.stgit@localhost.localdomain>
 References: <20100519120111.16717.71992.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:51078 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:51082 "EHLO
 	bob.linux.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1756041Ab0ESMoY (ORCPT
+	with ESMTP id S1756041Ab0ESMof (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 May 2010 08:44:24 -0400
+	Wed, 19 May 2010 08:44:35 -0400
 In-Reply-To: <20100519120111.16717.71992.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: greg@kroah.com, linux-serial@vger.kernel.org
 
-This now refcounts but doesn't actually check the reference was obtained in
-all the places it should.
+Remove unneeded tty layer lock kernel bits. Relock the needed bits using the
+port mutex. The istallion still has brd state races but those are not new
+or introduced by the removal of the lock_kernel logic.
 
 Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
 
- drivers/usb/serial/digi_acceleport.c |   14 +++++++++-----
- 1 files changed, 9 insertions(+), 5 deletions(-)
+ drivers/char/istallion.c |   22 +++++++++++++---------
+ drivers/char/stallion.c  |   20 ++++++++++++--------
+ 2 files changed, 25 insertions(+), 17 deletions(-)
 
 
-diff --git a/drivers/usb/serial/digi_acceleport.c b/drivers/usb/serial/digi_acceleport.c
-index 3edda3e..2d28c02 100644
---- a/drivers/usb/serial/digi_acceleport.c
-+++ b/drivers/usb/serial/digi_acceleport.c
-@@ -609,8 +609,10 @@ static void digi_wakeup_write_lock(struct work_struct *work)
- static void digi_wakeup_write(struct usb_serial_port *port)
- {
- 	struct tty_struct *tty = tty_port_tty_get(&port->port);
--	tty_wakeup(tty);
--	tty_kref_put(tty);
-+	if (tty) {
-+		tty_wakeup(tty);
-+		tty_kref_put(tty);
-+	}
+diff --git a/drivers/char/istallion.c b/drivers/char/istallion.c
+index 4e395c9..750650c 100644
+--- a/drivers/char/istallion.c
++++ b/drivers/char/istallion.c
+@@ -14,6 +14,7 @@
+  *	the Free Software Foundation; either version 2 of the License, or
+  *	(at your option) any later version.
+  *
++ *	FIXME: brdp->state needs proper locking.
+  */
+ 
+ /*****************************************************************************/
+@@ -4011,6 +4012,7 @@ static int stli_getbrdstats(combrd_t __user *bp)
+ 		return -ENODEV;
+ 
+ 	memset(&stli_brdstats, 0, sizeof(combrd_t));
++
+ 	stli_brdstats.brd = brdp->brdnr;
+ 	stli_brdstats.type = brdp->brdtype;
+ 	stli_brdstats.hwid = 0;
+@@ -4076,10 +4078,13 @@ static int stli_portcmdstats(struct tty_struct *tty, struct stliport *portp)
+ 	if (brdp == NULL)
+ 		return -ENODEV;
+ 
++	mutex_lock(&portp->port.mutex);
+ 	if (brdp->state & BST_STARTED) {
+ 		if ((rc = stli_cmdwait(brdp, portp, A_GETSTATS,
+-		    &stli_cdkstats, sizeof(asystats_t), 1)) < 0)
++		    &stli_cdkstats, sizeof(asystats_t), 1)) < 0) {
++			mutex_unlock(&portp->port.mutex);
+ 			return rc;
++		}
+ 	} else {
+ 		memset(&stli_cdkstats, 0, sizeof(asystats_t));
+ 	}
+@@ -4124,6 +4129,7 @@ static int stli_portcmdstats(struct tty_struct *tty, struct stliport *portp)
+ 	stli_comstats.modem = stli_cdkstats.dcdcnt;
+ 	stli_comstats.hwid = stli_cdkstats.hwid;
+ 	stli_comstats.signals = stli_mktiocm(stli_cdkstats.signals);
++	mutex_unlock(&portp->port.mutex);
+ 
+ 	return 0;
+ }
+@@ -4186,15 +4192,20 @@ static int stli_clrportstats(struct stliport *portp, comstats_t __user *cp)
+ 	if (!brdp)
+ 		return -ENODEV;
+ 
++	mutex_lock(&portp->port.mutex);
++
+ 	if (brdp->state & BST_STARTED) {
+-		if ((rc = stli_cmdwait(brdp, portp, A_CLEARSTATS, NULL, 0, 0)) < 0)
++		if ((rc = stli_cmdwait(brdp, portp, A_CLEARSTATS, NULL, 0, 0)) < 0) {
++			mutex_unlock(&portp->port.mutex);
+ 			return rc;
++		}
+ 	}
+ 
+ 	memset(&stli_comstats, 0, sizeof(comstats_t));
+ 	stli_comstats.brd = portp->brdnr;
+ 	stli_comstats.panel = portp->panelnr;
+ 	stli_comstats.port = portp->portnr;
++	mutex_unlock(&portp->port.mutex);
+ 
+ 	if (copy_to_user(cp, &stli_comstats, sizeof(comstats_t)))
+ 		return -EFAULT;
+@@ -4266,8 +4277,6 @@ static long stli_memioctl(struct file *fp, unsigned int cmd, unsigned long arg)
+ 	done = 0;
+ 	rc = 0;
+ 
+-	lock_kernel();
+-
+ 	switch (cmd) {
+ 	case COM_GETPORTSTATS:
+ 		rc = stli_getportstats(NULL, NULL, argp);
+@@ -4290,8 +4299,6 @@ static long stli_memioctl(struct file *fp, unsigned int cmd, unsigned long arg)
+ 		done++;
+ 		break;
+ 	}
+-	unlock_kernel();
+-
+ 	if (done)
+ 		return rc;
+ 
+@@ -4308,8 +4315,6 @@ static long stli_memioctl(struct file *fp, unsigned int cmd, unsigned long arg)
+ 	if (brdp->state == 0)
+ 		return -ENODEV;
+ 
+-	lock_kernel();
+-
+ 	switch (cmd) {
+ 	case STL_BINTR:
+ 		EBRDINTR(brdp);
+@@ -4332,7 +4337,6 @@ static long stli_memioctl(struct file *fp, unsigned int cmd, unsigned long arg)
+ 		rc = -ENOIOCTLCMD;
+ 		break;
+ 	}
+-	unlock_kernel();
+ 	return rc;
  }
  
+diff --git a/drivers/char/stallion.c b/drivers/char/stallion.c
+index 6049fd7..f2167f8 100644
+--- a/drivers/char/stallion.c
++++ b/drivers/char/stallion.c
+@@ -807,7 +807,6 @@ static void stl_waituntilsent(struct tty_struct *tty, int timeout)
+ 		timeout = HZ;
+ 	tend = jiffies + timeout;
  
-@@ -1683,7 +1685,7 @@ static int digi_read_inb_callback(struct urb *urb)
- 		priv->dp_throttle_restart = 1;
+-	lock_kernel();
+ 	while (stl_datastate(portp)) {
+ 		if (signal_pending(current))
+ 			break;
+@@ -815,7 +814,6 @@ static void stl_waituntilsent(struct tty_struct *tty, int timeout)
+ 		if (time_after_eq(jiffies, tend))
+ 			break;
+ 	}
+-	unlock_kernel();
+ }
  
- 	/* receive data */
--	if (opcode == DIGI_CMD_RECEIVE_DATA) {
-+	if (tty && opcode == DIGI_CMD_RECEIVE_DATA) {
- 		/* get flag from port_status */
- 		flag = 0;
+ /*****************************************************************************/
+@@ -1029,6 +1027,8 @@ static int stl_getserial(struct stlport *portp, struct serial_struct __user *sp)
+ 	pr_debug("stl_getserial(portp=%p,sp=%p)\n", portp, sp);
  
-@@ -1764,10 +1766,12 @@ static int digi_read_oob_callback(struct urb *urb)
- 			return -1;
- 
- 		tty = tty_port_tty_get(&port->port);
+ 	memset(&sio, 0, sizeof(struct serial_struct));
 +
- 		rts = 0;
--		rts = tty->termios->c_cflag & CRTSCTS;
-+		if (tty)
-+			rts = tty->termios->c_cflag & CRTSCTS;
- 		
--		if (opcode == DIGI_CMD_READ_INPUT_SIGNALS) {
-+		if (tty && opcode == DIGI_CMD_READ_INPUT_SIGNALS) {
- 			spin_lock(&priv->dp_port_lock);
- 			/* convert from digi flags to termiox flags */
- 			if (val & DIGI_READ_INPUT_SIGNALS_CTS) {
++	mutex_lock(&portp->port.mutex);
+ 	sio.line = portp->portnr;
+ 	sio.port = portp->ioaddr;
+ 	sio.flags = portp->port.flags;
+@@ -1048,6 +1048,7 @@ static int stl_getserial(struct stlport *portp, struct serial_struct __user *sp)
+ 	brdp = stl_brds[portp->brdnr];
+ 	if (brdp != NULL)
+ 		sio.irq = brdp->irq;
++	mutex_unlock(&portp->port.mutex);
+ 
+ 	return copy_to_user(sp, &sio, sizeof(struct serial_struct)) ? -EFAULT : 0;
+ }
+@@ -1069,12 +1070,15 @@ static int stl_setserial(struct tty_struct *tty, struct serial_struct __user *sp
+ 
+ 	if (copy_from_user(&sio, sp, sizeof(struct serial_struct)))
+ 		return -EFAULT;
++	mutex_lock(&portp->port.mutex);
+ 	if (!capable(CAP_SYS_ADMIN)) {
+ 		if ((sio.baud_base != portp->baud_base) ||
+ 		    (sio.close_delay != portp->close_delay) ||
+ 		    ((sio.flags & ~ASYNC_USR_MASK) !=
+-		    (portp->port.flags & ~ASYNC_USR_MASK)))
++		    (portp->port.flags & ~ASYNC_USR_MASK))) {
++			mutex_unlock(&portp->port.mutex);
+ 			return -EPERM;
++		}
+ 	} 
+ 
+ 	portp->port.flags = (portp->port.flags & ~ASYNC_USR_MASK) |
+@@ -1083,6 +1087,7 @@ static int stl_setserial(struct tty_struct *tty, struct serial_struct __user *sp
+ 	portp->close_delay = sio.close_delay;
+ 	portp->closing_wait = sio.closing_wait;
+ 	portp->custom_divisor = sio.custom_divisor;
++	mutex_unlock(&portp->port.mutex);
+ 	stl_setport(portp, tty->termios);
+ 	return 0;
+ }
+@@ -1147,8 +1152,6 @@ static int stl_ioctl(struct tty_struct *tty, struct file *file, unsigned int cmd
+ 
+ 	rc = 0;
+ 
+-	lock_kernel();
+-
+ 	switch (cmd) {
+ 	case TIOCGSERIAL:
+ 		rc = stl_getserial(portp, argp);
+@@ -1173,7 +1176,6 @@ static int stl_ioctl(struct tty_struct *tty, struct file *file, unsigned int cmd
+ 		rc = -ENOIOCTLCMD;
+ 		break;
+ 	}
+-	unlock_kernel();
+ 	return rc;
+ }
+ 
+@@ -2327,6 +2329,7 @@ static int stl_getportstats(struct tty_struct *tty, struct stlport *portp, comst
+ 			return -ENODEV;
+ 	}
+ 
++	mutex_lock(&portp->port.mutex);
+ 	portp->stats.state = portp->istate;
+ 	portp->stats.flags = portp->port.flags;
+ 	portp->stats.hwid = portp->hwid;
+@@ -2358,6 +2361,7 @@ static int stl_getportstats(struct tty_struct *tty, struct stlport *portp, comst
+ 		(STL_TXBUFSIZE - (tail - head));
+ 
+ 	portp->stats.signals = (unsigned long) stl_getsignals(portp);
++	mutex_unlock(&portp->port.mutex);
+ 
+ 	return copy_to_user(cp, &portp->stats,
+ 			    sizeof(comstats_t)) ? -EFAULT : 0;
+@@ -2382,10 +2386,12 @@ static int stl_clrportstats(struct stlport *portp, comstats_t __user *cp)
+ 			return -ENODEV;
+ 	}
+ 
++	mutex_lock(&portp->port.mutex);
+ 	memset(&portp->stats, 0, sizeof(comstats_t));
+ 	portp->stats.brd = portp->brdnr;
+ 	portp->stats.panel = portp->panelnr;
+ 	portp->stats.port = portp->portnr;
++	mutex_unlock(&portp->port.mutex);
+ 	return copy_to_user(cp, &portp->stats,
+ 			    sizeof(comstats_t)) ? -EFAULT : 0;
+ }
+@@ -2451,7 +2457,6 @@ static long stl_memioctl(struct file *fp, unsigned int cmd, unsigned long arg)
+ 		return -ENODEV;
+ 	rc = 0;
+ 
+-	lock_kernel();
+ 	switch (cmd) {
+ 	case COM_GETPORTSTATS:
+ 		rc = stl_getportstats(NULL, NULL, argp);
+@@ -2472,7 +2477,6 @@ static long stl_memioctl(struct file *fp, unsigned int cmd, unsigned long arg)
+ 		rc = -ENOIOCTLCMD;
+ 		break;
+ 	}
+-	unlock_kernel();
+ 	return rc;
+ }
+ 
 
