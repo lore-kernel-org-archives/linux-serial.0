@@ -1,145 +1,41 @@
 From: Alan Cox <alan@linux.intel.com>
-Subject: [PATCH 11/11] synclink: reworking locking a bit
-Date: Wed, 19 May 2010 13:03:33 +0100
-Message-ID: <20100519120331.16717.38196.stgit@localhost.localdomain>
-References: <20100519120111.16717.71992.stgit@localhost.localdomain>
+Subject: [PATCH 0/3] Serial reference passing
+Date: Wed, 19 May 2010 13:06:50 +0100
+Message-ID: <20100519120532.17281.38433.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:51118 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:53662 "EHLO
 	bob.linux.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751772Ab0ESMqB (ORCPT
+	with ESMTP id S1758056Ab0ESMtU (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 May 2010 08:46:01 -0400
-In-Reply-To: <20100519120111.16717.71992.stgit@localhost.localdomain>
+	Wed, 19 May 2010 08:49:20 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: greg@kroah.com, linux-serial@vger.kernel.org
 
-Use the port mutex and port lock to fix the various races. The locking
-still isn't totally consistent but its better than before. Wants switching
-to the port helpers.
-
-Signed-off-by: Alan Cox <alan@linux.intel.com>
+Clean up the way we pass stuff around a bit so that we can avoid a lot of the
+tty back references in the serial layer. This is by no means the whole fix but
+it lays the groundwork for the important user side bits.
 ---
 
- drivers/char/synclink_gt.c |   12 +++++++++++-
- drivers/char/synclinkmp.c  |    9 ++++++++-
- 2 files changed, 19 insertions(+), 2 deletions(-)
+Alan Cox (3):
+      tty: serial - fix tty referencing in set_ldisc
+      tty: serial - fix tty back references in termios
+      tty: serial - fix various misuses/mishandlings of port->tty
 
 
-diff --git a/drivers/char/synclink_gt.c b/drivers/char/synclink_gt.c
-index d0f81f5..c56b70a 100644
---- a/drivers/char/synclink_gt.c
-+++ b/drivers/char/synclink_gt.c
-@@ -675,12 +675,14 @@ static int open(struct tty_struct *tty, struct file *filp)
- 		goto cleanup;
- 	}
- 
-+	mutex_lock(&info->port.mutex);
- 	info->port.tty->low_latency = (info->port.flags & ASYNC_LOW_LATENCY) ? 1 : 0;
- 
- 	spin_lock_irqsave(&info->netlock, flags);
- 	if (info->netcount) {
- 		retval = -EBUSY;
- 		spin_unlock_irqrestore(&info->netlock, flags);
-+		mutex_unlock(&info->port.mutex);
- 		goto cleanup;
- 	}
- 	info->port.count++;
-@@ -692,7 +694,7 @@ static int open(struct tty_struct *tty, struct file *filp)
- 		if (retval < 0)
- 			goto cleanup;
- 	}
--
-+	mutex_unlock(&info->port.mutex);
- 	retval = block_til_ready(tty, filp, info);
- 	if (retval) {
- 		DBGINFO(("%s block_til_ready rc=%d\n", info->device_name, retval));
-@@ -724,12 +726,14 @@ static void close(struct tty_struct *tty, struct file *filp)
- 	if (tty_port_close_start(&info->port, tty, filp) == 0)
- 		goto cleanup;
- 
-+	mutex_lock(&info->port.mutex);
-  	if (info->port.flags & ASYNC_INITIALIZED)
-  		wait_until_sent(tty, info->timeout);
- 	flush_buffer(tty);
- 	tty_ldisc_flush(tty);
- 
- 	shutdown(info);
-+	mutex_unlock(&info->port.mutex);
- 
- 	tty_port_close_end(&info->port, tty);
- 	info->port.tty = NULL;
-@@ -740,17 +744,23 @@ cleanup:
- static void hangup(struct tty_struct *tty)
- {
- 	struct slgt_info *info = tty->driver_data;
-+	unsigned long flags;
- 
- 	if (sanity_check(info, tty->name, "hangup"))
- 		return;
- 	DBGINFO(("%s hangup\n", info->device_name));
- 
- 	flush_buffer(tty);
-+
-+	mutex_lock(&info->port.mutex);
- 	shutdown(info);
- 
-+	spin_lock_irqsave(&info->port.lock, flags);
- 	info->port.count = 0;
- 	info->port.flags &= ~ASYNC_NORMAL_ACTIVE;
- 	info->port.tty = NULL;
-+	spin_unlock_irqrestore(&info->port.lock, flags);
-+	mutex_unlock(&info->port.mutex);
- 
- 	wake_up_interruptible(&info->port.open_wait);
- }
-diff --git a/drivers/char/synclinkmp.c b/drivers/char/synclinkmp.c
-index 8da976b..cfa581e 100644
---- a/drivers/char/synclinkmp.c
-+++ b/drivers/char/synclinkmp.c
-@@ -812,13 +812,15 @@ static void close(struct tty_struct *tty, struct file *filp)
- 
- 	if (tty_port_close_start(&info->port, tty, filp) == 0)
- 		goto cleanup;
--		
-+
-+	mutex_lock(&info->port.mutex);		
-  	if (info->port.flags & ASYNC_INITIALIZED)
-  		wait_until_sent(tty, info->timeout);
- 
- 	flush_buffer(tty);
- 	tty_ldisc_flush(tty);
- 	shutdown(info);
-+	mutex_unlock(&info->port.mutex);		
- 
- 	tty_port_close_end(&info->port, tty);
- 	info->port.tty = NULL;
-@@ -834,6 +836,7 @@ cleanup:
- static void hangup(struct tty_struct *tty)
- {
- 	SLMP_INFO *info = tty->driver_data;
-+	unsigned long flags;
- 
- 	if (debug_level >= DEBUG_LEVEL_INFO)
- 		printk("%s(%d):%s hangup()\n",
-@@ -842,12 +845,16 @@ static void hangup(struct tty_struct *tty)
- 	if (sanity_check(info, tty->name, "hangup"))
- 		return;
- 
-+	mutex_lock(&info->port.mutex);		
- 	flush_buffer(tty);
- 	shutdown(info);
- 
-+	spin_lock_irqsave(&info->port.lock, flags);
- 	info->port.count = 0;
- 	info->port.flags &= ~ASYNC_NORMAL_ACTIVE;
- 	info->port.tty = NULL;
-+	spin_unlock_irqrestore(&info->port.lock, flags);
-+	mutex_unlock(&info->port.mutex);		
- 
- 	wake_up_interruptible(&info->port.open_wait);
- }
+ drivers/serial/21285.c       |   10 +---
+ drivers/serial/bfin_5xx.c    |    7 +--
+ drivers/serial/imx.c         |   10 ++--
+ drivers/serial/ioc3_serial.c |    9 ++-
+ drivers/serial/ioc4_serial.c |    9 ++-
+ drivers/serial/max3100.c     |    7 +--
+ drivers/serial/serial_core.c |  111 +++++++++++++++++++++++-------------------
+ include/linux/serial_core.h  |    2 -
+ 8 files changed, 83 insertions(+), 82 deletions(-)
+
+-- 
+No Signature
 
