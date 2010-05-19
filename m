@@ -1,188 +1,81 @@
 From: Alan Cox <alan@linux.intel.com>
-Subject: [PATCH 2/3] tty: serial - fix tty back references in termios
-Date: Wed, 19 May 2010 13:07:27 +0100
-Message-ID: <20100519120723.17281.15464.stgit@localhost.localdomain>
+Subject: [PATCH 3/3] tty: serial - fix tty referencing in set_ldisc
+Date: Wed, 19 May 2010 13:07:34 +0100
+Message-ID: <20100519120732.17281.46507.stgit@localhost.localdomain>
 References: <20100519120532.17281.38433.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:53670 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:53674 "EHLO
 	bob.linux.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752352Ab0ESMtz (ORCPT
+	with ESMTP id S1752352Ab0ESMuD (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 May 2010 08:49:55 -0400
+	Wed, 19 May 2010 08:50:03 -0400
 In-Reply-To: <20100519120532.17281.38433.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: greg@kroah.com, linux-serial@vger.kernel.org
 
-One or two drivers go poking back into the tty from the termios setting
-routine in unsafe ways. We don't need to pass the tty down because the
-[ab]users are just using it to get at things they can get at anyway.
-
-This leaves low_latency setting to sort out along with set_ldisc use.
+Pass down the ldisc number so that the drivers don't have to peek into the
+tty object themselves. This lets us get rid of another case of back referencing
+port to tty which we don't want (because of races versus hangup/close).
 
 Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
 
- drivers/serial/21285.c       |   10 +++-------
- drivers/serial/imx.c         |   10 ++++------
- drivers/serial/ioc3_serial.c |    9 +++++----
- drivers/serial/ioc4_serial.c |    9 +++++----
- drivers/serial/max3100.c     |    7 ++-----
- 5 files changed, 19 insertions(+), 26 deletions(-)
+ drivers/serial/bfin_5xx.c    |    7 ++-----
+ drivers/serial/serial_core.c |    2 +-
+ include/linux/serial_core.h  |    2 +-
+ 3 files changed, 4 insertions(+), 7 deletions(-)
 
 
-diff --git a/drivers/serial/21285.c b/drivers/serial/21285.c
-index 8681f13..d89aa38 100644
---- a/drivers/serial/21285.c
-+++ b/drivers/serial/21285.c
-@@ -216,7 +216,7 @@ serial21285_set_termios(struct uart_port *port, struct ktermios *termios,
- 			struct ktermios *old)
+diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
+index 96f7e74..e0d25ca 100644
+--- a/drivers/serial/bfin_5xx.c
++++ b/drivers/serial/bfin_5xx.c
+@@ -952,15 +952,12 @@ bfin_serial_verify_port(struct uart_port *port, struct serial_struct *ser)
+  * Enable the IrDA function if tty->ldisc.num is N_IRDA.
+  * In other cases, disable IrDA function.
+  */
+-static void bfin_serial_set_ldisc(struct uart_port *port)
++static void bfin_serial_set_ldisc(struct uart_port *port, int ld)
  {
- 	unsigned long flags;
--	unsigned int baud, quot, h_lcr;
-+	unsigned int baud, quot, h_lcr, b;
+ 	int line = port->line;
+ 	unsigned short val;
  
- 	/*
- 	 * We don't support modem control lines.
-@@ -234,12 +234,8 @@ serial21285_set_termios(struct uart_port *port, struct ktermios *termios,
- 	 */
- 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
- 	quot = uart_get_divisor(port, baud);
--
--	if (port->state && port->state->port.tty) {
--		struct tty_struct *tty = port->state->port.tty;
--		unsigned int b = port->uartclk / (16 * quot);
--		tty_encode_baud_rate(tty, b, b);
--	}
-+	b = port->uartclk / (16 * quot);
-+	tty_termios_encode_baud_rate(termios, b, b);
- 
- 	switch (termios->c_cflag & CSIZE) {
- 	case CS5:
-diff --git a/drivers/serial/imx.c b/drivers/serial/imx.c
-index eacb588..66ecc7a 100644
---- a/drivers/serial/imx.c
-+++ b/drivers/serial/imx.c
-@@ -909,13 +909,11 @@ imx_set_termios(struct uart_port *port, struct ktermios *termios,
- 	rational_best_approximation(16 * div * baud, sport->port.uartclk,
- 		1 << 16, 1 << 16, &num, &denom);
- 
--	if (port->state && port->state->port.tty) {
--		tdiv64 = sport->port.uartclk;
--		tdiv64 *= num;
--		do_div(tdiv64, denom * 16 * div);
--		tty_encode_baud_rate(sport->port.state->port.tty,
-+	tdiv64 = sport->port.uartclk;
-+	tdiv64 *= num;
-+	do_div(tdiv64, denom * 16 * div);
-+	tty_termios_encode_baud_rate(termios,
- 				(speed_t)tdiv64, (speed_t)tdiv64);
--	}
- 
- 	num -= 1;
- 	denom -= 1;
-diff --git a/drivers/serial/ioc3_serial.c b/drivers/serial/ioc3_serial.c
-index f164ba4..bd2e9e6 100644
---- a/drivers/serial/ioc3_serial.c
-+++ b/drivers/serial/ioc3_serial.c
-@@ -954,12 +954,13 @@ ioc3_change_speed(struct uart_port *the_port,
- 		  struct ktermios *new_termios, struct ktermios *old_termios)
- {
- 	struct ioc3_port *port = get_ioc3_port(the_port);
--	unsigned int cflag;
-+	unsigned int cflag, iflag;
- 	int baud;
- 	int new_parity = 0, new_parity_enable = 0, new_stop = 0, new_data = 8;
- 	struct uart_state *state = the_port->state;
- 
- 	cflag = new_termios->c_cflag;
-+	iflag = new_termios->c_iflag;
- 
- 	switch (cflag & CSIZE) {
- 	case CS5:
-@@ -1000,12 +1001,12 @@ ioc3_change_speed(struct uart_port *the_port,
- 
- 	state->port.tty->low_latency = 1;
- 
--	if (I_IGNPAR(state->port.tty))
-+	if (iflag & IGNPAR))
- 		the_port->ignore_status_mask &= ~(N_PARITY_ERROR
- 						  | N_FRAMING_ERROR);
--	if (I_IGNBRK(state->port.tty)) {
-+	if (iflag & IGNBRK) {
- 		the_port->ignore_status_mask &= ~N_BREAK;
--		if (I_IGNPAR(state->port.tty))
-+		if (iflag & IGNPAR)
- 			the_port->ignore_status_mask &= ~N_OVERRUN_ERROR;
- 	}
- 	if (!(cflag & CREAD)) {
-diff --git a/drivers/serial/ioc4_serial.c b/drivers/serial/ioc4_serial.c
-index 8ad28fc..2c30023 100644
---- a/drivers/serial/ioc4_serial.c
-+++ b/drivers/serial/ioc4_serial.c
-@@ -1685,11 +1685,12 @@ ioc4_change_speed(struct uart_port *the_port,
- {
- 	struct ioc4_port *port = get_ioc4_port(the_port, 0);
- 	int baud, bits;
--	unsigned cflag;
-+	unsigned cflag, iflag;
- 	int new_parity = 0, new_parity_enable = 0, new_stop = 0, new_data = 8;
- 	struct uart_state *state = the_port->state;
- 
- 	cflag = new_termios->c_cflag;
-+	iflag = new_termios->c_iflag;
- 
- 	switch (cflag & CSIZE) {
- 	case CS5:
-@@ -1741,12 +1742,12 @@ ioc4_change_speed(struct uart_port *the_port,
- 
- 	state->port.tty->low_latency = 1;
- 
--	if (I_IGNPAR(state->port.tty))
-+	if (iflag & IGNPAR)
- 		the_port->ignore_status_mask &= ~(N_PARITY_ERROR
- 						| N_FRAMING_ERROR);
--	if (I_IGNBRK(state->port.tty)) {
-+	if (iflag & IGNBRK) {
- 		the_port->ignore_status_mask &= ~N_BREAK;
--		if (I_IGNPAR(state->port.tty))
-+		if (iflag & IGNPAR))
- 			the_port->ignore_status_mask &= ~N_OVERRUN_ERROR;
- 	}
- 	if (!(cflag & CREAD)) {
-diff --git a/drivers/serial/max3100.c b/drivers/serial/max3100.c
-index 3351c3b..beb1afa 100644
---- a/drivers/serial/max3100.c
-+++ b/drivers/serial/max3100.c
-@@ -430,17 +430,14 @@ max3100_set_termios(struct uart_port *port, struct ktermios *termios,
- 	int baud = 0;
- 	unsigned cflag;
- 	u32 param_new, param_mask, parity = 0;
--	struct tty_struct *tty = s->port.state->port.tty;
- 
- 	dev_dbg(&s->spi->dev, "%s\n", __func__);
--	if (!tty)
+-	if (line >= port->state->port.tty->driver->num)
 -		return;
+-
+-	switch (port->state->port.tty->termios->c_line) {
++	switch (ld) {
+ 	case N_IRDA:
+ 		val = UART_GET_GCTL(&bfin_serial_ports[line]);
+ 		val |= (IREN | RPOLC);
+diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
+index 12ee7e0..570dca2 100644
+--- a/drivers/serial/serial_core.c
++++ b/drivers/serial/serial_core.c
+@@ -1194,7 +1194,7 @@ static void uart_set_ldisc(struct tty_struct *tty)
+ 	struct uart_port *uport = state->uart_port;
  
- 	cflag = termios->c_cflag;
- 	param_new = 0;
- 	param_mask = 0;
+ 	if (uport->ops->set_ldisc)
+-		uport->ops->set_ldisc(uport);
++		uport->ops->set_ldisc(uport, tty->termios->c_line);
+ }
  
--	baud = tty_get_baud_rate(tty);
-+	baud = tty_termios_baud_rate(termios);
- 	param_new = s->conf & MAX3100_BAUD;
- 	switch (baud) {
- 	case 300:
-@@ -485,7 +482,7 @@ max3100_set_termios(struct uart_port *port, struct ktermios *termios,
- 	default:
- 		baud = s->baud;
- 	}
--	tty_encode_baud_rate(tty, baud, baud);
-+	tty_termios_encode_baud_rate(termios, baud, baud);
- 	s->baud = baud;
- 	param_mask |= MAX3100_BAUD;
- 
+ static void uart_set_termios(struct tty_struct *tty,
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index f10db6e..3292816 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -220,7 +220,7 @@ struct uart_ops {
+ 	void		(*flush_buffer)(struct uart_port *);
+ 	void		(*set_termios)(struct uart_port *, struct ktermios *new,
+ 				       struct ktermios *old);
+-	void		(*set_ldisc)(struct uart_port *);
++	void		(*set_ldisc)(struct uart_port *, int new);
+ 	void		(*pm)(struct uart_port *, unsigned int state,
+ 			      unsigned int oldstate);
+ 	int		(*set_wake)(struct uart_port *, unsigned int state);
 
