@@ -1,96 +1,172 @@
 From: Alan Cox <alan@linux.intel.com>
-Subject: [PATCH 05/11] isicom: kill off the BKL
-Date: Wed, 19 May 2010 13:02:37 +0100
-Message-ID: <20100519120233.16717.87959.stgit@localhost.localdomain>
+Subject: [PATCH 06/11] rocket: kill BKL
+Date: Wed, 19 May 2010 13:02:48 +0100
+Message-ID: <20100519120242.16717.43677.stgit@localhost.localdomain>
 References: <20100519120111.16717.71992.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:51094 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:51098 "EHLO
 	bob.linux.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1756041Ab0ESMpE (ORCPT
+	with ESMTP id S1756041Ab0ESMpQ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 May 2010 08:45:04 -0400
+	Wed, 19 May 2010 08:45:16 -0400
 In-Reply-To: <20100519120111.16717.71992.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: greg@kroah.com, linux-serial@vger.kernel.org
 
-As with the others we can use the port mutex to get the needed locking
-properties and fix the race with open.
+We can use the port mutex for this and also for the hangup path so removing
+the problematic use of the hangup mutex in this driver. Fix up the locking
+on the various port flags while we are at it.
+
+Ultimately this driver needs to be using tty_port_ helpers which would sort
+this out far better.
 
 Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
 
- drivers/char/isicom.c |   13 +++++--------
- 1 files changed, 5 insertions(+), 8 deletions(-)
+ drivers/char/rocket.c |   28 +++++++++++++++++++---------
+ 1 files changed, 19 insertions(+), 9 deletions(-)
 
 
-diff --git a/drivers/char/isicom.c b/drivers/char/isicom.c
-index 98310e1..c27e9d2 100644
---- a/drivers/char/isicom.c
-+++ b/drivers/char/isicom.c
-@@ -124,7 +124,6 @@
- #include <linux/fs.h>
- #include <linux/sched.h>
+diff --git a/drivers/char/rocket.c b/drivers/char/rocket.c
+index 0e29a23..79c3bc6 100644
+--- a/drivers/char/rocket.c
++++ b/drivers/char/rocket.c
+@@ -73,7 +73,6 @@
+ #include <linux/tty_driver.h>
+ #include <linux/tty_flip.h>
  #include <linux/serial.h>
 -#include <linux/smp_lock.h>
- #include <linux/mm.h>
- #include <linux/interrupt.h>
- #include <linux/timer.h>
-@@ -872,7 +871,6 @@ static struct tty_port *isicom_find_port(struct tty_struct *tty)
- static int isicom_open(struct tty_struct *tty, struct file *filp)
- {
- 	struct isi_port *port;
--	struct isi_board *card;
- 	struct tty_port *tport;
+ #include <linux/string.h>
+ #include <linux/fcntl.h>
+ #include <linux/ptrace.h>
+@@ -1017,6 +1016,7 @@ static void rp_close(struct tty_struct *tty, struct file *filp)
+ 	if (tty_port_close_start(port, tty, filp) == 0)
+ 		return;
  
- 	tport = isicom_find_port(tty);
-@@ -1118,8 +1116,7 @@ static int isicom_set_serial_info(struct tty_struct *tty,
- 	if (copy_from_user(&newinfo, info, sizeof(newinfo)))
++	mutex_lock(&port->mutex);
+ 	cp = &info->channel;
+ 	/*
+ 	 * Before we drop DTR, make sure the UART transmitter
+@@ -1060,9 +1060,13 @@ static void rp_close(struct tty_struct *tty, struct file *filp)
+ 			info->xmit_buf = NULL;
+ 		}
+ 	}
++	spin_lock_irq(&port->lock);
+ 	info->port.flags &= ~(ASYNC_INITIALIZED | ASYNC_CLOSING | ASYNC_NORMAL_ACTIVE);
+ 	tty->closing = 0;
++	spin_unlock_irq(&port->lock);
++	mutex_unlock(&port->mutex);
+ 	tty_port_tty_set(port, NULL);
++
+ 	wake_up_interruptible(&port->close_wait);
+ 	complete_all(&info->close_wait);
+ 	atomic_dec(&rp_num_ports_open);
+@@ -1210,11 +1214,13 @@ static int get_config(struct r_port *info, struct rocket_config __user *retinfo)
+ 	if (!retinfo)
  		return -EFAULT;
+ 	memset(&tmp, 0, sizeof (tmp));
++	mutex_lock(&info->port.mutex);
+ 	tmp.line = info->line;
+ 	tmp.flags = info->flags;
+ 	tmp.close_delay = info->port.close_delay;
+ 	tmp.closing_wait = info->port.closing_wait;
+ 	tmp.port = rcktpt_io_addr[(info->line >> 5) & 3];
++	mutex_unlock(&info->port.mutex);
+ 
+ 	if (copy_to_user(retinfo, &tmp, sizeof (*retinfo)))
+ 		return -EFAULT;
+@@ -1229,10 +1235,13 @@ static int set_config(struct tty_struct *tty, struct r_port *info,
+ 	if (copy_from_user(&new_serial, new_info, sizeof (new_serial)))
+ 		return -EFAULT;
+ 
++	mutex_lock(&info->port.mutex);
+ 	if (!capable(CAP_SYS_ADMIN))
+ 	{
+-		if ((new_serial.flags & ~ROCKET_USR_MASK) != (info->flags & ~ROCKET_USR_MASK))
++		if ((new_serial.flags & ~ROCKET_USR_MASK) != (info->flags & ~ROCKET_USR_MASK)) {
++			mutex_unlock(&info->port.mutex);
+ 			return -EPERM;
++		}
+ 		info->flags = ((info->flags & ~ROCKET_USR_MASK) | (new_serial.flags & ROCKET_USR_MASK));
+ 		configure_r_port(tty, info, NULL);
+ 		return 0;
+@@ -1250,6 +1259,7 @@ static int set_config(struct tty_struct *tty, struct r_port *info,
+ 		tty->alt_speed = 230400;
+ 	if ((info->flags & ROCKET_SPD_MASK) == ROCKET_SPD_WARP)
+ 		tty->alt_speed = 460800;
++	mutex_unlock(&info->port.mutex);
+ 
+ 	configure_r_port(tty, info, NULL);
+ 	return 0;
+@@ -1325,8 +1335,6 @@ static int rp_ioctl(struct tty_struct *tty, struct file *file,
+ 	if (cmd != RCKP_GET_PORTS && rocket_paranoia_check(info, "rp_ioctl"))
+ 		return -ENXIO;
  
 -	lock_kernel();
 -
-+	mutex_lock(&port->port.mutex);
- 	reconfig_port = ((port->port.flags & ASYNC_SPD_MASK) !=
- 		(newinfo.flags & ASYNC_SPD_MASK));
- 
-@@ -1128,7 +1125,7 @@ static int isicom_set_serial_info(struct tty_struct *tty,
- 				(newinfo.closing_wait != port->port.closing_wait) ||
- 				((newinfo.flags & ~ASYNC_USR_MASK) !=
- 				(port->port.flags & ~ASYNC_USR_MASK))) {
--			unlock_kernel();
-+			mutex_unlock(&port->port.mutex);
- 			return -EPERM;
- 		}
- 		port->port.flags = ((port->port.flags & ~ASYNC_USR_MASK) |
-@@ -1145,7 +1142,7 @@ static int isicom_set_serial_info(struct tty_struct *tty,
- 		isicom_config_port(tty);
- 		spin_unlock_irqrestore(&port->card->card_lock, flags);
+ 	switch (cmd) {
+ 	case RCKP_GET_STRUCT:
+ 		if (copy_to_user(argp, info, sizeof (struct r_port)))
+@@ -1350,7 +1358,6 @@ static int rp_ioctl(struct tty_struct *tty, struct file *file,
+ 	default:
+ 		ret = -ENOIOCTLCMD;
  	}
 -	unlock_kernel();
-+	mutex_unlock(&port->port.mutex);
- 	return 0;
+ 	return ret;
  }
  
-@@ -1154,7 +1151,7 @@ static int isicom_get_serial_info(struct isi_port *port,
- {
- 	struct serial_struct out_info;
- 
+@@ -1471,7 +1478,6 @@ static void rp_wait_until_sent(struct tty_struct *tty, int timeout)
+ 	       jiffies);
+ 	printk(KERN_INFO "cps=%d...\n", info->cps);
+ #endif
 -	lock_kernel();
-+	mutex_lock(&port->port.mutex);
- 	memset(&out_info, 0, sizeof(out_info));
- /*	out_info.type = ? */
- 	out_info.line = port - isi_ports;
-@@ -1164,7 +1161,7 @@ static int isicom_get_serial_info(struct isi_port *port,
- /*	out_info.baud_base = ? */
- 	out_info.close_delay = port->port.close_delay;
- 	out_info.closing_wait = port->port.closing_wait;
+ 	while (1) {
+ 		txcnt = sGetTxCnt(cp);
+ 		if (!txcnt) {
+@@ -1499,7 +1505,6 @@ static void rp_wait_until_sent(struct tty_struct *tty, int timeout)
+ 			break;
+ 	}
+ 	__set_current_state(TASK_RUNNING);
 -	unlock_kernel();
-+	mutex_unlock(&port->port.mutex);
- 	if (copy_to_user(info, &out_info, sizeof(out_info)))
- 		return -EFAULT;
- 	return 0;
+ #ifdef ROCKET_DEBUG_WAIT_UNTIL_SENT
+ 	printk(KERN_INFO "txcnt = %d (jiff=%lu)...done\n", txcnt, jiffies);
+ #endif
+@@ -1512,6 +1517,7 @@ static void rp_hangup(struct tty_struct *tty)
+ {
+ 	CHANNEL_t *cp;
+ 	struct r_port *info = tty->driver_data;
++	unsigned long flags;
+ 
+ 	if (rocket_paranoia_check(info, "rp_hangup"))
+ 		return;
+@@ -1520,11 +1526,15 @@ static void rp_hangup(struct tty_struct *tty)
+ 	printk(KERN_INFO "rp_hangup of ttyR%d...\n", info->line);
+ #endif
+ 	rp_flush_buffer(tty);
+-	if (info->port.flags & ASYNC_CLOSING)
++	spin_lock_irqsave(&info->port.lock, flags);
++	if (info->port.flags & ASYNC_CLOSING) {
++		spin_unlock_irqrestore(&info->port.lock, flags);
+ 		return;
++	}
+ 	if (info->port.count)
+ 		atomic_dec(&rp_num_ports_open);
+ 	clear_bit((info->aiop * 8) + info->chan, (void *) &xmit_flags[info->board]);
++	spin_unlock_irqrestore(&info->port.lock, flags);
+ 
+ 	tty_port_hangup(&info->port);
+ 
+@@ -1535,7 +1545,7 @@ static void rp_hangup(struct tty_struct *tty)
+ 	sDisCTSFlowCtl(cp);
+ 	sDisTxSoftFlowCtl(cp);
+ 	sClrTxXOFF(cp);
+-	info->port.flags &= ~ASYNC_INITIALIZED;
++	clear_bit(ASYNCB_INITIALIZED, &info->port.flags);
+ 
+ 	wake_up_interruptible(&info->port.open_wait);
+ }
 
