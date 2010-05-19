@@ -1,53 +1,71 @@
 From: Alan Cox <alan@linux.intel.com>
-Subject: [PATCH 00/11] BKL pruning and serial bug fixing
-Date: Wed, 19 May 2010 13:01:42 +0100
-Message-ID: <20100519120111.16717.71992.stgit@localhost.localdomain>
+Subject: [PATCH 01/11] tty: Fix the digi acceleport driver NULL checks
+Date: Wed, 19 May 2010 13:01:56 +0100
+Message-ID: <20100519120148.16717.1135.stgit@localhost.localdomain>
+References: <20100519120111.16717.71992.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:51074 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:51078 "EHLO
 	bob.linux.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1756041Ab0ESMoM (ORCPT
+	with ESMTP id S1756041Ab0ESMoY (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 May 2010 08:44:12 -0400
+	Wed, 19 May 2010 08:44:24 -0400
+In-Reply-To: <20100519120111.16717.71992.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: greg@kroah.com, linux-serial@vger.kernel.org
 
-BKL elemination using the existing locks
+This now refcounts but doesn't actually check the reference was obtained in
+all the places it should.
 
-
+Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
 
-Alan Cox (11):
-      synclink: reworking locking a bit
-      specialix; Kill the BKL
-      epca: Kill the big kernel lock
-      cyclades: Kill off BKL usage
-      synclink: kill the big kernel lock
-      rocket: kill BKL
-      isicom: kill off the BKL
-      riscom8: kill use of lock_kernel
-      istallion: use bit ops for the board flags
-      stallion: prune lock_kernel calls
-      tty: Fix the digi acceleport driver NULL checks
+ drivers/usb/serial/digi_acceleport.c |   14 +++++++++-----
+ 1 files changed, 9 insertions(+), 5 deletions(-)
 
 
- drivers/char/cyclades.c              |   20 +++-----
- drivers/char/epca.c                  |    4 --
- drivers/char/isicom.c                |   13 ++---
- drivers/char/istallion.c             |   56 +++++++++++----------
- drivers/char/riscom8.c               |   14 +++--
- drivers/char/rocket.c                |   28 +++++++----
- drivers/char/specialix.c             |   11 ++--
- drivers/char/stallion.c              |   20 +++++---
- drivers/char/synclink.c              |   19 ++++---
- drivers/char/synclink_gt.c           |   90 +++++++++++++++++-----------------
- drivers/char/synclinkmp.c            |   41 ++++++++-------
- drivers/usb/serial/digi_acceleport.c |   14 +++--
- include/linux/istallion.h            |    2 -
- 13 files changed, 174 insertions(+), 158 deletions(-)
+diff --git a/drivers/usb/serial/digi_acceleport.c b/drivers/usb/serial/digi_acceleport.c
+index 3edda3e..2d28c02 100644
+--- a/drivers/usb/serial/digi_acceleport.c
++++ b/drivers/usb/serial/digi_acceleport.c
+@@ -609,8 +609,10 @@ static void digi_wakeup_write_lock(struct work_struct *work)
+ static void digi_wakeup_write(struct usb_serial_port *port)
+ {
+ 	struct tty_struct *tty = tty_port_tty_get(&port->port);
+-	tty_wakeup(tty);
+-	tty_kref_put(tty);
++	if (tty) {
++		tty_wakeup(tty);
++		tty_kref_put(tty);
++	}
+ }
+ 
+ 
+@@ -1683,7 +1685,7 @@ static int digi_read_inb_callback(struct urb *urb)
+ 		priv->dp_throttle_restart = 1;
+ 
+ 	/* receive data */
+-	if (opcode == DIGI_CMD_RECEIVE_DATA) {
++	if (tty && opcode == DIGI_CMD_RECEIVE_DATA) {
+ 		/* get flag from port_status */
+ 		flag = 0;
+ 
+@@ -1764,10 +1766,12 @@ static int digi_read_oob_callback(struct urb *urb)
+ 			return -1;
+ 
+ 		tty = tty_port_tty_get(&port->port);
++
+ 		rts = 0;
+-		rts = tty->termios->c_cflag & CRTSCTS;
++		if (tty)
++			rts = tty->termios->c_cflag & CRTSCTS;
+ 		
+-		if (opcode == DIGI_CMD_READ_INPUT_SIGNALS) {
++		if (tty && opcode == DIGI_CMD_READ_INPUT_SIGNALS) {
+ 			spin_lock(&priv->dp_port_lock);
+ 			/* convert from digi flags to termiox flags */
+ 			if (val & DIGI_READ_INPUT_SIGNALS_CTS) {
 
--- 
-Signature
