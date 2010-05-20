@@ -1,134 +1,28 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: [PATCH 4/4] serial: Use block_til_ready helper
-Date: Wed, 19 May 2010 13:14:18 +0100
-Message-ID: <20100519121415.18011.7728.stgit@localhost.localdomain>
-References: <20100519121234.18011.51870.stgit@localhost.localdomain>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH 00/11] BKL pruning and serial bug fixing
+Date: Thu, 20 May 2010 10:56:36 -0700
+Message-ID: <20100520175636.GB17077@kroah.com>
+References: <20100519120111.16717.71992.stgit@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:36531 "EHLO
-	bob.linux.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1758003Ab0ESM4q (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 May 2010 08:56:46 -0400
-In-Reply-To: <20100519121234.18011.51870.stgit@localhost.localdomain>
+Received: from kroah.org ([198.145.64.141]:38500 "EHLO coco.kroah.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755175Ab0ETSAS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 20 May 2010 14:00:18 -0400
+Content-Disposition: inline
+In-Reply-To: <20100519120111.16717.71992.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: greg@kroah.com, linux-serial@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>
+Cc: linux-serial@vger.kernel.org
 
-Our code now rather closely resembles the helper, so switch to it.
+On Wed, May 19, 2010 at 01:01:42PM +0100, Alan Cox wrote:
+> BKL elemination using the existing locks
 
-Signed-off-by: Alan Cox <alan@linux.intel.com>
----
+Hm, have all of these patches been in -next before now?  Do you think
+these are ready to go into .35?
 
- drivers/serial/serial_core.c |   87 ------------------------------------------
- 1 files changed, 1 insertions(+), 86 deletions(-)
+thanks,
 
-
-diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
-index 0603e0d..a55751a 100644
---- a/drivers/serial/serial_core.c
-+++ b/drivers/serial/serial_core.c
-@@ -1526,91 +1526,6 @@ static void uart_dtr_rts(struct tty_port *port, int onoff)
- 		uart_clear_mctrl(uport, TIOCM_DTR | TIOCM_RTS);
- }
- 
--/*
-- * Block the open until the port is ready.  We must be called with
-- * the per-port semaphore held.
-- */
--static int
--uart_block_til_ready(struct file *filp, struct uart_state *state)
--{
--	DECLARE_WAITQUEUE(wait, current);
--	struct tty_port *port = &state->port;
--	unsigned long flags;
--
--	spin_lock_irqsave(&port->lock, flags);
--	if (!tty_hung_up_p(filp))
--		port->count--;
--	port->blocked_open++;
--	spin_unlock_irqrestore(&port->lock, flags);
--
--	add_wait_queue(&port->open_wait, &wait);
--	while (1) {
--		set_current_state(TASK_INTERRUPTIBLE);
--
--		/*
--		 * If we have been hung up, tell userspace/restart open.
--		 */
--		if (tty_hung_up_p(filp) || port->tty == NULL)
--			break;
--
--		/*
--		 * If the port has been closed, tell userspace/restart open.
--		 */
--		if (!(port->flags & ASYNC_INITIALIZED))
--			break;
--
--		/*
--		 * If non-blocking mode is set, or CLOCAL mode is set,
--		 * we don't want to wait for the modem status lines to
--		 * indicate that the port is ready.
--		 *
--		 * Also, if the port is not enabled/configured, we want
--		 * to allow the open to succeed here.  Note that we will
--		 * have set TTY_IO_ERROR for a non-existant port.
--		 */
--		if ((filp->f_flags & O_NONBLOCK) ||
--		    (port->tty->termios->c_cflag & CLOCAL) ||
--		    (port->tty->flags & (1 << TTY_IO_ERROR)))
--			break;
--
--		/*
--		 * Set DTR to allow modem to know we're waiting.  Do
--		 * not set RTS here - we want to make sure we catch
--		 * the data from the modem.
--		 */
--		if (port->tty->termios->c_cflag & CBAUD)
--			tty_port_raise_dtr_rts(port);
--
--		/*
--		 * and wait for the carrier to indicate that the
--		 * modem is ready for us.
--		 */
--		if (tty_port_carrier_raised(port))
--			break;
--
--		schedule();
--
--		if (signal_pending(current))
--			break;
--	}
--	set_current_state(TASK_RUNNING);
--	remove_wait_queue(&port->open_wait, &wait);
--
--	spin_lock_irqsave(&port->lock, flags);
--	if (!tty_hung_up_p(filp))
--		port->count++;
--	port->blocked_open--;
--	spin_unlock_irqrestore(&port->lock, flags);
--
--	if (signal_pending(current))
--		return -ERESTARTSYS;
--
--	if (!port->tty || tty_hung_up_p(filp))
--		return -EAGAIN;
--
--	return 0;
--}
--
- static struct uart_state *uart_get(struct uart_driver *drv, int line)
- {
- 	struct uart_state *state;
-@@ -1719,7 +1634,7 @@ static int uart_open(struct tty_struct *tty, struct file *filp)
- 	 */
- 	mutex_unlock(&port->mutex);
- 	if (retval == 0)
--		retval = uart_block_til_ready(filp, state);
-+		retval = tty_port_block_til_ready(port, tty, filp);
- 
- 	/*
- 	 * If this is the first open to succeed, adjust things to suit.
-
+greg k-h
