@@ -1,98 +1,143 @@
 From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Subject: [PATCH 3/4] ARM: mach-shmobile: SH7372 has 6 SCIFA and 1 SCIFB ports
-Date: Sun, 23 May 2010 18:39:17 +0200 (CEST)
-Message-ID: <Pine.LNX.4.64.1005231833300.3571@axis700.grange>
+Subject: [PATCH 4/4 v2] ARM: mach-shmobile: add SCIFA and SCIFB DMA slave
+ definitions for sh7372
+Date: Sun, 23 May 2010 18:39:24 +0200 (CEST)
+Message-ID: <Pine.LNX.4.64.1005231836090.3571@axis700.grange>
 References: <Pine.LNX.4.64.1005231820190.3571@axis700.grange>
 Mime-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.gmx.net ([213.165.64.20]:46981 "HELO mail.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
-	id S1752865Ab0EWQjA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 23 May 2010 12:39:00 -0400
+Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <Pine.LNX.4.64.1005231820190.3571@axis700.grange>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-sh-owner@vger.kernel.org
 To: "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>
 Cc: linux-serial@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>
+List-Id: linux-serial@vger.kernel.org
 
-The current SH7372 setup code registers 7 SCIF ports, which is wrong.
+SH7372 can use DMA with the SCI serial driver. Add required slave IDs and slave
+descriptors.
 
 Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
 ---
 
-no change
+v1 -> v2:
 
- arch/arm/mach-shmobile/setup-sh7372.c |   14 +++++++-------
- 1 files changed, 7 insertions(+), 7 deletions(-)
+No need to move DMA platform devices to the top, they are placed correctly 
+by the new version of the
 
+[PATCH 9/9 v2] ARM: mach-shmobile: add DMA support to sh7372, enable DMA for SDHI
+
+patch
+
+ arch/arm/mach-shmobile/include/mach/sh7372.h |   14 +++++
+ arch/arm/mach-shmobile/setup-sh7372.c        |   70 ++++++++++++++++++++++++++
+ 2 files changed, 84 insertions(+), 0 deletions(-)
+
+diff --git a/arch/arm/mach-shmobile/include/mach/sh7372.h b/arch/arm/mach-shmobile/include/mach/sh7372.h
+index 57e033a..c2d2d81 100644
+--- a/arch/arm/mach-shmobile/include/mach/sh7372.h
++++ b/arch/arm/mach-shmobile/include/mach/sh7372.h
+@@ -433,6 +433,20 @@ enum {
+ 
+ /* DMA slave IDs */
+ enum {
++	SHDMA_SLAVE_SCIF0_TX,
++	SHDMA_SLAVE_SCIF0_RX,
++	SHDMA_SLAVE_SCIF1_TX,
++	SHDMA_SLAVE_SCIF1_RX,
++	SHDMA_SLAVE_SCIF2_TX,
++	SHDMA_SLAVE_SCIF2_RX,
++	SHDMA_SLAVE_SCIF3_TX,
++	SHDMA_SLAVE_SCIF3_RX,
++	SHDMA_SLAVE_SCIF4_TX,
++	SHDMA_SLAVE_SCIF4_RX,
++	SHDMA_SLAVE_SCIF5_TX,
++	SHDMA_SLAVE_SCIF5_RX,
++	SHDMA_SLAVE_SCIF6_TX,
++	SHDMA_SLAVE_SCIF6_RX,
+ 	SHDMA_SLAVE_SDHI0_RX,
+ 	SHDMA_SLAVE_SDHI0_TX,
+ 	SHDMA_SLAVE_SDHI1_RX,
 diff --git a/arch/arm/mach-shmobile/setup-sh7372.c b/arch/arm/mach-shmobile/setup-sh7372.c
-index 0a834d3..cc040a8 100644
+index cc040a8..ce50184 100644
 --- a/arch/arm/mach-shmobile/setup-sh7372.c
 +++ b/arch/arm/mach-shmobile/setup-sh7372.c
-@@ -256,7 +256,7 @@ static struct platform_device dma2_device = {
- static struct plat_sci_port scif0_platform_data = {
- 	.mapbase	= 0xe6c40000,
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.type		= PORT_SCIF,
-+	.type		= PORT_SCIFA,
- 	.irqs		= { 80, 80, 80, 80 },
- };
+@@ -62,6 +62,76 @@ enum {
  
-@@ -271,7 +271,7 @@ static struct platform_device scif0_device = {
- static struct plat_sci_port scif1_platform_data = {
- 	.mapbase	= 0xe6c50000,
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.type		= PORT_SCIF,
-+	.type		= PORT_SCIFA,
- 	.irqs           = { 81, 81, 81, 81 },
- };
- 
-@@ -286,7 +286,7 @@ static struct platform_device scif1_device = {
- static struct plat_sci_port scif2_platform_data = {
- 	.mapbase	= 0xe6c60000,
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.type		= PORT_SCIF,
-+	.type		= PORT_SCIFA,
- 	.irqs           = { 82, 82, 82, 82 },
- };
- 
-@@ -301,7 +301,7 @@ static struct platform_device scif2_device = {
- static struct plat_sci_port scif3_platform_data = {
- 	.mapbase	= 0xe6c70000,
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.type		= PORT_SCIF,
-+	.type		= PORT_SCIFA,
- 	.irqs           = { 83, 83, 83, 83 },
- };
- 
-@@ -316,7 +316,7 @@ static struct platform_device scif3_device = {
- static struct plat_sci_port scif4_platform_data = {
- 	.mapbase	= 0xe6c80000,
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.type		= PORT_SCIF,
-+	.type		= PORT_SCIFA,
- 	.irqs           = { 89, 89, 89, 89 },
- };
- 
-@@ -331,7 +331,7 @@ static struct platform_device scif4_device = {
- static struct plat_sci_port scif5_platform_data = {
- 	.mapbase	= 0xe6cb0000,
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.type		= PORT_SCIF,
-+	.type		= PORT_SCIFA,
- 	.irqs           = { 90, 90, 90, 90 },
- };
- 
-@@ -346,7 +346,7 @@ static struct platform_device scif5_device = {
- static struct plat_sci_port scif6_platform_data = {
- 	.mapbase	= 0xe6c30000,
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.type		= PORT_SCIF,
-+	.type		= PORT_SCIFB,
- 	.irqs           = { 91, 91, 91, 91 },
- };
- 
+ static const struct sh_dmae_slave_config sh7724_dmae_slaves[] = {
+ 	{
++		.slave_id	= SHDMA_SLAVE_SCIF0_TX,
++		.addr		= 0xe6c40020,
++		.chcr		= DM_FIX | SM_INC | 0x800 | TS_INDEX2VAL(XMIT_SZ_8BIT),
++		.mid_rid	= 0x21,
++	}, {
++		.slave_id	= SHDMA_SLAVE_SCIF0_RX,
++		.addr		= 0xe6c40024,
++		.chcr		= DM_INC | SM_FIX | 0x800 | TS_INDEX2VAL(XMIT_SZ_8BIT),
++		.mid_rid	= 0x22,
++	}, {
++		.slave_id	= SHDMA_SLAVE_SCIF1_TX,
++		.addr		= 0xe6c50020,
++		.chcr		= DM_FIX | SM_INC | 0x800 | TS_INDEX2VAL(XMIT_SZ_8BIT),
++		.mid_rid	= 0x25,
++	}, {
++		.slave_id	= SHDMA_SLAVE_SCIF1_RX,
++		.addr		= 0xe6c50024,
++		.chcr		= DM_INC | SM_FIX | 0x800 | TS_INDEX2VAL(XMIT_SZ_8BIT),
++		.mid_rid	= 0x26,
++	}, {
++		.slave_id	= SHDMA_SLAVE_SCIF2_TX,
++		.addr		= 0xe6c60020,
++		.chcr		= DM_FIX | SM_INC | 0x800 | TS_INDEX2VAL(XMIT_SZ_8BIT),
++		.mid_rid	= 0x29,
++	}, {
++		.slave_id	= SHDMA_SLAVE_SCIF2_RX,
++		.addr		= 0xe6c60024,
++		.chcr		= DM_INC | SM_FIX | 0x800 | TS_INDEX2VAL(XMIT_SZ_8BIT),
++		.mid_rid	= 0x2a,
++	}, {
++		.slave_id	= SHDMA_SLAVE_SCIF3_TX,
++		.addr		= 0xe6c70020,
++		.chcr		= DM_FIX | SM_INC | 0x800 | TS_INDEX2VAL(XMIT_SZ_8BIT),
++		.mid_rid	= 0x2d,
++	}, {
++		.slave_id	= SHDMA_SLAVE_SCIF3_RX,
++		.addr		= 0xe6c70024,
++		.chcr		= DM_INC | SM_FIX | 0x800 | TS_INDEX2VAL(XMIT_SZ_8BIT),
++		.mid_rid	= 0x2e,
++	}, {
++		.slave_id	= SHDMA_SLAVE_SCIF4_TX,
++		.addr		= 0xe6c80020,
++		.chcr		= DM_FIX | SM_INC | 0x800 | TS_INDEX2VAL(XMIT_SZ_8BIT),
++		.mid_rid	= 0x39,
++	}, {
++		.slave_id	= SHDMA_SLAVE_SCIF4_RX,
++		.addr		= 0xe6c80024,
++		.chcr		= DM_INC | SM_FIX | 0x800 | TS_INDEX2VAL(XMIT_SZ_8BIT),
++		.mid_rid	= 0x3a,
++	}, {
++		.slave_id	= SHDMA_SLAVE_SCIF5_TX,
++		.addr		= 0xe6cb0020,
++		.chcr		= DM_FIX | SM_INC | 0x800 | TS_INDEX2VAL(XMIT_SZ_8BIT),
++		.mid_rid	= 0x35,
++	}, {
++		.slave_id	= SHDMA_SLAVE_SCIF5_RX,
++		.addr		= 0xe6cb0024,
++		.chcr		= DM_INC | SM_FIX | 0x800 | TS_INDEX2VAL(XMIT_SZ_8BIT),
++		.mid_rid	= 0x36,
++	}, {
++		.slave_id	= SHDMA_SLAVE_SCIF6_TX,
++		.addr		= 0xe6c30040,
++		.chcr		= DM_FIX | SM_INC | 0x800 | TS_INDEX2VAL(XMIT_SZ_8BIT),
++		.mid_rid	= 0x3d,
++	}, {
++		.slave_id	= SHDMA_SLAVE_SCIF6_RX,
++		.addr		= 0xe6c30060,
++		.chcr		= DM_INC | SM_FIX | 0x800 | TS_INDEX2VAL(XMIT_SZ_8BIT),
++		.mid_rid	= 0x3e,
++	}, {
+ 		.slave_id	= SHDMA_SLAVE_SDHI0_TX,
+ 		.addr		= 0xe6850030,
+ 		.chcr		= DM_FIX | SM_INC | 0x800 | TS_INDEX2VAL(XMIT_SZ_16BIT),
 -- 
 1.6.2.4
 
