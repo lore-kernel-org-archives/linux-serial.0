@@ -1,38 +1,43 @@
-From: Mike Frysinger <vapier@gentoo.org>
-Subject: [PATCH 2/2] serial: bfin_5xx: fix typo in IER check
-Date: Sun, 23 May 2010 04:40:14 -0400
-Message-ID: <1274604014-26239-2-git-send-email-vapier@gentoo.org>
-References: <1274604014-26239-1-git-send-email-vapier@gentoo.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1274604014-26239-1-git-send-email-vapier@gentoo.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: uclinux-dist-devel@blackfin.uclinux.org, linux-kernel@vger.kernel.org, Sonic Zhang <sonic.zhang@analog.com>
+From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Subject: [PATCH 1/4 v2] serial: add a new port type, found on some sh-mobile
+ SoCs
+Date: Sun, 23 May 2010 18:39:02 +0200 (CEST)
+Message-ID: <Pine.LNX.4.64.1005231820190.3571@axis700.grange>
+Mime-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>
+Cc: linux-serial@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Sonic Zhang <sonic.zhang@analog.com>
+Such ports are found, e.g., on SH7372.
 
-This most likely won't cause problems on systems as people don't typically
-enable GPIO RTS/CTS if they don't actually use it.
-
-Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
-Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
 ---
- drivers/serial/bfin_5xx.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
-index a78652b..511cbf6 100644
---- a/drivers/serial/bfin_5xx.c
-+++ b/drivers/serial/bfin_5xx.c
-@@ -797,7 +797,7 @@ static void bfin_serial_shutdown(struct uart_port *port)
- 		gpio_free(uart->rts_pin);
- #endif
- #ifdef CONFIG_SERIAL_BFIN_HARD_CTSRTS
--	if (UART_GET_IER(uart) && EDSSI)
-+	if (UART_GET_IER(uart) & EDSSI)
- 		free_irq(uart->status_irq, uart);
- #endif
- }
+v1 -> v2:
+
+rebased onto the current (sh-2.6/master) HEAD, where two more new port 
+types have been registered.
+
+ include/linux/serial_core.h |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index f10db6e..5228320 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -186,6 +186,9 @@
+ #define PORT_ALTERA_JTAGUART	91
+ #define PORT_ALTERA_UART	92
+ 
++/* SH-SCI */
++#define PORT_SCIFB	93
++
+ #ifdef __KERNEL__
+ 
+ #include <linux/compiler.h>
 -- 
-1.7.1
+1.6.2.4
+
