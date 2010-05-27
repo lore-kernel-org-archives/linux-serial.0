@@ -1,67 +1,26 @@
-From: Kevin Hilman <khilman@deeprootsystems.com>
+From: "Luke-Jr" <luke@dashjr.org>
 Subject: Re: [PATCH v2] serial: Add OMAP high-speed UART driver
-Date: Wed, 26 May 2010 15:48:58 -0700
-Message-ID: <87wruqmg85.fsf@deeprootsystems.com>
-References: <58269.192.168.10.88.1274708590.squirrel@dbdmail.itg.ti.com>
+Date: Thu, 27 May 2010 11:00:19 -0500
+Message-ID: <201005271100.41305.luke@dashjr.org>
+References: <58269.192.168.10.88.1274708590.squirrel@dbdmail.itg.ti.com> <87wruqmg85.fsf@deeprootsystems.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pv0-f174.google.com ([74.125.83.174]:38246 "EHLO
-	mail-pv0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757201Ab0EZWtD (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 May 2010 18:49:03 -0400
-In-Reply-To: <58269.192.168.10.88.1274708590.squirrel@dbdmail.itg.ti.com> (Govindraj R.'s message of "Mon\, 24 May 2010 19\:13\:10 +0530 \(IST\)")
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <87wruqmg85.fsf@deeprootsystems.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Kevin Hilman <khilman@deeprootsystems.com>
+Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, Tony Lindgren <tony@atomide.com>
 List-Id: linux-serial@vger.kernel.org
-To: "Govindraj.R" <govindraj.raja@ti.com>
-Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, Tony Lindgren <tony@atomide.com>
 
-"Govindraj.R" <govindraj.raja@ti.com> writes:
+On Wednesday 26 May 2010 05:48:58 pm Kevin Hilman wrote:
+> FYI... this also works on OMAP2.
+> 
+> I tested it on my n810 along with UART hwmod conversion and it works
+> just fine there.
 
-> This patch adds driver support for OMAP3/4 high speed UART.
->
-> The driver is made separate from 8250 driver as we cannot
-> over load 8250 driver with omap platform specific configuration for
-> features like DMA, it makes easier to implement features like DMA and
-> hardware flow control and software flow control configuration with
-> this driver as required for the omap-platform.This patch involves only
-> the core driver and its dependent.
->
-> Cc: Tony Lindgren <tony@atomide.com>
-> Tested-by: Kevin Hilman <khilman@deeprootsystems.com>
-> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
-> ---
-> Platform data support for this driver is currently
-> present in Kevin's PM tree remotes/origin/pm-wip/uart branch
-> This branch contains uart-hwmod platform conversion which
-> utilizes the omap-hwmod framework. Tested using OMAP
-> 3430/3630/4430SDP boards.
->
->  arch/arm/plat-omap/include/plat/omap-serial.h |  129 +++
->  drivers/serial/Kconfig                        |   27 +
->  drivers/serial/Makefile                       |    1 +
->  drivers/serial/omap-serial.c                  | 1318 +++++++++++++++++++++++++
->  include/linux/serial_core.h                   |    3 +
->  5 files changed, 1478 insertions(+), 0 deletions(-)
-
-[...]
-
-> diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
-> index f55c494..4346bfa 100644
-> --- a/drivers/serial/Kconfig
-> +++ b/drivers/serial/Kconfig
-> @@ -1387,6 +1387,33 @@ config SERIAL_OF_PLATFORM
->  	  Currently, only 8250 compatible ports are supported, but
->  	  others can easily be added.
->
-> +config SERIAL_OMAP
-> +	tristate "OMAP serial port support"
-> +	depends on ARCH_OMAP3 || ARCH_OMAP4
-
-FYI... this also works on OMAP2.  
-
-I tested it on my n810 along with UART hwmod conversion and it works
-just fine there.
-
-Kevin
+Is it somehow different from the basic 8250 driver on OMAP2? I've been 
+struggling to figure out why my N810's GPS isn't working when I change kernels 
+(I've already made sure ttyS0 is the correct major/minor and adjusted the GPIO 
+calls; gpiodriver is talking to the chip, but not getting anywhere).
