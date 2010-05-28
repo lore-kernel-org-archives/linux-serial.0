@@ -1,34 +1,54 @@
-From: =?ISO-8859-1?Q?Eric_B=E9nard?= <eric@eukrea.com>
-Subject: serial/imx.c : wrong baudrate at resume if console is on UART
-Date: Thu, 27 May 2010 23:02:08 +0200
-Message-ID: <4BFEDDD0.8000607@eukrea.com>
+From: Govindraj <govindraj.ti@gmail.com>
+Subject: Re: [PATCH v2] serial: Add OMAP high-speed UART driver
+Date: Fri, 28 May 2010 12:41:29 +0530
+Message-ID: <AANLkTikta1db8KHV2Crz1zJEagmcOI20mSnXYUq02sZ5@mail.gmail.com>
+References: <58269.192.168.10.88.1274708590.squirrel@dbdmail.itg.ti.com>
+	<87wruqmg85.fsf@deeprootsystems.com>
+	<201005271100.41305.luke@dashjr.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 29.mail-out.ovh.net ([87.98.216.213]:38482 "HELO
-	29.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1756683Ab0E0VCL (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 27 May 2010 17:02:11 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <201005271100.41305.luke@dashjr.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: Luke-Jr <luke@dashjr.org>
+Cc: Kevin Hilman <khilman@deeprootsystems.com>, "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, Tony Lindgren <tony@atomide.com>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
 
-Hi,
+On Thu, May 27, 2010 at 9:30 PM, Luke-Jr <luke@dashjr.org> wrote:
+> On Wednesday 26 May 2010 05:48:58 pm Kevin Hilman wrote:
+>> FYI... this also works on OMAP2.
+>>
+>> I tested it on my n810 along with UART hwmod conversion and it works
+>> just fine there.
+>
+> Is it somehow different from the basic 8250 driver on OMAP2? I've bee=
+n
+> struggling to figure out why my N810's GPS isn't working when I chang=
+e kernels
+> (I've already made sure ttyS0 is the correct major/minor and adjusted=
+ the GPIO
+> calls; gpiodriver is talking to the chip, but not getting anywhere).
 
-while testing suspend/resume on i.MX27, I meet a problem on resume : if 
-the console is on the UART the baudrate it not restored properly (I get 
-random bitrate between 50 to 2Mbps). Here is a patch to add pm to the 
-uart_ops (but the problem occurs also without this patch) :
-http://lists.infradead.org/pipermail/linux-arm-kernel/2010-May/016495.html
+You need to use ttyO0 [%s/ttyS*/ttyO*]
 
-What is strange is that giving wrong structures (platform_device instead 
-of device) in suspend/resume functions as in following patch "fix" the 
-problem :
-http://lists.infradead.org/pipermail/linux-arm-kernel/2010-May/015985.html
+Since uart tty interface name as been modified with this driver.
 
-Do you have any idea of what could be wrong there ?
++#define OMAP_SERIAL_NAME       "ttyO"
 
-Many thanks,
-Eric
+---
+Regards,
+Govindraj.R
+
+
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-omap"=
+ in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at =A0http://vger.kernel.org/majordomo-info.html
+>
+--
+To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
+n
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
