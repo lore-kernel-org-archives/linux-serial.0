@@ -1,54 +1,80 @@
-From: Govindraj <govindraj.ti@gmail.com>
-Subject: Re: [PATCH v2] serial: Add OMAP high-speed UART driver
-Date: Fri, 28 May 2010 12:41:29 +0530
-Message-ID: <AANLkTikta1db8KHV2Crz1zJEagmcOI20mSnXYUq02sZ5@mail.gmail.com>
-References: <58269.192.168.10.88.1274708590.squirrel@dbdmail.itg.ti.com>
-	<87wruqmg85.fsf@deeprootsystems.com>
-	<201005271100.41305.luke@dashjr.org>
+From: Joonyoung Shim <jy0922.shim@samsung.com>
+Subject: [PATCH] ARM: S5PV210: serial: Fix section mismatch warning
+Date: Fri, 28 May 2010 19:21:11 +0900
+Message-ID: <4BFF9917.5000503@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <201005271100.41305.luke@dashjr.org>
-Sender: linux-omap-owner@vger.kernel.org
-To: Luke-Jr <luke@dashjr.org>
-Cc: Kevin Hilman <khilman@deeprootsystems.com>, "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, Tony Lindgren <tony@atomide.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout3.samsung.com ([203.254.224.33]:50397 "EHLO
+	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755788Ab0E1KVN (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 28 May 2010 06:21:13 -0400
+Received: from epmmp2 (mailout3.samsung.com [203.254.224.33])
+ by mailout1.samsung.com
+ (iPlanet Messaging Server 5.2 Patch 2 (built Jul 14 2004))
+ with ESMTP id <0L3400H37KRB8H@mailout1.samsung.com> for
+ linux-serial@vger.kernel.org; Fri, 28 May 2010 19:21:11 +0900 (KST)
+Received: from TNRNDGASPAPP1.tn.corp.samsungelectronics.net ([165.213.149.150])
+ by mmp2.samsung.com (iPlanet Messaging Server 5.2 Patch 2 (built Jul 14 2004))
+ with ESMTPA id <0L3400ARKKRB5S@mmp2.samsung.com> for
+ linux-serial@vger.kernel.org; Fri, 28 May 2010 19:21:11 +0900 (KST)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: ben-linux@fluff.org
+Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, kyungmin.park@samsung.com, m.szyprowski@samsung.com
 
-On Thu, May 27, 2010 at 9:30 PM, Luke-Jr <luke@dashjr.org> wrote:
-> On Wednesday 26 May 2010 05:48:58 pm Kevin Hilman wrote:
->> FYI... this also works on OMAP2.
->>
->> I tested it on my n810 along with UART hwmod conversion and it works
->> just fine there.
->
-> Is it somehow different from the basic 8250 driver on OMAP2? I've bee=
-n
-> struggling to figure out why my N810's GPS isn't working when I chang=
-e kernels
-> (I've already made sure ttyS0 is the correct major/minor and adjusted=
- the GPIO
-> calls; gpiodriver is talking to the chip, but not getting anywhere).
+Rename the structure to avoid the following warning:
 
-You need to use ttyO0 [%s/ttyS*/ttyO*]
+WARNING: drivers/serial/built-in.o(.data+0x534): Section mismatch in reference from the variable s5p_serial_drv to the function .devexit.text:s3c24xx_serial_remove()
+The variable s5p_serial_drv references
+the function __devexit s3c24xx_serial_remove()
+If the reference is valid then annotate the
+variable with __exit* (see linux/init.h) or name the variable:
+*driver, *_template, *_timer, *_sht, *_ops, *_probe, *_probe_one, *_console,
 
-Since uart tty interface name as been modified with this driver.
-
-+#define OMAP_SERIAL_NAME       "ttyO"
-
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Joonyoung Shim <jy0922.shim@samsung.com>
 ---
-Regards,
-Govindraj.R
+ drivers/serial/s5pv210.c |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
 
-
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-omap"=
- in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at =A0http://vger.kernel.org/majordomo-info.html
->
---
-To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/serial/s5pv210.c b/drivers/serial/s5pv210.c
+index 8dc0383..4a789e5 100644
+--- a/drivers/serial/s5pv210.c
++++ b/drivers/serial/s5pv210.c
+@@ -119,7 +119,7 @@ static int s5p_serial_probe(struct platform_device *pdev)
+ 	return s3c24xx_serial_probe(pdev, s5p_uart_inf[pdev->id]);
+ }
+ 
+-static struct platform_driver s5p_serial_drv = {
++static struct platform_driver s5p_serial_driver = {
+ 	.probe		= s5p_serial_probe,
+ 	.remove		= __devexit_p(s3c24xx_serial_remove),
+ 	.driver		= {
+@@ -130,19 +130,19 @@ static struct platform_driver s5p_serial_drv = {
+ 
+ static int __init s5pv210_serial_console_init(void)
+ {
+-	return s3c24xx_serial_initconsole(&s5p_serial_drv, s5p_uart_inf);
++	return s3c24xx_serial_initconsole(&s5p_serial_driver, s5p_uart_inf);
+ }
+ 
+ console_initcall(s5pv210_serial_console_init);
+ 
+ static int __init s5p_serial_init(void)
+ {
+-	return s3c24xx_serial_init(&s5p_serial_drv, *s5p_uart_inf);
++	return s3c24xx_serial_init(&s5p_serial_driver, *s5p_uart_inf);
+ }
+ 
+ static void __exit s5p_serial_exit(void)
+ {
+-	platform_driver_unregister(&s5p_serial_drv);
++	platform_driver_unregister(&s5p_serial_driver);
+ }
+ 
+ module_init(s5p_serial_init);
+-- 
+1.7.0.4
