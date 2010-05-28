@@ -1,106 +1,80 @@
-From: Joonyoung Shim <jy0922.shim@samsung.com>
-Subject: Re: [PATCH] ARM: S5PV210: serial: Fix section mismatch warning
-Date: Fri, 28 May 2010 19:36:11 +0900
-Message-ID: <4BFF9C9B.4080904@samsung.com>
-References: <4BFF9917.5000503@samsung.com>
- <20100528102906.GB4720@trinity.fluff.org>
+From: Govindraj <govindraj.ti@gmail.com>
+Subject: Re: [PATCH v2] serial: Add OMAP high-speed UART driver
+Date: Fri, 28 May 2010 16:54:13 +0530
+Message-ID: <AANLkTikvFAs7Ck_1bQtlKmj6cj-Lkh1ySOFZo5pR3QPU@mail.gmail.com>
+References: <58269.192.168.10.88.1274708590.squirrel@dbdmail.itg.ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout5.samsung.com ([203.254.224.35]:49185 "EHLO
-	mailout5.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754467Ab0E1KgN (ORCPT
+Received: from mail-vw0-f46.google.com ([209.85.212.46]:59452 "EHLO
+	mail-vw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755991Ab0E1LYP convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 28 May 2010 06:36:13 -0400
-Received: from epmmp2 (mailout5.samsung.com [203.254.224.35])
- by mailout1.samsung.com
- (iPlanet Messaging Server 5.2 Patch 2 (built Jul 14 2004))
- with ESMTP id <0L3400D1TLGB9T@mailout1.samsung.com> for
- linux-serial@vger.kernel.org; Fri, 28 May 2010 19:36:11 +0900 (KST)
-Received: from TNRNDGASPAPP1.tn.corp.samsungelectronics.net ([165.213.149.150])
- by mmp2.samsung.com (iPlanet Messaging Server 5.2 Patch 2 (built Jul 14 2004))
- with ESMTPA id <0L3400AG4LGB5S@mmp2.samsung.com> for
- linux-serial@vger.kernel.org; Fri, 28 May 2010 19:36:11 +0900 (KST)
-In-reply-to: <20100528102906.GB4720@trinity.fluff.org>
+	Fri, 28 May 2010 07:24:15 -0400
+In-Reply-To: <58269.192.168.10.88.1274708590.squirrel@dbdmail.itg.ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ben Dooks <ben-linux@fluff.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, kyungmin.park@samsung.com, m.szyprowski@samsung.com
+To: "Govindraj.R" <govindraj.raja@ti.com>
+Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, Kevin Hilman <khilman@deeprootsystems.com>, Tony Lindgren <tony@atomide.com>
 
-On 5/28/2010 7:29 PM, Ben Dooks wrote:
-> On Fri, May 28, 2010 at 07:21:11PM +0900, Joonyoung Shim wrote:
->> Rename the structure to avoid the following warning:
->>
->> WARNING: drivers/serial/built-in.o(.data+0x534): Section mismatch in reference from the variable s5p_serial_drv to the function .devexit.text:s3c24xx_serial_remove()
->> The variable s5p_serial_drv references
->> the function __devexit s3c24xx_serial_remove()
->> If the reference is valid then annotate the
->> variable with __exit* (see linux/init.h) or name the variable:
->> *driver, *_template, *_timer, *_sht, *_ops, *_probe, *_probe_one, *_console,
->>
->> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> if it's from you, then why is there a signoff from marek.
-> 
-> if Marek is the original authour then there should be a "From:" line
-> attributing the patch to him.
-> 
+On Mon, May 24, 2010 at 7:13 PM, Govindraj.R <govindraj.raja@ti.com> wr=
+ote:
+> This patch adds driver support for OMAP3/4 high speed UART.
+>
+> The driver is made separate from 8250 driver as we cannot
+> over load 8250 driver with omap platform specific configuration for
+> features like DMA, it makes easier to implement features like DMA and
+> hardware flow control and software flow control configuration with
+> this driver as required for the omap-platform.This patch involves onl=
+y
+> the core driver and its dependent.
+>
+> Cc: Tony Lindgren <tony@atomide.com>
+> Tested-by: Kevin Hilman <khilman@deeprootsystems.com>
+> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+> ---
+> Platform data support for this driver is currently
+> present in Kevin's PM tree remotes/origin/pm-wip/uart branch
+> This branch contains uart-hwmod platform conversion which
+> utilizes the omap-hwmod framework. Tested using OMAP
+> 3430/3630/4430SDP boards.
+>
+> =A0arch/arm/plat-omap/include/plat/omap-serial.h | =A0129 +++
+> =A0drivers/serial/Kconfig =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0| =A0 27 +
+> =A0drivers/serial/Makefile =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ | =A0 =A01 +
+> =A0drivers/serial/omap-serial.c =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0| =
+1318 +++++++++++++++++++++++++
+> =A0include/linux/serial_core.h =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 | =
+=A0 =A03 +
+> =A05 files changed, 1478 insertions(+), 0 deletions(-)
+> =A0create mode 100644 arch/arm/plat-omap/include/plat/omap-serial.h
+> =A0create mode 100644 drivers/serial/omap-serial.c
 
-OK. Marek is the original author.
+Update:
 
+Populating following changes for v3:
+Will be posting in couple of days.
 
-From: Marek Szyprowski <m.szyprowski@samsung.com>
+1.)  Replace platform_get_resource with platform_get_resource_byname
+     Reference :
+     http://marc.info/?l=3Dlinux-omap&m=3D127479257522952&w=3D2
 
-Rename the structure to avoid the following warning:
+2.)  Update kconfig to add OMAP2 support also
+      [Thanks to Kevin for testing it on n810(omap2)]
+      Reference :
+     http://marc.info/?l=3Dlinux-serial&m=3D127491414713957&w=3D2
 
-WARNING: drivers/serial/built-in.o(.data+0x534): Section mismatch in reference from the variable s5p_serial_drv to the function .devexit.text:s3c24xx_serial_remove()
-The variable s5p_serial_drv references
-the function __devexit s3c24xx_serial_remove()
-If the reference is valid then annotate the
-variable with __exit* (see linux/init.h) or name the variable:
-*driver, *_template, *_timer, *_sht, *_ops, *_probe, *_probe_one, *_console,
+Please let me know if there are any further comments.
+Thanks for the reviews and testing.
 
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Signed-off-by: Joonyoung Shim <jy0922.shim@samsung.com>
 ---
- drivers/serial/s5pv210.c |    8 ++++----
- 1 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/serial/s5pv210.c b/drivers/serial/s5pv210.c
-index 8dc0383..4a789e5 100644
---- a/drivers/serial/s5pv210.c
-+++ b/drivers/serial/s5pv210.c
-@@ -119,7 +119,7 @@ static int s5p_serial_probe(struct platform_device *pdev)
- 	return s3c24xx_serial_probe(pdev, s5p_uart_inf[pdev->id]);
- }
- 
--static struct platform_driver s5p_serial_drv = {
-+static struct platform_driver s5p_serial_driver = {
- 	.probe		= s5p_serial_probe,
- 	.remove		= __devexit_p(s3c24xx_serial_remove),
- 	.driver		= {
-@@ -130,19 +130,19 @@ static struct platform_driver s5p_serial_drv = {
- 
- static int __init s5pv210_serial_console_init(void)
- {
--	return s3c24xx_serial_initconsole(&s5p_serial_drv, s5p_uart_inf);
-+	return s3c24xx_serial_initconsole(&s5p_serial_driver, s5p_uart_inf);
- }
- 
- console_initcall(s5pv210_serial_console_init);
- 
- static int __init s5p_serial_init(void)
- {
--	return s3c24xx_serial_init(&s5p_serial_drv, *s5p_uart_inf);
-+	return s3c24xx_serial_init(&s5p_serial_driver, *s5p_uart_inf);
- }
- 
- static void __exit s5p_serial_exit(void)
- {
--	platform_driver_unregister(&s5p_serial_drv);
-+	platform_driver_unregister(&s5p_serial_driver);
- }
- 
- module_init(s5p_serial_init);
--- 
-1.7.0.4
+Regards,
+Govindraj.R
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
