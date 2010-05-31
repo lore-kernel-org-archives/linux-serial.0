@@ -1,44 +1,60 @@
-From: Paul Mundt <lethal@linux-sh.org>
-Subject: Re: [PATCH 4/4 v2] ARM: mach-shmobile: add SCIFA and SCIFB DMA slave definitions for sh7372
-Date: Mon, 31 May 2010 13:51:43 +0900
-Message-ID: <20100531045142.GG20358@linux-sh.org>
-References: <Pine.LNX.4.64.1005231820190.3571@axis700.grange> <Pine.LNX.4.64.1005231836090.3571@axis700.grange>
+From: =?ISO-8859-1?Q?Eric_B=E9nard?= <eric@eukrea.com>
+Subject: Re: serial/imx.c : wrong baudrate at resume if console is on UART
+Date: Mon, 31 May 2010 09:33:07 +0200
+Message-ID: <4C036633.6070702@eukrea.com>
+References: <4BFEDDD0.8000607@eukrea.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 124x34x33x190.ap124.ftth.ucom.ne.jp ([124.34.33.190]:49557 "EHLO
-	master.linux-sh.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751590Ab0EaEwC (ORCPT
+Received: from 30.mail-out.ovh.net ([213.186.62.213]:37784 "HELO
+	30.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1755972Ab0EaHjv (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 31 May 2010 00:52:02 -0400
-Content-Disposition: inline
-In-Reply-To: <Pine.LNX.4.64.1005231836090.3571@axis700.grange>
+	Mon, 31 May 2010 03:39:51 -0400
+In-Reply-To: <4BFEDDD0.8000607@eukrea.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Cc: "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On Sun, May 23, 2010 at 06:39:24PM +0200, Guennadi Liakhovetski wrote:
-> SH7372 can use DMA with the SCI serial driver. Add required slave IDs and slave
-> descriptors.
-> 
-> Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-> ---
-> 
-> v1 -> v2:
-> 
-> No need to move DMA platform devices to the top, they are placed correctly 
-> by the new version of the
-> 
-> [PATCH 9/9 v2] ARM: mach-shmobile: add DMA support to sh7372, enable DMA for SDHI
-> 
-> patch
-> 
->  arch/arm/mach-shmobile/include/mach/sh7372.h |   14 +++++
->  arch/arm/mach-shmobile/setup-sh7372.c        |   70 ++++++++++++++++++++++++++
->  2 files changed, 84 insertions(+), 0 deletions(-)
-> 
-This is applied now, too.
+Hi,
 
-You may want to double check to make sure all of the correct versions
-have been applied and that you have nothing more outstanding.
+Le 27/05/2010 23:02, Eric B=E9nard a =E9crit :
+> while testing suspend/resume on i.MX27, I meet a problem on resume : =
+if
+> the console is on the UART the baudrate it not restored properly (I g=
+et
+> random bitrate between 50 to 2Mbps). Here is a patch to add pm to the
+> uart_ops (but the problem occurs also without this patch) :
+> http://lists.infradead.org/pipermail/linux-arm-kernel/2010-May/016495=
+=2Ehtml
+>
+I've noticed that commenting out the following line in serial_core.c=20
+"fix" the problem :
+diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.=
+c
+index 7f28307..c63476e 100644
+--- a/drivers/serial/serial_core.c
++++ b/drivers/serial/serial_core.c
+@@ -2092,7 +2092,7 @@ int uart_resume_port(struct uart_driver *drv,=20
+struct uart_
+          */
+         if (uart_console(uport)) {
+                 uart_change_pm(state, 0);
+-               uport->ops->set_termios(uport, &termios, NULL);
++//             uport->ops->set_termios(uport, &termios, NULL);
+                 console_start(uport->cons);
+         }
+
+Do you have a hint of why the baudrate is not properly restored for the=
+=20
+console or where I should dig to fix this in serial/imx.c ?
+
+Thanks
+Eric
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
