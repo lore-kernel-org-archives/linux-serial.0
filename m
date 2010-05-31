@@ -1,44 +1,44 @@
-From: "Luke-Jr" <luke@dashjr.org>
-Subject: Re: [PATCH v2] serial: Add OMAP high-speed UART driver
-Date: Fri, 28 May 2010 08:06:24 -0500
-Message-ID: <201005280806.30838.luke@dashjr.org>
-References: <58269.192.168.10.88.1274708590.squirrel@dbdmail.itg.ti.com> <201005271100.41305.luke@dashjr.org> <AANLkTikta1db8KHV2Crz1zJEagmcOI20mSnXYUq02sZ5@mail.gmail.com>
+From: Paul Mundt <lethal@linux-sh.org>
+Subject: Re: [PATCH 4/4 v2] ARM: mach-shmobile: add SCIFA and SCIFB DMA slave definitions for sh7372
+Date: Mon, 31 May 2010 13:51:43 +0900
+Message-ID: <20100531045142.GG20358@linux-sh.org>
+References: <Pine.LNX.4.64.1005231820190.3571@axis700.grange> <Pine.LNX.4.64.1005231836090.3571@axis700.grange>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from zinan.dashjr.org ([173.242.112.54]:47534 "EHLO zinan.dashjr.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753178Ab0E1NGt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 28 May 2010 09:06:49 -0400
-In-Reply-To: <AANLkTikta1db8KHV2Crz1zJEagmcOI20mSnXYUq02sZ5@mail.gmail.com>
+Received: from 124x34x33x190.ap124.ftth.ucom.ne.jp ([124.34.33.190]:49557 "EHLO
+	master.linux-sh.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751590Ab0EaEwC (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 31 May 2010 00:52:02 -0400
+Content-Disposition: inline
+In-Reply-To: <Pine.LNX.4.64.1005231836090.3571@axis700.grange>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Govindraj <govindraj.ti@gmail.com>
-Cc: Kevin Hilman <khilman@deeprootsystems.com>, "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, Tony Lindgren <tony@atomide.com>
+To: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Cc: "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, linux-serial@vger.kernel.org
 
-On Friday 28 May 2010 02:11:29 am you wrote:
-> On Thu, May 27, 2010 at 9:30 PM, Luke-Jr <luke@dashjr.org> wrote:
-> > On Wednesday 26 May 2010 05:48:58 pm Kevin Hilman wrote:
-> >> FYI... this also works on OMAP2.
-> >>
-> >> I tested it on my n810 along with UART hwmod conversion and it works
-> >> just fine there.
-> >
-> > Is it somehow different from the basic 8250 driver on OMAP2? I've been
-> > struggling to figure out why my N810's GPS isn't working when I change
-> > kernels (I've already made sure ttyS0 is the correct major/minor and
-> > adjusted the GPIO calls; gpiodriver is talking to the chip, but not
-> > getting anywhere).
+On Sun, May 23, 2010 at 06:39:24PM +0200, Guennadi Liakhovetski wrote:
+> SH7372 can use DMA with the SCI serial driver. Add required slave IDs and slave
+> descriptors.
 > 
-> You need to use ttyO0 [%s/ttyS*/ttyO*]
+> Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+> ---
 > 
-> Since uart tty interface name as been modified with this driver.
+> v1 -> v2:
 > 
-> +#define OMAP_SERIAL_NAME       "ttyO"
+> No need to move DMA platform devices to the top, they are placed correctly 
+> by the new version of the
+> 
+> [PATCH 9/9 v2] ARM: mach-shmobile: add DMA support to sh7372, enable DMA for SDHI
+> 
+> patch
+> 
+>  arch/arm/mach-shmobile/include/mach/sh7372.h |   14 +++++
+>  arch/arm/mach-shmobile/setup-sh7372.c        |   70 ++++++++++++++++++++++++++
+>  2 files changed, 84 insertions(+), 0 deletions(-)
+> 
+This is applied now, too.
 
-Beyond the fact that this is hard-coded into Nokia's blob and thus not 
-something trivial to change, I meant it doesn't work with the 8250 driver. My 
-question pertains to if this driver does anything different that would make it 
-possibly work.
+You may want to double check to make sure all of the correct versions
+have been applied and that you have nothing more outstanding.
