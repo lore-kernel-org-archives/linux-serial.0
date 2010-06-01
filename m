@@ -1,43 +1,56 @@
-From: Mike Frysinger <vapier@gentoo.org>
-Subject: [PATCH 2/2] serial: bfin_5xx: fix typo in IER check
-Date: Mon, 31 May 2010 07:29:32 -0400
-Message-ID: <1275305372-20523-2-git-send-email-vapier@gentoo.org>
-References: <1275305372-20523-1-git-send-email-vapier@gentoo.org>
+From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Subject: Re: [PATCH 4/4 v2] ARM: mach-shmobile: add SCIFA and SCIFB DMA slave
+ definitions for sh7372
+Date: Tue, 1 Jun 2010 09:30:00 +0200 (CEST)
+Message-ID: <Pine.LNX.4.64.1006010928130.7762@axis700.grange>
+References: <Pine.LNX.4.64.1005231820190.3571@axis700.grange>
+ <Pine.LNX.4.64.1005231836090.3571@axis700.grange> <20100531045142.GG20358@linux-sh.org>
+Mime-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.gentoo.org ([140.211.166.183]:37691 "EHLO smtp.gentoo.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752516Ab0EaLZS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 31 May 2010 07:25:18 -0400
-In-Reply-To: <1275305372-20523-1-git-send-email-vapier@gentoo.org>
+Received: from mail.gmx.net ([213.165.64.20]:28145 "HELO mail.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
+	id S1753430Ab0FAH35 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 1 Jun 2010 03:29:57 -0400
+In-Reply-To: <20100531045142.GG20358@linux-sh.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: uclinux-dist-devel@blackfin.uclinux.org, linux-kernel@vger.kernel.org, Sonic Zhang <sonic.zhang@analog.com>
+To: Paul Mundt <lethal@linux-sh.org>
+Cc: "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, linux-serial@vger.kernel.org
 
-From: Sonic Zhang <sonic.zhang@analog.com>
+On Mon, 31 May 2010, Paul Mundt wrote:
 
-This most likely won't cause problems on systems as people don't typically
-enable GPIO RTS/CTS if they don't actually use it.
+> On Sun, May 23, 2010 at 06:39:24PM +0200, Guennadi Liakhovetski wrote:
+> > SH7372 can use DMA with the SCI serial driver. Add required slave IDs and slave
+> > descriptors.
+> > 
+> > Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+> > ---
+> > 
+> > v1 -> v2:
+> > 
+> > No need to move DMA platform devices to the top, they are placed correctly 
+> > by the new version of the
+> > 
+> > [PATCH 9/9 v2] ARM: mach-shmobile: add DMA support to sh7372, enable DMA for SDHI
+> > 
+> > patch
+> > 
+> >  arch/arm/mach-shmobile/include/mach/sh7372.h |   14 +++++
+> >  arch/arm/mach-shmobile/setup-sh7372.c        |   70 ++++++++++++++++++++++++++
+> >  2 files changed, 84 insertions(+), 0 deletions(-)
+> > 
+> This is applied now, too.
+> 
+> You may want to double check to make sure all of the correct versions
+> have been applied and that you have nothing more outstanding.
 
-Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
-Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+Apart from a wrong version of the "add DMA support to sh7372, enable DMA 
+for SDHI" patch, which doesn't change much, the rest looks good to me. 
+Thanks!
+
+Guennadi
 ---
- drivers/serial/bfin_5xx.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
-index a78652b..511cbf6 100644
---- a/drivers/serial/bfin_5xx.c
-+++ b/drivers/serial/bfin_5xx.c
-@@ -797,7 +797,7 @@ static void bfin_serial_shutdown(struct uart_port *port)
- 		gpio_free(uart->rts_pin);
- #endif
- #ifdef CONFIG_SERIAL_BFIN_HARD_CTSRTS
--	if (UART_GET_IER(uart) && EDSSI)
-+	if (UART_GET_IER(uart) & EDSSI)
- 		free_irq(uart->status_irq, uart);
- #endif
- }
--- 
-1.7.1
-
+Guennadi Liakhovetski, Ph.D.
+Freelance Open-Source Software Developer
+http://www.open-technology.de/
