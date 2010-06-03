@@ -1,31 +1,50 @@
 From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH] serial: add support for various Titan PCI cards
-Date: Thu, 3 Jun 2010 10:35:58 -0700
-Message-ID: <20100603173558.GB9307@kroah.com>
-References: <4C0675CE.4090305@visionsystems.de>
+Subject: Re: [PATCH 1/2] serial: bfin_5xx: IRDA is not affected by anomaly
+ 05000230
+Date: Thu, 3 Jun 2010 10:42:03 -0700
+Message-ID: <20100603174203.GE9307@kroah.com>
+References: <1275305372-20523-1-git-send-email-vapier@gentoo.org>
+ <20100603174131.GD9307@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:58928 "EHLO coco.kroah.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757086Ab0FCRxG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 3 Jun 2010 13:53:06 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <4C0675CE.4090305@visionsystems.de>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <20100603174131.GD9307@kroah.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Mike Frysinger <vapier@gentoo.org>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>, uclinux-dist-devel@blackfin.uclinux.org, linux-kernel@vger.kernel.org, Graf Yang <graf.yang@analog.com>
 List-Id: linux-serial@vger.kernel.org
-To: Yegor Yefremov <yegor_sub1@visionsystems.de>
-Cc: linux-serial@vger.kernel.org, gregkh@suse.de
 
-On Wed, Jun 02, 2010 at 05:16:30PM +0200, Yegor Yefremov wrote:
-> Index: b/include/linux/pci_ids.h
+On Thu, Jun 03, 2010 at 10:41:31AM -0700, Greg KH wrote:
+> On Mon, May 31, 2010 at 07:29:31AM -0400, Mike Frysinger wrote:
+> > From: Graf Yang <graf.yang@analog.com>
+> > 
+> > Anomaly 05000230 (over sampling of the UART STOP bit) applies only when
+> > the peripheral is operating in UART mode.  So drop the anomaly handling
+> > when the UART is in IRDA mode.
+> > 
+> > Signed-off-by: Graf Yang <graf.yang@analog.com>
+> > Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+> > ---
+> >  drivers/serial/bfin_5xx.c |    7 ++++++-
+> >  1 files changed, 6 insertions(+), 1 deletions(-)
+> > 
+> > diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
+> > index 96f7e74..a78652b 100644
+> > --- a/drivers/serial/bfin_5xx.c
+> > +++ b/drivers/serial/bfin_5xx.c
+> > @@ -869,7 +869,12 @@ bfin_serial_set_termios(struct uart_port *port, struct ktermios *termios,
+> >  	}
+> >  
+> >  	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16);
+> > -	quot = uart_get_divisor(port, baud) - ANOMALY_05000230;
+> > +	quot = uart_get_divisor(port, baud);
+> > +
+> > +	/* If discipline is not IRDA, apply ANOMALY_05000230 */
+> > +	if (termios->c_line != N_IRDA)
+> > +		quot -= ANOMALY_05000230;
+> > +
+> 
+> This can't be applied to the current tree, did you make it backwards?
 
-If you look at the top of this file, it says we are not adding new
-entries to it except for ids that are in more than one file.
-
-So, care to redo this patch without touching this file?  I'll be glad to
-take it that way.
-
-thanks,
-
-greg k-h
+Crap, that's because I already had it in my tree, doh...
