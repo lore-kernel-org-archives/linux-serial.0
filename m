@@ -1,50 +1,130 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH 1/2] serial: bfin_5xx: IRDA is not affected by anomaly
- 05000230
-Date: Thu, 3 Jun 2010 10:42:03 -0700
-Message-ID: <20100603174203.GE9307@kroah.com>
-References: <1275305372-20523-1-git-send-email-vapier@gentoo.org>
- <20100603174131.GD9307@kroah.com>
+From: Yegor Yefremov <yegor_sub1@visionsystems.de>
+Subject: [PATCH v2] serial: add support for various Titan PCI cards
+Date: Fri, 04 Jun 2010 09:58:18 +0200
+Message-ID: <4C08B21A.4030002@visionsystems.de>
+Reply-To: yegor_sub1@visionsystems.de
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20100603174131.GD9307@kroah.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Mike Frysinger <vapier@gentoo.org>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>, uclinux-dist-devel@blackfin.uclinux.org, linux-kernel@vger.kernel.org, Graf Yang <graf.yang@analog.com>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from hhlx01.vscom.de ([62.145.30.242]:35725 "EHLO
+	mail.visionsystems.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753884Ab0FDH60 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 4 Jun 2010 03:58:26 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: greg@kroah.com
 
-On Thu, Jun 03, 2010 at 10:41:31AM -0700, Greg KH wrote:
-> On Mon, May 31, 2010 at 07:29:31AM -0400, Mike Frysinger wrote:
-> > From: Graf Yang <graf.yang@analog.com>
-> > 
-> > Anomaly 05000230 (over sampling of the UART STOP bit) applies only when
-> > the peripheral is operating in UART mode.  So drop the anomaly handling
-> > when the UART is in IRDA mode.
-> > 
-> > Signed-off-by: Graf Yang <graf.yang@analog.com>
-> > Signed-off-by: Mike Frysinger <vapier@gentoo.org>
-> > ---
-> >  drivers/serial/bfin_5xx.c |    7 ++++++-
-> >  1 files changed, 6 insertions(+), 1 deletions(-)
-> > 
-> > diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
-> > index 96f7e74..a78652b 100644
-> > --- a/drivers/serial/bfin_5xx.c
-> > +++ b/drivers/serial/bfin_5xx.c
-> > @@ -869,7 +869,12 @@ bfin_serial_set_termios(struct uart_port *port, struct ktermios *termios,
-> >  	}
-> >  
-> >  	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16);
-> > -	quot = uart_get_divisor(port, baud) - ANOMALY_05000230;
-> > +	quot = uart_get_divisor(port, baud);
-> > +
-> > +	/* If discipline is not IRDA, apply ANOMALY_05000230 */
-> > +	if (termios->c_line != N_IRDA)
-> > +		quot -= ANOMALY_05000230;
-> > +
-> 
-> This can't be applied to the current tree, did you make it backwards?
+serial: add support for various Titan PCI cards
 
-Crap, that's because I already had it in my tree, doh...
+Models: 200I, 400I, 800I, 400EH, 800EH, 800EHB,
+        100E, 200E, 400E, 800E, 200EI, 200EISI
+
+Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
+
+Index: b/drivers/serial/8250_pci.c
+===================================================================
+--- a/drivers/serial/8250_pci.c	2010-06-03 16:04:45.000000000 +0200
++++ b/drivers/serial/8250_pci.c	2010-06-04 09:03:28.000000000 +0200
+@@ -982,6 +982,18 @@
+ #define PCI_SUBDEVICE_ID_POCTAL422	0x0408
+ #define PCI_VENDOR_ID_ADVANTECH		0x13fe
+ #define PCI_DEVICE_ID_ADVANTECH_PCI3620	0x3620
++#define PCI_DEVICE_ID_TITAN_200I	0x8028
++#define PCI_DEVICE_ID_TITAN_400I	0x8048
++#define PCI_DEVICE_ID_TITAN_800I	0x8088
++#define PCI_DEVICE_ID_TITAN_800EH	0xA007
++#define PCI_DEVICE_ID_TITAN_800EHB	0xA008
++#define PCI_DEVICE_ID_TITAN_400EH	0xA009
++#define PCI_DEVICE_ID_TITAN_100E	0xA010
++#define PCI_DEVICE_ID_TITAN_200E	0xA012
++#define PCI_DEVICE_ID_TITAN_400E	0xA013
++#define PCI_DEVICE_ID_TITAN_800E	0xA014
++#define PCI_DEVICE_ID_TITAN_200EI	0xA016
++#define PCI_DEVICE_ID_TITAN_200EISI	0xA017
+ 
+ /* Unknown vendors/cards - this should not be in linux/pci_ids.h */
+ #define PCI_SUBDEVICE_ID_UNKNOWN_0x1584	0x1584
+@@ -1541,6 +1553,10 @@
+ 	pbn_b3_4_115200,
+ 	pbn_b3_8_115200,
+ 
++	pbn_b4_bt_2_921600,
++	pbn_b4_bt_4_921600,
++	pbn_b4_bt_8_921600,
++
+ 	/*
+ 	 * Board-specific versions.
+ 	 */
+@@ -1995,6 +2011,25 @@
+ 		.uart_offset	= 8,
+ 	},
+ 
++	[pbn_b4_bt_2_921600] = {
++		.flags		= FL_BASE4,
++		.num_ports	= 2,
++		.base_baud	= 921600,
++		.uart_offset	= 8,
++	},
++	[pbn_b4_bt_4_921600] = {
++		.flags		= FL_BASE4,
++		.num_ports	= 4,
++		.base_baud	= 921600,
++		.uart_offset	= 8,
++	},
++	[pbn_b4_bt_8_921600] = {
++		.flags		= FL_BASE4,
++		.num_ports	= 8,
++		.base_baud	= 921600,
++		.uart_offset	= 8,
++	},
++
+ 	/*
+ 	 * Entries following this are board-specific.
+ 	 */
+@@ -3043,6 +3078,42 @@
+ 	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_800L,
+ 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+ 		pbn_b0_bt_8_921600 },
++	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_200I,
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
++		pbn_b4_bt_2_921600 },
++	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_400I,
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
++		pbn_b4_bt_4_921600 },
++	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_800I,
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
++		pbn_b4_bt_8_921600 },
++	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_400EH,
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
++		pbn_b0_4_921600 },
++	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_800EH,
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
++		pbn_b0_4_921600 },
++	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_800EHB,
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
++		pbn_b0_4_921600 },
++	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_100E,
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
++		pbn_oxsemi_1_4000000 },
++	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_200E,
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
++		pbn_oxsemi_2_4000000 },
++	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_400E,
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
++		pbn_oxsemi_4_4000000 },
++	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_800E,
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
++		pbn_oxsemi_8_4000000 },
++	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_200EI,
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
++		pbn_oxsemi_2_4000000 },
++	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_200EISI,
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
++		pbn_oxsemi_2_4000000 },
+ 
+ 	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_1S_10x_550,
+ 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+
