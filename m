@@ -1,168 +1,70 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: [PATCH 4/4] serial: fix wakup races in the mrst_max3110 driver
-Date: Thu, 17 Jun 2010 11:02:15 +0100
-Message-ID: <20100617100213.4379.16616.stgit@localhost.localdomain>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH 1/4] hsu: driver for Medfield High Speed UART device
+Date: Thu, 17 Jun 2010 10:38:53 -0700
+Message-ID: <20100617173853.GE24362@kroah.com>
 References: <20100617100012.4379.92949.stgit@localhost.localdomain>
+ <20100617100145.4379.60698.stgit@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:30637 "EHLO mga09.intel.com"
+Received: from kroah.org ([198.145.64.141]:51690 "EHLO coco.kroah.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757135Ab0FQKZU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Jun 2010 06:25:20 -0400
-In-Reply-To: <20100617100012.4379.92949.stgit@localhost.localdomain>
+	id S933093Ab0FQRj2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 17 Jun 2010 13:39:28 -0400
+Content-Disposition: inline
+In-Reply-To: <20100617100145.4379.60698.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: greg@kroah.com, linux-serial@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>
+Cc: linux-serial@vger.kernel.org
 
-From: Arjan van de Ven <arjan@linux.intel.com>
+On Thu, Jun 17, 2010 at 11:01:47AM +0100, Alan Cox wrote:
+> From: Feng Tang <feng.tang@intel.com>
+>=20
+> This is a PCI & UART driver, which suppors both PIO and DMA mode
+> UART operation. It has 3 identical UART ports and one internal
+> DMA controller.
+>=20
+> Current FW will export 4 pci devices for hsu: 3 uart ports and 1
+> dma controller, each has one IRQ line. And we need to discuss the
+> device model, one PCI device covering whole HSU should be a better
+> model, but there is a problem of how to export the 4 IRQs info
+>=20
+> Current driver set the highest baud rate to 2746800bps, which is
+> easy to scale down to 115200/230400.... To suport higher baud rate,
+> we need add special process, change DLAB/DLH/PS/DIV/MUL registers
+> all together.
+>=20
+> 921600 is the highest baud rate that has been tested with Bluetooth
+> modem connected to HSU port 0. Will test more when there is right
+> BT firmware.
+>=20
+> Signed-off-by: Feng Tang <feng.tang@intel.com>
+> Signed-off-by: Alan Cox <alan@linux.intel.com>
+> ---
+>=20
+>  drivers/serial/Kconfig      |    9=20
+>  drivers/serial/Makefile     |    1=20
+>  drivers/serial/mfd.c        | 1488 +++++++++++++++++++++++++++++++++=
+++++++++++
 
-The mrst_max3110 driver had a set of unsafe wakeup sequences
-along the following line:
+When building with this patch, I get the following build error:
+  CC [M]  drivers/serial/mfd.o
+  drivers/serial/mfd.c: In function =E2=80=98serial_hsu_probe=E2=80=99:
+  drivers/serial/mfd.c:1338:22: error: =E2=80=98serial_hsu_console=E2=80=
+=99 undeclared (first use in this function)
 
-if (!atomic_read(&foo)) {
-  atomic_set(&foo, 1);
-  wake_up(worker_thread);
-}
-and the worker thread would do
+So I can't take this, or the second patch (which doesn't fix this
+problem).
 
-if (atomic_read(&foo)) {
-  do_work();
-  atomic_set(&foo, 0);
-}
+Care to redo them so that the build is not broken?
 
-which can result in various missed wakups due to test-then-set races,
-as well as due to clear-after-work instead of clear-before-work.
+thanks,
 
-This patch fixes these races by using the proper bit test-and-set operations,
-and by doing clear-before-work.
-
-Signed-off-by: Arjan van de Ven <arjan@linux.intel.com>
-Signed-off-by: Alan Cox <alan@linux.intel.com>
----
-
- drivers/serial/mrst_max3110.c |   46 ++++++++++++++++-------------------------
- 1 files changed, 18 insertions(+), 28 deletions(-)
-
-
-diff --git a/drivers/serial/mrst_max3110.c b/drivers/serial/mrst_max3110.c
-index 0341853..f6ad1ec 100644
---- a/drivers/serial/mrst_max3110.c
-+++ b/drivers/serial/mrst_max3110.c
-@@ -48,6 +48,10 @@
- 
- #define PR_FMT	"mrst_max3110: "
- 
-+#define UART_TX_NEEDED 1
-+#define CON_TX_NEEDED  2
-+#define BIT_IRQ_PENDING    3
-+
- struct uart_max3110 {
- 	struct uart_port port;
- 	struct spi_device *spi;
-@@ -63,15 +67,13 @@ struct uart_max3110 {
- 	u8 clock;
- 	u8 parity, word_7bits;
- 
--	atomic_t uart_tx_need;
-+	unsigned long uart_flags;
- 
- 	/* console related */
- 	struct circ_buf con_xmit;
--	atomic_t con_tx_need;
- 
- 	/* irq related */
- 	u16 irq;
--	atomic_t irq_pending;
- };
- 
- /* global data structure, may need be removed */
-@@ -176,10 +178,9 @@ static void serial_m3110_con_putchar(struct uart_port *port, int ch)
- 		xmit->head = (xmit->head + 1) & (PAGE_SIZE - 1);
- 	}
- 
--	if (!atomic_read(&max->con_tx_need)) {
--		atomic_set(&max->con_tx_need, 1);
-+
-+	if (!test_and_set_bit(CON_TX_NEEDED, &max->uart_flags))
- 		wake_up_process(max->main_thread);
--	}
- }
- 
- /*
-@@ -318,10 +319,8 @@ static void serial_m3110_start_tx(struct uart_port *port)
- 	struct uart_max3110 *max =
- 		container_of(port, struct uart_max3110, port);
- 
--	if (!atomic_read(&max->uart_tx_need)) {
--		atomic_set(&max->uart_tx_need, 1);
-+	if (!test_and_set_bit(UART_TX_NEEDED, &max->uart_flags))
- 		wake_up_process(max->main_thread);
--	}
- }
- 
- static void receive_chars(struct uart_max3110 *max, unsigned char *str, int len)
-@@ -392,32 +391,23 @@ static int max3110_main_thread(void *_max)
- 	pr_info(PR_FMT "start main thread\n");
- 
- 	do {
--		wait_event_interruptible(*wq, (atomic_read(&max->irq_pending) ||
--					       atomic_read(&max->con_tx_need) ||
--					     atomic_read(&max->uart_tx_need)) ||
--					     kthread_should_stop());
-+		wait_event_interruptible(*wq, max->uart_flags || kthread_should_stop());
- 
- 		mutex_lock(&max->thread_mutex);
- 
--#ifdef CONFIG_MRST_MAX3110_IRQ
--		if (atomic_read(&max->irq_pending)) {
-+		if (test_and_clear_bit(BIT_IRQ_PENDING, &max->uart_flags))
- 			max3110_console_receive(max);
--			atomic_set(&max->irq_pending, 0);
--		}
--#endif
- 
- 		/* first handle console output */
--		if (atomic_read(&max->con_tx_need)) {
-+		if (test_and_clear_bit(CON_TX_NEEDED, &max->uart_flags))
- 			send_circ_buf(max, xmit);
--			atomic_set(&max->con_tx_need, 0);
--		}
- 
- 		/* handle uart output */
--		if (atomic_read(&max->uart_tx_need)) {
-+		if (test_and_clear_bit(UART_TX_NEEDED, &max->uart_flags))
- 			transmit_char(max);
--			atomic_set(&max->uart_tx_need, 0);
--		}
-+
- 		mutex_unlock(&max->thread_mutex);
-+
- 	} while (!kthread_should_stop());
- 
- 	return ret;
-@@ -430,10 +420,9 @@ static irqreturn_t serial_m3110_irq(int irq, void *dev_id)
- 
- 	/* max3110's irq is a falling edge, not level triggered,
- 	 * so no need to disable the irq */
--	if (!atomic_read(&max->irq_pending)) {
--		atomic_inc(&max->irq_pending);
-+	if (!test_and_set_bit(BIT_IRQ_PENDING, &max->uart_flags))
- 		wake_up_process(max->main_thread);
--	}
-+
- 	return IRQ_HANDLED;
- }
- #else
-@@ -753,7 +742,8 @@ static int serial_m3110_probe(struct spi_device *spi)
- 	max->baud = 0;
- 
- 	max->cur_conf = 0;
--	atomic_set(&max->irq_pending, 0);
-+	max->uart_flags = 0;
-+
- 	/* Check if reading configuration register returns something sane */
- 
- 	res = RC_TAG;
-
+greg k-h
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
