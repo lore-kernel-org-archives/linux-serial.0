@@ -1,17 +1,16 @@
 From: Alan Cox <alan@linux.intel.com>
-Subject: [PATCH 3/4] serial: replace open coded mutex with a real mutex in
-	mrst_max3110.c
-Date: Thu, 17 Jun 2010 11:02:06 +0100
-Message-ID: <20100617100204.4379.5286.stgit@localhost.localdomain>
+Subject: [PATCH 4/4] serial: fix wakup races in the mrst_max3110 driver
+Date: Thu, 17 Jun 2010 11:02:15 +0100
+Message-ID: <20100617100213.4379.16616.stgit@localhost.localdomain>
 References: <20100617100012.4379.92949.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:13046 "EHLO mga11.intel.com"
+Received: from mga09.intel.com ([134.134.136.24]:30637 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755395Ab0FQKZL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Jun 2010 06:25:11 -0400
+	id S1757135Ab0FQKZU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 17 Jun 2010 06:25:20 -0400
 In-Reply-To: <20100617100012.4379.92949.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -19,77 +18,151 @@ To: greg@kroah.com, linux-serial@vger.kernel.org
 
 From: Arjan van de Ven <arjan@linux.intel.com>
 
-The mrst_max3110.c driver uses an open coded, non atomic variable
-to create exclusion between two of its worker threads. More than that,
-while the main thread does a proper set-work-clear sequence,
-the other thread only does a test, with the result that no actual
-exclusion is happening.
+The mrst_max3110 driver had a set of unsafe wakeup sequences
+along the following line:
 
-this patch replaces this open coded variable with a proper mutex
+if (!atomic_read(&foo)) {
+  atomic_set(&foo, 1);
+  wake_up(worker_thread);
+}
+and the worker thread would do
 
-in addition, the 'lock' spinlock is removed from the per adapter structure,
-the lock was only ever initialized but never used
+if (atomic_read(&foo)) {
+  do_work();
+  atomic_set(&foo, 0);
+}
+
+which can result in various missed wakups due to test-then-set races,
+as well as due to clear-after-work instead of clear-before-work.
+
+This patch fixes these races by using the proper bit test-and-set operations,
+and by doing clear-before-work.
 
 Signed-off-by: Arjan van de Ven <arjan@linux.intel.com>
 Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
 
- drivers/serial/mrst_max3110.c |   15 ++++++++-------
- 1 files changed, 8 insertions(+), 7 deletions(-)
+ drivers/serial/mrst_max3110.c |   46 ++++++++++++++++-------------------------
+ 1 files changed, 18 insertions(+), 28 deletions(-)
 
 
 diff --git a/drivers/serial/mrst_max3110.c b/drivers/serial/mrst_max3110.c
-index f9c01ae..0341853 100644
+index 0341853..f6ad1ec 100644
 --- a/drivers/serial/mrst_max3110.c
 +++ b/drivers/serial/mrst_max3110.c
-@@ -56,8 +56,7 @@ struct uart_max3110 {
- 	wait_queue_head_t wq;
- 	struct task_struct *main_thread;
- 	struct task_struct *read_thread;
--	int mthread_up;
--	spinlock_t lock;
-+	struct mutex thread_mutex;;
+@@ -48,6 +48,10 @@
  
- 	u32 baud;
- 	u16 cur_conf;
-@@ -397,7 +396,8 @@ static int max3110_main_thread(void *_max)
- 					       atomic_read(&max->con_tx_need) ||
- 					     atomic_read(&max->uart_tx_need)) ||
- 					     kthread_should_stop());
--		max->mthread_up = 1;
+ #define PR_FMT	"mrst_max3110: "
+ 
++#define UART_TX_NEEDED 1
++#define CON_TX_NEEDED  2
++#define BIT_IRQ_PENDING    3
 +
-+		mutex_lock(&max->thread_mutex);
+ struct uart_max3110 {
+ 	struct uart_port port;
+ 	struct spi_device *spi;
+@@ -63,15 +67,13 @@ struct uart_max3110 {
+ 	u8 clock;
+ 	u8 parity, word_7bits;
  
- #ifdef CONFIG_MRST_MAX3110_IRQ
- 		if (atomic_read(&max->irq_pending)) {
-@@ -417,7 +417,7 @@ static int max3110_main_thread(void *_max)
+-	atomic_t uart_tx_need;
++	unsigned long uart_flags;
+ 
+ 	/* console related */
+ 	struct circ_buf con_xmit;
+-	atomic_t con_tx_need;
+ 
+ 	/* irq related */
+ 	u16 irq;
+-	atomic_t irq_pending;
+ };
+ 
+ /* global data structure, may need be removed */
+@@ -176,10 +178,9 @@ static void serial_m3110_con_putchar(struct uart_port *port, int ch)
+ 		xmit->head = (xmit->head + 1) & (PAGE_SIZE - 1);
+ 	}
+ 
+-	if (!atomic_read(&max->con_tx_need)) {
+-		atomic_set(&max->con_tx_need, 1);
++
++	if (!test_and_set_bit(CON_TX_NEEDED, &max->uart_flags))
+ 		wake_up_process(max->main_thread);
+-	}
+ }
+ 
+ /*
+@@ -318,10 +319,8 @@ static void serial_m3110_start_tx(struct uart_port *port)
+ 	struct uart_max3110 *max =
+ 		container_of(port, struct uart_max3110, port);
+ 
+-	if (!atomic_read(&max->uart_tx_need)) {
+-		atomic_set(&max->uart_tx_need, 1);
++	if (!test_and_set_bit(UART_TX_NEEDED, &max->uart_flags))
+ 		wake_up_process(max->main_thread);
+-	}
+ }
+ 
+ static void receive_chars(struct uart_max3110 *max, unsigned char *str, int len)
+@@ -392,32 +391,23 @@ static int max3110_main_thread(void *_max)
+ 	pr_info(PR_FMT "start main thread\n");
+ 
+ 	do {
+-		wait_event_interruptible(*wq, (atomic_read(&max->irq_pending) ||
+-					       atomic_read(&max->con_tx_need) ||
+-					     atomic_read(&max->uart_tx_need)) ||
+-					     kthread_should_stop());
++		wait_event_interruptible(*wq, max->uart_flags || kthread_should_stop());
+ 
+ 		mutex_lock(&max->thread_mutex);
+ 
+-#ifdef CONFIG_MRST_MAX3110_IRQ
+-		if (atomic_read(&max->irq_pending)) {
++		if (test_and_clear_bit(BIT_IRQ_PENDING, &max->uart_flags))
+ 			max3110_console_receive(max);
+-			atomic_set(&max->irq_pending, 0);
+-		}
+-#endif
+ 
+ 		/* first handle console output */
+-		if (atomic_read(&max->con_tx_need)) {
++		if (test_and_clear_bit(CON_TX_NEEDED, &max->uart_flags))
+ 			send_circ_buf(max, xmit);
+-			atomic_set(&max->con_tx_need, 0);
+-		}
+ 
+ 		/* handle uart output */
+-		if (atomic_read(&max->uart_tx_need)) {
++		if (test_and_clear_bit(UART_TX_NEEDED, &max->uart_flags))
  			transmit_char(max);
- 			atomic_set(&max->uart_tx_need, 0);
- 		}
--		max->mthread_up = 0;
-+		mutex_unlock(&max->thread_mutex);
+-			atomic_set(&max->uart_tx_need, 0);
+-		}
++
+ 		mutex_unlock(&max->thread_mutex);
++
  	} while (!kthread_should_stop());
  
  	return ret;
-@@ -444,8 +444,9 @@ static int max3110_read_thread(void *_max)
+@@ -430,10 +420,9 @@ static irqreturn_t serial_m3110_irq(int irq, void *dev_id)
  
- 	pr_info(PR_FMT "start read thread\n");
- 	do {
--		if (!max->mthread_up)
--			max3110_console_receive(max);
-+		mutex_lock(&max->thread_mutex);
-+		max3110_console_receive(max);
-+		mutex_unlock(&max->thread_mutex);
+ 	/* max3110's irq is a falling edge, not level triggered,
+ 	 * so no need to disable the irq */
+-	if (!atomic_read(&max->irq_pending)) {
+-		atomic_inc(&max->irq_pending);
++	if (!test_and_set_bit(BIT_IRQ_PENDING, &max->uart_flags))
+ 		wake_up_process(max->main_thread);
+-	}
++
+ 	return IRQ_HANDLED;
+ }
+ #else
+@@ -753,7 +742,8 @@ static int serial_m3110_probe(struct spi_device *spi)
+ 	max->baud = 0;
  
- 		set_current_state(TASK_INTERRUPTIBLE);
- 		schedule_timeout(HZ / 20);
-@@ -745,7 +746,7 @@ static int serial_m3110_probe(struct spi_device *spi)
- 	max->name = spi->modalias;	/* use spi name as the name */
- 	max->irq = (u16)spi->irq;
+ 	max->cur_conf = 0;
+-	atomic_set(&max->irq_pending, 0);
++	max->uart_flags = 0;
++
+ 	/* Check if reading configuration register returns something sane */
  
--	spin_lock_init(&max->lock);
-+	mutex_init(&max->thread_mutex);
- 
- 	max->word_7bits = 0;
- 	max->parity = 0;
+ 	res = RC_TAG;
 
