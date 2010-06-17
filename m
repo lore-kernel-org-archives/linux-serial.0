@@ -1,156 +1,95 @@
 From: Alan Cox <alan@linux.intel.com>
-Subject: [PATCH 2/4] hsu: add a periodic timer to check dma rx channel
-Date: Thu, 17 Jun 2010 11:01:57 +0100
-Message-ID: <20100617100155.4379.87198.stgit@localhost.localdomain>
+Subject: [PATCH 3/4] serial: replace open coded mutex with a real mutex in
+	mrst_max3110.c
+Date: Thu, 17 Jun 2010 11:02:06 +0100
+Message-ID: <20100617100204.4379.5286.stgit@localhost.localdomain>
 References: <20100617100012.4379.92949.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:7381 "EHLO mga11.intel.com"
+Received: from mga11.intel.com ([192.55.52.93]:13046 "EHLO mga11.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757135Ab0FQKZC (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Jun 2010 06:25:02 -0400
+	id S1755395Ab0FQKZL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 17 Jun 2010 06:25:11 -0400
 In-Reply-To: <20100617100012.4379.92949.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: greg@kroah.com, linux-serial@vger.kernel.org
 
-From: Feng Tang <feng.tang@intel.com>
+From: Arjan van de Ven <arjan@linux.intel.com>
 
-A general problem for uart rx dma channel is you never know when
-and how much data will be received, so usually preset it a DMA
-descriptor with a big size, and rely on DMA RX timeout IRQ to
-know there is some data in rx channel.
+The mrst_max3110.c driver uses an open coded, non atomic variable
+to create exclusion between two of its worker threads. More than that,
+while the main thread does a proper set-work-clear sequence,
+the other thread only does a test, with the result that no actual
+exclusion is happening.
 
-For a RX data size of multiple of MOTSR, there will be no timeout
-IRQ issued, thus OS will never be notified about that.
+this patch replaces this open coded variable with a proper mutex
 
-This is a work around for that, current timer frequency is 5 times
-per second, it should vary according to the baud rate
+in addition, the 'lock' spinlock is removed from the per adapter structure,
+the lock was only ever initialized but never used
 
-When future silicon version fix the problem, this workaround need
-be removed
-
-Signed-off-by: Feng Tang <feng.tang@intel.com>
+Signed-off-by: Arjan van de Ven <arjan@linux.intel.com>
 Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
 
- drivers/serial/mfd.c |   50 +++++++++++++++++++++++++++++++++++++++++++++++---
- 1 files changed, 47 insertions(+), 3 deletions(-)
+ drivers/serial/mrst_max3110.c |   15 ++++++++-------
+ 1 files changed, 8 insertions(+), 7 deletions(-)
 
 
-diff --git a/drivers/serial/mfd.c b/drivers/serial/mfd.c
-index 577df02..cf396b6 100644
---- a/drivers/serial/mfd.c
-+++ b/drivers/serial/mfd.c
-@@ -64,6 +64,8 @@
- #define mfd_readl(obj, offset)		readl(obj->reg + offset)
- #define mfd_writel(obj, offset, val)	writel(val, obj->reg + offset)
+diff --git a/drivers/serial/mrst_max3110.c b/drivers/serial/mrst_max3110.c
+index f9c01ae..0341853 100644
+--- a/drivers/serial/mrst_max3110.c
++++ b/drivers/serial/mrst_max3110.c
+@@ -56,8 +56,7 @@ struct uart_max3110 {
+ 	wait_queue_head_t wq;
+ 	struct task_struct *main_thread;
+ 	struct task_struct *read_thread;
+-	int mthread_up;
+-	spinlock_t lock;
++	struct mutex thread_mutex;;
  
-+#define HSU_DMA_TIMEOUT_CHECK_FREQ	(HZ/10)
+ 	u32 baud;
+ 	u16 cur_conf;
+@@ -397,7 +396,8 @@ static int max3110_main_thread(void *_max)
+ 					       atomic_read(&max->con_tx_need) ||
+ 					     atomic_read(&max->uart_tx_need)) ||
+ 					     kthread_should_stop());
+-		max->mthread_up = 1;
 +
- struct hsu_dma_buffer {
- 	u8		*buf;
- 	dma_addr_t	dma_addr;
-@@ -75,7 +77,8 @@ struct hsu_dma_chan {
- 	u32	id;
- 	u32	dirt;	/* to or from device */
- 	struct uart_hsu_port	*uport;
--	void __iomem	*reg;
-+	void __iomem		*reg;
-+	struct timer_list	rx_timer; /* only needed by RX channel */
- };
++		mutex_lock(&max->thread_mutex);
  
- struct uart_hsu_port {
-@@ -377,6 +380,8 @@ void hsu_dma_start_rx_chan(struct hsu_dma_chan *rxc, struct hsu_dma_buffer *dbuf
- 					 | (0x1 << 24)	/* timeout bit, see HSU Errata 1 */
- 					 );
- 	chan_writel(rxc, HSU_CH_CR, 0x3);
-+
-+	mod_timer(&rxc->rx_timer, jiffies + HSU_DMA_TIMEOUT_CHECK_FREQ);
- }
+ #ifdef CONFIG_MRST_MAX3110_IRQ
+ 		if (atomic_read(&max->irq_pending)) {
+@@ -417,7 +417,7 @@ static int max3110_main_thread(void *_max)
+ 			transmit_char(max);
+ 			atomic_set(&max->uart_tx_need, 0);
+ 		}
+-		max->mthread_up = 0;
++		mutex_unlock(&max->thread_mutex);
+ 	} while (!kthread_should_stop());
  
- /* Protected by spin_lock_irqsave(port->lock) */
-@@ -437,8 +442,13 @@ void hsu_dma_rx(struct uart_hsu_port *up, u32 int_sts)
- 	/* We can use 2 ways to calc the actual transfer len */
- 	count = chan_readl(chan, HSU_CH_D0SAR) - dbuf->dma_addr;
- 
--	if (!count)
-+	if (!count) {
-+		/* restart the channel before we leave */
-+		chan_writel(chan, HSU_CH_CR, 0x3);
- 		return;
-+	}
-+
-+	del_timer(&chan->rx_timer);
- 
- 	dma_sync_single_for_cpu(port->dev, dbuf->dma_addr,
- 			dbuf->dma_size, DMA_FROM_DEVICE);
-@@ -463,9 +473,12 @@ void hsu_dma_rx(struct uart_hsu_port *up, u32 int_sts)
- 					 | (0x1 << 16)
- 					 | (0x1 << 24)	/* timeout bit, see HSU Errata 1 */
- 					 );
-+	tty_flip_buffer_push(tty);
-+
- 	chan_writel(chan, HSU_CH_CR, 0x3);
-+	chan->rx_timer.expires = jiffies + HSU_DMA_TIMEOUT_CHECK_FREQ;
-+	add_timer(&chan->rx_timer);
- 
--	tty_flip_buffer_push(tty);
- }
- 
- static void serial_hsu_stop_rx(struct uart_port *port)
-@@ -893,6 +906,8 @@ static void serial_hsu_shutdown(struct uart_port *port)
- 		container_of(port, struct uart_hsu_port, port);
- 	unsigned long flags;
- 
-+	del_timer_sync(&up->rxc->rx_timer);
-+
- 	/* Disable interrupts from this port */
- 	up->ier = 0;
- 	serial_out(up, UART_IER, 0);
-@@ -1348,6 +1363,28 @@ err_disable:
  	return ret;
- }
+@@ -444,8 +444,9 @@ static int max3110_read_thread(void *_max)
  
-+static void hsu_dma_rx_timeout(unsigned long data)
-+{
-+	struct hsu_dma_chan *chan = (void *)data;
-+	struct uart_hsu_port *up = chan->uport;
-+	struct hsu_dma_buffer *dbuf = &up->rxbuf;
-+	int count = 0;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&up->port.lock, flags);
-+
-+	count = chan_readl(chan, HSU_CH_D0SAR) - dbuf->dma_addr;
-+
-+	if (!count) {
-+		mod_timer(&chan->rx_timer, jiffies + HSU_DMA_TIMEOUT_CHECK_FREQ);
-+		goto exit;
-+	}
-+
-+	hsu_dma_rx(up, 0);
-+exit:
-+	spin_unlock_irqrestore(&up->port.lock, flags);
-+}
-+
- static void hsu_global_init(void)
- {
- 	struct hsu_port *hsu;
-@@ -1409,6 +1446,13 @@ static void hsu_global_init(void)
- 		dchan->uport = &hsu->port[i/2];
- 		dchan->reg = hsu->reg + HSU_DMA_CHANS_REG_OFFSET +
- 				i * HSU_DMA_CHANS_REG_LENGTH;
-+
-+		/* Work around for RX */
-+		if (dchan->dirt == DMA_FROM_DEVICE) {
-+			init_timer(&dchan->rx_timer);
-+			dchan->rx_timer.function = hsu_dma_rx_timeout;
-+			dchan->rx_timer.data = (unsigned long)dchan;
-+		}
- 		dchan++;
- 	}
+ 	pr_info(PR_FMT "start read thread\n");
+ 	do {
+-		if (!max->mthread_up)
+-			max3110_console_receive(max);
++		mutex_lock(&max->thread_mutex);
++		max3110_console_receive(max);
++		mutex_unlock(&max->thread_mutex);
  
+ 		set_current_state(TASK_INTERRUPTIBLE);
+ 		schedule_timeout(HZ / 20);
+@@ -745,7 +746,7 @@ static int serial_m3110_probe(struct spi_device *spi)
+ 	max->name = spi->modalias;	/* use spi name as the name */
+ 	max->irq = (u16)spi->irq;
+ 
+-	spin_lock_init(&max->lock);
++	mutex_init(&max->thread_mutex);
+ 
+ 	max->word_7bits = 0;
+ 	max->parity = 0;
 
