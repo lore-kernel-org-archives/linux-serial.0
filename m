@@ -1,72 +1,46 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] parport/serial: add support for Timedia/SUNIX cards to
- parport_serial
-Date: Thu, 8 Jul 2010 12:11:22 +0100
-Message-ID: <20100708121122.17d3e823@lxorguk.ukuu.org.uk>
-References: <1277511823-6973-1-git-send-email-fbriere@fbriere.net>
+From: Ben Gardiner <bengardiner@nanometrics.ca>
+Subject: RFC: extending serial line disciplines to handle CTS changes.
+Date: Thu, 8 Jul 2010 16:18:54 -0400
+Message-ID: <AANLkTinZUIh9cuHzwJWnyDhDKu6yASZ27ZSyoCf41Dil@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-14
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:37956 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1754081Ab0GHLDd convert rfc822-to-8bit (ORCPT
+Received: from mail-ew0-f46.google.com ([209.85.215.46]:35904 "EHLO
+	mail-ew0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752272Ab0GHUS4 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 8 Jul 2010 07:03:33 -0400
-In-Reply-To: <1277511823-6973-1-git-send-email-fbriere@fbriere.net>
+	Thu, 8 Jul 2010 16:18:56 -0400
+Received: by ewy23 with SMTP id 23so293032ewy.19
+        for <linux-serial@vger.kernel.org>; Thu, 08 Jul 2010 13:18:54 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: =?ISO-8859-14?B?RnLpZOlyaWMgQnJp6HJl?= <fbriere@fbriere.net>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-parport@lists.infradead.org
+To: linux-serial@vger.kernel.org, linuxpps@ml.enneenne.com
+Cc: Christopher Cordahi <ChristopherCordahi@nanometrics.ca>
 
-On Fri, 25 Jun 2010 20:23:43 -0400
-=46r=E9d=E9ric Bri=E8re <fbriere@fbriere.net> wrote:
+Hi All,
 
-> Timedia/SUNIX PCI cards with both serial and parallel ports are
-> currently supported by 8250_pci and parport_pc individually.  Moving
-> that support into parport_serial allows using both types of ports at =
-the
-> same time.
+I am pondering the best approach to adding PPS over CTS lines of
+serial ports. We are considering using a platform where the UARTs do
+not have DCD lines and so we cannot use the usual PPS serial line
+discipline which has a DCD change handler. The serial ports do,
+however, have CTS lines with interrupt capability.
 
-This seems to have fallen on silence so I'm getting around to looking a=
-t
-it.  I'm not sure the sunix hack to avoid lots of entries is a good ide=
-a
-- it'll eventually break horribly somewhere.
+I'm wondering if setting up the serial port to no flow control and
+routing the PPS over CTS line might work.
 
+We could configure the serial port for no flow control and extend the
+serial line discipline framework to allow CTS change handlers. This
+could be accomplished by adding another function pointer to struct
+tty_ldisc and handing off to it at the bottom of
+uart_handle_cts_change like uart_handle_dcd_change does to the
+dcd_change pointer of the current struct tty_ldisc. Future patches
+would probably involve adding #ifdef CONFIG_HARD_PPS to the
+uart_handle_cts_change function but I think a PPS line-discipline only
+would be fine for the time-being.
 
-> + * Devices with a parallel port can be identified by their subdevice=
- ID
-> + * matching xx[7-9]x.  We thus mark them as class OTHER, so that the=
-y will be
-> + * ignored by 8250_pci, and claimed by parport_serial instead.
-> + */
-> +static void __devinit quirk_timedia(struct pci_dev *dev)
-> +{
-> +	/* 0,2,3,5,6: serial only -- 7,8,9: serial + parallel */
-> +	if ((dev->subsystem_device & 0x00f0) >=3D 0x70) {
-> +		dev_info(&dev->dev, "Timedia %04x; "
-> +			"changing class SERIAL to OTHER (use parport_serial)\n",
-> +			dev->subsystem_device);
-> +		dev->class =3D (PCI_CLASS_COMMUNICATION_OTHER << 8) |
-> +		    (dev->class & 0xff);
-> +	}
-> +}
-> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_TIMEDIA, PCI_DEVICE_ID_TIMEDI=
-A_1889,
-> +		quirk_timedia);
+Best Regards,
+Ben Gardiner
 
-And this check probably should be done in the serial driver so that it
-doesn't bind, rather than changing the class, which then lies to other
-bits of the kernel so can have funny side effects.
-
-If you did that check in the serial driver and returned -ENODEV to the
-probe the id will be handed on to the next driver that matches (ie
-parport_serial)
-
-Alan
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+---
+Nanometrics Inc.
+http://www.nanometrics.ca
