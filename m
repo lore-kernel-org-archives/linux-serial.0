@@ -1,76 +1,72 @@
-From: Govindraj <govindraj.ti@gmail.com>
-Subject: Re: [PATCH v3] serial: Add OMAP high-speed UART driver
-Date: Wed, 7 Jul 2010 17:52:42 +0530
-Message-ID: <AANLkTinq3Hx_2gGbuyvbGnNpSfQ75B3vJU9WU66GAzd4@mail.gmail.com>
-References: <33418.192.168.10.88.1275659646.squirrel@dbdmail.itg.ti.com>
-	<201006070809.47853.luke@dashjr.org>
-	<AANLkTimEtn-ef4ygY2Cu3ay4vAGHpCwtxrf8U9nW9NV8@mail.gmail.com>
-	<201006071115.34881.luke@dashjr.org>
-	<AANLkTinod9geJbbfdOIhB465qi6xHqfH-1vL048Bc3fa@mail.gmail.com>
-	<20100707120241.GN1920@atomide.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] parport/serial: add support for Timedia/SUNIX cards to
+ parport_serial
+Date: Thu, 8 Jul 2010 12:11:22 +0100
+Message-ID: <20100708121122.17d3e823@lxorguk.ukuu.org.uk>
+References: <1277511823-6973-1-git-send-email-fbriere@fbriere.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-14
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-yx0-f174.google.com ([209.85.213.174]:42343 "EHLO
-	mail-yx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753653Ab0GGMWo (ORCPT
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:37956 "EHLO
+	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1754081Ab0GHLDd convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 7 Jul 2010 08:22:44 -0400
-In-Reply-To: <20100707120241.GN1920@atomide.com>
+	Thu, 8 Jul 2010 07:03:33 -0400
+In-Reply-To: <1277511823-6973-1-git-send-email-fbriere@fbriere.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Luke-Jr <luke@dashjr.org>, "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, Kevin Hilman <khilman@deeprootsystems.com>
+To: =?ISO-8859-14?B?RnLpZOlyaWMgQnJp6HJl?= <fbriere@fbriere.net>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-parport@lists.infradead.org
 
-On Wed, Jul 7, 2010 at 5:32 PM, Tony Lindgren <tony@atomide.com> wrote:
-> * Govindraj <govindraj.ti@gmail.com> [100608 09:24]:
->> On Mon, Jun 7, 2010 at 9:45 PM, Luke-Jr <luke@dashjr.org> wrote:
->> > On Monday 07 June 2010 08:28:51 am Govindraj wrote:
->> >> Link:
->> >> http://git.kernel.org/?p=linux/kernel/git/khilman/linux-omap-pm.git;a=summa
->> >> ry
->> >>
->> >> Branch:
->> >> pm-wip/uart
->> >
->> > This branch doesn't appear to have omap-serial.c at all...
->> >
->> >> If you are trying to use with any client device connected to uart
->> >> then we need to ensure the client driver speaks to omap-serial
->> >> dev entries.
->> >
->>
->> You need apply the driver patch on top of this branch.
->>
->> [PATCH v3] serial: Add OMAP high-speed UART driver.
->
-> Do we still have a dependency to pm-wip/uart branch? Can you please
-> check if you can rebase all these patches on top of linux-omap for-next
-> branch?
+On Fri, 25 Jun 2010 20:23:43 -0400
+=46r=E9d=E9ric Bri=E8re <fbriere@fbriere.net> wrote:
 
-pm-wip uart branch is having all the mach-omap2/serail.c changes along with
-hwmod data file updation and serial hwmod usage.
+> Timedia/SUNIX PCI cards with both serial and parallel ports are
+> currently supported by 8250_pci and parport_pc individually.  Moving
+> that support into parport_serial allows using both types of ports at =
+the
+> same time.
 
-The driver patch [serial: Add OMAP high-speed UART driver]
-was tested against wip/uart branch.
-
-I will re-base all these patches for-next branch,
-and will post driver and board support patches from pm-wip/uart as a
-single series.
-
-Thanks,
-Govindraj.R
+This seems to have fallen on silence so I'm getting around to looking a=
+t
+it.  I'm not sure the sunix hack to avoid lots of entries is a good ide=
+a
+- it'll eventually break horribly somewhere.
 
 
->
-> Regards,
->
-> Tony
->
+> + * Devices with a parallel port can be identified by their subdevice=
+ ID
+> + * matching xx[7-9]x.  We thus mark them as class OTHER, so that the=
+y will be
+> + * ignored by 8250_pci, and claimed by parport_serial instead.
+> + */
+> +static void __devinit quirk_timedia(struct pci_dev *dev)
+> +{
+> +	/* 0,2,3,5,6: serial only -- 7,8,9: serial + parallel */
+> +	if ((dev->subsystem_device & 0x00f0) >=3D 0x70) {
+> +		dev_info(&dev->dev, "Timedia %04x; "
+> +			"changing class SERIAL to OTHER (use parport_serial)\n",
+> +			dev->subsystem_device);
+> +		dev->class =3D (PCI_CLASS_COMMUNICATION_OTHER << 8) |
+> +		    (dev->class & 0xff);
+> +	}
+> +}
+> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_TIMEDIA, PCI_DEVICE_ID_TIMEDI=
+A_1889,
+> +		quirk_timedia);
 
+And this check probably should be done in the serial driver so that it
+doesn't bind, rather than changing the class, which then lies to other
+bits of the kernel so can have funny side effects.
 
+If you did that check in the serial driver and returned -ENODEV to the
+probe the id will be handed on to the next driver that matches (ie
+parport_serial)
 
--- 
----
-Regards,
-Govindraj.R
+Alan
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
