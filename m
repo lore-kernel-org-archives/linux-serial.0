@@ -1,35 +1,41 @@
-From: Jon Smirl <jonsmirl@gmail.com>
-Subject: Is user space ldattach required?
-Date: Sun, 11 Jul 2010 23:22:36 -0400
-Message-ID: <AANLkTinahU8v-p8ZsawNxSIi3dcHzU7humyHwbmBd3_9@mail.gmail.com>
+From: =?iso-8859-1?B?RnLpZOlyaWMgQnJp6HJl?= <fbriere@fbriere.net>
+Subject: Re: [PATCH] parport/serial: add support for Timedia/SUNIX cards to
+ parport_serial
+Date: Mon, 12 Jul 2010 11:44:48 -0400
+Message-ID: <20100712154448.GA2558@toroia.fbriere.dyndns.org>
+References: <1277511823-6973-1-git-send-email-fbriere@fbriere.net>
+ <20100708121122.17d3e823@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qw0-f46.google.com ([209.85.216.46]:62099 "EHLO
-	mail-qw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755445Ab0GLDWi (ORCPT
+Received: from mxout-07.mxes.net ([216.86.168.182]:34814 "EHLO
+	mxout-07.mxes.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751613Ab0GLPov (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 11 Jul 2010 23:22:38 -0400
-Received: by qwh6 with SMTP id 6so1184512qwh.19
-        for <linux-serial@vger.kernel.org>; Sun, 11 Jul 2010 20:22:37 -0700 (PDT)
+	Mon, 12 Jul 2010 11:44:51 -0400
+Content-Disposition: inline
+In-Reply-To: <20100708121122.17d3e823@lxorguk.ukuu.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, linux-parport@lists.infradead.org
 
-I have a USB stick containing a microcontroller. The microcontroller
-is running TCP and can support two interfaces, the radio (802.15.4)
-and USB serial. It supports the SLIP protocol (or PPP could be added).
+On Thu, Jul 08, 2010 at 12:11:22PM +0100, Alan Cox wrote:
+> If you did that check in the serial driver and returned -ENODEV to the
+> probe the id will be handed on to the next driver that matches (ie
+> parport_serial)
 
-This is not a general purpose serial connection. The only thing you
-can do on the serial line without changing the firmware is talk SLIP.
-It is a standard USB serial device with a unique device ID.
+Thanks for the suggestion; it does look much cleaner that way.
 
-Can I use a device driver to get the SLIP ldisc attached to the port
-or do I have to have a user space helper? I'd prefer ttyUSBx to not
-even exist.
+Instead of sticking a big-ass if() in the function, I took the liberty
+of adding a .probe alongside the .init/.setup quirks, in case this could
+be useful for other devices.
 
-Is there a better way to get this device attached to the network stack?
+Note that I did not bother to cache the result of find_quirk(), so it
+will be called twice.  I did not find it worth to add extra complexity
+just for that; let me know if you disagree.
+
 
 -- 
-Jon Smirl
-jonsmirl@gmail.com
+On the Internet, no one knows you're using Windows NT
+		-- Submitted by Ramiro Estrugo, restrugo@fateware.com
