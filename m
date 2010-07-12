@@ -1,41 +1,71 @@
-From: =?iso-8859-1?B?RnLpZOlyaWMgQnJp6HJl?= <fbriere@fbriere.net>
-Subject: Re: [PATCH] parport/serial: add support for Timedia/SUNIX cards to
- parport_serial
-Date: Mon, 12 Jul 2010 11:44:48 -0400
-Message-ID: <20100712154448.GA2558@toroia.fbriere.dyndns.org>
-References: <1277511823-6973-1-git-send-email-fbriere@fbriere.net>
- <20100708121122.17d3e823@lxorguk.ukuu.org.uk>
+From: =?UTF-8?q?Fr=C3=A9d=C3=A9ric=20Bri=C3=A8re?= <fbriere@fbriere.net>
+Subject: [PATCH 1/2] serial: 8250_pci: add .probe member to struct pci_serial_quirk
+Date: Mon, 12 Jul 2010 11:49:42 -0400
+Message-ID: <1278949783-2820-1-git-send-email-fbriere@fbriere.net>
+References: <20100712154448.GA2558@toroia.fbriere.dyndns.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mxout-07.mxes.net ([216.86.168.182]:34814 "EHLO
+Received: from mxout-07.mxes.net ([216.86.168.182]:35966 "EHLO
 	mxout-07.mxes.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751613Ab0GLPov (ORCPT
+	with ESMTP id S1755927Ab0GLPtp (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 12 Jul 2010 11:44:51 -0400
-Content-Disposition: inline
-In-Reply-To: <20100708121122.17d3e823@lxorguk.ukuu.org.uk>
+	Mon, 12 Jul 2010 11:49:45 -0400
+In-Reply-To: <20100712154448.GA2558@toroia.fbriere.dyndns.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 Cc: linux-serial@vger.kernel.org, linux-parport@lists.infradead.org
 
-On Thu, Jul 08, 2010 at 12:11:22PM +0100, Alan Cox wrote:
-> If you did that check in the serial driver and returned -ENODEV to the
-> probe the id will be handed on to the next driver that matches (ie
-> parport_serial)
+This function, if present, is called early on by the 8250_pci probe; it
+can be used to reject devices meant for parport_serial.  (The .init
+function cannot be used for this purpose, as it is also called by
+parport_serial.)
 
-Thanks for the suggestion; it does look much cleaner that way.
+Signed-off-by: Fr=C3=A9d=C3=A9ric Bri=C3=A8re <fbriere@fbriere.net>
+---
+ drivers/serial/8250_pci.c |    9 +++++++++
+ 1 files changed, 9 insertions(+), 0 deletions(-)
 
-Instead of sticking a big-ass if() in the function, I took the liberty
-of adding a .probe alongside the .init/.setup quirks, in case this could
-be useful for other devices.
+diff --git a/drivers/serial/8250_pci.c b/drivers/serial/8250_pci.c
+index 01c012d..d9b9a63 100644
+--- a/drivers/serial/8250_pci.c
++++ b/drivers/serial/8250_pci.c
+@@ -41,6 +41,7 @@ struct pci_serial_quirk {
+ 	u32	device;
+ 	u32	subvendor;
+ 	u32	subdevice;
++	int	(*probe)(struct pci_dev *dev);
+ 	int	(*init)(struct pci_dev *dev);
+ 	int	(*setup)(struct serial_private *,
+ 			 const struct pciserial_board *,
+@@ -2470,11 +2471,19 @@ EXPORT_SYMBOL_GPL(pciserial_resume_ports);
+ static int __devinit
+ pciserial_init_one(struct pci_dev *dev, const struct pci_device_id *en=
+t)
+ {
++	struct pci_serial_quirk *quirk;
+ 	struct serial_private *priv;
+ 	const struct pciserial_board *board;
+ 	struct pciserial_board tmp;
+ 	int rc;
+=20
++	quirk =3D find_quirk(dev);
++	if (quirk->probe) {
++		rc =3D quirk->probe(dev);
++		if (rc)
++			return rc;
++	}
++
+ 	if (ent->driver_data >=3D ARRAY_SIZE(pci_boards)) {
+ 		printk(KERN_ERR "pci_init_one: invalid driver_data: %ld\n",
+ 			ent->driver_data);
+--=20
+1.7.1
 
-Note that I did not bother to cache the result of find_quirk(), so it
-will be called twice.  I did not find it worth to add extra complexity
-just for that; let me know if you disagree.
-
-
--- 
-On the Internet, no one knows you're using Windows NT
-		-- Submitted by Ramiro Estrugo, restrugo@fateware.com
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
