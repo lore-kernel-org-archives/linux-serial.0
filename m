@@ -1,150 +1,72 @@
-From: Manuel Lauss <manuel.lauss@googlemail.com>
-Subject: [PATCH 2/2] serial: 8250: remove SERIAL_8250_AU1X00
-Date: Thu, 15 Jul 2010 21:45:05 +0200
-Message-ID: <1279223105-23816-2-git-send-email-manuel.lauss@googlemail.com>
-References: <1279223105-23816-1-git-send-email-manuel.lauss@googlemail.com>
+From: Manuel Jander <manuel.jander@gmail.com>
+Subject: Serial buffer question
+Date: Sun, 18 Jul 2010 21:36:05 +0200
+Message-ID: <AANLkTin5vNE41jUX4m-sdc4L31I8D5m1UJnDNp1sL2ld@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bw0-f46.google.com ([209.85.214.46]:64060 "EHLO
-	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S934528Ab0GOTpV (ORCPT
+Received: from mail-ew0-f46.google.com ([209.85.215.46]:41152 "EHLO
+	mail-ew0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757153Ab0GRTgH (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 15 Jul 2010 15:45:21 -0400
-Received: by bwz1 with SMTP id 1so806787bwz.19
-        for <linux-serial@vger.kernel.org>; Thu, 15 Jul 2010 12:45:19 -0700 (PDT)
-In-Reply-To: <1279223105-23816-1-git-send-email-manuel.lauss@googlemail.com>
+	Sun, 18 Jul 2010 15:36:07 -0400
+Received: by ewy23 with SMTP id 23so1134521ewy.19
+        for <linux-serial@vger.kernel.org>; Sun, 18 Jul 2010 12:36:05 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linux-MIPS <linux-mips@linux-mips.org>
-Cc: Manuel Lauss <manuel.lauss@googlemail.com>, Linux-serial <linux-serial@vger.kernel.org>
+To: linux-serial@vger.kernel.org
 
-Remove the SERIAL_8250_AU1X00 config symbol.  Instead, use the MIPS_ALCHEMY
-one which is always defined when building an Au1x00-based platform.
+Hi there,
 
-Cc: Linux-serial <linux-serial@vger.kernel.org>
-Signed-off-by: Manuel Lauss <manuel.lauss@googlemail.com>
----
-This one depends on a previous patch (which removes SOC_AU1X00 and changes
-MACH_ALCHEMY) to apply cleanly (and then actually work), so I'd love for
-this to go in via the mips tree.
+some time ago I wrote a serial loop back driver which creates serial
+port pairs, which sent its data to the other, thus like acting like a
+cable, but with the possibilty to listen what is being transmitted :)
+It also supports local echo, to simulate single wire (ODB) interfaces.
 
- arch/mips/alchemy/common/platform.c |    2 --
- drivers/serial/8250.c               |   13 +++----------
- drivers/serial/Kconfig              |    8 --------
- 3 files changed, 3 insertions(+), 20 deletions(-)
+Until linux 2.6.24 it worked well, know running 2.6.33.2 somehow the
+flip buffer contents somehow grow in an uncontrolled way.
 
-diff --git a/arch/mips/alchemy/common/platform.c b/arch/mips/alchemy/common/platform.c
-index 70f4abd..7186a02 100644
---- a/arch/mips/alchemy/common/platform.c
-+++ b/arch/mips/alchemy/common/platform.c
-@@ -50,7 +50,6 @@ static void alchemy_8250_pm(struct uart_port *port, unsigned int state,
- 	}
- 
- static struct plat_serial8250_port au1x00_uart_data[] = {
--#if defined(CONFIG_SERIAL_8250_AU1X00)
- #if defined(CONFIG_SOC_AU1000)
- 	PORT(UART0_PHYS_ADDR, AU1000_UART0_INT),
- 	PORT(UART1_PHYS_ADDR, AU1000_UART1_INT),
-@@ -71,7 +70,6 @@ static struct plat_serial8250_port au1x00_uart_data[] = {
- 	PORT(UART0_PHYS_ADDR, AU1200_UART0_INT),
- 	PORT(UART1_PHYS_ADDR, AU1200_UART1_INT),
- #endif
--#endif	/* CONFIG_SERIAL_8250_AU1X00 */
- 	{ },
- };
- 
-diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index 2420bec..92f34b3 100644
---- a/drivers/serial/8250.c
-+++ b/drivers/serial/8250.c
-@@ -302,7 +302,7 @@ static const struct serial8250_config uart_config[] = {
- 	},
- };
- 
--#if defined (CONFIG_SERIAL_8250_AU1X00)
-+#if defined(CONFIG_MIPS_ALCHEMY)
- 
- /* Au1x00 UART hardware has a weird register layout */
- static const u8 au_io_in_map[] = {
-@@ -422,7 +422,6 @@ static unsigned int mem32_serial_in(struct uart_port *p, int offset)
- 	return readl(p->membase + offset);
- }
- 
--#ifdef CONFIG_SERIAL_8250_AU1X00
- static unsigned int au_serial_in(struct uart_port *p, int offset)
- {
- 	offset = map_8250_in_reg(p, offset) << p->regshift;
-@@ -434,7 +433,6 @@ static void au_serial_out(struct uart_port *p, int offset, int value)
- 	offset = map_8250_out_reg(p, offset) << p->regshift;
- 	__raw_writel(value, p->membase + offset);
- }
--#endif
- 
- static unsigned int tsi_serial_in(struct uart_port *p, int offset)
- {
-@@ -503,12 +501,11 @@ static void set_io_from_upio(struct uart_port *p)
- 		p->serial_out = mem32_serial_out;
- 		break;
- 
--#ifdef CONFIG_SERIAL_8250_AU1X00
- 	case UPIO_AU:
- 		p->serial_in = au_serial_in;
- 		p->serial_out = au_serial_out;
- 		break;
--#endif
-+
- 	case UPIO_TSI:
- 		p->serial_in = tsi_serial_in;
- 		p->serial_out = tsi_serial_out;
-@@ -535,9 +532,7 @@ serial_out_sync(struct uart_8250_port *up, int offset, int value)
- 	switch (p->iotype) {
- 	case UPIO_MEM:
- 	case UPIO_MEM32:
--#ifdef CONFIG_SERIAL_8250_AU1X00
- 	case UPIO_AU:
--#endif
- 	case UPIO_DWAPB:
- 		p->serial_out(p, offset, value);
- 		p->serial_in(p, UART_LCR);	/* safe, no side-effects */
-@@ -573,7 +568,7 @@ static inline void _serial_dl_write(struct uart_8250_port *up, int value)
- 	serial_outp(up, UART_DLM, value >> 8 & 0xff);
- }
- 
--#if defined(CONFIG_SERIAL_8250_AU1X00)
-+#if defined(CONFIG_MIPS_ALCHEMY)
- /* Au1x00 haven't got a standard divisor latch */
- static int serial_dl_read(struct uart_8250_port *up)
- {
-@@ -2596,11 +2591,9 @@ static void serial8250_config_port(struct uart_port *port, int flags)
- 	if (flags & UART_CONFIG_TYPE)
- 		autoconfig(up, probeflags);
- 
--#ifdef CONFIG_SERIAL_8250_AU1X00
- 	/* if access method is AU, it is a 16550 with a quirk */
- 	if (up->port.type == PORT_16550A && up->port.iotype == UPIO_AU)
- 		up->bugs |= UART_BUG_NOMSR;
--#endif
- 
- 	if (up->port.type != PORT_UNKNOWN && flags & UART_CONFIG_IRQ)
- 		autoconfig_irq(up);
-diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
-index 1acc7b3..e437ce8 100644
---- a/drivers/serial/Kconfig
-+++ b/drivers/serial/Kconfig
-@@ -258,14 +258,6 @@ config SERIAL_8250_ACORN
- 	  system, say Y to this option.  The driver can handle 1, 2, or 3 port
- 	  cards.  If unsure, say N.
- 
--config SERIAL_8250_AU1X00
--	bool "Au1x00 serial port support"
--	depends on SERIAL_8250 != n && MIPS_ALCHEMY
--	help
--	  If you have an Au1x00 SOC based board and want to use the serial port,
--	  say Y to this option. The driver can handle up to 4 serial ports,
--	  depending on the SOC. If unsure, say N.
--
- config SERIAL_8250_RM9K
- 	bool "Support for MIPS RM9xxx integrated serial port"
- 	depends on SERIAL_8250 != n && SERIAL_RM9000
--- 
-1.7.1.1
+Below, the main part of the driver. For one virtual loop serial port
+pair this function is called twice using a timer. tty_xmit and
+tty_recv are the serial port pair, exchanged accordingly to which port
+turn it is to be served.
 
+  while (!uart_circ_empty(xmit) && lifeboat < 100)
+  {
+    char ch;
+
+    ch = xmit->buf[xmit->tail];
+
+    dbg("tx(%d) %02x\n", i, ch);
+
+    if ( do_rx & (1<<ii) && tty_recv != NULL ) {
+      /* TX to counterpart port */
+      rport->icount.rx++;
+      tty_insert_flip_char(tty_recv, ch, TTY_NORMAL);
+      rxpush = 1;
+    }
+
+    if (do_echo && (do_rx & (1<<i)) ) {
+      xport->icount.rx++;
+      tty_insert_flip_char(tty_xmit, ch, TTY_NORMAL);
+      echo_push = 1;
+    }
+
+    xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+    xport->icount.tx++;
+
+    lifeboat++;
+  }
+
+The problem: the flip buffer of "xmit" grows all the time until
+"lifeboat" terminates the while loop. Could it be that
+tty_insert_flip_char() now affects inmediately the fill level of the
+xmit circular buffer and for earlier kernel versions this was somehow
+delayed ? Should I buffer the local echo char somewhere (when do_echo
+== 1) and call tty_insert_flip_char() outside the while loop ?
+
+I would be really glad if somebody could explain what happen from
+2.6.24 to 2.6.33.2 Thanks a lot in advance.
+
+Cheers,
+Manuel
