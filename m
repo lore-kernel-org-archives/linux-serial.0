@@ -1,165 +1,144 @@
 From: akpm@linux-foundation.org
-Subject: [patch 5/7] serial: MMIO32 support for 8250_early.c
-Date: Tue, 20 Jul 2010 15:26:51 -0700
-Message-ID: <201007202226.o6KMQpFh021533@imap1.linux-foundation.org>
+Subject: [patch 4/7] serial: mcf: don't take spinlocks in already protected functions
+Date: Tue, 20 Jul 2010 15:26:50 -0700
+Message-ID: <201007202226.o6KMQpNm021530@imap1.linux-foundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ANSI_X3.4-1968
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp1.linux-foundation.org ([140.211.169.13]:33899 "EHLO
+Received: from smtp1.linux-foundation.org ([140.211.169.13]:57214 "EHLO
 	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932860Ab0GTW1W (ORCPT
+	by vger.kernel.org with ESMTP id S932870Ab0GTW1W (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
 	Tue, 20 Jul 2010 18:27:22 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: greg@kroah.com
-Cc: linux-serial@vger.kernel.org, akpm@linux-foundation.org, _deepfire@feelingofgreen.ru, kosaki.motohiro@jp.fujitsu.com, randy.dunlap@oracle.com
+Cc: linux-serial@vger.kernel.org, akpm@linux-foundation.org, ygeorgie@gmail.com, alan@lxorguk.ukuu.org.uk, gerg@uclinux.org
 
-From: Samium Gromoff <_deepfire@feelingofgreen.ru>
+From: Yury Georgievskiy <ygeorgie@gmail.com>
 
-Provide MMIO32 support in 8250_early (aka earlycon)
+Don't take the port spinlock in uart functions where the serial core
+already takes care of locking/unlocking them.
 
-[randy.dunlap@oracle.com: fix printk format warnings]
-[akpm@linux-foundation.org: fix printk args some more]
-Signed-off-by: Samium Gromoff <_deepfire@feelingofgreen.ru>
+The code would actually lock up on architectures where spinlocks are
+implemented.
+
+Also protect calling mcf_rx_chars/mcf_tx_chars in the interrupt handler by
+the port spinlock and use IRQ_RETVAL to return from isr.
+
+[akpm@linux-foundation.org: make irq-handler return value more explicit]
+Signed-off-by: Yury Georgievskiy <ygeorgie@gmail.com>
 Cc: Greg KH <greg@kroah.com>
-Signed-off-by: Randy Dunlap <randy.dunlap@oracle.com>
-Cc: KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Acked-by: Greg Ungerer <gerg@uclinux.org>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 ---
 
- Documentation/kernel-parameters.txt |    3 +
- drivers/serial/8250_early.c         |   57 +++++++++++++++++++-------
- 2 files changed, 45 insertions(+), 15 deletions(-)
+ drivers/serial/mcf.c |   31 +++++++++++++------------------
+ 1 file changed, 13 insertions(+), 18 deletions(-)
 
-diff -puN Documentation/kernel-parameters.txt~serial-mmio32-support-for-8250_earlyc Documentation/kernel-parameters.txt
---- a/Documentation/kernel-parameters.txt~serial-mmio32-support-for-8250_earlyc
-+++ a/Documentation/kernel-parameters.txt
-@@ -657,8 +657,11 @@ and is between 256 and 4096 characters. 
- 	earlycon=	[KNL] Output early console device and options.
- 		uart[8250],io,<addr>[,options]
- 		uart[8250],mmio,<addr>[,options]
-+		uart[8250],mmio32,<addr>[,options]
- 			Start an early, polled-mode console on the 8250/16550
- 			UART at the specified I/O port or MMIO address.
-+			MMIO inter-register address stride is either 8bit (mmio)
-+                        or 32bit (mmio32).
- 			The options are the same as for ttyS, above.
- 
- 	earlyprintk=	[X86,SH,BLACKFIN]
-diff -puN drivers/serial/8250_early.c~serial-mmio32-support-for-8250_earlyc drivers/serial/8250_early.c
---- a/drivers/serial/8250_early.c~serial-mmio32-support-for-8250_earlyc
-+++ a/drivers/serial/8250_early.c
-@@ -19,9 +19,11 @@
-  * The user can specify the device directly, e.g.,
-  *	earlycon=uart8250,io,0x3f8,9600n8
-  *	earlycon=uart8250,mmio,0xff5e0000,115200n8
-+ *	earlycon=uart8250,mmio32,0xff5e0000,115200n8
-  * or
-  *	console=uart8250,io,0x3f8,9600n8
-  *	console=uart8250,mmio,0xff5e0000,115200n8
-+ *	console=uart8250,mmio32,0xff5e0000,115200n8
-  */
- 
- #include <linux/tty.h>
-@@ -48,18 +50,31 @@ static struct early_serial8250_device ea
- 
- static unsigned int __init serial_in(struct uart_port *port, int offset)
+diff -puN drivers/serial/mcf.c~serial-mcf-dont-take-spinlocks-in-already-protected-functions drivers/serial/mcf.c
+--- a/drivers/serial/mcf.c~serial-mcf-dont-take-spinlocks-in-already-protected-functions
++++ a/drivers/serial/mcf.c
+@@ -70,16 +70,14 @@ static unsigned int mcf_tx_empty(struct 
+ static unsigned int mcf_get_mctrl(struct uart_port *port)
  {
--	if (port->iotype == UPIO_MEM)
-+	switch (port->iotype) {
-+	case UPIO_MEM:
- 		return readb(port->membase + offset);
--	else
-+	case UPIO_MEM32:
-+		return readl(port->membase + (offset << 2));
-+	case UPIO_PORT:
- 		return inb(port->iobase + offset);
-+	default:
-+		return 0;
-+	}
- }
+ 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
+-	unsigned long flags;
+ 	unsigned int sigs;
  
- static void __init serial_out(struct uart_port *port, int offset, int value)
- {
--	if (port->iotype == UPIO_MEM)
-+	switch (port->iotype) {
-+	case UPIO_MEM:
- 		writeb(value, port->membase + offset);
--	else
-+		break;
-+	case UPIO_MEM32:
-+		writel(value, port->membase + (offset << 2));
-+		break;
-+	case UPIO_PORT:
- 		outb(value, port->iobase + offset);
-+		break;
-+	}
- }
- 
- #define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
-@@ -137,15 +152,21 @@ static int __init parse_options(struct e
- 								char *options)
- {
- 	struct uart_port *port = &device->port;
--	int mmio, length;
-+	int mmio, mmio32, length;
- 
- 	if (!options)
- 		return -ENODEV;
- 
- 	port->uartclk = BASE_BAUD * 16;
--	if (!strncmp(options, "mmio,", 5)) {
--		port->iotype = UPIO_MEM;
--		port->mapbase = simple_strtoul(options + 5, &options, 0);
+-	spin_lock_irqsave(&port->lock, flags);
+ 	sigs = (readb(port->membase + MCFUART_UIPR) & MCFUART_UIPR_CTS) ?
+ 		0 : TIOCM_CTS;
+ 	sigs |= (pp->sigs & TIOCM_RTS);
+ 	sigs |= (mcf_getppdcd(port->line) ? TIOCM_CD : 0);
+ 	sigs |= (mcf_getppdtr(port->line) ? TIOCM_DTR : 0);
+-	spin_unlock_irqrestore(&port->lock, flags);
 +
-+	mmio = !strncmp(options, "mmio,", 5);
-+	mmio32 = !strncmp(options, "mmio32,", 7);
-+	if (mmio || mmio32) {
-+		port->iotype = (mmio ? UPIO_MEM : UPIO_MEM32);
-+		port->mapbase = simple_strtoul(options + (mmio ? 5 : 7),
-+					       &options, 0);
-+		if (mmio32)
-+			port->regshift = 2;
- #ifdef CONFIG_FIX_EARLYCON_MEM
- 		set_fixmap_nocache(FIX_EARLYCON_MEM_BASE,
- 					port->mapbase & PAGE_MASK);
-@@ -157,11 +178,10 @@ static int __init parse_options(struct e
- 		if (!port->membase) {
- 			printk(KERN_ERR "%s: Couldn't ioremap 0x%llx\n",
- 				__func__,
--			       (unsigned long long)port->mapbase);
-+			       (unsigned long long) port->mapbase);
- 			return -ENOMEM;
- 		}
- #endif
--		mmio = 1;
- 	} else if (!strncmp(options, "io,", 3)) {
- 		port->iotype = UPIO_PORT;
- 		port->iobase = simple_strtoul(options + 3, &options, 0);
-@@ -181,11 +201,18 @@ static int __init parse_options(struct e
- 			device->baud);
- 	}
- 
--	printk(KERN_INFO "Early serial console at %s 0x%llx (options '%s')\n",
--		mmio ? "MMIO" : "I/O port",
--		mmio ? (unsigned long long) port->mapbase
--		     : (unsigned long long) port->iobase,
--		device->options);
-+	if (mmio || mmio32)
-+		printk(KERN_INFO
-+		       "Early serial console at MMIO%s 0x%llu (options '%s')\n",
-+			mmio32 ? "32" : "",
-+			(unsigned long long)port->mapbase,
-+			device->options);
-+	else
-+		printk(KERN_INFO
-+		      "Early serial console at I/O port 0x%lu (options '%s')\n",
-+			port->iobase,
-+			device->options);
-+
- 	return 0;
+ 	return sigs;
  }
  
+@@ -88,16 +86,13 @@ static unsigned int mcf_get_mctrl(struct
+ static void mcf_set_mctrl(struct uart_port *port, unsigned int sigs)
+ {
+ 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
+-	unsigned long flags;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
+ 	pp->sigs = sigs;
+ 	mcf_setppdtr(port->line, (sigs & TIOCM_DTR));
+ 	if (sigs & TIOCM_RTS)
+ 		writeb(MCFUART_UOP_RTS, port->membase + MCFUART_UOP1);
+ 	else
+ 		writeb(MCFUART_UOP_RTS, port->membase + MCFUART_UOP0);
+-	spin_unlock_irqrestore(&port->lock, flags);
+ }
+ 
+ /****************************************************************************/
+@@ -105,12 +100,9 @@ static void mcf_set_mctrl(struct uart_po
+ static void mcf_start_tx(struct uart_port *port)
+ {
+ 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
+-	unsigned long flags;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
+ 	pp->imr |= MCFUART_UIR_TXREADY;
+ 	writeb(pp->imr, port->membase + MCFUART_UIMR);
+-	spin_unlock_irqrestore(&port->lock, flags);
+ }
+ 
+ /****************************************************************************/
+@@ -118,12 +110,9 @@ static void mcf_start_tx(struct uart_por
+ static void mcf_stop_tx(struct uart_port *port)
+ {
+ 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
+-	unsigned long flags;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
+ 	pp->imr &= ~MCFUART_UIR_TXREADY;
+ 	writeb(pp->imr, port->membase + MCFUART_UIMR);
+-	spin_unlock_irqrestore(&port->lock, flags);
+ }
+ 
+ /****************************************************************************/
+@@ -131,12 +120,9 @@ static void mcf_stop_tx(struct uart_port
+ static void mcf_stop_rx(struct uart_port *port)
+ {
+ 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
+-	unsigned long flags;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
+ 	pp->imr &= ~MCFUART_UIR_RXREADY;
+ 	writeb(pp->imr, port->membase + MCFUART_UIMR);
+-	spin_unlock_irqrestore(&port->lock, flags);
+ }
+ 
+ /****************************************************************************/
+@@ -366,13 +352,22 @@ static irqreturn_t mcf_interrupt(int irq
+ 	struct uart_port *port = data;
+ 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
+ 	unsigned int isr;
++	irqreturn_t ret = IRQ_NONE;
+ 
+ 	isr = readb(port->membase + MCFUART_UISR) & pp->imr;
+-	if (isr & MCFUART_UIR_RXREADY)
++
++	spin_lock(&port->lock);
++	if (isr & MCFUART_UIR_RXREADY) {
+ 		mcf_rx_chars(pp);
+-	if (isr & MCFUART_UIR_TXREADY)
++		ret = IRQ_HANDLED;
++	}
++	if (isr & MCFUART_UIR_TXREADY) {
+ 		mcf_tx_chars(pp);
+-	return IRQ_HANDLED;
++		ret = IRQ_HANDLED;
++	}
++	spin_unlock(&port->lock);
++
++	return ret;
+ }
+ 
+ /****************************************************************************/
 _
