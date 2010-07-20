@@ -1,70 +1,61 @@
 From: akpm@linux-foundation.org
-Subject: [patch 6/7] timbuart: use __devinit and __devexit macros for probe and remove
-Date: Tue, 20 Jul 2010 15:26:53 -0700
-Message-ID: <201007202226.o6KMQrG8021538@imap1.linux-foundation.org>
+Subject: [patch 7/7] drivers/serial/68328serial.c: remove dead (ALMA_ANS | DRAGONIXVZ | M68EZ328ADS)
+Date: Tue, 20 Jul 2010 15:26:54 -0700
+Message-ID: <201007202226.o6KMQsmU021541@imap1.linux-foundation.org>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=ANSI_X3.4-1968
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp1.linux-foundation.org ([140.211.169.13]:41849 "EHLO
+Received: from smtp1.linux-foundation.org ([140.211.169.13]:44829 "EHLO
 	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932915Ab0GTWcX (ORCPT
+	by vger.kernel.org with ESMTP id S1761853Ab0GTWfC (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 20 Jul 2010 18:32:23 -0400
+	Tue, 20 Jul 2010 18:35:02 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: greg@kroah.com
-Cc: linux-serial@vger.kernel.org, akpm@linux-foundation.org, richard.rojfors@pelagicore.com
+Cc: linux-serial@vger.kernel.org, akpm@linux-foundation.org, siccegge@cs.fau.de, gerg@uclinux.org
 
-=46rom: Richard R=F6jfors <richard.rojfors@pelagicore.com>
+From: Christoph Egger <siccegge@cs.fau.de>
 
-Move the probe and remove functions to the devinit and devexit sections=
-=2E
+(ALMA_ANS | DRAGONIXVZ | M68EZ328ADS) doesn't exist in Kconfig, therefore
+remove all references to it from the source code.
 
-Signed-off-by: Richard R=F6jfors <richard.rojfors@pelagicore.com>
+Signed-off-by: Christoph Egger <siccegge@cs.fau.de>
+Acked-by: Greg Ungerer <gerg@uclinux.org>
 Cc: Greg KH <greg@kroah.com>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 ---
 
- drivers/serial/timbuart.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/serial/68328serial.c |   16 +++++-----------
+ 1 file changed, 5 insertions(+), 11 deletions(-)
 
-diff -puN drivers/serial/timbuart.c~timbuart-use-__devinit-and-__devexi=
-t-macros-for-probe-and-remove drivers/serial/timbuart.c
---- a/drivers/serial/timbuart.c~timbuart-use-__devinit-and-__devexit-ma=
-cros-for-probe-and-remove
-+++ a/drivers/serial/timbuart.c
-@@ -423,7 +423,7 @@ static struct uart_driver timbuart_drive
- 	.nr =3D 1
- };
-=20
--static int timbuart_probe(struct platform_device *dev)
-+static int __devinit timbuart_probe(struct platform_device *dev)
- {
- 	int err, irq;
- 	struct timbuart_port *uart;
-@@ -489,7 +489,7 @@ err_mem:
- 	return err;
- }
-=20
--static int timbuart_remove(struct platform_device *dev)
-+static int __devexit timbuart_remove(struct platform_device *dev)
- {
- 	struct timbuart_port *uart =3D platform_get_drvdata(dev);
-=20
-@@ -507,7 +507,7 @@ static struct platform_driver timbuart_p
- 		.owner	=3D THIS_MODULE,
- 	},
- 	.probe		=3D timbuart_probe,
--	.remove		=3D timbuart_remove,
-+	.remove		=3D __devexit_p(timbuart_remove),
- };
-=20
- /*--------------------------------------------------------------------=
-------*/
+diff -puN drivers/serial/68328serial.c~drivers-serial-68328serialc-remove-dead-alma_ans-dragonixvz-m68ez328ads drivers/serial/68328serial.c
+--- a/drivers/serial/68328serial.c~drivers-serial-68328serialc-remove-dead-alma_ans-dragonixvz-m68ez328ads
++++ a/drivers/serial/68328serial.c
+@@ -98,19 +98,13 @@ static void change_speed(struct m68k_ser
+  *	Setup for console. Argument comes from the boot command line.
+  */
+ 
+-#if defined(CONFIG_M68EZ328ADS) || defined(CONFIG_ALMA_ANS) || defined(CONFIG_DRAGONIXVZ)
+-#define	CONSOLE_BAUD_RATE	115200
+-#define	DEFAULT_CBAUD		B115200
+-#else
+-	/* (es) */
+-	/* note: this is messy, but it works, again, perhaps defined somewhere else?*/
+-	#ifdef CONFIG_M68VZ328
+-	#define CONSOLE_BAUD_RATE	19200
+-	#define DEFAULT_CBAUD		B19200
+-	#endif
+-	/* (/es) */
++/* note: this is messy, but it works, again, perhaps defined somewhere else?*/
++#ifdef CONFIG_M68VZ328
++#define CONSOLE_BAUD_RATE	19200
++#define DEFAULT_CBAUD		B19200
+ #endif
+ 
++
+ #ifndef CONSOLE_BAUD_RATE
+ #define	CONSOLE_BAUD_RATE	9600
+ #define	DEFAULT_CBAUD		B9600
 _
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
