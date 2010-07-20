@@ -1,28 +1,58 @@
-From: "Sonia Porter" <sporter@jusd.k12.ca.us>
-Subject: Dear Webmail User
-Date: Mon, 19 Jul 2010 18:26:37 -0700
-Message-ID: <8A78544F83994B468EAC5A3D242C1E34C79054__36783.4582961679$1279590211$gmane$org@exchsrv02.jusd.dom>
+From: akpm@linux-foundation.org
+Subject: [patch 1/7] "altera_uart: simplify altera_uart_console_putc()" checkpatch fixes
+Date: Tue, 20 Jul 2010 15:26:10 -0700
+Message-ID: <201007202226.o6KMQAWX021501@imap1.linux-foundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset=ANSI_X3.4-1968
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.jusd.k12.ca.us ([204.100.155.6]:43451 "EHLO
-	mail.jusd.k12.ca.us" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932088Ab0GTBma convert rfc822-to-8bit (ORCPT
+Received: from smtp1.linux-foundation.org ([140.211.169.13]:48424 "EHLO
+	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S932860Ab0GTW1P (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Jul 2010 21:42:30 -0400
-Content-class: urn:content-classes:message
+	Tue, 20 Jul 2010 18:27:15 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: info@upgrade.com
+To: greg@kroah.com
+Cc: linux-serial@vger.kernel.org, akpm@linux-foundation.org, tklauser@distanz.ch
 
-This message was sent automatically by a program on Web mail which periodically checks the size of in boxes, where new messages are received.The program is run weekly to ensure no one's in box grows too large. If your in box becomes too large,you will be unable to receive new email. Just before this message was sent,you had 18 Mega bytes (MB) or more of messages stored in your in box on your Web mail. To help's re-set your SPACE on our database prior to maintain your IN BOX.
- 
-YOU MUST COPY AND PAST THE BELOW LINK TO INCREASE YOUR INBOX QUOTA AND UPGRADE YOUR WEBMAIL ACCOUNT
+From: Andrew Morton <akpm@linux-foundation.org>
 
-http://www.eformit.com/eform.aspx?webmasterupgradesystem 
+ERROR: code indent should use tabs where possible
+#32: FILE: drivers/serial/altera_uart.c:397:
++^I         ALTERA_UART_STATUS_TRDY_MSK))$
+
+total: 1 errors, 0 warnings, 39 lines checked
+
+./patches/altera_uart-simplify-altera_uart_console_putc.patch has style problems, please review.  If any of these errors
+are false positives report them to the maintainer, see
+CHECKPATCH in MAINTAINERS.
+
+Please run checkpatch prior to sending patches
+
+
+This fix got lost when someone merged "altera_uart: simplify
+altera_uart_console_putc()".  Please don't lose fixes.  Please don't write
+of mere patches which have trivial checkpatch errors.
+
+Cc: Greg KH <greg@kroah.com>
+Cc: Tobias Klauser <tklauser@distanz.ch>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+---
+
+ drivers/serial/altera_uart.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff -puN drivers/serial/altera_uart.c~altera_uart-simplify-altera_uart_console_putc-checkpatch-fixes drivers/serial/altera_uart.c
+--- a/drivers/serial/altera_uart.c~altera_uart-simplify-altera_uart_console_putc-checkpatch-fixes
++++ a/drivers/serial/altera_uart.c
+@@ -394,7 +394,7 @@ int __init early_altera_uart_setup(struc
+ static void altera_uart_console_putc(struct uart_port *port, const char c)
+ {
+ 	while (!(readl(port->membase + ALTERA_UART_STATUS_REG) &
+-	         ALTERA_UART_STATUS_TRDY_MSK))
++		 ALTERA_UART_STATUS_TRDY_MSK))
+ 		cpu_relax();
  
- You will continue to receive this warning message periodically if your inbox size continues to be between 18 and 20 MB. If your in box size grows to 20MB,then a program on the Web mail will move your oldest email to a folder in your home directory to ensure that you will continue to be able to receive incoming email. You will be notified by email that this has taken place. If your in box grows to 25 MB, you will be unable to receive new email as it will be returned to the sender.After you read a message,it is best to REPLY and SAVE a copy.
- 
-Thanks.
-Web mail Help Desk
+ 	writel(c, port->membase + ALTERA_UART_TXDATA_REG);
+_
