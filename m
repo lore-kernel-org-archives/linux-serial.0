@@ -1,72 +1,28 @@
-From: Manuel Jander <manuel.jander@gmail.com>
-Subject: Serial buffer question
-Date: Sun, 18 Jul 2010 21:36:05 +0200
-Message-ID: <AANLkTin5vNE41jUX4m-sdc4L31I8D5m1UJnDNp1sL2ld@mail.gmail.com>
+From: "Sonia Porter" <sporter@jusd.k12.ca.us>
+Subject: Dear Webmail User
+Date: Mon, 19 Jul 2010 18:26:37 -0700
+Message-ID: <8A78544F83994B468EAC5A3D242C1E34C79054__36783.4582961679$1279590211$gmane$org@exchsrv02.jusd.dom>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ew0-f46.google.com ([209.85.215.46]:41152 "EHLO
-	mail-ew0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757153Ab0GRTgH (ORCPT
+Received: from mail.jusd.k12.ca.us ([204.100.155.6]:43451 "EHLO
+	mail.jusd.k12.ca.us" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932088Ab0GTBma convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 18 Jul 2010 15:36:07 -0400
-Received: by ewy23 with SMTP id 23so1134521ewy.19
-        for <linux-serial@vger.kernel.org>; Sun, 18 Jul 2010 12:36:05 -0700 (PDT)
+	Mon, 19 Jul 2010 21:42:30 -0400
+Content-class: urn:content-classes:message
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: info@upgrade.com
 
-Hi there,
+This message was sent automatically by a program on Web mail which periodically checks the size of in boxes, where new messages are received.The program is run weekly to ensure no one's in box grows too large. If your in box becomes too large,you will be unable to receive new email. Just before this message was sent,you had 18 Mega bytes (MB) or more of messages stored in your in box on your Web mail. To help's re-set your SPACE on our database prior to maintain your IN BOX.
+ 
+YOU MUST COPY AND PAST THE BELOW LINK TO INCREASE YOUR INBOX QUOTA AND UPGRADE YOUR WEBMAIL ACCOUNT
 
-some time ago I wrote a serial loop back driver which creates serial
-port pairs, which sent its data to the other, thus like acting like a
-cable, but with the possibilty to listen what is being transmitted :)
-It also supports local echo, to simulate single wire (ODB) interfaces.
-
-Until linux 2.6.24 it worked well, know running 2.6.33.2 somehow the
-flip buffer contents somehow grow in an uncontrolled way.
-
-Below, the main part of the driver. For one virtual loop serial port
-pair this function is called twice using a timer. tty_xmit and
-tty_recv are the serial port pair, exchanged accordingly to which port
-turn it is to be served.
-
-  while (!uart_circ_empty(xmit) && lifeboat < 100)
-  {
-    char ch;
-
-    ch = xmit->buf[xmit->tail];
-
-    dbg("tx(%d) %02x\n", i, ch);
-
-    if ( do_rx & (1<<ii) && tty_recv != NULL ) {
-      /* TX to counterpart port */
-      rport->icount.rx++;
-      tty_insert_flip_char(tty_recv, ch, TTY_NORMAL);
-      rxpush = 1;
-    }
-
-    if (do_echo && (do_rx & (1<<i)) ) {
-      xport->icount.rx++;
-      tty_insert_flip_char(tty_xmit, ch, TTY_NORMAL);
-      echo_push = 1;
-    }
-
-    xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-    xport->icount.tx++;
-
-    lifeboat++;
-  }
-
-The problem: the flip buffer of "xmit" grows all the time until
-"lifeboat" terminates the while loop. Could it be that
-tty_insert_flip_char() now affects inmediately the fill level of the
-xmit circular buffer and for earlier kernel versions this was somehow
-delayed ? Should I buffer the local echo char somewhere (when do_echo
-== 1) and call tty_insert_flip_char() outside the while loop ?
-
-I would be really glad if somebody could explain what happen from
-2.6.24 to 2.6.33.2 Thanks a lot in advance.
-
-Cheers,
-Manuel
+http://www.eformit.com/eform.aspx?webmasterupgradesystem 
+ 
+ You will continue to receive this warning message periodically if your inbox size continues to be between 18 and 20 MB. If your in box size grows to 20MB,then a program on the Web mail will move your oldest email to a folder in your home directory to ensure that you will continue to be able to receive incoming email. You will be notified by email that this has taken place. If your in box grows to 25 MB, you will be unable to receive new email as it will be returned to the sender.After you read a message,it is best to REPLY and SAVE a copy.
+ 
+Thanks.
+Web mail Help Desk
