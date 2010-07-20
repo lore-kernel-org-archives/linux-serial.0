@@ -1,144 +1,62 @@
 From: akpm@linux-foundation.org
-Subject: [patch 4/7] serial: mcf: don't take spinlocks in already protected functions
-Date: Tue, 20 Jul 2010 15:26:50 -0700
-Message-ID: <201007202226.o6KMQpNm021530@imap1.linux-foundation.org>
+Subject: [patch 2/7] serial: fix missing bit coverage of ASYNC_FLAGS
+Date: Tue, 20 Jul 2010 15:26:46 -0700
+Message-ID: <201007202226.o6KMQkLd021523@imap1.linux-foundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ANSI_X3.4-1968
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp1.linux-foundation.org ([140.211.169.13]:57214 "EHLO
+Received: from smtp1.linux-foundation.org ([140.211.169.13]:59187 "EHLO
 	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932870Ab0GTW1W (ORCPT
+	by vger.kernel.org with ESMTP id S932862Ab0GTW1Y (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 20 Jul 2010 18:27:22 -0400
+	Tue, 20 Jul 2010 18:27:24 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: greg@kroah.com
-Cc: linux-serial@vger.kernel.org, akpm@linux-foundation.org, ygeorgie@gmail.com, alan@lxorguk.ukuu.org.uk, gerg@uclinux.org
+Cc: linux-serial@vger.kernel.org, akpm@linux-foundation.org, jvillalo@redhat.com, alan@lxorguk.ukuu.org.uk, john.l.villalovos@intel.com
 
-From: Yury Georgievskiy <ygeorgie@gmail.com>
+From: John Villalovos <jvillalo@redhat.com>
 
-Don't take the port spinlock in uart functions where the serial core
-already takes care of locking/unlocking them.
+It seems that currently ASYNC_FLAGS is one bit short of covering all the
+bits of the ASYNC user flags.  In particular it does not cover the
+ASYNC_AUTOPROBE bit.
 
-The code would actually lock up on architectures where spinlocks are
-implemented.
+ASYNCB_LAST_USER and ASYNCB_AUTOPROBE are both equal to 15.
 
-Also protect calling mcf_rx_chars/mcf_tx_chars in the interrupt handler by
-the port spinlock and use IRQ_RETVAL to return from isr.
+Therefore:
+ASYNC_AUTOPROBE = 1000 0000 0000 0000
+ASYNC_FLAGS     = 0111 1111 1111 1111
 
-[akpm@linux-foundation.org: make irq-handler return value more explicit]
-Signed-off-by: Yury Georgievskiy <ygeorgie@gmail.com>
-Cc: Greg KH <greg@kroah.com>
+So ASYNC_FLAGS is not covering the ASYNC_AUTOPROBE bit.
+
+This patch fixes the issue and with the patch the values will be:
+ASYNC_AUTOPROBE = 1000 0000 0000 0000
+ASYNC_FLAGS     = 1111 1111 1111 1111
+
+As a side note, doing a "git grep" I didn't find any use of
+ASYNC_AUTOPROBE or ASYNCB_AUTOPROBE in the kernel, besides this include
+file.
+
+Signed-off-by: John Villalovos <john.l.villalovos@intel.com>
 Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Acked-by: Greg Ungerer <gerg@uclinux.org>
+Cc: Greg KH <greg@kroah.com>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 ---
 
- drivers/serial/mcf.c |   31 +++++++++++++------------------
- 1 file changed, 13 insertions(+), 18 deletions(-)
+ include/linux/serial.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff -puN drivers/serial/mcf.c~serial-mcf-dont-take-spinlocks-in-already-protected-functions drivers/serial/mcf.c
---- a/drivers/serial/mcf.c~serial-mcf-dont-take-spinlocks-in-already-protected-functions
-+++ a/drivers/serial/mcf.c
-@@ -70,16 +70,14 @@ static unsigned int mcf_tx_empty(struct 
- static unsigned int mcf_get_mctrl(struct uart_port *port)
- {
- 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
--	unsigned long flags;
- 	unsigned int sigs;
+diff -puN include/linux/serial.h~serial-fix-missing-bit-coverage-of-async_flags include/linux/serial.h
+--- a/include/linux/serial.h~serial-fix-missing-bit-coverage-of-async_flags
++++ a/include/linux/serial.h
+@@ -151,7 +151,7 @@ struct serial_uart_config {
+ #define ASYNC_BUGGY_UART	(1U << ASYNCB_BUGGY_UART)
+ #define ASYNC_AUTOPROBE		(1U << ASYNCB_AUTOPROBE)
  
--	spin_lock_irqsave(&port->lock, flags);
- 	sigs = (readb(port->membase + MCFUART_UIPR) & MCFUART_UIPR_CTS) ?
- 		0 : TIOCM_CTS;
- 	sigs |= (pp->sigs & TIOCM_RTS);
- 	sigs |= (mcf_getppdcd(port->line) ? TIOCM_CD : 0);
- 	sigs |= (mcf_getppdtr(port->line) ? TIOCM_DTR : 0);
--	spin_unlock_irqrestore(&port->lock, flags);
-+
- 	return sigs;
- }
- 
-@@ -88,16 +86,13 @@ static unsigned int mcf_get_mctrl(struct
- static void mcf_set_mctrl(struct uart_port *port, unsigned int sigs)
- {
- 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
--	unsigned long flags;
- 
--	spin_lock_irqsave(&port->lock, flags);
- 	pp->sigs = sigs;
- 	mcf_setppdtr(port->line, (sigs & TIOCM_DTR));
- 	if (sigs & TIOCM_RTS)
- 		writeb(MCFUART_UOP_RTS, port->membase + MCFUART_UOP1);
- 	else
- 		writeb(MCFUART_UOP_RTS, port->membase + MCFUART_UOP0);
--	spin_unlock_irqrestore(&port->lock, flags);
- }
- 
- /****************************************************************************/
-@@ -105,12 +100,9 @@ static void mcf_set_mctrl(struct uart_po
- static void mcf_start_tx(struct uart_port *port)
- {
- 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
--	unsigned long flags;
- 
--	spin_lock_irqsave(&port->lock, flags);
- 	pp->imr |= MCFUART_UIR_TXREADY;
- 	writeb(pp->imr, port->membase + MCFUART_UIMR);
--	spin_unlock_irqrestore(&port->lock, flags);
- }
- 
- /****************************************************************************/
-@@ -118,12 +110,9 @@ static void mcf_start_tx(struct uart_por
- static void mcf_stop_tx(struct uart_port *port)
- {
- 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
--	unsigned long flags;
- 
--	spin_lock_irqsave(&port->lock, flags);
- 	pp->imr &= ~MCFUART_UIR_TXREADY;
- 	writeb(pp->imr, port->membase + MCFUART_UIMR);
--	spin_unlock_irqrestore(&port->lock, flags);
- }
- 
- /****************************************************************************/
-@@ -131,12 +120,9 @@ static void mcf_stop_tx(struct uart_port
- static void mcf_stop_rx(struct uart_port *port)
- {
- 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
--	unsigned long flags;
- 
--	spin_lock_irqsave(&port->lock, flags);
- 	pp->imr &= ~MCFUART_UIR_RXREADY;
- 	writeb(pp->imr, port->membase + MCFUART_UIMR);
--	spin_unlock_irqrestore(&port->lock, flags);
- }
- 
- /****************************************************************************/
-@@ -366,13 +352,22 @@ static irqreturn_t mcf_interrupt(int irq
- 	struct uart_port *port = data;
- 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
- 	unsigned int isr;
-+	irqreturn_t ret = IRQ_NONE;
- 
- 	isr = readb(port->membase + MCFUART_UISR) & pp->imr;
--	if (isr & MCFUART_UIR_RXREADY)
-+
-+	spin_lock(&port->lock);
-+	if (isr & MCFUART_UIR_RXREADY) {
- 		mcf_rx_chars(pp);
--	if (isr & MCFUART_UIR_TXREADY)
-+		ret = IRQ_HANDLED;
-+	}
-+	if (isr & MCFUART_UIR_TXREADY) {
- 		mcf_tx_chars(pp);
--	return IRQ_HANDLED;
-+		ret = IRQ_HANDLED;
-+	}
-+	spin_unlock(&port->lock);
-+
-+	return ret;
- }
- 
- /****************************************************************************/
+-#define ASYNC_FLAGS		((1U << ASYNCB_LAST_USER) - 1)
++#define ASYNC_FLAGS		((1U << (ASYNCB_LAST_USER + 1)) - 1)
+ #define ASYNC_USR_MASK		(ASYNC_SPD_HI|ASYNC_SPD_VHI| \
+ 		ASYNC_CALLOUT_NOHUP|ASYNC_SPD_SHI|ASYNC_LOW_LATENCY)
+ #define ASYNC_SPD_CUST		(ASYNC_SPD_HI|ASYNC_SPD_VHI)
 _
