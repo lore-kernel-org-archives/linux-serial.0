@@ -1,42 +1,36 @@
 From: Alan Cox <alan@linux.intel.com>
-Subject: [RESEND PATCH] max3107: Fix gpiolib support
-Date: Tue, 27 Jul 2010 08:16:05 +0100
-Message-ID: <20100727071551.25761.146.stgit@localhost.localdomain>
+Subject: [PATCH 0/4] Medfield HSU serial
+Date: Tue, 27 Jul 2010 08:20:11 +0100
+Message-ID: <20100727071936.26058.23502.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:33990 "EHLO mga01.intel.com"
+Received: from mga09.intel.com ([134.134.136.24]:55992 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753558Ab0G0Hta (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 27 Jul 2010 03:49:30 -0400
+	id S1752425Ab0G0Hxh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 27 Jul 2010 03:53:37 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, greg@kroah.com
+To: greg@kroah.com, linux-serial@vger.kernel.org
 
-Because of the way gpiolib works we actually need to ifdef this in our
-header file
-
-Signed-off-by: Alan Cox <alan@linux.intel.com>
+With the header file escape fixed (sorry about that)
 ---
 
- drivers/serial/max3107.h |    2 ++
- 1 files changed, 2 insertions(+), 0 deletions(-)
+Feng Tang (4):
+      hsu: call PCI pm hooks in suspend/resume function
+      hsu: some code cleanup
+      hsu: add a periodic timer to check dma rx channel
+      hsu: driver for Medfield High Speed UART device
 
 
-diff --git a/drivers/serial/max3107.h b/drivers/serial/max3107.h
-index 72b3041..7ab6323 100644
---- a/drivers/serial/max3107.h
-+++ b/drivers/serial/max3107.h
-@@ -368,8 +368,10 @@ struct max3107_port {
- 	/* SPI device structure */
- 	struct spi_device *spi;
- 
-+#if defined(CONFIG_GPIOLIB)
- 	/* GPIO chip stucture */
- 	struct gpio_chip chip;
-+#endif
- 
- 	/* Workqueue that does all the magic */
- 	struct workqueue_struct *workqueue;
+ drivers/serial/Kconfig      |   10 
+ drivers/serial/Makefile     |    1 
+ drivers/serial/mfd.c        | 1498 +++++++++++++++++++++++++++++++++++++++++++
+ include/linux/serial_core.h |    2 
+ include/linux/serial_mfd.h  |   47 +
+ include/linux/serial_reg.h  |   16 
+ 6 files changed, 1574 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/serial/mfd.c
+ create mode 100644 include/linux/serial_mfd.h
 
