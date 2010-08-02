@@ -1,46 +1,43 @@
-From: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH 04/11] pcmcia: do not use io_req_t after call to
- pcmcia_request_io()
-Date: Sun, 01 Aug 2010 11:04:43 -0700
-Message-ID: <1280685883.12579.8.camel@localhost.localdomain>
-References: <20100801125749.GA2564@comet.dominikbrodowski.net>
-	 <1280667550-3040-4-git-send-email-linux@dominikbrodowski.net>
+From: Komuro <komurojun-mbn@nifty.com>
+Subject: Re: [PATCH 01/11] pcmcia: use pcmica_{read,write}_config_byte
+Date: Mon, 2 Aug 2010 20:59:26 +0900 (JST)
+Message-ID: <15238373.192661280750366920.komurojun-mbn@nifty.com>
+References: <1280667550-3040-1-git-send-email-linux@dominikbrodowski.net>
+	<20100801125749.GA2564@comet.dominikbrodowski.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1280667550-3040-4-git-send-email-linux-X3ehHDuj6sIIGcDfoQAp7OTW4wlIGRCZ@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Dominik Brodowski <linux-X3ehHDuj6sIIGcDfoQAp7OTW4wlIGRCZ@public.gmane.org>
-Cc: linux-pcmcia-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, laforge-TgoAw6mPHtdg9hUCZPvPmw@public.gmane.org, linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-pcmcia-bounces+glkpd-linux-pcmcia=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1280667550-3040-1-git-send-email-linux@dominikbrodowski.net>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-pcmcia>,
+	<mailto:linux-pcmcia-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-pcmcia/>
+List-Post: <mailto:linux-pcmcia@lists.infradead.org>
+List-Help: <mailto:linux-pcmcia-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-pcmcia>,
+	<mailto:linux-pcmcia-request@lists.infradead.org?subject=subscribe>
+Sender: linux-pcmcia-bounces@lists.infradead.org
+Errors-To: linux-pcmcia-bounces+glkpd-linux-pcmcia=m.gmane.org@lists.infradead.org
+Cc: Michael Buesch <mb@bu3sch.de>, netdev@vger.kernel.org, linux-pcmcia@lists.infradead.org, linux-wireless@vger.kernel.org, Dominik Brodowski <linux@dominikbrodowski.net>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Dominik,
+Hi,
 
-> After pcmcia_request_io(), do not make use of the values stored in
-> io_req_t, but instead use those found in struct pcmcia_device->resource[].
-> 
-> CC: netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> CC: linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> CC: linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> CC: linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> CC: laforge-TgoAw6mPHtdg9hUCZPvPmw@public.gmane.org
-> CC: linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> CC: linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> CC: alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org
-> CC: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Signed-off-by: Dominik Brodowski <linux-X3ehHDuj6sIIGcDfoQAp7OTW4wlIGRCZ@public.gmane.org>
-
-for the drivers/bluetooth/ pieces.
-
-Acked-by: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
-
-Regards
-
-Marcel
+>--- a/drivers/net/pcmcia/xirc2ps_cs.c
+>+++ b/drivers/net/pcmcia/xirc2ps_cs.c
 
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>+	if (err)
+> 	    goto config_error;
+>-	reg.Action = CS_WRITE;
+>-	reg.Offset = CISREG_IOBASE_1;
+>-	reg.Value = (link->io.BasePort2 >> 8) & 0xff;
+>-	if ((err = pcmcia_access_configuration_register(link, &reg)))
+>+
+>+	err = pcmcia_write_config_byte(link, CISREG_IOBASE_1,
+>+				link->io.BasePort2 & 0xff);
+
+It should be
+
+	err = pcmcia_write_config_byte(link, CISREG_IOBASE_1,
+				(link->io.BasePort2 >> 8) & 0xff);
