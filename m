@@ -1,47 +1,71 @@
-From: Jesper Nilsson <jesper.nilsson@axis.com>
-Subject: [GIT PULL] arch/cris changes for 2.6.36
-Date: Mon, 9 Aug 2010 14:26:28 +0200
-Message-ID: <20100809122628.GC17485@axis.com>
-References: <20100806085337.GA17485@axis.com>
+From: Kevin Hilman <khilman@deeprootsystems.com>
+Subject: Re: [PATCH v3] serial: Add OMAP high-speed UART driver
+Date: Mon, 09 Aug 2010 12:29:36 -0700
+Message-ID: <87zkwvinz3.fsf@deeprootsystems.com>
+References: <33418.192.168.10.88.1275659646.squirrel@dbdmail.itg.ti.com>
+	<201006070809.47853.luke@dashjr.org>
+	<AANLkTimEtn-ef4ygY2Cu3ay4vAGHpCwtxrf8U9nW9NV8@mail.gmail.com>
+	<201006071115.34881.luke@dashjr.org>
+	<AANLkTinod9geJbbfdOIhB465qi6xHqfH-1vL048Bc3fa@mail.gmail.com>
+	<20100707120241.GN1920@atomide.com>
+	<AANLkTinq3Hx_2gGbuyvbGnNpSfQ75B3vJU9WU66GAzd4@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from miranda.se.axis.com ([193.13.178.8]:34919 "EHLO
-	miranda.se.axis.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756326Ab0HIM1Y (ORCPT
+Received: from mail-pv0-f174.google.com ([74.125.83.174]:38834 "EHLO
+	mail-pv0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754672Ab0HIT3t (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 9 Aug 2010 08:27:24 -0400
-Content-Disposition: inline
-In-Reply-To: <20100806085337.GA17485@axis.com>
+	Mon, 9 Aug 2010 15:29:49 -0400
+In-Reply-To: <AANLkTinq3Hx_2gGbuyvbGnNpSfQ75B3vJU9WU66GAzd4@mail.gmail.com>
+	(Govindraj's message of "Wed, 7 Jul 2010 17:52:42 +0530")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, linux-serial@vger.kernel.org
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-cris-kernel <linux-cris-kernel@axis.com>, Claudio Scordino <claudio@evidence.eu.com>
+To: Govindraj <govindraj.ti@gmail.com>
+Cc: Tony Lindgren <tony@atomide.com>, Luke-Jr <luke@dashjr.org>, "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org
 
-Hi Linus,
+Govindraj <govindraj.ti@gmail.com> writes:
 
-I lost one patch in the last pull request (sorry Claudio), please pull the below tree
-which adds an ioctl to the CRISv10 serial driver.
+> On Wed, Jul 7, 2010 at 5:32 PM, Tony Lindgren <tony@atomide.com> wrote:
+>> * Govindraj <govindraj.ti@gmail.com> [100608 09:24]:
+>>> On Mon, Jun 7, 2010 at 9:45 PM, Luke-Jr <luke@dashjr.org> wrote:
+>>> > On Monday 07 June 2010 08:28:51 am Govindraj wrote:
+>>> >> Link:
+>>> >> http://git.kernel.org/?p=linux/kernel/git/khilman/linux-omap-pm.git;a=summa
+>>> >> ry
+>>> >>
+>>> >> Branch:
+>>> >> pm-wip/uart
+>>> >
+>>> > This branch doesn't appear to have omap-serial.c at all...
+>>> >
+>>> >> If you are trying to use with any client device connected to uart
+>>> >> then we need to ensure the client driver speaks to omap-serial
+>>> >> dev entries.
+>>> >
+>>>
+>>> You need apply the driver patch on top of this branch.
+>>>
+>>> [PATCH v3] serial: Add OMAP high-speed UART driver.
+>>
+>> Do we still have a dependency to pm-wip/uart branch? Can you please
+>> check if you can rebase all these patches on top of linux-omap for-next
+>> branch?
+>
+> pm-wip uart branch is having all the mach-omap2/serail.c changes along with
+> hwmod data file updation and serial hwmod usage.
+>
+> The driver patch [serial: Add OMAP high-speed UART driver]
+> was tested against wip/uart branch.
+>
+> I will re-base all these patches for-next branch,
+> and will post driver and board support patches from pm-wip/uart as a
+> single series.
 
+Any update on this?
 
-The following changes since commit 9fe6206f400646a2322096b56c59891d530e8d51:
-  Linus Torvalds (1):
-        Linux 2.6.35
+FWIW, I rebased the pm-wip/uart part on top of latest
+pm-wip/hwmods-omap4 but from here, you should take over responsibility
+for pm-wip/uart.
 
-are available in the git repository at:
-
-  git://www.jni.nu/cris.git rs485fix
-
-Claudio Scordino (1):
-      CRIS: ioctl for getting RS485 information
-
- arch/cris/include/asm/ioctls.h |    1 +
- drivers/serial/crisv10.c       |   11 +++++++++++
- 2 files changed, 12 insertions(+), 0 deletions(-)
-
-
-Thanks again,
-
-/^JN - Jesper Nilsson
--- 
-               Jesper Nilsson -- jesper.nilsson@axis.com
+Kevin
