@@ -1,45 +1,70 @@
-From: Komuro <komurojun-mbn@nifty.com>
-Subject: Re: [PATCH 11/18] pcmcia: do not use io_req_t when calling
-	pcmcia_request_io()
-Date: Sun, 8 Aug 2010 22:07:31 +0900 (JST)
-Message-ID: <103911.103501281272851252.komurojun-mbn@nifty.com>
-References: <1281046014-7585-11-git-send-email-linux@dominikbrodowski.net>
-	<20100805220511.GA7040@comet.dominikbrodowski.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pcmcia-bounces+glkpd-linux-pcmcia=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1281046014-7585-11-git-send-email-linux@dominikbrodowski.net>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-pcmcia>,
-	<mailto:linux-pcmcia-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-pcmcia/>
-List-Post: <mailto:linux-pcmcia@lists.infradead.org>
-List-Help: <mailto:linux-pcmcia-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-pcmcia>,
-	<mailto:linux-pcmcia-request@lists.infradead.org?subject=subscribe>
-Sender: linux-pcmcia-bounces@lists.infradead.org
-Errors-To: linux-pcmcia-bounces+glkpd-linux-pcmcia=m.gmane.org@lists.infradead.org
-Cc: alsa-devel@alsa-project.org, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, netdev@vger.kernel.org, linux-pcmcia@lists.infradead.org, linux-wireless@vger.kernel.org, laforge@gnumonks.org, linux-ide@vger.kernel.org, linux-mtd@lists.infradead.org, Dominik Brodowski <linux@dominikbrodowski.net>, Michael Buesch <mb@bu3sch.de>
+From: Michal Simek <monstr@monstr.eu>
+Subject: [PATCH] serial: Add CONSOLE_POLL support for uartlite
+Date: Mon,  9 Aug 2010 12:07:32 +0200
+Message-ID: <1281348452-26924-1-git-send-email-monstr@monstr.eu>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-bw0-f46.google.com ([209.85.214.46]:34064 "EHLO
+	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755835Ab0HIKHi (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 9 Aug 2010 06:07:38 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: jacmet@sunsite.dk
+Cc: grant.likely@secretlab.ca, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Michal Simek <monstr@monstr.eu>
 
-Hi,
+CONSOLE_POLL support for uartlite enables
+KGDB debugging over serial line.
 
-> 
->-    link->io.IOAddrLines =10;
->-    link->io.Attributes1 = IO_DATA_PATH_WIDTH_16;
->+    link->resource[0]->flags |= IO_DATA_PATH_WIDTH_16;
+Signed-off-by: Michal Simek <monstr@monstr.eu>
+---
+ drivers/serial/uartlite.c |   26 +++++++++++++++++++++++++-
+ 1 files changed, 25 insertions(+), 1 deletions(-)
 
-link->io_lines should be set here?
+diff --git a/drivers/serial/uartlite.c b/drivers/serial/uartlite.c
+index caf085d..ce1f3e0 100644
+--- a/drivers/serial/uartlite.c
++++ b/drivers/serial/uartlite.c
+@@ -322,6 +322,26 @@ static int ulite_verify_port(struct uart_port *port, struct serial_struct *ser)
+ 	return -EINVAL;
+ }
+ 
++#ifdef CONFIG_CONSOLE_POLL
++static int ulite_get_poll_char(struct uart_port *port)
++{
++	while (!(ioread32be(port->membase + ULITE_STATUS)
++						& ULITE_STATUS_RXVALID))
++		cpu_relax();
++
++	return ioread32be(port->membase + ULITE_RX);
++}
++
++static void ulite_put_poll_char(struct uart_port *port, unsigned char ch)
++{
++	while (ioread32be(port->membase + ULITE_STATUS) & ULITE_STATUS_TXFULL)
++		cpu_relax();
++
++	/* write char to device */
++	iowrite32be(ch, port->membase + ULITE_TX);
++}
++#endif
++
+ static struct uart_ops ulite_ops = {
+ 	.tx_empty	= ulite_tx_empty,
+ 	.set_mctrl	= ulite_set_mctrl,
+@@ -338,7 +358,11 @@ static struct uart_ops ulite_ops = {
+ 	.release_port	= ulite_release_port,
+ 	.request_port	= ulite_request_port,
+ 	.config_port	= ulite_config_port,
+-	.verify_port	= ulite_verify_port
++	.verify_port	= ulite_verify_port,
++#ifdef CONFIG_CONSOLE_POLL
++	.poll_get_char	= ulite_get_poll_char,
++	.poll_put_char	= ulite_put_poll_char,
++#endif
+ };
+ 
+ /* ---------------------------------------------------------------------
+-- 
+1.5.5.6
 
-
-
->@@ -840,14 +839,15 @@ xirc2ps_config(struct pcmcia_device * link)
-> 	}
-> 	printk(KNOT_XIRC "no ports available\n");
->     } else {
->-	link->io.NumPorts1 = 16;
->+	link->io_lines = 10;
->+	link->resource[0]->end = 16;
-
-Best Regards
-Komuro
