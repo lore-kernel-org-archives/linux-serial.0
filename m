@@ -1,71 +1,84 @@
-From: Kevin Hilman <khilman@deeprootsystems.com>
-Subject: Re: [PATCH v3] serial: Add OMAP high-speed UART driver
-Date: Mon, 09 Aug 2010 12:29:36 -0700
-Message-ID: <87zkwvinz3.fsf@deeprootsystems.com>
-References: <33418.192.168.10.88.1275659646.squirrel@dbdmail.itg.ti.com>
-	<201006070809.47853.luke@dashjr.org>
-	<AANLkTimEtn-ef4ygY2Cu3ay4vAGHpCwtxrf8U9nW9NV8@mail.gmail.com>
-	<201006071115.34881.luke@dashjr.org>
-	<AANLkTinod9geJbbfdOIhB465qi6xHqfH-1vL048Bc3fa@mail.gmail.com>
-	<20100707120241.GN1920@atomide.com>
-	<AANLkTinq3Hx_2gGbuyvbGnNpSfQ75B3vJU9WU66GAzd4@mail.gmail.com>
+From: Jason Wessel <jason.wessel@windriver.com>
+Subject: Re: [PATCH] serial: Add CONSOLE_POLL support for
+	uartlite
+Date: Tue, 10 Aug 2010 06:48:26 -0500
+Message-ID: <4C613C8A.1050600@windriver.com>
+References: <1281348452-26924-1-git-send-email-monstr@monstr.eu>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pv0-f174.google.com ([74.125.83.174]:38834 "EHLO
-	mail-pv0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754672Ab0HIT3t (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 9 Aug 2010 15:29:49 -0400
-In-Reply-To: <AANLkTinq3Hx_2gGbuyvbGnNpSfQ75B3vJU9WU66GAzd4@mail.gmail.com>
-	(Govindraj's message of "Wed, 7 Jul 2010 17:52:42 +0530")
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <kgdb-bugreport-bounces@lists.sourceforge.net>
+In-Reply-To: <1281348452-26924-1-git-send-email-monstr@monstr.eu>
+List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/kgdb-bugreport>,
+	<mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=unsubscribe>
+List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=kgdb-bugreport>
+List-Post: <mailto:kgdb-bugreport@lists.sourceforge.net>
+List-Help: <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=help>
+List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/kgdb-bugreport>,
+	<mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=subscribe>
+Errors-To: kgdb-bugreport-bounces@lists.sourceforge.net
+To: Michal Simek <monstr@monstr.eu>
+Cc: grant.likely@secretlab.ca, jacmet@sunsite.dk, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, KGDB Mailing List <kgdb-bugreport@lists.sourceforge.net>
 List-Id: linux-serial@vger.kernel.org
-To: Govindraj <govindraj.ti@gmail.com>
-Cc: Tony Lindgren <tony@atomide.com>, Luke-Jr <luke@dashjr.org>, "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org
 
-Govindraj <govindraj.ti@gmail.com> writes:
+On 08/09/2010 05:07 AM, Michal Simek wrote:
+> CONSOLE_POLL support for uartlite enables
+> KGDB debugging over serial line.
+> 
+> Signed-off-by: Michal Simek <monstr@monstr.eu>
+> ---
+>  drivers/serial/uartlite.c |   26 +++++++++++++++++++++++++-
+>  1 files changed, 25 insertions(+), 1 deletions(-)
+> 
+> diff --git a/drivers/serial/uartlite.c b/drivers/serial/uartlite.c
+> index caf085d..ce1f3e0 100644
+> --- a/drivers/serial/uartlite.c
+> +++ b/drivers/serial/uartlite.c
+> @@ -322,6 +322,26 @@ static int ulite_verify_port(struct uart_port *port, struct serial_struct *ser)
+>  	return -EINVAL;
+>  }
+>  
+> +#ifdef CONFIG_CONSOLE_POLL
+> +static int ulite_get_poll_char(struct uart_port *port)
+> +{
+> +	while (!(ioread32be(port->membase + ULITE_STATUS)
+> +						& ULITE_STATUS_RXVALID))
+> +		cpu_relax();
+> +
+> +	return ioread32be(port->membase + ULITE_RX);
+> +}
 
-> On Wed, Jul 7, 2010 at 5:32 PM, Tony Lindgren <tony@atomide.com> wrote:
->> * Govindraj <govindraj.ti@gmail.com> [100608 09:24]:
->>> On Mon, Jun 7, 2010 at 9:45 PM, Luke-Jr <luke@dashjr.org> wrote:
->>> > On Monday 07 June 2010 08:28:51 am Govindraj wrote:
->>> >> Link:
->>> >> http://git.kernel.org/?p=linux/kernel/git/khilman/linux-omap-pm.git;a=summa
->>> >> ry
->>> >>
->>> >> Branch:
->>> >> pm-wip/uart
->>> >
->>> > This branch doesn't appear to have omap-serial.c at all...
->>> >
->>> >> If you are trying to use with any client device connected to uart
->>> >> then we need to ensure the client driver speaks to omap-serial
->>> >> dev entries.
->>> >
->>>
->>> You need apply the driver patch on top of this branch.
->>>
->>> [PATCH v3] serial: Add OMAP high-speed UART driver.
->>
->> Do we still have a dependency to pm-wip/uart branch? Can you please
->> check if you can rebase all these patches on top of linux-omap for-next
->> branch?
->
-> pm-wip uart branch is having all the mach-omap2/serail.c changes along with
-> hwmod data file updation and serial hwmod usage.
->
-> The driver patch [serial: Add OMAP high-speed UART driver]
-> was tested against wip/uart branch.
->
-> I will re-base all these patches for-next branch,
-> and will post driver and board support patches from pm-wip/uart as a
-> single series.
 
-Any update on this?
 
-FWIW, I rebased the pm-wip/uart part on top of latest
-pm-wip/hwmods-omap4 but from here, you should take over responsibility
-for pm-wip/uart.
+After kdb was merged, the CONSOLE_POLL API had a subtle change where
+all I/O drivers should return immediately with a return of
+NO_POLL_CHAR in order to allow more than one I/O driver to operate in
+the same poll loop.
 
-Kevin
+
+The patch should look like the following for the get_poll_char.
+
++static int ulite_get_poll_char(struct uart_port *port)
++{
++	if (!(ioread32be(port->membase + ULITE_STATUS)
++	    & ULITE_STATUS_RXVALID))
++		return NO_POLL_CHAR;
++
++	return ioread32be(port->membase + ULITE_RX);
++}
+
+
+If you agree to the change you can add my SOB.
+
+Signed-off-by: Jason Wessel <jason.wessel@windriver.com>
+
+Cheers,
+Jason.
+
+
+------------------------------------------------------------------------------
+This SF.net email is sponsored by 
+
+Make an app they can't live without
+Enter the BlackBerry Developer Challenge
+http://p.sf.net/sfu/RIM-dev2dev 
