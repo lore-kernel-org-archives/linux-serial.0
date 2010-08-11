@@ -1,83 +1,81 @@
-From: Michal Simek <monstr@monstr.eu>
-Subject: Re: [PATCH] serial: Add CONSOLE_POLL support for uartlite
-Date: Tue, 10 Aug 2010 13:50:41 +0200
-Message-ID: <4C613D11.7080701@monstr.eu>
-References: <1281348452-26924-1-git-send-email-monstr@monstr.eu> <4C613C8A.1050600@windriver.com>
-Reply-To: monstr@monstr.eu
+From: Govindraj <govindraj.ti@gmail.com>
+Subject: Re: [PATCH v3] serial: Add OMAP high-speed UART driver
+Date: Wed, 11 Aug 2010 18:40:34 +0530
+Message-ID: <AANLkTimPqo3+xAPO=mYjVydW3BHrF_F4xxO0nUahOs=N@mail.gmail.com>
+References: <33418.192.168.10.88.1275659646.squirrel@dbdmail.itg.ti.com>
+	<201006070809.47853.luke@dashjr.org>
+	<AANLkTimEtn-ef4ygY2Cu3ay4vAGHpCwtxrf8U9nW9NV8@mail.gmail.com>
+	<201006071115.34881.luke@dashjr.org>
+	<AANLkTinod9geJbbfdOIhB465qi6xHqfH-1vL048Bc3fa@mail.gmail.com>
+	<20100707120241.GN1920@atomide.com>
+	<AANLkTinq3Hx_2gGbuyvbGnNpSfQ75B3vJU9WU66GAzd4@mail.gmail.com>
+	<87zkwvinz3.fsf@deeprootsystems.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bw0-f46.google.com ([209.85.214.46]:44190 "EHLO
-	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752490Ab0HJLur (ORCPT
+Received: from mail-ey0-f174.google.com ([209.85.215.174]:53574 "EHLO
+	mail-ey0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752251Ab0HKNKg (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 10 Aug 2010 07:50:47 -0400
-In-Reply-To: <4C613C8A.1050600@windriver.com>
+	Wed, 11 Aug 2010 09:10:36 -0400
+In-Reply-To: <87zkwvinz3.fsf@deeprootsystems.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jason Wessel <jason.wessel@windriver.com>
-Cc: jacmet@sunsite.dk, grant.likely@secretlab.ca, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, KGDB Mailing List <kgdb-bugreport@lists.sourceforge.net>
+To: Kevin Hilman <khilman@deeprootsystems.com>
+Cc: Tony Lindgren <tony@atomide.com>, Luke-Jr <luke@dashjr.org>, "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org
 
-Jason Wessel wrote:
-> On 08/09/2010 05:07 AM, Michal Simek wrote:
->> CONSOLE_POLL support for uartlite enables
->> KGDB debugging over serial line.
+On Tue, Aug 10, 2010 at 12:59 AM, Kevin Hilman
+<khilman@deeprootsystems.com> wrote:
+> Govindraj <govindraj.ti@gmail.com> writes:
+>
+>> On Wed, Jul 7, 2010 at 5:32 PM, Tony Lindgren <tony@atomide.com> wrote:
+>>> * Govindraj <govindraj.ti@gmail.com> [100608 09:24]:
+>>>> On Mon, Jun 7, 2010 at 9:45 PM, Luke-Jr <luke@dashjr.org> wrote:
+>>>> > On Monday 07 June 2010 08:28:51 am Govindraj wrote:
+>>>> >> Link:
+>>>> >> http://git.kernel.org/?p=linux/kernel/git/khilman/linux-omap-pm.git;a=summa
+>>>> >> ry
+>>>> >>
+>>>> >> Branch:
+>>>> >> pm-wip/uart
+>>>> >
+>>>> > This branch doesn't appear to have omap-serial.c at all...
+>>>> >
+>>>> >> If you are trying to use with any client device connected to uart
+>>>> >> then we need to ensure the client driver speaks to omap-serial
+>>>> >> dev entries.
+>>>> >
+>>>>
+>>>> You need apply the driver patch on top of this branch.
+>>>>
+>>>> [PATCH v3] serial: Add OMAP high-speed UART driver.
+>>>
+>>> Do we still have a dependency to pm-wip/uart branch? Can you please
+>>> check if you can rebase all these patches on top of linux-omap for-next
+>>> branch?
 >>
->> Signed-off-by: Michal Simek <monstr@monstr.eu>
->> ---
->>  drivers/serial/uartlite.c |   26 +++++++++++++++++++++++++-
->>  1 files changed, 25 insertions(+), 1 deletions(-)
+>> pm-wip uart branch is having all the mach-omap2/serail.c changes along with
+>> hwmod data file updation and serial hwmod usage.
 >>
->> diff --git a/drivers/serial/uartlite.c b/drivers/serial/uartlite.c
->> index caf085d..ce1f3e0 100644
->> --- a/drivers/serial/uartlite.c
->> +++ b/drivers/serial/uartlite.c
->> @@ -322,6 +322,26 @@ static int ulite_verify_port(struct uart_port *port, struct serial_struct *ser)
->>  	return -EINVAL;
->>  }
->>  
->> +#ifdef CONFIG_CONSOLE_POLL
->> +static int ulite_get_poll_char(struct uart_port *port)
->> +{
->> +	while (!(ioread32be(port->membase + ULITE_STATUS)
->> +						& ULITE_STATUS_RXVALID))
->> +		cpu_relax();
->> +
->> +	return ioread32be(port->membase + ULITE_RX);
->> +}
-> 
-> 
-> 
-> After kdb was merged, the CONSOLE_POLL API had a subtle change where
-> all I/O drivers should return immediately with a return of
-> NO_POLL_CHAR in order to allow more than one I/O driver to operate in
-> the same poll loop.
-> 
-> 
-> The patch should look like the following for the get_poll_char.
-> 
-> +static int ulite_get_poll_char(struct uart_port *port)
-> +{
-> +	if (!(ioread32be(port->membase + ULITE_STATUS)
-> +	    & ULITE_STATUS_RXVALID))
-> +		return NO_POLL_CHAR;
-> +
-> +	return ioread32be(port->membase + ULITE_RX);
-> +}
-> 
-> 
-> If you agree to the change you can add my SOB.
-> 
-> Signed-off-by: Jason Wessel <jason.wessel@windriver.com>
+>> The driver patch [serial: Add OMAP high-speed UART driver]
+>> was tested against wip/uart branch.
+>>
+>> I will re-base all these patches for-next branch,
+>> and will post driver and board support patches from pm-wip/uart as a
+>> single series.
+>
+> Any update on this?
+>
+> FWIW, I rebased the pm-wip/uart part on top of latest
+> pm-wip/hwmods-omap4 but from here, you should take over responsibility
+> for pm-wip/uart.
+>
 
-I have no problem with it.
+Yes sure, Will test and post to LO from pm-wip/uart.
 
 Thanks,
-Michal
+Govindraj.R
 
--- 
-Michal Simek, Ing. (M.Eng)
-w: www.monstr.eu p: +42-0-721842854
-Maintainer of Linux kernel 2.6 Microblaze Linux - http://www.monstr.eu/fdt/
-Microblaze U-BOOT custodian
+
+> Kevin
+>
