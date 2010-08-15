@@ -1,92 +1,82 @@
-From: Claudio Scordino <claudio@evidence.eu.com>
-Subject: [PATCH] CRIS RS485: Check SER_RS485_RTS_BEFORE_SEND before delaying.
-Date: Wed, 11 Aug 2010 17:09:31 +0200
-Message-ID: <4C62BD2B.2010508@evidence.eu.com>
+From: Darius Augulis <augulis.darius@gmail.com>
+Subject: Re: [PATCH] serial: samsung: fix device name
+Date: Sun, 15 Aug 2010 12:59:52 +0300
+Message-ID: <4C67BA98.8090405@gmail.com>
+References: <20100805201000.14030.34703.stgit@darius-desktop>
+	<AANLkTikp2ThBqF2jkU4CXS9-iYRoy3AWpeqWXjmLF6Gd@mail.gmail.com>
+	<4C5BAFF6.10606@gmail.com> <4C5BB462.6010409@samsung.com>
+	<008701cb3538$54a12a00$fde37e00$%kim@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jesper Nilsson <jesper.nilsson@axis.com>
-Cc: starvik@axis.com, linux-cris-kernel <linux-cris-kernel@axis.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Andrew Morton <akpm@linux-foundation.org>, Hinko Kocevar <hinko.kocevar@cetrtapot.si>, Janez Cufer <janez.cufer@cetrtapot.si>, Andy Whitcroft <apw@canonical.com>, Linux Kernel <linux-kernel@vger.kernel.org>, dev-etrax <dev-etrax@axis.com>, linux-serial@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <008701cb3538$54a12a00$fde37e00$%kim@samsung.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: linux-arm-kernel-bounces@lists.infradead.org
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Kukjin Kim <kgene.kim@samsung.com>, ben-linux@fluff.org
+Cc: linux-arm-kernel@lists.infradead.org, 'Kyungmin Park' <kmpark@infradead.org>, 'Joonyoung Shim' <jy0922.shim@samsung.com>, 'Paulius Zaleckas' <paulius.zaleckas@gmail.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Jesper,
+On 08/06/2010 10:23 AM, Kukjin Kim wrote:
+> Joonyoung Shim wrote:
+>>
+>> On 8/6/2010 3:47 PM, Paulius Zaleckas wrote:
+>>> On 08/06/2010 03:04 AM, Kyungmin Park wrote:
+>>>> Hi,
+>>>>
+>>>> It's already posted by Mr. Shim
+>>>> http://marc.info/?l=linux-arm-kernel&m=127410047306149&w=2
+>>>
+>>> Darius patch is a little bit cleaner.
+>>>
+>>
+>> OK, it's better.
+>>
+>> Acked-by: Joonyoung Shim<jy0922.shim@samsung.com>
+>>
+>
+> Hi all,
+>
+> I think, this should be handled by Ben Dooks....
+> As Kyungmin Park said, there was his comment about this.
+>
 
-	the following patch fixes the usage of the delay in RS485 mode
-on the Cris architecture.
+Ben, what's your opinion about that? Are you going to merge that?
 
-Very recently, the RS485 interface has been fixed by adding two further
-fields (see commit 1b6331848b69d1ed165a6bdc75c4046d68767563).
-
-This patch checks the value of the flag SER_RS485_RTS_BEFORE_SEND before
-delaying.
-
-Best regards,
-
-	Claudio
-
-
-CRIS RS485: Check SER_RS485_RTS_BEFORE_SEND before delaying.
-
-Signed-off-by: Claudio Scordino <claudio@evidence.eu.com>
----
- drivers/serial/crisv10.c |   21 ++++++++++++++-------
- 1 files changed, 14 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/serial/crisv10.c b/drivers/serial/crisv10.c
-index c856905..a2237e7 100644
---- a/drivers/serial/crisv10.c
-+++ b/drivers/serial/crisv10.c
-@@ -1411,11 +1411,12 @@ e100_enable_rs485(struct tty_struct *tty, struct serial_rs485 *r)
- 		       CONFIG_ETRAX_RS485_LTC1387_RXEN_PORT_G_BIT, 1);
- #endif
- 
--	info->rs485.flags = r->flags;
--	if (r->delay_rts_before_send >= 1000)
-+	info->rs485 = *r;
-+
-+	/* Maximum delay before RTS equal to 1000 */
-+	if (info->rs485.delay_rts_before_send >= 1000)
- 		info->rs485.delay_rts_before_send = 1000;
--	else
--		info->rs485.delay_rts_before_send = r->delay_rts_before_send;
-+
- /*	printk("rts: on send = %i, after = %i, enabled = %i",
- 		    info->rs485.rts_on_send,
- 		    info->rs485.rts_after_sent,
-@@ -3234,9 +3235,9 @@ rs_write(struct tty_struct *tty,
- 		e100_disable_rx(info);
- 		e100_enable_rx_irq(info);
- #endif
--
--		if (info->rs485.delay_rts_before_send > 0)
--			msleep(info->rs485.delay_rts_before_send);
-+		if ((info->rs485.flags & SER_RS485_RTS_BEFORE_SEND) &&
-+			(info->rs485.delay_rts_before_send > 0))
-+				msleep(info->rs485.delay_rts_before_send);
- 	}
- #endif /* CONFIG_ETRAX_RS485 */
- 
-@@ -3694,6 +3695,11 @@ rs_ioctl(struct tty_struct *tty, struct file * file,
- 
- 		rs485data.delay_rts_before_send = rs485ctrl.delay_rts_before_send;
- 		rs485data.flags = 0;
-+		if (rs485data.delay_rts_before_send != 0)
-+			rs485data.flags |= SER_RS485_RTS_BEFORE_SEND;
-+		else
-+			rs485data.flags &= ~(SER_RS485_RTS_BEFORE_SEND);
-+
- 		if (rs485ctrl.enabled)
- 			rs485data.flags |= SER_RS485_ENABLED;
- 		else
-@@ -4527,6 +4533,7 @@ static int __init rs_init(void)
- 		/* Set sane defaults */
- 		info->rs485.flags &= ~(SER_RS485_RTS_ON_SEND);
- 		info->rs485.flags |= SER_RS485_RTS_AFTER_SEND;
-+		info->rs485.flags &= ~(SER_RS485_RTS_BEFORE_SEND);
- 		info->rs485.delay_rts_before_send = 0;
- 		info->rs485.flags &= ~(SER_RS485_ENABLED);
- #endif
--- 
-1.6.0.4
+> This is just for your information....
+>
+> ===
+>
+> On Tue, May 18, 2010 at 12:52:13PM +0900, Joonyoung Shim wrote:
+>> On 5/18/2010 11:48 AM, Ben Dooks wrote:
+>>> On Mon, May 17, 2010 at 09:46:50PM +0900, Joonyoung Shim wrote:
+>>>> Thd dev_name and driver_name should be switched each other.
+>>>
+>>> Hmm, this doesn't seem to have appeard on the linux-arm-kernel list yet.
+>>>
+>>> Please provide some information about what problem that this is fixing
+>>> and the impact on any existing systems.
+>>>
+>>
+>> The serial device nodes are created to s3c2410_serial* on android
+>> platform instead of ttySAC*.
+>
+> This has been how they've been for ages, surely the android device node
+> creation sytstem supports symlinking /dev/SACx ->  /dev/s3c2410_serialx,
+> like many other operating sysyerms that can already do this.
+>
+> Changing this just because android (something as-yet unmerged into mainline)
+> does not like it. I'm not even happy with an #ifdef around this.
+>
+> If you really feel this is a problem that you absolutely must fix in kernel
+> then please provide a kernel commandline option to change the serial driver
+> name and use that on any platform that needs it. Another way would be to
+> update the serial platform data to have a field for which name to choose.
+>
