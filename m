@@ -1,34 +1,36 @@
-From: Claudio Scordino <claudio@evidence.eu.com>
-Subject: RS485: ioctls defined twice ?
-Date: Sun, 15 Aug 2010 16:22:13 +0200
-Message-ID: <4C67F815.8020808@evidence.eu.com>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: RS485: ioctls defined twice ?
+Date: Sun, 15 Aug 2010 16:38:48 +0100
+Message-ID: <20100815153848.GA19113@n2100.arm.linux.org.uk>
+References: <4C67F815.8020808@evidence.eu.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
-	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
-	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: linux-arm-kernel-bounces@lists.infradead.org
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
-Cc: Rick Bronson <rick@efn.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Linux Kernel <linux-kernel@vger.kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from caramon.arm.linux.org.uk ([78.32.30.218]:35359 "EHLO
+	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755715Ab0HOPjF (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 15 Aug 2010 11:39:05 -0400
+Content-Disposition: inline
+In-Reply-To: <4C67F815.8020808@evidence.eu.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Claudio Scordino <claudio@evidence.eu.com>
+Cc: linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, Rick Bronson <rick@efn.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Linux Kernel <linux-kernel@vger.kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org
 
-Hi all,
+On Sun, Aug 15, 2010 at 04:22:13PM +0200, Claudio Scordino wrote:
+> Hi all,
+> 
+> 	is there any reason why ioctls TIOCGRS485 and TIOCSRS485 are defined
 
-	is there any reason why ioctls TIOCGRS485 and TIOCSRS485 are defined (with the same values) in both include/asm-generic/ioctls.h and arch/arm/include/asm/ioctls.h ?
+Please wrap your message sensibly so I can see it while replying to you.
 
-The same happens also for avr32, powerpc and cris (which, however, defines a different value for TIOCSRS485).
+> The same happens also for avr32, powerpc and cris (which, however, defines
+> 
+> Is it duplicated code ?
+> 
+> Or should these values stay in both asm/ioctls.h and asm-generic/ioctls.h ?
 
-Is it duplicated code ?
-
-Or should these values stay in both asm/ioctls.h and asm-generic/ioctls.h ?
-
-Many thanks,
-
-	Claudio
+As an exercise to help you answer your own question, please research
+how asm-generic/ioctls.h get included on an avr32, powerpc, cris or
+ARM kernel build.
