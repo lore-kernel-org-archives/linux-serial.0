@@ -1,45 +1,31 @@
-From: Ralf Baechle <ralf@linux-mips.org>
-Subject: Re: One question about 8250 UART driver
-Date: Tue, 17 Aug 2010 14:24:27 +0100
-Message-ID: <20100817132427.GA17861@linux-mips.org>
-References: <20100817013734.GA28407@ywang-moblin2.bj.intel.com>
- <20100817091622.5aa3dcf2@linux.intel.com>
+From: Greg KH <gregkh@suse.de>
+Subject: Re: Uartlite - poll support
+Date: Tue, 17 Aug 2010 07:34:36 -0700
+Message-ID: <20100817143436.GA17909@suse.de>
+References: <1282034525-19207-1-git-send-email-monstr@monstr.eu>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from h5.dl5rb.org.uk ([81.2.74.5]:51498 "EHLO h5.dl5rb.org.uk"
+Received: from cantor.suse.de ([195.135.220.2]:43379 "EHLO mx1.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756962Ab0HQNZa (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 17 Aug 2010 09:25:30 -0400
+	id S1751261Ab0HQPFM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 17 Aug 2010 11:05:12 -0400
 Content-Disposition: inline
-In-Reply-To: <20100817091622.5aa3dcf2@linux.intel.com>
+In-Reply-To: <1282034525-19207-1-git-send-email-monstr@monstr.eu>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: Yong Wang <yong.y.wang@linux.intel.com>, Greg Kroah-Hartman <gregkh@suse.de>, Andrew Morton <akpm@linux-foundation.org>, Manuel Lauss <manuel.lauss@googlemail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Masayuki Ohtake <masa-korg@dsn.okisemi.com>, "Khor, Andrew Chih Howe" <andrew.chih.howe.khor@intel.com>
+To: Michal Simek <monstr@monstr.eu>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Tue, Aug 17, 2010 at 09:16:22AM +0100, Alan Cox wrote:
-
-> > We have a PCI based UART controller that is compatible with the
-> > existing 8250 serial driver in most aspects. However, one exception
-> > is that our UART controller can take advantage of the onboard DMA
-> > contoller to achieve higher throughput. Could you please share your
-> > insights about what is the proper way to add such DMA support into
-> > existing 8250 driver?
+On Tue, Aug 17, 2010 at 10:42:04AM +0200, Michal Simek wrote:
+> Hi Greg,
 > 
-> I'd say the same as I said to the other folks who asked this - create a
-> new driver. All the DMA based 8250 devices have differing DMA engines
-> and it'll become unmanagable in the existing driver.
-> 
-> Once we can see which bits of the existing code are useful for the DMA
-> 8250-style devices we can then create an 8250-lib.c which contains the
-> bits that are useful to 8250 and to non standard 8250-like devices.
+> I am not sure who is responsible for drivers/serial but I see
+> that your tty tree contains a lot of serial patches. 
+> Could you please add the uartlite poll patch to your tree?
 
-An existing example is drivers/serial/ioc3_serial.c.  IOC3 is an SGI
-custom chip which is only being used in SGI systems.  It has a PCI
-master and 486-style slave bus to which a SuperIO chip is connected.
-The IOC3 can either be configured to use the chip in legacy mode; then
-the standard 8250 driver will work fine.  It also support a DMA mode
-with receive and transmit rings which make it similar to a network chip.
+Sure, I'll queue it up for .37.
 
-  Ralf
+thanks,
+
+greg k-h
