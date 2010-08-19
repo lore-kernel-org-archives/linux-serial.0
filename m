@@ -1,31 +1,61 @@
-From: Greg KH <gregkh@suse.de>
-Subject: Re: Uartlite - poll support
-Date: Tue, 17 Aug 2010 07:34:36 -0700
-Message-ID: <20100817143436.GA17909@suse.de>
-References: <1282034525-19207-1-git-send-email-monstr@monstr.eu>
+From: Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH 1/2] serial: 8250: Initialize pointer to irq_info
+Date: Thu, 19 Aug 2010 16:43:54 -0700
+Message-ID: <20100819164354.09e30dc9.akpm@linux-foundation.org>
+References: <1282031947-16483-1-git-send-email-monstr@monstr.eu>
+	<20100817091720.56183993@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor.suse.de ([195.135.220.2]:43379 "EHLO mx1.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751261Ab0HQPFM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 17 Aug 2010 11:05:12 -0400
-Content-Disposition: inline
-In-Reply-To: <1282034525-19207-1-git-send-email-monstr@monstr.eu>
+Received: from smtp1.linux-foundation.org ([140.211.169.13]:38430 "EHLO
+	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751252Ab0HSXoK (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 19 Aug 2010 19:44:10 -0400
+In-Reply-To: <20100817091720.56183993@linux.intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Michal Simek <monstr@monstr.eu>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>
+Cc: Michal Simek <monstr@monstr.eu>, michal.simek@petalogix.com, Greg Kroah-Hartman <gregkh@suse.de>, Ralf Baechle <ralf@linux-mips.org>, Manuel Lauss <manuel.lauss@googlemail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Tue, Aug 17, 2010 at 10:42:04AM +0200, Michal Simek wrote:
-> Hi Greg,
+On Tue, 17 Aug 2010 09:17:20 +0100
+Alan Cox <alan@linux.intel.com> wrote:
+
+> On Tue, 17 Aug 2010 09:59:06 +0200
+> Michal Simek <monstr@monstr.eu> wrote:
 > 
-> I am not sure who is responsible for drivers/serial but I see
-> that your tty tree contains a lot of serial patches. 
-> Could you please add the uartlite poll patch to your tree?
+> > Initialize "i" irq_info pointer in serial_unlink_irq_chain.
+> > 
+> > Compilation warning:
+> >   CC      drivers/serial/8250.o
+> > drivers/serial/8250.c: In function 'serial8250_shutdown':
+> > drivers/serial/8250.c:1701: warning: 'i' may be used uninitialized in
+> > this function
+> 
+> NAK (again)
+> 
+> Use a newer compiler - modern ones get this right.
 
-Sure, I'll queue it up for .37.
+: static void serial_unlink_irq_chain(struct uart_8250_port *up)
+: {
+: 	struct irq_info *i;
+: 	struct hlist_node *n;
+: 	struct hlist_head *h;
+: 
+: 	mutex_lock(&hash_mutex);
+: 
+: 	h = &irq_lists[up->port.irq % NR_IRQ_HASH];
+: 
+: 	hlist_for_each(n, h) {
+: 		i = hlist_entry(n, struct irq_info, node);
+: 		if (i->irq == up->port.irq)
+: 			break;
+: 	}
+: 
+: 	BUG_ON(n == NULL);
+: 	BUG_ON(i->head == NULL);
 
-thanks,
+How can any compiler possibly determine that the hlist_for_each() is
+never executed zero times?
 
-greg k-h
