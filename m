@@ -1,61 +1,51 @@
-From: Andrew Morton <akpm@linux-foundation.org>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Subject: Re: [PATCH 1/2] serial: 8250: Initialize pointer to irq_info
-Date: Thu, 19 Aug 2010 16:43:54 -0700
-Message-ID: <20100819164354.09e30dc9.akpm@linux-foundation.org>
+Date: Fri, 20 Aug 2010 11:31:25 +0100
+Message-ID: <20100820113125.6d7b498f@lxorguk.ukuu.org.uk>
 References: <1282031947-16483-1-git-send-email-monstr@monstr.eu>
 	<20100817091720.56183993@linux.intel.com>
+	<20100819164354.09e30dc9.akpm@linux-foundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp1.linux-foundation.org ([140.211.169.13]:38430 "EHLO
-	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751252Ab0HSXoK (ORCPT
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:53837 "EHLO
+	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751499Ab0HTKQ0 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 19 Aug 2010 19:44:10 -0400
-In-Reply-To: <20100817091720.56183993@linux.intel.com>
+	Fri, 20 Aug 2010 06:16:26 -0400
+In-Reply-To: <20100819164354.09e30dc9.akpm@linux-foundation.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: Michal Simek <monstr@monstr.eu>, michal.simek@petalogix.com, Greg Kroah-Hartman <gregkh@suse.de>, Ralf Baechle <ralf@linux-mips.org>, Manuel Lauss <manuel.lauss@googlemail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Alan Cox <alan@linux.intel.com>, Michal Simek <monstr@monstr.eu>, michal.simek@petalogix.com, Greg Kroah-Hartman <gregkh@suse.de>, Ralf Baechle <ralf@linux-mips.org>, Manuel Lauss <manuel.lauss@googlemail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Tue, 17 Aug 2010 09:17:20 +0100
-Alan Cox <alan@linux.intel.com> wrote:
-
-> On Tue, 17 Aug 2010 09:59:06 +0200
-> Michal Simek <monstr@monstr.eu> wrote:
+> > Use a newer compiler - modern ones get this right.
 > 
-> > Initialize "i" irq_info pointer in serial_unlink_irq_chain.
-> > 
-> > Compilation warning:
-> >   CC      drivers/serial/8250.o
-> > drivers/serial/8250.c: In function 'serial8250_shutdown':
-> > drivers/serial/8250.c:1701: warning: 'i' may be used uninitialized in
-> > this function
+> : static void serial_unlink_irq_chain(struct uart_8250_port *up)
+> : {
+> : 	struct irq_info *i;
+> : 	struct hlist_node *n;
+> : 	struct hlist_head *h;
+> : 
+> : 	mutex_lock(&hash_mutex);
+> : 
+> : 	h = &irq_lists[up->port.irq % NR_IRQ_HASH];
+> : 
+> : 	hlist_for_each(n, h) {
+> : 		i = hlist_entry(n, struct irq_info, node);
+> : 		if (i->irq == up->port.irq)
+> : 			break;
+> : 	}
+> : 
+> : 	BUG_ON(n == NULL);
+> : 	BUG_ON(i->head == NULL);
 > 
-> NAK (again)
-> 
-> Use a newer compiler - modern ones get this right.
+> How can any compiler possibly determine that the hlist_for_each() is
+> never executed zero times?
 
-: static void serial_unlink_irq_chain(struct uart_8250_port *up)
-: {
-: 	struct irq_info *i;
-: 	struct hlist_node *n;
-: 	struct hlist_head *h;
-: 
-: 	mutex_lock(&hash_mutex);
-: 
-: 	h = &irq_lists[up->port.irq % NR_IRQ_HASH];
-: 
-: 	hlist_for_each(n, h) {
-: 		i = hlist_entry(n, struct irq_info, node);
-: 		if (i->irq == up->port.irq)
-: 			break;
-: 	}
-: 
-: 	BUG_ON(n == NULL);
-: 	BUG_ON(i->head == NULL);
+We had this argument was it two years ago ?
 
-How can any compiler possibly determine that the hlist_for_each() is
-never executed zero times?
+Modern gcc is capable of at least working out it can't work it out and
+doesn't emit a spurious warning.
 
