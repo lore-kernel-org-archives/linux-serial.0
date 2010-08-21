@@ -1,51 +1,75 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 1/2] serial: 8250: Initialize pointer to irq_info
-Date: Fri, 20 Aug 2010 11:31:25 +0100
-Message-ID: <20100820113125.6d7b498f@lxorguk.ukuu.org.uk>
-References: <1282031947-16483-1-git-send-email-monstr@monstr.eu>
-	<20100817091720.56183993@linux.intel.com>
-	<20100819164354.09e30dc9.akpm@linux-foundation.org>
+From: Komuro <komurojun-mbn@nifty.com>
+Subject: Re: [PATCH 11/18] pcmcia: do not use io_req_t when calling
+	pcmcia_request_io()
+Date: Sat, 21 Aug 2010 10:49:04 +0900 (JST)
+Message-ID: <3446357.27821282355344343.komurojun-mbn@nifty.com>
+References: <1281046014-7585-11-git-send-email-linux@dominikbrodowski.net>
+	<20100805220511.GA7040@comet.dominikbrodowski.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:53837 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751499Ab0HTKQ0 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 20 Aug 2010 06:16:26 -0400
-In-Reply-To: <20100819164354.09e30dc9.akpm@linux-foundation.org>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-pcmcia-bounces+glkpd-linux-pcmcia=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1281046014-7585-11-git-send-email-linux@dominikbrodowski.net>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-pcmcia>,
+	<mailto:linux-pcmcia-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-pcmcia/>
+List-Post: <mailto:linux-pcmcia@lists.infradead.org>
+List-Help: <mailto:linux-pcmcia-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-pcmcia>,
+	<mailto:linux-pcmcia-request@lists.infradead.org?subject=subscribe>
+Sender: linux-pcmcia-bounces@lists.infradead.org
+Errors-To: linux-pcmcia-bounces+glkpd-linux-pcmcia=m.gmane.org@lists.infradead.org
+To: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: linux-pcmcia@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Alan Cox <alan@linux.intel.com>, Michal Simek <monstr@monstr.eu>, michal.simek@petalogix.com, Greg Kroah-Hartman <gregkh@suse.de>, Ralf Baechle <ralf@linux-mips.org>, Manuel Lauss <manuel.lauss@googlemail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-> > Use a newer compiler - modern ones get this right.
+Hi
+
+>--- a/drivers/serial/serial_cs.c
+>+++ b/drivers/serial/serial_cs.c
+>@@static int serial_probe(struct pcmcia_device *link)
+> 	info->p_dev = link;
+> 	link->priv = info;
 > 
-> : static void serial_unlink_irq_chain(struct uart_8250_port *up)
-> : {
-> : 	struct irq_info *i;
-> : 	struct hlist_node *n;
-> : 	struct hlist_head *h;
-> : 
-> : 	mutex_lock(&hash_mutex);
-> : 
-> : 	h = &irq_lists[up->port.irq % NR_IRQ_HASH];
-> : 
-> : 	hlist_for_each(n, h) {
-> : 		i = hlist_entry(n, struct irq_info, node);
-> : 		if (i->irq == up->port.irq)
-> : 			break;
-> : 	}
-> : 
-> : 	BUG_ON(n == NULL);
-> : 	BUG_ON(i->head == NULL);
+>-	link->io.Attributes1 = IO_DATA_PATH_WIDTH_8;
+>-	link->io.NumPorts1 = 8;
+>+	link->resource[0]->flags |= IO_DATA_PATH_WIDTH_8;
+>+	link->resource[0]->end = 8;
+
+resource[0]->end should be end of port-address?
+
+
+@@ -463,13 +463,13 @@ static int simple_config(struct pcmcia_device *link)
+ 	/* If the card is already configured, look up the port and irq */
+ 	if (link->function_config) {
+ 		unsigned int port = 0;
+-		if ((link->io.BasePort2 != 0) &&
+-		    (link->io.NumPorts2 == 8)) {
+-			port = link->io.BasePort2;
++		if ((link->resource[1]->end != 0) &&
++			(resource_size(link->resource[1]) == 8)) {
++			port = link->resource[1]->end;
+ 			info->slave = 1;
+
+It should be link->resource[0];
+			(resource_size(link->resource[0]) == 8)) {
+			port = link->resource[0]->end;
+ 
+
+ 
+>static int multi_config(struct pcmcia_device *link)
+> 	int i, base2 = 0;
 > 
-> How can any compiler possibly determine that the hlist_for_each() is
-> never executed zero times?
+> 	/* First, look for a generic full-sized window */
+>-	link->io.NumPorts1 = info->multi * 8;
+>+	link->resource[0]->end = info->multi * 8;
+> 	if (pcmcia_loop_config(link, multi_config_check, &base2)) {
+> 		/* If that didn't work, look for two windows */
+>-		link->io.NumPorts1 = link->io.NumPorts2 = 8;
+>+		link->resource[0]->end = link->resource[1]->end = 8;
+> 		info->multi = 2;
+> 		if (pcmcia_loop_config(link, multi_config_check_notpicky,
+> 				       &base2)) {
 
-We had this argument was it two years ago ?
 
-Modern gcc is capable of at least working out it can't work it out and
-doesn't emit a spurious warning.
-
+resource[0]->end , link->resource[1]->end should be end of port-address?
