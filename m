@@ -1,49 +1,70 @@
-From: Jason Wang <jason77.wang@gmail.com>
-Subject: [PATCH RESEND 1/2] serial-core: skip call set_termios/console_start when no_console_suspend
-Date: Sat, 21 Aug 2010 15:14:41 +0800
-Message-ID: <1282374882-6651-2-git-send-email-jason77.wang@gmail.com>
-References: <1282374882-6651-1-git-send-email-jason77.wang@gmail.com>
+From: Peter Korsgaard <jacmet@sunsite.dk>
+Subject: Re: [PATCH] serial: Add CONSOLE_POLL support for uartlite
+Date: Sun, 22 Aug 2010 21:04:03 +0200
+Message-ID: <87mxsejwpo.fsf@macbook.be.48ers.dk>
+References: <1282034525-19207-1-git-send-email-monstr@monstr.eu>
+	<1282034525-19207-2-git-send-email-monstr@monstr.eu>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.windriver.com ([147.11.1.11]:44789 "EHLO
-	mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751211Ab0HUHLZ (ORCPT
+Received: from mail-wy0-f174.google.com ([74.125.82.174]:47743 "EHLO
+	mail-wy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750996Ab0HVTEJ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 21 Aug 2010 03:11:25 -0400
-In-Reply-To: <1282374882-6651-1-git-send-email-jason77.wang@gmail.com>
+	Sun, 22 Aug 2010 15:04:09 -0400
+In-Reply-To: <1282034525-19207-2-git-send-email-monstr@monstr.eu> (Michal
+	Simek's message of "Tue, 17 Aug 2010 10:42:05 +0200")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@suse.de, alan@linux.intel.com, arnd@arndb.de, sbrabec@suse.cz
-Cc: linux-serial@vger.kernel.org
+To: Michal Simek <monstr@monstr.eu>
+Cc: gregkh@suse.de, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jason Wessel <jason.wessel@windriver.com>
 
-The commit 4547be7 rewrites suspend and resume functions, this
-introduces a problem on the OMAP3EVM platoform. when the kernel boots
-with no_console_suspend and we suspend the kernel, then resume it,
-the serial console will be not usable. This problem should be common
-for all platforms.
-The cause for this problem is that when enter suspend, if we choose
-no_console_suspend, the console_stop will be skiped. But in resume
-function, the console port will be set to uninitialized state by
-calling set_termios function and the console_start is called without
-checking whether the no_console_suspend is set, Now fix it.
+>>>>> "Michal" == Michal Simek <monstr@monstr.eu> writes:
 
-Signed-off-by: Jason Wang <jason77.wang@gmail.com>
----
- drivers/serial/serial_core.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ Michal> CONSOLE_POLL support for uartlite enables
+ Michal> KGDB debugging over serial line.
 
-diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
-index cd85112..ff21200 100644
---- a/drivers/serial/serial_core.c
-+++ b/drivers/serial/serial_core.c
-@@ -2065,7 +2065,7 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
- 	/*
- 	 * Re-enable the console device after suspending.
- 	 */
--	if (uart_console(uport)) {
-+	if (console_suspend_enabled && uart_console(uport)) {
- 		uart_change_pm(state, 0);
- 		uport->ops->set_termios(uport, &termios, NULL);
- 		console_start(uport->cons);
+Please CC me on uartlite patches in the future, thanks.
+
+ Michal> Signed-off-by: Michal Simek <monstr@monstr.eu>
+ Michal> Signed-off-by: Jason Wessel <jason.wessel@windriver.com>
+ Michal> ---
+ Michal>  drivers/serial/uartlite.c |   26 +++++++++++++++++++++++++-
+ Michal>  1 files changed, 25 insertions(+), 1 deletions(-)
+
+ Michal> diff --git a/drivers/serial/uartlite.c b/drivers/serial/uartlite.c
+ Michal> index 9b03d7b..c0fae0d 100644
+ Michal> --- a/drivers/serial/uartlite.c
+ Michal> +++ b/drivers/serial/uartlite.c
+ Michal> @@ -322,6 +322,26 @@ static int ulite_verify_port(struct uart_port *port, struct serial_struct *ser)
+ Michal>  	return -EINVAL;
+ Michal>  }
+ 
+ Michal> +#ifdef CONFIG_CONSOLE_POLL
+ Michal> +static int ulite_get_poll_char(struct uart_port *port)
+ Michal> +{
+ Michal> +	while (!(ioread32be(port->membase + ULITE_STATUS)
+ Michal> +						& ULITE_STATUS_RXVALID))
+ Michal> +		return NO_POLL_CHAR;
+ Michal> +
+
+Using while instead of 'if' is imho pretty obscure here.
+
+ Michal> +	return ioread32be(port->membase + ULITE_RX);
+ Michal> +}
+ Michal> +
+ Michal> +static void ulite_put_poll_char(struct uart_port *port, unsigned char ch)
+ Michal> +{
+ Michal> +	while (ioread32be(port->membase + ULITE_STATUS) & ULITE_STATUS_TXFULL)
+ Michal> +		cpu_relax();
+
+
+You could reuse ulite_console_wait_tx() like ulite_console_putchar()
+does.
+
+Otherwise it looks fine.
+
+Acked-by: Peter Korsgaard <jacmet@sunsite.dk>
+
 -- 
-1.5.6.5
-
+Bye, Peter Korsgaard
