@@ -1,93 +1,61 @@
-From: Michal Simek <monstr@monstr.eu>
-Subject: Re: [PATCH] serial: Add CONSOLE_POLL support for uartlite
-Date: Mon, 23 Aug 2010 10:47:10 +0200
-Message-ID: <4C72358E.90503@monstr.eu>
-References: <1282034525-19207-1-git-send-email-monstr@monstr.eu>	<1282034525-19207-2-git-send-email-monstr@monstr.eu> <87mxsejwpo.fsf@macbook.be.48ers.dk>
-Reply-To: monstr@monstr.eu
+From: Stanislav Brabec <sbrabec@suse.cz>
+Subject: Re: [PATCH RESEND 0/2] two serial_core suspend/resume fixes
+Date: Mon, 23 Aug 2010 22:06:15 +0200
+Message-ID: <1282593975.3526.9.camel@utx.lan>
+References: <1282374882-6651-1-git-send-email-jason77.wang@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-2
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-fx0-f46.google.com ([209.85.161.46]:57471 "EHLO
-	mail-fx0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751641Ab0HWIrR (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 23 Aug 2010 04:47:17 -0400
-In-Reply-To: <87mxsejwpo.fsf@macbook.be.48ers.dk>
+Received: from cantor2.suse.de ([195.135.220.15]:55397 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753621Ab0HWUGS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 23 Aug 2010 16:06:18 -0400
+In-Reply-To: <1282374882-6651-1-git-send-email-jason77.wang@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Korsgaard <jacmet@sunsite.dk>
-Cc: gregkh@suse.de, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jason Wessel <jason.wessel@windriver.com>
+To: Jason Wang <jason77.wang@gmail.com>
+Cc: gregkh@suse.de, alan@linux.intel.com, arnd@arndb.de, linux-serial@vger.kernel.org
 
-Peter Korsgaard wrote:
->>>>>> "Michal" == Michal Simek <monstr@monstr.eu> writes:
-> 
->  Michal> CONSOLE_POLL support for uartlite enables
->  Michal> KGDB debugging over serial line.
-> 
-> Please CC me on uartlite patches in the future, thanks.
+Jason Wang wrote:
+> Sorry for resending this thread. Last thread is forgot to CC
+> Greg Kroah-Hartman.
 
-Oou sorry.
+Well, I experienced no_console_supend breakage on my PXA270 based Zauru=
+s
+SL-C3200 (terrier/spitz) as well.
 
-> 
->  Michal> Signed-off-by: Michal Simek <monstr@monstr.eu>
->  Michal> Signed-off-by: Jason Wessel <jason.wessel@windriver.com>
->  Michal> ---
->  Michal>  drivers/serial/uartlite.c |   26 +++++++++++++++++++++++++-
->  Michal>  1 files changed, 25 insertions(+), 1 deletions(-)
-> 
->  Michal> diff --git a/drivers/serial/uartlite.c b/drivers/serial/uartlite.c
->  Michal> index 9b03d7b..c0fae0d 100644
->  Michal> --- a/drivers/serial/uartlite.c
->  Michal> +++ b/drivers/serial/uartlite.c
->  Michal> @@ -322,6 +322,26 @@ static int ulite_verify_port(struct uart_port *port, struct serial_struct *ser)
->  Michal>  	return -EINVAL;
->  Michal>  }
->  
->  Michal> +#ifdef CONFIG_CONSOLE_POLL
->  Michal> +static int ulite_get_poll_char(struct uart_port *port)
->  Michal> +{
->  Michal> +	while (!(ioread32be(port->membase + ULITE_STATUS)
->  Michal> +						& ULITE_STATUS_RXVALID))
->  Michal> +		return NO_POLL_CHAR;
->  Michal> +
-> 
-> Using while instead of 'if' is imho pretty obscure here.
+But your patches did not fix the behavior, serial port remains dead
+after resume with no_console_supend.
 
-Agree that if is the better solution.
+> The [1/2] fix this situation:
+> we set no_console_supend and console=3DttyS0 to bootargs, then bootup
+> the kernel, the boot logs will print out from ttyS0. When we execute
+> echo mem > /sys/power/state, the system will suspend, we press a
+> key(or other wakeup trigger) to resume the system, but the ttyS0 can'=
+t
+> work anymore.
+>=20
+> The [2/2] fix this situation:
+> we set console=3DttyS0 to bootargs, then bootup the kernel, the boot
+> logs will print out from ttyS0, this time we set ttyS1 as tty and
+> login for shell. When we execute echo mem > /sys/power/state, the
+> system will suspend, we press a key(or other wakeup trigger) to
+> resume the system, but the ttyS0 can't work anymore.
 
-> 
->  Michal> +	return ioread32be(port->membase + ULITE_RX);
->  Michal> +}
->  Michal> +
->  Michal> +static void ulite_put_poll_char(struct uart_port *port, unsigned char ch)
->  Michal> +{
->  Michal> +	while (ioread32be(port->membase + ULITE_STATUS) & ULITE_STATUS_TXFULL)
->  Michal> +		cpu_relax();
-> 
-> 
-> You could reuse ulite_console_wait_tx() like ulite_console_putchar()
-> does.
+--=20
+Best Regards / S pozdravem,
 
-yes, but ulite_console_wait_tx is used only when uartlite console is 
-used. Not sure if I tried to setup console and KGDB but in this case I 
-will have to add some ifdef that's why was easier for me to write on ioread.
+Stanislav Brabec
+software developer
+---------------------------------------------------------------------
+SUSE LINUX, s. r. o.                          e-mail: sbrabec@suse.cz
+Lihovarsk=E1 1060/12                            tel: +420 284 028 966
+190 00 Praha 9                                fax: +420 284 028 951
+Czech Republic                                http://www.suse.cz/
 
-> 
-> Otherwise it looks fine.
-> 
-> Acked-by: Peter Korsgaard <jacmet@sunsite.dk>
-> 
-
-I will changed driver and send v2.
-
-Thanks,
-Michal
-
-
-
--- 
-Michal Simek, Ing. (M.Eng)
-w: www.monstr.eu p: +42-0-721842854
-Maintainer of Linux kernel 2.6 Microblaze Linux - http://www.monstr.eu/fdt/
-Microblaze U-BOOT custodian
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
