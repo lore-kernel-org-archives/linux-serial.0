@@ -1,63 +1,46 @@
-From: "Dr. David Alan Gilbert" <linux@treblig.org>
-Subject: serial.h v serial_core.h PORT_ defines?
-Date: Fri, 27 Aug 2010 20:35:41 +0100
-Message-ID: <20100827193541.GA29541@gallifrey>
+From: Komuro <komurojun-mbn@nifty.com>
+Subject: [BUG]  [PATCH 11/18] pcmcia: do not use io_req_t when calling pcmcia_request_io()
+Date: Sat, 28 Aug 2010 07:41:30 +0900 (JST)
+Message-ID: <24146021.7121282948890588.komurojun-mbn@nifty.com>
+References: <13709715.48251282365242982.komurojun-mbn@nifty.com>
+ <3446357.27821282355344343.komurojun-mbn@nifty.com>
+ <1281046014-7585-11-git-send-email-linux@dominikbrodowski.net>
+	<20100805220511.GA7040@comet.dominikbrodowski.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="iso-2022-jp"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx.treblig.org ([80.68.94.177]:60310 "EHLO mx.treblig.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752758Ab0H0UDS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 27 Aug 2010 16:03:18 -0400
-Content-Disposition: inline
+Received: from nfmsa302g.nifmail.jp ([210.131.2.174]:39306 "EHLO
+	nfmsa302g.nifmail.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753812Ab0H0WmR (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 27 Aug 2010 18:42:17 -0400
+In-Reply-To: <13709715.48251282365242982.komurojun-mbn@nifty.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: philippe.langlais@stericsson.com
+To: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: linux-pcmcia@lists.infradead.org, linux-serial@vger.kernel.org
+
 
 Hi,
-  I was playing with sparse and it flagged that in drivers/serial/8250.c
-there is a duplicate initialiser in the uart_config[] array
-(from Linus's git):
 
-       [PORT_NS16550A] = {
-                .name           = "NS16550A",
-                .fifo_size      = 16,
-                .tx_loadsz      = 16,
-                .fcr            = UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
-                .flags          = UART_CAP_FIFO | UART_NATSEMI,
-        },
+Something is strange in pcmcia_request_configuration? at kernel 2.6.36-rc1?
 
-and
-       [PORT_U6_16550A] = {
-                .name           = "U6_16550A",
-                .fifo_size      = 64,
-                .tx_loadsz      = 64,
-                .fcr            = UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
-                .flags          = UART_CAP_FIFO | UART_CAP_AFE,
-        },
+serial part of multi-function card does not work at 2.6.36-rc1.
 
-now PORT_NS16550A is defined as 14 in serial_core.h:
 
-#define PORT_NS16550A   14
+output of /proc/ioports
 
-and PORT_U6_16550A is defined as 14 in serial.h:
+[2.6.36-rc1]
+02e8-02ef : pcmcia_socket0
+   02e8-02ef : pcmcia0.0
+     02e8-02ef : serial
+0300-030f : pcmcia_socket0
+   0300-0008 : pcmcia0.0        <== Strange!!
 
-235dae5d (Philippe Langlais 2010-07-29 17:13:57 +0200  80) #define PORT_U6_16550A       14
 
-I guess that might subtly break NS16550A users?
+[2.6.35]
+02e8-02ef : pcmcia_socket0
+    02e8-02ef : serial
+0300-030f : pcmcia_socket0
 
-My assumption is that Philippe's addition should actually
-be to the serial_core.h list which currently goes upto 18.
-
-However, that leaves the question of why is there a set of nearly
-but not quite idential defines in serial.h and serial_core.h?
-
-(please leave me on cc for replies)
-
-Dave
--- 
- -----Open up your eyes, open up your mind, open up your code -------   
-/ Dr. David Alan Gilbert    |       Running GNU/Linux       | Happy  \ 
-\ gro.gilbert @ treblig.org |                               | In Hex /
- \ _________________________|_____ http://www.treblig.org   |_______/
