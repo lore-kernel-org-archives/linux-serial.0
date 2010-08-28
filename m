@@ -1,46 +1,132 @@
-From: Komuro <komurojun-mbn@nifty.com>
-Subject: [BUG]  [PATCH 11/18] pcmcia: do not use io_req_t when calling pcmcia_request_io()
-Date: Sat, 28 Aug 2010 07:41:30 +0900 (JST)
-Message-ID: <24146021.7121282948890588.komurojun-mbn@nifty.com>
-References: <13709715.48251282365242982.komurojun-mbn@nifty.com>
- <3446357.27821282355344343.komurojun-mbn@nifty.com>
- <1281046014-7585-11-git-send-email-linux@dominikbrodowski.net>
-	<20100805220511.GA7040@comet.dominikbrodowski.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-2022-jp"
-Content-Transfer-Encoding: 7bit
+From: Manuel Lauss <manuel.lauss@googlemail.com>
+Subject: [PATCH 2/2] Alchemy: UART PM through serial framework.
+Date: Sat, 28 Aug 2010 13:32:09 +0200
+Message-ID: <1282995129-22291-2-git-send-email-manuel.lauss@googlemail.com>
+References: <1282995129-22291-1-git-send-email-manuel.lauss@googlemail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nfmsa302g.nifmail.jp ([210.131.2.174]:39306 "EHLO
-	nfmsa302g.nifmail.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753812Ab0H0WmR (ORCPT
+Received: from mail-bw0-f46.google.com ([209.85.214.46]:43296 "EHLO
+	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753031Ab0H1LcS (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 27 Aug 2010 18:42:17 -0400
-In-Reply-To: <13709715.48251282365242982.komurojun-mbn@nifty.com>
+	Sat, 28 Aug 2010 07:32:18 -0400
+Received: by mail-bw0-f46.google.com with SMTP id 11so2570180bwz.19
+        for <linux-serial@vger.kernel.org>; Sat, 28 Aug 2010 04:32:17 -0700 (PDT)
+In-Reply-To: <1282995129-22291-1-git-send-email-manuel.lauss@googlemail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Dominik Brodowski <linux@dominikbrodowski.net>
-Cc: linux-pcmcia@lists.infradead.org, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Greg KH <greg@kroah.com>, Andrew Morton <akpm@linux-foundation.org>, Manuel Lauss <manuel.lauss@googlemail.com>
 
+Hook up the Alchemy on-chip uarts with the platform 8250 PM callback and
+enable/disable clocks to the uart blocks as needed.  This allows to
+get rid of the UART1 PM hack in the Alchemy PM code.
 
-Hi,
+Tested on Au1200.
 
-Something is strange in pcmcia_request_configuration? at kernel 2.6.36-rc1?
+Signed-off-by: Manuel Lauss <manuel.lauss@googlemail.com>
+---
+ arch/mips/alchemy/common/platform.c |   20 ++++++++++++++++++++
+ arch/mips/alchemy/common/power.c    |   35 -----------------------------------
+ 2 files changed, 20 insertions(+), 35 deletions(-)
 
-serial part of multi-function card does not work at 2.6.36-rc1.
-
-
-output of /proc/ioports
-
-[2.6.36-rc1]
-02e8-02ef : pcmcia_socket0
-   02e8-02ef : pcmcia0.0
-     02e8-02ef : serial
-0300-030f : pcmcia_socket0
-   0300-0008 : pcmcia0.0        <== Strange!!
-
-
-[2.6.35]
-02e8-02ef : pcmcia_socket0
-    02e8-02ef : serial
-0300-030f : pcmcia_socket0
+diff --git a/arch/mips/alchemy/common/platform.c b/arch/mips/alchemy/common/platform.c
+index 1dc55ee..3aeaf58 100644
+--- a/arch/mips/alchemy/common/platform.c
++++ b/arch/mips/alchemy/common/platform.c
+@@ -24,6 +24,25 @@
+ 
+ #include <prom.h>
+ 
++static void alchemy_8250_pm(struct uart_port *port, unsigned int state,
++			    unsigned int old_state)
++{
++	switch (state) {
++	case 0:		/* power-on sequence as suggested in the databooks */
++		__raw_writel(0, port->membase + UART_MOD_CNTRL);
++		wmb();
++		__raw_writel(1, port->membase + UART_MOD_CNTRL);
++		wmb();
++		__raw_writel(3, port->membase + UART_MOD_CNTRL);
++		wmb();
++		break;
++	case 3:		/* power off */
++		__raw_writel(0, port->membase + UART_MOD_CNTRL);
++		wmb();
++		break;
++	}
++}
++
+ #define PORT(_base, _irq)					\
+ 	{							\
+ 		.mapbase	= _base,			\
+@@ -33,6 +52,7 @@
+ 		.flags		= UPF_SKIP_TEST | UPF_IOREMAP |	\
+ 				  UPF_FIXED_TYPE,		\
+ 		.type		= PORT_16550A,			\
++		.pm		= alchemy_8250_pm,		\
+ 	}
+ 
+ static struct plat_serial8250_port au1x00_uart_data[] = {
+diff --git a/arch/mips/alchemy/common/power.c b/arch/mips/alchemy/common/power.c
+index 5ef06a1..e5916a5 100644
+--- a/arch/mips/alchemy/common/power.c
++++ b/arch/mips/alchemy/common/power.c
+@@ -49,11 +49,6 @@
+  * We only have to save/restore registers that aren't otherwise
+  * done as part of a driver pm_* function.
+  */
+-static unsigned int sleep_uart0_inten;
+-static unsigned int sleep_uart0_fifoctl;
+-static unsigned int sleep_uart0_linectl;
+-static unsigned int sleep_uart0_clkdiv;
+-static unsigned int sleep_uart0_enable;
+ static unsigned int sleep_usb[2];
+ static unsigned int sleep_sys_clocks[5];
+ static unsigned int sleep_sys_pinfunc;
+@@ -62,22 +57,6 @@ static unsigned int sleep_static_memctlr[4][3];
+ 
+ static void save_core_regs(void)
+ {
+-	extern void save_au1xxx_intctl(void);
+-	extern void pm_eth0_shutdown(void);
+-
+-	/*
+-	 * Do the serial ports.....these really should be a pm_*
+-	 * registered function by the driver......but of course the
+-	 * standard serial driver doesn't understand our Au1xxx
+-	 * unique registers.
+-	 */
+-	sleep_uart0_inten = au_readl(UART0_ADDR + UART_IER);
+-	sleep_uart0_fifoctl = au_readl(UART0_ADDR + UART_FCR);
+-	sleep_uart0_linectl = au_readl(UART0_ADDR + UART_LCR);
+-	sleep_uart0_clkdiv = au_readl(UART0_ADDR + UART_CLK);
+-	sleep_uart0_enable = au_readl(UART0_ADDR + UART_MOD_CNTRL);
+-	au_sync();
+-
+ #ifndef CONFIG_SOC_AU1200
+ 	/* Shutdown USB host/device. */
+ 	sleep_usb[0] = au_readl(USB_HOST_CONFIG);
+@@ -175,20 +154,6 @@ static void restore_core_regs(void)
+ 	au_writel(sleep_static_memctlr[3][0], MEM_STCFG3);
+ 	au_writel(sleep_static_memctlr[3][1], MEM_STTIME3);
+ 	au_writel(sleep_static_memctlr[3][2], MEM_STADDR3);
+-
+-	/*
+-	 * Enable the UART if it was enabled before sleep.
+-	 * I guess I should define module control bits........
+-	 */
+-	if (sleep_uart0_enable & 0x02) {
+-		au_writel(0, UART0_ADDR + UART_MOD_CNTRL); au_sync();
+-		au_writel(1, UART0_ADDR + UART_MOD_CNTRL); au_sync();
+-		au_writel(3, UART0_ADDR + UART_MOD_CNTRL); au_sync();
+-		au_writel(sleep_uart0_inten, UART0_ADDR + UART_IER); au_sync();
+-		au_writel(sleep_uart0_fifoctl, UART0_ADDR + UART_FCR); au_sync();
+-		au_writel(sleep_uart0_linectl, UART0_ADDR + UART_LCR); au_sync();
+-		au_writel(sleep_uart0_clkdiv, UART0_ADDR + UART_CLK); au_sync();
+-	}
+ }
+ 
+ void au_sleep(void)
+-- 
+1.7.2.2
 
