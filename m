@@ -1,42 +1,53 @@
-From: Mike Frysinger <vapier@gentoo.org>
-Subject: [PATCH] serial: bfin_sport_uart: restore transmit frame sync fix
-Date: Sat, 28 Aug 2010 16:32:55 -0400
-Message-ID: <1283027575-1686-1-git-send-email-vapier@gentoo.org>
+From: Stanislav Brabec <sbrabec@suse.cz>
+Subject: Re: [PATCH RESEND 0/2] two serial_core suspend/resume fixes
+Date: Mon, 30 Aug 2010 00:17:37 +0200
+Message-ID: <1283120257.17967.24.camel@utx.lan>
+References: <1282374882-6651-1-git-send-email-jason77.wang@gmail.com>
+	 <1282593975.3526.9.camel@utx.lan>
+	 <AANLkTikZgAMvODoFB9O9Mrb98f_xMatQfkb+2dgcrGJn@mail.gmail.com>
+	 <1282640491.4910.35.camel@utx.lan>  <4C748E0E.8040308@windriver.com>
+	 <1282733489.5085.35.camel@utx.lan> <1282766435.5085.178.camel@utx.lan>
+	 <4C762ADC.8080309@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-2
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.gentoo.org ([140.211.166.183]:47547 "EHLO smtp.gentoo.org"
+Received: from cantor.suse.de ([195.135.220.2]:42915 "EHLO mx1.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751996Ab0H1UXh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 28 Aug 2010 16:23:37 -0400
+	id S1753335Ab0H2WRj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 29 Aug 2010 18:17:39 -0400
+In-Reply-To: <4C762ADC.8080309@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: uclinux-dist-devel@blackfin.uclinux.org, linux-kernel@vger.kernel.org, Sonic Zhang <sonic.zhang@analog.com>
+To: Jason Wang <jason77.wang@gmail.com>
+Cc: gregkh@suse.de, alan@linux.intel.com, arnd@arndb.de, linux-serial@vger.kernel.org
 
-From: Sonic Zhang <sonic.zhang@analog.com>
+Jason Wang wrote:
 
-The large cleanup/rewrite of resources in commit ccf68e59e93181df9353c0cc
-accidentally reverted an earlier fix in commit a19e8b205915b2925aca75b.
-So restore it here.
+> Hah, :), i guess the ops->set_termios() resume your uart in the end.
+> Why lost some logs, i will try to reproduce your test.
 
-Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
-Signed-off-by: Mike Frysinger <vapier@gentoo.org>
----
- drivers/serial/bfin_sport_uart.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+I'll try and ask you to test verify that my new patch does not break
+your platform.
 
-diff --git a/drivers/serial/bfin_sport_uart.c b/drivers/serial/bfin_sport_uart.c
-index e57fb3d..5318dd3 100644
---- a/drivers/serial/bfin_sport_uart.c
-+++ b/drivers/serial/bfin_sport_uart.c
-@@ -121,7 +121,7 @@ static int sport_uart_setup(struct sport_uart_port *up, int size, int baud_rate)
- 	unsigned int sclk = get_sclk();
- 
- 	/* Set TCR1 and TCR2, TFSR is not enabled for uart */
--	SPORT_PUT_TCR1(up, (ITFS | TLSBIT | ITCLK));
-+	SPORT_PUT_TCR1(up, (LATFS | ITFS | TFSR | TLSBIT | ITCLK));
- 	SPORT_PUT_TCR2(up, size + 1);
- 	pr_debug("%s TCR1:%x, TCR2:%x\n", __func__, SPORT_GET_TCR1(up), SPORT_GET_TCR2(up));
- 
--- 
-1.7.2.2
+Anyway, now I know, what I did bad. Your patch makes things better on
+some platforms and does not break others.
 
+Acked-by: Stanislav Brabec <sbrabec@suse.cz>
+
+--=20
+Best Regards / S pozdravem,
+
+Stanislav Brabec
+software developer
+---------------------------------------------------------------------
+SUSE LINUX, s. r. o.                          e-mail: sbrabec@suse.cz
+Lihovarsk=E1 1060/12           tel: +420 284 028 966, +49 911 740538747
+190 00 Praha 9                                  fax: +420 284 028 951
+Czech Republic                                    http://www.suse.cz/
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
