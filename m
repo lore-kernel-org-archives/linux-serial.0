@@ -1,21 +1,40 @@
-From: Claudio Scordino <claudio@evidence.eu.com>
-Subject: Re: [PATCH] CRIS RS485: Check SER_RS485_RTS_BEFORE_SEND before delaying.
-Date: Mon, 30 Aug 2010 10:32:27 +0200
-Message-ID: <4C7B6C9B.2050801@evidence.eu.com>
+From: Mikael Starvik <mikael.starvik@axis.com>
+Subject: RE: [PATCH] CRIS RS485: Check SER_RS485_RTS_BEFORE_SEND before
+ delaying.
+Date: Mon, 30 Aug 2010 10:39:54 +0200
+Message-ID: <4BEA3FF3CAA35E408EA55C7BE2E61D05583CAE6AF5@xmail3.se.axis.com>
 References: <4C62BD2B.2010508@evidence.eu.com>
+ <4C7B6C9B.2050801@evidence.eu.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from borg.asidev.net ([95.141.32.69]:37408 "EHLO borg.asidev.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751548Ab0H3Icc (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 30 Aug 2010 04:32:32 -0400
-In-Reply-To: <4C62BD2B.2010508@evidence.eu.com>
+Received: from miranda.se.axis.com ([193.13.178.8]:49095 "EHLO
+	miranda.se.axis.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751662Ab0H3Iky convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 30 Aug 2010 04:40:54 -0400
+In-Reply-To: <4C7B6C9B.2050801@evidence.eu.com>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jesper Nilsson <jesper.nilsson@axis.com>
-Cc: starvik@axis.com, linux-cris-kernel <linux-cris-kernel@axis.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Andrew Morton <akpm@linux-foundation.org>, Hinko Kocevar <hinko.kocevar@cetrtapot.si>, Janez Cufer <janez.cufer@cetrtapot.si>, Andy Whitcroft <apw@canonical.com>, Linux Kernel <linux-kernel@vger.kernel.org>, dev-etrax <dev-etrax@axis.com>, linux-serial@vger.kernel.org
+To: Claudio Scordino <claudio@evidence.eu.com>, Jesper Nilsson <Jesper.Nilsson@axis.com>
+Cc: linux-cris-kernel <linux-cris-kernel@axis.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Andrew Morton <akpm@linux-foundation.org>, Hinko Kocevar <hinko.kocevar@cetrtapot.si>, Janez Cufer <janez.cufer@cetrtapot.si>, Andy Whitcroft <apw@canonical.com>, Linux Kernel <linux-kernel@vger.kernel.org>, dev-etrax <dev-etrax@axis.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+
+Hi!
+
+Jesper is on vacation but I find this patch ok.
+
+Acked-by: Mikael Starvik<Starvik@axis.com>
+
+/Mikael
+
+-----Original Message-----
+From: Claudio Scordino [mailto:claudio@evidence.eu.com] 
+Sent: den 30 augusti 2010 10:32
+To: Jesper Nilsson
+Cc: Mikael Starvik; linux-cris-kernel; Alan Cox; Andrew Morton; Hinko Kocevar; Janez Cufer; Andy Whitcroft; Linux Kernel; dev-etrax; linux-serial@vger.kernel.org
+Subject: Re: [PATCH] CRIS RS485: Check SER_RS485_RTS_BEFORE_SEND before delaying.
 
 Claudio Scordino ha scritto:
 > Hi Jesper,
