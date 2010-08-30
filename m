@@ -1,84 +1,82 @@
-From: Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: Re: [PATCH 11/18] pcmcia: do not use io_req_t when calling
- pcmcia_request_io()
-Date: Mon, 30 Aug 2010 08:27:24 +0200
-Message-ID: <20100830062724.GA2387@comet.dominikbrodowski.net>
-References: <24146021.7121282948890588.komurojun-mbn@nifty.com>
+From: Darius Augulis <augulis.darius@gmail.com>
+Subject: Re: [PATCH] serial: samsung: fix device name
+Date: Mon, 30 Aug 2010 10:05:28 +0300
+Message-ID: <4C7B5838.7060605@gmail.com>
+References: <20100805201000.14030.34703.stgit@darius-desktop> <AANLkTikp2ThBqF2jkU4CXS9-iYRoy3AWpeqWXjmLF6Gd@mail.gmail.com> <4C5BAFF6.10606@gmail.com> <4C5BB462.6010409@samsung.com> <008701cb3538$54a12a00$fde37e00$%kim@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from isilmar-3.linta.de ([188.40.101.200]:55606 "EHLO linta.de"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1752100Ab0H3GiB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 30 Aug 2010 02:38:01 -0400
-Content-Disposition: inline
-In-Reply-To: <24146021.7121282948890588.komurojun-mbn@nifty.com>
- <15035991.48241282365242613.komurojun-mbn@nifty.com>
- <3446357.27821282355344343.komurojun-mbn@nifty.com>
+Received: from darkstar.wilibox.com ([195.14.175.138]:56085 "EHLO
+	darkstar.wilibox.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753246Ab0H3HFd (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 30 Aug 2010 03:05:33 -0400
+In-Reply-To: <008701cb3538$54a12a00$fde37e00$%kim@samsung.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Komuro <komurojun-mbn@nifty.com>
-Cc: linux-pcmcia@lists.infradead.org, linux-serial@vger.kernel.org
+To: Kukjin Kim <kgene.kim@samsung.com>
+Cc: 'Joonyoung Shim' <jy0922.shim@samsung.com>, 'Paulius Zaleckas' <paulius.zaleckas@gmail.com>, 'Kyungmin Park' <kmpark@infradead.org>, ben-linux@fluff.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
-Hey,
+Hi Kukjin,
 
-does this patch help? If not, could you please enable dynamic debug by
-issuing
-
-$ echo "module pcmcia +p" > /sys/kernel/debug/dynamic_debug/control
+please pick up this one to your tree too.
 
 Thanks,
-	Dominik
 
+Darius.
 
-From: Dominik Brodowski <linux@dominikbrodowski.net>
-Date: Mon, 30 Aug 2010 08:18:54 +0200
-Subject: [PATCH] pcmcia: fix multifunction card handling in serial_cs.c
+On 08/06/2010 10:23 AM, Kukjin Kim wrote:
+> Joonyoung Shim wrote:
+>>
+>> On 8/6/2010 3:47 PM, Paulius Zaleckas wrote:
+>>> On 08/06/2010 03:04 AM, Kyungmin Park wrote:
+>>>> Hi,
+>>>>
+>>>> It's already posted by Mr. Shim
+>>>> http://marc.info/?l=linux-arm-kernel&m=127410047306149&w=2
+>>>
+>>> Darius patch is a little bit cleaner.
+>>>
+>>
+>> OK, it's better.
+>>
+>> Acked-by: Joonyoung Shim<jy0922.shim@samsung.com>
+>>
+>
+> Hi all,
+>
+> I think, this should be handled by Ben Dooks....
+> As Kyungmin Park said, there was his comment about this.
+>
+> This is just for your information....
+>
+> ===
+>
+> On Tue, May 18, 2010 at 12:52:13PM +0900, Joonyoung Shim wrote:
+>> On 5/18/2010 11:48 AM, Ben Dooks wrote:
+>>> On Mon, May 17, 2010 at 09:46:50PM +0900, Joonyoung Shim wrote:
+>>>> Thd dev_name and driver_name should be switched each other.
+>>>
+>>> Hmm, this doesn't seem to have appeard on the linux-arm-kernel list yet.
+>>>
+>>> Please provide some information about what problem that this is fixing
+>>> and the impact on any existing systems.
+>>>
+>>
+>> The serial device nodes are created to s3c2410_serial* on android
+>> platform instead of ttySAC*.
+>
+> This has been how they've been for ages, surely the android device node
+> creation sytstem supports symlinking /dev/SACx ->  /dev/s3c2410_serialx,
+> like many other operating sysyerms that can already do this.
+>
+> Changing this just because android (something as-yet unmerged into mainline)
+> does not like it. I'm not even happy with an #ifdef around this.
+>
+> If you really feel this is a problem that you absolutely must fix in kernel
+> then please provide a kernel commandline option to change the serial driver
+> name and use that on any platform that needs it. Another way would be to
+> update the serial platform data to have a field for which name to choose.
+>
 
-We shouldn't overwrite pre-set values, and we should also
-set the port address to the beginning, and not the end of
-the 8-port range.
-
-Reported-by: Komuro <komurojun-mbn@nifty.com>
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
-
-diff --git a/drivers/serial/serial_cs.c b/drivers/serial/serial_cs.c
-index 141c695..dd0fa12 100644
---- a/drivers/serial/serial_cs.c
-+++ b/drivers/serial/serial_cs.c
-@@ -335,8 +335,6 @@ static int serial_probe(struct pcmcia_device *link)
- 	info->p_dev = link;
- 	link->priv = info;
- 
--	link->resource[0]->flags |= IO_DATA_PATH_WIDTH_8;
--	link->resource[0]->end = 8;
- 	link->conf.Attributes = CONF_ENABLE_IRQ;
- 	if (do_sound) {
- 		link->conf.Attributes |= CONF_ENABLE_SPKR;
-@@ -466,7 +464,7 @@ static int simple_config(struct pcmcia_device *link)
- 		unsigned int port = 0;
- 		if ((link->resource[1]->end != 0) &&
- 			(resource_size(link->resource[1]) == 8)) {
--			port = link->resource[1]->end;
-+			port = link->resource[1]->start;
- 			info->slave = 1;
- 		} else if ((info->manfid == MANFID_OSITECH) &&
- 			(resource_size(link->resource[0]) == 0x40)) {
-@@ -479,6 +477,9 @@ static int simple_config(struct pcmcia_device *link)
- 		}
- 	}
- 
-+	link->resource[0]->flags |= IO_DATA_PATH_WIDTH_8;
-+	link->resource[0]->end = 8;
-+
- 	/* First pass: look for a config entry that looks normal.
- 	 * Two tries: without IO aliases, then with aliases */
- 	for (try = 0; try < 4; try++)
-@@ -558,6 +559,7 @@ static int multi_config(struct pcmcia_device *link)
- 	int i, base2 = 0;
- 
- 	/* First, look for a generic full-sized window */
-+	link->resource[0]->flags |= IO_DATA_PATH_WIDTH_8;
- 	link->resource[0]->end = info->multi * 8;
- 	if (pcmcia_loop_config(link, multi_config_check, &base2)) {
- 		/* If that didn't work, look for two windows */
