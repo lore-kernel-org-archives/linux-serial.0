@@ -1,16 +1,16 @@
 From: Alan Cox <alan@linux.intel.com>
 Subject: [PATCH 1/5] mrst_earlyprintk: add a kmsg_dumper to dump the printk
 	buffer when panic
-Date: Mon, 06 Sep 2010 13:38:39 +0100
-Message-ID: <20100906123838.1282.1856.stgit@localhost.localdomain>
+Date: Mon, 06 Sep 2010 13:39:01 +0100
+Message-ID: <20100906123843.1328.3930.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:24257 "EHLO mga01.intel.com"
+Received: from mga01.intel.com ([192.55.52.88]:23748 "EHLO mga01.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753147Ab0IFNVe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 6 Sep 2010 09:21:34 -0400
+	id S1753147Ab0IFNVo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 6 Sep 2010 09:21:44 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org, greg@kroah.com
