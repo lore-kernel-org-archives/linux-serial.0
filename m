@@ -1,748 +1,445 @@
-From: Feng Tang <feng.tang@intel.com>
-Subject: [PATCH v2 3/4] serial: mrst_max3110: some code cleanup
-Date: Fri, 10 Sep 2010 11:10:19 +0800
-Message-ID: <1284088220-12276-3-git-send-email-feng.tang@intel.com>
+From: Ingo Molnar <mingo@elte.hu>
+Subject: Re: [PATCH v2 1/4] x86, earlyprintk: add earlyprintk for Intel
+ Moorestown platform
+Date: Fri, 10 Sep 2010 08:36:31 +0200
+Message-ID: <20100910063631.GB31090@elte.hu>
 References: <1284088220-12276-1-git-send-email-feng.tang@intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga14.intel.com ([143.182.124.37]:52575 "EHLO mga14.intel.com"
+Received: from mx2.mail.elte.hu ([157.181.151.9]:37977 "EHLO mx2.mail.elte.hu"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754532Ab0IJCuV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 9 Sep 2010 22:50:21 -0400
+	id S1751081Ab0IJGgo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 10 Sep 2010 02:36:44 -0400
+Content-Disposition: inline
 In-Reply-To: <1284088220-12276-1-git-send-email-feng.tang@intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, greg@kroah.com, alan@linux.intel.com, mingo@elte.hu
-Cc: Feng Tang <feng.tang@intel.com>
+To: Feng Tang <feng.tang@intel.com>
+Cc: linux-serial@vger.kernel.org, greg@kroah.com, alan@linux.intel.com, x86 maintainers <x86@kernel.org>
 
-The cleanup for mrst_max3110 includes:
-* remove unneeded head files
-* make the spi_transfer dma safe, so that driver is more portable
-* add more check for error return value
-* use mutex_trylock for read thread
 
-Signed-off-by: Feng Tang <feng.tang@intel.com>
-Signed-off-by: Alan Cox <alan@linux.intel.com>
----
- drivers/serial/mrst_max3110.c |  323 +++++++++++++++++++++++++----------------
- drivers/serial/mrst_max3110.h |    1 +
- 2 files changed, 199 insertions(+), 125 deletions(-)
+* Feng Tang <feng.tang@intel.com> wrote:
 
-diff --git a/drivers/serial/mrst_max3110.c b/drivers/serial/mrst_max3110.c
-index f6ad1ec..880dce3 100644
---- a/drivers/serial/mrst_max3110.c
-+++ b/drivers/serial/mrst_max3110.c
-@@ -1,7 +1,7 @@
- /*
-- *  max3110.c - spi uart protocol driver for Maxim 3110 on Moorestown
-+ *  mrst_max3110.c - spi uart protocol driver for Maxim 3110
-  *
-- *  Copyright (C) Intel 2008 Feng Tang <feng.tang@intel.com>
-+ * Copyright (c) 2010, Intel Corporation.
-  *
-  * This program is free software; you can redistribute it and/or modify it
-  * under the terms and conditions of the GNU General Public License,
-@@ -31,18 +31,13 @@
- #include <linux/ioport.h>
- #include <linux/init.h>
- #include <linux/console.h>
--#include <linux/sysrq.h>
--#include <linux/platform_device.h>
- #include <linux/tty.h>
- #include <linux/tty_flip.h>
- #include <linux/serial_core.h>
- #include <linux/serial_reg.h>
- 
- #include <linux/kthread.h>
--#include <linux/delay.h>
--#include <asm/atomic.h>
- #include <linux/spi/spi.h>
--#include <linux/spi/dw_spi.h>
- 
- #include "mrst_max3110.h"
- 
-@@ -55,7 +50,7 @@
- struct uart_max3110 {
- 	struct uart_port port;
- 	struct spi_device *spi;
--	char *name;
-+	char name[24];
- 
- 	wait_queue_head_t wq;
- 	struct task_struct *main_thread;
-@@ -66,35 +61,30 @@ struct uart_max3110 {
- 	u16 cur_conf;
- 	u8 clock;
- 	u8 parity, word_7bits;
-+	u16 irq;
- 
- 	unsigned long uart_flags;
- 
- 	/* console related */
- 	struct circ_buf con_xmit;
--
--	/* irq related */
--	u16 irq;
- };
- 
- /* global data structure, may need be removed */
--struct uart_max3110 *pmax;
--static inline void receive_char(struct uart_max3110 *max, u8 ch);
-+static struct uart_max3110 *pmax;
-+
- static void receive_chars(struct uart_max3110 *max,
- 				unsigned char *str, int len);
--static int max3110_read_multi(struct uart_max3110 *max, int len, u8 *buf);
--static void max3110_console_receive(struct uart_max3110 *max);
-+static int max3110_read_multi(struct uart_max3110 *max, u8 *buf);
-+static void max3110_con_receive(struct uart_max3110 *max);
- 
--int max3110_write_then_read(struct uart_max3110 *max,
--		const u8 *txbuf, u8 *rxbuf, unsigned len, int always_fast)
-+static int max3110_write_then_read(struct uart_max3110 *max,
-+		const void *txbuf, void *rxbuf, unsigned len, int always_fast)
- {
- 	struct spi_device *spi = max->spi;
- 	struct spi_message	message;
- 	struct spi_transfer	x;
- 	int ret;
- 
--	if (!txbuf || !rxbuf)
--		return -EINVAL;
--
- 	spi_message_init(&message);
- 	memset(&x, 0, sizeof x);
- 	x.len = len;
-@@ -103,7 +93,7 @@ int max3110_write_then_read(struct uart_max3110 *max,
- 	spi_message_add_tail(&x, &message);
- 
- 	if (always_fast)
--		x.speed_hz = 3125000;
-+		x.speed_hz = spi->max_speed_hz;
- 	else if (max->baud)
- 		x.speed_hz = max->baud;
- 
-@@ -112,58 +102,80 @@ int max3110_write_then_read(struct uart_max3110 *max,
- 	return ret;
- }
- 
--/* Write a u16 to the device, and return one u16 read back */
--int max3110_out(struct uart_max3110 *max, const u16 out)
-+/* Write a 16b word to the device */
-+static int max3110_out(struct uart_max3110 *max, const u16 out)
- {
--	u16 tmp;
-+	void *buf;
-+	u16 *obuf, *ibuf;
-+	u8  ch;
- 	int ret;
- 
--	ret = max3110_write_then_read(max, (u8 *)&out, (u8 *)&tmp, 2, 1);
--	if (ret)
--		return ret;
-+	buf = kzalloc(8, GFP_KERNEL | GFP_DMA);
-+	if (!buf)
-+		return -ENOMEM;
-+
-+	obuf = buf;
-+	ibuf = buf + 4;
-+	*obuf = out;
-+	ret = max3110_write_then_read(max, obuf, ibuf, 2, 1);
-+	if (ret) {
-+		pr_warning(PR_FMT "%s(): get err msg %d when sending 0x%x\n",
-+				__func__, ret, out);
-+		goto exit;
-+	}
- 
- 	/* If some valid data is read back */
--	if (tmp & MAX3110_READ_DATA_AVAILABLE)
--		receive_char(max, (tmp & 0xff));
-+	if (*ibuf & MAX3110_READ_DATA_AVAILABLE) {
-+		ch = *ibuf & 0xff;
-+		receive_chars(max, &ch, 1);
-+	}
- 
-+exit:
-+	kfree(buf);
- 	return ret;
- }
- 
--#define MAX_READ_LEN	20
- /*
-  * This is usually used to read data from SPIC RX FIFO, which doesn't
-- * need any delay like flushing character out. It returns how many
-- * valide bytes are read back
-+ * need any delay like flushing character out.
-+ *
-+ * Return how many valide bytes are read back
-  */
--static int max3110_read_multi(struct uart_max3110 *max, int len, u8 *buf)
-+static int max3110_read_multi(struct uart_max3110 *max, u8 *rxbuf)
- {
--	u16 out[MAX_READ_LEN], in[MAX_READ_LEN];
--	u8 *pbuf, valid_str[MAX_READ_LEN];
--	int i, j, bytelen;
-+	void *buf;
-+	u16 *obuf, *ibuf;
-+	u8 *pbuf, valid_str[M3110_RX_FIFO_DEPTH];
-+	int i, j, blen;
- 
--	if (len > MAX_READ_LEN) {
--		pr_err(PR_FMT "read len %d is too large\n", len);
-+	blen = M3110_RX_FIFO_DEPTH * sizeof(u16);
-+	buf = kzalloc(blen * 2, GFP_KERNEL | GFP_DMA);
-+	if (!buf) {
-+		pr_warning(PR_FMT "%s(): fail to alloc dma buffer\n", __func__);
- 		return 0;
- 	}
- 
--	bytelen = len * 2;
--	memset(out, 0, bytelen);
--	memset(in, 0, bytelen);
-+	/* tx/rx always have the same length */
-+	obuf = buf;
-+	ibuf = buf + blen;
- 
--	if (max3110_write_then_read(max, (u8 *)out, (u8 *)in, bytelen, 1))
-+	if (max3110_write_then_read(max, obuf, ibuf, blen, 1)) {
-+		kfree(buf);
- 		return 0;
-+	}
- 
--	/* If caller don't provide a buffer, then handle received char */
--	pbuf = buf ? buf : valid_str;
-+	/* If caller doesn't provide a buffer, then handle received char */
-+	pbuf = rxbuf ? rxbuf : valid_str;
- 
--	for (i = 0, j = 0; i < len; i++) {
--		if (in[i] & MAX3110_READ_DATA_AVAILABLE)
--			pbuf[j++] = (u8)(in[i] & 0xff);
-+	for (i = 0, j = 0; i < M3110_RX_FIFO_DEPTH; i++) {
-+		if (ibuf[i] & MAX3110_READ_DATA_AVAILABLE)
-+			pbuf[j++] = ibuf[i] & 0xff;
- 	}
- 
- 	if (j && (pbuf == valid_str))
- 		receive_chars(max, valid_str, j);
- 
-+	kfree(buf);
- 	return j;
- }
- 
-@@ -177,10 +189,6 @@ static void serial_m3110_con_putchar(struct uart_port *port, int ch)
- 		xmit->buf[xmit->head] = (char)ch;
- 		xmit->head = (xmit->head + 1) & (PAGE_SIZE - 1);
- 	}
--
--
--	if (!test_and_set_bit(CON_TX_NEEDED, &max->uart_flags))
--		wake_up_process(max->main_thread);
- }
- 
- /*
-@@ -196,6 +204,9 @@ static void serial_m3110_con_write(struct console *co,
- 		return;
- 
- 	uart_console_write(&pmax->port, s, count, serial_m3110_con_putchar);
-+
-+	if (!test_and_set_bit(CON_TX_NEEDED, &pmax->uart_flags))
-+		wake_up_process(pmax->main_thread);
- }
- 
- static int __init
-@@ -209,6 +220,9 @@ serial_m3110_con_setup(struct console *co, char *options)
- 
- 	pr_info(PR_FMT "setting up console\n");
- 
-+	if (co->index == -1)
-+		co->index = 0;
-+
- 	if (!max) {
- 		pr_err(PR_FMT "pmax is NULL, return");
- 		return -ENODEV;
-@@ -239,8 +253,6 @@ static struct console serial_m3110_console = {
- 	.data		= &serial_m3110_reg,
- };
- 
--#define MRST_CONSOLE	(&serial_m3110_console)
--
- static unsigned int serial_m3110_tx_empty(struct uart_port *port)
- {
- 	return 1;
-@@ -258,32 +270,44 @@ static void serial_m3110_stop_rx(struct uart_port *port)
- }
- 
- #define WORDS_PER_XFER	128
--static inline void send_circ_buf(struct uart_max3110 *max,
-+static void send_circ_buf(struct uart_max3110 *max,
- 				struct circ_buf *xmit)
- {
--	int len, left = 0;
--	u16 obuf[WORDS_PER_XFER], ibuf[WORDS_PER_XFER];
-+	void *buf;
-+	u16 *obuf, *ibuf;
- 	u8 valid_str[WORDS_PER_XFER];
--	int i, j;
-+	int i, j, len, blen, dma_size, left, ret = 0;
-+
-+
-+	dma_size = WORDS_PER_XFER * sizeof(u16) * 2;
-+	buf = kzalloc(dma_size, GFP_KERNEL | GFP_DMA);
-+	if (!buf)
-+		return;
-+	obuf = buf;
-+	ibuf = buf + dma_size/2;
- 
- 	while (!uart_circ_empty(xmit)) {
- 		left = uart_circ_chars_pending(xmit);
- 		while (left) {
--			len = (left >= WORDS_PER_XFER) ? WORDS_PER_XFER : left;
-+			len = min(left, WORDS_PER_XFER);
-+			blen = len * sizeof(u16);
-+			memset(ibuf, 0, blen);
- 
--			memset(obuf, 0, len * 2);
--			memset(ibuf, 0, len * 2);
- 			for (i = 0; i < len; i++) {
- 				obuf[i] = (u8)xmit->buf[xmit->tail] | WD_TAG;
- 				xmit->tail = (xmit->tail + 1) &
- 						(UART_XMIT_SIZE - 1);
- 			}
--			max3110_write_then_read(max, (u8 *)obuf,
--						(u8 *)ibuf, len * 2, 0);
-+
-+			/* Fail to send msg to console is not very critical */
-+			ret = max3110_write_then_read(max, obuf, ibuf, blen, 0);
-+			if (ret)
-+				pr_warning(PR_FMT "%s(): get err msg %d\n",
-+						__func__, ret);
- 
- 			for (i = 0, j = 0; i < len; i++) {
- 				if (ibuf[i] & MAX3110_READ_DATA_AVAILABLE)
--					valid_str[j++] = (u8)(ibuf[i] & 0xff);
-+					valid_str[j++] = ibuf[i] & 0xff;
- 			}
- 
- 			if (j)
-@@ -293,6 +317,8 @@ static inline void send_circ_buf(struct uart_max3110 *max,
- 			left -= len;
- 		}
- 	}
-+
-+	kfree(buf);
- }
- 
- static void transmit_char(struct uart_max3110 *max)
-@@ -312,8 +338,10 @@ static void transmit_char(struct uart_max3110 *max)
- 		serial_m3110_stop_tx(port);
- }
- 
--/* This will be called by uart_write() and tty_write, can't
-- * go to sleep */
-+/*
-+ * This will be called by uart_write() and tty_write, can't
-+ * go to sleep
-+ */
- static void serial_m3110_start_tx(struct uart_port *port)
- {
- 	struct uart_max3110 *max =
-@@ -335,7 +363,7 @@ static void receive_chars(struct uart_max3110 *max, unsigned char *str, int len)
- 
- 	tty = port->state->port.tty;
- 	if (!tty)
--		return;	/* receive some char before the tty is opened */
-+		return;
- 
- 	while (len) {
- 		usable = tty_buffer_request_room(tty, len);
-@@ -343,32 +371,37 @@ static void receive_chars(struct uart_max3110 *max, unsigned char *str, int len)
- 			tty_insert_flip_string(tty, str, usable);
- 			str += usable;
- 			port->icount.rx += usable;
--			tty_flip_buffer_push(tty);
- 		}
- 		len -= usable;
- 	}
-+	tty_flip_buffer_push(tty);
- }
- 
--static inline void receive_char(struct uart_max3110 *max, u8 ch)
--{
--	receive_chars(max, &ch, 1);
--}
--
--static void max3110_console_receive(struct uart_max3110 *max)
-+/*
-+ * This routine will be used in read_thread or RX IRQ handling,
-+ * it will first do one round buffer read(8 words), if there is some
-+ * valid RX data, will try to read 5 more rounds till all data
-+ * is read out.
-+ *
-+ * Use stack space as data buffer to save some system load, and chose
-+ * 504 Btyes as a threadhold to do a bulk push to upper tty layer when
-+ * receiving bulk data, a much bigger buffer may cause stack overflow
-+ */
-+static void max3110_con_receive(struct uart_max3110 *max)
- {
- 	int loop = 1, num, total = 0;
- 	u8 recv_buf[512], *pbuf;
- 
- 	pbuf = recv_buf;
- 	do {
--		num = max3110_read_multi(max, 8, pbuf);
-+		num = max3110_read_multi(max, pbuf);
- 
- 		if (num) {
--			loop = 10;
-+			loop = 5;
- 			pbuf += num;
- 			total += num;
- 
--			if (total >= 500) {
-+			if (total >= 504) {
- 				receive_chars(max, recv_buf, total);
- 				pbuf = recv_buf;
- 				total = 0;
-@@ -396,7 +429,7 @@ static int max3110_main_thread(void *_max)
- 		mutex_lock(&max->thread_mutex);
- 
- 		if (test_and_clear_bit(BIT_IRQ_PENDING, &max->uart_flags))
--			max3110_console_receive(max);
-+			max3110_con_receive(max);
- 
- 		/* first handle console output */
- 		if (test_and_clear_bit(CON_TX_NEEDED, &max->uart_flags))
-@@ -433,9 +466,14 @@ static int max3110_read_thread(void *_max)
- 
- 	pr_info(PR_FMT "start read thread\n");
- 	do {
--		mutex_lock(&max->thread_mutex);
--		max3110_console_receive(max);
--		mutex_unlock(&max->thread_mutex);
-+		/*
-+		 * If can't acquire the mutex, it means the main thread
-+		 * is running which will also perform the rx job
-+		 */
-+		if (mutex_trylock(&max->thread_mutex)) {
-+			max3110_con_receive(max);
-+			mutex_unlock(&max->thread_mutex);
-+		}
- 
- 		set_current_state(TASK_INTERRUPTIBLE);
- 		schedule_timeout(HZ / 20);
-@@ -452,15 +490,16 @@ static int serial_m3110_startup(struct uart_port *port)
- 	u16 config = 0;
- 	int ret = 0;
- 
--	if (port->line != 0)
-+	if (port->line != 0) {
- 		pr_err(PR_FMT "uart port startup failed\n");
-+		return -1;
-+	}
- 
--	/* firstly disable all IRQ and config it to 115200, 8n1 */
-+	/* Disable all IRQ and config it to 115200, 8n1 */
- 	config = WC_TAG | WC_FIFO_ENABLE
- 			| WC_1_STOPBITS
- 			| WC_8BIT_WORD
- 			| WC_BAUD_DR2;
--	ret = max3110_out(max, config);
- 
- 	/* as we use thread to handle tx/rx, need set low latency */
- 	port->state->port.tty->low_latency = 1;
-@@ -471,14 +510,30 @@ static int serial_m3110_startup(struct uart_port *port)
- 	if (ret)
- 		return ret;
- 
--	/* enable RX IRQ only */
-+	/* Enable RX IRQ only */
- 	config |= WC_RXA_IRQ_ENABLE;
--	max3110_out(max, config);
- #else
--	/* if IRQ is disabled, start a read thread for input data */
-+	/* If IRQ is disabled, start a read thread for input data */
- 	max->read_thread =
- 		kthread_run(max3110_read_thread, max, "max3110_read");
-+	if (IS_ERR(max->read_thread)) {
-+		ret = PTR_ERR(max->read_thread);
-+		max->read_thread = NULL;
-+		pr_err(PR_FMT "Can't create read thread!");
-+		return ret;
-+	}
-+#endif
-+
-+	ret = max3110_out(max, config);
-+	if (ret) {
-+#ifdef CONFIG_MRST_MAX3110_IRQ
-+		free_irq(max->irq, max);
-+#else
-+		kthread_stop(max->read_thread);
-+		max->read_thread = NULL;
- #endif
-+		return ret;
-+	}
- 
- 	max->cur_conf = config;
- 	return 0;
-@@ -515,8 +570,7 @@ static int serial_m3110_request_port(struct uart_port *port)
- 
- static void serial_m3110_config_port(struct uart_port *port, int flags)
- {
--	/* give it fake type */
--	port->type = PORT_PXA;
-+	port->type = PORT_MAX3100;
- }
- 
- static int
-@@ -551,6 +605,9 @@ serial_m3110_set_termios(struct uart_port *port, struct ktermios *termios,
- 		new_conf |= WC_7BIT_WORD;
- 		break;
- 	default:
-+		/* We only support CS7 & CS8 */
-+		termios->c_cflag &= ~CSIZE;
-+		termios->c_cflag |= CS8;
- 	case CS8:
- 		cval = UART_LCR_WLEN8;
- 		new_conf |= WC_8BIT_WORD;
-@@ -559,7 +616,7 @@ serial_m3110_set_termios(struct uart_port *port, struct ktermios *termios,
- 
- 	baud = uart_get_baud_rate(port, termios, old, 0, 230400);
- 
--	/* first calc the div for 1.8MHZ clock case */
-+	/* First calc the div for 1.8MHZ clock case */
- 	switch (baud) {
- 	case 300:
- 		clk_div = WC_BAUD_DR384;
-@@ -595,7 +652,7 @@ serial_m3110_set_termios(struct uart_port *port, struct ktermios *termios,
- 		if (max->clock & MAX3110_HIGH_CLK)
- 			break;
- 	default:
--		/* pick the previous baud rate */
-+		/* Pick the previous baud rate */
- 		baud = max->baud;
- 		clk_div = max->cur_conf & WC_BAUD_DIV_MASK;
- 		tty_termios_encode_baud_rate(termios, baud, baud);
-@@ -603,15 +660,21 @@ serial_m3110_set_termios(struct uart_port *port, struct ktermios *termios,
- 
- 	if (max->clock & MAX3110_HIGH_CLK) {
- 		clk_div += 1;
--		/* high clk version max3110 doesn't support B300 */
--		if (baud == 300)
-+		/* High clk version max3110 doesn't support B300 */
-+		if (baud == 300) {
- 			baud = 600;
-+			clk_div = WC_BAUD_DR384;
-+		}
- 		if (baud == 230400)
- 			clk_div = WC_BAUD_DR1;
- 		tty_termios_encode_baud_rate(termios, baud, baud);
- 	}
- 
- 	new_conf = (new_conf & ~WC_BAUD_DIV_MASK) | clk_div;
-+
-+	if (unlikely(termios->c_cflag & CMSPAR))
-+		termios->c_cflag &= ~CMSPAR;
-+
- 	if (termios->c_cflag & CSTOPB)
- 		new_conf |= WC_2_STOPBITS;
- 	else
-@@ -631,13 +694,14 @@ serial_m3110_set_termios(struct uart_port *port, struct ktermios *termios,
- 
- 	new_conf |= WC_TAG;
- 	if (new_conf != max->cur_conf) {
--		max3110_out(max, new_conf);
--		max->cur_conf = new_conf;
--		max->baud = baud;
-+		if (!max3110_out(max, new_conf)) {
-+			max->cur_conf = new_conf;
-+			max->baud = baud;
-+		}
- 	}
- }
- 
--/* don't handle hw handshaking */
-+/* Don't handle hw handshaking */
- static unsigned int serial_m3110_get_mctrl(struct uart_port *port)
- {
- 	return TIOCM_DSR | TIOCM_CAR | TIOCM_DSR;
-@@ -671,7 +735,7 @@ struct uart_ops serial_m3110_ops = {
- 	.break_ctl	= serial_m3110_break_ctl,
- 	.startup	= serial_m3110_startup,
- 	.shutdown	= serial_m3110_shutdown,
--	.set_termios	= serial_m3110_set_termios,	/* must have */
-+	.set_termios	= serial_m3110_set_termios,
- 	.pm		= serial_m3110_pm,
- 	.type		= serial_m3110_type,
- 	.release_port	= serial_m3110_release_port,
-@@ -687,44 +751,52 @@ static struct uart_driver serial_m3110_reg = {
- 	.major		= TTY_MAJOR,
- 	.minor		= 64,
- 	.nr		= 1,
--	.cons		= MRST_CONSOLE,
-+	.cons		= &serial_m3110_console,
- };
- 
-+#ifdef CONFIG_PM
- static int serial_m3110_suspend(struct spi_device *spi, pm_message_t state)
- {
-+	struct uart_max3110 *max = spi_get_drvdata(spi);
-+
-+	disable_irq(max->irq);
-+	uart_suspend_port(&serial_m3110_reg, &max->port);
-+	max3110_out(max, max->cur_conf | WC_SW_SHDI);
- 	return 0;
- }
- 
- static int serial_m3110_resume(struct spi_device *spi)
- {
-+	struct uart_max3110 *max = spi_get_drvdata(spi);
-+
-+	max3110_out(max, max->cur_conf);
-+	uart_resume_port(&serial_m3110_reg, &max->port);
-+	enable_irq(max->irq);
- 	return 0;
- }
-+#else
-+#define serial_m3110_suspend	NULL
-+#define serial_m3110_resume	NULL
-+#endif
- 
--static struct dw_spi_chip spi0_uart = {
--	.poll_mode = 1,
--	.enable_dma = 0,
--	.type = SPI_FRF_SPI,
--};
--
--static int serial_m3110_probe(struct spi_device *spi)
-+static int __devinit serial_m3110_probe(struct spi_device *spi)
- {
- 	struct uart_max3110 *max;
--	int ret;
--	unsigned char *buffer;
-+	void *buffer;
- 	u16 res;
-+	int ret = 0;
-+
- 	max = kzalloc(sizeof(*max), GFP_KERNEL);
- 	if (!max)
- 		return -ENOMEM;
- 
--	/* set spi info */
--	spi->mode = SPI_MODE_0;
-+	/* Set spi info */
- 	spi->bits_per_word = 16;
- 	max->clock = MAX3110_HIGH_CLK;
--	spi->controller_data = &spi0_uart;
- 
- 	spi_setup(spi);
- 
--	max->port.type = PORT_PXA;	/* need apply for a max3110 type */
-+	max->port.type = PORT_MAX3100;	/* need apply for a max3110 type */
- 	max->port.fifosize = 2;		/* only have 16b buffer */
- 	max->port.ops = &serial_m3110_ops;
- 	max->port.line = 0;
-@@ -732,7 +804,7 @@ static int serial_m3110_probe(struct spi_device *spi)
- 	max->port.uartclk = 115200;
- 
- 	max->spi = spi;
--	max->name = spi->modalias;	/* use spi name as the name */
-+	strcpy(max->name, spi->modalias);
- 	max->irq = (u16)spi->irq;
- 
- 	mutex_init(&max->thread_mutex);
-@@ -754,13 +826,15 @@ static int serial_m3110_probe(struct spi_device *spi)
- 		ret = -ENODEV;
- 		goto err_get_page;
- 	}
--	buffer = (unsigned char *)__get_free_page(GFP_KERNEL);
-+
-+	buffer = (void *)__get_free_page(GFP_KERNEL);
- 	if (!buffer) {
- 		ret = -ENOMEM;
- 		goto err_get_page;
- 	}
--	max->con_xmit.buf = (unsigned char *)buffer;
--	max->con_xmit.head = max->con_xmit.tail = 0;
-+	max->con_xmit.buf = buffer;
-+	max->con_xmit.head = 0;
-+	max->con_xmit.tail = 0;
- 
- 	max->main_thread = kthread_run(max3110_main_thread,
- 					max, "max3110_main");
-@@ -769,7 +843,9 @@ static int serial_m3110_probe(struct spi_device *spi)
- 		goto err_kthread;
- 	}
- 
-+	spi_set_drvdata(spi, max);
- 	pmax = max;
-+
- 	/* give membase a psudo value to pass serial_core's check */
- 	max->port.membase = (void *)0xff110000;
- 	uart_add_one_port(&serial_m3110_reg, &max->port);
-@@ -779,19 +855,17 @@ static int serial_m3110_probe(struct spi_device *spi)
- err_kthread:
- 	free_page((unsigned long)buffer);
- err_get_page:
--	pmax = NULL;
- 	kfree(max);
- 	return ret;
- }
- 
--static int max3110_remove(struct spi_device *dev)
-+static int __devexit serial_m3110_remove(struct spi_device *dev)
- {
--	struct uart_max3110 *max = pmax;
-+	struct uart_max3110 *max = spi_get_drvdata(dev);
- 
--	if (!pmax)
-+	if (!max)
- 		return 0;
- 
--	pmax = NULL;
- 	uart_remove_one_port(&serial_m3110_reg, &max->port);
- 
- 	free_page((unsigned long)max->con_xmit.buf);
-@@ -810,13 +884,12 @@ static struct spi_driver uart_max3110_driver = {
- 			.owner	= THIS_MODULE,
- 	},
- 	.probe		= serial_m3110_probe,
--	.remove		= __devexit_p(max3110_remove),
-+	.remove		= __devexit_p(serial_m3110_remove),
- 	.suspend	= serial_m3110_suspend,
- 	.resume		= serial_m3110_resume,
- };
- 
--
--int __init serial_m3110_init(void)
-+static int __init serial_m3110_init(void)
- {
- 	int ret = 0;
- 
-@@ -831,7 +904,7 @@ int __init serial_m3110_init(void)
- 	return ret;
- }
- 
--void __exit serial_m3110_exit(void)
-+static void __exit serial_m3110_exit(void)
- {
- 	spi_unregister_driver(&uart_max3110_driver);
- 	uart_unregister_driver(&serial_m3110_reg);
-@@ -840,5 +913,5 @@ void __exit serial_m3110_exit(void)
- module_init(serial_m3110_init);
- module_exit(serial_m3110_exit);
- 
--MODULE_LICENSE("GPL");
-+MODULE_LICENSE("GPL v2");
- MODULE_ALIAS("max3110-uart");
-diff --git a/drivers/serial/mrst_max3110.h b/drivers/serial/mrst_max3110.h
-index 363478a..d1ef43a 100644
---- a/drivers/serial/mrst_max3110.h
-+++ b/drivers/serial/mrst_max3110.h
-@@ -56,4 +56,5 @@
- #define WC_BAUD_DR192		(0xE)
- #define WC_BAUD_DR384		(0xF)
- 
-+#define M3110_RX_FIFO_DEPTH	8
- #endif
--- 
-1.7.0.4
+> Intel Moorestown platform has a spi-uart device(Maxim3110), which
+> connects to a Designware spi core controller. This patch will add
+> early console function based on it.
+> 
+> As it will be used long before Linux spi subsystem get initialised,
+> we simply directly manipulate the spi controller's register to
+> acheive the early console func. This is safe as it will be disabled
+> when devices subsytem get initialised.
+> 
+> To use it, user need enable CONFIG_X86_MRST_EARLY_PRINTK in kenrel
+> config and add "earlyprintk=mrst" in kernel command line.
+> 
+> Signed-off-by: Feng Tang <feng.tang@intel.com>
+> Cc: x86 maintainers <x86@kernel.org>
+> Signed-off-by: Alan Cox <alan@linux.intel.com>
+> ---
+>  arch/x86/Kconfig.debug             |    4 +
+>  arch/x86/include/asm/mrst.h        |    4 +
+>  arch/x86/kernel/Makefile           |    1 +
+>  arch/x86/kernel/early_printk.c     |    5 +
+>  arch/x86/kernel/mrst_earlyprintk.c |  241 ++++++++++++++++++++++++++++++++++++
+>  5 files changed, 255 insertions(+), 0 deletions(-)
+>  create mode 100644 arch/x86/kernel/mrst_earlyprintk.c
+> 
+> diff --git a/arch/x86/Kconfig.debug b/arch/x86/Kconfig.debug
+> index 7508508..9c10cd6 100644
+> --- a/arch/x86/Kconfig.debug
+> +++ b/arch/x86/Kconfig.debug
+> @@ -43,6 +43,10 @@ config EARLY_PRINTK
+>  	  with klogd/syslogd or the X server. You should normally N here,
+>  	  unless you want to debug such a crash.
+>  
+> +config X86_MRST_EARLY_PRINTK
+> +	bool "Early printk for MRST platform support"
+> +	depends on EARLY_PRINTK && X86_MRST
+> +
+>  config EARLY_PRINTK_DBGP
+>  	bool "Early printk via EHCI debug port"
+>  	depends on EARLY_PRINTK && PCI
+> diff --git a/arch/x86/include/asm/mrst.h b/arch/x86/include/asm/mrst.h
+> index 1635074..4b891b3 100644
+> --- a/arch/x86/include/asm/mrst.h
+> +++ b/arch/x86/include/asm/mrst.h
+> @@ -10,6 +10,9 @@
+>   */
+>  #ifndef _ASM_X86_MRST_H
+>  #define _ASM_X86_MRST_H
+> +
+> +#include <linux/sfi.h>
+> +
+>  extern int pci_mrst_init(void);
+>  int __init sfi_parse_mrtc(struct sfi_table_header *table);
+>  
+> @@ -42,4 +45,5 @@ extern enum mrst_timer_options mrst_timer_options;
+>  #define SFI_MTMR_MAX_NUM 8
+>  #define SFI_MRTC_MAX	8
+>  
+> +extern struct console early_mrst_console;
+>  #endif /* _ASM_X86_MRST_H */
+> diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
+> index 0925676..e6dbe95 100644
+> --- a/arch/x86/kernel/Makefile
+> +++ b/arch/x86/kernel/Makefile
+> @@ -83,6 +83,7 @@ obj-$(CONFIG_DOUBLEFAULT) 	+= doublefault_32.o
+>  obj-$(CONFIG_KGDB)		+= kgdb.o
+>  obj-$(CONFIG_VM86)		+= vm86_32.o
+>  obj-$(CONFIG_EARLY_PRINTK)	+= early_printk.o
+> +obj-$(CONFIG_X86_MRST_EARLY_PRINTK)	+= mrst_earlyprintk.o
+>  
+>  obj-$(CONFIG_HPET_TIMER) 	+= hpet.o
+>  obj-$(CONFIG_APB_TIMER)		+= apb_timer.o
+> diff --git a/arch/x86/kernel/early_printk.c b/arch/x86/kernel/early_printk.c
+> index fa99bae..435a070 100644
+> --- a/arch/x86/kernel/early_printk.c
+> +++ b/arch/x86/kernel/early_printk.c
+> @@ -14,6 +14,7 @@
+>  #include <xen/hvc-console.h>
+>  #include <asm/pci-direct.h>
+>  #include <asm/fixmap.h>
+> +#include <asm/mrst.h>
+>  #include <asm/pgtable.h>
+>  #include <linux/usb/ehci_def.h>
+>  
+> @@ -239,6 +240,10 @@ static int __init setup_early_printk(char *buf)
+>  		if (!strncmp(buf, "xen", 3))
+>  			early_console_register(&xenboot_console, keep);
+>  #endif
+> +#ifdef CONFIG_X86_MRST_EARLY_PRINTK
+> +		if (!strncmp(buf, "mrst", 4))
+> +			early_console_register(&early_mrst_console, keep);
+> +#endif
+>  		buf++;
+>  	}
+>  	return 0;
+> diff --git a/arch/x86/kernel/mrst_earlyprintk.c b/arch/x86/kernel/mrst_earlyprintk.c
+> new file mode 100644
+> index 0000000..7c29025
+> --- /dev/null
+> +++ b/arch/x86/kernel/mrst_earlyprintk.c
 
+Small nit: please name the new file hierarchically and according to 
+existing namespace patterns: i.e. arch/x86/kernel/early_printk_mrst.c.
+
+> @@ -0,0 +1,241 @@
+> +/*
+> + * mrst_earlyprintk.c - spi-uart early printk for Intel Moorestown platform
+> + *
+> + * Copyright (c) 2009 Intel Corporation
+> + *
+> + * This program is free software; you can redistribute it and/or
+> + * modify it under the terms of the GNU General Public License
+> + * as published by the Free Software Foundation; version 2
+> + * of the License.
+> + */
+> +
+> +#include <linux/kmsg_dump.h>
+> +#include <linux/console.h>
+> +#include <linux/kernel.h>
+> +#include <linux/init.h>
+> +#include <linux/io.h>
+> +
+> +#include <asm/fixmap.h>
+> +#include <asm/pgtable.h>
+> +#include <asm/mrst.h>
+> +
+> +#define MRST_SPI_TIMEOUT	0x200000
+> +#define MRST_REGBASE_SPI0	0xff128000
+> +#define MRST_REGBASE_SPI1	0xff128400
+> +#define MRST_CLK_SPI0_REG	0xff11d86c
+> +
+> +/* Bit fields in CTRLR0 */
+> +#define SPI_DFS_OFFSET			0
+> +
+> +#define SPI_FRF_OFFSET			4
+> +#define SPI_FRF_SPI			0x0
+> +#define SPI_FRF_SSP			0x1
+> +#define SPI_FRF_MICROWIRE		0x2
+> +#define SPI_FRF_RESV			0x3
+
+Small nit: please try to use uniform vertical spacing for like-minded 
+symbols - i.e. move the four MRST_* one tab to the right - so that if 
+someone looks at the file for the first time sees a tidy picture of 
+constants, without extra visual noise.
+
+> +
+> +#define SPI_MODE_OFFSET			6
+> +#define SPI_SCPH_OFFSET			6
+> +#define SPI_SCOL_OFFSET			7
+> +#define SPI_TMOD_OFFSET			8
+> +#define	SPI_TMOD_TR			0x0		/* xmit & recv */
+> +#define SPI_TMOD_TO			0x1		/* xmit only */
+> +#define SPI_TMOD_RO			0x2		/* recv only */
+> +#define SPI_TMOD_EPROMREAD		0x3		/* eeprom read mode */
+> +
+> +#define SPI_SLVOE_OFFSET		10
+> +#define SPI_SRL_OFFSET			11
+> +#define SPI_CFS_OFFSET			12
+> +
+> +/* Bit fields in SR, 7 bits */
+> +#define SR_MASK				0x7f		/* cover 7 bits */
+> +#define SR_BUSY				(1 << 0)
+> +#define SR_TF_NOT_FULL			(1 << 1)
+> +#define SR_TF_EMPT			(1 << 2)
+> +#define SR_RF_NOT_EMPT			(1 << 3)
+> +#define SR_RF_FULL			(1 << 4)
+> +#define SR_TX_ERR			(1 << 5)
+> +#define SR_DCOL				(1 << 6)
+> +
+> +struct dw_spi_reg {
+> +	u32	ctrl0;
+> +	u32	ctrl1;
+> +	u32	ssienr;
+> +	u32	mwcr;
+> +	u32	ser;
+> +	u32	baudr;
+> +	u32	txfltr;
+> +	u32	rxfltr;
+> +	u32	txflr;
+> +	u32	rxflr;
+> +	u32	sr;
+> +	u32	imr;
+> +	u32	isr;
+> +	u32	risr;
+> +	u32	txoicr;
+> +	u32	rxoicr;
+> +	u32	rxuicr;
+> +	u32	msticr;
+> +	u32	icr;
+> +	u32	dmacr;
+> +	u32	dmatdlr;
+> +	u32	dmardlr;
+> +	u32	idr;
+> +	u32	version;
+> +	u32	dr;		/* Currently oper as 32 bits,
+> +				   though only low 16 bits matters */
+
+please use the customary (multi-line) comment style:
+
+  /*
+   * Comment .....
+   * ...... goes here.
+   */
+
+specified in Documentation/CodingStyle. (or use an overlong comment line 
+and ignore checkpatch)
+
+Also, the sentence should probably read:
+
+  /* Currently operates as 32 bits, though only the low 16 bits matter */
+
+> +} __packed;
+> +
+> +#define dw_readl(dw, name) \
+> +	__raw_readl(&dw->name)
+> +#define dw_writel(dw, name, val) \
+> +	__raw_writel((val), &dw->name)
+
+'dw' needs to be macro-side-effect protected as well, not just 'val'.
+
+Also, these definitions do not need to be multi-line. This looks much 
+tidier:
+
+#define dw_readl(dw, name)		__raw_readl(&(dw)->name)
+#define dw_writel(dw, name, val)	__raw_writel((val), &(dw)->name)
+
+( for extra bonus see that the vertical spacing lines up with the 
+  constant section higher in the file. )
+
+> +
+> +/* Default use SPI0 register for mrst, we will detect Penwell and use SPI1*/
+> +static unsigned long mrst_spi_paddr = MRST_REGBASE_SPI0;
+> +
+> +static u32 *pclk_spi0;
+> +/* Always contains an accessable address, start with 0 */
+> +static struct dw_spi_reg *pspi;
+> +static int mrst_spi_init_done;
+> +
+> +static struct kmsg_dumper dw_dumper;
+> +static int dumper_registered;
+> +
+> +static void dw_kmsg_dump(struct kmsg_dumper *dumper,
+> +			enum kmsg_dump_reason reason,
+> +			const char *s1, unsigned long l1,
+> +			const char *s2, unsigned long l2)
+> +{
+> +	int i;
+> +
+> +	/* When run to this, we'd better re-init the HW */
+> +	mrst_spi_init_done = 0;
+
+The mrst_spi_init_done flaggery and its interaction with implicit 
+initialization in the write() method is really ugly and non-obvious.
+
+Please add an explicit 'first initialization' call in the MRST bootup 
+code (or somewhere in the x86 bootup code), and then explicitly call 
+early_mrst_spi_init() here in the dumper.
+
+This allows the elimination of mrst_spi_init_done.
+
+> +
+> +	for (i = 0; i < l1; i++)
+> +		early_mrst_console.write(&early_mrst_console, s1 + i, 1);
+> +	for (i = 0; i < l2; i++)
+> +		early_mrst_console.write(&early_mrst_console, s2 + i, 1);
+> +}
+> +
+> +static void early_mrst_spi_init(void)
+> +{
+> +	u32 ctrlr0 = 0;
+> +	u32 spi0_cdiv;
+> +	static u32 freq; /* freq info only need be searched once */
+
+Very small nit: please use consistent capitalization in comments. This 
+comment should be capitalized - as most other comments are in the file.
+
+> +
+> +	if (!freq) {
+> +		set_fixmap_nocache(FIX_EARLYCON_MEM_BASE, MRST_CLK_SPI0_REG);
+> +		pclk_spi0 = (void *)(__fix_to_virt(FIX_EARLYCON_MEM_BASE) +
+> +				(MRST_CLK_SPI0_REG & (PAGE_SIZE - 1)));
+> +
+> +		spi0_cdiv = ((*pclk_spi0) & 0xe00) >> 9;
+> +		freq = 100000000 / (spi0_cdiv + 1);
+> +	}
+> +
+> +	if (mrst_identify_cpu() == MRST_CPU_CHIP_PENWELL)
+> +		mrst_spi_paddr = MRST_REGBASE_SPI1;
+> +
+> +	set_fixmap_nocache(FIX_EARLYCON_MEM_BASE, mrst_spi_paddr);
+> +	pspi = (void *)(__fix_to_virt(FIX_EARLYCON_MEM_BASE) +
+> +			(mrst_spi_paddr & (PAGE_SIZE - 1)));
+> +
+> +	/* Disable SPI controller */
+> +	dw_writel(pspi, ssienr, 0);
+> +
+> +	/* Set control param, 8 bits, transmit only mode */
+> +	ctrlr0 = dw_readl(pspi, ctrl0);
+> +
+> +	ctrlr0 &= 0xfcc0;
+> +	ctrlr0 |= 0xf | (SPI_FRF_SPI << SPI_FRF_OFFSET)
+> +		      | (SPI_TMOD_TO << SPI_TMOD_OFFSET);
+> +	dw_writel(pspi, ctrl0, ctrlr0);
+> +
+> +	/* Change the spi0 clk to comply with 115200 bps,
+> +	 * use 100000 as dividor to make the clock a little
+> +	 * slower than baud rate */
+
+Comment style.
+
+> +	dw_writel(pspi, baudr, freq/100000);
+> +
+> +	/* Disable all INT for early phase */
+> +	dw_writel(pspi, imr, 0x0);
+> +
+> +	/* Set the cs to spi-uart */
+> +	dw_writel(pspi, ser, 0x2);
+> +
+> +	/* Enable the HW, the last step for HW init */
+> +	dw_writel(pspi, ssienr, 0x1);
+> +
+> +	mrst_spi_init_done = 1;
+> +
+> +	/* Register the kmsg dumper */
+> +	if (!dumper_registered) {
+> +		dw_dumper.dump = dw_kmsg_dump;
+> +		kmsg_dump_register(&dw_dumper);
+> +		dumper_registered = 1;
+> +	}
+> +}
+> +
+> +/* Set the ratio rate, INT */
+> +static void max3110_write_config(void)
+> +{
+> +	u16 config;
+> +
+> +	/* 115200, TM not set, no parity, 8bit word */
+> +	config = 0xc001;
+> +	dw_writel(pspi, dr, config);
+> +}
+> +
+> +/* Translate char to a eligibal word and send to max3110 */
+
+eligible?
+
+> +static void max3110_write_data(char c)
+> +{
+> +	u16 data;
+> +
+> +	data = 0x8000 | c;
+> +	dw_writel(pspi, dr, data);
+> +}
+> +
+> +/* Slave select should be called in the read/write function */
+> +static void early_mrst_spi_putc(char c)
+> +{
+> +	unsigned int timeout;
+> +	u32 sr;
+> +
+> +	timeout = MRST_SPI_TIMEOUT;
+> +	/* Early putc need make sure the TX FIFO is not full*/
+
+Comments end with ' */', not with '*/', plus the sentence should 
+probably read:
+
+  /* Early putc needs to make sure the TX FIFO is not full */
+
+> +	while (--timeout) {
+> +		sr = dw_readl(pspi, sr);
+> +		if (!(sr & SR_TF_NOT_FULL))
+> +			cpu_relax();
+> +		else
+> +			break;
+> +	}
+> +
+> +	if (!timeout)
+> +		pr_warning("SPI: waiting timeout\n");
+
+"SPI: timed out\n"
+
+or:
+
+"SPI: waiting timed out\n"
+
+> +	else
+> +		max3110_write_data(c);
+> +}
+> +
+> +/* Early SPI only use polling mode */
+
+s/use/uses
+
+> +static void early_mrst_spi_write(struct console *con, const char *str, unsigned n)
+> +{
+> +	int i;
+> +
+> +	if (unlikely(!mrst_spi_init_done)) {
+> +		early_mrst_spi_init();
+> +		max3110_write_config();
+> +	}
+
+Shouldnt the call to max3110_write_config() be moved into 
+early_mrst_spi_init()?
+
+> +
+> +	for (i = 0; i < n && *str; i++) {
+> +		if (*str == '\n')
+> +			early_mrst_spi_putc('\r');
+> +		early_mrst_spi_putc(*str);
+> +		str++;
+> +	}
+> +}
+> +
+> +struct console early_mrst_console = {
+> +	.name =		"earlymrst",
+> +	.write =	early_mrst_spi_write,
+> +	.flags =	CON_PRINTBUFFER,
+> +	.index =	-1,
+> +};
+
+Thanks,
+
+	Ingo
