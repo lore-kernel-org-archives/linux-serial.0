@@ -1,148 +1,124 @@
-From: Feng Tang <feng.tang@intel.com>
-Subject: [PATCH 2/2] mrst_max3110: Make the IRQ option runtime
-Date: Mon, 13 Sep 2010 15:39:56 +0800
-Message-ID: <1284363596-26867-1-git-send-email-feng.tang@intel.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:23014 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754518Ab0IMHTy (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 13 Sep 2010 03:19:54 -0400
-Sender: linux-serial-owner@vger.kernel.org
+From: Davidlohr Bueso <dave@gnu.org>
+Subject: [PATCH] serial: max3107: Fix memory leaks when returning on error
+Date: Mon, 13 Sep 2010 12:08:11 -0400
+Message-ID: <1284394091.2055.5.camel@cowboy>
+Reply-To: dave@gnu.org
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: jianwei.yang@intel.com, alan@linux.intel.com, gregkh@suse.de
+Cc: linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: greg@kroah.com, alan@linux.intel.com, mingo@elte.hu
 
-From: Alan Cox <alan@linux.intel.com>
+[PATCH] serial: max3107: Fix memory leaks in max3107_probe() when returning on error.
 
-And while we are at it allow it to fail to find one. Without this the IRQ
-option will cause the 3110 driver to fail on 0.7 SFI firmware.
-
-Acked-by: Feng Tang <feng.tang@intel.com>
-Signed-off-by: Alan Cox <alan@linux.intel.com>
+Signed-off-by: Davidlohr Bueso <dave@gnu.org>
 ---
- drivers/serial/Kconfig        |    7 -----
- drivers/serial/mrst_max3110.c |   55 +++++++++++++++++++++--------------------
- 2 files changed, 28 insertions(+), 34 deletions(-)
+ drivers/serial/max3107.c |   34 +++++++++++++++++++++++++---------
+ 1 files changed, 25 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
-index 12900f7..ba4b390 100644
---- a/drivers/serial/Kconfig
-+++ b/drivers/serial/Kconfig
-@@ -717,13 +717,6 @@ config SERIAL_MRST_MAX3110
- 	  the Intel Moorestown platform. On other systems use the max3100
- 	  driver.
+diff --git a/drivers/serial/max3107.c b/drivers/serial/max3107.c
+index 67283c1..910870e 100644
+--- a/drivers/serial/max3107.c
++++ b/drivers/serial/max3107.c
+@@ -986,12 +986,14 @@ int max3107_probe(struct spi_device *spi, struct max3107_plat *pdata)
+ 	s->rxbuf = kzalloc(sizeof(u16) * (MAX3107_RX_FIFO_SIZE+2), GFP_KERNEL);
+ 	if (!s->rxbuf) {
+ 		pr_err("Allocating RX buffer failed\n");
+-		return -ENOMEM;
++		retval = -ENOMEM;
++		goto err_free4;
+ 	}
+ 	s->rxstr = kzalloc(sizeof(u8) * MAX3107_RX_FIFO_SIZE, GFP_KERNEL);
+ 	if (!s->rxstr) {
+ 		pr_err("Allocating RX buffer failed\n");
+-		return -ENOMEM;
++		retval = -ENOMEM;
++		goto err_free3;
+ 	}
+ 	/* SPI Tx buffer
+ 	 * SPI transfer buffer
+@@ -1002,7 +1004,8 @@ int max3107_probe(struct spi_device *spi, struct max3107_plat *pdata)
+ 	s->txbuf = kzalloc(sizeof(u16) * MAX3107_TX_FIFO_SIZE + 3, GFP_KERNEL);
+ 	if (!s->txbuf) {
+ 		pr_err("Allocating TX buffer failed\n");
+-		return -ENOMEM;
++		retval = -ENOMEM;
++		goto err_free2;
+ 	}
+ 	/* Initialize shared data lock */
+ 	spin_lock_init(&s->data_lock);
+@@ -1021,13 +1024,15 @@ int max3107_probe(struct spi_device *spi, struct max3107_plat *pdata)
+ 	buf[0] = MAX3107_REVID_REG;
+ 	if (max3107_rw(s, (u8 *)buf, (u8 *)buf, 2)) {
+ 		dev_err(&s->spi->dev, "SPI transfer for REVID read failed\n");
+-		return -EIO;
++		retval = -EIO;
++		goto err_free1;
+ 	}
+ 	if ((buf[0] & MAX3107_SPI_RX_DATA_MASK) != MAX3107_REVID1 &&
+ 		(buf[0] & MAX3107_SPI_RX_DATA_MASK) != MAX3107_REVID2) {
+ 		dev_err(&s->spi->dev, "REVID %x does not match\n",
+ 				(buf[0] & MAX3107_SPI_RX_DATA_MASK));
+-		return -ENODEV;
++		retval = -ENODEV;
++		goto err_free1;
+ 	}
  
--config MRST_MAX3110_IRQ
--	boolean "Enable GPIO IRQ for Max3110 over Moorestown"
--	default n
--	depends on SERIAL_MRST_MAX3110 && GPIO_LANGWELL
--	help
--	  This has to be enabled after Moorestown GPIO driver is loaded
--
- config SERIAL_MFD_HSU
- 	tristate "Medfield High Speed UART support"
- 	depends on PCI
-diff --git a/drivers/serial/mrst_max3110.c b/drivers/serial/mrst_max3110.c
-index f148ea1..198e09e 100644
---- a/drivers/serial/mrst_max3110.c
-+++ b/drivers/serial/mrst_max3110.c
-@@ -446,7 +446,6 @@ static int max3110_main_thread(void *_max)
- 	return ret;
- }
+ 	/* Disable all interrupts */
+@@ -1047,7 +1052,8 @@ int max3107_probe(struct spi_device *spi, struct max3107_plat *pdata)
+ 	/* Perform SPI transfer */
+ 	if (max3107_rw(s, (u8 *)buf, NULL, 4)) {
+ 		dev_err(&s->spi->dev, "SPI transfer for init failed\n");
+-		return -EIO;
++		retval = -EIO;
++		goto err_free1;
+ 	}
  
--#ifdef CONFIG_MRST_MAX3110_IRQ
- static irqreturn_t serial_m3110_irq(int irq, void *dev_id)
- {
- 	struct uart_max3110 *max = dev_id;
-@@ -458,7 +457,7 @@ static irqreturn_t serial_m3110_irq(int irq, void *dev_id)
+ 	/* Register UART driver */
+@@ -1055,7 +1061,7 @@ int max3107_probe(struct spi_device *spi, struct max3107_plat *pdata)
+ 		retval = uart_register_driver(&max3107_uart_driver);
+ 		if (retval) {
+ 			dev_err(&s->spi->dev, "Registering UART driver failed\n");
+-			return retval;
++			goto err_free1;
+ 		}
+ 		driver_registered = 1;
+ 	}
+@@ -1074,13 +1080,13 @@ int max3107_probe(struct spi_device *spi, struct max3107_plat *pdata)
+ 	retval = uart_add_one_port(&max3107_uart_driver, &s->port);
+ 	if (retval < 0) {
+ 		dev_err(&s->spi->dev, "Adding UART port failed\n");
+-		return retval;
++		goto err_free1;
+ 	}
  
- 	return IRQ_HANDLED;
- }
--#else
-+
- /* if don't use RX IRQ, then need a thread to polling read */
- static int max3110_read_thread(void *_max)
- {
-@@ -481,7 +480,6 @@ static int max3110_read_thread(void *_max)
+ 	if (pdata->configure) {
+ 		retval = pdata->configure(s);
+ 		if (retval < 0)
+-			return retval;
++			goto err_free1;
+ 	}
+ 
+ 	/* Go to suspend mode */
+@@ -1088,6 +1094,16 @@ int max3107_probe(struct spi_device *spi, struct max3107_plat *pdata)
+ 		pdata->hw_suspend(s, 1);
  
  	return 0;
++
++err_free1:
++	kfree(s->txbuf);
++err_free2:
++	kfree(s->rxstr);
++err_free3:
++	kfree(s->rxbuf);
++err_free4:
++	kfree(s);
++	return retval;
  }
--#endif
+ EXPORT_SYMBOL_GPL(max3107_probe);
  
- static int serial_m3110_startup(struct uart_port *port)
- {
-@@ -504,34 +502,38 @@ static int serial_m3110_startup(struct uart_port *port)
- 	/* as we use thread to handle tx/rx, need set low latency */
- 	port->state->port.tty->low_latency = 1;
- 
--#ifdef CONFIG_MRST_MAX3110_IRQ
--	ret = request_irq(max->irq, serial_m3110_irq,
-+	if (max->irq) {
-+		max->read_thread = NULL;
-+		ret = request_irq(max->irq, serial_m3110_irq,
- 				IRQ_TYPE_EDGE_FALLING, "max3110", max);
--	if (ret)
--		return ret;
-+		if (ret) {
-+			max->irq = 0;
-+			pr_err(PR_FMT "unable to allocate IRQ, polling\n");
-+		}  else {
-+			/* Enable RX IRQ only */
-+			config |= WC_RXA_IRQ_ENABLE;
-+		}
-+	}
- 
--	/* Enable RX IRQ only */
--	config |= WC_RXA_IRQ_ENABLE;
--#else
--	/* If IRQ is disabled, start a read thread for input data */
--	max->read_thread =
--		kthread_run(max3110_read_thread, max, "max3110_read");
--	if (IS_ERR(max->read_thread)) {
--		ret = PTR_ERR(max->read_thread);
--		max->read_thread = NULL;
--		pr_err(PR_FMT "Can't create read thread!");
--		return ret;
-+	if (max->irq == 0) {
-+		/* If IRQ is disabled, start a read thread for input data */
-+		max->read_thread =
-+			kthread_run(max3110_read_thread, max, "max3110_read");
-+		if (IS_ERR(max->read_thread)) {
-+			ret = PTR_ERR(max->read_thread);
-+			max->read_thread = NULL;
-+			pr_err(PR_FMT "Can't create read thread!\n");
-+			return ret;
-+		}
- 	}
--#endif
- 
- 	ret = max3110_out(max, config);
- 	if (ret) {
--#ifdef CONFIG_MRST_MAX3110_IRQ
--		free_irq(max->irq, max);
--#else
--		kthread_stop(max->read_thread);
-+		if (max->irq)
-+			free_irq(max->irq, max);
-+		if (max->read_thread)
-+			kthread_stop(max->read_thread);
- 		max->read_thread = NULL;
--#endif
- 		return ret;
- 	}
- 
-@@ -550,9 +552,8 @@ static void serial_m3110_shutdown(struct uart_port *port)
- 		max->read_thread = NULL;
- 	}
- 
--#ifdef CONFIG_MRST_MAX3110_IRQ
--	free_irq(max->irq, max);
--#endif
-+	if (max->irq)
-+		free_irq(max->irq, max);
- 
- 	/* Disable interrupts from this port */
- 	config = WC_TAG | WC_SW_SHDI;
 -- 
 1.7.0.4
-
