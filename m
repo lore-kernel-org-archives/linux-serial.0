@@ -1,38 +1,68 @@
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] Add sc16is7x2 driver
-Date: Wed, 15 Sep 2010 12:17:29 -0700
-Message-ID: <20100915121729.19864d88.akpm@linux-foundation.org>
-References: <4C80F419.5070601@iis.fraunhofer.de>
-	<20100913172544.a81e8422.akpm@linux-foundation.org>
-	<4C8F7381.50300@iis.fraunhofer.de>
-	<20100914072746.4dad4e34@bike.lwn.net>
-	<4C90CD36.6020602@iis.fraunhofer.de>
+From: Alan Cox <alan@linux.intel.com>
+Subject: [PATCH 0/3] Fix the TIOCGICOUNT problem for good
+Date: Thu, 16 Sep 2010 18:21:06 +0100
+Message-ID: <20100916171747.25987.33573.stgit@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp1.linux-foundation.org ([140.211.169.13]:52609 "EHLO
-	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753710Ab0IOTRj (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 15 Sep 2010 15:17:39 -0400
-In-Reply-To: <4C90CD36.6020602@iis.fraunhofer.de>
+Received: from mga14.intel.com ([143.182.124.37]:26449 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752693Ab0IPSGY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 16 Sep 2010 14:06:24 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-Cc: Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org, Greg KH <greg@kroah.com>, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, greg@kroah.com, drosenberg@vsecurity.com
 
-On Wed, 15 Sep 2010 15:42:14 +0200
-Manuel Stahl <manuel.stahl@iis.fraunhofer.de> wrote:
+Remembering to clear fields is something driver authors are simply never
+going to remember to get right every new driver. Instead take the problem
+away from them and give them a simple interface to do the job.
 
-> OK, here is an implementation with threaded irqs.
+---
 
-That simplified things nicely.  Does it still work?
+Alan Cox (3):
+      tty: icount changeover for other main devices
+      tty: Convert the USB drivers to the new icount interface
+      tty: Make tiocgicount a handler
 
-> Still not sure about 
-> the locking stuff. Maybe someone experienced with uart drivers can help?
 
-The question is too general for anyone to answer, really.  Please
-describe the specific issues in resonable detail?  
+ arch/ia64/hp/sim/simserial.c          |   12 -----
+ drivers/char/amiserial.c              |   56 ++++++++++++++-----------
+ drivers/char/cyclades.c               |   49 ++++++++++++----------
+ drivers/char/ip2/ip2main.c            |   71 +++++++++++++++++++-------------
+ drivers/char/mxser.c                  |   62 ++++++++++++++++------------
+ drivers/char/nozomi.c                 |   37 ++++++++---------
+ drivers/char/pcmcia/synclink_cs.c     |   60 ++++++++++++---------------
+ drivers/char/synclink.c               |   73 +++++++++++++++------------------
+ drivers/char/synclink_gt.c            |   55 +++++++++++++------------
+ drivers/char/synclinkmp.c             |   61 +++++++++++++---------------
+ drivers/char/tty_io.c                 |   21 +++++++++
+ drivers/net/usb/hso.c                 |   35 +++++++---------
+ drivers/serial/68360serial.c          |   51 +++++++++++------------
+ drivers/serial/serial_core.c          |   35 +++++++---------
+ drivers/usb/serial/ark3116.c          |   40 +++++++++---------
+ drivers/usb/serial/ftdi_sio.c         |    1 
+ drivers/usb/serial/io_edgeport.c      |   49 ++++++++++++----------
+ drivers/usb/serial/io_tables.h        |    4 ++
+ drivers/usb/serial/io_ti.c            |   29 ++++++++++---
+ drivers/usb/serial/mos7720.c          |   50 +++++++++++++----------
+ drivers/usb/serial/mos7840.c          |   50 +++++++++++++----------
+ drivers/usb/serial/ssu100.c           |   46 +++++++++++----------
+ drivers/usb/serial/ti_usb_3410_5052.c |   37 +++++++++++++----
+ drivers/usb/serial/usb-serial.c       |   13 ++++++
+ include/linux/tty_driver.h            |    9 ++++
+ include/linux/usb/serial.h            |    2 +
+ net/bluetooth/rfcomm/tty.c            |    4 --
+ 27 files changed, 561 insertions(+), 451 deletions(-)
+
+-- 
+Rust greets time a grave to steam, in mire gloom to no more gleam
+Does care die quiet and scarred, Berry red in Barry yard ?
+
+Rusted steel at rest dust all, old sump oil lead is my pall
+long rather to linger there, cold my fire once called me fair
+
+Who knows now when I was new, speed in flow and on I flew
+I turned eyes to run and see, in steam a dream adore me
 
 
