@@ -1,33 +1,36 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+From: David Miller <davem@davemloft.net>
 Subject: Re: [PATCH 0/3] Fix the TIOCGICOUNT problem for good
-Date: Thu, 16 Sep 2010 23:01:57 +0100
-Message-ID: <20100916230157.0c045cdd@lxorguk.ukuu.org.uk>
+Date: Thu, 16 Sep 2010 21:56:39 -0700 (PDT)
+Message-ID: <20100916.215639.172549193.davem@davemloft.net>
 References: <20100916171747.25987.33573.stgit@localhost.localdomain>
-	<20100916184446.GA8803@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:52750 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752677Ab0IPVkY (ORCPT
+Received: from 74-93-104-97-Washington.hfc.comcastbusiness.net ([74.93.104.97]:42360
+	"EHLO sunset.davemloft.net" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751551Ab0IQE4U (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 16 Sep 2010 17:40:24 -0400
-In-Reply-To: <20100916184446.GA8803@kroah.com>
+	Fri, 17 Sep 2010 00:56:20 -0400
+In-Reply-To: <20100916171747.25987.33573.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <greg@kroah.com>
-Cc: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, drosenberg@vsecurity.com
+To: alan@linux.intel.com
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, greg@kroah.com, drosenberg@vsecurity.com
 
-On Thu, 16 Sep 2010 11:44:46 -0700
-Greg KH <greg@kroah.com> wrote:
+From: Alan Cox <alan@linux.intel.com>
+Date: Thu, 16 Sep 2010 18:21:06 +0100
 
-> On Thu, Sep 16, 2010 at 06:21:06PM +0100, Alan Cox wrote:
-> > Remembering to clear fields is something driver authors are simply never
-> > going to remember to get right every new driver. Instead take the problem
-> > away from them and give them a simple interface to do the job.
+> Remembering to clear fields is something driver authors are simply never
+> going to remember to get right every new driver. Instead take the problem
+> away from them and give them a simple interface to do the job.
 > 
-> Looks good.  But is it ok if I keep the one driver patch I have now for
-> .36 and queue this up for .37?  I'll handle the merge conflicts myself.
+> ---
+> 
+> Alan Cox (3):
+>       tty: icount changeover for other main devices
+>       tty: Convert the USB drivers to the new icount interface
+>       tty: Make tiocgicount a handler
 
-Probably sensible given the closeness of .36 and the scale of changes
+This is a good plan for the next merge window, but for the current
+-rc series and -stable we'd better just fix the individual cases.
