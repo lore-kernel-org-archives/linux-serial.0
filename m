@@ -1,39 +1,43 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH 0/3] Fix the TIOCGICOUNT problem for good
-Date: Fri, 17 Sep 2010 10:01:49 -0700
-Message-ID: <20100917170149.GB13570@kroah.com>
-References: <20100916171747.25987.33573.stgit@localhost.localdomain>
- <20100916.215639.172549193.davem@davemloft.net>
+From: Dominik Brodowski <linux@dominikbrodowski.net>
+Subject: Re: Re: Re: Re: Re: [PATCH 11/18] pcmcia: do not use io_req_t when
+ calling pcmcia_request_io()
+Date: Fri, 17 Sep 2010 20:52:12 +0200
+Message-ID: <20100917185212.GA26258@comet.dominikbrodowski.net>
+References: <20100913195353.GA6999@comet.dominikbrodowski.net>
+ <20100904174334.GA955@isilmar-3.linta.de>
+ <20100904105415.GC16589@isilmar-3.linta.de>
+ <20100830062724.GA2387@comet.dominikbrodowski.net>
+ <13928942.191731283256326809.komurojun-mbn@nifty.com>
+ <29547163.98341283601820252.komurojun-mbn@nifty.com>
+ <8520532.194511283862270702.komurojun-mbn@nifty.com>
+ <31800273.194401284728811871.komurojun-mbn@nifty.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from isilmar-3.linta.de ([188.40.101.200]:40420 "EHLO linta.de"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1754475Ab0IQSxY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 17 Sep 2010 14:53:24 -0400
 Content-Disposition: inline
-In-Reply-To: <20100916.215639.172549193.davem@davemloft.net>
-Sender: linux-kernel-owner@vger.kernel.org
-To: David Miller <davem@davemloft.net>
-Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, drosenberg@vsecurity.com
+In-Reply-To: <31800273.194401284728811871.komurojun-mbn@nifty.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Komuro <komurojun-mbn@nifty.com>
+Cc: linux-pcmcia@lists.infradead.org, linux-serial@vger.kernel.org
 
-On Thu, Sep 16, 2010 at 09:56:39PM -0700, David Miller wrote:
-> From: Alan Cox <alan@linux.intel.com>
-> Date: Thu, 16 Sep 2010 18:21:06 +0100
-> 
-> > Remembering to clear fields is something driver authors are simply never
-> > going to remember to get right every new driver. Instead take the problem
-> > away from them and give them a simple interface to do the job.
-> > 
-> > ---
-> > 
-> > Alan Cox (3):
-> >       tty: icount changeover for other main devices
-> >       tty: Convert the USB drivers to the new icount interface
-> >       tty: Make tiocgicount a handler
-> 
-> This is a good plan for the next merge window, but for the current
-> -rc series and -stable we'd better just fix the individual cases.
+Dear Komuro,
 
-Agreed, that's the plan now.
+On Fri, Sep 17, 2010 at 10:06:51PM +0900, Komuro wrote:
+> Xircom multi-function card still does not work.
 
-thanks,
+Huh, that is indeed surprising, as the dmesg has all the usual config
+descriptions:
 
-greg k-h
+eth0: Xircom: port 0x300, irq 18, hwaddr 00:10:a4:f3:db:02
+...
+0.1: ttyS3 at I/O 0x2e8 (irq = 18) is a 16550A
+
+Are these lines different from what you see on a working kernel?
+
+Best,
+	Dominik
