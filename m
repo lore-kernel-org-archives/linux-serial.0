@@ -1,104 +1,42 @@
-From: Govindraj <govindraj.ti@gmail.com>
-Subject: Re: [PATCH 03/11] OMAP: UART: omap_device converions, remove implicit
- 8520 assumptions
-Date: Sat, 18 Sep 2010 14:48:35 +0530
-Message-ID: <AANLkTiniFVGzH-f6k9wn7Pk08R2EuWoDahC-Txo8-xcu@mail.gmail.com>
-References: <14049.10.24.255.18.1284739601.squirrel@dbdmail.itg.ti.com>
-	<87ocbwrl5w.fsf@deeprootsystems.com>
+From: Dominik Brodowski <linux@dominikbrodowski.net>
+Subject: Re: Re: Re: Re: Re: Re: [PATCH 11/18] pcmcia: do not use io_req_t
+ when calling pcmcia_request_io()
+Date: Sat, 18 Sep 2010 11:58:03 +0200
+Message-ID: <20100918095803.GA6415@comet.dominikbrodowski.net>
+References: <20100917185212.GA26258@comet.dominikbrodowski.net>
+ <20100913195353.GA6999@comet.dominikbrodowski.net>
+ <20100904174334.GA955@isilmar-3.linta.de>
+ <20100904105415.GC16589@isilmar-3.linta.de>
+ <20100830062724.GA2387@comet.dominikbrodowski.net>
+ <13928942.191731283256326809.komurojun-mbn@nifty.com>
+ <29547163.98341283601820252.komurojun-mbn@nifty.com>
+ <8520532.194511283862270702.komurojun-mbn@nifty.com>
+ <31800273.194401284728811871.komurojun-mbn@nifty.com>
+ <12823052.28741284774304299.komurojun-mbn@nifty.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <87ocbwrl5w.fsf@deeprootsystems.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Kevin Hilman <khilman@deeprootsystems.com>
-Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Tony Lindgren <tony@atomide.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from isilmar-3.linta.de ([188.40.101.200]:53473 "EHLO linta.de"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1755458Ab0IRJ6O (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 18 Sep 2010 05:58:14 -0400
+Content-Disposition: inline
+In-Reply-To: <12823052.28741284774304299.komurojun-mbn@nifty.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Komuro <komurojun-mbn@nifty.com>
+Cc: linux-pcmcia@lists.infradead.org, linux-serial@vger.kernel.org
 
-On Sat, Sep 18, 2010 at 5:13 AM, Kevin Hilman
-<khilman@deeprootsystems.com> wrote:
-> "Govindraj.R" <govindraj.raja@ti.com> writes:
->
->> From: Kevin Hilman <khilman@ti.com>
->>
->> Major rework of OMAP UART init for omap_device conversion as well as
->> use with either 8250 driver or new omap-serial driver.
->>
->> In preparation for a new omap-serial driver, remove 8250 assumptions
->> and dependencies from the serial core.
->>
->> Convert UART core and PM support to use omap_device layer. Also add
->> support for both console on 8250 or omap-serial driver.
->>
->> omap_device conversion:
->> - Convert clock API calls to omap_device calls
->> - Remove all static platform_data setup and configuration. =A0This i=
-s
->> =A0 all done by the omap_device build phase.
->>
->> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
->> Signed-off-by: Kevin Hilman <khilman@ti.com>
->> ---
->> =A0arch/arm/mach-omap2/serial.c | =A0528 +++++++++++++++++++++------=
----------------
->> =A01 files changed, 259 insertions(+), 269 deletions(-)
->>
->
-> [...]
->
->> + =A0 =A0 /*
->> + =A0 =A0 =A0* Need to block sleep long enough for interrupt driven
->> + =A0 =A0 =A0* driver to start. =A0Console driver is in polling mode
->> + =A0 =A0 =A0* so device needs to be kept enabled while polling driv=
-er
->> + =A0 =A0 =A0* is in use.
->> + =A0 =A0 =A0*/
->> + =A0 =A0 uart->timeout =3D (30 * HZ);
->
-> My fault, but there's a bug here. =A0This long timeout is only needed
-> when the init-time timout is non-zero, so should be:
->
-> =A0 =A0 =A0 =A0if (uart->timeout)
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0uart->timeout =3D (30 * HZ);
->
-> Without this, even though the default timeout is zero (meaning, UARTs
-> should not timeout and go idle), a timer will fire 30 seconds after b=
-oot
-> and cause the UARTs to go idle.
->
-> I discovered this when seeing the UARTs go idle, even though the
-> timeouts were all set to zero.
->
-> Can you fold this into your the next version?
+Hey,
 
+with 2.6.36-rc4+ (as of today), I see a (similar?) issue: When inserting
+a multifunction card after reboot for the first time, the serial part does
+not work. After re-inserting the card, it works. Re-loading the PCMCIA
+modules does not make the bug re-appear, so I presume the issue to be
+related to the serial layer. Could you verify whether it also works on
+2.6.36-rc4+ for you, at least if you re-insert the card?
 
-Thanks for this update and review.
+Will try to investigate further as to the cause(s) of this bug.
 
-Will incorporate this change.
-
-Thanks,
-Govindraj.R
-
-
->
-> Thanks,
->
-> Kevin
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-seria=
-l" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at =A0http://vger.kernel.org/majordomo-info.html
->
-
-
-
---=20
----
-Regards,
-Govindraj.R
---
-To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Best,
+	Dominik
