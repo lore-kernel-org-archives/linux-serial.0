@@ -1,39 +1,99 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: [PATCH 0/3] Fix the TIOCGICOUNT problem for good
-Date: Mon, 20 Sep 2010 09:31:07 +0100
-Message-ID: <20100920093107.379c431c@linux.intel.com>
-References: <20100916171747.25987.33573.stgit@localhost.localdomain>
-	<20100918155820.GA3942@infradead.org>
+From: Kevin Hilman <khilman@deeprootsystems.com>
+Subject: Re: [PATCH 00/11] OMAP: Serial: Add omap-serial driver with platform support
+Date: Mon, 20 Sep 2010 09:21:19 -0700
+Message-ID: <87wrqg2xog.fsf@deeprootsystems.com>
+References: <13965.10.24.255.18.1284739547.squirrel@dbdmail.itg.ti.com>
+	<87tylorl9i.fsf@deeprootsystems.com>
+	<AANLkTik-+RC7y=dJnDdxzrqMFnTzRV-j8s5FtmMy8ZhE@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:13239 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756057Ab0ITJRW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 20 Sep 2010 05:17:22 -0400
-In-Reply-To: <20100918155820.GA3942@infradead.org>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <AANLkTik-+RC7y=dJnDdxzrqMFnTzRV-j8s5FtmMy8ZhE@mail.gmail.com>
+	(Govindraj's message of "Sat, 18 Sep 2010 14:47:22 +0530")
+Sender: linux-omap-owner@vger.kernel.org
+To: Govindraj <govindraj.ti@gmail.com>
+Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Tony Lindgren <tony@atomide.com>
 List-Id: linux-serial@vger.kernel.org
-To: Christoph Hellwig <hch@infradead.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, greg@kroah.com, drosenberg@vsecurity.com
 
-On Sat, 18 Sep 2010 11:58:20 -0400
-Christoph Hellwig <hch@infradead.org> wrote:
+Govindraj <govindraj.ti@gmail.com> writes:
 
-> On Thu, Sep 16, 2010 at 06:21:06PM +0100, Alan Cox wrote:
-> > Remembering to clear fields is something driver authors are simply
-> > never going to remember to get right every new driver. Instead take
-> > the problem away from them and give them a simple interface to do
-> > the job.
-> 
-> Btw, I wonder if all the standard tty ioctls should get similar
-> treatment.  That way we have a nice enough skeleton of what needs to
-> be implemented in every tty driver instead of passing down the raw
-> ioctl method.
+> On Sat, Sep 18, 2010 at 5:11 AM, Kevin Hilman
+> <khilman@deeprootsystems.com> wrote:
+>> "Govindraj.R" <govindraj.raja@ti.com> writes:
+>>
+>>> This patch series adds a serial driver to handle uarts on omap plat=
+forms.
+>>> Currenlty omap-uarts are handled with 8250 driver, since updating
+>>> this driver with omap specific features will over load
+>>> the 8250 driver with all omap-specific data thus a new driver
+>>> is added to configure and support features like
+>>> dma, h/w, s/w flowcontrol for omap-uarts.
+>>> Also the patch series updates various low level platform specific
+>>> serial data to support omap-uarts with hwmod framework and adds sup=
+port
+>>> for uart4 on OMAP3630.
+>>
+>> This series is missing a couple things to work more broadly on all
+>> boards, specifically 3630-based boards.
+>>
+>> First, due to the current UART idle code base, you need to enable al=
+l
+>> OMAP UARTs 36xx. =A0Enabling less than all OMAP UARTs will break the
+>> current idle code. =A0As we discussed, the next phase we will move t=
+he
+>> idle management from this serial.c hackery into the omap-serial driv=
+er
+>> iteself. =A0Until then, you need to call omap_serial_init() on
+>> Zoom2/Zoom3. =A0Patch below[1]
+>>
+>> Also, you previously had a patch that updated omap_uart_idle_init() =
+to
+>> handle 36xx and specifically UART4. =A0Without that, struct
+>> omap_uart_state is not setup correctly for UART4, and thus cannot be
+>> properly idled on 3630.
+>
+> ok fine, I will I incorporate initialize all uarts patch for zoom boa=
+rds.
+>
+> Are you referring to this patch?
+> https://patchwork.kernel.org/patch/108066/
+>
+> Is this still needed if we have initialized all uarts?
+> This patch might not needed if we have initialized all uarts right?
 
-They have pretty much entirely now - TIOCMIWAIT is the main one that
-hasn't been done, but that really wants a generic implementation in
-tty_port that most drivers could then use.
+Right.  We don't need the above patchwork patch if all UARTs are
+initialized.
 
-Alan
+The other patch I was referring to was the one that added UART4 support
+to omap_uart_idle_init() (added the wk_en, wk_st, padconf etc.)  I had =
+a
+pending request for you to drop the muxmode from that patch, but the
+rest of it was still needed.
+
+>>
+>> Also, it's been a while since I tested this on OMAP2. =A0Please re-t=
+est on
+>> OMAP2 with the whole series. =A0Also, please report here the other
+>> platforms this was tested on. =A0The final needs to be tested on OMA=
+P2, 3
+>> and 4 before merge.
+>
+> Yes Sure,
+>
+> Just FYI this patch series was also tested on omap2,3,4.
+>
+
+OK, be sure to test Zoom3, because my testing on Zoom3 led to a crash a=
+s
+soon as idle was enabled due to the missing init of all UARTs.
+
+Thanks,
+
+Kevin
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
+n
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
