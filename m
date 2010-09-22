@@ -1,40 +1,56 @@
-From: Greg KH <greg@kroah.com>
+From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
 Subject: Re: [PATCH] Add sc16is7x2 driver
-Date: Tue, 21 Sep 2010 13:42:38 -0700
-Message-ID: <20100921204238.GE25112@kroah.com>
-References: <4C80F419.5070601@iis.fraunhofer.de>
- <20100913172544.a81e8422.akpm@linux-foundation.org>
- <4C8F7381.50300@iis.fraunhofer.de>
+Date: Wed, 22 Sep 2010 10:01:39 +0200
+Message-ID: <4C99B7E3.4070501@iis.fraunhofer.de>
+References: <4C80F419.5070601@iis.fraunhofer.de> <20100913172544.a81e8422.akpm@linux-foundation.org> <4C8F7381.50300@iis.fraunhofer.de> <20100921204238.GE25112@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:39884 "EHLO coco.kroah.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754407Ab0IUUrq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 21 Sep 2010 16:47:46 -0400
-Content-Disposition: inline
-In-Reply-To: <4C8F7381.50300@iis.fraunhofer.de>
+Received: from relay03-haj2.antispameurope.com ([83.246.65.53]:49209 "EHLO
+	relay03-haj2.antispameurope.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751131Ab0IVIBl convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 22 Sep 2010 04:01:41 -0400
+In-Reply-To: <20100921204238.GE25112@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+To: Greg KH <greg@kroah.com>
 Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Tue, Sep 14, 2010 at 03:07:13PM +0200, Manuel Stahl wrote:
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -47,6 +47,9 @@
->  #define PORT_U6_16550A	19	/* ST-Ericsson U6xxx internal UART */
->  #define PORT_MAX_8250	19	/* max port ID */
->  
-> +/* SC16IS7x2 SPI UART */
-> +#define PORT_SC16IS7X2	19
+Am 21.09.2010 22:42, schrieb Greg KH:
+> On Tue, Sep 14, 2010 at 03:07:13PM +0200, Manuel Stahl wrote:
+>> --- a/include/linux/serial_core.h
+>> +++ b/include/linux/serial_core.h
+>> @@ -47,6 +47,9 @@
+>>   #define PORT_U6_16550A	19	/* ST-Ericsson U6xxx internal UART */
+>>   #define PORT_MAX_8250	19	/* max port ID */
+>>
+>> +/* SC16IS7x2 SPI UART */
+>> +#define PORT_SC16IS7X2	19
+>
+> Hm, didn't you just duplicate the number here?  Shouldn't that be "20=
+"
+> and you bump the max up?
 
-Hm, didn't you just duplicate the number here?  Shouldn't that be "20"
-and you bump the max up?
+Oh, that might be true.
 
-In the end, we need to just drop those, I don't think we need defines
-anymore, but I need to look at it some more to find out.
+> In the end, we need to just drop those, I don't think we need defines
+> anymore, but I need to look at it some more to find out.
 
-thanks,
+Thank you for doing that, Greg.
 
-greg k-h
+Regards,
+--=20
+Dipl.-Inf. Manuel Stahl
+=46raunhofer-Institut f=FCr Integrierte Schaltungen IIS
+- Leistungsoptimierte Systeme -
+Nordostpark 93                Telefon  +49 (0)911/58061-6419
+90411 N=FCrnberg                Fax      +49 (0)911/58061-6398
+http://www.iis.fraunhofer.de  manuel.stahl@iis.fraunhofer.de
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
