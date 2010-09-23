@@ -1,54 +1,92 @@
-From: Darius Augulis <augulis.darius@gmail.com>
-Subject: [RESEND PATCH] serial: samsung: fix device name
-Date: Thu, 23 Sep 2010 22:15:31 +0300
-Message-ID: <20100923190212.18863.25678.stgit@darius-desktop>
+From: Wolfram Sang <w.sang@pengutronix.de>
+Subject: Re: [RESEND PATCH] serial: samsung: fix device name
+Date: Thu, 23 Sep 2010 21:40:21 +0200
+Message-ID: <20100923194021.GA11663@pengutronix.de>
+References: <20100923190212.18863.25678.stgit@darius-desktop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="y0ulUmNC+osPPQO6"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ey0-f174.google.com ([209.85.215.174]:49215 "EHLO
-	mail-ey0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752066Ab0IWTPi (ORCPT
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:56835 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756338Ab0IWTkb (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 23 Sep 2010 15:15:38 -0400
+	Thu, 23 Sep 2010 15:40:31 -0400
+Content-Disposition: inline
+In-Reply-To: <20100923190212.18863.25678.stgit@darius-desktop>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: kgene.kim@samsung.com, paulius.zaleckas@gmail.com, linux-kernel@vger.kernel.org, ben-linux@fluff.org, linux-serial@vger.kernel.org
+To: Darius Augulis <augulis.darius@gmail.com>
+Cc: linux-arm-kernel@lists.infradead.org, kgene.kim@samsung.com, paulius.zaleckas@gmail.com, linux-kernel@vger.kernel.org, ben-linux@fluff.org, linux-serial@vger.kernel.org
 
-Swap device and driver names in serial/samsung.c
 
-Signed-off-by: Darius Augulis <augulis.darius@gmail.com>
----
+--y0ulUmNC+osPPQO6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-This patch was submitted about 3 months ago, but still not merged.
-There was another similar patch from Joonyoung Shim
-<jy0922.shim@samsung.com> and was discussed here:
-http://marc.info/?l=linux-serial&m=127416101222281&w=2.
-Joonyoung Shim acked my patch and other people on ARM mailing list
-acked it. The maintainer, Ben Dooks, still not responding for
-a long time. Another maintainer, Kukjin Kim, refused to merge
-it without Ben's review.
-I would like to ask somebody pick up this bugfix.
+On Thu, Sep 23, 2010 at 10:15:31PM +0300, Darius Augulis wrote:
+> Swap device and driver names in serial/samsung.c
+>=20
+> Signed-off-by: Darius Augulis <augulis.darius@gmail.com>
+> ---
+>=20
+> This patch was submitted about 3 months ago, but still not merged.
+> There was another similar patch from Joonyoung Shim
+> <jy0922.shim@samsung.com> and was discussed here:
+> http://marc.info/?l=3Dlinux-serial&m=3D127416101222281&w=3D2.
+> Joonyoung Shim acked my patch and other people on ARM mailing list
+> acked it. The maintainer, Ben Dooks, still not responding for
 
- drivers/serial/samsung.c |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+Why didn't you add the ACKs to your patch? That will look more convincing f=
+or
+the one picking it up.
 
-diff --git a/drivers/serial/samsung.c b/drivers/serial/samsung.c
-index b1156ba..25c0d0f 100644
---- a/drivers/serial/samsung.c
-+++ b/drivers/serial/samsung.c
-@@ -883,10 +883,10 @@ static struct uart_ops s3c24xx_serial_ops = {
- 
- static struct uart_driver s3c24xx_uart_drv = {
- 	.owner		= THIS_MODULE,
--	.dev_name	= "s3c2410_serial",
-+	.driver_name    = "s3c2410_serial",
- 	.nr		= CONFIG_SERIAL_SAMSUNG_UARTS,
- 	.cons		= S3C24XX_SERIAL_CONSOLE,
--	.driver_name	= S3C24XX_SERIAL_NAME,
-+	.dev_name       = S3C24XX_SERIAL_NAME,
- 	.major		= S3C24XX_SERIAL_MAJOR,
- 	.minor		= S3C24XX_SERIAL_MINOR,
- };
+> a long time. Another maintainer, Kukjin Kim, refused to merge
+> it without Ben's review.
+> I would like to ask somebody pick up this bugfix.
+>=20
+>  drivers/serial/samsung.c |    4 ++--
+>  1 files changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/serial/samsung.c b/drivers/serial/samsung.c
+> index b1156ba..25c0d0f 100644
+> --- a/drivers/serial/samsung.c
+> +++ b/drivers/serial/samsung.c
+> @@ -883,10 +883,10 @@ static struct uart_ops s3c24xx_serial_ops =3D {
+> =20
+>  static struct uart_driver s3c24xx_uart_drv =3D {
+>  	.owner		=3D THIS_MODULE,
+> -	.dev_name	=3D "s3c2410_serial",
+> +	.driver_name    =3D "s3c2410_serial",
+>  	.nr		=3D CONFIG_SERIAL_SAMSUNG_UARTS,
+>  	.cons		=3D S3C24XX_SERIAL_CONSOLE,
+> -	.driver_name	=3D S3C24XX_SERIAL_NAME,
+> +	.dev_name       =3D S3C24XX_SERIAL_NAME,
+>  	.major		=3D S3C24XX_SERIAL_MAJOR,
+>  	.minor		=3D S3C24XX_SERIAL_MINOR,
+>  };
+>=20
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
+--=20
+Pengutronix e.K.                           | Wolfram Sang                |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+
+--y0ulUmNC+osPPQO6
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (GNU/Linux)
+
+iEYEARECAAYFAkybrSUACgkQD27XaX1/VRsXSQCeOkP69RU32uXgmCpgxMWbLe13
+5UIAoJSPCrpzUQyUo6ZKt0LdKbxTBimS
+=5Mc7
+-----END PGP SIGNATURE-----
+
+--y0ulUmNC+osPPQO6--
