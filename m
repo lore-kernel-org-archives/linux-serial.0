@@ -1,135 +1,112 @@
 From: Manuel Lauss <manuel.lauss@googlemail.com>
-Subject: [PATCH RESEND 2/2] Alchemy: UART PM through serial framework.
-Date: Fri, 24 Sep 2010 18:13:29 +0200
-Message-ID: <1285344809-16839-2-git-send-email-manuel.lauss@googlemail.com>
-References: <1285344809-16839-1-git-send-email-manuel.lauss@googlemail.com>
+Subject: [PATCH RESEND 1/2] 8250: pm callback for platform uarts
+Date: Fri, 24 Sep 2010 18:13:28 +0200
+Message-ID: <1285344809-16839-1-git-send-email-manuel.lauss@googlemail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
 Received: from mail-fx0-f46.google.com ([209.85.161.46]:51218 "EHLO
 	mail-fx0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753601Ab0IXQNi (ORCPT
+	with ESMTP id S1753431Ab0IXQNh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 24 Sep 2010 12:13:38 -0400
-Received: by mail-fx0-f46.google.com with SMTP id 3so817711fxm.19
-        for <linux-serial@vger.kernel.org>; Fri, 24 Sep 2010 09:13:38 -0700 (PDT)
-In-Reply-To: <1285344809-16839-1-git-send-email-manuel.lauss@googlemail.com>
+	Fri, 24 Sep 2010 12:13:37 -0400
+Received: by fxm3 with SMTP id 3so817711fxm.19
+        for <linux-serial@vger.kernel.org>; Fri, 24 Sep 2010 09:13:36 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: Greg KH <greg@kroah.com>, Andrew Morton <akpm@linux-foundation.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Manuel Lauss <manuel.lauss@googlemail.com>
 
-Hook up the Alchemy on-chip uarts with the platform 8250 PM callback and
-enable/disable clocks to the uart blocks as needed.  This also allows to
-get rid of the UART1 PM hack in the Alchemy PM code.
+The 8250 driver provides in its uart_ops a pm callback which in turn
+handles 8250 pm and, if it exists, calls a private callback.
+However there's no way for platform 8250 devices to assign anything
+to this callback.
 
-Tested on Au1200.
+This patch adds a new pm field to the plat_8250_port and uart_port
+structures and modifies the 8250 pm callback to call the platform
+method before powering up and after powering down (if the platform
+is capable of cutting power/clks to the block).
 
 Signed-off-by: Manuel Lauss <manuel.lauss@googlemail.com>
 ---
- arch/mips/alchemy/common/platform.c |   23 +++++++++++++++++++++++
- arch/mips/alchemy/common/power.c    |   35 -----------------------------------
- 2 files changed, 23 insertions(+), 35 deletions(-)
+ drivers/serial/8250.c       |   15 +++++++--------
+ include/linux/serial_8250.h |    2 ++
+ include/linux/serial_core.h |    2 ++
+ 3 files changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/arch/mips/alchemy/common/platform.c b/arch/mips/alchemy/common/platform.c
-index 1dc55ee..6f0afca 100644
---- a/arch/mips/alchemy/common/platform.c
-+++ b/arch/mips/alchemy/common/platform.c
-@@ -24,6 +24,28 @@
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index 24110f6..06606d2 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -154,12 +154,6 @@ struct uart_8250_port {
+ 	unsigned char		lsr_saved_flags;
+ #define MSR_SAVE_FLAGS UART_MSR_ANY_DELTA
+ 	unsigned char		msr_saved_flags;
+-
+-	/*
+-	 * We provide a per-port pm hook.
+-	 */
+-	void			(*pm)(struct uart_port *port,
+-				      unsigned int state, unsigned int old);
+ };
  
- #include <prom.h>
- 
-+static void alchemy_8250_pm(struct uart_port *port, unsigned int state,
-+			    unsigned int old_state)
-+{
-+	switch (state) {
-+	case 0:
-+		if ((__raw_readl(port->membase + UART_MOD_CNTRL) & 3) != 3) {
-+			/* power-on sequence as suggested in the databooks */
-+			__raw_writel(0, port->membase + UART_MOD_CNTRL);
-+			wmb();
-+			__raw_writel(1, port->membase + UART_MOD_CNTRL);
-+			wmb();
-+		}
-+		__raw_writel(3, port->membase + UART_MOD_CNTRL); /* full on */
-+		wmb();
-+		break;
-+	case 3:		/* power off */
-+		__raw_writel(0, port->membase + UART_MOD_CNTRL);
-+		wmb();
-+		break;
-+	}
-+}
-+
- #define PORT(_base, _irq)					\
- 	{							\
- 		.mapbase	= _base,			\
-@@ -33,6 +55,7 @@
- 		.flags		= UPF_SKIP_TEST | UPF_IOREMAP |	\
- 				  UPF_FIXED_TYPE,		\
- 		.type		= PORT_16550A,			\
-+		.pm		= alchemy_8250_pm,		\
- 	}
- 
- static struct plat_serial8250_port au1x00_uart_data[] = {
-diff --git a/arch/mips/alchemy/common/power.c b/arch/mips/alchemy/common/power.c
-index 5ef06a1..e5916a5 100644
---- a/arch/mips/alchemy/common/power.c
-+++ b/arch/mips/alchemy/common/power.c
-@@ -49,11 +49,6 @@
-  * We only have to save/restore registers that aren't otherwise
-  * done as part of a driver pm_* function.
-  */
--static unsigned int sleep_uart0_inten;
--static unsigned int sleep_uart0_fifoctl;
--static unsigned int sleep_uart0_linectl;
--static unsigned int sleep_uart0_clkdiv;
--static unsigned int sleep_uart0_enable;
- static unsigned int sleep_usb[2];
- static unsigned int sleep_sys_clocks[5];
- static unsigned int sleep_sys_pinfunc;
-@@ -62,22 +57,6 @@ static unsigned int sleep_static_memctlr[4][3];
- 
- static void save_core_regs(void)
+ struct irq_info {
+@@ -2446,10 +2440,13 @@ serial8250_pm(struct uart_port *port, unsigned int state,
  {
--	extern void save_au1xxx_intctl(void);
--	extern void pm_eth0_shutdown(void);
--
--	/*
--	 * Do the serial ports.....these really should be a pm_*
--	 * registered function by the driver......but of course the
--	 * standard serial driver doesn't understand our Au1xxx
--	 * unique registers.
--	 */
--	sleep_uart0_inten = au_readl(UART0_ADDR + UART_IER);
--	sleep_uart0_fifoctl = au_readl(UART0_ADDR + UART_FCR);
--	sleep_uart0_linectl = au_readl(UART0_ADDR + UART_LCR);
--	sleep_uart0_clkdiv = au_readl(UART0_ADDR + UART_CLK);
--	sleep_uart0_enable = au_readl(UART0_ADDR + UART_MOD_CNTRL);
--	au_sync();
--
- #ifndef CONFIG_SOC_AU1200
- 	/* Shutdown USB host/device. */
- 	sleep_usb[0] = au_readl(USB_HOST_CONFIG);
-@@ -175,20 +154,6 @@ static void restore_core_regs(void)
- 	au_writel(sleep_static_memctlr[3][0], MEM_STCFG3);
- 	au_writel(sleep_static_memctlr[3][1], MEM_STTIME3);
- 	au_writel(sleep_static_memctlr[3][2], MEM_STADDR3);
--
--	/*
--	 * Enable the UART if it was enabled before sleep.
--	 * I guess I should define module control bits........
--	 */
--	if (sleep_uart0_enable & 0x02) {
--		au_writel(0, UART0_ADDR + UART_MOD_CNTRL); au_sync();
--		au_writel(1, UART0_ADDR + UART_MOD_CNTRL); au_sync();
--		au_writel(3, UART0_ADDR + UART_MOD_CNTRL); au_sync();
--		au_writel(sleep_uart0_inten, UART0_ADDR + UART_IER); au_sync();
--		au_writel(sleep_uart0_fifoctl, UART0_ADDR + UART_FCR); au_sync();
--		au_writel(sleep_uart0_linectl, UART0_ADDR + UART_LCR); au_sync();
--		au_writel(sleep_uart0_clkdiv, UART0_ADDR + UART_CLK); au_sync();
--	}
+ 	struct uart_8250_port *p = (struct uart_8250_port *)port;
+ 
++	if ((p->port.pm) && (state == 0))	/* power up: call platform first */
++		p->port.pm(port, state, oldstate);
++
+ 	serial8250_set_sleep(p, state != 0);
+ 
+-	if (p->pm)
+-		p->pm(port, state, oldstate);
++	if ((p->port.pm) && (state != 0))	/* power down */
++		p->port.pm(port, state, oldstate);
  }
  
- void au_sleep(void)
+ static unsigned int serial8250_port_size(struct uart_8250_port *pt)
+@@ -3010,6 +3007,7 @@ static int __devinit serial8250_probe(struct platform_device *dev)
+ 		port.serial_in		= p->serial_in;
+ 		port.serial_out		= p->serial_out;
+ 		port.set_termios	= p->set_termios;
++		port.pm			= p->pm;
+ 		port.dev		= &dev->dev;
+ 		port.irqflags		|= irqflag;
+ 		ret = serial8250_register_port(&port);
+@@ -3161,6 +3159,7 @@ int serial8250_register_port(struct uart_port *port)
+ 		uart->port.flags        = port->flags | UPF_BOOT_AUTOCONF;
+ 		uart->port.mapbase      = port->mapbase;
+ 		uart->port.private_data = port->private_data;
++		uart->port.pm		= port->pm;
+ 		if (port->dev)
+ 			uart->port.dev = port->dev;
+ 
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index 7638dea..ce3af06 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -35,6 +35,8 @@ struct plat_serial8250_port {
+ 	void		(*set_termios)(struct uart_port *,
+ 			               struct ktermios *new,
+ 			               struct ktermios *old);
++	void		(*pm)(struct uart_port *, unsigned int state,
++			      unsigned old);
+ };
+ 
+ /*
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 563e234..632a16b 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -289,6 +289,8 @@ struct uart_port {
+ 	void			(*set_termios)(struct uart_port *,
+ 				               struct ktermios *new,
+ 				               struct ktermios *old);
++	void			(*pm)(struct uart_port *, unsigned int state,
++				      unsigned int old);
+ 	unsigned int		irq;			/* irq number */
+ 	unsigned long		irqflags;		/* irq flags  */
+ 	unsigned int		uartclk;		/* base uart clock */
 -- 
 1.7.2.3
 
