@@ -1,41 +1,135 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: [PATCH] tty: Fix warning left over from TIOCGICOUNT changes
-Date: Fri, 24 Sep 2010 15:49:18 +0100
-Message-ID: <20100924144750.11385.24596.stgit@localhost.localdomain>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-next-owner@vger.kernel.org>
-Sender: linux-next-owner@vger.kernel.org
-To: linux-next@vger.kernel.org, greg@kroah.com, linux-serial@vger.kernel.org
+From: Manuel Lauss <manuel.lauss@googlemail.com>
+Subject: [PATCH RESEND 2/2] Alchemy: UART PM through serial framework.
+Date: Fri, 24 Sep 2010 18:13:29 +0200
+Message-ID: <1285344809-16839-2-git-send-email-manuel.lauss@googlemail.com>
+References: <1285344809-16839-1-git-send-email-manuel.lauss@googlemail.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-fx0-f46.google.com ([209.85.161.46]:51218 "EHLO
+	mail-fx0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753601Ab0IXQNi (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 24 Sep 2010 12:13:38 -0400
+Received: by mail-fx0-f46.google.com with SMTP id 3so817711fxm.19
+        for <linux-serial@vger.kernel.org>; Fri, 24 Sep 2010 09:13:38 -0700 (PDT)
+In-Reply-To: <1285344809-16839-1-git-send-email-manuel.lauss@googlemail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Greg KH <greg@kroah.com>, Andrew Morton <akpm@linux-foundation.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Manuel Lauss <manuel.lauss@googlemail.com>
 
-Signed-off-by: Alan Cox <alan@linux.intel.com>
+Hook up the Alchemy on-chip uarts with the platform 8250 PM callback and
+enable/disable clocks to the uart blocks as needed.  This also allows to
+get rid of the UART1 PM hack in the Alchemy PM code.
+
+Tested on Au1200.
+
+Signed-off-by: Manuel Lauss <manuel.lauss@googlemail.com>
 ---
+ arch/mips/alchemy/common/platform.c |   23 +++++++++++++++++++++++
+ arch/mips/alchemy/common/power.c    |   35 -----------------------------------
+ 2 files changed, 23 insertions(+), 35 deletions(-)
 
- drivers/usb/serial/ssu100.c |    2 --
- 1 files changed, 0 insertions(+), 2 deletions(-)
-
-
-diff --git a/drivers/usb/serial/ssu100.c b/drivers/usb/serial/ssu100.c
-index 8bd60e3..f5312dd 100644
---- a/drivers/usb/serial/ssu100.c
-+++ b/drivers/usb/serial/ssu100.c
-@@ -444,8 +444,6 @@ static int ssu100_ioctl(struct tty_struct *tty, struct file *file,
- 		    unsigned int cmd, unsigned long arg)
+diff --git a/arch/mips/alchemy/common/platform.c b/arch/mips/alchemy/common/platform.c
+index 1dc55ee..6f0afca 100644
+--- a/arch/mips/alchemy/common/platform.c
++++ b/arch/mips/alchemy/common/platform.c
+@@ -24,6 +24,28 @@
+ 
+ #include <prom.h>
+ 
++static void alchemy_8250_pm(struct uart_port *port, unsigned int state,
++			    unsigned int old_state)
++{
++	switch (state) {
++	case 0:
++		if ((__raw_readl(port->membase + UART_MOD_CNTRL) & 3) != 3) {
++			/* power-on sequence as suggested in the databooks */
++			__raw_writel(0, port->membase + UART_MOD_CNTRL);
++			wmb();
++			__raw_writel(1, port->membase + UART_MOD_CNTRL);
++			wmb();
++		}
++		__raw_writel(3, port->membase + UART_MOD_CNTRL); /* full on */
++		wmb();
++		break;
++	case 3:		/* power off */
++		__raw_writel(0, port->membase + UART_MOD_CNTRL);
++		wmb();
++		break;
++	}
++}
++
+ #define PORT(_base, _irq)					\
+ 	{							\
+ 		.mapbase	= _base,			\
+@@ -33,6 +55,7 @@
+ 		.flags		= UPF_SKIP_TEST | UPF_IOREMAP |	\
+ 				  UPF_FIXED_TYPE,		\
+ 		.type		= PORT_16550A,			\
++		.pm		= alchemy_8250_pm,		\
+ 	}
+ 
+ static struct plat_serial8250_port au1x00_uart_data[] = {
+diff --git a/arch/mips/alchemy/common/power.c b/arch/mips/alchemy/common/power.c
+index 5ef06a1..e5916a5 100644
+--- a/arch/mips/alchemy/common/power.c
++++ b/arch/mips/alchemy/common/power.c
+@@ -49,11 +49,6 @@
+  * We only have to save/restore registers that aren't otherwise
+  * done as part of a driver pm_* function.
+  */
+-static unsigned int sleep_uart0_inten;
+-static unsigned int sleep_uart0_fifoctl;
+-static unsigned int sleep_uart0_linectl;
+-static unsigned int sleep_uart0_clkdiv;
+-static unsigned int sleep_uart0_enable;
+ static unsigned int sleep_usb[2];
+ static unsigned int sleep_sys_clocks[5];
+ static unsigned int sleep_sys_pinfunc;
+@@ -62,22 +57,6 @@ static unsigned int sleep_static_memctlr[4][3];
+ 
+ static void save_core_regs(void)
  {
- 	struct usb_serial_port *port = tty->driver_data;
--	struct ssu100_port_private *priv = usb_get_serial_port_data(port);
--	void __user *user_arg = (void __user *)arg;
+-	extern void save_au1xxx_intctl(void);
+-	extern void pm_eth0_shutdown(void);
+-
+-	/*
+-	 * Do the serial ports.....these really should be a pm_*
+-	 * registered function by the driver......but of course the
+-	 * standard serial driver doesn't understand our Au1xxx
+-	 * unique registers.
+-	 */
+-	sleep_uart0_inten = au_readl(UART0_ADDR + UART_IER);
+-	sleep_uart0_fifoctl = au_readl(UART0_ADDR + UART_FCR);
+-	sleep_uart0_linectl = au_readl(UART0_ADDR + UART_LCR);
+-	sleep_uart0_clkdiv = au_readl(UART0_ADDR + UART_CLK);
+-	sleep_uart0_enable = au_readl(UART0_ADDR + UART_MOD_CNTRL);
+-	au_sync();
+-
+ #ifndef CONFIG_SOC_AU1200
+ 	/* Shutdown USB host/device. */
+ 	sleep_usb[0] = au_readl(USB_HOST_CONFIG);
+@@ -175,20 +154,6 @@ static void restore_core_regs(void)
+ 	au_writel(sleep_static_memctlr[3][0], MEM_STCFG3);
+ 	au_writel(sleep_static_memctlr[3][1], MEM_STTIME3);
+ 	au_writel(sleep_static_memctlr[3][2], MEM_STADDR3);
+-
+-	/*
+-	 * Enable the UART if it was enabled before sleep.
+-	 * I guess I should define module control bits........
+-	 */
+-	if (sleep_uart0_enable & 0x02) {
+-		au_writel(0, UART0_ADDR + UART_MOD_CNTRL); au_sync();
+-		au_writel(1, UART0_ADDR + UART_MOD_CNTRL); au_sync();
+-		au_writel(3, UART0_ADDR + UART_MOD_CNTRL); au_sync();
+-		au_writel(sleep_uart0_inten, UART0_ADDR + UART_IER); au_sync();
+-		au_writel(sleep_uart0_fifoctl, UART0_ADDR + UART_FCR); au_sync();
+-		au_writel(sleep_uart0_linectl, UART0_ADDR + UART_LCR); au_sync();
+-		au_writel(sleep_uart0_clkdiv, UART0_ADDR + UART_CLK); au_sync();
+-	}
+ }
  
- 	dbg("%s cmd 0x%04x", __func__, cmd);
- 
+ void au_sleep(void)
+-- 
+1.7.2.3
 
-
---
-Elephants that sit in trees		Beware craters beneath trees
-Really hate Dutch Elm disease		Lest they have Dutch Elm disease
-In the boughs they sit and sun		For from on high there may thump
-A branch gives way down they come	An elephant in a grump
-Grumpily sat in the plants		In the bushes sat resigned
-Picking splinters from their pants	Peeling you from his behind
