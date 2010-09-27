@@ -1,131 +1,114 @@
-From: Darius Augulis <augulis.darius@gmail.com>
-Subject: Re: [RESEND PATCH] serial: samsung: fix device name
-Date: Mon, 27 Sep 2010 11:24:14 +0300
-Message-ID: <AANLkTinwwtE5t16zvpsU5eZvEtJedJr=0x_10DcB0U5z@mail.gmail.com>
-References: <20100923190212.18863.25678.stgit@darius-desktop>
-	<4C9BE577.4050504@fluff.org>
-	<AANLkTi=S8v19iT1DC=6Nh9BEgRvKzyzKTKoJmS0Bw1Fb@mail.gmail.com>
-	<4C9CD3E0.6060000@gmail.com>
-	<4C9FE2C4.8070302@fluff.org>
+From: "Govindraj.R" <govindraj.raja@ti.com>
+Subject: [PATCH 00/13 v3] OMAP: Serial: Add omap-serial driver with
+     platform support
+Date: Mon, 27 Sep 2010 20:19:11 +0530 (IST)
+Message-ID: <43448.10.24.255.17.1285598951.squirrel@dbdmail.itg.ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wy0-f174.google.com ([74.125.82.174]:38400 "EHLO
-	mail-wy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755911Ab0I0IYb convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 27 Sep 2010 04:24:31 -0400
-In-Reply-To: <4C9FE2C4.8070302@fluff.org>
+Received: from comal.ext.ti.com ([198.47.26.152]:34935 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756176Ab0I0OtP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 27 Sep 2010 10:49:15 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ben Dooks <ben-linux@fluff.org>
-Cc: Paulius Zaleckas <paulius.zaleckas@gmail.com>, kgene.kim@samsung.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: linux-omap@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Kevin Hilman <khilman@deeprootsystems.com>, Tony Lindgren <tony@atomide.com>
 
-On Mon, Sep 27, 2010 at 3:18 AM, Ben Dooks <ben-linux@fluff.org> wrote:
-> On 24/09/10 17:37, Paulius Zaleckas wrote:
->> On 09/24/2010 09:57 AM, Darius Augulis wrote:
->>> Hi,
->>>
->>> On Fri, Sep 24, 2010 at 2:40 AM, Ben Dooks<ben-linux@fluff.org> =A0=
-wrote:
->>>> On 23/09/10 20:15, Darius Augulis wrote:
->>>>> Swap device and driver names in serial/samsung.c
->>>>
->>>> This is far too short, please see the notes below on trying
->>>> to make this more informative.
->>>>
->>>>> Signed-off-by: Darius Augulis<augulis.darius@gmail.com>
->>>>> ---
->>>>>
->>>>> This patch was submitted about 3 months ago, but still not merged=
-=2E
->>>>> There was another similar patch from Joonyoung Shim
->>>>> <jy0922.shim@samsung.com> =A0and was discussed here:
->>>>> http://marc.info/?l=3Dlinux-serial&m=3D127416101222281&w=3D2.
->>>>> Joonyoung Shim acked my patch and other people on ARM mailing lis=
-t
->>>>> acked it. The maintainer, Ben Dooks, still not responding for
->>>>> a long time. Another maintainer, Kukjin Kim, refused to merge
->>>>> it without Ben's review.
->>>>> I would like to ask somebody pick up this bugfix.
->>>>
->>>> I belive last time this was brought up I asked about the affect
->>>> this has on the userspace. The following issues would be helpful
->>>> or essential to have noted in the header about the effect of this.
->>>>
->>>> - Does it change the /dev name of the device? if so I would thinl
->>>> =A0 carefully about applying it, as it would be a change in the wa=
-y
->>>> =A0 that userspace sees the kernel.
->>>
->>> It does - now devices are named /dev/s3c2410_serial, and patch chan=
-ges
->>> its name to /dev/ttySAC
->>>
->>>>
->>>> - Does it change the kernel output itself? A note on what diffeenc=
-es
->>>> =A0 can be seen in things like dmesg would be helpful.
->>>
->>> It does. Serial driver reports device names when probing, so there
->>> will appear ttySACx instead of
->>> s3c2410_serialx.
->>>
->>>>
->>>> - Are there any other side effects
->>>>
->>>> - Why is this a bug? Maybe the previous points will explain what i=
-s
->>>> =A0 going on, but if not, then a reasonably concise description of
->>>> =A0 what is going on here.
->>>
->>> This is bug, because of several points:
->>>
->>> 1. Because it contradicts kernel documentation. Please read
->>> Documentation/arm/Samsung-S3C24XX/Overview.txt line 196.
->>> This should be enough to apply this patch.
->>>
->>> 2. Because s3c2410_serial isn't correct name for serial device node=
-=2E
->>> It's name of Samsung serial driver.
->>>
->>> 3. Because now almost all userspace systems workaround it by creati=
-ng
->>> symlink
->>> /dev/ttySACx> =A0/dev/s3c2410_serialx and only then put some getty =
-on
->>> created symlink, not on original device.
->>> Systems which don't create this symlink, fail to boot at all, becau=
-se
->>> of wrong console name. Good example is Buildroot.
->>
->> I had similar issue with buildroot too, because in /etc/securetty it=
- is
->> defained as ttySAC0
->>
->> 4. For console in kernel boot command line you must enter console=3D=
-ttySACx.
->> Why it sould be different in userspace?
->>
->> For me it seems taht this bug was not noticed earlier, because most
->> embedded
->> systems were using static device nodes and ttySACx was used in these=
- cases.
->
-> As long as these are explained, then I'm reasonably happy for this to=
- be
-> applied, as long as there are no other complaints.
->
-> However, this is a big change, and I think it should await the next
-> merge window.
+This patch series adds a serial driver to handle uarts on omap platforms.
+Currenlty omap-uarts are handled with 8250 driver, since updating
+this driver with omap specific features will over load
+the 8250 driver with all omap-specific data thus a new driver
+is added to configure and support features like
+dma, h/w, s/w flowcontrol for omap-uarts.
+Also the patch series updates various low level platform specific
+serial data to support omap-uarts with hwmod framework and adds support
+for uart4 on OMAP3630.
 
-I agree that too.
+Patch series applies cleanly on pm-core branch on kevins PM tree.
+http://git.kernel.org/?p=linux/kernel/git/khilman/linux-omap-pm.git;
+a=shortlog;h=refs/heads/pm-core
+
+Patch series Testing Status Update:
+-----------------------------------
+OMAP4:(SDP): Boot tested with ttyO* and ttyS* interfaces using this patch series.
+
+OMAP2(2430SDP): Boot tested with ttyO* and ttyS* interfaces using this patch series.
+		(Couldn't test pm functionality here due to board shortage).
+
+OMAP3:(3430/3630SDP, ZOOM2/3):
+Boot tested for console with ttyS* and ttyO* interfaces.
+PM functionality checked omap3:
+1) ret count: debugfs mounted sleep_while_idle enabled, checked for ret count
+   values to increment this was done by setting sysfs timeout for all uarts.
+   Also checked by unsetting uart sysfs timeout to check ret count
+   stopped incrementing.
+2) core off count: debugfs mounted sleep_while_idle and enable_off_mode enabled
+   checked for core_off count to increment for core/per_pwrdm.
+3) Susupend: Done using echo mem > /sys/power/state.
+   Ensured no difference in behaviour with and without this patch series.
+
+v2 to v3 changes:
+-----------------
+1) Minor changes with omap-serial
+	https://patchwork.kernel.org/patch/199652/
+2) Undo the timeout macro modification done by mistake.
+	https://patchwork.kernel.org/patch/199642/
+3) update description log for patch:
+	OMAP3: SERIAL: Initialize all omap-uarts for zoom boards
+	https://patchwork.kernel.org/patch/199672/
+
+v1 to v2 changes:
+-----------------
+1) Incorporate timeout check
+       http://www.mail-archive.com/linux-omap@vger.kernel.org/msg35106.html
+2) Add wk_st, padconf etc for uart4
+       http://www.mail-archive.com/linux-omap@vger.kernel.org/msg35105.html
+
+Benoit Cousson (1):
+  OMAP4: UART: Add uart1-4 hwmods data for omap4
+
+Govindraj.R (8):
+  OMAP2: UART: remove set_uart_globals.
+  OMAP clock: Add uart4_ick/fck definitions for 3630
+  OMAP3: PRCM: Consider UART4 for 3630 chip in prcm_setup_regs
+  OMAP3: PM: Add prepare idle and resume idle call for uart4
+  OMAP3: serial: Fix uart4 handling for 3630
+  serial: Add OMAP high-speed UART driver
+  OMAP: SERIAL: Enable omap-serial driver in Kconfig.
+  OMAP3: SERIAL: Initialize all omap-uarts for zoom boards
+
+Kevin Hilman (4):
+  OMAP2/3: UART: add omap_hwmod data for UARTs 1-4
+  OMAP: UART: omap_device converions, remove implicit 8520 assumptions
+  OMAP: UART: don't do automatic bus-level suspend/resume
+  OMAP: UART: use non-locking versions of hwmod enable/idle functions
+
+ arch/arm/mach-omap2/Kconfig                   |   11 +-
+ arch/arm/mach-omap2/board-3630sdp.c           |    1 -
+ arch/arm/mach-omap2/board-zoom-peripherals.c  |    1 +
+ arch/arm/mach-omap2/clock3xxx_data.c          |   22 +
+ arch/arm/mach-omap2/cm-regbits-34xx.h         |    2 +
+ arch/arm/mach-omap2/omap_hwmod_2420_data.c    |  193 ++++
+ arch/arm/mach-omap2/omap_hwmod_2430_data.c    |  193 ++++
+ arch/arm/mach-omap2/omap_hwmod_3xxx_data.c    |  253 +++++-
+ arch/arm/mach-omap2/omap_hwmod_44xx_data.c    |  235 +++++
+ arch/arm/mach-omap2/pm34xx.c                  |   17 +-
+ arch/arm/mach-omap2/prcm-common.h             |    5 +
+ arch/arm/mach-omap2/prm-regbits-34xx.h        |    1 +
+ arch/arm/mach-omap2/serial.c                  |  555 ++++++-----
+ arch/arm/plat-omap/common.c                   |   16 -
+ arch/arm/plat-omap/include/plat/common.h      |    1 -
+ arch/arm/plat-omap/include/plat/dma.h         |    2 +
+ arch/arm/plat-omap/include/plat/irqs.h        |    2 +
+ arch/arm/plat-omap/include/plat/omap-serial.h |  129 +++
+ drivers/serial/Kconfig                        |   27 +
+ drivers/serial/Makefile                       |    1 +
+ drivers/serial/omap-serial.c                  | 1333 +++++++++++++++++++++++++
+ include/linux/serial_core.h                   |    3 +
+ 22 files changed, 2707 insertions(+), 296 deletions(-)
+ create mode 100644 arch/arm/plat-omap/include/plat/omap-serial.h
+ create mode 100644 drivers/serial/omap-serial.c
 
 
->
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
