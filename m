@@ -1,140 +1,33 @@
-From: Manuel Lauss <manuel.lauss@googlemail.com>
-Subject: [PATCH v2 2/2] Alchemy: Add UART PM methods.
-Date: Sat, 25 Sep 2010 15:13:46 +0200
-Message-ID: <1285420426-8510-2-git-send-email-manuel.lauss@googlemail.com>
-References: <1285420426-8510-1-git-send-email-manuel.lauss@googlemail.com>
+From: Ben Dooks <ben-linux@fluff.org>
+Subject: Re: [RESEND PATCH] serial: samsung: fix device name
+Date: Mon, 27 Sep 2010 01:17:01 +0100
+Message-ID: <4C9FE27D.80407@fluff.org>
+References: <20100923190212.18863.25678.stgit@darius-desktop>	<4C9BE577.4050504@fluff.org>	<AANLkTi=S8v19iT1DC=6Nh9BEgRvKzyzKTKoJmS0Bw1Fb@mail.gmail.com> <20100924073453.GA3840@richter>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-fx0-f46.google.com ([209.85.161.46]:60704 "EHLO
-	mail-fx0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753874Ab0IYNNy (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 25 Sep 2010 09:13:54 -0400
-Received: by fxm3 with SMTP id 3so1162668fxm.19
-        for <linux-serial@vger.kernel.org>; Sat, 25 Sep 2010 06:13:53 -0700 (PDT)
-In-Reply-To: <1285420426-8510-1-git-send-email-manuel.lauss@googlemail.com>
+Received: from dsl78-143-211-26.in-addr.fast.co.uk ([78.143.211.26]:37789 "EHLO
+	ben-laptop" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1754486Ab0I0ARG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 26 Sep 2010 20:17:06 -0400
+In-Reply-To: <20100924073453.GA3840@richter>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Andrew Morton <akpm@linux-foundation.org>, Greg KH <greg@kroah.com>, Manuel Lauss <manuel.lauss@googlemail.com>
+To: Simon Richter <Simon.Richter@hogyros.de>
+Cc: Darius Augulis <augulis.darius@gmail.com>, kgene.kim@samsung.com, Ben Dooks <ben-linux@fluff.org>, paulius.zaleckas@gmail.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Custom UART PM hook for Alchemy chips:  do standard UART pm and
-additionally en/disable uart block clocks as needed.
-This allows to get rid of a debug port PM hack in the Alchemy pm code.
+On 24/09/10 08:34, Simon Richter wrote:
+> Hi,
+> 
+> On Fri, Sep 24, 2010 at 09:57:19AM +0300, Darius Augulis wrote:
+> 
+>> It does - now devices are named /dev/s3c2410_serial, and patch changes
+>> its name to /dev/ttySAC
+> 
+> I wonder if it'd make sense to name them ttyS[0-9]. I've never
+> understood why the platform standard fixed serial ports on any device
+> should have a different name.
 
-Tested on Db1200.
-
-Signed-off-by: Manuel Lauss <manuel.lauss@googlemail.com>
----
- arch/mips/alchemy/common/platform.c |   28 ++++++++++++++++++++++++++++
- arch/mips/alchemy/common/power.c    |   35 -----------------------------------
- 2 files changed, 28 insertions(+), 35 deletions(-)
-
-diff --git a/arch/mips/alchemy/common/platform.c b/arch/mips/alchemy/common/platform.c
-index 1dc55ee..3691630 100644
---- a/arch/mips/alchemy/common/platform.c
-+++ b/arch/mips/alchemy/common/platform.c
-@@ -24,6 +24,33 @@
- 
- #include <prom.h>
- 
-+static void alchemy_8250_pm(struct uart_port *port, unsigned int state,
-+			    unsigned int old_state)
-+{
-+	switch (state) {
-+	case 0:
-+		if ((__raw_readl(port->membase + UART_MOD_CNTRL) & 3) != 3) {
-+			/* power-on sequence as suggested in the databooks */
-+			__raw_writel(0, port->membase + UART_MOD_CNTRL);
-+			wmb();
-+			__raw_writel(1, port->membase + UART_MOD_CNTRL);
-+			wmb();
-+		}
-+		__raw_writel(3, port->membase + UART_MOD_CNTRL); /* full on */
-+		wmb();
-+		serial8250_do_pm(port, state, old_state);
-+		break;
-+	case 3:		/* power off */
-+		serial8250_do_pm(port, state, old_state);
-+		__raw_writel(0, port->membase + UART_MOD_CNTRL);
-+		wmb();
-+		break;
-+	default:
-+		serial8250_do_pm(port, state, old_state);
-+		break;
-+	}
-+}
-+
- #define PORT(_base, _irq)					\
- 	{							\
- 		.mapbase	= _base,			\
-@@ -33,6 +60,7 @@
- 		.flags		= UPF_SKIP_TEST | UPF_IOREMAP |	\
- 				  UPF_FIXED_TYPE,		\
- 		.type		= PORT_16550A,			\
-+		.pm		= alchemy_8250_pm,		\
- 	}
- 
- static struct plat_serial8250_port au1x00_uart_data[] = {
-diff --git a/arch/mips/alchemy/common/power.c b/arch/mips/alchemy/common/power.c
-index 5ef06a1..e5916a5 100644
---- a/arch/mips/alchemy/common/power.c
-+++ b/arch/mips/alchemy/common/power.c
-@@ -49,11 +49,6 @@
-  * We only have to save/restore registers that aren't otherwise
-  * done as part of a driver pm_* function.
-  */
--static unsigned int sleep_uart0_inten;
--static unsigned int sleep_uart0_fifoctl;
--static unsigned int sleep_uart0_linectl;
--static unsigned int sleep_uart0_clkdiv;
--static unsigned int sleep_uart0_enable;
- static unsigned int sleep_usb[2];
- static unsigned int sleep_sys_clocks[5];
- static unsigned int sleep_sys_pinfunc;
-@@ -62,22 +57,6 @@ static unsigned int sleep_static_memctlr[4][3];
- 
- static void save_core_regs(void)
- {
--	extern void save_au1xxx_intctl(void);
--	extern void pm_eth0_shutdown(void);
--
--	/*
--	 * Do the serial ports.....these really should be a pm_*
--	 * registered function by the driver......but of course the
--	 * standard serial driver doesn't understand our Au1xxx
--	 * unique registers.
--	 */
--	sleep_uart0_inten = au_readl(UART0_ADDR + UART_IER);
--	sleep_uart0_fifoctl = au_readl(UART0_ADDR + UART_FCR);
--	sleep_uart0_linectl = au_readl(UART0_ADDR + UART_LCR);
--	sleep_uart0_clkdiv = au_readl(UART0_ADDR + UART_CLK);
--	sleep_uart0_enable = au_readl(UART0_ADDR + UART_MOD_CNTRL);
--	au_sync();
--
- #ifndef CONFIG_SOC_AU1200
- 	/* Shutdown USB host/device. */
- 	sleep_usb[0] = au_readl(USB_HOST_CONFIG);
-@@ -175,20 +154,6 @@ static void restore_core_regs(void)
- 	au_writel(sleep_static_memctlr[3][0], MEM_STCFG3);
- 	au_writel(sleep_static_memctlr[3][1], MEM_STTIME3);
- 	au_writel(sleep_static_memctlr[3][2], MEM_STADDR3);
--
--	/*
--	 * Enable the UART if it was enabled before sleep.
--	 * I guess I should define module control bits........
--	 */
--	if (sleep_uart0_enable & 0x02) {
--		au_writel(0, UART0_ADDR + UART_MOD_CNTRL); au_sync();
--		au_writel(1, UART0_ADDR + UART_MOD_CNTRL); au_sync();
--		au_writel(3, UART0_ADDR + UART_MOD_CNTRL); au_sync();
--		au_writel(sleep_uart0_inten, UART0_ADDR + UART_IER); au_sync();
--		au_writel(sleep_uart0_fifoctl, UART0_ADDR + UART_FCR); au_sync();
--		au_writel(sleep_uart0_linectl, UART0_ADDR + UART_LCR); au_sync();
--		au_writel(sleep_uart0_clkdiv, UART0_ADDR + UART_CLK); au_sync();
--	}
- }
- 
- void au_sleep(void)
--- 
-1.7.3
-
+Different driver. And yes, we've built systems with both this and
+an 8250 base chip.
