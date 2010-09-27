@@ -1,7 +1,7 @@
-From: Paulius Zaleckas <paulius.zaleckas@gmail.com>
+From: Darius Augulis <augulis.darius@gmail.com>
 Subject: Re: [RESEND PATCH] serial: samsung: fix device name
-Date: Mon, 27 Sep 2010 11:20:00 +0300
-Message-ID: <AANLkTimy=eJKeANFi7VspoB6GrRzW1=36vjbfuNqPRRJ@mail.gmail.com>
+Date: Mon, 27 Sep 2010 11:24:14 +0300
+Message-ID: <AANLkTinwwtE5t16zvpsU5eZvEtJedJr=0x_10DcB0U5z@mail.gmail.com>
 References: <20100923190212.18863.25678.stgit@darius-desktop>
 	<4C9BE577.4050504@fluff.org>
 	<AANLkTi=S8v19iT1DC=6Nh9BEgRvKzyzKTKoJmS0Bw1Fb@mail.gmail.com>
@@ -11,16 +11,16 @@ Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ww0-f44.google.com ([74.125.82.44]:39793 "EHLO
-	mail-ww0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751417Ab0I0IUB convert rfc822-to-8bit (ORCPT
+Received: from mail-wy0-f174.google.com ([74.125.82.174]:38400 "EHLO
+	mail-wy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755911Ab0I0IYb convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 27 Sep 2010 04:20:01 -0400
+	Mon, 27 Sep 2010 04:24:31 -0400
 In-Reply-To: <4C9FE2C4.8070302@fluff.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Ben Dooks <ben-linux@fluff.org>
-Cc: Darius Augulis <augulis.darius@gmail.com>, kgene.kim@samsung.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: Paulius Zaleckas <paulius.zaleckas@gmail.com>, kgene.kim@samsung.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 
 On Mon, Sep 27, 2010 at 3:18 AM, Ben Dooks <ben-linux@fluff.org> wrote:
 > On 24/09/10 17:37, Paulius Zaleckas wrote:
@@ -120,7 +120,10 @@ ttySACx.
 > However, this is a big change, and I think it should await the next
 > merge window.
 
-I also agree that it should be applied to next release.
+I agree that too.
+
+
+>
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
  in
