@@ -1,115 +1,114 @@
 From: Anton Vorontsov <cbouatmailru@gmail.com>
-Subject: [PATCH 1/5] serial: Factor out uart_poll_timeout() from 8250 driver
-Date: Tue, 28 Sep 2010 17:35:11 +0400
-Message-ID: <20100928133511.GA8289@oksana.dev.rtsoft.ru>
+Subject: [PATCH 2/5] altera_uart: Add support for polling mode (IRQ-less)
+Date: Tue, 28 Sep 2010 17:35:26 +0400
+Message-ID: <20100928133526.GB8289@oksana.dev.rtsoft.ru>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ew0-f46.google.com ([209.85.215.46]:47083 "EHLO
-	mail-ew0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754531Ab0I1Nf2 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 28 Sep 2010 09:35:28 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@suse.de>
 Cc: Alan Cox <alan@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>, Tobias Klauser <tklauser@distanz.ch>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 
-Soon we will use that handy function in the altera_uart driver.
+Some Altera UART implementations doesn't route the IRQ line, so we have
+to work in polling mode.
 
 Signed-off-by: Anton Vorontsov <cbouatmailru@gmail.com>
 ---
- drivers/serial/8250.c        |   14 ++++----------
- drivers/serial/serial_core.c |    9 +++++++++
- include/linux/serial_core.h  |    1 +
- 3 files changed, 14 insertions(+), 10 deletions(-)
+ drivers/serial/altera_uart.c |   38 +++++++++++++++++++++++++++++---------
+ 1 files changed, 29 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index 24110f6..61e95dd 100644
---- a/drivers/serial/8250.c
-+++ b/drivers/serial/8250.c
-@@ -1722,12 +1722,6 @@ static void serial_unlink_irq_chain(struct uart_8250_port *up)
- 	mutex_unlock(&hash_mutex);
+diff --git a/drivers/serial/altera_uart.c b/drivers/serial/altera_uart.c
+index f8d8a00..2603f59 100644
+--- a/drivers/serial/altera_uart.c
++++ b/drivers/serial/altera_uart.c
+@@ -15,6 +15,7 @@
+ 
+ #include <linux/kernel.h>
+ #include <linux/init.h>
++#include <linux/timer.h>
+ #include <linux/interrupt.h>
+ #include <linux/module.h>
+ #include <linux/console.h>
+@@ -76,6 +77,7 @@
+  */
+ struct altera_uart {
+ 	struct uart_port port;
++	struct timer_list tmr;
+ 	unsigned int sigs;	/* Local copy of line sigs */
+ 	unsigned short imr;	/* Local IMR mirror */
+ };
+@@ -168,6 +170,7 @@ static void altera_uart_set_termios(struct uart_port *port,
+ 	tty_termios_encode_baud_rate(termios, baud, baud);
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
++	uart_update_timeout(port, termios->c_cflag, baud);
+ 	writel(baudclk, port->membase + ALTERA_UART_DIVISOR_REG);
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ }
+@@ -268,6 +271,15 @@ static irqreturn_t altera_uart_interrupt(int irq, void *data)
+ 	return IRQ_RETVAL(isr);
  }
  
--/* Base timer interval for polling */
--static inline int poll_timeout(int timeout)
--{
--	return timeout > 6 ? (timeout / 2 - 2) : 1;
--}
--
- /*
-  * This function is used to handle ports that do not have an
-  * interrupt.  This doesn't work very well for 16450's, but gives
-@@ -1742,7 +1736,7 @@ static void serial8250_timeout(unsigned long data)
- 	iir = serial_in(up, UART_IIR);
- 	if (!(iir & UART_IIR_NO_INT))
- 		serial8250_handle_port(up);
--	mod_timer(&up->timer, jiffies + poll_timeout(up->port.timeout));
-+	mod_timer(&up->timer, jiffies + uart_poll_timeout(&up->port));
- }
- 
- static void serial8250_backup_timeout(unsigned long data)
-@@ -1787,7 +1781,7 @@ static void serial8250_backup_timeout(unsigned long data)
- 
- 	/* Standard timer interval plus 0.2s to keep the port running */
- 	mod_timer(&up->timer,
--		jiffies + poll_timeout(up->port.timeout) + HZ / 5);
-+		jiffies + uart_poll_timeout(&up->port) + HZ / 5);
- }
- 
- static unsigned int serial8250_tx_empty(struct uart_port *port)
-@@ -2069,7 +2063,7 @@ static int serial8250_startup(struct uart_port *port)
- 		up->timer.function = serial8250_backup_timeout;
- 		up->timer.data = (unsigned long)up;
- 		mod_timer(&up->timer, jiffies +
--			  poll_timeout(up->port.timeout) + HZ / 5);
-+			uart_poll_timeout(port) + HZ / 5);
- 	}
- 
- 	/*
-@@ -2079,7 +2073,7 @@ static int serial8250_startup(struct uart_port *port)
- 	 */
- 	if (!is_real_interrupt(up->port.irq)) {
- 		up->timer.data = (unsigned long)up;
--		mod_timer(&up->timer, jiffies + poll_timeout(up->port.timeout));
-+		mod_timer(&up->timer, jiffies + uart_poll_timeout(port));
- 	} else {
- 		retval = serial_link_irq_chain(up);
- 		if (retval)
-diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
-index cd85112..0889957 100644
---- a/drivers/serial/serial_core.c
-+++ b/drivers/serial/serial_core.c
-@@ -428,6 +428,15 @@ uart_get_divisor(struct uart_port *port, unsigned int baud)
- 
- EXPORT_SYMBOL(uart_get_divisor);
- 
-+/* Base timer interval for polling */
-+int uart_poll_timeout(struct uart_port *port)
++static void altera_uart_timer(unsigned long data)
 +{
-+	int timeout = port->timeout;
++	struct uart_port *port = (void *)data;
++	struct altera_uart *pp = container_of(port, struct altera_uart, port);
 +
-+	return timeout > 6 ? (timeout / 2 - 2) : 1;
++	altera_uart_interrupt(0, port);
++	mod_timer(&pp->tmr, jiffies + uart_poll_timeout(port));
 +}
-+EXPORT_SYMBOL(uart_poll_timeout);
 +
- /* FIXME: Consistent locking policy */
- static void uart_change_speed(struct tty_struct *tty, struct uart_state *state,
- 					struct ktermios *old_termios)
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 563e234..7e90ef4 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -410,6 +410,7 @@ unsigned int uart_get_baud_rate(struct uart_port *port, struct ktermios *termios
- 				struct ktermios *old, unsigned int min,
- 				unsigned int max);
- unsigned int uart_get_divisor(struct uart_port *port, unsigned int baud);
-+int uart_poll_timeout(struct uart_port *port);
+ static void altera_uart_config_port(struct uart_port *port, int flags)
+ {
+ 	port->type = PORT_ALTERA_UART;
+@@ -284,14 +296,6 @@ static int altera_uart_startup(struct uart_port *port)
+ 	unsigned long flags;
+ 	int ret;
  
- /*
-  * Console helpers.
+-	ret = request_irq(port->irq, altera_uart_interrupt, IRQF_DISABLED,
+-			DRV_NAME, port);
+-	if (ret) {
+-		pr_err(DRV_NAME ": unable to attach Altera UART %d "
+-		       "interrupt vector=%d\n", port->line, port->irq);
+-		return ret;
+-	}
+-
+ 	spin_lock_irqsave(&port->lock, flags);
+ 
+ 	/* Enable RX interrupts now */
+@@ -300,6 +304,19 @@ static int altera_uart_startup(struct uart_port *port)
+ 
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ 
++	if (port->irq) {
++		ret = request_irq(port->irq, altera_uart_interrupt,
++				  IRQF_DISABLED, DRV_NAME, port);
++		if (ret) {
++			pr_err(DRV_NAME ": unable to attach Altera UART %d "
++			       "interrupt vector=%d\n", port->line, port->irq);
++			return ret;
++		}
++	} else {
++		setup_timer(&pp->tmr, altera_uart_timer, (unsigned long)port);
++		mod_timer(&pp->tmr, jiffies + uart_poll_timeout(port));
++	}
++
+ 	return 0;
+ }
+ 
+@@ -316,7 +333,10 @@ static void altera_uart_shutdown(struct uart_port *port)
+ 
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ 
+-	free_irq(port->irq, port);
++	if (port->irq)
++		free_irq(port->irq, port);
++	else
++		del_timer_sync(&pp->tmr);
+ }
+ 
+ static const char *altera_uart_type(struct uart_port *port)
 -- 
 1.7.0.5
-
