@@ -1,65 +1,98 @@
 From: Tobias Klauser <tklauser@distanz.ch>
-Subject: Re: [PATCH 4/5] altera_uart: Add support for different address
-	strides
-Date: Tue, 28 Sep 2010 17:29:29 +0200
-Message-ID: <20100928152929.GD3137@distanz.ch>
-References: <20100928133537.GD8289@oksana.dev.rtsoft.ru>
+Subject: Re: [PATCH 2/5] altera_uart: Add support for polling mode
+	(IRQ-less)
+Date: Tue, 28 Sep 2010 17:45:39 +0200
+Message-ID: <20100928154539.GE3137@distanz.ch>
+References: <20100928133526.GB8289@oksana.dev.rtsoft.ru>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from symlink.to.noone.org ([85.10.207.172]:39359 "EHLO sym.noone.org"
+Received: from symlink.to.noone.org ([85.10.207.172]:51132 "EHLO sym.noone.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751127Ab0I1Pge (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 28 Sep 2010 11:36:34 -0400
+	id S1753724Ab0I1Ppk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 28 Sep 2010 11:45:40 -0400
 Content-Disposition: inline
-In-Reply-To: <20100928133537.GD8289@oksana.dev.rtsoft.ru>
+In-Reply-To: <20100928133526.GB8289@oksana.dev.rtsoft.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Anton Vorontsov <cbouatmailru@gmail.com>
 Cc: Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 2010-09-28 at 15:35:37 +0200, Anton Vorontsov <cbouatmailru@gmail.com> wrote:
-> Some controllers implement registers with a stride, to support
-> those we must implement the proper IO accessors.
+On 2010-09-28 at 15:35:26 +0200, Anton Vorontsov <cbouatmailru@gmail.com> wrote:
+> Some Altera UART implementations doesn't route the IRQ line, so we have
+> to work in polling mode.
 > 
 > Signed-off-by: Anton Vorontsov <cbouatmailru@gmail.com>
 > ---
->  drivers/serial/altera_uart.c |   59 +++++++++++++++++++++++++++---------------
->  include/linux/altera_uart.h  |    1 +
->  2 files changed, 39 insertions(+), 21 deletions(-)
+>  drivers/serial/altera_uart.c |   38 +++++++++++++++++++++++++++++---------
+>  1 files changed, 29 insertions(+), 9 deletions(-)
 > 
 > diff --git a/drivers/serial/altera_uart.c b/drivers/serial/altera_uart.c
-> index 7686aaa..0a1a066 100644
+> index f8d8a00..2603f59 100644
 > --- a/drivers/serial/altera_uart.c
 > +++ b/drivers/serial/altera_uart.c
-> @@ -78,13 +78,28 @@
+> @@ -15,6 +15,7 @@
+>  
+>  #include <linux/kernel.h>
+>  #include <linux/init.h>
+> +#include <linux/timer.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/module.h>
+>  #include <linux/console.h>
+> @@ -76,6 +77,7 @@
+>   */
 >  struct altera_uart {
 >  	struct uart_port port;
->  	struct timer_list tmr;
-> +	int bus_shift;
-
-This member is never used (only bus_shift from struct
-altera_uart_platform_uart). Seems to be a leftover.
-
+> +	struct timer_list tmr;
 >  	unsigned int sigs;	/* Local copy of line sigs */
 >  	unsigned short imr;	/* Local IMR mirror */
 >  };
+> @@ -168,6 +170,7 @@ static void altera_uart_set_termios(struct uart_port *port,
+>  	tty_termios_encode_baud_rate(termios, baud, baud);
 >  
-> +static u32 altera_uart_readl(struct uart_port *port, int reg)
+>  	spin_lock_irqsave(&port->lock, flags);
+> +	uart_update_timeout(port, termios->c_cflag, baud);
+>  	writel(baudclk, port->membase + ALTERA_UART_DIVISOR_REG);
+>  	spin_unlock_irqrestore(&port->lock, flags);
+>  }
+> @@ -268,6 +271,15 @@ static irqreturn_t altera_uart_interrupt(int irq, void *data)
+>  	return IRQ_RETVAL(isr);
+>  }
+>  
+> +static void altera_uart_timer(unsigned long data)
 > +{
-> +	struct altera_uart_platform_uart *platp = port->private_data;
+> +	struct uart_port *port = (void *)data;
+> +	struct altera_uart *pp = container_of(port, struct altera_uart, port);
 > +
-> +	return readl(port->membase + (reg << platp->bus_shift));
+> +	altera_uart_interrupt(0, port);
+> +	mod_timer(&pp->tmr, jiffies + uart_poll_timeout(port));
 > +}
 > +
-> +static void altera_uart_writel(struct uart_port *port, u32 dat, int reg)
-> +{
-> +	struct altera_uart_platform_uart *platp = port->private_data;
-> +
-> +	writel(dat, port->membase + (reg << platp->bus_shift));
-> +}
+>  static void altera_uart_config_port(struct uart_port *port, int flags)
+>  {
+>  	port->type = PORT_ALTERA_UART;
+> @@ -284,14 +296,6 @@ static int altera_uart_startup(struct uart_port *port)
+>  	unsigned long flags;
+>  	int ret;
+>  
+> -	ret = request_irq(port->irq, altera_uart_interrupt, IRQF_DISABLED,
+> -			DRV_NAME, port);
+> -	if (ret) {
+> -		pr_err(DRV_NAME ": unable to attach Altera UART %d "
+> -		       "interrupt vector=%d\n", port->line, port->irq);
+> -		return ret;
+> -	}
+> -
+>  	spin_lock_irqsave(&port->lock, flags);
+>  
+>  	/* Enable RX interrupts now */
+> @@ -300,6 +304,19 @@ static int altera_uart_startup(struct uart_port *port)
+>  
+>  	spin_unlock_irqrestore(&port->lock, flags);
 
-Why not make these inline?
+Shouldn't we only enable the RX interrupt if we actually use interrupts?
+Also I would retain the order here (first register the interrupt handler
+and then enable the interrupts).
 
 Cheers,
   Tobias
