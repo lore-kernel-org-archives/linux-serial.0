@@ -1,98 +1,101 @@
-From: Tobias Klauser <tklauser@distanz.ch>
-Subject: Re: [PATCH 2/5] altera_uart: Add support for polling mode
-	(IRQ-less)
-Date: Tue, 28 Sep 2010 17:45:39 +0200
-Message-ID: <20100928154539.GE3137@distanz.ch>
-References: <20100928133526.GB8289@oksana.dev.rtsoft.ru>
+From: Paul Walmsley <paul@pwsan.com>
+Subject: Re: [PATCH 07/13 v3] OMAP clock: Add uart4_ick/fck definitions for
+ 3630
+Date: Tue, 28 Sep 2010 15:14:33 -0600 (MDT)
+Message-ID: <alpine.DEB.2.00.1009281512430.5439@utopia.booyaka.com>
+References: <43702.10.24.255.17.1285599017.squirrel@dbdmail.itg.ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from symlink.to.noone.org ([85.10.207.172]:51132 "EHLO sym.noone.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753724Ab0I1Ppk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 28 Sep 2010 11:45:40 -0400
-Content-Disposition: inline
-In-Reply-To: <20100928133526.GB8289@oksana.dev.rtsoft.ru>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <43702.10.24.255.17.1285599017.squirrel@dbdmail.itg.ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Kevin Hilman <khilman@deeprootsystems.com>, "Govindraj.R" <govindraj.raja@ti.com>
+Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Sergio Aguirre <saaguirre@ti.com>, Tony Lindgren <tony@atomide.com>
 List-Id: linux-serial@vger.kernel.org
-To: Anton Vorontsov <cbouatmailru@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 2010-09-28 at 15:35:26 +0200, Anton Vorontsov <cbouatmailru@gmail.com> wrote:
-> Some Altera UART implementations doesn't route the IRQ line, so we have
-> to work in polling mode.
+Hi,
+
+On Mon, 27 Sep 2010, Govindraj.R wrote:
+
+> This is only valid for omap 36xx family of chips.
+
+This patch should have my ack before being merged.  ... in fact, it really 
+shouldn't be part of this series; it's completely orthogonal to the hwmod 
+and OMAP serial changes, and should have gone in separately several months 
+ago.
+
+But anyway,
+
+Acked-by: Paul Walmsley <paul@pwsan.com>
+
+- Paul
 > 
-> Signed-off-by: Anton Vorontsov <cbouatmailru@gmail.com>
+> Signed-off-by: Sergio Aguirre <saaguirre@ti.com>
+> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
 > ---
->  drivers/serial/altera_uart.c |   38 +++++++++++++++++++++++++++++---------
->  1 files changed, 29 insertions(+), 9 deletions(-)
+>  arch/arm/mach-omap2/clock3xxx_data.c |   22 ++++++++++++++++++++++
+>  1 files changed, 22 insertions(+), 0 deletions(-)
 > 
-> diff --git a/drivers/serial/altera_uart.c b/drivers/serial/altera_uart.c
-> index f8d8a00..2603f59 100644
-> --- a/drivers/serial/altera_uart.c
-> +++ b/drivers/serial/altera_uart.c
-> @@ -15,6 +15,7 @@
->  
->  #include <linux/kernel.h>
->  #include <linux/init.h>
-> +#include <linux/timer.h>
->  #include <linux/interrupt.h>
->  #include <linux/module.h>
->  #include <linux/console.h>
-> @@ -76,6 +77,7 @@
->   */
->  struct altera_uart {
->  	struct uart_port port;
-> +	struct timer_list tmr;
->  	unsigned int sigs;	/* Local copy of line sigs */
->  	unsigned short imr;	/* Local IMR mirror */
+> diff --git a/arch/arm/mach-omap2/clock3xxx_data.c b/arch/arm/mach-omap2/clock3xxx_data.c
+> index dfdce2d..90a4198 100644
+> --- a/arch/arm/mach-omap2/clock3xxx_data.c
+> +++ b/arch/arm/mach-omap2/clock3xxx_data.c
+> @@ -2465,6 +2465,16 @@ static struct clk uart3_fck = {
+>  	.recalc		= &followparent_recalc,
 >  };
-> @@ -168,6 +170,7 @@ static void altera_uart_set_termios(struct uart_port *port,
->  	tty_termios_encode_baud_rate(termios, baud, baud);
->  
->  	spin_lock_irqsave(&port->lock, flags);
-> +	uart_update_timeout(port, termios->c_cflag, baud);
->  	writel(baudclk, port->membase + ALTERA_UART_DIVISOR_REG);
->  	spin_unlock_irqrestore(&port->lock, flags);
->  }
-> @@ -268,6 +271,15 @@ static irqreturn_t altera_uart_interrupt(int irq, void *data)
->  	return IRQ_RETVAL(isr);
->  }
->  
-> +static void altera_uart_timer(unsigned long data)
-> +{
-> +	struct uart_port *port = (void *)data;
-> +	struct altera_uart *pp = container_of(port, struct altera_uart, port);
+> 
+> +static struct clk uart4_fck = {
+> +	.name		= "uart4_fck",
+> +	.ops		= &clkops_omap2_dflt_wait,
+> +	.parent		= &per_48m_fck,
+> +	.enable_reg	= OMAP_CM_REGADDR(OMAP3430_PER_MOD, CM_FCLKEN),
+> +	.enable_bit	= OMAP3630_EN_UART4_SHIFT,
+> +	.clkdm_name	= "per_clkdm",
+> +	.recalc		= &followparent_recalc,
+> +};
 > +
-> +	altera_uart_interrupt(0, port);
-> +	mod_timer(&pp->tmr, jiffies + uart_poll_timeout(port));
-> +}
+>  static struct clk gpt2_fck = {
+>  	.name		= "gpt2_fck",
+>  	.ops		= &clkops_omap2_dflt_wait,
+> @@ -2715,6 +2725,16 @@ static struct clk uart3_ick = {
+>  	.recalc		= &followparent_recalc,
+>  };
+> 
+> +static struct clk uart4_ick = {
+> +	.name		= "uart4_ick",
+> +	.ops		= &clkops_omap2_dflt_wait,
+> +	.parent		= &per_l4_ick,
+> +	.enable_reg	= OMAP_CM_REGADDR(OMAP3430_PER_MOD, CM_ICLKEN),
+> +	.enable_bit	= OMAP3630_EN_UART4_SHIFT,
+> +	.clkdm_name	= "per_clkdm",
+> +	.recalc		= &followparent_recalc,
+> +};
 > +
->  static void altera_uart_config_port(struct uart_port *port, int flags)
->  {
->  	port->type = PORT_ALTERA_UART;
-> @@ -284,14 +296,6 @@ static int altera_uart_startup(struct uart_port *port)
->  	unsigned long flags;
->  	int ret;
->  
-> -	ret = request_irq(port->irq, altera_uart_interrupt, IRQF_DISABLED,
-> -			DRV_NAME, port);
-> -	if (ret) {
-> -		pr_err(DRV_NAME ": unable to attach Altera UART %d "
-> -		       "interrupt vector=%d\n", port->line, port->irq);
-> -		return ret;
-> -	}
-> -
->  	spin_lock_irqsave(&port->lock, flags);
->  
->  	/* Enable RX interrupts now */
-> @@ -300,6 +304,19 @@ static int altera_uart_startup(struct uart_port *port)
->  
->  	spin_unlock_irqrestore(&port->lock, flags);
-
-Shouldn't we only enable the RX interrupt if we actually use interrupts?
-Also I would retain the order here (first register the interrupt handler
-and then enable the interrupts).
-
-Cheers,
-  Tobias
+>  static struct clk gpt9_ick = {
+>  	.name		= "gpt9_ick",
+>  	.ops		= &clkops_omap2_dflt_wait,
+> @@ -3349,6 +3369,7 @@ static struct omap_clk omap3xxx_clks[] = {
+>  	CLK(NULL,	"per_96m_fck",	&per_96m_fck,	CK_3XXX),
+>  	CLK(NULL,	"per_48m_fck",	&per_48m_fck,	CK_3XXX),
+>  	CLK(NULL,	"uart3_fck",	&uart3_fck,	CK_3XXX),
+> +	CLK(NULL,	"uart4_fck",	&uart4_fck,	CK_36XX),
+>  	CLK(NULL,	"gpt2_fck",	&gpt2_fck,	CK_3XXX),
+>  	CLK(NULL,	"gpt3_fck",	&gpt3_fck,	CK_3XXX),
+>  	CLK(NULL,	"gpt4_fck",	&gpt4_fck,	CK_3XXX),
+> @@ -3372,6 +3393,7 @@ static struct omap_clk omap3xxx_clks[] = {
+>  	CLK(NULL,	"gpio2_ick",	&gpio2_ick,	CK_3XXX),
+>  	CLK(NULL,	"wdt3_ick",	&wdt3_ick,	CK_3XXX),
+>  	CLK(NULL,	"uart3_ick",	&uart3_ick,	CK_3XXX),
+> +	CLK(NULL,	"uart4_ick",	&uart4_ick,	CK_36XX),
+>  	CLK(NULL,	"gpt9_ick",	&gpt9_ick,	CK_3XXX),
+>  	CLK(NULL,	"gpt8_ick",	&gpt8_ick,	CK_3XXX),
+>  	CLK(NULL,	"gpt7_ick",	&gpt7_ick,	CK_3XXX),
+> -- 
+> 1.6.3.3
+> 
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-omap" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
