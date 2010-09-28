@@ -1,108 +1,67 @@
 From: Anton Vorontsov <cbouatmailru@gmail.com>
-Subject: [PATCH 3/5] altera_uart: Add support for getting mapbase and IRQ
- from resources
-Date: Tue, 28 Sep 2010 17:35:31 +0400
-Message-ID: <20100928133531.GC8289@oksana.dev.rtsoft.ru>
+Subject: [PATCH 5/5] altera_uart: Make it possible to use Altera UART and
+ 8250 ports together
+Date: Tue, 28 Sep 2010 17:35:45 +0400
+Message-ID: <20100928133545.GE8289@oksana.dev.rtsoft.ru>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ew0-f46.google.com ([209.85.215.46]:47083 "EHLO
+	mail-ew0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755059Ab0I1NgL (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 28 Sep 2010 09:36:11 -0400
 Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@suse.de>
 Cc: Alan Cox <alan@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>, Tobias Klauser <tklauser@distanz.ch>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
 
-This makes it much easier to integrate the driver with the rest of
-the Linux (e.g. MFD subsystem).
-
-The old method is still supported though.
-
-Also, from now on, there is one platform device per port (no
-changes are needed for the platform code, as no one registers
-the devices anywhere in-tree yet).
+This fixes tty name and major number conflicts. The major number
+204 is used across many platform-specific serial drivers, so we
+use that.
 
 Signed-off-by: Anton Vorontsov <cbouatmailru@gmail.com>
 ---
- drivers/serial/altera_uart.c |   57 +++++++++++++++++++++++++----------------
- 1 files changed, 35 insertions(+), 22 deletions(-)
+ drivers/serial/altera_uart.c |    8 +++++---
+ 1 files changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/serial/altera_uart.c b/drivers/serial/altera_uart.c
-index 2603f59..7686aaa 100644
+index 0a1a066..6412357 100644
 --- a/drivers/serial/altera_uart.c
 +++ b/drivers/serial/altera_uart.c
-@@ -497,38 +497,51 @@ static int __devinit altera_uart_probe(struct platform_device *pdev)
- {
- 	struct altera_uart_platform_uart *platp = pdev->dev.platform_data;
- 	struct uart_port *port;
--	int i;
-+	struct resource *res_mem;
-+	struct resource *res_irq;
-+	int i = pdev->id;
+@@ -28,6 +28,7 @@
+ #include <linux/altera_uart.h>
  
--	for (i = 0; i < CONFIG_SERIAL_ALTERA_UART_MAXPORTS && platp[i].mapbase; i++) {
--		port = &altera_uart_ports[i].port;
-+	/* -1 emphasizes that the platform must have one port, no .N suffix */
-+	if (i == -1)
-+		i = 0;
+ #define DRV_NAME "altera_uart"
++#define SERIAL_ALTERA_MAJOR 204
  
--		port->line = i;
--		port->type = PORT_ALTERA_UART;
--		port->mapbase = platp[i].mapbase;
--		port->membase = ioremap(port->mapbase, ALTERA_UART_SIZE);
--		port->iotype = SERIAL_IO_MEM;
--		port->irq = platp[i].irq;
--		port->uartclk = platp[i].uartclk;
--		port->ops = &altera_uart_ops;
--		port->flags = ASYNC_BOOT_AUTOCONF;
-+	if (i >= CONFIG_SERIAL_ALTERA_UART_MAXPORTS)
-+		return -EINVAL;
+ /*
+  * Altera UART register definitions according to the Nios UART datasheet:
+@@ -471,7 +472,7 @@ static int __init altera_uart_console_setup(struct console *co, char *options)
+ static struct uart_driver altera_uart_driver;
  
--		uart_add_one_port(&altera_uart_driver, port);
--	}
-+	port = &altera_uart_ports[i].port;
-+
-+	res_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (res_mem)
-+		port->mapbase = res_mem->start;
-+	else if (platp->mapbase)
-+		port->mapbase = platp->mapbase;
-+	else
-+		return -EINVAL;
-+
-+	res_irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-+	if (res_irq)
-+		port->irq = res_irq->start;
-+	else if (platp->irq)
-+		port->irq = platp->irq;
-+
-+	port->line = i;
-+	port->type = PORT_ALTERA_UART;
-+	port->membase = ioremap(port->mapbase, ALTERA_UART_SIZE);
-+	port->iotype = SERIAL_IO_MEM;
-+	port->uartclk = platp->uartclk;
-+	port->ops = &altera_uart_ops;
-+	port->flags = ASYNC_BOOT_AUTOCONF;
-+
-+	uart_add_one_port(&altera_uart_driver, port);
- 
- 	return 0;
- }
- 
- static int __devexit altera_uart_remove(struct platform_device *pdev)
- {
--	struct uart_port *port;
--	int i;
--
--	for (i = 0; i < CONFIG_SERIAL_ALTERA_UART_MAXPORTS; i++) {
--		port = &altera_uart_ports[i].port;
--		if (port)
--			uart_remove_one_port(&altera_uart_driver, port);
--	}
-+	struct uart_port *port = &altera_uart_ports[pdev->id].port;
- 
-+	uart_remove_one_port(&altera_uart_driver, port);
- 	return 0;
- }
- 
+ static struct console altera_uart_console = {
+-	.name	= "ttyS",
++	.name	= "ttyAL",
+ 	.write	= altera_uart_console_write,
+ 	.device	= uart_console_device,
+ 	.setup	= altera_uart_console_setup,
+@@ -502,8 +503,8 @@ console_initcall(altera_uart_console_init);
+ static struct uart_driver altera_uart_driver = {
+ 	.owner		= THIS_MODULE,
+ 	.driver_name	= DRV_NAME,
+-	.dev_name	= "ttyS",
+-	.major		= TTY_MAJOR,
++	.dev_name	= "ttyAL",
++	.major		= SERIAL_ALTERA_MAJOR,
+ 	.minor		= 64,
+ 	.nr		= CONFIG_SERIAL_ALTERA_UART_MAXPORTS,
+ 	.cons		= ALTERA_UART_CONSOLE,
+@@ -600,3 +601,4 @@ MODULE_DESCRIPTION("Altera UART driver");
+ MODULE_AUTHOR("Thomas Chou <thomas@wytron.com.tw>");
+ MODULE_LICENSE("GPL");
+ MODULE_ALIAS("platform:" DRV_NAME);
++MODULE_ALIAS_CHARDEV_MAJOR(SERIAL_ALTERA_MAJOR);
 -- 
 1.7.0.5
