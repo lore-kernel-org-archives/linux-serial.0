@@ -1,54 +1,37 @@
-From: Anton Vorontsov <cbouatmailru@gmail.com>
-Subject: Re: [PATCH 2/5] altera_uart: Add support for polling mode
- (IRQ-less)
-Date: Fri, 1 Oct 2010 17:24:27 +0400
-Message-ID: <20101001132427.GA31865@oksana.dev.rtsoft.ru>
-References: <20100928133526.GB8289@oksana.dev.rtsoft.ru>
- <20100928154539.GE3137@distanz.ch>
+From: Alan Cox <alan@linux.intel.com>
+Subject: Re: [PATCH 5/8] altera_uart: Make it possible to use Altera UART
+ and 8250 ports together
+Date: Fri, 1 Oct 2010 13:41:38 +0100
+Message-ID: <20101001134138.5ea2fb55@linux.intel.com>
+References: <20101001132045.GA9649@oksana.dev.rtsoft.ru>
+	<20101001132207.GE25897@oksana.dev.rtsoft.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ey0-f174.google.com ([209.85.215.174]:65058 "EHLO
-	mail-ey0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932462Ab0JANYd (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 1 Oct 2010 09:24:33 -0400
-Content-Disposition: inline
-In-Reply-To: <20100928154539.GE3137@distanz.ch>
+Received: from mga14.intel.com ([143.182.124.37]:61689 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756392Ab0JANaf (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 1 Oct 2010 09:30:35 -0400
+In-Reply-To: <20101001132207.GE25897@oksana.dev.rtsoft.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tobias Klauser <tklauser@distanz.ch>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Anton Vorontsov <cbouatmailru@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@suse.de>, Andrew Morton <akpm@linux-foundation.org>, Tobias Klauser <tklauser@distanz.ch>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Tue, Sep 28, 2010 at 05:45:39PM +0200, Tobias Klauser wrote:
-[...]
-> > -	ret = request_irq(port->irq, altera_uart_interrupt, IRQF_DISABLED,
-> > -			DRV_NAME, port);
-> > -	if (ret) {
-> > -		pr_err(DRV_NAME ": unable to attach Altera UART %d "
-> > -		       "interrupt vector=%d\n", port->line, port->irq);
-> > -		return ret;
-> > -	}
-> > -
-> >  	spin_lock_irqsave(&port->lock, flags);
-> >  
-> >  	/* Enable RX interrupts now */
-> > @@ -300,6 +304,19 @@ static int altera_uart_startup(struct uart_port *port)
-> >  
-> >  	spin_unlock_irqrestore(&port->lock, flags);
-> 
-> Shouldn't we only enable the RX interrupt if we actually use interrupts?
+On Fri, 1 Oct 2010 17:22:07 +0400
+Anton Vorontsov <cbouatmailru@gmail.com> wrote:
 
-Why would that matter if we don't use the interrupts? ;-)
+> This fixes tty name and major number conflicts. The major number
+> 204 is used across many platform-specific serial drivers, so we
+> use that.
 
-But I made the change anyway.
+204 is allocated in small chunks to specific low volume devices so you
+need a proper minor allocation
 
-> Also I would retain the order here (first register the interrupt handler
-> and then enable the interrupts).
+At this point that would be 204,213 for whatever tiny range you need.
 
-OK, fixed. Thanks!
+Please send me a patch for devices.txt and update accordingly,
+otherwise no objections.
 
--- 
-Anton Vorontsov
-email: cbouatmailru@gmail.com
-irc://irc.freenode.net/bd2
+Alan
