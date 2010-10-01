@@ -1,28 +1,33 @@
-From: Tobias Klauser <tklauser@distanz.ch>
-Subject: Re: [PATCH 5/5] altera_uart: Make it possible to use Altera UART
-	and 8250 ports together
-Date: Wed, 29 Sep 2010 07:40:23 +0200
-Message-ID: <20100929054023.GG3137@distanz.ch>
-References: <20100928133545.GE8289@oksana.dev.rtsoft.ru>
+From: Anton Vorontsov <cbouatmailru@gmail.com>
+Subject: [PATCH v2 0/8] Some patches for Altera UART driver
+Date: Fri, 1 Oct 2010 17:20:45 +0400
+Message-ID: <20101001132045.GA9649@oksana.dev.rtsoft.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from symlink.to.noone.org ([85.10.207.172]:53082 "EHLO sym.noone.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751357Ab0I2FkY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 29 Sep 2010 01:40:24 -0400
+Received: from mail-ey0-f174.google.com ([209.85.215.174]:44337 "EHLO
+	mail-ey0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932088Ab0JANUu (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 1 Oct 2010 09:20:50 -0400
 Content-Disposition: inline
-In-Reply-To: <20100928133545.GE8289@oksana.dev.rtsoft.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Anton Vorontsov <cbouatmailru@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Alan Cox <alan@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>, Tobias Klauser <tklauser@distanz.ch>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 2010-09-28 at 15:35:45 +0200, Anton Vorontsov <cbouatmailru@gmail.com> wrote:
-> This fixes tty name and major number conflicts. The major number
-> 204 is used across many platform-specific serial drivers, so we
-> use that.
-> 
-> Signed-off-by: Anton Vorontsov <cbouatmailru@gmail.com>
+Hi all,
 
-Acked-by: Tobias Klauser <tklauser@distanz.ch>
+Here is v2. Changes:
+
+- Addressed comments by Alan Cox and Tobias Klauser;
+- In patch 'Add support for getting mapbase and IRQ from resources',
+  added ioremap() return value checking;
+- Added a few fixup patches.
+
+Thanks,
+
+-- 
+Anton Vorontsov
+email: cbouatmailru@gmail.com
+irc://irc.freenode.net/bd2
