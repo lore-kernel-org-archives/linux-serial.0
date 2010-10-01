@@ -1,47 +1,47 @@
-From: akpm@linux-foundation.org
-Subject: [patch 3/3] drivers/serial/serial_core.c: prevent reading uninitialized stack memory
-Date: Fri, 01 Oct 2010 14:18:04 -0700
-Message-ID: <201010012118.o91LI4lh021287@imap1.linux-foundation.org>
+From: "Mr. Peter Lee" <infovan2@aol.com>
+Subject: Hello Friend
+Date: Sat, 02 Oct 2010 06:31:07 +0800
+Message-ID: <20101002063107.1354689ag2u54bok@webmail.stpeter.com.ph>
+Reply-To: peterlee333@aol.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ANSI_X3.4-1968
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+	charset=ISO-8859-1;
+	DelSp="Yes";
+	format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp1.linux-foundation.org ([140.211.169.13]:58813 "EHLO
-	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1756642Ab0JAVSo (ORCPT
+Received: from pmx.stpeter.com.ph ([122.52.208.90]:55192 "EHLO
+	pmx.stpeter.com.ph" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752301Ab0JAXKr (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 1 Oct 2010 17:18:44 -0400
+	Fri, 1 Oct 2010 19:10:47 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: greg@kroah.com
-Cc: linux-serial@vger.kernel.org, akpm@linux-foundation.org, drosenberg@vsecurity.com, alan@lxorguk.ukuu.org.uk, dan.j.rosenberg@gmail.com
 
-From: Dan Rosenberg <drosenberg@vsecurity.com>
 
-The TIOCGICOUNT device ioctl allows unprivileged users to read
-uninitialized stack memory, because the "reserved" member of the
-serial_icounter_struct struct declared on the stack is not altered or
-zeroed before being copied back to the user.  This patch takes care of it.
+Dear Friend,
 
-Signed-off-by: Dan Rosenberg <dan.j.rosenberg@gmail.com>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Greg KH <greg@kroah.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
----
+I am Mr. Peter Lee a South Korean, happily married with children, and  
+i am a Director of Hang Seng Bank Ltd, in charge of the International  
+Remittance department. I have a confidential business suggestion for  
+you. I will need you to assist me in executing a business project from  
+Hong Kong to your country.
 
- drivers/serial/serial_core.c |    2 ++
- 1 file changed, 2 insertions(+)
+It involves the transfer of a large sum of money. Everything  
+concerning this transaction shall be legally done without hitch.  
+Please endeavour to reply me if interested. Here is my private  
+Email:(peterlee333@aol.com)
 
-diff -puN drivers/serial/serial_core.c~drivers-serial-serial_corec-prevent-reading-uninitialized-stack-memory drivers/serial/serial_core.c
---- a/drivers/serial/serial_core.c~drivers-serial-serial_corec-prevent-reading-uninitialized-stack-memory
-+++ a/drivers/serial/serial_core.c
-@@ -1081,6 +1081,8 @@ static int uart_get_icount(struct tty_st
- 	struct uart_icount cnow;
- 	struct uart_port *uport = state->uart_port;
- 
-+	memset(&icount, 0, sizeof(struct serial_icounter_struct));
-+
- 	spin_lock_irq(&uport->lock);
- 	memcpy(&cnow, &uport->icount, sizeof(struct uart_icount));
- 	spin_unlock_irq(&uport->lock);
-_
+Thanks,
+Best Regard,
+Mr. Peter Lee
+
+
+
+
+
+----------------------------------------------------------------
+This message was sent using IMP, the Internet Messaging Program.
+
+
