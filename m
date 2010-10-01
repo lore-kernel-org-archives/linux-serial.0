@@ -1,76 +1,29 @@
-From: Anton Vorontsov <cbouatmailru@gmail.com>
-Subject: [PATCH v3 5/8] altera_uart: Make it possible to use Altera UART
+From: Alan Cox <alan@linux.intel.com>
+Subject: Re: [PATCH 5/8] altera_uart: Make it possible to use Altera UART
  and 8250 ports together
-Date: Fri, 1 Oct 2010 18:23:24 +0400
-Message-ID: <20101001142324.GA4517@oksana.dev.rtsoft.ru>
-References: <20101001132207.GE25897@oksana.dev.rtsoft.ru>
+Date: Fri, 1 Oct 2010 15:18:41 +0100
+Message-ID: <20101001151841.3fad627c@linux.intel.com>
+References: <20101001132045.GA9649@oksana.dev.rtsoft.ru>
+	<20101001132207.GE25897@oksana.dev.rtsoft.ru>
+	<20101001134138.5ea2fb55@linux.intel.com>
+	<20101001135254.GA27739@oksana.dev.rtsoft.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ey0-f174.google.com ([209.85.215.174]:37046 "EHLO
-	mail-ey0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932151Ab0JAOYJ (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 1 Oct 2010 10:24:09 -0400
-Content-Disposition: inline
-In-Reply-To: <20101001132207.GE25897@oksana.dev.rtsoft.ru>
+Received: from mga02.intel.com ([134.134.136.20]:61945 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753010Ab0JAPHj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 1 Oct 2010 11:07:39 -0400
+In-Reply-To: <20101001135254.GA27739@oksana.dev.rtsoft.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@suse.de>
-Cc: Alan Cox <alan@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>, Tobias Klauser <tklauser@distanz.ch>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Anton Vorontsov <cbouatmailru@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@suse.de>, Andrew Morton <akpm@linux-foundation.org>, Tobias Klauser <tklauser@distanz.ch>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-This fixes tty name, major and minor numbers. The major number
-204 is used across many platform-specific serial drivers, so we
-use that.
+> I guess the sane maximum number of ports would be 8, but it is still
+> possible to do hundreds of them.
 
-Signed-off-by: Anton Vorontsov <cbouatmailru@gmail.com>
-Acked-by: Tobias Klauser <tklauser@distanz.ch>
----
+In that case you may just want to allocate a dynamic major instead - or
+do you actually need a fixed major/minor for your boot up ?
 
-Now minor is set to 213.
-
- drivers/serial/altera_uart.c |   11 +++++++----
- 1 files changed, 7 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/serial/altera_uart.c b/drivers/serial/altera_uart.c
-index f1985aa..fbc8f8e 100644
---- a/drivers/serial/altera_uart.c
-+++ b/drivers/serial/altera_uart.c
-@@ -28,6 +28,8 @@
- #include <linux/altera_uart.h>
- 
- #define DRV_NAME "altera_uart"
-+#define SERIAL_ALTERA_MAJOR 204
-+#define SERIAL_ALTERA_MINOR 213
- 
- /*
-  * Altera UART register definitions according to the Nios UART datasheet:
-@@ -471,7 +473,7 @@ static int __init altera_uart_console_setup(struct console *co, char *options)
- static struct uart_driver altera_uart_driver;
- 
- static struct console altera_uart_console = {
--	.name	= "ttyS",
-+	.name	= "ttyAL",
- 	.write	= altera_uart_console_write,
- 	.device	= uart_console_device,
- 	.setup	= altera_uart_console_setup,
-@@ -502,9 +504,9 @@ console_initcall(altera_uart_console_init);
- static struct uart_driver altera_uart_driver = {
- 	.owner		= THIS_MODULE,
- 	.driver_name	= DRV_NAME,
--	.dev_name	= "ttyS",
--	.major		= TTY_MAJOR,
--	.minor		= 64,
-+	.dev_name	= "ttyAL",
-+	.major		= SERIAL_ALTERA_MAJOR,
-+	.minor		= SERIAL_ALTERA_MINOR,
- 	.nr		= CONFIG_SERIAL_ALTERA_UART_MAXPORTS,
- 	.cons		= ALTERA_UART_CONSOLE,
- };
-@@ -603,3 +605,4 @@ MODULE_DESCRIPTION("Altera UART driver");
- MODULE_AUTHOR("Thomas Chou <thomas@wytron.com.tw>");
- MODULE_LICENSE("GPL");
- MODULE_ALIAS("platform:" DRV_NAME);
-+MODULE_ALIAS_CHARDEV_MAJOR(SERIAL_ALTERA_MAJOR);
--- 
-1.7.0.5
