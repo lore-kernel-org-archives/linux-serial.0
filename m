@@ -1,94 +1,120 @@
 From: Anton Vorontsov <cbouatmailru@gmail.com>
-Subject: [PATCH 2/8] altera_uart: Add support for polling mode (IRQ-less)
-Date: Fri, 1 Oct 2010 17:21:33 +0400
-Message-ID: <20101001132133.GB25897@oksana.dev.rtsoft.ru>
+Subject: [PATCH 3/8] altera_uart: Add support for getting mapbase and IRQ
+ from resources
+Date: Fri, 1 Oct 2010 17:21:42 +0400
+Message-ID: <20101001132142.GC25897@oksana.dev.rtsoft.ru>
 References: <20101001132045.GA9649@oksana.dev.rtsoft.ru>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ey0-f174.google.com ([209.85.215.174]:33073 "EHLO
+	mail-ey0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932516Ab0JANVy (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 1 Oct 2010 09:21:54 -0400
 Content-Disposition: inline
 In-Reply-To: <20101001132045.GA9649@oksana.dev.rtsoft.ru>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@suse.de>
 Cc: Alan Cox <alan@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>, Tobias Klauser <tklauser@distanz.ch>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
 
-Some Altera UART implementations doesn't route the IRQ line, so we have
-to work in polling mode.
+This makes it much easier to integrate the driver with the rest of
+the Linux (e.g. MFD subsystem).
+
+The old method is still supported though.
+
+Also, from now on, there is one platform device per port (no
+changes are needed for the platform code, as no one registers
+the devices anywhere in-tree yet).
 
 Signed-off-by: Anton Vorontsov <cbouatmailru@gmail.com>
+Acked-by: Tobias Klauser <tklauser@distanz.ch>
 ---
- drivers/serial/altera_uart.c |   23 ++++++++++++++++++++++-
- 1 files changed, 22 insertions(+), 1 deletions(-)
+ drivers/serial/altera_uart.c |   60 ++++++++++++++++++++++++++---------------
+ 1 files changed, 38 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/serial/altera_uart.c b/drivers/serial/altera_uart.c
-index f8d8a00..7dd58da 100644
+index 7dd58da..1dfeffa 100644
 --- a/drivers/serial/altera_uart.c
 +++ b/drivers/serial/altera_uart.c
-@@ -15,6 +15,7 @@
- 
- #include <linux/kernel.h>
- #include <linux/init.h>
-+#include <linux/timer.h>
- #include <linux/interrupt.h>
- #include <linux/module.h>
- #include <linux/console.h>
-@@ -76,6 +77,7 @@
-  */
- struct altera_uart {
- 	struct uart_port port;
-+	struct timer_list tmr;
- 	unsigned int sigs;	/* Local copy of line sigs */
- 	unsigned short imr;	/* Local IMR mirror */
- };
-@@ -168,6 +170,7 @@ static void altera_uart_set_termios(struct uart_port *port,
- 	tty_termios_encode_baud_rate(termios, baud, baud);
- 
- 	spin_lock_irqsave(&port->lock, flags);
-+	uart_update_timeout(port, termios->c_cflag, baud);
- 	writel(baudclk, port->membase + ALTERA_UART_DIVISOR_REG);
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
-@@ -268,6 +271,15 @@ static irqreturn_t altera_uart_interrupt(int irq, void *data)
- 	return IRQ_RETVAL(isr);
- }
- 
-+static void altera_uart_timer(unsigned long data)
-+{
-+	struct uart_port *port = (void *)data;
-+	struct altera_uart *pp = container_of(port, struct altera_uart, port);
-+
-+	altera_uart_interrupt(0, port);
-+	mod_timer(&pp->tmr, jiffies + uart_poll_timeout(port));
-+}
-+
- static void altera_uart_config_port(struct uart_port *port, int flags)
+@@ -498,38 +498,54 @@ static int __devinit altera_uart_probe(struct platform_device *pdev)
  {
- 	port->type = PORT_ALTERA_UART;
-@@ -284,6 +296,12 @@ static int altera_uart_startup(struct uart_port *port)
- 	unsigned long flags;
- 	int ret;
+ 	struct altera_uart_platform_uart *platp = pdev->dev.platform_data;
+ 	struct uart_port *port;
+-	int i;
++	struct resource *res_mem;
++	struct resource *res_irq;
++	int i = pdev->id;
  
-+	if (!port->irq) {
-+		setup_timer(&pp->tmr, altera_uart_timer, (unsigned long)port);
-+		mod_timer(&pp->tmr, jiffies + uart_poll_timeout(port));
-+		return 0;
-+	}
+-	for (i = 0; i < CONFIG_SERIAL_ALTERA_UART_MAXPORTS && platp[i].mapbase; i++) {
+-		port = &altera_uart_ports[i].port;
++	/* -1 emphasizes that the platform must have one port, no .N suffix */
++	if (i == -1)
++		i = 0;
+ 
+-		port->line = i;
+-		port->type = PORT_ALTERA_UART;
+-		port->mapbase = platp[i].mapbase;
+-		port->membase = ioremap(port->mapbase, ALTERA_UART_SIZE);
+-		port->iotype = SERIAL_IO_MEM;
+-		port->irq = platp[i].irq;
+-		port->uartclk = platp[i].uartclk;
+-		port->ops = &altera_uart_ops;
+-		port->flags = ASYNC_BOOT_AUTOCONF;
++	if (i >= CONFIG_SERIAL_ALTERA_UART_MAXPORTS)
++		return -EINVAL;
+ 
+-		uart_add_one_port(&altera_uart_driver, port);
+-	}
++	port = &altera_uart_ports[i].port;
 +
- 	ret = request_irq(port->irq, altera_uart_interrupt, IRQF_DISABLED,
- 			DRV_NAME, port);
- 	if (ret) {
-@@ -316,7 +334,10 @@ static void altera_uart_shutdown(struct uart_port *port)
- 
- 	spin_unlock_irqrestore(&port->lock, flags);
- 
--	free_irq(port->irq, port);
-+	if (port->irq)
-+		free_irq(port->irq, port);
++	res_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (res_mem)
++		port->mapbase = res_mem->start;
++	else if (platp->mapbase)
++		port->mapbase = platp->mapbase;
 +	else
-+		del_timer_sync(&pp->tmr);
++		return -EINVAL;
++
++	res_irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
++	if (res_irq)
++		port->irq = res_irq->start;
++	else if (platp->irq)
++		port->irq = platp->irq;
++
++	port->membase = ioremap(port->mapbase, ALTERA_UART_SIZE);
++	if (!port->membase)
++		return -ENOMEM;
++
++	port->line = i;
++	port->type = PORT_ALTERA_UART;
++	port->iotype = SERIAL_IO_MEM;
++	port->uartclk = platp->uartclk;
++	port->ops = &altera_uart_ops;
++	port->flags = ASYNC_BOOT_AUTOCONF;
++
++	uart_add_one_port(&altera_uart_driver, port);
+ 
+ 	return 0;
  }
  
- static const char *altera_uart_type(struct uart_port *port)
+ static int __devexit altera_uart_remove(struct platform_device *pdev)
+ {
+-	struct uart_port *port;
+-	int i;
+-
+-	for (i = 0; i < CONFIG_SERIAL_ALTERA_UART_MAXPORTS; i++) {
+-		port = &altera_uart_ports[i].port;
+-		if (port)
+-			uart_remove_one_port(&altera_uart_driver, port);
+-	}
++	struct uart_port *port = &altera_uart_ports[pdev->id].port;
+ 
++	uart_remove_one_port(&altera_uart_driver, port);
+ 	return 0;
+ }
+ 
 -- 
 1.7.0.5
+
