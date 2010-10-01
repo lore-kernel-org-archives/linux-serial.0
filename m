@@ -1,24 +1,29 @@
 From: Tobias Klauser <tklauser@distanz.ch>
-Subject: Re: [PATCH 6/8] altera_uart: Fixup type usage of port flags
-Date: Fri, 1 Oct 2010 15:54:34 +0200
-Message-ID: <20101001135434.GB10579@distanz.ch>
-References: <20101001132045.GA9649@oksana.dev.rtsoft.ru> <20101001132237.GF25897@oksana.dev.rtsoft.ru>
+Subject: Re: [PATCH 2/8] altera_uart: Add support for polling mode
+	(IRQ-less)
+Date: Fri, 1 Oct 2010 15:57:45 +0200
+Message-ID: <20101001135745.GC10579@distanz.ch>
+References: <20101001132045.GA9649@oksana.dev.rtsoft.ru> <20101001132133.GB25897@oksana.dev.rtsoft.ru>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from symlink.to.noone.org ([85.10.207.172]:40055 "EHLO sym.noone.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756087Ab0JAN5q (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 1 Oct 2010 09:57:46 -0400
 Content-Disposition: inline
-In-Reply-To: <20101001132237.GF25897@oksana.dev.rtsoft.ru>
-Sender: linux-kernel-owner@vger.kernel.org
+In-Reply-To: <20101001132133.GB25897@oksana.dev.rtsoft.ru>
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: Anton Vorontsov <cbouatmailru@gmail.com>
 Cc: Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
 
-On 2010-10-01 at 15:22:37 +0200, Anton Vorontsov <cbouatmailru@gmail.com> wrote:
-> port->flags is of type upf_t, which corresponds to UPF_* flags.
-> 
-> ASYNC_BOOT_AUTOCONF is an unsigned integer, which happen to
-> be the same as UPF_BOOT_AUTOCONF.
+On 2010-10-01 at 15:21:33 +0200, Anton Vorontsov <cbouatmailru@gmail.com> wrote:
+> Some Altera UART implementations doesn't route the IRQ line, so we have
+> to work in polling mode.
 > 
 > Signed-off-by: Anton Vorontsov <cbouatmailru@gmail.com>
 
 Acked-by: Tobias Klauser <tklauser@distanz.ch>
+
+Thanks a lot.
