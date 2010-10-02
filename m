@@ -1,41 +1,35 @@
-From: Daniel Drake <dsd@laptop.org>
-Subject: [PATCH] serial8250: ratelimit "too much work" error
-Date: Sat,  2 Oct 2010 12:04:38 +0100 (BST)
-Message-ID: <20101002110438.801F49D401B@zog.reactivated.net>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: akpm@linux-foundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] serial8250: ratelimit "too much work" error
+Date: Sat, 2 Oct 2010 15:22:29 +0100
+Message-ID: <20101002152229.5f0f957b@lxorguk.ukuu.org.uk>
+References: <20101002110438.801F49D401B@zog.reactivated.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:59537 "EHLO
+	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1755480Ab0JBN5s (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 2 Oct 2010 09:57:48 -0400
+In-Reply-To: <20101002110438.801F49D401B@zog.reactivated.net>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Daniel Drake <dsd@laptop.org>
+Cc: akpm@linux-foundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Running a serial console, if too many kernel messages are generated within
-a short time causing a lot of serial I/O, the 8250 driver will generate
-another kernel message reporting this, which just adds to the I/O. It has
-a cascading effect and quickly results the system being brought to its knees
-by a flood of "too much work" messages.
+On Sat,  2 Oct 2010 12:04:38 +0100 (BST)
+Daniel Drake <dsd@laptop.org> wrote:
 
-Ratelimit the error message to avoid this.
+> Running a serial console, if too many kernel messages are generated within
+> a short time causing a lot of serial I/O, the 8250 driver will generate
+> another kernel message reporting this, which just adds to the I/O. It has
+> a cascading effect and quickly results the system being brought to its knees
+> by a flood of "too much work" messages.
+> 
+> Ratelimit the error message to avoid this.
+> 
+> Signed-off-by: Daniel Drake <dsd@laptop.org>
 
-Signed-off-by: Daniel Drake <dsd@laptop.org>
----
- drivers/serial/8250.c |    5 +++--
- 1 files changed, 3 insertions(+), 2 deletions(-)
+Acked-by: Alan Cox <alan@linux.intel.com>
 
-diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index 24110f6..d3c5855 100644
---- a/drivers/serial/8250.c
-+++ b/drivers/serial/8250.c
-@@ -1606,8 +1606,9 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
- 
- 		if (l == i->head && pass_counter++ > PASS_LIMIT) {
- 			/* If we hit this, we're dead. */
--			printk(KERN_ERR "serial8250: too much work for "
--				"irq%d\n", irq);
-+			if (printk_ratelimit())
-+				printk(KERN_ERR "serial8250: too much work for "
-+					"irq%d\n", irq);
- 			break;
- 		}
- 	} while (l != end);
--- 
-1.7.2.3
