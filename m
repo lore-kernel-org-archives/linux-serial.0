@@ -1,90 +1,41 @@
-From: =?iso-8859-2?Q?Micha=B3_Miros=B3aw?= <mirq@rere.qmqm.pl>
-Subject: Re: [patch 2/3] sc16is7x2: use threaded irqs
-Date: Sat, 2 Oct 2010 01:37:53 +0200
-Message-ID: <20101001233753.GB5733@rere.qmqm.pl>
-References: <201010012118.o91LI4OP021284@imap1.linux-foundation.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-2
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from rere.qmqm.pl ([89.167.52.164]:40983 "EHLO rere.qmqm.pl"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754352Ab0JAXrS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 1 Oct 2010 19:47:18 -0400
-Content-Disposition: inline
-In-Reply-To: <201010012118.o91LI4OP021284@imap1.linux-foundation.org>
-Sender: linux-serial-owner@vger.kernel.org
+From: Daniel Drake <dsd@laptop.org>
+Subject: [PATCH] serial8250: ratelimit "too much work" error
+Date: Sat,  2 Oct 2010 12:04:38 +0100 (BST)
+Message-ID: <20101002110438.801F49D401B@zog.reactivated.net>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: akpm@linux-foundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: manuel.stahl@iis.fraunhofer.de
-Cc: akpm@linux-foundation.org, greg@kroah.com, linux-serial@vger.kernel.org
 
-On Fri, Oct 01, 2010 at 02:18:04PM -0700, akpm@linux-foundation.org wro=
-te:
-> From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
->=20
-> Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-> Cc: Greg KH <greg@kroah.com>
-> Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-> ---
->=20
->  drivers/serial/sc16is7x2.c |  115 ++++++++++++----------------------=
--
->  1 file changed, 40 insertions(+), 75 deletions(-)
->=20
-> diff -puN drivers/serial/sc16is7x2.c~sc16is7x2-use-threaded-irqs driv=
-ers/serial/sc16is7x2.c
-> --- a/drivers/serial/sc16is7x2.c~sc16is7x2-use-threaded-irqs
-> +++ a/drivers/serial/sc16is7x2.c
-[...]
-> @@ -1066,21 +1051,18 @@ static bool sc16is7x2_handle_channel(str
->  	return (chan->iir & UART_IIR_NO_INT) =3D=3D 0x00;
->  }
-> =20
-> -static void sc16is7x2_work(struct work_struct *w)
-> +static irqreturn_t sc16is7x2_work(int irq, void *data)
->  {
-> -	struct sc16is7x2_chip *ts =3D
-> -			container_of(w, struct sc16is7x2_chip, work);
-> +	struct sc16is7x2_chip *ts =3D (struct sc16is7x2_chip *)data;
+Running a serial console, if too many kernel messages are generated within
+a short time causing a lot of serial I/O, the 8250 driver will generate
+another kernel message reporting this, which just adds to the I/O. It has
+a cascading effect and quickly results the system being brought to its knees
+by a flood of "too much work" messages.
 
-You don't need to cast from (void *).
+Ratelimit the error message to avoid this.
 
-[...]
-> =20
-> -static irqreturn_t sc16is7x2_interrupt(int irq, void *dev_id)
-> +static irqreturn_t sc16is7x2_irq(int irq, void *data)
->  {
-> -	struct sc16is7x2_chip *ts =3D dev_id;
-> -
-> -	dev_dbg(&ts->spi->dev, "%s\n", __func__);
-> +	struct sc16is7x2_chip *ts =3D (struct sc16is7x2_channel *)data;
+Signed-off-by: Daniel Drake <dsd@laptop.org>
+---
+ drivers/serial/8250.c |    5 +++--
+ 1 files changed, 3 insertions(+), 2 deletions(-)
 
-This cast seems wrong. Better to just drop it, like in sc16is7x2_work()=
-=2E
-
-> =20
-> -	if (!ts->force_end_work && !work_pending(&ts->work) &&
-> -	    !freezing(current) && !ts->suspending)
-> -		queue_work(ts->workqueue, &ts->work);
-> -
-> -	return IRQ_HANDLED;
-> +	/* It takes too long to read the regs over SPI,
-> +	 * so just wake up the thread */
-> +	if (ts->channel[0].active || ts->channel[1].active)
-> +		return IRQ_WAKE_THREAD;
-> +	else
-> +		return IRQ_NONE;
->  }
-> =20
-[...]
-
-Since this is fixing up patch #1, wouldn't it be better to merge the tw=
-o?
-
-Best Regards,
-Micha=B3 Miros=B3aw
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index 24110f6..d3c5855 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -1606,8 +1606,9 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
+ 
+ 		if (l == i->head && pass_counter++ > PASS_LIMIT) {
+ 			/* If we hit this, we're dead. */
+-			printk(KERN_ERR "serial8250: too much work for "
+-				"irq%d\n", irq);
++			if (printk_ratelimit())
++				printk(KERN_ERR "serial8250: too much work for "
++					"irq%d\n", irq);
+ 			break;
+ 		}
+ 	} while (l != end);
+-- 
+1.7.2.3
