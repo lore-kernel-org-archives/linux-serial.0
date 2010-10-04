@@ -1,57 +1,84 @@
-From: Breno Leitao <leitao@linux.vnet.ibm.com>
-Subject: [PATCH] jsm: Remove the uart port on errors
-Date: Sun,  3 Oct 2010 21:57:20 -0300
-Message-ID: <1286153840-21624-1-git-send-email-leitao@linux.vnet.ibm.com>
+From: Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH] serial8250: ratelimit "too much work" error
+Date: Mon, 4 Oct 2010 14:51:01 -0700
+Message-ID: <20101004145101.b28fdc0a.akpm@linux-foundation.org>
+References: <20101002110438.801F49D401B@zog.reactivated.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from e24smtp02.br.ibm.com ([32.104.18.86]:44917 "EHLO
-	e24smtp02.br.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751855Ab0JDA50 (ORCPT
+Received: from smtp1.linux-foundation.org ([140.211.169.13]:48604 "EHLO
+	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751152Ab0JDVvm (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 3 Oct 2010 20:57:26 -0400
-Received: from mailhub3.br.ibm.com (mailhub3.br.ibm.com [9.18.232.110])
-	by e24smtp02.br.ibm.com (8.14.4/8.13.1) with ESMTP id o941355L016723
-	for <linux-serial@vger.kernel.org>; Sun, 3 Oct 2010 22:03:05 -0300
-Received: from d24av01.br.ibm.com (d24av01.br.ibm.com [9.8.31.91])
-	by mailhub3.br.ibm.com (8.13.8/8.13.8/NCO v10.0) with ESMTP id o9413YWf2949138
-	for <linux-serial@vger.kernel.org>; Sun, 3 Oct 2010 22:03:34 -0300
-Received: from d24av01.br.ibm.com (loopback [127.0.0.1])
-	by d24av01.br.ibm.com (8.14.4/8.13.1/NCO v10.0 AVout) with ESMTP id o940vBbl027417
-	for <linux-serial@vger.kernel.org>; Sun, 3 Oct 2010 21:57:11 -0300
+	Mon, 4 Oct 2010 17:51:42 -0400
+In-Reply-To: <20101002110438.801F49D401B@zog.reactivated.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Scott.Kilau@digi.com, Breno Leitao <leitao@linux.vnet.ibm.com>
+To: Daniel Drake <dsd@laptop.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, Greg KH <greg@kroah.com>
 
-If kzmalloc fails, the uart port is not removed causing a leak.
-This patch just add another label that removes the uart when the
-kzmalloc fails.
+On Sat,  2 Oct 2010 12:04:38 +0100 (BST)
+Daniel Drake <dsd@laptop.org> wrote:
 
-Signed-off-by: Breno Leitao <leitao@linux.vnet.ibm.com>
----
- drivers/serial/jsm/jsm_driver.c |    4 +++-
- 1 files changed, 3 insertions(+), 1 deletions(-)
+> Running a serial console, if too many kernel messages are generated within
+> a short time causing a lot of serial I/O, the 8250 driver will generate
+> another kernel message reporting this, which just adds to the I/O. It has
+> a cascading effect and quickly results the system being brought to its knees
+> by a flood of "too much work" messages.
+> 
+> Ratelimit the error message to avoid this.
+> 
+> Signed-off-by: Daniel Drake <dsd@laptop.org>
+> ---
+>  drivers/serial/8250.c |    5 +++--
+>  1 files changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+> index 24110f6..d3c5855 100644
+> --- a/drivers/serial/8250.c
+> +++ b/drivers/serial/8250.c
+> @@ -1606,8 +1606,9 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
+>  
+>  		if (l == i->head && pass_counter++ > PASS_LIMIT) {
+>  			/* If we hit this, we're dead. */
+> -			printk(KERN_ERR "serial8250: too much work for "
+> -				"irq%d\n", irq);
+> +			if (printk_ratelimit())
+> +				printk(KERN_ERR "serial8250: too much work for "
+> +					"irq%d\n", irq);
+>  			break;
+>  		}
+>  	} while (l != end);
 
-diff --git a/drivers/serial/jsm/jsm_driver.c b/drivers/serial/jsm/jsm_driver.c
-index eaf5450..18f5484 100644
---- a/drivers/serial/jsm/jsm_driver.c
-+++ b/drivers/serial/jsm/jsm_driver.c
-@@ -172,13 +172,15 @@ static int __devinit jsm_probe_one(struct pci_dev *pdev, const struct pci_device
- 		 	jsm_uart_port_init here! */
- 		dev_err(&pdev->dev, "memory allocation for flipbuf failed\n");
- 		rc = -ENOMEM;
--		goto out_free_irq;
-+		goto out_free_uart;
- 	}
+printk_ratelimit() shares a common ratelimiting state between all
+callers of printk_ratelimit().  This is pretty sucky because if one
+printk_ratelimit() caller is going crazy then this can cause punishment
+of other unrelated printk_ratelimit() callers who *aren't* going crazy.
+
+So it's generally better to use printk_ratelimited(), which will
+ratelimit this printkand no other printk, without affecting other
+printk_ratelimit[ed]() users.
+
+So, this:
+
+--- a/drivers/serial/8250.c~serial8250-ratelimit-too-much-work-error-fix
++++ a/drivers/serial/8250.c
+@@ -1606,9 +1606,8 @@ static irqreturn_t serial8250_interrupt(
  
- 	pci_set_drvdata(pdev, brd);
- 	pci_save_state(pdev);
- 
- 	return 0;
-+ out_free_uart:
-+	jsm_remove_uart_port(brd);
-  out_free_irq:
- 	jsm_remove_uart_port(brd);
- 	free_irq(brd->irq, brd);
--- 
-1.7.2.3
+ 		if (l == i->head && pass_counter++ > PASS_LIMIT) {
+ 			/* If we hit this, we're dead. */
+-			if (printk_ratelimit())
+-				printk(KERN_ERR "serial8250: too much work for "
+-					"irq%d\n", irq);
++			printk_ratelimited(KERN_ERR
++				"serial8250: too much work for irq%d\n", irq);
+ 			break;
+ 		}
+ 	} while (l != end);
+_
+
+which, interestingly, doesn't compile because someone stuck a
+DEFINE_RATELIMIT_STATE() in include/linux/kernel.h and it ain't defined
+anywhere.  Let me fix that up...
 
