@@ -1,54 +1,57 @@
-From: Mikulas Patocka <mpatocka@redhat.com>
-Subject: [PATCH] add support for Kouwell KW-L221N-2
-Date: Sun, 3 Oct 2010 13:23:17 -0400 (EDT)
-Message-ID: <Pine.LNX.4.64.1010031321130.14702@hs20-bc2-1.build.redhat.com>
-Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+From: Breno Leitao <leitao@linux.vnet.ibm.com>
+Subject: [PATCH] jsm: Remove the uart port on errors
+Date: Sun,  3 Oct 2010 21:57:20 -0300
+Message-ID: <1286153840-21624-1-git-send-email-leitao@linux.vnet.ibm.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([209.132.183.28]:35398 "EHLO mx1.redhat.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754199Ab0JCRXV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 3 Oct 2010 13:23:21 -0400
-Received: from int-mx01.intmail.prod.int.phx2.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-	by mx1.redhat.com (8.13.8/8.13.8) with ESMTP id o93HNKe6001590
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-SHA bits=256 verify=OK)
-	for <linux-serial@vger.kernel.org>; Sun, 3 Oct 2010 13:23:21 -0400
-Received: from hs20-bc2-1.build.redhat.com (hs20-bc2-1.build.redhat.com [10.10.28.34])
-	by int-mx01.intmail.prod.int.phx2.redhat.com (8.13.8/8.13.8) with ESMTP id o93HNJKW028847
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-SHA bits=256 verify=NO)
-	for <linux-serial@vger.kernel.org>; Sun, 3 Oct 2010 13:23:20 -0400
-Received: from hs20-bc2-1.build.redhat.com (localhost.localdomain [127.0.0.1])
-	by hs20-bc2-1.build.redhat.com (8.13.1/8.13.1) with ESMTP id o93HNJe6014737
-	for <linux-serial@vger.kernel.org>; Sun, 3 Oct 2010 13:23:19 -0400
-Received: from localhost (mpatocka@localhost)
-	by hs20-bc2-1.build.redhat.com (8.13.1/8.13.1/Submit) with ESMTP id o93HNHBn014731
-	for <linux-serial@vger.kernel.org>; Sun, 3 Oct 2010 13:23:19 -0400
+Received: from e24smtp02.br.ibm.com ([32.104.18.86]:44917 "EHLO
+	e24smtp02.br.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751855Ab0JDA50 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 3 Oct 2010 20:57:26 -0400
+Received: from mailhub3.br.ibm.com (mailhub3.br.ibm.com [9.18.232.110])
+	by e24smtp02.br.ibm.com (8.14.4/8.13.1) with ESMTP id o941355L016723
+	for <linux-serial@vger.kernel.org>; Sun, 3 Oct 2010 22:03:05 -0300
+Received: from d24av01.br.ibm.com (d24av01.br.ibm.com [9.8.31.91])
+	by mailhub3.br.ibm.com (8.13.8/8.13.8/NCO v10.0) with ESMTP id o9413YWf2949138
+	for <linux-serial@vger.kernel.org>; Sun, 3 Oct 2010 22:03:34 -0300
+Received: from d24av01.br.ibm.com (loopback [127.0.0.1])
+	by d24av01.br.ibm.com (8.14.4/8.13.1/NCO v10.0 AVout) with ESMTP id o940vBbl027417
+	for <linux-serial@vger.kernel.org>; Sun, 3 Oct 2010 21:57:11 -0300
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
+Cc: Scott.Kilau@digi.com, Breno Leitao <leitao@linux.vnet.ibm.com>
 
-Add support for Kouwell KW-L221N-2 card.
+If kzmalloc fails, the uart port is not removed causing a leak.
+This patch just add another label that removes the uart when the
+kzmalloc fails.
 
-The card was supported with the generic rule that got number of ports and 
-UART clock speed wrong.
-
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-
+Signed-off-by: Breno Leitao <leitao@linux.vnet.ibm.com>
 ---
- drivers/serial/8250_pci.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/serial/jsm/jsm_driver.c |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
 
-Index: linux-2.6.36-rc6-fast/drivers/serial/8250_pci.c
-===================================================================
---- linux-2.6.36-rc6-fast.orig/drivers/serial/8250_pci.c	2010-10-03 16:49:20.000000000 +0200
-+++ linux-2.6.36-rc6-fast/drivers/serial/8250_pci.c	2010-10-03 19:11:52.000000000 +0200
-@@ -2863,6 +2863,9 @@ static struct pci_device_id serial_pci_t
- 		PCI_SUBVENDOR_ID_SIIG, PCI_SUBDEVICE_ID_SIIG_QUARTET_SERIAL,
- 		0, 0,
- 		pbn_b0_4_1152000 },
-+	{	PCI_VENDOR_ID_OXSEMI, 0x9505,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b0_2_921600 },
+diff --git a/drivers/serial/jsm/jsm_driver.c b/drivers/serial/jsm/jsm_driver.c
+index eaf5450..18f5484 100644
+--- a/drivers/serial/jsm/jsm_driver.c
++++ b/drivers/serial/jsm/jsm_driver.c
+@@ -172,13 +172,15 @@ static int __devinit jsm_probe_one(struct pci_dev *pdev, const struct pci_device
+ 		 	jsm_uart_port_init here! */
+ 		dev_err(&pdev->dev, "memory allocation for flipbuf failed\n");
+ 		rc = -ENOMEM;
+-		goto out_free_irq;
++		goto out_free_uart;
+ 	}
  
- 		/*
- 		 * The below card is a little controversial since it is the
+ 	pci_set_drvdata(pdev, brd);
+ 	pci_save_state(pdev);
+ 
+ 	return 0;
++ out_free_uart:
++	jsm_remove_uart_port(brd);
+  out_free_irq:
+ 	jsm_remove_uart_port(brd);
+ 	free_irq(brd->irq, brd);
+-- 
+1.7.2.3
+
