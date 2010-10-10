@@ -1,57 +1,73 @@
-From: Breno Leitao <leitao@linux.vnet.ibm.com>
-Subject: [PATCH] jsm: Remove the uart port on errors
-Date: Thu,  7 Oct 2010 13:40:42 -0300
-Message-ID: <1286469642-18796-1-git-send-email-leitao@linux.vnet.ibm.com>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH] serial/of_serial: make it endian safe
+Date: Sun, 10 Oct 2010 18:14:07 +0200
+Message-ID: <20101010161407.GA15105@Chamillionaire.breakpoint.cc>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-15
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from e24smtp01.br.ibm.com ([32.104.18.85]:53929 "EHLO
-	e24smtp01.br.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751549Ab0JGQks (ORCPT
+Received: from Chamillionaire.breakpoint.cc ([85.10.199.196]:51880 "EHLO
+	Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753060Ab0JJQOI (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 7 Oct 2010 12:40:48 -0400
-Received: from mailhub3.br.ibm.com (mailhub3.br.ibm.com [9.18.232.110])
-	by e24smtp01.br.ibm.com (8.14.4/8.13.1) with ESMTP id o97Gs73Z029430
-	for <linux-serial@vger.kernel.org>; Thu, 7 Oct 2010 13:54:07 -0300
-Received: from d24av02.br.ibm.com (d24av02.br.ibm.com [9.8.31.93])
-	by mailhub3.br.ibm.com (8.13.8/8.13.8/NCO v10.0) with ESMTP id o97GkxG82924618
-	for <linux-serial@vger.kernel.org>; Thu, 7 Oct 2010 13:47:00 -0300
-Received: from d24av02.br.ibm.com (loopback [127.0.0.1])
-	by d24av02.br.ibm.com (8.14.4/8.13.1/NCO v10.0 AVout) with ESMTP id o97GeThl028373
-	for <linux-serial@vger.kernel.org>; Thu, 7 Oct 2010 13:40:29 -0300
+	Sun, 10 Oct 2010 12:14:08 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: greg@kroah.com
-Cc: linux-serial@vger.kernel.org, Breno Leitao <leitao@linux.vnet.ibm.com>
+To: Grant Likely <grant.likely@secretlab.ca>
+Cc: linux-serial@vger.kernel.org
 
-If kzmalloc fails, the uart port is not removed causing a leak.
-This patch just add another label that removes the uart when the
-kzmalloc fails.
+it works currently since Microblaze and Power are both BE.
 
-Signed-off-by: Breno Leitao <leitao@linux.vnet.ibm.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/serial/jsm/jsm_driver.c |    4 +++-
- 1 files changed, 3 insertions(+), 1 deletions(-)
+ drivers/serial/of_serial.c |   14 +++++++-------
+ 1 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/serial/jsm/jsm_driver.c b/drivers/serial/jsm/jsm_driver.c
-index eaf5450..18f5484 100644
---- a/drivers/serial/jsm/jsm_driver.c
-+++ b/drivers/serial/jsm/jsm_driver.c
-@@ -172,13 +172,15 @@ static int __devinit jsm_probe_one(struct pci_dev *pdev, const struct pci_device
- 		 	jsm_uart_port_init here! */
- 		dev_err(&pdev->dev, "memory allocation for flipbuf failed\n");
- 		rc = -ENOMEM;
--		goto out_free_irq;
-+		goto out_free_uart;
- 	}
+diff --git a/drivers/serial/of_serial.c b/drivers/serial/of_serial.c
+index 2af8fd1..012ef07 100644
+--- a/drivers/serial/of_serial.c
++++ b/drivers/serial/of_serial.c
+@@ -31,8 +31,8 @@ static int __devinit of_platform_serial_setup(struct platform_device *ofdev,
+ {
+ 	struct resource resource;
+ 	struct device_node *np = ofdev->dev.of_node;
+-	const unsigned int *clk, *spd;
+-	const u32 *prop;
++	const __be32 *clk, *spd;
++	const __be32 *prop;
+ 	int ret, prop_size;
  
- 	pci_set_drvdata(pdev, brd);
- 	pci_save_state(pdev);
+ 	memset(port, 0, sizeof *port);
+@@ -55,24 +55,24 @@ static int __devinit of_platform_serial_setup(struct platform_device *ofdev,
+ 	/* Check for shifted address mapping */
+ 	prop = of_get_property(np, "reg-offset", &prop_size);
+ 	if (prop && (prop_size == sizeof(u32)))
+-		port->mapbase += *prop;
++		port->mapbase += be32_to_cpup(prop);
  
+ 	/* Check for registers offset within the devices address range */
+ 	prop = of_get_property(np, "reg-shift", &prop_size);
+ 	if (prop && (prop_size == sizeof(u32)))
+-		port->regshift = *prop;
++		port->regshift = be32_to_cpup(prop);
+ 
+ 	port->irq = irq_of_parse_and_map(np, 0);
+ 	port->iotype = UPIO_MEM;
+ 	port->type = type;
+-	port->uartclk = *clk;
++	port->uartclk = be32_to_cpup(clk);
+ 	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
+ 		| UPF_FIXED_PORT | UPF_FIXED_TYPE;
+ 	port->dev = &ofdev->dev;
+ 	/* If current-speed was set, then try not to change it. */
+ 	if (spd)
+-		port->custom_divisor = *clk / (16 * (*spd));
+-
++		port->custom_divisor = be32_to_cpup(clk) /
++			(16 * (be32_to_cpup(spd)));
  	return 0;
-+ out_free_uart:
-+	jsm_remove_uart_port(brd);
-  out_free_irq:
- 	jsm_remove_uart_port(brd);
- 	free_irq(brd->irq, brd);
+ }
+ 
 -- 
 1.7.2.3
 
