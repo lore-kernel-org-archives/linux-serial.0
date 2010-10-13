@@ -1,73 +1,68 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH] serial/of_serial: make it endian safe
-Date: Sun, 10 Oct 2010 18:14:07 +0200
-Message-ID: <20101010161407.GA15105@Chamillionaire.breakpoint.cc>
+From: Stanislav Brabec <sbrabec@suse.cz>
+Subject: Re: [PATCH] Serial: BUGFIX: uart_resume_port has an omitted
+ condition.
+Date: Wed, 13 Oct 2010 13:26:45 +0200
+Message-ID: <1286969205.6082.700.camel@hammer.site>
+References: <1286949486-2446-1-git-send-email-myungjoo.ham@samsung.com>
+	 <20101013062605.GB4393@suse.de>
+	 <AANLkTimc-ETu4zrny=kmVRq8jnh2CDiVSqE-EXde4ioS@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
+Content-Type: text/plain; charset=ISO-8859-2
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from Chamillionaire.breakpoint.cc ([85.10.199.196]:51880 "EHLO
-	Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753060Ab0JJQOI (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 10 Oct 2010 12:14:08 -0400
-Content-Disposition: inline
+Received: from cantor.suse.de ([195.135.220.2]:38912 "EHLO mx1.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753821Ab0JML0t (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 13 Oct 2010 07:26:49 -0400
+In-Reply-To: <AANLkTimc-ETu4zrny=kmVRq8jnh2CDiVSqE-EXde4ioS@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Grant Likely <grant.likely@secretlab.ca>
-Cc: linux-serial@vger.kernel.org
+To: MyungJoo Ham <myungjoo.ham@samsung.com>
+Cc: Greg KH <gregkh@suse.de>, linux-kernel@vger.kernel.org, kyungmin.park@samsung.com, Alan Cox <alan@linux.intel.com>, Arnd Bergmann <arnd@arndb.de>, Andr Goddard Rosa <andre.goddard@gmail.com>, Jason Wang <jason77.wang@gmail.com>, linux-serial@vger.kernel.org
 
-it works currently since Microblaze and Power are both BE.
+On Wed, 13 Oct 2010 15:38:13 +0900, MyungJoo Ham wrote:
+> On Wed, Oct 13, 2010 at 3:26 PM, Greg KH <gregkh@suse.de> wrote:
+> > On Wed, Oct 13, 2010 at 02:58:06PM +0900, MyungJoo Ham wrote:
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- drivers/serial/of_serial.c |   14 +++++++-------
- 1 files changed, 7 insertions(+), 7 deletions(-)
+> > Is this a regression?  If so, from what working kernel?  Or has thi=
+s
+> > always been this way?
+>=20
+> I don't think this is a regression to the previous version. Logically=
+,
+> it's matching the console_stop()-console_start() pair.
 
-diff --git a/drivers/serial/of_serial.c b/drivers/serial/of_serial.c
-index 2af8fd1..012ef07 100644
---- a/drivers/serial/of_serial.c
-+++ b/drivers/serial/of_serial.c
-@@ -31,8 +31,8 @@ static int __devinit of_platform_serial_setup(struct platform_device *ofdev,
- {
- 	struct resource resource;
- 	struct device_node *np = ofdev->dev.of_node;
--	const unsigned int *clk, *spd;
--	const u32 *prop;
-+	const __be32 *clk, *spd;
-+	const __be32 *prop;
- 	int ret, prop_size;
- 
- 	memset(port, 0, sizeof *port);
-@@ -55,24 +55,24 @@ static int __devinit of_platform_serial_setup(struct platform_device *ofdev,
- 	/* Check for shifted address mapping */
- 	prop = of_get_property(np, "reg-offset", &prop_size);
- 	if (prop && (prop_size == sizeof(u32)))
--		port->mapbase += *prop;
-+		port->mapbase += be32_to_cpup(prop);
- 
- 	/* Check for registers offset within the devices address range */
- 	prop = of_get_property(np, "reg-shift", &prop_size);
- 	if (prop && (prop_size == sizeof(u32)))
--		port->regshift = *prop;
-+		port->regshift = be32_to_cpup(prop);
- 
- 	port->irq = irq_of_parse_and_map(np, 0);
- 	port->iotype = UPIO_MEM;
- 	port->type = type;
--	port->uartclk = *clk;
-+	port->uartclk = be32_to_cpup(clk);
- 	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
- 		| UPF_FIXED_PORT | UPF_FIXED_TYPE;
- 	port->dev = &ofdev->dev;
- 	/* If current-speed was set, then try not to change it. */
- 	if (spd)
--		port->custom_divisor = *clk / (16 * (*spd));
--
-+		port->custom_divisor = be32_to_cpup(clk) /
-+			(16 * (be32_to_cpup(spd)));
- 	return 0;
- }
- 
--- 
-1.7.2.3
+This disparity appeared deliberately in 4547be78. If you need
+no_console_suspend and the hardware lets the device in an undefined
+state after resume (i. e. PXA270), you need to call subset of the
+resume, even if the suspend counterpart was not called. Yes, I can
+imagine that it may be a source of problems.
 
+Did you try the latest patches from Jason Wang from linux-serial list?
+
+> Such hang in serial and its mitigation is observed in 2.6.36 at
+> arch/arm/mach-s5pv310 machines. In these machines, it hanged with
+> console_suspend_enabled =3D=3D 0 every time.
+
+It seems that support for no_console_suspend for all devices is becomin=
+g
+more complicated. I guess that a new driver calls (maybe "save_state"
+and "resume_state") or support for no_console_suspend directly in
+drivers may be useful.
+
+--=20
+Best Regards / S pozdravem,
+
+Stanislav Brabec
+software developer
+---------------------------------------------------------------------
+SUSE LINUX, s. r. o.                          e-mail: sbrabec@suse.cz
+Lihovarsk=E1 1060/12           tel: +420 284 028 966, +49 911 740538747
+190 00 Praha 9                                  fax: +420 284 028 951
+Czech Republic                                    http://www.suse.cz/
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
