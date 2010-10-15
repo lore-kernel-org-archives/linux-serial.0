@@ -1,62 +1,72 @@
 From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
 Subject: Re: [PATCH resend] Add sc16is7x2 driver
-Date: Fri, 15 Oct 2010 09:24:34 +0200
-Message-ID: <4CB801B2.808@iis.fraunhofer.de>
-References: <4CAD818B.2070603@iis.fraunhofer.de> <20101014190133.GB1009@kroah.com>
+Date: Fri, 15 Oct 2010 17:09:03 +0200
+Message-ID: <4CB86E8F.3060907@iis.fraunhofer.de>
+References: <4CAD818B.2070603@iis.fraunhofer.de> <20101014190133.GB1009@kroah.com> <4CB801B2.808@iis.fraunhofer.de> <20101015142709.GA18905@kroah.com>
 Mime-Version: 1.0
 Content-Type: multipart/mixed;
- boundary="------------090604090007020909070205"
+ boundary="------------060908060805020505060304"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from relay03-haj2.antispameurope.com ([83.246.65.53]:32817 "EHLO
+Received: from relay03-haj2.antispameurope.com ([83.246.65.53]:59436 "EHLO
 	relay03-haj2.antispameurope.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754011Ab0JOHYi (ORCPT
+	by vger.kernel.org with ESMTP id S1755198Ab0JOPJH (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 15 Oct 2010 03:24:38 -0400
-In-Reply-To: <20101014190133.GB1009@kroah.com>
+	Fri, 15 Oct 2010 11:09:07 -0400
+In-Reply-To: <20101015142709.GA18905@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <greg@kroah.com>
 Cc: linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>
 
 This is a multi-part message in MIME format.
---------------090604090007020909070205
+--------------060908060805020505060304
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: quoted-printable
-X-MIME-Autoconverted: from 8bit to quoted-printable by iis.fhg.de id JAA28550
+X-MIME-Autoconverted: from 8bit to quoted-printable by iis.fhg.de id RAA18387
 
-On 14.10.2010 21:01, Greg KH wrote:
-> On Thu, Oct 07, 2010 at 10:15:07AM +0200, Manuel Stahl wrote:
->> --- /dev/null
->> +++ b/include/linux/spi/sc16is7x2.h
->> @@ -0,0 +1,17 @@
->> +#ifndef LINUX_SPI_SC16IS752_H
->> +#define LINUX_SPI_SC16IS752_H
->> +
->> +#define SC16IS7X2_NR_GPIOS 8
->> +
->> +struct sc16is7x2_platform_data {
->> +	unsigned int	uartclk;
->> +	/* uart line number of the first channel */
->> +	unsigned	uart_base;
->> +	/* number assigned to the first GPIO */
->> +	unsigned	gpio_base;
->> +	char		*label;
->> +	/* list of GPIO names (array length =3D SC16IS7X2_NR_GPIOS) */
->> +	const char	*const *names;
->> +};
->> +
->> +#endif
+On 15.10.2010 16:27, Greg KH wrote:
+> On Fri, Oct 15, 2010 at 09:24:34AM +0200, Manuel Stahl wrote:
+>> On 14.10.2010 21:01, Greg KH wrote:
+>>> On Thu, Oct 07, 2010 at 10:15:07AM +0200, Manuel Stahl wrote:
+>>>> --- /dev/null
+>>>> +++ b/include/linux/spi/sc16is7x2.h
+>>>> @@ -0,0 +1,17 @@
+>>>> +#ifndef LINUX_SPI_SC16IS752_H
+>>>> +#define LINUX_SPI_SC16IS752_H
+>>>> +
+>>>> +#define SC16IS7X2_NR_GPIOS 8
+>>>> +
+>>>> +struct sc16is7x2_platform_data {
+>>>> +	unsigned int	uartclk;
+>>>> +	/* uart line number of the first channel */
+>>>> +	unsigned	uart_base;
+>>>> +	/* number assigned to the first GPIO */
+>>>> +	unsigned	gpio_base;
+>>>> +	char		*label;
+>>>> +	/* list of GPIO names (array length =3D SC16IS7X2_NR_GPIOS) */
+>>>> +	const char	*const *names;
+>>>> +};
+>>>> +
+>>>> +#endif
+>>>
+>>> Why is this needed in a .h file?  What other .c file uses this define
+>>> and structure?
+>>>
+>>> thanks,
+>>>
+>>> greg k-h
+>>
+>> The board setup code can pass information about the uart and gpio
+>> enumeration.
 >
-> Why is this needed in a .h file?  What other .c file uses this define
-> and structure?
->
-> thanks,
->
-> greg k-h
+> What "board setup code"?  I don't see that here in the patch anywhere.
 
-The board setup code can pass information about the uart and gpio=20
-enumeration. It can also define names for the GPIOs. Futhermore the base=20
-clock of the chip must be known, as it can be clocked by an external devi=
-ce.
+SPI devices are generally set up for a specific hardware board. I.e. for=20
+some ARM boards there is setup code in=20
+linux/arch/arm/mach-at91/board-<xyz>.c
+
+I use the sc16is7x2 for a board that is not yet in vanilla, so the board=20
+setup code is not included in the patch.
 
 Regards,
 --=20
@@ -73,12 +83,12 @@ E-Mail   manuel.stahl@iis.fraunhofer.de
 http://www.iis.fraunhofer.de
 http://www.smart-power.fraunhofer.de
 
---------------090604090007020909070205
+--------------060908060805020505060304
 Content-Type: text/x-vcard; charset=utf-8;
  name="manuel_stahl.vcf"
 Content-Disposition: attachment;
  filename="manuel_stahl.vcf"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 
 begin:vcard
 fn:Manuel Stahl
@@ -90,4 +100,4 @@ version:2.1
 end:vcard
 
 
---------------090604090007020909070205--
+--------------060908060805020505060304--
