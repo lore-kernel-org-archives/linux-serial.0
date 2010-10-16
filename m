@@ -1,72 +1,49 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH resend] Add sc16is7x2 driver
-Date: Fri, 15 Oct 2010 09:49:22 -0700
-Message-ID: <20101015164922.GB21576@kroah.com>
-References: <4CAD818B.2070603@iis.fraunhofer.de> <20101014190133.GB1009@kroah.com> <4CB801B2.808@iis.fraunhofer.de> <20101015142709.GA18905@kroah.com> <4CB86E8F.3060907@iis.fraunhofer.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Mike Frysinger <vapier@gentoo.org>
+Subject: [PATCH] serial: bfin_sport_uart: speed up sport RX sample rate to be 3% faster
+Date: Sat, 16 Oct 2010 18:22:34 -0400
+Message-ID: <1287267754-9298-1-git-send-email-vapier@gentoo.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:45036 "EHLO coco.kroah.org"
+Received: from smtp.gentoo.org ([140.211.166.183]:49511 "EHLO smtp.gentoo.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932107Ab0JOQtf (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 15 Oct 2010 12:49:35 -0400
-Content-Disposition: inline
-In-Reply-To: <4CB86E8F.3060907@iis.fraunhofer.de>
+	id S1755736Ab0JPWWw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 16 Oct 2010 18:22:52 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-Cc: linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>
+To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
 
-On Fri, Oct 15, 2010 at 05:09:03PM +0200, Manuel Stahl wrote:
-> On 15.10.2010 16:27, Greg KH wrote:
->> On Fri, Oct 15, 2010 at 09:24:34AM +0200, Manuel Stahl wrote:
->>> On 14.10.2010 21:01, Greg KH wrote:
->>>> On Thu, Oct 07, 2010 at 10:15:07AM +0200, Manuel Stahl wrote:
->>>>> --- /dev/null
->>>>> +++ b/include/linux/spi/sc16is7x2.h
->>>>> @@ -0,0 +1,17 @@
->>>>> +#ifndef LINUX_SPI_SC16IS752_H
->>>>> +#define LINUX_SPI_SC16IS752_H
->>>>> +
->>>>> +#define SC16IS7X2_NR_GPIOS 8
->>>>> +
->>>>> +struct sc16is7x2_platform_data {
->>>>> +	unsigned int	uartclk;
->>>>> +	/* uart line number of the first channel */
->>>>> +	unsigned	uart_base;
->>>>> +	/* number assigned to the first GPIO */
->>>>> +	unsigned	gpio_base;
->>>>> +	char		*label;
->>>>> +	/* list of GPIO names (array length = SC16IS7X2_NR_GPIOS) */
->>>>> +	const char	*const *names;
->>>>> +};
->>>>> +
->>>>> +#endif
->>>>
->>>> Why is this needed in a .h file?  What other .c file uses this define
->>>> and structure?
->>>>
->>>> thanks,
->>>>
->>>> greg k-h
->>>
->>> The board setup code can pass information about the uart and gpio
->>> enumeration.
->>
->> What "board setup code"?  I don't see that here in the patch anywhere.
->
-> SPI devices are generally set up for a specific hardware board. I.e. for 
-> some ARM boards there is setup code in 
-> linux/arch/arm/mach-at91/board-<xyz>.c
->
-> I use the sc16is7x2 for a board that is not yet in vanilla, so the board 
-> setup code is not included in the patch.
+From: Sonic Zhang <sonic.zhang@analog.com>
 
-Then why not add this header (or move it to the header file) when your
-board setup code is merged?  No need to have it there now, right?
+The actual uart baud rate of devices vary between +/-2% of what is
+asked.  The SPORT RX sample rate should be faster than double of the
+worst case.  Otherwise, wrong data may be received.  So set SPORT RX
+clock to be 3% faster in general.
 
-Care to resend this driver changed that way?
+Reported-by: Olivier STOCK <ostockemer@ereca.fr>
+Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+---
+ drivers/serial/bfin_sport_uart.c |    7 ++++++-
+ 1 files changed, 6 insertions(+), 1 deletions(-)
 
-thanks,
+diff --git a/drivers/serial/bfin_sport_uart.c b/drivers/serial/bfin_sport_uart.c
+index 5318dd3..6f1b51e 100644
+--- a/drivers/serial/bfin_sport_uart.c
++++ b/drivers/serial/bfin_sport_uart.c
+@@ -131,7 +131,12 @@ static int sport_uart_setup(struct sport_uart_port *up, int size, int baud_rate)
+ 	pr_debug("%s RCR1:%x, RCR2:%x\n", __func__, SPORT_GET_RCR1(up), SPORT_GET_RCR2(up));
+ 
+ 	tclkdiv = sclk / (2 * baud_rate) - 1;
+-	rclkdiv = sclk / (2 * baud_rate * 2) - 1;
++	/* The actual uart baud rate of devices vary between +/-2%. The sport
++	 * RX sample rate should be faster than the double of the worst case,
++	 * otherwise, wrong data are received. So, set sport RX clock to be
++	 * 3% faster.
++	 */
++	rclkdiv = sclk / (2 * baud_rate * 2 * 97 / 100) - 1;
+ 	SPORT_PUT_TCLKDIV(up, tclkdiv);
+ 	SPORT_PUT_RCLKDIV(up, rclkdiv);
+ 	SSYNC();
+-- 
+1.7.3.1
 
-greg k-h
