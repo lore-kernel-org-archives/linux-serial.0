@@ -1,62 +1,53 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Re: [PATCH] Documentation about RS485 serial communications
-Date: Tue, 19 Oct 2010 17:22:32 +0000 (UTC)
-Message-ID: <i9kk4o$svc$1@dough.gmane.org>
-References: <20100408111310.524f7354@lxorguk.ukuu.org.uk>
-	<4CBD8EE4.5040808@evidence.eu.com> <i9ka0s$4ua$1@dough.gmane.org>
-	<201010191727.53314.alexander.stein@systec-electronic.com>
+From: Greenbeard Labs <noreply@greenbeardlabs.com>
+Subject: Let Us Build Your Website!
+Date: Tue, 19 Oct 2010 04:17:04 -0500
+Message-ID: <0ae0a5c4bc55b444240295b31400a96c@relay.greenbeardlabs.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
-	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
-	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: linux-arm-kernel-bounces@lists.infradead.org
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from relay.greenbeardlabs.com ([208.77.148.74]:55737 "EHLO
+	relay.greenbeardlabs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751422Ab0JSSaE (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 19 Oct 2010 14:30:04 -0400
+Received: from relay.greenbeardlabs.com (relay.greenbeard.com [127.0.0.1])
+	by relay.greenbeardlabs.com (8.13.8/8.13.8) with ESMTP id o9J9H4Ea005541
+	for <linux-serial@vger.kernel.org>; Tue, 19 Oct 2010 04:17:04 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On 2010-10-19, Alexander Stein <alexander.stein@systec-electronic.com> wrote:
-> On Tuesday 19 October 2010, 16:29:48 Grant Edwards wrote:
->> On 2010-10-19, Claudio Scordino <claudio@evidence.eu.com> wrote:
->> > +2. HARDWARE-RELATED CONSIDERATIONS
->> > +
->> > +   Some CPUs (e.g., Atmel AT91) contain a transceiver capable of working
->> > both +   as RS232 and RS485.
->> 
->> Pardon my curiosity, but I've looked at a few AT91 parts, and I've
->> never seen on with an internal transceiver -- nor does Google seem
->> able to find any.
->> 
->> Frankly, I'd be pretty surprised, since it would be very difficult
->> (fab-wise), to build a mircoprocessor with I/O cells capable of
->> withstanding the voltage levels specified in RS232.
->> 
->> Can you specify to which parts you're referring?
->
-> I doubt the AT91 do have an internal transceiver but it has a
-> dedicated pin feature (RTS or CTS or something) which can be used to
-> switch between RS232 and RS485 by setting a bit in the USART provided
-> the pin is connected properly.
+We=E2=80=99ll build a custom website for you that you can easily manage
+yourself. Whether you want a blog, company website, online store, or
+something more unique, we can help. Our prices are as low as $100 per
+page.
 
-Yes, the AT91 UARTs do have a built-in half-duplex mode that will
-automatically control line direction by toggling RTS.
+We can also help you generate more business by increasing your
+exposure on search engines, social media sites, and across the web.
 
-That can used to control external half-duplex hardware like an RS485
-transceiver or any RS232-connected half-duplex device like some
-modems.
+Visit www.greenbeardlabs.com to learn more!
 
-Though the Atmel docs refer to it as "RS485 mode" there is no RS485
-transceiver in the AT91 parts (AFAIK), and "RS485 mode" isn't specific
-to RS485 - it can be used with any external half-duplex hardware.
 
--- 
-Grant Edwards               grant.b.edwards        Yow! I Know A Joke!!
-                                  at               
-                              gmail.com            
+
+---
+If you would like to remove your email address from our mailing list, p=
+aste
+the following link into your browser:
+http://relay.greenbeardlabs.com/lists/?p=3Dunsubscribe&uid=3D7147ad2b73=
+70f61cb646bfb486af9b33.
+
+Greenbeard Labs is a unit of Greenbeard Inc. This message is produced a=
+nd
+distributed by Greenbeard Inc, 3016 Selma, Dallas, TX 75234.
+
+
+--
+Powered by PHPlist, www.phplist.com --
+
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
