@@ -1,88 +1,62 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH resend] Add sc16is7x2 driver
-Date: Tue, 19 Oct 2010 08:37:48 -0700
-Message-ID: <20101019153748.GB4589@kroah.com>
-References: <4CAD818B.2070603@iis.fraunhofer.de>
- <20101014190133.GB1009@kroah.com>
- <4CB801B2.808@iis.fraunhofer.de>
- <20101015142709.GA18905@kroah.com>
- <4CB86E8F.3060907@iis.fraunhofer.de>
- <20101015164922.GB21576@kroah.com>
- <4CBC177E.8020407@iis.fraunhofer.de>
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: Re: [PATCH] Documentation about RS485 serial communications
+Date: Tue, 19 Oct 2010 17:22:32 +0000 (UTC)
+Message-ID: <i9kk4o$svc$1@dough.gmane.org>
+References: <20100408111310.524f7354@lxorguk.ukuu.org.uk>
+	<4CBD8EE4.5040808@evidence.eu.com> <i9ka0s$4ua$1@dough.gmane.org>
+	<201010191727.53314.alexander.stein@systec-electronic.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:59735 "EHLO coco.kroah.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752918Ab0JSPzo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Oct 2010 11:55:44 -0400
-Content-Disposition: inline
-In-Reply-To: <4CBC177E.8020407@iis.fraunhofer.de>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: linux-arm-kernel-bounces@lists.infradead.org
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-Cc: linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>
 
-On Mon, Oct 18, 2010 at 11:46:38AM +0200, Manuel Stahl wrote:
-> On 15.10.2010 18:49, Greg KH wrote:
-> >On Fri, Oct 15, 2010 at 05:09:03PM +0200, Manuel Stahl wrote:
-> >>On 15.10.2010 16:27, Greg KH wrote:
-> >>>On Fri, Oct 15, 2010 at 09:24:34AM +0200, Manuel Stahl wrote:
-> >>>>On 14.10.2010 21:01, Greg KH wrote:
-> >>>>>On Thu, Oct 07, 2010 at 10:15:07AM +0200, Manuel Stahl wrote:
-> >>>>>>--- /dev/null
-> >>>>>>+++ b/include/linux/spi/sc16is7x2.h
-> >>>>>>@@ -0,0 +1,17 @@
-> >>>>>>+#ifndef LINUX_SPI_SC16IS752_H
-> >>>>>>+#define LINUX_SPI_SC16IS752_H
-> >>>>>>+
-> >>>>>>+#define SC16IS7X2_NR_GPIOS 8
-> >>>>>>+
-> >>>>>>+struct sc16is7x2_platform_data {
-> >>>>>>+	unsigned int	uartclk;
-> >>>>>>+	/* uart line number of the first channel */
-> >>>>>>+	unsigned	uart_base;
-> >>>>>>+	/* number assigned to the first GPIO */
-> >>>>>>+	unsigned	gpio_base;
-> >>>>>>+	char		*label;
-> >>>>>>+	/* list of GPIO names (array length = SC16IS7X2_NR_GPIOS) */
-> >>>>>>+	const char	*const *names;
-> >>>>>>+};
-> >>>>>>+
-> >>>>>>+#endif
-> >>>>>
-> >>>>>Why is this needed in a .h file?  What other .c file uses this define
-> >>>>>and structure?
-> >>>>>
-> >>>>>thanks,
-> >>>>>
-> >>>>>greg k-h
-> >>>>
-> >>>>The board setup code can pass information about the uart and gpio
-> >>>>enumeration.
-> >>>
-> >>>What "board setup code"?  I don't see that here in the patch anywhere.
-> >>
-> >>SPI devices are generally set up for a specific hardware board. I.e. for
-> >>some ARM boards there is setup code in
-> >>linux/arch/arm/mach-at91/board-<xyz>.c
-> >>
-> >>I use the sc16is7x2 for a board that is not yet in vanilla, so the board
-> >>setup code is not included in the patch.
-> >
-> >Then why not add this header (or move it to the header file) when your
-> >board setup code is merged?  No need to have it there now, right?
-> 
-> Cause everyone who want's to use this driver for his board needs the
-> header. The board I use is a prototype, nearly the same as some
-> Atmel Demo board, but with the sc16is752 attached to the SPI port.
-> Therefore I don't see any benefit in publishing my board setup code.
+On 2010-10-19, Alexander Stein <alexander.stein@systec-electronic.com> wrote:
+> On Tuesday 19 October 2010, 16:29:48 Grant Edwards wrote:
+>> On 2010-10-19, Claudio Scordino <claudio@evidence.eu.com> wrote:
+>> > +2. HARDWARE-RELATED CONSIDERATIONS
+>> > +
+>> > +   Some CPUs (e.g., Atmel AT91) contain a transceiver capable of working
+>> > both +   as RS232 and RS485.
+>> 
+>> Pardon my curiosity, but I've looked at a few AT91 parts, and I've
+>> never seen on with an internal transceiver -- nor does Google seem
+>> able to find any.
+>> 
+>> Frankly, I'd be pretty surprised, since it would be very difficult
+>> (fab-wise), to build a mircoprocessor with I/O cells capable of
+>> withstanding the voltage levels specified in RS232.
+>> 
+>> Can you specify to which parts you're referring?
+>
+> I doubt the AT91 do have an internal transceiver but it has a
+> dedicated pin feature (RTS or CTS or something) which can be used to
+> switch between RS232 and RS485 by setting a bit in the USART provided
+> the pin is connected properly.
 
-How nice, you are saying that we need a .h file in the kernel for no
-other reason than to support out-of-tree code?  Well, feel free to
-resend this driver, and watch as the .h file is removed as it's not
-needed by any in-tree code...
+Yes, the AT91 UARTs do have a built-in half-duplex mode that will
+automatically control line direction by toggling RTS.
 
-good luck,
+That can used to control external half-duplex hardware like an RS485
+transceiver or any RS232-connected half-duplex device like some
+modems.
 
-greg k-h
+Though the Atmel docs refer to it as "RS485 mode" there is no RS485
+transceiver in the AT91 parts (AFAIK), and "RS485 mode" isn't specific
+to RS485 - it can be used with any external half-duplex hardware.
+
+-- 
+Grant Edwards               grant.b.edwards        Yow! I Know A Joke!!
+                                  at               
+                              gmail.com            
