@@ -1,102 +1,104 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [sodaville] [PATCH] serial: abstraction for 8250 legacy ports
-Date: Mon, 18 Oct 2010 22:16:50 +0200 (CEST)
-Message-ID: <alpine.LFD.2.00.1010182216310.6815@localhost6.localdomain6>
-References: <6858904d0c5c5eb42bedf92a093817252dc85549.1287426968.git.dirk.brandewie@gmail.com>
+From: Claudio Scordino <claudio@evidence.eu.com>
+Subject: Re: [PATCH] CRIS RS485: Check SER_RS485_RTS_BEFORE_SEND before delaying.
+Date: Tue, 19 Oct 2010 14:34:46 +0200
+Message-ID: <4CBD9066.4090503@evidence.eu.com>
+References: <4C62BD2B.2010508@evidence.eu.com> <4C7B6C9B.2050801@evidence.eu.com> <4BEA3FF3CAA35E408EA55C7BE2E61D05583CAE6AF5@xmail3.se.axis.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from www.tglx.de ([62.245.132.106]:55278 "EHLO www.tglx.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755965Ab0JRUQ7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Oct 2010 16:16:59 -0400
-In-Reply-To: <6858904d0c5c5eb42bedf92a093817252dc85549.1287426968.git.dirk.brandewie@gmail.com>
+Received: from 199-38.141.95.serverdedicati.seflow.it ([95.141.38.199]:57042
+	"EHLO borg.asidev.net" rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org
+	with ESMTP id S1758252Ab0JSMex (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 19 Oct 2010 08:34:53 -0400
+In-Reply-To: <4BEA3FF3CAA35E408EA55C7BE2E61D05583CAE6AF5@xmail3.se.axis.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: dirk.brandewie@gmail.com
-Cc: linux-serial@vger.kernel.org, sodaville@linutronix.de, gregkh@suse.de, Alan Cox <alan@linux.intel.com>
+To: Mikael Starvik <mikael.starvik@axis.com>, Jesper Nilsson <Jesper.Nilsson@axis.com>
+Cc: linux-cris-kernel <linux-cris-kernel@axis.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Andrew Morton <akpm@linux-foundation.org>, Hinko Kocevar <hinko.kocevar@cetrtapot.si>, Janez Cufer <janez.cufer@cetrtapot.si>, Andy Whitcroft <apw@canonical.com>, Linux Kernel <linux-kernel@vger.kernel.org>, dev-etrax <dev-etrax@axis.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-
-
-On Mon, 18 Oct 2010, dirk.brandewie@gmail.com wrote:
-
-> From: Alan Cox <alan@linux.intel.com>
+Mikael Starvik ha scritto:
+> Hi!
 > 
-> Not every platform that has generic legacy 8250 ports manages to have them
-> clocked the right way or without errata. Provide a generic interface to
-> allow platforms to override the default behaviour in a manner that dumps
-> the complexity in *their* code not the 8250 driver.
+> Jesper is on vacation but I find this patch ok.
 > 
-> Signed-off-by: Alan Cox <alan@linux.intel.com>
-> Signed-off-by: Dirk Brandewie <dirk.brandewie@gmail.com>
+> Acked-by: Mikael Starvik<Starvik@axis.com>
 
-Acked-by: Thomas Gleixner <tglx@linutronix.de>
+Hi Mikael, Hi Jesper,
 
-> ---
->  drivers/serial/8250.c       |   17 +++++++++++++++++
->  include/linux/serial_8250.h |    4 ++++
->  2 files changed, 21 insertions(+), 0 deletions(-)
-> 
-> diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-> index 24110f6..feb595d 100644
-> --- a/drivers/serial/8250.c
-> +++ b/drivers/serial/8250.c
-> @@ -2674,6 +2674,16 @@ static struct uart_ops serial8250_pops = {
->  
->  static struct uart_8250_port serial8250_ports[UART_NR];
->  
-> +static void (*serial8250_isa_config)(int port, struct uart_port *up,
-> +	unsigned short *capabilities);
-> +
-> +void serial8250_set_isa_configurator(
-> +	void (*v)(int port, struct uart_port *up, unsigned short *capabilities))
-> +{
-> +	serial8250_isa_config = v;
-> +}
-> +EXPORT_SYMBOL(serial8250_set_isa_configurator);
-> +
->  static void __init serial8250_isa_init_ports(void)
->  {
->  	struct uart_8250_port *up;
-> @@ -2719,6 +2729,9 @@ static void __init serial8250_isa_init_ports(void)
->  		up->port.regshift = old_serial_port[i].iomem_reg_shift;
->  		set_io_from_upio(&up->port);
->  		up->port.irqflags |= irqflag;
-> +		if (serial8250_isa_config != NULL)
-> +			serial8250_isa_config(i, &up->port, &up->capabilities);
-> +
->  	}
->  }
->  
-> @@ -3177,6 +3190,10 @@ int serial8250_register_port(struct uart_port *port)
->  		if (port->set_termios)
->  			uart->port.set_termios = port->set_termios;
->  
-> +		if (serial8250_isa_config != NULL)
-> +			serial8250_isa_config(0, &uart->port,
-> +					&uart->capabilities);
-> +
->  		ret = uart_add_one_port(&serial8250_reg, &uart->port);
->  		if (ret == 0)
->  			ret = uart->port.line;
-> diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-> index 7638dea..1214c4d 100644
-> --- a/include/linux/serial_8250.h
-> +++ b/include/linux/serial_8250.h
-> @@ -77,4 +77,8 @@ extern int setup_early_serial8250_console(char *cmdline);
->  extern void serial8250_do_set_termios(struct uart_port *port,
->  		struct ktermios *termios, struct ktermios *old);
->  
-> +extern void serial8250_set_isa_configurator(void (*v)
-> +					(int port, struct uart_port *up,
-> +						unsigned short *capabilities));
-> +
->  #endif
-> -- 
-> 1.7.2.3
-> 
-> _______________________________________________
-> sodaville mailing list
-> sodaville@linutronix.de
-> https://www.linutronix.de/mailman/listinfo/sodaville
-> 
+	the merge window will be opened very soon. So, please remember
+this patch.
+
+I already fixed the atmel_serial driver (commit number
+1b6331848b69d1ed165a6bdc75c4046d68767563)
+	
+Now, it's quite important to fix the Cris driver as well.
+
+Cheers,
+
+       Claudio
+
+
+CRIS RS485: Check SER_RS485_RTS_BEFORE_SEND before delaying.
+
+Signed-off-by: Claudio Scordino <claudio@evidence.eu.com>
+Acked-by: Mikael Starvik <Starvik@axis.com>
+---
+ drivers/serial/crisv10.c |   21 ++++++++++++++-------
+ 1 files changed, 14 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/serial/crisv10.c b/drivers/serial/crisv10.c
+index c856905..a2237e7 100644
+--- a/drivers/serial/crisv10.c
++++ b/drivers/serial/crisv10.c
+@@ -1411,11 +1411,12 @@ e100_enable_rs485(struct tty_struct *tty, struct serial_rs485 *r)
+ 		       CONFIG_ETRAX_RS485_LTC1387_RXEN_PORT_G_BIT, 1);
+ #endif
+ 
+-	info->rs485.flags = r->flags;
+-	if (r->delay_rts_before_send >= 1000)
++	info->rs485 = *r;
++
++	/* Maximum delay before RTS equal to 1000 */
++	if (info->rs485.delay_rts_before_send >= 1000)
+ 		info->rs485.delay_rts_before_send = 1000;
+-	else
+-		info->rs485.delay_rts_before_send = r->delay_rts_before_send;
++
+ /*	printk("rts: on send = %i, after = %i, enabled = %i",
+ 		    info->rs485.rts_on_send,
+ 		    info->rs485.rts_after_sent,
+@@ -3234,9 +3235,9 @@ rs_write(struct tty_struct *tty,
+ 		e100_disable_rx(info);
+ 		e100_enable_rx_irq(info);
+ #endif
+-
+-		if (info->rs485.delay_rts_before_send > 0)
+-			msleep(info->rs485.delay_rts_before_send);
++		if ((info->rs485.flags & SER_RS485_RTS_BEFORE_SEND) &&
++			(info->rs485.delay_rts_before_send > 0))
++				msleep(info->rs485.delay_rts_before_send);
+ 	}
+ #endif /* CONFIG_ETRAX_RS485 */
+ 
+@@ -3694,6 +3695,11 @@ rs_ioctl(struct tty_struct *tty, struct file * file,
+ 
+ 		rs485data.delay_rts_before_send = rs485ctrl.delay_rts_before_send;
+ 		rs485data.flags = 0;
++		if (rs485data.delay_rts_before_send != 0)
++			rs485data.flags |= SER_RS485_RTS_BEFORE_SEND;
++		else
++			rs485data.flags &= ~(SER_RS485_RTS_BEFORE_SEND);
++
+ 		if (rs485ctrl.enabled)
+ 			rs485data.flags |= SER_RS485_ENABLED;
+ 		else
+@@ -4527,6 +4533,7 @@ static int __init rs_init(void)
+ 		/* Set sane defaults */
+ 		info->rs485.flags &= ~(SER_RS485_RTS_ON_SEND);
+ 		info->rs485.flags |= SER_RS485_RTS_AFTER_SEND;
++		info->rs485.flags &= ~(SER_RS485_RTS_BEFORE_SEND);
+ 		info->rs485.delay_rts_before_send = 0;
+ 		info->rs485.flags &= ~(SER_RS485_ENABLED);
+ #endif
