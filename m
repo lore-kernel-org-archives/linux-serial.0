@@ -1,53 +1,38 @@
-From: Greenbeard Labs <noreply@greenbeardlabs.com>
-Subject: Let Us Build Your Website!
-Date: Tue, 19 Oct 2010 04:17:04 -0500
-Message-ID: <0ae0a5c4bc55b444240295b31400a96c@relay.greenbeardlabs.com>
+From: Alexander Stein <alexander.stein@systec-electronic.com>
+Subject: Re: [PATCH] Documentation about RS485 serial communications
+Date: Wed, 20 Oct 2010 10:00:14 +0200
+Message-ID: <201010201000.14905.alexander.stein@systec-electronic.com>
+References: <20100408111310.524f7354@lxorguk.ukuu.org.uk> <201010191727.53314.alexander.stein@systec-electronic.com> <i9kk4o$svc$1@dough.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from relay.greenbeardlabs.com ([208.77.148.74]:55737 "EHLO
-	relay.greenbeardlabs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751422Ab0JSSaE (ORCPT
+Received: from webbox687.server-home.net ([195.149.74.151]:52332 "EHLO
+	webbox687.server-home.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751008Ab0JTIAS (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Oct 2010 14:30:04 -0400
-Received: from relay.greenbeardlabs.com (relay.greenbeard.com [127.0.0.1])
-	by relay.greenbeardlabs.com (8.13.8/8.13.8) with ESMTP id o9J9H4Ea005541
-	for <linux-serial@vger.kernel.org>; Tue, 19 Oct 2010 04:17:04 -0500
+	Wed, 20 Oct 2010 04:00:18 -0400
+In-Reply-To: <i9kk4o$svc$1@dough.gmane.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Grant Edwards <grant.b.edwards@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-We=E2=80=99ll build a custom website for you that you can easily manage
-yourself. Whether you want a blog, company website, online store, or
-something more unique, we can help. Our prices are as low as $100 per
-page.
+On Tuesday 19 October 2010, 19:22:32 Grant Edwards wrote:
+> Yes, the AT91 UARTs do have a built-in half-duplex mode that will
+> automatically control line direction by toggling RTS.
+> 
+> That can used to control external half-duplex hardware like an RS485
+> transceiver or any RS232-connected half-duplex device like some
+> modems.
+> 
+> Though the Atmel docs refer to it as "RS485 mode" there is no RS485
+> transceiver in the AT91 parts (AFAIK), and "RS485 mode" isn't specific
+> to RS485 - it can be used with any external half-duplex hardware.
 
-We can also help you generate more business by increasing your
-exposure on search engines, social media sites, and across the web.
+Out of curiosity, how can I add RS485 (or whatever) support for other serial 
+devices like e.g. i.mx serial? Is there some driver independent interface 
+which only gets filled in board configs like setting some GPIO pins?
 
-Visit www.greenbeardlabs.com to learn more!
-
-
-
----
-If you would like to remove your email address from our mailing list, p=
-aste
-the following link into your browser:
-http://relay.greenbeardlabs.com/lists/?p=3Dunsubscribe&uid=3D7147ad2b73=
-70f61cb646bfb486af9b33.
-
-Greenbeard Labs is a unit of Greenbeard Inc. This message is produced a=
-nd
-distributed by Greenbeard Inc, 3016 Selma, Dallas, TX 75234.
-
-
---
-Powered by PHPlist, www.phplist.com --
-
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Alexander
