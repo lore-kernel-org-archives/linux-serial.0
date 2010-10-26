@@ -1,90 +1,39 @@
-From: Mikulas Patocka <mpatocka@redhat.com>
-Subject: Re: [PATCH] add support for Kouwell KW-L221N-2
-Date: Tue, 26 Oct 2010 14:20:48 -0400 (EDT)
-Message-ID: <Pine.LNX.4.64.1010261419470.19916@hs20-bc2-1.build.redhat.com>
-References: <Pine.LNX.4.64.1010031321130.14702@hs20-bc2-1.build.redhat.com>
+From: Mark Brown <broonie@opensource.wolfsonmicro.com>
+Subject: Re: [PATCH resend] Add sc16is7x2 driver
+Date: Tue, 26 Oct 2010 20:28:42 +0100
+Message-ID: <20101026192842.GB7119@sirena.org.uk>
+References: <4CAD818B.2070603@iis.fraunhofer.de> <20101014190133.GB1009@kroah.com> <4CB801B2.808@iis.fraunhofer.de> <20101015142709.GA18905@kroah.com> <4CB86E8F.3060907@iis.fraunhofer.de> <20101015164922.GB21576@kroah.com> <4CBC177E.8020407@iis.fraunhofer.de> <20101019153748.GB4589@kroah.com> <4CC6977C.1020908@iis.fraunhofer.de> <20101026145107.GA18531@kroah.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([209.132.183.28]:18818 "EHLO mx1.redhat.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S933495Ab0JZSUu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 26 Oct 2010 14:20:50 -0400
-Received: from int-mx01.intmail.prod.int.phx2.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-	by mx1.redhat.com (8.13.8/8.13.8) with ESMTP id o9QIKnHl012030
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-SHA bits=256 verify=OK)
-	for <linux-serial@vger.kernel.org>; Tue, 26 Oct 2010 14:20:50 -0400
-Received: from hs20-bc2-1.build.redhat.com (hs20-bc2-1.build.redhat.com [10.10.28.34])
-	by int-mx01.intmail.prod.int.phx2.redhat.com (8.13.8/8.13.8) with ESMTP id o9QIKnIl003497
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-SHA bits=256 verify=NO)
-	for <linux-serial@vger.kernel.org>; Tue, 26 Oct 2010 14:20:49 -0400
-Received: from hs20-bc2-1.build.redhat.com (localhost.localdomain [127.0.0.1])
-	by hs20-bc2-1.build.redhat.com (8.13.1/8.13.1) with ESMTP id o9QIKmrY006482
-	for <linux-serial@vger.kernel.org>; Tue, 26 Oct 2010 14:20:48 -0400
-Received: from localhost (mpatocka@localhost)
-	by hs20-bc2-1.build.redhat.com (8.13.1/8.13.1/Submit) with ESMTP id o9QIKmdc006475
-	for <linux-serial@vger.kernel.org>; Tue, 26 Oct 2010 14:20:48 -0400
-In-Reply-To: <Pine.LNX.4.64.1010031321130.14702@hs20-bc2-1.build.redhat.com>
+Received: from cassiel.sirena.org.uk ([80.68.93.111]:52823 "EHLO
+	cassiel.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751923Ab0JZT2p (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 26 Oct 2010 15:28:45 -0400
+Content-Disposition: inline
+In-Reply-To: <20101026145107.GA18531@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Greg KH <greg@kroah.com>
+Cc: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>
 
+On Tue, Oct 26, 2010 at 07:51:07AM -0700, Greg KH wrote:
+> On Tue, Oct 26, 2010 at 10:55:24AM +0200, Manuel Stahl wrote:
 
+> > This is the driver I took as a template. It consists of 
+> > drivers/serial/max3100.c and include/linux/serial_max3100.h
 
-On Sun, 3 Oct 2010, Mikulas Patocka wrote:
+> > And huh, "grep -R serial_max3100.h *" gives what? Only max3100.c
+> > So do we need to remove serial_max3100.h as it's not used anywhere else?
 
-> Add support for Kouwell KW-L221N-2 card.
-> 
-> The card was supported with the generic rule that got number of ports and 
-> UART clock speed wrong.
-> 
-> Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-> 
-> ---
->  drivers/serial/8250_pci.c |    3 +++
->  1 file changed, 3 insertions(+)
-> 
-> Index: linux-2.6.36-rc6-fast/drivers/serial/8250_pci.c
-> ===================================================================
-> --- linux-2.6.36-rc6-fast.orig/drivers/serial/8250_pci.c	2010-10-03 16:49:20.000000000 +0200
-> +++ linux-2.6.36-rc6-fast/drivers/serial/8250_pci.c	2010-10-03 19:11:52.000000000 +0200
-> @@ -2863,6 +2863,9 @@ static struct pci_device_id serial_pci_t
->  		PCI_SUBVENDOR_ID_SIIG, PCI_SUBDEVICE_ID_SIIG_QUARTET_SERIAL,
->  		0, 0,
->  		pbn_b0_4_1152000 },
-> +	{	PCI_VENDOR_ID_OXSEMI, 0x9505,
-> +		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-> +		pbn_b0_2_921600 },
->  
->  		/*
->  		 * The below card is a little controversial since it is the
-> 
+> Yup, that sounds like a great idea, I'll go queue up that patch when I
+> get back from my travels at the moment.
 
-The patch was wrong. This is correct (so that the second port works too):
-
-Mikulas
-
----
-
-Add support for Kouwell KW-L221N-2 card.
-
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-
----
- drivers/serial/8250_pci.c |    3 +++
- 1 file changed, 3 insertions(+)
-
-Index: linux-2.6.36-fast/drivers/serial/8250_pci.c
-===================================================================
---- linux-2.6.36-fast.orig/drivers/serial/8250_pci.c	2010-10-26 19:57:55.000000000 +0200
-+++ linux-2.6.36-fast/drivers/serial/8250_pci.c	2010-10-26 20:08:34.000000000 +0200
-@@ -2863,6 +2863,9 @@ static struct pci_device_id serial_pci_t
- 		PCI_SUBVENDOR_ID_SIIG, PCI_SUBDEVICE_ID_SIIG_QUARTET_SERIAL,
- 		0, 0,
- 		pbn_b0_4_1152000 },
-+	{	PCI_VENDOR_ID_OXSEMI, 0x9505,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b0_bt_2_921600 },
- 
- 		/*
- 		 * The below card is a little controversial since it is the
+Requiring that we have a user for all platform data provided by drivers
+would be incredibly painful for embedded development.  It would mean
+that we would be unable to usefully merge any drivers with platform data
+unless we also merge at least one board using them, meaning that we're
+dependant on getting the core board support for some public board into a
+state which can be merged (which would at best be likely to end up
+creating logjams on support for CPUs).
