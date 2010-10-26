@@ -1,39 +1,31 @@
-From: Mark Brown <broonie@opensource.wolfsonmicro.com>
-Subject: Re: [PATCH resend] Add sc16is7x2 driver
-Date: Tue, 26 Oct 2010 20:28:42 +0100
-Message-ID: <20101026192842.GB7119@sirena.org.uk>
-References: <4CAD818B.2070603@iis.fraunhofer.de> <20101014190133.GB1009@kroah.com> <4CB801B2.808@iis.fraunhofer.de> <20101015142709.GA18905@kroah.com> <4CB86E8F.3060907@iis.fraunhofer.de> <20101015164922.GB21576@kroah.com> <4CBC177E.8020407@iis.fraunhofer.de> <20101019153748.GB4589@kroah.com> <4CC6977C.1020908@iis.fraunhofer.de> <20101026145107.GA18531@kroah.com>
+From: Maciej Szmigiero <mhej@o2.pl>
+Subject: [SERIAL]blacklist si3052 chip
+Date: Tue, 26 Oct 2010 21:48:21 +0200
+Message-ID: <4CC73085.2070304@o2.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cassiel.sirena.org.uk ([80.68.93.111]:52823 "EHLO
-	cassiel.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751923Ab0JZT2p (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 26 Oct 2010 15:28:45 -0400
-Content-Disposition: inline
-In-Reply-To: <20101026145107.GA18531@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <greg@kroah.com>
-Cc: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>
 
-On Tue, Oct 26, 2010 at 07:51:07AM -0700, Greg KH wrote:
-> On Tue, Oct 26, 2010 at 10:55:24AM +0200, Manuel Stahl wrote:
+[SERIAL]blacklist si3052 chip
 
-> > This is the driver I took as a template. It consists of 
-> > drivers/serial/max3100.c and include/linux/serial_max3100.h
+Si3052-based softmodems aren't serial ports so don't bind serial driver to them.
+Allows proper driver to bind to them.
 
-> > And huh, "grep -R serial_max3100.h *" gives what? Only max3100.c
-> > So do we need to remove serial_max3100.h as it's not used anywhere else?
+Signed-off-by: Maciej Szmigiero <mhej@o2.pl>
 
-> Yup, that sounds like a great idea, I'll go queue up that patch when I
-> get back from my travels at the moment.
-
-Requiring that we have a user for all platform data provided by drivers
-would be incredibly painful for embedded development.  It would mean
-that we would be unable to usefully merge any drivers with platform data
-unless we also merge at least one board using them, meaning that we're
-dependant on getting the core board support for some public board into a
-state which can be merged (which would at best be likely to end up
-creating logjams on support for CPUs).
+--- a/drivers/serial/8250_pci.c	2010-10-26 20:59:32.000000000 +0200
++++ b/drivers/serial/8250_pci.c	2010-10-26 21:12:56.000000000 +0200
+@@ -2275,6 +2275,8 @@
+ 
+ static const struct pci_device_id softmodem_blacklist[] = {
+ 	{ PCI_VDEVICE(AL, 0x5457), }, /* ALi Corporation M5457 AC'97 Modem */
++	{ PCI_VDEVICE(MOTOROLA, 0x3052), }, /* Motorola Si3052-based modem */
++	{ PCI_DEVICE(0x1543, 0x3052), }, /* Si3052-based modem, default IDs */
+ };
+ 
+ /*
