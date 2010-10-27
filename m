@@ -1,32 +1,36 @@
-From: Maciej Szmigiero <mhej@o2.pl>
-Subject: Re: [SERIAL]blacklist si3052 chip
-Date: Tue, 26 Oct 2010 23:54:12 +0200
-Message-ID: <4CC74E04.7080407@o2.pl>
-References: <4CC73085.2070304@o2.pl> <20101026224940.22b4ac93@lxorguk.ukuu.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20101026224940.22b4ac93@lxorguk.ukuu.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Mike Frysinger <vapier@gentoo.org>
+Subject: [PATCH] serial: bfin_5xx: drop unused "line" variable
+Date: Wed, 27 Oct 2010 01:04:32 -0400
+Message-ID: <1288155872-10639-1-git-send-email-vapier@gentoo.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp.gentoo.org ([140.211.166.183]:53605 "EHLO smtp.gentoo.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751132Ab0J0FEX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 27 Oct 2010 01:04:23 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: uclinux-dist-devel@blackfin.uclinux.org
 
-W dniu 26.10.2010 23:49, Alan Cox pisze:
-> On Tue, 26 Oct 2010 21:48:21 +0200
-> Maciej Szmigiero <mhej@o2.pl> wrote:
-> 
->> [SERIAL]blacklist si3052 chip
->>
->> Si3052-based softmodems aren't serial ports so don't bind serial driver to them.
->> Allows proper driver to bind to them.
-> 
-> Which is the proper driver ?
-> 
-> Alan
-> 
+A recent clean up deleted the usage of this var, but not the decl.
 
-Awaiting final review on the DAHDI reviewboard.
+Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+---
+ drivers/serial/bfin_5xx.c |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
 
-Maciej Szmigiero
+diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
+index a9eff2b..0774ae9 100644
+--- a/drivers/serial/bfin_5xx.c
++++ b/drivers/serial/bfin_5xx.c
+@@ -959,7 +959,6 @@ bfin_serial_verify_port(struct uart_port *port, struct serial_struct *ser)
+  */
+ static void bfin_serial_set_ldisc(struct uart_port *port, int ld)
+ {
+-	int line = port->line;
+ 	unsigned short val;
+ 
+ 	switch (ld) {
+-- 
+1.7.3.2
+
