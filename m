@@ -1,18 +1,44 @@
-From: "Diamond" <spciallnofer@kkwl.ac.th>
-Subject: EASY OFFER
-Date: Wed, 27 Oct 2010 14:35:03 +0800
-Message-ID: <47668.9415205785$1288161549@news.gmane.org>
-Reply-To: <specialloanoffer@kkwl.ac.th>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="Windows-1251"
-Content-Transfer-Encoding: 7bit
+From: Mike Frysinger <vapier@gentoo.org>
+Subject: [PATCH 2/4] serial: bfin_5xx: remove redundant SSYNC to improve TX speed
+Date: Wed, 27 Oct 2010 04:16:48 -0400
+Message-ID: <1288167410-31554-3-git-send-email-vapier@gentoo.org>
+References: <1288167410-31554-1-git-send-email-vapier@gentoo.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp202.alice.it ([82.57.200.98]:49524 "EHLO smtp202.alice.it"
+Received: from smtp.gentoo.org ([140.211.166.183]:53078 "EHLO smtp.gentoo.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752668Ab0J0GjE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 27 Oct 2010 02:39:04 -0400
+	id S1755215Ab0J0IQn (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 27 Oct 2010 04:16:43 -0400
+In-Reply-To: <1288167410-31554-1-git-send-email-vapier@gentoo.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
 
-There is loan funding within 42 hours from   Diamond loan at 2% .We grant any type of loan to people .All we need is amount, duration and ur phone no.Susan
+From: Sonic Zhang <sonic.zhang@analog.com>
+
+We don't need to force a SSYNC here as the LSR register will already
+be updated by the time we get back to reading it.  This speeds up TX
+throughput and lowers general system overhead (since SSYNC is system
+wide, not peripheral-specific).
+
+Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+---
+ drivers/serial/bfin_5xx.c |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/serial/bfin_5xx.c b/drivers/serial/bfin_5xx.c
+index 9ea8265..01315a2 100644
+--- a/drivers/serial/bfin_5xx.c
++++ b/drivers/serial/bfin_5xx.c
+@@ -359,7 +359,6 @@ static void bfin_serial_tx_chars(struct bfin_serial_port *uart)
+ 		UART_PUT_CHAR(uart, xmit->buf[xmit->tail]);
+ 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+ 		uart->port.icount.tx++;
+-		SSYNC();
+ 	}
+ 
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+-- 
+1.7.3.2
+
