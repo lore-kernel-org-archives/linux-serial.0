@@ -1,162 +1,75 @@
-From: Linus Walleij <linus.ml.walleij@gmail.com>
-Subject: Re: [PATCH] ifx6x60: SPI protocol driver for Infineon 6x60 modem
-Date: Thu, 28 Oct 2010 14:35:02 -0400
-Message-ID: <AANLkTi=rPb9z5h3Zaq0vNJdqcGPjrsWpkCNbZRqsjvjP@mail.gmail.com>
-References: <20101026131325.4506.1135.stgit@localhost.localdomain>
+From: Albrecht =?iso-8859-1?b?RHJl3w==?= <albrecht.dress@arcor.de>
+Subject: [PPC/MPC5200B] strange data loss on uart reception
+Date: Sun, 31 Oct 2010 18:27:00 +0100
+Message-ID: <1288546021.1866.1@antares>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: multipart/signed; protocol="application/pgp-signature";
+	micalg=PGP-SHA1; boundary="=-c07L/9a8WkQRRJlYqMrW"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qy0-f174.google.com ([209.85.216.174]:58779 "EHLO
-	mail-qy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1761242Ab0J1SfD convert rfc822-to-8bit (ORCPT
+Received: from smtp5.netcologne.de ([194.8.194.25]:56904 "EHLO
+	smtp5.netcologne.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756245Ab0JaRcb (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 28 Oct 2010 14:35:03 -0400
-Received: by qyk12 with SMTP id 12so5768437qyk.19
-        for <linux-serial@vger.kernel.org>; Thu, 28 Oct 2010 11:35:02 -0700 (PDT)
-In-Reply-To: <20101026131325.4506.1135.stgit@localhost.localdomain>
+	Sun, 31 Oct 2010 13:32:31 -0400
+Received: from antares (xdsl-78-34-214-38.netcologne.de [78.34.214.38])
+	by smtp5.netcologne.de (Postfix) with ESMTP id 5BB3731C2F6
+	for <linux-serial@vger.kernel.org>; Sun, 31 Oct 2010 18:27:02 +0100 (CET)
+Received: from antares (antares [127.0.0.1])
+	by antares (Postfix) with ESMTPS id 1B87EBA03C
+	for <linux-serial@vger.kernel.org>; Sun, 31 Oct 2010 18:27:02 +0100 (CET)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: greg@kroah.com, linux-serial@vger.kernel.org, spi-devel-general@lists.sourceforge.net
+To: linux-serial@vger.kernel.org
 
-2010/10/26 Alan Cox <alan@lxorguk.ukuu.org.uk>:
+--=-c07L/9a8WkQRRJlYqMrW
+Content-Type: text/plain; charset=us-ascii; DelSp=Yes; Format=Flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Sorry for just reviewing the structs at this point but I hope it
-helps out...
+[re-posted from the linuxppc-dev list...]
 
-> diff --git a/drivers/serial/ifx6x60.h b/drivers/serial/ifx6x60.h
-> new file mode 100644
-> index 0000000..deb7b8d
-> --- /dev/null
-> +++ b/drivers/serial/ifx6x60.h
-> (...)
-> +struct ifx_spi_device {
-> + =A0 =A0 =A0 /* Our SPI device */
-> + =A0 =A0 =A0 struct spi_device *spi_dev;
-> +
-> + =A0 =A0 =A0 /* Port specific data */
-> + =A0 =A0 =A0 struct kfifo tx_fifo;
-> + =A0 =A0 =A0 spinlock_t fifo_lock;
-> + =A0 =A0 =A0 unsigned long signal_state;
-> +
-> + =A0 =A0 =A0 /* TTY Layer logic */
-> + =A0 =A0 =A0 struct tty_port tty_port;
-> + =A0 =A0 =A0 struct device *tty_dev;
-> + =A0 =A0 =A0 int minor;
-> +
-> + =A0 =A0 =A0 /* Low level I/O work */
-> + =A0 =A0 =A0 struct tasklet_struct io_work_tasklet;
-> + =A0 =A0 =A0 unsigned long flags;
-> + =A0 =A0 =A0 dma_addr_t rx_dma;
-> + =A0 =A0 =A0 dma_addr_t tx_dma;
-> +
-> + =A0 =A0 =A0 int is_6160; =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0 =A0 =A0/* Modem type */
+Hi all,
 
-Should this be a bool? It is suspiciously named much
-like something boolean.
+I'm not sure if this is the right list, so please excuse me if I'm totally =
+wrong here, or if my question is really dumb...
 
-> +
-> + =A0 =A0 =A0 spinlock_t write_lock;
-> + =A0 =A0 =A0 int write_pending;
+My platform is a MPC5200B (roughly Icecube) based board with kernel 2.6.32.=
+  From a PC I try to send data through the MPC5200B's serial port, using th=
+e standard mpc52xx_uart driver.  The reading process is rather slow in proc=
+essing the incoming data.  Thus, the uart is configured to use rts/cts  han=
+dshaking.  The port is opened in (O_EXCL | O_RDWR) mode.
 
-This should be a bool.
+Sending large data blocks to the 5200, I noticed that complete chunks of da=
+ta are missing in the output read in user space.  This is apparently *not* =
+a problem on the uart layer; the result of the TIOCGICOUNT ioctl does not r=
+eport any errors from the uart, and the serial_icounter_struct.rx field con=
+tains *exactly* the correct number of data bytes I transmitted.  The data l=
+oss seems to occur only if the block is larger than 64 kByte, but I didn't =
+find a scheme of the actually missing number of bytes.  However, it's alway=
+s a larger chunk of several hundred bytes to kBytes.
 
-> + =A0 =A0 =A0 spinlock_t power_lock;
-> + =A0 =A0 =A0 unsigned char power_status;
+Am I simply too dumb to use the uart correctly, or is there some issue in t=
+he kernel causing this effect?  I noticed that the function mpc52xx_uart_in=
+t_rx_chars() does not check the return value of tty_insert_flip_char().  If=
+ the system runs out of space (actually, the maximum buffer size used shoul=
+d be limited, in particular on embedded systems!), might this go undetected=
+?  This might explain the bigger "chunks", as the '5200's uart has a rather=
+ big fifo (512 bytes).
 
-This piece of comments from the ifx_spi_power_state_clear
-kerneldoc:
-"+ *     ifx_spi_power_state_clear       -       clear power bit"
-Actually indicates that this is also a bool, albeit using some
-opaque "val" to set/clear it. The code handling this flag really
-needs an overhaul or I'm not reading it right.
+Any insight would be really appreciated!
 
-> + =A0 =A0 =A0 unsigned char *rx_buffer;
-> + =A0 =A0 =A0 unsigned char *tx_buffer;
-> + =A0 =A0 =A0 dma_addr_t rx_bus;
-> + =A0 =A0 =A0 dma_addr_t tx_bus;
-> + =A0 =A0 =A0 unsigned char spi_more;
-> + =A0 =A0 =A0 unsigned char spi_slave_cts;
-> +
-> + =A0 =A0 =A0 struct timer_list spi_timer;
-> +
-> + =A0 =A0 =A0 struct spi_message spi_msg;
-> + =A0 =A0 =A0 struct spi_transfer spi_xfer;
-> +
-> + =A0 =A0 =A0 struct {
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 /* gpio lines */
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 unsigned short srdy; =A0 =A0 =A0 =A0 =A0=
- =A0/* slave-ready gpio */
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 unsigned short mrdy; =A0 =A0 =A0 =A0 =A0=
- =A0/* master-ready gpio */
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 unsigned short reset; =A0 =A0 =A0 =A0 =A0=
- /* modem-reset gpio */
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 unsigned short po; =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0/* modem-on gpio */
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 unsigned short reset_out; =A0 =A0 =A0 /=
-* modem-in-reset gpio */
+Thanks in advance,
+Albrecht.
 
-Is there something wrong about using u16 for these?
-If it's to fit the gpio function it ought to be unsigned int
-I believe.
+--=-c07L/9a8WkQRRJlYqMrW
+Content-Type: application/pgp-signature
 
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 /* state/stats */
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 int unack_srdy_int_nb;
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.14 (GNU/Linux)
 
-I don't get that comment above. This seems to be some
-interrupt counter, this whole struct may need some kerneldoc.
+iD8DBQBMzabln/9unNAn/9ERArIMAJ423RdZdSaTGkIc0iUVHTg1yZEpswCgkx8w
+cB3FUq4U/wo6SM8xCu7MoH0=
+=rBuL
+-----END PGP SIGNATURE-----
 
-> + =A0 =A0 =A0 } gpio;
-> +
-> + =A0 =A0 =A0 /* modem reset */
-> + =A0 =A0 =A0 unsigned long mdm_reset_state;
-> +#define MR_START =A0 =A0 =A0 0
-> +#define MR_INPROGRESS =A01
-> +#define MR_COMPLETE =A0 =A02
-> + =A0 =A0 =A0 wait_queue_head_t mdm_reset_wait;
-> +};
-> +
-> +#endif /* _IFX6X60_H */
-> diff --git a/include/linux/spi/ifx_modem.h b/include/linux/spi/ifx_mo=
-dem.h
-> new file mode 100644
-> index 0000000..a68f3b1
-> --- /dev/null
-> +++ b/include/linux/spi/ifx_modem.h
-> @@ -0,0 +1,14 @@
-> +#ifndef LINUX_IFX_MODEM_H
-> +#define LINUX_IFX_MODEM_H
-> +
-
-/**
- * Insert some kerneldoc of struct fields here, I think
- * it'd be nice.
- */
-
-> +struct ifx_modem_platform_data {
-> + =A0 =A0 =A0 unsigned short rst_out; /* modem reset out */
-> + =A0 =A0 =A0 unsigned short pwr_on; =A0/* power on */
-> + =A0 =A0 =A0 unsigned short rst_pmu; /* reset modem */
-> + =A0 =A0 =A0 unsigned short tx_pwr; =A0/* modem power threshold */
-> + =A0 =A0 =A0 unsigned short srdy; =A0 =A0/* SRDY */
-> + =A0 =A0 =A0 unsigned short mrdy; =A0 =A0/* MRDY */
-
-If these are GPIO pins they should be unsigned int I believe.
-
-> + =A0 =A0 =A0 unsigned short is_6160; /* Modem type */
-
-=2E. is this bool?
-
-> +};
-> +
-> +#endif
-
-Yours,
-Linus Walleij
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--=-c07L/9a8WkQRRJlYqMrW--
