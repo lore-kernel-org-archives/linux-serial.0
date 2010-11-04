@@ -1,34 +1,42 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PPC/MPC5200B] strange data loss on uart reception
-Date: Tue, 2 Nov 2010 21:02:48 -0700
-Message-ID: <20101103040248.GA7305@kroah.com>
-References: <20101101031003.GA2903@kroah.com> <1288622520.1807.0@antares> <1288721170.1923.0@antares>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: [PATCH 1/4] n_gsm: Copy n2 over when configuring via ioctl interface
+Date: Thu, 04 Nov 2010 15:16:24 +0000
+Message-ID: <20101104151623.21790.64456.stgit@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:33379 "EHLO coco.kroah.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750738Ab0KCECC (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 3 Nov 2010 00:02:02 -0400
-Content-Disposition: inline
-In-Reply-To: <1288721170.1923.0@antares>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:49378 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751695Ab0KDPhX (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 4 Nov 2010 11:37:23 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Albrecht Dre? <albrecht.dress@arcor.de>
-Cc: linux-serial@vger.kernel.org
+To: torvalds@linux-foundation.org, linux-serial@vger.kernel.org
 
-On Tue, Nov 02, 2010 at 07:06:02PM +0100, Albrecht Dre? wrote:
-> Am 01.11.10 15:41 schrieb(en) Albrecht Dre?:
->> Am 01.11.10 04:10 schrieb(en) Greg KH:
->>> On Sun, Oct 31, 2010 at 06:27:00PM +0100, Albrecht Dre? wrote:
->>>> Am I simply too dumb to use the uart correctly, or is there some issue in the kernel causing this effect?  I noticed that the function mpc52xx_uart_int_rx_chars() does not check the return value of tty_insert_flip_char().  If the system runs out of space (actually, the maximum buffer size used should be limited, in particular on embedded systems!), might this go undetected?  This might explain the bigger "chunks", as the '5200's uart has a rather big fifo (512 bytes).
->>>
->>> That might help, have you tried changing this and seeing if it fixes anything?
->
-> Ummm.  Apparently this was a hardware problem.  No errors on a 2nd board, and re-soldering the chip on the 1st fixed it there, too.  Probably a "cold" soldering.
+From: Ken Mills <ken.k.mills@intel.com>
 
-Ah, good, I like the "buggy hardware" type resolutions :)
+The n2 field is settable but didn't get propogated
 
-thanks for letting us know.
+Signed-off-by: Ken Mills <ken.k.mills@intel.com>
+Signed-off-by: Alan Cox <alan@linux.intel.com>
+---
 
-greg k-h
+ drivers/char/n_gsm.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+
+diff --git a/drivers/char/n_gsm.c b/drivers/char/n_gsm.c
+index 04ef3ef..7f79044 100644
+--- a/drivers/char/n_gsm.c
++++ b/drivers/char/n_gsm.c
+@@ -2375,6 +2375,7 @@ static int gsmld_config(struct tty_struct *tty, struct gsm_mux *gsm,
+ 	gsm->mru = c->mru;
+ 	gsm->encoding = c->encapsulation;
+ 	gsm->adaption = c->adaption;
++	gsm->n2 = c->n2;
+ 
+ 	if (c->i == 1)
+ 		gsm->ftype = UIH;
+
