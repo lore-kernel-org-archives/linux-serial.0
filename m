@@ -1,66 +1,35 @@
-From: Govindraj <govindraj.ti@gmail.com>
-Subject: Re: OMAP not resuming after waking from suspend to RAM after addition
- of the new OMAP serial drivers
-Date: Mon, 8 Nov 2010 14:19:38 +0530
-Message-ID: <AANLkTimiBHLRUSvpJ0bE+0NswmLbQGdoG9s8Q6hat3yV@mail.gmail.com>
-References: <AANLkTikVaBOtwSXHPPYyBHjFOS2yHODRAY7KV5Q3TjTL@mail.gmail.com>
+From: Thomas Weber <thomas.weber.linux@googlemail.com>
+Subject: Re: [PATCH resend] Add sc16is7x2 driver
+Date: Mon, 08 Nov 2010 15:01:24 +0100
+Message-ID: <4CD802B4.1040704@gmail.com>
+References: <4CAD818B.2070603@iis.fraunhofer.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ww0-f44.google.com ([74.125.82.44]:46356 "EHLO
-	mail-ww0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751860Ab0KHItj convert rfc822-to-8bit (ORCPT
+Received: from mail-fx0-f46.google.com ([209.85.161.46]:58516 "EHLO
+	mail-fx0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753803Ab0KHOCA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 8 Nov 2010 03:49:39 -0500
-In-Reply-To: <AANLkTikVaBOtwSXHPPYyBHjFOS2yHODRAY7KV5Q3TjTL@mail.gmail.com>
+	Mon, 8 Nov 2010 09:02:00 -0500
+In-Reply-To: <4CAD818B.2070603@iis.fraunhofer.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Laine Walker-Avina <lwalkera@ieee.org>
-Cc: Kevin Hilman <khilman@deeprootsystems.com>, "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Tony Lindgren <tony@atomide.com>
+To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+Cc: linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Greg KH <greg@kroah.com>, Andrew Morton <akpm@linux-foundation.org>
 
-On Fri, Nov 5, 2010 at 3:36 AM, Laine Walker-Avina <lwalkera@ieee.org> =
-wrote:
-> Hi,
->
-> I'm having trouble resuming from RAM suspend with the recent addition
-> of the new omap-serial driver. It appears to be in some sort of loop
-> in serial_omap_console_putchar() sometime after console_release_sem()
-> is called in the resume path. Has this driver been tested going into
-> and out of suspend?
->
+Am 07.10.2010 10:15, schrieb Manuel Stahl:
+> This patch adds support for the sc16is7x2 SPI to UART chips.
+> Each chip has two UARTs and 8 GPIOs.
 
-Yes, System wide suspend was tested.
-I dont find any issues resuming from suspend.
+Hello Manuel,
 
-Ref logs:
-------------
-3630SDP:       http://pastebin.com/AXz1xhaU
-ZOOM3:          http://pastebin.com/R8RNdNEc
+can you send the patch inline?
 
-My setup involves:
-OMAP3630 boards (3630SDP, ZOOM3)
-Kernel: Kevin's Latest PM branch (commit
-e0bcaca00bb6cc2d79c8c3b765f969e00a3d313b)
-
---
-Regards,
-Govindraj.R
+Why you check in your probe function the gpio_base but not the uart_base?
 
 
-> Thanks,
-> --
-> Laine Walker-Avina
-> Firmware Engineer
-> PASCO scientific
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-seria=
-l" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at =A0http://vger.kernel.org/majordomo-info.html
->
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Thomas
+
+
+
