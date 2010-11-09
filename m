@@ -1,57 +1,117 @@
-From: Davidlohr Bueso <dave@gnu.org>
-Subject: Re: [PATCH] serial: 8250: fix uninitialized compiler warning
-Date: Tue, 09 Nov 2010 15:54:36 -0300
-Message-ID: <1289328876.2260.37.camel@cowboy>
-References: <1289321723.2260.14.camel@cowboy>
-	 <20101109183310.2ac49f38@lxorguk.ukuu.org.uk>
-Reply-To: dave@gnu.org
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: dirk.brandewie@gmail.com
+Subject: [PATCH 3/6] serial/ce4100: Add PCI UART support for the ce4100
+Date: Tue,  9 Nov 2010 12:08:06 -0800
+Message-ID: <654d0e8f80dd959fd9c871ad1644126d58b2445b.1289331834.git.dirk.brandewie@gmail.com>
+References: <cover.1289331834.git.dirk.brandewie@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailbigip.dreamhost.com ([208.97.132.5]:43880 "EHLO
-	homiemail-a4.g.dreamhost.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1752344Ab0KISyp convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 9 Nov 2010 13:54:45 -0500
-In-Reply-To: <20101109183310.2ac49f38@lxorguk.ukuu.org.uk>
+Received: from mail-yx0-f174.google.com ([209.85.213.174]:59798 "EHLO
+	mail-yx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754198Ab0KITyh (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 9 Nov 2010 14:54:37 -0500
+In-Reply-To: <cover.1289331834.git.dirk.brandewie@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, LKML <linux-kernel@vger.kernel.org>, linux-kbuild <linux-kbuild@vger.kernel.org>, linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Dirk Brandewie <dirk.brandewie@gmail.com>, x86@kernel.org, linux-serial@vger.kernel.org
 
-On Tue, 2010-11-09 at 18:33 +0000, Alan Cox wrote:
-> On Tue, 09 Nov 2010 13:55:23 -0300
-> Davidlohr Bueso <dave@gnu.org> wrote:
->=20
-> > From: Davidlohr Bueso <dave@gnu.org>
-> >=20
-> > This addresses:
-> >=20
-> >   CC [M]  drivers/serial/8250.o
-> > drivers/serial/8250.c: In function =E2=80=98serial8250_shutdown=E2=80=
-=99:
-> > drivers/serial/8250.c:1696: warning: =E2=80=98i=E2=80=99 may be use=
-d uninitialized in this function
-> > drivers/serial/8250.c:1696: note: =E2=80=98i=E2=80=99 was declared =
-here
->=20
-> NAK - pleass see the four or five previous discussions on this one.
->=20
-Yes I should have googled this one before sending.
+From: Dirk Brandewie <dirk.brandewie@gmail.com>
 
-> The current compilers all seem to get it right anyway.
+This patch adds support for the PCI UART on the ce4100.
 
-This is with gcc 4.4.5 (ubuntu 10.10 - latest), released on October 1st=
-,
-2010 (quite current).
+Signed-off-by: Dirk Brandewie <dirk.brandewie@gmail.com>
+CC: linux-serial@vger.kernel.org
+---
+ drivers/serial/8250_pci.c |   35 +++++++++++++++++++++++++++++++++++
+ include/linux/pci_ids.h   |    1 +
+ 2 files changed, 36 insertions(+), 0 deletions(-)
 
-Thanks,
-Davidlohr
+diff --git a/drivers/serial/8250_pci.c b/drivers/serial/8250_pci.c
+index 53be4d3..f98da48 100644
+--- a/drivers/serial/8250_pci.c
++++ b/drivers/serial/8250_pci.c
+@@ -957,6 +957,22 @@ pci_default_setup(struct serial_private *priv,
+ 	return setup_port(priv, port, bar, offset, board->reg_shift);
+ }
+ 
++static int
++ce4100_serial_setup(struct serial_private *priv,
++		  const struct pciserial_board *board,
++		  struct uart_port *port, int idx)
++{
++	int ret;
++
++	ret = setup_port(priv, port, 0, 0, board->reg_shift);
++	port->iotype = UPIO_MEM32;
++	port->type = PORT_XSCALE;
++	port->flags = (port->flags | UPF_FIXED_PORT | UPF_FIXED_TYPE);
++	port->regshift = 2;
++
++	return ret;
++}
++
+ static int skip_tx_en_setup(struct serial_private *priv,
+ 			const struct pciserial_board *board,
+ 			struct uart_port *port, int idx)
+@@ -1072,6 +1088,13 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.subdevice	= PCI_ANY_ID,
+ 		.setup		= skip_tx_en_setup,
+ 	},
++	{
++		.vendor		= PCI_VENDOR_ID_INTEL,
++		.device		= PCI_DEVICE_ID_INTEL_CE4100_UART,
++		.subvendor	= PCI_ANY_ID,
++		.subdevice	= PCI_ANY_ID,
++		.setup		= ce4100_serial_setup,
++	},
+ 	/*
+ 	 * ITE
+ 	 */
+@@ -1592,6 +1615,7 @@ enum pci_board_num_t {
+ 	pbn_ADDIDATA_PCIe_2_3906250,
+ 	pbn_ADDIDATA_PCIe_4_3906250,
+ 	pbn_ADDIDATA_PCIe_8_3906250,
++	pbn_ce4100_1_115200,
+ };
+ 
+ /*
+@@ -2281,6 +2305,12 @@ static struct pciserial_board pci_boards[] __devinitdata = {
+ 		.uart_offset	= 0x200,
+ 		.first_offset	= 0x1000,
+ 	},
++	[pbn_ce4100_1_115200] = {
++		.flags		= FL_BASE0,
++		.num_ports	= 1,
++		.base_baud	= 921600,
++		.reg_shift      = 2,
++	},
+ };
+ 
+ static const struct pci_device_id softmodem_blacklist[] = {
+@@ -3760,6 +3790,11 @@ static struct pci_device_id serial_pci_tbl[] = {
+ 	{	PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9865,
+ 		0xA000, 0x3004,
+ 		0, 0, pbn_b0_bt_4_115200 },
++	/* Intel CE4100 */
++	{	PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CE4100_UART,
++		PCI_ANY_ID,  PCI_ANY_ID, 0, 0,
++		pbn_ce4100_1_115200 },
++
+ 
+ 	/*
+ 	 * These entries match devices with class COMMUNICATION_SERIAL,
+diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+index c6bcfe9..8fc40b6 100644
+--- a/include/linux/pci_ids.h
++++ b/include/linux/pci_ids.h
+@@ -2629,6 +2629,7 @@
+ #define PCI_DEVICE_ID_INTEL_LYNNFIELD_MC_CH2_ADDR_REV2  0x2db1
+ #define PCI_DEVICE_ID_INTEL_LYNNFIELD_MC_CH2_RANK_REV2  0x2db2
+ #define PCI_DEVICE_ID_INTEL_LYNNFIELD_MC_CH2_TC_REV2    0x2db3
++#define PCI_DEVICE_ID_INTEL_CE4100_UART	0x2e66
+ #define PCI_DEVICE_ID_INTEL_82855PM_HB	0x3340
+ #define PCI_DEVICE_ID_INTEL_IOAT_TBG4	0x3429
+ #define PCI_DEVICE_ID_INTEL_IOAT_TBG5	0x342a
+-- 
+1.7.2.3
 
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
