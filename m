@@ -1,37 +1,46 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH] pl011: added clock management feature
-Date: Tue, 9 Nov 2010 15:44:39 +0000
-Message-ID: <20101109154439.GA7973@n2100.arm.linux.org.uk>
-References: <1289316637-7828-1-git-send-email-linus.walleij@stericsson.com>
+From: Greg KH <gregkh@suse.de>
+Subject: Re: 8250_pci and OXPCIe952
+Date: Tue, 9 Nov 2010 07:45:13 -0800
+Message-ID: <20101109154513.GA5970@suse.de>
+References: <4CD96169.2060705@linux.vnet.ibm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([78.32.30.218]:45538 "EHLO
-	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750815Ab0KIPo7 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 9 Nov 2010 10:44:59 -0500
+Received: from cantor2.suse.de ([195.135.220.15]:42510 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751202Ab0KIPuQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 9 Nov 2010 10:50:16 -0500
 Content-Disposition: inline
-In-Reply-To: <1289316637-7828-1-git-send-email-linus.walleij@stericsson.com>
+In-Reply-To: <4CD96169.2060705@linux.vnet.ibm.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Walleij <linus.walleij@stericsson.com>
-Cc: linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, Par-Gunnar Hjalmdahl <par-gunnar.p.hjalmdahl@stericsson.com>, Lukasz Rymanowski <Lukasz.Rymanowski@tieto.com>, Grzegorz Sygieda <grzegorz.sygieda@tieto.com>
+To: Breno Leitao <leitao@linux.vnet.ibm.com>
+Cc: linux-serial@vger.kernel.org
 
-On Tue, Nov 09, 2010 at 04:30:37PM +0100, Linus Walleij wrote:
-> From: Grzegorz Sygieda <grzegorz.sygieda@tieto.com>
+On Tue, Nov 09, 2010 at 12:57:45PM -0200, Breno Leitao wrote:
+> Hi Greg,
 > 
-> This patch allows to control the pl011 clock using set_termios
-> callback. Any positive baudrate passed enables clock, otherwise
-> disables. This saves a lot of power on submicron designs since
-> we can clock off and disable unused UARTs.
+> I put an OXPCIe952 card on my machine (PPC), and the driver is not
+> running fine.
+> First of all, it identifies 8 ports, which is wrong. Also, it says
 
-Why not just close the port to save power - the clock in that case will
-automatically be turned off.
+How many should there be?
 
-It's not like the port can be used without the baud rate correctly set -
-or indeed characters transmitted or received without the clock running.
-So all the time that the clock is disabled, the port is inoperable.
+> 
+> 0000:01:00.1: ttyS1 at MMIO 0x3c05ff7fd200 (irq = 66) is a 16C950/954
+> 
+> and the driver loads without any other error, although it's not working.
 
-If you want to maintain the modem control line settings while the port
-is closed, why not clear the HUPCL termios flag?
+What should the address and irq be?
+
+> So, my question is: Does this driver support this chipset?
+
+I don't know.
+
+> Was it ever tested on PPC ?
+
+I don't know.
+
+thanks,
+
+greg k-h
