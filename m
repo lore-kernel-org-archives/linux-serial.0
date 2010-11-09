@@ -1,76 +1,53 @@
-From: Randy Dunlap <randy.dunlap@oracle.com>
-Subject: Re: [PATCH] serial: 8250: fix uninitialized compiler warning
-Date: Tue, 9 Nov 2010 09:01:23 -0800
-Message-ID: <20101109090123.6a12f3f2.randy.dunlap@oracle.com>
-References: <1289321723.2260.14.camel@cowboy>
+From: Greg KH <greg@kroah.com>
+Subject: Movement of the USB, TTY, Staging, and driver core trees for
+ linux-next
+Date: Tue, 9 Nov 2010 09:23:21 -0800
+Message-ID: <20101109172321.GA10927@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from rcsinet10.oracle.com ([148.87.113.121]:57238 "EHLO
-	rcsinet10.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753497Ab0KIRDB (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 9 Nov 2010 12:03:01 -0500
-In-Reply-To: <1289321723.2260.14.camel@cowboy>
+Received: from kroah.org ([198.145.64.141]:37899 "EHLO coco.kroah.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753825Ab0KIRZe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 9 Nov 2010 12:25:34 -0500
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: dave@gnu.org
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, LKML <linux-kernel@vger.kernel.org>, linux-kbuild <linux-kbuild@vger.kernel.org>, linux-serial@vger.kernel.org
+To: Stephen Rothwell <sfr@canb.auug.org.au>
+Cc: linux-next@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, devel@driverdev.osuosl.org
 
-On Tue, 09 Nov 2010 13:55:23 -0300 Davidlohr Bueso wrote:
+Hi Stephen,
 
-> From: Davidlohr Bueso <dave@gnu.org>
->=20
-> This addresses:
->=20
->   CC [M]  drivers/serial/8250.o
-> drivers/serial/8250.c: In function =E2=80=98serial8250_shutdown=E2=80=
-=99:
-> drivers/serial/8250.c:1696: warning: =E2=80=98i=E2=80=99 may be used =
-uninitialized in this function
-> drivers/serial/8250.c:1696: note: =E2=80=98i=E2=80=99 was declared he=
-re
+As discussed at the kernel summit, I've moved the USB, TTY, Staging, and
+driver core trees into git instead of using quilt.
 
-so in your analysis of this compiler warning, was the warning correct &=
- justified,
-or was it false?  I.e., is the init to NULL needed?
+Previously you had been pulling in the quilt trees from kernel.org, so
+this should hopefully be easier.
 
-If it was false, could we just quieten the warning by using:
+The location of the trees are now at:
+ USB:
+	git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb-2.6.git
+	with the usb-next and usb-linus branches
+ TTY:
+	git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty-2.6.git
+	with the tty-next and tty-linus branches
+ driver core:
+	git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core-2.6.git
+	with the driver-core-next and driver-core-linus branches
+ staging:
+	git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging-2.6.git
+	with the staging-next and staging-linus branches
 
-	struct irq_info *unitialized_var(i);
+Note the staging tree has moved from before, it used to be in a
+staging-next-2.6.git/ tree, and now it is together with the main staging
+development tree in just "staging-2.6.git/"
 
-plus #include <linux/compiler.h> ?
+There are no known interdependancies between these trees, unlike my
+previous quilt trees, so merges should be fine (if not, I should find
+them as well.)
 
+If there are any problems with this, please let me know.
 
-> Signed-off-by: Davidlohr Bueso <dave@gnu.org>
-> ---
->  drivers/serial/8250.c |    2 +-
->  1 files changed, 1 insertions(+), 1 deletions(-)
->=20
-> diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-> index 4d8e14b..f734eee 100644
-> --- a/drivers/serial/8250.c
-> +++ b/drivers/serial/8250.c
-> @@ -1693,7 +1693,7 @@ static int serial_link_irq_chain(struct uart_82=
-50_port *up)
-> =20
->  static void serial_unlink_irq_chain(struct uart_8250_port *up)
->  {
-> -	struct irq_info *i;
-> +	struct irq_info *i =3D NULL;
->  	struct hlist_node *n;
->  	struct hlist_head *h;
-> =20
-> --=20
+thanks,
 
-
----
-~Randy
-*** Remember to use Documentation/SubmitChecklist when testing your cod=
-e ***
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+greg k-h
