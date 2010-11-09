@@ -1,72 +1,321 @@
-From: Breno Leitao <leitao@linux.vnet.ibm.com>
-Subject: 8250_pci and OXPCIe952
-Date: Tue, 09 Nov 2010 12:57:45 -0200
-Message-ID: <4CD96169.2060705@linux.vnet.ibm.com>
+From: Linus Walleij <linus.walleij@stericsson.com>
+Subject: [PATCH] pl011: added clock management feature
+Date: Tue, 9 Nov 2010 16:30:37 +0100
+Message-ID: <1289316637-7828-1-git-send-email-linus.walleij@stericsson.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from e24smtp03.br.ibm.com ([32.104.18.24]:54036 "EHLO
-	e24smtp03.br.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750695Ab0KIO5u (ORCPT
+Received: from eu1sys200aog111.obsmtp.com ([207.126.144.131]:39116 "EHLO
+	eu1sys200aog111.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751439Ab0KIPbK (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 9 Nov 2010 09:57:50 -0500
-Received: from mailhub3.br.ibm.com (mailhub3.br.ibm.com [9.18.232.110])
-	by e24smtp03.br.ibm.com (8.14.4/8.13.1) with ESMTP id oA9Eo7Bv020749
-	for <linux-serial@vger.kernel.org>; Tue, 9 Nov 2010 12:50:07 -0200
-Received: from d24av02.br.ibm.com (d24av02.br.ibm.com [9.8.31.93])
-	by mailhub3.br.ibm.com (8.13.8/8.13.8/NCO v10.0) with ESMTP id oA9F4VgF806962
-	for <linux-serial@vger.kernel.org>; Tue, 9 Nov 2010 13:04:32 -0200
-Received: from d24av02.br.ibm.com (loopback [127.0.0.1])
-	by d24av02.br.ibm.com (8.14.4/8.13.1/NCO v10.0 AVout) with ESMTP id oA9EvVAJ002220
-	for <linux-serial@vger.kernel.org>; Tue, 9 Nov 2010 12:57:31 -0200
+	Tue, 9 Nov 2010 10:31:10 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@suse.de
-Cc: linux-serial@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
+Cc: Grzegorz Sygieda <grzegorz.sygieda@tieto.com>, Lukasz Rymanowski <Lukasz.Rymanowski@tieto.com>, Par-Gunnar Hjalmdahl <par-gunnar.p.hjalmdahl@stericsson.com>, Linus Walleij <linus.walleij@stericsson.com>
 
-Hi Greg,
+From: Grzegorz Sygieda <grzegorz.sygieda@tieto.com>
 
-I put an OXPCIe952 card on my machine (PPC), and the driver is not
-running fine.
-First of all, it identifies 8 ports, which is wrong. Also, it says
+This patch allows to control the pl011 clock using set_termios
+callback. Any positive baudrate passed enables clock, otherwise
+disables. This saves a lot of power on submicron designs since
+we can clock off and disable unused UARTs.
 
-0000:01:00.1: ttyS1 at MMIO 0x3c05ff7fd200 (irq = 66) is a 16C950/954
-
-and the driver loads without any other error, although it's not working.
-
-So, my question is: Does this driver support this chipset? Was it ever
-tested on PPC ?
-
-
-Thanks
-Breno
-
+Cc: Lukasz Rymanowski <Lukasz.Rymanowski@tieto.com>
+Cc: Par-Gunnar Hjalmdahl <par-gunnar.p.hjalmdahl@stericsson.com>
+Signed-off-by: Grzegorz Sygieda <grzegorz.sygieda@tieto.com>
+Signed-off-by: Linus Walleij <linus.walleij@stericsson.com>
 ---
-lspci output
+This patch depends on the DMA support, just because it's adjacent
+in the file in some functions. If it's desired to have them in the
+reverse order, this can be arranged for.
 
-01:00.0 System peripheral: Oxford Semiconductor Ltd Device c20c
-	Subsystem: Oxford Semiconductor Ltd Device c20c
-	Flags: fast devsel, IRQ 65
-	Memory at 3c05ff7fb000 (32-bit, non-prefetchable) [disabled] [size=1K]
-	Memory at 3c05ff800000 (32-bit, non-prefetchable) [disabled] [size=2M]
-	Capabilities: [40] Power Management version 3
-	Capabilities: [50] Message Signalled Interrupts: Mask- 64bit+ Count=1/1 
-Enable-
-	Capabilities: [70] Express Endpoint, MSI 00
-	Capabilities: [100] Device Serial Number 00-02-00-11-11-e0-30-00
-	Capabilities: [110] Power Budgeting <?>
+Maybe this shouldn't even be an optional Kconfig option, something
+like this should be expected when you set the baud rate to zero
+really. Comments welcome.
+---
+ drivers/serial/Kconfig      |    9 ++
+ drivers/serial/amba-pl011.c |  183 ++++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 189 insertions(+), 3 deletions(-)
 
-01:00.1 Serial controller: Oxford Semiconductor Ltd Device c20d (prog-if 
-02 [16550])
-	Subsystem: Oxford Semiconductor Ltd Device c20d
-	Flags: fast devsel, IRQ 66
-	Memory at 3c05ff7fc000 (32-bit, non-prefetchable) [size=16K]
-	Memory at 3c05ffa00000 (32-bit, non-prefetchable) [size=2M]
-	Memory at 3c05ffc00000 (32-bit, non-prefetchable) [size=2M]
-	Capabilities: [40] Power Management version 3
-	Capabilities: [70] Express Endpoint, MSI 00
-	Capabilities: [b0] MSI-X: Enable- Mask- TabSize=16
-	Capabilities: [100] Power Budgeting <?>
-	Kernel driver in use: serial
-	Kernel modules: 8250_pci
+diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
+index aff9dcd..0328fba 100644
+--- a/drivers/serial/Kconfig
++++ b/drivers/serial/Kconfig
+@@ -323,6 +323,15 @@ config SERIAL_AMBA_PL011_CONSOLE
+ 	  your boot loader (lilo or loadlin) about how to pass options to the
+ 	  kernel at boot time.)
+ 
++config SERIAL_AMBA_PL011_CLOCK_CONTROL
++	bool "Support for clock control on AMBA serial port"
++	depends on SERIAL_AMBA_PL011
++	select CONSOLE_POLL
++	---help---
++	  Say Y here if you wish to use amba set_termios function to control
++	  the pl011 clock. Any positive baudrate passed enables clock,
++	  otherwise disables (baudrate = B0 -> hangup)
++
+ config SERIAL_SB1250_DUART
+ 	tristate "BCM1xxx on-chip DUART serial support"
+ 	depends on SIBYTE_SB1xxx_SOC=y
+diff --git a/drivers/serial/amba-pl011.c b/drivers/serial/amba-pl011.c
+index e1b4652..5f4aca7 100644
+--- a/drivers/serial/amba-pl011.c
++++ b/drivers/serial/amba-pl011.c
+@@ -47,6 +47,7 @@
+ #include <linux/serial.h>
+ #include <linux/amba/bus.h>
+ #include <linux/amba/serial.h>
++#include <linux/workqueue.h>
+ #include <linux/clk.h>
+ #include <linux/slab.h>
+ #include <linux/dmaengine.h>
+@@ -89,6 +90,15 @@ struct pl011_dma_tx_transaction {
+ 	dma_cookie_t cookie;
+ };
+ 
++
++/* Available amba pl011 port clock states */
++enum pl011_clk_states {
++	PL011_CLK_OFF = 0,	/* clock disabled */
++	PL011_CLK_REQUEST_OFF,	/* disable after TX flushed */
++	PL011_CLK_ON,		/* clock enabled */
++	PL011_PORT_OFF,		/* port disabled */
++};
++
+ /*
+  * We wrap our port structure around the generic uart_port.
+  */
+@@ -113,6 +123,11 @@ struct uart_amba_port {
+ 	struct pl011_dma_rx_transaction dmarx;
+ 	struct pl011_dma_tx_transaction dmatx;
+ #endif
++#ifdef CONFIG_SERIAL_AMBA_PL011_CLOCK_CONTROL
++	enum pl011_clk_states	clk_state;	/* actual clock state */
++	struct delayed_work	clk_off_work;	/* work used for clock off */
++	unsigned int		clk_off_delay;	/* clock off delay */
++#endif
+ };
+ 
+ /* There is by now at least one vendor with differing details, so handle it */
+@@ -869,6 +884,155 @@ static inline int pl011_dma_tx_chars(struct uart_amba_port *uap)
+ }
+ #endif
+ 
++#ifdef CONFIG_SERIAL_AMBA_PL011_CLOCK_CONTROL
++/* Turn clock off if TX buffer is empty, otherwise reschedule */
++static void pl011_clock_off(struct work_struct *work)
++{
++	struct uart_amba_port *uap = container_of(work, struct uart_amba_port,
++						clk_off_work.work);
++	struct uart_port *port = &uap->port;
++	struct circ_buf *xmit = &port->state->xmit;
++	unsigned long flags;
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	if (uap->clk_state == PL011_CLK_REQUEST_OFF) {
++		if (uart_circ_empty(xmit)) {
++			clk_disable(uap->clk);
++			uap->clk_state = PL011_CLK_OFF;
++		} else
++			schedule_delayed_work(&uap->clk_off_work,
++						uap->clk_off_delay);
++	}
++
++	spin_unlock_irqrestore(&port->lock, flags);
++}
++
++/* Request to turn off uart clock once pending TX is flushed */
++static void pl011_clock_request_off(struct uart_port *port)
++{
++	unsigned long flags;
++	struct uart_amba_port *uap = (struct uart_amba_port *)(port);
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	if (uap->clk_state == PL011_CLK_ON) {
++		uap->clk_state = PL011_CLK_REQUEST_OFF;
++		/* Turn off later */
++		schedule_delayed_work(&uap->clk_off_work,
++					uap->clk_off_delay);
++	}
++
++	spin_unlock_irqrestore(&port->lock, flags);
++}
++
++/* Request to immediately turn on uart clock */
++static void pl011_clock_on(struct uart_port *port)
++{
++	unsigned long flags;
++	struct uart_amba_port *uap = (struct uart_amba_port *)(port);
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	switch (uap->clk_state) {
++	case PL011_CLK_OFF:
++		clk_enable(uap->clk);
++		/* fallthrough */
++	case PL011_CLK_REQUEST_OFF:
++		cancel_delayed_work(&uap->clk_off_work);
++		uap->clk_state = PL011_CLK_ON;
++		break;
++	default:
++		break;
++	}
++
++	spin_unlock_irqrestore(&port->lock, flags);
++}
++
++static void pl011_clock_check(struct uart_amba_port *uap)
++{
++	/* Reshedule work during off request  */
++	if (uap->clk_state == PL011_CLK_REQUEST_OFF)
++		/* New TX - restart work */
++		if (cancel_delayed_work(&uap->clk_off_work))
++			schedule_delayed_work(&uap->clk_off_work,
++						uap->clk_off_delay);
++}
++
++static int pl011_clock_startup(struct uart_amba_port *uap)
++{
++	int retval = 0;
++
++	if (uap->clk_state == PL011_PORT_OFF) {
++		retval = clk_enable(uap->clk);
++		if (!retval)
++			uap->clk_state = PL011_CLK_ON;
++		else
++			uap->clk_state = PL011_PORT_OFF;
++	}
++
++	return retval;
++}
++
++static void pl011_clock_shutdown(struct uart_amba_port *uap)
++{
++	spin_lock_irq(&uap->port.lock);
++	if (uap->clk_state == PL011_CLK_ON) {
++		clk_disable(uap->clk);
++		uap->clk_state = PL011_PORT_OFF;
++	}
++	spin_unlock_irq(&uap->port.lock);
++}
++
++static void
++pl011_clock_control(struct uart_port *port, struct ktermios *termios,
++		     struct ktermios *old)
++{
++	if (old) {
++		if ((termios->c_cflag & CBAUD) &&
++		    (termios->c_ispeed != old->c_ispeed ||
++		     termios->c_ospeed != old->c_ospeed)) {
++			if (termios->c_ispeed || termios->c_ospeed)
++				pl011_clock_on(port);
++			else
++				pl011_clock_request_off(port);
++		}
++	}
++}
++
++static void pl011_clock_control_init(struct uart_amba_port *uap)
++{
++	uap->clk_state = PL011_PORT_OFF;
++	INIT_DELAYED_WORK(&uap->clk_off_work, pl011_clock_off);
++	uap->clk_off_delay = HZ / 1000;  /* 1 ms */
++}
++
++#else
++/* Blank functions for clock control */
++static inline void pl011_clock_check(struct uart_amba_port *uap)
++{
++}
++
++static inline int pl011_clock_startup(struct uart_amba_port *uap)
++{
++	return clk_enable(uap->clk);
++}
++
++static inline void pl011_clock_shutdown(struct uart_amba_port *uap)
++{
++	clk_disable(uap->clk);
++}
++
++static inline void
++pl011_clock_control(struct uart_port *port, struct ktermios *termios,
++		     struct ktermios *old)
++{
++}
++
++static inline void pl011_clock_control_init(struct uart_amba_port *uap)
++{
++}
++#endif
+ 
+ static void pl011_stop_tx(struct uart_port *port)
+ {
+@@ -1024,6 +1188,9 @@ static void pl011_tx_chars(struct uart_amba_port *uap)
+ 			break;
+ 	} while (--count > 0);
+ 
++	if (count)
++		pl011_clock_check(uap);
++
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		uart_write_wakeup(&uap->port);
+ 
+@@ -1212,7 +1379,7 @@ static int pl011_startup(struct uart_port *port)
+ 	/*
+ 	 * Try to enable the clock producer.
+ 	 */
+-	retval = clk_enable(uap->clk);
++	retval = pl011_clock_startup(uap);
+ 	if (retval)
+ 		goto out;
+ 
+@@ -1280,7 +1447,7 @@ static int pl011_startup(struct uart_port *port)
+ 	return 0;
+ 
+  clk_dis:
+-	clk_disable(uap->clk);
++	pl011_clock_shutdown(uap);
+  out:
+ 	return retval;
+ }
+@@ -1331,7 +1498,7 @@ static void pl011_shutdown(struct uart_port *port)
+ 	/*
+ 	 * Shut down the clock producer
+ 	 */
+-	clk_disable(uap->clk);
++	pl011_clock_shutdown(uap);
+ }
+ 
+ static void
+@@ -1344,6 +1511,13 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	unsigned int baud, quot;
+ 
+ 	/*
++	 * Must be before uart_get_baud_rate() call, because
++	 * this function changes baudrate to default in case of 0
++	 * B0 hangup !!!
++	 */
++	pl011_clock_control(port, termios, old);
++
++	/*
+ 	 * Ask the core to calculate the divisor for us.
+ 	 */
+ 	baud = uart_get_baud_rate(port, termios, old, 0,
+@@ -1721,6 +1895,9 @@ static int pl011_probe(struct amba_device *dev, struct amba_id *id)
+ 	amba_ports[i] = uap;
+ 
+ 	amba_set_drvdata(dev, uap);
++
++	pl011_clock_control_init(uap);
++
+ 	ret = uart_add_one_port(&amba_reg, &uap->port);
+ 	if (ret) {
+ 		amba_set_drvdata(dev, NULL);
+-- 
+1.6.3.3
+
