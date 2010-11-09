@@ -1,46 +1,46 @@
-From: Greg KH <gregkh@suse.de>
-Subject: Re: 8250_pci and OXPCIe952
-Date: Tue, 9 Nov 2010 07:45:13 -0800
-Message-ID: <20101109154513.GA5970@suse.de>
-References: <4CD96169.2060705@linux.vnet.ibm.com>
+From: Davidlohr Bueso <dave@gnu.org>
+Subject: [PATCH] serial: 8250: fix uninitialized compiler warning
+Date: Tue, 09 Nov 2010 13:55:23 -0300
+Message-ID: <1289321723.2260.14.camel@cowboy>
+Reply-To: dave@gnu.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:42510 "EHLO mx2.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751202Ab0KIPuQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 9 Nov 2010 10:50:16 -0500
-Content-Disposition: inline
-In-Reply-To: <4CD96169.2060705@linux.vnet.ibm.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@suse.de>
+Cc: LKML <linux-kernel@vger.kernel.org>, linux-kbuild <linux-kbuild@vger.kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Breno Leitao <leitao@linux.vnet.ibm.com>
-Cc: linux-serial@vger.kernel.org
 
-On Tue, Nov 09, 2010 at 12:57:45PM -0200, Breno Leitao wrote:
-> Hi Greg,
-> 
-> I put an OXPCIe952 card on my machine (PPC), and the driver is not
-> running fine.
-> First of all, it identifies 8 ports, which is wrong. Also, it says
+=46rom: Davidlohr Bueso <dave@gnu.org>
 
-How many should there be?
+This addresses:
 
-> 
-> 0000:01:00.1: ttyS1 at MMIO 0x3c05ff7fd200 (irq = 66) is a 16C950/954
-> 
-> and the driver loads without any other error, although it's not working.
+  CC [M]  drivers/serial/8250.o
+drivers/serial/8250.c: In function =E2=80=98serial8250_shutdown=E2=80=99=
+:
+drivers/serial/8250.c:1696: warning: =E2=80=98i=E2=80=99 may be used un=
+initialized in this function
+drivers/serial/8250.c:1696: note: =E2=80=98i=E2=80=99 was declared here
 
-What should the address and irq be?
+Signed-off-by: Davidlohr Bueso <dave@gnu.org>
+---
+ drivers/serial/8250.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-> So, my question is: Does this driver support this chipset?
-
-I don't know.
-
-> Was it ever tested on PPC ?
-
-I don't know.
-
-thanks,
-
-greg k-h
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index 4d8e14b..f734eee 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -1693,7 +1693,7 @@ static int serial_link_irq_chain(struct uart_8250=
+_port *up)
+=20
+ static void serial_unlink_irq_chain(struct uart_8250_port *up)
+ {
+-	struct irq_info *i;
++	struct irq_info *i =3D NULL;
+ 	struct hlist_node *n;
+ 	struct hlist_head *h;
+=20
+--=20
+1.7.1
