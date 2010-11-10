@@ -1,47 +1,56 @@
-From: Yegor Yefremov <yegor_sub1@visionsystems.de>
-Subject: Re: [PATCH] serial/8250: Increase number of serial ports to 32
-Date: Wed, 10 Nov 2010 18:02:39 +0100
-Message-ID: <4CDAD02F.9080109@visionsystems.de>
-References: <4CDAA41F.1060402@visionsystems.de> <20101110160851.GA10708@kroah.com>
-Reply-To: yegor_sub1@visionsystems.de
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH] pl011: added clock management feature
+Date: Wed, 10 Nov 2010 17:11:04 +0000
+Message-ID: <20101110171104.GC27571@n2100.arm.linux.org.uk>
+References: <1289316637-7828-1-git-send-email-linus.walleij@stericsson.com> <20101109224012.GA21992@kroah.com> <20101110000152.GA8993@n2100.arm.linux.org.uk> <0CBD3CD1188FB94093DB405A20CBCFBE06C5C4D8D2@EXMB01.eu.tieto.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from hhlx01.visionsystems.de ([62.145.30.242]:50197 "EHLO
-	mail.visionsystems.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757081Ab0KJRCt (ORCPT
+Received: from caramon.arm.linux.org.uk ([78.32.30.218]:57394 "EHLO
+	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757185Ab0KJRLh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Nov 2010 12:02:49 -0500
-In-Reply-To: <20101110160851.GA10708@kroah.com>
+	Wed, 10 Nov 2010 12:11:37 -0500
+Content-Disposition: inline
+In-Reply-To: <0CBD3CD1188FB94093DB405A20CBCFBE06C5C4D8D2@EXMB01.eu.tieto.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <greg@kroah.com>
-Cc: linux-serial@vger.kernel.org
+To: Grzegorz.Sygieda@tieto.com
+Cc: greg@kroah.com, linus.walleij@stericsson.com, par-gunnar.p.hjalmdahl@stericsson.com, gregkh@suse.de, Lukasz.Rymanowski@tieto.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Am 10.11.2010 17:08, schrieb Greg KH:
-> On Wed, Nov 10, 2010 at 02:54:39PM +0100, Yegor Yefremov wrote:
->> This will make sure that multiple serial port cards can be
->> used out of the box. Otherwise the user must pass
->> nr_uarts parameter, that will be often forgotten and increases
->> support requests for serial card vendors.
-> Has this really happened in the past?
+On Wed, Nov 10, 2010 at 10:15:53AM +0200, Grzegorz.Sygieda@tieto.com wrote:
+> The main goal was to disable/enable clock while port open. This is usefull
+> for scenario, where some higher level driver wants to control the power
+> consumption (using set_termios). In the same time a user-space app (eg.
+> hciattach) is still bounded to the specific /dev/tty* device associated
+> with particular uart. From user POV device is always open, and app does
+> not have to respawn, and we can save power.
 
-It is still the case. The most requests that we get are "the card doesn't function under Ubuntu...". After examining dmesg one could see that 8250 driver is initialized with 4 UARTS.
+If a port is open, and bound (eg to a bluetooth hci), how does the higher
+level decide whether to place the port in low power mode?  How does it
+know that there isn't going to be characters sent to the port?
 
-There are also lots of questions and bugs concerning this subject. Like this one: https://bugs.launchpad.net/ubuntu/+source/linux/+bug/125524. I even found some entries from 2010:
-http://www.gnulinux.in/forum/4-port-serial-card-installation-fedora-11
+When the port is in this low power mode, it's as good as closed from the
+external world point of view.
 
-> What is the downside of changing
-> this option that has been around for many years now?  Also note that
-> multi-port serial cards are more rare these days than they used to be so
-> changing this seems a bit pointless now.
+I don't like this idea because I really can't see how it could be used
+effectively - there isn't really any way for a bound protocol to know
+whether there's characters expected to be received or not.  Either the
+port is open and in use, or it isn't.
 
-I can say that those cards are still selling. They're not dead.
+Let's take an example of a modem waiting for an incoming call.  It spends
+most of its time waiting for the call.  You could argue that you could
+shut the clock off to the port to save power - but then how do you receive
+the "RING" message from the modem?  As you've shut the clock off, you're
+not going to detect the activity on the receive line.
 
-The downside is that those card are not working out of the box and users not experienced in Linux often miss this parameter. Also some Live Linuxes like Ubuntu (perhaps I missed something) don't provide command line parameter, so you have to reload the driver with proper parameter.
+I'm sure that also applies to bluetooth as well, especially if you're a
+'client' device - as long as the port is attached, bluetooth probably
+expects to be able to listen to what's going on so the device can be
+discovered.
 
-I understand that it is somehow a responsibility of distribution maintainers to properly configure the kernel, but I hope that if vanilla kernel would increase default value, then they will also follow.
+It's all very well adding hooks to the transmit path to ensure that there
+clock is on while there's characters to be sent, but this really doesn't
+help you on the receive side.
 
-Best regards,
-Yegor
+I'm worried...
