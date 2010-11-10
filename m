@@ -1,40 +1,33 @@
-From: Breno Leitao <leitao@linux.vnet.ibm.com>
-Subject: Re: 8250_pci and OXPCIe952
-Date: Wed, 10 Nov 2010 13:18:24 -0200
-Message-ID: <4CDAB7C0.40606@linux.vnet.ibm.com>
-References: <4CD96169.2060705@linux.vnet.ibm.com> <20101109154513.GA5970@suse.de>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH] serial/8250: Increase number of serial ports to 32
+Date: Wed, 10 Nov 2010 08:08:51 -0800
+Message-ID: <20101110160851.GA10708@kroah.com>
+References: <4CDAA41F.1060402@visionsystems.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from e24smtp04.br.ibm.com ([32.104.18.25]:58789 "EHLO
-	e24smtp04.br.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756654Ab0KJPSb (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Nov 2010 10:18:31 -0500
-Received: from mailhub1.br.ibm.com (mailhub1.br.ibm.com [9.18.232.109])
-	by e24smtp04.br.ibm.com (8.14.4/8.13.1) with ESMTP id oAAFBakH002156
-	for <linux-serial@vger.kernel.org>; Wed, 10 Nov 2010 13:11:36 -0200
-Received: from d24av05.br.ibm.com (d24av05.br.ibm.com [9.18.232.44])
-	by mailhub1.br.ibm.com (8.13.8/8.13.8/NCO v10.0) with ESMTP id oAAFP7pA323784
-	for <linux-serial@vger.kernel.org>; Wed, 10 Nov 2010 13:25:10 -0200
-Received: from d24av05.br.ibm.com (loopback [127.0.0.1])
-	by d24av05.br.ibm.com (8.14.4/8.13.1/NCO v10.0 AVout) with ESMTP id oAAFIPtW022661
-	for <linux-serial@vger.kernel.org>; Wed, 10 Nov 2010 13:18:26 -0200
-In-Reply-To: <20101109154513.GA5970@suse.de>
+Received: from kroah.org ([198.145.64.141]:43673 "EHLO coco.kroah.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756893Ab0KJQTp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 10 Nov 2010 11:19:45 -0500
+Content-Disposition: inline
+In-Reply-To: <4CDAA41F.1060402@visionsystems.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@suse.de>
+To: Yegor Yefremov <yegor_sub1@visionsystems.de>
 Cc: linux-serial@vger.kernel.org
 
-Greg,
+On Wed, Nov 10, 2010 at 02:54:39PM +0100, Yegor Yefremov wrote:
+> This will make sure that multiple serial port cards can be
+> used out of the box. Otherwise the user must pass
+> nr_uarts parameter, that will be often forgotten and increases
+> support requests for serial card vendors.
 
-On 11/09/2010 01:45 PM, Greg KH wrote:
-> How many should there be?
-Only two UARTs in this chipset.
+Has this really happened in the past?  What is the downside of changing
+this option that has been around for many years now?  Also note that
+multi-port serial cards are more rare these days than they used to be so
+changing this seems a bit pointless now.
 
-> What should the address and irq be?
-These address seems to be fine, although the driver is not working. I 
-suppose that there is something that is broken in the device driver.
+thanks,
 
-Thanks
+greg k-h
