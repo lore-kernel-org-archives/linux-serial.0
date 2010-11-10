@@ -1,7 +1,7 @@
 From: <Grzegorz.Sygieda@tieto.com>
 Subject: RE: [PATCH] pl011: added clock management feature
-Date: Wed, 10 Nov 2010 09:54:18 +0200
-Message-ID: <0CBD3CD1188FB94093DB405A20CBCFBE06C5C4D88A@EXMB01.eu.tieto.com>
+Date: Wed, 10 Nov 2010 10:15:53 +0200
+Message-ID: <0CBD3CD1188FB94093DB405A20CBCFBE06C5C4D8D2@EXMB01.eu.tieto.com>
 References: <1289316637-7828-1-git-send-email-linus.walleij@stericsson.com>
  <20101109224012.GA21992@kroah.com>
  <20101110000152.GA8993@n2100.arm.linux.org.uk>
@@ -9,12 +9,11 @@ Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ebb06.tieto.com ([131.207.168.38]:44744 "EHLO ebb06.tieto.com"
+Received: from ebb06.tieto.com ([131.207.168.38]:49425 "EHLO ebb06.tieto.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752572Ab0KJHyh convert rfc822-to-8bit (ORCPT
+	id S1753287Ab0KJIQN convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Nov 2010 02:54:37 -0500
-In-Reply-To: <20101110000152.GA8993@n2100.arm.linux.org.uk>
+	Wed, 10 Nov 2010 03:16:13 -0500
 Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
