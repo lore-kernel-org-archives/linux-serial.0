@@ -1,56 +1,45 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH] pl011: added clock management feature
-Date: Wed, 10 Nov 2010 17:11:04 +0000
-Message-ID: <20101110171104.GC27571@n2100.arm.linux.org.uk>
-References: <1289316637-7828-1-git-send-email-linus.walleij@stericsson.com> <20101109224012.GA21992@kroah.com> <20101110000152.GA8993@n2100.arm.linux.org.uk> <0CBD3CD1188FB94093DB405A20CBCFBE06C5C4D8D2@EXMB01.eu.tieto.com>
+From: Greg KH <gregkh@suse.de>
+Subject: Re: [PATCH] Documentation about RS485 serial communications
+Date: Wed, 10 Nov 2010 09:28:42 -0800
+Message-ID: <20101110172842.GC12371@suse.de>
+References: <20100408111310.524f7354@lxorguk.ukuu.org.uk> <4CBD8EE4.5040808@evidence.eu.com> <i9ka0s$4ua$1@dough.gmane.org> <201010191727.53314.alexander.stein@systec-electronic.com> <i9kk4o$svc$1@dough.gmane.org> <4CC418A9.6090602@evidence.eu.com> <4CDA630F.4060903@atmel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([78.32.30.218]:57394 "EHLO
-	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757185Ab0KJRLh (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Nov 2010 12:11:37 -0500
+Received: from cantor2.suse.de ([195.135.220.15]:59882 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751195Ab0KJRbA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 10 Nov 2010 12:31:00 -0500
 Content-Disposition: inline
-In-Reply-To: <0CBD3CD1188FB94093DB405A20CBCFBE06C5C4D8D2@EXMB01.eu.tieto.com>
+In-Reply-To: <4CDA630F.4060903@atmel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Grzegorz.Sygieda@tieto.com
-Cc: greg@kroah.com, linus.walleij@stericsson.com, par-gunnar.p.hjalmdahl@stericsson.com, gregkh@suse.de, Lukasz.Rymanowski@tieto.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Claudio Scordino <claudio@evidence.eu.com>, linux-serial@vger.kernel.org, Grant Edwards <grant.b.edwards@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-On Wed, Nov 10, 2010 at 10:15:53AM +0200, Grzegorz.Sygieda@tieto.com wrote:
-> The main goal was to disable/enable clock while port open. This is usefull
-> for scenario, where some higher level driver wants to control the power
-> consumption (using set_termios). In the same time a user-space app (eg.
-> hciattach) is still bounded to the specific /dev/tty* device associated
-> with particular uart. From user POV device is always open, and app does
-> not have to respawn, and we can save power.
+On Wed, Nov 10, 2010 at 10:17:03AM +0100, Nicolas Ferre wrote:
+> Le 24/10/2010 13:29, Claudio Scordino :
+> 
+> [..]
+> 
+> > Hi all,
+> > 
+> > 	sorry for the misuse of the term "transceiver", and thank you
+> > for your corrections.
+> > 
+> > Hopefully, this new version of the document is slightly better.
+> 
+> Hi all,
+> 
+> This documentation is floating around for some time now. Claudio has
+> enhanced it and it is maybe time to merge it in mainline...
+> 
+> So, can serial people include it in their tree (Greg?) or should it go
+> through another path?
 
-If a port is open, and bound (eg to a bluetooth hci), how does the higher
-level decide whether to place the port in low power mode?  How does it
-know that there isn't going to be characters sent to the port?
+I can take it, if someone resends it with the accumulated acks that I
+think it gathered over the review cycle.
 
-When the port is in this low power mode, it's as good as closed from the
-external world point of view.
+thanks,
 
-I don't like this idea because I really can't see how it could be used
-effectively - there isn't really any way for a bound protocol to know
-whether there's characters expected to be received or not.  Either the
-port is open and in use, or it isn't.
-
-Let's take an example of a modem waiting for an incoming call.  It spends
-most of its time waiting for the call.  You could argue that you could
-shut the clock off to the port to save power - but then how do you receive
-the "RING" message from the modem?  As you've shut the clock off, you're
-not going to detect the activity on the receive line.
-
-I'm sure that also applies to bluetooth as well, especially if you're a
-'client' device - as long as the port is attached, bluetooth probably
-expects to be able to listen to what's going on so the device can be
-discovered.
-
-It's all very well adding hooks to the transmit path to ensure that there
-clock is on while there's characters to be sent, but this really doesn't
-help you on the receive side.
-
-I'm worried...
+greg k-h
