@@ -1,44 +1,64 @@
-From: Greg KH <gregkh@suse.de>
-Subject: Re: [PATCH] Documentation about RS485 serial communications
-Date: Wed, 10 Nov 2010 09:28:42 -0800
-Message-ID: <20101110172842.GC12371@suse.de>
-References: <20100408111310.524f7354@lxorguk.ukuu.org.uk> <4CBD8EE4.5040808@evidence.eu.com> <i9ka0s$4ua$1@dough.gmane.org> <201010191727.53314.alexander.stein@systec-electronic.com> <i9kk4o$svc$1@dough.gmane.org> <4CC418A9.6090602@evidence.eu.com> <4CDA630F.4060903@atmel.com>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH] serial/8250: Increase number of serial ports to 32
+Date: Wed, 10 Nov 2010 09:33:03 -0800
+Message-ID: <20101110173303.GA12830@kroah.com>
+References: <4CDAA41F.1060402@visionsystems.de> <20101110160851.GA10708@kroah.com> <4CDAD02F.9080109@visionsystems.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:59882 "EHLO mx2.suse.de"
+Received: from kroah.org ([198.145.64.141]:54527 "EHLO coco.kroah.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751195Ab0KJRbA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Nov 2010 12:31:00 -0500
+	id S1751215Ab0KJReL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 10 Nov 2010 12:34:11 -0500
 Content-Disposition: inline
-In-Reply-To: <4CDA630F.4060903@atmel.com>
+In-Reply-To: <4CDAD02F.9080109@visionsystems.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: Claudio Scordino <claudio@evidence.eu.com>, linux-serial@vger.kernel.org, Grant Edwards <grant.b.edwards@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
+To: Yegor Yefremov <yegor_sub1@visionsystems.de>
+Cc: linux-serial@vger.kernel.org
 
-On Wed, Nov 10, 2010 at 10:17:03AM +0100, Nicolas Ferre wrote:
-> Le 24/10/2010 13:29, Claudio Scordino :
+On Wed, Nov 10, 2010 at 06:02:39PM +0100, Yegor Yefremov wrote:
+> Am 10.11.2010 17:08, schrieb Greg KH:
+> > On Wed, Nov 10, 2010 at 02:54:39PM +0100, Yegor Yefremov wrote:
+> >> This will make sure that multiple serial port cards can be
+> >> used out of the box. Otherwise the user must pass
+> >> nr_uarts parameter, that will be often forgotten and increases
+> >> support requests for serial card vendors.
+> > Has this really happened in the past?
 > 
-> [..]
+> It is still the case. The most requests that we get are "the card
+> doesn't function under Ubuntu...". After examining dmesg one could see
+> that 8250 driver is initialized with 4 UARTS.
 > 
-> > Hi all,
-> > 
-> > 	sorry for the misuse of the term "transceiver", and thank you
-> > for your corrections.
-> > 
-> > Hopefully, this new version of the document is slightly better.
-> 
-> Hi all,
-> 
-> This documentation is floating around for some time now. Claudio has
-> enhanced it and it is maybe time to merge it in mainline...
-> 
-> So, can serial people include it in their tree (Greg?) or should it go
-> through another path?
+> There are also lots of questions and bugs concerning this subject.
+> Like this one:
+> https://bugs.launchpad.net/ubuntu/+source/linux/+bug/125524. I even
+> found some entries from 2010:
+> http://www.gnulinux.in/forum/4-port-serial-card-installation-fedora-11
 
-I can take it, if someone resends it with the accumulated acks that I
-think it gathered over the review cycle.
+Then get the distro to change the default setting of their kernels.
+
+> > What is the downside of changing
+> > this option that has been around for many years now?  Also note that
+> > multi-port serial cards are more rare these days than they used to be so
+> > changing this seems a bit pointless now.
+> 
+> I can say that those cards are still selling. They're not dead.
+> 
+> The downside is that those card are not working out of the box and
+> users not experienced in Linux often miss this parameter. Also some
+> Live Linuxes like Ubuntu (perhaps I missed something) don't provide
+> command line parameter, so you have to reload the driver with proper
+> parameter.
+> 
+> I understand that it is somehow a responsibility of distribution
+> maintainers to properly configure the kernel, but I hope that if
+> vanilla kernel would increase default value, then they will also
+> follow.
+
+I doubt it as they would never notice that the value changed at all
+(they run 'make oldconfig').  So please just work with the distros that
+you are having problems with to get the value changed.
 
 thanks,
 
