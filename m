@@ -1,65 +1,54 @@
-From: Greg KH <greg@kroah.com>
+From: Matt Schulte <matts@commtech-fastcom.com>
 Subject: Re: [PATCH] serial/8250: Increase number of serial ports to 32
-Date: Wed, 10 Nov 2010 09:33:03 -0800
-Message-ID: <20101110173303.GA12830@kroah.com>
-References: <4CDAA41F.1060402@visionsystems.de> <20101110160851.GA10708@kroah.com> <4CDAD02F.9080109@visionsystems.de>
+Date: Wed, 10 Nov 2010 13:10:51 -0600
+Message-ID: <AANLkTi=_RNAxSK_uVsVeO87w0HbUZWhKSgsbyHPnt-BN@mail.gmail.com>
+References: <4CDAA41F.1060402@visionsystems.de> <20101110160851.GA10708@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:54527 "EHLO coco.kroah.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751215Ab0KJReL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Nov 2010 12:34:11 -0500
-Content-Disposition: inline
-In-Reply-To: <4CDAD02F.9080109@visionsystems.de>
+Received: from mail-gy0-f174.google.com ([209.85.160.174]:43608 "EHLO
+	mail-gy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755613Ab0KJTLP convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 10 Nov 2010 14:11:15 -0500
+Received: by gyh4 with SMTP id 4so637902gyh.19
+        for <linux-serial@vger.kernel.org>; Wed, 10 Nov 2010 11:11:14 -0800 (PST)
+In-Reply-To: <20101110160851.GA10708@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Yegor Yefremov <yegor_sub1@visionsystems.de>
-Cc: linux-serial@vger.kernel.org
+To: Greg KH <greg@kroah.com>
+Cc: Yegor Yefremov <yegor_sub1@visionsystems.de>, linux-serial@vger.kernel.org
 
-On Wed, Nov 10, 2010 at 06:02:39PM +0100, Yegor Yefremov wrote:
-> Am 10.11.2010 17:08, schrieb Greg KH:
-> > On Wed, Nov 10, 2010 at 02:54:39PM +0100, Yegor Yefremov wrote:
-> >> This will make sure that multiple serial port cards can be
-> >> used out of the box. Otherwise the user must pass
-> >> nr_uarts parameter, that will be often forgotten and increases
-> >> support requests for serial card vendors.
-> > Has this really happened in the past?
-> 
-> It is still the case. The most requests that we get are "the card
-> doesn't function under Ubuntu...". After examining dmesg one could see
-> that 8250 driver is initialized with 4 UARTS.
-> 
-> There are also lots of questions and bugs concerning this subject.
-> Like this one:
-> https://bugs.launchpad.net/ubuntu/+source/linux/+bug/125524. I even
-> found some entries from 2010:
-> http://www.gnulinux.in/forum/4-port-serial-card-installation-fedora-11
+On Wed, Nov 10, 2010 at 10:08 AM, Greg KH <greg@kroah.com> wrote:
+> On Wed, Nov 10, 2010 at 02:54:39PM +0100, Yegor Yefremov wrote:
+>> This will make sure that multiple serial port cards can be
+>> used out of the box. Otherwise the user must pass
+>> nr_uarts parameter, that will be often forgotten and increases
+>> support requests for serial card vendors.
+>
+> Has this really happened in the past? =A0What is the downside of chan=
+ging
+> this option that has been around for many years now? =A0Also note tha=
+t
+> multi-port serial cards are more rare these days than they used to be=
+ so
+> changing this seems a bit pointless now.
+>
 
-Then get the distro to change the default setting of their kernels.
+Multiport serial cards are not dead, we still sell bunches.  This is
+one of those problems that really frustrates our customers.  They want
+their ports to show up by default and the only way to do it is to
+recompile the kernel or modify the boot line.  A lot of my customers
+don't like the 82510.nr_uarts work around in grub and so we have to
+hold their hands while they figure out how to recompile the kernel
+with support for more ports.  I think the default number of ports
+should definitely be changed from 4 to at least 8, maybe even 16 or
+32.
 
-> > What is the downside of changing
-> > this option that has been around for many years now?  Also note that
-> > multi-port serial cards are more rare these days than they used to be so
-> > changing this seems a bit pointless now.
-> 
-> I can say that those cards are still selling. They're not dead.
-> 
-> The downside is that those card are not working out of the box and
-> users not experienced in Linux often miss this parameter. Also some
-> Live Linuxes like Ubuntu (perhaps I missed something) don't provide
-> command line parameter, so you have to reload the driver with proper
-> parameter.
-> 
-> I understand that it is somehow a responsibility of distribution
-> maintainers to properly configure the kernel, but I hope that if
-> vanilla kernel would increase default value, then they will also
-> follow.
-
-I doubt it as they would never notice that the value changed at all
-(they run 'make oldconfig').  So please just work with the distros that
-you are having problems with to get the value changed.
-
-thanks,
-
-greg k-h
+Matt Schulte
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
