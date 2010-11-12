@@ -1,101 +1,40 @@
-From: Andrei Emeltchenko <andrei.emeltchenko.news@gmail.com>
+From: Greg KH <greg@kroah.com>
 Subject: Re: [PATCHv4 0/4] OMAP: Serial: remove magic and diplicates
-Date: Fri, 12 Nov 2010 15:48:19 +0200
-Message-ID: <AANLkTikd51vvT+=1TUU08s8Pxo7oNBX415=rnQEf6Wtv@mail.gmail.com>
+Date: Fri, 12 Nov 2010 07:01:43 -0800
+Message-ID: <20101112150143.GA18096@kroah.com>
 References: <1289567043-6213-1-git-send-email-Andrei.Emeltchenko.news@gmail.com>
-	<E0D41E29EB0DAC4E9F3FF173962E9E9402DC24F05C@dbde02.ent.ti.com>
-	<AANLkTin-j1Aww+Nu4zRdAP5TH-t+ftpW6VEWUdejb1Pn@mail.gmail.com>
-	<E0D41E29EB0DAC4E9F3FF173962E9E9402DC24F069@dbde02.ent.ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-gx0-f174.google.com ([209.85.161.174]:45229 "EHLO
-	mail-gx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755369Ab0KLNsV convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 12 Nov 2010 08:48:21 -0500
-In-Reply-To: <E0D41E29EB0DAC4E9F3FF173962E9E9402DC24F069@dbde02.ent.ti.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1289567043-6213-1-git-send-email-Andrei.Emeltchenko.news@gmail.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Emeltchenko Andrei <Andrei.Emeltchenko.news@gmail.com>
+Cc: linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm@lists.arm.linux.org.uk, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "G, Manjunath Kondaiah" <manjugk@ti.com>
-Cc: "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-Hi,
+On Fri, Nov 12, 2010 at 03:03:59PM +0200, Emeltchenko Andrei wrote:
+> From: Andrei Emeltchenko <andrei.emeltchenko@nokia.com>
+> 
+> Add MDR1 Serial register definition to serial_reg and remove duplicated
+> code, remove magic MDR1 register numbers from serial drivers.
+> 
+> *v2 add OMAP keyword to MDR1 definition
+> *v3 remove magic from serial drivers
+> *v4 taking comments from Manjunath and Govindraj: typos, CC
+> 
+> Andrei Emeltchenko (4):
+>   OMAP: Serial: Define OMAP uart MDR1 register definitions
+>   OMAP1: Serial: remove magic numbers for MDR1 reg
+>   OMAP2: Serial: remove magic numbers for MDR1 reg
+>   OMAP: Serial: remove redefined MDR1 register definitions
 
->> -----Original Message-----
->> From: Andrei Emeltchenko [mailto:andrei.emeltchenko.news@gmail.com]
->> Sent: Friday, November 12, 2010 6:50 PM
->> To: G, Manjunath Kondaiah
->> Cc: linux-omap@vger.kernel.org; linux-kernel@vger.kernel.org;
->> linux-arm@lists.arm.linux.org.uk; linux-serial@vger.kernel.org
->> Subject: Re: [PATCHv4 0/4] OMAP: Serial: remove magic and diplicates
->>
->> On Fri, Nov 12, 2010 at 3:17 PM, G, Manjunath Kondaiah
->> <manjugk@ti.com> wrote:
->> >
->> >
->> >> -----Original Message-----
->> >> From: linux-omap-owner@vger.kernel.org
->> >> [mailto:linux-omap-owner@vger.kernel.org] On Behalf Of
->> >> Emeltchenko Andrei
->> >> Sent: Friday, November 12, 2010 6:34 PM
->> >> To: linux-omap@vger.kernel.org; linux-kernel@vger.kernel.org;
->> >> linux-arm@lists.arm.linux.org.uk; linux-serial@vger.kernel.org
->> >> Subject: [PATCHv4 0/4] OMAP: Serial: remove magic and diplicates
->> >
->> > s/diplicates/duplicates
->> >
->> >>
->> >> From: Andrei Emeltchenko <andrei.emeltchenko@nokia.com>
->> >>
->> >> Add MDR1 Serial register definition to serial_reg and remove
->> >> duplicated
->> >> code, remove magic MDR1 register numbers from serial drivers.
->> >>
->> >> *v2 add OMAP keyword to MDR1 definition
->> >> *v3 remove magic from serial drivers
->> >> *v4 taking comments from Manjunath and Govindraj: typos, CC
->> >>
->> >> Andrei Emeltchenko (4):
->> >> =A0 OMAP: Serial: Define OMAP uart MDR1 register definitions
->> >> =A0 OMAP1: Serial: remove magic numbers for MDR1 reg
->> >> =A0 OMAP2: Serial: remove magic numbers for MDR1 reg
->> >> =A0 OMAP: Serial: remove redefined MDR1 register definitions
->> >>
->> >> =A0arch/arm/mach-omap1/serial.c =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
-| =A0 =A06 ++++--
->> >> =A0arch/arm/mach-omap2/serial.c =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
-| =A0 15
->> +++++++++------
->> >> =A0arch/arm/plat-omap/include/plat/omap-serial.h | =A0 =A03 ---
->> >> =A0drivers/serial/omap-serial.c =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
-| =A0 =A06 +++---
->> >> =A0include/linux/serial_reg.h =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0| =A0 12 ++++++++++++
->> >> =A05 files changed, 28 insertions(+), 14 deletions(-)
->> >
->> > Do you think patch series is required for these changes? How about
->> > merging with single patch?
->>
->> I can merge, sometimes somebody need patches to be split,
->
-> why? can you give example?
+Looks good, do you want these to go through the omap tree, or the serial
+tree?
 
-Maybe I got it wrong.
+If they go through the omap tree, feel free to add:
+	Acked-by: Greg Kroah-Hartman <gregkh@suse.de>
 
-> Please read: http://lwn.net/Articles/139918/
-> "if you make a single change to numerous files, group those changes i=
-nto
-> a single patch. =A0Thus a single logical change is contained within a
-> single patch."
+thanks,
 
-I have squashed those patches to the single one.
-
-Regards,
-Andrei
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+greg k-h
