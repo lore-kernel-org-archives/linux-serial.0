@@ -1,32 +1,43 @@
-From: <amandasaleeby1@centrum.sk>
-Subject: hello
-Date: Mon, 15 Nov 2010 17:42:16 +0100
-Message-ID: <201011151742.32645__28178.9275505163$1289839359$gmane$org@centrum.cz>
+From: Peter Zijlstra <peterz@infradead.org>
+Subject: serial8250: Mark console as CON_ANYTIME
+Date: Mon, 15 Nov 2010 21:11:12 +0100
+Message-ID: <1289851872.2109.550.camel@laptop>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from farizej.centrum.cz ([90.183.38.130]:51917 "EHLO
-	farizej.centrum.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757880Ab0KOQm3 (ORCPT
+Received: from canuck.infradead.org ([134.117.69.58]:49235 "EHLO
+	canuck.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755498Ab0KOULI convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 15 Nov 2010 11:42:29 -0500
-Received: by mail255.centrum.cz id S50415281Ab0KOQmQ (ORCPT
-	<rfc822;linux-serial@vger.kernel.org> + 2 others);
-	Mon, 15 Nov 2010 17:42:16 +0100
+	Mon, 15 Nov 2010 15:11:08 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: amandasaleeby1 <amandasaleeby1@centrum.sk>
+To: Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Ingo Molnar <mingo@elte.hu>, tglx <tglx@linutronix.de>, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 
-hello with love and trust
-my dearest friend compliment of the day to you.my name is Amanda favour a
-girl of 23years old honest trusting kind caring loving and fun with
-compassionate and generous nature viewing your email address which really interest
-me to know more about you that is having communication friendship with you
-if you will have the desire with me.so that we can get to know each other
-better sharing feelings and thought together .i will like you to write me
-through my email for easiest communication.i will be waiting to read from
-you.I will be waiting for your mail;please make sure you replied to me with the email address below,it is very confidential and private,thanks and have a nice day.
-here is my email address
-Amandasaleeby@she.com
+
+While trying to debug a cpu-hotplug issue I noticed printk() stopped
+working once the cpu got marked offline, since the 8250 serial console
+doesn't have any per-cpu resources the CON_ANYTIME bit is the safe and
+documented way to make it work again.
+
+Signed-off-by: Peter Zijlstra <a.p.zijlstra@chello.nl>
+---
+ drivers/serial/8250.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index 4d8e14b..09a5508 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -2872,7 +2872,7 @@ static struct console serial8250_console = {
+ 	.device		= uart_console_device,
+ 	.setup		= serial8250_console_setup,
+ 	.early_setup	= serial8250_console_early_setup,
+-	.flags		= CON_PRINTBUFFER,
++	.flags		= CON_PRINTBUFFER | CON_ANYTIME,
+ 	.index		= -1,
+ 	.data		= &serial8250_reg,
+ };
 
