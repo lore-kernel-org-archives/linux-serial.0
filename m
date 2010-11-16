@@ -1,22 +1,18 @@
 From: Emeltchenko Andrei <Andrei.Emeltchenko.news@gmail.com>
 Subject: [RFC] OMAP: Serial: Define register access modes in LCR
-Date: Tue, 16 Nov 2010 13:01:40 +0200
-Message-ID: <1289905300-31664-1-git-send-email-Andrei.Emeltchenko.news@gmail.com>
+Date: Tue, 16 Nov 2010 13:43:00 +0200
+Message-ID: <1289907780-31817-1-git-send-email-Andrei.Emeltchenko.news@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-bounces+linux-arm=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm>,
-	<mailto:linux-arm-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm/>
-List-Post: <mailto:linux-arm@lists.infradead.org>
-List-Help: <mailto:linux-arm-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm>,
-	<mailto:linux-arm-request@lists.infradead.org?subject=subscribe>
-Sender: linux-arm-bounces@lists.infradead.org
-Errors-To: linux-arm-bounces+linux-arm=m.gmane.org@lists.infradead.org
-To: linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp.nokia.com ([147.243.1.47]:33555 "EHLO mgw-sa01.nokia.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S933110Ab0KPLo6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 16 Nov 2010 06:44:58 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm@lists.infradead.org, linux-serial@vger.kernel.org
 
 From: Andrei Emeltchenko <andrei.emeltchenko@nokia.com>
 
@@ -378,3 +374,4 @@ index 6f38234..a371a0d 100644
  #define UART_MCR_TCRTLR		0x40 /* Access TCR/TLR (TI16C752, EFR[4]=1) */
 -- 
 1.7.0.4
+
