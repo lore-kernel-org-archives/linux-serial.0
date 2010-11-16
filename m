@@ -1,65 +1,40 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
+From: Matt Schulte <matts@commtech-fastcom.com>
 Subject: Re: [PATCH] Documentation about RS485 serial communications
-Date: Tue, 16 Nov 2010 15:52:11 +0000 (UTC)
-Message-ID: <ibu9bb$k6c$1@dough.gmane.org>
-References: <20101116143016.GB6527@ucw.cz>
- <A00955ACF1104CC28630FA1EAA4DF591@acksys.local>
+Date: Tue, 16 Nov 2010 10:13:22 -0600
+Message-ID: <AANLkTi=grehSnfWzCDtSXXmNb=-NAwbHHJ_P1XPyOuw8@mail.gmail.com>
+References: <20100408111310.524f7354@lxorguk.ukuu.org.uk> <4CBD8EE4.5040808@evidence.eu.com>
+ <i9ka0s$4ua$1@dough.gmane.org> <201010191727.53314.alexander.stein@systec-electronic.com>
+ <i9kk4o$svc$1@dough.gmane.org> <4CC418A9.6090602@evidence.eu.com>
+ <4CDA630F.4060903@atmel.com> <20101110172842.GC12371@suse.de>
+ <4CDBC3EC.6020707@evidence.eu.com> <20101116143016.GB6527@ucw.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lo.gmane.org ([80.91.229.12]:59596 "EHLO lo.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750875Ab0KPPw1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 16 Nov 2010 10:52:27 -0500
-Received: from list by lo.gmane.org with local (Exim 4.69)
-	(envelope-from <lnx-linux-serial@m.gmane.org>)
-	id 1PINpa-0001tg-DE
-	for linux-serial@vger.kernel.org; Tue, 16 Nov 2010 16:52:26 +0100
-Received: from dsl.comtrol.com ([64.122.56.22])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Tue, 16 Nov 2010 16:52:26 +0100
-Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Tue, 16 Nov 2010 16:52:26 +0100
+Received: from mail-vw0-f46.google.com ([209.85.212.46]:37170 "EHLO
+	mail-vw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754441Ab0KPQT6 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 16 Nov 2010 11:19:58 -0500
+In-Reply-To: <20101116143016.GB6527@ucw.cz>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Pavel Machek <pavel@ucw.cz>
+Cc: Claudio Scordino <claudio@evidence.eu.com>, Greg KH <gregkh@suse.de>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-serial@vger.kernel.org, Grant Edwards <grant.b.edwards@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-On 2010-11-16, Tosoni <jp.tosoni@acksys.fr> wrote:
-
->> I have seen hardware (kontron pmc-6l) that was capable of switching
->> between RS232, RS485 and one other standard by software.
->>
->> Is such hw common? If so, should we have standard interface?
+On Tue, Nov 16, 2010 at 8:30 AM, Pavel Machek <pavel@ucw.cz> wrote:
+> Hi!
 >
-> I believe it is neither common nor a good thing.
+>> Documentation about RS485 serial communications
+>
+> I have seen hardware (kontron pmc-6l) that was capable of switching
+> between RS232, RS485 and one other standard by software.
+>
+> Is such hw common? If so, should we have standard interface?
 
-People who need multiple interface types disagree with you as to
-whether it's a good thing or not.
+In my opinion this type of card is not that common.  Generally
+speaking the achievable baud rates for this type of multi-protocol
+card are very limited because of limitations of the transceiver chips.
+ It seems that most of the time people would rather have a faster
+serial port than one that does several different voltages.
 
-> Dynamically switching between electrical levels means that the remote
-> device must be capable of handling both electrical levels, else it
-> might be damaged (i.e., when the serial card is configured to RS485
-> but switches to RS232 when reset).
-
-Nobody said anything about doing it "dynamically", and if you read the
-manuals for the cards in question, it specifically says not to do
-that. [Though if you look at the electrical specs for any reputable
-RS485/422/232 driver/receiver you'll see that they're all spec'ed to
-withstand that sort of thing without damage.]
-
-The way it's done is that the card is installed, the ports are
-configured, and then the cabling is hooked up.
-
-> Or, different pins must be used for RS232 and RS485 (then software
-> switching is not really useful).
-
-That's not usually how it's done.
-
--- 
-Grant Edwards               grant.b.edwards        Yow! Don't hit me!!  I'm in
-                                  at               the Twilight Zone!!!
-                              gmail.com            
-
+Matt Schulte
