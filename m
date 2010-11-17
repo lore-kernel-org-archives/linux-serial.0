@@ -1,48 +1,44 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] Documentation about RS485 serial communications
-Date: Tue, 16 Nov 2010 20:04:26 +0000
-Message-ID: <20101116200426.75085b68@lxorguk.ukuu.org.uk>
-References: <20100408111310.524f7354@lxorguk.ukuu.org.uk>
-	<4CBD8EE4.5040808@evidence.eu.com>
-	<i9ka0s$4ua$1@dough.gmane.org>
-	<201010191727.53314.alexander.stein@systec-electronic.com>
-	<i9kk4o$svc$1@dough.gmane.org>
-	<4CC418A9.6090602@evidence.eu.com>
-	<4CDA630F.4060903@atmel.com>
-	<20101110172842.GC12371@suse.de>
-	<4CDBC3EC.6020707@evidence.eu.com>
-	<20101116143016.GB6527@ucw.cz>
-	<AANLkTi=grehSnfWzCDtSXXmNb=-NAwbHHJ_P1XPyOuw8@mail.gmail.com>
-	<20101116172013.102e06a6@lxorguk.ukuu.org.uk>
-	<ibuh1v$uh6$1@dough.gmane.org>
+From: <Grzegorz.Sygieda@tieto.com>
+Subject: RE: [PATCH] pl011: added clock management feature
+Date: Wed, 17 Nov 2010 10:24:35 +0200
+Message-ID: <0CBD3CD1188FB94093DB405A20CBCFBE06C7415895@EXMB01.eu.tieto.com>
+References: <1289316637-7828-1-git-send-email-linus.walleij@stericsson.com>
+ <20101109224012.GA21992@kroah.com>
+ <20101110000152.GA8993@n2100.arm.linux.org.uk>
+ <0CBD3CD1188FB94093DB405A20CBCFBE06C5C4D8D2@EXMB01.eu.tieto.com>
+ <20101110171104.GC27571@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:42514 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S932166Ab0KPUFg (ORCPT
+Received: from ebb06.tieto.com ([131.207.168.38]:46525 "EHLO ebb06.tieto.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S934199Ab0KQIZA convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 16 Nov 2010 15:05:36 -0500
-In-Reply-To: <ibuh1v$uh6$1@dough.gmane.org>
+	Wed, 17 Nov 2010 03:25:00 -0500
+In-Reply-To: <20101110171104.GC27571@n2100.arm.linux.org.uk>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Grant Edwards <grant.b.edwards@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: linux@arm.linux.org.uk
+Cc: greg@kroah.com, linus.walleij@stericsson.com, par-gunnar.p.hjalmdahl@stericsson.com, gregkh@suse.de, Lukasz.Rymanowski@tieto.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-> Comtrol, Moxa, B&B, Sealevel, and others all sell PCI cards and
-> Ethernet attached serial ports that have selectable interfaces
-> (typically RS-232/422/485).  Comtrol and Moxa have had drivers in the
-> kernel tree for ages, but they've always had to use custom ioctl calls
-> for things like configuring 232/485/422 mode and half/full-duplex
-> mode.
+> If a port is open, and bound (eg to a bluetooth hci), how does the higher level decide whether to place the port in low power mode?  How does it know that there isn't going to be > >characters sent to the port?
+> 
+> When the port is in this low power mode, it's as good as closed from the external world point of view.
+> 
+> I don't like this idea because I really can't see how it could be used effectively - there isn't really any way for a bound protocol to know whether there's characters expected to be received > or not.  Either the port is open and in use, or it isn't.
+> 
+> Let's take an example of a modem waiting for an incoming call.  It spends most of its time waiting for the call.  You could argue that you could shut the clock off to the port to save > power - but then how do you receive the "RING" message from the modem?  As you've shut the clock off, you're not going to detect the activity on the receive line.
+> 
+> I'm sure that also applies to bluetooth as well, especially if you're a 'client' device - as long as the port is attached, bluetooth probably expects to be able to listen to what's going on so >the device can be discovered.
+>
+> It's all very well adding hooks to the transmit path to ensure that there clock is on while there's characters to be sent, but this really doesn't help you on the receive side.
+> 
+> I'm worried...
 
-Ok so what is needed that isn't covered by the current termiox and
-TIOCG/SRS485 ioctls ?
+We have chip which acts (is registred) as platform_device, and have knowledge about its status through GPIO, (eg. Wake-up line), as well as it can control low power mode. This driver registers to hci discipline, thus gives posibliity to invoke tty functions, including set_termios. And this is what we are actualy doing. We think that this is best way to keep clock control without closing the uart.
 
-> Having a standard API for things like interface mode, half-full
-> duplex, inter-character timeout, 9-bit mode, and so on would be life a
-> lot easier for those of us who maintain Linux serial drivers...
+We don't think, if it possible to shutdown and then startup the uart port completly, from the chip's driver level. 
 
-9bit mode is a real problem with the tty layer defined in terms of 8bit
-streams but yes.
+Correct us if We're wrong.
