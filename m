@@ -1,64 +1,43 @@
-From: Michael Haardt <michael@moria.de>
+From: Grant Edwards <grant.b.edwards@gmail.com>
 Subject: Re: How to disable the transmit FIFO?
-Date: Thu, 18 Nov 2010 21:01:45 +0100
-Message-ID: <E1PJAfx-0000gW-8e@palantir.moria.de>
+Date: Thu, 18 Nov 2010 20:05:56 +0000 (UTC)
+Message-ID: <ic40v4$ghm$1@dough.gmane.org>
 References: <E1PJ0al-0000hs-Kb@palantir.moria.de>
- <20101118164122.GB2855@kroah.com>
+ <20101118164122.GB2855@kroah.com> <E1PJAfx-0000gW-8e@palantir.moria.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ti-gw.moria.de ([85.116.193.48]:36547 "EHLO gandalf.moria.de"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1759483Ab0KRUBu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 18 Nov 2010 15:01:50 -0500
-In-Reply-To: <20101118164122.GB2855@kroah.com>
+Received: from lo.gmane.org ([80.91.229.12]:50182 "EHLO lo.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755902Ab0KRUGK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 18 Nov 2010 15:06:10 -0500
+Received: from list by lo.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1PJAkD-0004si-32
+	for linux-serial@vger.kernel.org; Thu, 18 Nov 2010 21:06:09 +0100
+Received: from dsl.comtrol.com ([64.122.56.22])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Thu, 18 Nov 2010 21:06:09 +0100
+Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Thu, 18 Nov 2010 21:06:09 +0100
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: greg@kroah.com
-Cc: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-> > I miss a way to disable the transmit FIFO.
+On 2010-11-18, Michael Haardt <michael@moria.de> wrote:
+>> > I miss a way to disable the transmit FIFO.
+>>
+>> From userspace or from within a kernel driver?
 >
-> From userspace or from within a kernel driver?
+> From userspace.
 
->From userspace.
+$ man setserial
 
-> > UARTs that don't do hardware handshaking in hardware, but use a transmit
-> > FIFO, can only be used if the peer can deal with the delayed handshaking
-> > response.
-> > 
-> > If slow peers can not receive at line rate, hardware handshaking will
-> > still cause overruns with Linux as sender, because Linux fills the
-> > transmit FIFO and transmission continues at worst for 16 characters with
-> > a 16550 after CTS was asserted.
-> > 
-> > So, how can I fix hardware flow control response to the non-delayed
-> > behaviour as it worked with a 8250 or 16450 by disabling the transmit
-> > FIFO?
->
-> So you are saying this used to work and now it doesn't?
+-- 
+Grant Edwards               grant.b.edwards        Yow! FEELINGS are cascading
+                                  at               over me!!!
+                              gmail.com            
 
-It used to work with old non-FIFO UARTs (8250, 16450) and does not work
-with the slightly newer FIFO-UARTs (16550 and up, probably excluding
-those that can do RTS/CTS flow control in hardware).
-
-A transmitter FIFO on a UART that can not do RTS/CTS flow control in
-hardware delays the flow control response by the size of the FIFO.
-By the time Linux notices CTS being set, the FIFO is already filled and
-the transmitter keeps sending, despite the peer asking to pause.
-
-It is desirable that flow control has minimal delays from seeing CTS
-to pausing the flow.  Given a 16550 UART, you have to disable the
-transmitter FIFO for that.  One could argue whether the default should
-be high throughput (use the FIFO and delay handshaking) or correct flow
-control (no FIFO and near instant handshaking).  Most systems default
-to the first.
-
-The admin has to know if the peer allows delayed flow control and
-configure it for the affected UART ports.  Windows allows exactly that
-and the MS knowledge base correctly describes that the FIFO size may
-cause data overruns, suggesting to reduce it until the problem goes away.
-A binary switch, as offered by BSD, probably suffices, though.
-
-Michael
