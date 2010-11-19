@@ -1,36 +1,78 @@
-From: Ted Ts'o <tytso@mit.edu>
-Subject: Re: How to disable the transmit FIFO?
-Date: Thu, 18 Nov 2010 20:25:23 -0500
-Message-ID: <20101119012523.GT3290@thunk.org>
-References: <E1PJ0al-0000hs-Kb@palantir.moria.de>
- <20101118164122.GB2855@kroah.com>
- <E1PJAfx-0000gW-8e@palantir.moria.de>
- <ic40v4$ghm$1@dough.gmane.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Feng Tang <feng.tang@intel.com>
+Subject: [PATCH] serial: mfd: adjust the baud rate setting
+Date: Fri, 19 Nov 2010 10:20:26 +0800
+Message-ID: <1290133226-6429-1-git-send-email-feng.tang@intel.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from thunk.org ([69.25.196.29]:47621 "EHLO thunker.thunk.org"
+Received: from mga09.intel.com ([134.134.136.24]:44702 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1760172Ab0KSBZ2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 18 Nov 2010 20:25:28 -0500
-Content-Disposition: inline
-In-Reply-To: <ic40v4$ghm$1@dough.gmane.org>
+	id S1754730Ab0KSBqr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 18 Nov 2010 20:46:47 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Grant Edwards <grant.b.edwards@gmail.com>, Michael Haardt <michael@moria.de>
-Cc: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, greg@kroah.com, alan@linux.intel.com
+Cc: Feng Tang <feng.tang@intel.com>
 
-On Thu, Nov 18, 2010 at 08:05:56PM +0000, Grant Edwards wrote:
-> On 2010-11-18, Michael Haardt <michael@moria.de> wrote:
-> >> > I miss a way to disable the transmit FIFO.
-> >>
-> >> From userspace or from within a kernel driver?
-> >
-> > From userspace.
-> 
-> $ man setserial
+This change is made according to silicon engineers' feedback and
+the real world test result.
 
-Specifically, if you use setserial to configure a serial port so that
-its UART is a 16450, it will force the transmit FIFO to be unused.
+Signed-off-by: Feng Tang <feng.tang@intel.com>
+---
+ drivers/serial/mfd.c |   24 ++++++++----------------
+ 1 files changed, 8 insertions(+), 16 deletions(-)
 
-    	      	     	     	   - Ted
+diff --git a/drivers/serial/mfd.c b/drivers/serial/mfd.c
+index 5fc699e..d40010a 100644
+--- a/drivers/serial/mfd.c
++++ b/drivers/serial/mfd.c
+@@ -900,8 +900,7 @@ serial_hsu_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	unsigned char cval, fcr = 0;
+ 	unsigned long flags;
+ 	unsigned int baud, quot;
+-	u32 mul = 0x3600;
+-	u32 ps = 0x10;
++	u32 ps, mul;
+ 
+ 	switch (termios->c_cflag & CSIZE) {
+ 	case CS5:
+@@ -943,31 +942,24 @@ serial_hsu_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	baud = uart_get_baud_rate(port, termios, old, 0, 4000000);
+ 
+ 	quot = 1;
++	ps = 0x10;
++	mul = 0x3600;
+ 	switch (baud) {
+ 	case 3500000:
+ 		mul = 0x3345;
+ 		ps = 0xC;
+ 		break;
+-	case 3000000:
+-		mul = 0x2EE0;
+-		break;
+-	case 2500000:
+-		mul = 0x2710;
+-		break;
+-	case 2000000:
+-		mul = 0x1F40;
+-		break;
+ 	case 1843200:
+ 		mul = 0x2400;
+ 		break;
++	case 3000000:
++	case 2500000:
++	case 2000000:
+ 	case 1500000:
+-		mul = 0x1770;
+-		break;
+ 	case 1000000:
+-		mul = 0xFA0;
+-		break;
+ 	case 500000:
+-		mul = 0x7D0;
++		/* mul/ps/quot = 0x9C4/0x10/0x1 will make a 500000 bps */
++		mul = baud / 500000 * 0x9C4;
+ 		break;
+ 	default:
+ 		/* Use uart_get_divisor to get quot for other baud rates */
+-- 
+1.7.0.4
+
