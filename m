@@ -1,49 +1,36 @@
-From: Michael Haardt <michael@moria.de>
+From: Ted Ts'o <tytso@mit.edu>
 Subject: Re: How to disable the transmit FIFO?
-Date: Thu, 18 Nov 2010 21:58:17 +0100
-Message-ID: <E1PJBYf-0000h6-9W@palantir.moria.de>
+Date: Thu, 18 Nov 2010 20:25:23 -0500
+Message-ID: <20101119012523.GT3290@thunk.org>
 References: <E1PJ0al-0000hs-Kb@palantir.moria.de>
- <20101118164122.GB2855@kroah.com> <E1PJAfx-0000gW-8e@palantir.moria.de>
- <20101118201125.GA26323@kroah.com>
+ <20101118164122.GB2855@kroah.com>
+ <E1PJAfx-0000gW-8e@palantir.moria.de>
+ <ic40v4$ghm$1@dough.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ti-gw.moria.de ([85.116.193.48]:38293 "EHLO gandalf.moria.de"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1754211Ab0KRU6V (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 18 Nov 2010 15:58:21 -0500
-In-Reply-To: <20101118201125.GA26323@kroah.com>
+Received: from thunk.org ([69.25.196.29]:47621 "EHLO thunker.thunk.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1760172Ab0KSBZ2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 18 Nov 2010 20:25:28 -0500
+Content-Disposition: inline
+In-Reply-To: <ic40v4$ghm$1@dough.gmane.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: greg@kroah.com
+To: Grant Edwards <grant.b.edwards@gmail.com>, Michael Haardt <michael@moria.de>
 Cc: linux-serial@vger.kernel.org
 
-> What is the BSD user/kernel api that they have to provide this?
+On Thu, Nov 18, 2010 at 08:05:56PM +0000, Grant Edwards wrote:
+> On 2010-11-18, Michael Haardt <michael@moria.de> wrote:
+> >> > I miss a way to disable the transmit FIFO.
+> >>
+> >> From userspace or from within a kernel driver?
+> >
+> > From userspace.
+> 
+> $ man setserial
 
-BSD uses port-specific driver flags, so changing them requires a
-reboot.
+Specifically, if you use setserial to configure a serial port so that
+its UART is a 16450, it will force the transmit FIFO to be unused.
 
->From sio(4):
-
-     For standard ISA ports:
-	   device sio
-
-	   In /boot/device.hints:
-	   hint.sio.0.at="isa"
-	   hint.sio.0.port="0x3f8"
-	   hint.sio.0.flags="0x10"
-	   hint.sio.0.irq="4"
-	   hint.sio.1.at="isa"
-	   hint.sio.1.port="0x2f8"
-	   hint.sio.1.flags="0x0"
-	   hint.sio.1.irq="3"
-[...]
-     Meaning of flags:
-	   0x00001   shared IRQs
-	   0x00002   disable FIFO
-[...]
-
-It is important that the setting is port-specific, not global.
-
-Michael
+    	      	     	     	   - Ted
