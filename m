@@ -1,78 +1,32 @@
-From: Feng Tang <feng.tang@intel.com>
-Subject: [PATCH] serial: mfd: adjust the baud rate setting
-Date: Fri, 19 Nov 2010 10:20:26 +0800
-Message-ID: <1290133226-6429-1-git-send-email-feng.tang@intel.com>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH] serial: mfd: adjust the baud rate setting
+Date: Thu, 18 Nov 2010 18:05:59 -0800
+Message-ID: <20101119020559.GA18767@kroah.com>
+References: <1290133226-6429-1-git-send-email-feng.tang@intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:44702 "EHLO mga09.intel.com"
+Received: from kroah.org ([198.145.64.141]:57712 "EHLO coco.kroah.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754730Ab0KSBqr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 18 Nov 2010 20:46:47 -0500
+	id S1750708Ab0KSCHh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 18 Nov 2010 21:07:37 -0500
+Content-Disposition: inline
+In-Reply-To: <1290133226-6429-1-git-send-email-feng.tang@intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, greg@kroah.com, alan@linux.intel.com
-Cc: Feng Tang <feng.tang@intel.com>
+To: Feng Tang <feng.tang@intel.com>
+Cc: linux-serial@vger.kernel.org, alan@linux.intel.com
 
-This change is made according to silicon engineers' feedback and
-the real world test result.
+On Fri, Nov 19, 2010 at 10:20:26AM +0800, Feng Tang wrote:
+> This change is made according to silicon engineers' feedback and
+> the real world test result.
 
-Signed-off-by: Feng Tang <feng.tang@intel.com>
----
- drivers/serial/mfd.c |   24 ++++++++----------------
- 1 files changed, 8 insertions(+), 16 deletions(-)
+Ok, but what was that feeback and test results?  What needed to be
+changed and why?  In other words, describe the change, don't just say
+why you did it.
 
-diff --git a/drivers/serial/mfd.c b/drivers/serial/mfd.c
-index 5fc699e..d40010a 100644
---- a/drivers/serial/mfd.c
-+++ b/drivers/serial/mfd.c
-@@ -900,8 +900,7 @@ serial_hsu_set_termios(struct uart_port *port, struct ktermios *termios,
- 	unsigned char cval, fcr = 0;
- 	unsigned long flags;
- 	unsigned int baud, quot;
--	u32 mul = 0x3600;
--	u32 ps = 0x10;
-+	u32 ps, mul;
- 
- 	switch (termios->c_cflag & CSIZE) {
- 	case CS5:
-@@ -943,31 +942,24 @@ serial_hsu_set_termios(struct uart_port *port, struct ktermios *termios,
- 	baud = uart_get_baud_rate(port, termios, old, 0, 4000000);
- 
- 	quot = 1;
-+	ps = 0x10;
-+	mul = 0x3600;
- 	switch (baud) {
- 	case 3500000:
- 		mul = 0x3345;
- 		ps = 0xC;
- 		break;
--	case 3000000:
--		mul = 0x2EE0;
--		break;
--	case 2500000:
--		mul = 0x2710;
--		break;
--	case 2000000:
--		mul = 0x1F40;
--		break;
- 	case 1843200:
- 		mul = 0x2400;
- 		break;
-+	case 3000000:
-+	case 2500000:
-+	case 2000000:
- 	case 1500000:
--		mul = 0x1770;
--		break;
- 	case 1000000:
--		mul = 0xFA0;
--		break;
- 	case 500000:
--		mul = 0x7D0;
-+		/* mul/ps/quot = 0x9C4/0x10/0x1 will make a 500000 bps */
-+		mul = baud / 500000 * 0x9C4;
- 		break;
- 	default:
- 		/* Use uart_get_divisor to get quot for other baud rates */
--- 
-1.7.0.4
+Care to resend please?
 
+thanks,
+
+greg k-h
