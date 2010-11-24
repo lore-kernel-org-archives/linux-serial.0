@@ -1,56 +1,59 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Re: How to disable the transmit FIFO?
-Date: Wed, 24 Nov 2010 14:56:55 +0000 (UTC)
-Message-ID: <icj93m$9mh$1@dough.gmane.org>
-References: <E1PJ0al-0000hs-Kb@palantir.moria.de>
- <20101118164122.GB2855@kroah.com> <E1PJAfx-0000gW-8e@palantir.moria.de>
- <ic40v4$ghm$1@dough.gmane.org> <20101119012523.GT3290@thunk.org>
- <E1PLEkX-0000u5-SZ@palantir.moria.de>
+From: kyle cronan <kyle@pbx.org>
+Subject: how to debug dropped bytes?
+Date: Wed, 24 Nov 2010 11:10:44 -0600
+Message-ID: <AANLkTimwDEQdSodUT3b6kPTPZHrb9zcnMY9jG4FKaqjg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lo.gmane.org ([80.91.229.12]:43383 "EHLO lo.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753088Ab0KXO5I (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 24 Nov 2010 09:57:08 -0500
-Received: from list by lo.gmane.org with local (Exim 4.69)
-	(envelope-from <lnx-linux-serial@m.gmane.org>)
-	id 1PLGmQ-0005Sg-Rv
-	for linux-serial@vger.kernel.org; Wed, 24 Nov 2010 15:57:06 +0100
-Received: from dsl.comtrol.com ([64.122.56.22])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Wed, 24 Nov 2010 15:57:06 +0100
-Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Wed, 24 Nov 2010 15:57:06 +0100
+Received: from na3sys009aog111.obsmtp.com ([74.125.149.205]:53388 "HELO
+	na3sys009aog111.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1755691Ab0KXRLT (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 24 Nov 2010 12:11:19 -0500
+Received: by mail-bw0-f42.google.com with SMTP id 13so50306bwz.15
+        for <linux-serial@vger.kernel.org>; Wed, 24 Nov 2010 09:10:49 -0800 (PST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-On 2010-11-24, Michael Haardt <michael@moria.de> wrote:
->> Specifically, if you use setserial to configure a serial port so that
->> its UART is a 16450, it will force the transmit FIFO to be unused.
->
-> I tried that, but no change.  Sending a line of 21 characters to the port,
-> I see only two trailing edges of CTS, which is consistent with receiving
-> three characters by the SBC.  The other characters are sent and lost.
->
-> The SBC on the other end clears RTS immediatly after receiving a
-> character.  Linux may send one character at this moment, but that would
-> be stored in the receiver buffer and the SBC only asserts RTS if the
-> receiver buffer is empty.  Instead it sends multiple characters, flooding
-> the SBC.
+Hi all,
 
-But the Linux box does eventually stop sending, but it takes too long
-to stop?
+Can anyone suggest how to go about debugging an issue involving bytes
+being dropped by the usbserial and serial8250 drivers?  I have an i686
+architecture machine running 2.6.35 that needs to speak to two
+different serial devices, one connected to the onboard 16550 and the
+other connected via USB to an FTDI chip.  I am not using hardware flow
+control.
 
-It sounds like you need to buy a serial card that does RTS/CTS flow
-control in hardware.
+Both devices drop bytes even at low bit rates (19200 on both ports).
+They do so in a somewhat predictable manner.  On one of these ports
+all my program has to do is read a 65-byte packet each second, and
+what I see is that the packet almost always comes in at 64 bytes,
+sometimes 63.  At first I suspected that a bug in my code was to
+blame, but I can see the same behavior by just running 'cat
+/dev/ttyUSB0 | hexdump -C'.  Packets come in a single byte short, and
+then every 20 seconds or so I lose an additional byte.  It's similar
+behavior for /dev/ttyS0, according to what I've seen in the logs
+written out by my program.
 
--- 
-Grant Edwards               grant.b.edwards        Yow! This PORCUPINE knows
-                                  at               his ZIPCODE ... And he has
-                              gmail.com            "VISA"!!
+The fact that two totally different drivers are involved makes me
+think maybe there is some other device driver that has a very
+long-running ISR?  Just a guess- I'm not too familiar with such
+things.  I read about a program called irqtune, which I thought about
+trying, but it looks like that is very old.  By the way, some of the
+other device drivers in use on this system are: r8169, ath9k,
+snd_hda_intel (loaded but not used) and udlfb (DisplayLink framebuffer
+running xorg).  The chipset is an 82801GBM and CPU is Intel Atom
+Diamondville.
 
+Nothing of interest from the kernel log.  Oh, and, I don't know if
+this means anything, but I also experienced dropped packets a few
+months back, when I briefly decided to try switching from Ubuntu to
+plain Debian.  The problem went away when I went back to Ubuntu.  Even
+when I booted it up with the Debian kernel, which I thought was very
+strange.  And now this problem is back.  Back then it was with
+different hardware, although also Intel Atom.
+
+Suggestions appreciated very much.
+Thanks,
+Kyle
