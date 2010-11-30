@@ -1,88 +1,78 @@
-From: Daniel Drake <dsd@laptop.org>
-Subject: 8250 Serial console unusable
-Date: Fri, 26 Nov 2010 17:27:14 +0000
-Message-ID: <AANLkTimGPcuksdcwq73rDT6V1Xpyjm2qBGVc5MTgej7t@mail.gmail.com>
+From: Stanislav Brabec <sbrabec@suse.cz>
+Subject: Re: 8250 Serial console unusable
+Date: Tue, 30 Nov 2010 15:46:14 +0100
+Message-ID: <1291128374.18297.75.camel@hammer.site>
+References: <AANLkTimGPcuksdcwq73rDT6V1Xpyjm2qBGVc5MTgej7t@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-gx0-f174.google.com ([209.85.161.174]:54281 "EHLO
-	mail-gx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755296Ab0KZR1P (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 26 Nov 2010 12:27:15 -0500
-Received: by gxk22 with SMTP id 22so1044363gxk.19
-        for <linux-serial@vger.kernel.org>; Fri, 26 Nov 2010 09:27:15 -0800 (PST)
+Received: from cantor.suse.de ([195.135.220.2]:56034 "EHLO mx1.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751987Ab0K3OqR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 30 Nov 2010 09:46:17 -0500
+In-Reply-To: <AANLkTimGPcuksdcwq73rDT6V1Xpyjm2qBGVc5MTgej7t@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: jason77.wang@gmail.com, alan@linux.intel.com, arnd@arndb.de, sbrabec@suse.cz
+To: Daniel Drake <dsd@laptop.org>
+Cc: linux-serial@vger.kernel.org, jason77.wang@gmail.com, alan@linux.intel.com, arnd@arndb.de
 
-Hi,
+Daniel Drake wrote:
+> It
+> looks like Stanislav works with machines with a similar requirement,
+> which I guess suffer the same problem in Linus master:
 
-I see there's been a bit of recent turmoil in the area of serial
-console, no_console_suspend, and suspend/resume:
+Zaurus machines. Well, the current vanilla does not work with
+no_console_suspend on Zaurus as well.
 
+Changing
+if (console_suspend_enabled || !uart_console(uport)) {
+in resume process just above the line
+/* Protected by port mutex for now */
+to
+if (1) {
+makes resume working with no_console_suspend again. So one of lines
+inside does something important.
 
-commit 891b9dd10764352926e1e107756aa229dfa2c210
-Author: Jason Wang <jason77.wang@gmail.com>
-    serial-core: restore termios settings when resume console ports
+I never sent this patch to the list, because I suspect, that would brea=
+k
+other machines in this simple stupid form.
 
-commit ca2e71aa8cfb0056ce720f3fd53f59f5fac4a3e1
-Author: Jason Wang <jason77.wang@gmail.com>
-    serial-core: skip call set_termios/console_start when no_console_suspend
+> What's the right way to go around solving this, that doesn't step on
+> anyones toes?
 
-commit 3f582b8c11014e4ce310d9839fb335164195333f
-Author: Arnd Bergmann <arnd@arndb.de>
-    serial: fix termios settings in open
+Try to find exact instruction that needs to be called. See the topic
+"[PATCH RESEND 0/2] two serial_core suspend/resume fixes".
 
-commit 4547be7809a3b775ce750ec7f8b5748954741523
-Author: Stanislav Brabec <sbrabec@suse.cz>
-    serial-core: resume serial hardware with no_console_suspend
+> From an ignorant high-level perspective, it doesn't sound unreasonabl=
+e
+> or complicated to simply unconditionally restore the correct port
+> configuration on resume. I'm having trouble understanding the argumen=
+t
+> against this perspective presented in commit 891b9dd10.
 
+You cannot do it. There may exist a hardware, where resume depends on
+suspend previously called. But it does not happen with
+no_console_suspend. You have to find a subset, that is able to set
+console to working state without suspend/resume disparity.
 
-OLPC runs with "console=ttyS0,115200 no_console_suspend" parameters in
-order to receive all kernel messages, including the suspend/resume
-ones. A userspace-level getty and terminal is also run on this
-console.
+Maybe adding non-stopping save/restore in addition to suspend/resume in
+all drivers may be cleaner solution.
 
-For the XO-1.5 laptop (x86, VIA-based) there was some breakage around
-2.6.35 but this is now working in linus master - thanks.
+--=20
+Best Regards / S pozdravem,
 
-The XO-1 has always been trickier here and OLPC have applied some
-downstream-only hacks once or twice in the past. But now I'd like to
-get things working properly upstream.
-As of linus master as of today on XO-1, the serial console after
-resume is unusable, printing garbage. It looks like when we do go into
-suspend, the power to the 8250 chip is cut, so it gets reset at
-hardware level. This suggests that we do indeed need to restore
-register state during resume, even though we never suspended it. It
-looks like Stanislav works with machines with a similar requirement,
-which I guess suffer the same problem in Linus master:
+Stanislav Brabec
+software developer
+---------------------------------------------------------------------
+SUSE LINUX, s. r. o.                          e-mail: sbrabec@suse.cz
+Lihovarsk=C3=A1 1060/12           tel: +420 284 028 966, +49 911 740538=
+747
+190 00 Praha 9                                  fax: +420 284 028 951
+Czech Republic                                    http://www.suse.cz/
 
-
-commit 4547be7809a3b775ce750ec7f8b5748954741523
-Author: Stanislav Brabec <sbrabec@suse.cz>
-    serial-core: resume serial hardware with no_console_suspend
-
-    Perform a tricky suspend/resume even with no_console_suspend.
-
-    With no_console_suspend, kernel skips serial port suspend/resume and the
-    serial hardware may remain in undefined state after resume. It actually
-    happens on devices that don't have BIOS that handle serial
-    initialization. It makes impossible to use serial console after resume.
-
-    Devices affected by this problem include:
-    Sharp Zaurus devices
-    Several PXA based ARM embedded boards
-
-
-What's the right way to go around solving this, that doesn't step on
-anyones toes?
-
->From an ignorant high-level perspective, it doesn't sound unreasonable
-or complicated to simply unconditionally restore the correct port
-configuration on resume. I'm having trouble understanding the argument
-against this perspective presented in commit 891b9dd10.
-
-Thanks,
-Daniel
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
