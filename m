@@ -1,42 +1,56 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: 2.6.25 upgraded to 2.6.36: serial app stops working
-Date: Tue, 30 Nov 2010 08:42:32 -0800
-Message-ID: <20101130164232.GB18017@kroah.com>
-References: <20101130162754.GI5654@belle.intranet.vanheusden.com>
+From: Pavel Machek <pavel@ucw.cz>
+Subject: Re: [PATCH] Documentation about RS485 serial communications
+Date: Tue, 30 Nov 2010 20:19:14 +0100
+Message-ID: <20101130191913.GA5295@ucw.cz>
+References: <i9kk4o$svc$1@dough.gmane.org>
+ <4CC418A9.6090602@evidence.eu.com>
+ <4CDA630F.4060903@atmel.com>
+ <20101110172842.GC12371@suse.de>
+ <4CDBC3EC.6020707@evidence.eu.com>
+ <20101116143016.GB6527@ucw.cz>
+ <AANLkTi=grehSnfWzCDtSXXmNb=-NAwbHHJ_P1XPyOuw8@mail.gmail.com>
+ <20101116172013.102e06a6@lxorguk.ukuu.org.uk>
+ <ibuh1v$uh6$1@dough.gmane.org>
+ <20101116200426.75085b68@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:42007 "EHLO coco.kroah.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750821Ab0K3QoE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 30 Nov 2010 11:44:04 -0500
+Received: from ksp.mff.cuni.cz ([195.113.26.206]:51356 "EHLO
+	atrey.karlin.mff.cuni.cz" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752480Ab0K3TTX (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 30 Nov 2010 14:19:23 -0500
 Content-Disposition: inline
-In-Reply-To: <20101130162754.GI5654@belle.intranet.vanheusden.com>
+In-Reply-To: <20101116200426.75085b68@lxorguk.ukuu.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: folkert <folkert@vanheusden.com>
-Cc: linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Grant Edwards <grant.b.edwards@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Tue, Nov 30, 2010 at 05:27:55PM +0100, folkert wrote:
-> Hi,
+On Tue 2010-11-16 20:04:26, Alan Cox wrote:
+> > Comtrol, Moxa, B&B, Sealevel, and others all sell PCI cards and
+> > Ethernet attached serial ports that have selectable interfaces
+> > (typically RS-232/422/485).  Comtrol and Moxa have had drivers in the
+> > kernel tree for ages, but they've always had to use custom ioctl calls
+> > for things like configuring 232/485/422 mode and half/full-duplex
+> > mode.
 > 
-> I upgraded my linux system to 2.6.36. Now suddenly my serial driver for
-> my MSF receiver stopped working. Two things I noticed: I need to open
-> the serial device (/dev/ttyS0, a regular uart, see below) with O_NDELAY
-> for open() to return at all. Then something funny happens: I read bytes
-> from the device (at 50bps) which runs fine for a while but then suddenly
-> I get a burst of '0x00' bytes - precisely at the point at which the MSF
-> radio device sends a timecode! So I think the device fiddles with one of
-> the pins of the serial port confusing the linux serial driver. This
-> worked fine upto and including 2.6.25 (maybe later too) but with 2.6.36
-> this fails.
-> Anyone an idea what might go wrong here? And how to fix it?
+> Ok so what is needed that isn't covered by the current termiox and
+> TIOCG/SRS485 ioctls ?
 
-Any chance you could use 'git bisect' on the kernel tree to see what
-caused the change?  Moving from .25 to .36 is a huge jump, many many
-years of development and loads of things have changed so we need some
-help to narrow the problem down.
+IIRC selection of 232/485/422 mode was missing from proposed api.
 
-thanks,
+> > Having a standard API for things like interface mode, half-full
+> > duplex, inter-character timeout, 9-bit mode, and so on would be life a
+> > lot easier for those of us who maintain Linux serial drivers...
+> 
+> 9bit mode is a real problem with the tty layer defined in terms of 8bit
+> streams but yes.
 
-greg k-h
+Well, if you wanted to have some fun... kontron card is able to
+timestamp incoming characters, and saves state of the control signals
+when character is received...
+								Pavel
+-- 
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
