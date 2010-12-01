@@ -1,177 +1,75 @@
-From: Jamie Iles <jamie@jamieiles.com>
-Subject: [PATCH 2/2] 8250: add a UPIO_DWAPB32 for 32 bit accesses
-Date: Wed,  1 Dec 2010 23:39:36 +0000
-Message-ID: <1291246776-805-2-git-send-email-jamie@jamieiles.com>
-References: <20101201192728.GB31841@kroah.com>
+From: Matthias Reichl <hias@horus.com>
+Subject: Re: OXuPCI952 and baud_base questions
+Date: Thu, 2 Dec 2010 00:52:41 +0100
+Message-ID: <20101201235241.GA4070@horus.com>
+References: <20101201164634.GA5773@horus.com> <20101201221604.GA22114@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wy0-f174.google.com ([74.125.82.174]:49353 "EHLO
-	mail-wy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756404Ab0LAXj4 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 1 Dec 2010 18:39:56 -0500
-Received: by mail-wy0-f174.google.com with SMTP id 28so7541797wyb.19
-        for <linux-serial@vger.kernel.org>; Wed, 01 Dec 2010 15:39:55 -0800 (PST)
-In-Reply-To: <20101201192728.GB31841@kroah.com>
+Received: from mx12.lb01.inode.at ([62.99.145.14]:35359 "EHLO mx.inode.at"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1752371Ab0LAXwq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 1 Dec 2010 18:52:46 -0500
+Content-Disposition: inline
+In-Reply-To: <20101201221604.GA22114@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Jamie Iles <jamie@jamieiles.com>, Greg KH <greg@kroah.com>
+To: Greg KH <greg@kroah.com>
+Cc: Linux Kernel <linux-serial@vger.kernel.org>
 
-Some platforms contain a Synopsys DesignWare APB UART that is attached
-to a 32-bit APB bus where sub-word accesses are not allowed. Add a new
-IO type (UPIO_DWAPB32) that performs 32 bit acccesses to the UART.
+Hi Greg!
 
-v2:
-	- don't test for 32 bit in the output fast path, provide a
-	  separate dwabp32_serial_out() function. Refactor
-	  dwabp_serial_out() so that we can reuse the LCR saving
-	  code.
-v3:
-	- rebased on top of "8250: use container_of() instead of
-	  casting"
+On Wed, Dec 01, 2010 at 02:16:04PM -0800, Greg KH wrote:
+> On Wed, Dec 01, 2010 at 05:46:34PM +0100, Matthias Reichl wrote:
+> > I've got a Lindy 51237 multi I/O card (2 16C950 URATs up to 921kbit
+> > plus one parallel port) with a Oxford OXuPCI952 chip (PCI vendor
+> > ID 0x1415, device ID 0x9505).
+> > 
+> > http://www.lindy-international.com/2-port-rs-232-serial-1-port-parallel-card-pci/51237.html
+> > http://www.plxtech.com/products/uart/oxupci952
+> > 
+> > Kernel 2.6.36.1 doesn't contain any device-specific configuration,
+> > the "guess code" detects both UARTs at BAR0 and BAR1,
+> > but with the wrong baudrate (default of 115200 instead of
+> > 921600 needed for this card).
+> > 
+> > The card doesn't report any specific (sub-) vendor/device IDs but
+> > the generic Oxford IDs. So adding an entry to the pci_device_id
+> > table with a pbn_b0_bt_2_921600 config might break some prior
+> > working setups (OXuPCI952 with baud_base=115200).
+> > 
+> > Do you have any policy how to cope with such situations?
+> 
+> Always set the baud rate to a valid one before using the tty port?
 
-Cc: Greg KH <greg@kroah.com>
-Signed-off-by: Jamie Iles <jamie@jamieiles.com>
----
- drivers/serial/8250.c        |   51 ++++++++++++++++++++++++++++++++----------
- drivers/serial/serial_core.c |    2 +
- include/linux/serial_core.h  |    1 +
- 3 files changed, 42 insertions(+), 12 deletions(-)
+Sorry, I meant baud_base (or base_baud in 8250_pci.c), not baudrate :-(
 
-diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index 0b4ce47..9839199 100644
---- a/drivers/serial/8250.c
-+++ b/drivers/serial/8250.c
-@@ -454,22 +454,40 @@ static void tsi_serial_out(struct uart_port *p, int offset, int value)
- 		writeb(value, p->membase + offset);
- }
- 
-+/* Save the LCR value so it can be re-written when a Busy Detect IRQ occurs. */
-+static inline void dwapb_save_out_value(struct uart_port *p, int offset,
-+					int value)
-+{
-+	struct uart_8250_port *up =
-+		container_of(p, struct uart_8250_port, port);
-+
-+	if (offset == UART_LCR)
-+		up->lcr = value;
-+}
-+
-+/* Read the IER to ensure any interrupt is cleared before returning from ISR. */
-+static inline void dwapb_check_clear_ier(struct uart_port *p, int offset)
-+{
-+	if (offset == UART_TX || offset == UART_IER)
-+		p->serial_in(p, UART_IER);
-+}
-+
- static void dwapb_serial_out(struct uart_port *p, int offset, int value)
- {
- 	int save_offset = offset;
- 	offset = map_8250_out_reg(p, offset) << p->regshift;
--	/* Save the LCR value so it can be re-written when a
--	 * Busy Detect interrupt occurs. */
--	if (save_offset == UART_LCR) {
--		struct uart_8250_port *up =
--			container_of(p, struct uart_8250_port, port);
--		up->lcr = value;
--	}
-+	dwapb_save_out_value(p, save_offset, value);
- 	writeb(value, p->membase + offset);
--	/* Read the IER to ensure any interrupt is cleared before
--	 * returning from ISR. */
--	if (save_offset == UART_TX || save_offset == UART_IER)
--		value = p->serial_in(p, UART_IER);
-+	dwapb_check_clear_ier(p, save_offset);
-+}
-+
-+static void dwapb32_serial_out(struct uart_port *p, int offset, int value)
-+{
-+	int save_offset = offset;
-+	offset = map_8250_out_reg(p, offset) << p->regshift;
-+	dwapb_save_out_value(p, save_offset, value);
-+	writel(value, p->membase + offset);
-+	dwapb_check_clear_ier(p, save_offset);
- }
- 
- static unsigned int io_serial_in(struct uart_port *p, int offset)
-@@ -520,6 +538,11 @@ static void set_io_from_upio(struct uart_port *p)
- 		p->serial_out = dwapb_serial_out;
- 		break;
- 
-+	case UPIO_DWAPB32:
-+		p->serial_in = mem32_serial_in;
-+		p->serial_out = dwapb32_serial_out;
-+		break;
-+
- 	default:
- 		p->serial_in = io_serial_in;
- 		p->serial_out = io_serial_out;
-@@ -538,6 +561,7 @@ serial_out_sync(struct uart_8250_port *up, int offset, int value)
- 	case UPIO_MEM32:
- 	case UPIO_AU:
- 	case UPIO_DWAPB:
-+	case UPIO_DWAPB32:
- 		p->serial_out(p, offset, value);
- 		p->serial_in(p, UART_LCR);	/* safe, no side-effects */
- 		break;
-@@ -1587,7 +1611,8 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
- 			handled = 1;
- 
- 			end = NULL;
--		} else if (up->port.iotype == UPIO_DWAPB &&
-+		} else if ((up->port.iotype == UPIO_DWAPB ||
-+			    up->port.iotype == UPIO_DWAPB32) &&
- 			  (iir & UART_IIR_BUSY) == UART_IIR_BUSY) {
- 			/* The DesignWare APB UART has an Busy Detect (0x07)
- 			 * interrupt meaning an LCR write attempt occured while the
-@@ -2492,6 +2517,7 @@ static int serial8250_request_std_resource(struct uart_8250_port *up)
- 	case UPIO_MEM32:
- 	case UPIO_MEM:
- 	case UPIO_DWAPB:
-+	case UPIO_DWAPB32:
- 		if (!up->port.mapbase)
- 			break;
- 
-@@ -2529,6 +2555,7 @@ static void serial8250_release_std_resource(struct uart_8250_port *up)
- 	case UPIO_MEM32:
- 	case UPIO_MEM:
- 	case UPIO_DWAPB:
-+	case UPIO_DWAPB32:
- 		if (!up->port.mapbase)
- 			break;
- 
-diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
-index 9ffa5be..143103b 100644
---- a/drivers/serial/serial_core.c
-+++ b/drivers/serial/serial_core.c
-@@ -2134,6 +2134,7 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
- 	case UPIO_AU:
- 	case UPIO_TSI:
- 	case UPIO_DWAPB:
-+	case UPIO_DWAPB32:
- 		snprintf(address, sizeof(address),
- 			 "MMIO 0x%llx", (unsigned long long)port->mapbase);
- 		break;
-@@ -2554,6 +2555,7 @@ int uart_match_port(struct uart_port *port1, struct uart_port *port2)
- 	case UPIO_AU:
- 	case UPIO_TSI:
- 	case UPIO_DWAPB:
-+	case UPIO_DWAPB32:
- 		return (port1->mapbase == port2->mapbase);
- 	}
- 	return 0;
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 212eb4c..8681e7c 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -311,6 +311,7 @@ struct uart_port {
- #define UPIO_TSI		(5)			/* Tsi108/109 type IO */
- #define UPIO_DWAPB		(6)			/* DesignWare APB UART */
- #define UPIO_RM9000		(7)			/* RM9000 type IO */
-+#define UPIO_DWAPB32		(8)			/* DesignWare APB UART (32 bit accesses) */
- 
- 	unsigned int		read_status_mask;	/* driver specific */
- 	unsigned int		ignore_status_mask;	/* driver specific */
--- 
-1.7.2.3
+Since the baud_base is differing (115200 instead of 921600)
+setting a baudrate of X results in an actual baudrate of X*8 for
+this card.
 
+It's no problem for me to do a "setserial ... baud_base=921600"
+or pass a module/kernel parameter to circumvent the problem,
+but it sure would be nicer if the kernel would have set
+the baud_base correctly.
+
+The problem I'm seeing here is that this card is using a stock
+OXuPCI952, which can be equipped with any oscillator, and doesn't
+report any vendor-specific PCI IDs that lets it be distinguished
+from other stock OXuPCI952 cards - otherwise I've just sent
+a "[PATCH] Add support for Lindy 51237" to set baud_base=921600
+for this specific card.
+
+Personally, all 16C950 (compatible) cards I've bought so far
+were capable of a max. 921kbit/sec (and thus had a baud_base of 921600).
+So the current default of 115200 doesn't quite match my setup.
+If I only need a card capable of 115200 bit/sec I usually buy
+a standard 16550 card (not a 16C950).
+
+So, my question is: would you include a patch in the kernel
+to change the default baud_base from 115200 to 921600 for
+the OXuPCI952 chip (1415:9505)?
+
+so long,
+
+Hias
