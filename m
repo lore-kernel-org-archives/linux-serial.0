@@ -1,88 +1,58 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH] 8250: add a UPIO_DWAPB32 for 32 bit accesses (v2)
-Date: Wed, 1 Dec 2010 11:27:28 -0800
-Message-ID: <20101201192728.GB31841@kroah.com>
-References: <1290436007-683-1-git-send-email-jamie@jamieiles.com>
- <20101201011758.GA21009@kroah.com>
- <20101201081044.GM4398@pulham.picochip.com>
- <20101201170125.GA30594@kroah.com>
- <20101201171700.GF2898@pulham.picochip.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:46771 "EHLO coco.kroah.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755308Ab0LAT3z (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 1 Dec 2010 14:29:55 -0500
-Content-Disposition: inline
-In-Reply-To: <20101201171700.GF2898@pulham.picochip.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: dirk.brandewie@gmail.com
+Subject: [PATCH 0/4] V2 Add ability to link device blob(s) into vmlinux
+Date: Wed,  1 Dec 2010 11:41:31 -0800
+Message-ID: <cover.1291231792.git.dirk.brandewie@gmail.com>
+References: <cover.1289943240.git.dirk.brandewie@gmail.com>
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <cover.1289943240.git.dirk.brandewie@gmail.com>
+Sender: linux-arch-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: devicetree-discuss@lists.ozlabs.org, sodaville@linutronix.de, linuxppc-dev@lists.ozlabs.org, microblaze-uclinux@itee.uq.edu.au, linux-arch@vger.kernel.org, mmarek@suse.cz, Dirk Brandewie <dirk.brandewie@gmail.com>
 List-Id: linux-serial@vger.kernel.org
-To: Jamie Iles <jamie@jamieiles.com>
-Cc: linux-serial@vger.kernel.org
 
-On Wed, Dec 01, 2010 at 05:17:00PM +0000, Jamie Iles wrote:
-> On Wed, Dec 01, 2010 at 09:01:25AM -0800, Greg KH wrote:
-> > On Wed, Dec 01, 2010 at 08:10:44AM +0000, Jamie Iles wrote:
-> > > --- a/drivers/serial/8250.c
-> > > +++ b/drivers/serial/8250.c
-> > > @@ -454,21 +454,40 @@ static void tsi_serial_out(struct uart_port *p, int offset, int value)
-> > >  		writeb(value, p->membase + offset);
-> > >  }
-> > >  
-> > > +/* Save the LCR value so it can be re-written when a Busy Detect IRQ occurs. */
-> > > +static inline void dwapb_save_out_value(struct uart_port *p, int offset,
-> > > +					int value)
-> > > +{
-> > > +	struct uart_8250_port *up =
-> > > +		container_of(p, struct uart_8250_port, port);
-> > 
-> > container_of, when the original code did a simple cast:
-> > 
-> > >  static void dwapb_serial_out(struct uart_port *p, int offset, int value)
-> > >  {
-> > >  	int save_offset = offset;
-> > >  	offset = map_8250_out_reg(p, offset) << p->regshift;
-> > > -	/* Save the LCR value so it can be re-written when a
-> > > -	 * Busy Detect interrupt occurs. */
-> > > -	if (save_offset == UART_LCR) {
-> > > -		struct uart_8250_port *up = (struct uart_8250_port *)p;
-> > > -		up->lcr = value;
-> > > -	}
-> > > +	dwapb_save_out_value(p, save_offset, value);
-> > 
-> > Because of that, are you sure this is correct now?  You might just be
-> > getting lucky due to the location of the pointer within the structure,
-> > but then the old code was wrong.
-> > 
-> > Either way, I don't feel comfortable with this, do you?
-> struct uart_8250_port is defined in drivers/serial/8250.c as:
-> 
-> struct uart_8250_port {
->         struct uart_port        port;
->         struct timer_list       timer;          /* "no irq" timer */
-> 	...
-> };
-> 
+From: Dirk Brandewie <dirk.brandewie@gmail.com>
 
-Ah, yeah, you are right.
+This patch set adds the ability to link device tree blobs into
+vmlinux. 
 
-> So yes, I'm happy with the change but I could be missing something... I'm also 
-> happy to convert it back to a cast but container_of() feels a bit safer.  
+Patch 1 implements the changes to include/asm-generic/vmlinux.lds.h and
+adds a generic rule for generating DTB objects to be linked vmlinux.
 
-I totally agree, it is safer and makes more sense.
+Patch 2 implements linking a DTB into an x86 image.
 
-> I've just tried the patch below (on top of my previous patch) to convert all 
-> of the explicit casts (apart from the timer callbacks that take an unsigned 
-> long) to container_of() and that works fine on my board. Is this worth 
-> applying or would you rather I just keep the original cast?
+Patch 3-4 move {powerpc,microblaze}/boot/Makefile to use the dtc rule
+in patch 1.
 
-Yes, it's worth applying.
+This patch set has been tested on x86.
 
-So, care to send me 2 patches that I can apply with the proper changelog
-comments and signed-off-by: for this?  I don't care which order you do
-things in, which ever is easier for you.
+Powerpc and Microblaze have been compile tested with and without patch
+3 and 4 applied.
 
-thanks,
+Changes from V1:
 
-greg k-h
+Documentation added for dtc command in Makefile.lib to
+Documentation/kbuild/makefiles.txt
+Separate DTB_ALIGNMENT define removed.
+FORCE removed from dtc rule.
+Removed hardcoded path to dts files from dtc command.  
+Moved %.dtb: %.dts rule to arch specific makefiles. 
+ 
+Patch for adding kernel command line option to pass in dtb_compat
+string dropped from this set will be submitted seperately.
+
+Dirk Brandewie (4):
+  of: Add support for linking device tree blobs into vmlinux
+  x86/of: Add building device tree blob(s) into image.
+  of/powerpc: Use generic rule to build dtb's
+  microblaze/of: Use generic rule to build dtb's
+
+ Documentation/kbuild/makefiles.txt |   15 +++++++++++++++
+ arch/microblaze/boot/Makefile      |   10 ++--------
+ arch/powerpc/boot/Makefile         |    8 +++-----
+ arch/x86/platform/ce4100/Makefile  |   10 ++++++++++
+ include/asm-generic/vmlinux.lds.h  |   15 ++++++++++++---
+ scripts/Makefile.lib               |   21 ++++++++++++++++++++-
+ 6 files changed, 62 insertions(+), 17 deletions(-)
+
+-- 
+1.7.2.3
