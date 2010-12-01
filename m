@@ -1,57 +1,43 @@
-From: dirk.brandewie@gmail.com
-Subject: [PATCH 4/4] microblaze/of: Use generic rule to build dtb's
-Date: Wed,  1 Dec 2010 11:41:35 -0800
-Message-ID: <166d47e864aa8a41b2aa0f9ebc42d9b60afba21f.1291231792.git.dirk.brandewie@gmail.com>
-References: <cover.1289943240.git.dirk.brandewie@gmail.com>
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <cover.1289943240.git.dirk.brandewie@gmail.com>
-In-Reply-To: <cover.1291231792.git.dirk.brandewie@gmail.com>
-References: <cover.1291231792.git.dirk.brandewie@gmail.com>
-Sender: linux-arch-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: devicetree-discuss@lists.ozlabs.org, sodaville@linutronix.de, linuxppc-dev@lists.ozlabs.org, microblaze-uclinux@itee.uq.edu.au, linux-arch@vger.kernel.org, mmarek@suse.cz, Dirk Brandewie <dirk.brandewie@gmail.com>
+From: Greg KH <greg@kroah.com>
+Subject: Re: OXuPCI952 and baud_base questions
+Date: Wed, 1 Dec 2010 14:16:04 -0800
+Message-ID: <20101201221604.GA22114@kroah.com>
+References: <20101201164634.GA5773@horus.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from kroah.org ([198.145.64.141]:46962 "EHLO coco.kroah.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756190Ab0LAWTp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 1 Dec 2010 17:19:45 -0500
+Content-Disposition: inline
+In-Reply-To: <20101201164634.GA5773@horus.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Matthias Reichl <hias@horus.com>, Linux Kernel <linux-serial@vger.kernel.org>
 
-From: Dirk Brandewie <dirk.brandewie@gmail.com>
+On Wed, Dec 01, 2010 at 05:46:34PM +0100, Matthias Reichl wrote:
+> I've got a Lindy 51237 multi I/O card (2 16C950 URATs up to 921kbit
+> plus one parallel port) with a Oxford OXuPCI952 chip (PCI vendor
+> ID 0x1415, device ID 0x9505).
+> 
+> http://www.lindy-international.com/2-port-rs-232-serial-1-port-parallel-card-pci/51237.html
+> http://www.plxtech.com/products/uart/oxupci952
+> 
+> Kernel 2.6.36.1 doesn't contain any device-specific configuration,
+> the "guess code" detects both UARTs at BAR0 and BAR1,
+> but with the wrong baudrate (default of 115200 instead of
+> 921600 needed for this card).
+> 
+> The card doesn't report any specific (sub-) vendor/device IDs but
+> the generic Oxford IDs. So adding an entry to the pci_device_id
+> table with a pbn_b0_bt_2_921600 config might break some prior
+> working setups (OXuPCI952 with baud_base=115200).
+> 
+> Do you have any policy how to cope with such situations?
 
-Modify arch/powerpc/boot/Makefile to use dtc command in
-scripts/Makefile.lib
+Always set the baud rate to a valid one before using the tty port?
 
-Signed-off-by: Dirk Brandewie <dirk.brandewie@gmail.com>
----
- arch/microblaze/boot/Makefile |   10 ++--------
- 1 files changed, 2 insertions(+), 8 deletions(-)
+thanks,
 
-diff --git a/arch/microblaze/boot/Makefile b/arch/microblaze/boot/Makefile
-index be01d78..52430e5 100644
---- a/arch/microblaze/boot/Makefile
-+++ b/arch/microblaze/boot/Makefile
-@@ -10,9 +10,6 @@ targets := linux.bin linux.bin.gz simpleImage.%
- 
- OBJCOPYFLAGS := -O binary
- 
--# Where the DTS files live
--dtstree         := $(srctree)/$(src)/dts
--
- # Ensure system.dtb exists
- $(obj)/linked_dtb.o: $(obj)/system.dtb
- 
-@@ -51,14 +48,11 @@ $(obj)/simpleImage.%: vmlinux FORCE
- 	$(call if_changed,strip)
- 	@echo 'Kernel: $@ is ready' ' (#'`cat .version`')'
- 
--# Rule to build device tree blobs
--DTC = $(objtree)/scripts/dtc/dtc
- 
- # Rule to build device tree blobs
--quiet_cmd_dtc = DTC     $@
--	cmd_dtc = $(DTC) -O dtb -o $(obj)/$*.dtb -b 0 -p 1024 $(dtstree)/$*.dts
-+DTC_FLAGS := -p 1024
- 
--$(obj)/%.dtb: $(dtstree)/%.dts FORCE
-+$(obj)/%.dtb: $(src)/dts/%.dts FORCE
- 	$(call if_changed,dtc)
- 
- clean-files += *.dtb simpleImage.*.unstrip linux.bin.ub
--- 
-1.7.2.3
+greg k-h
