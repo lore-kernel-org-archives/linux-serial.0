@@ -1,237 +1,177 @@
 From: Jamie Iles <jamie@jamieiles.com>
-Subject: [PATCH 1/2] 8250: use container_of() instead of casting
-Date: Wed,  1 Dec 2010 23:39:35 +0000
-Message-ID: <1291246776-805-1-git-send-email-jamie@jamieiles.com>
+Subject: [PATCH 2/2] 8250: add a UPIO_DWAPB32 for 32 bit accesses
+Date: Wed,  1 Dec 2010 23:39:36 +0000
+Message-ID: <1291246776-805-2-git-send-email-jamie@jamieiles.com>
 References: <20101201192728.GB31841@kroah.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
 Received: from mail-wy0-f174.google.com ([74.125.82.174]:49353 "EHLO
 	mail-wy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756062Ab0LAXjs (ORCPT
+	with ESMTP id S1756404Ab0LAXj4 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 1 Dec 2010 18:39:48 -0500
-Received: by wyb28 with SMTP id 28so7541797wyb.19
-        for <linux-serial@vger.kernel.org>; Wed, 01 Dec 2010 15:39:46 -0800 (PST)
+	Wed, 1 Dec 2010 18:39:56 -0500
+Received: by mail-wy0-f174.google.com with SMTP id 28so7541797wyb.19
+        for <linux-serial@vger.kernel.org>; Wed, 01 Dec 2010 15:39:55 -0800 (PST)
 In-Reply-To: <20101201192728.GB31841@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: Jamie Iles <jamie@jamieiles.com>, Greg KH <greg@kroah.com>
 
-The 8250 driver structure uart_8250_port took advantage of the fact
-that the struct uart_port was the first member of its structure and
-used an explicit cast to convert to the derived class. Replace the
-explicit casts with container_of() for safety and clarity.
+Some platforms contain a Synopsys DesignWare APB UART that is attached
+to a 32-bit APB bus where sub-word accesses are not allowed. Add a new
+IO type (UPIO_DWAPB32) that performs 32 bit acccesses to the UART.
+
+v2:
+	- don't test for 32 bit in the output fast path, provide a
+	  separate dwabp32_serial_out() function. Refactor
+	  dwabp_serial_out() so that we can reuse the LCR saving
+	  code.
+v3:
+	- rebased on top of "8250: use container_of() instead of
+	  casting"
 
 Cc: Greg KH <greg@kroah.com>
 Signed-off-by: Jamie Iles <jamie@jamieiles.com>
 ---
- drivers/serial/8250.c |   60 ++++++++++++++++++++++++++++++++----------------
- 1 files changed, 40 insertions(+), 20 deletions(-)
+ drivers/serial/8250.c        |   51 ++++++++++++++++++++++++++++++++----------
+ drivers/serial/serial_core.c |    2 +
+ include/linux/serial_core.h  |    1 +
+ 3 files changed, 42 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
-index 4d8e14b..0b4ce47 100644
+index 0b4ce47..9839199 100644
 --- a/drivers/serial/8250.c
 +++ b/drivers/serial/8250.c
-@@ -461,7 +461,8 @@ static void dwapb_serial_out(struct uart_port *p, int offset, int value)
- 	/* Save the LCR value so it can be re-written when a
- 	 * Busy Detect interrupt occurs. */
- 	if (save_offset == UART_LCR) {
--		struct uart_8250_port *up = (struct uart_8250_port *)p;
-+		struct uart_8250_port *up =
-+			container_of(p, struct uart_8250_port, port);
- 		up->lcr = value;
- 	}
- 	writeb(value, p->membase + offset);
-@@ -485,7 +486,8 @@ static void io_serial_out(struct uart_port *p, int offset, int value)
+@@ -454,22 +454,40 @@ static void tsi_serial_out(struct uart_port *p, int offset, int value)
+ 		writeb(value, p->membase + offset);
+ }
  
- static void set_io_from_upio(struct uart_port *p)
- {
--	struct uart_8250_port *up = (struct uart_8250_port *)p;
++/* Save the LCR value so it can be re-written when a Busy Detect IRQ occurs. */
++static inline void dwapb_save_out_value(struct uart_port *p, int offset,
++					int value)
++{
 +	struct uart_8250_port *up =
 +		container_of(p, struct uart_8250_port, port);
- 	switch (p->iotype) {
- 	case UPIO_HUB6:
- 		p->serial_in = hub6_serial_in;
-@@ -1319,7 +1321,8 @@ static inline void __stop_tx(struct uart_8250_port *p)
- 
- static void serial8250_stop_tx(struct uart_port *port)
++
++	if (offset == UART_LCR)
++		up->lcr = value;
++}
++
++/* Read the IER to ensure any interrupt is cleared before returning from ISR. */
++static inline void dwapb_check_clear_ier(struct uart_port *p, int offset)
++{
++	if (offset == UART_TX || offset == UART_IER)
++		p->serial_in(p, UART_IER);
++}
++
+ static void dwapb_serial_out(struct uart_port *p, int offset, int value)
  {
--	struct uart_8250_port *up = (struct uart_8250_port *)port;
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
- 
- 	__stop_tx(up);
- 
-@@ -1336,7 +1339,8 @@ static void transmit_chars(struct uart_8250_port *up);
- 
- static void serial8250_start_tx(struct uart_port *port)
- {
--	struct uart_8250_port *up = (struct uart_8250_port *)port;
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
- 
- 	if (!(up->ier & UART_IER_THRI)) {
- 		up->ier |= UART_IER_THRI;
-@@ -1364,7 +1368,8 @@ static void serial8250_start_tx(struct uart_port *port)
- 
- static void serial8250_stop_rx(struct uart_port *port)
- {
--	struct uart_8250_port *up = (struct uart_8250_port *)port;
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
- 
- 	up->ier &= ~UART_IER_RLSI;
- 	up->port.read_status_mask &= ~UART_LSR_DR;
-@@ -1373,7 +1378,8 @@ static void serial8250_stop_rx(struct uart_port *port)
- 
- static void serial8250_enable_ms(struct uart_port *port)
- {
--	struct uart_8250_port *up = (struct uart_8250_port *)port;
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
- 
- 	/* no MSR capabilities */
- 	if (up->bugs & UART_BUG_NOMSR)
-@@ -1781,7 +1787,8 @@ static void serial8250_backup_timeout(unsigned long data)
- 
- static unsigned int serial8250_tx_empty(struct uart_port *port)
- {
--	struct uart_8250_port *up = (struct uart_8250_port *)port;
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
- 	unsigned long flags;
- 	unsigned int lsr;
- 
-@@ -1795,7 +1802,8 @@ static unsigned int serial8250_tx_empty(struct uart_port *port)
- 
- static unsigned int serial8250_get_mctrl(struct uart_port *port)
- {
--	struct uart_8250_port *up = (struct uart_8250_port *)port;
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
- 	unsigned int status;
- 	unsigned int ret;
- 
-@@ -1815,7 +1823,8 @@ static unsigned int serial8250_get_mctrl(struct uart_port *port)
- 
- static void serial8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
- {
--	struct uart_8250_port *up = (struct uart_8250_port *)port;
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
- 	unsigned char mcr = 0;
- 
- 	if (mctrl & TIOCM_RTS)
-@@ -1836,7 +1845,8 @@ static void serial8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 
- static void serial8250_break_ctl(struct uart_port *port, int break_state)
- {
--	struct uart_8250_port *up = (struct uart_8250_port *)port;
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&up->port.lock, flags);
-@@ -1890,7 +1900,8 @@ static void wait_for_xmitr(struct uart_8250_port *up, int bits)
- 
- static int serial8250_get_poll_char(struct uart_port *port)
- {
--	struct uart_8250_port *up = (struct uart_8250_port *)port;
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
- 	unsigned char lsr = serial_inp(up, UART_LSR);
- 
- 	if (!(lsr & UART_LSR_DR))
-@@ -1904,7 +1915,8 @@ static void serial8250_put_poll_char(struct uart_port *port,
- 			 unsigned char c)
- {
- 	unsigned int ier;
--	struct uart_8250_port *up = (struct uart_8250_port *)port;
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
- 
- 	/*
- 	 *	First save the IER then disable the interrupts
-@@ -1938,7 +1950,8 @@ static void serial8250_put_poll_char(struct uart_port *port,
- 
- static int serial8250_startup(struct uart_port *port)
- {
--	struct uart_8250_port *up = (struct uart_8250_port *)port;
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
- 	unsigned long flags;
- 	unsigned char lsr, iir;
- 	int retval;
-@@ -2166,7 +2179,8 @@ dont_test_tx_en:
- 
- static void serial8250_shutdown(struct uart_port *port)
- {
--	struct uart_8250_port *up = (struct uart_8250_port *)port;
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
- 	unsigned long flags;
- 
- 	/*
-@@ -2235,7 +2249,8 @@ void
- serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 		          struct ktermios *old)
- {
--	struct uart_8250_port *up = (struct uart_8250_port *)port;
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
- 	unsigned char cval, fcr = 0;
- 	unsigned long flags;
- 	unsigned int baud, quot;
-@@ -2435,7 +2450,8 @@ serial8250_set_ldisc(struct uart_port *port, int new)
- void serial8250_do_pm(struct uart_port *port, unsigned int state,
- 		      unsigned int oldstate)
- {
--	struct uart_8250_port *p = (struct uart_8250_port *)port;
-+	struct uart_8250_port *p =
-+		container_of(port, struct uart_8250_port, port);
- 
- 	serial8250_set_sleep(p, state != 0);
+ 	int save_offset = offset;
+ 	offset = map_8250_out_reg(p, offset) << p->regshift;
+-	/* Save the LCR value so it can be re-written when a
+-	 * Busy Detect interrupt occurs. */
+-	if (save_offset == UART_LCR) {
+-		struct uart_8250_port *up =
+-			container_of(p, struct uart_8250_port, port);
+-		up->lcr = value;
+-	}
++	dwapb_save_out_value(p, save_offset, value);
+ 	writeb(value, p->membase + offset);
+-	/* Read the IER to ensure any interrupt is cleared before
+-	 * returning from ISR. */
+-	if (save_offset == UART_TX || save_offset == UART_IER)
+-		value = p->serial_in(p, UART_IER);
++	dwapb_check_clear_ier(p, save_offset);
++}
++
++static void dwapb32_serial_out(struct uart_port *p, int offset, int value)
++{
++	int save_offset = offset;
++	offset = map_8250_out_reg(p, offset) << p->regshift;
++	dwapb_save_out_value(p, save_offset, value);
++	writel(value, p->membase + offset);
++	dwapb_check_clear_ier(p, save_offset);
  }
-@@ -2566,7 +2582,8 @@ static void serial8250_release_rsa_resource(struct uart_8250_port *up)
  
- static void serial8250_release_port(struct uart_port *port)
- {
--	struct uart_8250_port *up = (struct uart_8250_port *)port;
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
+ static unsigned int io_serial_in(struct uart_port *p, int offset)
+@@ -520,6 +538,11 @@ static void set_io_from_upio(struct uart_port *p)
+ 		p->serial_out = dwapb_serial_out;
+ 		break;
  
- 	serial8250_release_std_resource(up);
- 	if (up->port.type == PORT_RSA)
-@@ -2575,7 +2592,8 @@ static void serial8250_release_port(struct uart_port *port)
++	case UPIO_DWAPB32:
++		p->serial_in = mem32_serial_in;
++		p->serial_out = dwapb32_serial_out;
++		break;
++
+ 	default:
+ 		p->serial_in = io_serial_in;
+ 		p->serial_out = io_serial_out;
+@@ -538,6 +561,7 @@ serial_out_sync(struct uart_8250_port *up, int offset, int value)
+ 	case UPIO_MEM32:
+ 	case UPIO_AU:
+ 	case UPIO_DWAPB:
++	case UPIO_DWAPB32:
+ 		p->serial_out(p, offset, value);
+ 		p->serial_in(p, UART_LCR);	/* safe, no side-effects */
+ 		break;
+@@ -1587,7 +1611,8 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
+ 			handled = 1;
  
- static int serial8250_request_port(struct uart_port *port)
- {
--	struct uart_8250_port *up = (struct uart_8250_port *)port;
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
- 	int ret = 0;
+ 			end = NULL;
+-		} else if (up->port.iotype == UPIO_DWAPB &&
++		} else if ((up->port.iotype == UPIO_DWAPB ||
++			    up->port.iotype == UPIO_DWAPB32) &&
+ 			  (iir & UART_IIR_BUSY) == UART_IIR_BUSY) {
+ 			/* The DesignWare APB UART has an Busy Detect (0x07)
+ 			 * interrupt meaning an LCR write attempt occured while the
+@@ -2492,6 +2517,7 @@ static int serial8250_request_std_resource(struct uart_8250_port *up)
+ 	case UPIO_MEM32:
+ 	case UPIO_MEM:
+ 	case UPIO_DWAPB:
++	case UPIO_DWAPB32:
+ 		if (!up->port.mapbase)
+ 			break;
  
- 	ret = serial8250_request_std_resource(up);
-@@ -2590,7 +2608,8 @@ static int serial8250_request_port(struct uart_port *port)
+@@ -2529,6 +2555,7 @@ static void serial8250_release_std_resource(struct uart_8250_port *up)
+ 	case UPIO_MEM32:
+ 	case UPIO_MEM:
+ 	case UPIO_DWAPB:
++	case UPIO_DWAPB32:
+ 		if (!up->port.mapbase)
+ 			break;
  
- static void serial8250_config_port(struct uart_port *port, int flags)
- {
--	struct uart_8250_port *up = (struct uart_8250_port *)port;
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
- 	int probeflags = PROBE_ANY;
- 	int ret;
+diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
+index 9ffa5be..143103b 100644
+--- a/drivers/serial/serial_core.c
++++ b/drivers/serial/serial_core.c
+@@ -2134,6 +2134,7 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
+ 	case UPIO_AU:
+ 	case UPIO_TSI:
+ 	case UPIO_DWAPB:
++	case UPIO_DWAPB32:
+ 		snprintf(address, sizeof(address),
+ 			 "MMIO 0x%llx", (unsigned long long)port->mapbase);
+ 		break;
+@@ -2554,6 +2555,7 @@ int uart_match_port(struct uart_port *port1, struct uart_port *port2)
+ 	case UPIO_AU:
+ 	case UPIO_TSI:
+ 	case UPIO_DWAPB:
++	case UPIO_DWAPB32:
+ 		return (port1->mapbase == port2->mapbase);
+ 	}
+ 	return 0;
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 212eb4c..8681e7c 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -311,6 +311,7 @@ struct uart_port {
+ #define UPIO_TSI		(5)			/* Tsi108/109 type IO */
+ #define UPIO_DWAPB		(6)			/* DesignWare APB UART */
+ #define UPIO_RM9000		(7)			/* RM9000 type IO */
++#define UPIO_DWAPB32		(8)			/* DesignWare APB UART (32 bit accesses) */
  
-@@ -2771,7 +2790,8 @@ serial8250_register_ports(struct uart_driver *drv, struct device *dev)
- 
- static void serial8250_console_putchar(struct uart_port *port, int ch)
- {
--	struct uart_8250_port *up = (struct uart_8250_port *)port;
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
- 
- 	wait_for_xmitr(up, UART_LSR_THRE);
- 	serial_out(up, UART_TX, ch);
+ 	unsigned int		read_status_mask;	/* driver specific */
+ 	unsigned int		ignore_status_mask;	/* driver specific */
 -- 
 1.7.2.3
 
