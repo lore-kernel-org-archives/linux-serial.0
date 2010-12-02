@@ -1,84 +1,100 @@
-From: Matthias Reichl <hias@horus.com>
-Subject: Re: OXuPCI952 and baud_base questions
-Date: Thu, 2 Dec 2010 01:25:55 +0100
-Message-ID: <20101202002555.GA4613@horus.com>
-References: <20101201164634.GA5773@horus.com> <20101201221604.GA22114@kroah.com> <20101201235241.GA4070@horus.com> <20101201235722.GA26896@kroah.com>
+From: "Eric Malkowski" <eric@bvwireless.net>
+Subject: Sysbas 16C1052 PCI single chip UART
+Date: Wed, 1 Dec 2010 23:19:55 -0500 (EST)
+Message-ID: <57523.76.118.81.154.1291263595.squirrel@slice.bvwireless.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx15.lb01.inode.at ([62.99.145.17]:32557 "EHLO mx.inode.at"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1752373Ab0LBA0B (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 1 Dec 2010 19:26:01 -0500
-Content-Disposition: inline
-In-Reply-To: <20101201235722.GA26896@kroah.com>
+Received: from slice.bvwireless.net ([173.45.243.123]:54792 "EHLO
+	slice.bvwireless.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756854Ab0LBEZk (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 1 Dec 2010 23:25:40 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <greg@kroah.com>
-Cc: Linux Kernel <linux-serial@vger.kernel.org>
+To: linux-serial@vger.kernel.org
+Cc: eric@bvwireless.net
 
-On Wed, Dec 01, 2010 at 03:57:22PM -0800, Greg KH wrote:
-> On Thu, Dec 02, 2010 at 12:52:41AM +0100, Matthias Reichl wrote:
-> > Hi Greg!
-> > 
-> > On Wed, Dec 01, 2010 at 02:16:04PM -0800, Greg KH wrote:
-> > > On Wed, Dec 01, 2010 at 05:46:34PM +0100, Matthias Reichl wrote:
-> > > > I've got a Lindy 51237 multi I/O card (2 16C950 URATs up to 921kbit
-> > > > plus one parallel port) with a Oxford OXuPCI952 chip (PCI vendor
-> > > > ID 0x1415, device ID 0x9505).
-> > > > 
-> > > > http://www.lindy-international.com/2-port-rs-232-serial-1-port-parallel-card-pci/51237.html
-> > > > http://www.plxtech.com/products/uart/oxupci952
-> > > > 
-> > > > Kernel 2.6.36.1 doesn't contain any device-specific configuration,
-> > > > the "guess code" detects both UARTs at BAR0 and BAR1,
-> > > > but with the wrong baudrate (default of 115200 instead of
-> > > > 921600 needed for this card).
-> > > > 
-> > > > The card doesn't report any specific (sub-) vendor/device IDs but
-> > > > the generic Oxford IDs. So adding an entry to the pci_device_id
-> > > > table with a pbn_b0_bt_2_921600 config might break some prior
-> > > > working setups (OXuPCI952 with baud_base=115200).
-> > > > 
-> > > > Do you have any policy how to cope with such situations?
-> > > 
-> > > Always set the baud rate to a valid one before using the tty port?
-> > 
-> > Sorry, I meant baud_base (or base_baud in 8250_pci.c), not baudrate :-(
-> > 
-> > Since the baud_base is differing (115200 instead of 921600)
-> > setting a baudrate of X results in an actual baudrate of X*8 for
-> > this card.
-> > 
-> > It's no problem for me to do a "setserial ... baud_base=921600"
-> > or pass a module/kernel parameter to circumvent the problem,
-> > but it sure would be nicer if the kernel would have set
-> > the baud_base correctly.
-> > 
-> > The problem I'm seeing here is that this card is using a stock
-> > OXuPCI952, which can be equipped with any oscillator, and doesn't
-> > report any vendor-specific PCI IDs that lets it be distinguished
-> > from other stock OXuPCI952 cards - otherwise I've just sent
-> > a "[PATCH] Add support for Lindy 51237" to set baud_base=921600
-> > for this specific card.
-> > 
-> > Personally, all 16C950 (compatible) cards I've bought so far
-> > were capable of a max. 921kbit/sec (and thus had a baud_base of 921600).
-> > So the current default of 115200 doesn't quite match my setup.
-> > If I only need a card capable of 115200 bit/sec I usually buy
-> > a standard 16550 card (not a 16C950).
-> > 
-> > So, my question is: would you include a patch in the kernel
-> > to change the default baud_base from 115200 to 921600 for
-> > the OXuPCI952 chip (1415:9505)?
-> 
-> As it sounds like this might break existing setups, I'd probably defer
-> to not taking such a patch.
-> 
-> sorry,
+Hi all-
 
-No problem, I'd have decided the same way.
+The mini-pci boards I've been using from Artila with genuine Oxsemi 16C950 quad
+UART to get 2 x RS-422 ports capable of 460800 bps (and 2 x RS232 I don't use)
+have gone end of life and I'm struggling with getting a board I found from a
+supplier in the UK that has a Sysbas 16C1052PCI UART yielding 2 x RS422 that can
+do up to 921600 bps.
 
-so long & thanks for your reply,
+This board is a single chip w/ PCI and uarts all in one that is essentially the
+16C1052 chip and 2 RS422/485 transceivers and that's it -- very simple.
 
-Hias
+They have a CD that comes with 2.4 and 2.6 kernel source that is GPL -- it's a
+deal where they basically clone the existing serial driver to build their own
+kernel module w/ separate data structures and supporting modified standard linux
+serial driver code (not the best -- I would rather see them get the standard
+driver working or keep a patch against the standard driver).  I built up the 2.4
+driver against a 2.4.29 target I have (a bit old but stable) on x86 hardware and
+it compiles clean, goes in, but test code I write shows chars transmitting
+according to /proc/tty/driver/multiport (their version of
+/proc/tty/driver/serial) but nothing on a scope monitoring the differntial
+between Tx+ and Tx- on two scope channels.
+
+I also have a newer 2.6.28.4 target and tried building their 2.6 driver.  That
+driver was based on 2.6.19 ish serial driver code where the uart_port structure
+was moved a level deeper in an interim struct (I think), so I had to change a
+bunch of pointers to be compatible with the data structure changes.  Then I
+found some locking (the BUG_ON(!kernel_locked()); code in ioctl, break_ctl
+functions and friends were removed between 2.6.19 and 2.6.28.4 -- these were
+causing a seg fault panic when the BUG_ON would execute upon ioctl to setup a
+port, so I removed those in doing a comparison in the standard serial_core code.
+ The driver would insert fine and show the ttys and custom SB16C1050 UART listed
+along with /proc/tty/driver/multiport, but with this one it wouldn't even show
+chars as being accounted as transmitted in the /proc/tty/driver/multiport tx
+count listing.
+
+So I broke down and put the card in a windows laptop to at least see if the
+hardware works, and it works fine with a 4 wire RS-422 null setup between the
+two ports on the card at 460800 bps.
+
+My questions are -- does anyone here have any experience with any sysbas UARTs?
+-- especially in convincing the standard serial driver to work.  It's 16550
+compatible with many of the extensions that look like oxsemi 950 with the
+"pages" of registers where you write a special key to the LCR I think or
+something to that effect.  It's got at PCI BAR0 a set of 16 registers that are
+the 8 standard 16550 compatible regs for ports 1 and 2 each.  Then at PCI BAR1
+there are "option registers" that have convenience things to read the speed of
+the oscillator (14.7452 mhz for this one to do up to 921600 bps) and to read how
+many ports and the revision of it.  Also it can read the status of jumpers that
+select 485 or 422 and some global IRQ source data and IRQ enable/disable IIRC. 
+Lastly, the PCI BARs identify the UART regs and option regs as I/O port
+addresses, not MMIO.  I think I get 0x1440 for the 2 x 8 regs for the UARTs and
+0x1480 for the option regs.
+
+The datasheet can be acquired from their website:
+
+http://eng.sysbas.com/e-support/default.asp?sNum=downloads&category=51
+
+In case any of you are curious.
+I think you have to be a "member" to download the reference drivers they have. 
+The UK manufacturer that made the board (note they didn't put a serial eeprom to
+customize the PCI configuration space -- it's just the sysbas chip and 2
+transceivers and various caps/resistors to put it on a mini-pci card!) sent a CD
+with Linux 2.4, 2.6 source of their IMHO hacked serial drivers and some windows
+drivers.  I have to give them credit for at least distributing the linux driver
+as sourcecode -- it's just that neither worked for me!  I can make the
+sourcecode available if anyone here wants to look.
+
+I will probably spend some time with datasheet and standard serial driver source
+and see if I can get it working that way.  If I have success I will post
+results.  The usual adding of PCI vendor/device ID to the list with proper
+pbn_b0_2_921600 entry detects them as ST16650 but my testing reveals no IRQs
+occur so it doesn't know about tx empty to get the data going out off the IRQ
+handler.  Their 2.4 driver was showing IRQs happening at least in
+/proc/interrupts when the ports were open and stats showing tx count going up,
+but nothing on my scope.  So it's close, but still not working.
+
+Any thoughts or especially experiences with these UARTs shared would be
+appreciated.
+
+--
+Eric Malkowski
+
