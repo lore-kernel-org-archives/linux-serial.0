@@ -1,69 +1,111 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH] pl011: added clock management feature
-Date: Fri, 3 Dec 2010 15:15:47 +0000
-Message-ID: <20101203151547.GA30898@n2100.arm.linux.org.uk>
-References: <1289316637-7828-1-git-send-email-linus.walleij@stericsson.com> <20101109224012.GA21992@kroah.com> <AANLkTikUmq7qeFb+0XPpmzcvp5q_Z4SMjBaAgNZaCRqV@mail.gmail.com>
+From: =?ISO-8859-2?Q?Ond=F8ej_Pu=BEman?= <puzman@gmail.com>
+Subject: Bug in 8250.c - uninitialized FIFOs
+Date: Fri, 03 Dec 2010 18:56:16 +0100
+Message-ID: <4CF92F40.5070004@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=ISO-8859-2; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([78.32.30.218]:53377 "EHLO
-	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751728Ab0LCPQS (ORCPT
+Received: from gatekeeper.amit.cz ([188.95.124.146]:35588 "EHLO
+	electra.amit.cz" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753665Ab0LCSFM (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 3 Dec 2010 10:16:18 -0500
-Content-Disposition: inline
-In-Reply-To: <AANLkTikUmq7qeFb+0XPpmzcvp5q_Z4SMjBaAgNZaCRqV@mail.gmail.com>
+	Fri, 3 Dec 2010 13:05:12 -0500
+Received: from localhost (localhost [127.0.0.1])
+	by electra.amit.cz (Postfix) with ESMTP id 21049501A0
+	for <linux-serial@vger.kernel.org>; Fri,  3 Dec 2010 18:56:16 +0100 (CET)
+Received: from electra.amit.cz ([127.0.0.1])
+	by localhost (imp.amit.cz [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id XRdxilMOQM7K for <linux-serial@vger.kernel.org>;
+	Fri,  3 Dec 2010 18:56:14 +0100 (CET)
+Received: from [192.168.1.64] (puzman-o.praha.amit.cz [192.168.1.64])
+	by electra.amit.cz (Postfix) with ESMTP id 0685E5019E
+	for <linux-serial@vger.kernel.org>; Fri,  3 Dec 2010 18:56:14 +0100 (CET)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Vitaly Wool <vitalywool@gmail.com>
-Cc: Greg KH <greg@kroah.com>, Linus Walleij <linus.walleij@stericsson.com>, Par-Gunnar Hjalmdahl <par-gunnar.p.hjalmdahl@stericsson.com>, Greg Kroah-Hartman <gregkh@suse.de>, Lukasz Rymanowski <Lukasz.Rymanowski@tieto.com>, Grzegorz Sygieda <grzegorz.sygieda@tieto.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: linux-serial@vger.kernel.org
 
-On Fri, Dec 03, 2010 at 12:47:14PM +0100, Vitaly Wool wrote:
-> On Tue, Nov 9, 2010 at 11:40 PM, Greg KH <greg@kroah.com> wrote:
-> > On Tue, Nov 09, 2010 at 04:30:37PM +0100, Linus Walleij wrote:
-> >> From: Grzegorz Sygieda <grzegorz.sygieda@tieto.com>
-> >>
-> >> This patch allows to control the pl011 clock using set_termios
-> >> callback. Any positive baudrate passed enables clock, otherwise
-> >> disables. This saves a lot of power on submicron designs since
-> >> we can clock off and disable unused UARTs.
-> >
-> > That's nice, but it seems like an overload of what people tradition=
-ally
-> > think of when it comes to baud rates. =A0Why not just power down po=
-rts
-> > that are not open instead?
->=20
-> I like the idea as well and this is definitely gonna help conserving
-> the power for Bluetooth UARTs.
->=20
-> But using baud rate 0 is something I don't like.
+Hello,
+I have found a bug in 8250.c driver which causes that 16550A uart FIFOs 
+are not turned on during initialization if they are manually configured 
+by setserial. UART is then working only as plain 16450 without FIFOs. On 
+systems with higher interrupt latency this causes buffer overruns and 
+loss of received data when using higher communication speeds.
 
-You can't use the baud rate of 0 to power down ports - that already has
-a POSIX-defined function (hang up).
+I'm working for a company which produces industrial computers. These 
+devices typically contain high number (8 or more) of traditional 16550A 
+uarts - we use TL16C554A chips, but that is not much relevant. UARTs are 
+connected to the CPU by ISA bus (Celeron based devices) or LPC bus (Atom 
+based devices).
 
-> Why don't you stop
-> the clocks if RTS is cleared? This would have allowed the line
-> discipline driver to implicitly control the UART clock and there will
-> be no risk of losing data, as well as no non-standard behavior
-> involved. In fact, you'll be transparent to the upper layers in this
-> case.
+In the Linux the UARTs are using standard 8250.c driver and are 
+initialized using setserial command:
+setserial /dev/ttyS4 uart 16550A port 0x3E0 irq 10 baud_base 115200
 
-I've no idea what you're thinking, but you can't stop the UART clock
-because RTS is deasserted - or DTR for that matter.  Neither of those
-two define whether characters will be transmitted or received.
+This executes the UART initialization through serial8250_startup() 
+function. At the beginning of the function up->capabilities is 
+initialized from uart_config:
+ up->capabilities = uart_config[up->port.type].flags;
+Please note that neither up->port.fifosize nor up->tx_loadsz is 
+initialized here!!
 
-There are specialist protocols and devices out there which require
-RTS and DTR to be held at certain non-standard states for them to work.
-One range of devices are car OBD-II interfaces, where RTS controls the
-L line and sometimes the TX/RX direction on the bidirectional K data
-line.
+Later in the same function serial8250_clear_fifos() is called and 
+disables FIFOs. The above comment says that they will be reenabled in 
+set_termios (they won't ...)
 
-Similar things are done with DTR, and there's protocols which use
-DTR as a handshake.
+After serial8250_startup() the serial8250_set_termios() is called. In 
+this function the following check fails because up->port.fifosize is 
+zero because it is not initialized correctly.
+
+        if (up->capabilities & UART_CAP_FIFO && up->port.fifosize > 1) {
+                if (baud < 2400)
+                        fcr = UART_FCR_ENABLE_FIFO | UART_FCR_TRIGGER_1;
+                else
+                        fcr = uart_config[up->port.type].fcr;
+        }
+
+fcr variable remains zero and in the end the FCR register is set to zero 
+which results in disabled FIFOs even if the UART type is 16550A. This is 
+also true for other types of UARTs with FIFOs.
+
+If the UART is autoconfigured via 'setserial /dev/ttySx autoconfig' then 
+port.fifosize and tx_loadsz are initialized correctly in the 
+autoconfig() function and the UART is working correctly then.
+
+I checked the source codes and I can say that this bug is present in 
+2.6.x series of kernels for a couple of years. Namely I can confirm its 
+presence in 2.6.16.57, 2.6.32.24 and 2.6.36.1 (tested all of them on our 
+hardware).
+
+I think it was not noticed before because not many people use manually 
+configured non PNP UARTs on ISA/LPC bus these days. Also the data loss 
+caused by buffer overruns occures only if  IRQ latency is higher then 
+time needed to receive one character on given communication speed.
+For example our hardware looses received characters only if the UARTs 
+are connected throught LPC bus with SERIRQ (serial IRQ transport) and 
+not if they are connected to ISA bus because LPC SERIRQ has higher 
+interrupt latency then parallel ISA interupt lines.
+
+Here is the patch to correct the bug created against 2.6.36.1:
+
+diff -Naur a/drivers/serial/8250.c b/drivers/serial/8250.c
+--- a/drivers/serial/8250.c     2010-11-22 20:03:49.000000000 +0100
++++ b/drivers/serial/8250.c     2010-12-03 18:32:54.000000000 +0100
+@@ -1952,6 +1952,8 @@
+        unsigned char lsr, iir;
+        int retval;
+
++       up->port.fifosize = uart_config[up->port.type].fifo_size;
++       up->tx_loadsz = uart_config[up->port.type].tx_loadsz;
+        up->capabilities = uart_config[up->port.type].flags;
+        up->mcr = 0;
+
+
+The patch should work on most 2.6.x kernels.
+I hope that someone will be able to put that in the official kernel tree.
 --
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Ondrej Puzman
+HW & SW developer
+
+AMiT, spol. s.r.o.
+
