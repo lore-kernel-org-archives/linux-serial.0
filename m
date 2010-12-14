@@ -1,161 +1,119 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH v2] This driver supports UART-DM HW on MSM platforms.
- It uses the on chip DMA to drive data transfers and has optional support
- for UART power management independent of Linux suspend/resume and wakeup
- from Rx.
-Date: Tue, 14 Dec 2010 09:14:04 -0800
-Message-ID: <20101214171404.GB3832@kroah.com>
-References: <1292307586-6548-1-git-send-email-mrana@codeaurora.org>
+From: "Lee Howard" <lee.howard@mainpine.com>
+Subject: RE: Mainpine IQ Express Rev3 problems beginning 2.6.36
+Date: Tue, 14 Dec 2010 11:49:34 -0800
+Message-ID: <E2D1FFBE046E485284F82CC8135FD901@callisto>
+References: <4D001AF1.80902@mainpine.com> <20101209064259.GA10714@kroah.com> <9BEA64D1D71A4BCFA22E0ECE7A4B3A01@callisto> <20101212165201.GB14184@kroah.com>
+Reply-To: <lee.howard@mainpine.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:57926 "EHLO coco.kroah.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757418Ab0LNRTy (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 14 Dec 2010 12:19:54 -0500
-Content-Disposition: inline
-In-Reply-To: <1292307586-6548-1-git-send-email-mrana@codeaurora.org>
+Received: from pandora.howardsilvan.com ([216.235.106.114]:49433 "EHLO
+	mail.mainpine.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756853Ab0LNTtf (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 14 Dec 2010 14:49:35 -0500
+In-Reply-To: <20101212165201.GB14184@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Mayank Rana <mrana@codeaurora.org>
-Cc: linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, Nick Pelly <npelly@google.com>, Sankalp Bose <sankalpb@codeaurora.org>
+To: 'Greg KH' <greg@kroah.com>
+Cc: linux-serial@vger.kernel.org
 
-That's some subject: are you sure that should really be the subject?
+> -----Original Message-----
+> From: Greg KH [mailto:greg@kroah.com] 
+> Sent: Sunday, December 12, 2010 8:52 AM
 
-On Tue, Dec 14, 2010 at 11:49:46AM +0530, Mayank Rana wrote:
-> The driver was originally developed by Google. It is functionally
-> equivalent to the version available at:
-> http://android.git.kernel.org/?p=kernel/experimental.git
-> the differences being:
-> 1) Remove wakelocks and change unsupported DMA API.
-> 2) Replace clock selection register codes by macros.
-> 3) Fix checkpatch errors and add inline documentation.
-> 4) Add runtime PM hooks for active power state transitions.
-> 
-> CC: Nick Pelly <npelly@google.com>
-> Signed-off-by: Sankalp Bose <sankalpb@codeaurora.org>
-> Signed-off-by: Mayank Rana <mrana@codeaurora.org>
+> As for build issues, try to make a minimal working config for 
+> your system, using 'make localmodconfig'.  That will speed up 
+> your build time immensely as well as reduce your chances of 
+> build and runtime problems with the intermediate kernels.
 
-<snip>
+Thank-you, that did help immensely.
 
-I don't see the previous review comments I made addressed here, what
-happened?
+Here's the 'git bisect' result...
 
-Specifically, you need to sort out the ownership of this file (who wrote
-the thing, why you are submitting something written by someone else
-without their approval, etc.) and the like.
+--------------
+7a56aa45982bb87bfca98a2832b5ae782c03364a is the first bad commit 
+commit 7a56aa45982bb87bfca98a2832b5ae782c03364a
+Author: Yegor Yefremov <yegor_sub1@visionsystems.de>
+Date:   Wed Jun 16 16:29:55 2010 +0200
 
-> --- /dev/null
-> +++ b/drivers/serial/msm_serial_hs.c
-> @@ -0,0 +1,1680 @@
-> +/* drivers/serial/msm_serial_hs.c
-> + *
-> + * MSM 7k/8k High speed uart driver
-> + *
-> + * Copyright (c) 2007-2010, Code Aurora Forum. All rights reserved.
-> + * Copyright (c) 2008 Google Inc.
-> + * Modified: Nick Pelly <npelly@google.com>
-> + *
-> + * All source code in this file is licensed under the following license
-> + * except where indicated.
+    serial: add UART_CAP_EFR and UART_CAP_SLEEP flags to 16C950 UARTs
+definition
+    
+    Adding UART_CAP_EFR and UART_CAP_SLEEP flags will enable sleep mode
+    and automatic CTS flow control for 16C950 UARTs. It will also avoid
+    capabilities detection warning like this:
+    
+    "ttyS0: detected caps 00000700 should be 00000100"
+    
+    Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 
-Is anything indicated?  If not, drop it please.
+:040000 040000 1776ca8d5c653834363c0778b5b404ee52bd2d69
+b81cfe4f302a674935181bd248641873820517e5 M      drivers
+--------------
 
-> + *
-> + * This program is free software; you can redistribute it and/or
-> + * modify it under the terms of the GNU General Public License
-> + * version 2 as published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-> + * See the GNU General Public License for more details.
-> + *
-> + * You should have received a copy of the GNU General Public License
-> + * along with this program; if not, you can find it at http://www.fsf.org
+Indeed, if I remove the UART_CAP_EFR flag from later kernel revisions there
+is no problem.
 
-These last two paragraphs can be deleted, they are useless.
+Here is the 'dmesg' output for 8250 after removing UART_CAP_EFR...
 
-> + */
-> +
-> +/*
-> + * MSM 7k/8k High speed uart driver
-> + *
-> + * Has optional support for uart power management independent of linux
-> + * suspend/resume:
-> + *
-> + * RX wakeup.
-> + * UART wakeup can be triggered by RX activity (using a wakeup GPIO on the
-> + * UART RX pin). This should only be used if there is not a wakeup
-> + * GPIO on the UART CTS, and the first RX byte is known (for example, with the
-> + * Bluetooth Texas Instruments HCILL protocol), since the first RX byte will
-> + * always be lost. RTS will be asserted even while the UART is off in this mode
-> + * of operation. See msm_serial_hs_platform_data.rx_wakeup_irq.
-> + */
-> +
-> +#include <linux/module.h>
-> +
-> +#include <linux/serial.h>
-> +#include <linux/serial_core.h>
-> +#include <linux/slab.h>
-> +#include <linux/init.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/irq.h>
-> +#include <linux/io.h>
-> +#include <linux/ioport.h>
-> +#include <linux/kernel.h>
-> +#include <linux/timer.h>
-> +#include <linux/clk.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/pm_runtime.h>
-> +#include <linux/dma-mapping.h>
-> +#include <linux/dmapool.h>
-> +#include <linux/wait.h>
-> +#include <linux/workqueue.h>
-> +
-> +#include <linux/atomic.h>
-> +#include <asm/irq.h>
-> +#include <asm/system.h>
-> +
-> +#include <mach/hardware.h>
-> +#include <mach/dma.h>
-> +#include <linux/platform_data/msm_serial_hs.h>
-> +
-> +#include "msm_serial_hs_hwreg.h"
+--------------
+[    0.980209] Serial: 8250/16550 driver, 32 ports, IRQ sharing enabled
+[    1.245280] serial8250: ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
+[    1.266813] 00:09: ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
+[    1.266936] serial 0000:02:00.0: PCI INT A -> GSI 18 (level, low) -> IRQ
+18
+[    1.266954] 1 ports detected on Oxford PCI Express device
+[    1.267029] ttyS4: detected caps 00000700 should be 00000500
+[    1.267043] 0000:02:00.0: ttyS4 at MMIO 0xfd5fd000 (irq = 18) is a
+16C950/954
+[    1.267095] serial 0000:03:00.0: PCI INT A -> GSI 16 (level, low) -> IRQ
+16
+[    1.267105] 4 ports detected on Oxford PCI Express device
+[    1.267175] ttyS5: detected caps 00000700 should be 00000500
+[    1.267180] 0000:03:00.0: ttyS5 at MMIO 0xfc9fd000 (irq = 16) is a
+16C950/954
+[    1.267269] ttyS6: detected caps 00000700 should be 00000500
+[    1.267274] 0000:03:00.0: ttyS6 at MMIO 0xfc9fd200 (irq = 16) is a
+16C950/954
+[    1.267362] ttyS7: detected caps 00000700 should be 00000500
+[    1.267366] 0000:03:00.0: ttyS7 at MMIO 0xfc9fd400 (irq = 16) is a
+16C950/954
+[    1.267454] ttyS8: detected caps 00000700 should be 00000500
+[    1.267459] 0000:03:00.0: ttyS8 at MMIO 0xfc9fd600 (irq = 16) is a
+16C950/954
+[    1.267505] serial 0000:04:00.0: PCI INT A -> GSI 18 (level, low) -> IRQ
+18
+[    1.267514] 2 ports detected on Oxford PCI Express device
+[    1.267583] ttyS9: detected caps 00000700 should be 00000500
+[    1.267588] 0000:04:00.0: ttyS9 at MMIO 0xfcffd000 (irq = 18) is a
+16C950/954
+[    1.267678] ttyS10: detected caps 00000700 should be 00000500
+[    1.267683] 0000:04:00.0: ttyS10 at MMIO 0xfcffd200 (irq = 18) is a
+16C950/954
+[    1.267723] serial 0000:06:00.0: PCI INT A -> GSI 19 (level, low) -> IRQ
+19
+[    1.288452] 0000:06:00.0: ttyS11 at I/O 0xcf00 (irq = 19) is a 16550A
+[    1.309208] 0000:06:00.0: ttyS12 at I/O 0xcf08 (irq = 19) is a 16550A
+[    1.329963] 0000:06:00.0: ttyS13 at I/O 0xcf10 (irq = 19) is a 16550A
+[    1.350723] 0000:06:00.0: ttyS14 at I/O 0xcf18 (irq = 19) is a 16550A
+--------------
 
-Why do you need this .h file at all?  Just roll it into this .c file
-please.
+00:09 is the on-board serial controller, so that's ttyS1
 
-> +/**
-> + * msm_hs_request_clock_off - request to (i.e. asynchronously) turn off uart
-> + * clock once pending TX is flushed and Rx DMA command is terminated.
-> + * @uport: uart_port structure for the device instance.
-> + *
-> + * This functions puts the device into a partially active low power mode. It
-> + * waits to complete all pending tx transactions, flushes ongoing Rx DMA
-> + * command and terminates UART side Rx transaction, puts UART HW in non DMA
-> + * mode and then clocks off the device. A client calls this when no UART
-> + * data is expected. msm_request_clock_on() must be called before any further
-> + * UART can be sent or received.
-> + */
-> +void msm_hs_request_clock_off(struct uart_port *uport)
-> +{
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&uport->lock, flags);
-> +	msm_hs_request_clock_off_locked(uport);
-> +	spin_unlock_irqrestore(&uport->lock, flags);
-> +}
-> +EXPORT_SYMBOL(msm_hs_request_clock_off);
+0000:02:00.0 is a 1-port Rev3 IQ Express, that's ttyS4
 
-EXPORT_SYMBOL_GPL?
+0000:03:00.0 is a 4-port Rev3 IQ Express, that's ttyS5-ttyS8
 
-And why is this function exported at all anyway?  Who is going to call
-it?
+0000:04:00.0 is a 2-port Rev3 IQ Express, that's ttyS9-ttyS10
 
-Same goes for the other exported function.
+0000:06:00.0 is a 4-port Rev2 IQ Express, that's ttyS11-ttyS14  (these had
+no problem).
 
+Thanks,
 
-thanks,
+Lee.
 
-greg k-h
