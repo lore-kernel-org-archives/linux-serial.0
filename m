@@ -1,76 +1,76 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH v2] This driver supports UART-DM HW on MSM platforms.
- It uses the on chip DMA to drive data transfers and has optional support
- for UART power management independent of Linux suspend/resume and wakeup
- from Rx.
-Date: Tue, 14 Dec 2010 13:33:22 -0800
-Message-ID: <20101214213322.GB11298@kroah.com>
-References: <1292307586-6548-1-git-send-email-mrana@codeaurora.org>
- <20101214171404.GB3832@kroah.com>
- <AANLkTinVpJ-p648gOuRWyV2kp4U-HTu2rtirBnzOAJnK@mail.gmail.com>
+From: "Govindraj.R" <govindraj.raja@ti.com>
+Subject: [PATCH] Serial: Avoid unbalanced IRQ wake disable during resume
+Date: Thu, 16 Dec 2010 18:12:47 +0530 (IST)
+Message-ID: <14261.10.24.255.17.1292503367.squirrel@dbdmail.itg.ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:46175 "EHLO coco.kroah.org"
+Received: from comal.ext.ti.com ([198.47.26.152]:54444 "EHLO comal.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1760247Ab0LNVeT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 14 Dec 2010 16:34:19 -0500
-Content-Disposition: inline
-In-Reply-To: <AANLkTinVpJ-p648gOuRWyV2kp4U-HTu2rtirBnzOAJnK@mail.gmail.com>
+	id S1750896Ab0LPMmu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 16 Dec 2010 07:42:50 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Nick Pelly <npelly@google.com>
-Cc: Mayank Rana <mrana@codeaurora.org>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, Sankalp Bose <sankalpb@codeaurora.org>
+To: linux-serial@vger.kernel.org
+Cc: Paul Walmsley <paul@pwsan.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Kevin Hilman <khilman@deeprootsystems.com>, Greg KH <greg@kroah.com>
 
-On Tue, Dec 14, 2010 at 01:08:28PM -0800, Nick Pelly wrote:
-> On Tue, Dec 14, 2010 at 9:14 AM, Greg KH <greg@kroah.com> wrote:
-> >
-> > That's some subject: are you sure that should really be the subject?
-> >
-> > On Tue, Dec 14, 2010 at 11:49:46AM +0530, Mayank Rana wrote:
-> > > The driver was originally developed by Google. It is functionally
-> > > equivalent to the version available at:
-> > > http://android.git.kernel.org/?p=kernel/experimental.git
-> > > the differences being:
-> > > 1) Remove wakelocks and change unsupported DMA API.
-> > > 2) Replace clock selection register codes by macros.
-> > > 3) Fix checkpatch errors and add inline documentation.
-> > > 4) Add runtime PM hooks for active power state transitions.
-> > >
-> > > CC: Nick Pelly <npelly@google.com>
-> > > Signed-off-by: Sankalp Bose <sankalpb@codeaurora.org>
-> > > Signed-off-by: Mayank Rana <mrana@codeaurora.org>
-> >
-> > <snip>
-> >
-> > I don't see the previous review comments I made addressed here, what
-> > happened?
-> >
-> > Specifically, you need to sort out the ownership of this file (who wrote
-> > the thing, why you are submitting something written by someone else
-> > without their approval, etc.) and the like.
-> 
-> Glad someone is trying to get the patch upstream, but I think Mayank
-> has taken it a step backwards from the version on Android open source.
-> 
-> Removing the wakelock's are fine since they are somewhat
-> controversial, and not core to the driver.
+To avoid unbalanced IRQ wake disable, ensure that wakeups are disabled
+only when wakeups have been successfully enabled.
+Tested on OMAP3630SDP/ZOOM3.
 
-Why are they removed?  We now have the infrastructure in the kernel to
-keep them.  I say put them back so you can use the same driver in the
-Android builds as well.
+Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+Reported-by: Paul Walmsley <paul@pwsan.com>
+Cc: Santosh Shilimkar <santosh.shilimkar@ti.com>
+Cc: Kevin Hilman <khilman@deeprootsystems.com>
+Cc: Greg KH <greg@kroah.com>
+---
+This patch is in conclusion to issue discussed in below thread:
+http://www.spinics.net/lists/linux-omap/msg41356.html
 
-> But adding all the boilerplate comments on each function? They add no value.
+ drivers/serial/serial_core.c |    8 ++++++--
+ include/linux/serial_core.h  |    1 +
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
-For some functions, they can be helpful.
+diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
+index 9ffa5be..7ec1e11 100644
+--- a/drivers/serial/serial_core.c
++++ b/drivers/serial/serial_core.c
+@@ -1985,7 +1985,8 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
 
-> As far as authorship, I took the original Qualcomm driver and re-wrote
-> it. There is probably not a lot of code the same. The original driver
-> was very useful for regression testing though.
+ 	tty_dev = device_find_child(uport->dev, &match, serial_match_port);
+ 	if (device_may_wakeup(tty_dev)) {
+-		enable_irq_wake(uport->irq);
++		if (!enable_irq_wake(uport->irq))
++			uport->irq_wake = 1;
+ 		put_device(tty_dev);
+ 		mutex_unlock(&port->mutex);
+ 		return 0;
+@@ -2051,7 +2052,10 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
 
-A pointer to the original driver, and the copyright notice from it, and
-authorship information is needed in this version of the driver then.
+ 	tty_dev = device_find_child(uport->dev, &match, serial_match_port);
+ 	if (!uport->suspended && device_may_wakeup(tty_dev)) {
+-		disable_irq_wake(uport->irq);
++		if (uport->irq_wake) {
++			disable_irq_wake(uport->irq);
++			uport->irq_wake = 0;
++		}
+ 		mutex_unlock(&port->mutex);
+ 		return 0;
+ 	}
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 212eb4c..28b6698 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -361,6 +361,7 @@ struct uart_port {
+ 	struct device		*dev;			/* parent device */
+ 	unsigned char		hub6;			/* this should be in the 8250 driver */
+ 	unsigned char		suspended;
++	unsigned char		irq_wake;
+ 	unsigned char		unused[2];
+ 	void			*private_data;		/* generic platform data pointer */
+ };
+-- 
+1.7.1
 
-thanks,
 
-greg k-h
