@@ -1,156 +1,40 @@
-From: "changgx" <changgx-9Onoh4P/yGk@public.gmane.org>
-Subject: Re: Re: about sc16is7x2 drivier
-Date: Mon, 20 Dec 2010 18:20:58 +0800
-Message-ID: <4D0F2E15.0AB7A8.31769@m50-133.163.com>
+From: Andrew Pushkin <andrei.pushkin@promwad.com>
+Subject: Re: Need software UART implementation
+Date: Mon, 20 Dec 2010 18:15:24 +0200
+Message-ID: <AANLkTi=N+SqfOMFTdKyo1_QXZhxyByBoViwkYSBxEFUO@mail.gmail.com>
+References: <AANLkTiknD7OgbPFOOwedydywuUyKa2mA9ITwtsg2oaU6@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
-Return-path: <spi-devel-general-bounces-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>
-List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/spi-devel-general>,
-	<mailto:spi-devel-general-request-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=spi-devel-general>
-List-Post: <mailto:spi-devel-general-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>
-List-Help: <mailto:spi-devel-general-request-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/spi-devel-general>,
-	<mailto:spi-devel-general-request-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org?subject=subscribe>
-Errors-To: spi-devel-general-bounces-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org
-To: Manuel Stahl <manuel.stahl-GeUHRtUQU7nSyEMIgutvibNAH6kLmebB@public.gmane.org>
-Cc: spi-devel-general-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hunterzhu-MjT5Q16qtnaZox4op4iWzw@public.gmane.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ey0-f171.google.com ([209.85.215.171]:65163 "EHLO
+	mail-ey0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932680Ab0LTQQG (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 20 Dec 2010 11:16:06 -0500
+Received: by eyg5 with SMTP id 5so1540082eyg.2
+        for <linux-serial@vger.kernel.org>; Mon, 20 Dec 2010 08:16:05 -0800 (PST)
+In-Reply-To: <AANLkTiknD7OgbPFOOwedydywuUyKa2mA9ITwtsg2oaU6@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial <linux-serial@vger.kernel.org>
 
-CmhlbGxvIE1hbnVlbCBTdGFobCwKCiAgSSBhbSB2ZXJ5IHNvcnJ5IHRoYXQgdGhlIGlzc3VlIG9m
-IGNvcHlyaWdodC4gQW5kIEkgbW9kaWZ5IGl0oaMKCiAgQXMgZm9sbG93c6O6CgovKioKICogZHJp
-dmVycy9zZXJpYWwvc2MxNmlzN3gyLmMKICoKICogQ29weXJpZ2h0IChDKSBNYW51ZWwgU3RhaGwg
-PG1hbnVlbC5zdGFobEB4eHh4eHh4eHh4eHh4eHh4eD4gCiAqIEthdGh5IGNoYW5nIDxjaGFuZ2d4
-QDE2My5jb20+IGRvd25sb2FkIHRoZSBzb3VyY2UgY29kZSBvbiBpbnRlcm5ldCBhbmQgbW9kaWZ5
-IGl0LgogKiBUaGUgd2ViIGlzIGh0dHA6Ly93d3cuc3Bpbmljcy5uZXQvbGlzdHMvCiAqCiAqIFRo
-aXMgcHJvZ3JhbSBpcyBmcmVlIHNvZnR3YXJlOyB5b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBhbmQv
-b3IgbW9kaWZ5CiAqIGl0IHVuZGVyIHRoZSB0ZXJtcyBvZiB0aGUgR05VIEdlbmVyYWwgUHVibGlj
-IExpY2Vuc2UgdmVyc2lvbiAyIGFzCiAqIHB1Ymxpc2hlZCBieSB0aGUgRnJlZSBTb2Z0d2FyZSBG
-b3VuZGF0aW9uLgogKgogKiBUaGUgU0MxNklTN3gyIGRldmljZSBpcyBhIFNQSSBkcml2ZW4gZHVh
-bCBVQVJUIHdpdGggR1BJT3MuCiAqCiAqIFRoZSBkcml2ZXIgZXhwb3J0cyB0d28gdWFydHMgLgog
-Ki8KClRvIHNheSBzb3JyeSBhZ2FpbqGjCgprYXRoeSBjaGFuZwoKMjAxMC4xMi4yMAoJCgo9PT09
-PT09IDIwMTAtMTItMjAgMTE6MDM6MDAgxPrU2sC00MXW0NC0tcCjuj09PT09PT0KCj5IZWxsbyBL
-YXRoeSBDaGFuZywKPgo+SSB3aWxsIGhhdmUgYSBsb29rIGF0IHlvdXIgY2hhbmdlcy4gUGxlYXNl
-IHNlbmQgeW91ciBtYWlscyBhbHNvIHRvCj5zcGktZGV2ZWwtZ2VuZXJhbEBsaXN0cy5zb3VyY2Vm
-b3JnZS5uZXQgYW5kCj5zcGktZGV2ZWwtZ2VuZXJhbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQgKHNp
-bXBseSBwcmVzcyByZXBseS10by1hbGwpLgo+Cj5BbHNvIHJlbWVtYmVyIHRoYXQgeW91IHNob3Vs
-ZCBub3Qgc2ltcGx5IHJlbW92ZSBleGlzdGluZyBjb3B5cmlnaHQKPm5vdGljZXMgd2hlbiB5b3Ug
-bW9kaWZ5IGRyaXZlciEKPgo+UmVnYXJkcywKPk1hbnVlbCBTdGFobAo+Cj4+IGhlbGxvICxNYW51
-ZWwgU3RhaGw6Cj4+IAo+PiBJIGRlbGV0ZWQgdGhlIHBhcnQgb2YgdGhlIElPIGRyaXZlci5BbmQg
-SSBjb21waWxlIHRoZSBkcml2ZXIgZnJvbSB0aGUga2VybmVsIGluZGVwZW5kZW50Lgo+PiAKPj4g
-UGxlYXNlIHJlZmVyIHRvIHRoZSBhdHRhY2hlZCBzb3VyY2UgY29kZS4KPj4gCj4+IGthdGh5IGNo
-YW5nCj4+IAo+PiAyMDEwLjEyLjIwCj4+IAkKPj4gCj4+ID09PT09PT0gMjAxMC0xMi0yMCAxMDow
-OTowMCDE+tTawLTQxdbQ0LS1wKO6PT09PT09PQo+PiAKPj4+ID5IZWxsbyBLYXRoeSBDaGFuZywK
-Pj4+ID4KPj4+ID50aGFuayB5b3UgZm9yIHlvdXIgZWZmb3J0LiBDYW4geW91IHByb3ZpZGUgYSBw
-YXRjaCBmb3IgdGhlIHNjMTZpczd4Mi5jIGZpbGU/Cj4+PiA+Cj4+PiA+UmVnYXJkcywKPj4+ID5N
-YW51ZWwgU3RhaGwKPj4+ID4KPj4+ID5PbiAyMC4xMi4yMDEwIDEwOjAxLCBjaGFuZ2d4IHdyb3Rl
-Ogo+Pj4+ID4+IGhlbGxvLE1hbnVlbCBTdGFobDoKPj4+PiA+PiAKPj4+PiA+PiBTYzE2aXM3eDIg
-ZHJpdmVyIGhhcyBiZWVuIHN1Y2Nlc3NmdWxseSBkZWJ1Z2dlZC4KPj4+PiA+PiAKPj4+PiA+PiBJ
-biBzYzE2aXM3eDIuY6OsdGhlIGNvbnRyb2wgdG8gdGhlIHZhciAuY3NfY2hhbmdlIGRvZXMgbm90
-IG1hdGNoIHdpdGggYXQ5MXNhbTkyNjAgZHJpdmVyLgo+Pj4+ID4+IAo+Pj4+ID4+IDGhogo+Pj4+
-ID4+IEluIGZ1bmN0aW9uIHNjMTZpczd4Ml9zdGFydHVwKCksdGhlIHNwaSBjaGlwIHNlbGVjdCBt
-YWludGFpbnMgbG93IGxldmVsIGFmdGVyIHRoZSBzZXRlbmNlIGNtZHMgPSBzYzE2aXM3eDJfYWxs
-b2Nfc3BpX2NtZHMoOCkuCj4+Pj4gPj4gSXQgY2F1c2VkIGEgZXJyb3IgYWJvdXQgbmV4dCBTUEkg
-b3BlcmF0aW9uLgo+Pj4+ID4+IAo+Pj4+ID4+IEltcHJvdmVkIG1ldGhvZCBpcyB0byB1c2UgOCBz
-YzE2aXM3eDJfd3JpdGVfYXN5bmMoKSBmdW5jdGlvbiB0byBzZXQgc2MxNmlzN3gyIHJlZy4KPj4+
-PiA+PiAKPj4+PiA+PiAyoaIKPj4+PiA+PiAKPj4+PiA+PiBJbiBzYzE2aXM3eDJfbXNnX2FkZF9m
-aWZvX3R4KCkgZnVuY3Rpb26jrCB5b3UgbmVlZCB0byB0YWtlIGFudGktY3NfY2hhbmdlIHZhcmlh
-Ymxlcy4KPj4+PiA+PiAKPj4+PiA+PiAKPj4+PiA+PiBnb29kIGx1Y2shISEKPj4+PiA+PiAKPj4+
-PiA+PiAKPj4+PiA+PiA9PT09PT09IDIwMTAtMTItMTQgMTE6NTI6MDAgxPrU2sC00MXW0NC0tcCj
-uj09PT09PT0KPj4+PiA+PiAKPj4+Pj4gPj4+IEhlbGxvIGFnYWluLAo+Pj4+PiA+Pj4KPj4+Pj4g
-Pj4+IFRoZSBjb21tYW5kcyBpbiBzYzE2aXM3eDJfc3BpX2FzeW5jIGFyZSBzZW50IGFzeW5jIChh
-cyB0aGUgbmFtZSBzYXlzKSwKPj4+Pj4gPj4+IHNvIHRoZSBmaXJzdCB0aW1lIHlvdSBleGVjdXRl
-IHNjMTZpczd4Ml9yZWFkKHRzLT5zcGksIFVBUlRfSUVSLGNoKSB0aGUKPj4+Pj4gPj4+IGFzeW5j
-IHBhcnQgd2FzIG5vdCB5ZXQgY29tcGxldGVkLCB0aGUgc2Vjb25kIHRpbWUgaXQgd2FzIGNvbXBs
-ZXRlZCBhbmQKPj4+Pj4gPj4+IGhhcyBzZXQgVUFSVF9JRVIgdG8gMC4KPj4+Pj4gPj4+Cj4+Pj4+
-ID4+PiBSZWdhcmRzLAo+Pj4+PiA+Pj4gTWFudWVsCj4+Pj4+ID4+Pgo+Pj4+PiA+Pj4gT24gMTMu
-MTIuMjAxMCAwNjo0MywgY2hhbmdneCB3cm90ZToKPj4+Pj4+ID4+Pj4gICAgICBoZWxsb6OsbWFu
-dWVsLnN0YWhso7oKPj4+Pj4+ID4+Pj4KPj4+Pj4+ID4+Pj4gICAgICBleGN1c2UgbWUhIQo+Pj4+
-Pj4gPj4+Pgo+Pj4+Pj4gPj4+PiAgICAgIEkgZm91bmQgdGhlIHNjMTZpczd4Mi5jIGRyaXZlciBw
-cm92aWRlZCBieSB5b3Ugb24gdGhlIGludGVybmV0IHRoZQo+Pj4+Pj4gPj4+PiAgICAgIG90aGVy
-IGRheS4gQW5kIEkgZXhwbGFudGUgaXQgdG8gbXkgYm9hcmQuCj4+Pj4+PiA+Pj4+Cj4+Pj4+PiA+
-Pj4+ICAgICAgTXkgZGV2ZWxvcCBlbnZpcm9ubWVudCBpcyBhYm91dCCjukNQVSBmb3IgQVQ5MVNB
-TTkyNjAgYW5kIGtlbm5lbCBmb3IKPj4+Pj4+ID4+Pj4gICAgICBsaW51eC0yLjYuMjcuCj4+Pj4+
-PiA+Pj4+Cj4+Pj4+PiA+Pj4+ICAgICAgQnV0IEkgZm91bmQgc29tZSBxdWVzdGlvbnMgaW4gZGVi
-dWdnaW5nLgo+Pj4+Pj4gPj4+Pgo+Pj4+Pj4gPj4+PiAgICAgIEluIHRoZSBmdW5jdGlvbiBvZiBz
-YzE2aXM3eDJfc3RhcnR1cCggKSwgaSBhZGQgdGhlIHNlbnRlbmNlIHRvIHJlYWQKPj4+Pj4+ID4+
-Pj4gICAgICByZWdpc3RlciB2YWx1ZSBhZnRlciBzYzE2aXM3eDJfc3BpX2FzeW5jKHRzLT5zcGks
-IGNtZHMsIDgpIHNlbnRlbmNlCj4+Pj4+PiA+Pj4+ICAgICAgYW5kIGkgZmluZCB0aGF0IHRoZSBy
-ZXR1cm4gdmFsdWUgaXMgYWx3YXlzIDB4ZmYuCj4+Pj4+PiA+Pj4+Cj4+Pj4+PiA+Pj4+ICAgICAg
-Zm9yIGV4YW1wbGU6Cj4+Pj4+PiA+Pj4+Cj4+Pj4+PiA+Pj4+ICAgICAgaW50IHVpZXIxLHVpZXIy
-Owo+Pj4+Pj4gPj4+Pgo+Pj4+Pj4gPj4+PiAgICAgIHVpZXIxID0gc2MxNmlzN3gyX3JlYWQodHMt
-PnNwaSwgVUFSVF9JRVIsY2gpOwo+Pj4+Pj4gPj4+PiAgICAgIFNDMTZfUFJJTlRLKCIrKysrKysr
-KysrKysrKysrKysrKys+ICBzIKO6ZCBVQVJUX0lFUiA9IHgKPj4+Pj4+ID4+Pj4gICAgICBcbiIs
-X19mdW5jX18sX19MSU5FX18sdWllcjEpOwo+Pj4+Pj4gPj4+PiAgICAgIHVpZXIyID0gc2MxNmlz
-N3gyX3JlYWQodHMtPnNwaSwgVUFSVF9JRVIsY2gpOwo+Pj4+Pj4gPj4+PiAgICAgIFNDMTZfUFJJ
-TlRLKCIrKysrKysrKysrKysrKysrKysrKys+ICBzIKO6ZCBVQVJUX0lFUiA9IHgKPj4+Pj4+ID4+
-Pj4gICAgICBcbiIsX19mdW5jX18sX19MSU5FX18sdWllcjIpOwo+Pj4+Pj4gPj4+Pgo+Pj4+Pj4g
-Pj4+PiAgICAgIHRoZSBwcmludCByZXN1bHQ6Cj4+Pj4+PiA+Pj4+Cj4+Pj4+PiA+Pj4+ICAgICAg
-KysrKysrKysrKysrKysrKysrKysrPiAgc2MxNmlzN3gyX3N0YXJ0dXAgOiA1MTIgVUFSVF9JRVIg
-PSBmZgo+Pj4+Pj4gPj4+PiAgICAgICsrKysrKysrKysrKysrKysrKysrKz4gIHNjMTZpczd4Ml9z
-dGFydHVwIDogNTE1IFVBUlRfSUVSID0gMAo+Pj4+Pj4gPj4+Pgo+Pj4+Pj4gPj4+PiAgICAgIFRo
-ZSByZXN1bHRzIGlzIHRoYXQgdGhlIGZpcnN0IHRpbWUgaXMgMHhmZiwgdGhlIHNlY2VuZCBpcyAw
-Lgo+Pj4+Pj4gPj4+Pgo+Pj4+Pj4gPj4+PiAgICAgIEFuZCBpdCBpcyBzYW1lIHRvIHJlYWQgb3Ro
-ZXIgcmVnaXN0ZXIuCj4+Pj4+PiA+Pj4+Cj4+Pj4+PiA+Pj4+ICAgICAgcGxlYXNlIGdpdmUgbWUg
-c29tZSBhZHZpY2UgZm9yIHRoaXMgcXVlc3Rpb24uCj4+Pj4+PiA+Pj4+Cj4+Pj4+PiA+Pj4+ICAg
-ICAgcHM6IHRoYW5rIHlvdSB2ZXJ5IG11Y2ggZm9yIHlvdXIgb3BlbiBzb3VjZSBhbmQgbG9vayBm
-b3J3YXJkIHRvIHlvdXIKPj4+Pj4+ID4+Pj4gICAgICBlbWFpbC4KPj4+Pj4+ID4+Pj4KPj4+Pj4+
-ID4+Pj4gICAgICB0aGFua3OjoQo+Pj4+Pj4gPj4+Pgo+Pj4+Pj4gPj4+PiAgICAgIGthdGh5IGNo
-YW5nCj4+Pj4+PiA+Pj4+Cj4+Pj4+PiA+Pj4+ICAgICAgMjAxMC0xMi0xMwo+Pj4+Pj4gPj4+Pgo+
-Pj4+Pj4gPj4+PiAgICAgIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLQo+Pj4+Pj4gPj4+Pgo+Pj4+Pj4gPj4+PiAgICAgIEVtYWlso7pjaGFuZ2d4QDE2My5j
-b208bWFpbHRvOmNoYW5nZ3hAMTYzLmNvbT4KPj4+Pj4+ID4+Pj4KPj4+Pj4+ID4+Pj4gICAgICAt
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPj4+Pj4+ID4+
-Pj4KPj4+Pj4+ID4+Pj4KPj4+Pj4+ID4+Pj4KPj4+Pj4+ID4+Pj4gPSA9ID0gPSA9ID0gPSA9ID0g
-PSA9ID0gPSA9ID0gPSA9ID0gPSA9Cj4+Pj4+PiA+Pj4+IKGhoaGhoaGhoaGhoaGhoaHWwgo+Pj4+
-Pj4gPj4+PiDA8aOhCj4+Pj4+PiA+Pj4+IGNoYW5nZ3gKPj4+Pj4+ID4+Pj4gY2hhbmdneEAxNjMu
-Y29tPG1haWx0bzpjaGFuZ2d4QDE2My5jb20+Cj4+Pj4+PiA+Pj4+IDIwMTAtMTItMTMKPj4+Pj4+
-ID4+Pj4goaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoQo+Pj4+PiA+Pj4KPj4+Pj4gPj4+Cj4+
-Pj4+ID4+PiAtLSAKPj4+Pj4gPj4+IE1hbnVlbCBTdGFobAo+Pj4+PiA+Pj4gRnJhdW5ob2Zlci1J
-bnN0aXR1dCBJSVMKPj4+Pj4gPj4+IExlaXN0dW5nc29wdGltaWVydGUgU3lzdGVtZQo+Pj4+PiA+
-Pj4KPj4+Pj4gPj4+IE5vcmRvc3RwYXJrIDkzCj4+Pj4+ID4+PiBEOTA0MTEgTqi5cm5iZXJnCj4+
-Pj4+ID4+PiBUZWxlZm9uICArNDkgKDApOTExLzU4MDYxLTY0MTkKPj4+Pj4gPj4+IEZheCAgICAg
-ICs0OSAoMCk5MTEvNTgwNjEtNjM5OAo+Pj4+PiA+Pj4gRS1NYWlsICAgbWFudWVsLnN0YWhsQGlp
-cy5mcmF1bmhvZmVyLmRlCj4+Pj4+ID4+Pgo+Pj4+PiA+Pj4gaHR0cDovL3d3dy5paXMuZnJhdW5o
-b2Zlci5kZQo+Pj4+PiA+Pj4gaHR0cDovL3d3dy5zbWFydC1wb3dlci5mcmF1bmhvZmVyLmRlCj4+
-Pj4+ID4+Pgo+Pj4+PiA+Pj4KPj4+Pj4gPj4+Cj4+Pj4+ID4+PiBfX19fX19fX19fIEluZm9ybWF0
-aW9uIGZyb20gRVNFVCBTbWFydCBTZWN1cml0eSwgdmVyc2lvbiBvZiB2aXJ1cyBzaWduYXR1cmUg
-ZGF0YWJhc2UgNTU2MyAoMjAxMDEwMjYpIF9fX19fX19fX18KPj4+Pj4gPj4+Cj4+Pj4+ID4+PiBU
-aGUgbWVzc2FnZSB3YXMgY2hlY2tlZCBieSBFU0VUIFNtYXJ0IFNlY3VyaXR5Lgo+Pj4+PiA+Pj4K
-Pj4+Pj4gPj4+IGh0dHA6Ly93d3cuZXNldC5jb20KPj4+PiA+PiAKPj4+PiA+PiA9ID0gPSA9ID0g
-PSA9ID0gPSA9ID0gPSA9ID0gPSA9ID0gPSA9ID0KPj4+PiA+PiAJCQkKPj4+PiA+PiAKPj4+PiA+
-PiChoaGhoaGhoaGhoaGhoaGh1sIKPj4+PiA+PiDA8aOhCj4+Pj4gPj4gCj4+Pj4gPj4gCQkJCQo+
-Pj4+ID4+IKGhoaGhoaGhoaGhoaGhoaFjaGFuZ2d4Cj4+Pj4gPj4goaGhoaGhoaGhoaGhoaGhoWNo
-YW5nZ3hAMTYzLmNvbQo+Pj4+ID4+IKGhoaGhoaGhoaGhoaGhoaGhoaGhMjAxMC0xMi0yMAo+Pj4+
-ID4+IAo+Pj4+ID4+IAo+Pj4+ID4+IAo+Pj4+ID4+IAo+Pj4gPgo+Pj4gPgo+Pj4gPi0tIAo+Pj4g
-Pk1hbnVlbCBTdGFobAo+Pj4gPkZyYXVuaG9mZXItSW5zdGl0dXQgSUlTCj4+PiA+TGVpc3R1bmdz
-b3B0aW1pZXJ0ZSBTeXN0ZW1lCj4+PiA+Cj4+PiA+Tm9yZG9zdHBhcmsgOTMKPj4+ID5EOTA0MTEg
-Tqi5cm5iZXJnCj4+PiA+VGVsZWZvbiAgKzQ5ICgwKTkxMS81ODA2MS02NDE5Cj4+PiA+RmF4ICAg
-ICAgKzQ5ICgwKTkxMS81ODA2MS02Mzk4Cj4+PiA+RS1NYWlsICAgbWFudWVsLnN0YWhsQGlpcy5m
-cmF1bmhvZmVyLmRlCj4+PiA+Cj4+PiA+aHR0cDovL3d3dy5paXMuZnJhdW5ob2Zlci5kZQo+Pj4g
-Pmh0dHA6Ly93d3cuc21hcnQtcG93ZXIuZnJhdW5ob2Zlci5kZQo+Pj4gPgo+Pj4gPgo+Pj4gPgo+
-Pj4gPl9fX19fX19fX18gSW5mb3JtYXRpb24gZnJvbSBFU0VUIFNtYXJ0IFNlY3VyaXR5LCB2ZXJz
-aW9uIG9mIHZpcnVzIHNpZ25hdHVyZSBkYXRhYmFzZSA1NTYzICgyMDEwMTAyNikgX19fX19fX19f
-Xwo+Pj4gPgo+Pj4gPlRoZSBtZXNzYWdlIHdhcyBjaGVja2VkIGJ5IEVTRVQgU21hcnQgU2VjdXJp
-dHkuCj4+PiA+Cj4+PiA+aHR0cDovL3d3dy5lc2V0LmNvbQo+PiA9ID0gPSA9ID0gPSA9ID0gPSA9
-ID0gPSA9ID0gPSA9ID0gPSA9ID0KPj4gCQkJCj4+IAo+PiChoaGhoaGhoaGhoaGhoaGh1sIKPj4g
-wPGjoQo+PiAgCj4+IAkJCQkgCj4+IKGhoaGhoaGhoaGhoaGhoaFjaGFuZ2d4Cj4+IKGhoaGhoaGh
-oaGhoaGhoaFjaGFuZ2d4QDE2My5jb20KPj4goaGhoaGhoaGhoaGhoaGhoaGhoaEyMDEwLTEyLTIw
-Cj4+IAo+PiAKPj4gc2ExNmlzN3gyLmgKPj4gCj4+IE4YP24/cqOkYaiqPyllbT9oP3loaaHBP6Hp
-d14/P1kKPj4gCj4+IAo+PiBzYzE2aXM3eDIuYwo+PiAKPj4gThg/bj9yo6RhqKo/KWVtP2g/eWhp
-ocE/oel3Xj8/WQo+Cj4KPgo+Cj4KPl9fX19fX19fX18gSW5mb3JtYXRpb24gZnJvbSBFU0VUIFNt
-YXJ0IFNlY3VyaXR5LCB2ZXJzaW9uIG9mIHZpcnVzIHNpZ25hdHVyZSBkYXRhYmFzZSA1NTYzICgy
-MDEwMTAyNikgX19fX19fX19fXwo+Cj5UaGUgbWVzc2FnZSB3YXMgY2hlY2tlZCBieSBFU0VUIFNt
-YXJ0IFNlY3VyaXR5Lgo+Cj5odHRwOi8vd3d3LmVzZXQuY29tCgo9ID0gPSA9ID0gPSA9ID0gPSA9
-ID0gPSA9ID0gPSA9ID0gPSA9ID0KCQkJCgqhoaGhoaGhoaGhoaGhoaGh1sIKwPGjoQogCgkJCQkg
-CqGhoaGhoaGhoaGhoaGhoaFjaGFuZ2d4CqGhoaGhoaGhoaGhoaGhoaFjaGFuZ2d4QDE2My5jb20K
-oaGhoaGhoaGhoaGhoaGhoaGhoaEyMDEwLTEyLTIwCgoKCgoKLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-CkxvdHVzcGhlcmUgMjAxMQpSZWdpc3RlciBub3cgZm9yIExvdHVzcGhlcmUgMjAxMSBhbmQgbGVh
-cm4gaG93CnRvIGNvbm5lY3QgdGhlIGRvdHMsIHRha2UgeW91ciBjb2xsYWJvcmF0aXZlIGVudmly
-b25tZW50CnRvIHRoZSBuZXh0IGxldmVsLCBhbmQgZW50ZXIgdGhlIGVyYSBvZiBTb2NpYWwgQnVz
-aW5lc3MuCmh0dHA6Ly9wLnNmLm5ldC9zZnUvbG90dXNwaGVyZS1kMmQKX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18Kc3BpLWRldmVsLWdlbmVyYWwgbWFpbGlu
-ZyBsaXN0CnNwaS1kZXZlbC1nZW5lcmFsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldApodHRwczovL2xp
-c3RzLnNvdXJjZWZvcmdlLm5ldC9saXN0cy9saXN0aW5mby9zcGktZGV2ZWwtZ2VuZXJhbAo=
+I'm still looking for it ( software-gpio-uart )
+
+2010/7/21 Andrew Pushkin <andrei.pushkin@promwad.com>:
+> Hello. I need software UART implementation for arm atmel at91 or other
+> software UART implementation (for linux kernel). May be who get some
+> links with such projects?
+>
+
+
+-- 
+Andrew Pushkin
+-----------------------------------------------------------
+Promwad Innovation Company
+22, Olshevskogo St.
+Office 809
+220073, Minsk, Belarus
+Phone/Fax: +375 (17) 312-1246
+E-mail: andrei.pushkin@promwad.com
+Skype: andrewpushkin
+Web: www.promwad.com
