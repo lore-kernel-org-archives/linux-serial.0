@@ -1,40 +1,56 @@
-From: Andrew Pushkin <andrei.pushkin@promwad.com>
-Subject: Re: Need software UART implementation
-Date: Mon, 20 Dec 2010 18:15:24 +0200
-Message-ID: <AANLkTi=N+SqfOMFTdKyo1_QXZhxyByBoViwkYSBxEFUO@mail.gmail.com>
-References: <AANLkTiknD7OgbPFOOwedydywuUyKa2mA9ITwtsg2oaU6@mail.gmail.com>
+From: "changgx" <changgx-9Onoh4P/yGk@public.gmane.org>
+Subject: for sc16is752 driver
+Date: Wed, 22 Dec 2010 14:2:19 +0800
+Message-ID: <4D119475.0810A3.15889@m12-15.163.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ey0-f171.google.com ([209.85.215.171]:65163 "EHLO
-	mail-ey0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932680Ab0LTQQG (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 20 Dec 2010 11:16:06 -0500
-Received: by eyg5 with SMTP id 5so1540082eyg.2
-        for <linux-serial@vger.kernel.org>; Mon, 20 Dec 2010 08:16:05 -0800 (PST)
-In-Reply-To: <AANLkTiknD7OgbPFOOwedydywuUyKa2mA9ITwtsg2oaU6@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
+Return-path: <spi-devel-general-bounces-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>
+List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/spi-devel-general>,
+	<mailto:spi-devel-general-request-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=spi-devel-general>
+List-Post: <mailto:spi-devel-general-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>
+List-Help: <mailto:spi-devel-general-request-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/spi-devel-general>,
+	<mailto:spi-devel-general-request-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org?subject=subscribe>
+Errors-To: spi-devel-general-bounces-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org
+To: manuel.stahl-GeUHRtUQU7nSyEMIgutvibNAH6kLmebB@public.gmane.orgmanuel.stahl-GeUHRtUQU7nSyEMIgutvibNAH6kLmebB@public.gmane.org
+Cc: spi-devel-general-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, hunterzhu-MjT5Q16qtnaZox4op4iWzw@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial <linux-serial@vger.kernel.org>
 
-I'm still looking for it ( software-gpio-uart )
-
-2010/7/21 Andrew Pushkin <andrei.pushkin@promwad.com>:
-> Hello. I need software UART implementation for arm atmel at91 or other
-> software UART implementation (for linux kernel). May be who get some
-> links with such projects?
->
-
-
--- 
-Andrew Pushkin
------------------------------------------------------------
-Promwad Innovation Company
-22, Olshevskogo St.
-Office 809
-220073, Minsk, Belarus
-Phone/Fax: +375 (17) 312-1246
-E-mail: andrei.pushkin@promwad.com
-Skype: andrewpushkin
-Web: www.promwad.com
+SGVsbG8sbWFudWVsLnN0YWhsLCAgICAgICAgICAgICAKSSByZWFkIHRoZSBtZXNzYWdlIGZyb20g
+Sm9oYW5uZXMgUmVpZiAgb24gdGhlIGludGVybmV0LiAKSGlzIGVtYWlsIGlzIGFzIGZvbGxvd3M6
+CiJJJ20gdXNpbmcgdGhlIHNjMTZpczd4MiBkcml2ZXIgKFNQSTwtPiAyeCBVQVJUKSB3cml0dGVu
+IGJ5IE1hbnVlbCBTdGFobC4KV2hpbGUgb3BlcmF0aW5nIG9uZSBVQVJUIGNoYW5uZWwgZXZlcnl0
+aGluZyBzZWVtcyBmaW5lLiBCdXQgaWYgSSB1c2UgYm90aCBjaGFubmVscyB0aGUgZHJpdmVyIHJ1
+bnMgaW50byBhbiAidW5yZXNwb25zaXZlIHN0YXRlIiBhZnRlciBzb21lIHRpbWUuIEluIHRoaXMg
+c3RhdGUgSSBmaWd1cmVkIG91dCB0aGF0IHRoZSAvSVJRIHBpbiBvZiB0aGUgY2hpcCBzdGF5cyBs
+b3cgKGFjdGl2ZSkgYWx0aG91Z2ggdGhlIElJUiBvZiBib3RoIGNoYW5uZWxzIGluZGljYXRlcyB0
+aGF0IHRoZXJlIGlzIG5vIGludGVycnVwdCBwZW5kaW5nLiIKYmVjYXVzZSB0aGVyZSBpcyBub3Qg
+cmVxdWVzdF90aHJlYWRlZF9pcnEoICkgZnVuY3Rpb24gaW4gMi42LjI3IGtlcm5lbCAgdmVyc2lv
+bi4gU28gaSB1c2UgeW91ciBvbGQgdmVyc2lvbiBzYzE2aXM3eDIuYy4gSXQgZG9lcyBub3QgdXNl
+IHRoZSB0aHJlYWQtaXJxLCBidXQgd2l0aCB3b3JrIHF1ZXVlLiBCdXQgaSBnZXQgdGhlIHNhbWUg
+cmVzdWx0cyB3aXRoIEpvaGFubmVzIFJlaWYgLgpNeSB0ZXN0IGFwcCBwcm9ncmFtIGlzIGRlc2Ny
+aWJlZCBhcyBmb2xsb3dzOgpJbiB0aGUgYXBwbGljYXRpb24gIGNyZWF0ZXMgdHdvIHRocmVhZHMs
+IGVhY2ggb3BlcmF0ZXMgYSBzYzE2aXM3NTIgc2VyaWFsIHBvcnQuIEluIGV2ZXJ5IHRocmVhZCwg
+Zmlyc3Qgc2VuZCAxMDAgYnl0ZXMsZm9sbG93ZWQgYnkgd2FpdHRpbmcgdG8gcmVjZWl2ZSBhYm91
+dCAyMDBieXRlLgpUaGUgdGVzdCByZXN1bHQgaXMgdGhhdCB0aGUgc3BpIGRyaXZlciByZXBvcnRz
+IHRoZSBlcnJvciA6dHR5U0MwOiA2NCBpbnB1dCBvdmVycnVuKHMpICBvciB0dHlTQzE6IDEgaW5w
+dXQgb3ZlcnJ1bihzKSAsYW5kIGFwcCByZWNlaXZlZCBwYXJ0IG9mIHRoZSBkYXRhLgpTb21ldGlt
+ZXMgSVJRIGlzIGhlbGQgbG93LgpDYW4geW91IGdpdmUgc29tZSBhZHZpY2UgYWJvdXQgdGhpcyBx
+dWVzdGlvbj8KSSBjb250aW51ZSB0byBmb2xsb3cgdGhpcyBpc3N1ZS4KVGhhbmtzIQprYXRoeSBj
+aGFuZyAKIDIwMTAtMTItMjIKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tCnRlbKO6KzA4NiAyMSA2MjU0NTA1MC03OTEwCmZheKO6NjI1NzgwNDYKRW1haWyj
+umNoYW5nZ3hAMTYzLmNvbQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0KLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkZvcnJlc3RlciByZWNlbnRseSByZWxlYXNl
+ZCBhIHJlcG9ydCBvbiB0aGUgUmV0dXJuIG9uIEludmVzdG1lbnQgKFJPSSkgb2YKR29vZ2xlIEFw
+cHMuIFRoZXkgZm91bmQgYSAzMDAlIFJPSSwgMzglLTU2JSBjb3N0IHNhdmluZ3MsIGFuZCBicmVh
+ay1ldmVuCndpdGhpbiA3IG1vbnRocy4gIE92ZXIgMyBtaWxsaW9uIGJ1c2luZXNzZXMgaGF2ZSBn
+b25lIEdvb2dsZSB3aXRoIEdvb2dsZSBBcHBzOgphbiBvbmxpbmUgZW1haWwgY2FsZW5kYXIsIGFu
+ZCBkb2N1bWVudCBwcm9ncmFtIHRoYXQncyBhY2Nlc3NpYmxlIGZyb20geW91ciAKYnJvd3Nlci4g
+UmVhZCB0aGUgRm9ycmVzdGVyIHJlcG9ydDogaHR0cDovL3Auc2YubmV0L3NmdS9nb29nbGVhcHBz
+LXNmbmV3Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCnNw
+aS1kZXZlbC1nZW5lcmFsIG1haWxpbmcgbGlzdApzcGktZGV2ZWwtZ2VuZXJhbEBsaXN0cy5zb3Vy
+Y2Vmb3JnZS5uZXQKaHR0cHM6Ly9saXN0cy5zb3VyY2Vmb3JnZS5uZXQvbGlzdHMvbGlzdGluZm8v
+c3BpLWRldmVsLWdlbmVyYWwK
