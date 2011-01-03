@@ -1,63 +1,47 @@
-From: Nils Carlson <nils.carlson@ericsson.com>
-Subject: 16550 IIR LSR out-of-sync in handle_port
-Date: Mon, 3 Jan 2011 11:39:44 +0100
-Message-ID: <4D21A770.3080309@ericsson.com>
+From: Michael Williamson <michael.williamson@criticallink.com>
+Subject: Need to disable MSR interrupts in 8250 driver.  Request for guidance...
+Date: Mon, 03 Jan 2011 09:15:10 -0500
+Message-ID: <4D21D9EE.7070503@criticallink.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailgw10.se.ericsson.net ([193.180.251.61]:46913 "EHLO
-	mailgw10.se.ericsson.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751482Ab1ACKjq (ORCPT
+Received: from mail-vw0-f46.google.com ([209.85.212.46]:33755 "EHLO
+	mail-vw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754745Ab1ACOPR (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 3 Jan 2011 05:39:46 -0500
-Received: from [130.100.96.59] (seasc0608.dyn.rnd.as.sw.ericsson.se
- [130.100.96.59])	by linux.du.uab.ericsson.se (8.14.4/8.14.4) with ESMTP id
- p03Adisk020537	for <linux-serial@vger.kernel.org>; Mon, 3 Jan 2011 11:39:44
- +0100
+	Mon, 3 Jan 2011 09:15:17 -0500
+Received: by vws16 with SMTP id 16so5747721vws.19
+        for <linux-serial@vger.kernel.org>; Mon, 03 Jan 2011 06:15:16 -0800 (PST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
+Cc: "davinci-linux-open-source@linux.davincidsp.com" <davinci-linux-open-source@linux.davincidsp.com>
 
-Hi,
+Hello,
 
-I'm having an intermittent problem with my 16550 which is integrated in 
-a W83627DHG-P SuperIO chipset on a stable 2.6.32 kernel (though things 
-haven't changed much in 8250.c)
+I am working on platform from the davinci architecture that uses the 8520 UART
+driver.  However, there are some configurations that do not have a valid
+CTS input pin (it is a multi-purpose pin on a SoC part, and it may be configured
+for other functions).  These configurations can cause a pile of "false" 
+MSR interrupts.  If, in 8250.c, I set the UART_BUG_NOMSR flag as part of
+the up->bugs information, the problem clears up.
 
-The sequence of events is as follows:
-1. I get an interrupt for ttyS1 and IIR=0xc2 is read. This indicates 
-that the Transmitter Holding Register (THR) is empty and the handle_port 
-function is entered.
-2. The LSR is read as LSR=0x00, indicating that the THR is non-empty. At 
-this point we don't call the transmit_chars function as this is decided 
-by the LSR reading.
-3. After this I only hear from the serial port once, and then it goes 
-completely quiet; no more interrutps. This single interrupt has a 
-IIR=0xc1, so nothing interesting.
+The problem is that there is no way to pass bugs information via platform data.  
 
-Checking the LSR later it is set to LSR=0x60 indicating that now the THR 
-is empty.
+The link (below) contains a work-around patch that I had submitted to the davinci
+group.  It was suggested that I get guidance from the folks on the davinci-serial
+list, and that I should consider figuring out a way to set the UART_BUG_NOMSR 
+flag from the platform or initialization data.  The patch submission also has a 
+more detailed description of the problem for anyone interested.
 
-After this my serial port is permanently out of the game as no more 
-interrupts are generated.
+https://patchwork.kernel.org/patch/442671/
 
-Looking through the W83627DHG-P SuperIO chipset datasheet the only thing 
-I can come up with is that this is some sort of bug where the LSR is not 
-set concurrently with the IIR and I'm having terribly bad luck as the 
-LSR doesn't agree with the IIR. The other possibility is that something 
-is in fact writing to the serial port, though as I'm printk'ing from 
-each serial_in and serial_out I'm quite sure this isn't the case.
+Should I create a new port type, add a new UPF_ flag in the flags field, figure 
+out how to pass bugs information via platform data, or continue along the
+work-around path?  
 
-I see some solutions, but I don't think they're very pretty. One is to 
-stop and restart the tx interrupt each  time we call start_tx, this 
-should guarantee fresh interrupts.
+Thanks for any insight.
 
-Another solution would be to actually ignore the LSR in the interrupt 
-routine and just decode the IIR. This seems to be what the datasheet 
-intended. I'm guessing there are reasons not to do things this way, but 
-it does sort of make sense.
+-Mike
 
-All help and feedback much appreciated.
-
-Nils Carlson
