@@ -1,47 +1,71 @@
-From: Greg KH <gregkh@suse.de>
-Subject: Re: Need to disable MSR interrupts in 8250 driver. Request for
- guidance...
-Date: Mon, 3 Jan 2011 16:07:31 -0800
-Message-ID: <20110104000731.GA17841@suse.de>
-References: <4D21D9EE.7070503@criticallink.com>
- <87pqsda6de.fsf@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Michael Williamson <michael.williamson@criticallink.com>
+Subject: [PATCH 1/2] serial: Provide capability to disable modem status interrupts in 8250 driver
+Date: Tue,  4 Jan 2011 08:51:01 -0500
+Message-ID: <1294149062-31173-1-git-send-email-michael.williamson@criticallink.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor.suse.de ([195.135.220.2]:34792 "EHLO mx1.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750803Ab1ADAIN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 3 Jan 2011 19:08:13 -0500
-Content-Disposition: inline
-In-Reply-To: <87pqsda6de.fsf@ti.com>
+Received: from mail-qy0-f174.google.com ([209.85.216.174]:49026 "EHLO
+	mail-qy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750903Ab1ADNsx (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 4 Jan 2011 08:48:53 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kevin Hilman <khilman@deeprootsystems.com>
-Cc: Michael Williamson <michael.williamson@criticallink.com>, linux-serial@vger.kernel.org, "davinci-linux-open-source@linux.davincidsp.com" <davinci-linux-open-source@linux.davincidsp.com>
+To: davinci-linux-open-source@linux.davincidsp.com
+Cc: linux-arm-kernel@lists.infradead.org, khilman@deeprootsystems.com, linux-serial@vger.kernel.org, gregkh@suse.de, linux-kernel@vger.kernel.org, Michael Williamson <michael.williamson@criticallink.com>
 
-On Mon, Jan 03, 2011 at 03:56:45PM -0800, Kevin Hilman wrote:
-> Michael Williamson <michael.williamson@criticallink.com> writes:
-> 
-> > I am working on platform from the davinci architecture that uses the 8520 UART
-> > driver.  However, there are some configurations that do not have a valid
-> > CTS input pin (it is a multi-purpose pin on a SoC part, and it may be configured
-> > for other functions).  These configurations can cause a pile of "false" 
-> > MSR interrupts.  If, in 8250.c, I set the UART_BUG_NOMSR flag as part of
-> > the up->bugs information, the problem clears up.
-> 
-> [...]
-> 
-> > Should I create a new port type, add a new UPF_ flag in the flags field, figure 
-> > out how to pass bugs information via platform data, or continue along the
-> > work-around path?  
-> 
-> I added Greg KH to Cc as he's maintaining the 8250 core now.
-> 
-> IMO, adding UPF_ flag(s) to indicate this bug seems like the right way
-> to go to me.
+Certain SOC platforms utilize the 8250 serial UART core that do not provide
+valid modem control lines (in particular, CTS).  A mechanism is needed to
+allow platforms to configure the 8250 driver to disable modem status interrupts.
+Add a new UPF_NO_MSR flag and use it to check for the condition.
 
-Yes, it sounds correct to me as well.
+This patch was tested using a MityDSP-L138F platform having a UART CTS pin
+connected to a clock signal (and configured, via pinmux, as a clock input
+for another peripheral function).
 
-thanks,
+Signed-off-by: Michael Williamson <michael.williamson@criticallink.com>
+---
+Tested against linux-davinci tree.
+Checked that patch against davinci-next was successful.
 
-greg k-h
+ drivers/serial/8250.c       |    3 ++-
+ include/linux/serial_core.h |    3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index 09a5508..5b9e9f3 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -2613,7 +2613,8 @@ static void serial8250_config_port(struct uart_port *port, int flags)
+ 		autoconfig(up, probeflags);
+ 
+ 	/* if access method is AU, it is a 16550 with a quirk */
+-	if (up->port.type == PORT_16550A && up->port.iotype == UPIO_AU)
++	if ((up->port.type == PORT_16550A && up->port.iotype == UPIO_AU) ||
++	     up->port.flags & UPF_NO_MSR)
+ 		up->bugs |= UART_BUG_NOMSR;
+ 
+ 	if (up->port.type != PORT_UNKNOWN && flags & UART_CONFIG_IRQ)
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 212eb4c..e76064e 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -339,6 +339,7 @@ struct uart_port {
+ #define UPF_BUGGY_UART		((__force upf_t) (1 << 14))
+ #define UPF_NO_TXEN_TEST	((__force upf_t) (1 << 15))
+ #define UPF_MAGIC_MULTIPLIER	((__force upf_t) (1 << 16))
++#define UPF_NO_MSR		((__force upf_t) (1 << 17))
+ #define UPF_CONS_FLOW		((__force upf_t) (1 << 23))
+ #define UPF_SHARE_IRQ		((__force upf_t) (1 << 24))
+ /* The exact UART type is known and should not be probed.  */
+@@ -348,7 +349,7 @@ struct uart_port {
+ #define UPF_DEAD		((__force upf_t) (1 << 30))
+ #define UPF_IOREMAP		((__force upf_t) (1 << 31))
+ 
+-#define UPF_CHANGE_MASK		((__force upf_t) (0x17fff))
++#define UPF_CHANGE_MASK		((__force upf_t) (0x37fff))
+ #define UPF_USR_MASK		((__force upf_t) (UPF_SPD_MASK|UPF_LOW_LATENCY))
+ 
+ 	unsigned int		mctrl;			/* current modem ctrl settings */
+-- 
+1.7.0.4
+
