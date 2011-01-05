@@ -1,48 +1,71 @@
-From: Michael Williamson <michael.williamson@criticallink.com>
-Subject: [PATCH 2/2 v1] davinci: mityomapl138 platform: disable MS interrupts on UART1
-Date: Wed,  5 Jan 2011 07:26:32 -0500
-Message-ID: <1294230392-29564-2-git-send-email-michael.williamson@criticallink.com>
-References: <1294230392-29564-1-git-send-email-michael.williamson@criticallink.com>
+From: Michal Simek <monstr@monstr.eu>
+Subject: Re: Uartlite - ulite_transmit
+Date: Wed, 05 Jan 2011 13:39:14 +0100
+Message-ID: <4D246672.3070002@monstr.eu>
+References: <4D2465E0.2000707@monstr.eu>
+Reply-To: monstr@monstr.eu
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vw0-f46.google.com ([209.85.212.46]:58442 "EHLO
-	mail-vw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751716Ab1AEMYN (ORCPT
+Received: from mail-bw0-f46.google.com ([209.85.214.46]:47118 "EHLO
+	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751569Ab1AEMjT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Jan 2011 07:24:13 -0500
-Received: by mail-vw0-f46.google.com with SMTP id 16so6405069vws.19
-        for <linux-serial@vger.kernel.org>; Wed, 05 Jan 2011 04:24:13 -0800 (PST)
-In-Reply-To: <1294230392-29564-1-git-send-email-michael.williamson@criticallink.com>
+	Wed, 5 Jan 2011 07:39:19 -0500
+Received: by bwz15 with SMTP id 15so15433858bwz.19
+        for <linux-serial@vger.kernel.org>; Wed, 05 Jan 2011 04:39:18 -0800 (PST)
+In-Reply-To: <4D2465E0.2000707@monstr.eu>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: davinci-linux-open-source@linux.davincidsp.com
-Cc: linux-arm-kernel@lists.infradead.org, khilman@deeprootsystems.com, linux-serial@vger.kernel.org, gregkh@suse.de, Michael Williamson <michael.williamson@criticallink.com>
+To: monstr@monstr.eu
+Cc: Peter Korsgaard <jacmet@sunsite.dk>, Grant Likely <grant.likely@secretlab.ca>, linux-serial@vger.kernel.org
 
-All supported configurations of the MityDSP-l138 and MityARM-1808
-SoMs use the pin associated with CTS on UART1 as either an AHCLKX
-input or a USB_REFCLKIN input.  Disable modem status interrupts
-associated with this pin.
+Hi Peter, [cc: Grant]
 
-Signed-off-by: Michael Williamson <michael.williamson@criticallink.com>
----
-This is against the linux-davinci tree.
+I have found one thing which I would like to check with you.
+It is about mdm console which is uartlite compatible but it is slow.
+The problem which I think it is there is in ulite_transmit function if
+TXFULL is reported then it was returned 0. ulite_transmit is called from
+do-while loop in ulite_isr (shown below).
 
- arch/arm/mach-davinci/board-mityomapl138.c |    3 ++-
- 1 files changed, 2 insertions(+), 1 deletions(-)
+     do {
+         int stat = readb(port->membase + ULITE_STATUS);
+         busy  = ulite_receive(port, stat);
+         busy |= ulite_transmit(port, stat);
+     } while (busy);
 
-diff --git a/arch/arm/mach-davinci/board-mityomapl138.c b/arch/arm/mach-davinci/board-mityomapl138.c
-index 0bb5f0c..10ea4cb 100644
---- a/arch/arm/mach-davinci/board-mityomapl138.c
-+++ b/arch/arm/mach-davinci/board-mityomapl138.c
-@@ -283,7 +283,8 @@ static void __init mityomapl138_setup_nand(void)
- }
- 
- static struct davinci_uart_config mityomapl138_uart_config __initdata = {
--	.enabled_uarts = 0x7,
-+	.enabled_uarts	= 0x7,
-+	.disable_msi	= 0x2,
- };
- 
- static const short mityomap_mii_pins[] = {
+If tx is full then loop ends but there could be a lot of characters
+which need to be send that's why will be good to wait a little bit. I
+think it could be done by returning 1 in that case.
+
+What do you think? Patch is below.
+
+Thanks,
+Michal
+
+P.S.: second email because c&p error.
+
+
+diff --git a/drivers/serial/uartlite.c b/drivers/serial/uartlite.c
+index ff5f248..cd2c94b 100644
+--- a/drivers/serial/uartlite.c
++++ b/drivers/serial/uartlite.c
+@@ -128,7 +128,7 @@ static int ulite_transmit(struct uart_port *port,
+int stat)
+         struct circ_buf *xmit  = &port->info->xmit;
+
+         if (stat & ULITE_STATUS_TXFULL)
+-               return 0;
++               return 1;
+
+         if (port->x_char) {
+                 writeb(port->x_char, port->membase + ULITE_TX);
+
+
+
 -- 
-1.7.0.4
-
+Michal Simek, Ing. (M.Eng)
+w: www.monstr.eu p: +42-0-721842854
+Maintainer of Linux kernel 2.6 Microblaze Linux - http://www.monstr.eu/fdt/
+Microblaze U-BOOT custodian
