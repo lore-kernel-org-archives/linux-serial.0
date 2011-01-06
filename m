@@ -1,74 +1,61 @@
-From: Claudio Scordino <claudio@evidence.eu.com>
-Subject: [PATCH] RS485 on Cris: use global value of TIOCSRS485
-Date: Thu, 06 Jan 2011 09:25:43 +0100
-Message-ID: <4D257C87.4040400@evidence.eu.com>
+From: Peter Korsgaard <jacmet@sunsite.dk>
+Subject: Re: Uartlite - ulite_transmit
+Date: Thu, 06 Jan 2011 10:02:20 +0100
+Message-ID: <87r5cqh0bn.fsf@macbook.be.48ers.dk>
+References: <4D2465E0.2000707@monstr.eu> <4D246672.3070002@monstr.eu>
+	<87vd22h3dq.fsf@macbook.be.48ers.dk> <4D257D61.2060400@monstr.eu>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from borg.asidev.net ([95.141.38.199]:51867 "EHLO borg.asidev.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751277Ab1AFIeT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Jan 2011 03:34:19 -0500
+Received: from mail-wy0-f174.google.com ([74.125.82.174]:37662 "EHLO
+	mail-wy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751319Ab1AFJC0 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 6 Jan 2011 04:02:26 -0500
+Received: by wyb28 with SMTP id 28so16191549wyb.19
+        for <linux-serial@vger.kernel.org>; Thu, 06 Jan 2011 01:02:25 -0800 (PST)
+In-Reply-To: <4D257D61.2060400@monstr.eu> (Michal Simek's message of "Thu, 06
+	Jan 2011 09:29:21 +0100")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: starvik@axis.com, Jesper Nilsson <Jesper.Nilsson@axis.com>
-Cc: linux-cris-kernel <linux-cris-kernel@axis.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux Kernel <linux-kernel@vger.kernel.org>
+To: monstr@monstr.eu
+Cc: Grant Likely <grant.likely@secretlab.ca>, linux-serial@vger.kernel.org
 
-Hi Jesper, Hi Mikael,
+>>>>> "Michal" == Michal Simek <monstr@monstr.eu> writes:
 
-	    the following patch sets the value of TIOCSRS485 on Cris
-equal to the value of all other architectures (as currently is for
-TIOCGRS485).
+Hi,
 
-With this patch, TIOCSRS485 gets the same value across all
-architectures, making maintenance and portability of user-level code
-easier.
+ >> That would make us spin in the interrupt for potentially quite a
+ >> while, E.G. until all data is transferred to the TX fifo.
 
-Best regards,
+ Michal> yep. That's truth but shouldn't be a problem for standard
+ Michal> systems. Maybe worth to count how many times is tx fifo full on
+ Michal> standard systems.
 
-	Claudio
+But I still don't understand why you would want to burn CPU spinning
+when you know the UART will be busy for a while. Leaving it alone until
+it generates the TX fifo empty interrupt seems more logical to me.
 
+ >> What kind of problem are you trying to fix in the first place? You
+ >> should get an interrupt when the TX fifo empties, which fill completely
+ >> fill up the fifo again and so on - That should work just fine even with
+ >> a low baud rate.
 
-RS485: use global value of TIOCSRS485 (i.e. 0x546F) on Cris.
+ Michal> I am trying to solve the problem for xilinx mdm IP (compatible
+ Michal> with uartlite) where there are some missing characters on
+ Michal> serial console.
 
-Signed-off-by: Claudio Scordino <claudio@evidence.eu.com>
----
- arch/cris/include/asm/ioctls.h |    2 +-
- drivers/serial/crisv10.c       |    5 +++++
- 2 files changed, 6 insertions(+), 1 deletions(-)
+Strange. It's been a few years since I worked with Xilinx stuff and
+never used microblaze, so I don't know anything about MDM.
 
-diff --git a/arch/cris/include/asm/ioctls.h b/arch/cris/include/asm/ioctls.h
-index 488fbb3..2c15ff8 100644
---- a/arch/cris/include/asm/ioctls.h
-+++ b/arch/cris/include/asm/ioctls.h
-@@ -4,7 +4,7 @@
- #define TIOCSERGSTRUCT	0x5458 /* For debugging only */
- #define TIOCSERSETRS485	0x5461  /* enable rs-485 (deprecated) */
- #define TIOCSERWRRS485	0x5462  /* write rs-485 */
--#define TIOCSRS485	0x5463  /* enable rs-485 */
-+#define TIOCSRS485DEPR	0x5463  /* enable rs-485 (deprecated) */
- 
- #include <asm-generic/ioctls.h>
- 
-diff --git a/drivers/serial/crisv10.c b/drivers/serial/crisv10.c
-index bcc31f2..29bd418 100644
---- a/drivers/serial/crisv10.c
-+++ b/drivers/serial/crisv10.c
-@@ -3717,6 +3717,11 @@ rs_ioctl(struct tty_struct *tty, struct file * file,
- 		return e100_enable_rs485(tty, &rs485data);
- 	}
- 
-+	case TIOCSRS485DEPR:
-+	{
-+		printk(KERN_DEBUG "The use of this ioctl is deprecated. Use TIOCSRS485 instead\n");
-+		/* Fall through */
-+	}
- 	case TIOCSRS485:
- 	{
- 		/* This is the new version of TIOCSRS485, with new
+ Michal> Maybe there is something wrong in different place but there are
+ Michal> definitely missing characters.
+
+ Michal> Just for the record: I also have to extend for loop in
+ Michal> ulite_console_wait_tx to get all chars for console.
+
+Yeah, that loop should probably be time based (and perhaps calculated
+from baud rate).
+
 -- 
-1.7.1
-
-
-
+Bye, Peter Korsgaard
