@@ -1,83 +1,172 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: Mainpine IQ Express Rev3 problems beginning 2.6.36
-Date: Mon, 10 Jan 2011 16:02:31 -0800
-Message-ID: <20110111000231.GA30424@kroah.com>
-References: <4D001AF1.80902@mainpine.com>
- <20101209064259.GA10714@kroah.com>
- <9BEA64D1D71A4BCFA22E0ECE7A4B3A01@callisto>
- <20101212165201.GB14184@kroah.com>
- <E2D1FFBE046E485284F82CC8135FD901@callisto>
- <64E919E148714BFCB46D62A05E9EF13D@callisto>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Mike Frysinger <vapier@gentoo.org>
+Subject: [PATCH] drivers: char: hvc: add Blackfin JTAG console support
+Date: Mon, 10 Jan 2011 21:43:57 -0500
+Message-ID: <1294713837-4929-1-git-send-email-vapier@gentoo.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:38751 "EHLO coco.kroah.org"
+Received: from smtp.gentoo.org ([140.211.166.183]:59382 "EHLO smtp.gentoo.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754653Ab1AKACt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 10 Jan 2011 19:02:49 -0500
-Content-Disposition: inline
-In-Reply-To: <64E919E148714BFCB46D62A05E9EF13D@callisto>
+	id S1753410Ab1AKCgM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 10 Jan 2011 21:36:12 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Lee Howard <lee.howard@mainpine.com>
-Cc: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: uclinux-dist-devel@blackfin.uclinux.org, linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
 
-On Fri, Dec 17, 2010 at 05:25:19AM -0800, Lee Howard wrote:
-> > -----Original Message-----
-> > From: linux-serial-owner@vger.kernel.org 
-> > [mailto:linux-serial-owner@vger.kernel.org] On Behalf Of Lee Howard
-> > Sent: Tuesday, December 14, 2010 11:50 AM
-> > To: 'Greg KH'
-> > Cc: linux-serial@vger.kernel.org
-> > Subject: RE: Mainpine IQ Express Rev3 problems beginning 2.6.36
-> > 
-> > > -----Original Message-----
-> > > From: Greg KH [mailto:greg@kroah.com]
-> > > Sent: Sunday, December 12, 2010 8:52 AM
-> > 
-> > > As for build issues, try to make a minimal working config for your 
-> > > system, using 'make localmodconfig'.  That will speed up your build 
-> > > time immensely as well as reduce your chances of build and runtime 
-> > > problems with the intermediate kernels.
-> > 
-> > Thank-you, that did help immensely.
-> > 
-> > Here's the 'git bisect' result...
-> > 
-> > --------------
-> > 7a56aa45982bb87bfca98a2832b5ae782c03364a is the first bad 
-> > commit commit 7a56aa45982bb87bfca98a2832b5ae782c03364a
-> > Author: Yegor Yefremov <yegor_sub1@visionsystems.de>
-> > Date:   Wed Jun 16 16:29:55 2010 +0200
-> > 
-> >     serial: add UART_CAP_EFR and UART_CAP_SLEEP flags to 
-> > 16C950 UARTs definition
-> >     
-> >     Adding UART_CAP_EFR and UART_CAP_SLEEP flags will enable 
-> > sleep mode
-> >     and automatic CTS flow control for 16C950 UARTs. It will 
-> > also avoid
-> >     capabilities detection warning like this:
-> >     
-> >     "ttyS0: detected caps 00000700 should be 00000100"
-> >     
-> >     Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
-> >     Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
-> > 
-> > :040000 040000 1776ca8d5c653834363c0778b5b404ee52bd2d69
-> > b81cfe4f302a674935181bd248641873820517e5 M      drivers
-> > --------------
-> > 
-> > Indeed, if I remove the UART_CAP_EFR flag from later kernel 
-> > revisions there is no problem.
-> 
-> Greg,
-> 
-> What's to be done?
+This converts the existing bfin_jtag_comm TTY driver to the HVC layer so
+that the common HVC code can worry about all of the TTY/polling crap and
+leave the Blackfin code to worry about the Blackfin bits.
 
-Sorry for the delay, I think Pavel's posted patch will solve this issue
-for you, right?
+Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+---
+ drivers/char/Kconfig         |    9 ++++
+ drivers/char/Makefile        |    1 +
+ drivers/char/hvc_bfin_jtag.c |  105 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 115 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/char/hvc_bfin_jtag.c
 
-thanks,
+diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
+index 4498e2a..9c7fed8 100644
+--- a/drivers/char/Kconfig
++++ b/drivers/char/Kconfig
+@@ -731,6 +731,15 @@ config HVC_UDBG
+        select HVC_DRIVER
+        default n
+ 
++config HVC_BFIN_JTAG
++	bool "Blackfin JTAG console"
++	depends on BLACKFIN
++	select HVC_DRIVER
++	help
++	 This console uses the Blackfin JTAG to create a console under the
++	 the HVC driver.  If you don't have JTAG, then you probably don't
++	 want this option.
++
+ config VIRTIO_CONSOLE
+ 	tristate "Virtio console"
+ 	depends on VIRTIO
+diff --git a/drivers/char/Makefile b/drivers/char/Makefile
+index ccd666f..ae0e062 100644
+--- a/drivers/char/Makefile
++++ b/drivers/char/Makefile
+@@ -40,6 +40,7 @@ obj-$(CONFIG_HVC_IRQ)		+= hvc_irq.o
+ obj-$(CONFIG_HVC_XEN)		+= hvc_xen.o
+ obj-$(CONFIG_HVC_IUCV)		+= hvc_iucv.o
+ obj-$(CONFIG_HVC_UDBG)		+= hvc_udbg.o
++obj-$(CONFIG_HVC_BFIN_JTAG)	+= hvc_bfin_jtag.o
+ obj-$(CONFIG_VIRTIO_CONSOLE)	+= virtio_console.o
+ obj-$(CONFIG_RAW_DRIVER)	+= raw.o
+ obj-$(CONFIG_SGI_SNSC)		+= snsc.o snsc_event.o
+diff --git a/drivers/char/hvc_bfin_jtag.c b/drivers/char/hvc_bfin_jtag.c
+new file mode 100644
+index 0000000..31d6cc6
+--- /dev/null
++++ b/drivers/char/hvc_bfin_jtag.c
+@@ -0,0 +1,105 @@
++/*
++ * Console via Blackfin JTAG Communication
++ *
++ * Copyright 2008-2011 Analog Devices Inc.
++ *
++ * Enter bugs at http://blackfin.uclinux.org/
++ *
++ * Licensed under the GPL-2 or later.
++ */
++
++#include <linux/console.h>
++#include <linux/delay.h>
++#include <linux/err.h>
++#include <linux/init.h>
++#include <linux/moduleparam.h>
++#include <linux/types.h>
++
++#include "hvc_console.h"
++
++/* See the Debug/Emulation chapter in the HRM */
++#define EMUDOF   0x00000001	/* EMUDAT_OUT full & valid */
++#define EMUDIF   0x00000002	/* EMUDAT_IN full & valid */
++#define EMUDOOVF 0x00000004	/* EMUDAT_OUT overflow */
++#define EMUDIOVF 0x00000008	/* EMUDAT_IN overflow */
++
++/* Helper functions to glue the register API to simple C operations */
++static inline uint32_t bfin_write_emudat(uint32_t emudat)
++{
++	__asm__ __volatile__("emudat = %0;" : : "d"(emudat));
++	return emudat;
++}
++
++static inline uint32_t bfin_read_emudat(void)
++{
++	uint32_t emudat;
++	__asm__ __volatile__("%0 = emudat;" : "=d"(emudat));
++	return emudat;
++}
++
++/* Send data to the host */
++static int hvc_bfin_put_chars(uint32_t vt, const char *buf, int count)
++{
++	static uint32_t outbound_len;
++	uint32_t emudat;
++	int ret;
++
++	if (bfin_read_DBGSTAT() & EMUDOF)
++		return 0;
++
++	if (!outbound_len) {
++		outbound_len = count;
++		bfin_write_emudat(outbound_len);
++		return 0;
++	}
++
++	ret = min(outbound_len, (uint32_t)4);
++	memcpy(&emudat, buf, ret);
++	bfin_write_emudat(emudat);
++	outbound_len -= ret;
++
++	return ret;
++}
++
++/* Receive data from the host */
++static int hvc_bfin_get_chars(uint32_t vt, char *buf, int count)
++{
++	static uint32_t inbound_len;
++	uint32_t emudat;
++	int ret;
++
++	if (!(bfin_read_DBGSTAT() & EMUDIF))
++		return 0;
++	emudat = bfin_read_emudat();
++
++	if (!inbound_len) {
++		inbound_len = emudat;
++		return 0;
++	}
++
++	ret = min(inbound_len, (uint32_t)4);
++	memcpy(buf, &emudat, ret);
++	inbound_len -= ret;
++
++	return ret;
++}
++
++/* Glue the HVC layers to the Blackfin layers */
++static const struct hv_ops hvc_bfin_get_put_ops = {
++	.get_chars = hvc_bfin_get_chars,
++	.put_chars = hvc_bfin_put_chars,
++};
++
++static int __init hvc_bfin_console_init(void)
++{
++	hvc_instantiate(0, 0, &hvc_bfin_get_put_ops);
++	return 0;
++}
++console_initcall(hvc_bfin_console_init);
++
++static int __init hvc_bfin_init(void)
++{
++	hvc_alloc(0, 0, &hvc_bfin_get_put_ops, 128);
++	return 0;
++}
++device_initcall(hvc_bfin_init);
+-- 
+1.7.4.rc1
 
-greg k-h
