@@ -1,60 +1,145 @@
-From: Mike Frysinger <vapier@gentoo.org>
-Subject: Re: [PATCH] drivers: char: hvc: add Blackfin JTAG console support
-Date: Tue, 11 Jan 2011 00:31:57 -0500
-Message-ID: <AANLkTim1n+DNChvuqJKRTAKs2xjpDCV-yV_y9nyQc8RL@mail.gmail.com>
-References: <1294713837-4929-1-git-send-email-vapier@gentoo.org>
- <AANLkTinnuxvx9+eNvCqjK2GW2XQPn4LjK4WfMj=f20Xw@mail.gmail.com> <201101110441.33841.arnd@arndb.de>
+From: "Manjunathappa, Prakash" <prakash.pm@ti.com>
+Subject: RE: [PATCH 1/2 v1] davinci: support disabling modem status
+ interrupts on	SOC UARTS
+Date: Tue, 11 Jan 2011 13:47:19 +0530
+Message-ID: <B85A65D85D7EB246BE421B3FB0FBB593024829BCD4@dbde02.ent.ti.com>
+References: <1294230392-29564-1-git-send-email-michael.williamson@criticallink.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wy0-f174.google.com ([74.125.82.174]:64208 "EHLO
-	mail-wy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751200Ab1AKFcT convert rfc822-to-8bit (ORCPT
+Received: from arroyo.ext.ti.com ([192.94.94.40]:40534 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754350Ab1AKIRj convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 11 Jan 2011 00:32:19 -0500
-In-Reply-To: <201101110441.33841.arnd@arndb.de>
+	Tue, 11 Jan 2011 03:17:39 -0500
+In-Reply-To: <1294230392-29564-1-git-send-email-michael.williamson@criticallink.com>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>, uclinux-dist-devel@blackfin.uclinux.org, linux-kernel@vger.kernel.org
+To: Michael Williamson <michael.williamson@criticallink.com>, "davinci-linux-open-source@linux.davincidsp.com" <davinci-linux-open-source@linux.davincidsp.com>
+Cc: "khilman@deeprootsystems.com" <khilman@deeprootsystems.com>, "gregkh@suse.de" <gregkh@suse.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-On Mon, Jan 10, 2011 at 22:41, Arnd Bergmann wrote:
-> On Tuesday 11 January 2011, Mike Frysinger wrote:
->> throughput seems to be a bit lower. =C2=A0the Blackfin JTAG hardware=
- has
->> basically a 4 byte fifo that is filled/consumed in a single shot. =C2=
-=A0and
->> the Blackfin can produce much faster than the host can consume. =C2=A0=
-so
->> atm, i have it send out 4 bytes, and the hvc layers take care of
->> calling back into me at some point. =C2=A0if i add a busy loop to ru=
-n a few
->> hundred milliseconds (like HZ/4), it runs much nicer. =C2=A0but obvi=
-ously
->> doesnt give anyone else time to run. =C2=A0i cant schedule or anythi=
-ng as
->> the write layers are called with a spin_lock_irqsave. =C2=A0any tips=
- for
->> how to speed this up a bit ? =C2=A0or is it a wash with hvc ?
->
-> You could try lowering the hvc MIN_TIMEOUT value. If you want to
-> change it for blackfin, you could probably make it a configuration
-> option. However, if it really takes a few milliseconds that you need
-> to wait between two accesses, MIN_TIMEOUT should already be small
-> enough.
->
-> You should really not need to sleep in your output function, as
-> the khvcd() timeout logic tries handling this in the best way.
-> There may be a bug in that logic though (wouldn't be the first one
-> there), so try to see what the timeouts are when you get into
-> this problem.
+Hi Michael,
 
-np, i'll poke around a bit.  i'm ok with merging this driver now since
-it seems to be functionality equivalent to the old code.
--mike
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+On Wed, Jan 05, 2011 at 17:56:31, Michael Williamson wrote:
+> On the da850/omap-l138/am18x family of SoCs, up to three on chip UARTS may be
+> configured.  These peripherals support the standard Tx/Rx signals as well as
+> CTS/RTS hardware flow control signals.  The pins on these SOC's associated with
+> these signals are multiplexed; e.g., the pin providing UART0_TXD capability
+> also provides SPI0 chip select line 5 output capability.  The configuration of
+> the pin multiplexing occurs during platform initialization (or by earlier
+> bootloader operations).
+> 
+> There is a problem with the multiplexing implementation on these SOCs.  Only
+> the output and output enable portions of the I/O section of the pin are
+> multiplexed.  All peripheral input functions remain connected to a given pin
+> regardless of configuration.
+> 
+> In many configurations of these parts, providing a UART with Tx/Rx capability
+> is needed, but the HW flow control capability is not.  Furthermore, the pins
+> associated with the CTS inputs on these UARTS are often configured to support
+> a different peripheral, and they may be active/toggling during runtime.  This
+> can result in false modem status (CTS) interrupts being asserted to the 8250
+> driver controlling the associated Tx/Rx pins, and will impact system
+> performance.
+> 
+> The 8250 serial driver platform data does not provide a direct mechanism to
+> tell the driver to disable modem status (i.e., CTS) interrupts for a given
+> port.  As a work-around, intercept register writes to the IER and disable
+> modem status interrupts.
+> 
+> This patch was tested using a MityDSP-L138 SOM having UART1 enabled with the
+> associated CTS pin connected to a clock (configured for the AHCLKX function).
+> 
+> Background / problem reports related to this issue are captured in the links
+> below:
+> http://e2e.ti.com/support/dsp/omap_applications_processors/f/42/t/36701.aspx
+> http://www.mail-archive.com/davinci-linux-open-source@linux.davincidsp.com/msg19524.html
+> 
+> Signed-off-by: Michael Williamson <michael.williamson@criticallink.com>
+> Tested-by: Michael Williamson <michael.williamson@criticallink.com>
+> ---
+> This is against the linux-davinci tree.
+> 
+> Changes from original proposed patch:
+> - instead of overriding set_termios, now override serial_out driver hook
+>   and intercept writes to the MSR.
+> 
+> An alternate patch was proposed that modified the serial core driver and added a UPF_NO_MSR
+> flag.  There was resistance to this patch.  The reasoning is that the core 8250 driver code
+> should not continue to get muddied by platform hacks.
+> 
+> I'm wondering, given this and the original proposed patch, if the set_termios
+> override might be better?  This patch incurs a test penalty every time the UART
+> is accessed; whereas the original patch only incurs a penalty on IOCTL calls.  The
+> set_termios would at least report the proper IOCTL information for CRTSCTS 
+> when probed, I think, instead of just quietly lying about it...
+> 
+>  arch/arm/mach-davinci/include/mach/serial.h |    2 ++
+>  arch/arm/mach-davinci/serial.c              |   19 +++++++++++++++++++
+>  2 files changed, 21 insertions(+), 0 deletions(-)
+> 
+> diff --git a/arch/arm/mach-davinci/include/mach/serial.h b/arch/arm/mach-davinci/include/mach/serial.h
+> index 8051110..8f7f5e5 100644
+> --- a/arch/arm/mach-davinci/include/mach/serial.h
+> +++ b/arch/arm/mach-davinci/include/mach/serial.h
+> @@ -49,6 +49,8 @@
+>  struct davinci_uart_config {
+>  	/* Bit field of UARTs present; bit 0 --> UART1 */
+>  	unsigned int enabled_uarts;
+> +	/* Bit field of modem status interrupt disables; bit 0 -> UART1 */
+> +	unsigned int disable_msi;
+>  };
+>  
+>  extern int davinci_serial_init(struct davinci_uart_config *);
+> diff --git a/arch/arm/mach-davinci/serial.c b/arch/arm/mach-davinci/serial.c
+> index 1875740..83d44c0 100644
+> --- a/arch/arm/mach-davinci/serial.c
+> +++ b/arch/arm/mach-davinci/serial.c
+> @@ -31,6 +31,22 @@
+>  #include <mach/serial.h>
+>  #include <mach/cputype.h>
+>  
+> +static void davinci_serial_out_nomsi(struct uart_port *p, int offset, int value)
+> +{
+> +	int lcr, lcr_off;
+> +
+> +	if (offset == UART_IER) {
+> +		lcr_off = UART_LCR << p->regshift;
+> +		lcr = readb(p->membase + lcr_off);
+> +		/* don't override DLM setting, or probing operations */
+> +		if (!(lcr & UART_LCR_DLAB) && p->type != PORT_UNKNOWN)
+> +			value &= ~UART_IER_MSI;
+> +	}
+> +
+> +	offset <<= p->regshift;
+> +	writeb(value, p->membase + offset);
+> +}
+> +
+>  static inline unsigned int serial_read_reg(struct plat_serial8250_port *up,
+>  					   int offset)
+>  {
+> @@ -109,6 +125,9 @@ int __init davinci_serial_init(struct davinci_uart_config *info)
+>  
+>  		if (p->membase && p->type != PORT_AR7)
+>  			davinci_serial_reset(p);
+> +
+> +		if (info->disable_msi & (1 << i))
+> +			p->serial_out = davinci_serial_out_nomsi;
+>  	}
+>  
+>  	return platform_device_register(soc_info->serial_dev);
+> -- 
+> 1.7.0.4
+> 
+> _______________________________________________
+> Davinci-linux-open-source mailing list
+> Davinci-linux-open-source@linux.davincidsp.com
+> http://linux.davincidsp.com/mailman/listinfo/davinci-linux-open-source
+> 
+When status of CTS input is wrong, why can't we say flow control not supported on particular port and return an error to application trying to enable hardware flow control(i.e. set CRTSCTS). I am assuming you are seeing the spurious interrupts only on enabling hardware flow control(as modem status interrupt is enabled on setting the CRTSCTS).
+
+Thanks,
+Prakash
+
