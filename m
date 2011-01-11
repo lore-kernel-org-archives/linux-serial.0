@@ -1,45 +1,82 @@
 From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH resend 2] Add sc16is7x2 driver
-Date: Fri, 7 Jan 2011 11:37:33 -0800
-Message-ID: <20110107193733.GC18309@kroah.com>
-References: <4D272DDA.6010007@iis.fraunhofer.de>
+Subject: Re: Mainpine IQ Express Rev3 problems beginning 2.6.36
+Date: Mon, 10 Jan 2011 16:02:31 -0800
+Message-ID: <20110111000231.GA30424@kroah.com>
+References: <4D001AF1.80902@mainpine.com>
+ <20101209064259.GA10714@kroah.com>
+ <9BEA64D1D71A4BCFA22E0ECE7A4B3A01@callisto>
+ <20101212165201.GB14184@kroah.com>
+ <E2D1FFBE046E485284F82CC8135FD901@callisto>
+ <64E919E148714BFCB46D62A05E9EF13D@callisto>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:49449 "EHLO coco.kroah.org"
+Received: from kroah.org ([198.145.64.141]:38751 "EHLO coco.kroah.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754507Ab1AGTqC (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 7 Jan 2011 14:46:02 -0500
+	id S1754653Ab1AKACt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 10 Jan 2011 19:02:49 -0500
 Content-Disposition: inline
-In-Reply-To: <4D272DDA.6010007@iis.fraunhofer.de>
+In-Reply-To: <64E919E148714BFCB46D62A05E9EF13D@callisto>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-Cc: linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Thomas Weber <weber@corscience.de>, Johannes Reif <reif@corscience.de>, changgx <changgx@163.com>, miguelangel@nbee.es
+To: Lee Howard <lee.howard@mainpine.com>
+Cc: linux-serial@vger.kernel.org
 
-On Fri, Jan 07, 2011 at 04:14:34PM +0100, Manuel Stahl wrote:
-> IRQ is now implemented with work queue (like max3100).
-> The problem is, that the sc16is7x2 has a low active irq. But with
-> active low threaded_irqs, shared irqs are not allowed.
+On Fri, Dec 17, 2010 at 05:25:19AM -0800, Lee Howard wrote:
+> > -----Original Message-----
+> > From: linux-serial-owner@vger.kernel.org 
+> > [mailto:linux-serial-owner@vger.kernel.org] On Behalf Of Lee Howard
+> > Sent: Tuesday, December 14, 2010 11:50 AM
+> > To: 'Greg KH'
+> > Cc: linux-serial@vger.kernel.org
+> > Subject: RE: Mainpine IQ Express Rev3 problems beginning 2.6.36
+> > 
+> > > -----Original Message-----
+> > > From: Greg KH [mailto:greg@kroah.com]
+> > > Sent: Sunday, December 12, 2010 8:52 AM
+> > 
+> > > As for build issues, try to make a minimal working config for your 
+> > > system, using 'make localmodconfig'.  That will speed up your build 
+> > > time immensely as well as reduce your chances of build and runtime 
+> > > problems with the intermediate kernels.
+> > 
+> > Thank-you, that did help immensely.
+> > 
+> > Here's the 'git bisect' result...
+> > 
+> > --------------
+> > 7a56aa45982bb87bfca98a2832b5ae782c03364a is the first bad 
+> > commit commit 7a56aa45982bb87bfca98a2832b5ae782c03364a
+> > Author: Yegor Yefremov <yegor_sub1@visionsystems.de>
+> > Date:   Wed Jun 16 16:29:55 2010 +0200
+> > 
+> >     serial: add UART_CAP_EFR and UART_CAP_SLEEP flags to 
+> > 16C950 UARTs definition
+> >     
+> >     Adding UART_CAP_EFR and UART_CAP_SLEEP flags will enable 
+> > sleep mode
+> >     and automatic CTS flow control for 16C950 UARTs. It will 
+> > also avoid
+> >     capabilities detection warning like this:
+> >     
+> >     "ttyS0: detected caps 00000700 should be 00000100"
+> >     
+> >     Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
+> >     Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+> > 
+> > :040000 040000 1776ca8d5c653834363c0778b5b404ee52bd2d69
+> > b81cfe4f302a674935181bd248641873820517e5 M      drivers
+> > --------------
+> > 
+> > Indeed, if I remove the UART_CAP_EFR flag from later kernel 
+> > revisions there is no problem.
 > 
-> Please try this one and report errors.
+> Greg,
 > 
-> Regards,
-> Manuel Stahl
-> 
-> PS: sorry that the patch is not inline, not sure how to configure
-> thunderbird correctly
+> What's to be done?
 
-Don't sign your emails, and that will help out in getting 'git am' to be
-able to accept this.
-
-Care to retry with the signature?
-
-> --- /dev/null
-> +++ b/include/linux/serial_sc16is7x2.h
-
-This should go in include/linux/platform_data/ instead of the "main"
-include/linux/ directory.
+Sorry for the delay, I think Pavel's posted patch will solve this issue
+for you, right?
 
 thanks,
 
