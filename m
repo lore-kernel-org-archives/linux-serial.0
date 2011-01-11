@@ -1,42 +1,45 @@
-From: Mike Frysinger <vapier@gentoo.org>
+From: Arnd Bergmann <arnd@arndb.de>
 Subject: Re: [PATCH] drivers: char: hvc: add Blackfin JTAG console support
-Date: Mon, 10 Jan 2011 22:08:48 -0500
-Message-ID: <AANLkTinnuxvx9+eNvCqjK2GW2XQPn4LjK4WfMj=f20Xw@mail.gmail.com>
-References: <1294713837-4929-1-git-send-email-vapier@gentoo.org>
+Date: Tue, 11 Jan 2011 04:41:33 +0100
+Message-ID: <201101110441.33841.arnd@arndb.de>
+References: <1294713837-4929-1-git-send-email-vapier@gentoo.org> <AANLkTinnuxvx9+eNvCqjK2GW2XQPn4LjK4WfMj=f20Xw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: Text/Plain;
+  charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wy0-f174.google.com ([74.125.82.174]:61048 "EHLO
-	mail-wy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753732Ab1AKDMZ (ORCPT
+Received: from moutng.kundenserver.de ([212.227.17.8]:50373 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755300Ab1AKDli (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 10 Jan 2011 22:12:25 -0500
-In-Reply-To: <1294713837-4929-1-git-send-email-vapier@gentoo.org>
+	Mon, 10 Jan 2011 22:41:38 -0500
+In-Reply-To: <AANLkTinnuxvx9+eNvCqjK2GW2XQPn4LjK4WfMj=f20Xw@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: uclinux-dist-devel@blackfin.uclinux.org, linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
+To: Mike Frysinger <vapier@gentoo.org>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>, uclinux-dist-devel@blackfin.uclinux.org, linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2011 at 21:43, Mike Frysinger wrote:
-> This converts the existing bfin_jtag_comm TTY driver to the HVC layer so
-> that the common HVC code can worry about all of the TTY/polling crap and
-> leave the Blackfin code to worry about the Blackfin bits.
+On Tuesday 11 January 2011, Mike Frysinger wrote:
+> throughput seems to be a bit lower.  the Blackfin JTAG hardware has
+> basically a 4 byte fifo that is filled/consumed in a single shot.  and
+> the Blackfin can produce much faster than the host can consume.  so
+> atm, i have it send out 4 bytes, and the hvc layers take care of
+> calling back into me at some point.  if i add a busy loop to run a few
+> hundred milliseconds (like HZ/4), it runs much nicer.  but obviously
+> doesnt give anyone else time to run.  i cant schedule or anything as
+> the write layers are called with a spin_lock_irqsave.  any tips for
+> how to speed this up a bit ?  or is it a wash with hvc ?
 
-ive noticed a few downsides of converting to this ...
+You could try lowering the hvc MIN_TIMEOUT value. If you want to
+change it for blackfin, you could probably make it a configuration
+option. However, if it really takes a few milliseconds that you need
+to wait between two accesses, MIN_TIMEOUT should already be small
+enough.
 
-hvc cant be built as a module.  but not that big of a deal i guess.
+You should really not need to sleep in your output function, as
+the khvcd() timeout logic tries handling this in the best way.
+There may be a bug in that logic though (wouldn't be the first one
+there), so try to see what the timeouts are when you get into 
+this problem.
 
-throughput seems to be a bit lower.  the Blackfin JTAG hardware has
-basically a 4 byte fifo that is filled/consumed in a single shot.  and
-the Blackfin can produce much faster than the host can consume.  so
-atm, i have it send out 4 bytes, and the hvc layers take care of
-calling back into me at some point.  if i add a busy loop to run a few
-hundred milliseconds (like HZ/4), it runs much nicer.  but obviously
-doesnt give anyone else time to run.  i cant schedule or anything as
-the write layers are called with a spin_lock_irqsave.  any tips for
-how to speed this up a bit ?  or is it a wash with hvc ?
-
-the code size also increased a bit ... old driver added up to ~1.7KiB
-while hvc stuff is like ~4KiB.  but hvc does a nice job of keeping the
-Blackfin-specific piece small.  so i guess it's a wash.
--mike
+	Arnd
