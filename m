@@ -1,172 +1,42 @@
 From: Mike Frysinger <vapier@gentoo.org>
-Subject: [PATCH] drivers: char: hvc: add Blackfin JTAG console support
-Date: Mon, 10 Jan 2011 21:43:57 -0500
-Message-ID: <1294713837-4929-1-git-send-email-vapier@gentoo.org>
+Subject: Re: [PATCH] drivers: char: hvc: add Blackfin JTAG console support
+Date: Mon, 10 Jan 2011 22:08:48 -0500
+Message-ID: <AANLkTinnuxvx9+eNvCqjK2GW2XQPn4LjK4WfMj=f20Xw@mail.gmail.com>
+References: <1294713837-4929-1-git-send-email-vapier@gentoo.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.gentoo.org ([140.211.166.183]:59382 "EHLO smtp.gentoo.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753410Ab1AKCgM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 10 Jan 2011 21:36:12 -0500
+Received: from mail-wy0-f174.google.com ([74.125.82.174]:61048 "EHLO
+	mail-wy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753732Ab1AKDMZ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 10 Jan 2011 22:12:25 -0500
+In-Reply-To: <1294713837-4929-1-git-send-email-vapier@gentoo.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>
 Cc: uclinux-dist-devel@blackfin.uclinux.org, linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
 
-This converts the existing bfin_jtag_comm TTY driver to the HVC layer so
-that the common HVC code can worry about all of the TTY/polling crap and
-leave the Blackfin code to worry about the Blackfin bits.
+On Mon, Jan 10, 2011 at 21:43, Mike Frysinger wrote:
+> This converts the existing bfin_jtag_comm TTY driver to the HVC layer so
+> that the common HVC code can worry about all of the TTY/polling crap and
+> leave the Blackfin code to worry about the Blackfin bits.
 
-Signed-off-by: Mike Frysinger <vapier@gentoo.org>
----
- drivers/char/Kconfig         |    9 ++++
- drivers/char/Makefile        |    1 +
- drivers/char/hvc_bfin_jtag.c |  105 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 115 insertions(+), 0 deletions(-)
- create mode 100644 drivers/char/hvc_bfin_jtag.c
+ive noticed a few downsides of converting to this ...
 
-diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
-index 4498e2a..9c7fed8 100644
---- a/drivers/char/Kconfig
-+++ b/drivers/char/Kconfig
-@@ -731,6 +731,15 @@ config HVC_UDBG
-        select HVC_DRIVER
-        default n
- 
-+config HVC_BFIN_JTAG
-+	bool "Blackfin JTAG console"
-+	depends on BLACKFIN
-+	select HVC_DRIVER
-+	help
-+	 This console uses the Blackfin JTAG to create a console under the
-+	 the HVC driver.  If you don't have JTAG, then you probably don't
-+	 want this option.
-+
- config VIRTIO_CONSOLE
- 	tristate "Virtio console"
- 	depends on VIRTIO
-diff --git a/drivers/char/Makefile b/drivers/char/Makefile
-index ccd666f..ae0e062 100644
---- a/drivers/char/Makefile
-+++ b/drivers/char/Makefile
-@@ -40,6 +40,7 @@ obj-$(CONFIG_HVC_IRQ)		+= hvc_irq.o
- obj-$(CONFIG_HVC_XEN)		+= hvc_xen.o
- obj-$(CONFIG_HVC_IUCV)		+= hvc_iucv.o
- obj-$(CONFIG_HVC_UDBG)		+= hvc_udbg.o
-+obj-$(CONFIG_HVC_BFIN_JTAG)	+= hvc_bfin_jtag.o
- obj-$(CONFIG_VIRTIO_CONSOLE)	+= virtio_console.o
- obj-$(CONFIG_RAW_DRIVER)	+= raw.o
- obj-$(CONFIG_SGI_SNSC)		+= snsc.o snsc_event.o
-diff --git a/drivers/char/hvc_bfin_jtag.c b/drivers/char/hvc_bfin_jtag.c
-new file mode 100644
-index 0000000..31d6cc6
---- /dev/null
-+++ b/drivers/char/hvc_bfin_jtag.c
-@@ -0,0 +1,105 @@
-+/*
-+ * Console via Blackfin JTAG Communication
-+ *
-+ * Copyright 2008-2011 Analog Devices Inc.
-+ *
-+ * Enter bugs at http://blackfin.uclinux.org/
-+ *
-+ * Licensed under the GPL-2 or later.
-+ */
-+
-+#include <linux/console.h>
-+#include <linux/delay.h>
-+#include <linux/err.h>
-+#include <linux/init.h>
-+#include <linux/moduleparam.h>
-+#include <linux/types.h>
-+
-+#include "hvc_console.h"
-+
-+/* See the Debug/Emulation chapter in the HRM */
-+#define EMUDOF   0x00000001	/* EMUDAT_OUT full & valid */
-+#define EMUDIF   0x00000002	/* EMUDAT_IN full & valid */
-+#define EMUDOOVF 0x00000004	/* EMUDAT_OUT overflow */
-+#define EMUDIOVF 0x00000008	/* EMUDAT_IN overflow */
-+
-+/* Helper functions to glue the register API to simple C operations */
-+static inline uint32_t bfin_write_emudat(uint32_t emudat)
-+{
-+	__asm__ __volatile__("emudat = %0;" : : "d"(emudat));
-+	return emudat;
-+}
-+
-+static inline uint32_t bfin_read_emudat(void)
-+{
-+	uint32_t emudat;
-+	__asm__ __volatile__("%0 = emudat;" : "=d"(emudat));
-+	return emudat;
-+}
-+
-+/* Send data to the host */
-+static int hvc_bfin_put_chars(uint32_t vt, const char *buf, int count)
-+{
-+	static uint32_t outbound_len;
-+	uint32_t emudat;
-+	int ret;
-+
-+	if (bfin_read_DBGSTAT() & EMUDOF)
-+		return 0;
-+
-+	if (!outbound_len) {
-+		outbound_len = count;
-+		bfin_write_emudat(outbound_len);
-+		return 0;
-+	}
-+
-+	ret = min(outbound_len, (uint32_t)4);
-+	memcpy(&emudat, buf, ret);
-+	bfin_write_emudat(emudat);
-+	outbound_len -= ret;
-+
-+	return ret;
-+}
-+
-+/* Receive data from the host */
-+static int hvc_bfin_get_chars(uint32_t vt, char *buf, int count)
-+{
-+	static uint32_t inbound_len;
-+	uint32_t emudat;
-+	int ret;
-+
-+	if (!(bfin_read_DBGSTAT() & EMUDIF))
-+		return 0;
-+	emudat = bfin_read_emudat();
-+
-+	if (!inbound_len) {
-+		inbound_len = emudat;
-+		return 0;
-+	}
-+
-+	ret = min(inbound_len, (uint32_t)4);
-+	memcpy(buf, &emudat, ret);
-+	inbound_len -= ret;
-+
-+	return ret;
-+}
-+
-+/* Glue the HVC layers to the Blackfin layers */
-+static const struct hv_ops hvc_bfin_get_put_ops = {
-+	.get_chars = hvc_bfin_get_chars,
-+	.put_chars = hvc_bfin_put_chars,
-+};
-+
-+static int __init hvc_bfin_console_init(void)
-+{
-+	hvc_instantiate(0, 0, &hvc_bfin_get_put_ops);
-+	return 0;
-+}
-+console_initcall(hvc_bfin_console_init);
-+
-+static int __init hvc_bfin_init(void)
-+{
-+	hvc_alloc(0, 0, &hvc_bfin_get_put_ops, 128);
-+	return 0;
-+}
-+device_initcall(hvc_bfin_init);
--- 
-1.7.4.rc1
+hvc cant be built as a module.  but not that big of a deal i guess.
 
+throughput seems to be a bit lower.  the Blackfin JTAG hardware has
+basically a 4 byte fifo that is filled/consumed in a single shot.  and
+the Blackfin can produce much faster than the host can consume.  so
+atm, i have it send out 4 bytes, and the hvc layers take care of
+calling back into me at some point.  if i add a busy loop to run a few
+hundred milliseconds (like HZ/4), it runs much nicer.  but obviously
+doesnt give anyone else time to run.  i cant schedule or anything as
+the write layers are called with a spin_lock_irqsave.  any tips for
+how to speed this up a bit ?  or is it a wash with hvc ?
+
+the code size also increased a bit ... old driver added up to ~1.7KiB
+while hvc stuff is like ~4KiB.  but hvc does a nice job of keeping the
+Blackfin-specific piece small.  so i guess it's a wash.
+-mike
