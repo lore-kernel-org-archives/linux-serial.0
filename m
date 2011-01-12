@@ -1,126 +1,73 @@
-From: Feng Tang <feng.tang@intel.com>
-Subject: [PATCH] serial: mfd: remove the timeout workaround for A0
-Date: Wed, 12 Jan 2011 15:03:42 +0800
-Message-ID: <1294815822-6960-1-git-send-email-feng.tang@intel.com>
+From: Peter Korsgaard <jacmet@sunsite.dk>
+Subject: Re: Uartlite - ulite_transmit
+Date: Wed, 12 Jan 2011 10:40:08 +0100
+Message-ID: <87ei8izchz.fsf@macbook.be.48ers.dk>
+References: <4D2465E0.2000707@monstr.eu> <4D246672.3070002@monstr.eu>
+	<87vd22h3dq.fsf@macbook.be.48ers.dk> <4D257D61.2060400@monstr.eu>
+	<87r5cqh0bn.fsf@macbook.be.48ers.dk> <4D25871D.2000408@monstr.eu>
+	<87mxnegy4u.fsf@macbook.be.48ers.dk> <4D26C538.3010101@monstr.eu>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:37203 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752316Ab1ALHDU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Jan 2011 02:03:20 -0500
+Received: from mail-wy0-f174.google.com ([74.125.82.174]:53262 "EHLO
+	mail-wy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755969Ab1ALJkO (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 12 Jan 2011 04:40:14 -0500
+Received: by wyb28 with SMTP id 28so348999wyb.19
+        for <linux-serial@vger.kernel.org>; Wed, 12 Jan 2011 01:40:13 -0800 (PST)
+In-Reply-To: <4D26C538.3010101@monstr.eu> (Michal Simek's message of "Fri, 07
+	Jan 2011 08:48:08 +0100")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, greg@kroah.com, alan@linux.intel.com
-Cc: Feng Tang <feng.tang@intel.com>
+To: monstr@monstr.eu
+Cc: Grant Likely <grant.likely@secretlab.ca>, linux-serial@vger.kernel.org
 
-This is kind of a revert for commit 669b7a0938e "hsu: add a periodic
-timer to check dma rx channel", which is a workaround for a bug in A0
-stepping silicon, where a dma rx data timeout is missing for some case.
-Since new silicon has fixed it and the old version is phasing out, no
-need to carry on it any more.
+>>>>> "Michal" == Michal Simek <monstr@monstr.eu> writes:
 
-Signed-off-by: Feng Tang <feng.tang@intel.com>
----
- drivers/serial/mfd.c |   38 --------------------------------------
- 1 files changed, 0 insertions(+), 38 deletions(-)
+Hi,
 
-diff --git a/drivers/serial/mfd.c b/drivers/serial/mfd.c
-index d40010a..7767774 100644
---- a/drivers/serial/mfd.c
-+++ b/drivers/serial/mfd.c
-@@ -51,8 +51,6 @@
- #define mfd_readl(obj, offset)		readl(obj->reg + offset)
- #define mfd_writel(obj, offset, val)	writel(val, obj->reg + offset)
- 
--#define HSU_DMA_TIMEOUT_CHECK_FREQ	(HZ/10)
--
- struct hsu_dma_buffer {
- 	u8		*buf;
- 	dma_addr_t	dma_addr;
-@@ -65,7 +63,6 @@ struct hsu_dma_chan {
- 	enum dma_data_direction	dirt;
- 	struct uart_hsu_port	*uport;
- 	void __iomem		*reg;
--	struct timer_list	rx_timer; /* only needed by RX channel */
- };
- 
- struct uart_hsu_port {
-@@ -355,8 +352,6 @@ void hsu_dma_start_rx_chan(struct hsu_dma_chan *rxc, struct hsu_dma_buffer *dbuf
- 					 | (0x1 << 24)	/* timeout bit, see HSU Errata 1 */
- 					 );
- 	chan_writel(rxc, HSU_CH_CR, 0x3);
--
--	mod_timer(&rxc->rx_timer, jiffies + HSU_DMA_TIMEOUT_CHECK_FREQ);
- }
- 
- /* Protected by spin_lock_irqsave(port->lock) */
-@@ -420,7 +415,6 @@ void hsu_dma_rx(struct uart_hsu_port *up, u32 int_sts)
- 		chan_writel(chan, HSU_CH_CR, 0x3);
- 		return;
- 	}
--	del_timer(&chan->rx_timer);
- 
- 	dma_sync_single_for_cpu(port->dev, dbuf->dma_addr,
- 			dbuf->dma_size, DMA_FROM_DEVICE);
-@@ -448,8 +442,6 @@ void hsu_dma_rx(struct uart_hsu_port *up, u32 int_sts)
- 	tty_flip_buffer_push(tty);
- 
- 	chan_writel(chan, HSU_CH_CR, 0x3);
--	chan->rx_timer.expires = jiffies + HSU_DMA_TIMEOUT_CHECK_FREQ;
--	add_timer(&chan->rx_timer);
- 
- }
- 
-@@ -870,8 +862,6 @@ static void serial_hsu_shutdown(struct uart_port *port)
- 		container_of(port, struct uart_hsu_port, port);
- 	unsigned long flags;
- 
--	del_timer_sync(&up->rxc->rx_timer);
--
- 	/* Disable interrupts from this port */
- 	up->ier = 0;
- 	serial_out(up, UART_IER, 0);
-@@ -1343,28 +1333,6 @@ err_disable:
- 	return ret;
- }
- 
--static void hsu_dma_rx_timeout(unsigned long data)
--{
--	struct hsu_dma_chan *chan = (void *)data;
--	struct uart_hsu_port *up = chan->uport;
--	struct hsu_dma_buffer *dbuf = &up->rxbuf;
--	int count = 0;
--	unsigned long flags;
--
--	spin_lock_irqsave(&up->port.lock, flags);
--
--	count = chan_readl(chan, HSU_CH_D0SAR) - dbuf->dma_addr;
--
--	if (!count) {
--		mod_timer(&chan->rx_timer, jiffies + HSU_DMA_TIMEOUT_CHECK_FREQ);
--		goto exit;
--	}
--
--	hsu_dma_rx(up, 0);
--exit:
--	spin_unlock_irqrestore(&up->port.lock, flags);
--}
--
- static void hsu_global_init(void)
- {
- 	struct hsu_port *hsu;
-@@ -1427,12 +1395,6 @@ static void hsu_global_init(void)
- 		dchan->reg = hsu->reg + HSU_DMA_CHANS_REG_OFFSET +
- 				i * HSU_DMA_CHANS_REG_LENGTH;
- 
--		/* Work around for RX */
--		if (dchan->dirt == DMA_FROM_DEVICE) {
--			init_timer(&dchan->rx_timer);
--			dchan->rx_timer.function = hsu_dma_rx_timeout;
--			dchan->rx_timer.data = (unsigned long)dchan;
--		}
- 		dchan++;
- 	}
- 
+ Michal> I looked at that loop and I think that we should reread actual
+ Michal> status before ulite_transmit because status reg can be changed
+ Michal> when ulite_receive is executed. What do you think? (BTW: status
+ Michal> reading can be moved directly to ulite_receive/transmit
+ Michal> functions)
+
+ Michal>     do {
+ Michal>         int stat = ioread32be(port->membase + ULITE_STATUS);
+ Michal>         busy  = ulite_receive(port, stat);
+ Michal>         stat = ioread32be(port->membase + ULITE_STATUS); // check
+ Michal> status again
+ Michal>         busy |= ulite_transmit(port, stat);
+ Michal>         n++;
+ Michal>     } while (busy);
+
+It shouldn't really matter - ulite_transmit() only looks at TXFULL, and
+in the unlikely case where it was full but 1 character got transmitted
+during ulite_receive, we will catch it during the 2nd iteration of the
+loop (as busy will be true).
+
+The logic was afaik more-or-less directly copied from 8250.c
+
+ Michal> 1. Before fault happen:
+ Michal> ISR is called, status is 0x18 (interrupt enabled, tx fifo full) just
+ Michal> to ulite_transmit and detect TXFULL and return to ISR. Head and tail
+ Michal> are correct
+ Michal> 2. Broken part
+ Michal> ISR is called, status is 0x14 (interrupt enabled, tx fifo empty), jump
+ Michal> to ulite_transmit. Here I am printing (head and tail values are
+ Michal> zero). Xmit buffer address is the same. Then uart_circ_empty(xmit)
+ Michal> detects that head and tail are the same which means nothing to print.
+
+ Michal> My question: Is there any part of the code which can change xmit head
+ Michal> and tail values?
+
+Yes, ulite_transmit does (for tail). head is only changed by the serial core.
+
+ Michal> BTW: Getty is providing that login prompt. Could it be an issue with getty?
+
+Maybe. Or the fact that it calls set_termios or similar. Are you unable
+to reproduce the problem with other programs?
+
 -- 
-1.7.0.4
-
+Bye, Peter Korsgaard
