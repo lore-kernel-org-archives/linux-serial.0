@@ -1,232 +1,180 @@
-From: Michal Simek <monstr@monstr.eu>
-Subject: Re: Uartlite - ulite_transmit
-Date: Mon, 17 Jan 2011 16:17:55 +0100
-Message-ID: <4D345DA3.8020105@monstr.eu>
-References: <4D2465E0.2000707@monstr.eu> <4D246672.3070002@monstr.eu>	<87vd22h3dq.fsf@macbook.be.48ers.dk> <4D257D61.2060400@monstr.eu>	<87r5cqh0bn.fsf@macbook.be.48ers.dk> <4D25871D.2000408@monstr.eu>	<87mxnegy4u.fsf@macbook.be.48ers.dk> <4D26C538.3010101@monstr.eu>	<4D26D79C.8060304@monstr.eu> <4D2D78F3.2040903@monstr.eu>	<87aaj6zays.fsf@macbook.be.48ers.dk> <4D2D8113.1020504@monstr.eu>	<8739oyza2n.fsf@macbook.be.48ers.dk> <4D32B5A2.1070508@monstr.eu> <87r5cc5zqp.fsf@macbook.be.48ers.dk>
-Reply-To: monstr@monstr.eu
+From: Yin Kangkai <kangkai.yin@linux.intel.com>
+Subject: NS16550A should be aware of the uart_console() when goto high
+ speed?
+Date: Wed, 19 Jan 2011 10:29:07 +0800
+Message-ID: <20110119022907.GA27827@kai-debian>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ew0-f46.google.com ([209.85.215.46]:37977 "EHLO
-	mail-ew0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750900Ab1AQPSA (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 17 Jan 2011 10:18:00 -0500
-In-Reply-To: <87r5cc5zqp.fsf@macbook.be.48ers.dk>
+Received: from mga11.intel.com ([192.55.52.93]:5784 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751032Ab1ASC3J (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 18 Jan 2011 21:29:09 -0500
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Korsgaard <jacmet@sunsite.dk>
-Cc: linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@suse.de>, David Woodhouse <dwmw2@infradead.org>, Alan Cox <alan@linux.intel.com>
 
-Peter Korsgaard wrote:
->>>>>> "Michal" == Michal Simek <monstr@monstr.eu> writes:
-> 
-> Hi,
-> 
->  Michal> Hi Peter,
->  Michal> sorry for delay. I had to look at another issue.
-> 
-> No problem.
-> 
->  Michal> Below is full log:
->  Michal> 1. I setup baudrate to 50. (It could be possible to set it up to 0 too)
->  Michal> That's why I think that doesn't matter what baudrate is setup.
-> 
->  Michal> 2. You see where ulite_startup is called. It is called only once.
-> 
-> Ok, good.
-> 
->  Michal> 3. You see that there is no call __uart_wait_until_sent(). It could be
->  Michal> called for ASYNC mode. The second thing is __uart_wait_until_sent
->  Michal> function is checking if tx fifo is empty not circ buffer is empty.
-> 
-> Yes, that's afaik what that function should do.
-> 
->  Michal> 4. Next thing is that in uart_close. port->count is 2 which means that
->  Michal> the executing path is
->  Michal> 	if (port->count) {
->  Michal> 		spin_unlock_irqrestore(&port->lock, flags);
->  Michal> 		goto done;
->  Michal> 	}
->  Michal> which means that there is no chance to call __uart_wait_until_sent
->  Michal> function anyway.
-> 
-> And no buffer flushing, so that's fine.
-> 
->  Michal> 5. I did one modification to add simple while loop till circ buffer is
->  Michal> empty to the same location to see what happen (timouts are bogus
->  Michal> values).
-> 
->  Michal> if (port->count) {
->  Michal> 	spin_unlock_irqrestore(&port->lock, flags);
->  Michal> 	printk("************ %x %x\n", (&uport->state->xmit)->tail,
->  Michal> (&uport->state->xmit)->head);
->  Michal> 	while (!uart_circ_empty(&uport->state->xmit)) {
->  Michal> 		msleep_interruptible(jiffies_to_msecs((uport->timeout - HZ/50)));
->  Michal> 		if (signal_pending(current))
->  Michal> 			break;
->  Michal> 		if (time_after(jiffies, jiffies + uport->timeout))
->  Michal> 			break;
->  Michal> 	}
->  Michal> 	printk("************\n");
->  Michal> 	goto done;
->  Michal> }
-> 
-> Ok, so this shows that there's still data in the circular buffer when
-> uart is closed, like expected.
-> 
-> For me, it all looks normal:
-> 
-> 1. serial port gets opened, uart_open -> uart_startup -> ulite_startup
->    gets called, ASYNC_INITIALIZED gets set, circular buffer and hardware
->    TX fifo cleared.
-> 
-> 2. Some time later serial port gets opened again, and uart_startup is a
->    NOP because ASYNC_INITIALIZED is set. No circular buffer / hw fifo
->    clear.
-> 
-> 3. serial port gets closed, uart_close is a NOP because port->count > 0
-> 
-> 4. serial port gets opened again, NOP like in 2.
-> 
-> The problem is the uart_flush_buffer() call we see after uart_open() in
-> 4. If doesn't seem to come from serial_core (only called from uart_close
-> / uart_hangup), so presumably it comes from the TTY core or
-> userspace. Could you add a bit more debug to figure out where exactly it
-> comes from?
+Hi
 
-Last week I have also implemented simple ioctl function for uartlite - 
-just printk to see what happen. Look at the second log below.
+During my debugging of a platform which has a NS16550A UART chip, I
+found it will print garbage in the middle of serial console. Something
+like this:
 
+    ...
+    [    1.771270] ERST: Table is not found!
+    [    1.777618] Linux agpgart interface v0.103
+    [    1.782739] [drm] Initialized drm 1.1.0 20060810
+    [    1.788749] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+    [    1.796670] serial8250: ttyS0 at I/O 0x3f8 (irq = 4) is a NS16550A
+    
+    xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    (will show a log of garbage here)
+    
+    (and then it is OK again for the login prompt)
+    MeeGo release 1.1.80 (MeeGo)
+    Kernel 2.6.37-6.1-adaptation-oaktrail on an i686
+    ...
 
+Googled and find this thread: https://lkml.org/lkml/2005/3/25/157
+Tried that patch and it fixes this issue.
 
-If there is defined uartlite ioctl function (but always returns 
--ENOIOCTLCMD)
+I tried to do some further investigation, and seems NS16550A driver
+(8250.c) sets its own baud rate to high speed in autoconfig(). Should
+not it be aware of the uart_console() thing? i.e. if the uart is
+console, we can't make the change brutally, right?
 
-Sending select for 192.168.0.100...
-Lease of 192.168.0.100 obtaulite_ioctl 5401 bf9b1ed8
-n_tty_ioctl
-ined, lease time 7200
-adding dns 172.16.0.5
-adding dns 172.16.10.1
-Stuart_open(0) called
-arting portmap:
+Below is a dirty prove of concept patch, if it's the right direction,
+I will surely clean it up. Thanks.
 
-Welcome to
-  ulite_ioctl 5401 bf9f8a8c
-n_tty_ioctl
-ulite_ioctl 5402 bf9f8a70
-n_tty_ioctl
-_____       _   uart_close(0) called, port->count 2
-************ 210 362
-         _      _
-| ___ \     | |         | |    (_)
-| |_/ / ___ | |_   __ _ | |     _  _ __   _   _ __  __
-|  __/ / _ \| __| / _` || |    | || '_ \ | | | |\ \/ /
-| |   |  __/| |_ | (_| || |____| || | | || |_| | >  <
-\_|    \___| \__| \__,_|\_____/|_||_| |_| \__,_|/_/\_\
+Kangkai
 
-on Xilinx-SP605-LTP-full-WB-pc-msr-next-22-watch-wt-mdm
+>From b29b0797ce2e4798ec55d7d4d04e8d59c739c058 Mon Sep 17 00:00:00 2001
+From: Yin Kangkai <kangkai.yin@intel.com>
+Date: Wed, 19 Jan 2011 09:59:24 +0800
+Subject: [PATCH] NS16550A be aware of the uart_console() when goto high speed mode
 
-************
-uart_open(0) called
-ulite_ioctl 5401 bff76a18
-n_tty_ioctl
-ulite_ioctl 540b 2
-n_tty_ioctl
-n_tty_ioctl_helper TCFLSH
-tty_perform_flush TCIOFLUSH
-tty_perform_flush TCOFLUSH
-tty_driver_flush_buffer
-uart_flush_buffer(0) called
-ulite_ioctl 5402 bff769a4
-n_tty_ioctl
-ulite_ioctl 540b 0
-n_tty_ioctl
-n_tty_ioctl_helper TCFLSH
-tty_perform_flush TCIFLUSH
-ulite_ioctl 5401 bff76558
-n_tty_ioctl
+In currently implementation, NS16550A will goto high speed mode (high
+baud base) when it can, however, if that UART is used as a console,
+this will break existing the baud rate setting, e.g. when you already
+set console=ttyS0,115200n8 in kernel cmdline, and NS16550 is ttyS0,
+during autoconfig(), it will set its baud rate brutally to 921600, and
+makes the serial console print garbage.
 
-Xilinx-SP605-LTP-full-WB-pc-msr-next-22-watch-wt-mdm login:
+This patch tries to make NS16550A be aware of the uart_console() when
+it goes to high speed mode.
 
+Signed-off-by: Yin Kangkai <kangkai.yin@linux.intel.com>
+---
+ drivers/serial/8250.c        |   42 +++++++++++++++++++++++-------------------
+ drivers/serial/serial_core.c |    6 ------
+ include/linux/serial_core.h  |    5 +++++
+ 3 files changed, 28 insertions(+), 25 deletions(-)
 
-If uarlite ioctl is defined: (cases: TCFLSH, TCGETS, TCSETS) - return 0;
-It is interested but maybe implement that function could be enough. What 
-do you think?
-
-Thanks,
-Michal
-
-
-NET: Registered protocol family 17
-uart_open(0) called
-ulite_startup ------------------------
-Freeing unused kernel memory: 11218k freed
-ulite_ioctl 5600 bf9d1bc8
-n_tty_ioctl
-ulite_ioctl TCGETS bf9d1b1c
-ulite_ioctl TCSETS bf9d1b00
-ulite_ioctl TCGETS bf9d1a8c
-ulite_ioctl TCSETS bf9d1a70
-ulite_ioctl TCGETS bff204d0
-Mounting proc:
-Mounting var:
-Populatinulite_ioctl TCGETS bfd8b4c0
-g /var:
-Runningulite_ioctl TCGETS bf87e4c0
-  local start scripts.
-Mounting sysfs:
-mdev: initialising /dev
-ulite_ioctl TCGETS bf8164c0
-Mounting /etc/config:
-Populating /etc/culite_ioctl TCGETS bf95a4c0
-onfig:
-flatfsd:ulite_ioctl TCGETS bf9744c0
-  Created 8 configulite_ioctl TCGETS bf9434c0
-uration files (168 bytes)
-Mounting devpts:
-Setting hostname:
-Bringing up network interfaces:
-net eth0: Promiscuous mode disabled.
-udhcpc (v1.14.3) started
-Sending discover...
-Sending select for 192.168.0.100...
-Lease of 192.168.0.100 obtaulite_ioctl TCGETS bfa3bed8
-ined, lease time 7200
-adding dns 172.16.0.5
-adding uart_open(0) called
-ulite_ioctl TCGETS bf9d1a8c
-ulite_ioctl TCSETS bf9d1a70
-uart_close(0) called, port->count 2
-************ 1dd 362
-
-Starting portmap:
-
-Welcome to
-  _____       _           _      _
-| ___ \     | |         | |    (_)
-| |_/ / ___ | |_   __ _ | |     _  _ __   _   _ __  __
-|  __/ / _ \| __| / _` || |    | || '_ \ | | | |\ \/ /
-| |   |  __/| |_ | (_| || |____| || | | || |_| | >  <
-\_|    \___| \__| \__,_|\_____/|_||_| |_| \__,_|/_/\_\
-
-on Xilinx-SP605-LTP-full-WB-pc-msr-next-22-watch-wt-mdm
-
-************
-uart_open(0) called
-ulite_ioctl TCGETS bfd98a18
-ulite_ioctl TCFLSH 2
-ulite_ioctl TCSETS bfd989a4
-ulite_ioctl TCFLSH 0
-ulite_ioctl TCGETS bfd98558
-
-Xilinx-SP605-LTP-full-WB-pc-msr-next-22-watch-wt-mdm login:
-
-
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index 09a5508..2232e56 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -991,23 +991,25 @@ static void autoconfig_16550a(struct uart_8250_port *up)
+ 		serial_outp(up, UART_MCR, status1);
+ 
+ 		if ((status2 ^ status1) & UART_MCR_LOOP) {
+-			unsigned short quot;
++			if (!uart_console(&up->port)) {
++				unsigned short quot;
+ 
+-			serial_outp(up, UART_LCR, 0xE0);
++				serial_outp(up, UART_LCR, 0xE0);
+ 
+-			quot = serial_dl_read(up);
+-			quot <<= 3;
++				quot = serial_dl_read(up);
++				quot <<= 3;
+ 
+-			status1 = serial_in(up, 0x04); /* EXCR2 */
+-			status1 &= ~0xB0; /* Disable LOCK, mask out PRESL[01] */
+-			status1 |= 0x10;  /* 1.625 divisor for baud_base --> 921600 */
+-			serial_outp(up, 0x04, status1);
++				status1 = serial_in(up, 0x04); /* EXCR2 */
++				status1 &= ~0xB0; /* Disable LOCK, mask out PRESL[01] */
++				status1 |= 0x10;  /* 1.625 divisor for baud_base --> 921600 */
++				serial_outp(up, 0x04, status1);
+ 
+-			serial_dl_write(up, quot);
++				serial_dl_write(up, quot);
+ 
+-			serial_outp(up, UART_LCR, 0);
++				serial_outp(up, UART_LCR, 0);
+ 
+-			up->port.uartclk = 921600*16;
++				up->port.uartclk = 921600*16;
++			}
+ 			up->port.type = PORT_NS16550A;
+ 			up->capabilities |= UART_NATSEMI;
+ 			return;
+@@ -2975,17 +2977,19 @@ void serial8250_resume_port(int line)
+ 	struct uart_8250_port *up = &serial8250_ports[line];
+ 
+ 	if (up->capabilities & UART_NATSEMI) {
+-		unsigned char tmp;
++		if (!uart_console(&up->port)) {
++			unsigned char tmp;
+ 
+-		/* Ensure it's still in high speed mode */
+-		serial_outp(up, UART_LCR, 0xE0);
++			/* Ensure it's still in high speed mode */
++			serial_outp(up, UART_LCR, 0xE0);
+ 
+-		tmp = serial_in(up, 0x04); /* EXCR2 */
+-		tmp &= ~0xB0; /* Disable LOCK, mask out PRESL[01] */
+-		tmp |= 0x10;  /* 1.625 divisor for baud_base --> 921600 */
+-		serial_outp(up, 0x04, tmp);
++			tmp = serial_in(up, 0x04); /* EXCR2 */
++			tmp &= ~0xB0; /* Disable LOCK, mask out PRESL[01] */
++			tmp |= 0x10;  /* 1.625 divisor for baud_base --> 921600 */
++			serial_outp(up, 0x04, tmp);
+ 
+-		serial_outp(up, UART_LCR, 0);
++			serial_outp(up, UART_LCR, 0);
++		}
+ 	}
+ 	uart_resume_port(&serial8250_reg, &up->port);
+ }
+diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
+index 9ffa5be..f68409f 100644
+--- a/drivers/serial/serial_core.c
++++ b/drivers/serial/serial_core.c
+@@ -51,12 +51,6 @@ static struct lock_class_key port_lock_key;
+ 
+ #define HIGH_BITS_OFFSET	((sizeof(long)-sizeof(int))*8)
+ 
+-#ifdef CONFIG_SERIAL_CORE_CONSOLE
+-#define uart_console(port)	((port)->cons && (port)->cons->index == (port)->line)
+-#else
+-#define uart_console(port)	(0)
+-#endif
+-
+ static void uart_change_speed(struct tty_struct *tty, struct uart_state *state,
+ 					struct ktermios *old_termios);
+ static void __uart_wait_until_sent(struct uart_port *port, int timeout);
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 212eb4c..ad18c08 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -601,6 +601,11 @@ uart_insert_char(struct uart_port *port, unsigned int status,
+ #define UART_ENABLE_MS(port,cflag)	((port)->flags & UPF_HARDPPS_CD || \
+ 					 (cflag) & CRTSCTS || \
+ 					 !((cflag) & CLOCAL))
++#ifdef CONFIG_SERIAL_CORE_CONSOLE
++#define uart_console(port)      ((port)->cons && (port)->cons->index == (port)->line)
++#else
++#define uart_console(port)      (0)
++#endif
+ 
+ #endif
+ 
 -- 
-Michal Simek, Ing. (M.Eng)
-w: www.monstr.eu p: +42-0-721842854
-Maintainer of Linux kernel 2.6 Microblaze Linux - http://www.monstr.eu/fdt/
-Microblaze U-BOOT custodian
+1.6.5
+
