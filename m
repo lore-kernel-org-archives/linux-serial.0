@@ -1,56 +1,45 @@
-From: Michal Simek <monstr@monstr.eu>
-Subject: Re: Uartlite - ulite_transmit
-Date: Thu, 20 Jan 2011 09:08:32 +0100
-Message-ID: <4D37ED80.6000205@monstr.eu>
-References: <4D2465E0.2000707@monstr.eu> <4D246672.3070002@monstr.eu>	<87vd22h3dq.fsf@macbook.be.48ers.dk> <4D257D61.2060400@monstr.eu>	<87r5cqh0bn.fsf@macbook.be.48ers.dk> <4D25871D.2000408@monstr.eu>	<87mxnegy4u.fsf@macbook.be.48ers.dk> <4D26C538.3010101@monstr.eu>	<4D26D79C.8060304@monstr.eu> <4D2D78F3.2040903@monstr.eu>	<87aaj6zays.fsf@macbook.be.48ers.dk> <4D2D8113.1020504@monstr.eu>	<8739oyza2n.fsf@macbook.be.48ers.dk> <4D32B5A2.1070508@monstr.eu>	<87r5cc5zqp.fsf@macbook.be.48ers.dk> <4D345DA3.8020105@monstr.eu>	<87oc7cgbi1.fsf@macbook.be.48ers.dk> <4D37EC89.2080802@monstr.eu> <87d3nsdmn4.fsf@macbook.be.48ers.dk>
-Reply-To: monstr@monstr.eu
+From: Davidlohr Bueso <dave@gnu.org>
+Subject: [PATCH] input: trackpoint: return proper error value
+Date: Thu, 20 Jan 2011 11:45:30 -0300
+Message-ID: <1295534730.2089.1.camel@offworld>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bw0-f46.google.com ([209.85.214.46]:50709 "EHLO
-	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754162Ab1ATIIg (ORCPT
+Received: from hapkido.dreamhost.com ([66.33.216.122]:57781 "EHLO
+	hapkido.dreamhost.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755793Ab1ATOqU (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 20 Jan 2011 03:08:36 -0500
-In-Reply-To: <87d3nsdmn4.fsf@macbook.be.48ers.dk>
+	Thu, 20 Jan 2011 09:46:20 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Korsgaard <jacmet@sunsite.dk>
-Cc: linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+To: Dmitry Torokhov <dtor@mail.ru>, LKML <linux-kernel@vger.kernel.org>
+Cc: linux-serial@vger.kernel.org
 
-Peter Korsgaard wrote:
->>>>>> "Michal" == Michal Simek <monstr@monstr.eu> writes:
-> 
-> Hi,
-> 
->  >> /* flush input and output queues, important for modems! */
->  >> tcflush(0, TCIOFLUSH);
->  >> 
->  >> You could change that to a tcdrain() if that's not what you want.
->  >> 
-> 
->  Michal> Great that's work. Just for the record it is tcdrain(STDOUT_FILENO);
-> 
-> Yes. Notice that the code has changed a bit in busybox git (but same
-> functionality).
-> 
->  Michal> Patch against busybox 1.14.3 version is below. Maybe worth to
->  Michal> added it mainline busybox.
-> 
-> Yes, please bring it up with the busybox devs.
-> 
->  Michal> Thanks for your big help.
-> 
-> You're welcome.
+From: Davidlohr Bueso <dave@gnu.org>
 
-Will do in a sec. I will CC you too.
+If sysfs_create_group() returns an error, we should return it in trackpoint_detect(), instead of -1.
 
-Thanks,
-Michal
+Signed-off-by: Davidlohr Bueso <dave@gnu.org>
+---
+ drivers/input/mouse/trackpoint.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
+diff --git a/drivers/input/mouse/trackpoint.c b/drivers/input/mouse/trackpoint.c
+index 54b2fa8..e8b7c3f 100644
+--- a/drivers/input/mouse/trackpoint.c
++++ b/drivers/input/mouse/trackpoint.c
+@@ -324,7 +324,7 @@ int trackpoint_detect(struct psmouse *psmouse, bool set_properties)
+ 			error);
+ 		kfree(psmouse->private);
+ 		psmouse->private = NULL;
+-		return -1;
++		return error;
+ 	}
+ 
+ 	printk(KERN_INFO "IBM TrackPoint firmware: 0x%02x, buttons: %d/%d\n",
 -- 
-Michal Simek, Ing. (M.Eng)
-w: www.monstr.eu p: +42-0-721842854
-Maintainer of Linux kernel 2.6 Microblaze Linux - http://www.monstr.eu/fdt/
-Microblaze U-BOOT custodian
+1.7.1
+
+
+
