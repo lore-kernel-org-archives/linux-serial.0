@@ -1,45 +1,48 @@
-From: Davidlohr Bueso <dave@gnu.org>
-Subject: [PATCH] input: trackpoint: return proper error value
-Date: Thu, 20 Jan 2011 11:45:30 -0300
-Message-ID: <1295534730.2089.1.camel@offworld>
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: Re: [PATCH] input: trackpoint: return proper error value
+Date: Thu, 20 Jan 2011 23:36:05 -0800
+Message-ID: <20110121073605.GC21842@core.coreip.homeip.net>
+References: <1295534730.2089.1.camel@offworld>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from hapkido.dreamhost.com ([66.33.216.122]:57781 "EHLO
-	hapkido.dreamhost.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755793Ab1ATOqU (ORCPT
+Received: from mail-iw0-f174.google.com ([209.85.214.174]:35171 "EHLO
+	mail-iw0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752331Ab1AUHgy (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 20 Jan 2011 09:46:20 -0500
+	Fri, 21 Jan 2011 02:36:54 -0500
+Content-Disposition: inline
+In-Reply-To: <1295534730.2089.1.camel@offworld>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Dmitry Torokhov <dtor@mail.ru>, LKML <linux-kernel@vger.kernel.org>
-Cc: linux-serial@vger.kernel.org
+To: Davidlohr Bueso <dave@gnu.org>
+Cc: LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 
-From: Davidlohr Bueso <dave@gnu.org>
+On Thu, Jan 20, 2011 at 11:45:30AM -0300, Davidlohr Bueso wrote:
+> From: Davidlohr Bueso <dave@gnu.org>
+> 
+> If sysfs_create_group() returns an error, we should return it in trackpoint_detect(), instead of -1.
+> 
+> Signed-off-by: Davidlohr Bueso <dave@gnu.org>
+> ---
+>  drivers/input/mouse/trackpoint.c |    2 +-
+>  1 files changed, 1 insertions(+), 1 deletions(-)
+> 
+> diff --git a/drivers/input/mouse/trackpoint.c b/drivers/input/mouse/trackpoint.c
+> index 54b2fa8..e8b7c3f 100644
+> --- a/drivers/input/mouse/trackpoint.c
+> +++ b/drivers/input/mouse/trackpoint.c
+> @@ -324,7 +324,7 @@ int trackpoint_detect(struct psmouse *psmouse, bool set_properties)
+>  			error);
+>  		kfree(psmouse->private);
+>  		psmouse->private = NULL;
+> -		return -1;
+> +		return error;
 
-If sysfs_create_group() returns an error, we should return it in trackpoint_detect(), instead of -1.
+This is not the only place where we return -1 in place of proper error
+code in that driver. Care to update all of them?
 
-Signed-off-by: Davidlohr Bueso <dave@gnu.org>
----
- drivers/input/mouse/trackpoint.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+Thanks.
 
-diff --git a/drivers/input/mouse/trackpoint.c b/drivers/input/mouse/trackpoint.c
-index 54b2fa8..e8b7c3f 100644
---- a/drivers/input/mouse/trackpoint.c
-+++ b/drivers/input/mouse/trackpoint.c
-@@ -324,7 +324,7 @@ int trackpoint_detect(struct psmouse *psmouse, bool set_properties)
- 			error);
- 		kfree(psmouse->private);
- 		psmouse->private = NULL;
--		return -1;
-+		return error;
- 	}
- 
- 	printk(KERN_INFO "IBM TrackPoint firmware: 0x%02x, buttons: %d/%d\n",
 -- 
-1.7.1
-
-
-
+Dmitry
