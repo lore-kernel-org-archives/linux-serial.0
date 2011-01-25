@@ -1,121 +1,76 @@
-From: Yin Kangkai <kangkai.yin@linux.intel.com>
-Subject: [PATCH RFC] serial-core: reset the console speed on resume
-Date: Tue, 25 Jan 2011 18:43:02 +0800
-Message-ID: <20110125104302.GM3315@kai-debian>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:50322 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752433Ab1AYKnG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 25 Jan 2011 05:43:06 -0500
-Content-Disposition: inline
-Sender: linux-serial-owner@vger.kernel.org
+From: Tobias Klauser <tklauser@distanz.ch>
+Subject: [PATCH 1/2] tty: serial: altera_uart: remove early_altera_uart_setup
+Date: Tue, 25 Jan 2011 15:40:17 +0100
+Message-ID: <1295966417-11306-1-git-send-email-tklauser@distanz.ch>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Anton Vorontsov <cbouatmailru@gmail.com>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial <linux-serial@vger.kernel.org>
-Cc: Greg KH <greg@kroah.com>, Deepak Saxena <dsaxena@laptop.org>, Jason Wang <jason77.wang@gmail.com>, Stanislav Brabec <sbrabec@suse.cz>, Daniel Drake <dsd@laptop.org>, LKML <linux-kernel@vger.kernel.org>
 
-Hi all,
+The function has no users inside the tree and the nios2 architecture
+doesn't use it (anymore) either.
 
-On some platforms, we need to restore the console speed on resume even
-it was not suspended (no_console_suspend), and on others we don't have
-to do that.
-
-So don't care about the "console_suspend_enabled" and unconditionally
-reset the console speed if it is a console.
-
-
-This is actually a redo of ba15ab0 (Set proper console speed on resume
-if console suspend is disabled) from Deepak Saxena.  I also tried to
-investigate more to find out if this change will break others, here is
-what I've found out:
-
-
-commit 891b9dd10764352926e1e107756aa229dfa2c210
-Author: Jason Wang <jason77.wang@gmail.com>
-    serial-core: restore termios settings when resume console ports
-
-commit ca2e71aa8cfb0056ce720f3fd53f59f5fac4a3e1
-Author: Jason Wang <jason77.wang@gmail.com>
-    serial-core: skip call set_termios/console_start when no_console_suspend
-
-commit 4547be7809a3b775ce750ec7f8b5748954741523
-Author: Stanislav Brabec <sbrabec@suse.cz>
-    serial-core: resume serial hardware with no_console_suspend
-
-commit ba15ab0e8de0d4439a91342ad52d55ca9e313f3d
-Author: Deepak Saxena <dsaxena@laptop.org>
-    Set proper console speed on resume if console suspend is disabled
-
-from ba15ab0, we learned that, even if the console suspend is disabled
-(when no_console_suspend is set), we may still need to "reset the port
-to the state it was in before we suspended."
-
-Then with 4547be7, this piece of code is removed.
-
-And then Jason Wang added that back in ca2e71a and 891b9dd, to fix
-some breakage on OMAP3EVM platform. From ca2e71a we learned that the
-"set_termios" things is actually needed by both console is suspended
-and not suspended.
-
-That's why I removed the console_suspended_enabled condition, and only
-call console_start() when we actually suspeneded it.
-
-I also noticed in this thread:
-http://marc.info/?t=129079257100004&r=1&w=2, which talked about on
-some platforms, UART HW will be cut power whether or not we set
-no_console_suspend, and then on resume it does not work quite well. I
-have a similar HW, and this patch fixed this issue, don't know if this
-patch also works on their platforms.
-
-Thanks,
-Kangkai
-
-
->From 71a5c8e88f91febcd3714bf645023a5b9a4885d8 Mon Sep 17 00:00:00 2001
-From: Yin Kangkai <kangkai.yin@intel.com>
-Date: Mon, 24 Jan 2011 18:07:02 +0800
-Subject: [PATCH] serial-core: reset the console speed on resume
-
-On some platforms, we need to restore the console speed on resume even
-it was not suspended (no_console_suspend), and on others we don't have
-to do that.
-
-So don't care about the "console_suspend_enabled" and unconditionally
-reset the console speed if it is a console.
-
-Signed-off-by: Yin Kangkai <kangkai.yin@intel.com>
+Cc: Anton Vorontsov <cbouatmailru@gmail.com>
+Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
 ---
- drivers/serial/serial_core.c |    6 +++---
- 1 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/tty/serial/altera_uart.c |   23 -----------------------
+ include/linux/altera_uart.h      |    4 ----
+ 2 files changed, 0 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/serial/serial_core.c b/drivers/serial/serial_core.c
-index 9ffa5be..af4a4c1 100644
---- a/drivers/serial/serial_core.c
-+++ b/drivers/serial/serial_core.c
-@@ -2060,7 +2060,7 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
- 	/*
- 	 * Re-enable the console device after suspending.
- 	 */
--	if (console_suspend_enabled && uart_console(uport)) {
-+	if (uart_console(uport)) {
- 		/*
- 		 * First try to use the console cflag setting.
- 		 */
-@@ -2073,9 +2073,9 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
- 		if (port->tty && port->tty->termios && termios.c_cflag == 0)
- 			termios = *(port->tty->termios);
+diff --git a/drivers/tty/serial/altera_uart.c b/drivers/tty/serial/altera_uart.c
+index bde59d1..5ef414c 100644
+--- a/drivers/tty/serial/altera_uart.c
++++ b/drivers/tty/serial/altera_uart.c
+@@ -406,29 +406,6 @@ static struct altera_uart altera_uart_ports[CONFIG_SERIAL_ALTERA_UART_MAXPORTS];
  
--		uart_change_pm(state, 0);
- 		uport->ops->set_termios(uport, &termios, NULL);
--		console_start(uport->cons);
-+		if (console_suspend_enabled)
-+			console_start(uport->cons);
- 	}
+ #if defined(CONFIG_SERIAL_ALTERA_UART_CONSOLE)
  
- 	if (port->flags & ASYNC_SUSPENDED) {
+-int __init early_altera_uart_setup(struct altera_uart_platform_uart *platp)
+-{
+-	struct uart_port *port;
+-	int i;
+-
+-	for (i = 0; i < CONFIG_SERIAL_ALTERA_UART_MAXPORTS && platp[i].mapbase; i++) {
+-		port = &altera_uart_ports[i].port;
+-
+-		port->line = i;
+-		port->type = PORT_ALTERA_UART;
+-		port->mapbase = platp[i].mapbase;
+-		port->membase = ioremap(port->mapbase, ALTERA_UART_SIZE);
+-		port->iotype = SERIAL_IO_MEM;
+-		port->irq = platp[i].irq;
+-		port->uartclk = platp[i].uartclk;
+-		port->flags = UPF_BOOT_AUTOCONF;
+-		port->ops = &altera_uart_ops;
+-		port->private_data = platp;
+-	}
+-
+-	return 0;
+-}
+-
+ static void altera_uart_console_putc(struct uart_port *port, const char c)
+ {
+ 	while (!(altera_uart_readl(port, ALTERA_UART_STATUS_REG) &
+diff --git a/include/linux/altera_uart.h b/include/linux/altera_uart.h
+index a10a907..c022c82 100644
+--- a/include/linux/altera_uart.h
++++ b/include/linux/altera_uart.h
+@@ -5,8 +5,6 @@
+ #ifndef	__ALTUART_H
+ #define	__ALTUART_H
+ 
+-#include <linux/init.h>
+-
+ struct altera_uart_platform_uart {
+ 	unsigned long mapbase;	/* Physical address base */
+ 	unsigned int irq;	/* Interrupt vector */
+@@ -14,6 +12,4 @@ struct altera_uart_platform_uart {
+ 	unsigned int bus_shift;	/* Bus shift (address stride) */
+ };
+ 
+-int __init early_altera_uart_setup(struct altera_uart_platform_uart *platp);
+-
+ #endif /* __ALTUART_H */
 -- 
-1.6.5
-
--- 
-Don't worry, be happy.
+1.7.0.4
