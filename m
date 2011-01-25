@@ -1,45 +1,46 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH] serial/mrst_max3110: make buffer larger
-Date: Tue, 25 Jan 2011 14:15:11 +0000
-Message-ID: <20110125141459.9110.93938.stgit@bob.linux.org.uk>
+From: Dennis Borgmann <dennis.borgmann@googlemail.com>
+Subject: Reading more than 255 bytes at once
+Date: Tue, 25 Jan 2011 15:52:47 +0100
+Message-ID: <4D3EE3BF.80703@googlemail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:54003 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751977Ab1AYOlz (ORCPT
+Received: from mail-fx0-f46.google.com ([209.85.161.46]:52279 "EHLO
+	mail-fx0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750960Ab1AYOwy (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 25 Jan 2011 09:41:55 -0500
+	Tue, 25 Jan 2011 09:52:54 -0500
+Received: by fxm20 with SMTP id 20so5315025fxm.19
+        for <linux-serial@vger.kernel.org>; Tue, 25 Jan 2011 06:52:53 -0800 (PST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: greg@kroah.com, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-From: Dan Carpenter <error27@gmail.com>
+Hello linux-serial list!
 
-This is used to store the spi_device ->modalias so they have to be the same
-size.  SPI_NAME_SIZE is 32.
+I am using termios to process data on a /dev/ttyUSB*-port. Data is
+coming in on one of these ports in burst of over 500bytes. I am doing
+this with kernel 2.6.33.7, which contains FTDI-driver in Version 1.5.0.
+My serial-hardware is a FT4232 and I am using non-canonical input.
 
-Signed-off-by: Dan Carpenter <error27@gmail.com>
-Signed-off-by: Alan Cox <alan@linux.intel.com>
-Cc: stable@kernel.org
----
+My problem is, that I can only read bursts of up to 255 bytes, since the
+array of control characters within the kernel named c_cc represents only
+an unsigned char. So, if I set a value higher than 255 to c_cc[VMIN], it
+won't be set the way I want within the kernel.
 
- drivers/tty/serial/mrst_max3110.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+How would it be possible to read bursts of over 255 bytes? Right now I
+am doing a workaround, which checks for data within the buffer (ioctl
+SIOCINQ) of the serial driver and as soon as it gets above a wanted
+value (let's say 501 bytes), I read the buffer and flush it.
 
+I would rather like to do this with select(2) in combination with
+read(2), which only returns after 501 bytes are available.
 
-diff --git a/drivers/tty/serial/mrst_max3110.c b/drivers/tty/serial/mrst_max3110.c
-index b62857b..37e13c3 100644
---- a/drivers/tty/serial/mrst_max3110.c
-+++ b/drivers/tty/serial/mrst_max3110.c
-@@ -51,7 +51,7 @@
- struct uart_max3110 {
- 	struct uart_port port;
- 	struct spi_device *spi;
--	char name[24];
-+	char name[SPI_NAME_SIZE];
- 
- 	wait_queue_head_t wq;
- 	struct task_struct *main_thread;
+I already sent this question on ftdi-usb-sio-devel and privately to the
+developers of the FTDI-driver in use without any success.
 
+Is there a way to do this?
+
+Very kind regards,
+Dennis
