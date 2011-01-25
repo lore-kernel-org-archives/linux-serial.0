@@ -1,46 +1,58 @@
-From: Dennis Borgmann <dennis.borgmann@googlemail.com>
-Subject: Reading more than 255 bytes at once
-Date: Tue, 25 Jan 2011 15:52:47 +0100
-Message-ID: <4D3EE3BF.80703@googlemail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+From: Tobias Klauser <tklauser@distanz.ch>
+Subject: [PATCH 2/2] tty: serial: altera_uart: add devicetree support
+Date: Tue, 25 Jan 2011 15:57:37 +0100
+Message-ID: <1295967457-11876-1-git-send-email-tklauser@distanz.ch>
+References: <1295966417-11306-1-git-send-email-tklauser@distanz.ch>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-fx0-f46.google.com ([209.85.161.46]:52279 "EHLO
-	mail-fx0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750960Ab1AYOwy (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 25 Jan 2011 09:52:54 -0500
-Received: by fxm20 with SMTP id 20so5315025fxm.19
-        for <linux-serial@vger.kernel.org>; Tue, 25 Jan 2011 06:52:53 -0800 (PST)
+Received: from mx1.zhaw.ch ([160.85.104.50]:53325 "EHLO mx1.zhaw.ch"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751400Ab1AYO5i (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 25 Jan 2011 09:57:38 -0500
+In-Reply-To: <1295966417-11306-1-git-send-email-tklauser@distanz.ch>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
-Hello linux-serial list!
+Allow to retreive resources from a device tree (currently used in the
+out-of-tree nios2 architecture port only).
 
-I am using termios to process data on a /dev/ttyUSB*-port. Data is
-coming in on one of these ports in burst of over 500bytes. I am doing
-this with kernel 2.6.33.7, which contains FTDI-driver in Version 1.5.0.
-My serial-hardware is a FT4232 and I am using non-canonical input.
+Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
+---
+ drivers/tty/serial/altera_uart.c |   16 +++++++++++++---
+ 1 files changed, 13 insertions(+), 3 deletions(-)
 
-My problem is, that I can only read bursts of up to 255 bytes, since the
-array of control characters within the kernel named c_cc represents only
-an unsigned char. So, if I set a value higher than 255 to c_cc[VMIN], it
-won't be set the way I want within the kernel.
+diff --git a/drivers/tty/serial/altera_uart.c b/drivers/tty/serial/altera_uart.c
+index 7212162..bde59d1 100644
+--- a/drivers/tty/serial/altera_uart.c
++++ b/drivers/tty/serial/altera_uart.c
+@@ -567,13 +567,23 @@ static int __devexit altera_uart_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_OF
++static struct of_device_id altera_uart_match[] = {
++	{ .compatible = "altr,uart-1.0", },
++	{},
++};
++MODULE_DEVICE_TABLE(of, altera_uart_match);
++#endif /* CONFIG_OF */
++
+ static struct platform_driver altera_uart_platform_driver = {
+ 	.probe	= altera_uart_probe,
+ 	.remove	= __devexit_p(altera_uart_remove),
+ 	.driver	= {
+-		.name	= DRV_NAME,
+-		.owner	= THIS_MODULE,
+-		.pm	= NULL,
++		.name		= DRV_NAME,
++		.owner		= THIS_MODULE,
++#ifdef CONFIG_OF
++		.of_match_table	= altera_uart_match,
++#endif
+ 	},
+ };
+ 
+-- 
+1.7.0.4
 
-How would it be possible to read bursts of over 255 bytes? Right now I
-am doing a workaround, which checks for data within the buffer (ioctl
-SIOCINQ) of the serial driver and as soon as it gets above a wanted
-value (let's say 501 bytes), I read the buffer and flush it.
-
-I would rather like to do this with select(2) in combination with
-read(2), which only returns after 501 bytes are available.
-
-I already sent this question on ftdi-usb-sio-devel and privately to the
-developers of the FTDI-driver in use without any success.
-
-Is there a way to do this?
-
-Very kind regards,
-Dennis
