@@ -1,35 +1,28 @@
-From: Anton Vorontsov <avorontsov@mvista.com>
-Subject: Re: [PATCH 1/2] tty: serial: altera_uart: remove
- early_altera_uart_setup
-Date: Tue, 25 Jan 2011 19:27:56 +0300
-Message-ID: <20110125144529.GA4804@oksana.dev.rtsoft.ru>
-References: <1295966417-11306-1-git-send-email-tklauser@distanz.ch>
+From: Tobias Klauser <tklauser@distanz.ch>
+Subject: Re: [PATCH 2/2] tty: serial: altera_uart: add devicetree support
+Date: Wed, 26 Jan 2011 19:18:30 +0100
+Message-ID: <20110126181829.GD29757@distanz.ch>
+References: <1295966417-11306-1-git-send-email-tklauser@distanz.ch> <1295967457-11876-1-git-send-email-tklauser@distanz.ch>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from imap.ru.mvista.com ([213.79.90.228]:19140 "EHLO
-	buildserver.ru.mvista.com" rhost-flags-OK-FAIL-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751379Ab1AYQ7F (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 25 Jan 2011 11:59:05 -0500
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1295966417-11306-1-git-send-email-tklauser@distanz.ch>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <1295967457-11876-1-git-send-email-tklauser@distanz.ch>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tobias Klauser <tklauser@distanz.ch>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2011 at 03:40:17PM +0100, Tobias Klauser wrote:
-> The function has no users inside the tree and the nios2 architecture
-> doesn't use it (anymore) either.
+On 2011-01-25 at 15:57:37 +0100, Tobias Klauser <tklauser@distanz.ch> wrote:
+> Allow to retreive resources from a device tree (currently used in the
+> out-of-tree nios2 architecture port only).
 > 
-> Cc: Anton Vorontsov <cbouatmailru@gmail.com>
 > Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
 > ---
+>  drivers/tty/serial/altera_uart.c |   16 +++++++++++++---
+>  1 files changed, 13 insertions(+), 3 deletions(-)
 
-We don't use it either, at least so far. If/whenever we need it,
-we can always revert this commit. So,
+Please disregard this patch. The driver will need more changes to
+properly support retreiving everything it needs from device tree.
 
-Acked-by: Anton Vorontsov <cbouatmailru@gmail.com>
-
-Thanks!
+Sorry for the noise.
