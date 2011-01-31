@@ -1,101 +1,58 @@
-From: Yin Kangkai <kangkai.yin@linux.intel.com>
-Subject: [PATCH Resend] serial-core: reset the console speed on resume
-Date: Sun, 30 Jan 2011 11:15:30 +0800
-Message-ID: <1296357330-28571-2-git-send-email-kangkai.yin@linux.intel.com>
-References: <20110125104302.GM3315@kai-debian>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20110125104302.GM3315@kai-debian>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial <linux-serial@vger.kernel.org>
-Cc: linux-kernel@vger.kernel.org, Yin Kangkai <kangkai.yin@linux.intel.com>, Greg KH <greg@kroah.com>, Deepak Saxena <dsaxena@laptop.org>, Jason Wang <jason77.wang@gmail.com>, Stanislav Brabec <sbrabec@suse.cz>, Daniel Drake <dsd@laptop.org>
+From: Thomas Weber <thomas.weber.linux@googlemail.com>
+Subject: Re: [PATCH resend 2] Add sc16is7x2 driver
+Date: Mon, 31 Jan 2011 22:34:56 +0100
+Message-ID: <AANLkTimxM5WBn1=T8HJEiLnHmijKf-NahG9D1A0sH-yS@mail.gmail.com>
+References: <4D272DDA.6010007@iis.fraunhofer.de>
+	<4D2D8B12.2@gmail.com>
+	<4D2D9834.5000309@iis.fraunhofer.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-iw0-f174.google.com ([209.85.214.174]:63596 "EHLO
+	mail-iw0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756311Ab1AaVe5 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 31 Jan 2011 16:34:57 -0500
+In-Reply-To: <4D2D9834.5000309@iis.fraunhofer.de>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+Cc: linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Thomas Weber <weber@corscience.de>, Johannes Reif <reif@corscience.de>, changgx <changgx@163.com>, miguelangel@nbee.es
 
-On some platforms, we need to restore the console speed on resume even
-it was not suspended (no_console_suspend), and on others we don't have
-to do that.
+2011/1/12 Manuel Stahl <manuel.stahl@iis.fraunhofer.de>:
+> On 12.01.2011 12:05, Thomas Weber wrote:
+>>
+>> Am 07.01.2011 16:14, schrieb Manuel Stahl:
+>>>
+>>> IRQ is now implemented with work queue (like max3100).
+>>> The problem is, that the sc16is7x2 has a low active irq. But with active
+>>> low threaded_irqs, shared irqs are not allowed.
+>>>
+>>> Please try this one and report errors.
+>>>
+>>> Regards,
+>>> Manuel Stahl
+>>>
+>>> PS: sorry that the patch is not inline, not sure how to configure
+>>> thunderbird correctly
+>>
+>> Hello Manuel,
+>>
+>> There is a re-definition of PORT_SC16IS7X2 in serial_core.h
+>> First time it is 20, second time it is 98.
+>
+> A sorry, forgot to delete the line with 20.
+>
+> Can someone already confirm that the this version works more reliably than
+> the last one?
+>
+> Regards,
+> Manuel Stahl
+>
 
-So don't care about the "console_suspend_enabled" and unconditionally
-reset the console speed if it is a console.
+Hello Manuel,
 
-This is actually a redo of ba15ab0 (Set proper console speed on resume
-if console suspend is disabled) from Deepak Saxena.  I also tried to
-investigate more to find out if this change will break others, here is
-what I've found out:
+Johannes reworked the patch and tested it. He is at school in the
+moment, but he told me that it works now. Can you send a fixed patch?
 
-commit 891b9dd10764352926e1e107756aa229dfa2c210
-Author: Jason Wang <jason77.wang@gmail.com>
-    serial-core: restore termios settings when resume console ports
-
-commit ca2e71aa8cfb0056ce720f3fd53f59f5fac4a3e1
-Author: Jason Wang <jason77.wang@gmail.com>
-    serial-core: skip call set_termios/console_start when no_console_suspend
-
-commit 4547be7809a3b775ce750ec7f8b5748954741523
-Author: Stanislav Brabec <sbrabec@suse.cz>
-    serial-core: resume serial hardware with no_console_suspend
-
-commit ba15ab0e8de0d4439a91342ad52d55ca9e313f3d
-Author: Deepak Saxena <dsaxena@laptop.org>
-    Set proper console speed on resume if console suspend is disabled
-
-from ba15ab0, we learned that, even if the console suspend is disabled
-(when no_console_suspend is set), we may still need to "reset the port
-to the state it was in before we suspended."
-
-Then with 4547be7, this piece of code is removed.
-
-And then Jason Wang added that back in ca2e71a and 891b9dd, to fix
-some breakage on OMAP3EVM platform. From ca2e71a we learned that the
-"set_termios" things is actually needed by both console is suspended
-and not suspended.
-
-That's why I removed the console_suspended_enabled condition, and only
-call console_start() when we actually suspeneded it.
-
-I also noticed in this thread:
-http://marc.info/?t=129079257100004&r=1&w=2, which talked about on
-some platforms, UART HW will be cut power whether or not we set
-no_console_suspend, and then on resume it does not work quite well. I
-have a similar HW, and this patch fixed this issue, don't know if this
-patch also works on their platforms.
-
-[Update: Stanislav tested this patch on Zaurus and reported it improves the
-situation. Thanks.]
-
-CC: Greg KH <greg@kroah.com>
-CC: Deepak Saxena <dsaxena@laptop.org>
-CC: Jason Wang <jason77.wang@gmail.com>
-CC: Stanislav Brabec <sbrabec@suse.cz>
-CC: Daniel Drake <dsd@laptop.org>
-Signed-off-by: Yin Kangkai <kangkai.yin@linux.intel.com>
----
- drivers/tty/serial/serial_core.c |    6 +++---
- 1 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 460a72d..20563c5 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2064,7 +2064,7 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
- 	/*
- 	 * Re-enable the console device after suspending.
- 	 */
--	if (console_suspend_enabled && uart_console(uport)) {
-+	if (uart_console(uport)) {
- 		/*
- 		 * First try to use the console cflag setting.
- 		 */
-@@ -2077,9 +2077,9 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
- 		if (port->tty && port->tty->termios && termios.c_cflag == 0)
- 			termios = *(port->tty->termios);
- 
--		uart_change_pm(state, 0);
- 		uport->ops->set_termios(uport, &termios, NULL);
--		console_start(uport->cons);
-+		if (console_suspend_enabled)
-+			console_start(uport->cons);
- 	}
- 
- 	if (port->flags & ASYNC_SUSPENDED) {
--- 
-1.7.2.3
+Thomas
