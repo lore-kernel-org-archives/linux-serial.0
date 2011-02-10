@@ -1,40 +1,28 @@
-From: Anton Vorontsov <cbouatmailru@gmail.com>
-Subject: Re: [PATCH 2/4] tty: serial: altera_uart: Use port->regshift to
- store bus shift
-Date: Wed, 9 Feb 2011 13:46:35 +0300
-Message-ID: <20110209104635.GB21588@oksana.dev.rtsoft.ru>
-References: <cover.1297245277.git.tklauser@distanz.ch>
- <6ced1dcb96fc56fcdc8fb0daab898a773a7a320c.1297245277.git.tklauser@distanz.ch>
+From: "Jehj" <vandyck154621@yahoo.com.mx>
+Subject: Hnzacfa Bndhvhpx T%RAN_
+Date: Thu, 10 Feb 2011 10:32:31 +0800
+Message-ID: <201102101032317036237@yahoo.com.mx>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain;
+	charset="gb2312"
+Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bw0-f46.google.com ([209.85.214.46]:52172 "EHLO
-	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754524Ab1BIKqj (ORCPT
+Received: from nm19.bullet.mail.bf1.yahoo.com ([98.139.212.178]:42225 "HELO
+	nm19.bullet.mail.bf1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1754769Ab1BJChc (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 9 Feb 2011 05:46:39 -0500
-Content-Disposition: inline
-In-Reply-To: <6ced1dcb96fc56fcdc8fb0daab898a773a7a320c.1297245277.git.tklauser@distanz.ch>
+	Wed, 9 Feb 2011 21:37:32 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tobias Klauser <tklauser@distanz.ch>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, nios2-dev@sopc.et.ntust.edu.tw, linux-kernel@vger.kernel.org
+To: linux-serial <linux-serial@vger.kernel.org>
 
-On Wed, Feb 09, 2011 at 10:57:04AM +0100, Tobias Klauser wrote:
-> Use the regshift member of struct uart_port to store the address stride
-> from platform data. This way we can save one dereference per call of
-> altera_uart_readl and altera_uart_writel.
-> 
-> This also allows us to use the driver without platform data, which is
-> needed for device tree support in the Nios2 port.
-> 
-> Cc: Anton Vorontsov <cbouatmailru@gmail.com>
-> Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
-
-Acked-by: Anton Vorontsov <cbouatmailru@gmail.com>
-
-Thanks!
-
--- 
-Anton Vorontsov
-Email: cbouatmailru@gmail.com
+OLG+yczQ0Neo0rW5qdOmuPfA4L6rt8LP49HMoaOyydPD1K2zp9HMy7/F5NbGo6yw/New0+vV5sa3
+zt631rHwo6y/2rjQtL/V/aGjIL6tuf224MTqtcTK0LOhtLjBtqOssru2z7XE1srBv7jEvfijrLfC
+1ea2yLTvtb05MCXS1MnPoaPKx7OjxOrX1LPpoaLLzcDxoaK1yMrX0aGhow0KVbj3xrfFxs/j0cy8
+27jxo7rUqi/M9Si6rNPKt9EpICANCjDI7dbQu6qjpDI2MCAg07LW0Luqo6QyMzAgICDL1dHMo6Qy
+MjAgICAgu8a618KlMTkxNqOkNTAwICC67LrTtcCjpDU1MCAgvsXO5dau1/CjpDUwMCAgus3M7M/C
+o6Q0ODAgIL3w3L3I2KOkMTMwICAgwLbI7dy9yNijpDMwMCAgIMjt0/HPqqOkMTMwICANCsn6svrB
+tLXE16jStbuvo6y8vMr1tcS9+LK9o6zWysG/vfG3x870sciho9Pr1ebRzMTRt9ayrtbZoaPN6sir
+v8nS1MqkyM7I1bOjvbu8yqGjDQpnuPy24Ma3xcbAtLXn18nRr6O6MTM1IDkwNDQgMTg0NiAgUVE6
+MTU5Nzc5Mzg2OA0KwarPtcjLo7qzwrHzDQrIq7n6v+y13cj9zOzE2r/Jtb2ho7v1tb24tr/uoaPH
+67fF0MS5usLyo6FY
