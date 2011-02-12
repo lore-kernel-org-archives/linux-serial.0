@@ -1,28 +1,27 @@
-From: "Jehj" <vandyck154621@yahoo.com.mx>
-Subject: Hnzacfa Bndhvhpx T%RAN_
-Date: Thu, 10 Feb 2011 10:32:31 +0800
-Message-ID: <201102101032317036237@yahoo.com.mx>
+From: Richard Zhao <linuxzsc@gmail.com>
+Subject: uart ops tx_empty lock
+Date: Sat, 12 Feb 2011 21:16:45 +0800
+Message-ID: <AANLkTimpEcfmJ5SF_YpG1mE0eBiARQ7L17Pd+ay_OQoV@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="gb2312"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nm19.bullet.mail.bf1.yahoo.com ([98.139.212.178]:42225 "HELO
-	nm19.bullet.mail.bf1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with SMTP id S1754769Ab1BJChc (ORCPT
+Received: from mail-wy0-f174.google.com ([74.125.82.174]:38958 "EHLO
+	mail-wy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751640Ab1BLNQr (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 9 Feb 2011 21:37:32 -0500
+	Sat, 12 Feb 2011 08:16:47 -0500
+Received: by wyb28 with SMTP id 28so3378051wyb.19
+        for <linux-serial@vger.kernel.org>; Sat, 12 Feb 2011 05:16:45 -0800 (PST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial <linux-serial@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@suse.de>
+Cc: linux-serial@vger.kernel.org
 
-OLG+yczQ0Neo0rW5qdOmuPfA4L6rt8LP49HMoaOyydPD1K2zp9HMy7/F5NbGo6yw/New0+vV5sa3
-zt631rHwo6y/2rjQtL/V/aGjIL6tuf224MTqtcTK0LOhtLjBtqOssru2z7XE1srBv7jEvfijrLfC
-1ea2yLTvtb05MCXS1MnPoaPKx7OjxOrX1LPpoaLLzcDxoaK1yMrX0aGhow0KVbj3xrfFxs/j0cy8
-27jxo7rUqi/M9Si6rNPKt9EpICANCjDI7dbQu6qjpDI2MCAg07LW0Luqo6QyMzAgICDL1dHMo6Qy
-MjAgICAgu8a618KlMTkxNqOkNTAwICC67LrTtcCjpDU1MCAgvsXO5dau1/CjpDUwMCAgus3M7M/C
-o6Q0ODAgIL3w3L3I2KOkMTMwICAgwLbI7dy9yNijpDMwMCAgIMjt0/HPqqOkMTMwICANCsn6svrB
-tLXE16jStbuvo6y8vMr1tcS9+LK9o6zWysG/vfG3x870sciho9Pr1ebRzMTRt9ayrtbZoaPN6sir
-v8nS1MqkyM7I1bOjvbu8yqGjDQpnuPy24Ma3xcbAtLXn18nRr6O6MTM1IDkwNDQgMTg0NiAgUVE6
-MTU5Nzc5Mzg2OA0KwarPtcjLo7qzwrHzDQrIq7n6v+y13cj9zOzE2r/Jtb2ho7v1tb24tr/uoaPH
-67fF0MS5usLyo6FY
+Hi Greg,
+
+Does uart_ops.tx_empty need to hold port->lock?
+I find some drivers hold the lock in tx_empty hook, for example 8250.
+But many more drivers don't hold it, for example imx.c, sh-sci.c.
+
+Thanks
+Richard
