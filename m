@@ -1,75 +1,31 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 6/6] hci_ath: Fix the mess in this driver
-Date: Mon, 14 Feb 2011 16:28:18 +0000
-Message-ID: <20110214162803.10571.55396.stgit@bob.linux.org.uk>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [RFC PATCH 0/6] Rework tty helpers to avoid need for file
+ pointers
+Date: Mon, 14 Feb 2011 16:58:03 -0800
+Message-ID: <20110215005803.GA26879@kroah.com>
 References: <20110214162438.10571.8203.stgit@bob.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from kroah.org ([198.145.64.141]:48256 "EHLO coco.kroah.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750800Ab1BOA6q (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 14 Feb 2011 19:58:46 -0500
+Content-Disposition: inline
 In-Reply-To: <20110214162438.10571.8203.stgit@bob.linux.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-From: Alan Cox <alan@linux.intel.com>
+On Mon, Feb 14, 2011 at 04:25:51PM +0000, Alan Cox wrote:
+> (and then use this to fix the holes in hci_ath)
+> 
+> The cleanup wants doing anyway but we have a reason for needing to do it.
 
-Was this exploitable - who knows, but it was certainly totally broken
+This all looks great, thanks for doing this work.  I'll queue it up in a
+few days, unless there are any objections?
 
-Signed-of-by: Alan Cox <alan@linux.intel.com>
----
+thanks,
 
- drivers/bluetooth/hci_ath.c |   26 +++++++++++++-------------
- 1 files changed, 13 insertions(+), 13 deletions(-)
-
-
-diff --git a/drivers/bluetooth/hci_ath.c b/drivers/bluetooth/hci_ath.c
-index 6a160c1..bd34406 100644
---- a/drivers/bluetooth/hci_ath.c
-+++ b/drivers/bluetooth/hci_ath.c
-@@ -51,32 +51,32 @@ struct ath_struct {
- 
- static int ath_wakeup_ar3k(struct tty_struct *tty)
- {
--	struct termios settings;
--	int status = tty->driver->ops->tiocmget(tty, NULL);
-+	struct ktermios ktermios;
-+	int status = tty->driver->ops->tiocmget(tty);
- 
- 	if (status & TIOCM_CTS)
- 		return status;
- 
- 	/* Disable Automatic RTSCTS */
--	n_tty_ioctl_helper(tty, NULL, TCGETS, (unsigned long)&settings);
--	settings.c_cflag &= ~CRTSCTS;
--	n_tty_ioctl_helper(tty, NULL, TCSETS, (unsigned long)&settings);
-+	memcpy(&ktermios, tty->termios, sizeof(ktermios));
-+	ktermios.c_cflag &= ~CRTSCTS;
-+	tty_set_termios(tty, &ktermios);
- 
- 	/* Clear RTS first */
--	status = tty->driver->ops->tiocmget(tty, NULL);
--	tty->driver->ops->tiocmset(tty, NULL, 0x00, TIOCM_RTS);
-+	status = tty->driver->ops->tiocmget(tty);
-+	tty->driver->ops->tiocmset(tty, 0x00, TIOCM_RTS);
- 	mdelay(20);
- 
- 	/* Set RTS, wake up board */
--	status = tty->driver->ops->tiocmget(tty, NULL);
--	tty->driver->ops->tiocmset(tty, NULL, TIOCM_RTS, 0x00);
-+	status = tty->driver->ops->tiocmget(tty);
-+	tty->driver->ops->tiocmset(tty, TIOCM_RTS, 0x00);
- 	mdelay(20);
- 
--	status = tty->driver->ops->tiocmget(tty, NULL);
-+	status = tty->driver->ops->tiocmget(tty);
- 
--	n_tty_ioctl_helper(tty, NULL, TCGETS, (unsigned long)&settings);
--	settings.c_cflag |= CRTSCTS;
--	n_tty_ioctl_helper(tty, NULL, TCSETS, (unsigned long)&settings);
-+	/* Disable Automatic RTSCTS */
-+	ktermios.c_cflag |= CRTSCTS;
-+	status = tty_set_termios(tty, &ktermios);
- 
- 	return status;
- }
+greg k-h
