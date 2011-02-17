@@ -1,41 +1,26 @@
-From: Tobias Klauser <tklauser@distanz.ch>
-Subject: Re: [PATCH 0/4] tty: serial: Updates for altera_uart driver
-Date: Thu, 17 Feb 2011 20:38:00 +0100
-Message-ID: <20110217193800.GQ4076@distanz.ch>
-References: <cover.1297244810.git.tklauser@distanz.ch> <cover.1297245277.git.tklauser@distanz.ch> <20110217193255.GA27139@kroah.com>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [RFC PATCH 0/6] Rework tty helpers to avoid need for file
+ pointers
+Date: Thu, 17 Feb 2011 12:06:32 -0800
+Message-ID: <20110217200632.GA27228@kroah.com>
+References: <20110214162438.10571.8203.stgit@bob.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from symlink.to.noone.org ([85.10.207.172]:40567 "EHLO sym.noone.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751405Ab1BQTiH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Feb 2011 14:38:07 -0500
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20110217193255.GA27139@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <20110214162438.10571.8203.stgit@bob.linux.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <greg@kroah.com>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, nios2-dev@sopc.et.ntust.edu.tw, linux-kernel@vger.kernel.org
 
-On 2011-02-17 at 20:32:55 +0100, Greg KH <greg@kroah.com> wrote:
-> On Wed, Feb 09, 2011 at 10:55:28AM +0100, Tobias Klauser wrote:
-> > This patchset adds some updates to the altera_uart taken from the Nios2
-> > Linux port (currently out-of-tree) repository, the most important one
-> > probably being the added devicetree support.
-> > 
-> > Tobias Klauser (4):
-> >   tty: serial: altera_uart: Handle pdev->id == -1 in altera_uart_remove
-> >   tty: serial: altera_uart: Use port->regshift to store bus shift
-> >   tty: serial: altera_uart: Add devicetree support
-> >   MAINTAINERS: Add myself as a maintainer for
-> >     altera_uart/altera_jtaguart
+On Mon, Feb 14, 2011 at 04:25:51PM +0000, Alan Cox wrote:
+> (and then use this to fix the holes in hci_ath)
 > 
-> I've applied 3 of these patches, skipping the device tree patch, as it
-> looks like you are going to rework it.
+> The cleanup wants doing anyway but we have a reason for needing to do it.
 
-Yup, I'm currently waiting for a reply from Thomas and will update it
-accordingly then. I'll send the updated patch later on (hopefully with
-correct subject line this time).
+All now applied, including a build fix that you missed :)
 
-Thanks a lot
-Tobias
+thanks,
+
+greg k-h
