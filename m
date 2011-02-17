@@ -1,82 +1,38 @@
-From: Tobias Klauser <tklauser@distanz.ch>
-Subject: Re: [Nios2-dev] [PATCH 4/4] MAINTAINERS: Add myself as a
-	maintainer for  altera_uart/altera_jtaguart
-Date: Thu, 17 Feb 2011 08:51:56 +0100
-Message-ID: <20110217075156.GH4076@distanz.ch>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [Nios2-dev] [PATCH 4/4] MAINTAINERS: Add myself as a maintainer for  altera_uart/altera_jtaguart
+Date: Thu, 17 Feb 2011 19:02:41 +0100
+Message-ID: <201102171902.41784.arnd@arndb.de>
 References: <cover.1297245277.git.tklauser@distanz.ch> <04c107d8032cbaffada91066c1d010b9274aebe1.1297245277.git.tklauser@distanz.ch> <4D5C9314.8030101@wytron.com.tw>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from symlink.to.noone.org ([85.10.207.172]:52294 "EHLO sym.noone.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751034Ab1BQHv5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Feb 2011 02:51:57 -0500
-Content-Disposition: inline
+Received: from moutng.kundenserver.de ([212.227.126.171]:55137 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932395Ab1BQSC6 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 17 Feb 2011 13:02:58 -0500
 In-Reply-To: <4D5C9314.8030101@wytron.com.tw>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Thomas Chou <thomas@wytron.com.tw>
-Cc: nios2-dev@sopc.et.ntust.edu.tw, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
+Cc: Tobias Klauser <tklauser@distanz.ch>, nios2-dev@sopc.et.ntust.edu.tw, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
 
-Hi Thomas
-
-On 2011-02-17 at 04:16:36 +0100, Thomas Chou <thomas@wytron.com.tw> wrote:
-> On 02/09/2011 05:58 PM, Tobias Klauser wrote:
->> Signed-off-by: Tobias Klauser<tklauser@distanz.ch>
->> ---
->>   MAINTAINERS |   10 ++++++++++
->>   1 files changed, 10 insertions(+), 0 deletions(-)
->>
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index ecef0f1..4e86a11 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -465,6 +465,16 @@ M:	Matt Turner<mattst88@gmail.com>
->>   L:	linux-alpha@vger.kernel.org
->>   F:	arch/alpha/
->>
->> +ALTERA UART/JTAG UART SERIAL DRIVERS
->> +M:	Tobias Klauser<tklauser@distanz.ch>
->> +L:	linux-serial@vger.kernel.org
->> +L:	nios2-dev@sopc.et.ntust.edu.tw (moderated for non-subscribers)
->> +S:	Maintained
->> +F:	drivers/tty/serial/altera_uart.c
->> +F:	drivers/tty/serial/altera_jtaguart.c
->> +F:	include/linux/altera_uart.h
->> +F:	include/linux/altera_jtaguart.h
->> +
->>   AMD GEODE CS5536 USB DEVICE CONTROLLER DRIVER
->>   M:	Thomas Dahlmann<dahlmann.thomas@arcor.de>
->>   L:	linux-geode@lists.infradead.org (moderated for non-subscribers)
->
-> Hi Tobias,
->
-> As we get more drivers merged into mainline, we might consider adding a  
-> general entry for all altera related drivers to our mailing list. We  
+On Thursday 17 February 2011, Thomas Chou wrote:
+> As we get more drivers merged into mainline, we might consider adding a 
+> general entry for all altera related drivers to our mailing list. We 
 > could add "F: arch/nios2" to this entry in the near future.
 
-That's great. I didn't know about the K: section entry.
+On a related topic, are there plans to submit the nios2 arch code
+for review any time soon?
 
-I will send a patch as below.
+I'm usually reviewing all architectures that come in, and unicore32
+is almost ready to go in, so there is room to start reviewing the next
+one.
 
-> 1) subject: MAINTAINERS: add Altera related drivers entry
-> send this to Andrew Morton.
->
-> ALTERA EMBEDDED ARCH AND PERIPHERALS DRIVERS
-> L:	nios2-dev@sopc.et.ntust.edu.tw (moderated for non-subscribers)
-> S:	Maintained
-> K:	altera
->
-> 2) subject: MAINTAINERS: add Altera UART/JTAG UART maintainer
->
-> ALTERA UART/JTAG UART SERIAL DRIVERS
-> M:	Tobias Klauser <tklauser@distanz.ch>
-> L:	linux-serial@vger.kernel.org
-> S:	Maintained
-> F:	drivers/tty/serial/altera_uart.c
-> F:	drivers/tty/serial/altera_jtaguart.c
-> F:	include/linux/altera_uart.h
-> F:	include/linux/altera_jtaguart.h
+I expect nios2, lm32 and c64x to be submitted this year, but I'll
+probably only be able to review one at time. First come, first
+serve.
 
-Thanks
-Tobias
+	Arnd
