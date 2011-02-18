@@ -1,106 +1,73 @@
 From: Grant Likely <grant.likely@secretlab.ca>
-Subject: Re: [PATCH 5/5 v2] tty: serial: altera_jtaguart: Add device tree support
-Date: Fri, 18 Feb 2011 00:59:24 -0700
-Message-ID: <AANLkTikEPW2+0+NXhXRayX3_Ndd_dSaoNjJ7uuHfuT1O@mail.gmail.com>
-References: <c28550ba11ed228f4137ced1ab34761c08ad38ad.1297974227.git.tklauser@distanz.ch>
- <1298015675-18719-1-git-send-email-tklauser@distanz.ch>
+Subject: Re: [Nios2-dev] [PATCH 0/5] tty: serial: Updates for altera_jtaguart driver
+Date: Fri, 18 Feb 2011 01:06:15 -0700
+Message-ID: <AANLkTimv8xB7KF14C1ttjPorbXeo=nWX0P=a5TUcNCbG@mail.gmail.com>
+References: <cover.1297974227.git.tklauser@distanz.ch> <20110217221504.GA10686@kroah.com>
+ <20110218072324.GS4076@distanz.ch> <4D5E1FF6.20805@wytron.com.tw> <20110218074542.GA759@distanz.ch>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=Big5
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-iy0-f174.google.com ([209.85.210.174]:46485 "EHLO
+Received: from mail-iy0-f174.google.com ([209.85.210.174]:35681 "EHLO
 	mail-iy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752519Ab1BRH7o convert rfc822-to-8bit (ORCPT
+	with ESMTP id S1753554Ab1BRIGf (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 18 Feb 2011 02:59:44 -0500
-Received: by iyj8 with SMTP id 8so3238886iyj.19
-        for <linux-serial@vger.kernel.org>; Thu, 17 Feb 2011 23:59:44 -0800 (PST)
-In-Reply-To: <1298015675-18719-1-git-send-email-tklauser@distanz.ch>
+	Fri, 18 Feb 2011 03:06:35 -0500
+Received: by iyj8 with SMTP id 8so3243621iyj.19
+        for <linux-serial@vger.kernel.org>; Fri, 18 Feb 2011 00:06:35 -0800 (PST)
+In-Reply-To: <20110218074542.GA759@distanz.ch>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Tobias Klauser <tklauser@distanz.ch>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, nios2-dev@sopc.et.ntust.edu.tw
+Cc: Thomas Chou <thomas@wytron.com.tw>, nios2-dev@sopc.et.ntust.edu.tw, Greg KH <greg@kroah.com>, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
 
-On Fri, Feb 18, 2011 at 12:54 AM, Tobias Klauser <tklauser@distanz.ch> =
-wrote:
-> Advertise the possibility to use this driver with device tree if
-> CONFIG_OF is set.
+On Fri, Feb 18, 2011 at 12:45 AM, Tobias Klauser <tklauser@distanz.ch> wrote:
+> On 2011-02-18 at 08:29:58 +0100, Thomas Chou <thomas@wytron.com.tw> wrote:
+>> On 02/18/2011 03:23 PM, Tobias Klauser wrote:
+>>> On 2011-02-17 at 23:15:04 +0100, Greg KH<greg@kroah.com>  wrote:
+>>>> On Thu, Feb 17, 2011 at 09:28:23PM +0100, Tobias Klauser wrote:
+>>>>> This patchset adds updates taken from the Nios2 Linux port (currently
+>>>>> out-of-tree) repository to the altera_jtaguart driver.
+>>>>>
+>>>>> And this time with the correct cover letter right away :-)
+>>>>>
+>>>>> Tobias Klauser (5):
+>>>>>    tty: serial: altera_jtaguart: Don't use plain integer as NULL pointer
+>>>>>    tty: serial: altera_jtaguart: Remove unused function
+>>>>>      early_altera_jtaguart_setup
+>>>>>    tty: serial: altera_jtaguart: Support getting mapbase and IRQ from
+>>>>>      resources
+>>>>>    tty: serial: altera_jtaguart: Fixup type usage of port flags
+>>>>>    tty: serial: altera_jtaguart: Add device tree support
+>>>>
+>>>> After this series, I get the following build error:
+>>>>       CC [M]  drivers/tty/serial/altera_jtaguart.o
+>>>>       drivers/tty/serial/altera_jtaguart.c:485:3: error: unknown field ???of_match_table??? specified in initializer
+>>>
+>>> Strange, I didn't get that one when compile testing against linux-next
+>>> on x86_64. Though it seems I didn't correctly test it on nios2 and I got
+>>> a compile error about a missing semicolon in the definition of
+>>> altera_jtaguart_match there.
+>>
+>> It might be that the of_match_table patch is available in Grant's branch
+>> only, which is for v3.6.39. Maybe you can ask Grant to take this patch
+>> 5/5.
 >
-> Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
-> ---
-> =A0.../devicetree/bindings/altera_jtaguart.txt =A0 =A0 =A0 =A0| =A0 =A0=
-4 ++++
-> =A0drivers/tty/serial/altera_jtaguart.c =A0 =A0 =A0 =A0 =A0 =A0 =A0 |=
- =A0 15 +++++++++++++--
-> =A02 files changed, 17 insertions(+), 2 deletions(-)
-> =A0create mode 100644 Documentation/devicetree/bindings/altera_jtagua=
-rt.txt
+> That explains it, thanks Thomas.
 >
-> diff --git a/Documentation/devicetree/bindings/altera_jtaguart.txt b/=
-Documentation/devicetree/bindings/altera_jtaguart.txt
-> new file mode 100644
-> index 0000000..c152f65
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/altera_jtaguart.txt
+> Greg, care to take only patches 1/5 to 4/5 for now? I'll resubmit 5/5
+> for the 2.6.39 merge window, unless Grant already wants to take this to
+> his tree.
 
-This should be in
-Documentation/devicetree/bindings/serial/altera_jtaguart.txt, but
-otherwise:
+I'm happy to take this patch if it doesn't depend on the first 4.
+Alternately Greg, you could merge commit c9e358dfc "driver-core:
+remove conditionals around devicetree pointers" from my
+devicetree/test branch on git://git.secretlab.ca/git/linux-2.6.  I
+won't be rebasing that commit and it is the first commit on top of
+2.6.38-rc1.
 
-Acked-by: Grant Likely <grant.likely@secretlab.ca>
+g.
 
-> @@ -0,0 +1,4 @@
-> +Altera JTAG UART
-> +
-> +Required properties:
-> +- compatible : should be "ALTR,juart-1.0"
-> diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/seria=
-l/altera_jtaguart.c
-> index 8f014bb..60e049b 100644
-> --- a/drivers/tty/serial/altera_jtaguart.c
-> +++ b/drivers/tty/serial/altera_jtaguart.c
-> @@ -466,12 +466,23 @@ static int __devexit altera_jtaguart_remove(str=
-uct platform_device *pdev)
-> =A0 =A0 =A0 =A0return 0;
-> =A0}
->
-> +#ifdef CONFIG_OF
-> +static struct of_device_id altera_jtaguart_match[] =3D {
-> + =A0 =A0 =A0 { .compatible =3D "ALTR,juart-1.0", },
-> + =A0 =A0 =A0 {},
-> +};
-> +MODULE_DEVICE_TABLE(of, altera_jtaguart_match);
-> +#else
-> +#define altera_jtaguart_match NULL
-> +#endif /* CONFIG_OF */
-> +
-> =A0static struct platform_driver altera_jtaguart_platform_driver =3D =
-{
-> =A0 =A0 =A0 =A0.probe =A0=3D altera_jtaguart_probe,
-> =A0 =A0 =A0 =A0.remove =3D __devexit_p(altera_jtaguart_remove),
-> =A0 =A0 =A0 =A0.driver =3D {
-> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 .name =A0 =3D DRV_NAME,
-> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 .owner =A0=3D THIS_MODULE,
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 .name =A0 =A0 =A0 =A0 =A0 =3D DRV_NAME,
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 .owner =A0 =A0 =A0 =A0 =A0=3D THIS_MODU=
-LE,
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 .of_match_table =3D altera_jtaguart_mat=
-ch,
-> =A0 =A0 =A0 =A0},
-> =A0};
->
-> --
-> 1.7.0.4
->
->
-
-
-
---=20
+-- 
 Grant Likely, B.Sc., P.Eng.
 Secret Lab Technologies Ltd.
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
