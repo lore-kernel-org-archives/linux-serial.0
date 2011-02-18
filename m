@@ -1,78 +1,58 @@
-From: Grant Likely <grant.likely@secretlab.ca>
-Subject: Re: [Nios2-dev] [PATCH 0/5] tty: serial: Updates for altera_jtaguart driver
-Date: Fri, 18 Feb 2011 10:20:50 -0700
-Message-ID: <AANLkTik6iHf8YrOdmg4xZSUkeNYpsk_KxYbU0pTWqnME@mail.gmail.com>
-References: <cover.1297974227.git.tklauser@distanz.ch> <20110217221504.GA10686@kroah.com>
- <20110218072324.GS4076@distanz.ch> <4D5E1FF6.20805@wytron.com.tw>
- <20110218074542.GA759@distanz.ch> <AANLkTimv8xB7KF14C1ttjPorbXeo=nWX0P=a5TUcNCbG@mail.gmail.com>
- <20110218081108.GB759@distanz.ch>
+From: Andrei Warkentin <andreiw@motorola.com>
+Subject: Re: Newbie question: setting baudrate / managing FIFO.
+Date: Fri, 18 Feb 2011 14:15:59 -0600
+Message-ID: <AANLkTikR+Kcs9eNhDFxn1G6bo9yomEa7C-szyFdu2SoZ@mail.gmail.com>
+References: <AANLkTimdduXQaXJTuWPUKTFdQo9XOEYCkdNB_6RTVLFu@mail.gmail.com>
+	<AANLkTin7n0Uy3ypnibvExANmZmMBZmDi-UHXP_RfJZ7W@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=Big5
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-iw0-f174.google.com ([209.85.214.174]:65188 "EHLO
-	mail-iw0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751665Ab1BRRVK (ORCPT
+Received: from exprod5og105.obsmtp.com ([64.18.0.180]:55269 "EHLO
+	exprod5og105.obsmtp.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751732Ab1BRUQB (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 18 Feb 2011 12:21:10 -0500
-Received: by iwn9 with SMTP id 9so3846598iwn.19
-        for <linux-serial@vger.kernel.org>; Fri, 18 Feb 2011 09:21:10 -0800 (PST)
-In-Reply-To: <20110218081108.GB759@distanz.ch>
+	Fri, 18 Feb 2011 15:16:01 -0500
+Received: from DE01MGRG01.AM.MOT-MOBILITY.COM ([10.176.129.42])
+	by DE01MGRG01.AM.MOT-MOBILITY.COM (8.14.3/8.14.3) with ESMTP id p1IKGCRS001024
+	for <linux-serial@vger.kernel.org>; Fri, 18 Feb 2011 15:16:12 -0500 (EST)
+Received: from mail-vx0-f170.google.com (mail-vx0-f170.google.com [209.85.220.170])
+	by DE01MGRG01.AM.MOT-MOBILITY.COM (8.14.3/8.14.3) with ESMTP id p1IK97gc028118
+	(version=TLSv1/SSLv3 cipher=RC4-SHA bits=128 verify=OK)
+	for <linux-serial@vger.kernel.org>; Fri, 18 Feb 2011 15:16:11 -0500 (EST)
+Received: by mail-vx0-f170.google.com with SMTP id 38so2787299vxc.15
+        for <linux-serial@vger.kernel.org>; Fri, 18 Feb 2011 12:15:59 -0800 (PST)
+In-Reply-To: <AANLkTin7n0Uy3ypnibvExANmZmMBZmDi-UHXP_RfJZ7W@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tobias Klauser <tklauser@distanz.ch>
-Cc: Thomas Chou <thomas@wytron.com.tw>, nios2-dev@sopc.et.ntust.edu.tw, Greg KH <greg@kroah.com>, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On Fri, Feb 18, 2011 at 1:11 AM, Tobias Klauser <tklauser@distanz.ch> wrote:
-> On 2011-02-18 at 09:06:15 +0100, Grant Likely <grant.likely@secretlab.ca> wrote:
->> On Fri, Feb 18, 2011 at 12:45 AM, Tobias Klauser <tklauser@distanz.ch> wrote:
->> > On 2011-02-18 at 08:29:58 +0100, Thomas Chou <thomas@wytron.com.tw> wrote:
->> >> On 02/18/2011 03:23 PM, Tobias Klauser wrote:
->> >>> On 2011-02-17 at 23:15:04 +0100, Greg KH<greg@kroah.com>  wrote:
->> >>>> On Thu, Feb 17, 2011 at 09:28:23PM +0100, Tobias Klauser wrote:
->> >>>>> This patchset adds updates taken from the Nios2 Linux port (currently
->> >>>>> out-of-tree) repository to the altera_jtaguart driver.
->> >>>>>
->> >>>>> And this time with the correct cover letter right away :-)
->> >>>>>
->> >>>>> Tobias Klauser (5):
->> >>>>>    tty: serial: altera_jtaguart: Don't use plain integer as NULL pointer
->> >>>>>    tty: serial: altera_jtaguart: Remove unused function
->> >>>>>      early_altera_jtaguart_setup
->> >>>>>    tty: serial: altera_jtaguart: Support getting mapbase and IRQ from
->> >>>>>      resources
->> >>>>>    tty: serial: altera_jtaguart: Fixup type usage of port flags
->> >>>>>    tty: serial: altera_jtaguart: Add device tree support
->> >>>>
->> >>>> After this series, I get the following build error:
->> >>>>       CC [M]  drivers/tty/serial/altera_jtaguart.o
->> >>>>       drivers/tty/serial/altera_jtaguart.c:485:3: error: unknown field ???of_match_table??? specified in initializer
->> >>>
->> >>> Strange, I didn't get that one when compile testing against linux-next
->> >>> on x86_64. Though it seems I didn't correctly test it on nios2 and I got
->> >>> a compile error about a missing semicolon in the definition of
->> >>> altera_jtaguart_match there.
->> >>
->> >> It might be that the of_match_table patch is available in Grant's branch
->> >> only, which is for v3.6.39. Maybe you can ask Grant to take this patch
->> >> 5/5.
->> >
->> > That explains it, thanks Thomas.
->> >
->> > Greg, care to take only patches 1/5 to 4/5 for now? I'll resubmit 5/5
->> > for the 2.6.39 merge window, unless Grant already wants to take this to
->> > his tree.
+On Wed, Feb 16, 2011 at 1:07 PM, Andrei Warkentin <andreiw@motorola.com> wrote:
+> On Wed, Feb 16, 2011 at 4:51 AM, Andrei Warkentin <andreiw@motorola.com> wrote:
+>> Hi,
 >>
->> I'm happy to take this patch if it doesn't depend on the first 4.
->> Alternately Greg, you could merge commit c9e358dfc "driver-core:
->> remove conditionals around devicetree pointers" from my
->> devicetree/test branch on git://git.secretlab.ca/git/linux-2.6.  I
->> won't be rebasing that commit and it is the first commit on top of
->> 2.6.38-rc1.
+>> I looked about the archives, but maybe I skipped something... When I
+>> am handling set_termios, what assumptions can I make regarding the
+>> TX/RX state? I didn't take a look at all the serial drivers, but the
+>> ones I did look did not bother flushing FIFOs and ensuring nothing can
+>> be present in the TX FIFO while updating LCR and divisors. Should I do
+>> the equivalent of stop_tx inside set_termios? Is that already ensured?
+>> The hardware I am looking at needs to have FIFO cleared after setting
+>> baud rate, and I was getting concerned over potential data loss
+>> scenarios...
+>>
+>> Thanks,
+>> A
+>>
 >
-> The patch doesn't depend on the first 4, so you could take it if Greg
-> doesn't oppose.
+> I realize there are different versions of the TCSET - TCSETS,
+> TCSETF... i.e. if you wanted to flush the buffer you'd ask for it. So
+> it should be ok to just clear the FIFO and destroy anything in them,
+> right? Or should I still flush the FIFOs after disabling flow control
+> if it was on? After all you could have gotten data after you called
+> set_termios.
+>
+> Thanks,
+> A
+>
 
-Okay, I'll merge the ones that depend on my tree and that Greg acks.
-
-g.
+Anyone :)?
