@@ -1,48 +1,67 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: MAX3107 driver faulty
-Date: Fri, 18 Feb 2011 13:54:20 +0000
-Message-ID: <20110218135420.68277c1e@bob.linux.org.uk>
-References: <4D5E74C7.3040700@gmx.de>
-	<20110218135908.GA7305@pengutronix.de>
+From: Greg KH <gregkh@suse.de>
+Subject: Re: [Nios2-dev] [PATCH 0/5] tty: serial: Updates for
+ altera_jtaguart driver
+Date: Fri, 18 Feb 2011 07:26:51 -0800
+Message-ID: <20110218152651.GB10414@suse.de>
+References: <cover.1297974227.git.tklauser@distanz.ch>
+ <20110217221504.GA10686@kroah.com>
+ <20110218072324.GS4076@distanz.ch>
+ <4D5E1FF6.20805@wytron.com.tw>
+ <20110218074542.GA759@distanz.ch>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:36040 "EHLO mga09.intel.com"
+Received: from cantor2.suse.de ([195.135.220.15]:43530 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752955Ab1BROQq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 18 Feb 2011 09:16:46 -0500
-In-Reply-To: <20110218135908.GA7305@pengutronix.de>
+	id S1753881Ab1BRP0x (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 18 Feb 2011 10:26:53 -0500
+Content-Disposition: inline
+In-Reply-To: <20110218074542.GA759@distanz.ch>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Wolfram Sang <w.sang@pengutronix.de>
-Cc: Nico Becker <nico.becker@gmx.de>, linux-serial@vger.kernel.org, jianwei.yang@intel.com
+To: Tobias Klauser <tklauser@distanz.ch>
+Cc: Thomas Chou <thomas@wytron.com.tw>, Grant Likely <grant.likely@secretlab.ca>, nios2-dev@sopc.et.ntust.edu.tw, Greg KH <greg@kroah.com>, linux-serial@vger.kernel.org
 
-> > Have somebody test the driver,
-> > or have although trouble with the chip?
+On Fri, Feb 18, 2011 at 08:45:42AM +0100, Tobias Klauser wrote:
+> On 2011-02-18 at 08:29:58 +0100, Thomas Chou <thomas@wytron.com.tw> wrote:
+> > On 02/18/2011 03:23 PM, Tobias Klauser wrote:
+> >> On 2011-02-17 at 23:15:04 +0100, Greg KH<greg@kroah.com>  wrote:
+> >>> On Thu, Feb 17, 2011 at 09:28:23PM +0100, Tobias Klauser wrote:
+> >>>> This patchset adds updates taken from the Nios2 Linux port (currently
+> >>>> out-of-tree) repository to the altera_jtaguart driver.
+> >>>>
+> >>>> And this time with the correct cover letter right away :-)
+> >>>>
+> >>>> Tobias Klauser (5):
+> >>>>    tty: serial: altera_jtaguart: Don't use plain integer as NULL pointer
+> >>>>    tty: serial: altera_jtaguart: Remove unused function
+> >>>>      early_altera_jtaguart_setup
+> >>>>    tty: serial: altera_jtaguart: Support getting mapbase and IRQ from
+> >>>>      resources
+> >>>>    tty: serial: altera_jtaguart: Fixup type usage of port flags
+> >>>>    tty: serial: altera_jtaguart: Add device tree support
+> >>>
+> >>> After this series, I get the following build error:
+> >>> 	  CC [M]  drivers/tty/serial/altera_jtaguart.o
+> >>> 	  drivers/tty/serial/altera_jtaguart.c:485:3: error: unknown field ???of_match_table??? specified in initializer
+> >>
+> >> Strange, I didn't get that one when compile testing against linux-next
+> >> on x86_64. Though it seems I didn't correctly test it on nios2 and I got
+> >> a compile error about a missing semicolon in the definition of
+> >> altera_jtaguart_match there.
+> >
+> > It might be that the of_match_table patch is available in Grant's branch  
+> > only, which is for v3.6.39. Maybe you can ask Grant to take this patch 
+> > 5/5.
 > 
-> I haven't, but I'll add the people who brought the driver to the
-> kernel to CC. Maybe they can comment.
-
-It had some testing but in a limited configuration and mostly for a
-device that then got canned. Thus I can well believe the autocts/rts
-isn't set right, and IntOscen may well only get set if the firmware
-happens to do it etc
-
-> > Because i am really new with the kernel hacking,
-> > what are the next steps, build an patch?
+> That explains it, thanks Thomas.
 > 
-> Doing patches (one per issue) might be an idea. It is usually easier
-> to talk about code. Reading Documentation/SubmittingPatches will
-> probably make the process easier.
+> Greg, care to take only patches 1/5 to 4/5 for now? I'll resubmit 5/5
+> for the 2.6.39 merge window, unless Grant already wants to take this to
+> his tree.
 
-I would probably send it as four patches
+Please resend the 1-4 patches to me and I will be glad to apply them.
 
-1. A patch for the IntOscen configuration
-2. A patch to fix autocts/rts
-3. A patch to fix the register updates
-4. A patch to add any platform specific stuff you need for your device.
+thanks,
 
-Thanks
-
-Alan
+greg k-h
