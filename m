@@ -1,81 +1,71 @@
-From: Tobias Klauser <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>
-Subject: [PATCH 5/5 v3] tty: serial: altera_jtaguart: Add device tree support
-Date: Fri, 18 Feb 2011 09:10:01 +0100
-Message-ID: <1298016601-19111-1-git-send-email-tklauser@distanz.ch>
-References: <c28550ba11ed228f4137ced1ab34761c08ad38ad.1297974227.git.tklauser@distanz.ch>
+From: Tobias Klauser <tklauser@distanz.ch>
+Subject: Re: [Nios2-dev] [PATCH 0/5] tty: serial: Updates for
+	altera_jtaguart driver
+Date: Fri, 18 Feb 2011 09:11:09 +0100
+Message-ID: <20110218081108.GB759@distanz.ch>
+References: <cover.1297974227.git.tklauser@distanz.ch> <20110217221504.GA10686@kroah.com> <20110218072324.GS4076@distanz.ch> <4D5E1FF6.20805@wytron.com.tw> <20110218074542.GA759@distanz.ch> <AANLkTimv8xB7KF14C1ttjPorbXeo=nWX0P=a5TUcNCbG@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-In-Reply-To: <c28550ba11ed228f4137ced1ab34761c08ad38ad.1297974227.git.tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
-	<mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
-	<mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Sender: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-l3A5Bk7waGM@public.gmane.org>, Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Cc: nios2-dev-1eJk0qcHJCcaeqlQEoCUNoJY59XmG8rH@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from symlink.to.noone.org ([85.10.207.172]:48637 "EHLO sym.noone.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752519Ab1BRILK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 18 Feb 2011 03:11:10 -0500
+Content-Disposition: inline
+In-Reply-To: <AANLkTimv8xB7KF14C1ttjPorbXeo=nWX0P=a5TUcNCbG@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Grant Likely <grant.likely@secretlab.ca>
+Cc: Thomas Chou <thomas@wytron.com.tw>, nios2-dev@sopc.et.ntust.edu.tw, Greg KH <greg@kroah.com>, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
 
-Advertise the possibility to use this driver with device tree if
-CONFIG_OF is set.
+On 2011-02-18 at 09:06:15 +0100, Grant Likely <grant.likely@secretlab.ca> wrote:
+> On Fri, Feb 18, 2011 at 12:45 AM, Tobias Klauser <tklauser@distanz.ch> wrote:
+> > On 2011-02-18 at 08:29:58 +0100, Thomas Chou <thomas@wytron.com.tw> wrote:
+> >> On 02/18/2011 03:23 PM, Tobias Klauser wrote:
+> >>> On 2011-02-17 at 23:15:04 +0100, Greg KH<greg@kroah.com>  wrote:
+> >>>> On Thu, Feb 17, 2011 at 09:28:23PM +0100, Tobias Klauser wrote:
+> >>>>> This patchset adds updates taken from the Nios2 Linux port (currently
+> >>>>> out-of-tree) repository to the altera_jtaguart driver.
+> >>>>>
+> >>>>> And this time with the correct cover letter right away :-)
+> >>>>>
+> >>>>> Tobias Klauser (5):
+> >>>>>    tty: serial: altera_jtaguart: Don't use plain integer as NULL pointer
+> >>>>>    tty: serial: altera_jtaguart: Remove unused function
+> >>>>>      early_altera_jtaguart_setup
+> >>>>>    tty: serial: altera_jtaguart: Support getting mapbase and IRQ from
+> >>>>>      resources
+> >>>>>    tty: serial: altera_jtaguart: Fixup type usage of port flags
+> >>>>>    tty: serial: altera_jtaguart: Add device tree support
+> >>>>
+> >>>> After this series, I get the following build error:
+> >>>>       CC [M]  drivers/tty/serial/altera_jtaguart.o
+> >>>>       drivers/tty/serial/altera_jtaguart.c:485:3: error: unknown field ???of_match_table??? specified in initializer
+> >>>
+> >>> Strange, I didn't get that one when compile testing against linux-next
+> >>> on x86_64. Though it seems I didn't correctly test it on nios2 and I got
+> >>> a compile error about a missing semicolon in the definition of
+> >>> altera_jtaguart_match there.
+> >>
+> >> It might be that the of_match_table patch is available in Grant's branch
+> >> only, which is for v3.6.39. Maybe you can ask Grant to take this patch
+> >> 5/5.
+> >
+> > That explains it, thanks Thomas.
+> >
+> > Greg, care to take only patches 1/5 to 4/5 for now? I'll resubmit 5/5
+> > for the 2.6.39 merge window, unless Grant already wants to take this to
+> > his tree.
+> 
+> I'm happy to take this patch if it doesn't depend on the first 4.
+> Alternately Greg, you could merge commit c9e358dfc "driver-core:
+> remove conditionals around devicetree pointers" from my
+> devicetree/test branch on git://git.secretlab.ca/git/linux-2.6.  I
+> won't be rebasing that commit and it is the first commit on top of
+> 2.6.38-rc1.
 
-Signed-off-by: Tobias Klauser <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>
----
-v3:
- - put device tree binding documentation in the correct place (thanks Grant
-   Likely)
-v2:
- - add missing semicolon after definition of altera_jtaguart_match
+The patch doesn't depend on the first 4, so you could take it if Greg
+doesn't oppose.
 
- .../devicetree/bindings/serial/altera_jtaguart.txt |    4 ++++
- drivers/tty/serial/altera_jtaguart.c               |   15 +++++++++++++--
- 2 files changed, 17 insertions(+), 2 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/serial/altera_jtaguart.txt
-
-diff --git a/Documentation/devicetree/bindings/serial/altera_jtaguart.txt b/Documentation/devicetree/bindings/serial/altera_jtaguart.txt
-new file mode 100644
-index 0000000..c152f65
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/altera_jtaguart.txt
-@@ -0,0 +1,4 @@
-+Altera JTAG UART
-+
-+Required properties:
-+- compatible : should be "ALTR,juart-1.0"
-diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
-index 8f014bb..60e049b 100644
---- a/drivers/tty/serial/altera_jtaguart.c
-+++ b/drivers/tty/serial/altera_jtaguart.c
-@@ -466,12 +466,23 @@ static int __devexit altera_jtaguart_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
-+#ifdef CONFIG_OF
-+static struct of_device_id altera_jtaguart_match[] = {
-+	{ .compatible = "ALTR,juart-1.0", },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, altera_jtaguart_match);
-+#else
-+#define altera_jtaguart_match NULL
-+#endif /* CONFIG_OF */
-+
- static struct platform_driver altera_jtaguart_platform_driver = {
- 	.probe	= altera_jtaguart_probe,
- 	.remove	= __devexit_p(altera_jtaguart_remove),
- 	.driver	= {
--		.name	= DRV_NAME,
--		.owner	= THIS_MODULE,
-+		.name		= DRV_NAME,
-+		.owner		= THIS_MODULE,
-+		.of_match_table	= altera_jtaguart_match,
- 	},
- };
- 
--- 
-1.7.0.4
+Thanks
+Tobias
