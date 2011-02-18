@@ -1,71 +1,56 @@
 From: Tobias Klauser <tklauser@distanz.ch>
-Subject: Re: [Nios2-dev] [PATCH 0/5] tty: serial: Updates for
-	altera_jtaguart driver
-Date: Fri, 18 Feb 2011 09:11:09 +0100
-Message-ID: <20110218081108.GB759@distanz.ch>
-References: <cover.1297974227.git.tklauser@distanz.ch> <20110217221504.GA10686@kroah.com> <20110218072324.GS4076@distanz.ch> <4D5E1FF6.20805@wytron.com.tw> <20110218074542.GA759@distanz.ch> <AANLkTimv8xB7KF14C1ttjPorbXeo=nWX0P=a5TUcNCbG@mail.gmail.com>
+Subject: Re: [Nios2-dev] [PATHV v2] tty: serial: altera_uart: Add
+	devicetree support
+Date: Fri, 18 Feb 2011 09:15:46 +0100
+Message-ID: <20110218081546.GC759@distanz.ch>
+References: <c7a7085602687d2f1b6ac505c030f19bafda04e3.1297245277.git.tklauser@distanz.ch> <1297872732-10207-1-git-send-email-tklauser@distanz.ch> <4D5C86C1.8070404@wytron.com.tw> <20110217074846.GG4076@distanz.ch> <4D5DCB46.9090506@wytron.com.tw> <AANLkTinDD71YQbYovBSwU8YSCCZ56wQf35X97WFoY6R9@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from symlink.to.noone.org ([85.10.207.172]:48637 "EHLO sym.noone.org"
+Received: from symlink.to.noone.org ([85.10.207.172]:53270 "EHLO sym.noone.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752519Ab1BRILK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 18 Feb 2011 03:11:10 -0500
+	id S1756241Ab1BRIPr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 18 Feb 2011 03:15:47 -0500
 Content-Disposition: inline
-In-Reply-To: <AANLkTimv8xB7KF14C1ttjPorbXeo=nWX0P=a5TUcNCbG@mail.gmail.com>
+In-Reply-To: <AANLkTinDD71YQbYovBSwU8YSCCZ56wQf35X97WFoY6R9@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Grant Likely <grant.likely@secretlab.ca>
-Cc: Thomas Chou <thomas@wytron.com.tw>, nios2-dev@sopc.et.ntust.edu.tw, Greg KH <greg@kroah.com>, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
+Cc: Thomas Chou <thomas@wytron.com.tw>, nios2-dev@sopc.et.ntust.edu.tw, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org
 
-On 2011-02-18 at 09:06:15 +0100, Grant Likely <grant.likely@secretlab.ca> wrote:
-> On Fri, Feb 18, 2011 at 12:45 AM, Tobias Klauser <tklauser@distanz.ch> wrote:
-> > On 2011-02-18 at 08:29:58 +0100, Thomas Chou <thomas@wytron.com.tw> wrote:
-> >> On 02/18/2011 03:23 PM, Tobias Klauser wrote:
-> >>> On 2011-02-17 at 23:15:04 +0100, Greg KH<greg@kroah.com>  wrote:
-> >>>> On Thu, Feb 17, 2011 at 09:28:23PM +0100, Tobias Klauser wrote:
-> >>>>> This patchset adds updates taken from the Nios2 Linux port (currently
-> >>>>> out-of-tree) repository to the altera_jtaguart driver.
-> >>>>>
-> >>>>> And this time with the correct cover letter right away :-)
-> >>>>>
-> >>>>> Tobias Klauser (5):
-> >>>>>    tty: serial: altera_jtaguart: Don't use plain integer as NULL pointer
-> >>>>>    tty: serial: altera_jtaguart: Remove unused function
-> >>>>>      early_altera_jtaguart_setup
-> >>>>>    tty: serial: altera_jtaguart: Support getting mapbase and IRQ from
-> >>>>>      resources
-> >>>>>    tty: serial: altera_jtaguart: Fixup type usage of port flags
-> >>>>>    tty: serial: altera_jtaguart: Add device tree support
+On 2011-02-18 at 09:08:53 +0100, Grant Likely <grant.likely@secretlab.ca> wrote:
+> On Thu, Feb 17, 2011 at 6:28 PM, Thomas Chou <thomas@wytron.com.tw> wrote:
+> > On 02/17/2011 03:48 PM, Tobias Klauser wrote:
 > >>>>
-> >>>> After this series, I get the following build error:
-> >>>>       CC [M]  drivers/tty/serial/altera_jtaguart.o
-> >>>>       drivers/tty/serial/altera_jtaguart.c:485:3: error: unknown field ???of_match_table??? specified in initializer
+> >>>> +       ret = altera_uart_get_of_uartclk(pdev, port);
+> >>>> +       if (ret&&   platp)
+> >>>> +               port->uartclk = platp->uartclk;
+> >>>> +       else if (ret)
+> >>>> +               return ret;
+> >>>> +
 > >>>
-> >>> Strange, I didn't get that one when compile testing against linux-next
-> >>> on x86_64. Though it seems I didn't correctly test it on nios2 and I got
-> >>> a compile error about a missing semicolon in the definition of
-> >>> altera_jtaguart_match there.
+> >>> Better reverse the priority, with platform data checked first.
+> >>>
+> >>>        if (platp)
+> >>>                port->uartclk = platp->uartclk;
+> >>>        else {
+> >>>                ret = altera_uart_get_of_uartclk(pdev, port);
+> >>>                if (ret)
+> >>>                        return ret;
+> >>>        }
 > >>
-> >> It might be that the of_match_table patch is available in Grant's branch
-> >> only, which is for v3.6.39. Maybe you can ask Grant to take this patch
-> >> 5/5.
+> >> Do you have a specific reasoning for this? I thought it might make sense
+> >> to do it in the same order as with the resources above, but I have no
+> >> problem changing it to the way you suggest.
 > >
-> > That explains it, thanks Thomas.
-> >
-> > Greg, care to take only patches 1/5 to 4/5 for now? I'll resubmit 5/5
-> > for the 2.6.39 merge window, unless Grant already wants to take this to
-> > his tree.
+> > Not quite sure. But I see some drivers follow this order, and I just
+> > followed, too.
 > 
-> I'm happy to take this patch if it doesn't depend on the first 4.
-> Alternately Greg, you could merge commit c9e358dfc "driver-core:
-> remove conditionals around devicetree pointers" from my
-> devicetree/test branch on git://git.secretlab.ca/git/linux-2.6.  I
-> won't be rebasing that commit and it is the first commit on top of
-> 2.6.38-rc1.
+> The reason to check for platform_data first is that if a device has
+> *both* platform data and a device node pointer, then more than likely
+> the platform_data is indented to override the device node data.
 
-The patch doesn't depend on the first 4, so you could take it if Greg
-doesn't oppose.
+Thanks Grant and Thomas for the explanation. I was just wondering. I'll
+send an updated patch including the changes suggested by Thomas.
 
-Thanks
 Tobias
