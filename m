@@ -1,133 +1,93 @@
-From: Tamas Szklenar <tszklenar@cfa.harvard.edu>
-Subject: LAVA PCIe serial card problem
-Date: Mon, 21 Feb 2011 18:30:27 -0500
-Message-ID: <4D62F593.4010103@cfa.harvard.edu>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Feng Tang <feng.tang@intel.com>
+Subject: [PATCH 1/2] serial: mfd: remove the TX full-empty interrupts workaround
+Date: Tue, 22 Feb 2011 15:28:10 +0800
+Message-ID: <1298359690-9150-1-git-send-email-feng.tang@intel.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cfa.harvard.edu ([131.142.10.1]:52978 "EHLO cfa.harvard.edu"
+Received: from mga11.intel.com ([192.55.52.93]:28094 "EHLO mga11.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752445Ab1BVATH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 21 Feb 2011 19:19:07 -0500
-Received: from [131.142.9.222] (cfhat2 [131.142.9.222])
-	by cfa.harvard.edu (8.13.7/8.13.7/cfunix Mast-Sol 1.0) with ESMTP id p1LNURgw026972
-	for <linux-serial@vger.kernel.org>; Mon, 21 Feb 2011 18:30:28 -0500 (EST)
+	id S1753256Ab1BVH1i (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 22 Feb 2011 02:27:38 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, greg@kroah.com, alan@linux.intel.com
+Cc: Feng Tang <feng.tang@intel.com>
 
-Hi,
+In A0 stepping, TX half-empty interrupt is not working, so have to
+use the full-empty interrupts whose performance will be 15% lower.
+Now re-enable the half-empty interrrupt after it is enabled in
+silicon.
 
-We bought two PCIe serial cards from LAVA, one dual and one quad port card.
+Signed-off-by: Feng Tang <feng.tang@intel.com>
+---
+ drivers/tty/serial/mfd.c |   26 +++++---------------------
+ 1 files changed, 5 insertions(+), 21 deletions(-)
 
-My problem is that the devices are visible in lspci, but no module is 
-loaded to the cards. I have other PCI card from this manufacturer and 
-they are working well and the necessary module is loaded fine.
-
-Our linux is using the 2.6.35.7 kernel version.
-
-Could you help me to fix these card?
-
-I attached the output of the dmesg and the lspci to my mail.
-
-Thank you very much!
-
-
-Tamas
-
-===============================
-===============================
-
-Here is the output of the lspci -vv:
-
-07:00.0 Serial controller: NetMos Technology PCIe 9901 Multi-I/O 
-Controller (prog-if 02 [16550])
-         Subsystem: Lava Computer mfg Inc Device 0104
-         Control: I/O+ Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- 
-ParErr- Stepping- SERR- FastB2B- DisINTx-
-         Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- 
-<TAbort- <MAbort- >SERR- <PERR- INTx-
-         Interrupt: pin A routed to IRQ 17
-         Region 0: I/O ports at 8f00 [size=8]
-         Region 1: Memory at fd6ff000 (32-bit, non-prefetchable) [size=4K]
-         Region 4: Memory at fd6fe000 (32-bit, non-prefetchable) [size=4K]
-         Capabilities: [80] Power Management version 3
-                 Flags: PMEClk- DSI- D1+ D2+ AuxCurrent=0mA 
-PME(D0+,D1+,D2+,D3hot+,D3cold+)
-                 Status: D0 NoSoftRst- PME-Enable- DSel=0 DScale=1 PME-
-         Capabilities: [88] MSI: Enable- Count=1/32 Maskable- 64bit+
-                 Address: 0000000000000000  Data: 0000
-         Capabilities: [c0] Express (v1) Legacy Endpoint, MSI 00
-                 DevCap: MaxPayload 256 bytes, PhantFunc 0, Latency L0s 
-<64ns, L1 <1us
-                         ExtTag- AttnBtn+ AttnInd+ PwrInd+ RBE- FLReset-
-                 DevCtl: Report errors: Correctable- Non-Fatal- Fatal- 
-Unsupported-
-                         RlxdOrd+ ExtTag- PhantFunc- AuxPwr- NoSnoop+
-                         MaxPayload 128 bytes, MaxReadReq 512 bytes
-                 DevSta: CorrErr- UncorrErr+ FatalErr- UnsuppReq+ 
-AuxPwr+ TransPend-
-                 LnkCap: Port #0, Speed 2.5GT/s, Width x1, ASPM L0s L1, 
-Latency L0 unlimited, L1 unlimited
-                         ClockPM- Surprise- LLActRep- BwNot-
-                 LnkCtl: ASPM Disabled; RCB 64 bytes Disabled- Retrain- 
-CommClk-
-                         ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
-                 LnkSta: Speed 2.5GT/s, Width x1, TrErr- Train- SlotClk+ 
-DLActive- BWMgmt- ABWMgmt-
-         Capabilities: [100 v1] Power Budgeting <?>
-         Capabilities: [200 v1] Device Serial Number 88-99-ff-ee-dd-cc-bb-aa
-
-07:00.1 Serial controller: NetMos Technology PCIe 9901 Multi-I/O 
-Controller (prog-if 02 [16550])
-         Subsystem: Lava Computer mfg Inc Device 0105
-         Control: I/O+ Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- 
-ParErr- Stepping- SERR- FastB2B- DisINTx-
-         Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- 
-<TAbort- <MAbort- >SERR- <PERR- INTx-
-         Interrupt: pin B routed to IRQ 17
-         Region 0: I/O ports at 8e00 [size=8]
-         Region 1: Memory at fd6fd000 (32-bit, non-prefetchable) [size=4K]
-         Region 4: Memory at fd6fc000 (32-bit, non-prefetchable) [size=4K]
-         Capabilities: [80] Power Management version 3
-                 Flags: PMEClk- DSI- D1+ D2+ AuxCurrent=0mA 
-PME(D0+,D1+,D2+,D3hot+,D3cold+)
-                 Status: D0 NoSoftRst- PME-Enable- DSel=0 DScale=1 PME-
-         Capabilities: [88] MSI: Enable- Count=1/32 Maskable- 64bit+
-                 Address: 0000000000000000  Data: 0000
-         Capabilities: [c0] Express (v1) Legacy Endpoint, MSI 00
-                 DevCap: MaxPayload 256 bytes, PhantFunc 0, Latency L0s 
-<64ns, L1 <1us
-                         ExtTag- AttnBtn+ AttnInd+ PwrInd+ RBE- FLReset-
-                 DevCtl: Report errors: Correctable- Non-Fatal- Fatal- 
-Unsupported-
-                         RlxdOrd+ ExtTag- PhantFunc- AuxPwr- NoSnoop+
-                         MaxPayload 128 bytes, MaxReadReq 512 bytes
-                 DevSta: CorrErr- UncorrErr+ FatalErr- UnsuppReq+ 
-AuxPwr+ TransPend-
-                 LnkCap: Port #0, Speed 2.5GT/s, Width x1, ASPM L0s L1, 
-Latency L0 unlimited, L1 unlimited
-                         ClockPM- Surprise- LLActRep- BwNot-
-                 LnkCtl: ASPM Disabled; RCB 64 bytes Disabled- Retrain- 
-CommClk-
-                         ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
-
-===============================
-
-This is the output of the dmesg:
-
-[    6.249634] serial 0000:08:00.0: PCI INT A -> GSI 17 (level, low) -> 
-IRQ 17
-[    6.249641] serial 0000:08:00.0: PCI INT A disabled
-[    6.249654] serial 0000:08:00.1: PCI INT B -> GSI 17 (level, low) -> 
-IRQ 17
-[    6.249659] serial 0000:08:00.1: PCI INT B disabled
-[    6.249671] serial 0000:08:00.2: PCI INT C -> GSI 17 (level, low) -> 
-IRQ 17
-[    6.249676] serial 0000:08:00.2: PCI INT C disabled
-[    6.249687] serial 0000:08:00.3: PCI INT D -> GSI 17 (level, low) -> 
-IRQ 17
-[    6.249692] serial 0000:08:00.3: PCI INT D disabled
-
+diff --git a/drivers/tty/serial/mfd.c b/drivers/tty/serial/mfd.c
+index 7767774..53ff6af 100644
+--- a/drivers/tty/serial/mfd.c
++++ b/drivers/tty/serial/mfd.c
+@@ -16,9 +16,7 @@
+  *    2/3 chan to port 1, 4/5 chan to port 3. Even number chans
+  *    are used for RX, odd chans for TX
+  *
+- * 2. In A0 stepping, UART will not support TX half empty flag
+- *
+- * 3. The RI/DSR/DCD/DTR are not pinned out, DCD & DSR are always
++ * 2. The RI/DSR/DCD/DTR are not pinned out, DCD & DSR are always
+  *    asserted, only when the HW is reset the DDCD and DDSR will
+  *    be triggered
+  */
+@@ -41,8 +39,6 @@
+ #include <linux/io.h>
+ #include <linux/debugfs.h>
+ 
+-#define  MFD_HSU_A0_STEPPING	1
+-
+ #define HSU_DMA_BUF_SIZE	2048
+ 
+ #define chan_readl(chan, offset)	readl(chan->reg + offset)
+@@ -543,16 +539,9 @@ static void transmit_chars(struct uart_hsu_port *up)
+ 		return;
+ 	}
+ 
+-#ifndef MFD_HSU_A0_STEPPING
++	/* The IRQ is for TX FIFO half-empty */
+ 	count = up->port.fifosize / 2;
+-#else
+-	/*
+-	 * A0 only supports fully empty IRQ, and the first char written
+-	 * into it won't clear the EMPT bit, so we may need be cautious
+-	 * by useing a shorter buffer
+-	 */
+-	count = up->port.fifosize - 4;
+-#endif
++
+ 	do {
+ 		serial_out(up, UART_TX, xmit->buf[xmit->tail]);
+ 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+@@ -761,9 +750,8 @@ static void serial_hsu_break_ctl(struct uart_port *port, int break_state)
+ /*
+  * What special to do:
+  * 1. chose the 64B fifo mode
+- * 2. make sure not to select half empty mode for A0 stepping
+- * 3. start dma or pio depends on configuration
+- * 4. we only allocate dma memory when needed
++ * 2. start dma or pio depends on configuration
++ * 3. we only allocate dma memory when needed
+  */
+ static int serial_hsu_startup(struct uart_port *port)
+ {
+@@ -967,10 +955,6 @@ serial_hsu_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		fcr = UART_FCR_ENABLE_FIFO | UART_FCR_HSU_64_32B;
+ 
+ 	fcr |= UART_FCR_HSU_64B_FIFO;
+-#ifdef MFD_HSU_A0_STEPPING
+-	/* A0 doesn't support half empty IRQ */
+-	fcr |= UART_FCR_FULL_EMPT_TXI;
+-#endif
+ 
+ 	/*
+ 	 * Ok, we're now changing the port state.  Do it with
+-- 
+1.7.0.4
 
