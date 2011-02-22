@@ -1,93 +1,56 @@
 From: Feng Tang <feng.tang@intel.com>
-Subject: [PATCH 1/2] serial: mfd: remove the TX full-empty interrupts workaround
-Date: Tue, 22 Feb 2011 15:28:10 +0800
-Message-ID: <1298359690-9150-1-git-send-email-feng.tang@intel.com>
+Subject: [PATCH 2/2] serial: mfd: add a module parameter for setting each port's working mode
+Date: Tue, 22 Feb 2011 15:28:12 +0800
+Message-ID: <1298359692-9182-1-git-send-email-feng.tang@intel.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:28094 "EHLO mga11.intel.com"
+Received: from mga02.intel.com ([134.134.136.20]:20292 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753256Ab1BVH1i (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 22 Feb 2011 02:27:38 -0500
+	id S1753256Ab1BVH1m (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 22 Feb 2011 02:27:42 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org, greg@kroah.com, alan@linux.intel.com
-Cc: Feng Tang <feng.tang@intel.com>
+Cc: chiau.ee.chew@intel.com, Feng Tang <feng.tang@intel.com>
 
-In A0 stepping, TX half-empty interrupt is not working, so have to
-use the full-empty interrupts whose performance will be 15% lower.
-Now re-enable the half-empty interrrupt after it is enabled in
-silicon.
+The three identical uart ports can work either in DMA or PIO mode. Adding such
+a module parameter "hsu_dma_enable" will enable user to chose working modes for
+each port. If the mfd driver is built in kernel, adding a "mfd.hsu_dma_enable=x"
+in kernel command line has the same effect.
 
 Signed-off-by: Feng Tang <feng.tang@intel.com>
 ---
- drivers/tty/serial/mfd.c |   26 +++++---------------------
- 1 files changed, 5 insertions(+), 21 deletions(-)
+ drivers/tty/serial/mfd.c |   11 +++++++++++
+ 1 files changed, 11 insertions(+), 0 deletions(-)
 
 diff --git a/drivers/tty/serial/mfd.c b/drivers/tty/serial/mfd.c
-index 7767774..53ff6af 100644
+index 53ff6af..c111f36 100644
 --- a/drivers/tty/serial/mfd.c
 +++ b/drivers/tty/serial/mfd.c
-@@ -16,9 +16,7 @@
-  *    2/3 chan to port 1, 4/5 chan to port 3. Even number chans
-  *    are used for RX, odd chans for TX
-  *
-- * 2. In A0 stepping, UART will not support TX half empty flag
-- *
-- * 3. The RI/DSR/DCD/DTR are not pinned out, DCD & DSR are always
-+ * 2. The RI/DSR/DCD/DTR are not pinned out, DCD & DSR are always
-  *    asserted, only when the HW is reset the DDCD and DDSR will
-  *    be triggered
-  */
-@@ -41,8 +39,6 @@
- #include <linux/io.h>
- #include <linux/debugfs.h>
+@@ -47,6 +47,11 @@
+ #define mfd_readl(obj, offset)		readl(obj->reg + offset)
+ #define mfd_writel(obj, offset, val)	writel(val, obj->reg + offset)
  
--#define  MFD_HSU_A0_STEPPING	1
--
- #define HSU_DMA_BUF_SIZE	2048
++static int hsu_dma_enable;
++module_param(hsu_dma_enable, int, 0);
++MODULE_PARM_DESC(hsu_dma_enable, "It is a bitmap to set working mode, if \
++bit[x] is 1, then port[x] will work in DMA mode, otherwise in PIO mode.");
++
+ struct hsu_dma_buffer {
+ 	u8		*buf;
+ 	dma_addr_t	dma_addr;
+@@ -1367,6 +1372,12 @@ static void hsu_global_init(void)
  
- #define chan_readl(chan, offset)	readl(chan->reg + offset)
-@@ -543,16 +539,9 @@ static void transmit_chars(struct uart_hsu_port *up)
- 		return;
+ 		serial_hsu_ports[i] = uport;
+ 		uport->index = i;
++
++		if (hsu_dma_enable & (1<<i))
++			uport->use_dma = 1;
++		else
++			uport->use_dma = 0;
++
+ 		uport++;
  	}
  
--#ifndef MFD_HSU_A0_STEPPING
-+	/* The IRQ is for TX FIFO half-empty */
- 	count = up->port.fifosize / 2;
--#else
--	/*
--	 * A0 only supports fully empty IRQ, and the first char written
--	 * into it won't clear the EMPT bit, so we may need be cautious
--	 * by useing a shorter buffer
--	 */
--	count = up->port.fifosize - 4;
--#endif
-+
- 	do {
- 		serial_out(up, UART_TX, xmit->buf[xmit->tail]);
- 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-@@ -761,9 +750,8 @@ static void serial_hsu_break_ctl(struct uart_port *port, int break_state)
- /*
-  * What special to do:
-  * 1. chose the 64B fifo mode
-- * 2. make sure not to select half empty mode for A0 stepping
-- * 3. start dma or pio depends on configuration
-- * 4. we only allocate dma memory when needed
-+ * 2. start dma or pio depends on configuration
-+ * 3. we only allocate dma memory when needed
-  */
- static int serial_hsu_startup(struct uart_port *port)
- {
-@@ -967,10 +955,6 @@ serial_hsu_set_termios(struct uart_port *port, struct ktermios *termios,
- 		fcr = UART_FCR_ENABLE_FIFO | UART_FCR_HSU_64_32B;
- 
- 	fcr |= UART_FCR_HSU_64B_FIFO;
--#ifdef MFD_HSU_A0_STEPPING
--	/* A0 doesn't support half empty IRQ */
--	fcr |= UART_FCR_FULL_EMPT_TXI;
--#endif
- 
- 	/*
- 	 * Ok, we're now changing the port state.  Do it with
 -- 
 1.7.0.4
 
