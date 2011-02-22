@@ -1,32 +1,40 @@
 From: Greg KH <greg@kroah.com>
-Subject: Re: SC16is752 I2c driver
-Date: Tue, 22 Feb 2011 14:05:07 -0800
-Message-ID: <20110222220507.GA4530@kroah.com>
-References: <4D63C80A.3070005@dawning.com>
+Subject: Re: LAVA PCIe serial card problem
+Date: Tue, 22 Feb 2011 14:05:48 -0800
+Message-ID: <20110222220548.GB4530@kroah.com>
+References: <4D62F593.4010103@cfa.harvard.edu>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:35374 "EHLO coco.kroah.org"
+Received: from kroah.org ([198.145.64.141]:35376 "EHLO coco.kroah.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750920Ab1BVWGE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 22 Feb 2011 17:06:04 -0500
+	id S1751296Ab1BVWGF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 22 Feb 2011 17:06:05 -0500
 Content-Disposition: inline
-In-Reply-To: <4D63C80A.3070005@dawning.com>
+In-Reply-To: <4D62F593.4010103@cfa.harvard.edu>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Pete Murray <pmurray@dawning.com>
+To: Tamas Szklenar <tszklenar@cfa.harvard.edu>
 Cc: linux-serial@vger.kernel.org
 
-On Tue, Feb 22, 2011 at 09:28:26AM -0500, Pete Murray wrote:
-> Hello,
+On Mon, Feb 21, 2011 at 06:30:27PM -0500, Tamas Szklenar wrote:
+> Hi,
 > 
-> I wrote an I2C  driver for the SC16is752 dual Uart chip, I see there
-> is an SPI version now.  There was no SPI version when I was
-> developing, if there was I would have tried to add I2C support to
-> that driver instead.  Is this something I should post for review, or
-> should I work on adding support to the existing SPI version?
+> We bought two PCIe serial cards from LAVA, one dual and one quad port card.
+> 
+> My problem is that the devices are visible in lspci, but no module
+> is loaded to the cards. I have other PCI card from this manufacturer
+> and they are working well and the necessary module is loaded fine.
+> 
+> Our linux is using the 2.6.35.7 kernel version.
+> 
+> Could you help me to fix these card?
+> 
+> I attached the output of the dmesg and the lspci to my mail.
 
-Try adding support to the SPI version, it might be simpler.
+What driver attached to the other cards that work properly for you?
+Have you tried adding the device id for your new card to the "new_ids"
+file for this driver and seeing if that worked properly or not?
 
 thanks,
 
