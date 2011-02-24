@@ -1,65 +1,34 @@
-From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-Subject: Re: SC16is752 I2c driver
-Date: Wed, 23 Feb 2011 09:15:02 +0100
-Message-ID: <4D64C206.8010106@iis.fraunhofer.de>
-References: <4D63C80A.3070005@dawning.com> <4D64B7E1.7090708@gmail.com>
+From: "Ian Davies" <iandavies198@gmail.com>
+Subject: Please i wait to hear from you urgently, it very important
+Date: Thu, 24 Feb 2011 11:14:15 -0800
+Message-ID: <20110224200930.B5F185E000D__43519.3806690679$1298602495$gmane$org@mail.dumlupinar.edu.tr>
+Reply-To: <iandavies822@yahoo.no>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain;charset="Windows-1251"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from relay03-haj2.antispameurope.com ([83.246.65.53]:44215 "EHLO
-	relay03-haj2.antispameurope.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754759Ab1BWIPG (ORCPT
+Received: from dpusmtpgw.dpu.edu.tr ([194.27.43.31]:64835 "EHLO
+	dpusmtpgw.dumlupinar.edu.tr" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754690Ab1BYCye (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 23 Feb 2011 03:15:06 -0500
-In-Reply-To: <4D64B7E1.7090708@gmail.com>
+	Thu, 24 Feb 2011 21:54:34 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Thomas Weber <thomas.weber.linux@googlemail.com>
-Cc: Pete Murray <pmurray@dawning.com>, linux-serial@vger.kernel.org
 
-On 23.02.2011 08:31, Thomas Weber wrote:
-> Hello Manuel,
->
-> Am 22.02.2011 15:28, schrieb Pete Murray:
->> Hello,
->>
->> I wrote an I2C  driver for the SC16is752 dual Uart chip, I see there=
- is
->> an SPI version now.  There was no SPI version when I was developing,=
- if
->> there was I would have tried to add I2C support to that driver inste=
-ad.
->> Is this something I should post for review, or should I work on addi=
-ng
->> support to the existing SPI version?
->> Thanks
->> Pete
->>
->
-> do you have an updated version of your SC16IS752 driver, so that Pete
-> can add his I2C part?
+I am Ian Davies ;an accredited vendor of Alliot Groups, a subsidiary firm of Emirates International Holding (EIH); A private equity funds holding company that focuses on hedge funds.
 
-My latest version is the one from 7th February 2011 that was posted on=20
-linux-serial.
+I have contacted you in the hope that you can be my associate by accepting to stand as the legal recipient to a Fixed-Income deposit, valued at 25MUSD by provind an International Offshore account to clear the funds.
 
-Regards,
---=20
-Manuel Stahl
-=46raunhofer-Institut IIS
-Leistungsoptimierte Systeme
+Once I file your details as the new recipient to the funds, the fundswill be approved through the AUTOMATED CLEARING HOUSE (ACH) - A facility used by financial institutions to distribute electronic debit and credit entries to bank accounts and therefore settles such entries. Under the automated clearing house system. 
 
-Nordostpark 93
-D90411 N=FCrnberg
-Telefon  +49 (0)911/58061-6419
-=46ax      +49 (0)911/58061-6398
-E-Mail   manuel.stahl@iis.fraunhofer.de
 
-http://www.iis.fraunhofer.de
-http://www.smart-power.fraunhofer.de
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+upon approval of your details  as the new recipient; a Credit advice will be issued in your favor and the funds will clear in your account within three banking days. I am willing to give you 40% which is 10MUSD as your commission out of the 25MUSD for your assistance in providing an International Offshore account to clear the funds.
+
+
+I am confident you will be honest enough to adhere to our agreed commissions in spite of the 25MUSD coming through your account. I will need you to forward me your legal names address and phone to file your details on the fund as the new recipient in this first Quater of the financial fiscal year 2011.
+
+Looking forward to working with you.
+Ian Davies
+Accredited vendor
+Alliot Groups PS
+
