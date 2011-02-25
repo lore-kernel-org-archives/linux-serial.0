@@ -1,34 +1,47 @@
-From: "Ian Davies" <iandavies198@gmail.com>
-Subject: Please i wait to hear from you urgently, it very important
-Date: Thu, 24 Feb 2011 11:14:15 -0800
-Message-ID: <20110224200930.B5F185E000D__43519.3806690679$1298602495$gmane$org@mail.dumlupinar.edu.tr>
-Reply-To: <iandavies822@yahoo.no>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH 3/4 v3] tty: serial: altera_uart: Add devicetree support
+Date: Fri, 25 Feb 2011 09:58:56 -0800
+Message-ID: <20110225175856.GA17072@kroah.com>
+References: <c7a7085602687d2f1b6ac505c030f19bafda04e3.1297245277.git.tklauser@distanz.ch>
+ <1298025332-31846-1-git-send-email-tklauser@distanz.ch>
 Mime-Version: 1.0
-Content-Type: text/plain;charset="Windows-1251"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from dpusmtpgw.dpu.edu.tr ([194.27.43.31]:64835 "EHLO
-	dpusmtpgw.dumlupinar.edu.tr" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754690Ab1BYCye (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 24 Feb 2011 21:54:34 -0500
+Received: from kroah.org ([198.145.64.141]:34279 "EHLO coco.kroah.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756362Ab1BYSCu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 25 Feb 2011 13:02:50 -0500
+Content-Disposition: inline
+In-Reply-To: <1298025332-31846-1-git-send-email-tklauser@distanz.ch>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Tobias Klauser <tklauser@distanz.ch>
+Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, nios2-dev@sopc.et.ntust.edu.tw, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org, Grant Likely <grant.likely@secretlab.ca>
 
-I am Ian Davies ;an accredited vendor of Alliot Groups, a subsidiary firm of Emirates International Holding (EIH); A private equity funds holding company that focuses on hedge funds.
+On Fri, Feb 18, 2011 at 11:35:32AM +0100, Tobias Klauser wrote:
+> With the recent switch of the (currently still out-of-tree) Nios2 Linux
+> port to devicetree we want to be able to retreive the resources and
+> properties from dts.
+> 
+> The old method to retreive resources and properties from platform data
+> is still supported.
+> 
+> Cc: Grant Likely <grant.likely@secretlab.ca>
+> Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
+> ---
+> 
+> Greg: This patch will have the same compile problem in your tree as the
+> altera_jtaguart patch has. As this patch depends on the previous ones of
+> this series it might be best to apply it once commit c9e358dfc
+> "driver-core: remove conditionals around devicetree pointers" from
+> Grant's tree is merged.
 
-I have contacted you in the hope that you can be my associate by accepting to stand as the legal recipient to a Fixed-Income deposit, valued at 25MUSD by provind an International Offshore account to clear the funds.
+Ok, I can't take this then, Grant, can you?
 
-Once I file your details as the new recipient to the funds, the fundswill be approved through the AUTOMATED CLEARING HOUSE (ACH) - A facility used by financial institutions to distribute electronic debit and credit entries to bank accounts and therefore settles such entries. Under the automated clearing house system. 
+Please feel free to add:
+	Acked-by: Greg Kroah-Hartman <gregkh@suse.de>
+to it.
 
+thanks,
 
-upon approval of your details  as the new recipient; a Credit advice will be issued in your favor and the funds will clear in your account within three banking days. I am willing to give you 40% which is 10MUSD as your commission out of the 25MUSD for your assistance in providing an International Offshore account to clear the funds.
-
-
-I am confident you will be honest enough to adhere to our agreed commissions in spite of the 25MUSD coming through your account. I will need you to forward me your legal names address and phone to file your details on the fund as the new recipient in this first Quater of the financial fiscal year 2011.
-
-Looking forward to working with you.
-Ian Davies
-Accredited vendor
-Alliot Groups PS
-
+greg k-h
