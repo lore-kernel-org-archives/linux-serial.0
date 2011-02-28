@@ -1,54 +1,154 @@
-From: Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>
-Subject: Re: [PATCH 3/4 v3] tty: serial: altera_uart: Add devicetree support
-Date: Mon, 28 Feb 2011 01:31:00 -0700
-Message-ID: <20110228083100.GE13690@angua.secretlab.ca>
-References: <c7a7085602687d2f1b6ac505c030f19bafda04e3.1297245277.git.tklauser@distanz.ch>
-	<1298025332-31846-1-git-send-email-tklauser@distanz.ch>
-	<20110225175856.GA17072@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20110225175856.GA17072-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
-	<mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
-	<mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-To: Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
-Cc: nios2-dev-1eJk0qcHJCcaeqlQEoCUNoJY59XmG8rH@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Greg Kroah-Hartman <gregkh-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tobias Klauser <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>
+From: "Govindraj.R" <govindraj.raja@ti.com>
+Subject: [PATCH 3/7] OMAP2+: UART: Remove certain uart calls from sram_idle
+Date: Mon, 28 Feb 2011 20:09:14 +0530
+Message-ID: <1298903958-6496-4-git-send-email-govindraj.raja@ti.com>
+References: <1298903958-6496-1-git-send-email-govindraj.raja@ti.com>
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <1298903958-6496-1-git-send-email-govindraj.raja@ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: "Govindraj.R" <govindraj.raja@ti.com>, Tony Lindgren <tony@atomide.com>, Benoit Cousson <b-cousson@ti.com>, Kevin Hilman <khilman@ti.com>, Paul Walmsley <paul@pwsan.com>, Rajendra Nayak <rnayak@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Feb 25, 2011 at 09:58:56AM -0800, Greg KH wrote:
-> On Fri, Feb 18, 2011 at 11:35:32AM +0100, Tobias Klauser wrote:
-> > With the recent switch of the (currently still out-of-tree) Nios2 Linux
-> > port to devicetree we want to be able to retreive the resources and
-> > properties from dts.
-> > 
-> > The old method to retreive resources and properties from platform data
-> > is still supported.
-> > 
-> > Cc: Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>
-> > Signed-off-by: Tobias Klauser <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>
-> > ---
-> > 
-> > Greg: This patch will have the same compile problem in your tree as the
-> > altera_jtaguart patch has. As this patch depends on the previous ones of
-> > this series it might be best to apply it once commit c9e358dfc
-> > "driver-core: remove conditionals around devicetree pointers" from
-> > Grant's tree is merged.
-> 
-> Ok, I can't take this then, Grant, can you?
-> 
-> Please feel free to add:
-> 	Acked-by: Greg Kroah-Hartman <gregkh-l3A5Bk7waGM@public.gmane.org>
-> to it.
+In preparation to UART runtime conversion. Remove certain uart specific calls
+from sram_idle path in pm24xx/34xx files.
+These func calls will no more be used with upcoming uart runtime design.
 
-Merged, thanks,
+1.) Removing console lock holding :- Now can be handled with omap-serial file
+    itself with appropraite console_enable/disable calls for clk_enable/disable
+    cases.
+2.) omap_uart_can_sleep :- not needed driver can decide based on inactivity.
+3.) omap_uart_prepare_suspend :- omap-serial can take care with driver
+    suspend/resume hooks.
 
-g.
+Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+---
+ arch/arm/mach-omap2/pm24xx.c             |   11 -----------
+ arch/arm/mach-omap2/pm34xx.c             |   16 ----------------
+ arch/arm/plat-omap/include/plat/serial.h |    4 ----
+ 3 files changed, 0 insertions(+), 31 deletions(-)
+
+diff --git a/arch/arm/mach-omap2/pm24xx.c b/arch/arm/mach-omap2/pm24xx.c
+index 97feb3a..5af9881 100644
+--- a/arch/arm/mach-omap2/pm24xx.c
++++ b/arch/arm/mach-omap2/pm24xx.c
+@@ -132,11 +132,6 @@ static void omap2_enter_full_retention(void)
+ 	if (omap_irq_pending())
+ 		goto no_sleep;
+ 
+-	/* Block console output in case it is on one of the OMAP UARTs */
+-	if (!is_suspending())
+-		if (!console_trylock())
+-			goto no_sleep;
+-
+ 	omap_uart_prepare_idle(0);
+ 	omap_uart_prepare_idle(1);
+ 	omap_uart_prepare_idle(2);
+@@ -150,9 +145,6 @@ static void omap2_enter_full_retention(void)
+ 	omap_uart_resume_idle(1);
+ 	omap_uart_resume_idle(0);
+ 
+-	if (!is_suspending())
+-		console_unlock();
+-
+ no_sleep:
+ 	if (omap2_pm_debug) {
+ 		unsigned long long tmp;
+@@ -267,8 +259,6 @@ static int omap2_can_sleep(void)
+ {
+ 	if (omap2_fclks_active())
+ 		return 0;
+-	if (!omap_uart_can_sleep())
+-		return 0;
+ 	if (osc_ck->usecount > 1)
+ 		return 0;
+ 	if (omap_dma_running())
+@@ -319,7 +309,6 @@ static int omap2_pm_suspend(void)
+ 	mir1 = omap_readl(0x480fe0a4);
+ 	omap_writel(1 << 5, 0x480fe0ac);
+ 
+-	omap_uart_prepare_suspend();
+ 	omap2_enter_full_retention();
+ 
+ 	omap_writel(mir1, 0x480fe0a4);
+diff --git a/arch/arm/mach-omap2/pm34xx.c b/arch/arm/mach-omap2/pm34xx.c
+index 2f864e4..850bb0a 100644
+--- a/arch/arm/mach-omap2/pm34xx.c
++++ b/arch/arm/mach-omap2/pm34xx.c
+@@ -395,13 +395,6 @@ void omap_sram_idle(void)
+ 		omap3_enable_io_chain();
+ 	}
+ 
+-	/* Block console output in case it is on one of the OMAP UARTs */
+-	if (!is_suspending())
+-		if (per_next_state < PWRDM_POWER_ON ||
+-		    core_next_state < PWRDM_POWER_ON)
+-			if (!console_trylock())
+-				goto console_still_active;
+-
+ 	/* PER */
+ 	if (per_next_state < PWRDM_POWER_ON) {
+ 		per_going_off = (per_next_state == PWRDM_POWER_OFF) ? 1 : 0;
+@@ -481,10 +474,6 @@ void omap_sram_idle(void)
+ 		omap_uart_resume_idle(3);
+ 	}
+ 
+-	if (!is_suspending())
+-		console_unlock();
+-
+-console_still_active:
+ 	/* Disable IO-PAD and IO-CHAIN wakeup */
+ 	if (omap3_has_io_wakeup() &&
+ 	    (per_next_state < PWRDM_POWER_ON ||
+@@ -503,8 +492,6 @@ int omap3_can_sleep(void)
+ {
+ 	if (!sleep_while_idle)
+ 		return 0;
+-	if (!omap_uart_can_sleep())
+-		return 0;
+ 	return 1;
+ }
+ 
+@@ -547,7 +534,6 @@ static int omap3_pm_suspend(void)
+ 			goto restore;
+ 	}
+ 
+-	omap_uart_prepare_suspend();
+ 	omap3_intc_suspend();
+ 
+ 	omap_sram_idle();
+@@ -594,14 +580,12 @@ static int omap3_pm_begin(suspend_state_t state)
+ {
+ 	disable_hlt();
+ 	suspend_state = state;
+-	omap_uart_enable_irqs(0);
+ 	return 0;
+ }
+ 
+ static void omap3_pm_end(void)
+ {
+ 	suspend_state = PM_SUSPEND_ON;
+-	omap_uart_enable_irqs(1);
+ 	enable_hlt();
+ 	return;
+ }
+diff --git a/arch/arm/plat-omap/include/plat/serial.h b/arch/arm/plat-omap/include/plat/serial.h
+index 8061695..6339848 100644
+--- a/arch/arm/plat-omap/include/plat/serial.h
++++ b/arch/arm/plat-omap/include/plat/serial.h
+@@ -106,12 +106,8 @@ struct omap_board_data;
+ 
+ extern void omap_serial_init(void);
+ extern void omap_serial_init_port(struct omap_board_data *bdata);
+-extern int omap_uart_can_sleep(void);
+-extern void omap_uart_check_wakeup(void);
+-extern void omap_uart_prepare_suspend(void);
+ extern void omap_uart_prepare_idle(int num);
+ extern void omap_uart_resume_idle(int num);
+-extern void omap_uart_enable_irqs(int enable);
+ #endif
+ 
+ #endif
+-- 
+1.7.1
+
