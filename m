@@ -1,97 +1,92 @@
-From: Sricharan R <r.sricharan@ti.com>
-Subject: RE: [PATCH 6/7] OMAP: Serial: Allow UART parameters to be configured
- from board file
-Date: Wed, 2 Mar 2011 00:46:19 +0530
-Message-ID: <056ac5e848953fa5c37f7ed7a8cc1050@mail.gmail.com>
-References: <1298903958-6496-1-git-send-email-govindraj.raja@ti.com> <1298903958-6496-7-git-send-email-govindraj.raja@ti.com>
+From: "Mr. henry" <henmoralendingfirm1@gmail.com>
+Subject: (unknown)
+Date: Wed, 2 Mar 2011 01:48:15 +0200 (EET)
+Message-ID: <33906.41.204.224.12.1299023295.squirrel@89.238.215.26>
+Reply-To: henmoralendingfirm@gmail.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1298903958-6496-7-git-send-email-govindraj.raja@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Jon Hunter <jon-hunter@ti.com>, Tony Lindgren <tony@atomide.com>, Benoit Cousson <b-cousson@ti.com>, Kevin Hilman <khilman@ti.com>, Paul Walmsley <paul@pwsan.com>, Rajendra Nayak <rnayak@ti.com>, Deepak Kattungal <deepak.k@ti.com>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.vilaumitel.ro ([89.238.215.26]:58277 "EHLO
+	mail.vilaumitel.ro" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757395Ab1CBARa (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 1 Mar 2011 19:17:30 -0500
+Subject: 
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
->diff --git a/arch/arm/mach-omap2/serial.c b/arch/arm/mach-omap2/serial.c
->index 755f4aa..530e9e3 100644
->--- a/arch/arm/mach-omap2/serial.c
->+++ b/arch/arm/mach-omap2/serial.c
->@@ -44,6 +44,15 @@
->
-> static int omap_uart_con_id __initdata = -1;
->
->+static struct omap_uart_port_info omap_serial_default_info[] = {
->+	{
->+		.dma_enabled	= 0,
->+		.dma_rx_buf_size = DEFAULT_RXDMA_BUFSIZE,
->+		.dma_rx_timeout = DEFAULT_RXDMA_TIMEOUT,
->+		.idle_timeout	= DEFAULT_IDLE_TIMEOUT,
->+	},
->+};
->+
-> static int uart_idle_hwmod(struct omap_device *od)
-> {
-> 	omap_hwmod_idle(od->hwmods[0]);
->@@ -66,6 +75,54 @@ static struct omap_device_pm_latency
-omap_uart_latency[]
->= {
-> 	},
-> };
->
->+#ifdef CONFIG_OMAP_MUX
->+static struct omap_device_pad default_serial0_pads[] __initdata = {
->+	{
->+		.name	= "uart1_rx.uart1_rx",
->+		.flags	= OMAP_DEVICE_PAD_REMUX | OMAP_DEVICE_PAD_WAKEUP,
->+		.enable	= OMAP_MUX_MODE0,
->+	},
->+};
->+
->+static struct omap_device_pad default_serial1_pads[] __initdata = {
->+	{
->+		.name	= "uart2_rx.uart2_rx",
->+		.flags	= OMAP_DEVICE_PAD_REMUX | OMAP_DEVICE_PAD_WAKEUP,
->+		.enable	= OMAP_MUX_MODE0,
->+	},
->+};
->+
->+static struct omap_device_pad default_serial2_pads[] __initdata = {
->+	{
->+		.name	= "uart3_rx_irrx.uart3_rx_irrx",
->+		.flags	= OMAP_DEVICE_PAD_REMUX | OMAP_DEVICE_PAD_WAKEUP,
->+		.enable	= OMAP_MUX_MODE0,
->+	},
->+};
->+
->+static struct omap_device_pad default_omap36xx_serial3_pads[] __initdata
-=
->{
->+	{
->+		.name	= "gpmc_wait3.uart4_rx",
->+		.flags	= OMAP_DEVICE_PAD_REMUX | OMAP_DEVICE_PAD_WAKEUP,
->+		.enable	= OMAP_MUX_MODE2,
->+	},
->+};
->+
->+static struct omap_device_pad default_omap4_serial3_pads[] __initdata =
-{
->+	{
->+		.name	= "uart4_rx.uart4_rx",
->+		.flags	= OMAP_DEVICE_PAD_REMUX | OMAP_DEVICE_PAD_WAKEUP,
->+		.enable	= OMAP_MUX_MODE0,
->+	},
->+};
-Here only the UART RX pins are muxed, so what about the cts, rts, tx pins?
-Is it consistent that across all socs that only UART3 would have UART/IRDA
-functions capability so that serial2 pads can always be called "rx_irxx"
-?.
+Van sz=FCks=E9ge a hitel b=E1rmilyen c=E9lra? Van egy p=E9nz=FCgyi prob=
+l=E9ma? Nem
+sz=FCks=E9g van a p=E9nz=FCgyi megold=E1s? Mr. Henrik
+ hitelek a megold=E1s toall a p=E9nz=FCgyi probl=E9m=E1kat, mi hitelek =
+k=F6nnyen,
+olcs=F3, =E9s gyors. =CDrjon nek=FCnk ma, hogy a k=F6lcs=F6nt, amire v=E1=
+gytok, akkor
+int=E9zkedik minden olyan k=F6lcs=F6n, hogy megfeleljen a k=F6lts=E9gve=
+t=E9s mind=F6ssze
+3%-os kamat. Ha
+=E9rdekli, l=E9pjen vel=FCnk kapcsolatba immediately.Optional Hitel A v=
+=E9delem
+lehet&#337;v=E9 teszi,
+hogy megfeleljen a hitelt=F6rleszt=E9s, ha nem tud dolgozni, betegs=E9g=
+ miatt,
+baleset vagy
+munkan=E9lk=FClis=E9g. Csak akkor vegye ki az =E9rt=E9kes biztos=EDt=E1=
+st, ha alkalmazni
+az =D6n k=F6lcs=F6nt,
+eml=E9kszem, hogy elmondja nek=FCnk, ha azt szeretn=E9, hogy
+henmoralendingfirm@gmail.com
 
-Thanks,
- sricharan
->
->--
->To unsubscribe from this list: send the line "unsubscribe linux-omap" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
+* HITEL JELENTKEZ=C9SI LAP *
+
+* Teljes n=E9v ............*
+
+* Otthoni c=EDm ....................... ..*
+
+* Sz=FClet=E9si d=E1tum ......................*
+
+* Telefonsz=E1m ...................*
+
+* MOBIL sz=E1m, ha ..............*
+
+* HITEL sz=FCks=E9ges mennyis=E9g .................*
+
+* FAX .................*
+
+* =C1llampolg=E1rs=E1g ..................*
+
+* ORSZ=C1G ........................*
+
+* SZAKMA ....................*
+
+* SEX ..................................*
+
+* F=C9RFI .............................*
+
+* FEMAL .........................*
+
+* V=C1L=C1S HA ......................*
+
+* Legk=F6zelebbi hozz=E1tartoz=F3 .......................*
+
+* N=C9V .......................... ...*
+
+* Sz=FClet=E9si d=E1tum .....................*
+
+* C=C9LJA K=D6LCS=D6NZ=C9S .......................... .......*
+
+* A k=F6lcs=F6n id&#337;tartam=E1t ........................*
+
+* ID .......................*
+
+* A =DCdv=F6zlettel *
+
+
+* Mr. henry *
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
