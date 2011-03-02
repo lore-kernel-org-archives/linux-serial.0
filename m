@@ -1,91 +1,151 @@
-From: "Varadarajan, Charulatha" <charu@ti.com>
-Subject: Re: [PATCH 2/7] OMAP2+: mux: Enable wakeup for wakeup enable
- requested pads
-Date: Wed, 2 Mar 2011 10:19:58 +0530
-Message-ID: <AANLkTim8tTO5wDvzXxy8G35vYMBsXP2fJu=KHDHpw7aC@mail.gmail.com>
-References: <1298903958-6496-1-git-send-email-govindraj.raja@ti.com> <1298903958-6496-3-git-send-email-govindraj.raja@ti.com>
+From: Govindraj <govindraj.ti@gmail.com>
+Subject: Re: [PATCH 6/7] OMAP: Serial: Allow UART parameters to be configured
+ from board file
+Date: Wed, 2 Mar 2011 13:10:58 +0530
+Message-ID: <AANLkTimD9rOC=4P6Vy2jzvcXZ-gZmF42Te4CBjS8AJLT@mail.gmail.com>
+References: <1298903958-6496-1-git-send-email-govindraj.raja@ti.com>
+ <1298903958-6496-7-git-send-email-govindraj.raja@ti.com> <056ac5e848953fa5c37f7ed7a8cc1050@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1298903958-6496-3-git-send-email-govindraj.raja@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: "Govindraj.R" <govindraj.raja@ti.com>
-Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Benoit Cousson <b-cousson@ti.com>, Kevin Hilman <khilman@ti.com>, Paul Walmsley <paul@pwsan.com>, Rajendra Nayak <rnayak@ti.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ww0-f44.google.com ([74.125.82.44]:37097 "EHLO
+	mail-ww0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750881Ab1CBHlT convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 2 Mar 2011 02:41:19 -0500
+In-Reply-To: <056ac5e848953fa5c37f7ed7a8cc1050@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Sricharan R <r.sricharan@ti.com>
+Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jon Hunter <jon-hunter@ti.com>, Tony Lindgren <tony@atomide.com>, Benoit Cousson <b-cousson@ti.com>, Kevin Hilman <khilman@ti.com>, Paul Walmsley <paul@pwsan.com>, Rajendra Nayak <rnayak@ti.com>, Deepak Kattungal <deepak.k@ti.com>
 
-Govind,
+On Wed, Mar 2, 2011 at 12:46 AM, Sricharan R <r.sricharan@ti.com> wrote=
+:
+> Hi,
+>>diff --git a/arch/arm/mach-omap2/serial.c b/arch/arm/mach-omap2/seria=
+l.c
+>>index 755f4aa..530e9e3 100644
+>>--- a/arch/arm/mach-omap2/serial.c
+>>+++ b/arch/arm/mach-omap2/serial.c
+>>@@ -44,6 +44,15 @@
+>>
+>> static int omap_uart_con_id __initdata =3D -1;
+>>
+>>+static struct omap_uart_port_info omap_serial_default_info[] =3D {
+>>+ =A0 =A0 =A0{
+>>+ =A0 =A0 =A0 =A0 =A0 =A0 =A0.dma_enabled =A0 =A0=3D 0,
+>>+ =A0 =A0 =A0 =A0 =A0 =A0 =A0.dma_rx_buf_size =3D DEFAULT_RXDMA_BUFSI=
+ZE,
+>>+ =A0 =A0 =A0 =A0 =A0 =A0 =A0.dma_rx_timeout =3D DEFAULT_RXDMA_TIMEOU=
+T,
+>>+ =A0 =A0 =A0 =A0 =A0 =A0 =A0.idle_timeout =A0 =3D DEFAULT_IDLE_TIMEO=
+UT,
+>>+ =A0 =A0 =A0},
+>>+};
+>>+
+>> static int uart_idle_hwmod(struct omap_device *od)
+>> {
+>> =A0 =A0 =A0 omap_hwmod_idle(od->hwmods[0]);
+>>@@ -66,6 +75,54 @@ static struct omap_device_pm_latency
+> omap_uart_latency[]
+>>=3D {
+>> =A0 =A0 =A0 },
+>> };
+>>
+>>+#ifdef CONFIG_OMAP_MUX
+>>+static struct omap_device_pad default_serial0_pads[] __initdata =3D =
+{
+>>+ =A0 =A0 =A0{
+>>+ =A0 =A0 =A0 =A0 =A0 =A0 =A0.name =A0 =3D "uart1_rx.uart1_rx",
+>>+ =A0 =A0 =A0 =A0 =A0 =A0 =A0.flags =A0=3D OMAP_DEVICE_PAD_REMUX | OM=
+AP_DEVICE_PAD_WAKEUP,
+>>+ =A0 =A0 =A0 =A0 =A0 =A0 =A0.enable =3D OMAP_MUX_MODE0,
+>>+ =A0 =A0 =A0},
+>>+};
+>>+
+>>+static struct omap_device_pad default_serial1_pads[] __initdata =3D =
+{
+>>+ =A0 =A0 =A0{
+>>+ =A0 =A0 =A0 =A0 =A0 =A0 =A0.name =A0 =3D "uart2_rx.uart2_rx",
+>>+ =A0 =A0 =A0 =A0 =A0 =A0 =A0.flags =A0=3D OMAP_DEVICE_PAD_REMUX | OM=
+AP_DEVICE_PAD_WAKEUP,
+>>+ =A0 =A0 =A0 =A0 =A0 =A0 =A0.enable =3D OMAP_MUX_MODE0,
+>>+ =A0 =A0 =A0},
+>>+};
+>>+
+>>+static struct omap_device_pad default_serial2_pads[] __initdata =3D =
+{
+>>+ =A0 =A0 =A0{
+>>+ =A0 =A0 =A0 =A0 =A0 =A0 =A0.name =A0 =3D "uart3_rx_irrx.uart3_rx_ir=
+rx",
+>>+ =A0 =A0 =A0 =A0 =A0 =A0 =A0.flags =A0=3D OMAP_DEVICE_PAD_REMUX | OM=
+AP_DEVICE_PAD_WAKEUP,
+>>+ =A0 =A0 =A0 =A0 =A0 =A0 =A0.enable =3D OMAP_MUX_MODE0,
+>>+ =A0 =A0 =A0},
+>>+};
+>>+
+>>+static struct omap_device_pad default_omap36xx_serial3_pads[] __init=
+data
+> =3D
+>>{
+>>+ =A0 =A0 =A0{
+>>+ =A0 =A0 =A0 =A0 =A0 =A0 =A0.name =A0 =3D "gpmc_wait3.uart4_rx",
+>>+ =A0 =A0 =A0 =A0 =A0 =A0 =A0.flags =A0=3D OMAP_DEVICE_PAD_REMUX | OM=
+AP_DEVICE_PAD_WAKEUP,
+>>+ =A0 =A0 =A0 =A0 =A0 =A0 =A0.enable =3D OMAP_MUX_MODE2,
+>>+ =A0 =A0 =A0},
+>>+};
+>>+
+>>+static struct omap_device_pad default_omap4_serial3_pads[] __initdat=
+a =3D
+> {
+>>+ =A0 =A0 =A0{
+>>+ =A0 =A0 =A0 =A0 =A0 =A0 =A0.name =A0 =3D "uart4_rx.uart4_rx",
+>>+ =A0 =A0 =A0 =A0 =A0 =A0 =A0.flags =A0=3D OMAP_DEVICE_PAD_REMUX | OM=
+AP_DEVICE_PAD_WAKEUP,
+>>+ =A0 =A0 =A0 =A0 =A0 =A0 =A0.enable =3D OMAP_MUX_MODE0,
+>>+ =A0 =A0 =A0},
+>>+};
+> Here only the UART RX pins are muxed, so what about the cts, rts, tx =
+pins?
 
-Couple of minor comments.
+The intention here is to enable wakeup capabilities for uart rx pad.
 
-On Mon, Feb 28, 2011 at 20:09, Govindraj.R <govindraj.raja@ti.com> wrot=
-e:
-> For device pads which have OMAP_DEVICE_PAD_WAKEUP set (which means th=
-ey
-> are wakeup capable) enable the IO-daisy wakeup capability.
-> During re-muxing avoid direct write with val as this can disturb if a=
-ny
-> mux done at bootloader level so read the pad then write back.
->
-> Also add a api to fetch the wake-up status bit is set for given omap-=
-hwmod
+AFAIK most of the boards are currently dependent on bootloader for
+uart-muxing if any board is not dependent on bootloader then we
+can use omap_serial_init_port along with board_mux_info from board.
 
-%s/a api/an API/
+Prior to this change uart wakeup is based on rx_pad and we were populat=
+ing
+offset and using omap_ctrl api's to read/write which is cleaned up now.
+Most of boards are dependent on uart-rx wakeup to avoid breaking any
+board support we
+are using omap_serial_init by filling default values, which provides
+us with same
+environment but with right approach towards handling mux data with a
+handshake with
+hwmod framework.
 
-> device using available mux info which is added during omap_hwmod_mux_=
+So if any board needs specific mux they can go ahead and add required
+mux data in
+board file and use map_serial_init_port instead of current omap_serial_=
 init.
-> Wakeup status bit is needed for uart_resume_idle call from sram_idle =
-path
-> based on wake-up event has occurred for given uart we can enable cloc=
-ks back.
->
-> Signed-off-by: Rajendra Nayak <rnayak@ti.com>
-> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
-> ---
-> =A0arch/arm/mach-omap2/mux.c =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0|=
- =A0 23 +++++++++++++++++++++++
-> =A0arch/arm/mach-omap2/mux.h =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0|=
- =A0 13 +++++++++++++
-> =A0arch/arm/mach-omap2/omap_hwmod.c =A0 =A0 =A0 =A0 =A0 =A0 | =A0 13 =
-+++++++++++++
-> =A0arch/arm/plat-omap/include/plat/omap_hwmod.h | =A0 =A01 +
-> =A04 files changed, 50 insertions(+), 0 deletions(-)
->
-> diff --git a/arch/arm/mach-omap2/mux.c b/arch/arm/mach-omap2/mux.c
-> index 98148b6..5338b93 100644
-> --- a/arch/arm/mach-omap2/mux.c
-> +++ b/arch/arm/mach-omap2/mux.c
-> @@ -317,6 +317,24 @@ err1:
-> =A0 =A0 =A0 =A0return NULL;
-> =A0}
->
-> +/* Gets the wakeup status of given pad from omap-hwmod */
-> +int omap_hwmod_mux_wakeup(struct omap_hwmod_mux_info *hmux)
-> +{
-> + =A0 =A0 =A0 int i;
-> + =A0 =A0 =A0 unsigned int val =3D -EINVAL;
-> +
-> + =A0 =A0 =A0 for (i =3D 0; i < hmux->nr_pads; i++) {
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 struct omap_device_pad *pad =3D &hmux->=
-pads[i];
-> +
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 val =3D omap_mux_read(pad->partition, p=
-ad->mux->reg_offset);
-> + =A0 =A0 =A0 }
-> +
-> + =A0 =A0 =A0 if (val > 0 && val & OMAP_WAKEUP_EVENT)
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 return 1;
-> + =A0 =A0 =A0 else
 
-No need of else here.
 
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 return 0;
-> +}
-> +
+> Is it consistent that across all socs that only UART3 would have UART=
+/IRDA
+> functions capability so that serial2 pads can always be called "rx_ir=
+xx"
+> ?.
 
-- V Charulatha
+Yes from OMAP2420 to OMAP4430 uart3 can used as irda.
+
 --
-To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
-n
+Thanks,
+Govindraj.R
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
 the body of a message to majordomo@vger.kernel.org
 More majordomo info at  http://vger.kernel.org/majordomo-info.html
