@@ -1,92 +1,91 @@
-From: "Mr. henry" <henmoralendingfirm1@gmail.com>
-Subject: (unknown)
-Date: Wed, 2 Mar 2011 01:47:23 +0200 (EET)
-Message-ID: <32618.41.204.224.12.1299023243.squirrel__36706.7441613928$1299025419$gmane$org@89.238.215.26>
-Reply-To: henmoralendingfirm@gmail.com
+From: "Varadarajan, Charulatha" <charu@ti.com>
+Subject: Re: [PATCH 2/7] OMAP2+: mux: Enable wakeup for wakeup enable
+ requested pads
+Date: Wed, 2 Mar 2011 10:19:58 +0530
+Message-ID: <AANLkTim8tTO5wDvzXxy8G35vYMBsXP2fJu=KHDHpw7aC@mail.gmail.com>
+References: <1298903958-6496-1-git-send-email-govindraj.raja@ti.com> <1298903958-6496-3-git-send-email-govindraj.raja@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.vilaumitel.ro ([89.238.215.26]:51596 "EHLO
-	mail.vilaumitel.ro" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757645Ab1CBAXa (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 1 Mar 2011 19:23:30 -0500
-Subject: 
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <1298903958-6496-3-git-send-email-govindraj.raja@ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: "Govindraj.R" <govindraj.raja@ti.com>
+Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Benoit Cousson <b-cousson@ti.com>, Kevin Hilman <khilman@ti.com>, Paul Walmsley <paul@pwsan.com>, Rajendra Nayak <rnayak@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-Van sz=FCks=E9ge a hitel b=E1rmilyen c=E9lra? Van egy p=E9nz=FCgyi prob=
-l=E9ma? Nem
-sz=FCks=E9g van a p=E9nz=FCgyi megold=E1s? Mr. Henrik
- hitelek a megold=E1s toall a p=E9nz=FCgyi probl=E9m=E1kat, mi hitelek =
-k=F6nnyen,
-olcs=F3, =E9s gyors. =CDrjon nek=FCnk ma, hogy a k=F6lcs=F6nt, amire v=E1=
-gytok, akkor
-int=E9zkedik minden olyan k=F6lcs=F6n, hogy megfeleljen a k=F6lts=E9gve=
-t=E9s mind=F6ssze
-3%-os kamat. Ha
-=E9rdekli, l=E9pjen vel=FCnk kapcsolatba immediately.Optional Hitel A v=
-=E9delem
-lehet&#337;v=E9 teszi,
-hogy megfeleljen a hitelt=F6rleszt=E9s, ha nem tud dolgozni, betegs=E9g=
- miatt,
-baleset vagy
-munkan=E9lk=FClis=E9g. Csak akkor vegye ki az =E9rt=E9kes biztos=EDt=E1=
-st, ha alkalmazni
-az =D6n k=F6lcs=F6nt,
-eml=E9kszem, hogy elmondja nek=FCnk, ha azt szeretn=E9, hogy
-henmoralendingfirm@gmail.com
+Govind,
 
-* HITEL JELENTKEZ=C9SI LAP *
+Couple of minor comments.
 
-* Teljes n=E9v ............*
+On Mon, Feb 28, 2011 at 20:09, Govindraj.R <govindraj.raja@ti.com> wrot=
+e:
+> For device pads which have OMAP_DEVICE_PAD_WAKEUP set (which means th=
+ey
+> are wakeup capable) enable the IO-daisy wakeup capability.
+> During re-muxing avoid direct write with val as this can disturb if a=
+ny
+> mux done at bootloader level so read the pad then write back.
+>
+> Also add a api to fetch the wake-up status bit is set for given omap-=
+hwmod
 
-* Otthoni c=EDm ....................... ..*
+%s/a api/an API/
 
-* Sz=FClet=E9si d=E1tum ......................*
+> device using available mux info which is added during omap_hwmod_mux_=
+init.
+> Wakeup status bit is needed for uart_resume_idle call from sram_idle =
+path
+> based on wake-up event has occurred for given uart we can enable cloc=
+ks back.
+>
+> Signed-off-by: Rajendra Nayak <rnayak@ti.com>
+> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+> ---
+> =A0arch/arm/mach-omap2/mux.c =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0|=
+ =A0 23 +++++++++++++++++++++++
+> =A0arch/arm/mach-omap2/mux.h =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0|=
+ =A0 13 +++++++++++++
+> =A0arch/arm/mach-omap2/omap_hwmod.c =A0 =A0 =A0 =A0 =A0 =A0 | =A0 13 =
++++++++++++++
+> =A0arch/arm/plat-omap/include/plat/omap_hwmod.h | =A0 =A01 +
+> =A04 files changed, 50 insertions(+), 0 deletions(-)
+>
+> diff --git a/arch/arm/mach-omap2/mux.c b/arch/arm/mach-omap2/mux.c
+> index 98148b6..5338b93 100644
+> --- a/arch/arm/mach-omap2/mux.c
+> +++ b/arch/arm/mach-omap2/mux.c
+> @@ -317,6 +317,24 @@ err1:
+> =A0 =A0 =A0 =A0return NULL;
+> =A0}
+>
+> +/* Gets the wakeup status of given pad from omap-hwmod */
+> +int omap_hwmod_mux_wakeup(struct omap_hwmod_mux_info *hmux)
+> +{
+> + =A0 =A0 =A0 int i;
+> + =A0 =A0 =A0 unsigned int val =3D -EINVAL;
+> +
+> + =A0 =A0 =A0 for (i =3D 0; i < hmux->nr_pads; i++) {
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 struct omap_device_pad *pad =3D &hmux->=
+pads[i];
+> +
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 val =3D omap_mux_read(pad->partition, p=
+ad->mux->reg_offset);
+> + =A0 =A0 =A0 }
+> +
+> + =A0 =A0 =A0 if (val > 0 && val & OMAP_WAKEUP_EVENT)
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 return 1;
+> + =A0 =A0 =A0 else
 
-* Telefonsz=E1m ...................*
+No need of else here.
 
-* MOBIL sz=E1m, ha ..............*
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 return 0;
+> +}
+> +
 
-* HITEL sz=FCks=E9ges mennyis=E9g .................*
-
-* FAX .................*
-
-* =C1llampolg=E1rs=E1g ..................*
-
-* ORSZ=C1G ........................*
-
-* SZAKMA ....................*
-
-* SEX ..................................*
-
-* F=C9RFI .............................*
-
-* FEMAL .........................*
-
-* V=C1L=C1S HA ......................*
-
-* Legk=F6zelebbi hozz=E1tartoz=F3 .......................*
-
-* N=C9V .......................... ...*
-
-* Sz=FClet=E9si d=E1tum .....................*
-
-* C=C9LJA K=D6LCS=D6NZ=C9S .......................... .......*
-
-* A k=F6lcs=F6n id&#337;tartam=E1t ........................*
-
-* ID .......................*
-
-* A =DCdv=F6zlettel *
-
-
-* Mr. henry *
-
+- V Charulatha
 --
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
+To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
+n
 the body of a message to majordomo@vger.kernel.org
 More majordomo info at  http://vger.kernel.org/majordomo-info.html
