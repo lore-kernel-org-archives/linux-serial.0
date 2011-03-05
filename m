@@ -1,24 +1,22 @@
 From: Kevin Hilman <khilman@ti.com>
 Subject: Re: [PATCH 2/7] OMAP2+: mux: Enable wakeup for wakeup enable requested pads
-Date: Fri, 04 Mar 2011 15:54:44 -0800
-Message-ID: <87lj0u8mrf.fsf@ti.com>
+Date: Fri, 04 Mar 2011 17:27:00 -0800
+Message-ID: <87bp1q5pcr.fsf@ti.com>
 References: <1299064343-28534-1-git-send-email-govindraj.raja@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog106.obsmtp.com ([74.125.149.77]:50978 "EHLO
-	na3sys009aog106.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1760025Ab1CDXyt (ORCPT
+Received: from na3sys009aog114.obsmtp.com ([74.125.149.211]:53939 "EHLO
+	na3sys009aog114.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752121Ab1CEB1H (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 4 Mar 2011 18:54:49 -0500
+	Fri, 4 Mar 2011 20:27:07 -0500
 In-Reply-To: <1299064343-28534-1-git-send-email-govindraj.raja@ti.com>
 	(Govindraj R.'s message of "Wed, 2 Mar 2011 16:42:23 +0530")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: "Govindraj.R" <govindraj.raja@ti.com>
 Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Benoit Cousson <b-cousson@ti.com>, Paul Walmsley <paul@pwsan.com>, Rajendra Nayak <rnayak@ti.com>
-
-Hi Govindraj,
 
 "Govindraj.R" <govindraj.raja@ti.com> writes:
 
@@ -34,6 +32,17 @@ Hi Govindraj,
 >
 > Signed-off-by: Rajendra Nayak <rnayak@ti.com>
 > Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+
+Another issue with this patch...
+
+This actually is a change in behavior from the previous code.  The
+current code (albiet hacky) only enables IO-ring wakeups when
+device_may_wakeup() == true.
+
+This code should probably also do the same.
+
+Kevin
+
 > ---
 >  arch/arm/mach-omap2/mux.c                    |   28 ++++++++++++++++++++++++++
 >  arch/arm/mach-omap2/mux.h                    |   13 ++++++++++++
@@ -51,17 +60,6 @@ Hi Govindraj,
 >  
 > +/* Gets the wakeup status of given pad from omap-hwmod */
 > +int omap_hwmod_mux_wakeup(struct omap_hwmod_mux_info *hmux)
-
-should return a bool
-
-Also, documentation should be clear that it returns true if *any* pad
-associated with this device has a wakeup event.
-
-Also a name reflecting the get/check/status nature of this function
-would help readability, maybe:
-
-bool omap_hwmod_mux_wakeup_event(struct omap_hwmod_mux_info *hmux)
-
 > +{
 > +	int i;
 > +	unsigned int val;
@@ -93,13 +91,6 @@ bool omap_hwmod_mux_wakeup_event(struct omap_hwmod_mux_info *hmux)
 > +			if (flags & OMAP_DEVICE_PAD_WAKEUP)
 > +				val |= OMAP_WAKEUP_EN;
 > +
-
-Is this needed on every idle transition?  
-
-You're currently setting it on every idle transition, but never clearing
-it.  If it is to be a one-time thing, then move it to the early init of
-the mux.
-
 >  			pr_debug("%s: Idling %s %x\n", __func__,
 >  					pad->name, val);
 >  			break;
@@ -109,20 +100,6 @@ the mux.
 >  		if (val >= 0) {
 > +			val |= omap_mux_read(pad->partition,
 > +						pad->mux->reg_offset);
-
-I don't think this is doing what you expect, and will lead to very
-difficult to find bugs.  Since your OR'ing in bits from the current
-value, you will never be able to clear any bits in this register.
-
-As just a dumb example, consider the enable case where
-pad->enable=MUX_MODE0 (0x0).  If the bootloader has initialized this pad
-to MUX_MODE7 (0x7), this code will never set it to MUX_MODE0, since this
-read and OR of the existing value will always set it back to MUX_MODE7.
-
-At a minimum, this change should be a separate patch with a more
-detailed description.
-
-
 >  			omap_mux_write(pad->partition, val,
 >  					pad->mux->reg_offset);
 >  			pad->flags = flags;
@@ -168,27 +145,6 @@ detailed description.
 > + * Returns the wake_up status bit of available pad mux pin.
 > + */
 > +int omap_hmwod_pad_wakeup_status(struct omap_hwmod *oh)
-
-Again, naming here could improve readability.  Maybe:
-
-bool omap_hmwod_get_io_wakeup_status(struct omap_hwmod *oh)
-
->From the name and the bool return, it should be clear that this is just
-checking for the wakeup event.  I also think it should be clear that
-this is checking for IO-ring wakeups, not module wakeups.
-
-Also, in PATCH 5/7, you're calling this hwmod API directly from a
-driver.  Drivers should not know anything about hwmods.  Any
-OMAP-specific hooks must be called through pdata function pointers.
-Also, they should go through omap_device, which would then call
-omap_hwmod.
-
-Thinking more about this (and how you use it in PATCH 5/7), what is
-needed is an omap_device level API to check if a wakeup occured for that
-device.  That function would check for either module-level wakeup or IO
-pad wakeup.  The driver should not need to care about how the wakeup
-occurred.
-
 > +{
 > +	if (oh->mux)
 > +		return omap_hwmod_mux_wakeup(oh->mux);
@@ -206,5 +162,3 @@ occurred.
 >  /*
 >   * Chip variant-specific hwmod init routines - XXX should be converted
 >   * to use initcalls once the initial boot ordering is straightened out
-
-Kevin
