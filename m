@@ -1,51 +1,141 @@
 From: =?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>
-Subject: [PATCH 1/2] n_gsm: improve behaviour with encoding 0
-Date: Tue,  8 Mar 2011 01:24:31 +0100
-Message-ID: <1299543872-14580-1-git-send-email-eric@eukrea.com>
+Subject: [PATCH 2/2] n_gsm: add a documentation
+Date: Tue,  8 Mar 2011 01:24:32 +0100
+Message-ID: <1299543872-14580-2-git-send-email-eric@eukrea.com>
+References: <1299543872-14580-1-git-send-email-eric@eukrea.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 6.27.mail-out.ovh.net ([46.105.50.195]:36336 "HELO
+Received: from 3.27.mail-out.ovh.net ([46.105.56.209]:48045 "HELO
 	27.mail-out.ovh.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with SMTP id S1751344Ab1CHAvb (ORCPT
+	with SMTP id S1753945Ab1CHBZd (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 7 Mar 2011 19:51:31 -0500
+	Mon, 7 Mar 2011 20:25:33 -0500
+In-Reply-To: <1299543872-14580-1-git-send-email-eric@eukrea.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: alan@lxorguk.ukuu.org.uk, =?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>
 
-* on Telit & Sim.com modems, using encoding 0, opening a new DLC
-randomly fails. Not setting PF bit of the control byte gives a
-reliable behaviour on these modems.
+* this documentation gives some details on how to get the n_gsm
+line discipline to work with modems supporting 07.10 basic option.
 
-* note that the detailed documentation of CMUX for both these
-modems doesn't set this bit when sending the UIH frame with the
-MSC command :
-http://www.telit.com/module/infopool/download.php?id=3D616
-http://wm.sim.com/sim/News/photo/2010721161442.pdf
+* it was tested on Telit and Simcom modems.
 
 Signed-off-by: Eric B=C3=A9nard <eric@eukrea.com>
 ---
- drivers/tty/n_gsm.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ Documentation/serial/n_gsm.txt |   87 ++++++++++++++++++++++++++++++++=
+++++++++
+ 1 files changed, 87 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/serial/n_gsm.txt
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 9a71b57..38efedb 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1251,7 +1251,7 @@ static void gsm_control_response(struct gsm_mux *=
-gsm, unsigned int command,
- static void gsm_control_transmit(struct gsm_mux *gsm, struct gsm_contr=
-ol *ctrl)
- {
- 	struct gsm_msg *msg =3D gsm_data_alloc(gsm, 0, ctrl->len + 1,
--							gsm->ftype|PF);
-+					gsm->ftype|(gsm->encoding ? PF : 0));
- 	if (msg =3D=3D NULL)
- 		return;
- 	msg->data[0] =3D (ctrl->cmd << 1) | 2 | EA;	/* command */
+diff --git a/Documentation/serial/n_gsm.txt b/Documentation/serial/n_gs=
+m.txt
+new file mode 100644
+index 0000000..0c06ef3
+--- /dev/null
++++ b/Documentation/serial/n_gsm.txt
+@@ -0,0 +1,87 @@
++n_gsm.c GSM 0710 tty multiplexor HOWTO
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D
++
++This line discipline implements the GSM 07.10 multiplexing protocol
++detailed in the following 3GPP document :
++http://www.3gpp.org/ftp/Specs/archive/07_series/07.10/0710-720.zip
++
++This document give some hints on how to use this driver with GPRS and =
+3G
++modems connected to a physical serial port.
++
++How to use it
++-------------
++1- initialize the modem in 0710 mux mode (usually AT+CMUX=3D command) =
+through
++its serial port. Depending on the modem used, you can pass more or les=
+s
++parameters to this command,
++2- switch the serial line to using the n_gsm line discipline by using
++TIOCSETD ioctl,
++3- configure the mux using GSMIOC_GETCONF / GSMIOC_SETCONF ioctl,
++
++Major parts of the initialization program :
++#include <linux/gsmmux.h>
++#define N_GSM0710	21	/* GSM 0710 Mux */
++#define DEFAULT_SPEED	B115200
++#define SERIAL_PORT	/dev/ttyS0
++
++	int ldisc =3D N_GSM0710;
++	struct gsm_config c;
++	struct termios configuration;
++
++	/* open the serial port connected to the modem */
++	fd =3D open(SERIAL_PORT, O_RDWR | O_NOCTTY | O_NDELAY);
++
++	/* configure the serial port : speed, flow control ... */
++
++	/* send the AT commands to switch the modem to CMUX mode
++	   and check that it's succesful (should return OK) */
++	write(fd, "AT+CMUX=3D0\r", 10);
++
++	/* experience showed that some modems need some time before
++	   being able to answer to the first MUX packet so a delay
++	   may be needed here in some case */
++	sleep(3);
++
++	/* use n_gsm line discipline */
++	ioctl(fd, TIOCSETD, &ldisc);
++
++	/* get n_gsm configuration */
++	ioctl(fd, GSMIOC_GETCONF, &c);
++	/* we are initiator and need encoding 0 (basic) */
++	c.initiator =3D 1;
++	c.encapsulation =3D 0;
++	/* our modem defaults to a maximum size of 127 bytes */
++	c.mru =3D 127;
++	c.mtu =3D 127;
++	/* set the new configuration */
++	ioctl(fd, GSMIOC_SETCONF, &c);
++
++	/* and wait for ever to keep the line discipline enabled */
++	while(1) sleep(1);
++
++4- create the devices corresponding to the "virtual" serial ports (tak=
+e care,
++each modem has its configuration and some DLC have dedicated functions=
+,
++for example GPS), starting with minor 1 (DLC0 is reserved for the mana=
+gement
++of the mux)
++
++MAJOR=3D`cat /proc/devices |grep gsmtty | awk '{print $1}`
++for i in `seq 1 4`; do
++	mknod /dev/ttygsm$i c $MAJOR $i
++done
++
++5- use these devices as plain serial ports.
++for example, it's possible :
++- and to use gnokii to send / receive SMS on ttygsm1
++- to use ppp to establish a datalink on ttygsm2
++
++6- first close all virtual ports before closing the physical port.
++
++Additional Documentation
++------------------------
++More practical details on the protocol and how it's supported by indus=
+trial
++modems can be found in the following documents :
++http://www.telit.com/module/infopool/download.php?id=3D616
++http://www.u-blox.com/images/downloads/Product_Docs/LEON-G100-G200-Mux=
+Implementation_ApplicationNote_%28GSM%20G1-CS-10002%29.pdf
++http://www.sierrawireless.com/Support/Downloads/AirPrime/WMP_Series/~/=
+media/Support_Downloads/AirPrime/Application_notes/CMUX_Feature_Applica=
+tion_Note-Rev004.ashx
++http://wm.sim.com/sim/News/photo/2010721161442.pdf
++
++11-03-07- Eric B=C3=A9nard - <eric@eukrea.com>
 --=20
 1.7.4
 
