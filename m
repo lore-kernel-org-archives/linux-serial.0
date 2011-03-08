@@ -1,24 +1,33 @@
-From: Paul Walmsley <paul@pwsan.com>
-Subject: Re: [PATCH 2/7] OMAP2+: mux: Enable wakeup for wakeup enable requested
- pads
-Date: Tue, 8 Mar 2011 12:21:43 -0700 (MST)
-Message-ID: <alpine.DEB.2.00.1103081220140.10981@utopia.booyaka.com>
-References: <1299064343-28534-1-git-send-email-govindraj.raja@ti.com> <87lj0u8mrf.fsf@ti.com> <87tyfi49cs.fsf@ti.com> <AANLkTiknEQrqUt1-sY6-aDw4R5ZMP2uErSjRNB5Yex_v@mail.gmail.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 1/2] n_gsm: improve behaviour with encoding 0
+Date: Tue, 8 Mar 2011 19:52:02 +0000
+Message-ID: <20110308195202.20ef135e@lxorguk.ukuu.org.uk>
+References: <1299543872-14580-1-git-send-email-eric@eukrea.com>
+	<20110308130145.3bacbe1b@lxorguk.ukuu.org.uk>
+	<4D765658.7070301@eukrea.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <AANLkTiknEQrqUt1-sY6-aDw4R5ZMP2uErSjRNB5Yex_v@mail.gmail.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Govindraj <govindraj.ti@gmail.com>
-Cc: Kevin Hilman <khilman@ti.com>, r.sricharan@ti.com, "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Benoit Cousson <b-cousson@ti.com>, Rajendra Nayak <rnayak@ti.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:55095 "EHLO
+	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1755645Ab1CHTv4 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 8 Mar 2011 14:51:56 -0500
+In-Reply-To: <4D765658.7070301@eukrea.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Eric =?ISO-8859-14?B?QuluYXJk?= <eric@eukrea.com>
+Cc: linux-serial@vger.kernel.org
 
+> I attach the log for the 2 following case :
+> - Simcom SIM300 : mux establish fine, pppd launch and the link establish (I 
+> interrupted the process), a serial terminal can talk to the modem and get answer,
+> - Telit UC864E : mux establish fine, pppd blocks after sending AT, a serial 
+> terminal can talk to the modem and get answer so I don't understand why chat 
+> fails,
 
-By the way, if your patch relies on OMAP_DEVICE_PAD_IDLE, you should 
-probably sync up with Sricharan, who is apparently planning to remove that 
-flag:
+First guess would be to try fiddling the flow control, could be the modem
+for some reason thinks it is currently flow controlled ?
 
-   http://www.mail-archive.com/linux-omap@vger.kernel.org/msg46296.html
-
-
-- Paul
+Alan
