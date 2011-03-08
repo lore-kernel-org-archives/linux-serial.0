@@ -1,41 +1,46 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 2/2] n_gsm: add a documentation
-Date: Tue, 8 Mar 2011 12:52:08 +0000
-Message-ID: <20110308125208.3ed69f49@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 1/2] n_gsm: improve behaviour with encoding 0
+Date: Tue, 8 Mar 2011 13:01:45 +0000
+Message-ID: <20110308130145.3bacbe1b@lxorguk.ukuu.org.uk>
 References: <1299543872-14580-1-git-send-email-eric@eukrea.com>
-	<1299543872-14580-2-git-send-email-eric@eukrea.com>
-	<4D7577F0.2030901@eukrea.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-14
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:36697 "EHLO
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:49744 "EHLO
 	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1753175Ab1CHMwB convert rfc822-to-8bit (ORCPT
+	with ESMTP id S1754593Ab1CHNBj convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 8 Mar 2011 07:52:01 -0500
-In-Reply-To: <4D7577F0.2030901@eukrea.com>
+	Tue, 8 Mar 2011 08:01:39 -0500
+In-Reply-To: <1299543872-14580-1-git-send-email-eric@eukrea.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Eric =?ISO-8859-14?B?QuluYXJk?= <eric@eukrea.com>
 Cc: linux-serial@vger.kernel.org
 
-On Tue, 08 Mar 2011 01:27:28 +0100
+On Tue,  8 Mar 2011 01:24:31 +0100
 Eric B=E9nard <eric@eukrea.com> wrote:
 
-> Hi,
->=20
-> On 08/03/2011 01:24, Eric B=E9nard wrote:
-> > +6- first close all virtual ports before closing the physical port.
-> > +
->=20
-> here is what I get when closing the physical serial port and when a v=
-irtual=20
-> port is still open :
+> * on Telit & Sim.com modems, using encoding 0, opening a new DLC
+> randomly fails. Not setting PF bit of the control byte gives a
+> reliable behaviour on these modems.
 
-That looks like it wants reporting to Arnd as it looks like fall out fr=
-om
-the tty_lock/unlock changes removing the big kernel lock.
+Any change needs doing with reference to the standard not modem specifi=
+c
+hacks. Chances are the modem is right about the PF bit and we perhaps a=
+re
+not - but it's not an encoding dependant bit so the patch is certainly
+wrong.
+
+In this case:
+
+5.4.3.1 says (of UI/UIH etc) 'both stations shall set the P bit to 0'
+
+so the modem is right and we are wrong.
+
+I think what is actually needed is to just remove the PF setting
+completely for that function. Obviously the other modems don't care or
+check the bit.
 
 Alan
 --
