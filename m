@@ -1,153 +1,83 @@
-From: Govindraj <govindraj.ti@gmail.com>
+From: Kevin Hilman <khilman@ti.com>
 Subject: Re: [PATCH 5/7] Serial: OMAP: add runtime pm support for omap-serial driver
-Date: Wed, 9 Mar 2011 20:37:11 +0530
-Message-ID: <AANLkTim0Xuu8Bs4tzyH1kQp2eS5nUq8stQX4MGzELEE6@mail.gmail.com>
+Date: Wed, 09 Mar 2011 15:06:24 -0800
+Message-ID: <87oc5jvqq7.fsf@ti.com>
 References: <1298903958-6496-1-git-send-email-govindraj.raja@ti.com>
- <1298903958-6496-6-git-send-email-govindraj.raja@ti.com> <87r5am499h.fsf@ti.com>
- <AANLkTim35McK1cFFEXyS49D6b8CT+4pQfmKAswOn3e7_@mail.gmail.com> <87hbbdjc7y.fsf@ti.com>
+	<1298903958-6496-6-git-send-email-govindraj.raja@ti.com>
+	<87r5am499h.fsf@ti.com>
+	<AANLkTim35McK1cFFEXyS49D6b8CT+4pQfmKAswOn3e7_@mail.gmail.com>
+	<87hbbdjc7y.fsf@ti.com>
+	<AANLkTim0Xuu8Bs4tzyH1kQp2eS5nUq8stQX4MGzELEE6@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bw0-f46.google.com ([209.85.214.46]:47558 "EHLO
-	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757043Ab1CIPHc convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 9 Mar 2011 10:07:32 -0500
-In-Reply-To: <87hbbdjc7y.fsf@ti.com>
+Received: from na3sys009aog103.obsmtp.com ([74.125.149.71]:33028 "EHLO
+	na3sys009aog103.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750814Ab1CIXGa convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 9 Mar 2011 18:06:30 -0500
+In-Reply-To: <AANLkTim0Xuu8Bs4tzyH1kQp2eS5nUq8stQX4MGzELEE6@mail.gmail.com>
+	(Govindraj's message of "Wed, 9 Mar 2011 20:37:11 +0530")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kevin Hilman <khilman@ti.com>
+To: Govindraj <govindraj.ti@gmail.com>
 Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Benoit Cousson <b-cousson@ti.com>, Paul Walmsley <paul@pwsan.com>, Rajendra Nayak <rnayak@ti.com>
 
-On Wed, Mar 9, 2011 at 7:18 AM, Kevin Hilman <khilman@ti.com> wrote:
-> Govindraj <govindraj.ti@gmail.com> writes:
->
-> [...]
->
->>> This function should not be needed.
->>>
->>> The timer should be replaced by the auto-suspend feature of runtime=
- PM.
+Govindraj <govindraj.ti@gmail.com> writes:
+
+[...]
+
 >>
->> If I use autosuspend based on timer runtime framework
->> will disable clocks based on autosuspend timeout.
+>> So here's an experiment to try with autosuspend. =C2=A0I suspect thi=
+s will
+>> work, just hack it up to prove the concept. =C2=A0If it works, we ca=
+n make
+>> something more generic. =C2=A0Here are a few alternatives to try. =C2=
+=A0I may
+>> experiment with some of them tomorrow as well, but please let me kno=
+w
+>> what you try:
 >>
->> But if I cut clocks outside sram idle path module level wakeup
->> will not work.
->> if I cut func clocks outside prepare for idle
->> wake_up is a problem.
->
-> As I mentioned in the other thread, module wakeups are not the proble=
-m,
-> rather the module generating the interrupt is the problem. =A0So cutt=
-ing
-> clocks outside prepare_for_idle path is not the problem. =A0It's the
-> re-enabling of the clocks that is important.
->
->> So I am going with existing model where we are cutting clocks in
->> prepare idle and enabling the clock back in resume_idle based on
->> wakeup event as any other combination doesn't seem to work.
+>> Using autosuspend, clocks will get cut independently of the idle pat=
+h.
+>> Then, use the PRCM ISR detection of UART module wakeups to call the
+>> UART's interrupt handler. =C2=A0The interrupt handler will pm_runtim=
+e_get(),
+>> enable the clocks, and then take care of the interrupt. =C2=A0Done.
 >>
->> [As stated in other thread to reproduce the issue
->> with module level wakeup]
->>
->> Even with existing framework if I try to experiment
->> by cutting clocks after uart timeout in allow_sleep
->> func, module level wakeup doesn't seem to happen.
->>>
->>> Instead of calling omap_port_disable() callers should call
->>> pm_runtime_put_autosuspend(), and the console_stop() should be part=
- of
->>> the ->runtime_suspend() callback.
->>>
->>> Also, why do you check for pm_runtime_suspended()? =A0Just call it =
-for
->>> every time and we get runtime PM use-counting and statistics for fr=
-ee
->>> and the ->runtime_suspend() callback will be called when the usecou=
-nt
->>> goes to zero.
->>>
->>
->> Yes correct, but I can't balance the put_sync and get_sync
->> as said above. I can call put_sync only once in prepare_idle
->> to cut clocks. But having put_sync outside prepare_idle, if
->> clocks are cut module level wakeup doesn't seem to happen.
->>
->>
->>>> +static void serial_omap_inactivity_timer(unsigned long uart_no)
->>>> +{
->>>> + =A0 =A0 struct uart_omap_port *up =3D ui[uart_no];
->>>> +
->>>> + =A0 =A0 up->can_sleep =3D 1;
->>>> + =A0 =A0 omap_uart_smart_idle(up);
->>>> +}
->>>
->>> This will not be needed if using the autosuspend feature.
->>
->> Using autosuspend, module level wakeup will not happen
->> since autosuspend cuts clocks outside prepare_idle
->> based on autosuspend timeout.
->
-> OK, I get the point. =A0You mentioned module level wakeups about 10 t=
-imes
-> in this message. =A0;)
->
-> However, rather than continue to hack around this problem we need to
-> understand the root cause. =A0Thanks to Paul, I think I undersand the=
- root
-> cause as explained in the other thread, and I think there's a relativ=
-ely
-> easy way to make them work.
->
-> So here's an experiment to try with autosuspend. =A0I suspect this wi=
-ll
-> work, just hack it up to prove the concept. =A0If it works, we can ma=
-ke
-> something more generic. =A0Here are a few alternatives to try. =A0I m=
-ay
-> experiment with some of them tomorrow as well, but please let me know
-> what you try:
->
-> Using autosuspend, clocks will get cut independently of the idle path=
-=2E
-> Then, use the PRCM ISR detection of UART module wakeups to call the
-> UART's interrupt handler. =A0The interrupt handler will pm_runtime_ge=
-t(),
-> enable the clocks, and then take care of the interrupt. =A0Done.
->
-> Alternatively, you could test it on current code by simply removing t=
-he
-> resume_from_idle call from the idle path and calling it instead from =
+>> Alternatively, you could test it on current code by simply removing =
 the
-> PRCM ISR when UART module wakeups are detected.
-
-I remember doing similar experiment didn't seem to help,
-
+>> resume_from_idle call from the idle path and calling it instead from=
+ the
+>> PRCM ISR when UART module wakeups are detected.
 >
-> Another option to experiment with: use PRCM ISR to trigger a SW
-> interrupt of the UART IRQ (cf. MPU_INTC.INTCPS_ISR_SETn registers.)
-> This may be the cleanest approach, and not require calling into the
-> driver, but I'm not sure if the normal interrupt clearing process wil=
-l
-> also clear the SW interrupt.
+> I remember doing similar experiment didn't seem to help,
+>
 
-need to check this.
+To show it's possible, I did really hacky proof of concept, hard-coded
+to UART3 console for n900/beagle, but at least it shows that this
+approach can work, and the module-level wakeups are working and can be
+used as the trigger for UART wakeup instead of resume_from_idle.  Of
+course, it still has problems with using serial after non-UART wakeups,
+but once omap-serial is using runtime PM, that will no longer be an
+issue.
 
->
-> The best longer-term solution is will be to use the chained PRCM
-> interrupt handler[1] (not yet finished.) =A0Using that, drivers could
-> directly register for their individual module wakeup interrupts.
+My hacky branch is called pm-wip/uart-wkup and is in my pm git tree[1]
+(based at the pm-core branch)
 
-Agree.
+To test module-level wakeups (instead of IO-ring) I again forced CORE t=
+o
+stay on during suspend, and tested wakeup from suspend on 3430/n900:
 
->
-> Kevin
->
-> [1] http://marc.info/?l=3Dlinux-omap&m=3D129258489308837&w=3D2
->
->
+  echo 3 > /debug/pm_debug/core_pwrdm/suspend
+  echo mem > /sys/power/state
+
+Kevin
+
+[1] git://git.kernel.org/pub/scm/linux/kernel/git/khilman/linux-omap-pm=
+=2Egit
+
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
  in
