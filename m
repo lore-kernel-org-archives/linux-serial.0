@@ -1,150 +1,115 @@
-From: =?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>
-Subject: [PATCH v2 1/2] n_gsm: add a documentation
-Date: Tue,  8 Mar 2011 22:15:53 +0100
-Message-ID: <1299618954-4742-1-git-send-email-eric@eukrea.com>
-References: <20110308130145.3bacbe1b@lxorguk.ukuu.org.uk>
+From: Kevin Hilman <khilman@ti.com>
+Subject: Re: [PATCH 2/7] OMAP2+: mux: Enable wakeup for wakeup enable requested pads
+Date: Tue, 08 Mar 2011 17:14:46 -0800
+Message-ID: <87mxl5m6wp.fsf@ti.com>
+References: <1299064343-28534-1-git-send-email-govindraj.raja@ti.com>
+	<87lj0u8mrf.fsf@ti.com>
+	<AANLkTin2f7n-v5Hg7NHB8a4fEmpzt_07xy-M1wjnKHtU@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 8.26.mail-out.ovh.net ([46.105.52.117]:59888 "HELO
-	26.mail-out.ovh.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with SMTP id S1754800Ab1CHXCs (ORCPT
+Received: from na3sys009aog109.obsmtp.com ([74.125.149.201]:52974 "EHLO
+	na3sys009aog109.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754855Ab1CIBOw (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 8 Mar 2011 18:02:48 -0500
-In-Reply-To: <20110308130145.3bacbe1b@lxorguk.ukuu.org.uk>
+	Tue, 8 Mar 2011 20:14:52 -0500
+In-Reply-To: <AANLkTin2f7n-v5Hg7NHB8a4fEmpzt_07xy-M1wjnKHtU@mail.gmail.com>
+	(Govindraj's message of "Tue, 8 Mar 2011 17:49:31 +0530")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: alan@lxorguk.ukuu.org.uk, mirq@rere.qmqm.pl, =?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>
+To: Govindraj <govindraj.ti@gmail.com>
+Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Benoit Cousson <b-cousson@ti.com>, Paul Walmsley <paul@pwsan.com>, Rajendra Nayak <rnayak@ti.com>
 
-* this documentation gives some details on how to get the n_gsm
-line discipline to work with modems supporting 07.10 basic option.
+Govindraj <govindraj.ti@gmail.com> writes:
 
-* it was tested on Telit and Simcom modems.
+> Module level wakeup doesn't seem to work and only
+> way it seem to wakeup is through using resume_idle
+> from sram_idle.
 
-Signed-off-by: Eric B=C3=A9nard <eric@eukrea.com>
----
-v2 : small updates following Michal's review
+Have you verified if the module wakeups themselves are not working, or
+just that the wakeup is not propagating to a device IRQ?
 
- Documentation/serial/n_gsm.txt |   89 ++++++++++++++++++++++++++++++++=
-++++++++
- 1 files changed, 89 insertions(+), 0 deletions(-)
- create mode 100644 Documentation/serial/n_gsm.txt
+As a quick test, I did a suspend-only test shows that module-level
+wakeups (at least from PER UART) are working.
 
-diff --git a/Documentation/serial/n_gsm.txt b/Documentation/serial/n_gs=
-m.txt
-new file mode 100644
-index 0000000..397f41a
---- /dev/null
-+++ b/Documentation/serial/n_gsm.txt
-@@ -0,0 +1,89 @@
-+n_gsm.c GSM 0710 tty multiplexor HOWTO
-+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D
-+
-+This line discipline implements the GSM 07.10 multiplexing protocol
-+detailed in the following 3GPP document :
-+http://www.3gpp.org/ftp/Specs/archive/07_series/07.10/0710-720.zip
-+
-+This document give some hints on how to use this driver with GPRS and =
-3G
-+modems connected to a physical serial port.
-+
-+How to use it
-+-------------
-+1- initialize the modem in 0710 mux mode (usually AT+CMUX=3D command) =
-through
-+its serial port. Depending on the modem used, you can pass more or les=
-s
-+parameters to this command,
-+2- switch the serial line to using the n_gsm line discipline by using
-+TIOCSETD ioctl,
-+3- configure the mux using GSMIOC_GETCONF / GSMIOC_SETCONF ioctl,
-+
-+Major parts of the initialization program :
-+(a good starting point is util-linux-ng/sys-utils/ldattach.c)
-+#include <linux/gsmmux.h>
-+#define N_GSM0710	21	/* GSM 0710 Mux */
-+#define DEFAULT_SPEED	B115200
-+#define SERIAL_PORT	/dev/ttyS0
-+
-+	int ldisc =3D N_GSM0710;
-+	struct gsm_config c;
-+	struct termios configuration;
-+
-+	/* open the serial port connected to the modem */
-+	fd =3D open(SERIAL_PORT, O_RDWR | O_NOCTTY | O_NDELAY);
-+
-+	/* configure the serial port : speed, flow control ... */
-+
-+	/* send the AT commands to switch the modem to CMUX mode
-+	   and check that it's succesful (should return OK) */
-+	write(fd, "AT+CMUX=3D0\r", 10);
-+
-+	/* experience showed that some modems need some time before
-+	   being able to answer to the first MUX packet so a delay
-+	   may be needed here in some case */
-+	sleep(3);
-+
-+	/* use n_gsm line discipline */
-+	ioctl(fd, TIOCSETD, &ldisc);
-+
-+	/* get n_gsm configuration */
-+	ioctl(fd, GSMIOC_GETCONF, &c);
-+	/* we are initiator and need encoding 0 (basic) */
-+	c.initiator =3D 1;
-+	c.encapsulation =3D 0;
-+	/* our modem defaults to a maximum size of 127 bytes */
-+	c.mru =3D 127;
-+	c.mtu =3D 127;
-+	/* set the new configuration */
-+	ioctl(fd, GSMIOC_SETCONF, &c);
-+
-+	/* and wait for ever to keep the line discipline enabled */
-+	daemon(0,0);
-+	pause();
-+
-+4- create the devices corresponding to the "virtual" serial ports (tak=
-e care,
-+each modem has its configuration and some DLC have dedicated functions=
-,
-+for example GPS), starting with minor 1 (DLC0 is reserved for the mana=
-gement
-+of the mux)
-+
-+MAJOR=3D`cat /proc/devices |grep gsmtty | awk '{print $1}`
-+for i in `seq 1 4`; do
-+	mknod /dev/ttygsm$i c $MAJOR $i
-+done
-+
-+5- use these devices as plain serial ports.
-+for example, it's possible :
-+- and to use gnokii to send / receive SMS on ttygsm1
-+- to use ppp to establish a datalink on ttygsm2
-+
-+6- first close all virtual ports before closing the physical port.
-+
-+Additional Documentation
-+------------------------
-+More practical details on the protocol and how it's supported by indus=
-trial
-+modems can be found in the following documents :
-+http://www.telit.com/module/infopool/download.php?id=3D616
-+http://www.u-blox.com/images/downloads/Product_Docs/LEON-G100-G200-Mux=
-Implementation_ApplicationNote_%28GSM%20G1-CS-10002%29.pdf
-+http://www.sierrawireless.com/Support/Downloads/AirPrime/WMP_Series/~/=
-media/Support_Downloads/AirPrime/Application_notes/CMUX_Feature_Applica=
-tion_Note-Rev004.ashx
-+http://wm.sim.com/sim/News/photo/2010721161442.pdf
-+
-+11-03-08 - Eric B=C3=A9nard - <eric@eukrea.com>
---=20
-1.7.4
+On 3530/Beagle, which has console on UART3 (in PER), I successfully
+tested module level wakeups from suspend.
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+First, I added a simple debug printk[1] to show the wakeup source.
+Then, I ensure CORE stays 'ON' during suspend.  If CORE stays on, the IO
+ring is never armed, so only module wakeups can happen:
+
+   # echo 3 > /debug/pm_debug/core_pwrdm/suspend 
+
+then I suspend
+
+   # echo mem > /sys/power/state 
+
+and type a key on the console to wakeup, and I see:
+
+   PRCM IRQ: mod 0x800: WKST=0x00000800
+
+Which shows PER wakeup from UART3.  If you do the same without setting
+CORE to ON, you'll see that the first wakeup is in the WKUP powerdomain
+from the IO ring.
+
+So module-level wakeups are indeed working.
+
+The problem is actually not that module wakeups are working, but rather
+that the module does not generate an interrupt upon wakeup if it is
+idle.  The resume_from_idle hack works because as soon as clocks are
+enabled, the module generates the interrupt (special thanks to Paul
+Walmsley for helping me understand this.)
+
+>
+> One simple way to reproduce the problem with
+> existing code base also is adding this patch which
+> will enable module level wakeup always.
+>
+> https://patchwork.kernel.org/patch/501211/
+>
+> and with below change.
+>
+> govindraj@Linux-BSP-Server:~/clones/linux-omap-2.6$ gd
+> diff --git a/arch/arm/mach-omap2/serial.c b/arch/arm/mach-omap2/serial.c
+> index 47eef48..6343773 100644
+> --- a/arch/arm/mach-omap2/serial.c
+> +++ b/arch/arm/mach-omap2/serial.c
+> @@ -380,6 +380,7 @@ static void omap_uart_allow_sleep(struct
+> omap_uart_state *uart)
+>         omap_uart_smart_idle_enable(uart, 1);
+>         uart->can_sleep = 1;
+>         del_timer(&uart->timer);
+> +       omap_uart_disable_clocks(uart);
+>  }
+>
+> We can see module level wakeup doesn't wakeup the uart.
+> once we set sleep_timeout for uart and timer starts.
+
+The above change alone can never work.  I'm pretty sure you wouldn't see
+IO-ring wakeups will not happen with this change either because the
+kernel will probably hang.
+
+If you disable the clocks here, then any console usage between the
+timeout and the idle path will hang the kernel.  You can't do this
+without taking the console lock.  Doing that will be much easier in your
+new driver.
+
+Kevin
+
+
+[1]
+diff --git a/arch/arm/mach-omap2/pm34xx.c b/arch/arm/mach-omap2/pm34xx.c
+index 6e2bd38..677a235 100644
+--- a/arch/arm/mach-omap2/pm34xx.c
++++ b/arch/arm/mach-omap2/pm34xx.c
+@@ -219,6 +219,8 @@ static int prcm_clear_mod_irqs(s16 module, u8 regs)
+ 		iclk = omap2_cm_read_mod_reg(module, iclk_off);
+ 		fclk = omap2_cm_read_mod_reg(module, fclk_off);
+ 		while (wkst) {
++			printk("PRCM IRQ: mod 0x%x: WKST=0x%08x\n",
++			       module, wkst);
+ 			clken = wkst;
+ 			omap2_cm_set_mod_reg_bits(clken, module, iclk_off);
+ 			/*
+
