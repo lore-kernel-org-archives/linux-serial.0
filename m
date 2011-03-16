@@ -1,36 +1,68 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 70/76] tty: move cd1865.h to drivers/staging/tty/
-Date: Wed, 16 Mar 2011 14:12:40 -0700
-Message-ID: <1300309966-5745-70-git-send-email-gregkh@suse.de>
+Subject: [PATCH 71/76] tty_audit: fix tty_audit_add_data live lock on audit disabled
+Date: Wed, 16 Mar 2011 14:12:41 -0700
+Message-ID: <1300309966-5745-71-git-send-email-gregkh@suse.de>
 References: <20110316205746.GA2938@kroah.com>
  <1300309966-5745-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:32804 "EHLO coco.kroah.org"
+Received: from kroah.org ([198.145.64.141]:32946 "EHLO coco.kroah.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754700Ab1CPVPg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Mar 2011 17:15:36 -0400
+	id S1755011Ab1CPVPi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Mar 2011 17:15:38 -0400
 In-Reply-To: <1300309966-5745-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Xiaotian Feng <dfeng@redhat.com>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Xiaotian Feng <dfeng@redhat.com>
 
-The file is required by the specialix driver, which was
-moved to drivers/staging/.
+The current tty_audit_add_data code:
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+        do {
+                size_t run;
+
+                run = N_TTY_BUF_SIZE - buf->valid;
+                if (run > size)
+                        run = size;
+                memcpy(buf->data + buf->valid, data, run);
+                buf->valid += run;
+                data += run;
+                size -= run;
+                if (buf->valid == N_TTY_BUF_SIZE)
+                        tty_audit_buf_push_current(buf);
+        } while (size != 0);
+
+If the current buffer is full, kernel will then call tty_audit_buf_push_current
+to empty the buffer. But if we disabled audit at the same time, tty_audit_buf_push()
+returns immediately if audit_enabled is zero.  Without emptying the buffer.
+With obvious effect on tty_audit_add_data() that ends up spinning in that loop,
+copying 0 bytes at each iteration and attempting to push each time without any effect.
+Holding the lock all along.
+
+Suggested-by: Alexander Viro <aviro@redhat.com>
+Signed-off-by: Xiaotian Feng <dfeng@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/{char => staging/tty}/cd1865.h |    0
- 1 files changed, 0 insertions(+), 0 deletions(-)
- rename drivers/{char => staging/tty}/cd1865.h (100%)
+ drivers/tty/tty_audit.c |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
 
-diff --git a/drivers/char/cd1865.h b/drivers/staging/tty/cd1865.h
-similarity index 100%
-rename from drivers/char/cd1865.h
-rename to drivers/staging/tty/cd1865.h
+diff --git a/drivers/tty/tty_audit.c b/drivers/tty/tty_audit.c
+index f64582b..7c58669 100644
+--- a/drivers/tty/tty_audit.c
++++ b/drivers/tty/tty_audit.c
+@@ -95,8 +95,10 @@ static void tty_audit_buf_push(struct task_struct *tsk, uid_t loginuid,
+ {
+ 	if (buf->valid == 0)
+ 		return;
+-	if (audit_enabled == 0)
++	if (audit_enabled == 0) {
++		buf->valid = 0;
+ 		return;
++	}
+ 	tty_audit_log("tty", tsk, loginuid, sessionid, buf->major, buf->minor,
+ 		      buf->data, buf->valid);
+ 	buf->valid = 0;
 -- 
 1.7.4.1
 
