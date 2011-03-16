@@ -1,144 +1,177 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 18/76] tty,vcs: lseek/VC-release race fix
-Date: Wed, 16 Mar 2011 14:11:48 -0700
-Message-ID: <1300309966-5745-18-git-send-email-gregkh@suse.de>
+Subject: [PATCH 16/76] hvc: add Blackfin JTAG console support
+Date: Wed, 16 Mar 2011 14:11:46 -0700
+Message-ID: <1300309966-5745-16-git-send-email-gregkh@suse.de>
 References: <20110316205746.GA2938@kroah.com>
  <1300309966-5745-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:32990 "EHLO coco.kroah.org"
+Received: from kroah.org ([198.145.64.141]:32974 "EHLO coco.kroah.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754731Ab1CPVNT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Mar 2011 17:13:19 -0400
+	id S1754269Ab1CPVNQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Mar 2011 17:13:16 -0400
 In-Reply-To: <1300309966-5745-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Jiri Olsa <jolsa@redhat.com>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Mike Frysinger <vapier@gentoo.org>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Jiri Olsa <jolsa@redhat.com>
+From: Mike Frysinger <vapier@gentoo.org>
 
-there's a race between vcs's lseek handler and VC release.
+This converts the existing bfin_jtag_comm TTY driver to the HVC layer so
+that the common HVC code can worry about all of the TTY/polling crap and
+leave the Blackfin code to worry about the Blackfin bits.
 
-The lseek handler does not hold console_lock and touches
-VC's size info. If during this the VC got released, there's
-an access violation.
-
-Following program triggers the issue for me:
-
-[SNIP]
-#define _BSD_SOURCE
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <linux/vt.h>
-#include <unistd.h>
-#include <errno.h>
-
-static int run_seek(void)
-{
-        while(1) {
-                int fd;
-                fd = open("./vcs30", O_RDWR);
-                while(lseek(fd, 0, 0) != -1);
-                close(fd);
-        }
-}
-
-static int open_ioctl_tty(void)
-{
-        return open("/dev/tty1", O_RDWR);
-}
-
-static int do_ioctl(int fd, int req, int i)
-{
-        return ioctl(fd, req, i);
-}
-
-#define INIT(i) do_ioctl(ioctl_fd, VT_ACTIVATE, i)
-#define SHUT(i) do_ioctl(ioctl_fd, VT_DISALLOCATE, i)
-
-int main(int argc, char **argv)
-{
-        int ioctl_fd = open_ioctl_tty();
-
-        if (ioctl < 0) {
-                perror("open tty1 failed\n");
-                return -1;
-        }
-
-        if ((-1 == mknod("vcs30", S_IFCHR|0666, makedev(7, 30))) &&
-            (errno != EEXIST)) {
-                printf("errno %d\n", errno);
-                perror("failed to create vcs30");
-                return -1;
-        }
-
-        do_ioctl(ioctl_fd, VT_LOCKSWITCH, 0);
-
-        if (!fork())
-                run_seek();
-
-        while(1) {
-                INIT(30);
-                SHUT(30);
-        }
-
-        return 0;
-}
-[SNIP]
-
-Signed-off-by: Jiri Olsa <jolsa@redhat.com>
+Signed-off-by: Mike Frysinger <vapier@gentoo.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/vt/vc_screen.c |   18 ++++++++++++++++++
- 1 files changed, 18 insertions(+), 0 deletions(-)
+ drivers/char/Kconfig            |    9 +++
+ drivers/tty/hvc/Makefile        |    1 +
+ drivers/tty/hvc/hvc_bfin_jtag.c |  105 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 115 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/tty/hvc/hvc_bfin_jtag.c
 
-diff --git a/drivers/tty/vt/vc_screen.c b/drivers/tty/vt/vc_screen.c
-index a672ed1..3c27c4b 100644
---- a/drivers/tty/vt/vc_screen.c
-+++ b/drivers/tty/vt/vc_screen.c
-@@ -159,7 +159,13 @@ static loff_t vcs_lseek(struct file *file, loff_t offset, int orig)
- 	int size;
+diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
+index b7980a83..17f9b96 100644
+--- a/drivers/char/Kconfig
++++ b/drivers/char/Kconfig
+@@ -691,6 +691,15 @@ config HVC_DCC
+ 	 driver. This console is used through a JTAG only on ARM. If you don't have
+ 	 a JTAG then you probably don't want this option.
  
- 	mutex_lock(&con_buf_mtx);
-+	console_lock();
- 	size = vcs_size(file->f_path.dentry->d_inode);
-+	console_unlock();
-+	if (size < 0) {
-+		mutex_unlock(&con_buf_mtx);
-+		return size;
++config HVC_BFIN_JTAG
++	bool "Blackfin JTAG console"
++	depends on BLACKFIN
++	select HVC_DRIVER
++	help
++	 This console uses the Blackfin JTAG to create a console under the
++	 the HVC driver.  If you don't have JTAG, then you probably don't
++	 want this option.
++
+ config VIRTIO_CONSOLE
+ 	tristate "Virtio console"
+ 	depends on VIRTIO
+diff --git a/drivers/tty/hvc/Makefile b/drivers/tty/hvc/Makefile
+index e6bed5f..7b0edbc 100644
+--- a/drivers/tty/hvc/Makefile
++++ b/drivers/tty/hvc/Makefile
+@@ -9,5 +9,6 @@ obj-$(CONFIG_HVC_IRQ)		+= hvc_irq.o
+ obj-$(CONFIG_HVC_XEN)		+= hvc_xen.o
+ obj-$(CONFIG_HVC_IUCV)		+= hvc_iucv.o
+ obj-$(CONFIG_HVC_UDBG)		+= hvc_udbg.o
++obj-$(CONFIG_HVC_BFIN_JTAG)	+= hvc_bfin_jtag.o
+ obj-$(CONFIG_HVCS)		+= hvcs.o
+ obj-$(CONFIG_VIRTIO_CONSOLE)	+= virtio_console.o
+diff --git a/drivers/tty/hvc/hvc_bfin_jtag.c b/drivers/tty/hvc/hvc_bfin_jtag.c
+new file mode 100644
+index 0000000..31d6cc6
+--- /dev/null
++++ b/drivers/tty/hvc/hvc_bfin_jtag.c
+@@ -0,0 +1,105 @@
++/*
++ * Console via Blackfin JTAG Communication
++ *
++ * Copyright 2008-2011 Analog Devices Inc.
++ *
++ * Enter bugs at http://blackfin.uclinux.org/
++ *
++ * Licensed under the GPL-2 or later.
++ */
++
++#include <linux/console.h>
++#include <linux/delay.h>
++#include <linux/err.h>
++#include <linux/init.h>
++#include <linux/moduleparam.h>
++#include <linux/types.h>
++
++#include "hvc_console.h"
++
++/* See the Debug/Emulation chapter in the HRM */
++#define EMUDOF   0x00000001	/* EMUDAT_OUT full & valid */
++#define EMUDIF   0x00000002	/* EMUDAT_IN full & valid */
++#define EMUDOOVF 0x00000004	/* EMUDAT_OUT overflow */
++#define EMUDIOVF 0x00000008	/* EMUDAT_IN overflow */
++
++/* Helper functions to glue the register API to simple C operations */
++static inline uint32_t bfin_write_emudat(uint32_t emudat)
++{
++	__asm__ __volatile__("emudat = %0;" : : "d"(emudat));
++	return emudat;
++}
++
++static inline uint32_t bfin_read_emudat(void)
++{
++	uint32_t emudat;
++	__asm__ __volatile__("%0 = emudat;" : "=d"(emudat));
++	return emudat;
++}
++
++/* Send data to the host */
++static int hvc_bfin_put_chars(uint32_t vt, const char *buf, int count)
++{
++	static uint32_t outbound_len;
++	uint32_t emudat;
++	int ret;
++
++	if (bfin_read_DBGSTAT() & EMUDOF)
++		return 0;
++
++	if (!outbound_len) {
++		outbound_len = count;
++		bfin_write_emudat(outbound_len);
++		return 0;
 +	}
- 	switch (orig) {
- 		default:
- 			mutex_unlock(&con_buf_mtx);
-@@ -237,6 +243,12 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
- 		 * could sleep.
- 		 */
- 		size = vcs_size(inode);
-+		if (size < 0) {
-+			if (read)
-+				break;
-+			ret = size;
-+			goto unlock_out;
-+		}
- 		if (pos >= size)
- 			break;
- 		if (count > size - pos)
-@@ -436,6 +448,12 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
- 		 * Return data written up to now on failure.
- 		 */
- 		size = vcs_size(inode);
-+		if (size < 0) {
-+			if (written)
-+				break;
-+			ret = size;
-+			goto unlock_out;
-+		}
- 		if (pos >= size)
- 			break;
- 		if (this_round > size - pos)
++
++	ret = min(outbound_len, (uint32_t)4);
++	memcpy(&emudat, buf, ret);
++	bfin_write_emudat(emudat);
++	outbound_len -= ret;
++
++	return ret;
++}
++
++/* Receive data from the host */
++static int hvc_bfin_get_chars(uint32_t vt, char *buf, int count)
++{
++	static uint32_t inbound_len;
++	uint32_t emudat;
++	int ret;
++
++	if (!(bfin_read_DBGSTAT() & EMUDIF))
++		return 0;
++	emudat = bfin_read_emudat();
++
++	if (!inbound_len) {
++		inbound_len = emudat;
++		return 0;
++	}
++
++	ret = min(inbound_len, (uint32_t)4);
++	memcpy(buf, &emudat, ret);
++	inbound_len -= ret;
++
++	return ret;
++}
++
++/* Glue the HVC layers to the Blackfin layers */
++static const struct hv_ops hvc_bfin_get_put_ops = {
++	.get_chars = hvc_bfin_get_chars,
++	.put_chars = hvc_bfin_put_chars,
++};
++
++static int __init hvc_bfin_console_init(void)
++{
++	hvc_instantiate(0, 0, &hvc_bfin_get_put_ops);
++	return 0;
++}
++console_initcall(hvc_bfin_console_init);
++
++static int __init hvc_bfin_init(void)
++{
++	hvc_alloc(0, 0, &hvc_bfin_get_put_ops, 128);
++	return 0;
++}
++device_initcall(hvc_bfin_init);
 -- 
 1.7.4.1
 
