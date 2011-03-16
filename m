@@ -1,50 +1,55 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 66/76] nozomi: don't use flush_scheduled_work()
-Date: Wed, 16 Mar 2011 14:12:36 -0700
-Message-ID: <1300309966-5745-66-git-send-email-gregkh@suse.de>
+Subject: [PATCH 64/76] MAINTAINERS: Update HVC file patterns
+Date: Wed, 16 Mar 2011 14:12:34 -0700
+Message-ID: <1300309966-5745-64-git-send-email-gregkh@suse.de>
 References: <20110316205746.GA2938@kroah.com>
  <1300309966-5745-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:32879 "EHLO coco.kroah.org"
+Received: from kroah.org ([198.145.64.141]:32953 "EHLO coco.kroah.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754582Ab1CPVPO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Mar 2011 17:15:14 -0400
+	id S1754259Ab1CPVPI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Mar 2011 17:15:08 -0400
 In-Reply-To: <1300309966-5745-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Tejun Heo <tj@kernel.org>, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Joe Perches <joe@perches.com>, Andrew Morton <akpm@linux-foundation.org>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Tejun Heo <tj@kernel.org>
+From: Joe Perches <joe@perches.com>
 
-flush_scheduled_work() in tty_exit() doesn't seem to target any
-specific work.  If it was to flush work items used in tty generic
-layer, they're already flushed properly during tty release.
+Commit 728674a7e466628df2aeec6d11a2ae1ef968fb67
+("tty: move hvc drivers to drivers/tty/hvc/")
+moved the files, update the patterns as appropriate.
 
-flush_scheduled_work() is going away.  Remove the seemingly redundant
-usage.
-
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: Alan Cox <alan@linux.intel.com>
+Signed-off-by: Joe Perches <joe@perches.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/nozomi.c |    2 --
- 1 files changed, 0 insertions(+), 2 deletions(-)
+ MAINTAINERS |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/nozomi.c b/drivers/tty/nozomi.c
-index 513ba12..f4f1116 100644
---- a/drivers/tty/nozomi.c
-+++ b/drivers/tty/nozomi.c
-@@ -1514,8 +1514,6 @@ static void __devexit tty_exit(struct nozomi *dc)
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 5099856..ab3a9ac 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2819,7 +2819,7 @@ F:	mm/hwpoison-inject.c
+ HYPERVISOR VIRTUAL CONSOLE DRIVER
+ L:	linuxppc-dev@lists.ozlabs.org
+ S:	Odd Fixes
+-F:	drivers/char/hvc_*
++F:	drivers/tty/hvc/
  
- 	DBG1(" ");
+ iSCSI BOOT FIRMWARE TABLE (iBFT) DRIVER
+ M:	Peter Jones <pjones@redhat.com>
+@@ -6090,7 +6090,7 @@ M:	Chris Metcalf <cmetcalf@tilera.com>
+ W:	http://www.tilera.com/scm/
+ S:	Supported
+ F:	arch/tile/
+-F:	drivers/char/hvc_tile.c
++F:	drivers/tty/hvc/hvc_tile.c
+ F:	drivers/net/tile/
  
--	flush_scheduled_work();
--
- 	for (i = 0; i < MAX_PORT; ++i) {
- 		struct tty_struct *tty = tty_port_tty_get(&dc->port[i].port);
- 		if (tty && list_empty(&tty->hangup_work.entry))
+ TLAN NETWORK DRIVER
 -- 
 1.7.4.1
 
