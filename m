@@ -1,520 +1,572 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 53/76] tty: move obsolete and broken generic_serial drivers to drivers/staging/generic_serial/
-Date: Wed, 16 Mar 2011 14:12:23 -0700
-Message-ID: <1300309966-5745-53-git-send-email-gregkh@suse.de>
+Subject: [PATCH 50/76] tty: move a number of tty drivers from drivers/char/ to drivers/tty/
+Date: Wed, 16 Mar 2011 14:12:20 -0700
+Message-ID: <1300309966-5745-50-git-send-email-gregkh@suse.de>
 References: <20110316205746.GA2938@kroah.com>
  <1300309966-5745-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:32957 "EHLO coco.kroah.org"
+Received: from kroah.org ([198.145.64.141]:32781 "EHLO coco.kroah.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754935Ab1CPVOx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Mar 2011 17:14:53 -0400
+	id S1754264Ab1CPVOm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Mar 2011 17:14:42 -0400
 In-Reply-To: <1300309966-5745-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@suse.de>, Arnd Bergmann <arnd@arndb.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>
 
-As planned by Arnd Bergmann, this moves the following drivers to the
-drivers/staging/generic_serial directory where they will be removed
-after 2.6.41 if no one steps up to claim them.
-	generic_serial
-	rio
-	ser_a2232
-	sx
-	vme_scc
+As planned by Arnd Bergmann, this moves the following drivers from
+drivers/char/ to drivers/tty/ as that's where they really belong:
+	amiserial
+	nozomi
+	synclink
+	rocket
+	cyclades
+	moxa
+	mxser
+	isicom
+	bfin_jtag_comm
 
 Cc: Arnd Bergmann <arnd@arndb.de>
 Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Cc: Jiri Slaby <jslaby@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/char/Kconfig                               |   44 -------------------
- drivers/char/Makefile                              |    6 ---
- drivers/staging/Kconfig                            |    2 +
- drivers/staging/Makefile                           |    1 +
- drivers/staging/generic_serial/Kconfig             |   45 ++++++++++++++++++++
- drivers/staging/generic_serial/Makefile            |    6 +++
- drivers/staging/generic_serial/TODO                |    6 +++
- .../generic_serial}/generic_serial.c               |    0
- .../{char => staging/generic_serial}/rio/Makefile  |    0
- .../{char => staging/generic_serial}/rio/board.h   |    0
- .../{char => staging/generic_serial}/rio/cirrus.h  |    0
- .../{char => staging/generic_serial}/rio/cmdblk.h  |    0
- .../{char => staging/generic_serial}/rio/cmdpkt.h  |    0
- .../{char => staging/generic_serial}/rio/daemon.h  |    0
- .../{char => staging/generic_serial}/rio/errors.h  |    0
- .../{char => staging/generic_serial}/rio/func.h    |    0
- .../{char => staging/generic_serial}/rio/host.h    |    0
- .../{char => staging/generic_serial}/rio/link.h    |    0
- .../generic_serial}/rio/linux_compat.h             |    0
- drivers/{char => staging/generic_serial}/rio/map.h |    0
- .../{char => staging/generic_serial}/rio/param.h   |    0
- .../{char => staging/generic_serial}/rio/parmmap.h |    0
- drivers/{char => staging/generic_serial}/rio/pci.h |    0
- drivers/{char => staging/generic_serial}/rio/phb.h |    0
- drivers/{char => staging/generic_serial}/rio/pkt.h |    0
- .../{char => staging/generic_serial}/rio/port.h    |    0
- .../{char => staging/generic_serial}/rio/protsts.h |    0
- drivers/{char => staging/generic_serial}/rio/rio.h |    0
- .../generic_serial}/rio/rio_linux.c                |    0
- .../generic_serial}/rio/rio_linux.h                |    0
- .../generic_serial}/rio/rioboard.h                 |    0
- .../{char => staging/generic_serial}/rio/rioboot.c |    0
- .../{char => staging/generic_serial}/rio/riocmd.c  |    0
- .../{char => staging/generic_serial}/rio/rioctrl.c |    0
- .../{char => staging/generic_serial}/rio/riodrvr.h |    0
- .../{char => staging/generic_serial}/rio/rioinfo.h |    0
- .../{char => staging/generic_serial}/rio/rioinit.c |    0
- .../{char => staging/generic_serial}/rio/riointr.c |    0
- .../generic_serial}/rio/rioioctl.h                 |    0
- .../generic_serial}/rio/rioparam.c                 |    0
- .../generic_serial}/rio/rioroute.c                 |    0
- .../generic_serial}/rio/riospace.h                 |    0
- .../generic_serial}/rio/riotable.c                 |    0
- .../{char => staging/generic_serial}/rio/riotty.c  |    0
- .../{char => staging/generic_serial}/rio/route.h   |    0
- drivers/{char => staging/generic_serial}/rio/rup.h |    0
- .../{char => staging/generic_serial}/rio/unixrup.h |    0
- .../{char => staging/generic_serial}/ser_a2232.c   |    0
- .../{char => staging/generic_serial}/ser_a2232.h   |    0
- .../generic_serial}/ser_a2232fw.ax                 |    0
- .../{char => staging/generic_serial}/ser_a2232fw.h |    0
- drivers/{char => staging/generic_serial}/sx.c      |    0
- drivers/{char => staging/generic_serial}/sx.h      |    0
- .../{char => staging/generic_serial}/sxboards.h    |    0
- .../{char => staging/generic_serial}/sxwindow.h    |    0
- drivers/{char => staging/generic_serial}/vme_scc.c |    0
- 56 files changed, 60 insertions(+), 50 deletions(-)
- create mode 100644 drivers/staging/generic_serial/Kconfig
- create mode 100644 drivers/staging/generic_serial/Makefile
- create mode 100644 drivers/staging/generic_serial/TODO
- rename drivers/{char => staging/generic_serial}/generic_serial.c (100%)
- rename drivers/{char => staging/generic_serial}/rio/Makefile (100%)
- rename drivers/{char => staging/generic_serial}/rio/board.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/cirrus.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/cmdblk.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/cmdpkt.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/daemon.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/errors.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/func.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/host.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/link.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/linux_compat.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/map.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/param.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/parmmap.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/pci.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/phb.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/pkt.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/port.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/protsts.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/rio.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/rio_linux.c (100%)
- rename drivers/{char => staging/generic_serial}/rio/rio_linux.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/rioboard.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/rioboot.c (100%)
- rename drivers/{char => staging/generic_serial}/rio/riocmd.c (100%)
- rename drivers/{char => staging/generic_serial}/rio/rioctrl.c (100%)
- rename drivers/{char => staging/generic_serial}/rio/riodrvr.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/rioinfo.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/rioinit.c (100%)
- rename drivers/{char => staging/generic_serial}/rio/riointr.c (100%)
- rename drivers/{char => staging/generic_serial}/rio/rioioctl.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/rioparam.c (100%)
- rename drivers/{char => staging/generic_serial}/rio/rioroute.c (100%)
- rename drivers/{char => staging/generic_serial}/rio/riospace.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/riotable.c (100%)
- rename drivers/{char => staging/generic_serial}/rio/riotty.c (100%)
- rename drivers/{char => staging/generic_serial}/rio/route.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/rup.h (100%)
- rename drivers/{char => staging/generic_serial}/rio/unixrup.h (100%)
- rename drivers/{char => staging/generic_serial}/ser_a2232.c (100%)
- rename drivers/{char => staging/generic_serial}/ser_a2232.h (100%)
- rename drivers/{char => staging/generic_serial}/ser_a2232fw.ax (100%)
- rename drivers/{char => staging/generic_serial}/ser_a2232fw.h (100%)
- rename drivers/{char => staging/generic_serial}/sx.c (100%)
- rename drivers/{char => staging/generic_serial}/sx.h (100%)
- rename drivers/{char => staging/generic_serial}/sxboards.h (100%)
- rename drivers/{char => staging/generic_serial}/sxwindow.h (100%)
- rename drivers/{char => staging/generic_serial}/vme_scc.c (100%)
+ drivers/char/Kconfig                   |  172 --------------------------------
+ drivers/char/Makefile                  |   11 --
+ drivers/tty/Kconfig                    |  171 +++++++++++++++++++++++++++++++
+ drivers/tty/Makefile                   |   13 +++
+ drivers/{char => tty}/amiserial.c      |    0
+ drivers/{char => tty}/bfin_jtag_comm.c |    0
+ drivers/{char => tty}/cyclades.c       |    0
+ drivers/{char => tty}/isicom.c         |    0
+ drivers/{char => tty}/moxa.c           |    0
+ drivers/{char => tty}/moxa.h           |    0
+ drivers/{char => tty}/mxser.c          |    0
+ drivers/{char => tty}/mxser.h          |    0
+ drivers/{char => tty}/nozomi.c         |    0
+ drivers/{char => tty}/rocket.c         |    0
+ drivers/{char => tty}/rocket.h         |    0
+ drivers/{char => tty}/rocket_int.h     |    0
+ drivers/{char => tty}/synclink.c       |    0
+ drivers/{char => tty}/synclink_gt.c    |    0
+ drivers/{char => tty}/synclinkmp.c     |    0
+ 19 files changed, 184 insertions(+), 183 deletions(-)
+ rename drivers/{char => tty}/amiserial.c (100%)
+ rename drivers/{char => tty}/bfin_jtag_comm.c (100%)
+ rename drivers/{char => tty}/cyclades.c (100%)
+ rename drivers/{char => tty}/isicom.c (100%)
+ rename drivers/{char => tty}/moxa.c (100%)
+ rename drivers/{char => tty}/moxa.h (100%)
+ rename drivers/{char => tty}/mxser.c (100%)
+ rename drivers/{char => tty}/mxser.h (100%)
+ rename drivers/{char => tty}/nozomi.c (100%)
+ rename drivers/{char => tty}/rocket.c (100%)
+ rename drivers/{char => tty}/rocket.h (100%)
+ rename drivers/{char => tty}/rocket_int.h (100%)
+ rename drivers/{char => tty}/synclink.c (100%)
+ rename drivers/{char => tty}/synclink_gt.c (100%)
+ rename drivers/{char => tty}/synclinkmp.c (100%)
 
 diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
-index 7b8cf02..04f8b2d 100644
+index 9b9ab86..1adfac6 100644
 --- a/drivers/char/Kconfig
 +++ b/drivers/char/Kconfig
-@@ -15,34 +15,6 @@ config DEVKMEM
+@@ -15,36 +15,6 @@ config DEVKMEM
  	  kind of kernel debugging operations.
  	  When in doubt, say "N".
  
--config SX
--	tristate "Specialix SX (and SI) card support"
--	depends on SERIAL_NONSTANDARD && (PCI || EISA || ISA) && BROKEN
+-config BFIN_JTAG_COMM
+-	tristate "Blackfin JTAG Communication"
+-	depends on BLACKFIN
 -	help
--	  This is a driver for the SX and SI multiport serial cards.
--	  Please read the file <file:Documentation/serial/sx.txt> for details.
+-	  Add support for emulating a TTY device over the Blackfin JTAG.
+-
+-	  To compile this driver as a module, choose M here: the
+-	  module will be called bfin_jtag_comm.
+-
+-config BFIN_JTAG_COMM_CONSOLE
+-	bool "Console on Blackfin JTAG"
+-	depends on BFIN_JTAG_COMM=y
+-
+-config SERIAL_NONSTANDARD
+-	bool "Non-standard serial port support"
+-	depends on HAS_IOMEM
+-	---help---
+-	  Say Y here if you have any non-standard serial boards -- boards
+-	  which aren't supported using the standard "dumb" serial driver.
+-	  This includes intelligent serial boards such as Cyclades,
+-	  Digiboards, etc. These are usually used for systems that need many
+-	  serial ports because they serve many terminals or dial-in
+-	  connections.
+-
+-	  Note that the answer to this question won't directly affect the
+-	  kernel: saying N will just cause the configurator to skip all
+-	  the questions about non-standard serial boards.
+-
+-	  Most people can say N here.
+-
+ config COMPUTONE
+ 	tristate "Computone IntelliPort Plus serial support"
+ 	depends on SERIAL_NONSTANDARD && (ISA || EISA || PCI)
+@@ -60,50 +30,6 @@ config COMPUTONE
+ 	  To compile this driver as module, choose M here: the
+ 	  module will be called ip2.
+ 
+-config ROCKETPORT
+-	tristate "Comtrol RocketPort support"
+-	depends on SERIAL_NONSTANDARD && (ISA || EISA || PCI)
+-	help
+-	  This driver supports Comtrol RocketPort and RocketModem PCI boards.   
+-          These boards provide 2, 4, 8, 16, or 32 high-speed serial ports or
+-          modems.  For information about the RocketPort/RocketModem  boards
+-          and this driver read <file:Documentation/serial/rocket.txt>.
+-
+-	  To compile this driver as a module, choose M here: the
+-	  module will be called rocket.
+-
+-	  If you want to compile this driver into the kernel, say Y here.  If
+-          you don't have a Comtrol RocketPort/RocketModem card installed, say N.
+-
+-config CYCLADES
+-	tristate "Cyclades async mux support"
+-	depends on SERIAL_NONSTANDARD && (PCI || ISA)
+-	select FW_LOADER
+-	---help---
+-	  This driver supports Cyclades Z and Y multiserial boards.
+-	  You would need something like this to connect more than two modems to
+-	  your Linux box, for instance in order to become a dial-in server.
+-
+-	  For information about the Cyclades-Z card, read
+-	  <file:Documentation/serial/README.cycladesZ>.
+-
+-	  To compile this driver as a module, choose M here: the
+-	  module will be called cyclades.
+-
+-	  If you haven't heard about it, it's safe to say N.
+-
+-config CYZ_INTR
+-	bool "Cyclades-Z interrupt mode operation (EXPERIMENTAL)"
+-	depends on EXPERIMENTAL && CYCLADES
+-	help
+-	  The Cyclades-Z family of multiport cards allows 2 (two) driver op
+-	  modes: polling and interrupt. In polling mode, the driver will check
+-	  the status of the Cyclades-Z ports every certain amount of time
+-	  (which is called polling cycle and is configurable). In interrupt
+-	  mode, it will use an interrupt line (IRQ) in order to check the
+-	  status of the Cyclades-Z ports. The default op mode is polling. If
+-	  unsure, say N.
+-
+ config DIGIEPCA
+ 	tristate "Digiboard Intelligent Async Support"
+ 	depends on SERIAL_NONSTANDARD && (ISA || EISA || PCI)
+@@ -119,94 +45,6 @@ config DIGIEPCA
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called epca.
+ 
+-config MOXA_INTELLIO
+-	tristate "Moxa Intellio support"
+-	depends on SERIAL_NONSTANDARD && (ISA || EISA || PCI)
+-	select FW_LOADER
+-	help
+-	  Say Y here if you have a Moxa Intellio multiport serial card.
+-
+-	  To compile this driver as a module, choose M here: the
+-	  module will be called moxa.
+-
+-config MOXA_SMARTIO
+-	tristate "Moxa SmartIO support v. 2.0"
+-	depends on SERIAL_NONSTANDARD && (PCI || EISA || ISA)
+-	help
+-	  Say Y here if you have a Moxa SmartIO multiport serial card and/or
+-	  want to help develop a new version of this driver.
+-
+-	  This is upgraded (1.9.1) driver from original Moxa drivers with
+-	  changes finally resulting in PCI probing.
+-
+-	  This driver can also be built as a module. The module will be called
+-	  mxser. If you want to do that, say M here.
+-
+-config ISI
+-	tristate "Multi-Tech multiport card support (EXPERIMENTAL)"
+-	depends on SERIAL_NONSTANDARD && PCI
+-	select FW_LOADER
+-	help
+-	  This is a driver for the Multi-Tech cards which provide several
+-	  serial ports.  The driver is experimental and can currently only be
+-	  built as a module. The module will be called isicom.
+-	  If you want to do that, choose M here.
+-
+-config SYNCLINK
+-	tristate "Microgate SyncLink card support"
+-	depends on SERIAL_NONSTANDARD && PCI && ISA_DMA_API
+-	help
+-	  Provides support for the SyncLink ISA and PCI multiprotocol serial
+-	  adapters. These adapters support asynchronous and HDLC bit
+-	  synchronous communication up to 10Mbps (PCI adapter).
 -
 -	  This driver can only be built as a module ( = code which can be
 -	  inserted in and removed from the running kernel whenever you want).
--	  The module will be called sx. If you want to do that, say M here.
+-	  The module will be called synclink.  If you want to do that, say M
+-	  here.
 -
--config RIO
--	tristate "Specialix RIO system support"
--	depends on SERIAL_NONSTANDARD && BROKEN
+-config SYNCLINKMP
+-	tristate "SyncLink Multiport support"
+-	depends on SERIAL_NONSTANDARD && PCI
 -	help
--	  This is a driver for the Specialix RIO, a smart serial card which
--	  drives an outboard box that can support up to 128 ports.  Product
--	  information is at <http://www.perle.com/support/documentation.html#multiport>.
--	  There are both ISA and PCI versions.
+-	  Enable support for the SyncLink Multiport (2 or 4 ports)
+-	  serial adapter, running asynchronous and HDLC communications up
+-	  to 2.048Mbps. Each ports is independently selectable for
+-	  RS-232, V.35, RS-449, RS-530, and X.21
 -
--config RIO_OLDPCI
--	bool "Support really old RIO/PCI cards"
--	depends on RIO
+-	  This driver may be built as a module ( = code which can be
+-	  inserted in and removed from the running kernel whenever you want).
+-	  The module will be called synclinkmp.  If you want to do that, say M
+-	  here.
+-
+-config SYNCLINK_GT
+-	tristate "SyncLink GT/AC support"
+-	depends on SERIAL_NONSTANDARD && PCI
 -	help
--	  Older RIO PCI cards need some initialization-time configuration to
--	  determine the IRQ and some control addresses.  If you have a RIO and
--	  this doesn't seem to work, try setting this to Y.
+-	  Support for SyncLink GT and SyncLink AC families of
+-	  synchronous and asynchronous serial adapters
+-	  manufactured by Microgate Systems, Ltd. (www.microgate.com)
 -
- config STALDRV
- 	bool "Stallion multiport serial support"
+-config N_HDLC
+-	tristate "HDLC line discipline support"
+-	depends on SERIAL_NONSTANDARD
+-	help
+-	  Allows synchronous HDLC communications with tty device drivers that
+-	  support synchronous HDLC such as the Microgate SyncLink adapter.
+-
+-	  This driver can be built as a module ( = code which can be
+-	  inserted in and removed from the running kernel whenever you want).
+-	  The module will be called n_hdlc. If you want to do that, say M
+-	  here.
+-
+-config N_GSM
+-	tristate "GSM MUX line discipline support (EXPERIMENTAL)"
+-	depends on EXPERIMENTAL
+-	depends on NET
+-	help
+-	  This line discipline provides support for the GSM MUX protocol and
+-	  presents the mux as a set of 61 individual tty devices.
+-
+ config RISCOM8
+ 	tristate "SDL RISCom/8 card support"
  	depends on SERIAL_NONSTANDARD
-@@ -55,22 +27,6 @@ config STALDRV
- 	  in this case.  If you have never heard about all this, it's safe to
- 	  say N.
+@@ -296,16 +134,6 @@ config ISTALLION
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called istallion.
  
--config A2232
--	tristate "Commodore A2232 serial support (EXPERIMENTAL)"
--	depends on EXPERIMENTAL && ZORRO && BROKEN
--	---help---
--	  This option supports the 2232 7-port serial card shipped with the
--	  Amiga 2000 and other Zorro-bus machines, dating from 1989.  At
--	  a max of 19,200 bps, the ports are served by a 6551 ACIA UART chip
--	  each, plus a 8520 CIA, and a master 6502 CPU and buffer as well. The
--	  ports were connected with 8 pin DIN connectors on the card bracket,
--	  for which 8 pin to DB25 adapters were supplied. The card also had
--	  jumpers internally to toggle various pinning configurations.
+-config NOZOMI
+-	tristate "HSDPA Broadband Wireless Data Card - Globe Trotter"
+-	depends on PCI && EXPERIMENTAL
+-	help
+-	  If you have a HSDPA driver Broadband Wireless Data Card -
+-	  Globe Trotter PCMCIA card, say Y here.
 -
--	  This driver can be built as a module; but then "generic_serial"
--	  will also be built as a module. This has to be loaded before
--	  "ser_a2232". If you want to do this, answer M here.
+-	  To compile this driver as a module, choose M here, the module
+-	  will be called nozomi.
 -
- config SGI_SNSC
- 	bool "SGI Altix system controller communication support"
- 	depends on (IA64_SGI_SN2 || IA64_GENERIC)
+ config A2232
+ 	tristate "Commodore A2232 serial support (EXPERIMENTAL)"
+ 	depends on EXPERIMENTAL && ZORRO && BROKEN
 diff --git a/drivers/char/Makefile b/drivers/char/Makefile
-index 48bb8ac..3ca1f62 100644
+index 5bc765d..f5dc7c9 100644
 --- a/drivers/char/Makefile
 +++ b/drivers/char/Makefile
-@@ -5,13 +5,7 @@
+@@ -5,29 +5,18 @@
  obj-y				+= mem.o random.o
  obj-$(CONFIG_TTY_PRINTK)	+= ttyprintk.o
  obj-y				+= misc.o
--obj-$(CONFIG_MVME147_SCC)	+= generic_serial.o vme_scc.o
--obj-$(CONFIG_MVME162_SCC)	+= generic_serial.o vme_scc.o
--obj-$(CONFIG_BVME6000_SCC)	+= generic_serial.o vme_scc.o
--obj-$(CONFIG_A2232)		+= ser_a2232.o generic_serial.o
+-obj-$(CONFIG_BFIN_JTAG_COMM)	+= bfin_jtag_comm.o
+ obj-$(CONFIG_MVME147_SCC)	+= generic_serial.o vme_scc.o
+ obj-$(CONFIG_MVME162_SCC)	+= generic_serial.o vme_scc.o
+ obj-$(CONFIG_BVME6000_SCC)	+= generic_serial.o vme_scc.o
+-obj-$(CONFIG_ROCKETPORT)	+= rocket.o
+ obj-$(CONFIG_SERIAL167)		+= serial167.o
+-obj-$(CONFIG_CYCLADES)		+= cyclades.o
+ obj-$(CONFIG_STALLION)		+= stallion.o
+ obj-$(CONFIG_ISTALLION)		+= istallion.o
+-obj-$(CONFIG_NOZOMI)		+= nozomi.o
+ obj-$(CONFIG_DIGIEPCA)		+= epca.o
+ obj-$(CONFIG_SPECIALIX)		+= specialix.o
+-obj-$(CONFIG_MOXA_INTELLIO)	+= moxa.o
+ obj-$(CONFIG_A2232)		+= ser_a2232.o generic_serial.o
  obj-$(CONFIG_ATARI_DSP56K)	+= dsp56k.o
--obj-$(CONFIG_SX)		+= sx.o generic_serial.o
--obj-$(CONFIG_RIO)		+= rio/ generic_serial.o
+-obj-$(CONFIG_MOXA_SMARTIO)	+= mxser.o
+ obj-$(CONFIG_COMPUTONE)		+= ip2/
+ obj-$(CONFIG_RISCOM8)		+= riscom8.o
+-obj-$(CONFIG_ISI)		+= isicom.o
+-obj-$(CONFIG_SYNCLINK)		+= synclink.o
+-obj-$(CONFIG_SYNCLINKMP)	+= synclinkmp.o
+-obj-$(CONFIG_SYNCLINK_GT)	+= synclink_gt.o
+-obj-$(CONFIG_AMIGA_BUILTIN_SERIAL) += amiserial.o
+ obj-$(CONFIG_SX)		+= sx.o generic_serial.o
+ obj-$(CONFIG_RIO)		+= rio/ generic_serial.o
  obj-$(CONFIG_RAW_DRIVER)	+= raw.o
- obj-$(CONFIG_SGI_SNSC)		+= snsc.o snsc_event.o
- obj-$(CONFIG_MSPEC)		+= mspec.o
-diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
-index fb1fc4e..58e4a8e 100644
---- a/drivers/staging/Kconfig
-+++ b/drivers/staging/Kconfig
-@@ -43,6 +43,8 @@ if !STAGING_EXCLUDE_BUILD
+diff --git a/drivers/tty/Kconfig b/drivers/tty/Kconfig
+index 9cfbdb3..3fd7199 100644
+--- a/drivers/tty/Kconfig
++++ b/drivers/tty/Kconfig
+@@ -147,4 +147,175 @@ config LEGACY_PTY_COUNT
+ 	  When not in use, each legacy PTY occupies 12 bytes on 32-bit
+ 	  architectures and 24 bytes on 64-bit architectures.
  
- source "drivers/staging/tty/Kconfig"
- 
-+source "drivers/staging/generic_serial/Kconfig"
-+
- source "drivers/staging/et131x/Kconfig"
- 
- source "drivers/staging/slicoss/Kconfig"
-diff --git a/drivers/staging/Makefile b/drivers/staging/Makefile
-index f498e34..ff7372d 100644
---- a/drivers/staging/Makefile
-+++ b/drivers/staging/Makefile
-@@ -4,6 +4,7 @@
- obj-$(CONFIG_STAGING)		+= staging.o
- 
- obj-y += tty/
-+obj-y += generic_serial/
- obj-$(CONFIG_ET131X)		+= et131x/
- obj-$(CONFIG_SLICOSS)		+= slicoss/
- obj-$(CONFIG_VIDEO_GO7007)	+= go7007/
-diff --git a/drivers/staging/generic_serial/Kconfig b/drivers/staging/generic_serial/Kconfig
-new file mode 100644
-index 0000000..795daea
---- /dev/null
-+++ b/drivers/staging/generic_serial/Kconfig
-@@ -0,0 +1,45 @@
-+config A2232
-+	tristate "Commodore A2232 serial support (EXPERIMENTAL)"
-+	depends on EXPERIMENTAL && ZORRO && BROKEN
-+	---help---
-+	  This option supports the 2232 7-port serial card shipped with the
-+	  Amiga 2000 and other Zorro-bus machines, dating from 1989.  At
-+	  a max of 19,200 bps, the ports are served by a 6551 ACIA UART chip
-+	  each, plus a 8520 CIA, and a master 6502 CPU and buffer as well. The
-+	  ports were connected with 8 pin DIN connectors on the card bracket,
-+	  for which 8 pin to DB25 adapters were supplied. The card also had
-+	  jumpers internally to toggle various pinning configurations.
-+
-+	  This driver can be built as a module; but then "generic_serial"
-+	  will also be built as a module. This has to be loaded before
-+	  "ser_a2232". If you want to do this, answer M here.
-+
-+config SX
-+	tristate "Specialix SX (and SI) card support"
-+	depends on SERIAL_NONSTANDARD && (PCI || EISA || ISA) && BROKEN
++config BFIN_JTAG_COMM
++	tristate "Blackfin JTAG Communication"
++	depends on BLACKFIN
 +	help
-+	  This is a driver for the SX and SI multiport serial cards.
-+	  Please read the file <file:Documentation/serial/sx.txt> for details.
++	  Add support for emulating a TTY device over the Blackfin JTAG.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called bfin_jtag_comm.
++
++config BFIN_JTAG_COMM_CONSOLE
++	bool "Console on Blackfin JTAG"
++	depends on BFIN_JTAG_COMM=y
++
++config SERIAL_NONSTANDARD
++	bool "Non-standard serial port support"
++	depends on HAS_IOMEM
++	---help---
++	  Say Y here if you have any non-standard serial boards -- boards
++	  which aren't supported using the standard "dumb" serial driver.
++	  This includes intelligent serial boards such as Cyclades,
++	  Digiboards, etc. These are usually used for systems that need many
++	  serial ports because they serve many terminals or dial-in
++	  connections.
++
++	  Note that the answer to this question won't directly affect the
++	  kernel: saying N will just cause the configurator to skip all
++	  the questions about non-standard serial boards.
++
++	  Most people can say N here.
++
++config ROCKETPORT
++	tristate "Comtrol RocketPort support"
++	depends on SERIAL_NONSTANDARD && (ISA || EISA || PCI)
++	help
++	  This driver supports Comtrol RocketPort and RocketModem PCI boards.   
++          These boards provide 2, 4, 8, 16, or 32 high-speed serial ports or
++          modems.  For information about the RocketPort/RocketModem  boards
++          and this driver read <file:Documentation/serial/rocket.txt>.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called rocket.
++
++	  If you want to compile this driver into the kernel, say Y here.  If
++          you don't have a Comtrol RocketPort/RocketModem card installed, say N.
++
++config CYCLADES
++	tristate "Cyclades async mux support"
++	depends on SERIAL_NONSTANDARD && (PCI || ISA)
++	select FW_LOADER
++	---help---
++	  This driver supports Cyclades Z and Y multiserial boards.
++	  You would need something like this to connect more than two modems to
++	  your Linux box, for instance in order to become a dial-in server.
++
++	  For information about the Cyclades-Z card, read
++	  <file:Documentation/serial/README.cycladesZ>.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called cyclades.
++
++	  If you haven't heard about it, it's safe to say N.
++
++config CYZ_INTR
++	bool "Cyclades-Z interrupt mode operation (EXPERIMENTAL)"
++	depends on EXPERIMENTAL && CYCLADES
++	help
++	  The Cyclades-Z family of multiport cards allows 2 (two) driver op
++	  modes: polling and interrupt. In polling mode, the driver will check
++	  the status of the Cyclades-Z ports every certain amount of time
++	  (which is called polling cycle and is configurable). In interrupt
++	  mode, it will use an interrupt line (IRQ) in order to check the
++	  status of the Cyclades-Z ports. The default op mode is polling. If
++	  unsure, say N.
++
++config MOXA_INTELLIO
++	tristate "Moxa Intellio support"
++	depends on SERIAL_NONSTANDARD && (ISA || EISA || PCI)
++	select FW_LOADER
++	help
++	  Say Y here if you have a Moxa Intellio multiport serial card.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called moxa.
++
++config MOXA_SMARTIO
++	tristate "Moxa SmartIO support v. 2.0"
++	depends on SERIAL_NONSTANDARD && (PCI || EISA || ISA)
++	help
++	  Say Y here if you have a Moxa SmartIO multiport serial card and/or
++	  want to help develop a new version of this driver.
++
++	  This is upgraded (1.9.1) driver from original Moxa drivers with
++	  changes finally resulting in PCI probing.
++
++	  This driver can also be built as a module. The module will be called
++	  mxser. If you want to do that, say M here.
++
++config SYNCLINK
++	tristate "Microgate SyncLink card support"
++	depends on SERIAL_NONSTANDARD && PCI && ISA_DMA_API
++	help
++	  Provides support for the SyncLink ISA and PCI multiprotocol serial
++	  adapters. These adapters support asynchronous and HDLC bit
++	  synchronous communication up to 10Mbps (PCI adapter).
 +
 +	  This driver can only be built as a module ( = code which can be
 +	  inserted in and removed from the running kernel whenever you want).
-+	  The module will be called sx. If you want to do that, say M here.
++	  The module will be called synclink.  If you want to do that, say M
++	  here.
 +
-+config RIO
-+	tristate "Specialix RIO system support"
-+	depends on SERIAL_NONSTANDARD && BROKEN
++config SYNCLINKMP
++	tristate "SyncLink Multiport support"
++	depends on SERIAL_NONSTANDARD && PCI
 +	help
-+	  This is a driver for the Specialix RIO, a smart serial card which
-+	  drives an outboard box that can support up to 128 ports.  Product
-+	  information is at <http://www.perle.com/support/documentation.html#multiport>.
-+	  There are both ISA and PCI versions.
++	  Enable support for the SyncLink Multiport (2 or 4 ports)
++	  serial adapter, running asynchronous and HDLC communications up
++	  to 2.048Mbps. Each ports is independently selectable for
++	  RS-232, V.35, RS-449, RS-530, and X.21
 +
-+config RIO_OLDPCI
-+	bool "Support really old RIO/PCI cards"
-+	depends on RIO
++	  This driver may be built as a module ( = code which can be
++	  inserted in and removed from the running kernel whenever you want).
++	  The module will be called synclinkmp.  If you want to do that, say M
++	  here.
++
++config SYNCLINK_GT
++	tristate "SyncLink GT/AC support"
++	depends on SERIAL_NONSTANDARD && PCI
 +	help
-+	  Older RIO PCI cards need some initialization-time configuration to
-+	  determine the IRQ and some control addresses.  If you have a RIO and
-+	  this doesn't seem to work, try setting this to Y.
++	  Support for SyncLink GT and SyncLink AC families of
++	  synchronous and asynchronous serial adapters
++	  manufactured by Microgate Systems, Ltd. (www.microgate.com)
 +
++config NOZOMI
++	tristate "HSDPA Broadband Wireless Data Card - Globe Trotter"
++	depends on PCI && EXPERIMENTAL
++	help
++	  If you have a HSDPA driver Broadband Wireless Data Card -
++	  Globe Trotter PCMCIA card, say Y here.
 +
-diff --git a/drivers/staging/generic_serial/Makefile b/drivers/staging/generic_serial/Makefile
-new file mode 100644
-index 0000000..ffc90c8
---- /dev/null
-+++ b/drivers/staging/generic_serial/Makefile
-@@ -0,0 +1,6 @@
-+obj-$(CONFIG_MVME147_SCC)	+= generic_serial.o vme_scc.o
-+obj-$(CONFIG_MVME162_SCC)	+= generic_serial.o vme_scc.o
-+obj-$(CONFIG_BVME6000_SCC)	+= generic_serial.o vme_scc.o
-+obj-$(CONFIG_A2232)		+= ser_a2232.o generic_serial.o
-+obj-$(CONFIG_SX)		+= sx.o generic_serial.o
-+obj-$(CONFIG_RIO)		+= rio/ generic_serial.o
-diff --git a/drivers/staging/generic_serial/TODO b/drivers/staging/generic_serial/TODO
-new file mode 100644
-index 0000000..8875645
---- /dev/null
-+++ b/drivers/staging/generic_serial/TODO
-@@ -0,0 +1,6 @@
-+These are a few tty/serial drivers that either do not build,
-+or work if they do build, or if they seem to work, are for obsolete
-+hardware, or are full of unfixable races and no one uses them anymore.
++	  To compile this driver as a module, choose M here, the module
++	  will be called nozomi.
 +
-+If no one steps up to adopt any of these drivers, they will be removed
-+in the 2.6.41 release.
-diff --git a/drivers/char/generic_serial.c b/drivers/staging/generic_serial/generic_serial.c
++config ISI
++	tristate "Multi-Tech multiport card support (EXPERIMENTAL)"
++	depends on SERIAL_NONSTANDARD && PCI
++	select FW_LOADER
++	help
++	  This is a driver for the Multi-Tech cards which provide several
++	  serial ports.  The driver is experimental and can currently only be
++	  built as a module. The module will be called isicom.
++	  If you want to do that, choose M here.
++
++config N_HDLC
++	tristate "HDLC line discipline support"
++	depends on SERIAL_NONSTANDARD
++	help
++	  Allows synchronous HDLC communications with tty device drivers that
++	  support synchronous HDLC such as the Microgate SyncLink adapter.
++
++	  This driver can be built as a module ( = code which can be
++	  inserted in and removed from the running kernel whenever you want).
++	  The module will be called n_hdlc. If you want to do that, say M
++	  here.
++
++config N_GSM
++	tristate "GSM MUX line discipline support (EXPERIMENTAL)"
++	depends on EXPERIMENTAL
++	depends on NET
++	help
++	  This line discipline provides support for the GSM MUX protocol and
++	  presents the mux as a set of 61 individual tty devices.
+ 
+diff --git a/drivers/tty/Makefile b/drivers/tty/Makefile
+index 3962772..e549da3 100644
+--- a/drivers/tty/Makefile
++++ b/drivers/tty/Makefile
+@@ -11,3 +11,16 @@ obj-$(CONFIG_R3964)		+= n_r3964.o
+ obj-y				+= vt/
+ obj-$(CONFIG_HVC_DRIVER)	+= hvc/
+ obj-y				+= serial/
++
++# tty drivers
++obj-$(CONFIG_AMIGA_BUILTIN_SERIAL) += amiserial.o
++obj-$(CONFIG_BFIN_JTAG_COMM)	+= bfin_jtag_comm.o
++obj-$(CONFIG_CYCLADES)		+= cyclades.o
++obj-$(CONFIG_ISI)		+= isicom.o
++obj-$(CONFIG_MOXA_INTELLIO)	+= moxa.o
++obj-$(CONFIG_MOXA_SMARTIO)	+= mxser.o
++obj-$(CONFIG_NOZOMI)		+= nozomi.o
++obj-$(CONFIG_ROCKETPORT)	+= rocket.o
++obj-$(CONFIG_SYNCLINK_GT)	+= synclink_gt.o
++obj-$(CONFIG_SYNCLINKMP)	+= synclinkmp.o
++obj-$(CONFIG_SYNCLINK)		+= synclink.o
+diff --git a/drivers/char/amiserial.c b/drivers/tty/amiserial.c
 similarity index 100%
-rename from drivers/char/generic_serial.c
-rename to drivers/staging/generic_serial/generic_serial.c
-diff --git a/drivers/char/rio/Makefile b/drivers/staging/generic_serial/rio/Makefile
+rename from drivers/char/amiserial.c
+rename to drivers/tty/amiserial.c
+diff --git a/drivers/char/bfin_jtag_comm.c b/drivers/tty/bfin_jtag_comm.c
 similarity index 100%
-rename from drivers/char/rio/Makefile
-rename to drivers/staging/generic_serial/rio/Makefile
-diff --git a/drivers/char/rio/board.h b/drivers/staging/generic_serial/rio/board.h
+rename from drivers/char/bfin_jtag_comm.c
+rename to drivers/tty/bfin_jtag_comm.c
+diff --git a/drivers/char/cyclades.c b/drivers/tty/cyclades.c
 similarity index 100%
-rename from drivers/char/rio/board.h
-rename to drivers/staging/generic_serial/rio/board.h
-diff --git a/drivers/char/rio/cirrus.h b/drivers/staging/generic_serial/rio/cirrus.h
+rename from drivers/char/cyclades.c
+rename to drivers/tty/cyclades.c
+diff --git a/drivers/char/isicom.c b/drivers/tty/isicom.c
 similarity index 100%
-rename from drivers/char/rio/cirrus.h
-rename to drivers/staging/generic_serial/rio/cirrus.h
-diff --git a/drivers/char/rio/cmdblk.h b/drivers/staging/generic_serial/rio/cmdblk.h
+rename from drivers/char/isicom.c
+rename to drivers/tty/isicom.c
+diff --git a/drivers/char/moxa.c b/drivers/tty/moxa.c
 similarity index 100%
-rename from drivers/char/rio/cmdblk.h
-rename to drivers/staging/generic_serial/rio/cmdblk.h
-diff --git a/drivers/char/rio/cmdpkt.h b/drivers/staging/generic_serial/rio/cmdpkt.h
+rename from drivers/char/moxa.c
+rename to drivers/tty/moxa.c
+diff --git a/drivers/char/moxa.h b/drivers/tty/moxa.h
 similarity index 100%
-rename from drivers/char/rio/cmdpkt.h
-rename to drivers/staging/generic_serial/rio/cmdpkt.h
-diff --git a/drivers/char/rio/daemon.h b/drivers/staging/generic_serial/rio/daemon.h
+rename from drivers/char/moxa.h
+rename to drivers/tty/moxa.h
+diff --git a/drivers/char/mxser.c b/drivers/tty/mxser.c
 similarity index 100%
-rename from drivers/char/rio/daemon.h
-rename to drivers/staging/generic_serial/rio/daemon.h
-diff --git a/drivers/char/rio/errors.h b/drivers/staging/generic_serial/rio/errors.h
+rename from drivers/char/mxser.c
+rename to drivers/tty/mxser.c
+diff --git a/drivers/char/mxser.h b/drivers/tty/mxser.h
 similarity index 100%
-rename from drivers/char/rio/errors.h
-rename to drivers/staging/generic_serial/rio/errors.h
-diff --git a/drivers/char/rio/func.h b/drivers/staging/generic_serial/rio/func.h
+rename from drivers/char/mxser.h
+rename to drivers/tty/mxser.h
+diff --git a/drivers/char/nozomi.c b/drivers/tty/nozomi.c
 similarity index 100%
-rename from drivers/char/rio/func.h
-rename to drivers/staging/generic_serial/rio/func.h
-diff --git a/drivers/char/rio/host.h b/drivers/staging/generic_serial/rio/host.h
+rename from drivers/char/nozomi.c
+rename to drivers/tty/nozomi.c
+diff --git a/drivers/char/rocket.c b/drivers/tty/rocket.c
 similarity index 100%
-rename from drivers/char/rio/host.h
-rename to drivers/staging/generic_serial/rio/host.h
-diff --git a/drivers/char/rio/link.h b/drivers/staging/generic_serial/rio/link.h
+rename from drivers/char/rocket.c
+rename to drivers/tty/rocket.c
+diff --git a/drivers/char/rocket.h b/drivers/tty/rocket.h
 similarity index 100%
-rename from drivers/char/rio/link.h
-rename to drivers/staging/generic_serial/rio/link.h
-diff --git a/drivers/char/rio/linux_compat.h b/drivers/staging/generic_serial/rio/linux_compat.h
+rename from drivers/char/rocket.h
+rename to drivers/tty/rocket.h
+diff --git a/drivers/char/rocket_int.h b/drivers/tty/rocket_int.h
 similarity index 100%
-rename from drivers/char/rio/linux_compat.h
-rename to drivers/staging/generic_serial/rio/linux_compat.h
-diff --git a/drivers/char/rio/map.h b/drivers/staging/generic_serial/rio/map.h
+rename from drivers/char/rocket_int.h
+rename to drivers/tty/rocket_int.h
+diff --git a/drivers/char/synclink.c b/drivers/tty/synclink.c
 similarity index 100%
-rename from drivers/char/rio/map.h
-rename to drivers/staging/generic_serial/rio/map.h
-diff --git a/drivers/char/rio/param.h b/drivers/staging/generic_serial/rio/param.h
+rename from drivers/char/synclink.c
+rename to drivers/tty/synclink.c
+diff --git a/drivers/char/synclink_gt.c b/drivers/tty/synclink_gt.c
 similarity index 100%
-rename from drivers/char/rio/param.h
-rename to drivers/staging/generic_serial/rio/param.h
-diff --git a/drivers/char/rio/parmmap.h b/drivers/staging/generic_serial/rio/parmmap.h
+rename from drivers/char/synclink_gt.c
+rename to drivers/tty/synclink_gt.c
+diff --git a/drivers/char/synclinkmp.c b/drivers/tty/synclinkmp.c
 similarity index 100%
-rename from drivers/char/rio/parmmap.h
-rename to drivers/staging/generic_serial/rio/parmmap.h
-diff --git a/drivers/char/rio/pci.h b/drivers/staging/generic_serial/rio/pci.h
-similarity index 100%
-rename from drivers/char/rio/pci.h
-rename to drivers/staging/generic_serial/rio/pci.h
-diff --git a/drivers/char/rio/phb.h b/drivers/staging/generic_serial/rio/phb.h
-similarity index 100%
-rename from drivers/char/rio/phb.h
-rename to drivers/staging/generic_serial/rio/phb.h
-diff --git a/drivers/char/rio/pkt.h b/drivers/staging/generic_serial/rio/pkt.h
-similarity index 100%
-rename from drivers/char/rio/pkt.h
-rename to drivers/staging/generic_serial/rio/pkt.h
-diff --git a/drivers/char/rio/port.h b/drivers/staging/generic_serial/rio/port.h
-similarity index 100%
-rename from drivers/char/rio/port.h
-rename to drivers/staging/generic_serial/rio/port.h
-diff --git a/drivers/char/rio/protsts.h b/drivers/staging/generic_serial/rio/protsts.h
-similarity index 100%
-rename from drivers/char/rio/protsts.h
-rename to drivers/staging/generic_serial/rio/protsts.h
-diff --git a/drivers/char/rio/rio.h b/drivers/staging/generic_serial/rio/rio.h
-similarity index 100%
-rename from drivers/char/rio/rio.h
-rename to drivers/staging/generic_serial/rio/rio.h
-diff --git a/drivers/char/rio/rio_linux.c b/drivers/staging/generic_serial/rio/rio_linux.c
-similarity index 100%
-rename from drivers/char/rio/rio_linux.c
-rename to drivers/staging/generic_serial/rio/rio_linux.c
-diff --git a/drivers/char/rio/rio_linux.h b/drivers/staging/generic_serial/rio/rio_linux.h
-similarity index 100%
-rename from drivers/char/rio/rio_linux.h
-rename to drivers/staging/generic_serial/rio/rio_linux.h
-diff --git a/drivers/char/rio/rioboard.h b/drivers/staging/generic_serial/rio/rioboard.h
-similarity index 100%
-rename from drivers/char/rio/rioboard.h
-rename to drivers/staging/generic_serial/rio/rioboard.h
-diff --git a/drivers/char/rio/rioboot.c b/drivers/staging/generic_serial/rio/rioboot.c
-similarity index 100%
-rename from drivers/char/rio/rioboot.c
-rename to drivers/staging/generic_serial/rio/rioboot.c
-diff --git a/drivers/char/rio/riocmd.c b/drivers/staging/generic_serial/rio/riocmd.c
-similarity index 100%
-rename from drivers/char/rio/riocmd.c
-rename to drivers/staging/generic_serial/rio/riocmd.c
-diff --git a/drivers/char/rio/rioctrl.c b/drivers/staging/generic_serial/rio/rioctrl.c
-similarity index 100%
-rename from drivers/char/rio/rioctrl.c
-rename to drivers/staging/generic_serial/rio/rioctrl.c
-diff --git a/drivers/char/rio/riodrvr.h b/drivers/staging/generic_serial/rio/riodrvr.h
-similarity index 100%
-rename from drivers/char/rio/riodrvr.h
-rename to drivers/staging/generic_serial/rio/riodrvr.h
-diff --git a/drivers/char/rio/rioinfo.h b/drivers/staging/generic_serial/rio/rioinfo.h
-similarity index 100%
-rename from drivers/char/rio/rioinfo.h
-rename to drivers/staging/generic_serial/rio/rioinfo.h
-diff --git a/drivers/char/rio/rioinit.c b/drivers/staging/generic_serial/rio/rioinit.c
-similarity index 100%
-rename from drivers/char/rio/rioinit.c
-rename to drivers/staging/generic_serial/rio/rioinit.c
-diff --git a/drivers/char/rio/riointr.c b/drivers/staging/generic_serial/rio/riointr.c
-similarity index 100%
-rename from drivers/char/rio/riointr.c
-rename to drivers/staging/generic_serial/rio/riointr.c
-diff --git a/drivers/char/rio/rioioctl.h b/drivers/staging/generic_serial/rio/rioioctl.h
-similarity index 100%
-rename from drivers/char/rio/rioioctl.h
-rename to drivers/staging/generic_serial/rio/rioioctl.h
-diff --git a/drivers/char/rio/rioparam.c b/drivers/staging/generic_serial/rio/rioparam.c
-similarity index 100%
-rename from drivers/char/rio/rioparam.c
-rename to drivers/staging/generic_serial/rio/rioparam.c
-diff --git a/drivers/char/rio/rioroute.c b/drivers/staging/generic_serial/rio/rioroute.c
-similarity index 100%
-rename from drivers/char/rio/rioroute.c
-rename to drivers/staging/generic_serial/rio/rioroute.c
-diff --git a/drivers/char/rio/riospace.h b/drivers/staging/generic_serial/rio/riospace.h
-similarity index 100%
-rename from drivers/char/rio/riospace.h
-rename to drivers/staging/generic_serial/rio/riospace.h
-diff --git a/drivers/char/rio/riotable.c b/drivers/staging/generic_serial/rio/riotable.c
-similarity index 100%
-rename from drivers/char/rio/riotable.c
-rename to drivers/staging/generic_serial/rio/riotable.c
-diff --git a/drivers/char/rio/riotty.c b/drivers/staging/generic_serial/rio/riotty.c
-similarity index 100%
-rename from drivers/char/rio/riotty.c
-rename to drivers/staging/generic_serial/rio/riotty.c
-diff --git a/drivers/char/rio/route.h b/drivers/staging/generic_serial/rio/route.h
-similarity index 100%
-rename from drivers/char/rio/route.h
-rename to drivers/staging/generic_serial/rio/route.h
-diff --git a/drivers/char/rio/rup.h b/drivers/staging/generic_serial/rio/rup.h
-similarity index 100%
-rename from drivers/char/rio/rup.h
-rename to drivers/staging/generic_serial/rio/rup.h
-diff --git a/drivers/char/rio/unixrup.h b/drivers/staging/generic_serial/rio/unixrup.h
-similarity index 100%
-rename from drivers/char/rio/unixrup.h
-rename to drivers/staging/generic_serial/rio/unixrup.h
-diff --git a/drivers/char/ser_a2232.c b/drivers/staging/generic_serial/ser_a2232.c
-similarity index 100%
-rename from drivers/char/ser_a2232.c
-rename to drivers/staging/generic_serial/ser_a2232.c
-diff --git a/drivers/char/ser_a2232.h b/drivers/staging/generic_serial/ser_a2232.h
-similarity index 100%
-rename from drivers/char/ser_a2232.h
-rename to drivers/staging/generic_serial/ser_a2232.h
-diff --git a/drivers/char/ser_a2232fw.ax b/drivers/staging/generic_serial/ser_a2232fw.ax
-similarity index 100%
-rename from drivers/char/ser_a2232fw.ax
-rename to drivers/staging/generic_serial/ser_a2232fw.ax
-diff --git a/drivers/char/ser_a2232fw.h b/drivers/staging/generic_serial/ser_a2232fw.h
-similarity index 100%
-rename from drivers/char/ser_a2232fw.h
-rename to drivers/staging/generic_serial/ser_a2232fw.h
-diff --git a/drivers/char/sx.c b/drivers/staging/generic_serial/sx.c
-similarity index 100%
-rename from drivers/char/sx.c
-rename to drivers/staging/generic_serial/sx.c
-diff --git a/drivers/char/sx.h b/drivers/staging/generic_serial/sx.h
-similarity index 100%
-rename from drivers/char/sx.h
-rename to drivers/staging/generic_serial/sx.h
-diff --git a/drivers/char/sxboards.h b/drivers/staging/generic_serial/sxboards.h
-similarity index 100%
-rename from drivers/char/sxboards.h
-rename to drivers/staging/generic_serial/sxboards.h
-diff --git a/drivers/char/sxwindow.h b/drivers/staging/generic_serial/sxwindow.h
-similarity index 100%
-rename from drivers/char/sxwindow.h
-rename to drivers/staging/generic_serial/sxwindow.h
-diff --git a/drivers/char/vme_scc.c b/drivers/staging/generic_serial/vme_scc.c
-similarity index 100%
-rename from drivers/char/vme_scc.c
-rename to drivers/staging/generic_serial/vme_scc.c
+rename from drivers/char/synclinkmp.c
+rename to drivers/tty/synclinkmp.c
 -- 
 1.7.4.1
 
