@@ -1,130 +1,110 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 12/76] hvc_dcc: Fix bad code generation by marking assembly volatile
-Date: Wed, 16 Mar 2011 14:11:42 -0700
-Message-ID: <1300309966-5745-12-git-send-email-gregkh@suse.de>
+Subject: [PATCH 08/76] serial-core: reset the console speed on resume
+Date: Wed, 16 Mar 2011 14:11:38 -0700
+Message-ID: <1300309966-5745-8-git-send-email-gregkh@suse.de>
 References: <20110316205746.GA2938@kroah.com>
  <1300309966-5745-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
 Received: from kroah.org ([198.145.64.141]:32879 "EHLO coco.kroah.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754226Ab1CPVNI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Mar 2011 17:13:08 -0400
+	id S1754660Ab1CPVM7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Mar 2011 17:12:59 -0400
 In-Reply-To: <1300309966-5745-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Stephen Boyd <sboyd@codeaurora.org>, Arnd Bergmann <arnd@arndb.de>, Daniel Walker <dwalker@codeaurora.org>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Yin Kangkai <kangkai.yin@linux.intel.com>, Greg KH <greg@kroah.com>, Deepak Saxena <dsaxena@laptop.org>, Jason Wang <jason77.wang@gmail.com>, Stanislav Brabec <sbrabec@suse.cz>, Daniel Drake <dsd@laptop.org>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Stephen Boyd <sboyd@codeaurora.org>
+From: Yin Kangkai <kangkai.yin@linux.intel.com>
 
-Without marking the asm __dcc_getstatus() volatile my compiler
-decides it can cache the value of __ret in a register and then
-check the value of it continually in hvc_dcc_put_chars() (I had
-to replace get_wait/put_wait with 1 and fixup the branch
-otherwise my disassembler barfed on __dcc_(get|put)char).
+On some platforms, we need to restore the console speed on resume even
+it was not suspended (no_console_suspend), and on others we don't have
+to do that.
 
-00000000 <hvc_dcc_put_chars>:
-   0:   ee103e11        mrc     14, 0, r3, cr0, cr1, {0}
-   4:   e3a0c000        mov     ip, #0  ; 0x0
-   8:   e2033202        and     r3, r3, #536870912      ; 0x20000000
-   c:   ea000006        b       2c <hvc_dcc_put_chars+0x2c>
-  10:   e3530000        cmp     r3, #0  ; 0x0
-  14:   1afffffd        bne     10 <hvc_dcc_put_chars+0x10>
-  18:   e7d1000c        ldrb    r0, [r1, ip]
-  1c:   ee10fe11        mrc     14, 0, pc, cr0, cr1, {0}
-  20:   2afffffd        bcs     1c <hvc_dcc_put_chars+0x1c>
-  24:   ee000e15        mcr     14, 0, r0, cr0, cr5, {0}
-  28:   e28cc001        add     ip, ip, #1      ; 0x1
-  2c:   e15c0002        cmp     ip, r2
-  30:   bafffff6        blt     10 <hvc_dcc_put_chars+0x10>
-  34:   e1a00002        mov     r0, r2
-  38:   e12fff1e        bx      lr
+So don't care about the "console_suspend_enabled" and unconditionally
+reset the console speed if it is a console.
 
-As you can see, the value of the mrc is checked against
-DCC_STATUS_TX (bit 29) and then stored in r3 for later use.
-Marking the asm volatile produces the following:
+This is actually a redo of ba15ab0 (Set proper console speed on resume
+if console suspend is disabled) from Deepak Saxena.  I also tried to
+investigate more to find out if this change will break others, here is
+what I've found out:
 
-00000000 <hvc_dcc_put_chars>:
-   0:   e3a03000        mov     r3, #0  ; 0x0
-   4:   ea000007        b       28 <hvc_dcc_put_chars+0x28>
-   8:   ee100e11        mrc     14, 0, r0, cr0, cr1, {0}
-   c:   e3100202        tst     r0, #536870912  ; 0x20000000
-  10:   1afffffc        bne     8 <hvc_dcc_put_chars+0x8>
-  14:   e7d10003        ldrb    r0, [r1, r3]
-  18:   ee10fe11        mrc     14, 0, pc, cr0, cr1, {0}
-  1c:   2afffffd        bcs     18 <hvc_dcc_put_chars+0x18>
-  20:   ee000e15        mcr     14, 0, r0, cr0, cr5, {0}
-  24:   e2833001        add     r3, r3, #1      ; 0x1
-  28:   e1530002        cmp     r3, r2
-  2c:   bafffff5        blt     8 <hvc_dcc_put_chars+0x8>
-  30:   e1a00002        mov     r0, r2
-  34:   e12fff1e        bx      lr
+commit 891b9dd10764352926e1e107756aa229dfa2c210
+Author: Jason Wang <jason77.wang@gmail.com>
+    serial-core: restore termios settings when resume console ports
 
-which looks better and actually works. Mark all the inline
-assembly in this file as volatile since we don't want the
-compiler to optimize away these statements or move them around
-in any way.
+commit ca2e71aa8cfb0056ce720f3fd53f59f5fac4a3e1
+Author: Jason Wang <jason77.wang@gmail.com>
+    serial-core: skip call set_termios/console_start when no_console_suspend
 
-Acked-by: Tony Lindgren <tony@atomide.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Nicolas Pitre <nicolas.pitre@linaro.org>
-Cc: Daniel Walker <dwalker@codeaurora.org>
-Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
+commit 4547be7809a3b775ce750ec7f8b5748954741523
+Author: Stanislav Brabec <sbrabec@suse.cz>
+    serial-core: resume serial hardware with no_console_suspend
+
+commit ba15ab0e8de0d4439a91342ad52d55ca9e313f3d
+Author: Deepak Saxena <dsaxena@laptop.org>
+    Set proper console speed on resume if console suspend is disabled
+
+from ba15ab0, we learned that, even if the console suspend is disabled
+(when no_console_suspend is set), we may still need to "reset the port
+to the state it was in before we suspended."
+
+Then with 4547be7, this piece of code is removed.
+
+And then Jason Wang added that back in ca2e71a and 891b9dd, to fix
+some breakage on OMAP3EVM platform. From ca2e71a we learned that the
+"set_termios" things is actually needed by both console is suspended
+and not suspended.
+
+That's why I removed the console_suspended_enabled condition, and only
+call console_start() when we actually suspeneded it.
+
+I also noticed in this thread:
+http://marc.info/?t=129079257100004&r=1&w=2, which talked about on
+some platforms, UART HW will be cut power whether or not we set
+no_console_suspend, and then on resume it does not work quite well. I
+have a similar HW, and this patch fixed this issue, don't know if this
+patch also works on their platforms.
+
+[Update: Stanislav tested this patch on Zaurus and reported it improves the
+situation. Thanks.]
+
+CC: Greg KH <greg@kroah.com>
+CC: Deepak Saxena <dsaxena@laptop.org>
+CC: Jason Wang <jason77.wang@gmail.com>
+CC: Stanislav Brabec <sbrabec@suse.cz>
+CC: Daniel Drake <dsd@laptop.org>
+Signed-off-by: Yin Kangkai <kangkai.yin@linux.intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/hvc/hvc_dcc.c |   11 +++++------
- 1 files changed, 5 insertions(+), 6 deletions(-)
+ drivers/tty/serial/serial_core.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/hvc/hvc_dcc.c b/drivers/tty/hvc/hvc_dcc.c
-index 6470f63..155ec10 100644
---- a/drivers/tty/hvc/hvc_dcc.c
-+++ b/drivers/tty/hvc/hvc_dcc.c
-@@ -33,8 +33,7 @@
- static inline u32 __dcc_getstatus(void)
- {
- 	u32 __ret;
--
--	asm("mrc p14, 0, %0, c0, c1, 0	@ read comms ctrl reg"
-+	asm volatile("mrc p14, 0, %0, c0, c1, 0	@ read comms ctrl reg"
- 		: "=r" (__ret) : : "cc");
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 460a72d..20563c5 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2064,7 +2064,7 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
+ 	/*
+ 	 * Re-enable the console device after suspending.
+ 	 */
+-	if (console_suspend_enabled && uart_console(uport)) {
++	if (uart_console(uport)) {
+ 		/*
+ 		 * First try to use the console cflag setting.
+ 		 */
+@@ -2077,9 +2077,9 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
+ 		if (port->tty && port->tty->termios && termios.c_cflag == 0)
+ 			termios = *(port->tty->termios);
  
- 	return __ret;
-@@ -46,7 +45,7 @@ static inline char __dcc_getchar(void)
- {
- 	char __c;
+-		uart_change_pm(state, 0);
+ 		uport->ops->set_termios(uport, &termios, NULL);
+-		console_start(uport->cons);
++		if (console_suspend_enabled)
++			console_start(uport->cons);
+ 	}
  
--	asm("get_wait:	mrc p14, 0, pc, c0, c1, 0                          \n\
-+	asm volatile("get_wait:	mrc p14, 0, pc, c0, c1, 0                  \n\
- 			bne get_wait                                       \n\
- 			mrc p14, 0, %0, c0, c5, 0	@ read comms data reg"
- 		: "=r" (__c) : : "cc");
-@@ -58,7 +57,7 @@ static inline char __dcc_getchar(void)
- {
- 	char __c;
- 
--	asm("mrc p14, 0, %0, c0, c5, 0	@ read comms data reg"
-+	asm volatile("mrc p14, 0, %0, c0, c5, 0	@ read comms data reg"
- 		: "=r" (__c));
- 
- 	return __c;
-@@ -68,7 +67,7 @@ static inline char __dcc_getchar(void)
- #if defined(CONFIG_CPU_V7)
- static inline void __dcc_putchar(char c)
- {
--	asm("put_wait:	mrc p14, 0, pc, c0, c1, 0                 \n\
-+	asm volatile("put_wait:	mrc p14, 0, pc, c0, c1, 0         \n\
- 			bcs put_wait                              \n\
- 			mcr p14, 0, %0, c0, c5, 0                   "
- 	: : "r" (c) : "cc");
-@@ -76,7 +75,7 @@ static inline void __dcc_putchar(char c)
- #else
- static inline void __dcc_putchar(char c)
- {
--	asm("mcr p14, 0, %0, c0, c5, 0	@ write a char"
-+	asm volatile("mcr p14, 0, %0, c0, c5, 0	@ write a char"
- 		: /* no output register */
- 		: "r" (c));
- }
+ 	if (port->flags & ASYNC_SUSPENDED) {
 -- 
 1.7.4.1
 
