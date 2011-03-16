@@ -1,42 +1,402 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 38/76] tty: fix build error in vt_ioctl.c if CONFIG_COMPAT is enabled
-Date: Wed, 16 Mar 2011 14:12:08 -0700
-Message-ID: <1300309966-5745-38-git-send-email-gregkh@suse.de>
+Subject: [PATCH 36/76] tty: remove filp from the USB tty ioctls
+Date: Wed, 16 Mar 2011 14:12:06 -0700
+Message-ID: <1300309966-5745-36-git-send-email-gregkh@suse.de>
 References: <20110316205746.GA2938@kroah.com>
  <1300309966-5745-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:33001 "EHLO coco.kroah.org"
+Received: from kroah.org ([198.145.64.141]:32974 "EHLO coco.kroah.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754855Ab1CPVOG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Mar 2011 17:14:06 -0400
+	id S1754325Ab1CPVOE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Mar 2011 17:14:04 -0400
 In-Reply-To: <1300309966-5745-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>
+Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@suse.de>
 
-This was caused by the previous patch to remove the file pointer
-from the tty ioctl handler.
+From: Alan Cox <alan@linux.intel.com>
 
-Cc: Alan Cox <alan@linux.intel.com>
+We don't use it so we can trim it from here as we try and stamp the file
+object dependencies out of the serial code.
+
+Signed-off-by: Alan Cox <alan@linux.intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- include/linux/tty.h |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ drivers/staging/quatech_usb2/quatech_usb2.c |    2 +-
+ drivers/staging/serqt_usb2/serqt_usb2.c     |    2 +-
+ drivers/usb/serial/ark3116.c                |    2 +-
+ drivers/usb/serial/ch341.c                  |    3 +--
+ drivers/usb/serial/cypress_m8.c             |    4 ++--
+ drivers/usb/serial/ftdi_sio.c               |    4 ++--
+ drivers/usb/serial/io_edgeport.c            |    4 ++--
+ drivers/usb/serial/io_ti.c                  |    2 +-
+ drivers/usb/serial/kobil_sct.c              |    4 ++--
+ drivers/usb/serial/mos7720.c                |    2 +-
+ drivers/usb/serial/mos7840.c                |    2 +-
+ drivers/usb/serial/opticon.c                |    2 +-
+ drivers/usb/serial/oti6858.c                |    4 ++--
+ drivers/usb/serial/pl2303.c                 |    2 +-
+ drivers/usb/serial/spcp8x5.c                |    2 +-
+ drivers/usb/serial/ssu100.c                 |    2 +-
+ drivers/usb/serial/ti_usb_3410_5052.c       |    4 ++--
+ drivers/usb/serial/usb-serial.c             |    2 +-
+ drivers/usb/serial/usb-wwan.h               |    2 +-
+ drivers/usb/serial/usb_wwan.c               |    2 +-
+ drivers/usb/serial/whiteheat.c              |    4 ++--
+ include/linux/usb/serial.h                  |    2 +-
+ 22 files changed, 29 insertions(+), 30 deletions(-)
 
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 483df15..ef1e012 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -587,7 +587,7 @@ extern int pcxe_open(struct tty_struct *tty, struct file *filp);
- extern int vt_ioctl(struct tty_struct *tty,
- 		    unsigned int cmd, unsigned long arg);
+diff --git a/drivers/staging/quatech_usb2/quatech_usb2.c b/drivers/staging/quatech_usb2/quatech_usb2.c
+index 3734448..36b18e3 100644
+--- a/drivers/staging/quatech_usb2/quatech_usb2.c
++++ b/drivers/staging/quatech_usb2/quatech_usb2.c
+@@ -852,7 +852,7 @@ static int qt2_chars_in_buffer(struct tty_struct *tty)
+  * TIOCMGET and TIOCMSET are filtered off to their own methods before they get
+  * here, so we don't have to handle them.
+  */
+-static int qt2_ioctl(struct tty_struct *tty, struct file *file,
++static int qt2_ioctl(struct tty_struct *tty,
+ 		     unsigned int cmd, unsigned long arg)
+ {
+ 	struct usb_serial_port *port = tty->driver_data;
+diff --git a/drivers/staging/serqt_usb2/serqt_usb2.c b/drivers/staging/serqt_usb2/serqt_usb2.c
+index 39776c1..e0aae86 100644
+--- a/drivers/staging/serqt_usb2/serqt_usb2.c
++++ b/drivers/staging/serqt_usb2/serqt_usb2.c
+@@ -1191,7 +1191,7 @@ static int qt_write_room(struct tty_struct *tty)
  
--extern long vt_compat_ioctl(struct tty_struct *tty, struct file * file,
-+extern long vt_compat_ioctl(struct tty_struct *tty,
- 		     unsigned int cmd, unsigned long arg);
+ }
  
- /* tty_mutex.c */
+-static int qt_ioctl(struct tty_struct *tty, struct file *file,
++static int qt_ioctl(struct tty_struct *tty,
+ 		    unsigned int cmd, unsigned long arg)
+ {
+ 	struct usb_serial_port *port = tty->driver_data;
+diff --git a/drivers/usb/serial/ark3116.c b/drivers/usb/serial/ark3116.c
+index 2f837e9..5cdb9d9 100644
+--- a/drivers/usb/serial/ark3116.c
++++ b/drivers/usb/serial/ark3116.c
+@@ -431,7 +431,7 @@ static int ark3116_get_icount(struct tty_struct *tty,
+ 	return 0;
+ }
+ 
+-static int ark3116_ioctl(struct tty_struct *tty, struct file *file,
++static int ark3116_ioctl(struct tty_struct *tty,
+ 			 unsigned int cmd, unsigned long arg)
+ {
+ 	struct usb_serial_port *port = tty->driver_data;
+diff --git a/drivers/usb/serial/ch341.c b/drivers/usb/serial/ch341.c
+index 5cbef31..d0b9fea 100644
+--- a/drivers/usb/serial/ch341.c
++++ b/drivers/usb/serial/ch341.c
+@@ -552,8 +552,7 @@ static int wait_modem_info(struct usb_serial_port *port, unsigned int arg)
+ 	return 0;
+ }
+ 
+-/*static int ch341_ioctl(struct usb_serial_port *port, struct file *file,*/
+-static int ch341_ioctl(struct tty_struct *tty, struct file *file,
++static int ch341_ioctl(struct tty_struct *tty,
+ 			unsigned int cmd, unsigned long arg)
+ {
+ 	struct usb_serial_port *port = tty->driver_data;
+diff --git a/drivers/usb/serial/cypress_m8.c b/drivers/usb/serial/cypress_m8.c
+index 2beb5a6..987e9bf 100644
+--- a/drivers/usb/serial/cypress_m8.c
++++ b/drivers/usb/serial/cypress_m8.c
+@@ -169,7 +169,7 @@ static int  cypress_write(struct tty_struct *tty, struct usb_serial_port *port,
+ 			const unsigned char *buf, int count);
+ static void cypress_send(struct usb_serial_port *port);
+ static int  cypress_write_room(struct tty_struct *tty);
+-static int  cypress_ioctl(struct tty_struct *tty, struct file *file,
++static int  cypress_ioctl(struct tty_struct *tty,
+ 			unsigned int cmd, unsigned long arg);
+ static void cypress_set_termios(struct tty_struct *tty,
+ 			struct usb_serial_port *port, struct ktermios *old);
+@@ -917,7 +917,7 @@ static int cypress_tiocmset(struct tty_struct *tty,
+ }
+ 
+ 
+-static int cypress_ioctl(struct tty_struct *tty, struct file *file,
++static int cypress_ioctl(struct tty_struct *tty,
+ 					unsigned int cmd, unsigned long arg)
+ {
+ 	struct usb_serial_port *port = tty->driver_data;
+diff --git a/drivers/usb/serial/ftdi_sio.c b/drivers/usb/serial/ftdi_sio.c
+index f521ab1..e3e23a4 100644
+--- a/drivers/usb/serial/ftdi_sio.c
++++ b/drivers/usb/serial/ftdi_sio.c
+@@ -859,7 +859,7 @@ static void ftdi_set_termios(struct tty_struct *tty,
+ static int  ftdi_tiocmget(struct tty_struct *tty);
+ static int  ftdi_tiocmset(struct tty_struct *tty,
+ 			unsigned int set, unsigned int clear);
+-static int  ftdi_ioctl(struct tty_struct *tty, struct file *file,
++static int  ftdi_ioctl(struct tty_struct *tty,
+ 			unsigned int cmd, unsigned long arg);
+ static void ftdi_break_ctl(struct tty_struct *tty, int break_state);
+ 
+@@ -2210,7 +2210,7 @@ static int ftdi_tiocmset(struct tty_struct *tty,
+ 	return update_mctrl(port, set, clear);
+ }
+ 
+-static int ftdi_ioctl(struct tty_struct *tty, struct file *file,
++static int ftdi_ioctl(struct tty_struct *tty,
+ 					unsigned int cmd, unsigned long arg)
+ {
+ 	struct usb_serial_port *port = tty->driver_data;
+diff --git a/drivers/usb/serial/io_edgeport.c b/drivers/usb/serial/io_edgeport.c
+index 0b8846e..ae91bcd 100644
+--- a/drivers/usb/serial/io_edgeport.c
++++ b/drivers/usb/serial/io_edgeport.c
+@@ -216,7 +216,7 @@ static void edge_unthrottle(struct tty_struct *tty);
+ static void edge_set_termios(struct tty_struct *tty,
+ 					struct usb_serial_port *port,
+ 					struct ktermios *old_termios);
+-static int  edge_ioctl(struct tty_struct *tty, struct file *file,
++static int  edge_ioctl(struct tty_struct *tty,
+ 					unsigned int cmd, unsigned long arg);
+ static void edge_break(struct tty_struct *tty, int break_state);
+ static int  edge_tiocmget(struct tty_struct *tty);
+@@ -1679,7 +1679,7 @@ static int get_serial_info(struct edgeport_port *edge_port,
+  * SerialIoctl
+  *	this function handles any ioctl calls to the driver
+  *****************************************************************************/
+-static int edge_ioctl(struct tty_struct *tty, struct file *file,
++static int edge_ioctl(struct tty_struct *tty,
+ 					unsigned int cmd, unsigned long arg)
+ {
+ 	struct usb_serial_port *port = tty->driver_data;
+diff --git a/drivers/usb/serial/io_ti.c b/drivers/usb/serial/io_ti.c
+index 8812052..d843491 100644
+--- a/drivers/usb/serial/io_ti.c
++++ b/drivers/usb/serial/io_ti.c
+@@ -2552,7 +2552,7 @@ static int get_serial_info(struct edgeport_port *edge_port,
+ 	return 0;
+ }
+ 
+-static int edge_ioctl(struct tty_struct *tty, struct file *file,
++static int edge_ioctl(struct tty_struct *tty,
+ 					unsigned int cmd, unsigned long arg)
+ {
+ 	struct usb_serial_port *port = tty->driver_data;
+diff --git a/drivers/usb/serial/kobil_sct.c b/drivers/usb/serial/kobil_sct.c
+index 22cd0c0..667863e 100644
+--- a/drivers/usb/serial/kobil_sct.c
++++ b/drivers/usb/serial/kobil_sct.c
+@@ -75,7 +75,7 @@ static void kobil_close(struct usb_serial_port *port);
+ static int  kobil_write(struct tty_struct *tty, struct usb_serial_port *port,
+ 			 const unsigned char *buf, int count);
+ static int  kobil_write_room(struct tty_struct *tty);
+-static int  kobil_ioctl(struct tty_struct *tty, struct file *file,
++static int  kobil_ioctl(struct tty_struct *tty,
+ 			unsigned int cmd, unsigned long arg);
+ static int  kobil_tiocmget(struct tty_struct *tty);
+ static int  kobil_tiocmset(struct tty_struct *tty,
+@@ -668,7 +668,7 @@ static void kobil_set_termios(struct tty_struct *tty,
+ 		);
+ }
+ 
+-static int kobil_ioctl(struct tty_struct *tty, struct file *file,
++static int kobil_ioctl(struct tty_struct *tty,
+ 					unsigned int cmd, unsigned long arg)
+ {
+ 	struct usb_serial_port *port = tty->driver_data;
+diff --git a/drivers/usb/serial/mos7720.c b/drivers/usb/serial/mos7720.c
+index 95b1c64..d8b3e8f 100644
+--- a/drivers/usb/serial/mos7720.c
++++ b/drivers/usb/serial/mos7720.c
+@@ -1987,7 +1987,7 @@ static int get_serial_info(struct moschip_port *mos7720_port,
+ 	return 0;
+ }
+ 
+-static int mos7720_ioctl(struct tty_struct *tty, struct file *file,
++static int mos7720_ioctl(struct tty_struct *tty,
+ 			 unsigned int cmd, unsigned long arg)
+ {
+ 	struct usb_serial_port *port = tty->driver_data;
+diff --git a/drivers/usb/serial/mos7840.c b/drivers/usb/serial/mos7840.c
+index 9424178..7b50aa1 100644
+--- a/drivers/usb/serial/mos7840.c
++++ b/drivers/usb/serial/mos7840.c
+@@ -2235,7 +2235,7 @@ static int mos7840_get_icount(struct tty_struct *tty,
+  *	this function handles any ioctl calls to the driver
+  *****************************************************************************/
+ 
+-static int mos7840_ioctl(struct tty_struct *tty, struct file *file,
++static int mos7840_ioctl(struct tty_struct *tty,
+ 			 unsigned int cmd, unsigned long arg)
+ {
+ 	struct usb_serial_port *port = tty->driver_data;
+diff --git a/drivers/usb/serial/opticon.c b/drivers/usb/serial/opticon.c
+index e305df8..8d603a1 100644
+--- a/drivers/usb/serial/opticon.c
++++ b/drivers/usb/serial/opticon.c
+@@ -396,7 +396,7 @@ static int get_serial_info(struct opticon_private *priv,
+ 	return 0;
+ }
+ 
+-static int opticon_ioctl(struct tty_struct *tty, struct file *file,
++static int opticon_ioctl(struct tty_struct *tty,
+ 			 unsigned int cmd, unsigned long arg)
+ {
+ 	struct usb_serial_port *port = tty->driver_data;
+diff --git a/drivers/usb/serial/oti6858.c b/drivers/usb/serial/oti6858.c
+index 63734cb..4c29e6c 100644
+--- a/drivers/usb/serial/oti6858.c
++++ b/drivers/usb/serial/oti6858.c
+@@ -135,7 +135,7 @@ static void oti6858_close(struct usb_serial_port *port);
+ static void oti6858_set_termios(struct tty_struct *tty,
+ 			struct usb_serial_port *port, struct ktermios *old);
+ static void oti6858_init_termios(struct tty_struct *tty);
+-static int oti6858_ioctl(struct tty_struct *tty, struct file *file,
++static int oti6858_ioctl(struct tty_struct *tty,
+ 			unsigned int cmd, unsigned long arg);
+ static void oti6858_read_int_callback(struct urb *urb);
+ static void oti6858_read_bulk_callback(struct urb *urb);
+@@ -728,7 +728,7 @@ static int wait_modem_info(struct usb_serial_port *port, unsigned int arg)
+ 	return 0;
+ }
+ 
+-static int oti6858_ioctl(struct tty_struct *tty, struct file *file,
++static int oti6858_ioctl(struct tty_struct *tty,
+ 			unsigned int cmd, unsigned long arg)
+ {
+ 	struct usb_serial_port *port = tty->driver_data;
+diff --git a/drivers/usb/serial/pl2303.c b/drivers/usb/serial/pl2303.c
+index b797992..30461fc 100644
+--- a/drivers/usb/serial/pl2303.c
++++ b/drivers/usb/serial/pl2303.c
+@@ -606,7 +606,7 @@ static int wait_modem_info(struct usb_serial_port *port, unsigned int arg)
+ 	return 0;
+ }
+ 
+-static int pl2303_ioctl(struct tty_struct *tty, struct file *file,
++static int pl2303_ioctl(struct tty_struct *tty,
+ 			unsigned int cmd, unsigned long arg)
+ {
+ 	struct serial_struct ser;
+diff --git a/drivers/usb/serial/spcp8x5.c b/drivers/usb/serial/spcp8x5.c
+index dfbc543..180ea6c 100644
+--- a/drivers/usb/serial/spcp8x5.c
++++ b/drivers/usb/serial/spcp8x5.c
+@@ -576,7 +576,7 @@ static int spcp8x5_wait_modem_info(struct usb_serial_port *port,
+ 	return 0;
+ }
+ 
+-static int spcp8x5_ioctl(struct tty_struct *tty, struct file *file,
++static int spcp8x5_ioctl(struct tty_struct *tty,
+ 			 unsigned int cmd, unsigned long arg)
+ {
+ 	struct usb_serial_port *port = tty->driver_data;
+diff --git a/drivers/usb/serial/ssu100.c b/drivers/usb/serial/ssu100.c
+index abceee9..87362e4 100644
+--- a/drivers/usb/serial/ssu100.c
++++ b/drivers/usb/serial/ssu100.c
+@@ -439,7 +439,7 @@ static int ssu100_get_icount(struct tty_struct *tty,
+ 
+ 
+ 
+-static int ssu100_ioctl(struct tty_struct *tty, struct file *file,
++static int ssu100_ioctl(struct tty_struct *tty,
+ 		    unsigned int cmd, unsigned long arg)
+ {
+ 	struct usb_serial_port *port = tty->driver_data;
+diff --git a/drivers/usb/serial/ti_usb_3410_5052.c b/drivers/usb/serial/ti_usb_3410_5052.c
+index c7fea4a..f4a57ad 100644
+--- a/drivers/usb/serial/ti_usb_3410_5052.c
++++ b/drivers/usb/serial/ti_usb_3410_5052.c
+@@ -106,7 +106,7 @@ static int ti_write_room(struct tty_struct *tty);
+ static int ti_chars_in_buffer(struct tty_struct *tty);
+ static void ti_throttle(struct tty_struct *tty);
+ static void ti_unthrottle(struct tty_struct *tty);
+-static int ti_ioctl(struct tty_struct *tty, struct file *file,
++static int ti_ioctl(struct tty_struct *tty,
+ 		unsigned int cmd, unsigned long arg);
+ static int ti_get_icount(struct tty_struct *tty,
+ 		struct serial_icounter_struct *icount);
+@@ -818,7 +818,7 @@ static int ti_get_icount(struct tty_struct *tty,
+ 	return 0;
+ }
+ 
+-static int ti_ioctl(struct tty_struct *tty, struct file *file,
++static int ti_ioctl(struct tty_struct *tty,
+ 	unsigned int cmd, unsigned long arg)
+ {
+ 	struct usb_serial_port *port = tty->driver_data;
+diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-serial.c
+index dab679e..b1110e1 100644
+--- a/drivers/usb/serial/usb-serial.c
++++ b/drivers/usb/serial/usb-serial.c
+@@ -417,7 +417,7 @@ static int serial_ioctl(struct tty_struct *tty, struct file *file,
+ 	/* pass on to the driver specific version of this function
+ 	   if it is available */
+ 	if (port->serial->type->ioctl) {
+-		retval = port->serial->type->ioctl(tty, file, cmd, arg);
++		retval = port->serial->type->ioctl(tty, cmd, arg);
+ 	} else
+ 		retval = -ENOIOCTLCMD;
+ 	return retval;
+diff --git a/drivers/usb/serial/usb-wwan.h b/drivers/usb/serial/usb-wwan.h
+index 4d65f1c..c47b6ec 100644
+--- a/drivers/usb/serial/usb-wwan.h
++++ b/drivers/usb/serial/usb-wwan.h
+@@ -18,7 +18,7 @@ extern void usb_wwan_set_termios(struct tty_struct *tty,
+ extern int usb_wwan_tiocmget(struct tty_struct *tty);
+ extern int usb_wwan_tiocmset(struct tty_struct *tty,
+ 			     unsigned int set, unsigned int clear);
+-extern int usb_wwan_ioctl(struct tty_struct *tty, struct file *file,
++extern int usb_wwan_ioctl(struct tty_struct *tty,
+ 			  unsigned int cmd, unsigned long arg);
+ extern int usb_wwan_send_setup(struct usb_serial_port *port);
+ extern int usb_wwan_write(struct tty_struct *tty, struct usb_serial_port *port,
+diff --git a/drivers/usb/serial/usb_wwan.c b/drivers/usb/serial/usb_wwan.c
+index b729120..b38d77b 100644
+--- a/drivers/usb/serial/usb_wwan.c
++++ b/drivers/usb/serial/usb_wwan.c
+@@ -178,7 +178,7 @@ static int set_serial_info(struct usb_serial_port *port,
+ 	return retval;
+ }
+ 
+-int usb_wwan_ioctl(struct tty_struct *tty, struct file *file,
++int usb_wwan_ioctl(struct tty_struct *tty,
+ 		   unsigned int cmd, unsigned long arg)
+ {
+ 	struct usb_serial_port *port = tty->driver_data;
+diff --git a/drivers/usb/serial/whiteheat.c b/drivers/usb/serial/whiteheat.c
+index 6e0c397..5b073bc 100644
+--- a/drivers/usb/serial/whiteheat.c
++++ b/drivers/usb/serial/whiteheat.c
+@@ -152,7 +152,7 @@ static int  whiteheat_write(struct tty_struct *tty,
+ 			struct usb_serial_port *port,
+ 			const unsigned char *buf, int count);
+ static int  whiteheat_write_room(struct tty_struct *tty);
+-static int  whiteheat_ioctl(struct tty_struct *tty, struct file *file,
++static int  whiteheat_ioctl(struct tty_struct *tty,
+ 			unsigned int cmd, unsigned long arg);
+ static void whiteheat_set_termios(struct tty_struct *tty,
+ 			struct usb_serial_port *port, struct ktermios *old);
+@@ -874,7 +874,7 @@ static int whiteheat_tiocmset(struct tty_struct *tty,
+ }
+ 
+ 
+-static int whiteheat_ioctl(struct tty_struct *tty, struct file *file,
++static int whiteheat_ioctl(struct tty_struct *tty,
+ 					unsigned int cmd, unsigned long arg)
+ {
+ 	struct usb_serial_port *port = tty->driver_data;
+diff --git a/include/linux/usb/serial.h b/include/linux/usb/serial.h
+index c1aa1b2..00e98ee 100644
+--- a/include/linux/usb/serial.h
++++ b/include/linux/usb/serial.h
+@@ -260,7 +260,7 @@ struct usb_serial_driver {
+ 			const unsigned char *buf, int count);
+ 	/* Called only by the tty layer */
+ 	int  (*write_room)(struct tty_struct *tty);
+-	int  (*ioctl)(struct tty_struct *tty, struct file *file,
++	int  (*ioctl)(struct tty_struct *tty,
+ 		      unsigned int cmd, unsigned long arg);
+ 	void (*set_termios)(struct tty_struct *tty,
+ 			struct usb_serial_port *port, struct ktermios *old);
 -- 
 1.7.4.1
 
