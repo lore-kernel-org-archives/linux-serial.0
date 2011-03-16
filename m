@@ -1,75 +1,66 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 06/76] tty_ldisc: don't use flush_scheduled_work()
-Date: Wed, 16 Mar 2011 14:11:36 -0700
-Message-ID: <1300309966-5745-6-git-send-email-gregkh@suse.de>
+Subject: [PATCH 05/76] serial: omap-serial: Enable the UART wake-up bits always
+Date: Wed, 16 Mar 2011 14:11:35 -0700
+Message-ID: <1300309966-5745-5-git-send-email-gregkh@suse.de>
 References: <20110316205746.GA2938@kroah.com>
  <1300309966-5745-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:60993 "EHLO coco.kroah.org"
+Received: from kroah.org ([198.145.64.141]:32850 "EHLO coco.kroah.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754641Ab1CPVMz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Mar 2011 17:12:55 -0400
+	id S1754296Ab1CPVMx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Mar 2011 17:12:53 -0400
 In-Reply-To: <1300309966-5745-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Tejun Heo <tj@kernel.org>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Jarkko Nikula <jhnikula@gmail.com>, "Govindraj.R" <govindraj.raja@ti.com>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Tejun Heo <tj@kernel.org>
+From: Jarkko Nikula <jhnikula@gmail.com>
 
-flush_scheduled_work() is scheduled to be deprecated.  Explicitly sync
-flush the used work items instead.  Note that before this change,
-flush_scheduled_work() wouldn't have properly flushed tty->buf.work if
-it were on timer.
+OMAP can do also dynamic idling so wake-up enable register should be set
+also while system is running. If UART_OMAP_WER is not set, then for instance
+the RX activity cannot wake up the UART port that is sleeping.
 
-Signed-off-by: Tejun Heo <tj@kernel.org>
+This RX wake-up feature was working when the 8250 driver was used instead
+of omap-serial. Reason for this is that the 8250 doesn't set the
+UART_OMAP_WER and then arch/arm/mach-omap2/pm34xx.c ends up saving and
+restoring the reset default which is the same than value
+OMAP_UART_WER_MOD_WKUP here.
+
+Fix this by moving the conditional UART_OMAP_WER write from serial_omap_pm
+into serial_omap_startup where wake-up bits are set unconditionally.
+
+Signed-off-by: Jarkko Nikula <jhnikula@gmail.com>
+Cc: Govindraj.R <govindraj.raja@ti.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/tty_ldisc.c |   17 +++++++++++++++--
- 1 files changed, 15 insertions(+), 2 deletions(-)
+ drivers/tty/serial/omap-serial.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index 4214d58..c42f402 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -535,6 +535,19 @@ static int tty_ldisc_halt(struct tty_struct *tty)
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 699b344..7635379 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -520,6 +520,9 @@ static int serial_omap_startup(struct uart_port *port)
+ 	up->ier = UART_IER_RLSI | UART_IER_RDI;
+ 	serial_out(up, UART_IER, up->ier);
+ 
++	/* Enable module level wake up */
++	serial_out(up, UART_OMAP_WER, OMAP_UART_WER_MOD_WKUP);
++
+ 	up->port_activity = jiffies;
+ 	return 0;
+ }
+@@ -827,9 +830,6 @@ serial_omap_pm(struct uart_port *port, unsigned int state,
+ 	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
+ 	serial_out(up, UART_EFR, efr);
+ 	serial_out(up, UART_LCR, 0);
+-	/* Enable module level wake up */
+-	serial_out(up, UART_OMAP_WER,
+-		(state != 0) ? OMAP_UART_WER_MOD_WKUP : 0);
  }
  
- /**
-+ *	tty_ldisc_flush_works	-	flush all works of a tty
-+ *	@tty: tty device to flush works for
-+ *
-+ *	Sync flush all works belonging to @tty.
-+ */
-+static void tty_ldisc_flush_works(struct tty_struct *tty)
-+{
-+	flush_work_sync(&tty->hangup_work);
-+	flush_work_sync(&tty->SAK_work);
-+	flush_delayed_work_sync(&tty->buf.work);
-+}
-+
-+/**
-  *	tty_ldisc_wait_idle	-	wait for the ldisc to become idle
-  *	@tty: tty to wait for
-  *
-@@ -653,7 +666,7 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
- 
- 	mutex_unlock(&tty->ldisc_mutex);
- 
--	flush_scheduled_work();
-+	tty_ldisc_flush_works(tty);
- 
- 	retval = tty_ldisc_wait_idle(tty);
- 
-@@ -905,7 +918,7 @@ void tty_ldisc_release(struct tty_struct *tty, struct tty_struct *o_tty)
- 
- 	tty_unlock();
- 	tty_ldisc_halt(tty);
--	flush_scheduled_work();
-+	tty_ldisc_flush_works(tty);
- 	tty_lock();
- 
- 	mutex_lock(&tty->ldisc_mutex);
+ static void serial_omap_release_port(struct uart_port *port)
 -- 
 1.7.4.1
 
