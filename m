@@ -1,55 +1,48 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 64/76] MAINTAINERS: Update HVC file patterns
-Date: Wed, 16 Mar 2011 14:12:34 -0700
-Message-ID: <1300309966-5745-64-git-send-email-gregkh@suse.de>
+Subject: [PATCH 67/76] Staging: generic_serial: fix double locking bug
+Date: Wed, 16 Mar 2011 14:12:37 -0700
+Message-ID: <1300309966-5745-67-git-send-email-gregkh@suse.de>
 References: <20110316205746.GA2938@kroah.com>
  <1300309966-5745-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:32953 "EHLO coco.kroah.org"
+Received: from kroah.org ([198.145.64.141]:32839 "EHLO coco.kroah.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754259Ab1CPVPI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Mar 2011 17:15:08 -0400
+	id S1754856Ab1CPVPb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Mar 2011 17:15:31 -0400
 In-Reply-To: <1300309966-5745-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Joe Perches <joe@perches.com>, Andrew Morton <akpm@linux-foundation.org>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Dan Carpenter <error27@gmail.com>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Joe Perches <joe@perches.com>
+From: Dan Carpenter <error27@gmail.com>
 
-Commit 728674a7e466628df2aeec6d11a2ae1ef968fb67
-("tty: move hvc drivers to drivers/tty/hvc/")
-moved the files, update the patterns as appropriate.
+spin_lock_irqsave() is not nestable.  The second time that it gets
+called it overwrites the "flags" variable and so IRQs can't be restored
+properly.
 
-Signed-off-by: Joe Perches <joe@perches.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Dan Carpenter <error27@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- MAINTAINERS |    4 ++--
+ drivers/staging/generic_serial/generic_serial.c |    4 ++--
  1 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 5099856..ab3a9ac 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2819,7 +2819,7 @@ F:	mm/hwpoison-inject.c
- HYPERVISOR VIRTUAL CONSOLE DRIVER
- L:	linuxppc-dev@lists.ozlabs.org
- S:	Odd Fixes
--F:	drivers/char/hvc_*
-+F:	drivers/tty/hvc/
+diff --git a/drivers/staging/generic_serial/generic_serial.c b/drivers/staging/generic_serial/generic_serial.c
+index 5954ee1..466988d 100644
+--- a/drivers/staging/generic_serial/generic_serial.c
++++ b/drivers/staging/generic_serial/generic_serial.c
+@@ -566,9 +566,9 @@ void gs_close(struct tty_struct * tty, struct file * filp)
+ 	 * line status register.
+ 	 */
  
- iSCSI BOOT FIRMWARE TABLE (iBFT) DRIVER
- M:	Peter Jones <pjones@redhat.com>
-@@ -6090,7 +6090,7 @@ M:	Chris Metcalf <cmetcalf@tilera.com>
- W:	http://www.tilera.com/scm/
- S:	Supported
- F:	arch/tile/
--F:	drivers/char/hvc_tile.c
-+F:	drivers/tty/hvc/hvc_tile.c
- F:	drivers/net/tile/
+-	spin_lock_irqsave(&port->driver_lock, flags);
++	spin_lock(&port->driver_lock);
+ 	port->rd->disable_rx_interrupts (port);
+-	spin_unlock_irqrestore(&port->driver_lock, flags);
++	spin_unlock(&port->driver_lock);
+ 	spin_unlock_irqrestore(&port->port.lock, flags);
  
- TLAN NETWORK DRIVER
+ 	/* close has no way of returning "EINTR", so discard return value */
 -- 
 1.7.4.1
 
