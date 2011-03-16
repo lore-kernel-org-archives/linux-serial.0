@@ -1,80 +1,101 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 17/76] TTY: use appropriate printk priority level
-Date: Wed, 16 Mar 2011 14:11:47 -0700
-Message-ID: <1300309966-5745-17-git-send-email-gregkh@suse.de>
+Subject: [PATCH 14/76] hvc_dcc: Simplify assembly for v6 and v7 ARM
+Date: Wed, 16 Mar 2011 14:11:44 -0700
+Message-ID: <1300309966-5745-14-git-send-email-gregkh@suse.de>
 References: <20110316205746.GA2938@kroah.com>
  <1300309966-5745-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:32879 "EHLO coco.kroah.org"
+Received: from kroah.org ([198.145.64.141]:32953 "EHLO coco.kroah.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754286Ab1CPVNR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Mar 2011 17:13:17 -0400
+	id S1754704Ab1CPVNL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Mar 2011 17:13:11 -0400
 In-Reply-To: <1300309966-5745-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Mandeep Singh Baines <msb@chromium.org>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Stephen Boyd <sboyd@codeaurora.org>, Arnd Bergmann <arnd@arndb.de>, Daniel Walker <dwalker@codeaurora.org>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Mandeep Singh Baines <msb@chromium.org>
+From: Stephen Boyd <sboyd@codeaurora.org>
 
-printk()s without a priority level default to KERN_WARNING. To reduce
-noise at KERN_WARNING, this patch set the priority level appriopriately
-for unleveled printks()s. This should be useful to folks that look at
-dmesg warnings closely.
+The inline assembly differences for v6 vs. v7 in the hvc_dcc
+driver are purely optimizations. On a v7 processor, an mrc with
+the pc sets the condition codes to the 28-31 bits of the register
+being read. It just so happens that the TX/RX full bits the DCC
+driver is testing for are high enough in the register to be put
+into the condition codes. On a v6 processor, this "feature" isn't
+implemented and thus we have to do the usual read, mask, test
+operations to check for TX/RX full.
 
-Signed-off-by: Mandeep Singh Baines <msb@chromium.org>
+Since we already test the RX/TX full bits before calling
+__dcc_getchar() and __dcc_putchar() we don't actually need to do
+anything special for v7 over v6. The only difference is in
+hvc_dcc_get_chars(). We would test RX full, poll RX full, and
+then read a character from the buffer, whereas now we will test
+RX full, read a character from the buffer, and then test RX full
+again for the second iteration of the loop. It doesn't seem
+possible for the buffer to go from full to empty between testing
+the RX full and reading a character. Therefore, replace the v7
+versions with the v6 versions and everything works the same.
+
+Acked-by: Tony Lindgren <tony@atomide.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Nicolas Pitre <nicolas.pitre@linaro.org>
+Cc: Daniel Walker <dwalker@codeaurora.org>
+Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/vt/vt.c |   15 ++++++++-------
- 1 files changed, 8 insertions(+), 7 deletions(-)
+ drivers/tty/hvc/hvc_dcc.c |   24 ------------------------
+ 1 files changed, 0 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 147ede3..d5669ff 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -2157,10 +2157,10 @@ static int do_con_write(struct tty_struct *tty, const unsigned char *buf, int co
+diff --git a/drivers/tty/hvc/hvc_dcc.c b/drivers/tty/hvc/hvc_dcc.c
+index ad23cc8..435f6fa 100644
+--- a/drivers/tty/hvc/hvc_dcc.c
++++ b/drivers/tty/hvc/hvc_dcc.c
+@@ -40,19 +40,6 @@ static inline u32 __dcc_getstatus(void)
+ }
  
- 	currcons = vc->vc_num;
- 	if (!vc_cons_allocated(currcons)) {
--	    /* could this happen? */
--		printk_once("con_write: tty %d not allocated\n", currcons+1);
--	    console_unlock();
--	    return 0;
-+		/* could this happen? */
-+		pr_warn_once("con_write: tty %d not allocated\n", currcons+1);
-+		console_unlock();
-+		return 0;
- 	}
  
- 	himask = vc->vc_hi_font_mask;
-@@ -2940,7 +2940,7 @@ static int __init con_init(void)
- 	gotoxy(vc, vc->vc_x, vc->vc_y);
- 	csi_J(vc, 0);
- 	update_screen(vc);
--	printk("Console: %s %s %dx%d",
-+	pr_info("Console: %s %s %dx%d",
- 		vc->vc_can_do_color ? "colour" : "mono",
- 		display_desc, vc->vc_cols, vc->vc_rows);
- 	printable = 1;
-@@ -3103,7 +3103,7 @@ static int bind_con_driver(const struct consw *csw, int first, int last,
- 			clear_buffer_attributes(vc);
- 	}
+-#if defined(CONFIG_CPU_V7)
+-static inline char __dcc_getchar(void)
+-{
+-	char __c;
+-
+-	asm volatile("get_wait:	mrc p14, 0, pc, c0, c1, 0                  \n\
+-			bne get_wait                                       \n\
+-			mrc p14, 0, %0, c0, c5, 0	@ read comms data reg"
+-		: "=r" (__c) : : "cc");
+-
+-	return __c;
+-}
+-#else
+ static inline char __dcc_getchar(void)
+ {
+ 	char __c;
+@@ -62,24 +49,13 @@ static inline char __dcc_getchar(void)
  
--	printk("Console: switching ");
-+	pr_info("Console: switching ");
- 	if (!deflt)
- 		printk("consoles %d-%d ", first+1, last+1);
- 	if (j >= 0) {
-@@ -3809,7 +3809,8 @@ void do_unblank_screen(int leaving_gfx)
- 		return;
- 	if (!vc_cons_allocated(fg_console)) {
- 		/* impossible */
--		printk("unblank_screen: tty %d not allocated ??\n", fg_console+1);
-+		pr_warning("unblank_screen: tty %d not allocated ??\n",
-+			   fg_console+1);
- 		return;
- 	}
- 	vc = vc_cons[fg_console].d;
+ 	return __c;
+ }
+-#endif
+ 
+-#if defined(CONFIG_CPU_V7)
+-static inline void __dcc_putchar(char c)
+-{
+-	asm volatile("put_wait:	mrc p14, 0, pc, c0, c1, 0         \n\
+-			bcs put_wait                              \n\
+-			mcr p14, 0, %0, c0, c5, 0                   "
+-	: : "r" (c) : "cc");
+-}
+-#else
+ static inline void __dcc_putchar(char c)
+ {
+ 	asm volatile("mcr p14, 0, %0, c0, c5, 0	@ write a char"
+ 		: /* no output register */
+ 		: "r" (c));
+ }
+-#endif
+ 
+ static int hvc_dcc_put_chars(uint32_t vt, const char *buf, int count)
+ {
 -- 
 1.7.4.1
 
