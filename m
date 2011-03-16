@@ -1,50 +1,130 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 11/76] serial: pch_uart: revert Kconfig for non-DMA mode
-Date: Wed, 16 Mar 2011 14:11:41 -0700
-Message-ID: <1300309966-5745-11-git-send-email-gregkh@suse.de>
+Subject: [PATCH 12/76] hvc_dcc: Fix bad code generation by marking assembly volatile
+Date: Wed, 16 Mar 2011 14:11:42 -0700
+Message-ID: <1300309966-5745-12-git-send-email-gregkh@suse.de>
 References: <20110316205746.GA2938@kroah.com>
  <1300309966-5745-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:32867 "EHLO coco.kroah.org"
+Received: from kroah.org ([198.145.64.141]:32879 "EHLO coco.kroah.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754678Ab1CPVNG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Mar 2011 17:13:06 -0400
+	id S1754226Ab1CPVNI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Mar 2011 17:13:08 -0400
 In-Reply-To: <1300309966-5745-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Stephen Boyd <sboyd@codeaurora.org>, Arnd Bergmann <arnd@arndb.de>, Daniel Walker <dwalker@codeaurora.org>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>
+From: Stephen Boyd <sboyd@codeaurora.org>
 
-PCH_DMA is not always enabled when a user uses PCH_UART.
-Since overhead of DMA is not small, in case of low frequent
-communication, without DMA is better.
-Thus, "select PCH_DMA" and DMADEVICES are unnecessary
+Without marking the asm __dcc_getstatus() volatile my compiler
+decides it can cache the value of __ret in a register and then
+check the value of it continually in hvc_dcc_put_chars() (I had
+to replace get_wait/put_wait with 1 and fixup the branch
+otherwise my disassembler barfed on __dcc_(get|put)char).
 
-Signed-off-by: Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>
+00000000 <hvc_dcc_put_chars>:
+   0:   ee103e11        mrc     14, 0, r3, cr0, cr1, {0}
+   4:   e3a0c000        mov     ip, #0  ; 0x0
+   8:   e2033202        and     r3, r3, #536870912      ; 0x20000000
+   c:   ea000006        b       2c <hvc_dcc_put_chars+0x2c>
+  10:   e3530000        cmp     r3, #0  ; 0x0
+  14:   1afffffd        bne     10 <hvc_dcc_put_chars+0x10>
+  18:   e7d1000c        ldrb    r0, [r1, ip]
+  1c:   ee10fe11        mrc     14, 0, pc, cr0, cr1, {0}
+  20:   2afffffd        bcs     1c <hvc_dcc_put_chars+0x1c>
+  24:   ee000e15        mcr     14, 0, r0, cr0, cr5, {0}
+  28:   e28cc001        add     ip, ip, #1      ; 0x1
+  2c:   e15c0002        cmp     ip, r2
+  30:   bafffff6        blt     10 <hvc_dcc_put_chars+0x10>
+  34:   e1a00002        mov     r0, r2
+  38:   e12fff1e        bx      lr
+
+As you can see, the value of the mrc is checked against
+DCC_STATUS_TX (bit 29) and then stored in r3 for later use.
+Marking the asm volatile produces the following:
+
+00000000 <hvc_dcc_put_chars>:
+   0:   e3a03000        mov     r3, #0  ; 0x0
+   4:   ea000007        b       28 <hvc_dcc_put_chars+0x28>
+   8:   ee100e11        mrc     14, 0, r0, cr0, cr1, {0}
+   c:   e3100202        tst     r0, #536870912  ; 0x20000000
+  10:   1afffffc        bne     8 <hvc_dcc_put_chars+0x8>
+  14:   e7d10003        ldrb    r0, [r1, r3]
+  18:   ee10fe11        mrc     14, 0, pc, cr0, cr1, {0}
+  1c:   2afffffd        bcs     18 <hvc_dcc_put_chars+0x18>
+  20:   ee000e15        mcr     14, 0, r0, cr0, cr5, {0}
+  24:   e2833001        add     r3, r3, #1      ; 0x1
+  28:   e1530002        cmp     r3, r2
+  2c:   bafffff5        blt     8 <hvc_dcc_put_chars+0x8>
+  30:   e1a00002        mov     r0, r2
+  34:   e12fff1e        bx      lr
+
+which looks better and actually works. Mark all the inline
+assembly in this file as volatile since we don't want the
+compiler to optimize away these statements or move them around
+in any way.
+
+Acked-by: Tony Lindgren <tony@atomide.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Nicolas Pitre <nicolas.pitre@linaro.org>
+Cc: Daniel Walker <dwalker@codeaurora.org>
+Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/serial/Kconfig |    5 ++---
- 1 files changed, 2 insertions(+), 3 deletions(-)
+ drivers/tty/hvc/hvc_dcc.c |   11 +++++------
+ 1 files changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 86e2c99..aaedbad 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1588,10 +1588,9 @@ config SERIAL_IFX6X60
- 	  Support for the IFX6x60 modem devices on Intel MID platforms.
+diff --git a/drivers/tty/hvc/hvc_dcc.c b/drivers/tty/hvc/hvc_dcc.c
+index 6470f63..155ec10 100644
+--- a/drivers/tty/hvc/hvc_dcc.c
++++ b/drivers/tty/hvc/hvc_dcc.c
+@@ -33,8 +33,7 @@
+ static inline u32 __dcc_getstatus(void)
+ {
+ 	u32 __ret;
+-
+-	asm("mrc p14, 0, %0, c0, c1, 0	@ read comms ctrl reg"
++	asm volatile("mrc p14, 0, %0, c0, c1, 0	@ read comms ctrl reg"
+ 		: "=r" (__ret) : : "cc");
  
- config SERIAL_PCH_UART
--	tristate "Intel EG20T PCH UART"
--	depends on PCI && DMADEVICES
-+	tristate "Intel EG20T PCH UART/OKI SEMICONDUCTOR ML7213 IOH"
-+	depends on PCI
- 	select SERIAL_CORE
--	select PCH_DMA
- 	help
- 	  This driver is for PCH(Platform controller Hub) UART of Intel EG20T
- 	  which is an IOH(Input/Output Hub) for x86 embedded processor.
+ 	return __ret;
+@@ -46,7 +45,7 @@ static inline char __dcc_getchar(void)
+ {
+ 	char __c;
+ 
+-	asm("get_wait:	mrc p14, 0, pc, c0, c1, 0                          \n\
++	asm volatile("get_wait:	mrc p14, 0, pc, c0, c1, 0                  \n\
+ 			bne get_wait                                       \n\
+ 			mrc p14, 0, %0, c0, c5, 0	@ read comms data reg"
+ 		: "=r" (__c) : : "cc");
+@@ -58,7 +57,7 @@ static inline char __dcc_getchar(void)
+ {
+ 	char __c;
+ 
+-	asm("mrc p14, 0, %0, c0, c5, 0	@ read comms data reg"
++	asm volatile("mrc p14, 0, %0, c0, c5, 0	@ read comms data reg"
+ 		: "=r" (__c));
+ 
+ 	return __c;
+@@ -68,7 +67,7 @@ static inline char __dcc_getchar(void)
+ #if defined(CONFIG_CPU_V7)
+ static inline void __dcc_putchar(char c)
+ {
+-	asm("put_wait:	mrc p14, 0, pc, c0, c1, 0                 \n\
++	asm volatile("put_wait:	mrc p14, 0, pc, c0, c1, 0         \n\
+ 			bcs put_wait                              \n\
+ 			mcr p14, 0, %0, c0, c5, 0                   "
+ 	: : "r" (c) : "cc");
+@@ -76,7 +75,7 @@ static inline void __dcc_putchar(char c)
+ #else
+ static inline void __dcc_putchar(char c)
+ {
+-	asm("mcr p14, 0, %0, c0, c5, 0	@ write a char"
++	asm volatile("mcr p14, 0, %0, c0, c5, 0	@ write a char"
+ 		: /* no output register */
+ 		: "r" (c));
+ }
 -- 
 1.7.4.1
 
