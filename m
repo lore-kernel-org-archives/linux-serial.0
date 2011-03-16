@@ -1,139 +1,152 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 61/76] pch_uart: Fix DMA channel miss-setting issue.
-Date: Wed, 16 Mar 2011 14:12:31 -0700
-Message-ID: <1300309966-5745-61-git-send-email-gregkh@suse.de>
+Subject: [PATCH 73/76] n_gsm: add a documentation
+Date: Wed, 16 Mar 2011 14:12:43 -0700
+Message-ID: <1300309966-5745-73-git-send-email-gregkh@suse.de>
 References: <20110316205746.GA2938@kroah.com>
  <1300309966-5745-1-git-send-email-gregkh@suse.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:32804 "EHLO coco.kroah.org"
+Received: from kroah.org ([198.145.64.141]:32957 "EHLO coco.kroah.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754086Ab1CPVPF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Mar 2011 17:15:05 -0400
+	id S1754751Ab1CPVPj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Mar 2011 17:15:39 -0400
 In-Reply-To: <1300309966-5745-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: =?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>
+=46rom: Eric B=C3=A9nard <eric@eukrea.com>
 
-Signed-off-by: Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>
+* this documentation gives some details on how to get the n_gsm
+line discipline to work with modems supporting 07.10 basic option.
+
+* it was tested on Telit and Simcom modems.
+
+Signed-off-by: Eric B=C3=A9nard <eric@eukrea.com>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/serial/pch_uart.c |   59 ++++++++++++++++++++++++++++++++--------
- 1 files changed, 47 insertions(+), 12 deletions(-)
+ Documentation/serial/n_gsm.txt |   89 ++++++++++++++++++++++++++++++++=
+++++++++
+ 1 files changed, 89 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/serial/n_gsm.txt
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index da0ba0f..a5ce9a5 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -235,6 +235,36 @@ struct eg20t_port {
- 	dma_addr_t			rx_buf_dma;
- };
- 
-+/**
-+ * struct pch_uart_driver_data - private data structure for UART-DMA
-+ * @port_type:			The number of DMA channel
-+ * @line_no:			UART port line number (0, 1, 2...)
-+ */
-+struct pch_uart_driver_data {
-+	int port_type;
-+	int line_no;
-+};
+diff --git a/Documentation/serial/n_gsm.txt b/Documentation/serial/n_gs=
+m.txt
+new file mode 100644
+index 0000000..397f41a
+--- /dev/null
++++ b/Documentation/serial/n_gsm.txt
+@@ -0,0 +1,89 @@
++n_gsm.c GSM 0710 tty multiplexor HOWTO
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D
 +
-+enum pch_uart_num_t {
-+	pch_et20t_uart0 = 0,
-+	pch_et20t_uart1,
-+	pch_et20t_uart2,
-+	pch_et20t_uart3,
-+	pch_ml7213_uart0,
-+	pch_ml7213_uart1,
-+	pch_ml7213_uart2,
-+};
++This line discipline implements the GSM 07.10 multiplexing protocol
++detailed in the following 3GPP document :
++http://www.3gpp.org/ftp/Specs/archive/07_series/07.10/0710-720.zip
 +
-+static struct pch_uart_driver_data drv_dat[] = {
-+	[pch_et20t_uart0] = {PCH_UART_8LINE, 0},
-+	[pch_et20t_uart1] = {PCH_UART_2LINE, 1},
-+	[pch_et20t_uart2] = {PCH_UART_2LINE, 2},
-+	[pch_et20t_uart3] = {PCH_UART_2LINE, 3},
-+	[pch_ml7213_uart0] = {PCH_UART_8LINE, 0},
-+	[pch_ml7213_uart1] = {PCH_UART_2LINE, 1},
-+	[pch_ml7213_uart2] = {PCH_UART_2LINE, 2},
-+};
++This document give some hints on how to use this driver with GPRS and =
+3G
++modems connected to a physical serial port.
 +
- static unsigned int default_baud = 9600;
- static const int trigger_level_256[4] = { 1, 64, 128, 224 };
- static const int trigger_level_64[4] = { 1, 16, 32, 56 };
-@@ -568,7 +598,8 @@ static void pch_request_dma(struct uart_port *port)
- 	/* Set Tx DMA */
- 	param = &priv->param_tx;
- 	param->dma_dev = &dma_dev->dev;
--	param->chan_id = priv->port.line;
-+	param->chan_id = priv->port.line * 2; /* Tx = 0, 2, 4, ... */
++How to use it
++-------------
++1- initialize the modem in 0710 mux mode (usually AT+CMUX=3D command) =
+through
++its serial port. Depending on the modem used, you can pass more or les=
+s
++parameters to this command,
++2- switch the serial line to using the n_gsm line discipline by using
++TIOCSETD ioctl,
++3- configure the mux using GSMIOC_GETCONF / GSMIOC_SETCONF ioctl,
 +
- 	param->tx_reg = port->mapbase + UART_TX;
- 	chan = dma_request_channel(mask, filter, param);
- 	if (!chan) {
-@@ -581,7 +612,8 @@ static void pch_request_dma(struct uart_port *port)
- 	/* Set Rx DMA */
- 	param = &priv->param_rx;
- 	param->dma_dev = &dma_dev->dev;
--	param->chan_id = priv->port.line + 1; /* Rx = Tx + 1 */
-+	param->chan_id = priv->port.line * 2 + 1; /* Rx = Tx + 1 */
++Major parts of the initialization program :
++(a good starting point is util-linux-ng/sys-utils/ldattach.c)
++#include <linux/gsmmux.h>
++#define N_GSM0710	21	/* GSM 0710 Mux */
++#define DEFAULT_SPEED	B115200
++#define SERIAL_PORT	/dev/ttyS0
 +
- 	param->rx_reg = port->mapbase + UART_RX;
- 	chan = dma_request_channel(mask, filter, param);
- 	if (!chan) {
-@@ -1358,8 +1390,11 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
- 	unsigned int mapbase;
- 	unsigned char *rxbuf;
- 	int fifosize, base_baud;
--	static int num;
--	int port_type = id->driver_data;
-+	int port_type;
-+	struct pch_uart_driver_data *board;
++	int ldisc =3D N_GSM0710;
++	struct gsm_config c;
++	struct termios configuration;
 +
-+	board = &drv_dat[id->driver_data];
-+	port_type = board->port_type;
- 
- 	priv = kzalloc(sizeof(struct eg20t_port), GFP_KERNEL);
- 	if (priv == NULL)
-@@ -1404,7 +1439,7 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
- 	priv->port.ops = &pch_uart_ops;
- 	priv->port.flags = UPF_BOOT_AUTOCONF;
- 	priv->port.fifosize = fifosize;
--	priv->port.line = num++;
-+	priv->port.line = board->line_no;
- 	priv->trigger = PCH_UART_HAL_TRIGGER_M;
- 
- 	spin_lock_init(&priv->port.lock);
-@@ -1482,19 +1517,19 @@ static int pch_uart_pci_resume(struct pci_dev *pdev)
- 
- static DEFINE_PCI_DEVICE_TABLE(pch_uart_pci_id) = {
- 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x8811),
--	 .driver_data = PCH_UART_8LINE},
-+	 .driver_data = pch_et20t_uart0},
- 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x8812),
--	 .driver_data = PCH_UART_2LINE},
-+	 .driver_data = pch_et20t_uart1},
- 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x8813),
--	 .driver_data = PCH_UART_2LINE},
-+	 .driver_data = pch_et20t_uart2},
- 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x8814),
--	 .driver_data = PCH_UART_2LINE},
-+	 .driver_data = pch_et20t_uart3},
- 	{PCI_DEVICE(PCI_VENDOR_ID_ROHM, 0x8027),
--	 .driver_data = PCH_UART_8LINE},
-+	 .driver_data = pch_ml7213_uart0},
- 	{PCI_DEVICE(PCI_VENDOR_ID_ROHM, 0x8028),
--	 .driver_data = PCH_UART_2LINE},
-+	 .driver_data = pch_ml7213_uart1},
- 	{PCI_DEVICE(PCI_VENDOR_ID_ROHM, 0x8029),
--	 .driver_data = PCH_UART_2LINE},
-+	 .driver_data = pch_ml7213_uart2},
- 	{0,},
- };
- 
--- 
++	/* open the serial port connected to the modem */
++	fd =3D open(SERIAL_PORT, O_RDWR | O_NOCTTY | O_NDELAY);
++
++	/* configure the serial port : speed, flow control ... */
++
++	/* send the AT commands to switch the modem to CMUX mode
++	   and check that it's succesful (should return OK) */
++	write(fd, "AT+CMUX=3D0\r", 10);
++
++	/* experience showed that some modems need some time before
++	   being able to answer to the first MUX packet so a delay
++	   may be needed here in some case */
++	sleep(3);
++
++	/* use n_gsm line discipline */
++	ioctl(fd, TIOCSETD, &ldisc);
++
++	/* get n_gsm configuration */
++	ioctl(fd, GSMIOC_GETCONF, &c);
++	/* we are initiator and need encoding 0 (basic) */
++	c.initiator =3D 1;
++	c.encapsulation =3D 0;
++	/* our modem defaults to a maximum size of 127 bytes */
++	c.mru =3D 127;
++	c.mtu =3D 127;
++	/* set the new configuration */
++	ioctl(fd, GSMIOC_SETCONF, &c);
++
++	/* and wait for ever to keep the line discipline enabled */
++	daemon(0,0);
++	pause();
++
++4- create the devices corresponding to the "virtual" serial ports (tak=
+e care,
++each modem has its configuration and some DLC have dedicated functions=
+,
++for example GPS), starting with minor 1 (DLC0 is reserved for the mana=
+gement
++of the mux)
++
++MAJOR=3D`cat /proc/devices |grep gsmtty | awk '{print $1}`
++for i in `seq 1 4`; do
++	mknod /dev/ttygsm$i c $MAJOR $i
++done
++
++5- use these devices as plain serial ports.
++for example, it's possible :
++- and to use gnokii to send / receive SMS on ttygsm1
++- to use ppp to establish a datalink on ttygsm2
++
++6- first close all virtual ports before closing the physical port.
++
++Additional Documentation
++------------------------
++More practical details on the protocol and how it's supported by indus=
+trial
++modems can be found in the following documents :
++http://www.telit.com/module/infopool/download.php?id=3D616
++http://www.u-blox.com/images/downloads/Product_Docs/LEON-G100-G200-Mux=
+Implementation_ApplicationNote_%28GSM%20G1-CS-10002%29.pdf
++http://www.sierrawireless.com/Support/Downloads/AirPrime/WMP_Series/~/=
+media/Support_Downloads/AirPrime/Application_notes/CMUX_Feature_Applica=
+tion_Note-Rev004.ashx
++http://wm.sim.com/sim/News/photo/2010721161442.pdf
++
++11-03-08 - Eric B=C3=A9nard - <eric@eukrea.com>
+--=20
 1.7.4.1
 
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
