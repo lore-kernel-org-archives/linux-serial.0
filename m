@@ -1,98 +1,127 @@
-From: Greg Ungerer <gerg@snapgear.com>
-Subject: Re: [PATCH 09/76] 68328serial: remove unsed m68k_serial->tqueue_hangup
-Date: Thu, 17 Mar 2011 08:41:22 +1000
-Message-ID: <4D813C92.1060303@snapgear.com>
-References: <20110316205746.GA2938@kroah.com> <1300309966-5745-1-git-send-email-gregkh@suse.de> <1300309966-5745-9-git-send-email-gregkh@suse.de>
+From: David Daney <ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Subject: [RFC PATCH 1/2] serial: 8250: Add a notifier chain for driver
+	registration.
+Date: Wed, 16 Mar 2011 18:26:06 -0700
+Message-ID: <1300325167-26433-2-git-send-email-ddaney@caviumnetworks.com>
+References: <1300325167-26433-1-git-send-email-ddaney@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from sncsmrelay2.nai.com ([67.97.80.206]:46301 "EHLO
-	sncsmrelay2.nai.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751561Ab1CPWqh (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Mar 2011 18:46:37 -0400
-In-Reply-To: <1300309966-5745-9-git-send-email-gregkh@suse.de>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+In-Reply-To: <1300325167-26433-1-git-send-email-ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
+	<mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss>
+List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
+	<mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
+Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Sender: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-l3A5Bk7waGM@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org
+Cc: David Daney <ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@suse.de>
-Cc: linux-serial@vger.kernel.org, Tejun Heo <tj@kernel.org>
 
-On 17/03/11 07:11, Greg Kroah-Hartman wrote:
-> From: Tejun Heo<tj@kernel.org>
->
-> m68k_serial->tqueue_hangup is unused.  Remove it.
->
-> Signed-off-by: Tejun Heo<tj@kernel.org>
-> Cc: Greg Ungerer<gerg@uclinux.org>
+The 8250 driver is a bit weird in that in addition to supporting
+platform devices, extra devices can be added by calling
+serial8250_register_port().
 
-Acked-by: Greg Ungerer <gerg@uclinux.org>
+The problem is that if we call serial8250_register_port() before the
+driver is initialized Bad Things happen (we dereference NULL
+pointers).
 
+There doesn't seem to be a general way to know if a driver has been
+initialized, so we add a notifier chain just for this driver.  When the
+SERIAL8250_DRIVER_ADD notifier is called, we know it is safe to call
+serial8250_register_port(), and we can add our devices.
 
-> Signed-off-by: Greg Kroah-Hartman<gregkh@suse.de>
-> ---
->   drivers/tty/serial/68328serial.c |   23 -----------------------
->   drivers/tty/serial/68328serial.h |    1 -
->   2 files changed, 0 insertions(+), 24 deletions(-)
->
-> diff --git a/drivers/tty/serial/68328serial.c b/drivers/tty/serial/68328serial.c
-> index be0ebce..a9d9985 100644
-> --- a/drivers/tty/serial/68328serial.c
-> +++ b/drivers/tty/serial/68328serial.c
-> @@ -393,28 +393,6 @@ static void do_softint(struct work_struct *work)
->   #endif
->   }
->
-> -/*
-> - * This routine is called from the scheduler tqueue when the interrupt
-> - * routine has signalled that a hangup has occurred.  The path of
-> - * hangup processing is:
-> - *
-> - * 	serial interrupt routine ->  (scheduler tqueue) ->
-> - * 	do_serial_hangup() ->  tty->hangup() ->  rs_hangup()
-> - *
-> - */
-> -static void do_serial_hangup(struct work_struct *work)
-> -{
-> -	struct m68k_serial	*info = container_of(work, struct m68k_serial, tqueue_hangup);
-> -	struct tty_struct	*tty;
-> -	
-> -	tty = info->port.tty;
-> -	if (!tty)
-> -		return;
-> -
-> -	tty_hangup(tty);
-> -}
-> -
-> -
->   static int startup(struct m68k_serial * info)
->   {
->   	m68328_uart *uart =&uart_addr[info->line];
-> @@ -1348,7 +1326,6 @@ rs68328_init(void)
->   	    info->count = 0;
->   	    info->blocked_open = 0;
->   	    INIT_WORK(&info->tqueue, do_softint);
-> -	    INIT_WORK(&info->tqueue_hangup, do_serial_hangup);
->   	    init_waitqueue_head(&info->open_wait);
->   	    init_waitqueue_head(&info->close_wait);
->   	    info->line = i;
-> diff --git a/drivers/tty/serial/68328serial.h b/drivers/tty/serial/68328serial.h
-> index 664ceb0..8c9c3c0 100644
-> --- a/drivers/tty/serial/68328serial.h
-> +++ b/drivers/tty/serial/68328serial.h
-> @@ -159,7 +159,6 @@ struct m68k_serial {
->   	int			xmit_tail;
->   	int			xmit_cnt;
->   	struct work_struct	tqueue;
-> -	struct work_struct	tqueue_hangup;
->   	wait_queue_head_t	open_wait;
->   	wait_queue_head_t	close_wait;
->   };
+Signed-off-by: David Daney <ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+---
+ drivers/tty/serial/8250.c   |   20 ++++++++++++++++++++
+ include/linux/serial_8250.h |   21 +++++++++++++++++++++
+ 2 files changed, 41 insertions(+), 0 deletions(-)
 
-
+diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
+index 3975df6..229a1d2 100644
+--- a/drivers/tty/serial/8250.c
++++ b/drivers/tty/serial/8250.c
+@@ -3281,6 +3281,20 @@ void serial8250_unregister_port(int line)
+ }
+ EXPORT_SYMBOL(serial8250_unregister_port);
+ 
++static BLOCKING_NOTIFIER_HEAD(serial8250_notifier);
++
++int serial8250_register_notifier(struct notifier_block *nb)
++{
++	return blocking_notifier_chain_register(&serial8250_notifier, nb);
++}
++EXPORT_SYMBOL(serial8250_register_notifier);
++
++int serial8250_unregister_notifier(struct notifier_block *nb)
++{
++	return blocking_notifier_chain_unregister(&serial8250_notifier, nb);
++}
++EXPORT_SYMBOL(serial8250_unregister_notifier);
++
+ static int __init serial8250_init(void)
+ {
+ 	int ret;
+@@ -3328,6 +3342,10 @@ unreg_uart_drv:
+ 	uart_unregister_driver(&serial8250_reg);
+ #endif
+ out:
++	if (ret == 0)
++		blocking_notifier_call_chain(&serial8250_notifier,
++					     SERIAL8250_DRIVER_ADD, NULL);
++
+ 	return ret;
+ }
+ 
+@@ -3335,6 +3353,8 @@ static void __exit serial8250_exit(void)
+ {
+ 	struct platform_device *isa_dev = serial8250_isa_devs;
+ 
++	blocking_notifier_call_chain(&serial8250_notifier,
++				     SERIAL8250_DRIVER_REMOVE, NULL);
+ 	/*
+ 	 * This tells serial8250_unregister_port() not to re-register
+ 	 * the ports (thereby making serial8250_isa_driver permanently
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index 97f5b45..2155c28 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -11,6 +11,7 @@
+ #ifndef _LINUX_SERIAL_8250_H
+ #define _LINUX_SERIAL_8250_H
+ 
++#include <linux/notifier.h>
+ #include <linux/serial_core.h>
+ #include <linux/platform_device.h>
+ 
+@@ -85,4 +86,24 @@ extern void serial8250_set_isa_configurator(void (*v)
+ 					(int port, struct uart_port *up,
+ 						unsigned short *capabilities));
+ 
++extern int serial8250_register_notifier(struct notifier_block *nb);
++extern int serial8250_unregister_notifier(struct notifier_block *nb);
++/*
++ * Notifiers get called to allow serial8250_register_port() after the
++ * driver is registered, and serial8250_unregister_port() to be called
++ * before it is unregistered.
++ */
++#define SERIAL8250_DRIVER_ADD 1
++#define SERIAL8250_DRIVER_REMOVE 2
++
++#define serial8250_notifier(fn, pri)				\
++({								\
++	static struct notifier_block fn##_nb = {		\
++		.notifier_call = fn,				\
++		.priority = pri					\
++	};							\
++								\
++	serial8250_register_notifier(&fn##_nb);			\
++})
++
+ #endif
 -- 
-------------------------------------------------------------------------
-Greg Ungerer  --  Principal Engineer        EMAIL:     gerg@snapgear.com
-SnapGear Group, McAfee                      PHONE:       +61 7 3435 2888
-8 Gardner Close                             FAX:         +61 7 3217 5323
-Milton, QLD, 4064, Australia                WEB: http://www.SnapGear.com
+1.7.2.3
