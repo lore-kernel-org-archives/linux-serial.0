@@ -1,29 +1,46 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: Wrong GIT author ? also bugs: serial: Add uart driver for
- i.MX23/28
-Date: Fri, 18 Mar 2011 13:49:21 +0000
-Message-ID: <20110318134921.3b5f1277@lxorguk.ukuu.org.uk>
-References: <201103180302.p2I326tA020159@hera.kernel.org>
-	<20110318112920.07148450@lxorguk.ukuu.org.uk>
-	<20110318133905.GB29521@pengutronix.de>
+Subject: [PATCH] MAINTAINERS: Add serial
+Date: Fri, 18 Mar 2011 13:34:07 +0000
+Message-ID: <20110318133346.9767.49089.stgit@bob.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:57105 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1756517Ab1CRNtj (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:56431 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756677Ab1CRNyf (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 18 Mar 2011 09:49:39 -0400
-In-Reply-To: <20110318133905.GB29521@pengutronix.de>
+	Fri, 18 Mar 2011 09:54:35 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, torvalds@linux-foundation.org
+To: linux-serial@vger.kernel.org, torvalds@linux-foundation.org, s.hauer@pengutronix.de
 
-> BTW I wasn't aware of the linux-serial list and the according MAINTAINER
-> entries do not exist. Should they be added?
+From: Alan Cox <alan@linux.intel.com>
 
-Judging by the fact you looked in MAINTAINERS and didn't fid it - yes
+Add an entry for serial maintainers. 
 
-Alan
+Signed-off-by: Alan Cox <alan@linux.intel.com>
+---
+
+ MAINTAINERS |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2b9de57..e52a739 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -5405,6 +5405,12 @@ L:	alsa-devel@alsa-project.org (moderated for non-subscribers)
+ S:	Supported
+ F:	sound/soc/samsung
+ 
++SERIAL DRIVERS
++M:	Alan Cox <alan@linux.intel.com>
++L:	linux-serial@vger.kernel.org
++S:	Maintained
++F:	tty/serial
++
+ TIMEKEEPING, NTP
+ M:	John Stultz <johnstul@us.ibm.com>
+ M:	Thomas Gleixner <tglx@linutronix.de>
+
