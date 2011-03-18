@@ -1,20 +1,20 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [RFC 3/5] 8250: register upio users
-Date: Fri, 18 Mar 2011 15:25:38 +0000
-Message-ID: <20110318152529.10657.10613.stgit@bob.linux.org.uk>
+Subject: [RFC 4/5] 8250: evict the hub6 I/O operations
+Date: Fri, 18 Mar 2011 15:25:57 +0000
+Message-ID: <20110318152549.10657.33161.stgit@bob.linux.org.uk>
 References: <20110318152145.10657.23718.stgit@bob.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:44127 "EHLO
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:44128 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754184Ab1CRPp3 (ORCPT
+	with ESMTP id S1750953Ab1CRPps (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 18 Mar 2011 11:45:29 -0400
+	Fri, 18 Mar 2011 11:45:48 -0400
 Received: from bob.linux.org.uk (earthlight.etchedpixels.co.uk [81.2.110.250])
-	by lxorguk.ukuu.org.uk (8.14.4/8.14.1) with ESMTP id p2IFmI2i018113
-	for <linux-serial@vger.kernel.org>; Fri, 18 Mar 2011 15:48:24 GMT
+	by lxorguk.ukuu.org.uk (8.14.4/8.14.1) with ESMTP id p2IFmbRC018128
+	for <linux-serial@vger.kernel.org>; Fri, 18 Mar 2011 15:48:42 GMT
 In-Reply-To: <20110318152145.10657.23718.stgit@bob.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -22,174 +22,217 @@ To: linux-serial@vger.kernel.org
 
 From: Alan Cox <alan@linux.intel.com>
 
-We need to do this so we can continue to offer the setserial upio interface
-while dumping I/O methods back out into the drivers.
+This is a test to see how the split looks when we do this, there is other
+hub6 code buried in the core because of the way the 8250 and serial core
+manage resources. That needs addressing.
 
 Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
 
- drivers/tty/serial/8250.c   |  103 ++++++++++++++++++++++++++++++-------------
- include/linux/serial_8250.h |    4 ++
- 2 files changed, 77 insertions(+), 30 deletions(-)
+ drivers/tty/serial/8250.c      |   52 ++--------------------------------------
+ drivers/tty/serial/8250.h      |   27 +++++++++++++++++++++
+ drivers/tty/serial/8250_hub6.c |   39 ++++++++++++++++++++++++++++++
+ include/linux/serial_8250.h    |    2 +-
+ 4 files changed, 69 insertions(+), 51 deletions(-)
 
 
 diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
-index c3e56a7..89a00d1 100644
+index 89a00d1..a5867da 100644
 --- a/drivers/tty/serial/8250.c
 +++ b/drivers/tty/serial/8250.c
-@@ -612,46 +612,87 @@ static const struct serial8250_ops rm9k_ops = {
- 	.serial_dl_write = rm9k_serial_dl_write
- };
+@@ -131,32 +131,6 @@ static unsigned long probe_rsa[PORT_RSA_MAX];
+ static unsigned int probe_rsa_count;
+ #endif /* CONFIG_SERIAL_8250_RSA  */
  
--/* This needs to move to a table where drivers register their ops. Needs
--   some thought on the module count side */
-+	
-+static const struct serial8250_ops *upio_ops[UPIO_MAX + 1] = {
-+	/* We rely upon pio_ops being built in */
-+	&pio_ops,	/* UPIO_PORT */
-+	&hub6_ops,	/* UPIO_HUB6 */
-+	&mem_ops,	/* UPIO_MEM */
-+	&mem32_ops,	/* UPIO_MEM32 */
-+	&au_ops,	/* UPIO_AU */
-+	&tsi_ops,	/* UPIO_TSI */
-+	&dwapb_ops,	/* UPIO_DWAPB */
-+	&rm9k_ops,	/* UPIO_RM9000 */
-+	&dwapb32_ops	/* UPIO_DWAPB32 */
-+};
-+
-+static DEFINE_MUTEX(upio_mutex);
-+
- static void set_io_from_upio(struct uart_port *p)
- {
- 	struct uart_8250_port *up =
- 		container_of(p, struct uart_8250_port, port);
+-struct uart_8250_port {
+-	struct uart_port	port;
+-	const struct serial8250_ops *ops;	/* I/O access methods */
+-	struct timer_list	timer;		/* "no irq" timer */
+-	struct list_head	list;		/* ports on this IRQ */
+-	unsigned short		capabilities;	/* port capabilities */
+-	unsigned short		bugs;		/* port bugs */
+-	unsigned int		tx_loadsz;	/* transmit fifo load size */
+-	unsigned char		acr;
+-	unsigned char		ier;
+-	unsigned char		lcr;
+-	unsigned char		mcr;
+-	unsigned char		mcr_mask;	/* mask of user bits */
+-	unsigned char		mcr_force;	/* mask of forced bits */
+-	unsigned char		cur_iotype;	/* Running I/O type */
+-
+-	/*
+-	 * Some bits in registers are cleared on a read, so they must
+-	 * be saved whenever the register is read but the bits will not
+-	 * be immediately processed.
+-	 */
+-#define LSR_SAVE_FLAGS UART_LSR_BRK_ERROR_BITS
+-	unsigned char		lsr_saved_flags;
+-#define MSR_SAVE_FLAGS UART_MSR_ANY_DELTA
+-	unsigned char		msr_saved_flags;
+-};
  
--	switch (p->iotype) {
--	case UPIO_HUB6:
--		up->ops = &hub6_ops;
--		break;
--	case UPIO_MEM:
--		up->ops = &mem_ops;
--		break;
--	case UPIO_RM9000:
--		up->ops = &rm9k_ops;
--		break;
--	case UPIO_MEM32:
--		up->ops = &mem32_ops;
--		break;
--	case UPIO_AU:
--		up->ops = &au_ops;
--		break;
--	case UPIO_TSI:
--		up->ops = &tsi_ops;
--		break;
--	case UPIO_DWAPB:
--		up->ops = &dwapb_ops;
--		break;
--	case UPIO_DWAPB32:
--		up->ops = &dwapb32_ops;
--		break;
--	default:
-+	mutex_lock(&upio_mutex);
-+	if (p->iotype > UPIO_MAX) {
-+		WARN_ON(1);
- 		up->ops = &pio_ops;
--		break;
-+		p->iotype = UPIO_PORT;
-+	}
-+	/* up->ops may differ from up->cur_iotype ops
-+	   For now work off cur_iotype, we should address this better later */
-+	module_put(upio_ops[up->cur_iotype]->owner);
-+	up->ops = upio_ops[p->iotype];
-+	if (up->ops == NULL || !try_module_get(up->ops->owner)) {
-+		up->ops = &pio_ops;
-+		p->iotype = UPIO_PORT;
- 	}
-+		
- 	/* Remember loaded iotype */
- 	up->cur_iotype = p->iotype;
-+	mutex_unlock(&upio_mutex);
+ struct irq_info {
+ 	struct			hlist_node node;
+@@ -406,28 +380,6 @@ static void std_serial_dl_write(struct uart_port *p, unsigned int value)
+ 	up->ops->serial_out(p, UART_DLM, value >> 8 & 0xff);
  }
  
-+/**
-+ *	serial8250_upio_register	-	register UPIO methods
-+ *	@upio: upio number
-+ *	@ops: operations for this upio
-+ *
-+ *	Registers a set of upio operations and makes them available via
-+ *	the serial configuration interface for tty devices, and via the
-+ *	registration interfaces via upio value setting. Unless there are
-+ *	specific reasons new drivers should pass an ops structure directly
-+ *	instead.
-+ */
-+int serial8250_upio_register(int upio, struct serial8250_ops *ops)
-+{
-+	int ret = 0;
-+	mutex_lock(&upio_mutex);
-+	if (upio < 1 || upio > UPIO_MAX)
-+		ret = -EINVAL;
-+	else if (upio_ops[upio])
-+		ret = -EBUSY;
-+	else
-+		upio_ops[upio] = ops;
-+	mutex_unlock(&upio_mutex);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(serial8250_upio_register);
-+
-+int serial8250_upio_unregister(int upio)
-+{
-+	int ret = 0;
-+	mutex_lock(&upio_mutex);
-+	if (upio_ops[upio] == NULL) {
-+		WARN_ON(1);
-+		ret = -EINVAL;
-+	}
-+	upio_ops[upio] = NULL;
-+	mutex_unlock(&upio_mutex);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(serial8250_upio_unregister);
-+
- static void
- serial_out_sync(struct uart_8250_port *up, int offset, int value)
+-
+-static unsigned int hub6_serial_in(struct uart_port *p, int offset)
+-{
+-	offset = map_8250_in_reg(p, offset) << p->regshift;
+-	outb(p->hub6 - 1 + offset, p->iobase);
+-	return inb(p->iobase + 1);
+-}
+-
+-static void hub6_serial_out(struct uart_port *p, int offset, int value)
+-{
+-	offset = map_8250_out_reg(p, offset) << p->regshift;
+-	outb(p->hub6 - 1 + offset, p->iobase);
+-	outb(value, p->iobase + 1);
+-}
+-
+-static const struct serial8250_ops hub6_ops = {
+-	.serial_in = hub6_serial_in,
+-	.serial_out = hub6_serial_out,
+-	.serial_dl_read = std_serial_dl_read,
+-	.serial_dl_write = std_serial_dl_write
+-};
+-
+ static unsigned int mem_serial_in(struct uart_port *p, int offset)
  {
-@@ -3305,7 +3346,7 @@ int serial8250_register_port(struct uart_port *port,
- 
- 		set_io_from_upio(&uart->port);
- 		if (ops)
--			uart->port.ops = ops;
-+			uart->ops = ops;
- 
- 		if (serial8250_isa_config != NULL)
- 			serial8250_isa_config(0, &uart->port,
-@@ -3337,6 +3378,8 @@ void serial8250_unregister_port(int line)
- 	if (serial8250_isa_devs) {
- 		uart->port.flags &= ~UPF_BOOT_AUTOCONF;
- 		uart->port.type = PORT_UNKNOWN;
-+		uart->port.iotype = UPIO_PORT;
-+		set_io_from_upio(&uart->port);
- 		uart->port.dev = &serial8250_isa_devs->dev;
- 		uart_add_one_port(&serial8250_reg, &uart->port);
- 	} else {
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index 15806bb..30d4f62 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -24,6 +24,7 @@ struct serial8250_ops {
- 			      unsigned old);
- 	unsigned int	(*serial_dl_read)(struct uart_port *);
- 	void		(*serial_dl_write)(struct uart_port *, unsigned int);
-+	struct module 	*owner;
+ 	offset = map_8250_in_reg(p, offset) << p->regshift;
+@@ -616,7 +568,7 @@ static const struct serial8250_ops rm9k_ops = {
+ static const struct serial8250_ops *upio_ops[UPIO_MAX + 1] = {
+ 	/* We rely upon pio_ops being built in */
+ 	&pio_ops,	/* UPIO_PORT */
+-	&hub6_ops,	/* UPIO_HUB6 */
++	NULL,		/* UPIO_HUB6 */
+ 	&mem_ops,	/* UPIO_MEM */
+ 	&mem32_ops,	/* UPIO_MEM32 */
+ 	&au_ops,	/* UPIO_AU */
+@@ -664,7 +616,7 @@ static void set_io_from_upio(struct uart_port *p)
+  *	specific reasons new drivers should pass an ops structure directly
+  *	instead.
+  */
+-int serial8250_upio_register(int upio, struct serial8250_ops *ops)
++int serial8250_upio_register(int upio, const struct serial8250_ops *ops)
+ {
+ 	int ret = 0;
+ 	mutex_lock(&upio_mutex);
+diff --git a/drivers/tty/serial/8250.h b/drivers/tty/serial/8250.h
+index 6e19ea3..3b3c282 100644
+--- a/drivers/tty/serial/8250.h
++++ b/drivers/tty/serial/8250.h
+@@ -28,6 +28,33 @@ struct old_serial_port {
+ 	unsigned long irqflags;
  };
  
++struct uart_8250_port {
++	struct uart_port	port;
++	const struct serial8250_ops *ops;	/* I/O access methods */
++	struct timer_list	timer;		/* "no irq" timer */
++	struct list_head	list;		/* ports on this IRQ */
++	unsigned short		capabilities;	/* port capabilities */
++	unsigned short		bugs;		/* port bugs */
++	unsigned int		tx_loadsz;	/* transmit fifo load size */
++	unsigned char		acr;
++	unsigned char		ier;
++	unsigned char		lcr;
++	unsigned char		mcr;
++	unsigned char		mcr_mask;	/* mask of user bits */
++	unsigned char		mcr_force;	/* mask of forced bits */
++	unsigned char		cur_iotype;	/* Running I/O type */
++
++	/*
++	 * Some bits in registers are cleared on a read, so they must
++	 * be saved whenever the register is read but the bits will not
++	 * be immediately processed.
++	 */
++#define LSR_SAVE_FLAGS UART_LSR_BRK_ERROR_BITS
++	unsigned char		lsr_saved_flags;
++#define MSR_SAVE_FLAGS UART_MSR_ANY_DELTA
++	unsigned char		msr_saved_flags;
++};
++
  /*
-@@ -99,4 +100,7 @@ static inline int __deprecated early_serial_setup(struct uart_port *port)
+  * This replaces serial_uart_config in include/linux/serial.h
+  */
+diff --git a/drivers/tty/serial/8250_hub6.c b/drivers/tty/serial/8250_hub6.c
+index 7609150..4f34201 100644
+--- a/drivers/tty/serial/8250_hub6.c
++++ b/drivers/tty/serial/8250_hub6.c
+@@ -11,6 +11,8 @@
+ #include <linux/module.h>
+ #include <linux/init.h>
+ #include <linux/serial_8250.h>
++#include <linux/serial_reg.h>
++#include "8250.h"
+ 
+ #define HUB6(card,port)							\
+ 	{								\
+@@ -38,6 +40,42 @@ static struct plat_serial8250_port hub6_data[] = {
+ 	{ },
+ };
+ 
++
++static unsigned int hub6_serial_in(struct uart_port *p, int offset)
++{
++	outb(p->hub6 - 1 + offset, p->iobase);
++	return inb(p->iobase + 1);
++}
++
++static void hub6_serial_out(struct uart_port *p, int offset, int value)
++{
++	outb(p->hub6 - 1 + offset, p->iobase);
++	outb(value, p->iobase + 1);
++}
++
++/* Uart divisor latch read */
++static unsigned hub6_serial_dl_read(struct uart_port *p)
++{
++	return hub6_serial_in(p, UART_DLL) |
++			hub6_serial_in(p, UART_DLM) << 8;
++}
++
++/* Uart divisor latch write */
++static void hub6_serial_dl_write(struct uart_port *p, unsigned int value)
++{
++	hub6_serial_out(p, UART_DLL, value & 0xff);
++	hub6_serial_out(p, UART_DLM, value >> 8 & 0xff);
++}
++
++static const struct serial8250_ops hub6_ops = {
++	.owner = THIS_MODULE,
++
++	.serial_in = hub6_serial_in,
++	.serial_out = hub6_serial_out,
++	.serial_dl_read = hub6_serial_dl_read,
++	.serial_dl_write = hub6_serial_dl_write
++};
++
+ static struct platform_device hub6_device = {
+ 	.name			= "serial8250",
+ 	.id			= PLAT8250_DEV_HUB6,
+@@ -48,6 +86,7 @@ static struct platform_device hub6_device = {
+ 
+ static int __init hub6_init(void)
+ {
++	serial8250_upio_register(UPIO_HUB6, &hub6_ops);
+ 	return platform_device_register(&hub6_device);
+ }
+ 
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index 30d4f62..e36495e 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -100,7 +100,7 @@ static inline int __deprecated early_serial_setup(struct uart_port *port)
          return serial8250_early_setup(port, NULL);
  }
  
-+extern int serial8250_upio_register(int upio, struct serial8250_ops *ops);
-+extern int serial8250_upio_unregister(int upio);
-+
+-extern int serial8250_upio_register(int upio, struct serial8250_ops *ops);
++extern int serial8250_upio_register(int upio, const struct serial8250_ops *ops);
+ extern int serial8250_upio_unregister(int upio);
+ 
  #endif
 
