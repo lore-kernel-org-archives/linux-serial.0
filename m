@@ -1,42 +1,54 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: Should .dtr_rts do tty_port_tty_get?
-Date: Fri, 25 Mar 2011 11:45:39 +0100
-Message-ID: <4D8C7253.3040204@suse.cz>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-2
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH 1/1] TTY: serial_core, fix dtr_rts NULL dereference
+Date: Fri, 25 Mar 2011 11:45:56 +0100
+Message-ID: <1301049956-6933-1-git-send-email-jslaby@suse.cz>
+References: <4D8C7253.3040204@suse.cz>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-fx0-f46.google.com ([209.85.161.46]:37188 "EHLO
-	mail-fx0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S934195Ab1CYKpo (ORCPT
+Received: from mail.pripojeni.net ([217.66.174.14]:44322 "EHLO
+	smtp.pripojeni.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S934195Ab1CYKqG (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Mar 2011 06:45:44 -0400
+	Fri, 25 Mar 2011 06:46:06 -0400
+In-Reply-To: <4D8C7253.3040204@suse.cz>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@suse.de>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Jiri Slaby <jirislaby@gmail.com>
+To: gregkh@suse.de
+Cc: linux-serial@vger.kernel.org, jirislaby@gmail.com, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-Hi,
+Under certain circumstances uart_dtr_rts might cause an oops. It dies
+because port->tty is NULL. To fix this, let's take a reference of
+port->tty by tty_port_tty_get. And if it is not there already, fail
+gracefully.
 
-I'm playing with a serial device and got a nice oops. Maybe after some
-weird stty's, I don't know. But it dies in uart_dtr_rts:
-        .loc 1 1535 0
-        movq    (%rbx), %r13    # port_1(D)->tty, D.26746
-...
-        .loc 1 1494 0
-        testb   $2, 224(%r13)   #, D.26746_10->flags
-                    ^^^^^^^^^
-                      HERE
+After all, indeed drop the reference.
 
-Because r13 (port->tty) is NULL. So the question is about the principle.
-Should it call tty_port_tty_get or is it a bug in the TTY layer and
-uart_dtr_rts should not be called with port->tty == NULL?
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Cc: Greg KH <gregkh@suse.de>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
+---
+ drivers/tty/serial/serial_core.c |    8 ++++++--
+ 1 files changed, 6 insertions(+), 2 deletions(-)
 
-I'll attach a patch which does the former as a reply to this message.
-
-BTW only serial_core needs tty in dtr_rts.
-
-thanks,
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index d6e7240..88a0472 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1531,8 +1531,12 @@ static void uart_dtr_rts(struct tty_port *port, int onoff)
+ 		 * If this is the first open to succeed,
+ 		 * adjust things to suit.
+ 		 */
+-		if (!test_and_set_bit(ASYNCB_NORMAL_ACTIVE, &port->flags))
+-			uart_update_termios(port->tty, state);
++		if (!test_and_set_bit(ASYNCB_NORMAL_ACTIVE, &port->flags)) {
++			struct tty_struct *tty = tty_port_tty_get(port);
++			if (tty)
++				uart_update_termios(tty, state);
++			tty_kref_put(tty);
++		}
+ 	}
+ 	else
+ 		uart_clear_mctrl(uport, TIOCM_DTR | TIOCM_RTS);
 -- 
-js
-suse labs
+1.7.4.1
+
+
