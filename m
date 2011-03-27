@@ -1,59 +1,65 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 1/1] TTY: serial_core, fix dtr_rts NULL dereference
-Date: Fri, 25 Mar 2011 20:49:22 +0000
-Message-ID: <20110325204922.7ed9fd8c@lxorguk.ukuu.org.uk>
-References: <4D8C7253.3040204@suse.cz>
-	<1301049956-6933-1-git-send-email-jslaby@suse.cz>
-	<20110325110040.6866d671@lxorguk.ukuu.org.uk>
-	<4D8CAA0F.9040204@suse.cz>
+From: Mikhail Kshevetskiy <mikhail.kshevetskiy@gmail.com>
+Subject: [PATCH] tty/n_gsm: fix bug in CRC calculation for gsm1 mode
+Date: Sun, 27 Mar 2011 04:05:00 +0400
+Message-ID: <1301184300-9158-1-git-send-email-mikhail.kshevetskiy@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:39508 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1754157Ab1CYUs6 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Mar 2011 16:48:58 -0400
-In-Reply-To: <4D8CAA0F.9040204@suse.cz>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <stable-bounces@linux.kernel.org>
+List-Unsubscribe: <http://linux.kernel.org/mailman/options/stable>,
+	<mailto:stable-request@linux.kernel.org?subject=unsubscribe>
+List-Archive: <http://linux.kernel.org/mailman/private/stable/>
+List-Post: <mailto:stable@linux.kernel.org>
+List-Help: <mailto:stable-request@linux.kernel.org?subject=help>
+List-Subscribe: <http://linux.kernel.org/mailman/listinfo/stable>,
+	<mailto:stable-request@linux.kernel.org?subject=subscribe>
+Sender: stable-bounces@linux.kernel.org
+Errors-To: stable-bounces@linux.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@suse.de>, stable@kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: Jiri Slaby <jirislaby@gmail.com>, gregkh@suse.de, linux-serial@vger.kernel.org
 
-> > The uart helper layer assumes here (and a couple of other spots) that the
-> > IRQ handler for the tty takes the port lock.
-> 
-> The oopsing path is through open BTW:
-> -> uart_open
->  -> tty_port_block_til_ready
->   -> tty_port_raise_dtr_rts
->    -> uart_dtr_rts
-> 
-> > I think the *right* fix is probably to pass port not port->tty into the
-> > helper in the first place but that seems to ripple into a lot of drivers.
-> > 
-> > (passing port->tty to things that then go tty->port is braindead and
-> > causes half the mess in the tty/serial code)
-> 
-> I seem to miss the point. uart_update_termios needs tty, not port.
+Problem description:
+  gsm_queue() calculate a CRC for arrived frames. As a last step of
+  CRC calculation it call
 
+    gsm->fcs = gsm_fcs_add(gsm->fcs, gsm->received_fcs);
 
-Actually I think it needs shooting having looked more closely
+  This work perfectly for the case of GSM0 mode as gsm->received_fcs
+  contain the last piece of data required to generate final CRC.
 
-It does 3 things
+  gsm->received_fcs is not used for GSM1 mode. Thus we put an
+  additional byte to CRC calculation. As result we get a wrong CRC
+  and reject incoming frame.
 
-1. It copies a flag across as part of a console hack. That should be done
-elsewhere - eg in uart_startup
+Signed-off-by: Mikhail Kshevetskiy <mikhail.kshevetskiy@gmail.com>
+---
+ drivers/tty/n_gsm.c |    8 ++++++--
+ 1 files changed, 6 insertions(+), 2 deletions(-)
 
-2. It sets the speed, which was already done by uart_startup
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 176f632..4806276 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1658,8 +1658,12 @@ static void gsm_queue(struct gsm_mux *gsm)
+ 
+ 	if ((gsm->control & ~PF) == UI)
+ 		gsm->fcs = gsm_fcs_add_block(gsm->fcs, gsm->buf, gsm->len);
+-	/* generate final CRC with received FCS */
+-	gsm->fcs = gsm_fcs_add(gsm->fcs, gsm->received_fcs);
++	if (gsm->encoding == 0){
++		/* WARNING: gsm->received_fcs is used for gsm->encoding = 0 only.
++		            In this case it contain the last piece of data
++		            required to generate final CRC */
++		gsm->fcs = gsm_fcs_add(gsm->fcs, gsm->received_fcs);
++	}
+ 	if (gsm->fcs != GOOD_FCS) {
+ 		gsm->bad_fcs++;
+ 		if (debug & 4)
+-- 
+1.7.4.1
 
-3. It goes poking around in the CBAUD flag before playing with DTR and
-RTS which will have no effect as we *already* set the flags in
-uart_dtr_rts
-
-Am I missing something ?
-
-
-
-
+_______________________________________________
+stable mailing list
+stable@linux.kernel.org
+http://linux.kernel.org/mailman/listinfo/stable
