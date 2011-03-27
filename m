@@ -1,65 +1,67 @@
-From: Mikhail Kshevetskiy <mikhail.kshevetskiy@gmail.com>
-Subject: [PATCH] tty/n_gsm: fix bug in CRC calculation for gsm1 mode
-Date: Sun, 27 Mar 2011 04:05:00 +0400
-Message-ID: <1301184300-9158-1-git-send-email-mikhail.kshevetskiy@gmail.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] tty/n_gsm: fix bug in CRC calculation for gsm1 mode
+Date: Sun, 27 Mar 2011 14:30:24 +0100
+Message-ID: <20110327143024.66c1fb0f@lxorguk.ukuu.org.uk>
+References: <1301184300-9158-1-git-send-email-mikhail.kshevetskiy@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <stable-bounces@linux.kernel.org>
-List-Unsubscribe: <http://linux.kernel.org/mailman/options/stable>,
-	<mailto:stable-request@linux.kernel.org?subject=unsubscribe>
-List-Archive: <http://linux.kernel.org/mailman/private/stable/>
-List-Post: <mailto:stable@linux.kernel.org>
-List-Help: <mailto:stable-request@linux.kernel.org?subject=help>
-List-Subscribe: <http://linux.kernel.org/mailman/listinfo/stable>,
-	<mailto:stable-request@linux.kernel.org?subject=subscribe>
-Sender: stable-bounces@linux.kernel.org
-Errors-To: stable-bounces@linux.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, stable@kernel.org, linux-kernel@vger.kernel.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:53894 "EHLO
+	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751577Ab1C0Ncw (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 27 Mar 2011 09:32:52 -0400
+In-Reply-To: <1301184300-9158-1-git-send-email-mikhail.kshevetskiy@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Mikhail Kshevetskiy <mikhail.kshevetskiy@gmail.com>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, stable@kernel.org, linux-kernel@vger.kernel.org
 
-Problem description:
-  gsm_queue() calculate a CRC for arrived frames. As a last step of
-  CRC calculation it call
+>   gsm->received_fcs is not used for GSM1 mode. Thus we put an
+>   additional byte to CRC calculation. As result we get a wrong CRC
+>   and reject incoming frame.
 
-    gsm->fcs = gsm_fcs_add(gsm->fcs, gsm->received_fcs);
+That much is true except that it was originally tested with gsm encoding
+1 on various modems for a while and not seen the problem. So I am trying
+to work out why or whether some of the GSM0 patches broke GSM1 somewhere.
 
-  This work perfectly for the case of GSM0 mode as gsm->received_fcs
-  contain the last piece of data required to generate final CRC.
+What hardware was it tested on ?
 
-  gsm->received_fcs is not used for GSM1 mode. Thus we put an
-  additional byte to CRC calculation. As result we get a wrong CRC
-  and reject incoming frame.
+It looks right - probably the code wants pushing into
+gsm0_receive/gsm1_receive appropriately so no special cases leak into
+gsm_queue.
 
-Signed-off-by: Mikhail Kshevetskiy <mikhail.kshevetskiy@gmail.com>
----
- drivers/tty/n_gsm.c |    8 ++++++--
- 1 files changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 176f632..4806276 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1658,8 +1658,12 @@ static void gsm_queue(struct gsm_mux *gsm)
- 
- 	if ((gsm->control & ~PF) == UI)
- 		gsm->fcs = gsm_fcs_add_block(gsm->fcs, gsm->buf, gsm->len);
--	/* generate final CRC with received FCS */
--	gsm->fcs = gsm_fcs_add(gsm->fcs, gsm->received_fcs);
-+	if (gsm->encoding == 0){
-+		/* WARNING: gsm->received_fcs is used for gsm->encoding = 0 only.
-+		            In this case it contain the last piece of data
-+		            required to generate final CRC */
-+		gsm->fcs = gsm_fcs_add(gsm->fcs, gsm->received_fcs);
-+	}
- 	if (gsm->fcs != GOOD_FCS) {
- 		gsm->bad_fcs++;
- 		if (debug & 4)
+
+> 
+> Signed-off-by: Mikhail Kshevetskiy <mikhail.kshevetskiy@gmail.com>
+> ---
+>  drivers/tty/n_gsm.c |    8 ++++++--
+>  1 files changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+> index 176f632..4806276 100644
+> --- a/drivers/tty/n_gsm.c
+> +++ b/drivers/tty/n_gsm.c
+> @@ -1658,8 +1658,12 @@ static void gsm_queue(struct gsm_mux *gsm)
+>  
+>  	if ((gsm->control & ~PF) == UI)
+>  		gsm->fcs = gsm_fcs_add_block(gsm->fcs, gsm->buf, gsm->len);
+> -	/* generate final CRC with received FCS */
+> -	gsm->fcs = gsm_fcs_add(gsm->fcs, gsm->received_fcs);
+> +	if (gsm->encoding == 0){
+> +		/* WARNING: gsm->received_fcs is used for gsm->encoding = 0 only.
+> +		            In this case it contain the last piece of data
+> +		            required to generate final CRC */
+> +		gsm->fcs = gsm_fcs_add(gsm->fcs, gsm->received_fcs);
+> +	}
+>  	if (gsm->fcs != GOOD_FCS) {
+>  		gsm->bad_fcs++;
+>  		if (debug & 4)
+
+
 -- 
-1.7.4.1
-
-_______________________________________________
-stable mailing list
-stable@linux.kernel.org
-http://linux.kernel.org/mailman/listinfo/stable
+--
+	"Alan, I'm getting a bit worried about you."
+				-- Linus Torvalds
