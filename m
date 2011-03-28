@@ -1,81 +1,88 @@
-From: Mikhail Kshevetskiy <mikhail.kshevetskiy@gmail.com>
-Subject: Re: [PATCH] tty/n_gsm: fix bug in CRC calculation for gsm1 mode
-Date: Sun, 27 Mar 2011 21:33:00 +0400
-Message-ID: <20110327213300.6ce7d1f2@laska.campus-ws.pu.ru>
-References: <1301184300-9158-1-git-send-email-mikhail.kshevetskiy@gmail.com>
-	<20110327143024.66c1fb0f@lxorguk.ukuu.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From: Tobias Klauser <tklauser@distanz.ch>
+Subject: [PATCH] serial: altera_uart: Scan for a free port if platform device id is -1
+Date: Mon, 28 Mar 2011 13:57:11 +0200
+Message-ID: <1301313431-10063-1-git-send-email-tklauser@distanz.ch>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-fx0-f46.google.com ([209.85.161.46]:45596 "EHLO
-	mail-fx0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753423Ab1C0RdI (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 27 Mar 2011 13:33:08 -0400
-In-Reply-To: <20110327143024.66c1fb0f@lxorguk.ukuu.org.uk>
+Received: from mx1.zhaw.ch ([160.85.104.50]:59712 "EHLO mx1.zhaw.ch"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751347Ab1C1L5N (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 28 Mar 2011 07:57:13 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, stable@kernel.org, linux-kernel@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+Cc: Greg KH <gregkh@suse.de>, nios2-dev@sopc.et.ntust.edu.tw, linux-kernel@vger.kernel.org, Anton Vorontsov <cbouatmailru@gmail.com>
 
-On Sun, 27 Mar 2011 14:30:24 +0100
-Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
+Devices extracted from device tree all seem to have pdev->id set to -1.
+Up until now we mapped all devices with id -1 to the first device.  This
+behaviour could lead to problems when using more than one Altera UART in
+a system.
 
-> >   gsm->received_fcs is not used for GSM1 mode. Thus we put an
-> >   additional byte to CRC calculation. As result we get a wrong CRC
-> >   and reject incoming frame.
-> 
-> That much is true except that it was originally tested with gsm encoding
-> 1 on various modems for a while and not seen the problem. So I am trying
-> to work out why or whether some of the GSM0 patches broke GSM1 somewhere.
+This patch changes the behaviour of the driver to scan for the next free
+id in case the id is -1.
 
-as i can see, it's your commit c2f2f0000bb69f067fea12624272e6a58a811702.
+Because we cannot refer back to the assigned id in altera_uart_remove,
+the port instance needs to be stored in device drvdata.
 
-Why we need received_fcs variable? We can completely drop it and calculate
-fsc in gsm0_receive() and gsm1_receive(). gsm_queue() in this case will
-contain only fsc checking code.
+Reported-by: David Smoot <davidsmoot@gmail.com>
+Cc: Anton Vorontsov <cbouatmailru@gmail.com>
+Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
+---
+ drivers/tty/serial/altera_uart.c |   26 +++++++++++++++-----------
+ 1 files changed, 15 insertions(+), 11 deletions(-)
 
-> What hardware was it tested on ?
+diff --git a/drivers/tty/serial/altera_uart.c b/drivers/tty/serial/altera_uart.c
+index 6a1ebd9..3a9cffa 100644
+--- a/drivers/tty/serial/altera_uart.c
++++ b/drivers/tty/serial/altera_uart.c
+@@ -517,11 +517,14 @@ static int __devinit altera_uart_probe(struct platform_device *pdev)
+ 	int i = pdev->id;
+ 	int ret;
+ 
+-	/* -1 emphasizes that the platform must have one port, no .N suffix */
+-	if (i == -1)
+-		i = 0;
++	/* if id is -1 scan for a free id and use that one */
++	if (i == -1) {
++		for (i = 0; i < CONFIG_SERIAL_ALTERA_UART_MAXPORTS; i++)
++			if (altera_uart_ports[i].port.mapbase == 0)
++				break;
++	}
+ 
+-	if (i >= CONFIG_SERIAL_ALTERA_UART_MAXPORTS)
++	if (i < 0 || i >= CONFIG_SERIAL_ALTERA_UART_MAXPORTS)
+ 		return -EINVAL;
+ 
+ 	port = &altera_uart_ports[i].port;
+@@ -564,6 +567,8 @@ static int __devinit altera_uart_probe(struct platform_device *pdev)
+ 	port->ops = &altera_uart_ops;
+ 	port->flags = UPF_BOOT_AUTOCONF;
+ 
++	dev_set_drvdata(&pdev->dev, port);
++
+ 	uart_add_one_port(&altera_uart_driver, port);
+ 
+ 	return 0;
+@@ -571,14 +576,13 @@ static int __devinit altera_uart_probe(struct platform_device *pdev)
+ 
+ static int __devexit altera_uart_remove(struct platform_device *pdev)
+ {
+-	struct uart_port *port;
+-	int i = pdev->id;
++	struct uart_port *port = dev_get_drvdata(&pdev->dev);
+ 
+-	if (i == -1)
+-		i = 0;
+-
+-	port = &altera_uart_ports[i].port;
+-	uart_remove_one_port(&altera_uart_driver, port);
++	if (port) {
++		uart_remove_one_port(&altera_uart_driver, port);
++		dev_set_drvdata(&pdev->dev, NULL);
++		port->mapbase = 0;
++	}
+ 
+ 	return 0;
+ }
+-- 
+1.7.0.4
 
-Enfora, Inc. Enabler-III G Modem
-
-> It looks right - probably the code wants pushing into
-> gsm0_receive/gsm1_receive appropriately so no special cases leak into
-> gsm_queue.
-
-It's possible, see my comment about received_fcs variable above
-
-> 
-> 
-> > 
-> > Signed-off-by: Mikhail Kshevetskiy <mikhail.kshevetskiy@gmail.com>
-> > ---
-> >  drivers/tty/n_gsm.c |    8 ++++++--
-> >  1 files changed, 6 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> > index 176f632..4806276 100644
-> > --- a/drivers/tty/n_gsm.c
-> > +++ b/drivers/tty/n_gsm.c
-> > @@ -1658,8 +1658,12 @@ static void gsm_queue(struct gsm_mux *gsm)
-> >  
-> >  	if ((gsm->control & ~PF) == UI)
-> >  		gsm->fcs = gsm_fcs_add_block(gsm->fcs, gsm->buf, gsm->len);
-> > -	/* generate final CRC with received FCS */
-> > -	gsm->fcs = gsm_fcs_add(gsm->fcs, gsm->received_fcs);
-> > +	if (gsm->encoding == 0){
-> > +		/* WARNING: gsm->received_fcs is used for gsm->encoding = 0 only.
-> > +		            In this case it contain the last piece of data
-> > +		            required to generate final CRC */
-> > +		gsm->fcs = gsm_fcs_add(gsm->fcs, gsm->received_fcs);
-> > +	}
-> >  	if (gsm->fcs != GOOD_FCS) {
-> >  		gsm->bad_fcs++;
-> >  		if (debug & 4)
-> 
-> 
-> -- 
-> --
-> 	"Alan, I'm getting a bit worried about you."
-> 				-- Linus Torvalds
