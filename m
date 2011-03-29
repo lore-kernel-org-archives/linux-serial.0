@@ -1,57 +1,74 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: Wrong GIT author ? also bugs: serial: Add uart driver for
- i.MX23/28
-Date: Tue, 29 Mar 2011 10:33:35 +0100
-Message-ID: <20110329103335.7a5ff37d@lxorguk.ukuu.org.uk>
-References: <201103180302.p2I326tA020159@hera.kernel.org>
-	<20110318112920.07148450@lxorguk.ukuu.org.uk>
-	<20110329091456.GI30938@pengutronix.de>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: Re: [PATCH 1/1] TTY: serial_core, fix dtr_rts NULL dereference
+Date: Tue, 29 Mar 2011 17:10:31 +0200
+Message-ID: <4D91F667.3060603@suse.cz>
+References: <4D8C7253.3040204@suse.cz>	<1301049956-6933-1-git-send-email-jslaby@suse.cz>	<20110325110040.6866d671@lxorguk.ukuu.org.uk>	<4D8CAA0F.9040204@suse.cz> <20110325204922.7ed9fd8c@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:34864 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751022Ab1C2Jd3 (ORCPT
+Received: from mail-fx0-f46.google.com ([209.85.161.46]:37217 "EHLO
+	mail-fx0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750991Ab1C2PKf (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 Mar 2011 05:33:29 -0400
-In-Reply-To: <20110329091456.GI30938@pengutronix.de>
+	Tue, 29 Mar 2011 11:10:35 -0400
+Received: by fxm17 with SMTP id 17so289186fxm.19
+        for <linux-serial@vger.kernel.org>; Tue, 29 Mar 2011 08:10:34 -0700 (PDT)
+In-Reply-To: <20110325204922.7ed9fd8c@lxorguk.ukuu.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Uwe =?ISO-8859-14?B?S2xlaW5lLUv2bmln?= <u.kleine-koenig@pengutronix.de>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, linux-serial@vger.kernel.org, torvalds@linux-foundation.org, kernel@pengutronix.de
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Jiri Slaby <jirislaby@gmail.com>, gregkh@suse.de, linux-serial@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
 
-> I don't understand how to do this and didn't find something like that in
-> other drivers. (I checked amba-pl011.c and imx.c.) Also
-> Documentation/serial/driver doesn't describe this. (It is also silent
-> about CMSPAR and doesn't even advise to clear unsupported bits.)
-> Can you be a bit more verbose here?
+On 03/25/2011 09:49 PM, Alan Cox wrote:
+>>> The uart helper layer assumes here (and a couple of other spots) that the
+>>> IRQ handler for the tty takes the port lock.
+>>
+>> The oopsing path is through open BTW:
+>> -> uart_open
+>>  -> tty_port_block_til_ready
+>>   -> tty_port_raise_dtr_rts
+>>    -> uart_dtr_rts
+>>
+>>> I think the *right* fix is probably to pass port not port->tty into the
+>>> helper in the first place but that seems to ripple into a lot of drivers.
+>>>
+>>> (passing port->tty to things that then go tty->port is braindead and
+>>> causes half the mess in the tty/serial code)
+>>
+>> I seem to miss the point. uart_update_termios needs tty, not port.
+> 
+> 
+> Actually I think it needs shooting having looked more closely
 
-8250.c is the best place to look.
+Hmm, looking more closely, it's broken and should be converted to
+tty_port in full. I'll take a look if I can do something about that.
 
-Basically on return from your routine the _hardware_ bits of the termios
-struct should be the ones set.
+> It does 3 things
+> 
+> 1. It copies a flag across as part of a console hack. That should be done
+> elsewhere - eg in uart_startup
 
-So eg if you only supported 8bit characters you'd wipe the CSx bits and
-set CS8.
+Perhaps.
 
-For the speed there is a helper so you probably want
+> 2. It sets the speed, which was already done by uart_startup
 
-        /* Don't rewrite B0 */
-        if (tty_termios_baud_rate(termios))
-                tty_termios_encode_baud_rate(termios, baud, baud);
+Note that uart_startup is called with init_hw = 0 from uart_open. So the
+speed is not set yet. So we should set the speed in uart_startup
+unconditionally, I guess.
 
-> @@ -286,6 +283,9 @@ static void mxs_auart_settermios(struct uart_port *u,
->  {
->  	u32 bm, ctrl, ctrl2, div;
->  	unsigned int cflag, baud;
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&u->lock, flags);
+> 3. It goes poking around in the CBAUD flag before playing with DTR and
+> RTS which will have no effect as we *already* set the flags in
+> uart_dtr_rts
 
-Termios you don't need the lock - just the IRQ handler and you still
-really want the tty_port_tty_get()/tty_kref_put() if that wasn't already
-dealt with.
+ACK
 
-(You may not need it but its easier to put in than prove with the serial
-layer at the moment)
+.dtr_rts did only dtr_rts when added by you. Then Arnd moved
+uart_update_termios into that in 3f582b8c11.
+
+I'll post a patch as a short-term fix shortly.
+
+thanks,
+-- 
+js
+suse labs
