@@ -1,43 +1,60 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] tty/n_gsm: fix bug in CRC calculation for gsm1 mode
-Date: Thu, 31 Mar 2011 13:11:44 +0100
-Message-ID: <20110331131144.74a579db@lxorguk.ukuu.org.uk>
-References: <1301184300-9158-1-git-send-email-mikhail.kshevetskiy@gmail.com>
+From: Michal Simek <monstr@monstr.eu>
+Subject: Re: Microblaze early console support
+Date: Mon, 04 Apr 2011 19:21:58 +0200
+Message-ID: <4D99FE36.1070307@monstr.eu>
+References: <1301934655-20495-1-git-send-email-monstr@monstr.eu>
+Reply-To: monstr@monstr.eu
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:40792 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751552Ab1CaMLU (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 31 Mar 2011 08:11:20 -0400
-In-Reply-To: <1301184300-9158-1-git-send-email-mikhail.kshevetskiy@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1301934655-20495-1-git-send-email-monstr@monstr.eu>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Michal Simek <monstr@monstr.eu>
+Cc: linux-kernel@vger.kernel.org, john.williams@petalogix.com, Russell King <linux@arm.linux.org.uk>, Ralf Baechle <ralf@linux-mips.org>, Ingo Molnar <mingo@redhat.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
 List-Id: linux-serial@vger.kernel.org
-To: Mikhail Kshevetskiy <mikhail.kshevetskiy@gmail.com>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, stable@kernel.org, linux-kernel@vger.kernel.org
 
-On Sun, 27 Mar 2011 04:05:00 +0400
-Mikhail Kshevetskiy <mikhail.kshevetskiy@gmail.com> wrote:
+resent.
 
-> Problem description:
->   gsm_queue() calculate a CRC for arrived frames. As a last step of
->   CRC calculation it call
-> 
->     gsm->fcs = gsm_fcs_add(gsm->fcs, gsm->received_fcs);
-> 
->   This work perfectly for the case of GSM0 mode as gsm->received_fcs
->   contain the last piece of data required to generate final CRC.
-> 
->   gsm->received_fcs is not used for GSM1 mode. Thus we put an
->   additional byte to CRC calculation. As result we get a wrong CRC
->   and reject incoming frame.
-> 
-> Signed-off-by: Mikhail Kshevetskiy <mikhail.kshevetskiy@gmail.com>
+M
 
-Acked-by: Alan Cox <alan@linux.intel.com>
+Michal Simek wrote:
+> Hi,
+> 
+> I have one question about early console support on MMU kernel.
+> When do you register an early console and what TLB mapping you use?
+> 
+> For Microblaze I registered it before main memory is setup that's why I was
+> hardcoded TLB 63 to 1:1 mapping (virt addr = phys addr). 
+> It is output only for early_printk messages but I would like to use it 
+> as boot console. There are only some messages that's why TLB 63 was released
+> later on.
+> That is the current state.
+> 
+> I have added CON_BOOT flag and register early console by register_console function
+> and I allocate TLB 63 for it. But unfortunately I haven't found any function 
+> in unregister_console which is called for unregistering to help me to release TLB 63
+> when early console is not used. Is there any way how to do it?
+> 
+> From our experiment in past there is performance degression when kernel can't use
+> a TLB that's why I tried to find out a way to release TLB 63.
+> This is the reason why I would like to know your opinion if my style is correct 
+> or not.
+> I created new remap_early_printk function which does ioremap for console space.
+> This function is called from setup_arch when memory is setup. Then early mapping of TLB 63
+> is automatically released and can be used for Linux purpose.
+> Is it correct design how to do it?
+> 
+> How do you handle it in your arch? Do you register early console before memory initialization
+> is done?
+> 
+> You can also look at my patch I have done.
+> 
+> Thanks for your suggestions,
+> Michal
 
-(This wants cleaning up better as Mikhael also says but this patch is
-clear and unlike a big clean up a better base point for a stable fix and
-can be reworked further)
+-- 
+Michal Simek, Ing. (M.Eng)
+w: www.monstr.eu p: +42-0-721842854
+Maintainer of Linux kernel 2.6 Microblaze Linux - http://www.monstr.eu/fdt/
+Microblaze U-BOOT custodian
