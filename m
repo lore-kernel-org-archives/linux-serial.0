@@ -1,39 +1,48 @@
-From: Ralf Baechle <ralf@linux-mips.org>
-Subject: Re: [PATCH V6] MIPS: lantiq: add serial port support
-Date: Wed, 6 Apr 2011 01:58:10 +0200
-Message-ID: <20110405235810.GA9962@linux-mips.org>
-References: <1302005458-8423-1-git-send-email-blogic@openwrt.org>
- <20110405145519.5befce51@lxorguk.ukuu.org.uk>
- <4D9B2054.8090305@openwrt.org>
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: Add new ASYNC_SPD_WARP13?
+Date: Wed, 6 Apr 2011 16:48:49 +0000 (UTC)
+Message-ID: <ini5hh$7s3$1@dough.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from eddie.linux-mips.org ([78.24.191.182]:54570 "EHLO
-	cvs.linux-mips.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752469Ab1DEX6S (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Apr 2011 19:58:18 -0400
-Received: from localhost.localdomain ([127.0.0.1]:41990 "EHLO
-        duck.linux-mips.net" rhost-flags-OK-OK-OK-FAIL)
-        by eddie.linux-mips.org with ESMTP id S1491885Ab1DEX6Q (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 Apr 2011 01:58:16 +0200
-Content-Disposition: inline
-In-Reply-To: <4D9B2054.8090305@openwrt.org>
+Received: from lo.gmane.org ([80.91.229.12]:33087 "EHLO lo.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755291Ab1DFQtH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 6 Apr 2011 12:49:07 -0400
+Received: from list by lo.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1Q7Vue-0004Dv-RF
+	for linux-serial@vger.kernel.org; Wed, 06 Apr 2011 18:49:00 +0200
+Received: from dsl.comtrol.com ([64.122.56.22])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Wed, 06 Apr 2011 18:49:00 +0200
+Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Wed, 06 Apr 2011 18:49:00 +0200
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: John Crispin <blogic@openwrt.org>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Ralph Hempel <ralph.hempel@lantiq.com>, Felix Fietkau <nbd@openwrt.org>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On Tue, Apr 05, 2011 at 03:59:48PM +0200, John Crispin wrote:
+I'm working on a driver for a serial board that supports 921600 bps,
+and it would be awfully nice if there was a way to specify that using
+the ASYNC_SPD_xxxxx mechanism.  Is there any reason why this wouldn't
+work?
 
-> > Acked-by: Alan Cox <alan@linux.intel.com>
-> >
-> >   
-> Hi Alan,
-> 
-> thanks alot :)
 
-Thanks everybody; queued for 2.6.40.
+  #define ASYNC_SPD_HI         (1U << ASYNCB_SPD_HI)
+  #define ASYNC_SPD_VHI        (1U << ASYNCB_SPD_VHI)
+  #define ASYNC_SPD_SHI        (1U << ASYNCB_SPD_SHI)
+  #define ASYNC_SPD_CUST       (ASYNC_SPD_HI|ASYNC_SPD_VHI)
+  #define ASYNC_SPD_WARP       (ASYNC_SPD_HI|ASYNC_SPD_SHI)
++ #define ASYNC_SPD_WARP13     (ASYNC_SPD_HI|ASYNC_SPD_SHI|ASYNC_SPD_SHI)
 
-  Ralf
+  #define ASYNC_SPD_MASK       (ASYNC_SPD_HI|ASYNC_SPD_VHI|ASYNC_SPD_SHI)
+
+  
+-- 
+Grant Edwards               grant.b.edwards        Yow! I'm wearing PAMPERS!!
+                                  at               
+                              gmail.com            
+
