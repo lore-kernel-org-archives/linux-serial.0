@@ -1,48 +1,31 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Add new ASYNC_SPD_WARP13?
-Date: Wed, 6 Apr 2011 16:48:49 +0000 (UTC)
-Message-ID: <ini5hh$7s3$1@dough.gmane.org>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: Add new ASYNC_SPD_WARP13?
+Date: Wed, 6 Apr 2011 17:53:50 +0100
+Message-ID: <20110406175350.64bd2f23@lxorguk.ukuu.org.uk>
+References: <ini5hh$7s3$1@dough.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lo.gmane.org ([80.91.229.12]:33087 "EHLO lo.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755291Ab1DFQtH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 6 Apr 2011 12:49:07 -0400
-Received: from list by lo.gmane.org with local (Exim 4.69)
-	(envelope-from <lnx-linux-serial@m.gmane.org>)
-	id 1Q7Vue-0004Dv-RF
-	for linux-serial@vger.kernel.org; Wed, 06 Apr 2011 18:49:00 +0200
-Received: from dsl.comtrol.com ([64.122.56.22])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Wed, 06 Apr 2011 18:49:00 +0200
-Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Wed, 06 Apr 2011 18:49:00 +0200
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:57116 "EHLO
+	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1755291Ab1DFQxJ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 6 Apr 2011 12:53:09 -0400
+In-Reply-To: <ini5hh$7s3$1@dough.gmane.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Grant Edwards <grant.b.edwards@gmail.com>
+Cc: linux-serial@vger.kernel.org
 
-I'm working on a driver for a serial board that supports 921600 bps,
-and it would be awfully nice if there was a way to specify that using
-the ASYNC_SPD_xxxxx mechanism.  Is there any reason why this wouldn't
-work?
+On Wed, 6 Apr 2011 16:48:49 +0000 (UTC)
+Grant Edwards <grant.b.edwards@gmail.com> wrote:
 
+> I'm working on a driver for a serial board that supports 921600 bps,
+> and it would be awfully nice if there was a way to specify that using
+> the ASYNC_SPD_xxxxx mechanism.  Is there any reason why this wouldn't
+> work?
 
-  #define ASYNC_SPD_HI         (1U << ASYNCB_SPD_HI)
-  #define ASYNC_SPD_VHI        (1U << ASYNCB_SPD_VHI)
-  #define ASYNC_SPD_SHI        (1U << ASYNCB_SPD_SHI)
-  #define ASYNC_SPD_CUST       (ASYNC_SPD_HI|ASYNC_SPD_VHI)
-  #define ASYNC_SPD_WARP       (ASYNC_SPD_HI|ASYNC_SPD_SHI)
-+ #define ASYNC_SPD_WARP13     (ASYNC_SPD_HI|ASYNC_SPD_SHI|ASYNC_SPD_SHI)
-
-  #define ASYNC_SPD_MASK       (ASYNC_SPD_HI|ASYNC_SPD_VHI|ASYNC_SPD_SHI)
-
-  
--- 
-Grant Edwards               grant.b.edwards        Yow! I'm wearing PAMPERS!!
-                                  at               
-                              gmail.com            
+The ASYNC_SPD_xxxx mechanism is obsolete. Just set the baud rate to
+921600, the kernel has supported arbitary baud rates for some time.
 
