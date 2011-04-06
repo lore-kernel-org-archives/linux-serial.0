@@ -1,49 +1,34 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Subject: Re: Add new ASYNC_SPD_WARP13?
-Date: Wed, 6 Apr 2011 17:14:16 +0000 (UTC)
-Message-ID: <ini718$hfj$1@dough.gmane.org>
+Date: Wed, 6 Apr 2011 20:14:57 +0100
+Message-ID: <20110406201457.1a5402ba@lxorguk.ukuu.org.uk>
 References: <ini5hh$7s3$1@dough.gmane.org>
- <20110406175350.64bd2f23@lxorguk.ukuu.org.uk>
+	<20110406175350.64bd2f23@lxorguk.ukuu.org.uk>
+	<ini6in$gno$1@dough.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lo.gmane.org ([80.91.229.12]:44690 "EHLO lo.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754587Ab1DFROb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 6 Apr 2011 13:14:31 -0400
-Received: from list by lo.gmane.org with local (Exim 4.69)
-	(envelope-from <lnx-linux-serial@m.gmane.org>)
-	id 1Q7WJK-0006MA-0y
-	for linux-serial@vger.kernel.org; Wed, 06 Apr 2011 19:14:30 +0200
-Received: from dsl.comtrol.com ([64.122.56.22])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Wed, 06 Apr 2011 19:14:30 +0200
-Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Wed, 06 Apr 2011 19:14:30 +0200
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:45372 "EHLO
+	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751879Ab1DFTOQ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 6 Apr 2011 15:14:16 -0400
+In-Reply-To: <ini6in$gno$1@dough.gmane.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Grant Edwards <grant.b.edwards@gmail.com>
+Cc: linux-serial@vger.kernel.org
 
-On 2011-04-06, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
+> I could tell them to go the SPD_CUST route to get 921600, but I was
+> hoping to provide an option that would support 921600 the same way
+> that 57600, 230400, and 460800 are supported.
 
-> The ASYNC_SPD_xxxx mechanism is obsolete. Just set the baud rate to
-> 921600, the kernel has supported arbitary baud rates for some time.
+And no doubt in time other speeds as well.
 
-This raises a question I've been wondering about for some time.  While
-the kernel and the serial driver API support arbitrary baud rates,
-termios doesn't AFAICT.
+ASYNC_SPD_xxx is legacy, it remains simply because we provided it as a
+historic interface to some drivers and we don't want to break stuff
 
-How does one use the standard POSIX serial port API to obtain an
-abritrary baud rate?
+So please use SPD_CUST if you must do this.
 
-The only way I can find to get arbitrary baud rates from a user
-perspective is to use the ASYNC_SPD_xxxx mechanism.
-
--- 
-Grant Edwards               grant.b.edwards        Yow! Catsup and Mustard all
-                                  at               over the place!  It's the
-                              gmail.com            Human Hamburger!
-
+Alan
