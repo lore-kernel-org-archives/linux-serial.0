@@ -1,54 +1,29 @@
-From: Jesper Juhl <jj@chaosbits.net>
-Subject: [PATCH][Trivial] Serial, ifx6x60c: Remove duplicate includes of
- linux/tty.h
-Date: Sun, 10 Apr 2011 19:22:34 +0200 (CEST)
-Message-ID: <alpine.LNX.2.00.1104101919210.17706@swampdragon.chaosbits.net>
+From: "GET BACK TO ME IMMEDIATELY" <googleservice@terra.es>
+Subject: GET BACK TO ME IMMEDIATELY
+Date: Sun, 10 Apr 2011 19:25:46 +0000 (UTC)
+Message-ID: <20110410152334.1B9CF2A35B28__44123.9794520245$1302463546$gmane$org@mail.alsa.co.cr>
+Reply-To: <googleservice@terra.es>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain;
+	charset="Windows-1251"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from swampdragon.chaosbits.net ([90.184.90.115]:10395 "EHLO
-	swampdragon.chaosbits.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755329Ab1DJRWM (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 10 Apr 2011 13:22:12 -0400
+Received: from logistix.cr ([201.201.66.140]:14322 "EHLO mail.alsa.co.cr"
+	rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1754091Ab1DJTZf (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 10 Apr 2011 15:25:35 -0400
+Date: Fri, 29 Apr 2011 05:51:58 +0200
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, trivial@kernel.org
 
-Including linux/tty.h 3 times is a little over the top - once will do.
+Hello 
 
-Signed-off-by: Jesper Juhl <jj@chaosbits.net>
----
- ifx6x60.c |    2 --
- 1 file changed, 2 deletions(-)
+I wish to ask for your consent for a partnership project that I would want both of us to execute mutually which is beneficial. However my name is Mr. Rodney Smith. Kindly get back to me to confirm the receipt of this massage so that I will give you full details of the project.
 
-	compile tested only.
+Send your reply to my private email at rodney_smith@ibibo.com 
 
-diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
-index 8ee5a41..5315525 100644
---- a/drivers/tty/serial/ifx6x60.c
-+++ b/drivers/tty/serial/ifx6x60.c
-@@ -41,7 +41,6 @@
- #include <linux/tty.h>
- #include <linux/device.h>
- #include <linux/spi/spi.h>
--#include <linux/tty.h>
- #include <linux/kfifo.h>
- #include <linux/tty_flip.h>
- #include <linux/timer.h>
-@@ -56,7 +55,6 @@
- #include <linux/sched.h>
- #include <linux/time.h>
- #include <linux/wait.h>
--#include <linux/tty.h>
- #include <linux/pm.h>
- #include <linux/pm_runtime.h>
- #include <linux/spi/ifx_modem.h>
+I am waiting for your permission.
 
-
--- 
-Jesper Juhl <jj@chaosbits.net>       http://www.chaosbits.net/
-Don't top-post http://www.catb.org/jargon/html/T/top-post.html
-Plain text mails only, please.
-
+Warm regards
+Mr. Rodney Smith
+Email:smithrodney@ibibo.com
