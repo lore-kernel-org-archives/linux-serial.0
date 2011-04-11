@@ -1,109 +1,63 @@
-From: Niels de Vos <ndevos@redhat.com>
-Subject: [PATCH v2] parport_pc.c: correctly release the requested region for
- the IT887x
-Date: Mon, 11 Apr 2011 08:27:21 +0100
-Message-ID: <4DA2AD59.8070302@redhat.com>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: [PATCH] serial/imx: read cts state only after acking cts change irq
+Date: Mon, 11 Apr 2011 10:59:09 +0200
+Message-ID: <1302512349-14923-1-git-send-email-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature";
- boundary="------------enigE38997D45DE098544D7E7D98"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([209.132.183.28]:24299 "EHLO mx1.redhat.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754079Ab1DKH1Z (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 11 Apr 2011 03:27:25 -0400
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:52635 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750794Ab1DKI7V (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 11 Apr 2011 04:59:21 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, Julia Lawall <julia@diku.dk>
+To: Alan Cox <alan@linux.intel.com>
+Cc: linux-serial@vger.kernel.org, kernel@pengutronix.de
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE38997D45DE098544D7E7D98
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+If cts changes between reading the level at the cts input (USR1_RTSS)
+and acking the irq (USR1_RTSD) the last edge doesn't generate an irq an=
+d
+uart_handle_cts_change is called with a outdated value for cts.
 
-Replace release_resource() by release_region() and also fix the
-inconsistency in the size of the requested/released region.
+The race was introduced by commit
 
-The size of the resource should be 32, not 0x8 like it was corrected in
-commit e7c310c36e5fdf1b83a459e5db167bfbd86137db already.
+	ceca629 ([ARM] 2971/1: i.MX uart handle rts irq)
 
-CC: linux-serial@vger.kernel.org
-Reported-by: Julia Lawall <julia@diku.dk>
-Signed-off-by: Niels de Vos <ndevos@redhat.com>
-
+Reported-by: Arwed Springer <Arwed.Springer@de.trumpf.com>
+Tested-by: Arwed Springer <Arwed.Springer@de.trumpf.com>
+Cc: stable@kernel.org # 2.6.14+
+Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
 ---
-This is a followup/improvement on https://lkml.org/lkml/2011/4/11/37
-that was posted by Julia earlier. I've updated the subject to reflect
-the corrections made.
+ drivers/tty/serial/imx.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
-There is currently no maintainer for the drivers/parport/ tree. As the
-IT887x also (can) provide a serial port, I'm adding linux-serial@ to the
-list of CCs.
-
- drivers/parport/parport_pc.c |    8 +++-----
- 1 files changed, 3 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/parport/parport_pc.c b/drivers/parport/parport_pc.c
-index 8d62fb7..be8b5ac 100644
---- a/drivers/parport/parport_pc.c
-+++ b/drivers/parport/parport_pc.c
-@@ -2550,7 +2550,6 @@ static int __devinit sio_ite_8872_probe(struct pci_=
-dev *pdev, int autoirq,
- 					 const struct parport_pc_via_data *via)
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index dfcf4b1..0d66751 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -382,12 +382,13 @@ static void imx_start_tx(struct uart_port *port)
+ static irqreturn_t imx_rtsint(int irq, void *dev_id)
  {
- 	short inta_addr[6] =3D { 0x2A0, 0x2C0, 0x220, 0x240, 0x1E0 };
--	struct resource *base_res;
- 	u32 ite8872set;
- 	u32 ite8872_lpt, ite8872_lpthi;
- 	u8 ite8872_irq, type;
-@@ -2561,8 +2560,7 @@ static int __devinit sio_ite_8872_probe(struct pci_=
-dev *pdev, int autoirq,
+ 	struct imx_port *sport =3D dev_id;
+-	unsigned int val =3D readl(sport->port.membase + USR1) & USR1_RTSS;
++	unsigned int val;
+ 	unsigned long flags;
 =20
- 	/* make sure which one chip */
- 	for (i =3D 0; i < 5; i++) {
--		base_res =3D request_region(inta_addr[i], 32, "it887x");
--		if (base_res) {
-+		if (request_region(inta_addr[i], 32, "it887x")) {
- 			int test;
- 			pci_write_config_dword(pdev, 0x60,
- 						0xe5000000 | inta_addr[i]);
-@@ -2571,7 +2569,7 @@ static int __devinit sio_ite_8872_probe(struct pci_=
-dev *pdev, int autoirq,
- 			test =3D inb(inta_addr[i]);
- 			if (test !=3D 0xff)
- 				break;
--			release_region(inta_addr[i], 0x8);
-+			release_region(inta_addr[i], 32);
- 		}
- 	}
- 	if (i >=3D 5) {
-@@ -2635,7 +2633,7 @@ static int __devinit sio_ite_8872_probe(struct pci_=
-dev *pdev, int autoirq,
- 	/*
- 	 * Release the resource so that parport_pc_probe_port can get it.
- 	 */
--	release_resource(base_res);
-+	release_region(inta_addr[i], 32);
- 	if (parport_pc_probe_port(ite8872_lpt, ite8872_lpthi,
- 				   irq, PARPORT_DMA_NONE, &pdev->dev, 0)) {
- 		printk(KERN_INFO
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+=20
+ 	writel(USR1_RTSD, sport->port.membase + USR1);
++	val =3D readl(sport->port.membase + USR1) & USR1_RTSS;
+ 	uart_handle_cts_change(&sport->port, !!val);
+ 	wake_up_interruptible(&sport->port.state->port.delta_msr_wait);
+=20
 --=20
-1.7.4
+1.7.2.3
 
-
-
---------------enigE38997D45DE098544D7E7D98
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-
-iEYEARECAAYFAk2irVkACgkQ3GGILUD6RHttzwCdFNPIs9CcI22ypaK4TA0bOOtn
-c3oAoMEMLfNSwYcPiUVAw4vLLiDC/++R
-=8flc
------END PGP SIGNATURE-----
-
---------------enigE38997D45DE098544D7E7D98--
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
