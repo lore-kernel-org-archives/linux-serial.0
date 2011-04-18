@@ -1,50 +1,32 @@
-From: "Govindraj.R" <govindraj.raja@ti.com>
-Subject: [PATCH] Serial: Remove unused code.
-Date: Mon, 18 Apr 2011 20:27:35 +0530
-Message-ID: <1303138655-1127-1-git-send-email-govindraj.raja@ti.com>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH] tty/serial/pl011: don't print error msg if
+	dmaengine_pause is not supported
+Date: Mon, 18 Apr 2011 16:13:40 +0100
+Message-ID: <20110418151340.GB25671@n2100.arm.linux.org.uk>
+References: <98422bc7c3ebb4bf6a4ab26179b3f3b7d1a5b5ca.1303125086.git.viresh.kumar@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:53003 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754551Ab1DRO4l (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Apr 2011 10:56:41 -0400
+Received: from caramon.arm.linux.org.uk ([78.32.30.218]:57748 "EHLO
+	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751753Ab1DRPOH (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 18 Apr 2011 11:14:07 -0400
+Content-Disposition: inline
+In-Reply-To: <98422bc7c3ebb4bf6a4ab26179b3f3b7d1a5b5ca.1303125086.git.viresh.kumar@st.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: "Govindraj.R" <govindraj.raja@ti.com>, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+To: Viresh Kumar <viresh.kumar@st.com>
+Cc: linux-arm-kernel@lists.infradead.org, linus.walleij@stericsson.com, armando.visconti@st.com, shiraz.hashim@st.com, amit.goel@st.com, viresh.linux@gmail.com, linux-serial@vger.kernel.org
 
-Remove stale code in serial_core layer.
+On Mon, Apr 18, 2011 at 04:52:00PM +0530, Viresh Kumar wrote:
+> Few dma controller doesn't support dmaengine_pause() and return -ENXIO if
+> dmaengine_pause() is called for them. Error messages such as "unable to pause
+> DMA transfer" shouldn't be printed for them.
 
-Cc: Greg Kroah-Hartman <gregkh@suse.de>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
----
- drivers/tty/serial/serial_core.c |   11 -----------
- 1 files changed, 0 insertions(+), 11 deletions(-)
+It is _required_ to pause the DMA engine at this point, as we need to
+read characters via PIO.  Leaving the DMA engine active at this point
+invites it to transfer additional characters beneath us, before we've
+had time to properly update the DMA engine for the characters received.
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 733fe8e..e3e2026 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1240,17 +1240,6 @@ static void uart_set_termios(struct tty_struct *tty,
- 		}
- 		spin_unlock_irqrestore(&state->uart_port->lock, flags);
- 	}
--#if 0
--	/*
--	 * No need to wake up processes in open wait, since they
--	 * sample the CLOCAL flag once, and don't recheck it.
--	 * XXX  It's not clear whether the current behavior is correct
--	 * or not.  Hence, this may change.....
--	 */
--	if (!(old_termios->c_cflag & CLOCAL) &&
--	    (tty->termios->c_cflag & CLOCAL))
--		wake_up_interruptible(&state->uart_port.open_wait);
--#endif
- }
- 
- /*
--- 
-1.7.1
-
+So, dmaengine_pause() is a requirement for PL011.
