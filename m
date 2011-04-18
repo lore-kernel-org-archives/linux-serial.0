@@ -1,60 +1,85 @@
-From: Viresh Kumar <viresh.kumar@st.com>
-Subject: [PATCH] tty/serial/pl011: don't print error msg if dmaengine_pause is not supported
-Date: Mon, 18 Apr 2011 16:52:00 +0530
-Message-ID: <98422bc7c3ebb4bf6a4ab26179b3f3b7d1a5b5ca.1303125086.git.viresh.kumar@st.com>
+From: Niels de Vos <ndevos@redhat.com>
+Subject: [RESEND, PATCH v2] parport_pc.c: correctly release the requested
+ region for the IT887x
+Date: Mon, 18 Apr 2011 15:26:03 +0100
+Message-ID: <4DAC49FB.5060004@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from eu1sys200aog106.obsmtp.com ([207.126.144.121]:48501 "EHLO
-	eu1sys200aog106.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751267Ab1DRLW3 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Apr 2011 07:22:29 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:36178 "EHLO mx1.redhat.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754577Ab1DRO0a (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 18 Apr 2011 10:26:30 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, linux@arm.linux.org.uk, linus.walleij@stericsson.com
-Cc: armando.visconti@st.com, shiraz.hashim@st.com, amit.goel@st.com, viresh.linux@gmail.com, linux-serial@vger.kernel.org, Viresh Kumar <viresh.kumar@st.com>
+To: linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, Julia Lawall <julia@diku.dk>, trivial@kernel.org
 
-Few dma controller doesn't support dmaengine_pause() and return -ENXIO if
-dmaengine_pause() is called for them. Error messages such as "unable to pause
-DMA transfer" shouldn't be printed for them.
+Replace release_resource() by release_region() and also fix the
+inconsistency in the size of the requested/released region.
 
-Signed-off-by: Viresh Kumar <viresh.kumar@st.com>
+The size of the resource should be 32, not 0x8 like it was corrected in
+commit e7c310c36e5fdf1b83a459e5db167bfbd86137db already.
+
+CC: linux-serial@vger.kernel.org
+Reported-by: Julia Lawall <julia@diku.dk>
+Signed-off-by: Niels de Vos <ndevos@redhat.com>
+
 ---
- drivers/tty/serial/amba-pl011.c |   13 ++++++++-----
- 1 files changed, 8 insertions(+), 5 deletions(-)
+This is a followup/improvement on https://lkml.org/lkml/2011/4/11/37
+that was posted by Julia earlier. I've updated the subject to reflect
+the corrections made.
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 6deee4e..c0e1a42 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -755,18 +755,21 @@ static void pl011_dma_rx_irq(struct uart_amba_port *uap)
- 	size_t pending;
- 	struct dma_tx_state state;
- 	enum dma_status dmastat;
-+	int ret;
+There is currently no maintainer for the drivers/parport/ tree. As the
+IT887x also (can) provide a serial port, I'm adding linux-serial@ to the
+list of CCs.
+
+ drivers/parport/parport_pc.c |    8 +++-----
+ 1 files changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/parport/parport_pc.c b/drivers/parport/parport_pc.c
+index 8d62fb7..be8b5ac 100644
+--- a/drivers/parport/parport_pc.c
++++ b/drivers/parport/parport_pc.c
+@@ -2550,7 +2550,6 @@ static int __devinit sio_ite_8872_probe(struct pci_dev *pdev, int autoirq,
+ 					 const struct parport_pc_via_data *via)
+ {
+ 	short inta_addr[6] = { 0x2A0, 0x2C0, 0x220, 0x240, 0x1E0 };
+-	struct resource *base_res;
+ 	u32 ite8872set;
+ 	u32 ite8872_lpt, ite8872_lpthi;
+ 	u8 ite8872_irq, type;
+@@ -2561,8 +2560,7 @@ static int __devinit sio_ite_8872_probe(struct pci_dev *pdev, int autoirq,
  
+ 	/* make sure which one chip */
+ 	for (i = 0; i < 5; i++) {
+-		base_res = request_region(inta_addr[i], 32, "it887x");
+-		if (base_res) {
++		if (request_region(inta_addr[i], 32, "it887x")) {
+ 			int test;
+ 			pci_write_config_dword(pdev, 0x60,
+ 						0xe5000000 | inta_addr[i]);
+@@ -2571,7 +2569,7 @@ static int __devinit sio_ite_8872_probe(struct pci_dev *pdev, int autoirq,
+ 			test = inb(inta_addr[i]);
+ 			if (test != 0xff)
+ 				break;
+-			release_region(inta_addr[i], 0x8);
++			release_region(inta_addr[i], 32);
+ 		}
+ 	}
+ 	if (i >= 5) {
+@@ -2635,7 +2633,7 @@ static int __devinit sio_ite_8872_probe(struct pci_dev *pdev, int autoirq,
  	/*
- 	 * Pause the transfer so we can trust the current counter,
- 	 * do this before we pause the PL011 block, else we may
- 	 * overflow the FIFO.
+ 	 * Release the resource so that parport_pc_probe_port can get it.
  	 */
--	if (dmaengine_pause(rxchan))
--		dev_err(uap->port.dev, "unable to pause DMA transfer\n");
-+	ret = dmaengine_pause(rxchan);
-+	if (ret && ret != -ENXIO)
-+		dev_err(uap->port.dev, "unable to pause DMA transfer");
-+
- 	dmastat = rxchan->device->device_tx_status(rxchan,
--						   dmarx->cookie, &state);
--	if (dmastat != DMA_PAUSED)
--		dev_err(uap->port.dev, "unable to pause DMA transfer\n");
-+			dmarx->cookie, &state);
-+	if (ret != -ENXIO && dmastat != DMA_PAUSED)
-+		dev_err(uap->port.dev, "unable to pause DMA transfer");
- 
- 	/* Disable RX DMA - incoming data will wait in the FIFO */
- 	uap->dmacr &= ~UART011_RXDMAE;
+-	release_resource(base_res);
++	release_region(inta_addr[i], 32);
+ 	if (parport_pc_probe_port(ite8872_lpt, ite8872_lpthi,
+ 				   irq, PARPORT_DMA_NONE, &pdev->dev, 0)) {
+ 		printk(KERN_INFO
 -- 
-1.7.2.2
+1.7.4
+
+
 
