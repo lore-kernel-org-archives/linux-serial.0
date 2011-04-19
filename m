@@ -1,36 +1,88 @@
 From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH] tty/serial/pl011: don't print error msg if
- dmaengine_pause is not supported
-Date: Tue, 19 Apr 2011 02:27:36 +0200
-Message-ID: <BANLkTi=rhN1v0t00wUU3KrC5yATbWK9D5Q@mail.gmail.com>
-References: <98422bc7c3ebb4bf6a4ab26179b3f3b7d1a5b5ca.1303125086.git.viresh.kumar@st.com>
+Subject: [PATCH] dmaengine: implement pause and resume for dw_dmac
+Date: Tue, 19 Apr 2011 02:31:32 +0200
+Message-ID: <1303173092-21785-1-git-send-email-linus.walleij@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wy0-f174.google.com ([74.125.82.174]:59057 "EHLO
-	mail-wy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752884Ab1DSA1h (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Apr 2011 20:27:37 -0400
-Received: by wya21 with SMTP id 21so4395956wya.19
-        for <linux-serial@vger.kernel.org>; Mon, 18 Apr 2011 17:27:36 -0700 (PDT)
-In-Reply-To: <98422bc7c3ebb4bf6a4ab26179b3f3b7d1a5b5ca.1303125086.git.viresh.kumar@st.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: linux-arm-kernel-bounces@lists.infradead.org
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-kernel@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>
+Cc: shiraz.hashim@st.com, amit.goel@st.com, Linus Walleij <linus.walleij@linaro.org>, armando.visconti@st.com, viresh.linux@gmail.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
-To: Viresh Kumar <viresh.kumar@st.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux@arm.linux.org.uk, amit.goel@st.com, armando.visconti@st.com, shiraz.hashim@st.com, viresh.linux@gmail.com, linux-serial@vger.kernel.org, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>
 
-2011/4/18 Viresh Kumar <viresh.kumar@st.com>:
+It seems that the SPEAr needs this.
 
-> Few dma controller doesn't support dmaengine_pause() and return -ENXIO if
-> dmaengine_pause() is called for them. Error messages such as "unable to pause
-> DMA transfer" shouldn't be printed for them.
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/dma/dw_dmac.c      |   22 ++++++++++++++++++++--
+ drivers/dma/dw_dmac_regs.h |    1 +
+ 2 files changed, 21 insertions(+), 2 deletions(-)
 
-Hm for dw_dma this seems like a piece of cake to simply implement
-instead.
-
-I'll send a patch for that instead, can you test it and ACK it if it
-works for you?
-
-Yours,
-Linus Walleij
+diff --git a/drivers/dma/dw_dmac.c b/drivers/dma/dw_dmac.c
+index 9c25c7d..60ac779 100644
+--- a/drivers/dma/dw_dmac.c
++++ b/drivers/dma/dw_dmac.c
+@@ -801,8 +801,7 @@ static int dwc_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
+ 	struct dw_desc		*desc, *_desc;
+ 	LIST_HEAD(list);
+ 
+-	/* Only supports DMA_TERMINATE_ALL */
+-	if (cmd != DMA_TERMINATE_ALL)
++	if (cmd != DMA_TERMINATE_ALL && cmd != DMA_PAUSE && cmd != DMA_RESUME)
+ 		return -ENXIO;
+ 
+ 	/*
+@@ -813,11 +812,30 @@ static int dwc_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
+ 	 */
+ 	spin_lock_bh(&dwc->lock);
+ 
++	if (cmd == DMA_RESUME) {
++		if (dwc->paused) {
++			channel_set_bit(dw, CH_EN, dwc->mask);
++			while (!dma_readl(dw, CH_EN) & dwc->mask)
++				cpu_relax();
++		}
++		spin_unlock_bh(&dwc->lock);
++		return 0;
++	}
++
+ 	channel_clear_bit(dw, CH_EN, dwc->mask);
+ 
+ 	while (dma_readl(dw, CH_EN) & dwc->mask)
+ 		cpu_relax();
+ 
++	if (cmd == DMA_PAUSE) {
++		dwc->paused = true;
++		spin_unlock_bh(&dwc->lock);
++		return 0;
++	}
++
++	/* Terminating a paused transfer */
++	dwc->paused = false;
++
+ 	/* active_list entries will end up before queued entries */
+ 	list_splice_init(&dwc->queue, &list);
+ 	list_splice_init(&dwc->active_list, &list);
+diff --git a/drivers/dma/dw_dmac_regs.h b/drivers/dma/dw_dmac_regs.h
+index 720f821..c968597 100644
+--- a/drivers/dma/dw_dmac_regs.h
++++ b/drivers/dma/dw_dmac_regs.h
+@@ -138,6 +138,7 @@ struct dw_dma_chan {
+ 	void __iomem		*ch_regs;
+ 	u8			mask;
+ 	u8			priority;
++	bool			paused;
+ 
+ 	spinlock_t		lock;
+ 
+-- 
+1.7.4
