@@ -1,49 +1,80 @@
-From: Jack Stone <jwjstone@fastmail.fm>
-Subject: Re: [PATCH 3/7] Char: nozomi, remove useless tty_sem
-Date: Wed, 20 Apr 2011 10:55:32 +0100
-Message-ID: <4DAEAD94.6070304@fastmail.fm>
-References: <1303288998-31718-1-git-send-email-jslaby@suse.cz> <1303288998-31718-3-git-send-email-jslaby@suse.cz>
+From: John Linn <John.Linn@xilinx.com>
+Subject: RE: [PATCH] tty/serial: add support for Xilinx PS UART
+Date: Wed, 20 Apr 2011 07:43:29 -0600
+Message-ID: <b744d309-dbb5-44d4-9d51-98e50970c2a2@VA3EHSMHS018.ehs.local>
+References: <e35578a9-909d-4594-bbe4-41d89b5f9b3e@VA3EHSMHS014.ehs.local><20110419221530.7370d013@lxorguk.ukuu.org.uk><551928f1-72b8-432e-879e-8721b5c87414@VA3EHSMHS017.ehs.local> <20110420102501.1e395f14@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1303288998-31718-3-git-send-email-jslaby@suse.cz>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: gregkh@suse.de, jirislaby@gmail.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from va3ehsobe003.messaging.microsoft.com ([216.32.180.13]:14385
+	"EHLO VA3EHSOBE003.bigfish.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754983Ab1DTNnq convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 20 Apr 2011 09:43:46 -0400
+Content-Class: urn:content-classes:message
+In-Reply-To: <20110420102501.1e395f14@lxorguk.ukuu.org.uk>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On 20/04/2011 09:43, Jiri Slaby wrote:
-> tty_sem used to protect tty open count. This was removed in 33dd474a
-> but the lock remained in place.
+> -----Original Message-----
+> From: Alan Cox [mailto:alan@lxorguk.ukuu.org.uk]
+> Sent: Wednesday, April 20, 2011 3:25 AM
+> To: John Linn
+> Cc: linux-kernel@vger.kernel.org; linux-serial@vger.kernel.org
+> Subject: Re: [PATCH] tty/serial: add support for Xilinx PS UART
 > 
-> So remove it completely as it protects nothing now.
+> > > > +	/* Min baud rate = 6bps and Max Baud Rate is 10Mbps for
+> 100Mhz
+> > > clk */
+> > > > +	baud = uart_get_baud_rate(port, termios, old, 0,
+460800);
+> > > > +	xuartps_set_baud_rate(port, baud);
+> > >
+> > > So why pass 460800 ?
+> >
+> > Seems like 115200 is better number.
 > 
-> Also this solves Mac's problem with inatomic operation called from
-> atomic context (ppp):
-> BUG: scheduling while atomic: firefox-bin/1992/0x10000800
-> Modules linked in: ...
-> Pid: 1992, comm: firefox-bin Not tainted 2.6.38 #1
-> Call Trace:
-> ...
->  [] ? mutex_lock+0xe/0x21
->  [] ? ntty_write+0x5d/0x192 [nozomi]
->  [] ? __mod_timer.clone.30+0xbe/0xcc
->  [] ? check_preempt_curr+0x60/0x6d
->  [] ? __nf_ct_refresh_acct+0x75/0xbe
->  [] ? ppp_async_push+0xa9/0x3bd [ppp_async]
->  [] ? ppp_async_send+0x34/0x40 [ppp_async]
->  [] ? ppp_push+0x6c/0x4f9 [ppp_generic]
-> ...
-> 
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> Reported-by: Mac <kmac@poczta.fm>
-> Tested-by: Gerald Pfeifer <gerald@pfeifer.com>
-> Cc: Jack Stone <jwjstone@fastmail.fm>
-Reviewed-by: Jack Stone <jwjstone@fastmail.fm>
-> Cc: Alan Cox <alan@linux.intel.com>
-> Cc: Greg Kroah-Hartman <gregkh@suse.de>
+> Well if it can do 10Mbit why not pass 10Mbit as the upper limit ?
 
-Thanks for sorting this Jiri.
+The only reason would be because we don't test it, but yes that could be
+done.
 
-Jack
+> 
+> > > And set the baud rate (see 8250.c for an example). Note that the
+> > helper
+> > > functions know about mapping slight errors so if you are asked for
+> > 9600
+> > > and the hardware does 9575 it will report B9600 as you'd expect
+not
+> do
+> > > something crazy.
+> > >
+> >
+> > Sorry I didn't follow what you meant above. The h/w is a bit
+> different
+> > with it's
+> > baud rate settings due to 2 different dividers.
+> 
+> After you've worked out what baud rate you actually set do
+> 
+> 	       /* Don't rewrite B0 */
+>         if (tty_termios_baud_rate(termios))
+>                 tty_termios_encode_baud_rate(termios, baud, baud);
+> 
+> 
+> which will ensure that the termios reflects the actual rate.
+
+Thanks for clarifying, I'll look at that.
+
+-- John
+
+> 
+> Alan
+
+
+This email and any attachments are intended for the sole use of the named recipient(s) and contain(s) confidential information that may be proprietary, privileged or copyrighted under applicable law. If you are not the intended recipient, do not read, copy, or forward this email message or any attachments. Delete this email message and any attachments immediately.
+
+
