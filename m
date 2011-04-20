@@ -1,19 +1,19 @@
 From: John Linn <John.Linn@xilinx.com>
 Subject: RE: [PATCH] tty/serial: add support for Xilinx PS UART
-Date: Wed, 20 Apr 2011 07:43:29 -0600
-Message-ID: <b744d309-dbb5-44d4-9d51-98e50970c2a2@VA3EHSMHS018.ehs.local>
-References: <e35578a9-909d-4594-bbe4-41d89b5f9b3e@VA3EHSMHS014.ehs.local><20110419221530.7370d013@lxorguk.ukuu.org.uk><551928f1-72b8-432e-879e-8721b5c87414@VA3EHSMHS017.ehs.local> <20110420102501.1e395f14@lxorguk.ukuu.org.uk>
+Date: Wed, 20 Apr 2011 09:19:22 -0600
+Message-ID: <bde1ee6b-79a8-46f9-a8a3-38a91e51f1c3@VA3EHSMHS019.ehs.local>
+References: <e35578a9-909d-4594-bbe4-41d89b5f9b3e@VA3EHSMHS014.ehs.local> <20110419221530.7370d013@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from va3ehsobe003.messaging.microsoft.com ([216.32.180.13]:14385
-	"EHLO VA3EHSOBE003.bigfish.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754983Ab1DTNnq convert rfc822-to-8bit
+Received: from va3ehsobe006.messaging.microsoft.com ([216.32.180.16]:53844
+	"EHLO VA3EHSOBE009.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1753468Ab1DTPTj convert rfc822-to-8bit
 	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 20 Apr 2011 09:43:46 -0400
+	Wed, 20 Apr 2011 11:19:39 -0400
 Content-Class: urn:content-classes:message
-In-Reply-To: <20110420102501.1e395f14@lxorguk.ukuu.org.uk>
+In-Reply-To: <20110419221530.7370d013@lxorguk.ukuu.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Alan Cox <alan@lxorguk.ukuu.org.uk>
@@ -21,59 +21,77 @@ Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
 > -----Original Message-----
 > From: Alan Cox [mailto:alan@lxorguk.ukuu.org.uk]
-> Sent: Wednesday, April 20, 2011 3:25 AM
+> Sent: Tuesday, April 19, 2011 3:16 PM
 > To: John Linn
 > Cc: linux-kernel@vger.kernel.org; linux-serial@vger.kernel.org
 > Subject: Re: [PATCH] tty/serial: add support for Xilinx PS UART
 > 
-> > > > +	/* Min baud rate = 6bps and Max Baud Rate is 10Mbps for
-> 100Mhz
-> > > clk */
-> > > > +	baud = uart_get_baud_rate(port, termios, old, 0,
-460800);
-> > > > +	xuartps_set_baud_rate(port, baud);
-> > >
-> > > So why pass 460800 ?
-> >
-> > Seems like 115200 is better number.
+> On Tue, 19 Apr 2011 14:14:52 -0600
+> John Linn <john.linn@xilinx.com> wrote:
 > 
-> Well if it can do 10Mbit why not pass 10Mbit as the upper limit ?
+> > The Xilinx PS Uart is used on the new ARM based SoC. This
+> > UART is not compatible with others such that a seperate
+> > driver is required.
+> 
+> Joyous. I wish people would standardise.
+> 
+> > +		 213 = /dev/ttyPS0		Xilinx PS serial port 0
+> > +		 214 = /dev/ttyPS1		Xilinx PS serial port 1
+> > +		 215 = /dev/ttyPS2		Xilinx PS serial port 2
+> > +		 216 = /dev/ttyPS3		Xilinx PS serial port 3
+> 
+> Is there a specific reason you need fixed minor numbers ? If not
+please
+> use a dynamic range and keep Linus happy.
+> 
+> > +/**
+> > + * xuartps_isr - Interrupt handler
+> > + * @irq: Irq number
+> > + * @dev_id: Id of the port
+> > + *
+> > + * Returns IRQHANDLED
+> > + **/
+> > +static irqreturn_t xuartps_isr(int irq, void *dev_id)
+> > +{
+> > +	struct uart_port *port = (struct uart_port *)dev_id;
+> > +	struct tty_struct *tty = port->state->port.tty;
+> > +	unsigned long flags;
+> > +	unsigned int isrstatus, numbytes;
+> > +	unsigned int data;
+> > +	char status = TTY_NORMAL;
+> > +
+> > +	spin_lock_irqsave(&port->lock, flags);
+> 
+> The ttys are refcounting now and your locking subtly wrong if you want
+> to
+> avoid it (you lookup port-> stuff before you lock it)
+> 
+> The best way to do this is
+> 
+> 	tty = tty_port_tty_get(&port->state->port);
+> 
+> 	/* Returns a tty with reference or NULL */
+> 
+> 	Do stuff
+> 
+> 	tty_kref_put(tty);
 
-The only reason would be because we don't test it, but yes that could be
-done.
+I see the subtle locking issue you mention.
 
-> 
-> > > And set the baud rate (see 8250.c for an example). Note that the
-> > helper
-> > > functions know about mapping slight errors so if you are asked for
-> > 9600
-> > > and the hardware does 9575 it will report B9600 as you'd expect
-not
-> do
-> > > something crazy.
-> > >
-> >
-> > Sorry I didn't follow what you meant above. The h/w is a bit
-> different
-> > with it's
-> > baud rate settings due to 2 different dividers.
-> 
-> After you've worked out what baud rate you actually set do
-> 
-> 	       /* Don't rewrite B0 */
->         if (tty_termios_baud_rate(termios))
->                 tty_termios_encode_baud_rate(termios, baud, baud);
-> 
-> 
-> which will ensure that the termios reflects the actual rate.
+This looks like a good way to help it, but it's not clear to me what to
+do in an isr 
+if the function returns a NULL for the tty.  In other places you can say
+the tty
+was busy, but in an ISR that doesn't make much sense (to me anyway).
 
-Thanks for clarifying, I'll look at that.
+It seems easier in this case to just move the tty =
+port->state->port.tty to after 
+the lock is acquired.
 
--- John
+I'm sure there's something obvious I'm missing here.
 
-> 
-> Alan
-
+Thanks,
+John
 
 This email and any attachments are intended for the sole use of the named recipient(s) and contain(s) confidential information that may be proprietary, privileged or copyrighted under applicable law. If you are not the intended recipient, do not read, copy, or forward this email message or any attachments. Delete this email message and any attachments immediately.
 
