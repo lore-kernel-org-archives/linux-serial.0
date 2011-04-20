@@ -1,46 +1,49 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] tty/serial: add support for Xilinx PS UART
-Date: Wed, 20 Apr 2011 10:39:28 +0100
-Message-ID: <20110420103928.4049573f@lxorguk.ukuu.org.uk>
-References: <e35578a9-909d-4594-bbe4-41d89b5f9b3e@VA3EHSMHS014.ehs.local>
-	<20110419221530.7370d013@lxorguk.ukuu.org.uk>
-	<8d05c32c-9ff1-4eda-9563-6857ede6541a@VA3EHSMHS020.ehs.local>
-	<20110419232141.GA27491@kroah.com>
-	<68925dd6-03b8-48af-9f96-0a3f611712e1@VA3EHSMHS020.ehs.local>
+From: Jack Stone <jwjstone@fastmail.fm>
+Subject: Re: [PATCH 3/7] Char: nozomi, remove useless tty_sem
+Date: Wed, 20 Apr 2011 10:55:32 +0100
+Message-ID: <4DAEAD94.6070304@fastmail.fm>
+References: <1303288998-31718-1-git-send-email-jslaby@suse.cz> <1303288998-31718-3-git-send-email-jslaby@suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:49901 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751388Ab1DTJic (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 20 Apr 2011 05:38:32 -0400
-In-Reply-To: <68925dd6-03b8-48af-9f96-0a3f611712e1@VA3EHSMHS020.ehs.local>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1303288998-31718-3-git-send-email-jslaby@suse.cz>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jiri Slaby <jslaby@suse.cz>
+Cc: gregkh@suse.de, jirislaby@gmail.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
-To: John Linn <John.Linn@xilinx.com>
-Cc: Greg KH <greg@kroah.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-> Reading up on it a bit as I'm not an expert on it (like you). 
-> It's not clear to me what the device driver uses for it's major/minor in
-> this case.  
+On 20/04/2011 09:43, Jiri Slaby wrote:
+> tty_sem used to protect tty open count. This was removed in 33dd474a
+> but the lock remained in place.
+> 
+> So remove it completely as it protects nothing now.
+> 
+> Also this solves Mac's problem with inatomic operation called from
+> atomic context (ppp):
+> BUG: scheduling while atomic: firefox-bin/1992/0x10000800
+> Modules linked in: ...
+> Pid: 1992, comm: firefox-bin Not tainted 2.6.38 #1
+> Call Trace:
+> ...
+>  [] ? mutex_lock+0xe/0x21
+>  [] ? ntty_write+0x5d/0x192 [nozomi]
+>  [] ? __mod_timer.clone.30+0xbe/0xcc
+>  [] ? check_preempt_curr+0x60/0x6d
+>  [] ? __nf_ct_refresh_acct+0x75/0xbe
+>  [] ? ppp_async_push+0xa9/0x3bd [ppp_async]
+>  [] ? ppp_async_send+0x34/0x40 [ppp_async]
+>  [] ? ppp_push+0x6c/0x4f9 [ppp_generic]
+> ...
+> 
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> Reported-by: Mac <kmac@poczta.fm>
+> Tested-by: Gerald Pfeifer <gerald@pfeifer.com>
+> Cc: Jack Stone <jwjstone@fastmail.fm>
+Reviewed-by: Jack Stone <jwjstone@fastmail.fm>
+> Cc: Alan Cox <alan@linux.intel.com>
+> Cc: Greg Kroah-Hartman <gregkh@suse.de>
 
-If you don't specify then the kernel picks one. udev can then create the
-right /dev/ttyPS1/2/3 nodes itself. If you have devtmpfs enabled then
-devtmpfs is a virtual file system which will just have the nodes in at as
-specified by the drivers. It eliminates all the hard work maintaining
-device nodes/ranges in user space.
+Thanks for sorting this Jiri.
 
-> The only reason we didn't just use ttyS0 was that it's not a 8250 really
-
-If you'd attempted to use ttyS0 you would indeed have been told to change
-it
-> and
-> since we have are an FPGA people can add real 8250s in soft logic and
-> then
-> the system would get confusing.
-
-and that's exactly why !
-
-Alan
+Jack
