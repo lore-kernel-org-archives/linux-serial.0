@@ -1,54 +1,114 @@
 From: John Linn <John.Linn@xilinx.com>
 Subject: RE: [PATCH V2] tty/serial: add support for Xilinx PS UART
-Date: Fri, 22 Apr 2011 07:40:06 -0600
-Message-ID: <15951ed5-383b-47ad-bbbd-47650f04735a@VA3EHSMHS026.ehs.local>
-References: <90e49570-bc82-41a9-ac79-2f5007e93a2a@VA3EHSMHS018.ehs.local> <4DB14626.8090002@petalogix.com> <1303464033.26896.11.camel@Joe-Laptop>
+Date: Fri, 22 Apr 2011 09:12:42 -0600
+Message-ID: <a9a3298f-e87b-476d-8fca-47ce72b7b0bb@VA3EHSMHS007.ehs.local>
+References: <90e49570-bc82-41a9-ac79-2f5007e93a2a@VA3EHSMHS018.ehs.local> <4DB14626.8090002@petalogix.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from va3ehsobe006.messaging.microsoft.com ([216.32.180.16]:24021
-	"EHLO VA3EHSOBE007.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1755368Ab1DVNkL (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 22 Apr 2011 09:40:11 -0400
+Received: from va3ehsobe006.messaging.microsoft.com ([216.32.180.16]:4012 "EHLO
+	VA3EHSOBE009.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1753275Ab1DVPMv convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 22 Apr 2011 11:12:51 -0400
 Content-Class: urn:content-classes:message
-In-Reply-To: <1303464033.26896.11.camel@Joe-Laptop>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Joe Perches <joe@perches.com>, michal.simek@petalogix.com
+To: michal.simek@petalogix.com
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, alan@lxorguk.ukuu.org.uk, greg@kroah.com, grant.likely@secretlab.ca
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKb2UgUGVyY2hlcyBbbWFpbHRv
-OmpvZUBwZXJjaGVzLmNvbV0NCj4gU2VudDogRnJpZGF5LCBBcHJpbCAyMiwgMjAxMSAzOjIxIEFN
-DQo+IFRvOiBtaWNoYWwuc2ltZWtAcGV0YWxvZ2l4LmNvbQ0KPiBDYzogSm9obiBMaW5uOyBsaW51
-eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBsaW51eC0NCj4gc2VyaWFsQHZnZXIua2VybmVsLm9y
-ZzsgYWxhbkBseG9yZ3VrLnVrdXUub3JnLnVrOyBncmVnQGtyb2FoLmNvbTsNCj4gZ3JhbnQubGlr
-ZWx5QHNlY3JldGxhYi5jYQ0KPiBTdWJqZWN0OiBSZTogW1BBVENIIFYyXSB0dHkvc2VyaWFsOiBh
-ZGQgc3VwcG9ydCBmb3IgWGlsaW54IFBTIFVBUlQNCj4gDQo+IE9uIEZyaSwgMjAxMS0wNC0yMiBh
-dCAxMToxMSArMDIwMCwgTWljaGFsIFNpbWVrIHdyb3RlOg0KPiA+IEpvaG4gTGlubiB3cm90ZToN
-Cj4gPiA+IFRoZSBYaWxpbnggUFMgVWFydCBpcyB1c2VkIG9uIHRoZSBuZXcgQVJNIGJhc2VkIFNv
-Qy4gVGhpcw0KPiA+ID4gVUFSVCBpcyBub3QgY29tcGF0aWJsZSB3aXRoIG90aGVycyBzdWNoIHRo
-YXQgYSBzZXBlcmF0ZQ0KPiA+ID4gZHJpdmVyIGlzIHJlcXVpcmVkLg0KPiBbXQ0KPiA+ID4gKysr
-IGIvZHJpdmVycy90dHkvc2VyaWFsL3hpbGlueF91YXJ0cHMuYw0KPiBbXQ0KPiA+ID4gKwkJcmMg
-PSB1YXJ0X2FkZF9vbmVfcG9ydCgmeHVhcnRwc191YXJ0X2RyaXZlciwgcG9ydCk7DQo+ID4gPiAr
-CQlpZiAocmMpIHsNCj4gPiA+ICsJCQlkZXZfZXJyKCZwZGV2LT5kZXYsICJ1YXJ0X2FkZF9vbmVf
-cG9ydCgpIGZhaWxlZDsgXA0KPiA+ID4gKwkJCQkJCWVycj0laVxuIiwgcmMpOw0KPiANCj4gVGhh
-dCdzIGEgd2hpdGVzcGFjZSBlcnJvci4NCj4gUGxlYXNlIGRvbid0IGJlIGNvbmNlcm5lZCBhYm91
-dCA4MCBjb2x1bW4gbGluZXMgdXNlZCBmb3IgZm9ybWF0dGluZy4NCj4gWW91IGNvdWxkIHVzZSBz
-b21ldGhpbmcgbGlrZSB0aGlzIGFzIHdlbGwuDQoNClRoYW5rcyBKb2UuICBJJ20gc3VycHJpc2Vk
-IGNoZWNrcGF0Y2ggZGlkbid0IGNhdGNoIHRoYXQuICBFYXN5IGVub3VnaA0KdG8gZml4IG9uIHRo
-ZSBuZXh0IHNwaW4gb2YgdGhlIHBhdGNoLg0KDQpJIHRob3VnaHQgY2hlY2twYXRjaCBkaWQgY29t
-cGxhaW4gaWYgdGhlIGxpbmVzIHdlcmUgbG9uZ2VyIHRoYW4gODAsIGJ1dA0KbWF5YmUgdGhlcmUg
-YXJlIHNvbWUgZXhjZXB0aW9ucyBJIGRpZG4ndCByZWFsaXplLiAgDQoNClRoYW5rcyBmb3IgeW91
-ciB0aW1lIGFuZCBpbnB1dCwgbGVhcm5pbmcgbW9yZSBldmVyeWRheSA6KQ0KSm9obg0KDQo+IA0K
-PiAJCQlkZXZfZXJyKCZwZGV2LT5kZXYsDQo+IAkJCQkidWFydF9hZGRfb25lX3BvcnQoKSBmYWls
-ZWQ7IGVycj0lZFxuIiwgcmMpOw0KPiANCj4gDQoNCgpUaGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNo
-bWVudHMgYXJlIGludGVuZGVkIGZvciB0aGUgc29sZSB1c2Ugb2YgdGhlIG5hbWVkIHJlY2lwaWVu
-dChzKSBhbmQgY29udGFpbihzKSBjb25maWRlbnRpYWwgaW5mb3JtYXRpb24gdGhhdCBtYXkgYmUg
-cHJvcHJpZXRhcnksIHByaXZpbGVnZWQgb3IgY29weXJpZ2h0ZWQgdW5kZXIgYXBwbGljYWJsZSBs
-YXcuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQsIGRvIG5vdCByZWFkLCBj
-b3B5LCBvciBmb3J3YXJkIHRoaXMgZW1haWwgbWVzc2FnZSBvciBhbnkgYXR0YWNobWVudHMuIERl
-bGV0ZSB0aGlzIGVtYWlsIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBpbW1lZGlhdGVseS4K
+> -----Original Message-----
+> From: John Linn
+> Sent: Friday, April 22, 2011 7:36 AM
+> To: 'michal.simek@petalogix.com'
+> Cc: linux-kernel@vger.kernel.org; linux-serial@vger.kernel.org;
+> alan@lxorguk.ukuu.org.uk; greg@kroah.com; grant.likely@secretlab.ca
+> Subject: RE: [PATCH V2] tty/serial: add support for Xilinx PS UART
+> 
+> > -----Original Message-----
+> > From: Michal Simek [mailto:michal.simek@petalogix.com]
+> > Sent: Friday, April 22, 2011 3:11 AM
+> > To: John Linn
+> > Cc: linux-kernel@vger.kernel.org; linux-serial@vger.kernel.org;
+> > alan@lxorguk.ukuu.org.uk; greg@kroah.com; grant.likely@secretlab.ca
+> > Subject: Re: [PATCH V2] tty/serial: add support for Xilinx PS UART
+> >
+> > John Linn wrote:
+> > > The Xilinx PS Uart is used on the new ARM based SoC. This
+> > > UART is not compatible with others such that a seperate
+> > > driver is required.
+> > >
+> > > Signed-off-by: John Linn <john.linn@xilinx.com>
+> > > ---
+> > >
+> > > V2 Changes
+> > >
+> 
+> Hi Michal,
+> 
+> I don't have a problem removing the empty lines, but is there some
+> guideline on that
+> which I'm ignoring and should know?
+
+Those were pretty ugly, didn't realize they were all in there, no big
+deal. I found a few more than you did :)
+
+Thanks,
+John
+
+> 
+> > AFAIK. Grant proposed to write it in different style. I think he
+will
+> > agree with me.
+> >
+> > #ifdef CONFIG_OF
+> > static struct of_device_id xuartps_of_match[] __devinitdata = {
+> > 	{ .compatible = "xlnx,xuartps", },
+> > 	{}
+> > };
+> > MODULE_DEVICE_TABLE(of, xuartps_of_match);
+> > #else
+> > #define xuartps_of_match NULL
+> > #endif
+> >
+> >
+> > static struct platform_driver xuartps_platform_driver = {
+> > 	.probe   = xuartps_probe,		/* Probe method */
+> > 	.remove  = __exit_p(xuartps_remove),	/* Detach method */
+> > 	.suspend = xuartps_suspend,		/* Suspend */
+> > 	.resume  = xuartps_resume,		/* Resume after a
+suspend */
+> > 	.driver  = {
+> > 		.owner = THIS_MODULE,
+> > 		.name = XUARTPS_NAME,		/* Driver name */
+> > 		.of_match_table = xuartps_of_match,
+> > 	},
+> > };
+> >
+> 
+> I'll check it out, that does look familiar to me now that you say it.
+> We've had this
+> driver around for a while so it just needs to be updated to the newer
+> style.
+> 
+> Easy enough.
+> 
+> Thanks for the review and input,
+> John
+> 
+> > Regards,
+> > Michal
+> >
+> >
+> >
+> > --
+> > Michal Simek, Ing. (M.Eng)
+> > PetaLogix - Linux Solutions for a Reconfigurable World
+> > w: www.petalogix.com p: +61-7-30090663,+42-0-721842854 f: +61-7-
+> > 30090663
+
+
+This email and any attachments are intended for the sole use of the named recipient(s) and contain(s) confidential information that may be proprietary, privileged or copyrighted under applicable law. If you are not the intended recipient, do not read, copy, or forward this email message or any attachments. Delete this email message and any attachments immediately.
 
 
