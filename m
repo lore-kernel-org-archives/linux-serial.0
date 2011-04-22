@@ -1,114 +1,31 @@
-From: John Linn <John.Linn@xilinx.com>
-Subject: RE: [PATCH V2] tty/serial: add support for Xilinx PS UART
-Date: Fri, 22 Apr 2011 09:12:42 -0600
-Message-ID: <a9a3298f-e87b-476d-8fca-47ce72b7b0bb@VA3EHSMHS007.ehs.local>
-References: <90e49570-bc82-41a9-ac79-2f5007e93a2a@VA3EHSMHS018.ehs.local> <4DB14626.8090002@petalogix.com>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH V2] tty/serial: add support for Xilinx PS UART
+Date: Fri, 22 Apr 2011 08:22:07 -0700
+Message-ID: <20110422152207.GA12927@kroah.com>
+References: <90e49570-bc82-41a9-ac79-2f5007e93a2a@VA3EHSMHS018.ehs.local>
+ <4DB14626.8090002@petalogix.com>
+ <a9a3298f-e87b-476d-8fca-47ce72b7b0bb@VA3EHSMHS007.ehs.local>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from va3ehsobe006.messaging.microsoft.com ([216.32.180.16]:4012 "EHLO
-	VA3EHSOBE009.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1753275Ab1DVPMv convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 22 Apr 2011 11:12:51 -0400
-Content-Class: urn:content-classes:message
+Received: from kroah.org ([198.145.64.141]:47521 "EHLO coco.kroah.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752204Ab1DVPVV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 22 Apr 2011 11:21:21 -0400
+Content-Disposition: inline
+In-Reply-To: <a9a3298f-e87b-476d-8fca-47ce72b7b0bb@VA3EHSMHS007.ehs.local>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: michal.simek@petalogix.com
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, alan@lxorguk.ukuu.org.uk, greg@kroah.com, grant.likely@secretlab.ca
+To: John Linn <John.Linn@xilinx.com>
+Cc: michal.simek@petalogix.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, alan@lxorguk.ukuu.org.uk, grant.likely@secretlab.ca
 
-> -----Original Message-----
-> From: John Linn
-> Sent: Friday, April 22, 2011 7:36 AM
-> To: 'michal.simek@petalogix.com'
-> Cc: linux-kernel@vger.kernel.org; linux-serial@vger.kernel.org;
-> alan@lxorguk.ukuu.org.uk; greg@kroah.com; grant.likely@secretlab.ca
-> Subject: RE: [PATCH V2] tty/serial: add support for Xilinx PS UART
+On Fri, Apr 22, 2011 at 09:12:42AM -0600, John Linn wrote:
+> This email and any attachments are intended for the sole use of the named recipient(s) and contain(s) confidential information that may be proprietary, privileged or copyrighted under applicable law. If you are not the intended recipient, do not read, copy, or forward this email message or any attachments. Delete this email message and any attachments immediately.
 > 
-> > -----Original Message-----
-> > From: Michal Simek [mailto:michal.simek@petalogix.com]
-> > Sent: Friday, April 22, 2011 3:11 AM
-> > To: John Linn
-> > Cc: linux-kernel@vger.kernel.org; linux-serial@vger.kernel.org;
-> > alan@lxorguk.ukuu.org.uk; greg@kroah.com; grant.likely@secretlab.ca
-> > Subject: Re: [PATCH V2] tty/serial: add support for Xilinx PS UART
-> >
-> > John Linn wrote:
-> > > The Xilinx PS Uart is used on the new ARM based SoC. This
-> > > UART is not compatible with others such that a seperate
-> > > driver is required.
-> > >
-> > > Signed-off-by: John Linn <john.linn@xilinx.com>
-> > > ---
-> > >
-> > > V2 Changes
-> > >
-> 
-> Hi Michal,
-> 
-> I don't have a problem removing the empty lines, but is there some
-> guideline on that
-> which I'm ignoring and should know?
 
-Those were pretty ugly, didn't realize they were all in there, no big
-deal. I found a few more than you did :)
+Please remove these lines, they are incompatible with opensource kernel
+development efforts.
 
-Thanks,
-John
+sorry,
 
-> 
-> > AFAIK. Grant proposed to write it in different style. I think he
-will
-> > agree with me.
-> >
-> > #ifdef CONFIG_OF
-> > static struct of_device_id xuartps_of_match[] __devinitdata = {
-> > 	{ .compatible = "xlnx,xuartps", },
-> > 	{}
-> > };
-> > MODULE_DEVICE_TABLE(of, xuartps_of_match);
-> > #else
-> > #define xuartps_of_match NULL
-> > #endif
-> >
-> >
-> > static struct platform_driver xuartps_platform_driver = {
-> > 	.probe   = xuartps_probe,		/* Probe method */
-> > 	.remove  = __exit_p(xuartps_remove),	/* Detach method */
-> > 	.suspend = xuartps_suspend,		/* Suspend */
-> > 	.resume  = xuartps_resume,		/* Resume after a
-suspend */
-> > 	.driver  = {
-> > 		.owner = THIS_MODULE,
-> > 		.name = XUARTPS_NAME,		/* Driver name */
-> > 		.of_match_table = xuartps_of_match,
-> > 	},
-> > };
-> >
-> 
-> I'll check it out, that does look familiar to me now that you say it.
-> We've had this
-> driver around for a while so it just needs to be updated to the newer
-> style.
-> 
-> Easy enough.
-> 
-> Thanks for the review and input,
-> John
-> 
-> > Regards,
-> > Michal
-> >
-> >
-> >
-> > --
-> > Michal Simek, Ing. (M.Eng)
-> > PetaLogix - Linux Solutions for a Reconfigurable World
-> > w: www.petalogix.com p: +61-7-30090663,+42-0-721842854 f: +61-7-
-> > 30090663
-
-
-This email and any attachments are intended for the sole use of the named recipient(s) and contain(s) confidential information that may be proprietary, privileged or copyrighted under applicable law. If you are not the intended recipient, do not read, copy, or forward this email message or any attachments. Delete this email message and any attachments immediately.
-
-
+greg k-h
