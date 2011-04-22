@@ -1,75 +1,53 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 1/3] parport_pc.c: correctly release the requested region for the IT887x
-Date: Fri, 22 Apr 2011 16:11:38 -0700
-Message-ID: <1303513900-6169-1-git-send-email-gregkh@suse.de>
+Subject: [PATCH 2/3] serial/imx: read cts state only after acking
+	cts change irq
+Date: Fri, 22 Apr 2011 16:11:39 -0700
+Message-ID: <1303513900-6169-2-git-send-email-gregkh@suse.de>
 References: <20110422230713.GA5883@kroah.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:46561 "EHLO coco.kroah.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753589Ab1DVXLm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 22 Apr 2011 19:11:42 -0400
-In-Reply-To: <20110422230713.GA5883@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+	<1303513900-6169-1-git-send-email-gregkh@suse.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <stable-bounces@linux.kernel.org>
+In-Reply-To: <1303513900-6169-1-git-send-email-gregkh@suse.de>
+List-Unsubscribe: <http://linux.kernel.org/mailman/options/stable>,
+	<mailto:stable-request@linux.kernel.org?subject=unsubscribe>
+List-Archive: <http://linux.kernel.org/mailman/private/stable/>
+List-Post: <mailto:stable@linux.kernel.org>
+List-Help: <mailto:stable-request@linux.kernel.org?subject=help>
+List-Subscribe: <http://linux.kernel.org/mailman/listinfo/stable>,
+	<mailto:stable-request@linux.kernel.org?subject=subscribe>
+Sender: stable-bounces@linux.kernel.org
+Errors-To: stable-bounces@linux.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Niels de Vos <ndevos@redhat.com>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: stable@kernel.org.#.2.6.14+, Greg Kroah-Hartman <gregkh@suse.de>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+List-Id: linux-serial@vger.kernel.org
 
-From: Niels de Vos <ndevos@redhat.com>
-
-Replace release_resource() by release_region() and also fix the
-inconsistency in the size of the requested/released region.
-
-The size of the resource should be 32, not 0x8 like it was corrected in
-commit e7c310c36e5fdf1b83a459e5db167bfbd86137db already.
-
-CC: linux-serial@vger.kernel.org
-Reported-by: Julia Lawall <julia@diku.dk>
-Signed-off-by: Niels de Vos <ndevos@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
----
- drivers/parport/parport_pc.c |    8 +++-----
- 1 files changed, 3 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/parport/parport_pc.c b/drivers/parport/parport_pc.c
-index a3755ff..bc8ce48 100644
---- a/drivers/parport/parport_pc.c
-+++ b/drivers/parport/parport_pc.c
-@@ -2550,7 +2550,6 @@ static int __devinit sio_ite_8872_probe(struct pci_dev *pdev, int autoirq,
- 					 const struct parport_pc_via_data *via)
- {
- 	short inta_addr[6] = { 0x2A0, 0x2C0, 0x220, 0x240, 0x1E0 };
--	struct resource *base_res;
- 	u32 ite8872set;
- 	u32 ite8872_lpt, ite8872_lpthi;
- 	u8 ite8872_irq, type;
-@@ -2561,8 +2560,7 @@ static int __devinit sio_ite_8872_probe(struct pci_dev *pdev, int autoirq,
- 
- 	/* make sure which one chip */
- 	for (i = 0; i < 5; i++) {
--		base_res = request_region(inta_addr[i], 32, "it887x");
--		if (base_res) {
-+		if (request_region(inta_addr[i], 32, "it887x")) {
- 			int test;
- 			pci_write_config_dword(pdev, 0x60,
- 						0xe5000000 | inta_addr[i]);
-@@ -2571,7 +2569,7 @@ static int __devinit sio_ite_8872_probe(struct pci_dev *pdev, int autoirq,
- 			test = inb(inta_addr[i]);
- 			if (test != 0xff)
- 				break;
--			release_region(inta_addr[i], 0x8);
-+			release_region(inta_addr[i], 32);
- 		}
- 	}
- 	if (i >= 5) {
-@@ -2635,7 +2633,7 @@ static int __devinit sio_ite_8872_probe(struct pci_dev *pdev, int autoirq,
- 	/*
- 	 * Release the resource so that parport_pc_probe_port can get it.
- 	 */
--	release_resource(base_res);
-+	release_region(inta_addr[i], 32);
- 	if (parport_pc_probe_port(ite8872_lpt, ite8872_lpthi,
- 				   irq, PARPORT_DMA_NONE, &pdev->dev, 0)) {
- 		printk(KERN_INFO
--- 
-1.7.4.2
-
+RnJvbTogVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4K
+CklmIGN0cyBjaGFuZ2VzIGJldHdlZW4gcmVhZGluZyB0aGUgbGV2ZWwgYXQgdGhlIGN0cyBpbnB1
+dCAoVVNSMV9SVFNTKQphbmQgYWNraW5nIHRoZSBpcnEgKFVTUjFfUlRTRCkgdGhlIGxhc3QgZWRn
+ZSBkb2Vzbid0IGdlbmVyYXRlIGFuIGlycSBhbmQKdWFydF9oYW5kbGVfY3RzX2NoYW5nZSBpcyBj
+YWxsZWQgd2l0aCBhIG91dGRhdGVkIHZhbHVlIGZvciBjdHMuCgpUaGUgcmFjZSB3YXMgaW50cm9k
+dWNlZCBieSBjb21taXQKCgljZWNhNjI5IChbQVJNXSAyOTcxLzE6IGkuTVggdWFydCBoYW5kbGUg
+cnRzIGlycSkKClJlcG9ydGVkLWJ5OiBBcndlZCBTcHJpbmdlciA8QXJ3ZWQuU3ByaW5nZXJAZGUu
+dHJ1bXBmLmNvbT4KVGVzdGVkLWJ5OiBBcndlZCBTcHJpbmdlciA8QXJ3ZWQuU3ByaW5nZXJAZGUu
+dHJ1bXBmLmNvbT4KQ2M6IHN0YWJsZUBrZXJuZWwub3JnICMgMi42LjE0KwpTaWduZWQtb2ZmLWJ5
+OiBVd2UgS2xlaW5lLUvDtm5pZyA8dS5rbGVpbmUta29lbmlnQHBlbmd1dHJvbml4LmRlPgpTaWdu
+ZWQtb2ZmLWJ5OiBHcmVnIEtyb2FoLUhhcnRtYW4gPGdyZWdraEBzdXNlLmRlPgotLS0KIGRyaXZl
+cnMvdHR5L3NlcmlhbC9pbXguYyB8ICAgIDMgKystCiAxIGZpbGVzIGNoYW5nZWQsIDIgaW5zZXJ0
+aW9ucygrKSwgMSBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwv
+aW14LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMKaW5kZXggY2IzNmIwZC4uNjJkZjcyZCAx
+MDA2NDQKLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jCisrKyBiL2RyaXZlcnMvdHR5L3Nl
+cmlhbC9pbXguYwpAQCAtMzgyLDEyICszODIsMTMgQEAgc3RhdGljIHZvaWQgaW14X3N0YXJ0X3R4
+KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpCiBzdGF0aWMgaXJxcmV0dXJuX3QgaW14X3J0c2ludChp
+bnQgaXJxLCB2b2lkICpkZXZfaWQpCiB7CiAJc3RydWN0IGlteF9wb3J0ICpzcG9ydCA9IGRldl9p
+ZDsKLQl1bnNpZ25lZCBpbnQgdmFsID0gcmVhZGwoc3BvcnQtPnBvcnQubWVtYmFzZSArIFVTUjEp
+ICYgVVNSMV9SVFNTOworCXVuc2lnbmVkIGludCB2YWw7CiAJdW5zaWduZWQgbG9uZyBmbGFnczsK
+IAogCXNwaW5fbG9ja19pcnFzYXZlKCZzcG9ydC0+cG9ydC5sb2NrLCBmbGFncyk7CiAKIAl3cml0
+ZWwoVVNSMV9SVFNELCBzcG9ydC0+cG9ydC5tZW1iYXNlICsgVVNSMSk7CisJdmFsID0gcmVhZGwo
+c3BvcnQtPnBvcnQubWVtYmFzZSArIFVTUjEpICYgVVNSMV9SVFNTOwogCXVhcnRfaGFuZGxlX2N0
+c19jaGFuZ2UoJnNwb3J0LT5wb3J0LCAhIXZhbCk7CiAJd2FrZV91cF9pbnRlcnJ1cHRpYmxlKCZz
+cG9ydC0+cG9ydC5zdGF0ZS0+cG9ydC5kZWx0YV9tc3Jfd2FpdCk7CiAKLS0gCjEuNy40LjIKCl9f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCnN0YWJsZSBtYWls
+aW5nIGxpc3QKc3RhYmxlQGxpbnV4Lmtlcm5lbC5vcmcKaHR0cDovL2xpbnV4Lmtlcm5lbC5vcmcv
+bWFpbG1hbi9saXN0aW5mby9zdGFibGUK
