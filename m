@@ -1,51 +1,62 @@
-From: Greg KH <gregkh@suse.de>
-Subject: [GIT PATCH] TTY/serial driver fixes for .39
-Date: Fri, 22 Apr 2011 16:07:13 -0700
-Message-ID: <20110422230713.GA5883@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+From: Greg Kroah-Hartman <gregkh@suse.de>
+Subject: [PATCH 3/3] tty/n_gsm: fix bug in CRC calculation for gsm1 mode
+Date: Fri, 22 Apr 2011 16:11:40 -0700
+Message-ID: <1303513900-6169-3-git-send-email-gregkh@suse.de>
+References: <20110422230713.GA5883@kroah.com>
+ <1303513900-6169-1-git-send-email-gregkh@suse.de>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from kroah.org ([198.145.64.141]:46568 "EHLO coco.kroah.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753638Ab1DVXLo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 22 Apr 2011 19:11:44 -0400
+In-Reply-To: <1303513900-6169-1-git-send-email-gregkh@suse.de>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Mikhail Kshevetskiy <mikhail.kshevetskiy@gmail.com>, stable <stable@kernel.org>, Greg Kroah-Hartman <gregkh@suse.de>
 
-Here are some small tty/serial fixes for the .39 tree.
+From: Mikhail Kshevetskiy <mikhail.kshevetskiy@gmail.com>
 
-It also includes a parport patch, as it seems relevant to the serial
-drivers (resource conflict) and there's not a parport maintainer tree
-anywhere that I know of.
+Problem description:
+  gsm_queue() calculate a CRC for arrived frames. As a last step of
+  CRC calculation it call
 
-Please pull from:
-	master.kernel.org:/pub/scm/linux/kernel/git/gregkh/tty-2.6.git/ tty-li=
-nus
+    gsm->fcs = gsm_fcs_add(gsm->fcs, gsm->received_fcs);
 
-All of these patches have been in the -mm and -next trees for a while.
+  This work perfectly for the case of GSM0 mode as gsm->received_fcs
+  contain the last piece of data required to generate final CRC.
 
-Patches will be sent to the linux-serial mailing list, if anyone wants
-to see them.
+  gsm->received_fcs is not used for GSM1 mode. Thus we put an
+  additional byte to CRC calculation. As result we get a wrong CRC
+  and reject incoming frame.
 
-thanks,
+Signed-off-by: Mikhail Kshevetskiy <mikhail.kshevetskiy@gmail.com>
+Acked-by: Alan Cox <alan@linux.intel.com>
+Cc: stable <stable@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+---
+ drivers/tty/n_gsm.c |    8 ++++++--
+ 1 files changed, 6 insertions(+), 2 deletions(-)
 
-greg k-h
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 47f8cdb..74273e6 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1658,8 +1658,12 @@ static void gsm_queue(struct gsm_mux *gsm)
+ 
+ 	if ((gsm->control & ~PF) == UI)
+ 		gsm->fcs = gsm_fcs_add_block(gsm->fcs, gsm->buf, gsm->len);
+-	/* generate final CRC with received FCS */
+-	gsm->fcs = gsm_fcs_add(gsm->fcs, gsm->received_fcs);
++	if (gsm->encoding == 0){
++		/* WARNING: gsm->received_fcs is used for gsm->encoding = 0 only.
++		            In this case it contain the last piece of data
++		            required to generate final CRC */
++		gsm->fcs = gsm_fcs_add(gsm->fcs, gsm->received_fcs);
++	}
+ 	if (gsm->fcs != GOOD_FCS) {
+ 		gsm->bad_fcs++;
+ 		if (debug & 4)
+-- 
+1.7.4.2
 
-------------
-
- drivers/parport/parport_pc.c |    8 +++-----
- drivers/tty/n_gsm.c          |    8 ++++++--
- drivers/tty/serial/imx.c     |    3 ++-
- 3 files changed, 11 insertions(+), 8 deletions(-)
-
----------------
-
-Mikhail Kshevetskiy (1):
-      tty/n_gsm: fix bug in CRC calculation for gsm1 mode
-
-Niels de Vos (1):
-      parport_pc.c: correctly release the requested region for the IT88=
-7x
-
-Uwe Kleine-K=F6nig (1):
-      serial/imx: read cts state only after acking cts change irq
