@@ -1,41 +1,94 @@
 From: johnlinn@comcast.net
 Subject: Re: [PATCH V3] tty/serial: add support for Xilinx PS UART
-Date: Tue, 26 Apr 2011 21:19:34 +0000 (UTC)
-Message-ID: <1722853311.1900521.1303852774744.JavaMail.root@sz0140a.emeryville.ca.mail.comcast.net>
-References: <20110426194740.GB17748@kroah.com>
+Date: Tue, 26 Apr 2011 23:15:58 +0000 (UTC)
+Message-ID: <549692800.1907368.1303859758362.JavaMail.root@sz0140a.emeryville.ca.mail.comcast.net>
+References: <381805170.1906645.1303859011392.JavaMail.root@sz0140a.emeryville.ca.mail.comcast.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from qmta10.emeryville.ca.mail.comcast.net ([76.96.30.17]:43877 "EHLO
-	qmta10.emeryville.ca.mail.comcast.net" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932356Ab1DZVTk (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 26 Apr 2011 17:19:40 -0400
-In-Reply-To: <20110426194740.GB17748@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <381805170.1906645.1303859011392.JavaMail.root@sz0140a.emeryville.ca.mail.comcast.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: alan@lxorguk.ukuu.org.uk
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, michal.simek@petalogix.com, joe@perches.com, grant.likely@secretlab.ca, greg@kroah.com
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <greg@kroah.com>
-Cc: linux-serial@vger.kernel.org, grant likely <grant.likely@secretlab.ca>, alan@lxorguk.ukuu.org.uk
 
-> On Tue, Apr 26, 2011 at 02:18:53PM +0000, johnlinn@comcast.net wrote:
-> > It's not clear to me how owns the serial driver subsystem as I see
-> that
-> > you own the tty and a serial driver. I'm trying to figure out who I
-> would
-> > ask if they will merge this patch in to their tree?
+> -----Original Message-----
+> From: Alan Cox [mailto:alan@lxorguk.ukuu.org.uk] 
+> Sent: Tuesday, April 26, 2011 1:58 PM
+> To: John Linn
+> Cc: linux-kernel@vger.kernel.org; linux-serial@vger.kernel.org;
+> michal.simek@petalogix.com; joe@perches.com;
+> grant.likely@secretlab.ca;
+> greg@kroah.com
+> Subject: Re: [PATCH V3] tty/serial: add support for Xilinx PS UART
 > 
-> Resend it, cc the linux-serial list and me and Alan Cox.  I'll pick
-> it
-> up in my "tty" tree if he acks it.
+> O
+> > +	if (percent_err >= 3)
+> > +		dev_err(port->dev, "Error too large, baud rate not
+> set\n");
+> 
+> So in this cause baud isn't the one the user asked. Also the user can
+> make it spew errors by continually generating wrong rates.
+> 
+> If the error is large go for the nearest you can and return it. The
+> core
+> tty code will do all the rest including reporting to the user they
+> didn't
+> get their wishes.
+> 
 
-Great, thanks.  Alan responded with a bit more work, but now I know how
-the process will eventually work.
+Hi Alan,
+
+Thanks for the input. I wrestled with this some before doing the 1st patchset.  
+
+Prior to this, we were not checking for this error, but instead we were finding
+the values with the least amount of error and then going with them.
+
+I thought I was improving but now as I look at it further, that seems like it 
+was better and I should have stuck to that method.
+
+Thoughts?
+
+> > +	else {
+> > +		/* Set the values for the new baud rate */
+> > +		xuartps_writel(brgr_val, XUARTPS_BAUDGEN_OFFSET);
+> > +		xuartps_writel(brdiv_val, XUARTPS_BAUDDIV_OFFSET);
+> 
+> and in this it may not be exact.
+> 
+> I suspect this routine needs to return the actual baud rate (or maybe
+> baudrate/error code)
+> 
+> 
+> > +	/* Min baud rate = 6bps and Max Baud Rate is 10Mbps for 100Mhz
+> clk */
+> > +	baud = uart_get_baud_rate(port, termios, old, 0, 10000000);
+> > +	xuartps_set_baud_rate(port, baud);
+> > +	if (tty_termios_baud_rate(termios))
+> > +		tty_termios_encode_baud_rate(termios, baud, baud);
+> 
+> and this should do something like
+> 
+> 	baud = xuartps_set_baud_rate(port baud);
+> 
+> > +
+> > +	/*
+> > +	 * Update the per-port timeout.
+> > +	 */
+> > +	uart_update_timeout(port, termios->c_cflag, baud);
+> 
+> [which would also fix this timeout!]
+
+Maybe you were meaning that if the baud rate was not really set because of the
+error this timeout would be wrong also, and if so that makes sense.
+
+Otherwise, I didn't undestand why the timeout was broken.
 
 Thanks,
 John
 
 > 
-> thanks,
+> Otherwise looks ready to merge
 > 
-> greg k-h
+> 
