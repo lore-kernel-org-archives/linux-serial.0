@@ -1,41 +1,55 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+From: johnlinn@comcast.net
 Subject: Re: [PATCH V3] tty/serial: add support for Xilinx PS UART
-Date: Wed, 27 Apr 2011 10:33:40 +0100
-Message-ID: <20110427103340.2554df83@lxorguk.ukuu.org.uk>
-References: <381805170.1906645.1303859011392.JavaMail.root@sz0140a.emeryville.ca.mail.comcast.net>
-	<549692800.1907368.1303859758362.JavaMail.root@sz0140a.emeryville.ca.mail.comcast.net>
+Date: Wed, 27 Apr 2011 13:21:36 +0000 (UTC)
+Message-ID: <126598808.1934339.1303910496698.JavaMail.root@sz0140a.emeryville.ca.mail.comcast.net>
+References: <20110427103340.2554df83@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:56188 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752001Ab1D0Jcp (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 27 Apr 2011 05:32:45 -0400
-In-Reply-To: <549692800.1907368.1303859758362.JavaMail.root@sz0140a.emeryville.ca.mail.comcast.net>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20110427103340.2554df83@lxorguk.ukuu.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, michal simek <michal.simek@petalogix.com>, joe@perches.com, grant likely <grant.likely@secretlab.ca>, greg@kroah.com
 List-Id: linux-serial@vger.kernel.org
-To: johnlinn@comcast.net
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, michal.simek@petalogix.com, joe@perches.com, grant.likely@secretlab.ca, greg@kroah.com
 
-> I thought I was improving but now as I look at it further, that seems like it 
-> was better and I should have stuck to that method.
-> 
-> Thoughts?
 
-Go for nearest is the right behaviour. The whole tty layer works on that
-basis as do soem other things. It means you don't have to have a set of
-calls to do things like "enumerate valid data rates" instead you ask and
-compare.
+----- "Alan Cox" <alan@lxorguk.ukuu.org.uk> wrote:
 
-> > > +	uart_update_timeout(port, termios->c_cflag, baud);
+> > I thought I was improving but now as I look at it further, that
+> seems like it 
+> > was better and I should have stuck to that method.
 > > 
-> > [which would also fix this timeout!]
+> > Thoughts?
 > 
-> Maybe you were meaning that if the baud rate was not really set because of the
-> error this timeout would be wrong also, and if so that makes sense.
+> Go for nearest is the right behaviour. The whole tty layer works on
+> that
+> basis as do soem other things. It means you don't have to have a set
+> of
+> calls to do things like "enumerate valid data rates" instead you ask
+> and
+> compare.
 
-Correct
+I wasn't very clear on that, sorry about that.
 
-Alan
+I meant we were not detecting if the error was too much and finding the 
+nearest baud rate that had an acceptable amount of error. 
+
+We were just finding the best baud rate generator values for the baud and
+then using them without any kind of error.
+
+Thanks,
+John
+
+> 
+> > > > +	uart_update_timeout(port, termios->c_cflag, baud);
+> > > 
+> > > [which would also fix this timeout!]
+> > 
+> > Maybe you were meaning that if the baud rate was not really set
+> because of the
+> > error this timeout would be wrong also, and if so that makes sense.
+> 
+> Correct
+> 
+> Alan
