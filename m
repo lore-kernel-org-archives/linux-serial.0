@@ -1,19 +1,14 @@
 From: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
 Subject: [RFC 2/5] gpio: add support for Technologic Systems TS-5500 GPIOs
 Date: Fri, 29 Apr 2011 18:21:49 -0400
-Message-ID: <1304115712-5299-3-git-send-email-vivien.didelot__47278.6332983107$1304116141$gmane$org@savoirfairelinux.com>
+Message-ID: <1304115712-5299-3-git-send-email-vivien.didelot__27571.0130030804$1304116154$gmane$org@savoirfairelinux.com>
 References: <1304115712-5299-1-git-send-email-vivien.didelot@savoirfairelinux.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.savoirfairelinux.com ([209.172.62.77]:49369 "EHLO
-	mail.savoirfairelinux.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752370Ab1D2W2P (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 29 Apr 2011 18:28:15 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1304115712-5299-1-git-send-email-vivien.didelot@savoirfairelinux.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.orglinux-kernel@vger.kernel.org
 Cc: Jerome Oufella <jerome.oufella@savoirfairelinux.com>, platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org, lm-sensors@lm-sensors.org
+List-Id: linux-serial@vger.kernel.org
 
 From: Jerome Oufella <jerome.oufella@savoirfairelinux.com>
 
@@ -682,4 +677,3 @@ index 0000000..387039b
 +#endif /* TS5500_GPIO_H_ */
 -- 
 1.7.1
-
