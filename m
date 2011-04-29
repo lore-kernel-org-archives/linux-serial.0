@@ -1,11 +1,11 @@
 From: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
 Subject: [RFC 5/5] hwmon: add support for Technologic Systems TS-5500 A-D converter
 Date: Fri, 29 Apr 2011 18:21:52 -0400
-Message-ID: <1304115712-5299-6-git-send-email-vivien.didelot__20137.8119564199$1304116421$gmane$org@savoirfairelinux.com>
+Message-ID: <1304115712-5299-6-git-send-email-vivien.didelot__19578.4260322855$1304116421$gmane$org@savoirfairelinux.com>
 References: <1304115712-5299-1-git-send-email-vivien.didelot@savoirfairelinux.com>
-Return-path: <platform-driver-x86-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1304115712-5299-1-git-send-email-vivien.didelot@savoirfairelinux.com>
-Sender: platform-driver-x86-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.orglinux-kernel@vger.kernel.org
 Cc: Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>, platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org, lm-sensors@lm-sensors.org
 List-Id: linux-serial@vger.kernel.org
