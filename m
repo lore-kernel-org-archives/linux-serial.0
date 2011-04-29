@@ -1,54 +1,42 @@
 From: Greg KH <greg@kroah.com>
-Subject: Re: [RFC 1/5] platform-drivers-x86: add support for Technologic
- Systems TS-5xxx detection
-Date: Fri, 29 Apr 2011 16:32:30 -0700
-Message-ID: <20110429233230.GB24864@kroah.com>
-References: <1304115712-5299-1-git-send-email-vivien.didelot@savoirfairelinux.com>
- <1304115712-5299-2-git-send-email-vivien.didelot@savoirfairelinux.com>
+Subject: Re: [PATCH V5] tty/serial: add support for Xilinx PS UART
+Date: Fri, 29 Apr 2011 16:37:19 -0700
+Message-ID: <20110429233719.GA25417@kroah.com>
+References: <fd084891-aef0-4a0d-afac-168819ead5f2@VA3EHSMHS026.ehs.local>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <platform-driver-x86-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from kroah.org ([198.145.64.141]:54108 "EHLO coco.kroah.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1759084Ab1D3AHq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 29 Apr 2011 20:07:46 -0400
 Content-Disposition: inline
-In-Reply-To: <1304115712-5299-2-git-send-email-vivien.didelot@savoirfairelinux.com>
-Sender: platform-driver-x86-owner@vger.kernel.org
-To: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
-Cc: linux-kernel@vger.kernel.org, Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>, platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org, lm-sensors@lm-sensors.org
+In-Reply-To: <fd084891-aef0-4a0d-afac-168819ead5f2@VA3EHSMHS026.ehs.local>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: johnlinn@comcast.net
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, alan@lxorguk.ukuu.org.uk, michal.simek@petalogix.com, joe@perches.com, grant.likely@secretlab.ca, John Linn <john.linn@xilinx.com>
 
-On Fri, Apr 29, 2011 at 06:21:48PM -0400, Vivien Didelot wrote:
-> +/proc filesystem
-> +----------------
-> +
-> +Information about the TS board is available through the /proc/ts-sbcinfo.
+On Fri, Apr 29, 2011 at 03:59:06PM -0600, johnlinn@comcast.net wrote:
+> From: John Linn <john.linn@xilinx.com>
+> 
+> The Xilinx PS Uart is used on the new ARM based SoC. This
+> UART is not compatible with others such that a seperate
+> driver is required.
+> 
+> Signed-off-by: John Linn <john.linn@xilinx.com>
 
-Really?  Why?
+That's fine, but:
 
-As you now have added a new kernel/user ABI, it must be documented in
-Documentation/ABI/
+> 
+> This email and any attachments are intended for the sole use of the named recipient(s) and contain(s) confidential information that may be proprietary, privileged or copyrighted under applicable law. If you are not the intended recipient, do not read, copy, or forward this email message or any attachments. Delete this email message and any attachments immediately.
+>
 
-Please include that in your next patch.
+That means I can't apply this patch :(
 
-But first off, why a new proc file?  What is it used for?
+{sigh}
 
-> +static int ts_sbcinfo_init_buffer(char *buf, struct ts5xxx_sbcinfo *sbcinfo)
-> +{
-> +	char *pos = buf;
-> +
-> +	pos += ts_addbuf(pos, "Board ID", "TS-%d", sbcinfo->board_id);
-> +	pos += ts_addbuf(pos, "RS485", "%s", sbcinfo->rs485 ? "yes" : "no");
-> +	pos += ts_addbuf(pos, "AnalogToDigital", "%s",
-> +			 sbcinfo->adc ? "yes" : "no");
-> +	pos += ts_addbuf(pos, "Auto485", "%s", sbcinfo->auto485 ? "yes" : "no");
-> +	pos += ts_addbuf(pos, "SRAM", "%s", sbcinfo->sram ? "yes" : "no");
-> +	pos += ts_addbuf(pos, "External Reset", "%s",
-> +			 sbcinfo->external_reset ? "yes" : "no");
-
-Most of these look like they should be simple "one value per file" sysfs
-files for your system.  That would make things much easier on your
-userspace tools to handle parsing them properly, right?
-
-Why not do that instead?
-
-thanks,
+Please fix this, as it does not allow you to participate in kernel
+development efforts.
 
 greg k-h
