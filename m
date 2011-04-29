@@ -1,46 +1,51 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: OMAP2+: UART: Remove uart clock handling code from serial.c
-Date: Fri, 29 Apr 2011 14:20:18 +0100
-Message-ID: <20110429142018.165055b2@lxorguk.ukuu.org.uk>
-References: <1304080796-625-1-git-send-email-govindraj.raja@ti.com>
-	<1304080796-625-3-git-send-email-govindraj.raja@ti.com>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH V4] tty/serial: add support for Xilinx PS UART
+Date: Fri, 29 Apr 2011 14:14:34 -0700
+Message-ID: <20110429211434.GA1355@kroah.com>
+References: <beef0ca4-f7d3-4f61-b22a-d9eeeb0618f4@VA3EHSMHS010.ehs.local>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:36920 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1758610Ab1D2NTR (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 29 Apr 2011 09:19:17 -0400
-In-Reply-To: <1304080796-625-3-git-send-email-govindraj.raja@ti.com>
+Received: from kroah.org ([198.145.64.141]:52143 "EHLO coco.kroah.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1760875Ab1D2VPl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 29 Apr 2011 17:15:41 -0400
+Content-Disposition: inline
+In-Reply-To: <beef0ca4-f7d3-4f61-b22a-d9eeeb0618f4@VA3EHSMHS010.ehs.local>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Govindraj.R" <govindraj.raja@ti.com>
-Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Benoit Cousson <b-cousson@ti.com>, Kevin Hilman <khilman@ti.com>, Paul Walmsley <paul@pwsan.com>, Rajendra Nayak <rnayak@ti.com>
+To: johnlinn@comcast.net
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, alan@lxorguk.ukuu.org.uk, michal.simek@petalogix.com, joe@perches.com, grant.likely@secretlab.ca, John Linn <john.linn@xilinx.com>
 
-On Fri, 29 Apr 2011 18:09:46 +0530
-"Govindraj.R" <govindraj.raja@ti.com> wrote:
+On Wed, Apr 27, 2011 at 12:17:36PM -0600, johnlinn@comcast.net wrote:
+> From: John Linn <john.linn@xilinx.com>
+>=20
+> The Xilinx PS Uart is used on the new ARM based SoC. This
+> UART is not compatible with others such that a seperate
+> driver is required.
+>=20
+> Signed-off-by: John Linn <john.linn@xilinx.com>
 
-> Cleanup serial.c file in preparation to addition of runtime api's in omap-serial
-> file. Remove all clock handling mechanism as this will be taken care with
-> pm runtime api's in omap-serial.c file itself.
-> 
-> 1.) Remove omap-device enable and disable. We can can use get_sync/put_sync api's
-> 2.) Remove context save/restore can be done with runtime_resume callback for
->     get_sync call. No need to save context as all reg details available in
->     uart_port structure can be used for restore, so add missing regs in
->     uart port struct.
-> 3.) Add func to identify console uart.
-> 4.) Erratum handling informed as flag to driver and func to handle erratum
->     can be moved to omap-serial driver itself.
-> 
-> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+I get build failures with this patch:
 
-The tty parts of this look fine, the OMAP bits I have no idea.
+  CC [M]  drivers/tty/serial/xilinx_uartps.o
+drivers/tty/serial/xilinx_uartps.c: In function =E2=80=98xuartps_get_po=
+rt=E2=80=99:
+drivers/tty/serial/xilinx_uartps.c:785:14: error: =E2=80=98NO_IRQ=E2=80=
+=99 undeclared (first use in this function)
+drivers/tty/serial/xilinx_uartps.c:785:14: note: each undeclared identi=
+fier is reported only once for each function it appears in
+make[1]: *** [drivers/tty/serial/xilinx_uartps.o] Error 1
 
-So for the tty bits with my serial maintainer hat on
+Care to fix this up so it's in a state I can properly apply it to the
+tree?
 
-Acked-by: Alan Cox <alan@linux.intel.com>
+thanks,
 
-but its mostly up to the ARM/OMAP people
+greg k-h
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
