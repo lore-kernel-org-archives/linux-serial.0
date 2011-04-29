@@ -1,8 +1,8 @@
 From: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
-Subject: [RFC 3/5] serial: add support for Technologic Systems
-	TS-5500 RS-485 serial port
-Date: Fri, 29 Apr 2011 18:21:50 -0400
-Message-ID: <1304115712-5299-4-git-send-email-vivien.didelot@savoirfairelinux.com>
+Subject: [RFC 4/5] leds: add support for Technologic Systems
+	TS-5500 leds
+Date: Fri, 29 Apr 2011 18:21:51 -0400
+Message-ID: <1304115712-5299-5-git-send-email-vivien.didelot@savoirfairelinux.com>
 References: <1304115712-5299-1-git-send-email-vivien.didelot@savoirfairelinux.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,177 +19,285 @@ List-Subscribe: <http://lists.lm-sensors.org/mailman/listinfo/lm-sensors>,
 Sender: lm-sensors-bounces@lm-sensors.org
 Errors-To: lm-sensors-bounces@lm-sensors.org
 To: linux-kernel@vger.kernel.orglinux-kernel@vger.kernel.org
-Cc: lm-sensors@lm-sensors.org, linux-serial@vger.kernel.org, platform-driver-x86@vger.kernel.org
+Cc: lm-sensors@lm-sensors.org, linux-serial@vger.kernel.org, Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>, platform-driver-x86@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+
+From: Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>
 
 
 Signed-off-by: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
 ---
- MAINTAINERS                         |    1 +
- drivers/tty/serial/8250.c           |   30 +++++++++++++++++++++++
- drivers/tty/serial/Kconfig          |   19 ++++++++++++++
- drivers/tty/serial/Makefile         |    1 +
- drivers/tty/serial/ts5500-auto485.c |   45 +++++++++++++++++++++++++++++++++++
- 5 files changed, 96 insertions(+), 0 deletions(-)
- create mode 100644 drivers/tty/serial/ts5500-auto485.c
+ MAINTAINERS                |    1 +
+ drivers/leds/Kconfig       |   12 +++
+ drivers/leds/Makefile      |    1 +
+ drivers/leds/leds-ts5500.c |  211 ++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 225 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/leds/leds-ts5500.c
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 32c2c57..da3b6d3 100644
+index da3b6d3..c0a646d 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -6060,6 +6060,7 @@ F:	drivers/platform/x86/ts5xxx-sbcinfo.c
- F:	include/linux/ts5xxx-sbcinfo.h
+@@ -6061,6 +6061,7 @@ F:	include/linux/ts5xxx-sbcinfo.h
  F:	drivers/gpio/ts5500-gpio.c
  F:	include/linux/ts5500-gpio.h
-+F:	drivers/tty/serial/ts5500-auto485.c
+ F:	drivers/tty/serial/ts5500-auto485.c
++F:	drivers/leds/leds-ts5500.c
  
  TEGRA SUPPORT
  M:	Colin Cross <ccross@android.com>
-diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
-index 6611535..3ed7fee 100644
---- a/drivers/tty/serial/8250.c
-+++ b/drivers/tty/serial/8250.c
-@@ -109,6 +109,13 @@ static unsigned int skip_txen_test; /* force skip of txen test at init time */
- #define CONFIG_HUB6 1
+diff --git a/drivers/leds/Kconfig b/drivers/leds/Kconfig
+index 9bec869..14144df 100644
+--- a/drivers/leds/Kconfig
++++ b/drivers/leds/Kconfig
+@@ -379,6 +379,18 @@ config LEDS_NETXBIG
+ 	  and 5Big Network v2 boards. The LEDs are wired to a CPLD and are
+ 	  controlled through a GPIO extension bus.
  
- #include <asm/serial.h>
-+
-+/* TS-5500 related stuff */
-+#ifdef CONFIG_SERIAL_8250_TS5500_485_TIMER
-+#define TS5500_TIMER2_SPEED_ADDR	0x42
-+#define TS5500_485_SERIAL_PORT		0x02
-+#endif
-+
- /*
-  * SERIAL_PORT_DFNS tells us about built-in ports that have no
-  * standard enumeration mechanism.   Platforms that can find all
-@@ -437,6 +444,25 @@ static void au_serial_out(struct uart_port *p, int offset, int value)
- 	__raw_writel(value, p->membase + offset);
- }
- 
-+#ifdef CONFIG_SERIAL_8250_TS5500_485_TIMER
-+void serial8250_ts5500_set_termios(struct uart_port *port,
-+				   struct ktermios *new,
-+				   struct ktermios *old)
-+{
-+	u16 speed;
-+
-+	if (new->c_ospeed >= 9600 && port->line == TS5500_485_SERIAL_PORT) {
-+		speed = ((115200 * 2) / new->c_ospeed);
-+
-+		/* This should be written by low byte followed by high byte */
-+		spin_lock_irq(&port->lock);
-+		outb((speed & 0x0F), TS5500_TIMER2_SPEED_ADDR);
-+		outb((speed >> 8), TS5500_TIMER2_SPEED_ADDR);
-+		spin_unlock_irq(&port->lock);
-+	}
-+}
-+#endif
-+
- static unsigned int tsi_serial_in(struct uart_port *p, int offset)
- {
- 	unsigned int tmp;
-@@ -2464,6 +2490,10 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 	/* Don't rewrite B0 */
- 	if (tty_termios_baud_rate(termios))
- 		tty_termios_encode_baud_rate(termios, baud, baud);
-+
-+#ifdef CONFIG_SERIAL_8250_TS5500_485_TIMER
-+	serial8250_ts5500_set_termios(port, termios, old);
-+#endif
- }
- EXPORT_SYMBOL(serial8250_do_set_termios);
- 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 80484af..cbd88c0 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -241,6 +241,25 @@ config SERIAL_8250_RSA
- 	help
- 	  ::: To be written :::
- 
-+config SERIAL_8250_TS5500_485_TIMER
-+	bool "Support RS-485 mode on TS-5500"
-+	depends on TS5500_SBC
-+	depends on SERIAL_8250_EXTENDED
++config LEDS_TS5500
++	tristate "LED Support for TS-5500 SBCs"
++	depends on LEDS_CLASS && TS5500_SBC
 +	help
-+	  Say Y here to enable RS-485 timer programming for the COM3 serial
-+	  port on Technologic Systems TS-5500 SBCs.
-+	  Note: this does not affect the RS-232 behaviour on the COM3 port.
++	  This option enables support for on-chip LED drivers found
++	  on Technologic Systems TS-5500 SBCs.
 +
-+config SERIAL_8250_TS5500_AUTO485
-+	tristate "Support Auto485 feature on TS-5500"
-+	depends on SERIAL_8250_TS5500_485_TIMER
-+	help
-+	  Say Y or M here to enable the Auto485 feature on Technologic Systems
-+	  TS-5500 SBCs.
-+	  Warning: When loaded, the Auto485 feature is enabled
-+	  as long as the module is loaded, so you won't be able to disable it
-+	  if the module is statically linked in.
++	  To compile this driver as a module, choose M here: the module will
++	  be called leds-ts5500.
 +
- config SERIAL_8250_MCA
- 	tristate "Support 8250-type ports on MCA buses"
- 	depends on SERIAL_8250 != n && MCA
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index fee0690..3fbcbbf 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -94,3 +94,4 @@ obj-$(CONFIG_SERIAL_IFX6X60)  	+= ifx6x60.o
- obj-$(CONFIG_SERIAL_PCH_UART)	+= pch_uart.o
- obj-$(CONFIG_SERIAL_MSM_SMD)	+= msm_smd_tty.o
- obj-$(CONFIG_SERIAL_MXS_AUART) += mxs-auart.o
-+obj-$(CONFIG_SERIAL_8250_TS5500_AUTO485) += ts5500-auto485.o
-diff --git a/drivers/tty/serial/ts5500-auto485.c b/drivers/tty/serial/ts5500-auto485.c
++comment "LED Triggers"
++
+ config LEDS_TRIGGERS
+ 	bool "LED Trigger support"
+ 	depends on LEDS_CLASS
+diff --git a/drivers/leds/Makefile b/drivers/leds/Makefile
+index 39c80fc..ce5a25f 100644
+--- a/drivers/leds/Makefile
++++ b/drivers/leds/Makefile
+@@ -42,6 +42,7 @@ obj-$(CONFIG_LEDS_DELL_NETBOOKS)	+= dell-led.o
+ obj-$(CONFIG_LEDS_MC13783)		+= leds-mc13783.o
+ obj-$(CONFIG_LEDS_NS2)			+= leds-ns2.o
+ obj-$(CONFIG_LEDS_NETXBIG)		+= leds-netxbig.o
++obj-$(CONFIG_LEDS_TS5500)		+= leds-ts5500.o
+ 
+ # LED SPI Drivers
+ obj-$(CONFIG_LEDS_DAC124S085)		+= leds-dac124s085.o
+diff --git a/drivers/leds/leds-ts5500.c b/drivers/leds/leds-ts5500.c
 new file mode 100644
-index 0000000..fd01aa0
+index 0000000..aec6d71
 --- /dev/null
-+++ b/drivers/tty/serial/ts5500-auto485.c
-@@ -0,0 +1,45 @@
++++ b/drivers/leds/leds-ts5500.c
+@@ -0,0 +1,211 @@
 +/*
-+ * ts5500-auto485.c - support for the TS-5500 auto485 feature
++ * Technologic Systems TS-5500 boards - LED driver
 + *
 + * Copyright (c) 2010 Savoir-faire Linux Inc.
-+ *      Arthur Gautier <arthur.gautier@savoirfairelinux.com>
++ *	Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>
++ *
++ * Portions Copyright (c) 2008 Compulab, Ltd.
++ *	Mike Rapoport <mike@compulab.co.il>
++ *
++ * Portions Copyright (c) 2006-2008 Marvell International Ltd.
++ *	Eric Miao <eric.miao@marvell.com>
++ *
++ * Based on drivers/leds/leds-da903x.c from linux-2.6.32.8.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
 + */
 +
 +#include <linux/module.h>
-+#include <linux/io.h>
++#include <linux/kernel.h>
++#include <linux/init.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
++#include <linux/leds.h>
++#include <linux/workqueue.h>
 +#include <linux/ts5xxx-sbcinfo.h>
++#include <linux/io.h>
 +
-+#define TS5500_485_CONTROLER_ADDR	0x75	/* controler register address */
-+#define TS5500_485_BITS			0xC0	/* RTS485 and Auto485 bits */
++#define DRIVER_NAME "leds-ts5500"
 +
-+static int __init serial8250_init_ts5500_485(void)
++/**
++ * struct ts5500_led - LED structure
++ * @cdev:		LED class device structure.
++ * @work:		Work structure.
++ * @new_brightness:	LED brightness.
++ * @ioaddr:		LED I/O address.
++ */
++struct ts5500_led {
++	struct led_classdev	cdev;
++	struct work_struct	work;
++	enum led_brightness	new_brightness;
++	int			ioaddr;
++	int			bit;
++};
++
++static void ts5500_led_work(struct work_struct *work)
 +{
-+	struct ts5xxx_sbcinfo sbcinfo;
-+	u8 reg;
++	struct ts5500_led *led = container_of(work, struct ts5500_led, work);
++	u8 val = led->new_brightness ? led->bit : 0;
 +
-+	/* Validate platform and auto485 feature */
-+	ts5xxx_sbcinfo_set(&sbcinfo);
++	outb(val, led->ioaddr);
++}
 +
-+	if (!sbcinfo.auto485) {
-+		printk(KERN_ERR ": Auto485 not available on this platform\n");
++static void ts5500_led_set(struct led_classdev *led_cdev,
++			   enum led_brightness value)
++{
++	struct ts5500_led *led = container_of(led_cdev, struct ts5500_led,
++					      cdev);
++
++	led->new_brightness = value;
++	schedule_work(&led->work);
++}
++
++static int __devinit ts5500_led_probe(struct platform_device *pdev)
++{
++	struct led_platform_data *pdata = pdev->dev.platform_data;
++	struct ts5500_led *led;
++	struct resource *res;
++	int ret;
++
++	if (pdata == NULL || !pdata->num_leds) {
++		dev_err(&pdev->dev, "No platform data available\n");
 +		return -ENODEV;
 +	}
 +
-+	/* Enable RS-485 mode */
-+	reg = inb(TS5500_485_CONTROLER_ADDR) | TS5500_485_BITS;
-+	outb(reg, TS5500_485_CONTROLER_ADDR);
++	res = platform_get_resource(pdev, IORESOURCE_IO, 0);
++	if (!res) {
++		dev_err(&pdev->dev, "Failed to get I/O resource\n");
++		return -EBUSY;
++	}
++
++	led = kzalloc(sizeof(struct ts5500_led), GFP_KERNEL);
++	if (led == NULL) {
++		dev_err(&pdev->dev, "Failed to alloc memory for LED device\n");
++		return -ENOMEM;
++	}
++
++	led->cdev.name = pdata->leds[0].name;
++	led->cdev.default_trigger = pdata->leds[0].default_trigger;
++	led->cdev.brightness_set = ts5500_led_set;
++	led->cdev.brightness = LED_OFF;
++
++	led->ioaddr = res->start;
++	led->bit = pdata->leds[0].flags;
++	led->new_brightness = LED_OFF;
++
++	INIT_WORK(&led->work, ts5500_led_work);
++
++	ret = led_classdev_register(pdev->dev.parent, &led->cdev);
++	if (ret) {
++		dev_err(&pdev->dev, "Failed to register LED\n");
++		goto err;
++	}
++
++	platform_set_drvdata(pdev, led);
++	return 0;
++
++err:
++	kfree(led);
++	return ret;
++}
++
++static int __devexit ts5500_led_remove(struct platform_device *pdev)
++{
++	struct ts5500_led *led = platform_get_drvdata(pdev);
++
++	platform_set_drvdata(pdev, NULL);
++	led_classdev_unregister(&led->cdev);
++	kfree(led);
 +
 +	return 0;
 +}
-+module_init(serial8250_init_ts5500_485);
 +
-+static void __exit serial8250_ts5500_485(void)
++static struct platform_driver ts5500_led_driver = {
++	.driver	= {
++		.name	= DRIVER_NAME,
++		.owner	= THIS_MODULE,
++	},
++	.probe		= ts5500_led_probe,
++	.remove		= __devexit_p(ts5500_led_remove),
++};
++
++
++static struct led_info ts5500_led_info = {
++	.name = DRIVER_NAME,
++	.default_trigger = DRIVER_NAME,
++	.flags = 0x01,
++};
++
++static struct led_platform_data ts5500_led_platform_data = {
++	.num_leds	= 1,
++	.leds		= &ts5500_led_info,
++};
++
++static struct resource ts5500_led_resources[] = {
++	{
++		.name	= DRIVER_NAME,
++		.start	= 0x77,
++		.end	= 0x77,
++		.flags	= IORESOURCE_IO,
++	}
++};
++
++static void ts5500_led_release(struct device *dev)
 +{
-+	u8 reg = inb(TS5500_485_CONTROLER_ADDR) & ~TS5500_485_BITS;
-+	outb(reg, TS5500_485_CONTROLER_ADDR);
++	/* noop */
 +}
-+module_exit(serial8250_ts5500_485);
 +
-+MODULE_DESCRIPTION("Technologic Systems TS-5500, auto485 driver");
-+MODULE_AUTHOR("Arthur Gautier <arthur.gautier@savoirfairelinux.com>");
++static struct platform_device ts5500_led_device = {
++	.name = DRIVER_NAME,
++	.resource = ts5500_led_resources,
++	.num_resources = ARRAY_SIZE(ts5500_led_resources),
++	.id = -1,
++	.dev = {
++		.platform_data = &ts5500_led_platform_data,
++		.release = ts5500_led_release,
++	},
++};
++
++static int __init ts5500_led_init(void)
++{
++	struct ts5xxx_sbcinfo sbcinfo;
++	int ret;
++
++	ts5xxx_sbcinfo_set(&sbcinfo);
++
++	if (sbcinfo.board_id != 5500) {
++		printk(KERN_ERR DRIVER_NAME
++		       ": Expected TS5500 but TS-SBC reported TS%d\n",
++		       sbcinfo.board_id);
++		return -ENODEV;
++	}
++
++	ret = platform_driver_register(&ts5500_led_driver);
++	if (ret)
++		goto error_out;
++
++	ret = platform_device_register(&ts5500_led_device);
++	if (ret)
++		goto error_device_register;
++
++	return 0;
++
++error_device_register:
++	platform_driver_unregister(&ts5500_led_driver);
++error_out:
++	return ret;
++}
++module_init(ts5500_led_init);
++
++static void __exit ts5500_led_exit(void)
++{
++	platform_driver_unregister(&ts5500_led_driver);
++	platform_device_unregister(&ts5500_led_device);
++}
++module_exit(ts5500_led_exit);
++
 +MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("LED driver for Technologic Systems TS5500");
++MODULE_AUTHOR("Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>");
 -- 
 1.7.1
 
