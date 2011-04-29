@@ -1,12 +1,17 @@
 From: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
 Subject: [RFC 0/5] Support for Technologic Systems TS-5500 board
 Date: Fri, 29 Apr 2011 18:21:47 -0400
-Message-ID: <1304115712-5299-1-git-send-email-vivien.didelot__48696.5482625694$1304116122$gmane$org@savoirfairelinux.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Message-ID: <1304115712-5299-1-git-send-email-vivien.didelot__47755.5750207559$1304116137$gmane$org@savoirfairelinux.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.savoirfairelinux.com ([209.172.62.77]:49371 "EHLO
+	mail.savoirfairelinux.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752935Ab1D2W2P (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 29 Apr 2011 18:28:15 -0400
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.orglinux-kernel@vger.kernel.org
 Cc: platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org, lm-sensors@lm-sensors.org
-List-Id: linux-serial@vger.kernel.org
 
 This set of patches is a request for comments. It brings the complete support
 for the TS-5500 Single Board Computer from Technologic Systems.
@@ -65,3 +70,4 @@ Vivien Didelot (1):
  create mode 100644 drivers/tty/serial/ts5500-auto485.c
  create mode 100644 include/linux/ts5500-gpio.h
  create mode 100644 include/linux/ts5xxx-sbcinfo.h
+
