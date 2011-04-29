@@ -1,34 +1,106 @@
-From: johnlinn@comcast.net
-Subject: Re: [PATCH V4] tty/serial: add support for Xilinx PS UART
-Date: Wed, 27 Apr 2011 20:57:39 +0000 (UTC)
-Message-ID: <2016772931.1967511.1303937859543.JavaMail.root@sz0140a.emeryville.ca.mail.comcast.net>
-References: <20110427214045.6f6d179d@lxorguk.ukuu.org.uk>
+From: "Govindraj.R" <govindraj.raja@ti.com>
+Subject: [PATCH v2 05/12] OMAP: Serial: Hold console lock for console usage.
+Date: Fri, 29 Apr 2011 18:09:49 +0530
+Message-ID: <1304080796-625-6-git-send-email-govindraj.raja@ti.com>
+References: <1304080796-625-1-git-send-email-govindraj.raja@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from qmta08.emeryville.ca.mail.comcast.net ([76.96.30.80]:38173 "EHLO
-	qmta08.emeryville.ca.mail.comcast.net" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1756589Ab1D0U5l (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 27 Apr 2011 16:57:41 -0400
-In-Reply-To: <20110427214045.6f6d179d@lxorguk.ukuu.org.uk>
+Received: from comal.ext.ti.com ([198.47.26.152]:36464 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753538Ab1D2Mm0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 29 Apr 2011 08:42:26 -0400
+In-Reply-To: <1304080796-625-1-git-send-email-govindraj.raja@ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, michal simek <michal.simek@petalogix.com>, joe@perches.com, grant likely <grant.likely@secretlab.ca>, greg@kroah.com, John Linn <john.linn@xilinx.com>
+To: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: "Govindraj.R" <govindraj.raja@ti.com>, Tony Lindgren <tony@atomide.com>, Benoit Cousson <b-cousson@ti.com>, Kevin Hilman <khilman@ti.com>, Paul Walmsley <paul@pwsan.com>, Rajendra Nayak <rnayak@ti.com>
 
-> On Wed, 27 Apr 2011 12:17:36 -0600
-> <johnlinn@comcast.net> wrote:
-> 
-> > From: John Linn <john.linn@xilinx.com>
-> > 
-> > The Xilinx PS Uart is used on the new ARM based SoC. This
-> > UART is not compatible with others such that a seperate
-> > driver is required.
-> > 
-> > Signed-off-by: John Linn <john.linn@xilinx.com>
-> 
-> Acked-by: Alan Cox <alan@linux.intel.com>
+Acquire console lock before enabling and writing to console-uart
+to avoid any recursive prints from console write.
+for ex:
+	--> printk
+	  --> uart_console_write
+	    --> get_sync
+	      --> printk from omap_device enable
+		--> uart_console write
 
-Thanks a bunch Alan, appreciate the help.
+Also during bootup console_lock is not available.
+       --> uart_add_one_port
+	   --> console_register
+	       --> console_lock
+	        --> console_unlock
+	             --> call_console_drivers (here yet console_lock is not released)
+		          --> uart_console_write
+
+Hence convert prints from omap_device_enable/disable to pr_debug.
+
+Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+---
+ arch/arm/plat-omap/omap_device.c |    8 ++++----
+ drivers/tty/serial/omap-serial.c |    8 +++++++-
+ 2 files changed, 11 insertions(+), 5 deletions(-)
+
+diff --git a/arch/arm/plat-omap/omap_device.c b/arch/arm/plat-omap/omap_device.c
+index 9bbda9a..f7c6dca 100644
+--- a/arch/arm/plat-omap/omap_device.c
++++ b/arch/arm/plat-omap/omap_device.c
+@@ -145,12 +145,12 @@ static int _omap_device_activate(struct omap_device *od, u8 ignore_lat)
+ 			odpl->activate_lat_worst = act_lat;
+ 			if (odpl->flags & OMAP_DEVICE_LATENCY_AUTO_ADJUST) {
+ 				odpl->activate_lat = act_lat;
+-				pr_warning("omap_device: %s.%d: new worst case "
++				pr_debug("omap_device: %s.%d: new worst case "
+ 					   "activate latency %d: %llu\n",
+ 					   od->pdev.name, od->pdev.id,
+ 					   od->pm_lat_level, act_lat);
+ 			} else
+-				pr_warning("omap_device: %s.%d: activate "
++				pr_debug("omap_device: %s.%d: activate "
+ 					   "latency %d higher than exptected. "
+ 					   "(%llu > %d)\n",
+ 					   od->pdev.name, od->pdev.id,
+@@ -213,12 +213,12 @@ static int _omap_device_deactivate(struct omap_device *od, u8 ignore_lat)
+ 			odpl->deactivate_lat_worst = deact_lat;
+ 			if (odpl->flags & OMAP_DEVICE_LATENCY_AUTO_ADJUST) {
+ 				odpl->deactivate_lat = deact_lat;
+-				pr_warning("omap_device: %s.%d: new worst case "
++				pr_debug("omap_device: %s.%d: new worst case "
+ 					   "deactivate latency %d: %llu\n",
+ 					   od->pdev.name, od->pdev.id,
+ 					   od->pm_lat_level, deact_lat);
+ 			} else
+-				pr_warning("omap_device: %s.%d: deactivate "
++				pr_debug("omap_device: %s.%d: deactivate "
+ 					   "latency %d higher than exptected. "
+ 					   "(%llu > %d)\n",
+ 					   od->pdev.name, od->pdev.id,
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 633dfb4..7d8ca45 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -1007,7 +1007,10 @@ serial_omap_console_write(struct console *co, const char *s,
+ 	struct uart_omap_port *up = serial_omap_console_ports[co->index];
+ 	unsigned long flags;
+ 	unsigned int ier;
+-	int locked = 1;
++	int console_lock = 0, locked = 1;
++
++	if (console_trylock())
++		console_lock = 1;
+ 
+ 	local_irq_save(flags);
+ 	if (up->port.sysrq)
+@@ -1043,6 +1046,9 @@ serial_omap_console_write(struct console *co, const char *s,
+ 	if (up->msr_saved_flags)
+ 		check_modem_status(up);
+ 
++	if (console_lock)
++		console_unlock();
++
+ 	serial_omap_port_disable(up);
+ 	if (locked)
+ 		spin_unlock(&up->port.lock);
+-- 
+1.7.1
+
