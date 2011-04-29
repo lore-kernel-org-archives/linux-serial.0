@@ -1,14 +1,19 @@
 From: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
 Subject: [RFC 4/5] leds: add support for Technologic Systems TS-5500 leds
 Date: Fri, 29 Apr 2011 18:21:51 -0400
-Message-ID: <1304115712-5299-5-git-send-email-vivien.didelot__29019.8500887074$1304116403$gmane$org@savoirfairelinux.com>
+Message-ID: <1304115712-5299-5-git-send-email-vivien.didelot__16301.1359320537$1304116403$gmane$org@savoirfairelinux.com>
 References: <1304115712-5299-1-git-send-email-vivien.didelot@savoirfairelinux.com>
-Return-path: <platform-driver-x86-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.savoirfairelinux.com ([209.172.62.77]:47069 "EHLO
+	mail.savoirfairelinux.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751944Ab1D2WdP (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 29 Apr 2011 18:33:15 -0400
 In-Reply-To: <1304115712-5299-1-git-send-email-vivien.didelot@savoirfairelinux.com>
-Sender: platform-driver-x86-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.orglinux-kernel@vger.kernel.org
 Cc: Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>, platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org, lm-sensors@lm-sensors.org
-List-Id: linux-serial@vger.kernel.org
 
 From: Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>
 
@@ -288,3 +293,4 @@ index 0000000..aec6d71
 +MODULE_AUTHOR("Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>");
 -- 
 1.7.1
+
