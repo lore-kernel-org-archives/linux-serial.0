@@ -1,1221 +1,611 @@
-From: johnlinn@comcast.net
-Subject: [PATCH V6 2nd Send] tty/serial: add support for Xilinx PS UART
-Date: Sat, 30 Apr 2011 00:07:43 -0400
-Message-ID: <1304136463-4482-1-git-send-email-johnlinn@comcast.net>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, alan@lxorguk.ukuu.org.uk, michal.simek@petalogix.com, joe@perches.com, grant.likely@secretlab.ca, greg@kroah.com
-Cc: John Linn <john.linn@xilinx.com>
+From: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: Re: [lm-sensors] [RFC 5/5] hwmon: add support for Technologic Systems
+ TS-5500 A-D converter
+Date: Sat, 30 Apr 2011 10:56:31 +0100
+Message-ID: <4DBBDCCF.4010104@cam.ac.uk>
+References: <1304115712-5299-1-git-send-email-vivien.didelot@savoirfairelinux.com> <1304115712-5299-6-git-send-email-vivien.didelot@savoirfairelinux.com> <20110430033938.GA14397@ericsson.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <platform-driver-x86-owner@vger.kernel.org>
+In-Reply-To: <20110430033938.GA14397@ericsson.com>
+Sender: platform-driver-x86-owner@vger.kernel.org
+To: Guenter Roeck <guenter.roeck@ericsson.com>
+Cc: Vivien Didelot <vivien.didelot@savoirfairelinux.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "lm-sensors@lm-sensors.org" <lm-sensors@lm-sensors.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>, "platform-driver-x86@vger.kernel.org" <platform-driver-x86@vger.kernel.org>, linux-iio@vger.kernel.org, "Hennerich, Michael" <Michael.Hennerich@analog.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: John Linn <john.linn@xilinx.com>
-
-The Xilinx PS Uart is used on the new ARM based SoC. This
-UART is not compatible with others such that a seperate
-driver is required.
-
-Signed-off-by: John Linn <john.linn@xilinx.com>
----
-
-V6 
-
-Removed legal footer issues. My apologies Greg.  
-2nd send really has it removed.  Thanks Greg KH.
-
-V5 Changes
-
-Removed NO_IRQ which was causing a compile error for non-ARM architectures
-as found by Greg KH.
-
-V4 Changes
-
-Small update based on input from Alan Cox in the area of the baud
-rate setup. Thanks for his input and patience.
-
-V3 Changes
-
-Minor updates based on input from Michal Simek and Joe Perches. Mostly
-formatting changes other than minor OF change from Michal. Thanks for
-their input.
-
-V2 Changes
-
-Updated based on Alan Cox and Greg KH comments. Thanks for their input. 
-I hope I corrected everything as expected.
-
-1. Now using dynamic device nodes so Doc*/devices.txt removed from patch.
-2. Other minor updates based on Alan's input.
-
- drivers/tty/serial/Kconfig         |   13 +
- drivers/tty/serial/Makefile        |    1 +
- drivers/tty/serial/xilinx_uartps.c | 1113 ++++++++++++++++++++++++++++++++++++
- include/linux/serial_core.h        |    3 +
- 4 files changed, 1130 insertions(+), 0 deletions(-)
- create mode 100644 drivers/tty/serial/xilinx_uartps.c
-
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 80484af..84876ec 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1612,4 +1612,17 @@ config SERIAL_MXS_AUART_CONSOLE
- 	help
- 	  Enable a MXS AUART port to be the system console.
- 
-+config SERIAL_XILINX_PS_UART
-+	tristate "Xilinx PS UART support"
-+	select SERIAL_CORE
-+	help
-+	  This driver supports the Xilinx PS UART port.
-+
-+config SERIAL_XILINX_PS_UART_CONSOLE
-+	bool "Xilinx PS UART console support"
-+	depends on SERIAL_XILINX_PS_UART=y
-+	select SERIAL_CORE_CONSOLE
-+	help
-+	  Enable a Xilinx PS UART port to be the system console.
-+
- endmenu
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index fee0690..aafddf1 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -94,3 +94,4 @@ obj-$(CONFIG_SERIAL_IFX6X60)  	+= ifx6x60.o
- obj-$(CONFIG_SERIAL_PCH_UART)	+= pch_uart.o
- obj-$(CONFIG_SERIAL_MSM_SMD)	+= msm_smd_tty.o
- obj-$(CONFIG_SERIAL_MXS_AUART) += mxs-auart.o
-+obj-$(CONFIG_SERIAL_XILINX_PS_UART) += xilinx_uartps.o
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-new file mode 100644
-index 0000000..19cc1e8
---- /dev/null
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -0,0 +1,1113 @@
-+/*
-+ * Xilinx PS UART driver
-+ *
-+ * 2011 (c) Xilinx Inc.
-+ *
-+ * This program is free software; you can redistribute it
-+ * and/or modify it under the terms of the GNU General Public
-+ * License as published by the Free Software Foundation;
-+ * either version 2 of the License, or (at your option) any
-+ * later version.
-+ *
-+ */
-+
-+#include <linux/platform_device.h>
-+#include <linux/serial_core.h>
-+#include <linux/console.h>
-+#include <linux/serial.h>
-+#include <linux/irq.h>
-+#include <linux/io.h>
-+#include <linux/of.h>
-+
-+#define XUARTPS_TTY_NAME	"ttyPS"
-+#define XUARTPS_NAME		"xuartps"
-+#define XUARTPS_MAJOR		0	/* use dynamic node allocation */
-+#define XUARTPS_MINOR		0	/* works best with devtmpfs */
-+#define XUARTPS_NR_PORTS	2
-+#define XUARTPS_FIFO_SIZE	16	/* FIFO size */
-+#define XUARTPS_REGISTER_SPACE	0xFFF
-+
-+#define xuartps_readl(offset)		ioread32(port->membase + offset)
-+#define xuartps_writel(val, offset)	iowrite32(val, port->membase + offset)
-+
-+/********************************Register Map********************************/
-+/** UART
-+ *
-+ * Register offsets for the UART.
-+ *
-+ */
-+#define XUARTPS_CR_OFFSET	0x00  /* Control Register [8:0] */
-+#define XUARTPS_MR_OFFSET	0x04  /* Mode Register [10:0] */
-+#define XUARTPS_IER_OFFSET	0x08  /* Interrupt Enable [10:0] */
-+#define XUARTPS_IDR_OFFSET	0x0C  /* Interrupt Disable [10:0] */
-+#define XUARTPS_IMR_OFFSET	0x10  /* Interrupt Mask [10:0] */
-+#define XUARTPS_ISR_OFFSET	0x14  /* Interrupt Status [10:0]*/
-+#define XUARTPS_BAUDGEN_OFFSET	0x18  /* Baud Rate Generator [15:0] */
-+#define XUARTPS_RXTOUT_OFFSET	0x1C  /* RX Timeout [7:0] */
-+#define XUARTPS_RXWM_OFFSET	0x20  /* RX FIFO Trigger Level [5:0] */
-+#define XUARTPS_MODEMCR_OFFSET	0x24  /* Modem Control [5:0] */
-+#define XUARTPS_MODEMSR_OFFSET	0x28  /* Modem Status [8:0] */
-+#define XUARTPS_SR_OFFSET	0x2C  /* Channel Status [11:0] */
-+#define XUARTPS_FIFO_OFFSET	0x30  /* FIFO [15:0] or [7:0] */
-+#define XUARTPS_BAUDDIV_OFFSET	0x34  /* Baud Rate Divider [7:0] */
-+#define XUARTPS_FLOWDEL_OFFSET	0x38  /* Flow Delay [15:0] */
-+#define XUARTPS_IRRX_PWIDTH_OFFSET 0x3C /* IR Minimum Received Pulse
-+						Width [15:0] */
-+#define XUARTPS_IRTX_PWIDTH_OFFSET 0x40 /* IR Transmitted pulse
-+						Width [7:0] */
-+#define XUARTPS_TXWM_OFFSET	0x44  /* TX FIFO Trigger Level [5:0] */
-+
-+/** Control Register
-+ *
-+ * The Control register (CR) controls the major functions of the device.
-+ *
-+ * Control Register Bit Definitions
-+ */
-+#define XUARTPS_CR_STOPBRK	0x00000100  /* Stop TX break */
-+#define XUARTPS_CR_STARTBRK	0x00000080  /* Set TX break */
-+#define XUARTPS_CR_TX_DIS	0x00000020  /* TX disabled. */
-+#define XUARTPS_CR_TX_EN	0x00000010  /* TX enabled */
-+#define XUARTPS_CR_RX_DIS	0x00000008  /* RX disabled. */
-+#define XUARTPS_CR_RX_EN	0x00000004  /* RX enabled */
-+#define XUARTPS_CR_TXRST	0x00000002  /* TX logic reset */
-+#define XUARTPS_CR_RXRST	0x00000001  /* RX logic reset */
-+#define XUARTPS_CR_RST_TO	0x00000040  /* Restart Timeout Counter */
-+
-+/** Mode Register
-+ *
-+ * The mode register (MR) defines the mode of transfer as well as the data
-+ * format. If this register is modified during transmission or reception,
-+ * data validity cannot be guaranteed.
-+ *
-+ * Mode Register Bit Definitions
-+ *
-+ */
-+#define XUARTPS_MR_CLKSEL		0x00000001  /* Pre-scalar selection */
-+#define XUARTPS_MR_CHMODE_L_LOOP	0x00000200  /* Local loop back mode */
-+#define XUARTPS_MR_CHMODE_NORM		0x00000000  /* Normal mode */
-+
-+#define XUARTPS_MR_STOPMODE_2_BIT	0x00000080  /* 2 stop bits */
-+#define XUARTPS_MR_STOPMODE_1_BIT	0x00000000  /* 1 stop bit */
-+
-+#define XUARTPS_MR_PARITY_NONE		0x00000020  /* No parity mode */
-+#define XUARTPS_MR_PARITY_MARK		0x00000018  /* Mark parity mode */
-+#define XUARTPS_MR_PARITY_SPACE		0x00000010  /* Space parity mode */
-+#define XUARTPS_MR_PARITY_ODD		0x00000008  /* Odd parity mode */
-+#define XUARTPS_MR_PARITY_EVEN		0x00000000  /* Even parity mode */
-+
-+#define XUARTPS_MR_CHARLEN_6_BIT	0x00000006  /* 6 bits data */
-+#define XUARTPS_MR_CHARLEN_7_BIT	0x00000004  /* 7 bits data */
-+#define XUARTPS_MR_CHARLEN_8_BIT	0x00000000  /* 8 bits data */
-+
-+/** Interrupt Registers
-+ *
-+ * Interrupt control logic uses the interrupt enable register (IER) and the
-+ * interrupt disable register (IDR) to set the value of the bits in the
-+ * interrupt mask register (IMR). The IMR determines whether to pass an
-+ * interrupt to the interrupt status register (ISR).
-+ * Writing a 1 to IER Enables an interrupt, writing a 1 to IDR disables an
-+ * interrupt. IMR and ISR are read only, and IER and IDR are write only.
-+ * Reading either IER or IDR returns 0x00.
-+ *
-+ * All four registers have the same bit definitions.
-+ */
-+#define XUARTPS_IXR_TOUT	0x00000100 /* RX Timeout error interrupt */
-+#define XUARTPS_IXR_PARITY	0x00000080 /* Parity error interrupt */
-+#define XUARTPS_IXR_FRAMING	0x00000040 /* Framing error interrupt */
-+#define XUARTPS_IXR_OVERRUN	0x00000020 /* Overrun error interrupt */
-+#define XUARTPS_IXR_TXFULL	0x00000010 /* TX FIFO Full interrupt */
-+#define XUARTPS_IXR_TXEMPTY	0x00000008 /* TX FIFO empty interrupt */
-+#define XUARTPS_ISR_RXEMPTY	0x00000002 /* RX FIFO empty interrupt */
-+#define XUARTPS_IXR_RXTRIG	0x00000001 /* RX FIFO trigger interrupt */
-+#define XUARTPS_IXR_RXFULL	0x00000004 /* RX FIFO full interrupt. */
-+#define XUARTPS_IXR_RXEMPTY	0x00000002 /* RX FIFO empty interrupt. */
-+#define XUARTPS_IXR_MASK	0x00001FFF /* Valid bit mask */
-+
-+/** Channel Status Register
-+ *
-+ * The channel status register (CSR) is provided to enable the control logic
-+ * to monitor the status of bits in the channel interrupt status register,
-+ * even if these are masked out by the interrupt mask register.
-+ */
-+#define XUARTPS_SR_RXEMPTY	0x00000002 /* RX FIFO empty */
-+#define XUARTPS_SR_TXEMPTY	0x00000008 /* TX FIFO empty */
-+#define XUARTPS_SR_TXFULL	0x00000010 /* TX FIFO full */
-+#define XUARTPS_SR_RXTRIG	0x00000001 /* Rx Trigger */
-+
-+/**
-+ * xuartps_isr - Interrupt handler
-+ * @irq: Irq number
-+ * @dev_id: Id of the port
-+ *
-+ * Returns IRQHANDLED
-+ **/
-+static irqreturn_t xuartps_isr(int irq, void *dev_id)
-+{
-+	struct uart_port *port = (struct uart_port *)dev_id;
-+	struct tty_struct *tty;
-+	unsigned long flags;
-+	unsigned int isrstatus, numbytes;
-+	unsigned int data;
-+	char status = TTY_NORMAL;
-+
-+	/* Get the tty which could be NULL so don't assume it's valid */
-+	tty = tty_port_tty_get(&port->state->port);
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+
-+	/* Read the interrupt status register to determine which
-+	 * interrupt(s) is/are active.
-+	 */
-+	isrstatus = xuartps_readl(XUARTPS_ISR_OFFSET);
-+
-+	/* drop byte with parity error if IGNPAR specified */
-+	if (isrstatus & port->ignore_status_mask & XUARTPS_IXR_PARITY)
-+		isrstatus &= ~(XUARTPS_IXR_RXTRIG | XUARTPS_IXR_TOUT);
-+
-+	isrstatus &= port->read_status_mask;
-+	isrstatus &= ~port->ignore_status_mask;
-+
-+	if ((isrstatus & XUARTPS_IXR_TOUT) ||
-+		(isrstatus & XUARTPS_IXR_RXTRIG)) {
-+		/* Receive Timeout Interrupt */
-+		while ((xuartps_readl(XUARTPS_SR_OFFSET) &
-+			XUARTPS_SR_RXEMPTY) != XUARTPS_SR_RXEMPTY) {
-+			data = xuartps_readl(XUARTPS_FIFO_OFFSET);
-+			port->icount.rx++;
-+
-+			if (isrstatus & XUARTPS_IXR_PARITY) {
-+				port->icount.parity++;
-+				status = TTY_PARITY;
-+			} else if (isrstatus & XUARTPS_IXR_FRAMING) {
-+				port->icount.frame++;
-+				status = TTY_FRAME;
-+			} else if (isrstatus & XUARTPS_IXR_OVERRUN)
-+				port->icount.overrun++;
-+
-+			if (tty)
-+				uart_insert_char(port, isrstatus,
-+						XUARTPS_IXR_OVERRUN, data,
-+						status);
-+		}
-+		spin_unlock(&port->lock);
-+		if (tty)
-+			tty_flip_buffer_push(tty);
-+		spin_lock(&port->lock);
-+	}
-+
-+	/* Dispatch an appropriate handler */
-+	if ((isrstatus & XUARTPS_IXR_TXEMPTY) == XUARTPS_IXR_TXEMPTY) {
-+		if (uart_circ_empty(&port->state->xmit)) {
-+			xuartps_writel(XUARTPS_IXR_TXEMPTY,
-+						XUARTPS_IDR_OFFSET);
-+		} else {
-+			numbytes = port->fifosize;
-+			/* Break if no more data available in the UART buffer */
-+			while (numbytes--) {
-+				if (uart_circ_empty(&port->state->xmit))
-+					break;
-+				/* Get the data from the UART circular buffer
-+				 * and write it to the xuartps's TX_FIFO
-+				 * register.
-+				 */
-+				xuartps_writel(
-+					port->state->xmit.buf[port->state->xmit.
-+					tail], XUARTPS_FIFO_OFFSET);
-+
-+				port->icount.tx++;
-+
-+				/* Adjust the tail of the UART buffer and wrap
-+				 * the buffer if it reaches limit.
-+				 */
-+				port->state->xmit.tail =
-+					(port->state->xmit.tail + 1) & \
-+						(UART_XMIT_SIZE - 1);
-+			}
-+
-+			if (uart_circ_chars_pending(
-+					&port->state->xmit) < WAKEUP_CHARS)
-+				uart_write_wakeup(port);
-+		}
-+	}
-+
-+	xuartps_writel(isrstatus, XUARTPS_ISR_OFFSET);
-+
-+	/* be sure to release the lock and tty before leaving */
-+	spin_unlock_irqrestore(&port->lock, flags);
-+	tty_kref_put(tty);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+/**
-+ * xuartps_set_baud_rate - Calculate and set the baud rate
-+ * @port: Handle to the uart port structure
-+ * @baud: Baud rate to set
-+ *
-+ * Returns baud rate, requested baud when possible, or actual baud when there
-+ *	was too much error
-+ **/
-+static unsigned int xuartps_set_baud_rate(struct uart_port *port,
-+						unsigned int baud)
-+{
-+	unsigned int sel_clk;
-+	unsigned int calc_baud = 0;
-+	unsigned int brgr_val, brdiv_val;
-+	unsigned int bauderror;
-+
-+	/* Formula to obtain baud rate is
-+	 *	baud_tx/rx rate = sel_clk/CD * (BDIV + 1)
-+	 *	input_clk = (Uart User Defined Clock or Apb Clock)
-+	 *		depends on UCLKEN in MR Reg
-+	 *	sel_clk = input_clk or input_clk/8;
-+	 *		depends on CLKS in MR reg
-+	 *	CD and BDIV depends on values in
-+	 *			baud rate generate register
-+	 *			baud rate clock divisor register
-+	 */
-+	sel_clk = port->uartclk;
-+	if (xuartps_readl(XUARTPS_MR_OFFSET) & XUARTPS_MR_CLKSEL)
-+		sel_clk = sel_clk / 8;
-+
-+	/* Find the best values for baud generation */
-+	for (brdiv_val = 4; brdiv_val < 255; brdiv_val++) {
-+
-+		brgr_val = sel_clk / (baud * (brdiv_val + 1));
-+		if (brgr_val < 2 || brgr_val > 65535)
-+			continue;
-+
-+		calc_baud = sel_clk / (brgr_val * (brdiv_val + 1));
-+
-+		if (baud > calc_baud)
-+			bauderror = baud - calc_baud;
-+		else
-+			bauderror = calc_baud - baud;
-+
-+		/* use the values when percent error is acceptable */
-+		if (((bauderror * 100) / baud) < 3) {
-+			calc_baud = baud;
-+			break;
-+		}
-+	}
-+
-+	/* Set the values for the new baud rate */
-+	xuartps_writel(brgr_val, XUARTPS_BAUDGEN_OFFSET);
-+	xuartps_writel(brdiv_val, XUARTPS_BAUDDIV_OFFSET);
-+
-+	return calc_baud;
-+}
-+
-+/*----------------------Uart Operations---------------------------*/
-+
-+/**
-+ * xuartps_start_tx -  Start transmitting bytes
-+ * @port: Handle to the uart port structure
-+ *
-+ **/
-+static void xuartps_start_tx(struct uart_port *port)
-+{
-+	unsigned int status, numbytes = port->fifosize;
-+
-+	if (uart_circ_empty(&port->state->xmit) || uart_tx_stopped(port))
-+		return;
-+
-+	status = xuartps_readl(XUARTPS_CR_OFFSET);
-+	/* Set the TX enable bit and clear the TX disable bit to enable the
-+	 * transmitter.
-+	 */
-+	xuartps_writel((status & ~XUARTPS_CR_TX_DIS) | XUARTPS_CR_TX_EN,
-+		XUARTPS_CR_OFFSET);
-+
-+	while (numbytes-- && ((xuartps_readl(XUARTPS_SR_OFFSET)
-+		& XUARTPS_SR_TXFULL)) != XUARTPS_SR_TXFULL) {
-+
-+		/* Break if no more data available in the UART buffer */
-+		if (uart_circ_empty(&port->state->xmit))
-+			break;
-+
-+		/* Get the data from the UART circular buffer and
-+		 * write it to the xuartps's TX_FIFO register.
-+		 */
-+		xuartps_writel(
-+			port->state->xmit.buf[port->state->xmit.tail],
-+			XUARTPS_FIFO_OFFSET);
-+		port->icount.tx++;
-+
-+		/* Adjust the tail of the UART buffer and wrap
-+		 * the buffer if it reaches limit.
-+		 */
-+		port->state->xmit.tail = (port->state->xmit.tail + 1) &
-+					(UART_XMIT_SIZE - 1);
-+	}
-+
-+	/* Enable the TX Empty interrupt */
-+	xuartps_writel(XUARTPS_IXR_TXEMPTY, XUARTPS_IER_OFFSET);
-+
-+	if (uart_circ_chars_pending(&port->state->xmit) < WAKEUP_CHARS)
-+		uart_write_wakeup(port);
-+}
-+
-+/**
-+ * xuartps_stop_tx - Stop TX
-+ * @port: Handle to the uart port structure
-+ *
-+ **/
-+static void xuartps_stop_tx(struct uart_port *port)
-+{
-+	unsigned int regval;
-+
-+	regval = xuartps_readl(XUARTPS_CR_OFFSET);
-+	regval |= XUARTPS_CR_TX_DIS;
-+	/* Disable the transmitter */
-+	xuartps_writel(regval, XUARTPS_CR_OFFSET);
-+}
-+
-+/**
-+ * xuartps_stop_rx - Stop RX
-+ * @port: Handle to the uart port structure
-+ *
-+ **/
-+static void xuartps_stop_rx(struct uart_port *port)
-+{
-+	unsigned int regval;
-+
-+	regval = xuartps_readl(XUARTPS_CR_OFFSET);
-+	regval |= XUARTPS_CR_RX_DIS;
-+	/* Disable the receiver */
-+	xuartps_writel(regval, XUARTPS_CR_OFFSET);
-+}
-+
-+/**
-+ * xuartps_tx_empty -  Check whether TX is empty
-+ * @port: Handle to the uart port structure
-+ *
-+ * Returns TIOCSER_TEMT on success, 0 otherwise
-+ **/
-+static unsigned int xuartps_tx_empty(struct uart_port *port)
-+{
-+	unsigned int status;
-+
-+	status = xuartps_readl(XUARTPS_ISR_OFFSET) & XUARTPS_IXR_TXEMPTY;
-+	return status ? TIOCSER_TEMT : 0;
-+}
-+
-+/**
-+ * xuartps_break_ctl - Based on the input ctl we have to start or stop
-+ *			transmitting char breaks
-+ * @port: Handle to the uart port structure
-+ * @ctl: Value based on which start or stop decision is taken
-+ *
-+ **/
-+static void xuartps_break_ctl(struct uart_port *port, int ctl)
-+{
-+	unsigned int status;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+
-+	status = xuartps_readl(XUARTPS_CR_OFFSET);
-+
-+	if (ctl == -1)
-+		xuartps_writel(XUARTPS_CR_STARTBRK | status,
-+					XUARTPS_CR_OFFSET);
-+	else {
-+		if ((status & XUARTPS_CR_STOPBRK) == 0)
-+			xuartps_writel(XUARTPS_CR_STOPBRK | status,
-+					 XUARTPS_CR_OFFSET);
-+	}
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
-+/**
-+ * xuartps_set_termios - termios operations, handling data length, parity,
-+ *				stop bits, flow control, baud rate
-+ * @port: Handle to the uart port structure
-+ * @termios: Handle to the input termios structure
-+ * @old: Values of the previously saved termios structure
-+ *
-+ **/
-+static void xuartps_set_termios(struct uart_port *port,
-+				struct ktermios *termios, struct ktermios *old)
-+{
-+	unsigned int cval = 0;
-+	unsigned int baud;
-+	unsigned long flags;
-+	unsigned int ctrl_reg, mode_reg;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+
-+	/* Empty the receive FIFO 1st before making changes */
-+	while ((xuartps_readl(XUARTPS_SR_OFFSET) &
-+		 XUARTPS_SR_RXEMPTY) != XUARTPS_SR_RXEMPTY) {
-+		xuartps_readl(XUARTPS_FIFO_OFFSET);
-+	}
-+
-+	/* Disable the TX and RX to set baud rate */
-+	xuartps_writel(xuartps_readl(XUARTPS_CR_OFFSET) |
-+			(XUARTPS_CR_TX_DIS | XUARTPS_CR_RX_DIS),
-+			XUARTPS_CR_OFFSET);
-+
-+	/* Min baud rate = 6bps and Max Baud Rate is 10Mbps for 100Mhz clk */
-+	baud = uart_get_baud_rate(port, termios, old, 0, 10000000);
-+	baud = xuartps_set_baud_rate(port, baud);
-+	if (tty_termios_baud_rate(termios))
-+		tty_termios_encode_baud_rate(termios, baud, baud);
-+
-+	/*
-+	 * Update the per-port timeout.
-+	 */
-+	uart_update_timeout(port, termios->c_cflag, baud);
-+
-+	/* Set TX/RX Reset */
-+	xuartps_writel(xuartps_readl(XUARTPS_CR_OFFSET) |
-+			(XUARTPS_CR_TXRST | XUARTPS_CR_RXRST),
-+			XUARTPS_CR_OFFSET);
-+
-+	ctrl_reg = xuartps_readl(XUARTPS_CR_OFFSET);
-+
-+	/* Clear the RX disable and TX disable bits and then set the TX enable
-+	 * bit and RX enable bit to enable the transmitter and receiver.
-+	 */
-+	xuartps_writel(
-+		(ctrl_reg & ~(XUARTPS_CR_TX_DIS | XUARTPS_CR_RX_DIS))
-+			| (XUARTPS_CR_TX_EN | XUARTPS_CR_RX_EN),
-+			XUARTPS_CR_OFFSET);
-+
-+	xuartps_writel(10, XUARTPS_RXTOUT_OFFSET);
-+
-+	port->read_status_mask = XUARTPS_IXR_TXEMPTY | XUARTPS_IXR_RXTRIG |
-+			XUARTPS_IXR_OVERRUN | XUARTPS_IXR_TOUT;
-+	port->ignore_status_mask = 0;
-+
-+	if (termios->c_iflag & INPCK)
-+		port->read_status_mask |= XUARTPS_IXR_PARITY |
-+		XUARTPS_IXR_FRAMING;
-+
-+	if (termios->c_iflag & IGNPAR)
-+		port->ignore_status_mask |= XUARTPS_IXR_PARITY |
-+			XUARTPS_IXR_FRAMING | XUARTPS_IXR_OVERRUN;
-+
-+	/* ignore all characters if CREAD is not set */
-+	if ((termios->c_cflag & CREAD) == 0)
-+		port->ignore_status_mask |= XUARTPS_IXR_RXTRIG |
-+			XUARTPS_IXR_TOUT | XUARTPS_IXR_PARITY |
-+			XUARTPS_IXR_FRAMING | XUARTPS_IXR_OVERRUN;
-+
-+	mode_reg = xuartps_readl(XUARTPS_MR_OFFSET);
-+
-+	/* Handling Data Size */
-+	switch (termios->c_cflag & CSIZE) {
-+	case CS6:
-+		cval |= XUARTPS_MR_CHARLEN_6_BIT;
-+		break;
-+	case CS7:
-+		cval |= XUARTPS_MR_CHARLEN_7_BIT;
-+		break;
-+	default:
-+	case CS8:
-+		cval |= XUARTPS_MR_CHARLEN_8_BIT;
-+		termios->c_cflag &= ~CSIZE;
-+		termios->c_cflag |= CS8;
-+		break;
-+	}
-+
-+	/* Handling Parity and Stop Bits length */
-+	if (termios->c_cflag & CSTOPB)
-+		cval |= XUARTPS_MR_STOPMODE_2_BIT; /* 2 STOP bits */
-+	else
-+		cval |= XUARTPS_MR_STOPMODE_1_BIT; /* 1 STOP bit */
-+
-+	if (termios->c_cflag & PARENB) {
-+		/* Mark or Space parity */
-+		if (termios->c_cflag & CMSPAR) {
-+			if (termios->c_cflag & PARODD)
-+				cval |= XUARTPS_MR_PARITY_MARK;
-+			else
-+				cval |= XUARTPS_MR_PARITY_SPACE;
-+		} else if (termios->c_cflag & PARODD)
-+				cval |= XUARTPS_MR_PARITY_ODD;
-+			else
-+				cval |= XUARTPS_MR_PARITY_EVEN;
-+	} else
-+		cval |= XUARTPS_MR_PARITY_NONE;
-+	xuartps_writel(cval , XUARTPS_MR_OFFSET);
-+
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
-+/**
-+ * xuartps_startup - Called when an application opens a xuartps port
-+ * @port: Handle to the uart port structure
-+ *
-+ * Returns 0 on success, negative error otherwise
-+ **/
-+static int xuartps_startup(struct uart_port *port)
-+{
-+	unsigned int retval = 0, status = 0;
-+
-+	retval = request_irq(port->irq, xuartps_isr, 0, XUARTPS_NAME,
-+								(void *)port);
-+	if (retval)
-+		return retval;
-+
-+	/* Disable the TX and RX */
-+	xuartps_writel(XUARTPS_CR_TX_DIS | XUARTPS_CR_RX_DIS,
-+						XUARTPS_CR_OFFSET);
-+
-+	/* Set the Control Register with TX/RX Enable, TX/RX Reset,
-+	 * no break chars.
-+	 */
-+	xuartps_writel(XUARTPS_CR_TXRST | XUARTPS_CR_RXRST,
-+				XUARTPS_CR_OFFSET);
-+
-+	status = xuartps_readl(XUARTPS_CR_OFFSET);
-+
-+	/* Clear the RX disable and TX disable bits and then set the TX enable
-+	 * bit and RX enable bit to enable the transmitter and receiver.
-+	 */
-+	xuartps_writel((status & ~(XUARTPS_CR_TX_DIS | XUARTPS_CR_RX_DIS))
-+			| (XUARTPS_CR_TX_EN | XUARTPS_CR_RX_EN |
-+			XUARTPS_CR_STOPBRK), XUARTPS_CR_OFFSET);
-+
-+	/* Set the Mode Register with normal mode,8 data bits,1 stop bit,
-+	 * no parity.
-+	 */
-+	xuartps_writel(XUARTPS_MR_CHMODE_NORM | XUARTPS_MR_STOPMODE_1_BIT
-+		| XUARTPS_MR_PARITY_NONE | XUARTPS_MR_CHARLEN_8_BIT,
-+		 XUARTPS_MR_OFFSET);
-+
-+	/* Set the RX FIFO Trigger level to 14 assuming FIFO size as 16 */
-+	xuartps_writel(14, XUARTPS_RXWM_OFFSET);
-+
-+	/* Receive Timeout register is enabled with value of 10 */
-+	xuartps_writel(10, XUARTPS_RXTOUT_OFFSET);
-+
-+
-+	/* Set the Interrupt Registers with desired interrupts */
-+	xuartps_writel(XUARTPS_IXR_TXEMPTY | XUARTPS_IXR_PARITY |
-+		XUARTPS_IXR_FRAMING | XUARTPS_IXR_OVERRUN |
-+		XUARTPS_IXR_RXTRIG | XUARTPS_IXR_TOUT, XUARTPS_IER_OFFSET);
-+	xuartps_writel(~(XUARTPS_IXR_TXEMPTY | XUARTPS_IXR_PARITY |
-+		XUARTPS_IXR_FRAMING | XUARTPS_IXR_OVERRUN |
-+		XUARTPS_IXR_RXTRIG | XUARTPS_IXR_TOUT), XUARTPS_IDR_OFFSET);
-+
-+	return retval;
-+}
-+
-+/**
-+ * xuartps_shutdown - Called when an application closes a xuartps port
-+ * @port: Handle to the uart port structure
-+ *
-+ **/
-+static void xuartps_shutdown(struct uart_port *port)
-+{
-+	int status;
-+
-+	/* Disable interrupts */
-+	status = xuartps_readl(XUARTPS_IMR_OFFSET);
-+	xuartps_writel(status, XUARTPS_IDR_OFFSET);
-+
-+	/* Disable the TX and RX */
-+	xuartps_writel(XUARTPS_CR_TX_DIS | XUARTPS_CR_RX_DIS,
-+				 XUARTPS_CR_OFFSET);
-+	free_irq(port->irq, port);
-+}
-+
-+/**
-+ * xuartps_type - Set UART type to xuartps port
-+ * @port: Handle to the uart port structure
-+ *
-+ * Returns string on success, NULL otherwise
-+ **/
-+static const char *xuartps_type(struct uart_port *port)
-+{
-+	return port->type == PORT_XUARTPS ? XUARTPS_NAME : NULL;
-+}
-+
-+/**
-+ * xuartps_verify_port - Verify the port params
-+ * @port: Handle to the uart port structure
-+ * @ser: Handle to the structure whose members are compared
-+ *
-+ * Returns 0 if success otherwise -EINVAL
-+ **/
-+static int xuartps_verify_port(struct uart_port *port,
-+					struct serial_struct *ser)
-+{
-+	if (ser->type != PORT_UNKNOWN && ser->type != PORT_XUARTPS)
-+		return -EINVAL;
-+	if (port->irq != ser->irq)
-+		return -EINVAL;
-+	if (ser->io_type != UPIO_MEM)
-+		return -EINVAL;
-+	if (port->iobase != ser->port)
-+		return -EINVAL;
-+	if (ser->hub6 != 0)
-+		return -EINVAL;
-+	return 0;
-+}
-+
-+/**
-+ * xuartps_request_port - Claim the memory region attached to xuartps port,
-+ *				called when the driver adds a xuartps port via
-+ *				uart_add_one_port()
-+ * @port: Handle to the uart port structure
-+ *
-+ * Returns 0, -ENOMEM if request fails
-+ **/
-+static int xuartps_request_port(struct uart_port *port)
-+{
-+	if (!request_mem_region(port->mapbase, XUARTPS_REGISTER_SPACE,
-+					 XUARTPS_NAME)) {
-+		return -ENOMEM;
-+	}
-+
-+	port->membase = ioremap(port->mapbase, XUARTPS_REGISTER_SPACE);
-+	if (!port->membase) {
-+		dev_err(port->dev, "Unable to map registers\n");
-+		release_mem_region(port->mapbase, XUARTPS_REGISTER_SPACE);
-+		return -ENOMEM;
-+	}
-+	return 0;
-+}
-+
-+/**
-+ * xuartps_release_port - Release the memory region attached to a xuartps
-+ *				port, called when the driver removes a xuartps
-+ *				port via uart_remove_one_port().
-+ * @port: Handle to the uart port structure
-+ *
-+ **/
-+static void xuartps_release_port(struct uart_port *port)
-+{
-+	release_mem_region(port->mapbase, XUARTPS_REGISTER_SPACE);
-+	iounmap(port->membase);
-+	port->membase = NULL;
-+}
-+
-+/**
-+ * xuartps_config_port - Configure xuartps, called when the driver adds a
-+ *				xuartps port
-+ * @port: Handle to the uart port structure
-+ * @flags: If any
-+ *
-+ **/
-+static void xuartps_config_port(struct uart_port *port, int flags)
-+{
-+	if (flags & UART_CONFIG_TYPE && xuartps_request_port(port) == 0)
-+		port->type = PORT_XUARTPS;
-+}
-+
-+/**
-+ * xuartps_get_mctrl - Get the modem control state
-+ *
-+ * @port: Handle to the uart port structure
-+ *
-+ * Returns the modem control state
-+ *
-+ **/
-+static unsigned int xuartps_get_mctrl(struct uart_port *port)
-+{
-+	return TIOCM_CTS | TIOCM_DSR | TIOCM_CAR;
-+}
-+
-+static void xuartps_set_mctrl(struct uart_port *port, unsigned int mctrl)
-+{
-+	/* N/A */
-+}
-+
-+static void xuartps_enable_ms(struct uart_port *port)
-+{
-+	/* N/A */
-+}
-+
-+/** The UART operations structure
-+ */
-+static struct uart_ops xuartps_ops = {
-+	.set_mctrl	= xuartps_set_mctrl,
-+	.get_mctrl	= xuartps_get_mctrl,
-+	.enable_ms	= xuartps_enable_ms,
-+
-+	.start_tx	= xuartps_start_tx,	/* Start transmitting */
-+	.stop_tx	= xuartps_stop_tx,	/* Stop transmission */
-+	.stop_rx	= xuartps_stop_rx,	/* Stop reception */
-+	.tx_empty	= xuartps_tx_empty,	/* Transmitter busy? */
-+	.break_ctl	= xuartps_break_ctl,	/* Start/stop
-+						 * transmitting break
-+						 */
-+	.set_termios	= xuartps_set_termios,	/* Set termios */
-+	.startup	= xuartps_startup,	/* App opens xuartps */
-+	.shutdown	= xuartps_shutdown,	/* App closes xuartps */
-+	.type		= xuartps_type,		/* Set UART type */
-+	.verify_port	= xuartps_verify_port,	/* Verification of port
-+						 * params
-+						 */
-+	.request_port	= xuartps_request_port,	/* Claim resources
-+						 * associated with a
-+						 * xuartps port
-+						 */
-+	.release_port	= xuartps_release_port,	/* Release resources
-+						 * associated with a
-+						 * xuartps port
-+						 */
-+	.config_port	= xuartps_config_port,	/* Configure when driver
-+						 * adds a xuartps port
-+						 */
-+};
-+
-+static struct uart_port xuartps_port[2];
-+
-+/**
-+ * xuartps_get_port - Configure the port from the platform device resource
-+ *			info
-+ *
-+ * Returns a pointer to a uart_port or NULL for failure
-+ **/
-+static struct uart_port *xuartps_get_port(void)
-+{
-+	struct uart_port *port;
-+	int id;
-+
-+	/* Find the next unused port */
-+	for (id = 0; id < XUARTPS_NR_PORTS; id++)
-+		if (xuartps_port[id].mapbase == 0)
-+			break;
-+
-+	if (id >= XUARTPS_NR_PORTS)
-+		return NULL;
-+
-+	port = &xuartps_port[id];
-+
-+	/* At this point, we've got an empty uart_port struct, initialize it */
-+	spin_lock_init(&port->lock);
-+	port->membase	= NULL;
-+	port->iobase	= 1; /* mark port in use */
-+	port->irq	= 0;
-+	port->type	= PORT_UNKNOWN;
-+	port->iotype	= UPIO_MEM32;
-+	port->flags	= UPF_BOOT_AUTOCONF;
-+	port->ops	= &xuartps_ops;
-+	port->fifosize	= XUARTPS_FIFO_SIZE;
-+	port->line	= id;
-+	port->dev	= NULL;
-+	return port;
-+}
-+
-+/*-----------------------Console driver operations--------------------------*/
-+
-+#ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
-+/**
-+ * xuartps_console_wait_tx - Wait for the TX to be full
-+ * @port: Handle to the uart port structure
-+ *
-+ **/
-+static void xuartps_console_wait_tx(struct uart_port *port)
-+{
-+	while ((xuartps_readl(XUARTPS_SR_OFFSET) & XUARTPS_SR_TXEMPTY)
-+				!= XUARTPS_SR_TXEMPTY)
-+		barrier();
-+}
-+
-+/**
-+ * xuartps_console_putchar - write the character to the FIFO buffer
-+ * @port: Handle to the uart port structure
-+ * @ch: Character to be written
-+ *
-+ **/
-+static void xuartps_console_putchar(struct uart_port *port, int ch)
-+{
-+	xuartps_console_wait_tx(port);
-+	xuartps_writel(ch, XUARTPS_FIFO_OFFSET);
-+}
-+
-+/**
-+ * xuartps_console_write - perform write operation
-+ * @port: Handle to the uart port structure
-+ * @s: Pointer to character array
-+ * @count: No of characters
-+ **/
-+static void xuartps_console_write(struct console *co, const char *s,
-+				unsigned int count)
-+{
-+	struct uart_port *port = &xuartps_port[co->index];
-+	unsigned long flags;
-+	unsigned int imr;
-+	int locked = 1;
-+
-+	if (oops_in_progress)
-+		locked = spin_trylock_irqsave(&port->lock, flags);
-+	else
-+		spin_lock_irqsave(&port->lock, flags);
-+
-+	/* save and disable interrupt */
-+	imr = xuartps_readl(XUARTPS_IMR_OFFSET);
-+	xuartps_writel(imr, XUARTPS_IDR_OFFSET);
-+
-+	uart_console_write(port, s, count, xuartps_console_putchar);
-+	xuartps_console_wait_tx(port);
-+
-+	/* restore interrupt state, it seems like there may be a h/w bug
-+	 * in that the interrupt enable register should not need to be
-+	 * written based on the data sheet
-+	 */
-+	xuartps_writel(~imr, XUARTPS_IDR_OFFSET);
-+	xuartps_writel(imr, XUARTPS_IER_OFFSET);
-+
-+	if (locked)
-+		spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
-+/**
-+ * xuartps_console_setup - Initialize the uart to default config
-+ * @co: Console handle
-+ * @options: Initial settings of uart
-+ *
-+ * Returns 0, -ENODEV if no device
-+ **/
-+static int __init xuartps_console_setup(struct console *co, char *options)
-+{
-+	struct uart_port *port = &xuartps_port[co->index];
-+	int baud = 9600;
-+	int bits = 8;
-+	int parity = 'n';
-+	int flow = 'n';
-+
-+	if (co->index < 0 || co->index >= XUARTPS_NR_PORTS)
-+		return -EINVAL;
-+
-+	if (!port->mapbase) {
-+		pr_debug("console on ttyPS%i not present\n", co->index);
-+		return -ENODEV;
-+	}
-+
-+	if (options)
-+		uart_parse_options(options, &baud, &parity, &bits, &flow);
-+
-+	return uart_set_options(port, co, baud, parity, bits, flow);
-+}
-+
-+static struct uart_driver xuartps_uart_driver;
-+
-+static struct console xuartps_console = {
-+	.name	= XUARTPS_TTY_NAME,
-+	.write	= xuartps_console_write,
-+	.device	= uart_console_device,
-+	.setup	= xuartps_console_setup,
-+	.flags	= CON_PRINTBUFFER,
-+	.index	= -1, /* Specified on the cmdline (e.g. console=ttyPS ) */
-+	.data	= &xuartps_uart_driver,
-+};
-+
-+/**
-+ * xuartps_console_init - Initialization call
-+ *
-+ * Returns 0 on success, negative error otherwise
-+ **/
-+static int __init xuartps_console_init(void)
-+{
-+	register_console(&xuartps_console);
-+	return 0;
-+}
-+
-+console_initcall(xuartps_console_init);
-+
-+#endif /* CONFIG_SERIAL_XILINX_PS_UART_CONSOLE */
-+
-+/** Structure Definitions
-+ */
-+static struct uart_driver xuartps_uart_driver = {
-+	.owner		= THIS_MODULE,		/* Owner */
-+	.driver_name	= XUARTPS_NAME,		/* Driver name */
-+	.dev_name	= XUARTPS_TTY_NAME,	/* Node name */
-+	.major		= XUARTPS_MAJOR,	/* Major number */
-+	.minor		= XUARTPS_MINOR,	/* Minor number */
-+	.nr		= XUARTPS_NR_PORTS,	/* Number of UART ports */
-+#ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
-+	.cons		= &xuartps_console,	/* Console */
-+#endif
-+};
-+
-+/* ---------------------------------------------------------------------
-+ * Platform bus binding
-+ */
-+/**
-+ * xuartps_probe - Platform driver probe
-+ * @pdev: Pointer to the platform device structure
-+ *
-+ * Returns 0 on success, negative error otherwise
-+ **/
-+static int __devinit xuartps_probe(struct platform_device *pdev)
-+{
-+	int rc;
-+	struct uart_port *port;
-+	struct resource *res, *res2;
-+	int clk = 0;
-+
-+#ifdef CONFIG_OF
-+	const unsigned int *prop;
-+
-+	prop = of_get_property(pdev->dev.of_node, "clock", NULL);
-+	if (prop)
-+		clk = be32_to_cpup(prop);
-+#else
-+	clk = *((unsigned int *)(pdev->dev.platform_data));
-+#endif
-+	if (!clk) {
-+		dev_err(&pdev->dev, "no clock specified\n");
-+		return -ENODEV;
-+	}
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res)
-+		return -ENODEV;
-+
-+	res2 = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-+	if (!res2)
-+		return -ENODEV;
-+
-+	/* Initialize the port structure */
-+	port = xuartps_get_port();
-+
-+	if (!port) {
-+		dev_err(&pdev->dev, "Cannot get uart_port structure\n");
-+		return -ENODEV;
-+	} else {
-+		/* Register the port.
-+		 * This function also registers this device with the tty layer
-+		 * and triggers invocation of the config_port() entry point.
-+		 */
-+		port->mapbase = res->start;
-+		port->irq = res2->start;
-+		port->dev = &pdev->dev;
-+		port->uartclk = clk;
-+		dev_set_drvdata(&pdev->dev, port);
-+		rc = uart_add_one_port(&xuartps_uart_driver, port);
-+		if (rc) {
-+			dev_err(&pdev->dev,
-+				"uart_add_one_port() failed; err=%i\n", rc);
-+			dev_set_drvdata(&pdev->dev, NULL);
-+			return rc;
-+		}
-+		return 0;
-+	}
-+}
-+
-+/**
-+ * xuartps_remove - called when the platform driver is unregistered
-+ * @pdev: Pointer to the platform device structure
-+ *
-+ * Returns 0 on success, negative error otherwise
-+ **/
-+static int __devexit xuartps_remove(struct platform_device *pdev)
-+{
-+	struct uart_port *port = dev_get_drvdata(&pdev->dev);
-+	int rc = 0;
-+
-+	/* Remove the xuartps port from the serial core */
-+	if (port) {
-+		rc = uart_remove_one_port(&xuartps_uart_driver, port);
-+		dev_set_drvdata(&pdev->dev, NULL);
-+		port->mapbase = 0;
-+	}
-+	return rc;
-+}
-+
-+/**
-+ * xuartps_suspend - suspend event
-+ * @pdev: Pointer to the platform device structure
-+ * @state: State of the device
-+ *
-+ * Returns 0
-+ **/
-+static int xuartps_suspend(struct platform_device *pdev, pm_message_t state)
-+{
-+	/* Call the API provided in serial_core.c file which handles
-+	 * the suspend.
-+	 */
-+	uart_suspend_port(&xuartps_uart_driver, &xuartps_port[pdev->id]);
-+	return 0;
-+}
-+
-+/**
-+ * xuartps_resume - Resume after a previous suspend
-+ * @pdev: Pointer to the platform device structure
-+ *
-+ * Returns 0
-+ **/
-+static int xuartps_resume(struct platform_device *pdev)
-+{
-+	uart_resume_port(&xuartps_uart_driver, &xuartps_port[pdev->id]);
-+	return 0;
-+}
-+
-+/* Match table for of_platform binding */
-+
-+#ifdef CONFIG_OF
-+static struct of_device_id xuartps_of_match[] __devinitdata = {
-+	{ .compatible = "xlnx,xuartps", },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, xuartps_of_match);
-+#else
-+#define xuartps_of_match NULL
-+#endif
-+
-+static struct platform_driver xuartps_platform_driver = {
-+	.probe   = xuartps_probe,		/* Probe method */
-+	.remove  = __exit_p(xuartps_remove),	/* Detach method */
-+	.suspend = xuartps_suspend,		/* Suspend */
-+	.resume  = xuartps_resume,		/* Resume after a suspend */
-+	.driver  = {
-+		.owner = THIS_MODULE,
-+		.name = XUARTPS_NAME,		/* Driver name */
-+		.of_match_table = xuartps_of_match,
-+		},
-+};
-+
-+/* ---------------------------------------------------------------------
-+ * Module Init and Exit
-+ */
-+/**
-+ * xuartps_init - Initial driver registration call
-+ *
-+ * Returns whether the registration was successful or not
-+ **/
-+static int __init xuartps_init(void)
-+{
-+	int retval = 0;
-+
-+	/* Register the xuartps driver with the serial core */
-+	retval = uart_register_driver(&xuartps_uart_driver);
-+	if (retval)
-+		return retval;
-+
-+	/* Register the platform driver */
-+	retval = platform_driver_register(&xuartps_platform_driver);
-+	if (retval)
-+		uart_unregister_driver(&xuartps_uart_driver);
-+
-+	return retval;
-+}
-+
-+/**
-+ * xuartps_exit - Driver unregistration call
-+ **/
-+static void __exit xuartps_exit(void)
-+{
-+	/* The order of unregistration is important. Unregister the
-+	 * UART driver before the platform driver crashes the system.
-+	 */
-+
-+	/* Unregister the platform driver */
-+	platform_driver_unregister(&xuartps_platform_driver);
-+
-+	/* Unregister the xuartps driver */
-+	uart_unregister_driver(&xuartps_uart_driver);
-+}
-+
-+module_init(xuartps_init);
-+module_exit(xuartps_exit);
-+
-+MODULE_DESCRIPTION("Driver for PS UART");
-+MODULE_AUTHOR("Xilinx Inc.");
-+MODULE_LICENSE("GPL");
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 758c5b0..95d479b 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -202,6 +202,9 @@
- /* VIA VT8500 SoC */
- #define PORT_VT8500	97
- 
-+/* Xilinx PSS UART */
-+#define PORT_XUARTPS	98
-+
- #ifdef __KERNEL__
- 
- #include <linux/compiler.h>
--- 
-1.5.4.7
+On 04/30/11 04:39, Guenter Roeck wrote:
+> On Fri, Apr 29, 2011 at 06:21:52PM -0400, Vivien Didelot wrote:
+>> From: Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>
+>>
+>>
+>> Signed-off-by: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
+> 
+> Hi Vivien,
+> 
+> The headline and file name are a bit misleading, since the driver is really
+> for MAX197 on a TS-5500 board.
+> 
+> You should split the driver into two parts, a generic driver
+> for the MAX197 and a platform driver (residing somewhere in arch/
+> or possibly drivers/platform/) to instantiate it.
+The bus looks 'interesting'. Vivien, is this a common interface to
+parts? If so, perhaps we want a small layer in between the raw reads
+on the ts5500 and what hits the maxim part.  That would allow us
+to simply support other means of talking to this chip. If it's a very
+much part specific interface, then we can leave generalizing until
+someone actually needs it of course!
+> 
+> There should be a platform data include file, probably in
+> include/linux/platform_data/.
+> 
+> .ioaddr in platform data should not be necessary. The driver's probe
+> function should get the values using platform_get_resource().
+> 
+> Having said that, from reading the code it looks like the chip is not really
+> used for hardware monitoring, but for generic ADC functionality. A quick look
+> into the TS-5500 user manual confirms this. So this should not be a hwmon
+> driver in the first place, but a generic ADC driver. Given the ADC conversion rate
+> of the MAX197, the hwmon ABI is not optimal anyway. You should move this driver
+> into the iio subsystem, probably to drivers/staging/iio/adc. Copying the iio
+> mailing list for input.
+Yup, that does make sense here as far as I can tell. Definitely wants to be broken
+up in the platform bit and max197 drivers though as Guenter has said.
+> 
+> Thanks,
+> Guenter
+Thanks for cc'ing us...
+> 
+>> ---
+>>  MAINTAINERS                |    1 +
+>>  drivers/hwmon/Kconfig      |   10 +
+>>  drivers/hwmon/Makefile     |    1 +
+>>  drivers/hwmon/ts5500-adc.c |  481 ++++++++++++++++++++++++++++++++++++++++++++
+>>  4 files changed, 493 insertions(+), 0 deletions(-)
+>>  create mode 100644 drivers/hwmon/ts5500-adc.c
+>>
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+>> index c0a646d..aace74a 100644
+>> --- a/MAINTAINERS
+>> +++ b/MAINTAINERS
+>> @@ -6062,6 +6062,7 @@ F:        drivers/gpio/ts5500-gpio.c
+>>  F:     include/linux/ts5500-gpio.h
+>>  F:     drivers/tty/serial/ts5500-auto485.c
+>>  F:     drivers/leds/leds-ts5500.c
+>> +F:     drivers/hwmon/ts5500-adc.c
+>>
+>>  TEGRA SUPPORT
+>>  M:     Colin Cross <ccross@android.com>
+>> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+>> index 060ef63..5070530 100644
+>> --- a/drivers/hwmon/Kconfig
+>> +++ b/drivers/hwmon/Kconfig
+>> @@ -1286,6 +1286,16 @@ config SENSORS_MC13783_ADC
+>>          help
+>>            Support for the A/D converter on MC13783 PMIC.
+>>
+>> +config SENSORS_TS5500_ADC
+>> +        tristate "Technologic Systems TS-5500 ADC"
+>> +        depends on TS5500_SBC
+>> +        help
+>> +      Support for the A/D converter on Technologic Systems TS-5500
+>> +         SBCs.
+>> +
+>> +         This driver can also be built as a module.  If so, the module
+>> +         will be called ts5500-adc.
+>> +
+>>  if ACPI
+>>
+>>  comment "ACPI drivers"
+>> diff --git a/drivers/hwmon/Makefile b/drivers/hwmon/Makefile
+>> index 967d0ea..9c8563d 100644
+>> --- a/drivers/hwmon/Makefile
+>> +++ b/drivers/hwmon/Makefile
+>> @@ -114,6 +114,7 @@ obj-$(CONFIG_SENSORS_W83L785TS)     += w83l785ts.o
+>>  obj-$(CONFIG_SENSORS_W83L786NG)        += w83l786ng.o
+>>  obj-$(CONFIG_SENSORS_WM831X)   += wm831x-hwmon.o
+>>  obj-$(CONFIG_SENSORS_WM8350)   += wm8350-hwmon.o
+>> +obj-$(CONFIG_SENSORS_TS5500_ADC)+= ts5500-adc.o
+>>
+>>  # PMBus drivers
+>>  obj-$(CONFIG_PMBUS)            += pmbus_core.o
+>> diff --git a/drivers/hwmon/ts5500-adc.c b/drivers/hwmon/ts5500-adc.c
+>> new file mode 100644
+>> index 0000000..6568e9e
+>> --- /dev/null
+>> +++ b/drivers/hwmon/ts5500-adc.c
+>> @@ -0,0 +1,481 @@
+>> +/*
+>> + * Technologic Systems TS-5500 boards - MAX197 ADC driver
+>> + *
+>> + * Copyright (c) 2010 Savoir-faire Linux Inc.
+>> + *          Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>
+>> + *
+>> + * Portions Copyright (C) 2008 Marc Pignat <marc.pignat@hevs.ch>
+>> + *
+>> + * The driver uses direct access for communication with the ADC.
+>> + * Should work unchanged with the MAX199 chip.
+>> + *
+>> + * This program is free software; you can redistribute it and/or modify
+>> + * it under the terms of the GNU General Public License as published by
+>> + * the Free Software Foundation; either version 2 of the License, or
+>> + * (at your option) any later version.
+>> + *
+>> + * This program is distributed in the hope that it will be useful,
+>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>> + * GNU General Public License for more details.
+>> + *
+>> + * You should have received a copy of the GNU General Public License
+>> + * along with this program; if not, write to the Free Software
+>> + * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+>> + */
+>> +
+>> +#include <linux/init.h>
+>> +#include <linux/module.h>
+>> +#include <linux/kernel.h>
+>> +#include <linux/device.h>
+>> +#include <linux/delay.h>
+>> +#include <linux/platform_device.h>
+>> +#include <linux/err.h>
+>> +#include <linux/sysfs.h>
+>> +#include <linux/hwmon.h>
+>> +#include <linux/hwmon-sysfs.h>
+>> +#include <linux/mutex.h>
+>> +#include <linux/ts5xxx-sbcinfo.h>
+>> +#include <linux/slab.h>
+>> +#include <linux/io.h>
+>> +
+>> +#define MODULE_NAME    "ts5500-max197"
+>> +
+>> +/*
+>> + * Control bits of A/D command
+>> + * bits 0-2:   selected channel (0 - 7)
+>> + * bits 3:     uni/bipolar (0 = unipolar (ie 0 to +5V))
+>> + *                         (1 = bipolar (ie -5 to +5V))
+>> + * bit 4:      selected range (0 = 5v range, 1 = 10V range)
+>> + * bit 5-7:    padded zero (unused)
+>> + */
+>> +#define TS5500_MAX197_BIPOLAR          0x08
+>> +#define TS5500_MAX197_UNIPOLAR         0x00
+>> +#define TS5500_MAX197_RANGE_5V         0x00    /* 0 to 5V range */
+>> +#define TS5500_MAX197_RANGE_10V                0x10    /* 0 to 10V range */
+>> +
+>> +#define TS5500_MAX197_READ_DELAY       15      /* usec */
+>> +#define TS5500_MAX197_READ_BUSY_MASK   0x01
+>> +#define TS5500_MAX197_NAME             "MAX197 (8 channels)"
+>> +
+>> +#define MAX197_CHANNELS_MAX            8       /* 0 to 7 channels on device */
+>> +
+>> +#define max197_test_bit(bit, map)      (test_bit(bit, map) != 0)
+>> +
+>> +/**
+>> + * struct max197_platform_data
+>> + * @name:      Name of the device.
+>> + * @ioaddr:    I/O address containing:
+>> + *             .data:          Data register for conversion reading.
+>> + *             .ctrl:          A/D Control Register (bit 0 = 0 when
+>> + *                             conversion completed).
+>> + * @read:      Information about conversion reading, with:
+>> + *             .delay:         Delay before next conversion.
+>> + *             .busy_mask:     Control register bit 0 equals 1 means
+>> + *                             conversion is not completed yet.
+>> + * @ctrl:      Data tables addressable by [polarity][range].
+>> + * @ranges:    Ranges.
+>> + *             .min:           Min value.
+>> + *             .max:           Max value.
+>> + * @scale:     Polarity/Range coefficients to scale raw conversion reading.
+>> + */
+>> +struct max197_platform_data {
+>> +       const char *name;
+>> +       struct {
+>> +               int data;
+>> +               int ctrl;
+>> +       } ioaddr;
+>> +       struct {
+>> +               u8 delay;
+>> +               u8 busy_mask;
+>> +       } read;
+>> +       u8 ctrl[2][2];
+>> +       struct {
+>> +               int min[2][2];
+>> +               int max[2][2];
+>> +       } ranges;
+>> +       int scale[2][2];
+>> +};
+>> +
+>> +/**
+>> + * struct max197_chip
+>> + * @hwmon_dev:         The hwmon device.
+>> + * @lock:              Read/Write mutex.
+>> + * @spec:              The MAX197 platform data.
+>> + * @polarity:          bitmap for polarity.
+>> + * @range:             bitmap for range.
+>> + */
+>> +struct max197_chip {
+>> +       struct device *hwmon_dev;
+>> +       struct mutex lock;
+>> +       struct max197_platform_data spec;
+>> +       DECLARE_BITMAP(polarity, MAX197_CHANNELS_MAX);
+>> +       DECLARE_BITMAP(range, MAX197_CHANNELS_MAX);
+>> +};
+>> +
+>> +static inline s32 max197_scale(struct max197_chip *chip, s16 raw,
+>> +                                  int polarity, int range)
+>> +{
+>> +       s32 scaled = raw;
+>> +
+>> +       scaled *= chip->spec.scale[polarity][range];
+>> +       scaled /= 10000;
+>> +
+>> +       return scaled;
+>> +}
+>> +
+>> +static inline int max197_range(struct max197_chip *chip, int is_min,
+>> +                              int polarity, int range)
+>> +{
+>> +       if (is_min)
+>> +               return chip->spec.ranges.min[polarity][range];
+>> +       return chip->spec.ranges.max[polarity][range];
+>> +}
+>> +
+>> +static inline int max197_strtol(const char *buf, long *value, int range1,
+>> +                               int range2)
+>> +{
+>> +       if (strict_strtol(buf, 10, value))
+>> +               return -EINVAL;
+>> +
+>> +       if (range1 < range2)
+>> +               *value = SENSORS_LIMIT(*value, range1, range2);
+>> +       else
+>> +               *value = SENSORS_LIMIT(*value, range2, range1);
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +static inline struct max197_chip *max197_get_drvdata(struct device *dev)
+>> +{
+>> +       return platform_get_drvdata(to_platform_device(dev));
+>> +}
+>> +
+>> +/**
+>> + * max197_show_range() - Display range on user output
+>> + *
+>> + * Function called on read access on
+>> + * /sys/devices/platform/ts5500-max197/in{0,1,2,3,4,5,6,7}_{min,max}
+>> + */
+>> +static ssize_t max197_show_range(struct device *dev,
+>> +                                struct device_attribute *devattr, char *buf)
+>> +{
+>> +       struct max197_chip *chip = max197_get_drvdata(dev);
+>> +       struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+>> +       int is_min = attr->nr != 0;
+>> +       int polarity, range;
+>> +
+>> +       if (mutex_lock_interruptible(&chip->lock))
+>> +               return -ERESTARTSYS;
+>> +
+>> +       polarity = max197_test_bit(attr->index, chip->polarity);
+>> +       range = max197_test_bit(attr->index, chip->range);
+>> +
+>> +       mutex_unlock(&chip->lock);
+>> +
+>> +       return sprintf(buf, "%d\n",
+>> +                      max197_range(chip, is_min, polarity, range));
+>> +}
+>> +
+>> +/**
+>> + * max197_store_range() - Write range from user input
+>> + *
+>> + * Function called on write access on
+>> + * /sys/devices/platform/ts5500-max197/in{0,1,2,3,4,5,6,7}_{min,max}
+>> + */
+>> +static ssize_t max197_store_range(struct device *dev,
+>> +                                 struct device_attribute *devattr,
+>> +                                 const char *buf, size_t count)
+>> +{
+>> +       struct max197_chip *chip = max197_get_drvdata(dev);
+>> +       struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+>> +       int is_min = attr->nr != 0;
+>> +       int range1 = max197_range(chip, is_min, 0, 0);
+>> +       int range2 = max197_range(chip, is_min, 1, 1);
+>> +       long value;
+>> +
+>> +       if (max197_strtol(buf, &value, range1, range2))
+>> +               return -EINVAL;
+>> +
+>> +       if (mutex_lock_interruptible(&chip->lock))
+>> +               return -ERESTARTSYS;
+>> +
+>> +       if (abs(value) > 5000)
+>> +               set_bit(attr->index, chip->range);
+>> +       else
+>> +               clear_bit(attr->index, chip->range);
+>> +
+>> +       if (is_min) {
+>> +               if (value < 0)
+>> +                       set_bit(attr->index, chip->polarity);
+>> +               else
+>> +                       clear_bit(attr->index, chip->polarity);
+>> +       }
+>> +
+>> +       mutex_unlock(&chip->lock);
+>> +
+>> +       return count;
+>> +}
+>> +
+>> +/**
+>> + * max197_show_input() - Show channel input
+>> + *
+>> + * Function called on read access on
+>> + * /sys/devices/platform/ts5500-max197/in{0,1,2,3,4,5,6,7}_input
+>> + */
+>> +static ssize_t max197_show_input(struct device *dev,
+>> +                                struct device_attribute *devattr, char *buf)
+>> +{
+>> +       struct max197_chip *chip = max197_get_drvdata(dev);
+>> +       struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+>> +       int polarity, range;
+>> +       int ret;
+>> +       u8 command;
+>> +
+>> +       if (mutex_lock_interruptible(&chip->lock))
+>> +               return -ERESTARTSYS;
+>> +
+>> +       polarity = max197_test_bit(attr->index, chip->polarity);
+>> +       range = max197_test_bit(attr->index, chip->range);
+>> +
+>> +       command = attr->index | chip->spec.ctrl[polarity][range];
+>> +
+>> +       outb(command, chip->spec.ioaddr.data);
+>> +
+>> +       udelay(chip->spec.read.delay);
+>> +       ret = inb(chip->spec.ioaddr.ctrl);
+>> +
+>> +       if (ret & chip->spec.read.busy_mask) {
+>> +               dev_err(dev, "device not ready (ret=0x0%x, try=%d)\n", ret,
+>> +                       range);
+>> +               ret = -EIO;
+>> +       } else {
+>> +               /* LSB of conversion is at 0x196 and MSB is at 0x197 */
+>> +               u8 lsb = inb(chip->spec.ioaddr.data);
+>> +               u8 msb = inb(chip->spec.ioaddr.data + 1);
+>> +               s16 raw = (msb << 8) | lsb;
+>> +               s32 scaled = max197_scale(chip, raw, polarity, range);
+>> +
+>> +               ret = sprintf(buf, "%d\n", scaled);
+>> +       }
+>> +
+>> +       mutex_unlock(&chip->lock);
+>> +       return ret;
+>> +}
+>> +
+>> +static ssize_t max197_show_name(struct device *dev,
+>> +       struct device_attribute *devattr, char *buf)
+>> +{
+>> +       return sprintf(buf, "%s\n", max197_get_drvdata(dev)->spec.name);
+>> +}
+>> +
+>> +#define MAX197_HWMON_CHANNEL(chan)                             \
+>> +       SENSOR_DEVICE_ATTR(in##chan##_input, S_IRUGO,           \
+>> +                          max197_show_input, NULL, chan);      \
+>> +       SENSOR_DEVICE_ATTR_2(in##chan##_max, S_IRUGO | S_IWUSR, \
+>> +                            max197_show_range,                 \
+>> +                            max197_store_range, 0, chan);      \
+>> +       SENSOR_DEVICE_ATTR_2(in##chan##_min, S_IRUGO | S_IWUSR, \
+>> +                            max197_show_range,                 \
+>> +                            max197_store_range, 1, chan)       \
+>> +
+>> +#define MAX197_SYSFS_CHANNEL(chan)                             \
+>> +       &sensor_dev_attr_in##chan##_input.dev_attr.attr,        \
+>> +       &sensor_dev_attr_in##chan##_max.dev_attr.attr,          \
+>> +       &sensor_dev_attr_in##chan##_min.dev_attr.attr
+>> +
+>> +static DEVICE_ATTR(name, S_IRUGO, max197_show_name, NULL);
+>> +
+>> +static MAX197_HWMON_CHANNEL(0);
+>> +static MAX197_HWMON_CHANNEL(1);
+>> +static MAX197_HWMON_CHANNEL(2);
+>> +static MAX197_HWMON_CHANNEL(3);
+>> +static MAX197_HWMON_CHANNEL(4);
+>> +static MAX197_HWMON_CHANNEL(5);
+>> +static MAX197_HWMON_CHANNEL(6);
+>> +static MAX197_HWMON_CHANNEL(7);
+>> +
+>> +static const struct attribute_group max197_sysfs_group = {
+>> +       .attrs = (struct attribute *[]) {
+>> +               &dev_attr_name.attr,
+>> +               MAX197_SYSFS_CHANNEL(0),
+>> +               MAX197_SYSFS_CHANNEL(1),
+>> +               MAX197_SYSFS_CHANNEL(2),
+>> +               MAX197_SYSFS_CHANNEL(3),
+>> +               MAX197_SYSFS_CHANNEL(4),
+>> +               MAX197_SYSFS_CHANNEL(5),
+>> +               MAX197_SYSFS_CHANNEL(6),
+>> +               MAX197_SYSFS_CHANNEL(7),
+>> +               NULL
+>> +       }
+>> +};
+>> +
+>> +static int __devinit max197_probe(struct platform_device *pdev)
+>> +{
+>> +       struct max197_platform_data *pdata = pdev->dev.platform_data;
+>> +       struct max197_chip *chip;
+>> +       int ret;
+>> +
+>> +       if (pdata == NULL)
+>> +               return -ENODEV;
+>> +
+>> +       chip = kzalloc(sizeof *chip, GFP_KERNEL);
+>> +       if (!chip)
+>> +               return -ENOMEM;
+>> +
+>> +       chip->spec = *pdata;
+>> +
+>> +       mutex_init(&chip->lock);
+>> +       mutex_lock(&chip->lock);
+>> +
+>> +       ret = sysfs_create_group(&pdev->dev.kobj, &max197_sysfs_group);
+>> +       if (ret) {
+>> +               dev_err(&pdev->dev, "sysfs_create_group failed.\n");
+>> +               goto error_unlock_and_free;
+>> +       }
+>> +
+>> +       chip->hwmon_dev = hwmon_device_register(&pdev->dev);
+>> +       if (IS_ERR(chip->hwmon_dev)) {
+>> +               dev_err(&pdev->dev, "hwmon_device_register failed.\n");
+>> +               ret = PTR_ERR(chip->hwmon_dev);
+>> +               goto error_unregister_device;
+>> +       }
+>> +
+>> +       platform_set_drvdata(pdev, chip);
+>> +       mutex_unlock(&chip->lock);
+>> +       return 0;
+>> +
+>> +error_unregister_device:
+>> +       sysfs_remove_group(&pdev->dev.kobj, &max197_sysfs_group);
+>> +
+>> +error_unlock_and_free:
+>> +       mutex_unlock(&chip->lock);
+>> +       kfree(chip);
+>> +       return ret;
+>> +}
+>> +
+>> +static int __devexit max197_remove(struct platform_device *pdev)
+>> +{
+>> +       struct max197_chip *chip = platform_get_drvdata(pdev);
+>> +
+>> +       mutex_lock(&chip->lock);
+>> +       hwmon_device_unregister(chip->hwmon_dev);
+>> +       sysfs_remove_group(&pdev->dev.kobj, &max197_sysfs_group);
+>> +       platform_set_drvdata(pdev, NULL);
+>> +       mutex_unlock(&chip->lock);
+>> +       kfree(chip);
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +static struct platform_driver max197_driver = {
+>> +       .driver = {
+>> +               .name   = MODULE_NAME,
+>> +               .owner  = THIS_MODULE,
+>> +       },
+>> +       .probe  = max197_probe,
+>> +       .remove = __devexit_p(max197_remove),
+>> +};
+>> +
+>> +static void ts5500_max197_release(struct device *dev)
+>> +{
+>> +       /* noop */
+>> +}
+>> +
+>> +static struct resource ts5500_max197_resources[] = {
+>> +       {
+>> +               .name  = MODULE_NAME "-data",
+>> +               .start = 0x196,
+>> +               .end   = 0x197,
+>> +               .flags = IORESOURCE_IO,
+>> +       },
+>> +       {
+>> +               .name  = MODULE_NAME "-ctrl",
+>> +               .start = 0x195,
+>> +               .end   = 0x195,
+>> +               .flags = IORESOURCE_IO,
+>> +       }
+>> +};
+>> +
+>> +static struct max197_platform_data ts5500_max197_platform_data = {
+>> +       .name = TS5500_MAX197_NAME,
+>> +       .ioaddr = {
+>> +               .data = 0x196,
+>> +               .ctrl = 0x195,
+>> +       },
+>> +       .read = {
+>> +               .delay     = TS5500_MAX197_READ_DELAY,
+>> +               .busy_mask = TS5500_MAX197_READ_BUSY_MASK,
+>> +       },
+>> +       .ctrl = {
+>> +               { TS5500_MAX197_UNIPOLAR | TS5500_MAX197_RANGE_5V,
+>> +                 TS5500_MAX197_UNIPOLAR | TS5500_MAX197_RANGE_10V },
+>> +               { TS5500_MAX197_BIPOLAR  | TS5500_MAX197_RANGE_5V,
+>> +                 TS5500_MAX197_BIPOLAR  | TS5500_MAX197_RANGE_10V },
+>> +       },
+>> +       .ranges = {
+>> +               .min = {
+>> +                       {  0,     0 },
+>> +                       { -5000, -10000 },
+>> +               },
+>> +               .max = {
+>> +                       {  5000,  10000 },
+>> +                       {  5000,  10000 },
+>> +               },
+>> +       },
+>> +       .scale = {
+>> +               { 12207, 24414 },
+>> +               { 24414, 48828 },
+>> +       },
+>> +};
+>> +
+>> +static struct platform_device ts5500_max197_device = {
+>> +       .name = MODULE_NAME,
+>> +       .id = -1,
+>> +       .resource = ts5500_max197_resources,
+>> +       .num_resources = ARRAY_SIZE(ts5500_max197_resources),
+>> +       .dev = {
+>> +               .platform_data = &ts5500_max197_platform_data,
+>> +               .release = ts5500_max197_release,
+>> +       },
+>> +};
+>> +
+>> +static int __init ts5500_max197_init(void)
+>> +{
+>> +       struct ts5xxx_sbcinfo sbcinfo;
+>> +       int ret;
+>> +
+>> +       ts5xxx_sbcinfo_set(&sbcinfo);
+>> +       if (5500 != sbcinfo.board_id && !sbcinfo.adc) {
+>> +               printk(MODULE_NAME ": Incompatible TS Board.\n");
+>> +               return -ENODEV;
+>> +       }
+>> +
+>> +       ret = platform_driver_register(&max197_driver);
+>> +       if (ret)
+>> +               goto error_out;
+>> +
+>> +       ret = platform_device_register(&ts5500_max197_device);
+>> +       if (ret)
+>> +               goto error_device_register;
+>> +
+>> +       return 0;
+>> +
+>> +error_device_register:
+>> +       platform_driver_unregister(&max197_driver);
+>> +error_out:
+>> +       return ret;
+>> +}
+>> +module_init(ts5500_max197_init);
+>> +
+>> +static void __exit ts5500_max197_exit(void)
+>> +{
+>> +       platform_device_unregister(&ts5500_max197_device);
+>> +       platform_driver_unregister(&max197_driver);
+>> +}
+>> +module_exit(ts5500_max197_exit);
+>> +
+>> +MODULE_DESCRIPTION("TS5500 MAX197 ADC device driver");
+>> +MODULE_AUTHOR("Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>");
+>> +MODULE_LICENSE("GPL");
+>> +MODULE_ALIAS("platform:ts5500-max197");
+>> --
+>> 1.7.1
+>>
+>>
+>> _______________________________________________
+>> lm-sensors mailing list
+>> lm-sensors@lm-sensors.org
+>> http://lists.lm-sensors.org/mailman/listinfo/lm-sensors
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
