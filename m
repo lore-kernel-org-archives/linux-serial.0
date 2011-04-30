@@ -1,144 +1,113 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [RFC 1/5] platform-drivers-x86: add support for Technologic
- Systems TS-5xxx detection
-Date: Sat, 30 Apr 2011 11:07:05 +0100
-Message-ID: <20110430110705.5ca3376b@lxorguk.ukuu.org.uk>
+Subject: Re: [RFC 2/5] gpio: add support for Technologic Systems TS-5500
+ GPIOs
+Date: Sat, 30 Apr 2011 11:15:36 +0100
+Message-ID: <20110430111536.5cb49d59@lxorguk.ukuu.org.uk>
 References: <1304115712-5299-1-git-send-email-vivien.didelot@savoirfairelinux.com>
-	<1304115712-5299-2-git-send-email-vivien.didelot@savoirfairelinux.com>
+	<1304115712-5299-3-git-send-email-vivien.didelot@savoirfairelinux.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:50796 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1755038Ab1D3KGo (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 30 Apr 2011 06:06:44 -0400
-In-Reply-To: <1304115712-5299-2-git-send-email-vivien.didelot@savoirfairelinux.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Return-path: <platform-driver-x86-owner@vger.kernel.org>
+In-Reply-To: <1304115712-5299-3-git-send-email-vivien.didelot@savoirfairelinux.com>
+Sender: platform-driver-x86-owner@vger.kernel.org
 To: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
-Cc: linux-kernel@vger.kernel.org, Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>, platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org, lm-sensors@lm-sensors.org
+Cc: linux-kernel@vger.kernel.org, Jerome Oufella <jerome.oufella@savoirfairelinux.com>, platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org, lm-sensors@lm-sensors.org
+List-Id: linux-serial@vger.kernel.org
 
-> + * ts5xxx_sbcinfo_set() - set the SBC info structure with the current SBC's info
-> + * @sbcinfo:		structure containing SBC info to set.
-> + */
-> +void ts5xxx_sbcinfo_set(struct ts5xxx_sbcinfo *sbcinfo)
-> +{
-> +	memcpy(sbcinfo, &ts_sbcinfo, sizeof(*sbcinfo));
-> +}
-> +EXPORT_SYMBOL(ts5xxx_sbcinfo_set);
+> + * The TS-5500 board has 38 GPIOs referred to as DIOs in the product's
+> + * litterature.
 
-You export this but it's not clear who for or why - and there is also no
-locking, so it seems to be an internal interface ?
+literature
 
+> +#define MODULE_NAME "ts5500-gpio"
 
-> +/**
-> + * ts_find_sbc_config() - find a SBC configuration from an id
-> + * @id:			ID of the board to find.
-> + */
-> +static inline struct ts_sbc_config *ts_find_sbc_config(u8 id)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(ts_sbcs_configs); i++)
-> +		if (id == ts_sbcs_configs[i].id)
-> +			return &ts_sbcs_configs[i];
-> +
-> +	return NULL;
-> +}
-
-gcc will figure out inlines for you in static stuff and normally very well
+see dev_dbg etc and the fmt support in them - they will do all this for
+you nicely and the various printks can become dev_* which will tidy it up
+and give more info
 
 > +
-> +/**
-> + * ts_sbcinfo_detect() - detect the TS board
-> + * @sbcinfo:		structure where to store the detected board's info.
-> + */
-> +static int ts_sbcinfo_detect(struct ts5xxx_sbcinfo *sbcinfo)
-> +{
-> +	u8 temp;
-> +	struct ts_sbc_config *sbc;
-> +	int ret = 0;
+> +#define PORT_BIT_SET(addr, bit)		\
+> +	do {				\
+> +		u8 var;			\
+> +		var = inb(addr);	\
+> +		var |= (1 << bit);	\
+> +		outb(var, addr);	\
+> +	} while (0)
 > +
-> +	memset(sbcinfo, 0, sizeof(*sbcinfo));
-> +
-> +	if (!request_region(IOADDR_SBCID, 4, "TS-SBC"))
-> +		return -EBUSY;
-> +
-> +	temp = inb(IOADDR_SBCID);
-> +	/* If it is a 3x00 SBC only match against the first 3 bits */
-> +	if (temp & 0x07)
-> +		temp &= 0x07;
+> +#define PORT_BIT_CLEAR(addr, bit)	\
+> +	do {				\
+> +		u8 var;			\
+> +		var = inb(addr);	\
+> +		var &= ~(1 << bit);	\
+> +		outb(var, addr);	\
+> +	} while (0)
 
-So if this is compiled into a kernel we blindly inb this address and some
-platform just crashed on boot. Is this board like other embedded ones in
-that there is some safe way to check if its such a board first ?
-
-> +
-> +	sbc = ts_find_sbc_config(temp);
-> +	if (!sbc) {
-> +		ret = -ENODEV;
-
-Assuming you've indentified the board properly this case might be worth a
-pr_err giving the fact it seemed to be a TS-5xxx, the config number and
-that it is unknown - that will help anyone with future boards realise
-their config isn't supported.
+These shouldn't be magic macros especially if creating variables and give
+the multiple references to addr will break on things like ++ - use a
+function so it is typechecked and variables behave as espected.
 
 
-> +
-> +/**
-> + * ts_sbcinfo_proc_read() - function called when a read access is done on
-> + *                          /proc/ts-sbcinfo
-> + */
-> +static int ts_sbcinfo_proc_read(char *page, char **start, off_t off,
-> +				int count, int *eof, void *data)
-> +{
-> +	int to_copy = (procfs_buffer_size <= count) ?
-> +		procfs_buffer_size - off : count;
-
-> +
-> +	if (off + to_copy >= procfs_buffer_size) {
-> +		to_copy = procfs_buffer_size - off;
-> +		*eof = 1;
-> +	}
-
-Suppose off is 0x7FFFFFFF and count = 100
-
-	to_copy = 100
-	off + to_copy >= procfs_buffer_size   [off_t may be 32bit]
-
-	100 + 0x7FFFFFFF (wraps) < buffer size
-
-
-> +static int __init ts5xxx_sbcinfo_init(void)
-> +{
-> +	int err;
-> +
-> +	err = ts_sbcinfo_detect(&ts_sbcinfo);
-> +	if (err < 0) {
-> +		printk(KERN_ERR KBUILD_MODNAME
-> +		       ": Failed to get SBC information\n");
-> +		return err;
-> +	}
-
-Well that will depend why and probably the caller can give the best
-information including silence if the board is just not a ts-5xxx
-
-> +	proc_entry = create_proc_read_entry(PROCFS_NAME, S_IRUGO, NULL,
-> +					    ts_sbcinfo_proc_read, 0);
-> +	if (proc_entry == NULL) {
-> +		printk(KERN_ERR KBUILD_MODNAME
-> +		       ": Failed to create proc entry\n");
-
-pr_err
-
-> +		return -ENOMEM;
+> +	/* Request DIO1 */
+> +	if (!request_region(0x7A, 3, "ts5500-gpio-DIO1")) {
+> +		dev_err(&pdev->dev, "Cannot request I/O port 0x7A-7C\n");
+> +		goto err_req_dio1;
 > +	}
 > +
-> +	procfs_buffer_size = ts_sbcinfo_init_buffer(procfs_buffer, &ts_sbcinfo);
-> +	printk(KBUILD_MODNAME ": TS SBC's info driver loaded.\n");
+> +	/* Request DIO2 */
+> +	if (!request_region(0x7D, 3, "ts5500-gpio-DIO2")) {
+> +		dev_err(&pdev->dev, "Cannot request I/O port 0x7D-7F\n");
+> +		goto err_req_dio2;
+> +	}
+> +
+> +	/* Request LCDIO if wanted */
+> +	if (use_lcdio && !request_region(0x72, 2, "ts5500-gpio-LCD")) {
+> +		dev_err(&pdev->dev, "Cannot request I/O port 0x72-73\n");
+> +		goto err_req_lcdio;
+> +	}
 
-Printk not needed
+I'd have expected these to be resources of the platform device but I
+guess that if they are entirely fixed it doesn't really matter much.
 
-Alan
+> +	/* Enable IRQ generation */
+> +	mutex_lock(&drvdata->gpio_lock);
+> +	PORT_BIT_SET(0x7A, 7); /* DIO1_13 on IRQ7 */
+> +	PORT_BIT_SET(0x7D, 7); /* DIO2_13 on IRQ6 */
+> +	if (use_lcdio) {
+> +		PORT_BIT_CLEAR(0x7D, 4); /* Enable LCD header usage as DIO */
+> +		PORT_BIT_SET(0x7D, 6);   /* LCD_RS on IRQ1 */
+> +	}
+
+What happens if an IRQ occurs at this point, you have no handler for it ?
+
+> +err_gpiochip_add:
+> +	printk(KERN_ERR "gpio: Failed registering gpio chip.\n");
+> +	kfree(drvdata);
+
+pr_err/dev_err etc - in general
+
+
+> +
+> +static int __init ts5500_gpio_init(void)
+> +{
+> +	int ret;
+> +
+> +	ret = platform_driver_register(&ts5500_gpio_driver);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = platform_device_register(&gpio_device);
+> +	if (ret) {
+> +		printk(MODULE_NAME ": Failed to register platform device\n");
+> +		platform_driver_unregister(&ts5500_gpio_driver);
+> +		return ret;
+> +	}
+> +
+> +	printk(MODULE_NAME ": GPIO/DIO driver loaded.\n");
+
+prinkt isn't needed
+
+Also you've done no checks to see if it's being loaded on the right
+board. I'd actually have expected a single chunk of code in
+arch/x86/platform/ts5500 or similar to do the board check and create the
+platform devices, and this code to just register them.
