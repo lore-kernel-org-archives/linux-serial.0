@@ -1,46 +1,60 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [RFC 1/5] platform-drivers-x86: add support for Technologic
- Systems TS-5xxx detection
-Date: Tue, 3 May 2011 07:13:45 -0700
-Message-ID: <20110503141345.GB8056@kroah.com>
-References: <1304115712-5299-1-git-send-email-vivien.didelot@savoirfairelinux.com>
- <1304115712-5299-2-git-send-email-vivien.didelot@savoirfairelinux.com>
- <20110429233230.GB24864@kroah.com>
- <1304368433-sup-4264@sfl>
- <20110502215535.GA30373@kroah.com>
- <20110503103919.5b0daa5e@lxorguk.ukuu.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
+Subject: Re: [lm-sensors] [RFC 5/5] hwmon: add support for Technologic Systems TS-5500 A-D converter
+Date: Tue, 03 May 2011 11:55:34 -0400
+Message-ID: <1304434162-sup-3877@sfl>
+References: <1304115712-5299-1-git-send-email-vivien.didelot@savoirfairelinux.com> <1304115712-5299-6-git-send-email-vivien.didelot@savoirfairelinux.com> <20110430033938.GA14397@ericsson.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:60744 "EHLO coco.kroah.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752852Ab1ECOM6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 3 May 2011 10:12:58 -0400
-Content-Disposition: inline
-In-Reply-To: <20110503103919.5b0daa5e@lxorguk.ukuu.org.uk>
+Received: from mail.savoirfairelinux.com ([209.172.62.77]:55802 "EHLO
+	mail.savoirfairelinux.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750725Ab1ECPzk (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 3 May 2011 11:55:40 -0400
+In-reply-to: <20110430033938.GA14397@ericsson.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Vivien Didelot <vivien.didelot@savoirfairelinux.com>, linux-kernel <linux-kernel@vger.kernel.org>, Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>, platform-driver-x86 <platform-driver-x86@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, lm-sensors <lm-sensors@lm-sensors.org>
+To: Guenter Roeck <guenter.roeck@ericsson.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "lm-sensors@lm-sensors.org" <lm-sensors@lm-sensors.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>, "platform-driver-x86@vger.kernel.org" <platform-driver-x86@vger.kernel.org>, linux-iio <linux-iio@vger.kernel.org>
 
-On Tue, May 03, 2011 at 10:39:19AM +0100, Alan Cox wrote:
-> > > I had a look at other drivers, and /sys/devices/platform/ts/ seems to be
-> > > a good place to hold those entries (one per options as you suggested).
-> > > Do you agree with that?
-> > 
-> > No, this is not a platform device, is it?  Only platform devices go
-> > there, and I really doubt you have many of them for this board.
+Hi Guenter,
+
+Excerpts from Guenter Roeck's message of 2011-04-29 23:39:38 -0400:
+> Hi Vivien,
 > 
-> It seems analogous to some of the laptop helpers so I don't think it is
-> that unreasonable to make the board config a platform device of its own -
-> we don't really have a general solution to the board as a device, so if
-> you look at equivalents on laptops and the like we have assorted platform
-> control interfaces that are platform devices.
+> The headline and file name are a bit misleading, since the driver is really
+> for MAX197 on a TS-5500 board.
+> 
+> You should split the driver into two parts, a generic driver
+> for the MAX197 and a platform driver (residing somewhere in arch/
+> or possibly drivers/platform/) to instantiate it.
+> 
+> There should be a platform data include file, probably in
+> include/linux/platform_data/.
+> 
+> .ioaddr in platform data should not be necessary. The driver's probe
+> function should get the values using platform_get_resource().
+> 
+> Having said that, from reading the code it looks like the chip is not really
+> used for hardware monitoring, but for generic ADC functionality. A quick look
+> into the TS-5500 user manual confirms this. So this should not be a hwmon
+> driver in the first place, but a generic ADC driver. Given the ADC conversion rate
+> of the MAX197, the hwmon ABI is not optimal anyway. You should move this driver
+> into the iio subsystem, probably to drivers/staging/iio/adc. Copying the iio
+> mailing list for input.
+> 
+> Thanks,
+> Guenter
 
-Platform control devices are great, I have no objection to that.  I do
-object to random proc files to try to describe the fact that this board
-has a rs232 port on it, when that is able to be determined elsewhere.
+I've took a closer look to the manual and that's right, in fact the
+driver doesn't talk to the MAX197 directly. The board uses a CPLD to
+abstract the interface to the MAX197. So all the MAX197 logic is hidden
+by the CPLD.  Therefore, the driver files should probably not have
+function and structure names with a "max197_" prefix. I'll make the code
+a bit clearer. What do you think?
 
-thanks,
+Ok for iio subsystem, several ADC drivers are in drivers/hwmon/ but
+drivers/staging/iio/adc seems to be the good place now.
 
-greg k-h
+Regards,
+Vivien.
