@@ -1,52 +1,76 @@
-From: Paul Walmsley <paul@pwsan.com>
-Subject: Re: [PATCH v2 04/12] Serial: OMAP: Add runtime pm support for
- omap-serial driver
-Date: Wed, 4 May 2011 15:05:21 -0600 (MDT)
-Message-ID: <alpine.DEB.2.00.1105041503260.30136@utopia.booyaka.com>
-References: <1304080796-625-1-git-send-email-govindraj.raja@ti.com> <1304080796-625-5-git-send-email-govindraj.raja@ti.com> <87hb9aqk53.fsf@ti.com>
+From: Kevin Hilman <khilman@ti.com>
+Subject: Re: [PATCH v2 10/12] OMAP2+: hwmod: Add api to enable io_ring wakeup.
+Date: Wed, 04 May 2011 16:59:40 -0700
+Message-ID: <87mxj2nhjn.fsf@ti.com>
+References: <1304080796-625-1-git-send-email-govindraj.raja@ti.com>
+	<1304080796-625-11-git-send-email-govindraj.raja@ti.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from utopia.booyaka.com ([72.9.107.138]:43884 "EHLO
-	utopia.booyaka.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752918Ab1EDVFW (ORCPT
+Received: from na3sys009aog117.obsmtp.com ([74.125.149.242]:57351 "EHLO
+	na3sys009aog117.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755987Ab1EDX7o (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 May 2011 17:05:22 -0400
-In-Reply-To: <87hb9aqk53.fsf@ti.com>
+	Wed, 4 May 2011 19:59:44 -0400
+In-Reply-To: <1304080796-625-11-git-send-email-govindraj.raja@ti.com>
+	(Govindraj R.'s message of "Fri, 29 Apr 2011 18:09:54 +0530")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: "Govindraj.R" <govindraj.raja@ti.com>
-Cc: Kevin Hilman <khilman@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Benoit Cousson <b-cousson@ti.com>, Rajendra Nayak <rnayak@ti.com>
+Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Benoit Cousson <b-cousson@ti.com>, Paul Walmsley <paul@pwsan.com>, Rajendra Nayak <rnayak@ti.com>
 
-Hi Govindraj,
+"Govindraj.R" <govindraj.raja@ti.com> writes:
 
-On Wed, 4 May 2011, Kevin Hilman wrote:
+> Add api to enable io_pad wakeup based on mux dynamic pad and
 
-> "Govindraj.R" <govindraj.raja@ti.com> writes:
-> 
-> > +++ b/arch/arm/mach-omap2/serial.c
-> > @@ -189,6 +189,21 @@ static void omap_serial_fill_default_pads(struct omap_board_data *bdata)
-> >  	}
-> >  }
-> >  
-> > +static void omap_uart_wakeup_enable(struct platform_device *pdev, bool enable)
-> > +{
-> > +	struct omap_uart_port_info *up = pdev->dev.platform_data;
-> > +
-> > +	/* Set or clear wake-enable bit */
-> > +	if (up->wk_en && up->wk_mask) {
-> > +		u32 v = __raw_readl(up->wk_en);
-> > +		if (enable)
-> > +			v |= up->wk_mask;
-> > +		else
-> > +			v &= ~up->wk_mask;
-> > +		__raw_writel(v, up->wk_en);
-> > +	}
-> > +}
+s/api/API/
+s/io_pad/IO pad/
 
-To be a little more direct: there should be no PRCM register interactions 
-in the driver, absolutely none.  This stuff needs to go through 
-omap_device/omap_hwmod functions if it's really needed.
+> wake_up enable flag initialized during hwmod_mux.
+>
+> Use the wakeup flag and pad_remux flag and enable wakeup capability
+> for the pad having these flags enabled.
+>
+> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
 
+This patch (except for the serial.c hange) isn't really dependent on the
+rest of this series, and should be a separate patch to be merged by
+Paul.
 
-- Paul
+Some other comments below...
+
+> ---
+>  arch/arm/mach-omap2/omap_hwmod.c              |   34 +++++++++++++++++++++++++
+>  arch/arm/mach-omap2/serial.c                  |    6 ++++
+>  arch/arm/plat-omap/include/plat/omap_device.h |    1 +
+>  arch/arm/plat-omap/include/plat/omap_hwmod.h  |    1 +
+>  arch/arm/plat-omap/omap_device.c              |   26 +++++++++++++++++++
+>  5 files changed, 68 insertions(+), 0 deletions(-)
+>
+> diff --git a/arch/arm/mach-omap2/omap_hwmod.c b/arch/arm/mach-omap2/omap_hwmod.c
+> index e034294..4a12336 100644
+> --- a/arch/arm/mach-omap2/omap_hwmod.c
+> +++ b/arch/arm/mach-omap2/omap_hwmod.c
+> @@ -2369,3 +2369,37 @@ int omap_hwmod_no_setup_reset(struct omap_hwmod *oh)
+>  
+>  	return 0;
+>  }
+> +
+> +/**
+> + * omap_hwmod_enable_ioring_wakeup - Set wakeup bit for iopad ring.
+> + * @oh: struct omap_hwmod *
+> + * @enable: based on 0 or 1 set or unset wakeup bit.
+
+more specifically, when true, set wakeup bit, when false, clear wakeup bit
+
+> + * traverse through dynamic pads. If pad is enabled then
+> + * set wakeup bit for the mux pin. Return error if pads are
+> + * not enabled or not available.
+> + */
+
+The comment here should be clearer about when the bit actually gets
+set.  Specifically, this function doesn't actually write the value out,
+but instead it configures the value which will be used during the hwmod 
+idle transition.
+
+Kevin
