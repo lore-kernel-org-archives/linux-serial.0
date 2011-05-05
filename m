@@ -1,28 +1,93 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [RFC 1/5] platform-drivers-x86: add support for Technologic
- Systems TS-5xxx detection
-Date: Thu, 5 May 2011 14:38:37 +0100
-Message-ID: <20110505143837.7790edd5@lxorguk.ukuu.org.uk>
-References: <1304115712-5299-1-git-send-email-vivien.didelot@savoirfairelinux.com>
-	<1304115712-5299-2-git-send-email-vivien.didelot@savoirfairelinux.com>
-	<20110430110705.5ca3376b@lxorguk.ukuu.org.uk>
-	<1304520382-sup-3361@sfl>
-	<20110504162954.7ecf5b5e@lxorguk.ukuu.org.uk>
-	<1304537667-sup-2171@sfl>
+From: Kevin Hilman <khilman@ti.com>
+Subject: Re: [PATCH v2 05/12] OMAP: Serial: Hold console lock for console usage.
+Date: Thu, 05 May 2011 07:52:03 -0700
+Message-ID: <8762ppmc8c.fsf@ti.com>
+References: <1304080796-625-1-git-send-email-govindraj.raja@ti.com>
+	<1304080796-625-6-git-send-email-govindraj.raja@ti.com>
+	<87vcxqp577.fsf@ti.com>
+	<BANLkTi=Ded-q777t=fTc_rcX4=HBq5Bh1g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1304537667-sup-2171@sfl>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
-Cc: linux-kernel <linux-kernel@vger.kernel.org>, Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>, platform-driver-x86 <platform-driver-x86@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, lm-sensors <lm-sensors@lm-sensors.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <BANLkTi=Ded-q777t=fTc_rcX4=HBq5Bh1g@mail.gmail.com> (Govindraj's
+	message of "Thu, 5 May 2011 15:55:17 +0530")
+Sender: linux-omap-owner@vger.kernel.org
+To: Govindraj <govindraj.ti@gmail.com>
+Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Benoit Cousson <b-cousson@ti.com>, Paul Walmsley <paul@pwsan.com>, Rajendra Nayak <rnayak@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-> I've looked at that, and the board doesn't support DMI. Elements we have
-> are the processor (i.e. AMD ElanSC520), the BIOS, maybe the memory and
-> PCI bus layouts...
+Govindraj <govindraj.ti@gmail.com> writes:
 
-Well the CPU is a big help that cuts it down a lot. PCI bridge
-subvendor/dev can be a good way to identify boards as well if they
-manufacturers have actually bothered to set them properly.
+> On Thu, May 5, 2011 at 2:13 AM, Kevin Hilman <khilman@ti.com> wrote:
+>> "Govindraj.R" <govindraj.raja@ti.com> writes:
+>>
+>>> Acquire console lock before enabling and writing to console-uart
+>>> to avoid any recursive prints from console write.
+>>> for ex:
+>>> =C2=A0 =C2=A0 =C2=A0 --> printk
+>>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 --> uart_console_write
+>>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 --> get_sync
+>>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 --> printk from omap_devi=
+ce enable
+>>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 --> uart_console w=
+rite
+>>
+>> By this time, since the device's runtime PM hooks have been called, =
+the
+>> device's rutime PM state should be set to RPM_SUSPENDING (not yet
+>> RPM_SUSPENDED).
+>>
+>> In addition to the console lock, you should be able to use that flag=
+ to
+>> avoid console writes while the console is in the process of suspendi=
+ng.
+>>
+>
+> Yes RPM_SUSPENDING check helps along with console lock
+
+Great!
+
+> << Changes as below >>
+> ---------------
+> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/om=
+ap-serial.c
+> index 59f548f..71964c3 100644
+> --- a/drivers/tty/serial/omap-serial.c
+> +++ b/drivers/tty/serial/omap-serial.c
+> @@ -1040,6 +1040,18 @@ serial_omap_console_write(struct console *co,
+> const char *s,
+>         if (console_trylock())
+>                 console_lock =3D 1;
+>
+> +       /*
+> +        * If console_lock is not available and we are in suspending
+> +        * state then we can avoid the console usage scenario
+> +        * as this may introduce recursive prints.
+> +        * Basically this scenario occurs during boot while
+> +        * printing debug bootlogs.
+> +        */
+> +
+> +       if (!console_lock &&
+> +               up->pdev->dev.power.runtime_status =3D=3D RPM_SUSPEND=
+ING)
+> +               return;
+> +
+>         local_irq_save(flags);
+>         if (up->port.sysrq)
+>                 locked =3D 0;
+>
+> ------------
+>
+> Is it ok to check the RPM_SUSPENDING flag in driver ?
+> I can't find any API currently available under runtime.h to use.
+
+I would propose a new API in pm_runtime.h similar to
+pm_runtime_suspended() that checks for this.
+
+Kevin
+--
+To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
+n
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
