@@ -1,101 +1,219 @@
 From: Govindraj <govindraj.ti@gmail.com>
-Subject: Re: [PATCH v2 10/12] OMAP2+: hwmod: Add api to enable io_ring wakeup.
-Date: Thu, 5 May 2011 11:28:51 +0530
-Message-ID: <BANLkTin-Yyg5cLUpjRvXvAQgoNN4anKHUQ@mail.gmail.com>
+Subject: Re: [PATCH v2 05/12] OMAP: Serial: Hold console lock for console usage.
+Date: Thu, 5 May 2011 15:55:17 +0530
+Message-ID: <BANLkTi=Ded-q777t=fTc_rcX4=HBq5Bh1g@mail.gmail.com>
 References: <1304080796-625-1-git-send-email-govindraj.raja@ti.com>
- <1304080796-625-11-git-send-email-govindraj.raja@ti.com> <87mxj2nhjn.fsf@ti.com>
+ <1304080796-625-6-git-send-email-govindraj.raja@ti.com> <87vcxqp577.fsf@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bw0-f46.google.com ([209.85.214.46]:42400 "EHLO
+Received: from mail-bw0-f46.google.com ([209.85.214.46]:40951 "EHLO
 	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751443Ab1EEF7N convert rfc822-to-8bit (ORCPT
+	with ESMTP id S1753790Ab1EEKZn convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 5 May 2011 01:59:13 -0400
-In-Reply-To: <87mxj2nhjn.fsf@ti.com>
+	Thu, 5 May 2011 06:25:43 -0400
+In-Reply-To: <87vcxqp577.fsf@ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Kevin Hilman <khilman@ti.com>
 Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Benoit Cousson <b-cousson@ti.com>, Paul Walmsley <paul@pwsan.com>, Rajendra Nayak <rnayak@ti.com>
 
-On Thu, May 5, 2011 at 5:29 AM, Kevin Hilman <khilman@ti.com> wrote:
+On Thu, May 5, 2011 at 2:13 AM, Kevin Hilman <khilman@ti.com> wrote:
 > "Govindraj.R" <govindraj.raja@ti.com> writes:
 >
->> Add api to enable io_pad wakeup based on mux dynamic pad and
+>> Acquire console lock before enabling and writing to console-uart
+>> to avoid any recursive prints from console write.
+>> for ex:
+>> =A0 =A0 =A0 --> printk
+>> =A0 =A0 =A0 =A0 --> uart_console_write
+>> =A0 =A0 =A0 =A0 =A0 --> get_sync
+>> =A0 =A0 =A0 =A0 =A0 =A0 --> printk from omap_device enable
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 --> uart_console write
 >
-> s/api/API/
-> s/io_pad/IO pad/
-
-will update.
-
+> By this time, since the device's runtime PM hooks have been called, t=
+he
+> device's rutime PM state should be set to RPM_SUSPENDING (not yet
+> RPM_SUSPENDED).
 >
->> wake_up enable flag initialized during hwmod_mux.
+> In addition to the console lock, you should be able to use that flag =
+to
+> avoid console writes while the console is in the process of suspendin=
+g.
+>
+
+Yes RPM_SUSPENDING check helps along with console lock
+
+<< Changes as below >>
+---------------
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap=
+-serial.c
+index 59f548f..71964c3 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -1040,6 +1040,18 @@ serial_omap_console_write(struct console *co,
+const char *s,
+        if (console_trylock())
+                console_lock =3D 1;
+
++       /*
++        * If console_lock is not available and we are in suspending
++        * state then we can avoid the console usage scenario
++        * as this may introduce recursive prints.
++        * Basically this scenario occurs during boot while
++        * printing debug bootlogs.
++        */
++
++       if (!console_lock &&
++               up->pdev->dev.power.runtime_status =3D=3D RPM_SUSPENDIN=
+G)
++               return;
++
+        local_irq_save(flags);
+        if (up->port.sysrq)
+                locked =3D 0;
+
+------------
+
+Is it ok to check the RPM_SUSPENDING flag in driver ?
+I can't find any API currently available under runtime.h to use.
+
+
+>> Also during bootup console_lock is not available.
+>> =A0 =A0 =A0 =A0--> uart_add_one_port
+>> =A0 =A0 =A0 =A0 =A0--> console_register
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0--> console_lock
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 --> console_unlock
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0--> call_console_drivers (her=
+e yet console_lock is not released)
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 --> uart_console_wri=
+te
 >>
->> Use the wakeup flag and pad_remux flag and enable wakeup capability
->> for the pad having these flags enabled.
->>
->> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+>> Hence convert prints from omap_device_enable/disable to pr_debug.
 >
-> This patch (except for the serial.c hange) isn't really dependent on =
-the
-> rest of this series, and should be a separate patch to be merged by
-> Paul.
+> And what if you add 'debug' to your kernel command line? =A0IOW, you'=
+re
+> only solving the problem if you debug printk's are not going to the
+> console.
 >
 
-Yes. fine will post out hwmod API additions as separate patch.
+yes correct issue will re-surface during boot-up once we have debug ena=
+bled
+and all pr_debugs with omap_device_enable trying to use console_write.
 
-> Some other comments below...
->
->> ---
->> =A0arch/arm/mach-omap2/omap_hwmod.c =A0 =A0 =A0 =A0 =A0 =A0 =A0| =A0=
- 34 +++++++++++++++++++++++++
->> =A0arch/arm/mach-omap2/serial.c =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0|=
- =A0 =A06 ++++
->> =A0arch/arm/plat-omap/include/plat/omap_device.h | =A0 =A01 +
->> =A0arch/arm/plat-omap/include/plat/omap_hwmod.h =A0| =A0 =A01 +
->> =A0arch/arm/plat-omap/omap_device.c =A0 =A0 =A0 =A0 =A0 =A0 =A0| =A0=
- 26 +++++++++++++++++++
->> =A05 files changed, 68 insertions(+), 0 deletions(-)
->>
->> diff --git a/arch/arm/mach-omap2/omap_hwmod.c b/arch/arm/mach-omap2/=
-omap_hwmod.c
->> index e034294..4a12336 100644
->> --- a/arch/arm/mach-omap2/omap_hwmod.c
->> +++ b/arch/arm/mach-omap2/omap_hwmod.c
->> @@ -2369,3 +2369,37 @@ int omap_hwmod_no_setup_reset(struct omap_hwm=
-od *oh)
->>
->> =A0 =A0 =A0 return 0;
->> =A0}
->> +
->> +/**
->> + * omap_hwmod_enable_ioring_wakeup - Set wakeup bit for iopad ring.
->> + * @oh: struct omap_hwmod *
->> + * @enable: based on 0 or 1 set or unset wakeup bit.
->
-> more specifically, when true, set wakeup bit, when false, clear wakeu=
-p bit
+--
+Thanks,
+Govindraj.R
 
-ok.
-
+> You're also not solving the problem that will happen down the road wh=
+en
+> someone else adds a printk to low-level code in order to debug someth=
+ing
+> deep in the idle sequence.
 >
->> + * traverse through dynamic pads. If pad is enabled then
->> + * set wakeup bit for the mux pin. Return error if pads are
->> + * not enabled or not available.
->> + */
+> The recursive locking needs to be solved, not avoided.
 >
-> The comment here should be clearer about when the bit actually gets
-> set. =A0Specifically, this function doesn't actually write the value =
-out,
-> but instead it configures the value which will be used during the hwm=
-od
-> idle transition.
->
-
-Yes correct. Will update the comments.
-
 > Kevin
+>
+>> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+>> ---
+>> =A0arch/arm/plat-omap/omap_device.c | =A0 =A08 ++++----
+>> =A0drivers/tty/serial/omap-serial.c | =A0 =A08 +++++++-
+>> =A02 files changed, 11 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/arch/arm/plat-omap/omap_device.c b/arch/arm/plat-omap/o=
+map_device.c
+>> index 9bbda9a..f7c6dca 100644
+>> --- a/arch/arm/plat-omap/omap_device.c
+>> +++ b/arch/arm/plat-omap/omap_device.c
+>> @@ -145,12 +145,12 @@ static int _omap_device_activate(struct omap_d=
+evice *od, u8 ignore_lat)
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 odpl->activate_lat_worst=
+ =3D act_lat;
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 if (odpl->flags & OMAP_D=
+EVICE_LATENCY_AUTO_ADJUST) {
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 odpl->ac=
+tivate_lat =3D act_lat;
+>> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 pr_warning=
+("omap_device: %s.%d: new worst case "
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 pr_debug("=
+omap_device: %s.%d: new worst case "
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0"activate latency %d: %llu\n",
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0od->pdev.name, od->pdev.id,
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0od->pm_lat_level, act_lat);
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 } else
+>> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 pr_warning=
+("omap_device: %s.%d: activate "
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 pr_debug("=
+omap_device: %s.%d: activate "
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0"latency %d higher than exptected. "
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0"(%llu > %d)\n",
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0od->pdev.name, od->pdev.id,
+>> @@ -213,12 +213,12 @@ static int _omap_device_deactivate(struct omap=
+_device *od, u8 ignore_lat)
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 odpl->deactivate_lat_wor=
+st =3D deact_lat;
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 if (odpl->flags & OMAP_D=
+EVICE_LATENCY_AUTO_ADJUST) {
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 odpl->de=
+activate_lat =3D deact_lat;
+>> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 pr_warning=
+("omap_device: %s.%d: new worst case "
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 pr_debug("=
+omap_device: %s.%d: new worst case "
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0"deactivate latency %d: %llu\n",
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0od->pdev.name, od->pdev.id,
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0od->pm_lat_level, deact_lat);
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 } else
+>> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 pr_warning=
+("omap_device: %s.%d: deactivate "
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 pr_debug("=
+omap_device: %s.%d: deactivate "
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0"latency %d higher than exptected. "
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0"(%llu > %d)\n",
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0od->pdev.name, od->pdev.id,
+>> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/o=
+map-serial.c
+>> index 633dfb4..7d8ca45 100644
+>> --- a/drivers/tty/serial/omap-serial.c
+>> +++ b/drivers/tty/serial/omap-serial.c
+>> @@ -1007,7 +1007,10 @@ serial_omap_console_write(struct console *co,=
+ const char *s,
+>> =A0 =A0 =A0 struct uart_omap_port *up =3D serial_omap_console_ports[=
+co->index];
+>> =A0 =A0 =A0 unsigned long flags;
+>> =A0 =A0 =A0 unsigned int ier;
+>> - =A0 =A0 int locked =3D 1;
+>> + =A0 =A0 int console_lock =3D 0, locked =3D 1;
+>> +
+>> + =A0 =A0 if (console_trylock())
+>> + =A0 =A0 =A0 =A0 =A0 =A0 console_lock =3D 1;
+>>
+>> =A0 =A0 =A0 local_irq_save(flags);
+>> =A0 =A0 =A0 if (up->port.sysrq)
+>> @@ -1043,6 +1046,9 @@ serial_omap_console_write(struct console *co, =
+const char *s,
+>> =A0 =A0 =A0 if (up->msr_saved_flags)
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 check_modem_status(up);
+>>
+>> + =A0 =A0 if (console_lock)
+>> + =A0 =A0 =A0 =A0 =A0 =A0 console_unlock();
+>> +
+>> =A0 =A0 =A0 serial_omap_port_disable(up);
+>> =A0 =A0 =A0 if (locked)
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 spin_unlock(&up->port.lock);
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-seria=
 l" in
