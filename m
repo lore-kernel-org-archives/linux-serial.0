@@ -1,127 +1,221 @@
 From: Govindraj <govindraj.ti@gmail.com>
-Subject: Re: [PATCH v2 11/12] OMAP: Serial: Use resume call from prcm to
- enable uart
-Date: Fri, 6 May 2011 14:46:48 +0530
-Message-ID: <BANLkTinr8n0P31LWPrwL83sWCzVQOqo6=Q@mail.gmail.com>
+Subject: Re: [PATCH v2 12/12] OMAP2: Serial: Add no async wake flag.
+Date: Fri, 6 May 2011 15:04:28 +0530
+Message-ID: <BANLkTimg2-eJtDnAykDmciEf7s9siuG_QA@mail.gmail.com>
 References: <1304080796-625-1-git-send-email-govindraj.raja@ti.com>
- <1304080796-625-12-git-send-email-govindraj.raja@ti.com> <87pqnym2f2.fsf@ti.com>
- <BANLkTi=32NfMr7exWpOoPHX7_-Jc0i5LqA@mail.gmail.com> <87liylkxdi.fsf@ti.com>
+ <1304080796-625-13-git-send-email-govindraj.raja@ti.com> <87k4e5hx32.fsf@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-fx0-f46.google.com ([209.85.161.46]:59265 "EHLO
+Received: from mail-fx0-f46.google.com ([209.85.161.46]:41980 "EHLO
 	mail-fx0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755312Ab1EFJRJ convert rfc822-to-8bit (ORCPT
+	with ESMTP id S1753952Ab1EFJet convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 6 May 2011 05:17:09 -0400
-In-Reply-To: <87liylkxdi.fsf@ti.com>
+	Fri, 6 May 2011 05:34:49 -0400
+In-Reply-To: <87k4e5hx32.fsf@ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Kevin Hilman <khilman@ti.com>
 Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Benoit Cousson <b-cousson@ti.com>, Paul Walmsley <paul@pwsan.com>, Rajendra Nayak <rnayak@ti.com>
 
-On Thu, May 5, 2011 at 8:28 PM, Kevin Hilman <khilman@ti.com> wrote:
-> Govindraj <govindraj.ti@gmail.com> writes:
+On Thu, May 5, 2011 at 11:02 PM, Kevin Hilman <khilman@ti.com> wrote:
+> "Govindraj.R" <govindraj.raja@ti.com> writes:
 >
-> [...]
+>> For omap2 cpu_idle thread will not be available
 >
->>>
->>> ... this is just putting back basically the same thing that was rem=
-oved in
->>> patch 1. =A0IOW, this is now being checked for *every* PRCM wakeup,=
- which
->>> is no different than having it in the idle path.
->>>
->>> I thought I understood that you had the SW IRQ triggering working, =
-so
->>> this part should not be necessary.
->>
->> Actually I tried few experiments but couldn't get it working.
+> Why not?
 >
-> What exactly is not working? =A0 The interrupt is not firing at all? =
-=A0The
-> driver's ISR is not being called?
+>> and uart_clock cutting happens only in suspend path.
 >
-
-It throws a oops as here
-
-http://pastebin.com/5bcPjAA0
-
-Reproduced with below [EXP-1] change + below kernel.
-
-git://gitorious.org/uart_runtime/pm.git
-[Has uart runtime patches based on pm-core branch]
-
->> Tried below but didn't help.
->>
->> ------------------------------------
->> diff --git a/arch/arm/mach-omap2/pm34xx.c b/arch/arm/mach-omap2/pm34=
-xx.c
->> index 3960330..2c1dfc2 100644
->> --- a/arch/arm/mach-omap2/pm34xx.c
->> +++ b/arch/arm/mach-omap2/pm34xx.c
->> @@ -288,6 +288,16 @@ static irqreturn_t prcm_interrupt_handler (int
->> irq, void *dev_id)
->> =A0 =A0 =A0 =A0 do {
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 if (irqstatus_mpu & (OMAP3430_WKUP_S=
-T_MASK |
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0OMAP3430_IO_ST_MASK)) {
->> +#if 1
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 /*
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0* EXP-1: SET UART1 =
-SOFT IRQ BIT
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0* 3430 -SDP UART1 c=
-onsole.
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0* M_IRQ_72, INTCPS_=
-ISR_SET
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0* 0x4820 0090 + (0x=
-20 * n)
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0* bit-8 n =3D 2
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0*/
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 __raw_writel(0x100 , 0=
-x482000D0);
->> +#endif
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 c =3D _prcm_int_hand=
-le_wakeup();
->>
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 /*
->>
->> -----------------------------------
->>
->> Currently we are planning to integrate irq_chaining patches
->> on top uart_runtime patches which is work-in-progress.
->> Will remove resume_idle once we have irq_chaining patches available.
+> Aren't clocks also cut after runtime PM autosuspend?
 >
-> Well, I'm not OK with $SUBJECT patch as it is since it's just moving =
+>> Prior to this patch the uart_clock was cut using prepare/resume
+>> calls since these funcs are no more available with runtime
+>> changes use no_async_wake flag to keep clock active during bootup
+>> otherwise uart port will disabled during boot-up and cannot be
+>> enabled back.
+>
+> This doesn't just keep clock active during bootup, but it keeps clock
+> active always, except during suspend.
+>
+>> Also based on this flag we can disable uart port during suspend
+>> and enable back during resume.
+>
+> I think disabling UART port during suspend should already be part of =
 an
-> ugly hack from serial.c to the PRCM ISR. =A0If the hack is going to s=
-tay,
-> then it should stay where it is until it can be fixed for real.
+> earlier patch. =A0This patch should then only make it conditional.
+>
+>> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+>> ---
+>> =A0arch/arm/mach-omap2/serial.c =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0|=
+ =A0 =A07 +++++++
+>> =A0arch/arm/plat-omap/include/plat/omap-serial.h | =A0 =A03 +++
+>> =A0drivers/tty/serial/omap-serial.c =A0 =A0 =A0 =A0 =A0 =A0 =A0| =A0=
+ 14 ++++++++++++++
+>> =A03 files changed, 24 insertions(+), 0 deletions(-)
+>>
+>> diff --git a/arch/arm/mach-omap2/serial.c b/arch/arm/mach-omap2/seri=
+al.c
+>> index d4ef370..1af9fd5 100644
+>> --- a/arch/arm/mach-omap2/serial.c
+>> +++ b/arch/arm/mach-omap2/serial.c
+>> @@ -245,6 +245,12 @@ static void omap_uart_wakeup_enable(struct plat=
+form_device *pdev, bool enable)
+>> =A0static void omap_uart_idle_init(struct omap_uart_port_info *uart,
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 unsigned=
+ short num)
+>> =A0{
+>> + =A0 =A0 /* On omap2 no cpu_idle and async wakeup from prcm_module.
+>
+> Please remove comments about CPU idle, as the need for this has nothi=
+ng
+> to do with CPU idle.
+>
+>> + =A0 =A0 =A0* This flag can be used to cut clocks only in suspend p=
+ath.
+>> + =A0 =A0 =A0* to avoid boot break due to aggressive clock cutting f=
+rom
+>> + =A0 =A0 =A0* omap-serial driver.
+>> + =A0 =A0 =A0*/
+>
+> fix multi-line comment style throughout
+>
+>> + =A0 =A0 uart->no_async_wake =3D true;
+>
+> If needed (which I still don't think I understand),
 
-Now with runtime changes we are cutting clocks independently
-whereas prior to this we where cutting clocks only in sram_idle path.
+Looking into the pm24xx.c code what I understood is..
 
-With runtime changes:
-1.) Once we cut uart clocks and send a char to uart it directs wakeup_i=
-rq to
-prcm_irq_handler the one way to wakeup uart from there was to check
-uart mod wakeup status bits if wakeup event occurred then wakeup the
-particular uart.
-2.) Moving this resume back to sram path will break module wakeup after
-uart clocks are disabled(using put_sync)
+(1) omap2_enter_full_retention was cutting and enabling the uart
+clocks back whether in idle patch or in suspend path.
 
-Thats the reason I have moved this to prcm_irq path to ensure
-once auto-suspend happens after inactivity period we have resume_call
-to wakeup uart port.
+(2) since we cut clocks outside this retention path I don't know
+how to wake back uart as don't see any irq_handlers servicing
+wake-up events in pm24xx.c
+[Correct me if I am missing something here.]
+
+(3) Since there was no async wakeup mechanism I could see
+on pm24xx.c so one approach was to use of these flags.
+[If I cut clocks during boot using put_sync in uart code since no
+wakeup mechanism will break boot]
+
+(4) For socs with no aync wakeup we are keeping clocks active from
+probe and disabling/enabling clocks in suspend/resume hooks.
+
+> for readability sake
+> this flag should be called 'has_async_wake', and default to false. =A0=
+It
+> should then be set to true on available SoCs.
+
+Yes sure I can rename the flag and use above approach.
 
 --
 Thanks,
 Govindraj.R
 
+
 >
 > Kevin
+>
+>> =A0 =A0 =A0 if (cpu_is_omap34xx()) {
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 u32 mod =3D num > 1 ? OMAP3430_PER_MOD :=
+ CORE_MOD;
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 u32 wk_mask =3D 0;
+>> @@ -266,6 +272,7 @@ static void omap_uart_idle_init(struct omap_uart=
+_port_info *uart,
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 break;
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 }
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 uart->wk_mask =3D wk_mask;
+>> + =A0 =A0 =A0 =A0 =A0 =A0 uart->no_async_wake =3D false;
+>> =A0 =A0 =A0 } else if (cpu_is_omap24xx()) {
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 u32 wk_mask =3D 0;
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 u32 wk_en =3D PM_WKEN1, wk_st =3D PM_WKS=
+T1;
+>> diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/ar=
+m/plat-omap/include/plat/omap-serial.h
+>> index b5117bd..1de5bc4 100644
+>> --- a/arch/arm/plat-omap/include/plat/omap-serial.h
+>> +++ b/arch/arm/plat-omap/include/plat/omap-serial.h
+>> @@ -79,6 +79,7 @@ struct omap_uart_port_info {
+>> =A0 =A0 =A0 void __iomem *wk_st;
+>> =A0 =A0 =A0 void __iomem *wk_en;
+>> =A0 =A0 =A0 u32 wk_mask;
+>> + =A0 =A0 bool =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0no_async_wake;
+>> =A0};
+>>
+>> =A0struct uart_omap_dma {
+>> @@ -134,6 +135,8 @@ struct uart_omap_port {
+>> =A0 =A0 =A0 unsigned int =A0 =A0 =A0 =A0 =A0 =A0errata;
+>> =A0 =A0 =A0 void (*enable_wakeup)(struct platform_device *, bool);
+>> =A0 =A0 =A0 bool (*chk_wakeup)(struct platform_device *);
+>> +
+>> + =A0 =A0 bool =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0no_async_wake;
+>> =A0};
+>>
+>> =A0#endif /* __OMAP_SERIAL_H__ */
+>> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/o=
+map-serial.c
+>> index eea478c..59f548f 100644
+>> --- a/drivers/tty/serial/omap-serial.c
+>> +++ b/drivers/tty/serial/omap-serial.c
+>> @@ -1168,6 +1168,13 @@ static int serial_omap_suspend(struct device =
+*dev)
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 uart_suspend_port(&serial_omap_reg, &up-=
+>port);
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 console_trylock();
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 serial_omap_pm(&up->port, 3, 0);
+>> +
+>> + =A0 =A0 =A0 =A0 =A0 =A0 /* OMAP2 dont have cpu_idle thread and asy=
+nc wakeup from prcm.
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0* For such socs clocks will be kept act=
+ive from probe and
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0* cut only in suspend path.
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0*/
+>> + =A0 =A0 =A0 =A0 =A0 =A0 if (up->no_async_wake)
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 serial_omap_port_disable(u=
+p);
+>> =A0 =A0 =A0 }
+>> =A0 =A0 =A0 return 0;
+>> =A0}
+>> @@ -1179,6 +1186,9 @@ static int serial_omap_resume(struct device *d=
+ev)
+>> =A0 =A0 =A0 if (up) {
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 uart_resume_port(&serial_omap_reg, &up->=
+port);
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 console_unlock();
+>> +
+>> + =A0 =A0 =A0 =A0 =A0 =A0 if (up->no_async_wake)
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 serial_omap_port_enable(up=
+);
+>> =A0 =A0 =A0 }
+>>
+>> =A0 =A0 =A0 return 0;
+>> @@ -1402,6 +1412,7 @@ static int serial_omap_probe(struct platform_d=
+evice *pdev)
+>> =A0 =A0 =A0 up->errata =3D omap_up_info->errata;
+>> =A0 =A0 =A0 up->enable_wakeup =3D omap_up_info->enable_wakeup;
+>> =A0 =A0 =A0 up->chk_wakeup =3D omap_up_info->chk_wakeup;
+>> + =A0 =A0 up->no_async_wake =3D omap_up_info->no_async_wake;
+>>
+>> =A0 =A0 =A0 if (omap_up_info->dma_enabled) {
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 up->uart_dma.uart_dma_tx =3D dma_tx->sta=
+rt;
+>> @@ -1430,6 +1441,9 @@ static int serial_omap_probe(struct platform_d=
+evice *pdev)
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 serial_omap_port_disable(up);
+>> =A0 =A0 =A0 }
+>>
+>> + =A0 =A0 if (up->no_async_wake)
+>> + =A0 =A0 =A0 =A0 =A0 =A0 serial_omap_port_enable(up);
+>> +
+>> =A0 =A0 =A0 ui[pdev->id] =3D up;
+>> =A0 =A0 =A0 serial_omap_add_console_port(up);
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-seria=
+l" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at =A0http://vger.kernel.org/majordomo-info.html
 >
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
