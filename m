@@ -1,74 +1,111 @@
-From: "Watkins, Melissa" <m-watkins@ti.com>
-Subject: Serial driver parity support
-Date: Thu, 12 May 2011 12:29:51 -0500
-Message-ID: <131E5DFBE7373E4C8D813795A6AA7F08034B0550CA@dlee06.ent.ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Antony Pavlov <antony@niisi.msk.ru>
+Subject: [PATCH] serial: 8250_pci: add support for Cronyx Omega PCI multiserial board.
+Date: Fri, 13 May 2011 23:49:49 +0400
+Message-ID: <1305316189-31027-1-git-send-email-antony@niisi.msk.ru>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:55498 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1758008Ab1ELR3x convert rfc822-to-8bit (ORCPT
+Received: from t111.niisi.ras.ru ([193.232.173.111]:47921 "EHLO
+	t111.niisi.ras.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757347Ab1EMUT0 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 12 May 2011 13:29:53 -0400
-Received: from dlep34.itg.ti.com ([157.170.170.115])
-	by comal.ext.ti.com (8.13.7/8.13.7) with ESMTP id p4CHTqup014590
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-SHA bits=256 verify=NO)
-	for <linux-serial@vger.kernel.org>; Thu, 12 May 2011 12:29:52 -0500
-Received: from dlep26.itg.ti.com (localhost [127.0.0.1])
-	by dlep34.itg.ti.com (8.13.7/8.13.7) with ESMTP id p4CHTqoG004044
-	for <linux-serial@vger.kernel.org>; Thu, 12 May 2011 12:29:52 -0500 (CDT)
-Received: from dlee73.ent.ti.com (localhost [127.0.0.1])
-	by dlep26.itg.ti.com (8.13.8/8.13.8) with ESMTP id p4CHTqNo021366
-	for <linux-serial@vger.kernel.org>; Thu, 12 May 2011 12:29:52 -0500 (CDT)
-Content-Language: en-US
+	Fri, 13 May 2011 16:19:26 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+Cc: Antony Pavlov <antony@niisi.msk.ru>
 
-All,
+This patch adds support for the Omega-PCI, an 8-port asynchronous
+multiport adapter for computers with PCI bus [1].
 
-I am working to implement parity support for a serial driver.=A0 I had =
-several general questions about how serial drivers should handle parity=
- and parity errors.
+[1] http://www.cronyx.ru/hardware/ompci.html
 
-1. The serial driver sets TTY_DRIVER_REAL_RAW.=A0 My understanding of  =
-	TTY_DRIVER_REAL_RAW is that, if set, the driver will only send the 	mi=
-nimum notifications of parity errors required or according to the 	c_if=
-lags.=A0 For example, regarding parity errors:
+Signed-off-by: Antony Pavlov <antony@niisi.msk.ru>
+---
+ drivers/tty/serial/8250_pci.c |   31 +++++++++++++++++++++++++++++++
+ include/linux/pci_ids.h       |    1 +
+ 2 files changed, 32 insertions(+), 0 deletions(-)
 
-   ! (INPCK)=A0=A0=A0=A0     --  char with PE will be pushed as TTY_NOR=
-MAL
-   INPCK & !(IGNPAR) --=A0 char with PE will be pushed as TTY_PARITY
-   INPCK & IGNPAR=A0=A0=A0=A0--=A0 char with PE will be discarded and n=
-ot pushed
+diff --git a/drivers/tty/serial/8250_pci.c b/drivers/tty/serial/8250_pci.c
+index 738cec9..a640e95 100644
+--- a/drivers/tty/serial/8250_pci.c
++++ b/drivers/tty/serial/8250_pci.c
+@@ -973,6 +973,14 @@ ce4100_serial_setup(struct serial_private *priv,
+ 	return ret;
+ }
+ 
++static int
++pci_omegapci_setup(struct serial_private *priv,
++		      struct pciserial_board *board,
++		      struct uart_port *port, int idx)
++{
++	return setup_port(priv, port, 2, idx * 8, 0);
++}
++
+ static int skip_tx_en_setup(struct serial_private *priv,
+ 			const struct pciserial_board *board,
+ 			struct uart_port *port, int idx)
+@@ -1296,6 +1304,16 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.exit		= __devexit_p(pci_plx9050_exit),
+ 	},
+ 	/*
++	 * Cronyx Omega PCI (PLX-chip based)
++	 */
++	{
++		.vendor		= PCI_VENDOR_ID_PLX,
++		.device		= PCI_DEVICE_ID_PLX_CRONYX_OMEGA,
++		.subvendor	= PCI_ANY_ID,
++		.subdevice	= PCI_ANY_ID,
++		.setup		= pci_omegapci_setup,
++	 },
++	/*
+ 	 * SBS Technologies, Inc., PMC-OCTALPRO 232
+ 	 */
+ 	{
+@@ -1617,6 +1635,7 @@ enum pci_board_num_t {
+ 	pbn_ADDIDATA_PCIe_4_3906250,
+ 	pbn_ADDIDATA_PCIe_8_3906250,
+ 	pbn_ce4100_1_115200,
++	pbn_omegapci,
+ };
+ 
+ /*
+@@ -2312,6 +2331,12 @@ static struct pciserial_board pci_boards[] __devinitdata = {
+ 		.base_baud	= 921600,
+ 		.reg_shift      = 2,
+ 	},
++	[pbn_omegapci] = {
++		.flags		= FL_BASE0,
++		.num_ports	= 8,
++		.base_baud	= 115200,
++		.uart_offset	= 0x200,
++	},
+ };
+ 
+ static const struct pci_device_id softmodem_blacklist[] = {
+@@ -3801,6 +3826,12 @@ static struct pci_device_id serial_pci_tbl[] = {
+ 		PCI_ANY_ID,  PCI_ANY_ID, 0, 0,
+ 		pbn_ce4100_1_115200 },
+ 
++	/*
++	 * Cronyx Omega PCI
++	 */
++	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_CRONYX_OMEGA,
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
++		pbn_omegapci },
+ 
+ 	/*
+ 	 * These entries match devices with class COMMUNICATION_SERIAL,
+diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+index 8abe8d7..a237e26 100644
+--- a/include/linux/pci_ids.h
++++ b/include/linux/pci_ids.h
+@@ -1028,6 +1028,7 @@
+ #define PCI_DEVICE_ID_PLX_9056		0x9056
+ #define PCI_DEVICE_ID_PLX_9080		0x9080
+ #define PCI_DEVICE_ID_PLX_GTEK_SERIAL2	0xa001
++#define PCI_DEVICE_ID_PLX_CRONYX_OMEGA	0xc001
+ 
+ #define PCI_VENDOR_ID_MADGE		0x10b6
+ #define PCI_DEVICE_ID_MADGE_MK2		0x0002
+-- 
+1.7.1
 
-=A0=A0 =A0=A0=A0Is my understanding correct?
-
-2. When receiving characters, I am pushing a block of characters (<=3D =
-16) at 	a time to the TTY data structure. =A0If a parity error occurs o=
-n the 8th 	character, should I push the entire block of data with the T=
-TY_PARITY 	flag? =A0Or should I first push the first 7 characters with =
-the 	TTY_NORMAL flag and the 8th character separately with the TTY_PARI=
-TY 	flag? =A0
-
-3. Is there a priority given to BI, FE, and PE errors? =A0For example, =
-if more 	than one of these errors occurs for a single character, should=
- all 	errors be flagged?=A0 Or is one error given priority, and (depend=
-ing on 	the c_iflag settings) the character is pushed with the flag set=
- to 	this type of error?
-
-4. Should I ever push the parity bit to TTY? =A0Or should the parity bi=
-t 	always be removed first?
-
-Thanks in advance for your advice.
-
-Regards,
-Melissa Watkins
-Texas Instruments
-ARM MPU Hardware Apps
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
