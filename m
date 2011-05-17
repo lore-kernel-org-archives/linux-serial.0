@@ -1,47 +1,45 @@
-From: Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: RE: [PATCH 0/2] tty/serial: Add PORT_TEGRA, fix break handling for
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 0/2] tty/serial: Add PORT_TEGRA, fix break handling for
  it
-Date: Tue, 17 May 2011 12:44:00 -0700
-Message-ID: <74CDBE0F657A3D45AFBB94109FB122FF04986AAAE1@HQMAIL01.nvidia.com>
+Date: Tue, 17 May 2011 22:58:25 +0100
+Message-ID: <20110517225825.032e9461@lxorguk.ukuu.org.uk>
 References: <1305660466-4704-1-git-send-email-swarren@nvidia.com>
- <20110517193836.GA6912@suse.de>
+	<20110517193836.GA6912@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20110517193836.GA6912-l3A5Bk7waGM@public.gmane.org>
-Content-Language: en-US
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg KH <gregkh-l3A5Bk7waGM@public.gmane.org>
-Cc: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:33874 "EHLO
+	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1756614Ab1EQV44 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 17 May 2011 17:56:56 -0400
+In-Reply-To: <20110517193836.GA6912@suse.de>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@suse.de>
+Cc: Stephen Warren <swarren@nvidia.com>, ldewangan@nvidia.com, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org
 
-Greg KH wrote at Tuesday, May 17, 2011 1:39 PM:
-> On Tue, May 17, 2011 at 01:27:44PM -0600, Stephen Warren wrote:
-> > 8250.c needs a specific PORT_TEGRA type for two reasons:
-> > * RTOIE bit needs to be set, but UUE is reserved, so split RTOIE handling
-> >   out of PORT_XSCALE.
-> > * A WAR is needed for break reception.
-> >
-> > I'd like to get the first of these two patches merged into the tegra
-> > arch for-next branch, so that I can modify the board files to explicitly
-> > request the new port type rather than relying on auto-detection. As such,
-> > could you please create a branch for that/these changes, then merge it
-> > into tty-2.6.git, so that the same branch can be merged into Tegra's
-> > for-next branch. Thanks.
-> 
-> No, I really don't want to create a separate branch for just 2 patches,
-> a whole 43 lines modified, that's pretty useless.
-> 
 > If Alan acks these, I'll be glad to take them through the serial tree as
 > normal, or you can take them through the tegra tree.
+> 
+> Either way, they need Alan's review first.
 
-Hmm. OK; I thought this was standard practice, based on my experiences with
-other subsystems.
+First one I am fine with. Second is more chip specific goop where we
+don't want it. However right at the moment there isn't a magic cure to
+that and the port->ops hackery I've been doing isn't done and it's not
+reasonable to hold this up waiting for a project with indeterminate
+completion date.
 
-I guess I'll opt for you just taking these through your tree then.
+Ack #1
 
-Thanks.
+Can you add a 
 
--- 
-nvpublic
+/*
+ * FIXME: This needs to become a port specific callback once we have a
+ * framework for this
+ */
+
+to #2 so it doesn't get forgotten in a future cleanup.
+
+Alan
