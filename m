@@ -1,35 +1,53 @@
-From: Russell King <rmk@arm.linux.org.uk>
+From: Greg KH <greg@kroah.com>
 Subject: Re: [PATCHv2 1/2] amba pl011: workaround for uart registers lockup
-Date: Tue, 17 May 2011 19:45:27 +0100
-Message-ID: <20110517184527.GC15422@flint.arm.linux.org.uk>
-References: <20110516172958.GA13011@kroah.com> <1305609617-9524-1-git-send-email-shreshthakumar.sahu@stericsson.com> <20110517182356.GA17703@kroah.com> <20110517183015.GA15422@flint.arm.linux.org.uk> <20110517184019.GA31727@kroah.com>
+Date: Tue, 17 May 2011 11:51:33 -0700
+Message-ID: <20110517185133.GB9105@kroah.com>
+References: <20110516172958.GA13011@kroah.com>
+ <1305609617-9524-1-git-send-email-shreshthakumar.sahu@stericsson.com>
+ <20110517182356.GA17703@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([78.32.30.218]:49400 "EHLO
-	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756067Ab1EQSpp (ORCPT
+Received: from out3.smtp.messagingengine.com ([66.111.4.27]:42526 "EHLO
+	out3.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1756375Ab1EQSyA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 17 May 2011 14:45:45 -0400
+	Tue, 17 May 2011 14:54:00 -0400
 Content-Disposition: inline
-In-Reply-To: <20110517184019.GA31727@kroah.com>
+In-Reply-To: <20110517182356.GA17703@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <greg@kroah.com>
-Cc: Shreshtha Kumar SAHU <shreshthakumar.sahu@stericsson.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linus.walleij@stericsson.com, alan@linux.intel.com
+To: Shreshtha Kumar SAHU <shreshthakumar.sahu@stericsson.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, rmk+kernel@arm.linux.org.uk, linus.walleij@stericsson.com, alan@linux.intel.com
 
-On Tue, May 17, 2011 at 11:40:19AM -0700, Greg KH wrote:
-> On Tue, May 17, 2011 at 07:30:15PM +0100, Russell King wrote:
-> > On Tue, May 17, 2011 at 11:23:56AM -0700, Greg KH wrote:
-> > > Why?  You don't use these callbacks in this driver, so why add them?
+On Tue, May 17, 2011 at 11:23:56AM -0700, Greg KH wrote:
+> On Tue, May 17, 2011 at 10:50:17AM +0530, Shreshtha Kumar SAHU wrote:
+> > From: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
 > > 
-> > Did you look at the second patch?
+> > This workaround aims to break the deadlock situation
+> > which raises during continuous transfer of data for long
+> > duration over uart with hardware flow control. It is
+> > observed that CTS interrupt cannot be cleared in uart
+> > interrupt register (ICR). Hence further transfer over
+> > uart gets blocked.
+> > 
+> > It is seen that during such deadlock condition ICR
+> > don't get cleared even on multiple write. This leads
+> > pass_counter to decrease and finally reach zero. This
+> > can be taken as trigger point to run this UART_BT_WA.
+> > 
+> > Workaround backups the register configuration, does soft
+> > reset of UART using BIT-0 of PRCC_K_SOFTRST_SET/CLEAR
+> > registers and restores the registers.
+> > 
+> > This patch also provides support for uart init and exit
+> > function calls if present.
 > 
-> The second patch was not sent to me, so I couldn't have seen it :(
+> Why?  You don't use these callbacks in this driver, so why add them?
 
-Ok, I've just forwarded you the second patch.
+Ok, I see them in the 2/2 patch now, thanks.
 
--- 
-Russell King
- Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
- maintainer of:
+Do you still want me to take this patch through the serial tree, or will
+both be going through some ARM tree?
+
+greg k-h
