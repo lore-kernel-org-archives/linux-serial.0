@@ -1,48 +1,39 @@
 From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCHv2 1/2] amba pl011: workaround for uart registers lockup
-Date: Tue, 17 May 2011 11:23:56 -0700
-Message-ID: <20110517182356.GA17703@kroah.com>
-References: <20110516172958.GA13011@kroah.com>
- <1305609617-9524-1-git-send-email-shreshthakumar.sahu@stericsson.com>
+Subject: Re: [PATCH] serial: 8250_pci: add support for Cronyx Omega PCI
+ multiserial board.
+Date: Tue, 17 May 2011 11:22:36 -0700
+Message-ID: <20110517182236.GA17682@kroah.com>
+References: <1305347972-19321-1-git-send-email-antony@niisi.msk.ru>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out3.smtp.messagingengine.com ([66.111.4.27]:34472 "EHLO
+Received: from out3.smtp.messagingengine.com ([66.111.4.27]:49550 "EHLO
 	out3.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1756074Ab1EQSYG (ORCPT
+	by vger.kernel.org with ESMTP id S1756065Ab1EQSYE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 17 May 2011 14:24:06 -0400
+	Tue, 17 May 2011 14:24:04 -0400
 Content-Disposition: inline
-In-Reply-To: <1305609617-9524-1-git-send-email-shreshthakumar.sahu@stericsson.com>
+In-Reply-To: <1305347972-19321-1-git-send-email-antony@niisi.msk.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Shreshtha Kumar SAHU <shreshthakumar.sahu@stericsson.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, rmk+kernel@arm.linux.org.uk, linus.walleij@stericsson.com, alan@linux.intel.com
+To: Antony Pavlov <antony@niisi.msk.ru>
+Cc: Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
 
-On Tue, May 17, 2011 at 10:50:17AM +0530, Shreshtha Kumar SAHU wrote:
-> From: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
+On Sat, May 14, 2011 at 08:39:32AM +0400, Antony Pavlov wrote:
+> This patch adds support for the Omega-PCI, an 8-port asynchronous
+> multiport adapter for computers with PCI bus [1].
 > 
-> This workaround aims to break the deadlock situation
-> which raises during continuous transfer of data for long
-> duration over uart with hardware flow control. It is
-> observed that CTS interrupt cannot be cleared in uart
-> interrupt register (ICR). Hence further transfer over
-> uart gets blocked.
+> [1] http://www.cronyx.ru/hardware/ompci.html
 > 
-> It is seen that during such deadlock condition ICR
-> don't get cleared even on multiple write. This leads
-> pass_counter to decrease and finally reach zero. This
-> can be taken as trigger point to run this UART_BT_WA.
-> 
-> Workaround backups the register configuration, does soft
-> reset of UART using BIT-0 of PRCC_K_SOFTRST_SET/CLEAR
-> registers and restores the registers.
-> 
-> This patch also provides support for uart init and exit
-> function calls if present.
+> Signed-off-by: Antony Pavlov <antony@niisi.msk.ru>
+> ---
+>  drivers/tty/serial/8250_pci.c |   32 ++++++++++++++++++++++++++++++++
 
-Why?  You don't use these callbacks in this driver, so why add them?
+What tree did you make this against?  It doesn't apply to my tty-next
+tree that shows up in the linux-next releases.
 
-confused,
+Care to refresh it and resend it?
+
+thanks,
 
 greg k-h
