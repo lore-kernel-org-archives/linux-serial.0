@@ -1,44 +1,106 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: scheduling work from receive_buf
-Date: Wed, 18 May 2011 16:08:42 +0100
-Message-ID: <20110518160842.4b8d855c@lxorguk.ukuu.org.uk>
-References: <BANLkTiniE1zcvW0CPJF3KRJ8XV03fKwNiw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From: Antony Pavlov <antony@niisi.msk.ru>
+Subject: [PATCH] serial: 8250_pci: add support for Cronyx Omega PCI multiserial board.
+Date: Wed, 18 May 2011 22:38:30 +0400
+Message-ID: <1305743910-28471-1-git-send-email-antony@niisi.msk.ru>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:49710 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S933151Ab1ERPHJ (ORCPT
+Received: from t111.niisi.ras.ru ([193.232.173.111]:41796 "EHLO
+	t111.niisi.ras.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932709Ab1ERS1B (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 18 May 2011 11:07:09 -0400
-In-Reply-To: <BANLkTiniE1zcvW0CPJF3KRJ8XV03fKwNiw@mail.gmail.com>
+	Wed, 18 May 2011 14:27:01 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Pavan Savoy <pavan_savoy@sify.com>
-Cc: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+Cc: Antony Pavlov <antony@niisi.msk.ru>
 
-On Tue, 17 May 2011 20:50:09 +0530
-Pavan Savoy <pavan_savoy@sify.com> wrote:
+This patch adds support for the Omega-PCI, an 8-port asynchronous
+multiport adapter for computers with PCI bus [1].
 
-> currently in my line discipline driver - I've implemented a
-> receive_buf function inside which upon receiving a particular byte of
-> data, I need to
-> send a bunch of data and wait for its reception (which happens to
-> accumulate in receive_buf).
-> 
-> for this I implemented a work struct which I schedule into the default
-> work queue by doing a schedule_work inside my receive_buf function
-> when I receive such byte.
-> However I can't seem to do a wait_for_completion inside my work
-> handler. This completion is completed upon reception inside the
-> receive_buf function.
-> 
-> wait_for_completion inside the worker thread doesn't seem to allow the
-> receive_buf to be called.
-> Please suggest how best I can implement something like this ?
+[1] http://www.cronyx.ru/hardware/ompci.html
 
-I think by not waiting in the first place. Personally I would write that
-kind of code as a state machine and instead of blocking for stuff just
-trigger actions as states are reached.
+Signed-off-by: Antony Pavlov <antony@niisi.msk.ru>
+---
+ drivers/tty/serial/8250_pci.c |   32 ++++++++++++++++++++++++++++++++
+ 1 files changed, 32 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/tty/serial/8250_pci.c b/drivers/tty/serial/8250_pci.c
+index 762db97..4b4968a 100644
+--- a/drivers/tty/serial/8250_pci.c
++++ b/drivers/tty/serial/8250_pci.c
+@@ -971,6 +971,14 @@ ce4100_serial_setup(struct serial_private *priv,
+ 	return ret;
+ }
+ 
++static int
++pci_omegapci_setup(struct serial_private *priv,
++		      struct pciserial_board *board,
++		      struct uart_port *port, int idx)
++{
++	return setup_port(priv, port, 2, idx * 8, 0);
++}
++
+ static int skip_tx_en_setup(struct serial_private *priv,
+ 			const struct pciserial_board *board,
+ 			struct uart_port *port, int idx)
+@@ -1011,6 +1019,7 @@ static int skip_tx_en_setup(struct serial_private *priv,
+ #define PCI_DEVICE_ID_TITAN_200EISI	0xA017
+ #define PCI_DEVICE_ID_OXSEMI_16PCI958	0x9538
+ #define PCIE_DEVICE_ID_NEO_2_OX_IBM	0x00F6
++#define PCI_DEVICE_ID_PLX_CRONYX_OMEGA	0xc001
+ 
+ /* Unknown vendors/cards - this should not be in linux/pci_ids.h */
+ #define PCI_SUBDEVICE_ID_UNKNOWN_0x1584	0x1584
+@@ -1438,6 +1447,16 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.setup		= pci_default_setup,
+ 	},
+ 	/*
++	 * Cronyx Omega PCI (PLX-chip based)
++	 */
++	{
++		.vendor		= PCI_VENDOR_ID_PLX,
++		.device		= PCI_DEVICE_ID_PLX_CRONYX_OMEGA,
++		.subvendor	= PCI_ANY_ID,
++		.subdevice	= PCI_ANY_ID,
++		.setup		= pci_omegapci_setup,
++	 },
++	/*
+ 	 * Default "match everything" terminator entry
+ 	 */
+ 	{
+@@ -1624,6 +1643,7 @@ enum pci_board_num_t {
+ 	pbn_ADDIDATA_PCIe_4_3906250,
+ 	pbn_ADDIDATA_PCIe_8_3906250,
+ 	pbn_ce4100_1_115200,
++	pbn_omegapci,
+ };
+ 
+ /*
+@@ -2319,6 +2339,12 @@ static struct pciserial_board pci_boards[] __devinitdata = {
+ 		.base_baud	= 921600,
+ 		.reg_shift      = 2,
+ 	},
++	[pbn_omegapci] = {
++		.flags		= FL_BASE0,
++		.num_ports	= 8,
++		.base_baud	= 115200,
++		.uart_offset	= 0x200,
++	},
+ };
+ 
+ static const struct pci_device_id softmodem_blacklist[] = {
+@@ -3816,6 +3842,12 @@ static struct pci_device_id serial_pci_tbl[] = {
+ 		PCI_ANY_ID,  PCI_ANY_ID, 0, 0,
+ 		pbn_ce4100_1_115200 },
+ 
++	/*
++	 * Cronyx Omega PCI
++	 */
++	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_CRONYX_OMEGA,
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
++		pbn_omegapci },
+ 
+ 	/*
+ 	 * These entries match devices with class COMMUNICATION_SERIAL,
+-- 
+1.7.1
 
