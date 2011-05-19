@@ -1,106 +1,103 @@
-From: Antony Pavlov <antony@niisi.msk.ru>
-Subject: [PATCH] serial: 8250_pci: add support for Cronyx Omega PCI multiserial board.
-Date: Wed, 18 May 2011 22:38:30 +0400
-Message-ID: <1305743910-28471-1-git-send-email-antony@niisi.msk.ru>
+From: Pavan Savoy <pavan_savoy@sify.com>
+Subject: serial_core's port->count mess
+Date: Thu, 19 May 2011 15:08:52 +0530
+Message-ID: <BANLkTim=dgCwFTeCyz273nBq4MGQs1FJsw@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from t111.niisi.ras.ru ([193.232.173.111]:41796 "EHLO
-	t111.niisi.ras.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932709Ab1ERS1B (ORCPT
+Received: from mail-wy0-f174.google.com ([74.125.82.174]:49194 "EHLO
+	mail-wy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932844Ab1ESJiy (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 18 May 2011 14:27:01 -0400
+	Thu, 19 May 2011 05:38:54 -0400
+Received: by wya21 with SMTP id 21so1823520wya.19
+        for <linux-serial@vger.kernel.org>; Thu, 19 May 2011 02:38:53 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
-Cc: Antony Pavlov <antony@niisi.msk.ru>
+To: linux-serial@vger.kernel.org
+Cc: pavan_savoy@sify.com
 
-This patch adds support for the Omega-PCI, an 8-port asynchronous
-multiport adapter for computers with PCI bus [1].
+Hi,
 
-[1] http://www.cronyx.ru/hardware/ompci.html
+I have a device connected to my apps processor over UART, the serial
+core's hooked up with omap-serial UART driver.
+There is a scenario, where the device just fails to respond, and I
+should be closing the UART & opening it again to re-try the request.
+This is also coupled with power-cycling the chip.
 
-Signed-off-by: Antony Pavlov <antony@niisi.msk.ru>
----
- drivers/tty/serial/8250_pci.c |   32 ++++++++++++++++++++++++++++++++
- 1 files changed, 32 insertions(+), 0 deletions(-)
+However a normal start/stop sequence where chip responds to every
+request & I close UART when I'm done - is something like this,
+[function name & line number in logs)
+uart_open(1) called
+uart_open: 1635
+uart_open: 1651
+uart_open: 1663
+uart_open: 1674
+omap-hsuart omap-hsuart.1: serial_omap_pm+1
+omap-hsuart omap-hsuart.1: Enable CTS wakeup for UART 1
+omap-hsuart omap-hsuart.1: serial_omap_startup+1
+omap-hsuart omap-hsuart.1: serial_omap_set_mctrl+1
+omap-hsuart omap-hsuart.1: serial_omap_get_mctrl+1
+uart_open: 1686
+uart_open: 1694
+omap-hsuart omap-hsuart.1: serial_omap_set_mctrl+1
+omap-hsuart omap-hsuart.1: serial_omap_set_termios+1
+omap-hsuart omap-hsuart.1: serial_omap_set_mctrl+1
+uart_open: 1705
+uart_flush_buffer(1) called
+omap-hsuart omap-hsuart.1: serial_omap_set_mctrl+1
+omap-hsuart omap-hsuart.1: serial_omap_set_termios+1
+omap-hsuart omap-hsuart.1: serial_omap_set_mctrl+1
+omap-hsuart omap-hsuart.1: serial_omap_set_termios+1
+uart_flush_buffer(1) called
+uart_flush_buffer(1) called
+uart_flush_buffer(1) called
+omap-hsuart omap-hsuart.1: serial_omap_set_mctrl+1
+omap-hsuart omap-hsuart.1: serial_omap_set_termios+1
+uart_wait_until_sent(1), jiffies=4294954470, expire=4294954474...
+omap-hsuart omap-hsuart.1: serial_omap_tx_empty+1
+uart_wait_until_sent(1), jiffies=4294954471, expire=4294954475...
+omap-hsuart omap-hsuart.1: serial_omap_tx_empty+1
+(stc): st_tty_open
 
-diff --git a/drivers/tty/serial/8250_pci.c b/drivers/tty/serial/8250_pci.c
-index 762db97..4b4968a 100644
---- a/drivers/tty/serial/8250_pci.c
-+++ b/drivers/tty/serial/8250_pci.c
-@@ -971,6 +971,14 @@ ce4100_serial_setup(struct serial_private *priv,
- 	return ret;
- }
- 
-+static int
-+pci_omegapci_setup(struct serial_private *priv,
-+		      struct pciserial_board *board,
-+		      struct uart_port *port, int idx)
-+{
-+	return setup_port(priv, port, 2, idx * 8, 0);
-+}
-+
- static int skip_tx_en_setup(struct serial_private *priv,
- 			const struct pciserial_board *board,
- 			struct uart_port *port, int idx)
-@@ -1011,6 +1019,7 @@ static int skip_tx_en_setup(struct serial_private *priv,
- #define PCI_DEVICE_ID_TITAN_200EISI	0xA017
- #define PCI_DEVICE_ID_OXSEMI_16PCI958	0x9538
- #define PCIE_DEVICE_ID_NEO_2_OX_IBM	0x00F6
-+#define PCI_DEVICE_ID_PLX_CRONYX_OMEGA	0xc001
- 
- /* Unknown vendors/cards - this should not be in linux/pci_ids.h */
- #define PCI_SUBDEVICE_ID_UNKNOWN_0x1584	0x1584
-@@ -1438,6 +1447,16 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
- 		.setup		= pci_default_setup,
- 	},
- 	/*
-+	 * Cronyx Omega PCI (PLX-chip based)
-+	 */
-+	{
-+		.vendor		= PCI_VENDOR_ID_PLX,
-+		.device		= PCI_DEVICE_ID_PLX_CRONYX_OMEGA,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.setup		= pci_omegapci_setup,
-+	 },
-+	/*
- 	 * Default "match everything" terminator entry
- 	 */
- 	{
-@@ -1624,6 +1643,7 @@ enum pci_board_num_t {
- 	pbn_ADDIDATA_PCIe_4_3906250,
- 	pbn_ADDIDATA_PCIe_8_3906250,
- 	pbn_ce4100_1_115200,
-+	pbn_omegapci,
- };
- 
- /*
-@@ -2319,6 +2339,12 @@ static struct pciserial_board pci_boards[] __devinitdata = {
- 		.base_baud	= 921600,
- 		.reg_shift      = 2,
- 	},
-+	[pbn_omegapci] = {
-+		.flags		= FL_BASE0,
-+		.num_ports	= 8,
-+		.base_baud	= 115200,
-+		.uart_offset	= 0x200,
-+	},
- };
- 
- static const struct pci_device_id softmodem_blacklist[] = {
-@@ -3816,6 +3842,12 @@ static struct pci_device_id serial_pci_tbl[] = {
- 		PCI_ANY_ID,  PCI_ANY_ID, 0, 0,
- 		pbn_ce4100_1_115200 },
- 
-+	/*
-+	 * Cronyx Omega PCI
-+	 */
-+	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_CRONYX_OMEGA,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_omegapci },
- 
- 	/*
- 	 * These entries match devices with class COMMUNICATION_SERIAL,
--- 
-1.7.1
+uart_flush_buffer(1) called
+uart_flush_buffer(1) called
+uart_flush_buffer(1) called
+(stk) :ldisc_install = 0
+uart_close(1) called
+uart_close: 1295
+uart_close: 1316
+uart_wait_until_sent(1), jiffies=4294951992, expire=4294951996...
+omap-hsuart omap-hsuart.1: serial_omap_tx_empty+1
+uart_close: 1327
+omap-hsuart omap-hsuart.1: Disable CTS wakeup for UART1
+uart_wait_until_sent(1), jiffies=4294951994, expire=4294951996...
+omap-hsuart omap-hsuart.1: serial_omap_tx_empty+1
+uart_close: 1345
+omap-hsuart omap-hsuart.1: serial_omap_set_mctrl+1
+omap-hsuart omap-hsuart.1: serial_omap_shutdown+1
+omap-hsuart omap-hsuart.1: serial_omap_set_mctrl+1
+uart_flush_buffer(1) called
+uart_flush_buffer(1) called
+omap-hsuart omap-hsuart.1: serial_omap_pm+1
+uart_close: 1368
+(stc): st_tty_close
 
+However, in a scenario where the chip fails to respond to one of the
+requests, the start/stop sequence becomes something like this,
+uart_open(1) called
+uart_open: 1635
+uart_open: 1651
+uart_open: 1663
+uart_open: 1705
+
+So, the problem seems to be that the port->count in the serial_core
+isn't 1 & hence the call,
+        if (port->count == 1)
+                uart_change_pm(state, 0);
+doesn't seem to be happening, which is very critical. Also no calls
+are made to uart_startup & hence omap-serial's startup.
+
+Where should I be looking as to why the port->count is messed up ?
+What is the this count used for?
+Also how is this related to chip not responding to certain commands?
