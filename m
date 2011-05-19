@@ -1,192 +1,112 @@
-From: Pavan Savoy <pavan_savoy@sify.com>
-Subject: Re: serial_core's port->count mess
-Date: Thu, 19 May 2011 18:47:02 +0530
-Message-ID: <BANLkTi=e2eWLy67y9Xe69PA_a-OUNR30cQ@mail.gmail.com>
-References: <BANLkTim=dgCwFTeCyz273nBq4MGQs1FJsw@mail.gmail.com>
-	<BANLkTim7OmA1y+Z_4CHZBCKu-uG_=9jJ=A@mail.gmail.com>
-	<BANLkTikP__2Qh9cYUmA5jzgL_XxWB4rjhA@mail.gmail.com>
-	<BANLkTik6f4rFcr+X=ov4y=48QCxF1=zvkg@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Michael Reed <mreed@linux.vnet.ibm.com>
+Subject: [PATCH 1/2] 8250_pci Add EEH support to the 8250 driver for IBM/Digi PCIe 2-port Adapter
+Date: Thu, 19 May 2011 14:03:42 -0500
+Message-ID: <1305831823-25400-1-git-send-email-mreed@linux.vnet.ibm.com>
+References: <mreed@linux.vnet.ibm.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wy0-f174.google.com ([74.125.82.174]:57809 "EHLO
-	mail-wy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932671Ab1ESNRD convert rfc822-to-8bit (ORCPT
+Received: from e35.co.us.ibm.com ([32.97.110.153]:57267 "EHLO
+	e35.co.us.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756791Ab1ESTEL (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 19 May 2011 09:17:03 -0400
-Received: by wya21 with SMTP id 21so1962940wya.19
-        for <linux-serial@vger.kernel.org>; Thu, 19 May 2011 06:17:02 -0700 (PDT)
-In-Reply-To: <BANLkTik6f4rFcr+X=ov4y=48QCxF1=zvkg@mail.gmail.com>
+	Thu, 19 May 2011 15:04:11 -0400
+Received: from d03relay01.boulder.ibm.com (d03relay01.boulder.ibm.com [9.17.195.226])
+	by e35.co.us.ibm.com (8.14.4/8.13.1) with ESMTP id p4JIl3RA010655
+	for <linux-serial@vger.kernel.org>; Thu, 19 May 2011 12:47:03 -0600
+Received: from d03av06.boulder.ibm.com (d03av06.boulder.ibm.com [9.17.195.245])
+	by d03relay01.boulder.ibm.com (8.13.8/8.13.8/NCO v10.0) with ESMTP id p4JJ3po6057224
+	for <linux-serial@vger.kernel.org>; Thu, 19 May 2011 13:03:51 -0600
+Received: from d03av06.boulder.ibm.com (loopback [127.0.0.1])
+	by d03av06.boulder.ibm.com (8.14.4/8.13.1/NCO v10.0 AVout) with ESMTP id p4JJ8vC4024062
+	for <linux-serial@vger.kernel.org>; Thu, 19 May 2011 13:08:58 -0600
+In-Reply-To: <mreed@linux.vnet.ibm.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Govindraj <govindraj.ti@gmail.com>
-Cc: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Michael Reed <mreed@linux.vnet.ibm.com>, Greg Kroah-Hartman <gregkh@suse.de>, Breno Leitao <leitao@linux.vnet.ibm.com>, Scott Kilau <scottk@digi.com>
 
-On Thu, May 19, 2011 at 6:42 PM, Govindraj <govindraj.ti@gmail.com> wro=
-te:
->
-> On Thu, May 19, 2011 at 6:21 PM, Pavan Savoy <pavan_savoy@sify.com> w=
-rote:
->>
->> On Thu, May 19, 2011 at 3:58 PM, Govindraj <govindraj.ti@gmail.com> =
-wrote:
->> >
->> > On Thu, May 19, 2011 at 3:08 PM, Pavan Savoy <pavan_savoy@sify.com=
->
->> > wrote:
->> >>
->> >> Hi,
->> >>
->> >> I have a device connected to my apps processor over UART, the ser=
-ial
->> >> core's hooked up with omap-serial UART driver.
->> >> There is a scenario, where the device just fails to respond, and =
-I
->> >> should be closing the UART & opening it again to re-try the reque=
-st.
->> >> This is also coupled with power-cycling the chip.
->> >>
->> >> However a normal start/stop sequence where chip responds to every
->> >> request & I close UART when I'm done - is something like this,
->> >> [function name & line number in logs)
->> >> uart_open(1) called
->> >> uart_open: 1635
->> >> uart_open: 1651
->> >> uart_open: 1663
->> >> uart_open: 1674
->> >> omap-hsuart omap-hsuart.1: serial_omap_pm+1
->> >> omap-hsuart omap-hsuart.1: Enable CTS wakeup for UART 1
->> >> omap-hsuart omap-hsuart.1: serial_omap_startup+1
->> >> omap-hsuart omap-hsuart.1: serial_omap_set_mctrl+1
->> >> omap-hsuart omap-hsuart.1: serial_omap_get_mctrl+1
->> >> uart_open: 1686
->> >> uart_open: 1694
->> >> omap-hsuart omap-hsuart.1: serial_omap_set_mctrl+1
->> >> omap-hsuart omap-hsuart.1: serial_omap_set_termios+1
->> >> omap-hsuart omap-hsuart.1: serial_omap_set_mctrl+1
->> >> uart_open: 1705
->> >> uart_flush_buffer(1) called
->> >> omap-hsuart omap-hsuart.1: serial_omap_set_mctrl+1
->> >> omap-hsuart omap-hsuart.1: serial_omap_set_termios+1
->> >> omap-hsuart omap-hsuart.1: serial_omap_set_mctrl+1
->> >> omap-hsuart omap-hsuart.1: serial_omap_set_termios+1
->> >> uart_flush_buffer(1) called
->> >> uart_flush_buffer(1) called
->> >> uart_flush_buffer(1) called
->> >> omap-hsuart omap-hsuart.1: serial_omap_set_mctrl+1
->> >> omap-hsuart omap-hsuart.1: serial_omap_set_termios+1
->> >> uart_wait_until_sent(1), jiffies=3D4294954470, expire=3D429495447=
-4...
->> >> omap-hsuart omap-hsuart.1: serial_omap_tx_empty+1
->> >> uart_wait_until_sent(1), jiffies=3D4294954471, expire=3D429495447=
-5...
->> >> omap-hsuart omap-hsuart.1: serial_omap_tx_empty+1
->> >> (stc): st_tty_open
->> >>
->> >> uart_flush_buffer(1) called
->> >> uart_flush_buffer(1) called
->> >> uart_flush_buffer(1) called
->> >> (stk) :ldisc_install =3D 0
->> >> uart_close(1) called
->> >> uart_close: 1295
->> >> uart_close: 1316
->> >> uart_wait_until_sent(1), jiffies=3D4294951992, expire=3D429495199=
-6...
->> >> omap-hsuart omap-hsuart.1: serial_omap_tx_empty+1
->> >> uart_close: 1327
->> >> omap-hsuart omap-hsuart.1: Disable CTS wakeup for UART1
->> >> uart_wait_until_sent(1), jiffies=3D4294951994, expire=3D429495199=
-6...
->> >> omap-hsuart omap-hsuart.1: serial_omap_tx_empty+1
->> >> uart_close: 1345
->> >> omap-hsuart omap-hsuart.1: serial_omap_set_mctrl+1
->> >> omap-hsuart omap-hsuart.1: serial_omap_shutdown+1
->> >> omap-hsuart omap-hsuart.1: serial_omap_set_mctrl+1
->> >> uart_flush_buffer(1) called
->> >> uart_flush_buffer(1) called
->> >> omap-hsuart omap-hsuart.1: serial_omap_pm+1
->> >> uart_close: 1368
->> >> (stc): st_tty_close
->> >>
->> >> However, in a scenario where the chip fails to respond to one of =
-the
->> >> requests, the start/stop sequence becomes something like this,
->> >> uart_open(1) called
->> >> uart_open: 1635
->> >> uart_open: 1651
->> >> uart_open: 1663
->> >> uart_open: 1705
->> >>
->> >> So, the problem seems to be that the port->count in the serial_co=
-re
->> >> isn't 1 & hence the call,
->> >> =C2=A0 =C2=A0 =C2=A0 =C2=A0if (port->count =3D=3D 1)
->> >> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0uart_chang=
-e_pm(state, 0);
->> >
->> > Actually port count will be incremented based on number of times
->> > the port will be opened. (file open do on the the given ttyOx inte=
-rface)
->> > for the first tty open the count gets incremented to one and sets =
-state
->> > to
->> > active
->> > (state, 0)
->> > if you open multiple times then the serial_core knows port in acti=
-ve
->> > state
->> > so it is not necessary to call uart_change_pm(state, 0)
->>
->> Assuming multiple opens isn't that big a deal...
->> But I get a tcgetattr() failure then, and thereby unable to set the
->> default baud-rate
->> and hence send data over UART.
->
-> Whats the error number?
+The purpose of the patch is to add EEH support to the 8250_PCI driver for the IBM/Digi PCIE 2port Async EIA-232 Adapter that uses a PLX chipset on the PPC platforrm.  Basic support for this adapter was recently added https://lkml.org/lkml/2011/5/11/341
+This patch was created against  2.6.38.6
 
-strerror throws me Invalid arguments when the tcgetattr() fails.
+Cc: Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Breno Leitao <leitao@linux.vnet.ibm.com>
+Cc: Scott Kilau <scottk@digi.com>
+Signed-off-by:   Michael Reed <mreed@linux.vnet.ibm.com>
+---
+ drivers/tty/serial/8250_pci.c |   47 +++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 47 insertions(+), 0 deletions(-)
 
->> >> doesn't seem to be happening, which is very critical. Also no cal=
-ls
->> >> are made to uart_startup & hence omap-serial's startup.
->> >>
->> >> Where should I be looking as to why the port->count is messed up =
-?
->> >> What is the this count used for?
->> >> Also how is this related to chip not responding to certain comman=
-ds?
->> >
->> > Is the uart_clks cut? Try keeping uart clocks active always.
->>
->> Need to check this then....
->> How do I make sure they stay on ?
->
-> you an avoid setting uart timeouts from sysfs entry or
-> comment out omap_device_idle from */mach-omap2/serial.c file.
+diff --git a/drivers/tty/serial/8250_pci.c b/drivers/tty/serial/8250_pci.c
+index 8b8930f..ef193a9 100644
+--- a/drivers/tty/serial/8250_pci.c
++++ b/drivers/tty/serial/8250_pci.c
+@@ -2562,6 +2562,7 @@ pciserial_init_one(struct pci_dev *dev, const struct pci_device_id *ent)
+ 	board = &pci_boards[ent->driver_data];
+ 
+ 	rc = pci_enable_device(dev);
++	pci_save_state(dev);
+ 	if (rc)
+ 		return rc;
+ 
+@@ -3821,6 +3822,51 @@ static struct pci_device_id serial_pci_tbl[] = {
+ 	{ 0, }
+ };
+ 
++static pci_ers_result_t serial8250_io_error_detected(struct pci_dev *dev,
++pci_channel_state_t state)
++{
++	struct serial_private *priv = pci_get_drvdata(dev);
++
++	if (state == pci_channel_io_perm_failure)
++		return PCI_ERS_RESULT_DISCONNECT;
++
++	if (priv)
++		pciserial_suspend_ports(priv);
++
++	pci_disable_device(dev);
++
++	return PCI_ERS_RESULT_NEED_RESET;
++}
++
++static pci_ers_result_t serial8250_io_slot_reset(struct pci_dev *dev)
++{
++	int rc;
++
++	rc = pci_enable_device(dev);
++
++	if (rc)
++		return PCI_ERS_RESULT_DISCONNECT;
++
++	pci_restore_state(dev);
++	pci_save_state(dev);
++
++	return PCI_ERS_RESULT_RECOVERED;
++}
++
++static void serial8250_io_resume(struct pci_dev *dev)
++{
++	struct serial_private *priv = pci_get_drvdata(dev);
++
++	if (priv)
++		pciserial_resume_ports(priv);
++}
++
++static struct pci_error_handlers serial8250_err_handler = {
++	.error_detected = serial8250_io_error_detected,
++	.slot_reset = serial8250_io_slot_reset,
++	.resume = serial8250_io_resume,
++};
++
+ static struct pci_driver serial_pci_driver = {
+ 	.name		= "serial",
+ 	.probe		= pciserial_init_one,
+@@ -3830,6 +3876,7 @@ static struct pci_driver serial_pci_driver = {
+ 	.resume		= pciserial_resume_one,
+ #endif
+ 	.id_table	= serial_pci_tbl,
++	.err_handler = &serial8250_err_handler,
+ };
+ 
+ static int __init serial8250_pci_init(void)
+-- 
+1.7.1
 
-Yes, kind of familiar with 2nd approach - but need help on the sysfs en=
-try ...
-which one should I be looking for ? (hopefully available on all omap ke=
-rnels..)
-
->>
->> > Govindraj.R
->> >
->> >>
->> >> --
->> >> To unsubscribe from this list: send the line "unsubscribe linux-s=
-erial"
->> >> in
->> >> the body of a message to majordomo@vger.kernel.org
->> >> More majordomo info at =C2=A0http://vger.kernel.org/majordomo-inf=
-o.html
->> >
->> >
->
->
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
