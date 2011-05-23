@@ -1,14 +1,14 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 10/48] TTY: unify tty_init_dev fail path handling
-Date: Mon, 23 May 2011 12:10:16 -0700
-Message-ID: <1306177854-18172-10-git-send-email-gregkh@suse.de>
+Subject: [PATCH 11/48] TTY: unify pty_install fail path handling
+Date: Mon, 23 May 2011 12:10:17 -0700
+Message-ID: <1306177854-18172-11-git-send-email-gregkh@suse.de>
 References: <20110523190539.GA17519@kroah.com>
  <1306177854-18172-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor.suse.de ([195.135.220.2]:42024 "EHLO mx1.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:47277 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932091Ab1EWTKW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 23 May 2011 15:10:22 -0400
+	id S932091Ab1EWTKZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 23 May 2011 15:10:25 -0400
 In-Reply-To: <1306177854-18172-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -28,58 +28,57 @@ Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Cc: Julian Anastasov <ja@ssi.bg>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/tty_io.c |   23 ++++++++++++-----------
- 1 files changed, 12 insertions(+), 11 deletions(-)
+ drivers/tty/pty.c |   19 ++++++++++---------
+ 1 files changed, 10 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 188632e..026bf2f 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -1391,16 +1391,15 @@ struct tty_struct *tty_init_dev(struct tty_driver *driver, int idx,
- 		return ERR_PTR(-ENODEV);
- 
- 	tty = alloc_tty_struct();
--	if (!tty)
--		goto fail_no_mem;
-+	if (!tty) {
+diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+index 2107747..f511918 100644
+--- a/drivers/tty/pty.c
++++ b/drivers/tty/pty.c
+@@ -295,8 +295,8 @@ static int pty_install(struct tty_driver *driver, struct tty_struct *tty)
+ 		return -ENOMEM;
+ 	if (!try_module_get(driver->other->owner)) {
+ 		/* This cannot in fact currently happen */
+-		free_tty_struct(o_tty);
+-		return -ENOMEM;
 +		retval = -ENOMEM;
-+		goto err_module_put;
-+	}
- 	initialize_tty_struct(tty, driver, idx);
- 
- 	retval = tty_driver_install_tty(driver, tty);
--	if (retval < 0) {
--		free_tty_struct(tty);
--		module_put(driver->owner);
--		return ERR_PTR(retval);
--	}
-+	if (retval < 0)
 +		goto err_free_tty;
+ 	}
+ 	initialize_tty_struct(o_tty, driver->other, idx);
+ 
+@@ -304,13 +304,11 @@ static int pty_install(struct tty_driver *driver, struct tty_struct *tty)
+ 	   the easy way .. */
+ 	retval = tty_init_termios(tty);
+ 	if (retval)
+-		goto free_mem_out;
++		goto err_module_put;
+ 
+ 	retval = tty_init_termios(o_tty);
+-	if (retval) {
+-		tty_free_termios(tty);
+-		goto free_mem_out;
+-	}
++	if (retval)
++		goto err_free_termios;
  
  	/*
- 	 * Structures all installed ... call the ldisc open routines.
-@@ -1409,15 +1408,17 @@ struct tty_struct *tty_init_dev(struct tty_driver *driver, int idx,
- 	 */
- 	retval = tty_ldisc_setup(tty, tty->link);
- 	if (retval)
--		goto release_mem_out;
-+		goto err_release_tty;
- 	return tty;
- 
--fail_no_mem:
-+err_free_tty:
-+	free_tty_struct(tty);
+ 	 * Everything allocated ... set up the o_tty structure.
+@@ -327,10 +325,13 @@ static int pty_install(struct tty_driver *driver, struct tty_struct *tty)
+ 	tty->count++;
+ 	driver->ttys[idx] = tty;
+ 	return 0;
+-free_mem_out:
++err_free_termios:
++	tty_free_termios(tty);
 +err_module_put:
- 	module_put(driver->owner);
--	return ERR_PTR(-ENOMEM);
-+	return ERR_PTR(retval);
+ 	module_put(o_tty->driver->owner);
++err_free_tty:
+ 	free_tty_struct(o_tty);
+-	return -ENOMEM;
++	return retval;
+ }
  
- 	/* call the tty release_tty routine to clean out this slot */
--release_mem_out:
-+err_release_tty:
- 	if (printk_ratelimit())
- 		printk(KERN_INFO "tty_init_dev: ldisc open failed, "
- 				 "clearing slot %d\n", idx);
+ static int pty_bsd_ioctl(struct tty_struct *tty,
 -- 
 1.7.4.2
 
