@@ -1,15 +1,15 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 08/48] Char: moxa, remove unused variables
-Date: Mon, 23 May 2011 12:06:25 -0700
-Message-ID: <1306177625-17885-8-git-send-email-gregkh@suse.de>
+Subject: [PATCH 05/48] TTY: serial_core, remove unused variable
+Date: Mon, 23 May 2011 12:06:22 -0700
+Message-ID: <1306177625-17885-5-git-send-email-gregkh@suse.de>
 References: <20110523190539.GA17519@kroah.com>
  <1306177625-17885-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out5.smtp.messagingengine.com ([66.111.4.29]:47302 "EHLO
+Received: from out5.smtp.messagingengine.com ([66.111.4.29]:56686 "EHLO
 	out5.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932747Ab1EWTQV (ORCPT
+	by vger.kernel.org with ESMTP id S932726Ab1EWTQU (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 23 May 2011 15:16:21 -0400
+	Mon, 23 May 2011 15:16:20 -0400
 In-Reply-To: <1306177625-17885-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -18,46 +18,35 @@ Cc: Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@suse.de>
 
 From: Jiri Slaby <jslaby@suse.cz>
 
-drivers/tty/moxa.c:1287:2: warning: Value stored to 'port' is never read
-        port = tty->index;
-        ^      ~~~~~~~~~~
-drivers/tty/moxa.c:1763:2: warning: Value stored to 'cflag' is never read
-        cflag = termio->c_cflag;        /* termio->c_cflag */
-        ^       ~~~~~~~~~~~~~~~
+drivers/tty/serial/serial_core.c:1980:2: warning: Value stored to 'tty' is never read
+        tty = port->tty;
+        ^     ~~~~~~~~~
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Acked-by: Govindraj.R <govindraj.raja@ti.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/moxa.c |    4 ----
+ drivers/tty/serial/serial_core.c |    4 ----
  1 files changed, 0 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/moxa.c b/drivers/tty/moxa.c
-index 35b0c38..ffdaab3 100644
---- a/drivers/tty/moxa.c
-+++ b/drivers/tty/moxa.c
-@@ -1281,10 +1281,8 @@ static int moxa_tiocmset(struct tty_struct *tty,
- 			 unsigned int set, unsigned int clear)
- {
- 	struct moxa_port *ch;
--	int port;
- 	int dtr, rts;
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 733fe8e..d6e7240 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1972,13 +1972,9 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+ 	struct tty_port *port = &state->port;
+ 	struct device *tty_dev;
+ 	struct uart_match match = {uport, drv};
+-	struct tty_struct *tty;
  
--	port = tty->index;
- 	mutex_lock(&moxa_openlock);
- 	ch = tty->driver_data;
- 	if (!ch) {
-@@ -1756,11 +1754,9 @@ static int MoxaPortSetTermio(struct moxa_port *port, struct ktermios *termio,
- 		speed_t baud)
- {
- 	void __iomem *ofsAddr;
--	tcflag_t cflag;
- 	tcflag_t mode = 0;
+ 	mutex_lock(&port->mutex);
  
- 	ofsAddr = port->tableAddr;
--	cflag = termio->c_cflag;	/* termio->c_cflag */
- 
- 	mode = termio->c_cflag & CSIZE;
- 	if (mode == CS5)
+-	/* Must be inside the mutex lock until we convert to tty_port */
+-	tty = port->tty;
+-
+ 	tty_dev = device_find_child(uport->dev, &match, serial_match_port);
+ 	if (device_may_wakeup(tty_dev)) {
+ 		if (!enable_irq_wake(uport->irq))
 -- 
 1.7.4.2
 
