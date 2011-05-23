@@ -1,14 +1,14 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 11/48] TTY: unify pty_install fail path handling
-Date: Mon, 23 May 2011 12:10:17 -0700
-Message-ID: <1306177854-18172-11-git-send-email-gregkh@suse.de>
+Subject: [PATCH 12/48] TTY: unify pty_unix98_install fail path handling
+Date: Mon, 23 May 2011 12:10:18 -0700
+Message-ID: <1306177854-18172-12-git-send-email-gregkh@suse.de>
 References: <20110523190539.GA17519@kroah.com>
  <1306177854-18172-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:47277 "EHLO mx2.suse.de"
+Received: from cantor.suse.de ([195.135.220.2]:42032 "EHLO mx1.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932091Ab1EWTKZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 23 May 2011 15:10:25 -0400
+	id S1756324Ab1EWTK3 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 23 May 2011 15:10:29 -0400
 In-Reply-To: <1306177854-18172-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -28,57 +28,52 @@ Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Cc: Julian Anastasov <ja@ssi.bg>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/pty.c |   19 ++++++++++---------
- 1 files changed, 10 insertions(+), 9 deletions(-)
+ drivers/tty/pty.c |   12 ++++++------
+ 1 files changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
-index 2107747..f511918 100644
+index f511918..b25d6c4 100644
 --- a/drivers/tty/pty.c
 +++ b/drivers/tty/pty.c
-@@ -295,8 +295,8 @@ static int pty_install(struct tty_driver *driver, struct tty_struct *tty)
+@@ -560,20 +560,19 @@ static int pty_unix98_install(struct tty_driver *driver, struct tty_struct *tty)
  		return -ENOMEM;
  	if (!try_module_get(driver->other->owner)) {
  		/* This cannot in fact currently happen */
 -		free_tty_struct(o_tty);
 -		return -ENOMEM;
-+		retval = -ENOMEM;
 +		goto err_free_tty;
  	}
  	initialize_tty_struct(o_tty, driver->other, idx);
  
-@@ -304,13 +304,11 @@ static int pty_install(struct tty_driver *driver, struct tty_struct *tty)
- 	   the easy way .. */
- 	retval = tty_init_termios(tty);
- 	if (retval)
+ 	tty->termios = kzalloc(sizeof(struct ktermios[2]), GFP_KERNEL);
+ 	if (tty->termios == NULL)
 -		goto free_mem_out;
-+		goto err_module_put;
++		goto err_free_mem;
+ 	*tty->termios = driver->init_termios;
+ 	tty->termios_locked = tty->termios + 1;
  
- 	retval = tty_init_termios(o_tty);
--	if (retval) {
--		tty_free_termios(tty);
+ 	o_tty->termios = kzalloc(sizeof(struct ktermios[2]), GFP_KERNEL);
+ 	if (o_tty->termios == NULL)
 -		goto free_mem_out;
--	}
-+	if (retval)
-+		goto err_free_termios;
++		goto err_free_mem;
+ 	*o_tty->termios = driver->other->init_termios;
+ 	o_tty->termios_locked = o_tty->termios + 1;
  
- 	/*
- 	 * Everything allocated ... set up the o_tty structure.
-@@ -327,10 +325,13 @@ static int pty_install(struct tty_driver *driver, struct tty_struct *tty)
+@@ -592,11 +591,12 @@ static int pty_unix98_install(struct tty_driver *driver, struct tty_struct *tty)
  	tty->count++;
- 	driver->ttys[idx] = tty;
+ 	pty_count++;
  	return 0;
 -free_mem_out:
-+err_free_termios:
-+	tty_free_termios(tty);
-+err_module_put:
++err_free_mem:
+ 	kfree(o_tty->termios);
++	kfree(tty->termios);
  	module_put(o_tty->driver->owner);
 +err_free_tty:
  	free_tty_struct(o_tty);
--	return -ENOMEM;
-+	return retval;
+-	kfree(tty->termios);
+ 	return -ENOMEM;
  }
  
- static int pty_bsd_ioctl(struct tty_struct *tty,
 -- 
 1.7.4.2
 
