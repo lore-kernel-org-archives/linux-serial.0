@@ -1,13 +1,13 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 05/48] TTY: serial_core, remove unused variable
-Date: Mon, 23 May 2011 12:06:22 -0700
-Message-ID: <1306177625-17885-5-git-send-email-gregkh@suse.de>
+Subject: [PATCH 06/48] Char: cyclades, fix unused variable
+Date: Mon, 23 May 2011 12:06:23 -0700
+Message-ID: <1306177625-17885-6-git-send-email-gregkh@suse.de>
 References: <20110523190539.GA17519@kroah.com>
  <1306177625-17885-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out5.smtp.messagingengine.com ([66.111.4.29]:56686 "EHLO
+Received: from out5.smtp.messagingengine.com ([66.111.4.29]:43751 "EHLO
 	out5.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932726Ab1EWTQU (ORCPT
+	by vger.kernel.org with ESMTP id S932729Ab1EWTQU (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
 	Mon, 23 May 2011 15:16:20 -0400
 In-Reply-To: <1306177625-17885-1-git-send-email-gregkh@suse.de>
@@ -18,35 +18,44 @@ Cc: Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@suse.de>
 
 From: Jiri Slaby <jslaby@suse.cz>
 
-drivers/tty/serial/serial_core.c:1980:2: warning: Value stored to 'tty' is never read
-        tty = port->tty;
-        ^     ~~~~~~~~~
+drivers/tty/cyclades.c:1454:2: warning: Value stored to 'channel' is never read
+	channel = info->line - card->first_line;
+	^         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Fix it by moving it to the appropriate debug section where it is used.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Acked-by: Govindraj.R <govindraj.raja@ti.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/serial/serial_core.c |    4 ----
- 1 files changed, 0 insertions(+), 4 deletions(-)
+ drivers/tty/cyclades.c |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 733fe8e..d6e7240 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1972,13 +1972,9 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
- 	struct tty_port *port = &state->port;
- 	struct device *tty_dev;
- 	struct uart_match match = {uport, drv};
--	struct tty_struct *tty;
+diff --git a/drivers/tty/cyclades.c b/drivers/tty/cyclades.c
+index c99728f..e6f20d2 100644
+--- a/drivers/tty/cyclades.c
++++ b/drivers/tty/cyclades.c
+@@ -1445,13 +1445,11 @@ static void cy_shutdown(struct cyclades_port *info, struct tty_struct *tty)
+ {
+ 	struct cyclades_card *card;
+ 	unsigned long flags;
+-	int channel;
  
- 	mutex_lock(&port->mutex);
+ 	if (!(info->port.flags & ASYNC_INITIALIZED))
+ 		return;
  
--	/* Must be inside the mutex lock until we convert to tty_port */
--	tty = port->tty;
--
- 	tty_dev = device_find_child(uport->dev, &match, serial_match_port);
- 	if (device_may_wakeup(tty_dev)) {
- 		if (!enable_irq_wake(uport->irq))
+ 	card = info->card;
+-	channel = info->line - card->first_line;
+ 	if (!cy_is_Z(card)) {
+ 		spin_lock_irqsave(&card->card_lock, flags);
+ 
+@@ -1476,6 +1474,7 @@ static void cy_shutdown(struct cyclades_port *info, struct tty_struct *tty)
+ 		spin_unlock_irqrestore(&card->card_lock, flags);
+ 	} else {
+ #ifdef CY_DEBUG_OPEN
++		int channel = info->line - card->first_line;
+ 		printk(KERN_DEBUG "cyc shutdown Z card %d, channel %d, "
+ 			"base_addr %p\n", card, channel, card->base_addr);
+ #endif
 -- 
 1.7.4.2
 
