@@ -1,50 +1,37 @@
-From: Greg KH <gregkh@suse.de>
-Subject: Re: [GIT PATCH] TTY/serial driver patches for .40
-Date: Mon, 23 May 2011 12:43:06 -0700
-Message-ID: <20110523194306.GA20850@suse.de>
-References: <20110523190539.GA17519@kroah.com>
- <BANLkTi=jGtVjJEY9aE2SPJCHhbpXfgsFTg@mail.gmail.com>
+From: Alan Cox <alan@linux.jf.intel.com>
+Subject: [PATCH] 8250_pci: Fix missing const from merges
+Date: Tue, 24 May 2011 12:35:48 +0100
+Message-ID: <20110524113545.18907.2712.stgit@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor.suse.de ([195.135.220.2]:43486 "EHLO mx1.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756190Ab1EWTmF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 23 May 2011 15:42:05 -0400
-Content-Disposition: inline
-In-Reply-To: <BANLkTi=jGtVjJEY9aE2SPJCHhbpXfgsFTg@mail.gmail.com>
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:60471 "EHLO
+	localhost.localdomain" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753127Ab1EXLxh (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 24 May 2011 07:53:37 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: greg@kroah.com, linux-serial@vger.kernel.org
 
-On Mon, May 23, 2011 at 12:27:35PM -0700, Linus Torvalds wrote:
-> On Mon, May 23, 2011 at 12:05 PM, Greg KH <gregkh@suse.de> wrote:
-> >
-> > Some api cleanups, and driver updates, nothing really major. =A0You=
- will
-> > get two conflicts when you merge this to your tree (one in the tty
-> > Makefile and one in the bluetooth driver), but they should be "obvi=
-ous"
-> > as to what to do.
->=20
-> I went a bit beyond "obvious", and actually fixed in the merge what
-> looked to be some missed things:
->=20
->  - the hci_uart_tty_receive "Return value" comment was stale
->=20
->  - it really looked to me like the 'stat.byte_rx' increment should us=
-e
-> the new 'received' count that we return.
->=20
-> So anybody who cares should probably check the end result.
+Signed-off-by: Alan Cox <alan@linux.intel.com>
+---
 
-It looks correct to me, thanks for catching this and doing the merge.
+ drivers/tty/serial/8250_pci.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-greg k-h
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/tty/serial/8250_pci.c b/drivers/tty/serial/8250_pci.c
+index 4b4968a..78e98a5 100644
+--- a/drivers/tty/serial/8250_pci.c
++++ b/drivers/tty/serial/8250_pci.c
+@@ -973,7 +973,7 @@ ce4100_serial_setup(struct serial_private *priv,
+ 
+ static int
+ pci_omegapci_setup(struct serial_private *priv,
+-		      struct pciserial_board *board,
++		      const struct pciserial_board *board,
+ 		      struct uart_port *port, int idx)
+ {
+ 	return setup_port(priv, port, 2, idx * 8, 0);
+
