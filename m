@@ -1,54 +1,43 @@
-From: leitao@linux.vnet.ibm.com
-Subject: [PATCH] 8250: Fix capabilities when changing the port type
-Date: Thu, 26 May 2011 11:18:39 -0300
-Message-ID: <1306419519-10669-1-git-send-email-leitao@linux.vnet.ibm.com>
-References: <1306334898-16399-1-git-send-email-leitao@linux.vnet.ibm.com>
+From: Greg KH <gregkh@suse.de>
+Subject: Re: [GIT PATCH] TTY/serial driver patches for .40
+Date: Fri, 27 May 2011 09:00:21 +0800
+Message-ID: <20110527010021.GD23506@suse.de>
+References: <20110523190539.GA17519@kroah.com>
+ <Pine.LNX.4.64.1105261248060.9307@axis700.grange>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from e24smtp03.br.ibm.com ([32.104.18.24]:50324 "EHLO
-	e24smtp03.br.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751478Ab1EZOqJ (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 26 May 2011 10:46:09 -0400
-Received: from /spool/local
-	by e24smtp03.br.ibm.com with XMail ESMTP
-	for <linux-serial@vger.kernel.org> from <leitao@linux.vnet.ibm.com>;
-	Thu, 26 May 2011 11:46:00 -0300
-Received: from d24av01.br.ibm.com (d24av01.br.ibm.com [9.8.31.91])
-	by mailhub1.br.ibm.com (8.13.8/8.13.8/NCO v10.0) with ESMTP id p4QElLZk917976
-	for <linux-serial@vger.kernel.org>; Thu, 26 May 2011 11:47:25 -0300
-Received: from d24av01.br.ibm.com (loopback [127.0.0.1])
-	by d24av01.br.ibm.com (8.14.4/8.13.1/NCO v10.0 AVout) with ESMTP id p4QCjmZd001657
-	for <linux-serial@vger.kernel.org>; Thu, 26 May 2011 09:45:49 -0300
-In-Reply-To: <1306334898-16399-1-git-send-email-leitao@linux.vnet.ibm.com>
+Received: from cantor2.suse.de ([195.135.220.15]:59420 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1758668Ab1E0A7l (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 26 May 2011 20:59:41 -0400
+Content-Disposition: inline
+In-Reply-To: <Pine.LNX.4.64.1105261248060.9307@axis700.grange>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@suse.de
-Cc: linux-serial@vger.kernel.org, scottk@digi.com, Breno Leitao <leitao@linux.vnet.ibm.com>, Michael Reed <mreed@linux.vnet.ibm.com>
+To: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Felipe Balbi <balbi@ti.com>
 
-When changing the port type, the capabilities flags should be changed
-also, otherwise the capabilities will not correspond to the port type,
-which make set_sleep() crash on rmmod.
+On Thu, May 26, 2011 at 12:54:29PM +0200, Guennadi Liakhovetski wrote:
+> On Mon, 23 May 2011, Greg KH wrote:
+> 
+> > Here's the big tty/serial merge for .40
+> 
+> /me confused: this patch
+> 
+> > Felipe Balbi (1):
+> >       tty: make receive_buf() return the amout of bytes received
+> 
+> is more than one year old, which I wouldn't care about, if it didn't 
+> introduce a regression on my mackerel 
+> (arch/arm/mach-shmobile/board-mackerel.c) board. With it in place printing 
+> a lot of text over ssh pauses the output multiple times for several 
+> seconds. With this patch reverted the behaviour is back to normal. To 
+> reproduce one can either cat a few largish files under /etc or just dmesg 
+> - if there have been enough messages accumulated.
 
-This patch just assign the correct capabilites when the port changes.
+I think I'll be reverting this one.
 
-Signed-off-by: Breno Leitao <leitao@linux.vnet.ibm.com>
-CC: Michael Reed <mreed@linux.vnet.ibm.com>
----
- drivers/tty/serial/8250.c |    1 +
- 1 files changed, 1 insertions(+), 0 deletions(-)
+thanks,
 
-diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
-index b40f7b9..b4129f5 100644
---- a/drivers/tty/serial/8250.c
-+++ b/drivers/tty/serial/8250.c
-@@ -3318,6 +3318,7 @@ void serial8250_unregister_port(int line)
- 		uart->port.flags &= ~UPF_BOOT_AUTOCONF;
- 		uart->port.type = PORT_UNKNOWN;
- 		uart->port.dev = &serial8250_isa_devs->dev;
-+		uart->capabilities = uart_config[uart->port.type].flags;
- 		uart_add_one_port(&serial8250_reg, &uart->port);
- 	} else {
- 		uart->port.dev = NULL;
--- 
-1.7.4.4
-
+greg k-h
