@@ -1,43 +1,52 @@
-From: Greg KH <gregkh@suse.de>
-Subject: Re: [GIT PATCH] TTY/serial driver patches for .40
-Date: Fri, 27 May 2011 09:00:21 +0800
-Message-ID: <20110527010021.GD23506@suse.de>
-References: <20110523190539.GA17519@kroah.com>
- <Pine.LNX.4.64.1105261248060.9307@axis700.grange>
+From: =?UTF-8?q?Fr=C3=A9d=C3=A9ric=20Bri=C3=A8re?= <fbriere@fbriere.net>
+Subject: [PATCH 1/2] serial: 8250_pci: add .probe member to
+	struct pci_serial_quirk
+Date: Sun, 29 May 2011 15:08:03 -0400
+Message-ID: <1306696084-17977-1-git-send-email-fbriere@fbriere.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:59420 "EHLO mx2.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1758668Ab1E0A7l (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 26 May 2011 20:59:41 -0400
-Content-Disposition: inline
-In-Reply-To: <Pine.LNX.4.64.1105261248060.9307@axis700.grange>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-parport-bounces+linux-parport-2=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-parport>,
+	<mailto:linux-parport-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-parport/>
+List-Post: <mailto:linux-parport@lists.infradead.org>
+List-Help: <mailto:linux-parport-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-parport>,
+	<mailto:linux-parport-request@lists.infradead.org?subject=subscribe>
+Sender: linux-parport-bounces@lists.infradead.org
+Errors-To: linux-parport-bounces+linux-parport-2=m.gmane.org@lists.infradead.org
+To: linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-parport@lists.infradead.org, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
-To: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Felipe Balbi <balbi@ti.com>
 
-On Thu, May 26, 2011 at 12:54:29PM +0200, Guennadi Liakhovetski wrote:
-> On Mon, 23 May 2011, Greg KH wrote:
-> 
-> > Here's the big tty/serial merge for .40
-> 
-> /me confused: this patch
-> 
-> > Felipe Balbi (1):
-> >       tty: make receive_buf() return the amout of bytes received
-> 
-> is more than one year old, which I wouldn't care about, if it didn't 
-> introduce a regression on my mackerel 
-> (arch/arm/mach-shmobile/board-mackerel.c) board. With it in place printing 
-> a lot of text over ssh pauses the output multiple times for several 
-> seconds. With this patch reverted the behaviour is back to normal. To 
-> reproduce one can either cat a few largish files under /etc or just dmesg 
-> - if there have been enough messages accumulated.
-
-I think I'll be reverting this one.
-
-thanks,
-
-greg k-h
+VGhpcyBmdW5jdGlvbiwgaWYgcHJlc2VudCwgaXMgY2FsbGVkIGVhcmx5IG9uIGJ5IHRoZSA4MjUw
+X3BjaSBwcm9iZTsgaXQKY2FuIGJlIHVzZWQgdG8gcmVqZWN0IGRldmljZXMgbWVhbnQgZm9yIHBh
+cnBvcnRfc2VyaWFsLiAgKFRoZSAuaW5pdApmdW5jdGlvbiBjYW5ub3QgYmUgdXNlZCBmb3IgdGhp
+cyBwdXJwb3NlLCBhcyBpdCBpcyBhbHNvIGNhbGxlZCBieQpwYXJwb3J0X3NlcmlhbC4pCgpTaWdu
+ZWQtb2ZmLWJ5OiBGcsOpZMOpcmljIEJyacOocmUgPGZicmllcmVAZmJyaWVyZS5uZXQ+CkNjOiBH
+cmVnIEtyb2FoLUhhcnRtYW4gPGdyZWdraEBzdXNlLmRlPgpDYzogQWxhbiBDb3ggPGFsYW5AbGlu
+dXguaW50ZWwuY29tPgpDYzogbGludXgtc2VyaWFsQHZnZXIua2VybmVsLm9yZwpDYzogbGludXgt
+cGFycG9ydEBsaXN0cy5pbmZyYWRlYWQub3JnCi0tLQogZHJpdmVycy90dHkvc2VyaWFsLzgyNTBf
+cGNpLmMgfCAgICA5ICsrKysrKysrKwogMSBmaWxlcyBjaGFuZ2VkLCA5IGluc2VydGlvbnMoKyks
+IDAgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsLzgyNTBfcGNp
+LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MF9wY2kuYwppbmRleCA0YjQ5NjhhLi5lNmZiNjdi
+IDEwMDY0NAotLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MF9wY2kuYworKysgYi9kcml2ZXJz
+L3R0eS9zZXJpYWwvODI1MF9wY2kuYwpAQCAtMzksNiArMzksNyBAQCBzdHJ1Y3QgcGNpX3Nlcmlh
+bF9xdWlyayB7CiAJdTMyCWRldmljZTsKIAl1MzIJc3VidmVuZG9yOwogCXUzMglzdWJkZXZpY2U7
+CisJaW50CSgqcHJvYmUpKHN0cnVjdCBwY2lfZGV2ICpkZXYpOwogCWludAkoKmluaXQpKHN0cnVj
+dCBwY2lfZGV2ICpkZXYpOwogCWludAkoKnNldHVwKShzdHJ1Y3Qgc2VyaWFsX3ByaXZhdGUgKiwK
+IAkJCSBjb25zdCBzdHJ1Y3QgcGNpc2VyaWFsX2JvYXJkICosCkBAIC0yNTgxLDExICsyNTgyLDE5
+IEBAIEVYUE9SVF9TWU1CT0xfR1BMKHBjaXNlcmlhbF9yZXN1bWVfcG9ydHMpOwogc3RhdGljIGlu
+dCBfX2RldmluaXQKIHBjaXNlcmlhbF9pbml0X29uZShzdHJ1Y3QgcGNpX2RldiAqZGV2LCBjb25z
+dCBzdHJ1Y3QgcGNpX2RldmljZV9pZCAqZW50KQogeworCXN0cnVjdCBwY2lfc2VyaWFsX3F1aXJr
+ICpxdWlyazsKIAlzdHJ1Y3Qgc2VyaWFsX3ByaXZhdGUgKnByaXY7CiAJY29uc3Qgc3RydWN0IHBj
+aXNlcmlhbF9ib2FyZCAqYm9hcmQ7CiAJc3RydWN0IHBjaXNlcmlhbF9ib2FyZCB0bXA7CiAJaW50
+IHJjOwogCisJcXVpcmsgPSBmaW5kX3F1aXJrKGRldik7CisJaWYgKHF1aXJrLT5wcm9iZSkgewor
+CQlyYyA9IHF1aXJrLT5wcm9iZShkZXYpOworCQlpZiAocmMpCisJCQlyZXR1cm4gcmM7CisJfQor
+CiAJaWYgKGVudC0+ZHJpdmVyX2RhdGEgPj0gQVJSQVlfU0laRShwY2lfYm9hcmRzKSkgewogCQlw
+cmludGsoS0VSTl9FUlIgInBjaV9pbml0X29uZTogaW52YWxpZCBkcml2ZXJfZGF0YTogJWxkXG4i
+LAogCQkJZW50LT5kcml2ZXJfZGF0YSk7Ci0tIAoxLjcuNS4xCgoKX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KTGludXgtcGFycG9ydCBtYWlsaW5nIGxpc3QK
+TGludXgtcGFycG9ydEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQu
+b3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtcGFycG9ydAo=
