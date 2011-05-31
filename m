@@ -1,46 +1,114 @@
-From: =?iso-8859-2?Q?Micha=B3_Miros=B3aw?= <mirq@rere.qmqm.pl>
-Subject: Re: [PATCH v4] 8250_pci: add -ENODEV code for Intel EG20T PCH
-Date: Tue, 31 May 2011 12:47:02 +0200
-Message-ID: <20110531104702.GA15469@rere.qmqm.pl>
-References: <1306838130-3644-1-git-send-email-tomoya-linux@dsn.okisemi.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-2
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Michael Reed <mreed@linux.vnet.ibm.com>
+Subject: [PATCH][RESEND] 8250_pci Add EEH support to the 8250 driver for IBM/Digi PCIe 2-port Adapter
+Date: Tue, 31 May 2011 12:06:28 -0500
+Message-ID: <1306861589-17617-1-git-send-email-mreed@linux.vnet.ibm.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from rere.qmqm.pl ([89.167.52.164]:34652 "EHLO rere.qmqm.pl"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751859Ab1EaKrD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 31 May 2011 06:47:03 -0400
-Content-Disposition: inline
-In-Reply-To: <1306838130-3644-1-git-send-email-tomoya-linux@dsn.okisemi.com>
+Received: from e38.co.us.ibm.com ([32.97.110.159]:38400 "EHLO
+	e38.co.us.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757766Ab1EaRHB (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 31 May 2011 13:07:01 -0400
+Received: from d03relay03.boulder.ibm.com (d03relay03.boulder.ibm.com [9.17.195.228])
+	by e38.co.us.ibm.com (8.14.4/8.13.1) with ESMTP id p4VGwlRW001477
+	for <linux-serial@vger.kernel.org>; Tue, 31 May 2011 10:58:47 -0600
+Received: from d03av02.boulder.ibm.com (d03av02.boulder.ibm.com [9.17.195.168])
+	by d03relay03.boulder.ibm.com (8.13.8/8.13.8/NCO v10.0) with ESMTP id p4VH6sj0127000
+	for <linux-serial@vger.kernel.org>; Tue, 31 May 2011 11:06:55 -0600
+Received: from d03av02.boulder.ibm.com (loopback [127.0.0.1])
+	by d03av02.boulder.ibm.com (8.14.4/8.13.1/NCO v10.0 AVout) with ESMTP id p4VB6KZI001396
+	for <linux-serial@vger.kernel.org>; Tue, 31 May 2011 05:06:22 -0600
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>
-Cc: Alan Cox <alan@linux.intel.com>, gregkh@suse.de, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, qi.wang@intel.com, yong.y.wang@intel.com, joel.clark@intel.com, kok.howg.ewe@intel.com, toshiharu-linux@dsn.okisemi.com
+To: linux-serial@vger.kernel.org
+Cc: Michael Reed <mreed@linux.vnet.ibm.com>, Greg Kroah-Hartman <gregkh@suse.de>, Breno Leitao <leitao@linux.vnet.ibm.com>, Scott Kilau <scottk@digi.com>
 
-On Tue, May 31, 2011 at 07:35:30PM +0900, Tomoya MORINAGA wrote:
-> Intel EG20T PCH has UART device which is compatible with 8250.
-> Currently, with general configuration, the PCH UART driver is not loa=
-ded but
-> 8250 standard driver is loaded.
-> Therefore, in case of using PCH UART driver, need to disable 8250 pci=
- function.
-> However, this procedure is not best solution.
-> This patch, in 8250_pci, if the device is the PCH or the family IOH,
-> '-ENODEV' is returned.
-> As a result, disabling 8250-pci processing becomes unnecessary.
-[...]
+The purpose of the patch is to add EEH support to the 8250_PCI driver
+for the IBM/Digi PCIE 2port Async EIA-232 Adapter that uses a PLX
+chipset on the PPC platforrm.  Basic support for this adapter was
+recently added https://lkml.org/lkml/2011/5/11/341
 
-My comment about return_ENODEV() name does not make sense if you put th=
-e
-ifdef inside that function. I thought you would put it around the devic=
-e-id
-entries.
+This patch was created against the linux-next kernel
 
-Best Regards,
-Micha=B3 Miros=B3aw
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Cc: Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Breno Leitao <leitao@linux.vnet.ibm.com>
+Cc: Scott Kilau <scottk@digi.com>
+Signed-off-by: Michael Reed <mreed@linux.vnet.ibm.com>
+---
+ drivers/tty/serial/8250_pci.c |   47 +++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 47 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/tty/serial/8250_pci.c b/drivers/tty/serial/8250_pci.c
+index 4b4968a..5b328e4 100644
+--- a/drivers/tty/serial/8250_pci.c
++++ b/drivers/tty/serial/8250_pci.c
+@@ -2595,6 +2595,7 @@ pciserial_init_one(struct pci_dev *dev, const struct pci_device_id *ent)
+ 	board = &pci_boards[ent->driver_data];
+ 
+ 	rc = pci_enable_device(dev);
++	pci_save_state(dev);
+ 	if (rc)
+ 		return rc;
+ 
+@@ -3868,6 +3869,51 @@ static struct pci_device_id serial_pci_tbl[] = {
+ 	{ 0, }
+ };
+ 
++static pci_ers_result_t serial8250_io_error_detected(struct pci_dev *dev,
++						pci_channel_state_t state)
++{
++	struct serial_private *priv = pci_get_drvdata(dev);
++
++	if (state == pci_channel_io_perm_failure)
++		return PCI_ERS_RESULT_DISCONNECT;
++
++	if (priv)
++		pciserial_suspend_ports(priv);
++
++	pci_disable_device(dev);
++
++	return PCI_ERS_RESULT_NEED_RESET;
++}
++
++static pci_ers_result_t serial8250_io_slot_reset(struct pci_dev *dev)
++{
++	int rc;
++
++	rc = pci_enable_device(dev);
++
++	if (rc)
++		return PCI_ERS_RESULT_DISCONNECT;
++
++	pci_restore_state(dev);
++	pci_save_state(dev);
++
++	return PCI_ERS_RESULT_RECOVERED;
++}
++
++static void serial8250_io_resume(struct pci_dev *dev)
++{
++	struct serial_private *priv = pci_get_drvdata(dev);
++
++	if (priv)
++		pciserial_resume_ports(priv);
++}
++
++static struct pci_error_handlers serial8250_err_handler = {
++	.error_detected = serial8250_io_error_detected,
++	.slot_reset = serial8250_io_slot_reset,
++	.resume = serial8250_io_resume,
++};
++
+ static struct pci_driver serial_pci_driver = {
+ 	.name		= "serial",
+ 	.probe		= pciserial_init_one,
+@@ -3877,6 +3923,7 @@ static struct pci_driver serial_pci_driver = {
+ 	.resume		= pciserial_resume_one,
+ #endif
+ 	.id_table	= serial_pci_tbl,
++	.err_handler	= &serial8250_err_handler,
+ };
+ 
+ static int __init serial8250_pci_init(void)
+-- 
+1.7.1
+
