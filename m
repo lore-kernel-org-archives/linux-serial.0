@@ -1,26 +1,24 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+From: lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
 Subject: Re: ioremap warning fix for jsm driver.
-Date: Wed, 1 Jun 2011 20:32:58 +0100
-Message-ID: <20110601203258.01f3249f@lxorguk.ukuu.org.uk>
+Date: Wed, 1 Jun 2011 16:29:26 -0400
+Message-ID: <20110601202926.GK21345@caffeine.csclub.uwaterloo.ca>
 References: <20110601183841.GJ21345@caffeine.csclub.uwaterloo.ca>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:47272 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1757970Ab1FATbM (ORCPT
+Received: from caffeine.csclub.uwaterloo.ca ([129.97.134.17]:50373 "EHLO
+	caffeine.csclub.uwaterloo.ca" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753845Ab1FAU31 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 1 Jun 2011 15:31:12 -0400
+	Wed, 1 Jun 2011 16:29:27 -0400
+Content-Disposition: inline
 In-Reply-To: <20110601183841.GJ21345@caffeine.csclub.uwaterloo.ca>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, greg@kroah.com
+Cc: linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 
-On Wed, 1 Jun 2011 14:38:41 -0400
-lsorense@csclub.uwaterloo.ca (Lennart Sorensen) wrote:
-
+On Wed, Jun 01, 2011 at 02:38:41PM -0400, Lennart Sorensen wrote:
 > I saw a warning about ioremap from the jsm driver on a system which
 > looked like this:
 > 
@@ -33,7 +31,37 @@ lsorense@csclub.uwaterloo.ca (Lennart Sorensen) wrote:
 > than a hard coded value.  If you happen to have the regiong legitimately
 > mapped to a base addres that is not 4K aligned, ioremap complains
 > otherwise.
-> 
-> Signed-off-by: Len Sorensen <lsorense@csclub.uwaterloo.ca>
 
-Acked-by: Alan Cox <alan@linux.intel.com>
+I can't believe I didn't spell check that. :(
+
+Should have been:
+
+Turns out the warning is valid.  The jsm driver has been asking to ioremap
+0x1000 forever, but in fact only 8 port chips have 0x1000 bytes of memory.
+4 port chips have 0x800 and 2 port chips have 0x400 according to the
+data sheet.  It makes more sense to map the size of the region rather
+than a hard coded value.  If you happen to have the region legitimately
+mapped to a base address that is not 4K aligned ioremap complains, and
+otherwise memory not belonging to the device is reserved as far as I
+can tell.
+
+> Signed-off-by: Len Sorensen <lsorense@csclub.uwaterloo.ca>
+> 
+> 
+> diff --git a/drivers/tty/serial/jsm/jsm_driver.c b/drivers/tty/serial/jsm/jsm_driver.c
+> index 18f5484..96da178 100644
+> --- a/drivers/tty/serial/jsm/jsm_driver.c
+> +++ b/drivers/tty/serial/jsm/jsm_driver.c
+> @@ -125,7 +125,7 @@ static int __devinit jsm_probe_one(struct pci_dev *pdev, const struct pci_device
+>  	brd->bd_uart_offset = 0x200;
+>  	brd->bd_dividend = 921600;
+>  
+> -	brd->re_map_membase = ioremap(brd->membase, 0x1000);
+> +	brd->re_map_membase = ioremap(brd->membase, pci_resource_len(pdev, 0));
+>  	if (!brd->re_map_membase) {
+>  		dev_err(&pdev->dev,
+>  			"card has no PCI Memory resources, "
+> 
+> 
+> -- 
+> Len Sorensen
