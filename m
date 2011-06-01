@@ -1,44 +1,51 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: [PATCH 2/2] parport/serial: add support for Timedia/SUNIX cards
- to parport_serial
-Date: Wed, 1 Jun 2011 13:41:07 +0100
-Message-ID: <20110601134107.74e4dbf7@bob.linux.org.uk>
-References: <1306696084-17977-1-git-send-email-fbriere@fbriere.net>
-	<1306696084-17977-2-git-send-email-fbriere@fbriere.net>
+From: lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
+Subject: ioremap warning fix for jsm driver.
+Date: Wed, 1 Jun 2011 14:38:41 -0400
+Message-ID: <20110601183841.GJ21345@caffeine.csclub.uwaterloo.ca>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-14
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:2522 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751128Ab1FAMx7 convert rfc822-to-8bit (ORCPT
+Received: from caffeine.csclub.uwaterloo.ca ([129.97.134.17]:39992 "EHLO
+	caffeine.csclub.uwaterloo.ca" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1756859Ab1FASim (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 1 Jun 2011 08:53:59 -0400
-In-Reply-To: <1306696084-17977-2-git-send-email-fbriere@fbriere.net>
+	Wed, 1 Jun 2011 14:38:42 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: =?ISO-8859-14?B?RnLpZOlyaWMgQnJp6HJl?= <fbriere@fbriere.net>
-Cc: linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, linux-parport@lists.infradead.org
+To: linux-serial@vger.kernel.org
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Len Sorensen <lsorense@csclub.uwaterloo.ca>
 
-On Sun, 29 May 2011 15:08:04 -0400
-=46r=E9d=E9ric Bri=E8re <fbriere@fbriere.net> wrote:
+I saw a warning about ioremap from the jsm driver on a system which
+looked like this:
 
-> Timedia/SUNIX PCI cards with both serial and parallel ports are
-> currently supported by 8250_pci and parport_pc individually.  Moving
-> that support into parport_serial allows using both types of ports at
-> the same time.
->=20
-> This was successfully tested with a SUNIX 4079T.
->=20
-> Signed-off-by: Fr=E9d=E9ric Bri=E8re <fbriere@fbriere.net>
-> Cc: Greg Kroah-Hartman <gregkh@suse.de>
-> Cc: Alan Cox <alan@linux.intel.com>
-> Cc: linux-serial@vger.kernel.org
-> Cc: linux-parport@lists.infradead.org
+resource map sanity check conflict: 0xe0200800 0xe02017ff 0xe0200800 0xe0200fff 0000:01:08.0
 
-Acked-by: Alan Cox <alan@linux.intel.com>
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Turns out the warning is valid.  The jsm driver has been asking to ioremap
+0x1000 forever, but in fact only 8 port chips have 0x1000 bytes of memory.
+4 port chips have 0x800 and 2 port chips have 0x400 according to the
+data sheet.  It makes more sense to map the size of the region rather
+than a hard coded value.  If you happen to have the regiong legitimately
+mapped to a base addres that is not 4K aligned, ioremap complains
+otherwise.
+
+Signed-off-by: Len Sorensen <lsorense@csclub.uwaterloo.ca>
+
+
+diff --git a/drivers/tty/serial/jsm/jsm_driver.c b/drivers/tty/serial/jsm/jsm_driver.c
+index 18f5484..96da178 100644
+--- a/drivers/tty/serial/jsm/jsm_driver.c
++++ b/drivers/tty/serial/jsm/jsm_driver.c
+@@ -125,7 +125,7 @@ static int __devinit jsm_probe_one(struct pci_dev *pdev, const struct pci_device
+ 	brd->bd_uart_offset = 0x200;
+ 	brd->bd_dividend = 921600;
+ 
+-	brd->re_map_membase = ioremap(brd->membase, 0x1000);
++	brd->re_map_membase = ioremap(brd->membase, pci_resource_len(pdev, 0));
+ 	if (!brd->re_map_membase) {
+ 		dev_err(&pdev->dev,
+ 			"card has no PCI Memory resources, "
+
+
+-- 
+Len Sorensen
