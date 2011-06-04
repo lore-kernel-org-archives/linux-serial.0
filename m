@@ -1,28 +1,33 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: /proc/stat btime accuracy problem
-Date: Thu, 2 Jun 2011 11:00:24 +0100
-Message-ID: <20110602110024.4d93243b@bob.linux.org.uk>
-References: <BANLkTiniq6GVMJPO_-efKrWHQg9V9Dod9g@mail.gmail.com>
-	<1306967733.11492.11.camel@work-vm>
-	<BANLkTi=yEMDLEo99WZm2Bt4pi_pog5igww@mail.gmail.com>
-	<1306972711.11492.23.camel@work-vm>
-	<BANLkTimuPrqN1euyOqAGm2m4Ea1PdbrzDQ@mail.gmail.com>
-	<1306975745.11492.30.camel@work-vm>
+From: =?UTF-8?Q? "=C2=A92011.Coca-Cola_Great_Britain" ?=
+	<info@coca-cola.co.uk>
+Subject: (no subject)
+Date: Sat, 04 Jun 2011 11:20:03 +0200
+Message-ID: <f751ed2ff19550e20ced8085ad48699a@localhost>
+Reply-To: jim-gardner.c@live.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1306975745.11492.30.camel@work-vm>
-Sender: linux-kernel-owner@vger.kernel.org
-To: john stultz <johnstul@us.ibm.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@linutronix.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.condornet.sk ([92.245.1.11]:51124 "EHLO mail.condornet.sk"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753083Ab1FEH1G (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 5 Jun 2011 03:27:06 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-> CC'ing the linux-serial list and Alan for their thoughts: Does the
-> serial port is disabling irqs for 30+ seconds during boot seem at all
-> sane?
 
-printk is supposed to work from anywhere so it takes the hit. It should
-only be printk that is involved however.
 
-Alan
+
+-- 
+04-06-20011
+Your Mail-ID has been awarded 750,000.00 GBP From The Coca-Cola Online
+Bonanza 2011. For claims send
+Name:
+Address:
+Phone No:
+Age: Sex:
+Occupation:
+Country:
+Contact: Mr. Jim Gardner
+Claims department : jim-gardner.c@live.com
+TEL: +44 755 284 8328
