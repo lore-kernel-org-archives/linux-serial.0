@@ -1,42 +1,104 @@
-From: Vasily Averin <vvs@parallels.com>
-Subject: [PATCH] serial: 8250_pci: corrected definition pci_omegapci_setup()
-Date: Mon, 06 Jun 2011 11:49:06 +0400
-Message-ID: <4DEC8672.6090900@parallels.com>
+From: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
+Subject: Re: [RFC 3/5] serial: add support for Technologic Systems TS-5500
+ RS-485 serial port
+Date: Mon, 6 Jun 2011 16:48:34 -0400
+Message-ID: <20110606164834.5894deda@v0nbox>
+References: <1304115712-5299-1-git-send-email-vivien.didelot@savoirfairelinux.com>
+	<1304115712-5299-4-git-send-email-vivien.didelot@savoirfairelinux.com>
+	<20110430111753.69466ae5@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailhub.sw.ru ([195.214.232.25]:23293 "EHLO relay.sw.ru"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751014Ab1FFHtU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 6 Jun 2011 03:49:20 -0400
+Received: from mail.savoirfairelinux.com ([209.172.62.77]:43092 "EHLO
+	mail.savoirfairelinux.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757042Ab1FFUss (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 6 Jun 2011 16:48:48 -0400
+In-Reply-To: <20110430111753.69466ae5@lxorguk.ukuu.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, Antony Pavlov <antony@niisi.msk.ru>
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org, lm-sensors@lm-sensors.org
 
-fixed compilation warning
-drivers/tty/serial/8250_pci.c:1457:3: warning:
- initialization from incompatible pointer type
+Hi,
+Sorry for the late reply to this comment.
 
-Signed-off-by: Vasily Averin <vvs@sw.ru>
----
- drivers/tty/serial/8250_pci.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+On Sat, 30 Apr 2011 11:17:53
++0100, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote :
+> > --- a/drivers/tty/serial/8250.c
+> > +++ b/drivers/tty/serial/8250.c
+> > @@ -109,6 +109,13 @@ static unsigned int skip_txen_test; /* force
+> > skip of txen test at init time */
+> >  #define CONFIG_HUB6 1
+> >
+> >  #include <asm/serial.h>
+> > +
+> > +/* TS-5500 related stuff */
+> > +#ifdef CONFIG_SERIAL_8250_TS5500_485_TIMER
+> > +#define TS5500_TIMER2_SPEED_ADDR        0x42
+> > +#define TS5500_485_SERIAL_PORT                0x02
+> > +#endif
+> > +
+> >  /*
+> >   * SERIAL_PORT_DFNS tells us about built-in ports that have no
+> >   * standard enumeration mechanism.   Platforms that can find all
+> > @@ -437,6 +444,25 @@ static void au_serial_out(struct uart_port *p,
+> > int offset, int value)
+> >          __raw_writel(value, p->membase + offset);
+> >  }
+> >
+> > +#ifdef CONFIG_SERIAL_8250_TS5500_485_TIMER
+> > +void serial8250_ts5500_set_termios(struct uart_port *port,
+> > +                                   struct ktermios *new,
+> > +                                   struct ktermios *old)
+> > +{
+> > +        u16 speed;
+> > +
+> > +        if (new->c_ospeed >= 9600 && port->line ==
+> > TS5500_485_SERIAL_PORT) {
+> > +                speed = ((115200 * 2) / new->c_ospeed);
+> > +
+> > +                /* This should be written by low byte followed by
+> > high byte */
+> > +                spin_lock_irq(&port->lock);
+> > +                outb((speed & 0x0F), TS5500_TIMER2_SPEED_ADDR);
+> > +                outb((speed >> 8), TS5500_TIMER2_SPEED_ADDR);
+> > +                spin_unlock_irq(&port->lock);
+> > +        }
+> > +}
+> > +#endif
+>
+> Please don't put board specific magic in this file, we are desperately
+> trying to get rid of it.
+>
+> > +
+> >  static unsigned int tsi_serial_in(struct uart_port *p, int offset)
+> >  {
+> >          unsigned int tmp;
+> > @@ -2464,6 +2490,10 @@ serial8250_do_set_termios(struct uart_port
+> > *port, struct ktermios *termios,
+> >          /* Don't rewrite B0 */
+> >          if (tty_termios_baud_rate(termios))
+> >                  tty_termios_encode_baud_rate(termios, baud, baud);
+> > +
+> > +#ifdef CONFIG_SERIAL_8250_TS5500_485_TIMER
+> > +        serial8250_ts5500_set_termios(port, termios, old);
+> > +#endif
+> >  }
+> >  EXPORT_SYMBOL(serial8250_do_set_termios);
+>
+> Provide your own set_termios method and then call into this one (which
+> is why it is exported)
 
-diff --git a/drivers/tty/serial/8250_pci.c b/drivers/tty/serial/8250_pci.c
-index 4b4968a..78e98a5 100644
---- a/drivers/tty/serial/8250_pci.c
-+++ b/drivers/tty/serial/8250_pci.c
-@@ -973,7 +973,7 @@ ce4100_serial_setup(struct serial_private *priv,
+I don't really understand how to do this. I've written my own
+ts5500_serial8250_set_termios() function, which first makes a call to
+serial8250_do_set_termios(), but I don't know how to make the platform
+uses this one now. I've seen the plat_serial8250_port structure which
+has a set_termios field, but I didn't find an example of usage of this
+structure with this field. Maybe that's not the good way to "hook" the
+serial8250_do_set_termios() function.
+Could you please explain how to do this?
 
- static int
- pci_omegapci_setup(struct serial_private *priv,
--		      struct pciserial_board *board,
-+		      const struct pciserial_board *board,
- 		      struct uart_port *port, int idx)
- {
- 	return setup_port(priv, port, 2, idx * 8, 0);
--- 
-1.7.4.1
-
+Regards,
+Vivien.
