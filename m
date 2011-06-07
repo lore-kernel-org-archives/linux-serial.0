@@ -1,104 +1,93 @@
-From: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
-Subject: Re: [RFC 3/5] serial: add support for Technologic Systems TS-5500
- RS-485 serial port
-Date: Mon, 6 Jun 2011 16:48:34 -0400
-Message-ID: <20110606164834.5894deda@v0nbox>
-References: <1304115712-5299-1-git-send-email-vivien.didelot@savoirfairelinux.com>
-	<1304115712-5299-4-git-send-email-vivien.didelot@savoirfairelinux.com>
-	<20110430111753.69466ae5@lxorguk.ukuu.org.uk>
+From: Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: /proc/stat btime accuracy problem
+Date: Mon, 6 Jun 2011 23:20:46 -0600
+Message-ID: <BANLkTimGfwqvhOKXCGqJUvMU7jozqQT8=g@mail.gmail.com>
+References: <BANLkTiniq6GVMJPO_-efKrWHQg9V9Dod9g@mail.gmail.com>
+ <1306967733.11492.11.camel@work-vm> <BANLkTi=yEMDLEo99WZm2Bt4pi_pog5igww@mail.gmail.com>
+ <1306972711.11492.23.camel@work-vm> <BANLkTimuPrqN1euyOqAGm2m4Ea1PdbrzDQ@mail.gmail.com>
+ <1306975745.11492.30.camel@work-vm> <BANLkTikR4HNnFsYm2ymm1+FTbeeXtvH51g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.savoirfairelinux.com ([209.172.62.77]:43092 "EHLO
-	mail.savoirfairelinux.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757042Ab1FFUss (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 6 Jun 2011 16:48:48 -0400
-In-Reply-To: <20110430111753.69466ae5@lxorguk.ukuu.org.uk>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <BANLkTikR4HNnFsYm2ymm1+FTbeeXtvH51g@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: john stultz <johnstul@us.ibm.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org, lm-sensors@lm-sensors.org
 
-Hi,
-Sorry for the late reply to this comment.
+I'm still spinning my wheels on this, so I guess the only thing left
+is to ask even more stupid questions :)
 
-On Sat, 30 Apr 2011 11:17:53
-+0100, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote :
-> > --- a/drivers/tty/serial/8250.c
-> > +++ b/drivers/tty/serial/8250.c
-> > @@ -109,6 +109,13 @@ static unsigned int skip_txen_test; /* force
-> > skip of txen test at init time */
-> >  #define CONFIG_HUB6 1
-> >
-> >  #include <asm/serial.h>
-> > +
-> > +/* TS-5500 related stuff */
-> > +#ifdef CONFIG_SERIAL_8250_TS5500_485_TIMER
-> > +#define TS5500_TIMER2_SPEED_ADDR        0x42
-> > +#define TS5500_485_SERIAL_PORT                0x02
-> > +#endif
-> > +
-> >  /*
-> >   * SERIAL_PORT_DFNS tells us about built-in ports that have no
-> >   * standard enumeration mechanism.   Platforms that can find all
-> > @@ -437,6 +444,25 @@ static void au_serial_out(struct uart_port *p,
-> > int offset, int value)
-> >          __raw_writel(value, p->membase + offset);
-> >  }
-> >
-> > +#ifdef CONFIG_SERIAL_8250_TS5500_485_TIMER
-> > +void serial8250_ts5500_set_termios(struct uart_port *port,
-> > +                                   struct ktermios *new,
-> > +                                   struct ktermios *old)
-> > +{
-> > +        u16 speed;
-> > +
-> > +        if (new->c_ospeed >= 9600 && port->line ==
-> > TS5500_485_SERIAL_PORT) {
-> > +                speed = ((115200 * 2) / new->c_ospeed);
-> > +
-> > +                /* This should be written by low byte followed by
-> > high byte */
-> > +                spin_lock_irq(&port->lock);
-> > +                outb((speed & 0x0F), TS5500_TIMER2_SPEED_ADDR);
-> > +                outb((speed >> 8), TS5500_TIMER2_SPEED_ADDR);
-> > +                spin_unlock_irq(&port->lock);
-> > +        }
-> > +}
-> > +#endif
->
-> Please don't put board specific magic in this file, we are desperately
-> trying to get rid of it.
->
-> > +
-> >  static unsigned int tsi_serial_in(struct uart_port *p, int offset)
-> >  {
-> >          unsigned int tmp;
-> > @@ -2464,6 +2490,10 @@ serial8250_do_set_termios(struct uart_port
-> > *port, struct ktermios *termios,
-> >          /* Don't rewrite B0 */
-> >          if (tty_termios_baud_rate(termios))
-> >                  tty_termios_encode_baud_rate(termios, baud, baud);
-> > +
-> > +#ifdef CONFIG_SERIAL_8250_TS5500_485_TIMER
-> > +        serial8250_ts5500_set_termios(port, termios, old);
-> > +#endif
-> >  }
-> >  EXPORT_SYMBOL(serial8250_do_set_termios);
->
-> Provide your own set_termios method and then call into this one (which
-> is why it is exported)
+I'm only concerned about the early boot sequence, and I think only
+about the period when we're using the jiffies clocksource.  My
+understanding is:
 
-I don't really understand how to do this. I've written my own
-ts5500_serial8250_set_termios() function, which first makes a call to
-serial8250_do_set_termios(), but I don't know how to make the platform
-uses this one now. I've seen the plat_serial8250_port structure which
-has a set_termios field, but I didn't find an example of usage of this
-structure with this field. Maybe that's not the good way to "hook" the
-serial8250_do_set_termios() function.
-Could you please explain how to do this?
+  - I'm using the jiffies clocksource during early boot.
+  - Jiffies depends on a periodic (1000 HZ in my case) interrupt that
+updates xtime via the tick_periodic -> do_timer -> update_wall_time
+path.
+  - If those periodic interrupts are lost, those xtime updates are forever lost.
+  - An interrupt would be lost if interrupts are disabled for an
+interval that covers two or more ticks (my guess ... I'm thinking that
+if interrupts were re-enabled before the second tick, the first one
+would be delayed but not lost).
+  - The RTC runs independently of CPU interrupts being disabled, so
+its time is not lost.
+  - User-space will typically reset xtime to match the RTC
 
-Regards,
-Vivien.
+And my sequence of events is:
+
+  - xtime = RTC reading #1
+  - wall_to_monotonic = -xtime
+  - periodic tick increments xtime
+  -  some ticks are lost while interrupts are disabled
+  - by the time we switch from jiffies to hpet and eventually tsc
+clock source, the RTC is ahead of xtime by several seconds (1-2 in a
+normal boot, 30+ in more extreme cases)
+  - user-space resets xtime to RTC ("hwclock -hctosys" in my case),
+which adds the delta to xtime and subtracts it from wall_to_monotonic
+  - getboottime() returns -wall_to_monotonic (should be RTC reading
+#1, but now "reading #1 + delta")
+
+It seems like we're throwing away information here at the time we
+switch from jiffies to a more capable clocksource -- at that point, we
+know the RTC - xtime delta, and we know that delta represents time
+when interrupts were disabled.  (Obviously this only applies during
+early boot, before we do any RTC updates.)
+
+My naive thought was "well, what if we just use the RTC directly as a
+clocksource."  It's crappy resolution, but at least it doesn't lose
+time, so I tried the following, which didn't work at all (hangs during
+boot).  But I don't know enough to know *why* this isn't feasible.
+Seems like jiffies can be different sizes, so why not 1 Hz?
+
++static cycle_t rtc_read(struct clocksource *cs)
++{
++       static struct timespec base;
++       struct timespec now;
++       static int first = 1;
++
++       read_persistent_clock(&now);
++       if (first) {
++               first = 0;
++               base = now;
++       }
++
++       return (cycle_t) (now.tv_sec - base.tv_sec);
++}
++
++struct clocksource clocksource_rtc = {
++       .name           = "rtc",
++       .rating         = 1,
++       .read           = rtc_read,
++       .flags          = CLOCK_SOURCE_IS_CONTINUOUS,
++       .mask           = CLOCKSOURCE_MASK(64),
++       .mult           = NSEC_PER_SEC,
++};
++
++struct clocksource * __init clocksource_default_clock(void)
++{
++       return &clocksource_rtc;
++}
+
+Bjorn
