@@ -1,49 +1,34 @@
-From: Jon Hunter <jon-hunter@ti.com>
-Subject: Re: [PATCH v3 04/12] Serial: OMAP: Add runtime pm support for omap-serial
- driver
-Date: Wed, 8 Jun 2011 15:39:04 -0500
-Message-ID: <4DEFDDE8.3090808@ti.com>
-References: <1307532194-13039-1-git-send-email-govindraj.raja@ti.com> <1307532194-13039-5-git-send-email-govindraj.raja@ti.com>
+From: Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>
+Subject: Re: FW: [PATCH v5] 8250_pci: add -ENODEV code for Intel EG20T PCH
+Date: Thu, 09 Jun 2011 08:57:11 +0900
+Message-ID: <4DF00C57.2080406@dsn.okisemi.com>
+References: <667A27282ACF7941B0F557DAD3491E16010A9E12CB@rrsmsx504.amr.corp.intel.com> <20110608162613.GA7005@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:60585 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751141Ab1FHUjK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 8 Jun 2011 16:39:10 -0400
-In-Reply-To: <1307532194-13039-5-git-send-email-govindraj.raja@ti.com>
+Received: from sm-d311v.smileserver.ne.jp ([203.211.202.206]:23778 "EHLO
+	sm-d311v.smileserver.ne.jp" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754011Ab1FHX5N (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 8 Jun 2011 19:57:13 -0400
+In-Reply-To: <20110608162613.GA7005@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Govindraj.R" <govindraj.raja@ti.com>
-Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>
+To: Greg KH <gregkh@suse.de>
+Cc: "Clark, Joel" <joel.clark@intel.com>, "Cox, Alan" <alan.cox@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Wang, Qi" <qi.wang@intel.com>, "Wang, Yong Y" <yong.y.wang@intel.com>, "Ewe, Kok Howg" <kok.howg.ewe@intel.com>, "toshiharu-linux@dsn.okisemi.com" <toshiharu-linux@dsn.okisemi.com>, "Liu, Bing Wei" <bing.wei.liu@intel.com>, "Skarpness, Mark" <mark.skarpness@intel.com>
 
-Hi Govindraj,
+Hi Greg,
 
-On 6/8/2011 6:23 AM, Govindraj.R wrote:
+(2011/06/09 1:26), Greg KH wrote:
+ >> We would like to add this fix as soon as it is acceptable.
+ >Add it to what?
+I think Joel means MeeGo team want to add this patch.
 
-[snip]
 
-> +
-> +#define OMAP_UART_AUTOSUSPEND_DELAY (30 * HZ) /* Value is msecs */
+Hi Joel,
+As Greg saying, This patch have already accepted and applied by Greg.
 
-[snip]
-
-> @@ -1295,18 +1381,36 @@ static int serial_omap_probe(struct platform_device *pdev)
->   		up->uart_dma.rx_dma_channel = OMAP_UART_DMA_CH_FREE;
->   	}
->
-> +	pm_runtime_use_autosuspend(&pdev->dev);
-> +	pm_runtime_set_autosuspend_delay(&pdev->dev,
-> +			OMAP_UART_AUTOSUSPEND_DELAY);
-
-Something is weird here...DEFAULT_AUTOSUSPEND_DELAY is defined as 
-(30*HZ) which would appear to be jiffies (ticks per second) and NOT 
-msecs. However, pm_runtime_set_autosuspend is clearly expecting msecs. 
-So this seems to conflict. By default 30*HZ for omap would be 30*128 = 
-3840ms so not quite 4 seconds.
-
-What were you intending here?
-
-Cheers
-Jon
+-- 
+tomoya
+OKI SEMICONDUCTOR CO., LTD.
