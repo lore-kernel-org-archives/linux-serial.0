@@ -1,68 +1,173 @@
-From: Hans-Christian Egtvedt <hans-christian.egtvedt@atmel.com>
-Subject: Re: [PATCH] atmel_serial: keep the platform_device unchanged
-Date: Wed, 08 Jun 2011 10:45:03 +0200
-Message-ID: <1307522703.10626.9.camel@hcegtvedt.norway.atmel.com>
-References: <1302724038-26236-1-git-send-email-plagnioj@jcrosoft.com>
+From: "Govindraj.R" <govindraj.raja@ti.com>
+Subject: [PATCH v3 03/12] OMAP2+: Serial: Add default mux for all uarts.
+Date: Wed, 8 Jun 2011 16:53:05 +0530
+Message-ID: <1307532194-13039-4-git-send-email-govindraj.raja@ti.com>
+References: <1307532194-13039-1-git-send-email-govindraj.raja@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from newsmtp5.atmel.com ([204.2.163.5]:6946 "EHLO sjogate2.atmel.com"
+Received: from comal.ext.ti.com ([198.47.26.152]:40243 "EHLO comal.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752429Ab1FHIpc (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 8 Jun 2011 04:45:32 -0400
-In-Reply-To: <1302724038-26236-1-git-send-email-plagnioj@jcrosoft.com>
+	id S1753302Ab1FHLXp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 8 Jun 2011 07:23:45 -0400
+In-Reply-To: <1307532194-13039-1-git-send-email-govindraj.raja@ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Patrice Vilchez <patrice.vilchez@atmel.com>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@suse.de>
+To: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>
 
-On Wed, 2011-04-13 at 21:47 +0200, Jean-Christophe PLAGNIOL-VILLARD
-wrote:
-> specify the port num via platform_data this will allow to match the clock
-> with the plaform_dev staticly
+Add default mux data for all uarts if mux info is not passed from
+board file to avoid breaking any board support.
 
-Sure this works as intended, now the platform device id is off, and at
-least for my 3.0 testing it is no longer able to open the console,
-unless I explicit set the id field again.
+Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+---
+ arch/arm/mach-omap2/serial.c |  127 +++++++++++++++++++++++++++++++++++++++++-
+ 1 files changed, 126 insertions(+), 1 deletions(-)
 
-Example on NGW100 mkII I use USART instance 1 as serial console, if not
-setting the platform device id to 0 (re-mapping), then I get a warning
-about unable to open console.
-
-Is you clock optimization an additional patch?
-
-<snipp AT91 changes)
-
-> diff --git a/arch/avr32/mach-at32ap/at32ap700x.c b/arch/avr32/mach-at32ap/at32ap700x.c
-> index bfc9d07..aa677e2 100644
-> --- a/arch/avr32/mach-at32ap/at32ap700x.c
-> +++ b/arch/avr32/mach-at32ap/at32ap700x.c
-> @@ -1014,6 +1014,7 @@ static struct platform_device *__initdata at32_usarts[4];
->  void __init at32_map_usart(unsigned int hw_id, unsigned int line, int flags)
->  {
->  	struct platform_device *pdev;
-> +	struct atmel_uart_data *pdata;
->  
->  	switch (hw_id) {
->  	case 0:
-> @@ -1042,7 +1043,8 @@ void __init at32_map_usart(unsigned int hw_id, unsigned int line, int flags)
->  		data->regs = (void __iomem *)pdev->resource[0].start;
->  	}
->  
-> -	pdev->id = line;
-
-AVR32 needs this to be present to work independent of which USART
-peripheral the user chooses to use for console.
-
-> +	pdata = pdev->dev.platform_data;
-> +	pdata->num = portnr;
->  	at32_usarts[line] = pdev;
->  }
->  
-
-<snipp>
-
+diff --git a/arch/arm/mach-omap2/serial.c b/arch/arm/mach-omap2/serial.c
+index b16768a..8c1a4c7 100644
+--- a/arch/arm/mach-omap2/serial.c
++++ b/arch/arm/mach-omap2/serial.c
+@@ -66,6 +66,129 @@ static struct omap_device_pm_latency omap_uart_latency[] = {
+ 	},
+ };
+ 
++#ifdef CONFIG_OMAP_MUX
++static struct omap_device_pad default_uart1_pads[] __initdata = {
++	{
++		.name	= "uart1_cts.uart1_cts",
++		.enable	= OMAP_PIN_INPUT_PULLUP | OMAP_MUX_MODE0,
++	},
++	{
++		.name	= "uart1_rts.uart1_rts",
++		.enable	= OMAP_PIN_OUTPUT | OMAP_MUX_MODE0,
++	},
++	{
++		.name	= "uart1_tx.uart1_tx",
++		.enable	= OMAP_PIN_OUTPUT | OMAP_MUX_MODE0,
++	},
++	{
++		.name	= "uart1_rx.uart1_rx",
++		.flags	= OMAP_DEVICE_PAD_REMUX | OMAP_DEVICE_PAD_WAKEUP,
++		.enable	= OMAP_PIN_INPUT_PULLUP | OMAP_MUX_MODE0,
++	},
++};
++
++static struct omap_device_pad default_uart2_pads[] __initdata = {
++	{
++		.name	= "uart2_cts.uart2_cts",
++		.enable	= OMAP_PIN_INPUT_PULLUP | OMAP_MUX_MODE0,
++	},
++	{
++		.name	= "uart2_rts.uart2_rts",
++		.enable	= OMAP_PIN_OUTPUT | OMAP_MUX_MODE0,
++	},
++	{
++		.name	= "uart2_tx.uart2_tx",
++		.enable	= OMAP_PIN_OUTPUT | OMAP_MUX_MODE0,
++	},
++	{
++		.name	= "uart2_rx.uart2_rx",
++		.flags	= OMAP_DEVICE_PAD_REMUX | OMAP_DEVICE_PAD_WAKEUP,
++		.enable	= OMAP_PIN_INPUT_PULLUP | OMAP_MUX_MODE0,
++	},
++};
++
++static struct omap_device_pad default_uart3_pads[] __initdata = {
++	{
++		.name	= "uart3_cts_rctx.uart3_cts_rctx",
++		.enable	= OMAP_PIN_INPUT_PULLUP | OMAP_MUX_MODE0,
++	},
++	{
++		.name	= "uart3_rts_sd.uart3_rts_sd",
++		.enable	= OMAP_PIN_OUTPUT | OMAP_MUX_MODE0,
++	},
++	{
++		.name	= "uart3_tx_irtx.uart3_tx_irtx",
++		.enable	= OMAP_PIN_OUTPUT | OMAP_MUX_MODE0,
++	},
++	{
++		.name	= "uart3_rx_irrx.uart3_rx_irrx",
++		.flags	= OMAP_DEVICE_PAD_REMUX | OMAP_DEVICE_PAD_WAKEUP,
++		.enable	= OMAP_PIN_INPUT | OMAP_MUX_MODE0,
++	},
++};
++
++static struct omap_device_pad default_omap36xx_uart4_pads[] __initdata = {
++	{
++		.name   = "gpmc_wait2.uart4_tx",
++		.enable = OMAP_PIN_OUTPUT | OMAP_MUX_MODE0,
++	},
++	{
++		.name	= "gpmc_wait3.uart4_rx",
++		.flags	= OMAP_DEVICE_PAD_REMUX | OMAP_DEVICE_PAD_WAKEUP,
++		.enable	= OMAP_PIN_INPUT | OMAP_MUX_MODE2,
++	},
++};
++
++static struct omap_device_pad default_omap4_uart4_pads[] __initdata = {
++	{
++		.name	= "uart4_tx.uart4_tx",
++		.enable	= OMAP_PIN_OUTPUT | OMAP_MUX_MODE0,
++	},
++	{
++		.name	= "uart4_rx.uart4_rx",
++		.flags	= OMAP_DEVICE_PAD_REMUX | OMAP_DEVICE_PAD_WAKEUP,
++		.enable	= OMAP_PIN_INPUT | OMAP_MUX_MODE0,
++	},
++};
++#else
++static struct omap_device_pad default_uart1_pads[] __initdata = {};
++static struct omap_device_pad default_uart2_pads[] __initdata = {};
++static struct omap_device_pad default_uart3_pads[] __initdata = {};
++static struct omap_device_pad default_omap36xx_uart4_pads[] __initdata = {};
++static struct omap_device_pad default_omap4_uart4_pads[] __initdata = {};
++#endif
++
++static void omap_serial_fill_default_pads(struct omap_board_data *bdata)
++{
++	switch (bdata->id) {
++	case 0:
++		bdata->pads = default_uart1_pads;
++		bdata->pads_cnt = ARRAY_SIZE(default_uart1_pads);
++		break;
++	case 1:
++		bdata->pads = default_uart2_pads;
++		bdata->pads_cnt = ARRAY_SIZE(default_uart2_pads);
++		break;
++	case 2:
++		bdata->pads = default_uart3_pads;
++		bdata->pads_cnt = ARRAY_SIZE(default_uart3_pads);
++		break;
++	case 3:
++		if (cpu_is_omap44xx()) {
++			bdata->pads = default_omap4_uart4_pads;
++			bdata->pads_cnt =
++				ARRAY_SIZE(default_omap4_uart4_pads);
++		} else {
++			bdata->pads = default_omap36xx_uart4_pads;
++			bdata->pads_cnt =
++				ARRAY_SIZE(default_omap36xx_uart4_pads);
++		}
++		break;
++	default:
++		break;
++	}
++}
++
+ static void omap_uart_idle_init(struct omap_uart_port_info *uart,
+ 				unsigned short num)
+ {
+@@ -242,6 +365,8 @@ void __init omap_serial_init(void)
+ 		bdata.flags = 0;
+ 		bdata.pads = NULL;
+ 		bdata.pads_cnt = 0;
+-		omap_serial_init_port(&bdata);
++
++		if (cpu_is_omap44xx() || cpu_is_omap34xx())
++			omap_serial_fill_default_pads(&bdata);
+ 	}
+ }
 -- 
-Hans-Christian Egtvedt
+1.7.0.4
 
