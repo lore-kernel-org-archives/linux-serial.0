@@ -1,63 +1,30 @@
-From: Hans-Christian Egtvedt <hans-christian.egtvedt@atmel.com>
-Subject: Re: [PATCH] atmel_serial: keep the platform_device unchanged
-Date: Wed, 08 Jun 2011 16:02:20 +0200
-Message-ID: <1307541740.10626.15.camel@hcegtvedt.norway.atmel.com>
-References: <1302724038-26236-1-git-send-email-plagnioj@jcrosoft.com>
-	 <1307522703.10626.9.camel@hcegtvedt.norway.atmel.com>
-	 <20110608134730.GA17584@game.jcrosoft.org>
+From: Greg KH <gregkh@suse.de>
+Subject: Re: FW: [PATCH v5] 8250_pci: add -ENODEV code for Intel EG20T PCH
+Date: Wed, 8 Jun 2011 09:26:13 -0700
+Message-ID: <20110608162613.GA7005@suse.de>
+References: <667A27282ACF7941B0F557DAD3491E16010A9E12CB@rrsmsx504.amr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from newsmtp5.atmel.com ([204.2.163.5]:53993 "EHLO
-	sjogate2.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755208Ab1FHOCx (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 8 Jun 2011 10:02:53 -0400
-In-Reply-To: <20110608134730.GA17584@game.jcrosoft.org>
+Received: from cantor2.suse.de ([195.135.220.15]:37864 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751710Ab1FHQdB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 8 Jun 2011 12:33:01 -0400
+Content-Disposition: inline
+In-Reply-To: <667A27282ACF7941B0F557DAD3491E16010A9E12CB@rrsmsx504.amr.corp.intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Patrice Vilchez <patrice.vilchez@atmel.com>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@suse.de>
+To: "Clark, Joel" <joel.clark@intel.com>
+Cc: "Cox, Alan" <alan.cox@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Wang, Qi" <qi.wang@intel.com>, "Wang, Yong Y" <yong.y.wang@intel.com>, "Ewe, Kok Howg" <kok.howg.ewe@intel.com>, "toshiharu-linux@dsn.okisemi.com" <toshiharu-linux@dsn.okisemi.com>, 'Tomoya MORINAGA' <tomoya-linux@dsn.okisemi.com>, "Liu, Bing Wei" <bing.wei.liu@intel.com>, "Skarpness, Mark" <mark.skarpness@intel.com>
 
-On Wed, 2011-06-08 at 15:47 +0200, Jean-Christophe PLAGNIOL-VILLARD
-wrote:
-> On 10:45 Wed 08 Jun     , Hans-Christian Egtvedt wrote:
-> > On Wed, 2011-04-13 at 21:47 +0200, Jean-Christophe PLAGNIOL-VILLARD
-> > wrote:
+On Wed, Jun 08, 2011 at 05:26:42AM -0600, Clark, Joel wrote:
+> We would like to add this fix as soon as it is acceptable.
 
-<snipp>
+Add it to what?
 
-> > > diff --git a/arch/avr32/mach-at32ap/at32ap700x.c b/arch/avr32/mach-at32ap/at32ap700x.c
-> > > index bfc9d07..aa677e2 100644
-> > > --- a/arch/avr32/mach-at32ap/at32ap700x.c
-> > > +++ b/arch/avr32/mach-at32ap/at32ap700x.c
-> > > @@ -1014,6 +1014,7 @@ static struct platform_device *__initdata at32_usarts[4];
-> > >  void __init at32_map_usart(unsigned int hw_id, unsigned int line, int flags)
-> > >  {
-> > >  	struct platform_device *pdev;
-> > > +	struct atmel_uart_data *pdata;
-> > >  
-> > >  	switch (hw_id) {
-> > >  	case 0:
-> > > @@ -1042,7 +1043,8 @@ void __init at32_map_usart(unsigned int hw_id, unsigned int line, int flags)
-> > >  		data->regs = (void __iomem *)pdev->resource[0].start;
-> > >  	}
-> > >  
-> > > -	pdev->id = line;
-> > 
-> > AVR32 needs this to be present to work independent of which USART
-> > peripheral the user chooses to use for console.
-> > 
-> > > +	pdata = pdev->dev.platform_data;
-> > > +	pdata->num = portnr;
-> here supposed to be
-> 	pdata->num = line;
+> Will this version of this patch be accepted and applied?
 
-I know, but that doesn't fix the problem about not able to find a
-console, the platform data id must also be 0 (if console is on ttyS0)
-AFAICT.
+It's already in linux-next and will be sent to Linus in a few days for
+inclusion in the final 3.0 release.
 
--- 
-Hans-Christian Egtvedt
-
+greg k-h
