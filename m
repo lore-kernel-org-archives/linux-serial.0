@@ -1,30 +1,49 @@
-From: Greg KH <gregkh@suse.de>
-Subject: Re: FW: [PATCH v5] 8250_pci: add -ENODEV code for Intel EG20T PCH
-Date: Wed, 8 Jun 2011 09:26:13 -0700
-Message-ID: <20110608162613.GA7005@suse.de>
-References: <667A27282ACF7941B0F557DAD3491E16010A9E12CB@rrsmsx504.amr.corp.intel.com>
+From: Jon Hunter <jon-hunter@ti.com>
+Subject: Re: [PATCH v3 04/12] Serial: OMAP: Add runtime pm support for omap-serial
+ driver
+Date: Wed, 8 Jun 2011 15:39:04 -0500
+Message-ID: <4DEFDDE8.3090808@ti.com>
+References: <1307532194-13039-1-git-send-email-govindraj.raja@ti.com> <1307532194-13039-5-git-send-email-govindraj.raja@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:37864 "EHLO mx2.suse.de"
+Received: from bear.ext.ti.com ([192.94.94.41]:60585 "EHLO bear.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751710Ab1FHQdB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 8 Jun 2011 12:33:01 -0400
-Content-Disposition: inline
-In-Reply-To: <667A27282ACF7941B0F557DAD3491E16010A9E12CB@rrsmsx504.amr.corp.intel.com>
+	id S1751141Ab1FHUjK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 8 Jun 2011 16:39:10 -0400
+In-Reply-To: <1307532194-13039-5-git-send-email-govindraj.raja@ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Clark, Joel" <joel.clark@intel.com>
-Cc: "Cox, Alan" <alan.cox@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Wang, Qi" <qi.wang@intel.com>, "Wang, Yong Y" <yong.y.wang@intel.com>, "Ewe, Kok Howg" <kok.howg.ewe@intel.com>, "toshiharu-linux@dsn.okisemi.com" <toshiharu-linux@dsn.okisemi.com>, 'Tomoya MORINAGA' <tomoya-linux@dsn.okisemi.com>, "Liu, Bing Wei" <bing.wei.liu@intel.com>, "Skarpness, Mark" <mark.skarpness@intel.com>
+To: "Govindraj.R" <govindraj.raja@ti.com>
+Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>
 
-On Wed, Jun 08, 2011 at 05:26:42AM -0600, Clark, Joel wrote:
-> We would like to add this fix as soon as it is acceptable.
+Hi Govindraj,
 
-Add it to what?
+On 6/8/2011 6:23 AM, Govindraj.R wrote:
 
-> Will this version of this patch be accepted and applied?
+[snip]
 
-It's already in linux-next and will be sent to Linus in a few days for
-inclusion in the final 3.0 release.
+> +
+> +#define OMAP_UART_AUTOSUSPEND_DELAY (30 * HZ) /* Value is msecs */
 
-greg k-h
+[snip]
+
+> @@ -1295,18 +1381,36 @@ static int serial_omap_probe(struct platform_device *pdev)
+>   		up->uart_dma.rx_dma_channel = OMAP_UART_DMA_CH_FREE;
+>   	}
+>
+> +	pm_runtime_use_autosuspend(&pdev->dev);
+> +	pm_runtime_set_autosuspend_delay(&pdev->dev,
+> +			OMAP_UART_AUTOSUSPEND_DELAY);
+
+Something is weird here...DEFAULT_AUTOSUSPEND_DELAY is defined as 
+(30*HZ) which would appear to be jiffies (ticks per second) and NOT 
+msecs. However, pm_runtime_set_autosuspend is clearly expecting msecs. 
+So this seems to conflict. By default 30*HZ for omap would be 30*128 = 
+3840ms so not quite 4 seconds.
+
+What were you intending here?
+
+Cheers
+Jon
