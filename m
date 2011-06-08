@@ -1,133 +1,72 @@
-From: "Clark, Joel" <joel.clark@intel.com>
-Subject: FW: [PATCH v5] 8250_pci: add -ENODEV code for Intel EG20T PCH
-Date: Wed, 8 Jun 2011 05:26:42 -0600
-Message-ID: <667A27282ACF7941B0F557DAD3491E16010A9E12CB@rrsmsx504.amr.corp.intel.com>
+From: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+Subject: Re: [PATCH] atmel_serial: keep the platform_device unchanged
+Date: Wed, 8 Jun 2011 15:47:30 +0200
+Message-ID: <20110608134730.GA17584@game.jcrosoft.org>
+References: <1302724038-26236-1-git-send-email-plagnioj@jcrosoft.com>
+	<1307522703.10626.9.camel@hcegtvedt.norway.atmel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:6824 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750999Ab1FHL1C convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 8 Jun 2011 07:27:02 -0400
-Content-Language: en-US
-Sender: linux-serial-owner@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <1307522703.10626.9.camel@hcegtvedt.norway.atmel.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: linux-arm-kernel-bounces@lists.infradead.org
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Hans-Christian Egtvedt <hans-christian.egtvedt@atmel.com>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@suse.de>, Patrice Vilchez <patrice.vilchez@atmel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
-To: "Cox, Alan" <alan.cox@intel.com>, "gregkh@suse.de" <gregkh@suse.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.k>
-Cc: "Wang, Qi" <qi.wang@intel.com>, "Wang, Yong Y" <yong.y.wang@intel.com>, "Clark, Joel" <joel.clark@intel.com>, "Ewe, Kok Howg" <kok.howg.ewe@intel.com>, "toshiharu-linux@dsn.okisemi.com" <toshiharu-linux@dsn.okisemi.com>, 'Tomoya MORINAGA' <tomoya-linux@dsn.okisemi.com>, "Liu, Bing Wei" <bing.wei.liu@intel.com>, "Skarpness, Mark" <mark.skarpness@intel.com>
 
-> On Wednesday, June 01, 2011 7:31 PM, Tomoya MORINAGA [mailto:tomoya-linux@dsn.okisemi.com] wrote:
->
-> Intel EG20T PCH has UART device which is compatible with 8250.
-> Currently, with general configuration, the PCH UART driver is not loaded but
-> 8250 standard driver is loaded.
-> Therefore, in case of using PCH UART driver, need to disable 8250 pci function.
-> However, this procedure is not best solution.
-> This patch, in 8250_pci, if the device is the PCH or the family IOH,
-> '-ENODEV' is returned.
-> As a result, disabling 8250-pci processing becomes unnecessary.
->
-> Signed-off-by: Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>
-> ---
-> V5: Rename own_init again.
->     return_ENODEV() to pci_eg20t_init()
->
-> V4: Rename own_init to return_ENODEV
->     Add #if defined ~ #endif
->
-> V3: add own init() and set the init() to quirk table.
->
-> V2: Delete #ifdef CONFIG_SERIAL_PCH_UART ~ #endif
->     Use quirk table structure
-> ---
->  drivers/tty/serial/8250_pci.c |   59 +++++++++++++++++++++++++++++++++++++++++
->  1 files changed, 59 insertions(+), 0 deletions(-)
->
-> diff --git a/drivers/tty/serial/8250_pci.c b/drivers/tty/serial/8250_pci.c
-> index 738cec9..2b40fbf 100644
-> --- a/drivers/tty/serial/8250_pci.c
-> +++ b/drivers/tty/serial/8250_pci.c
-> @@ -988,6 +988,15 @@ static int skip_tx_en_setup(struct serial_private *priv,
->  	return pci_default_setup(priv, board, port, idx);
->  }
->  
-> +static int pci_eg20t_init(struct pci_dev *dev)
-> +{
-> +#if defined(CONFIG_SERIAL_PCH_UART) || defined(CONFIG_SERIAL_PCH_UART_MODULE)
-> +	return -ENODEV;
-> +#else
-> +	return 0;
-> +#endif
-> +}
-> +
->  /* This should be in linux/pci_ids.h */
->  #define PCI_VENDOR_ID_SBSMODULARIO	0x124B
->  #define PCI_SUBVENDOR_ID_SBSMODULARIO	0x124B
-> @@ -1430,6 +1439,56 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
->  		.init		= pci_oxsemi_tornado_init,
->  		.setup		= pci_default_setup,
->  	},
-> +	{
-> +		.vendor         = PCI_VENDOR_ID_INTEL,
-> +		.device         = 0x8811,
-> +		.init		= pci_eg20t_init,
-> +	},
-> +	{
-> +		.vendor         = PCI_VENDOR_ID_INTEL,
-> +		.device         = 0x8812,
-> +		.init		= pci_eg20t_init,
-> +	},
-> +	{
-> +		.vendor         = PCI_VENDOR_ID_INTEL,
-> +		.device         = 0x8813,
-> +		.init		= pci_eg20t_init,
-> +	},
-> +	{
-> +		.vendor         = PCI_VENDOR_ID_INTEL,
-> +		.device         = 0x8814,
-> +		.init		= pci_eg20t_init,
-> +	},
-> +	{
-> +		.vendor         = 0x10DB,
-> +		.device         = 0x8027,
-> +		.init		= pci_eg20t_init,
-> +	},
-> +	{
-> +		.vendor         = 0x10DB,
-> +		.device         = 0x8028,
-> +		.init		= pci_eg20t_init,
-> +	},
-> +	{
-> +		.vendor         = 0x10DB,
-> +		.device         = 0x8029,
-> +		.init		= pci_eg20t_init,
-> +	},
-> +	{
-> +		.vendor         = 0x10DB,
-> +		.device         = 0x800C,
-> +		.init		= pci_eg20t_init,
-> +	},
-> +	{
-> +		.vendor         = 0x10DB,
-> +		.device         = 0x800D,
-> +		.init		= pci_eg20t_init,
-> +	},
-> +	{
-> +		.vendor         = 0x10DB,
-> +		.device         = 0x800D,
-> +		.init		= pci_eg20t_init,
-> +	},
->  	/*
->  	 * Default "match everything" terminator entry
->  	 */
->
-> -- 
-> 1.7.4
+On 10:45 Wed 08 Jun     , Hans-Christian Egtvedt wrote:
+> On Wed, 2011-04-13 at 21:47 +0200, Jean-Christophe PLAGNIOL-VILLARD
+> wrote:
+> > specify the port num via platform_data this will allow to match the clock
+> > with the plaform_dev staticly
+> 
+> Sure this works as intended, now the platform device id is off, and at
+> least for my 3.0 testing it is no longer able to open the console,
+> unless I explicit set the id field again.
+> 
+> Example on NGW100 mkII I use USART instance 1 as serial console, if not
+> setting the platform device id to 0 (re-mapping), then I get a warning
+> about unable to open console.
+> 
+> Is you clock optimization an additional patch?
+no but we can also switch the avr32 to clkdev
+> 
+> <snipp AT91 changes)
+> 
+> > diff --git a/arch/avr32/mach-at32ap/at32ap700x.c b/arch/avr32/mach-at32ap/at32ap700x.c
+> > index bfc9d07..aa677e2 100644
+> > --- a/arch/avr32/mach-at32ap/at32ap700x.c
+> > +++ b/arch/avr32/mach-at32ap/at32ap700x.c
+> > @@ -1014,6 +1014,7 @@ static struct platform_device *__initdata at32_usarts[4];
+> >  void __init at32_map_usart(unsigned int hw_id, unsigned int line, int flags)
+> >  {
+> >  	struct platform_device *pdev;
+> > +	struct atmel_uart_data *pdata;
+> >  
+> >  	switch (hw_id) {
+> >  	case 0:
+> > @@ -1042,7 +1043,8 @@ void __init at32_map_usart(unsigned int hw_id, unsigned int line, int flags)
+> >  		data->regs = (void __iomem *)pdev->resource[0].start;
+> >  	}
+> >  
+> > -	pdev->id = line;
+> 
+> AVR32 needs this to be present to work independent of which USART
+> peripheral the user chooses to use for console.
+> 
+> > +	pdata = pdev->dev.platform_data;
+> > +	pdata->num = portnr;
+here supposed to be
+	pdata->num = line;
 
-
-We would like to add this fix as soon as it is acceptable.  Will this version of this patch be accepted and applied?
-
-regards
-Joel Clark
-MeeGo IVI 
+Best Regards,
+J.
