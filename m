@@ -1,7 +1,7 @@
 From: john stultz <johnstul@us.ibm.com>
 Subject: Re: /proc/stat btime accuracy problem
-Date: Tue, 07 Jun 2011 10:50:17 -0700
-Message-ID: <1307469017.3163.37.camel@work-vm>
+Date: Tue, 07 Jun 2011 18:03:57 -0700
+Message-ID: <1307495037.3163.76.camel@work-vm>
 References: <BANLkTiniq6GVMJPO_-efKrWHQg9V9Dod9g@mail.gmail.com>
 	 <1306967733.11492.11.camel@work-vm>
 	 <BANLkTi=yEMDLEo99WZm2Bt4pi_pog5igww@mail.gmail.com>
@@ -10,126 +10,96 @@ References: <BANLkTiniq6GVMJPO_-efKrWHQg9V9Dod9g@mail.gmail.com>
 	 <1306975745.11492.30.camel@work-vm>
 	 <BANLkTikR4HNnFsYm2ymm1+FTbeeXtvH51g@mail.gmail.com>
 	 <BANLkTimGfwqvhOKXCGqJUvMU7jozqQT8=g@mail.gmail.com>
+	 <1307469017.3163.37.camel@work-vm>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from e9.ny.us.ibm.com ([32.97.182.139]:42925 "EHLO e9.ny.us.ibm.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754063Ab1FGRuu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 7 Jun 2011 13:50:50 -0400
-In-Reply-To: <BANLkTimGfwqvhOKXCGqJUvMU7jozqQT8=g@mail.gmail.com>
+Received: from e35.co.us.ibm.com ([32.97.110.153]:55327 "EHLO
+	e35.co.us.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932342Ab1FHBEH (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 7 Jun 2011 21:04:07 -0400
+In-Reply-To: <1307469017.3163.37.camel@work-vm>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Bjorn Helgaas <bhelgaas@google.com>
 Cc: Thomas Gleixner <tglx@linutronix.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
 
-On Mon, 2011-06-06 at 23:20 -0600, Bjorn Helgaas wrote:
-> I'm still spinning my wheels on this, so I guess the only thing left
-> is to ask even more stupid questions :)
+On Tue, 2011-06-07 at 10:50 -0700, john stultz wrote:
+> Maybe to get this back on coarse, could you provide some additional
+> details about the machine where you're seeing this? Is there one
+> specific driver that is putting out tons of output over the serial
+> console? Or is there anything unique about the serial port or its
+> settings (is it configured at 300 baud :)? What is the /proc/interrupts
+> count after boot on one of these systems?
+
+Sorry, I just remembered you already provided some of these details
+below:
+
+On Thu, 2011-06-02 at 00:34 -0600, Bjorn Helgaas wrote: 
+> Linux version 3.0.0-smp-DEV ...
+>   BH now   rtc 1306992452 (start_kernel, before setup_arch)
+>       Printk 230K of numa=fake debug stuff (more than seems strictly
+>       necessary to me, but there it is).  All this data goes into the log
+>       buffer, not to the UART, because the console hasn't been
+>       initialized yet.
+[snip]
+> console [ttyS0] enabled
+>       Now ttyS0 is enabled, so we dump the log buffer to the UART.  I think
+>       this happens in console_unlock(), with interrupts disabled for the whole
+>       buffer.
 > 
-> I'm only concerned about the early boot sequence, and I think only
-> about the period when we're using the jiffies clocksource.  My
-> understanding is:
-> 
->   - I'm using the jiffies clocksource during early boot.
->   - Jiffies depends on a periodic (1000 HZ in my case) interrupt that
-> updates xtime via the tick_periodic -> do_timer -> update_wall_time
-> path.
-Yep.
-
->   - If those periodic interrupts are lost, those xtime updates are forever lost.
-
-Yep.
-
->   - An interrupt would be lost if interrupts are disabled for an
-> interval that covers two or more ticks (my guess ... I'm thinking that
-> if interrupts were re-enabled before the second tick, the first one
-> would be delayed but not lost).
-
-Yep.  There's also some possibly connected issues here to irq starvation
-related to the irq priorities (so even if irqs were disabled, if the irq
-is getting hammered, and that irq is higher priority then the tick, you
-can lose ticks that way as well).
-
->   - The RTC runs independently of CPU interrupts being disabled, so
-> its time is not lost.
-
-Yep.
-
->   - User-space will typically reset xtime to match the RTC
-
-Not really sure about this one. I think most systems will set the system
-time via NTP and then after we're considered in-sync with ntpd we'll set
-the RTC to system time every 11 minutes. 
-
-But regardless, the issue that if we lose ticks, the btime won't seem to
-be correct remains.
-
-> And my sequence of events is:
-> 
->   - xtime = RTC reading #1
->   - wall_to_monotonic = -xtime
->   - periodic tick increments xtime
->   -  some ticks are lost while interrupts are disabled
->   - by the time we switch from jiffies to hpet and eventually tsc
-> clock source, the RTC is ahead of xtime by several seconds (1-2 in a
-> normal boot, 30+ in more extreme cases)
->   - user-space resets xtime to RTC ("hwclock -hctosys" in my case),
-> which adds the delta to xtime and subtracts it from wall_to_monotonic
->   - getboottime() returns -wall_to_monotonic (should be RTC reading
-> #1, but now "reading #1 + delta")
-> 
-> It seems like we're throwing away information here at the time we
-> switch from jiffies to a more capable clocksource -- at that point, we
-> know the RTC - xtime delta, and we know that delta represents time
-> when interrupts were disabled.  (Obviously this only applies during
-> early boot, before we do any RTC updates.)
-
-But I think you're focusing on trying to solve the symptom instead of
-the problem. The really big issue here is that irqs are apparently being
-disabled for 30 seconds at a time.
-
-Sure, once a real clocksource is registered, maybe you don't see
-timekeeping problems, but if the serial console gets more output, but
-then you might see strange scheduling issues, or very late timers.
-Further, you could hit other strange problems like OOM issues if you're
-doing lots of RCU and the grace periods don't get to run.
-
-Further, even if we did use the RTC to correct for lost ticks that
-happened while using the jiffies clocksource, you have the fact that the
-RTC resolution is so coarse, you couldn't account for lost ticks of less
-then a second anyway (which I suspect is much more common then the 30
-second intervals you're seeing).
+>   BH now   rtc 1306992481 xt 1306992459 wtm -1306992457
+>   clocksource_register jiffies
+>       This RTC read is in clocksource_register(); note that xtime is now
+>       22 seconds behind the RTC.  The UART is running at 115200 baud,
+>       and 230K/(115200/10) = about 20 seconds, so this sort of matches
+>       the time I expect it to take to dump the buffer.
 
 
-> My naive thought was "well, what if we just use the RTC directly as a
-> clocksource."  It's crappy resolution, but at least it doesn't lose
-> time, so I tried the following, which didn't work at all (hangs during
-> boot).  But I don't know enough to know *why* this isn't feasible.
+Ok. So having the 230k data backlog at console_unlock() seems to be part of the issue.
 
-It wouldn't be impossible to use the RTC as a clocksource (I think old
-601 ppc macs use this). However, its not really a generic solution, as
-systems have a number of different types of RTCs, some which go over i2c
-buses or require interrupts in order to be read. read_persistent_clock
-is safe, but it doesn't solve the issue for systems that don't provide a
-read_persistent_clock hook.
-
-> Seems like jiffies can be different sizes, so why not 1 Hz?
-
-Hmm. That is interesting. I'm guessing it probably hits an edge case
-where the timekeeping code expects there to be a non-zero shift value.
-But again, I don't think this approach is going to solve all the issues
-that might be caused by 30-seconds of irqs being off.
-
-
-Maybe to get this back on coarse, could you provide some additional
-details about the machine where you're seeing this? Is there one
-specific driver that is putting out tons of output over the serial
-console? Or is there anything unique about the serial port or its
-settings (is it configured at 300 baud :)? What is the /proc/interrupts
-count after boot on one of these systems?
+Maybe something like the following could help? By only holding irqs off for 1k chunks?
 
 thanks
 -john
+
+
+diff --git a/kernel/printk.c b/kernel/printk.c
+index 3518539..9703b22 100644
+--- a/kernel/printk.c
++++ b/kernel/printk.c
+@@ -1243,6 +1243,7 @@ void console_unlock(void)
+ 	unsigned long flags;
+ 	unsigned _con_start, _log_end;
+ 	unsigned wake_klogd = 0;
++	unsigned chunk_size, length;
+ 
+ 	if (console_suspended) {
+ 		up(&console_sem);
+@@ -1251,14 +1252,18 @@ void console_unlock(void)
+ 
+ 	console_may_schedule = 0;
+ 
++	chunk_size = min(LOG_BUF_MASK, 1024); /* 1k chunks */
++
+ 	for ( ; ; ) {
+ 		spin_lock_irqsave(&logbuf_lock, flags);
+ 		wake_klogd |= log_start - log_end;
+ 		if (con_start == log_end)
+ 			break;			/* Nothing to print */
++		length = (log_end - con_start) & LOG_BUF_MASK;
++		length = min(length , chunk_size);
+ 		_con_start = con_start;
+-		_log_end = log_end;
+-		con_start = log_end;		/* Flush */
++		_log_end = (con_start + length) & LOG_BUF_MASK;
++		con_start = _log_end;		/* Flush */
+ 		spin_unlock(&logbuf_lock);
+ 		stop_critical_timings();	/* don't trace print latency */
+ 		call_console_drivers(_con_start, _log_end);
+
+
+
 
