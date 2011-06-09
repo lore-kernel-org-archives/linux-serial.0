@@ -1,42 +1,55 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCHv2 1/2] amba pl011: workaround for uart registers lockup
-Date: Thu, 9 Jun 2011 13:11:53 -0700
-Message-ID: <20110609201153.GA12792@kroah.com>
-References: <20110516172958.GA13011@kroah.com>
- <1305609617-9524-1-git-send-email-shreshthakumar.sahu@stericsson.com>
- <20110517182356.GA17703@kroah.com>
- <20110517185133.GB9105@kroah.com>
- <BANLkTik18mT-AYU=myEohquwgJ12hXZzcA@mail.gmail.com>
+From: Jon Hunter <jon-hunter@ti.com>
+Subject: Re: [PATCH v3 04/12] Serial: OMAP: Add runtime pm support for omap-serial
+ driver
+Date: Thu, 9 Jun 2011 15:49:03 -0500
+Message-ID: <4DF131BF.3050908@ti.com>
+References: <1307532194-13039-1-git-send-email-govindraj.raja@ti.com> <1307532194-13039-5-git-send-email-govindraj.raja@ti.com> <4DEFDDE8.3090808@ti.com> <BANLkTik1fRzQEnGyzTLour-_kYxR+y2kGg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out4.smtp.messagingengine.com ([66.111.4.28]:49376 "EHLO
-	out4.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753574Ab1FIUSu (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 9 Jun 2011 16:18:50 -0400
-Content-Disposition: inline
-In-Reply-To: <BANLkTik18mT-AYU=myEohquwgJ12hXZzcA@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <BANLkTik1fRzQEnGyzTLour-_kYxR+y2kGg@mail.gmail.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Govindraj <govindraj.ti@gmail.com>
+Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>
 List-Id: linux-serial@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Shreshtha Kumar SAHU <shreshthakumar.sahu@stericsson.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, rmk+kernel@arm.linux.org.uk, linus.walleij@stericsson.com, alan@linux.intel.com
 
-On Thu, Jun 09, 2011 at 09:46:26PM +0200, Linus Walleij wrote:
-> On Tue, May 17, 2011 at 8:51 PM, Greg KH <greg@kroah.com> wrote:
-> 
-> > Do you still want me to take this patch through the serial tree, or will
-> > both be going through some ARM tree?
-> 
-> Hm these two patches appear to be stuck in limbo, missing the
-> merge window and all.
-> 
-> Which is sad, because they fix real issues to us.
-> 
-> How do we proceed?
+Hi Govindraj
 
-Resend them and I'll take them.
+On 06/08/2011 11:35 PM, Govindraj wrote:
+> On Thu, Jun 9, 2011 at 2:09 AM, Jon Hunter<jon-hunter@ti.com>  wrote:
+>> Hi Govindraj,
+>>
+>> On 6/8/2011 6:23 AM, Govindraj.R wrote:
+>>
+>> [snip]
+>>
+>>> +
+>>> +#define OMAP_UART_AUTOSUSPEND_DELAY (30 * HZ) /* Value is msecs */
+>>
+>> [snip]
+>>
+>>> @@ -1295,18 +1381,36 @@ static int serial_omap_probe(struct
+>>> platform_device *pdev)
+>>>                 up->uart_dma.rx_dma_channel = OMAP_UART_DMA_CH_FREE;
+>>>         }
+>>>
+>>> +       pm_runtime_use_autosuspend(&pdev->dev);
+>>> +       pm_runtime_set_autosuspend_delay(&pdev->dev,
+>>> +                       OMAP_UART_AUTOSUSPEND_DELAY);
+>>
+>> Something is weird here...DEFAULT_AUTOSUSPEND_DELAY is defined as (30*HZ)
+>> which would appear to be jiffies (ticks per second) and NOT msecs. However,
+>> pm_runtime_set_autosuspend is clearly expecting msecs. So this seems to
+>> conflict. By default 30*HZ for omap would be 30*128 = 3840ms so not quite 4
+>> seconds.
+>>
+>> What were you intending here?
+>
+> Intention is to get approx 3 secs timeout for autosuspend.
 
-thanks,
+In that case you should just define DEFAULT_AUTOSUSPEND_DELAY as 30000. 
+The above is just confusing as you are mixing time types and hence, it 
+is not clear what you intend the default timeout to be.
 
-greg k-h
+Jon
