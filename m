@@ -1,37 +1,77 @@
-From: "Clark, Joel" <joel.clark@intel.com>
-Subject: RE: FW: [PATCH v5] 8250_pci: add -ENODEV code for Intel EG20T PCH
-Date: Wed, 8 Jun 2011 18:04:11 -0600
-Message-ID: <667A27282ACF7941B0F557DAD3491E16010AA3C015@rrsmsx504.amr.corp.intel.com>
-References: <667A27282ACF7941B0F557DAD3491E16010A9E12CB@rrsmsx504.amr.corp.intel.com>
- <20110608162613.GA7005@suse.de> <4DF00C57.2080406@dsn.okisemi.com>
+From: Govindraj <govindraj.ti@gmail.com>
+Subject: Re: [PATCH v3 04/12] Serial: OMAP: Add runtime pm support for
+ omap-serial driver
+Date: Thu, 9 Jun 2011 10:05:47 +0530
+Message-ID: <BANLkTik1fRzQEnGyzTLour-_kYxR+y2kGg@mail.gmail.com>
+References: <1307532194-13039-1-git-send-email-govindraj.raja@ti.com>
+ <1307532194-13039-5-git-send-email-govindraj.raja@ti.com> <4DEFDDE8.3090808@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:53946 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750862Ab1FIAEO convert rfc822-to-8bit (ORCPT
+Received: from mail-bw0-f52.google.com ([209.85.214.52]:40114 "EHLO
+	mail-bw0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750748Ab1FIEgI convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 8 Jun 2011 20:04:14 -0400
-In-Reply-To: <4DF00C57.2080406@dsn.okisemi.com>
-Content-Language: en-US
+	Thu, 9 Jun 2011 00:36:08 -0400
+In-Reply-To: <4DEFDDE8.3090808@ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>, Greg KH <gregkh@suse.de>
-Cc: "Cox, Alan" <alan.cox@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Wang, Qi" <qi.wang@intel.com>, "Wang, Yong Y" <yong.y.wang@intel.com>, "Ewe, Kok Howg" <kok.howg.ewe@intel.com>, "toshiharu-linux@dsn.okisemi.com" <toshiharu-linux@dsn.okisemi.com>, "Liu, Bing Wei" <bing.wei.liu@intel.com>, "Skarpness, Mark" <mark.skarpness@intel.com>
+To: Jon Hunter <jon-hunter@ti.com>
+Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>
 
+On Thu, Jun 9, 2011 at 2:09 AM, Jon Hunter <jon-hunter@ti.com> wrote:
+> Hi Govindraj,
+>
+> On 6/8/2011 6:23 AM, Govindraj.R wrote:
+>
+> [snip]
+>
+>> +
+>> +#define OMAP_UART_AUTOSUSPEND_DELAY (30 * HZ) /* Value is msecs */
+>
+> [snip]
+>
+>> @@ -1295,18 +1381,36 @@ static int serial_omap_probe(struct
+>> platform_device *pdev)
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0up->uart_dma.rx_dma_channel =3D OMAP_=
+UART_DMA_CH_FREE;
+>> =A0 =A0 =A0 =A0}
+>>
+>> + =A0 =A0 =A0 pm_runtime_use_autosuspend(&pdev->dev);
+>> + =A0 =A0 =A0 pm_runtime_set_autosuspend_delay(&pdev->dev,
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 OMAP_UART_AUTOSUSPEND_=
+DELAY);
+>
+> Something is weird here...DEFAULT_AUTOSUSPEND_DELAY is defined as (30=
+*HZ)
+> which would appear to be jiffies (ticks per second) and NOT msecs. Ho=
+wever,
+> pm_runtime_set_autosuspend is clearly expecting msecs. So this seems =
+to
+> conflict. By default 30*HZ for omap would be 30*128 =3D 3840ms so not=
+ quite 4
+> seconds.
+>
+> What were you intending here?
 
-> From: Sent: Wednesday, June 08, 2011 4:57 PM, Tomoya MORINAGA [mailto:tomoya-linux@dsn.okisemi.com]
-> 
-> I think Joel means MeeGo team want to add this patch.
-> 
-> Hi Joel,
-> As Greg saying, This patch have already accepted and applied by Greg.
+Intention is to get approx 3 secs timeout for autosuspend.
 
-Yes, thanks we will add it now
-Joel
+--
+Thanks,
+Govindraj.R
 
-> 
-> -- 
-> tomoya
-> OKI SEMICONDUCTOR CO., LTD.
+>
+> Cheers
+> Jon
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-seria=
+l" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at =A0http://vger.kernel.org/majordomo-info.html
+>
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
