@@ -1,42 +1,45 @@
-From: Shreshtha Kumar SAHU <shreshthakumar.sahu@stericsson.com>
-Subject: Re: [PATCH 2/2] amba pl011: platform data for reg lockup and glitch
-Date: Fri, 10 Jun 2011 14:37:06 +0530
-Message-ID: <20110610090704.GA476@bnru02.bnr.st.com>
-References: <1307653008-3398-1-git-send-email-linus.walleij@stericsson.com>
- <20110609210218.GH24424@n2100.arm.linux.org.uk>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: uart : lost characters when system is busy
+Date: Fri, 10 Jun 2011 10:20:26 +0100
+Message-ID: <20110610102026.01f7da05@lxorguk.ukuu.org.uk>
+References: <4DF1DCA9.9060604@parrot.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from eu1sys200aog112.obsmtp.com ([207.126.144.133]:57880 "EHLO
-	eu1sys200aog112.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751372Ab1FJJHg (ORCPT
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:40543 "EHLO
+	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1750774Ab1FJJSW (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Jun 2011 05:07:36 -0400
-Content-Disposition: inline
-In-Reply-To: <20110609210218.GH24424@n2100.arm.linux.org.uk>
+	Fri, 10 Jun 2011 05:18:22 -0400
+In-Reply-To: <4DF1DCA9.9060604@parrot.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Linus WALLEIJ <linus.walleij@stericsson.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Greg Kroah-Hartman <gregkh@suse.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Lee Jones <lee.jones@linaro.org>
+To: Matthieu CASTET <matthieu.castet@parrot.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 
-On Thu, Jun 09, 2011 at 23:02:18 +0200, Russell King - ARM Linux wrote:
-> On Thu, Jun 09, 2011 at 10:56:48PM +0200, Linus Walleij wrote:
-> > +	/* uart-0 pins gpio configuration should be
-> > +	 * kept intact to prevent glitch in tx line
-> > +	 * when tty dev is opened. Later these pins
-> > +	 * are configured to uart mop500_pins_uart0
-> > +	 *
-> > +	 * It will be replaced with uart configuration
-> > +	 * once the issue is solved.
-> > +	 */
-> > +	GPIO0_GPIO	| PIN_INPUT_PULLUP,
-> > +	GPIO1_GPIO	| PIN_OUTPUT_HIGH,
-> > +	GPIO2_GPIO	| PIN_INPUT_PULLUP,
-> > +	GPIO3_GPIO	| PIN_OUTPUT_LOW,
-> 
-> Why do you want the TXD line (GPIO3) to be indicating a break condition?
+> uart_throttle/uart_unthrottle is called from a workqueue.
+> If the system is busy, and the uart receive lot's of data, we fill the tty
+> buffer, but the workqueue doesn't run and we never have a chance to call
+> uart_throttle. So the uart is never slow down.
 
-Yes it should be PIN_OUTPUT_HIGH, as it is configured in mop500_pins_uart0.
+You should have around 64K of buffering (actually n_tty worst case
+should be 63.5Kbyte) that's a lot of slack so what is holding off the
+work queue for so long on your problem system ? I think that should be
+answered first as it sounds like some other part of your kernel is
+misbehaving.
 
-Thanks,
-Shreshtha
+> A workaround could be to check the buffer threshold in tty_flip_buffer_push and
+> call throttle callback if needed.
+
+tty_flip_buffer_push can be called from an IRQ, the throttle callback
+needs to be able to sleep.
+
+What might work if it is needed though is to provide a tty_is_throttled()
+method that a driver can use to check the instantaneous throttle state.
+Trouble is that will require a lot of care on the drivers part to deal
+with asynchronus throttle/unthrottle events while peering at the state in
+its IRQ handler as well.
+
+Anyway - question for the case you hit, what tasks or work held off the
+serial work queue for 63.5Kbytes of data ?
