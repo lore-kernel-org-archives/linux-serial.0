@@ -1,79 +1,70 @@
-From: Shane McDonald <mcdonald.shane@gmail.com>
-Subject: Re: [PATCH] tty: 8250: handle USR for DesignWare 8250 with correct accessors
-Date: Fri, 10 Jun 2011 12:58:20 -0600
-Message-ID: <BANLkTikatUdC=9tPts9_UjzHcz1UfTktAg@mail.gmail.com>
-References: <1307616525-22028-1-git-send-email-jamie@jamieiles.com>
-	<20110610035817.GA6740@linux-mips.org>
+From: Maxime Bizon <mbizon@freebox.fr>
+Subject: [PATCH] serial: bcm63xx_uart: fix irq storm after rx fifo overrun.
+Date: Fri, 10 Jun 2011 23:17:58 +0200
+Message-ID: <1307740678.30618.67.camel@sakura.staff.proxad.net>
+Reply-To: mbizon@freebox.fr
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="ANSI_X3.4-1968"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-iw0-f174.google.com ([209.85.214.174]:43943 "EHLO
-	mail-iw0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757622Ab1FJS6V convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Jun 2011 14:58:21 -0400
-Received: by iwn34 with SMTP id 34so2390816iwn.19
-        for <linux-serial@vger.kernel.org>; Fri, 10 Jun 2011 11:58:20 -0700 (PDT)
-In-Reply-To: <20110610035817.GA6740@linux-mips.org>
+Received: from smtp4-g21.free.fr ([212.27.42.4]:49092 "EHLO smtp4-g21.free.fr"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1757627Ab1FJVSH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 10 Jun 2011 17:18:07 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ralf Baechle <ralf@linux-mips.org>
-Cc: Jamie Iles <jamie@jamieiles.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, linux-mips@linux-mips.org, Marc St-Jean <bluezzer@gmail.com>, Anoop P A <anoop.pa@gmail.com>
+To: Greg Kroah-Hartman <gregkh@suse.de>
+Cc: linux-serial@vger.kernel.org
 
-On Thu, Jun 9, 2011 at 9:58 PM, Ralf Baechle <ralf@linux-mips.org> wrot=
-e:
-> On Thu, Jun 09, 2011 at 11:48:45AM +0100, Jamie Iles wrote:
->
-> The original read access was for a read access at offset 0xc0 from th=
-e
-> base address. =A0Your patch changes this to offset 0x1f * 4 =3D 0x7c.
->
-> If you look at arch/mips/include/asm/pmc-sierra/msp71xx/msp_regs.h th=
-ere's
->
-> #define MSP_UART0_BASE =A0 =A0 =A0 =A0 =A0(MSP_SLP_BASE + 0x100)
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0 =A0/* UART0 controller base =A0 =A0 =A0 =A0*/
-> #define MSP_BCPY_CTRL_BASE =A0 =A0 =A0(MSP_SLP_BASE + 0x120)
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0 =A0/* Block Copy controller base =A0 */
->
-> So there are just 0x20 of address space reserved for that UART. =A0Me=
- thinks
-> that PMC-Sierra clamped the 256 byte address space of the DesignWare =
-APB
-> UART to what is standard for 16550 class UARTs, 8 registers which at =
-a
-> shift of 4 is 0x20 bytes and the status register being accesses is re=
-ally
-> something else. =A0I'd guess PMC-Sierra just remapped the register to
-> another address.
-=2E..
-> On a 2nd thought I wonder if the restricted address space of the PMC-=
-Sierra
-> variant and the strange remapping would justify treating it as a subv=
-ariant
-> of the DW APB UART, rename it to UPIO_PMC_MSP_DWAPB, hardcode the acc=
-ess to
-> the remapped status register. =A0And get rid of the unused UPIO_DWAPB=
-32 ...
->
-> I've cced a few people who should know more about this.
 
-Marc and I were originally responsible for this code, but we're no long=
-er
-at PMC-Sierra, and I don't remember the details.  If Anoop isn't able
-confirm Ralf's suspicions regarding the smaller address space
-and remapped register, I'll see if I can track down some former co-work=
-ers
-that could shed some light on this.
+RX fifo reset is required to clear irq.
 
-Ralf's 2nd thought makes perfect sense to me, though.
+Signed-off-by: Maxime Bizon <mbizon@freebox.fr>
+---
+ drivers/tty/serial/bcm63xx_uart.c |   18 ++++++++++++++----
+ 1 files changed, 14 insertions(+), 4 deletions(-)
 
-Shane
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx_uart.c
+index a1a0e55..c0b68b9 100644
+--- a/drivers/tty/serial/bcm63xx_uart.c
++++ b/drivers/tty/serial/bcm63xx_uart.c
+@@ -250,6 +250,20 @@ static void bcm_uart_do_rx(struct uart_port *port)
+ 		/* get overrun/fifo empty information from ier
+ 		 * register */
+ 		iestat = bcm_uart_readl(port, UART_IR_REG);
++
++		if (unlikely(iestat & UART_IR_STAT(UART_IR_RXOVER))) {
++			unsigned int val;
++
++			/* fifo reset is required to clear
++			 * interrupt */
++			val = bcm_uart_readl(port, UART_CTL_REG);
++			val |= UART_CTL_RSTRXFIFO_MASK;
++			bcm_uart_writel(port, val, UART_CTL_REG);
++
++			port->icount.overrun++;
++			tty_insert_flip_char(tty, 0, TTY_OVERRUN);
++		}
++
+ 		if (!(iestat & UART_IR_STAT(UART_IR_RXNOTEMPTY)))
+ 			break;
+ 
+@@ -284,10 +298,6 @@ static void bcm_uart_do_rx(struct uart_port *port)
+ 		if (uart_handle_sysrq_char(port, c))
+ 			continue;
+ 
+-		if (unlikely(iestat & UART_IR_STAT(UART_IR_RXOVER))) {
+-			port->icount.overrun++;
+-			tty_insert_flip_char(tty, 0, TTY_OVERRUN);
+-		}
+ 
+ 		if ((cstat & port->ignore_status_mask) == 0)
+ 			tty_insert_flip_char(tty, c, flag);
+-- 
+1.7.1.1
+
+
+-- 
+Maxime
+
+
