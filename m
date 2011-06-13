@@ -1,44 +1,80 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] tty: 8250: handle USR for DesignWare 8250 with correct
- accessors
-Date: Mon, 13 Jun 2011 10:29:54 +0100
-Message-ID: <20110613102954.4d65509c@lxorguk.ukuu.org.uk>
-References: <1307616525-22028-1-git-send-email-jamie@jamieiles.com>
-	<20110610035817.GA6740@linux-mips.org>
-	<20110610075426.GM3711@pulham.picochip.com>
-	<20110610145724.1e0c0983@bob.linux.org.uk>
-	<20110613091926.GB2472@pulham.picochip.com>
+From: Greg KH <greg@kroah.com>
+Subject: Re: Fwd: Re: "irq 42: nobody cared" and I/O errors on serial ports
+Date: Mon, 13 Jun 2011 08:48:18 -0700
+Message-ID: <20110613154818.GB32372@kroah.com>
+References: <4DF5FAA3020000360001E08D@gwia.alliedtelesyn.co.nz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:48707 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1750716Ab1FMJ15 (ORCPT
+Received: from out4.smtp.messagingengine.com ([66.111.4.28]:42862 "EHLO
+	out4.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750864Ab1FMPsZ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 13 Jun 2011 05:27:57 -0400
-In-Reply-To: <20110613091926.GB2472@pulham.picochip.com>
+	Mon, 13 Jun 2011 11:48:25 -0400
+Content-Disposition: inline
+In-Reply-To: <4DF5FAA3020000360001E08D@gwia.alliedtelesyn.co.nz>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jamie Iles <jamie@jamieiles.com>
-Cc: Alan Cox <alan@linux.intel.com>, Ralf Baechle <ralf@linux-mips.org>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, linux-mips@linux-mips.org, Marc St-Jean <bluezzer@gmail.com>, Shane McDonald <mcdonald.shane@gmail.com>, Anoop P A <anoop.pa@gmail.com>
+To: andrew mcgregor <andrew.mcgregor@alliedtelesis.co.nz>
+Cc: linux-serial@vger.kernel.org
 
-On Mon, 13 Jun 2011 10:19:26 +0100
-Jamie Iles <jamie@jamieiles.com> wrote:
-
-> On Fri, Jun 10, 2011 at 02:57:24PM +0100, Alan Cox wrote:
-> > > I found this series from Alan 
-> > > (http://www.spinics.net/lists/linux-serial/msg03484.html) which looks 
-> > > like it would do the job if we added the extra irq callback.  Ideally
-> > > we just remove both of the UPIO_DWAPB and UPIO_DWAPB32 and let the
-> > > platform specify the ops.
-> > 
-> > I've not yet had time to go back and revisit those patches and debug
-> > them so they actually work but as and when someone gets time I think
-> > it's the right basic path to follow, and the irq callback looks
-> > sensible too.
+On Mon, Jun 13, 2011 at 11:55:14AM +1200, andrew mcgregor wrote:
+> Ok, patch attached.
 > 
-> As an intermediate step, how about adding the irq callback to 
-> uart_8250_port and removing UPIO_DWAPB and UPIO_DWAPB32 from the driver? 
+> 
+> 
+> NOTICE: This message contains privileged and confidential
+> information intended only for the use of the addressee
+> named above. If you are not the intended recipient of
+> this message you are hereby notified that you must not
+> disseminate, copy or take any action in reliance on it.
+> If you have received this message in error please
+> notify Allied Telesis Labs Ltd immediately.
+> Any views expressed in this message are those of the
+> individual sender, except where the sender has the
+> authority to issue and specifically states them to
+> be the views of Allied Telesis Labs.
 
-Feel free to - it makes the later job easier.
+
+Because of this header, I can't accept any patches sent with it, as it
+contridicts the "Signed-off-by:" line below.  Which should I believe?
+
+Please resend without it and fix the email to: line, as that was quite
+corrupted as well, and I will be glad to queue it up.
+
+> >From 9c14cbc96253c90533a4dbd12fd8cc23955d7133 Mon Sep 17 00:00:00 2001
+> From: Andrew McGregor <andrew.mcgregor@alliedtelesis.co.nz>
+> Date: Mon, 13 Jun 2011 11:31:31 +1200
+> Subject: [PATCH]  fix "IRQ45: nobody cared"
+> 
+> Unthrottling the TTY during close ends up enabling interrupts
+> on a device not on the active list, which will never have the
+> interrupts cleared.  Doctor, it hurts when I do this.
+> 
+> On Wed, 01 Jun 2011 10:34:07 +1200
+> "andrew mcgregor" <andrew.mcgregor@alliedtelesis.co.nz> wrote:
+> 
+> > The LKML message
+> > http://kerneltrap.org/mailarchive/linux-kernel/2010/2/25/4541847 from
+> > February doesn't seem to have been resolved since.  We struck the
+> > issue, and the patch below (against 2.6.32) fixes it.  Should I
+> > supply a patch against 3.0.0rc?
+> 
+> I think that would be sensible. I don't actually see how you hit it as
+> the IRQ ought to be masked by then but it's certainly wrong for n_tty
+> to be calling into check_unthrottle at that point.
+> 
+> So yes please send a patch with a suitable Signed-off-by: line to
+> linux-serial and cc GregKH <greg@kroah.com> as well.
+> 
+> Alan
+> 
+> Signed-off-by: Alan Cox <alan@linux.intel.com>
+
+Wait, Alan wrote this?  Or you did?  You can't add someone elses
+Signed-off-by: to a patch they didn't create.  Please read
+Documentation/SubmittingPatches for what this line means.
+
+thanks,
+
+greg k-h
