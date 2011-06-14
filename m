@@ -1,80 +1,24 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: Fwd: Re: "irq 42: nobody cared" and I/O errors on serial ports
-Date: Mon, 13 Jun 2011 08:48:18 -0700
-Message-ID: <20110613154818.GB32372@kroah.com>
-References: <4DF5FAA3020000360001E08D@gwia.alliedtelesyn.co.nz>
+From: Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH] TTY: define TTY_MAX_RECEIVE_ROOM to 65536
+Date: Tue, 14 Jun 2011 14:24:46 +0100
+Message-ID: <20110614142446.063c0859@bob.linux.org.uk>
+References: <1308057986-11472-1-git-send-email-ffainelli@freebox.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out4.smtp.messagingengine.com ([66.111.4.28]:42862 "EHLO
-	out4.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750864Ab1FMPsZ (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 13 Jun 2011 11:48:25 -0400
-Content-Disposition: inline
-In-Reply-To: <4DF5FAA3020000360001E08D@gwia.alliedtelesyn.co.nz>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1308057986-11472-1-git-send-email-ffainelli-MmRyKUhfbQ9GWvitb5QawA@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Florian Fainelli <ffainelli-MmRyKUhfbQ9GWvitb5QawA@public.gmane.org>
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, "Gustavo F. Padovan" <padovan-Y3ZbgMPKUGA34EUeqzHoZw@public.gmane.org>, Wolfgang Grandegger <wg-5Yr1BZd7O62+XT7JhA+gdA@public.gmane.org>, Andreas Koensgen <ajk-iz34hMvxm2Hmj42eshorlhS11BummzK+@public.gmane.org>, Samuel Ortiz <samuel-jcdQHdrhKHMdnm+yROfE0A@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, Greg Kroah-Hartman <gregkh-l3A5Bk7waGM@public.gmane.org>, Mikael Starvik <starvik-VrBV9hrLPhE@public.gmane.org>, Jesper Nilsson <jesper.nilsson-VrBV9hrLPhE@public.gmane.org>, Pavan Savoy <pavan_savoy-l0cyMroinI0@public.gmane.org>, Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, David Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Eric Dumazet <eric.dumazet-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Oliver Hartkopp <socketcan-fJ+pQTUTwRTk1uMJSBkQmQ@public.gmane.org>, Tobias Klauser <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, socketcan-core-0fE9KPoRgkgATYTw5x5z8w@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hams-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ppp-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-cris-kernel-VrBV9hrLPhE@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: andrew mcgregor <andrew.mcgregor@alliedtelesis.co.nz>
-Cc: linux-serial@vger.kernel.org
 
-On Mon, Jun 13, 2011 at 11:55:14AM +1200, andrew mcgregor wrote:
-> Ok, patch attached.
-> 
-> 
-> 
-> NOTICE: This message contains privileged and confidential
-> information intended only for the use of the addressee
-> named above. If you are not the intended recipient of
-> this message you are hereby notified that you must not
-> disseminate, copy or take any action in reliance on it.
-> If you have received this message in error please
-> notify Allied Telesis Labs Ltd immediately.
-> Any views expressed in this message are those of the
-> individual sender, except where the sender has the
-> authority to issue and specifically states them to
-> be the views of Allied Telesis Labs.
+On Tue, 14 Jun 2011 15:26:25 +0200
+Florian Fainelli <ffainelli-MmRyKUhfbQ9GWvitb5QawA@public.gmane.org> wrote:
 
+> A lot of TTY drivers are setting their receive_room value to 65536
+> so let's define a constant for this.
 
-Because of this header, I can't accept any patches sent with it, as it
-contridicts the "Signed-off-by:" line below.  Which should I believe?
+These are not all the same thing so NAK
 
-Please resend without it and fix the email to: line, as that was quite
-corrupted as well, and I will be glad to queue it up.
-
-> >From 9c14cbc96253c90533a4dbd12fd8cc23955d7133 Mon Sep 17 00:00:00 2001
-> From: Andrew McGregor <andrew.mcgregor@alliedtelesis.co.nz>
-> Date: Mon, 13 Jun 2011 11:31:31 +1200
-> Subject: [PATCH]  fix "IRQ45: nobody cared"
-> 
-> Unthrottling the TTY during close ends up enabling interrupts
-> on a device not on the active list, which will never have the
-> interrupts cleared.  Doctor, it hurts when I do this.
-> 
-> On Wed, 01 Jun 2011 10:34:07 +1200
-> "andrew mcgregor" <andrew.mcgregor@alliedtelesis.co.nz> wrote:
-> 
-> > The LKML message
-> > http://kerneltrap.org/mailarchive/linux-kernel/2010/2/25/4541847 from
-> > February doesn't seem to have been resolved since.  We struck the
-> > issue, and the patch below (against 2.6.32) fixes it.  Should I
-> > supply a patch against 3.0.0rc?
-> 
-> I think that would be sensible. I don't actually see how you hit it as
-> the IRQ ought to be masked by then but it's certainly wrong for n_tty
-> to be calling into check_unthrottle at that point.
-> 
-> So yes please send a patch with a suitable Signed-off-by: line to
-> linux-serial and cc GregKH <greg@kroah.com> as well.
-> 
-> Alan
-> 
-> Signed-off-by: Alan Cox <alan@linux.intel.com>
-
-Wait, Alan wrote this?  Or you did?  You can't add someone elses
-Signed-off-by: to a patch they didn't create.  Please read
-Documentation/SubmittingPatches for what this line means.
-
-thanks,
-
-greg k-h
+Linus wants to get rid of tty->receive_room anyway
