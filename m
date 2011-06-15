@@ -1,54 +1,42 @@
-From: Shane McDonald <mcdonald.shane@gmail.com>
-Subject: Re: [PATCH] tty: 8250: handle USR for DesignWare 8250 with correct accessors
-Date: Tue, 14 Jun 2011 09:33:45 -0600
-Message-ID: <BANLkTi=0Pk-2YT=jLeBTNLYELfo+e-saZA@mail.gmail.com>
-References: <1307616525-22028-1-git-send-email-jamie@jamieiles.com>
-	<20110610035817.GA6740@linux-mips.org>
+From: Greg KH <greg@kroah.com>
+Subject: Re: Fwd: Re: "irq 42: nobody cared" and I/O errors on serial ports
+Date: Tue, 14 Jun 2011 17:44:42 -0700
+Message-ID: <20110615004442.GA24642@kroah.com>
+References: <4DF8A60E020000360001E101@gwia.alliedtelesyn.co.nz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-iy0-f174.google.com ([209.85.210.174]:62969 "EHLO
-	mail-iy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752000Ab1FNPdq convert rfc822-to-8bit (ORCPT
+Received: from out4.smtp.messagingengine.com ([66.111.4.28]:48576 "EHLO
+	out4.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751369Ab1FOAos (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 14 Jun 2011 11:33:46 -0400
-Received: by iyb14 with SMTP id 14so4764254iyb.19
-        for <linux-serial@vger.kernel.org>; Tue, 14 Jun 2011 08:33:45 -0700 (PDT)
-In-Reply-To: <20110610035817.GA6740@linux-mips.org>
+	Tue, 14 Jun 2011 20:44:48 -0400
+Content-Disposition: inline
+In-Reply-To: <4DF8A60E020000360001E101@gwia.alliedtelesyn.co.nz>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ralf Baechle <ralf@linux-mips.org>
-Cc: Jamie Iles <jamie@jamieiles.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, linux-mips@linux-mips.org, Marc St-Jean <bluezzer@gmail.com>, Anoop P A <anoop.pa@gmail.com>
+To: andrew mcgregor <andrew.mcgregor@alliedtelesis.co.nz>
+Cc: linux-serial@vger.kernel.org
 
-On Thu, Jun 9, 2011 at 9:58 PM, Ralf Baechle <ralf@linux-mips.org> wrot=
-e:
-> If you look at arch/mips/include/asm/pmc-sierra/msp71xx/msp_regs.h th=
-ere's
->
-> #define MSP_UART0_BASE =A0 =A0 =A0 =A0 =A0(MSP_SLP_BASE + 0x100)
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0 =A0/* UART0 controller base =A0 =A0 =A0 =A0*/
-> #define MSP_BCPY_CTRL_BASE =A0 =A0 =A0(MSP_SLP_BASE + 0x120)
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0 =A0/* Block Copy controller base =A0 */
->
-> So there are just 0x20 of address space reserved for that UART. =A0Me=
- thinks
-> that PMC-Sierra clamped the 256 byte address space of the DesignWare =
-APB
-> UART to what is standard for 16550 class UARTs, 8 registers which at =
-a
-> shift of 4 is 0x20 bytes and the status register being accesses is re=
-ally
-> something else. =A0I'd guess PMC-Sierra just remapped the register to
-> another address.
+On Wed, Jun 15, 2011 at 12:31:10PM +1200, andrew mcgregor wrote:
+> Resending due to catastrophically broken mail system...
+> 
+> Oops, sorry.
+> 
+> I can't remove that trailer, it's added automatically by the email
+> system (yeah, I know... the mail administrator is a problem). In any
+> case, disregard that, it's a patch to the kernel, which is GPL, and
+> therefore so is the patch.
 
-I have confirmed with a contact at PMC-Sierra that this is the case.
+Why should I believe the signed-off-by when the footer contridicts it?
+Which one over-rides?
 
-Shane
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Sorry, but I can't accept patches this way.  Please fix your email
+system and resend so that I can apply it properly.
+
+Also note that your Cc: lines keep being incorrect, please fix your
+email client as well :(
+
+thanks,
+
+greg k-h
