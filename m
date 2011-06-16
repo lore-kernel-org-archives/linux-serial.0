@@ -1,50 +1,27 @@
-From: Greg KH <gregkh@suse.de>
-Subject: Re: PROBLEM:  BUG and system dies if cat /proc/tty/driver/serial
- while console on ttyS0
-Date: Wed, 15 Jun 2011 08:28:08 -0700
-Message-ID: <20110615152808.GA9928@suse.de>
-References: <COL116-W65B54193A5784AAE0E1505A36B0@phx.gbl>
+From: johnlinn@comcast.net
+Subject: kernel lockup due to bad baud rate data
+Date: Thu, 16 Jun 2011 00:09:12 +0000 (UTC)
+Message-ID: <1786375823.1623268.1308182952117.JavaMail.root@sz0140a.emeryville.ca.mail.comcast.net>
+References: <1719676005.1623192.1308182800563.JavaMail.root@sz0140a.emeryville.ca.mail.comcast.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor.suse.de ([195.135.220.2]:40376 "EHLO mx1.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755787Ab1FOP33 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 15 Jun 2011 11:29:29 -0400
-Content-Disposition: inline
-In-Reply-To: <COL116-W65B54193A5784AAE0E1505A36B0@phx.gbl>
+Received: from qmta06.emeryville.ca.mail.comcast.net ([76.96.30.56]:47376 "EHLO
+	qmta06.emeryville.ca.mail.comcast.net" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752251Ab1FPAOz (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 15 Jun 2011 20:14:55 -0400
+In-Reply-To: <1719676005.1623192.1308182800563.JavaMail.root@sz0140a.emeryville.ca.mail.comcast.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: John Lumby <johnlumby@hotmail.com>
-Cc: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On Wed, Jun 15, 2011 at 11:08:51AM -0400, John Lumby wrote:
->=20
-> If I direct kernel console output to the serial port ttyS0
-> =A0by grub kernel command line like so
-> =A0 =A0 =A0 =A0 =A0 kernel /vmlinuz-2.6.39-FLG ro root=3D/dev/sdb3 ro=
-otfstype=3Dext3 selinux=3D0 console=3DttyS0,19200n8r console=3Dtty0
-> then console output appears at the other end of the ttyS0 as expected=
-,  but then if I log in (on local tty1) and
->=20
-> cat /proc/tty/driver/serial
->=20
-> I get this=A0 (on 2.6.39)
->=20
-> BUG:   sleeping function called from invalid context at arch/x86/mm/f=
-ault.c:1087
-> and the system is dead.
+I'm testing with 2.6.39 and our serial driver that's unique to our ARM platform.  I suspect we have a problem with our serial driver but wanted to see if anyone has seen any similar behavior.
 
-This should be resolved in the next 2.6.39.y release, and should also b=
-e
-fixed in the 3.0-rc3 kernel.  Can you verify that?
+When running with 2 serial ports, any input from a serial terminal running at the wrong baud rate (9600 instead of 115.2K) on a 2nd shell (not the console shell) causes the kernel to lock up. It doesn't crash, I'm still trying to understand what it's doing.  I can no longer ping the board as the network was working prior.
 
-thanks,
+I just wanted to make sure there's not any known tty issues related to this.
 
-greg k-h
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Thanks,
+John
