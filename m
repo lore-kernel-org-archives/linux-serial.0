@@ -1,37 +1,47 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH 1/2] amba pl011: workaround for uart registers lockup
-Date: Thu, 16 Jun 2011 10:17:51 +0200
-Message-ID: <BANLkTikSEVCGGsjF_fTCNZsmjvGoic5u=Q@mail.gmail.com>
-References: <1307952693-25232-1-git-send-email-linus.walleij@stericsson.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+From: Jamie Iles <jamie@jamieiles.com>
+Subject: [PATCH 1/5] tty: serial: allow ports to override the irq handler
+Date: Thu, 16 Jun 2011 10:19:57 +0100
+Message-ID: <1308216001-5299-2-git-send-email-jamie@jamieiles.com>
+References: <1308216001-5299-1-git-send-email-jamie@jamieiles.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qy0-f174.google.com ([209.85.216.174]:51354 "EHLO
-	mail-qy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750814Ab1FPIRw (ORCPT
+Received: from mail-ww0-f44.google.com ([74.125.82.44]:54149 "EHLO
+	mail-ww0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756133Ab1FPJUJ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 16 Jun 2011 04:17:52 -0400
-Received: by qyk29 with SMTP id 29so62606qyk.19
-        for <linux-serial@vger.kernel.org>; Thu, 16 Jun 2011 01:17:51 -0700 (PDT)
-In-Reply-To: <1307952693-25232-1-git-send-email-linus.walleij@stericsson.com>
+	Thu, 16 Jun 2011 05:20:09 -0400
+Received: by mail-ww0-f44.google.com with SMTP id 36so1330937wwa.1
+        for <linux-serial@vger.kernel.org>; Thu, 16 Jun 2011 02:20:08 -0700 (PDT)
+In-Reply-To: <1308216001-5299-1-git-send-email-jamie@jamieiles.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@suse.de>
-Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Lee Jones <lee.jones@linaro.org>, Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
+To: linux-serial@vger.kernel.org
+Cc: Jamie Iles <jamie@jamieiles.com>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@suse.de>
 
-On Mon, Jun 13, 2011 at 10:11 AM, Linus Walleij
-<linus.walleij@stericsson.com> wrote:
+Some serial ports may have unusal requirements for interrupt handling
+(e.g. the Synopsys DesignWare 8250-alike port and it's busy detect
+interrupt).  Add a .handle_irq callback that can be used for platforms
+to override the interrupt behaviour in a similar fashion to the
+.serial_out and .serial_in callbacks.
 
-> From: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
->
-> This workaround aims to break the deadlock situation
-> which raises during continuous transfer of data for long
-> duration over uart with hardware flow control. It is
-> observed that CTS interrupt cannot be cleared in uart
-> interrupt register (ICR). Hence further transfer over
-> uart gets blocked.
+Cc: Alan Cox <alan@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@suse.de>
+Signed-off-by: Jamie Iles <jamie@jamieiles.com>
+---
+ include/linux/serial_core.h |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
-Ping on this, Greg have you picked these two for the tty next tree?
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 758c5b0..5dd7653 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -296,6 +296,7 @@ struct uart_port {
+ 	void			(*set_termios)(struct uart_port *,
+ 				               struct ktermios *new,
+ 				               struct ktermios *old);
++	int			(*handle_irq)(struct uart_port *);
+ 	void			(*pm)(struct uart_port *, unsigned int state,
+ 				      unsigned int old);
+ 	unsigned int		irq;			/* irq number */
+-- 
+1.7.4.1
 
-Thanks,
-Linus Walleij
