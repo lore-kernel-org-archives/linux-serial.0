@@ -1,47 +1,41 @@
 From: Jamie Iles <jamie@jamieiles.com>
-Subject: [PATCH 1/5] tty: serial: allow ports to override the irq handler
-Date: Thu, 16 Jun 2011 10:19:57 +0100
-Message-ID: <1308216001-5299-2-git-send-email-jamie@jamieiles.com>
-References: <1308216001-5299-1-git-send-email-jamie@jamieiles.com>
+Subject: [PATCH 0/5] Remove UPIO_DWAPB{,32} from 8250 driver
+Date: Thu, 16 Jun 2011 10:19:56 +0100
+Message-ID: <1308216001-5299-1-git-send-email-jamie@jamieiles.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
 Received: from mail-ww0-f44.google.com ([74.125.82.44]:54149 "EHLO
 	mail-ww0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756133Ab1FPJUJ (ORCPT
+	with ESMTP id S1755772Ab1FPJUH (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 16 Jun 2011 05:20:09 -0400
-Received: by mail-ww0-f44.google.com with SMTP id 36so1330937wwa.1
-        for <linux-serial@vger.kernel.org>; Thu, 16 Jun 2011 02:20:08 -0700 (PDT)
-In-Reply-To: <1308216001-5299-1-git-send-email-jamie@jamieiles.com>
+	Thu, 16 Jun 2011 05:20:07 -0400
+Received: by wwa36 with SMTP id 36so1330937wwa.1
+        for <linux-serial@vger.kernel.org>; Thu, 16 Jun 2011 02:20:06 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Jamie Iles <jamie@jamieiles.com>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Jamie Iles <jamie@jamieiles.com>
 
-Some serial ports may have unusal requirements for interrupt handling
-(e.g. the Synopsys DesignWare 8250-alike port and it's busy detect
-interrupt).  Add a .handle_irq callback that can be used for platforms
-to override the interrupt behaviour in a similar fashion to the
-.serial_out and .serial_in callbacks.
+This series removes UPIO_DWAPB and UPIO_DWAPB32 from the 8250 serial driver.
+The quirk handling is moved into the platform code for the only user
+(MIPS pmc-sierra).
 
-Cc: Alan Cox <alan@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>
-Signed-off-by: Jamie Iles <jamie@jamieiles.com>
----
- include/linux/serial_core.h |    1 +
- 1 files changed, 1 insertions(+), 0 deletions(-)
+A .handle_irq callback is added to uart_port and uart_8250_port so that
+platforms can override IRQ behaviour in a generic way.
 
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 758c5b0..5dd7653 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -296,6 +296,7 @@ struct uart_port {
- 	void			(*set_termios)(struct uart_port *,
- 				               struct ktermios *new,
- 				               struct ktermios *old);
-+	int			(*handle_irq)(struct uart_port *);
- 	void			(*pm)(struct uart_port *, unsigned int state,
- 				      unsigned int old);
- 	unsigned int		irq;			/* irq number */
+Jamie Iles (5):
+  tty: serial: allow ports to override the irq handler
+  tty: serial8250: allow platforms to override irq handler
+  mips: msp71xx/serial: convert to pr_foo() helpers
+  mips: msp71xx/serial: add workaround for DW UART
+  tty: serial8250: remove UPIO_DWAPB{,32}
+
+ arch/mips/pmc-sierra/msp71xx/msp_serial.c |   73 ++++++++++++++++++--
+ drivers/tty/serial/8250.c                 |  107 +++++++++-------------------
+ drivers/tty/serial/serial_core.c          |    4 -
+ include/linux/serial_8250.h               |    2 +
+ include/linux/serial_core.h               |    5 +-
+ 5 files changed, 106 insertions(+), 85 deletions(-)
+
 -- 
 1.7.4.1
 
