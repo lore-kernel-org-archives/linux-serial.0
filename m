@@ -1,36 +1,67 @@
-From: Gabor Juhos <juhosg@openwrt.org>
-Subject: Re: [PATCH 11/13] serial: add driver for the built-in UART of the
- AR933X SoC
-Date: Tue, 21 Jun 2011 20:55:40 +0200
-Message-ID: <4E00E92C.6000302@openwrt.org>
-References: <1308597973-6037-1-git-send-email-juhosg@openwrt.org>	<1308597973-6037-12-git-send-email-juhosg@openwrt.org> <20110621095951.7dc1c9ee@lxorguk.ukuu.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+From: Alexander Stein <alexander.stein@systec-electronic.com>
+Subject: [PATCH] pch_uart: Add MSI support
+Date: Wed, 22 Jun 2011 11:50:19 +0200
+Message-ID: <1308736219-19975-1-git-send-email-alexander.stein@systec-electronic.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from phoenix3.szarvasnet.hu ([87.101.127.16]:56097 "EHLO
-	phoenix3.szarvasnet.hu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751865Ab1FUS4U (ORCPT
+Received: from webbox687.server-home.net ([195.149.74.151]:47661 "EHLO
+	webbox687.server-home.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755868Ab1FVJun (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 21 Jun 2011 14:56:20 -0400
-In-Reply-To: <20110621095951.7dc1c9ee@lxorguk.ukuu.org.uk>
+	Wed, 22 Jun 2011 05:50:43 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Ralf Baechle <ralf@linux-mips.org>, linux-mips@linux-mips.org, Kathy Giori <kgiori@qca.qualcomm.com>, "Luis R. Rodriguez" <rodrigue@qca.qualcomm.com>, linux-serial@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>, Alexander Stein <alexander.stein@systec-electronic.com>
 
-Hi Alan,
+Signed-off-by: Alexander Stein <alexander.stein@systec-electronic.com>
+---
+ drivers/tty/serial/pch_uart.c |   12 ++++++++++++
+ 1 files changed, 12 insertions(+), 0 deletions(-)
 
-> Looks good to me
-> 
-> Signed-off-by: Alan Cox <alan@linux.intel.com>
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index 4652109..9db9773 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -234,6 +234,7 @@ struct eg20t_port {
+ 	int				tx_dma_use;
+ 	void				*rx_buf_virt;
+ 	dma_addr_t			rx_buf_dma;
++	int				use_msi;
+ };
+ 
+ /**
+@@ -1429,6 +1430,12 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
+ 		goto init_port_hal_free;
+ 	}
+ 
++	ret = pci_enable_msi(pdev);
++	if (ret)
++		priv->use_msi = 0;
++	else
++		priv->use_msi = 1;
++
+ 	iobase = pci_resource_start(pdev, 0);
+ 	mapbase = pci_resource_start(pdev, 1);
+ 	priv->mapbase = mapbase;
+@@ -1485,6 +1492,9 @@ static void pch_uart_pci_remove(struct pci_dev *pdev)
+ 	struct eg20t_port *priv;
+ 
+ 	priv = (struct eg20t_port *)pci_get_drvdata(pdev);
++
++	if (priv->use_msi)
++		pci_disable_msi(pdev);
+ 	pch_uart_exit_port(priv);
+ 	pci_disable_device(pdev);
+ 	kfree(priv);
+@@ -1568,6 +1578,8 @@ static int __devinit pch_uart_pci_probe(struct pci_dev *pdev,
+ 	return ret;
+ 
+ probe_disable_device:
++	if (priv->use_msi)
++		pci_disable_msi(pdev);
+ 	pci_disable_device(pdev);
+ probe_error:
+ 	return ret;
+-- 
+1.7.3.4
 
-Thank you!
-
-> and no problem here with it going via the MIPS tree (but make sure GregKH
-> is happy)
-
-Of course.
-
-Regards,
-Gabor
