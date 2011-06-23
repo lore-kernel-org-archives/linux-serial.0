@@ -1,49 +1,71 @@
-From: Alexander Stein <alexander.stein@systec-electronic.com>
-Subject: Re: [PATCH v2] pch_uart: Add MSI support
-Date: Thu, 23 Jun 2011 09:37:17 +0200
-Message-ID: <201106230937.17628.alexander.stein@systec-electronic.com>
-References: <4E02857C.1010304@dsn.okisemi.com> <1308812405-5245-1-git-send-email-alexander.stein@systec-electronic.com> <4E02E856.70007@ladisch.de>
-Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+From: Jamie Iles <jamie@jamieiles.com>
+Subject: [PATCHv2 1/2] dt: document the of_serial bindings
+Date: Thu, 23 Jun 2011 15:08:34 +0100
+Message-ID: <1308838115-23034-1-git-send-email-jamie@jamieiles.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from webbox687.server-home.net ([195.149.74.151]:38022 "EHLO
-	webbox687.server-home.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752923Ab1FWHiO (ORCPT
+Received: from mail-wy0-f174.google.com ([74.125.82.174]:50124 "EHLO
+	mail-wy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756257Ab1FWOIx (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 23 Jun 2011 03:38:14 -0400
-In-Reply-To: <4E02E856.70007@ladisch.de>
+	Thu, 23 Jun 2011 10:08:53 -0400
+Received: by wyb38 with SMTP id 38so1309666wyb.19
+        for <linux-serial@vger.kernel.org>; Thu, 23 Jun 2011 07:08:52 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Clemens Ladisch <clemens@ladisch.de>
-Cc: Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Jamie Iles <jamie@jamieiles.com>, Grant Likely <grant.likely@secretlab.ca>, Arnd Bergmann <arnd@arndb.de>
 
-On Thursday 23 June 2011 09:16:38 Clemens Ladisch wrote:
-> Alexander Stein wrote:
-> > +++ b/drivers/tty/serial/pch_uart.c
-> > @@ -1578,6 +1578,8 @@ static struct eg20t_port *pch_uart_init_port(struct
-> > pci_dev *pdev,
-> > 
-> > +	pci_enable_msi(pdev);
-> 
-> Pretty much every driver that tries this eventually ends up with
-> a blacklist of devices that don't implement MSI correctly.
-> Did you test this with all the models that are supported by this driver?
+The of_serial bindings can be used to register a number of serial
+devices.  Document this binding with all of the others.
 
-I don't have all models supported by this driver. So I could only test with 
-this one:
-#lspci -v -s 02:0a.1
-02:0a.1 Serial controller: Intel Corporation Device 8811 (prog-if 02 [16550])
-        Subsystem: Intel Corporation Device 8811
-        Flags: bus master, fast devsel, latency 0, IRQ 40
-        I/O ports at 9040 [size=8]
-        Memory at 9fefb2f0 (32-bit, non-prefetchable) [size=16]
-        Capabilities: [40] MSI: Mask- 64bit- Count=1/1 Enable+
-        Capabilities: [50] Power Management version 2
-        Kernel driver in use: pch_uart
+Cc: Grant Likely <grant.likely@secretlab.ca>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Jamie Iles <jamie@jamieiles.com>
+---
+ .../devicetree/bindings/tty/serial/of-serial.txt   |   34 ++++++++++++++++++++
+ 1 files changed, 34 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/tty/serial/of-serial.txt
 
-There are 3 more for the other ports.
+diff --git a/Documentation/devicetree/bindings/tty/serial/of-serial.txt b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
+new file mode 100644
+index 0000000..b0c52c2
+--- /dev/null
++++ b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
+@@ -0,0 +1,34 @@
++* UART (Universal Asynchronous Receiver/Transmitter)
++
++Required properties:
++- compatible : one of:
++	- "ns8250"
++	- "ns16450"
++	- "ns16550a"
++	- "ns16550"
++	- "ns16750"
++	- "ns16850"
++	- "nvidia,tegra250-uart"
++	- "ibm,qpace-nwp-serial"
++	- "serial" if the port type is unknown.
++- reg : offset and length of the register set for the device.
++- interrupts : should contain uart interrupt.
++- clock-frequency : the input clock frequency for the UART.
++
++Optional properties:
++- current-speed : the current active speed of the UART.
++- reg-offset : offset to apply to the mapbase from the start of the registers.
++- reg-shift : quantity to shift the register offsets by.
++- used-by-rtas : set to indicate that the port is in use by the firmware and
++  should not be registered.
++
++Example:
++
++	uart@80230000 {
++		compatible = "ns8250";
++		device-type = "serial";
++		reg = <0x80230000 0x100>;
++		clock-frequency = <3686400>;
++		interrupts = <10>;
++		reg-shift = <2>;
++	};
+-- 
+1.7.4.1
 
-Regards,
-Alexander
