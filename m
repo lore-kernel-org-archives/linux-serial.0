@@ -1,79 +1,100 @@
-From: Jamie Iles <jamie@jamieiles.com>
-Subject: [PATCHv2 2/2] tty: of_serial: support for 32 bit accesses
-Date: Thu, 23 Jun 2011 15:08:35 +0100
-Message-ID: <1308838115-23034-2-git-send-email-jamie@jamieiles.com>
+From: Grant Likely <grant.likely@secretlab.ca>
+Subject: Re: [PATCHv2 1/2] dt: document the of_serial bindings
+Date: Thu, 23 Jun 2011 08:55:21 -0600
+Message-ID: <BANLkTim_=xToTYjATh8Z_ji3muMy3dXj0Q@mail.gmail.com>
 References: <1308838115-23034-1-git-send-email-jamie@jamieiles.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ww0-f44.google.com ([74.125.82.44]:53880 "EHLO
-	mail-ww0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756257Ab1FWOI7 (ORCPT
+Received: from mail-yw0-f46.google.com ([209.85.213.46]:56807 "EHLO
+	mail-yw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757939Ab1FWOzl convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 23 Jun 2011 10:08:59 -0400
-Received: by wwe5 with SMTP id 5so1952396wwe.1
-        for <linux-serial@vger.kernel.org>; Thu, 23 Jun 2011 07:08:58 -0700 (PDT)
+	Thu, 23 Jun 2011 10:55:41 -0400
+Received: by ywe9 with SMTP id 9so741203ywe.19
+        for <linux-serial@vger.kernel.org>; Thu, 23 Jun 2011 07:55:41 -0700 (PDT)
 In-Reply-To: <1308838115-23034-1-git-send-email-jamie@jamieiles.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Jamie Iles <jamie@jamieiles.com>
+To: Jamie Iles <jamie@jamieiles.com>
+Cc: linux-serial@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
 
-Some platforms e.g. TI Davinci require 32-bit accesses to the UARTs.
-The of_serial driver currently registers all UARTs as UPIO_MEM.  Add a
-new attribute "io-width" to allow the port to be registered with
-different IO width requirements.
+On Thu, Jun 23, 2011 at 8:08 AM, Jamie Iles <jamie@jamieiles.com> wrote=
+:
+> The of_serial bindings can be used to register a number of serial
+> devices. =A0Document this binding with all of the others.
+>
+> Cc: Grant Likely <grant.likely@secretlab.ca>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Signed-off-by: Jamie Iles <jamie@jamieiles.com>
+> ---
+> =A0.../devicetree/bindings/tty/serial/of-serial.txt =A0 | =A0 34 ++++=
+++++++++++++++++
+> =A01 files changed, 34 insertions(+), 0 deletions(-)
+> =A0create mode 100644 Documentation/devicetree/bindings/tty/serial/of=
+-serial.txt
+>
+> diff --git a/Documentation/devicetree/bindings/tty/serial/of-serial.t=
+xt b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
+> new file mode 100644
+> index 0000000..b0c52c2
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
+> @@ -0,0 +1,34 @@
+> +* UART (Universal Asynchronous Receiver/Transmitter)
+> +
+> +Required properties:
+> +- compatible : one of:
+> + =A0 =A0 =A0 - "ns8250"
+> + =A0 =A0 =A0 - "ns16450"
+> + =A0 =A0 =A0 - "ns16550a"
+> + =A0 =A0 =A0 - "ns16550"
+> + =A0 =A0 =A0 - "ns16750"
+> + =A0 =A0 =A0 - "ns16850"
+> + =A0 =A0 =A0 - "nvidia,tegra250-uart"
+> + =A0 =A0 =A0 - "ibm,qpace-nwp-serial"
+> + =A0 =A0 =A0 - "serial" if the port type is unknown.
+> +- reg : offset and length of the register set for the device.
+> +- interrupts : should contain uart interrupt.
+> +- clock-frequency : the input clock frequency for the UART.
+> +
+> +Optional properties:
+> +- current-speed : the current active speed of the UART.
+> +- reg-offset : offset to apply to the mapbase from the start of the =
+registers.
+> +- reg-shift : quantity to shift the register offsets by.
+> +- used-by-rtas : set to indicate that the port is in use by the firm=
+ware and
+> + =A0should not be registered.
+> +
+> +Example:
+> +
+> + =A0 =A0 =A0 uart@80230000 {
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 compatible =3D "ns8250";
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 device-type =3D "serial";
 
-v2: replace dev_warn() with dev_err()
+Drop device-type.  Otherwise looks good.
 
-Acked-by: Alan Cox <alan@linux.intel.com>
-Acked-by: Grant Likely <grant.likely@secretlab.ca>
-Signed-off-by: Jamie Iles <jamie@jamieiles.com>
----
- .../devicetree/bindings/tty/serial/of-serial.txt   |    3 +++
- drivers/tty/serial/of_serial.c                     |   17 +++++++++++++++++
- 2 files changed, 20 insertions(+), 0 deletions(-)
+g.
 
-diff --git a/Documentation/devicetree/bindings/tty/serial/of-serial.txt b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
-index b0c52c2..1771cda 100644
---- a/Documentation/devicetree/bindings/tty/serial/of-serial.txt
-+++ b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
-@@ -21,6 +21,9 @@ Optional properties:
- - reg-shift : quantity to shift the register offsets by.
- - used-by-rtas : set to indicate that the port is in use by the firmware and
-   should not be registered.
-+- io-width : the size (in bytes) of the IO accesses that should be performed
-+  on the device.  There are some systems that require 32-bit accesses to the
-+  UART (e.g. TI davinci).
- 
- Example:
- 
-diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-index c911b24..82af1fc 100644
---- a/drivers/tty/serial/of_serial.c
-+++ b/drivers/tty/serial/of_serial.c
-@@ -65,6 +65,23 @@ static int __devinit of_platform_serial_setup(struct platform_device *ofdev,
- 
- 	port->irq = irq_of_parse_and_map(np, 0);
- 	port->iotype = UPIO_MEM;
-+	prop = of_get_property(np, "io-width", &prop_size);
-+	if (prop && (prop_size == sizeof(u32))) {
-+		switch (be32_to_cpup(prop)) {
-+		case 1:
-+			port->iotype = UPIO_MEM;
-+			break;
-+		case 4:
-+			port->iotype = UPIO_MEM32;
-+			break;
-+		default:
-+			dev_err(&ofdev->dev,
-+				"unsupported io width (%d bytes)\n",
-+				be32_to_cpup(prop));
-+			return -EINVAL;
-+		}
-+	}
-+
- 	port->type = type;
- 	port->uartclk = be32_to_cpup(clk);
- 	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
--- 
-1.7.4.1
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 reg =3D <0x80230000 0x100>;
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 clock-frequency =3D <3686400>;
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 interrupts =3D <10>;
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 reg-shift =3D <2>;
+> + =A0 =A0 =A0 };
+> --
+> 1.7.4.1
+>
+>
 
+
+
+--=20
+Grant Likely, B.Sc., P.Eng.
+Secret Lab Technologies Ltd.
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
