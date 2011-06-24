@@ -1,95 +1,56 @@
-From: Grant Likely <grant.likely@secretlab.ca>
-Subject: Re: [PATCHv2 1/2] dt: document the of_serial bindings
-Date: Thu, 23 Jun 2011 08:57:14 -0600
-Message-ID: <BANLkTim8gaXHT_z-CSAc6=Etw5nOHxfbMA@mail.gmail.com>
-References: <1308838115-23034-1-git-send-email-jamie@jamieiles.com>
- <BANLkTim_=xToTYjATh8Z_ji3muMy3dXj0Q@mail.gmail.com> <BANLkTinHFTEkLKo-__km5dRn6bXeJBZzzA@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Shawn Guo <shawn.guo@linaro.org>
+Subject: [PATCH v2 0/5] Add basic device support for imx51 babbage
+Date: Sat, 25 Jun 2011 02:04:31 +0800
+Message-ID: <1308938676-31121-1-git-send-email-shawn.guo@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-gx0-f174.google.com ([209.85.161.174]:33771 "EHLO
-	mail-gx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754653Ab1FWO5g convert rfc822-to-8bit (ORCPT
+Received: from mail-iw0-f174.google.com ([209.85.214.174]:42977 "EHLO
+	mail-iw0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753292Ab1FXRy0 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 23 Jun 2011 10:57:36 -0400
-Received: by gxk21 with SMTP id 21so800751gxk.19
-        for <linux-serial@vger.kernel.org>; Thu, 23 Jun 2011 07:57:35 -0700 (PDT)
-In-Reply-To: <BANLkTinHFTEkLKo-__km5dRn6bXeJBZzzA@mail.gmail.com>
+	Fri, 24 Jun 2011 13:54:26 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jamie Iles <jamie@jamieiles.com>
-Cc: linux-serial@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, devicetree-discuss <devicetree-discuss@lists.ozlabs.org>
+To: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org, netdev@vger.kernel.org, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, patches@linaro.org
 
-On Thu, Jun 23, 2011 at 8:56 AM, Grant Likely <grant.likely@secretlab.c=
-a> wrote:
-> On Thu, Jun 23, 2011 at 8:55 AM, Grant Likely <grant.likely@secretlab=
-=2Eca> wrote:
->> On Thu, Jun 23, 2011 at 8:08 AM, Jamie Iles <jamie@jamieiles.com> wr=
-ote:
->>> The of_serial bindings can be used to register a number of serial
->>> devices. =A0Document this binding with all of the others.
->>>
->>> Cc: Grant Likely <grant.likely@secretlab.ca>
->>> Cc: Arnd Bergmann <arnd@arndb.de>
->>> Signed-off-by: Jamie Iles <jamie@jamieiles.com>
->>> ---
->>> =A0.../devicetree/bindings/tty/serial/of-serial.txt =A0 | =A0 34 ++=
-++++++++++++++++++
->>> =A01 files changed, 34 insertions(+), 0 deletions(-)
->>> =A0create mode 100644 Documentation/devicetree/bindings/tty/serial/=
-of-serial.txt
->>>
->>> diff --git a/Documentation/devicetree/bindings/tty/serial/of-serial=
-=2Etxt b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
->>> new file mode 100644
->>> index 0000000..b0c52c2
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
->>> @@ -0,0 +1,34 @@
->>> +* UART (Universal Asynchronous Receiver/Transmitter)
->>> +
->>> +Required properties:
->>> +- compatible : one of:
->>> + =A0 =A0 =A0 - "ns8250"
->>> + =A0 =A0 =A0 - "ns16450"
->>> + =A0 =A0 =A0 - "ns16550a"
->>> + =A0 =A0 =A0 - "ns16550"
->>> + =A0 =A0 =A0 - "ns16750"
->>> + =A0 =A0 =A0 - "ns16850"
->>> + =A0 =A0 =A0 - "nvidia,tegra250-uart"
->>> + =A0 =A0 =A0 - "ibm,qpace-nwp-serial"
->>> + =A0 =A0 =A0 - "serial" if the port type is unknown.
->>> +- reg : offset and length of the register set for the device.
->>> +- interrupts : should contain uart interrupt.
->>> +- clock-frequency : the input clock frequency for the UART.
->>> +
->>> +Optional properties:
->>> +- current-speed : the current active speed of the UART.
->>> +- reg-offset : offset to apply to the mapbase from the start of th=
-e registers.
->>> +- reg-shift : quantity to shift the register offsets by.
->>> +- used-by-rtas : set to indicate that the port is in use by the fi=
-rmware and
->>> + =A0should not be registered.
->>> +
->>> +Example:
->>> +
->>> + =A0 =A0 =A0 uart@80230000 {
->>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 compatible =3D "ns8250";
->>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 device-type =3D "serial";
->>
->> Drop device-type. =A0Otherwise looks good.
->
-> Although the used-by-rtas description should probably mention
-> specifically that it is used by OpenFirmware RTAS.
+This patch set adds the basic device tree support for imx51 babbage
+board.  With uart and fec dt support added, the dt kernel can boot
+into console with nfs root on babbage, so that we get a good base
+to start playing dt and converting further drivers to use dt on
+imx51.
 
-Oh, and device tree documentation changes should cc: the
-devicetree-discuss@lists.ozlabs.org mailing list.
+It creates the platform imx51-dt for using the device tree, and
+leaves existing board support files alone, so nothing should be
+broken.  The plan is to add stuff step by step into imx51-dt to
+get it support every existing imx51 boards, and then remove the
+existing board files.
 
-g.
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+It works against Linus tree plus the dt infrastructure patches
+recently posted by Grant Likely.
+
+Changes since v1:
+ * Add functions dealing with aliases node
+ * Add one patch to remove the use of cpu_is_mx1 in serial driver
+ * Address comments on v1 given by Grant and Arnd
+
+Shawn Guo (5):
+      dt: add of_alias_scan and of_alias_get_id
+      serial/imx: get rid of the use of cpu_is_mx1()
+      serial/imx: add device tree support
+      net/fec: add device tree support
+      ARM: mx5: add basic device tree support for imx51 babbage
+
+Documentation/devicetree/bindings/net/fsl-fec.txt  |   22 +++
+ .../bindings/tty/serial/fsl-imx-uart.txt           |   20 +++
+ arch/arm/boot/dts/imx51-babbage.dts                |   93 ++++++++++
+ arch/arm/mach-imx/clock-imx1.c                     |    6 +-
+ arch/arm/mach-mx5/Kconfig                          |    8 +
+ arch/arm/mach-mx5/Makefile                         |    1 +
+ arch/arm/mach-mx5/imx51-dt.c                       |   70 ++++++++
+ arch/arm/plat-mxc/devices/platform-imx-uart.c      |    2 +-
+ drivers/net/fec.c                                  |   81 ++++++++-
+ drivers/of/base.c                                  |  181 ++++++++++++++++++++
+ drivers/of/fdt.c                                   |    6 +
+ drivers/tty/serial/imx.c                           |  132 +++++++++++++--
+ include/linux/of.h                                 |    7 +
+ 13 files changed, 606 insertions(+), 23 deletions(-)
