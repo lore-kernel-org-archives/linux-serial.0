@@ -1,46 +1,31 @@
 From: Ralf Baechle <ralf@linux-mips.org>
-Subject: [PATCH 10/12] SERIAL: SC26xx: Fix link error.
-Date: Mon, 27 Jun 2011 14:26:56 +0100
-Message-ID: <f0b3d9a91be8dba5c45c14efebaa9c7800694f15.1309182743.git.ralf@linux-mips.org>
-References: <17dd5038b15d7135791aadbe80464a13c80758d3.1309182742.git.ralf@linux-mips.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <17dd5038b15d7135791aadbe80464a13c80758d3.1309182742.git.ralf@linux-mips.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org
+Subject: [PATCH 00/12] Fix various section mismatches and build errors.
+Date: Sun, 26 Jun 2011 12:19:54 +0100
+Message-ID: <17dd5038b15d7135791aadbe80464a13c80758d3.1309182742.git.ralf@linux-mips.org>
+Return-path: <linux-mips-bounce@linux-mips.org>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+To: Andrew Morton <akpm@linux-foundation.org>, Alan Cox <alan@linux.intel.com>, Brent Casavant <bcasavan@sgi.com>, David Airlie <airlied@linux.ie>David
+Cc: dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, netdev@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Kconfig allows enabling console support for the SC26xx driver even when
-it's configured as a module resulting in a:
+I'm getting screen and screens full of section mismatches from my test
+builds of the current kernel to the point where it's sometimes more
+meaningful messages get hidden by the bulk of mismatches.  This is the
+first round of fixes with more to come.
 
-ERROR: "uart_console_device" [drivers/tty/serial/sc26xx.ko] undefined!
+  Ralf
 
-modpost error since the driver was merged in
-eea63e0e8a60d00485b47fb6e75d9aa2566b989b [SC26XX: New serial driver for
-SC2681 uarts] in 2.6.25.  Fixed by only allowing console support to be
-enabled if the driver is builtin.
-
-Signed-off-by: Ralf Baechle <ralf@linux-mips.org>
-To: Alan Cox <alan@linux.intel.com>
-Cc: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-mips@linux-mips.org
----
- drivers/tty/serial/Kconfig |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 636144c..b3692e6 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1419,7 +1419,7 @@ config SERIAL_SC26XX
- 
- config SERIAL_SC26XX_CONSOLE
- 	bool "Console on SC2681/SC2692 serial port"
--	depends on SERIAL_SC26XX
-+	depends on SERIAL_SC26XX=y
- 	select SERIAL_CORE_CONSOLE
- 	help
- 	  Support for Console on SC2681/SC2692 serial ports.
--- 
-1.7.4.4
+ drivers/gpu/drm/radeon/radeon_clocks.c |    4 ++--
+ drivers/leds/leds-lp5521.c             |    4 ++--
+ drivers/leds/leds-lp5523.c             |    4 ++--
+ drivers/misc/ioc4.c                    |    2 +-
+ drivers/net/3c509.c                    |    2 +-
+ drivers/net/3c59x.c                    |    2 +-
+ drivers/net/depca.c                    |   25 +++++++++++++------------
+ drivers/net/hp100.c                    |    2 +-
+ drivers/net/ne3210.c                   |   12 +++++++-----
+ drivers/net/tulip/de4x5.c              |    2 +-
+ drivers/scsi/sim710.c                  |    2 +-
+ drivers/tty/serial/Kconfig             |    2 +-
+ 12 files changed, 33 insertions(+), 30 deletions(-)
