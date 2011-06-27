@@ -1,15 +1,16 @@
 From: Govindraj <govindraj.ti@gmail.com>
-Subject: Re: [PATCH v3 11/12] OMAP2: Serial: Add has_async_wake flag.
-Date: Mon, 27 Jun 2011 18:39:54 +0530
-Message-ID: <BANLkTik9ZLyA4+1VMFj08Zke151OqAhATQ@mail.gmail.com>
+Subject: Re: [PATCH v3 05/12] OMAP: Serial: Hold console lock for console
+	usage.
+Date: Mon, 27 Jun 2011 19:05:06 +0530
+Message-ID: <BANLkTi=Zcre6cXrD4bRw-K6DtPKX3=O7jA@mail.gmail.com>
 References: <1307532194-13039-1-git-send-email-govindraj.raja@ti.com>
-	<1307532194-13039-12-git-send-email-govindraj.raja@ti.com>
-	<87y60qpxcq.fsf@ti.com>
+	<1307532194-13039-6-git-send-email-govindraj.raja@ti.com>
+	<87boxmsrjt.fsf@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <87y60qpxcq.fsf@ti.com>
+In-Reply-To: <87boxmsrjt.fsf@ti.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
 	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -23,167 +24,145 @@ To: Kevin Hilman <khilman@ti.com>
 Cc: Tony Lindgren <tony@atomide.com>, "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Jun 25, 2011 at 5:59 AM, Kevin Hilman <khilman@ti.com> wrote:
+On Sat, Jun 25, 2011 at 5:36 AM, Kevin Hilman <khilman@ti.com> wrote:
 > "Govindraj.R" <govindraj.raja@ti.com> writes:
 >
->> Prior to this patch the uart_clock was cut using prepare/resume calls si=
-nce
->> these funcs are no more available with runtime changes use has_async_wake
->> flag to keep clock active during bootup otherwise uart port will disabled
->> during boot-up and cannot be enabled back.
+>> Acquire console lock before enabling and writing to console-uart
+>> to avoid any recursive prints from console write.
+>> for ex:
+>> =A0 =A0 =A0 =A0 --> printk
+>> =A0 =A0 =A0 =A0 =A0 --> uart_console_write
+>> =A0 =A0 =A0 =A0 =A0 =A0 --> get_sync
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 --> printk from omap_device enable
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 --> uart_console write
+>>
+>> Use RPM_SUSPENDING check to avoid below scenario during bootup
+>> As during bootup console_lock is not available.
+>> =A0 =A0 =A0 =A0--> uart_add_one_port
+>> =A0 =A0 =A0 =A0 =A0 =A0--> console_register
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0--> console_lock
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 --> console_unlock
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0--> call_console_drivers (her=
+e yet console_lock is not released)
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 --> uart_console_wri=
+te
+>>
+>> Acked-by: Alan Cox <alan@linux.intel.com>
+>> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+>> ---
+>> =A0drivers/tty/serial/omap-serial.c | =A0 20 +++++++++++++++++++-
+>> =A01 files changed, 19 insertions(+), 1 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-=
+serial.c
+>> index 897416f..ee94291 100644
+>> --- a/drivers/tty/serial/omap-serial.c
+>> +++ b/drivers/tty/serial/omap-serial.c
+>> @@ -1008,7 +1008,22 @@ serial_omap_console_write(struct console *co, con=
+st char *s,
+>> =A0 =A0 =A0 struct uart_omap_port *up =3D serial_omap_console_ports[co->=
+index];
+>> =A0 =A0 =A0 unsigned long flags;
+>> =A0 =A0 =A0 unsigned int ier;
+>> - =A0 =A0 int locked =3D 1;
+>> + =A0 =A0 int console_lock =3D 0, locked =3D 1;
+>> +
+>> + =A0 =A0 if (console_trylock())
+>> + =A0 =A0 =A0 =A0 =A0 =A0 console_lock =3D 1;
 >
-> Is this only a bootup issue, or a runtime PM issue? =A0It appears to me
-> that with this patch, runtime PM is effectively disabled for the whole
-> time.
+> So now we take the console lock on *every* console write? =A0Even if the
+> device is not about to be idled? =A0 This is rather over-protective, don't
+> you think?
 >
 
-it boots up fine, its a runtime PM issue where there is
-no mechanism to wakeup after clock cutting from
-runtime autosuspend.
+This scenario is because of print from
+omap_uart_console_write --> get_sync --> omap_enable_enable
+trying to print worst activate or deactivate latency some times.
 
+will result in recursive print scenario.
 
-> Why not just use pm_runtime_disable() in _probe() for devices with no
-> async wakeup.
+holding console lock will only ensure that the print from get_sync gets
+logged to be printed later to console.
+
+>> + =A0 =A0 /*
+>> + =A0 =A0 =A0* If console_lock is not available and we are in suspending
+>> + =A0 =A0 =A0* state then we can avoid the console usage scenario
+>
+> s/in suspending state/runtime suspending/
+
+ok.
+
+>
+>> + =A0 =A0 =A0* as this may introduce recursive prints.
+>> + =A0 =A0 =A0* Basically this scenario occurs during boot while
+>> + =A0 =A0 =A0* printing debug bootlogs.
+>
+> The exact scenario for triggering this still not well described, and
+> thus still I don't get it.
 >
 
-Agree.
-can drop of this patch and bind below changes in runtime conversion patch  =
-04/12
+scenario is same as said above.
 
-do pm_runtime_enable only if device_may_wakeup
-is true in probe.
+omap_uart_console_write --> get_sync --> omap_device
 
-<<SNIP>>
-in serial_omap_probe
+printk worst activate latency calls omap_uart_console write.
 
-if (device_may_wakeup(&pdev->dev)) {
-	pm_runtime_use_autosuspend(&pdev->dev);
-	pm_runtime_set_autosuspend_delay(&pdev->dev,
-				OMAP_UART_AUTOSUSPEND_DELAY);
-	pm_runtime_enable(&pdev->dev);
-	pm_runtime_irq_safe(&pdev->dev);
-}
+after boot up we have access to console lock,
+but during boot up we don't have console lock available
+and results in printk recursiveness.
+
+> I still don't fully understand this problem,
+
+basically its due to recursive printk during bootup
+and also after bootup as said above.
+
+> but if it's isolated to
+> runtime suspending, maybe you need a console lock in the runtime_suspend
+> path (like you already have in the static suspend path.)
+
+console_lock in runtime_suspend will not help
+during bootup and due to printk emerging out from
+omap_device enable after system bootup.
 
 
->> Also based on this flag we can disable uart port during suspend and
->> enable back during resume for omap_socs that have not set
->> has_async_wake.
 >
-> Then you can use pm_runtime_enable() in ->prepare() and
-> pm_runtime_disable() in ->complete()
+>> + =A0 =A0 =A0*/
+>> +
+>> + =A0 =A0 if (!console_lock &&
+>> + =A0 =A0 =A0 =A0 =A0 =A0 up->pdev->dev.power.runtime_status =3D=3D RPM_=
+SUSPENDING)
+>> + =A0 =A0 =A0 =A0 =A0 =A0 return;
+>
+> Assuming this was a printk, it's now lost, right? =A0 Not sure that's an
+> acceptable solution.
 >
 
-u mean runtime enable in suspend and runtime disable in resume
-if device_may_wakeup is false.
+AFAIK it gets logged prints later.
 
-<<SNIP>>
-in serial_omap_suspend
-
-if (!device_may_wakeup(&pdev->dev))
-	pm_runtime_enable(&pdev->dev);
-
+to summarize holding console lock helps after bootup
+since during boot up console lock is not available need to use
+above runtime_status check.
 
 --
 Thanks,
 Govindraj.R
 
-> Kevin
+
+>> =A0 =A0 =A0 local_irq_save(flags);
+>> =A0 =A0 =A0 if (up->port.sysrq)
+>> @@ -1044,6 +1059,9 @@ serial_omap_console_write(struct console *co, cons=
+t char *s,
+>> =A0 =A0 =A0 if (up->msr_saved_flags)
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 check_modem_status(up);
+>>
+>> + =A0 =A0 if (console_lock)
+>> + =A0 =A0 =A0 =A0 =A0 =A0 console_unlock();
+>> +
+>> =A0 =A0 =A0 serial_omap_port_disable(up);
+>> =A0 =A0 =A0 if (locked)
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 spin_unlock(&up->port.lock);
 >
->> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
->> ---
->> =A0arch/arm/mach-omap2/serial.c =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0| =A0=
- =A01 +
->> =A0arch/arm/plat-omap/include/plat/omap-serial.h | =A0 =A03 +++
->> =A0drivers/tty/serial/omap-serial.c =A0 =A0 =A0 =A0 =A0 =A0 =A0| =A0 14 =
-++++++++++++++
->> =A03 files changed, 18 insertions(+), 0 deletions(-)
->>
->> diff --git a/arch/arm/mach-omap2/serial.c b/arch/arm/mach-omap2/serial.c
->> index 4bc5914..0a95c95 100644
->> --- a/arch/arm/mach-omap2/serial.c
->> +++ b/arch/arm/mach-omap2/serial.c
->> @@ -266,6 +266,7 @@ static void omap_uart_idle_init(struct omap_uart_por=
-t_info *uart,
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 break;
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 }
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 uart->wk_mask =3D wk_mask;
->> + =A0 =A0 =A0 =A0 =A0 =A0 uart->has_async_wake =3D true;
->> =A0 =A0 =A0 } else if (cpu_is_omap24xx()) {
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 u32 wk_mask =3D 0;
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 u32 wk_en =3D PM_WKEN1, wk_st =3D PM_WKST1;
->> diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/pl=
-at-omap/include/plat/omap-serial.h
->> index b5117bd..69e6d4b 100644
->> --- a/arch/arm/plat-omap/include/plat/omap-serial.h
->> +++ b/arch/arm/plat-omap/include/plat/omap-serial.h
->> @@ -79,6 +79,7 @@ struct omap_uart_port_info {
->> =A0 =A0 =A0 void __iomem *wk_st;
->> =A0 =A0 =A0 void __iomem *wk_en;
->> =A0 =A0 =A0 u32 wk_mask;
->> + =A0 =A0 bool =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0has_async_wake;
->> =A0};
->>
->> =A0struct uart_omap_dma {
->> @@ -134,6 +135,8 @@ struct uart_omap_port {
->> =A0 =A0 =A0 unsigned int =A0 =A0 =A0 =A0 =A0 =A0errata;
->> =A0 =A0 =A0 void (*enable_wakeup)(struct platform_device *, bool);
->> =A0 =A0 =A0 bool (*chk_wakeup)(struct platform_device *);
->> +
->> + =A0 =A0 bool =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0has_async_wake;
->> =A0};
->>
->> =A0#endif /* __OMAP_SERIAL_H__ */
->> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-=
-serial.c
->> index c3561dd..dbe76f3 100644
->> --- a/drivers/tty/serial/omap-serial.c
->> +++ b/drivers/tty/serial/omap-serial.c
->> @@ -1181,6 +1181,13 @@ static int serial_omap_suspend(struct device *dev)
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 uart_suspend_port(&serial_omap_reg, &up->por=
-t);
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 console_trylock();
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 serial_omap_pm(&up->port, 3, 0);
->> +
->> + =A0 =A0 =A0 =A0 =A0 =A0 /* OMAP2 dont have async wakeup from prcm.
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0* For such socs clocks will be kept active =
-from probe and
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0* cut only in suspend path.
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0*/
->> + =A0 =A0 =A0 =A0 =A0 =A0 if (!up->has_async_wake)
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 serial_omap_port_disable(up);
->> =A0 =A0 =A0 }
->> =A0 =A0 =A0 return 0;
->> =A0}
->> @@ -1192,6 +1199,9 @@ static int serial_omap_resume(struct device *dev)
->> =A0 =A0 =A0 if (up) {
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 uart_resume_port(&serial_omap_reg, &up->port=
-);
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 console_unlock();
->> +
->> + =A0 =A0 =A0 =A0 =A0 =A0 if (!up->has_async_wake)
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 serial_omap_port_enable(up);
->> =A0 =A0 =A0 }
->>
->> =A0 =A0 =A0 return 0;
->> @@ -1415,6 +1425,7 @@ static int serial_omap_probe(struct platform_devic=
-e *pdev)
->> =A0 =A0 =A0 up->errata =3D omap_up_info->errata;
->> =A0 =A0 =A0 up->enable_wakeup =3D omap_up_info->enable_wakeup;
->> =A0 =A0 =A0 up->chk_wakeup =3D omap_up_info->chk_wakeup;
->> + =A0 =A0 up->has_async_wake =3D omap_up_info->has_async_wake;
->>
->> =A0 =A0 =A0 if (omap_up_info->dma_enabled) {
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 up->uart_dma.uart_dma_tx =3D dma_tx->start;
->> @@ -1443,6 +1454,9 @@ static int serial_omap_probe(struct platform_devic=
-e *pdev)
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 serial_omap_port_disable(up);
->> =A0 =A0 =A0 }
->>
->> + =A0 =A0 if (!up->has_async_wake)
->> + =A0 =A0 =A0 =A0 =A0 =A0 serial_omap_port_enable(up);
->> +
->> =A0 =A0 =A0 ui[pdev->id] =3D up;
->> =A0 =A0 =A0 serial_omap_add_console_port(up);
+> Kevin
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-serial" in
 > the body of a message to majordomo@vger.kernel.org
