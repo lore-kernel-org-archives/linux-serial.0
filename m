@@ -1,124 +1,80 @@
-From: Kevin Hilman <khilman@ti.com>
-Subject: Re: [PATCH v3 11/12] OMAP2: Serial: Add has_async_wake flag.
-Date: Fri, 24 Jun 2011 17:29:25 -0700
-Message-ID: <87y60qpxcq.fsf@ti.com>
-References: <1307532194-13039-1-git-send-email-govindraj.raja@ti.com>
-	<1307532194-13039-12-git-send-email-govindraj.raja@ti.com>
+From: Jamie Iles <jamie-wmLquQDDieKakBO8gow8eQ@public.gmane.org>
+Subject: [PATCHv3 2/2] tty: of_serial: support for 32 bit accesses
+Date: Mon, 27 Jun 2011 13:32:34 +0100
+Message-ID: <1309177954-8786-2-git-send-email-jamie@jamieiles.com>
+References: <1309177954-8786-1-git-send-email-jamie@jamieiles.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1307532194-13039-12-git-send-email-govindraj.raja@ti.com>
-	(Govindraj R.'s message of "Wed, 8 Jun 2011 16:53:13 +0530")
-Sender: linux-omap-owner@vger.kernel.org
-To: "Govindraj.R" <govindraj.raja@ti.com>
-Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+In-Reply-To: <1309177954-8786-1-git-send-email-jamie-wmLquQDDieKakBO8gow8eQ@public.gmane.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
+	<mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss>
+List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
+	<mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
+Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Sender: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-"Govindraj.R" <govindraj.raja@ti.com> writes:
+Some platforms e.g. TI Davinci require 32-bit accesses to the UARTs.
+The of_serial driver currently registers all UARTs as UPIO_MEM.  Add a
+new attribute "io-width" to allow the port to be registered with
+different IO width requirements.
 
-> Prior to this patch the uart_clock was cut using prepare/resume calls since
-> these funcs are no more available with runtime changes use has_async_wake
-> flag to keep clock active during bootup otherwise uart port will disabled
-> during boot-up and cannot be enabled back.  
+Acked-by: Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Acked-by: Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>
+Signed-off-by: Jamie Iles <jamie-wmLquQDDieKakBO8gow8eQ@public.gmane.org>
+---
+ .../devicetree/bindings/tty/serial/of-serial.txt   |    3 +++
+ drivers/tty/serial/of_serial.c                     |   17 +++++++++++++++++
+ 2 files changed, 20 insertions(+), 0 deletions(-)
 
-Is this only a bootup issue, or a runtime PM issue?  It appears to me
-that with this patch, runtime PM is effectively disabled for the whole
-time.
-
-Why not just use pm_runtime_disable() in _probe() for devices with no
-async wakeup.
-
-> Also based on this flag we can disable uart port during suspend and
-> enable back during resume for omap_socs that have not set
-> has_async_wake.
-
-Then you can use pm_runtime_enable() in ->prepare() and
-pm_runtime_disable() in ->complete()
-
-Kevin
-
-> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
-> ---
->  arch/arm/mach-omap2/serial.c                  |    1 +
->  arch/arm/plat-omap/include/plat/omap-serial.h |    3 +++
->  drivers/tty/serial/omap-serial.c              |   14 ++++++++++++++
->  3 files changed, 18 insertions(+), 0 deletions(-)
->
-> diff --git a/arch/arm/mach-omap2/serial.c b/arch/arm/mach-omap2/serial.c
-> index 4bc5914..0a95c95 100644
-> --- a/arch/arm/mach-omap2/serial.c
-> +++ b/arch/arm/mach-omap2/serial.c
-> @@ -266,6 +266,7 @@ static void omap_uart_idle_init(struct omap_uart_port_info *uart,
->  			break;
->  		}
->  		uart->wk_mask = wk_mask;
-> +		uart->has_async_wake = true;
->  	} else if (cpu_is_omap24xx()) {
->  		u32 wk_mask = 0;
->  		u32 wk_en = PM_WKEN1, wk_st = PM_WKST1;
-> diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/plat-omap/include/plat/omap-serial.h
-> index b5117bd..69e6d4b 100644
-> --- a/arch/arm/plat-omap/include/plat/omap-serial.h
-> +++ b/arch/arm/plat-omap/include/plat/omap-serial.h
-> @@ -79,6 +79,7 @@ struct omap_uart_port_info {
->  	void __iomem *wk_st;
->  	void __iomem *wk_en;
->  	u32 wk_mask;
-> +	bool			has_async_wake;
->  };
->  
->  struct uart_omap_dma {
-> @@ -134,6 +135,8 @@ struct uart_omap_port {
->  	unsigned int		errata;
->  	void (*enable_wakeup)(struct platform_device *, bool);
->  	bool (*chk_wakeup)(struct platform_device *);
-> +
-> +	bool			has_async_wake;
->  };
->  
->  #endif /* __OMAP_SERIAL_H__ */
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-> index c3561dd..dbe76f3 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -1181,6 +1181,13 @@ static int serial_omap_suspend(struct device *dev)
->  		uart_suspend_port(&serial_omap_reg, &up->port);
->  		console_trylock();
->  		serial_omap_pm(&up->port, 3, 0);
-> +
-> +		/* OMAP2 dont have async wakeup from prcm.
-> +		 * For such socs clocks will be kept active from probe and
-> +		 * cut only in suspend path.
-> +		 */
-> +		if (!up->has_async_wake)
-> +			serial_omap_port_disable(up);
->  	}
->  	return 0;
->  }
-> @@ -1192,6 +1199,9 @@ static int serial_omap_resume(struct device *dev)
->  	if (up) {
->  		uart_resume_port(&serial_omap_reg, &up->port);
->  		console_unlock();
-> +
-> +		if (!up->has_async_wake)
-> +			serial_omap_port_enable(up);
->  	}
->  
->  	return 0;
-> @@ -1415,6 +1425,7 @@ static int serial_omap_probe(struct platform_device *pdev)
->  	up->errata = omap_up_info->errata;
->  	up->enable_wakeup = omap_up_info->enable_wakeup;
->  	up->chk_wakeup = omap_up_info->chk_wakeup;
-> +	up->has_async_wake = omap_up_info->has_async_wake;
->  
->  	if (omap_up_info->dma_enabled) {
->  		up->uart_dma.uart_dma_tx = dma_tx->start;
-> @@ -1443,6 +1454,9 @@ static int serial_omap_probe(struct platform_device *pdev)
->  		serial_omap_port_disable(up);
->  	}
->  
-> +	if (!up->has_async_wake)
-> +		serial_omap_port_enable(up);
-> +
->  	ui[pdev->id] = up;
->  	serial_omap_add_console_port(up);
+diff --git a/Documentation/devicetree/bindings/tty/serial/of-serial.txt b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
+index 35e53ae..93260d0 100644
+--- a/Documentation/devicetree/bindings/tty/serial/of-serial.txt
++++ b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
+@@ -21,6 +21,9 @@ Optional properties:
+ - reg-shift : quantity to shift the register offsets by.
+ - used-by-rtas : set to indicate that the port is in use by the OpenFirmware
+   RTAS and should not be registered.
++- io-width : the size (in bytes) of the IO accesses that should be performed
++  on the device.  There are some systems that require 32-bit accesses to the
++  UART (e.g. TI davinci).
+ 
+ Example:
+ 
+diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+index c911b24..dfcad6f 100644
+--- a/drivers/tty/serial/of_serial.c
++++ b/drivers/tty/serial/of_serial.c
+@@ -65,6 +65,23 @@ static int __devinit of_platform_serial_setup(struct platform_device *ofdev,
+ 
+ 	port->irq = irq_of_parse_and_map(np, 0);
+ 	port->iotype = UPIO_MEM;
++	prop = of_get_property(np, "io-width", &prop_size);
++	if (prop && (prop_size == sizeof(u32))) {
++		switch (be32_to_cpup(prop)) {
++		case 1:
++			port->iotype = UPIO_MEM;
++			break;
++		case 4:
++			port->iotype = UPIO_MEM32;
++			break;
++		default:
++			dev_warn(&ofdev->dev,
++				 "unsupported io width (%d bytes)\n",
++				 be32_to_cpup(prop));
++			return -EINVAL;
++		}
++	}
++
+ 	port->type = type;
+ 	port->uartclk = be32_to_cpup(clk);
+ 	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
+-- 
+1.7.4.1
