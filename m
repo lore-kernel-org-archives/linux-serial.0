@@ -1,189 +1,113 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 2/7] serial/8250: move alchemy I/O handler to platform code
-Date: Mon, 27 Jun 2011 23:45:15 +0200
-Message-ID: <1309211120-2803-3-git-send-email-arnd@arndb.de>
+Subject: [PATCH 7/7] serial/8250: make PIO support optional
+Date: Mon, 27 Jun 2011 23:45:20 +0200
+Message-ID: <1309211120-2803-8-git-send-email-arnd@arndb.de>
 References: <1309211120-2803-1-git-send-email-arnd@arndb.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.126.186]:57031 "EHLO
+Received: from moutng.kundenserver.de ([212.227.17.9]:58521 "EHLO
 	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754325Ab1F0VqD (ORCPT
+	with ESMTP id S1754371Ab1F0VqL (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 27 Jun 2011 17:46:03 -0400
+	Mon, 27 Jun 2011 17:46:11 -0400
 In-Reply-To: <1309211120-2803-1-git-send-email-arnd@arndb.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@suse.de>
-Cc: linux-kernel@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, Arnd Bergmann <arnd@arndb.de>, Ralf Baechle <ralf@linux-mips.org>, Manuel Lauss <manuel.lauss@googlemail.com>, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org
 
-Only one platform ever sets the UPIO_AU iotype, so it's
-cleaner to define the handlers in the code that actually
-requires it, rather than building the same logic into
-every 8250 driver.
+It is not currently possible to build support for the 8250 UART
+on architectures that don't define PC-style I/O accessors like
+inb/outb. Most embedded systems without PCI don't actually have
+PC-style I/O, so they should not have to make up their own
+accessors.
+
+This makes the PIO support in the 8250 driver completely
+conditional on CONFIG_HAS_IOPORT so we can remove the bogus
+definitions from all the places that only need them for 8250.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Cc: Ralf Baechle <ralf@linux-mips.org>
-Cc: Manuel Lauss <manuel.lauss@googlemail.com>
 Cc: Greg Kroah-Hartman <gregkh@suse.de>
 Cc: linux-serial@vger.kernel.org
 ---
- arch/mips/alchemy/common/platform.c |   50 ++++++++++++++++++++++++++++++
- drivers/tty/serial/8250.c           |   58 -----------------------------------
- 2 files changed, 50 insertions(+), 58 deletions(-)
+ drivers/tty/serial/8250.c |   20 ++++++++++++++------
+ 1 files changed, 14 insertions(+), 6 deletions(-)
 
-diff --git a/arch/mips/alchemy/common/platform.c b/arch/mips/alchemy/common/platform.c
-index 3b2c18b..750441f 100644
---- a/arch/mips/alchemy/common/platform.c
-+++ b/arch/mips/alchemy/common/platform.c
-@@ -45,6 +45,54 @@ static void alchemy_8250_pm(struct uart_port *port, unsigned int state,
- #endif
- }
- 
-+/* Au1x00 UART hardware has a weird register layout */
-+static const u8 au_io_in_map[] = {
-+	[UART_RX]  = 0,
-+	[UART_IER] = 2,
-+	[UART_IIR] = 3,
-+	[UART_LCR] = 5,
-+	[UART_MCR] = 6,
-+	[UART_LSR] = 7,
-+	[UART_MSR] = 8,
-+};
-+
-+static const u8 au_io_out_map[] = {
-+	[UART_TX]  = 1,
-+	[UART_IER] = 2,
-+	[UART_FCR] = 4,
-+	[UART_LCR] = 5,
-+	[UART_MCR] = 6,
-+};
-+
-+/* sane hardware needs no mapping */
-+static inline int map_8250_in_reg(struct uart_port *p, int offset)
-+{
-+	if (p->iotype != UPIO_AU)
-+		return offset;
-+	return au_io_in_map[offset];
-+}
-+
-+static inline int map_8250_out_reg(struct uart_port *p, int offset)
-+{
-+	if (p->iotype != UPIO_AU)
-+		return offset;
-+	return au_io_out_map[offset];
-+}
-+
-+/* sane hardware needs no mapping */
-+static unsigned int au_serial_in(struct uart_port *p, int offset)
-+{
-+	offset = map_8250_in_reg(p, offset) << p->regshift;
-+	return __raw_readl(p->membase + offset);
-+}
-+
-+static void au_serial_out(struct uart_port *p, int offset, int value)
-+{
-+	offset = map_8250_out_reg(p, offset) << p->regshift;
-+	__raw_writel(value, p->membase + offset);
-+}
-+
-+
- #define PORT(_base, _irq)					\
- 	{							\
- 		.mapbase	= _base,			\
-@@ -55,6 +103,8 @@ static void alchemy_8250_pm(struct uart_port *port, unsigned int state,
- 				  UPF_FIXED_TYPE,		\
- 		.type		= PORT_16550A,			\
- 		.pm		= alchemy_8250_pm,		\
-+		.serial_in	= au_serial_in,			\
-+		.serial_out	= au_serial_out			\
- 	}
- 
- static struct plat_serial8250_port au1x00_uart_data[][4] __initdata = {
 diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
-index cf19b26..c8f107e 100644
+index 2b06c27..a2933d6 100644
 --- a/drivers/tty/serial/8250.c
 +++ b/drivers/tty/serial/8250.c
-@@ -304,50 +304,9 @@ static const struct serial8250_config uart_config[] = {
- 	},
- };
- 
--#if defined(CONFIG_MIPS_ALCHEMY)
--
--/* Au1x00 UART hardware has a weird register layout */
--static const u8 au_io_in_map[] = {
--	[UART_RX]  = 0,
--	[UART_IER] = 2,
--	[UART_IIR] = 3,
--	[UART_LCR] = 5,
--	[UART_MCR] = 6,
--	[UART_LSR] = 7,
--	[UART_MSR] = 8,
--};
--
--static const u8 au_io_out_map[] = {
--	[UART_TX]  = 1,
--	[UART_IER] = 2,
--	[UART_FCR] = 4,
--	[UART_LCR] = 5,
--	[UART_MCR] = 6,
--};
--
--/* sane hardware needs no mapping */
--static inline int map_8250_in_reg(struct uart_port *p, int offset)
--{
--	if (p->iotype != UPIO_AU)
--		return offset;
--	return au_io_in_map[offset];
--}
--
--static inline int map_8250_out_reg(struct uart_port *p, int offset)
--{
--	if (p->iotype != UPIO_AU)
--		return offset;
--	return au_io_out_map[offset];
--}
--
--#else
--
--/* sane hardware needs no mapping */
- #define map_8250_in_reg(up, offset) (offset)
- #define map_8250_out_reg(up, offset) (offset)
- 
--#endif
--
- static unsigned int hub6_serial_in(struct uart_port *p, int offset)
- {
- 	offset = map_8250_in_reg(p, offset) << p->regshift;
-@@ -386,18 +345,6 @@ static unsigned int mem32_serial_in(struct uart_port *p, int offset)
+@@ -318,6 +318,7 @@ static unsigned int mem32_serial_in(struct uart_port *p, int offset)
  	return readl(p->membase + offset);
  }
  
--static unsigned int au_serial_in(struct uart_port *p, int offset)
--{
--	offset = map_8250_in_reg(p, offset) << p->regshift;
--	return __raw_readl(p->membase + offset);
--}
--
--static void au_serial_out(struct uart_port *p, int offset, int value)
--{
--	offset = map_8250_out_reg(p, offset) << p->regshift;
--	__raw_writel(value, p->membase + offset);
--}
--
- static unsigned int tsi_serial_in(struct uart_port *p, int offset)
++#ifdef CONFIG_HAS_IOPORT
+ static unsigned int io_serial_in(struct uart_port *p, int offset)
  {
- 	unsigned int tmp;
-@@ -484,11 +431,6 @@ static void set_io_from_upio(struct uart_port *p)
- 		p->serial_out = mem32_serial_out;
+ 	offset = map_8250_in_reg(p, offset) << p->regshift;
+@@ -329,16 +330,19 @@ static void io_serial_out(struct uart_port *p, int offset, int value)
+ 	offset = map_8250_out_reg(p, offset) << p->regshift;
+ 	outb(value, p->iobase + offset);
+ }
++#endif
+ 
+ static void set_io_from_upio(struct uart_port *p)
+ {
+ 	struct uart_8250_port *up =
+ 		container_of(p, struct uart_8250_port, port);
+ 	switch (p->iotype) {
+-	case UPIO_MEM:
+-		p->serial_in = mem_serial_in;
+-		p->serial_out = mem_serial_out;
++#ifdef CONFIG_HAS_IOPORT
++	case UPIO_PORT:
++		p->serial_in = io_serial_in;
++		p->serial_out = io_serial_out;
+ 		break;
++#endif
+ 
+ 	case UPIO_MEM32:
+ 		p->serial_in = mem32_serial_in;
+@@ -346,9 +350,10 @@ static void set_io_from_upio(struct uart_port *p)
  		break;
  
--	case UPIO_AU:
--		p->serial_in = au_serial_in;
--		p->serial_out = au_serial_out;
--		break;
+ 	default:
+-		p->serial_in = io_serial_in;
+-		p->serial_out = io_serial_out;
++		p->serial_in = mem_serial_in;
++		p->serial_out = mem_serial_out;
+ 		break;
++
+ 	}
+ 	/* Remember loaded iotype */
+ 	up->cur_iotype = p->iotype;
+@@ -2250,12 +2255,13 @@ static int serial8250_request_port(struct uart_port *port)
+ 			}
+ 		}
+ 		break;
 -
- 	case UPIO_TSI:
- 		p->serial_in = tsi_serial_in;
- 		p->serial_out = tsi_serial_out;
++#ifdef CONFIG_HAS_IOPORT
+ 	case UPIO_HUB6:
+ 	case UPIO_PORT:
+ 		if (!request_region(up->port.iobase, size, "serial"))
+ 			ret = -EBUSY;
+ 		break;
++#endif
+ 	}
+ 	return ret;
+ }
+@@ -2282,10 +2288,12 @@ static void serial8250_release_port(struct uart_port *port)
+ 		release_mem_region(up->port.mapbase, size);
+ 		break;
+ 
++#ifdef CONFIG_HAS_IOPORT
+ 	case UPIO_HUB6:
+ 	case UPIO_PORT:
+ 		release_region(up->port.iobase, size);
+ 		break;
++#endif
+ 	}
+ }
+ 
 -- 
 1.7.5.4
 
