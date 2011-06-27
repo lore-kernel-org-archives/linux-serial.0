@@ -1,75 +1,94 @@
-From: Jamie Iles <jamie-wmLquQDDieKakBO8gow8eQ@public.gmane.org>
-Subject: [PATCHv3 1/2] dt: document the of_serial bindings
-Date: Mon, 27 Jun 2011 13:32:33 +0100
-Message-ID: <1309177954-8786-1-git-send-email-jamie@jamieiles.com>
+From: Govindraj <govindraj.ti@gmail.com>
+Subject: Re: [PATCH v3 02/12] OMAP2+: UART: Remove uart clock handling code
+	from serial.c
+Date: Mon, 27 Jun 2011 18:19:55 +0530
+Message-ID: <BANLkTim1fEnfqu4KaN6FkG_CT93=joZC_w@mail.gmail.com>
+References: <1307532194-13039-1-git-send-email-govindraj.raja@ti.com>
+	<1307532194-13039-3-git-send-email-govindraj.raja@ti.com>
+	<877h8ax3ss.fsf@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
-	<mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
-	<mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <877h8ax3ss.fsf@ti.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: linux-arm-kernel-bounces@lists.infradead.org
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Kevin Hilman <khilman@ti.com>
+Cc: Tony Lindgren <tony@atomide.com>, "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The of_serial bindings can be used to register a number of serial
-devices.  Document this binding with all of the others.
+On Sat, Jun 25, 2011 at 3:58 AM, Kevin Hilman <khilman@ti.com> wrote:
+> "Govindraj.R" <govindraj.raja@ti.com> writes:
+>
+>> Cleanup serial.c file in preparation to addition of runtime api's in oma=
+p-serial
+>> file. Remove all clock handling mechanism as this will be taken care with
+>> pm runtime api's in omap-serial.c file itself.
+>>
+>> 1.) Remove omap-device enable and disable. We can can use get_sync/put_s=
+ync api's
+>> 2.) Remove context save/restore can be done with runtime_resume callback=
+ for
+>> =A0 =A0 get_sync call. No need to save context as all reg details availa=
+ble in
+>> =A0 =A0 uart_port structure can be used for restore, so add missing regs=
+ in
+>> =A0 =A0 uart port struct.
+>> 3.) Add func to identify console uart.
+>> 4.) Erratum handling informed as flag to driver and func to handle errat=
+um
+>> =A0 =A0 can be moved to omap-serial driver itself.
+>>
+>> Acked-by: Alan Cox <alan@linux.intel.com>
+>> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+>
+> [...]
+>
+>> @@ -47,65 +40,9 @@
+>> =A0#include "control.h"
+>> =A0#include "mux.h"
+>>
+>> -#define UART_OMAP_NO_EMPTY_FIFO_READ_IP_REV =A00x52
+>> -#define UART_OMAP_WER =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A00x17 =A0 =A0/* Wak=
+e-up enable register */
+>> -
+>> -#define UART_ERRATA_FIFO_FULL_ABORT =A0(0x1 << 0)
+>> -#define UART_ERRATA_i202_MDR1_ACCESS (0x1 << 1)
+>> -
+>> -/*
+>> - * NOTE: By default the serial timeout is disabled as it causes lost ch=
+aracters
+>> - * over the serial ports. This means that the UART clocks will stay on =
+until
+>> - * disabled via sysfs. This also causes that any deeper omap sleep stat=
+es are
+>> - * blocked.
+>> - */
+>> -#define DEFAULT_TIMEOUT 0
+>> -
+>> -#define MAX_UART_HWMOD_NAME_LEN =A0 =A0 =A0 =A0 =A0 =A0 =A016
+>> +#define MAX_UART_HWMOD_NAME_LEN =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A016
+>
+> Minor: only whitespace change here, you converted tabs to spaces.
 
-v3: remove device-type and clarify used-by-rtas
+yes, will correct this.
 
-Cc: Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>
-Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Signed-off-by: Jamie Iles <jamie-wmLquQDDieKakBO8gow8eQ@public.gmane.org>
----
- .../devicetree/bindings/tty/serial/of-serial.txt   |   33 ++++++++++++++++++++
- 1 files changed, 33 insertions(+), 0 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/tty/serial/of-serial.txt
+--
+Govindraj.R
 
-diff --git a/Documentation/devicetree/bindings/tty/serial/of-serial.txt b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
-new file mode 100644
-index 0000000..35e53ae
---- /dev/null
-+++ b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
-@@ -0,0 +1,33 @@
-+* UART (Universal Asynchronous Receiver/Transmitter)
-+
-+Required properties:
-+- compatible : one of:
-+	- "ns8250"
-+	- "ns16450"
-+	- "ns16550a"
-+	- "ns16550"
-+	- "ns16750"
-+	- "ns16850"
-+	- "nvidia,tegra250-uart"
-+	- "ibm,qpace-nwp-serial"
-+	- "serial" if the port type is unknown.
-+- reg : offset and length of the register set for the device.
-+- interrupts : should contain uart interrupt.
-+- clock-frequency : the input clock frequency for the UART.
-+
-+Optional properties:
-+- current-speed : the current active speed of the UART.
-+- reg-offset : offset to apply to the mapbase from the start of the registers.
-+- reg-shift : quantity to shift the register offsets by.
-+- used-by-rtas : set to indicate that the port is in use by the OpenFirmware
-+  RTAS and should not be registered.
-+
-+Example:
-+
-+	uart@80230000 {
-+		compatible = "ns8250";
-+		reg = <0x80230000 0x100>;
-+		clock-frequency = <3686400>;
-+		interrupts = <10>;
-+		reg-shift = <2>;
-+	};
--- 
-1.7.4.1
+>
+> Rest of this looks fine.
+>
+> Kevin
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at =A0http://vger.kernel.org/majordomo-info.html
+>
