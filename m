@@ -1,77 +1,62 @@
-From: Jamie Iles <jamie@jamieiles.com>
-Subject: Re: [PATCH 4/7] serial/8250: move DWAP support to arch/mips
-Date: Mon, 27 Jun 2011 23:15:41 +0100
-Message-ID: <20110627221541.GA5370@gallagher>
-References: <1309211120-2803-1-git-send-email-arnd@arndb.de>
- <1309211120-2803-5-git-send-email-arnd@arndb.de>
+From: Kevin Hilman <khilman@ti.com>
+Subject: Re: [PATCH v3 11/12] OMAP2: Serial: Add has_async_wake flag.
+Date: Mon, 27 Jun 2011 15:28:57 -0700
+Message-ID: <877h86aoye.fsf@ti.com>
+References: <1307532194-13039-1-git-send-email-govindraj.raja@ti.com>
+	<1307532194-13039-12-git-send-email-govindraj.raja@ti.com>
+	<87y60qpxcq.fsf@ti.com>
+	<BANLkTik9ZLyA4+1VMFj08Zke151OqAhATQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ww0-f44.google.com ([74.125.82.44]:42969 "EHLO
-	mail-ww0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755219Ab1F0WPr (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 27 Jun 2011 18:15:47 -0400
-Content-Disposition: inline
-In-Reply-To: <1309211120-2803-5-git-send-email-arnd@arndb.de>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <BANLkTik9ZLyA4+1VMFj08Zke151OqAhATQ@mail.gmail.com> (Govindraj's
+	message of "Mon, 27 Jun 2011 18:39:54 +0530")
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: linux-arm-kernel-bounces@lists.infradead.org
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Govindraj <govindraj.ti@gmail.com>
+Cc: Tony Lindgren <tony@atomide.com>, "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-kernel@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, Ralf Baechle <ralf@linux-mips.org>, Jamie Iles <jamie@jamieiles.com>, linux-serial@vger.kernel.org
 
-Hi Arnd,
-
-On Mon, Jun 27, 2011 at 11:45:17PM +0200, Arnd Bergmann wrote:
-> Only one board uses the UPIO_DWAP iotype, and nothing uses
-> the UPIO_DWAP32 iotype. It seems much cleaner to handle the
-> DWAP quirk as a new port type, and move the serial_out
-> accessor into the platform code. If more platforms start
-> using the DWAP port, that function can be moved into a
-> common location.
-
-I posted a series[1] a couple of weeks back that does this for 
-DWAPB/DWAPB32 in a slightly different way which also removes the extra 
-interrupt handling into the platform code.
-
-Incidentally, I've been trying to mainline a platform (picoxcell) that 
-has a DWAPB (with 32-bit access requirement) but struggled to get 
-feedback on the SoC port but hope to resubmit as a device tree based 
-platform.
-
-1. http://marc.info/?l=linux-serial&m=130821602729595&w=2
-
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Cc: Ralf Baechle <ralf@linux-mips.org>
-> Cc: Jamie Iles <jamie@jamieiles.com>
-> Cc: Greg Kroah-Hartman <gregkh@suse.de>
-> Cc: linux-serial@vger.kernel.org
-> ---
->  arch/mips/pmc-sierra/msp71xx/msp_serial.c |   32 ++++++++++-
->  drivers/tty/serial/8250.c                 |   87 +++--------------------------
->  drivers/tty/serial/8250_hub6.c            |   17 ++++++
-
-Should the hub6 stuff be in this patch?
-
->  drivers/tty/serial/serial_core.c          |    4 -
->  include/linux/serial_core.h               |    5 +-
->  5 files changed, 57 insertions(+), 88 deletions(-)
-> 
-> diff --git a/arch/mips/pmc-sierra/msp71xx/msp_serial.c b/arch/mips/pmc-sierra/msp71xx/msp_serial.c
-> index f726162..6c9f1d3 100644
-> --- a/arch/mips/pmc-sierra/msp71xx/msp_serial.c
-> +++ b/arch/mips/pmc-sierra/msp71xx/msp_serial.c
-> @@ -38,6 +38,33 @@
->  #include <msp_int.h>
->  #include <msp_regs.h>
->  
-> +/* Save the LCR value so it can be re-written when a Busy Detect IRQ occurs. */
-> +static inline void dwapb_save_out_value(struct uart_port *p, int offset,
-> +					int value)
-> +{
-> +	struct uart_8250_port *up =
-> +		container_of(p, struct uart_8250_port, port);
-
-I couldn't see that struct uart_8250_port is moved out of 8250.c, so I'm 
-not sure that this would work in here?
-
-Jamie
+R292aW5kcmFqIDxnb3ZpbmRyYWoudGlAZ21haWwuY29tPiB3cml0ZXM6Cgo+IE9uIFNhdCwgSnVu
+IDI1LCAyMDExIGF0IDU6NTkgQU0sIEtldmluIEhpbG1hbiA8a2hpbG1hbkB0aS5jb20+IHdyb3Rl
+Ogo+PiAiR292aW5kcmFqLlIiIDxnb3ZpbmRyYWoucmFqYUB0aS5jb20+IHdyaXRlczoKPj4KPj4+
+IFByaW9yIHRvIHRoaXMgcGF0Y2ggdGhlIHVhcnRfY2xvY2sgd2FzIGN1dCB1c2luZyBwcmVwYXJl
+L3Jlc3VtZSBjYWxscyBzaW5jZQo+Pj4gdGhlc2UgZnVuY3MgYXJlIG5vIG1vcmUgYXZhaWxhYmxl
+IHdpdGggcnVudGltZSBjaGFuZ2VzIHVzZSBoYXNfYXN5bmNfd2FrZQo+Pj4gZmxhZyB0byBrZWVw
+IGNsb2NrIGFjdGl2ZSBkdXJpbmcgYm9vdHVwIG90aGVyd2lzZSB1YXJ0IHBvcnQgd2lsbCBkaXNh
+YmxlZAo+Pj4gZHVyaW5nIGJvb3QtdXAgYW5kIGNhbm5vdCBiZSBlbmFibGVkIGJhY2suCj4+Cj4+
+IElzIHRoaXMgb25seSBhIGJvb3R1cCBpc3N1ZSwgb3IgYSBydW50aW1lIFBNIGlzc3VlPyDCoEl0
+IGFwcGVhcnMgdG8gbWUKPj4gdGhhdCB3aXRoIHRoaXMgcGF0Y2gsIHJ1bnRpbWUgUE0gaXMgZWZm
+ZWN0aXZlbHkgZGlzYWJsZWQgZm9yIHRoZSB3aG9sZQo+PiB0aW1lLgo+Pgo+Cj4gaXQgYm9vdHMg
+dXAgZmluZSwgaXRzIGEgcnVudGltZSBQTSBpc3N1ZSB3aGVyZSB0aGVyZSBpcwo+IG5vIG1lY2hh
+bmlzbSB0byB3YWtldXAgYWZ0ZXIgY2xvY2sgY3V0dGluZyBmcm9tCj4gcnVudGltZSBhdXRvc3Vz
+cGVuZC4KPgo+Cj4+IFdoeSBub3QganVzdCB1c2UgcG1fcnVudGltZV9kaXNhYmxlKCkgaW4gX3By
+b2JlKCkgZm9yIGRldmljZXMgd2l0aCBubwo+PiBhc3luYyB3YWtldXAuCj4+Cj4KPiBBZ3JlZS4K
+PiBjYW4gZHJvcCBvZiB0aGlzIHBhdGNoIGFuZCBiaW5kIGJlbG93IGNoYW5nZXMgaW4gcnVudGlt
+ZSBjb252ZXJzaW9uIHBhdGNoICAwNC8xMgo+Cj4gZG8gcG1fcnVudGltZV9lbmFibGUgb25seSBp
+ZiBkZXZpY2VfbWF5X3dha2V1cAo+IGlzIHRydWUgaW4gcHJvYmUuCj4KPiA8PFNOSVA+Pgo+IGlu
+IHNlcmlhbF9vbWFwX3Byb2JlCj4KPiBpZiAoZGV2aWNlX21heV93YWtldXAoJnBkZXYtPmRldikp
+IHsKPiAJcG1fcnVudGltZV91c2VfYXV0b3N1c3BlbmQoJnBkZXYtPmRldik7Cj4gCXBtX3J1bnRp
+bWVfc2V0X2F1dG9zdXNwZW5kX2RlbGF5KCZwZGV2LT5kZXYsCj4gCQkJCU9NQVBfVUFSVF9BVVRP
+U1VTUEVORF9ERUxBWSk7Cj4gCXBtX3J1bnRpbWVfZW5hYmxlKCZwZGV2LT5kZXYpOwo+IAlwbV9y
+dW50aW1lX2lycV9zYWZlKCZwZGV2LT5kZXYpOwo+IH0KCldlbGwsIEkgdGhpbmsgb25seSB0aGUg
+X2VuYWJsZSgpIHNob3VsZCBiZSBjb25kaXRpb25hbC4KCj4+PiBBbHNvIGJhc2VkIG9uIHRoaXMg
+ZmxhZyB3ZSBjYW4gZGlzYWJsZSB1YXJ0IHBvcnQgZHVyaW5nIHN1c3BlbmQgYW5kCj4+PiBlbmFi
+bGUgYmFjayBkdXJpbmcgcmVzdW1lIGZvciBvbWFwX3NvY3MgdGhhdCBoYXZlIG5vdCBzZXQKPj4+
+IGhhc19hc3luY193YWtlLgo+Pgo+PiBUaGVuIHlvdSBjYW4gdXNlIHBtX3J1bnRpbWVfZW5hYmxl
+KCkgaW4gLT5wcmVwYXJlKCkgYW5kCj4+IHBtX3J1bnRpbWVfZGlzYWJsZSgpIGluIC0+Y29tcGxl
+dGUoKQo+Pgo+Cj4gdSBtZWFuIHJ1bnRpbWUgZW5hYmxlIGluIHN1c3BlbmQgYW5kIHJ1bnRpbWUg
+ZGlzYWJsZSBpbiByZXN1bWUKPiBpZiBkZXZpY2VfbWF5X3dha2V1cCBpcyBmYWxzZS4KCk5vLCBJ
+IG1lYW50IHRoZSAucHJlcGFyZSAocnVucyBiZWZvcmUgLnN1c3BlbmQpIGFuZCAuY29tcGxldGUg
+KHJ1bnMKYWZ0ZXIgLnJlc3VtZSkgY2FsbGJhY2tzLiAgCgpLZXZpbgoKCgpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxp
+bmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3Rz
+LmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
