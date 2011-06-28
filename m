@@ -1,35 +1,63 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 2/7] serial/8250: move alchemy I/O handler to platform code
-Date: Tue, 28 Jun 2011 19:07:23 +0200
-Message-ID: <201106281907.24124.arnd@arndb.de>
-References: <1309211120-2803-1-git-send-email-arnd@arndb.de> <BANLkTin9=5Yp6W8S6hSuUZ8w08eUhRxxQw@mail.gmail.com> <BANLkTimnH81zys5Ab4XpsyuNXK2B+MqQrw@mail.gmail.com>
+From: Stephen Warren <swarren@nvidia.com>
+Subject: RE: [PATCH] tty/serial: Fix XSCALE serial ports, e.g. ce4100
+Date: Tue, 28 Jun 2011 10:22:18 -0700
+Message-ID: <74CDBE0F657A3D45AFBB94109FB122FF049D2EC52C@HQMAIL01.nvidia.com>
+References: <1308325507-17711-1-git-send-email-swarren@nvidia.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.126.186]:53480 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759755Ab1F1RHl (ORCPT
+Received: from hqemgate03.nvidia.com ([216.228.121.140]:12281 "EHLO
+	hqemgate03.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759564Ab1F1RWi convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 28 Jun 2011 13:07:41 -0400
-In-Reply-To: <BANLkTimnH81zys5Ab4XpsyuNXK2B+MqQrw@mail.gmail.com>
+	Tue, 28 Jun 2011 13:22:38 -0400
+In-Reply-To: <1308325507-17711-1-git-send-email-swarren@nvidia.com>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Manuel Lauss <manuel.lauss@googlemail.com>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-kernel@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, Ralf Baechle <ralf@linux-mips.org>, linux-serial@vger.kernel.org
+To: "gregkh@suse.de" <gregkh@suse.de>, "alan@linux.intel.com" <alan@linux.intel.com>, "bigeasy@linutronix.de" <bigeasy@linutronix.de>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On Tuesday 28 June 2011, Manuel Lauss wrote:
-> Okay, found it.  the Alchemy headers have definitions for UART_RX/TX/... with
-> different values; they can be deleted safely since nothing depends on them.
-> Here's an updated and tested patch.  I took the liberty to rename the functions
-> a bit while at it.
+Stephen Warren wrote at Friday, June 17, 2011 9:45 AM:
+> Commit 4539c24fe4f92c09ee668ef959d3e8180df619b9 "tty/serial: Add
+> explicit PORT_TEGRA type" introduced separate flags describing the need
+> for IER bits UUE and RTOIE. Both bits are required for the XSCALE port
+> type. While that patch updated uart_config[] as required, the auto-probing
+> code wasn't updated to set the RTOIE flag when an XSCALE port type was
+> detected. This caused such ports to stop working. This patch rectifies
+> that.
 
-Cool, thanks so much for tracking that down!
+Alan, Greg,
 
-Please send me (in private) the Signed-off-by that you want me to add to the
-patch, apparently you missed that.
+Does this patch look OK? Seems like it should go into 3.0, but I don't see
+it ack'd or committed anywhere yet.
 
-I'll put your version in the series then.
+Thanks.
 
-	Arnd
+> Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Tested-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Signed-off-by: Stephen Warren <swarren@nvidia.com>
+> ---
+>  drivers/tty/serial/8250.c |    2 +-
+>  1 files changed, 1 insertions(+), 1 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
+> index f11df87..f1422a6 100644
+> --- a/drivers/tty/serial/8250.c
+> +++ b/drivers/tty/serial/8250.c
+> @@ -1107,7 +1107,7 @@ static void autoconfig_16550a(struct uart_8250_port *up)
+>  			 */
+>  			DEBUG_AUTOCONF("Xscale ");
+>  			up->port.type = PORT_XSCALE;
+> -			up->capabilities |= UART_CAP_UUE;
+> +			up->capabilities |= UART_CAP_UUE | UART_CAP_RTOIE;
+>  			return;
+>  		}
+>  	} else {
+> --
+> 1.7.0.4
+
+-- 
+nvpublic
+
