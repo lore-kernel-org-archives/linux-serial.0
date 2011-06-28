@@ -1,158 +1,96 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 11/12] amba pl011: platform data for reg lockup and glitch v2
-Date: Tue, 28 Jun 2011 09:03:48 -0700
-Message-ID: <1309277029-1532-11-git-send-email-gregkh@suse.de>
+Subject: [PATCH 08/12] tty: n_gsm: Fixed logic to decode break signal from modem status
+Date: Tue, 28 Jun 2011 09:03:45 -0700
+Message-ID: <1309277029-1532-8-git-send-email-gregkh@suse.de>
 References: <20110628153856.GB32710@kroah.com>
  <1309277029-1532-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out4.smtp.messagingengine.com ([66.111.4.28]:44936 "EHLO
+Received: from out4.smtp.messagingengine.com ([66.111.4.28]:58495 "EHLO
 	out4.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1759232Ab1F1QEI (ORCPT
+	by vger.kernel.org with ESMTP id S1759225Ab1F1QED (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 28 Jun 2011 12:04:08 -0400
+	Tue, 28 Jun 2011 12:04:03 -0400
 In-Reply-To: <1309277029-1532-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Russ Gorby <russ.gorby@intel.com>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
+From: Russ Gorby <russ.gorby@intel.com>
 
-This patch provides platform data for following
- - uart reset function to assist uart register lockup workaround
+The modem status can be one or 2 octets and contains the V.24 signals
+and in the 2 octet case also the break signal.
+We were improperly decoding the break signal from the modem in the
+2 octet case.
 
- - init/exit function to fix glitch in the tx pin in tty_open
-	when tty port0 is opened a glitch is seen in the tx line
-	of uart0. This happens in pl011_startup() when tx fifo
-	interrupt is provoked into asserting.
-	Now uart0 pins are enabled (alt function) only when init
-	is complete and turned back to gpio when closed.
-
-Signed-off-by: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Russ Gorby <russ.gorby@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- arch/arm/mach-ux500/board-mop500-pins.c |   16 +++++++--
- arch/arm/mach-ux500/board-mop500.c      |   54 +++++++++++++++++++++++++++++++
- 2 files changed, 66 insertions(+), 4 deletions(-)
+ drivers/tty/n_gsm.c |   23 ++++++++++++++++++-----
+ 1 files changed, 18 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/mach-ux500/board-mop500-pins.c b/arch/arm/mach-ux500/board-mop500-pins.c
-index fd4cf1c..70cdbd6 100644
---- a/arch/arm/mach-ux500/board-mop500-pins.c
-+++ b/arch/arm/mach-ux500/board-mop500-pins.c
-@@ -110,10 +110,18 @@ static pin_cfg_t mop500_pins_common[] = {
- 	GPIO168_KP_O0,
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 09e8c7d..7290394 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -984,10 +984,22 @@ static void gsm_control_reply(struct gsm_mux *gsm, int cmd, u8 *data,
+  */
  
- 	/* UART */
--	GPIO0_U0_CTSn	| PIN_INPUT_PULLUP,
--	GPIO1_U0_RTSn	| PIN_OUTPUT_HIGH,
--	GPIO2_U0_RXD	| PIN_INPUT_PULLUP,
--	GPIO3_U0_TXD	| PIN_OUTPUT_HIGH,
-+	/* uart-0 pins gpio configuration should be
-+	 * kept intact to prevent glitch in tx line
-+	 * when tty dev is opened. Later these pins
-+	 * are configured to uart mop500_pins_uart0
-+	 *
-+	 * It will be replaced with uart configuration
-+	 * once the issue is solved.
-+	 */
-+	GPIO0_GPIO	| PIN_INPUT_PULLUP,
-+	GPIO1_GPIO	| PIN_OUTPUT_HIGH,
-+	GPIO2_GPIO	| PIN_INPUT_PULLUP,
-+	GPIO3_GPIO	| PIN_OUTPUT_HIGH,
+ static void gsm_process_modem(struct tty_struct *tty, struct gsm_dlci *dlci,
+-							u32 modem)
++							u32 modem, int clen)
+ {
+ 	int  mlines = 0;
+-	u8 brk = modem >> 6;
++	u8 brk = 0;
++
++	/* The modem status command can either contain one octet (v.24 signals)
++	   or two octets (v.24 signals + break signals). The length field will
++	   either be 2 or 3 respectively. This is specified in section
++	   5.4.6.3.7 of the  27.010 mux spec. */
++
++	if (clen == 2)
++		modem = modem & 0x7f;
++	else {
++		brk = modem & 0x7f;
++		modem = (modem >> 7) & 0x7f;
++	};
  
- 	GPIO29_U2_RXD	| PIN_INPUT_PULLUP,
- 	GPIO30_U2_TXD	| PIN_OUTPUT_HIGH,
-diff --git a/arch/arm/mach-ux500/board-mop500.c b/arch/arm/mach-ux500/board-mop500.c
-index bb26f40..2a08c07 100644
---- a/arch/arm/mach-ux500/board-mop500.c
-+++ b/arch/arm/mach-ux500/board-mop500.c
-@@ -27,18 +27,21 @@
- #include <linux/leds-lp5521.h>
- #include <linux/input.h>
- #include <linux/gpio_keys.h>
-+#include <linux/delay.h>
+ 	/* Flow control/ready to communicate */
+ 	if (modem & MDM_FC) {
+@@ -1061,7 +1073,7 @@ static void gsm_control_modem(struct gsm_mux *gsm, u8 *data, int clen)
+ 			return;
+ 	}
+ 	tty = tty_port_tty_get(&dlci->port);
+-	gsm_process_modem(tty, dlci, modem);
++	gsm_process_modem(tty, dlci, modem, clen);
+ 	if (tty) {
+ 		tty_wakeup(tty);
+ 		tty_kref_put(tty);
+@@ -1482,12 +1494,13 @@ static void gsm_dlci_begin_close(struct gsm_dlci *dlci)
+  *	open we shovel the bits down it, if not we drop them.
+  */
  
- #include <asm/mach-types.h>
- #include <asm/mach/arch.h>
+-static void gsm_dlci_data(struct gsm_dlci *dlci, u8 *data, int len)
++static void gsm_dlci_data(struct gsm_dlci *dlci, u8 *data, int clen)
+ {
+ 	/* krefs .. */
+ 	struct tty_port *port = &dlci->port;
+ 	struct tty_struct *tty = tty_port_tty_get(port);
+ 	unsigned int modem = 0;
++	int len = clen;
  
- #include <plat/i2c.h>
- #include <plat/ste_dma40.h>
-+#include <plat/pincfg.h>
- 
- #include <mach/hardware.h>
- #include <mach/setup.h>
- #include <mach/devices.h>
- #include <mach/irqs.h>
- 
-+#include "pins-db8500.h"
- #include "ste-dma40-db8500.h"
- #include "devices-db8500.h"
- #include "board-mop500.h"
-@@ -393,12 +396,63 @@ static struct stedma40_chan_cfg uart2_dma_cfg_tx = {
- };
- #endif
- 
-+
-+static pin_cfg_t mop500_pins_uart0[] = {
-+	GPIO0_U0_CTSn   | PIN_INPUT_PULLUP,
-+	GPIO1_U0_RTSn   | PIN_OUTPUT_HIGH,
-+	GPIO2_U0_RXD    | PIN_INPUT_PULLUP,
-+	GPIO3_U0_TXD    | PIN_OUTPUT_HIGH,
-+};
-+
-+#define PRCC_K_SOFTRST_SET      0x18
-+#define PRCC_K_SOFTRST_CLEAR    0x1C
-+static void ux500_uart0_reset(void)
-+{
-+	void __iomem *prcc_rst_set, *prcc_rst_clr;
-+
-+	prcc_rst_set = (void __iomem *)IO_ADDRESS(U8500_CLKRST1_BASE +
-+			PRCC_K_SOFTRST_SET);
-+	prcc_rst_clr = (void __iomem *)IO_ADDRESS(U8500_CLKRST1_BASE +
-+			PRCC_K_SOFTRST_CLEAR);
-+
-+	/* Activate soft reset PRCC_K_SOFTRST_CLEAR */
-+	writel((readl(prcc_rst_clr) | 0x1), prcc_rst_clr);
-+	udelay(1);
-+
-+	/* Release soft reset PRCC_K_SOFTRST_SET */
-+	writel((readl(prcc_rst_set) | 0x1), prcc_rst_set);
-+	udelay(1);
-+}
-+
-+static void ux500_uart0_init(void)
-+{
-+	int ret;
-+
-+	ret = nmk_config_pins(mop500_pins_uart0,
-+			ARRAY_SIZE(mop500_pins_uart0));
-+	if (ret < 0)
-+		pr_err("pl011: uart pins_enable failed\n");
-+}
-+
-+static void ux500_uart0_exit(void)
-+{
-+	int ret;
-+
-+	ret = nmk_config_pins_sleep(mop500_pins_uart0,
-+			ARRAY_SIZE(mop500_pins_uart0));
-+	if (ret < 0)
-+		pr_err("pl011: uart pins_disable failed\n");
-+}
-+
- static struct amba_pl011_data uart0_plat = {
- #ifdef CONFIG_STE_DMA40
- 	.dma_filter = stedma40_filter,
- 	.dma_rx_param = &uart0_dma_cfg_rx,
- 	.dma_tx_param = &uart0_dma_cfg_tx,
- #endif
-+	.init = ux500_uart0_init,
-+	.exit = ux500_uart0_exit,
-+	.reset = ux500_uart0_reset,
- };
- 
- static struct amba_pl011_data uart1_plat = {
+ 	if (debug & 16)
+ 		pr_debug("%d bytes for tty %p\n", len, tty);
+@@ -1507,7 +1520,7 @@ static void gsm_dlci_data(struct gsm_dlci *dlci, u8 *data, int len)
+ 				if (len == 0)
+ 					return;
+ 			}
+-			gsm_process_modem(tty, dlci, modem);
++			gsm_process_modem(tty, dlci, modem, clen);
+ 		/* Line state will go via DLCI 0 controls only */
+ 		case 1:
+ 		default:
 -- 
 1.7.5.4
 
