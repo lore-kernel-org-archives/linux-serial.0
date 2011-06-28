@@ -1,33 +1,34 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: [PATCH 10/12] SERIAL: SC26xx: Fix link error.
-Date: Tue, 28 Jun 2011 09:25:40 +0100
-Message-ID: <20110628092540.61c94bf9@bob.linux.org.uk>
-References: <17dd5038b15d7135791aadbe80464a13c80758d3.1309182742.git.ralf@linux-mips.org>
-        <f0b3d9a91be8dba5c45c14efebaa9c7800694f15.1309182743.git.ralf@linux-mips.org>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 7/7] serial/8250: make PIO support optional
+Date: Tue, 28 Jun 2011 11:05:00 +0100
+Message-ID: <20110628110500.1cf60104@lxorguk.ukuu.org.uk>
+References: <1309211120-2803-1-git-send-email-arnd@arndb.de>
+	<1309211120-2803-8-git-send-email-arnd@arndb.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <f0b3d9a91be8dba5c45c14efebaa9c7800694f15.1309182743.git.ralf@linux-mips.org>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-To: Ralf Baechle <ralf@linux-mips.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:58739 "EHLO
+	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1755907Ab1F1KCg (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 28 Jun 2011 06:02:36 -0400
+In-Reply-To: <1309211120-2803-8-git-send-email-arnd@arndb.de>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Mon, 27 Jun 2011 14:26:56 +0100
-Ralf Baechle <ralf@linux-mips.org> wrote:
+> This makes the PIO support in the 8250 driver completely
+> conditional on CONFIG_HAS_IOPORT so we can remove the bogus
+> definitions from all the places that only need them for 8250.
 
-> Kconfig allows enabling console support for the SC26xx driver even
-> when it's configured as a module resulting in a:
-> 
-> ERROR: "uart_console_device" [drivers/tty/serial/sc26xx.ko] undefined!
-> 
-> modpost error since the driver was merged in
-> eea63e0e8a60d00485b47fb6e75d9aa2566b989b [SC26XX: New serial driver
-> for SC2681 uarts] in 2.6.25.  Fixed by only allowing console support
-> to be enabled if the driver is builtin.
-> 
-> Signed-off-by: Ralf Baechle <ralf@linux-mips.org>
+NAK this as last time.
 
-Acked-by: Alan Cox <alan@linux.intel.com>
+We had a discussion about how to fix this properly. I even posted some
+sketched out patches to show how it could be addressed
+
+Shotgunning the code with ifdefs was not that.
+
+
+Get the port methods out of the core code as was proposed.
