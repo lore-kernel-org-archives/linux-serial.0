@@ -1,86 +1,105 @@
-From: Greg KH <gregkh@suse.de>
-Subject: [GIT PATCH] TTY/serial driver fixes for 3.0
-Date: Tue, 28 Jun 2011 08:38:56 -0700
-Message-ID: <20110628153856.GB32710@kroah.com>
+From: Greg Kroah-Hartman <gregkh@suse.de>
+Subject: [PATCH 03/12] ARM: SAMSUNG: serial: Fix on handling of one
+	clock source for UART
+Date: Tue, 28 Jun 2011 09:03:40 -0700
+Message-ID: <1309277029-1532-3-git-send-email-gregkh@suse.de>
+References: <20110628153856.GB32710@kroah.com>
+	<1309277029-1532-1-git-send-email-gregkh@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out4.smtp.messagingengine.com ([66.111.4.28]:38435 "EHLO
-	out4.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1758973Ab1F1Pjx (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 28 Jun 2011 11:39:53 -0400
-Content-Disposition: inline
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <stable-bounces@linux.kernel.org>
+In-Reply-To: <1309277029-1532-1-git-send-email-gregkh@suse.de>
+List-Unsubscribe: <http://linux.kernel.org/mailman/options/stable>,
+	<mailto:stable-request@linux.kernel.org?subject=unsubscribe>
+List-Archive: <http://linux.kernel.org/mailman/private/stable/>
+List-Post: <mailto:stable@linux.kernel.org>
+List-Help: <mailto:stable-request@linux.kernel.org?subject=help>
+List-Subscribe: <http://linux.kernel.org/mailman/listinfo/stable>,
+	<mailto:stable-request@linux.kernel.org?subject=subscribe>
+Sender: stable-bounces@linux.kernel.org
+Errors-To: stable-bounces@linux.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@suse.de>, Kukjin Kim <kgene.kim@samsung.com>, stable <stable@kernel.org>, Boojin Kim <boojin.kim@samsung.com>
 List-Id: linux-serial@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Here are some small tty/serial fixes for the 3.0
+From: Boojin Kim <boojin.kim@samsung.com>
 
-The amba serial driver fixes are the biggest, fixing problems that were
-causing lockups for users.  Other than that, just a smattering of small
-fixes that have been reported as problems by people.
+This patch fixes the way of comparison for handling of two or more
+clock sources for UART.
 
-Please pull from:
-	master.kernel.org:/pub/scm/linux/kernel/git/gregkh/tty-2.6.git/ tty-linus
+For example, if just only one clock source is defined even though
+there are two clock sources for UART, the serial driver does not
+set proper clock up. Of course, it is problem.
 
-All of these patches have been in the -mm and -next trees for a while.
+So this patch changes the condition of comparison to avoid useless
+setup clock and adds a flag 'NO_NEED_CHECK_CLKSRC' which means
+selection of source clock is not required.
 
-Patches will be sent to the linux-serial mailing list, if anyone wants
-to see them.
+In addition, since the Exynos4210 has only one clock source for UART
+this patch adds the flag into its common_init_uarts().
 
-thanks,
-
-greg k-h
-
-------------
-
+Signed-off-by: Boojin Kim <boojin.kim@samsung.com>
+Signed-off-by: Kukjin Kim <kgene.kim@samsung.com>
+Cc: stable <stable@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+---
  arch/arm/mach-exynos4/init.c                     |    1 +
- arch/arm/mach-ux500/board-mop500-pins.c          |   16 ++-
- arch/arm/mach-ux500/board-mop500.c               |   54 ++++++++++
- arch/arm/plat-samsung/include/plat/regs-serial.h |    2 +
- drivers/tty/n_gsm.c                              |   26 ++++-
- drivers/tty/n_tty.c                              |    1 +
- drivers/tty/serial/8250.c                        |    1 +
- drivers/tty/serial/8250_pci.c                    |   59 ++++++++++
- drivers/tty/serial/amba-pl011.c                  |  123 +++++++++++++++++++++-
- drivers/tty/serial/bcm63xx_uart.c                |   18 +++-
- drivers/tty/serial/jsm/jsm_driver.c              |    2 +-
- drivers/tty/serial/s5pv210.c                     |    4 +-
- drivers/tty/tty_ldisc.c                          |    4 +-
- include/linux/amba/serial.h                      |    3 +
- 14 files changed, 295 insertions(+), 19 deletions(-)
+ arch/arm/plat-samsung/include/plat/regs-serial.h |    2 ++
+ drivers/tty/serial/s5pv210.c                     |    4 ++--
+ 3 files changed, 5 insertions(+), 2 deletions(-)
 
----------------
+diff --git a/arch/arm/mach-exynos4/init.c b/arch/arm/mach-exynos4/init.c
+index cf91f50..a8a83e3 100644
+--- a/arch/arm/mach-exynos4/init.c
++++ b/arch/arm/mach-exynos4/init.c
+@@ -35,6 +35,7 @@ void __init exynos4_common_init_uarts(struct s3c2410_uartcfg *cfg, int no)
+ 			tcfg->clocks = exynos4_serial_clocks;
+ 			tcfg->clocks_size = ARRAY_SIZE(exynos4_serial_clocks);
+ 		}
++		tcfg->flags |= NO_NEED_CHECK_CLKSRC;
+ 	}
+ 
+ 	s3c24xx_init_uartdevs("s5pv210-uart", s5p_uart_resources, cfg, no);
+diff --git a/arch/arm/plat-samsung/include/plat/regs-serial.h b/arch/arm/plat-samsung/include/plat/regs-serial.h
+index c151c5f..116edfe 100644
+--- a/arch/arm/plat-samsung/include/plat/regs-serial.h
++++ b/arch/arm/plat-samsung/include/plat/regs-serial.h
+@@ -224,6 +224,8 @@
+ #define S5PV210_UFSTAT_RXMASK	(255<<0)
+ #define S5PV210_UFSTAT_RXSHIFT	(0)
+ 
++#define NO_NEED_CHECK_CLKSRC	1
++
+ #ifndef __ASSEMBLY__
+ 
+ /* struct s3c24xx_uart_clksrc
+diff --git a/drivers/tty/serial/s5pv210.c b/drivers/tty/serial/s5pv210.c
+index fb2619f..dd194dc 100644
+--- a/drivers/tty/serial/s5pv210.c
++++ b/drivers/tty/serial/s5pv210.c
+@@ -30,7 +30,7 @@ static int s5pv210_serial_setsource(struct uart_port *port,
+ 	struct s3c2410_uartcfg *cfg = port->dev->platform_data;
+ 	unsigned long ucon = rd_regl(port, S3C2410_UCON);
+ 
+-	if ((cfg->clocks_size) == 1)
++	if (cfg->flags & NO_NEED_CHECK_CLKSRC)
+ 		return 0;
+ 
+ 	if (strcmp(clk->name, "pclk") == 0)
+@@ -55,7 +55,7 @@ static int s5pv210_serial_getsource(struct uart_port *port,
+ 
+ 	clk->divisor = 1;
+ 
+-	if ((cfg->clocks_size) == 1)
++	if (cfg->flags & NO_NEED_CHECK_CLKSRC)
+ 		return 0;
+ 
+ 	switch (ucon & S5PV210_UCON_CLKMASK) {
+-- 
+1.7.5.4
 
-Alan Cox (1):
-      8250_pci: Fix missing const from merges
-
-Boojin Kim (1):
-      ARM: SAMSUNG: serial: Fix on handling of one clock source for UART
-
-Jiri Slaby (2):
-      TTY: ldisc, do not close until there are readers
-      TTY: ntty, add one more sanity check
-
-Lennart Sorensen (1):
-      serial: ioremap warning fix for jsm driver.
-
-Maxime Bizon (1):
-      serial: bcm63xx_uart: fix irq storm after rx fifo overrun.
-
-Russ Gorby (2):
-      tty: n_gsm: Fixed logic to decode break signal from modem status
-      tty: n_gsm: improper skb_pull() use was leaking framed data
-
-Shreshtha Kumar Sahu (2):
-      amba pl011: workaround for uart registers lockup
-      amba pl011: platform data for reg lockup and glitch v2
-
-Tomoya MORINAGA (1):
-      8250_pci: add -ENODEV code for Intel EG20T PCH
-
-leitao@linux.vnet.ibm.com (1):
-      8250: Fix capabilities when changing the port type
-
+_______________________________________________
+stable mailing list
+stable@linux.kernel.org
+http://linux.kernel.org/mailman/listinfo/stable
