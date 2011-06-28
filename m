@@ -1,50 +1,33 @@
-From: Manuel Lauss <manuel.lauss@googlemail.com>
-Subject: Re: [PATCH 2/7] serial/8250: move alchemy I/O handler to platform code
-Date: Tue, 28 Jun 2011 10:06:40 +0200
-Message-ID: <BANLkTimDo7x5MmnNKoopLZNM7RBeNp=Fsg@mail.gmail.com>
-References: <1309211120-2803-1-git-send-email-arnd@arndb.de>
-	<1309211120-2803-3-git-send-email-arnd@arndb.de>
+From: Alan Cox <alan@linux.intel.com>
+Subject: Re: [PATCH 10/12] SERIAL: SC26xx: Fix link error.
+Date: Tue, 28 Jun 2011 09:25:40 +0100
+Message-ID: <20110628092540.61c94bf9@bob.linux.org.uk>
+References: <17dd5038b15d7135791aadbe80464a13c80758d3.1309182742.git.ralf@linux-mips.org>
+        <f0b3d9a91be8dba5c45c14efebaa9c7800694f15.1309182743.git.ralf@linux-mips.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qw0-f46.google.com ([209.85.216.46]:57250 "EHLO
-	mail-qw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756092Ab1F1IGm convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 28 Jun 2011 04:06:42 -0400
-In-Reply-To: <1309211120-2803-3-git-send-email-arnd@arndb.de>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-mips-bounce@linux-mips.org>
+In-Reply-To: <f0b3d9a91be8dba5c45c14efebaa9c7800694f15.1309182743.git.ralf@linux-mips.org>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+To: Ralf Baechle <ralf@linux-mips.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org
 List-Id: linux-serial@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-kernel@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, Ralf Baechle <ralf@linux-mips.org>, linux-serial@vger.kernel.org
 
-Hi Arnd,
+On Mon, 27 Jun 2011 14:26:56 +0100
+Ralf Baechle <ralf@linux-mips.org> wrote:
 
-On Mon, Jun 27, 2011 at 11:45 PM, Arnd Bergmann <arnd@arndb.de> wrote:
-> Only one platform ever sets the UPIO_AU iotype, so it's
-> cleaner to define the handlers in the code that actually
-> requires it, rather than building the same logic into
-> every 8250 driver.
->
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Cc: Ralf Baechle <ralf@linux-mips.org>
-> Cc: Manuel Lauss <manuel.lauss@googlemail.com>
-> Cc: Greg Kroah-Hartman <gregkh@suse.de>
-> Cc: linux-serial@vger.kernel.org
-> ---
-> =A0arch/mips/alchemy/common/platform.c | =A0 50 +++++++++++++++++++++=
-+++++++++
-> =A0drivers/tty/serial/8250.c =A0 =A0 =A0 =A0 =A0 | =A0 58 -----------=
-------------------------
-> =A02 files changed, 50 insertions(+), 58 deletions(-)
+> Kconfig allows enabling console support for the SC26xx driver even
+> when it's configured as a module resulting in a:
+> 
+> ERROR: "uart_console_device" [drivers/tty/serial/sc26xx.ko] undefined!
+> 
+> modpost error since the driver was merged in
+> eea63e0e8a60d00485b47fb6e75d9aa2566b989b [SC26XX: New serial driver
+> for SC2681 uarts] in 2.6.25.  Fixed by only allowing console support
+> to be enabled if the driver is builtin.
+> 
+> Signed-off-by: Ralf Baechle <ralf@linux-mips.org>
 
-This breaks serial console on all my Alchemy test system.  I'll try to
-figure out why.
-
-Manuel
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Acked-by: Alan Cox <alan@linux.intel.com>
