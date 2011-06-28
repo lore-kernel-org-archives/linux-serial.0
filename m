@@ -1,127 +1,56 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 06/12] TTY: ldisc,
-	do not close until there are readers
-Date: Tue, 28 Jun 2011 09:03:43 -0700
-Message-ID: <1309277029-1532-6-git-send-email-gregkh@suse.de>
+Subject: [PATCH 02/12] serial: ioremap warning fix for jsm driver.
+Date: Tue, 28 Jun 2011 09:03:39 -0700
+Message-ID: <1309277029-1532-2-git-send-email-gregkh@suse.de>
 References: <20110628153856.GB32710@kroah.com>
-	<1309277029-1532-1-git-send-email-gregkh@suse.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <stable-bounces@linux.kernel.org>
+ <1309277029-1532-1-git-send-email-gregkh@suse.de>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from out4.smtp.messagingengine.com ([66.111.4.28]:40722 "EHLO
+	out4.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1758925Ab1F1QDy (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 28 Jun 2011 12:03:54 -0400
 In-Reply-To: <1309277029-1532-1-git-send-email-gregkh@suse.de>
-List-Unsubscribe: <http://linux.kernel.org/mailman/options/stable>,
-	<mailto:stable-request@linux.kernel.org?subject=unsubscribe>
-List-Archive: <http://linux.kernel.org/mailman/private/stable/>
-List-Post: <mailto:stable@linux.kernel.org>
-List-Help: <mailto:stable-request@linux.kernel.org?subject=help>
-List-Subscribe: <http://linux.kernel.org/mailman/listinfo/stable>,
-	<mailto:stable-request@linux.kernel.org?subject=subscribe>
-Sender: stable-bounces@linux.kernel.org
-Errors-To: stable-bounces@linux.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: 39@hera.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, Jiri Slaby <jslaby@suse.cz>, 33@hera.kernel.org, 34@hera.kernel.org, 32@hera.kernel.org@hera.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, stable <stable@kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Jiri Slaby <jslaby@suse.cz>
+From: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
 
-We restored tty_ldisc_wait_idle in 100eeae2c5c (TTY: restore
-tty_ldisc_wait_idle). We used it in the ldisc changing path to fix the
-case where there are tasks in n_tty_read waiting for data and somebody
-tries to change ldisc.
+I saw a warning about ioremap from the jsm driver on a system which
+looked like this:
 
-Similar to the case above, there may be also tasks waiting in
-n_tty_read while hangup is performed. As 65b770468e98 (tty-ldisc: turn
-ldisc user count into a proper refcount) removed the wait-until-idle
-from all paths, hangup path won't wait for them to disappear either
-now. So add it back even to the hangup path.
+resource map sanity check conflict: 0xe0200800 0xe02017ff 0xe0200800 0xe0200fff 0000:01:08.0
 
-There is a difference, we need uninterruptible sleep as there is
-obviously HUP signal pending. So tty_ldisc_wait_idle now sleeps
-without possibility to be interrupted. This is what original
-tty_ldisc_wait_idle did. After the wait idle reintroduction
-(100eeae2c5c), we have had interruptible sleeps for the ldisc changing
-path. But as there is a 5s timeout anyway, we don't allow it to be
-interrupted from now on. It's not worth the added complexity of
-deciding what kind of sleep we want.
+Turns out the warning is valid.  The jsm driver has been asking to ioremap
+0x1000 forever, but in fact only 8 port chips have 0x1000 bytes of memory.
+4 port chips have 0x800 and 2 port chips have 0x400 according to the
+data sheet.  It makes more sense to map the size of the region rather
+than a hard coded value.  If you happen to have the region legitimately
+mapped to a base address that is not 4K aligned, ioremap complains
+otherwise.
 
-Before 65b770468e98 tty_ldisc_release was called also from
-tty_ldisc_release. It is called from tty_release, so I don't think we
-need to restore that one.
-
-This is nicely reproducible after constifying the timing when
-drivers/tty/n_tty.c is patched as follows ("TTY: ntty, add one more
-sanity check" patch is needed to actually see it explode):
-%% -1548,6 +1549,7 @@ static int n_tty_open(struct tty_struct *tty)
-
-        /* These are ugly. Currently a malloc failure here can panic */
-        if (!tty->read_buf) {
-+               msleep(100);
-                tty->read_buf = kzalloc(N_TTY_BUF_SIZE, GFP_KERNEL);
-                if (!tty->read_buf)
-                        return -ENOMEM;
-%% -1785,6 +1788,7 @@ do_it_again:
-                                break;
-                        }
-                        timeout = schedule_timeout(timeout);
-+                       msleep(20);
-                        continue;
-                }
-                __set_current_state(TASK_RUNNING);
-===== With a process: =====
-    while (1) {
-        int fd = open(argv[1], O_RDWR);
-        read(fd, buf, sizeof(buf));
-        close(fd);
-    }
-===== and its child: =====
-        setsid();
-        while (1) {
-                int fd = open(tty, O_RDWR|O_NOCTTY);
-                ioctl(fd, TIOCSCTTY, 1);
-                vhangup();
-                close(fd);
-                usleep(100 * (10 + random() % 1000));
-        }
-===== EOF =====
-
-References: https://bugzilla.novell.com/show_bug.cgi?id=693374
-References: https://bugzilla.novell.com/show_bug.cgi?id=694509
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: stable <stable@kernel.org> [32, 33, 34, 39]
+Signed-off-by: Len Sorensen <lsorense@csclub.uwaterloo.ca>
+Acked-by: Alan Cox <alan@linux.intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/tty_ldisc.c |    4 +++-
- 1 files changed, 3 insertions(+), 1 deletions(-)
+ drivers/tty/serial/jsm/jsm_driver.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index 5d01d32..ef925d5 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -555,7 +555,7 @@ static void tty_ldisc_flush_works(struct tty_struct *tty)
- static int tty_ldisc_wait_idle(struct tty_struct *tty)
- {
- 	int ret;
--	ret = wait_event_interruptible_timeout(tty_ldisc_idle,
-+	ret = wait_event_timeout(tty_ldisc_idle,
- 			atomic_read(&tty->ldisc->users) == 1, 5 * HZ);
- 	if (ret < 0)
- 		return ret;
-@@ -763,6 +763,8 @@ static int tty_ldisc_reinit(struct tty_struct *tty, int ldisc)
- 	if (IS_ERR(ld))
- 		return -1;
+diff --git a/drivers/tty/serial/jsm/jsm_driver.c b/drivers/tty/serial/jsm/jsm_driver.c
+index 18f5484..96da178 100644
+--- a/drivers/tty/serial/jsm/jsm_driver.c
++++ b/drivers/tty/serial/jsm/jsm_driver.c
+@@ -125,7 +125,7 @@ static int __devinit jsm_probe_one(struct pci_dev *pdev, const struct pci_device
+ 	brd->bd_uart_offset = 0x200;
+ 	brd->bd_dividend = 921600;
  
-+	WARN_ON_ONCE(tty_ldisc_wait_idle(tty));
-+
- 	tty_ldisc_close(tty, tty->ldisc);
- 	tty_ldisc_put(tty->ldisc);
- 	tty->ldisc = NULL;
+-	brd->re_map_membase = ioremap(brd->membase, 0x1000);
++	brd->re_map_membase = ioremap(brd->membase, pci_resource_len(pdev, 0));
+ 	if (!brd->re_map_membase) {
+ 		dev_err(&pdev->dev,
+ 			"card has no PCI Memory resources, "
 -- 
 1.7.5.4
 
-_______________________________________________
-stable mailing list
-stable@linux.kernel.org
-http://linux.kernel.org/mailman/listinfo/stable
