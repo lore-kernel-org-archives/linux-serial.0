@@ -1,48 +1,53 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 6/7] serial/8250: sanitize fourport handling
-Date: Tue, 28 Jun 2011 14:07:40 +0200
-Message-ID: <201106281407.40446.arnd@arndb.de>
-References: <1309211120-2803-1-git-send-email-arnd@arndb.de> <1309211120-2803-7-git-send-email-arnd@arndb.de> <20110628111035.7bd69c0d@lxorguk.ukuu.org.uk>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 7/7] serial/8250: make PIO support optional
+Date: Tue, 28 Jun 2011 13:22:55 +0100
+Message-ID: <20110628132255.71dcb72a@lxorguk.ukuu.org.uk>
+References: <1309211120-2803-1-git-send-email-arnd@arndb.de>
+	<1309211120-2803-8-git-send-email-arnd@arndb.de>
+	<20110628110500.1cf60104@lxorguk.ukuu.org.uk>
+	<201106281352.01459.arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20110628111035.7bd69c0d@lxorguk.ukuu.org.uk>
+In-Reply-To: <201106281352.01459.arnd@arndb.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+To: Arnd Bergmann <arnd@arndb.de>
 Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tuesday 28 June 2011, Alan Cox wrote:
-> On Mon, 27 Jun 2011 23:45:19 +0200
-> Arnd Bergmann <arnd@arndb.de> wrote:
-> 
-> > Support for AST fourport cards is always built into
-> > the 8250 driver, even if CONFIG_SERIAL_8250_FOURPORT
-> > is disabled. This introduces a set of macros for
-> > accessing the special interrupt control register on
-> > the fourport card, so that support is left out
-> > when the option is disabled, without adding more #ifdef
-> > lines to the driver itself.
-> 
-> Why not just leave it in - it seems to take almost no code and your
-> changes mean people setting the fourport flag are going to get strange
-> behaviour when it isn't compiled in.
+> I got this done for all the obscure ones in patches 1-6, leaving
+> only the common UPIO_PORT and UPIO_MEM ones. Changing those would
+> mean a lot more churn, and also solving a few other problems:
 
-Mostly to avoid the inb/outb when fourport is disabled. The regular
-I/O can be handled using the indirect serial_in/out functions, but
-the fourport handling requires some address calculations.
+Yes I like 1-5 ...
 
-Also, now that you mention users toggling the fourport flag, I can't
-see where that would ever do something good. On anything but a real
-fourport card, it will lead to writing to ports you shouldn't write
-to (0x1f on mmio based uarts, 18 bytes after the requested region
-for regular ports).
+> I would much prefer getting a build error on inb/outb for the latter
+> kind than having to provide bogus definitions in a lot of architectures.
+> For request_region, it's probably better to stub out the macro than
+> the users.
 
-If you have an actual AST fourport card, you won't be able to use
-it unless you load the 8250_fourport driver that registers the correct
-addresses, and disabling the fourport flag will then cause the
-uart to stop getting interrupts.
+Agreed but that can be done by io_serial_in/io_serial_out out of the
+8250.c file. Really we need p->ops or a function in another file which
+provides the ioport 8250 interface and then all you'd have in the core
+code would be
 
-	Arnd
+	uart8250_set_ioport_ops(p);
+
+which would live in 8250_ioport.c or be a "return -EINVAL' for anything
+else. 
+
+That leaves request/release_std resources depending how such platforms
+handle request_region attempts, and the other fourport bits which want
+pushing into the 8250f_fourport driver perhaps as extra p-> ops.
+
+	if (p->startup)
+		p->startup(p);
+
+etc
+
+(Or indeed probably a p->ops-> for the lot is even saner)
+
+
+
+Thoughts ?
