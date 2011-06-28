@@ -1,8 +1,8 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 03/12] ARM: SAMSUNG: serial: Fix on handling of one
-	clock source for UART
-Date: Tue, 28 Jun 2011 09:03:40 -0700
-Message-ID: <1309277029-1532-3-git-send-email-gregkh@suse.de>
+Subject: [PATCH 06/12] TTY: ldisc,
+	do not close until there are readers
+Date: Tue, 28 Jun 2011 09:03:43 -0700
+Message-ID: <1309277029-1532-6-git-send-email-gregkh@suse.de>
 References: <20110628153856.GB32710@kroah.com>
 	<1309277029-1532-1-git-send-email-gregkh@suse.de>
 Mime-Version: 1.0
@@ -20,82 +20,104 @@ List-Subscribe: <http://linux.kernel.org/mailman/listinfo/stable>,
 Sender: stable-bounces@linux.kernel.org
 Errors-To: stable-bounces@linux.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, Kukjin Kim <kgene.kim@samsung.com>, stable <stable@kernel.org>, Boojin Kim <boojin.kim@samsung.com>
+Cc: 39@hera.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, Jiri Slaby <jslaby@suse.cz>, 33@hera.kernel.org, 34@hera.kernel.org, 32@hera.kernel.org@hera.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, stable <stable@kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>
 List-Id: linux-serial@vger.kernel.org
 
-From: Boojin Kim <boojin.kim@samsung.com>
+From: Jiri Slaby <jslaby@suse.cz>
 
-This patch fixes the way of comparison for handling of two or more
-clock sources for UART.
+We restored tty_ldisc_wait_idle in 100eeae2c5c (TTY: restore
+tty_ldisc_wait_idle). We used it in the ldisc changing path to fix the
+case where there are tasks in n_tty_read waiting for data and somebody
+tries to change ldisc.
 
-For example, if just only one clock source is defined even though
-there are two clock sources for UART, the serial driver does not
-set proper clock up. Of course, it is problem.
+Similar to the case above, there may be also tasks waiting in
+n_tty_read while hangup is performed. As 65b770468e98 (tty-ldisc: turn
+ldisc user count into a proper refcount) removed the wait-until-idle
+from all paths, hangup path won't wait for them to disappear either
+now. So add it back even to the hangup path.
 
-So this patch changes the condition of comparison to avoid useless
-setup clock and adds a flag 'NO_NEED_CHECK_CLKSRC' which means
-selection of source clock is not required.
+There is a difference, we need uninterruptible sleep as there is
+obviously HUP signal pending. So tty_ldisc_wait_idle now sleeps
+without possibility to be interrupted. This is what original
+tty_ldisc_wait_idle did. After the wait idle reintroduction
+(100eeae2c5c), we have had interruptible sleeps for the ldisc changing
+path. But as there is a 5s timeout anyway, we don't allow it to be
+interrupted from now on. It's not worth the added complexity of
+deciding what kind of sleep we want.
 
-In addition, since the Exynos4210 has only one clock source for UART
-this patch adds the flag into its common_init_uarts().
+Before 65b770468e98 tty_ldisc_release was called also from
+tty_ldisc_release. It is called from tty_release, so I don't think we
+need to restore that one.
 
-Signed-off-by: Boojin Kim <boojin.kim@samsung.com>
-Signed-off-by: Kukjin Kim <kgene.kim@samsung.com>
-Cc: stable <stable@kernel.org>
+This is nicely reproducible after constifying the timing when
+drivers/tty/n_tty.c is patched as follows ("TTY: ntty, add one more
+sanity check" patch is needed to actually see it explode):
+%% -1548,6 +1549,7 @@ static int n_tty_open(struct tty_struct *tty)
+
+        /* These are ugly. Currently a malloc failure here can panic */
+        if (!tty->read_buf) {
++               msleep(100);
+                tty->read_buf = kzalloc(N_TTY_BUF_SIZE, GFP_KERNEL);
+                if (!tty->read_buf)
+                        return -ENOMEM;
+%% -1785,6 +1788,7 @@ do_it_again:
+                                break;
+                        }
+                        timeout = schedule_timeout(timeout);
++                       msleep(20);
+                        continue;
+                }
+                __set_current_state(TASK_RUNNING);
+===== With a process: =====
+    while (1) {
+        int fd = open(argv[1], O_RDWR);
+        read(fd, buf, sizeof(buf));
+        close(fd);
+    }
+===== and its child: =====
+        setsid();
+        while (1) {
+                int fd = open(tty, O_RDWR|O_NOCTTY);
+                ioctl(fd, TIOCSCTTY, 1);
+                vhangup();
+                close(fd);
+                usleep(100 * (10 + random() % 1000));
+        }
+===== EOF =====
+
+References: https://bugzilla.novell.com/show_bug.cgi?id=693374
+References: https://bugzilla.novell.com/show_bug.cgi?id=694509
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: stable <stable@kernel.org> [32, 33, 34, 39]
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- arch/arm/mach-exynos4/init.c                     |    1 +
- arch/arm/plat-samsung/include/plat/regs-serial.h |    2 ++
- drivers/tty/serial/s5pv210.c                     |    4 ++--
- 3 files changed, 5 insertions(+), 2 deletions(-)
+ drivers/tty/tty_ldisc.c |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
 
-diff --git a/arch/arm/mach-exynos4/init.c b/arch/arm/mach-exynos4/init.c
-index cf91f50..a8a83e3 100644
---- a/arch/arm/mach-exynos4/init.c
-+++ b/arch/arm/mach-exynos4/init.c
-@@ -35,6 +35,7 @@ void __init exynos4_common_init_uarts(struct s3c2410_uartcfg *cfg, int no)
- 			tcfg->clocks = exynos4_serial_clocks;
- 			tcfg->clocks_size = ARRAY_SIZE(exynos4_serial_clocks);
- 		}
-+		tcfg->flags |= NO_NEED_CHECK_CLKSRC;
- 	}
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index 5d01d32..ef925d5 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -555,7 +555,7 @@ static void tty_ldisc_flush_works(struct tty_struct *tty)
+ static int tty_ldisc_wait_idle(struct tty_struct *tty)
+ {
+ 	int ret;
+-	ret = wait_event_interruptible_timeout(tty_ldisc_idle,
++	ret = wait_event_timeout(tty_ldisc_idle,
+ 			atomic_read(&tty->ldisc->users) == 1, 5 * HZ);
+ 	if (ret < 0)
+ 		return ret;
+@@ -763,6 +763,8 @@ static int tty_ldisc_reinit(struct tty_struct *tty, int ldisc)
+ 	if (IS_ERR(ld))
+ 		return -1;
  
- 	s3c24xx_init_uartdevs("s5pv210-uart", s5p_uart_resources, cfg, no);
-diff --git a/arch/arm/plat-samsung/include/plat/regs-serial.h b/arch/arm/plat-samsung/include/plat/regs-serial.h
-index c151c5f..116edfe 100644
---- a/arch/arm/plat-samsung/include/plat/regs-serial.h
-+++ b/arch/arm/plat-samsung/include/plat/regs-serial.h
-@@ -224,6 +224,8 @@
- #define S5PV210_UFSTAT_RXMASK	(255<<0)
- #define S5PV210_UFSTAT_RXSHIFT	(0)
- 
-+#define NO_NEED_CHECK_CLKSRC	1
++	WARN_ON_ONCE(tty_ldisc_wait_idle(tty));
 +
- #ifndef __ASSEMBLY__
- 
- /* struct s3c24xx_uart_clksrc
-diff --git a/drivers/tty/serial/s5pv210.c b/drivers/tty/serial/s5pv210.c
-index fb2619f..dd194dc 100644
---- a/drivers/tty/serial/s5pv210.c
-+++ b/drivers/tty/serial/s5pv210.c
-@@ -30,7 +30,7 @@ static int s5pv210_serial_setsource(struct uart_port *port,
- 	struct s3c2410_uartcfg *cfg = port->dev->platform_data;
- 	unsigned long ucon = rd_regl(port, S3C2410_UCON);
- 
--	if ((cfg->clocks_size) == 1)
-+	if (cfg->flags & NO_NEED_CHECK_CLKSRC)
- 		return 0;
- 
- 	if (strcmp(clk->name, "pclk") == 0)
-@@ -55,7 +55,7 @@ static int s5pv210_serial_getsource(struct uart_port *port,
- 
- 	clk->divisor = 1;
- 
--	if ((cfg->clocks_size) == 1)
-+	if (cfg->flags & NO_NEED_CHECK_CLKSRC)
- 		return 0;
- 
- 	switch (ucon & S5PV210_UCON_CLKMASK) {
+ 	tty_ldisc_close(tty, tty->ldisc);
+ 	tty_ldisc_put(tty->ldisc);
+ 	tty->ldisc = NULL;
 -- 
 1.7.5.4
 
