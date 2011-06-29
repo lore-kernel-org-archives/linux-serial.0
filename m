@@ -1,33 +1,39 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH] tty/serial: Fix XSCALE serial ports, e.g. ce4100
-Date: Tue, 28 Jun 2011 19:44:00 +0200
-Message-ID: <4E0A12E0.9080107@linutronix.de>
-References: <1308325507-17711-1-git-send-email-swarren@nvidia.com> <74CDBE0F657A3D45AFBB94109FB122FF049D2EC52C@HQMAIL01.nvidia.com>
+From: Guenter Roeck <guenter@roeck-us.net>
+Subject: Re: [PATCH 04/12] 8250_pci: Fix missing const from merges
+Date: Tue, 28 Jun 2011 18:36:23 -0700
+Message-ID: <6.2.5.6.2.20110628183349.025eea30@roeck-us.net>
+References: <20110628153856.GB32710@kroah.com>
+ <1309277029-1532-1-git-send-email-gregkh@suse.de>
+ <1309277029-1532-4-git-send-email-gregkh@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; format=flowed
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:52222 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1760317Ab1F1RoG (ORCPT
+Received: from mail.active-venture.com ([67.228.131.195]:55811 "EHLO
+	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751390Ab1F2BnM (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 28 Jun 2011 13:44:06 -0400
-In-Reply-To: <74CDBE0F657A3D45AFBB94109FB122FF049D2EC52C@HQMAIL01.nvidia.com>
+	Tue, 28 Jun 2011 21:43:12 -0400
+In-Reply-To: <1309277029-1532-4-git-send-email-gregkh@suse.de>
+References: <20110628153856.GB32710@kroah.com>
+ <1309277029-1532-1-git-send-email-gregkh@suse.de>
+ <1309277029-1532-4-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Stephen Warren <swarren@nvidia.com>
-Cc: "gregkh@suse.de" <gregkh@suse.de>, "alan@linux.intel.com" <alan@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: linux-serial@vger.kernel.org
+Cc: Alan Cox <alan@linux.jf.intel.com>, Alan Cox <alan@linux.intel.com>, Antony Pavlov <antony@niisi.msk.ru>, Borislav Petkov <bp@alien8.de>, Vasily Averin <vvs@sw.ru>, Guenter Roeck <linux@roeck-us.net>, Greg Kroah-Hartman <gregkh@suse.de>
 
-Stephen Warren wrote:
-> Alan, Greg,
-> 
-> Does this patch look OK? Seems like it should go into 3.0, but I don't see
-> it ack'd or committed anywhere yet.
+At 09:03 AM 6/28/2011, Greg Kroah-Hartman wrote:
+>From: Alan Cox <alan@linux.jf.intel.com>
+>
+>Signed-off-by: Alan Cox <alan@linux.intel.com>
+>Signed-off-by: Antony Pavlov <antony@niisi.msk.ru>
+>Signed-off-by: Borislav Petkov <bp@alien8.de>
+>Signed-off-by: Vasily Averin <vvs@sw.ru>
+>Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+>Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 
-I was going to send a ping about by the end of the week since Greg just
-got back to his computer around yesterday.
+I may be getting old, but I don't fully understand why I am in the 
+Sign-off path for this one ???
 
-> 
-> Thanks.
+Guenter
 
-Sebastian
