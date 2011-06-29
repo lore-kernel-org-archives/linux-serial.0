@@ -1,71 +1,52 @@
-From: James Bottomley <James.Bottomley@HansenPartnership.com>
-Subject: Re: [PATCH 00/12] Fix various section mismatches and build errors.
-Date: Wed, 29 Jun 2011 08:58:19 -0500
-Message-ID: <1309355899.2551.4.camel@mulgrave>
-References: <17dd5038b15d7135791aadbe80464a13c80758d3.1309182742.git.ralf@linux-mips.org>
-	 <20110627.221257.1290251511587162468.davem@davemloft.net>
-	 <20110629130711.GA15649@linux-mips.org>
+From: Guenter Roeck <guenter@roeck-us.net>
+Subject: Re: [PATCH 04/12] 8250_pci: Fix missing const from merges
+Date: Wed, 29 Jun 2011 07:41:36 -0700
+Message-ID: <6.2.5.6.2.20110629073059.0269c650@roeck-us.net>
+References: <20110628153856.GB32710@kroah.com>
+ <1309277029-1532-1-git-send-email-gregkh@suse.de>
+ <1309277029-1532-4-git-send-email-gregkh@suse.de>
+ <6.2.5.6.2.20110628183349.025eea30@roeck-us.net>
+ <20110629042040.GA17260@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <20110629130711.GA15649@linux-mips.org>
-Sender: netdev-owner@vger.kernel.org
-To: Ralf Baechle <ralf@linux-mips.org>
-Cc: David Miller <davem@davemloft.net>, akpm@linux-foundation.org, alan@linux.intel.com, bcasavan@sgi.com, airlied@linux.ie, grundler@parisc-linux.org, perex@perex.cz, rpurdie@rpsys.net, klassert@mathematik.tu-chemnitz.de, tj@kernel.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; format=flowed
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.active-venture.com ([67.228.131.195]:54917 "EHLO
+	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752358Ab1F2OmE (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 29 Jun 2011 10:42:04 -0400
+In-Reply-To: <20110629042040.GA17260@suse.de>
+References: <20110628153856.GB32710@kroah.com>
+ <1309277029-1532-1-git-send-email-gregkh@suse.de>
+ <1309277029-1532-4-git-send-email-gregkh@suse.de>
+ <6.2.5.6.2.20110628183349.025eea30@roeck-us.net>
+ <20110629042040.GA17260@suse.de>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@suse.de>
+Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.jf.intel.com>, Alan Cox <alan@linux.intel.com>, Antony Pavlov <antony@niisi.msk.ru>, Borislav Petkov <bp@alien8.de>, Vasily Averin <vvs@sw.ru>, Guenter Roeck <linux@roeck-us.net>
 
-On Wed, 2011-06-29 at 14:07 +0100, Ralf Baechle wrote:
-> On Mon, Jun 27, 2011 at 10:12:57PM -0700, David Miller wrote:
->=20
-> > commit 948252cb9e01d65a89ecadf67be5018351eee15e
-> > Author: David S. Miller <davem@davemloft.net>
-> > Date:   Tue May 31 19:27:48 2011 -0700
-> >=20
-> >     Revert "net: fix section mismatches"
-> >    =20
-> >     This reverts commit e5cb966c0838e4da43a3b0751bdcac7fe719f7b4.
-> >    =20
-> >     It causes new build regressions with gcc-4.2 which is
-> >     pretty common on non-x86 platforms.
-> >    =20
-> >     Reported-by: James Bottomley <James.Bottomley@HansenPartnership=
-=2Ecom>
-> >     Signed-off-by: David S. Miller <davem@davemloft.net>
-> >=20
-> > and postings that led to this revert including:
-> >=20
-> > http://marc.info/?l=3Dlinux-netdev&m=3D130653748205263&w=3D2
->=20
-> Thanks for the pointers; I looked into it a bit deeper and found that=
- the
-> construct which hppa64-linux-gcc 4.2.4 doesn't like is the combinatio=
-n of
-> const and __devinitconst __devinitdata.
->=20
-> My patches are minimalistic and don't do any constification and seem =
-to
-> work fine for PA-RISC.
->=20
-> A possible alternative to allow the use of Micha=C5=82's reverted pat=
-ch would
-> be to conditionalize the definition of __devinitconst.  There is no
-> user of __devexitconst so I left that unchanged.
+At 09:20 PM 6/28/2011, Greg KH wrote:
+>On Tue, Jun 28, 2011 at 06:36:23PM -0700, Guenter Roeck wrote:
+> > At 09:03 AM 6/28/2011, Greg Kroah-Hartman wrote:
+> > >From: Alan Cox <alan@linux.jf.intel.com>
+> > >
+> > >Signed-off-by: Alan Cox <alan@linux.intel.com>
+> > >Signed-off-by: Antony Pavlov <antony@niisi.msk.ru>
+> > >Signed-off-by: Borislav Petkov <bp@alien8.de>
+> > >Signed-off-by: Vasily Averin <vvs@sw.ru>
+> > >Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> > >Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+> >
+> > I may be getting old, but I don't fully understand why I am in the
+> > Sign-off path for this one ???
+>
+>Because you sent me a patch that did this same thing, as did others, so
+>I merged them all together so everyone could get the credit.
 
-To be honest, my own take on this is that, apart from the compiler
-cockups trying to do read only annotations, which affect various
-versions of gcc not just the parisc ones, the _devX annotations are
-pretty pointless.  They only really do something in the non-hotplug
-case, so since 95% of the world seems to use hotplug now and the other
-5% doesn't care that much about the odd page of memory (which you rarel=
-y
-get, since modules sections are accumulated per module, not aggregate),
-I'd just favour stripping __init and __exit where there's a problem.
+Ah yes, one of those. No need to do that for me, if it ever happens again.
+Important is that the warning gets fixed.
 
-I think we should simply concentrate on __init and __exit; that's where
-most of the discard value lies and stop expending huge efforts on the
-__devX stuff which adds huge complexity for no real gain.
-
-James
-
+Thanks,
+Guenter
 
