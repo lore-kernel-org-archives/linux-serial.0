@@ -1,114 +1,113 @@
-From: Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>
-Subject: Re: [PATCHv3 2/2] tty: of_serial: support for 32 bit accesses
-Date: Thu, 30 Jun 2011 12:38:22 -0600
-Message-ID: <BANLkTimOJwZt7=yyZjQqW+ctF5zcRNp2aQ@mail.gmail.com>
-References: <1309177954-8786-1-git-send-email-jamie@jamieiles.com>
-	<1309177954-8786-2-git-send-email-jamie@jamieiles.com>
+From: Grant Likely <grant.likely@secretlab.ca>
+Subject: [PATCH] tty/serial: change of_serial to use new
+ of_property_read_u32() api
+Date: Thu, 30 Jun 2011 13:00:33 -0600
+Message-ID: <20110630185921.13784.3823.stgit@ponder>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-In-Reply-To: <1309177954-8786-2-git-send-email-jamie-wmLquQDDieKakBO8gow8eQ@public.gmane.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
-	<mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
-	<mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-To: Jamie Iles <jamie-wmLquQDDieKakBO8gow8eQ@public.gmane.org>
-Cc: devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pv0-f174.google.com ([74.125.83.174]:64900 "EHLO
+	mail-pv0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753457Ab1F3TAh (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 30 Jun 2011 15:00:37 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: devicetree-discuss@lists.ozlabs.org, Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
 
-On Mon, Jun 27, 2011 at 6:32 AM, Jamie Iles <jamie-wmLquQDDieKakBO8gow8eQ@public.gmane.org> wrote:
-> Some platforms e.g. TI Davinci require 32-bit accesses to the UARTs.
-> The of_serial driver currently registers all UARTs as UPIO_MEM. =A0Add a
-> new attribute "io-width" to allow the port to be registered with
-> different IO width requirements.
->
-> Acked-by: Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> Acked-by: Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>
-> Signed-off-by: Jamie Iles <jamie-wmLquQDDieKakBO8gow8eQ@public.gmane.org>
-> ---
-> =A0.../devicetree/bindings/tty/serial/of-serial.txt =A0 | =A0 =A03 +++
-> =A0drivers/tty/serial/of_serial.c =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- | =A0 17 +++++++++++++++++
-> =A02 files changed, 20 insertions(+), 0 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/tty/serial/of-serial.txt b=
-/Documentation/devicetree/bindings/tty/serial/of-serial.txt
-> index 35e53ae..93260d0 100644
-> --- a/Documentation/devicetree/bindings/tty/serial/of-serial.txt
-> +++ b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
-> @@ -21,6 +21,9 @@ Optional properties:
-> =A0- reg-shift : quantity to shift the register offsets by.
-> =A0- used-by-rtas : set to indicate that the port is in use by the OpenFi=
-rmware
-> =A0 RTAS and should not be registered.
-> +- io-width : the size (in bytes) of the IO accesses that should be perfo=
-rmed
+Simplifies the code a bit and drops a few lines.
 
-I know I've already picked this up into linux-next, but I'm going to
-change the property name (unless there are objections).  This should
-be okay since it hasn't appeared in any mainline kernels yet.  I'd
-like this to be named 'reg-io-width' instead to be more consistent
-with the existing 'reg-shift' and 'reg-offset' properties.
+Signed-off-by: Grant Likely <grant.likely@secretlab.ca>
+---
+
+I've only actually build tested this, but this shows some of the cleanup
+achieved using the of_property_read_u32() API.  If this gets merged in the
+v3.1 merge window then it will need to go via the devicetree/next branch.
 
 g.
 
-> + =A0on the device. =A0There are some systems that require 32-bit accesse=
-s to the
-> + =A0UART (e.g. TI davinci).
->
-> =A0Example:
->
-> diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_seria=
-l.c
-> index c911b24..dfcad6f 100644
-> --- a/drivers/tty/serial/of_serial.c
-> +++ b/drivers/tty/serial/of_serial.c
-> @@ -65,6 +65,23 @@ static int __devinit of_platform_serial_setup(struct p=
-latform_device *ofdev,
->
-> =A0 =A0 =A0 =A0port->irq =3D irq_of_parse_and_map(np, 0);
-> =A0 =A0 =A0 =A0port->iotype =3D UPIO_MEM;
-> + =A0 =A0 =A0 prop =3D of_get_property(np, "io-width", &prop_size);
-> + =A0 =A0 =A0 if (prop && (prop_size =3D=3D sizeof(u32))) {
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 switch (be32_to_cpup(prop)) {
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 case 1:
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 port->iotype =3D UPIO_MEM;
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 break;
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 case 4:
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 port->iotype =3D UPIO_MEM32;
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 break;
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 default:
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 dev_warn(&ofdev->dev,
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0"unsuppo=
-rted io width (%d bytes)\n",
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0be32_to_=
-cpup(prop));
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 return -EINVAL;
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 }
-> + =A0 =A0 =A0 }
-> +
-> =A0 =A0 =A0 =A0port->type =3D type;
-> =A0 =A0 =A0 =A0port->uartclk =3D be32_to_cpup(clk);
-> =A0 =A0 =A0 =A0port->flags =3D UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IO=
-REMAP
-> --
-> 1.7.4.1
->
-> _______________________________________________
-> devicetree-discuss mailing list
-> devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-> https://lists.ozlabs.org/listinfo/devicetree-discuss
->
+ drivers/tty/serial/of_serial.c |   37 +++++++++++++++----------------------
+ 1 files changed, 15 insertions(+), 22 deletions(-)
 
+diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+index 36038ed..dbfbfda 100644
+--- a/drivers/tty/serial/of_serial.c
++++ b/drivers/tty/serial/of_serial.c
+@@ -32,17 +32,17 @@ static int __devinit of_platform_serial_setup(struct platform_device *ofdev,
+ {
+ 	struct resource resource;
+ 	struct device_node *np = ofdev->dev.of_node;
+-	const __be32 *clk, *spd;
+-	const __be32 *prop;
+-	int ret, prop_size;
++	u32 clk, spd, prop;
++	int ret;
+ 
+ 	memset(port, 0, sizeof *port);
+-	spd = of_get_property(np, "current-speed", NULL);
+-	clk = of_get_property(np, "clock-frequency", NULL);
+-	if (!clk) {
++	if (of_property_read_u32(np, "clock-frequency", &clk)) {
+ 		dev_warn(&ofdev->dev, "no clock-frequency property set\n");
+ 		return -ENODEV;
+ 	}
++	/* If current-speed was set, then try not to change it. */
++	if (of_property_read_u32(np, "current-speed", &spd) == 0)
++		port->custom_divisor = clk / (16 * spd);
+ 
+ 	ret = of_address_to_resource(np, 0, &resource);
+ 	if (ret) {
+@@ -54,20 +54,17 @@ static int __devinit of_platform_serial_setup(struct platform_device *ofdev,
+ 	port->mapbase = resource.start;
+ 
+ 	/* Check for shifted address mapping */
+-	prop = of_get_property(np, "reg-offset", &prop_size);
+-	if (prop && (prop_size == sizeof(u32)))
+-		port->mapbase += be32_to_cpup(prop);
++	if (of_property_read_u32(np, "reg-offset", &prop) == 0)
++		port->mapbase += prop;
+ 
+ 	/* Check for registers offset within the devices address range */
+-	prop = of_get_property(np, "reg-shift", &prop_size);
+-	if (prop && (prop_size == sizeof(u32)))
+-		port->regshift = be32_to_cpup(prop);
++	if (of_property_read_u32(np, "reg-shift", &prop) == 0)
++		port->regshift = prop;
+ 
+ 	port->irq = irq_of_parse_and_map(np, 0);
+ 	port->iotype = UPIO_MEM;
+-	prop = of_get_property(np, "reg-io-width", &prop_size);
+-	if (prop && (prop_size == sizeof(u32))) {
+-		switch (be32_to_cpup(prop)) {
++	if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
++		switch (prop) {
+ 		case 1:
+ 			port->iotype = UPIO_MEM;
+ 			break;
+@@ -75,21 +72,17 @@ static int __devinit of_platform_serial_setup(struct platform_device *ofdev,
+ 			port->iotype = UPIO_MEM32;
+ 			break;
+ 		default:
+-			dev_warn(&ofdev->dev,
+-				 "unsupported io width (%d bytes)\n",
+-				 be32_to_cpup(prop));
++			dev_warn(&ofdev->dev, "unsupported reg-io-width (%d)\n",
++				 prop);
+ 			return -EINVAL;
+ 		}
+ 	}
+ 
+ 	port->type = type;
+-	port->uartclk = be32_to_cpup(clk);
++	port->uartclk = clk;
+ 	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
+ 		| UPF_FIXED_PORT | UPF_FIXED_TYPE;
+ 	port->dev = &ofdev->dev;
+-	/* If current-speed was set, then try not to change it. */
+-	if (spd)
+-		port->custom_divisor = be32_to_cpup(clk) / (16 * (be32_to_cpup(spd)));
+ 
+ 	return 0;
+ }
 
-
--- =
-
-Grant Likely, B.Sc., P.Eng.
-Secret Lab Technologies Ltd.
