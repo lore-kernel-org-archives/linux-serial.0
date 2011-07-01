@@ -1,32 +1,30 @@
 From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH 11/13] serial: add driver for the built-in UART of the
- AR933X SoC
-Date: Fri, 1 Jul 2011 14:11:23 -0700
-Message-ID: <20110701211123.GA19805@kroah.com>
-References: <1308597973-6037-1-git-send-email-juhosg@openwrt.org>
- <1308597973-6037-12-git-send-email-juhosg@openwrt.org>
- <20110621095951.7dc1c9ee@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH v2] pch_uart: Add MSI support
+Date: Fri, 1 Jul 2011 15:32:09 -0700
+Message-ID: <20110701223209.GA9581@kroah.com>
+References: <4E02857C.1010304@dsn.okisemi.com>
+ <1308812405-5245-1-git-send-email-alexander.stein@systec-electronic.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out3.smtp.messagingengine.com ([66.111.4.27]:35159 "EHLO
+Received: from out3.smtp.messagingengine.com ([66.111.4.27]:50127 "EHLO
 	out3.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1757598Ab1GAVQd (ORCPT
+	by vger.kernel.org with ESMTP id S1757598Ab1GAWlZ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 1 Jul 2011 17:16:33 -0400
+	Fri, 1 Jul 2011 18:41:25 -0400
 Content-Disposition: inline
-In-Reply-To: <20110621095951.7dc1c9ee@lxorguk.ukuu.org.uk>
+In-Reply-To: <1308812405-5245-1-git-send-email-alexander.stein@systec-electronic.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Gabor Juhos <juhosg@openwrt.org>, Ralf Baechle <ralf@linux-mips.org>, linux-mips@linux-mips.org, Kathy Giori <kgiori@qca.qualcomm.com>, "Luis R. Rodriguez" <rodrigue@qca.qualcomm.com>, linux-serial@vger.kernel.org
+To: Alexander Stein <alexander.stein@systec-electronic.com>
+Cc: Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2011 at 09:59:51AM +0100, Alan Cox wrote:
-> Looks good to me
-> 
-> Signed-off-by: Alan Cox <alan@linux.intel.com>
-> 
-> and no problem here with it going via the MIPS tree (but make sure GregKH
-> is happy)
+On Thu, Jun 23, 2011 at 09:00:05AM +0200, Alexander Stein wrote:
+> Signed-off-by: Alexander Stein <alexander.stein@systec-electronic.com>
+> ---
+> Changes in v2:
+> * msi_enabled is stored in pci_dev already, skip it in our code
 
-I'm happy with this.
+This doesn't apply to my tree, what kernel tree is it against?
+
+greg k-h
