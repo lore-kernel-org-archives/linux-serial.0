@@ -1,30 +1,40 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH v2] pch_uart: Add MSI support
-Date: Fri, 1 Jul 2011 15:32:09 -0700
-Message-ID: <20110701223209.GA9581@kroah.com>
-References: <4E02857C.1010304@dsn.okisemi.com>
- <1308812405-5245-1-git-send-email-alexander.stein@systec-electronic.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Shawn Guo <shawn.guo@linaro.org>
+Subject: [PATCH 0/2] Add device tree probe support for tty/serial/imx
+Date: Sun,  3 Jul 2011 15:55:58 +0800
+Message-ID: <1309679760-22796-1-git-send-email-shawn.guo@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out3.smtp.messagingengine.com ([66.111.4.27]:50127 "EHLO
-	out3.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1757598Ab1GAWlZ (ORCPT
+Received: from mail-iw0-f174.google.com ([209.85.214.174]:45955 "EHLO
+	mail-iw0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752064Ab1GCHp3 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 1 Jul 2011 18:41:25 -0400
-Content-Disposition: inline
-In-Reply-To: <1308812405-5245-1-git-send-email-alexander.stein@systec-electronic.com>
+	Sun, 3 Jul 2011 03:45:29 -0400
+Received: by iwn6 with SMTP id 6so3768707iwn.19
+        for <linux-serial@vger.kernel.org>; Sun, 03 Jul 2011 00:45:29 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alexander Stein <alexander.stein@systec-electronic.com>
-Cc: Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, devicetree-discuss@lists.ozlabs.org, patches@linaro.org
 
-On Thu, Jun 23, 2011 at 09:00:05AM +0200, Alexander Stein wrote:
-> Signed-off-by: Alexander Stein <alexander.stein@systec-electronic.com>
-> ---
-> Changes in v2:
-> * msi_enabled is stored in pci_dev already, skip it in our code
+The first patch removes the use of cpu_is_mx1().  It has no dependency
+on other patches, and can be merged right away after review gets done.
+I assume it will go through Sascha's tree with Alan's ack, since it
+touches quite some arch codes.  Please let me know if it's not the case.
 
-This doesn't apply to my tree, what kernel tree is it against?
+The second patch adds device tree probe, and depends on the patch
+below.
 
-greg k-h
+  http://article.gmane.org/gmane.linux.drivers.devicetree/6128
+
+Grant, how does the above patch look to you?  I have been seeing
+a number of drivers depending on it when migrating to device tree.
+It will be good if we can git it settled soon.
+
+Shawn Guo (2):
+      serial/imx: get rid of the uses of cpu_is_mx1()
+      serial/imx: add device tree probe support
+
+ .../bindings/tty/serial/fsl-imx-uart.txt           |   19 +++
+ arch/arm/mach-imx/clock-imx1.c                     |    6 +-
+ arch/arm/plat-mxc/devices/platform-imx-uart.c      |    2 +-
+ drivers/tty/serial/imx.c                           |  131 +++++++++++++++++--
+ 4 files changed, 140 insertions(+), 18 deletions(-)
