@@ -1,224 +1,133 @@
 From: Shawn Guo <shawn.guo@freescale.com>
-Subject: Re: [PATCH 1/2] serial/imx: get rid of the uses of cpu_is_mx1()
-Date: Mon, 4 Jul 2011 10:19:25 +0800
-Message-ID: <20110704021923.GA10245@S2100-06.ap.freescale.net>
+Subject: Re: [PATCH 2/2] serial/imx: add device tree probe support
+Date: Mon, 4 Jul 2011 10:36:47 +0800
+Message-ID: <20110704023646.GB10245@S2100-06.ap.freescale.net>
 References: <1309679760-22796-1-git-send-email-shawn.guo@linaro.org>
- <1309679760-22796-2-git-send-email-shawn.guo@linaro.org>
- <20110703211007.GB13742@ponder.secretlab.ca>
+ <1309679760-22796-3-git-send-email-shawn.guo@linaro.org>
+ <20110703211434.GC13742@ponder.secretlab.ca>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from tx2ehsobe001.messaging.microsoft.com ([65.55.88.11]:39841 "EHLO
-	TX2EHSOBE002.bigfish.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751650Ab1GDCNJ (ORCPT
+Received: from va3ehsobe001.messaging.microsoft.com ([216.32.180.11]:46111
+	"EHLO VA3EHSOBE008.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751690Ab1GDCbP (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 3 Jul 2011 22:13:09 -0400
+	Sun, 3 Jul 2011 22:31:15 -0400
 Content-Disposition: inline
-In-Reply-To: <20110703211007.GB13742@ponder.secretlab.ca>
+In-Reply-To: <20110703211434.GC13742@ponder.secretlab.ca>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Grant Likely <grant.likely@secretlab.ca>
-Cc: Shawn Guo <shawn.guo@linaro.org>, patches@linaro.org, devicetree-discuss@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Shawn Guo <shawn.guo@linaro.org>, patches@linaro.org, devicetree-discuss@lists.ozlabs.org, Jason Liu <jason.hui@linaro.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, Jeremy Kerr <jeremy.kerr@canonical.com>, Sascha Hauer <s.hauer@pengutronix.de>, linux-arm-kernel@lists.infradead.org
 
-Hi Grant,
-
-Thanks for the review.
-
-On Sun, Jul 03, 2011 at 03:10:07PM -0600, Grant Likely wrote:
-> On Sun, Jul 03, 2011 at 03:55:59PM +0800, Shawn Guo wrote:
-> > The patch removes all the uses of cpu_is_mx1().  Instead, it uses
-> > the .id_table of platform_driver to distinguish the uart device type.
+On Sun, Jul 03, 2011 at 03:14:34PM -0600, Grant Likely wrote:
+> On Sun, Jul 03, 2011 at 03:56:00PM +0800, Shawn Guo wrote:
+> > It adds device tree probe support for imx tty/serial driver.
 > > 
+> > Signed-off-by: Jeremy Kerr <jeremy.kerr@canonical.com>
+> > Signed-off-by: Jason Liu <jason.hui@linaro.org>
 > > Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
 > > Cc: Sascha Hauer <s.hauer@pengutronix.de>
 > > Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
+> > Cc: Grant Likely <grant.likely@secretlab.ca>
+> 
+> Minor comments below, but otherwise looks okay to me.  Feel free to
+> add the following when you respin with the first patch:
+> 
+> Acked-by: Grant Likely <grant.likely@secretlab.ca>
+> 
+> I don't see any reason preventing this from being ready to be queued
+> up for v3.1
+> 
+> g.
+> 
 > > ---
-> >  arch/arm/mach-imx/clock-imx1.c                |    6 +-
-> >  arch/arm/plat-mxc/devices/platform-imx-uart.c |    2 +-
-> >  drivers/tty/serial/imx.c                      |   51 ++++++++++++++++++++++--
-> >  3 files changed, 50 insertions(+), 9 deletions(-)
+> >  .../bindings/tty/serial/fsl-imx-uart.txt           |   19 +++++
+> >  drivers/tty/serial/imx.c                           |   82 +++++++++++++++++---
+> >  2 files changed, 91 insertions(+), 10 deletions(-)
+> >  create mode 100644 Documentation/devicetree/bindings/tty/serial/fsl-imx-uart.txt
 > > 
-> > diff --git a/arch/arm/mach-imx/clock-imx1.c b/arch/arm/mach-imx/clock-imx1.c
-> > index dcc4172..4aabeb2 100644
-> > --- a/arch/arm/mach-imx/clock-imx1.c
-> > +++ b/arch/arm/mach-imx/clock-imx1.c
-> > @@ -587,9 +587,9 @@ static struct clk_lookup lookups[] __initdata = {
-> >  	_REGISTER_CLOCK(NULL, "mma", mma_clk)
-> >  	_REGISTER_CLOCK("imx_udc.0", NULL, usbd_clk)
-> >  	_REGISTER_CLOCK(NULL, "gpt", gpt_clk)
-> > -	_REGISTER_CLOCK("imx-uart.0", NULL, uart_clk)
-> > -	_REGISTER_CLOCK("imx-uart.1", NULL, uart_clk)
-> > -	_REGISTER_CLOCK("imx-uart.2", NULL, uart_clk)
-> > +	_REGISTER_CLOCK("imx1-uart.0", NULL, uart_clk)
-> > +	_REGISTER_CLOCK("imx1-uart.1", NULL, uart_clk)
-> > +	_REGISTER_CLOCK("imx1-uart.2", NULL, uart_clk)
-> >  	_REGISTER_CLOCK("imx-i2c.0", NULL, i2c_clk)
-> >  	_REGISTER_CLOCK("imx1-cspi.0", NULL, spi_clk)
-> >  	_REGISTER_CLOCK("imx1-cspi.1", NULL, spi_clk)
-> > diff --git a/arch/arm/plat-mxc/devices/platform-imx-uart.c b/arch/arm/plat-mxc/devices/platform-imx-uart.c
-> > index cfce8c9..477271a 100644
-> > --- a/arch/arm/plat-mxc/devices/platform-imx-uart.c
-> > +++ b/arch/arm/plat-mxc/devices/platform-imx-uart.c
-> > @@ -152,7 +152,7 @@ struct platform_device *__init imx_add_imx_uart_3irq(
-> >  		},
-> >  	};
-> >  
-> > -	return imx_add_platform_device("imx-uart", data->id, res,
-> > +	return imx_add_platform_device("imx1-uart", data->id, res,
-> >  			ARRAY_SIZE(res), pdata, sizeof(*pdata));
-> >  }
-> >  
+> > diff --git a/Documentation/devicetree/bindings/tty/serial/fsl-imx-uart.txt b/Documentation/devicetree/bindings/tty/serial/fsl-imx-uart.txt
+> > new file mode 100644
+> > index 0000000..a9c0406
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/tty/serial/fsl-imx-uart.txt
+> > @@ -0,0 +1,19 @@
+> > +* Freescale i.MX Universal Asynchronous Receiver/Transmitter (UART)
+> > +
+> > +Required properties:
+> > +- compatible : Should be "fsl,<soc>-uart"
+> > +- reg : Address and length of the register set for the device
+> > +- interrupts : Should contain uart interrupt
+> > +
+> > +Optional properties:
+> > +- fsl,uart-has-rtscts : Indicate the uart has rts and cts
+> > +- fsl,irda-mode : Indicate the uart supports irda mode
+> > +
+> > +Example:
+> > +
+> > +uart@73fbc000 {
+> > +	compatible = "fsl,imx51-uart", "fsl,imx21-uart";
+> > +	reg = <0x73fbc000 0x4000>;
+> > +	interrupts = <31>;
+> > +	fsl,uart-has-rtscts;
+> > +};
 > > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> > index 22fe801..983f3bd 100644
+> > index 983f3bd..483c447 100644
 > > --- a/drivers/tty/serial/imx.c
 > > +++ b/drivers/tty/serial/imx.c
-> > @@ -48,7 +48,6 @@
+> > @@ -45,6 +45,8 @@
+> >  #include <linux/delay.h>
+> >  #include <linux/rational.h>
+> >  #include <linux/slab.h>
+> > +#include <linux/of.h>
+> > +#include <linux/of_device.h>
 > >  
 > >  #include <asm/io.h>
 > >  #include <asm/irq.h>
-> > -#include <mach/hardware.h>
-> >  #include <mach/imx-uart.h>
-> >  
-> >  /* Register definitions */
-> > @@ -67,7 +66,8 @@
-> >  #define UBMR  0xa8 /* BRM Modulator Register */
-> >  #define UBRC  0xac /* Baud Rate Count Register */
-> >  #define MX2_ONEMS 0xb0 /* One Millisecond register */
-> > -#define UTS (cpu_is_mx1() ? 0xd0 : 0xb4) /* UART Test Register */
-> > +#define MX1_UTS 0xd0 /* UART Test Register on mx1 */
-> > +#define MX2_UTS 0xb4 /* UART Test Register on mx2 and later */
-> >  
-> >  /* UART Control Register Bit Fields.*/
-> >  #define  URXD_CHARRDY    (1<<15)
-> > @@ -181,6 +181,17 @@
-> >  
-> >  #define UART_NR 8
-> >  
-> > +enum imx_uart_type {
-> > +	IMX1_UART,
-> > +	IMX2_UART,
-> > +};
-> > +
-> > +/* device type dependent stuff */
-> > +struct imx_uart_data {
-> > +	unsigned uts_reg;
-> > +	enum imx_uart_type devtype;
-> > +};
-> > +
-> >  struct imx_port {
-> >  	struct uart_port	port;
-> >  	struct timer_list	timer;
-> > @@ -192,6 +203,7 @@ struct imx_port {
-> >  	unsigned int		irda_inv_tx:1;
-> >  	unsigned short		trcv_delay; /* transceiver delay */
-> >  	struct clk		*clk;
-> > +	struct imx_uart_data	*devdata;
+> > @@ -239,6 +241,12 @@ static struct platform_device_id imx_uart_devtype[] = {
+> >  	}
 > >  };
 > >  
-> >  #ifdef CONFIG_IRDA
-> > @@ -200,6 +212,33 @@ struct imx_port {
-> >  #define USE_IRDA(sport)	(0)
-> >  #endif
-> >  
-> > +#define UTS (sport->devdata->uts_reg)
-> > +#define IS_IMX1_UART() (sport->devdata->devtype == IMX1_UART)
-> > +#define IS_IMX2_UART() (sport->devdata->devtype == IMX2_UART)
-> > +
-> > +static struct imx_uart_data imx_uart_devdata[] = {
-> > +	[IMX1_UART] = {
-> > +		.uts_reg = MX1_UTS,
-> > +		.devtype = IMX1_UART,
-> > +	},
-> > +	[IMX2_UART] = {
-> > +		.uts_reg = MX2_UTS,
-> > +		.devtype = IMX2_UART,
-> > +	},
-> > +};
-> > +
-> > +static struct platform_device_id imx_uart_devtype[] = {
-> > +	{
-> > +		.name = "imx1-uart",
-> > +		.driver_data = IMX1_UART,
-> > +	}, {
-> > +		.name = "imx-uart",
-> > +		.driver_data = IMX2_UART,
+> > +static struct of_device_id imx_uart_dt_ids[] = {
+> > +	{ .compatible = "fsl,imx1-uart", .data = &imx_uart_devdata[IMX1_UART], },
+> > +	{ .compatible = "fsl,imx21-uart", .data = &imx_uart_devdata[IMX2_UART], },
+> > +	{ /* sentinel */ },
 > 
-> Rather than using driver_data as an index, and having a separate
-> table, you can use it as a pointer to the imx_uard_data structure.
-> That's why driver_data is declared as a kernel_ulong_t.  The only
-> reason it isn't a void* (AFAIK) is that mod_devicetable.h is exported
-> to userspace.
+> Nit: drop the ',' from the last entry so that nobody inadvertently
+> adds another entry to the list.
 > 
+Ok, will make the change on other patches where the comment applies.
 
-Yes, I thought about it.  I happened to choose saving type cast
-(twice) over making two tables (platform_device_id and of_device_id)
-look consistent.  But I do not have a strong position on that, so I
-respect your comment since you do :)
-
-I will make the change on other patches where the comment apples.
-
-> > +	}, {
-> > +		/* sentinel */
-> > +	}
 > > +};
 > > +
 > >  /*
 > >   * Handle any change of modem status signal since we were last called.
 > >   */
-> > @@ -689,7 +728,7 @@ static int imx_startup(struct uart_port *port)
-> >  		}
-> >  	}
+> > @@ -1261,6 +1269,58 @@ static int serial_imx_resume(struct platform_device *dev)
+> >  	return 0;
+> >  }
 > >  
-> > -	if (!cpu_is_mx1()) {
-> > +	if (IS_IMX2_UART()) {
+> > +#ifdef CONFIG_OF
+> > +static int serial_imx_probe_dt(struct imx_port *sport,
+> > +		struct platform_device *pdev)
+> > +{
+> > +	struct device_node *np = pdev->dev.of_node;
+> > +	const struct of_device_id *of_id =
+> > +			of_match_device(imx_uart_dt_ids, &pdev->dev);
+> > +
+> > +	if (!np)
+> > +		return -ENODEV;
+> > +
+> > +	pdev->id = of_alias_get_id(np, "serial");
+> > +	if (pdev->id < 0)
+> > +		return -ENODEV;
 > 
-> The logic is getting reversed here, is this really what you want to
-> do?  I would think you'd want to preserve the !IS_IMX1_UART() logic.
+> If you're bailing here, it would be friendly to spit out a klog
+> message saying why the driver has bailed.
 > 
-Maybe not.  I actually made a small improvement here.  The body of
-the 'if' is really IMX2 specific code, so it makes more sense to use
-IS_IMX2_UART() than !IS_IMX1_UART().
+Ok, will make the change on other patches where the comment applies.
 
 Regards,
 Shawn
-
-> >  		temp = readl(sport->port.membase + UCR3);
-> >  		temp |= MX2_UCR3_RXDMUXSEL;
-> >  		writel(temp, sport->port.membase + UCR3);
-> > @@ -923,7 +962,7 @@ imx_set_termios(struct uart_port *port, struct ktermios *termios,
-> >  	writel(num, sport->port.membase + UBIR);
-> >  	writel(denom, sport->port.membase + UBMR);
-> >  
-> > -	if (!cpu_is_mx1())
-> > +	if (IS_IMX2_UART())
-> >  		writel(sport->port.uartclk / div / 1000,
-> >  				sport->port.membase + MX2_ONEMS);
-> >  
-> > @@ -1062,7 +1101,7 @@ imx_console_write(struct console *co, const char *s, unsigned int count)
-> >  	ucr1 = old_ucr1 = readl(sport->port.membase + UCR1);
-> >  	old_ucr2 = readl(sport->port.membase + UCR2);
-> >  
-> > -	if (cpu_is_mx1())
-> > +	if (IS_IMX1_UART())
-> >  		ucr1 |= MX1_UCR1_UARTCLKEN;
-> >  	ucr1 |= UCR1_UARTEN;
-> >  	ucr1 &= ~(UCR1_TXMPTYEN | UCR1_RRDYEN | UCR1_RTSDEN);
-> > @@ -1262,6 +1301,7 @@ static int serial_imx_probe(struct platform_device *pdev)
-> >  	init_timer(&sport->timer);
-> >  	sport->timer.function = imx_timeout;
-> >  	sport->timer.data     = (unsigned long)sport;
-> > +	sport->devdata = &imx_uart_devdata[pdev->id_entry->driver_data];
-> >  
-> >  	sport->clk = clk_get(&pdev->dev, "uart");
-> >  	if (IS_ERR(sport->clk)) {
-> > @@ -1340,6 +1380,7 @@ static struct platform_driver serial_imx_driver = {
-> >  
-> >  	.suspend	= serial_imx_suspend,
-> >  	.resume		= serial_imx_resume,
-> > +	.id_table	= imx_uart_devtype,
-> >  	.driver		= {
-> >  		.name	= "imx-uart",
-> >  		.owner	= THIS_MODULE,
-> > -- 
-> > 1.7.4.1
 
