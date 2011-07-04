@@ -1,94 +1,62 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: [PATCH 2/2] serial/imx: add device tree probe support
-Date: Mon, 4 Jul 2011 08:58:20 +0200
-Message-ID: <20110704065820.GY6069@pengutronix.de>
-References: <1309679760-22796-1-git-send-email-shawn.guo@linaro.org>
- <1309679760-22796-3-git-send-email-shawn.guo@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Alexander Stein <alexander.stein@systec-electronic.com>
+Subject: [PATCH v3] pch_uart: Add MSI support
+Date: Mon,  4 Jul 2011 08:58:31 +0200
+Message-ID: <1309762711-8571-1-git-send-email-alexander.stein@systec-electronic.com>
+References: <20110701223209.GA9581@kroah.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:52504 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751515Ab1GDG6X (ORCPT
+Received: from 61-96-236-77.server-home.net ([77.236.96.61]:35969 "EHLO
+	webbox1416.server-home.net" rhost-flags-OK-FAIL-OK-OK)
+	by vger.kernel.org with ESMTP id S1751380Ab1GDHHu (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 4 Jul 2011 02:58:23 -0400
-Content-Disposition: inline
-In-Reply-To: <1309679760-22796-3-git-send-email-shawn.guo@linaro.org>
+	Mon, 4 Jul 2011 03:07:50 -0400
+In-Reply-To: <20110701223209.GA9581@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Shawn Guo <shawn.guo@linaro.org>
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree-discuss@lists.ozlabs.org, patches@linaro.org, Jeremy Kerr <jeremy.kerr@canonical.com>, Jason Liu <jason.hui@linaro.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Grant Likely <grant.likely@secretlab.ca>
+To: Greg KH <greg@kroah.com>
+Cc: Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alexander Stein <alexander.stein@systec-electronic.com>
 
-On Sun, Jul 03, 2011 at 03:56:00PM +0800, Shawn Guo wrote:
-> It adds device tree probe support for imx tty/serial driver.
-> 
-> Signed-off-by: Jeremy Kerr <jeremy.kerr@canonical.com>
-> Signed-off-by: Jason Liu <jason.hui@linaro.org>
-> Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
-> Cc: Sascha Hauer <s.hauer@pengutronix.de>
-> Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-> Cc: Grant Likely <grant.likely@secretlab.ca>
-> ---
->  .../bindings/tty/serial/fsl-imx-uart.txt           |   19 +++++
->  drivers/tty/serial/imx.c                           |   82 +++++++++++++++++---
->  2 files changed, 91 insertions(+), 10 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/tty/serial/fsl-imx-uart.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/tty/serial/fsl-imx-uart.txt b/Documentation/devicetree/bindings/tty/serial/fsl-imx-uart.txt
-> new file mode 100644
-> index 0000000..a9c0406
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/tty/serial/fsl-imx-uart.txt
-> @@ -0,0 +1,19 @@
-> +* Freescale i.MX Universal Asynchronous Receiver/Transmitter (UART)
-> +
-> +Required properties:
-> +- compatible : Should be "fsl,<soc>-uart"
-> +- reg : Address and length of the register set for the device
-> +- interrupts : Should contain uart interrupt
-> +
-> +Optional properties:
-> +- fsl,uart-has-rtscts : Indicate the uart has rts and cts
-> +- fsl,irda-mode : Indicate the uart supports irda mode
-> +
-> +Example:
-> +
-> +uart@73fbc000 {
-> +	compatible = "fsl,imx51-uart", "fsl,imx21-uart";
-> +	reg = <0x73fbc000 0x4000>;
-> +	interrupts = <31>;
-> +	fsl,uart-has-rtscts;
-> +};
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 983f3bd..483c447 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -45,6 +45,8 @@
->  #include <linux/delay.h>
->  #include <linux/rational.h>
->  #include <linux/slab.h>
-> +#include <linux/of.h>
-> +#include <linux/of_device.h>
->  
->  #include <asm/io.h>
->  #include <asm/irq.h>
-> @@ -239,6 +241,12 @@ static struct platform_device_id imx_uart_devtype[] = {
->  	}
->  };
->  
-> +static struct of_device_id imx_uart_dt_ids[] = {
-> +	{ .compatible = "fsl,imx1-uart", .data = &imx_uart_devdata[IMX1_UART], },
-> +	{ .compatible = "fsl,imx21-uart", .data = &imx_uart_devdata[IMX2_UART], },
-> +	{ /* sentinel */ },
-> +};
+Signed-off-by: Alexander Stein <alexander.stein@systec-electronic.com>
+---
+Hello Greg,
 
-Isn't this table a bit too small? What about the other SoCs?
+I'm sorry. This patch was based some other patches, like console support.
 
-Sascha
+Changes in v3:
+* Rebased to current git master
 
+ drivers/tty/serial/pch_uart.c |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
 
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index 4652109..d3ba85b 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -1429,6 +1429,8 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
+ 		goto init_port_hal_free;
+ 	}
+ 
++	pci_enable_msi(pdev);
++
+ 	iobase = pci_resource_start(pdev, 0);
+ 	mapbase = pci_resource_start(pdev, 1);
+ 	priv->mapbase = mapbase;
+@@ -1485,6 +1487,8 @@ static void pch_uart_pci_remove(struct pci_dev *pdev)
+ 	struct eg20t_port *priv;
+ 
+ 	priv = (struct eg20t_port *)pci_get_drvdata(pdev);
++
++	pci_disable_msi(pdev);
+ 	pch_uart_exit_port(priv);
+ 	pci_disable_device(pdev);
+ 	kfree(priv);
+@@ -1568,6 +1572,7 @@ static int __devinit pch_uart_pci_probe(struct pci_dev *pdev,
+ 	return ret;
+ 
+ probe_disable_device:
++	pci_disable_msi(pdev);
+ 	pci_disable_device(pdev);
+ probe_error:
+ 	return ret;
 -- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+1.7.3.4
+
