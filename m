@@ -1,83 +1,36 @@
-From: Shawn Guo <shawn.guo@freescale.com>
-Subject: Re: [PATCH 1/2] serial/imx: get rid of the uses of cpu_is_mx1()
-Date: Mon, 4 Jul 2011 18:26:59 +0800
-Message-ID: <20110704102657.GI10245@S2100-06.ap.freescale.net>
-References: <1309679760-22796-1-git-send-email-shawn.guo@linaro.org>
- <1309679760-22796-2-git-send-email-shawn.guo@linaro.org>
- <20110703211007.GB13742@ponder.secretlab.ca>
- <20110704021923.GA10245@S2100-06.ap.freescale.net>
- <20110704073320.GB4338@pengutronix.de>
- <20110704084324.GE10245@S2100-06.ap.freescale.net>
- <20110704092805.GH4338@pengutronix.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Alexander Stein <alexander.stein@systec-electronic.com>
+Subject: [PATCH resend] pch_uart: add missing comment about OKI ML7223
+Date: Mon,  4 Jul 2011 15:35:51 +0200
+Message-ID: <1309786551-5879-1-git-send-email-alexander.stein@systec-electronic.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from tx2ehsobe001.messaging.microsoft.com ([65.55.88.11]:38681 "EHLO
-	TX2EHSOBE001.bigfish.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752172Ab1GDKUl convert rfc822-to-8bit (ORCPT
+Received: from 61-96-236-77.server-home.net ([77.236.96.61]:49173 "EHLO
+	webbox1416.server-home.net" rhost-flags-OK-FAIL-OK-OK)
+	by vger.kernel.org with ESMTP id S1751118Ab1GDNfy (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 4 Jul 2011 06:20:41 -0400
-Content-Disposition: inline
-In-Reply-To: <20110704092805.GH4338@pengutronix.de>
+	Mon, 4 Jul 2011 09:35:54 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Grant Likely <grant.likely@secretlab.ca>, patches@linaro.org, devicetree-discuss@lists.ozlabs.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, Shawn Guo <shawn.guo@linaro.org>, Sascha Hauer <s.hauer@pengutronix.de>, linux-arm-kernel@lists.infradead.org
+To: Alan Cox <alan@linux.intel.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, trivial@kernel.org, Alexander Stein <alexander.stein@systec-electronic.com>
 
-On Mon, Jul 04, 2011 at 11:28:05AM +0200, Uwe Kleine-K=F6nig wrote:
-> Hello Shawn,
->=20
-> On Mon, Jul 04, 2011 at 04:43:25PM +0800, Shawn Guo wrote:
-> > On Mon, Jul 04, 2011 at 09:33:20AM +0200, Uwe Kleine-K=F6nig wrote:
-> > > On Mon, Jul 04, 2011 at 10:19:25AM +0800, Shawn Guo wrote:
-> > > > > > +static struct platform_device_id imx_uart_devtype[] =3D {
-> > > > > > +	{
-> > > > > > +		.name =3D "imx1-uart",
-> > > > > > +		.driver_data =3D IMX1_UART,
-> > > > > > +	}, {
-> > > > > > +		.name =3D "imx-uart",
-> > > > > > +		.driver_data =3D IMX2_UART,
-> > > It feels strange to introduce IMX2 today meaning
-> > > i.MX{21,25,27,31,35,50,51,53}. I didn't check the changes in deta=
-il, but
-> > > if the only relevant change is that the UTS register is at a diff=
-erent
-> >=20
-> > No, it's not the only relevant change.  The patch also changes a co=
-uple of
-> > 'if (!cpu_is_imx1())' to 'if (IS_IMX2_UART())'.
-> >=20
-> > The 'IMX2' in 'IMX2_UART' does not necessarily mean i.MX{21,25,27,
-> > 31,35,50,51,53}.  It actually means i.MX{21,25,27,31,35,50,51,53} a=
-ll
-> > have the same UART block which was firstly introduced on IMX2.
-> This is ugly. IMHO something like imx_uart_v2 would be much better.
+Signed-off-by: Alexander Stein <alexander.stein@systec-electronic.com>
+Reviewed-by: Jesper Juhl <jj@chaosbits.net>
+---
+ drivers/tty/serial/pch_uart.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
-I will be very careful to define version number for IP block while
-hardware people do not.  When some day they do, we will probably have
-the version number we defined today conflicting with the one they
-will define.
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index d3ba85b..91da2a9 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -44,6 +44,7 @@ enum {
+ /* Set the max number of UART port
+  * Intel EG20T PCH: 4 port
+  * OKI SEMICONDUCTOR ML7213 IOH: 3 port
++ * OKI SEMICONDUCTOR ML7223 IOH: 2 port
+ */
+ #define PCH_UART_NR	4
+ 
+-- 
+1.7.3.4
 
-> For a driver that supports all i.MX generations
->=20
-> 	if (IS_IMX2_UART())
->=20
-> is simply misleading. Even if you had documented at the definition
-> of imx_uart_type (and/or IS_IMX2_UART) that IMX2_UART means everythin=
-g
-> currently known but MX1, just looking at the if condition yields wron=
-g
-> expectations.
->=20
-To address your concern, I will rename IMX2_UART to IMX_UART.
-
---=20
-Regards,
-Shawn
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
