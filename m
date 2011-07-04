@@ -1,28 +1,25 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+From: Arnd Bergmann <arnd@arndb.de>
 Subject: Re: [PATCH 7/7] serial/8250: make PIO support optional
-Date: Mon, 4 Jul 2011 22:55:20 +0100
-Message-ID: <20110704225520.2d0004f3@lxorguk.ukuu.org.uk>
-References: <1309211120-2803-1-git-send-email-arnd@arndb.de>
-	<201107042127.31649.arnd@arndb.de>
-	<20110704205336.09547e1f@lxorguk.ukuu.org.uk>
-	<201107042237.05295.arnd@arndb.de>
+Date: Mon, 4 Jul 2011 23:54:30 +0200
+Message-ID: <201107042354.31321.arnd@arndb.de>
+References: <1309211120-2803-1-git-send-email-arnd@arndb.de> <201107042237.05295.arnd@arndb.de> <20110704225520.2d0004f3@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <201107042237.05295.arnd@arndb.de>
+In-Reply-To: <20110704225520.2d0004f3@lxorguk.ukuu.org.uk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-> How are people using those ISA cards today? The version of setserial
-> that I found is not able to set MMIO mode on those. I suppose you
+On Monday 04 July 2011 23:55:20 Alan Cox wrote:
+> > How are people using those ISA cards today? The version of setserial
+> > that I found is not able to set MMIO mode on those. I suppose you
+> 
+> Various ugly hacks, if its tricky we can drop support and see who screams
 
-Various ugly hacks, if its tricky we can drop support and see who screams
+I don't think it's much of a problem, I just didn't expect these to exit.
 
-> are not talking about isapnp cards, right? Those should not need to
-> be handled through the ISA driver at all.
-
-ISAPnP will do it automatically so the ISAPnP case isn't a problem. I've
-never sen an ISAPnP port that was anything but standard.
+	Arnd
