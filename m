@@ -1,25 +1,35 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 7/7] serial/8250: make PIO support optional
-Date: Mon, 4 Jul 2011 23:54:30 +0200
-Message-ID: <201107042354.31321.arnd@arndb.de>
-References: <1309211120-2803-1-git-send-email-arnd@arndb.de> <201107042237.05295.arnd@arndb.de> <20110704225520.2d0004f3@lxorguk.ukuu.org.uk>
+From: Shawn Guo <shawn.guo@linaro.org>
+Subject: [PATCH v2 0/2] Add device tree probe support for tty/serial/imx
+Date: Tue, 5 Jul 2011 23:05:36 +0800
+Message-ID: <1309878338-25697-1-git-send-email-shawn.guo@linaro.org>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20110704225520.2d0004f3@lxorguk.ukuu.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from db3ehsobe005.messaging.microsoft.com ([213.199.154.143]:50949
+	"EHLO DB3EHSOBE005.bigfish.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753198Ab1GEO7X (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 5 Jul 2011 10:59:23 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, devicetree-discuss@lists.ozlabs.org, patches@linaro.org
 
-On Monday 04 July 2011 23:55:20 Alan Cox wrote:
-> > How are people using those ISA cards today? The version of setserial
-> > that I found is not able to set MMIO mode on those. I suppose you
-> 
-> Various ugly hacks, if its tricky we can drop support and see who screams
+The first patch removes the use of cpu_is_mx1().  The second patch
+adds device tree probe with a dependency on the following patch.
 
-I don't think it's much of a problem, I just didn't expect these to exit.
+  http://article.gmane.org/gmane.linux.drivers.devicetree/6128
 
-	Arnd
+Changes since v1:
+ * Address review comments given by Grant and Uwe
+
+Shawn Guo (2):
+      serial/imx: get rid of the uses of cpu_is_mx1()
+      serial/imx: add device tree probe support
+
+ .../bindings/tty/serial/fsl-imx-uart.txt           |   19 +++
+ arch/arm/mach-imx/clock-imx1.c                     |    6 +-
+ arch/arm/plat-mxc/devices/platform-imx-uart.c      |    2 +-
+ drivers/tty/serial/imx.c                           |  148 +++++++++++++++++---
+ 4 files changed, 149 insertions(+), 26 deletions(-)
+
