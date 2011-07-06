@@ -1,57 +1,57 @@
-From: Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH] tty/serial: tegra: Use engineering names in DT compatible property
-Date: Tue,  5 Jul 2011 14:07:41 -0600
-Message-ID: <1309896461-21976-1-git-send-email-swarren@nvidia.com>
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, Greg KH <gregkh-l3A5Bk7waGM@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+From: Shawn Guo <shawn.guo@freescale.com>
+Subject: Re: [PATCH v2 1/2] serial/imx: get rid of the uses of cpu_is_mx1()
+Date: Wed, 6 Jul 2011 13:53:32 +0800
+Message-ID: <20110706055331.GD26324@S2100-06.ap.freescale.net>
+References: <1309878338-25697-1-git-send-email-shawn.guo@linaro.org>
+ <1309878338-25697-2-git-send-email-shawn.guo@linaro.org>
+ <CACxGe6v+izZiANbzvhnTvrLU9+XgXD=W8FNGfTLzGXLNuCjZcg@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from tx2ehsobe004.messaging.microsoft.com ([65.55.88.14]:34562 "EHLO
+	TX2EHSOBE009.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751093Ab1GFFrL convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 6 Jul 2011 01:47:11 -0400
+Content-Disposition: inline
+In-Reply-To: <CACxGe6v+izZiANbzvhnTvrLU9+XgXD=W8FNGfTLzGXLNuCjZcg@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Grant Likely <grant.likely@secretlab.ca>
+Cc: Shawn Guo <shawn.guo@linaro.org>, patches@linaro.org, devicetree-discuss@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Alan Cox <alan@linux.intel.com>
 
-Engineering names are more stable than marketing names. Hence, use them
-for Device Tree compatible properties instead.
+On Tue, Jul 05, 2011 at 11:27:55AM -0600, Grant Likely wrote:
+> On Tue, Jul 5, 2011 at 9:05 AM, Shawn Guo <shawn.guo@linaro.org> wrot=
+e:
+> > The patch removes all the uses of cpu_is_mx1(). =A0Instead, it uses
+> > the .id_table of platform_driver to distinguish the uart device typ=
+e.
+> >
+> > A couple of !cpu_is_mx1() logic gets turned into IS_IMX_UART, as th=
+e
+> > codes wrapped there are really IMX specific.
+> >
+> > It also removes macro MX1_UCR3_REF25 and MX1_UCR3_REF30 which are
+> > not used anywhere.
+> >
+> > Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+> > Cc: Sascha Hauer <s.hauer@pengutronix.de>
+> > Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
+>=20
+> Acked-by: Grant Likely <grant.likely@secretlab.ca>
+>=20
+> Who's tree is this one going to get merged through?
+>=20
+I think it will be easier to go Sascha's tree.  Alan, Sascha, what
+do you think?
 
-Signed-off-by: Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
-Greg, This builds on patches Grant has (or has said he will have) in his
-devicetree/next branch, so I assume this change would be merged through
-the same route.
+--=20
+Regards,
+Shawn
 
-Grant, this patch is physically against devicetree/arm. The of-serial.txt
-change should also apply to devicetree/next as is, and you'd previously
-indicated that you'd queue the addition of the Tegra entry to of_serial.c
-in your devicetree/next branch, so this should apply on top of that once
-you have done so. Finally, this should go into devicetree/test too.
-
- .../devicetree/bindings/tty/serial/of-serial.txt   |    2 +-
- drivers/tty/serial/of_serial.c                     |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/tty/serial/of-serial.txt b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
-index 337a7e5..b8b27b0 100644
---- a/Documentation/devicetree/bindings/tty/serial/of-serial.txt
-+++ b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
-@@ -8,7 +8,7 @@ Required properties:
- 	- "ns16550"
- 	- "ns16750"
- 	- "ns16850"
--	- "nvidia,tegra250-uart"
-+	- "nvidia,tegra20-uart"
- 	- "ibm,qpace-nwp-serial"
- 	- "serial" if the port type is unknown.
- - reg : offset and length of the register set for the device.
-diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-index e65f1e8..e58cece 100644
---- a/drivers/tty/serial/of_serial.c
-+++ b/drivers/tty/serial/of_serial.c
-@@ -181,7 +181,7 @@ static struct of_device_id __devinitdata of_platform_serial_table[] = {
- 	{ .compatible = "ns16550",  .data = (void *)PORT_16550, },
- 	{ .compatible = "ns16750",  .data = (void *)PORT_16750, },
- 	{ .compatible = "ns16850",  .data = (void *)PORT_16850, },
--	{ .compatible = "nvidia,tegra250-uart", .data = (void *)PORT_TEGRA, },
-+	{ .compatible = "nvidia,tegra20-uart", .data = (void *)PORT_TEGRA, },
- #ifdef CONFIG_SERIAL_OF_PLATFORM_NWPSERIAL
- 	{ .compatible = "ibm,qpace-nwp-serial",
- 		.data = (void *)PORT_NWPSERIAL, },
--- 
-1.7.0.4
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
