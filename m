@@ -1,49 +1,37 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH] n_gsm: fix the wrong FCS handling
-Date: Thu, 07 Jul 2011 15:16:48 +0100
-Message-ID: <20110707141618.2695.14222.stgit@localhost.localdomain>
+From: Shawn Guo <shawn.guo@freescale.com>
+Subject: Re: [PATCH v2 1/5] dt: add of_alias_scan and of_alias_get_id
+Date: Fri, 8 Jul 2011 17:36:06 +0800
+Message-ID: <20110708093605.GE12722@S2100-06.ap.freescale.net>
+References: <1308938676-31121-1-git-send-email-shawn.guo@linaro.org>
+ <1308938676-31121-2-git-send-email-shawn.guo@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:51829 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756802Ab1GGPVM (ORCPT
+Received: from am1ehsobe001.messaging.microsoft.com ([213.199.154.204]:33683
+	"EHLO AM1EHSOBE001.bigfish.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751319Ab1GHJ3t (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 7 Jul 2011 11:21:12 -0400
+	Fri, 8 Jul 2011 05:29:49 -0400
+Content-Disposition: inline
+In-Reply-To: <1308938676-31121-2-git-send-email-shawn.guo@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: greg@kroah.com, stable@kernel.org, linux-serial@vger.kernel.org
+To: Shawn Guo <shawn.guo@linaro.org>
+Cc: linux-arm-kernel@lists.infradead.org, patches@linaro.org, netdev@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-From: \"Du, Alek\" <alek.du@intel.com>
+Hi Grant,
 
-FCS could be GSM0_SOF, so will break state machine...
+I saw neither your comments nor ack on this patch.  Where does it go?
 
-[This byte isn't quoted in any way so a SOF here doesn't imply an error
- occurred.]
+Regards,
+Shawn
 
-Signed-off-by: Alek Du <alek.du@intel.com>
-Signed-off-by: Alan Cox <alan@linux.intel.com>
-
-[Trivial but best backported once its in 3.1rc I think]
----
-
- drivers/tty/n_gsm.c |    4 ----
- 1 files changed, 0 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index ec37f57..8a50e4e 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1885,10 +1885,6 @@ static void gsm0_receive(struct gsm_mux *gsm, unsigned char c)
- 		break;
- 	case GSM_FCS:		/* FCS follows the packet */
- 		gsm->received_fcs = c;
--		if (c == GSM0_SOF) {
--			gsm->state = GSM_SEARCH;
--			break;
--		}
- 		gsm_queue(gsm);
- 		gsm->state = GSM_SSOF;
- 		break;
+On Sat, Jun 25, 2011 at 02:04:32AM +0800, Shawn Guo wrote:
+> The patch adds function of_alias_scan to populate a global lookup
+> table with the properties of 'aliases' node and function
+> of_alias_get_id for drivers to find alias id from the lookup table.
+> 
+> Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+> Cc: Grant Likely <grant.likely@secretlab.ca>
+> ---
 
