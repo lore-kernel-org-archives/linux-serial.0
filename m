@@ -1,37 +1,38 @@
-From: Shawn Guo <shawn.guo@freescale.com>
-Subject: Re: [PATCH v2 1/5] dt: add of_alias_scan and of_alias_get_id
-Date: Fri, 8 Jul 2011 17:36:06 +0800
-Message-ID: <20110708093605.GE12722@S2100-06.ap.freescale.net>
-References: <1308938676-31121-1-git-send-email-shawn.guo@linaro.org>
- <1308938676-31121-2-git-send-email-shawn.guo@linaro.org>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH] tty/serial: tegra: Use engineering names in DT
+ compatible property
+Date: Fri, 8 Jul 2011 14:36:04 -0700
+Message-ID: <20110708213604.GB31866@kroah.com>
+References: <1309896461-21976-1-git-send-email-swarren@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from am1ehsobe001.messaging.microsoft.com ([213.199.154.204]:33683
-	"EHLO AM1EHSOBE001.bigfish.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751319Ab1GHJ3t (ORCPT
+Received: from out5.smtp.messagingengine.com ([66.111.4.29]:38638 "EHLO
+	out5.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754290Ab1GHVlV (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 8 Jul 2011 05:29:49 -0400
+	Fri, 8 Jul 2011 17:41:21 -0400
 Content-Disposition: inline
-In-Reply-To: <1308938676-31121-2-git-send-email-shawn.guo@linaro.org>
+In-Reply-To: <1309896461-21976-1-git-send-email-swarren@nvidia.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Shawn Guo <shawn.guo@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, patches@linaro.org, netdev@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Stephen Warren <swarren@nvidia.com>
+Cc: Grant Likely <grant.likely@secretlab.ca>, Greg KH <gregkh@suse.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
 
-Hi Grant,
-
-I saw neither your comments nor ack on this patch.  Where does it go?
-
-Regards,
-Shawn
-
-On Sat, Jun 25, 2011 at 02:04:32AM +0800, Shawn Guo wrote:
-> The patch adds function of_alias_scan to populate a global lookup
-> table with the properties of 'aliases' node and function
-> of_alias_get_id for drivers to find alias id from the lookup table.
+On Tue, Jul 05, 2011 at 02:07:41PM -0600, Stephen Warren wrote:
+> Engineering names are more stable than marketing names. Hence, use them
+> for Device Tree compatible properties instead.
 > 
-> Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
-> Cc: Grant Likely <grant.likely@secretlab.ca>
+> Signed-off-by: Stephen Warren <swarren@nvidia.com>
 > ---
+> Greg, This builds on patches Grant has (or has said he will have) in his
+> devicetree/next branch, so I assume this change would be merged through
+> the same route.
 
+Sounds reasonable.  Grant, feel free to add:
+	Acked-by: Greg Kroah-Hartman <gregkh@suse.de>
+to the patch when you apply it.
+
+thanks,
+
+greg k-h
