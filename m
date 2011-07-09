@@ -1,23 +1,18 @@
-From: Greg KH <greg@kroah.com>
+From: Grant Likely <grant.likely@secretlab.ca>
 Subject: Re: [PATCH] tty/serial: tegra: Use engineering names in DT
  compatible property
-Date: Fri, 8 Jul 2011 14:36:04 -0700
-Message-ID: <20110708213604.GB31866@kroah.com>
+Date: Sun, 10 Jul 2011 06:49:27 +0900
+Message-ID: <20110709214927.GF2805@ponder.secretlab.ca>
 References: <1309896461-21976-1-git-send-email-swarren@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out5.smtp.messagingengine.com ([66.111.4.29]:38638 "EHLO
-	out5.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754290Ab1GHVlV (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 8 Jul 2011 17:41:21 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
 In-Reply-To: <1309896461-21976-1-git-send-email-swarren@nvidia.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Stephen Warren <swarren@nvidia.com>
-Cc: Grant Likely <grant.likely@secretlab.ca>, Greg KH <gregkh@suse.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
+Cc: Greg KH <gregkh@suse.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
+List-Id: linux-serial@vger.kernel.org
 
 On Tue, Jul 05, 2011 at 02:07:41PM -0600, Stephen Warren wrote:
 > Engineering names are more stable than marketing names. Hence, use them
@@ -28,11 +23,51 @@ On Tue, Jul 05, 2011 at 02:07:41PM -0600, Stephen Warren wrote:
 > Greg, This builds on patches Grant has (or has said he will have) in his
 > devicetree/next branch, so I assume this change would be merged through
 > the same route.
+> 
+> Grant, this patch is physically against devicetree/arm. The of-serial.txt
+> change should also apply to devicetree/next as is, and you'd previously
+> indicated that you'd queue the addition of the Tegra entry to of_serial.c
+> in your devicetree/next branch, so this should apply on top of that once
+> you have done so. Finally, this should go into devicetree/test too.
 
-Sounds reasonable.  Grant, feel free to add:
-	Acked-by: Greg Kroah-Hartman <gregkh@suse.de>
-to the patch when you apply it.
+Hi Stephen.  I've just modified the original patch and put it into
+devicetree/next.  Once I get back on the ground and have some internet
+access, I'll push my tree out (this email will probably get out before
+I get a chance to push out my tree).
 
-thanks,
+g.
 
-greg k-h
+> 
+>  .../devicetree/bindings/tty/serial/of-serial.txt   |    2 +-
+>  drivers/tty/serial/of_serial.c                     |    2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/tty/serial/of-serial.txt b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
+> index 337a7e5..b8b27b0 100644
+> --- a/Documentation/devicetree/bindings/tty/serial/of-serial.txt
+> +++ b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
+> @@ -8,7 +8,7 @@ Required properties:
+>  	- "ns16550"
+>  	- "ns16750"
+>  	- "ns16850"
+> -	- "nvidia,tegra250-uart"
+> +	- "nvidia,tegra20-uart"
+>  	- "ibm,qpace-nwp-serial"
+>  	- "serial" if the port type is unknown.
+>  - reg : offset and length of the register set for the device.
+> diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+> index e65f1e8..e58cece 100644
+> --- a/drivers/tty/serial/of_serial.c
+> +++ b/drivers/tty/serial/of_serial.c
+> @@ -181,7 +181,7 @@ static struct of_device_id __devinitdata of_platform_serial_table[] = {
+>  	{ .compatible = "ns16550",  .data = (void *)PORT_16550, },
+>  	{ .compatible = "ns16750",  .data = (void *)PORT_16750, },
+>  	{ .compatible = "ns16850",  .data = (void *)PORT_16850, },
+> -	{ .compatible = "nvidia,tegra250-uart", .data = (void *)PORT_TEGRA, },
+> +	{ .compatible = "nvidia,tegra20-uart", .data = (void *)PORT_TEGRA, },
+>  #ifdef CONFIG_SERIAL_OF_PLATFORM_NWPSERIAL
+>  	{ .compatible = "ibm,qpace-nwp-serial",
+>  		.data = (void *)PORT_NWPSERIAL, },
+> -- 
+> 1.7.0.4
+> 
