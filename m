@@ -1,73 +1,31 @@
-From: Grant Likely <grant.likely@secretlab.ca>
-Subject: Re: [PATCH] tty/serial: tegra: Use engineering names in DT
- compatible property
-Date: Sun, 10 Jul 2011 06:49:27 +0900
-Message-ID: <20110709214927.GF2805@ponder.secretlab.ca>
-References: <1309896461-21976-1-git-send-email-swarren@nvidia.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Edwin van Vliet <edwin@cheatah.nl>
+Subject: [PATCH] drivers/tty/serial/crisv10: fix double assignment
+Date: Mon, 11 Jul 2011 01:37:31 +0200
+Message-ID: <1310341051-27057-1-git-send-email-edwin@cheatah.nl>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1309896461-21976-1-git-send-email-swarren@nvidia.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stephen Warren <swarren@nvidia.com>
-Cc: Greg KH <gregkh@suse.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
+To: starvik@axis.com, jesper.nilsson@axis.com
+Cc: alan@linux.intel.com, linux-cris-kernel@axis.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Edwin van Vliet <edwin@cheatah.nl>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jul 05, 2011 at 02:07:41PM -0600, Stephen Warren wrote:
-> Engineering names are more stable than marketing names. Hence, use them
-> for Device Tree compatible properties instead.
-> 
-> Signed-off-by: Stephen Warren <swarren@nvidia.com>
-> ---
-> Greg, This builds on patches Grant has (or has said he will have) in his
-> devicetree/next branch, so I assume this change would be merged through
-> the same route.
-> 
-> Grant, this patch is physically against devicetree/arm. The of-serial.txt
-> change should also apply to devicetree/next as is, and you'd previously
-> indicated that you'd queue the addition of the Tegra entry to of_serial.c
-> in your devicetree/next branch, so this should apply on top of that once
-> you have done so. Finally, this should go into devicetree/test too.
+Struct member dma_in_enabled was assigned twice in a row.
 
-Hi Stephen.  I've just modified the original patch and put it into
-devicetree/next.  Once I get back on the ground and have some internet
-access, I'll push my tree out (this email will probably get out before
-I get a chance to push out my tree).
+Signed-off-by: Edwin van Vliet <edwin@cheatah.nl>
+---
+ drivers/tty/serial/crisv10.c |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
 
-g.
-
-> 
->  .../devicetree/bindings/tty/serial/of-serial.txt   |    2 +-
->  drivers/tty/serial/of_serial.c                     |    2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/tty/serial/of-serial.txt b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
-> index 337a7e5..b8b27b0 100644
-> --- a/Documentation/devicetree/bindings/tty/serial/of-serial.txt
-> +++ b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
-> @@ -8,7 +8,7 @@ Required properties:
->  	- "ns16550"
->  	- "ns16750"
->  	- "ns16850"
-> -	- "nvidia,tegra250-uart"
-> +	- "nvidia,tegra20-uart"
->  	- "ibm,qpace-nwp-serial"
->  	- "serial" if the port type is unknown.
->  - reg : offset and length of the register set for the device.
-> diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-> index e65f1e8..e58cece 100644
-> --- a/drivers/tty/serial/of_serial.c
-> +++ b/drivers/tty/serial/of_serial.c
-> @@ -181,7 +181,7 @@ static struct of_device_id __devinitdata of_platform_serial_table[] = {
->  	{ .compatible = "ns16550",  .data = (void *)PORT_16550, },
->  	{ .compatible = "ns16750",  .data = (void *)PORT_16750, },
->  	{ .compatible = "ns16850",  .data = (void *)PORT_16850, },
-> -	{ .compatible = "nvidia,tegra250-uart", .data = (void *)PORT_TEGRA, },
-> +	{ .compatible = "nvidia,tegra20-uart", .data = (void *)PORT_TEGRA, },
->  #ifdef CONFIG_SERIAL_OF_PLATFORM_NWPSERIAL
->  	{ .compatible = "ibm,qpace-nwp-serial",
->  		.data = (void *)PORT_NWPSERIAL, },
-> -- 
-> 1.7.0.4
-> 
+diff --git a/drivers/tty/serial/crisv10.c b/drivers/tty/serial/crisv10.c
+index 225123b..0c55181 100644
+--- a/drivers/tty/serial/crisv10.c
++++ b/drivers/tty/serial/crisv10.c
+@@ -330,7 +330,6 @@ static struct e100_serial rs_table[] = {
+ 	  .dma_in_irq_description = "serial 1 dma rec",
+ #else
+ 	  .dma_in_enabled = 0,
+-	  .dma_in_enabled = 0,
+ 	  .dma_in_nbr = UINT_MAX,
+ 	  .dma_in_irq_nbr = 0,
+ 	  .dma_in_irq_flags = 0,
+-- 
+1.7.5.4
