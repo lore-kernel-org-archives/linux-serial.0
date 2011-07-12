@@ -1,115 +1,45 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 1/3] TTY: serial, remove BTM from wait_until_sent
-Date: Tue, 12 Jul 2011 22:43:18 +0200
-Message-ID: <1310503400-28447-1-git-send-email-jslaby@suse.cz>
+Subject: [PATCH 2/3] TTY: msm_serial, remove unneeded console set
+Date: Tue, 12 Jul 2011 22:43:19 +0200
+Message-ID: <1310503400-28447-2-git-send-email-jslaby@suse.cz>
+References: <1310503400-28447-1-git-send-email-jslaby@suse.cz>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1310503400-28447-1-git-send-email-jslaby@suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@suse.de
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com, Alan Cox <alan@linux.intel.com>, Arnd Bergmann <arnd@arndb.de>, Andreas Bombe <aeb@debian.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-During the BKL removal process, the BKL was switched to tty_lock
-(BTM). Now we should start pruning the BTM further. Let's start with
-wait_until_sent of the serial layer. This will allow us to switch to
-the tty port helpers and thus clean it up much.
+It doesn't make sense to set console to uart_port in console->setup.
+At that time the console is set by uart_add_one_port already.
 
-In wait_until_sent there are some uport members accessed, but neither
-of them is protected by BTM at the location they are set ('=>' means
-function call):
-* uport->fifosize (set in tty_ioctl => uart_ioctl => uart_set_info)
-* uport->type (set in add_one_port prior to tty_register_device)
-* uport->timeout (set usually in tty_ioctl => tty_mode_ioctl =>
-  tty_set_termios => uart_set_termios => uart_change_speed =>
-  uport->ops->set_termios => uart_update_timeout)
-* call to uport->ops->tx_empty()
-
-If the tx_empty hook needs some lock to protect accesses to registers,
-it should take &uport->lock spinlock like 8250 does. Otherwise there
-still might be races e.g. with ISRs.
-
-This should also fix the issue Andreas is seeing (BTM in comparison to
-BKL doesn't have any hidden functionality like unlocking during
-sleeping).
+The call chain looked like:
+uart_add_one_port()
+  uport->cons = drv->cons;   <= once
+  uart_configure_port()
+    register_console()
+     console->setup()
+       port->cons = co;      <= second time
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-References: https://lkml.org/lkml/2011/5/25/562
 Cc: Greg Kroah-Hartman <gregkh@suse.de>
 Cc: Alan Cox <alan@linux.intel.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Andreas Bombe <aeb@debian.org>
 ---
- drivers/tty/serial/serial_core.c |   30 +++++++-----------------------
- 1 files changed, 7 insertions(+), 23 deletions(-)
+ drivers/tty/serial/msm_serial.c |    2 --
+ 1 files changed, 0 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index db7912c..2cbf1bd 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -57,7 +57,7 @@ static struct lock_class_key port_lock_key;
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index e6ba838..29cbfd8 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -804,8 +804,6 @@ static int __init msm_console_setup(struct console *co, char *options)
+ 	if (unlikely(!port->membase))
+ 		return -ENXIO;
  
- static void uart_change_speed(struct tty_struct *tty, struct uart_state *state,
- 					struct ktermios *old_termios);
--static void __uart_wait_until_sent(struct uart_port *port, int timeout);
-+static void uart_wait_until_sent(struct tty_struct *tty, int timeout);
- static void uart_change_pm(struct uart_state *state, int pm_state);
- 
- /*
-@@ -1304,16 +1304,8 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
- 	tty->closing = 1;
- 	spin_unlock_irqrestore(&port->lock, flags);
- 
--	if (port->closing_wait != ASYNC_CLOSING_WAIT_NONE) {
--		/*
--		 * hack: open-coded tty_wait_until_sent to avoid
--		 * recursive tty_lock
--		 */
--		long timeout = msecs_to_jiffies(port->closing_wait);
--		if (wait_event_interruptible_timeout(tty->write_wait,
--				!tty_chars_in_buffer(tty), timeout) >= 0)
--			__uart_wait_until_sent(uport, timeout);
--	}
-+	if (port->closing_wait != ASYNC_CLOSING_WAIT_NONE)
-+		tty_wait_until_sent(tty, msecs_to_jiffies(port->closing_wait));
- 
- 	/*
- 	 * At this point, we stop accepting input.  To do this, we
-@@ -1329,7 +1321,7 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
- 		 * has completely drained; this is especially
- 		 * important if there is a transmit FIFO!
- 		 */
--		__uart_wait_until_sent(uport, uport->timeout);
-+		uart_wait_until_sent(tty, uport->timeout);
- 	}
- 
- 	uart_shutdown(tty, state);
-@@ -1363,8 +1355,10 @@ done:
- 	mutex_unlock(&port->mutex);
- }
- 
--static void __uart_wait_until_sent(struct uart_port *port, int timeout)
-+static void uart_wait_until_sent(struct tty_struct *tty, int timeout)
- {
-+	struct uart_state *state = tty->driver_data;
-+	struct uart_port *port = state->uart_port;
- 	unsigned long char_time, expire;
- 
- 	if (port->type == PORT_UNKNOWN || port->fifosize == 0)
-@@ -1416,16 +1410,6 @@ static void __uart_wait_until_sent(struct uart_port *port, int timeout)
- 	}
- }
- 
--static void uart_wait_until_sent(struct tty_struct *tty, int timeout)
--{
--	struct uart_state *state = tty->driver_data;
--	struct uart_port *port = state->uart_port;
+-	port->cons = co;
 -
--	tty_lock();
--	__uart_wait_until_sent(port, timeout);
--	tty_unlock();
--}
--
- /*
-  * This is called with the BKL held in
-  *  linux/drivers/char/tty_io.c:do_tty_hangup()
+ 	msm_init_clock(port);
+ 
+ 	if (options)
 -- 
 1.7.6
