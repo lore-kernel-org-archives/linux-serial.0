@@ -1,73 +1,75 @@
-From: Uwe Bonnes <bon@elektron.ikp.physik.tu-darmstadt.de>
-Subject: drivers/usb/serial/ftdi_sio.c: For the FT232H FTDI_SIO_SET_BAUDRATE_REQUEST, index needs to be shifted too
-Date: Wed, 13 Jul 2011 11:14:05 +0200
-Message-ID: <19997.25053.862456.607559@elektron.ikp.physik.tu-darmstadt.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 1/2] TTY: ami_serial, remove BTM from wait_until_sent
+Date: Wed, 13 Jul 2011 12:31:25 +0200
+Message-ID: <1310553086-27427-1-git-send-email-jslaby@suse.cz>
+References: <201107122325.35013.arnd@arndb.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lnx503.hrz.tu-darmstadt.de ([130.83.156.232]:53541 "EHLO
-	lnx503.hrz.tu-darmstadt.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S965124Ab1GMJOI (ORCPT
+Received: from mail.pripojeni.net ([178.22.112.14]:37556 "EHLO
+	smtp.pripojeni.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S965216Ab1GMKbe (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 13 Jul 2011 05:14:08 -0400
+	Wed, 13 Jul 2011 06:31:34 -0400
+In-Reply-To: <201107122325.35013.arnd@arndb.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@suse.de
-Cc: linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
+Cc: jirislaby@gmail.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, Alan Cox <alan@linux.intel.com>, Andreas Bombe <aeb@debian.org>
 
-Hello,
+The same as in "TTY: serial, remove BTM from wait_until_sent" we don't
+need to take BTM in wait_until_sent of ami_serial. Exactly the same
+as serial, ami_serial accesses some "info" members (xmit_fifo_size,
+timeout), but their assignment on other places in the code is not
+protected by BTM anyway.
 
-the recent addition of the FT232H showed that baudrate was set wrong. See
-gmane.linux.usb.general: "[ftdi_sio] FT232H support".  With the old code,
-the MSB of the 4 encoded fractional divider bits and more important the
-clock predivider bits got lost. Adding the FT232H to the code patch were
-these bits are shifted solves the problem. I verified baud rates with a
-scope now.
+So the BTM protects nothing here. This removal helps us to get rid of
+tty_locked() and __big_tty_mutex_owner in the following patch. This
+was suggested by Arnd.
 
-I suspect, that the BM device probably needs these bits shifted too. But
-there is no predivider bit, so this is not obvious, and a missing MSB of the
-encoded fractional divider only shifts the resulting baudrate minimal. 
-The AM has only 3 bits of encoded fractional divider, so it is not impacted.
-
-I have no BM device to test, so I only added a comment and left the code for
-the BM untouched.
-
-This time with checkpatch happy.
-
-Bye
-
--- 
-Uwe Bonnes                bon@elektron.ikp.physik.tu-darmstadt.de
-
-Institut fuer Kernphysik  Schlossgartenstrasse 9  64289 Darmstadt
---------- Tel. 06151 162516 -------- Fax. 06151 164321 ----------
->From 892f1ac2b0b47ffc7adf70ecbe5d7d2f31c79232 Mon Sep 17 00:00:00 2001
-From: Uwe Bonnes <bon@elektron.ikp.physik.tu-darmstadt.de>
-Date: Tue, 12 Jul 2011 18:47:08 +0200
-Subject: ftdi_sio: For the FT232H FTDI_SIO_SET_BAUDRATE_REQUEST, index needs to be shifted too
-
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Alan Cox <alan@linux.intel.com>
+Cc: Andreas Bombe <aeb@debian.org>
 ---
- drivers/usb/serial/ftdi_sio.c |    5 ++++-
- 1 files changed, 4 insertions(+), 1 deletions(-)
+ drivers/tty/amiserial.c |   10 +---------
+ 1 files changed, 1 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/usb/serial/ftdi_sio.c b/drivers/usb/serial/ftdi_sio.c
-index 2e06b90..0692a36 100644
---- a/drivers/usb/serial/ftdi_sio.c
-+++ b/drivers/usb/serial/ftdi_sio.c
-@@ -1205,7 +1205,10 @@ static int change_speed(struct tty_struct *tty, struct usb_serial_port *port)
- 	urb_index_value = get_ftdi_divisor(tty, port);
- 	urb_value = (__u16)urb_index_value;
- 	urb_index = (__u16)(urb_index_value >> 16);
--	if (priv->interface) {	/* FT2232C */
-+	if ((priv->chip_type == FT2232C) || (priv->chip_type == FT2232H) ||
-+		(priv->chip_type == FT4232H) || (priv->chip_type == FT232H)) {
-+		/* Probably the BM type needs the MSB of the encoded fractional
-+		 * divider also moved like for the chips above. Any infos? */
- 		urb_index = (__u16)((urb_index << 8) | priv->interface);
- 	}
+diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
+index 2205795..6d43f55 100644
+--- a/drivers/tty/amiserial.c
++++ b/drivers/tty/amiserial.c
+@@ -1529,7 +1529,6 @@ static void rs_wait_until_sent(struct tty_struct *tty, int timeout)
+ {
+ 	struct async_struct * info = tty->driver_data;
+ 	unsigned long orig_jiffies, char_time;
+-	int tty_was_locked = tty_locked();
+ 	int lsr;
  
+ 	if (serial_paranoia_check(info, tty->name, "rs_wait_until_sent"))
+@@ -1541,12 +1540,6 @@ static void rs_wait_until_sent(struct tty_struct *tty, int timeout)
+ 	orig_jiffies = jiffies;
+ 
+ 	/*
+-	 * tty_wait_until_sent is called from lots of places,
+-	 * with or without the BTM.
+-	 */
+-	if (!tty_was_locked)
+-		tty_lock();
+-	/*
+ 	 * Set the check interval to be 1/5 of the estimated time to
+ 	 * send a single character, and make it at least 1.  The check
+ 	 * interval should also be less than the timeout.
+@@ -1586,8 +1579,7 @@ static void rs_wait_until_sent(struct tty_struct *tty, int timeout)
+ 			break;
+ 	}
+ 	__set_current_state(TASK_RUNNING);
+-	if (!tty_was_locked)
+-		tty_unlock();
++
+ #ifdef SERIAL_DEBUG_RS_WAIT_UNTIL_SENT
+ 	printk("lsr = %d (jiff=%lu)...done\n", lsr, jiffies);
+ #endif
 -- 
-1.7.3.4
-Signed-off-by: Uwe Bonnes <bon@elektron.ikp.physik.tu-darmstadt.de>
+1.7.6
+
 
