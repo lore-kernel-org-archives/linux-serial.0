@@ -1,50 +1,75 @@
-From: Jiri Slaby <jirislaby@gmail.com>
-Subject: Re: [PATCH 2/2] TTY: remove tty_locked
-Date: Thu, 14 Jul 2011 14:18:30 +0200
-Message-ID: <4E1EDE96.8070700@gmail.com>
-References: <201107122325.35013.arnd@arndb.de> <1310553086-27427-1-git-send-email-jslaby@suse.cz> <1310553086-27427-2-git-send-email-jslaby@suse.cz>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH v2 4/6] TTY: ami_serial, remove BTM from wait_until_sent
+Date: Thu, 14 Jul 2011 14:35:13 +0200
+Message-ID: <1310646915-3032-4-git-send-email-jslaby@suse.cz>
+References: <1310646915-3032-1-git-send-email-jslaby@suse.cz>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-fx0-f52.google.com ([209.85.161.52]:52975 "EHLO
-	mail-fx0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754111Ab1GNMSe (ORCPT
+Received: from mail.pripojeni.net ([178.22.112.14]:51359 "EHLO
+	smtp.pripojeni.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754428Ab1GNMfU (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 14 Jul 2011 08:18:34 -0400
-In-Reply-To: <1310553086-27427-2-git-send-email-jslaby@suse.cz>
+	Thu, 14 Jul 2011 08:35:20 -0400
+In-Reply-To: <1310646915-3032-1-git-send-email-jslaby@suse.cz>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: gregkh@suse.de, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Alan Cox <alan@linux.intel.com>
+To: gregkh@suse.de
+Cc: jirislaby@gmail.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>, Andreas Bombe <aeb@debian.org>
 
-On 07/13/2011 12:31 PM, Jiri Slaby wrote:
-> --- a/drivers/tty/tty_mutex.c
-> +++ b/drivers/tty/tty_mutex.c
-=2E..
-> @@ -25,10 +23,7 @@ void __lockfunc tty_lock(void)
->  {
->  	struct task_struct *task =3D current;
+The same as in "TTY: serial, remove BTM from wait_until_sent" we don't
+need to take BTM in wait_until_sent of ami_serial. Exactly the same
+as serial, ami_serial accesses some "info" members (xmit_fifo_size,
+timeout), but their assignment on other places in the code is not
+protected by BTM anyway.
 
-Hmm I overlooked it generates a warning:
-drivers/tty/tty_mutex.c: In function =91tty_lock=92:
-drivers/tty/tty_mutex.c:24:22: warning: unused variable =91task=92
-drivers/tty/tty_mutex.c: In function =91tty_unlock=92:
-drivers/tty/tty_mutex.c:32:22: warning: unused variable =91task=92
+So the BTM protects nothing here. This removal helps us to get rid of
+tty_locked() and __big_tty_mutex_owner in the following patch. This
+was suggested by Arnd.
 
-> -	WARN_ON(__big_tty_mutex_owner =3D=3D task);
-> -
->  	mutex_lock(&big_tty_mutex);
-> -	__big_tty_mutex_owner =3D task;
->  }
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Alan Cox <alan@linux.intel.com>
+Cc: Andreas Bombe <aeb@debian.org>
+---
+ drivers/tty/amiserial.c |   10 +---------
+ 1 files changed, 1 insertions(+), 9 deletions(-)
 
-I will send whole series as v2 since it is confusing enough.
+diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
+index 2205795..6d43f55 100644
+--- a/drivers/tty/amiserial.c
++++ b/drivers/tty/amiserial.c
+@@ -1529,7 +1529,6 @@ static void rs_wait_until_sent(struct tty_struct *tty, int timeout)
+ {
+ 	struct async_struct * info = tty->driver_data;
+ 	unsigned long orig_jiffies, char_time;
+-	int tty_was_locked = tty_locked();
+ 	int lsr;
+ 
+ 	if (serial_paranoia_check(info, tty->name, "rs_wait_until_sent"))
+@@ -1541,12 +1540,6 @@ static void rs_wait_until_sent(struct tty_struct *tty, int timeout)
+ 	orig_jiffies = jiffies;
+ 
+ 	/*
+-	 * tty_wait_until_sent is called from lots of places,
+-	 * with or without the BTM.
+-	 */
+-	if (!tty_was_locked)
+-		tty_lock();
+-	/*
+ 	 * Set the check interval to be 1/5 of the estimated time to
+ 	 * send a single character, and make it at least 1.  The check
+ 	 * interval should also be less than the timeout.
+@@ -1586,8 +1579,7 @@ static void rs_wait_until_sent(struct tty_struct *tty, int timeout)
+ 			break;
+ 	}
+ 	__set_current_state(TASK_RUNNING);
+-	if (!tty_was_locked)
+-		tty_unlock();
++
+ #ifdef SERIAL_DEBUG_RS_WAIT_UNTIL_SENT
+ 	printk("lsr = %d (jiff=%lu)...done\n", lsr, jiffies);
+ #endif
+-- 
+1.7.6
 
-thanks,
---=20
-js
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
