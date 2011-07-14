@@ -1,75 +1,97 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH v2 4/6] TTY: ami_serial, remove BTM from wait_until_sent
-Date: Thu, 14 Jul 2011 14:35:13 +0200
-Message-ID: <1310646915-3032-4-git-send-email-jslaby@suse.cz>
+Subject: [PATCH v2 3/6] TTY: serial, remove tasklet for tty_wakeup
+Date: Thu, 14 Jul 2011 14:35:12 +0200
+Message-ID: <1310646915-3032-3-git-send-email-jslaby@suse.cz>
 References: <1310646915-3032-1-git-send-email-jslaby@suse.cz>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.pripojeni.net ([178.22.112.14]:51359 "EHLO
-	smtp.pripojeni.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754428Ab1GNMfU (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 14 Jul 2011 08:35:20 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1310646915-3032-1-git-send-email-jslaby@suse.cz>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@suse.de
-Cc: jirislaby@gmail.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>, Andreas Bombe <aeb@debian.org>
+Cc: jirislaby@gmail.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>
+List-Id: linux-serial@vger.kernel.org
 
-The same as in "TTY: serial, remove BTM from wait_until_sent" we don't
-need to take BTM in wait_until_sent of ami_serial. Exactly the same
-as serial, ami_serial accesses some "info" members (xmit_fifo_size,
-timeout), but their assignment on other places in the code is not
-protected by BTM anyway.
-
-So the BTM protects nothing here. This removal helps us to get rid of
-tty_locked() and __big_tty_mutex_owner in the following patch. This
-was suggested by Arnd.
+tty_wakeup can be called from any context. So there is no need to have
+an extra tasklet for calling that. Hence save some space and remove
+the tasklet completely.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Acked-by: Arnd Bergmann <arnd@arndb.de>
 Cc: Greg Kroah-Hartman <gregkh@suse.de>
 Cc: Alan Cox <alan@linux.intel.com>
-Cc: Andreas Bombe <aeb@debian.org>
 ---
- drivers/tty/amiserial.c |   10 +---------
- 1 files changed, 1 insertions(+), 9 deletions(-)
+ drivers/tty/serial/serial_core.c |   20 +-------------------
+ include/linux/serial_core.h      |    1 -
+ 2 files changed, 1 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
-index 2205795..6d43f55 100644
---- a/drivers/tty/amiserial.c
-+++ b/drivers/tty/amiserial.c
-@@ -1529,7 +1529,6 @@ static void rs_wait_until_sent(struct tty_struct *tty, int timeout)
- {
- 	struct async_struct * info = tty->driver_data;
- 	unsigned long orig_jiffies, char_time;
--	int tty_was_locked = tty_locked();
- 	int lsr;
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 2cbf1bd..4786232 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -72,7 +72,7 @@ void uart_write_wakeup(struct uart_port *port)
+ 	 * closed.  No cookie for you.
+ 	 */
+ 	BUG_ON(!state);
+-	tasklet_schedule(&state->tlet);
++	tty_wakeup(state->port.tty);
+ }
  
- 	if (serial_paranoia_check(info, tty->name, "rs_wait_until_sent"))
-@@ -1541,12 +1540,6 @@ static void rs_wait_until_sent(struct tty_struct *tty, int timeout)
- 	orig_jiffies = jiffies;
+ static void uart_stop(struct tty_struct *tty)
+@@ -107,12 +107,6 @@ static void uart_start(struct tty_struct *tty)
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ }
+ 
+-static void uart_tasklet_action(unsigned long data)
+-{
+-	struct uart_state *state = (struct uart_state *)data;
+-	tty_wakeup(state->port.tty);
+-}
+-
+ static inline void
+ uart_update_mctrl(struct uart_port *port, unsigned int set, unsigned int clear)
+ {
+@@ -250,11 +244,6 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
+ 	}
  
  	/*
--	 * tty_wait_until_sent is called from lots of places,
--	 * with or without the BTM.
+-	 * kill off our tasklet
 -	 */
--	if (!tty_was_locked)
--		tty_lock();
+-	tasklet_kill(&state->tlet);
+-
 -	/*
- 	 * Set the check interval to be 1/5 of the estimated time to
- 	 * send a single character, and make it at least 1.  The check
- 	 * interval should also be less than the timeout.
-@@ -1586,8 +1579,7 @@ static void rs_wait_until_sent(struct tty_struct *tty, int timeout)
- 			break;
+ 	 * Free the transmit buffer page.
+ 	 */
+ 	if (state->xmit.buf) {
+@@ -2277,8 +2266,6 @@ int uart_register_driver(struct uart_driver *drv)
+ 		port->ops = &uart_port_ops;
+ 		port->close_delay     = 500;	/* .5 seconds */
+ 		port->closing_wait    = 30000;	/* 30 seconds */
+-		tasklet_init(&state->tlet, uart_tasklet_action,
+-			     (unsigned long)state);
  	}
- 	__set_current_state(TASK_RUNNING);
--	if (!tty_was_locked)
--		tty_unlock();
-+
- #ifdef SERIAL_DEBUG_RS_WAIT_UNTIL_SENT
- 	printk("lsr = %d (jiff=%lu)...done\n", lsr, jiffies);
- #endif
+ 
+ 	retval = tty_register_driver(normal);
+@@ -2439,11 +2426,6 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
+ 	 */
+ 	uport->type = PORT_UNKNOWN;
+ 
+-	/*
+-	 * Kill the tasklet, and free resources.
+-	 */
+-	tasklet_kill(&state->tlet);
+-
+ 	state->uart_port = NULL;
+ 	mutex_unlock(&port_mutex);
+ 
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index a5c3114..76e1103 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -384,7 +384,6 @@ struct uart_state {
+ 	int			pm_state;
+ 	struct circ_buf		xmit;
+ 
+-	struct tasklet_struct	tlet;
+ 	struct uart_port	*uart_port;
+ };
+ 
 -- 
 1.7.6
-
-
