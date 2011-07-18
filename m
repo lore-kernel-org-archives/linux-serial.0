@@ -1,43 +1,45 @@
-From: Nick Pelly <npelly@google.com>
-Subject: [PATCH] omap-serial: Allow IXON and IXOFF to be disabled.
-Date: Fri, 15 Jul 2011 13:53:08 -0700
-Message-ID: <1310763188-21248-1-git-send-email-npelly@google.com>
+From: John Crispin <blogic@openwrt.org>
+Subject: [PATCH 3/3] MIPS: lantiq: set timeout in uart_port
+Date: Mon, 18 Jul 2011 22:04:13 +0200
+Message-ID: <1311019453-21277-3-git-send-email-blogic@openwrt.org>
+References: <1311019453-21277-1-git-send-email-blogic@openwrt.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp-out.google.com ([216.239.44.51]:15327 "EHLO
-	smtp-out.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751041Ab1GOUxW (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 15 Jul 2011 16:53:22 -0400
+Received: from nbd.name ([46.4.11.11]:49945 "EHLO nbd.name"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750946Ab1GRUDG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 18 Jul 2011 16:03:06 -0400
+In-Reply-To: <1311019453-21277-1-git-send-email-blogic@openwrt.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, Nick Pelly <npelly@google.com>
+To: Ralf Baechle <ralf@linux-mips.org>
+Cc: John Crispin <blogic@openwrt.org>, Thomas Langer <thomas.langer@lantiq.com>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org
 
-Fixes logic bug that software flow control cannot be disabled, because
-serial_omap_configure_xonxoff() is not called if both IXON and IXOFF bits
-are cleared.
+Without this patch apps using readline hang.
 
-Signed-off-by: Nick Pelly <npelly@google.com>
-Acked-by: Govindraj.R <govindraj.raja@ti.com>
-Tested-by: Govindraj.R <govindraj.raja@ti.com>
+Signed-off-by: Thomas Langer <thomas.langer@lantiq.com>
+Signed-off-by: John Crispin <blogic@openwrt.org>
+Cc: linux-mips@linux-mips.org
+Cc: linux-serial@vger.kernel.org
 ---
- drivers/tty/serial/omap-serial.c |    3 +--
- 1 files changed, 1 insertions(+), 2 deletions(-)
+ drivers/tty/serial/lantiq.c |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 0275c28..4ca2c5f 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -806,8 +806,7 @@ serial_omap_set_termios(struct uart_port *port, struct ktermios *termios,
+diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
+index 58cf279..bc95f52 100644
+--- a/drivers/tty/serial/lantiq.c
++++ b/drivers/tty/serial/lantiq.c
+@@ -478,8 +478,10 @@ lqasc_set_termios(struct uart_port *port,
+ 	spin_unlock_irqrestore(&ltq_asc_lock, flags);
  
- 	serial_omap_set_mctrl(&up->port, up->port.mctrl);
- 	/* Software Flow Control Configuration */
--	if (termios->c_iflag & (IXON | IXOFF))
--		serial_omap_configure_xonxoff(up, termios);
-+	serial_omap_configure_xonxoff(up, termios);
+ 	/* Don't rewrite B0 */
+-        if (tty_termios_baud_rate(new))
++	if (tty_termios_baud_rate(new))
+ 		tty_termios_encode_baud_rate(new, baud, baud);
++
++	uart_update_timeout(port, cflag, baud);
+ }
  
- 	spin_unlock_irqrestore(&up->port.lock, flags);
- 	dev_dbg(up->port.dev, "serial_omap_set_termios+%d\n", up->pdev->id);
+ static const char*
 -- 
-1.7.5.2
+1.7.2.3
 
