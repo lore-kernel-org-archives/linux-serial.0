@@ -1,71 +1,41 @@
-From: "Zhang, Sonic" <Sonic.Zhang@analog.com>
-Subject: RE: [PATCH 1/2] serial:blackfin: Correct coding style in bfin
- serial driver.
-Date: Tue, 19 Jul 2011 22:44:36 -0400
-Message-ID: <DB904C5425BA6F4E8424B3B51A1414D16C9CB6EE64@NWD2CMBX1.ad.analog.com>
-References: <1311070165-29402-1-git-send-email-sonic.adi@gmail.com>
- <1311089315.2286.157.camel@Joe-Laptop>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+From: Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>
+Subject: [PATCH] pch_uart: Set PCIe bus number using probe parameter
+Date: Wed, 20 Jul 2011 20:17:49 +0900
+Message-ID: <1311160669-3927-1-git-send-email-tomoya-linux@dsn.okisemi.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from tx2ehsobe004.messaging.microsoft.com ([65.55.88.14]:40039 "EHLO
-	TX2EHSOBE009.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1752433Ab1GTCpa convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Jul 2011 22:45:30 -0400
-In-Reply-To: <1311089315.2286.157.camel@Joe-Laptop>
-Content-Language: en-US
+Received: from sm-d311v.smileserver.ne.jp ([203.211.202.206]:37815 "EHLO
+	sm-d311v.smileserver.ne.jp" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751746Ab1GTLRc (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 20 Jul 2011 07:17:32 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Joe Perches <joe@perches.com>, Sonic Zhang <sonic.adi@gmail.com>
-Cc: Alan Cox <alan@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Alan Cox <alan@linux.intel.com>, gregkh@suse.de, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: qi.wang@intel.com, yong.y.wang@intel.com, joel.clark@intel.com, kok.howg.ewe@intel.com, toshiharu-linux@dsn.okisemi.com, Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>
 
+Currently, PCIe bus number is set as fixed value "2".
+However, PCIe bus number is not always "2".
+This patch sets bus number using probe() parameter.
 
+Signed-off-by: Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>
+---
+ drivers/tty/serial/pch_uart.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
->-----Original Message-----
->From: Joe Perches [mailto:joe@perches.com]
->Sent: Tuesday, July 19, 2011 11:29 PM
->To: Sonic Zhang
->Cc: Alan Cox; linux-serial@vger.kernel.org;
->linux-kernel@vger.kernel.org; Zhang, Sonic
->Subject: Re: [PATCH 1/2] serial:blackfin: Correct coding style
->in bfin serial driver.
->
->On Tue, 2011-07-19 at 18:09 +0800, Sonic Zhang wrote:
->> From: Sonic Zhang <sonic.zhang@analog.com>
->[]
->> @@ -1091,10 +1090,18 @@
->bfin_serial_console_get_options(struct bfin_serial_port *uart,
->int *baud,
->>                              *parity = 'o';
->>              }
->>              switch (lcr & 0x03) {
->> -                    case 0: *bits = 5; break;
->> -                    case 1: *bits = 6; break;
->> -                    case 2: *bits = 7; break;
->> -                    case 3: *bits = 8; break;
->> +            case 0:
->> +                    *bits = 5;
->> +                    break;
->> +            case 1:
->> +                    *bits = 6;
->> +                    break;
->> +            case 2:
->> +                    *bits = 7;
->> +                    break;
->> +            case 3:
->> +                    *bits = 8;
->> +                    break;
->>              }
->
->Maybe just:
->       *bits = 5 + (lcr & 3);
->
-
-Could be a new patch.
-
-Sonic
->
->
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index 58dc030..36441c7 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -611,7 +611,8 @@ static void pch_request_dma(struct uart_port *port)
+ 	dma_cap_zero(mask);
+ 	dma_cap_set(DMA_SLAVE, mask);
+ 
+-	dma_dev = pci_get_bus_and_slot(2, PCI_DEVFN(0xa, 0)); /* Get DMA's dev
++	dma_dev = pci_get_bus_and_slot(priv->pdev->bus->number,
++				       PCI_DEVFN(0xa, 0)); /* Get DMA's dev
+ 								information */
+ 	/* Set Tx DMA */
+ 	param = &priv->param_tx;
+-- 
+1.7.4.4
 
