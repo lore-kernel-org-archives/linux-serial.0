@@ -1,92 +1,72 @@
-From: Sergei Shtylyov <sshtylyov@mvista.com>
-Subject: Re: [Patch/resend]drivers/usb/serial/ftdi_sio.c: For the FT232H FTDI_SIO_SET_BAUDRATE_REQUEST,
- index needs to be shifted too
-Date: Fri, 22 Jul 2011 16:20:57 +0400
-Message-ID: <4E296B29.6050806@ru.mvista.com>
-References: <20009.14251.49084.453544@elektron.ikp.physik.tu-darmstadt.de>
+From: Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>
+Subject: Re: [PATCH v3] pch_uart: Add MSI support
+Date: Fri, 22 Jul 2011 21:39:01 +0900
+Message-ID: <4E296F65.1080904@dsn.okisemi.com>
+References: <20110701223209.GA9581@kroah.com> <1309762711-8571-1-git-send-email-alexander.stein@systec-electronic.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-2022-JP
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ww0-f44.google.com ([74.125.82.44]:62073 "EHLO
-	mail-ww0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753779Ab1GVMVW (ORCPT
+Received: from sm-d311v.smileserver.ne.jp ([203.211.202.206]:25275 "EHLO
+	sm-d311v.smileserver.ne.jp" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753794Ab1GVMjH (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 22 Jul 2011 08:21:22 -0400
-In-Reply-To: <20009.14251.49084.453544@elektron.ikp.physik.tu-darmstadt.de>
+	Fri, 22 Jul 2011 08:39:07 -0400
+In-Reply-To: <1309762711-8571-1-git-send-email-alexander.stein@systec-electronic.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Uwe Bonnes <bon@elektron.ikp.physik.tu-darmstadt.de>
-Cc: gregkh@suse.de, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
+To: Alexander Stein <alexander.stein@systec-electronic.com>
+Cc: Greg KH <greg@kroah.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hello.
-
-On 22-07-2011 12:41, Uwe Bonnes wrote:
-
-> the recent addition of the FT232H showed that baudrate was set wrong. See
-> gmane.linux.usb.general: "[ftdi_sio] FT232H support".  With the old code,
-> the MSB of the 4 encoded fractional divider bits and more important the
-> clock predivider bits got lost. Adding the FT232H to the code patch were
-> these bits are shifted solves the problem. I verified baud rates with a
-> scope now.
-
-> I suspect, that the BM device probably needs these bits shifted too. But
-> there is no predivider bit, so this is not obvious, and a missing MSB of the
-> encoded fractional divider only shifts the resulting baudrate minimal.
-> The AM has only 3 bits of encoded fractional divider, so it is not impacted.
-
-> I have no BM device to test, so I only added a comment and left the code for
-> the BM untouched.
-
-> This time with checkpatch happy.
-
-> Bye
-
-> --
-> Uwe Bonnes                bon@elektron.ikp.physik.tu-darmstadt.de
-
-> Institut fuer Kernphysik  Schlossgartenstrasse 9  64289 Darmstadt
-> --------- Tel. 06151 162516 -------- Fax. 06151 164321 ----------
-> From 892f1ac2b0b47ffc7adf70ecbe5d7d2f31c79232 Mon Sep 17 00:00:00 2001
-> From: Uwe Bonnes <bon@elektron.ikp.physik.tu-darmstadt.de>
-> Date: Tue, 12 Jul 2011 18:47:08 +0200
-> Subject: ftdi_sio: For the FT232H FTDI_SIO_SET_BAUDRATE_REQUEST, index needs to be shifted too
-
+(2011/07/04 15:58), Alexander Stein wrote:
+> Signed-off-by: Alexander Stein<alexander.stein@systec-electronic.com>
 > ---
->  drivers/usb/serial/ftdi_sio.c |    5 ++++-
->  1 files changed, 4 insertions(+), 1 deletions(-)
+> Hello Greg,
+> 
+> I'm sorry. This patch was based some other patches, like console support.
+> 
+> Changes in v3:
+> * Rebased to current git master
+> 
+>   drivers/tty/serial/pch_uart.c |    5 +++++
+>   1 files changed, 5 insertions(+), 0 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+> index 4652109..d3ba85b 100644
+> --- a/drivers/tty/serial/pch_uart.c
+> +++ b/drivers/tty/serial/pch_uart.c
+> @@ -1429,6 +1429,8 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
+>   		goto init_port_hal_free;
+>   	}
+> 
+> +	pci_enable_msi(pdev);
+> +
+>   	iobase = pci_resource_start(pdev, 0);
+>   	mapbase = pci_resource_start(pdev, 1);
+>   	priv->mapbase = mapbase;
+> @@ -1485,6 +1487,8 @@ static void pch_uart_pci_remove(struct pci_dev *pdev)
+>   	struct eg20t_port *priv;
+> 
+>   	priv = (struct eg20t_port *)pci_get_drvdata(pdev);
+> +
+> +	pci_disable_msi(pdev);
+>   	pch_uart_exit_port(priv);
+>   	pci_disable_device(pdev);
+>   	kfree(priv);
+> @@ -1568,6 +1572,7 @@ static int __devinit pch_uart_pci_probe(struct pci_dev *pdev,
+>   	return ret;
+> 
+>   probe_disable_device:
+> +	pci_disable_msi(pdev);
+>   	pci_disable_device(pdev);
+>   probe_error:
+>   	return ret;
 
-> diff --git a/drivers/usb/serial/ftdi_sio.c b/drivers/usb/serial/ftdi_sio.c
-> index 2e06b90..0692a36 100644
-> --- a/drivers/usb/serial/ftdi_sio.c
-> +++ b/drivers/usb/serial/ftdi_sio.c
-> @@ -1205,7 +1205,10 @@ static int change_speed(struct tty_struct *tty, struct usb_serial_port *port)
->  	urb_index_value = get_ftdi_divisor(tty, port);
->  	urb_value = (__u16)urb_index_value;
->  	urb_index = (__u16)(urb_index_value >> 16);
-> -	if (priv->interface) {	/* FT2232C */
-> +	if ((priv->chip_type == FT2232C) || (priv->chip_type == FT2232H) ||
-> +		(priv->chip_type == FT4232H) || (priv->chip_type == FT232H)) {
 
-    This rather asks for a *switch* statement.
+Using this patch, PCH_UART doesn't work all.
+For using MSI, I think, need bus master enable(pci_set_master) ?
 
-> +		/* Probably the BM type needs the MSB of the encoded fractional
-> +		 * divider also moved like for the chips above. Any infos? */
-
-    The preferred comment style:
-
-/*
-  * bla
-  * bla
-  */
-
->  		urb_index = (__u16)((urb_index << 8) | priv->interface);
->  	}
->
-> --
-> 1.7.3.4
-> Signed-off-by: Uwe Bonnes <bon@elektron.ikp.physik.tu-darmstadt.de>
-
-    Signoff should precede the patch, not follow it.
-
-WBR, Sergei
+Best Regards,
+-- 
+tomoya
+OKI SEMICONDUCTOR CO., LTD.
