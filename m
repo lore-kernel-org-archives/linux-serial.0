@@ -1,72 +1,96 @@
-From: Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>
-Subject: Re: [PATCH v3] pch_uart: Add MSI support
-Date: Fri, 22 Jul 2011 21:39:01 +0900
-Message-ID: <4E296F65.1080904@dsn.okisemi.com>
-References: <20110701223209.GA9581@kroah.com> <1309762711-8571-1-git-send-email-alexander.stein@systec-electronic.com>
+From: "Al Cooper" <alcooperx@gmail.com>
+Subject: [PATCH] 8250: Fix race condition in
+ serial8250_backup_timeout().
+Date: Mon, 25 Jul 2011 16:19:52 -0400
+Message-ID: <1311625192-5806-1-git-send-email-alcooperx@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-2022-JP
+Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from sm-d311v.smileserver.ne.jp ([203.211.202.206]:25275 "EHLO
-	sm-d311v.smileserver.ne.jp" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753794Ab1GVMjH (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 22 Jul 2011 08:39:07 -0400
-In-Reply-To: <1309762711-8571-1-git-send-email-alexander.stein@systec-electronic.com>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, cernekee@gmail.com
+Cc: Al Cooper <alcooperx@gmail.com>
 List-Id: linux-serial@vger.kernel.org
-To: Alexander Stein <alexander.stein@systec-electronic.com>
-Cc: Greg KH <greg@kroah.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-(2011/07/04 15:58), Alexander Stein wrote:
-> Signed-off-by: Alexander Stein<alexander.stein@systec-electronic.com>
-> ---
-> Hello Greg,
-> 
-> I'm sorry. This patch was based some other patches, like console support.
-> 
-> Changes in v3:
-> * Rebased to current git master
-> 
->   drivers/tty/serial/pch_uart.c |    5 +++++
->   1 files changed, 5 insertions(+), 0 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-> index 4652109..d3ba85b 100644
-> --- a/drivers/tty/serial/pch_uart.c
-> +++ b/drivers/tty/serial/pch_uart.c
-> @@ -1429,6 +1429,8 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
->   		goto init_port_hal_free;
->   	}
-> 
-> +	pci_enable_msi(pdev);
-> +
->   	iobase = pci_resource_start(pdev, 0);
->   	mapbase = pci_resource_start(pdev, 1);
->   	priv->mapbase = mapbase;
-> @@ -1485,6 +1487,8 @@ static void pch_uart_pci_remove(struct pci_dev *pdev)
->   	struct eg20t_port *priv;
-> 
->   	priv = (struct eg20t_port *)pci_get_drvdata(pdev);
-> +
-> +	pci_disable_msi(pdev);
->   	pch_uart_exit_port(priv);
->   	pci_disable_device(pdev);
->   	kfree(priv);
-> @@ -1568,6 +1572,7 @@ static int __devinit pch_uart_pci_probe(struct pci_dev *pdev,
->   	return ret;
-> 
->   probe_disable_device:
-> +	pci_disable_msi(pdev);
->   	pci_disable_device(pdev);
->   probe_error:
->   	return ret;
+This is to fix an issue where output will suddenly become very slow.
+The problem occurs on 8250 UARTS with the hardware bug UART_BUG_THRE.
 
+BACKGROUND
+For normal UARTs (without UART_BUG_THRE): When the serial core layer
+gets new transmit data and the transmitter is idle, it buffers the
+data and calls the 8250s' serial8250_start_tx() routine which will
+simply enable the TX interrupt in the IER register and return. This
+should immediately fire a THRE interrupt and begin transmitting the
+data.
+For buggy UARTs (with UART_BUG_THRE): merely enabling the TX interrupt
+in IER does not necessarily generate a new THRE interrupt.
+Therefore, a background timer periodically checks to see if there is
+pending data, and starts transmission if that is the case.
 
-Using this patch, PCH_UART doesn't work all.
-For using MSI, I think, need bus master enable(pci_set_master) ?
+The bug happens on SMP systems when the system has nothing to transmit,
+the transmit interrupt is disabled and the following sequence occurs:
+- CPU0: The background timer routine serial8250_backup_timeout()
+  starts and saves the state of the interrupt enable register (IER)
+  and then disables all interrupts in IER. NOTE: The transmit interrupt
+  (TI) bit is saved as disabled.
+- CPU1: The serial core gets data to transmit, grabs the port lock and
+  calls serial8250_start_tx() which enables the TI in IER.
+- CPU0: serial8250_backup_timeout() waits for the port lock.
+- CPU1: finishes (with TI enabled) and releases the port lock.
+- CPU0: serial8250_backup_timeout() calls the interrupt routine which
+  will transmit the next fifo's worth of data and then restores the
+  IER from the previously saved value (TI disabled).
+At this point, as long as the serial core has more transmit data
+buffered, it will not call serial8250_start_tx() again and the
+background timer routine will slowly transmit the data.
 
-Best Regards,
+The fix is to have serial8250_start_tx() get the port lock before
+it saves the IER state and release it after restoring IER. This will
+prevent serial8250_start_tx() from running in parallel.
+
+Signed-off-by: Al Cooper <alcooperx@gmail.com>
+---
+ drivers/tty/serial/8250.c |    8 +++++---
+ 1 files changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
+index b4129f5..8fb7e8f 100644
+--- a/drivers/tty/serial/8250.c
++++ b/drivers/tty/serial/8250.c
+@@ -1819,6 +1819,8 @@ static void serial8250_backup_timeout(unsigned long data)
+ 	unsigned int iir, ier = 0, lsr;
+ 	unsigned long flags;
+ 
++	spin_lock_irqsave(&up->port.lock, flags);
++
+ 	/*
+ 	 * Must disable interrupts or else we risk racing with the interrupt
+ 	 * based handler.
+@@ -1836,10 +1838,8 @@ static void serial8250_backup_timeout(unsigned long data)
+ 	 * the "Diva" UART used on the management processor on many HP
+ 	 * ia64 and parisc boxes.
+ 	 */
+-	spin_lock_irqsave(&up->port.lock, flags);
+ 	lsr = serial_in(up, UART_LSR);
+ 	up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
+-	spin_unlock_irqrestore(&up->port.lock, flags);
+ 	if ((iir & UART_IIR_NO_INT) && (up->ier & UART_IER_THRI) &&
+ 	    (!uart_circ_empty(&up->port.state->xmit) || up->port.x_char) &&
+ 	    (lsr & UART_LSR_THRE)) {
+@@ -1848,11 +1848,13 @@ static void serial8250_backup_timeout(unsigned long data)
+ 	}
+ 
+ 	if (!(iir & UART_IIR_NO_INT))
+-		serial8250_handle_port(up);
++		transmit_chars(up);
+ 
+ 	if (is_real_interrupt(up->port.irq))
+ 		serial_out(up, UART_IER, ier);
+ 
++	spin_unlock_irqrestore(&up->port.lock, flags);
++
+ 	/* Standard timer interval plus 0.2s to keep the port running */
+ 	mod_timer(&up->timer,
+ 		jiffies + uart_poll_timeout(&up->port) + HZ / 5);
 -- 
-tomoya
-OKI SEMICONDUCTOR CO., LTD.
+1.7.3.2
