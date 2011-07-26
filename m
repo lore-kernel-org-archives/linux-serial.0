@@ -1,96 +1,144 @@
-From: "Al Cooper" <alcooperx@gmail.com>
-Subject: [PATCH] 8250: Fix race condition in
- serial8250_backup_timeout().
-Date: Mon, 25 Jul 2011 16:19:52 -0400
-Message-ID: <1311625192-5806-1-git-send-email-alcooperx@gmail.com>
+From: Greg KH <gregkh@suse.de>
+Subject: [GIT PATCH] TTY/serial driver patches for 3.1
+Date: Mon, 25 Jul 2011 22:02:25 -0700
+Message-ID: <20110726050225.GA2529@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, cernekee@gmail.com
-Cc: Al Cooper <alcooperx@gmail.com>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from out4.smtp.messagingengine.com ([66.111.4.28]:59604 "EHLO
+	out4.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751293Ab1GZFQB (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 26 Jul 2011 01:16:01 -0400
+Content-Disposition: inline
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-This is to fix an issue where output will suddenly become very slow.
-The problem occurs on 8250 UARTS with the hardware bug UART_BUG_THRE.
+Here is the big tty/serial patchset for your 3.1 tree.
 
-BACKGROUND
-For normal UARTs (without UART_BUG_THRE): When the serial core layer
-gets new transmit data and the transmitter is idle, it buffers the
-data and calls the 8250s' serial8250_start_tx() routine which will
-simply enable the TX interrupt in the IER register and return. This
-should immediately fire a THRE interrupt and begin transmitting the
-data.
-For buggy UARTs (with UART_BUG_THRE): merely enabling the TX interrupt
-in IER does not necessarily generate a new THRE interrupt.
-Therefore, a background timer periodically checks to see if there is
-pending data, and starts transmission if that is the case.
+Nothing major at all, lots of line discipline tweaks for the newer ones
+that were added last release, and some small tty core fixes as well.
 
-The bug happens on SMP systems when the system has nothing to transmit,
-the transmit interrupt is disabled and the following sequence occurs:
-- CPU0: The background timer routine serial8250_backup_timeout()
-  starts and saves the state of the interrupt enable register (IER)
-  and then disables all interrupts in IER. NOTE: The transmit interrupt
-  (TI) bit is saved as disabled.
-- CPU1: The serial core gets data to transmit, grabs the port lock and
-  calls serial8250_start_tx() which enables the TI in IER.
-- CPU0: serial8250_backup_timeout() waits for the port lock.
-- CPU1: finishes (with TI enabled) and releases the port lock.
-- CPU0: serial8250_backup_timeout() calls the interrupt routine which
-  will transmit the next fifo's worth of data and then restores the
-  IER from the previously saved value (TI disabled).
-At this point, as long as the serial core has more transmit data
-buffered, it will not call serial8250_start_tx() again and the
-background timer routine will slowly transmit the data.
+=46ull details are below as to what it contains.
 
-The fix is to have serial8250_start_tx() get the port lock before
-it saves the IER state and release it after restoring IER. This will
-prevent serial8250_start_tx() from running in parallel.
+Please pull from:
+	master.kernel.org:/pub/scm/linux/kernel/git/gregkh/tty-2.6.git/ tty-ne=
+xt
 
-Signed-off-by: Al Cooper <alcooperx@gmail.com>
----
- drivers/tty/serial/8250.c |    8 +++++---
- 1 files changed, 5 insertions(+), 3 deletions(-)
+All of these patches have been in the -mm and -next trees for a while.
 
-diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
-index b4129f5..8fb7e8f 100644
---- a/drivers/tty/serial/8250.c
-+++ b/drivers/tty/serial/8250.c
-@@ -1819,6 +1819,8 @@ static void serial8250_backup_timeout(unsigned long data)
- 	unsigned int iir, ier = 0, lsr;
- 	unsigned long flags;
- 
-+	spin_lock_irqsave(&up->port.lock, flags);
-+
- 	/*
- 	 * Must disable interrupts or else we risk racing with the interrupt
- 	 * based handler.
-@@ -1836,10 +1838,8 @@ static void serial8250_backup_timeout(unsigned long data)
- 	 * the "Diva" UART used on the management processor on many HP
- 	 * ia64 and parisc boxes.
- 	 */
--	spin_lock_irqsave(&up->port.lock, flags);
- 	lsr = serial_in(up, UART_LSR);
- 	up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
--	spin_unlock_irqrestore(&up->port.lock, flags);
- 	if ((iir & UART_IIR_NO_INT) && (up->ier & UART_IER_THRI) &&
- 	    (!uart_circ_empty(&up->port.state->xmit) || up->port.x_char) &&
- 	    (lsr & UART_LSR_THRE)) {
-@@ -1848,11 +1848,13 @@ static void serial8250_backup_timeout(unsigned long data)
- 	}
- 
- 	if (!(iir & UART_IIR_NO_INT))
--		serial8250_handle_port(up);
-+		transmit_chars(up);
- 
- 	if (is_real_interrupt(up->port.irq))
- 		serial_out(up, UART_IER, ier);
- 
-+	spin_unlock_irqrestore(&up->port.lock, flags);
-+
- 	/* Standard timer interval plus 0.2s to keep the port running */
- 	mod_timer(&up->timer,
- 		jiffies + uart_poll_timeout(&up->port) + HZ / 5);
--- 
-1.7.3.2
+Patches will be sent to the linux-serial mailing list, if anyone wants
+to see them.
+
+thanks,
+
+greg k-h
+
+------------
+
+ drivers/misc/Makefile            |    2 +-
+ drivers/misc/pch_phub.c          |    4 +-
+ drivers/misc/pti.c               |   99 ++++++----
+ drivers/parport/parport_pc.c     |   54 -----
+ drivers/parport/parport_serial.c |  229 ++++++++++++++++++++--
+ drivers/tty/moxa.c               |    5 +-
+ drivers/tty/mxser.c              |    4 +-
+ drivers/tty/n_gsm.c              |  401 ++++++++++++++++++++++++++++++=
++++++---
+ drivers/tty/n_tty.c              |    2 +-
+ drivers/tty/serial/8250.c        |    4 +-
+ drivers/tty/serial/8250_pci.c    |  183 +++++++++++++++++-
+ drivers/tty/serial/Kconfig       |    2 +-
+ drivers/tty/serial/pch_uart.c    |   11 +-
+ drivers/tty/serial/s5pv210.c     |    4 +
+ drivers/tty/serial/samsung.c     |   27 ++--
+ drivers/tty/tty_io.c             |    4 +-
+ include/linux/gsmmux.h           |   11 +
+ include/linux/pci_ids.h          |    4 +
+ include/linux/pti.h              |    3 +-
+ include/linux/tty.h              |   37 ++--
+ 20 files changed, 903 insertions(+), 187 deletions(-)
+
+---------------
+
+Alexander Stein (2):
+      pch_uart: Add MSI support
+      pch_uart: add missing comment about OKI ML7223
+
+Andrew McGregor (1):
+      tty: fix "IRQ45: nobody cared"
+
+Du, Alek (1):
+      n_gsm: fix the wrong FCS handling
+
+=46lorian Fainelli (1):
+      TTY: export NR_LDISC and N_* line discipline numbers to user-spac=
+e
+
+=46r=E9d=E9ric Bri=E8re (2):
+      serial: 8250_pci: add .probe member to struct pci_serial_quirk
+      parport/serial: add support for Timedia/SUNIX cards to parport_se=
+rial
+
+J Freyensee (2):
+      0 for o PTI Makefile bug.
+      PTI feature to allow user to name and mark masterchannel request.
+
+Jiri Slaby (1):
+      serial: 8250, increase PASS_LIMIT
+
+Jongpill Lee (1):
+      tty: s5pv210: Add delay loop on fifo reset function for UART
+
+Manuel Zerpies (1):
+      drivers/tty: use printk_ratelimited() instead of printk_ratelimit=
+()
+
+Michael Reed (1):
+      8250_pci Add EEH support to the 8250 driver for IBM/Digi PCIe 2-p=
+ort Adapter
+
+Mika Westerberg (1):
+      serial: mrst_max3110: initialize waitqueue earlier
+
+Mike Frysinger (1):
+      serial: bfin_5xx: fix off-by-one with resource size
+
+MyungJoo Ham (1):
+      tty: serial: samsung.c remove legacy PM code.
+
+Nicos Gollan (1):
+      Basic support for Moschip 9900 family I/O chips
+
+Ralf Baechle (1):
+      SERIAL: SC26xx: Fix link error.
+
+Russ Gorby (3):
+      tty: n_gsm: expose gsmtty device nodes at ldisc open time
+      tty: n_gsm: Add raw-ip support
+      tty: n_gsm: Added refcount usage to gsm_mux and gsm_dlci structs
+
+Shreshtha Kumar Sahu (1):
+      amba pl011: workaround for uart registers lockup
+
+Stephen Warren (1):
+      tty/serial: Fix XSCALE serial ports, e.g. ce4100
+
+Tomoya MORINAGA (1):
+      pch_phub: Fix register miss-setting issue
+
+Uwe Kleine-K=F6nig (1):
+      serial/pch: use global div helper instead of creating a private o=
+ne
+
+William Douglas (1):
+      mrst_max3110: Change max missing message priority.
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
