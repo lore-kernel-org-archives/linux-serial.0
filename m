@@ -1,144 +1,40 @@
-From: Greg KH <gregkh@suse.de>
-Subject: [GIT PATCH] TTY/serial driver patches for 3.1
-Date: Mon, 25 Jul 2011 22:02:25 -0700
-Message-ID: <20110726050225.GA2529@kroah.com>
+From: Tabi Timur-B04825 <B04825@freescale.com>
+Subject: Re: [GIT PATCH] TTY/serial driver patches for 3.1
+Date: Tue, 26 Jul 2011 15:05:17 +0000
+Message-ID: <CAOZdJXWuRLSZVof1q51yTmk1FXFR28mb9qSYcbChC8KC2awn=g@mail.gmail.com>
+References: <20110726050225.GA2529@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out4.smtp.messagingengine.com ([66.111.4.28]:59604 "EHLO
-	out4.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751293Ab1GZFQB (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 26 Jul 2011 01:16:01 -0400
-Content-Disposition: inline
+Received: from am1ehsobe001.messaging.microsoft.com ([213.199.154.204]:24917
+	"EHLO AM1EHSOBE001.bigfish.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751877Ab1GZPFV convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 26 Jul 2011 11:05:21 -0400
+In-Reply-To: <20110726050225.GA2529@kroah.com>
+Content-Language: en-US
+Content-ID: <375F0D82D6FC7B4CA22FC1855F182442@freescale.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Greg KH <gregkh@suse.de>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-Here is the big tty/serial patchset for your 3.1 tree.
+On Tue, Jul 26, 2011 at 12:02 AM, Greg KH <gregkh@suse.de> wrote:
+> Here is the big tty/serial patchset for your 3.1 tree.
+>
+> Nothing major at all, lots of line discipline tweaks for the newer ones
+> that were added last release, and some small tty core fixes as well.
 
-Nothing major at all, lots of line discipline tweaks for the newer ones
-that were added last release, and some small tty core fixes as well.
+Greg,
 
-=46ull details are below as to what it contains.
+I hate to be a pest, but you didn't include my patch, "[v3]
+tty/powerpc: introduce the ePAPR embedded hypervisor byte channel
+driver".  The other six patches of that patchset are already in Linus'
+tree, so I'd really like to get this one into 3.1 as well.  You even
+tried to apply v2 to tty-next about three weeks ago, but it didn't
+apply so I immediately posted v3.
 
-Please pull from:
-	master.kernel.org:/pub/scm/linux/kernel/git/gregkh/tty-2.6.git/ tty-ne=
-xt
-
-All of these patches have been in the -mm and -next trees for a while.
-
-Patches will be sent to the linux-serial mailing list, if anyone wants
-to see them.
-
-thanks,
-
-greg k-h
-
-------------
-
- drivers/misc/Makefile            |    2 +-
- drivers/misc/pch_phub.c          |    4 +-
- drivers/misc/pti.c               |   99 ++++++----
- drivers/parport/parport_pc.c     |   54 -----
- drivers/parport/parport_serial.c |  229 ++++++++++++++++++++--
- drivers/tty/moxa.c               |    5 +-
- drivers/tty/mxser.c              |    4 +-
- drivers/tty/n_gsm.c              |  401 ++++++++++++++++++++++++++++++=
-+++++---
- drivers/tty/n_tty.c              |    2 +-
- drivers/tty/serial/8250.c        |    4 +-
- drivers/tty/serial/8250_pci.c    |  183 +++++++++++++++++-
- drivers/tty/serial/Kconfig       |    2 +-
- drivers/tty/serial/pch_uart.c    |   11 +-
- drivers/tty/serial/s5pv210.c     |    4 +
- drivers/tty/serial/samsung.c     |   27 ++--
- drivers/tty/tty_io.c             |    4 +-
- include/linux/gsmmux.h           |   11 +
- include/linux/pci_ids.h          |    4 +
- include/linux/pti.h              |    3 +-
- include/linux/tty.h              |   37 ++--
- 20 files changed, 903 insertions(+), 187 deletions(-)
-
----------------
-
-Alexander Stein (2):
-      pch_uart: Add MSI support
-      pch_uart: add missing comment about OKI ML7223
-
-Andrew McGregor (1):
-      tty: fix "IRQ45: nobody cared"
-
-Du, Alek (1):
-      n_gsm: fix the wrong FCS handling
-
-=46lorian Fainelli (1):
-      TTY: export NR_LDISC and N_* line discipline numbers to user-spac=
-e
-
-=46r=E9d=E9ric Bri=E8re (2):
-      serial: 8250_pci: add .probe member to struct pci_serial_quirk
-      parport/serial: add support for Timedia/SUNIX cards to parport_se=
-rial
-
-J Freyensee (2):
-      0 for o PTI Makefile bug.
-      PTI feature to allow user to name and mark masterchannel request.
-
-Jiri Slaby (1):
-      serial: 8250, increase PASS_LIMIT
-
-Jongpill Lee (1):
-      tty: s5pv210: Add delay loop on fifo reset function for UART
-
-Manuel Zerpies (1):
-      drivers/tty: use printk_ratelimited() instead of printk_ratelimit=
-()
-
-Michael Reed (1):
-      8250_pci Add EEH support to the 8250 driver for IBM/Digi PCIe 2-p=
-ort Adapter
-
-Mika Westerberg (1):
-      serial: mrst_max3110: initialize waitqueue earlier
-
-Mike Frysinger (1):
-      serial: bfin_5xx: fix off-by-one with resource size
-
-MyungJoo Ham (1):
-      tty: serial: samsung.c remove legacy PM code.
-
-Nicos Gollan (1):
-      Basic support for Moschip 9900 family I/O chips
-
-Ralf Baechle (1):
-      SERIAL: SC26xx: Fix link error.
-
-Russ Gorby (3):
-      tty: n_gsm: expose gsmtty device nodes at ldisc open time
-      tty: n_gsm: Add raw-ip support
-      tty: n_gsm: Added refcount usage to gsm_mux and gsm_dlci structs
-
-Shreshtha Kumar Sahu (1):
-      amba pl011: workaround for uart registers lockup
-
-Stephen Warren (1):
-      tty/serial: Fix XSCALE serial ports, e.g. ce4100
-
-Tomoya MORINAGA (1):
-      pch_phub: Fix register miss-setting issue
-
-Uwe Kleine-K=F6nig (1):
-      serial/pch: use global div helper instead of creating a private o=
-ne
-
-William Douglas (1):
-      mrst_max3110: Change max missing message priority.
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+-- 
+Timur Tabi
+Linux kernel developer at Freescale
