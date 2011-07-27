@@ -1,47 +1,41 @@
-From: Kyungmin Park <kmpark@infradead.org>
-Subject: [PATCH] serial: samsung: Fix compiler error when !CONFIG_PM_SLEEP
-Date: Wed, 27 Jul 2011 12:46:32 +0900
-Message-ID: <20110727034632.GA31896@july>
+From: Greg KH <gregkh@suse.de>
+Subject: Re: [GIT PATCH] TTY/serial driver patches for 3.1
+Date: Tue, 26 Jul 2011 21:07:55 -0700
+Message-ID: <20110727040755.GA11308@suse.de>
+References: <20110726050225.GA2529@kroah.com>
+ <CAOZdJXWuRLSZVof1q51yTmk1FXFR28mb9qSYcbChC8KC2awn=g@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout3.samsung.com ([203.254.224.33]:27577 "EHLO
-	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753995Ab1G0Dqk (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 26 Jul 2011 23:46:40 -0400
-Content-disposition: inline
+Received: from cantor2.suse.de ([195.135.220.15]:42239 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754300Ab1G0EMx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 27 Jul 2011 00:12:53 -0400
+Content-Disposition: inline
+In-Reply-To: <CAOZdJXWuRLSZVof1q51yTmk1FXFR28mb9qSYcbChC8KC2awn=g@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Tabi Timur-B04825 <B04825@freescale.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-From: Kyungmin Park <kyungmin.park@samsung.com>
+On Tue, Jul 26, 2011 at 03:05:17PM +0000, Tabi Timur-B04825 wrote:
+> On Tue, Jul 26, 2011 at 12:02 AM, Greg KH <gregkh@suse.de> wrote:
+> > Here is the big tty/serial patchset for your 3.1 tree.
+> >
+> > Nothing major at all, lots of line discipline tweaks for the newer ones
+> > that were added last release, and some small tty core fixes as well.
+> 
+> Greg,
+> 
+> I hate to be a pest, but you didn't include my patch, "[v3]
+> tty/powerpc: introduce the ePAPR embedded hypervisor byte channel
+> driver".  The other six patches of that patchset are already in Linus'
+> tree, so I'd really like to get this one into 3.1 as well.  You even
+> tried to apply v2 to tty-next about three weeks ago, but it didn't
+> apply so I immediately posted v3.
 
-drivers/tty/serial/samsung.c: In function 's3c24xx_serial_init':
-drivers/tty/serial/samsung.c:1237: error: lvalue required as unary '&' operand
+It is in my queue to review after -rc1 is out.
 
-Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
----
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index afc6294..318ab90 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1225,15 +1225,15 @@ static const struct dev_pm_ops s3c24xx_serial_pm_ops = {
- 	.suspend = s3c24xx_serial_suspend,
- 	.resume = s3c24xx_serial_resume,
- };
--#else /* !CONFIG_PM_SLEEP */
--#define s3c24xx_serial_pm_ops	NULL
- #endif /* CONFIG_PM_SLEEP */
- 
- int s3c24xx_serial_init(struct platform_driver *drv,
- 			struct s3c24xx_uart_info *info)
- {
- 	dbg("s3c24xx_serial_init(%p,%p)\n", drv, info);
-+#ifdef CONFIG_PM_SLEEP
- 	drv->driver.pm = &s3c24xx_serial_pm_ops;
-+#endif
- 
- 	return platform_driver_register(drv);
- }
+thanks,
+
+greg k-h
