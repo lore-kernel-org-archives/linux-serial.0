@@ -1,88 +1,50 @@
-From: "Govindraj.R" <govindraj.raja@ti.com>
-Subject: [RFC v2]: Issues implementing clock handling mechanism within UART driver
-Date: Thu, 28 Jul 2011 14:59:55 +0530
-Message-ID: <1311845395-31917-1-git-send-email-govindraj.raja@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-omap-owner@vger.kernel.org>
-Sender: linux-omap-owner@vger.kernel.org
-To: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-pm@lists.linux-foundation.org
-Cc: "Rafael J. Wysocki" <rjw@sisk.pl>, Paul Walmsley <paul@pwsan.com>, Kevin Hilman <khilman@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Partha Basak <p-basak2@ti.com>, Felipe Balbi <balbi@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Rajendra Nayak <rnayak@ti.com>, Benoit Cousson <b-cousson@ti.com>, Tero Kristo <t-kristo@ti.com>, Govindraj R <govindraj.raja@ti.com>
+From: Andi Kleen <andi@firstfloor.org>
+Subject: [PATCH] [48/50] SERIAL: SC26xx: Fix link error.
+Date: Thu, 28 Jul 2011 16:44:53 -0700 (PDT)
+Message-ID: <20110728234453.299DF2403FF@tassilo.jf.intel.com>
+References: <20110728444.299940435@firstfloor.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20110728444.299940435@firstfloor.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: ralf@linux-mips.org, linux-serial@vger.kernel.org, linux-mips@linux-mips.org, alan@linux.intel.com, gregkh@suse.de, ak@linux.intel.com, linux-kernel@vger.kernel.org, stable@kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-To handle uart clocks within uart driver we need the *semantics of clock enable
-API should not internally trigger any UART PORT operation* even before
-completing clock_enable.
+2.6.35-longterm review patch.  If anyone has any objections, please let me know.
 
-Ex: while configuring baud rate we may use runtime api's to enable uart port.
-get_sync -> printk -> call console uart to print
+------------------
+From: Ralf Baechle <ralf@linux-mips.org>
 
-For example, say we are calling Uart_configure baud to configure the baud-rate.
-Even before this operation completes, if there is print, we may switch to uart
-write operation which is undesirable.
+[ upstream commit f2eb3cdf14457fccb14ae8c4d7d7cee088cd3957 ]
 
-This occurs due to any printks called from omap_device ()/omap_hwmod ()/clk layers
-which come in the flow from pm_runtime_get_sync/ pm_runtime_put_autosuspend API's.
+Kconfig allows enabling console support for the SC26xx driver even when
+it's configured as a module resulting in a:
 
-	1. pm_runtime_get _sync -> printk -> console_write -> pm_runtime_get_sync
-	2. pm_runtime_ put_autosuspend -> rpm_suspend -> pm_generic suspend ->
-	   omap_device_disable -> debug prints -> console_write -> pm_runtime_get_sync
+ERROR: "uart_console_device" [drivers/tty/serial/sc26xx.ko] undefined!
 
-This leads to a deadlock caused by contention of the power_lock from
-the same runtime API context.
+modpost error since the driver was merged in
+eea63e0e8a60d00485b47fb6e75d9aa2566b989b [SC26XX: New serial driver for
+SC2681 uarts] in 2.6.25.  Fixed by only allowing console support to be
+enabled if the driver is builtin.
 
-Work-around explored:
---------------------
-Use console lock aggressively around each get_sync/put_sync.
+Signed-off-by: Ralf Baechle <ralf@linux-mips.org>
+Cc: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-mips@linux-mips.org
+Cc: stable <stable@kernel.org>
+Acked-by: Alan Cox <alan@linux.intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
 
-	Uart_configure baud {
-		1. Console_lock
-		2. pm_runtime_get_sync
-		3. Console_unlock (and send the prints accumulated in the
-		   log buffer to the console) which leads to a console_write .
-		4. This console_write in turn leads to a console_lock+pm_runtime_get_sync
-		5. Also  Console_unlock is undesirable here since it jumps to
-		   console write even before baud config was complete.
-	}
-
-Locking the console around a pm_runtime_get_sync()will make sure that all prints
-are sent to the log-buffer until the console in unlocked, thereby getting rid of
-recursively jumping from one port op to another even before current port
-operation is complete.
-
-However, this leads to:
-	1. Cant bind put_autosuspend with console lock as they get scheduled later
-	   put -> print -> console_write -> get_sync (one runtime API context we
-	   may enter another runtime API power lock contention)
-	2. Using console_lock wrapper everywhere in driver to suppress prints
-	   from get_sync is too aggressive in nature.
-	3. During Boot-up, console_lock is not available until uart driver
-	   completes its registration with kernel console_driver.
-
-Observing the semantics of console_lock/unlock, it seems undesirable to be used
-within uart driver. But can rather be used form global stand point to suppress
-uart prints.
-
-Example:
-1. While system wide suspending
-2. In cpu idle path., etc.
-
-Proposal:
---------
-	1. For the UART, follow the current approach of locking the console in
-	   Idle/Suspend path before cutting the clock but using pm_runtime_putsync.
-	   That is, continue using the prepare/resume Idle calls in idle path.
-	2. Other Approach would be adding conditions to debug prints from
-	   omap_device/ omap_hwmod/clock_framework avoid calling these debug
-	   prints for uart.
-	   Or Even a debug macro that would not debug prints if the context is
-	   from uart.
-
-Any further approaches are welcome.
-
-Have captured little more details compared to v1 posted erlier:
-http://www.mail-archive.com/linux-omap@vger.kernel.org/msg52707.html
-
--- 
-1.7.4.1
-
+Index: linux-2.6.35.y/drivers/serial/Kconfig
+===================================================================
+--- linux-2.6.35.y.orig/drivers/serial/Kconfig
++++ linux-2.6.35.y/drivers/serial/Kconfig
+@@ -1417,7 +1417,7 @@ config SERIAL_SC26XX
+ 
+ config SERIAL_SC26XX_CONSOLE
+ 	bool "Console on SC2681/SC2692 serial port"
+-	depends on SERIAL_SC26XX
++	depends on SERIAL_SC26XX=y
+ 	select SERIAL_CORE_CONSOLE
+ 	help
+ 	  Support for Console on SC2681/SC2692 serial ports.
