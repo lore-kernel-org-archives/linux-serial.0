@@ -1,50 +1,74 @@
-From: Andi Kleen <andi@firstfloor.org>
-Subject: [PATCH] [48/50] SERIAL: SC26xx: Fix link error.
-Date: Thu, 28 Jul 2011 16:44:53 -0700 (PDT)
-Message-ID: <20110728234453.299DF2403FF@tassilo.jf.intel.com>
-References: <20110728444.299940435@firstfloor.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20110728444.299940435@firstfloor.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: ralf@linux-mips.org, linux-serial@vger.kernel.org, linux-mips@linux-mips.org, alan@linux.intel.com, gregkh@suse.de, ak@linux.intel.com, linux-kernel@vger.kernel.org, stable@kernel.org
+From: Felipe Balbi <balbi@ti.com>
+Subject: Re: [RFC v2]: Issues implementing clock handling mechanism within
+ UART driver
+Date: Fri, 29 Jul 2011 12:55:13 +0300
+Message-ID: <20110729095512.GE31013@legolas.emea.dhcp.ti.com>
+References: <1311845395-31917-1-git-send-email-govindraj.raja@ti.com>
+Reply-To: balbi@ti.com
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Qz2CZ664xQdCRdPu"
+Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1311845395-31917-1-git-send-email-govindraj.raja@ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: "Govindraj.R" <govindraj.raja@ti.com>
+Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-pm@lists.linux-foundation.org, "Rafael J. Wysocki" <rjw@sisk.pl>, Paul Walmsley <paul@pwsan.com>, Kevin Hilman <khilman@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Partha Basak <p-basak2@ti.com>, Felipe Balbi <balbi@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Rajendra Nayak <rnayak@ti.com>, Benoit Cousson <b-cousson@ti.com>, Tero Kristo <t-kristo@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-2.6.35-longterm review patch.  If anyone has any objections, please let me know.
 
-------------------
-From: Ralf Baechle <ralf@linux-mips.org>
+--Qz2CZ664xQdCRdPu
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-[ upstream commit f2eb3cdf14457fccb14ae8c4d7d7cee088cd3957 ]
+Hi,
 
-Kconfig allows enabling console support for the SC26xx driver even when
-it's configured as a module resulting in a:
+On Thu, Jul 28, 2011 at 02:59:55PM +0530, Govindraj.R wrote:
+> Proposal:
+> --------
+> 	1. For the UART, follow the current approach of locking the console in
+> 	   Idle/Suspend path before cutting the clock but using pm_runtime_putsy=
+nc.
+> 	   That is, continue using the prepare/resume Idle calls in idle path.
 
-ERROR: "uart_console_device" [drivers/tty/serial/sc26xx.ko] undefined!
+I believe you should be using ->prepare() to prevent that any other
+work on UART won't trigger a console_write() right now. Maybe only
+queueing the work for after ->complete() or, maybe, just ignoring the
+work and loosing some prints, dunno.
 
-modpost error since the driver was merged in
-eea63e0e8a60d00485b47fb6e75d9aa2566b989b [SC26XX: New serial driver for
-SC2681 uarts] in 2.6.25.  Fixed by only allowing console support to be
-enabled if the driver is builtin.
+> 	2. Other Approach would be adding conditions to debug prints from
+> 	   omap_device/ omap_hwmod/clock_framework avoid calling these debug
+> 	   prints for uart.
+> 	   Or Even a debug macro that would not debug prints if the context is
+> 	   from uart.
 
-Signed-off-by: Ralf Baechle <ralf@linux-mips.org>
-Cc: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-mips@linux-mips.org
-Cc: stable <stable@kernel.org>
-Acked-by: Alan Cox <alan@linux.intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
-Signed-off-by: Andi Kleen <ak@linux.intel.com>
+yeah, that might work but then again, if we were using 8250.c, would we
+have this limitation ??
 
-Index: linux-2.6.35.y/drivers/serial/Kconfig
-===================================================================
---- linux-2.6.35.y.orig/drivers/serial/Kconfig
-+++ linux-2.6.35.y/drivers/serial/Kconfig
-@@ -1417,7 +1417,7 @@ config SERIAL_SC26XX
- 
- config SERIAL_SC26XX_CONSOLE
- 	bool "Console on SC2681/SC2692 serial port"
--	depends on SERIAL_SC26XX
-+	depends on SERIAL_SC26XX=y
- 	select SERIAL_CORE_CONSOLE
- 	help
- 	  Support for Console on SC2681/SC2692 serial ports.
+I think that, maybe, your best call would be to capture console_write()
+calls into an internal temporary buffer on ->prepare() and flush it once
+->complete() is called ?
+
+BTW, where are the patches ? :-)
+
+--=20
+balbi
+
+--Qz2CZ664xQdCRdPu
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iQEcBAEBAgAGBQJOMoOAAAoJEAv8Txj19kN16FAH/RaPeEYhHbADkBrNm7vHHAIq
+CYYUXN8jZ0IiUUUpo7Z7H98nWXuq92KeaScP6OYgDg8WcyZT3TM0wWPsznT+Raov
+U9VnhNO6vhE1GbGUj2rt/jw2CeLGU8Zm7x6LG3UcL6jPACUigN69+WVlDUs8kGM/
+AzmIOXjaSyWZdT9vXa0evAHLNYtDXsJzTZnXyb39abBJ8czTRsW809HdR3kFLXJ7
+N+gc/oHG6WigC4R65k3Z/Kp7CeBiKgtaUdY9W2wNoGbcsb7x8oY7mSa0qU9BFrw4
+p1uPU8fgC4EJ3EHJarzeu0+AdEBDNpsKwoTN/MH55Tz9cW+T3ak2FduJFhDSO7o=
+=5/TQ
+-----END PGP SIGNATURE-----
+
+--Qz2CZ664xQdCRdPu--
