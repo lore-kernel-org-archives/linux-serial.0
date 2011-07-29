@@ -1,106 +1,86 @@
-From: Govindraj <govindraj.ti@gmail.com>
+From: Felipe Balbi <balbi@ti.com>
 Subject: Re: [RFC v2]: Issues implementing clock handling mechanism within
  UART driver
-Date: Fri, 29 Jul 2011 16:54:44 +0530
-Message-ID: <CAAL8m4xjN15RfwbDd_c1HdoKY327CWOn5qwuoUT=fop4J0K5cw@mail.gmail.com>
-References: <1311845395-31917-1-git-send-email-govindraj.raja@ti.com> <20110729095512.GE31013@legolas.emea.dhcp.ti.com>
+Date: Fri, 29 Jul 2011 14:37:14 +0300
+Message-ID: <20110729113713.GK31013@legolas.emea.dhcp.ti.com>
+References: <1311845395-31917-1-git-send-email-govindraj.raja@ti.com>
+ <20110729095512.GE31013@legolas.emea.dhcp.ti.com>
+ <CAAL8m4xjN15RfwbDd_c1HdoKY327CWOn5qwuoUT=fop4J0K5cw@mail.gmail.com>
+Reply-To: balbi@ti.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-fx0-f46.google.com ([209.85.161.46]:41917 "EHLO
-	mail-fx0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932077Ab1G2LZF convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 29 Jul 2011 07:25:05 -0400
-In-Reply-To: <20110729095512.GE31013@legolas.emea.dhcp.ti.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="KaGhPsiNaI6/sRd6"
+Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAAL8m4xjN15RfwbDd_c1HdoKY327CWOn5qwuoUT=fop4J0K5cw@mail.gmail.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Govindraj <govindraj.ti@gmail.com>
+Cc: balbi@ti.com, "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-pm@lists.linux-foundation.org, "Rafael J. Wysocki" <rjw@sisk.pl>, Paul Walmsley <paul@pwsan.com>, Kevin Hilman <khilman@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Partha Basak <p-basak2@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Rajendra Nayak <rnayak@ti.com>, Benoit Cousson <b-cousson@ti.com>, Tero Kristo <t-kristo@ti.com>
 List-Id: linux-serial@vger.kernel.org
-To: balbi@ti.com
-Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-pm@lists.linux-foundation.org, "Rafael J. Wysocki" <rjw@sisk.pl>, Paul Walmsley <paul@pwsan.com>, Kevin Hilman <khilman@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Partha Basak <p-basak2@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Rajendra Nayak <rnayak@ti.com>, Benoit Cousson <b-cousson@ti.com>, Tero Kristo <t-kristo@ti.com>
-
-On Fri, Jul 29, 2011 at 3:25 PM, Felipe Balbi <balbi@ti.com> wrote:
-> Hi,
->
-
-Thanks for replying.
-
-> On Thu, Jul 28, 2011 at 02:59:55PM +0530, Govindraj.R wrote:
->> Proposal:
->> --------
->> =A0 =A0 =A0 1. For the UART, follow the current approach of locking =
-the console in
->> =A0 =A0 =A0 =A0 =A0Idle/Suspend path before cutting the clock but us=
-ing pm_runtime_putsync.
->> =A0 =A0 =A0 =A0 =A0That is, continue using the prepare/resume Idle c=
-alls in idle path.
->
-> I believe you should be using ->prepare() to prevent that any other
-> work on UART won't trigger a console_write() right now. Maybe only
-> queueing the work for after ->complete() or, maybe, just ignoring the
-> work and loosing some prints, dunno.
->
-
-Yes true, for suspend path but for Idle path we don't have any such
-mechanism.
-
->> =A0 =A0 =A0 2. Other Approach would be adding conditions to debug pr=
-ints from
->> =A0 =A0 =A0 =A0 =A0omap_device/ omap_hwmod/clock_framework avoid cal=
-ling these debug
->> =A0 =A0 =A0 =A0 =A0prints for uart.
->> =A0 =A0 =A0 =A0 =A0Or Even a debug macro that would not debug prints=
- if the context is
->> =A0 =A0 =A0 =A0 =A0from uart.
->
-> yeah, that might work but then again, if we were using 8250.c, would =
-we
-> have this limitation ??
->
-
-Its not necessary which driver we use, its about clock handling mechani=
-sm
-where it has to be done.
-
-if we add clock handling mechanism into the driver, from driver context
-handling clocks + managing the printks for the same uart port is a
-issue, due to reasons said earlier.
-
-> I think that, maybe, your best call would be to capture console_write=
-()
-> calls into an internal temporary buffer on ->prepare() and flush it o=
-nce
-> ->complete() is called ?
->
-
-IIUC ->prepare and -> complete are only for suspend path
-when we do system wide suspend
-
-for normal idle path get_sync and put_sycn we dont have any ->prepare
-or -> complete where we can buffer the contents and flush later.
-
-> BTW, where are the patches ? :-)
-
-I have done clock gating in idle path integrating irq chaining patches.
-hosted in gitorious here[1].
-
-Was consolidating whether this approach is OK,
-or
-Are there any other approaches that I should consider?
-
---
-Thanks,
-Govindraj.R
-
-[1]: https://gitorious.org/runtime_3-0/runtime_3-0/commits/wip_irqchn
 
 
->
-> --
-> balbi
->
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--KaGhPsiNaI6/sRd6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+On Fri, Jul 29, 2011 at 04:54:44PM +0530, Govindraj wrote:
+> On Fri, Jul 29, 2011 at 3:25 PM, Felipe Balbi <balbi@ti.com> wrote:
+> > Hi,
+> >
+>=20
+> Thanks for replying.
+>=20
+> > On Thu, Jul 28, 2011 at 02:59:55PM +0530, Govindraj.R wrote:
+> >> Proposal:
+> >> --------
+> >> =A0 =A0 =A0 1. For the UART, follow the current approach of locking th=
+e console in
+> >> =A0 =A0 =A0 =A0 =A0Idle/Suspend path before cutting the clock but usin=
+g pm_runtime_putsync.
+> >> =A0 =A0 =A0 =A0 =A0That is, continue using the prepare/resume Idle cal=
+ls in idle path.
+> >
+> > I believe you should be using ->prepare() to prevent that any other
+> > work on UART won't trigger a console_write() right now. Maybe only
+> > queueing the work for after ->complete() or, maybe, just ignoring the
+> > work and loosing some prints, dunno.
+> >
+>=20
+> Yes true, for suspend path but for Idle path we don't have any such
+> mechanism.
+
+aha... good point ;-)
+
+> I have done clock gating in idle path integrating irq chaining patches.
+> hosted in gitorious here[1].
+>=20
+> Was consolidating whether this approach is OK,
+> or
+> Are there any other approaches that I should consider?
+
+why don't you also start queueing writes after the first call to
+runtime_suspend() and flush them after the first call runtime_resume()??
+
+--=20
+balbi
+
+--KaGhPsiNaI6/sRd6
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iQEcBAEBAgAGBQJOMptpAAoJEAv8Txj19kN1a1EIAIMHs3SqnpCS+xNzpHLMKZTI
+AbajLXZhYv62xoCKjOr/V1gNlsbEn1/P8cyufgOqrzy4nA1NGli1rUMqDbkfhYDy
+3oRccBYLovJ3duxgqLhdKzj1FSP9cPE6mbeBlq2U7YplJKJtZRk5l3r/4LoMWwkf
+Bdfod4rMXsQwGKZQI1hBsCrlupnVrozi0YIL/Ntj3Mtu9DQDPB+pjMie2URURegO
+MK0O+JNO0Mz23NCljteBMOF4rEEAVI5ubYUzHvxm+cPYFuT9EjjtCutkoD3flJut
+6HWKUVM+5I1MY3Cx47z2QNaAxESPSFZnfCQ6PD7xN3wxfdM+PCpUVWvwfG8iz9Q=
+=DE5E
+-----END PGP SIGNATURE-----
+
+--KaGhPsiNaI6/sRd6--
