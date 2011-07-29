@@ -1,49 +1,26 @@
-From: lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Subject: Re: Very strange data loss with jsm driver
-Date: Fri, 29 Jul 2011 14:06:50 -0400
-Message-ID: <20110729180650.GL8562@caffeine.csclub.uwaterloo.ca>
+Date: Fri, 29 Jul 2011 19:14:42 +0100
+Message-ID: <20110729191442.35d09111@lxorguk.ukuu.org.uk>
 References: <20110729160416.GK8562@caffeine.csclub.uwaterloo.ca>
- <20110729172736.4b199d31@lxorguk.ukuu.org.uk>
- <20110729165342.GB8566@caffeine.csclub.uwaterloo.ca>
+	<20110729172736.4b199d31@lxorguk.ukuu.org.uk>
+	<20110729165342.GB8566@caffeine.csclub.uwaterloo.ca>
+	<20110729180650.GL8562@caffeine.csclub.uwaterloo.ca>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caffeine.csclub.uwaterloo.ca ([129.97.134.17]:35098 "EHLO
-	caffeine.csclub.uwaterloo.ca" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752476Ab1G2SGu (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 29 Jul 2011 14:06:50 -0400
-Content-Disposition: inline
-In-Reply-To: <20110729165342.GB8566@caffeine.csclub.uwaterloo.ca>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20110729180650.GL8562@caffeine.csclub.uwaterloo.ca>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Breno Leitao <leitao@linux.vnet.ibm.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Breno Leitao <leitao@linux.vnet.ibm.com>
+List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jul 29, 2011 at 12:53:42PM -0400, Lennart Sorensen wrote:
-> On Fri, Jul 29, 2011 at 05:27:36PM +0100, Alan Cox wrote:
-> > > The trigger point appears to be lines of up to 14 bytes, followed by
-> > > a newline.  With 15 bytes or more per line it seems to be OK.
-> > > 
-> > > Anyone got a clue?
-> > 
-> > FIFO size perhaps - and some kind of missed wakeup or tx handling bug ?
-> 
-> FIFO size is 64bytes, so that doesn't immediately sound related.
-> 
-> The thing I find weird is that it thinks everything was sent right away.
-> 
-> Also why should the newline have anything to do with it?  If you send
-> 100100 bytes should it matter where the newlines are unless the tty
-> layer or the driver is interpreting the newlines for some reason.
+> I noticed fifosize in the uart_port info is set to 16, even though the
+> fifo size is actually 64 bytes as all actual driver bits know.  What is
+> fifosize actually used for?
 
-Same breakage on 2.6.18.  I suspect this has always been broken.
+Only within the driver. The generic code merely knows how it as a
+configuration property but doesn't use it.
 
-Hmm.
-
-I noticed fifosize in the uart_port info is set to 16, even though the
-fifo size is actually 64 bytes as all actual driver bits know.  What is
-fifosize actually used for?
-
--- 
-Len Sorensen
+Alan
