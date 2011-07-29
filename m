@@ -1,101 +1,91 @@
-From: Govindraj <govindraj.ti@gmail.com>
+From: Felipe Balbi <balbi@ti.com>
 Subject: Re: [RFC v2]: Issues implementing clock handling mechanism within
  UART driver
-Date: Fri, 29 Jul 2011 17:29:12 +0530
-Message-ID: <CAAL8m4wq7RQ_Rp-+LMWYY=dtTnhtR5UY+8HpO5C_54goKezaTg@mail.gmail.com>
+Date: Fri, 29 Jul 2011 15:19:08 +0300
+Message-ID: <20110729121907.GM31013@legolas.emea.dhcp.ti.com>
 References: <1311845395-31917-1-git-send-email-govindraj.raja@ti.com>
- <20110729095512.GE31013@legolas.emea.dhcp.ti.com> <CAAL8m4xjN15RfwbDd_c1HdoKY327CWOn5qwuoUT=fop4J0K5cw@mail.gmail.com>
+ <20110729095512.GE31013@legolas.emea.dhcp.ti.com>
+ <CAAL8m4xjN15RfwbDd_c1HdoKY327CWOn5qwuoUT=fop4J0K5cw@mail.gmail.com>
  <20110729113713.GK31013@legolas.emea.dhcp.ti.com>
+ <CAAL8m4wq7RQ_Rp-+LMWYY=dtTnhtR5UY+8HpO5C_54goKezaTg@mail.gmail.com>
+Reply-To: balbi@ti.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="mI5TpPl/qDRoXxBg"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-fx0-f46.google.com ([209.85.161.46]:53466 "EHLO
-	mail-fx0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755192Ab1G2L7d convert rfc822-to-8bit (ORCPT
+Received: from na3sys009aog119.obsmtp.com ([74.125.149.246]:39963 "EHLO
+	na3sys009aog119.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755804Ab1G2MTN (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 29 Jul 2011 07:59:33 -0400
-In-Reply-To: <20110729113713.GK31013@legolas.emea.dhcp.ti.com>
+	Fri, 29 Jul 2011 08:19:13 -0400
+Content-Disposition: inline
+In-Reply-To: <CAAL8m4wq7RQ_Rp-+LMWYY=dtTnhtR5UY+8HpO5C_54goKezaTg@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: balbi@ti.com
-Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-pm@lists.linux-foundation.org, "Rafael J. Wysocki" <rjw@sisk.pl>, Paul Walmsley <paul@pwsan.com>, Kevin Hilman <khilman@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Partha Basak <p-basak2@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Rajendra Nayak <rnayak@ti.com>, Benoit Cousson <b-cousson@ti.com>, Tero Kristo <t-kristo@ti.com>
+To: Govindraj <govindraj.ti@gmail.com>
+Cc: balbi@ti.com, "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-pm@lists.linux-foundation.org, "Rafael J. Wysocki" <rjw@sisk.pl>, Paul Walmsley <paul@pwsan.com>, Kevin Hilman <khilman@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Partha Basak <p-basak2@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Rajendra Nayak <rnayak@ti.com>, Benoit Cousson <b-cousson@ti.com>, Tero Kristo <t-kristo@ti.com>
 
-On Fri, Jul 29, 2011 at 5:07 PM, Felipe Balbi <balbi@ti.com> wrote:
-> Hi,
->
-> On Fri, Jul 29, 2011 at 04:54:44PM +0530, Govindraj wrote:
->> On Fri, Jul 29, 2011 at 3:25 PM, Felipe Balbi <balbi@ti.com> wrote:
->> > Hi,
->> >
->>
->> Thanks for replying.
->>
->> > On Thu, Jul 28, 2011 at 02:59:55PM +0530, Govindraj.R wrote:
->> >> Proposal:
->> >> --------
->> >> =A0 =A0 =A0 1. For the UART, follow the current approach of locki=
-ng the console in
->> >> =A0 =A0 =A0 =A0 =A0Idle/Suspend path before cutting the clock but=
- using pm_runtime_putsync.
->> >> =A0 =A0 =A0 =A0 =A0That is, continue using the prepare/resume Idl=
-e calls in idle path.
->> >
->> > I believe you should be using ->prepare() to prevent that any othe=
-r
->> > work on UART won't trigger a console_write() right now. Maybe only
->> > queueing the work for after ->complete() or, maybe, just ignoring =
-the
->> > work and loosing some prints, dunno.
->> >
->>
->> Yes true, for suspend path but for Idle path we don't have any such
->> mechanism.
->
-> aha... good point ;-)
->
->> I have done clock gating in idle path integrating irq chaining patch=
-es.
->> hosted in gitorious here[1].
->>
->> Was consolidating whether this approach is OK,
->> or
->> Are there any other approaches that I should consider?
->
-> why don't you also start queueing writes after the first call to
-> runtime_suspend() and flush them after the first call runtime_resume(=
-)??
->
 
-Yes fine, But there are scenarios even before first runtime_suspend hap=
-pens,
+--mI5TpPl/qDRoXxBg
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-ex: uart_port_configure -> get_sync -> pm_generic_runtime_resume
-(omap_device_enable in this case) debug printk -> console_write -> get_=
-sync.
+Hi,
 
-there are numerous such scenarios where we end from runtime context
-to runtime api context again, or jumping from one uart port operation
-to uart print operation.
+On Fri, Jul 29, 2011 at 05:29:12PM +0530, Govindraj wrote:
+> Yes fine, But there are scenarios even before first runtime_suspend happe=
+ns,
+>=20
+> ex: uart_port_configure -> get_sync -> pm_generic_runtime_resume
+> (omap_device_enable in this case) debug printk -> console_write -> get_sy=
+nc.
+>=20
+> there are numerous such scenarios where we end from runtime context
+> to runtime api context again, or jumping from one uart port operation
+> to uart print operation.
 
-So either we should not have those prints from pm_generic layers or sup=
-press
-them(seems pretty much a problem for a clean design within the driver
-using console_lock/unlock for every get_sync, and for
-runtime_put we cannot suppress the prints as it gets scheduled later)
+calling pm_runtime_get_sync() should not be a problem. It should only
+increase the usage counters... This sounds like a race condition on the
+driver, no ?
 
-or if other folks who really need those prints form pm_generic* layers
-to debug and analysis then we have no other choice rather control
-the clk_enable/disable from outside driver code in idle path.
+What you're experiencing, if I understood correctly, is a deadlock ? In
+that case, can you try to track the locking mechanism on the omap-serial
+driver to try to find if there isn't anything obviously wrong ?
 
---
-Thanks
-Govindraj.R
+> So either we should not have those prints from pm_generic layers or suppr=
+ess
+> them(seems pretty much a problem for a clean design within the driver
+> using console_lock/unlock for every get_sync, and for
+> runtime_put we cannot suppress the prints as it gets scheduled later)
+>=20
+> or if other folks who really need those prints form pm_generic* layers
+> to debug and analysis then we have no other choice rather control
+> the clk_enable/disable from outside driver code in idle path.
 
-*pm_generic layers for omap, referring to omap_device/omap_hwmod layers
-which does low level clock handling.
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+yeah, none of these would be nice :-(
+
+I think this needs more debugging to be sure what's exactly going on.
+What's exactly causing the deadlock ? Which lock is held and never
+released ?
+
+--=20
+balbi
+
+--mI5TpPl/qDRoXxBg
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iQEcBAEBAgAGBQJOMqU7AAoJEAv8Txj19kN1g4oH/188EVO7WsJ7AruGD1YLbS4Q
+ikA+ECceM8E1JmoxdMMXNJRzN45WZW2SyCA61yjiwjMrGbh2/Q88u4cfncXaOVl7
++xZEFg8TZz0RVvtarJf+R6mmJdRMiuvxKPZz1552aopKFOLqpgrU6kes3tDjepkq
+Z6E4Gv8Ijx8rBrGbR9YLkGTsQEW7bSXDeCr9pxIV/624p+gAp6lauizfpKKxGD4X
+lvwNJybZn1se7+NYXdSjJIpd5dHwub7D/Np6n4uo3WfHMMDHyFXaVvz1mBf+UyEX
+D33tExXx8RMkOhmYuwe7eB4sT2sg9r6nLnOnJ2t1c1PFiHce3Od1BuRVV7dqgko=
+=t6Co
+-----END PGP SIGNATURE-----
+
+--mI5TpPl/qDRoXxBg--
