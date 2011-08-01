@@ -1,107 +1,67 @@
-From: Govindraj <govindraj.ti@gmail.com>
-Subject: Re: [RFC v2]: Issues implementing clock handling mechanism within
- UART driver
-Date: Mon, 1 Aug 2011 18:16:59 +0530
-Message-ID: <CAAL8m4xTiwH4dKYMWm1M=xMSEzZD=hgL_dxUZeSBkda_58VF7g@mail.gmail.com>
-References: <20110729095512.GE31013@legolas.emea.dhcp.ti.com>
- <CAAL8m4xjN15RfwbDd_c1HdoKY327CWOn5qwuoUT=fop4J0K5cw@mail.gmail.com>
- <20110729113713.GK31013@legolas.emea.dhcp.ti.com> <CAAL8m4wq7RQ_Rp-+LMWYY=dtTnhtR5UY+8HpO5C_54goKezaTg@mail.gmail.com>
- <20110729121907.GM31013@legolas.emea.dhcp.ti.com> <CAAL8m4wQqS64xG0Vi9YCOdy3f2=1V7UkJCErpikHOra4X=g7+w@mail.gmail.com>
- <20110729140210.GT31013@legolas.emea.dhcp.ti.com> <CAAL8m4wdKu_XGFaGxuAJ9uypRyyQMkR8HL7Y6E=pBkwX=L43nA@mail.gmail.com>
- <20110801090328.GG31013@legolas.emea.dhcp.ti.com> <CAMrsUdL_9mzKsjrKf=spihxcRTQc6Tsr+MAP9GFAz_7sE27B6Q@mail.gmail.com>
- <20110801100203.GN31013@legolas.emea.dhcp.ti.com>
+From: Axel Lin <axel.lin@gmail.com>
+Subject: [PATCH] tty: Add "spi:" prefix for spi modalias
+Date: Mon, 01 Aug 2011 21:20:10 +0800
+Message-ID: <1312204810.4852.1.camel@phoenix>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-fx0-f46.google.com ([209.85.161.46]:44675 "EHLO
-	mail-fx0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752788Ab1HAMrU convert rfc822-to-8bit (ORCPT
+Received: from mail-pz0-f42.google.com ([209.85.210.42]:50830 "EHLO
+	mail-pz0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751788Ab1HANUV (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 1 Aug 2011 08:47:20 -0400
-In-Reply-To: <20110801100203.GN31013@legolas.emea.dhcp.ti.com>
+	Mon, 1 Aug 2011 09:20:21 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: balbi@ti.com
-Cc: "Raja, Govindraj" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-pm@lists.linux-foundation.org, "Rafael J. Wysocki" <rjw@sisk.pl>, Paul Walmsley <paul@pwsan.com>, Kevin Hilman <khilman@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Partha Basak <p-basak2@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Rajendra Nayak <rnayak@ti.com>, Benoit Cousson <b-cousson@ti.com>, Tero Kristo <t-kristo@ti.com>
+To: linux-kernel@vger.kernel.org
+Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
 
-On Mon, Aug 1, 2011 at 3:32 PM, Felipe Balbi <balbi@ti.com> wrote:
-> Hi,
->
-> (fix your mailer dude)
+Since commit e0626e38 (spi: prefix modalias with "spi:"),
+the spi modalias is prefixed with "spi:".
 
-Sorry some settings got screwed up with my mailer
+This patch adds "spi:" prefix and removes "-spi" suffix in the modalias.
 
->
-> On Mon, Aug 01, 2011 at 03:26:52PM +0530, Raja, Govindraj wrote:
+Signed-off-by: Axel Lin <axel.lin@gmail.com>
+---
+ drivers/tty/serial/max3107-aava.c |    2 +-
+ drivers/tty/serial/max3107.c      |    2 +-
+ drivers/tty/serial/mrst_max3110.c |    2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-[..]
+diff --git a/drivers/tty/serial/max3107-aava.c b/drivers/tty/serial/max3107-aava.c
+index 0b98a77..90c40f2 100644
+--- a/drivers/tty/serial/max3107-aava.c
++++ b/drivers/tty/serial/max3107-aava.c
+@@ -341,5 +341,5 @@ module_exit(max3107_exit);
+ 
+ MODULE_DESCRIPTION("MAX3107 driver");
+ MODULE_AUTHOR("Aavamobile");
+-MODULE_ALIAS("aava-max3107-spi");
++MODULE_ALIAS("spi:aava-max3107");
+ MODULE_LICENSE("GPL v2");
+diff --git a/drivers/tty/serial/max3107.c b/drivers/tty/serial/max3107.c
+index 8d56d1b..a50f406 100644
+--- a/drivers/tty/serial/max3107.c
++++ b/drivers/tty/serial/max3107.c
+@@ -1210,5 +1210,5 @@ module_exit(max3107_exit);
+ 
+ MODULE_DESCRIPTION("MAX3107 driver");
+ MODULE_AUTHOR("Aavamobile");
+-MODULE_ALIAS("max3107-spi");
++MODULE_ALIAS("spi:max3107");
+ MODULE_LICENSE("GPL v2");
+diff --git a/drivers/tty/serial/mrst_max3110.c b/drivers/tty/serial/mrst_max3110.c
+index a764bf9..23bc743 100644
+--- a/drivers/tty/serial/mrst_max3110.c
++++ b/drivers/tty/serial/mrst_max3110.c
+@@ -917,4 +917,4 @@ module_init(serial_m3110_init);
+ module_exit(serial_m3110_exit);
+ 
+ MODULE_LICENSE("GPL v2");
+-MODULE_ALIAS("max3110-uart");
++MODULE_ALIAS("spi:max3110-uart");
+-- 
+1.7.4.1
 
->> =C2=A0 =C2=A0 =C2=A0this hunk is unnecessary. Clocks are always on w=
-hen they are called.
->>
->> =C2=A0 =C2=A0The problem is:
->> =C2=A0 =C2=A0[1]:
->> =C2=A0 =C2=A0runtime_put -> *power.lock* - > rpm->suspend -> above p=
-r_debug ->
->> =C2=A0 =C2=A0console_write -> get_sync
->> =C2=A0 =C2=A0-> *power.lock* -> rpm resume
->> =C2=A0 =C2=A0power.lock contention.
->
-> Are you sure ? If the device is still on, won't that get_sync() only
-> increase the pm counter ? Instead of going through everything ?? Oh
-> well, this is becoming quite racy :-(
 
-Yes true, but before it increments the counter it will take
-power.lock
 
-if we look into internals.
-
-pm_runtime_get_sync -> *__pm_runtime_resume* --> rpm_resume
-
-int __pm_runtime_resume(struct device *dev, int rpmflags)
-{
- [..]
-        spin_lock_irqsave(&dev->power.lock, flags);
-        retval =3D rpm_resume(dev, rpmflags);
-        spin_unlock_irqrestore(&dev->power.lock, flags);
-[..]
-}
-
-Same applicable for runtime_put
-
-[..]
->> =C2=A0 =C2=A0 =C2=A0I'll leave this to Kevin to decide what to do, b=
-ut clocks are off
->> =C2=A0 =C2=A0 =C2=A0here...
->>
->> =C2=A0 =C2=A0Yes fine.=EF=BF=BD
->> =C2=A0 =C2=A0Since most of these prints will be printed if DEBUG mac=
-ro
->> =C2=A0 =C2=A0is defined in respective files and *debug* is used in c=
-ommand line.
->> =C2=A0 =C2=A0Can't leave uart clocks active always on debug cases.
->> =C2=A0 =C2=A0[If *debug* =EF=BF=BDused as command line]
->> =C2=A0 =C2=A0and gate uart clocks only for non debug cases.
->> =C2=A0 =C2=A0With this approach=EF=BF=BDat least=EF=BF=BDwe can have=
- a clean solution
->> =C2=A0 =C2=A0in uart driver also without adding clock gating from id=
-le path.
->> =C2=A0 =C2=A0Not sure if this=EF=BF=BDagreeable.
->> =C2=A0 =C2=A0As of now gating from idle path seems to be only clean =
-approach.
->
-> I see.. that could be one way... let's see how Kevin feels about it
-> though.
->
-
-OK.
-
---
-Thanks,
-Govindraj.R
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
