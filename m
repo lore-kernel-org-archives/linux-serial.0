@@ -1,67 +1,26 @@
-From: Axel Lin <axel.lin@gmail.com>
-Subject: [PATCH] tty: Add "spi:" prefix for spi modalias
-Date: Mon, 01 Aug 2011 21:20:10 +0800
-Message-ID: <1312204810.4852.1.camel@phoenix>
+From: Mike Frysinger <vapier.adi@gmail.com>
+Subject: Re: [PATCH 2/2] serial:blackfin: Put TX IRQ in individual platform
+ resource. Fix typo.
+Date: Mon, 1 Aug 2011 07:20:25 -0700
+Message-ID: <CAMjpGUdMEEM3r79b9DkwyaeFOaNn=DZXWuwtHk72wXEnk98Kpw@mail.gmail.com>
+References: <1312193592-6672-1-git-send-email-sonic.adi@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pz0-f42.google.com ([209.85.210.42]:50830 "EHLO
-	mail-pz0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751788Ab1HANUV (ORCPT
+Received: from mail-ey0-f171.google.com ([209.85.215.171]:57743 "EHLO
+	mail-ey0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751940Ab1HAOUq (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 1 Aug 2011 09:20:21 -0400
+	Mon, 1 Aug 2011 10:20:46 -0400
+In-Reply-To: <1312193592-6672-1-git-send-email-sonic.adi@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
+To: Sonic Zhang <sonic.adi@gmail.com>
+Cc: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
 
-Since commit e0626e38 (spi: prefix modalias with "spi:"),
-the spi modalias is prefixed with "spi:".
+On Mon, Aug 1, 2011 at 03:13, Sonic Zhang wrote:
+> Fix typo in last patch.
 
-This patch adds "spi:" prefix and removes "-spi" suffix in the modalias.
-
-Signed-off-by: Axel Lin <axel.lin@gmail.com>
----
- drivers/tty/serial/max3107-aava.c |    2 +-
- drivers/tty/serial/max3107.c      |    2 +-
- drivers/tty/serial/mrst_max3110.c |    2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/serial/max3107-aava.c b/drivers/tty/serial/max3107-aava.c
-index 0b98a77..90c40f2 100644
---- a/drivers/tty/serial/max3107-aava.c
-+++ b/drivers/tty/serial/max3107-aava.c
-@@ -341,5 +341,5 @@ module_exit(max3107_exit);
- 
- MODULE_DESCRIPTION("MAX3107 driver");
- MODULE_AUTHOR("Aavamobile");
--MODULE_ALIAS("aava-max3107-spi");
-+MODULE_ALIAS("spi:aava-max3107");
- MODULE_LICENSE("GPL v2");
-diff --git a/drivers/tty/serial/max3107.c b/drivers/tty/serial/max3107.c
-index 8d56d1b..a50f406 100644
---- a/drivers/tty/serial/max3107.c
-+++ b/drivers/tty/serial/max3107.c
-@@ -1210,5 +1210,5 @@ module_exit(max3107_exit);
- 
- MODULE_DESCRIPTION("MAX3107 driver");
- MODULE_AUTHOR("Aavamobile");
--MODULE_ALIAS("max3107-spi");
-+MODULE_ALIAS("spi:max3107");
- MODULE_LICENSE("GPL v2");
-diff --git a/drivers/tty/serial/mrst_max3110.c b/drivers/tty/serial/mrst_max3110.c
-index a764bf9..23bc743 100644
---- a/drivers/tty/serial/mrst_max3110.c
-+++ b/drivers/tty/serial/mrst_max3110.c
-@@ -917,4 +917,4 @@ module_init(serial_m3110_init);
- module_exit(serial_m3110_exit);
- 
- MODULE_LICENSE("GPL v2");
--MODULE_ALIAS("max3110-uart");
-+MODULE_ALIAS("spi:max3110-uart");
--- 
-1.7.4.1
-
-
-
+this should be folded into the previous patch then so that you're
+submitting known broken code
+-mike
