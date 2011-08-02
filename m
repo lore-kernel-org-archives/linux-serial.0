@@ -1,123 +1,40 @@
-From: Sonic Zhang <sonic.adi@gmail.com>
-Subject: [PATCH v2] serial:bfin_uart: Put TX IRQ in individual platform resource.
-Date: Tue, 2 Aug 2011 11:45:27 +0800
-Message-ID: <1312256727-13906-1-git-send-email-sonic.adi@gmail.com>
+From: Breno Leitao <leitao@linux.vnet.ibm.com>
+Subject: Re: Very strange data loss with jsm driver
+Date: Tue, 02 Aug 2011 11:17:52 -0300
+Message-ID: <4E380710.1010204@linux.vnet.ibm.com>
+References: <20110729160416.GK8562@caffeine.csclub.uwaterloo.ca> <20110729172736.4b199d31@lxorguk.ukuu.org.uk> <20110729165342.GB8566@caffeine.csclub.uwaterloo.ca> <20110729180650.GL8562@caffeine.csclub.uwaterloo.ca> <20110729191442.35d09111@lxorguk.ukuu.org.uk> <20110729181337.GM8562@caffeine.csclub.uwaterloo.ca>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ch1ehsobe005.messaging.microsoft.com ([216.32.181.185]:41407
-	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752675Ab1HBDvl (ORCPT
+Received: from e24smtp04.br.ibm.com ([32.104.18.25]:45940 "EHLO
+	e24smtp04.br.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753142Ab1HBOSx (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 1 Aug 2011 23:51:41 -0400
+	Tue, 2 Aug 2011 10:18:53 -0400
+Received: from /spool/local
+	by br.ibm.com with XMail ESMTP
+	for <linux-serial@vger.kernel.org> from <leitao@linux.vnet.ibm.com>;
+	Tue, 2 Aug 2011 11:18:48 -0300
+In-Reply-To: <20110729181337.GM8562@caffeine.csclub.uwaterloo.ca>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-From: Sonic Zhang <sonic.zhang@analog.com>
+On 07/29/2011 03:13 PM, Lennart Sorensen wrote:
+>
+>  It seems it can't be the tty layer, since other serial drivers seem to
+>  work fine. It has to be the jsm.
+Well, I finally tested it over here, and what I found is:
 
-Serial TX IRQ is not RX IRQ plus 1 in some blackfin chips.
-Give individual platform resources to both TX and RX irqs.
+If the line has a \r among the first 16 bytes, then the information
+is TXed immediately. If there is no \r in the first 16 bytes, then the
+information seems to be buffered.
 
-Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
----
- drivers/tty/serial/bfin_uart.c |   35 +++++++++++++++++++++--------------
- 1 files changed, 21 insertions(+), 14 deletions(-)
+So, it seems that that the patch should ask the driver to TX the
+information when we receive a \r or when the buffer is full. Does it
+make sense to you ?
 
-diff --git a/drivers/tty/serial/bfin_uart.c b/drivers/tty/serial/bfin_uart.c
-index e08bc04..881c6e7 100644
---- a/drivers/tty/serial/bfin_uart.c
-+++ b/drivers/tty/serial/bfin_uart.c
-@@ -667,17 +667,17 @@ static int bfin_serial_startup(struct uart_port *port)
- 		kgdboc_break_enabled = 0;
- 	else {
- # endif
--	if (request_irq(uart->port.irq, bfin_serial_rx_int, IRQF_DISABLED,
-+	if (request_irq(uart->rx_irq, bfin_serial_rx_int, IRQF_DISABLED,
- 	     "BFIN_UART_RX", uart)) {
- 		printk(KERN_NOTICE "Unable to attach BlackFin UART RX interrupt\n");
- 		return -EBUSY;
- 	}
- 
- 	if (request_irq
--	    (uart->port.irq+1, bfin_serial_tx_int, IRQF_DISABLED,
-+	    (uart->tx_irq, bfin_serial_tx_int, IRQF_DISABLED,
- 	     "BFIN_UART_TX", uart)) {
- 		printk(KERN_NOTICE "Unable to attach BlackFin UART TX interrupt\n");
--		free_irq(uart->port.irq, uart);
-+		free_irq(uart->rx_irq, uart);
- 		return -EBUSY;
- 	}
- 
-@@ -692,7 +692,7 @@ static int bfin_serial_startup(struct uart_port *port)
- 		 */
- 		unsigned uart_dma_ch_rx, uart_dma_ch_tx;
- 
--		switch (uart->port.irq) {
-+		switch (uart->rx_irq) {
- 		case IRQ_UART3_RX:
- 			uart_dma_ch_rx = CH_UART3_RX;
- 			uart_dma_ch_tx = CH_UART3_TX;
-@@ -709,16 +709,16 @@ static int bfin_serial_startup(struct uart_port *port)
- 		if (uart_dma_ch_rx &&
- 			request_dma(uart_dma_ch_rx, "BFIN_UART_RX") < 0) {
- 			printk(KERN_NOTICE"Fail to attach UART interrupt\n");
--			free_irq(uart->port.irq, uart);
--			free_irq(uart->port.irq + 1, uart);
-+			free_irq(uart->rx_irq, uart);
-+			free_irq(uart->tx_irq, uart);
- 			return -EBUSY;
- 		}
- 		if (uart_dma_ch_tx &&
- 			request_dma(uart_dma_ch_tx, "BFIN_UART_TX") < 0) {
- 			printk(KERN_NOTICE "Fail to attach UART interrupt\n");
- 			free_dma(uart_dma_ch_rx);
--			free_irq(uart->port.irq, uart);
--			free_irq(uart->port.irq + 1, uart);
-+			free_irq(uart->rx_irq, uart);
-+			free_irq(uart->tx_irq, uart);
- 			return -EBUSY;
- 		}
- 	}
-@@ -785,8 +785,8 @@ static void bfin_serial_shutdown(struct uart_port *port)
- 		break;
- 	};
- #endif
--	free_irq(uart->port.irq, uart);
--	free_irq(uart->port.irq+1, uart);
-+	free_irq(uart->rx_irq, uart);
-+	free_irq(uart->tx_irq, uart);
- #endif
- 
- #ifdef CONFIG_SERIAL_BFIN_CTSRTS
-@@ -1319,14 +1319,21 @@ static int bfin_serial_probe(struct platform_device *pdev)
- 		}
- 		uart->port.mapbase = res->start;
- 
--		uart->port.irq = platform_get_irq(pdev, 0);
--		if (uart->port.irq < 0) {
--			dev_err(&pdev->dev, "No uart RX/TX IRQ specified\n");
-+		uart->tx_irq = platform_get_irq(pdev, 0);
-+		if (uart->tx_irq < 0) {
-+			dev_err(&pdev->dev, "No uart TX IRQ specified\n");
- 			ret = -ENOENT;
- 			goto out_error_unmap;
- 		}
- 
--		uart->status_irq = platform_get_irq(pdev, 1);
-+		uart->rx_irq = platform_get_irq(pdev, 1);
-+		if (uart->rx_irq < 0) {
-+			dev_err(&pdev->dev, "No uart RX IRQ specified\n");
-+			ret = -ENOENT;
-+			goto out_error_unmap;
-+		}
-+
-+		uart->status_irq = platform_get_irq(pdev, 2);
- 		if (uart->status_irq < 0) {
- 			dev_err(&pdev->dev, "No uart status IRQ specified\n");
- 			ret = -ENOENT;
--- 
-1.7.0.4
-
+Thanks
 
