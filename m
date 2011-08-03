@@ -1,31 +1,53 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] SERIAL: Lantiq: Set timeout in uart_port
-Date: Wed, 3 Aug 2011 16:10:29 +0100
-Message-ID: <20110803161029.1d46865f@lxorguk.ukuu.org.uk>
-References: <20110803143724.GB8673@linux-mips.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:40384 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1754579Ab1HCPHS (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 3 Aug 2011 11:07:18 -0400
-In-Reply-To: <20110803143724.GB8673@linux-mips.org>
-Sender: linux-serial-owner@vger.kernel.org
+From: Greg KH <gregkh@suse.de>
+Subject: [088/102] SERIAL: SC26xx: Fix link error.
+Date: Wed, 03 Aug 2011 15:01:48 -0700
+Message-ID: <20110803221252.928206230@clark.kroah.org>
+References: <20110803221345.GA10346@kroah.com>
+Return-path: <linux-mips-bounce@linux-mips.org>
+In-Reply-To: <20110803221345.GA10346@kroah.com>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+To: linux-kernel@vger.kernel.org, stable@kernel.org
+Cc: stable-review@kernel.org, torvalds@linux-foundation.org, akpm@linux-foundation.org, alan@lxorguk.ukuu.org.uk, Ralf Baechle <ralf@linux-mips.org>, linux-serial@vger.kernel.org, linux-mips@linux-mips.org, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
-To: Ralf Baechle <ralf@linux-mips.org>
-Cc: linux-serial@vger.kernel.org, linux-mips@linux-mips.org, greg@kroah.com
 
-On Wed, 3 Aug 2011 15:37:24 +0100
-Ralf Baechle <ralf@linux-mips.org> wrote:
+3.0-stable review patch.  If anyone has any objections, please let us know.
 
-> From: John Crispin <blogic@openwrt.org>
-> 
-> Without this patch apps using readline hang.
-> 
-> Signed-off-by: Thomas Langer <thomas.langer@lantiq.com>
-> Signed-off-by: John Crispin <blogic@openwrt.org>
+------------------
 
-Signed-off-by: Alan Cox <alan@linux.intel.com>
+From: Ralf Baechle <ralf@linux-mips.org>
+
+commit f2eb3cdf14457fccb14ae8c4d7d7cee088cd3957 upstream.
+
+Kconfig allows enabling console support for the SC26xx driver even when
+it's configured as a module resulting in a:
+
+ERROR: "uart_console_device" [drivers/tty/serial/sc26xx.ko] undefined!
+
+modpost error since the driver was merged in
+eea63e0e8a60d00485b47fb6e75d9aa2566b989b [SC26XX: New serial driver for
+SC2681 uarts] in 2.6.25.  Fixed by only allowing console support to be
+enabled if the driver is builtin.
+
+Signed-off-by: Ralf Baechle <ralf@linux-mips.org>
+Cc: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-mips@linux-mips.org
+Acked-by: Alan Cox <alan@linux.intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/tty/serial/Kconfig |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1419,7 +1419,7 @@ config SERIAL_SC26XX
+ 
+ config SERIAL_SC26XX_CONSOLE
+ 	bool "Console on SC2681/SC2692 serial port"
+-	depends on SERIAL_SC26XX
++	depends on SERIAL_SC26XX=y
+ 	select SERIAL_CORE_CONSOLE
+ 	help
+ 	  Support for Console on SC2681/SC2692 serial ports.
