@@ -1,124 +1,102 @@
-From: Ben Dooks <ben-linux@fluff.org>
+From: Thomas Abraham <thomas.abraham@linaro.org>
 Subject: Re: [PATCH 2/4] serial: s5pv210: Add device tree support
-Date: Wed, 3 Aug 2011 10:12:49 +0100
-Message-ID: <20110803091249.GB28651@trinity.fluff.org>
-References: <1312326509-2723-1-git-send-email-thomas.abraham@linaro.org> <1312326509-2723-3-git-send-email-thomas.abraham@linaro.org>
+Date: Wed, 3 Aug 2011 11:09:23 +0100
+Message-ID: <CAJuYYwSg8XcdRqD1VHzsL4oGtJkCdhAM9mpSX_jQnGr0BKz2PQ@mail.gmail.com>
+References: <1312326509-2723-1-git-send-email-thomas.abraham@linaro.org>
+	<1312326509-2723-3-git-send-email-thomas.abraham@linaro.org>
+	<20110803091249.GB28651@trinity.fluff.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1312326509-2723-3-git-send-email-thomas.abraham@linaro.org>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Thomas Abraham <thomas.abraham@linaro.org>
-Cc: devicetree-discuss@lists.ozlabs.org, kgene.kim@samsung.com, Ben Dooks <ben-linux@fluff.org>, patches@linaro.org, grant.likely@secretlab.ca, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-yx0-f174.google.com ([209.85.213.174]:46976 "EHLO
+	mail-yx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752594Ab1HCKJY convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 3 Aug 2011 06:09:24 -0400
+In-Reply-To: <20110803091249.GB28651@trinity.fluff.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Ben Dooks <ben-linux@fluff.org>
+Cc: devicetree-discuss@lists.ozlabs.org, kgene.kim@samsung.com, patches@linaro.org, grant.likely@secretlab.ca, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Wed, Aug 03, 2011 at 12:08:27AM +0100, Thomas Abraham wrote:
-> For device tree based probe, the dependecy on pdev->id to attach a
-> corresponding default port info to the driver's private data is
-> removed. The fifosize parameter is obtained from the device tree
-> node and the next available instance of port info is updated
-> with the fifosize value and attached to the driver's private data.
-> The default platform data is selected based on the compatible property.
-> 
-> CC: Ben Dooks <ben-linux@fluff.org>
-> Signed-off-by: Thomas Abraham <thomas.abraham@linaro.org>
-> ---
->  .../devicetree/bindings/serial/samsung_uart.txt    |   16 +++++++
->  drivers/tty/serial/s5pv210.c                       |   43 +++++++++++++++++++-
->  drivers/tty/serial/samsung.c                       |    5 ++-
->  3 files changed, 62 insertions(+), 2 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/serial/samsung_uart.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.txt b/Documentation/devicetree/bindings/serial/samsung_uart.txt
-> new file mode 100644
-> index 0000000..9174499
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/samsung_uart.txt
-> @@ -0,0 +1,16 @@
-> +* Samsung's UART Controller
-> +
-> +The Samsung's UART controller is used for serial communications on all of
-> +Samsung's s3c24xx, s3c64xx and s5p series application processors.
-> +
-> +Required properties:
-> +- compatible: should be specific to the application processor
-> +    - "samsung,s5pv310-uart" , for Exynos4 processors.
-> +
-> +- reg: base physical address of the controller and length of memory mapped
-> +  region.
-> +
-> +- interrupts : Three interrupt numbers should be specified in the following
-> +  order - Rx interrupt, Tx interrupt, Error Interrupt.
-> +
-> +- samsung,uart-fifosize: Size of the tx/rx fifo used in the controller.
-> diff --git a/drivers/tty/serial/s5pv210.c b/drivers/tty/serial/s5pv210.c
-> index fb0806c..a44b599 100644
-> --- a/drivers/tty/serial/s5pv210.c
-> +++ b/drivers/tty/serial/s5pv210.c
-> @@ -19,6 +19,7 @@
->  #include <linux/serial_core.h>
->  #include <linux/serial.h>
->  #include <linux/delay.h>
-> +#include <linux/of.h>
->  
->  #include <asm/irq.h>
->  #include <mach/hardware.h>
-> @@ -132,10 +133,49 @@ static struct s3c24xx_uart_info *s5p_uart_inf[] = {
->  	[3] = &s5p_port_fifo16,
->  };
->  
-> +#ifdef CONFIG_OF
-> +static struct s3c2410_uartcfg s5pv310_uart_defcfg = {
-> +	.ucon	= 0x3c5,
-> +	.ufcon	= 0x111,
-> +	.flags	= NO_NEED_CHECK_CLKSRC,
-> +	.has_fracval = 1,
-> +};
-> +
-> +static const struct of_device_id s5pv210_uart_dt_match[] = {
-> +	{ .compatible = "samsung,s5pv310-uart", .data = &s5pv310_uart_defcfg },
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(of, s5pv210_uart_match);
-> +#else
-> +#define s5pv210_uart_match NULL
-> +#endif
-> +
->  /* device management */
->  static int s5p_serial_probe(struct platform_device *pdev)
->  {
-> -	return s3c24xx_serial_probe(pdev, s5p_uart_inf[pdev->id]);
-> +	static unsigned int probe_index;
-> +	unsigned int port = pdev->id;
-> +	const struct of_device_id *match;
-> +	struct s3c2410_uartcfg *cfg;
-> +
-> +	if (pdev->dev.of_node) {
-> +		if (of_property_read_u32(pdev->dev.of_node,
-> +				"samsung,uart-fifosize",
-> +				&s5p_uart_inf[probe_index]->fifosize))
-> +			return -EINVAL;
+Hi Ben,
 
-I'd rather see the fifo size either being a property of the soc itself
-or being inferred by the compatible field. 
+On 3 August 2011 10:12, Ben Dooks <ben-linux@fluff.org> wrote:
+> On Wed, Aug 03, 2011 at 12:08:27AM +0100, Thomas Abraham wrote:
+>> For device tree based probe, the dependecy on pdev->id to attach a
+>> corresponding default port info to the driver's private data is
+>> removed. The fifosize parameter is obtained from the device tree
+>> node and the next available instance of port info is updated
+>> with the fifosize value and attached to the driver's private data.
+>> The default platform data is selected based on the compatible proper=
+ty.
+>>
+>> CC: Ben Dooks <ben-linux@fluff.org>
+>> Signed-off-by: Thomas Abraham <thomas.abraham@linaro.org>
+>> ---
+>> =A0.../devicetree/bindings/serial/samsung_uart.txt =A0 =A0| =A0 16 +=
+++++++
+>> =A0drivers/tty/serial/s5pv210.c =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 | =A0 43 +++++++++++++++++++-
+>> =A0drivers/tty/serial/samsung.c =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 | =A0 =A05 ++-
+>> =A03 files changed, 62 insertions(+), 2 deletions(-)
+>> =A0create mode 100644 Documentation/devicetree/bindings/serial/samsu=
+ng_uart.txt
 
->  	.driver		= {
->  		.name	= "s5pv210-uart",
->  		.owner	= THIS_MODULE,
-> +		.of_match_table	= s5pv210_uart_dt_match,
+[...]
 
-I think maybe doing something like
+>>
+>> +
+>> + =A0 =A0 if (pdev->dev.of_node) {
+>> + =A0 =A0 =A0 =A0 =A0 =A0 if (of_property_read_u32(pdev->dev.of_node=
+,
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 "samsung,u=
+art-fifosize",
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 &s5p_uart_=
+inf[probe_index]->fifosize))
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 return -EINVAL;
+>
+> I'd rather see the fifo size either being a property of the soc itsel=
+f
+> or being inferred by the compatible field.
 
-		.of_match_table = of_match_ptr(5pv210_uart_dt_match),
+Ok. I missed that. I will make it part of the SoC data.
 
-so we can avoid having the #else and #define 5pv210_uart_dt_match NULL
-in a number of places.
+>
+>> =A0 =A0 =A0 .driver =A0 =A0 =A0 =A0 =3D {
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 .name =A0 =3D "s5pv210-uart",
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 .owner =A0=3D THIS_MODULE,
+>> + =A0 =A0 =A0 =A0 =A0 =A0 .of_match_table =3D s5pv210_uart_dt_match,
+>
+> I think maybe doing something like
+>
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0.of_match_table =3D of_match_ptr(5pv21=
+0_uart_dt_match),
+>
+> so we can avoid having the #else and #define 5pv210_uart_dt_match NUL=
+L
+> in a number of places.
 
->  	},
->  };
+Ok. I will change it.
 
--- 
-Ben Dooks, ben@fluff.org, http://www.fluff.org/ben/
+Thanks,
+Thomas.
 
-Large Hadron Colada: A large Pina Colada that makes the universe disappear.
+>
+>> =A0 =A0 =A0 },
+>> =A0};
+>
+> --
+> Ben Dooks, ben@fluff.org, http://www.fluff.org/ben/
+>
+> Large Hadron Colada: A large Pina Colada that makes the universe disa=
+ppear.
+>
+>
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
