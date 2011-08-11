@@ -1,89 +1,184 @@
-From: Andreas Bombe <andreas.bombe@mytum.de>
-Subject: Re: [PATCH v2 1/6] TTY: serial, remove BTM from wait_until_sent
-Date: Thu, 11 Aug 2011 03:06:41 +0200
-Message-ID: <20110811010640.GA4186@amos.fritz.box>
-References: <1310646915-3032-1-git-send-email-jslaby@suse.cz>
- <20110719003503.GA4138@amos.fritz.box>
- <4E3FE2D2.5020801@gmail.com>
- <20110810010933.GA4733@amos.fritz.box>
- <4E429907.6080000@gmail.com>
- <20110810180754.GB13832@bombe-desk.opditex>
- <4E42C998.1050208@gmail.com>
+From: Sonic Zhang <sonic.adi@gmail.com>
+Subject: Re: [PATCH v2] serial:bfin_uart: Put TX IRQ in individual platform resource.
+Date: Thu, 11 Aug 2011 16:03:52 +0800
+Message-ID: <CAJxxZ0Ob6MddPM17B_yhx47ZCCfxa38g0j+bUD4gTbH_GfFhQQ@mail.gmail.com>
+References: <1312256727-13906-1-git-send-email-sonic.adi@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from infernal.debian.net ([87.230.26.131]:60654 "EHLO
-	infernal.debian.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752443Ab1HKBGs (ORCPT
+Received: from mail-vw0-f46.google.com ([209.85.212.46]:55248 "EHLO
+	mail-vw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751085Ab1HKIDz convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Aug 2011 21:06:48 -0400
-Content-Disposition: inline
-In-Reply-To: <4E42C998.1050208@gmail.com>
+	Thu, 11 Aug 2011 04:03:55 -0400
+In-Reply-To: <1312256727-13906-1-git-send-email-sonic.adi@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jirislaby@gmail.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, gregkh@suse.de, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Arnd Bergmann <arnd@arndb.de>
+To: Alan Cox <alan@linux.intel.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
 
-On Wed, Aug 10, 2011 at 08:10:32PM +0200, Jiri Slaby wrote:
-> On 08/10/2011 08:07 PM, Andreas Bombe wrote:
-> > On Wed, Aug 10, 2011 at 04:43:19PM +0200, Jiri Slaby wrote:
-> >> On 08/10/2011 03:09 AM, Andreas Bombe wrote:
-> >>> I did my simple test on ttyS0 again: "stty -F /dev/ttyS0 crtscts" then
-> >>> "echo >/dev/ttyS0". I attached the gzipped sysrq-t list in case you need
-> >>> the complete output. This is just the process while it is trying to
-> >>> close the device (bash's internal echo):
-> >>
-> >> Hmm, perhaps obvious question. What is the port connected with? And with
-> >> what cable? Is it null modem cable? Or at least with DTR-CTS connected?
-> > 
-> > Nothing is connected. After all, the whole point of this exercise is to
-> > give the driver data to send which it can't get out so I can see whether
-> > it blocks all tty operations system wide while trying to do the flush on
-> > close.
-> 
-> But according to the trace, it waits only in its queue...
-> 
-> Well, could you turn on lockdep and dump sysrq-d when your echo is
-> closing the port?
+Hi Alan,
 
-Ok, it still appears to be holding the big_tty_mutex. I ran /bin/echo so
-that it actually shows up as "echo" here:
+Any comments?
 
-[  962.365574] SysRq : Show Locks Held
-[  962.365580] 
-[  962.365581] Showing all locks held in the system:
-[  962.365599] 1 lock held by Xorg/1881:
-[  962.365601]  #0:  (big_tty_mutex){+.+.+.}, at: [<ffffffff813d0013>] tty_lock+0x12/0x14
-[  962.365624] 1 lock held by getty/2732:
-[  962.365626]  #0:  (&tty->atomic_read_lock){+.+.+.}, at: [<ffffffff81254fff>] n_tty_read+0x188/0x681
-[  962.365637] 1 lock held by getty/2733:
-[  962.365639]  #0:  (&tty->atomic_read_lock){+.+.+.}, at: [<ffffffff81254fff>] n_tty_read+0x188/0x681
-[  962.365647] 1 lock held by getty/2734:
-[  962.365649]  #0:  (&tty->atomic_read_lock){+.+.+.}, at: [<ffffffff81254fff>] n_tty_read+0x188/0x681
-[  962.365658] 1 lock held by getty/2735:
-[  962.365660]  #0:  (&tty->atomic_read_lock){+.+.+.}, at: [<ffffffff81254fff>] n_tty_read+0x188/0x681
-[  962.365679] 1 lock held by bash/2994:
-[  962.365681]  #0:  (&tty->atomic_read_lock){+.+.+.}, at: [<ffffffff81254fff>] n_tty_read+0x188/0x681
-[  962.365691] 1 lock held by bash/3326:
-[  962.365692]  #0:  (&tty->atomic_read_lock){+.+.+.}, at: [<ffffffff81254fff>] n_tty_read+0x188/0x681
-[  962.365701] 1 lock held by bash/3444:
-[  962.365703]  #0:  (&tty->atomic_read_lock){+.+.+.}, at: [<ffffffff81254fff>] n_tty_read+0x188/0x681
-[  962.365713] 1 lock held by bash/3793:
-[  962.365715]  #0:  (&tty->atomic_read_lock){+.+.+.}, at: [<ffffffff81254fff>] n_tty_read+0x188/0x681
-[  962.365725] 1 lock held by less/3899:
-[  962.365727]  #0:  (&tty->atomic_read_lock){+.+.+.}, at: [<ffffffff81254fff>] n_tty_read+0x188/0x681
-[  962.365735] 2 locks held by echo/4162:
-[  962.365737]  #0:  (big_tty_mutex){+.+.+.}, at: [<ffffffff813d0013>] tty_lock+0x12/0x14
-[  962.365746]  #1:  (&port->mutex){+.+.+.}, at: [<ffffffff81268b46>] uart_close+0x6c/0x243
-[  962.365754] 
-[  962.365756] =============================================
-[  962.365757] 
+Sonic Zhang
 
-
-Also, can you not reproduce it? I thought the "enable hardware handshake
-on unconnected port and send" dance should be universal enough to work
-for everyone. Everyone with a serial port somewhere in the system, that
-is.
-
--- 
-Andreas Bombe
+On Tue, Aug 2, 2011 at 11:45 AM, Sonic Zhang <sonic.adi@gmail.com> wrot=
+e:
+> From: Sonic Zhang <sonic.zhang@analog.com>
+>
+> Serial TX IRQ is not RX IRQ plus 1 in some blackfin chips.
+> Give individual platform resources to both TX and RX irqs.
+>
+> Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+> ---
+> =A0drivers/tty/serial/bfin_uart.c | =A0 35 +++++++++++++++++++++-----=
+---------
+> =A01 files changed, 21 insertions(+), 14 deletions(-)
+>
+> diff --git a/drivers/tty/serial/bfin_uart.c b/drivers/tty/serial/bfin=
+_uart.c
+> index e08bc04..881c6e7 100644
+> --- a/drivers/tty/serial/bfin_uart.c
+> +++ b/drivers/tty/serial/bfin_uart.c
+> @@ -667,17 +667,17 @@ static int bfin_serial_startup(struct uart_port=
+ *port)
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0kgdboc_break_enabled =3D 0;
+> =A0 =A0 =A0 =A0else {
+> =A0# endif
+> - =A0 =A0 =A0 if (request_irq(uart->port.irq, bfin_serial_rx_int, IRQ=
+=46_DISABLED,
+> + =A0 =A0 =A0 if (request_irq(uart->rx_irq, bfin_serial_rx_int, IRQF_=
+DISABLED,
+> =A0 =A0 =A0 =A0 =A0 =A0 "BFIN_UART_RX", uart)) {
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0printk(KERN_NOTICE "Unable to attach B=
+lackFin UART RX interrupt\n");
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0return -EBUSY;
+> =A0 =A0 =A0 =A0}
+>
+> =A0 =A0 =A0 =A0if (request_irq
+> - =A0 =A0 =A0 =A0 =A0 (uart->port.irq+1, bfin_serial_tx_int, IRQF_DIS=
+ABLED,
+> + =A0 =A0 =A0 =A0 =A0 (uart->tx_irq, bfin_serial_tx_int, IRQF_DISABLE=
+D,
+> =A0 =A0 =A0 =A0 =A0 =A0 "BFIN_UART_TX", uart)) {
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0printk(KERN_NOTICE "Unable to attach B=
+lackFin UART TX interrupt\n");
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 free_irq(uart->port.irq, uart);
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 free_irq(uart->rx_irq, uart);
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0return -EBUSY;
+> =A0 =A0 =A0 =A0}
+>
+> @@ -692,7 +692,7 @@ static int bfin_serial_startup(struct uart_port *=
+port)
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 */
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0unsigned uart_dma_ch_rx, uart_dma_ch_t=
+x;
+>
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 switch (uart->port.irq) {
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 switch (uart->rx_irq) {
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0case IRQ_UART3_RX:
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0uart_dma_ch_rx =3D CH_=
+UART3_RX;
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0uart_dma_ch_tx =3D CH_=
+UART3_TX;
+> @@ -709,16 +709,16 @@ static int bfin_serial_startup(struct uart_port=
+ *port)
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0if (uart_dma_ch_rx &&
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0request_dma(uart_dma_c=
+h_rx, "BFIN_UART_RX") < 0) {
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0printk(KERN_NOTICE"Fai=
+l to attach UART interrupt\n");
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 free_irq(uart->port.irq=
+, uart);
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 free_irq(uart->port.irq=
+ + 1, uart);
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 free_irq(uart->rx_irq, =
+uart);
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 free_irq(uart->tx_irq, =
+uart);
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0return -EBUSY;
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0}
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0if (uart_dma_ch_tx &&
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0request_dma(uart_dma_c=
+h_tx, "BFIN_UART_TX") < 0) {
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0printk(KERN_NOTICE "Fa=
+il to attach UART interrupt\n");
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0free_dma(uart_dma_ch_r=
+x);
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 free_irq(uart->port.irq=
+, uart);
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 free_irq(uart->port.irq=
+ + 1, uart);
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 free_irq(uart->rx_irq, =
+uart);
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 free_irq(uart->tx_irq, =
+uart);
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0return -EBUSY;
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0}
+> =A0 =A0 =A0 =A0}
+> @@ -785,8 +785,8 @@ static void bfin_serial_shutdown(struct uart_port=
+ *port)
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0break;
+> =A0 =A0 =A0 =A0};
+> =A0#endif
+> - =A0 =A0 =A0 free_irq(uart->port.irq, uart);
+> - =A0 =A0 =A0 free_irq(uart->port.irq+1, uart);
+> + =A0 =A0 =A0 free_irq(uart->rx_irq, uart);
+> + =A0 =A0 =A0 free_irq(uart->tx_irq, uart);
+> =A0#endif
+>
+> =A0#ifdef CONFIG_SERIAL_BFIN_CTSRTS
+> @@ -1319,14 +1319,21 @@ static int bfin_serial_probe(struct platform_=
+device *pdev)
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0}
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0uart->port.mapbase =3D res->start;
+>
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 uart->port.irq =3D platform_get_irq(pde=
+v, 0);
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 if (uart->port.irq < 0) {
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 dev_err(&pdev->dev, "No=
+ uart RX/TX IRQ specified\n");
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 uart->tx_irq =3D platform_get_irq(pdev,=
+ 0);
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 if (uart->tx_irq < 0) {
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 dev_err(&pdev->dev, "No=
+ uart TX IRQ specified\n");
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0ret =3D -ENOENT;
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0goto out_error_unmap;
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0}
+>
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 uart->status_irq =3D platform_get_irq(p=
+dev, 1);
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 uart->rx_irq =3D platform_get_irq(pdev,=
+ 1);
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 if (uart->rx_irq < 0) {
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 dev_err(&pdev->dev, "No=
+ uart RX IRQ specified\n");
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 ret =3D -ENOENT;
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 goto out_error_unmap;
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 }
+> +
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 uart->status_irq =3D platform_get_irq(p=
+dev, 2);
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0if (uart->status_irq < 0) {
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0dev_err(&pdev->dev, "N=
+o uart status IRQ specified\n");
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0ret =3D -ENOENT;
+> --
+> 1.7.0.4
+>
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kerne=
+l" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at =A0http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at =A0http://www.tux.org/lkml/
+>
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
