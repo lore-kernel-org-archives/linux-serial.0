@@ -1,124 +1,31 @@
-From: Sonic Zhang <sonic.adi@gmail.com>
-Subject: [PATCH v3] serial:bfin_uart: Put TX IRQ in individual platform resource.
-Date: Fri, 12 Aug 2011 11:15:51 +0800
-Message-ID: <1313118951-27886-1-git-send-email-sonic.adi@gmail.com>
+From: "Rose" <william_rose55@yahoo.com>
+Subject: =?UTF-8?Q?HELLO=20my=20=20=E4=BD=A0=E5=A5=BD=EF=BC=8C=E6=88=91?=
+Date: Fri, 12 Aug 2011 20:29:15 +0200
+Message-ID: <20110812202915.5407F0B0@centrum.sk>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from tx2ehsobe002.messaging.microsoft.com ([65.55.88.12]:59450 "EHLO
-	TX2EHSOBE003.bigfish.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752841Ab1HLDWZ (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 11 Aug 2011 23:22:25 -0400
+Received: from gmmr5.centrum.cz ([90.183.38.152]:48883 "EHLO gmmr5.centrum.cz"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753755Ab1HLS3Q (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 12 Aug 2011 14:29:16 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
-
-From: Sonic Zhang <sonic.zhang@analog.com>
-
-Serial TX IRQ is not RX IRQ plus 1 in some blackfin chips.
-Give individual platform resources to both TX and RX irqs.
-
-Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
----
- drivers/tty/serial/bfin_uart.c |   36 ++++++++++++++++++++++--------------
- 1 files changed, 22 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/tty/serial/bfin_uart.c b/drivers/tty/serial/bfin_uart.c
-index e08bc04..c7e592d 100644
---- a/drivers/tty/serial/bfin_uart.c
-+++ b/drivers/tty/serial/bfin_uart.c
-@@ -667,17 +667,17 @@ static int bfin_serial_startup(struct uart_port *port)
- 		kgdboc_break_enabled = 0;
- 	else {
- # endif
--	if (request_irq(uart->port.irq, bfin_serial_rx_int, IRQF_DISABLED,
-+	if (request_irq(uart->rx_irq, bfin_serial_rx_int, IRQF_DISABLED,
- 	     "BFIN_UART_RX", uart)) {
- 		printk(KERN_NOTICE "Unable to attach BlackFin UART RX interrupt\n");
- 		return -EBUSY;
- 	}
- 
- 	if (request_irq
--	    (uart->port.irq+1, bfin_serial_tx_int, IRQF_DISABLED,
-+	    (uart->tx_irq, bfin_serial_tx_int, IRQF_DISABLED,
- 	     "BFIN_UART_TX", uart)) {
- 		printk(KERN_NOTICE "Unable to attach BlackFin UART TX interrupt\n");
--		free_irq(uart->port.irq, uart);
-+		free_irq(uart->rx_irq, uart);
- 		return -EBUSY;
- 	}
- 
-@@ -692,7 +692,7 @@ static int bfin_serial_startup(struct uart_port *port)
- 		 */
- 		unsigned uart_dma_ch_rx, uart_dma_ch_tx;
- 
--		switch (uart->port.irq) {
-+		switch (uart->rx_irq) {
- 		case IRQ_UART3_RX:
- 			uart_dma_ch_rx = CH_UART3_RX;
- 			uart_dma_ch_tx = CH_UART3_TX;
-@@ -709,16 +709,16 @@ static int bfin_serial_startup(struct uart_port *port)
- 		if (uart_dma_ch_rx &&
- 			request_dma(uart_dma_ch_rx, "BFIN_UART_RX") < 0) {
- 			printk(KERN_NOTICE"Fail to attach UART interrupt\n");
--			free_irq(uart->port.irq, uart);
--			free_irq(uart->port.irq + 1, uart);
-+			free_irq(uart->rx_irq, uart);
-+			free_irq(uart->tx_irq, uart);
- 			return -EBUSY;
- 		}
- 		if (uart_dma_ch_tx &&
- 			request_dma(uart_dma_ch_tx, "BFIN_UART_TX") < 0) {
- 			printk(KERN_NOTICE "Fail to attach UART interrupt\n");
- 			free_dma(uart_dma_ch_rx);
--			free_irq(uart->port.irq, uart);
--			free_irq(uart->port.irq + 1, uart);
-+			free_irq(uart->rx_irq, uart);
-+			free_irq(uart->tx_irq, uart);
- 			return -EBUSY;
- 		}
- 	}
-@@ -785,8 +785,8 @@ static void bfin_serial_shutdown(struct uart_port *port)
- 		break;
- 	};
- #endif
--	free_irq(uart->port.irq, uart);
--	free_irq(uart->port.irq+1, uart);
-+	free_irq(uart->rx_irq, uart);
-+	free_irq(uart->tx_irq, uart);
- #endif
- 
- #ifdef CONFIG_SERIAL_BFIN_CTSRTS
-@@ -1319,14 +1319,22 @@ static int bfin_serial_probe(struct platform_device *pdev)
- 		}
- 		uart->port.mapbase = res->start;
- 
--		uart->port.irq = platform_get_irq(pdev, 0);
--		if (uart->port.irq < 0) {
--			dev_err(&pdev->dev, "No uart RX/TX IRQ specified\n");
-+		uart->tx_irq = platform_get_irq(pdev, 0);
-+		if (uart->tx_irq < 0) {
-+			dev_err(&pdev->dev, "No uart TX IRQ specified\n");
- 			ret = -ENOENT;
- 			goto out_error_unmap;
- 		}
- 
--		uart->status_irq = platform_get_irq(pdev, 1);
-+		uart->rx_irq = platform_get_irq(pdev, 1);
-+		if (uart->rx_irq < 0) {
-+			dev_err(&pdev->dev, "No uart RX IRQ specified\n");
-+			ret = -ENOENT;
-+			goto out_error_unmap;
-+		}
-+		uart->port.irq = uart->rx_irq;
-+
-+		uart->status_irq = platform_get_irq(pdev, 2);
- 		if (uart->status_irq < 0) {
- 			dev_err(&pdev->dev, "No uart status IRQ specified\n");
- 			ret = -ENOENT;
--- 
-1.7.0.4
 
 
+HELLO
+My name is Rose,i and became intrested in you, i will also like to know=
+ you more,and i want you to send an email to my email address so i can =
+give you my picture for you to know whom i am. Here is my email address=
+(william_rose55@yahoo.com)I believe we can move from here!
+I am waiting for your mail to my email address above..
+(Remeber the distance or colour does not matter but love matters alot i=
+n life)
+Thanks Rose=C2=A0 please contact me now through my email address
+(william_rose55@yahoo.com)
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
