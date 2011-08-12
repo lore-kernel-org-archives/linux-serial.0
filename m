@@ -1,31 +1,39 @@
-From: "Rose" <william_rose55@yahoo.com>
-Subject: =?UTF-8?Q?HELLO=20my=20=20=E4=BD=A0=E5=A5=BD=EF=BC=8C=E6=88=91?=
-Date: Fri, 12 Aug 2011 20:29:39 +0200
-Message-ID: <20110812202939.18A83956@centrum.sk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gmmr2.centrum.cz ([90.183.38.158]:53286 "EHLO gmmr2.centrum.cz"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753755Ab1HLS3l (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 12 Aug 2011 14:29:41 -0400
-Sender: linux-serial-owner@vger.kernel.org
+From: David Brown <davidb@codeaurora.org>
+Subject: [PATCH 0/4] Initial DT support for MSM8660
+Date: Fri, 12 Aug 2011 16:00:04 -0700
+Message-ID: <1313190008-7551-1-git-send-email-davidb@codeaurora.org>
+Return-path: <linux-doc-owner@vger.kernel.org>
+Sender: linux-doc-owner@vger.kernel.org
+To: David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Alan Cox <alan@linux.intel.com>, Randy Dunlap <rdunlap@xenotime.net>
+Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-doc@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
 List-Id: linux-serial@vger.kernel.org
 
+This series adds initial support for booting the MSM8660 via
+devicetree.  The target boots with a serial console, and no platform
+data.
 
-HELLO
-My name is Rose,i and became intrested in you, i will also like to know=
- you more,and i want you to send an email to my email address so i can =
-give you my picture for you to know whom i am. Here is my email address=
-(william_rose55@yahoo.com)I believe we can move from here!
-I am waiting for your mail to my email address above..
-(Remeber the distance or colour does not matter but love matters alot i=
-n life)
-Thanks Rose=C2=A0 please contact me now through my email address
-(william_rose55@yahoo.com)
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+In order to test this with a devicetree boot, it is necessary to
+include patches allowing the devicetree to be appended to the kernel,
+and merge ATAG values into the DT.
+
+Once these patches reach mainline, I intend to remove the non-DT boot
+for this target.
+
+David Brown (4):
+  msm_serial: Use relative resources for iomem
+  msm_serial: Add devicetree support
+  ARM: msm: Add devicetree support for msm8660-surf
+  ARM: msm: Describe MSM 8660 SURF FPGA registers in DT
+
+ .../devicetree/bindings/tty/serial/msm_serial.txt  |   18 ++++
+ arch/arm/boot/dts/msm8660-surf.dts                 |   29 ++++++
+ arch/arm/mach-msm/board-msm8x60.c                  |   98 ++++++++++++++++++--
+ drivers/tty/serial/msm_serial.c                    |   30 ++++--
+ 4 files changed, 158 insertions(+), 17 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/tty/serial/msm_serial.txt
+ create mode 100644 arch/arm/boot/dts/msm8660-surf.dts
+
+-- 
+Sent by an employee of the Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum.
+
