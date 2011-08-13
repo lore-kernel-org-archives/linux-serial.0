@@ -1,83 +1,55 @@
-From: David Brown <davidb@codeaurora.org>
+From: Arnd Bergmann <arnd@arndb.de>
 Subject: Re: [PATCH 2/4] msm_serial: Add devicetree support
-Date: Sat, 13 Aug 2011 12:46:45 -0700
-Message-ID: <20110813194645.GA23710@huya.qualcomm.com>
-References: <1313190008-7551-1-git-send-email-davidb@codeaurora.org>
- <1313190008-7551-3-git-send-email-davidb@codeaurora.org>
- <1434305.ibxmc6q715@wuerfel>
+Date: Sat, 13 Aug 2011 23:34:15 +0200
+Message-ID: <65679699.l4XXDScc0T@wuerfel>
+References: <1313190008-7551-1-git-send-email-davidb@codeaurora.org> <1434305.ibxmc6q715@wuerfel> <20110813194645.GA23710@huya.qualcomm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1434305.ibxmc6q715@wuerfel>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: linux-arm-kernel@lists.infradead.org, David Brown <davidb@codeaurora.org>, Randy Dunlap <rdunlap@xenotime.net>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Alan Cox <alan@linux.intel.com>, Grant Likely <grant.likely@secretlab.ca>, linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from moutng.kundenserver.de ([212.227.17.10]:58781 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752295Ab1HMVep (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 13 Aug 2011 17:34:45 -0400
+In-Reply-To: <20110813194645.GA23710@huya.qualcomm.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: David Brown <davidb@codeaurora.org>
+Cc: linux-arm-kernel@lists.infradead.org, Randy Dunlap <rdunlap@xenotime.net>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Alan Cox <alan@linux.intel.com>, Grant Likely <grant.likely@secretlab.ca>, linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Sat, Aug 13, 2011 at 10:29:00AM +0200, Arnd Bergmann wrote:
-> On Friday 12 August 2011 16:00:06 David Brown wrote:
-> > +Required properties:
-> > +- compatible :
-> > +       - "qcom,msm-uart"
-> > +- reg : offset and length of the register set for the device
-> > +       for the hsuart operating in compatible mode, there should be a
-> > +       second pair describing the gsbi registers.
-> > +- interrupts : should contain the uart interrupt.
-> > +
-> > +Example:
-> > +
-> > +       uart@19c400000 {
-> > +               compatible = "qcom,msm-hsuart", "qcom,msm-uart";
-> > +               reg = <0x19c40000 0x1000">,
-> > +                     <0x19c00000 0x1000">;
-> > +               interrupts = <195>;
-> > +       };
+On Saturday 13 August 2011 12:46:45 David Brown wrote:
 > 
+> I'm not sure actually what is best to use here.  I'm thinking that the
+> 'lite' identifier should perhaps go away.  MSM's have two UARTS on
+> them, an older "simple" PIO type of UART, and a newer one that can do
+> DMA (called the hsuart for high-speed).  The hsuart can also be used
+> in a non-DMA driver in a mostly compatible way with the old UART.
 > 
+> For non-high-speed applications, the user will probably just want to
+> use the non-DMA driver.  My question is then: if the device tree
+> describes it as
 > 
-> > @@ -920,11 +928,17 @@ static int __devexit msm_serial_remove(struct platform_device *pdev)
-> >         return 0;
-> >  }
-> >  
-> > +static struct of_device_id msm_match_table[] = {
-> > +       { .compatible = "qcom,msm-hsuart-lite" },
-> > +       {}
-> > +};
-> > +
+>         compatible = "qcom,msm-hsuart", "qcom,msm-uart";
 > 
-> Hi David,
+> and one driver matches qcom,msm-hsuart and another matches
+> qcom,msm-uart, which driver will get used.  Ideally, it would use the
+> earliest one in the list.
 > 
-> It looks like you changed the value for the "compatible" property in the
-> process of making the patch, but did not update all places.
-> 
-> Should it be qcom,msm-hsuart-lite or qcom,msm-hsuart?
+> If that's the case, I'll get rid of the -lite suffix and just make the
+> non-DMA driver compatible with the plain "qcom,msm-uart".
 
-I guess I got the documentation to be different than the code.
-Sadily, I think the documentation is probably what I want instead of
-the code.
+I believe that unfortunately the answer is that the first driver that
+matches anything will get used. There are two possible ways that I can
+see to make it do what you want anyway:
 
-I'm not sure actually what is best to use here.  I'm thinking that the
-'lite' identifier should perhaps go away.  MSM's have two UARTS on
-them, an older "simple" PIO type of UART, and a newer one that can do
-DMA (called the hsuart for high-speed).  The hsuart can also be used
-in a non-DMA driver in a mostly compatible way with the old UART.
+1. In the probe function for the slow driver, you return an error
+when the device you get passed matches "qcom,msm-hsuart", possibly
+dependent on whether the other driver also got built.
 
-For non-high-speed applications, the user will probably just want to
-use the non-DMA driver.  My question is then: if the device tree
-describes it as
+2. You register one platform driver that handles both names and
+gives the device to just one of the two drivers. This would probably
+require linking the two drivers into the same module, or having
+the non-DMA speed driver just act as a library.
 
-	compatible = "qcom,msm-hsuart", "qcom,msm-uart";
-
-and one driver matches qcom,msm-hsuart and another matches
-qcom,msm-uart, which driver will get used.  Ideally, it would use the
-earliest one in the list.
-
-If that's the case, I'll get rid of the -lite suffix and just make the
-non-DMA driver compatible with the plain "qcom,msm-uart".
-
-David
-
--- 
-Sent by an employee of the Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum.
+	Arnd
