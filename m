@@ -1,87 +1,28 @@
-From: David Brown <davidb@codeaurora.org>
-Subject: [PATCH 1/4] msm_serial: Use relative resources for iomem
-Date: Fri, 12 Aug 2011 16:00:05 -0700
-Message-ID: <1313190008-7551-2-git-send-email-davidb@codeaurora.org>
-References: <1313190008-7551-1-git-send-email-davidb@codeaurora.org>
+From: Nicolle Smith <nismith@tanner.org>
+Subject: Let op Let op! Te activeren! Webmail Quota Limiet
+Date: Fri, 12 Aug 2011 20:23:37 -0400
+Message-ID: <76A7ECD1A4104A4EB27A334A52BDC3BE01A99D46FC@EX2007MAIL.ths.local>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from wolverine01.qualcomm.com ([199.106.114.254]:42543 "EHLO
-	wolverine01.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752388Ab1HLXAX (ORCPT
+Received: from pem.tanner.org ([208.73.81.103]:1891 "EHLO smtp.tanner.org"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1753178Ab1HMAtL convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 12 Aug 2011 19:00:23 -0400
-In-Reply-To: <1313190008-7551-1-git-send-email-davidb@codeaurora.org>
+	Fri, 12 Aug 2011 20:49:11 -0400
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Alan Cox <alan@linux.intel.com>
-Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
 
-Device tree iomem resources are only accessible by index, and not by
-name.  The msm_serial devices always have either 1 or 2 iomem
-resources, that are always in the same order.  Convert the
-platform_get_resource_byname into just platform_get_resource to
-facilitate device tree conversion.
+Uw mailbox heeft overschreden de limiet van 1GB, die zo
+gedefinieerd door de beheerder, bent u draait op 5.9GB, mag u niet
+kunnen verzenden of ontvangen nieuwe berichten totdat u opnieuw valideren van uw
+mailbox. Om revalidates uw mailbox,
+Klik op onderstaande link:
 
-Signed-off-by: David Brown <davidb@codeaurora.org>
----
- drivers/tty/serial/msm_serial.c |   16 ++++++----------
- 1 files changed, 6 insertions(+), 10 deletions(-)
+http://sindicato2.com/form/use/please/form1.html
 
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index e6ba838..d9863b2 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -589,9 +589,8 @@ static void msm_release_port(struct uart_port *port)
- 		iowrite32(GSBI_PROTOCOL_IDLE, msm_port->gsbi_base +
- 			  GSBI_CONTROL);
- 
--		gsbi_resource = platform_get_resource_byname(pdev,
--							     IORESOURCE_MEM,
--							     "gsbi_resource");
-+		gsbi_resource = platform_get_resource(pdev,
-+							IORESOURCE_MEM, 1);
- 
- 		if (unlikely(!gsbi_resource))
- 			return;
-@@ -612,8 +611,7 @@ static int msm_request_port(struct uart_port *port)
- 	resource_size_t size;
- 	int ret;
- 
--	uart_resource = platform_get_resource_byname(pdev, IORESOURCE_MEM,
--						     "uart_resource");
-+	uart_resource = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (unlikely(!uart_resource))
- 		return -ENXIO;
- 
-@@ -628,8 +626,7 @@ static int msm_request_port(struct uart_port *port)
- 		goto fail_release_port;
- 	}
- 
--	gsbi_resource = platform_get_resource_byname(pdev, IORESOURCE_MEM,
--						     "gsbi_resource");
-+	gsbi_resource = platform_get_resource(pdev, IORESOURCE_MEM, 1);
- 	/* Is this a GSBI-based port? */
- 	if (gsbi_resource) {
- 		size = resource_size(gsbi_resource);
-@@ -875,7 +872,7 @@ static int __init msm_serial_probe(struct platform_device *pdev)
- 	port->dev = &pdev->dev;
- 	msm_port = UART_TO_MSM(port);
- 
--	if (platform_get_resource_byname(pdev, IORESOURCE_MEM, "gsbi_resource"))
-+	if (platform_get_resource(pdev, IORESOURCE_MEM, 1))
- 		msm_port->is_uartdm = 1;
- 	else
- 		msm_port->is_uartdm = 0;
-@@ -899,8 +896,7 @@ static int __init msm_serial_probe(struct platform_device *pdev)
- 	printk(KERN_INFO "uartclk = %d\n", port->uartclk);
- 
- 
--	resource = platform_get_resource_byname(pdev, IORESOURCE_MEM,
--						     "uart_resource");
-+	resource = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (unlikely(!resource))
- 		return -ENXIO;
- 	port->mapbase = resource->start;
--- 
-Sent by an employee of the Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum.
-
+dank U
+Webmail System Administrator
+2011 ITS Help Desk.
