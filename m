@@ -1,138 +1,187 @@
 From: Jamie Iles <jamie@jamieiles.com>
-Subject: [PATCH 4/5] mips: msp71xx/serial: add workaround for DW UART
-Date: Mon, 15 Aug 2011 10:17:54 +0100
-Message-ID: <1313399875-11006-5-git-send-email-jamie@jamieiles.com>
+Subject: [PATCH 5/5] tty: serial8250: remove UPIO_DWAPB{,32}
+Date: Mon, 15 Aug 2011 10:17:55 +0100
+Message-ID: <1313399875-11006-6-git-send-email-jamie@jamieiles.com>
 References: <1313399875-11006-1-git-send-email-jamie@jamieiles.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wy0-f174.google.com ([74.125.82.174]:44113 "EHLO
-	mail-wy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752672Ab1HOJSJ (ORCPT
+Received: from mail-ww0-f44.google.com ([74.125.82.44]:45800 "EHLO
+	mail-ww0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752672Ab1HOJSL (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 15 Aug 2011 05:18:09 -0400
-Received: by mail-wy0-f174.google.com with SMTP id 24so3358626wyg.19
-        for <linux-serial@vger.kernel.org>; Mon, 15 Aug 2011 02:18:09 -0700 (PDT)
+	Mon, 15 Aug 2011 05:18:11 -0400
+Received: by mail-ww0-f44.google.com with SMTP id 5so4661742wwf.1
+        for <linux-serial@vger.kernel.org>; Mon, 15 Aug 2011 02:18:10 -0700 (PDT)
 In-Reply-To: <1313399875-11006-1-git-send-email-jamie@jamieiles.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: arnd@arndb.de, Jamie Iles <jamie@jamieiles.com>, Ralf Baechle <ralf@linux-mips.org>, Alan Cox <alan@linux.intel.com>
+Cc: arnd@arndb.de, Jamie Iles <jamie@jamieiles.com>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@suse.de>
 
-The Synopsys DesignWare UART in pmc-sierra msp71xx has an extra feature
-where the UART detects a write attempt to the LCR whilst busy and raises
-an interrupt.  The driver needs to clear the interrupt and rewrite the
-LCR.  Move this into platform code and out of the 8250 driver.
+Now that platforms can override the port IRQ handler and the only user
+of these UPIO modes has been converted over, kill off UPIO_DWAPB and
+UPIO_DWAPB32.
 
-Cc: Ralf Baechle <ralf@linux-mips.org>
 Cc: Alan Cox <alan@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@suse.de>
 Signed-off-by: Jamie Iles <jamie@jamieiles.com>
 ---
- arch/mips/pmc-sierra/msp71xx/msp_serial.c |   69 +++++++++++++++++++++++++++--
- 1 files changed, 65 insertions(+), 4 deletions(-)
+ drivers/tty/serial/8250.c        |   68 --------------------------------------
+ drivers/tty/serial/serial_core.c |    4 --
+ include/linux/serial_core.h      |    4 +--
+ 3 files changed, 1 insertions(+), 75 deletions(-)
 
-diff --git a/arch/mips/pmc-sierra/msp71xx/msp_serial.c b/arch/mips/pmc-sierra/msp71xx/msp_serial.c
-index c3247b5..a1c7c7d 100644
---- a/arch/mips/pmc-sierra/msp71xx/msp_serial.c
-+++ b/arch/mips/pmc-sierra/msp71xx/msp_serial.c
-@@ -27,6 +27,7 @@
- #include <linux/serial.h>
- #include <linux/serial_core.h>
- #include <linux/serial_reg.h>
-+#include <linux/slab.h>
- 
- #include <asm/bootinfo.h>
- #include <asm/io.h>
-@@ -38,6 +39,55 @@
- #include <msp_int.h>
- #include <msp_regs.h>
- 
-+struct msp_uart_data {
-+	int	last_lcr;
-+};
-+
-+static void msp_serial_out(struct uart_port *p, int offset, int value)
-+{
-+	struct msp_uart_data *d = p->private_data;
-+
-+	if (offset == UART_LCR)
-+		d->last_lcr = value;
-+
-+	offset <<= p->regshift;
-+	writeb(value, p->membase + offset);
-+}
-+
-+static unsigned int msp_serial_in(struct uart_port *p, int offset)
-+{
-+	offset <<= p->regshift;
-+
-+	return readb(p->membase + offset);
-+}
-+
-+static int msp_serial_handle_irq(struct uart_port *p)
-+{
-+	struct msp_uart_data *d = p->private_data;
-+	unsigned int iir = readb(p->membase + (UART_IIR << p->regshift));
-+
-+	if (serial8250_handle_irq(p, iir)) {
-+		return 1;
-+	} else if ((iir & UART_IIR_BUSY) == UART_IIR_BUSY) {
-+		/*
-+		 * The DesignWare APB UART has an Busy Detect (0x07) interrupt
-+		 * meaning an LCR write attempt occurred while the UART was
-+		 * busy. The interrupt must be cleared by reading the UART
-+		 * status register (USR) and the LCR re-written.
-+		 *
-+		 * Note: MSP reserves 0x20 bytes of address space for the UART
-+		 * and the USR is mapped in a separate block at an offset of
-+		 * 0xc0 from the start of the UART.
-+		 */
-+		(void)readb(p->membase + 0xc0);
-+		writeb(d->last_lcr, p->membase + (UART_LCR << p->regshift));
-+
-+		return 1;
-+	}
-+
-+	return 0;
-+}
-+
- void __init msp_serial_setup(void)
- {
- 	char    *s;
-@@ -59,13 +109,22 @@ void __init msp_serial_setup(void)
- 	up.irq          = MSP_INT_UART0;
- 	up.uartclk      = uartclk;
- 	up.regshift     = 2;
--	up.iotype       = UPIO_DWAPB; /* UPIO_MEM like */
-+	up.iotype       = UPIO_MEM;
- 	up.flags        = ASYNC_BOOT_AUTOCONF | ASYNC_SKIP_TEST;
- 	up.type         = PORT_16550A;
- 	up.line         = 0;
--	up.private_data		= (void*)UART0_STATUS_REG;
--	if (early_serial_setup(&up))
-+	up.serial_out	= msp_serial_out;
-+	up.serial_in	= msp_serial_in;
-+	up.handle_irq	= msp_serial_handle_irq;
-+	up.private_data	= kzalloc(sizeof(struct msp_uart_data), GFP_KERNEL);
-+	if (!up.private_data) {
-+		pr_err("failed to allocate uart private data\n");
-+		return;
-+	}
-+	if (early_serial_setup(&up)) {
-+		kfree(up.private_data);
- 		pr_err("Early serial init of port 0 failed\n");
-+	}
- 
- 	/* Initialize the second serial port, if one exists */
- 	switch (mips_machtype) {
-@@ -88,6 +147,8 @@ void __init msp_serial_setup(void)
- 	up.irq          = MSP_INT_UART1;
- 	up.line         = 1;
- 	up.private_data		= (void*)UART1_STATUS_REG;
--	if (early_serial_setup(&up))
-+	if (early_serial_setup(&up)) {
-+		kfree(up.private_data);
- 		pr_err("Early serial init of port 1 failed\n");
-+	}
+diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
+index 833e011..6f594d2 100644
+--- a/drivers/tty/serial/8250.c
++++ b/drivers/tty/serial/8250.c
+@@ -461,42 +461,6 @@ static void tsi_serial_out(struct uart_port *p, int offset, int value)
+ 		writeb(value, p->membase + offset);
  }
+ 
+-/* Save the LCR value so it can be re-written when a Busy Detect IRQ occurs. */
+-static inline void dwapb_save_out_value(struct uart_port *p, int offset,
+-					int value)
+-{
+-	struct uart_8250_port *up =
+-		container_of(p, struct uart_8250_port, port);
+-
+-	if (offset == UART_LCR)
+-		up->lcr = value;
+-}
+-
+-/* Read the IER to ensure any interrupt is cleared before returning from ISR. */
+-static inline void dwapb_check_clear_ier(struct uart_port *p, int offset)
+-{
+-	if (offset == UART_TX || offset == UART_IER)
+-		p->serial_in(p, UART_IER);
+-}
+-
+-static void dwapb_serial_out(struct uart_port *p, int offset, int value)
+-{
+-	int save_offset = offset;
+-	offset = map_8250_out_reg(p, offset) << p->regshift;
+-	dwapb_save_out_value(p, save_offset, value);
+-	writeb(value, p->membase + offset);
+-	dwapb_check_clear_ier(p, save_offset);
+-}
+-
+-static void dwapb32_serial_out(struct uart_port *p, int offset, int value)
+-{
+-	int save_offset = offset;
+-	offset = map_8250_out_reg(p, offset) << p->regshift;
+-	dwapb_save_out_value(p, save_offset, value);
+-	writel(value, p->membase + offset);
+-	dwapb_check_clear_ier(p, save_offset);
+-}
+-
+ static unsigned int io_serial_in(struct uart_port *p, int offset)
+ {
+ 	offset = map_8250_in_reg(p, offset) << p->regshift;
+@@ -542,16 +506,6 @@ static void set_io_from_upio(struct uart_port *p)
+ 		p->serial_out = tsi_serial_out;
+ 		break;
+ 
+-	case UPIO_DWAPB:
+-		p->serial_in = mem_serial_in;
+-		p->serial_out = dwapb_serial_out;
+-		break;
+-
+-	case UPIO_DWAPB32:
+-		p->serial_in = mem32_serial_in;
+-		p->serial_out = dwapb32_serial_out;
+-		break;
+-
+ 	default:
+ 		p->serial_in = io_serial_in;
+ 		p->serial_out = io_serial_out;
+@@ -570,8 +524,6 @@ serial_out_sync(struct uart_8250_port *up, int offset, int value)
+ 	case UPIO_MEM:
+ 	case UPIO_MEM32:
+ 	case UPIO_AU:
+-	case UPIO_DWAPB:
+-	case UPIO_DWAPB32:
+ 		p->serial_out(p, offset, value);
+ 		p->serial_in(p, UART_LCR);	/* safe, no side-effects */
+ 		break;
+@@ -1679,23 +1631,7 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
+ 		port = &up->port;
+ 
+ 		if (port->handle_irq(port)) {
+-
+ 			handled = 1;
+-
+-			end = NULL;
+-		} else if ((up->port.iotype == UPIO_DWAPB ||
+-			    up->port.iotype == UPIO_DWAPB32) &&
+-			  (iir & UART_IIR_BUSY) == UART_IIR_BUSY) {
+-			/* The DesignWare APB UART has an Busy Detect (0x07)
+-			 * interrupt meaning an LCR write attempt occurred while the
+-			 * UART was busy. The interrupt must be cleared by reading
+-			 * the UART status register (USR) and the LCR re-written. */
+-			unsigned int status;
+-			status = *(volatile u32 *)up->port.private_data;
+-			serial_out(up, UART_LCR, up->lcr);
+-
+-			handled = 1;
+-
+ 			end = NULL;
+ 		} else if (end == NULL)
+ 			end = l;
+@@ -2592,8 +2528,6 @@ static int serial8250_request_std_resource(struct uart_8250_port *up)
+ 	case UPIO_TSI:
+ 	case UPIO_MEM32:
+ 	case UPIO_MEM:
+-	case UPIO_DWAPB:
+-	case UPIO_DWAPB32:
+ 		if (!up->port.mapbase)
+ 			break;
+ 
+@@ -2630,8 +2564,6 @@ static void serial8250_release_std_resource(struct uart_8250_port *up)
+ 	case UPIO_TSI:
+ 	case UPIO_MEM32:
+ 	case UPIO_MEM:
+-	case UPIO_DWAPB:
+-	case UPIO_DWAPB32:
+ 		if (!up->port.mapbase)
+ 			break;
+ 
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index db7912c..e5a0cae 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2063,8 +2063,6 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
+ 	case UPIO_MEM32:
+ 	case UPIO_AU:
+ 	case UPIO_TSI:
+-	case UPIO_DWAPB:
+-	case UPIO_DWAPB32:
+ 		snprintf(address, sizeof(address),
+ 			 "MMIO 0x%llx", (unsigned long long)port->mapbase);
+ 		break;
+@@ -2484,8 +2482,6 @@ int uart_match_port(struct uart_port *port1, struct uart_port *port2)
+ 	case UPIO_MEM32:
+ 	case UPIO_AU:
+ 	case UPIO_TSI:
+-	case UPIO_DWAPB:
+-	case UPIO_DWAPB32:
+ 		return (port1->mapbase == port2->mapbase);
+ 	}
+ 	return 0;
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index b6fa317..1b3669d 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -318,9 +318,7 @@ struct uart_port {
+ #define UPIO_MEM32		(3)
+ #define UPIO_AU			(4)			/* Au1x00 type IO */
+ #define UPIO_TSI		(5)			/* Tsi108/109 type IO */
+-#define UPIO_DWAPB		(6)			/* DesignWare APB UART */
+-#define UPIO_RM9000		(7)			/* RM9000 type IO */
+-#define UPIO_DWAPB32		(8)			/* DesignWare APB UART (32 bit accesses) */
++#define UPIO_RM9000		(6)			/* RM9000 type IO */
+ 
+ 	unsigned int		read_status_mask;	/* driver specific */
+ 	unsigned int		ignore_status_mask;	/* driver specific */
 -- 
 1.7.4.1
 
