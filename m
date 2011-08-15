@@ -1,55 +1,32 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 2/4] msm_serial: Add devicetree support
-Date: Sat, 13 Aug 2011 23:34:15 +0200
-Message-ID: <65679699.l4XXDScc0T@wuerfel>
-References: <1313190008-7551-1-git-send-email-davidb@codeaurora.org> <1434305.ibxmc6q715@wuerfel> <20110813194645.GA23710@huya.qualcomm.com>
+From: Tabi Timur-B04825 <B04825@freescale.com>
+Subject: Re: [GIT PATCH] TTY/serial driver patches for 3.1
+Date: Mon, 15 Aug 2011 00:23:11 +0000
+Message-ID: <4E4866EE.3070803@freescale.com>
+References: <20110726050225.GA2529@kroah.com>
+ <CAOZdJXWuRLSZVof1q51yTmk1FXFR28mb9qSYcbChC8KC2awn=g@mail.gmail.com>
+ <20110727040755.GA11308@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.17.10]:58781 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752295Ab1HMVep (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 13 Aug 2011 17:34:45 -0400
-In-Reply-To: <20110813194645.GA23710@huya.qualcomm.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20110727040755.GA11308@suse.de>
+Content-Language: en-US
+Content-ID: <0C0E36775C879942AA29DA6894AEF95D@freescale.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg KH <gregkh@suse.de>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: David Brown <davidb@codeaurora.org>
-Cc: linux-arm-kernel@lists.infradead.org, Randy Dunlap <rdunlap@xenotime.net>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Alan Cox <alan@linux.intel.com>, Grant Likely <grant.likely@secretlab.ca>, linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Saturday 13 August 2011 12:46:45 David Brown wrote:
-> 
-> I'm not sure actually what is best to use here.  I'm thinking that the
-> 'lite' identifier should perhaps go away.  MSM's have two UARTS on
-> them, an older "simple" PIO type of UART, and a newer one that can do
-> DMA (called the hsuart for high-speed).  The hsuart can also be used
-> in a non-DMA driver in a mostly compatible way with the old UART.
-> 
-> For non-high-speed applications, the user will probably just want to
-> use the non-DMA driver.  My question is then: if the device tree
-> describes it as
-> 
->         compatible = "qcom,msm-hsuart", "qcom,msm-uart";
-> 
-> and one driver matches qcom,msm-hsuart and another matches
-> qcom,msm-uart, which driver will get used.  Ideally, it would use the
-> earliest one in the list.
-> 
-> If that's the case, I'll get rid of the -lite suffix and just make the
-> non-DMA driver compatible with the plain "qcom,msm-uart".
+Greg KH wrote:
+>> >  I hate to be a pest, but you didn't include my patch, "[v3]
+>> >  tty/powerpc: introduce the ePAPR embedded hypervisor byte channel
+>> >  driver".  The other six patches of that patchset are already in Linus'
+>> >  tree, so I'd really like to get this one into 3.1 as well.  You even
+>> >  tried to apply v2 to tty-next about three weeks ago, but it didn't
+>> >  apply so I immediately posted v3.
 
-I believe that unfortunately the answer is that the first driver that
-matches anything will get used. There are two possible ways that I can
-see to make it do what you want anyway:
+> It is in my queue to review after -rc1 is out.
 
-1. In the probe function for the slow driver, you return an error
-when the device you get passed matches "qcom,msm-hsuart", possibly
-dependent on whether the other driver also got built.
-
-2. You register one platform driver that handles both names and
-gives the device to just one of the two drivers. This would probably
-require linking the two drivers into the same module, or having
-the non-DMA speed driver just act as a library.
-
-	Arnd
+3.1-rc2 was just released, and I still don't see my driver.  For -rc3, 
+Linus said he wants to see only "real fixes" 
+(http://lkml.org/lkml/2011/8/14/281).
