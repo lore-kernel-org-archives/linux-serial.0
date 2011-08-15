@@ -1,22 +1,27 @@
-From: Favour love <favour2b@itimes.com>
-Subject: HELLO
-Date: Mon, 15 Aug 2011 18:08:56 +0530 (IST)
-Message-ID: <1892491167.1482291313411936330.JavaMail.root@ims1.itimes.com>
-Reply-To: Favour baby <favourbaby2b@yahoo.com>
+From: Ralf Baechle <ralf@linux-mips.org>
+Subject: Re: [PATCH 3/5] mips: msp71xx/serial: convert to pr_foo() helpers
+Date: Mon, 15 Aug 2011 13:44:48 +0100
+Message-ID: <20110815124448.GA25544@linux-mips.org>
+References: <1313399875-11006-1-git-send-email-jamie@jamieiles.com>
+ <1313399875-11006-4-git-send-email-jamie@jamieiles.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from bmc05.indiatimes.com ([223.165.31.109]:38900 "HELO
-	bmc05.indiatimes.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1752302Ab1HOMi2 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 15 Aug 2011 08:38:28 -0400
+Received: from h5.dl5rb.org.uk ([81.2.74.5]:33895 "EHLO linux-mips.org"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1753198Ab1HOMpg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 15 Aug 2011 08:45:36 -0400
+Content-Disposition: inline
+In-Reply-To: <1313399875-11006-4-git-send-email-jamie@jamieiles.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Jamie Iles <jamie@jamieiles.com>
+Cc: linux-serial@vger.kernel.org, arnd@arndb.de
 
-hello dear,
-How are you? I hope you are fine, my name is miss Favour, I saw your profile today when i was browsing looking for a new friend, that is why i write this mail to you, I will like to know more about you if you don't mind, reply me soon so that i will send you my picture and we be good friends,
-Accept my regards,
-Hope to hear from you soon,
-Favour
+On Mon, Aug 15, 2011 at 10:17:53AM +0100, Jamie Iles wrote:
+
+Thanks, queued for 3.2.
+
+But please cc all MIPS patches to linux-mips@linux-mips.org.
+
+  Ralf
