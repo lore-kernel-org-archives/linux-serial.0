@@ -1,123 +1,76 @@
-From: David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH v2 2/4] msm_serial: Add devicetree support
-Date: Tue, 16 Aug 2011 10:52:14 -0700
-Message-ID: <1313517136-27414-3-git-send-email-davidb@codeaurora.org>
-References: <1313517136-27414-1-git-send-email-davidb@codeaurora.org>
+From: David Brown <davidb@codeaurora.org>
+Subject: Re: [PATCH 2/4] msm_serial: Add devicetree support
+Date: Tue, 16 Aug 2011 10:57:02 -0700
+Message-ID: <20110816175702.GA27576@huya.qualcomm.com>
+References: <1313190008-7551-1-git-send-email-davidb@codeaurora.org>
+ <1434305.ibxmc6q715@wuerfel>
+ <20110813194645.GA23710@huya.qualcomm.com>
+ <65679699.l4XXDScc0T@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-In-Reply-To: <1313517136-27414-1-git-send-email-davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
-	<mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
-	<mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-To: Randy Dunlap <rdunlap-/UHa2rfvQTnk1uMJSBkQmQ@public.gmane.org>, David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Daniel Walker <dwalker-zu3NM2574RrQT0dZR+AlfA@public.gmane.org>, Bryan Huntsman <bryanh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from wolverine01.qualcomm.com ([199.106.114.254]:63638 "EHLO
+	wolverine01.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751295Ab1HPR5E (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 16 Aug 2011 13:57:04 -0400
+Content-Disposition: inline
+In-Reply-To: <65679699.l4XXDScc0T@wuerfel>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: David Brown <davidb@codeaurora.org>, linux-arm-kernel@lists.infradead.org, Randy Dunlap <rdunlap@xenotime.net>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Alan Cox <alan@linux.intel.com>, Grant Likely <grant.likely@secretlab.ca>, linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Add devicetree support to the msm_serial driver.  Clocks are still
-queried by direct name from the driver until device tree clock support
-is implemented.
+On Sat, Aug 13, 2011 at 11:34:15PM +0200, Arnd Bergmann wrote:
+> On Saturday 13 August 2011 12:46:45 David Brown wrote:
+> > 
+> > I'm not sure actually what is best to use here.  I'm thinking that the
+> > 'lite' identifier should perhaps go away.  MSM's have two UARTS on
+> > them, an older "simple" PIO type of UART, and a newer one that can do
+> > DMA (called the hsuart for high-speed).  The hsuart can also be used
+> > in a non-DMA driver in a mostly compatible way with the old UART.
+> > 
+> > For non-high-speed applications, the user will probably just want to
+> > use the non-DMA driver.  My question is then: if the device tree
+> > describes it as
+> > 
+> >         compatible = "qcom,msm-hsuart", "qcom,msm-uart";
+> > 
+> > and one driver matches qcom,msm-hsuart and another matches
+> > qcom,msm-uart, which driver will get used.  Ideally, it would use the
+> > earliest one in the list.
+> > 
+> > If that's the case, I'll get rid of the -lite suffix and just make the
+> > non-DMA driver compatible with the plain "qcom,msm-uart".
+> 
+> I believe that unfortunately the answer is that the first driver that
+> matches anything will get used. There are two possible ways that I can
+> see to make it do what you want anyway:
+> 
+> 1. In the probe function for the slow driver, you return an error
+> when the device you get passed matches "qcom,msm-hsuart", possibly
+> dependent on whether the other driver also got built.
+> 
+> 2. You register one platform driver that handles both names and
+> gives the device to just one of the two drivers. This would probably
+> require linking the two drivers into the same module, or having
+> the non-DMA speed driver just act as a library.
 
-Signed-off-by: David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
- .../devicetree/bindings/tty/serial/msm_serial.txt  |   22 ++++++++++++++++++++
- drivers/tty/serial/msm_serial.c                    |   14 ++++++++++++
- 2 files changed, 36 insertions(+), 0 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/tty/serial/msm_serial.txt
+How about if I just keep it simple for now.  Since there isn't
+actually a driver for the DMA version, this driver will handle both
+UART blocks, so I'll just do the plain thing in the DT.
 
-diff --git a/Documentation/devicetree/bindings/tty/serial/msm_serial.txt b/Documentation/devicetree/bindings/tty/serial/msm_serial.txt
-new file mode 100644
-index 0000000..1b72e79
---- /dev/null
-+++ b/Documentation/devicetree/bindings/tty/serial/msm_serial.txt
-@@ -0,0 +1,22 @@
-+* Qualcomm MSM UART
-+
-+Required properties:
-+- compatible :
-+	- "qcom,msm-uart"
-+- reg : offset and length of the register set for the device
-+	for the hsuart operating in compatible mode, there should be a
-+	second pair describing the gsbi registers.
-+- interrupts : should contain the uart interrupt.
-+
-+There are two different UART blocks in MSM devices, "qcom,msm-uart"
-+and "qcom,msm-hsuart".  The msm-serial driver is able to handle both
-+of these devices.
-+
-+Example:
-+
-+	uart@19c400000 {
-+		compatible = "qcom,msm-hsuart", "qcom,msm-uart";
-+		reg = <0x19c40000 0x1000>,
-+		      <0x19c00000 0x1000>;
-+		interrupts = <195>;
-+	};
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index d9863b2..7767902 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -19,6 +19,7 @@
- # define SUPPORT_SYSRQ
- #endif
- 
-+#include <linux/atomic.h>
- #include <linux/hrtimer.h>
- #include <linux/module.h>
- #include <linux/io.h>
-@@ -33,6 +34,8 @@
- #include <linux/clk.h>
- #include <linux/platform_device.h>
- #include <linux/delay.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
- 
- #include "msm_serial.h"
- 
-@@ -856,6 +859,8 @@ static struct uart_driver msm_uart_driver = {
- 	.cons = MSM_CONSOLE,
- };
- 
-+static atomic_t msm_uart_next_id = ATOMIC_INIT(0);
-+
- static int __init msm_serial_probe(struct platform_device *pdev)
- {
- 	struct msm_port *msm_port;
-@@ -863,6 +868,9 @@ static int __init msm_serial_probe(struct platform_device *pdev)
- 	struct uart_port *port;
- 	int irq;
- 
-+	if (pdev->id == -1)
-+		pdev->id = atomic_inc_return(&msm_uart_next_id) - 1;
-+
- 	if (unlikely(pdev->id < 0 || pdev->id >= UART_NR))
- 		return -ENXIO;
- 
-@@ -920,11 +928,17 @@ static int __devexit msm_serial_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
-+static struct of_device_id msm_match_table[] = {
-+	{ .compatible = "qcom,msm-uart" },
-+	{}
-+};
-+
- static struct platform_driver msm_platform_driver = {
- 	.remove = msm_serial_remove,
- 	.driver = {
- 		.name = "msm_serial",
- 		.owner = THIS_MODULE,
-+		.of_match_table = msm_match_table,
- 	},
- };
- 
+In the future, when a DMA-capable driver exists, we can figure out how
+to determine which driver should be used.  At this point, I'm not even
+sure what the correct answer will be, since a given configuration may
+want to use non-DMA for one msm-hsuart device, and the DMA driver for
+another.  It's kind of board/use specific, but beyond just describing
+what the hardware is.
+
+I've just sent new patches with this fixed up.
+
+David
+
 -- 
 Sent by an employee of the Qualcomm Innovation Center, Inc.
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum.
