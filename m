@@ -1,36 +1,42 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 0/5] Remove UPIO_DWAPB{,32} from 8250 driver
-Date: Tue, 16 Aug 2011 16:39:31 +0200
-Message-ID: <201108161639.32166.arnd@arndb.de>
-References: <1313399875-11006-1-git-send-email-jamie@jamieiles.com> <201108161605.08811.arnd@arndb.de> <20110816142026.GH2786@pulham.picochip.com>
-Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+From: Jamie Iles <jamie@jamieiles.com>
+Subject: [PATCH 0/2] serial8250: support for DesignWare 8250
+Date: Tue, 16 Aug 2011 17:47:45 +0100
+Message-ID: <1313513267-25955-1-git-send-email-jamie@jamieiles.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.126.171]:56898 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751098Ab1HPOje (ORCPT
+Received: from mail-ww0-f44.google.com ([74.125.82.44]:49357 "EHLO
+	mail-ww0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752580Ab1HPQsB (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 16 Aug 2011 10:39:34 -0400
-In-Reply-To: <20110816142026.GH2786@pulham.picochip.com>
+	Tue, 16 Aug 2011 12:48:01 -0400
+Received: by wwf5 with SMTP id 5so106726wwf.1
+        for <linux-serial@vger.kernel.org>; Tue, 16 Aug 2011 09:48:00 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jamie Iles <jamie@jamieiles.com>
-Cc: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: arnd@arndb.de, alan@lxorguk.ukuu.org.uk, Jamie Iles <jamie@jamieiles.com>
 
-On Tuesday 16 August 2011, Jamie Iles wrote:
-> In that case I could add an ns8250dw compatible string and put the 
-> handlers into here (both 8 and 32 bit variants).
+This builds on my previous series that removes UPIO_DWAPB and
+UPIO_DWAPB32 and allows the DesignWare 8250 extra features to be used.
+I've set this up as a helper function that adds the accessors to a
+uart_port as I thought this could be used by both of_serial and normal
+platform devices.  These helpers could be converted to a set of 8250 ops
+once we have that in place.
 
-Not sure I understand what the effect of that is. I'll just wait
-for your patch then and assume that you're doing it right.
+Jamie
 
-> Note that the MIPS 
-> user that I've removed in this series should probably still keep the 
-> accessors in the platform code as they've remapped the USR to a 
-> different location to the Synopsys spec.
+Jamie Iles (2):
+  tty: serial8250: add helpers for the DesignWare 8250
+  tty: of_serial: add support for the DesignWare 8250
 
-Agreed.
+ .../devicetree/bindings/tty/serial/of-serial.txt   |    1 +
+ drivers/tty/serial/8250_dw.c                       |   99 ++++++++++++++++++++
+ drivers/tty/serial/Kconfig                         |    7 ++
+ drivers/tty/serial/Makefile                        |    1 +
+ drivers/tty/serial/of_serial.c                     |    7 ++
+ include/linux/serial_8250.h                        |    8 ++
+ 6 files changed, 123 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/tty/serial/8250_dw.c
 
-	Arnd
+-- 
+1.7.4.1
+
