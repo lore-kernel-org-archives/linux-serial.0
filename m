@@ -1,43 +1,101 @@
-From: Jamie Iles <jamie@jamieiles.com>
-Subject: Re: [PATCH 4/5] mips: msp71xx/serial: add workaround for DW UART
-Date: Wed, 17 Aug 2011 14:51:11 +0100
-Message-ID: <20110817135111.GB6586@pulham.picochip.com>
-References: <1313399875-11006-1-git-send-email-jamie@jamieiles.com>
- <1313399875-11006-5-git-send-email-jamie@jamieiles.com>
- <20110817125633.GC16422@linux-mips.org>
+From: Alan Cooper <alcooperx@gmail.com>
+Subject: [PATCH/resend] 8250: Fix race condition in serial8250_backup_timeout()
+Date: Wed, 17 Aug 2011 10:05:59 -0400
+Message-ID: <CAOGqxeWf8TFO4SHcwLRod7R0mD9YudZNX0PFybe+aeNzrjOOww@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wy0-f174.google.com ([74.125.82.174]:36002 "EHLO
+Received: from mail-wy0-f174.google.com ([74.125.82.174]:48927 "EHLO
 	mail-wy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753397Ab1HQNvQ (ORCPT
+	with ESMTP id S1753696Ab1HQOGA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 17 Aug 2011 09:51:16 -0400
-Received: by wyg24 with SMTP id 24so685323wyg.19
-        for <linux-serial@vger.kernel.org>; Wed, 17 Aug 2011 06:51:14 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <20110817125633.GC16422@linux-mips.org>
+	Wed, 17 Aug 2011 10:06:00 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ralf Baechle <ralf@linux-mips.org>
-Cc: Jamie Iles <jamie@jamieiles.com>, linux-serial@vger.kernel.org, arnd@arndb.de, Alan Cox <alan@linux.intel.com>
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2011 at 01:56:33PM +0100, Ralf Baechle wrote:
-> On Mon, Aug 15, 2011 at 10:17:54AM +0100, Jamie Iles wrote:
-> 
-> > The Synopsys DesignWare UART in pmc-sierra msp71xx has an extra feature
-> > where the UART detects a write attempt to the LCR whilst busy and raises
-> > an interrupt.  The driver needs to clear the interrupt and rewrite the
-> > LCR.  Move this into platform code and out of the 8250 driver.
-> > 
-> > Cc: Ralf Baechle <ralf@linux-mips.org>
-> > Cc: Alan Cox <alan@linux.intel.com>
-> > Signed-off-by: Jamie Iles <jamie@jamieiles.com>
-> 
-> Not quite the way I'd have done it but looks like it's going to work.
-> 
-> Acked-by: Ralf Baechle <ralf@linux-mips.org>
+This is to fix an issue where output will suddenly become very slow.
+The problem occurs on 8250 UARTS with the hardware bug UART_BUG_THRE.
 
-Thanks Ralf.  Out of interest, what would you have done differently?
+BACKGROUND
+For normal UARTs (without UART_BUG_THRE): When the serial core layer
+gets new transmit data and the transmitter is idle, it buffers the
+data and calls the 8250s' serial8250_start_tx() routine which will
+simply enable the TX interrupt in the IER register and return. This
+should immediately fire a THRE interrupt and begin transmitting the
+data.
+For buggy UARTs (with UART_BUG_THRE): merely enabling the TX interrupt
+in IER does not necessarily generate a new THRE interrupt.
+Therefore, a background timer periodically checks to see if there is
+pending data, and starts transmission if that is the case.
 
-Jamie
+The bug happens on SMP systems when the system has nothing to transmit,
+the transmit interrupt is disabled and the following sequence occurs:
+- CPU0: The background timer routine serial8250_backup_timeout()
+ starts and saves the state of the interrupt enable register (IER)
+ and then disables all interrupts in IER. NOTE: The transmit interrupt
+ (TI) bit is saved as disabled.
+- CPU1: The serial core gets data to transmit, grabs the port lock and
+ calls serial8250_start_tx() which enables the TI in IER.
+- CPU0: serial8250_backup_timeout() waits for the port lock.
+- CPU1: finishes (with TI enabled) and releases the port lock.
+- CPU0: serial8250_backup_timeout() calls the interrupt routine which
+ will transmit the next fifo's worth of data and then restores the
+ IER from the previously saved value (TI disabled).
+At this point, as long as the serial core has more transmit data
+buffered, it will not call serial8250_start_tx() again and the
+background timer routine will slowly transmit the data.
+
+The fix is to have serial8250_start_tx() get the port lock before
+it saves the IER state and release it after restoring IER. This
+also means that we have to call  transmit_chars() instead of
+serial8250_handle_port() because serial8250_handle_port also grabs
+the lock. This will prevent serial8250_start_tx() from running in parallel.
+
+Signed-off-by: Al Cooper <alcooperx@gmail.com>
+---
+ drivers/tty/serial/8250.c |    8 +++++---
+ 1 files changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
+index b4129f5..8fb7e8f 100644
+--- a/drivers/tty/serial/8250.c
++++ b/drivers/tty/serial/8250.c
+@@ -1819,6 +1819,8 @@ static void serial8250_backup_timeout(unsigned long data)
+       unsigned int iir, ier = 0, lsr;
+       unsigned long flags;
+
++       spin_lock_irqsave(&up->port.lock, flags);
++
+       /*
+        * Must disable interrupts or else we risk racing with the interrupt
+        * based handler.
+@@ -1836,10 +1838,8 @@ static void serial8250_backup_timeout(unsigned long data)
+        * the "Diva" UART used on the management processor on many HP
+        * ia64 and parisc boxes.
+        */
+-       spin_lock_irqsave(&up->port.lock, flags);
+       lsr = serial_in(up, UART_LSR);
+       up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
+-       spin_unlock_irqrestore(&up->port.lock, flags);
+       if ((iir & UART_IIR_NO_INT) && (up->ier & UART_IER_THRI) &&
+           (!uart_circ_empty(&up->port.state->xmit) || up->port.x_char) &&
+           (lsr & UART_LSR_THRE)) {
+@@ -1848,11 +1848,13 @@ static void serial8250_backup_timeout(unsigned
+long data)
+       }
+
+       if (!(iir & UART_IIR_NO_INT))
+-               serial8250_handle_port(up);
++               transmit_chars(up);
+
+       if (is_real_interrupt(up->port.irq))
+               serial_out(up, UART_IER, ier);
+
++       spin_unlock_irqrestore(&up->port.lock, flags);
++
+       /* Standard timer interval plus 0.2s to keep the port running */
+       mod_timer(&up->timer,
+               jiffies + uart_poll_timeout(&up->port) + HZ / 5);
+--
+1.7.3.2
