@@ -1,47 +1,40 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 2/4] msm_serial: Add devicetree support
-Date: Tue, 16 Aug 2011 21:07:08 +0200
-Message-ID: <3445697.36l0oAAgCs@wuerfel>
-References: <1313190008-7551-1-git-send-email-davidb@codeaurora.org>
-	<65679699.l4XXDScc0T@wuerfel>
-	<20110816175702.GA27576@huya.qualcomm.com>
+From: Jiri Slaby <jirislaby@gmail.com>
+Subject: [UART] Why CAP_SYS_ADMIN can open non-started port?
+Date: Wed, 17 Aug 2011 11:25:27 +0200
+Message-ID: <4E4B8907.8030008@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20110816175702.GA27576@huya.qualcomm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
-	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
-	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: linux-arm-kernel-bounces@lists.infradead.org
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: David Brown <davidb@codeaurora.org>
-Cc: linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, Bryan Huntsman <bryanh@codeaurora.org>, linux-kernel@vger.kernel.org, Grant Likely <grant.likely@secretlab.ca>, Randy Dunlap <rdunlap@xenotime.net>, linux-serial@vger.kernel.org, Daniel Walker <dwalker@fifo99.com>, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-fx0-f46.google.com ([209.85.161.46]:50538 "EHLO
+	mail-fx0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752098Ab1HQJZb (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 17 Aug 2011 05:25:31 -0400
+Received: by fxh19 with SMTP id 19so517544fxh.19
+        for <linux-serial@vger.kernel.org>; Wed, 17 Aug 2011 02:25:30 -0700 (PDT)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Greg KH <gregkh@suse.de>, linux@arm.linux.org.uk
 
-On Tuesday 16 August 2011 10:57:02 David Brown wrote:
-> How about if I just keep it simple for now.  Since there isn't
-> actually a driver for the DMA version, this driver will handle both
-> UART blocks, so I'll just do the plain thing in the DT.
+Hi,
 
-Sounds good to me.
+while I was in the process of uart cleanup, I found this:
+static int uart_startup(...) {
+  ...
+  retval = port->ops->startup(port);
+  ...
+  if (retval && capable(CAP_SYS_ADMIN))
+    retval = 0;
 
-> In the future, when a DMA-capable driver exists, we can figure out how
-> to determine which driver should be used.  At this point, I'm not even
-> sure what the correct answer will be, since a given configuration may
-> want to use non-DMA for one msm-hsuart device, and the DMA driver for
-> another.  It's kind of board/use specific, but beyond just describing
-> what the hardware is.
+  return retval;
+}
 
-In order to be absolutely future-proof, you could mandate that you always
-list two "compatible" values, one for the generic version and one for
-the specific implementation (high-speed or low-speed). It's a simple
-change from what you have now and it allows to change the drivers to
-bind to just the specific name in case you want to handle them separately
-in the future, without having to change the device tree files.
+Why CAP_SYS_ADMIN should not see the failing port startup? Does anybody
+from you remember if it is for some kind of possibility to later
+re-autoconfigure the port or something like that?
 
-	Arnd
+thanks,
+-- 
+js
