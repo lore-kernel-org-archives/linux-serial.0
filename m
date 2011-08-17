@@ -1,76 +1,36 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH] TTY: serial, document ignoring of uart->ops->startup error
-Date: Wed, 17 Aug 2011 13:48:15 +0200
-Message-ID: <1313581695-30520-1-git-send-email-jslaby@suse.cz>
-References: <20110817111309.6abf1fe6@lxorguk.ukuu.org.uk>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20110817111309.6abf1fe6@lxorguk.ukuu.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@suse.de
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, jirislaby@gmail.com, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Russel King <linux@arm.linux.org.uk>
+From: Ralf Baechle <ralf@linux-mips.org>
+Subject: Re: [PATCH 4/5] mips: msp71xx/serial: add workaround for DW UART
+Date: Wed, 17 Aug 2011 13:56:33 +0100
+Message-ID: <20110817125633.GC16422@linux-mips.org>
+References: <1313399875-11006-1-git-send-email-jamie@jamieiles.com>
+ <1313399875-11006-5-git-send-email-jamie@jamieiles.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from h5.dl5rb.org.uk ([81.2.74.5]:37149 "EHLO linux-mips.org"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1752864Ab1HQM6E (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 17 Aug 2011 08:58:04 -0400
+Content-Disposition: inline
+In-Reply-To: <1313399875-11006-5-git-send-email-jamie@jamieiles.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Jamie Iles <jamie@jamieiles.com>
+Cc: linux-serial@vger.kernel.org, arnd@arndb.de, Alan Cox <alan@linux.intel.com>
 
-When a user has SYS_ADMIN capabilities and uart->ops->startup returns
-an error in uart_startup, we silently drop the error. We then return 0
-and behave as if it didn't fail. (Not quite, since we set TTY_IO_ERROR
-bit and leave ASYNC_INITIALIZED bit cleared.)
+On Mon, Aug 15, 2011 at 10:17:54AM +0100, Jamie Iles wrote:
 
-This all is to allow setserial to work with improperly configured or
-unconfigured ports. User can thus set port properties and reconfigure
-properly.
-
-This patch only documents this behavior.
-
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Greg KH <gregkh@suse.de>
-Cc: Russel King <linux@arm.linux.org.uk>
----
-On 08/17/2011 12:13 PM, Alan Cox wrote:
-> On Wed, 17 Aug 2011 11:25:27 +0200
-> Jiri Slaby <jirislaby@gmail.com> wrote:
+> The Synopsys DesignWare UART in pmc-sierra msp71xx has an extra feature
+> where the UART detects a write attempt to the LCR whilst busy and raises
+> an interrupt.  The driver needs to clear the interrupt and rewrite the
+> LCR.  Move this into platform code and out of the 8250 driver.
 > 
->> Hi,
->>
->> while I was in the process of uart cleanup, I found this:
->> static int uart_startup(...) {
->>   ...
->>   retval = port->ops->startup(port);
->>   ...
->>   if (retval && capable(CAP_SYS_ADMIN))
->>     retval = 0;
->>
->>   return retval;
->> }
->>
->> Why CAP_SYS_ADMIN should not see the failing port startup? Does anybody
->> from you remember if it is for some kind of possibility to later
->> re-autoconfigure the port or something like that?
-> 
-> In a word - setserial
+> Cc: Ralf Baechle <ralf@linux-mips.org>
+> Cc: Alan Cox <alan@linux.intel.com>
+> Signed-off-by: Jamie Iles <jamie@jamieiles.com>
 
-Yes, thanks. So I assume especially for the configuration of port/irq/type. So
-this is why this is special to tty/serial and USB serials don't need to support
-this.
+Not quite the way I'd have done it but looks like it's going to work.
 
- drivers/tty/serial/serial_core.c |    5 +++++
- 1 files changed, 5 insertions(+), 0 deletions(-)
+Acked-by: Ralf Baechle <ralf@linux-mips.org>
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index db7912c..a3efbea 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -200,6 +200,11 @@ static int uart_startup(struct tty_struct *tty, struct uart_state *state, int in
- 		clear_bit(TTY_IO_ERROR, &tty->flags);
- 	}
- 
-+	/*
-+	 * This is to allow setserial on this port. People may want to set
-+	 * port/irq/type and then reconfigure the port properly if it failed
-+	 * now.
-+	 */
- 	if (retval && capable(CAP_SYS_ADMIN))
- 		retval = 0;
- 
--- 
-1.7.6
+  Ralf
