@@ -1,81 +1,73 @@
-From: David Brown <davidb@codeaurora.org>
-Subject: [PATCH v3 1/4] msm_serial: Use relative resources for iomem
-Date: Thu, 18 Aug 2011 10:25:42 -0700
-Message-ID: <1313688345-17699-2-git-send-email-davidb@codeaurora.org>
-References: <1313688345-17699-1-git-send-email-davidb@codeaurora.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1313688345-17699-1-git-send-email-davidb@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Alan Cox <alan@linux.intel.com>
-Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+From: "Anoop P.A." <Anoop_P.A@pmc-sierra.com>
+Subject: RE: [PATCH 3/5] mips: msp71xx/serial: convert to pr_foo() helpers
+Date: Thu, 18 Aug 2011 11:40:53 -0700
+Message-ID: <A7DEA48C84FD0B48AAAE33F328C0201406358752@BBY1EXM11.pmc_nt.nt.pmc-sierra.bc.ca>
+References: <1313399875-11006-1-git-send-email-jamie@jamieiles.com> <1313399875-11006-4-git-send-email-jamie@jamieiles.com>
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from bby1mta02.pmc-sierra.com ([216.241.235.117]:59315 "EHLO
+	bby1mta02.pmc-sierra.bc.ca" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752349Ab1HRTIR convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 18 Aug 2011 15:08:17 -0400
+Content-class: urn:content-classes:message
+In-Reply-To: <1313399875-11006-4-git-send-email-jamie@jamieiles.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Jamie Iles <jamie@jamieiles.com>, linux-serial@vger.kernel.org
+Cc: arnd@arndb.de, Ralf Baechle <ralf@linux-mips.org>
 
-Device tree iomem resources are only accessible by index, and not by
-name.  The msm_serial devices always have either 1 or 2 iomem
-resources, that are always in the same order.  Convert the
-platform_get_resource_byname into just platform_get_resource to
-facilitate device tree conversion.
+Acked-by:  Anoop P A<Anoop_P.A@pmc-sierra.com>
 
-Signed-off-by: David Brown <davidb@codeaurora.org>
----
- drivers/tty/serial/msm_serial.c |   16 ++++++----------
- 1 files changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index e6ba838..d9863b2 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -589,9 +589,8 @@ static void msm_release_port(struct uart_port *port)
- 		iowrite32(GSBI_PROTOCOL_IDLE, msm_port->gsbi_base +
- 			  GSBI_CONTROL);
- 
--		gsbi_resource = platform_get_resource_byname(pdev,
--							     IORESOURCE_MEM,
--							     "gsbi_resource");
-+		gsbi_resource = platform_get_resource(pdev,
-+							IORESOURCE_MEM, 1);
- 
- 		if (unlikely(!gsbi_resource))
- 			return;
-@@ -612,8 +611,7 @@ static int msm_request_port(struct uart_port *port)
- 	resource_size_t size;
- 	int ret;
- 
--	uart_resource = platform_get_resource_byname(pdev, IORESOURCE_MEM,
--						     "uart_resource");
-+	uart_resource = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (unlikely(!uart_resource))
- 		return -ENXIO;
- 
-@@ -628,8 +626,7 @@ static int msm_request_port(struct uart_port *port)
- 		goto fail_release_port;
- 	}
- 
--	gsbi_resource = platform_get_resource_byname(pdev, IORESOURCE_MEM,
--						     "gsbi_resource");
-+	gsbi_resource = platform_get_resource(pdev, IORESOURCE_MEM, 1);
- 	/* Is this a GSBI-based port? */
- 	if (gsbi_resource) {
- 		size = resource_size(gsbi_resource);
-@@ -875,7 +872,7 @@ static int __init msm_serial_probe(struct platform_device *pdev)
- 	port->dev = &pdev->dev;
- 	msm_port = UART_TO_MSM(port);
- 
--	if (platform_get_resource_byname(pdev, IORESOURCE_MEM, "gsbi_resource"))
-+	if (platform_get_resource(pdev, IORESOURCE_MEM, 1))
- 		msm_port->is_uartdm = 1;
- 	else
- 		msm_port->is_uartdm = 0;
-@@ -899,8 +896,7 @@ static int __init msm_serial_probe(struct platform_device *pdev)
- 	printk(KERN_INFO "uartclk = %d\n", port->uartclk);
- 
- 
--	resource = platform_get_resource_byname(pdev, IORESOURCE_MEM,
--						     "uart_resource");
-+	resource = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (unlikely(!resource))
- 		return -ENXIO;
- 	port->mapbase = resource->start;
--- 
-Sent by an employee of the Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum.
+> -----Original Message-----
+> From: linux-mips-bounce@linux-mips.org
+[mailto:linux-mips-bounce@linux-
+> mips.org] On Behalf Of Jamie Iles
+> Sent: Monday, August 15, 2011 2:48 PM
+> To: linux-serial@vger.kernel.org
+> Cc: arnd@arndb.de; Jamie Iles; Ralf Baechle
+> Subject: [PATCH 3/5] mips: msp71xx/serial: convert to pr_foo() helpers
+> 
+> Convert to pr_foo() helpers rather than printk(KERN_.*).
+> 
+> Cc: Ralf Baechle <ralf@linux-mips.org>
+> Cc: Signed-off-by: Jamie Iles <jamie@jamieiles.com>
+> ---
+>  arch/mips/pmc-sierra/msp71xx/msp_serial.c |    4 ++--
+>  1 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/mips/pmc-sierra/msp71xx/msp_serial.c
+b/arch/mips/pmc-
+> sierra/msp71xx/msp_serial.c
+> index f726162..c3247b5 100644
+> --- a/arch/mips/pmc-sierra/msp71xx/msp_serial.c
+> +++ b/arch/mips/pmc-sierra/msp71xx/msp_serial.c
+> @@ -65,7 +65,7 @@ void __init msp_serial_setup(void)
+>  	up.line         = 0;
+>  	up.private_data		= (void*)UART0_STATUS_REG;
+>  	if (early_serial_setup(&up))
+> -		printk(KERN_ERR "Early serial init of port 0 failed\n");
+> +		pr_err("Early serial init of port 0 failed\n");
+> 
+>  	/* Initialize the second serial port, if one exists */
+>  	switch (mips_machtype) {
+> @@ -89,5 +89,5 @@ void __init msp_serial_setup(void)
+>  	up.line         = 1;
+>  	up.private_data		= (void*)UART1_STATUS_REG;
+>  	if (early_serial_setup(&up))
+> -		printk(KERN_ERR "Early serial init of port 1 failed\n");
+> +		pr_err("Early serial init of port 1 failed\n");
+>  }
+> --
+> 1.7.4.1
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe
+linux-serial" in the
+> body of a message to majordomo@vger.kernel.org More majordomo info at
+> http://vger.kernel.org/majordomo-info.html
+
