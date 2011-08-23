@@ -1,18 +1,15 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+From: Greg KH <greg@kroah.com>
 Subject: Re: [PATCH] atmel_serial: RS485: receiving enabled when sending data
-Date: Tue, 23 Aug 2011 11:21:16 +0100
-Message-ID: <20110823102116.GF19622@n2100.arm.linux.org.uk>
+Date: Tue, 23 Aug 2011 08:39:32 -0700
+Message-ID: <20110823153932.GA26081@kroah.com>
 References: <4E492CFF.7040905@pwrnet.de> <20110822211832.GA8023@kroah.com>
 	<4E536536.3030004@evidence.eu.com>
-	<20110823093035.GB19622@n2100.arm.linux.org.uk>
-	<4E537BB3.60001@evidence.eu.com>
-	<20110823111438.5d6b286d@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <20110823111438.5d6b286d@lxorguk.ukuu.org.uk>
+In-Reply-To: <4E536536.3030004@evidence.eu.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
 	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -22,35 +19,93 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: linux-arm-kernel-bounces@lists.infradead.org
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Greg KH <greg@kroah.com>, nicolas.ferre@atmel.com, linux-kernel@vger.kernel.org, Claudio Scordino <claudio@evidence.eu.com>, Bernhard Roth <br@pwrnet.de>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Claudio Scordino <claudio@evidence.eu.com>
+Cc: linux-arm-kernel@lists.infradead.org, nicolas.ferre@atmel.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Bernhard Roth <br@pwrnet.de>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Aug 23, 2011 at 11:14:38AM +0100, Alan Cox wrote:
-> > atmel_serial: RS485: receiving enabled when sending data
+On Tue, Aug 23, 2011 at 10:30:46AM +0200, Claudio Scordino wrote:
+> Il 22/08/2011 23:18, Greg KH ha scritto:
+> > On Mon, Aug 15, 2011 at 04:28:15PM +0200, Bernhard Roth wrote:
+> >> Hello!
+> >>
+> >> By default the atmel_serial driver in RS485 mode disables receiving
+> >> data until all data in the send buffer has been sent. This flag
+> >> allows to receive data even whilst sending data. This is very useful
+> >> to
+> >>
+> >> - check if the data has been sent correctly over the RS485 bus
+> >> - assure that no collision happened
+> >> - check for short circuits/termination issues on the RS485 bus
+> >>
+> >> Usually this functionality is realized by hardware, wether
+> >> controlling the RX-Enable pin of the RS485 transceiver with RTS
+> >> (driver control signal) or pulling it LOW permanently. The present
+> >> atmel_serial driver makes this impossible, thus requiring following
+> >> patch.
+> >>
+> >> Usage example:
+> >>
+> >>      struct serial_rs485     rs485;
+> >>
+> >>      memset(&rs485, 0, sizeof(rs485));
+> >>      rs485.flags = SER_RS485_ENABLED | SER_RS485_RX_DURING_TX;
+> >>      ioctl(fd, TIOCSRS485,&rs485);
+> >>
+> >>
+> >>
+> >>
+> >> atmel_serial: RS485: receiving enabled when sending data
+> >>
+> >> By default the atmel_serial driver in RS485 mode disables receiving
+> >> data until
+> >> all data in the send buffer has been sent. This flag allows to receive data
+> >> even whilst sending data.
+> >>
+> >> Signed-off-by: Bernhard Roth<br@pwrnet.de>
+> >> Signed-off-by: Claudio Scordino<claudio@evidence.eu.com>
+> >> ---
+> >>   drivers/tty/serial/atmel_serial.c |   17 ++++++++++-------
+> >>   include/linux/serial.h            |    1 +
+> >>   2 files changed, 11 insertions(+), 7 deletions(-)
+> >>
+> >> diff --git a/drivers/tty/serial/atmel_serial.c
+> >> b/drivers/tty/serial/atmel_serial.c
+> >> index af9b781..5f6c745 100644
+> >> --- a/drivers/tty/serial/atmel_serial.c
+> >> +++ b/drivers/tty/serial/atmel_serial.c
+> >> @@ -339,8 +339,9 @@ static void atmel_stop_tx(struct uart_port *port)
+> >>       /* Disable interrupts */
+> >>       UART_PUT_IDR(port, atmel_port->tx_done_mask);
+> >>
+> >> -    if (atmel_port->rs485.flags&  SER_RS485_ENABLED)
+> >> -        atmel_start_rx(port);
+> >> +    if ((atmel_port->rs485.flags&  SER_RS485_ENABLED)&&
+> >> +        !(atmel_port->rs485.flags&  SER_RS485_RX_DURING_TX))
+> >> +            atmel_start_rx(port);
 > > 
-> > By default the atmel_serial driver in RS485 mode disables receiving data until
-> > all data in the send buffer has been sent. This flag allows to receive data
-> > even whilst sending data.
+> > Can you fix your email client to not strip patches of tabs and resend
+> > this so that I can apply it?
 > > 
-> > Signed-off-by: Bernhard Roth <br@pwrnet.de> 
-> > Signed-off-by: Claudio Scordino <claudio@evidence.eu.com>
+> > thanks,
+> > 
+> > greg k-h
 > 
-> Acked-by: Alan Cox <alan@linux.intel.com>
+> Hi Greg,
 > 
-> (although when we have people having a serious meta discussion about four
->  spaces, or a tab or neither rather than functionality I despair)
+>     please find below the patch with the right tabs.
+> 
+> Remind however that the main author of the patch is Bernhard, not me.
 
-We could ignore it, but then we end up with code being randomly
-formatted throughout files, which makes it _more_ likely that the
-code will be misread later.  That in turn makes the chances of
-bugs introduced more likely in the future.
+Then properly send the patch so that this is shown.  Please just add a:
 
-It also encourages 'cleanup' patches further down the line, so more
-churn - which is something that Linus has been complaining about,
-particularly in regard to ARM stuff.
+From: foo <foo@foo.org>
 
-It's far better to get things right the first time round than have
-to keep touching stuff time and time again - either because of
-cleanup patches or because of subtle bugs introduced by misreading
-the code.
+as the first line of the patch changelog portion and git will fix things
+up correctly.  Documentation/SubmittingPatches describes this in detail.
+
+Care to resend your updated version, with this corrected author
+information, so I get it right?
+
+thanks,
+
+greg k-h
