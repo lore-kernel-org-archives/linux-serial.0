@@ -1,49 +1,168 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH] tty: omap-serial: fix boot hang by converting to use a
- threaded IRQ handler (was Re: [PATCH] irq: always set IRQF_ONESHOT if no
- primary handler is specified)
-Date: Tue, 23 Aug 2011 10:14:50 +0200
-Message-ID: <20110823081450.GA20979@linutronix.de>
-References: <1310070737-18514-1-git-send-email-bigeasy@linutronix.de>
- <C5991460-2092-4E65-99EE-091F8DAA0AC3@gmail.com>
- <4E4D4A5F.202@linutronix.de>
- <20110818213418.GA20509@legolas.emea.dhcp.ti.com>
- <alpine.DEB.2.00.1108221742130.10315@utopia.booyaka.com>
- <alpine.DEB.2.00.1108222306300.28226@utopia.booyaka.com>
+From: Claudio Scordino <claudio@evidence.eu.com>
+Subject: Re: [PATCH] atmel_serial: RS485: receiving enabled when sending data
+Date: Tue, 23 Aug 2011 10:30:46 +0200
+Message-ID: <4E536536.3030004@evidence.eu.com>
+References: <4E492CFF.7040905@pwrnet.de> <20110822211832.GA8023@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Return-path: <linux-omap-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.00.1108222306300.28226@utopia.booyaka.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Paul Walmsley <paul@pwsan.com>
-Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Pantelis Antoniou <pantelis.antoniou@gmail.com>, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Felipe Balbi <balbi@ti.com>, torvalds@linux-foundation.org, mporter@ti.com, Kevin Hilman <khilman@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20110822211832.GA8023@kroah.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: linux-arm-kernel-bounces@lists.infradead.org
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Greg KH <greg@kroah.com>
+Cc: linux-arm-kernel@lists.infradead.org, nicolas.ferre@atmel.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Bernhard Roth <br@pwrnet.de>
 List-Id: linux-serial@vger.kernel.org
 
-* Paul Walmsley | 2011-08-22 23:10:21 [-0600]:
+Il 22/08/2011 23:18, Greg KH ha scritto:
+> On Mon, Aug 15, 2011 at 04:28:15PM +0200, Bernhard Roth wrote:
+>> Hello!
+>>
+>> By default the atmel_serial driver in RS485 mode disables receiving
+>> data until all data in the send buffer has been sent. This flag
+>> allows to receive data even whilst sending data. This is very useful
+>> to
+>>
+>> - check if the data has been sent correctly over the RS485 bus
+>> - assure that no collision happened
+>> - check for short circuits/termination issues on the RS485 bus
+>>
+>> Usually this functionality is realized by hardware, wether
+>> controlling the RX-Enable pin of the RS485 transceiver with RTS
+>> (driver control signal) or pulling it LOW permanently. The present
+>> atmel_serial driver makes this impossible, thus requiring following
+>> patch.
+>>
+>> Usage example:
+>>
+>>      struct serial_rs485     rs485;
+>>
+>>      memset(&rs485, 0, sizeof(rs485));
+>>      rs485.flags = SER_RS485_ENABLED | SER_RS485_RX_DURING_TX;
+>>      ioctl(fd, TIOCSRS485,&rs485);
+>>
+>>
+>>
+>>
+>> atmel_serial: RS485: receiving enabled when sending data
+>>
+>> By default the atmel_serial driver in RS485 mode disables receiving
+>> data until
+>> all data in the send buffer has been sent. This flag allows to receive data
+>> even whilst sending data.
+>>
+>> Signed-off-by: Bernhard Roth<br@pwrnet.de>
+>> Signed-off-by: Claudio Scordino<claudio@evidence.eu.com>
+>> ---
+>>   drivers/tty/serial/atmel_serial.c |   17 ++++++++++-------
+>>   include/linux/serial.h            |    1 +
+>>   2 files changed, 11 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/atmel_serial.c
+>> b/drivers/tty/serial/atmel_serial.c
+>> index af9b781..5f6c745 100644
+>> --- a/drivers/tty/serial/atmel_serial.c
+>> +++ b/drivers/tty/serial/atmel_serial.c
+>> @@ -339,8 +339,9 @@ static void atmel_stop_tx(struct uart_port *port)
+>>       /* Disable interrupts */
+>>       UART_PUT_IDR(port, atmel_port->tx_done_mask);
+>>
+>> -    if (atmel_port->rs485.flags&  SER_RS485_ENABLED)
+>> -        atmel_start_rx(port);
+>> +    if ((atmel_port->rs485.flags&  SER_RS485_ENABLED)&&
+>> +        !(atmel_port->rs485.flags&  SER_RS485_RX_DURING_TX))
+>> +            atmel_start_rx(port);
+> 
+> Can you fix your email client to not strip patches of tabs and resend
+> this so that I can apply it?
+> 
+> thanks,
+> 
+> greg k-h
 
->IRQ handler type mismatch for IRQ 74
+Hi Greg,
 
->It turns out that the omap-serial code used one threaded IRQ
->handler[1][2] and one non-threaded IRQ handler[3] that shared the same
->IRQ.  During the 3.1-rc series, a patch was merged[4] that caused
->IRQF_ONESHOT to be set on the threaded handler, but the non-threaded
->handler did not have IRQF_ONESHOT set.  Since interrupt handlers
+    please find below the patch with the right tabs.
 
-Is the type of IRQ74 edge or line/eoi?
-Since you registered the serial handler as threaded and the primary
-handler did _not_ disable the irq source (due to the absence of the
-IRQF_ONESHOT flag or a custom primary handler which does this by
-changing a bit in the hardware) it is more or less luck that you did not
-hang forever on the first serial interrupt. Well, it does not happen
-with edge typed interrupt lines.
+Remind however that the main author of the patch is Bernhard, not me.
 
->that share the same IRQ must also share the presence or absence of
->IRQF_ONESHOT[5], this new commit caused a mismatch that prevented the
->non-threaded IRQ from registering.
+Best regards,
 
-In theory it should be okay if the handler without ONESHOT is either
-primary only or primary + threaded and the primary disables the irq
-source.
+    		Claudio 
 
-Sebastian
+atmel_serial: RS485: receiving enabled when sending data
+
+By default the atmel_serial driver in RS485 mode disables receiving data until
+all data in the send buffer has been sent. This flag allows to receive data
+even whilst sending data.
+
+Signed-off-by: Bernhard Roth <br@pwrnet.de> 
+Signed-off-by: Claudio Scordino <claudio@evidence.eu.com>
+---
+ drivers/tty/serial/atmel_serial.c |   17 ++++++++++-------
+ include/linux/serial.h            |    1 +
+ 2 files changed, 11 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index af9b781..5f6c745 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -339,8 +339,9 @@ static void atmel_stop_tx(struct uart_port *port)
+ 	/* Disable interrupts */
+ 	UART_PUT_IDR(port, atmel_port->tx_done_mask);
+ 
+-	if (atmel_port->rs485.flags & SER_RS485_ENABLED)
+-		atmel_start_rx(port);
++	if ((atmel_port->rs485.flags & SER_RS485_ENABLED) &&
++		!(atmel_port->rs485.flags & SER_RS485_RX_DURING_TX))
++			atmel_start_rx(port);
+ }
+ 
+ /*
+@@ -356,8 +357,9 @@ static void atmel_start_tx(struct uart_port *port)
+ 			   really need this.*/
+ 			return;
+ 
+-		if (atmel_port->rs485.flags & SER_RS485_ENABLED)
+-			atmel_stop_rx(port);
++		if ((atmel_port->rs485.flags & SER_RS485_ENABLED) &&
++			!(atmel_port->rs485.flags & SER_RS485_RX_DURING_TX))
++				atmel_stop_rx(port);
+ 
+ 		/* re-enable PDC transmit */
+ 		UART_PUT_PTCR(port, ATMEL_PDC_TXTEN);
+@@ -680,9 +682,10 @@ static void atmel_tx_dma(struct uart_port *port)
+ 		/* Enable interrupts */
+ 		UART_PUT_IER(port, atmel_port->tx_done_mask);
+ 	} else {
+-		if (atmel_port->rs485.flags & SER_RS485_ENABLED) {
+-			/* DMA done, stop TX, start RX for RS485 */
+-			atmel_start_rx(port);
++		if ((atmel_port->rs485.flags & SER_RS485_ENABLED) &&
++			!(atmel_port->rs485.flags & SER_RS485_RX_DURING_TX)) {
++				/* DMA done, stop TX, start RX for RS485 */
++				atmel_start_rx(port);
+ 		}
+ 	}
+ 
+diff --git a/include/linux/serial.h b/include/linux/serial.h
+index ef91406..97ff8e2 100644
+--- a/include/linux/serial.h
++++ b/include/linux/serial.h
+@@ -211,6 +211,7 @@ struct serial_rs485 {
+ #define SER_RS485_RTS_ON_SEND		(1 << 1)
+ #define SER_RS485_RTS_AFTER_SEND	(1 << 2)
+ #define SER_RS485_RTS_BEFORE_SEND	(1 << 3)
++#define SER_RS485_RX_DURING_TX		(1 << 4)
+ 	__u32	delay_rts_before_send;	/* Milliseconds */
+ 	__u32	delay_rts_after_send;	/* Milliseconds */
+ 	__u32	padding[5];		/* Memory is cheap, new structs
+-- 
+1.7.1
