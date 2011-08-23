@@ -1,148 +1,66 @@
-From: Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH] tty: omap-serial: fix boot hang by converting to use a
- threaded IRQ handler (was Re: [PATCH] irq: always set IRQF_ONESHOT if no
- primary handler is specified)
-Date: Tue, 23 Aug 2011 12:12:58 +0300
-Message-ID: <20110823091257.GE1341@legolas.emea.dhcp.ti.com>
-References: <1310070737-18514-1-git-send-email-bigeasy@linutronix.de>
- <C5991460-2092-4E65-99EE-091F8DAA0AC3@gmail.com>
- <4E4D4A5F.202@linutronix.de>
- <20110818213418.GA20509@legolas.emea.dhcp.ti.com>
- <alpine.DEB.2.00.1108221742130.10315@utopia.booyaka.com>
- <alpine.DEB.2.00.1108222306300.28226@utopia.booyaka.com>
-Reply-To: balbi@ti.com
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH] atmel_serial: RS485: receiving enabled when sending data
+Date: Tue, 23 Aug 2011 10:30:35 +0100
+Message-ID: <20110823093035.GB19622@n2100.arm.linux.org.uk>
+References: <4E492CFF.7040905@pwrnet.de> <20110822211832.GA8023@kroah.com>
+	<4E536536.3030004@evidence.eu.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="HnQK338I3UIa/qiP"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.00.1108222306300.28226@utopia.booyaka.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Walmsley <paul@pwsan.com>
-Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Pantelis Antoniou <pantelis.antoniou@gmail.com>, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Felipe Balbi <balbi@ti.com>, torvalds@linux-foundation.org, mporter@ti.com, Kevin Hilman <khilman@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>
+In-Reply-To: <4E536536.3030004@evidence.eu.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: linux-arm-kernel-bounces@lists.infradead.org
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Claudio Scordino <claudio@evidence.eu.com>
+Cc: Greg KH <greg@kroah.com>, nicolas.ferre@atmel.com, linux-kernel@vger.kernel.org, Bernhard Roth <br@pwrnet.de>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
+On Tue, Aug 23, 2011 at 10:30:46AM +0200, Claudio Scordino wrote:
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index af9b781..5f6c745 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -339,8 +339,9 @@ static void atmel_stop_tx(struct uart_port *port)
+>  	/* Disable interrupts */
+>  	UART_PUT_IDR(port, atmel_port->tx_done_mask);
+>  
+> -	if (atmel_port->rs485.flags & SER_RS485_ENABLED)
+> -		atmel_start_rx(port);
+> +	if ((atmel_port->rs485.flags & SER_RS485_ENABLED) &&
+> +		!(atmel_port->rs485.flags & SER_RS485_RX_DURING_TX))
+> +			atmel_start_rx(port);
 
---HnQK338I3UIa/qiP
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+However, this is incorrect formatting.  The code following the 'if' ends
+up being indented by two tabs.
 
-Hi,
+This illustrates why the whole idea that tabs should only be used for
+indenting is wrong.  You end up with either what you have above, or:
 
-On Mon, Aug 22, 2011 at 11:10:21PM -0600, Paul Walmsley wrote:
->=20
-> Convert the omap-serial hardirq handler to a threaded IRQ handler. Withou=
-t=20
-> this patch, OMAP boards which use the on-board OMAP UARTs and the=20
-> omap-serial driver will not boot to userspace after commit=20
-> f3637a5f2e2eb391ff5757bc83fb5de8f9726464 ("irq: Always set IRQF_ONESHOT i=
-f=20
-> no primary handler is specified").  Enabling CONFIG_DEBUG_SHIRQ reveals=
-=20
-> 'IRQ handler type mismatch' errors:
->=20
-> IRQ handler type mismatch for IRQ 74
-> current handler: serial idle
-> [<c001b124>] (unwind_backtrace+0x0/0xf0) from [<c009c900>] (__setup_irq+0=
-x42c/0x464)
-> [<c009c900>] (__setup_irq+0x42c/0x464) from [<c009ca08>] (request_threade=
-d_irq+0xd0/0x148)
-> [<c009ca08>] (request_threaded_irq+0xd0/0x148) from [<c029d398>] (serial_=
-omap_startup+0x30/0x2dc)
-> [<c029d398>] (serial_omap_startup+0x30/0x2dc) from [<c0295a38>] (uart_sta=
-rtup+0x5c/0x1ac)
->=20
-> (etc.)
->=20
-> It turns out that the omap-serial code used one threaded IRQ
-> handler[1][2] and one non-threaded IRQ handler[3] that shared the same
-> IRQ.  During the 3.1-rc series, a patch was merged[4] that caused
-> IRQF_ONESHOT to be set on the threaded handler, but the non-threaded
-> handler did not have IRQF_ONESHOT set.  Since interrupt handlers
-> that share the same IRQ must also share the presence or absence of
-> IRQF_ONESHOT[5], this new commit caused a mismatch that prevented the
-> non-threaded IRQ from registering.
->=20
-> Fix by converting the non-threaded IRQ handler in omap-serial.c to a
-> threaded IRQ handler.  Ideally we would not have to make this type of
-> change during the -rc series, but the commit that caused this behavior
-> was itself merged between v3.1-rc2 and v3.1-rc3.  In the long term, it
-> would be good to get rid of the shared IRQ handler hack in
-> arch/arm/mach-omap2/serial.c.
->=20
-> This change has been boot-tested on OMAP3530 BeagleBoard and
-> OMAP4430ES2 PandaBoard, and static suspend has been lightly tested on
-> the BeagleBoard.
->=20
-> Pantelis Antoniou <pantelis.antoniou@gmail.com> originally reported
-> the boot failure.
->=20
-> 1. arch/arm/mach-omap2/serial.c line 550, as of Linux v3.1-rc3.  http://g=
-it.kernel.org/?p=3Dlinux/kernel/git/torvalds/linux-2.6.git;a=3Dblob;f=3Darc=
-h/arm/mach-omap2/serial.c;h=3D466fc722fa0f39f03b8d93cf84e4dae4f57fd029;hb=
-=3Dfcb8ce5cfe30ca9ca5c9a79cdfe26d1993e65e0c#l550
->=20
-> 2. arch/arm/mach-omap2/serial.c line 563, as of Linux v3.1-rc3.  http://g=
-it.kernel.org/?p=3Dlinux/kernel/git/torvalds/linux-2.6.git;a=3Dblob;f=3Darc=
-h/arm/mach-omap2/serial.c;h=3D466fc722fa0f39f03b8d93cf84e4dae4f57fd029;hb=
-=3Dfcb8ce5cfe30ca9ca5c9a79cdfe26d1993e65e0c#l563
->=20
-> 3. drivers/tty/serial/omap-serial.c line 464, as of Linux v3.1-rc3.  http=
-://git.kernel.org/?p=3Dlinux/kernel/git/torvalds/linux-2.6.git;a=3Dblob;f=
-=3Ddrivers/tty/serial/omap-serial.c;h=3Dc37df8d0fa2819261dffccc5bc4d0180b95=
-31f49;hb=3Dfcb8ce5cfe30ca9ca5c9a79cdfe26d1993e65e0c#l464
->=20
-> 4. Commit f3637a5f2e2eb391ff5757bc83fb5de8f9726464 ("irq: Always set
->    IRQF_ONESHOT if no primary handler is specified")
->=20
-> 5. Gleixner, Thomas. _[patch 2/5] genirq: Allow shared oneshot
->    interrupts_.  http://lkml.org/lkml/2011/2/23/511
->=20
-> Signed-off-by: Paul Walmsley <paul@pwsan.com>
-> Cc: Pantelis Antoniou <pantelis.antoniou@gmail.com>
-> Cc: Govindraj.R <govindraj.raja@ti.com>
-> Cc: Kevin Hilman <khilman@ti.com>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> ---
->  drivers/tty/serial/omap-serial.c |    4 ++--
->  1 files changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-s=
-erial.c
-> index c37df8d..e83a769 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -461,8 +461,8 @@ static int serial_omap_startup(struct uart_port *port)
->  	/*
->  	 * Allocate the IRQ
->  	 */
-> -	retval =3D request_irq(up->port.irq, serial_omap_irq, up->port.irqflags,
-> -				up->name, up);
-> +	retval =3D request_threaded_irq(up->port.irq, NULL, serial_omap_irq,
-> +				      up->port.irqflags, up->name, up);
+	if ((atmel_port->rs485.flags & SER_RS485_ENABLED) &&
+		!(atmel_port->rs485.flags & SER_RS485_RX_DURING_TX))
+		atmel_start_rx(port);
 
-if you're not running on a slow bus, you should use top half to check if
-IRQs are really from this device.
+both of which are dire for readability.  The only sane way to do this is
+to ignore that stupid "indentation by tabs only" thing and do it as the
+kernel code has _always_ been done over the last 19 years:
 
---=20
-balbi
+	if ((atmel_port->rs485.flags & SER_RS485_ENABLED) &&
+	    !(atmel_port->rs485.flags & SER_RS485_RX_DURING_TX))
+		atmel_start_rx(port);
 
---HnQK338I3UIa/qiP
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+IOW, use spaces to align the wrapped 'if' statement.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
+> +		if ((atmel_port->rs485.flags & SER_RS485_ENABLED) &&
+> +			!(atmel_port->rs485.flags & SER_RS485_RX_DURING_TX)) {
+> +				/* DMA done, stop TX, start RX for RS485 */
+> +				atmel_start_rx(port);
 
-iQEcBAEBAgAGBQJOU28ZAAoJEAv8Txj19kN1rkEH/iUvextOJdIXajoe2tRiz0TX
-EOKKh6gcYHRh8zS9f0gI/xxEhECYMX8GJS3+u4kZDn8wRtBQ1R6oTDmxaFP/ut/+
-bpD1v6BgorIrJQxcM6RPfPAMU51J+q2mR9JnYcn7r13801BPt4GwpQYKm1tRz56P
-6rXitFWmIWeOhIr5UzlI5cvIYCa9Rv6Xw4Ra+xTkVUf0FyC3+9+1FN4xm96l858g
-kC6WqVkg8kox9Ye3lL75ffuw4zv9Ezg4G+T6kAtoL5UtVpAO5lWskC5lw5lCZDsw
-RS8gDfPNtmL3dJdm3H6RXcQmVCGewLodMVF5fTJ5Lf3dYaqwvR5zvm8Ux5uQ82Q=
-=9R/R
------END PGP SIGNATURE-----
-
---HnQK338I3UIa/qiP--
+And here it makes it look like there's a missing brace.
