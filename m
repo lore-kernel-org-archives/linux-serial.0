@@ -1,111 +1,90 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH] atmel_serial: RS485: receiving enabled when sending data
-Date: Tue, 23 Aug 2011 08:39:32 -0700
-Message-ID: <20110823153932.GA26081@kroah.com>
-References: <4E492CFF.7040905@pwrnet.de> <20110822211832.GA8023@kroah.com>
-	<4E536536.3030004@evidence.eu.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH] tty: omap-serial: fix boot hang by converting to use a
+ threaded IRQ handler (was Re: [PATCH] irq: always set IRQF_ONESHOT if no
+ primary handler is specified)
+Date: Tue, 23 Aug 2011 09:13:55 -0700
+Message-ID: <CA+55aFyFzzd2GBbwFYrXMK353UE4tdrdZ5Lt8=qEwaaMJvStnA@mail.gmail.com>
+References: <1310070737-18514-1-git-send-email-bigeasy@linutronix.de>
+ <C5991460-2092-4E65-99EE-091F8DAA0AC3@gmail.com> <4E4D4A5F.202@linutronix.de>
+ <20110818213418.GA20509@legolas.emea.dhcp.ti.com> <alpine.DEB.2.00.1108221742130.10315@utopia.booyaka.com>
+ <alpine.DEB.2.00.1108222306300.28226@utopia.booyaka.com> <20110823095711.058d9cf4@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <4E536536.3030004@evidence.eu.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
-	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
-	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: linux-arm-kernel-bounces@lists.infradead.org
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Claudio Scordino <claudio@evidence.eu.com>
-Cc: linux-arm-kernel@lists.infradead.org, nicolas.ferre@atmel.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Bernhard Roth <br@pwrnet.de>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp1.linux-foundation.org ([140.211.169.13]:56098 "EHLO
+	smtp1.linux-foundation.org" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751959Ab1HWQOW convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 23 Aug 2011 12:14:22 -0400
+In-Reply-To: <20110823095711.058d9cf4@lxorguk.ukuu.org.uk>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Paul Walmsley <paul@pwsan.com>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Pantelis Antoniou <pantelis.antoniou@gmail.com>, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Felipe Balbi <balbi@ti.com>, mporter@ti.com, Kevin Hilman <khilman@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>
 
-On Tue, Aug 23, 2011 at 10:30:46AM +0200, Claudio Scordino wrote:
-> Il 22/08/2011 23:18, Greg KH ha scritto:
-> > On Mon, Aug 15, 2011 at 04:28:15PM +0200, Bernhard Roth wrote:
-> >> Hello!
-> >>
-> >> By default the atmel_serial driver in RS485 mode disables receiving
-> >> data until all data in the send buffer has been sent. This flag
-> >> allows to receive data even whilst sending data. This is very useful
-> >> to
-> >>
-> >> - check if the data has been sent correctly over the RS485 bus
-> >> - assure that no collision happened
-> >> - check for short circuits/termination issues on the RS485 bus
-> >>
-> >> Usually this functionality is realized by hardware, wether
-> >> controlling the RX-Enable pin of the RS485 transceiver with RTS
-> >> (driver control signal) or pulling it LOW permanently. The present
-> >> atmel_serial driver makes this impossible, thus requiring following
-> >> patch.
-> >>
-> >> Usage example:
-> >>
-> >>      struct serial_rs485     rs485;
-> >>
-> >>      memset(&rs485, 0, sizeof(rs485));
-> >>      rs485.flags = SER_RS485_ENABLED | SER_RS485_RX_DURING_TX;
-> >>      ioctl(fd, TIOCSRS485,&rs485);
-> >>
-> >>
-> >>
-> >>
-> >> atmel_serial: RS485: receiving enabled when sending data
-> >>
-> >> By default the atmel_serial driver in RS485 mode disables receiving
-> >> data until
-> >> all data in the send buffer has been sent. This flag allows to receive data
-> >> even whilst sending data.
-> >>
-> >> Signed-off-by: Bernhard Roth<br@pwrnet.de>
-> >> Signed-off-by: Claudio Scordino<claudio@evidence.eu.com>
-> >> ---
-> >>   drivers/tty/serial/atmel_serial.c |   17 ++++++++++-------
-> >>   include/linux/serial.h            |    1 +
-> >>   2 files changed, 11 insertions(+), 7 deletions(-)
-> >>
-> >> diff --git a/drivers/tty/serial/atmel_serial.c
-> >> b/drivers/tty/serial/atmel_serial.c
-> >> index af9b781..5f6c745 100644
-> >> --- a/drivers/tty/serial/atmel_serial.c
-> >> +++ b/drivers/tty/serial/atmel_serial.c
-> >> @@ -339,8 +339,9 @@ static void atmel_stop_tx(struct uart_port *port)
-> >>       /* Disable interrupts */
-> >>       UART_PUT_IDR(port, atmel_port->tx_done_mask);
-> >>
-> >> -    if (atmel_port->rs485.flags&  SER_RS485_ENABLED)
-> >> -        atmel_start_rx(port);
-> >> +    if ((atmel_port->rs485.flags&  SER_RS485_ENABLED)&&
-> >> +        !(atmel_port->rs485.flags&  SER_RS485_RX_DURING_TX))
-> >> +            atmel_start_rx(port);
-> > 
-> > Can you fix your email client to not strip patches of tabs and resend
-> > this so that I can apply it?
-> > 
-> > thanks,
-> > 
-> > greg k-h
-> 
-> Hi Greg,
-> 
->     please find below the patch with the right tabs.
-> 
-> Remind however that the main author of the patch is Bernhard, not me.
+On Tue, Aug 23, 2011 at 1:57 AM, Alan Cox <alan@lxorguk.ukuu.org.uk> wr=
+ote:
+> On Mon, 22 Aug 2011 23:10:21 -0600 (MDT)
+> Paul Walmsley <paul@pwsan.com> wrote:
+>
+>>
+>> Convert the omap-serial hardirq handler to a threaded IRQ handler. W=
+ithout
+>> this patch, OMAP boards which use the on-board OMAP UARTs and the
+>> omap-serial driver will not boot to userspace after commit
+>> f3637a5f2e2eb391ff5757bc83fb5de8f9726464 ("irq: Always set IRQF_ONES=
+HOT if
+>> no primary handler is specified"). =A0Enabling CONFIG_DEBUG_SHIRQ re=
+veals
+>> 'IRQ handler type mismatch' errors:
+>
+> There are multiple other drivers reporting all these problems - the
+> faulty irq change should be reverted at this point not the drivers
+> fiddled with.
 
-Then properly send the patch so that this is shown.  Please just add a:
+Agreed. It's too late to try to fix random drivers.
 
-From: foo <foo@foo.org>
+The real issue seems to be that clue:
 
-as the first line of the patch changelog portion and git will fix things
-up correctly.  Documentation/SubmittingPatches describes this in detail.
+    "Enabling CONFIG_DEBUG_SHIRQ reveals 'IRQ handler type mismatch' er=
+rors"
 
-Care to resend your updated version, with this corrected author
-information, so I get it right?
+iow, we have a shared irq, and forcing the IRQF_ONESHOT bit is
+resulting in those shared interrupts now having different values of
+IRQF_ONESHOT, so this test triggers:
 
-thanks,
+                /*
+                 * Can't share interrupts unless both agree to and are
+                 * the same type (level, edge, polarity). So both flag
+                 * fields must have IRQF_SHARED set and the bits which
+                 * set the trigger type must match. Also all must
+                 * agree on ONESHOT.
+                 */
+                if (!((old->flags & new->flags) & IRQF_SHARED) ||
+                    ((old->flags ^ new->flags) & IRQF_TRIGGER_MASK) ||
+                    ((old->flags ^ new->flags) & IRQF_ONESHOT)) {
+                        old_name =3D old->name;
+                        goto mismatch;
+                }
 
-greg k-h
+and the irq isn't installed at all (setup_irq returns with EBUSY).
+
+So the commit that caused this problem was simply bogus. The commit log=
+ says
+
+                       "Since it is required for those users and
+    there is no difference for others it makes sense to add this flag
+    unconditionally."
+
+but the "there is no difference for others" seems to be total crap,
+exactly because it results in this IRQF mismatch.
+
+So I think that commit should just be reverted. Thomas?
+
+                           Linus
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
