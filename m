@@ -1,38 +1,43 @@
-From: Jamie Iles <jamie@jamieiles.com>
-Subject: Re: [PATCH] tty: 8250_dw: fix build error for CONFIG_SERIAL_8250=m
-Date: Wed, 24 Aug 2011 16:24:34 +0100
-Message-ID: <20110824152434.GQ23757@pulham.picochip.com>
-References: <1314169906-12958-1-git-send-email-jamie@jamieiles.com>
- <201108241645.16377.arnd@arndb.de>
+From: Alan Cox <alan@linux.intel.com>
+Subject: Re: [PATCH] serial/imx: support to handle break character
+Date: Wed, 24 Aug 2011 16:50:48 +0100
+Message-ID: <20110824165048.07721783@bob.linux.org.uk>
+References: <1314178907-20074-1-git-send-email-jason77.wang@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wy0-f174.google.com ([74.125.82.174]:59490 "EHLO
-	mail-wy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750917Ab1HXPYs (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 24 Aug 2011 11:24:48 -0400
-Received: by wyg24 with SMTP id 24so920260wyg.19
-        for <linux-serial@vger.kernel.org>; Wed, 24 Aug 2011 08:24:47 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <201108241645.16377.arnd@arndb.de>
+Received: from mga03.intel.com ([143.182.124.21]:36614 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751172Ab1HXPpv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 24 Aug 2011 11:45:51 -0400
+In-Reply-To: <1314178907-20074-1-git-send-email-jason77.wang@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Jamie Iles <jamie@jamieiles.com>, linux-serial@vger.kernel.org, Greg KH <greg@kroah.com>
+To: Hui Wang <jason77.wang@gmail.com>
+Cc: gregkh@suse.de, s.hauer@pengutronix.de, linux-serial@vger.kernel.org
 
-Hi Arnd,
+On Wed, 24 Aug 2011 17:41:47 +0800
+Hui Wang <jason77.wang@gmail.com> wrote:
 
-On Wed, Aug 24, 2011 at 04:45:16PM +0200, Arnd Bergmann wrote:
-> When go go to such length, I think the approach I initially advocated
-> (making 8250_dw a standalone platform_driver like of_serial) will be
-> nicer.
+> The imx UART hardware controller can identify BREAK character and the
+> imx_set_termios() can accept BRKINT set by users, but current existing
+> imx_rxint() can't pass BREAK character and TTY_BREAK to the tty layer
+> as other serial drivers do (8250.c omap_serial.c).
+> 
+> Here add code to handle BREAK character and pass it to tty layer.
+> 
+> To detect error occurrence, i use URXD_ERR to replace (URXD_OVRRUN |
+> URXD_FRMERR | ...) because any kind of error occurs, URXD_ERR will
+> always be set to 1.
+> 
+> I put the URXD_BRK to the first place to check since when BREAK error
+> occurs, not only URXD_BRK is set to 1, but also URXD_PRERR and
+> URXD_FRMERR are all set to 1. This arrangement can filter out fake
+> parity and frame errors when BREAK error occurs.
+> 
+> Signed-off-by: Hui Wang <jason77.wang@gmail.com>
+> Cc: Sascha Hauer <s.hauer@pengutronix.de>
 
-For a separate driver, is it okay to make it depend on CONFIG_OF, and 
-only have device tree bindings, or should this still support being 
-registered as a static platform device with platform data?  I'm not sure 
-what the consensus is on creating device tree only platform drivers.
+Acked-by: Alan Cox <alan@linux.intel.com>
 
-Thanks,
-
-Jamie
