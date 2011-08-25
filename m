@@ -1,24 +1,47 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v3 2/4] msm_serial: Add devicetree support
-Date: Thu, 25 Aug 2011 13:28:05 +0200
-Message-ID: <201108251328.05689.arnd@arndb.de>
-References: <1313688345-17699-1-git-send-email-davidb@codeaurora.org> <1313688345-17699-3-git-send-email-davidb@codeaurora.org>
-Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-15"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <1313688345-17699-3-git-send-email-davidb@codeaurora.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: David Brown <davidb@codeaurora.org>
-Cc: Randy Dunlap <rdunlap@xenotime.net>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Alan Cox <alan@linux.intel.com>, Grant Likely <grant.likely@secretlab.ca>, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 4/5] TTY: use tty_wait_until_sent_from_close in tty_port_close_start
+Date: Thu, 25 Aug 2011 15:12:07 +0200
+Message-ID: <1314277928-13388-4-git-send-email-jslaby@suse.cz>
+References: <4E556CB7.2010102@suse.cz>
+ <1314277928-13388-1-git-send-email-jslaby@suse.cz>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.pripojeni.net ([178.22.112.14]:49566 "EHLO
+	smtp.pripojeni.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751164Ab1HYNMR (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 25 Aug 2011 09:12:17 -0400
+In-Reply-To: <1314277928-13388-1-git-send-email-jslaby@suse.cz>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: gregkh@suse.de
+Cc: Arnd Bergmann <arnd@arndb.de>, alan@linux.intel.com, linux-serial@vger.kernel.org, jirislaby@gmail.com, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 
-On Thursday 18 August 2011, David Brown wrote:
-> Add devicetree support to the msm_serial driver.  Clocks are still
-> queried by direct name from the driver until device tree clock support
-> is implemented.
-> 
-> Signed-off-by: David Brown <davidb@codeaurora.org>
+Let's use the newly added helper to avoid stalls in drivers which are
+already ported to tty_port helpers.
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+We have to ensure here, that there is no user of tty_port_close_start
+and tty_port_close which holds port->mutex (or other) lock over them.
+And sure, there is none.
+
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+---
+ drivers/tty/tty_port.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index 33d37d2..ef9dd62 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -350,7 +350,7 @@ int tty_port_close_start(struct tty_port *port,
+ 		tty_driver_flush_buffer(tty);
+ 	if (test_bit(ASYNCB_INITIALIZED, &port->flags) &&
+ 			port->closing_wait != ASYNC_CLOSING_WAIT_NONE)
+-		tty_wait_until_sent(tty, port->closing_wait);
++		tty_wait_until_sent_from_close(tty, port->closing_wait);
+ 	if (port->drain_delay) {
+ 		unsigned int bps = tty_get_baud_rate(tty);
+ 		long timeout;
+-- 
+1.7.6
+
+
