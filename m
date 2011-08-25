@@ -1,105 +1,44 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 5/5] TTY: use tty_wait_until_sent_from_close in other drivers
-Date: Thu, 25 Aug 2011 15:12:08 +0200
-Message-ID: <1314277928-13388-5-git-send-email-jslaby@suse.cz>
-References: <4E556CB7.2010102@suse.cz>
- <1314277928-13388-1-git-send-email-jslaby@suse.cz>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.pripojeni.net ([178.22.112.14]:49568 "EHLO
-	smtp.pripojeni.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753256Ab1HYNMR (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 25 Aug 2011 09:12:17 -0400
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 1/5] TTY: serial, use ASYNCB_CLOSING in uart_close
+Date: Thu, 25 Aug 2011 17:15:01 +0200
+Message-ID: <201108251715.01443.arnd@arndb.de>
+References: <4E556CB7.2010102@suse.cz> <1314277928-13388-1-git-send-email-jslaby@suse.cz>
+Mime-Version: 1.0
+Content-Type: Text/Plain;
+  charset="iso-8859-15"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1314277928-13388-1-git-send-email-jslaby@suse.cz>
-Sender: linux-serial-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jiri Slaby <jslaby@suse.cz>
+Cc: gregkh@suse.de, alan@linux.intel.com, linux-serial@vger.kernel.org, jirislaby@gmail.com, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@suse.de
-Cc: Arnd Bergmann <arnd@arndb.de>, alan@linux.intel.com, linux-serial@vger.kernel.org, jirislaby@gmail.com, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 
-Let's use the newly added helper to avoid stalls in drivers which are
-not yet ported to tty_port helpers.
+On Thursday 25 August 2011, Jiri Slaby wrote:
+> 
+> We need to move port->mutex locking after wait_until_sent in
+> uart_close (for rationale see next patches). But if we did it now, we
+> would introduce a race between close and open. This is exactly why
+> port->mutex is locked at the top of uart_close.
+> 
+> To avoid the race, we add ASYNCB_CLOSING to uart_close. Like every
+> other sane TTY driver. Thanks to tty_port_block_til_ready used in
+> uart_open we will have this for free. Then we can move the port->mutex
+> lock.
+> 
+> Also note that this will make the conversion to tty_port helpers
+> easier. They are currently handling ASYNC_CLOSING flag correctly.
+> 
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 
-Those which are broken (call tty_wait_until_sent with irqs disabled)
-are left untouched. They are in a deeper trouble than we are trying to
-solve here. This includes amiserial, 68328serial, 68360serial and
-crisv10.
+The series looks good to me,
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
- drivers/isdn/i4l/isdn_tty.c      |    2 +-
- drivers/tty/hvc/hvc_console.c    |    2 +-
- drivers/tty/hvc/hvcs.c           |    2 +-
- drivers/tty/serial/serial_core.c |    3 ++-
- net/irda/ircomm/ircomm_tty.c     |    2 +-
- 5 files changed, 6 insertions(+), 5 deletions(-)
+Acked-by: Arnd Bergmann <arnd@arndb.de>
 
-diff --git a/drivers/isdn/i4l/isdn_tty.c b/drivers/isdn/i4l/isdn_tty.c
-index d850427..e5546cb 100644
---- a/drivers/isdn/i4l/isdn_tty.c
-+++ b/drivers/isdn/i4l/isdn_tty.c
-@@ -1693,7 +1693,7 @@ isdn_tty_close(struct tty_struct *tty, struct file *filp)
- 	 * line status register.
- 	 */
- 	if (info->flags & ISDN_ASYNC_INITIALIZED) {
--		tty_wait_until_sent(tty, 3000);	/* 30 seconds timeout */
-+		tty_wait_until_sent_from_close(tty, 3000);	/* 30 seconds timeout */
- 		/*
- 		 * Before we drop DTR, make sure the UART transmitter
- 		 * has completely drained; this is especially
-diff --git a/drivers/tty/hvc/hvc_console.c b/drivers/tty/hvc/hvc_console.c
-index e1aaf4f..b6b2d18 100644
---- a/drivers/tty/hvc/hvc_console.c
-+++ b/drivers/tty/hvc/hvc_console.c
-@@ -388,7 +388,7 @@ static void hvc_close(struct tty_struct *tty, struct file * filp)
- 		 * there is no buffered data otherwise sleeps on a wait queue
- 		 * waking periodically to check chars_in_buffer().
- 		 */
--		tty_wait_until_sent(tty, HVC_CLOSE_WAIT);
-+		tty_wait_until_sent_from_close(tty, HVC_CLOSE_WAIT);
- 	} else {
- 		if (hp->count < 0)
- 			printk(KERN_ERR "hvc_close %X: oops, count is %d\n",
-diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
-index 4c8b665..e523773 100644
---- a/drivers/tty/hvc/hvcs.c
-+++ b/drivers/tty/hvc/hvcs.c
-@@ -1237,7 +1237,7 @@ static void hvcs_close(struct tty_struct *tty, struct file *filp)
- 		irq = hvcsd->vdev->irq;
- 		spin_unlock_irqrestore(&hvcsd->lock, flags);
- 
--		tty_wait_until_sent(tty, HVCS_CLOSE_WAIT);
-+		tty_wait_until_sent_from_close(tty, HVCS_CLOSE_WAIT);
- 
- 		/*
- 		 * This line is important because it tells hvcs_open that this
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index e1bff1b..5c04cb9 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1297,7 +1297,8 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
- 	spin_unlock_irqrestore(&port->lock, flags);
- 
- 	if (port->closing_wait != ASYNC_CLOSING_WAIT_NONE)
--		tty_wait_until_sent(tty, msecs_to_jiffies(port->closing_wait));
-+		tty_wait_until_sent_from_close(tty,
-+				msecs_to_jiffies(port->closing_wait));
- 
- 	/*
- 	 * At this point, we stop accepting input.  To do this, we
-diff --git a/net/irda/ircomm/ircomm_tty.c b/net/irda/ircomm/ircomm_tty.c
-index b3cc8b3..253695d 100644
---- a/net/irda/ircomm/ircomm_tty.c
-+++ b/net/irda/ircomm/ircomm_tty.c
-@@ -551,7 +551,7 @@ static void ircomm_tty_close(struct tty_struct *tty, struct file *filp)
- 	 */
- 	tty->closing = 1;
- 	if (self->closing_wait != ASYNC_CLOSING_WAIT_NONE)
--		tty_wait_until_sent(tty, self->closing_wait);
-+		tty_wait_until_sent_from_close(tty, self->closing_wait);
- 
- 	ircomm_tty_shutdown(self);
- 
--- 
-1.7.6
+The only thing left to note is probably that there are a bunch
+of drivers that implement their own *_wait_until_sent function
+and call that from their *_close function instead of calling
+tty_wait_until_sent. These drivers continue to suffer from the
+same stalls that you are fixing the other ones.
 
-
+	Arnd
