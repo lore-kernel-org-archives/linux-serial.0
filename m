@@ -1,55 +1,56 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 1/5] TTY: serial, use ASYNCB_CLOSING in uart_close
-Date: Thu, 25 Aug 2011 15:12:04 +0200
-Message-ID: <1314277928-13388-1-git-send-email-jslaby@suse.cz>
+Subject: [PATCH 3/5] TTY: define tty_wait_until_sent_from_close
+Date: Thu, 25 Aug 2011 15:12:06 +0200
+Message-ID: <1314277928-13388-3-git-send-email-jslaby@suse.cz>
 References: <4E556CB7.2010102@suse.cz>
+ <1314277928-13388-1-git-send-email-jslaby@suse.cz>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <4E556CB7.2010102@suse.cz>
+In-Reply-To: <1314277928-13388-1-git-send-email-jslaby@suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@suse.de
 Cc: Arnd Bergmann <arnd@arndb.de>, alan@linux.intel.com, linux-serial@vger.kernel.org, jirislaby@gmail.com, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 List-Id: linux-serial@vger.kernel.org
 
-We need to move port->mutex locking after wait_until_sent in
-uart_close (for rationale see next patches). But if we did it now, we
-would introduce a race between close and open. This is exactly why
-port->mutex is locked at the top of uart_close.
+We need this helper to fix system stalls. The issue is that the rest
+of the system TTYs wait for us to finish waiting. This wasn't an issue
+with BKL. BKL used to unlock implicitly.
 
-To avoid the race, we add ASYNCB_CLOSING to uart_close. Like every
-other sane TTY driver. Thanks to tty_port_block_til_ready used in
-uart_open we will have this for free. Then we can move the port->mutex
-lock.
-
-Also note that this will make the conversion to tty_port helpers
-easier. They are currently handling ASYNC_CLOSING flag correctly.
+This is based on the Arnd suggestion.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Cc: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/tty/serial/serial_core.c |    3 +++
- 1 files changed, 3 insertions(+), 0 deletions(-)
+ include/linux/tty.h |   18 ++++++++++++++++++
+ 1 files changed, 18 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 781d566..cd7a0bb 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1293,6 +1293,7 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
- 	 * the line discipline to only process XON/XOFF characters by
- 	 * setting tty->closing.
- 	 */
-+	set_bit(ASYNCB_CLOSING, &port->flags);
- 	tty->closing = 1;
- 	spin_unlock_irqrestore(&port->lock, flags);
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index a7720a4..a0bf319 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -604,6 +604,24 @@ extern void __lockfunc tty_lock(void) __acquires(tty_lock);
+ extern void __lockfunc tty_unlock(void) __releases(tty_lock);
  
-@@ -1340,8 +1341,10 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
- 	 * Wake up anyone trying to open this port.
- 	 */
- 	clear_bit(ASYNCB_NORMAL_ACTIVE, &port->flags);
-+	clear_bit(ASYNCB_CLOSING, &port->flags);
- 	spin_unlock_irqrestore(&port->lock, flags);
- 	wake_up_interruptible(&port->open_wait);
-+	wake_up_interruptible(&port->close_wait);
- 
- done:
- 	mutex_unlock(&port->mutex);
+ /*
++ * this shall be called only from where BTM is held (like close)
++ *
++ * We need this to ensure nobody waits for us to finish while we are waiting.
++ * Without this we were encountering system stalls.
++ *
++ * This should be indeed removed with BTM removal later.
++ *
++ * Locking: BTM required. Nobody is allowed to hold port->mutex.
++ */
++static inline void tty_wait_until_sent_from_close(struct tty_struct *tty,
++		long timeout)
++{
++	tty_unlock(); /* tty->ops->close holds the BTM, drop it while waiting */
++	tty_wait_until_sent(tty, timeout);
++	tty_lock();
++}
++
++/*
+  * wait_event_interruptible_tty -- wait for a condition with the tty lock held
+  *
+  * The condition we are waiting for might take a long time to
 -- 
 1.7.6
