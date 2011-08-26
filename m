@@ -1,80 +1,57 @@
-From: Greg KH <gregkh@suse.de>
-Subject: [GIT PATCH] TTY/serial driver fixes for 3.1
-Date: Fri, 26 Aug 2011 12:11:43 -0700
-Message-ID: <20110826191143.GC5557@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+From: Greg Kroah-Hartman <gregkh@suse.de>
+Subject: [PATCH 11/12] TTY: serial, document ignoring of uart->ops->startup error
+Date: Fri, 26 Aug 2011 13:58:20 -0700
+Message-ID: <1314392301-25140-11-git-send-email-gregkh@suse.de>
+References: <20110826191143.GC5557@kroah.com>
+ <1314392301-25140-1-git-send-email-gregkh@suse.de>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from cantor2.suse.de ([195.135.220.15]:37758 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753646Ab1HZU6e (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 26 Aug 2011 16:58:34 -0400
+In-Reply-To: <1314392301-25140-1-git-send-email-gregkh@suse.de>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Russel King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@suse.de>
 
-Here are some small tty/serial fixes for the 3.1 release.
+From: Jiri Slaby <jslaby@suse.cz>
 
-Please pull from:
-	master.kernel.org:/pub/scm/linux/kernel/git/gregkh/tty-2.6.git/ tty-linus
+When a user has SYS_ADMIN capabilities and uart->ops->startup returns
+an error in uart_startup, we silently drop the error. We then return 0
+and behave as if it didn't fail. (Not quite, since we set TTY_IO_ERROR
+bit and leave ASYNC_INITIALIZED bit cleared.)
 
-All of these patches have been in the -mm and -next trees for a while.
+This all is to allow setserial to work with improperly configured or
+unconfigured ports. User can thus set port properties and reconfigure
+properly.
 
-Patches will be sent to the linux-serial mailing list, if anyone wants
-to see them.
+This patch only documents this behavior.
 
-thanks,
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Russel King <linux@arm.linux.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+---
+ drivers/tty/serial/serial_core.c |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
 
-greg k-h
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index db7912c..a3efbea 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -200,6 +200,11 @@ static int uart_startup(struct tty_struct *tty, struct uart_state *state, int in
+ 		clear_bit(TTY_IO_ERROR, &tty->flags);
+ 	}
+ 
++	/*
++	 * This is to allow setserial on this port. People may want to set
++	 * port/irq/type and then reconfigure the port properly if it failed
++	 * now.
++	 */
+ 	if (retval && capable(CAP_SYS_ADMIN))
+ 		retval = 0;
+ 
+-- 
+1.7.6.1
 
-------------
-
- drivers/tty/pty.c                 |   17 +++++++++++++++--
- drivers/tty/serial/8250.c         |    8 +++++---
- drivers/tty/serial/8250_pci.c     |   11 +++++------
- drivers/tty/serial/8250_pnp.c     |    3 +++
- drivers/tty/serial/atmel_serial.c |    8 +++++---
- drivers/tty/serial/max3107-aava.c |    2 +-
- drivers/tty/serial/max3107.c      |    2 +-
- drivers/tty/serial/mrst_max3110.c |    2 +-
- drivers/tty/serial/omap-serial.c  |    3 +--
- drivers/tty/serial/pch_uart.c     |    3 ++-
- drivers/tty/serial/samsung.c      |    8 ++++++--
- drivers/tty/serial/serial_core.c  |    5 +++++
- drivers/tty/serial/ucc_uart.c     |    2 +-
- drivers/tty/tty_io.c              |    3 +--
- include/linux/tty.h               |    2 ++
- include/linux/tty_driver.h        |    3 +++
- 16 files changed, 57 insertions(+), 25 deletions(-)
-
----------------
-
-Al Cooper (1):
-      8250: Fix race condition in serial8250_backup_timeout().
-
-Axel Lin (1):
-      tty: Add "spi:" prefix for spi modalias
-
-Bjorn Helgaas (1):
-      serial: 8250_pnp: add Intermec CV60 touchscreen device
-
-Eric Smith (1):
-      8250_pci: add support for Rosewill RC-305 4x serial port card
-
-Jiri Slaby (2):
-      TTY: pty, fix pty counting
-      TTY: serial, document ignoring of uart->ops->startup error
-
-Kukjin Kim (1):
-      serial: samsung: Fix build error
-
-Kumar Gala (1):
-      drivers/serial/ucc_uart.c: Fix compiler warning
-
-Nick Pelly (1):
-      omap-serial: Allow IXON and IXOFF to be disabled.
-
-Tomoya MORINAGA (2):
-      pch_uart: Set PCIe bus number using probe parameter
-      serial/8250_pci: delete duplicate data definition
-
-Voss, Nikolaus (1):
-      atmel_serial: fix atmel_default_console_device
