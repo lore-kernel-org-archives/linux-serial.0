@@ -1,42 +1,54 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH] ce4100: fix a build error
-Date: Fri, 26 Aug 2011 11:23:36 +0100
-Message-ID: <20110826102324.16980.61370.stgit@localhost.localdomain>
+Subject: [PATCH 2/4] x86/mrst: Add platform data for Max3110 devices
+Date: Fri, 26 Aug 2011 11:25:14 +0100
+Message-ID: <20110826102501.17010.91892.stgit@localhost.localdomain>
+References: <20110826102414.17010.71484.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
 Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:60893 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750917Ab1HZLU4 (ORCPT
+	with ESMTP id S1750917Ab1HZLU7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 26 Aug 2011 07:20:56 -0400
+	Fri, 26 Aug 2011 07:20:59 -0400
+In-Reply-To: <20110826102414.17010.71484.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: x86@kernel.org, linux-serial@vger.kernel.org
+To: greg@kroah.com, linux-serial@vger.kernel.org
 
-From: Zhang Rui <rui.zhang@intel.com>
+From: Feng Tang <feng.tang@intel.com>
 
-Fix a build error
+Those info will be used when spi controller driver setup
+max3110 as a slave device
 
-Signed-off-by: Zhang Rui <rui.zhang@intel.com>
+Signed-off-by: Feng Tang <feng.tang@intel.com>
 Signed-off-by: Alan Cox <alan@linux.intel.com>
+Signed-off-by: Dirk Brandewie <dirk.brandewie@gmail.com>
 ---
 
- arch/x86/platform/ce4100/ce4100.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ arch/x86/platform/mrst/mrst.c |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
 
-diff --git a/arch/x86/platform/ce4100/ce4100.c b/arch/x86/platform/ce4100/ce4100.c
-index 28071bb..4c61b52 100644
---- a/arch/x86/platform/ce4100/ce4100.c
-+++ b/arch/x86/platform/ce4100/ce4100.c
-@@ -109,7 +109,7 @@ static __init void sdv_serial_fixup(void)
- }
+diff --git a/arch/x86/platform/mrst/mrst.c b/arch/x86/platform/mrst/mrst.c
+index 7000e74..b8da1b9 100644
+--- a/arch/x86/platform/mrst/mrst.c
++++ b/arch/x86/platform/mrst/mrst.c
+@@ -14,6 +14,8 @@
  
- #else
--static inline void sdv_serial_fixup(void);
-+static inline void sdv_serial_fixup(void) {};
- #endif
+ #include <linux/init.h>
+ #include <linux/kernel.h>
++#include <linux/interrupt.h>
++#include <linux/scatterlist.h>
+ #include <linux/sfi.h>
+ #include <linux/intel_pmic_gpio.h>
+ #include <linux/spi/spi.h>
+@@ -392,6 +394,7 @@ static void __init *max3111_platform_data(void *info)
+ 	struct spi_board_info *spi_info = info;
+ 	int intr = get_gpio_by_name("max3111_int");
  
- static void __init sdv_arch_setup(void)
++	spi_info->mode = SPI_MODE_0;
+ 	if (intr == -1)
+ 		return NULL;
+ 	spi_info->irq = intr + MRST_IRQ_OFFSET;
 
