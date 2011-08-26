@@ -1,126 +1,130 @@
-From: Breno Leitao <leitao@linux.vnet.ibm.com>
-Subject: Re: [PATCH 1/3] jsm: remove remaining flip buffer code
-Date: Thu, 25 Aug 2011 13:54:25 -0300
-Message-ID: <4E567E41.90605@linux.vnet.ibm.com>
-References: <1314202043-12039-1-git-send-email-cascardo@linux.vnet.ibm.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: [PATCH] hsu: add runtime pm support
+Date: Fri, 26 Aug 2011 11:35:16 +0100
+Message-ID: <20110826103516.17340.59099.stgit@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from e24smtp05.br.ibm.com ([32.104.18.26]:54845 "EHLO
-	e24smtp05.br.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752040Ab1HYQyh (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:52922 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750747Ab1HZKkN (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 25 Aug 2011 12:54:37 -0400
-Received: from /spool/local
-	by br.ibm.com with XMail ESMTP
-	for <linux-serial@vger.kernel.org> from <leitao@linux.vnet.ibm.com>;
-	Thu, 25 Aug 2011 13:54:31 -0300
-In-Reply-To: <1314202043-12039-1-git-send-email-cascardo@linux.vnet.ibm.com>
+	Fri, 26 Aug 2011 06:40:13 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>
-Cc: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: greg@kroah.com, linux-serial@vger.kernel.org
 
-Thanks Thadeu. The patches are fine. Please, update the driver version=20
-due these modifications.
+From: Kristen Carlson Accardi <kristen@linux.intel.com>
 
-On 08/24/2011 01:07 PM, Thadeu Lima de Souza Cascardo wrote:
-> The flip buffer is not used anymore. Remove its allocation and
-> declaration in the board structure.
->
-> Signed-off-by: Thadeu Lima de Souza Cascardo<cascardo@linux.vnet.ibm.=
-com>
-> ---
->   drivers/tty/serial/jsm/jsm.h        |    3 ---
->   drivers/tty/serial/jsm/jsm_driver.c |   18 ------------------
->   2 files changed, 0 insertions(+), 21 deletions(-)
->
-> diff --git a/drivers/tty/serial/jsm/jsm.h b/drivers/tty/serial/jsm/js=
-m.h
-> index b704c8c..cd53bdd 100644
-> --- a/drivers/tty/serial/jsm/jsm.h
-> +++ b/drivers/tty/serial/jsm/jsm.h
-> @@ -88,7 +88,6 @@ enum {
->
->   /* 4 extra for alignment play space */
->   #define WRITEBUFLEN	((4096) + 4)
-> -#define MYFLIPLEN	N_TTY_BUF_SIZE
->
->   #define JSM_VERSION	"jsm: 1.2-1-INKERNEL"
->   #define JSM_PARTNUM	"40002438_A-INKERNEL"
-> @@ -150,7 +149,6 @@ struct jsm_board
->   	u32		bd_uart_offset;	/* Space between each UART */
->
->   	struct jsm_channel *channels[MAXPORTS]; /* array of pointers to ou=
-r channels. */
-> -	char		*flipbuf;	/* Our flip buffer, alloced if board is found */
->
->   	u32		bd_dividend;	/* Board/UARTs specific dividend */
->
-> @@ -177,7 +175,6 @@ struct jsm_board
->   #define CH_TX_FIFO_LWM	0x0800		/* TX Fifo is below Low Water	*/
->   #define CH_BREAK_SENDING 0x1000		/* Break is being sent		*/
->   #define CH_LOOPBACK 0x2000		/* Channel is in lookback mode	*/
-> -#define CH_FLIPBUF_IN_USE 0x4000	/* Channel's flipbuf is in use	*/
->   #define CH_BAUD0	0x08000		/* Used for checking B0 transitions */
->
->   /* Our Read/Error/Write queue sizes */
-> diff --git a/drivers/tty/serial/jsm/jsm_driver.c b/drivers/tty/serial=
-/jsm/jsm_driver.c
-> index 96da178..1cc8cf6 100644
-> --- a/drivers/tty/serial/jsm/jsm_driver.c
-> +++ b/drivers/tty/serial/jsm/jsm_driver.c
-> @@ -160,27 +160,10 @@ static int __devinit jsm_probe_one(struct pci_d=
-ev *pdev, const struct pci_device
->   	dev_info(&pdev->dev, "board %d: Digi Neo (rev %d), irq %d\n",
->   			adapter_count, brd->rev, brd->irq);
->
-> -	/*
-> -	 * allocate flip buffer for board.
-> -	 *
-> -	 * Okay to malloc with GFP_KERNEL, we are not at interrupt
-> -	 * context, and there are no locks held.
-> -	 */
-> -	brd->flipbuf =3D kzalloc(MYFLIPLEN, GFP_KERNEL);
-> -	if (!brd->flipbuf) {
-> -		/* XXX: leaking all resources from jsm_tty_init and
-> -		 	jsm_uart_port_init here! */
-> -		dev_err(&pdev->dev, "memory allocation for flipbuf failed\n");
-> -		rc =3D -ENOMEM;
-> -		goto out_free_uart;
-> -	}
-> -
->   	pci_set_drvdata(pdev, brd);
->   	pci_save_state(pdev);
->
->   	return 0;
-> - out_free_uart:
-> -	jsm_remove_uart_port(brd);
->    out_free_irq:
->   	jsm_remove_uart_port(brd);
->   	free_irq(brd->irq, brd);
-> @@ -218,7 +201,6 @@ static void __devexit jsm_remove_one(struct pci_d=
-ev *pdev)
->
->   	pci_release_regions(pdev);
->   	pci_disable_device(pdev);
-> -	kfree(brd->flipbuf);
->   	kfree(brd);
->   }
->
+Doesn't appear to be much to do here, however having the suspend/resume
+functions will allow the d3/d0 transitions to be sent by the pci core.
 
+Signed-off-by: Kristen Carlson Accardi <kristen@linux.intel.com>
+Signed-off-by: Alan Cox <alan@linux.intel.com>
+---
 
---=20
-Breno Leit=E3o
-Advisory Software Engineer
-Linux Technology Center
-Phone: +55 16 8115-3915
-E-Mail: brenohl@br.ibm.com
+ drivers/tty/serial/mfd.c |   47 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 47 insertions(+), 0 deletions(-)
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/tty/serial/mfd.c b/drivers/tty/serial/mfd.c
+index cab52f4..cfa7501 100644
+--- a/drivers/tty/serial/mfd.c
++++ b/drivers/tty/serial/mfd.c
+@@ -38,6 +38,7 @@
+ #include <linux/pci.h>
+ #include <linux/io.h>
+ #include <linux/debugfs.h>
++#include <linux/pm_runtime.h>
+ 
+ #define HSU_DMA_BUF_SIZE	2048
+ 
+@@ -764,6 +765,8 @@ static int serial_hsu_startup(struct uart_port *port)
+ 		container_of(port, struct uart_hsu_port, port);
+ 	unsigned long flags;
+ 
++	pm_runtime_get_sync(up->dev);
++
+ 	/*
+ 	 * Clear the FIFO buffers and disable them.
+ 	 * (they will be reenabled in set_termios())
+@@ -871,6 +874,8 @@ static void serial_hsu_shutdown(struct uart_port *port)
+ 				  UART_FCR_CLEAR_RCVR |
+ 				  UART_FCR_CLEAR_XMIT);
+ 	serial_out(up, UART_FCR, 0);
++
++	pm_runtime_put(up->dev);
+ }
+ 
+ static void
+@@ -1249,6 +1254,39 @@ static int serial_hsu_resume(struct pci_dev *pdev)
+ #define serial_hsu_resume	NULL
+ #endif
+ 
++#ifdef CONFIG_PM_RUNTIME
++static int serial_hsu_runtime_idle(struct device *dev)
++{
++	int err;
++
++	err = pm_schedule_suspend(dev, 500);
++	if (err)
++		return -EBUSY;
++
++	return 0;
++}
++
++static int serial_hsu_runtime_suspend(struct device *dev)
++{
++	return 0;
++}
++
++static int serial_hsu_runtime_resume(struct device *dev)
++{
++	return 0;
++}
++#else
++#define serial_hsu_runtime_idle		NULL
++#define serial_hsu_runtime_suspend	NULL
++#define serial_hsu_runtime_resume	NULL
++#endif
++
++static const struct dev_pm_ops serial_hsu_pm_ops = {
++	.runtime_suspend = serial_hsu_runtime_suspend,
++	.runtime_resume = serial_hsu_runtime_resume,
++	.runtime_idle = serial_hsu_runtime_idle,
++};
++
+ /* temp global pointer before we settle down on using one or four PCI dev */
+ static struct hsu_port *phsu;
+ 
+@@ -1315,6 +1353,9 @@ static int serial_hsu_probe(struct pci_dev *pdev,
+ 		pci_set_drvdata(pdev, uport);
+ 	}
+ 
++	pm_runtime_put_noidle(&pdev->dev);
++	pm_runtime_allow(&pdev->dev);
++
+ 	return 0;
+ 
+ err_disable:
+@@ -1411,6 +1452,9 @@ static void serial_hsu_remove(struct pci_dev *pdev)
+ 	if (!priv)
+ 		return;
+ 
++	pm_runtime_forbid(&pdev->dev);
++	pm_runtime_get_noresume(&pdev->dev);
++
+ 	/* For port 0/1/2, priv is the address of uart_hsu_port */
+ 	if (pdev->device != 0x081E) {
+ 		up = priv;
+@@ -1438,6 +1482,9 @@ static struct pci_driver hsu_pci_driver = {
+ 	.remove =	__devexit_p(serial_hsu_remove),
+ 	.suspend =	serial_hsu_suspend,
+ 	.resume	=	serial_hsu_resume,
++	.driver = {
++		.pm = &serial_hsu_pm_ops,
++	},
+ };
+ 
+ static int __init hsu_pci_init(void)
+
