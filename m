@@ -1,54 +1,58 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 2/4] x86/mrst: Add platform data for Max3110 devices
-Date: Fri, 26 Aug 2011 11:25:14 +0100
-Message-ID: <20110826102501.17010.91892.stgit@localhost.localdomain>
-References: <20110826102414.17010.71484.stgit@localhost.localdomain>
+Subject: [PATCH 2/2] n_gsm: Send CLD command on exit
+Date: Fri, 26 Aug 2011 11:28:11 +0100
+Message-ID: <20110826102746.17092.95409.stgit@localhost.localdomain>
+References: <20110826102731.17092.52217.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
 Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:60893 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750917Ab1HZLU7 (ORCPT
+	with ESMTP id S1750917Ab1HZLVA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 26 Aug 2011 07:20:59 -0400
-In-Reply-To: <20110826102414.17010.71484.stgit@localhost.localdomain>
+	Fri, 26 Aug 2011 07:21:00 -0400
+In-Reply-To: <20110826102731.17092.52217.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: greg@kroah.com, linux-serial@vger.kernel.org
 
-From: Feng Tang <feng.tang@intel.com>
+From: Alan Cox <alan@linux.intel.com>
 
-Those info will be used when spi controller driver setup
-max3110 as a slave device
+A DISC on DLCI 0 should close down the mux but Michael Lauer reports this
+is not the case for some modems. Send a CLD as well.
 
-Signed-off-by: Feng Tang <feng.tang@intel.com>
 Signed-off-by: Alan Cox <alan@linux.intel.com>
-Signed-off-by: Dirk Brandewie <dirk.brandewie@gmail.com>
+Tested-by: Michael Lauer
 ---
 
- arch/x86/platform/mrst/mrst.c |    3 +++
- 1 files changed, 3 insertions(+), 0 deletions(-)
+ drivers/tty/n_gsm.c |    8 ++++++++
+ 1 files changed, 8 insertions(+), 0 deletions(-)
 
-diff --git a/arch/x86/platform/mrst/mrst.c b/arch/x86/platform/mrst/mrst.c
-index 7000e74..b8da1b9 100644
---- a/arch/x86/platform/mrst/mrst.c
-+++ b/arch/x86/platform/mrst/mrst.c
-@@ -14,6 +14,8 @@
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 8f03ea7..b90638c 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -2005,6 +2005,7 @@ void gsm_cleanup_mux(struct gsm_mux *gsm)
+ 	int i;
+ 	struct gsm_dlci *dlci = gsm->dlci[0];
+ 	struct gsm_msg *txq;
++	struct gsm_control *gc;
  
- #include <linux/init.h>
- #include <linux/kernel.h>
-+#include <linux/interrupt.h>
-+#include <linux/scatterlist.h>
- #include <linux/sfi.h>
- #include <linux/intel_pmic_gpio.h>
- #include <linux/spi/spi.h>
-@@ -392,6 +394,7 @@ static void __init *max3111_platform_data(void *info)
- 	struct spi_board_info *spi_info = info;
- 	int intr = get_gpio_by_name("max3111_int");
+ 	gsm->dead = 1;
  
-+	spi_info->mode = SPI_MODE_0;
- 	if (intr == -1)
- 		return NULL;
- 	spi_info->irq = intr + MRST_IRQ_OFFSET;
+@@ -2018,6 +2019,13 @@ void gsm_cleanup_mux(struct gsm_mux *gsm)
+ 	spin_unlock(&gsm_mux_lock);
+ 	WARN_ON(i == MAX_MUX);
+ 
++	/* In theory disconnecting DLCI 0 is sufficient but for some
++	   modems this is apparently not the case. */
++	if (dlci) {
++		gc = gsm_control_send(gsm, CMD_CLD, NULL, 0);
++		if (gc)
++			gsm_control_wait(gsm, gc);
++	}
+ 	del_timer_sync(&gsm->t2_timer);
+ 	/* Now we are sure T2 has stopped */
+ 	if (dlci) {
 
