@@ -1,65 +1,42 @@
-From: marcus.folkesson@gmail.com
-Subject: [PATCH] serial: pxa: work around for errata #20
-Date: Tue, 30 Aug 2011 13:53:10 +0200
-Message-ID: <1314705190-5819-2-git-send-email-marcus.folkesson@gmail.com>
-References: <y>
- <1314705190-5819-1-git-send-email-marcus.folkesson@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1314705190-5819-1-git-send-email-marcus.folkesson@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Marcus Folkesson <marcus.folkesson@gmail.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: Hardware flowcontrol on XR17D154
+Date: Tue, 30 Aug 2011 13:32:21 +0100
+Message-ID: <20110830133221.304b27f0@lxorguk.ukuu.org.uk>
+References: <201108301217.07468.sgh@sgh.dk>
+	<20110830113433.618b2486@lxorguk.ukuu.org.uk>
+	<201108301327.04542.sgh@sgh.dk>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:33268 "EHLO
+	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751658Ab1H3MdY (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 30 Aug 2011 08:33:24 -0400
+In-Reply-To: <201108301327.04542.sgh@sgh.dk>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: =?UTF-8?B?U8O4cmVu?= holm <sgh@sgh.dk>
+Cc: linux-serial@vger.kernel.org
 
-From: Marcus Folkesson <marcus.folkesson@gmail.com>
+> My particular uart resports (status1 == 6 && status2 == 6). If that is good 
+> enough I can add another porttype and add the correct register address as 
+> UART_EXAR_EFR in the header file.
 
-Errata E20: UART: Character Timeout interrupt remains set under certain
-software conditions.
+Try it and see. We can put it in -next for a while and then there will a
+release cycle duriing which any unfortunate clashes wil get resolved.
 
-Implication: The software servicing the UART can be trapped in an infinite loop.
+Alternatively if it's a device attached to a specific platform create it
+as a platform device of some kind in the board specific code and pick
+that up in the serial driver.
 
-Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
----
- drivers/tty/serial/pxa.c |   20 ++++++++++++++++++++
- 1 files changed, 20 insertions(+), 0 deletions(-)
+> Another thought could be to write 0xFF (or some other value) to the correct 
+> EFR-register and read that byte to test if the register is present. The 
+> problem here is that I do not how the bus reacts to writting/reading invalid 
+> addresses.
 
-diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
-index 531931c..5c8e3bb 100644
---- a/drivers/tty/serial/pxa.c
-+++ b/drivers/tty/serial/pxa.c
-@@ -100,6 +100,16 @@ static inline void receive_chars(struct uart_pxa_port *up, int *status)
- 	int max_count = 256;
- 
- 	do {
-+		/* work around Errata #20 according to
-+		 * Intel(R) PXA27x Processor Family
-+		 * Specification Update (May 2005)
-+		 *
-+		 * Step 2
-+		 * Disable the Reciever Time Out Interrupt via IER[RTOEI]
-+		 */
-+		up->ier &= ~UART_IER_RTOIE;
-+		serial_out(up, UART_IER, up->ier);
-+
- 		ch = serial_in(up, UART_RX);
- 		flag = TTY_NORMAL;
- 		up->port.icount.rx++;
-@@ -156,6 +166,16 @@ static inline void receive_chars(struct uart_pxa_port *up, int *status)
- 		*status = serial_in(up, UART_LSR);
- 	} while ((*status & UART_LSR_DR) && (max_count-- > 0));
- 	tty_flip_buffer_push(tty);
-+
-+	/* work around Errata #20 according to
-+	 * Intel(R) PXA27x Processor Family
-+	 * Specification Update (May 2005)
-+	 *
-+	 * Step 6:
-+	 * No more data in FIFO: Re-enable RTO interrupt via IER[RTOIE]
-+	 */
-+	up->ier |= UART_IER_RTOIE;
-+	serial_out(up, UART_IER, up->ier);
- }
- 
- static void transmit_chars(struct uart_pxa_port *up)
--- 
-1.7.4.1
+The trouble is an extra register may in fact be part of some other device
+- it's generally not a great idea if there are other choices.
+
+Alan
