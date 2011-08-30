@@ -1,103 +1,54 @@
-From: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
-Subject: [PATCH: tty-next] TTY: serial: Move mutex_unlock in uart_close function
-Date: Mon, 29 Aug 2011 15:43:36 +0900
-Message-ID: <1314600216-8146-1-git-send-email-nobuhiro.iwamatsu.yj@renesas.com>
+From: =?utf-8?B?5q+P5aSp6YO95pyJ5paw5Lmw5a62?= <admin@bcis.net.cn>
+Subject: =?utf-8?B?5pyA5paw5bm/5Lqk5Lya5Lmw5a625bqTKzUwMOS4h+a1t+WkluS5sOWutui1hOa6kCs=?=
+	=?utf-8?B?6YKu5Lu25Y+R6YCB5pa55qGIPeavj+WkqemDveacieaWsOS5sOWutuWbnuWkje+8gQ==?=
+Date: Tue, 30 Aug 2011 05:02:57 +0000 (UTC)
+Message-ID: <20111002115714143442@bcis.net.cn>
+Reply-To: <1339625218@qq.com>
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-yi0-f46.google.com ([209.85.218.46]:54926 "EHLO
-	mail-yi0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751859Ab1H2Gnl (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 29 Aug 2011 02:43:41 -0400
-Received: by yie30 with SMTP id 30so3297349yie.19
-        for <linux-serial@vger.kernel.org>; Sun, 28 Aug 2011 23:43:41 -0700 (PDT)
+Received: from [183.62.138.135] ([183.62.138.135]:41158 "HELO bcis.net.cn"
+	rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with SMTP
+	id S1751463Ab1H3FCw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 30 Aug 2011 01:02:52 -0400
+Date: Sun, 2 Oct 2011 11:57:06 +0800
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: gregkh@suse.de, Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
 
-When mutex_lock is not called, mutex_unlock is sometimes called.
-This deletes unnecessary goto and makes modifications so that
-mutex_unlock is called.
+NTAw5LiH5rW35aSW5Lmw5a626LWE5rqQK+mCruS7tuWPkemAgeaWueahiCvmtbflpJbkubDlrrZF
+bWFpbOaQnOe0ouacuj3mr4/lpKnpg73mnInlrqLmiLflm57lpI3vvIENCjUwMOS4h+a1t+WkluS5
+sOWutui1hOa6kCvpgq7ku7blj5HpgIHmlrnmoYgr5rW35aSW5Lmw5a62RW1haWzmkJzntKLmnLo9
+5q+P5aSp6YO95pyJ5a6i5oi35Zue5aSN77yBDQoNCjHjgIE1MDDkuIfkubDlrrbotYTmupDvvJog
+6LWg6YCB55qENTAw5LiH5Lmw5a626LWE5rqQ5bqT77yM5pu05pawICjlj6/ku6XmjInnhafmgqjn
+moTkuqflk4Hmj5Dlj5blh7rmnaXvvIzmm7Tnsr7lh4blvIDlj5Ep44CCIA0KMuOAgei2hee6p+a1
+t+WkluS5sOWutkVtYWls5pCc57Si5py677yaIOWGhee9ruS6hjYwMOS4h+ihjOS4muWFs+mUruiv
+je+8jOagueaNrumVv+WwvuivjeaQnOe0ou+8jOe7k+aenOabtOeyvuehruWMuemFje+8m+avj+Wk
+qeiDveaQnOe0ojEtMuS4h+S7peS4iuS5sOWutuecn+WunkVNQUlM77yM5oiQ5Y2V546H6auY44CC
+IA0KM+OAgee+pOWPkei9r+S7tu+8miDmk43kvZznroDljZXvvIzlip/og73lvLrlpKfvvIzmqKHk
+u7/kurrlt6Xmk43kvZzmqKHlvI/vvIzliLDovr7njofpq5jvvIzml6Xlj5HpgIE15LiH5bCB5Lul
+5LiK44CCIA0KIA0K5pSv5oyB5pSv5LuY5a6d5ouF5L+d5Lqk5piTICjlhYjlj5HotKflubblrono
+o4Xorr7nva7nvqTlj5Hova/ku7bvvIznhLblkI7ku5jmrL4pIOW9u+W6leaJk+a2iOaCqOeahCDp
+ob7omZHjgIINCg0K6K+36IGU57O777yaDQpRUToxMzM5NjI1MjE4ICAgZW1haWw6IDEzMzk2MjUy
+MThAcXEuY29tDQpRUToxMzM5NjI1MjE4ICAgZW1haWw6IDEzMzk2MjUyMThAcXEuY29tDQpRUTox
+MzM5NjI1MjE4ICAgZW1haWw6IDEzMzk2MjUyMThAcXEuY29tDQpRUToxMzM5NjI1MjE4ICAgZW1h
+aWw6IDEzMzk2MjUyMThAcXEuY29tDQpRUToxMzM5NjI1MjE4ICAgZW1haWw6IDEzMzk2MjUyMThA
+cXEuY29tDQpRUToxMzM5NjI1MjE4ICAgZW1haWw6IDEzMzk2MjUyMThAcXEuY29tDQoNCuWFjei0
+uei1oOmAgToNCjHjgIHotoXnuqfmtbflpJbkubDlrrbmkJzntKLmnLos5Y+v5Lul6L275p2+5omr
+5o+P5Ye6IDUwMC0xMDAw5LiH5Lmw5a62RW1haWzvvIzlu7rnq4voh6rlt7HnmoTokKXplIDmlbDm
+ja7lupPjgIINCjLjgIEyMDA55bm05rW35YWz5o+Q5Y2V5pWw5o2ucGllcnPniYjmlbDmja4gMeWN
+g+S4h+OAgg0KM+OAgTIwMTHmmKXlraMxMDnlsYrlub/kuqTkvJrkubDlrrbnjrDlnLror6Lnm5jm
+lbDmja7lupPmlrDpspzlh7rngonvvIzotoXnuqfmlrDpspzkubDlrrbvvIzmlrDpspzmlbDmja7v
+vIzlrrnmmJPmiJDljZXvvIEgDQo044CBMjAwOOW5tOiHszIwMTDlubQg5pil5a2jK+eni+Wto+W5
+v+S6pOS8muS5sOWutuWQjeW9le+8jDEwMyAxMDQgMTA1IDEwNiAxMDcgMTA4IOWFseWFreWxiu+8
+jOWFsTEyMC425LiH5pWw5o2u44CCIA0KNeOAgeacgOaWsOWFqOeQg+S5sOWutuW6kyzlhbE0NTE2
+NjDmnaHmlbDmja7vvIzmr4/kuKrlnYfmnIlFbWFpbOOAgg0KNuOAgTIwMTDlubTlm73pmYXkv4Pp
+lIDljY/kvJrvvIhQUEFJ77yJ5oiQ5ZGY5ZCN5Y2VIFBQQUkgTWVtYmVycyBEaXJlY3RvcnnvvIzp
+nZ7luLjph43opoHnmoTlpKfkubDlrrbjgIINCjfjgIEyMDEw5bm05Yiw6aaZ5riv6YeH6LSt55qE
+5Zu95aSW5a6i5Lq65ZCN5b2VKOmmmea4r+i0uOWPkeWxgOaPkOS+mynvvIzlhbE3LjLkuIfmlbDm
+ja7vvIzotoXnuqfph43opoHnmoTkubDlrrbjgIINCjjjgIExMDDkuIfmnaHlm73lpJbotLjmmJPo
+r6Lnm5jvvIzmr4/kuKrlnYfmnIlFbWFpbOOAgg0KOeOAgeS5sOWutui1hOa6kOabtOaWsOS4reOA
+guOAguOAgg0K5YWo6YOo6YO95pyJ44CCDQogDQo=
 
-[    8.304000] WARNING: at kernel/muex-debug.c:78
-[    8.304000] Modules linked in:
-[    8.304000]
-[    8.304000] Pid : 114, Comm:                 modprobe
-[    8.304000] CPU : 0                  Not tainted  (3.1.0-rc3-next-20110826 #810)
-[    8.304000]
-[    8.304000] PC is at debug_mutex_unlock+0xf4/0x120
-[    8.304000] PR is at debug_mutex_unlock+0xe6/0x120
-[    8.304000] PC  : 80051114 SP  : 9f02de58 SR  : 400081f1 TEA : 295cf4f2
-[    8.304000] R0  : 00000001 R1  : 00000000 R2  : 0000000f R3  : 00000000
-[    8.304000] R4  : 9fc63158 R5  : 00000000 R6  : 00000001 R7  : 9fe1de78
-[    8.304000] R8  : 805c6b2c R9  : 80003920 R10 : 00000000 R11 : 805c6b2c
-[    8.304000] R12 : 80425ca0 R13 : 00000000 R14 : 9f02de58
-[    8.304000] MACH: 00000003 MACL: 00000000 GBR : 296e1678 PR  : 80051106
-[    8.304000]
-[    8.304000] Call trace:
-[    8.304000]  [<804236c6>] __mutex_unlock_slowpath+0x46/0x120
-[    8.304000]  [<804237aa>] mutex_unlock+0xa/0x20
-[    8.304000]  [<80240ed6>] uart_close+0x76/0x2c0
-[    8.304000]  [<80223b98>] tty_release+0xf8/0x5c0
-[    8.304000]  [<800a93a6>] lookup_object+0x26/0xa0
-[    8.304000]  [<80063f6a>] call_rcu+0x8a/0xc0
-[    8.304000]  [<800a944a>] put_object+0x2a/0x60
-[    8.304000]  [<80003920>] arch_local_irq_restore+0x0/0x40
-[    8.304000]  [<800af320>] fput+0x180/0x2c0
-[    8.304000]  [<800af248>] fput+0xa8/0x2c0
-[    8.304000]  [<800ab1a8>] filp_close+0x48/0xc0
-[    8.304000]  [<800ab29a>] sys_close+0x7a/0x100
-[    8.304000]  [<8000825a>] syscall_call+0xc/0x10
-[    8.304000]  [<800ab220>] sys_close+0x0/0x100
-[    8.304000]
-[    8.304000] Code:
-[    8.304000]   8005110e:  mov.l     @r1, r1
-[    8.304000]   80051110:  tst       r1, r1
-[    8.304000]   80051112:  bf        80051116
-[    8.304000] ->80051114:  trapa     #62
-[    8.304000]   80051116:  mov.l     @r8, r1
-[    8.304000]   80051118:  tst       r1, r1
-[    8.304000]   8005111a:  bt.s      8005104c
-[    8.304000]   8005111c:  mov       #0, r1
-[    8.304000]   8005111e:  bra       80051056
-[    8.304000]
-[    8.304000] ---[ end trace e8f8e04c313f429b ]---
-
-Signed-off-by: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
----
- drivers/tty/serial/serial_core.c |    5 ++---
- 1 files changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 5c04cb9..c0fdbc5 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1262,7 +1262,7 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
- 
- 	if (tty_hung_up_p(filp)) {
- 		spin_unlock_irqrestore(&port->lock, flags);
--		goto done;
-+		return;
- 	}
- 
- 	if ((tty->count == 1) && (port->count != 1)) {
-@@ -1284,7 +1284,7 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
- 	}
- 	if (port->count) {
- 		spin_unlock_irqrestore(&port->lock, flags);
--		goto done;
-+		return;
- 	}
- 
- 	/*
-@@ -1347,7 +1347,6 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
- 	wake_up_interruptible(&port->open_wait);
- 	wake_up_interruptible(&port->close_wait);
- 
--done:
- 	mutex_unlock(&port->mutex);
- }
- 
--- 
-1.7.5.4
 
