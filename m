@@ -1,56 +1,59 @@
-From: =?iso-8859-1?q?S=F8ren_holm?= <sgh@sgh.dk>
-Subject: Re: Hardware flowcontrol on XR17D154
-Date: Tue, 30 Aug 2011 15:14:13 +0200
-Message-ID: <201108301514.13268.sgh@sgh.dk>
-References: <201108301217.07468.sgh@sgh.dk> <201108301327.04542.sgh@sgh.dk> <20110830133221.304b27f0@lxorguk.ukuu.org.uk>
+From: Jiri Slaby <jirislaby@gmail.com>
+Subject: Re: [PATCH v2 3/6] TTY: serial, remove tasklet for tty_wakeup
+Date: Wed, 31 Aug 2011 16:43:06 +0200
+Message-ID: <4E5E487A.10709@gmail.com>
+References: <1310646915-3032-1-git-send-email-jslaby@suse.cz> <1310646915-3032-3-git-send-email-jslaby@suse.cz> <20110719173401.131e220f@bob.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cpe.ge-0-2-0-951.faaqnqu1.customer.tele.dk ([93.167.193.22]:35204
-	"EHLO mail.mikrofyn.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753952Ab1H3NOP convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 30 Aug 2011 09:14:15 -0400
-In-Reply-To: <20110830133221.304b27f0@lxorguk.ukuu.org.uk>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20110719173401.131e220f@bob.linux.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, gregkh@suse.de, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-serial@vger.kernel.org
 
-> > My particular uart resports (status1 =3D=3D 6 && status2 =3D=3D 6).=
- If that is
-> > good enough I can add another porttype and add the correct register
-> > address as UART_EXAR_EFR in the header file.
->=20
-> Try it and see. We can put it in -next for a while and then there wil=
-l a
-> release cycle duriing which any unfortunate clashes wil get resolved.
+On 07/19/2011 06:34 PM, Alan Cox wrote:
+> On Thu, 14 Jul 2011 14:35:12 +0200
+> Jiri Slaby <jslaby@suse.cz> wrote:
+> 
+>> tty_wakeup can be called from any context. So there is no need to have
+>> an extra tasklet for calling that. Hence save some space and remove
+>> the tasklet completely.
+>>
+>> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+>> Cc: Greg Kroah-Hartman <gregkh@suse.de>
+>> Cc: Alan Cox <alan@linux.intel.com>
+>> ---
+>>  drivers/tty/serial/serial_core.c |   20 +-------------------
+>>  include/linux/serial_core.h      |    1 -
+>>  2 files changed, 1 insertions(+), 20 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/serial_core.c
+>> b/drivers/tty/serial/serial_core.c index 2cbf1bd..4786232 100644
+>> --- a/drivers/tty/serial/serial_core.c
+>> +++ b/drivers/tty/serial/serial_core.c
+>> @@ -72,7 +72,7 @@ void uart_write_wakeup(struct uart_port *port)
+>>  	 * closed.  No cookie for you.
+>>  	 */
+>>  	BUG_ON(!state);
+>> -	tasklet_schedule(&state->tlet);
+>> +	tty_wakeup(state->port.tty);
+> 
+> Probably worth noting that this is only safe if the uart locks are held
+> and because of the current lock/ref drop combinations in the
+> serial_core code otherwise it can race with hangup...
 
-I will prepare and test a patch.
+I see this was merged. Since I was not sure this patch is OK after your
+comment, I reviewed the code now. It shouldn't be an issue right now,
+exactly as you wrote. I.e. the device is stopped, ISR synchronized and
+even then ->hangup sets tty to NULL.
 
-> Alternatively if it's a device attached to a specific platform create=
- it
-> as a platform device of some kind in the board specific code and pick
-> that up in the serial driver.
->=20
-> > Another thought could be to write 0xFF (or some other value) to the
-> > correct EFR-register and read that byte to test if the register is
-> > present. The problem here is that I do not how the bus reacts to
-> > writting/reading invalid addresses.
->=20
-> The trouble is an extra register may in fact be part of some other de=
-vice
-> - it's generally not a great idea if there are other choices.
+I have a patch in my queue which converts all these guys to
+tty_port_tty_get. This is needed before I can use tty_port_hangup
+obviously. It is because the order there is opposite (set tty to NULL,
+then shutdown everybody).
 
-Ok. It did seem like a dangerous thing to do.
-
-Thanks Alan
-
---=20
-S=F8ren Holm
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+thanks for review,
+-- 
+js
