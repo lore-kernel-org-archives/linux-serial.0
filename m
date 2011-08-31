@@ -1,59 +1,107 @@
-From: Jiri Slaby <jirislaby@gmail.com>
-Subject: Re: [PATCH v2 3/6] TTY: serial, remove tasklet for tty_wakeup
-Date: Wed, 31 Aug 2011 16:43:06 +0200
-Message-ID: <4E5E487A.10709@gmail.com>
-References: <1310646915-3032-1-git-send-email-jslaby@suse.cz> <1310646915-3032-3-git-send-email-jslaby@suse.cz> <20110719173401.131e220f@bob.linux.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20110719173401.131e220f@bob.linux.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, gregkh@suse.de, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 2/4] TTY: serial, remove dead code from 68328
+Date: Wed, 31 Aug 2011 21:24:57 +0200
+Message-ID: <1314818699-10873-2-git-send-email-jslaby@suse.cz>
+References: <1314818699-10873-1-git-send-email-jslaby@suse.cz>
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <1314818699-10873-1-git-send-email-jslaby@suse.cz>
+Sender: linux-m68k-owner@vger.kernel.org
+To: gregkh@suse.de
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com, Geert Uytterhoeven <geert@linux-m68k.org>, Alan Cox <alan@linux.intel.com>, linux-m68k@lists.linux-m68k.org
 List-Id: linux-serial@vger.kernel.org
 
-On 07/19/2011 06:34 PM, Alan Cox wrote:
-> On Thu, 14 Jul 2011 14:35:12 +0200
-> Jiri Slaby <jslaby@suse.cz> wrote:
-> 
->> tty_wakeup can be called from any context. So there is no need to have
->> an extra tasklet for calling that. Hence save some space and remove
->> the tasklet completely.
->>
->> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
->> Cc: Greg Kroah-Hartman <gregkh@suse.de>
->> Cc: Alan Cox <alan@linux.intel.com>
->> ---
->>  drivers/tty/serial/serial_core.c |   20 +-------------------
->>  include/linux/serial_core.h      |    1 -
->>  2 files changed, 1 insertions(+), 20 deletions(-)
->>
->> diff --git a/drivers/tty/serial/serial_core.c
->> b/drivers/tty/serial/serial_core.c index 2cbf1bd..4786232 100644
->> --- a/drivers/tty/serial/serial_core.c
->> +++ b/drivers/tty/serial/serial_core.c
->> @@ -72,7 +72,7 @@ void uart_write_wakeup(struct uart_port *port)
->>  	 * closed.  No cookie for you.
->>  	 */
->>  	BUG_ON(!state);
->> -	tasklet_schedule(&state->tlet);
->> +	tty_wakeup(state->port.tty);
-> 
-> Probably worth noting that this is only safe if the uart locks are held
-> and because of the current lock/ref drop combinations in the
-> serial_core code otherwise it can race with hangup...
+The code is dead at least since 2002. So remove it to not distort git
+grep output (about port.tty usage).
 
-I see this was merged. Since I was not sure this patch is OK after your
-comment, I reviewed the code now. It shouldn't be an issue right now,
-exactly as you wrote. I.e. the device is stopped, ISR synchronized and
-even then ->hangup sets tty to NULL.
+Remove the whole do_softirq tasklet as it's noop now.
 
-I have a patch in my queue which converts all these guys to
-tty_port_tty_get. This is needed before I can use tty_port_hangup
-obviously. It is because the order there is opposite (set tty to NULL,
-then shutdown everybody).
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Alan Cox <alan@linux.intel.com>
+---
+Cc: linux-m68k@lists.linux-m68k.org
+ drivers/tty/serial/68328serial.c |   35 -----------------------------------
+ drivers/tty/serial/68328serial.h |    1 -
+ 2 files changed, 0 insertions(+), 36 deletions(-)
 
-thanks for review,
+diff --git a/drivers/tty/serial/68328serial.c b/drivers/tty/serial/68328serial.c
+index e0a7754..f549231 100644
+--- a/drivers/tty/serial/68328serial.c
++++ b/drivers/tty/serial/68328serial.c
+@@ -235,22 +235,6 @@ static void batten_down_hatches(void)
+ 
+ static void status_handle(struct m68k_serial *info, unsigned short status)
+ {
+-#if 0
+-	if(status & DCD) {
+-		if((info->port.tty->termios->c_cflag & CRTSCTS) &&
+-		   ((info->curregs[3] & AUTO_ENAB)==0)) {
+-			info->curregs[3] |= AUTO_ENAB;
+-			info->pendregs[3] |= AUTO_ENAB;
+-			write_zsreg(info->m68k_channel, 3, info->curregs[3]);
+-		}
+-	} else {
+-		if((info->curregs[3] & AUTO_ENAB)) {
+-			info->curregs[3] &= ~AUTO_ENAB;
+-			info->pendregs[3] &= ~AUTO_ENAB;
+-			write_zsreg(info->m68k_channel, 3, info->curregs[3]);
+-		}
+-	}
+-#endif
+ 	/* If this is console input and this is a
+ 	 * 'break asserted' status change interrupt
+ 	 * see if we can drop into the debugger
+@@ -340,9 +324,6 @@ static void transmit_chars(struct m68k_serial *info)
+ 	info->xmit_tail = info->xmit_tail & (SERIAL_XMIT_SIZE-1);
+ 	info->xmit_cnt--;
+ 
+-	if (info->xmit_cnt < WAKEUP_CHARS)
+-		schedule_work(&info->tqueue);
+-
+ 	if(info->xmit_cnt <= 0) {
+ 		/* All done for now... TX ints off */
+ 		uart->ustcnt &= ~USTCNT_TX_INTR_MASK;
+@@ -378,21 +359,6 @@ irqreturn_t rs_interrupt(int irq, void *dev_id)
+ 	return IRQ_HANDLED;
+ }
+ 
+-static void do_softint(struct work_struct *work)
+-{
+-	struct m68k_serial	*info = container_of(work, struct m68k_serial, tqueue);
+-	struct tty_struct	*tty;
+-	
+-	tty = info->tty;
+-	if (!tty)
+-		return;
+-#if 0
+-	if (clear_bit(RS_EVENT_WRITE_WAKEUP, &info->event)) {
+-		tty_wakeup(tty);
+-	}
+-#endif   
+-}
+-
+ static int startup(struct m68k_serial * info)
+ {
+ 	m68328_uart *uart = &uart_addr[info->line];
+@@ -1324,7 +1290,6 @@ rs68328_init(void)
+ 	    info->event = 0;
+ 	    info->count = 0;
+ 	    info->blocked_open = 0;
+-	    INIT_WORK(&info->tqueue, do_softint);
+ 	    init_waitqueue_head(&info->open_wait);
+ 	    init_waitqueue_head(&info->close_wait);
+ 	    info->line = i;
+diff --git a/drivers/tty/serial/68328serial.h b/drivers/tty/serial/68328serial.h
+index 8c9c3c0..3d2faab 100644
+--- a/drivers/tty/serial/68328serial.h
++++ b/drivers/tty/serial/68328serial.h
+@@ -158,7 +158,6 @@ struct m68k_serial {
+ 	int			xmit_head;
+ 	int			xmit_tail;
+ 	int			xmit_cnt;
+-	struct work_struct	tqueue;
+ 	wait_queue_head_t	open_wait;
+ 	wait_queue_head_t	close_wait;
+ };
 -- 
-js
+1.7.6.1
