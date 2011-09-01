@@ -1,138 +1,78 @@
-From: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Subject: Re: [PATCH 3/7] serial/8250: move UPIO_TSI to powerpc
-Date: Thu, 01 Sep 2011 16:02:06 +1000
-Message-ID: <1314856926.4145.12.camel@pasglop>
-References: <1309211120-2803-1-git-send-email-arnd@arndb.de>
-	<1309211120-2803-4-git-send-email-arnd@arndb.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <1309211120-2803-4-git-send-email-arnd@arndb.de>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
-	<mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
-	<mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org
+From: WANG Cong <xiyou.wangcong@gmail.com>
+Subject: [PATCH] cris: lower the printk level in cris serial driver
+Date: Thu,  1 Sep 2011 14:14:00 +0800
+Message-ID: <1314857640-6623-1-git-send-email-xiyou.wangcong@gmail.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ey0-f174.google.com ([209.85.215.174]:36731 "EHLO
+	mail-ey0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753586Ab1IAGOp (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 1 Sep 2011 02:14:45 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: akpm@linux-foundation.org, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, WANG Cong <xiyou.wangcong@gmail.com>, Alan Cox <alan@linux.intel.com>, linux-cris-kernel@axis.com, linux-serial@vger.kernel.org
 
-On Mon, 2011-06-27 at 23:45 +0200, Arnd Bergmann wrote:
-> This iotype is only used by the legacy_serial code in powerpc, so the
-> code should live there, rather than be compiled in for every 8250
-> driver.
+KERN_CRIT is too high, replace those KERN_CRIT with KERN_ERR or KERN_INFO.
 
-Obviously untested :-)
+Cc: Mikael Starvik <starvik@axis.com>
+Cc: Jesper Nilsson <jesper.nilsson@axis.com>
+Signed-off-by: WANG Cong <xiyou.wangcong@gmail.com>
 
-Misses the definition of UART_IIR etc...
-
-I'm committing a fixed version in my tree
-
-Cheers.
-Ben.
-
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-> Cc: linuxppc-dev@lists.ozlabs.org
-> Cc: Greg Kroah-Hartman <gregkh@suse.de>
-> Cc: linux-serial@vger.kernel.org
-> ---
->  arch/powerpc/kernel/legacy_serial.c |   24 ++++++++++++++++++++++++
->  drivers/tty/serial/8250.c           |   23 -----------------------
->  2 files changed, 24 insertions(+), 23 deletions(-)
-> 
-> diff --git a/arch/powerpc/kernel/legacy_serial.c b/arch/powerpc/kernel/legacy_serial.c
-> index 2b97b80..b229e1e 100644
-> --- a/arch/powerpc/kernel/legacy_serial.c
-> +++ b/arch/powerpc/kernel/legacy_serial.c
-> @@ -47,6 +47,24 @@ static struct __initdata of_device_id legacy_serial_parents[] = {
->  static unsigned int legacy_serial_count;
->  static int legacy_serial_console = -1;
->  
-> +static unsigned int tsi_serial_in(struct uart_port *p, int offset)
-> +{
-> +	unsigned int tmp;
-> +	offset = offset << p->regshift;
-> +	if (offset == UART_IIR) {
-> +		tmp = readl(p->membase + (UART_IIR & ~3));
-> +		return (tmp >> 16) & 0xff; /* UART_IIR % 4 == 2 */
-> +	} else
-> +		return readb(p->membase + offset);
-> +}
-> +
-> +static void tsi_serial_out(struct uart_port *p, int offset, int value)
-> +{
-> +	offset = offset << p->regshift;
-> +	if (!((offset == UART_IER) && (value & UART_IER_UUE)))
-> +		writeb(value, p->membase + offset);
-> +}
-> +
->  static int __init add_legacy_port(struct device_node *np, int want_index,
->  				  int iotype, phys_addr_t base,
->  				  phys_addr_t taddr, unsigned long irq,
-> @@ -102,6 +120,7 @@ static int __init add_legacy_port(struct device_node *np, int want_index,
->  		legacy_serial_ports[index].iobase = base;
->  	else
->  		legacy_serial_ports[index].mapbase = base;
-> +
->  	legacy_serial_ports[index].iotype = iotype;
->  	legacy_serial_ports[index].uartclk = clock;
->  	legacy_serial_ports[index].irq = irq;
-> @@ -112,6 +131,11 @@ static int __init add_legacy_port(struct device_node *np, int want_index,
->  	legacy_serial_infos[index].speed = spd ? be32_to_cpup(spd) : 0;
->  	legacy_serial_infos[index].irq_check_parent = irq_check_parent;
->  
-> +	if (iotype == UPIO_TSI) {
-> +		legacy_serial_ports[index].serial_in = tsi_serial_in;
-> +		legacy_serial_ports[index].serial_out = tsi_serial_out;
-> +	}
-> +
->  	printk(KERN_DEBUG "Found legacy serial port %d for %s\n",
->  	       index, np->full_name);
->  	printk(KERN_DEBUG "  %s=%llx, taddr=%llx, irq=%lx, clk=%d, speed=%d\n",
-> diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
-> index c8f107e..d575ccb 100644
-> --- a/drivers/tty/serial/8250.c
-> +++ b/drivers/tty/serial/8250.c
-> @@ -345,24 +345,6 @@ static unsigned int mem32_serial_in(struct uart_port *p, int offset)
->  	return readl(p->membase + offset);
->  }
->  
-> -static unsigned int tsi_serial_in(struct uart_port *p, int offset)
-> -{
-> -	unsigned int tmp;
-> -	offset = map_8250_in_reg(p, offset) << p->regshift;
-> -	if (offset == UART_IIR) {
-> -		tmp = readl(p->membase + (UART_IIR & ~3));
-> -		return (tmp >> 16) & 0xff; /* UART_IIR % 4 == 2 */
-> -	} else
-> -		return readb(p->membase + offset);
-> -}
-> -
-> -static void tsi_serial_out(struct uart_port *p, int offset, int value)
-> -{
-> -	offset = map_8250_out_reg(p, offset) << p->regshift;
-> -	if (!((offset == UART_IER) && (value & UART_IER_UUE)))
-> -		writeb(value, p->membase + offset);
-> -}
-> -
->  /* Save the LCR value so it can be re-written when a Busy Detect IRQ occurs. */
->  static inline void dwapb_save_out_value(struct uart_port *p, int offset,
->  					int value)
-> @@ -431,11 +413,6 @@ static void set_io_from_upio(struct uart_port *p)
->  		p->serial_out = mem32_serial_out;
->  		break;
->  
-> -	case UPIO_TSI:
-> -		p->serial_in = tsi_serial_in;
-> -		p->serial_out = tsi_serial_out;
-> -		break;
-> -
->  	case UPIO_DWAPB:
->  		p->serial_in = mem_serial_in;
->  		p->serial_out = dwapb_serial_out;
+---
+diff --git a/drivers/tty/serial/crisv10.c b/drivers/tty/serial/crisv10.c
+index 225123b..77ba4ed 100644
+--- a/drivers/tty/serial/crisv10.c
++++ b/drivers/tty/serial/crisv10.c
+@@ -1788,7 +1788,7 @@ static unsigned int handle_descr_data(struct e100_serial *info,
+ 	struct etrax_recv_buffer *buffer = phys_to_virt(descr->buf) - sizeof *buffer;
+ 
+ 	if (info->recv_cnt + recvl > 65536) {
+-		printk(KERN_CRIT
++		printk(KERN_INFO
+ 		       "%s: Too much pending incoming serial data! Dropping %u bytes.\n", __func__, recvl);
+ 		return 0;
+ 	}
+@@ -3813,13 +3813,13 @@ rs_close(struct tty_struct *tty, struct file * filp)
+ 		 * one, we've got real problems, since it means the
+ 		 * serial port won't be shutdown.
+ 		 */
+-		printk(KERN_CRIT
++		printk(KERN_ERR
+ 		       "rs_close: bad serial port count; tty->count is 1, "
+ 		       "info->count is %d\n", info->count);
+ 		info->count = 1;
+ 	}
+ 	if (--info->count < 0) {
+-		printk(KERN_CRIT "rs_close: bad serial port count for ttyS%d: %d\n",
++		printk(KERN_ERR "rs_close: bad serial port count for ttyS%d: %d\n",
+ 		       info->line, info->count);
+ 		info->count = 0;
+ 	}
+@@ -4452,7 +4452,7 @@ static int __init rs_init(void)
+ #if defined(CONFIG_ETRAX_RS485_ON_PA)
+ 	if (cris_io_interface_allocate_pins(if_ser0, 'a', rs485_pa_bit,
+ 			rs485_pa_bit)) {
+-		printk(KERN_CRIT "ETRAX100LX serial: Could not allocate "
++		printk(KERN_ERR "ETRAX100LX serial: Could not allocate "
+ 			"RS485 pin\n");
+ 		put_tty_driver(driver);
+ 		return -EBUSY;
+@@ -4461,7 +4461,7 @@ static int __init rs_init(void)
+ #if defined(CONFIG_ETRAX_RS485_ON_PORT_G)
+ 	if (cris_io_interface_allocate_pins(if_ser0, 'g', rs485_pa_bit,
+ 			rs485_port_g_bit)) {
+-		printk(KERN_CRIT "ETRAX100LX serial: Could not allocate "
++		printk(KERN_ERR "ETRAX100LX serial: Could not allocate "
+ 			"RS485 pin\n");
+ 		put_tty_driver(driver);
+ 		return -EBUSY;
+@@ -4494,7 +4494,7 @@ static int __init rs_init(void)
+ 		if (info->enabled) {
+ 			if (cris_request_io_interface(info->io_if,
+ 					info->io_if_description)) {
+-				printk(KERN_CRIT "ETRAX100LX async serial: "
++				printk(KERN_ERR "ETRAX100LX async serial: "
+ 					"Could not allocate IO pins for "
+ 					"%s, port %d\n",
+ 					info->io_if_description, i);
