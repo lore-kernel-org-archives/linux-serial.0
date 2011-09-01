@@ -1,45 +1,79 @@
-From: Mikael Starvik <mikael.starvik@axis.com>
-Subject: RE: [PATCH] cris: lower the printk level in cris serial driver
-Date: Thu, 1 Sep 2011 10:34:28 +0200
-Message-ID: <4BEA3FF3CAA35E408EA55C7BE2E61D055C652CFE5D@xmail3.se.axis.com>
-References: <1314857640-6623-1-git-send-email-xiyou.wangcong@gmail.com>
-	<CAMuHMdWSm2bQQpdM1OM=6+17CeNikn9RYm_BpFmEV7jD4sAPig@mail.gmail.com>
- <20110901090930.064c2775@lxorguk.ukuu.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: WANG Cong <xiyou.wangcong@gmail.com>
+Subject: [Updated PATCH] cris: lower the printk level in cris serial driver
+Date: Thu,  1 Sep 2011 16:47:49 +0800
+Message-ID: <1314866869-14717-1-git-send-email-xiyou.wangcong@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ra.se.axis.com ([195.60.68.13]:36242 "EHLO ra.se.axis.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756447Ab1IAIog (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 1 Sep 2011 04:44:36 -0400
-In-Reply-To: <20110901090930.064c2775@lxorguk.ukuu.org.uk>
-Content-Language: en-US
+Received: from mail-ew0-f46.google.com ([209.85.215.46]:42359 "EHLO
+	mail-ew0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756460Ab1IAIsa (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 1 Sep 2011 04:48:30 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>, Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: WANG Cong <xiyou.wangcong@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, Jesper Nilsson <jespern@axis.com>, Alan Cox <alan@linux.intel.com>, linux-cris-kernel <linux-cris-kernel@axis.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: linux-kernel@vger.kernel.org
+Cc: akpm@linux-foundation.org, Geert Uytterhoeven <geert@linux-m68k.org>, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, WANG Cong <xiyou.wangcong@gmail.com>, Alan Cox <alan@linux.intel.com>, linux-cris-kernel@axis.com, linux-serial@vger.kernel.org
 
-QXMgYSBzaWRlIG5vdGUgY3Jpc3YxMCBpcyBvbGQgc3R1ZmYuIElmIHlvdSB3YW50IHRvIGNoYW5n
-ZSBhbnl0aGluZyBrZWVwIGl0IHNpbXBsZSAobGlrZSBjaGFuZ2luZyBsb2cgbGV2ZWwpLiBGaW5k
-aW5nIHNvbWVvbmUgdG8gdmVyaWZ5IG1vcmUgY29ycmVjdCBtb2RpZmljYXRpb25zIGFzIEFsYW4g
-cHJvcG9zZXMgbWF5IGJlIGRpZmZpY3VsdC4NCg0KL01pa2FlbA0KDQotLS0tLU9yaWdpbmFsIE1l
-c3NhZ2UtLS0tLQ0KRnJvbTogQWxhbiBDb3ggW21haWx0bzphbGFuQGx4b3JndWsudWt1dS5vcmcu
-dWtdIA0KU2VudDogZGVuIDEgc2VwdGVtYmVyIDIwMTEgMTA6MTANClRvOiBHZWVydCBVeXR0ZXJo
-b2V2ZW4NCkNjOiBXQU5HIENvbmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IGFrcG1A
-bGludXgtZm91bmRhdGlvbi5vcmc7IE1pa2FlbCBTdGFydmlrOyBKZXNwZXIgTmlsc3NvbjsgQWxh
-biBDb3g7IGxpbnV4LWNyaXMta2VybmVsOyBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnDQpT
-dWJqZWN0OiBSZTogW1BBVENIXSBjcmlzOiBsb3dlciB0aGUgcHJpbnRrIGxldmVsIGluIGNyaXMg
-c2VyaWFsIGRyaXZlcg0KDQo+ID4gwqAgwqAgwqAgwqBpZiAoaW5mby0+cmVjdl9jbnQgKyByZWN2
-bCA+IDY1NTM2KSB7DQo+ID4gLSDCoCDCoCDCoCDCoCDCoCDCoCDCoCBwcmludGsoS0VSTl9DUklU
-DQo+ID4gKyDCoCDCoCDCoCDCoCDCoCDCoCDCoCBwcmludGsoS0VSTl9JTkZPDQo+ID4gwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgIiVzOiBUb28gbXVjaCBwZW5kaW5nIGluY29taW5n
-IHNlcmlhbCBkYXRhISBEcm9wcGluZyAldSBieXRlcy5cbiIsIF9fZnVuY19fLCByZWN2bCk7DQo+
-ID4gwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqByZXR1cm4gMDsNCj4gPiDCoCDCoCDCoCDCoH0NCj4g
-DQo+IEkgdGhpbmsgZHJvcHBlZCBkYXRhIHdhcnJhbnRzIEtFUk5fV0FSTi4NCg0KSWYgeW91IGhh
-dmUgYW4gb3ZlcmZsb3cgeW91IHdhbnQgdG8gcHVzaCB0aGUgcmVsZXZhbnQgdHR5IGZsYWcgaW50
-byB0aGUNCnF1ZXVlLiBJJ20gbm90IHN1cmUgYSBwcmludGsgaXMgdGhhdCB1c2VmdWwgLSBlbmQg
-dXNlcnMgb2YgZW1iZWRkZWQNCmRldmljZXMgKG9yIGV2ZW4gUEMgZGVza3RvcHMpIHdvbid0IHNl
-ZSBpdCBhbnl3YXkgYW5kIGlmIHlvdSBoYXZlIHNlcmlhbA0KY29uc29sZSBpdCBjYW4gYWN0dWFs
-bHkgbWFrZSB0aGluZ3Mgd29yc2UNCg0KUGx1cyBvZiBjb3Vyc2UgaXQncyBub3QgcmF0ZSBsaW1p
-dGVkIGhlcmUgc28gaXRzIGEgbG9nIHdpcGluZyB2ZWN0b3IgLi4uDQo=
+KERN_CRIT is too high, replace those KERN_CRIT with KERN_ERR or KERN_WARNING.
+
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Mikael Starvik <starvik@axis.com>
+Cc: Jesper Nilsson <jesper.nilsson@axis.com>
+Signed-off-by: WANG Cong <xiyou.wangcong@gmail.com>
+
+---
+diff --git a/drivers/tty/serial/crisv10.c b/drivers/tty/serial/crisv10.c
+index 225123b..9f50bdd 100644
+--- a/drivers/tty/serial/crisv10.c
++++ b/drivers/tty/serial/crisv10.c
+@@ -1788,7 +1788,7 @@ static unsigned int handle_descr_data(struct e100_serial *info,
+ 	struct etrax_recv_buffer *buffer = phys_to_virt(descr->buf) - sizeof *buffer;
+ 
+ 	if (info->recv_cnt + recvl > 65536) {
+-		printk(KERN_CRIT
++		printk(KERN_WARNING
+ 		       "%s: Too much pending incoming serial data! Dropping %u bytes.\n", __func__, recvl);
+ 		return 0;
+ 	}
+@@ -3813,13 +3813,13 @@ rs_close(struct tty_struct *tty, struct file * filp)
+ 		 * one, we've got real problems, since it means the
+ 		 * serial port won't be shutdown.
+ 		 */
+-		printk(KERN_CRIT
++		printk(KERN_ERR
+ 		       "rs_close: bad serial port count; tty->count is 1, "
+ 		       "info->count is %d\n", info->count);
+ 		info->count = 1;
+ 	}
+ 	if (--info->count < 0) {
+-		printk(KERN_CRIT "rs_close: bad serial port count for ttyS%d: %d\n",
++		printk(KERN_ERR "rs_close: bad serial port count for ttyS%d: %d\n",
+ 		       info->line, info->count);
+ 		info->count = 0;
+ 	}
+@@ -4452,7 +4452,7 @@ static int __init rs_init(void)
+ #if defined(CONFIG_ETRAX_RS485_ON_PA)
+ 	if (cris_io_interface_allocate_pins(if_ser0, 'a', rs485_pa_bit,
+ 			rs485_pa_bit)) {
+-		printk(KERN_CRIT "ETRAX100LX serial: Could not allocate "
++		printk(KERN_ERR "ETRAX100LX serial: Could not allocate "
+ 			"RS485 pin\n");
+ 		put_tty_driver(driver);
+ 		return -EBUSY;
+@@ -4461,7 +4461,7 @@ static int __init rs_init(void)
+ #if defined(CONFIG_ETRAX_RS485_ON_PORT_G)
+ 	if (cris_io_interface_allocate_pins(if_ser0, 'g', rs485_pa_bit,
+ 			rs485_port_g_bit)) {
+-		printk(KERN_CRIT "ETRAX100LX serial: Could not allocate "
++		printk(KERN_ERR "ETRAX100LX serial: Could not allocate "
+ 			"RS485 pin\n");
+ 		put_tty_driver(driver);
+ 		return -EBUSY;
+@@ -4494,7 +4494,7 @@ static int __init rs_init(void)
+ 		if (info->enabled) {
+ 			if (cris_request_io_interface(info->io_if,
+ 					info->io_if_description)) {
+-				printk(KERN_CRIT "ETRAX100LX async serial: "
++				printk(KERN_ERR "ETRAX100LX async serial: "
+ 					"Could not allocate IO pins for "
+ 					"%s, port %d\n",
+ 					info->io_if_description, i);
