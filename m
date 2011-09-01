@@ -1,30 +1,53 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 3/4] TTY: serial, fix build of some drivers
-Date: Wed, 31 Aug 2011 22:28:50 +0100
-Message-ID: <20110831222850.494bf19d@lxorguk.ukuu.org.uk>
-References: <1314818699-10873-1-git-send-email-jslaby@suse.cz>
-	<1314818699-10873-3-git-send-email-jslaby@suse.cz>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1314818699-10873-3-git-send-email-jslaby@suse.cz>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: gregkh@suse.de, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com, Alan Cox <alan@linux.intel.com>
+From: WANG Cong <xiyou.wangcong@gmail.com>
+Subject: [PATCH] cris: fix a build error in drivers/tty/serial/crisv10.c
+Date: Thu,  1 Sep 2011 13:58:29 +0800
+Message-ID: <1314856709-5766-1-git-send-email-xiyou.wangcong@gmail.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ew0-f46.google.com ([209.85.215.46]:52781 "EHLO
+	mail-ew0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751066Ab1IAF7b (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 1 Sep 2011 01:59:31 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: akpm@linux-foundation.org, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, WANG Cong <xiyou.wangcong@gmail.com>, Alan Cox <alan@linux.intel.com>, linux-cris-kernel@axis.com, linux-serial@vger.kernel.org
 
-On Wed, 31 Aug 2011 21:24:58 +0200
-Jiri Slaby <jslaby@suse.cz> wrote:
+This patch fixes the following build error:
 
-> I'm getting build errors such as:
-> .../tty/serial/max3107.c: In function =E2=80=98put_data_to_circ_buf=E2=
-=80=99:
-> .../tty/serial/max3107.c:149:2: error: implicit declaration of functi=
-on =E2=80=98tty_insert_flip_string=E2=80=99
->=20
-> Those drivers need to include linux/tty_flip.h. The question is
-> whether we want to fix them at all. As they are broken for some time
-> already and nobody noticed...
+drivers/tty/serial/crisv10.c:4453: error: 'if_ser0' undeclared (first use in this function): 2 errors in 2 logs
+        v3.1-rc4/cris/cris-allmodconfig v3.1-rc4/cris/cris-allyesconfig
+drivers/tty/serial/crisv10.c:4453: error: (Each undeclared identifier is reported only once: 2 errors in 2 logs
+        v3.1-rc4/cris/cris-allmodconfig v3.1-rc4/cris/cris-allyesconfig
+drivers/tty/serial/crisv10.c:4453: error: for each function it appears in.): 2 errors in 2 logs
+        v3.1-rc4/cris/cris-allmodconfig v3.1-rc4/cris/cris-allyesconfig
 
-Config options randomly including it ?
+"if_ser0" is a typo, it should be "if_serial_0".
+
+Cc: Mikael Starvik <starvik@axis.com>
+Cc: Jesper Nilsson <jesper.nilsson@axis.com>
+Signed-off-by: WANG Cong <xiyou.wangcong@gmail.com>
+
+---
+diff --git a/drivers/tty/serial/crisv10.c b/drivers/tty/serial/crisv10.c
+index 225123b..58be715 100644
+--- a/drivers/tty/serial/crisv10.c
++++ b/drivers/tty/serial/crisv10.c
+@@ -4450,7 +4450,7 @@ static int __init rs_init(void)
+ 
+ #if defined(CONFIG_ETRAX_RS485)
+ #if defined(CONFIG_ETRAX_RS485_ON_PA)
+-	if (cris_io_interface_allocate_pins(if_ser0, 'a', rs485_pa_bit,
++	if (cris_io_interface_allocate_pins(if_serial_0, 'a', rs485_pa_bit,
+ 			rs485_pa_bit)) {
+ 		printk(KERN_CRIT "ETRAX100LX serial: Could not allocate "
+ 			"RS485 pin\n");
+@@ -4459,7 +4459,7 @@ static int __init rs_init(void)
+ 	}
+ #endif
+ #if defined(CONFIG_ETRAX_RS485_ON_PORT_G)
+-	if (cris_io_interface_allocate_pins(if_ser0, 'g', rs485_pa_bit,
++	if (cris_io_interface_allocate_pins(if_serial_0, 'g', rs485_pa_bit,
+ 			rs485_port_g_bit)) {
+ 		printk(KERN_CRIT "ETRAX100LX serial: Could not allocate "
+ 			"RS485 pin\n");
