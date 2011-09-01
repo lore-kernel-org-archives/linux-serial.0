@@ -1,52 +1,45 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH 3/4] TTY: serial, fix build of some drivers
-Date: Thu, 01 Sep 2011 10:29:12 +0200
-Message-ID: <4E5F4258.8030008@suse.cz>
-References: <1314818699-10873-1-git-send-email-jslaby@suse.cz> <1314818699-10873-3-git-send-email-jslaby@suse.cz> <20110831222850.494bf19d@lxorguk.ukuu.org.uk>
+From: Mikael Starvik <mikael.starvik@axis.com>
+Subject: RE: [PATCH] cris: lower the printk level in cris serial driver
+Date: Thu, 1 Sep 2011 10:34:28 +0200
+Message-ID: <4BEA3FF3CAA35E408EA55C7BE2E61D055C652CFE5D@xmail3.se.axis.com>
+References: <1314857640-6623-1-git-send-email-xiyou.wangcong@gmail.com>
+	<CAMuHMdWSm2bQQpdM1OM=6+17CeNikn9RYm_BpFmEV7jD4sAPig@mail.gmail.com>
+ <20110901090930.064c2775@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-fx0-f46.google.com ([209.85.161.46]:47205 "EHLO
-	mail-fx0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756100Ab1IAI3R (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 1 Sep 2011 04:29:17 -0400
-In-Reply-To: <20110831222850.494bf19d@lxorguk.ukuu.org.uk>
+Received: from ra.se.axis.com ([195.60.68.13]:36242 "EHLO ra.se.axis.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756447Ab1IAIog (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 1 Sep 2011 04:44:36 -0400
+In-Reply-To: <20110901090930.064c2775@lxorguk.ukuu.org.uk>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: gregkh@suse.de, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com, Alan Cox <alan@linux.intel.com>
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>, Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: WANG Cong <xiyou.wangcong@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, Jesper Nilsson <jespern@axis.com>, Alan Cox <alan@linux.intel.com>, linux-cris-kernel <linux-cris-kernel@axis.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On 08/31/2011 11:28 PM, Alan Cox wrote:
-> On Wed, 31 Aug 2011 21:24:58 +0200
-> Jiri Slaby <jslaby@suse.cz> wrote:
->=20
->> I'm getting build errors such as:
->> .../tty/serial/max3107.c: In function =E2=80=98put_data_to_circ_buf=E2=
-=80=99:
->> .../tty/serial/max3107.c:149:2: error: implicit declaration of funct=
-ion =E2=80=98tty_insert_flip_string=E2=80=99
->>
->> Those drivers need to include linux/tty_flip.h. The question is
->> whether we want to fix them at all. As they are broken for some time
->> already and nobody noticed...
->=20
-> Config options randomly including it ?
-
-Ah, no, ignore that comment. I realized that I removed linux/tty_flip.h
-inclusion from serial_core.h. I moved the big inlines out of the header
-and the inclusion was no longer needed there.
-
-Hence these failures. And I think there will be more. So please apply
-the patch, it's correct, except the changelog.
-
-thanks,
---=20
-js
-suse labs
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+QXMgYSBzaWRlIG5vdGUgY3Jpc3YxMCBpcyBvbGQgc3R1ZmYuIElmIHlvdSB3YW50IHRvIGNoYW5n
+ZSBhbnl0aGluZyBrZWVwIGl0IHNpbXBsZSAobGlrZSBjaGFuZ2luZyBsb2cgbGV2ZWwpLiBGaW5k
+aW5nIHNvbWVvbmUgdG8gdmVyaWZ5IG1vcmUgY29ycmVjdCBtb2RpZmljYXRpb25zIGFzIEFsYW4g
+cHJvcG9zZXMgbWF5IGJlIGRpZmZpY3VsdC4NCg0KL01pa2FlbA0KDQotLS0tLU9yaWdpbmFsIE1l
+c3NhZ2UtLS0tLQ0KRnJvbTogQWxhbiBDb3ggW21haWx0bzphbGFuQGx4b3JndWsudWt1dS5vcmcu
+dWtdIA0KU2VudDogZGVuIDEgc2VwdGVtYmVyIDIwMTEgMTA6MTANClRvOiBHZWVydCBVeXR0ZXJo
+b2V2ZW4NCkNjOiBXQU5HIENvbmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IGFrcG1A
+bGludXgtZm91bmRhdGlvbi5vcmc7IE1pa2FlbCBTdGFydmlrOyBKZXNwZXIgTmlsc3NvbjsgQWxh
+biBDb3g7IGxpbnV4LWNyaXMta2VybmVsOyBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnDQpT
+dWJqZWN0OiBSZTogW1BBVENIXSBjcmlzOiBsb3dlciB0aGUgcHJpbnRrIGxldmVsIGluIGNyaXMg
+c2VyaWFsIGRyaXZlcg0KDQo+ID4gwqAgwqAgwqAgwqBpZiAoaW5mby0+cmVjdl9jbnQgKyByZWN2
+bCA+IDY1NTM2KSB7DQo+ID4gLSDCoCDCoCDCoCDCoCDCoCDCoCDCoCBwcmludGsoS0VSTl9DUklU
+DQo+ID4gKyDCoCDCoCDCoCDCoCDCoCDCoCDCoCBwcmludGsoS0VSTl9JTkZPDQo+ID4gwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgIiVzOiBUb28gbXVjaCBwZW5kaW5nIGluY29taW5n
+IHNlcmlhbCBkYXRhISBEcm9wcGluZyAldSBieXRlcy5cbiIsIF9fZnVuY19fLCByZWN2bCk7DQo+
+ID4gwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqByZXR1cm4gMDsNCj4gPiDCoCDCoCDCoCDCoH0NCj4g
+DQo+IEkgdGhpbmsgZHJvcHBlZCBkYXRhIHdhcnJhbnRzIEtFUk5fV0FSTi4NCg0KSWYgeW91IGhh
+dmUgYW4gb3ZlcmZsb3cgeW91IHdhbnQgdG8gcHVzaCB0aGUgcmVsZXZhbnQgdHR5IGZsYWcgaW50
+byB0aGUNCnF1ZXVlLiBJJ20gbm90IHN1cmUgYSBwcmludGsgaXMgdGhhdCB1c2VmdWwgLSBlbmQg
+dXNlcnMgb2YgZW1iZWRkZWQNCmRldmljZXMgKG9yIGV2ZW4gUEMgZGVza3RvcHMpIHdvbid0IHNl
+ZSBpdCBhbnl3YXkgYW5kIGlmIHlvdSBoYXZlIHNlcmlhbA0KY29uc29sZSBpdCBjYW4gYWN0dWFs
+bHkgbWFrZSB0aGluZ3Mgd29yc2UNCg0KUGx1cyBvZiBjb3Vyc2UgaXQncyBub3QgcmF0ZSBsaW1p
+dGVkIGhlcmUgc28gaXRzIGEgbG9nIHdpcGluZyB2ZWN0b3IgLi4uDQo=
