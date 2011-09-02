@@ -1,200 +1,59 @@
-From: =?iso-8859-1?q?S=F8ren_holm?= <sgh@sgh.dk>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Subject: Re: Hardware flowcontrol on XR17D154
-Date: Fri, 2 Sep 2011 12:20:50 +0200
-Message-ID: <201109021220.50339.sgh@sgh.dk>
-References: <201108301217.07468.sgh@sgh.dk> <201108301327.04542.sgh@sgh.dk> <20110830133221.304b27f0@lxorguk.ukuu.org.uk>
+Date: Fri, 2 Sep 2011 13:28:38 +0100
+Message-ID: <20110902132838.5481f302@lxorguk.ukuu.org.uk>
+References: <201108301217.07468.sgh@sgh.dk>
+	<201108301327.04542.sgh@sgh.dk>
+	<20110830133221.304b27f0@lxorguk.ukuu.org.uk>
+	<201109021220.50339.sgh@sgh.dk>
 Mime-Version: 1.0
-Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_C4KYOsyDvD8ZAfy"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cpe.ge-0-2-0-951.faaqnqu1.customer.tele.dk ([93.167.193.22]:39940
-	"EHLO mail.mikrofyn.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933333Ab1IBKUy (ORCPT
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:44459 "EHLO
+	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1750860Ab1IBM3f convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Sep 2011 06:20:54 -0400
-In-Reply-To: <20110830133221.304b27f0@lxorguk.ukuu.org.uk>
+	Fri, 2 Sep 2011 08:29:35 -0400
+In-Reply-To: <201109021220.50339.sgh@sgh.dk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+To: =?UTF-8?B?U8O4cmVu?= holm <sgh@sgh.dk>
 Cc: linux-serial@vger.kernel.org
 
---Boundary-00=_C4KYOsyDvD8ZAfy
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+On Fri, 2 Sep 2011 12:20:50 +0200
+S=C3=B8ren holm <sgh@sgh.dk> wrote:
 
-Hi
-
-Here is my patch to add EFR-support for XR17D15x
-Do you have any comments, since this is my first patch to the kernel ?
-
-=2D-=20
-S=F8ren Holm
-
---Boundary-00=_C4KYOsyDvD8ZAfy
-Content-Type: text/x-patch;
-  charset="UTF-8";
-  name="0001-serial-Support-the-EFR-register-of-XR1715x-uarts.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
-	filename="0001-serial-Support-the-EFR-register-of-XR1715x-uarts.patch"
-
-=46rom fcf3746a15af26ddd2e8e2421f81799b15c27707 Mon Sep 17 00:00:00 2001
-=46rom: =3D?UTF-8?q?S=3DC3=3DB8ren=3D20Holm?=3D <sh@mikrofyn.com>
-Date: Fri, 2 Sep 2011 12:18:59 +0200
-Subject: [PATCH] serial: Support the EFR-register of XR1715x uarts.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=3DUTF-8
-Content-Transfer-Encoding: 8bit
-
-The EFR (Enhenced-Features-Register) is located at a different offset
-than the other devices supporting UART_CAP_EFR. This change add a special
-setup quick to set UPF_EXAR_EFR on the port. UPF_EXAR_EFR is then used to
-the port type to PORT_XR17D15X since it is for sure a XR17D15X uart.
-
-Signed-off-by: S=C3=B8ren Holm <sgh@sgh.dk>
-=2D--
- drivers/tty/serial/8250.c     |   18 +++++++++++++++++-
- drivers/tty/serial/8250_pci.c |   33 +++++++++++++++++++++++++++++++++
- include/linux/serial_core.h   |    4 +++-
- include/linux/serial_reg.h    |    1 +
- 4 files changed, 54 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
-index 7f50999..d626ca8 100644
-=2D-- a/drivers/tty/serial/8250.c
-+++ b/drivers/tty/serial/8250.c
-@@ -309,6 +309,13 @@ static const struct serial8250_config uart_config[] =
-=3D {
- 				  UART_FCR_T_TRIG_01,
- 		.flags		=3D UART_CAP_FIFO | UART_CAP_RTOIE,
- 	},
-+	[PORT_XR17D15X] =3D {
-+		.name		=3D "XR17D15X",
-+		.fifo_size	=3D 64,
-+		.tx_loadsz	=3D 64,
-+		.fcr		=3D UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
-+		.flags		=3D UART_CAP_FIFO | UART_CAP_AFE | UART_CAP_EFR,
-+	},
- };
-=20
- #if defined(CONFIG_MIPS_ALCHEMY)
-@@ -1119,6 +1126,12 @@ static void autoconfig_16550a(struct uart_8250_port =
-*up)
- 	}
- 	serial_outp(up, UART_IER, iersave);
-=20
-+	// Exar uarts have EFR in a weird location
-+	if (up->port.flags & UPF_EXAR_EFR) {
-+		up->port.type =3D PORT_XR17D15X;
-+		up->capabilities |=3D UART_CAP_AFE | UART_CAP_EFR;
-+	}
-+
- 	/*
- 	 * We distinguish between 16550A and U6 16550A by counting
- 	 * how many bytes are in the FIFO.
-@@ -2458,7 +2471,10 @@ serial8250_do_set_termios(struct uart_port *port, st=
-ruct ktermios *termios,
- 			efr |=3D UART_EFR_CTS;
-=20
- 		serial_outp(up, UART_LCR, UART_LCR_CONF_MODE_B);
-=2D		serial_outp(up, UART_EFR, efr);
-+		if (up->port.flags & UPF_EXAR_EFR)
-+			serial_outp(up, UART_XR_EFR, efr);
-+		else
-+			serial_outp(up, UART_EFR, efr);
- 	}
-=20
- #ifdef CONFIG_ARCH_OMAP
-diff --git a/drivers/tty/serial/8250_pci.c b/drivers/tty/serial/8250_pci.c
-index 3abeca2..52247da 100644
-=2D-- a/drivers/tty/serial/8250_pci.c
-+++ b/drivers/tty/serial/8250_pci.c
-@@ -1101,6 +1101,15 @@ static int pci_eg20t_init(struct pci_dev *dev)
- #endif
- }
-=20
-+static int
-+pci_xr17c154_setup(struct serial_private *priv,
-+		  const struct pciserial_board *board,
-+		  struct uart_port *port, int idx)
-+{
-+	port->flags |=3D UPF_EXAR_EFR;
-+	return pci_default_setup(priv, board, port, idx);
-+}
-+
- /* This should be in linux/pci_ids.h */
- #define PCI_VENDOR_ID_SBSMODULARIO	0x124B
- #define PCI_SUBVENDOR_ID_SBSMODULARIO	0x124B
-@@ -1506,6 +1515,30 @@ static struct pci_serial_quirk pci_serial_quirks[] _=
-_refdata =3D {
- 		.setup		=3D pci_timedia_setup,
- 	},
- 	/*
-+	 * Exar cards
-+	 */
-+	{
-+		.vendor =3D PCI_VENDOR_ID_EXAR,
-+		.device =3D PCI_DEVICE_ID_EXAR_XR17C152,
-+		.subvendor	=3D PCI_ANY_ID,
-+		.subdevice	=3D PCI_ANY_ID,
-+		.setup		=3D pci_xr17c154_setup,
-+	},
-+	{
-+		.vendor =3D PCI_VENDOR_ID_EXAR,
-+		.device =3D PCI_DEVICE_ID_EXAR_XR17C154,
-+		.subvendor	=3D PCI_ANY_ID,
-+		.subdevice	=3D PCI_ANY_ID,
-+		.setup		=3D pci_xr17c154_setup,
-+	},
-+	{
-+		.vendor =3D PCI_VENDOR_ID_EXAR,
-+		.device =3D PCI_DEVICE_ID_EXAR_XR17C158,
-+		.subvendor	=3D PCI_ANY_ID,
-+		.subdevice	=3D PCI_ANY_ID,
-+		.setup		=3D pci_xr17c154_setup,
-+	},
-+	/*
- 	 * Xircom cards
- 	 */
- 	{
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index a5c3114..01aa96b 100644
-=2D-- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -46,7 +46,8 @@
- #define PORT_AR7	18	/* Texas Instruments AR7 internal UART */
- #define PORT_U6_16550A	19	/* ST-Ericsson U6xxx internal UART */
- #define PORT_TEGRA	20	/* NVIDIA Tegra internal UART */
-=2D#define PORT_MAX_8250	20	/* max port ID */
-+#define PORT_XR17D15X	21	/* Exar XR17D15x UART */
-+#define PORT_MAX_8250	21	/* max port ID */
-=20
- /*
-  * ARM specific type numbers.  These are not currently guaranteed
-@@ -350,6 +351,7 @@ struct uart_port {
- #define UPF_MAGIC_MULTIPLIER	((__force upf_t) (1 << 16))
- #define UPF_CONS_FLOW		((__force upf_t) (1 << 23))
- #define UPF_SHARE_IRQ		((__force upf_t) (1 << 24))
-+#define UPF_EXAR_EFR		((__force upf_t) (1 << 25))
- /* The exact UART type is known and should not be probed.  */
- #define UPF_FIXED_TYPE		((__force upf_t) (1 << 27))
- #define UPF_BOOT_AUTOCONF	((__force upf_t) (1 << 28))
-diff --git a/include/linux/serial_reg.h b/include/linux/serial_reg.h
-index c75bda3..63a749a 100644
-=2D-- a/include/linux/serial_reg.h
-+++ b/include/linux/serial_reg.h
-@@ -152,6 +152,7 @@
-  * LCR=3D0xBF (or DLAB=3D1 for 16C660)
-  */
- #define UART_EFR	2	/* I/O: Extended Features Register */
-+#define UART_XR_EFR	9	/* I/O: Extended Features Register for Exar XR17D154=
- */
- #define UART_EFR_CTS		0x80 /* CTS flow control */
- #define UART_EFR_RTS		0x40 /* RTS flow control */
- #define UART_EFR_SCD		0x20 /* Special character detect */
-=2D-=20
-1.7.4.1
+> Hi
+>=20
+> Here is my patch to add EFR-support for XR17D15x
+> Do you have any comments, since this is my first patch to the kernel =
+?
 
 
---Boundary-00=_C4KYOsyDvD8ZAfy--
+Codewise it looks fine
+
+Two things though - run changes through scripts/checkpatch.pl (and it'l=
+l
+tell you off for the // comment...) and actually inline the patch rathe=
+r
+than attach it so it is easy for people to comment on.
+
+The important bits of it however  - the actual implementation looks rig=
+ht
+to me and sensibly implemented.
+
+Possibly it should instead override serial_out/in to use the different =
+EFR
+that way but given this is one spot only I don't think its worth the ex=
+tra
+complexity - and if other changes later make it worth doing it's easy t=
+o
+change.
+
+Alan
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
