@@ -1,27 +1,29 @@
 From: =?UTF-8?q?S=C3=B8ren=20Holm?= <sgh@sgh.dk>
 Subject: [PATCH] serial: Support the EFR-register of XR1715x uarts.
-Date: Fri,  2 Sep 2011 22:52:24 +0200
-Message-ID: <1314996744-2878-1-git-send-email-sgh@sgh.dk>
+Date: Fri,  2 Sep 2011 22:55:37 +0200
+Message-ID: <1314996937-2994-1-git-send-email-sgh@sgh.dk>
 References: <20110902132838.5481f302@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx04.stofanet.dk ([212.10.10.14]:45043 "EHLO mx04.stofanet.dk"
+Received: from mx02.stofanet.dk ([212.10.10.12]:44357 "EHLO mx02.stofanet.dk"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755787Ab1IBVCA convert rfc822-to-8bit (ORCPT
+	id S1755787Ab1IBVF3 convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Sep 2011 17:02:00 -0400
+	Fri, 2 Sep 2011 17:05:29 -0400
 Received: from 5634f1b4.rev.stofanet.dk ([86.52.241.180] helo=asrock)
 	by mx01.stofanet.dk (envelope-from
 	<sgh@sgh.dk>)
-	with esmtp id 1Qzaj1-0007wN-2O
-	for linux-serial@vger.kernel.org; Fri, 02 Sep 2011 22:52:31 +0200
+	with esmtp id 1Qzam2-0000Fp-15
+	for linux-serial@vger.kernel.org; Fri, 02 Sep 2011 22:55:38 +0200
+Received: from koontz.sgh.dk (unknown [192.168.0.25])
+	by asrock (Postfix) with ESMTP id E92FD802AC
+	for <linux-serial@vger.kernel.org>; Fri,  2 Sep 2011 22:55:37 +0200 (CEST)
 In-Reply-To: <20110902132838.5481f302@lxorguk.ukuu.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: =?UTF-8?q?S=C3=B8ren=20Holm?= <sgh@sgh.dk>
 
 The EFR (Enhenced-Features-Register) is located at a different offset
 than the other devices supporting UART_CAP_EFR. This change add a speci=
