@@ -1,39 +1,30 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] serial: Support the EFR-register of XR1715x uarts.
-Date: Sat, 3 Sep 2011 11:47:35 +0100
-Message-ID: <20110903114735.374db25f@lxorguk.ukuu.org.uk>
-References: <20110902132838.5481f302@lxorguk.ukuu.org.uk>
-	<1314996937-2994-1-git-send-email-sgh@sgh.dk>
+From: "System Administrator" <info@support.com>
+Subject: Warning Increase Your Mailbox Quota
+Date: Sun, 4 Sep 2011 02:49:23 +0800
+Message-ID: <20110903184923.M89969__23630.6616141976$1315094647$gmane$org@support.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain;
+	charset=big5
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:35384 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752988Ab1ICKsd convert rfc822-to-8bit (ORCPT
+Received: from webmail.ntcb.edu.tw ([140.131.110.5]:55158 "EHLO
+	webmail.ntcb.edu.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751101Ab1IDADf (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 3 Sep 2011 06:48:33 -0400
-In-Reply-To: <1314996937-2994-1-git-send-email-sgh@sgh.dk>
+	Sat, 3 Sep 2011 20:03:35 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: =?UTF-8?B?U8O4cmVu?= Holm <sgh@sgh.dk>
-Cc: linux-serial@vger.kernel.org, greg@kroah.com
 
-On Fri,  2 Sep 2011 22:55:37 +0200
-S=C3=B8ren Holm <sgh@sgh.dk> wrote:
+Your Mail Quota Has Exceeded The Set Quota/Limit. You Are Currently
+Running On 23GB Due To Hidden Files And Folders On Your Mailbox,
+you may not be able to receive or send new mails until you re-validate.
 
-> The EFR (Enhenced-Features-Register) is located at a different offset
-> than the other devices supporting UART_CAP_EFR. This change add a spe=
-cial
-> setup quick to set UPF_EXAR_EFR on the port. UPF_EXAR_EFR is then use=
-d to
-> the port type to PORT_XR17D15X since it is for sure a XR17D15X uart.
->=20
-> Signed-off-by: S=C3=B8ren Holm <sgh@sgh.dk>
+Please Click  Any of the Link Below To Validate Your Mailbox And Increase 
+Your Quota.
 
-Acked-by: Alan Cox <alan@linux.intel.com>
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+http://buzurl.com/bf64 Or http://buzurl.com/bf65
+
+Failure To Validate Your Quota May Result total Lost Of Important Information
+In Your Mailbox Or Cause Limited Access To It.
+
+Mail Quota alert -Error Code #1997142DDE
+System Administrator
