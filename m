@@ -1,426 +1,130 @@
-From: Yong Zhang <yong.zhang0@gmail.com>
-Subject: [PATCH 54/62] TTY: irq: Remove IRQF_DISABLED
-Date: Wed,  7 Sep 2011 16:10:51 +0800
-Message-ID: <1315383059-3673-55-git-send-email-yong.zhang0@gmail.com>
-References: <1315383059-3673-1-git-send-email-yong.zhang0@gmail.com>
+From: "Govindraj.R" <govindraj.raja@ti.com>
+Subject: [PATCH v4 02/11] OMAP2+: hwmod: Add API to check IO PAD wakeup status
+Date: Wed, 7 Sep 2011 18:23:24 +0530
+Message-ID: <1315400013-4849-3-git-send-email-govindraj.raja@ti.com>
+References: <1315400013-4849-1-git-send-email-govindraj.raja@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <1315383059-3673-1-git-send-email-yong.zhang0@gmail.com>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
-	<mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
-	<mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-To: linux-kernel@vger.kernel.org
-Cc: Jesper Nilsson <jesper.nilsson@axis.com>, linux-cris-kernel@axis.com, Tobias Klauser <tklauser@distanz.ch>, Lucas De Marchi <lucas.demarchi@profusion.mobi>, Greg Kroah-Hartman <gregkh@suse.de>, nios2-dev@sopc.et.ntust.edu.tw, Mikael Starvik <starvik@axis.com>, Yong Zhang <yong.zhang0@gmail.com>, Jesper Juhl <jj@chaosbits.net>, linux-serial@vger.kernel.org, Jiri Kosina <jkosina@suse.cz>, uclinux-dist-devel@blackfin.uclinux.org, tglx@linutronix.de, Sonic Zhang <sonic.zhang@analog.com>, linuxppc-dev@lists.ozlabs.org, mingo@elte.hu, Alan Cox <alan@linux.intel.com>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1315400013-4849-1-git-send-email-govindraj.raja@ti.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: linux-arm-kernel-bounces@lists.infradead.org
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-omap@vger.kernel.org
+Cc: Kevin Hilman <khilman@ti.com>, Paul Walmsley <paul@pwsan.com>, Tony Lindgren <tony@atomide.com>, Partha Basak <p-basak2@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>, linux-serial@vger.kernel.org, Vishwanath Sripathy <vishwanath.bs@ti.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-This flag is a NOOP and can be removed now.
+Add API to determine IO-PAD wakeup event status for a given
+hwmod dynamic_mux pad.
 
-Signed-off-by: Yong Zhang <yong.zhang0@gmail.com>
+Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
 ---
- drivers/tty/amiserial.c              |    2 +-
- drivers/tty/cyclades.c               |    2 +-
- drivers/tty/hvc/hvc_irq.c            |    2 +-
- drivers/tty/hvc/hvcs.c               |    2 +-
- drivers/tty/hvc/hvsi.c               |    2 +-
- drivers/tty/isicom.c                 |    2 +-
- drivers/tty/serial/68328serial.c     |    2 +-
- drivers/tty/serial/altera_jtaguart.c |    2 +-
- drivers/tty/serial/altera_uart.c     |    2 +-
- drivers/tty/serial/bfin_5xx.c        |    8 ++++----
- drivers/tty/serial/bfin_sport_uart.c |    2 +-
- drivers/tty/serial/crisv10.c         |   18 +++++++++---------
- drivers/tty/serial/icom.c            |    2 +-
- drivers/tty/serial/lantiq.c          |    6 +++---
- drivers/tty/serial/mcf.c             |    2 +-
- drivers/tty/serial/mpc52xx_uart.c    |    2 +-
- drivers/tty/serial/serial_ks8695.c   |    8 ++++----
- drivers/tty/serial/sh-sci.c          |    2 +-
- drivers/tty/serial/sn_console.c      |    2 +-
- 19 files changed, 35 insertions(+), 35 deletions(-)
+ arch/arm/mach-omap2/mux.c                    |   30 ++++++++++++++++++++++++++
+ arch/arm/mach-omap2/mux.h                    |   13 +++++++++++
+ arch/arm/mach-omap2/omap_hwmod.c             |    7 ++++++
+ arch/arm/plat-omap/include/plat/omap_hwmod.h |    1 +
+ 4 files changed, 51 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
-index 2205795..047e8ff 100644
---- a/drivers/tty/amiserial.c
-+++ b/drivers/tty/amiserial.c
-@@ -2025,7 +2025,7 @@ static int __init amiga_serial_probe(struct platform_device *pdev)
- 	if (error)
- 		goto fail_unregister;
- 
--	error = request_irq(IRQ_AMIGA_RBF, ser_rx_int, IRQF_DISABLED,
-+	error = request_irq(IRQ_AMIGA_RBF, ser_rx_int, 0,
- 			    "serial RX", state);
- 	if (error)
- 		goto fail_free_irq;
-diff --git a/drivers/tty/cyclades.c b/drivers/tty/cyclades.c
-index c0e8f2e..1215773 100644
---- a/drivers/tty/cyclades.c
-+++ b/drivers/tty/cyclades.c
-@@ -3377,7 +3377,7 @@ static int __init cy_detect_isa(void)
- 
- 		/* allocate IRQ */
- 		if (request_irq(cy_isa_irq, cyy_interrupt,
--				IRQF_DISABLED, "Cyclom-Y", &cy_card[j])) {
-+				0, "Cyclom-Y", &cy_card[j])) {
- 			printk(KERN_ERR "Cyclom-Y/ISA found at 0x%lx, but "
- 				"could not allocate IRQ#%d.\n",
- 				(unsigned long)cy_isa_address, cy_isa_irq);
-diff --git a/drivers/tty/hvc/hvc_irq.c b/drivers/tty/hvc/hvc_irq.c
-index 2623e17..c9adb05 100644
---- a/drivers/tty/hvc/hvc_irq.c
-+++ b/drivers/tty/hvc/hvc_irq.c
-@@ -28,7 +28,7 @@ int notifier_add_irq(struct hvc_struct *hp, int irq)
- 		hp->irq_requested = 0;
- 		return 0;
- 	}
--	rc = request_irq(irq, hvc_handle_interrupt, IRQF_DISABLED,
-+	rc = request_irq(irq, hvc_handle_interrupt, 0,
- 			   "hvc_console", hp);
- 	if (!rc)
- 		hp->irq_requested = 1;
-diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
-index 4c8b665..2a6f413 100644
---- a/drivers/tty/hvc/hvcs.c
-+++ b/drivers/tty/hvc/hvcs.c
-@@ -1057,7 +1057,7 @@ static int hvcs_enable_device(struct hvcs_struct *hvcsd, uint32_t unit_address,
- 	 * the conn was registered and now.
- 	 */
- 	if (!(rc = request_irq(irq, &hvcs_handle_interrupt,
--				IRQF_DISABLED, "ibmhvcs", hvcsd))) {
-+				0, "ibmhvcs", hvcsd))) {
- 		/*
- 		 * It is possible the vty-server was removed after the irq was
- 		 * requested but before we have time to enable interrupts.
-diff --git a/drivers/tty/hvc/hvsi.c b/drivers/tty/hvc/hvsi.c
-index c94e2f5..cdfa3e0 100644
---- a/drivers/tty/hvc/hvsi.c
-+++ b/drivers/tty/hvc/hvsi.c
-@@ -1105,7 +1105,7 @@ static int __init hvsi_init(void)
- 		struct hvsi_struct *hp = &hvsi_ports[i];
- 		int ret = 1;
- 
--		ret = request_irq(hp->virq, hvsi_interrupt, IRQF_DISABLED, "hvsi", hp);
-+		ret = request_irq(hp->virq, hvsi_interrupt, 0, "hvsi", hp);
- 		if (ret)
- 			printk(KERN_ERR "HVSI: couldn't reserve irq 0x%x (error %i)\n",
- 				hp->virq, ret);
-diff --git a/drivers/tty/isicom.c b/drivers/tty/isicom.c
-index db1cf9c..e5c295a 100644
---- a/drivers/tty/isicom.c
-+++ b/drivers/tty/isicom.c
-@@ -1598,7 +1598,7 @@ static int __devinit isicom_probe(struct pci_dev *pdev,
- 	}
- 
- 	retval = request_irq(board->irq, isicom_interrupt,
--			IRQF_SHARED | IRQF_DISABLED, ISICOM_NAME, board);
-+			IRQF_SHARED, ISICOM_NAME, board);
- 	if (retval < 0) {
- 		dev_err(&pdev->dev, "Could not install handler at Irq %d. "
- 			"Card%d will be disabled.\n", board->irq, index + 1);
-diff --git a/drivers/tty/serial/68328serial.c b/drivers/tty/serial/68328serial.c
-index e0a7754..84a822e 100644
---- a/drivers/tty/serial/68328serial.c
-+++ b/drivers/tty/serial/68328serial.c
-@@ -1341,7 +1341,7 @@ rs68328_init(void)
- 
- 	    if (request_irq(uart_irqs[i],
- 			    rs_interrupt,
--			    IRQF_DISABLED,
-+			    0,
- 			    "M68328_UART", info))
-                 panic("Unable to attach 68328 serial interrupt\n");
- 	}
-diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
-index 60e049b..00a73ec 100644
---- a/drivers/tty/serial/altera_jtaguart.c
-+++ b/drivers/tty/serial/altera_jtaguart.c
-@@ -218,7 +218,7 @@ static int altera_jtaguart_startup(struct uart_port *port)
- 	unsigned long flags;
- 	int ret;
- 
--	ret = request_irq(port->irq, altera_jtaguart_interrupt, IRQF_DISABLED,
-+	ret = request_irq(port->irq, altera_jtaguart_interrupt, 0,
- 			DRV_NAME, port);
- 	if (ret) {
- 		pr_err(DRV_NAME ": unable to attach Altera JTAG UART %d "
-diff --git a/drivers/tty/serial/altera_uart.c b/drivers/tty/serial/altera_uart.c
-index 50bc5a5..d902558 100644
---- a/drivers/tty/serial/altera_uart.c
-+++ b/drivers/tty/serial/altera_uart.c
-@@ -315,7 +315,7 @@ static int altera_uart_startup(struct uart_port *port)
- 		return 0;
- 	}
- 
--	ret = request_irq(port->irq, altera_uart_interrupt, IRQF_DISABLED,
-+	ret = request_irq(port->irq, altera_uart_interrupt, 0,
- 			DRV_NAME, port);
- 	if (ret) {
- 		pr_err(DRV_NAME ": unable to attach Altera UART %d "
-diff --git a/drivers/tty/serial/bfin_5xx.c b/drivers/tty/serial/bfin_5xx.c
-index ff69791..1769bbf 100644
---- a/drivers/tty/serial/bfin_5xx.c
-+++ b/drivers/tty/serial/bfin_5xx.c
-@@ -667,14 +667,14 @@ static int bfin_serial_startup(struct uart_port *port)
- 		kgdboc_break_enabled = 0;
- 	else {
- # endif
--	if (request_irq(uart->port.irq, bfin_serial_rx_int, IRQF_DISABLED,
-+	if (request_irq(uart->port.irq, bfin_serial_rx_int, 0,
- 	     "BFIN_UART_RX", uart)) {
- 		printk(KERN_NOTICE "Unable to attach BlackFin UART RX interrupt\n");
- 		return -EBUSY;
- 	}
- 
- 	if (request_irq
--	    (uart->port.irq+1, bfin_serial_tx_int, IRQF_DISABLED,
-+	    (uart->port.irq+1, bfin_serial_tx_int, 0,
- 	     "BFIN_UART_TX", uart)) {
- 		printk(KERN_NOTICE "Unable to attach BlackFin UART TX interrupt\n");
- 		free_irq(uart->port.irq, uart);
-@@ -734,7 +734,7 @@ static int bfin_serial_startup(struct uart_port *port)
- 		if (request_irq(gpio_to_irq(uart->cts_pin),
- 			bfin_serial_mctrl_cts_int,
- 			IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING |
--			IRQF_DISABLED, "BFIN_UART_CTS", uart)) {
-+			0, "BFIN_UART_CTS", uart)) {
- 			uart->cts_pin = -1;
- 			pr_info("Unable to attach BlackFin UART CTS interrupt. So, disable it.\n");
- 		}
-@@ -746,7 +746,7 @@ static int bfin_serial_startup(struct uart_port *port)
- #ifdef CONFIG_SERIAL_BFIN_HARD_CTSRTS
- 	if (uart->cts_pin >= 0 && request_irq(uart->status_irq,
- 		bfin_serial_mctrl_cts_int,
--		IRQF_DISABLED, "BFIN_UART_MODEM_STATUS", uart)) {
-+		0, "BFIN_UART_MODEM_STATUS", uart)) {
- 		uart->cts_pin = -1;
- 		pr_info("Unable to attach BlackFin UART Modem Status interrupt.\n");
- 	}
-diff --git a/drivers/tty/serial/bfin_sport_uart.c b/drivers/tty/serial/bfin_sport_uart.c
-index 891d194..ee101c0 100644
---- a/drivers/tty/serial/bfin_sport_uart.c
-+++ b/drivers/tty/serial/bfin_sport_uart.c
-@@ -294,7 +294,7 @@ static int sport_startup(struct uart_port *port)
- 		if (request_irq(gpio_to_irq(up->cts_pin),
- 			sport_mctrl_cts_int,
- 			IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING |
--			IRQF_DISABLED, "BFIN_SPORT_UART_CTS", up)) {
-+			0, "BFIN_SPORT_UART_CTS", up)) {
- 			up->cts_pin = -1;
- 			dev_info(port->dev, "Unable to attach BlackFin UART over SPORT CTS interrupt. So, disable it.\n");
- 		}
-diff --git a/drivers/tty/serial/crisv10.c b/drivers/tty/serial/crisv10.c
-index 225123b..59a4d22 100644
---- a/drivers/tty/serial/crisv10.c
-+++ b/drivers/tty/serial/crisv10.c
-@@ -258,7 +258,7 @@ static struct e100_serial rs_table[] = {
- 	  .dma_out_enabled = 1,
- 	  .dma_out_nbr = SER0_TX_DMA_NBR,
- 	  .dma_out_irq_nbr = SER0_DMA_TX_IRQ_NBR,
--	  .dma_out_irq_flags = IRQF_DISABLED,
-+	  .dma_out_irq_flags = 0,
- 	  .dma_out_irq_description = "serial 0 dma tr",
- #else
- 	  .dma_out_enabled = 0,
-@@ -271,7 +271,7 @@ static struct e100_serial rs_table[] = {
- 	  .dma_in_enabled = 1,
- 	  .dma_in_nbr = SER0_RX_DMA_NBR,
- 	  .dma_in_irq_nbr = SER0_DMA_RX_IRQ_NBR,
--	  .dma_in_irq_flags = IRQF_DISABLED,
-+	  .dma_in_irq_flags = 0,
- 	  .dma_in_irq_description = "serial 0 dma rec",
- #else
- 	  .dma_in_enabled = 0,
-@@ -313,7 +313,7 @@ static struct e100_serial rs_table[] = {
- 	  .dma_out_enabled = 1,
- 	  .dma_out_nbr = SER1_TX_DMA_NBR,
- 	  .dma_out_irq_nbr = SER1_DMA_TX_IRQ_NBR,
--	  .dma_out_irq_flags = IRQF_DISABLED,
-+	  .dma_out_irq_flags = 0,
- 	  .dma_out_irq_description = "serial 1 dma tr",
- #else
- 	  .dma_out_enabled = 0,
-@@ -326,7 +326,7 @@ static struct e100_serial rs_table[] = {
- 	  .dma_in_enabled = 1,
- 	  .dma_in_nbr = SER1_RX_DMA_NBR,
- 	  .dma_in_irq_nbr = SER1_DMA_RX_IRQ_NBR,
--	  .dma_in_irq_flags = IRQF_DISABLED,
-+	  .dma_in_irq_flags = 0,
- 	  .dma_in_irq_description = "serial 1 dma rec",
- #else
- 	  .dma_in_enabled = 0,
-@@ -369,7 +369,7 @@ static struct e100_serial rs_table[] = {
- 	  .dma_out_enabled = 1,
- 	  .dma_out_nbr = SER2_TX_DMA_NBR,
- 	  .dma_out_irq_nbr = SER2_DMA_TX_IRQ_NBR,
--	  .dma_out_irq_flags = IRQF_DISABLED,
-+	  .dma_out_irq_flags = 0,
- 	  .dma_out_irq_description = "serial 2 dma tr",
- #else
- 	  .dma_out_enabled = 0,
-@@ -382,7 +382,7 @@ static struct e100_serial rs_table[] = {
- 	  .dma_in_enabled = 1,
- 	  .dma_in_nbr = SER2_RX_DMA_NBR,
- 	  .dma_in_irq_nbr = SER2_DMA_RX_IRQ_NBR,
--	  .dma_in_irq_flags = IRQF_DISABLED,
-+	  .dma_in_irq_flags = 0,
- 	  .dma_in_irq_description = "serial 2 dma rec",
- #else
- 	  .dma_in_enabled = 0,
-@@ -423,7 +423,7 @@ static struct e100_serial rs_table[] = {
- 	  .dma_out_enabled = 1,
- 	  .dma_out_nbr = SER3_TX_DMA_NBR,
- 	  .dma_out_irq_nbr = SER3_DMA_TX_IRQ_NBR,
--	  .dma_out_irq_flags = IRQF_DISABLED,
-+	  .dma_out_irq_flags = 0,
- 	  .dma_out_irq_description = "serial 3 dma tr",
- #else
- 	  .dma_out_enabled = 0,
-@@ -436,7 +436,7 @@ static struct e100_serial rs_table[] = {
- 	  .dma_in_enabled = 1,
- 	  .dma_in_nbr = SER3_RX_DMA_NBR,
- 	  .dma_in_irq_nbr = SER3_DMA_RX_IRQ_NBR,
--	  .dma_in_irq_flags = IRQF_DISABLED,
-+	  .dma_in_irq_flags = 0,
- 	  .dma_in_irq_description = "serial 3 dma rec",
- #else
- 	  .dma_in_enabled = 0,
-@@ -4558,7 +4558,7 @@ static int __init rs_init(void)
- 	/* hook the irq's for DMA channel 6 and 7, serial output and input, and some more... */
- 
- 	if (request_irq(SERIAL_IRQ_NBR, ser_interrupt,
--			IRQF_SHARED | IRQF_DISABLED, "serial ", driver))
-+			IRQF_SHARED, "serial ", driver))
- 		panic("%s: Failed to request irq8", __func__);
- 
- #endif
-diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
-index 8a869e5..d55709a 100644
---- a/drivers/tty/serial/icom.c
-+++ b/drivers/tty/serial/icom.c
-@@ -1554,7 +1554,7 @@ static int __devinit icom_probe(struct pci_dev *dev,
- 
- 	 /* save off irq and request irq line */
- 	 if ( (retval = request_irq(dev->irq, icom_interrupt,
--				   IRQF_DISABLED | IRQF_SHARED, ICOM_DRIVER_NAME,
-+				   IRQF_SHARED, ICOM_DRIVER_NAME,
- 				   (void *) icom_adapter))) {
- 		  goto probe_exit2;
- 	 }
-diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
-index 58cf279..9e2d42b 100644
---- a/drivers/tty/serial/lantiq.c
-+++ b/drivers/tty/serial/lantiq.c
-@@ -338,21 +338,21 @@ lqasc_startup(struct uart_port *port)
- 		ASCCON_ROEN, port->membase + LTQ_ASC_CON);
- 
- 	retval = request_irq(ltq_port->tx_irq, lqasc_tx_int,
--		IRQF_DISABLED, "asc_tx", port);
-+		0, "asc_tx", port);
- 	if (retval) {
- 		pr_err("failed to request lqasc_tx_int\n");
- 		return retval;
- 	}
- 
- 	retval = request_irq(ltq_port->rx_irq, lqasc_rx_int,
--		IRQF_DISABLED, "asc_rx", port);
-+		0, "asc_rx", port);
- 	if (retval) {
- 		pr_err("failed to request lqasc_rx_int\n");
- 		goto err1;
- 	}
- 
- 	retval = request_irq(ltq_port->err_irq, lqasc_err_int,
--		IRQF_DISABLED, "asc_err", port);
-+		0, "asc_err", port);
- 	if (retval) {
- 		pr_err("failed to request lqasc_err_int\n");
- 		goto err2;
-diff --git a/drivers/tty/serial/mcf.c b/drivers/tty/serial/mcf.c
-index 3394b7c..9afca09 100644
---- a/drivers/tty/serial/mcf.c
-+++ b/drivers/tty/serial/mcf.c
-@@ -380,7 +380,7 @@ static void mcf_config_port(struct uart_port *port, int flags)
- 	/* Clear mask, so no surprise interrupts. */
- 	writeb(0, port->membase + MCFUART_UIMR);
- 
--	if (request_irq(port->irq, mcf_interrupt, IRQF_DISABLED, "UART", port))
-+	if (request_irq(port->irq, mcf_interrupt, 0, "UART", port))
- 		printk(KERN_ERR "MCF: unable to attach ColdFire UART %d "
- 			"interrupt vector=%d\n", port->line, port->irq);
+diff --git a/arch/arm/mach-omap2/mux.c b/arch/arm/mach-omap2/mux.c
+index 655e948..5f15ab8 100644
+--- a/arch/arm/mach-omap2/mux.c
++++ b/arch/arm/mach-omap2/mux.c
+@@ -351,6 +351,36 @@ err1:
+ 	return NULL;
  }
-diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
-index a0bcd8a..a0d02ef 100644
---- a/drivers/tty/serial/mpc52xx_uart.c
-+++ b/drivers/tty/serial/mpc52xx_uart.c
-@@ -273,7 +273,7 @@ static unsigned int mpc5200b_psc_set_baudrate(struct uart_port *port,
  
- static void mpc52xx_psc_get_irq(struct uart_port *port, struct device_node *np)
++/**
++ * omap_hwmod_mux_get_wake_status - omap hwmod check pad wakeup
++ * @hmux:		Pads for a hwmod
++ *
++ * Gets the wakeup status of given pad from omap-hwmod.
++ * Returns true if wakeup event is set for pad else false
++ * if wakeup is not occured or pads are not avialable.
++ */
++bool omap_hwmod_mux_get_wake_status(struct omap_hwmod_mux_info *hmux)
++{
++	int i;
++	unsigned int val;
++	u8 ret = false;
++
++	for (i = 0; i < hmux->nr_pads; i++) {
++		struct omap_device_pad *pad = &hmux->pads[i];
++
++		if (pad->flags & OMAP_DEVICE_PAD_WAKEUP) {
++			val = omap_mux_read(pad->partition,
++					pad->mux->reg_offset);
++			if (val & OMAP_WAKEUP_EVENT) {
++				ret = true;
++				break;
++			}
++		}
++	}
++
++	return ret;
++}
++
+ /* Assumes the calling function takes care of locking */
+ void omap_hwmod_mux(struct omap_hwmod_mux_info *hmux, u8 state)
  {
--	port->irqflags = IRQF_DISABLED;
-+	port->irqflags = 0;
- 	port->irq = irq_of_parse_and_map(np, 0);
+diff --git a/arch/arm/mach-omap2/mux.h b/arch/arm/mach-omap2/mux.h
+index 2132308..8b2150a 100644
+--- a/arch/arm/mach-omap2/mux.h
++++ b/arch/arm/mach-omap2/mux.h
+@@ -225,8 +225,21 @@ omap_hwmod_mux_init(struct omap_device_pad *bpads, int nr_pads);
+  */
+ void omap_hwmod_mux(struct omap_hwmod_mux_info *hmux, u8 state);
+ 
++/**
++ * omap_hwmod_mux_get_wake_status - omap hwmod check pad wakeup
++ * @hmux:		Pads for a hwmod
++ *
++ * Called only from omap_hwmod.c, do not use.
++ */
++bool omap_hwmod_mux_get_wake_status(struct omap_hwmod_mux_info *hmux);
+ #else
+ 
++static inline bool
++omap_hwmod_mux_get_wake_status(struct omap_hwmod_mux_info *hmux)
++{
++	return 0;
++}
++
+ static inline int omap_mux_init_gpio(int gpio, int val)
+ {
+ 	return 0;
+diff --git a/arch/arm/mach-omap2/omap_hwmod.c b/arch/arm/mach-omap2/omap_hwmod.c
+index e751dd9..a8b24d7 100644
+--- a/arch/arm/mach-omap2/omap_hwmod.c
++++ b/arch/arm/mach-omap2/omap_hwmod.c
+@@ -2724,3 +2724,10 @@ int omap_hwmod_no_setup_reset(struct omap_hwmod *oh)
+ 
+ 	return 0;
  }
++
++int omap_hwmod_pad_get_wakeup_status(struct omap_hwmod *oh)
++{
++	if (oh && oh->mux)
++		return omap_hwmod_mux_get_wake_status(oh->mux);
++	return -EINVAL;
++}
+diff --git a/arch/arm/plat-omap/include/plat/omap_hwmod.h b/arch/arm/plat-omap/include/plat/omap_hwmod.h
+index 0e329ca..9a6195c 100644
+--- a/arch/arm/plat-omap/include/plat/omap_hwmod.h
++++ b/arch/arm/plat-omap/include/plat/omap_hwmod.h
+@@ -607,6 +607,7 @@ u32 omap_hwmod_get_context_loss_count(struct omap_hwmod *oh);
  
-diff --git a/drivers/tty/serial/serial_ks8695.c b/drivers/tty/serial/serial_ks8695.c
-index 2430319..01949af 100644
---- a/drivers/tty/serial/serial_ks8695.c
-+++ b/drivers/tty/serial/serial_ks8695.c
-@@ -336,19 +336,19 @@ static int ks8695uart_startup(struct uart_port *port)
- 	/*
- 	 * Allocate the IRQ
- 	 */
--	retval = request_irq(KS8695_IRQ_UART_TX, ks8695uart_tx_chars, IRQF_DISABLED, "UART TX", port);
-+	retval = request_irq(KS8695_IRQ_UART_TX, ks8695uart_tx_chars, 0, "UART TX", port);
- 	if (retval)
- 		goto err_tx;
+ int omap_hwmod_no_setup_reset(struct omap_hwmod *oh);
  
--	retval = request_irq(KS8695_IRQ_UART_RX, ks8695uart_rx_chars, IRQF_DISABLED, "UART RX", port);
-+	retval = request_irq(KS8695_IRQ_UART_RX, ks8695uart_rx_chars, 0, "UART RX", port);
- 	if (retval)
- 		goto err_rx;
- 
--	retval = request_irq(KS8695_IRQ_UART_LINE_STATUS, ks8695uart_rx_chars, IRQF_DISABLED, "UART LineStatus", port);
-+	retval = request_irq(KS8695_IRQ_UART_LINE_STATUS, ks8695uart_rx_chars, 0, "UART LineStatus", port);
- 	if (retval)
- 		goto err_ls;
- 
--	retval = request_irq(KS8695_IRQ_UART_MODEM_STATUS, ks8695uart_modem_status, IRQF_DISABLED, "UART ModemStatus", port);
-+	retval = request_irq(KS8695_IRQ_UART_MODEM_STATUS, ks8695uart_modem_status, 0, "UART ModemStatus", port);
- 	if (retval)
- 		goto err_ms;
- 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index a9414fa..7b14f6c 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -1962,7 +1962,7 @@ static int __devinit sci_init_single(struct platform_device *dev,
- 	 * For the muxed case there's nothing more to do.
- 	 */
- 	port->irq		= p->irqs[SCIx_RXI_IRQ];
--	port->irqflags		= IRQF_DISABLED;
-+	port->irqflags		= 0;
- 
- 	port->serial_in		= sci_serial_in;
- 	port->serial_out	= sci_serial_out;
-diff --git a/drivers/tty/serial/sn_console.c b/drivers/tty/serial/sn_console.c
-index 377ae74..2969c86 100644
---- a/drivers/tty/serial/sn_console.c
-+++ b/drivers/tty/serial/sn_console.c
-@@ -737,7 +737,7 @@ static void __init sn_sal_switch_to_interrupts(struct sn_cons_port *port)
- 		DPRINTF("sn_console: switching to interrupt driven console\n");
- 
- 		if (request_irq(SGI_UART_VECTOR, sn_sal_interrupt,
--				IRQF_DISABLED | IRQF_SHARED,
-+				IRQF_SHARED,
- 				"SAL console driver", port) >= 0) {
- 			spin_lock_irqsave(&port->sc_port.lock, flags);
- 			port->sc_port.irq = SGI_UART_VECTOR;
++int omap_hwmod_pad_get_wakeup_status(struct omap_hwmod *oh);
+ /*
+  * Chip variant-specific hwmod init routines - XXX should be converted
+  * to use initcalls once the initial boot ordering is straightened out
 -- 
 1.7.4.1
