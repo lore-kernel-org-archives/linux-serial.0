@@ -1,35 +1,103 @@
-From: "Mr. Daniel Tsai" <danieltsai0@aol.com>
-Subject: Business transaction.
-Date: Sun, 11 Sep 2011 17:07:15 +0200
-Message-ID: <20110911150716.EDEEA4276C5_E6CCEA4F@radon.cen.brad.ac.uk>
+From: Govindraj <govindraj.ti@gmail.com>
+Subject: Re: [PATCH v4 10/11] OMAP: Serial: Allow UART parameters to be
+ configured from board file.
+Date: Mon, 12 Sep 2011 12:04:41 +0530
+Message-ID: <CAAL8m4x6uNKu9tTxj8L4HkrsFhigJ_mxOg+NMGcAk__aCg8VZA@mail.gmail.com>
+References: <1315400013-4849-1-git-send-email-govindraj.raja@ti.com>
+ <1315400013-4849-11-git-send-email-govindraj.raja@ti.com> <87zkidtttm.fsf@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="Windows-1251"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from hydrogen.cen.brad.ac.uk ([143.53.238.3]:38205 "EHLO
-	hydrogen.cen.brad.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753416Ab1ILDHt (ORCPT
+Received: from mail-bw0-f46.google.com ([209.85.214.46]:51951 "EHLO
+	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751210Ab1ILGfF convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 11 Sep 2011 23:07:49 -0400
+	Mon, 12 Sep 2011 02:35:05 -0400
+In-Reply-To: <87zkidtttm.fsf@ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: danieltsai0@aol.com
+To: Kevin Hilman <khilman@ti.com>
+Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, Paul Walmsley <paul@pwsan.com>, Tony Lindgren <tony@atomide.com>, Deepak K <deepak.k@ti.com>, Partha Basak <p-basak2@ti.com>, Jon Hunter <jon-hunter@ti.com>, linux-serial@vger.kernel.org, Vishwanath Sripathy <vishwanath.bs@ti.com>, linux-arm-kernel@lists.infradead.org
 
-Hello my friend. My name is Daniel Tsai and
+On Sat, Sep 10, 2011 at 12:41 AM, Kevin Hilman <khilman@ti.com> wrote:
+> "Govindraj.R" <govindraj.raja@ti.com> writes:
+>
+>> The following UART parameters are defined within the UART driver:
+>>
+>> 1). Whether the UART uses DMA (dma_enabled), by default set to 0
+>> 2). The size of dma buffer (set to 4096 bytes)
+>> 3). The time after which the dma should stop if no more data is rece=
+ived.
+>> 4). The auto suspend delay that will be passed for pm_runtime_autosu=
+spend
+>> =A0 =A0 where uart will be disabled after timeout
+>>
+>> Different UARTs may be used for different purpose such as the consol=
+e,
+>> for interfacing bluetooth chip, for interfacing to a modem chip, etc=
+=2E
+>> Therefore, it is necessary to be able to customize the above setting=
+s
+>> for a given board on a per UART basis.
+>>
+>> This change allows these parameters to be configured from the board =
+file
+>> and allows the parameters to be configured for each UART independent=
+ly.
+>>
+>> If a board does not define its own custom parameters for the UARTs, =
+then
+>> use the default parameters in the structure "omap_serial_default_inf=
+o".
+>> The default parameters are defined to be the same as the current set=
+tings
+>> in the UART driver to avoid breaking the UART for any board. By defa=
+ult,
+>> make all boards use the default UART parameters.
+>>
+>> Signed-off-by: Deepak K <deepak.k@ti.com>
+>> Signed-off-by: Jon Hunter <jon-hunter@ti.com>
+>> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+>
+> Who is the author of this patch? =A0The first version says Jon[1], v2=
+ says
+> Deepak[2]. =A0Either way, please ensure proper authorship is attribut=
+ed
+> using From: at the beginning of the changelog. =A0(git-format-patch w=
+ill
+> do this for you when the authorship is correct in the git history.)
+>
+> Even better would be to summarize the changes since the first version
+> after the '---' so it would be clearer why the authorship was changed=
+=2E
+>
+> Only 1/3 of my comments from v3 were addressed in this version. =A0Pl=
+ease
+> re-read my comments there[3].
+>
 
-I live in Hong Kong. I want you to be my
+Will fix this and repost.
 
-partner in a business transaction of 44.5Million USD.
+--
+Thanks,
+Govindraj.R
 
-If you are interested for more details,
 
-you MUST reply me to my private email address:
-
-danieltsai11@yahoo.com.hk or danieltsai95@aol.com
-
-when I get your message, I will tell you what
-
-to do next. Thank you.
-
-Mr. Daniel Tsai
+> Kevin
+>
+>
+> [1] http://marc.info/?l=3Dlinux-omap&m=3D129890257812478&w=3D2
+> [2] http://marc.info/?l=3Dlinux-omap&m=3D130408096416887&w=3D2
+> [3] http://marc.info/?l=3Dlinux-omap&m=3D130896078622810&w=3D2
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-omap"=
+ in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at =A0http://vger.kernel.org/majordomo-info.html
+>
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
