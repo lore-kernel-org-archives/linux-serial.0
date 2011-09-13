@@ -1,58 +1,340 @@
-From: =?utf-8?B?5LuFMTDlhYPmr4/lpKk=?= <test@amidress.com>
-Subject: =?utf-8?B?576k5Y+R6L2v5Lu2K+S5sOWutuaQnOe0ouacuisxMDnlsYrlub/kuqTkvJrkubDlrrY=?=
-	=?utf-8?B?44CB5rW35YWz5pWw5o2uLEIyQuivouebmOS5sOWutjUwMOS4h+OAgg==?=
-Date: Tue, 13 Sep 2011 15:36:42 +0000 (UTC)
-Message-ID: <20111213084751284814@amidress.com>
-Reply-To: <1339625218@qq.com>
+From: Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>
+Subject: jsm: remove buggy write queue
+Date: Tue, 13 Sep 2011 14:55:23 -0300
+Message-ID: <20110913175522.GB3592@oc1711230544.ibm.com>
+References: <1314202463-12297-1-git-send-email-cascardo@linux.vnet.ibm.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 184.172.211.66-static.reverse.softlayer.com ([184.172.211.66]:4001
-	"HELO amidress.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1755006Ab1IMPgj (ORCPT
+Received: from e24smtp04.br.ibm.com ([32.104.18.25]:35931 "EHLO
+	e24smtp04.br.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754344Ab1IMRze (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 13 Sep 2011 11:36:39 -0400
-Date: Tue, 13 Dec 2011 08:47:39 +0800
+	Tue, 13 Sep 2011 13:55:34 -0400
+Received: from /spool/local
+	by br.ibm.com with XMail ESMTP
+	for <linux-serial@vger.kernel.org> from <cascardo@linux.vnet.ibm.com>;
+	Tue, 13 Sep 2011 14:55:31 -0300
+Content-Disposition: inline
+In-Reply-To: <1314202463-12297-1-git-send-email-cascardo@linux.vnet.ibm.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <greg@kroah.com>
+Cc: stable@kernel.org, Breno Leitao <leitao@linux.vnet.ibm.com>, lucaskt@linux.vnet.ibm.com, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>
 
-576k5Y+R6L2v5Lu2KzEwOeWxiuW5v+S6pOS8muS5sOWutuOAgea1t+WFs+aVsOaNruOAgeaQnOe0
-ouW8leaTjuS5sOWutixCMkLor6Lnm5jkubDlrrblhbE1MDDkuIcs5LuFMTDlhYPmr4/lpKnjgIIg
-DQrkv53or4Hmr4/lpKnpg73mnInkubDlrrblm57lpI3jgIINCuS/neivgeavj+WkqemDveacieS5
-sOWutuWbnuWkjeOAgg0KDQoNCjHjgIHnvqTlj5Hova/ku7bvvJog5pON5L2c566A5Y2V77yM5Yqf
-6IO95by65aSn77yM5qih5Lu/5Lq65bel5pON5L2c5qih5byP77yM5Yiw6L6+546H6auY77yM5pel
-5Y+R6YCBNeS4h+WwgeS7peS4iuOAgiANCjLjgIE1MDDkuIfkubDlrrbotYTmupDvvJog6LWg6YCB
-55qENTAw5LiH5Lmw5a626LWE5rqQ5bqT77yM5q+P5pyI5pu05pawIOOAgiANCjPjgIHotoXnuqfm
-tbflpJbkubDlrrZFbWFpbOaQnOe0ouacuu+8miDmr4/lpKnog73mkJzntKIxLTLkuIfku6XkuIrk
-ubDlrrbnnJ/lrp5FTUFJTO+8jOaIkOWNleeOh+mrmOOAgiANCiANCg0K6KaB55qE5oqT57Sn6IGU
-57O7UVE6IDEzMzk2MjUyMTggICDmiJbogIXnq4vljbPlm57lpI3pgq7nrrE6IDEzMzk2MjUyMThA
-cXEuY29tDQropoHnmoTmipPntKfogZTns7tRUTogMTMzOTYyNTIxOCAgIOaIluiAheeri+WNs+Wb
-nuWkjemCrueusTogMTMzOTYyNTIxOEBxcS5jb20NCuimgeeahOaKk+e0p+iBlOezu1FROiAxMzM5
-NjI1MjE4ICAg5oiW6ICF56uL5Y2z5Zue5aSN6YKu566xOiAxMzM5NjI1MjE4QHFxLmNvbQ0KDQrl
-hY3otLnotaDpgIE6DQrkuIDlhbE45Liq5YyFKOaVsOaNruaYr+WFqOihjOS4mueahO+8jOaMieeF
-p+ihjOS4muWIhuWlveexu++8jOW5tuS4lOWPr+S7peaMieeFp+WFs+mUruivjeafpeivoueahCnv
-vJogDQox77yMMjAxMeaYpeWtozEwOeWxiuW5v+S6pOS8muS5sOWutueOsOWcuuivouebmOaVsOaN
-ruW6k+aWsOmynOWHuueCie+8jOi2hee6p+aWsOmynOS5sOWutu+8jOaWsOmynOaVsOaNru+8jOWu
-ueaYk+aIkOWNle+8gSANCjLvvIzotK3kubDlkI7lj6/ku6XlhY3otLnmm7TmlrAyMDEx56eL5a2j
-5bm/5Lqk5LyaKzIwMTLmmKXlraPlub/kuqTkvJrkubDlrrbmlbDmja7jgILlpKrotoXlgLzkuobj
-gIINCjPvvIzmnIDmlrDlhajnkIPkubDlrrblupMs5YWxNDUxNjYw5p2h5pWw5o2u44CCICjmnIDm
-lrDmm7TmlrDml6XmnJ8gMjAxMS0wNS0xNuaXpSkNCjTvvIwyMDA45bm0LDIwMDnlubQsMjAxMOW5
-tCDmmKXlraMr56eL5a2j5bm/5Lqk5Lya5Lmw5a625ZCN5b2V77yMMTAzIDEwNCAxMDUgMTA2IDEw
-NyAxMDgg5YWx5YWt5bGKIOWFsTEyMC425LiH5pWw5o2u44CCDQo177yMMjAxMOW5tOWbvemZheS/
-g+mUgOWNj+S8mu+8iFBQQUnvvInmiJDlkZjlkI3ljZUgUFBBSSBNZW1iZXJzIERpcmVjdG9yee+8
-jOmdnuW4uOmHjeimgeeahOWkp+S5sOWutuOAgg0KNu+8jDIwMTDlubTliLDpppnmuK/ph4fotK3n
-moTlm73lpJblrqLkurrlkI3lvZUo6aaZ5riv6LS45Y+R5bGA5o+Q5L6bKe+8jOWFsTcuMuS4h+aV
-sOaNru+8jOi2hee6p+mHjeimgeeahOS5sOWutuOAgg0KN++8jDQ4LjY45LiH5p2h5pyA5paw5Lmw
-5a626K+i55uY77yM6LSt5Lmw5ZCO5q+P5pyI5pu05pawIDEtMuS4h+adoe+8jOWMheaLrDLpg6jl
-iIbvvIwx77yM5pyA5paw55qE6K+i55uYIDLvvIzmnIDmlrDnmoTlsZXkvJrkubDlrrbjgILlhY3o
-tLnmm7TmlrAzNuS4quaciOOAgg0KOO+8jDIwMDnlubTmtbflhbPmj5DljZXmlbDmja5waWVyc+eJ
-iOaVsOaNriAx5Y2D5LiH44CCDQoNCg0K6K+a5L+h5Li65pys77yM5pSv5oyB5pSv5LuY5a6d5ouF
-5L+d5Lqk5piTICjlhYjlj5HotKflubblronoo4Xorr7nva7nvqTlj5Hova/ku7bvvIznhLblkI7k
-u5jmrL4pIOW9u+W6leaJk+a2iOaCqOeahCDpob7omZHjgIINCg0KIA0KDQoNCiANCg0K57K+5YeG
-5pWw5o2uLeaIkOWNleeOh+aegemrmA0K57K+5YeG5pWw5o2uLeaIkOWNleeOh+aegemrmA0K57K+
-5YeG5pWw5o2uLeaIkOWNleeOh+aegemrmA0K57K+5YeG5pWw5o2uLeaIkOWNleeOh+aegemrmA0K
-57K+5YeG5pWw5o2uLeaIkOWNleeOh+aegemrmA0K
+jsm uses a write queue that copies from uart_core circular buffer. This
+copying however has some bugs, like not wrapping the head counter. Since
+this write queue is also a circular buffer, the consumer function is
+ready to use the uart_core circular buffer directly.
 
+This buggy copying function was making some bytes be dropped when
+transmitting to a raw tty, doing something like this.
+
+[root@hostname ~]$ cat /dev/ttyn1 > cascardo/dump &
+[1] 2658
+[root@hostname ~]$ cat /proc/tty/drivers > /dev/ttyn0
+[root@hostname ~]$ cat /proc/tty/drivers
+/dev/tty             /dev/tty        5       0 system:/dev/tty
+/dev/console         /dev/console    5       1 system:console
+/dev/ptmx            /dev/ptmx       5       2 system
+/dev/vc/0            /dev/vc/0       4       0 system:vtmaster
+jsm                  /dev/ttyn     250 0-31 serial
+serial               /dev/ttyS       4 64-95 serial
+hvc                  /dev/hvc      229 0-7 system
+pty_slave            /dev/pts      136 0-1048575 pty:slave
+pty_master           /dev/ptm      128 0-1048575 pty:master
+unknown              /dev/tty        4 1-63 console
+[root@hostname ~]$ cat cascardo/dump
+/dev/tty             /dev/tty        5       0 system:/dev/tty
+/dev/console         /dev/console    5       1 system:console
+/dev/ptmx            /dev/ptmx       5       2 system
+/dev/vc/0            /dev/vc/0       4       0 system:vtmaste[root@hostname ~]$
+
+This patch drops the driver write queue entirely, using the circular
+buffer from uart_core only.
+
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>
+---
+
+Hello, Greg.
+
+This should probably go to 3.1 and stable releases, since it fixes a
+bug.
+
+Regards,
+Cascardo.
+
+
+---
+ drivers/tty/serial/jsm/jsm.h        |    7 ---
+ drivers/tty/serial/jsm/jsm_driver.c |    1 -
+ drivers/tty/serial/jsm/jsm_neo.c    |   29 ++++++-----
+ drivers/tty/serial/jsm/jsm_tty.c    |   94 +++++------------------------------
+ 4 files changed, 28 insertions(+), 103 deletions(-)
+
+diff --git a/drivers/tty/serial/jsm/jsm.h b/drivers/tty/serial/jsm/jsm.h
+index cd53bdd..529bec6 100644
+--- a/drivers/tty/serial/jsm/jsm.h
++++ b/drivers/tty/serial/jsm/jsm.h
+@@ -180,10 +180,8 @@ struct jsm_board
+ /* Our Read/Error/Write queue sizes */
+ #define RQUEUEMASK	0x1FFF		/* 8 K - 1 */
+ #define EQUEUEMASK	0x1FFF		/* 8 K - 1 */
+-#define WQUEUEMASK	0x0FFF		/* 4 K - 1 */
+ #define RQUEUESIZE	(RQUEUEMASK + 1)
+ #define EQUEUESIZE	RQUEUESIZE
+-#define WQUEUESIZE	(WQUEUEMASK + 1)
+
+
+ /************************************************************************
+@@ -223,10 +221,6 @@ struct jsm_channel {
+ 	u16		ch_e_head;	/* Head location of the error queue */
+ 	u16		ch_e_tail;	/* Tail location of the error queue */
+
+-	u8		*ch_wqueue;	/* Our write queue buffer - malloc'ed */
+-	u16		ch_w_head;	/* Head location of the write queue */
+-	u16		ch_w_tail;	/* Tail location of the write queue */
+-
+ 	u64		ch_rxcount;	/* total of data received so far */
+ 	u64		ch_txcount;	/* total of data transmitted so far */
+
+@@ -375,7 +369,6 @@ extern int	jsm_debug;
+  * Prototypes for non-static functions used in more than one module
+  *
+  *************************************************************************/
+-int jsm_tty_write(struct uart_port *port);
+ int jsm_tty_init(struct jsm_board *);
+ int jsm_uart_port_init(struct jsm_board *);
+ int jsm_remove_uart_port(struct jsm_board *);
+diff --git a/drivers/tty/serial/jsm/jsm_driver.c b/drivers/tty/serial/jsm/jsm_driver.c
+index 1cc8cf6..648b6a3 100644
+--- a/drivers/tty/serial/jsm/jsm_driver.c
++++ b/drivers/tty/serial/jsm/jsm_driver.c
+@@ -194,7 +194,6 @@ static void __devexit jsm_remove_one(struct pci_dev *pdev)
+ 		if (brd->channels[i]) {
+ 			kfree(brd->channels[i]->ch_rqueue);
+ 			kfree(brd->channels[i]->ch_equeue);
+-			kfree(brd->channels[i]->ch_wqueue);
+ 			kfree(brd->channels[i]);
+ 		}
+ 	}
+diff --git a/drivers/tty/serial/jsm/jsm_neo.c b/drivers/tty/serial/jsm/jsm_neo.c
+index 4538c3e..bd6e846 100644
+--- a/drivers/tty/serial/jsm/jsm_neo.c
++++ b/drivers/tty/serial/jsm/jsm_neo.c
+@@ -496,12 +496,15 @@ static void neo_copy_data_from_queue_to_uart(struct jsm_channel *ch)
+ 	int s;
+ 	int qlen;
+ 	u32 len_written = 0;
++	struct circ_buf *circ;
+
+ 	if (!ch)
+ 		return;
+
++	circ = &ch->uart_port.state->xmit;
++
+ 	/* No data to write to the UART */
+-	if (ch->ch_w_tail == ch->ch_w_head)
++	if (uart_circ_empty(circ))
+ 		return;
+
+ 	/* If port is "stopped", don't send any data to the UART */
+@@ -517,11 +520,10 @@ static void neo_copy_data_from_queue_to_uart(struct jsm_channel *ch)
+ 		if (ch->ch_cached_lsr & UART_LSR_THRE) {
+ 			ch->ch_cached_lsr &= ~(UART_LSR_THRE);
+
+-			writeb(ch->ch_wqueue[ch->ch_w_tail], &ch->ch_neo_uart->txrx);
++			writeb(circ->buf[circ->tail], &ch->ch_neo_uart->txrx);
+ 			jsm_printk(WRITE, INFO, &ch->ch_bd->pci_dev,
+-					"Tx data: %x\n", ch->ch_wqueue[ch->ch_w_head]);
+-			ch->ch_w_tail++;
+-			ch->ch_w_tail &= WQUEUEMASK;
++					"Tx data: %x\n", circ->buf[circ->head]);
++			circ->tail = (circ->tail + 1) & (UART_XMIT_SIZE - 1);
+ 			ch->ch_txcount++;
+ 		}
+ 		return;
+@@ -536,36 +538,36 @@ static void neo_copy_data_from_queue_to_uart(struct jsm_channel *ch)
+ 	n = UART_17158_TX_FIFOSIZE - ch->ch_t_tlevel;
+
+ 	/* cache head and tail of queue */
+-	head = ch->ch_w_head & WQUEUEMASK;
+-	tail = ch->ch_w_tail & WQUEUEMASK;
+-	qlen = (head - tail) & WQUEUEMASK;
++	head = circ->head & (UART_XMIT_SIZE - 1);
++	tail = circ->tail & (UART_XMIT_SIZE - 1);
++	qlen = uart_circ_chars_pending(circ);
+
+ 	/* Find minimum of the FIFO space, versus queue length */
+ 	n = min(n, qlen);
+
+ 	while (n > 0) {
+
+-		s = ((head >= tail) ? head : WQUEUESIZE) - tail;
++		s = ((head >= tail) ? head : UART_XMIT_SIZE) - tail;
+ 		s = min(s, n);
+
+ 		if (s <= 0)
+ 			break;
+
+-		memcpy_toio(&ch->ch_neo_uart->txrxburst, ch->ch_wqueue + tail, s);
++		memcpy_toio(&ch->ch_neo_uart->txrxburst, circ->buf + tail, s);
+ 		/* Add and flip queue if needed */
+-		tail = (tail + s) & WQUEUEMASK;
++		tail = (tail + s) & (UART_XMIT_SIZE - 1);
+ 		n -= s;
+ 		ch->ch_txcount += s;
+ 		len_written += s;
+ 	}
+
+ 	/* Update the final tail */
+-	ch->ch_w_tail = tail & WQUEUEMASK;
++	circ->tail = tail & (UART_XMIT_SIZE - 1);
+
+ 	if (len_written >= ch->ch_t_tlevel)
+ 		ch->ch_flags &= ~(CH_TX_FIFO_EMPTY | CH_TX_FIFO_LWM);
+
+-	if (!jsm_tty_write(&ch->uart_port))
++	if (uart_circ_empty(circ))
+ 		uart_write_wakeup(&ch->uart_port);
+ }
+
+@@ -946,7 +948,6 @@ static void neo_param(struct jsm_channel *ch)
+ 	if ((ch->ch_c_cflag & (CBAUD)) == 0) {
+ 		ch->ch_r_head = ch->ch_r_tail = 0;
+ 		ch->ch_e_head = ch->ch_e_tail = 0;
+-		ch->ch_w_head = ch->ch_w_tail = 0;
+
+ 		neo_flush_uart_write(ch);
+ 		neo_flush_uart_read(ch);
+diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/jsm_tty.c
+index 7a4a914..434bd88 100644
+--- a/drivers/tty/serial/jsm/jsm_tty.c
++++ b/drivers/tty/serial/jsm/jsm_tty.c
+@@ -118,6 +118,19 @@ static void jsm_tty_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ 	udelay(10);
+ }
+
++/*
++ * jsm_tty_write()
++ *
++ * Take data from the user or kernel and send it out to the FEP.
++ * In here exists all the Transparent Print magic as well.
++ */
++static void jsm_tty_write(struct uart_port *port)
++{
++	struct jsm_channel *channel;
++	channel = container_of(port, struct jsm_channel, uart_port);
++	channel->ch_bd->bd_ops->copy_data_from_queue_to_uart(channel);
++}
++
+ static void jsm_tty_start_tx(struct uart_port *port)
+ {
+ 	struct jsm_channel *channel = (struct jsm_channel *)port;
+@@ -216,14 +229,6 @@ static int jsm_tty_open(struct uart_port *port)
+ 			return -ENOMEM;
+ 		}
+ 	}
+-	if (!channel->ch_wqueue) {
+-		channel->ch_wqueue = kzalloc(WQUEUESIZE, GFP_KERNEL);
+-		if (!channel->ch_wqueue) {
+-			jsm_printk(INIT, ERR, &channel->ch_bd->pci_dev,
+-				"unable to allocate write queue buf");
+-			return -ENOMEM;
+-		}
+-	}
+
+ 	channel->ch_flags &= ~(CH_OPENING);
+ 	/*
+@@ -237,7 +242,6 @@ static int jsm_tty_open(struct uart_port *port)
+ 	 */
+ 	channel->ch_r_head = channel->ch_r_tail = 0;
+ 	channel->ch_e_head = channel->ch_e_tail = 0;
+-	channel->ch_w_head = channel->ch_w_tail = 0;
+
+ 	brd->bd_ops->flush_uart_write(channel);
+ 	brd->bd_ops->flush_uart_read(channel);
+@@ -836,75 +840,3 @@ void jsm_check_queue_flow_control(struct jsm_channel *ch)
+ 		}
+ 	}
+ }
+-
+-/*
+- * jsm_tty_write()
+- *
+- * Take data from the user or kernel and send it out to the FEP.
+- * In here exists all the Transparent Print magic as well.
+- */
+-int jsm_tty_write(struct uart_port *port)
+-{
+-	int bufcount;
+-	int data_count = 0,data_count1 =0;
+-	u16 head;
+-	u16 tail;
+-	u16 tmask;
+-	u32 remain;
+-	int temp_tail = port->state->xmit.tail;
+-	struct jsm_channel *channel = (struct jsm_channel *)port;
+-
+-	tmask = WQUEUEMASK;
+-	head = (channel->ch_w_head) & tmask;
+-	tail = (channel->ch_w_tail) & tmask;
+-
+-	if ((bufcount = tail - head - 1) < 0)
+-		bufcount += WQUEUESIZE;
+-
+-	bufcount = min(bufcount, 56);
+-	remain = WQUEUESIZE - head;
+-
+-	data_count = 0;
+-	if (bufcount >= remain) {
+-		bufcount -= remain;
+-		while ((port->state->xmit.head != temp_tail) &&
+-		(data_count < remain)) {
+-			channel->ch_wqueue[head++] =
+-			port->state->xmit.buf[temp_tail];
+-
+-			temp_tail++;
+-			temp_tail &= (UART_XMIT_SIZE - 1);
+-			data_count++;
+-		}
+-		if (data_count == remain) head = 0;
+-	}
+-
+-	data_count1 = 0;
+-	if (bufcount > 0) {
+-		remain = bufcount;
+-		while ((port->state->xmit.head != temp_tail) &&
+-			(data_count1 < remain)) {
+-			channel->ch_wqueue[head++] =
+-				port->state->xmit.buf[temp_tail];
+-
+-			temp_tail++;
+-			temp_tail &= (UART_XMIT_SIZE - 1);
+-			data_count1++;
+-
+-		}
+-	}
+-
+-	port->state->xmit.tail = temp_tail;
+-
+-	data_count += data_count1;
+-	if (data_count) {
+-		head &= tmask;
+-		channel->ch_w_head = head;
+-	}
+-
+-	if (data_count) {
+-		channel->ch_bd->bd_ops->copy_data_from_queue_to_uart(channel);
+-	}
+-
+-	return data_count;
+-}
+-- 
+1.7.4.4
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
