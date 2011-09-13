@@ -1,328 +1,58 @@
-From: Kevin Hilman <khilman@ti.com>
-Subject: Re: [PATCH v4 07/11] Serial: OMAP: Add runtime pm support for omap-serial driver
-Date: Mon, 12 Sep 2011 10:01:23 -0700
-Message-ID: <87sjo1itjw.fsf@ti.com>
-References: <1315400013-4849-1-git-send-email-govindraj.raja@ti.com>
-	<1315400013-4849-8-git-send-email-govindraj.raja@ti.com>
-	<87obyu36lo.fsf@ti.com>
-	<CAAL8m4wpCVrhY7++ROwu0Whh4w_cF_dUr0t5622+WmJZah_FRA@mail.gmail.com>
-	<8739g5y45m.fsf@ti.com>
-	<CAAL8m4zR06U115V52+fT84dc6g7PYkLb1jJaMKGyi2VJhFtYxg@mail.gmail.com>
+From: =?utf-8?B?5LuFMTDlhYPmr4/lpKk=?= <test@amidress.com>
+Subject: =?utf-8?B?576k5Y+R6L2v5Lu2K+S5sOWutuaQnOe0ouacuisxMDnlsYrlub/kuqTkvJrkubDlrrY=?=
+	=?utf-8?B?44CB5rW35YWz5pWw5o2uLEIyQuivouebmOS5sOWutjUwMOS4h+OAgg==?=
+Date: Tue, 13 Sep 2011 15:36:42 +0000 (UTC)
+Message-ID: <20111213084751284814@amidress.com>
+Reply-To: <1339625218@qq.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <CAAL8m4zR06U115V52+fT84dc6g7PYkLb1jJaMKGyi2VJhFtYxg@mail.gmail.com>
-	(Govindraj's message of "Mon, 12 Sep 2011 12:25:41 +0530")
-Sender: linux-omap-owner@vger.kernel.org
-To: Govindraj <govindraj.ti@gmail.com>
-Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, Paul Walmsley <paul@pwsan.com>, Tony Lindgren <tony@atomide.com>, Partha Basak <p-basak2@ti.com>, linux-serial@vger.kernel.org, Vishwanath Sripathy <vishwanath.bs@ti.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from 184.172.211.66-static.reverse.softlayer.com ([184.172.211.66]:4001
+	"HELO amidress.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1755006Ab1IMPgj (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 13 Sep 2011 11:36:39 -0400
+Date: Tue, 13 Dec 2011 08:47:39 +0800
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Govindraj <govindraj.ti@gmail.com> writes:
+576k5Y+R6L2v5Lu2KzEwOeWxiuW5v+S6pOS8muS5sOWutuOAgea1t+WFs+aVsOaNruOAgeaQnOe0
+ouW8leaTjuS5sOWutixCMkLor6Lnm5jkubDlrrblhbE1MDDkuIcs5LuFMTDlhYPmr4/lpKnjgIIg
+DQrkv53or4Hmr4/lpKnpg73mnInkubDlrrblm57lpI3jgIINCuS/neivgeavj+WkqemDveacieS5
+sOWutuWbnuWkjeOAgg0KDQoNCjHjgIHnvqTlj5Hova/ku7bvvJog5pON5L2c566A5Y2V77yM5Yqf
+6IO95by65aSn77yM5qih5Lu/5Lq65bel5pON5L2c5qih5byP77yM5Yiw6L6+546H6auY77yM5pel
+5Y+R6YCBNeS4h+WwgeS7peS4iuOAgiANCjLjgIE1MDDkuIfkubDlrrbotYTmupDvvJog6LWg6YCB
+55qENTAw5LiH5Lmw5a626LWE5rqQ5bqT77yM5q+P5pyI5pu05pawIOOAgiANCjPjgIHotoXnuqfm
+tbflpJbkubDlrrZFbWFpbOaQnOe0ouacuu+8miDmr4/lpKnog73mkJzntKIxLTLkuIfku6XkuIrk
+ubDlrrbnnJ/lrp5FTUFJTO+8jOaIkOWNleeOh+mrmOOAgiANCiANCg0K6KaB55qE5oqT57Sn6IGU
+57O7UVE6IDEzMzk2MjUyMTggICDmiJbogIXnq4vljbPlm57lpI3pgq7nrrE6IDEzMzk2MjUyMThA
+cXEuY29tDQropoHnmoTmipPntKfogZTns7tRUTogMTMzOTYyNTIxOCAgIOaIluiAheeri+WNs+Wb
+nuWkjemCrueusTogMTMzOTYyNTIxOEBxcS5jb20NCuimgeeahOaKk+e0p+iBlOezu1FROiAxMzM5
+NjI1MjE4ICAg5oiW6ICF56uL5Y2z5Zue5aSN6YKu566xOiAxMzM5NjI1MjE4QHFxLmNvbQ0KDQrl
+hY3otLnotaDpgIE6DQrkuIDlhbE45Liq5YyFKOaVsOaNruaYr+WFqOihjOS4mueahO+8jOaMieeF
+p+ihjOS4muWIhuWlveexu++8jOW5tuS4lOWPr+S7peaMieeFp+WFs+mUruivjeafpeivoueahCnv
+vJogDQox77yMMjAxMeaYpeWtozEwOeWxiuW5v+S6pOS8muS5sOWutueOsOWcuuivouebmOaVsOaN
+ruW6k+aWsOmynOWHuueCie+8jOi2hee6p+aWsOmynOS5sOWutu+8jOaWsOmynOaVsOaNru+8jOWu
+ueaYk+aIkOWNle+8gSANCjLvvIzotK3kubDlkI7lj6/ku6XlhY3otLnmm7TmlrAyMDEx56eL5a2j
+5bm/5Lqk5LyaKzIwMTLmmKXlraPlub/kuqTkvJrkubDlrrbmlbDmja7jgILlpKrotoXlgLzkuobj
+gIINCjPvvIzmnIDmlrDlhajnkIPkubDlrrblupMs5YWxNDUxNjYw5p2h5pWw5o2u44CCICjmnIDm
+lrDmm7TmlrDml6XmnJ8gMjAxMS0wNS0xNuaXpSkNCjTvvIwyMDA45bm0LDIwMDnlubQsMjAxMOW5
+tCDmmKXlraMr56eL5a2j5bm/5Lqk5Lya5Lmw5a625ZCN5b2V77yMMTAzIDEwNCAxMDUgMTA2IDEw
+NyAxMDgg5YWx5YWt5bGKIOWFsTEyMC425LiH5pWw5o2u44CCDQo177yMMjAxMOW5tOWbvemZheS/
+g+mUgOWNj+S8mu+8iFBQQUnvvInmiJDlkZjlkI3ljZUgUFBBSSBNZW1iZXJzIERpcmVjdG9yee+8
+jOmdnuW4uOmHjeimgeeahOWkp+S5sOWutuOAgg0KNu+8jDIwMTDlubTliLDpppnmuK/ph4fotK3n
+moTlm73lpJblrqLkurrlkI3lvZUo6aaZ5riv6LS45Y+R5bGA5o+Q5L6bKe+8jOWFsTcuMuS4h+aV
+sOaNru+8jOi2hee6p+mHjeimgeeahOS5sOWutuOAgg0KN++8jDQ4LjY45LiH5p2h5pyA5paw5Lmw
+5a626K+i55uY77yM6LSt5Lmw5ZCO5q+P5pyI5pu05pawIDEtMuS4h+adoe+8jOWMheaLrDLpg6jl
+iIbvvIwx77yM5pyA5paw55qE6K+i55uYIDLvvIzmnIDmlrDnmoTlsZXkvJrkubDlrrbjgILlhY3o
+tLnmm7TmlrAzNuS4quaciOOAgg0KOO+8jDIwMDnlubTmtbflhbPmj5DljZXmlbDmja5waWVyc+eJ
+iOaVsOaNriAx5Y2D5LiH44CCDQoNCg0K6K+a5L+h5Li65pys77yM5pSv5oyB5pSv5LuY5a6d5ouF
+5L+d5Lqk5piTICjlhYjlj5HotKflubblronoo4Xorr7nva7nvqTlj5Hova/ku7bvvIznhLblkI7k
+u5jmrL4pIOW9u+W6leaJk+a2iOaCqOeahCDpob7omZHjgIINCg0KIA0KDQoNCiANCg0K57K+5YeG
+5pWw5o2uLeaIkOWNleeOh+aegemrmA0K57K+5YeG5pWw5o2uLeaIkOWNleeOh+aegemrmA0K57K+
+5YeG5pWw5o2uLeaIkOWNleeOh+aegemrmA0K57K+5YeG5pWw5o2uLeaIkOWNleeOh+aegemrmA0K
+57K+5YeG5pWw5o2uLeaIkOWNleeOh+aegemrmA0K
 
-> On Fri, Sep 9, 2011 at 11:44 PM, Kevin Hilman <khilman@ti.com> wrote:
->> Govindraj <govindraj.ti@gmail.com> writes:
->>
->>> On Fri, Sep 9, 2011 at 5:54 AM, Kevin Hilman <khilman@ti.com> wrote=
-:
->>>> "Govindraj.R" <govindraj.raja@ti.com> writes:
->>>>
->>>>> Adapts omap-serial driver to use pm_runtime API's.
->>>>>
->>>>> 1.) Moving context_restore func to driver from serial.c
->>>>> 2.) Use runtime irq safe to use get_sync from irq context.
->>>>> 3.) autosuspend for port specific activities and put for reg acce=
-ss.
->>>>
->>>> Re: autosuspend, it looks like the driver now has 2 mechanisms for
->>>> tracking activity. =C2=A0The runtime PM 'mark last busy' and the e=
-xisting
->>>> 'up->port_activity =3D jiffies' stuff. =C2=A0Do you think those co=
-uld be
->>>> unified?
->>>>
->>>
->>> Is there a way where we can retrieve the last busy jiffie value
->>> using runtime API? I don't find that available.
->>>
->>
->> Not currently. =C2=A0The question is more along the lines of: what i=
-s the
->> port_activity jiffies used for, and can it be replaced by using
->> _mark_last_busy().
->>
->> If it cannot, that's fine, but it should be described.
->
-> Okay.
->
->>
->>>> At first glance, it looks like most places with a _mark_last_busy(=
-) also
->>>> have a up->port_activity update. =C2=A0I'm not familiar enough wit=
-h the
->>>> driver to make the call, but they look awfully similar.
->>>>
->>>
->>> Ok, I will check whether I can get rid if it.
->>>
->>>>> 4.) for earlyprintk usage the debug macro will write to console u=
-art
->>>>> =C2=A0 =C2=A0 so keep uart clocks active from boot, idle using hw=
-mod API's re-enable back
->>>>> =C2=A0 =C2=A0 using runtime API's.
->>>>
->>>> /me doesn't understand
->>>
->>> I have added this reason in early mail reply to 04/11 patch review
->>> [needed for earlyprintk option from low level debug ]
->>
->> OK, but AFAIK, DEBUG_LL + earlyprintk do not use this driver. =C2=A0=
-Instead
->> they use the debug macros, so any hacks to deal with that do not bel=
-ong
->> in the driver.
->>
->> If there are hacks required, they should be in a separate patch, wit=
-h a
->> separate descriptive changelog.
->>
->
-> Yes these are required, because early printk relies on clocks from bo=
-otloader
-> and if clocks are gated even before console_driver is available it ca=
-n
-> lead to boot failures.
 
-My point is that hacks/workaround for DEBUG_LL + earlyprintk don't
-belong in this driver, since this driver is not involved.
-
-> I can keep that part as a separate patch.
-
-Yes please.
-
->>>>
->>>>> 5.) Moving context restore to runtime suspend and using reg value=
-s from port
->>>>> =C2=A0 =C2=A0 structure to restore the uart port context based on=
- context_loss_count.
->>>>> =C2=A0 =C2=A0 Maintain internal state machine for avoiding repeat=
-ed enable/disable of
->>>>> =C2=A0 =C2=A0 uart port wakeup mechanism.
->>>>> 6.) Add API to enable wakeup and check wakeup status.
->>>>>
->>>>> Acked-by: Alan Cox <alan@linux.intel.com>
->>>>> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
->>>>> ---
->>>>> =C2=A0arch/arm/mach-omap2/serial.c =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0| =C2=A0 49 ++++++
->>>>> =C2=A0arch/arm/plat-omap/include/plat/omap-serial.h | =C2=A0 10 +=
-+
->>>>> =C2=A0drivers/tty/serial/omap-serial.c =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0| =C2=A0211 ++++++++++++++++++++++---
->>>>> =C2=A03 files changed, 250 insertions(+), 20 deletions(-)
->>>>>
->>>
->>> [..]
->>>
->>>>> +
->>>>> +static void omap_uart_wakeup_enable(struct platform_device *pdev=
-, bool enable)
->>>>> +{
->>>>> + =C2=A0 =C2=A0 struct omap_device *od;
->>>>> + =C2=A0 =C2=A0 struct omap_uart_port_info *up =3D pdev->dev.plat=
-form_data;
->>>>> +
->>>>> + =C2=A0 =C2=A0 /* Set or clear wake-enable bit */
->>>>> + =C2=A0 =C2=A0 if (up->wk_en && up->wk_mask) {
->>>>> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 u32 v =3D __raw_readl=
-(up->wk_en);
->>>>> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (enable)
->>>>> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 v |=3D up->wk_mask;
->>>>> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 else
->>>>> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 v &=3D ~up->wk_mask;
->>>>> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 __raw_writel(v, up->w=
-k_en);
->>>>> + =C2=A0 =C2=A0 }
->>>>> +
->>>>> + =C2=A0 =C2=A0 od =3D to_omap_device(pdev);
->>>>> + =C2=A0 =C2=A0 if (enable)
->>>>> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 omap_hwmod_enable_wak=
-eup(od->hwmods[0]);
->>>>> + =C2=A0 =C2=A0 else
->>>>> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 omap_hwmod_disable_wa=
-keup(od->hwmods[0]);
->>>>> +}
->>>>> +
->>>>
->>>> Here again, this is difficult to review because you removed the co=
-de in
->>>> [4/11] and add it back here, but with rather different functionali=
-ty
->>>> with no description as to why.
->>>>
->>>
->>> will move this change as part of 4/11 itself.
->>>
->>
->> The point was not just that the move was confusing, but that you cha=
-nged
->> the functionality along with the move without any description.
->>
->
-> If are referring to uart rx pad wakeup its still retained but done
-> using mux framework.
-
-OK, let me try this a slightly different way.  Here's what you did:
-
-- remove some code in patch 4
-- add it back in patch 7, but in different form (with no description of=
- diffs)
-- the missing parts of original code are not documented
-- moved code has some new (but undocumented) features (module-level wak=
-eup)
-- turns out the missing parts (IO pad wakeups) are done using a
-  different framework in yet another patch (which would be fine, if it
-  the reviewers were given a hint.)
-
-I hope this is enough to demonstrate that trying to decipher what what
-you meant to do, what you did, and what you didn't do is extremely
-time consuming for a reviewer.
-
-Well-constructed patches, broken up into *logical* chunks with
-descriptive changelogs are invaluable to an efficient review process.
-
->>>> The previous version enabled wakeups at the PRCM and at the IO rin=
-g.
->>>> This version enables wakeups at the PRCM as well but instead of en=
-abling
->>>> them at the IO ring, enables them at the module.
->>>>
->>>
->>> Since we are gating using prepare idle call I think
->>> we can use this enable wake-up call as part of prepare idle call it=
-self,
->>> as done earlier.
->>
->> Not sure what that has to with my comment.
->>
->> In moving this code, you removed the enable/disable of IO ring wakeu=
-ps.
->> It probably continues to work because they're enabled by the bootloa=
-der,
->> but that is not correct and the driver should be managing the IO rin=
-g
->> wakeups as before.
->>
->
-> Prior to this we used io-pad offsets address and modified to enable w=
-akeup
-> mechanism, But since we received some comments from Tony to use mux f=
-ramework
-> for any mux changes, I removed using mux address and use mux framewor=
-k from
-> hwmod, I have not removed rx-pad wakeup still enable io-pad wakeup.
-> otherwise wakeup from off-mode will fail on 3430SDP.
->
-> omap_uart_wakeup_enable
->     --> omap_hwmod_enable_wakeup
->            --> omap_hwmod_enable_ioring_wakeup [PATCH v4 01/11]
-> OMAP2+: hwmod: Add API to enable IO ring wakeup.]
->
-> boot-loaders doesn't enable io pad wakeup for uart.
->
->
->> [...]
->>
->>>>> =C2=A0}
->>>>>
->>>>> =C2=A0static int __init
->>>>> @@ -1065,22 +1123,33 @@ static struct uart_driver serial_omap_reg=
- =3D {
->>>>> =C2=A0 =C2=A0 =C2=A0 .cons =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =3D=
- OMAP_CONSOLE,
->>>>> =C2=A0};
->>>>>
->>>>> -static int
->>>>> -serial_omap_suspend(struct platform_device *pdev, pm_message_t s=
-tate)
->>>>> +static int serial_omap_suspend(struct device *dev)
->>>>> =C2=A0{
->>>>> - =C2=A0 =C2=A0 struct uart_omap_port *up =3D platform_get_drvdat=
-a(pdev);
->>>>> + =C2=A0 =C2=A0 struct uart_omap_port *up =3D dev_get_drvdata(dev=
-);
->>>>>
->>>>> - =C2=A0 =C2=A0 if (up)
->>>>> + =C2=A0 =C2=A0 if (up) {
->>>>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 uart_suspend_por=
-t(&serial_omap_reg, &up->port);
->>>>> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (up->port.line =3D=
-=3D up->port.cons->index &&
->>>>> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 !is_console_locked())
->>>>> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 up->console_locked =3D console_trylock();
->>>>> + =C2=A0 =C2=A0 }
->>>>> +
->>>>
->>>> Motiviation for console locking in this version of the series is n=
-ot
->>>> clear, and not described in the changelog.
->>>>
->>>> It's also present here in static suspend/resume but not in runtime
->>>> suspend/resume, which also is suspicious.
->>>>
->>>
->>> Yes will add to change log,
->>>
->>> We needed this for no console suspend use case
->>> no console lock is taken in no_console_suspend is specified,
->>>
->>> Since our pwr_dmn hooks disable clocks left enabled during suspend,
->>> so any prints after pwr_dmn hooks can cause problems since clocks
->>> are already cut from pwr_dmn hooks.
->>>
->>> So buffer prints while entering suspend by taking console lock
->>> if not taken already and print back after uart state machine restor=
-es
->>> console uart.
->>
->> Any special consideration for features like no_console_suspend shoul=
-d be
->> done in a separate patch with a separate changelog.
->>
->
-> will add as separate patch.
-
-yes please.
-
->> However, as I've stated before during previous reviews, if someone h=
-as
->> put no_console_suspend on the command line, that means they've
->> specifically stated they *want* to see console writes during suspend=
-=2E
->> That means, we should not cut clocks at all.
->>
->> Of course, that means the system will not hit the low power state be=
-case
->> the UART clocks are not gated, but that is what the user requested.
->
-> Yes correct, But pwr domain callback will now cut all enabled clocks
-> now, so only available method was to use console_lock and print later=
-=2E
->
-> pwr_domain callback done in omap-device.c
-> will force to low powers state by gating all clocks that where left
-> enabled by driver.
-
-These are the kinds of things that belong in a descriptive changelog.
-
-Kevin
---
-To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
