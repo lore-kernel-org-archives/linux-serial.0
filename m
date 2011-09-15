@@ -1,20 +1,20 @@
-From: =?utf-8?B?5LuFMTDlhYPmr4/lpKk=?= <admin@gener-tech.net>
+From: =?utf-8?B?5LuFMTDlhYPmr4/lpKk=?= <test@amidress.com>
 Subject: =?utf-8?B?576k5Y+R6L2v5Lu2K+S5sOWutuaQnOe0ouacuisxMDnlsYrlub/kuqTkvJrkubDlrrY=?=
 	=?utf-8?B?44CB5rW35YWz5pWw5o2uLEIyQuivouebmOS5sOWutjUwMOS4h+OAgg==?=
-Date: Thu, 15 Sep 2011 05:26:33 +0000 (UTC)
-Message-ID: <20111214235511528137@gener-tech.net>
+Date: Thu, 15 Sep 2011 21:32:18 +0000 (UTC)
+Message-ID: <20111214070833517227@amidress.com>
 Reply-To: <1339625218@qq.com>
 Mime-Version: 1.0
 Content-Type: text/plain;
 	charset="utf-8"
 Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [180.168.143.187] ([180.168.143.187]:11331 "EHLO
-	gener-bxz7t1o42.gener-tech.net" rhost-flags-FAIL-FAIL-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1752051Ab1IOF0a (ORCPT
+Received: from 184.172.211.66-static.reverse.softlayer.com ([184.172.211.66]:1531
+	"HELO amidress.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S934998Ab1IOVcG (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 15 Sep 2011 01:26:30 -0400
-Date: Wed, 14 Dec 2011 23:54:58 +0800
+	Thu, 15 Sep 2011 17:32:06 -0400
+Date: Wed, 14 Dec 2011 07:08:21 +0800
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
