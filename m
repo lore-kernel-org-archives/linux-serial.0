@@ -1,81 +1,58 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Re: close() handler of tty driver called for port that's not open?
-Date: Wed, 14 Sep 2011 20:13:34 +0000 (UTC)
-Message-ID: <j4r1td$67s$1@dough.gmane.org>
-References: <j4qk9f$vro$1@dough.gmane.org>
- <20110914203353.08c715af@lxorguk.ukuu.org.uk>
- <j4r0mr$veq$1@dough.gmane.org>
- <20110914210543.6b35de4e@lxorguk.ukuu.org.uk>
+From: =?utf-8?B?5LuFMTDlhYPmr4/lpKk=?= <admin@gener-tech.net>
+Subject: =?utf-8?B?576k5Y+R6L2v5Lu2K+S5sOWutuaQnOe0ouacuisxMDnlsYrlub/kuqTkvJrkubDlrrY=?=
+	=?utf-8?B?44CB5rW35YWz5pWw5o2uLEIyQuivouebmOS5sOWutjUwMOS4h+OAgg==?=
+Date: Thu, 15 Sep 2011 05:26:33 +0000 (UTC)
+Message-ID: <20111214235511528137@gener-tech.net>
+Reply-To: <1339625218@qq.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lo.gmane.org ([80.91.229.12]:56303 "EHLO lo.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S933151Ab1INUNt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 14 Sep 2011 16:13:49 -0400
-Received: from list by lo.gmane.org with local (Exim 4.69)
-	(envelope-from <lnx-linux-serial@m.gmane.org>)
-	id 1R3vq7-0003nk-Jq
-	for linux-serial@vger.kernel.org; Wed, 14 Sep 2011 22:13:47 +0200
-Received: from dsl.comtrol.com ([64.122.56.22])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Wed, 14 Sep 2011 22:13:47 +0200
-Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Wed, 14 Sep 2011 22:13:47 +0200
+Received: from [180.168.143.187] ([180.168.143.187]:11331 "EHLO
+	gener-bxz7t1o42.gener-tech.net" rhost-flags-FAIL-FAIL-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752051Ab1IOF0a (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 15 Sep 2011 01:26:30 -0400
+Date: Wed, 14 Dec 2011 23:54:58 +0800
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
 
-On 2011-09-14, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
->> In my mind, a port was only open after my open() handler returns
->> success.  I guess that's wrong, and I should increment my use counter
->> unconditionally each time my open() handler is called.
->
-> Probably - and remember to allow for hangup.
+576k5Y+R6L2v5Lu2KzEwOeWxiuW5v+S6pOS8muS5sOWutuOAgea1t+WFs+aVsOaNruOAgeaQnOe0
+ouW8leaTjuS5sOWutixCMkLor6Lnm5jkubDlrrblhbE1MDDkuIcs5LuFMTDlhYPmr4/lpKnjgIIg
+DQrkv53or4Hmr4/lpKnpg73mnInkubDlrrblm57lpI3jgIINCuS/neivgeavj+WkqemDveacieS5
+sOWutuWbnuWkjeOAgg0KDQoNCjHjgIHnvqTlj5Hova/ku7bvvJog5pON5L2c566A5Y2V77yM5Yqf
+6IO95by65aSn77yM5qih5Lu/5Lq65bel5pON5L2c5qih5byP77yM5Yiw6L6+546H6auY77yM5pel
+5Y+R6YCBNeS4h+WwgeS7peS4iuOAgiANCjLjgIE1MDDkuIfkubDlrrbotYTmupDvvJog6LWg6YCB
+55qENTAw5LiH5Lmw5a626LWE5rqQ5bqT77yM5q+P5pyI5pu05pawIOOAgiANCjPjgIHotoXnuqfm
+tbflpJbkubDlrrZFbWFpbOaQnOe0ouacuu+8miDmr4/lpKnog73mkJzntKIxLTLkuIfku6XkuIrk
+ubDlrrbnnJ/lrp5FTUFJTO+8jOaIkOWNleeOh+mrmOOAgiANCiANCg0K6KaB55qE5oqT57Sn6IGU
+57O7UVE6IDEzMzk2MjUyMTggICDmiJbogIXnq4vljbPlm57lpI3pgq7nrrE6IDEzMzk2MjUyMThA
+cXEuY29tDQropoHnmoTmipPntKfogZTns7tRUTogMTMzOTYyNTIxOCAgIOaIluiAheeri+WNs+Wb
+nuWkjemCrueusTogMTMzOTYyNTIxOEBxcS5jb20NCuimgeeahOaKk+e0p+iBlOezu1FROiAxMzM5
+NjI1MjE4ICAg5oiW6ICF56uL5Y2z5Zue5aSN6YKu566xOiAxMzM5NjI1MjE4QHFxLmNvbQ0KDQrl
+hY3otLnotaDpgIE6DQrkuIDlhbE45Liq5YyFKOaVsOaNruaYr+WFqOihjOS4mueahO+8jOaMieeF
+p+ihjOS4muWIhuWlveexu++8jOW5tuS4lOWPr+S7peaMieeFp+WFs+mUruivjeafpeivoueahCnv
+vJogDQox77yMMjAxMeaYpeWtozEwOeWxiuW5v+S6pOS8muS5sOWutueOsOWcuuivouebmOaVsOaN
+ruW6k+aWsOmynOWHuueCie+8jOi2hee6p+aWsOmynOS5sOWutu+8jOaWsOmynOaVsOaNru+8jOWu
+ueaYk+aIkOWNle+8gSANCjLvvIzotK3kubDlkI7lj6/ku6XlhY3otLnmm7TmlrAyMDEx56eL5a2j
+5bm/5Lqk5LyaKzIwMTLmmKXlraPlub/kuqTkvJrkubDlrrbmlbDmja7jgILlpKrotoXlgLzkuobj
+gIINCjPvvIzmnIDmlrDlhajnkIPkubDlrrblupMs5YWxNDUxNjYw5p2h5pWw5o2u44CCICjmnIDm
+lrDmm7TmlrDml6XmnJ8gMjAxMS0wNS0xNuaXpSkNCjTvvIwyMDA45bm0LDIwMDnlubQsMjAxMOW5
+tCDmmKXlraMr56eL5a2j5bm/5Lqk5Lya5Lmw5a625ZCN5b2V77yMMTAzIDEwNCAxMDUgMTA2IDEw
+NyAxMDgg5YWx5YWt5bGKIOWFsTEyMC425LiH5pWw5o2u44CCDQo177yMMjAxMOW5tOWbvemZheS/
+g+mUgOWNj+S8mu+8iFBQQUnvvInmiJDlkZjlkI3ljZUgUFBBSSBNZW1iZXJzIERpcmVjdG9yee+8
+jOmdnuW4uOmHjeimgeeahOWkp+S5sOWutuOAgg0KNu+8jDIwMTDlubTliLDpppnmuK/ph4fotK3n
+moTlm73lpJblrqLkurrlkI3lvZUo6aaZ5riv6LS45Y+R5bGA5o+Q5L6bKe+8jOWFsTcuMuS4h+aV
+sOaNru+8jOi2hee6p+mHjeimgeeahOS5sOWutuOAgg0KN++8jDQ4LjY45LiH5p2h5pyA5paw5Lmw
+5a626K+i55uY77yM6LSt5Lmw5ZCO5q+P5pyI5pu05pawIDEtMuS4h+adoe+8jOWMheaLrDLpg6jl
+iIbvvIwx77yM5pyA5paw55qE6K+i55uYIDLvvIzmnIDmlrDnmoTlsZXkvJrkubDlrrbjgILlhY3o
+tLnmm7TmlrAzNuS4quaciOOAgg0KOO+8jDIwMDnlubTmtbflhbPmj5DljZXmlbDmja5waWVyc+eJ
+iOaVsOaNriAx5Y2D5LiH44CCDQoNCg0K6K+a5L+h5Li65pys77yM5pSv5oyB5pSv5LuY5a6d5ouF
+5L+d5Lqk5piTICjlhYjlj5HotKflubblronoo4Xorr7nva7nvqTlj5Hova/ku7bvvIznhLblkI7k
+u5jmrL4pIOW9u+W6leaJk+a2iOaCqOeahCDpob7omZHjgIINCg0KIA0KDQoNCiANCg0K57K+5YeG
+5pWw5o2uLeaIkOWNleeOh+aegemrmA0K57K+5YeG5pWw5o2uLeaIkOWNleeOh+aegemrmA0K57K+
+5YeG5pWw5o2uLeaIkOWNleeOh+aegemrmA0K57K+5YeG5pWw5o2uLeaIkOWNleeOh+aegemrmA0K
+57K+5YeG5pWw5o2uLeaIkOWNleeOh+aegemrmA0K
 
-Thanks.  I was just looking at the way that is handled in the tty_port
-helpers.
-
->> customers are running kernels recent enough to have those helpers. I
->> suppose I could look into writing compatibility versions compatible
->> with the range of kernels I have to support.
->
-> It's actually pretty independant of the underlying tty code so may well
-> backport quite easily although it does touch on the refcounting stuff a
-> bit I guess.
->
->> The problem is how to make a driver written that way work for
->> somebody running a 2.4 kernel (or even a not-very-recent 2.6 kernel).
->> Yes, I have a few customers running 2.4 kernels, and lots of
->> customers running older 2.6 kernels.  I _might_ be able to convince
->> management it's time to drop support for 2.4, but there's no way I
->> can abandon customers using 2.6 kernels.
->
-> For 2.4 I think you are on your own, but there are also no 2.4
-> kernels without security holes so I tend to think of 2.4 as mostly
-> dead.
-
-I think a good argument can be made for that, but I AFAIK my 2.4
-customers are running isolated, semi-embedded boxes where security
-isn't a concern.  (I know... famous last words.)
-
-> In the 2.6 case the tty_port code depends upon the tty layer
-> refcounting, and the tty layer refcounting fixes exploitable races in
-> tty hangup.
->
-> At a certainly point you may actually be best supporting both setups
-> as two driver variants. One for the kernels with old style
-> lock_kernel assumptions and the like, one for those where tty_port
-> appears and we relax the rest of the rules dramatically.
-
-That's certainly worth considering.  Once done, it looks like it would
-reduce future maintenance effort.
-
--- 
-Grant Edwards               grant.b.edwards        Yow! One FISHWICH coming
-                                  at               up!!
-                              gmail.com            
 
