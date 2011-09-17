@@ -1,47 +1,42 @@
-From: Jean Delvare <jdelvare@suse.de>
-Subject: [PATCH] serial: SERIAL_MRST_MAX3110 should depend on X86_MRST
-Date: Fri, 16 Sep 2011 22:40:16 +0200
-Message-ID: <201109162240.16874.jdelvare@suse.de>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] serial: SERIAL_MRST_MAX3110 should depend on X86_MRST
+Date: Sat, 17 Sep 2011 12:28:43 +0100
+Message-ID: <20110917122843.38d7ba22@lxorguk.ukuu.org.uk>
+References: <201109162240.16874.jdelvare@suse.de>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:36868 "EHLO mx2.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751759Ab1IPUkT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 16 Sep 2011 16:40:19 -0400
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:35585 "EHLO
+	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751260Ab1IQL3W (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 17 Sep 2011 07:29:22 -0400
+In-Reply-To: <201109162240.16874.jdelvare@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: linux-serial@vger.kernel.org
+To: Jean Delvare <jdelvare@suse.de>
+Cc: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
 
-As I understand it, driver mrst_max3110 is only useful on Moorestown
-systems, so it should depend on X86_MRST.
+On Fri, 16 Sep 2011 22:40:16 +0200
+Jean Delvare <jdelvare@suse.de> wrote:
 
-Signed-off-by: Jean Delvare <jdelvare@suse.de>
-Cc: Alan Cox <alan@linux.intel.com>
----
-There are a few other drivers in a similar situation
-(i2c/busses/i2c-intel-mid, gpio/langwell_gpio, tty/serial/mfd,
-staging/sep) for which I suspect the same should be done,
-assuming that X86_MRST is for both Moorestown and Medfield.
+> As I understand it, driver mrst_max3110 is only useful on Moorestown
+> systems, so it should depend on X86_MRST.
 
- drivers/tty/serial/Kconfig |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Not so simple. There are various things that need dependancies. Some I've
+sorted in my tree, some not, but it's all shelved until kernel.org is
+back as I've switched to working on other projects for the moment rather
+than waste time chasing trees around the internet.
 
---- linux-3.1-rc4.orig/drivers/tty/serial/Kconfig	2011-08-16 11:49:57.000000000 +0200
-+++ linux-3.1-rc4/drivers/tty/serial/Kconfig	2011-09-16 22:03:32.000000000 +0200
-@@ -695,7 +695,7 @@ config SERIAL_SA1100_CONSOLE
- 
- config SERIAL_MRST_MAX3110
- 	tristate "SPI UART driver for Max3110"
--	depends on SPI_DW_PCI
-+	depends on X86_MRST && SPI_DW_PCI
- 	select SERIAL_CORE
- 	select SERIAL_CORE_CONSOLE
- 	help
+> Signed-off-by: Jean Delvare <jdelvare@suse.de>
+> Cc: Alan Cox <alan@linux.intel.com>
+> ---
+> There are a few other drivers in a similar situation
+> (i2c/busses/i2c-intel-mid, gpio/langwell_gpio, tty/serial/mfd,
+> staging/sep) for which I suspect the same should be done,
+> assuming that X86_MRST is for both Moorestown and Medfield.
 
--- 
-Jean Delvare
-Suse L3
+Not with the latest patches.
+
+Alan
