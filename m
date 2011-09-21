@@ -1,245 +1,63 @@
-From: Thomas Abraham <thomas.abraham@linaro.org>
-Subject: [PATCH] serial: samsung: move handling of fclk/n clock to platform code
-Date: Wed, 21 Sep 2011 08:54:32 +0530
-Message-ID: <1316575472-10775-1-git-send-email-thomas.abraham@linaro.org>
-Content-Transfer-Encoding: 7BIT
+From: =?utf-8?B?5LuFMTDlhYPmr4/lpKk=?= <admin@zuancang.com>
+Subject: =?utf-8?B?576k5Y+R6L2v5Lu2K+S5sOWutuaQnOe0ouacuisxMDnlsYrlub/kuqTkvJrkubDlrrY=?=
+	=?utf-8?B?44CB5rW35YWz5pWw5o2uLEIyQuivouebmOS5sOWutjUwMOS4hw==?=
+Date: Wed, 21 Sep 2011 07:26:09 +0000 (UTC)
+Message-ID: <20120921152027448837@zuancang.com>
+Reply-To: <1339625218@qq.com>
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout2.samsung.com ([203.254.224.25]:20557 "EHLO
-	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751778Ab1IUDZA (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 20 Sep 2011 23:25:00 -0400
+Received: from [211.157.105.68] ([211.157.105.68]:2733 "HELO zuancang.com"
+	rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with SMTP
+	id S1752474Ab1IUH0D (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 21 Sep 2011 03:26:03 -0400
+Date: Fri, 21 Sep 2012 15:20:15 +0800
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org
-Cc: alan@linux.intel.com, ben-linux@fluff.org, anarsoul@gmail.com, linux-arm-kernel@lists.infradead.org, kgene.kim@samsung.com
+To: linshaolong138@163.com, lintecengineers@yahoo.com, linturn62@gmail.com, linux-biz@lege.com, linux-serial@vger.kernel.org, linwoodbb@aol.com, linxinli222137@hotmail.com
 
-s3c2440 uses fclk/n (fclk divided by n) clock as one of the possible clocks used
-to generate the baud rate clock. The divider 'n' in this case can be logically
-represented outside of the uart controller.
+576k5Y+R6L2v5Lu2KzEwOeWxiuW5v+S6pOS8muS5sOWutuOAgea1t+WFs+aVsOaNruOAgeaQnOe0
+ouW8leaTjuS5sOWutixCMkLor6Lnm5jkubDlrrblhbE1MDDkuIcs5LuFMTDlhYPmr4/lpKnjgIIg
+DQrnvqTlj5Hova/ku7YrMTA55bGK5bm/5Lqk5Lya5Lmw5a6244CB5rW35YWz5pWw5o2u44CB5pCc
+57Si5byV5pOO5Lmw5a62LEIyQuivouebmOS5sOWutuWFsTUwMOS4hyzku4UxMOWFg+avj+WkqeOA
+giANCuS/neivgeavj+WkqemDveacieS5sOWutuWbnuWkjeOAgg0K5L+d6K+B5q+P5aSp6YO95pyJ
+5Lmw5a625Zue5aSN44CCDQrkv53or4Hmr4/lpKnpg73mnInkubDlrrblm57lpI3jgIINCjHjgIHn
+vqTlj5Hova/ku7bvvJog5pON5L2c566A5Y2V77yM5Yqf6IO95by65aSn77yM5qih5Lu/5Lq65bel
+5pON5L2c5qih5byP77yM5Yiw6L6+546H6auY77yM5pel5Y+R6YCBNeS4h+WwgeS7peS4iuOAgiAN
+CjLjgIE1MDDkuIfkubDlrrbotYTmupDvvJog6LWg6YCB55qENTAw5LiH5Lmw5a626LWE5rqQ5bqT
+77yM5pu05pawICjlj6/ku6XmjInnhafmgqjnmoTkuqflk4Hmj5Dlj5blh7rmnaXvvIzmm7Tnsr7l
+h4blvIDlj5Ep44CCIA0KM+OAgei2hee6p+a1t+WkluS5sOWutkVtYWls5pCc57Si5py677yaIOWG
+hee9ruS6hjYwMOS4h+ihjOS4muWFs+mUruivje+8jOagueaNrumVv+WwvuivjeaQnOe0ou+8jOe7
+k+aenOabtOeyvuehruWMuemFje+8m+avj+WkqeiDveaQnOe0ojEtMuS4h+S7peS4iuS5sOWutuec
+n+WunkVNQUlM77yM5oiQ5Y2V546H6auY44CCIA0KIA0K6KaB55qE5oqT57Sn6IGU57O7UVE6IDEz
+Mzk2MjUyMTggICDmiJbogIXnq4vljbPlm57lpI3pgq7nrrE6IDEzMzk2MjUyMThAcXEuY29tDQro
+poHnmoTmipPntKfogZTns7tRUTogMTMzOTYyNTIxOCAgIOaIluiAheeri+WNs+WbnuWkjemCrueu
+sTogMTMzOTYyNTIxOEBxcS5jb20NCuimgeeahOaKk+e0p+iBlOezu1FROiAxMzM5NjI1MjE4ICAg
+5oiW6ICF56uL5Y2z5Zue5aSN6YKu566xOiAxMzM5NjI1MjE4QHFxLmNvbQ0KIA0K5YWN6LS56LWg
+6YCBOg0K5LiA5YWxOOS4quWMhSjmlbDmja7mmK/lhajooYzkuJrnmoTvvIzmjInnhafooYzkuJrl
+iIblpb3nsbvvvIzlubbkuJTlj6/ku6XmjInnhaflhbPplK7or43mn6Xor6LnmoQp77yaIA0KMe+8
+jDIwMTHmmKXlraMxMDnlsYrlub/kuqTkvJrkubDlrrbnjrDlnLror6Lnm5jmlbDmja7lupPmlrDp
+spzlh7rngonvvIzotoXnuqfmlrDpspzkubDlrrbvvIzmlrDpspzmlbDmja7vvIzlrrnmmJPmiJDl
+jZXvvIEgDQoy77yM6LSt5Lmw5ZCO5Y+v5Lul5YWN6LS55pu05pawMjAxMeeni+Wto+W5v+S6pOS8
+misyMDEy5pil5a2j5bm/5Lqk5Lya5Lmw5a625pWw5o2u44CC5aSq6LaF5YC85LqG44CCDQoz77yM
+5pyA5paw5YWo55CD5Lmw5a625bqTLOWFsTQ1MTY2MOadoeaVsOaNruOAgiAo5pyA5paw5pu05paw
+5pel5pyfIDIwMTEtMDUtMTbml6UpDQo077yMMjAwOOW5tCwyMDA55bm0LDIwMTDlubQg5pil5a2j
+K+eni+Wto+W5v+S6pOS8muS5sOWutuWQjeW9le+8jDEwMyAxMDQgMTA1IDEwNiAxMDcgMTA4IOWF
+seWFreWxiiDlhbExMjAuNuS4h+aVsOaNruOAgg0KNe+8jDIwMTDlubTlm73pmYXkv4PplIDljY/k
+vJrvvIhQUEFJ77yJ5oiQ5ZGY5ZCN5Y2VIFBQQUkgTWVtYmVycyBEaXJlY3RvcnnvvIzpnZ7luLjp
+h43opoHnmoTlpKfkubDlrrbjgIINCjbvvIwyMDEw5bm05Yiw6aaZ5riv6YeH6LSt55qE5Zu95aSW
+5a6i5Lq65ZCN5b2VKOmmmea4r+i0uOWPkeWxgOaPkOS+mynvvIzlhbE3LjLkuIfmlbDmja7vvIzo
+toXnuqfph43opoHnmoTkubDlrrbjgIINCjfvvIw0OC42OOS4h+adoeacgOaWsOS5sOWutuivoueb
+mO+8jOi0reS5sOWQjuavj+aciOabtOaWsCAxLTLkuIfmnaHvvIzljIXmi6wy6YOo5YiG77yMMe+8
+jOacgOaWsOeahOivouebmCAy77yM5pyA5paw55qE5bGV5Lya5Lmw5a6244CC5YWN6LS55pu05paw
+MzbkuKrmnIjjgIINCjjvvIwyMDA55bm05rW35YWz5o+Q5Y2V5pWw5o2ucGllcnPniYjmlbDmja4g
+MeWNg+S4h+OAgg0KDQror5rkv6HkuLrmnKzvvIzmlK/mjIHmlK/ku5jlrp3mi4Xkv53kuqTmmJMg
+KOWFiOWPkei0p+W5tuWuieijheiuvue9rue+pOWPkei9r+S7tu+8jOeEtuWQjuS7mOasvikg5b27
+5bqV5omT5raI5oKo55qEIOmhvuiZkeOAgg0KIA0KDQogDQrnsr7lh4bmlbDmja4t5oiQ5Y2V546H
+5p6B6auYDQrnsr7lh4bmlbDmja4t5oiQ5Y2V546H5p6B6auYDQrnsr7lh4bmlbDmja4t5oiQ5Y2V
+546H5p6B6auYDQrnsr7lh4bmlbDmja4t5oiQ5Y2V546H5p6B6auYDQrnsr7lh4bmlbDmja4t5oiQ
+5Y2V546H5p6B6auYDQo=
 
-This patch creates a new clock by name "fclk_n" for s3c2440 based platforms to
-represent the fclk/n clock in the platform code. This clock provides a get_rate
-callback that checks the UCON0/1/2 registers to determine the clock rate. The
-samsung uart driver would receive the "fclk_n" clock name as one of the possible
-baud rate clock options and the driver need not determine clock rate of fclk/n.
-
-Cc: Ben Dooks <ben-linux@fluff.org>
-Cc: Vasily Khoruzhick <anarsoul@gmail.com>
-Signed-off-by: Thomas Abraham <thomas.abraham@linaro.org>
----
-In order to add clkdev based clock lookup (moving away from passing clock names
-in platform data) for the Samsung UART driver, some portions of this driver
-have to be first simplified. In this patch, the complicated handling on fclk/n
-clock is removed which would further result in removing of the struct
-s3c24xx_uart_clksrc itself and consolidation of the clock handling for
-various SoC's supported by the Samsung UART driver.
-
-The addition of clkdev based clock lookup is required to fully add device tree
-support for the Samsung driver (no platform data when using device tree based
-discovery means no list of clock names for baud rate clock).
-
-This patch has been tested on smdk2440 board and following two patches
-applied on top of linux 3.1-rc6.
-[PATCH] serial: samsung: Add unified interrupt handler for s3c64xx and later SoC's
-[PATCH] ARM: SAMSUNG: Remove uart irq handling from plaform code
-
- arch/arm/mach-s3c2440/clock.c       |   37 +++++++++++++++++++++++++++++++++++
- arch/arm/mach-s3c2440/mach-rx1950.c |    4 +-
- arch/arm/mach-s3c2440/mach-rx3715.c |    4 +-
- drivers/tty/serial/s3c2440.c        |   33 ++----------------------------
- drivers/tty/serial/samsung.c        |   21 -------------------
- 5 files changed, 44 insertions(+), 55 deletions(-)
-
-diff --git a/arch/arm/mach-s3c2440/clock.c b/arch/arm/mach-s3c2440/clock.c
-index f9e6bda..8a6cf6a 100644
---- a/arch/arm/mach-s3c2440/clock.c
-+++ b/arch/arm/mach-s3c2440/clock.c
-@@ -34,6 +34,7 @@
- #include <linux/mutex.h>
- #include <linux/clk.h>
- #include <linux/io.h>
-+#include <linux/serial_core.h>
- 
- #include <mach/hardware.h>
- #include <linux/atomic.h>
-@@ -43,6 +44,7 @@
- 
- #include <plat/clock.h>
- #include <plat/cpu.h>
-+#include <plat/regs-serial.h>
- 
- /* S3C2440 extended clock support */
- 
-@@ -108,6 +110,40 @@ static struct clk s3c2440_clk_ac97 = {
- 	.ctrlbit	= S3C2440_CLKCON_CAMERA,
- };
- 
-+static unsigned long  s3c2440_fclk_n_getrate(struct clk *clk)
-+{
-+	unsigned long ucon0, ucon1, ucon2, divisor;
-+
-+	/* the fun of calculating the uart divisors on the s3c2440 */
-+	ucon0 = __raw_readl(S3C24XX_VA_UART0 + S3C2410_UCON);
-+	ucon1 = __raw_readl(S3C24XX_VA_UART1 + S3C2410_UCON);
-+	ucon2 = __raw_readl(S3C24XX_VA_UART2 + S3C2410_UCON);
-+
-+	ucon0 &= S3C2440_UCON0_DIVMASK;
-+	ucon1 &= S3C2440_UCON1_DIVMASK;
-+	ucon2 &= S3C2440_UCON2_DIVMASK;
-+
-+	if (ucon0 != 0)
-+		divisor = (ucon0 >> S3C2440_UCON_DIVSHIFT) + 6;
-+	else if (ucon1 != 0)
-+		divisor = (ucon1 >> S3C2440_UCON_DIVSHIFT) + 21;
-+	else if (ucon2 != 0)
-+		divisor = (ucon2 >> S3C2440_UCON_DIVSHIFT) + 36;
-+	else
-+		/* manual calims 44, seems to be 9 */
-+		divisor = 9;
-+
-+	return clk_get_rate(clk->parent) / divisor;
-+}
-+
-+static struct clk s3c2440_clk_fclk_n = {
-+	.name		= "fclk_n",
-+	.parent		= &clk_f,
-+	.ops		= &(struct clk_ops) {
-+		.get_rate	= s3c2440_fclk_n_getrate,
-+	},
-+};
-+
- static int s3c2440_clk_add(struct sys_device *sysdev)
- {
- 	struct clk *clock_upll;
-@@ -126,6 +162,7 @@ static int s3c2440_clk_add(struct sys_device *sysdev)
- 	s3c2440_clk_cam.parent = clock_h;
- 	s3c2440_clk_ac97.parent = clock_p;
- 	s3c2440_clk_cam_upll.parent = clock_upll;
-+	s3c24xx_register_clock(&s3c2440_clk_fclk_n);
- 
- 	s3c24xx_register_clock(&s3c2440_clk_ac97);
- 	s3c24xx_register_clock(&s3c2440_clk_cam);
-diff --git a/arch/arm/mach-s3c2440/mach-rx1950.c b/arch/arm/mach-s3c2440/mach-rx1950.c
-index 27ea950..9528b37 100644
---- a/arch/arm/mach-s3c2440/mach-rx1950.c
-+++ b/arch/arm/mach-s3c2440/mach-rx1950.c
-@@ -69,8 +69,8 @@ static struct map_desc rx1950_iodesc[] __initdata = {
- 
- static struct s3c24xx_uart_clksrc rx1950_serial_clocks[] = {
- 	[0] = {
--	       .name = "fclk",
--	       .divisor = 0x0a,
-+	       .name = "fclk_n",
-+	       .divisor = 1,
- 	       .min_baud = 0,
- 	       .max_baud = 0,
- 	},
-diff --git a/arch/arm/mach-s3c2440/mach-rx3715.c b/arch/arm/mach-s3c2440/mach-rx3715.c
-index 1472b1a..a88247e 100644
---- a/arch/arm/mach-s3c2440/mach-rx3715.c
-+++ b/arch/arm/mach-s3c2440/mach-rx3715.c
-@@ -70,8 +70,8 @@ static struct map_desc rx3715_iodesc[] __initdata = {
- 
- static struct s3c24xx_uart_clksrc rx3715_serial_clocks[] = {
- 	[0] = {
--		.name		= "fclk",
--		.divisor	= 0,
-+		.name		= "fclk_n",
-+		.divisor	= 1,
- 		.min_baud	= 0,
- 		.max_baud	= 0,
- 	}
-diff --git a/drivers/tty/serial/s3c2440.c b/drivers/tty/serial/s3c2440.c
-index 1d0c324..4498828 100644
---- a/drivers/tty/serial/s3c2440.c
-+++ b/drivers/tty/serial/s3c2440.c
-@@ -39,7 +39,7 @@ static int s3c2440_serial_setsource(struct uart_port *port,
- 		ucon |= S3C2440_UCON_UCLK;
- 	else if (strcmp(clk->name, "pclk") == 0)
- 		ucon |= S3C2440_UCON_PCLK;
--	else if (strcmp(clk->name, "fclk") == 0)
-+	else if (strcmp(clk->name, "fclk_n") == 0)
- 		ucon |= S3C2440_UCON_FCLK;
- 	else {
- 		printk(KERN_ERR "unknown clock source %s\n", clk->name);
-@@ -55,7 +55,6 @@ static int s3c2440_serial_getsource(struct uart_port *port,
- 				    struct s3c24xx_uart_clksrc *clk)
- {
- 	unsigned long ucon = rd_regl(port, S3C2410_UCON);
--	unsigned long ucon0, ucon1, ucon2;
- 
- 	switch (ucon & S3C2440_UCON_CLKMASK) {
- 	case S3C2440_UCON_UCLK:
-@@ -70,34 +69,8 @@ static int s3c2440_serial_getsource(struct uart_port *port,
- 		break;
- 
- 	case S3C2440_UCON_FCLK:
--		/* the fun of calculating the uart divisors on
--		 * the s3c2440 */
--
--		ucon0 = __raw_readl(S3C24XX_VA_UART0 + S3C2410_UCON);
--		ucon1 = __raw_readl(S3C24XX_VA_UART1 + S3C2410_UCON);
--		ucon2 = __raw_readl(S3C24XX_VA_UART2 + S3C2410_UCON);
--
--		printk("ucons: %08lx, %08lx, %08lx\n", ucon0, ucon1, ucon2);
--
--		ucon0 &= S3C2440_UCON0_DIVMASK;
--		ucon1 &= S3C2440_UCON1_DIVMASK;
--		ucon2 &= S3C2440_UCON2_DIVMASK;
--
--		if (ucon0 != 0) {
--			clk->divisor = ucon0 >> S3C2440_UCON_DIVSHIFT;
--			clk->divisor += 6;
--		} else if (ucon1 != 0) {
--			clk->divisor = ucon1 >> S3C2440_UCON_DIVSHIFT;
--			clk->divisor += 21;
--		} else if (ucon2 != 0) {
--			clk->divisor = ucon2 >> S3C2440_UCON_DIVSHIFT;
--			clk->divisor += 36;
--		} else {
--			/* manual calims 44, seems to be 9 */
--			clk->divisor = 9;
--		}
--
--		clk->name = "fclk";
-+		clk->divisor = 1;
-+		clk->name = "fclk_n";
- 		break;
- 	}
- 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index 6edafb5..97e45cd 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -569,27 +569,6 @@ static unsigned int s3c24xx_serial_getclk(struct uart_port *port,
- 		if (cfg->clocks_size == 0)
- 			clkp = &tmp_clksrc;
- 
--		/* check to see if we're sourcing fclk, and if so we're
--		 * going to have to update the clock source
--		 */
--
--		if (strcmp(clkp->name, "fclk") == 0) {
--			struct s3c24xx_uart_clksrc src;
--
--			s3c24xx_serial_getsource(port, &src);
--
--			/* check that the port already using fclk, and if
--			 * not, then re-select fclk
--			 */
--
--			if (strcmp(src.name, clkp->name) == 0) {
--				s3c24xx_serial_setsource(port, clkp);
--				s3c24xx_serial_getsource(port, &src);
--			}
--
--			clkp->divisor = src.divisor;
--		}
--
- 		s3c24xx_serial_calcbaud(res, port, clkp, baud);
- 		best = res;
- 		resptr = best + 1;
--- 
-1.6.6.rc2
 
