@@ -1,67 +1,43 @@
 From: Greg KH <greg@kroah.com>
-Subject: Re: jsm: remove buggy write queue
-Date: Thu, 22 Sep 2011 15:38:09 -0700
-Message-ID: <20110922223809.GA21159@kroah.com>
-References: <1314202463-12297-1-git-send-email-cascardo@linux.vnet.ibm.com>
- <20110913175522.GB3592@oc1711230544.ibm.com>
+Subject: Re: [PATCH: tty-next] TTY: serial: Move mutex_unlock in uart_close
+ function
+Date: Thu, 22 Sep 2011 15:43:30 -0700
+Message-ID: <20110922224330.GA21296@kroah.com>
+References: <1314600216-8146-1-git-send-email-nobuhiro.iwamatsu.yj@renesas.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out2.smtp.messagingengine.com ([66.111.4.26]:60078 "EHLO
+Received: from out2.smtp.messagingengine.com ([66.111.4.26]:49153 "EHLO
 	out2.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751728Ab1IVXA4 (ORCPT
+	by vger.kernel.org with ESMTP id S1753777Ab1IVXA6 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 22 Sep 2011 19:00:56 -0400
+	Thu, 22 Sep 2011 19:00:58 -0400
 Content-Disposition: inline
-In-Reply-To: <20110913175522.GB3592@oc1711230544.ibm.com>
+In-Reply-To: <1314600216-8146-1-git-send-email-nobuhiro.iwamatsu.yj@renesas.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>
-Cc: stable@kernel.org, Breno Leitao <leitao@linux.vnet.ibm.com>, lucaskt@linux.vnet.ibm.com, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
+Cc: linux-serial@vger.kernel.org, gregkh@suse.de
 
-On Tue, Sep 13, 2011 at 02:55:23PM -0300, Thadeu Lima de Souza Cascardo wrote:
-> jsm uses a write queue that copies from uart_core circular buffer. This
-> copying however has some bugs, like not wrapping the head counter. Since
-> this write queue is also a circular buffer, the consumer function is
-> ready to use the uart_core circular buffer directly.
-> 
-> This buggy copying function was making some bytes be dropped when
-> transmitting to a raw tty, doing something like this.
-> 
-> [root@hostname ~]$ cat /dev/ttyn1 > cascardo/dump &
-> [1] 2658
-> [root@hostname ~]$ cat /proc/tty/drivers > /dev/ttyn0
-> [root@hostname ~]$ cat /proc/tty/drivers
-> /dev/tty             /dev/tty        5       0 system:/dev/tty
-> /dev/console         /dev/console    5       1 system:console
-> /dev/ptmx            /dev/ptmx       5       2 system
-> /dev/vc/0            /dev/vc/0       4       0 system:vtmaster
-> jsm                  /dev/ttyn     250 0-31 serial
-> serial               /dev/ttyS       4 64-95 serial
-> hvc                  /dev/hvc      229 0-7 system
-> pty_slave            /dev/pts      136 0-1048575 pty:slave
-> pty_master           /dev/ptm      128 0-1048575 pty:master
-> unknown              /dev/tty        4 1-63 console
-> [root@hostname ~]$ cat cascardo/dump
-> /dev/tty             /dev/tty        5       0 system:/dev/tty
-> /dev/console         /dev/console    5       1 system:console
-> /dev/ptmx            /dev/ptmx       5       2 system
-> /dev/vc/0            /dev/vc/0       4       0 system:vtmaste[root@hostname ~]$
-> 
-> This patch drops the driver write queue entirely, using the circular
-> buffer from uart_core only.
-> 
-> Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>
-> ---
-> 
-> Hello, Greg.
-> 
-> This should probably go to 3.1 and stable releases, since it fixes a
-> bug.
+On Mon, Aug 29, 2011 at 03:43:36PM +0900, Nobuhiro Iwamatsu wrote:
+> When mutex_lock is not called, mutex_unlock is sometimes called.
+> This deletes unnecessary goto and makes modifications so that
+> mutex_unlock is called.
 
-I already have this in my tree queued up for 3.2, so please remind me of
-this when it hits Linus's tree during the 3.2 merge window.
+No you don't, your patch prevents mutex_unlock() from being called:
 
-thanks,
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -1262,7 +1262,7 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
+>  
+>  	if (tty_hung_up_p(filp)) {
+>  		spin_unlock_irqrestore(&port->lock, flags);
+> -		goto done;
+> +		return;
+
+Before this mutex_lock() was called, so we need to unlock it, yet you
+just prevented that from happening.
+
+So this patch is not correct at all, right?
 
 greg k-h
