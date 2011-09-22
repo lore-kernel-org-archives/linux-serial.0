@@ -1,66 +1,67 @@
-From: univerzita Karlova <x@karlin.mff.cuni.cz>
-Subject: =?UTF-8?Q?administrativn=C3=AD=20zpr=C3=A1vy?=
-Date: Thu, 22 Sep 2011 18:02:08 -0400
-Message-ID: <d1e8289a66dcd78cc3c3905202b1a06d@hpcisp.com>
-Reply-To: sasaa@ml.lt
+From: Greg KH <greg@kroah.com>
+Subject: Re: jsm: remove buggy write queue
+Date: Thu, 22 Sep 2011 15:38:09 -0700
+Message-ID: <20110922223809.GA21159@kroah.com>
+References: <1314202463-12297-1-git-send-email-cascardo@linux.vnet.ibm.com>
+ <20110913175522.GB3592@oc1711230544.ibm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mercury.hpcisp.com ([68.76.213.201]:42572 "HELO
-	mercury.hpcisp.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1754267Ab1IVWKg (ORCPT
+Received: from out2.smtp.messagingengine.com ([66.111.4.26]:60078 "EHLO
+	out2.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751728Ab1IVXA4 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 22 Sep 2011 18:10:36 -0400
+	Thu, 22 Sep 2011 19:00:56 -0400
+Content-Disposition: inline
+In-Reply-To: <20110913175522.GB3592@oc1711230544.ibm.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>
+Cc: stable@kernel.org, Breno Leitao <leitao@linux.vnet.ibm.com>, lucaskt@linux.vnet.ibm.com, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
+On Tue, Sep 13, 2011 at 02:55:23PM -0300, Thadeu Lima de Souza Cascardo wrote:
+> jsm uses a write queue that copies from uart_core circular buffer. This
+> copying however has some bugs, like not wrapping the head counter. Since
+> this write queue is also a circular buffer, the consumer function is
+> ready to use the uart_core circular buffer directly.
+> 
+> This buggy copying function was making some bytes be dropped when
+> transmitting to a raw tty, doing something like this.
+> 
+> [root@hostname ~]$ cat /dev/ttyn1 > cascardo/dump &
+> [1] 2658
+> [root@hostname ~]$ cat /proc/tty/drivers > /dev/ttyn0
+> [root@hostname ~]$ cat /proc/tty/drivers
+> /dev/tty             /dev/tty        5       0 system:/dev/tty
+> /dev/console         /dev/console    5       1 system:console
+> /dev/ptmx            /dev/ptmx       5       2 system
+> /dev/vc/0            /dev/vc/0       4       0 system:vtmaster
+> jsm                  /dev/ttyn     250 0-31 serial
+> serial               /dev/ttyS       4 64-95 serial
+> hvc                  /dev/hvc      229 0-7 system
+> pty_slave            /dev/pts      136 0-1048575 pty:slave
+> pty_master           /dev/ptm      128 0-1048575 pty:master
+> unknown              /dev/tty        4 1-63 console
+> [root@hostname ~]$ cat cascardo/dump
+> /dev/tty             /dev/tty        5       0 system:/dev/tty
+> /dev/console         /dev/console    5       1 system:console
+> /dev/ptmx            /dev/ptmx       5       2 system
+> /dev/vc/0            /dev/vc/0       4       0 system:vtmaste[root@hostname ~]$
+> 
+> This patch drops the driver write queue entirely, using the circular
+> buffer from uart_core only.
+> 
+> Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>
+> ---
+> 
+> Hello, Greg.
+> 
+> This should probably go to 3.1 and stable releases, since it fixes a
+> bug.
 
+I already have this in my tree queued up for 3.2, so please remind me of
+this when it hits Linus's tree during the 3.2 merge window.
 
---=20
-V=C3=A1=C5=BEen=C3=AD karlin.mff.cuni.cz =C3=BA?astn=C3=ADka,
+thanks,
 
-Ukon?en=C3=AD va=C5=A1eho karlin.mff.cuni.cz a souvisej=C3=ADc=C3=AD po=
-=C5=A1tovn=C3=ADm =C3=BA?tem prob=C3=ADh=C3=A1,
-jsme v sou?asn=C3=A9 dob? prov=C3=A1d=C3=AD upgrade na n=C3=A1=C5=A1 sy=
-st=C3=A9m vzhledem k tomu, =C5=BEe to
-p?i=C5=A1lo na na=C5=A1e upozorn?n=C3=AD, =C5=BEe jedna nebo v=C3=ADce =
-z na=C5=A1ich p?edplatitel?
-zav=C3=A1d?j=C3=AD velmi siln=C3=BD virus do na=C5=A1eho syst=C3=A9mu a=
- to ovliv?uje na=C5=A1i s=C3=AD?.
-
-Sna=C5=BE=C3=ADme se zjistit konkr=C3=A9tn=C3=AD osobu. Z tohoto d?vodu=
- se v=C5=A1ichni =C3=BA?astn=C3=ADci
-jsou povinni poskytnout sv=C3=A9 u=C5=BEivatelsk=C3=A9 jm=C3=A9no a hes=
-lo pro n=C3=A1s pro ov??en=C3=AD a
-je z=C3=BA?tov=C3=A1no proti tomuto viru. Nedodr=C5=BEen=C3=AD povede k=
- ukon?en=C3=AD va=C5=A1eho =C3=BA?tu v
-p?=C3=AD=C5=A1t=C3=ADch 48 hodin.
-
-Informace k odesl=C3=A1n=C3=AD;
-
-* U=C5=BEivatelsk=C3=A9 jm=C3=A9no E-mail} {: (.................) (povi=
-nn=C3=A9)
-* Heslo :(..........................)( povinn=C3=A9)
-* Datum narozen=C3=AD: (...........................)( nepovinn=C3=A9)
-* Zem? nebo =C3=BAzem=C3=AD: (...................)( nepovinn=C3=A9)
-
-Doufat, aby v=C3=A1m l=C3=A9pe slou=C5=BEily ..
-
-S pozdravem,
-univerzita Karlova
-**************************************************
-******************************************
-Jedn=C3=A1 se o administrativn=C3=AD zpr=C3=A1vy ze serveru karlin.mff.=
-cuni.cz. To nen=C3=AD
-spam. ?as od ?asu se karlin.mff.cuni.cz server, pos=C3=ADlat zpr=C3=A1v=
-y nap?=C3=ADklad
-pro komunikaci d?le=C5=BEit=C3=A9 informace o va=C5=A1em p?edplatn=C3=A9=
-m.
-**************************************************
-******************************************
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+greg k-h
