@@ -1,108 +1,47 @@
-From: Mikhail Kshevetskiy <mikhail.kshevetskiy@gmail.com>
-Subject: [PATCH 2/2] tty/n_gsm: avoid fifo overflow in gsm_dlci_data_output
-Date: Fri, 23 Sep 2011 19:22:56 +0400
-Message-ID: <1316791376-4863-2-git-send-email-mikhail.kshevetskiy@gmail.com>
-References: <1316791376-4863-1-git-send-email-mikhail.kshevetskiy@gmail.com>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: Re: [PATCH 1/4] TTY: serial, fix locking imbalance
+Date: Fri, 23 Sep 2011 20:52:16 +0200
+Message-ID: <4E7CD560.8010706@suse.cz>
+References: <1314818699-10873-1-git-send-email-jslaby@suse.cz> <20110922224653.GB21296@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ey0-f174.google.com ([209.85.215.174]:62529 "EHLO
-	mail-ey0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754737Ab1IWPXO (ORCPT
+Received: from mail-fx0-f46.google.com ([209.85.161.46]:58328 "EHLO
+	mail-fx0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751504Ab1IWSwd (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 23 Sep 2011 11:23:14 -0400
-In-Reply-To: <1316791376-4863-1-git-send-email-mikhail.kshevetskiy@gmail.com>
+	Fri, 23 Sep 2011 14:52:33 -0400
+In-Reply-To: <20110922224653.GB21296@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: gregkh@suse.de, alan@linux.intel.com, linux-kernel@vger.kernel.org
+To: Greg KH <greg@kroah.com>
+Cc: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>, gregkh@suse.de, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com
 
-n_gsm use a simple approach: every writing to fifo correspond exactly one
-reading from fifo. There are no problem in this approach until we read
-less bytes then we write. As result fifo may owerflow. This leads to packet
-loss and very slow responce.
+On 09/23/2011 12:46 AM, Greg KH wrote:
+> On Wed, Aug 31, 2011 at 09:24:56PM +0200, Jiri Slaby wrote:
+>> Commit "TTY: serial, move locking in uart_close" moved the lock, but
+>> omitted to update branches which unlock the lock. Now they try to
+>> unlock the lock without holding it.
+>>
+>> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+>> ---
+>> If possible, please, merge this into the patch mentioned above (it's
+>> not upstream yet).
+> 
+> I can't do that,
 
-For example, this happens with ping packets (about 96 byte each) and default
-gsm->mtu = 64. As result we get 50 sec ping timeout and 20% packet loss.
+Hmm, but what is the reason for that? I mean, why do you prefer a kernel
+with broken history with respect to bisection? Per definition -next
+doesn't mind rebases in subtrees. Or is this already in tty-linus branch
+(I cannot check now, obviously)?
 
-Fix the problem by reading and sending all data from the fifo
+> and Nobuhiro Iwamatsu sent this to me before you, so
+> I'll take his version instead, if you don't mind.
 
-Signed-off-by: Mikhail Kshevetskiy <mikhail.kshevetskiy@gmail.com>
----
- drivers/tty/n_gsm.c |   58 +++++++++++++++++++++++++++-----------------------
- 1 files changed, 31 insertions(+), 27 deletions(-)
+No, I don't of course.
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 143dc5e..be77fb5 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -810,37 +810,41 @@ static int gsm_dlci_data_output(struct gsm_mux *gsm, struct gsm_dlci *dlci)
- {
- 	struct gsm_msg *msg;
- 	u8 *dp;
--	int len, size;
-+	int len, total_size, size;
- 	int h = dlci->adaption - 1;
- 
--	len = kfifo_len(dlci->fifo);
--	if (len == 0)
--		return 0;
--
--	/* MTU/MRU count only the data bits */
--	if (len > gsm->mtu)
--		len = gsm->mtu;
--
--	size = len + h;
--
--	msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
--	/* FIXME: need a timer or something to kick this so it can't
--	   get stuck with no work outstanding and no buffer free */
--	if (msg == NULL)
--		return -ENOMEM;
--	dp = msg->data;
--	switch (dlci->adaption) {
--	case 1:	/* Unstructured */
--		break;
--	case 2:	/* Unstructed with modem bits. Always one byte as we never
--		   send inline break data */
--		*dp++ = gsm_encode_modem(dlci);
--		break;
-+	total_size = 0;
-+	while(1) {
-+		len = kfifo_len(dlci->fifo);
-+		if (len == 0)
-+			return total_size;
-+
-+		/* MTU/MRU count only the data bits */
-+		if (len > gsm->mtu)
-+			len = gsm->mtu;
-+
-+		size = len + h;
-+
-+		msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
-+		/* FIXME: need a timer or something to kick this so it can't
-+		   get stuck with no work outstanding and no buffer free */
-+		if (msg == NULL)
-+			return -ENOMEM;
-+		dp = msg->data;
-+		switch (dlci->adaption) {
-+		case 1:	/* Unstructured */
-+			break;
-+		case 2:	/* Unstructed with modem bits. Always one byte as we never
-+			   send inline break data */
-+			*dp++ = gsm_encode_modem(dlci);
-+			break;
-+		}
-+		WARN_ON(kfifo_out_locked(dlci->fifo, dp , len, &dlci->lock) != len);
-+		__gsm_data_queue(dlci, msg);
-+		total_size += size;
- 	}
--	WARN_ON(kfifo_out_locked(dlci->fifo, dp , len, &dlci->lock) != len);
--	__gsm_data_queue(dlci, msg);
- 	/* Bytes of data we used up */
--	return size;
-+	return total_size;
- }
- 
- /**
+thanks,
 -- 
-1.7.5.4
-
+js
+suse labs
