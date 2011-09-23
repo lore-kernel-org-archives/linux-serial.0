@@ -1,39 +1,49 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] tty/n_gsm: fix bug in tiocmset
-Date: Fri, 23 Sep 2011 11:05:20 +0100
-Message-ID: <20110923110520.1119aeb9@lxorguk.ukuu.org.uk>
-References: <CAJnFFh3XRFEC49yFvjstreqqkeraA9GA1_AL-s9rj87HksdgBg@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From: Mikhail Kshevetskiy <mikhail.kshevetskiy@gmail.com>
+Subject: [PATCH 1/2] tty/n_gsm: fix a bug in gsm_dlci_data_output (adaption = 2 case)
+Date: Fri, 23 Sep 2011 19:22:55 +0400
+Message-ID: <1316791376-4863-1-git-send-email-mikhail.kshevetskiy@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:55497 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752053Ab1IWKGu (ORCPT
+Received: from mail-ey0-f174.google.com ([209.85.215.174]:62529 "EHLO
+	mail-ey0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753089Ab1IWPXN (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 23 Sep 2011 06:06:50 -0400
-In-Reply-To: <CAJnFFh3XRFEC49yFvjstreqqkeraA9GA1_AL-s9rj87HksdgBg@mail.gmail.com>
+	Fri, 23 Sep 2011 11:23:13 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Nikola Diklic-Perin <diklic.perin.nikola@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, greg@kroah.com
+To: linux-serial@vger.kernel.org
+Cc: gregkh@suse.de, alan@linux.intel.com, linux-kernel@vger.kernel.org
 
-On Fri, 23 Sep 2011 10:59:43 +0200
-Nikola Diklic-Perin <diklic.perin.nikola@gmail.com> wrote:
+in adaption=2 case we should put 1 or 2 byte with modem status bits
+at the beginning of a buffer pointed by "dp". n_gsm use 1 byte case,
+so it allocate a buffer of len + 1 size. As result we should:
+  * put 1 byte of modem status bits
+  * increase data pointer
+  * put "len" bytes of data
+but actually we have:
+  * increase first byte with the value of modem status bits
+  * decrease "len"
+  * put orig_len - 1 bytes of data starting from the buffer beggining
+This is evidently wrong.
 
-> From: Nikola Diklic-Perin <diklic.perin.nikola@gmail.com>
-> 
-> Clear bitmask was not inverted before masking modem_tx.
-> 
-> Calling ioctl(fd, TIOCMBIC, TIOCM_RTS) results in:
-> 
-> [  197.430000] pre_modem_tx:	0x00000006
-> [  197.430000] clear:			0x00000004
-> [  197.430000] set:			0x00000000
-> [  197.440000] post_modem_tx:	0x00000004
-> 
-> which is wrong.
-> 
-> Signed-off-by: Nikola Diklic-Perin <diklic.perin.nikola@gmail.com>
+Signed-off-by: Mikhail Kshevetskiy <mikhail.kshevetskiy@gmail.com>
+---
+ drivers/tty/n_gsm.c |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
 
-Acked-by: Alan Cox <alan@linx.intel.com>
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 8a50e4e..143dc5e 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -834,8 +834,7 @@ static int gsm_dlci_data_output(struct gsm_mux *gsm, struct gsm_dlci *dlci)
+ 		break;
+ 	case 2:	/* Unstructed with modem bits. Always one byte as we never
+ 		   send inline break data */
+-		*dp += gsm_encode_modem(dlci);
+-		len--;
++		*dp++ = gsm_encode_modem(dlci);
+ 		break;
+ 	}
+ 	WARN_ON(kfifo_out_locked(dlci->fifo, dp , len, &dlci->lock) != len);
+-- 
+1.7.5.4
+
