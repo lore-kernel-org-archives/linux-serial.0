@@ -1,43 +1,39 @@
-From: Nikola Diklic-Perin <diklic.perin.nikola@gmail.com>
-Subject: [PATCH] tty/n_gsm: fix bug in tiocmset
-Date: Fri, 23 Sep 2011 10:59:43 +0200
-Message-ID: <CAJnFFh3XRFEC49yFvjstreqqkeraA9GA1_AL-s9rj87HksdgBg@mail.gmail.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] tty/n_gsm: fix bug in tiocmset
+Date: Fri, 23 Sep 2011 11:05:20 +0100
+Message-ID: <20110923110520.1119aeb9@lxorguk.ukuu.org.uk>
+References: <CAJnFFh3XRFEC49yFvjstreqqkeraA9GA1_AL-s9rj87HksdgBg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-yi0-f46.google.com ([209.85.218.46]:47002 "EHLO
-	mail-yi0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752226Ab1IWI7o (ORCPT
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:55497 "EHLO
+	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752053Ab1IWKGu (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 23 Sep 2011 04:59:44 -0400
+	Fri, 23 Sep 2011 06:06:50 -0400
+In-Reply-To: <CAJnFFh3XRFEC49yFvjstreqqkeraA9GA1_AL-s9rj87HksdgBg@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: diklic.perin.nikola@gmail.com
+To: Nikola Diklic-Perin <diklic.perin.nikola@gmail.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, greg@kroah.com
 
-From: Nikola Diklic-Perin <diklic.perin.nikola@gmail.com>
+On Fri, 23 Sep 2011 10:59:43 +0200
+Nikola Diklic-Perin <diklic.perin.nikola@gmail.com> wrote:
 
-Clear bitmask was not inverted before masking modem_tx.
+> From: Nikola Diklic-Perin <diklic.perin.nikola@gmail.com>
+> 
+> Clear bitmask was not inverted before masking modem_tx.
+> 
+> Calling ioctl(fd, TIOCMBIC, TIOCM_RTS) results in:
+> 
+> [  197.430000] pre_modem_tx:	0x00000006
+> [  197.430000] clear:			0x00000004
+> [  197.430000] set:			0x00000000
+> [  197.440000] post_modem_tx:	0x00000004
+> 
+> which is wrong.
+> 
+> Signed-off-by: Nikola Diklic-Perin <diklic.perin.nikola@gmail.com>
 
-Calling ioctl(fd, TIOCMBIC, TIOCM_RTS) results in:
-
-[  197.430000] pre_modem_tx:	0x00000006
-[  197.430000] clear:			0x00000004
-[  197.430000] set:			0x00000000
-[  197.440000] post_modem_tx:	0x00000004
-
-which is wrong.
-
-Signed-off-by: Nikola Diklic-Perin <diklic.perin.nikola@gmail.com>
----
---- a/drivers/tty/n_gsm.c	2011-09-22 18:19:16.592480805 +0200
-+++ b/drivers/tty/n_gsm.c	2011-09-21 16:15:29.506800052 +0200
-@@ -2982,7 +2982,7 @@ static int gsmtty_tiocmset(struct tty_st
- 	struct gsm_dlci *dlci = tty->driver_data;
- 	unsigned int modem_tx = dlci->modem_tx;
-
--	modem_tx &= clear;
-+	modem_tx &= ~clear;
- 	modem_tx |= set;
-
- 	if (modem_tx != dlci->modem_tx) {
+Acked-by: Alan Cox <alan@linx.intel.com>
