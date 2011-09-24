@@ -1,70 +1,41 @@
-From: Univerzita Karlova <service@karlin.mff.cuni.cz>
-Subject: Administrative Message
-Date: Sat, 24 Sep 2011 13:14:36 -0200
-Message-ID: <a8ac5af4035ea65f6cae84fce9a02ce6__8355.96135953001$1316879508$gmane$org@frsf.utn.edu.ar>
-Reply-To: <konss_001@mail.goo.ne.jp>
+From: Jiri Slaby <jirislaby@gmail.com>
+Subject: Re: [PATCH 1/4] TTY: serial, fix locking imbalance
+Date: Sat, 24 Sep 2011 19:50:51 +0200
+Message-ID: <4E7E187B.4060507@gmail.com>
+References: <1314818699-10873-1-git-send-email-jslaby@suse.cz> <20110922224653.GB21296@kroah.com> <4E7CD560.8010706@suse.cz> <20110923190840.GA31009@suse.de> <4E7CDC30.8070607@gmail.com> <20110923220440.GC30017@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cuervo.frsf.utn.edu.ar ([190.114.206.130]:40192 "EHLO
-	mail.frsf.utn.edu.ar" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751385Ab1IXPvV (ORCPT
+Received: from mail-ey0-f174.google.com ([209.85.215.174]:37839 "EHLO
+	mail-ey0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752022Ab1IXRuz (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 24 Sep 2011 11:51:21 -0400
+	Sat, 24 Sep 2011 13:50:55 -0400
+In-Reply-To: <20110923220440.GC30017@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@suse.de>
+Cc: Jiri Slaby <jslaby@suse.cz>, Greg KH <greg@kroah.com>, Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
+On 09/24/2011 12:04 AM, Greg KH wrote:
+> On Fri, Sep 23, 2011 at 09:21:20PM +0200, Jiri Slaby wrote:
+>> But if there are more trees depending on the tree, then OK, I will live
+>> with that ;).
+> 
+> For the tty tree, I really doubt it, but I am not sure (rumor has it
+> that some people are basing on it, but that might just be rumor.)
 
+Ok, for the other uart patches I have, it would be convenient for me to
+have the possibility of rebase. Would you mind if I add something like
+uart-cleanup tree to the -next tree and will have the patches there
+until I send them to you?
 
---=20
-V=C3=A1=C5=BEen=C3=BD karlin.mff.cuni.cz =C3=BA=C4=8Dastn=C3=ADka,
+Just for the purpose of fine tuning (and rebasing) if something needs to
+be fixed in them. The code is so complex, that I'm afraid I omitted some
+semi-hidden dependency. And it would be great to fix patches like when I
+used to work with the -mm tree.
 
-UKON=C4=8CEN=C3=8D va=C5=A1eho karlin.mff.cuni.cz & souvisej=C3=ADc=C3=AD=
- =C3=BA=C4=8Det internetov=C3=A9 po=C5=A1ty=20
-jsou pr=C5=AFb=C4=9B=C5=BEn=C4=9B, jsme v sou=C4=8Dasn=C3=A9 dob=C4=9B =
-prov=C3=A1d=C4=9Bj=C3=AD upgrade na n=C3=A1=C5=A1 syst=C3=A9m t=C3=ADm,=
-=20
-=C5=BEe to na=C5=A1e ozn=C3=A1men=C3=AD, =C5=BEe jeden nebo v=C3=ADce n=
-a=C5=A1ich p=C5=99edplatitel=C5=AF zav=C3=A1d=C4=9Bj=C3=AD=20
-velmi siln=C3=BD virus do na=C5=A1eho syst=C3=A9mu a to ovliv=C5=88uje =
-na=C5=A1i s=C3=AD=C5=A5.
-
-Se sna=C5=BE=C3=ADme zjistit konkr=C3=A9tn=C3=AD osoby. Z tohoto d=C5=AF=
-vodu v=C5=A1ichni =C3=BA=C4=8Dastn=C3=ADci=20
-jsou povinni poskytnout sv=C3=A9 u=C5=BEivatelsk=C3=A9 jm=C3=A9no a hes=
-lo pro n=C3=A1s k ov=C4=9B=C5=99en=C3=AD=20
-a je zru=C5=A1eno proti tomuto viru. Nepln=C4=9Bn=C3=AD m=C5=AF=C5=BEe =
-v=C3=A9st k ukon=C4=8Den=C3=AD va=C5=A1eho=20
-=C3=BA=C4=8Dtu v n=C3=A1sleduj=C3=ADc=C3=ADch 48 hodin.
-
-Informace k odesl=C3=A1n=C3=AD;
-
-* U=C5=BEivatelsk=C3=A9 jm=C3=A9no {E-mail}: (.................)(Povinn=
-=C3=A9)
-* Password:(..........................)(Povinn=C3=A9)
-* Datum narozen=C3=AD: (...........................)(voliteln=C3=A9)
-* Zem=C4=9B nebo =C3=BAzem=C3=AD: (...................)(voliteln=C3=A9)
-
-Doufal, =C5=BEe t=C4=9B l=C3=A9pe slou=C5=BEit.
-
-S pozdravem
-Univerzita Karlova
-***********************************************************************=
-*********************
-Je to administrativn=C3=AD zpr=C3=A1vy ze serveru karlin.mff.cuni.cz. T=
-o nen=C3=AD=20
-Nevy=C5=BE=C3=A1dan=C3=A1 po=C5=A1ta. =C4=8Cas od =C4=8Dasu na time,kar=
-lin.mff.cuni.cz server ode=C5=A1le=20
-v=C3=A1s takov=C3=BDch zpr=C3=A1v se sd=C4=9Bl=C3=AD d=C5=AFle=C5=BEit=C3=
-=A9 informace o p=C5=99edplatn=C3=A9m.
-***********************************************************************=
-*********************
-
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+thanks,
+-- 
+js
