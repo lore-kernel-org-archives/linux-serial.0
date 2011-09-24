@@ -1,69 +1,70 @@
-From: Greg KH <gregkh@suse.de>
-Subject: Re: [PATCH 1/4] TTY: serial, fix locking imbalance
-Date: Fri, 23 Sep 2011 15:04:40 -0700
-Message-ID: <20110923220440.GC30017@suse.de>
-References: <1314818699-10873-1-git-send-email-jslaby@suse.cz>
- <20110922224653.GB21296@kroah.com>
- <4E7CD560.8010706@suse.cz>
- <20110923190840.GA31009@suse.de>
- <4E7CDC30.8070607@gmail.com>
+From: Univerzita Karlova <service@karlin.mff.cuni.cz>
+Subject: Administrative Message
+Date: Sat, 24 Sep 2011 13:14:36 -0200
+Message-ID: <a8ac5af4035ea65f6cae84fce9a02ce6__8355.96135953001$1316879508$gmane$org@frsf.utn.edu.ar>
+Reply-To: <konss_001@mail.goo.ne.jp>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:51462 "EHLO mx2.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752186Ab1IWWGe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 23 Sep 2011 18:06:34 -0400
-Content-Disposition: inline
-In-Reply-To: <4E7CDC30.8070607@gmail.com>
+Received: from cuervo.frsf.utn.edu.ar ([190.114.206.130]:40192 "EHLO
+	mail.frsf.utn.edu.ar" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751385Ab1IXPvV (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 24 Sep 2011 11:51:21 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jirislaby@gmail.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, Greg KH <greg@kroah.com>, Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>
 
-On Fri, Sep 23, 2011 at 09:21:20PM +0200, Jiri Slaby wrote:
-> On 09/23/2011 09:08 PM, Greg KH wrote:
-> > On Fri, Sep 23, 2011 at 08:52:16PM +0200, Jiri Slaby wrote:
-> >> On 09/23/2011 12:46 AM, Greg KH wrote:
-> >>> On Wed, Aug 31, 2011 at 09:24:56PM +0200, Jiri Slaby wrote:
-> >>>> Commit "TTY: serial, move locking in uart_close" moved the lock, but
-> >>>> omitted to update branches which unlock the lock. Now they try to
-> >>>> unlock the lock without holding it.
-> >>>>
-> >>>> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> >>>> ---
-> >>>> If possible, please, merge this into the patch mentioned above (it's
-> >>>> not upstream yet).
-> >>>
-> >>> I can't do that,
-> >>
-> >> Hmm, but what is the reason for that? I mean, why do you prefer a kernel
-> >> with broken history with respect to bisection? Per definition -next
-> >> doesn't mind rebases in subtrees. Or is this already in tty-linus branch
-> >> (I cannot check now, obviously)?
-> > 
-> > Because it is in my tree and I can't rebase it as others depend on it
-> > (linux-next and others.)
-> 
-> linux-next doesn't mind if you rebase. That's exactly what it is for. To
-> test commits collected from #for-next branches and alter them if needed.
-> It merges whatever is in the current branch no matter what was there
-> some days ago.
 
-Users who base their work on mine care if I rebase.
 
-And so do I, it's just one of those rules, "Greg will not rebase his
-trees" that makes for better development.
+--=20
+V=C3=A1=C5=BEen=C3=BD karlin.mff.cuni.cz =C3=BA=C4=8Dastn=C3=ADka,
 
-And yes, sometimes it does cause minor problems like this, but overall,
-it's much easier for everyone involved.
+UKON=C4=8CEN=C3=8D va=C5=A1eho karlin.mff.cuni.cz & souvisej=C3=ADc=C3=AD=
+ =C3=BA=C4=8Det internetov=C3=A9 po=C5=A1ty=20
+jsou pr=C5=AFb=C4=9B=C5=BEn=C4=9B, jsme v sou=C4=8Dasn=C3=A9 dob=C4=9B =
+prov=C3=A1d=C4=9Bj=C3=AD upgrade na n=C3=A1=C5=A1 syst=C3=A9m t=C3=ADm,=
+=20
+=C5=BEe to na=C5=A1e ozn=C3=A1men=C3=AD, =C5=BEe jeden nebo v=C3=ADce n=
+a=C5=A1ich p=C5=99edplatitel=C5=AF zav=C3=A1d=C4=9Bj=C3=AD=20
+velmi siln=C3=BD virus do na=C5=A1eho syst=C3=A9mu a to ovliv=C5=88uje =
+na=C5=A1i s=C3=AD=C5=A5.
 
-> But if there are more trees depending on the tree, then OK, I will live
-> with that ;).
+Se sna=C5=BE=C3=ADme zjistit konkr=C3=A9tn=C3=AD osoby. Z tohoto d=C5=AF=
+vodu v=C5=A1ichni =C3=BA=C4=8Dastn=C3=ADci=20
+jsou povinni poskytnout sv=C3=A9 u=C5=BEivatelsk=C3=A9 jm=C3=A9no a hes=
+lo pro n=C3=A1s k ov=C4=9B=C5=99en=C3=AD=20
+a je zru=C5=A1eno proti tomuto viru. Nepln=C4=9Bn=C3=AD m=C5=AF=C5=BEe =
+v=C3=A9st k ukon=C4=8Den=C3=AD va=C5=A1eho=20
+=C3=BA=C4=8Dtu v n=C3=A1sleduj=C3=ADc=C3=ADch 48 hodin.
 
-For the tty tree, I really doubt it, but I am not sure (rumor has it
-that some people are basing on it, but that might just be rumor.)  For
-my staging and USB trees, I can't rebase as I know I have users for
-those trees.
+Informace k odesl=C3=A1n=C3=AD;
 
-greg k-h
+* U=C5=BEivatelsk=C3=A9 jm=C3=A9no {E-mail}: (.................)(Povinn=
+=C3=A9)
+* Password:(..........................)(Povinn=C3=A9)
+* Datum narozen=C3=AD: (...........................)(voliteln=C3=A9)
+* Zem=C4=9B nebo =C3=BAzem=C3=AD: (...................)(voliteln=C3=A9)
+
+Doufal, =C5=BEe t=C4=9B l=C3=A9pe slou=C5=BEit.
+
+S pozdravem
+Univerzita Karlova
+***********************************************************************=
+*********************
+Je to administrativn=C3=AD zpr=C3=A1vy ze serveru karlin.mff.cuni.cz. T=
+o nen=C3=AD=20
+Nevy=C5=BE=C3=A1dan=C3=A1 po=C5=A1ta. =C4=8Cas od =C4=8Dasu na time,kar=
+lin.mff.cuni.cz server ode=C5=A1le=20
+v=C3=A1s takov=C3=BDch zpr=C3=A1v se sd=C4=9Bl=C3=AD d=C5=AFle=C5=BEit=C3=
+=A9 informace o p=C5=99edplatn=C3=A9m.
+***********************************************************************=
+*********************
+
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
