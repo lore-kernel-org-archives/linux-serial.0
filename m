@@ -1,132 +1,225 @@
 From: Thomas Abraham <thomas.abraham@linaro.org>
-Subject: [PATCH 1/9] serial: samsung: Keep a copy of the location of platform
- data in driver's private data
-Date: Tue, 27 Sep 2011 00:37:10 +0530
-Message-ID: <1317064038-32428-2-git-send-email-thomas.abraham@linaro.org>
+Subject: [PATCH 2/9] serial: samsung: move handling of fclk/n clock to platform
+ code
+Date: Tue, 27 Sep 2011 00:37:11 +0530
+Message-ID: <1317064038-32428-3-git-send-email-thomas.abraham@linaro.org>
 References: <1317064038-32428-1-git-send-email-thomas.abraham@linaro.org>
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 In-reply-to: <1317064038-32428-1-git-send-email-thomas.abraham@linaro.org>
 Sender: linux-samsung-soc-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
-Cc: linux-arm-kernel@lists.infradead.org, alan@linux.intel.com, grant.likely@secretlab.ca, linux-samsung-soc@vger.kernel.org, kgene.kim@samsung.com, ben-linux@fluff.org, patches@linaro.org
+Cc: linux-arm-kernel@lists.infradead.org, alan@linux.intel.com, grant.likely@secretlab.ca, linux-samsung-soc@vger.kernel.org, kgene.kim@samsung.com, ben-linux@fluff.org, patches@linaro.org, Vasily Khoruzhick <anarsoul@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Add a pointer to the location of the platform data in the driver's private
-data. When instantiated using device tree, pdev->dev->platform_data does not
-necessarily point to a valid instance of platform data. The platform data
-pointer in the driver's private data could be set to pdev->dev->platform_data
-or platform data instance created from device tree.
+s3c2440 uses fclk/n (fclk divided by n) clock as one of the possible clocks used
+to generate the baud rate clock. The divider 'n' in this case can be logically
+represented outside of the uart controller.
+
+This patch creates a new clock by name "fclk_n" for s3c2440 based platforms to
+represent the fclk/n clock in the platform code. This clock provides a get_rate
+callback that checks the UCON0/1/2 registers to determine the clock rate. The
+samsung uart driver would receive the "fclk_n" clock name as one of the possible
+baud rate clock options and the driver need not determine clock rate of fclk/n.
 
 Cc: Ben Dooks <ben-linux@fluff.org>
+Cc: Vasily Khoruzhick <anarsoul@gmail.com>
 Signed-off-by: Thomas Abraham <thomas.abraham@linaro.org>
 ---
- drivers/tty/serial/s5pv210.c |   12 ++++++++++--
- drivers/tty/serial/samsung.c |   16 ++++++++++++----
- drivers/tty/serial/samsung.h |    4 +++-
- 3 files changed, 25 insertions(+), 7 deletions(-)
+ arch/arm/mach-s3c2440/clock.c       |   37 +++++++++++++++++++++++++++++++++++
+ arch/arm/mach-s3c2440/mach-rx1950.c |    4 +-
+ arch/arm/mach-s3c2440/mach-rx3715.c |    4 +-
+ drivers/tty/serial/s3c2440.c        |   33 ++----------------------------
+ drivers/tty/serial/samsung.c        |   21 -------------------
+ 5 files changed, 44 insertions(+), 55 deletions(-)
 
-diff --git a/drivers/tty/serial/s5pv210.c b/drivers/tty/serial/s5pv210.c
-index 8b0b888..03b249e 100644
---- a/drivers/tty/serial/s5pv210.c
-+++ b/drivers/tty/serial/s5pv210.c
-@@ -28,9 +28,13 @@
- static int s5pv210_serial_setsource(struct uart_port *port,
- 					struct s3c24xx_uart_clksrc *clk)
+diff --git a/arch/arm/mach-s3c2440/clock.c b/arch/arm/mach-s3c2440/clock.c
+index f9e6bda..f85853c 100644
+--- a/arch/arm/mach-s3c2440/clock.c
++++ b/arch/arm/mach-s3c2440/clock.c
+@@ -34,6 +34,7 @@
+ #include <linux/mutex.h>
+ #include <linux/clk.h>
+ #include <linux/io.h>
++#include <linux/serial_core.h>
+ 
+ #include <mach/hardware.h>
+ #include <linux/atomic.h>
+@@ -43,6 +44,7 @@
+ 
+ #include <plat/clock.h>
+ #include <plat/cpu.h>
++#include <plat/regs-serial.h>
+ 
+ /* S3C2440 extended clock support */
+ 
+@@ -108,6 +110,40 @@ static struct clk s3c2440_clk_ac97 = {
+ 	.ctrlbit	= S3C2440_CLKCON_CAMERA,
+ };
+ 
++static unsigned long  s3c2440_fclk_n_getrate(struct clk *clk)
++{
++	unsigned long ucon0, ucon1, ucon2, divisor;
++
++	/* the fun of calculating the uart divisors on the s3c2440 */
++	ucon0 = __raw_readl(S3C24XX_VA_UART0 + S3C2410_UCON);
++	ucon1 = __raw_readl(S3C24XX_VA_UART1 + S3C2410_UCON);
++	ucon2 = __raw_readl(S3C24XX_VA_UART2 + S3C2410_UCON);
++
++	ucon0 &= S3C2440_UCON0_DIVMASK;
++	ucon1 &= S3C2440_UCON1_DIVMASK;
++	ucon2 &= S3C2440_UCON2_DIVMASK;
++
++	if (ucon0 != 0)
++		divisor = (ucon0 >> S3C2440_UCON_DIVSHIFT) + 6;
++	else if (ucon1 != 0)
++		divisor = (ucon1 >> S3C2440_UCON_DIVSHIFT) + 21;
++	else if (ucon2 != 0)
++		divisor = (ucon2 >> S3C2440_UCON_DIVSHIFT) + 36;
++	else
++		/* manual calims 44, seems to be 9 */
++		divisor = 9;
++
++	return clk_get_rate(clk->parent) / divisor;
++}
++
++static struct clk s3c2440_clk_fclk_n = {
++	.name		= "fclk_n",
++	.parent		= &clk_f,
++	.ops		= &(struct clk_ops) {
++		.get_rate	= s3c2440_fclk_n_getrate,
++	},
++};
++
+ static int s3c2440_clk_add(struct sys_device *sysdev)
  {
--	struct s3c2410_uartcfg *cfg = port->dev->platform_data;
-+	struct s3c24xx_uart_port *ourport;
-+	struct s3c2410_uartcfg *cfg;
+ 	struct clk *clock_upll;
+@@ -126,6 +162,7 @@ static int s3c2440_clk_add(struct sys_device *sysdev)
+ 	s3c2440_clk_cam.parent = clock_h;
+ 	s3c2440_clk_ac97.parent = clock_p;
+ 	s3c2440_clk_cam_upll.parent = clock_upll;
++	s3c24xx_register_clock(&s3c2440_clk_fclk_n);
+ 
+ 	s3c24xx_register_clock(&s3c2440_clk_ac97);
+ 	s3c24xx_register_clock(&s3c2440_clk_cam);
+diff --git a/arch/arm/mach-s3c2440/mach-rx1950.c b/arch/arm/mach-s3c2440/mach-rx1950.c
+index 27ea950..9528b37 100644
+--- a/arch/arm/mach-s3c2440/mach-rx1950.c
++++ b/arch/arm/mach-s3c2440/mach-rx1950.c
+@@ -69,8 +69,8 @@ static struct map_desc rx1950_iodesc[] __initdata = {
+ 
+ static struct s3c24xx_uart_clksrc rx1950_serial_clocks[] = {
+ 	[0] = {
+-	       .name = "fclk",
+-	       .divisor = 0x0a,
++	       .name = "fclk_n",
++	       .divisor = 1,
+ 	       .min_baud = 0,
+ 	       .max_baud = 0,
+ 	},
+diff --git a/arch/arm/mach-s3c2440/mach-rx3715.c b/arch/arm/mach-s3c2440/mach-rx3715.c
+index 1472b1a..a88247e 100644
+--- a/arch/arm/mach-s3c2440/mach-rx3715.c
++++ b/arch/arm/mach-s3c2440/mach-rx3715.c
+@@ -70,8 +70,8 @@ static struct map_desc rx3715_iodesc[] __initdata = {
+ 
+ static struct s3c24xx_uart_clksrc rx3715_serial_clocks[] = {
+ 	[0] = {
+-		.name		= "fclk",
+-		.divisor	= 0,
++		.name		= "fclk_n",
++		.divisor	= 1,
+ 		.min_baud	= 0,
+ 		.max_baud	= 0,
+ 	}
+diff --git a/drivers/tty/serial/s3c2440.c b/drivers/tty/serial/s3c2440.c
+index 1d0c324..4498828 100644
+--- a/drivers/tty/serial/s3c2440.c
++++ b/drivers/tty/serial/s3c2440.c
+@@ -39,7 +39,7 @@ static int s3c2440_serial_setsource(struct uart_port *port,
+ 		ucon |= S3C2440_UCON_UCLK;
+ 	else if (strcmp(clk->name, "pclk") == 0)
+ 		ucon |= S3C2440_UCON_PCLK;
+-	else if (strcmp(clk->name, "fclk") == 0)
++	else if (strcmp(clk->name, "fclk_n") == 0)
+ 		ucon |= S3C2440_UCON_FCLK;
+ 	else {
+ 		printk(KERN_ERR "unknown clock source %s\n", clk->name);
+@@ -55,7 +55,6 @@ static int s3c2440_serial_getsource(struct uart_port *port,
+ 				    struct s3c24xx_uart_clksrc *clk)
+ {
  	unsigned long ucon = rd_regl(port, S3C2410_UCON);
+-	unsigned long ucon0, ucon1, ucon2;
  
-+	ourport = container_of(port, struct s3c24xx_uart_port, port);
-+	cfg = ourport->cfg;
-+
- 	if (cfg->flags & NO_NEED_CHECK_CLKSRC)
- 		return 0;
+ 	switch (ucon & S3C2440_UCON_CLKMASK) {
+ 	case S3C2440_UCON_UCLK:
+@@ -70,34 +69,8 @@ static int s3c2440_serial_getsource(struct uart_port *port,
+ 		break;
  
-@@ -51,9 +55,13 @@ static int s5pv210_serial_setsource(struct uart_port *port,
- static int s5pv210_serial_getsource(struct uart_port *port,
- 					struct s3c24xx_uart_clksrc *clk)
- {
--	struct s3c2410_uartcfg *cfg = port->dev->platform_data;
-+	struct s3c24xx_uart_port *ourport;
-+	struct s3c2410_uartcfg *cfg;
- 	u32 ucon = rd_regl(port, S3C2410_UCON);
+ 	case S3C2440_UCON_FCLK:
+-		/* the fun of calculating the uart divisors on
+-		 * the s3c2440 */
+-
+-		ucon0 = __raw_readl(S3C24XX_VA_UART0 + S3C2410_UCON);
+-		ucon1 = __raw_readl(S3C24XX_VA_UART1 + S3C2410_UCON);
+-		ucon2 = __raw_readl(S3C24XX_VA_UART2 + S3C2410_UCON);
+-
+-		printk("ucons: %08lx, %08lx, %08lx\n", ucon0, ucon1, ucon2);
+-
+-		ucon0 &= S3C2440_UCON0_DIVMASK;
+-		ucon1 &= S3C2440_UCON1_DIVMASK;
+-		ucon2 &= S3C2440_UCON2_DIVMASK;
+-
+-		if (ucon0 != 0) {
+-			clk->divisor = ucon0 >> S3C2440_UCON_DIVSHIFT;
+-			clk->divisor += 6;
+-		} else if (ucon1 != 0) {
+-			clk->divisor = ucon1 >> S3C2440_UCON_DIVSHIFT;
+-			clk->divisor += 21;
+-		} else if (ucon2 != 0) {
+-			clk->divisor = ucon2 >> S3C2440_UCON_DIVSHIFT;
+-			clk->divisor += 36;
+-		} else {
+-			/* manual calims 44, seems to be 9 */
+-			clk->divisor = 9;
+-		}
+-
+-		clk->name = "fclk";
++		clk->divisor = 1;
++		clk->name = "fclk_n";
+ 		break;
+ 	}
  
-+	ourport = container_of(port, struct s3c24xx_uart_port, port);
-+	cfg = ourport->cfg;
-+
- 	clk->divisor = 1;
- 
- 	if (cfg->flags & NO_NEED_CHECK_CLKSRC)
 diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index b31f1c3..51cfb9f 100644
+index 51cfb9f..fc242b2 100644
 --- a/drivers/tty/serial/samsung.c
 +++ b/drivers/tty/serial/samsung.c
-@@ -190,10 +190,13 @@ static inline struct s3c24xx_uart_info *s3c24xx_port_to_info(struct uart_port *p
+@@ -649,27 +649,6 @@ static unsigned int s3c24xx_serial_getclk(struct uart_port *port,
+ 		if (cfg->clocks_size == 0)
+ 			clkp = &tmp_clksrc;
  
- static inline struct s3c2410_uartcfg *s3c24xx_port_to_cfg(struct uart_port *port)
- {
-+	struct s3c24xx_uart_port *ourport;
-+
- 	if (port->dev == NULL)
- 		return NULL;
- 
--	return (struct s3c2410_uartcfg *)port->dev->platform_data;
-+	ourport = container_of(port, struct s3c24xx_uart_port, port);
-+	return ourport->cfg;
- }
- 
- static int s3c24xx_serial_rx_fifocnt(struct s3c24xx_uart_port *ourport,
-@@ -1125,7 +1128,7 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
- 				    struct platform_device *platdev)
- {
- 	struct uart_port *port = &ourport->port;
--	struct s3c2410_uartcfg *cfg;
-+	struct s3c2410_uartcfg *cfg = platdev->dev.platform_data;
- 	struct resource *res;
- 	int ret;
- 
-@@ -1134,11 +1137,16 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
- 	if (platdev == NULL)
- 		return -ENODEV;
- 
--	cfg = s3c24xx_dev_to_cfg(&platdev->dev);
+-		/* check to see if we're sourcing fclk, and if so we're
+-		 * going to have to update the clock source
+-		 */
 -
- 	if (port->mapbase != 0)
- 		return 0;
- 
-+	/*
-+	 * If platform data is supplied, keep a copy of the location of
-+	 * platform data in the driver's private data.
-+	 */
-+	if (cfg)
-+		ourport->cfg = cfg;
-+
- 	if (cfg->hwport > CONFIG_SERIAL_SAMSUNG_UARTS) {
- 		printk(KERN_ERR "%s: port %d bigger than %d\n", __func__,
- 		       cfg->hwport, CONFIG_SERIAL_SAMSUNG_UARTS);
-diff --git a/drivers/tty/serial/samsung.h b/drivers/tty/serial/samsung.h
-index 8e87b78..6c9cb9d 100644
---- a/drivers/tty/serial/samsung.h
-+++ b/drivers/tty/serial/samsung.h
-@@ -48,6 +48,9 @@ struct s3c24xx_uart_port {
- 	struct clk			*baudclk;
- 	struct uart_port		port;
- 
-+	/* reference to platform data */
-+	struct s3c2410_uartcfg		*cfg;
-+
- #ifdef CONFIG_CPU_FREQ
- 	struct notifier_block		freq_transition;
- #endif
-@@ -56,7 +59,6 @@ struct s3c24xx_uart_port {
- /* conversion functions */
- 
- #define s3c24xx_dev_to_port(__dev) (struct uart_port *)dev_get_drvdata(__dev)
--#define s3c24xx_dev_to_cfg(__dev) (struct s3c2410_uartcfg *)((__dev)->platform_data)
- 
- /* register access controls */
- 
+-		if (strcmp(clkp->name, "fclk") == 0) {
+-			struct s3c24xx_uart_clksrc src;
+-
+-			s3c24xx_serial_getsource(port, &src);
+-
+-			/* check that the port already using fclk, and if
+-			 * not, then re-select fclk
+-			 */
+-
+-			if (strcmp(src.name, clkp->name) == 0) {
+-				s3c24xx_serial_setsource(port, clkp);
+-				s3c24xx_serial_getsource(port, &src);
+-			}
+-
+-			clkp->divisor = src.divisor;
+-		}
+-
+ 		s3c24xx_serial_calcbaud(res, port, clkp, baud);
+ 		best = res;
+ 		resptr = best + 1;
 -- 
 1.6.6.rc2
