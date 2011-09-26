@@ -1,41 +1,52 @@
-From: Jiri Slaby <jirislaby@gmail.com>
-Subject: Re: [PATCH 1/4] TTY: serial, fix locking imbalance
-Date: Sat, 24 Sep 2011 19:50:51 +0200
-Message-ID: <4E7E187B.4060507@gmail.com>
-References: <1314818699-10873-1-git-send-email-jslaby@suse.cz> <20110922224653.GB21296@kroah.com> <4E7CD560.8010706@suse.cz> <20110923190840.GA31009@suse.de> <4E7CDC30.8070607@gmail.com> <20110923220440.GC30017@suse.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Subject: [PATCH 1/2] 8250: ratelimit LSR safety check engaged warning.
+Date: Mon, 26 Sep 2011 09:14:34 -0400
+Message-ID: <1317042874-20044-1-git-send-email-konrad.wilk@oracle.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ey0-f174.google.com ([209.85.215.174]:37839 "EHLO
-	mail-ey0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752022Ab1IXRuz (ORCPT
+Received: from rcsinet15.oracle.com ([148.87.113.117]:43264 "EHLO
+	rcsinet15.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751361Ab1IZNO7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 24 Sep 2011 13:50:55 -0400
-In-Reply-To: <20110923220440.GC30017@suse.de>
+	Mon, 26 Sep 2011 09:14:59 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@suse.de>
-Cc: Jiri Slaby <jslaby@suse.cz>, Greg KH <greg@kroah.com>, Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+To: linux-kernel@vger.kernel.org
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
 
-On 09/24/2011 12:04 AM, Greg KH wrote:
-> On Fri, Sep 23, 2011 at 09:21:20PM +0200, Jiri Slaby wrote:
->> But if there are more trees depending on the tree, then OK, I will live
->> with that ;).
-> 
-> For the tty tree, I really doubt it, but I am not sure (rumor has it
-> that some people are basing on it, but that might just be rumor.)
+On my BIOSTAR TA890FXE the ttyS0 ends up spewing:
 
-Ok, for the other uart patches I have, it would be convenient for me to
-have the possibility of rebase. Would you mind if I add something like
-uart-cleanup tree to the -next tree and will have the patches there
-until I send them to you?
+[904682.485933] ttyS0: LSR safety check engaged!
+[904692.505895] ttyS0: LSR safety check engaged!
+[904702.525972] ttyS0: LSR safety check engaged!
+[904712.545967] ttyS0: LSR safety check engaged!
+[904722.566125] ttyS0: LSR safety check engaged!
+..
+lets limit it so it won't be the only thing visible
+in the ring buffer.
 
-Just for the purpose of fine tuning (and rebasing) if something needs to
-be fixed in them. The code is so complex, that I'm afraid I omitted some
-semi-hidden dependency. And it would be great to fix patches like when I
-used to work with the -mm tree.
+CC: Greg Kroah-Hartman <gregkh@suse.de>
+CC: Alan Cox <alan@linux.intel.com>
+CC: linux-serial@vger.kernel.org
+Signed-off-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+---
+ drivers/tty/serial/8250.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
-thanks,
+diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
+index 7f50999..fc5e9ac 100644
+--- a/drivers/tty/serial/8250.c
++++ b/drivers/tty/serial/8250.c
+@@ -2081,8 +2081,8 @@ static int serial8250_startup(struct uart_port *port)
+ 	 */
+ 	if (!(up->port.flags & UPF_BUGGY_UART) &&
+ 	    (serial_inp(up, UART_LSR) == 0xff)) {
+-		printk(KERN_INFO "ttyS%d: LSR safety check engaged!\n",
+-		       serial_index(&up->port));
++		printk_ratelimited(KERN_INFO "ttyS%d: LSR safety check engaged!\n",
++				   serial_index(&up->port));
+ 		return -ENODEV;
+ 	}
+ 
 -- 
-js
+1.7.4.1
+
