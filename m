@@ -1,373 +1,571 @@
 From: Thomas Abraham <thomas.abraham@linaro.org>
-Subject: [PATCH 3/9] serial: samsung: switch to clkdev based clock lookup
-Date: Tue, 27 Sep 2011 00:37:12 +0530
-Message-ID: <1317064038-32428-4-git-send-email-thomas.abraham@linaro.org>
+Subject: [PATCH 4/9] serial: samsung: remove struct 's3c24xx_uart_clksrc' and
+ all uses of it
+Date: Tue, 27 Sep 2011 00:37:13 +0530
+Message-ID: <1317064038-32428-5-git-send-email-thomas.abraham@linaro.org>
 References: <1317064038-32428-1-git-send-email-thomas.abraham@linaro.org>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout4.samsung.com ([203.254.224.34]:32522 "EHLO
-	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752100Ab1IZTHf (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 26 Sep 2011 15:07:35 -0400
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 In-reply-to: <1317064038-32428-1-git-send-email-thomas.abraham@linaro.org>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-samsung-soc-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
-Cc: linux-arm-kernel@lists.infradead.org, alan@linux.intel.com, grant.likely@secretlab.ca, linux-samsung-soc@vger.kernel.org, kgene.kim@samsung.com, ben-linux@fluff.org, patches@linaro.org
+Cc: linux-arm-kernel@lists.infradead.org, alan@linux.intel.com, grant.likely@secretlab.ca, linux-samsung-soc@vger.kernel.org, kgene.kim@samsung.com, ben-linux@fluff.org, patches@linaro.org, Ramax Lo <ramaxlo@gmail.com>, Vasily Khoruzhick <anarsoul@gmail.com>
+List-Id: linux-serial@vger.kernel.org
 
-Instead of using clock names supplied in platform data, use a generic
-clock name 'clk_uart_baud' to look up clocks. The platform code should
-register clocks with the name 'clk_uart_baud' which can be used by the
-baud rate generator. The clock lookup and selection of the best clock
-as baud rate clock is reworked.
+With clkdev based clock lookup added to samsung serial driver, the use
+of 'struct s3c24xx_uart_clksrc' to supply clock names in platform
+data can be removed.
 
 Cc: Ben Dooks <ben-linux@fluff.org>
+Cc: Ramax Lo <ramaxlo@gmail.com>
+Cc: Vasily Khoruzhick <anarsoul@gmail.com>
 Signed-off-by: Thomas Abraham <thomas.abraham@linaro.org>
 ---
- arch/arm/plat-samsung/include/plat/regs-serial.h |    5 +
- drivers/tty/serial/samsung.c                     |  207 +++++++++-------------
- drivers/tty/serial/samsung.h                     |    4 +
- 3 files changed, 95 insertions(+), 121 deletions(-)
+ arch/arm/mach-exynos4/init.c                     |   15 +----------
+ arch/arm/mach-s3c2410/mach-bast.c                |   22 ---------------
+ arch/arm/mach-s3c2410/mach-vr1000.c              |   24 -----------------
+ arch/arm/mach-s3c2440/mach-anubis.c              |   22 +--------------
+ arch/arm/mach-s3c2440/mach-at2440evb.c           |   22 +--------------
+ arch/arm/mach-s3c2440/mach-osiris.c              |   24 ++---------------
+ arch/arm/mach-s3c2440/mach-rx1950.c              |   18 ++----------
+ arch/arm/mach-s3c2440/mach-rx3715.c              |   19 ++-----------
+ arch/arm/mach-s5p64x0/init.c                     |   31 ----------------------
+ arch/arm/mach-s5pv210/init.c                     |   19 -------------
+ arch/arm/plat-samsung/include/plat/regs-serial.h |   23 ----------------
+ drivers/tty/serial/samsung.h                     |    1 -
+ 12 files changed, 14 insertions(+), 226 deletions(-)
 
+diff --git a/arch/arm/mach-exynos4/init.c b/arch/arm/mach-exynos4/init.c
+index a8a83e3..e836c9c 100644
+--- a/arch/arm/mach-exynos4/init.c
++++ b/arch/arm/mach-exynos4/init.c
+@@ -14,15 +14,6 @@
+ #include <plat/devs.h>
+ #include <plat/regs-serial.h>
+ 
+-static struct s3c24xx_uart_clksrc exynos4_serial_clocks[] = {
+-	[0] = {
+-		.name		= "uclk1",
+-		.divisor	= 1,
+-		.min_baud	= 0,
+-		.max_baud	= 0,
+-	},
+-};
+-
+ /* uart registration process */
+ void __init exynos4_common_init_uarts(struct s3c2410_uartcfg *cfg, int no)
+ {
+@@ -30,11 +21,7 @@ void __init exynos4_common_init_uarts(struct s3c2410_uartcfg *cfg, int no)
+ 	u32 ucnt;
+ 
+ 	for (ucnt = 0; ucnt < no; ucnt++, tcfg++) {
+-		if (!tcfg->clocks) {
+-			tcfg->has_fracval = 1;
+-			tcfg->clocks = exynos4_serial_clocks;
+-			tcfg->clocks_size = ARRAY_SIZE(exynos4_serial_clocks);
+-		}
++		tcfg->has_fracval = 1;
+ 		tcfg->flags |= NO_NEED_CHECK_CLKSRC;
+ 	}
+ 
+diff --git a/arch/arm/mach-s3c2410/mach-bast.c b/arch/arm/mach-s3c2410/mach-bast.c
+index 1e2d536..e92e29b 100644
+--- a/arch/arm/mach-s3c2410/mach-bast.c
++++ b/arch/arm/mach-s3c2410/mach-bast.c
+@@ -164,22 +164,6 @@ static struct map_desc bast_iodesc[] __initdata = {
+ #define ULCON S3C2410_LCON_CS8 | S3C2410_LCON_PNONE | S3C2410_LCON_STOPB
+ #define UFCON S3C2410_UFCON_RXTRIG8 | S3C2410_UFCON_FIFOMODE
+ 
+-static struct s3c24xx_uart_clksrc bast_serial_clocks[] = {
+-	[0] = {
+-		.name		= "uclk",
+-		.divisor	= 1,
+-		.min_baud	= 0,
+-		.max_baud	= 0,
+-	},
+-	[1] = {
+-		.name		= "pclk",
+-		.divisor	= 1,
+-		.min_baud	= 0,
+-		.max_baud	= 0,
+-	}
+-};
+-
+-
+ static struct s3c2410_uartcfg bast_uartcfgs[] __initdata = {
+ 	[0] = {
+ 		.hwport	     = 0,
+@@ -187,8 +171,6 @@ static struct s3c2410_uartcfg bast_uartcfgs[] __initdata = {
+ 		.ucon	     = UCON,
+ 		.ulcon	     = ULCON,
+ 		.ufcon	     = UFCON,
+-		.clocks	     = bast_serial_clocks,
+-		.clocks_size = ARRAY_SIZE(bast_serial_clocks),
+ 	},
+ 	[1] = {
+ 		.hwport	     = 1,
+@@ -196,8 +178,6 @@ static struct s3c2410_uartcfg bast_uartcfgs[] __initdata = {
+ 		.ucon	     = UCON,
+ 		.ulcon	     = ULCON,
+ 		.ufcon	     = UFCON,
+-		.clocks	     = bast_serial_clocks,
+-		.clocks_size = ARRAY_SIZE(bast_serial_clocks),
+ 	},
+ 	/* port 2 is not actually used */
+ 	[2] = {
+@@ -206,8 +186,6 @@ static struct s3c2410_uartcfg bast_uartcfgs[] __initdata = {
+ 		.ucon	     = UCON,
+ 		.ulcon	     = ULCON,
+ 		.ufcon	     = UFCON,
+-		.clocks	     = bast_serial_clocks,
+-		.clocks_size = ARRAY_SIZE(bast_serial_clocks),
+ 	}
+ };
+ 
+diff --git a/arch/arm/mach-s3c2410/mach-vr1000.c b/arch/arm/mach-s3c2410/mach-vr1000.c
+index 6ccce5a..208d83a 100644
+--- a/arch/arm/mach-s3c2410/mach-vr1000.c
++++ b/arch/arm/mach-s3c2410/mach-vr1000.c
+@@ -109,23 +109,6 @@ static struct map_desc vr1000_iodesc[] __initdata = {
+ #define ULCON S3C2410_LCON_CS8 | S3C2410_LCON_PNONE | S3C2410_LCON_STOPB
+ #define UFCON S3C2410_UFCON_RXTRIG8 | S3C2410_UFCON_FIFOMODE
+ 
+-/* uart clock source(s) */
+-
+-static struct s3c24xx_uart_clksrc vr1000_serial_clocks[] = {
+-	[0] = {
+-		.name		= "uclk",
+-		.divisor	= 1,
+-		.min_baud	= 0,
+-		.max_baud	= 0,
+-	},
+-	[1] = {
+-		.name		= "pclk",
+-		.divisor	= 1,
+-		.min_baud	= 0,
+-		.max_baud	= 0.
+-	}
+-};
+-
+ static struct s3c2410_uartcfg vr1000_uartcfgs[] __initdata = {
+ 	[0] = {
+ 		.hwport	     = 0,
+@@ -133,8 +116,6 @@ static struct s3c2410_uartcfg vr1000_uartcfgs[] __initdata = {
+ 		.ucon	     = UCON,
+ 		.ulcon	     = ULCON,
+ 		.ufcon	     = UFCON,
+-		.clocks	     = vr1000_serial_clocks,
+-		.clocks_size = ARRAY_SIZE(vr1000_serial_clocks),
+ 	},
+ 	[1] = {
+ 		.hwport	     = 1,
+@@ -142,8 +123,6 @@ static struct s3c2410_uartcfg vr1000_uartcfgs[] __initdata = {
+ 		.ucon	     = UCON,
+ 		.ulcon	     = ULCON,
+ 		.ufcon	     = UFCON,
+-		.clocks	     = vr1000_serial_clocks,
+-		.clocks_size = ARRAY_SIZE(vr1000_serial_clocks),
+ 	},
+ 	/* port 2 is not actually used */
+ 	[2] = {
+@@ -152,9 +131,6 @@ static struct s3c2410_uartcfg vr1000_uartcfgs[] __initdata = {
+ 		.ucon	     = UCON,
+ 		.ulcon	     = ULCON,
+ 		.ufcon	     = UFCON,
+-		.clocks	     = vr1000_serial_clocks,
+-		.clocks_size = ARRAY_SIZE(vr1000_serial_clocks),
+-
+ 	}
+ };
+ 
+diff --git a/arch/arm/mach-s3c2440/mach-anubis.c b/arch/arm/mach-s3c2440/mach-anubis.c
+index d708678..0097585 100644
+--- a/arch/arm/mach-s3c2440/mach-anubis.c
++++ b/arch/arm/mach-s3c2440/mach-anubis.c
+@@ -96,22 +96,6 @@ static struct map_desc anubis_iodesc[] __initdata = {
+ #define ULCON S3C2410_LCON_CS8 | S3C2410_LCON_PNONE | S3C2410_LCON_STOPB
+ #define UFCON S3C2410_UFCON_RXTRIG8 | S3C2410_UFCON_FIFOMODE
+ 
+-static struct s3c24xx_uart_clksrc anubis_serial_clocks[] = {
+-	[0] = {
+-		.name		= "uclk",
+-		.divisor	= 1,
+-		.min_baud	= 0,
+-		.max_baud	= 0,
+-	},
+-	[1] = {
+-		.name		= "pclk",
+-		.divisor	= 1,
+-		.min_baud	= 0,
+-		.max_baud	= 0,
+-	}
+-};
+-
+-
+ static struct s3c2410_uartcfg anubis_uartcfgs[] __initdata = {
+ 	[0] = {
+ 		.hwport	     = 0,
+@@ -119,8 +103,7 @@ static struct s3c2410_uartcfg anubis_uartcfgs[] __initdata = {
+ 		.ucon	     = UCON,
+ 		.ulcon	     = ULCON,
+ 		.ufcon	     = UFCON,
+-		.clocks	     = anubis_serial_clocks,
+-		.clocks_size = ARRAY_SIZE(anubis_serial_clocks),
++		.clk_sel	= S3C2410_UCON_CLKSEL1 | S3C2410_UCON_CLKSEL2,
+ 	},
+ 	[1] = {
+ 		.hwport	     = 2,
+@@ -128,8 +111,7 @@ static struct s3c2410_uartcfg anubis_uartcfgs[] __initdata = {
+ 		.ucon	     = UCON,
+ 		.ulcon	     = ULCON,
+ 		.ufcon	     = UFCON,
+-		.clocks	     = anubis_serial_clocks,
+-		.clocks_size = ARRAY_SIZE(anubis_serial_clocks),
++		.clk_sel	= S3C2410_UCON_CLKSEL1 | S3C2410_UCON_CLKSEL2,
+ 	},
+ };
+ 
+diff --git a/arch/arm/mach-s3c2440/mach-at2440evb.c b/arch/arm/mach-s3c2440/mach-at2440evb.c
+index 6c98b78..4cc60b1 100644
+--- a/arch/arm/mach-s3c2440/mach-at2440evb.c
++++ b/arch/arm/mach-s3c2440/mach-at2440evb.c
+@@ -57,22 +57,6 @@ static struct map_desc at2440evb_iodesc[] __initdata = {
+ #define ULCON (S3C2410_LCON_CS8 | S3C2410_LCON_PNONE)
+ #define UFCON (S3C2410_UFCON_RXTRIG8 | S3C2410_UFCON_FIFOMODE)
+ 
+-static struct s3c24xx_uart_clksrc at2440evb_serial_clocks[] = {
+-	[0] = {
+-		.name		= "uclk",
+-		.divisor	= 1,
+-		.min_baud	= 0,
+-		.max_baud	= 0,
+-	},
+-	[1] = {
+-		.name		= "pclk",
+-		.divisor	= 1,
+-		.min_baud	= 0,
+-		.max_baud	= 0,
+-	}
+-};
+-
+-
+ static struct s3c2410_uartcfg at2440evb_uartcfgs[] __initdata = {
+ 	[0] = {
+ 		.hwport	     = 0,
+@@ -80,8 +64,7 @@ static struct s3c2410_uartcfg at2440evb_uartcfgs[] __initdata = {
+ 		.ucon	     = UCON,
+ 		.ulcon	     = ULCON,
+ 		.ufcon	     = UFCON,
+-		.clocks	     = at2440evb_serial_clocks,
+-		.clocks_size = ARRAY_SIZE(at2440evb_serial_clocks),
++		.clk_sel	= S3C2410_UCON_CLKSEL1 | S3C2410_UCON_CLKSEL2,
+ 	},
+ 	[1] = {
+ 		.hwport	     = 1,
+@@ -89,8 +72,7 @@ static struct s3c2410_uartcfg at2440evb_uartcfgs[] __initdata = {
+ 		.ucon	     = UCON,
+ 		.ulcon	     = ULCON,
+ 		.ufcon	     = UFCON,
+-		.clocks	     = at2440evb_serial_clocks,
+-		.clocks_size = ARRAY_SIZE(at2440evb_serial_clocks),
++		.clk_sel	= S3C2410_UCON_CLKSEL1 | S3C2410_UCON_CLKSEL2,
+ 	},
+ };
+ 
+diff --git a/arch/arm/mach-s3c2440/mach-osiris.c b/arch/arm/mach-s3c2440/mach-osiris.c
+index d885363..b75ed46 100644
+--- a/arch/arm/mach-s3c2440/mach-osiris.c
++++ b/arch/arm/mach-s3c2440/mach-osiris.c
+@@ -100,21 +100,6 @@ static struct map_desc osiris_iodesc[] __initdata = {
+ #define ULCON S3C2410_LCON_CS8 | S3C2410_LCON_PNONE | S3C2410_LCON_STOPB
+ #define UFCON S3C2410_UFCON_RXTRIG8 | S3C2410_UFCON_FIFOMODE
+ 
+-static struct s3c24xx_uart_clksrc osiris_serial_clocks[] = {
+-	[0] = {
+-		.name		= "uclk",
+-		.divisor	= 1,
+-		.min_baud	= 0,
+-		.max_baud	= 0,
+-	},
+-	[1] = {
+-		.name		= "pclk",
+-		.divisor	= 1,
+-		.min_baud	= 0,
+-		.max_baud	= 0,
+-	}
+-};
+-
+ static struct s3c2410_uartcfg osiris_uartcfgs[] __initdata = {
+ 	[0] = {
+ 		.hwport	     = 0,
+@@ -122,8 +107,7 @@ static struct s3c2410_uartcfg osiris_uartcfgs[] __initdata = {
+ 		.ucon	     = UCON,
+ 		.ulcon	     = ULCON,
+ 		.ufcon	     = UFCON,
+-		.clocks	     = osiris_serial_clocks,
+-		.clocks_size = ARRAY_SIZE(osiris_serial_clocks),
++		.clk_sel	= S3C2410_UCON_CLKSEL1 | S3C2410_UCON_CLKSEL2,
+ 	},
+ 	[1] = {
+ 		.hwport	     = 1,
+@@ -131,8 +115,7 @@ static struct s3c2410_uartcfg osiris_uartcfgs[] __initdata = {
+ 		.ucon	     = UCON,
+ 		.ulcon	     = ULCON,
+ 		.ufcon	     = UFCON,
+-		.clocks	     = osiris_serial_clocks,
+-		.clocks_size = ARRAY_SIZE(osiris_serial_clocks),
++		.clk_sel	= S3C2410_UCON_CLKSEL1 | S3C2410_UCON_CLKSEL2,
+ 	},
+ 	[2] = {
+ 		.hwport	     = 2,
+@@ -140,8 +123,7 @@ static struct s3c2410_uartcfg osiris_uartcfgs[] __initdata = {
+ 		.ucon	     = UCON,
+ 		.ulcon	     = ULCON,
+ 		.ufcon	     = UFCON,
+-		.clocks	     = osiris_serial_clocks,
+-		.clocks_size = ARRAY_SIZE(osiris_serial_clocks),
++		.clk_sel	= S3C2410_UCON_CLKSEL1 | S3C2410_UCON_CLKSEL2,
+ 	}
+ };
+ 
+diff --git a/arch/arm/mach-s3c2440/mach-rx1950.c b/arch/arm/mach-s3c2440/mach-rx1950.c
+index 9528b37..04bb392 100644
+--- a/arch/arm/mach-s3c2440/mach-rx1950.c
++++ b/arch/arm/mach-s3c2440/mach-rx1950.c
+@@ -67,15 +67,6 @@
+ static struct map_desc rx1950_iodesc[] __initdata = {
+ };
+ 
+-static struct s3c24xx_uart_clksrc rx1950_serial_clocks[] = {
+-	[0] = {
+-	       .name = "fclk_n",
+-	       .divisor = 1,
+-	       .min_baud = 0,
+-	       .max_baud = 0,
+-	},
+-};
+-
+ static struct s3c2410_uartcfg rx1950_uartcfgs[] __initdata = {
+ 	[0] = {
+ 	       .hwport = 0,
+@@ -83,8 +74,7 @@ static struct s3c2410_uartcfg rx1950_uartcfgs[] __initdata = {
+ 	       .ucon = 0x3c5,
+ 	       .ulcon = 0x03,
+ 	       .ufcon = 0x51,
+-	       .clocks = rx1950_serial_clocks,
+-	       .clocks_size = ARRAY_SIZE(rx1950_serial_clocks),
++		.clk_sel = S3C2410_UCON_CLKSEL3,
+ 	},
+ 	[1] = {
+ 	       .hwport = 1,
+@@ -92,8 +82,7 @@ static struct s3c2410_uartcfg rx1950_uartcfgs[] __initdata = {
+ 	       .ucon = 0x3c5,
+ 	       .ulcon = 0x03,
+ 	       .ufcon = 0x51,
+-	       .clocks = rx1950_serial_clocks,
+-	       .clocks_size = ARRAY_SIZE(rx1950_serial_clocks),
++		.clk_sel = S3C2410_UCON_CLKSEL3,
+ 	},
+ 	/* IR port */
+ 	[2] = {
+@@ -102,8 +91,7 @@ static struct s3c2410_uartcfg rx1950_uartcfgs[] __initdata = {
+ 	       .ucon = 0x3c5,
+ 	       .ulcon = 0x43,
+ 	       .ufcon = 0xf1,
+-	       .clocks = rx1950_serial_clocks,
+-	       .clocks_size = ARRAY_SIZE(rx1950_serial_clocks),
++		.clk_sel = S3C2410_UCON_CLKSEL3,
+ 	},
+ };
+ 
+diff --git a/arch/arm/mach-s3c2440/mach-rx3715.c b/arch/arm/mach-s3c2440/mach-rx3715.c
+index a88247e..3c0d17c 100644
+--- a/arch/arm/mach-s3c2440/mach-rx3715.c
++++ b/arch/arm/mach-s3c2440/mach-rx3715.c
+@@ -67,16 +67,6 @@ static struct map_desc rx3715_iodesc[] __initdata = {
+ 	},
+ };
+ 
+-
+-static struct s3c24xx_uart_clksrc rx3715_serial_clocks[] = {
+-	[0] = {
+-		.name		= "fclk_n",
+-		.divisor	= 1,
+-		.min_baud	= 0,
+-		.max_baud	= 0,
+-	}
+-};
+-
+ static struct s3c2410_uartcfg rx3715_uartcfgs[] = {
+ 	[0] = {
+ 		.hwport	     = 0,
+@@ -84,8 +74,7 @@ static struct s3c2410_uartcfg rx3715_uartcfgs[] = {
+ 		.ucon	     = 0x3c5,
+ 		.ulcon	     = 0x03,
+ 		.ufcon	     = 0x51,
+-		.clocks	     = rx3715_serial_clocks,
+-		.clocks_size = ARRAY_SIZE(rx3715_serial_clocks),
++		.clk_sel	= S3C2410_UCON_CLKSEL3,
+ 	},
+ 	[1] = {
+ 		.hwport	     = 1,
+@@ -93,8 +82,7 @@ static struct s3c2410_uartcfg rx3715_uartcfgs[] = {
+ 		.ucon	     = 0x3c5,
+ 		.ulcon	     = 0x03,
+ 		.ufcon	     = 0x00,
+-		.clocks	     = rx3715_serial_clocks,
+-		.clocks_size = ARRAY_SIZE(rx3715_serial_clocks),
++		.clk_sel	= S3C2410_UCON_CLKSEL3,
+ 	},
+ 	/* IR port */
+ 	[2] = {
+@@ -103,8 +91,7 @@ static struct s3c2410_uartcfg rx3715_uartcfgs[] = {
+ 		.ucon	     = 0x3c5,
+ 		.ulcon	     = 0x43,
+ 		.ufcon	     = 0x51,
+-		.clocks	     = rx3715_serial_clocks,
+-		.clocks_size = ARRAY_SIZE(rx3715_serial_clocks),
++		.clk_sel	= S3C2410_UCON_CLKSEL3,
+ 	}
+ };
+ 
+diff --git a/arch/arm/mach-s5p64x0/init.c b/arch/arm/mach-s5p64x0/init.c
+index 79833ca..659a66c 100644
+--- a/arch/arm/mach-s5p64x0/init.c
++++ b/arch/arm/mach-s5p64x0/init.c
+@@ -23,36 +23,7 @@
+ #include <plat/s5p6450.h>
+ #include <plat/regs-serial.h>
+ 
+-static struct s3c24xx_uart_clksrc s5p64x0_serial_clocks[] = {
+-	[0] = {
+-		.name		= "pclk_low",
+-		.divisor	= 1,
+-		.min_baud	= 0,
+-		.max_baud	= 0,
+-	},
+-	[1] = {
+-		.name		= "uclk1",
+-		.divisor	= 1,
+-		.min_baud	= 0,
+-		.max_baud	= 0,
+-	},
+-};
+-
+ /* uart registration process */
+-
+-void __init s5p64x0_common_init_uarts(struct s3c2410_uartcfg *cfg, int no)
+-{
+-	struct s3c2410_uartcfg *tcfg = cfg;
+-	u32 ucnt;
+-
+-	for (ucnt = 0; ucnt < no; ucnt++, tcfg++) {
+-		if (!tcfg->clocks) {
+-			tcfg->clocks = s5p64x0_serial_clocks;
+-			tcfg->clocks_size = ARRAY_SIZE(s5p64x0_serial_clocks);
+-		}
+-	}
+-}
+-
+ void __init s5p6440_init_uarts(struct s3c2410_uartcfg *cfg, int no)
+ {
+ 	int uart;
+@@ -62,12 +33,10 @@ void __init s5p6440_init_uarts(struct s3c2410_uartcfg *cfg, int no)
+ 		s5p_uart_resources[uart].resources->end = S5P6440_PA_UART(uart) + S5P_SZ_UART;
+ 	}
+ 
+-	s5p64x0_common_init_uarts(cfg, no);
+ 	s3c24xx_init_uartdevs("s3c6400-uart", s5p_uart_resources, cfg, no);
+ }
+ 
+ void __init s5p6450_init_uarts(struct s3c2410_uartcfg *cfg, int no)
+ {
+-	s5p64x0_common_init_uarts(cfg, no);
+ 	s3c24xx_init_uartdevs("s3c6400-uart", s5p_uart_resources, cfg, no);
+ }
+diff --git a/arch/arm/mach-s5pv210/init.c b/arch/arm/mach-s5pv210/init.c
+index 4865ae2..468a5f8 100644
+--- a/arch/arm/mach-s5pv210/init.c
++++ b/arch/arm/mach-s5pv210/init.c
+@@ -18,27 +18,8 @@
+ #include <plat/s5pv210.h>
+ #include <plat/regs-serial.h>
+ 
+-static struct s3c24xx_uart_clksrc s5pv210_serial_clocks[] = {
+-	[0] = {
+-		.name		= "pclk",
+-		.divisor	= 1,
+-		.min_baud	= 0,
+-		.max_baud	= 0,
+-	},
+-};
+-
+ /* uart registration process */
+ void __init s5pv210_common_init_uarts(struct s3c2410_uartcfg *cfg, int no)
+ {
+-	struct s3c2410_uartcfg *tcfg = cfg;
+-	u32 ucnt;
+-
+-	for (ucnt = 0; ucnt < no; ucnt++, tcfg++) {
+-		if (!tcfg->clocks) {
+-			tcfg->clocks = s5pv210_serial_clocks;
+-			tcfg->clocks_size = ARRAY_SIZE(s5pv210_serial_clocks);
+-		}
+-	}
+-
+ 	s3c24xx_init_uartdevs("s5pv210-uart", s5p_uart_resources, cfg, no);
+ }
 diff --git a/arch/arm/plat-samsung/include/plat/regs-serial.h b/arch/arm/plat-samsung/include/plat/regs-serial.h
-index 7207348..b493d8d 100644
+index b493d8d..25f0c36 100644
 --- a/arch/arm/plat-samsung/include/plat/regs-serial.h
 +++ b/arch/arm/plat-samsung/include/plat/regs-serial.h
-@@ -222,6 +222,10 @@
- #define S5PV210_UFSTAT_RXSHIFT	(0)
- 
- #define NO_NEED_CHECK_CLKSRC	1
-+#define S3C2410_UCON_CLKSEL0	(1 << 0)
-+#define S3C2410_UCON_CLKSEL1	(1 << 1)
-+#define S3C2410_UCON_CLKSEL2	(1 << 2)
-+#define S3C2410_UCON_CLKSEL3	(1 << 3)
+@@ -229,26 +229,6 @@
  
  #ifndef __ASSEMBLY__
  
-@@ -257,6 +261,7 @@ struct s3c2410_uartcfg {
- 	unsigned char	   unused;
- 	unsigned short	   flags;
- 	upf_t		   uart_flags;	 /* default uart flags */
-+	unsigned int	   clk_sel;
- 
- 	unsigned int	   has_fracval;
- 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index fc242b2..dc5a4ed 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -49,6 +49,7 @@
- #include <mach/map.h>
- 
- #include <plat/regs-serial.h>
-+#include <plat/clock.h>
- 
- #include "samsung.h"
- 
-@@ -558,133 +559,98 @@ static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
+-/* struct s3c24xx_uart_clksrc
+- *
+- * this structure defines a named clock source that can be used for the
+- * uart, so that the best clock can be selected for the requested baud
+- * rate.
+- *
+- * min_baud and max_baud define the range of baud-rates this clock is
+- * acceptable for, if they are both zero, it is assumed any baud rate that
+- * can be generated from this clock will be used.
+- *
+- * divisor gives the divisor from the clock to the one seen by the uart
+-*/
+-
+-struct s3c24xx_uart_clksrc {
+-	const char	*name;
+-	unsigned int	 divisor;
+-	unsigned int	 min_baud;
+-	unsigned int	 max_baud;
+-};
+-
+ /* configuration structure for per-machine configurations for the
+  * serial port
   *
- */
- 
-+#define MAX_CLK_NAME_LENGTH 15
- 
--#define MAX_CLKS (8)
+@@ -268,9 +248,6 @@ struct s3c2410_uartcfg {
+ 	unsigned long	   ucon;	 /* value of ucon for port */
+ 	unsigned long	   ulcon;	 /* value of ulcon for port */
+ 	unsigned long	   ufcon;	 /* value of ufcon for port */
 -
--static struct s3c24xx_uart_clksrc tmp_clksrc = {
--	.name		= "pclk",
--	.min_baud	= 0,
--	.max_baud	= 0,
--	.divisor	= 1,
--};
--
--static inline int
--s3c24xx_serial_getsource(struct uart_port *port, struct s3c24xx_uart_clksrc *c)
-+static inline int s3c24xx_serial_getsource(struct uart_port *port)
- {
- 	struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
-+	unsigned int ucon;
+-	struct s3c24xx_uart_clksrc *clocks;
+-	unsigned int		    clocks_size;
+ };
  
--	return (info->get_clksrc)(port, c);
--}
--
--static inline int
--s3c24xx_serial_setsource(struct uart_port *port, struct s3c24xx_uart_clksrc *c)
--{
--	struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
-+	if (info->num_clks == 1)
-+		return 0;
- 
--	return (info->set_clksrc)(port, c);
-+	ucon = rd_regl(port, S3C2410_UCON);
-+	ucon &= info->clksel_mask;
-+	return ucon >> info->clksel_shift;
- }
- 
--struct baud_calc {
--	struct s3c24xx_uart_clksrc	*clksrc;
--	unsigned int			 calc;
--	unsigned int			 divslot;
--	unsigned int			 quot;
--	struct clk			*src;
--};
--
--static int s3c24xx_serial_calcbaud(struct baud_calc *calc,
--				   struct uart_port *port,
--				   struct s3c24xx_uart_clksrc *clksrc,
--				   unsigned int baud)
-+static void s3c24xx_serial_setsource(struct uart_port *port,
-+			unsigned int clk_sel)
- {
--	struct s3c24xx_uart_port *ourport = to_ourport(port);
--	unsigned long rate;
--
--	calc->src = clk_get(port->dev, clksrc->name);
--	if (calc->src == NULL || IS_ERR(calc->src))
--		return 0;
--
--	rate = clk_get_rate(calc->src);
--	rate /= clksrc->divisor;
-+	struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
-+	unsigned int ucon;
- 
--	calc->clksrc = clksrc;
-+	if (info->num_clks == 1)
-+		return;
- 
--	if (ourport->info->has_divslot) {
--		unsigned long div = rate / baud;
--
--		/* The UDIVSLOT register on the newer UARTs allows us to
--		 * get a divisor adjustment of 1/16th on the baud clock.
--		 *
--		 * We don't keep the UDIVSLOT value (the 16ths we calculated
--		 * by not multiplying the baud by 16) as it is easy enough
--		 * to recalculate.
--		 */
--
--		calc->quot = div / 16;
--		calc->calc = rate / div;
--	} else {
--		calc->quot = (rate + (8 * baud)) / (16 * baud);
--		calc->calc = (rate / (calc->quot * 16));
--	}
-+	ucon = rd_regl(port, S3C2410_UCON);
-+	if ((ucon & info->clksel_mask) >> info->clksel_shift == clk_sel)
-+		return;
- 
--	calc->quot--;
--	return 1;
-+	ucon &= ~info->clksel_mask;
-+	ucon |= clk_sel << info->clksel_shift;
-+	wr_regl(port, S3C2410_UCON, ucon);
- }
- 
--static unsigned int s3c24xx_serial_getclk(struct uart_port *port,
--					  struct s3c24xx_uart_clksrc **clksrc,
--					  struct clk **clk,
--					  unsigned int baud)
-+static unsigned int s3c24xx_serial_getclk(struct s3c24xx_uart_port *ourport,
-+			unsigned int req_baud, struct clk **best_clk,
-+			unsigned int *clk_num)
- {
--	struct s3c2410_uartcfg *cfg = s3c24xx_port_to_cfg(port);
--	struct s3c24xx_uart_clksrc *clkp;
--	struct baud_calc res[MAX_CLKS];
--	struct baud_calc *resptr, *best, *sptr;
--	int i;
--
--	clkp = cfg->clocks;
--	best = NULL;
--
--	if (cfg->clocks_size < 2) {
--		if (cfg->clocks_size == 0)
--			clkp = &tmp_clksrc;
--
--		s3c24xx_serial_calcbaud(res, port, clkp, baud);
--		best = res;
--		resptr = best + 1;
--	} else {
--		resptr = res;
--
--		for (i = 0; i < cfg->clocks_size; i++, clkp++) {
--			if (s3c24xx_serial_calcbaud(resptr, port, clkp, baud))
--				resptr++;
-+	struct s3c24xx_uart_info *info = ourport->info;
-+	struct clk *clk;
-+	unsigned long rate;
-+	unsigned int cnt, baud, quot, clk_sel, best_quot = 0;
-+	char clkname[MAX_CLK_NAME_LENGTH];
-+	int calc_deviation, deviation = (1 << 30) - 1;
-+
-+	*best_clk = NULL;
-+	clk_sel = (ourport->cfg->clk_sel) ? ourport->cfg->clk_sel :
-+			ourport->info->def_clk_sel;
-+	for (cnt = 0; cnt < info->num_clks; cnt++) {
-+		if (!(clk_sel & (1 << cnt)))
-+			continue;
-+
-+		sprintf(clkname, "clk_uart_baud%d", cnt);
-+		clk = clk_get(ourport->port.dev, clkname);
-+		if (IS_ERR_OR_NULL(clk))
-+			continue;
-+
-+		rate = clk_get_rate(clk);
-+		if (!rate)
-+			continue;
-+
-+		if (ourport->info->has_divslot) {
-+			unsigned long div = rate / req_baud;
-+
-+			/* The UDIVSLOT register on the newer UARTs allows us to
-+			 * get a divisor adjustment of 1/16th on the baud clock.
-+			 *
-+			 * We don't keep the UDIVSLOT value (the 16ths we
-+			 * calculated by not multiplying the baud by 16) as it
-+			 * is easy enough to recalculate.
-+			 */
-+
-+			quot = div / 16;
-+			baud = rate / div;
-+		} else {
-+			quot = (rate + (8 * req_baud)) / (16 * req_baud);
-+			baud = rate / (quot * 16);
- 		}
--	}
--
--	/* ok, we now need to select the best clock we found */
--
--	if (!best) {
--		unsigned int deviation = (1<<30)|((1<<30)-1);
--		int calc_deviation;
-+		quot--;
- 
--		for (sptr = res; sptr < resptr; sptr++) {
--			calc_deviation = baud - sptr->calc;
--			if (calc_deviation < 0)
--				calc_deviation = -calc_deviation;
-+		calc_deviation = req_baud - baud;
-+		if (calc_deviation < 0)
-+			calc_deviation = -calc_deviation;
- 
--			if (calc_deviation < deviation) {
--				best = sptr;
--				deviation = calc_deviation;
--			}
-+		if (calc_deviation < deviation) {
-+			*best_clk = clk;
-+			best_quot = quot;
-+			*clk_num = cnt;
-+			deviation = calc_deviation;
- 		}
- 	}
- 
--	/* store results to pass back */
--
--	*clksrc = best->clksrc;
--	*clk    = best->src;
--
--	return best->quot;
-+	return best_quot;
- }
- 
- /* udivslot_table[]
-@@ -717,10 +683,9 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
- {
- 	struct s3c2410_uartcfg *cfg = s3c24xx_port_to_cfg(port);
- 	struct s3c24xx_uart_port *ourport = to_ourport(port);
--	struct s3c24xx_uart_clksrc *clksrc = NULL;
- 	struct clk *clk = NULL;
- 	unsigned long flags;
--	unsigned int baud, quot;
-+	unsigned int baud, quot, clk_sel = 0;
- 	unsigned int ulcon;
- 	unsigned int umcon;
- 	unsigned int udivslot = 0;
-@@ -736,17 +701,16 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
- 	 */
- 
- 	baud = uart_get_baud_rate(port, termios, old, 0, 115200*8);
--
-+	quot = s3c24xx_serial_getclk(ourport, baud, &clk, &clk_sel);
- 	if (baud == 38400 && (port->flags & UPF_SPD_MASK) == UPF_SPD_CUST)
- 		quot = port->custom_divisor;
--	else
--		quot = s3c24xx_serial_getclk(port, &clksrc, &clk, baud);
-+	if (!clk)
-+		return;
- 
- 	/* check to see if we need  to change clock source */
- 
--	if (ourport->clksrc != clksrc || ourport->baudclk != clk) {
--		dbg("selecting clock %p\n", clk);
--		s3c24xx_serial_setsource(port, clksrc);
-+	if (ourport->baudclk != clk) {
-+		s3c24xx_serial_setsource(port, clk_sel);
- 
- 		if (ourport->baudclk != NULL && !IS_ERR(ourport->baudclk)) {
- 			clk_disable(ourport->baudclk);
-@@ -755,7 +719,6 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
- 
- 		clk_enable(clk);
- 
--		ourport->clksrc = clksrc;
- 		ourport->baudclk = clk;
- 		ourport->baudclk_rate = clk ? clk_get_rate(clk) : 0;
- 	}
-@@ -1202,7 +1165,7 @@ static ssize_t s3c24xx_serial_show_clksrc(struct device *dev,
- 	struct uart_port *port = s3c24xx_dev_to_port(dev);
- 	struct s3c24xx_uart_port *ourport = to_ourport(port);
- 
--	return snprintf(buf, PAGE_SIZE, "* %s\n", ourport->clksrc->name);
-+	return snprintf(buf, PAGE_SIZE, "* %s\n", ourport->baudclk->name);
- }
- 
- static DEVICE_ATTR(clock_source, S_IRUGO, s3c24xx_serial_show_clksrc, NULL);
-@@ -1382,12 +1345,13 @@ static void __init
- s3c24xx_serial_get_options(struct uart_port *port, int *baud,
- 			   int *parity, int *bits)
- {
--	struct s3c24xx_uart_clksrc clksrc;
- 	struct clk *clk;
- 	unsigned int ulcon;
- 	unsigned int ucon;
- 	unsigned int ubrdiv;
- 	unsigned long rate;
-+	unsigned int clk_sel;
-+	char clk_name[MAX_CLK_NAME_LENGTH];
- 
- 	ulcon  = rd_regl(port, S3C2410_ULCON);
- 	ucon   = rd_regl(port, S3C2410_UCON);
-@@ -1432,11 +1396,12 @@ s3c24xx_serial_get_options(struct uart_port *port, int *baud,
- 
- 		/* now calculate the baud rate */
- 
--		s3c24xx_serial_getsource(port, &clksrc);
-+		clk_sel = s3c24xx_serial_getsource(port);
-+		sprintf(clk_name, "clk_uart_baud%d", clk_sel);
- 
--		clk = clk_get(port->dev, clksrc.name);
-+		clk = clk_get(port->dev, clk_name);
- 		if (!IS_ERR(clk) && clk != NULL)
--			rate = clk_get_rate(clk) / clksrc.divisor;
-+			rate = clk_get_rate(clk);
- 		else
- 			rate = 1;
- 
+ /* s3c24xx_uart_devs
 diff --git a/drivers/tty/serial/samsung.h b/drivers/tty/serial/samsung.h
-index 6c9cb9d..11369f3 100644
+index 11369f3..40e9ef1 100644
 --- a/drivers/tty/serial/samsung.h
 +++ b/drivers/tty/serial/samsung.h
-@@ -19,6 +19,10 @@ struct s3c24xx_uart_info {
- 	unsigned long		tx_fifomask;
- 	unsigned long		tx_fifoshift;
- 	unsigned long		tx_fifofull;
-+	unsigned int		def_clk_sel;
-+	unsigned long		num_clks;
-+	unsigned long		clksel_mask;
-+	unsigned long		clksel_shift;
+@@ -47,7 +47,6 @@ struct s3c24xx_uart_port {
+ 	unsigned int			tx_irq;
  
- 	/* uart port features */
- 
+ 	struct s3c24xx_uart_info	*info;
+-	struct s3c24xx_uart_clksrc	*clksrc;
+ 	struct clk			*clk;
+ 	struct clk			*baudclk;
+ 	struct uart_port		port;
 -- 
 1.6.6.rc2
-
