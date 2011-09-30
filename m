@@ -1,63 +1,133 @@
-From: =?utf-8?B?5LuFMTDlhYPmr4/lpKk=?= <admin@ih-intel.com>
-Subject: =?utf-8?B?576k5Y+R6L2v5Lu2K+S5sOWutuaQnOe0ouacuivmnIDmlrDlub/kuqTkvJrkubDlrrbjgIHmtbc=?=
-	=?utf-8?B?5YWz5pWw5o2uLEIyQuivouebmOS5sOWutjUwMOS4h+OAgg==?=
-Date: Thu, 29 Sep 2011 23:07:53 +0000 (UTC)
-Message-ID: <20120930004951263584@ih-intel.com>
-Reply-To: <1339625218@qq.com>
+From: "Govindraj.R" <govindraj.raja@ti.com>
+Subject: [PATCH v6 00/16] OMAP2+: UART: Runtime adaptation + cleanup
+Date: Fri, 30 Sep 2011 16:30:36 +0530
+Message-ID: <1317380436-548-1-git-send-email-govindraj.raja@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [211.144.136.18] ([211.144.136.18]:3926 "HELO ih-intel.com"
-	rhost-flags-FAIL-FAIL-OK-OK) by vger.kernel.org with SMTP
-	id S1752127Ab1I2XHs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 29 Sep 2011 19:07:48 -0400
-Date: Sun, 30 Sep 2012 00:49:46 +0800
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-omap-owner@vger.kernel.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: linux-omap@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Kevin Hilman <khilman@ti.com>, Tero Kristo <t-kristo@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Paul Walmsley <paul@pwsan.com>, Partha Basak <p-basak2@ti.com>, Tony Lindgren <tony@atomide.com>, Rajendra Nayak <rnayak@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Govindraj R <govindraj.raja@ti.com>
 List-Id: linux-serial@vger.kernel.org
-To: linmiao@online.sh.cn, linodejava@c-98-226-85-10.hsd1.in.com, linqiang105@163.com, linruo2010@gmail.com, linshaolong2008@126.com, lin-stan@hotmail.com, lintie1208@126.com
 
-576k5Y+R6L2v5Lu2K+S5sOWutuaQnOe0ouacuisxMDnlsYrlub/kuqTkvJrkubDlrrbjgIHlsZXk
-vJrkubDlrrbjgIHmtbflhbPmlbDmja4sQjJC6K+i55uY5Lmw5a62NTAw5LiH44CCDQoNCuS4gOWF
-sTjkuKrljIUo5pWw5o2u5piv5YWo6KGM5Lia55qE77yM5oyJ54Wn6KGM5Lia5YiG5aW957G777yM
-5bm25LiU5Y+v5Lul5oyJ54Wn5YWz6ZSu6K+N5p+l6K+i55qEKe+8miANCjHvvIwyMDEx5pil5a2j
-MTA55bGK5bm/5Lqk5Lya5Lmw5a625pWw5o2u5bqT5paw6bKc5Ye654KJ77yM6LaF57qn5paw6bKc
-5Lmw5a6277yM5paw6bKc5pWw5o2u77yM5a655piT5oiQ5Y2V77yBIA0KMu+8jOacgOaWsOWFqOeQ
-g+S5sOWutuW6kyzlhbE0NTE2NjDmnaHmlbDmja7jgIIgDQoz77yMMjAwOOW5tCwyMDA55bm0LDIw
-MTDlubQg5pil5a2jK+eni+Wto+W5v+S6pOS8muS5sOWutuWQjeW9le+8jDEwMyAxMDQgMTA1IDEw
-NiAxMDcgMTA4IOWFseWFreWxiiDlhbExMjAuNuS4h+aVsOaNruOAgg0KNO+8jDIwMTDlubTlm73p
-mYXkv4PplIDljY/kvJrvvIhQUEFJ77yJ5oiQ5ZGY5ZCN5Y2VIFBQQUkgTWVtYmVycyBEaXJlY3Rv
-cnnvvIzpnZ7luLjph43opoHnmoTlpKfkubDlrrbjgIINCjXvvIwyMDEw5bm05Yiw6aaZ5riv6YeH
-6LSt55qE5Zu95aSW5a6i5Lq65ZCN5b2VKOmmmea4r+i0uOWPkeWxgOaPkOS+mynvvIzlhbE3LjLk
-uIfmlbDmja7vvIzotoXnuqfph43opoHnmoTkubDlrrbjgIINCjbvvIw2MC445LiH5p2h5pyA5paw
-5Zu95aSWQjJC5Lmw5a626K+i55uY44CCDQo377yMMjAwOeW5tOa1t+WFs+aPkOWNleaVsOaNrnBp
-ZXJz54mI5pWw5o2uIDHljYPkuIfjgIINCjjvvIznvqTlj5Hova/ku7bvvIznvqTlj5Hova/ku7bn
-moTpg6jnvbLkuI7lronoo4XjgIINCg0K5YWxIDUwMOS4h+S4quS5sOWutu+8jOavj+S4quWdh+ac
-iUVtYWlsLiANCg0K5L+d6K+B5q+P5aSp6YO95pyJ5Lmw5a625Zue5aSN44CCDQrkv53or4Hmr4/l
-pKnpg73mnInkubDlrrblm57lpI3jgIINCg0K6KaB55qE5oqT57Sn6IGU57O7UVE6IDEzMzk2MjUy
-MTggICDmiJbogIXnq4vljbPlm57lpI3pgq7nrrE6IDEzMzk2MjUyMThAcXEuY29tDQropoHnmoTm
-ipPntKfogZTns7tRUTogMTMzOTYyNTIxOCAgIOaIluiAheeri+WNs+WbnuWkjemCrueusTogMTMz
-OTYyNTIxOEBxcS5jb20NCuimgeeahOaKk+e0p+iBlOezu1FROiAxMzM5NjI1MjE4ICAg5oiW6ICF
-56uL5Y2z5Zue5aSN6YKu566xOiAxMzM5NjI1MjE4QHFxLmNvbQ0KIA0KDQror5rkv6HkuLrmnKzv
-vIzlpoLmnpzkuI3kv6Hku7vmnKzkuros5Y+v5Lul6LWw5reY5a6d5Lqk5piTLOaUtui0p+mqjOiv
-geWQjuWGjeS7mOasvizov5nmmK/lr7nmgqjmnIDlpb3nmoTkv53pmpzkuobjgIIgDQoNCuS/neiv
-geavj+WkqemDveacieS5sOWutuWbnuWkjeOAgg0K5L+d6K+B5q+P5aSp6YO95pyJ5Lmw5a625Zue
-5aSN44CCDQrkv53or4Hmr4/lpKnpg73mnInkubDlrrblm57lpI3jgIINCg0KDQoNCg0K5bm/5Lqk
-5Lya5Lmw5a625oyJ5Lqn5ZOB57G75Yir5YiG57G777yM5YiG5Li65Lul5LiL5Yeg57G777yaDQox
-IOWKnuWFrOiuvuWkhw0KMiDnvJbnu4flj4rol6Tpk4Hlt6Xoibrlk4ENCjMg546755KDDQo0IOmk
-kOWOqOeUqOWFtw0KNSDovabovoYNCjYg5aSn5Z6L5py65qKw5Y+K6K6+5aSHDQo3IOeUteWtkOeU
-teawlA0KOCDnlLXlrZDmtojotLnlk4ENCjkg57q657uHDQoxMCDmnI3oo4UNCjExIOS4quS6uuaK
-pOeQhg0KMTIg5bel56iL5py65qKwDQoxMyDlt6XlhbcNCjE0IOWMluW3pQ0KMTUg6K6h566X5py6
-5Y+K6YCa6K6vDQoxNiDlrrblsYXnlKjlk4ENCjE3IOWutuWxheijhemlsA0KMTgg5a625YW3DQox
-OSDlrrbnlKjnlLXlmagNCjIwIOW7uuetkeWPiuijhemlsOadkOaWmQ0KMjEg6IqC5pel55So5ZOB
-DQoyMiDnpLzlk4Hlj4rotaDlk4ENCjIzIOaRqeaJmOi9pg0KMjQg5rG96L2m6YWN5Lu2DQoyNSDp
-o5/lk4ENCjI2IOmZtueTtw0KMjcg6ZOB55+zDQoyOCDnjqnlhbcNCjI5IOWNq+a1tA0KMzAg5LqU
-6YeRDQozMSDlsI/lnovmnLrmorANCjMyIOmeiw0KMzMg5LyR6Zey55So5ZOBDQozNCDljLvnlpcN
-CjM1IOa1tOWupOS6p+WTgQ0KMzYg5Zut5p6XDQozNyDnhafmmI7kuqflk4ENCjM4IOmSn+ihqOec
-vOmVnA0KMzkg6Ieq6KGM6L2mDQo0MCDljIUNCg0KDQrkv53or4Hmr4/lpKnpg73mnInkubDlrrbl
-m57lpI3jgIINCuS/neivgeavj+WkqemDveacieS5sOWutuWbnuWkjeOAgg0K5L+d6K+B5q+P5aSp
-6YO95pyJ5Lmw5a625Zue5aSN44CCDQrkv53or4Hmr4/lpKnpg73mnInkubDlrrblm57lpI3jgIIN
-CuS/neivgeavj+WkqemDveacieS5sOWutuWbnuWkjeOAgg0K
+Converting uart driver to adapt to pm runtime API's.
+Code re-org + cleanup.
+Moving some functionality from serial.c to omap-serial.c
 
+Changes involves:
+================
+1.) Cleaning up certain uart calls from sram_idle func.
+2.) Removed all types of uart clock handling code from serial.c
+3.) Using hwmod_mux API enable wakeup capability for uart pad during
+   hwmod_idle state i.e., when uart clocks are disabled we can enable
+   io-pad wakeup capability for uart if mux_data is available for
+   given uart. Also during during resume from idle call to uart we need
+   to enable clocks back conditionally and this can be done only when io-pad
+   wakeup event bit is set for uart_rx pad. So we need a hwmod API
+   which can probe the uart pad and let us know whether a uart wakeup
+   happened. So omap_hmwod_pad_wakeup_status API is added to meet this
+   requirement.
+3.) Adapted omap-serial driver to use runtime API's.
+4.) Modify serial_init calls to accept uart parameters from board file.
+    Like dma_usage, rx_timeout, dma_rx_pollrate, auto_suspend_timeout etc.
+5.) Use the omap_prm driver with irq_chaining to wake up uart after clocks are
+    cut.
+	
+Patch series is based on 3.1.0-rc4 + omap_device fixes.
+>From Kevin's tree.
+git://gitorious.org/khilman/linux-omap-pm.git for_3.2/omap_device
+
+Also the patch series depends on Tero's v9 Irq_chaining patches.
+Dependent irq_chaining patches are as below.
+
+e9e7ae1 omap3+: add omap prm driver initialization
+e52486f OMAP3: pm: do not enable PRCM MPU interrupts manually
+ae5f2af omap3: pm: use prcm chain handler
+61ad50f OMAP2+: mux: add support for PAD wakeup interrupts
+cab47bf mfd: omap-prm: added suspend prepare and complete callbacks
+8ed5bcd mfd: omap-prm: added chain interrupt handler
+024f0e3 mfd: omap-prm: add driver skeleton
+d285827 TEMP: OMAP4xxx: hwmod data: add PRM hwmod
+da6f48f TEMP: OMAP3xxx: hwmod data: add PRM hwmod
+
+Same combination is hosted at:
+git://gitorious.org/runtime_3-0/runtime_3-0.git v6_uart_runtime
+
+Ensure CONFIG_OMAP_PRM is set while testing irq_chaining with uart.
+
+Changes from v5:
+---------------
+* Incorporating omap_uart_can_sleep function to avoid
+  console sluglishness as reported by tero.
+* fixing below comments adding omap4 for autosuspend and wakeup.
+  http://www.mail-archive.com/linux-omap@vger.kernel.org/msg56221.html
+
+  In addition cleaning up pads from omap4430sdp/panda board file
+  to use default pads from serial.c
+
+Changes from v4:
+---------------
+
+1.) Fixing v4 comments from Kevin.
+    Spilt into smaller logical patches.
+2.) Using Irq_chaining OMAP_PRM driver for waking up uart.
+
+Testing updates:
+----------------
+OMAP2420/2430SDP: Boot tested.
+
+OMAP3430SDP:
+retention, off_mode, system_wide suspend is tested.
+(earlyprintk & no_console_suspend checked)
+
+OMAP3630 - Zoom3:
+pm-retention checked with quart/omap-uart3
+[Also tested with uart3 as console uart and pm-ret checked]
+
+BeagleBoard XM Rev C(3630):
+retention, off_mode, system_wide suspend is tested.
+
+OMAP4430-SDP/PANDA-4430/PANDA-4460: Boot tested.
+
+Deepak K (1):
+  OMAP2+: UART: Allow UART parameters to be configured from board file.
+
+Govindraj.R (14):
+  OMAP2+: hwmod: Add API to enable IO ring wakeup.
+  OMAP2+: hwmod: Add API to check IO PAD wakeup status
+  OMAP2+: UART: cleanup + remove uart pm specific API
+  OMAP2+: UART: cleanup 8250 console driver support
+  OMAP2+: UART: Cleanup part of clock gating mechanism for uart
+  OMAP2+: UART: Remove certain feilds from omap_uart_state struct
+  OMAP2+: UART: Add default mux for all uarts.
+  OMAP2+: UART: Store certain reg values to port structure
+  OMAP2+: UART: Add runtime pm support for omap-serial driver
+  OMAP2+: UART: Modify omap_uart_can_sleep function
+  OMAP2+: UART: Move errata handling from serial.c to omap-serial
+  OMAP2+: UART: Take console_lock in suspend path if not taken
+  OMAP2+: UART: Enable back uart clocks with runtime API for early
+    console
+  OMAP2+: UART: Do not gate uart clocks if used for debug_prints
+
+Jon Hunter (1):
+  OMAP2+: UART: Make the RX_TIMEOUT for DMA configurable for each UART
+
+ arch/arm/mach-omap2/board-3430sdp.c           |  100 +---
+ arch/arm/mach-omap2/board-4430sdp.c           |   68 +--
+ arch/arm/mach-omap2/board-n8x0.c              |    6 +-
+ arch/arm/mach-omap2/board-omap4panda.c        |   68 +--
+ arch/arm/mach-omap2/mux.c                     |   30 +
+ arch/arm/mach-omap2/mux.h                     |   13 +
+ arch/arm/mach-omap2/omap_hwmod.c              |   66 ++
+ arch/arm/mach-omap2/pm24xx.c                  |   18 -
+ arch/arm/mach-omap2/pm34xx.c                  |   23 -
+ arch/arm/mach-omap2/serial.c                  |  937 +++++++------------------
+ arch/arm/plat-omap/include/plat/omap-serial.h |   30 +-
+ arch/arm/plat-omap/include/plat/omap_hwmod.h  |    1 +
+ arch/arm/plat-omap/include/plat/serial.h      |   10 +-
+ drivers/tty/serial/omap-serial.c              |  305 +++++++--
+ 14 files changed, 660 insertions(+), 1015 deletions(-)
+
+-- 
+1.7.4.1
 
