@@ -1,63 +1,62 @@
-From: Vishwanath Sripathy <vishwanath.bs@ti.com>
-Subject: RE: [PATCH v6 01/16] OMAP2+: hwmod: Add API to enable IO ring wakeup.
-Date: Mon, 3 Oct 2011 20:40:44 +0530
-Message-ID: <36fe5ae626b83bb4856f3a58a23bf503@mail.gmail.com>
-References: <1317380495-584-1-git-send-email-govindraj.raja@ti.com> <4E871883.4010207@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+From: Lucas Kannebley Tavares <lucaskt@linux.vnet.ibm.com>
+Subject: [PATCH] jsm: Fixed EEH recovery error
+Date: Mon,  3 Oct 2011 13:52:12 -0300
+Message-ID: <1317660732-3647-1-git-send-email-lucaskt@linux.vnet.ibm.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog123.obsmtp.com ([74.125.149.149]:33645 "EHLO
-	na3sys009aog123.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1756430Ab1JCPKo (ORCPT
+Received: from e24smtp04.br.ibm.com ([32.104.18.25]:59259 "EHLO
+	e24smtp04.br.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754466Ab1JCQxM (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 3 Oct 2011 11:10:44 -0400
-In-Reply-To: <4E871883.4010207@ti.com>
+	Mon, 3 Oct 2011 12:53:12 -0400
+Received: from /spool/local
+	by br.ibm.com with XMail ESMTP
+	for <linux-serial@vger.kernel.org> from <lucaskt@linux.vnet.ibm.com>;
+	Mon, 3 Oct 2011 13:53:10 -0300
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Rajendra Nayak <rnayak@ti.com>, Govindraj Raja <govindraj.raja@ti.com>
-Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Kevin Hilman <khilman@ti.com>, Tony Lindgren <tony@atomide.com>, Partha Basak <p-basak2@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>
+To: linux-serial@vger.kernel.org
+Cc: Breno Leitao <leitao@linux.vnet.ibm.com>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, cascardo@linux.vnet.ibm.com, Lucas Kannebley Tavares <lucaskt@linux.vnet.ibm.com>
 
----snip--
-> > +{
-> > +	struct omap_device_pad *pad;
-> > +	int ret = -EINVAL, j;
-> > +
-> > +	if (oh->mux&&  oh->mux->enabled) {
-> > +		for (j = 0; j<  oh->mux->nr_pads_dynamic; j++) {
-> > +			pad = oh->mux->pads_dynamic[j];
-> > +			if (pad->flags&  OMAP_DEVICE_PAD_WAKEUP) {
-> > +				if (set_wake)
-> > +					pad->idle |= OMAP_WAKEUP_EN;
-> > +				else
-> > +					pad->idle&= ~OMAP_WAKEUP_EN;
->
-> I think apart from enabling/disabling the IO wakeup's at the pad
-> level, there is also a need to trigger the IO daisy chain control
-> (Wu clock) by programming the PRCM.PM_WKEN_WKUP[16] EN_IO_CHAIN
-> bit and waiting on the PRCM.PM_WKST_WKUP[16] ST_IO_CHAIN) bit,
-> which is done by the omap3_enable/disable_io_chain function.
-> This is still done in the cpuidle path, but it makes sense to
-> move that over here, since it should be done every time a pad
-> level wakeup is enabled or disabled.
->
-> See section 3.5.7.2.2 I/O Wake-Up Mechanism of 36xx TRM revA.
->
-> "The I/O wake-up scheme is enabled by triggering the I/O daisy chain
-> control (Wu clock) by
-> programming a dedicated register (PRCM.PM_WKEN_WKUP[16] EN_IO_CHAIN)
-> in
-> the PRCM module.Software must wait for the I/O daisy chain to
-> complete
-> before it transitions the PER domain to a
-> nonfunctional state. This is done by polling a dedicated status bit
-> in
-> the PRCM module
-> (PRCM.PM_WKST_WKUP[16] ST_IO_CHAIN). This status bit must be cleared
-> by
-> software when the bit is
-> read to 1."
-I am working on adding Daisy chain support via hwmod mux framework.
-I will post the patches soon.
+There was an error on the jsm driver that would cause it to be unable to
+recover after a second error is detected.
 
-Regards
-Vishwa
+At the first error, the device recovers properly:
+
+[72521.485691] EEH: Detected PCI bus error on device 0003:02:00.0
+[72521.485695] EEH: This PCI device has failed 1 times in the last hour:
+...
+[72532.035693] ttyn3 at MMIO 0x0 (irq = 49) is a jsm
+[72532.105689] jsm: Port 3 added
+
+However, at the second error, it cascades until EEH disables the device:
+
+[72631.229549] Call Trace:
+...
+[72641.725687] jsm: Port 3 added
+[72641.725695] EEH: Detected PCI bus error on device 0003:02:00.0
+[72641.725698] EEH: This PCI device has failed 3 times in the last hour:
+
+It was caused because the PCI state was not being saved after the first
+restore. Therefore, at the second recovery the PCI state would not be
+restored.
+
+Signed-off-by: Lucas Kannebley Tavares <lucaskt@linux.vnet.ibm.com>
+---
+ drivers/tty/serial/jsm/jsm_driver.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/tty/serial/jsm/jsm_driver.c b/drivers/tty/serial/jsm/jsm_driver.c
+index 96da178..8941b15 100644
+--- a/drivers/tty/serial/jsm/jsm_driver.c
++++ b/drivers/tty/serial/jsm/jsm_driver.c
+@@ -270,6 +270,7 @@ static void jsm_io_resume(struct pci_dev *pdev)
+ 	struct jsm_board *brd = pci_get_drvdata(pdev);
+ 
+ 	pci_restore_state(pdev);
++	pci_save_state(pdev);
+ 
+ 	jsm_uart_port_init(brd);
+ }
+-- 
+1.7.4.4
+
