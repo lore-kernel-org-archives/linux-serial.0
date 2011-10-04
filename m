@@ -1,53 +1,56 @@
 From: Grant Likely <grant.likely@secretlab.ca>
 Subject: Re: [RFC PATCH] tty/serial: atmel_serial: add device tree support
-Date: Tue, 4 Oct 2011 10:55:20 -0600
-Message-ID: <20111004165520.GB10919@ponder.secretlab.ca>
+Date: Tue, 4 Oct 2011 10:52:26 -0600
+Message-ID: <20111004165226.GA10919@ponder.secretlab.ca>
 References: <1317635502-9430-1-git-send-email-nicolas.ferre@atmel.com>
  <4E8A6858.6020700@gmail.com>
- <4E8AC171.4020706@atmel.com>
- <4E8B054B.3060506@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-gy0-f174.google.com ([209.85.160.174]:55882 "EHLO
-	mail-gy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932832Ab1JDR7v (ORCPT
+Received: from mail-yx0-f174.google.com ([209.85.213.174]:45786 "EHLO
+	mail-yx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757212Ab1JDSBR (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 Oct 2011 13:59:51 -0400
+	Tue, 4 Oct 2011 14:01:17 -0400
 Content-Disposition: inline
-In-Reply-To: <4E8B054B.3060506@gmail.com>
+In-Reply-To: <4E8A6858.6020700@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Rob Herring <robherring2@gmail.com>
 Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, linux-arm-kernel@lists.infradead.org, alan@linux.intel.com, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org
 
-On Tue, Oct 04, 2011 at 08:08:27AM -0500, Rob Herring wrote:
-> Nicolas,
+On Mon, Oct 03, 2011 at 08:58:48PM -0500, Rob Herring wrote:
+> On 10/03/2011 04:51 AM, Nicolas Ferre wrote:
+> >  static int __devinit atmel_serial_probe(struct platform_device *pdev)
+> >  {
+> >  	struct atmel_uart_port *port;
+> > +	struct device_node *np = pdev->dev.of_node;
+> >  	struct atmel_uart_data *pdata = pdev->dev.platform_data;
+> >  	void *data;
+> >  	int ret;
+> >  
+> >  	BUILD_BUG_ON(ATMEL_SERIAL_RINGSIZE & (ATMEL_SERIAL_RINGSIZE - 1));
+> >  
+> > -	port = &atmel_ports[pdata->num];
+> > +	if (np) {
+> > +		ret = of_alias_get_id(np, "serial");
+> > +		if (ret < 0)
+> > +			goto err;
 > 
-> On 10/04/2011 03:18 AM, Nicolas Ferre wrote:
-> > On 10/04/2011 03:58 AM, Rob Herring :
-> >> On 10/03/2011 04:51 AM, Nicolas Ferre wrote:
-> >>> +Optional properties:
-> >>> +- atmel,use-dma-rx: use of PDC or DMA for receiving data
-> >>> +- atmel,use-dma-tx: use of PDC or DMA for transmitting data
-> >>
-> >> Is this an internal DMA or separate DMA controller? If the latter, these
-> >> should be phandles to a DMA channel/request.
-> > 
-> > Well, for now it relies on PDC (looks like an internal DMA). There is no
-> > notion of channel/request so I think it is appropriate to keep it like this.
-> > 
+> I'll defer to Grant on this. There aren't any other drivers using this.
 > 
-> Okay. Although, this is a bit of Linux creeping into DT. DT should
-> describe the h/w. You should really be describing whether the h/w
-> supports DMA or not rather than whether you want to use DMA or not.
-> Since DMA support is really tied to the SOC rather than board, you could
-> just use the compatible string to distinguish platforms that support DMA
-> or not. So what is determining this setting? Is it purely user choice?
 
-It is okay for a binding to still requires config properties like this
-to state if the DMA can be used, even if compatible is enough to
-distinquish.  However, you're right to bring it up.  It is a design
-choice that should be made thoughtfully.
+This is the correct thing to do.
+
+One note however; I prefer driver to *not* require an alias to be
+present.  By all means, use an alias if it is available, but the
+driver should auto-enumerate if it is not.  There is a patch that
+makes of_alias_get_id() do this for you, but it hasn't been mainlined
+yet and it is still a bit in flux.  There will be something that takes
+care of this for you, but be aware that the function name may change.
+
+In the mean time, this patch is okay.
+
+Acked-by: Grant Likely <grant.likely@secretlab.ca>
 
 g.
