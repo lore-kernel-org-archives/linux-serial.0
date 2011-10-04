@@ -1,106 +1,42 @@
-From: Kevin Hilman <khilman@ti.com>
-Subject: Re: [PATCH v6 01/16] OMAP2+: hwmod: Add API to enable IO ring wakeup.
-Date: Tue, 04 Oct 2011 14:03:29 -0700
-Message-ID: <8762k48o66.fsf@ti.com>
-References: <1317380495-584-1-git-send-email-govindraj.raja@ti.com>
-	<4E871883.4010207@ti.com>
+From: Antti Palosaari <crope@iki.fi>
+Subject: serial device name for smart card reader that is integrated to Anysee
+ DVB USB device
+Date: Wed, 05 Oct 2011 00:22:09 +0300
+Message-ID: <4E8B7901.2050700@iki.fi>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog111.obsmtp.com ([74.125.149.205]:54829 "EHLO
-	na3sys009aog111.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1756228Ab1JDVDf (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 Oct 2011 17:03:35 -0400
-In-Reply-To: <4E871883.4010207@ti.com> (Rajendra Nayak's message of "Sat, 01
-	Oct 2011 19:11:23 +0530")
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-media-owner@vger.kernel.org>
+Sender: linux-media-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org, linux-media@vger.kernel.org, linux-usb@vger.kernel.org
+Cc: =?ISO-8859-1?Q?Bj=F8rn_Mork?= <bjorn@mork.no>, James Courtier-Dutton <james.dutton@gmail.com>, HoP <jpetrous@gmail.com>, =?ISO-8859-1?Q?Istv=E1n_V=E1radi?= <ivaradi@gmail.com>
 List-Id: linux-serial@vger.kernel.org
-To: Rajendra Nayak <rnayak@ti.com>
-Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Partha Basak <p-basak2@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>
 
-Hi Rajendra,
+I have been looking for correct device name for serial smart card reader 
+that is integrated to Anysee DVB USB devices. Consider it like old so 
+called Phoenix reader. Phoenix is de facto protocol used for such 
+readers and there is whole bunch of different RS232 (/dev/ttyS#) or 
+USB-serial (/dev/ttyUSB#) readers using that protocol.
 
-Rajendra Nayak <rnayak@ti.com> writes:
+Anyhow, that one is integrated to DVB USB device that is driven by 
+dvb_usb_anysee driver. As I understand, I need reserve new device name 
+and major number for my device. See Documentation/devices.txt
 
-> On Friday 30 September 2011 04:31 PM, Govindraj.R wrote:
->> Add API to enable IO pad wakeup capability based on mux dynamic pad and
->> wake_up enable flag available from hwmod_mux initialization.
->>
->> Use the wakeup_enable flag and enable wakeup capability
->> for the given pads. Wakeup capability will be enabled/disabled
->> during hwmod idle transition based on whether wakeup_flag is
->> set or cleared.
->>
->> Call the omap_hwmod_set_ioring_wakeup from hwmod_wakeup_enable/disable.
->>
->> Signed-off-by: Govindraj.R<govindraj.raja@ti.com>
->> ---
->>   arch/arm/mach-omap2/omap_hwmod.c |   59 ++++++++++++++++++++++++++++++++++++++
->>   1 files changed, 59 insertions(+), 0 deletions(-)
->>
->> diff --git a/arch/arm/mach-omap2/omap_hwmod.c b/arch/arm/mach-omap2/omap_hwmod.c
->> index 84cc0bd..e751dd9 100644
->> --- a/arch/arm/mach-omap2/omap_hwmod.c
->> +++ b/arch/arm/mach-omap2/omap_hwmod.c
->> @@ -2062,6 +2062,34 @@ static int __init omap_hwmod_setup_all(void)
->>   core_initcall(omap_hwmod_setup_all);
->>
->>   /**
->> + * omap_hwmod_set_ioring_wakeup - enable io pad wakeup flag.
->> + * @oh: struct omap_hwmod *
->> + * @set: bool value indicating to set or clear wakeup status.
->> + *
->> + * Set or Clear wakeup flag for the io_pad.
->> + */
->> +static int omap_hwmod_set_ioring_wakeup(struct omap_hwmod *oh, bool set_wake)
->> +{
->> +	struct omap_device_pad *pad;
->> +	int ret = -EINVAL, j;
->> +
->> +	if (oh->mux&&  oh->mux->enabled) {
->> +		for (j = 0; j<  oh->mux->nr_pads_dynamic; j++) {
->> +			pad = oh->mux->pads_dynamic[j];
->> +			if (pad->flags&  OMAP_DEVICE_PAD_WAKEUP) {
->> +				if (set_wake)
->> +					pad->idle |= OMAP_WAKEUP_EN;
->> +				else
->> +					pad->idle&= ~OMAP_WAKEUP_EN;
->
-> I think apart from enabling/disabling the IO wakeup's at the pad
-> level, there is also a need to trigger the IO daisy chain control
-> (Wu clock) by programming the PRCM.PM_WKEN_WKUP[16] EN_IO_CHAIN
-> bit and waiting on the PRCM.PM_WKST_WKUP[16] ST_IO_CHAIN) bit,
-> which is done by the omap3_enable/disable_io_chain function.
-> This is still done in the cpuidle path, but it makes sense to
-> move that over here, since it should be done every time a pad
-> level wakeup is enabled or disabled.
+Current proof-of-concept driver can be found from:
+http://git.linuxtv.org/anttip/media_tree.git/shortlog/refs/heads/anysee-sc
+Don't review code since it is not ready for release yet, it even lacks 
+locking.
 
-So should it be done just here or also in the idle path?  In general,
-I'm certainly for moving things out of the idle path into the places
-where they belong.
+There have been some proposes about names, mainly whether to register it 
+under the DVB adapter it is physically (/dev/dvb/adapterN/sc#) or to the 
+root of /dev (/dev/sc#). I used sc as name, SC=SmartCard.
 
-However, I don't get from the TRM description below that it should be
-done every time a pad-level wake is enabled or disabled.  Can you
-clarify what part of the TRM description you mean?
+Could someone who have enough knowledge point out which one is correct 
+or better?
 
-All I understand is that it has to be done before PER domain
-transisions.
 
-Also, if this were to happen, are there side-effects of having the IO
-daisy chain armed outside the idle path?
+regards
+Antti
 
-Kevin
-
-> See section 3.5.7.2.2 I/O Wake-Up Mechanism of 36xx TRM revA.
->
-> "The I/O wake-up scheme is enabled by triggering the I/O daisy chain
-> control (Wu clock) by
-> programming a dedicated register (PRCM.PM_WKEN_WKUP[16] EN_IO_CHAIN)
-> in the PRCM module.Software must wait for the I/O daisy chain to
-> complete before it transitions the PER domain to a
-> nonfunctional state. This is done by polling a dedicated status bit in
-> the PRCM module
-> (PRCM.PM_WKST_WKUP[16] ST_IO_CHAIN). This status bit must be cleared
-> by software when the bit is
-> read to 1."
+-- 
+http://palosaari.fi/
