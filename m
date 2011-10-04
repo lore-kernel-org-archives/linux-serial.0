@@ -1,42 +1,58 @@
-From: Antti Palosaari <crope@iki.fi>
-Subject: serial device name for smart card reader that is integrated to Anysee
- DVB USB device
-Date: Wed, 05 Oct 2011 00:22:09 +0300
-Message-ID: <4E8B7901.2050700@iki.fi>
+From: Kevin Hilman <khilman@ti.com>
+Subject: Re: [PATCH v6 04/16] OMAP2+: UART: cleanup 8250 console driver support
+Date: Tue, 04 Oct 2011 14:42:57 -0700
+Message-ID: <87lit077ry.fsf@ti.com>
+References: <1317380495-584-1-git-send-email-govindraj.raja@ti.com>
+	<1317380495-584-4-git-send-email-govindraj.raja@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-media-owner@vger.kernel.org>
-Sender: linux-media-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-media@vger.kernel.org, linux-usb@vger.kernel.org
-Cc: =?ISO-8859-1?Q?Bj=F8rn_Mork?= <bjorn@mork.no>, James Courtier-Dutton <james.dutton@gmail.com>, HoP <jpetrous@gmail.com>, =?ISO-8859-1?Q?Istv=E1n_V=E1radi?= <ivaradi@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from na3sys009aog119.obsmtp.com ([74.125.149.246]:41024 "EHLO
+	na3sys009aog119.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1756228Ab1JDVnC (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 4 Oct 2011 17:43:02 -0400
+In-Reply-To: <1317380495-584-4-git-send-email-govindraj.raja@ti.com>
+	(Govindraj R.'s message of "Fri, 30 Sep 2011 16:31:30 +0530")
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: "Govindraj.R" <govindraj.raja@ti.com>
+Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Partha Basak <p-basak2@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Rajendra Nayak <rnayak@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>
 
-I have been looking for correct device name for serial smart card reader 
-that is integrated to Anysee DVB USB devices. Consider it like old so 
-called Phoenix reader. Phoenix is de facto protocol used for such 
-readers and there is whole bunch of different RS232 (/dev/ttyS#) or 
-USB-serial (/dev/ttyUSB#) readers using that protocol.
+"Govindraj.R" <govindraj.raja@ti.com> writes:
 
-Anyhow, that one is integrated to DVB USB device that is driven by 
-dvb_usb_anysee driver. As I understand, I need reserve new device name 
-and major number for my device. See Documentation/devices.txt
+> We had been using traditional 8250 driver as uart console driver
+> prior to omap-serial driver. Since we have omap-serial driver
+> in mainline kernel for some time now it has been used as default
+> uart console driver on omap2+ platforms. Remove 8250 support for
+> omap-uarts.
 
-Current proof-of-concept driver can be found from:
-http://git.linuxtv.org/anttip/media_tree.git/shortlog/refs/heads/anysee-sc
-Don't review code since it is not ready for release yet, it even lacks 
-locking.
+Nice to see the this disappearing.
 
-There have been some proposes about names, mainly whether to register it 
-under the DVB adapter it is physically (/dev/dvb/adapterN/sc#) or to the 
-root of /dev (/dev/sc#). I used sc as name, SC=SmartCard.
+> Serial_in and serial_out override for 8250 serial driver is also
+> removed. Empty fifo read fix is already taken care with omap-serial
+> driver with data ready bit check from LSR reg before reading RX fifo.
 
-Could someone who have enough knowledge point out which one is correct 
-or better?
+As stated in the previous review.  Patches that move code/features
+should have the removal and the add-back in the same patch.  Doing so
+makes it easy for reviewers to see whether it was simply moved, or if it
+was modified when it was moved, etc.
 
+> Also waiting for THRE(transmit hold reg empty) is done with wait_for_xmitr
+> in omap-serial driver.
 
-regards
-Antti
+Again, remove it here in the patch that adds that support (the errata
+patch I guess.)
 
--- 
-http://palosaari.fi/
+> Remove headers that were necessary to support 8250 support
+> and remove all config bindings done to keep 8250 backward compatibility
+> while adding omap-serial driver. Remove omap_uart_reset needed for
+> 8250 autoconf.
+>
+> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+
+So basically, this patch should only remove the legacy 8250 support (as
+the subject says) and everything else should be done in the other
+relevant patches.
+
+Kevin
