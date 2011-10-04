@@ -1,62 +1,201 @@
-From: Lucas Kannebley Tavares <lucaskt@linux.vnet.ibm.com>
-Subject: [PATCH] jsm: Fixed EEH recovery error
-Date: Mon,  3 Oct 2011 13:52:12 -0300
-Message-ID: <1317660732-3647-1-git-send-email-lucaskt@linux.vnet.ibm.com>
+From: Rob Herring <robherring2@gmail.com>
+Subject: Re: [RFC PATCH] tty/serial: atmel_serial: add device tree support
+Date: Mon, 03 Oct 2011 20:58:48 -0500
+Message-ID: <4E8A6858.6020700@gmail.com>
+References: <1317635502-9430-1-git-send-email-nicolas.ferre@atmel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from e24smtp04.br.ibm.com ([32.104.18.25]:59259 "EHLO
-	e24smtp04.br.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754466Ab1JCQxM (ORCPT
+Received: from mail-yw0-f46.google.com ([209.85.213.46]:48114 "EHLO
+	mail-yw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751874Ab1JDCEy (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 3 Oct 2011 12:53:12 -0400
-Received: from /spool/local
-	by br.ibm.com with XMail ESMTP
-	for <linux-serial@vger.kernel.org> from <lucaskt@linux.vnet.ibm.com>;
-	Mon, 3 Oct 2011 13:53:10 -0300
+	Mon, 3 Oct 2011 22:04:54 -0400
+In-Reply-To: <1317635502-9430-1-git-send-email-nicolas.ferre@atmel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Breno Leitao <leitao@linux.vnet.ibm.com>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, cascardo@linux.vnet.ibm.com, Lucas Kannebley Tavares <lucaskt@linux.vnet.ibm.com>
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: linux-arm-kernel@lists.infradead.org, alan@linux.intel.com, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org
 
-There was an error on the jsm driver that would cause it to be unable to
-recover after a second error is detected.
+On 10/03/2011 04:51 AM, Nicolas Ferre wrote:
+> Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+> ---
+> Hi,
+> 
+> Here is a first attempt to add device tree support to atmel_serial driver.
+> RS485 data are not handled for the moment. My feeling is that they should be
+> added as a generic DT biding set.
 
-At the first error, the device recovers properly:
+Feel free to propose something. :)
 
-[72521.485691] EEH: Detected PCI bus error on device 0003:02:00.0
-[72521.485695] EEH: This PCI device has failed 1 times in the last hour:
-...
-[72532.035693] ttyn3 at MMIO 0x0 (irq = 49) is a jsm
-[72532.105689] jsm: Port 3 added
+> 
+> 
+>  .../devicetree/bindings/tty/serial/atmel-usart.txt |   27 +++++++++
+>  drivers/tty/serial/atmel_serial.c                  |   56 +++++++++++++++++---
+>  2 files changed, 75 insertions(+), 8 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/tty/serial/atmel-usart.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/tty/serial/atmel-usart.txt b/Documentation/devicetree/bindings/tty/serial/atmel-usart.txt
+> new file mode 100644
+> index 0000000..a49d9a1
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/tty/serial/atmel-usart.txt
+> @@ -0,0 +1,27 @@
+> +* Atmel Universal Synchronous Asynchronous Receiver/Transmitter (USART)
+> +
+> +Required properties:
+> +- compatible: Should be "atmel,<chip>-usart"
+> +  The compatible <chip> indicated will be the first SoC to support an
+> +  additional mode or an USART new feature.
+> +- reg: Should contain registers location and length
+> +- interrupts: Should contain interrupt
+> +
+> +Optional properties:
+> +- atmel,use-dma-rx: use of PDC or DMA for receiving data
+> +- atmel,use-dma-tx: use of PDC or DMA for transmitting data
 
-However, at the second error, it cascades until EEH disables the device:
+Is this an internal DMA or separate DMA controller? If the latter, these
+should be phandles to a DMA channel/request.
 
-[72631.229549] Call Trace:
-...
-[72641.725687] jsm: Port 3 added
-[72641.725695] EEH: Detected PCI bus error on device 0003:02:00.0
-[72641.725698] EEH: This PCI device has failed 3 times in the last hour:
+> +
+> +<chip> compatible description:
+> +- at91rm9200:  legacy USART support
+> +- at91sam9260: generic USART implementation for SAM9 SoCs
+> +
+> +Example:
+> +
+> +	usart0: serial@fff8c000 {
+> +		compatible = "atmel,at91sam9260-usart";
+> +		reg = <0xfff8c000 0x4000>;
+> +		interrupts = <7>;
+> +		atmel,use-dma-rx;
+> +		atmel,use-dma-tx;
+> +	};
+> +
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index 453cdb5..65f56c3 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -33,6 +33,8 @@
+>  #include <linux/sysrq.h>
+>  #include <linux/tty_flip.h>
+>  #include <linux/platform_device.h>
+> +#include <linux/of.h>
+> +#include <linux/of_device.h>
+>  #include <linux/dma-mapping.h>
+>  #include <linux/atmel_pdc.h>
+>  #include <linux/atmel_serial.h>
+> @@ -162,6 +164,16 @@ static struct atmel_uart_port atmel_ports[ATMEL_MAX_UART];
+>  static struct console atmel_console;
+>  #endif
+>  
+> +#if defined(CONFIG_OF)
+> +static const struct of_device_id atmel_serial_dt_ids[] = {
+> +	{ .compatible = "atmel,at91rm9200-usart" },
+> +	{ .compatible = "atmel,at91sam9260-usart" },
+> +	{ /* sentinel */ }
+> +};
+> +
+> +MODULE_DEVICE_TABLE(of, atmel_serial_dt_ids);
+> +#endif
 
-It was caused because the PCI state was not being saved after the first
-restore. Therefore, at the second recovery the PCI state would not be
-restored.
+This ifdef isn't necessary, but it really depends if long term this
+driver will be built without OF (and you care about the extra data).
 
-Signed-off-by: Lucas Kannebley Tavares <lucaskt@linux.vnet.ibm.com>
----
- drivers/tty/serial/jsm/jsm_driver.c |    1 +
- 1 files changed, 1 insertions(+), 0 deletions(-)
+> +
+>  static inline struct atmel_uart_port *
+>  to_atmel_uart_port(struct uart_port *uart)
+>  {
+> @@ -1413,14 +1425,31 @@ static struct uart_ops atmel_pops = {
+>  static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
+>  				      struct platform_device *pdev)
+>  {
+> +	struct device_node *np = pdev->dev.of_node;
+>  	struct uart_port *port = &atmel_port->uart;
+>  	struct atmel_uart_data *pdata = pdev->dev.platform_data;
+> +	int ret;
+> +
+> +	if (np) {
+> +		ret = of_alias_get_id(np, "serial");
+> +		if (ret >= 0)
+> +			port->line = ret;
+> +		if (of_get_property(np, "atmel,use-dma-rx", NULL))
+> +			atmel_port->use_dma_rx	= 1;
+> +		if (of_get_property(np, "atmel,use-dma-tx", NULL))
+> +			atmel_port->use_dma_tx	= 1;
+> +	} else {
+> +		port->line = pdata->num;
+> +
+> +		atmel_port->use_dma_rx	= pdata->use_dma_rx;
+> +		atmel_port->use_dma_tx	= pdata->use_dma_tx;
+> +		atmel_port->rs485	= pdata->rs485;
+> +	}
+>  
+>  	port->iotype		= UPIO_MEM;
+>  	port->flags		= UPF_BOOT_AUTOCONF;
+>  	port->ops		= &atmel_pops;
+>  	port->fifosize		= 1;
+> -	port->line		= pdata->num;
+>  	port->dev		= &pdev->dev;
+>  	port->mapbase	= pdev->resource[0].start;
+>  	port->irq	= pdev->resource[1].start;
+> @@ -1430,7 +1459,7 @@ static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
+>  
+>  	memset(&atmel_port->rx_ring, 0, sizeof(atmel_port->rx_ring));
+>  
+> -	if (pdata->regs) {
+> +	if (pdata && pdata->regs) {
+>  		/* Already mapped by setup code */
+>  		port->membase = pdata->regs;
+>  	} else {
+> @@ -1447,10 +1476,6 @@ static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
+>  		/* only enable clock when USART is in use */
+>  	}
+>  
+> -	atmel_port->use_dma_rx	= pdata->use_dma_rx;
+> -	atmel_port->use_dma_tx	= pdata->use_dma_tx;
+> -	atmel_port->rs485	= pdata->rs485;
+> -
+>  	/* Use TXEMPTY for interrupt when rs485 else TXRDY or ENDTX|TXBUFE */
+>  	if (atmel_port->rs485.flags & SER_RS485_ENABLED)
+>  		atmel_port->tx_done_mask = ATMEL_US_TXEMPTY;
+> @@ -1710,13 +1735,27 @@ static int atmel_serial_resume(struct platform_device *pdev)
+>  static int __devinit atmel_serial_probe(struct platform_device *pdev)
+>  {
+>  	struct atmel_uart_port *port;
+> +	struct device_node *np = pdev->dev.of_node;
+>  	struct atmel_uart_data *pdata = pdev->dev.platform_data;
+>  	void *data;
+>  	int ret;
+>  
+>  	BUILD_BUG_ON(ATMEL_SERIAL_RINGSIZE & (ATMEL_SERIAL_RINGSIZE - 1));
+>  
+> -	port = &atmel_ports[pdata->num];
+> +	if (np) {
+> +		ret = of_alias_get_id(np, "serial");
 
-diff --git a/drivers/tty/serial/jsm/jsm_driver.c b/drivers/tty/serial/jsm/jsm_driver.c
-index 96da178..8941b15 100644
---- a/drivers/tty/serial/jsm/jsm_driver.c
-+++ b/drivers/tty/serial/jsm/jsm_driver.c
-@@ -270,6 +270,7 @@ static void jsm_io_resume(struct pci_dev *pdev)
- 	struct jsm_board *brd = pci_get_drvdata(pdev);
- 
- 	pci_restore_state(pdev);
-+	pci_save_state(pdev);
- 
- 	jsm_uart_port_init(brd);
- }
--- 
-1.7.4.4
+I'll defer to Grant on this. There aren't any other drivers using this.
 
+> +		if (ret < 0)
+> +			goto err;
+> +	} else {
+> +		if (pdata) {
+> +			ret = pdata->num;
+> +		} else {
+> +			ret = -ENODEV;
+> +			goto err;
+> +		}
+> +	}
+
+This would a bit more concise:
+
+	} else if (pdata) {
+		ret = pdata->num;
+	} else {
+		ret = -ENODEV;
+		goto err;
+	}
+
+
+Rob
