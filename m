@@ -1,111 +1,54 @@
-From: Govindraj <govindraj.ti@gmail.com>
-Subject: Re: [PATCH v6 04/16] OMAP2+: UART: cleanup 8250 console driver support
-Date: Wed, 5 Oct 2011 12:24:11 +0530
-Message-ID: <CAAL8m4yhbPQdz5od-cv4HirzTUT4qxUJv_c3Lpj9+efjqxm6hg@mail.gmail.com>
-References: <1317380495-584-1-git-send-email-govindraj.raja@ti.com>
- <1317380495-584-4-git-send-email-govindraj.raja@ti.com> <87lit077ry.fsf@ti.com>
+From: Greg KH <greg@kroah.com>
+Subject: Re: serial device name for smart card reader that is integrated to
+ Anysee DVB USB device
+Date: Wed, 5 Oct 2011 00:01:59 -0700
+Message-ID: <20111005070159.GA6896@kroah.com>
+References: <4E8B7901.2050700@iki.fi>
+ <20111005045917.GB4700@kroah.com>
+ <4E8BF21B.4010907@iki.fi>
+ <201110050815.17949.oneukum@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bw0-f46.google.com ([209.85.214.46]:53511 "EHLO
-	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752776Ab1JEGyc convert rfc822-to-8bit (ORCPT
+Received: from out5.smtp.messagingengine.com ([66.111.4.29]:43111 "EHLO
+	out5.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1757242Ab1JEHCW (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Oct 2011 02:54:32 -0400
-In-Reply-To: <87lit077ry.fsf@ti.com>
+	Wed, 5 Oct 2011 03:02:22 -0400
+Content-Disposition: inline
+In-Reply-To: <201110050815.17949.oneukum@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kevin Hilman <khilman@ti.com>
-Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Partha Basak <p-basak2@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Rajendra Nayak <rnayak@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>
+To: Oliver Neukum <oneukum@suse.de>
+Cc: Antti Palosaari <crope@iki.fi>, linux-serial@vger.kernel.org, linux-media@vger.kernel.org, linux-usb@vger.kernel.org, =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>, James Courtier-Dutton <james.dutton@gmail.com>, HoP <jpetrous@gmail.com>, =?iso-8859-1?Q?Istv=E1n_V=E1radi?= <ivaradi@gmail.com>
 
-Hi Kevin,
+On Wed, Oct 05, 2011 at 08:15:17AM +0200, Oliver Neukum wrote:
+> Am Mittwoch, 5. Oktober 2011, 07:58:51 schrieb Antti Palosaari:
+> > On 10/05/2011 07:59 AM, Greg KH wrote:
+> 
+> > > Why not just use the usb-serial core and then you get a ttyUSB* device
+> > > node "for free"?  It also should provide a lot of the basic tty
+> > > infrastructure and ring buffer logic all ready to use.
+> > 
+> > Since I don't see how I can access same platform data from DVB USB  and 
+> > USB-serial driver (usb_set_intfdata). I asked that earlier, see: 
+> > http://www.mail-archive.com/linux-media@vger.kernel.org/msg36027.html
+> 
+> Yes, and I'll have to give you the same answer as then.
+> 
+> But, Greg, Antti makes a very valid point here. The generic code assumes that
+> it owns intfdata, that is you cannot use it as is for access to anything that lacks
+> its own interface. But this is not a fatal flaw. We can alter the generic code to use
+> an accessor function the driver can provide and make it default to get/set_intfdata
+> 
+> What do you think?
 
-Thanks for the review,
+I totally forgot about that previous answer, I write too much email :)
 
+Anyway, yes, if we can alter the core to make this work for this type of
+device, that is probably much easier than having to write a whole tty
+driver just for this one type of device.  I'll gladly take such a patch.
 
-On Wed, Oct 5, 2011 at 3:12 AM, Kevin Hilman <khilman@ti.com> wrote:
-> "Govindraj.R" <govindraj.raja@ti.com> writes:
->
->> We had been using traditional 8250 driver as uart console driver
->> prior to omap-serial driver. Since we have omap-serial driver
->> in mainline kernel for some time now it has been used as default
->> uart console driver on omap2+ platforms. Remove 8250 support for
->> omap-uarts.
->
-> Nice to see the this disappearing.
->
->> Serial_in and serial_out override for 8250 serial driver is also
->> removed.
+thanks,
 
->> Empty fifo read fix is already taken care with omap-serial
->> driver with data ready bit check from LSR reg before reading RX fifo=
-=2E
->
-> As stated in the previous review. =A0Patches that move code/features
-> should have the removal and the add-back in the same patch. =A0Doing =
-so
-> makes it easy for reviewers to see whether it was simply moved, or if=
- it
-> was modified when it was moved, etc.
->
-
-Empty fifo read is already taken care in omap-serial.c and is part of
-mainline code.
-Nothing to add to omap-serial.c
-
->> Also waiting for THRE(transmit hold reg empty) is done with wait_for=
-_xmitr
->> in omap-serial driver.
->
-> Again, remove it here in the patch that adds that support (the errata
-> patch I guess.)
->
-
-The errata patch ( [PATCH v6 11/16] ) moves only mdr_errata and force_i=
-dle
-from serial.c to omap-serial.c.
-
-Already handled stuffs and things that already exists with omap-serial.=
-c
-are removed here.
-
->> Remove headers that were necessary to support 8250 support
->> and remove all config bindings done to keep 8250 backward compatibil=
-ity
->> while adding omap-serial driver. Remove omap_uart_reset needed for
->> 8250 autoconf.
->>
->> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
->
-> So basically, this patch should only remove the legacy 8250 support (=
-as
-> the subject says) and everything else should be done in the other
-> relevant patches.
->
-
-Yes removes only the 8250 code. serial_in/serial_out were read/write ov=
-errides
-part of 8250 code.
-
-serial_in/serial_out had these checks for empty fifo read and wait for =
-tx
-which is already handled with omap-serial.c.
-
---
-Thanks,
-Govindraj.R
-
-
-> Kevin
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-seria=
-l" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at =A0http://vger.kernel.org/majordomo-info.html
->
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+greg k-h
