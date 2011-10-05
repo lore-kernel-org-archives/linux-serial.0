@@ -1,54 +1,93 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: serial device name for smart card reader that is integrated to
- Anysee DVB USB device
-Date: Wed, 5 Oct 2011 00:01:59 -0700
-Message-ID: <20111005070159.GA6896@kroah.com>
-References: <4E8B7901.2050700@iki.fi>
- <20111005045917.GB4700@kroah.com>
- <4E8BF21B.4010907@iki.fi>
- <201110050815.17949.oneukum@suse.de>
+From: Oliver Neukum <oneukum@suse.de>
+Subject: Re: serial device name for smart card reader that is integrated to Anysee DVB USB device
+Date: Wed, 5 Oct 2011 10:16:06 +0200
+Message-ID: <201110051016.06291.oneukum@suse.de>
+References: <4E8B7901.2050700@iki.fi> <201110050815.17949.oneukum@suse.de> <4E8BF6DE.1010105@iki.fi>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out5.smtp.messagingengine.com ([66.111.4.29]:43111 "EHLO
-	out5.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1757242Ab1JEHCW (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Oct 2011 03:02:22 -0400
-Content-Disposition: inline
-In-Reply-To: <201110050815.17949.oneukum@suse.de>
+Received: from cantor2.suse.de ([195.135.220.15]:55114 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1757988Ab1JEIPx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 5 Oct 2011 04:15:53 -0400
+In-Reply-To: <4E8BF6DE.1010105@iki.fi>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Oliver Neukum <oneukum@suse.de>
-Cc: Antti Palosaari <crope@iki.fi>, linux-serial@vger.kernel.org, linux-media@vger.kernel.org, linux-usb@vger.kernel.org, =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>, James Courtier-Dutton <james.dutton@gmail.com>, HoP <jpetrous@gmail.com>, =?iso-8859-1?Q?Istv=E1n_V=E1radi?= <ivaradi@gmail.com>
+To: Antti Palosaari <crope@iki.fi>
+Cc: Greg KH <greg@kroah.com>, linux-serial@vger.kernel.org, linux-media@vger.kernel.org, linux-usb@vger.kernel.org, =?iso-8859-1?q?Bj=F8rn_Mork?= <bjorn@mork.no>, James Courtier-Dutton <james.dutton@gmail.com>, HoP <jpetrous@gmail.com>, =?iso-8859-1?q?Istv=E1n_V=E1radi?= <ivaradi@gmail.com>
 
-On Wed, Oct 05, 2011 at 08:15:17AM +0200, Oliver Neukum wrote:
-> Am Mittwoch, 5. Oktober 2011, 07:58:51 schrieb Antti Palosaari:
-> > On 10/05/2011 07:59 AM, Greg KH wrote:
+Am Mittwoch, 5. Oktober 2011, 08:19:10 schrieb Antti Palosaari:
+> On 10/05/2011 09:15 AM, Oliver Neukum wrote:
+
+> > But, Greg, Antti makes a very valid point here. The generic code assumes that
+> > it owns intfdata, that is you cannot use it as is for access to anything that lacks
+> > its own interface. But this is not a fatal flaw. We can alter the generic code to use
+> > an accessor function the driver can provide and make it default to get/set_intfdata
+> >
+> > What do you think?
 > 
-> > > Why not just use the usb-serial core and then you get a ttyUSB* device
-> > > node "for free"?  It also should provide a lot of the basic tty
-> > > infrastructure and ring buffer logic all ready to use.
-> > 
-> > Since I don't see how I can access same platform data from DVB USB  and 
-> > USB-serial driver (usb_set_intfdata). I asked that earlier, see: 
-> > http://www.mail-archive.com/linux-media@vger.kernel.org/msg36027.html
-> 
-> Yes, and I'll have to give you the same answer as then.
-> 
-> But, Greg, Antti makes a very valid point here. The generic code assumes that
-> it owns intfdata, that is you cannot use it as is for access to anything that lacks
-> its own interface. But this is not a fatal flaw. We can alter the generic code to use
-> an accessor function the driver can provide and make it default to get/set_intfdata
-> 
-> What do you think?
+> Oliver, I looked your old thread reply but I didn't catch how you meant 
+> it to happen. Could you give some small example?
 
-I totally forgot about that previous answer, I write too much email :)
+Look at this structure:
 
-Anyway, yes, if we can alter the core to make this work for this type of
-device, that is probably much easier than having to write a whole tty
-driver just for this one type of device.  I'll gladly take such a patch.
+struct dvb_usb_device {
+        struct dvb_usb_device_properties props;
+        struct dvb_usb_device_description *desc;
 
-thanks,
+        struct usb_device *udev;
 
-greg k-h
+#define DVB_USB_STATE_INIT        0x000
+#define DVB_USB_STATE_I2C         0x001
+#define DVB_USB_STATE_DVB         0x002
+#define DVB_USB_STATE_REMOTE      0x004
+        int state;
+
+        int powered;
+
+        /* locking */
+        struct mutex usb_mutex;
+
+        /* i2c */
+        struct mutex i2c_mutex;
+        struct i2c_adapter i2c_adap;
+
+        int                    num_adapters_initialized;
+        struct dvb_usb_adapter adapter[MAX_NO_OF_ADAPTER_PER_DEVICE];
+
+        /* remote control */
+        struct rc_dev *rc_dev;
+        struct input_dev *input_dev;
+        char rc_phys[64];
+        struct delayed_work rc_query_work;
+        u32 last_event;
+        int last_state;
+
+        struct module *owner;
+
+        void *priv;
+};
+
+It contains a pointer to an input device. You could add a pointer to a usb
+serial device here. This leaves you with two problems.
+
+1. The USB serial layer will try to set intfdata
+
+We will need to change it to use a function the driver provides to store
+a pointer to its private data.
+
+2. The usb serial layer will not learn about events it needs to learn about.
+
+We need to extended the usb dvb code to call into a sufficiently abstracted
+method in the usb serial code.
+
+
+Conceptually the usb serial code is ready to share an interface among
+multiple serial ports, but not to share an interface with something else.
+I described the steps necesary to allow that. This is new, so there are
+no examples.
+
+	Regards
+		Oliver
