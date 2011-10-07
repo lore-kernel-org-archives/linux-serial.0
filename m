@@ -1,62 +1,94 @@
-From: Govindraj <govindraj.ti@gmail.com>
-Subject: Re: [PATCH v6 07/16] OMAP2+: UART: Add default mux for all uarts.
-Date: Thu, 6 Oct 2011 13:51:27 +0530
-Message-ID: <CAAL8m4zuZ5qFJBdKqNxbw4ApKQ6WnTXiy4yFgOFeeG4H2mtCrg@mail.gmail.com>
-References: <1317380495-584-1-git-send-email-govindraj.raja@ti.com>
- <1317380495-584-7-git-send-email-govindraj.raja@ti.com> <87zkhf9s4p.fsf@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com>
+Subject: [PATCH] 8250_pci: Fix kernel panic when pch_uart is disabled
+Date: Fri,  7 Oct 2011 13:39:49 +0900
+Message-ID: <1317962389-21786-1-git-send-email-tomoya-linux@dsn.lapis-semi.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bw0-f46.google.com ([209.85.214.46]:55788 "EHLO
-	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932245Ab1JFIXA convert rfc822-to-8bit (ORCPT
+Received: from sm-d311v.smileserver.ne.jp ([203.211.202.206]:5007 "EHLO
+	sm-d311v.smileserver.ne.jp" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750699Ab1JGEbj (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Oct 2011 04:23:00 -0400
-In-Reply-To: <87zkhf9s4p.fsf@ti.com>
+	Fri, 7 Oct 2011 00:31:39 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kevin Hilman <khilman@ti.com>
-Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Partha Basak <p-basak2@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Rajendra Nayak <rnayak@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>
+To: Alan Cox <alan@linux.intel.com>, gregkh@suse.de, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: qi.wang@intel.com, yong.y.wang@intel.com, joel.clark@intel.com, kok.howg.ewe@intel.com, Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com>
 
-Thanks for the review.
+Currently, ".setup" function is not set. 
+As a result, when detecting our IOH's uart device without pch_uart, kernel panic
+occurs at the following of pciserial_init_ports().
 
-On Thu, Oct 6, 2011 at 12:34 AM, Kevin Hilman <khilman@ti.com> wrote:
-> "Govindraj.R" <govindraj.raja@ti.com> writes:
->
->> Prior to this change rx-pad wakeup was done by writing to rx-pad off=
-set value
->> populated in serial.c idle_init. Now with mux framework support we c=
-an use
->> mux_utilities along with hmwod framework to handle io-pad configurat=
-ion and
->> enable rx-pad wake-up mechanism.
->
-> This patch (along with a few others) have compile errors when CONFIG_=
-PM
-> is not set.
->
+	for (i = 0; i < nr_ports; i++) {
+		if (quirk->setup(priv, board, &serial_port, i))
+			break;
 
-Will check and fix this.
+So, this patch adds the ".setup" function.
+We can use pci_default_setup because our IOH's uart is compatible with 16550.
 
-Please let me know on further comments on the series.
+Signed-off-by: Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com>
+---
+ drivers/tty/serial/8250_pci.c |    9 +++++++++
+ 1 files changed, 9 insertions(+), 0 deletions(-)
 
-Will re-post fixing the same.
+diff --git a/drivers/tty/serial/8250_pci.c b/drivers/tty/serial/8250_pci.c
+index 3abeca2..55677b9 100644
+--- a/drivers/tty/serial/8250_pci.c
++++ b/drivers/tty/serial/8250_pci.c
+@@ -1558,46 +1558,55 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.vendor         = PCI_VENDOR_ID_INTEL,
+ 		.device         = 0x8811,
+ 		.init		= pci_eg20t_init,
++		.setup		= pci_default_setup,
+ 	},
+ 	{
+ 		.vendor         = PCI_VENDOR_ID_INTEL,
+ 		.device         = 0x8812,
+ 		.init		= pci_eg20t_init,
++		.setup		= pci_default_setup,
+ 	},
+ 	{
+ 		.vendor         = PCI_VENDOR_ID_INTEL,
+ 		.device         = 0x8813,
+ 		.init		= pci_eg20t_init,
++		.setup		= pci_default_setup,
+ 	},
+ 	{
+ 		.vendor         = PCI_VENDOR_ID_INTEL,
+ 		.device         = 0x8814,
+ 		.init		= pci_eg20t_init,
++		.setup		= pci_default_setup,
+ 	},
+ 	{
+ 		.vendor         = 0x10DB,
+ 		.device         = 0x8027,
+ 		.init		= pci_eg20t_init,
++		.setup		= pci_default_setup,
+ 	},
+ 	{
+ 		.vendor         = 0x10DB,
+ 		.device         = 0x8028,
+ 		.init		= pci_eg20t_init,
++		.setup		= pci_default_setup,
+ 	},
+ 	{
+ 		.vendor         = 0x10DB,
+ 		.device         = 0x8029,
+ 		.init		= pci_eg20t_init,
++		.setup		= pci_default_setup,
+ 	},
+ 	{
+ 		.vendor         = 0x10DB,
+ 		.device         = 0x800C,
+ 		.init		= pci_eg20t_init,
++		.setup		= pci_default_setup,
+ 	},
+ 	{
+ 		.vendor         = 0x10DB,
+ 		.device         = 0x800D,
+ 		.init		= pci_eg20t_init,
++		.setup		= pci_default_setup,
+ 	},
+ 	/*
+ 	 * Cronyx Omega PCI (PLX-chip based)
+-- 
+1.7.4.4
 
---
-Thanks,
-Govindraj.R
-
-
-> Kevin
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-seria=
-l" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at =A0http://vger.kernel.org/majordomo-info.html
->
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
