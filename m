@@ -1,239 +1,58 @@
-From: Doug Anderson <dianders@chromium.org>
-Subject: Re: [PATCH] TTY: serial_core: Fix crash if agetty() run on
- non-console serial port
-Date: Mon, 10 Oct 2011 13:28:31 -0700
-Message-ID: <CAD=FV=Vv_FDjYYTZLF8kBaYELy5Lq9en9+9hw8QCVT89KeMnew@mail.gmail.com>
-References: <1318024753-15336-1-git-send-email-dianders@chromium.org>
-	<4E900E9E.2070604@gmail.com>
-	<CAD=FV=U2H08ohbgmDxWNPkh8bm8uBPt-2_H2B4cSb9LvEFWdHA@mail.gmail.com>
+From: Kevin Hilman <khilman@ti.com>
+Subject: Re: [PATCH v6 02/16] OMAP2+: hwmod: Add API to check IO PAD wakeup status
+Date: Mon, 10 Oct 2011 15:24:15 -0700
+Message-ID: <878vosh4ds.fsf@ti.com>
+References: <1317380495-584-1-git-send-email-govindraj.raja@ti.com>
+	<1317380495-584-2-git-send-email-govindraj.raja@ti.com>
+	<4E8724D7.6060907@ti.com>
+	<CAAL8m4zLz4kv+nNPKHD6zKG0pdXifXpmWiHnLAyn_bq228qHXA@mail.gmail.com>
+	<4E8946BD.1010108@ti.com>
+	<CAAL8m4xkC1Ftnr=RpAK5m2PVvPx3yzitO5gNJfOKiD0_YkGkdA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp-out.google.com ([74.125.121.67]:13079 "EHLO
-	smtp-out.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751761Ab1JJU2e convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 10 Oct 2011 16:28:34 -0400
-Received: from hpaq2.eem.corp.google.com (hpaq2.eem.corp.google.com [172.25.149.2])
-	by smtp-out.google.com with ESMTP id p9AKSXxx023824
-	for <linux-serial@vger.kernel.org>; Mon, 10 Oct 2011 13:28:33 -0700
-Received: from bkbzs8 (bkbzs8.prod.google.com [10.205.80.8])
-	by hpaq2.eem.corp.google.com with ESMTP id p9AKR5j3024100
-	(version=TLSv1/SSLv3 cipher=RC4-SHA bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Mon, 10 Oct 2011 13:28:32 -0700
-Received: by bkbzs8 with SMTP id zs8so3745701bkb.7
-        for <linux-serial@vger.kernel.org>; Mon, 10 Oct 2011 13:28:31 -0700 (PDT)
-In-Reply-To: <CAD=FV=U2H08ohbgmDxWNPkh8bm8uBPt-2_H2B4cSb9LvEFWdHA@mail.gmail.com>
+Received: from na3sys009aog123.obsmtp.com ([74.125.149.149]:38124 "EHLO
+	na3sys009aog123.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752169Ab1JJWYV convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 10 Oct 2011 18:24:21 -0400
+In-Reply-To: <CAAL8m4xkC1Ftnr=RpAK5m2PVvPx3yzitO5gNJfOKiD0_YkGkdA@mail.gmail.com>
+	(Govindraj's message of "Mon, 3 Oct 2011 11:26:04 +0530")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jirislaby@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Olof Johansson <olof@lixom.net>, Tom Warren <twarren@nvidia.com>, Allen Martin <AMartin@nvidia.com>
+To: Govindraj <govindraj.ti@gmail.com>
+Cc: Rajendra Nayak <rnayak@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Partha Basak <p-basak2@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>
 
-OK, so I've tracked down the source of the HUP. =A0Unfortunately, it
-looks to be hardware that I have no control over.
+Govindraj <govindraj.ti@gmail.com> writes:
 
-Specifically, on the nVidia Tegra 250 on UARTB (and probably UARTs C,
-D, and E), the DCD / DSR / DTR / RI lines are not pinned out.
-However, some of the lines seem to be connected internally.
-Specifically, the DTR line appears to be tied to the DCD and DSR lines
-for some reason.
-
-What does that mean for us? =A0It means that when we call this in
-uart_suspend_port():
-  ops->set_mctrl(uport, 0);
-
-=2E..we'll drop DTR.  ...and because the lines are tied, we'll get a
-drop of DCD and DSR.  ...and a drop of DCD is a hangup.
-
-
-So where does that leave us?
-
-1. I'd like to get rid of the HUP, and it looks like I can use
-mcr_mask / mcr_force to do this.  I could do this in a nice way
-(adding it as a flag in the serial8250_config structure) so that I
-don't need to use the ugly ALPHA_KLUDGE_MCR.  I'll submit a separate
-patch for this and make sure to include everyone on this thread.
-
-2. I still think that my original patch has some merit to it.  It
-shouldn't hurt anything, and there's always the (very unlikely) case
-that someone else could see this if they get a DCD drop at just the
-right time during suspend.  If you agree, I'd love to get an ack on
-it.  :)
-
-
-Look for my mcr_mask / mcr_force soon.  I look forward to your
-thoughts on the matter.
-
-
-Thanks again,
-
--Doug
-
---
-
-P.S. For the truly interested, here's the writeup I did for
-<http://crosbug.com/21461>, which is the bug entry I created in the
-Chromium OS project...
-
-Specifically, here's the stack trace of the HUP being thrown into the s=
-ystem:
-
-  <7>[   52.882844] ttyS0 hangup...
-  <5>[   52.885986] Backtrace:
-  <5>[   52.888770] [<c0053fa4>] (unwind_backtrace+0x0/0xec) from
-[<c042ab14>] (dump_stack+0x28/0x30)
-  <5>[   52.897853] [<c042ab14>] (dump_stack+0x28/0x30) from
-[<c0266f78>] (tty_hangup+0x40/0x6c)
-  <5>[   52.906486] [<c0266f78>] (tty_hangup+0x40/0x6c) from
-[<c02828fc>] (check_modem_status+0xf4/0x1dc)
-  <5>[   52.915914] [<c02828fc>] (check_modem_status+0xf4/0x1dc) from
-[<c0283e08>] (serial8250_handle_port+0x2d0/0x300)
-  <5>[   52.926591] [<c0283e08>] (serial8250_handle_port+0x2d0/0x300)
-from [<c0283e98>] (serial8250_interrupt+0x60/0x134)
-  <5>[   52.937449] [<c0283e98>] (serial8250_interrupt+0x60/0x134)
-from [<c00c0904>] (handle_IRQ_event+0x88/0x198)
-  <5>[   52.947681] [<c00c0904>] (handle_IRQ_event+0x88/0x198) from
-[<c00c27d8>] (handle_level_irq+0xf4/0x188)
-  <5>[   52.957565] [<c00c27d8>] (handle_level_irq+0xf4/0x188) from
-[<c0047320>] (asm_do_IRQ+0x98/0xd8)
-  <5>[   52.966810] [<c0047320>] (asm_do_IRQ+0x98/0xd8) from
-[<c004cf38>] (__irq_svc+0x38/0xc0)
-  <5>[   52.975316] Exception stack(0xf4fe5d28 to 0xf4fe5d70)
-  <5>[   52.980800] 5d20:                   c060aac4 a0000093 00000000
-00000000 c0698988 f5000800
-  <5>[   52.989504] 5d40: c05f7cc0 f5000840 c05f7c08 00000000 f5000838
-f4fe5da4 f4fe5d28 f4fe5d70
-  <5>[   52.998192] 5d60: c005b2b4 c0281000 60000013 ffffffff
-  <5>[   53.003688] [<c004cf38>] (__irq_svc+0x38/0xc0) from
-[<c0281000>] (uart_suspend_port+0x18c/0x2e8)
-  <5>[   53.013023] [<c0281000>] (uart_suspend_port+0x18c/0x2e8) from
-[<c0282a70>] (serial8250_suspend+0x4c/0x68)
-  <5>[   53.023176] [<c0282a70>] (serial8250_suspend+0x4c/0x68) from
-[<c0292b40>] (platform_pm_suspend+0x58/0x6c)
-  <5>[   53.033321] [<c0292b40>] (platform_pm_suspend+0x58/0x6c) from
-[<c029654c>] (pm_op+0x60/0xbc)
-  <5>[   53.042297] [<c029654c>] (pm_op+0x60/0xbc) from [<c0296d8c>]
-(__device_suspend+0x138/0x1c8)
-  <5>[   53.051184] [<c0296d8c>] (__device_suspend+0x138/0x1c8) from
-[<c029715c>] (dpm_suspend_start+0x2ec/0x3dc)
-  <5>[   53.061333] [<c029715c>] (dpm_suspend_start+0x2ec/0x3dc) from
-[<c00b89cc>] (suspend_devices_and_enter+0xa8/0x2e0)
-  <5>[   53.072189] [<c00b89cc>]
-(suspend_devices_and_enter+0xa8/0x2e0) from [<c00b8cdc>]
-(enter_state+0xd8/0x140)
-  <5>[   53.082415] [<c00b8cdc>] (enter_state+0xd8/0x140) from
-[<c00b80c4>] (state_store+0xb4/0xc8)
-  <5>[   53.091306] [<c00b80c4>] (state_store+0xb4/0xc8) from
-[<c02258ac>] (kobj_attr_store+0x1c/0x28)
-  <5>[   53.100474] [<c02258ac>] (kobj_attr_store+0x1c/0x28) from
-[<c0170628>] (sysfs_write_file+0x118/0x14c)
-  <5>[   53.110272] [<c0170628>] (sysfs_write_file+0x118/0x14c) from
-[<c011e050>] (vfs_write+0xc4/0x140)
-  <5>[   53.119608] [<c011e050>] (vfs_write+0xc4/0x140) from
-[<c011e2cc>] (sys_write+0x4c/0x78)
-  <5>[   53.128136] [<c011e2cc>] (sys_write+0x4c/0x78) from
-[<c004d380>] (ret_fast_syscall+0x0/0x30)
-
-
-The check_modem_status+0xf4 is actually the line:
-  uart_handle_dcd_change(&up->port, status & UART_MSR_DCD);
-
-The uart_suspend_port()+0x18c is the unlocking of the IRQ following the=
- line:
-  ops->set_mctrl(uport, 0);
-
-
-I've gone digging and it looks like the set_mctrl() ends up changing
-MCR from 0x0b to 0x00.  In the progress, the MSR goes from 0xb0 to
-0x1a.  Decoding that...
-
-MCR:
-  * RTS:    disable
-  * CTS:    disable
-  * LOOKBK: disable
-  * OUT2:   enable         =3D> disable
-  * OUT1:   disable
-  * RTS:    FORCE_RTS_LOW  =3D> FORCE_RTS_HI
-  * DTR:    FORCE_DTR_LOW  =3D> FORCE_DTR_HI
-
-MSR:
-  * CD:   1  =3D> 0
-  * RI:   0
-  * DSR:  1  =3D> 0
-  * CTS:  1
-
-  * DCD:  0  =3D> 1
-  * DRI:  0
-  * DDSR: 0  =3D> 1
-  * DCTS: 0
-
-I tracked the changes to MCR down one bit at a time, and it appears
-the the DTR bit change is the magic bit.  I'm guessing that DTR is
-routed internally back to the CD and DSR lines (the lines don't appear
-to be externally available on the CPU according to the tech reference
-manual).
-  <6>[   41.302967] set_mctrl MSR starts at b0
-  <6>[   41.307640] set_mctrl MCR 0b =3D> 03, MSR became b0
-  <6>[   41.313289] set_mctrl MCR 03 =3D> 01, MSR became b0
-  <6>[   41.318937] set_mctrl MCR 01 =3D> 00, MSR became 1a
-
-=2E..and just to confirm I didn't mess up, I tried the other order:
-  <6>[   54.522910] set_mctrl MSR starts at b0
-  <6>[   54.527577] set_mctrl MCR 0b =3D> 0a, MSR became 1a
-  <6>[   54.533226] set_mctrl MCR 0a =3D> 08, MSR became 1a
-  <6>[   54.538870] set_mctrl MCR 08 =3D> 00, MSR became 1a
-
----
-
-On Sat, Oct 8, 2011 at 8:55 AM, Doug Anderson <dianders@chromium.org> w=
-rote:
+> On Mon, Oct 3, 2011 at 10:53 AM, Rajendra Nayak <rnayak@ti.com> wrote=
+:
+>> On Monday 03 October 2011 10:30 AM, Govindraj wrote:
+>>
+>>> On Sat, Oct 1, 2011 at 8:03 PM, Rajendra Nayak<rnayak@ti.com> =C2=A0=
+wrote:
+>>>>
+>>>> On Friday 30 September 2011 04:31 PM, Govindraj.R wrote:
+>>>>>
+>>>>> Add API to determine IO-PAD wakeup event status for a given
+>>>>> hwmod dynamic_mux pad.
+>>>>>
+>>>>> Wake up event set will be cleared on pad mux_read.
+>>>>
+>>>> Are these api's even getting used in this series?
+>>>
+>>> Used in Tero's irq_chaining patches.
+>>
+>> So shouldn't this patch be part of his series instead?
 >
-> On Sat, Oct 8, 2011 at 1:49 AM, Jiri Slaby <jirislaby@gmail.com> wrot=
-e:
-> > I cannot reproduce this. What uart driver is this with? And where d=
-oes
-> > it call uart_suspend_port from? Basically, it would mean that it ca=
-lls
-> > uart_suspend_port while userspace is still running? Or who HUPs the=
- port
-> > (the second point in your list)?
+> Yes it is. Part of his v9-series.
 >
-> Thank you for testing! =A0I am working with the 8250 driver controlli=
-ng
-> the onboard UART on an nVidia Tegra T25 (ARM).
->
-> You raise very good questions, and I'm happy to keep tracking down to
-> continue to look for a deeper root cause. =A0I continued to do some m=
-ore
-> testing of this patch (with the help of a few others) after posting
-> the list. =A0We tried the same setup on an x86-based board and the HU=
-P
-> doesn't show up. =A0...so my patch wasn't needed on that board (altho=
-ugh
-> my patch didn't hurt). =A0...that means, as you already pointed out,
-> that the HUP must _not_ be coming from userspace.
->
-> Probably the true bug in my system is that a spurious HUP is being
-> generated as a result of the suspend. =A0That is probably platform
-> dependent and would explain why this hasn't been a bigger problem for
-> others.
->
->
-> ...however, even though my patch shouldn't be needed for any hardware
-> that doesn't generate the spurious HUP, it might still be worthwhile
-> to consider including it? =A0...or perhaps changing it to a BUG_ON or
-> WARN_ON to at least detect the case of running the shutdown code afte=
-r
-> the suspend code? =A0Definitely the case that I ran into (shutdown af=
-ter
-> suspend) will definitely cause a crash during resume.
->
->
-> I will spend time on Monday digging into the source of the HUP and
-> will post a followup.
->
-> -Doug
+
+Then please drop from this series and state the introductory patch
+(PATCH 0/n) that this series has a dependency on Tero's series.
+
+Kevin
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
  in
