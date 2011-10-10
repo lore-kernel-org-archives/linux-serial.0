@@ -1,472 +1,278 @@
 From: Thomas Abraham <thomas.abraham@linaro.org>
-Subject: [PATCH v2 5/9] serial: samsung: remove all uses of get_clksrc and
- set_clksrc
-Date: Mon, 10 Oct 2011 15:38:01 +0530
-Message-ID: <1318241285-23568-6-git-send-email-thomas.abraham@linaro.org>
+Subject: [PATCH v2 7/9] serial: samsung: merge all SoC specific port reset
+ functions
+Date: Mon, 10 Oct 2011 15:38:03 +0530
+Message-ID: <1318241285-23568-8-git-send-email-thomas.abraham@linaro.org>
 References: <1318241285-23568-1-git-send-email-thomas.abraham@linaro.org>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout3.samsung.com ([203.254.224.33]:45063 "EHLO
+	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753267Ab1JJKHW (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 10 Oct 2011 06:07:22 -0400
 In-reply-to: <1318241285-23568-1-git-send-email-thomas.abraham@linaro.org>
-Sender: linux-samsung-soc-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
 Cc: linux-arm-kernel@lists.infradead.org, alan@linux.intel.com, grant.likely@secretlab.ca, linux-samsung-soc@vger.kernel.org, kgene.kim@samsung.com, ben-linux@fluff.org
-List-Id: linux-serial@vger.kernel.org
 
-With clkdev based clock lookup support, the clock set and get operation
-using clock names communicated between the samsung uart driver and the
-SoC specific extension can be removed.
-
-In addition to that, for each platform specific extension, add the
-default clock selection, number of clock options for uart baud generator,
-clock selection bit mask and shift values which is required by the
-clkdev support in samsung uart driver.
-
-The default clock selection value 'def_clk_sel' specifies the default clock
-to be used as the source clock for baud rate generator in case the platform
-code does not specify the same.
+The port reset function in each of the platform specific extension performs
+the same operations and hence all the reset port functions can be merged into
+one and moved into the common samsung uart driver. The SoC specific port reset
+functions are removed from SoC extensions.
 
 Cc: Ben Dooks <ben-linux@fluff.org>
 Signed-off-by: Thomas Abraham <thomas.abraham@linaro.org>
 ---
- arch/arm/mach-exynos4/init.c                     |    4 +-
- arch/arm/plat-samsung/include/plat/regs-serial.h |    7 ++-
- drivers/tty/serial/s3c2410.c                     |   31 ++----------
- drivers/tty/serial/s3c2412.c                     |   55 ++------------------
- drivers/tty/serial/s3c2440.c                     |   58 ++-------------------
- drivers/tty/serial/s3c6400.c                     |   54 ++------------------
- drivers/tty/serial/s5pv210.c                     |   60 ++--------------------
- drivers/tty/serial/samsung.h                     |    5 --
- 8 files changed, 27 insertions(+), 247 deletions(-)
+ drivers/tty/serial/s3c2410.c |   18 ------------------
+ drivers/tty/serial/s3c2412.c |   24 ------------------------
+ drivers/tty/serial/s3c2440.c |   24 ------------------------
+ drivers/tty/serial/s3c6400.c |   24 ------------------------
+ drivers/tty/serial/s5pv210.c |   22 +---------------------
+ drivers/tty/serial/samsung.c |   23 ++++++++++++++++++-----
+ 6 files changed, 19 insertions(+), 116 deletions(-)
 
-diff --git a/arch/arm/mach-exynos4/init.c b/arch/arm/mach-exynos4/init.c
-index e836c9c..3c9590b 100644
---- a/arch/arm/mach-exynos4/init.c
-+++ b/arch/arm/mach-exynos4/init.c
-@@ -20,10 +20,8 @@ void __init exynos4_common_init_uarts(struct s3c2410_uartcfg *cfg, int no)
- 	struct s3c2410_uartcfg *tcfg = cfg;
- 	u32 ucnt;
- 
--	for (ucnt = 0; ucnt < no; ucnt++, tcfg++) {
-+	for (ucnt = 0; ucnt < no; ucnt++, tcfg++)
- 		tcfg->has_fracval = 1;
--		tcfg->flags |= NO_NEED_CHECK_CLKSRC;
--	}
- 
- 	s3c24xx_init_uartdevs("s5pv210-uart", s5p_uart_resources, cfg, no);
- }
-diff --git a/arch/arm/plat-samsung/include/plat/regs-serial.h b/arch/arm/plat-samsung/include/plat/regs-serial.h
-index 25f0c36..133fa97 100644
---- a/arch/arm/plat-samsung/include/plat/regs-serial.h
-+++ b/arch/arm/plat-samsung/include/plat/regs-serial.h
-@@ -71,6 +71,7 @@
- #define S3C2410_LCON_IRM          (1<<6)
- 
- #define S3C2440_UCON_CLKMASK	  (3<<10)
-+#define S3C2440_UCON_CLKSHIFT	  (10)
- #define S3C2440_UCON_PCLK	  (0<<10)
- #define S3C2440_UCON_UCLK	  (1<<10)
- #define S3C2440_UCON_PCLK2	  (2<<10)
-@@ -78,6 +79,7 @@
- #define S3C2443_UCON_EPLL	  (3<<10)
- 
- #define S3C6400_UCON_CLKMASK	(3<<10)
-+#define S3C6400_UCON_CLKSHIFT	(10)
- #define S3C6400_UCON_PCLK	(0<<10)
- #define S3C6400_UCON_PCLK2	(2<<10)
- #define S3C6400_UCON_UCLK0	(1<<10)
-@@ -90,11 +92,14 @@
- #define S3C2440_UCON_DIVSHIFT	  (12)
- 
- #define S3C2412_UCON_CLKMASK	(3<<10)
-+#define S3C2412_UCON_CLKSHIFT	(10)
- #define S3C2412_UCON_UCLK	(1<<10)
- #define S3C2412_UCON_USYSCLK	(3<<10)
- #define S3C2412_UCON_PCLK	(0<<10)
- #define S3C2412_UCON_PCLK2	(2<<10)
- 
-+#define S3C2410_UCON_CLKMASK	(1 << 10)
-+#define S3C2410_UCON_CLKSHIFT	(10)
- #define S3C2410_UCON_UCLK	  (1<<10)
- #define S3C2410_UCON_SBREAK	  (1<<4)
- 
-@@ -193,6 +198,7 @@
- 
- /* Following are specific to S5PV210 */
- #define S5PV210_UCON_CLKMASK	(1<<10)
-+#define S5PV210_UCON_CLKSHIFT	(10)
- #define S5PV210_UCON_PCLK	(0<<10)
- #define S5PV210_UCON_UCLK	(1<<10)
- 
-@@ -221,7 +227,6 @@
- #define S5PV210_UFSTAT_RXMASK	(255<<0)
- #define S5PV210_UFSTAT_RXSHIFT	(0)
- 
--#define NO_NEED_CHECK_CLKSRC	1
- #define S3C2410_UCON_CLKSEL0	(1 << 0)
- #define S3C2410_UCON_CLKSEL1	(1 << 1)
- #define S3C2410_UCON_CLKSEL2	(1 << 2)
 diff --git a/drivers/tty/serial/s3c2410.c b/drivers/tty/serial/s3c2410.c
-index b1d7e7c..e668a9d 100644
+index e668a9d..1491c32 100644
 --- a/drivers/tty/serial/s3c2410.c
 +++ b/drivers/tty/serial/s3c2410.c
-@@ -25,31 +25,6 @@
+@@ -25,23 +25,6 @@
  
  #include "samsung.h"
  
--static int s3c2410_serial_setsource(struct uart_port *port,
--				    struct s3c24xx_uart_clksrc *clk)
+-static int s3c2410_serial_resetport(struct uart_port *port,
+-				    struct s3c2410_uartcfg *cfg)
 -{
--	unsigned long ucon = rd_regl(port, S3C2410_UCON);
+-	dbg("s3c2410_serial_resetport: port=%p (%08lx), cfg=%p\n",
+-	    port, port->mapbase, cfg);
 -
--	if (strcmp(clk->name, "uclk") == 0)
--		ucon |= S3C2410_UCON_UCLK;
--	else
--		ucon &= ~S3C2410_UCON_UCLK;
+-	wr_regl(port, S3C2410_UCON,  cfg->ucon);
+-	wr_regl(port, S3C2410_ULCON, cfg->ulcon);
 -
--	wr_regl(port, S3C2410_UCON, ucon);
--	return 0;
--}
+-	/* reset both fifos */
 -
--static int s3c2410_serial_getsource(struct uart_port *port,
--				    struct s3c24xx_uart_clksrc *clk)
--{
--	unsigned long ucon = rd_regl(port, S3C2410_UCON);
--
--	clk->divisor = 1;
--	clk->name = (ucon & S3C2410_UCON_UCLK) ? "uclk" : "pclk";
+-	wr_regl(port, S3C2410_UFCON, cfg->ufcon | S3C2410_UFCON_RESETBOTH);
+-	wr_regl(port, S3C2410_UFCON, cfg->ufcon);
 -
 -	return 0;
 -}
 -
- static int s3c2410_serial_resetport(struct uart_port *port,
- 				    struct s3c2410_uartcfg *cfg)
- {
-@@ -77,8 +52,10 @@ static struct s3c24xx_uart_info s3c2410_uart_inf = {
- 	.tx_fifofull	= S3C2410_UFSTAT_TXFULL,
- 	.tx_fifomask	= S3C2410_UFSTAT_TXMASK,
- 	.tx_fifoshift	= S3C2410_UFSTAT_TXSHIFT,
--	.get_clksrc	= s3c2410_serial_getsource,
--	.set_clksrc	= s3c2410_serial_setsource,
-+	.def_clk_sel	= S3C2410_UCON_CLKSEL0,
-+	.num_clks	= 2,
-+	.clksel_mask	= S3C2410_UCON_CLKMASK,
-+	.clksel_shift	= S3C2410_UCON_CLKSHIFT,
- 	.reset_port	= s3c2410_serial_resetport,
+ static struct s3c24xx_uart_info s3c2410_uart_inf = {
+ 	.name		= "Samsung S3C2410 UART",
+ 	.type		= PORT_S3C2410,
+@@ -56,7 +39,6 @@ static struct s3c24xx_uart_info s3c2410_uart_inf = {
+ 	.num_clks	= 2,
+ 	.clksel_mask	= S3C2410_UCON_CLKMASK,
+ 	.clksel_shift	= S3C2410_UCON_CLKSHIFT,
+-	.reset_port	= s3c2410_serial_resetport,
  };
  
+ static int s3c2410_serial_probe(struct platform_device *dev)
 diff --git a/drivers/tty/serial/s3c2412.c b/drivers/tty/serial/s3c2412.c
-index 2234bf9..5b85c19 100644
+index 5b85c19..38ae730 100644
 --- a/drivers/tty/serial/s3c2412.c
 +++ b/drivers/tty/serial/s3c2412.c
-@@ -25,55 +25,6 @@
+@@ -25,29 +25,6 @@
  
  #include "samsung.h"
  
--static int s3c2412_serial_setsource(struct uart_port *port,
--				     struct s3c24xx_uart_clksrc *clk)
+-static int s3c2412_serial_resetport(struct uart_port *port,
+-				    struct s3c2410_uartcfg *cfg)
 -{
 -	unsigned long ucon = rd_regl(port, S3C2410_UCON);
 -
--	ucon &= ~S3C2412_UCON_CLKMASK;
+-	dbg("%s: port=%p (%08lx), cfg=%p\n",
+-	    __func__, port, port->mapbase, cfg);
 -
--	if (strcmp(clk->name, "uclk") == 0)
--		ucon |= S3C2440_UCON_UCLK;
--	else if (strcmp(clk->name, "pclk") == 0)
--		ucon |= S3C2440_UCON_PCLK;
--	else if (strcmp(clk->name, "usysclk") == 0)
--		ucon |= S3C2412_UCON_USYSCLK;
--	else {
--		printk(KERN_ERR "unknown clock source %s\n", clk->name);
--		return -EINVAL;
--	}
+-	/* ensure we don't change the clock settings... */
 -
--	wr_regl(port, S3C2410_UCON, ucon);
--	return 0;
--}
+-	ucon &= S3C2412_UCON_CLKMASK;
 -
+-	wr_regl(port, S3C2410_UCON,  ucon | cfg->ucon);
+-	wr_regl(port, S3C2410_ULCON, cfg->ulcon);
 -
--static int s3c2412_serial_getsource(struct uart_port *port,
--				    struct s3c24xx_uart_clksrc *clk)
--{
--	unsigned long ucon = rd_regl(port, S3C2410_UCON);
+-	/* reset both fifos */
 -
--	switch (ucon & S3C2412_UCON_CLKMASK) {
--	case S3C2412_UCON_UCLK:
--		clk->divisor = 1;
--		clk->name = "uclk";
--		break;
--
--	case S3C2412_UCON_PCLK:
--	case S3C2412_UCON_PCLK2:
--		clk->divisor = 1;
--		clk->name = "pclk";
--		break;
--
--	case S3C2412_UCON_USYSCLK:
--		clk->divisor = 1;
--		clk->name = "usysclk";
--		break;
--	}
+-	wr_regl(port, S3C2410_UFCON, cfg->ufcon | S3C2410_UFCON_RESETBOTH);
+-	wr_regl(port, S3C2410_UFCON, cfg->ufcon);
 -
 -	return 0;
 -}
 -
- static int s3c2412_serial_resetport(struct uart_port *port,
- 				    struct s3c2410_uartcfg *cfg)
- {
-@@ -108,8 +59,10 @@ static struct s3c24xx_uart_info s3c2412_uart_inf = {
- 	.tx_fifofull	= S3C2440_UFSTAT_TXFULL,
- 	.tx_fifomask	= S3C2440_UFSTAT_TXMASK,
- 	.tx_fifoshift	= S3C2440_UFSTAT_TXSHIFT,
--	.get_clksrc	= s3c2412_serial_getsource,
--	.set_clksrc	= s3c2412_serial_setsource,
-+	.def_clk_sel	= S3C2410_UCON_CLKSEL2,
-+	.num_clks	= 4,
-+	.clksel_mask	= S3C2412_UCON_CLKMASK,
-+	.clksel_shift	= S3C2412_UCON_CLKSHIFT,
- 	.reset_port	= s3c2412_serial_resetport,
+ static struct s3c24xx_uart_info s3c2412_uart_inf = {
+ 	.name		= "Samsung S3C2412 UART",
+ 	.type		= PORT_S3C2412,
+@@ -63,7 +40,6 @@ static struct s3c24xx_uart_info s3c2412_uart_inf = {
+ 	.num_clks	= 4,
+ 	.clksel_mask	= S3C2412_UCON_CLKMASK,
+ 	.clksel_shift	= S3C2412_UCON_CLKSHIFT,
+-	.reset_port	= s3c2412_serial_resetport,
  };
  
+ /* device management */
 diff --git a/drivers/tty/serial/s3c2440.c b/drivers/tty/serial/s3c2440.c
-index 4498828..39930f8 100644
+index 39930f8..70652f5 100644
 --- a/drivers/tty/serial/s3c2440.c
 +++ b/drivers/tty/serial/s3c2440.c
-@@ -25,58 +25,6 @@
+@@ -25,29 +25,6 @@
  
  #include "samsung.h"
  
--
--static int s3c2440_serial_setsource(struct uart_port *port,
--				     struct s3c24xx_uart_clksrc *clk)
+-static int s3c2440_serial_resetport(struct uart_port *port,
+-				    struct s3c2410_uartcfg *cfg)
 -{
 -	unsigned long ucon = rd_regl(port, S3C2410_UCON);
 -
--	/* todo - proper fclk<>nonfclk switch. */
+-	dbg("s3c2440_serial_resetport: port=%p (%08lx), cfg=%p\n",
+-	    port, port->mapbase, cfg);
 -
--	ucon &= ~S3C2440_UCON_CLKMASK;
+-	/* ensure we don't change the clock settings... */
 -
--	if (strcmp(clk->name, "uclk") == 0)
--		ucon |= S3C2440_UCON_UCLK;
--	else if (strcmp(clk->name, "pclk") == 0)
--		ucon |= S3C2440_UCON_PCLK;
--	else if (strcmp(clk->name, "fclk_n") == 0)
--		ucon |= S3C2440_UCON_FCLK;
--	else {
--		printk(KERN_ERR "unknown clock source %s\n", clk->name);
--		return -EINVAL;
--	}
+-	ucon &= (S3C2440_UCON0_DIVMASK | (3<<10));
 -
--	wr_regl(port, S3C2410_UCON, ucon);
--	return 0;
--}
+-	wr_regl(port, S3C2410_UCON,  ucon | cfg->ucon);
+-	wr_regl(port, S3C2410_ULCON, cfg->ulcon);
 -
+-	/* reset both fifos */
 -
--static int s3c2440_serial_getsource(struct uart_port *port,
--				    struct s3c24xx_uart_clksrc *clk)
--{
--	unsigned long ucon = rd_regl(port, S3C2410_UCON);
--
--	switch (ucon & S3C2440_UCON_CLKMASK) {
--	case S3C2440_UCON_UCLK:
--		clk->divisor = 1;
--		clk->name = "uclk";
--		break;
--
--	case S3C2440_UCON_PCLK:
--	case S3C2440_UCON_PCLK2:
--		clk->divisor = 1;
--		clk->name = "pclk";
--		break;
--
--	case S3C2440_UCON_FCLK:
--		clk->divisor = 1;
--		clk->name = "fclk_n";
--		break;
--	}
+-	wr_regl(port, S3C2410_UFCON, cfg->ufcon | S3C2410_UFCON_RESETBOTH);
+-	wr_regl(port, S3C2410_UFCON, cfg->ufcon);
 -
 -	return 0;
 -}
 -
- static int s3c2440_serial_resetport(struct uart_port *port,
- 				    struct s3c2410_uartcfg *cfg)
- {
-@@ -110,8 +58,10 @@ static struct s3c24xx_uart_info s3c2440_uart_inf = {
- 	.tx_fifofull	= S3C2440_UFSTAT_TXFULL,
- 	.tx_fifomask	= S3C2440_UFSTAT_TXMASK,
- 	.tx_fifoshift	= S3C2440_UFSTAT_TXSHIFT,
--	.get_clksrc	= s3c2440_serial_getsource,
--	.set_clksrc	= s3c2440_serial_setsource,
-+	.def_clk_sel	= S3C2410_UCON_CLKSEL2,
-+	.num_clks	= 4,
-+	.clksel_mask	= S3C2440_UCON_CLKMASK,
-+	.clksel_shift	= S3C2440_UCON_CLKSHIFT,
- 	.reset_port	= s3c2440_serial_resetport,
+ static struct s3c24xx_uart_info s3c2440_uart_inf = {
+ 	.name		= "Samsung S3C2440 UART",
+ 	.type		= PORT_S3C2440,
+@@ -62,7 +39,6 @@ static struct s3c24xx_uart_info s3c2440_uart_inf = {
+ 	.num_clks	= 4,
+ 	.clksel_mask	= S3C2440_UCON_CLKMASK,
+ 	.clksel_shift	= S3C2440_UCON_CLKSHIFT,
+-	.reset_port	= s3c2440_serial_resetport,
  };
  
+ /* device management */
 diff --git a/drivers/tty/serial/s3c6400.c b/drivers/tty/serial/s3c6400.c
-index e2f6913..c5a6d46 100644
+index c5a6d46..30a69f1 100644
 --- a/drivers/tty/serial/s3c6400.c
 +++ b/drivers/tty/serial/s3c6400.c
-@@ -26,54 +26,6 @@
+@@ -26,29 +26,6 @@
  
  #include "samsung.h"
  
--static int s3c6400_serial_setsource(struct uart_port *port,
--				    struct s3c24xx_uart_clksrc *clk)
+-static int s3c6400_serial_resetport(struct uart_port *port,
+-				    struct s3c2410_uartcfg *cfg)
 -{
 -	unsigned long ucon = rd_regl(port, S3C2410_UCON);
 -
--	if (strcmp(clk->name, "uclk0") == 0) {
--		ucon &= ~S3C6400_UCON_CLKMASK;
--		ucon |= S3C6400_UCON_UCLK0;
--	} else if (strcmp(clk->name, "uclk1") == 0)
--		ucon |= S3C6400_UCON_UCLK1;
--	else if (strcmp(clk->name, "pclk") == 0) {
--		/* See notes about transitioning from UCLK to PCLK */
--		ucon &= ~S3C6400_UCON_UCLK0;
--	} else {
--		printk(KERN_ERR "unknown clock source %s\n", clk->name);
--		return -EINVAL;
--	}
+-	dbg("s3c6400_serial_resetport: port=%p (%08lx), cfg=%p\n",
+-	    port, port->mapbase, cfg);
 -
--	wr_regl(port, S3C2410_UCON, ucon);
--	return 0;
--}
+-	/* ensure we don't change the clock settings... */
 -
+-	ucon &= S3C6400_UCON_CLKMASK;
 -
--static int s3c6400_serial_getsource(struct uart_port *port,
--				    struct s3c24xx_uart_clksrc *clk)
--{
--	u32 ucon = rd_regl(port, S3C2410_UCON);
+-	wr_regl(port, S3C2410_UCON,  ucon | cfg->ucon);
+-	wr_regl(port, S3C2410_ULCON, cfg->ulcon);
 -
--	clk->divisor = 1;
+-	/* reset both fifos */
 -
--	switch (ucon & S3C6400_UCON_CLKMASK) {
--	case S3C6400_UCON_UCLK0:
--		clk->name = "uclk0";
--		break;
--
--	case S3C6400_UCON_UCLK1:
--		clk->name = "uclk1";
--		break;
--
--	case S3C6400_UCON_PCLK:
--	case S3C6400_UCON_PCLK2:
--		clk->name = "pclk";
--		break;
--	}
+-	wr_regl(port, S3C2410_UFCON, cfg->ufcon | S3C2410_UFCON_RESETBOTH);
+-	wr_regl(port, S3C2410_UFCON, cfg->ufcon);
 -
 -	return 0;
 -}
 -
- static int s3c6400_serial_resetport(struct uart_port *port,
- 				    struct s3c2410_uartcfg *cfg)
- {
-@@ -108,8 +60,10 @@ static struct s3c24xx_uart_info s3c6400_uart_inf = {
- 	.tx_fifofull	= S3C2440_UFSTAT_TXFULL,
- 	.tx_fifomask	= S3C2440_UFSTAT_TXMASK,
- 	.tx_fifoshift	= S3C2440_UFSTAT_TXSHIFT,
--	.get_clksrc	= s3c6400_serial_getsource,
--	.set_clksrc	= s3c6400_serial_setsource,
-+	.def_clk_sel	= S3C2410_UCON_CLKSEL2,
-+	.num_clks	= 4,
-+	.clksel_mask	= S3C6400_UCON_CLKMASK,
-+	.clksel_shift	= S3C6400_UCON_CLKSHIFT,
- 	.reset_port	= s3c6400_serial_resetport,
+ static struct s3c24xx_uart_info s3c6400_uart_inf = {
+ 	.name		= "Samsung S3C6400 UART",
+ 	.type		= PORT_S3C6400,
+@@ -64,7 +41,6 @@ static struct s3c24xx_uart_info s3c6400_uart_inf = {
+ 	.num_clks	= 4,
+ 	.clksel_mask	= S3C6400_UCON_CLKMASK,
+ 	.clksel_shift	= S3C6400_UCON_CLKSHIFT,
+-	.reset_port	= s3c6400_serial_resetport,
  };
  
+ /* device management */
 diff --git a/drivers/tty/serial/s5pv210.c b/drivers/tty/serial/s5pv210.c
-index 03b249e..173df5a 100644
+index 173df5a..d232094 100644
 --- a/drivers/tty/serial/s5pv210.c
 +++ b/drivers/tty/serial/s5pv210.c
-@@ -25,60 +25,6 @@
+@@ -25,25 +25,6 @@
  #include <plat/regs-serial.h>
  #include "samsung.h"
  
--static int s5pv210_serial_setsource(struct uart_port *port,
--					struct s3c24xx_uart_clksrc *clk)
+-static int s5pv210_serial_resetport(struct uart_port *port,
+-					struct s3c2410_uartcfg *cfg)
 -{
--	struct s3c24xx_uart_port *ourport;
--	struct s3c2410_uartcfg *cfg;
 -	unsigned long ucon = rd_regl(port, S3C2410_UCON);
 -
--	ourport = container_of(port, struct s3c24xx_uart_port, port);
--	cfg = ourport->cfg;
+-	ucon &= S5PV210_UCON_CLKMASK;
+-	wr_regl(port, S3C2410_UCON,  ucon | cfg->ucon);
+-	wr_regl(port, S3C2410_ULCON, cfg->ulcon);
 -
--	if (cfg->flags & NO_NEED_CHECK_CLKSRC)
--		return 0;
+-	/* reset both fifos */
+-	wr_regl(port, S3C2410_UFCON, cfg->ufcon | S3C2410_UFCON_RESETBOTH);
+-	wr_regl(port, S3C2410_UFCON, cfg->ufcon);
 -
--	if (strcmp(clk->name, "pclk") == 0)
--		ucon &= ~S5PV210_UCON_CLKMASK;
--	else if (strcmp(clk->name, "uclk1") == 0)
--		ucon |= S5PV210_UCON_CLKMASK;
--	else {
--		printk(KERN_ERR "unknown clock source %s\n", clk->name);
--		return -EINVAL;
--	}
--
--	wr_regl(port, S3C2410_UCON, ucon);
--	return 0;
--}
--
--
--static int s5pv210_serial_getsource(struct uart_port *port,
--					struct s3c24xx_uart_clksrc *clk)
--{
--	struct s3c24xx_uart_port *ourport;
--	struct s3c2410_uartcfg *cfg;
--	u32 ucon = rd_regl(port, S3C2410_UCON);
--
--	ourport = container_of(port, struct s3c24xx_uart_port, port);
--	cfg = ourport->cfg;
--
--	clk->divisor = 1;
--
--	if (cfg->flags & NO_NEED_CHECK_CLKSRC)
--		return 0;
--
--	switch (ucon & S5PV210_UCON_CLKMASK) {
--	case S5PV210_UCON_PCLK:
--		clk->name = "pclk";
--		break;
--	case S5PV210_UCON_UCLK:
--		clk->name = "uclk1";
--		break;
--	}
+-	/* It is need to delay When reset FIFO register */
+-	udelay(1);
 -
 -	return 0;
 -}
 -
- static int s5pv210_serial_resetport(struct uart_port *port,
- 					struct s3c2410_uartcfg *cfg)
- {
-@@ -109,8 +55,10 @@ static int s5pv210_serial_resetport(struct uart_port *port,
- 		.tx_fifofull	= S5PV210_UFSTAT_TXFULL,	\
- 		.tx_fifomask	= S5PV210_UFSTAT_TXMASK,	\
- 		.tx_fifoshift	= S5PV210_UFSTAT_TXSHIFT,	\
--		.get_clksrc	= s5pv210_serial_getsource,	\
--		.set_clksrc	= s5pv210_serial_setsource,	\
-+		.def_clk_sel	= S3C2410_UCON_CLKSEL0,		\
-+		.num_clks	= 2,				\
-+		.clksel_mask	= S5PV210_UCON_CLKMASK,		\
-+		.clksel_shift	= S5PV210_UCON_CLKSHIFT,	\
- 		.reset_port	= s5pv210_serial_resetport
+ #define S5PV210_UART_DEFAULT_INFO(fifo_size)			\
+ 		.name		= "Samsung S5PV210 UART0",	\
+ 		.type		= PORT_S3C6400,			\
+@@ -58,8 +39,7 @@ static int s5pv210_serial_resetport(struct uart_port *port,
+ 		.def_clk_sel	= S3C2410_UCON_CLKSEL0,		\
+ 		.num_clks	= 2,				\
+ 		.clksel_mask	= S5PV210_UCON_CLKMASK,		\
+-		.clksel_shift	= S5PV210_UCON_CLKSHIFT,	\
+-		.reset_port	= s5pv210_serial_resetport
++		.clksel_shift	= S5PV210_UCON_CLKSHIFT
  
  static struct s3c24xx_uart_info s5p_port_fifo256 = {
-diff --git a/drivers/tty/serial/samsung.h b/drivers/tty/serial/samsung.h
-index 40e9ef1..c9cab2c 100644
---- a/drivers/tty/serial/samsung.h
-+++ b/drivers/tty/serial/samsung.h
-@@ -28,11 +28,6 @@ struct s3c24xx_uart_info {
+ 	S5PV210_UART_DEFAULT_INFO(256),
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index dc5a4ed..78aea1a 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -965,16 +965,29 @@ static struct s3c24xx_uart_port s3c24xx_serial_ports[CONFIG_SERIAL_SAMSUNG_UARTS
  
- 	unsigned int		has_divslot:1;
+ /* s3c24xx_serial_resetport
+  *
+- * wrapper to call the specific reset for this port (reset the fifos
+- * and the settings)
++ * reset the fifos and other the settings.
+ */
  
--	/* clock source control */
--
--	int (*get_clksrc)(struct uart_port *, struct s3c24xx_uart_clksrc *clk);
--	int (*set_clksrc)(struct uart_port *, struct s3c24xx_uart_clksrc *clk);
--
- 	/* uart controls */
- 	int (*reset_port)(struct uart_port *, struct s3c2410_uartcfg *);
- };
+-static inline int s3c24xx_serial_resetport(struct uart_port *port,
+-					   struct s3c2410_uartcfg *cfg)
++static void s3c24xx_serial_resetport(struct uart_port *port,
++				   struct s3c2410_uartcfg *cfg)
+ {
+ 	struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
++	unsigned long ucon = rd_regl(port, S3C2410_UCON);
++	unsigned int ucon_mask;
+ 
+-	return (info->reset_port)(port, cfg);
++	ucon_mask = info->clksel_mask;
++	if (info->type == PORT_S3C2440)
++		ucon_mask |= S3C2440_UCON0_DIVMASK;
++
++	ucon &= ucon_mask;
++	wr_regl(port, S3C2410_UCON,  ucon | cfg->ucon);
++
++	/* reset both fifos */
++	wr_regl(port, S3C2410_UFCON, cfg->ufcon | S3C2410_UFCON_RESETBOTH);
++	wr_regl(port, S3C2410_UFCON, cfg->ufcon);
++
++	/* some delay is required after fifo reset */
++	udelay(1);
+ }
+ 
+ 
 -- 
 1.6.6.rc2
+
