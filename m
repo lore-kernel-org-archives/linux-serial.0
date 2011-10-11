@@ -1,47 +1,36 @@
-From: Kevin Hilman <khilman@ti.com>
-Subject: Re: [PATCH v6 15/16] OMAP2+: UART: Enable back uart clocks with runtime API for early console
-Date: Tue, 11 Oct 2011 14:06:16 -0700
-Message-ID: <87pqi3z19z.fsf@ti.com>
-References: <1317380561-661-1-git-send-email-govindraj.raja@ti.com>
-	<1317380561-661-6-git-send-email-govindraj.raja@ti.com>
+From: "Shunji Takeshi" <yuh5256221@gmail.com>
+Subject: For Your Interest:
+Date: Wed, 12 Oct 2011 01:58:25 +0330
+Message-ID: <20111011223112.688842E6CA2@mail.cssthailand.com>
+Reply-To: davtuw5244@aim.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1317380561-661-6-git-send-email-govindraj.raja@ti.com>
-	(Govindraj R.'s message of "Fri, 30 Sep 2011 16:32:40 +0530")
-Sender: linux-omap-owner@vger.kernel.org
-To: "Govindraj.R" <govindraj.raja@ti.com>
-Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Partha Basak <p-basak2@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Rajendra Nayak <rnayak@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.cssthailand.com ([119.46.26.94]:46879 "EHLO
+	mail.cssthailand.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751072Ab1JKWiS convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 11 Oct 2011 18:38:18 -0400
+Content-Description: Mail message body
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Recipients <yuh5256221@gmail.com>
 
-"Govindraj.R" <govindraj.raja@ti.com> writes:
 
-> For the early console probing we had avoided hwmod reset and idling
-> and uart was idled using hwmod API and enabled back using omap_device API
-> after omap_device registration.
->
-> Now since we are using runtime API's to enable back uart, move hwmod
-> idling and use runtime API to enable back UART.
->
-> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+Business Enquiry.
 
-Now that the driver is using runtime PM.  Why do we still need
-HWMOD_INIT_NO_IDLE and HWMOD_INIT_NO_RESET?
 
-The comment in the code says:
+Private Email: davtuw5244@aim.com
+   
+Hello,
+This is to invite you to an investment opportunity involving a lucrative business proposal for a common interest to share with you. 
+    
+I am Mr. Shunji Takeshi from Hong Kong. This is a deal which concerns the transfer of a large sum of money. Everything about this transaction shall be legally done without any problem. Please endeavor to observe utmost discretion in all matters concerning this issue. 
+If you are interested, mail back, through my private Email address, written above,
 
-		/*
-		 * During UART early init, device need to be probed
-		 * to determine SoC specific init before omap_device
-		 * is ready.  Therefore, don't allow idle here
-		 */
-
-This was true when using the 8250 driver because it was not using
-runtime PM so could not know how to (re)enable the device.
-
-However, since the driver is now runtime PM adapted, any device access
-should be contained within a runtime PM get/put block, so there should
-no longer be a reason not allow the IP blocks to be reset during boot.
-
-Kevin
-
+I shall give you more informations about this proposal, as soon as I receive your positive response.
+   
+Kind Regards, 
+   
+Mr.Shunji Takeshi.
