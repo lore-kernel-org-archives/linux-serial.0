@@ -1,41 +1,63 @@
-From: Govindraj <govindraj.ti@gmail.com>
-Subject: Re: [PATCH v6 08/16] OMAP2+: UART: Store certain reg values to port structure
-Date: Tue, 11 Oct 2011 18:51:20 +0530
-Message-ID: <CAAL8m4wHYULvpjgJpM0gvhV_rcmBAz_=P5tUU+-DZ0=6i+jYoA@mail.gmail.com>
-References: <1317380495-584-1-git-send-email-govindraj.raja@ti.com>
- <1317380495-584-8-git-send-email-govindraj.raja@ti.com> <8739f0bdqh.fsf@ti.com>
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
+Subject: Re: [RFC PATCH] tty/serial: atmel_serial: add device tree support
+Date: Tue, 11 Oct 2011 18:04:51 +0200
+Message-ID: <4E946923.1010202@atmel.com>
+References: <1317635502-9430-1-git-send-email-nicolas.ferre@atmel.com> <4E8A6858.6020700@gmail.com> <4E8AC171.4020706@atmel.com> <4E8B054B.3060506@gmail.com> <20111004165520.GB10919@ponder.secretlab.ca>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bw0-f46.google.com ([209.85.214.46]:55025 "EHLO
-	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754234Ab1JKNVl (ORCPT
+Received: from newsmtp5.atmel.com ([204.2.163.5]:50464 "EHLO
+	sjogate2.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754812Ab1JKQFE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 11 Oct 2011 09:21:41 -0400
-In-Reply-To: <8739f0bdqh.fsf@ti.com>
+	Tue, 11 Oct 2011 12:05:04 -0400
+In-Reply-To: <20111004165520.GB10919@ponder.secretlab.ca>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kevin Hilman <khilman@ti.com>
-Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Partha Basak <p-basak2@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Rajendra Nayak <rnayak@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>
+To: Grant Likely <grant.likely@secretlab.ca>, Rob Herring <robherring2@gmail.com>
+Cc: linux-arm-kernel@lists.infradead.org, alan@linux.intel.com, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org
 
-On Tue, Oct 11, 2011 at 5:28 AM, Kevin Hilman <khilman@ti.com> wrote:
-> "Govindraj.R" <govindraj.raja@ti.com> writes:
->
->> In preparation to runtime conversion add missing uart regs to
->> port structure which can be used in context restore.
->> Also ensuring all uart reg info's are part of port structure.
+On 10/04/2011 06:55 PM, Grant Likely :
+> On Tue, Oct 04, 2011 at 08:08:27AM -0500, Rob Herring wrote:
+>> Nicolas,
 >>
->> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
->
-> IMO, this should come later in the series to avoid adding bunch of code
-> that gets moved in a subsequent patch.
->
-> First, convert to runtime PM (current patch 9/16)
-> Then, add a patch to move context save/restore into driver.
-> Then, add this patch.
+>> On 10/04/2011 03:18 AM, Nicolas Ferre wrote:
+>>> On 10/04/2011 03:58 AM, Rob Herring :
+>>>> On 10/03/2011 04:51 AM, Nicolas Ferre wrote:
+>>>>> +Optional properties:
+>>>>> +- atmel,use-dma-rx: use of PDC or DMA for receiving data
+>>>>> +- atmel,use-dma-tx: use of PDC or DMA for transmitting data
+>>>>
+>>>> Is this an internal DMA or separate DMA controller? If the latter, these
+>>>> should be phandles to a DMA channel/request.
+>>>
+>>> Well, for now it relies on PDC (looks like an internal DMA). There is no
+>>> notion of channel/request so I think it is appropriate to keep it like this.
+>>>
+>>
+>> Okay. Although, this is a bit of Linux creeping into DT. DT should
+>> describe the h/w. You should really be describing whether the h/w
+>> supports DMA or not rather than whether you want to use DMA or not.
+>> Since DMA support is really tied to the SOC rather than board, you could
+>> just use the compatible string to distinguish platforms that support DMA
+>> or not. So what is determining this setting? Is it purely user choice?
+> 
+> It is okay for a binding to still requires config properties like this
+> to state if the DMA can be used, even if compatible is enough to
+> distinquish.  However, you're right to bring it up.  It is a design
+> choice that should be made thoughtfully.
 
-Okay fine.
+Grant, Rob,
 
---
-Thanks,
-Govindraj.R
+Thanks for your inputs.
+
+I would like to keep this binding to allow the user to choose the way he
+likes to use integrated DMA.
+
+I plan to resend a patch series about this serial driver once I will be
+able to propose a rs485 binding.
+
+Cheers,
+-- 
+Nicolas Ferre
