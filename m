@@ -1,44 +1,110 @@
-From: Michal Simek <monstr@monstr.eu>
-Subject: Using serial driver 16550A in poll mode without interrupt connected
-Date: Wed, 12 Oct 2011 15:03:39 +0200
-Message-ID: <4E95902B.7080204@monstr.eu>
-Reply-To: monstr@monstr.eu
+From: Govindraj <govindraj.ti@gmail.com>
+Subject: Re: [PATCH v6 10/16] OMAP2+: UART: Modify omap_uart_can_sleep function
+Date: Wed, 12 Oct 2011 19:08:51 +0530
+Message-ID: <CAAL8m4xTmz+-ureDiGPoKUu634q1Wy=h01kpfRWCk9LFCV0+Dg@mail.gmail.com>
+References: <1317380561-661-1-git-send-email-govindraj.raja@ti.com> <87vcrv2xox.fsf@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-gx0-f174.google.com ([209.85.161.174]:45958 "EHLO
-	mail-gx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752859Ab1JLNDm (ORCPT
+Received: from mail-bw0-f46.google.com ([209.85.214.46]:32773 "EHLO
+	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753323Ab1JLNjM convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Oct 2011 09:03:42 -0400
+	Wed, 12 Oct 2011 09:39:12 -0400
+In-Reply-To: <87vcrv2xox.fsf@ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, LKML <linux-kernel@vger.kernel.org>, Peter Korsgaard <jacmet@sunsite.dk>
+To: Kevin Hilman <khilman@ti.com>
+Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Partha Basak <p-basak2@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Rajendra Nayak <rnayak@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>
 
-Hi,
+On Tue, Oct 11, 2011 at 11:54 PM, Kevin Hilman <khilman@ti.com> wrote:
+> "Govindraj.R" <govindraj.raja@ti.com> writes:
+>
+>> Modify the omap_uart_can_sleep function to check uart is active
+>> or not to be used by pm code to enter low power states.
+>
+> Doesn't the driver now control when the UART clocks are gated (using
+> runtime PM autosuspend)?
+>
+> IMO, this check should be completely removed and the driver should
+> be managing this with the autosuspend timeout.
+>
+>> Removing this check can cause console response little sluggish.
+>
+> Sluggish in what way?
+>
 
-we have internal discussion around serial drivers and their usage without interrupts
-in polling mode. It is on FPGA with Microblaze/PPC/ARM and
-it is easy for us to have serial IP without IRQ connected to the interrupt controller.
+response is slower like when we type something or cat debugfs/pm_count
+see things little slower on console, there is no character loss.
 
-Driver is probed with no IRQ (NO_IRQ = -1 on Microblaze)
-83e00000.serial: ttyS0 at MMIO 0x83e01003 (irq = -1) is a 16550A
+Happens even though we have not set the autosuspend timeout and uart
+clocks are active,
+which basically means allowing mpu to enter retention keeping uart acti=
+ve.
 
-writing any data to ttyS0 return -1.
-Is there any reason no to use driver in poll mode especially for user applications
-not for consoles.
+this delay in response or sluggishness is not there on my 3430SDP or
+3630zoom board but I was able to see this behavior on a beagle board(xm=
+ rev c).
 
-Is it possible to use serial driver without IRQ - or blocking IRQ, etc.?
+retaining this uart_can_sleep check in omap3_can_sleep ensures a better
+console user experience. (not allowing mpu to enter retention
+until uart clocks are cut)
 
-Currently we care about uart16550 and uarlite.
 
+> If the driver is runtime suspended, it should only be sluggish for th=
+e
+> first character. =A0After that, the autosuspend timeout should preven=
+t it
+> from feeling sluggish.
+>
+>> However no characters will be lost until uart clocks are gated
+>> and woken up using rx-pad. UART interface clocks can be auto gated
+>> this can make response on uart slower. This behaviour was observed
+>> only on some of OMAP3 boards(beagleboard xm rev c).
+>>
+>> Reported-by: Tero Kristo <t-kristo@ti.com>
+>> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+>> ---
+>> =A0arch/arm/mach-omap2/serial.c | =A0 21 +++++++++------------
+>> =A01 files changed, 9 insertions(+), 12 deletions(-)
+>>
+>> diff --git a/arch/arm/mach-omap2/serial.c b/arch/arm/mach-omap2/seri=
+al.c
+>> index 6725caf..ccf3550 100644
+>> --- a/arch/arm/mach-omap2/serial.c
+>> +++ b/arch/arm/mach-omap2/serial.c
+>> @@ -156,23 +156,20 @@ static void omap_uart_smart_idle_enable(struct=
+ omap_uart_state *uart,
+>>
+>> =A0int omap_uart_can_sleep(void)
+>> =A0{
+>> - =A0 =A0 struct omap_uart_state *uart;
+>> - =A0 =A0 int can_sleep =3D 1;
+>> -
+>> - =A0 =A0 list_for_each_entry(uart, &uart_list, node) {
+>> - =A0 =A0 =A0 =A0 =A0 =A0 if (!uart->clocked)
+>> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 continue;
+>> + =A0 =A0 struct omap_hwmod *oh;
+>> + =A0 =A0 u8 i, ret =3D true;
+>>
+>> - =A0 =A0 =A0 =A0 =A0 =A0 if (!uart->can_sleep) {
+>> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 can_sleep =3D 0;
+>> + =A0 =A0 for (i =3D 0; i < num_uarts; i++) {
+>> + =A0 =A0 =A0 =A0 =A0 =A0 oh =3D omap_uart_hwmod_lookup(i);
+>
+> This is a heavy operation to add for *every* entry into idle.
+>
+
+removing uart_list caused this ops, retaining uart_list
+will ensure this will be replaced with list_for_each_entry
+as done in existing code.
+
+--
 Thanks,
-Michal
-
--- 
-Michal Simek, Ing. (M.Eng)
-w: www.monstr.eu p: +42-0-721842854
-Maintainer of Linux kernel 2.6 Microblaze Linux - http://www.monstr.eu/fdt/
-Microblaze U-BOOT custodian
+Govindraj.R
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
