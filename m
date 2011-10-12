@@ -1,103 +1,75 @@
 From: Doug Anderson <dianders@chromium.org>
-Subject: [PATCH] tty/serial: Prevent drop of DCD on suspend for Tegra UARTs
-Date: Tue, 11 Oct 2011 17:05:43 -0700
-Message-ID: <1318377943-24519-1-git-send-email-dianders@chromium.org>
+Subject: [PATCH v2] TTY: serial_core: Fix crash if DCD drop during suspend
+Date: Tue, 11 Oct 2011 17:25:44 -0700
+Message-ID: <1318379144-27187-1-git-send-email-dianders@chromium.org>
+References: <1318024753-15336-1-git-send-email-dianders@chromium.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp-out.google.com ([74.125.121.67]:3147 "EHLO
+Received: from smtp-out.google.com ([216.239.44.51]:51298 "EHLO
 	smtp-out.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751344Ab1JLAGF (ORCPT
+	with ESMTP id S1750959Ab1JLA0R (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 11 Oct 2011 20:06:05 -0400
+	Tue, 11 Oct 2011 20:26:17 -0400
+In-Reply-To: <1318024753-15336-1-git-send-email-dianders@chromium.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Jiri Slaby <jirislaby@gmail.com>, Stephen Warren <swarren@nvidia.com>, Olof Johansson <olof@lixom.net>
 Cc: Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, Allen Martin <AMartin@nvidia.com>, Tom Warren <twarren@nvidia.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Doug Anderson <dianders@chromium.org>
 
-On Tegra UARTs (except UART1), the DTR / DCD / DSR lines are not
-externally accessible.  Instead, the DTR line internally appears to be
-looped back to be the input to the DCD and DSR lines.  The net effect
-of this is that when we drop DTR (like when we suspend), we'll see DCD
-drop too.  ...and when we see DCD drop, we treat that as a hangup.
+This crash was showing up 100% of the time on Tegra CPUs when an
+agetty was running on the serial port and the console was not running
+on the serial port.  The reason the Tegra saw it so reliably is that
+the Tegra CPU internally ties DTR to DCD/DSR.  That means when we
+dropped DTR during suspend we would get always get an immediate DCD
+drop.
 
-In order to prevent this hangup from occurring at every sleep, we need
-to force DTR to remain high on Tegra UARTs.
+The specific order of operations that were running:
+* uart_suspend_port() would be called to put the uart in suspend mode
+* we'd drop DTR (ops->set_mctrl(uport, 0)).
+* the DTR drop would be looped back in the CPU to be a DCD drop.
+* the DCD drop would look to the serial driver as a hangup
+* the hangup would call uart_shutdown()
+* ... suspend / resume happens ...
+* uart_resume_port() would be called and run the code in the
+  (port->flags & ASYNC_SUSPENDED) block, which would startup the port
+  (and enable tx again).
+* Since the UART would be available for tx, we'd immediately get
+  an interrupt, eventually calling transmit_chars()
+* The transmit_chars() function would crash.  The first crash would
+  be a dereference of a NULL tty member, but since the port has been
+  shutdown that was just a symptom.
 
-This patch uses the mcr_mask / mcr_force fields, which were originally
-added for the kludge ALPHA_KLUDGE_MCR.  Using these fields does not
-prevent us from removing ALPHA_KLUDGE_MCR--we can just remove the "if"
-tests I have added and always init mcr_mask / mcr_force from the
-serial8250_config.
-
-NOTE: If we have people that are using UARTA on a Tegra and need to
-control DTR, we'll need to either add a separate port type for UARTA
-or we'll need to add some tegra-specific code to detect whether the
-DTR needs to be left high.
+I have proposed a patch that would fix the Tegra CPUs here (see
+https://lkml.org/lkml/2011/10/11/444 - tty/serial: Prevent drop of DCD
+on suspend for Tegra UARTs).  However, even with that fix it is still
+possible for systems that have an externally visible DCD line to see a
+crash if the DCD drops at just the right time during suspend: thus
+this patch is still useful.
 
 Signed-off-by: Doug Anderson <dianders@chromium.org>
 ---
- drivers/tty/serial/8250.c |   14 ++++++++++++++
- drivers/tty/serial/8250.h |    2 ++
- 2 files changed, 16 insertions(+), 0 deletions(-)
+v2: Updated change description and comments based on deeper digging.
 
-diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
-index 7f50999..c8d26a3 100644
---- a/drivers/tty/serial/8250.c
-+++ b/drivers/tty/serial/8250.c
-@@ -308,6 +308,8 @@ static const struct serial8250_config uart_config[] = {
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_01 |
- 				  UART_FCR_T_TRIG_01,
- 		.flags		= UART_CAP_FIFO | UART_CAP_RTOIE,
-+		.mcr_mask	= ~UART_MCR_DTR,
-+		.mcr_force	= UART_MCR_DTR,
- 	},
- };
+ drivers/tty/serial/serial_core.c |    7 +++++++
+ 1 files changed, 7 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index a3efbea..7a86b39 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -255,6 +255,13 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
+ 	}
  
-@@ -1282,6 +1284,10 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
- 	up->port.fifosize = uart_config[up->port.type].fifo_size;
- 	up->capabilities = uart_config[up->port.type].flags;
- 	up->tx_loadsz = uart_config[up->port.type].tx_loadsz;
-+	if (!ALPHA_KLUDGE_MCR) {
-+		up->mcr_mask = uart_config[up->port.type].mcr_mask;
-+		up->mcr_force = uart_config[up->port.type].mcr_force;
-+	}
- 
- 	if (up->port.type == PORT_UNKNOWN)
- 		goto out;
-@@ -2034,6 +2040,10 @@ static int serial8250_startup(struct uart_port *port)
- 	up->port.fifosize = uart_config[up->port.type].fifo_size;
- 	up->tx_loadsz = uart_config[up->port.type].tx_loadsz;
- 	up->capabilities = uart_config[up->port.type].flags;
-+	if (!ALPHA_KLUDGE_MCR) {
-+		up->mcr_mask = uart_config[up->port.type].mcr_mask;
-+		up->mcr_force = uart_config[up->port.type].mcr_force;
-+	}
- 	up->mcr = 0;
- 
- 	if (up->port.iotype != up->cur_iotype)
-@@ -2841,6 +2851,10 @@ serial8250_init_fixed_type_port(struct uart_8250_port *up, unsigned int type)
- 	up->port.fifosize = uart_config[type].fifo_size;
- 	up->capabilities = uart_config[type].flags;
- 	up->tx_loadsz = uart_config[type].tx_loadsz;
-+	if (!ALPHA_KLUDGE_MCR) {
-+		up->mcr_mask = uart_config[type].mcr_mask;
-+		up->mcr_force = uart_config[type].mcr_force;
-+	}
- }
- 
- static void __init
-diff --git a/drivers/tty/serial/8250.h b/drivers/tty/serial/8250.h
-index 6edf4a6..1f75100 100644
---- a/drivers/tty/serial/8250.h
-+++ b/drivers/tty/serial/8250.h
-@@ -35,6 +35,8 @@ struct serial8250_config {
- 	unsigned short	tx_loadsz;
- 	unsigned char	fcr;
- 	unsigned int	flags;
-+	unsigned char	mcr_mask;
-+	unsigned char	mcr_force;
- };
- 
- #define UART_CAP_FIFO	(1 << 8)	/* UART has FIFO */
+ 	/*
++	 * It's possible for shutdown to be called after suspend if we get
++	 * a DCD drop (hangup) at just the right time.  Clear suspended bit so
++	 * we don't try to resume a port that has been shutdown.
++	 */
++	clear_bit(ASYNCB_SUSPENDED, &port->flags);
++
++	/*
+ 	 * kill off our tasklet
+ 	 */
+ 	tasklet_kill(&state->tlet);
 -- 
 1.7.3.1
 
