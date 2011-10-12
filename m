@@ -1,34 +1,91 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: Using serial driver 16550A in poll mode without interrupt
- connected
-Date: Wed, 12 Oct 2011 14:51:53 +0100
-Message-ID: <20111012145153.5490b592@lxorguk.ukuu.org.uk>
-References: <4E95902B.7080204@monstr.eu>
+From: Govindraj <govindraj.ti@gmail.com>
+Subject: Re: [PATCH v6 15/16] OMAP2+: UART: Enable back uart clocks with
+ runtime API for early console
+Date: Wed, 12 Oct 2011 19:34:12 +0530
+Message-ID: <CAAL8m4xmGQaQZm5Oz8B5e6Mt7VP7c_VwQ=AnfpKotZRci32JiQ@mail.gmail.com>
+References: <1317380561-661-1-git-send-email-govindraj.raja@ti.com>
+ <1317380561-661-6-git-send-email-govindraj.raja@ti.com> <87pqi3z19z.fsf@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:56435 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752329Ab1JLNxT (ORCPT
+Received: from mail-bw0-f46.google.com ([209.85.214.46]:47561 "EHLO
+	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750951Ab1JLOEd convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Oct 2011 09:53:19 -0400
-In-Reply-To: <4E95902B.7080204@monstr.eu>
+	Wed, 12 Oct 2011 10:04:33 -0400
+In-Reply-To: <87pqi3z19z.fsf@ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: monstr@monstr.eu
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, LKML <linux-kernel@vger.kernel.org>, Peter Korsgaard <jacmet@sunsite.dk>
+To: Kevin Hilman <khilman@ti.com>
+Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Partha Basak <p-basak2@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Rajendra Nayak <rnayak@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>
 
-> Driver is probed with no IRQ (NO_IRQ = -1 on Microblaze)
-> 83e00000.serial: ttyS0 at MMIO 0x83e01003 (irq = -1) is a 16550A
+On Wed, Oct 12, 2011 at 2:36 AM, Kevin Hilman <khilman@ti.com> wrote:
+> "Govindraj.R" <govindraj.raja@ti.com> writes:
+>
+>> For the early console probing we had avoided hwmod reset and idling
+>> and uart was idled using hwmod API and enabled back using omap_devic=
+e API
+>> after omap_device registration.
+>>
+>> Now since we are using runtime API's to enable back uart, move hwmod
+>> idling and use runtime API to enable back UART.
+>>
+>> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+>
+> Now that the driver is using runtime PM. =A0Why do we still need
+> HWMOD_INIT_NO_IDLE and HWMOD_INIT_NO_RESET?
+>
+> The comment in the code says:
+>
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0/*
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 * During UART early init, device need=
+ to be probed
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 * to determine SoC specific init befo=
+re omap_device
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 * is ready. =A0Therefore, don't allow=
+ idle here
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 */
+>
+> This was true when using the 8250 driver because it was not using
+> runtime PM so could not know how to (re)enable the device.
+>
+> However, since the driver is now runtime PM adapted, any device acces=
+s
+> should be contained within a runtime PM get/put block, so there shoul=
+d
+> no longer be a reason not allow the IP blocks to be reset during boot=
+=2E
+>
 
-Zero means no IRQ. NO_IRQ is a legacy internal thing for the old IDE code
-so not something other code should be using. Setting the IRQ to -1 is
-bogus and will confuse the rest of the kernel.
+=46orgot to add, this is still needed for
+earlyprintk(CONFIG_EARLY_PRINTK) use case,
 
-> Is it possible to use serial driver without IRQ - or blocking IRQ, etc.?
+The initial boot prints until a console driver is available is from
+"arch/arm/kernel/early_printk.c" which does a tx on uart console
+and relies on configuration from bootloader.
 
-Within limits - it kills your power management and data rates because of
-the continual polling.
+during bootup earlyprink does a tx on uart console and if  uart driver
+is not available yet
+uart reset or idle done by hwmod layer can cause boot failures.
 
-Alan
+--> put_char from earlyprintk.c
+     --> reset/idle from hwmod layer
+          --> put_char from earlyprintk.c
+
+
+So console_uart reset or clock gating must be done only after uart
+driver is available or be prevented
+using these available hwmod_flags.
+
+omap_serial_early_init should be now be binded with CONFIG_SERIAL_OMAP =
+macro ?
+
+--
+Thanks,
+Govindraj.R
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
