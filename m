@@ -1,37 +1,47 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] tty/serial: Prevent drop of DCD on suspend for Tegra
- UARTs
-Date: Wed, 12 Oct 2011 12:56:47 +0100
-Message-ID: <20111012125647.6b9ec66e@lxorguk.ukuu.org.uk>
-References: <1318377943-24519-1-git-send-email-dianders@chromium.org>
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
+Subject: Re: [RFC PATCH] tty/serial: RS485 bindings for device tree
+Date: Wed, 12 Oct 2011 14:02:38 +0200
+Message-ID: <4E9581DE.20702@atmel.com>
+References: <1318353208-24422-1-git-send-email-nicolas.ferre@atmel.com>
+	<4E947CA6.9010703@atmel.com> <3289709.mzRgbAUyPT@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:37095 "EHLO
-	www.etchedpixels.co.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752747Ab1JLL6u (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Oct 2011 07:58:50 -0400
-In-Reply-To: <1318377943-24519-1-git-send-email-dianders@chromium.org>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <3289709.mzRgbAUyPT@wuerfel>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: linux-arm-kernel-bounces@lists.infradead.org
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: jesper.nilsson@axis.com, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org, claudio@evidence.eu.com, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, alan@lxorguk.ukuu.org.uk
 List-Id: linux-serial@vger.kernel.org
-To: Doug Anderson <dianders@chromium.org>
-Cc: Jiri Slaby <jirislaby@gmail.com>, Stephen Warren <swarren@nvidia.com>, Olof Johansson <olof@lixom.net>, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, Allen Martin <AMartin@nvidia.com>, Tom Warren <twarren@nvidia.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-> NOTE: If we have people that are using UARTA on a Tegra and need to
-> control DTR, we'll need to either add a separate port type for UARTA
-> or we'll need to add some tegra-specific code to detect whether the
-> DTR needs to be left high.
+On 10/11/2011 08:41 PM, Arnd Bergmann :
+> On Tuesday 11 October 2011 19:28:06 Nicolas Ferre wrote:
+>>
+>>> +Optional properties:
+>>> +- linux,rs485-enabled-at-boot-time: empty property telling to enable the rs485
+>>> +  feature at boot time. It can be disabled later with proper ioctl.
+>>
+>> +- linux,rs485-rx-during-tx: empty property that enable the receiving of data
+>> +  even whilst sending data.
+> 
+> This does not sound too linux specific. If it's a hardware property, don't
+> use the 'linux,' prefix and just make it 'rs484-full-duplex' or such.
 
-I have two problems with this change
+Ok, I understand. Your remark may also apply to linux,rs485-rts-delay.
+So we may end-up with:
 
-- It adds more special cases into the 8250.c core code
-- It breaks the UARTA port (which is a regression so not acceptable for
-  upstream merging)
+- linux,rs485-enabled-at-boot-time
+- rs485-rx-during-tx
+- rs485-rts-delay
 
-I think you should simply provide your platform with an appropriate
-serial_in/serial_out method that does the needed masking. That way its
-kept isolated from everyone else.
-
-Alan
+Best regards,
+-- 
+Nicolas Ferre
