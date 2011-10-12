@@ -1,57 +1,80 @@
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: [PATCH v2 3/5] tty/serial: atmel_serial: whitespace and braces modifications
-Date: Wed, 12 Oct 2011 18:06:58 +0200
-Message-ID: <e4c59e6f5ee33c1be57085ac0840b53322526367.1318433947.git.nicolas.ferre@atmel.com>
+From: Nicolas Ferre <nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v2 2/5] tty/serial: atmel_serial: change platform_data
+ variable name
+Date: Wed, 12 Oct 2011 18:06:57 +0200
+Message-ID: <58d65421a85737b7a25b967da09c3f564fc49be7.1318433947.git.nicolas.ferre@atmel.com>
 References: <1318435620-7481-1-git-send-email-nicolas.ferre@atmel.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from newsmtp5.atmel.com ([204.2.163.5]:11553 "EHLO
-	sjogate2.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751914Ab1JLQIE (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Oct 2011 12:08:04 -0400
-In-Reply-To: <1318435620-7481-1-git-send-email-nicolas.ferre@atmel.com>
-In-Reply-To: <37a19e194d02144aecd24f284f5e43979643a3c3.1318433947.git.nicolas.ferre@atmel.com>
-References: <37a19e194d02144aecd24f284f5e43979643a3c3.1318433947.git.nicolas.ferre@atmel.com>
-Sender: linux-serial-owner@vger.kernel.org
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+In-Reply-To: <1318435620-7481-1-git-send-email-nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <37a19e194d02144aecd24f284f5e43979643a3c3.1318433947.git.nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
+References: <37a19e194d02144aecd24f284f5e43979643a3c3.1318433947.git.nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss>
+List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
+Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Sender: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, claudio-YOzL5CV4y4YG1A2ADO40+w@public.gmane.org, jesper.nilsson-VrBV9hrLPhE@public.gmane.org, alan@lxor
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, grant.likely@secretlab.ca, devicetree-discuss@lists.ozlabs.org, robherring2@gmail.com, claudio@evidence.eu.com, jesper.nilsson@axis.com, alan@lxo
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>
 
-Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+Easier to follow if platform_data name is pdata.
+
+Signed-off-by: Nicolas Ferre <nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/tty/serial/atmel_serial.c |    9 +++++----
- 1 files changed, 5 insertions(+), 4 deletions(-)
+ drivers/tty/serial/atmel_serial.c |   14 +++++++-------
+ 1 files changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index a507daa..bb72354 100644
+index c7232a9..a507daa 100644
 --- a/drivers/tty/serial/atmel_serial.c
 +++ b/drivers/tty/serial/atmel_serial.c
-@@ -1433,10 +1433,10 @@ static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
+@@ -1417,13 +1417,13 @@ static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
+ 				      struct platform_device *pdev)
+ {
+ 	struct uart_port *port = &atmel_port->uart;
+-	struct atmel_uart_data *data = pdev->dev.platform_data;
++	struct atmel_uart_data *pdata = pdev->dev.platform_data;
+ 
+ 	port->iotype		= UPIO_MEM;
+ 	port->flags		= UPF_BOOT_AUTOCONF;
+ 	port->ops		= &atmel_pops;
+ 	port->fifosize		= 1;
+-	port->line		= data->num;
++	port->line		= pdata->num;
+ 	port->dev		= &pdev->dev;
+ 	port->mapbase	= pdev->resource[0].start;
+ 	port->irq	= pdev->resource[1].start;
+@@ -1433,9 +1433,9 @@ static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
  
  	memset(&atmel_port->rx_ring, 0, sizeof(atmel_port->rx_ring));
  
--	if (pdata->regs)
-+	if (pdata->regs) {
+-	if (data->regs)
++	if (pdata->regs)
  		/* Already mapped by setup code */
- 		port->membase = pdata->regs;
--	else {
-+	} else {
+-		port->membase = data->regs;
++		port->membase = pdata->regs;
+ 	else {
  		port->flags	|= UPF_IOREMAP;
  		port->membase	= NULL;
- 	}
-@@ -1450,9 +1450,10 @@ static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
+@@ -1450,9 +1450,9 @@ static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
  		/* only enable clock when USART is in use */
  	}
  
--	atmel_port->use_dma_rx = pdata->use_dma_rx;
--	atmel_port->use_dma_tx = pdata->use_dma_tx;
-+	atmel_port->use_dma_rx	= pdata->use_dma_rx;
-+	atmel_port->use_dma_tx	= pdata->use_dma_tx;
- 	atmel_port->rs485	= pdata->rs485;
-+
+-	atmel_port->use_dma_rx = data->use_dma_rx;
+-	atmel_port->use_dma_tx = data->use_dma_tx;
+-	atmel_port->rs485	= data->rs485;
++	atmel_port->use_dma_rx = pdata->use_dma_rx;
++	atmel_port->use_dma_tx = pdata->use_dma_tx;
++	atmel_port->rs485	= pdata->rs485;
  	/* Use TXEMPTY for interrupt when rs485 else TXRDY or ENDTX|TXBUFE */
  	if (atmel_port->rs485.flags & SER_RS485_ENABLED)
  		atmel_port->tx_done_mask = ATMEL_US_TXEMPTY;
 -- 
 1.7.5.4
-
