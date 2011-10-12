@@ -1,36 +1,103 @@
-From: "Shunji Takeshi" <yuh5256221@gmail.com>
-Subject: For Your Interest:
-Date: Wed, 12 Oct 2011 01:58:25 +0330
-Message-ID: <20111011223112.688842E6CA2@mail.cssthailand.com>
-Reply-To: davtuw5244@aim.com
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+From: Doug Anderson <dianders@chromium.org>
+Subject: [PATCH] tty/serial: Prevent drop of DCD on suspend for Tegra UARTs
+Date: Tue, 11 Oct 2011 17:05:43 -0700
+Message-ID: <1318377943-24519-1-git-send-email-dianders@chromium.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.cssthailand.com ([119.46.26.94]:46879 "EHLO
-	mail.cssthailand.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751072Ab1JKWiS convert rfc822-to-8bit (ORCPT
+Received: from smtp-out.google.com ([74.125.121.67]:3147 "EHLO
+	smtp-out.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751344Ab1JLAGF (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 11 Oct 2011 18:38:18 -0400
-Content-Description: Mail message body
+	Tue, 11 Oct 2011 20:06:05 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Recipients <yuh5256221@gmail.com>
+To: Jiri Slaby <jirislaby@gmail.com>, Stephen Warren <swarren@nvidia.com>, Olof Johansson <olof@lixom.net>
+Cc: Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, Allen Martin <AMartin@nvidia.com>, Tom Warren <twarren@nvidia.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Doug Anderson <dianders@chromium.org>
 
+On Tegra UARTs (except UART1), the DTR / DCD / DSR lines are not
+externally accessible.  Instead, the DTR line internally appears to be
+looped back to be the input to the DCD and DSR lines.  The net effect
+of this is that when we drop DTR (like when we suspend), we'll see DCD
+drop too.  ...and when we see DCD drop, we treat that as a hangup.
 
-Business Enquiry.
+In order to prevent this hangup from occurring at every sleep, we need
+to force DTR to remain high on Tegra UARTs.
 
+This patch uses the mcr_mask / mcr_force fields, which were originally
+added for the kludge ALPHA_KLUDGE_MCR.  Using these fields does not
+prevent us from removing ALPHA_KLUDGE_MCR--we can just remove the "if"
+tests I have added and always init mcr_mask / mcr_force from the
+serial8250_config.
 
-Private Email: davtuw5244@aim.com
-   
-Hello,
-This is to invite you to an investment opportunity involving a lucrative business proposal for a common interest to share with you. 
-    
-I am Mr. Shunji Takeshi from Hong Kong. This is a deal which concerns the transfer of a large sum of money. Everything about this transaction shall be legally done without any problem. Please endeavor to observe utmost discretion in all matters concerning this issue. 
-If you are interested, mail back, through my private Email address, written above,
+NOTE: If we have people that are using UARTA on a Tegra and need to
+control DTR, we'll need to either add a separate port type for UARTA
+or we'll need to add some tegra-specific code to detect whether the
+DTR needs to be left high.
 
-I shall give you more informations about this proposal, as soon as I receive your positive response.
-   
-Kind Regards, 
-   
-Mr.Shunji Takeshi.
+Signed-off-by: Doug Anderson <dianders@chromium.org>
+---
+ drivers/tty/serial/8250.c |   14 ++++++++++++++
+ drivers/tty/serial/8250.h |    2 ++
+ 2 files changed, 16 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
+index 7f50999..c8d26a3 100644
+--- a/drivers/tty/serial/8250.c
++++ b/drivers/tty/serial/8250.c
+@@ -308,6 +308,8 @@ static const struct serial8250_config uart_config[] = {
+ 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_01 |
+ 				  UART_FCR_T_TRIG_01,
+ 		.flags		= UART_CAP_FIFO | UART_CAP_RTOIE,
++		.mcr_mask	= ~UART_MCR_DTR,
++		.mcr_force	= UART_MCR_DTR,
+ 	},
+ };
+ 
+@@ -1282,6 +1284,10 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
+ 	up->port.fifosize = uart_config[up->port.type].fifo_size;
+ 	up->capabilities = uart_config[up->port.type].flags;
+ 	up->tx_loadsz = uart_config[up->port.type].tx_loadsz;
++	if (!ALPHA_KLUDGE_MCR) {
++		up->mcr_mask = uart_config[up->port.type].mcr_mask;
++		up->mcr_force = uart_config[up->port.type].mcr_force;
++	}
+ 
+ 	if (up->port.type == PORT_UNKNOWN)
+ 		goto out;
+@@ -2034,6 +2040,10 @@ static int serial8250_startup(struct uart_port *port)
+ 	up->port.fifosize = uart_config[up->port.type].fifo_size;
+ 	up->tx_loadsz = uart_config[up->port.type].tx_loadsz;
+ 	up->capabilities = uart_config[up->port.type].flags;
++	if (!ALPHA_KLUDGE_MCR) {
++		up->mcr_mask = uart_config[up->port.type].mcr_mask;
++		up->mcr_force = uart_config[up->port.type].mcr_force;
++	}
+ 	up->mcr = 0;
+ 
+ 	if (up->port.iotype != up->cur_iotype)
+@@ -2841,6 +2851,10 @@ serial8250_init_fixed_type_port(struct uart_8250_port *up, unsigned int type)
+ 	up->port.fifosize = uart_config[type].fifo_size;
+ 	up->capabilities = uart_config[type].flags;
+ 	up->tx_loadsz = uart_config[type].tx_loadsz;
++	if (!ALPHA_KLUDGE_MCR) {
++		up->mcr_mask = uart_config[type].mcr_mask;
++		up->mcr_force = uart_config[type].mcr_force;
++	}
+ }
+ 
+ static void __init
+diff --git a/drivers/tty/serial/8250.h b/drivers/tty/serial/8250.h
+index 6edf4a6..1f75100 100644
+--- a/drivers/tty/serial/8250.h
++++ b/drivers/tty/serial/8250.h
+@@ -35,6 +35,8 @@ struct serial8250_config {
+ 	unsigned short	tx_loadsz;
+ 	unsigned char	fcr;
+ 	unsigned int	flags;
++	unsigned char	mcr_mask;
++	unsigned char	mcr_force;
+ };
+ 
+ #define UART_CAP_FIFO	(1 << 8)	/* UART has FIFO */
+-- 
+1.7.3.1
+
