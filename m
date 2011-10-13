@@ -1,98 +1,125 @@
-From: Jean Pihet <jean.pihet@newoldbits.com>
-Subject: Re: [PATCH v6 10/16] OMAP2+: UART: Modify omap_uart_can_sleep function
-Date: Thu, 13 Oct 2011 08:59:57 +0200
-Message-ID: <CAORVsuUsE09P0v-Ro7PctkE96mF4Cnefe9cASYJu447tVNBJ-g@mail.gmail.com>
-References: <1317380561-661-1-git-send-email-govindraj.raja@ti.com>
-	<87vcrv2xox.fsf@ti.com>
-	<CAAL8m4xTmz+-ureDiGPoKUu634q1Wy=h01kpfRWCk9LFCV0+Dg@mail.gmail.com>
-	<87wrcangkq.fsf@ti.com>
-	<CAAL8m4zAOw9=qFCYV6-FxqGxQKwNZf71McCUtXSxoFMdOqz5PA@mail.gmail.com>
+From: Alan Cox <alan@linux.intel.com>
+Subject: Re: [PATCH] UART: add CSR SiRFprimaII SoC on-chip uart drivers
+Date: Thu, 13 Oct 2011 10:55:56 +0100
+Message-ID: <20111013105556.09d64d4d@bob.linux.org.uk>
+References: <1318487293-6963-1-git-send-email-Barry.Song@csr.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vx0-f174.google.com ([209.85.220.174]:35488 "EHLO
-	mail-vx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751027Ab1JMG76 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 13 Oct 2011 02:59:58 -0400
-In-Reply-To: <CAAL8m4zAOw9=qFCYV6-FxqGxQKwNZf71McCUtXSxoFMdOqz5PA@mail.gmail.com>
+Received: from mga09.intel.com ([134.134.136.24]:15733 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753524Ab1JMJqW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 13 Oct 2011 05:46:22 -0400
+In-Reply-To: <1318487293-6963-1-git-send-email-Barry.Song@csr.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Govindraj <govindraj.ti@gmail.com>
-Cc: Kevin Hilman <khilman@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Partha Basak <p-basak2@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Rajendra Nayak <rnayak@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>
+To: Barry Song <Barry.Song@csr.com>
+Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, workgroup.linux@csr.com, Rong Wang <Rong.Wang@csr.com>, Linus Walleij <linus.walleij@linaro.org>, Bin Shi <Bin.Shi@csr.com>, Barry Song <Baohua.Song@csr.com>
 
-Hi Govindraj,
+Looks basically ok but somewhat outdated for the tty layer. In
+particular it needs to be aware of the refcounting on tty objects and
+of the fact we allow arbitary baud rate handling
 
-On Thu, Oct 13, 2011 at 3:09 AM, Govindraj <govindraj.ti@gmail.com> wro=
-te:
-=2E..
->>
->> Yes, but obviously comes at the expense of power savings. =A0IOW, Th=
-is is
->> a hard-coded power vs. performance trade off that we are trying to g=
-et
->> away from.
->>
->> So, the root of the problem is that the MPU wakeup latency is causin=
-g a
->> "sluggish" console. =A0The solution? =A0request an MPU wakeup latenc=
-y
->> constraint.
->>
+> +static struct sirfsoc_baudrate_to_regv baudrate_to_regv[] = {
+
+const
+
+> +static unsigned int
+> +sirfsoc_uart_pio_rx_chars(struct uart_port *port, unsigned int
+> max_rx_count) +{
+> +	unsigned int ch, rx_count = 0;
+> +	int temp;
+> +	struct tty_struct *tty = port->state->port.tty;
+
+tty = tty_port_tty_get(&port->state->port);
+
+[the newer tty code is refcounting, also tty can be NULL here and needs
+h handling accordingly]
+
+> +	while (!(rd_regl(port, SIRFUART_RX_FIFO_STATUS) &
+> +
+> SIRFUART_FIFOEMPTY_MASK(port))) {
+> +		temp =
+> tty_buffer_request_room(port->state->port.tty, 1);
+> +		if (unlikely(temp == 0)) {
+> +			port->icount.buf_overrun++;
+> +			break;
+> +		}
+
+You don't need to do this - just uart_insert_char. If we run out of mid
+layer buffering it's not a port overrun as such (ie a fifo exceeded)
+it's a system wide memory crunch and something pretty serious and
+bigger is going on.
+
+> +	port->icount.rx += rx_count;
+> +	tty_flip_buffer_push(tty);
+
+[Do these only if tty != NULL obviously)
+
+and
+	tty_kref_put(tty);
+
+
+
+> +static void sirfsoc_uart_set_termios(struct uart_port *port,
+> +				       struct ktermios *termios,
+> +				       struct ktermios *old)
+> +{
+
+If you don't support CMSPAR then clear the bit in the passed termios.
+
+> +	for (ic = 0; ic < SIRFUART_BAUD_RATE_SUPPORT_NR; ic++)
+> +		if (baud_rate == baudrate_to_regv[ic].baud_rate)
+> +			clk_div_reg = baudrate_to_regv[ic].reg_val;
+> +	if (clk_div_reg == 0)
+> +		pr_err("SiRF UART: Cannot set Baud Rate (9600 ~
+> 4000000).\n");
+
+The baud rate is not guaranteed to be one the Bxxxxx values, you should
+be computing it not using a table.
+Also the pr_err means any user can fill the logs with junk.
+
+The correct behaviour here is
+
+	compute the best timing for the baud rate requested
+	compute the actual baud rate obtained
+
+then report it back to the caller
+
+	if (tty_termios_baud_rate(termios))
+		tty_termios_encode_baud_rate(termios, baud. baud);
+
+The above assuming you set the same input and output rate
+
+
+
+> +static struct console sirfsoc_uart_console = {
+> +	.name		= "ttyS",
+
+ttyS is 8250 devces. Pick a new name for your own.
+
 >
-> Okay, Will explore this.
->
->> This is a classic use-case for such a constraint, and the serial dri=
-ver
->> should have the option of requesting a constraint to prevent the slu=
-ggish
->> console. =A0The constraint only needs to be held until the auto-susp=
-end
->> delay expires, so should be relased in the ->runtime_suspend() metho=
-d of
->> the driver.
->>
->> This constraint needs to be configurable, probably from the board fi=
-le,
->> so that it is optional, and so users who don't care about sluggish
->> consoles (or non-console UART users who don't care about response ti=
-me)
->> have the option of preferring power savings over UART responsiveness=
-=2E
->>
->> As a reference, the i2c driver is currently doing something similar
->> in that it request an MPU constraint to prevent the MPU from going i=
-nto
->> retention/off while waiting for an i2c interrupt to arrive.
->>
->
-> Thanks, will check and try to use the mpu constraints
-As a reference the pm-qos branch of
-https://gitorious.org/jpihet/omap-pm has the latest code for the
-per-device constraints framework.
+> +	.dev_name	= SIRFSOC_UART_NAME,
+> +	.major		= SIRFSOC_UART_MAJOR,
+> +	.minor		= SIRFSOC_UART_MINOR,
 
-Please refer to the documentation at Documentation/power/pm_qos_interfa=
-ce.txt.
-The commit dbec9ed1 [1] shows how I2C is using the framework.
+Use dynamic allocations
 
-[1] https://gitorious.org/jpihet/omap-pm/commit/dbec9ed1a6d6341d2ad2352=
-a9578d66d15d198f4
 
-Regards,
-Jean
+> +#define SIRFSOC_UART_NAME			"ttyS"
+> +#define SIRFSOC_UART_MAJOR			TTY_MAJOR
+> +#define SIRFSOC_UART_MINOR			64
 
->
-> --
-> Govindraj.R.
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-omap"=
- in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at =A0http://vger.kernel.org/majordomo-info.html
->
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+These values belong to an existing inerface, don't reuse the names like
+that, and please use dynamic allocation for the numbers
+
+> +#define uart_tx_port_tty_invalid(port)   \
+> +	(((port)->state == NULL) || ((port)->state->port.tty ==
+> NULL)) 
+
+This has no locking so little meaning - what guarantees it doesn't
+change  under or after the call. I suspect you want to be checking and
+referencing the tty in one shot as in the example I gave above for the
+rx fix.
+
