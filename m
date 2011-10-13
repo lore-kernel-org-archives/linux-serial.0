@@ -1,90 +1,64 @@
-From: Govindraj <govindraj.ti@gmail.com>
-Subject: Re: [PATCH v6 09/16] OMAP2+: UART: Add runtime pm support for
-	omap-serial driver
-Date: Thu, 13 Oct 2011 06:58:48 +0530
-Message-ID: <CAAL8m4yrXo4KRYxXxWECU99B6--FCMBDFUbNk+vsBV0Jnt0bcg@mail.gmail.com>
-References: <1317380495-584-1-git-send-email-govindraj.raja@ti.com>
-	<1317380495-584-9-git-send-email-govindraj.raja@ti.com>
-	<878voplppo.fsf@ti.com>
+From: Grant Likely <grant.likely@secretlab.ca>
+Subject: Re: [PATCH v2 3/5] tty/serial: atmel_serial: whitespace and braces
+ modifications
+Date: Wed, 12 Oct 2011 19:02:48 -0600
+Message-ID: <20111013010248.GN14042@ponder.secretlab.ca>
+References: <37a19e194d02144aecd24f284f5e43979643a3c3.1318433947.git.nicolas.ferre@atmel.com>
+ <e4c59e6f5ee33c1be57085ac0840b53322526367.1318433947.git.nicolas.ferre@atmel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <878voplppo.fsf@ti.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
-	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
-	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: linux-arm-kernel-bounces@lists.infradead.org
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Kevin Hilman <khilman@ti.com>
-Cc: Tony Lindgren <tony@atomide.com>, Rajendra Nayak <rnayak@ti.com>, Partha Basak <p-basak2@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, linux-serial@vger.kernel.org, Vishwanath Sripathy <vishwanath.bs@ti.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-gy0-f174.google.com ([209.85.160.174]:49936 "EHLO
+	mail-gy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752407Ab1JMCZb (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 12 Oct 2011 22:25:31 -0400
+Content-Disposition: inline
+In-Reply-To: <e4c59e6f5ee33c1be57085ac0840b53322526367.1318433947.git.nicolas.ferre@atmel.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: linux-arm-kernel@lists.infradead.org, devicetree-discuss@lists.ozlabs.org, robherring2@gmail.com, claudio@evidence.eu.com, jesper.nilsson@axis.com, alan@lxorguk.ukuu.org.uk, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Thu, Oct 13, 2011 at 5:36 AM, Kevin Hilman <khilman@ti.com> wrote:
-> "Govindraj.R" <govindraj.raja@ti.com> writes:
->
-> [...]
->
->> Use device_may_wakeup to check whether uart has wakeup capabilities
->> and then enable uart runtime usage for the uart.
->
-> Curious about what happens when device_may_wakeup() is not set during
-> device init.
->
-> [...]
->
->> @@ -1305,6 +1363,16 @@ static int serial_omap_probe(struct platform_devi=
-ce *pdev)
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 up->uart_dma.rx_dma_channel =3D OMAP_UART_DM=
-A_CH_FREE;
->> =A0 =A0 =A0 }
->>
->> + =A0 =A0 pm_runtime_use_autosuspend(&pdev->dev);
->> + =A0 =A0 pm_runtime_set_autosuspend_delay(&pdev->dev,
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 OMAP_UART_AUTOSUSPEND_DELAY);
->> +
->> + =A0 =A0 pm_runtime_irq_safe(&pdev->dev);
->> + =A0 =A0 if (device_may_wakeup(&pdev->dev)) {
->> + =A0 =A0 =A0 =A0 =A0 =A0 pm_runtime_enable(&pdev->dev);
->
-> So if device_may_wakeup() is false, runtime PM is not enabled, then...
->
->> + =A0 =A0 =A0 =A0 =A0 =A0 pm_runtime_get_sync(&pdev->dev);
->
-> ...this get doesn't happen, and the first register access causes a crash.
+On Wed, Oct 12, 2011 at 06:06:58PM +0200, Nicolas Ferre wrote:
+> Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
 
-Actually no crash, clocks will left enabled from boot up (hwmod_no_reset/id=
-le)
-that are idled and enabled back here.
+Acked-by: Grant Likely <grant.likely@secretlab.ca>
 
-Since hwmod_idle is binded here later ([PATCH v6 15/16]),
-
->
-> So either this get isn't needed, because there is no device access in
-> this path, or this path is broken and needs validation.
->
->> + =A0 =A0 }
->> +
->> =A0 =A0 =A0 ui[pdev->id] =3D up;
->> =A0 =A0 =A0 serial_omap_add_console_port(up);
->>
->> @@ -1312,6 +1380,7 @@ static int serial_omap_probe(struct platform_devic=
-e *pdev)
->> =A0 =A0 =A0 if (ret !=3D 0)
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 goto do_release_region;
->>
->> + =A0 =A0 pm_runtime_put(&pdev->dev);
->
-> ...also, this put is not balanced with a corresponding get.
-
-this needs to happen only when runtime is enabled.
-
-will correct this.
-
---
-Thanks,
-Govindraj.,R
+> ---
+>  drivers/tty/serial/atmel_serial.c |    9 +++++----
+>  1 files changed, 5 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index a507daa..bb72354 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -1433,10 +1433,10 @@ static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
+>  
+>  	memset(&atmel_port->rx_ring, 0, sizeof(atmel_port->rx_ring));
+>  
+> -	if (pdata->regs)
+> +	if (pdata->regs) {
+>  		/* Already mapped by setup code */
+>  		port->membase = pdata->regs;
+> -	else {
+> +	} else {
+>  		port->flags	|= UPF_IOREMAP;
+>  		port->membase	= NULL;
+>  	}
+> @@ -1450,9 +1450,10 @@ static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
+>  		/* only enable clock when USART is in use */
+>  	}
+>  
+> -	atmel_port->use_dma_rx = pdata->use_dma_rx;
+> -	atmel_port->use_dma_tx = pdata->use_dma_tx;
+> +	atmel_port->use_dma_rx	= pdata->use_dma_rx;
+> +	atmel_port->use_dma_tx	= pdata->use_dma_tx;
+>  	atmel_port->rs485	= pdata->rs485;
+> +
+>  	/* Use TXEMPTY for interrupt when rs485 else TXRDY or ENDTX|TXBUFE */
+>  	if (atmel_port->rs485.flags & SER_RS485_ENABLED)
+>  		atmel_port->tx_done_mask = ATMEL_US_TXEMPTY;
+> -- 
+> 1.7.5.4
+> 
