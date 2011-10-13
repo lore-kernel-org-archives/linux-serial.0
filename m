@@ -1,125 +1,56 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: [PATCH] UART: add CSR SiRFprimaII SoC on-chip uart drivers
-Date: Thu, 13 Oct 2011 10:55:56 +0100
-Message-ID: <20111013105556.09d64d4d@bob.linux.org.uk>
-References: <1318487293-6963-1-git-send-email-Barry.Song@csr.com>
+From: Michal Simek <monstr@monstr.eu>
+Subject: Re: Using serial driver 16550A in poll mode without interrupt connected
+Date: Thu, 13 Oct 2011 11:56:52 +0200
+Message-ID: <4E96B5E4.1040602@monstr.eu>
+References: <4E95902B.7080204@monstr.eu> <20111012145153.5490b592@lxorguk.ukuu.org.uk>
+Reply-To: monstr@monstr.eu
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:15733 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753524Ab1JMJqW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 13 Oct 2011 05:46:22 -0400
-In-Reply-To: <1318487293-6963-1-git-send-email-Barry.Song@csr.com>
+Received: from mail-bw0-f46.google.com ([209.85.214.46]:51673 "EHLO
+	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752003Ab1JMJ44 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 13 Oct 2011 05:56:56 -0400
+In-Reply-To: <20111012145153.5490b592@lxorguk.ukuu.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Barry Song <Barry.Song@csr.com>
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, workgroup.linux@csr.com, Rong Wang <Rong.Wang@csr.com>, Linus Walleij <linus.walleij@linaro.org>, Bin Shi <Bin.Shi@csr.com>, Barry Song <Baohua.Song@csr.com>
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, LKML <linux-kernel@vger.kernel.org>, Peter Korsgaard <jacmet@sunsite.dk>
 
-Looks basically ok but somewhat outdated for the tty layer. In
-particular it needs to be aware of the refcounting on tty objects and
-of the fact we allow arbitary baud rate handling
+Alan Cox wrote:
+>> Driver is probed with no IRQ (NO_IRQ = -1 on Microblaze)
+>> 83e00000.serial: ttyS0 at MMIO 0x83e01003 (irq = -1) is a 16550A
+> 
+> Zero means no IRQ. NO_IRQ is a legacy internal thing for the old IDE code
+> so not something other code should be using. Setting the IRQ to -1 is
+> bogus and will confuse the rest of the kernel.
 
-> +static struct sirfsoc_baudrate_to_regv baudrate_to_regv[] = {
+It is on my list. There are still some archs (ARM, etc) which still use it.
 
-const
+> 
+>> Is it possible to use serial driver without IRQ - or blocking IRQ, etc.?
+> 
+> Within limits - it kills your power management and data rates because of
+> the continual polling.
 
-> +static unsigned int
-> +sirfsoc_uart_pio_rx_chars(struct uart_port *port, unsigned int
-> max_rx_count) +{
-> +	unsigned int ch, rx_count = 0;
-> +	int temp;
-> +	struct tty_struct *tty = port->state->port.tty;
+Microblaze does nothing with power management and data rates is no problem -
+it could exchange some data to check actual status or so.
 
-tty = tty_port_tty_get(&port->state->port);
+We just need to make a decision about generating compatible properties for
+serial IPs without IRQ. Our BSP which generate dts from Xilinx tools is able
+to check if IRQ is connected and based on that do any action - show error/warning/ignore.
 
-[the newer tty code is refcounting, also tty can be NULL here and needs
-h handling accordingly]
+If compatible string is not in DTS driver for this IP is not probed.
+If you are saying that Linux serial drivers are not prepared for polling because of any reason
+we will handle that in BSP.
 
-> +	while (!(rd_regl(port, SIRFUART_RX_FIFO_STATUS) &
-> +
-> SIRFUART_FIFOEMPTY_MASK(port))) {
-> +		temp =
-> tty_buffer_request_room(port->state->port.tty, 1);
-> +		if (unlikely(temp == 0)) {
-> +			port->icount.buf_overrun++;
-> +			break;
-> +		}
+Thanks,
+Michal
 
-You don't need to do this - just uart_insert_char. If we run out of mid
-layer buffering it's not a port overrun as such (ie a fifo exceeded)
-it's a system wide memory crunch and something pretty serious and
-bigger is going on.
-
-> +	port->icount.rx += rx_count;
-> +	tty_flip_buffer_push(tty);
-
-[Do these only if tty != NULL obviously)
-
-and
-	tty_kref_put(tty);
-
-
-
-> +static void sirfsoc_uart_set_termios(struct uart_port *port,
-> +				       struct ktermios *termios,
-> +				       struct ktermios *old)
-> +{
-
-If you don't support CMSPAR then clear the bit in the passed termios.
-
-> +	for (ic = 0; ic < SIRFUART_BAUD_RATE_SUPPORT_NR; ic++)
-> +		if (baud_rate == baudrate_to_regv[ic].baud_rate)
-> +			clk_div_reg = baudrate_to_regv[ic].reg_val;
-> +	if (clk_div_reg == 0)
-> +		pr_err("SiRF UART: Cannot set Baud Rate (9600 ~
-> 4000000).\n");
-
-The baud rate is not guaranteed to be one the Bxxxxx values, you should
-be computing it not using a table.
-Also the pr_err means any user can fill the logs with junk.
-
-The correct behaviour here is
-
-	compute the best timing for the baud rate requested
-	compute the actual baud rate obtained
-
-then report it back to the caller
-
-	if (tty_termios_baud_rate(termios))
-		tty_termios_encode_baud_rate(termios, baud. baud);
-
-The above assuming you set the same input and output rate
-
-
-
-> +static struct console sirfsoc_uart_console = {
-> +	.name		= "ttyS",
-
-ttyS is 8250 devces. Pick a new name for your own.
-
->
-> +	.dev_name	= SIRFSOC_UART_NAME,
-> +	.major		= SIRFSOC_UART_MAJOR,
-> +	.minor		= SIRFSOC_UART_MINOR,
-
-Use dynamic allocations
-
-
-> +#define SIRFSOC_UART_NAME			"ttyS"
-> +#define SIRFSOC_UART_MAJOR			TTY_MAJOR
-> +#define SIRFSOC_UART_MINOR			64
-
-These values belong to an existing inerface, don't reuse the names like
-that, and please use dynamic allocation for the numbers
-
-> +#define uart_tx_port_tty_invalid(port)   \
-> +	(((port)->state == NULL) || ((port)->state->port.tty ==
-> NULL)) 
-
-This has no locking so little meaning - what guarantees it doesn't
-change  under or after the call. I suspect you want to be checking and
-referencing the tty in one shot as in the example I gave above for the
-rx fix.
-
+-- 
+Michal Simek, Ing. (M.Eng)
+w: www.monstr.eu p: +42-0-721842854
+Maintainer of Linux kernel 2.6 Microblaze Linux - http://www.monstr.eu/fdt/
+Microblaze U-BOOT custodian
