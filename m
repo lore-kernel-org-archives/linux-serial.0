@@ -1,53 +1,71 @@
 From: Michal Simek <monstr@monstr.eu>
 Subject: Re: Using serial driver 16550A in poll mode without interrupt connected
-Date: Thu, 13 Oct 2011 11:56:52 +0200
-Message-ID: <4E96B5E4.1040602@monstr.eu>
-References: <4E95902B.7080204@monstr.eu> <20111012145153.5490b592@lxorguk.ukuu.org.uk>
+Date: Thu, 13 Oct 2011 12:08:14 +0200
+Message-ID: <4E96B88E.6030109@monstr.eu>
+References: <4E95902B.7080204@monstr.eu> <20111012145153.5490b592@lxorguk.ukuu.org.uk> <20111012151937.GL11548@thunk.org>
 Reply-To: monstr@monstr.eu
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bw0-f46.google.com ([209.85.214.46]:51673 "EHLO
-	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752003Ab1JMJ44 (ORCPT
+Received: from mail-ey0-f174.google.com ([209.85.215.174]:45312 "EHLO
+	mail-ey0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752274Ab1JMKIS (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 13 Oct 2011 05:56:56 -0400
-In-Reply-To: <20111012145153.5490b592@lxorguk.ukuu.org.uk>
+	Thu, 13 Oct 2011 06:08:18 -0400
+In-Reply-To: <20111012151937.GL11548@thunk.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, LKML <linux-kernel@vger.kernel.org>, Peter Korsgaard <jacmet@sunsite.dk>
+To: Ted Ts'o <tytso@mit.edu>, Alan Cox <alan@lxorguk.ukuu.org.uk>, monstr@monstr.eu, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, LKML <linux-kernel@vger.kernel.org>
 
-Alan Cox wrote:
->> Driver is probed with no IRQ (NO_IRQ = -1 on Microblaze)
->> 83e00000.serial: ttyS0 at MMIO 0x83e01003 (irq = -1) is a 16550A
+Ted Ts'o wrote:
+> On Wed, Oct 12, 2011 at 02:51:53PM +0100, Alan Cox wrote:
+>>> Driver is probed with no IRQ (NO_IRQ = -1 on Microblaze)
+>>> 83e00000.serial: ttyS0 at MMIO 0x83e01003 (irq = -1) is a 16550A
+>> Zero means no IRQ. NO_IRQ is a legacy internal thing for the old IDE code
+>> so not something other code should be using. Setting the IRQ to -1 is
+>> bogus and will confuse the rest of the kernel.
+>>
+>>> Is it possible to use serial driver without IRQ - or blocking IRQ, etc.?
+>> Within limits - it kills your power management and data rates because of
+>> the continual polling.
 > 
-> Zero means no IRQ. NO_IRQ is a legacy internal thing for the old IDE code
-> so not something other code should be using. Setting the IRQ to -1 is
-> bogus and will confuse the rest of the kernel.
+> It was something that I implemented years ago primarily for crappy
+> hardware that didn't get interrupts right.  It's not something which
+> where I would advise anyone to intentionally design hardware to use.
 
-It is on my list. There are still some archs (ARM, etc) which still use it.
+It shouldn't be crappy hardware in our case because in FPGA you can connect it yourself.
+It is pretty easy to connect IRQ and choose interrupt number.
 
 > 
->> Is it possible to use serial driver without IRQ - or blocking IRQ, etc.?
-> 
-> Within limits - it kills your power management and data rates because of
-> the continual polling.
+> If you have really deep FIFO's (i.e., a kilobyte or more), and you're
+> primarily interested in throughput, not latency, and/or you are trying
+> to support tens or hundreds of serial ports for some kind of modem
+> pool, there is a place for a polled implementation. 
 
-Microblaze does nothing with power management and data rates is no problem -
-it could exchange some data to check actual status or so.
+I don't personally care about throughput or latency or even how deep FIFO is.
+It could be several bytes - just send command and receive status or so.
+Or if this need large fifo - you can just add it to your hw design.
 
-We just need to make a decision about generating compatible properties for
-serial IPs without IRQ. Our BSP which generate dts from Xilinx tools is able
-to check if IRQ is connected and based on that do any action - show error/warning/ignore.
+For example our interrupt controller supports up to 32 interrupt lines.
+If someone decides to use more that 32 serial IPs(include some lines for timer, etc)
+we don't have support for IRQ cascades and for getting status over serial line will
+be easier to use polling. As you write below there should be a lot of interrupts too.
 
-If compatible string is not in DTS driver for this IP is not probed.
-If you are saying that Linux serial drivers are not prepared for polling because of any reason
-we will handle that in BSP.
+See the Comtrol
+> Rockport for an example of hardware and with a linux driver that will
+> handle this.  It's basically a "NAPI for serial ports" sort of
+> approach to minimize the overhead of potentially hundreds of thousands
+> of interrupts per second if you are driving large numbers of ports
+> (and at that point, power management is the least of your concerns
+> :-).  But you need special hardware to do this, not a random 16550A
+> with a pathetically small 16 byte FIFO.
+
+Can you point me to that files? Is it in the mainline kernel?
 
 Thanks,
 Michal
+
 
 -- 
 Michal Simek, Ing. (M.Eng)
