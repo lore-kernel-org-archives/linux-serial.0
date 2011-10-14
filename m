@@ -1,102 +1,81 @@
 From: Kevin Hilman <khilman@ti.com>
-Subject: Re: [PATCH v6 09/16] OMAP2+: UART: Add runtime pm support for omap-serial driver
-Date: Fri, 14 Oct 2011 10:04:38 -0700
-Message-ID: <87ehyfec7t.fsf@ti.com>
-References: <1317380495-584-1-git-send-email-govindraj.raja@ti.com>
-	<1317380495-584-9-git-send-email-govindraj.raja@ti.com>
-	<878voplppo.fsf@ti.com>
-	<CAAL8m4yrXo4KRYxXxWECU99B6--FCMBDFUbNk+vsBV0Jnt0bcg@mail.gmail.com>
-	<87obxkio3e.fsf@ti.com>
-	<CAAL8m4zbdA9rtwLhft8UGQTtvroNbYYoBoq4BG2Eu2nCToX5+w@mail.gmail.com>
+Subject: Re: [PATCH v6 15/16] OMAP2+: UART: Enable back uart clocks with runtime API for early console
+Date: Fri, 14 Oct 2011 10:12:18 -0700
+Message-ID: <8739evebv1.fsf@ti.com>
+References: <1317380561-661-1-git-send-email-govindraj.raja@ti.com>
+	<1317380561-661-6-git-send-email-govindraj.raja@ti.com>
+	<87pqi3z19z.fsf@ti.com>
+	<CAAL8m4xmGQaQZm5Oz8B5e6Mt7VP7c_VwQ=AnfpKotZRci32JiQ@mail.gmail.com>
+	<871uuhn4kw.fsf@ti.com>
+	<CAAL8m4wzT-ecmVeU--EQGF1PxuZuB6WZj54MmVAk-kCtFUcUSg@mail.gmail.com>
+	<8739ewk3m0.fsf@ti.com>
+	<CAAL8m4wgLbmm-3eqku1+0oa77_fxVoFzR1ujF9nwAQRavfqLfg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog122.obsmtp.com ([74.125.149.147]:37746 "EHLO
-	na3sys009aog122.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753831Ab1JNREo convert rfc822-to-8bit
+Received: from na3sys009aog121.obsmtp.com ([74.125.149.145]:47229 "EHLO
+	na3sys009aog121.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S933349Ab1JNRMX convert rfc822-to-8bit
 	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 14 Oct 2011 13:04:44 -0400
-In-Reply-To: <CAAL8m4zbdA9rtwLhft8UGQTtvroNbYYoBoq4BG2Eu2nCToX5+w@mail.gmail.com>
-	(Govindraj's message of "Fri, 14 Oct 2011 18:02:19 +0530")
+	Fri, 14 Oct 2011 13:12:23 -0400
+In-Reply-To: <CAAL8m4wgLbmm-3eqku1+0oa77_fxVoFzR1ujF9nwAQRavfqLfg@mail.gmail.com>
+	(Govindraj's message of "Fri, 14 Oct 2011 19:48:51 +0530")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Govindraj <govindraj.ti@gmail.com>
-Cc: Tony Lindgren <tony@atomide.com>, Rajendra Nayak <rnayak@ti.com>, Partha Basak <p-basak2@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, linux-serial@vger.kernel.org, Vishwanath Sripathy <vishwanath.bs@ti.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Partha Basak <p-basak2@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Rajendra Nayak <rnayak@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>
 
 Govindraj <govindraj.ti@gmail.com> writes:
 
-> On Fri, Oct 14, 2011 at 2:52 AM, Kevin Hilman <khilman@ti.com> wrote:
->> Govindraj <govindraj.ti@gmail.com> writes:
->>
->>> On Thu, Oct 13, 2011 at 5:36 AM, Kevin Hilman <khilman@ti.com> wrot=
-e:
->>>> "Govindraj.R" <govindraj.raja@ti.com> writes:
->>>>
->>>> [...]
->>>>
->>>>> Use device_may_wakeup to check whether uart has wakeup capabiliti=
-es
->>>>> and then enable uart runtime usage for the uart.
->>>>
->>>> Curious about what happens when device_may_wakeup() is not set dur=
-ing
->>>> device init.
->>>>
->>>> [...]
->>>>
->>>>> @@ -1305,6 +1363,16 @@ static int serial_omap_probe(struct platfo=
-rm_device *pdev)
->>>>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 up->uart_dma.rx_=
-dma_channel =3D OMAP_UART_DMA_CH_FREE;
->>>>> =C2=A0 =C2=A0 =C2=A0 }
->>>>>
->>>>> + =C2=A0 =C2=A0 pm_runtime_use_autosuspend(&pdev->dev);
->>>>> + =C2=A0 =C2=A0 pm_runtime_set_autosuspend_delay(&pdev->dev,
->>>>> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 OMAP_UART_AUTOSUSPEND_DELAY);
->>>>> +
->>>>> + =C2=A0 =C2=A0 pm_runtime_irq_safe(&pdev->dev);
->>>>> + =C2=A0 =C2=A0 if (device_may_wakeup(&pdev->dev)) {
->>>>> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 pm_runtime_enable(&pd=
-ev->dev);
->>>>
->>>> So if device_may_wakeup() is false, runtime PM is not enabled, the=
-n...
->>>>
->>>>> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 pm_runtime_get_sync(&=
-pdev->dev);
->>>>
->>>> ...this get doesn't happen, and the first register access causes a=
- crash.
->>>
->>> Actually no crash, clocks will left enabled from boot up (hwmod_no_=
-reset/idle)
->>> that are idled and enabled back here.
->>>
->>> Since hwmod_idle is binded here later ([PATCH v6 15/16]),
->>
->> IMO, That's not a very maintainable solution.
->>
->> What happens when when someone fixes serial.c to only set
->> HWMOD_INIT_NO_IDLE on the console UART? =C2=A0or if we fix things so=
- we don't
->> need INIT_NO_IDLE anymore? =C2=A0Then this will crash.
->>
->> Driver code should not make assumptions like this about what device =
-init
->> code is or isn't doing.
+[...]
+
+>
+> I did some study into the approaches you suggested,
+> Below are my observation, Please correct me if I missed out
+> any thing in my below observation,
+>
+>
+>> 1) Use the a custom activate_func in the omap_device pm_lats struct
+>> =C2=A0 to idle the first time.
 >>
 >
-> Okay, How about doing as below ensuring get_sync always
-> and forbid runtime to avoid clock_gating if wakeup is not set.
+> same activate func gets called for all uarts, how to determine the
+> activate func. was called for first time for the given uart.
 >
+> (use od->pdev->dev.name strcmp with uart name for first name
+> and maintain a state machine ? confused)
+>
+> Then should we have different activate funcs?
 
-This is better, I'm not crazy about that either.
+You would only need to install a custom activate_func for the console
+UART device.  After the first call, you could set the activate_func bac=
+k
+to the default.
 
-Consider a platform that doesn't have wakeups, but the UARTs are not
-used (at least initially.)   That means on power up, all the UARTs are
-left enabled to consume power even when they're not used.
+>> 2) Use a bus notifier so the device init can be notified when the
+>> =C2=A0 real driver is available. =C2=A0I think you're probably wanti=
+ng
+>> =C2=A0 the BUS_NOTIFY_BIND_DRIVER event, which would happen right
+>> =C2=A0 before probe. =C2=A0There's also BUS_NOTIFY_BOUND_DRIVER whic=
+h
+>> =C2=A0 happens right after probe. =C2=A0 You might actually want to =
+use
+>> =C2=A0 both. =C2=A0e.g. =C2=A0 console_lock(); omap_hwmod_idle() in =
+BIND
+>> =C2=A0 and console_unlock() in 'BOUND'.
+>
+> bus_register_notifier is for all drivers within the bus,
+> omap-uart is registered as platform bus and there a lot more
+> devices that register under platform bus,
+>
+> So registering the notifier for platform bus will call notifier
+> for all probes withing platform bus,
+>
+> Is there a way to have notifier per device or given device?
+
+The notifier callback passes the device pointer.  You just have to take
+action for the devices you care about, and return for the others.
 
 Kevin
 --
