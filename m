@@ -1,334 +1,152 @@
-From: Oliver Neukum <oliver-GvhC2dPhHPQdnm+yROfE0A@public.gmane.org>
-Subject: Re: serial device name for smart card reader that is integrated to Anysee DVB USB device
-Date: Fri, 14 Oct 2011 19:32:51 +0200
-Message-ID: <201110141932.51378.oliver@neukum.org>
-References: <4E8B7901.2050700@iki.fi> <4E8BF6DE.1010105@iki.fi> <201110051016.06291.oneukum@suse.de>
+From: Govindraj <govindraj.ti@gmail.com>
+Subject: Re: [PATCH v6 09/16] OMAP2+: UART: Add runtime pm support for
+ omap-serial driver
+Date: Fri, 14 Oct 2011 23:59:53 +0530
+Message-ID: <CAAL8m4zt1aA2ysRTRazQgn=1QGJkzcYLMCi2m_dUqNKf+0Sh7w@mail.gmail.com>
+References: <1317380495-584-1-git-send-email-govindraj.raja@ti.com>
+ <1317380495-584-9-git-send-email-govindraj.raja@ti.com> <878voplppo.fsf@ti.com>
+ <CAAL8m4yrXo4KRYxXxWECU99B6--FCMBDFUbNk+vsBV0Jnt0bcg@mail.gmail.com>
+ <87obxkio3e.fsf@ti.com> <CAAL8m4zbdA9rtwLhft8UGQTtvroNbYYoBoq4BG2Eu2nCToX5+w@mail.gmail.com>
+ <87ehyfec7t.fsf@ti.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <201110051016.06291.oneukum-l3A5Bk7waGM@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Antti Palosaari <crope-X3B1VOXEql0@public.gmane.org>
-Cc: Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?iso-8859-1?q?Bj=F8rn_Mork?= <bjorn-yOkvZcmFvRU@public.gmane.org>, James Courtier-Dutton <james.dutton-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, HoP <jpetrous-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?iso-8859-1?q?Istv=E1n_V=E1radi?= <ivaradi-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-bw0-f46.google.com ([209.85.214.46]:44694 "EHLO
+	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752113Ab1JNSaS convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 14 Oct 2011 14:30:18 -0400
+In-Reply-To: <87ehyfec7t.fsf@ti.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Kevin Hilman <khilman@ti.com>
+Cc: Tony Lindgren <tony@atomide.com>, Rajendra Nayak <rnayak@ti.com>, Partha Basak <p-basak2@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, linux-serial@vger.kernel.org, Vishwanath Sripathy <vishwanath.bs@ti.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Am Mittwoch, 5. Oktober 2011, 10:16:06 schrieb Oliver Neukum:
-> Am Mittwoch, 5. Oktober 2011, 08:19:10 schrieb Antti Palosaari:
-> > On 10/05/2011 09:15 AM, Oliver Neukum wrote:
-> 
-> > > But, Greg, Antti makes a very valid point here. The generic code assumes that
-> > > it owns intfdata, that is you cannot use it as is for access to anything that lacks
-> > > its own interface. But this is not a fatal flaw. We can alter the generic code to use
-> > > an accessor function the driver can provide and make it default to get/set_intfdata
-> > >
-> > > What do you think?
-> > 
-> > Oliver, I looked your old thread reply but I didn't catch how you meant 
-> > it to happen. Could you give some small example?
+On Fri, Oct 14, 2011 at 10:34 PM, Kevin Hilman <khilman@ti.com> wrote:
+> Govindraj <govindraj.ti@gmail.com> writes:
+>
+>> On Fri, Oct 14, 2011 at 2:52 AM, Kevin Hilman <khilman@ti.com> wrote=
+:
+>>> Govindraj <govindraj.ti@gmail.com> writes:
+>>>
+>>>> On Thu, Oct 13, 2011 at 5:36 AM, Kevin Hilman <khilman@ti.com> wro=
+te:
+>>>>> "Govindraj.R" <govindraj.raja@ti.com> writes:
+>>>>>
+>>>>> [...]
+>>>>>
+>>>>>> Use device_may_wakeup to check whether uart has wakeup capabilit=
+ies
+>>>>>> and then enable uart runtime usage for the uart.
+>>>>>
+>>>>> Curious about what happens when device_may_wakeup() is not set du=
+ring
+>>>>> device init.
+>>>>>
+>>>>> [...]
+>>>>>
+>>>>>> @@ -1305,6 +1363,16 @@ static int serial_omap_probe(struct platf=
+orm_device *pdev)
+>>>>>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 up->uart_dma.rx_dma_channel =3D OMAP=
+_UART_DMA_CH_FREE;
+>>>>>> =A0 =A0 =A0 }
+>>>>>>
+>>>>>> + =A0 =A0 pm_runtime_use_autosuspend(&pdev->dev);
+>>>>>> + =A0 =A0 pm_runtime_set_autosuspend_delay(&pdev->dev,
+>>>>>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 OMAP_UART_AUTOSUSPEND_=
+DELAY);
+>>>>>> +
+>>>>>> + =A0 =A0 pm_runtime_irq_safe(&pdev->dev);
+>>>>>> + =A0 =A0 if (device_may_wakeup(&pdev->dev)) {
+>>>>>> + =A0 =A0 =A0 =A0 =A0 =A0 pm_runtime_enable(&pdev->dev);
+>>>>>
+>>>>> So if device_may_wakeup() is false, runtime PM is not enabled, th=
+en...
+>>>>>
+>>>>>> + =A0 =A0 =A0 =A0 =A0 =A0 pm_runtime_get_sync(&pdev->dev);
+>>>>>
+>>>>> ...this get doesn't happen, and the first register access causes =
+a crash.
+>>>>
+>>>> Actually no crash, clocks will left enabled from boot up (hwmod_no=
+_reset/idle)
+>>>> that are idled and enabled back here.
+>>>>
+>>>> Since hwmod_idle is binded here later ([PATCH v6 15/16]),
+>>>
+>>> IMO, That's not a very maintainable solution.
+>>>
+>>> What happens when when someone fixes serial.c to only set
+>>> HWMOD_INIT_NO_IDLE on the console UART? =A0or if we fix things so w=
+e don't
+>>> need INIT_NO_IDLE anymore? =A0Then this will crash.
+>>>
+>>> Driver code should not make assumptions like this about what device=
+ init
+>>> code is or isn't doing.
+>>>
+>>
+>> Okay, How about doing as below ensuring get_sync always
+>> and forbid runtime to avoid clock_gating if wakeup is not set.
+>>
+>
+> This is better, I'm not crazy about that either.
+>
+> Consider a platform that doesn't have wakeups, but the UARTs are not
+> used (at least initially.) =A0 That means on power up, all the UARTs =
+are
+> left enabled to consume power even when they're not used.
+>
 
-Hi,
+okay, the right place would be serial_omap_pm
+to do add runtime forbid.
 
-here is the code I come up with at an early, extremely incomplete stage.
-Just for your information because I'll stop working on this for a few days.
+whenever the uart port is used it will call serial_omap_pm
+with state param assigned value zero from serial_core layer
+for open system call from user space.
 
-	Regards
-		Oliver
+Also when uart port is closed it will shutdown where we can add runtime=
+_allow.
+So for uart ports not wakeup capable keep uart clocks on until
+used and once port is shutdown cut uart clocks.
 
-diff --git a/drivers/media/dvb/dvb-usb/anysee.c b/drivers/media/dvb/dvb-usb/anysee.c
-index 2cbf19a..34c950a 100644
---- a/drivers/media/dvb/dvb-usb/anysee.c
-+++ b/drivers/media/dvb/dvb-usb/anysee.c
-@@ -31,6 +31,12 @@
-  * is highly welcome!
-  */
- 
-+#include <linux/kernel.h>
-+#include <linux/tty_driver.h>
-+#include <linux/tty.h>
-+#include <linux/serial.h>
-+#include <linux/usb.h>
-+#include <linux/usb/serial.h>
- #include "anysee.h"
- #include "tda1002x.h"
- #include "mt352.h"
-@@ -898,6 +904,8 @@ static int anysee_probe(struct usb_interface *intf,
- 	if (ret)
- 		return ret;
- 
-+	usb_serial_start(d->card_dev, intf);
+
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap=
+-serial.c
+index 8a955fc..2c43744 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -608,6 +608,10 @@ static void serial_omap_shutdown(struct uart_port =
+*port)
+                        up->uart_dma.rx_buf_dma_phys);
+                up->uart_dma.rx_buf =3D NULL;
+        }
 +
- 	return anysee_init(d);
++       if (!device_may_wakeup(&up->pdev->dev))
++               pm_runtime_allow(&up->pdev->dev);
++
+        pm_runtime_put(&up->pdev->dev);
+        free_irq(up->port.irq, up);
  }
- 
-@@ -973,6 +981,10 @@ static int __init anysee_module_init(void)
- 	if (ret)
- 		err("%s: usb_register failed. Error number %d", __func__, ret);
- 
-+	ret = usb_serial_register(&anysee_card_driver);
-+	if (ret)
-+		usb_deregister(&anysee_driver);
+@@ -893,6 +897,10 @@ serial_omap_pm(struct uart_port *port, unsigned in=
+t state,
+        serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
+        serial_out(up, UART_EFR, efr);
+        serial_out(up, UART_LCR, 0);
 +
- 	return ret;
++       if (!state && !device_may_wakeup(&up->pdev->dev))
++               pm_runtime_forbid(&up->pdev->dev);
++
+        pm_runtime_put(&up->pdev->dev);
  }
- 
-diff --git a/drivers/media/dvb/dvb-usb/anysee.h b/drivers/media/dvb/dvb-usb/anysee.h
-index ad6ccd1..f1ca088 100644
---- a/drivers/media/dvb/dvb-usb/anysee.h
-+++ b/drivers/media/dvb/dvb-usb/anysee.h
-@@ -61,6 +61,9 @@ struct anysee_state {
- 	u8 seq;
- };
- 
-+static struct usb_serial_driver anysee_card_driver = {
-+};
-+
- #define ANYSEE_HW_507T    2 /* E30 */
- #define ANYSEE_HW_507CD   6 /* E30 Plus */
- #define ANYSEE_HW_507DC  10 /* E30 C Plus */
-diff --git a/drivers/media/dvb/dvb-usb/dvb-usb.h b/drivers/media/dvb/dvb-usb/dvb-usb.h
-index 7d35d07..5333c4d 100644
---- a/drivers/media/dvb/dvb-usb/dvb-usb.h
-+++ b/drivers/media/dvb/dvb-usb/dvb-usb.h
-@@ -425,6 +425,7 @@ struct dvb_usb_device {
- 	/* remote control */
- 	struct rc_dev *rc_dev;
- 	struct input_dev *input_dev;
-+	struct usb_serial *card_dev;
- 	char rc_phys[64];
- 	struct delayed_work rc_query_work;
- 	u32 last_event;
-diff --git a/drivers/usb/serial/generic.c b/drivers/usb/serial/generic.c
-index e4db5ad..4c387ab 100644
---- a/drivers/usb/serial/generic.c
-+++ b/drivers/usb/serial/generic.c
-@@ -175,6 +175,12 @@ int usb_serial_generic_prepare_write_buffer(struct usb_serial_port *port,
- 	return kfifo_out_locked(&port->write_fifo, dest, size, &port->lock);
- }
- 
-+void usb_serial_generic_set_private_data(struct usb_interface *intf, struct usb_serial *serial)
-+{
-+	usb_set_intfdata(intf, serial);
-+}
-+EXPORT_SYMBOL_GPL(usb_serial_generic_set_private_data);
-+
- /**
-  * usb_serial_generic_write_start - kick off an URB write
-  * @port:	Pointer to the &struct usb_serial_port data
-diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-serial.c
-index 1c03130..dd8cf75 100644
---- a/drivers/usb/serial/usb-serial.c
-+++ b/drivers/usb/serial/usb-serial.c
-@@ -707,19 +707,18 @@ static const struct tty_port_operations serial_port_ops = {
- 	.shutdown = serial_down,
- };
- 
--int usb_serial_probe(struct usb_interface *interface,
--			       const struct usb_device_id *id)
-+int usb_serial_start(struct usb_serial *serial, struct usb_interface *interface)
- {
- 	struct usb_device *dev = interface_to_usbdev(interface);
--	struct usb_serial *serial = NULL;
--	struct usb_serial_port *port;
-+	struct usb_serial_driver *type = NULL;
- 	struct usb_host_interface *iface_desc;
- 	struct usb_endpoint_descriptor *endpoint;
- 	struct usb_endpoint_descriptor *interrupt_in_endpoint[MAX_NUM_PORTS];
- 	struct usb_endpoint_descriptor *interrupt_out_endpoint[MAX_NUM_PORTS];
- 	struct usb_endpoint_descriptor *bulk_in_endpoint[MAX_NUM_PORTS];
- 	struct usb_endpoint_descriptor *bulk_out_endpoint[MAX_NUM_PORTS];
--	struct usb_serial_driver *type = NULL;
-+	struct usb_serial_port *port;
-+
- 	int retval;
- 	unsigned int minor;
- 	int buffer_size;
-@@ -731,28 +730,6 @@ int usb_serial_probe(struct usb_interface *interface,
- 	int num_ports = 0;
- 	int max_endpoints;
- 
--	mutex_lock(&table_lock);
--	type = search_serial_device(interface);
--	if (!type) {
--		mutex_unlock(&table_lock);
--		dbg("none matched");
--		return -ENODEV;
--	}
--
--	if (!try_module_get(type->driver.owner)) {
--		mutex_unlock(&table_lock);
--		dev_err(&interface->dev, "module get failed, exiting\n");
--		return -EIO;
--	}
--	mutex_unlock(&table_lock);
--
--	serial = create_serial(dev, interface, type);
--	if (!serial) {
--		module_put(type->driver.owner);
--		dev_err(&interface->dev, "%s - out of memory\n", __func__);
--		return -ENOMEM;
--	}
--
- 	/* if this device type has a probe function, call it */
- 	if (type->probe) {
- 		const struct usb_device_id *id;
-@@ -1087,7 +1064,8 @@ int usb_serial_probe(struct usb_interface *interface,
- 
- exit:
- 	/* success */
--	usb_set_intfdata(interface, serial);
-+	serial->type->set_private_data(interface, serial);
-+	//usb_set_intfdata(interface, serial);
- 	module_put(type->driver.owner);
- 	return 0;
- 
-@@ -1096,6 +1074,39 @@ probe_error:
- 	module_put(type->driver.owner);
- 	return -EIO;
- }
-+EXPORT_SYMBOL_GPL(usb_serial_start);
-+
-+int usb_serial_probe(struct usb_interface *interface,
-+			       const struct usb_device_id *id)
-+{
-+	struct usb_device *dev = interface_to_usbdev(interface);
-+	struct usb_serial *serial = NULL;
-+	struct usb_serial_driver *type = NULL;
-+
-+	mutex_lock(&table_lock);
-+	type = search_serial_device(interface);
-+	if (!type) {
-+		mutex_unlock(&table_lock);
-+		dbg("none matched");
-+		return -ENODEV;
-+	}
-+
-+	if (!try_module_get(type->driver.owner)) {
-+		mutex_unlock(&table_lock);
-+		dev_err(&interface->dev, "module get failed, exiting\n");
-+		return -EIO;
-+	}
-+	mutex_unlock(&table_lock);
-+
-+	serial = create_serial(dev, interface, type);
-+	if (!serial) {
-+		module_put(type->driver.owner);
-+		dev_err(&interface->dev, "%s - out of memory\n", __func__);
-+		return -ENOMEM;
-+	}
-+
-+	return usb_serial_start(serial, interface);
-+}
- EXPORT_SYMBOL_GPL(usb_serial_probe);
- 
- void usb_serial_disconnect(struct usb_interface *interface)
-@@ -1109,7 +1120,8 @@ void usb_serial_disconnect(struct usb_interface *interface)
- 	dbg("%s", __func__);
- 
- 	mutex_lock(&serial->disc_mutex);
--	usb_set_intfdata(interface, NULL);
-+	serial->type->set_private_data(interface, NULL);
-+
- 	/* must set a flag, to signal subdrivers */
- 	serial->disconnected = 1;
- 	mutex_unlock(&serial->disc_mutex);
-@@ -1148,11 +1160,11 @@ void usb_serial_disconnect(struct usb_interface *interface)
- 	usb_serial_put(serial);
- 	dev_info(dev, "device disconnected\n");
- }
-+
- EXPORT_SYMBOL_GPL(usb_serial_disconnect);
- 
--int usb_serial_suspend(struct usb_interface *intf, pm_message_t message)
-+int usb_serial_do_suspend(struct usb_serial *serial, pm_message_t message)
- {
--	struct usb_serial *serial = usb_get_intfdata(intf);
- 	struct usb_serial_port *port;
- 	int i, r = 0;
- 
-@@ -1175,11 +1187,18 @@ int usb_serial_suspend(struct usb_interface *intf, pm_message_t message)
- err_out:
- 	return r;
- }
--EXPORT_SYMBOL(usb_serial_suspend);
- 
--int usb_serial_resume(struct usb_interface *intf)
-+EXPORT_SYMBOL(usb_serial_do_suspend);
-+
-+int usb_serial_suspend(struct usb_interface *intf, pm_message_t message)
- {
- 	struct usb_serial *serial = usb_get_intfdata(intf);
-+	return usb_serial_do_suspend(serial, message);
-+}
-+EXPORT_SYMBOL(usb_serial_suspend);
-+
-+int usb_serial_do_resume(struct usb_serial *serial)
-+{
- 	int rv;
- 
- 	serial->suspending = 0;
-@@ -1190,8 +1209,17 @@ int usb_serial_resume(struct usb_interface *intf)
- 
- 	return rv;
- }
-+EXPORT_SYMBOL(usb_serial_do_resume);
-+
-+int usb_serial_resume(struct usb_interface *intf)
-+{
-+	struct usb_serial *serial = usb_get_intfdata(intf);
-+	return usb_serial_do_resume(serial);
-+}
-+
- EXPORT_SYMBOL(usb_serial_resume);
- 
-+
- static const struct tty_operations serial_ops = {
- 	.open =			serial_open,
- 	.close =		serial_close,
-@@ -1332,6 +1360,7 @@ static void fixup_generic(struct usb_serial_driver *device)
- 	set_to_generic_if_null(device, release);
- 	set_to_generic_if_null(device, process_read_urb);
- 	set_to_generic_if_null(device, prepare_write_buffer);
-+	set_to_generic_if_null(device, set_private_data);
- }
- 
- int usb_serial_register(struct usb_serial_driver *driver)
-diff --git a/include/linux/usb/serial.h b/include/linux/usb/serial.h
-index b29f70b..396de61 100644
---- a/include/linux/usb/serial.h
-+++ b/include/linux/usb/serial.h
-@@ -243,6 +243,7 @@ struct usb_serial_driver {
- 	int (*probe)(struct usb_serial *serial, const struct usb_device_id *id);
- 	int (*attach)(struct usb_serial *serial);
- 	int (*calc_num_ports) (struct usb_serial *serial);
-+	void (*set_private_data) (struct usb_interface *intf, struct usb_serial *serial);
- 
- 	void (*disconnect)(struct usb_serial *serial);
- 	void (*release)(struct usb_serial *serial);
-@@ -301,10 +302,13 @@ extern void usb_serial_port_softint(struct usb_serial_port *port);
- 
- extern int usb_serial_probe(struct usb_interface *iface,
- 			    const struct usb_device_id *id);
-+extern int usb_serial_start(struct usb_serial *serial, struct usb_interface *iface);
- extern void usb_serial_disconnect(struct usb_interface *iface);
- 
- extern int usb_serial_suspend(struct usb_interface *intf, pm_message_t message);
-+extern int usb_serial_do_suspend(struct usb_serial *serial, pm_message_t message); 
- extern int usb_serial_resume(struct usb_interface *intf);
-+extern int usb_serial_do_resume(struct usb_serial *serial);
- 
- extern int ezusb_writememory(struct usb_serial *serial, int address,
- 			     unsigned char *data, int length, __u8 bRequest);
-@@ -329,6 +333,7 @@ extern int usb_serial_generic_open(struct tty_struct *tty,
- extern int usb_serial_generic_write(struct tty_struct *tty,
- 	struct usb_serial_port *port, const unsigned char *buf, int count);
- extern void usb_serial_generic_close(struct usb_serial_port *port);
-+extern void usb_serial_generic_set_private_data(struct usb_interface *intf, struct usb_serial *serial);
- extern int usb_serial_generic_resume(struct usb_serial *serial);
- extern int usb_serial_generic_write_room(struct tty_struct *tty);
- extern int usb_serial_generic_chars_in_buffer(struct tty_struct *tty);
+
+
 --
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Thanks,
+Govindraj.R
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
 More majordomo info at  http://vger.kernel.org/majordomo-info.html
