@@ -1,150 +1,58 @@
-From: Govindraj <govindraj.ti@gmail.com>
-Subject: Re: [PATCH v6 09/16] OMAP2+: UART: Add runtime pm support for
- omap-serial driver
-Date: Fri, 14 Oct 2011 23:59:53 +0530
-Message-ID: <CAAL8m4zt1aA2ysRTRazQgn=1QGJkzcYLMCi2m_dUqNKf+0Sh7w@mail.gmail.com>
-References: <1317380495-584-1-git-send-email-govindraj.raja@ti.com>
- <1317380495-584-9-git-send-email-govindraj.raja@ti.com> <878voplppo.fsf@ti.com>
- <CAAL8m4yrXo4KRYxXxWECU99B6--FCMBDFUbNk+vsBV0Jnt0bcg@mail.gmail.com>
- <87obxkio3e.fsf@ti.com> <CAAL8m4zbdA9rtwLhft8UGQTtvroNbYYoBoq4BG2Eu2nCToX5+w@mail.gmail.com>
- <87ehyfec7t.fsf@ti.com>
+From: Univerzita Karlova <mdiaz@frch.utn.edu.ar>
+Subject: =?UTF-8?Q?administrativn=C3=AD=20zpr=C3=A1vy?=
+Date: Sat, 15 Oct 2011 18:08:11 +0100
+Message-ID: <870cd95985e6d924c05da186df11e657__44034.5158953734$1318698924$gmane$org@mail.frch.utn.edu.ar>
+Reply-To: wen@auto.lt
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bw0-f46.google.com ([209.85.214.46]:44694 "EHLO
-	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752113Ab1JNSaS convert rfc822-to-8bit (ORCPT
+Received: from mail.frch.utn.edu.ar ([190.114.208.70]:53822 "EHLO
+	mail.frch.utn.edu.ar" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753391Ab1JORO4 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 14 Oct 2011 14:30:18 -0400
-In-Reply-To: <87ehyfec7t.fsf@ti.com>
+	Sat, 15 Oct 2011 13:14:56 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kevin Hilman <khilman@ti.com>
-Cc: Tony Lindgren <tony@atomide.com>, Rajendra Nayak <rnayak@ti.com>, Partha Basak <p-basak2@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, linux-serial@vger.kernel.org, Vishwanath Sripathy <vishwanath.bs@ti.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-
-On Fri, Oct 14, 2011 at 10:34 PM, Kevin Hilman <khilman@ti.com> wrote:
-> Govindraj <govindraj.ti@gmail.com> writes:
->
->> On Fri, Oct 14, 2011 at 2:52 AM, Kevin Hilman <khilman@ti.com> wrote=
-:
->>> Govindraj <govindraj.ti@gmail.com> writes:
->>>
->>>> On Thu, Oct 13, 2011 at 5:36 AM, Kevin Hilman <khilman@ti.com> wro=
-te:
->>>>> "Govindraj.R" <govindraj.raja@ti.com> writes:
->>>>>
->>>>> [...]
->>>>>
->>>>>> Use device_may_wakeup to check whether uart has wakeup capabilit=
-ies
->>>>>> and then enable uart runtime usage for the uart.
->>>>>
->>>>> Curious about what happens when device_may_wakeup() is not set du=
-ring
->>>>> device init.
->>>>>
->>>>> [...]
->>>>>
->>>>>> @@ -1305,6 +1363,16 @@ static int serial_omap_probe(struct platf=
-orm_device *pdev)
->>>>>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 up->uart_dma.rx_dma_channel =3D OMAP=
-_UART_DMA_CH_FREE;
->>>>>> =A0 =A0 =A0 }
->>>>>>
->>>>>> + =A0 =A0 pm_runtime_use_autosuspend(&pdev->dev);
->>>>>> + =A0 =A0 pm_runtime_set_autosuspend_delay(&pdev->dev,
->>>>>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 OMAP_UART_AUTOSUSPEND_=
-DELAY);
->>>>>> +
->>>>>> + =A0 =A0 pm_runtime_irq_safe(&pdev->dev);
->>>>>> + =A0 =A0 if (device_may_wakeup(&pdev->dev)) {
->>>>>> + =A0 =A0 =A0 =A0 =A0 =A0 pm_runtime_enable(&pdev->dev);
->>>>>
->>>>> So if device_may_wakeup() is false, runtime PM is not enabled, th=
-en...
->>>>>
->>>>>> + =A0 =A0 =A0 =A0 =A0 =A0 pm_runtime_get_sync(&pdev->dev);
->>>>>
->>>>> ...this get doesn't happen, and the first register access causes =
-a crash.
->>>>
->>>> Actually no crash, clocks will left enabled from boot up (hwmod_no=
-_reset/idle)
->>>> that are idled and enabled back here.
->>>>
->>>> Since hwmod_idle is binded here later ([PATCH v6 15/16]),
->>>
->>> IMO, That's not a very maintainable solution.
->>>
->>> What happens when when someone fixes serial.c to only set
->>> HWMOD_INIT_NO_IDLE on the console UART? =A0or if we fix things so w=
-e don't
->>> need INIT_NO_IDLE anymore? =A0Then this will crash.
->>>
->>> Driver code should not make assumptions like this about what device=
- init
->>> code is or isn't doing.
->>>
->>
->> Okay, How about doing as below ensuring get_sync always
->> and forbid runtime to avoid clock_gating if wakeup is not set.
->>
->
-> This is better, I'm not crazy about that either.
->
-> Consider a platform that doesn't have wakeups, but the UARTs are not
-> used (at least initially.) =A0 That means on power up, all the UARTs =
-are
-> left enabled to consume power even when they're not used.
->
-
-okay, the right place would be serial_omap_pm
-to do add runtime forbid.
-
-whenever the uart port is used it will call serial_omap_pm
-with state param assigned value zero from serial_core layer
-for open system call from user space.
-
-Also when uart port is closed it will shutdown where we can add runtime=
-_allow.
-So for uart ports not wakeup capable keep uart clocks on until
-used and once port is shutdown cut uart clocks.
 
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap=
--serial.c
-index 8a955fc..2c43744 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -608,6 +608,10 @@ static void serial_omap_shutdown(struct uart_port =
-*port)
-                        up->uart_dma.rx_buf_dma_phys);
-                up->uart_dma.rx_buf =3D NULL;
-        }
-+
-+       if (!device_may_wakeup(&up->pdev->dev))
-+               pm_runtime_allow(&up->pdev->dev);
-+
-        pm_runtime_put(&up->pdev->dev);
-        free_irq(up->port.irq, up);
- }
-@@ -893,6 +897,10 @@ serial_omap_pm(struct uart_port *port, unsigned in=
-t state,
-        serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
-        serial_out(up, UART_EFR, efr);
-        serial_out(up, UART_LCR, 0);
-+
-+       if (!state && !device_may_wakeup(&up->pdev->dev))
-+               pm_runtime_forbid(&up->pdev->dev);
-+
-        pm_runtime_put(&up->pdev->dev);
- }
 
 
---
-Thanks,
-Govindraj.R
+--=20
+ V=C3=A1=C5=BEen=C3=BD cuni.cz p=C5=99edplatitelem,
+
+ Provedeme aktualizaci v syst=C3=A9mu v d=C5=AFsledku spoustu p=C5=99et=
+=C3=AD=C5=BEen=C3=AD, vysok=C3=BD=20
+ obsah spamu, kter=C3=BD poch=C3=A1z=C3=AD z na=C5=A1eho serveru a prop=
+u=C5=A1t=C4=9Bn=C3=AD nebezpe=C4=8Dn=C3=BD=20
+ virus podle n=C4=9Bkter=C3=BDch z=C3=A1kazn=C3=ADk=C5=AF na tomto serv=
+eru, v=C5=A1echny =C3=BA=C4=8Dtu, =C5=BEe=20
+ u=C5=BEivatel mus=C3=AD aktualizovat jejich =C3=BA=C4=8Det pro zv=C3=BD=
+=C5=A1en=C3=AD bezpe=C4=8Dnosti a lep=C5=A1=C3=AD=20
+ po=C5=A1tovn=C3=AD slu=C5=BEby na aviod ukon=C4=8Den=C3=AD =C3=BA=C4=8D=
+et jako nespln=C4=9Bn=C3=AD povede k ukon=C4=8Den=C3=AD=20
+ va=C5=A1eho =C3=BA=C4=8Dtu v n=C3=A1sleduj=C3=ADc=C3=ADch 48 hodin.
+
+ Klepn=C4=9Bte na odkaz n=C3=AD=C5=BEe, vyplnit spr=C3=A1vn=C3=A9 infor=
+mace a p=C5=99ed=C3=A1 sout=C4=9B=C5=BEit pro=20
+ aktualizaci,
+
+ http://buzurl.com/bu11
+
+ Doufal, =C5=BEe v=C3=A1m poslou=C5=BE=C3=AD l=C3=A9pe...
+
+ S pozdravem
+ Univerzita Karlova
+ **********************************************************************=
+**********************
+ Je to administrativn=C3=AD zpr=C3=A1vy na serveru cuni.cz. To nen=C3=AD=
+ Nevy=C5=BE=C3=A1dan=C3=A1=20
+ po=C5=A1ta. =C4=8Cas v =C4=8Dase Server cuni.cz v=C3=A1m za=C5=A1leme =
+tyto zpr=C3=A1vy p=C5=99edat d=C5=AFle=C5=BEit=C3=A9=20
+ informace o p=C5=99edplatn=C3=A9m.
+ **********************************************************************=
+********************
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
  in
