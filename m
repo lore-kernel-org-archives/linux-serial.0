@@ -1,60 +1,39 @@
-From: Univerzita Karlova <mdiaz@frch.utn.edu.ar>
-Subject: =?UTF-8?Q?administrativn=C3=AD=20zpr=C3=A1vy?=
-Date: Sat, 15 Oct 2011 18:08:11 +0100
-Message-ID: <870cd95985e6d924c05da186df11e657__44034.5158953734$1318698924$gmane$org@mail.frch.utn.edu.ar>
-Reply-To: wen@auto.lt
+From: "Paul Chiha" <paul.chiha@greyinnovation.com>
+Subject: OMAP2+:UART driver help
+Date: Mon, 17 Oct 2011 15:48:21 +1100
+Message-ID: <51A4F524D105AA4C93787F33E2C90E62EE59C2@greysvr02.GreyInnovation.local>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.frch.utn.edu.ar ([190.114.208.70]:53822 "EHLO
-	mail.frch.utn.edu.ar" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753391Ab1JORO4 (ORCPT
+Received: from eth1683.vic.adsl.internode.on.net ([150.101.217.146]:50241 "EHLO
+	greyinnovation.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752349Ab1JQFCh convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 15 Oct 2011 13:14:56 -0400
+	Mon, 17 Oct 2011 01:02:37 -0400
+Content-class: urn:content-classes:message
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
+Hi,
 
+I'm a newbie and would like some help with serial drivers in the kernel.
 
+I've got an OMAP35x EVM (with UARTs 1/2-3 on board), and I would like to
+write
+my own driver which uses UART 3.  I'm not sure of the best way to do
+this.
+I don't know how to use the existing ttyO2 device and omap-serial driver
+for my
+own purpose.  Basically I want to write a driver which sits between the
+application and the omap-serial driver, but only for UART 3.  Is there a
+simple
+mechanism to do this, or do I need to replace omap_serial with my own?
+Also,
+is there an existing driver that does something similar to what I want
+that I
+can base my driver on?
 
---=20
- V=C3=A1=C5=BEen=C3=BD cuni.cz p=C5=99edplatitelem,
-
- Provedeme aktualizaci v syst=C3=A9mu v d=C5=AFsledku spoustu p=C5=99et=
-=C3=AD=C5=BEen=C3=AD, vysok=C3=BD=20
- obsah spamu, kter=C3=BD poch=C3=A1z=C3=AD z na=C5=A1eho serveru a prop=
-u=C5=A1t=C4=9Bn=C3=AD nebezpe=C4=8Dn=C3=BD=20
- virus podle n=C4=9Bkter=C3=BDch z=C3=A1kazn=C3=ADk=C5=AF na tomto serv=
-eru, v=C5=A1echny =C3=BA=C4=8Dtu, =C5=BEe=20
- u=C5=BEivatel mus=C3=AD aktualizovat jejich =C3=BA=C4=8Det pro zv=C3=BD=
-=C5=A1en=C3=AD bezpe=C4=8Dnosti a lep=C5=A1=C3=AD=20
- po=C5=A1tovn=C3=AD slu=C5=BEby na aviod ukon=C4=8Den=C3=AD =C3=BA=C4=8D=
-et jako nespln=C4=9Bn=C3=AD povede k ukon=C4=8Den=C3=AD=20
- va=C5=A1eho =C3=BA=C4=8Dtu v n=C3=A1sleduj=C3=ADc=C3=ADch 48 hodin.
-
- Klepn=C4=9Bte na odkaz n=C3=AD=C5=BEe, vyplnit spr=C3=A1vn=C3=A9 infor=
-mace a p=C5=99ed=C3=A1 sout=C4=9B=C5=BEit pro=20
- aktualizaci,
-
- http://buzurl.com/bu11
-
- Doufal, =C5=BEe v=C3=A1m poslou=C5=BE=C3=AD l=C3=A9pe...
-
- S pozdravem
- Univerzita Karlova
- **********************************************************************=
-**********************
- Je to administrativn=C3=AD zpr=C3=A1vy na serveru cuni.cz. To nen=C3=AD=
- Nevy=C5=BE=C3=A1dan=C3=A1=20
- po=C5=A1ta. =C4=8Cas v =C4=8Dase Server cuni.cz v=C3=A1m za=C5=A1leme =
-tyto zpr=C3=A1vy p=C5=99edat d=C5=AFle=C5=BEit=C3=A9=20
- informace o p=C5=99edplatn=C3=A9m.
- **********************************************************************=
-********************
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Paul
