@@ -1,55 +1,39 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH v2] UART: add CSR SiRFprimaII SoC on-chip uart drivers
-Date: Tue, 18 Oct 2011 11:13:19 -0700
-Message-ID: <20111018181319.GA7015@kroah.com>
-References: <1318570799-3785-1-git-send-email-Barry.Song@csr.com>
- <CAGsJ_4w6fGH+G9KapHXzCwMhz_NKfPdCxs7rF5hWKw2LGUpwWA@mail.gmail.com>
+From: Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [Patch 1/6]drivers/usb/serial/ftdi_sio.c: Basic icount
+ infrastructure for ftdi_sio
+Date: Tue, 18 Oct 2011 13:44:12 -0700
+Message-ID: <20111018204412.GA10910@kroah.com>
+References: <20115.3608.745590.271161@elektron.ikp.physik.tu-darmstadt.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out5.smtp.messagingengine.com ([66.111.4.29]:60820 "EHLO
-	out5.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751083Ab1JRSWL (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Oct 2011 14:22:11 -0400
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CAGsJ_4w6fGH+G9KapHXzCwMhz_NKfPdCxs7rF5hWKw2LGUpwWA@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <20115.3608.745590.271161-1JbLm1bU5j5ZIx36JBfelj3+ndqKAYMe9FMPySWZwLkb1SvskN2V4Q@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Uwe Bonnes <bon-1JbLm1bU5j5ZIx36JBfelj3+ndqKAYMe9FMPySWZwLkb1SvskN2V4Q@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Barry Song <21cnbao@gmail.com>
-Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, Rong Wang <Rong.Wang@csr.com>, Bin Shi <Bin.Shi@csr.com>, Linus Walleij <linus.walleij@linaro.org>, workgroup.linux@csr.com, Barry Song <Baohua.Song@csr.com>, linux-arm-kernel@lists.infradead.org
 
-On Tue, Oct 18, 2011 at 11:39:11AM +0800, Barry Song wrote:
-> 2011/10/14 Barry Song <Barry.Song@csr.com>:
-> > From: Rong Wang <Rong.Wang@csr.com>
-> >
-> > SiRFprimaII is the latest generation application processor from CSR=
-=E2=80=99s
-> > multi-function SoC product family.
-> > The SoC support codes are in arch/arm/mach-prima2 from Linux mainli=
-ne
-> > 3.0.
-> >
-> > There are three dedicated UARTs in system. This patch adds basic dr=
-iver
-> > support for them.
-> >
-> > It has used the newest pinmux subsystem from Linus Walleij.
->=20
-> Hi Alan, it means this patch doesn't compile until pinmux tree of
-> Linus Walleij is merged into mainline.
-> Now it is a linux next tree.
+On Mon, Oct 10, 2011 at 05:24:08PM +0200, Uwe Bonnes wrote:
+> 
+> -- 
+> Uwe Bonnes                bon-1JbLm1bU5j5ZIx36JBfelj3+ndqKAYMe9FMPySWZwLkb1SvskN2V4Q@public.gmane.org
+> 
+> Institut fuer Kernphysik  Schlossgartenstrasse 9  64289 Darmstadt
+> --------- Tel. 06151 162516 -------- Fax. 06151 164321 ----------
+> >From ea100c30d21374caa4fef77d78272497751703ce Mon Sep 17 00:00:00 2001
+> From: Uwe Bonnes <bon-1JbLm1bU5j5ZIx36JBfelj3+ndqKAYMe9FMPySWZwLkb1SvskN2V4Q@public.gmane.org>
+> Date: Sun, 9 Oct 2011 16:48:51 +0200
+> Subject: Basic icount infrastructure for ftdi_sio
 
-So should it go through the pinmux tree?  Or do you want to wait for th=
-e
-3.3 kernel release to get this merged?
+Why did you send these patches this way?  I'll fix these up this time,
+but note that I have to edit every one of your patches, which is a pain.
+Please just use git send-email next time.
 
 thanks,
 
 greg k-h
 --
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 More majordomo info at  http://vger.kernel.org/majordomo-info.html
