@@ -1,39 +1,64 @@
-From: Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [Patch 1/6]drivers/usb/serial/ftdi_sio.c: Basic icount
- infrastructure for ftdi_sio
-Date: Tue, 18 Oct 2011 13:44:12 -0700
-Message-ID: <20111018204412.GA10910@kroah.com>
-References: <20115.3608.745590.271161@elektron.ikp.physik.tu-darmstadt.de>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH v2] TTY: serial_core: Fix crash if DCD drop during suspend
+Date: Tue, 18 Oct 2011 14:21:05 -0700
+Message-ID: <20111018212105.GA10426@kroah.com>
+References: <1318024753-15336-1-git-send-email-dianders@chromium.org>
+ <1318379144-27187-1-git-send-email-dianders@chromium.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from out5.smtp.messagingengine.com ([66.111.4.29]:34760 "EHLO
+	out5.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752902Ab1JRVXK (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 18 Oct 2011 17:23:10 -0400
 Content-Disposition: inline
-In-Reply-To: <20115.3608.745590.271161-1JbLm1bU5j5ZIx36JBfelj3+ndqKAYMe9FMPySWZwLkb1SvskN2V4Q@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Uwe Bonnes <bon-1JbLm1bU5j5ZIx36JBfelj3+ndqKAYMe9FMPySWZwLkb1SvskN2V4Q@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <1318379144-27187-1-git-send-email-dianders@chromium.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Doug Anderson <dianders@chromium.org>
+Cc: Jiri Slaby <jirislaby@gmail.com>, Stephen Warren <swarren@nvidia.com>, Olof Johansson <olof@lixom.net>, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, Allen Martin <AMartin@nvidia.com>, Tom Warren <twarren@nvidia.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Mon, Oct 10, 2011 at 05:24:08PM +0200, Uwe Bonnes wrote:
+On Tue, Oct 11, 2011 at 05:25:44PM -0700, Doug Anderson wrote:
+> This crash was showing up 100% of the time on Tegra CPUs when an
+> agetty was running on the serial port and the console was not running
+> on the serial port.  The reason the Tegra saw it so reliably is that
+> the Tegra CPU internally ties DTR to DCD/DSR.  That means when we
+> dropped DTR during suspend we would get always get an immediate DCD
+> drop.
 > 
-> -- 
-> Uwe Bonnes                bon-1JbLm1bU5j5ZIx36JBfelj3+ndqKAYMe9FMPySWZwLkb1SvskN2V4Q@public.gmane.org
+> The specific order of operations that were running:
+> * uart_suspend_port() would be called to put the uart in suspend mode
+> * we'd drop DTR (ops->set_mctrl(uport, 0)).
+> * the DTR drop would be looped back in the CPU to be a DCD drop.
+> * the DCD drop would look to the serial driver as a hangup
+> * the hangup would call uart_shutdown()
+> * ... suspend / resume happens ...
+> * uart_resume_port() would be called and run the code in the
+>   (port->flags & ASYNC_SUSPENDED) block, which would startup the port
+>   (and enable tx again).
+> * Since the UART would be available for tx, we'd immediately get
+>   an interrupt, eventually calling transmit_chars()
+> * The transmit_chars() function would crash.  The first crash would
+>   be a dereference of a NULL tty member, but since the port has been
+>   shutdown that was just a symptom.
 > 
-> Institut fuer Kernphysik  Schlossgartenstrasse 9  64289 Darmstadt
-> --------- Tel. 06151 162516 -------- Fax. 06151 164321 ----------
-> >From ea100c30d21374caa4fef77d78272497751703ce Mon Sep 17 00:00:00 2001
-> From: Uwe Bonnes <bon-1JbLm1bU5j5ZIx36JBfelj3+ndqKAYMe9FMPySWZwLkb1SvskN2V4Q@public.gmane.org>
-> Date: Sun, 9 Oct 2011 16:48:51 +0200
-> Subject: Basic icount infrastructure for ftdi_sio
+> I have proposed a patch that would fix the Tegra CPUs here (see
+> https://lkml.org/lkml/2011/10/11/444 - tty/serial: Prevent drop of DCD
+> on suspend for Tegra UARTs).  However, even with that fix it is still
+> possible for systems that have an externally visible DCD line to see a
+> crash if the DCD drops at just the right time during suspend: thus
+> this patch is still useful.
+> 
+> Signed-off-by: Doug Anderson <dianders@chromium.org>
+> Acked-by: Alan Cox <alan@linux.intel.com>
+> ---
+> v2: Updated change description and comments based on deeper digging.
 
-Why did you send these patches this way?  I'll fix these up this time,
-but note that I have to edit every one of your patches, which is a pain.
-Please just use git send-email next time.
+This patch doesn't apply at all to the linux-next tree, can you redo it
+so that I know it is correct, and resend it?  (remember to keep Alan's
+Ack on it.)
 
 thanks,
 
 greg k-h
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
