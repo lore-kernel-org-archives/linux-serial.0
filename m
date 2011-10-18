@@ -1,69 +1,55 @@
-From: "Govindraj.R" <govindraj.raja@ti.com>
-Subject: [PATCH v7 20/21] OMAP2+: UART: Avoid uart idling on suspend for no_console_suspend usecase
-Date: Tue, 18 Oct 2011 21:05:40 +0530
-Message-ID: <1318952141-10697-1-git-send-email-govindraj.raja@ti.com>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH v2] UART: add CSR SiRFprimaII SoC on-chip uart drivers
+Date: Tue, 18 Oct 2011 11:13:19 -0700
+Message-ID: <20111018181319.GA7015@kroah.com>
+References: <1318570799-3785-1-git-send-email-Barry.Song@csr.com>
+ <CAGsJ_4w6fGH+G9KapHXzCwMhz_NKfPdCxs7rF5hWKw2LGUpwWA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:48702 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S933041Ab1JRPft (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Oct 2011 11:35:49 -0400
+Received: from out5.smtp.messagingengine.com ([66.111.4.29]:60820 "EHLO
+	out5.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751083Ab1JRSWL (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 18 Oct 2011 14:22:11 -0400
+Content-Disposition: inline
+In-Reply-To: <CAGsJ_4w6fGH+G9KapHXzCwMhz_NKfPdCxs7rF5hWKw2LGUpwWA@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-omap@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Kevin Hilman <khilman@ti.com>, Tony Lindgren <tony@atomide.com>, Partha Basak <p-basak2@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Rajendra Nayak <rnayak@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Govindraj R <govindraj.raja@ti.com>
+To: Barry Song <21cnbao@gmail.com>
+Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, Rong Wang <Rong.Wang@csr.com>, Bin Shi <Bin.Shi@csr.com>, Linus Walleij <linus.walleij@linaro.org>, workgroup.linux@csr.com, Barry Song <Baohua.Song@csr.com>, linux-arm-kernel@lists.infradead.org
 
-If no_console_suspend is used we have prevent uart idling during suspend
-to provide debug prints.
+On Tue, Oct 18, 2011 at 11:39:11AM +0800, Barry Song wrote:
+> 2011/10/14 Barry Song <Barry.Song@csr.com>:
+> > From: Rong Wang <Rong.Wang@csr.com>
+> >
+> > SiRFprimaII is the latest generation application processor from CSR=
+=E2=80=99s
+> > multi-function SoC product family.
+> > The SoC support codes are in arch/arm/mach-prima2 from Linux mainli=
+ne
+> > 3.0.
+> >
+> > There are three dedicated UARTs in system. This patch adds basic dr=
+iver
+> > support for them.
+> >
+> > It has used the newest pinmux subsystem from Linus Walleij.
+>=20
+> Hi Alan, it means this patch doesn't compile until pinmux tree of
+> Linus Walleij is merged into mainline.
+> Now it is a linux next tree.
 
-Power domain hooks can idle uarts if left enabled during system wide suspend
-so re-use the omap_device_disable_idle_on_suspend API's to ensure console_uart
-is not idled during suspend.
+So should it go through the pinmux tree?  Or do you want to wait for th=
+e
+3.3 kernel release to get this merged?
 
-omap_device_disable_idle_on_suspend API was used on all uarts since the uart
-driver was not runtime adapted, now with runtime adaptation we can re-use this
-API only for no_console_suspend use cases.
+thanks,
 
-Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
----
- arch/arm/mach-omap2/serial.c |    9 ++++++++-
- 1 files changed, 8 insertions(+), 1 deletions(-)
-
-diff --git a/arch/arm/mach-omap2/serial.c b/arch/arm/mach-omap2/serial.c
-index 55903f0..5e3bbce 100644
---- a/arch/arm/mach-omap2/serial.c
-+++ b/arch/arm/mach-omap2/serial.c
-@@ -64,6 +64,7 @@ struct omap_uart_state {
- static LIST_HEAD(uart_list);
- static u8 num_uarts;
- static u8 console_uart_id = -1;
-+static u8 no_console_suspend;
- 
- #define DEFAULT_RXDMA_POLLRATE		1	/* RX DMA polling rate (us) */
- #define DEFAULT_RXDMA_BUFSIZE		4096	/* RX DMA buffer size */
-@@ -308,6 +309,10 @@ static int __init omap_serial_early_init(void)
- 
- 		if (cmdline_find_option(uart_name)) {
- 			console_uart_id = uart->num;
-+
-+			if (cmdline_find_option("no_console_suspend"))
-+				no_console_suspend = true;
-+
- 			/*
- 			 * omap-uart can be used for earlyprintk logs
- 			 * So if omap-uart is used as console then prevent
-@@ -400,7 +405,9 @@ void __init omap_serial_init_port(struct omap_board_data *bdata,
- 		od->pm_lats = console_uart_latency;
- 	}
- 
--	omap_device_disable_idle_on_suspend(pdev);
-+	if (no_console_suspend)
-+		omap_device_disable_idle_on_suspend(pdev);
-+
- 	oh->mux = omap_hwmod_mux_init(bdata->pads, bdata->pads_cnt);
- 
- 	uart->pdev = pdev;
--- 
-1.7.4.1
-
+greg k-h
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
