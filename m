@@ -1,90 +1,58 @@
-From: Govindraj <govindraj.ti@gmail.com>
-Subject: Re: OMAP2+:UART driver help
-Date: Mon, 17 Oct 2011 11:13:26 +0530
-Message-ID: <CAAL8m4zbWxJk4X9N-=pX6fQLv+1zrE_949o3rwLNrd+sTtKraA@mail.gmail.com>
-References: <51A4F524D105AA4C93787F33E2C90E62EE59C2@greysvr02.GreyInnovation.local>
+From: Barry Song <21cnbao@gmail.com>
+Subject: Re: [PATCH v2] UART: add CSR SiRFprimaII SoC on-chip uart drivers
+Date: Tue, 18 Oct 2011 11:39:11 +0800
+Message-ID: <CAGsJ_4w6fGH+G9KapHXzCwMhz_NKfPdCxs7rF5hWKw2LGUpwWA@mail.gmail.com>
+References: <1318570799-3785-1-git-send-email-Barry.Song@csr.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bw0-f46.google.com ([209.85.214.46]:42131 "EHLO
+Received: from mail-bw0-f46.google.com ([209.85.214.46]:57297 "EHLO
 	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753982Ab1JQFnr convert rfc822-to-8bit (ORCPT
+	with ESMTP id S1752460Ab1JRDjc convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 17 Oct 2011 01:43:47 -0400
-Received: by bkbzt19 with SMTP id zt19so3283782bkb.19
-        for <linux-serial@vger.kernel.org>; Sun, 16 Oct 2011 22:43:46 -0700 (PDT)
-In-Reply-To: <51A4F524D105AA4C93787F33E2C90E62EE59C2@greysvr02.GreyInnovation.local>
+	Mon, 17 Oct 2011 23:39:32 -0400
+Received: by bkbzt19 with SMTP id zt19so267831bkb.19
+        for <linux-serial@vger.kernel.org>; Mon, 17 Oct 2011 20:39:31 -0700 (PDT)
+In-Reply-To: <1318570799-3785-1-git-send-email-Barry.Song@csr.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Paul Chiha <paul.chiha@greyinnovation.com>
-Cc: linux-serial@vger.kernel.org
+To: alan@linux.intel.com
+Cc: linux-serial@vger.kernel.org, Rong Wang <Rong.Wang@csr.com>, Bin Shi <Bin.Shi@csr.com>, Linus Walleij <linus.walleij@linaro.org>, workgroup.linux@csr.com, Barry Song <Baohua.Song@csr.com>, linux-arm-kernel@lists.infradead.org
 
-Hi Paul,
-
-On Mon, Oct 17, 2011 at 10:18 AM, Paul Chiha
-<paul.chiha@greyinnovation.com> wrote:
-> Hi,
+2011/10/14 Barry Song <Barry.Song@csr.com>:
+> From: Rong Wang <Rong.Wang@csr.com>
 >
-> I'm a newbie and would like some help with serial drivers in the kern=
-el.
+> SiRFprimaII is the latest generation application processor from CSR=E2=
+=80=99s
+> multi-function SoC product family.
+> The SoC support codes are in arch/arm/mach-prima2 from Linux mainline
+> 3.0.
 >
-> I've got an OMAP35x EVM (with UARTs 1/2-3 on board), and I would like=
- to
-> write
-> my own driver which uses UART 3. =A0I'm not sure of the best way to d=
-o
-> this.
+> There are three dedicated UARTs in system. This patch adds basic driv=
+er
+> support for them.
+>
+> It has used the newest pinmux subsystem from Linus Walleij.
 
-Most use cases tend to use omap-serial itself with a client driver,
-for any client peripheral over uart.
-
-> I don't know how to use the existing ttyO2 device and omap-serial dri=
-ver
-> for my
-> own purpose. =A0Basically I want to write a driver which sits between=
- the
-> application and the omap-serial driver, but only for UART 3. =A0Is th=
-ere a
-> simple
-> mechanism to do this, or do I need to replace omap_serial with my own=
-?
-
-I don't know why you want to do that rather use the existing uart drive=
-r,
-for any console usage you can pass console parameter from bootargs
-and works well, for any use case from user space application can open
-UART3(ttyO2) configure it using termios ops and use it.
-
-How is your use case very different from these?
-
-If you have a device connected over UART and want to controlled
-then, you may consider intermediate layer as ldisc layer.
-ex: TI Bluetooth driver "drivers/misc/ti-st/st_core.c"
-
-
-> Also,
-> is there an existing driver that does something similar to what I wan=
-t
-> that I
-> can base my driver on?
-
-I dont see any such driver other omap-serial which supports omap-uarts,
-but AFAIK you cannot add stuffs in that driver for a particular use cas=
-e.
-
---
-Thanks,
-Govindraj.R
+Hi Alan, it means this patch doesn't compile until pinmux tree of
+Linus Walleij is merged into mainline.
+Now it is a linux next tree.
 
 >
-> Paul
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-seria=
-l" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at =A0http://vger.kernel.org/majordomo-info.html
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Rong Wang <Rong.Wang@csr.com>
+> Signed-off-by: Bin Shi <Bin.Shi@csr.com>
+> Signed-off-by: Barry Song <Baohua.Song@csr.com>
+> ---
+> =C2=A0-v2:
+> =C2=A0rename device name from ttyS to ttySiRF;
+> =C2=A0use dynamic device major and minor;
+> =C2=A0support non-Bxxx baudrate;
+> =C2=A0fix other minor issues Alan Cox required.
 >
+
+-barry
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
  in
