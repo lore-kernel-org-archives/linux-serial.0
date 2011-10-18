@@ -1,58 +1,96 @@
-From: Barry Song <21cnbao@gmail.com>
-Subject: Re: [PATCH v2] UART: add CSR SiRFprimaII SoC on-chip uart drivers
-Date: Tue, 18 Oct 2011 11:39:11 +0800
-Message-ID: <CAGsJ_4w6fGH+G9KapHXzCwMhz_NKfPdCxs7rF5hWKw2LGUpwWA@mail.gmail.com>
-References: <1318570799-3785-1-git-send-email-Barry.Song@csr.com>
+From: "Paul Chiha" <paul.chiha@greyinnovation.com>
+Subject: RE: OMAP2+:UART driver help
+Date: Tue, 18 Oct 2011 15:46:27 +1100
+Message-ID: <51A4F524D105AA4C93787F33E2C90E62EE5A5A@greysvr02.GreyInnovation.local>
+References: <51A4F524D105AA4C93787F33E2C90E62EE59C2@greysvr02.GreyInnovation.local> <CAAL8m4zbWxJk4X9N-=pX6fQLv+1zrE_949o3rwLNrd+sTtKraA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bw0-f46.google.com ([209.85.214.46]:57297 "EHLO
-	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752460Ab1JRDjc convert rfc822-to-8bit (ORCPT
+Received: from eth1683.vic.adsl.internode.on.net ([150.101.217.146]:16035 "EHLO
+	greyinnovation.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751494Ab1JREpY convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 17 Oct 2011 23:39:32 -0400
-Received: by bkbzt19 with SMTP id zt19so267831bkb.19
-        for <linux-serial@vger.kernel.org>; Mon, 17 Oct 2011 20:39:31 -0700 (PDT)
-In-Reply-To: <1318570799-3785-1-git-send-email-Barry.Song@csr.com>
+	Tue, 18 Oct 2011 00:45:24 -0400
+Content-class: urn:content-classes:message
+In-Reply-To: <CAAL8m4zbWxJk4X9N-=pX6fQLv+1zrE_949o3rwLNrd+sTtKraA@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: alan@linux.intel.com
-Cc: linux-serial@vger.kernel.org, Rong Wang <Rong.Wang@csr.com>, Bin Shi <Bin.Shi@csr.com>, Linus Walleij <linus.walleij@linaro.org>, workgroup.linux@csr.com, Barry Song <Baohua.Song@csr.com>, linux-arm-kernel@lists.infradead.org
+To: Govindraj <govindraj.ti@gmail.com>
+Cc: linux-serial@vger.kernel.org
 
-2011/10/14 Barry Song <Barry.Song@csr.com>:
-> From: Rong Wang <Rong.Wang@csr.com>
->
-> SiRFprimaII is the latest generation application processor from CSR=E2=
-=80=99s
-> multi-function SoC product family.
-> The SoC support codes are in arch/arm/mach-prima2 from Linux mainline
-> 3.0.
->
-> There are three dedicated UARTs in system. This patch adds basic driv=
-er
-> support for them.
->
-> It has used the newest pinmux subsystem from Linus Walleij.
+Govindraj,
 
-Hi Alan, it means this patch doesn't compile until pinmux tree of
-Linus Walleij is merged into mainline.
-Now it is a linux next tree.
+Thanks for your response.
 
->
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Signed-off-by: Rong Wang <Rong.Wang@csr.com>
-> Signed-off-by: Bin Shi <Bin.Shi@csr.com>
-> Signed-off-by: Barry Song <Baohua.Song@csr.com>
-> ---
-> =C2=A0-v2:
-> =C2=A0rename device name from ttyS to ttySiRF;
-> =C2=A0use dynamic device major and minor;
-> =C2=A0support non-Bxxx baudrate;
-> =C2=A0fix other minor issues Alan Cox required.
->
+On Monday, 17 October 2011 4:43 PM, Govindraj [mailto:govindraj.ti@gmai=
+l.com] wrote:
+>=20
+> Hi Paul,
+>=20
+> On Mon, Oct 17, 2011 at 10:18 AM, Paul Chiha <paul.chiha@greyinnovati=
+on.com>
+> wrote:
+> > Hi,
+> >
+> > I'm a newbie and would like some help with serial drivers in the ke=
+rnel.
+> >
+> > I've got an OMAP35x EVM (with UARTs 1/2-3 on board), and I would li=
+ke
+> > to write my own driver which uses UART 3. =A0I'm not sure of the be=
+st
+> > way to do this.
+>=20
+> Most use cases tend to use omap-serial itself with a client driver, f=
+or any
+> client peripheral over uart.
+>=20
+> > I don't know how to use the existing ttyO2 device and omap-serial
+> > driver for my own purpose. =A0Basically I want to write a driver wh=
+ich
+> > sits between the application and the omap-serial driver, but only f=
+or
+> > UART 3. =A0Is there a simple mechanism to do this, or do I need to
+> > replace omap_serial with my own?
+>=20
+> I don't know why you want to do that rather use the existing uart dri=
+ver, for
+> any console usage you can pass console parameter from bootargs and wo=
+rks well,
+> for any use case from user space application can open
+> UART3(ttyO2) configure it using termios ops and use it.
+>=20
+> How is your use case very different from these?
+>=20
 
--barry
+Because I need to be able to convert the given datastream, and send out=
+ packets at a precise periodic interval.  I could do it all in userspac=
+e, but I need to be able to guarantee timing.  Hence, a driver is recom=
+mended.
+
+> If you have a device connected over UART and want to controlled then,=
+ you may
+> consider intermediate layer as ldisc layer.
+> ex: TI Bluetooth driver "drivers/misc/ti-st/st_core.c"
+>=20
+
+Thanks, I'll have a look.
+
+>=20
+> > Also,
+> > is there an existing driver that does something similar to what I w=
+ant
+> > that I can base my driver on?
+>=20
+> I dont see any such driver other omap-serial which supports omap-uart=
+s, but
+> AFAIK you cannot add stuffs in that driver for a particular use case.
+>=20
+
+Yes I know.  I'll see if I can use the existing omap-serial driver.
+Thanks,
+Paul
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
  in
