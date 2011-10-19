@@ -1,64 +1,63 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH v2] TTY: serial_core: Fix crash if DCD drop during suspend
-Date: Tue, 18 Oct 2011 14:21:05 -0700
-Message-ID: <20111018212105.GA10426@kroah.com>
-References: <1318024753-15336-1-git-send-email-dianders@chromium.org>
- <1318379144-27187-1-git-send-email-dianders@chromium.org>
+From: Barry Song <21cnbao@gmail.com>
+Subject: Re: [PATCH v2] UART: add CSR SiRFprimaII SoC on-chip uart drivers
+Date: Wed, 19 Oct 2011 09:19:54 +0800
+Message-ID: <CAGsJ_4xJzL6dfSmmae8LH6kt2g1PmevgrFWgYLR3Tif8PD0bCQ@mail.gmail.com>
+References: <1318570799-3785-1-git-send-email-Barry.Song@csr.com>
+ <CAGsJ_4w6fGH+G9KapHXzCwMhz_NKfPdCxs7rF5hWKw2LGUpwWA@mail.gmail.com> <20111018181319.GA7015@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out5.smtp.messagingengine.com ([66.111.4.29]:34760 "EHLO
-	out5.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752902Ab1JRVXK (ORCPT
+Received: from mail-bw0-f46.google.com ([209.85.214.46]:54392 "EHLO
+	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751047Ab1JSBUP convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Oct 2011 17:23:10 -0400
-Content-Disposition: inline
-In-Reply-To: <1318379144-27187-1-git-send-email-dianders@chromium.org>
+	Tue, 18 Oct 2011 21:20:15 -0400
+Received: by bkbzt19 with SMTP id zt19so1439327bkb.19
+        for <linux-serial@vger.kernel.org>; Tue, 18 Oct 2011 18:20:14 -0700 (PDT)
+In-Reply-To: <20111018181319.GA7015@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Doug Anderson <dianders@chromium.org>
-Cc: Jiri Slaby <jirislaby@gmail.com>, Stephen Warren <swarren@nvidia.com>, Olof Johansson <olof@lixom.net>, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, Allen Martin <AMartin@nvidia.com>, Tom Warren <twarren@nvidia.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Greg KH <greg@kroah.com>, Linus Walleij <linus.walleij@linaro.org>, alan@linux.intel.com
+Cc: linux-serial@vger.kernel.org, Rong Wang <Rong.Wang@csr.com>, Bin Shi <Bin.Shi@csr.com>, workgroup.linux@csr.com, Barry Song <Baohua.Song@csr.com>, linux-arm-kernel@lists.infradead.org
 
-On Tue, Oct 11, 2011 at 05:25:44PM -0700, Doug Anderson wrote:
-> This crash was showing up 100% of the time on Tegra CPUs when an
-> agetty was running on the serial port and the console was not running
-> on the serial port.  The reason the Tegra saw it so reliably is that
-> the Tegra CPU internally ties DTR to DCD/DSR.  That means when we
-> dropped DTR during suspend we would get always get an immediate DCD
-> drop.
-> 
-> The specific order of operations that were running:
-> * uart_suspend_port() would be called to put the uart in suspend mode
-> * we'd drop DTR (ops->set_mctrl(uport, 0)).
-> * the DTR drop would be looped back in the CPU to be a DCD drop.
-> * the DCD drop would look to the serial driver as a hangup
-> * the hangup would call uart_shutdown()
-> * ... suspend / resume happens ...
-> * uart_resume_port() would be called and run the code in the
->   (port->flags & ASYNC_SUSPENDED) block, which would startup the port
->   (and enable tx again).
-> * Since the UART would be available for tx, we'd immediately get
->   an interrupt, eventually calling transmit_chars()
-> * The transmit_chars() function would crash.  The first crash would
->   be a dereference of a NULL tty member, but since the port has been
->   shutdown that was just a symptom.
-> 
-> I have proposed a patch that would fix the Tegra CPUs here (see
-> https://lkml.org/lkml/2011/10/11/444 - tty/serial: Prevent drop of DCD
-> on suspend for Tegra UARTs).  However, even with that fix it is still
-> possible for systems that have an externally visible DCD line to see a
-> crash if the DCD drops at just the right time during suspend: thus
-> this patch is still useful.
-> 
-> Signed-off-by: Doug Anderson <dianders@chromium.org>
-> Acked-by: Alan Cox <alan@linux.intel.com>
-> ---
-> v2: Updated change description and comments based on deeper digging.
+2011/10/19 Greg KH <greg@kroah.com>:
+> On Tue, Oct 18, 2011 at 11:39:11AM +0800, Barry Song wrote:
+>> 2011/10/14 Barry Song <Barry.Song@csr.com>:
+>> > From: Rong Wang <Rong.Wang@csr.com>
+>> >
+>> > SiRFprimaII is the latest generation application processor from CS=
+R=E2=80=99s
+>> > multi-function SoC product family.
+>> > The SoC support codes are in arch/arm/mach-prima2 from Linux mainl=
+ine
+>> > 3.0.
+>> >
+>> > There are three dedicated UARTs in system. This patch adds basic d=
+river
+>> > support for them.
+>> >
+>> > It has used the newest pinmux subsystem from Linus Walleij.
+>>
+>> Hi Alan, it means this patch doesn't compile until pinmux tree of
+>> Linus Walleij is merged into mainline.
+>> Now it is a linux next tree.
+>
+> So should it go through the pinmux tree? =C2=A0Or do you want to wait=
+ for the
+> 3.3 kernel release to get this merged?
 
-This patch doesn't apply at all to the linux-next tree, can you redo it
-so that I know it is correct, and resend it?  (remember to keep Alan's
-Ack on it.)
+i think we can go ahead through Linux W's pinmux tree. Linus, would
+you like to take care once Alan ack this.
 
-thanks,
+>
+> thanks,
+>
+> greg k-h
 
-greg k-h
+-barry
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
