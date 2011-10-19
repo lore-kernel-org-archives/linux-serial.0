@@ -1,83 +1,53 @@
-From: "Mohammed, Afzal" <afzal@ti.com>
-Subject: RE: [PATCH v7 21/21] OMAP2+: UART: Do not gate uart clocks if used
- for debug_prints
-Date: Wed, 19 Oct 2011 19:50:06 +0530
-Message-ID: <B85A65D85D7EB246BE421B3FB0FBB5930328693855@dbde02.ent.ti.com>
-References: <1318952141-10697-1-git-send-email-govindraj.raja@ti.com>
- <1318952141-10697-2-git-send-email-govindraj.raja@ti.com>
- <B85A65D85D7EB246BE421B3FB0FBB593032869342E@dbde02.ent.ti.com>
- <CAAL8m4wKu8w2iTBXmtekD09RaD200qFAG6jH=RgdmjJ2uuX8cA@mail.gmail.com>
+From: Greg KH <gregkh@suse.de>
+Subject: Re: patch "tty/serial: atmel_serial: auto-enumerate ports" added to
+ tty tree
+Date: Wed, 19 Oct 2011 08:35:44 -0700
+Message-ID: <20111019153544.GB2289@suse.de>
+References: <1318981651741@kroah.org>
+ <4E9E9AF4.1050105@atmel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <CAAL8m4wKu8w2iTBXmtekD09RaD200qFAG6jH=RgdmjJ2uuX8cA@mail.gmail.com>
-Content-Language: en-US
-Sender: linux-omap-owner@vger.kernel.org
-To: Govindraj <govindraj.ti@gmail.com>
-Cc: "R, Govindraj" <govindraj.raja@ti.com>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "Hilman, Kevin" <khilman@ti.com>, Tony Lindgren <tony@atomide.com>, "Nayak, Rajendra" <rnayak@ti.com>, "Basak, Partha" <p-basak2@ti.com>, "Shilimkar, Santosh" <santosh.shilimkar@ti.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Sripathy, Vishwanath" <vishwanath.bs@ti.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from cantor2.suse.de ([195.135.220.15]:44603 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751782Ab1JSPgs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 19 Oct 2011 11:36:48 -0400
+Content-Disposition: inline
+In-Reply-To: <4E9E9AF4.1050105@atmel.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: grant.likely@secretlab.ca, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org
 
-Hi Govindraj,
+On Wed, Oct 19, 2011 at 11:40:04AM +0200, Nicolas Ferre wrote:
+> On 10/19/2011 01:47 AM, gregkh@suse.de :
+> > 
+> > This is a note to let you know that I've just added the patch titled
+> > 
+> >     tty/serial: atmel_serial: auto-enumerate ports
+> > 
+> > to my tty git tree which can be found at
+> >     git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
+> > in the tty-next branch.
+> > 
+> > The patch will show up in the next release of the linux-next tree
+> > (usually sometime within the next 24 hours during the week.)
+> > 
+> > The patch will also will be merged in the next major kernel release
+> > during the merge window.
+> > 
+> > If you have any questions about this process, please let me know.
+> 
+> Hi Greg,
+> 
+> Thanks for taking this series into your tree.
+> 
+> Can you please consider folding or adding the patch that I have just sent.
+> It corrects this auto-enumerate implementation and its name is:
+> "tty/serial: atmel_serial: bootconsole removed from auto-enumerates"
 
-On Wed, Oct 19, 2011 at 18:22:58, Govindraj wrote:
-> On Wed, Oct 19, 2011 at 11:05 AM, Mohammed, Afzal <afzal@ti.com> wrot=
-e:
-> > Hi Govindraj,
-> >
-> > On Tue, Oct 18, 2011 at 21:05:41, R, Govindraj wrote:
-> >> If OMAP UART is used as console uart and debug is enabled,
-> >> avoid gating of uart clocks to print all debug prints.
-> > :
-> > :
-> >> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 console_uart_id =3D ua=
-rt->num;
-> >>
-> >> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 if (cmdline_find_option(=
-"debug")) {
-> >> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 uart_deb=
-ug =3D true;
-> >
-> > Shouldn't "loglevel" also be checked?
-> >
->=20
-> Might not be necessary,
->=20
-> loglevel only sets the option in console driver how a printk should b=
-e handled
-> from vprintk so any printk should be to sent to console or to syslogd=
- action
-> where it will be buffered to a file(var/log/messages).
->=20
-> Any print's with any log level should be handled and printed to conso=
-le.
->=20
-> consider below path below path
->=20
-> uart->ops
->  -> runtime_get_sync
->       -> omap_device_enable
->           -> clock_enable
->=20
-> All the prints in given path are dev_dbgs for which we need debug to =
-be set from
-> command line argument.
->=20
-> As stated in change log any dev_dbg prints from these path can be
-> redirect to uart->ops
-> so even before our clock was enabled we got redirected back to uart c=
-ode.
->=20
-> So for dev_dbg prints from above path we need debug to be set from co=
-mmand-line
-> and we can prevent uart clock gating to this scenario.
+Now applied.
 
-Isn't passing bootargs "loglevel=3D10" same as "debug"? (init/main.c)
+thanks,
 
-Regards
-Afzal
---
-To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+greg k-h
