@@ -1,38 +1,46 @@
-From: "Mohammed, Afzal" <afzal@ti.com>
-Subject: RE: [PATCH v7 21/21] OMAP2+: UART: Do not gate uart clocks if used
- for	debug_prints
-Date: Wed, 19 Oct 2011 12:21:19 +0530
-Message-ID: <B85A65D85D7EB246BE421B3FB0FBB59303286934E1@dbde02.ent.ti.com>
-References: <1318952141-10697-1-git-send-email-govindraj.raja@ti.com>
- <1318952141-10697-2-git-send-email-govindraj.raja@ti.com>
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
+Subject: [PATCH] tty/serial: atmel_serial: bootconsole removed from
+	auto-enumerates
+Date: Wed, 19 Oct 2011 11:36:20 +0200
+Message-ID: <1319016980-10355-1-git-send-email-nicolas.ferre@atmel.com>
+References: <1318981651741@kroah.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-omap-owner@vger.kernel.org>
-Content-Language: en-US
-Sender: linux-omap-owner@vger.kernel.org
-To: "R, Govindraj" <govindraj.raja@ti.com>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
-Cc: "Hilman, Kevin" <khilman@ti.com>, Tony Lindgren <tony@atomide.com>, "Nayak, Rajendra" <rnayak@ti.com>, "Basak, Partha" <p-basak2@ti.com>, "Shilimkar, Santosh" <santosh.shilimkar@ti.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Sripathy, Vishwanath" <vishwanath.bs@ti.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1318981651741@kroah.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: linux-arm-kernel-bounces@lists.infradead.org
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-arm-kernel@lists.infradead.org, gregkh@suse.de
+Cc: grant.likely@secretlab.ca, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-kernel@vger.kernel.org, alan@lxorguk.ukuu.org.uk, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Govindraj,
+Auto-enumerate mechanism conflicts with bootconsoles: remove
+the usage counter for this type of consoles.
 
-On Wed, Oct 19, 2011 at 11:05:02, Mohammed, Afzal wrote:
-> Hi Govindraj,
-> 
-> On Tue, Oct 18, 2011 at 21:05:41, R, Govindraj wrote:
-> > If OMAP UART is used as console uart and debug is enabled,
-> > avoid gating of uart clocks to print all debug prints.
-> : 
-> :
-> >  			console_uart_id = uart->num;
-> >  
-> > +			if (cmdline_find_option("debug")) {
-> > +				uart_debug = true;
-> 
-> Shouldn't "loglevel" also be checked?
+Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+---
+ drivers/tty/serial/atmel_serial.c |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
 
-Or use console_loglevel instead ?
-
-Regards
-Afzal
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 30d8c77..9988c0c 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -1676,7 +1676,6 @@ static int __init atmel_console_init(void)
+ 		int id = pdata->num;
+ 		struct atmel_uart_port *port = &atmel_ports[id];
+ 
+-		set_bit(id, &atmel_ports_in_use);
+ 		port->backup_imr = 0;
+ 		port->uart.line = id;
+ 
+-- 
+1.7.5.4
