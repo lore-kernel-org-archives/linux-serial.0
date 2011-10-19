@@ -1,27 +1,79 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: [PATCH v2] UART: add CSR SiRFprimaII SoC on-chip uart drivers
-Date: Wed, 19 Oct 2011 13:13:26 +0100
-Message-ID: <20111019131326.7722222b@bob.linux.org.uk>
-References: <1318570799-3785-1-git-send-email-Barry.Song@csr.com>
-	<CAGsJ_4w6fGH+G9KapHXzCwMhz_NKfPdCxs7rF5hWKw2LGUpwWA@mail.gmail.com>
-	<20111018181319.GA7015@kroah.com>
-	<CAGsJ_4xJzL6dfSmmae8LH6kt2g1PmevgrFWgYLR3Tif8PD0bCQ@mail.gmail.com>
+From: Govindraj <govindraj.ti@gmail.com>
+Subject: Re: [PATCH v7 21/21] OMAP2+: UART: Do not gate uart clocks if used
+ for debug_prints
+Date: Wed, 19 Oct 2011 18:22:58 +0530
+Message-ID: <CAAL8m4wKu8w2iTBXmtekD09RaD200qFAG6jH=RgdmjJ2uuX8cA@mail.gmail.com>
+References: <1318952141-10697-1-git-send-email-govindraj.raja@ti.com>
+ <1318952141-10697-2-git-send-email-govindraj.raja@ti.com> <B85A65D85D7EB246BE421B3FB0FBB593032869342E@dbde02.ent.ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:48131 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754753Ab1JSMDR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 Oct 2011 08:03:17 -0400
-In-Reply-To: <CAGsJ_4xJzL6dfSmmae8LH6kt2g1PmevgrFWgYLR3Tif8PD0bCQ@mail.gmail.com>
+Received: from mail-bw0-f46.google.com ([209.85.214.46]:41192 "EHLO
+	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751347Ab1JSMxU convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 19 Oct 2011 08:53:20 -0400
+In-Reply-To: <B85A65D85D7EB246BE421B3FB0FBB593032869342E@dbde02.ent.ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Barry Song <21cnbao@gmail.com>
-Cc: Greg KH <greg@kroah.com>, Linus Walleij <linus.walleij@linaro.org>, linux-serial@vger.kernel.org, Rong Wang <Rong.Wang@csr.com>, Bin Shi <Bin.Shi@csr.com>, workgroup.linux@csr.com, Barry Song <Baohua.Song@csr.com>, linux-arm-kernel@lists.infradead.org
+To: "Mohammed, Afzal" <afzal@ti.com>
+Cc: "R, Govindraj" <govindraj.raja@ti.com>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "Hilman, Kevin" <khilman@ti.com>, Tony Lindgren <tony@atomide.com>, "Nayak, Rajendra" <rnayak@ti.com>, "Basak, Partha" <p-basak2@ti.com>, "Shilimkar, Santosh" <santosh.shilimkar@ti.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Sripathy, Vishwanath" <vishwanath.bs@ti.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
+On Wed, Oct 19, 2011 at 11:05 AM, Mohammed, Afzal <afzal@ti.com> wrote:
+> Hi Govindraj,
+>
+> On Tue, Oct 18, 2011 at 21:05:41, R, Govindraj wrote:
+>> If OMAP UART is used as console uart and debug is enabled,
+>> avoid gating of uart clocks to print all debug prints.
+> :
+> :
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 console_uart_id =3D uart=
+->num;
+>>
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 if (cmdline_find_option("d=
+ebug")) {
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 uart_debug=
+ =3D true;
+>
+> Shouldn't "loglevel" also be checked?
+>
 
-> i think we can go ahead through Linux W's pinmux tree. Linus, would
-> you like to take care once Alan ack this.
+Might not be necessary,
 
-Fine by me
+loglevel only sets the option in console driver how a printk should be =
+handled
+from vprintk so any printk should be to sent to console or to syslogd a=
+ction
+where it will be buffered to a file(var/log/messages).
+
+Any print's with any log level should be handled and printed to console=
+=2E
+
+consider below path below path
+
+uart->ops
+ -> runtime_get_sync
+      -> omap_device_enable
+          -> clock_enable
+
+All the prints in given path are dev_dbgs for which we need debug to be=
+ set from
+command line argument.
+
+As stated in change log any dev_dbg prints from these path can be
+redirect to uart->ops
+so even before our clock was enabled we got redirected back to uart cod=
+e.
+
+So for dev_dbg prints from above path we need debug to be set from comm=
+and-line
+and we can prevent uart clock gating to this scenario.
+
+--
+Govindraj.R
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
