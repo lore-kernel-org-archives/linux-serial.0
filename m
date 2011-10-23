@@ -1,71 +1,105 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH 02/14] ARM : SAMSUNG : Add RS485 support.
-Date: Sun, 23 Oct 2011 21:20:08 +0100
-Message-ID: <20111023202008.GB27802@n2100.arm.linux.org.uk>
-References: <1319255194-4799-1-git-send-email-paul.s.schilling@gmail.com>
-	<20111022134726.GD21374@n2100.arm.linux.org.uk>
-	<CAC=G6syuf-J4am1mHRg-5gzqy661yOT9pUK2vQyToLPtv4tvEg@mail.gmail.com>
+From: Dan Williams <dan.j.williams@intel.com>
+Subject: [PATCH] serial/8250_pci: add a quirk for the kt serial controller
+Date: Sun, 23 Oct 2011 15:27:16 -0700
+Message-ID: <20111023222711.22713.11434.stgit@localhost6.localdomain6>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <CAC=G6syuf-J4am1mHRg-5gzqy661yOT9pUK2vQyToLPtv4tvEg@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
-	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
-	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: linux-arm-kernel-bounces@lists.infradead.org
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Paul Schilling <paul.s.schilling@gmail.com>
-Cc: Nicolas Pitre <nicolas.pitre@linaro.org>, Kukjin Kim <kgene.kim@samsung.com>, linux-serial@vger.kernel.org, Boojin Kim <boojin.kim@samsung.com>, Greg Kroah-Hartman <gregkh@suse.de>, linux-kernel@vger.kernel.org, Ben Dooks <ben-linux@fluff.org>, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mga01.intel.com ([192.55.52.88]:54686 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752198Ab1JWW1R (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 23 Oct 2011 18:27:17 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: gregkh@suse.de
+Cc: Nhan H Mai <nhan.h.mai@intel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, alan@linux.intel.com
 
-On Sun, Oct 23, 2011 at 12:12:13PM -0500, Paul Schilling wrote:
-> On Sat, Oct 22, 2011 at 8:47 AM, Russell King - ARM Linux
-> <linux@arm.linux.org.uk> wrote:
-> >> + =A0 =A0 =A0 =A0 =A0 =A0 } else {
-> >> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 /* Set a short timer to togg=
-le RTS */
-> >> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 mod_timer(
-> >> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 &(ourport->rs485_tx_timer),
-> >> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 jiffies + usecs_to_jiffies(
-> >> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 ourport->char_time_usec
-> >> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 / 10));
-> >
-> > This could do with being better formatted. =A0Also, & doesn't need foll=
-owing
-> > parens.
-> =
+Workaround dropped notifications in the iir register.  Prevent reads
+coincident with new interrupt notifications by reading the iir at most
+once per interrupt.
 
-> when I ran checkpatch it complained that it exceeded 80 characters.  I
-> had trouble keeping this line
-> under 80 characters.
+Reported-by: Nhan H Mai <nhan.h.mai@intel.com>
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+---
+ drivers/tty/serial/8250.c     |    6 +++++-
+ drivers/tty/serial/8250_pci.c |   15 +++++++++++++++
+ include/linux/pci_ids.h       |    1 +
+ include/linux/serial_core.h   |    1 +
+ 4 files changed, 22 insertions(+), 1 deletions(-)
 
-		} else {
-			mod_timer(&our_port->rs485_tx_timer, jiffies +
-				  usecs_to_jiffies(ourport->char_time_usec
-						   / 10));
+diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
+index 7f50999..513e728 100644
+--- a/drivers/tty/serial/8250.c
++++ b/drivers/tty/serial/8250.c
+@@ -1652,7 +1652,11 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
+ 
+ 		up = list_entry(l, struct uart_8250_port, list);
+ 
+-		iir = serial_in(up, UART_IIR);
++		if (pass_counter && up->port.flags & UPF_IIR_ONCE)
++			iir = UART_IIR_NO_INT;
++		else
++			iir = serial_in(up, UART_IIR);
++
+ 		if (!(iir & UART_IIR_NO_INT)) {
+ 			serial8250_handle_port(up);
+ 
+diff --git a/drivers/tty/serial/8250_pci.c b/drivers/tty/serial/8250_pci.c
+index 3abeca2..4ad2fb4 100644
+--- a/drivers/tty/serial/8250_pci.c
++++ b/drivers/tty/serial/8250_pci.c
+@@ -1092,6 +1092,14 @@ static int skip_tx_en_setup(struct serial_private *priv,
+ 	return pci_default_setup(priv, board, port, idx);
+ }
+ 
++static int kt_serial_setup(struct serial_private *priv,
++			   const struct pciserial_board *board,
++			   struct uart_port *port, int idx)
++{
++	port->flags |= UPF_IIR_ONCE;
++	return skip_tx_en_setup(priv, board, port, idx);
++}
++
+ static int pci_eg20t_init(struct pci_dev *dev)
+ {
+ #if defined(CONFIG_SERIAL_PCH_UART) || defined(CONFIG_SERIAL_PCH_UART_MODULE)
+@@ -1211,6 +1219,13 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.subdevice	= PCI_ANY_ID,
+ 		.setup		= ce4100_serial_setup,
+ 	},
++	{
++		.vendor		= PCI_VENDOR_ID_INTEL,
++		.device		= PCI_DEVICE_ID_INTEL_PATSBURG_KT,
++		.subvendor	= PCI_ANY_ID,
++		.subdevice	= PCI_ANY_ID,
++		.setup		= kt_serial_setup,
++	},
+ 	/*
+ 	 * ITE
+ 	 */
+diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+index ae96bbe..ed80d75 100644
+--- a/include/linux/pci_ids.h
++++ b/include/linux/pci_ids.h
+@@ -2492,6 +2492,7 @@
+ #define PCI_DEVICE_ID_INTEL_IOAT	0x1a38
+ #define PCI_DEVICE_ID_INTEL_COUGARPOINT_LPC_MIN	0x1c41
+ #define PCI_DEVICE_ID_INTEL_COUGARPOINT_LPC_MAX	0x1c5f
++#define PCI_DEVICE_ID_INTEL_PATSBURG_KT	0x1d3d
+ #define PCI_DEVICE_ID_INTEL_PATSBURG_LPC_0	0x1d40
+ #define PCI_DEVICE_ID_INTEL_PATSBURG_LPC_1	0x1d41
+ #define PCI_DEVICE_ID_INTEL_PANTHERPOINT_XHCI	0x1e31
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index a5c3114..a66484b3 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -350,6 +350,7 @@ struct uart_port {
+ #define UPF_MAGIC_MULTIPLIER	((__force upf_t) (1 << 16))
+ #define UPF_CONS_FLOW		((__force upf_t) (1 << 23))
+ #define UPF_SHARE_IRQ		((__force upf_t) (1 << 24))
++#define UPF_IIR_ONCE		((__force upf_t) (1 << 25))
+ /* The exact UART type is known and should not be probed.  */
+ #define UPF_FIXED_TYPE		((__force upf_t) (1 << 27))
+ #define UPF_BOOT_AUTOCONF	((__force upf_t) (1 << 28))
 
-is probably a better way to format it.
-
-> >> - =A0 =A0 =A0 =A0 =A0 =A0 if (port->flags & UPF_CONS_FLOW)
-> >> + =A0 =A0 =A0 =A0 =A0 =A0 if (port->flags & UPF_CONS_FLOW) {
-> >> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 s3c24xx_serial_rx_enable(p=
-ort);
-> >> + =A0 =A0 =A0 =A0 =A0 =A0 }
-> >
-> > Why are you reformatting code?
-> =
-
-> I will remove the reformatting of the code.
-
-If you wish to reformat the code to clean up checkpatch warnings, then that
-needs to be a separate patch from any other changes.
