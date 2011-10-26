@@ -1,127 +1,64 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 75/79] tty/serial: atmel_serial: auto-enumerate ports
-Date: Wed, 26 Oct 2011 14:13:20 +0200
-Message-ID: <1319631204-23262-75-git-send-email-gregkh@suse.de>
+Subject: [PATCH 70/79] TTY: pty, release tty in all ptmx_open fail paths
+Date: Wed, 26 Oct 2011 14:13:15 +0200
+Message-ID: <1319631204-23262-70-git-send-email-gregkh@suse.de>
 References: <20111026114236.GA22180@kroah.com>
  <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:32880 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:32867 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932971Ab1JZMOE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Oct 2011 08:14:04 -0400
+	id S932960Ab1JZMOC (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 26 Oct 2011 08:14:02 -0400
 In-Reply-To: <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Jiri Slaby <jslaby@suse.cz>, stable <stable@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
+From: Jiri Slaby <jslaby@suse.cz>
 
-If no platform data provided to enumerate ports, use a bit field
-to choose port number and check if port is already initialized.
-Use this mechanism for both console and plain serial ports.
+Mistakenly, commit 64ba3dc3143d (tty: never hold BTM while getting
+tty_mutex) switched one fail path in ptmx_open to not free the newly
+allocated tty.
 
-Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
-Acked-by: Grant Likely <grant.likely@secretlab.ca>
+Fix that by jumping to the appropriate place. And rename the labels so
+that it's clear what is going on there.
+
+Introduced-in: v2.6.36-rc2
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Cc: stable <stable@vger.kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/serial/atmel_serial.c |   44 ++++++++++++++++++++++++++++++------
- 1 files changed, 36 insertions(+), 8 deletions(-)
+ drivers/tty/pty.c |   10 +++++-----
+ 1 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index bb72354..1074329 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -157,6 +157,7 @@ struct atmel_uart_port {
- };
+diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+index 7613f95..2feea63 100644
+--- a/drivers/tty/pty.c
++++ b/drivers/tty/pty.c
+@@ -686,15 +686,15 @@ static int ptmx_open(struct inode *inode, struct file *filp)
  
- static struct atmel_uart_port atmel_ports[ATMEL_MAX_UART];
-+static unsigned long atmel_ports_in_use;
+ 	retval = devpts_pty_new(inode, tty->link);
+ 	if (retval)
+-		goto out1;
++		goto err_release;
  
- #ifdef SUPPORT_SYSRQ
- static struct console atmel_console;
-@@ -1423,7 +1424,6 @@ static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
- 	port->flags		= UPF_BOOT_AUTOCONF;
- 	port->ops		= &atmel_pops;
- 	port->fifosize		= 1;
--	port->line		= pdata->num;
- 	port->dev		= &pdev->dev;
- 	port->mapbase	= pdev->resource[0].start;
- 	port->irq	= pdev->resource[1].start;
-@@ -1613,10 +1613,15 @@ static struct console atmel_console = {
- static int __init atmel_console_init(void)
- {
- 	if (atmel_default_console_device) {
--		add_preferred_console(ATMEL_DEVICENAME,
--				      atmel_default_console_device->id, NULL);
--		atmel_init_port(&atmel_ports[atmel_default_console_device->id],
--				atmel_default_console_device);
-+		int id = atmel_default_console_device->id;
-+		struct atmel_uart_port *port = &atmel_ports[id];
+ 	retval = ptm_driver->ops->open(tty, filp);
+ 	if (retval)
+-		goto out2;
+-out1:
++		goto err_release;
 +
-+		set_bit(id, &atmel_ports_in_use);
-+		port->backup_imr = 0;
-+		port->uart.line = id;
-+
-+		add_preferred_console(ATMEL_DEVICENAME, id, NULL);
-+		atmel_init_port(port, atmel_default_console_device);
- 		register_console(&atmel_console);
- 	}
- 
-@@ -1715,12 +1720,33 @@ static int __devinit atmel_serial_probe(struct platform_device *pdev)
- 	struct atmel_uart_port *port;
- 	struct atmel_uart_data *pdata = pdev->dev.platform_data;
- 	void *data;
--	int ret;
-+	int ret = -ENODEV;
- 
- 	BUILD_BUG_ON(ATMEL_SERIAL_RINGSIZE & (ATMEL_SERIAL_RINGSIZE - 1));
- 
--	port = &atmel_ports[pdata->num];
-+	if (pdata)
-+		ret = pdata->num;
-+
-+	if (ret < 0)
-+		/* port id not found in platform data:
-+		 * auto-enumerate it */
-+		ret = find_first_zero_bit(&atmel_ports_in_use,
-+				sizeof(atmel_ports_in_use));
-+
-+	if (ret > ATMEL_MAX_UART) {
-+		ret = -ENODEV;
-+		goto err;
-+	}
-+
-+	if (test_and_set_bit(ret, &atmel_ports_in_use)) {
-+		/* port already in use */
-+		ret = -EBUSY;
-+		goto err;
-+	}
-+
-+	port = &atmel_ports[ret];
- 	port->backup_imr = 0;
-+	port->uart.line = ret;
- 
- 	atmel_init_port(port, pdev);
- 
-@@ -1766,7 +1792,7 @@ err_alloc_ring:
- 		clk_put(port->clk);
- 		port->clk = NULL;
- 	}
--
-+err:
- 	return ret;
- }
- 
-@@ -1786,6 +1812,8 @@ static int __devexit atmel_serial_remove(struct platform_device *pdev)
- 
- 	/* "port" is allocated statically, so we shouldn't free it */
- 
-+	clear_bit(port->line, &atmel_ports_in_use);
-+
- 	clk_put(atmel_port->clk);
- 
- 	return ret;
+ 	tty_unlock();
+-	return retval;
+-out2:
++	return 0;
++err_release:
+ 	tty_unlock();
+ 	tty_release(inode, filp);
+ 	return retval;
 -- 
 1.7.7
 
