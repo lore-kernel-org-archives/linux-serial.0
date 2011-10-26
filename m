@@ -1,112 +1,96 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 34/79] TTY: use tty_wait_until_sent_from_close in other drivers
-Date: Wed, 26 Oct 2011 14:12:39 +0200
-Message-ID: <1319631204-23262-34-git-send-email-gregkh@suse.de>
+Subject: [PATCH 25/79] atmel_serial: RS485: receiving enabled when sending data
+Date: Wed, 26 Oct 2011 14:12:30 +0200
+Message-ID: <1319631204-23262-25-git-send-email-gregkh@suse.de>
 References: <20111026114236.GA22180@kroah.com>
  <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:60996 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:60975 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932872Ab1JZMNn (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Oct 2011 08:13:43 -0400
-Received: from relay2.suse.de (charybdis-ext.suse.de [195.135.221.2])
-	(using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx2.suse.de (Postfix) with ESMTP id 67AA78F71C
-	for <linux-serial@vger.kernel.org>; Wed, 26 Oct 2011 14:13:42 +0200 (CEST)
+	id S932872Ab1JZMNi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 26 Oct 2011 08:13:38 -0400
 In-Reply-To: <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Bernhard Roth <br@pwrnet.de>, Claudio Scordino <claudio@evidence.eu.com>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Jiri Slaby <jslaby@suse.cz>
+From: Bernhard Roth <br@pwrnet.de>
 
-Let's use the newly added helper to avoid stalls in drivers which are
-not yet ported to tty_port helpers.
+By default the atmel_serial driver in RS485 mode disables receiving data until
+all data in the send buffer has been sent. This flag allows to receive data
+even whilst sending data.
 
-Those which are broken (call tty_wait_until_sent with irqs disabled)
-are left untouched. They are in a deeper trouble than we are trying to
-solve here. This includes amiserial, 68328serial, 68360serial and
-crisv10.
-
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Bernhard Roth <br@pwrnet.de>
+Signed-off-by: Claudio Scordino <claudio@evidence.eu.com>
+Acked-by: Alan Cox <alan@linux.intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/isdn/i4l/isdn_tty.c      |    2 +-
- drivers/tty/hvc/hvc_console.c    |    2 +-
- drivers/tty/hvc/hvcs.c           |    2 +-
- drivers/tty/serial/serial_core.c |    3 ++-
- net/irda/ircomm/ircomm_tty.c     |    2 +-
- 5 files changed, 6 insertions(+), 5 deletions(-)
+ Documentation/serial/serial-rs485.txt |    3 +++
+ drivers/tty/serial/atmel_serial.c     |    9 ++++++---
+ include/linux/serial.h                |    1 +
+ 3 files changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/isdn/i4l/isdn_tty.c b/drivers/isdn/i4l/isdn_tty.c
-index d850427..e5546cb 100644
---- a/drivers/isdn/i4l/isdn_tty.c
-+++ b/drivers/isdn/i4l/isdn_tty.c
-@@ -1693,7 +1693,7 @@ isdn_tty_close(struct tty_struct *tty, struct file *filp)
- 	 * line status register.
- 	 */
- 	if (info->flags & ISDN_ASYNC_INITIALIZED) {
--		tty_wait_until_sent(tty, 3000);	/* 30 seconds timeout */
-+		tty_wait_until_sent_from_close(tty, 3000);	/* 30 seconds timeout */
- 		/*
- 		 * Before we drop DTR, make sure the UART transmitter
- 		 * has completely drained; this is especially
-diff --git a/drivers/tty/hvc/hvc_console.c b/drivers/tty/hvc/hvc_console.c
-index e1aaf4f..b6b2d18 100644
---- a/drivers/tty/hvc/hvc_console.c
-+++ b/drivers/tty/hvc/hvc_console.c
-@@ -388,7 +388,7 @@ static void hvc_close(struct tty_struct *tty, struct file * filp)
- 		 * there is no buffered data otherwise sleeps on a wait queue
- 		 * waking periodically to check chars_in_buffer().
- 		 */
--		tty_wait_until_sent(tty, HVC_CLOSE_WAIT);
-+		tty_wait_until_sent_from_close(tty, HVC_CLOSE_WAIT);
+diff --git a/Documentation/serial/serial-rs485.txt b/Documentation/serial/serial-rs485.txt
+index a493238..c8878f8 100644
+--- a/Documentation/serial/serial-rs485.txt
++++ b/Documentation/serial/serial-rs485.txt
+@@ -104,6 +104,9 @@
+ 	rs485conf.flags |= SER_RS485_RTS_AFTER_SEND;
+ 	rs485conf.delay_rts_after_send = ...;
+ 
++	/* Set this flag if you want to receive data even whilst sending data */
++	rs485conf.flags |= SER_RS485_RX_DURING_TX;
++
+ 	if (ioctl (fd, TIOCSRS485, &rs485conf) < 0) {
+ 		/* Error handling. See errno. */
+ 	}
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index af9b781..c7232a9 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -339,7 +339,8 @@ static void atmel_stop_tx(struct uart_port *port)
+ 	/* Disable interrupts */
+ 	UART_PUT_IDR(port, atmel_port->tx_done_mask);
+ 
+-	if (atmel_port->rs485.flags & SER_RS485_ENABLED)
++	if ((atmel_port->rs485.flags & SER_RS485_ENABLED) &&
++	    !(atmel_port->rs485.flags & SER_RS485_RX_DURING_TX))
+ 		atmel_start_rx(port);
+ }
+ 
+@@ -356,7 +357,8 @@ static void atmel_start_tx(struct uart_port *port)
+ 			   really need this.*/
+ 			return;
+ 
+-		if (atmel_port->rs485.flags & SER_RS485_ENABLED)
++		if ((atmel_port->rs485.flags & SER_RS485_ENABLED) &&
++		    !(atmel_port->rs485.flags & SER_RS485_RX_DURING_TX))
+ 			atmel_stop_rx(port);
+ 
+ 		/* re-enable PDC transmit */
+@@ -680,7 +682,8 @@ static void atmel_tx_dma(struct uart_port *port)
+ 		/* Enable interrupts */
+ 		UART_PUT_IER(port, atmel_port->tx_done_mask);
  	} else {
- 		if (hp->count < 0)
- 			printk(KERN_ERR "hvc_close %X: oops, count is %d\n",
-diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
-index 4c8b665..e523773 100644
---- a/drivers/tty/hvc/hvcs.c
-+++ b/drivers/tty/hvc/hvcs.c
-@@ -1237,7 +1237,7 @@ static void hvcs_close(struct tty_struct *tty, struct file *filp)
- 		irq = hvcsd->vdev->irq;
- 		spin_unlock_irqrestore(&hvcsd->lock, flags);
- 
--		tty_wait_until_sent(tty, HVCS_CLOSE_WAIT);
-+		tty_wait_until_sent_from_close(tty, HVCS_CLOSE_WAIT);
- 
- 		/*
- 		 * This line is important because it tells hvcs_open that this
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 0464360..1d3780c 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1292,7 +1292,8 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
- 	spin_unlock_irqrestore(&port->lock, flags);
- 
- 	if (port->closing_wait != ASYNC_CLOSING_WAIT_NONE)
--		tty_wait_until_sent(tty, msecs_to_jiffies(port->closing_wait));
-+		tty_wait_until_sent_from_close(tty,
-+				msecs_to_jiffies(port->closing_wait));
- 
- 	/*
- 	 * At this point, we stop accepting input.  To do this, we
-diff --git a/net/irda/ircomm/ircomm_tty.c b/net/irda/ircomm/ircomm_tty.c
-index b3cc8b3..253695d 100644
---- a/net/irda/ircomm/ircomm_tty.c
-+++ b/net/irda/ircomm/ircomm_tty.c
-@@ -551,7 +551,7 @@ static void ircomm_tty_close(struct tty_struct *tty, struct file *filp)
- 	 */
- 	tty->closing = 1;
- 	if (self->closing_wait != ASYNC_CLOSING_WAIT_NONE)
--		tty_wait_until_sent(tty, self->closing_wait);
-+		tty_wait_until_sent_from_close(tty, self->closing_wait);
- 
- 	ircomm_tty_shutdown(self);
- 
+-		if (atmel_port->rs485.flags & SER_RS485_ENABLED) {
++		if ((atmel_port->rs485.flags & SER_RS485_ENABLED) &&
++		    !(atmel_port->rs485.flags & SER_RS485_RX_DURING_TX)) {
+ 			/* DMA done, stop TX, start RX for RS485 */
+ 			atmel_start_rx(port);
+ 		}
+diff --git a/include/linux/serial.h b/include/linux/serial.h
+index ef91406..97ff8e2 100644
+--- a/include/linux/serial.h
++++ b/include/linux/serial.h
+@@ -211,6 +211,7 @@ struct serial_rs485 {
+ #define SER_RS485_RTS_ON_SEND		(1 << 1)
+ #define SER_RS485_RTS_AFTER_SEND	(1 << 2)
+ #define SER_RS485_RTS_BEFORE_SEND	(1 << 3)
++#define SER_RS485_RX_DURING_TX		(1 << 4)
+ 	__u32	delay_rts_before_send;	/* Milliseconds */
+ 	__u32	delay_rts_after_send;	/* Milliseconds */
+ 	__u32	padding[5];		/* Memory is cheap, new structs
 -- 
 1.7.7
 
