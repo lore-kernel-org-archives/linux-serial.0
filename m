@@ -1,106 +1,71 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 46/79] TTY: serial: Move mutex_unlock in uart_close function
-Date: Wed, 26 Oct 2011 14:12:51 +0200
-Message-ID: <1319631204-23262-46-git-send-email-gregkh@suse.de>
+Subject: [PATCH 63/79] hvc_console: display printk messages on console.
+Date: Wed, 26 Oct 2011 14:13:08 +0200
+Message-ID: <1319631204-23262-63-git-send-email-gregkh@suse.de>
 References: <20111026114236.GA22180@kroah.com>
  <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:32796 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:32843 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932899Ab1JZMNu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Oct 2011 08:13:50 -0400
+	id S932917Ab1JZMN5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 26 Oct 2011 08:13:57 -0400
 In-Reply-To: <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>, Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Miche Baker-Harvey <miche@google.com>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
+From: Miche Baker-Harvey <miche@google.com>
 
-When mutex_lock is not called, mutex_unlock is sometimes called.
-This deletes unnecessary goto and makes modifications so that
-mutex_unlock is called.
+printk only works for "registered consoles."  Currently, the hvc_console
+code calls register_console() from hvc_instantiate(), but that's only
+used in the early console case.  In hvc_alloc(), register_console() was
+not called.
 
-[    8.304000] WARNING: at kernel/muex-debug.c:78
-[    8.304000] Modules linked in:
-[    8.304000]
-[    8.304000] Pid : 114, Comm:                 modprobe
-[    8.304000] CPU : 0                  Not tainted  (3.1.0-rc3-next-20110826 #810)
-[    8.304000]
-[    8.304000] PC is at debug_mutex_unlock+0xf4/0x120
-[    8.304000] PR is at debug_mutex_unlock+0xe6/0x120
-[    8.304000] PC  : 80051114 SP  : 9f02de58 SR  : 400081f1 TEA : 295cf4f2
-[    8.304000] R0  : 00000001 R1  : 00000000 R2  : 0000000f R3  : 00000000
-[    8.304000] R4  : 9fc63158 R5  : 00000000 R6  : 00000001 R7  : 9fe1de78
-[    8.304000] R8  : 805c6b2c R9  : 80003920 R10 : 00000000 R11 : 805c6b2c
-[    8.304000] R12 : 80425ca0 R13 : 00000000 R14 : 9f02de58
-[    8.304000] MACH: 00000003 MACL: 00000000 GBR : 296e1678 PR  : 80051106
-[    8.304000]
-[    8.304000] Call trace:
-[    8.304000]  [<804236c6>] __mutex_unlock_slowpath+0x46/0x120
-[    8.304000]  [<804237aa>] mutex_unlock+0xa/0x20
-[    8.304000]  [<80240ed6>] uart_close+0x76/0x2c0
-[    8.304000]  [<80223b98>] tty_release+0xf8/0x5c0
-[    8.304000]  [<800a93a6>] lookup_object+0x26/0xa0
-[    8.304000]  [<80063f6a>] call_rcu+0x8a/0xc0
-[    8.304000]  [<800a944a>] put_object+0x2a/0x60
-[    8.304000]  [<80003920>] arch_local_irq_restore+0x0/0x40
-[    8.304000]  [<800af320>] fput+0x180/0x2c0
-[    8.304000]  [<800af248>] fput+0xa8/0x2c0
-[    8.304000]  [<800ab1a8>] filp_close+0x48/0xc0
-[    8.304000]  [<800ab29a>] sys_close+0x7a/0x100
-[    8.304000]  [<8000825a>] syscall_call+0xc/0x10
-[    8.304000]  [<800ab220>] sys_close+0x0/0x100
-[    8.304000]
-[    8.304000] Code:
-[    8.304000]   8005110e:  mov.l     @r1, r1
-[    8.304000]   80051110:  tst       r1, r1
-[    8.304000]   80051112:  bf        80051116
-[    8.304000] ->80051114:  trapa     #62
-[    8.304000]   80051116:  mov.l     @r8, r1
-[    8.304000]   80051118:  tst       r1, r1
-[    8.304000]   8005111a:  bt.s      8005104c
-[    8.304000]   8005111c:  mov       #0, r1
-[    8.304000]   8005111e:  bra       80051056
-[    8.304000]
-[    8.304000] ---[ end trace e8f8e04c313f429b ]---
+Add a call to register_console() in hvc_alloc(), set up the index in
+the hvc_console, and set up the necessary vtermnos[] and cons_op[]
+entries so that printk functions work.
 
-Signed-off-by: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Signed-off-by: Miche Baker-Harvey <miche@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/serial/serial_core.c |    5 ++---
- 1 files changed, 2 insertions(+), 3 deletions(-)
+ drivers/tty/hvc/hvc_console.c |    7 ++++++-
+ 1 files changed, 6 insertions(+), 1 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 1d3780c..a32dc43 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1257,7 +1257,7 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
+diff --git a/drivers/tty/hvc/hvc_console.c b/drivers/tty/hvc/hvc_console.c
+index b6b2d18..7430bc3 100644
+--- a/drivers/tty/hvc/hvc_console.c
++++ b/drivers/tty/hvc/hvc_console.c
+@@ -852,7 +852,7 @@ struct hvc_struct *hvc_alloc(uint32_t vtermno, int data,
+ 	 * find index to use:
+ 	 * see if this vterm id matches one registered for console.
+ 	 */
+-	for (i=0; i < MAX_NR_HVC_CONSOLES; i++)
++	for (i = 0; i < MAX_NR_HVC_CONSOLES; i++)
+ 		if (vtermnos[i] == hp->vtermno &&
+ 		    cons_ops[i] == hp->ops)
+ 			break;
+@@ -862,9 +862,13 @@ struct hvc_struct *hvc_alloc(uint32_t vtermno, int data,
+ 		i = ++last_hvc;
  
- 	if (tty_hung_up_p(filp)) {
- 		spin_unlock_irqrestore(&port->lock, flags);
--		goto done;
-+		return;
- 	}
+ 	hp->index = i;
++	hvc_console.index = i;
++	vtermnos[i] = vtermno;
++	cons_ops[i] = ops;
  
- 	if ((tty->count == 1) && (port->count != 1)) {
-@@ -1279,7 +1279,7 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
- 	}
- 	if (port->count) {
- 		spin_unlock_irqrestore(&port->lock, flags);
--		goto done;
-+		return;
- 	}
+ 	list_add_tail(&(hp->next), &hvc_structs);
+ 	spin_unlock(&hvc_structs_lock);
++	register_console(&hvc_console);
  
- 	/*
-@@ -1342,7 +1342,6 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
- 	wake_up_interruptible(&port->open_wait);
- 	wake_up_interruptible(&port->close_wait);
- 
--done:
- 	mutex_unlock(&port->mutex);
+ 	return hp;
  }
+@@ -875,6 +879,7 @@ int hvc_remove(struct hvc_struct *hp)
+ 	unsigned long flags;
+ 	struct tty_struct *tty;
+ 
++	unregister_console(&hvc_console);
+ 	spin_lock_irqsave(&hp->lock, flags);
+ 	tty = tty_kref_get(hp->tty);
  
 -- 
 1.7.7
