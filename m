@@ -1,182 +1,68 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 50/79] serial: Support the EFR-register of XR1715x uarts.
-Date: Wed, 26 Oct 2011 14:12:55 +0200
-Message-ID: <1319631204-23262-50-git-send-email-gregkh@suse.de>
+Subject: [PATCH 65/79] parport_pc: release IO region properly if unsupported ITE887x card is found
+Date: Wed, 26 Oct 2011 14:13:10 +0200
+Message-ID: <1319631204-23262-65-git-send-email-gregkh@suse.de>
 References: <20111026114236.GA22180@kroah.com>
  <1319631204-23262-1-git-send-email-gregkh@suse.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:32820 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:32852 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932925Ab1JZMNx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Oct 2011 08:13:53 -0400
+	id S932919Ab1JZMN6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 26 Oct 2011 08:13:58 -0400
 In-Reply-To: <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: =?UTF-8?q?S=C3=B8ren=20Holm?= <sgh@sgh.dk>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Jiri Kosina <jkosina@suse.cz>, Bjorn Helgaas <bjorn.helgaas@hp.com>, Alan Cox <alan@linux.intel.com>, Joe Krahn <krahn@niehs.nih.gov>, Andrew Morton <akpm@google.com>, Greg Kroah-Hartman <gregkh@suse.de>
 
-=46rom: S=C3=B8ren Holm <sgh@sgh.dk>
+From: Jiri Kosina <jkosina@suse.cz>
 
-The EFR (Enhenced-Features-Register) is located at a different offset
-than the other devices supporting UART_CAP_EFR. This change add a speci=
-al
-setup quick to set UPF_EXAR_EFR on the port. UPF_EXAR_EFR is then used =
-to
-the port type to PORT_XR17D15X since it is for sure a XR17D15X uart.
+sio_ite_8872_probe() bails out if it detects no-parallel (1S, 2S) or
+unknown card.
 
-Signed-off-by: S=C3=B8ren Holm <sgh@sgh.dk>
-Acked-by: Alan Cox <alan@linux.intel.com>
+It doesn't call release_region() on the previously allocated resource
+though.  This causes
+
+  (a) leak of the resource
+  (b) kernel oops when parport module is removed and /proc/ioports is read. This
+      is because the string that has been associated to the IO port region
+      is a static char array inside the already removed module.
+
+Let's call release_region() properly before baling out.
+
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Acked-by: Niels de Vos <ndevos@redhat.com>
+Cc: Bjorn Helgaas <bjorn.helgaas@hp.com>
+Cc: Alan Cox <alan@linux.intel.com>
+Cc: Joe Krahn <krahn@niehs.nih.gov>
+Signed-off-by: Andrew Morton <akpm@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/serial/8250.c     |   20 +++++++++++++++++++-
- drivers/tty/serial/8250_pci.c |   33 +++++++++++++++++++++++++++++++++
- include/linux/serial_core.h   |    4 +++-
- include/linux/serial_reg.h    |    1 +
- 4 files changed, 56 insertions(+), 2 deletions(-)
+ drivers/parport/parport_pc.c |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
-index 435ce14..82ca71a 100644
---- a/drivers/tty/serial/8250.c
-+++ b/drivers/tty/serial/8250.c
-@@ -309,6 +309,13 @@ static const struct serial8250_config uart_config[=
-] =3D {
- 				  UART_FCR_T_TRIG_01,
- 		.flags		=3D UART_CAP_FIFO | UART_CAP_RTOIE,
- 	},
-+	[PORT_XR17D15X] =3D {
-+		.name		=3D "XR17D15X",
-+		.fifo_size	=3D 64,
-+		.tx_loadsz	=3D 64,
-+		.fcr		=3D UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
-+		.flags		=3D UART_CAP_FIFO | UART_CAP_AFE | UART_CAP_EFR,
-+	},
- };
-=20
- #if defined(CONFIG_MIPS_ALCHEMY)
-@@ -1075,6 +1082,14 @@ static void autoconfig_16550a(struct uart_8250_p=
-ort *up)
- 	serial_outp(up, UART_IER, iersave);
-=20
- 	/*
-+	 * Exar uarts have EFR in a weird location
-+	 */
-+	if (up->port.flags & UPF_EXAR_EFR) {
-+		up->port.type =3D PORT_XR17D15X;
-+		up->capabilities |=3D UART_CAP_AFE | UART_CAP_EFR;
-+	}
-+
-+	/*
- 	 * We distinguish between 16550A and U6 16550A by counting
- 	 * how many bytes are in the FIFO.
- 	 */
-@@ -2417,7 +2432,10 @@ serial8250_do_set_termios(struct uart_port *port=
-, struct ktermios *termios,
- 			efr |=3D UART_EFR_CTS;
-=20
- 		serial_outp(up, UART_LCR, UART_LCR_CONF_MODE_B);
--		serial_outp(up, UART_EFR, efr);
-+		if (up->port.flags & UPF_EXAR_EFR)
-+			serial_outp(up, UART_XR_EFR, efr);
-+		else
-+			serial_outp(up, UART_EFR, efr);
+diff --git a/drivers/parport/parport_pc.c b/drivers/parport/parport_pc.c
+index d1cdb94..d0b597b 100644
+--- a/drivers/parport/parport_pc.c
++++ b/drivers/parport/parport_pc.c
+@@ -2595,14 +2595,17 @@ static int __devinit sio_ite_8872_probe(struct pci_dev *pdev, int autoirq,
+ 		break;
+ 	case 0x6:
+ 		printk(KERN_INFO "parport_pc: ITE8873 found (1S)\n");
++		release_region(inta_addr[i], 32);
+ 		return 0;
+ 	case 0x8:
+ 		printk(KERN_INFO "parport_pc: ITE8874 found (2S)\n");
++		release_region(inta_addr[i], 32);
+ 		return 0;
+ 	default:
+ 		printk(KERN_INFO "parport_pc: unknown ITE887x\n");
+ 		printk(KERN_INFO "parport_pc: please mail 'lspci -nvv' "
+ 			"output to Rich.Liu@ite.com.tw\n");
++		release_region(inta_addr[i], 32);
+ 		return 0;
  	}
-=20
- #ifdef CONFIG_ARCH_OMAP
-diff --git a/drivers/tty/serial/8250_pci.c b/drivers/tty/serial/8250_pc=
-i.c
-index 6b887d9..a79caba 100644
---- a/drivers/tty/serial/8250_pci.c
-+++ b/drivers/tty/serial/8250_pci.c
-@@ -1101,6 +1101,15 @@ static int pci_eg20t_init(struct pci_dev *dev)
- #endif
- }
-=20
-+static int
-+pci_xr17c154_setup(struct serial_private *priv,
-+		  const struct pciserial_board *board,
-+		  struct uart_port *port, int idx)
-+{
-+	port->flags |=3D UPF_EXAR_EFR;
-+	return pci_default_setup(priv, board, port, idx);
-+}
-+
- /* This should be in linux/pci_ids.h */
- #define PCI_VENDOR_ID_SBSMODULARIO	0x124B
- #define PCI_SUBVENDOR_ID_SBSMODULARIO	0x124B
-@@ -1506,6 +1515,30 @@ static struct pci_serial_quirk pci_serial_quirks=
-[] __refdata =3D {
- 		.setup		=3D pci_timedia_setup,
- 	},
- 	/*
-+	 * Exar cards
-+	 */
-+	{
-+		.vendor =3D PCI_VENDOR_ID_EXAR,
-+		.device =3D PCI_DEVICE_ID_EXAR_XR17C152,
-+		.subvendor	=3D PCI_ANY_ID,
-+		.subdevice	=3D PCI_ANY_ID,
-+		.setup		=3D pci_xr17c154_setup,
-+	},
-+	{
-+		.vendor =3D PCI_VENDOR_ID_EXAR,
-+		.device =3D PCI_DEVICE_ID_EXAR_XR17C154,
-+		.subvendor	=3D PCI_ANY_ID,
-+		.subdevice	=3D PCI_ANY_ID,
-+		.setup		=3D pci_xr17c154_setup,
-+	},
-+	{
-+		.vendor =3D PCI_VENDOR_ID_EXAR,
-+		.device =3D PCI_DEVICE_ID_EXAR_XR17C158,
-+		.subvendor	=3D PCI_ANY_ID,
-+		.subdevice	=3D PCI_ANY_ID,
-+		.setup		=3D pci_xr17c154_setup,
-+	},
-+	/*
- 	 * Xircom cards
- 	 */
- 	{
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 493773e..eadf33d 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -46,7 +46,8 @@
- #define PORT_AR7	18	/* Texas Instruments AR7 internal UART */
- #define PORT_U6_16550A	19	/* ST-Ericsson U6xxx internal UART */
- #define PORT_TEGRA	20	/* NVIDIA Tegra internal UART */
--#define PORT_MAX_8250	20	/* max port ID */
-+#define PORT_XR17D15X	21	/* Exar XR17D15x UART */
-+#define PORT_MAX_8250	21	/* max port ID */
-=20
- /*
-  * ARM specific type numbers.  These are not currently guaranteed
-@@ -349,6 +350,7 @@ struct uart_port {
- #define UPF_MAGIC_MULTIPLIER	((__force upf_t) (1 << 16))
- #define UPF_CONS_FLOW		((__force upf_t) (1 << 23))
- #define UPF_SHARE_IRQ		((__force upf_t) (1 << 24))
-+#define UPF_EXAR_EFR		((__force upf_t) (1 << 25))
- /* The exact UART type is known and should not be probed.  */
- #define UPF_FIXED_TYPE		((__force upf_t) (1 << 27))
- #define UPF_BOOT_AUTOCONF	((__force upf_t) (1 << 28))
-diff --git a/include/linux/serial_reg.h b/include/linux/serial_reg.h
-index c75bda3..8ce70d7 100644
---- a/include/linux/serial_reg.h
-+++ b/include/linux/serial_reg.h
-@@ -152,6 +152,7 @@
-  * LCR=3D0xBF (or DLAB=3D1 for 16C660)
-  */
- #define UART_EFR	2	/* I/O: Extended Features Register */
-+#define UART_XR_EFR	9	/* I/O: Extended Features Register (XR17D15x) */
- #define UART_EFR_CTS		0x80 /* CTS flow control */
- #define UART_EFR_RTS		0x40 /* RTS flow control */
- #define UART_EFR_SCD		0x20 /* Special character detect */
---=20
+ 
+-- 
 1.7.7
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
