@@ -1,14 +1,14 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 16/79] tty: serial8250: allow platforms to override irq handler
-Date: Wed, 26 Oct 2011 14:12:21 +0200
-Message-ID: <1319631204-23262-16-git-send-email-gregkh@suse.de>
+Subject: [PATCH 18/79] mips: msp71xx/serial: add workaround for DW UART
+Date: Wed, 26 Oct 2011 14:12:23 +0200
+Message-ID: <1319631204-23262-18-git-send-email-gregkh@suse.de>
 References: <20111026114236.GA22180@kroah.com>
  <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:60940 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:60951 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932798Ab1JZMNe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Oct 2011 08:13:34 -0400
+	id S932861Ab1JZMNf (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 26 Oct 2011 08:13:35 -0400
 In-Reply-To: <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -17,135 +17,123 @@ Cc: Jamie Iles <jamie@jamieiles.com>, Greg Kroah-Hartman <gregkh@suse.de>
 
 From: Jamie Iles <jamie@jamieiles.com>
 
-Some ports (e.g. Synopsys DesignWare 8250) have special requirements for
-handling the interrupts.  Allow these platforms to specify their own
-interrupt handler that will override the default.
-serial8250_handle_irq() is provided so that platforms can extend the IRQ
-handler rather than completely replacing it.
+The Synopsys DesignWare UART in pmc-sierra msp71xx has an extra feature
+where the UART detects a write attempt to the LCR whilst busy and raises
+an interrupt.  The driver needs to clear the interrupt and rewrite the
+LCR.  Move this into platform code and out of the 8250 driver.
 
-Signed-off-by: Jamie Iles <jamie@jamieiles.com>
+Acked-by: Ralf Baechle <ralf@linux-mips.org>
 Acked-by: Alan Cox <alan@linux.intel.com>
+Signed-off-by: Jamie Iles <jamie@jamieiles.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/serial/8250.c   |   39 +++++++++++++++++++++++++++++++++++----
- include/linux/serial_8250.h |    2 ++
- 2 files changed, 37 insertions(+), 4 deletions(-)
+ arch/mips/pmc-sierra/msp71xx/msp_serial.c |   69 +++++++++++++++++++++++++++--
+ 1 files changed, 65 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
-index f2dfec8..833e011 100644
---- a/drivers/tty/serial/8250.c
-+++ b/drivers/tty/serial/8250.c
-@@ -509,6 +509,8 @@ static void io_serial_out(struct uart_port *p, int offset, int value)
- 	outb(value, p->iobase + offset);
- }
+diff --git a/arch/mips/pmc-sierra/msp71xx/msp_serial.c b/arch/mips/pmc-sierra/msp71xx/msp_serial.c
+index c3247b5..a1c7c7d 100644
+--- a/arch/mips/pmc-sierra/msp71xx/msp_serial.c
++++ b/arch/mips/pmc-sierra/msp71xx/msp_serial.c
+@@ -27,6 +27,7 @@
+ #include <linux/serial.h>
+ #include <linux/serial_core.h>
+ #include <linux/serial_reg.h>
++#include <linux/slab.h>
  
-+static int serial8250_default_handle_irq(struct uart_port *port);
+ #include <asm/bootinfo.h>
+ #include <asm/io.h>
+@@ -38,6 +39,55 @@
+ #include <msp_int.h>
+ #include <msp_regs.h>
+ 
++struct msp_uart_data {
++	int	last_lcr;
++};
 +
- static void set_io_from_upio(struct uart_port *p)
- {
- 	struct uart_8250_port *up =
-@@ -557,6 +559,7 @@ static void set_io_from_upio(struct uart_port *p)
- 	}
- 	/* Remember loaded iotype */
- 	up->cur_iotype = p->iotype;
-+	p->handle_irq = serial8250_default_handle_irq;
- }
- 
- static void
-@@ -1621,6 +1624,28 @@ static void serial8250_handle_port(struct uart_8250_port *up)
- 	spin_unlock_irqrestore(&up->port.lock, flags);
- }
- 
-+int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
++static void msp_serial_out(struct uart_port *p, int offset, int value)
 +{
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
++	struct msp_uart_data *d = p->private_data;
 +
-+	if (!(iir & UART_IIR_NO_INT)) {
-+		serial8250_handle_port(up);
++	if (offset == UART_LCR)
++		d->last_lcr = value;
++
++	offset <<= p->regshift;
++	writeb(value, p->membase + offset);
++}
++
++static unsigned int msp_serial_in(struct uart_port *p, int offset)
++{
++	offset <<= p->regshift;
++
++	return readb(p->membase + offset);
++}
++
++static int msp_serial_handle_irq(struct uart_port *p)
++{
++	struct msp_uart_data *d = p->private_data;
++	unsigned int iir = readb(p->membase + (UART_IIR << p->regshift));
++
++	if (serial8250_handle_irq(p, iir)) {
++		return 1;
++	} else if ((iir & UART_IIR_BUSY) == UART_IIR_BUSY) {
++		/*
++		 * The DesignWare APB UART has an Busy Detect (0x07) interrupt
++		 * meaning an LCR write attempt occurred while the UART was
++		 * busy. The interrupt must be cleared by reading the UART
++		 * status register (USR) and the LCR re-written.
++		 *
++		 * Note: MSP reserves 0x20 bytes of address space for the UART
++		 * and the USR is mapped in a separate block at an offset of
++		 * 0xc0 from the start of the UART.
++		 */
++		(void)readb(p->membase + 0xc0);
++		writeb(d->last_lcr, p->membase + (UART_LCR << p->regshift));
++
 +		return 1;
 +	}
 +
 +	return 0;
 +}
 +
-+static int serial8250_default_handle_irq(struct uart_port *port)
-+{
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
-+	unsigned int iir = serial_in(up, UART_IIR);
-+
-+	return serial8250_handle_irq(port, iir);
-+}
-+
- /*
-  * This is the serial driver's interrupt routine.
-  *
-@@ -1648,13 +1673,12 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
- 	l = i->head;
- 	do {
- 		struct uart_8250_port *up;
--		unsigned int iir;
-+		struct uart_port *port;
+ void __init msp_serial_setup(void)
+ {
+ 	char    *s;
+@@ -59,13 +109,22 @@ void __init msp_serial_setup(void)
+ 	up.irq          = MSP_INT_UART0;
+ 	up.uartclk      = uartclk;
+ 	up.regshift     = 2;
+-	up.iotype       = UPIO_DWAPB; /* UPIO_MEM like */
++	up.iotype       = UPIO_MEM;
+ 	up.flags        = ASYNC_BOOT_AUTOCONF | ASYNC_SKIP_TEST;
+ 	up.type         = PORT_16550A;
+ 	up.line         = 0;
+-	up.private_data		= (void*)UART0_STATUS_REG;
+-	if (early_serial_setup(&up))
++	up.serial_out	= msp_serial_out;
++	up.serial_in	= msp_serial_in;
++	up.handle_irq	= msp_serial_handle_irq;
++	up.private_data	= kzalloc(sizeof(struct msp_uart_data), GFP_KERNEL);
++	if (!up.private_data) {
++		pr_err("failed to allocate uart private data\n");
++		return;
++	}
++	if (early_serial_setup(&up)) {
++		kfree(up.private_data);
+ 		pr_err("Early serial init of port 0 failed\n");
++	}
  
- 		up = list_entry(l, struct uart_8250_port, list);
-+		port = &up->port;
- 
--		iir = serial_in(up, UART_IIR);
--		if (!(iir & UART_IIR_NO_INT)) {
--			serial8250_handle_port(up);
-+		if (port->handle_irq(port)) {
- 
- 			handled = 1;
- 
-@@ -3048,6 +3072,10 @@ int __init early_serial_setup(struct uart_port *port)
- 		p->serial_in = port->serial_in;
- 	if (port->serial_out)
- 		p->serial_out = port->serial_out;
-+	if (port->handle_irq)
-+		p->handle_irq = port->handle_irq;
-+	else
-+		p->handle_irq = serial8250_default_handle_irq;
- 
- 	return 0;
+ 	/* Initialize the second serial port, if one exists */
+ 	switch (mips_machtype) {
+@@ -88,6 +147,8 @@ void __init msp_serial_setup(void)
+ 	up.irq          = MSP_INT_UART1;
+ 	up.line         = 1;
+ 	up.private_data		= (void*)UART1_STATUS_REG;
+-	if (early_serial_setup(&up))
++	if (early_serial_setup(&up)) {
++		kfree(up.private_data);
+ 		pr_err("Early serial init of port 1 failed\n");
++	}
  }
-@@ -3116,6 +3144,7 @@ static int __devinit serial8250_probe(struct platform_device *dev)
- 		port.type		= p->type;
- 		port.serial_in		= p->serial_in;
- 		port.serial_out		= p->serial_out;
-+		port.handle_irq		= p->handle_irq;
- 		port.set_termios	= p->set_termios;
- 		port.pm			= p->pm;
- 		port.dev		= &dev->dev;
-@@ -3281,6 +3310,8 @@ int serial8250_register_port(struct uart_port *port)
- 			uart->port.serial_in = port->serial_in;
- 		if (port->serial_out)
- 			uart->port.serial_out = port->serial_out;
-+		if (port->handle_irq)
-+			uart->port.handle_irq = port->handle_irq;
- 		/*  Possibly override set_termios call */
- 		if (port->set_termios)
- 			uart->port.set_termios = port->set_termios;
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index 97f5b45..1f05bbe 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -35,6 +35,7 @@ struct plat_serial8250_port {
- 	void		(*set_termios)(struct uart_port *,
- 			               struct ktermios *new,
- 			               struct ktermios *old);
-+	int		(*handle_irq)(struct uart_port *);
- 	void		(*pm)(struct uart_port *, unsigned int state,
- 			      unsigned old);
- };
-@@ -80,6 +81,7 @@ extern void serial8250_do_set_termios(struct uart_port *port,
- 		struct ktermios *termios, struct ktermios *old);
- extern void serial8250_do_pm(struct uart_port *port, unsigned int state,
- 			     unsigned int oldstate);
-+int serial8250_handle_irq(struct uart_port *port, unsigned int iir);
- 
- extern void serial8250_set_isa_configurator(void (*v)
- 					(int port, struct uart_port *up,
 -- 
 1.7.7
 
