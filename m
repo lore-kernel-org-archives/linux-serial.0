@@ -1,73 +1,43 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 77/79] Revert "TTY: call tty_driver_lookup_tty unconditionally"
-Date: Wed, 26 Oct 2011 14:13:22 +0200
-Message-ID: <1319631204-23262-77-git-send-email-gregkh@suse.de>
+Subject: [PATCH 78/79] tty/serial: atmel_serial: bootconsole removed from auto-enumerates
+Date: Wed, 26 Oct 2011 14:13:23 +0200
+Message-ID: <1319631204-23262-78-git-send-email-gregkh@suse.de>
 References: <20111026114236.GA22180@kroah.com>
  <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:32886 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:32887 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932975Ab1JZMOF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Oct 2011 08:14:05 -0400
+	id S932977Ab1JZMOG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 26 Oct 2011 08:14:06 -0400
 In-Reply-To: <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, Jiri Slaby <jslaby@suse.cz>, stable <stable@vger.kernel.org>, Sukadev Bhattiprolu <sukadev@us.ibm.com>, Alan Cox <alan@redhat.com>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@suse.de>
 
-This reverts commit 631180aca723cb92e128fdac5fd144e913ca84e5.
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
 
-It caused problems when /dev/tty is a pty:
-	https://lkml.org/lkml/2011/10/12/401
+Auto-enumerate mechanism conflicts with bootconsoles: remove
+the usage counter for this type of consoles.
 
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: stable <stable@vger.kernel.org>
-Cc: Sukadev Bhattiprolu <sukadev@us.ibm.com>
-Cc: Alan Cox <alan@redhat.com>
+Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/tty_io.c |   21 ++++++++++++---------
- 1 files changed, 12 insertions(+), 9 deletions(-)
+ drivers/tty/serial/atmel_serial.c |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 0425170..767ecbb 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -1821,7 +1821,7 @@ int tty_release(struct inode *inode, struct file *filp)
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index fc4081e..358bbb2 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -1674,7 +1674,6 @@ static int __init atmel_console_init(void)
+ 		int id = atmel_default_console_device->id;
+ 		struct atmel_uart_port *port = &atmel_ports[id];
  
- static int tty_open(struct inode *inode, struct file *filp)
- {
--	struct tty_struct *tty;
-+	struct tty_struct *tty = NULL;
- 	int noctty, retval;
- 	struct tty_driver *driver;
- 	int index;
-@@ -1892,14 +1892,17 @@ retry_open:
- 		return -ENODEV;
- 	}
- got_driver:
--	/* check whether we're reopening an existing tty */
--	tty = tty_driver_lookup_tty(driver, inode, index);
--	if (IS_ERR(tty)) {
--		tty_unlock();
--		mutex_unlock(&tty_mutex);
--		tty_driver_kref_put(driver);
--		tty_free_file(filp);
--		return PTR_ERR(tty);
-+	if (!tty) {
-+		/* check whether we're reopening an existing tty */
-+		tty = tty_driver_lookup_tty(driver, inode, index);
-+
-+		if (IS_ERR(tty)) {
-+			tty_unlock();
-+			mutex_unlock(&tty_mutex);
-+			tty_driver_kref_put(driver);
-+			tty_free_file(filp);
-+			return PTR_ERR(tty);
-+		}
- 	}
+-		set_bit(id, &atmel_ports_in_use);
+ 		port->backup_imr = 0;
+ 		port->uart.line = id;
  
- 	if (tty) {
 -- 
 1.7.7
 
