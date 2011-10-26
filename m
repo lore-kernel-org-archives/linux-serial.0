@@ -1,125 +1,150 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 03/79] TTY: serial, remove BTM from wait_until_sent
-Date: Wed, 26 Oct 2011 14:12:08 +0200
-Message-ID: <1319631204-23262-3-git-send-email-gregkh@suse.de>
+Subject: [PATCH 07/79] TTY: remove tty_locked
+Date: Wed, 26 Oct 2011 14:12:12 +0200
+Message-ID: <1319631204-23262-7-git-send-email-gregkh@suse.de>
 References: <20111026114236.GA22180@kroah.com>
  <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:60917 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:60928 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932798Ab1JZMN2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Oct 2011 08:13:28 -0400
+	id S932832Ab1JZMNa (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 26 Oct 2011 08:13:30 -0400
 In-Reply-To: <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>, Andreas Bombe <aeb@debian.org>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@suse.de>
 
 From: Jiri Slaby <jslaby@suse.cz>
 
-During the BKL removal process, the BKL was switched to tty_lock
-(BTM). Now we should start pruning the BTM further. Let's start with
-wait_until_sent of the serial layer. This will allow us to switch to
-the tty port helpers and thus clean it up much.
-
-In wait_until_sent there are some uport members accessed, but neither
-of them is protected by BTM at the location they are set ('=>' means
-function call):
-* uport->fifosize (set in tty_ioctl => uart_ioctl => uart_set_info)
-* uport->type (set in add_one_port prior to tty_register_device)
-* uport->timeout (set usually in tty_ioctl => tty_mode_ioctl =>
-  tty_set_termios => uart_set_termios => uart_change_speed =>
-  uport->ops->set_termios => uart_update_timeout)
-* call to uport->ops->tx_empty()
-
-If the tx_empty hook needs some lock to protect accesses to registers,
-it should take &uport->lock spinlock like 8250 does. Otherwise there
-still might be races e.g. with ISRs.
-
-This should also fix the issue Andreas is seeing (BTM in comparison to
-BKL doesn't have any hidden functionality like unlocking during
-sleeping).
+We used it really only serial and ami_serial. The rest of the
+callsites were BUG/WARN_ONs to check if BTM is held. Now that we
+pruned tty_locked from both of the real users, we can get rid of
+tty_lock along with __big_tty_mutex_owner.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-References: https://lkml.org/lkml/2011/5/25/562
-Cc: Alan Cox <alan@linux.intel.com>
 Acked-by: Arnd Bergmann <arnd@arndb.de>
-Cc: Andreas Bombe <aeb@debian.org>
+Cc: Alan Cox <alan@linux.intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/serial/serial_core.c |   30 +++++++-----------------------
- 1 files changed, 7 insertions(+), 23 deletions(-)
+ drivers/tty/serial/serial_core.c |    4 ----
+ drivers/tty/tty_ldisc.c          |    1 -
+ drivers/tty/tty_mutex.c          |   12 ------------
+ drivers/tty/vt/selection.c       |    4 ++--
+ include/linux/tty.h              |    2 --
+ 5 files changed, 2 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index db7912c..2cbf1bd 100644
+index 4786232..44c2963 100644
 --- a/drivers/tty/serial/serial_core.c
 +++ b/drivers/tty/serial/serial_core.c
-@@ -57,7 +57,7 @@ static struct lock_class_key port_lock_key;
+@@ -1245,8 +1245,6 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
+ 	struct uart_port *uport;
+ 	unsigned long flags;
  
- static void uart_change_speed(struct tty_struct *tty, struct uart_state *state,
- 					struct ktermios *old_termios);
--static void __uart_wait_until_sent(struct uart_port *port, int timeout);
-+static void uart_wait_until_sent(struct tty_struct *tty, int timeout);
- static void uart_change_pm(struct uart_state *state, int pm_state);
+-	BUG_ON(!tty_locked());
+-
+ 	if (!state)
+ 		return;
  
- /*
-@@ -1304,16 +1304,8 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
- 	tty->closing = 1;
- 	spin_unlock_irqrestore(&port->lock, flags);
+@@ -1411,7 +1409,6 @@ static void uart_hangup(struct tty_struct *tty)
+ 	struct tty_port *port = &state->port;
+ 	unsigned long flags;
  
--	if (port->closing_wait != ASYNC_CLOSING_WAIT_NONE) {
--		/*
--		 * hack: open-coded tty_wait_until_sent to avoid
--		 * recursive tty_lock
--		 */
--		long timeout = msecs_to_jiffies(port->closing_wait);
--		if (wait_event_interruptible_timeout(tty->write_wait,
--				!tty_chars_in_buffer(tty), timeout) >= 0)
--			__uart_wait_until_sent(uport, timeout);
--	}
-+	if (port->closing_wait != ASYNC_CLOSING_WAIT_NONE)
-+		tty_wait_until_sent(tty, msecs_to_jiffies(port->closing_wait));
+-	BUG_ON(!tty_locked());
+ 	pr_debug("uart_hangup(%d)\n", state->uart_port->line);
+ 
+ 	mutex_lock(&port->mutex);
+@@ -1498,7 +1495,6 @@ static int uart_open(struct tty_struct *tty, struct file *filp)
+ 	struct tty_port *port;
+ 	int retval, line = tty->index;
+ 
+-	BUG_ON(!tty_locked());
+ 	pr_debug("uart_open(%d) called\n", line);
  
  	/*
- 	 * At this point, we stop accepting input.  To do this, we
-@@ -1329,7 +1321,7 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
- 		 * has completely drained; this is especially
- 		 * important if there is a transmit FIFO!
- 		 */
--		__uart_wait_until_sent(uport, uport->timeout);
-+		uart_wait_until_sent(tty, uport->timeout);
- 	}
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index ef925d5..512c49f 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -450,7 +450,6 @@ static int tty_ldisc_open(struct tty_struct *tty, struct tty_ldisc *ld)
+ 	if (ld->ops->open) {
+ 		int ret;
+                 /* BTM here locks versus a hangup event */
+-		WARN_ON(!tty_locked());
+ 		ret = ld->ops->open(tty);
+ 		if (ret)
+ 			clear_bit(TTY_LDISC_OPEN, &tty->flags);
+diff --git a/drivers/tty/tty_mutex.c b/drivers/tty/tty_mutex.c
+index 3b2bb77..9ff986c 100644
+--- a/drivers/tty/tty_mutex.c
++++ b/drivers/tty/tty_mutex.c
+@@ -15,30 +15,18 @@
+  * Don't use in new code.
+  */
+ static DEFINE_MUTEX(big_tty_mutex);
+-struct task_struct *__big_tty_mutex_owner;
+-EXPORT_SYMBOL_GPL(__big_tty_mutex_owner);
  
- 	uart_shutdown(tty, state);
-@@ -1363,8 +1355,10 @@ done:
- 	mutex_unlock(&port->mutex);
- }
- 
--static void __uart_wait_until_sent(struct uart_port *port, int timeout)
-+static void uart_wait_until_sent(struct tty_struct *tty, int timeout)
- {
-+	struct uart_state *state = tty->driver_data;
-+	struct uart_port *port = state->uart_port;
- 	unsigned long char_time, expire;
- 
- 	if (port->type == PORT_UNKNOWN || port->fifosize == 0)
-@@ -1416,16 +1410,6 @@ static void __uart_wait_until_sent(struct uart_port *port, int timeout)
- 	}
- }
- 
--static void uart_wait_until_sent(struct tty_struct *tty, int timeout)
--{
--	struct uart_state *state = tty->driver_data;
--	struct uart_port *port = state->uart_port;
--
--	tty_lock();
--	__uart_wait_until_sent(port, timeout);
--	tty_unlock();
--}
--
  /*
-  * This is called with the BKL held in
-  *  linux/drivers/char/tty_io.c:do_tty_hangup()
+  * Getting the big tty mutex.
+  */
+ void __lockfunc tty_lock(void)
+ {
+-	struct task_struct *task = current;
+-
+-	WARN_ON(__big_tty_mutex_owner == task);
+-
+ 	mutex_lock(&big_tty_mutex);
+-	__big_tty_mutex_owner = task;
+ }
+ EXPORT_SYMBOL(tty_lock);
+ 
+ void __lockfunc tty_unlock(void)
+ {
+-	struct task_struct *task = current;
+-
+-	WARN_ON(__big_tty_mutex_owner != task);
+-	__big_tty_mutex_owner = NULL;
+-
+ 	mutex_unlock(&big_tty_mutex);
+ }
+ EXPORT_SYMBOL(tty_unlock);
+diff --git a/drivers/tty/vt/selection.c b/drivers/tty/vt/selection.c
+index fb864e7..7a0a12a 100644
+--- a/drivers/tty/vt/selection.c
++++ b/drivers/tty/vt/selection.c
+@@ -301,6 +301,8 @@ int set_selection(const struct tiocl_selection __user *sel, struct tty_struct *t
+ /* Insert the contents of the selection buffer into the
+  * queue of the tty associated with the current console.
+  * Invoked by ioctl().
++ *
++ * Locking: always called with BTM from vt_ioctl
+  */
+ int paste_selection(struct tty_struct *tty)
+ {
+@@ -310,8 +312,6 @@ int paste_selection(struct tty_struct *tty)
+ 	struct  tty_ldisc *ld;
+ 	DECLARE_WAITQUEUE(wait, current);
+ 
+-	/* always called with BTM from vt_ioctl */
+-	WARN_ON(!tty_locked());
+ 
+ 	console_lock();
+ 	poke_blanked_console();
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 44bc0c5..6d5eceb 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -600,8 +600,6 @@ extern long vt_compat_ioctl(struct tty_struct *tty,
+ /* functions for preparation of BKL removal */
+ extern void __lockfunc tty_lock(void) __acquires(tty_lock);
+ extern void __lockfunc tty_unlock(void) __releases(tty_lock);
+-extern struct task_struct *__big_tty_mutex_owner;
+-#define tty_locked()		(current == __big_tty_mutex_owner)
+ 
+ /*
+  * wait_event_interruptible_tty -- wait for a condition with the tty lock held
 -- 
 1.7.7
 
