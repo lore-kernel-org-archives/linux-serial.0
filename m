@@ -1,69 +1,86 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 32/79] TTY: define tty_wait_until_sent_from_close
-Date: Wed, 26 Oct 2011 14:12:37 +0200
-Message-ID: <1319631204-23262-32-git-send-email-gregkh@suse.de>
+Subject: [PATCH 38/79] max3110: wake up fixes
+Date: Wed, 26 Oct 2011 14:12:43 +0200
+Message-ID: <1319631204-23262-38-git-send-email-gregkh@suse.de>
 References: <20111026114236.GA22180@kroah.com>
  <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:60993 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:32771 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932892Ab1JZMNm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Oct 2011 08:13:42 -0400
-Received: from relay2.suse.de (charybdis-ext.suse.de [195.135.221.2])
-	(using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx2.suse.de (Postfix) with ESMTP id 47C608FB03
-	for <linux-serial@vger.kernel.org>; Wed, 26 Oct 2011 14:13:41 +0200 (CEST)
+	id S932863Ab1JZMNp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 26 Oct 2011 08:13:45 -0400
 In-Reply-To: <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Dirk Brandewie <dirk.brandewie@gmail.com>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Jiri Slaby <jslaby@suse.cz>
+From: Dirk Brandewie <dirk.brandewie@gmail.com>
 
-We need this helper to fix system stalls. The issue is that the rest
-of the system TTYs wait for us to finish waiting. This wasn't an issue
-with BKL. BKL used to unlock implicitly.
+The main thread is waiting on on a wait_queue but wake_up_process() is
+used to wake the thread. This reads weirdly. Change wake_up_process() to
+wake_up().
 
-This is based on the Arnd suggestion.
+Tested on the Moorestown tablet build
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Dirk Brandewie <dirk.brandewie@gmail.com>
+Signed-off-by: Alan Cox <alan@linux.intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- include/linux/tty.h |   18 ++++++++++++++++++
- 1 files changed, 18 insertions(+), 0 deletions(-)
+ drivers/tty/serial/mrst_max3110.c |   11 +++++++----
+ 1 files changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 6d5eceb..0ad6888 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -602,6 +602,24 @@ extern void __lockfunc tty_lock(void) __acquires(tty_lock);
- extern void __lockfunc tty_unlock(void) __releases(tty_lock);
+diff --git a/drivers/tty/serial/mrst_max3110.c b/drivers/tty/serial/mrst_max3110.c
+index a764bf9..c8f9868 100644
+--- a/drivers/tty/serial/mrst_max3110.c
++++ b/drivers/tty/serial/mrst_max3110.c
+@@ -207,7 +207,7 @@ static void serial_m3110_con_write(struct console *co,
+ 	uart_console_write(&pmax->port, s, count, serial_m3110_con_putchar);
  
- /*
-+ * this shall be called only from where BTM is held (like close)
-+ *
-+ * We need this to ensure nobody waits for us to finish while we are waiting.
-+ * Without this we were encountering system stalls.
-+ *
-+ * This should be indeed removed with BTM removal later.
-+ *
-+ * Locking: BTM required. Nobody is allowed to hold port->mutex.
-+ */
-+static inline void tty_wait_until_sent_from_close(struct tty_struct *tty,
-+		long timeout)
-+{
-+	tty_unlock(); /* tty->ops->close holds the BTM, drop it while waiting */
-+	tty_wait_until_sent(tty, timeout);
-+	tty_lock();
-+}
+ 	if (!test_and_set_bit(CON_TX_NEEDED, &pmax->uart_flags))
+-		wake_up_process(pmax->main_thread);
++		wake_up(&pmax->wq);
+ }
+ 
+ static int __init
+@@ -301,6 +301,7 @@ static void send_circ_buf(struct uart_max3110 *max,
+ 			}
+ 
+ 			/* Fail to send msg to console is not very critical */
 +
-+/*
-  * wait_event_interruptible_tty -- wait for a condition with the tty lock held
-  *
-  * The condition we are waiting for might take a long time to
+ 			ret = max3110_write_then_read(max, obuf, ibuf, blen, 0);
+ 			if (ret)
+ 				pr_warning(PR_FMT "%s(): get err msg %d\n",
+@@ -349,7 +350,7 @@ static void serial_m3110_start_tx(struct uart_port *port)
+ 		container_of(port, struct uart_max3110, port);
+ 
+ 	if (!test_and_set_bit(UART_TX_NEEDED, &max->uart_flags))
+-		wake_up_process(max->main_thread);
++		wake_up(&max->wq);
+ }
+ 
+ static void receive_chars(struct uart_max3110 *max, unsigned char *str, int len)
+@@ -424,7 +425,8 @@ static int max3110_main_thread(void *_max)
+ 	pr_info(PR_FMT "start main thread\n");
+ 
+ 	do {
+-		wait_event_interruptible(*wq, max->uart_flags || kthread_should_stop());
++		wait_event_interruptible(*wq,
++				max->uart_flags || kthread_should_stop());
+ 
+ 		mutex_lock(&max->thread_mutex);
+ 
+@@ -452,8 +454,9 @@ static irqreturn_t serial_m3110_irq(int irq, void *dev_id)
+ 
+ 	/* max3110's irq is a falling edge, not level triggered,
+ 	 * so no need to disable the irq */
++
+ 	if (!test_and_set_bit(BIT_IRQ_PENDING, &max->uart_flags))
+-		wake_up_process(max->main_thread);
++		wake_up(&max->wq);
+ 
+ 	return IRQ_HANDLED;
+ }
 -- 
 1.7.7
 
