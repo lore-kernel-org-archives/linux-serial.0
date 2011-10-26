@@ -1,115 +1,84 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 47/79] TTY: serial, remove dead code from 68328
-Date: Wed, 26 Oct 2011 14:12:52 +0200
-Message-ID: <1319631204-23262-47-git-send-email-gregkh@suse.de>
+Subject: [PATCH 53/79] keyboard: Do not include <linux/irq.>
+Date: Wed, 26 Oct 2011 14:12:58 +0200
+Message-ID: <1319631204-23262-53-git-send-email-gregkh@suse.de>
 References: <20111026114236.GA22180@kroah.com>
  <1319631204-23262-1-git-send-email-gregkh@suse.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:32798 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:32808 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932901Ab1JZMNu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Oct 2011 08:13:50 -0400
+	id S932918Ab1JZMNx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 26 Oct 2011 08:13:53 -0400
 In-Reply-To: <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Jiri Slaby <jslaby@suse.cz>, Geert Uytterhoeven <geert@linux-m68k.org>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Jiri Slaby <jslaby@suse.cz>
+=46rom: Geert Uytterhoeven <geert@linux-m68k.org>
 
-The code is dead at least since 2002. So remove it to not distort git
-grep output (about port.tty usage).
+The top of <linux/irq.h> has this comment:
 
-Remove the whole do_softirq tasklet as it's noop now.
+ * Please do not include this file in generic code.  There is currently
+ * no requirement for any architecture to implement anything held
+ * within this file.
+ *
+ * Thanks. --rmk
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Alan Cox <alan@linux.intel.com>
+Remove inclusion of <linux/irq.>, to prevent the following compile erro=
+r
+from happening soon:
+
+| include/linux/irq.h:132: error: redefinition of =E2=80=98struct irq_d=
+ata=E2=80=99
+| include/linux/irq.h:286: error: redefinition of =E2=80=98struct irq_c=
+hip=E2=80=99
+
+drivers/tty/vt/keyboard.c needs to include <asm/irq_regs.h> for get_irq=
+_regs():
+
+| drivers/tty/vt/keyboard.c:497: error: implicit declaration of functio=
+n =E2=80=98get_irq_regs=E2=80=99
+| drivers/tty/vt/keyboard.c:497: warning: initialization makes pointer =
+from integer without a cast
+
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Acked-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/serial/68328serial.c |   35 -----------------------------------
- drivers/tty/serial/68328serial.h |    1 -
- 2 files changed, 0 insertions(+), 36 deletions(-)
+ drivers/tty/vt/keyboard.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
-diff --git a/drivers/tty/serial/68328serial.c b/drivers/tty/serial/68328serial.c
-index e0a7754..f549231 100644
---- a/drivers/tty/serial/68328serial.c
-+++ b/drivers/tty/serial/68328serial.c
-@@ -235,22 +235,6 @@ static void batten_down_hatches(void)
- 
- static void status_handle(struct m68k_serial *info, unsigned short status)
- {
--#if 0
--	if(status & DCD) {
--		if((info->port.tty->termios->c_cflag & CRTSCTS) &&
--		   ((info->curregs[3] & AUTO_ENAB)==0)) {
--			info->curregs[3] |= AUTO_ENAB;
--			info->pendregs[3] |= AUTO_ENAB;
--			write_zsreg(info->m68k_channel, 3, info->curregs[3]);
--		}
--	} else {
--		if((info->curregs[3] & AUTO_ENAB)) {
--			info->curregs[3] &= ~AUTO_ENAB;
--			info->pendregs[3] &= ~AUTO_ENAB;
--			write_zsreg(info->m68k_channel, 3, info->curregs[3]);
--		}
--	}
--#endif
- 	/* If this is console input and this is a
- 	 * 'break asserted' status change interrupt
- 	 * see if we can drop into the debugger
-@@ -340,9 +324,6 @@ static void transmit_chars(struct m68k_serial *info)
- 	info->xmit_tail = info->xmit_tail & (SERIAL_XMIT_SIZE-1);
- 	info->xmit_cnt--;
- 
--	if (info->xmit_cnt < WAKEUP_CHARS)
--		schedule_work(&info->tqueue);
--
- 	if(info->xmit_cnt <= 0) {
- 		/* All done for now... TX ints off */
- 		uart->ustcnt &= ~USTCNT_TX_INTR_MASK;
-@@ -378,21 +359,6 @@ irqreturn_t rs_interrupt(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
- 
--static void do_softint(struct work_struct *work)
--{
--	struct m68k_serial	*info = container_of(work, struct m68k_serial, tqueue);
--	struct tty_struct	*tty;
--	
--	tty = info->tty;
--	if (!tty)
--		return;
--#if 0
--	if (clear_bit(RS_EVENT_WRITE_WAKEUP, &info->event)) {
--		tty_wakeup(tty);
--	}
--#endif   
--}
--
- static int startup(struct m68k_serial * info)
- {
- 	m68328_uart *uart = &uart_addr[info->line];
-@@ -1324,7 +1290,6 @@ rs68328_init(void)
- 	    info->event = 0;
- 	    info->count = 0;
- 	    info->blocked_open = 0;
--	    INIT_WORK(&info->tqueue, do_softint);
- 	    init_waitqueue_head(&info->open_wait);
- 	    init_waitqueue_head(&info->close_wait);
- 	    info->line = i;
-diff --git a/drivers/tty/serial/68328serial.h b/drivers/tty/serial/68328serial.h
-index 8c9c3c0..3d2faab 100644
---- a/drivers/tty/serial/68328serial.h
-+++ b/drivers/tty/serial/68328serial.h
-@@ -158,7 +158,6 @@ struct m68k_serial {
- 	int			xmit_head;
- 	int			xmit_tail;
- 	int			xmit_cnt;
--	struct work_struct	tqueue;
- 	wait_queue_head_t	open_wait;
- 	wait_queue_head_t	close_wait;
- };
--- 
+diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
+index 3761ccf..a605549 100644
+--- a/drivers/tty/vt/keyboard.c
++++ b/drivers/tty/vt/keyboard.c
+@@ -33,7 +33,6 @@
+ #include <linux/string.h>
+ #include <linux/init.h>
+ #include <linux/slab.h>
+-#include <linux/irq.h>
+=20
+ #include <linux/kbd_kern.h>
+ #include <linux/kbd_diacr.h>
+@@ -43,6 +42,8 @@
+ #include <linux/notifier.h>
+ #include <linux/jiffies.h>
+=20
++#include <asm/irq_regs.h>
++
+ extern void ctrl_alt_del(void);
+=20
+ /*
+--=20
 1.7.7
 
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
