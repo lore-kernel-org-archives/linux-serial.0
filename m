@@ -1,72 +1,68 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 63/79] hvc_console: display printk messages on console.
-Date: Wed, 26 Oct 2011 14:13:08 +0200
-Message-ID: <1319631204-23262-63-git-send-email-gregkh@suse.de>
+Subject: [PATCH 62/79] TTY: snyclinkmp: forever loop in tx_load_dma_buffer()
+Date: Wed, 26 Oct 2011 14:13:07 +0200
+Message-ID: <1319631204-23262-62-git-send-email-gregkh@suse.de>
 References: <20111026114236.GA22180@kroah.com>
  <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:32843 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:32841 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932917Ab1JZMN5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	id S932948Ab1JZMN5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
 	Wed, 26 Oct 2011 08:13:57 -0400
 In-Reply-To: <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Miche Baker-Harvey <miche@google.com>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Dan Carpenter <dan.carpenter@oracle.com>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Miche Baker-Harvey <miche@google.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-printk only works for "registered consoles."  Currently, the hvc_console
-code calls register_console() from hvc_instantiate(), but that's only
-used in the early console case.  In hvc_alloc(), register_console() was
-not called.
+My main concern here was the line that said:
+	copy_count = min_t(unsigned short,count,SCABUFSIZE);
+"count" is an unsigned int here so the cast to unsigned short
+truncates the upper bits.  So if count is 0x10000 then copy_count is
+0 and the loop never exits.
 
-Add a call to register_console() in hvc_alloc(), set up the index in
-the hvc_console, and set up the necessary vtermnos[] and cons_op[]
-entries so that printk functions work.
+"count" comes from skb->len in hdlcdev_xmit().
 
-Signed-off-by: Miche Baker-Harvey <miche@google.com>
+The other min_t() changes are just cleanups.
+
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/hvc/hvc_console.c |    7 ++++++-
- 1 files changed, 6 insertions(+), 1 deletions(-)
+ drivers/tty/synclinkmp.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/hvc/hvc_console.c b/drivers/tty/hvc/hvc_console.c
-index b6b2d18..7430bc3 100644
---- a/drivers/tty/hvc/hvc_console.c
-+++ b/drivers/tty/hvc/hvc_console.c
-@@ -852,7 +852,7 @@ struct hvc_struct *hvc_alloc(uint32_t vtermno, int data,
- 	 * find index to use:
- 	 * see if this vterm id matches one registered for console.
+diff --git a/drivers/tty/synclinkmp.c b/drivers/tty/synclinkmp.c
+index c77831c..0f6b796 100644
+--- a/drivers/tty/synclinkmp.c
++++ b/drivers/tty/synclinkmp.c
+@@ -4950,7 +4950,7 @@ CheckAgain:
+ 
+ 	if ( debug_level >= DEBUG_LEVEL_DATA )
+ 		trace_block(info,info->rx_buf_list_ex[StartIndex].virt_addr,
+-			min_t(int, framesize,SCABUFSIZE),0);
++			min_t(unsigned int, framesize, SCABUFSIZE), 0);
+ 
+ 	if (framesize) {
+ 		if (framesize > info->max_frame_size)
+@@ -5015,14 +5015,14 @@ static void tx_load_dma_buffer(SLMP_INFO *info, const char *buf, unsigned int co
+ 	SCADESC_EX *desc_ex;
+ 
+ 	if ( debug_level >= DEBUG_LEVEL_DATA )
+-		trace_block(info,buf, min_t(int, count,SCABUFSIZE), 1);
++		trace_block(info, buf, min_t(unsigned int, count, SCABUFSIZE), 1);
+ 
+ 	/* Copy source buffer to one or more DMA buffers, starting with
+ 	 * the first transmit dma buffer.
  	 */
--	for (i=0; i < MAX_NR_HVC_CONSOLES; i++)
-+	for (i = 0; i < MAX_NR_HVC_CONSOLES; i++)
- 		if (vtermnos[i] == hp->vtermno &&
- 		    cons_ops[i] == hp->ops)
- 			break;
-@@ -862,9 +862,13 @@ struct hvc_struct *hvc_alloc(uint32_t vtermno, int data,
- 		i = ++last_hvc;
+ 	for(i=0;;)
+ 	{
+-		copy_count = min_t(unsigned short,count,SCABUFSIZE);
++		copy_count = min_t(unsigned int, count, SCABUFSIZE);
  
- 	hp->index = i;
-+	hvc_console.index = i;
-+	vtermnos[i] = vtermno;
-+	cons_ops[i] = ops;
- 
- 	list_add_tail(&(hp->next), &hvc_structs);
- 	spin_unlock(&hvc_structs_lock);
-+	register_console(&hvc_console);
- 
- 	return hp;
- }
-@@ -875,6 +879,7 @@ int hvc_remove(struct hvc_struct *hp)
- 	unsigned long flags;
- 	struct tty_struct *tty;
- 
-+	unregister_console(&hvc_console);
- 	spin_lock_irqsave(&hp->lock, flags);
- 	tty = tty_kref_get(hp->tty);
- 
+ 		desc = &info->tx_buf_list[i];
+ 		desc_ex = &info->tx_buf_list_ex[i];
 -- 
 1.7.7
 
