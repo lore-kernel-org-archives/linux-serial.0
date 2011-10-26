@@ -1,178 +1,181 @@
-From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 76/79] tty/serial: atmel_serial: add device tree support
-Date: Wed, 26 Oct 2011 14:13:21 +0200
-Message-ID: <1319631204-23262-76-git-send-email-gregkh@suse.de>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 47/79] TTY: serial, remove dead code from 68328
+Date: Wed, 26 Oct 2011 14:26:58 +0200
+Message-ID: <CAMuHMdXsOhRigq29GG-SPn8MpH+AaXFQ69mCMcbdwPYV0kvhog@mail.gmail.com>
 References: <20111026114236.GA22180@kroah.com>
- <1319631204-23262-1-git-send-email-gregkh@suse.de>
+	<1319631204-23262-1-git-send-email-gregkh@suse.de>
+	<1319631204-23262-47-git-send-email-gregkh@suse.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:32882 "EHLO mx2.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932972Ab1JZMOF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Oct 2011 08:14:05 -0400
-In-Reply-To: <1319631204-23262-1-git-send-email-gregkh@suse.de>
+Received: from mail-iy0-f174.google.com ([209.85.210.174]:59426 "EHLO
+	mail-iy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932751Ab1JZM07 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 26 Oct 2011 08:26:59 -0400
+Received: by iaby12 with SMTP id y12so1673727iab.19
+        for <linux-serial@vger.kernel.org>; Wed, 26 Oct 2011 05:26:58 -0700 (PDT)
+In-Reply-To: <1319631204-23262-47-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@suse.de>
+To: Greg Kroah-Hartman <gregkh@suse.de>, Greg Ungerer <gerg@uclinux.org>
+Cc: linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>
 
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
+m68knommu =3D> Greg
 
-Will use aliases to enumerate ports, if available.
+On Wed, Oct 26, 2011 at 14:12, Greg Kroah-Hartman <gregkh@suse.de> wrot=
+e:
+> From: Jiri Slaby <jslaby@suse.cz>
+>
+> The code is dead at least since 2002. So remove it to not distort git
+> grep output (about port.tty usage).
+>
+> Remove the whole do_softirq tasklet as it's noop now.
+>
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> Cc: Alan Cox <alan@linux.intel.com>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+> ---
+> =C2=A0drivers/tty/serial/68328serial.c | =C2=A0 35 ------------------=
+-----------------
+> =C2=A0drivers/tty/serial/68328serial.h | =C2=A0 =C2=A01 -
+> =C2=A02 files changed, 0 insertions(+), 36 deletions(-)
+>
+> diff --git a/drivers/tty/serial/68328serial.c b/drivers/tty/serial/68=
+328serial.c
+> index e0a7754..f549231 100644
+> --- a/drivers/tty/serial/68328serial.c
+> +++ b/drivers/tty/serial/68328serial.c
+> @@ -235,22 +235,6 @@ static void batten_down_hatches(void)
+>
+> =C2=A0static void status_handle(struct m68k_serial *info, unsigned sh=
+ort status)
+> =C2=A0{
+> -#if 0
+> - =C2=A0 =C2=A0 =C2=A0 if(status & DCD) {
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if((info->port.tty=
+->termios->c_cflag & CRTSCTS) &&
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0((inf=
+o->curregs[3] & AUTO_ENAB)=3D=3D0)) {
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 info->curregs[3] |=3D AUTO_ENAB;
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 info->pendregs[3] |=3D AUTO_ENAB;
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 write_zsreg(info->m68k_channel, 3, info->curregs[3]);
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }
+> - =C2=A0 =C2=A0 =C2=A0 } else {
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if((info->curregs[=
+3] & AUTO_ENAB)) {
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 info->curregs[3] &=3D ~AUTO_ENAB;
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 info->pendregs[3] &=3D ~AUTO_ENAB;
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 write_zsreg(info->m68k_channel, 3, info->curregs[3]);
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }
+> - =C2=A0 =C2=A0 =C2=A0 }
+> -#endif
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0/* If this is console input and this is a
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 * 'break asserted' status change interrup=
+t
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 * see if we can drop into the debugger
+> @@ -340,9 +324,6 @@ static void transmit_chars(struct m68k_serial *in=
+fo)
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0info->xmit_tail =3D info->xmit_tail & (SER=
+IAL_XMIT_SIZE-1);
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0info->xmit_cnt--;
+>
+> - =C2=A0 =C2=A0 =C2=A0 if (info->xmit_cnt < WAKEUP_CHARS)
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 schedule_work(&inf=
+o->tqueue);
+> -
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0if(info->xmit_cnt <=3D 0) {
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0/* All done fo=
+r now... TX ints off */
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0uart->ustcnt &=
+=3D ~USTCNT_TX_INTR_MASK;
+> @@ -378,21 +359,6 @@ irqreturn_t rs_interrupt(int irq, void *dev_id)
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0return IRQ_HANDLED;
+> =C2=A0}
+>
+> -static void do_softint(struct work_struct *work)
+> -{
+> - =C2=A0 =C2=A0 =C2=A0 struct m68k_serial =C2=A0 =C2=A0 =C2=A0*info =3D=
+ container_of(work, struct m68k_serial, tqueue);
+> - =C2=A0 =C2=A0 =C2=A0 struct tty_struct =C2=A0 =C2=A0 =C2=A0 *tty;
+> -
+> - =C2=A0 =C2=A0 =C2=A0 tty =3D info->tty;
+> - =C2=A0 =C2=A0 =C2=A0 if (!tty)
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return;
+> -#if 0
+> - =C2=A0 =C2=A0 =C2=A0 if (clear_bit(RS_EVENT_WRITE_WAKEUP, &info->ev=
+ent)) {
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 tty_wakeup(tty);
+> - =C2=A0 =C2=A0 =C2=A0 }
+> -#endif
+> -}
+> -
+> =C2=A0static int startup(struct m68k_serial * info)
+> =C2=A0{
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0m68328_uart *uart =3D &uart_addr[info->lin=
+e];
+> @@ -1324,7 +1290,6 @@ rs68328_init(void)
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0info->event =3D 0;
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0info->count =3D 0;
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0info->blocked_open =3D 0;
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 INIT_WORK(&info->tqueue, do_soft=
+int);
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0init_waitqueue_head(&info->o=
+pen_wait);
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0init_waitqueue_head(&info->c=
+lose_wait);
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0info->line =3D i;
+> diff --git a/drivers/tty/serial/68328serial.h b/drivers/tty/serial/68=
+328serial.h
+> index 8c9c3c0..3d2faab 100644
+> --- a/drivers/tty/serial/68328serial.h
+> +++ b/drivers/tty/serial/68328serial.h
+> @@ -158,7 +158,6 @@ struct m68k_serial {
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0int =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 xmit_head;
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0int =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 xmit_tail;
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0int =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 xmit_cnt;
+> - =C2=A0 =C2=A0 =C2=A0 struct work_struct =C2=A0 =C2=A0 =C2=A0tqueue;
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0wait_queue_head_t =C2=A0 =C2=A0 =C2=A0 ope=
+n_wait;
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0wait_queue_head_t =C2=A0 =C2=A0 =C2=A0 clo=
+se_wait;
+> =C2=A0};
+> --
+> 1.7.7
+>
+>
 
-Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
-Acked-by: Grant Likely <grant.likely@secretlab.ca>
-Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
----
- drivers/tty/serial/atmel_serial.c |   79 +++++++++++++++++++++++++++++++++----
- 1 files changed, 71 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 1074329..fc4081e 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -33,6 +33,8 @@
- #include <linux/sysrq.h>
- #include <linux/tty_flip.h>
- #include <linux/platform_device.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
- #include <linux/dma-mapping.h>
- #include <linux/atmel_pdc.h>
- #include <linux/atmel_serial.h>
-@@ -163,6 +165,16 @@ static unsigned long atmel_ports_in_use;
- static struct console atmel_console;
- #endif
- 
-+#if defined(CONFIG_OF)
-+static const struct of_device_id atmel_serial_dt_ids[] = {
-+	{ .compatible = "atmel,at91rm9200-usart" },
-+	{ .compatible = "atmel,at91sam9260-usart" },
-+	{ /* sentinel */ }
-+};
-+
-+MODULE_DEVICE_TABLE(of, atmel_serial_dt_ids);
-+#endif
-+
- static inline struct atmel_uart_port *
- to_atmel_uart_port(struct uart_port *uart)
- {
-@@ -1411,6 +1423,48 @@ static struct uart_ops atmel_pops = {
- #endif
- };
- 
-+static void __devinit atmel_of_init_port(struct atmel_uart_port *atmel_port,
-+					 struct device_node *np)
-+{
-+	u32 rs485_delay[2];
-+
-+	/* DMA/PDC usage specification */
-+	if (of_get_property(np, "atmel,use-dma-rx", NULL))
-+		atmel_port->use_dma_rx	= 1;
-+	else
-+		atmel_port->use_dma_rx	= 0;
-+	if (of_get_property(np, "atmel,use-dma-tx", NULL))
-+		atmel_port->use_dma_tx	= 1;
-+	else
-+		atmel_port->use_dma_tx	= 0;
-+
-+	/* rs485 properties */
-+	if (of_property_read_u32_array(np, "rs485-rts-delay",
-+					    rs485_delay, 2) == 0) {
-+		struct serial_rs485 *rs485conf = &atmel_port->rs485;
-+
-+		rs485conf->delay_rts_before_send = rs485_delay[0];
-+		rs485conf->delay_rts_after_send = rs485_delay[1];
-+		rs485conf->flags = 0;
-+
-+		if (rs485conf->delay_rts_before_send == 0 &&
-+		    rs485conf->delay_rts_after_send == 0) {
-+			rs485conf->flags |= SER_RS485_RTS_ON_SEND;
-+		} else {
-+			if (rs485conf->delay_rts_before_send)
-+				rs485conf->flags |= SER_RS485_RTS_BEFORE_SEND;
-+			if (rs485conf->delay_rts_after_send)
-+				rs485conf->flags |= SER_RS485_RTS_AFTER_SEND;
-+		}
-+
-+		if (of_get_property(np, "rs485-rx-during-tx", NULL))
-+			rs485conf->flags |= SER_RS485_RX_DURING_TX;
-+
-+		if (of_get_property(np, "linux,rs485-enabled-at-boot-time", NULL))
-+			rs485conf->flags |= SER_RS485_ENABLED;
-+	}
-+}
-+
- /*
-  * Configure the port from the platform device resource info.
-  */
-@@ -1420,6 +1474,14 @@ static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
- 	struct uart_port *port = &atmel_port->uart;
- 	struct atmel_uart_data *pdata = pdev->dev.platform_data;
- 
-+	if (pdev->dev.of_node) {
-+		atmel_of_init_port(atmel_port, pdev->dev.of_node);
-+	} else {
-+		atmel_port->use_dma_rx	= pdata->use_dma_rx;
-+		atmel_port->use_dma_tx	= pdata->use_dma_tx;
-+		atmel_port->rs485	= pdata->rs485;
-+	}
-+
- 	port->iotype		= UPIO_MEM;
- 	port->flags		= UPF_BOOT_AUTOCONF;
- 	port->ops		= &atmel_pops;
-@@ -1433,7 +1495,7 @@ static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
- 
- 	memset(&atmel_port->rx_ring, 0, sizeof(atmel_port->rx_ring));
- 
--	if (pdata->regs) {
-+	if (pdata && pdata->regs) {
- 		/* Already mapped by setup code */
- 		port->membase = pdata->regs;
- 	} else {
-@@ -1450,10 +1512,6 @@ static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
- 		/* only enable clock when USART is in use */
- 	}
- 
--	atmel_port->use_dma_rx	= pdata->use_dma_rx;
--	atmel_port->use_dma_tx	= pdata->use_dma_tx;
--	atmel_port->rs485	= pdata->rs485;
--
- 	/* Use TXEMPTY for interrupt when rs485 else TXRDY or ENDTX|TXBUFE */
- 	if (atmel_port->rs485.flags & SER_RS485_ENABLED)
- 		atmel_port->tx_done_mask = ATMEL_US_TXEMPTY;
-@@ -1718,17 +1776,21 @@ static int atmel_serial_resume(struct platform_device *pdev)
- static int __devinit atmel_serial_probe(struct platform_device *pdev)
- {
- 	struct atmel_uart_port *port;
-+	struct device_node *np = pdev->dev.of_node;
- 	struct atmel_uart_data *pdata = pdev->dev.platform_data;
- 	void *data;
- 	int ret = -ENODEV;
- 
- 	BUILD_BUG_ON(ATMEL_SERIAL_RINGSIZE & (ATMEL_SERIAL_RINGSIZE - 1));
- 
--	if (pdata)
--		ret = pdata->num;
-+	if (np)
-+		ret = of_alias_get_id(np, "serial");
-+	else
-+		if (pdata)
-+			ret = pdata->num;
- 
- 	if (ret < 0)
--		/* port id not found in platform data:
-+		/* port id not found in platform data nor device-tree aliases:
- 		 * auto-enumerate it */
- 		ret = find_first_zero_bit(&atmel_ports_in_use,
- 				sizeof(atmel_ports_in_use));
-@@ -1827,6 +1889,7 @@ static struct platform_driver atmel_serial_driver = {
- 	.driver		= {
- 		.name	= "atmel_usart",
- 		.owner	= THIS_MODULE,
-+		.of_match_table	= of_match_ptr(atmel_serial_dt_ids),
- 	},
- };
- 
--- 
-1.7.7
 
+--=20
+Gr{oetje,eeting}s,
+
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-=
+m68k.org
+
+In personal conversations with technical people, I call myself a hacker=
+=2E But
+when I'm talking to journalists I just say "programmer" or something li=
+ke that.
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0=C2=A0 =C2=A0=C2=A0 -- Linus Torvalds
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
