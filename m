@@ -1,139 +1,320 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 18/79] mips: msp71xx/serial: add workaround for DW UART
-Date: Wed, 26 Oct 2011 14:12:23 +0200
-Message-ID: <1319631204-23262-18-git-send-email-gregkh@suse.de>
+Subject: [PATCH 28/79] jsm: remove buggy write queue
+Date: Wed, 26 Oct 2011 14:12:33 +0200
+Message-ID: <1319631204-23262-28-git-send-email-gregkh@suse.de>
 References: <20111026114236.GA22180@kroah.com>
  <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:60951 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:60986 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932861Ab1JZMNf (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Oct 2011 08:13:35 -0400
+	id S932863Ab1JZMNk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 26 Oct 2011 08:13:40 -0400
 In-Reply-To: <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Jamie Iles <jamie@jamieiles.com>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Jamie Iles <jamie@jamieiles.com>
+From: Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>
 
-The Synopsys DesignWare UART in pmc-sierra msp71xx has an extra feature
-where the UART detects a write attempt to the LCR whilst busy and raises
-an interrupt.  The driver needs to clear the interrupt and rewrite the
-LCR.  Move this into platform code and out of the 8250 driver.
+jsm uses a write queue that copies from uart_core circular buffer. This
+copying however has some bugs, like not wrapping the head counter. Since
+this write queue is also a circular buffer, the consumer function is
+ready to use the uart_core circular buffer directly.
 
-Acked-by: Ralf Baechle <ralf@linux-mips.org>
-Acked-by: Alan Cox <alan@linux.intel.com>
-Signed-off-by: Jamie Iles <jamie@jamieiles.com>
+This buggy copying function was making some bytes be dropped when
+transmitting to a raw tty, doing something like this.
+
+[root@hostname ~]$ cat /dev/ttyn1 > cascardo/dump &
+[1] 2658
+[root@hostname ~]$ cat /proc/tty/drivers > /dev/ttyn0
+[root@hostname ~]$ cat /proc/tty/drivers
+/dev/tty             /dev/tty        5       0 system:/dev/tty
+/dev/console         /dev/console    5       1 system:console
+/dev/ptmx            /dev/ptmx       5       2 system
+/dev/vc/0            /dev/vc/0       4       0 system:vtmaster
+jsm                  /dev/ttyn     250 0-31 serial
+serial               /dev/ttyS       4 64-95 serial
+hvc                  /dev/hvc      229 0-7 system
+pty_slave            /dev/pts      136 0-1048575 pty:slave
+pty_master           /dev/ptm      128 0-1048575 pty:master
+unknown              /dev/tty        4 1-63 console
+[root@hostname ~]$ cat cascardo/dump
+/dev/tty             /dev/tty        5       0 system:/dev/tty
+/dev/console         /dev/console    5       1 system:console
+/dev/ptmx            /dev/ptmx       5       2 system
+/dev/vc/0            /dev/vc/0       4       0 system:vtmaste[root@hostname ~]$
+
+This patch drops the driver write queue entirely, using the circular
+buffer from uart_core only.
+
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- arch/mips/pmc-sierra/msp71xx/msp_serial.c |   69 +++++++++++++++++++++++++++--
- 1 files changed, 65 insertions(+), 4 deletions(-)
+ drivers/tty/serial/jsm/jsm.h        |    7 ---
+ drivers/tty/serial/jsm/jsm_driver.c |    1 -
+ drivers/tty/serial/jsm/jsm_neo.c    |   29 ++++++-----
+ drivers/tty/serial/jsm/jsm_tty.c    |   94 +++++------------------------------
+ 4 files changed, 28 insertions(+), 103 deletions(-)
 
-diff --git a/arch/mips/pmc-sierra/msp71xx/msp_serial.c b/arch/mips/pmc-sierra/msp71xx/msp_serial.c
-index c3247b5..a1c7c7d 100644
---- a/arch/mips/pmc-sierra/msp71xx/msp_serial.c
-+++ b/arch/mips/pmc-sierra/msp71xx/msp_serial.c
-@@ -27,6 +27,7 @@
- #include <linux/serial.h>
- #include <linux/serial_core.h>
- #include <linux/serial_reg.h>
-+#include <linux/slab.h>
+diff --git a/drivers/tty/serial/jsm/jsm.h b/drivers/tty/serial/jsm/jsm.h
+index cd53bdd..529bec6 100644
+--- a/drivers/tty/serial/jsm/jsm.h
++++ b/drivers/tty/serial/jsm/jsm.h
+@@ -180,10 +180,8 @@ struct jsm_board
+ /* Our Read/Error/Write queue sizes */
+ #define RQUEUEMASK	0x1FFF		/* 8 K - 1 */
+ #define EQUEUEMASK	0x1FFF		/* 8 K - 1 */
+-#define WQUEUEMASK	0x0FFF		/* 4 K - 1 */
+ #define RQUEUESIZE	(RQUEUEMASK + 1)
+ #define EQUEUESIZE	RQUEUESIZE
+-#define WQUEUESIZE	(WQUEUEMASK + 1)
  
- #include <asm/bootinfo.h>
- #include <asm/io.h>
-@@ -38,6 +39,55 @@
- #include <msp_int.h>
- #include <msp_regs.h>
  
-+struct msp_uart_data {
-+	int	last_lcr;
-+};
-+
-+static void msp_serial_out(struct uart_port *p, int offset, int value)
-+{
-+	struct msp_uart_data *d = p->private_data;
-+
-+	if (offset == UART_LCR)
-+		d->last_lcr = value;
-+
-+	offset <<= p->regshift;
-+	writeb(value, p->membase + offset);
-+}
-+
-+static unsigned int msp_serial_in(struct uart_port *p, int offset)
-+{
-+	offset <<= p->regshift;
-+
-+	return readb(p->membase + offset);
-+}
-+
-+static int msp_serial_handle_irq(struct uart_port *p)
-+{
-+	struct msp_uart_data *d = p->private_data;
-+	unsigned int iir = readb(p->membase + (UART_IIR << p->regshift));
-+
-+	if (serial8250_handle_irq(p, iir)) {
-+		return 1;
-+	} else if ((iir & UART_IIR_BUSY) == UART_IIR_BUSY) {
-+		/*
-+		 * The DesignWare APB UART has an Busy Detect (0x07) interrupt
-+		 * meaning an LCR write attempt occurred while the UART was
-+		 * busy. The interrupt must be cleared by reading the UART
-+		 * status register (USR) and the LCR re-written.
-+		 *
-+		 * Note: MSP reserves 0x20 bytes of address space for the UART
-+		 * and the USR is mapped in a separate block at an offset of
-+		 * 0xc0 from the start of the UART.
-+		 */
-+		(void)readb(p->membase + 0xc0);
-+		writeb(d->last_lcr, p->membase + (UART_LCR << p->regshift));
-+
-+		return 1;
-+	}
-+
-+	return 0;
-+}
-+
- void __init msp_serial_setup(void)
- {
- 	char    *s;
-@@ -59,13 +109,22 @@ void __init msp_serial_setup(void)
- 	up.irq          = MSP_INT_UART0;
- 	up.uartclk      = uartclk;
- 	up.regshift     = 2;
--	up.iotype       = UPIO_DWAPB; /* UPIO_MEM like */
-+	up.iotype       = UPIO_MEM;
- 	up.flags        = ASYNC_BOOT_AUTOCONF | ASYNC_SKIP_TEST;
- 	up.type         = PORT_16550A;
- 	up.line         = 0;
--	up.private_data		= (void*)UART0_STATUS_REG;
--	if (early_serial_setup(&up))
-+	up.serial_out	= msp_serial_out;
-+	up.serial_in	= msp_serial_in;
-+	up.handle_irq	= msp_serial_handle_irq;
-+	up.private_data	= kzalloc(sizeof(struct msp_uart_data), GFP_KERNEL);
-+	if (!up.private_data) {
-+		pr_err("failed to allocate uart private data\n");
-+		return;
-+	}
-+	if (early_serial_setup(&up)) {
-+		kfree(up.private_data);
- 		pr_err("Early serial init of port 0 failed\n");
-+	}
+ /************************************************************************
+@@ -223,10 +221,6 @@ struct jsm_channel {
+ 	u16		ch_e_head;	/* Head location of the error queue */
+ 	u16		ch_e_tail;	/* Tail location of the error queue */
  
- 	/* Initialize the second serial port, if one exists */
- 	switch (mips_machtype) {
-@@ -88,6 +147,8 @@ void __init msp_serial_setup(void)
- 	up.irq          = MSP_INT_UART1;
- 	up.line         = 1;
- 	up.private_data		= (void*)UART1_STATUS_REG;
--	if (early_serial_setup(&up))
-+	if (early_serial_setup(&up)) {
-+		kfree(up.private_data);
- 		pr_err("Early serial init of port 1 failed\n");
-+	}
+-	u8		*ch_wqueue;	/* Our write queue buffer - malloc'ed */
+-	u16		ch_w_head;	/* Head location of the write queue */
+-	u16		ch_w_tail;	/* Tail location of the write queue */
+-
+ 	u64		ch_rxcount;	/* total of data received so far */
+ 	u64		ch_txcount;	/* total of data transmitted so far */
+ 
+@@ -375,7 +369,6 @@ extern int	jsm_debug;
+  * Prototypes for non-static functions used in more than one module
+  *
+  *************************************************************************/
+-int jsm_tty_write(struct uart_port *port);
+ int jsm_tty_init(struct jsm_board *);
+ int jsm_uart_port_init(struct jsm_board *);
+ int jsm_remove_uart_port(struct jsm_board *);
+diff --git a/drivers/tty/serial/jsm/jsm_driver.c b/drivers/tty/serial/jsm/jsm_driver.c
+index 1cc8cf6..648b6a3 100644
+--- a/drivers/tty/serial/jsm/jsm_driver.c
++++ b/drivers/tty/serial/jsm/jsm_driver.c
+@@ -194,7 +194,6 @@ static void __devexit jsm_remove_one(struct pci_dev *pdev)
+ 		if (brd->channels[i]) {
+ 			kfree(brd->channels[i]->ch_rqueue);
+ 			kfree(brd->channels[i]->ch_equeue);
+-			kfree(brd->channels[i]->ch_wqueue);
+ 			kfree(brd->channels[i]);
+ 		}
+ 	}
+diff --git a/drivers/tty/serial/jsm/jsm_neo.c b/drivers/tty/serial/jsm/jsm_neo.c
+index 4538c3e..bd6e846 100644
+--- a/drivers/tty/serial/jsm/jsm_neo.c
++++ b/drivers/tty/serial/jsm/jsm_neo.c
+@@ -496,12 +496,15 @@ static void neo_copy_data_from_queue_to_uart(struct jsm_channel *ch)
+ 	int s;
+ 	int qlen;
+ 	u32 len_written = 0;
++	struct circ_buf *circ;
+ 
+ 	if (!ch)
+ 		return;
+ 
++	circ = &ch->uart_port.state->xmit;
++
+ 	/* No data to write to the UART */
+-	if (ch->ch_w_tail == ch->ch_w_head)
++	if (uart_circ_empty(circ))
+ 		return;
+ 
+ 	/* If port is "stopped", don't send any data to the UART */
+@@ -517,11 +520,10 @@ static void neo_copy_data_from_queue_to_uart(struct jsm_channel *ch)
+ 		if (ch->ch_cached_lsr & UART_LSR_THRE) {
+ 			ch->ch_cached_lsr &= ~(UART_LSR_THRE);
+ 
+-			writeb(ch->ch_wqueue[ch->ch_w_tail], &ch->ch_neo_uart->txrx);
++			writeb(circ->buf[circ->tail], &ch->ch_neo_uart->txrx);
+ 			jsm_printk(WRITE, INFO, &ch->ch_bd->pci_dev,
+-					"Tx data: %x\n", ch->ch_wqueue[ch->ch_w_head]);
+-			ch->ch_w_tail++;
+-			ch->ch_w_tail &= WQUEUEMASK;
++					"Tx data: %x\n", circ->buf[circ->head]);
++			circ->tail = (circ->tail + 1) & (UART_XMIT_SIZE - 1);
+ 			ch->ch_txcount++;
+ 		}
+ 		return;
+@@ -536,36 +538,36 @@ static void neo_copy_data_from_queue_to_uart(struct jsm_channel *ch)
+ 	n = UART_17158_TX_FIFOSIZE - ch->ch_t_tlevel;
+ 
+ 	/* cache head and tail of queue */
+-	head = ch->ch_w_head & WQUEUEMASK;
+-	tail = ch->ch_w_tail & WQUEUEMASK;
+-	qlen = (head - tail) & WQUEUEMASK;
++	head = circ->head & (UART_XMIT_SIZE - 1);
++	tail = circ->tail & (UART_XMIT_SIZE - 1);
++	qlen = uart_circ_chars_pending(circ);
+ 
+ 	/* Find minimum of the FIFO space, versus queue length */
+ 	n = min(n, qlen);
+ 
+ 	while (n > 0) {
+ 
+-		s = ((head >= tail) ? head : WQUEUESIZE) - tail;
++		s = ((head >= tail) ? head : UART_XMIT_SIZE) - tail;
+ 		s = min(s, n);
+ 
+ 		if (s <= 0)
+ 			break;
+ 
+-		memcpy_toio(&ch->ch_neo_uart->txrxburst, ch->ch_wqueue + tail, s);
++		memcpy_toio(&ch->ch_neo_uart->txrxburst, circ->buf + tail, s);
+ 		/* Add and flip queue if needed */
+-		tail = (tail + s) & WQUEUEMASK;
++		tail = (tail + s) & (UART_XMIT_SIZE - 1);
+ 		n -= s;
+ 		ch->ch_txcount += s;
+ 		len_written += s;
+ 	}
+ 
+ 	/* Update the final tail */
+-	ch->ch_w_tail = tail & WQUEUEMASK;
++	circ->tail = tail & (UART_XMIT_SIZE - 1);
+ 
+ 	if (len_written >= ch->ch_t_tlevel)
+ 		ch->ch_flags &= ~(CH_TX_FIFO_EMPTY | CH_TX_FIFO_LWM);
+ 
+-	if (!jsm_tty_write(&ch->uart_port))
++	if (uart_circ_empty(circ))
+ 		uart_write_wakeup(&ch->uart_port);
  }
+ 
+@@ -946,7 +948,6 @@ static void neo_param(struct jsm_channel *ch)
+ 	if ((ch->ch_c_cflag & (CBAUD)) == 0) {
+ 		ch->ch_r_head = ch->ch_r_tail = 0;
+ 		ch->ch_e_head = ch->ch_e_tail = 0;
+-		ch->ch_w_head = ch->ch_w_tail = 0;
+ 
+ 		neo_flush_uart_write(ch);
+ 		neo_flush_uart_read(ch);
+diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/jsm_tty.c
+index 7a4a914..434bd88 100644
+--- a/drivers/tty/serial/jsm/jsm_tty.c
++++ b/drivers/tty/serial/jsm/jsm_tty.c
+@@ -118,6 +118,19 @@ static void jsm_tty_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ 	udelay(10);
+ }
+ 
++/*
++ * jsm_tty_write()
++ *
++ * Take data from the user or kernel and send it out to the FEP.
++ * In here exists all the Transparent Print magic as well.
++ */
++static void jsm_tty_write(struct uart_port *port)
++{
++	struct jsm_channel *channel;
++	channel = container_of(port, struct jsm_channel, uart_port);
++	channel->ch_bd->bd_ops->copy_data_from_queue_to_uart(channel);
++}
++
+ static void jsm_tty_start_tx(struct uart_port *port)
+ {
+ 	struct jsm_channel *channel = (struct jsm_channel *)port;
+@@ -216,14 +229,6 @@ static int jsm_tty_open(struct uart_port *port)
+ 			return -ENOMEM;
+ 		}
+ 	}
+-	if (!channel->ch_wqueue) {
+-		channel->ch_wqueue = kzalloc(WQUEUESIZE, GFP_KERNEL);
+-		if (!channel->ch_wqueue) {
+-			jsm_printk(INIT, ERR, &channel->ch_bd->pci_dev,
+-				"unable to allocate write queue buf");
+-			return -ENOMEM;
+-		}
+-	}
+ 
+ 	channel->ch_flags &= ~(CH_OPENING);
+ 	/*
+@@ -237,7 +242,6 @@ static int jsm_tty_open(struct uart_port *port)
+ 	 */
+ 	channel->ch_r_head = channel->ch_r_tail = 0;
+ 	channel->ch_e_head = channel->ch_e_tail = 0;
+-	channel->ch_w_head = channel->ch_w_tail = 0;
+ 
+ 	brd->bd_ops->flush_uart_write(channel);
+ 	brd->bd_ops->flush_uart_read(channel);
+@@ -836,75 +840,3 @@ void jsm_check_queue_flow_control(struct jsm_channel *ch)
+ 		}
+ 	}
+ }
+-
+-/*
+- * jsm_tty_write()
+- *
+- * Take data from the user or kernel and send it out to the FEP.
+- * In here exists all the Transparent Print magic as well.
+- */
+-int jsm_tty_write(struct uart_port *port)
+-{
+-	int bufcount;
+-	int data_count = 0,data_count1 =0;
+-	u16 head;
+-	u16 tail;
+-	u16 tmask;
+-	u32 remain;
+-	int temp_tail = port->state->xmit.tail;
+-	struct jsm_channel *channel = (struct jsm_channel *)port;
+-
+-	tmask = WQUEUEMASK;
+-	head = (channel->ch_w_head) & tmask;
+-	tail = (channel->ch_w_tail) & tmask;
+-
+-	if ((bufcount = tail - head - 1) < 0)
+-		bufcount += WQUEUESIZE;
+-
+-	bufcount = min(bufcount, 56);
+-	remain = WQUEUESIZE - head;
+-
+-	data_count = 0;
+-	if (bufcount >= remain) {
+-		bufcount -= remain;
+-		while ((port->state->xmit.head != temp_tail) &&
+-		(data_count < remain)) {
+-			channel->ch_wqueue[head++] =
+-			port->state->xmit.buf[temp_tail];
+-
+-			temp_tail++;
+-			temp_tail &= (UART_XMIT_SIZE - 1);
+-			data_count++;
+-		}
+-		if (data_count == remain) head = 0;
+-	}
+-
+-	data_count1 = 0;
+-	if (bufcount > 0) {
+-		remain = bufcount;
+-		while ((port->state->xmit.head != temp_tail) &&
+-			(data_count1 < remain)) {
+-			channel->ch_wqueue[head++] =
+-				port->state->xmit.buf[temp_tail];
+-
+-			temp_tail++;
+-			temp_tail &= (UART_XMIT_SIZE - 1);
+-			data_count1++;
+-
+-		}
+-	}
+-
+-	port->state->xmit.tail = temp_tail;
+-
+-	data_count += data_count1;
+-	if (data_count) {
+-		head &= tmask;
+-		channel->ch_w_head = head;
+-	}
+-
+-	if (data_count) {
+-		channel->ch_bd->bd_ops->copy_data_from_queue_to_uart(channel);
+-	}
+-
+-	return data_count;
+-}
 -- 
 1.7.7
 
