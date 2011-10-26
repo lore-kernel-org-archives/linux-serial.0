@@ -1,242 +1,178 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 69/79] TTY: make tty_add_file non-failing
-Date: Wed, 26 Oct 2011 14:13:14 +0200
-Message-ID: <1319631204-23262-69-git-send-email-gregkh@suse.de>
+Subject: [PATCH 76/79] tty/serial: atmel_serial: add device tree support
+Date: Wed, 26 Oct 2011 14:13:21 +0200
+Message-ID: <1319631204-23262-76-git-send-email-gregkh@suse.de>
 References: <20111026114236.GA22180@kroah.com>
  <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:32862 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:32882 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932926Ab1JZMOB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Oct 2011 08:14:01 -0400
+	id S932972Ab1JZMOF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 26 Oct 2011 08:14:05 -0400
 In-Reply-To: <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Jiri Slaby <jslaby@suse.cz>, stable <stable@vger.kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Pekka Enberg <penberg@kernel.org>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Jiri Slaby <jslaby@suse.cz>
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
 
-If tty_add_file fails at the point it is now, we have to revert all
-the changes we did to the tty. It means either decrease all refcounts
-if this was a tty reopen or delete the tty if it was newly allocated.
+Will use aliases to enumerate ports, if available.
 
-There was a try to fix this in v3.0-rc2 using tty_release in 0259894c7
-(TTY: fix fail path in tty_open). But instead it introduced a NULL
-dereference. It's because tty_release dereferences
-filp->private_data, but that one is set even in our tty_add_file. And
-when tty_add_file fails, it's still NULL/garbage. Hence tty_release
-cannot be called there.
-
-To circumvent the original leak (and the current NULL deref) we split
-tty_add_file into two functions, making the latter non-failing. In
-that case we may do the former early in open, where handling failures
-is easy. The latter stays as it is now. So there is no change in
-functionality.
-
-The original bug (leak) was introduced by f573bd176 (tty: Remove
-__GFP_NOFAIL from tty_add_file()). Thanks Dan for reporting this.
-
-Later, we may split tty_release into more functions and call only some
-of them in this fail path instead. (If at all possible.)
-
-Introduced-in: v2.6.37-rc2
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: stable <stable@vger.kernel.org>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Pekka Enberg <penberg@kernel.org>
+Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+Acked-by: Grant Likely <grant.likely@secretlab.ca>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/pty.c    |   16 +++++++++++-----
- drivers/tty/tty_io.c |   47 +++++++++++++++++++++++++++++++++++------------
- include/linux/tty.h  |    4 +++-
- 3 files changed, 49 insertions(+), 18 deletions(-)
+ drivers/tty/serial/atmel_serial.c |   79 +++++++++++++++++++++++++++++++++----
+ 1 files changed, 71 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
-index 98b6e3b..7613f95 100644
---- a/drivers/tty/pty.c
-+++ b/drivers/tty/pty.c
-@@ -657,12 +657,18 @@ static int ptmx_open(struct inode *inode, struct file *filp)
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 1074329..fc4081e 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -33,6 +33,8 @@
+ #include <linux/sysrq.h>
+ #include <linux/tty_flip.h>
+ #include <linux/platform_device.h>
++#include <linux/of.h>
++#include <linux/of_device.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/atmel_pdc.h>
+ #include <linux/atmel_serial.h>
+@@ -163,6 +165,16 @@ static unsigned long atmel_ports_in_use;
+ static struct console atmel_console;
+ #endif
  
- 	nonseekable_open(inode, filp);
- 
-+	retval = tty_alloc_file(filp);
-+	if (retval)
-+		return retval;
++#if defined(CONFIG_OF)
++static const struct of_device_id atmel_serial_dt_ids[] = {
++	{ .compatible = "atmel,at91rm9200-usart" },
++	{ .compatible = "atmel,at91sam9260-usart" },
++	{ /* sentinel */ }
++};
 +
- 	/* find a device that is not in use. */
- 	tty_lock();
- 	index = devpts_new_index(inode);
- 	tty_unlock();
--	if (index < 0)
--		return index;
-+	if (index < 0) {
-+		retval = index;
-+		goto err_file;
-+	}
- 
- 	mutex_lock(&tty_mutex);
- 	tty_lock();
-@@ -676,9 +682,7 @@ static int ptmx_open(struct inode *inode, struct file *filp)
- 
- 	set_bit(TTY_PTY_LOCK, &tty->flags); /* LOCK THE SLAVE */
- 
--	retval = tty_add_file(tty, filp);
--	if (retval)
--		goto out;
-+	tty_add_file(tty, filp);
- 
- 	retval = devpts_pty_new(inode, tty->link);
- 	if (retval)
-@@ -697,6 +701,8 @@ out2:
- out:
- 	devpts_kill_index(inode, index);
- 	tty_unlock();
-+err_file:
-+	tty_free_file(filp);
- 	return retval;
- }
- 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 6913da8..767ecbb 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -194,8 +194,7 @@ static inline struct tty_struct *file_tty(struct file *file)
- 	return ((struct tty_file_private *)file->private_data)->tty;
- }
- 
--/* Associate a new file with the tty structure */
--int tty_add_file(struct tty_struct *tty, struct file *file)
-+int tty_alloc_file(struct file *file)
++MODULE_DEVICE_TABLE(of, atmel_serial_dt_ids);
++#endif
++
+ static inline struct atmel_uart_port *
+ to_atmel_uart_port(struct uart_port *uart)
  {
- 	struct tty_file_private *priv;
+@@ -1411,6 +1423,48 @@ static struct uart_ops atmel_pops = {
+ #endif
+ };
  
-@@ -203,15 +202,36 @@ int tty_add_file(struct tty_struct *tty, struct file *file)
- 	if (!priv)
- 		return -ENOMEM;
- 
-+	file->private_data = priv;
++static void __devinit atmel_of_init_port(struct atmel_uart_port *atmel_port,
++					 struct device_node *np)
++{
++	u32 rs485_delay[2];
 +
-+	return 0;
++	/* DMA/PDC usage specification */
++	if (of_get_property(np, "atmel,use-dma-rx", NULL))
++		atmel_port->use_dma_rx	= 1;
++	else
++		atmel_port->use_dma_rx	= 0;
++	if (of_get_property(np, "atmel,use-dma-tx", NULL))
++		atmel_port->use_dma_tx	= 1;
++	else
++		atmel_port->use_dma_tx	= 0;
++
++	/* rs485 properties */
++	if (of_property_read_u32_array(np, "rs485-rts-delay",
++					    rs485_delay, 2) == 0) {
++		struct serial_rs485 *rs485conf = &atmel_port->rs485;
++
++		rs485conf->delay_rts_before_send = rs485_delay[0];
++		rs485conf->delay_rts_after_send = rs485_delay[1];
++		rs485conf->flags = 0;
++
++		if (rs485conf->delay_rts_before_send == 0 &&
++		    rs485conf->delay_rts_after_send == 0) {
++			rs485conf->flags |= SER_RS485_RTS_ON_SEND;
++		} else {
++			if (rs485conf->delay_rts_before_send)
++				rs485conf->flags |= SER_RS485_RTS_BEFORE_SEND;
++			if (rs485conf->delay_rts_after_send)
++				rs485conf->flags |= SER_RS485_RTS_AFTER_SEND;
++		}
++
++		if (of_get_property(np, "rs485-rx-during-tx", NULL))
++			rs485conf->flags |= SER_RS485_RX_DURING_TX;
++
++		if (of_get_property(np, "linux,rs485-enabled-at-boot-time", NULL))
++			rs485conf->flags |= SER_RS485_ENABLED;
++	}
 +}
 +
-+/* Associate a new file with the tty structure */
-+void tty_add_file(struct tty_struct *tty, struct file *file)
-+{
-+	struct tty_file_private *priv = file->private_data;
+ /*
+  * Configure the port from the platform device resource info.
+  */
+@@ -1420,6 +1474,14 @@ static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
+ 	struct uart_port *port = &atmel_port->uart;
+ 	struct atmel_uart_data *pdata = pdev->dev.platform_data;
+ 
++	if (pdev->dev.of_node) {
++		atmel_of_init_port(atmel_port, pdev->dev.of_node);
++	} else {
++		atmel_port->use_dma_rx	= pdata->use_dma_rx;
++		atmel_port->use_dma_tx	= pdata->use_dma_tx;
++		atmel_port->rs485	= pdata->rs485;
++	}
 +
- 	priv->tty = tty;
- 	priv->file = file;
--	file->private_data = priv;
+ 	port->iotype		= UPIO_MEM;
+ 	port->flags		= UPF_BOOT_AUTOCONF;
+ 	port->ops		= &atmel_pops;
+@@ -1433,7 +1495,7 @@ static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
  
- 	spin_lock(&tty_files_lock);
- 	list_add(&priv->list, &tty->tty_files);
- 	spin_unlock(&tty_files_lock);
-+}
+ 	memset(&atmel_port->rx_ring, 0, sizeof(atmel_port->rx_ring));
  
--	return 0;
-+/**
-+ * tty_free_file - free file->private_data
-+ *
-+ * This shall be used only for fail path handling when tty_add_file was not
-+ * called yet.
-+ */
-+void tty_free_file(struct file *file)
-+{
-+	struct tty_file_private *priv = file->private_data;
-+
-+	file->private_data = NULL;
-+	kfree(priv);
- }
- 
- /* Delete file from its tty */
-@@ -222,8 +242,7 @@ void tty_del_file(struct file *file)
- 	spin_lock(&tty_files_lock);
- 	list_del(&priv->list);
- 	spin_unlock(&tty_files_lock);
--	file->private_data = NULL;
--	kfree(priv);
-+	tty_free_file(file);
- }
- 
- 
-@@ -1812,6 +1831,10 @@ static int tty_open(struct inode *inode, struct file *filp)
- 	nonseekable_open(inode, filp);
- 
- retry_open:
-+	retval = tty_alloc_file(filp);
-+	if (retval)
-+		return -ENOMEM;
-+
- 	noctty = filp->f_flags & O_NOCTTY;
- 	index  = -1;
- 	retval = 0;
-@@ -1824,6 +1847,7 @@ retry_open:
- 		if (!tty) {
- 			tty_unlock();
- 			mutex_unlock(&tty_mutex);
-+			tty_free_file(filp);
- 			return -ENXIO;
- 		}
- 		driver = tty_driver_kref_get(tty->driver);
-@@ -1856,6 +1880,7 @@ retry_open:
- 		}
- 		tty_unlock();
- 		mutex_unlock(&tty_mutex);
-+		tty_free_file(filp);
- 		return -ENODEV;
+-	if (pdata->regs) {
++	if (pdata && pdata->regs) {
+ 		/* Already mapped by setup code */
+ 		port->membase = pdata->regs;
+ 	} else {
+@@ -1450,10 +1512,6 @@ static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
+ 		/* only enable clock when USART is in use */
  	}
  
-@@ -1863,6 +1888,7 @@ retry_open:
- 	if (!driver) {
- 		tty_unlock();
- 		mutex_unlock(&tty_mutex);
-+		tty_free_file(filp);
- 		return -ENODEV;
- 	}
- got_driver:
-@@ -1874,6 +1900,7 @@ got_driver:
- 			tty_unlock();
- 			mutex_unlock(&tty_mutex);
- 			tty_driver_kref_put(driver);
-+			tty_free_file(filp);
- 			return PTR_ERR(tty);
- 		}
- 	}
-@@ -1889,15 +1916,11 @@ got_driver:
- 	tty_driver_kref_put(driver);
- 	if (IS_ERR(tty)) {
- 		tty_unlock();
-+		tty_free_file(filp);
- 		return PTR_ERR(tty);
- 	}
+-	atmel_port->use_dma_rx	= pdata->use_dma_rx;
+-	atmel_port->use_dma_tx	= pdata->use_dma_tx;
+-	atmel_port->rs485	= pdata->rs485;
+-
+ 	/* Use TXEMPTY for interrupt when rs485 else TXRDY or ENDTX|TXBUFE */
+ 	if (atmel_port->rs485.flags & SER_RS485_ENABLED)
+ 		atmel_port->tx_done_mask = ATMEL_US_TXEMPTY;
+@@ -1718,17 +1776,21 @@ static int atmel_serial_resume(struct platform_device *pdev)
+ static int __devinit atmel_serial_probe(struct platform_device *pdev)
+ {
+ 	struct atmel_uart_port *port;
++	struct device_node *np = pdev->dev.of_node;
+ 	struct atmel_uart_data *pdata = pdev->dev.platform_data;
+ 	void *data;
+ 	int ret = -ENODEV;
  
--	retval = tty_add_file(tty, filp);
--	if (retval) {
--		tty_unlock();
--		tty_release(inode, filp);
--		return retval;
--	}
-+	tty_add_file(tty, filp);
+ 	BUILD_BUG_ON(ATMEL_SERIAL_RINGSIZE & (ATMEL_SERIAL_RINGSIZE - 1));
  
- 	check_tty_count(tty, "tty_open");
- 	if (tty->driver->type == TTY_DRIVER_TYPE_PTY &&
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 64c12a3..ff2925a 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -471,7 +471,9 @@ extern void proc_clear_tty(struct task_struct *p);
- extern struct tty_struct *get_current_tty(void);
- extern void tty_default_fops(struct file_operations *fops);
- extern struct tty_struct *alloc_tty_struct(void);
--extern int tty_add_file(struct tty_struct *tty, struct file *file);
-+extern int tty_alloc_file(struct file *file);
-+extern void tty_add_file(struct tty_struct *tty, struct file *file);
-+extern void tty_free_file(struct file *file);
- extern void free_tty_struct(struct tty_struct *tty);
- extern void initialize_tty_struct(struct tty_struct *tty,
- 		struct tty_driver *driver, int idx);
+-	if (pdata)
+-		ret = pdata->num;
++	if (np)
++		ret = of_alias_get_id(np, "serial");
++	else
++		if (pdata)
++			ret = pdata->num;
+ 
+ 	if (ret < 0)
+-		/* port id not found in platform data:
++		/* port id not found in platform data nor device-tree aliases:
+ 		 * auto-enumerate it */
+ 		ret = find_first_zero_bit(&atmel_ports_in_use,
+ 				sizeof(atmel_ports_in_use));
+@@ -1827,6 +1889,7 @@ static struct platform_driver atmel_serial_driver = {
+ 	.driver		= {
+ 		.name	= "atmel_usart",
+ 		.owner	= THIS_MODULE,
++		.of_match_table	= of_match_ptr(atmel_serial_dt_ids),
+ 	},
+ };
+ 
 -- 
 1.7.7
 
