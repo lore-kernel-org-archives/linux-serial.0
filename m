@@ -1,100 +1,76 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 64/79] tty: Support compat_ioctl get/set termios_locked
-Date: Wed, 26 Oct 2011 14:13:09 +0200
-Message-ID: <1319631204-23262-64-git-send-email-gregkh@suse.de>
+Subject: [PATCH 73/79] tty/serial: atmel_serial: change platform_data variable name
+Date: Wed, 26 Oct 2011 14:13:18 +0200
+Message-ID: <1319631204-23262-73-git-send-email-gregkh@suse.de>
 References: <20111026114236.GA22180@kroah.com>
  <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:32846 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:32876 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932950Ab1JZMN6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Oct 2011 08:13:58 -0400
+	id S932929Ab1JZMOD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 26 Oct 2011 08:14:03 -0400
 In-Reply-To: <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Thomas Meyer <thomas@m3y3r.de>, Arnd Bergmann <arnd@arndb.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Andrew Morton <akpm@google.com>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Thomas Meyer <thomas@m3y3r.de>
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
 
-When running a Fedora 15 (x86) on an x86_64 kernel, in the boot process
-plymouthd complains about those two missing ioctls:
-[    2.581783] ioctl32(plymouthd:186): Unknown cmd fd(10) cmd(00005457){t:'T';sz:0} arg(ffb6a5d0) on /dev/tty1
-[    2.581803] ioctl32(plymouthd:186): Unknown cmd fd(10) cmd(00005456){t:'T';sz:0} arg(ffb6a680) on /dev/tty1
+Easier to follow if platform_data name is pdata.
 
-both ioctl functions work on the 'struct termios' resp. 'struct termios2',
-which has the same size (36 bytes resp. 44 bytes) on x86 and x86_64,
-so it's just a matter of converting the pointer from userland.
-
-Signed-off-by: Thomas Meyer <thomas@m3y3r.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Signed-off-by: Andrew Morton <akpm@google.com>
+Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+Acked-by: Grant Likely <grant.likely@secretlab.ca>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/tty_io.c    |    2 ++
- drivers/tty/tty_ioctl.c |   17 +++++++++++++++++
- include/linux/tty.h     |    2 ++
- 3 files changed, 21 insertions(+), 0 deletions(-)
+ drivers/tty/serial/atmel_serial.c |   14 +++++++-------
+ 1 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 150e4f7..4ca4bcd 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -2717,6 +2717,8 @@ static long tty_compat_ioctl(struct file *file, unsigned int cmd,
- 	ld = tty_ldisc_ref_wait(tty);
- 	if (ld->ops->compat_ioctl)
- 		retval = ld->ops->compat_ioctl(tty, file, cmd, arg);
-+	else
-+		retval = n_tty_compat_ioctl_helper(tty, file, cmd, arg);
- 	tty_ldisc_deref(ld);
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index c7232a9..a507daa 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -1417,13 +1417,13 @@ static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
+ 				      struct platform_device *pdev)
+ {
+ 	struct uart_port *port = &atmel_port->uart;
+-	struct atmel_uart_data *data = pdev->dev.platform_data;
++	struct atmel_uart_data *pdata = pdev->dev.platform_data;
  
- 	return retval;
-diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
-index 53f2442..9314d93 100644
---- a/drivers/tty/tty_ioctl.c
-+++ b/drivers/tty/tty_ioctl.c
-@@ -19,6 +19,7 @@
- #include <linux/module.h>
- #include <linux/bitops.h>
- #include <linux/mutex.h>
-+#include <linux/compat.h>
+ 	port->iotype		= UPIO_MEM;
+ 	port->flags		= UPF_BOOT_AUTOCONF;
+ 	port->ops		= &atmel_pops;
+ 	port->fifosize		= 1;
+-	port->line		= data->num;
++	port->line		= pdata->num;
+ 	port->dev		= &pdev->dev;
+ 	port->mapbase	= pdev->resource[0].start;
+ 	port->irq	= pdev->resource[1].start;
+@@ -1433,9 +1433,9 @@ static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
  
- #include <asm/io.h>
- #include <asm/uaccess.h>
-@@ -1179,3 +1180,19 @@ int n_tty_ioctl_helper(struct tty_struct *tty, struct file *file,
+ 	memset(&atmel_port->rx_ring, 0, sizeof(atmel_port->rx_ring));
+ 
+-	if (data->regs)
++	if (pdata->regs)
+ 		/* Already mapped by setup code */
+-		port->membase = data->regs;
++		port->membase = pdata->regs;
+ 	else {
+ 		port->flags	|= UPF_IOREMAP;
+ 		port->membase	= NULL;
+@@ -1450,9 +1450,9 @@ static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
+ 		/* only enable clock when USART is in use */
  	}
- }
- EXPORT_SYMBOL(n_tty_ioctl_helper);
-+
-+#ifdef CONFIG_COMPAT
-+long n_tty_compat_ioctl_helper(struct tty_struct *tty, struct file *file,
-+					unsigned int cmd, unsigned long arg)
-+{
-+	switch (cmd) {
-+	case TIOCGLCKTRMIOS:
-+	case TIOCSLCKTRMIOS:
-+		return tty_mode_ioctl(tty, file, cmd, (unsigned long) compat_ptr(arg));
-+	default:
-+		return -ENOIOCTLCMD;
-+	}
-+}
-+EXPORT_SYMBOL(n_tty_compat_ioctl_helper);
-+#endif
-+
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 0ad6888..64c12a3 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -579,6 +579,8 @@ extern int __init tty_init(void);
- /* tty_ioctl.c */
- extern int n_tty_ioctl_helper(struct tty_struct *tty, struct file *file,
- 		       unsigned int cmd, unsigned long arg);
-+extern long n_tty_compat_ioctl_helper(struct tty_struct *tty, struct file *file,
-+		       unsigned int cmd, unsigned long arg);
  
- /* serial.c */
- 
+-	atmel_port->use_dma_rx = data->use_dma_rx;
+-	atmel_port->use_dma_tx = data->use_dma_tx;
+-	atmel_port->rs485	= data->rs485;
++	atmel_port->use_dma_rx = pdata->use_dma_rx;
++	atmel_port->use_dma_tx = pdata->use_dma_tx;
++	atmel_port->rs485	= pdata->rs485;
+ 	/* Use TXEMPTY for interrupt when rs485 else TXRDY or ENDTX|TXBUFE */
+ 	if (atmel_port->rs485.flags & SER_RS485_ENABLED)
+ 		atmel_port->tx_done_mask = ATMEL_US_TXEMPTY;
 -- 
 1.7.7
 
