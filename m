@@ -1,64 +1,83 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 70/79] TTY: pty, release tty in all ptmx_open fail paths
-Date: Wed, 26 Oct 2011 14:13:15 +0200
-Message-ID: <1319631204-23262-70-git-send-email-gregkh@suse.de>
+Subject: [PATCH 71/79] TTY: call tty_driver_lookup_tty unconditionally
+Date: Wed, 26 Oct 2011 14:13:16 +0200
+Message-ID: <1319631204-23262-71-git-send-email-gregkh@suse.de>
 References: <20111026114236.GA22180@kroah.com>
  <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:32867 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:32871 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932960Ab1JZMOC (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	id S932966Ab1JZMOC (ORCPT <rfc822;linux-serial@vger.kernel.org>);
 	Wed, 26 Oct 2011 08:14:02 -0400
 In-Reply-To: <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Jiri Slaby <jslaby@suse.cz>, stable <stable@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Jiri Slaby <jslaby@suse.cz>, stable <stable@vger.kernel.org>, Sukadev Bhattiprolu <sukadev@us.ibm.com>, Alan Cox <alan@redhat.com>, Greg Kroah-Hartman <gregkh@suse.de>
 
 From: Jiri Slaby <jslaby@suse.cz>
 
-Mistakenly, commit 64ba3dc3143d (tty: never hold BTM while getting
-tty_mutex) switched one fail path in ptmx_open to not free the newly
-allocated tty.
+Commit 4a2b5fddd5 (Move tty lookup/reopen to caller) made the call to
+tty_driver_lookup_tty conditional in tty_open. It doesn't look like it
+was an intention. Or if it was, it was not documented in the changelog
+and the code now looks weird. For example there would be no need to
+remember the tty driver and tty index. Further the condition depends
+on a tty which we drop a reference of already.
 
-Fix that by jumping to the appropriate place. And rename the labels so
-that it's clear what is going on there.
+If I'm looking correctly, this should not matter thanks to the locking
+currently done there. Thus, tty_driver->ttys[idx] cannot change under
+our hands. But anyway, it makes sense to change that to the old
+behaviour.
 
-Introduced-in: v2.6.36-rc2
+Introduced-in: v2.6.28-rc2
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 Cc: stable <stable@vger.kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Sukadev Bhattiprolu <sukadev@us.ibm.com>
+Cc: Alan Cox <alan@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/pty.c |   10 +++++-----
- 1 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/tty/tty_io.c |   21 +++++++++------------
+ 1 files changed, 9 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
-index 7613f95..2feea63 100644
---- a/drivers/tty/pty.c
-+++ b/drivers/tty/pty.c
-@@ -686,15 +686,15 @@ static int ptmx_open(struct inode *inode, struct file *filp)
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 767ecbb..0425170 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -1821,7 +1821,7 @@ int tty_release(struct inode *inode, struct file *filp)
  
- 	retval = devpts_pty_new(inode, tty->link);
- 	if (retval)
--		goto out1;
-+		goto err_release;
+ static int tty_open(struct inode *inode, struct file *filp)
+ {
+-	struct tty_struct *tty = NULL;
++	struct tty_struct *tty;
+ 	int noctty, retval;
+ 	struct tty_driver *driver;
+ 	int index;
+@@ -1892,17 +1892,14 @@ retry_open:
+ 		return -ENODEV;
+ 	}
+ got_driver:
+-	if (!tty) {
+-		/* check whether we're reopening an existing tty */
+-		tty = tty_driver_lookup_tty(driver, inode, index);
+-
+-		if (IS_ERR(tty)) {
+-			tty_unlock();
+-			mutex_unlock(&tty_mutex);
+-			tty_driver_kref_put(driver);
+-			tty_free_file(filp);
+-			return PTR_ERR(tty);
+-		}
++	/* check whether we're reopening an existing tty */
++	tty = tty_driver_lookup_tty(driver, inode, index);
++	if (IS_ERR(tty)) {
++		tty_unlock();
++		mutex_unlock(&tty_mutex);
++		tty_driver_kref_put(driver);
++		tty_free_file(filp);
++		return PTR_ERR(tty);
+ 	}
  
- 	retval = ptm_driver->ops->open(tty, filp);
- 	if (retval)
--		goto out2;
--out1:
-+		goto err_release;
-+
- 	tty_unlock();
--	return retval;
--out2:
-+	return 0;
-+err_release:
- 	tty_unlock();
- 	tty_release(inode, filp);
- 	return retval;
+ 	if (tty) {
 -- 
 1.7.7
 
