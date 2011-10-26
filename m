@@ -1,68 +1,72 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 65/79] parport_pc: release IO region properly if unsupported ITE887x card is found
-Date: Wed, 26 Oct 2011 14:13:10 +0200
-Message-ID: <1319631204-23262-65-git-send-email-gregkh@suse.de>
+Subject: [PATCH 57/79] drivers/tty: don't use the byte channel handle as a parameter in ehv_bytechan.c
+Date: Wed, 26 Oct 2011 14:13:02 +0200
+Message-ID: <1319631204-23262-57-git-send-email-gregkh@suse.de>
 References: <20111026114236.GA22180@kroah.com>
  <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:32852 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:32829 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932919Ab1JZMN6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Oct 2011 08:13:58 -0400
+	id S932929Ab1JZMNz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 26 Oct 2011 08:13:55 -0400
 In-Reply-To: <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Jiri Kosina <jkosina@suse.cz>, Bjorn Helgaas <bjorn.helgaas@hp.com>, Alan Cox <alan@linux.intel.com>, Joe Krahn <krahn@niehs.nih.gov>, Andrew Morton <akpm@google.com>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Timur Tabi <timur@freescale.com>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Jiri Kosina <jkosina@suse.cz>
+From: Timur Tabi <timur@freescale.com>
 
-sio_ite_8872_probe() bails out if it detects no-parallel (1S, 2S) or
-unknown card.
+The ePAPR hypervisor byte channel console driver only supports one byte
+channel as a console, and the byte channel handle is stored in a global
+variable.  It doesn't make any sense to pass that handle as a parameter
+to the console functions, since these functions already have access to the
+global variable.
 
-It doesn't call release_region() on the previously allocated resource
-though.  This causes
-
-  (a) leak of the resource
-  (b) kernel oops when parport module is removed and /proc/ioports is read. This
-      is because the string that has been associated to the IO port region
-      is a static char array inside the already removed module.
-
-Let's call release_region() properly before baling out.
-
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
-Acked-by: Niels de Vos <ndevos@redhat.com>
-Cc: Bjorn Helgaas <bjorn.helgaas@hp.com>
-Cc: Alan Cox <alan@linux.intel.com>
-Cc: Joe Krahn <krahn@niehs.nih.gov>
-Signed-off-by: Andrew Morton <akpm@google.com>
+Signed-off-by: Timur Tabi <timur@freescale.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/parport/parport_pc.c |    3 +++
- 1 files changed, 3 insertions(+), 0 deletions(-)
+ drivers/tty/ehv_bytechan.c |    7 ++-----
+ 1 files changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/parport/parport_pc.c b/drivers/parport/parport_pc.c
-index d1cdb94..d0b597b 100644
---- a/drivers/parport/parport_pc.c
-+++ b/drivers/parport/parport_pc.c
-@@ -2595,14 +2595,17 @@ static int __devinit sio_ite_8872_probe(struct pci_dev *pdev, int autoirq,
- 		break;
- 	case 0x6:
- 		printk(KERN_INFO "parport_pc: ITE8873 found (1S)\n");
-+		release_region(inta_addr[i], 32);
- 		return 0;
- 	case 0x8:
- 		printk(KERN_INFO "parport_pc: ITE8874 found (2S)\n");
-+		release_region(inta_addr[i], 32);
- 		return 0;
- 	default:
- 		printk(KERN_INFO "parport_pc: unknown ITE887x\n");
- 		printk(KERN_INFO "parport_pc: please mail 'lspci -nvv' "
- 			"output to Rich.Liu@ite.com.tw\n");
-+		release_region(inta_addr[i], 32);
- 		return 0;
+diff --git a/drivers/tty/ehv_bytechan.c b/drivers/tty/ehv_bytechan.c
+index f733718..1595dba 100644
+--- a/drivers/tty/ehv_bytechan.c
++++ b/drivers/tty/ehv_bytechan.c
+@@ -282,7 +282,6 @@ static int ehv_bc_console_byte_channel_send(unsigned int handle, const char *s,
+ static void ehv_bc_console_write(struct console *co, const char *s,
+ 				 unsigned int count)
+ {
+-	unsigned int handle = (uintptr_t)co->data;
+ 	char s2[EV_BYTE_CHANNEL_MAX_BYTES];
+ 	unsigned int i, j = 0;
+ 	char c;
+@@ -295,14 +294,14 @@ static void ehv_bc_console_write(struct console *co, const char *s,
+ 
+ 		s2[j++] = c;
+ 		if (j >= (EV_BYTE_CHANNEL_MAX_BYTES - 1)) {
+-			if (ehv_bc_console_byte_channel_send(handle, s2, j))
++			if (ehv_bc_console_byte_channel_send(stdout_bc, s2, j))
+ 				return;
+ 			j = 0;
+ 		}
  	}
  
+ 	if (j)
+-		ehv_bc_console_byte_channel_send(handle, s2, j);
++		ehv_bc_console_byte_channel_send(stdout_bc, s2, j);
+ }
+ 
+ /*
+@@ -348,8 +347,6 @@ static int __init ehv_bc_console_init(void)
+ 			   CONFIG_PPC_EARLY_DEBUG_EHV_BC_HANDLE);
+ #endif
+ 
+-	ehv_bc_console.data = (void *)(uintptr_t)stdout_bc;
+-
+ 	/* add_preferred_console() must be called before register_console(),
+ 	   otherwise it won't work.  However, we don't want to enumerate all the
+ 	   byte channels here, either, since we only care about one. */
 -- 
 1.7.7
 
