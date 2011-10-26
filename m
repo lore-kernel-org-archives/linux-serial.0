@@ -1,59 +1,242 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 74/79] tty/serial: atmel_serial: whitespace and braces modifications
-Date: Wed, 26 Oct 2011 14:13:19 +0200
-Message-ID: <1319631204-23262-74-git-send-email-gregkh@suse.de>
+Subject: [PATCH 69/79] TTY: make tty_add_file non-failing
+Date: Wed, 26 Oct 2011 14:13:14 +0200
+Message-ID: <1319631204-23262-69-git-send-email-gregkh@suse.de>
 References: <20111026114236.GA22180@kroah.com>
  <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:32877 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:32862 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932967Ab1JZMOE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Oct 2011 08:14:04 -0400
+	id S932926Ab1JZMOB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 26 Oct 2011 08:14:01 -0400
 In-Reply-To: <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Jiri Slaby <jslaby@suse.cz>, stable <stable@vger.kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Pekka Enberg <penberg@kernel.org>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
+From: Jiri Slaby <jslaby@suse.cz>
 
-Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
-Acked-by: Grant Likely <grant.likely@secretlab.ca>
+If tty_add_file fails at the point it is now, we have to revert all
+the changes we did to the tty. It means either decrease all refcounts
+if this was a tty reopen or delete the tty if it was newly allocated.
+
+There was a try to fix this in v3.0-rc2 using tty_release in 0259894c7
+(TTY: fix fail path in tty_open). But instead it introduced a NULL
+dereference. It's because tty_release dereferences
+filp->private_data, but that one is set even in our tty_add_file. And
+when tty_add_file fails, it's still NULL/garbage. Hence tty_release
+cannot be called there.
+
+To circumvent the original leak (and the current NULL deref) we split
+tty_add_file into two functions, making the latter non-failing. In
+that case we may do the former early in open, where handling failures
+is easy. The latter stays as it is now. So there is no change in
+functionality.
+
+The original bug (leak) was introduced by f573bd176 (tty: Remove
+__GFP_NOFAIL from tty_add_file()). Thanks Dan for reporting this.
+
+Later, we may split tty_release into more functions and call only some
+of them in this fail path instead. (If at all possible.)
+
+Introduced-in: v2.6.37-rc2
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: stable <stable@vger.kernel.org>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Pekka Enberg <penberg@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/serial/atmel_serial.c |    9 +++++----
- 1 files changed, 5 insertions(+), 4 deletions(-)
+ drivers/tty/pty.c    |   16 +++++++++++-----
+ drivers/tty/tty_io.c |   47 +++++++++++++++++++++++++++++++++++------------
+ include/linux/tty.h  |    4 +++-
+ 3 files changed, 49 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index a507daa..bb72354 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -1433,10 +1433,10 @@ static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
+diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+index 98b6e3b..7613f95 100644
+--- a/drivers/tty/pty.c
++++ b/drivers/tty/pty.c
+@@ -657,12 +657,18 @@ static int ptmx_open(struct inode *inode, struct file *filp)
  
- 	memset(&atmel_port->rx_ring, 0, sizeof(atmel_port->rx_ring));
+ 	nonseekable_open(inode, filp);
  
--	if (pdata->regs)
-+	if (pdata->regs) {
- 		/* Already mapped by setup code */
- 		port->membase = pdata->regs;
--	else {
-+	} else {
- 		port->flags	|= UPF_IOREMAP;
- 		port->membase	= NULL;
- 	}
-@@ -1450,9 +1450,10 @@ static void __devinit atmel_init_port(struct atmel_uart_port *atmel_port,
- 		/* only enable clock when USART is in use */
- 	}
- 
--	atmel_port->use_dma_rx = pdata->use_dma_rx;
--	atmel_port->use_dma_tx = pdata->use_dma_tx;
-+	atmel_port->use_dma_rx	= pdata->use_dma_rx;
-+	atmel_port->use_dma_tx	= pdata->use_dma_tx;
- 	atmel_port->rs485	= pdata->rs485;
++	retval = tty_alloc_file(filp);
++	if (retval)
++		return retval;
 +
- 	/* Use TXEMPTY for interrupt when rs485 else TXRDY or ENDTX|TXBUFE */
- 	if (atmel_port->rs485.flags & SER_RS485_ENABLED)
- 		atmel_port->tx_done_mask = ATMEL_US_TXEMPTY;
+ 	/* find a device that is not in use. */
+ 	tty_lock();
+ 	index = devpts_new_index(inode);
+ 	tty_unlock();
+-	if (index < 0)
+-		return index;
++	if (index < 0) {
++		retval = index;
++		goto err_file;
++	}
+ 
+ 	mutex_lock(&tty_mutex);
+ 	tty_lock();
+@@ -676,9 +682,7 @@ static int ptmx_open(struct inode *inode, struct file *filp)
+ 
+ 	set_bit(TTY_PTY_LOCK, &tty->flags); /* LOCK THE SLAVE */
+ 
+-	retval = tty_add_file(tty, filp);
+-	if (retval)
+-		goto out;
++	tty_add_file(tty, filp);
+ 
+ 	retval = devpts_pty_new(inode, tty->link);
+ 	if (retval)
+@@ -697,6 +701,8 @@ out2:
+ out:
+ 	devpts_kill_index(inode, index);
+ 	tty_unlock();
++err_file:
++	tty_free_file(filp);
+ 	return retval;
+ }
+ 
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 6913da8..767ecbb 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -194,8 +194,7 @@ static inline struct tty_struct *file_tty(struct file *file)
+ 	return ((struct tty_file_private *)file->private_data)->tty;
+ }
+ 
+-/* Associate a new file with the tty structure */
+-int tty_add_file(struct tty_struct *tty, struct file *file)
++int tty_alloc_file(struct file *file)
+ {
+ 	struct tty_file_private *priv;
+ 
+@@ -203,15 +202,36 @@ int tty_add_file(struct tty_struct *tty, struct file *file)
+ 	if (!priv)
+ 		return -ENOMEM;
+ 
++	file->private_data = priv;
++
++	return 0;
++}
++
++/* Associate a new file with the tty structure */
++void tty_add_file(struct tty_struct *tty, struct file *file)
++{
++	struct tty_file_private *priv = file->private_data;
++
+ 	priv->tty = tty;
+ 	priv->file = file;
+-	file->private_data = priv;
+ 
+ 	spin_lock(&tty_files_lock);
+ 	list_add(&priv->list, &tty->tty_files);
+ 	spin_unlock(&tty_files_lock);
++}
+ 
+-	return 0;
++/**
++ * tty_free_file - free file->private_data
++ *
++ * This shall be used only for fail path handling when tty_add_file was not
++ * called yet.
++ */
++void tty_free_file(struct file *file)
++{
++	struct tty_file_private *priv = file->private_data;
++
++	file->private_data = NULL;
++	kfree(priv);
+ }
+ 
+ /* Delete file from its tty */
+@@ -222,8 +242,7 @@ void tty_del_file(struct file *file)
+ 	spin_lock(&tty_files_lock);
+ 	list_del(&priv->list);
+ 	spin_unlock(&tty_files_lock);
+-	file->private_data = NULL;
+-	kfree(priv);
++	tty_free_file(file);
+ }
+ 
+ 
+@@ -1812,6 +1831,10 @@ static int tty_open(struct inode *inode, struct file *filp)
+ 	nonseekable_open(inode, filp);
+ 
+ retry_open:
++	retval = tty_alloc_file(filp);
++	if (retval)
++		return -ENOMEM;
++
+ 	noctty = filp->f_flags & O_NOCTTY;
+ 	index  = -1;
+ 	retval = 0;
+@@ -1824,6 +1847,7 @@ retry_open:
+ 		if (!tty) {
+ 			tty_unlock();
+ 			mutex_unlock(&tty_mutex);
++			tty_free_file(filp);
+ 			return -ENXIO;
+ 		}
+ 		driver = tty_driver_kref_get(tty->driver);
+@@ -1856,6 +1880,7 @@ retry_open:
+ 		}
+ 		tty_unlock();
+ 		mutex_unlock(&tty_mutex);
++		tty_free_file(filp);
+ 		return -ENODEV;
+ 	}
+ 
+@@ -1863,6 +1888,7 @@ retry_open:
+ 	if (!driver) {
+ 		tty_unlock();
+ 		mutex_unlock(&tty_mutex);
++		tty_free_file(filp);
+ 		return -ENODEV;
+ 	}
+ got_driver:
+@@ -1874,6 +1900,7 @@ got_driver:
+ 			tty_unlock();
+ 			mutex_unlock(&tty_mutex);
+ 			tty_driver_kref_put(driver);
++			tty_free_file(filp);
+ 			return PTR_ERR(tty);
+ 		}
+ 	}
+@@ -1889,15 +1916,11 @@ got_driver:
+ 	tty_driver_kref_put(driver);
+ 	if (IS_ERR(tty)) {
+ 		tty_unlock();
++		tty_free_file(filp);
+ 		return PTR_ERR(tty);
+ 	}
+ 
+-	retval = tty_add_file(tty, filp);
+-	if (retval) {
+-		tty_unlock();
+-		tty_release(inode, filp);
+-		return retval;
+-	}
++	tty_add_file(tty, filp);
+ 
+ 	check_tty_count(tty, "tty_open");
+ 	if (tty->driver->type == TTY_DRIVER_TYPE_PTY &&
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 64c12a3..ff2925a 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -471,7 +471,9 @@ extern void proc_clear_tty(struct task_struct *p);
+ extern struct tty_struct *get_current_tty(void);
+ extern void tty_default_fops(struct file_operations *fops);
+ extern struct tty_struct *alloc_tty_struct(void);
+-extern int tty_add_file(struct tty_struct *tty, struct file *file);
++extern int tty_alloc_file(struct file *file);
++extern void tty_add_file(struct tty_struct *tty, struct file *file);
++extern void tty_free_file(struct file *file);
+ extern void free_tty_struct(struct tty_struct *tty);
+ extern void initialize_tty_struct(struct tty_struct *tty,
+ 		struct tty_driver *driver, int idx);
 -- 
 1.7.7
 
