@@ -1,124 +1,114 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 12/79] serial:bfin_uart: Put TX IRQ in individual platform resource.
-Date: Wed, 26 Oct 2011 14:12:17 +0200
-Message-ID: <1319631204-23262-12-git-send-email-gregkh@suse.de>
+Subject: [PATCH 08/79] TTY: mxser+cyclades remove wait_until_sent debug code
+Date: Wed, 26 Oct 2011 14:12:13 +0200
+Message-ID: <1319631204-23262-8-git-send-email-gregkh@suse.de>
 References: <20111026114236.GA22180@kroah.com>
  <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:60936 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:60929 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932848Ab1JZMNd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Oct 2011 08:13:33 -0400
+	id S932840Ab1JZMNb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 26 Oct 2011 08:13:31 -0400
+Received: from relay2.suse.de (charybdis-ext.suse.de [195.135.221.2])
+	(using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx2.suse.de (Postfix) with ESMTP id 568A78FB03
+	for <linux-serial@vger.kernel.org>; Wed, 26 Oct 2011 14:13:30 +0200 (CEST)
 In-Reply-To: <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Sonic Zhang <sonic.zhang@analog.com>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Sonic Zhang <sonic.zhang@analog.com>
+From: Jiri Slaby <jslaby@suse.cz>
 
-Serial TX IRQ is not RX IRQ plus 1 in some blackfin chips.
-Give individual platform resources to both TX and RX irqs.
+It makes the code really ugly. And since it can be enabled only before
+building and only in the source files, it can be barely used by users.
+That said, I've not seen anybody to use it in the past few years.
 
-Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+This crap is copied to some more drivers over the tty tree. Since I'm
+not their maintainer, I'm not sure if I should remove them too?
+
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/serial/bfin_uart.c |   36 ++++++++++++++++++++++--------------
- 1 files changed, 22 insertions(+), 14 deletions(-)
+ drivers/tty/cyclades.c |   12 +-----------
+ drivers/tty/mxser.c    |   13 +------------
+ 2 files changed, 2 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/tty/serial/bfin_uart.c b/drivers/tty/serial/bfin_uart.c
-index e08bc04..c7e592d 100644
---- a/drivers/tty/serial/bfin_uart.c
-+++ b/drivers/tty/serial/bfin_uart.c
-@@ -667,17 +667,17 @@ static int bfin_serial_startup(struct uart_port *port)
- 		kgdboc_break_enabled = 0;
- 	else {
- # endif
--	if (request_irq(uart->port.irq, bfin_serial_rx_int, IRQF_DISABLED,
-+	if (request_irq(uart->rx_irq, bfin_serial_rx_int, IRQF_DISABLED,
- 	     "BFIN_UART_RX", uart)) {
- 		printk(KERN_NOTICE "Unable to attach BlackFin UART RX interrupt\n");
- 		return -EBUSY;
- 	}
- 
- 	if (request_irq
--	    (uart->port.irq+1, bfin_serial_tx_int, IRQF_DISABLED,
-+	    (uart->tx_irq, bfin_serial_tx_int, IRQF_DISABLED,
- 	     "BFIN_UART_TX", uart)) {
- 		printk(KERN_NOTICE "Unable to attach BlackFin UART TX interrupt\n");
--		free_irq(uart->port.irq, uart);
-+		free_irq(uart->rx_irq, uart);
- 		return -EBUSY;
- 	}
- 
-@@ -692,7 +692,7 @@ static int bfin_serial_startup(struct uart_port *port)
- 		 */
- 		unsigned uart_dma_ch_rx, uart_dma_ch_tx;
- 
--		switch (uart->port.irq) {
-+		switch (uart->rx_irq) {
- 		case IRQ_UART3_RX:
- 			uart_dma_ch_rx = CH_UART3_RX;
- 			uart_dma_ch_tx = CH_UART3_TX;
-@@ -709,16 +709,16 @@ static int bfin_serial_startup(struct uart_port *port)
- 		if (uart_dma_ch_rx &&
- 			request_dma(uart_dma_ch_rx, "BFIN_UART_RX") < 0) {
- 			printk(KERN_NOTICE"Fail to attach UART interrupt\n");
--			free_irq(uart->port.irq, uart);
--			free_irq(uart->port.irq + 1, uart);
-+			free_irq(uart->rx_irq, uart);
-+			free_irq(uart->tx_irq, uart);
- 			return -EBUSY;
- 		}
- 		if (uart_dma_ch_tx &&
- 			request_dma(uart_dma_ch_tx, "BFIN_UART_TX") < 0) {
- 			printk(KERN_NOTICE "Fail to attach UART interrupt\n");
- 			free_dma(uart_dma_ch_rx);
--			free_irq(uart->port.irq, uart);
--			free_irq(uart->port.irq + 1, uart);
-+			free_irq(uart->rx_irq, uart);
-+			free_irq(uart->tx_irq, uart);
- 			return -EBUSY;
- 		}
- 	}
-@@ -785,8 +785,8 @@ static void bfin_serial_shutdown(struct uart_port *port)
- 		break;
- 	};
- #endif
--	free_irq(uart->port.irq, uart);
--	free_irq(uart->port.irq+1, uart);
-+	free_irq(uart->rx_irq, uart);
-+	free_irq(uart->tx_irq, uart);
- #endif
- 
- #ifdef CONFIG_SERIAL_BFIN_CTSRTS
-@@ -1319,14 +1319,22 @@ static int bfin_serial_probe(struct platform_device *pdev)
- 		}
- 		uart->port.mapbase = res->start;
- 
--		uart->port.irq = platform_get_irq(pdev, 0);
--		if (uart->port.irq < 0) {
--			dev_err(&pdev->dev, "No uart RX/TX IRQ specified\n");
-+		uart->tx_irq = platform_get_irq(pdev, 0);
-+		if (uart->tx_irq < 0) {
-+			dev_err(&pdev->dev, "No uart TX IRQ specified\n");
- 			ret = -ENOENT;
- 			goto out_error_unmap;
- 		}
- 
--		uart->status_irq = platform_get_irq(pdev, 1);
-+		uart->rx_irq = platform_get_irq(pdev, 1);
-+		if (uart->rx_irq < 0) {
-+			dev_err(&pdev->dev, "No uart RX IRQ specified\n");
-+			ret = -ENOENT;
-+			goto out_error_unmap;
-+		}
-+		uart->port.irq = uart->rx_irq;
+diff --git a/drivers/tty/cyclades.c b/drivers/tty/cyclades.c
+index c0e8f2e..5beef49 100644
+--- a/drivers/tty/cyclades.c
++++ b/drivers/tty/cyclades.c
+@@ -45,7 +45,6 @@
+ #undef	CY_DEBUG_IO
+ #undef	CY_DEBUG_COUNT
+ #undef	CY_DEBUG_DTR
+-#undef	CY_DEBUG_WAIT_UNTIL_SENT
+ #undef	CY_DEBUG_INTERRUPTS
+ #undef	CY_16Y_HACK
+ #undef	CY_ENABLE_MONITORING
+@@ -1678,16 +1677,10 @@ static void cy_wait_until_sent(struct tty_struct *tty, int timeout)
+ 	 */
+ 	if (!timeout || timeout > 2 * info->timeout)
+ 		timeout = 2 * info->timeout;
+-#ifdef CY_DEBUG_WAIT_UNTIL_SENT
+-	printk(KERN_DEBUG "In cy_wait_until_sent(%d) check=%d, jiff=%lu...",
+-		timeout, char_time, jiffies);
+-#endif
 +
-+		uart->status_irq = platform_get_irq(pdev, 2);
- 		if (uart->status_irq < 0) {
- 			dev_err(&pdev->dev, "No uart status IRQ specified\n");
- 			ret = -ENOENT;
+ 	card = info->card;
+ 	if (!cy_is_Z(card)) {
+ 		while (cyy_readb(info, CySRER) & CyTxRdy) {
+-#ifdef CY_DEBUG_WAIT_UNTIL_SENT
+-			printk(KERN_DEBUG "Not clean (jiff=%lu)...", jiffies);
+-#endif
+ 			if (msleep_interruptible(jiffies_to_msecs(char_time)))
+ 				break;
+ 			if (timeout && time_after(jiffies, orig_jiffies +
+@@ -1697,9 +1690,6 @@ static void cy_wait_until_sent(struct tty_struct *tty, int timeout)
+ 	}
+ 	/* Run one more char cycle */
+ 	msleep_interruptible(jiffies_to_msecs(char_time * 5));
+-#ifdef CY_DEBUG_WAIT_UNTIL_SENT
+-	printk(KERN_DEBUG "Clean (jiff=%lu)...done\n", jiffies);
+-#endif
+ }
+ 
+ static void cy_flush_buffer(struct tty_struct *tty)
+diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
+index 7fc8c02..8998d52 100644
+--- a/drivers/tty/mxser.c
++++ b/drivers/tty/mxser.c
+@@ -2005,16 +2005,9 @@ static void mxser_wait_until_sent(struct tty_struct *tty, int timeout)
+ 	 */
+ 	if (!timeout || timeout > 2 * info->timeout)
+ 		timeout = 2 * info->timeout;
+-#ifdef SERIAL_DEBUG_RS_WAIT_UNTIL_SENT
+-	printk(KERN_DEBUG "In rs_wait_until_sent(%d) check=%lu...",
+-		timeout, char_time);
+-	printk("jiff=%lu...", jiffies);
+-#endif
++
+ 	spin_lock_irqsave(&info->slock, flags);
+ 	while (!((lsr = inb(info->ioaddr + UART_LSR)) & UART_LSR_TEMT)) {
+-#ifdef SERIAL_DEBUG_RS_WAIT_UNTIL_SENT
+-		printk("lsr = %d (jiff=%lu)...", lsr, jiffies);
+-#endif
+ 		spin_unlock_irqrestore(&info->slock, flags);
+ 		schedule_timeout_interruptible(char_time);
+ 		spin_lock_irqsave(&info->slock, flags);
+@@ -2025,10 +2018,6 @@ static void mxser_wait_until_sent(struct tty_struct *tty, int timeout)
+ 	}
+ 	spin_unlock_irqrestore(&info->slock, flags);
+ 	set_current_state(TASK_RUNNING);
+-
+-#ifdef SERIAL_DEBUG_RS_WAIT_UNTIL_SENT
+-	printk("lsr = %d (jiff=%lu)...done\n", lsr, jiffies);
+-#endif
+ }
+ 
+ /*
 -- 
 1.7.7
 
