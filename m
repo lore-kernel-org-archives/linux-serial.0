@@ -1,62 +1,351 @@
-From: "Williams, Dan J" <dan.j.williams@intel.com>
-Subject: Re: [PATCH] serial/8250_pci: add a quirk for the kt serial controller
-Date: Tue, 25 Oct 2011 15:52:20 -0700
-Message-ID: <CABE8wwugFuNUstAFxKGLyZthAk+Cb9MN3kQFDr-vN08pdsMoRA@mail.gmail.com>
-References: <20111023222711.22713.11434.stgit@localhost6.localdomain6>
-	<20111025022852.GB32457@kroah.com>
-	<1319573794.9320.15.camel@dwillia2-mobl>
-	<20111025205106.GD7234@suse.de>
+From: Greg KH <gregkh@suse.de>
+Subject: [GIT PATCH] TTY/serial driver patches for 3.2
+Date: Wed, 26 Oct 2011 13:42:36 +0200
+Message-ID: <20111026114236.GA22180@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="IS0zKkzwUGydFO0o"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:50325 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752821Ab1JYWwe convert rfc822-to-8bit (ORCPT
+Received: from out5.smtp.messagingengine.com ([66.111.4.29]:53269 "EHLO
+	out5.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S932772Ab1JZLmq (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 25 Oct 2011 18:52:34 -0400
-In-Reply-To: <20111025205106.GD7234@suse.de>
+	Wed, 26 Oct 2011 07:42:46 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@suse.de>
-Cc: Greg KH <greg@kroah.com>, Nhan H Mai <nhan.h.mai@intel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, alan@linux.intel.com
+To: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Tue, Oct 25, 2011 at 1:51 PM, Greg KH <gregkh@suse.de> wrote:
-> On Tue, Oct 25, 2011 at 01:16:34PM -0700, Dan Williams wrote:
->> From: Dan Williams <dan.j.williams@intel.com>
->> Date: Sun, 23 Oct 2011 15:06:24 -0700
->> Subject: [PATCH v2] serial/8250_pci: add a quirk for the kt serial c=
-ontroller
->>
->> Workaround dropped notifications in the iir register. =A0Prevent rea=
-ds
->> coincident with new interrupt notifications by reading the iir at mo=
-st
->> once per interrupt.
->>
->> Reported-by: Nhan H Mai <nhan.h.mai@intel.com>
->> Signed-off-by: Dan Williams <dan.j.williams@intel.com>
->
-> Much better.
->
-> But.
->
-> Do you really think I can apply a patch that looks like this above? =A0=
-I
-> have to edit the text of the email before I apply it.
 
-I don't doubt you get busted patches all the time, this isn't one.
-Double checked before and now triple checked that git am takes the
-last occurrence of the From: Date: and Subject: headers and that my
-mailer is not corrupting the patch.
+--IS0zKkzwUGydFO0o
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I have no problem resending to fit into your workflow, but I expect
-"git am" will do the right thing with this mail.
+Here is the tty/serial driver patchset for the 3.2 tree.
 
---
-Dan
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Nothing major here, with a lot of good cleanup of the tty layer from
+Jiri Slaby, and some driver updates and additions.
+
+Note, you will get a merge error in the following files when merging
+with your tree:
+	drivers/tty/serial/8250_pci.c
+	drivers/tty/serial/atmel_serial.c
+
+The one in 8250_pci.c is trivial to fix, the atmel_serial one isn't as
+easy, but I'm sure you can figure it out :)  If you want me to do the
+merge for it, I'll be glad to do so, just let me know.
+
+Please pull from:
+	git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
+
+All of these patches have been in the -mm and -next trees for a while.
+
+Patches will be sent to the linux-serial mailing list, if anyone wants
+to see them.
+
+thanks,
+
+greg k-h
+
+------------
+
+
+ Documentation/devicetree/bindings/serial/rs485.txt |   31 +
+ .../devicetree/bindings/tty/serial/atmel-usart.txt |   27 +
+ .../bindings/tty/serial/snps-dw-apb-uart.txt       |   25 +
+ Documentation/serial/serial-rs485.txt              |    8 +
+ arch/arm/Kconfig                                   |    1 -
+ arch/arm/mach-s3c64xx/dev-uart.c                   |   60 +--
+ arch/arm/mach-s3c64xx/include/mach/irqs.h          |   30 -
+ arch/arm/mach-s3c64xx/irq.c                        |   25 -
+ arch/arm/plat-s5p/Kconfig                          |    1 -
+ arch/arm/plat-s5p/dev-uart.c                       |   84 +--
+ arch/arm/plat-s5p/include/plat/irqs.h              |   35 -
+ arch/arm/plat-s5p/irq.c                            |   34 -
+ arch/arm/plat-samsung/Kconfig                      |    5 -
+ arch/arm/plat-samsung/Makefile                     |    1 -
+ arch/arm/plat-samsung/include/plat/regs-serial.h   |    5 +
+ arch/arm/plat-samsung/irq-uart.c                   |   96 ---
+ arch/h8300/Kconfig                                 |    2 +-
+ arch/mips/pmc-sierra/msp71xx/msp_serial.c          |   73 ++-
+ arch/powerpc/include/asm/udbg.h                    |    1 +
+ arch/powerpc/kernel/udbg.c                         |    2 +
+ arch/x86/platform/mrst/mrst.c                      |    3 +
+ drivers/isdn/i4l/isdn_tty.c                        |    2 +-
+ drivers/parport/parport_pc.c                       |    3 +
+ drivers/staging/Kconfig                            |    2 +
+ drivers/staging/Makefile                           |    1 +
+ drivers/{tty =3D> staging}/serial/68360serial.c      |    0
+ drivers/staging/serial/Kconfig                     |   16 +
+ drivers/staging/serial/Makefile                    |    1 +
+ drivers/staging/serial/TODO                        |    6 +
+ drivers/tty/Kconfig                                |   34 +
+ drivers/tty/Makefile                               |    1 +
+ drivers/tty/amiserial.c                            |   12 +-
+ drivers/tty/cyclades.c                             |   14 +-
+ drivers/tty/ehv_bytechan.c                         |  881 ++++++++++++++++=
+++++
+ drivers/tty/hvc/hvc_console.c                      |    9 +-
+ drivers/tty/hvc/hvc_irq.c                          |    2 +-
+ drivers/tty/hvc/hvcs.c                             |    4 +-
+ drivers/tty/hvc/hvsi.c                             |    2 +-
+ drivers/tty/isicom.c                               |    2 +-
+ drivers/tty/mxser.c                                |   13 +-
+ drivers/tty/n_gsm.c                                |   64 +-
+ drivers/tty/pty.c                                  |   26 +-
+ drivers/tty/serial/68328serial.c                   |   37 +-
+ drivers/tty/serial/68328serial.h                   |    1 -
+ drivers/tty/serial/8250.c                          |  132 ++--
+ drivers/tty/serial/8250_dw.c                       |  194 +++++
+ drivers/tty/serial/8250_pci.c                      |   42 +
+ drivers/tty/serial/Kconfig                         |   30 +-
+ drivers/tty/serial/Makefile                        |    4 +-
+ drivers/tty/serial/altera_jtaguart.c               |    2 +-
+ drivers/tty/serial/altera_uart.c                   |    2 +-
+ drivers/tty/serial/apbuart.c                       |    1 +
+ drivers/tty/serial/atmel_serial.c                  |  129 +++-
+ drivers/tty/serial/bfin_sport_uart.c               |    2 +-
+ drivers/tty/serial/{bfin_5xx.c =3D> bfin_uart.c}     |   65 +-
+ drivers/tty/serial/cpm_uart/cpm_uart_core.c        |    1 +
+ drivers/tty/serial/crisv10.c                       |   30 +-
+ drivers/tty/serial/dz.c                            |    1 +
+ drivers/tty/serial/icom.c                          |    2 +-
+ drivers/tty/serial/imx.c                           |   10 +-
+ drivers/tty/serial/ioc3_serial.c                   |    1 +
+ drivers/tty/serial/ioc4_serial.c                   |    1 +
+ drivers/tty/serial/jsm/jsm.h                       |   10 -
+ drivers/tty/serial/jsm/jsm_driver.c                |   19 -
+ drivers/tty/serial/jsm/jsm_neo.c                   |   29 +-
+ drivers/tty/serial/jsm/jsm_tty.c                   |   94 +--
+ drivers/tty/serial/lantiq.c                        |    6 +-
+ drivers/tty/serial/m32r_sio.c                      |    1 +
+ drivers/tty/serial/max3100.c                       |    2 +
+ drivers/tty/serial/max3107.c                       |    2 +
+ drivers/tty/serial/mcf.c                           |    2 +-
+ drivers/tty/serial/mfd.c                           |   49 ++-
+ drivers/tty/serial/mpc52xx_uart.c                  |    3 +-
+ drivers/tty/serial/mrst_max3110.c                  |  115 ++--
+ drivers/tty/serial/mrst_max3110.h                  |    1 +
+ drivers/tty/serial/msm_serial.c                    |    2 -
+ drivers/tty/serial/msm_serial_hs.c                 |    2 +
+ drivers/tty/serial/mux.c                           |    2 +
+ drivers/tty/serial/nwpserial.c                     |    1 +
+ drivers/tty/serial/pch_uart.c                      |    2 +
+ drivers/tty/serial/pxa.c                           |   20 +
+ drivers/tty/serial/samsung.c                       |  107 +++-
+ drivers/tty/serial/samsung.h                       |    1 +
+ drivers/tty/serial/sb1250-duart.c                  |    1 +
+ drivers/tty/serial/serial_core.c                   |   72 +--
+ drivers/tty/serial/serial_ks8695.c                 |    9 +-
+ drivers/tty/serial/serial_txx9.c                   |    2 +
+ drivers/tty/serial/sh-sci.c                        |    2 +-
+ drivers/tty/serial/sn_console.c                    |    3 +-
+ drivers/tty/serial/timbuart.c                      |    2 +
+ drivers/tty/serial/uartlite.c                      |    1 +
+ drivers/tty/serial/ucc_uart.c                      |    4 +-
+ drivers/tty/serial/xilinx_uartps.c                 |    4 +-
+ drivers/tty/serial/zs.c                            |    1 +
+ drivers/tty/synclink.c                             |    1 -
+ drivers/tty/synclinkmp.c                           |    6 +-
+ drivers/tty/tty_io.c                               |   50 +-
+ drivers/tty/tty_ioctl.c                            |   17 +
+ drivers/tty/tty_ldisc.c                            |    1 -
+ drivers/tty/tty_mutex.c                            |   12 -
+ drivers/tty/tty_port.c                             |    2 +-
+ drivers/tty/vt/keyboard.c                          |    3 +-
+ drivers/tty/vt/selection.c                         |    4 +-
+ drivers/tty/vt/vt.c                                |    2 +-
+ include/linux/serial.h                             |    1 +
+ include/linux/serial_8250.h                        |    2 +
+ include/linux/serial_core.h                        |   10 +-
+ include/linux/serial_reg.h                         |    1 +
+ include/linux/tty.h                                |   26 +-
+ net/irda/ircomm/ircomm_tty.c                       |    2 +-
+ 110 files changed, 2102 insertions(+), 940 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/rs485.txt
+ create mode 100644 Documentation/devicetree/bindings/tty/serial/atmel-usar=
+t.txt
+ create mode 100644 Documentation/devicetree/bindings/tty/serial/snps-dw-ap=
+b-uart.txt
+ delete mode 100644 arch/arm/plat-samsung/irq-uart.c
+ rename drivers/{tty =3D> staging}/serial/68360serial.c (100%)
+ create mode 100644 drivers/staging/serial/Kconfig
+ create mode 100644 drivers/staging/serial/Makefile
+ create mode 100644 drivers/staging/serial/TODO
+ create mode 100644 drivers/tty/ehv_bytechan.c
+ create mode 100644 drivers/tty/serial/8250_dw.c
+ rename drivers/tty/serial/{bfin_5xx.c =3D> bfin_uart.c} (97%)
+
+---------------
+
+Alan Cox (3):
+      n_gsm: update TODO list
+      n_gsm: Send CLD command on exit
+      max3110: Fix up port->tty backreferencing
+
+Alexander Shishkin (1):
+      max3110: add sysrq support
+
+Andi Kleen (1):
+      serial: mfd: Initconst section fixes
+
+Bernhard Roth (1):
+      atmel_serial: RS485: receiving enabled when sending data
+
+Dan Carpenter (1):
+      TTY: snyclinkmp: forever loop in tx_load_dma_buffer()
+
+Dirk Brandewie (1):
+      max3110: wake up fixes
+
+Doug Anderson (1):
+      TTY: serial_core: Fix crash if DCD drop during suspend
+
+Edwin van Vliet (1):
+      drivers/tty/synclink: remove double comment
+
+Feng Tang (1):
+      x86/mrst: Add platform data for Max3110 devices
+
+Geert Uytterhoeven (1):
+      keyboard: Do not include <linux/irq.>
+
+Greg Kroah-Hartman (3):
+      Revert "tty: of_serial: add support for the DesignWare 8250"
+      Revert "tty: serial8250: add helpers for the DesignWare 8250"
+      Revert "TTY: call tty_driver_lookup_tty unconditionally"
+
+Hui Wang (1):
+      serial/imx: support to handle break character
+
+Jamie Iles (9):
+      tty: serial: allow ports to override the irq handler
+      tty: serial8250: allow platforms to override irq handler
+      mips: msp71xx/serial: convert to pr_foo() helpers
+      mips: msp71xx/serial: add workaround for DW UART
+      tty: serial8250: remove UPIO_DWAPB{,32}
+      tty: serial8250: add helpers for the DesignWare 8250
+      tty: of_serial: add support for the DesignWare 8250
+      tty: 8250: export serial8250_handle_irq
+      tty: add a DesignWare 8250 driver
+
+Jiri Kosina (1):
+      parport_pc: release IO region properly if unsupported ITE887x card is=
+ found
+
+Jiri Slaby (18):
+      TTY: serial, remove BTM from wait_until_sent
+      TTY: msm_serial, remove unneeded console set
+      TTY: serial, remove tasklet for tty_wakeup
+      TTY: ami_serial, remove BTM from wait_until_sent
+      TTY: remove tty_locked
+      TTY: mxser+cyclades remove wait_until_sent debug code
+      TTY: serial, use ASYNCB_CLOSING in uart_close
+      TTY: serial, move locking in uart_close
+      TTY: define tty_wait_until_sent_from_close
+      TTY: use tty_wait_until_sent_from_close in tty_port_close_start
+      TTY: use tty_wait_until_sent_from_close in other drivers
+      TTY: serial, remove dead code from 68328
+      TTY: serial, fix includes in some drivers
+      TTY: serial, move 68360 driver to staging
+      TTY: drop driver reference in tty_open fail path
+      TTY: make tty_add_file non-failing
+      TTY: pty, release tty in all ptmx_open fail paths
+      TTY: call tty_driver_lookup_tty unconditionally
+
+Konrad Rzeszutek Wilk (1):
+      8250: ratelimit LSR safety check engaged warning.
+
+Kristen Carlson Accardi (1):
+      hsu: add runtime pm support
+
+Kukjin Kim (1):
+      tty: Add support serial for EXYNOS4212 SoC
+
+Marcus Folkesson (1):
+      serial: pxa: work around for errata #20
+
+Mathias Krause (1):
+      tty: clearify structure initializer in notify_write()
+
+Miche Baker-Harvey (1):
+      hvc_console: display printk messages on console.
+
+Mikhail Kshevetskiy (2):
+      tty/n_gsm: fix a bug in gsm_dlci_data_output (adaption =3D 2 case)
+      tty/n_gsm: avoid fifo overflow in gsm_dlci_data_output
+
+Nicolas Ferre (6):
+      tty/serial: RS485 bindings for device tree
+      tty/serial: atmel_serial: change platform_data variable name
+      tty/serial: atmel_serial: whitespace and braces modifications
+      tty/serial: atmel_serial: auto-enumerate ports
+      tty/serial: atmel_serial: add device tree support
+      tty/serial: atmel_serial: bootconsole removed from auto-enumerates
+
+Nikola Diklic-Perin (1):
+      tty/n_gsm: fix bug in tiocmset
+
+Ning Jiang (1):
+      serial-core: power up uart port early before we do set_termios when r=
+esuming
+
+Nobuhiro Iwamatsu (1):
+      TTY: serial: Move mutex_unlock in uart_close function
+
+Paul Bolle (1):
+      h8300: drivers/serial/Kconfig was moved
+
+Sonic Zhang (3):
+      serial:blackfin: Correct coding style in bfin serial driver.
+      serial:blackfin: rename Blackfin serial driver to bfin_uart.c
+      serial:bfin_uart: Put TX IRQ in individual platform resource.
+
+S=F8ren Holm (1):
+      serial: Support the EFR-register of XR1715x uarts.
+
+Thadeu Lima de Souza Cascardo (3):
+      jsm: remove remaining flip buffer code
+      jsm: remove buggy write queue
+      jsm: print byte we are dequeing
+
+Thomas Abraham (2):
+      serial: samsung: Add unified interrupt handler for s3c64xx and later =
+SoC's
+      ARM: SAMSUNG: Remove uart irq handling from plaform code
+
+Thomas Meyer (1):
+      tty: Support compat_ioctl get/set termios_locked
+
+Timur Tabi (3):
+      tty/powerpc: introduce the ePAPR embedded hypervisor byte channel dri=
+ver
+      tty/powerpc: fix build break with ehv_bytechan.c on allyesconfig
+      drivers/tty: don't use the byte channel handle as a parameter in ehv_=
+bytechan.c
+
+Tomoya MORINAGA (1):
+      8250_pci: Fix kernel panic when pch_uart is disabled
+
+WANG Cong (2):
+      cris: fix a build error in drivers/tty/serial/crisv10.c
+      cris: lower the printk level in cris serial driver
+
+Yong Zhang (1):
+      TTY: irq: Remove IRQF_DISABLED
+
+
+--IS0zKkzwUGydFO0o
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.18 (GNU/Linux)
+
+iEYEARECAAYFAk6n8iwACgkQMUfUDdst+yk8HACeNHFjbzDbz5iSaJhAU9vc49vm
+f/QAn1VGXeswrkFYg4Ijk1XRnfxDD3Qv
+=YJQJ
+-----END PGP SIGNATURE-----
+
+--IS0zKkzwUGydFO0o--
