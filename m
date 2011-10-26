@@ -1,54 +1,70 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 39/79] x86/mrst: Add platform data for Max3110 devices
-Date: Wed, 26 Oct 2011 14:12:44 +0200
-Message-ID: <1319631204-23262-39-git-send-email-gregkh@suse.de>
+Subject: [PATCH 30/79] TTY: serial, use ASYNCB_CLOSING in uart_close
+Date: Wed, 26 Oct 2011 14:12:35 +0200
+Message-ID: <1319631204-23262-30-git-send-email-gregkh@suse.de>
 References: <20111026114236.GA22180@kroah.com>
  <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:32775 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:60991 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932901Ab1JZMNq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Oct 2011 08:13:46 -0400
+	id S932852Ab1JZMNl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 26 Oct 2011 08:13:41 -0400
+Received: from relay2.suse.de (charybdis-ext.suse.de [195.135.221.2])
+	(using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx2.suse.de (Postfix) with ESMTP id 6BA338F71C
+	for <linux-serial@vger.kernel.org>; Wed, 26 Oct 2011 14:13:40 +0200 (CEST)
 In-Reply-To: <1319631204-23262-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Feng Tang <feng.tang@intel.com>, Alan Cox <alan@linux.intel.com>, Dirk Brandewie <dirk.brandewie@gmail.com>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Feng Tang <feng.tang@intel.com>
+From: Jiri Slaby <jslaby@suse.cz>
 
-Those info will be used when spi controller driver setup
-max3110 as a slave device
+We need to move port->mutex locking after wait_until_sent in
+uart_close (for rationale see next patches). But if we did it now, we
+would introduce a race between close and open. This is exactly why
+port->mutex is locked at the top of uart_close.
 
-Signed-off-by: Feng Tang <feng.tang@intel.com>
-Signed-off-by: Alan Cox <alan@linux.intel.com>
-Signed-off-by: Dirk Brandewie <dirk.brandewie@gmail.com>
+To avoid the race, we add ASYNCB_CLOSING to uart_close. Like every
+other sane TTY driver. Thanks to tty_port_block_til_ready used in
+uart_open we will have this for free. Then we can move the port->mutex
+lock.
+
+Also note that this will make the conversion to tty_port helpers
+easier. They are currently handling ASYNC_CLOSING flag correctly.
+
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- arch/x86/platform/mrst/mrst.c |    3 +++
+ drivers/tty/serial/serial_core.c |    3 +++
  1 files changed, 3 insertions(+), 0 deletions(-)
 
-diff --git a/arch/x86/platform/mrst/mrst.c b/arch/x86/platform/mrst/mrst.c
-index 7000e74..b8da1b9 100644
---- a/arch/x86/platform/mrst/mrst.c
-+++ b/arch/x86/platform/mrst/mrst.c
-@@ -14,6 +14,8 @@
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 3844980..849bd0d 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1288,6 +1288,7 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
+ 	 * the line discipline to only process XON/XOFF characters by
+ 	 * setting tty->closing.
+ 	 */
++	set_bit(ASYNCB_CLOSING, &port->flags);
+ 	tty->closing = 1;
+ 	spin_unlock_irqrestore(&port->lock, flags);
  
- #include <linux/init.h>
- #include <linux/kernel.h>
-+#include <linux/interrupt.h>
-+#include <linux/scatterlist.h>
- #include <linux/sfi.h>
- #include <linux/intel_pmic_gpio.h>
- #include <linux/spi/spi.h>
-@@ -392,6 +394,7 @@ static void __init *max3111_platform_data(void *info)
- 	struct spi_board_info *spi_info = info;
- 	int intr = get_gpio_by_name("max3111_int");
+@@ -1335,8 +1336,10 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
+ 	 * Wake up anyone trying to open this port.
+ 	 */
+ 	clear_bit(ASYNCB_NORMAL_ACTIVE, &port->flags);
++	clear_bit(ASYNCB_CLOSING, &port->flags);
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ 	wake_up_interruptible(&port->open_wait);
++	wake_up_interruptible(&port->close_wait);
  
-+	spi_info->mode = SPI_MODE_0;
- 	if (intr == -1)
- 		return NULL;
- 	spi_info->irq = intr + MRST_IRQ_OFFSET;
+ done:
+ 	mutex_unlock(&port->mutex);
 -- 
 1.7.7
 
