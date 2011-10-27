@@ -1,86 +1,39 @@
-From: Jiri Kosina <jkosina@suse.cz>
-Subject: Re: [GIT PATCH] TTY/serial driver patches for 3.2
-Date: Wed, 26 Oct 2011 23:38:19 +0200 (CEST)
-Message-ID: <alpine.LRH.2.00.1110262335300.24704@twin.jikos.cz>
-References: <20111026114236.GA22180@kroah.com> <CA+55aFycM+nHxJNnFSjEXQvZkeBfHu161ePC0=7sWKZR1toQNA@mail.gmail.com> <20111026133438.GA26336@suse.de> <20111026141635.GA2293@glitch>
-Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com>
+Subject: [PATCH 1/2] pch_uart: Fix hw-flow control issue
+Date: Thu, 27 Oct 2011 15:45:18 +0900
+Message-ID: <1319697919-5623-1-git-send-email-tomoya-linux@dsn.lapis-semi.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:43178 "EHLO mx2.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752450Ab1JZViV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Oct 2011 17:38:21 -0400
-In-Reply-To: <20111026141635.GA2293@glitch>
+Received: from sm-d311v.smileserver.ne.jp ([203.211.202.206]:33645 "EHLO
+	sm-d311v.smileserver.ne.jp" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751671Ab1J0Gpp (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 27 Oct 2011 02:45:45 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Domenico Andreoli <cavokz@gmail.com>
-Cc: Greg KH <gregkh@suse.de>, Linus Torvalds <torvalds@linux-foundation.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>, gregkh@suse.de, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: qi.wang@intel.com, yong.y.wang@intel.com, joel.clark@intel.com, kok.howg.ewe@intel.com, Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com>
 
-On Wed, 26 Oct 2011, Domenico Andreoli wrote:
+Using hardware flow control,
+currently, register of the control-bit(AFE) is not set.
+This patch fixes the issue.
 
-> > > > The one in 8250_pci.c is trivial to fix, the atmel_serial one i=
-sn't as
-> > > > easy, but I'm sure you can figure it out :) =A0If you want me t=
-o do the
-> > > > merge for it, I'll be glad to do so, just let me know.
-> > >=20
-> > > So I figured it out, but please double-check, especially since it
-> > > seems to be some arm-only driver that I can't even compile-test m=
-y
-> > > resolution.
-> >=20
-> > I think it looks correct, but yeah, as I can't build it either, it'=
-s
-> > tough to tell.
-> >=20
-> > Nicolas, can you verify that Linus's merge was done correctly?  If =
-not,
-> > can you send a patch?  It is commit
-> > efb8d21b2c6db3497655cc6a033ae8a9883e4063 in Linus's tree right now.
->=20
-> tryed to build efb8d21 with at91cap9adk_defconfig + DT + 8250 but it =
-fails:
->=20
-> drivers/tty/serial/atmel_serial.c: In function 'atmel_serial_probe':
-> drivers/tty/serial/atmel_serial.c:1788:3: error: implicit declaration=
- of function 'of_alias_get_id' [-Werror=3Dimplicit-function-declaration=
-]
-> drivers/tty/serial/atmel_serial.c: At top level:
-> drivers/tty/serial/atmel_serial.c:1893:3: error: implicit declaration=
- of function 'of_match_ptr' [-Werror=3Dimplicit-function-declaration]
-> drivers/tty/serial/atmel_serial.c:1893:3: error: initializer element =
-is not constant
-> drivers/tty/serial/atmel_serial.c:1893:3: error: (near initialization=
- for 'atmel_serial_driver.driver.of_match_table')
-> cc1: some warnings being treated as errors
->=20
-> there is not mention of such (new) of_match_ptr macro anywhere in Lin=
-us' tree.
+Signed-off-by: Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com>
+---
+ drivers/tty/serial/pch_uart.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
-Yes, it's depending on this one, which I believe is queued in Grant's t=
-ree=20
-but not yet merged:
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index b950d05..b1aabe8 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -1290,6 +1290,7 @@ static void pch_uart_set_termios(struct uart_port *port,
+ 	if (rtn)
+ 		goto out;
+ 
++	pch_uart_set_mctrl(&priv->port, priv->port.mctrl);
+ 	/* Don't rewrite B0 */
+ 	if (tty_termios_baud_rate(termios))
+ 		tty_termios_encode_baud_rate(termios, baud, baud);
+-- 
+1.7.4.4
 
-	commit 3a1e362e3f3cd571b3974b8d44b8e358ec7a098c
-	Author: Ben Dooks <ben-linux@fluff.org>
-	Date:   Wed Aug 3 10:11:42 2011 +0100
-
-	    OF: Add of_match_ptr() macro
-	   =20
-	    Add a macro of_match_ptr() that allows the .of_match_table
-	    entry in the driver structures to be assigned without having
-	    an #ifdef xxx NULL for the case that OF is not enabled
-	   =20
-	    Signed-off-by: Ben Dooks <ben-linux@fluff.org>
-	    Signed-off-by: Grant Likely <grant.likely@secretlab.ca>
-
---=20
-Jiri Kosina
-SUSE Labs
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
