@@ -1,46 +1,50 @@
 From: Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com>
-Subject: [PATCH 2/2] pch_uart: Delete modem status interrupt enable code
-Date: Thu, 27 Oct 2011 15:45:19 +0900
-Message-ID: <1319697919-5623-2-git-send-email-tomoya-linux@dsn.lapis-semi.com>
-References: <1319697919-5623-1-git-send-email-tomoya-linux@dsn.lapis-semi.com>
+Subject: [PATCH 2/2] pch_uart: Change company name OKI SEMICONDUCTOR to LAPIS Semiconductor
+Date: Fri, 28 Oct 2011 09:38:50 +0900
+Message-ID: <1319762330-7134-2-git-send-email-tomoya-linux@dsn.lapis-semi.com>
+References: <1319762330-7134-1-git-send-email-tomoya-linux@dsn.lapis-semi.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from sm-d311v.smileserver.ne.jp ([203.211.202.206]:33655 "EHLO
+Received: from sm-d311v.smileserver.ne.jp ([203.211.202.206]:40114 "EHLO
 	sm-d311v.smileserver.ne.jp" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752259Ab1J0Gpq (ORCPT
+	by vger.kernel.org with ESMTP id S1752853Ab1J1AjI (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 27 Oct 2011 02:45:46 -0400
-In-Reply-To: <1319697919-5623-1-git-send-email-tomoya-linux@dsn.lapis-semi.com>
+	Thu, 27 Oct 2011 20:39:08 -0400
+In-Reply-To: <1319762330-7134-1-git-send-email-tomoya-linux@dsn.lapis-semi.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Alan Cox <alan@linux.intel.com>, gregkh@suse.de, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Cc: qi.wang@intel.com, yong.y.wang@intel.com, joel.clark@intel.com, kok.howg.ewe@intel.com, Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com>
 
-Currently, modem status interrupt software processing is not implemented.
-So, if enabling modem status interrupt, the interrupt processing is not
-processed correctly.
-(pch_uart device has auto hardware flow control function. So, pch_uart driver
-doesn't have to control modem status interrupt.)
-This patch deletes the code.
+On October 1 in 2011,
+OKI SEMICONDUCTOR Co., Ltd. changed the company name in to LAPIS Semiconductor Co., Ltd.
 
 Signed-off-by: Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com>
 ---
- drivers/tty/serial/pch_uart.c |    3 ++-
- 1 files changed, 2 insertions(+), 1 deletions(-)
+ drivers/tty/serial/pch_uart.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index b1aabe8..1a076cd 100644
+index 6405dd1..a6f9547 100644
 --- a/drivers/tty/serial/pch_uart.c
 +++ b/drivers/tty/serial/pch_uart.c
-@@ -1121,7 +1121,8 @@ static void pch_uart_enable_ms(struct uart_port *port)
- {
- 	struct eg20t_port *priv;
- 	priv = container_of(port, struct eg20t_port, port);
--	pch_uart_hal_enable_interrupt(priv, PCH_UART_HAL_MS_INT);
-+	dev_info(priv->port.dev,
-+		"PCH UART : Modem status interrupt is not supported.\n");
- }
+@@ -1,5 +1,5 @@
+ /*
+- *Copyright (C) 2010 OKI SEMICONDUCTOR CO., LTD.
++ *Copyright (C) 2011 LAPIS Semiconductor Co., Ltd.
+  *
+  *This program is free software; you can redistribute it and/or modify
+  *it under the terms of the GNU General Public License as published by
+@@ -49,8 +49,8 @@ enum {
  
- /* Control the transmission of a break signal. */
+ /* Set the max number of UART port
+  * Intel EG20T PCH: 4 port
+- * OKI SEMICONDUCTOR ML7213 IOH: 3 port
+- * OKI SEMICONDUCTOR ML7223 IOH: 2 port
++ * LAPIS Semiconductor ML7213 IOH: 3 port
++ * LAPIS Semiconductor ML7223 IOH: 2 port
+ */
+ #define PCH_UART_NR	4
+ 
 -- 
 1.7.4.4
 
