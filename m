@@ -1,91 +1,61 @@
-From: Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com>
-Subject: [PATCH 1/2] pch_uart: Support new device LAPIS Semiconductor ML7831 IOH
-Date: Fri, 28 Oct 2011 09:38:49 +0900
-Message-ID: <1319762330-7134-1-git-send-email-tomoya-linux@dsn.lapis-semi.com>
+From: Barry Song <21cnbao@gmail.com>
+Subject: Re: [PATCH v2] UART: add CSR SiRFprimaII SoC on-chip uart drivers
+Date: Fri, 28 Oct 2011 10:52:19 +0800
+Message-ID: <CAGsJ_4z+QxytK0MkvzK1tCJh8vdm0YRwMhnfCn+Ydw3twU1ERQ@mail.gmail.com>
+References: <1318570799-3785-1-git-send-email-Barry.Song@csr.com>
+ <CAGsJ_4w6fGH+G9KapHXzCwMhz_NKfPdCxs7rF5hWKw2LGUpwWA@mail.gmail.com>
+ <20111018181319.GA7015@kroah.com> <CAGsJ_4xJzL6dfSmmae8LH6kt2g1PmevgrFWgYLR3Tif8PD0bCQ@mail.gmail.com>
+ <CAKnu2MqUW=6tH0A1Zae0MgMyKiU4X26c0jGCQFKeJrxJA2GyzA@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from sm-d311v.smileserver.ne.jp ([203.211.202.206]:40099 "EHLO
-	sm-d311v.smileserver.ne.jp" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752835Ab1J1AjI (ORCPT
+Received: from mail-bw0-f46.google.com ([209.85.214.46]:63089 "EHLO
+	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753503Ab1J1Cwl convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 27 Oct 2011 20:39:08 -0400
+	Thu, 27 Oct 2011 22:52:41 -0400
+Received: by bkbzt4 with SMTP id zt4so103262bkb.19
+        for <linux-serial@vger.kernel.org>; Thu, 27 Oct 2011 19:52:40 -0700 (PDT)
+In-Reply-To: <CAKnu2MqUW=6tH0A1Zae0MgMyKiU4X26c0jGCQFKeJrxJA2GyzA@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>, gregkh@suse.de, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: qi.wang@intel.com, yong.y.wang@intel.com, joel.clark@intel.com, kok.howg.ewe@intel.com, Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com>
+To: Linus Walleij <linus.ml.walleij@gmail.com>, Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Greg KH <greg@kroah.com>, alan@linux.intel.com, Rong Wang <Rong.Wang@csr.com>, Bin Shi <Bin.Shi@csr.com>, workgroup.linux@csr.com, linux-serial@vger.kernel.org, Barry Song <Baohua.Song@csr.com>, linux-arm-kernel@lists.infradead.org
 
-ML7831 is companion chip for Intel Atom E6xx series.
+2011/10/20 Linus Walleij <linus.ml.walleij@gmail.com>:
+> 2011/10/19 Barry Song <21cnbao@gmail.com>:
+>> 2011/10/19 Greg KH <greg@kroah.com>:
+>>> So should it go through the pinmux tree? =C2=A0Or do you want to wa=
+it for the
+>>> 3.3 kernel release to get this merged?
+>>
+>> i think we can go ahead through Linux W's pinmux tree. Linus, would
+>> you like to take care once Alan ack this.
+>
+> It's a bit late, and I don't know if Torvalds will pull my pin contro=
+l tree
+> yet, that's uncertain since it's an all new subsystem. It's stabilizi=
+ng
+> for the merge window.
+>
+> I would suggest that you see if my tree gets pulled in the merge
+> window, and if and when it does, send the patch as a single patch
+> directly to Torvalds with Alan's ACK and explain the situation
+> with cross-dependence and all.
 
-Signed-off-by: Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com>
----
- drivers/tty/serial/Kconfig    |   14 +++++++-------
- drivers/tty/serial/pch_uart.c |    8 ++++++++
- 2 files changed, 15 insertions(+), 7 deletions(-)
+i am glad to find your pinctrl tree has been merged by Torvalds. so i
+will send this uart driver patch depending on your tree to Linus
+Torvalds directly.
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 956f2f0..13e5f51 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1560,7 +1560,7 @@ config SERIAL_IFX6X60
- 	  Support for the IFX6x60 modem devices on Intel MID platforms.
- 
- config SERIAL_PCH_UART
--	tristate "Intel EG20T PCH / OKI SEMICONDUCTOR IOH(ML7213/ML7223) UART"
-+	tristate "Intel EG20T PCH/LAPIS Semicon IOH(ML7213/ML7223/ML7831) UART"
- 	depends on PCI
- 	select SERIAL_CORE
- 	help
-@@ -1568,12 +1568,12 @@ config SERIAL_PCH_UART
- 	  which is an IOH(Input/Output Hub) for x86 embedded processor.
- 	  Enabling PCH_DMA, this PCH UART works as DMA mode.
- 
--	  This driver also can be used for OKI SEMICONDUCTOR IOH(Input/
--	  Output Hub), ML7213 and ML7223.
--	  ML7213 IOH is for IVI(In-Vehicle Infotainment) use and ML7223 IOH is
--	  for MP(Media Phone) use.
--	  ML7213/ML7223 is companion chip for Intel Atom E6xx series.
--	  ML7213/ML7223 is completely compatible for Intel EG20T PCH.
-+	  This driver also can be used for LAPIS Semiconductor IOH(Input/
-+	  Output Hub), ML7213, ML7223 and ML7831.
-+	  ML7213 IOH is for IVI(In-Vehicle Infotainment) use, ML7223 IOH is
-+	  for MP(Media Phone) use and ML7831 IOH is for general purpose use.
-+	  ML7213/ML7223/ML7831 is companion chip for Intel Atom E6xx series.
-+	  ML7213/ML7223/ML7831 is completely compatible for Intel EG20T PCH.
- 
- config SERIAL_PCH_UART_CONSOLE
- 	bool "Support for console on Intel EG20T PCH UART/OKI SEMICONDUCTOR ML7213 IOH"
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 1a076cd..6405dd1 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -265,6 +265,8 @@ enum pch_uart_num_t {
- 	pch_ml7213_uart2,
- 	pch_ml7223_uart0,
- 	pch_ml7223_uart1,
-+	pch_ml7831_uart0,
-+	pch_ml7831_uart1,
- };
- 
- static struct pch_uart_driver_data drv_dat[] = {
-@@ -277,6 +279,8 @@ static struct pch_uart_driver_data drv_dat[] = {
- 	[pch_ml7213_uart2] = {PCH_UART_2LINE, 2},
- 	[pch_ml7223_uart0] = {PCH_UART_8LINE, 0},
- 	[pch_ml7223_uart1] = {PCH_UART_2LINE, 1},
-+	[pch_ml7831_uart0] = {PCH_UART_8LINE, 0},
-+	[pch_ml7831_uart1] = {PCH_UART_2LINE, 1},
- };
- 
- #ifdef CONFIG_SERIAL_PCH_UART_CONSOLE
-@@ -1712,6 +1716,10 @@ static DEFINE_PCI_DEVICE_TABLE(pch_uart_pci_id) = {
- 	 .driver_data = pch_ml7223_uart0},
- 	{PCI_DEVICE(PCI_VENDOR_ID_ROHM, 0x800D),
- 	 .driver_data = pch_ml7223_uart1},
-+	{PCI_DEVICE(PCI_VENDOR_ID_ROHM, 0x8811),
-+	 .driver_data = pch_ml7831_uart0},
-+	{PCI_DEVICE(PCI_VENDOR_ID_ROHM, 0x8812),
-+	 .driver_data = pch_ml7831_uart1},
- 	{0,},
- };
- 
--- 
-1.7.4.4
+>
+> Linus Walleij
+>
 
+thanks
+barry
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
