@@ -1,28 +1,34 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: [PATCH 2/2] pch_uart: Delete modem status interrupt enable code
-Date: Tue, 1 Nov 2011 12:57:57 +0000
-Message-ID: <20111101125757.4ef7f883@bob.linux.org.uk>
-References: <1319697919-5623-1-git-send-email-tomoya-linux@dsn.lapis-semi.com>
-	<1319697919-5623-2-git-send-email-tomoya-linux@dsn.lapis-semi.com>
+From: Barry Song <21cnbao@gmail.com>
+Subject: Re: [PATCH] UART: add CSR SiRFprimaII SoC on-chip uart drivers
+Date: Tue, 1 Nov 2011 20:48:29 +0800
+Message-ID: <CAGsJ_4wGRv9=fbWtK-0jkmXDcd=y2r6qxae99tNgim4=BmxJ+w@mail.gmail.com>
+References: <1319772453-1275-1-git-send-email-Barry.Song@csr.com>
+ <20111028071129.GA2362@tarshish> <CAGsJ_4z=VtU+RJ4c0Y2ruttWU6mTVtHMxzvCYWGz=5w6i7QJMQ@mail.gmail.com>
+ <20111101114242.7c90f958@bob.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1319697919-5623-2-git-send-email-tomoya-linux@dsn.lapis-semi.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com>
-Cc: gregkh@suse.de, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, qi.wang@intel.com, yong.y.wang@intel.com, joel.clark@intel.com, kok.howg.ewe@intel.com
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-bw0-f46.google.com ([209.85.214.46]:61776 "EHLO
+	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754462Ab1KAMsv (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 1 Nov 2011 08:48:51 -0400
+In-Reply-To: <20111101114242.7c90f958@bob.linux.org.uk>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>, torvalds@linux-foundation.org
+Cc: Baruch Siach <baruch@tkos.co.il>, Rong Wang <Rong.Wang@csr.com>, Bin Shi <Bin.Shi@csr.com>, Linus Walleij <linus.walleij@linaro.org>, linux-kernel@vger.kernel.org, workgroup.linux@csr.com, linux-serial@vger.kernel.org, Barry Song <Baohua.Song@csr.com>, linux-arm-kernel@lists.infradead.org
 
-> (pch_uart device has auto hardware flow control function. So,
-> pch_uart driver doesn't have to control modem status interrupt.)
+2011/11/1 Alan Cox <alan@linux.intel.com>:
+>> i am not sure whether i will make Linus confused if i send a new
+>> version at this moment. how about i send a seperate patch to fix this
+>> after the driver is applied?
+>
+> That would be the best idea - its a trivial typo so doesn't really
+> matter much.
+ok, Alan.
 
-This is true for flow control bits but not for incoming carrier detect ?
+Linus, have you gotten it? and can you apply it?
+or do you want this to go through tty tree and merge it until next merge window?
 
-> This patch deletes the code.
-
-> +	dev_info(priv->port.dev,
-> +		"PCH UART : Modem status interrupt is not
-> supported.\n"); }
-
-dev_info seems wrong here. Does the user need to know this ?
+-barry
