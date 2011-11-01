@@ -1,54 +1,91 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH] UART: add CSR SiRFprimaII SoC on-chip uart drivers
-Date: Tue, 1 Nov 2011 06:40:06 -0700
-Message-ID: <20111101134006.GA9959@kroah.com>
-References: <1319772453-1275-1-git-send-email-Barry.Song@csr.com>
- <20111028071129.GA2362@tarshish>
- <CAGsJ_4z=VtU+RJ4c0Y2ruttWU6mTVtHMxzvCYWGz=5w6i7QJMQ@mail.gmail.com>
- <20111101114242.7c90f958@bob.linux.org.uk>
- <CAGsJ_4wGRv9=fbWtK-0jkmXDcd=y2r6qxae99tNgim4=BmxJ+w@mail.gmail.com>
- <20111101131021.GA9109@kroah.com>
- <CAGsJ_4ySO=ACfAeeHMvw_sOUdaD9KYD09f4LYrWdUkA2PwuLvA@mail.gmail.com>
+From: Paul Schilling <paul.s.schilling@gmail.com>
+Subject: Re: [PATCH 02/14] ARM : SAMSUNG : Add RS485 support.
+Date: Tue, 1 Nov 2011 09:57:56 -0500
+Message-ID: <CAC=G6swE7WCqTFkJkOm_GXpVncjXrc+-jvaKHiwc9KTb6Re8hQ@mail.gmail.com>
+References: <1319255194-4799-1-git-send-email-paul.s.schilling@gmail.com>
+	<20111101121851.7d393277@bob.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAGsJ_4ySO=ACfAeeHMvw_sOUdaD9KYD09f4LYrWdUkA2PwuLvA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Barry Song <21cnbao@gmail.com>
-Cc: Alan Cox <alan@linux.intel.com>, torvalds@linux-foundation.org, Baruch Siach <baruch@tkos.co.il>, Rong Wang <Rong.Wang@csr.com>, Bin Shi <Bin.Shi@csr.com>, Linus Walleij <linus.walleij@linaro.org>, linux-kernel@vger.kernel.org, workgroup.linux@csr.com, linux-serial@vger.kernel.org, Barry Song <Baohua.Song@csr.com>, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-vw0-f46.google.com ([209.85.212.46]:57446 "EHLO
+	mail-vw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751170Ab1KAO55 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 1 Nov 2011 10:57:57 -0400
+In-Reply-To: <20111101121851.7d393277@bob.linux.org.uk>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>
+Cc: Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@suse.de>, Boojin Kim <boojin.kim@samsung.com>, Nicolas Pitre <nicolas.pitre@linaro.org>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Tue, Nov 01, 2011 at 09:28:39PM +0800, Barry Song wrote:
-> 2011/11/1 Greg KH <greg@kroah.com>:
-> > On Tue, Nov 01, 2011 at 08:48:29PM +0800, Barry Song wrote:
-> >> 2011/11/1 Alan Cox <alan@linux.intel.com>:
-> >> >> i am not sure whether i will make Linus confused if i send a ne=
-w
-> >> >> version at this moment. how about i send a seperate patch to fi=
-x this
-> >> >> after the driver is applied?
-> >> >
-> >> > That would be the best idea - its a trivial typo so doesn't real=
-ly
-> >> > matter much.
-> >> ok, Alan.
-> >>
-> >> Linus, have you gotten it? and can you apply it?
-> >> or do you want this to go through tty tree and merge it until next=
- merge window?
-> >
-> > That's probably the easiest thing to do, right? =A0Send it to me an=
-d I can
-> > handle it.
->=20
-> Hi Greg, thanks! as i checked your tree, this patch should be able to
-> apply on your tree since you already have pinmux subsystem.
-> do i need to git send-email to you again for this?
+I am working on resubmitting this stuff right now.  I have 14 patches
+that should be
+broken into more like 20 patches.  Most of them are ARM S3C and
+specifically S3C2416 patches.
+I am working on a patch right now to fix a Atomic wait in the DMA
+code.  That causes
+20 milliseconds of no interrupts whenever a sound is played on the sams=
+ung S3C
+platform.
 
-Yes, please do.
+The code below wasn't supposed to go out and I have patch that removes
+that chunk
+of code almost ready that just needs testing before I send it.
 
-thanks,
+On Tue, Nov 1, 2011 at 7:18 AM, Alan Cox <alan@linux.intel.com> wrote:
+>> +config SAMSUNG_HAS_RS485
+>> + =A0 =A0 bool "Enable RS485 support for Samsung"
+>> + =A0 =A0 depends on SERIAL_SAMSUNG && (MACH_CONDOR2440 ||
+>> MACH_CONDOR2416 || MACH_MINI2440)
+>> + =A0 =A0 default y if (MACH_CONDOR2440 || MACH_CONDOR2416)
+>> + =A0 =A0 default n if (MACH_MINI2440)
+>
+> There really needs to be more ARM thinking about doing this sort of
+> stuff at runtime. If you can detect the board type at runtime then yo=
+u
+> need to be moving towards kicking board specifics out of the depends,
+> and treating it as an "include support for this, if the board has it"
+> so you can move towards less build time only configuration.
+>
 
-greg k-h
+The chunk of code that says FIXME is an optimization that could be
+implemented to
+decrease interrupts by using DMA until the last byte is ready to be
+sent.  I have a new
+patch that explains in a comment what the code is for.
+
+>> +/* FIXME */
+>> + =A0 =A0 #if 0
+>> + =A0 =A0 if (last_state !=3D en) {
+>> +
+>
+> So this doesn't look ready to submit either...
+>
+
+I have a patch that I haven't sent yet that fixes the code formating
+issues.  I need to compile and test it before I send it out.
+
+>
+>> + =A0 =A0 =A0 =A0 =A0 =A0 if ((utrstat & S3C2410_UTRSTAT_TXE) ? 1 : =
+0) {
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 if (cfg->gpio_transmit_en =
+> -1) {
+>> +
+>> gpio_set_value(cfg->gpio_transmit_en, 0);
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 }
+>
+> Lots of excess brackets (see CodingStyle) - removing a few of the
+> excess ones would make it easier to read later.
+>
+> The later bits become a real mess of ifdefs - much not your fault, th=
+e
+> combination of your ifdefs and existing lack of design push it beyond
+> ugly and really want addressing.
+>
+>
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
