@@ -1,28 +1,28 @@
 From: Alan Cox <alan@linux.intel.com>
-Subject: Re: [PATCH 1/2] pch_uart: Support new device LAPIS Semiconductor
- ML7831 IOH
-Date: Tue, 1 Nov 2011 12:55:38 +0000
-Message-ID: <20111101125538.38ea9c97@bob.linux.org.uk>
-References: <1319762330-7134-1-git-send-email-tomoya-linux@dsn.lapis-semi.com>
+Subject: Re: [PATCH 2/2] pch_uart: Delete modem status interrupt enable code
+Date: Tue, 1 Nov 2011 12:57:57 +0000
+Message-ID: <20111101125757.4ef7f883@bob.linux.org.uk>
+References: <1319697919-5623-1-git-send-email-tomoya-linux@dsn.lapis-semi.com>
+	<1319697919-5623-2-git-send-email-tomoya-linux@dsn.lapis-semi.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:4462 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754320Ab1KAMo4 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 1 Nov 2011 08:44:56 -0400
-In-Reply-To: <1319762330-7134-1-git-send-email-tomoya-linux@dsn.lapis-semi.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1319697919-5623-2-git-send-email-tomoya-linux@dsn.lapis-semi.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com>
 Cc: gregkh@suse.de, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, qi.wang@intel.com, yong.y.wang@intel.com, joel.clark@intel.com, kok.howg.ewe@intel.com
+List-Id: linux-serial@vger.kernel.org
 
-On Fri, 28 Oct 2011 09:38:49 +0900
-Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com> wrote:
+> (pch_uart device has auto hardware flow control function. So,
+> pch_uart driver doesn't have to control modem status interrupt.)
 
-> ML7831 is companion chip for Intel Atom E6xx series.
-> 
-> Signed-off-by: Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com>
+This is true for flow control bits but not for incoming carrier detect ?
 
-Acked-by: Alan Cox <alan@linux.intel.com>
+> This patch deletes the code.
+
+> +	dev_info(priv->port.dev,
+> +		"PCH UART : Modem status interrupt is not
+> supported.\n"); }
+
+dev_info seems wrong here. Does the user need to know this ?
