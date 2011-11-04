@@ -1,40 +1,70 @@
-From: Mark Brown <broonie@opensource.wolfsonmicro.com>
-Subject: [PATCH] serial: samsung: Fix build for non-Exynos4210 devices
-Date: Fri,  4 Nov 2011 17:16:24 +0000
-Message-ID: <1320426984-17525-1-git-send-email-broonie@opensource.wolfsonmicro.com>
+From: Kevin Hilman <khilman@ti.com>
+Subject: Re: [PATCH v7 16/21] OMAP2+: UART: Remove custom activate funcs and use generic funcs.
+Date: Fri, 04 Nov 2011 15:00:14 -0700
+Message-ID: <877h3f5z0x.fsf@ti.com>
+References: <1318952110-10659-1-git-send-email-govindraj.raja@ti.com>
+	<1318952110-10659-2-git-send-email-govindraj.raja@ti.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from opensource.wolfsonmicro.com ([80.75.67.52]:42106 "EHLO
-	opensource.wolfsonmicro.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755915Ab1KDRQ2 (ORCPT
+Received: from na3sys009aog114.obsmtp.com ([74.125.149.211]:44106 "EHLO
+	na3sys009aog114.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751926Ab1KDWAT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 4 Nov 2011 13:16:28 -0400
+	Fri, 4 Nov 2011 18:00:19 -0400
+In-Reply-To: <1318952110-10659-2-git-send-email-govindraj.raja@ti.com>
+	(Govindraj R.'s message of "Tue, 18 Oct 2011 21:05:07 +0530")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>, Kukjin Kim <kgene.kim@samsung.com>
-Cc: Thomas Abraham <thomas.abraham@linaro.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Brown <broonie@opensource.wolfsonmicro.com>
+To: "Govindraj.R" <govindraj.raja@ti.com>
+Cc: linux-omap@vger.kernel.org, Tony Lindgren <tony@atomide.com>, Rajendra Nayak <rnayak@ti.com>, Partha Basak <p-basak2@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, linux-serial@vger.kernel.org, Vishwanath Sripathy <vishwanath.bs@ti.com>, linux-arm-kernel@lists.infradead.org
 
-exynos4120_serial_drv_data is only defined when building with support
-for Exynos4210 so use the already provided define to ensure that we
-don't reference it when building for other SoCs.
+"Govindraj.R" <govindraj.raja@ti.com> writes:
 
-Signed-off-by: Mark Brown <broonie@opensource.wolfsonmicro.com>
----
- drivers/tty/serial/samsung.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+> The custom hwmod activate and deactivate funcs does hwmod_enable
+> and idle same can be done with omap_device generic API's.
+>
+> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index efe3756..7272eee 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1649,7 +1649,7 @@ MODULE_DEVICE_TABLE(platform, s3c24xx_serial_driver_ids);
- #ifdef CONFIG_OF
- static const struct of_device_id s3c24xx_uart_dt_match[] = {
- 	{ .compatible = "samsung,exynos4210-uart",
--		.data = &exynos4210_serial_drv_data },
-+		.data = EXYNOS4210_SERIAL_DRV_DATA },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, s3c24xx_uart_dt_match);
--- 
-1.7.7.1
+This one needs a minor update for current mainline...
 
+> ---
+>  arch/arm/mach-omap2/serial.c |   18 ++----------------
+>  1 files changed, 2 insertions(+), 16 deletions(-)
+>
+> diff --git a/arch/arm/mach-omap2/serial.c b/arch/arm/mach-omap2/serial.c
+> index 7c65410..7658a03 100644
+> --- a/arch/arm/mach-omap2/serial.c
+> +++ b/arch/arm/mach-omap2/serial.c
+> @@ -78,24 +78,10 @@ static struct omap_uart_port_info omap_serial_default_info[] __initdata = {
+>  	},
+>  };
+>  
+> -static int uart_idle_hwmod(struct omap_device *od)
+> -{
+> -	omap_hwmod_idle(od->hwmods[0]);
+> -
+> -	return 0;
+> -}
+> -
+> -static int uart_enable_hwmod(struct omap_device *od)
+> -{
+> -	omap_hwmod_enable(od->hwmods[0]);
+> -
+> -	return 0;
+> -}
+> -
+>  static struct omap_device_pm_latency omap_uart_latency[] = {
+>  	{
+> -		.deactivate_func = uart_idle_hwmod,
+> -		.activate_func	 = uart_enable_hwmod,
+> +		.activate_func	 = omap_device_enable_hwmods,
+> +		.deactivate_func = omap_device_idle_hwmods,
+>  		.flags = OMAP_DEVICE_LATENCY_AUTO_ADJUST,
+>  	},
+>  };
+
+If we're just using default pm_latency struct, it can be passed to
+omap_device_build as NULL, and a default one will be configured.
+
+Kevin
