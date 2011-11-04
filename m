@@ -1,14 +1,14 @@
 From: Kevin Hilman <khilman@ti.com>
-Subject: Re: [PATCH v7 17/21] OMAP2+: UART: Remove omap_uart_can_sleep and add pm_qos
-Date: Fri, 04 Nov 2011 15:42:07 -0700
-Message-ID: <87vcqz33y8.fsf@ti.com>
+Subject: Re: [PATCH v7 19/21] OMAP2+: UART: Use custom activate func for console uart.
+Date: Fri, 04 Nov 2011 16:00:00 -0700
+Message-ID: <878vnv334f.fsf@ti.com>
 References: <1318952110-10659-1-git-send-email-govindraj.raja@ti.com>
-	<1318952110-10659-3-git-send-email-govindraj.raja@ti.com>
+	<1318952110-10659-5-git-send-email-govindraj.raja@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1318952110-10659-3-git-send-email-govindraj.raja@ti.com>
-	(Govindraj R.'s message of "Tue, 18 Oct 2011 21:05:08 +0530")
+In-Reply-To: <1318952110-10659-5-git-send-email-govindraj.raja@ti.com>
+	(Govindraj R.'s message of "Tue, 18 Oct 2011 21:05:10 +0530")
 Sender: linux-omap-owner@vger.kernel.org
 To: "Govindraj.R" <govindraj.raja@ti.com>
 Cc: linux-omap@vger.kernel.org, Tony Lindgren <tony@atomide.com>, Rajendra Nayak <rnayak@ti.com>, Partha Basak <p-basak2@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, linux-serial@vger.kernel.org, Vishwanath Sripathy <vishwanath.bs@ti.com>, linux-arm-kernel@lists.infradead.org
@@ -16,310 +16,181 @@ List-Id: linux-serial@vger.kernel.org
 
 "Govindraj.R" <govindraj.raja@ti.com> writes:
 
-> Omap_uart_can_sleep function blocks system wide low power state until
-> uart is active remove this func and add qos requests to prevent
-                ^
-missing some punctuation.
-
-> MPU from transitioning while uart is active and remove qos request
-> if uart is auto-idled.
-
-It would be helpful to summarize my previous comments[1] about why this
-happens on some UARTs (PER) and not others (CORE.)  
-
-> qos requests are blocking notifier calls so put these requests to
-> work queue to avoid warn on slow path warning while using qos
-> API's from runtime callbacks. 
-
-OK.  
-
-Rather than a vague reference to 'warn on slow path', please describe
-that this is needed because the driver uses the irq_safe mode of runtime
-PM, so callbacks may be run with interrupts disabled.
-
-> Flush_sync any pending qos jobs in work queue while suspending.
-
-Nice.
-
+> Omap-uart can be used as console uart to print early boot
+> messages using earlyprintk so for console uart prevent
+> hwmod reset or idling during bootup.
+>
+> Identify the console_uart set the id and use the custom
+> pm_latency ops for console uart for the first time
+> to idle console uart left enabled from bootup and then enable
+> them back and reset pm_latency ops to default ops.
+>
+> Thanks to Kevin Hilman <khilman@ti.com> for suggesting
+> this approach.
+>
 > Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
 > ---
->  arch/arm/mach-omap2/cpuidle34xx.c             |    5 ---
->  arch/arm/mach-omap2/pm24xx.c                  |    2 -
->  arch/arm/mach-omap2/pm34xx.c                  |   10 ------
->  arch/arm/mach-omap2/serial.c                  |   24 +-------------
->  arch/arm/plat-omap/include/plat/omap-serial.h |    8 +++++
->  drivers/tty/serial/omap-serial.c              |   41 ++++++++++++++++++++++++-
->  6 files changed, 50 insertions(+), 40 deletions(-)
+>  arch/arm/mach-omap2/serial.c |   79 ++++++++++++++++++++++++++++-------------
+>  1 files changed, 54 insertions(+), 25 deletions(-)
 >
-> diff --git a/arch/arm/mach-omap2/cpuidle34xx.c b/arch/arm/mach-omap2/cpuidle34xx.c
-> index 4bf6e6e..98b7d3f 100644
-> --- a/arch/arm/mach-omap2/cpuidle34xx.c
-> +++ b/arch/arm/mach-omap2/cpuidle34xx.c
-> @@ -226,11 +226,6 @@ static int omap3_enter_idle_bm(struct cpuidle_device *dev,
->  	struct omap3_idle_statedata *cx;
->  	int ret;
->  
-> -	if (!omap3_can_sleep()) {
-> -		new_state = dev->safe_state;
-> -		goto select_state;
-> -	}
-> -
->  	/*
->  	 * Prevent idle completely if CAM is active.
->  	 * CAM does not have wakeup capability in OMAP3.
-> diff --git a/arch/arm/mach-omap2/pm24xx.c b/arch/arm/mach-omap2/pm24xx.c
-> index a75f764..192f0a4 100644
-> --- a/arch/arm/mach-omap2/pm24xx.c
-> +++ b/arch/arm/mach-omap2/pm24xx.c
-> @@ -248,8 +248,6 @@ static int omap2_can_sleep(void)
->  {
->  	if (omap2_fclks_active())
->  		return 0;
-> -	if (!omap_uart_can_sleep())
-> -		return 0;
->  	if (osc_ck->usecount > 1)
->  		return 0;
->  	if (omap_dma_running())
-> diff --git a/arch/arm/mach-omap2/pm34xx.c b/arch/arm/mach-omap2/pm34xx.c
-> index 6e7f276..a635fa1 100644
-> --- a/arch/arm/mach-omap2/pm34xx.c
-> +++ b/arch/arm/mach-omap2/pm34xx.c
-> @@ -425,21 +425,11 @@ void omap_sram_idle(void)
->  	clkdm_allow_idle(mpu_pwrdm->pwrdm_clkdms[0]);
->  }
->  
-> -int omap3_can_sleep(void)
-> -{
-> -	if (!omap_uart_can_sleep())
-> -		return 0;
-> -	return 1;
-> -}
-> -
->  static void omap3_pm_idle(void)
->  {
->  	local_irq_disable();
->  	local_fiq_disable();
->  
-> -	if (!omap3_can_sleep())
-> -		goto out;
-> -
->  	if (omap_irq_pending() || need_resched())
->  		goto out;
->  
 > diff --git a/arch/arm/mach-omap2/serial.c b/arch/arm/mach-omap2/serial.c
-> index 7658a03..55ce950 100644
+> index e1eba7f..55903f0 100644
 > --- a/arch/arm/mach-omap2/serial.c
 > +++ b/arch/arm/mach-omap2/serial.c
-> @@ -75,6 +75,7 @@ static struct omap_uart_port_info omap_serial_default_info[] __initdata = {
->  		.dma_rx_poll_rate = DEFAULT_RXDMA_POLLRATE,
->  		.dma_rx_timeout = DEFAULT_RXDMA_TIMEOUT,
->  		.autosuspend_timeout = DEFAULT_AUTOSUSPEND_DELAY,
-> +		.use_pm_qos = true,
-
-You're enabling the MPU constraint for all UARTs.
-
-However, as mentioned previously[1], due to a HW sleepdep between MPU
-and CORE, this constraint isn't actually needed for CORE UARTs, so it's
-a bit wasteful to go through all the constraint setting for no reason.
-
-The changelog should summarize this, and the init code should only
-enable the constraints for PER UARTs, at least on OMAP3.  I'm not sure
-about OMAP4.
-
+> @@ -63,6 +63,7 @@ struct omap_uart_state {
+>  
+>  static LIST_HEAD(uart_list);
+>  static u8 num_uarts;
+> +static u8 console_uart_id = -1;
+>  
+>  #define DEFAULT_RXDMA_POLLRATE		1	/* RX DMA polling rate (us) */
+>  #define DEFAULT_RXDMA_BUFSIZE		4096	/* RX DMA buffer size */
+> @@ -87,6 +88,29 @@ static struct omap_device_pm_latency omap_uart_latency[] = {
 >  	},
 >  };
 >  
-> @@ -87,28 +88,6 @@ static struct omap_device_pm_latency omap_uart_latency[] = {
->  };
->  
->  #ifdef CONFIG_PM
-> -
-> -int omap_uart_can_sleep(void)
-> -{
-> -	struct omap_uart_state *uart;
-> -	int can_sleep = 1;
-> -
-> -	list_for_each_entry(uart, &uart_list, node) {
-> -		if (!uart->clocked)
-> -			continue;
-> -
-> -		if (!uart->can_sleep) {
-> -			can_sleep = 0;
-> -			continue;
-> -		}
-> -
-> -		/* This UART can now safely sleep. */
-> -		omap_uart_allow_sleep(uart);
-> -	}
-> -
-> -	return can_sleep;
-> -}
-> -
->  static void omap_uart_enable_wakeup(struct platform_device *pdev, bool enable)
->  {
->  	struct omap_device *od = to_omap_device(pdev);
-> @@ -363,6 +342,7 @@ void __init omap_serial_init_port(struct omap_board_data *bdata,
->  	omap_up.dma_rx_timeout = info->dma_rx_timeout;
->  	omap_up.dma_rx_poll_rate = info->dma_rx_poll_rate;
->  	omap_up.autosuspend_timeout = info->autosuspend_timeout;
-> +	omap_up.use_pm_qos = info->use_pm_qos;
->  
->  	/* Enable the MDR1 errata for OMAP3 */
->  	if (cpu_is_omap34xx() && !cpu_is_ti816x())
-> diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/plat-omap/include/plat/omap-serial.h
-> index 9a6879c..41eda3c 100644
-> --- a/arch/arm/plat-omap/include/plat/omap-serial.h
-> +++ b/arch/arm/plat-omap/include/plat/omap-serial.h
-> @@ -19,6 +19,7 @@
->  
->  #include <linux/serial_core.h>
->  #include <linux/platform_device.h>
-> +#include <linux/pm_qos_params.h>
->  
->  #include <plat/mux.h>
->  
-> @@ -68,6 +69,7 @@ struct omap_uart_port_info {
->  	unsigned int		dma_rx_timeout;
->  	unsigned int		autosuspend_timeout;
->  	unsigned int		dma_rx_poll_rate;
-> +	u8			use_pm_qos;
->  
->  	u32 (*get_context_loss_count)(struct device *);
->  	void (*set_forceidle)(struct platform_device *);
-> @@ -129,6 +131,12 @@ struct uart_omap_port {
->  	u32			context_loss_cnt;
->  	u32			errata;
->  	u8			wakeups_enabled;
-> +
-> +	struct pm_qos_request_list pm_qos_request;
-> +	u32			latency;
-> +	struct work_struct	work;
-
-minor: call this qos_work.
-
-> +	u8			request_qos;
-> +	u8			use_pm_qos;
->  };
->  
->  #endif /* __OMAP_SERIAL_H__ */
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-> index 1714bd2..956736c 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -51,6 +51,8 @@ static void serial_omap_rxdma_poll(unsigned long uart_no);
->  static int serial_omap_start_rxdma(struct uart_omap_port *up);
->  static void serial_omap_mdr1_errataset(struct uart_omap_port *up, u8 mdr1);
->  
-> +static struct workqueue_struct *serial_omap_uart_wq;
-> +
->  static inline unsigned int serial_in(struct uart_omap_port *up, int offset)
->  {
->  	offset <<= up->port.regshift;
-> @@ -674,6 +676,21 @@ serial_omap_configure_xonxoff
->  	serial_out(up, UART_LCR, up->lcr);
->  }
->  
-> +static void serial_omap_uart_qos_work(struct work_struct *work)
+> +static int console_uart_enable_hwmod(struct omap_device *od)
 > +{
-> +	struct uart_omap_port *up = container_of(work, struct uart_omap_port,
-> +						work);
+> +	/* For early console we prevented hwmod reset and idle
+> +	 * So before we enable the uart clocks idle and then
+> +	 */
+
+minor: fix multi-line comment style (search for multi-line in
+Documentation/CodingStyle).  Another one below.
+
+Notice that you're moving existing code here, but also changing the
+functionality without a description as to why.    Based on the existing code:
+
+You need a console_lock() here...
+
+> +	omap_hwmod_idle(od->hwmods[0]);
+> +	omap_hwmod_enable(od->hwmods[0]);
+
+...and this should be omap_device_enable().
+
+And  you need a console_unlock() here.
+
+Yes, you're subsequent patches avoid this problem, but we still need a real
+fix other than checking for 'debug/loglevel', and when that happens,
+we'll need a console lock here.
+
+> +	/* restore the default activate/deactivate funcs,
+> +	 * since now we have set the hwmod state machine right
+> +	 * with the idle/enable for console uart
+> +	 */
+> +	od->pm_lats = omap_uart_latency;
 > +
-> +	if (!up->request_qos) {
-> +		pm_qos_add_request(&up->pm_qos_request,
-> +			PM_QOS_CPU_DMA_LATENCY, up->latency);
-> +		up->request_qos = true;
-
-->request_qos is a confusing name.  ->qos_requested would help
-readability, IMO.
-
-> +	} else {
-> +		pm_qos_remove_request(&up->pm_qos_request);
-> +		up->request_qos = false;
-> +	}
+> +	return 0;
 > +}
 > +
->  static void
->  serial_omap_set_termios(struct uart_port *port, struct ktermios *termios,
->  			struct ktermios *old)
-> @@ -869,6 +886,13 @@ serial_omap_set_termios(struct uart_port *port, struct ktermios *termios,
->  	serial_omap_configure_xonxoff(up, termios);
->  
->  	spin_unlock_irqrestore(&up->port.lock, flags);
+> +static struct omap_device_pm_latency console_uart_latency[] = {
+> +	{
+> +		.activate_func	 = console_uart_enable_hwmod,
+> +	},
+> +};
 > +
-> +	if (up->use_pm_qos) {
-> +		/* calculate wakeup latency constraint */
-> +		up->latency = (1000000 * up->port.fifosize) / (1000 * baud / 8);
-> +		schedule_work(&up->work);
-
-Is this one really needed?  There's a pm_runtime_put() right after this
-that will immediately remove the constraint.
-
-Actually, it seems like it would be better to calculate the latency
-earlier in this function (right after the baud rate) so that the
-subsequent pm_runtime_get() sets the constraint...
-
-> +	}
-> +
->  	pm_runtime_put(&up->pdev->dev);
-
-...and this will remove the constraint.
-
->  	dev_dbg(up->port.dev, "serial_omap_set_termios+%d\n", up->pdev->id);
->  }
-> @@ -1144,8 +1168,11 @@ static int serial_omap_suspend(struct device *dev)
+>  #ifdef CONFIG_PM
+>  static void omap_uart_enable_wakeup(struct platform_device *pdev, bool enable)
 >  {
->  	struct uart_omap_port *up = dev_get_drvdata(dev);
+> @@ -251,12 +275,20 @@ static void omap_serial_fill_default_pads(struct omap_board_data *bdata)
+>  static void omap_serial_fill_default_pads(struct omap_board_data *bdata) {}
+>  #endif
 >  
-> -	if (up)
-> +	if (up) {
->  		uart_suspend_port(&serial_omap_reg, &up->port);
-> +		flush_work_sync(&up->work);
+> +char *cmdline_find_option(char *str)
+
+static inline
+
+> +{
+> +	extern char *saved_command_line;
+> +
+> +	return strstr(saved_command_line, str);
+> +}
+> +
+>  static int __init omap_serial_early_init(void)
+>  {
+>  	do {
+>  		char oh_name[MAX_UART_HWMOD_NAME_LEN];
+>  		struct omap_hwmod *oh;
+>  		struct omap_uart_state *uart;
+> +		char uart_name[MAX_UART_HWMOD_NAME_LEN];
+>  
+>  		snprintf(oh_name, MAX_UART_HWMOD_NAME_LEN,
+>  			 "uart%d", num_uarts + 1);
+> @@ -271,18 +303,23 @@ static int __init omap_serial_early_init(void)
+>  		uart->oh = oh;
+>  		uart->num = num_uarts++;
+>  		list_add_tail(&uart->node, &uart_list);
+> +		snprintf(uart_name, MAX_UART_HWMOD_NAME_LEN,
+> +				"%s%d", OMAP_SERIAL_NAME, uart->num);
+> +
+> +		if (cmdline_find_option(uart_name)) {
+> +			console_uart_id = uart->num;
+> +			/*
+> +			 * omap-uart can be used for earlyprintk logs
+> +			 * So if omap-uart is used as console then prevent
+> +			 * uart reset and idle to get logs from omap-uart
+> +			 * until uart console driver is available to take
+> +			 * care for console messages.
+> +			 * Idling or resetting omap-uart while printing logs
+> +			 * early boot logs can stall the boot-up.
+> +			 */
+> +			oh->flags |= HWMOD_INIT_NO_IDLE | HWMOD_INIT_NO_RESET;
+> +		}
+>  
+> -		/*
+> -		 * NOTE: omap_hwmod_setup*() has not yet been called,
+> -		 *       so no hwmod functions will work yet.
+> -		 */
+> -
+> -		/*
+> -		 * During UART early init, device need to be probed
+> -		 * to determine SoC specific init before omap_device
+> -		 * is ready.  Therefore, don't allow idle here
+> -		 */
+> -		uart->oh->flags |= HWMOD_INIT_NO_IDLE | HWMOD_INIT_NO_RESET;
+>  	} while (1);
+>  
+>  	return 0;
+> @@ -311,6 +348,7 @@ void __init omap_serial_init_port(struct omap_board_data *bdata,
+>  	u32 pdata_size = 0;
+>  	char *name;
+>  	struct omap_uart_port_info omap_up;
+> +	struct omap_device *od;
+>  
+>  	if (WARN_ON(!bdata))
+>  		return;
+> @@ -357,6 +395,11 @@ void __init omap_serial_init_port(struct omap_board_data *bdata,
+>  	WARN(IS_ERR(pdev), "Could not build omap_device for %s: %s.\n",
+>  	     name, oh->name);
+>  
+> +	if (console_uart_id == bdata->id) {
+> +		od = to_omap_device(pdev);
+> +		od->pm_lats = console_uart_latency;
 > +	}
 > +
->  	return 0;
+>  	omap_device_disable_idle_on_suspend(pdev);
+>  	oh->mux = omap_hwmod_mux_init(bdata->pads, bdata->pads_cnt);
+>  
+> @@ -364,20 +407,6 @@ void __init omap_serial_init_port(struct omap_board_data *bdata,
+>  
+>  	oh->dev_attr = uart;
+>  
+> -	console_lock(); /* in case the earlycon is on the UART */
+> -
+> -	/*
+> -	 * Because of early UART probing, UART did not get idled
+> -	 * on init.  Now that omap_device is ready, ensure full idle
+> -	 * before doing omap_device_enable().
+> -	 */
+> -	omap_hwmod_idle(uart->oh);
+> -
+> -	omap_device_enable(uart->pdev);
+> -	omap_device_idle(uart->pdev);
+> -
+> -	console_unlock();
+> -
+>  	if ((cpu_is_omap34xx() || cpu_is_omap44xx()) && bdata->pads)
+>  		device_init_wakeup(&pdev->dev, true);
 >  }
->  
-> @@ -1368,6 +1395,7 @@ static int serial_omap_probe(struct platform_device *pdev)
->  	up->port.uartclk = omap_up_info->uartclk;
->  	up->uart_dma.uart_base = mem->start;
->  	up->errata = omap_up_info->errata;
-> +	up->use_pm_qos = omap_up_info->use_pm_qos;
->  
->  	if (omap_up_info->dma_enabled) {
->  		up->uart_dma.uart_dma_tx = dma_tx->start;
-> @@ -1382,6 +1410,11 @@ static int serial_omap_probe(struct platform_device *pdev)
->  		up->uart_dma.rx_dma_channel = OMAP_UART_DMA_CH_FREE;
->  	}
->  
-> +	if (up->use_pm_qos) {
-> +		serial_omap_uart_wq = create_workqueue(up->name);
-> +		INIT_WORK(&up->work, serial_omap_uart_qos_work);
-> +	}
-> +
->  	pm_runtime_use_autosuspend(&pdev->dev);
->  	pm_runtime_set_autosuspend_delay(&pdev->dev,
->  			omap_up_info->autosuspend_timeout);
-> @@ -1516,6 +1549,9 @@ static int serial_omap_runtime_suspend(struct device *dev)
->  	if (up->use_dma && pdata->set_forceidle)
->  		pdata->set_forceidle(up->pdev);
->  
-> +	if (up->use_pm_qos && up->request_qos)
-> +		schedule_work(&up->work);
-> +
->  	return 0;
->  }
->  
-> @@ -1535,6 +1571,9 @@ static int serial_omap_runtime_resume(struct device *dev)
->  		/* Errata i291 */
->  		if (up->use_dma && pdata->set_noidle)
->  			pdata->set_noidle(up->pdev);
-> +
-> +		if (up->use_pm_qos && !up->request_qos)
-> +			schedule_work(&up->work);
->  	}
->  
->  	return 0;
 
 Kevin
-
-[1] http://www.mail-archive.com/linux-omap@vger.kernel.org/msg57577.html
