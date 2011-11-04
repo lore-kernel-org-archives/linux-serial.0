@@ -1,426 +1,216 @@
-From: Javier Martinez Canillas <martinez.javier@gmail.com>
-Subject: Re: [PATCH 1/1] omap: serial: Add RS-485 standard support
-Date: Thu, 3 Nov 2011 20:06:58 +0100
-Message-ID: <CAAwP0s3upt6W5Z6f=N_6ZdZnK9YtdD6SdUUvEhZgB=P8=z7Yuw@mail.gmail.com>
-References: <1319843084-16948-1-git-send-email-martinez.javier@gmail.com>
+From: Claudio Scordino <claudio@evidence.eu.com>
+Subject: [PATCH] RS485: fix inconsistencies in the meaning of some variables
+Date: Fri, 04 Nov 2011 09:19:21 +0100
+Message-ID: <4EB3A009.10502@evidence.eu.com>
+References: <4E492CFF.7040905@pwrnet.de> <20110822211832.GA8023@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1319843084-16948-1-git-send-email-martinez.javier@gmail.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Alan Cox <alan@linux.intel.com>, Govindraj Raja <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, Javier Martinez Canillas <martinez.javier@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-wy0-f174.google.com ([74.125.82.174]:57733 "EHLO
+	mail-wy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752453Ab1KDITb (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 4 Nov 2011 04:19:31 -0400
+In-Reply-To: <20110822211832.GA8023@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: alan@linux.intel.com, Greg KH <greg@kroah.com>
+Cc: nicolas.ferre@atmel.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jesper Nilsson <Jesper.Nilsson@axis.com>, Mikael Starvik <mikael.starvik@axis.com>, Darron Black <darron@griffin.net>
 
-On Sat, Oct 29, 2011 at 1:04 AM, Javier Martinez Canillas
-<martinez.javier@gmail.com> wrote:
-> This patch adds TIA/EIA-485 standard support to OMAP-UART controller =
-driver
-> by adding handlers for TIOCSRS485 and TIOCGRS485 ioctl commands.
->
-> This patch is based on Ilya Yanok <yanok@emcraft.com> patch [1] but i=
-t changes
-> the function serial_omap_update_rts() that raises and lows the Ready-=
-to-Send
-> control signal. Also, it forces to update the RTS signal when the ser=
-ial-core
-> calls serial_omap_set_mctrl().
->
-> [1]: http://www.spinics.net/lists/linux-omap/msg58546.html
->
-> Signed-off-by: Javier Martinez Canillas <martinez.javier@gmail.com>
-> ---
-> =C2=A0arch/arm/plat-omap/include/plat/omap-serial.h | =C2=A0 =C2=A02 =
-+
-> =C2=A0drivers/tty/serial/Makefile =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 | =C2=A0 =C2=A02 +-
-> =C2=A0drivers/tty/serial/omap-serial.c =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0| =C2=A0139 ++++++++++++++++++++++--
-> =C2=A0include/linux/serial_reg.h =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0| =C2=A0 =C2=A02 +
-> =C2=A04 files changed, 132 insertions(+), 13 deletions(-)
->
-> diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm=
-/plat-omap/include/plat/omap-serial.h
-> index 2682043..b7c2c29 100644
-> --- a/arch/arm/plat-omap/include/plat/omap-serial.h
-> +++ b/arch/arm/plat-omap/include/plat/omap-serial.h
-> @@ -111,6 +111,8 @@ struct uart_omap_port {
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0unsigned char =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 msr_saved_flags;
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0char =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0name[20];
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0unsigned long =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 port_activity;
-> + =C2=A0 =C2=A0 =C2=A0 struct serial_rs485 =C2=A0 =C2=A0 rs485;
-> + =C2=A0 =C2=A0 =C2=A0 unsigned int =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0tx_in_progress:1, tx_wait_end:1;
-> =C2=A0};
->
-> =C2=A0#endif /* __OMAP_SERIAL_H__ */
-> diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefil=
-e
-> index 83b4da6..865f238 100644
-> --- a/drivers/tty/serial/Makefile
-> +++ b/drivers/tty/serial/Makefile
-> @@ -71,7 +71,7 @@ obj-$(CONFIG_SERIAL_VR41XX) +=3D vr41xx_siu.o
-> =C2=A0obj-$(CONFIG_SERIAL_SGI_IOC4) +=3D ioc4_serial.o
-> =C2=A0obj-$(CONFIG_SERIAL_SGI_IOC3) +=3D ioc3_serial.o
-> =C2=A0obj-$(CONFIG_SERIAL_ATMEL) +=3D atmel_serial.o
-> -obj-$(CONFIG_SERIAL_UARTLITE) +=3D uartlite.o
-> +#obj-$(CONFIG_SERIAL_UARTLITE) +=3D uartlite.o
-> =C2=A0obj-$(CONFIG_SERIAL_MSM) +=3D msm_serial.o
-> =C2=A0obj-$(CONFIG_SERIAL_MSM_HS) +=3D msm_serial_hs.o
-> =C2=A0obj-$(CONFIG_SERIAL_NETX) +=3D netx-serial.o
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/om=
-ap-serial.c
-> index 5e713d3..d1789f4 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -37,6 +37,7 @@
-> =C2=A0#include <linux/clk.h>
-> =C2=A0#include <linux/serial_core.h>
-> =C2=A0#include <linux/irq.h>
-> +#include <linux/uaccess.h>
->
-> =C2=A0#include <plat/dma.h>
-> =C2=A0#include <plat/dmtimer.h>
-> @@ -114,6 +115,56 @@ static void serial_omap_enable_ms(struct uart_po=
-rt *port)
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0serial_out(up, UART_IER, up->ier);
-> =C2=A0}
->
-> +static inline void serial_omap_enable_ier_thri(struct uart_omap_port=
- *up)
-> +{
-> + =C2=A0 =C2=A0 =C2=A0 if (!(up->ier & UART_IER_THRI)) {
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 up->ier |=3D UART_=
-IER_THRI;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 serial_out(up, UAR=
-T_IER, up->ier);
-> + =C2=A0 =C2=A0 =C2=A0 }
-> +}
-> +
-> +static inline void serial_omap_disable_ier_thri(struct uart_omap_por=
-t *up)
-> +{
-> + =C2=A0 =C2=A0 =C2=A0 if (up->ier & UART_IER_THRI) {
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 up->ier &=3D ~UART=
-_IER_THRI;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 serial_out(up, UAR=
-T_IER, up->ier);
-> + =C2=A0 =C2=A0 =C2=A0 }
-> +}
-> +
-> +static inline void serial_omap_thri_mode(struct uart_omap_port *up)
-> +{
-> + =C2=A0 =C2=A0 =C2=A0 unsigned char scr =3D serial_in(up, UART_OMAP_=
-SCR);
-> +
-> + =C2=A0 =C2=A0 =C2=A0 if (up->tx_wait_end)
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 scr |=3D UART_OMAP=
-_SCR_TX_EMPTY_CTL_IT;
-> + =C2=A0 =C2=A0 =C2=A0 else
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 scr &=3D ~UART_OMA=
-P_SCR_TX_EMPTY_CTL_IT;
-> + =C2=A0 =C2=A0 =C2=A0 serial_out(up, UART_OMAP_SCR, scr);
-> +}
-> +
-> +
-> +static inline void serial_omap_update_rts(struct uart_omap_port *up)
-> +{
-> + =C2=A0 =C2=A0 =C2=A0 unsigned char mcr =3D up->mcr;
-> + =C2=A0 =C2=A0 =C2=A0 int rts_on_send =3D up->rs485.flags & SER_RS48=
-5_RTS_ON_SEND;
-> +
-> + =C2=A0 =C2=A0 =C2=A0 if (up->rs485.flags & SER_RS485_ENABLED) {
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (up->tx_in_prog=
-ress) {
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 if (rts_on_send)
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 mcr |=3D UART_MCR_RTS;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 else
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 mcr &=3D ~UART_MCR_RTS;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 } else {
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 if (rts_on_send)
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 mcr &=3D ~UART_MCR_RTS;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 else
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 mcr |=3D ~UART_MCR_RTS;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }
-> + =C2=A0 =C2=A0 =C2=A0 }
-> +
-> + =C2=A0 =C2=A0 =C2=A0 serial_out(up, UART_MCR, mcr);
-> +}
-> +
-> =C2=A0static void serial_omap_stop_tx(struct uart_port *port)
-> =C2=A0{
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0struct uart_omap_port *up =3D (struct uart=
-_omap_port *)port;
-> @@ -131,9 +182,14 @@ static void serial_omap_stop_tx(struct uart_port=
- *port)
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0up->uart_dma.t=
-x_dma_channel =3D OMAP_UART_DMA_CH_FREE;
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0}
->
-> - =C2=A0 =C2=A0 =C2=A0 if (up->ier & UART_IER_THRI) {
-> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 up->ier &=3D ~UART=
-_IER_THRI;
-> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 serial_out(up, UAR=
-T_IER, up->ier);
-> + =C2=A0 =C2=A0 =C2=A0 if (!(up->rs485.flags & SER_RS485_ENABLED))
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 serial_omap_disabl=
-e_ier_thri(up);
-> + =C2=A0 =C2=A0 =C2=A0 else {
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 up->tx_in_progress=
- =3D 0;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 serial_omap_update=
-_rts(up);
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 up->tx_wait_end =3D=
- 1;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 serial_omap_thri_m=
-ode(up);
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 serial_omap_enable=
-_ier_thri(up);
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0}
-> =C2=A0}
->
-> @@ -246,14 +302,6 @@ static void transmit_chars(struct uart_omap_port=
- *up)
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0serial_omap_st=
-op_tx(&up->port);
-> =C2=A0}
->
-> -static inline void serial_omap_enable_ier_thri(struct uart_omap_port=
- *up)
-> -{
-> - =C2=A0 =C2=A0 =C2=A0 if (!(up->ier & UART_IER_THRI)) {
-> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 up->ier |=3D UART_=
-IER_THRI;
-> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 serial_out(up, UAR=
-T_IER, up->ier);
-> - =C2=A0 =C2=A0 =C2=A0 }
-> -}
-> -
-> =C2=A0static void serial_omap_start_tx(struct uart_port *port)
-> =C2=A0{
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0struct uart_omap_port *up =3D (struct uart=
-_omap_port *)port;
-> @@ -261,6 +309,18 @@ static void serial_omap_start_tx(struct uart_por=
-t *port)
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0unsigned int start;
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0int ret =3D 0;
->
-> + =C2=A0 =C2=A0 =C2=A0 if (up->rs485.flags & SER_RS485_ENABLED) {
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!up->tx_in_pro=
-gress) {
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 up->tx_in_progress =3D 1;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 serial_omap_update_rts(up);
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (up->tx_wait_en=
-d) {
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 up->tx_wait_end =3D 0;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 serial_omap_thri_mode(up);
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 serial_omap_disable_ier_thri(up);
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }
-> + =C2=A0 =C2=A0 =C2=A0 }
-> +
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0if (!up->use_dma) {
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0serial_omap_en=
-able_ier_thri(up);
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return;
-> @@ -343,6 +403,11 @@ static unsigned int check_modem_status(struct ua=
-rt_omap_port *up)
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0return status;
-> =C2=A0}
->
-> +static inline unsigned int __serial_omap_tx_empty(struct uart_omap_p=
-ort *up)
-> +{
-> + =C2=A0 =C2=A0 =C2=A0 return serial_in(up, UART_LSR) & UART_LSR_TEMT=
- ? TIOCSER_TEMT : 0;
-> +}
-> +
-> =C2=A0/**
-> =C2=A0* serial_omap_irq() - This handles the interrupt from one port
-> =C2=A0* @irq: uart port irq number
-> @@ -359,6 +424,16 @@ static inline irqreturn_t serial_omap_irq(int ir=
-q, void *dev_id)
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return IRQ_NON=
-E;
->
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0spin_lock_irqsave(&up->port.lock, flags);
-> + =C2=A0 =C2=A0 =C2=A0 if (up->tx_wait_end && (iir & UART_IIR_THRI) &=
-&
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 __serial_omap_tx_empty(up)) {
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 up->tx_wait_end =3D=
- 0;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 up->tx_in_progress=
- =3D 0;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 serial_omap_thri_m=
-ode(up);
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 serial_omap_update=
-_rts(up);
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 serial_omap_disabl=
-e_ier_thri(up);
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 spin_unlock_irqres=
-tore(&up->port.lock, flags);
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return IRQ_HANDLED=
-;
-> + =C2=A0 =C2=A0 =C2=A0 }
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0lsr =3D serial_in(up, UART_LSR);
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0if (iir & UART_IIR_RLSI) {
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0if (!up->use_d=
-ma) {
-> @@ -390,7 +465,7 @@ static unsigned int serial_omap_tx_empty(struct u=
-art_port *port)
->
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0dev_dbg(up->port.dev, "serial_omap_tx_empt=
-y+%d\n", up->pdev->id);
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0spin_lock_irqsave(&up->port.lock, flags);
-> - =C2=A0 =C2=A0 =C2=A0 ret =3D serial_in(up, UART_LSR) & UART_LSR_TEM=
-T ? TIOCSER_TEMT : 0;
-> + =C2=A0 =C2=A0 =C2=A0 ret =3D __serial_omap_tx_empty(up);
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0spin_unlock_irqrestore(&up->port.lock, fla=
-gs);
->
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0return ret;
-> @@ -434,6 +509,10 @@ static void serial_omap_set_mctrl(struct uart_po=
-rt *port, unsigned int mctrl)
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0mcr |=3D UART_=
-MCR_LOOP;
->
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0mcr |=3D up->mcr;
-> +
-> + =C2=A0 =C2=A0 =C2=A0 if (up->rs485.flags & SER_RS485_ENABLED)
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 serial_omap_update=
-_rts(up);
-> +
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0serial_out(up, UART_MCR, mcr);
-> =C2=A0}
->
-> @@ -1028,6 +1107,41 @@ static inline void serial_omap_add_console_por=
-t(struct uart_omap_port *up)
->
-> =C2=A0#endif
->
-> +static int
-> +serial_omap_ioctl(struct uart_port *port, unsigned int cmd, unsigned=
- long arg)
-> +{
-> + =C2=A0 =C2=A0 =C2=A0 struct serial_rs485 rs485conf;
-> + =C2=A0 =C2=A0 =C2=A0 struct uart_omap_port *up =3D (struct uart_oma=
-p_port *)port;
-> + =C2=A0 =C2=A0 =C2=A0 unsigned long flags;
-> +
-> + =C2=A0 =C2=A0 =C2=A0 switch (cmd) {
-> + =C2=A0 =C2=A0 =C2=A0 case TIOCSRS485:
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (copy_from_user=
-(&rs485conf, (struct serial_rs485 *) arg,
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0sizeof(rs485conf)))
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 return -EFAULT;
-> +
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 spin_lock_irqsave(=
-&up->port.lock, flags);
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!(rs485conf.fl=
-ags & SER_RS485_ENABLED)) {
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 up->tx_in_progress =3D 0;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 up->tx_wait_end =3D 0;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 up->rs485 =3D rs48=
-5conf;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 serial_omap_update=
-_rts(up);
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 serial_omap_thri_m=
-ode(up);
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 spin_unlock_irqres=
-tore(&up->port.lock, flags);
-> +
-> + =C2=A0 =C2=A0 =C2=A0 case TIOCGRS485:
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (copy_to_user((=
-struct serial_rs485 *) arg,
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0&(up->rs485), sizeof(rs485con=
-f)))
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 return -EFAULT;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 break;
-> +
-> + =C2=A0 =C2=A0 =C2=A0 default:
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return -ENOIOCTLCM=
-D;
-> + =C2=A0 =C2=A0 =C2=A0 }
-> + =C2=A0 =C2=A0 =C2=A0 return 0;
-> +}
-> +
-> =C2=A0static struct uart_ops serial_omap_pops =3D {
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0.tx_empty =C2=A0 =C2=A0 =C2=A0 =3D serial_=
-omap_tx_empty,
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0.set_mctrl =C2=A0 =C2=A0 =C2=A0=3D serial_=
-omap_set_mctrl,
-> @@ -1041,6 +1155,7 @@ static struct uart_ops serial_omap_pops =3D {
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0.shutdown =C2=A0 =C2=A0 =C2=A0 =3D serial_=
-omap_shutdown,
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0.set_termios =C2=A0 =C2=A0=3D serial_omap_=
-set_termios,
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0.pm =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =3D serial_omap_pm,
-> + =C2=A0 =C2=A0 =C2=A0 .ioctl =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=3D s=
-erial_omap_ioctl,
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0.type =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =3D=
- serial_omap_type,
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0.release_port =C2=A0 =3D serial_omap_relea=
-se_port,
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0.request_port =C2=A0 =3D serial_omap_reque=
-st_port,
-> diff --git a/include/linux/serial_reg.h b/include/linux/serial_reg.h
-> index c75bda3..dc6a3f7 100644
-> --- a/include/linux/serial_reg.h
-> +++ b/include/linux/serial_reg.h
-> @@ -362,5 +362,7 @@
-> =C2=A0#define UART_OMAP_MDR1_CIR_MODE =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A00x06 =C2=A0 =C2=A0/* CIR mode */
-> =C2=A0#define UART_OMAP_MDR1_DISABLE =C2=A0 =C2=A0 =C2=A0 =C2=A0 0x07=
- =C2=A0 =C2=A0/* Disable (default state) */
->
-> +#define UART_OMAP_SCR_TX_EMPTY_CTL_IT =C2=A0 0x04 =C2=A0 =C2=A0/* TX=
- Empty IRQ mode */
-> +
-> =C2=A0#endif /* _LINUX_SERIAL_REG_H */
->
-> --
-> 1.7.4.1
->
->
+Hi Alan, Hi Greg,
 
-Hello,
+	it seems that the crisv10.c and the atmel_serial.c serial
+drivers interpret the fields of the serial_rs485 structure in a different
+way.
 
-Any comments for this patch?
+In particular, it seems that crisv10.c uses SER_RS485_RTS_AFTER_SEND and
+SER_RS485_RTS_ON_SEND for the _logic value_ of the RTS pin;
+atmel_serial.c, instead, uses these values to know if a _delay_ must be
+set before and after sending.
+
+This patch makes the usage of these variables consistent across all
+drivers and fixes the Documentation as well.
+In particular, SER_RS485_RTS_AFTER_SEND and SER_RS485_RTS_ON_SEND will
+be used to set the logic value of the RTS pin (as in the crisv10.c
+driver); the delay is understood by looking only at the value of
+delay_rts_before_send and delay_rts_after_send.
 
 Best regards,
 
---=20
-Javier Mart=C3=ADnez Canillas
-(+34) 682 39 81 69
-Barcelona, Spain
---
-To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+	Claudio
+
+
+Subject: RS485: fix inconsistencies in the meaning of some variables
+From: Claudio Scordino <claudio@evidence.eu.com>
+
+The crisv10.c and the atmel_serial.c serial drivers interpret the fields
+of the serial_rs485 structure in a different way.
+In particular, crisv10.c uses SER_RS485_RTS_AFTER_SEND and 
+SER_RS485_RTS_ON_SEND for the voltage of the RTS pin; atmel_serial.c, instead,
+uses these values to know if a delay must be set before and after sending.
+This patch makes the usage of these variables consistent across all drivers and
+fixes the Documentation as well.
+>From now on, SER_RS485_RTS_AFTER_SEND and SER_RS485_RTS_ON_SEND will be used to
+set the voltage of the RTS pin (as in the crisv10.c driver); the delay will be
+understood by looking only at the value of delay_rts_before_send and 
+delay_rts_after_send.
+
+Signed-off-by: Claudio Scordino <claudio@evidence.eu.com>
+Signed-off-by: Darron Black <darron@griffin.net>
+---
+ Documentation/serial/serial-rs485.txt |   14 +++++++++++---
+ drivers/tty/serial/atmel_serial.c     |   20 +++++---------------
+ drivers/tty/serial/crisv10.c          |   10 ++--------
+ include/linux/serial.h                |   14 ++++++++------
+ 4 files changed, 26 insertions(+), 32 deletions(-)
+
+diff --git a/Documentation/serial/serial-rs485.txt b/Documentation/serial/serial-rs485.txt
+index 079cb3d..d3a7388 100644
+--- a/Documentation/serial/serial-rs485.txt
++++ b/Documentation/serial/serial-rs485.txt
+@@ -97,15 +97,23 @@
+ 
+ 	struct serial_rs485 rs485conf;
+ 
+-	/* Set RS485 mode: */
++	/* Enable RS485 mode: */
+ 	rs485conf.flags |= SER_RS485_ENABLED;
+ 
++	/* Set voltage value for RTS pin equal to 1 when sending: */
++	rs485conf.flags |= SER_RS485_RTS_ON_SEND;
++	/* or, set voltage value for RTS pin equal to 0 when sending: */
++	rs485conf.flags &= ~(SER_RS485_RTS_ON_SEND);
++
++	/* Set voltage value for RTS pin equal to 1 after sending: */
++	rs485conf.flags |= SER_RS485_RTS_AFTER_SEND;
++	/* or, set voltage value for RTS pin equal to 0 after sending: */
++	rs485conf.flags &= ~(SER_RS485_RTS_AFTER_SEND);
++
+ 	/* Set rts delay before send, if needed: */
+-	rs485conf.flags |= SER_RS485_RTS_BEFORE_SEND;
+ 	rs485conf.delay_rts_before_send = ...;
+ 
+ 	/* Set rts delay after send, if needed: */
+-	rs485conf.flags |= SER_RS485_RTS_AFTER_SEND;
+ 	rs485conf.delay_rts_after_send = ...;
+ 
+ 	/* Set this flag if you want to receive data even whilst sending data */
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 4a0f86f..23aa677 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -228,7 +228,7 @@ void atmel_config_rs485(struct uart_port *port, struct serial_rs485 *rs485conf)
+ 	if (rs485conf->flags & SER_RS485_ENABLED) {
+ 		dev_dbg(port->dev, "Setting UART to RS485\n");
+ 		atmel_port->tx_done_mask = ATMEL_US_TXEMPTY;
+-		if (rs485conf->flags & SER_RS485_RTS_AFTER_SEND)
++		if ((rs485conf->delay_rts_after_send) > 0)
+ 			UART_PUT_TTGR(port, rs485conf->delay_rts_after_send);
+ 		mode |= ATMEL_US_USMODE_RS485;
+ 	} else {
+@@ -304,9 +304,9 @@ static void atmel_set_mctrl(struct uart_port *port, u_int mctrl)
+ 
+ 	if (atmel_port->rs485.flags & SER_RS485_ENABLED) {
+ 		dev_dbg(port->dev, "Setting UART to RS485\n");
+-		if (atmel_port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
++		if ((atmel_port->rs485.delay_rts_after_send) > 0)
+ 			UART_PUT_TTGR(port,
+-					atmel_port->rs485.delay_rts_after_send);
++			    atmel_port->rs485.delay_rts_after_send);
+ 		mode |= ATMEL_US_USMODE_RS485;
+ 	} else {
+ 		dev_dbg(port->dev, "Setting UART to RS232\n");
+@@ -1228,9 +1228,9 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
+ 
+ 	if (atmel_port->rs485.flags & SER_RS485_ENABLED) {
+ 		dev_dbg(port->dev, "Setting UART to RS485\n");
+-		if (atmel_port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
++		if ((atmel_port->rs485.delay_rts_after_send) > 0)
+ 			UART_PUT_TTGR(port,
+-					atmel_port->rs485.delay_rts_after_send);
++			    atmel_port->rs485.delay_rts_after_send);
+ 		mode |= ATMEL_US_USMODE_RS485;
+ 	} else {
+ 		dev_dbg(port->dev, "Setting UART to RS232\n");
+@@ -1447,16 +1447,6 @@ static void __devinit atmel_of_init_port(struct atmel_uart_port *atmel_port,
+ 		rs485conf->delay_rts_after_send = rs485_delay[1];
+ 		rs485conf->flags = 0;
+ 
+-		if (rs485conf->delay_rts_before_send == 0 &&
+-		    rs485conf->delay_rts_after_send == 0) {
+-			rs485conf->flags |= SER_RS485_RTS_ON_SEND;
+-		} else {
+-			if (rs485conf->delay_rts_before_send)
+-				rs485conf->flags |= SER_RS485_RTS_BEFORE_SEND;
+-			if (rs485conf->delay_rts_after_send)
+-				rs485conf->flags |= SER_RS485_RTS_AFTER_SEND;
+-		}
+-
+ 		if (of_get_property(np, "rs485-rx-during-tx", NULL))
+ 			rs485conf->flags |= SER_RS485_RX_DURING_TX;
+ 
+diff --git a/drivers/tty/serial/crisv10.c b/drivers/tty/serial/crisv10.c
+index b743504..1dfba7b 100644
+--- a/drivers/tty/serial/crisv10.c
++++ b/drivers/tty/serial/crisv10.c
+@@ -3234,9 +3234,8 @@ rs_write(struct tty_struct *tty,
+ 		e100_disable_rx(info);
+ 		e100_enable_rx_irq(info);
+ #endif
+-		if ((info->rs485.flags & SER_RS485_RTS_BEFORE_SEND) &&
+-			(info->rs485.delay_rts_before_send > 0))
+-				msleep(info->rs485.delay_rts_before_send);
++		if (info->rs485.delay_rts_before_send > 0)
++			msleep(info->rs485.delay_rts_before_send);
+ 	}
+ #endif /* CONFIG_ETRAX_RS485 */
+ 
+@@ -3693,10 +3692,6 @@ rs_ioctl(struct tty_struct *tty,
+ 
+ 		rs485data.delay_rts_before_send = rs485ctrl.delay_rts_before_send;
+ 		rs485data.flags = 0;
+-		if (rs485data.delay_rts_before_send != 0)
+-			rs485data.flags |= SER_RS485_RTS_BEFORE_SEND;
+-		else
+-			rs485data.flags &= ~(SER_RS485_RTS_BEFORE_SEND);
+ 
+ 		if (rs485ctrl.enabled)
+ 			rs485data.flags |= SER_RS485_ENABLED;
+@@ -4531,7 +4526,6 @@ static int __init rs_init(void)
+ 		/* Set sane defaults */
+ 		info->rs485.flags &= ~(SER_RS485_RTS_ON_SEND);
+ 		info->rs485.flags |= SER_RS485_RTS_AFTER_SEND;
+-		info->rs485.flags &= ~(SER_RS485_RTS_BEFORE_SEND);
+ 		info->rs485.delay_rts_before_send = 0;
+ 		info->rs485.flags &= ~(SER_RS485_ENABLED);
+ #endif
+diff --git a/include/linux/serial.h b/include/linux/serial.h
+index 97ff8e2..5a9fd4a 100644
+--- a/include/linux/serial.h
++++ b/include/linux/serial.h
+@@ -207,13 +207,15 @@ struct serial_icounter_struct {
+ 
+ struct serial_rs485 {
+ 	__u32	flags;			/* RS485 feature flags */
+-#define SER_RS485_ENABLED		(1 << 0)
+-#define SER_RS485_RTS_ON_SEND		(1 << 1)
+-#define SER_RS485_RTS_AFTER_SEND	(1 << 2)
+-#define SER_RS485_RTS_BEFORE_SEND	(1 << 3)
++#define SER_RS485_ENABLED		(1 << 0)	/* If enabled */
++#define SER_RS485_RTS_ON_SEND		(1 << 1)	/* Voltage value for
++							   RTS pin when
++							   sending */
++#define SER_RS485_RTS_AFTER_SEND	(1 << 2)	/* Voltage value for
++							   RTS pin after sent*/
+ #define SER_RS485_RX_DURING_TX		(1 << 4)
+-	__u32	delay_rts_before_send;	/* Milliseconds */
+-	__u32	delay_rts_after_send;	/* Milliseconds */
++	__u32	delay_rts_before_send;	/* Delay before send (milliseconds) */
++	__u32	delay_rts_after_send;	/* Delay after send (milliseconds) */
+ 	__u32	padding[5];		/* Memory is cheap, new structs
+ 					   are a royal PITA .. */
+ };
+-- 
+1.7.1
+
