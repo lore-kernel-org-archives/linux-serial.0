@@ -1,58 +1,87 @@
-From: Thomas Abraham <thomas.abraham@linaro.org>
-Subject: Re: [PATCH] serial: samsung: Fix build for non-Exynos4210 devices
-Date: Sun, 6 Nov 2011 21:43:45 +0530
-Message-ID: <CAJuYYwQakbLqM46gVexB4Evby-aHA11hAx4N4Nw4mdYXp_yEOQ@mail.gmail.com>
-References: <1320426984-17525-1-git-send-email-broonie@opensource.wolfsonmicro.com>
+From: Govindraj <govindraj.ti@gmail.com>
+Subject: Re: [PATCH v7 16/21] OMAP2+: UART: Remove custom activate funcs and
+ use generic funcs.
+Date: Mon, 7 Nov 2011 14:09:01 +0530
+Message-ID: <CAAL8m4y1LOhZSLGO5rJQzFxnWxi7gBsHyLfKLNuRxNB465b=rQ@mail.gmail.com>
+References: <1318952110-10659-1-git-send-email-govindraj.raja@ti.com>
+ <1318952110-10659-2-git-send-email-govindraj.raja@ti.com> <877h3f5z0x.fsf@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1320426984-17525-1-git-send-email-broonie@opensource.wolfsonmicro.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Mark Brown <broonie@opensource.wolfsonmicro.com>
-Cc: Alan Cox <alan@linux.intel.com>, Kukjin Kim <kgene.kim@samsung.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-bw0-f46.google.com ([209.85.214.46]:37435 "EHLO
+	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751460Ab1KGIjX convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 7 Nov 2011 03:39:23 -0500
+In-Reply-To: <877h3f5z0x.fsf@ti.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Kevin Hilman <khilman@ti.com>
+Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, Tony Lindgren <tony@atomide.com>, Rajendra Nayak <rnayak@ti.com>, Partha Basak <p-basak2@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, linux-serial@vger.kernel.org, Vishwanath Sripathy <vishwanath.bs@ti.com>, linux-arm-kernel@lists.infradead.org
 
-Hi Mark,
-
-On 4 November 2011 22:46, Mark Brown
-<broonie@opensource.wolfsonmicro.com> wrote:
-> exynos4120_serial_drv_data is only defined when building with support
-> for Exynos4210 so use the already provided define to ensure that we
-> don't reference it when building for other SoCs.
+On Sat, Nov 5, 2011 at 3:30 AM, Kevin Hilman <khilman@ti.com> wrote:
+> "Govindraj.R" <govindraj.raja@ti.com> writes:
 >
-> Signed-off-by: Mark Brown <broonie@opensource.wolfsonmicro.com>
+>> The custom hwmod activate and deactivate funcs does hwmod_enable
+>> and idle same can be done with omap_device generic API's.
+>>
+>> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+>
+> This one needs a minor update for current mainline...
+>
+>> ---
+>> =A0arch/arm/mach-omap2/serial.c | =A0 18 ++----------------
+>> =A01 files changed, 2 insertions(+), 16 deletions(-)
+>>
+>> diff --git a/arch/arm/mach-omap2/serial.c b/arch/arm/mach-omap2/seri=
+al.c
+>> index 7c65410..7658a03 100644
+>> --- a/arch/arm/mach-omap2/serial.c
+>> +++ b/arch/arm/mach-omap2/serial.c
+>> @@ -78,24 +78,10 @@ static struct omap_uart_port_info omap_serial_de=
+fault_info[] __initdata =3D {
+>> =A0 =A0 =A0 },
+>> =A0};
+>>
+>> -static int uart_idle_hwmod(struct omap_device *od)
+>> -{
+>> - =A0 =A0 omap_hwmod_idle(od->hwmods[0]);
+>> -
+>> - =A0 =A0 return 0;
+>> -}
+>> -
+>> -static int uart_enable_hwmod(struct omap_device *od)
+>> -{
+>> - =A0 =A0 omap_hwmod_enable(od->hwmods[0]);
+>> -
+>> - =A0 =A0 return 0;
+>> -}
+>> -
+>> =A0static struct omap_device_pm_latency omap_uart_latency[] =3D {
+>> =A0 =A0 =A0 {
+>> - =A0 =A0 =A0 =A0 =A0 =A0 .deactivate_func =3D uart_idle_hwmod,
+>> - =A0 =A0 =A0 =A0 =A0 =A0 .activate_func =A0 =3D uart_enable_hwmod,
+>> + =A0 =A0 =A0 =A0 =A0 =A0 .activate_func =A0 =3D omap_device_enable_=
+hwmods,
+>> + =A0 =A0 =A0 =A0 =A0 =A0 .deactivate_func =3D omap_device_idle_hwmo=
+ds,
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 .flags =3D OMAP_DEVICE_LATENCY_AUTO_ADJU=
+ST,
+>> =A0 =A0 =A0 },
+>> =A0};
+>
+> If we're just using default pm_latency struct, it can be passed to
+> omap_device_build as NULL, and a default one will be configured.
+>
 
-I missed that one. Thanks for the fix.
+yes, will update this.
 
-The Samsung device tree patches will not be merged in v3.2 merge
-window. So should this fix be merged into the uart dt support patch or
-should this be a separate patch?
-
+--
 Thanks,
-Thomas.
-
-> ---
-> =A0drivers/tty/serial/samsung.c | =A0 =A02 +-
-> =A01 files changed, 1 insertions(+), 1 deletions(-)
->
-> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsun=
-g.c
-> index efe3756..7272eee 100644
-> --- a/drivers/tty/serial/samsung.c
-> +++ b/drivers/tty/serial/samsung.c
-> @@ -1649,7 +1649,7 @@ MODULE_DEVICE_TABLE(platform, s3c24xx_serial_dr=
-iver_ids);
-> =A0#ifdef CONFIG_OF
-> =A0static const struct of_device_id s3c24xx_uart_dt_match[] =3D {
-> =A0 =A0 =A0 =A0{ .compatible =3D "samsung,exynos4210-uart",
-> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 .data =3D &exynos4210_serial_drv_data }=
-,
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 .data =3D EXYNOS4210_SERIAL_DRV_DATA },
-> =A0 =A0 =A0 =A0{},
-> =A0};
-> =A0MODULE_DEVICE_TABLE(of, s3c24xx_uart_dt_match);
-> --
-> 1.7.7.1
->
->
+Govindraj.R
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
