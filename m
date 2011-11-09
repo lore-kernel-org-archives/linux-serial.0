@@ -1,69 +1,18 @@
-From: Kevin Hilman <khilman@ti.com>
-Subject: Re: [PATCH v7 17/21] OMAP2+: UART: Remove omap_uart_can_sleep and add pm_qos
-Date: Tue, 08 Nov 2011 11:20:57 -0800
-Message-ID: <87r51i1kva.fsf@ti.com>
-References: <1318952110-10659-1-git-send-email-govindraj.raja@ti.com>
-	<1318952110-10659-3-git-send-email-govindraj.raja@ti.com>
-	<87vcqz33y8.fsf@ti.com> <4EB8F368.5070603@ti.com>
+From: pradeep Annavarapu <asnvpradeep@yahoo.com>
+Subject: Re:
+Date: Wed, 9 Nov 2011 17:28:07 +0530 (IST)
+Message-ID: <1320839887.53468.yint-ygo-j2me@web94704.mail.in2.yahoo.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog115.obsmtp.com ([74.125.149.238]:40176 "EHLO
-	na3sys009aog115.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753211Ab1KHTVG (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 8 Nov 2011 14:21:06 -0500
-In-Reply-To: <4EB8F368.5070603@ti.com> (Rajendra Nayak's message of "Tue, 08
-	Nov 2011 14:46:24 +0530")
+Received: from nm2.bullet.mail.in.yahoo.com ([121.101.151.224]:48381 "HELO
+	nm2.bullet.mail.in.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1752151Ab1KIL6L convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 9 Nov 2011 06:58:11 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Rajendra Nayak <rnayak@ti.com>
-Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, Tony Lindgren <tony@atomide.com>, Partha Basak <p-basak2@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, linux-serial@vger.kernel.org, Vishwanath Sripathy <vishwanath.bs@ti.com>, linux-arm-kernel@lists.infradead.org
+To: lavi2905@yahoo.com, leelaratnam@yahoo.com, lillian.gonzalez@njit.edu, linux-kernel@vger.kernel.org, linux-newbie@vger.kernel.org, linux-serial@vger.kernel.org, lucky@takrer.com, manch
 
-Rajendra Nayak <rnayak@ti.com> writes:
-
-> Hi Kevin,
->
-> On Saturday 05 November 2011 04:12 AM, Kevin Hilman wrote:
->> However, as mentioned previously[1], due to a HW sleepdep between MPU
->> and CORE, this constraint isn't actually needed for CORE UARTs, so it's
->> a bit wasteful to go through all the constraint setting for no reason.
->
-> I had a short chat with Govind on this and was trying to understand
-> this better.
-> Are you referring to the 'autodeps' for omap3 here, because they would
-> prevent any clock domain from idling as long as MPU or IVA are active,
-
-No, I was thinking of HW sleepdeps.  However, I looked back at the
-OMAP3430 TRM and see that MPU does not have a HW sleepdep on CORE like I
-thought.
-
-> but not the other way round. Which means MPU can still idle, while CORE
-> does not.
->
-> My guess was, its probably the CORE domain idling itself thats causing
-> the UART sluggishness, (and not MPU idling), due to higher latency,
-> which is prevented with an active UART module in CORE, but not in PER.
-
-OK, that indeed makes sense.  Thanks for correcting me.
-
-> So Govind did a small experiment to prevent just CORE idling and let MPU
-> idle alone and that did not show any sluggishness.
-
-OK, good.
-
-> Now, putting a pm-qos constraint for a UART in CORE still looks
-> redundant because the latency requirement that UART has is in
-> some way *indirectly* met (because the active UART in CORE prevents
-> CORE transitions in idle).
-> But don't you think the UART driver should express its
-> latency constraints regardless, without thinking of any indirect ways
-> in which the same requirements would have already been met?
-
-Yes, you're right.  The driver should not need to know which powerdomain
-a given UART is in.  It's probably best (and most portable) to have UART
-always express its requirements all the time.
-
-Thanks for digging into this,
-
-Kevin
+http://www.passionchapel.org/group.php?id=53&top=49&page=21
