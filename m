@@ -1,75 +1,109 @@
-From: Richard Zhao <richard.zhao@linaro.org>
-Subject: Re: [PATCH 1/1] serial: imx: convert to clk_prepare/clk_unprepare
-Date: Thu, 10 Nov 2011 16:24:33 +0800
-Message-ID: <20111110082432.GA14617@b20223-02.ap.freescale.net>
-References: <1320901158-13103-1-git-send-email-richard.zhao@linaro.org>
- <20111110080641.GT16886@pengutronix.de>
+From: Govindraj <govindraj.ti@gmail.com>
+Subject: Re: [PATCH v7 17/21] OMAP2+: UART: Remove omap_uart_can_sleep and add pm_qos
+Date: Thu, 10 Nov 2011 17:30:05 +0530
+Message-ID: <CAAL8m4zLEnQE+BkK4xmLUBkREYOuqjmbBweKS0_qcEYUMo71nQ@mail.gmail.com>
+References: <1318952110-10659-1-git-send-email-govindraj.raja@ti.com>
+ <1318952110-10659-3-git-send-email-govindraj.raja@ti.com> <87vcqz33y8.fsf@ti.com>
+ <4EB8F368.5070603@ti.com> <87r51i1kva.fsf@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from va3ehsobe005.messaging.microsoft.com ([216.32.180.31]:16888
-	"EHLO VA3EHSOBE005.bigfish.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753321Ab1KJIYw (ORCPT
+Received: from mail-bw0-f46.google.com ([209.85.214.46]:57393 "EHLO
+	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932585Ab1KJMA1 convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 10 Nov 2011 03:24:52 -0500
-Content-Disposition: inline
-In-Reply-To: <20111110080641.GT16886@pengutronix.de>
+	Thu, 10 Nov 2011 07:00:27 -0500
+In-Reply-To: <87r51i1kva.fsf@ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: kernel@pengutronix.de, eric.miao@linaro.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, alan@linux.intel.com
+To: Kevin Hilman <khilman@ti.com>
+Cc: Rajendra Nayak <rnayak@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, Tony Lindgren <tony@atomide.com>, Partha Basak <p-basak2@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, linux-serial@vger.kernel.org, Vishwanath Sripathy <vishwanath.bs@ti.com>, linux-arm-kernel@lists.infradead.org
 
-On Thu, Nov 10, 2011 at 09:06:41AM +0100, Sascha Hauer wrote:
-> On Thu, Nov 10, 2011 at 12:59:18PM +0800, Richard Zhao wrote:
-> > Signed-off-by: Richard Zhao <richard.zhao@linaro.org>
-> > ---
-> >  drivers/tty/serial/imx.c |    3 +++
-> >  1 files changed, 3 insertions(+), 0 deletions(-)
-> > 
-> > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> > index 163fc90..22fd9c8 100644
-> > --- a/drivers/tty/serial/imx.c
-> > +++ b/drivers/tty/serial/imx.c
-> > @@ -1390,6 +1390,7 @@ static int serial_imx_probe(struct platform_device *pdev)
-> >  		ret = PTR_ERR(sport->clk);
-> >  		goto unmap;
-> >  	}
-> > +	clk_prepare(sport->clk);
-> >  	clk_enable(sport->clk);
-> >  
-> >  	sport->port.uartclk = clk_get_rate(sport->clk);
-> > @@ -1415,6 +1416,7 @@ deinit:
-> >  clkput:
-> >  	clk_put(sport->clk);
-> >  	clk_disable(sport->clk);
-> > +	clk_unprepare(sport->clk);
-> 
-> Ouch, clk_put before clk_disable? This is is bug. Care to fix it?
-hmm.. I'll fix the two bugs in my next version patch.
-> 
-> >  unmap:
-> >  	iounmap(sport->port.membase);
-> >  free:
-> > @@ -1438,6 +1440,7 @@ static int serial_imx_remove(struct platform_device *pdev)
-> >  	}
-> >  
-> >  	clk_disable(sport->clk);
-> > +	clk_unprepare(sport->clk);
-> >  
-> 
-> Here clk_put is missing, another bug.
-> 
-> Sascha
-> 
-> -- 
-> Pengutronix e.K.                           |                             |
-> Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-> Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-> Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> 
+Hi Kevin,
 
+On Wed, Nov 9, 2011 at 12:50 AM, Kevin Hilman <khilman@ti.com> wrote:
+> Rajendra Nayak <rnayak@ti.com> writes:
+>
+>> Hi Kevin,
+>>
+>> On Saturday 05 November 2011 04:12 AM, Kevin Hilman wrote:
+>>> However, as mentioned previously[1], due to a HW sleepdep between M=
+PU
+>>> and CORE, this constraint isn't actually needed for CORE UARTs, so =
+it's
+>>> a bit wasteful to go through all the constraint setting for no reas=
+on.
+>>
+>> I had a short chat with Govind on this and was trying to understand
+>> this better.
+>> Are you referring to the 'autodeps' for omap3 here, because they wou=
+ld
+>> prevent any clock domain from idling as long as MPU or IVA are activ=
+e,
+>
+> No, I was thinking of HW sleepdeps. =A0However, I looked back at the
+> OMAP3430 TRM and see that MPU does not have a HW sleepdep on CORE lik=
+e I
+> thought.
+>
+>> but not the other way round. Which means MPU can still idle, while C=
+ORE
+>> does not.
+>>
+>> My guess was, its probably the CORE domain idling itself thats causi=
+ng
+>> the UART sluggishness, (and not MPU idling), due to higher latency,
+>> which is prevented with an active UART module in CORE, but not in PE=
+R.
+>
+> OK, that indeed makes sense. =A0Thanks for correcting me.
+>
+>> So Govind did a small experiment to prevent just CORE idling and let=
+ MPU
+>> idle alone and that did not show any sluggishness.
+>
+> OK, good.
+>
+>> Now, putting a pm-qos constraint for a UART in CORE still looks
+>> redundant because the latency requirement that UART has is in
+>> some way *indirectly* met (because the active UART in CORE prevents
+>> CORE transitions in idle).
+>> But don't you think the UART driver should express its
+>> latency constraints regardless, without thinking of any indirect way=
+s
+>> in which the same requirements would have already been met?
+>
+> Yes, you're right. =A0The driver should not need to know which powerd=
+omain
+> a given UART is in. =A0It's probably best (and most portable) to have=
+ UART
+> always express its requirements all the time.
+>
+> Thanks for digging into this,
+>
+
+I have fixed this and other uart_v7 comments and have re-based the
+patch series on top
+of 3.2-rc1 along with Tero's v9 irq chaining patches and tested the sam=
+e.
+Available here [1].
+
+Can this patches series be added to a test branch for upstreaming or do=
+ you
+think there are still some outstanding comments that needs to be discus=
+sed?
+
+--
+Thanks,
+Govindraj.R
+
+[1]:
+
+git://gitorious.org/runtime_3-0/runtime_3-0.git
+3.2-rc1_uart_runtime
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
