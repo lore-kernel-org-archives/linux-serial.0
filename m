@@ -1,79 +1,79 @@
-From: Tomoya MORINAGA <tomoya.rohm@gmail.com>
-Subject: [PATCH] pch_uart: Fix DMA resource leak issue
-Date: Fri, 11 Nov 2011 10:55:27 +0900
-Message-ID: <1320976527-6142-1-git-send-email-tomoya.rohm@gmail.com>
+From: Shubhrajyoti <shubhrajyoti@ti.com>
+Subject: Re: [PATCH v7 11/21] OMAP2+: UART: Move errata handling from serial.c
+ to omap-serial
+Date: Fri, 11 Nov 2011 11:41:36 +0530
+Message-ID: <4EBCBC98.9040200@ti.com>
+References: <1318951576-10165-1-git-send-email-govindraj.raja@ti.com> <1318951576-10165-12-git-send-email-govindraj.raja@ti.com> <4EBC61DB.9020402@ti.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from sm-d311v.smileserver.ne.jp ([203.211.202.206]:39761 "EHLO
-	sm-d311v.smileserver.ne.jp" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751149Ab1KKB42 (ORCPT
+Received: from na3sys009aog117.obsmtp.com ([74.125.149.242]:52249 "EHLO
+	na3sys009aog117.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751054Ab1KKGLp (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 10 Nov 2011 20:56:28 -0500
+	Fri, 11 Nov 2011 01:11:45 -0500
+In-Reply-To: <4EBC61DB.9020402@ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>, gregkh@suse.de, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: qi.wang@intel.com, yong.y.wang@intel.com, joel.clark@intel.com, kok.howg.ewe@intel.com, Tomoya MORINAGA <tomoya.rohm@gmail.com>
+To: Jon Hunter <jon-hunter@ti.com>
+Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, Kevin Hilman <khilman@ti.com>, Tony Lindgren <tony@atomide.com>, Rajendra Nayak <rnayak@ti.com>, Partha Basak <p-basak2@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, linux-serial@vger.kernel.org, Vishwanath Sripathy <vishwanath.bs@ti.com>, linux-arm-kernel@lists.infradead.org
 
-Changing UART mode PIO->DMA->PIO->DMA like below, pch_uart driver can't get
-DMA channel resource.
+On Friday 11 November 2011 05:14 AM, Jon Hunter wrote:
+> Hi Govindraj,
+>
+> On 10/18/2011 10:26, Govindraj.R wrote:
+>> Move the errata handling mechanism from serial.c to omap-serial file
+>> and utilise the same func in driver file.
+>>
+>> Errata i202, i291 are moved to be handled with omap-serial
+>> Moving the errata macro from serial.c file to driver header file
+>> as from on errata will be handled in driver file itself.
+>> Corrected errata id from chapter reference 2.15 to errata id i291.
+>>
+>> Removed errata and dma_enabled feilds from omap_uart_state struct
+Nitpick.
+The field spelling could be corrected.
+>> as they are no more needed with errata handling done within omap-serial.
+>>
+>> Acked-by: Alan Cox<alan@linux.intel.com>
+>> Signed-off-by: Govindraj.R<govindraj.raja@ti.com>
+>> ---
+>>   arch/arm/mach-omap2/serial.c                  |   97
+>> +++++++------------------
+>>   arch/arm/plat-omap/include/plat/omap-serial.h |    6 ++
+>>   drivers/tty/serial/omap-serial.c              |   66 ++++++++++++++++-
+>>   3 files changed, 95 insertions(+), 74 deletions(-)
+>
+> [snip]
+>
+>> +    /* Enable the MDR1 errata for OMAP3 */
+>> +    if (cpu_is_omap34xx()&&  !cpu_is_ti816x())
+>> +        omap_up.errata |= UART_ERRATA_i202_MDR1_ACCESS;
+>
+> This errata (i202) is applicable to all devices from OMAP2430 to
+> OMAP4460 (apparently this one is not getting fixed). So could you make
+> sure this is enabled for 2430, 3430, 3630, 4430 and 4460?
+>
+Yes good point.
 
-setserial /dev/ttyPCH0 ^low_latency
-setserial /dev/ttyPCH0 low_latency
-
-CAUSE:
-Changing mode using setserial command, ".startup" function which gets DMA
-channel is called before ".verify_port" function which sets
-dma-flag(use_dma/use_dma_flag) as 1.
-
-PIO->DMA
-  .startup: Since dma-flag is 0, DMA channel is not requested.
-  .verify_port: dma-flag is set as 1.
-  .shutdown: N/A
-
-DMA->PIO
-  .startup: Since dma-flag is 1, DMA channel is requested.
-  .verify_port: dma-flag is set as 0.
-  .shutdown: Since dma-flag is 0, DMA channel is not released.
-
-This means DMA channel resource leak occurs.
-Next time, this driver can't get DMA channel resource forever.
-
-MODIFICATION:
-  Currently, when release DMA channel resource, this driver checks dma-flag.
-  However, this specification occurs the above issue.
-  This driver must check whether dma_request_channel is executed or not.
-  The values are saved in private data variable "chan_tx/chan_tx".
-  These variables mean if the value is NULL, DMA channel is not requested,
-  if not NULL, DMA channel is requested.
-
-This patch fixes the issue.
-
-Signed-off-by: Tomoya MORINAGA <tomoya.rohm@gmail.com>
----
- drivers/tty/serial/pch_uart.c |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 21febef..284fa48 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -628,6 +628,7 @@ static void pch_request_dma(struct uart_port *port)
- 		dev_err(priv->port.dev, "%s:dma_request_channel FAILS(Rx)\n",
- 			__func__);
- 		dma_release_channel(priv->chan_tx);
-+		priv->chan_tx = NULL;
- 		return;
- 	}
- 
-@@ -1215,8 +1216,7 @@ static void pch_uart_shutdown(struct uart_port *port)
- 		dev_err(priv->port.dev,
- 			"pch_uart_hal_set_fifo Failed(ret=%d)\n", ret);
- 
--	if (priv->use_dma_flag)
--		pch_free_dma(port);
-+	pch_free_dma(port);
- 
- 	free_irq(priv->port.irq, priv);
- }
--- 
-1.7.4.4
+> [snip]
+>
+>> +/*
+>> + * Work Around for Errata i202 (3430 - 1.12, 3630 - 1.6)
+>
+> We should update the comment to be "Work Around for Errata i202 (2430,
+> 3430, 3630, 4430 and 4460)". The "1.12" and "1.6" are just the section
+> references in the errata docs, but I think that you can drop these as
+> you can just search for the errata ID which is i202.
+>
+> Cheers
+> Jon
+>
+>
+>
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-omap" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
