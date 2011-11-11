@@ -1,61 +1,79 @@
-From: Richard Zhao <richard.zhao@linaro.org>
-Subject: [PATCH V2 14/14] mmc: sdhci-esdhc-imx: add clk_prepare/clk_unprepare
-Date: Fri, 11 Nov 2011 09:10:29 +0800
-Message-ID: <1320973829-4388-15-git-send-email-richard.zhao@linaro.org>
-References: <1320973829-4388-1-git-send-email-richard.zhao@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1320973829-4388-1-git-send-email-richard.zhao@linaro.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: linux-arm-kernel-bounces@lists.infradead.org
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org, netdev@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: amit.kucheria@canonical.com, linux@arm.linux.org.uk, kernel@pengutronix.de, eric.miao@linaro.org, ben-linux@fluff.org, cjb@laptop.org, Richard Zhao <richard.zhao@linaro.org>, alan@linux.intel.com
+From: Tomoya MORINAGA <tomoya.rohm@gmail.com>
+Subject: [PATCH] pch_uart: Fix DMA resource leak issue
+Date: Fri, 11 Nov 2011 10:55:27 +0900
+Message-ID: <1320976527-6142-1-git-send-email-tomoya.rohm@gmail.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from sm-d311v.smileserver.ne.jp ([203.211.202.206]:39761 "EHLO
+	sm-d311v.smileserver.ne.jp" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751149Ab1KKB42 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 10 Nov 2011 20:56:28 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>, gregkh@suse.de, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: qi.wang@intel.com, yong.y.wang@intel.com, joel.clark@intel.com, kok.howg.ewe@intel.com, Tomoya MORINAGA <tomoya.rohm@gmail.com>
 
-Signed-off-by: Richard Zhao <richard.zhao@linaro.org>
+Changing UART mode PIO->DMA->PIO->DMA like below, pch_uart driver can't get
+DMA channel resource.
+
+setserial /dev/ttyPCH0 ^low_latency
+setserial /dev/ttyPCH0 low_latency
+
+CAUSE:
+Changing mode using setserial command, ".startup" function which gets DMA
+channel is called before ".verify_port" function which sets
+dma-flag(use_dma/use_dma_flag) as 1.
+
+PIO->DMA
+  .startup: Since dma-flag is 0, DMA channel is not requested.
+  .verify_port: dma-flag is set as 1.
+  .shutdown: N/A
+
+DMA->PIO
+  .startup: Since dma-flag is 1, DMA channel is requested.
+  .verify_port: dma-flag is set as 0.
+  .shutdown: Since dma-flag is 0, DMA channel is not released.
+
+This means DMA channel resource leak occurs.
+Next time, this driver can't get DMA channel resource forever.
+
+MODIFICATION:
+  Currently, when release DMA channel resource, this driver checks dma-flag.
+  However, this specification occurs the above issue.
+  This driver must check whether dma_request_channel is executed or not.
+  The values are saved in private data variable "chan_tx/chan_tx".
+  These variables mean if the value is NULL, DMA channel is not requested,
+  if not NULL, DMA channel is requested.
+
+This patch fixes the issue.
+
+Signed-off-by: Tomoya MORINAGA <tomoya.rohm@gmail.com>
 ---
- drivers/mmc/host/sdhci-esdhc-imx.c |    6 +++---
- 1 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/tty/serial/pch_uart.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/mmc/host/sdhci-esdhc-imx.c b/drivers/mmc/host/sdhci-esdhc-imx.c
-index ae57769..f1ae37e 100644
---- a/drivers/mmc/host/sdhci-esdhc-imx.c
-+++ b/drivers/mmc/host/sdhci-esdhc-imx.c
-@@ -462,7 +462,7 @@ static int __devinit sdhci_esdhc_imx_probe(struct platform_device *pdev)
- 		err = PTR_ERR(clk);
- 		goto err_clk_get;
- 	}
--	clk_enable(clk);
-+	clk_prepare_enable(clk);
- 	pltfm_host->clk = clk;
- 
- 	if (!is_imx25_esdhc(imx_data))
-@@ -550,7 +550,7 @@ no_card_detect_irq:
- 		gpio_free(boarddata->wp_gpio);
- no_card_detect_pin:
- no_board_data:
--	clk_disable(pltfm_host->clk);
-+	clk_disable_unprepare(pltfm_host->clk);
- 	clk_put(pltfm_host->clk);
- err_clk_get:
- 	kfree(imx_data);
-@@ -577,7 +577,7 @@ static int __devexit sdhci_esdhc_imx_remove(struct platform_device *pdev)
- 		gpio_free(boarddata->cd_gpio);
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index 21febef..284fa48 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -628,6 +628,7 @@ static void pch_request_dma(struct uart_port *port)
+ 		dev_err(priv->port.dev, "%s:dma_request_channel FAILS(Rx)\n",
+ 			__func__);
+ 		dma_release_channel(priv->chan_tx);
++		priv->chan_tx = NULL;
+ 		return;
  	}
  
--	clk_disable(pltfm_host->clk);
-+	clk_disable_unprepare(pltfm_host->clk);
- 	clk_put(pltfm_host->clk);
- 	kfree(imx_data);
+@@ -1215,8 +1216,7 @@ static void pch_uart_shutdown(struct uart_port *port)
+ 		dev_err(priv->port.dev,
+ 			"pch_uart_hal_set_fifo Failed(ret=%d)\n", ret);
  
+-	if (priv->use_dma_flag)
+-		pch_free_dma(port);
++	pch_free_dma(port);
+ 
+ 	free_irq(priv->port.irq, priv);
+ }
 -- 
-1.7.5.4
+1.7.4.4
+
