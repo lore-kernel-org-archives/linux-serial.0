@@ -1,68 +1,51 @@
-From: Jon Hunter <jon-hunter@ti.com>
-Subject: Re: [PATCH v7 11/21] OMAP2+: UART: Move errata handling from serial.c
- to omap-serial
-Date: Thu, 10 Nov 2011 17:44:27 -0600
-Message-ID: <4EBC61DB.9020402@ti.com>
-References: <1318951576-10165-1-git-send-email-govindraj.raja@ti.com> <1318951576-10165-12-git-send-email-govindraj.raja@ti.com>
+From: Richard Zhao <richard.zhao-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: [PATCH V2 01/14] clk: add helper functions clk_prepare_enable and clk_disable_unprepare
+Date: Fri, 11 Nov 2011 09:10:16 +0800
+Message-ID: <1320973829-4388-2-git-send-email-richard.zhao@linaro.org>
+References: <1320973829-4388-1-git-send-email-richard.zhao@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:52006 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755318Ab1KJXod (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 10 Nov 2011 18:44:33 -0500
-In-Reply-To: <1318951576-10165-12-git-send-email-govindraj.raja@ti.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1320973829-4388-1-git-send-email-richard.zhao-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Sender: linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, amit.kucheria-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, ben-linux-elnMNo+KYs3YtjvyW6yDsg@public.gmane.org, cjb-2X9k7bc8m7Mdnm+yROfE0A@public.gmane.org, alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, eric.miao-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Richard Zhao <richard.zhao-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: "Govindraj.R" <govindraj.raja@ti.com>
-Cc: linux-omap@vger.kernel.org, Kevin Hilman <khilman@ti.com>, Tony Lindgren <tony@atomide.com>, Rajendra Nayak <rnayak@ti.com>, Partha Basak <p-basak2@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, linux-serial@vger.kernel.org, Vishwanath Sripathy <vishwanath.bs@ti.com>, linux-arm-kernel@lists.infradead.org
 
-Hi Govindraj,
+Signed-off-by: Richard Zhao <richard.zhao-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+---
+ include/linux/clk.h |   19 +++++++++++++++++++
+ 1 files changed, 19 insertions(+), 0 deletions(-)
 
-On 10/18/2011 10:26, Govindraj.R wrote:
-> Move the errata handling mechanism from serial.c to omap-serial file
-> and utilise the same func in driver file.
->
-> Errata i202, i291 are moved to be handled with omap-serial
-> Moving the errata macro from serial.c file to driver header file
-> as from on errata will be handled in driver file itself.
-> Corrected errata id from chapter reference 2.15 to errata id i291.
->
-> Removed errata and dma_enabled feilds from omap_uart_state struct
-> as they are no more needed with errata handling done within omap-serial.
->
-> Acked-by: Alan Cox<alan@linux.intel.com>
-> Signed-off-by: Govindraj.R<govindraj.raja@ti.com>
-> ---
->   arch/arm/mach-omap2/serial.c                  |   97 +++++++------------------
->   arch/arm/plat-omap/include/plat/omap-serial.h |    6 ++
->   drivers/tty/serial/omap-serial.c              |   66 ++++++++++++++++-
->   3 files changed, 95 insertions(+), 74 deletions(-)
-
-[snip]
-
-> +	/* Enable the MDR1 errata for OMAP3 */
-> +	if (cpu_is_omap34xx()&&  !cpu_is_ti816x())
-> +		omap_up.errata |= UART_ERRATA_i202_MDR1_ACCESS;
-
-This errata (i202) is applicable to all devices from OMAP2430 to 
-OMAP4460 (apparently this one is not getting fixed). So could you make 
-sure this is enabled for 2430, 3430, 3630, 4430 and 4460?
-
-[snip]
-
-> +/*
-> + * Work Around for Errata i202 (3430 - 1.12, 3630 - 1.6)
-
-We should update the comment to be "Work Around for Errata i202 (2430, 
-3430, 3630, 4430 and 4460)". The "1.12" and "1.6" are just the section 
-references in the errata docs, but I think that you can drop these as 
-you can just search for the errata ID which is i202.
-
-Cheers
-Jon
-
-
-
+diff --git a/include/linux/clk.h b/include/linux/clk.h
+index 7213b52..63985f7 100644
+--- a/include/linux/clk.h
++++ b/include/linux/clk.h
+@@ -107,6 +107,25 @@ static inline void clk_unprepare(struct clk *clk)
+ }
+ #endif
+ 
++static inline int clk_prepare_enable(struct clk *clk)
++{
++	int ret;
++
++	ret = clk_prepare(clk);
++	if (!ret)
++		ret = clk_enable(clk);
++	if (ret)
++		clk_unprepare(clk);
++
++	return ret;
++}
++
++static inline void clk_disable_unprepare(struct clk *clk)
++{
++	clk_disable(clk);
++	clk_unprepare(clk);
++}
++
+ /**
+  * clk_get_rate - obtain the current clock rate (in Hz) for a clock source.
+  *		  This is only valid once the clock source has been enabled.
+-- 
+1.7.5.4
