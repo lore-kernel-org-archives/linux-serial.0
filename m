@@ -1,68 +1,59 @@
 From: Wolfram Sang <w.sang@pengutronix.de>
-Subject: [PATCH 3/8] serial: 8250: save rs485_flags per instance
-Date: Wed, 16 Nov 2011 17:24:40 +0100
-Message-ID: <1321460685-15753-4-git-send-email-w.sang@pengutronix.de>
-References: <1321460685-15753-1-git-send-email-w.sang@pengutronix.de>
+Subject: =?UTF-8?q?=5BPATCH=200/8=5D=20serial=3A=208250=3A=20support=20hw-based=20RS485=20direction=20control=20=28finally!=29?=
+Date: Wed, 16 Nov 2011 17:24:37 +0100
+Message-ID: <1321460685-15753-1-git-send-email-w.sang@pengutronix.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1321460685-15753-1-git-send-email-w.sang@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Claudio Scordino <claudio@evidence.eu.com>, Juergen Beisert <jbe@pengutronix.de>, Matthias Fuchs <mfuchs@ma-fu.de>, Wolfram Sang <w.sang@pengutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-This avoids mangling with registers when reading the RS485 status via IOCTL.
-Also, features can check their configuration at runtime which will be needed
-for a later patch.
+Some 8250-variants control the direction pin for RS485 in hardware. Lin=
+ux has
+RS485 support these days, so update the 8250-driver to adhere to that. =
+There
+have been attempts for mainlining this before. So, I started with the v=
+ersion
+from Matthias which got no further comments, a proof-of-concept for the=
+ 16V2750
+from J=C3=BCrgen, and reworked it to match the current state of RS485 i=
+n Linux. Some
+minor cleanup patches came along the way. Really looking forward to
+comments/tags, because I think it is really time to get this functional=
+ity into
+mainline once and for all ;)
 
-Signed-off-by: Wolfram Sang <w.sang@pengutronix.de>
----
- drivers/tty/serial/8250.c |   16 +++++-----------
- 1 files changed, 5 insertions(+), 11 deletions(-)
+Code is based on 3.2-rc2, tested on a OMAP-based custom board with a 16=
+V2750.
+A git tree can be found here:
 
-diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
-index 920b4df..b5d3248 100644
---- a/drivers/tty/serial/8250.c
-+++ b/drivers/tty/serial/8250.c
-@@ -154,6 +154,7 @@ struct uart_8250_port {
- 	unsigned char		lsr_saved_flags;
- #define MSR_SAVE_FLAGS UART_MSR_ANY_DELTA
- 	unsigned char		msr_saved_flags;
-+	__u32			rs485_flags;	/* copied from IOCTL */
- };
- 
- struct irq_info {
-@@ -2729,28 +2730,21 @@ static int serial8250_ioctl_port(struct uart_port *port,
- 		serial_outp(up, UART_FCTR, fctr);
- 		serial_outp(up, UART_LCR, lcr);
- 		spin_unlock_irqrestore(&up->port.lock, flags);
-+
-+		up->rs485_flags = rs485ctrl.flags;
-+
- 		return 0;
- 	}
- 
- 	case TIOCGRS485:
- 	{
- 		struct serial_rs485 rs485ctrl;
--		unsigned char lcr;
- 
- 		if (port->type != PORT_16850)
- 			return -ENOTTY;
- 
- 		memset(&rs485ctrl, 0, sizeof(rs485ctrl));
--
--		spin_lock_irqsave(&up->port.lock, flags);
--		lcr = serial_inp(up, UART_LCR);
--		serial_outp(up, UART_LCR, UART_LCR_CONF_MODE_B);
--		if (serial_inp(up, UART_FCTR) & UART_FCTR_RS485)
--			rs485ctrl.flags = SER_RS485_ENABLED;
--		else
--			rs485ctrl.flags = 0;
--		serial_outp(up, UART_LCR, lcr);
--		spin_unlock_irqrestore(&up->port.lock, flags);
-+		rs485ctrl.flags = up->rs485_flags;
- 
- 		if (copy_to_user((struct serial_rs485 *)arg, &rs485ctrl,
- 				 sizeof(rs485ctrl)))
--- 
+	git://git.pengutronix.de/git/wsa/linux-2.6.git 8250_rs485
+
+Thanks and regards,
+
+   Wolfram
+
+Matthias Fuchs (1):
+  serial: 8250: Add ioctl to enable auto rs485 mode with some Exar UART=
+s
+
+Wolfram Sang (7):
+  serial: 8250: replace hardcoded 0xbf with #define
+  serial: 8250: save rs485_flags per instance
+  serial: 8250: add RX_DURING_TX capability to RS485 mode
+  serial: 8250: reject delaying RTS with RS485
+  serial: 8250: update rs485 flags with polarity settings
+  serial: 8250: add Exar 16V2750 support
+  serial: 8250: fix comment about accessing EMSR
+
+ drivers/tty/serial/8250.c   |  143 +++++++++++++++++++++++++++++++++++=
+++++---
+ include/linux/serial_core.h |    3 +-
+ include/linux/serial_reg.h  |    4 +-
+ 3 files changed, 137 insertions(+), 13 deletions(-)
+
+--=20
 1.7.7.1
