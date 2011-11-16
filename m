@@ -1,7 +1,7 @@
 From: Wolfram Sang <w.sang@pengutronix.de>
-Subject: [PATCH 8/8] serial: 8250: fix comment about accessing EMSR
-Date: Wed, 16 Nov 2011 17:24:45 +0100
-Message-ID: <1321460685-15753-9-git-send-email-w.sang@pengutronix.de>
+Subject: [PATCH 5/8] serial: 8250: reject delaying RTS with RS485
+Date: Wed, 16 Nov 2011 17:24:42 +0100
+Message-ID: <1321460685-15753-6-git-send-email-w.sang@pengutronix.de>
 References: <1321460685-15753-1-git-send-email-w.sang@pengutronix.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1321460685-15753-1-git-send-email-w.sang@pengutronix.de>
@@ -10,29 +10,27 @@ To: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Claudio Scordino <claudio@evidence.eu.com>, Juergen Beisert <jbe@pengutronix.de>, Matthias Fuchs <mfuchs@ma-fu.de>, Wolfram Sang <w.sang@pengutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-All docs I checked do say LCR should NOT be 0xBF (16c850, 16c854,
-16v2750). Fix it according to that, since the only usage of the register
-currently implements the revised access method. If somebody later finds
-a derivate which actually does need 0xBF to enable that register, we can
-update the comment again with precise references.
+There might be chips capable of doing this, but for now nothing is implemented,
+so reject usage of this feature.
 
 Signed-off-by: Wolfram Sang <w.sang@pengutronix.de>
 ---
- include/linux/serial_reg.h |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ drivers/tty/serial/8250.c |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
 
-diff --git a/include/linux/serial_reg.h b/include/linux/serial_reg.h
-index 0267bab6..0a1beca 100644
---- a/include/linux/serial_reg.h
-+++ b/include/linux/serial_reg.h
-@@ -211,7 +211,7 @@
- #define UART_FCTR_TX		0x80  /* Programmable trigger mode select */
+diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
+index 6a2f47f..28b3608 100644
+--- a/drivers/tty/serial/8250.c
++++ b/drivers/tty/serial/8250.c
+@@ -2735,6 +2735,9 @@ static int serial8250_ioctl_port(struct uart_port *port,
+ 				   sizeof(rs485ctrl)))
+ 			return -EFAULT;
  
- /*
-- * LCR=0xBF, FCTR[6]=1
-+ * LCR!=0xBF (some docs say =0), FCTR[6]=1, XR16C85x
-  */
- #define UART_EMSR	7	/* Extended Mode Select Register */
- #define UART_EMSR_FIFO_COUNT	0x01  /* Rx/Tx select */
++		if (rs485ctrl.delay_rts_before_send || rs485ctrl.delay_rts_after_send)
++			return -EOPNOTSUPP;
++
+ 		spin_lock_irqsave(&up->port.lock, flags);
+ 		lcr = serial_inp(up, UART_LCR);
+ 		serial_outp(up, UART_LCR, UART_LCR_CONF_MODE_B);
 -- 
 1.7.7.1
