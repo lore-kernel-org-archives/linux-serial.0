@@ -1,207 +1,60 @@
-From: Rajendra Nayak <rnayak@ti.com>
-Subject: [PATCH 3/3] ARM: omap: pass minimal SoC/board data for UART from dt
-Date: Wed, 16 Nov 2011 16:32:26 +0530
-Message-ID: <1321441346-19591-4-git-send-email-rnayak@ti.com>
-References: <1321441346-19591-1-git-send-email-rnayak@ti.com>
+From: Rob Herring <robherring2@gmail.com>
+Subject: Re: [PATCH 1/3] ARM: omap_device: handle first time activation of
+ console device
+Date: Wed, 16 Nov 2011 08:50:44 -0600
+Message-ID: <4EC3CDC4.7000108@gmail.com>
+References: <1321441346-19591-1-git-send-email-rnayak@ti.com> <1321441346-19591-2-git-send-email-rnayak@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:58496 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755949Ab1KPLDD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Nov 2011 06:03:03 -0500
-In-Reply-To: <1321441346-19591-1-git-send-email-rnayak@ti.com>
+Received: from mail-gx0-f174.google.com ([209.85.161.174]:34245 "EHLO
+	mail-gx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752268Ab1KPOus (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Nov 2011 09:50:48 -0500
+In-Reply-To: <1321441346-19591-2-git-send-email-rnayak@ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
-Cc: tony@atomide.com, khilman@ti.com, govindraj.raja@ti.com, b-cousson@ti.com, linux-arm-kernel@lists.infradead.org, linaro-dev@lists.linaro.org, Rajendra Nayak <rnayak@ti.com>
+To: Rajendra Nayak <rnayak@ti.com>
+Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, khilman@ti.com, linaro-dev@lists.linaro.org, tony@atomide.com, govindraj.raja@ti.com, linux-arm-kernel@lists.infradead.org
 
-Pass minimal data needed for console boot, from dt, for
-OMAP4 panda/sdp and OMAP3 beagle boards, and get rid of the
-static initialization from generic board file.
+On 11/16/2011 05:02 AM, Rajendra Nayak wrote:
+> console device on OMAP is never reset or idled by hwmod post
+> initial setup, early during boot, for obvious reasons not to
+> break early debug prints thrown on console.
+> This leaves the console device enabled at boot and the first activation
+> of it using hwmod needs to be handled in such a way that a disable is
+> called followed by an enable of the hwmod, the subsequent activations
+> can then use the default activation technique.
+> 
+> To handle this add a new binding to identify a hwmod which is used as
+> the console device.
+> 
+> This patch is based on the what is done in serial.c for non-DT builds.
+> 
+> Signed-off-by: Rajendra Nayak <rnayak@ti.com>
+> ---
+>  .../devicetree/bindings/arm/omap/omap.txt          |    1 +
+>  arch/arm/plat-omap/omap_device.c                   |   33 +++++++++++++++++++-
+>  2 files changed, 33 insertions(+), 1 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/omap/omap.txt b/Documentation/devicetree/bindings/arm/omap/omap.txt
+> index dbdab40..46ffd41 100644
+> --- a/Documentation/devicetree/bindings/arm/omap/omap.txt
+> +++ b/Documentation/devicetree/bindings/arm/omap/omap.txt
+> @@ -21,6 +21,7 @@ Required properties:
+>  Optional properties:
+>  - ti,no_idle_on_suspend: When present, it prevents the PM to idle the module
+>    during suspend.
+> +- ti,console_hwmod: boolean, identifies the hwmod used as console device
+>  
 
-Signed-off-by: Rajendra Nayak <rnayak@ti.com>
----
- arch/arm/boot/dts/omap3-beagle.dts  |   17 +++++++++++++++++
- arch/arm/boot/dts/omap3.dtsi        |   27 +++++++++++++++++++++++++++
- arch/arm/boot/dts/omap4-panda.dts   |   17 +++++++++++++++++
- arch/arm/boot/dts/omap4-sdp.dts     |   17 +++++++++++++++++
- arch/arm/boot/dts/omap4.dtsi        |   24 ++++++++++++++++++++++++
- arch/arm/mach-omap2/board-generic.c |    1 -
- 6 files changed, 102 insertions(+), 1 deletions(-)
+This doesn't seem right. Which console is not a h/w property. Why can't
+you use aliases like other platforms are doing?
 
-diff --git a/arch/arm/boot/dts/omap3-beagle.dts b/arch/arm/boot/dts/omap3-beagle.dts
-index 9486be6..4c8f11e 100644
---- a/arch/arm/boot/dts/omap3-beagle.dts
-+++ b/arch/arm/boot/dts/omap3-beagle.dts
-@@ -27,3 +27,20 @@
- 		reg = <0x80000000 0x20000000>; /* 512 MB */
- 	};
- };
-+
-+&uart1 {
-+	clock-frequency = <48000000>;
-+};
-+
-+&uart2 {
-+	clock-frequency = <48000000>;
-+};
-+
-+&uart3 {
-+	ti,console_hwmod;
-+	clock-frequency = <48000000>;
-+};
-+
-+&uart4 {
-+	clock-frequency = <48000000>;
-+};
-diff --git a/arch/arm/boot/dts/omap3.dtsi b/arch/arm/boot/dts/omap3.dtsi
-index d202bb5..ea591c5 100644
---- a/arch/arm/boot/dts/omap3.dtsi
-+++ b/arch/arm/boot/dts/omap3.dtsi
-@@ -13,6 +13,13 @@
- / {
- 	compatible = "ti,omap3430", "ti,omap3";
- 
-+	aliases {
-+		uart1 = &uart1;
-+		uart2 = &uart2;
-+		uart3 = &uart3;
-+		uart4 = &uart4;
-+	};
-+
- 	cpus {
- 		cpu@0 {
- 			compatible = "arm,cortex-a8";
-@@ -59,5 +66,25 @@
- 			interrupt-controller;
- 			#interrupt-cells = <1>;
- 		};
-+
-+		uart1: uart@1 {
-+			compatible = "ti,omap-uart";
-+			ti,hwmods = "uart1";
-+		};
-+
-+		uart2: uart@2 {
-+			compatible = "ti,omap-uart";
-+			ti,hwmods = "uart2";
-+		};
-+
-+		uart3: uart@3 {
-+			compatible = "ti,omap-uart";
-+			ti,hwmods = "uart3";
-+		};
-+
-+		uart4: uart@4 {
-+			compatible = "ti,omap-uart";
-+			ti,hwmods = "uart4";
-+		};
- 	};
- };
-diff --git a/arch/arm/boot/dts/omap4-panda.dts b/arch/arm/boot/dts/omap4-panda.dts
-index c702657..aa65449 100644
---- a/arch/arm/boot/dts/omap4-panda.dts
-+++ b/arch/arm/boot/dts/omap4-panda.dts
-@@ -27,3 +27,20 @@
- 		reg = <0x80000000 0x40000000>; /* 1 GB */
- 	};
- };
-+
-+&uart1 {
-+	clock-frequency = <48000000>;
-+};
-+
-+&uart2 {
-+	clock-frequency = <48000000>;
-+};
-+
-+&uart3 {
-+	ti,console_hwmod;
-+	clock-frequency = <48000000>;
-+};
-+
-+&uart4 {
-+	clock-frequency = <48000000>;
-+};
-diff --git a/arch/arm/boot/dts/omap4-sdp.dts b/arch/arm/boot/dts/omap4-sdp.dts
-index 066e28c..524f5bf 100644
---- a/arch/arm/boot/dts/omap4-sdp.dts
-+++ b/arch/arm/boot/dts/omap4-sdp.dts
-@@ -27,3 +27,20 @@
- 		reg = <0x80000000 0x40000000>; /* 1 GB */
- 	};
- };
-+
-+&uart1 {
-+	clock-frequency = <48000000>;
-+};
-+
-+&uart2 {
-+	clock-frequency = <48000000>;
-+};
-+
-+&uart3 {
-+	ti,console_hwmod;
-+	clock-frequency = <48000000>;
-+};
-+
-+&uart4 {
-+	clock-frequency = <48000000>;
-+};
-diff --git a/arch/arm/boot/dts/omap4.dtsi b/arch/arm/boot/dts/omap4.dtsi
-index 4c61c82..2378d1e 100644
---- a/arch/arm/boot/dts/omap4.dtsi
-+++ b/arch/arm/boot/dts/omap4.dtsi
-@@ -21,6 +21,10 @@
- 	interrupt-parent = <&gic>;
- 
- 	aliases {
-+		uart1 = &uart1;
-+		uart2 = &uart2;
-+		uart3 = &uart3;
-+		uart4 = &uart4;
- 	};
- 
- 	cpus {
-@@ -99,5 +103,25 @@
- 			reg = <0x48241000 0x1000>,
- 			      <0x48240100 0x0100>;
- 		};
-+
-+		uart1: uart@1 {
-+			compatible = "ti,omap-uart";
-+			ti,hwmods = "uart1";
-+		};
-+
-+		uart2: uart@2 {
-+			compatible = "ti,omap-uart";
-+			ti,hwmods = "uart2";
-+		};
-+
-+		uart3: uart@3 {
-+			compatible = "ti,omap-uart";
-+			ti,hwmods = "uart3";
-+		};
-+
-+		uart4: uart@4 {
-+			compatible = "ti,omap-uart";
-+			ti,hwmods = "uart4";
-+		};
- 	};
- };
-diff --git a/arch/arm/mach-omap2/board-generic.c b/arch/arm/mach-omap2/board-generic.c
-index fb55fa3..bb72809 100644
---- a/arch/arm/mach-omap2/board-generic.c
-+++ b/arch/arm/mach-omap2/board-generic.c
-@@ -70,7 +70,6 @@ static void __init omap_generic_init(void)
- 	if (node)
- 		irq_domain_add_simple(node, 0);
- 
--	omap_serial_init();
- 	omap_sdrc_init(NULL, NULL);
- 
- 	of_platform_populate(NULL, omap_dt_match_table, NULL, NULL);
--- 
-1.7.1
+Also, it's not clear in the documentation where this (and
+ti,no_idle_on_suspend) should go in the DT. Both seem like they should
+be kernel cmdline params.
 
+Rob
