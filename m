@@ -1,173 +1,107 @@
-From: Rajendra Nayak <rnayak@ti.com>
-Subject: Re: [PATCH 3/3] ARM: omap: pass minimal SoC/board data for UART from
- dt
-Date: Thu, 17 Nov 2011 14:12:22 +0530
-Message-ID: <4EC4C8EE.30701@ti.com>
-References: <1321441346-19591-1-git-send-email-rnayak@ti.com> <1321441346-19591-4-git-send-email-rnayak@ti.com> <4EC45D9B.5020006@gmail.com>
+From: Claudio Scordino <claudio@evidence.eu.com>
+Subject: Re: [PATCH 2/8] serial: 8250: Add ioctl to enable auto rs485 mode
+ with some Exar UARTs
+Date: Thu, 17 Nov 2011 10:40:14 +0100
+Message-ID: <4EC4D67E.1050102@evidence.eu.com>
+References: <1321460685-15753-1-git-send-email-w.sang@pengutronix.de> <1321460685-15753-3-git-send-email-w.sang@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog124.obsmtp.com ([74.125.149.151]:39046 "EHLO
-	na3sys009aog124.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752469Ab1KQImd (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Nov 2011 03:42:33 -0500
-In-Reply-To: <4EC45D9B.5020006@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1321460685-15753-3-git-send-email-w.sang@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Wolfram Sang <w.sang@pengutronix.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Juergen Beisert <jbe@pengutronix.de>, Matthias Fuchs <mfuchs@ma-fu.de>
 List-Id: linux-serial@vger.kernel.org
-To: Rob Herring <robherring2@gmail.com>
-Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, khilman@ti.com, linaro-dev@lists.linaro.org, tony@atomide.com, govindraj.raja@ti.com, linux-arm-kernel@lists.infradead.org
 
-On Thursday 17 November 2011 06:34 AM, Rob Herring wrote:
-> On 11/16/2011 05:02 AM, Rajendra Nayak wrote:
->> Pass minimal data needed for console boot, from dt, for
->> OMAP4 panda/sdp and OMAP3 beagle boards, and get rid of the
->> static initialization from generic board file.
->>
->> Signed-off-by: Rajendra Nayak<rnayak@ti.com>
->> ---
->>   arch/arm/boot/dts/omap3-beagle.dts  |   17 +++++++++++++++++
->>   arch/arm/boot/dts/omap3.dtsi        |   27 +++++++++++++++++++++++++++
->>   arch/arm/boot/dts/omap4-panda.dts   |   17 +++++++++++++++++
->>   arch/arm/boot/dts/omap4-sdp.dts     |   17 +++++++++++++++++
->>   arch/arm/boot/dts/omap4.dtsi        |   24 ++++++++++++++++++++++++
->>   arch/arm/mach-omap2/board-generic.c |    1 -
->>   6 files changed, 102 insertions(+), 1 deletions(-)
->>
->> diff --git a/arch/arm/boot/dts/omap3-beagle.dts b/arch/arm/boot/dts/omap3-beagle.dts
->> index 9486be6..4c8f11e 100644
->> --- a/arch/arm/boot/dts/omap3-beagle.dts
->> +++ b/arch/arm/boot/dts/omap3-beagle.dts
->> @@ -27,3 +27,20 @@
->>   		reg =<0x80000000 0x20000000>; /* 512 MB */
->>   	};
->>   };
->> +
->> +&uart1 {
->> +	clock-frequency =<48000000>;
->> +};
->> +
->> +&uart2 {
->> +	clock-frequency =<48000000>;
->> +};
->> +
->> +&uart3 {
->> +	ti,console_hwmod;
->> +	clock-frequency =<48000000>;
->> +};
->> +
->> +&uart4 {
->> +	clock-frequency =<48000000>;
->> +};
->> diff --git a/arch/arm/boot/dts/omap3.dtsi b/arch/arm/boot/dts/omap3.dtsi
->> index d202bb5..ea591c5 100644
->> --- a/arch/arm/boot/dts/omap3.dtsi
->> +++ b/arch/arm/boot/dts/omap3.dtsi
->> @@ -13,6 +13,13 @@
->>   / {
->>   	compatible = "ti,omap3430", "ti,omap3";
->>
->> +	aliases {
->> +		uart1 =&uart1;
->> +		uart2 =&uart2;
->> +		uart3 =&uart3;
->> +		uart4 =&uart4;
->> +	};
->> +
->>   	cpus {
->>   		cpu@0 {
->>   			compatible = "arm,cortex-a8";
->> @@ -59,5 +66,25 @@
->>   			interrupt-controller;
->>   			#interrupt-cells =<1>;
->>   		};
->> +
->> +		uart1: uart@1 {
->
-> Use the generic name serial and the address: uart1: serial@1234abcd
+Hi Wolfram,
 
-ok.
+Il 16/11/2011 17:24, Wolfram Sang ha scritto:
+> From: Matthias Fuchs<mfuchs@ma-fu.de>
+> 
+> Some Exar UARTs support an auto rs485 mode. In this mode
+> the UART's RTS# pin is activated during transmitting and
+> can be used to enable a rs485 line driver. This has nothing
+> to do with attempts to do this by manually asserting/
+> deasserting handshake lines in software.
+> 
+> Signed-off-by: Matthias Fuchs<mfuchs@ma-fu.de>
+> 
+> [wsa] Replaced 0xbf with define, saved some line-breaks.
+> 
+> Signed-off-by: Wolfram Sang<w.sang@pengutronix.de>
+> ---
+>   drivers/tty/serial/8250.c  |   68 ++++++++++++++++++++++++++++++++++++++++++++
+>   include/linux/serial_reg.h |    1 +
+>   2 files changed, 69 insertions(+), 0 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
+> index f8f2320..920b4df 100644
+> --- a/drivers/tty/serial/8250.c
+> +++ b/drivers/tty/serial/8250.c
+> @@ -38,6 +38,7 @@
+>   #include<linux/nmi.h>
+>   #include<linux/mutex.h>
+>   #include<linux/slab.h>
+> +#include<linux/uaccess.h>
+> 
+>   #include<asm/io.h>
+>   #include<asm/irq.h>
+> @@ -2698,6 +2699,72 @@ serial8250_type(struct uart_port *port)
+>   	return uart_config[type].name;
+>   }
+> 
+> +static int serial8250_ioctl_port(struct uart_port *port,
+> +		      unsigned int cmd, unsigned long arg)
+> +{
+> +	struct uart_8250_port *up = (struct uart_8250_port *)port;
+> +	unsigned long flags;
+> +
+> +	switch (cmd) {
+> +	case TIOCSRS485:
+> +	{
+> +		struct serial_rs485 rs485ctrl;
+> +		unsigned char fctr, lcr;
+> +
+> +		if (port->type != PORT_16850)
+> +			return -ENOTTY;
+> +
+> +		if (copy_from_user(&rs485ctrl, (struct serial_rs485 *)arg,
+> +				   sizeof(rs485ctrl)))
+> +			return -EFAULT;
+> +
+> +		spin_lock_irqsave(&up->port.lock, flags);
+> +		lcr = serial_inp(up, UART_LCR);
+> +		serial_outp(up, UART_LCR, UART_LCR_CONF_MODE_B);
+> +		fctr = serial_inp(up, UART_FCTR);
+> +		if (rs485ctrl.flags&  SER_RS485_ENABLED)
+> +			fctr |= UART_FCTR_RS485;
+> +		else
+> +			fctr&= ~UART_FCTR_RS485;
+> +		serial_outp(up, UART_FCTR, fctr);
+> +		serial_outp(up, UART_LCR, lcr);
+> +		spin_unlock_irqrestore(&up->port.lock, flags);
+> +		return 0;
+> +	}
+> +
+> +	case TIOCGRS485:
+> +	{
+> +		struct serial_rs485 rs485ctrl;
+> +		unsigned char lcr;
+> +
+> +		if (port->type != PORT_16850)
+> +			return -ENOTTY;
+> +
+> +		memset(&rs485ctrl, 0, sizeof(rs485ctrl));
+> +
+> +		spin_lock_irqsave(&up->port.lock, flags);
+> +		lcr = serial_inp(up, UART_LCR);
+> +		serial_outp(up, UART_LCR, UART_LCR_CONF_MODE_B);
+> +		if (serial_inp(up, UART_FCTR)&  UART_FCTR_RS485)
+> +			rs485ctrl.flags = SER_RS485_ENABLED;
+> +		else
+> +			rs485ctrl.flags = 0;
 
->
->> +			compatible = "ti,omap-uart";
->> +			ti,hwmods = "uart1";
->> +		};
->> +
->> +		uart2: uart@2 {
->> +			compatible = "ti,omap-uart";
->> +			ti,hwmods = "uart2";
->> +		};
->> +
->> +		uart3: uart@3 {
->> +			compatible = "ti,omap-uart";
->> +			ti,hwmods = "uart3";
->> +		};
->> +
->> +		uart4: uart@4 {
->> +			compatible = "ti,omap-uart";
->> +			ti,hwmods = "uart4";
->> +		};
->>   	};
->>   };
->> diff --git a/arch/arm/boot/dts/omap4-panda.dts b/arch/arm/boot/dts/omap4-panda.dts
->> index c702657..aa65449 100644
->> --- a/arch/arm/boot/dts/omap4-panda.dts
->> +++ b/arch/arm/boot/dts/omap4-panda.dts
->> @@ -27,3 +27,20 @@
->>   		reg =<0x80000000 0x40000000>; /* 1 GB */
->>   	};
->>   };
->> +
->> +&uart1 {
->> +	clock-frequency =<48000000>;
->> +};
->> +
->> +&uart2 {
->> +	clock-frequency =<48000000>;
->> +};
->> +
->> +&uart3 {
->> +	ti,console_hwmod;
->> +	clock-frequency =<48000000>;
->> +};
->> +
->> +&uart4 {
->> +	clock-frequency =<48000000>;
->> +};
->> diff --git a/arch/arm/boot/dts/omap4-sdp.dts b/arch/arm/boot/dts/omap4-sdp.dts
->> index 066e28c..524f5bf 100644
->> --- a/arch/arm/boot/dts/omap4-sdp.dts
->> +++ b/arch/arm/boot/dts/omap4-sdp.dts
->> @@ -27,3 +27,20 @@
->>   		reg =<0x80000000 0x40000000>; /* 1 GB */
->>   	};
->>   };
->> +
->> +&uart1 {
->> +	clock-frequency =<48000000>;
->> +};
->> +
->> +&uart2 {
->> +	clock-frequency =<48000000>;
->> +};
->> +
->> +&uart3 {
->> +	ti,console_hwmod;
->> +	clock-frequency =<48000000>;
->> +};
->> +
->> +&uart4 {
->> +	clock-frequency =<48000000>;
->
-> It doesn't seem that this frequency ever varies and is likely to be
-> replaced with clock bindings, so maybe just put it in the dtsi files.
+This else branch may be removed, since the structure has been already memsetted to 0.
 
-sure, will do.
-
-regards,
-Rajendra
->
-> Rob
->
-
+	Claudio
