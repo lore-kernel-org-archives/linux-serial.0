@@ -1,60 +1,163 @@
-From: Jon Hunter <jon-hunter@ti.com>
-Subject: Re: [PATCH v8 11/20] OMAP2+: UART: Move errata handling from serial.c
- to omap-serial
-Date: Wed, 16 Nov 2011 14:04:12 -0600
-Message-ID: <4EC4173C.7090200@ti.com>
-References: <1321005551-21786-1-git-send-email-govindraj.raja@ti.com> <1321005551-21786-2-git-send-email-govindraj.raja@ti.com> <4EC17123.2070505@ti.com> <CAAL8m4xYUd=5g7VOa7Ofnm6nRs8U1a7W+sofAkeCVOOURRfVXg@mail.gmail.com>
+From: Rob Herring <robherring2@gmail.com>
+Subject: Re: [PATCH 3/3] ARM: omap: pass minimal SoC/board data for UART from
+ dt
+Date: Wed, 16 Nov 2011 19:04:27 -0600
+Message-ID: <4EC45D9B.5020006@gmail.com>
+References: <1321441346-19591-1-git-send-email-rnayak@ti.com> <1321441346-19591-4-git-send-email-rnayak@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <CAAL8m4xYUd=5g7VOa7Ofnm6nRs8U1a7W+sofAkeCVOOURRfVXg@mail.gmail.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Govindraj <govindraj.ti@gmail.com>
-Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, Kevin Hilman <khilman@ti.com>, Tony Lindgren <tony@atomide.com>, Rajendra Nayak <rnayak@ti.com>, Partha Basak <p-basak2@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, linux-serial@vger.kernel.org, Vishwanath Sripathy <vishwanath.bs@ti.com>, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-yx0-f174.google.com ([209.85.213.174]:43105 "EHLO
+	mail-yx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754803Ab1KQBEb (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Nov 2011 20:04:31 -0500
+In-Reply-To: <1321441346-19591-4-git-send-email-rnayak@ti.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Rajendra Nayak <rnayak@ti.com>
+Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, khilman@ti.com, linaro-dev@lists.linaro.org, tony@atomide.com, govindraj.raja@ti.com, linux-arm-kernel@lists.infradead.org
 
-Hi Govindraj,
+On 11/16/2011 05:02 AM, Rajendra Nayak wrote:
+> Pass minimal data needed for console boot, from dt, for
+> OMAP4 panda/sdp and OMAP3 beagle boards, and get rid of the
+> static initialization from generic board file.
+> 
+> Signed-off-by: Rajendra Nayak <rnayak@ti.com>
+> ---
+>  arch/arm/boot/dts/omap3-beagle.dts  |   17 +++++++++++++++++
+>  arch/arm/boot/dts/omap3.dtsi        |   27 +++++++++++++++++++++++++++
+>  arch/arm/boot/dts/omap4-panda.dts   |   17 +++++++++++++++++
+>  arch/arm/boot/dts/omap4-sdp.dts     |   17 +++++++++++++++++
+>  arch/arm/boot/dts/omap4.dtsi        |   24 ++++++++++++++++++++++++
+>  arch/arm/mach-omap2/board-generic.c |    1 -
+>  6 files changed, 102 insertions(+), 1 deletions(-)
+> 
+> diff --git a/arch/arm/boot/dts/omap3-beagle.dts b/arch/arm/boot/dts/omap3-beagle.dts
+> index 9486be6..4c8f11e 100644
+> --- a/arch/arm/boot/dts/omap3-beagle.dts
+> +++ b/arch/arm/boot/dts/omap3-beagle.dts
+> @@ -27,3 +27,20 @@
+>  		reg = <0x80000000 0x20000000>; /* 512 MB */
+>  	};
+>  };
+> +
+> +&uart1 {
+> +	clock-frequency = <48000000>;
+> +};
+> +
+> +&uart2 {
+> +	clock-frequency = <48000000>;
+> +};
+> +
+> +&uart3 {
+> +	ti,console_hwmod;
+> +	clock-frequency = <48000000>;
+> +};
+> +
+> +&uart4 {
+> +	clock-frequency = <48000000>;
+> +};
+> diff --git a/arch/arm/boot/dts/omap3.dtsi b/arch/arm/boot/dts/omap3.dtsi
+> index d202bb5..ea591c5 100644
+> --- a/arch/arm/boot/dts/omap3.dtsi
+> +++ b/arch/arm/boot/dts/omap3.dtsi
+> @@ -13,6 +13,13 @@
+>  / {
+>  	compatible = "ti,omap3430", "ti,omap3";
+>  
+> +	aliases {
+> +		uart1 = &uart1;
+> +		uart2 = &uart2;
+> +		uart3 = &uart3;
+> +		uart4 = &uart4;
+> +	};
+> +
+>  	cpus {
+>  		cpu@0 {
+>  			compatible = "arm,cortex-a8";
+> @@ -59,5 +66,25 @@
+>  			interrupt-controller;
+>  			#interrupt-cells = <1>;
+>  		};
+> +
+> +		uart1: uart@1 {
 
-On 11/16/2011 4:13, Govindraj wrote:
-> On Tue, Nov 15, 2011 at 1:20 AM, Jon Hunter<jon-hunter@ti.com>  wrote:
->> Hi Govindraj,
->
-> [...]
->
->>>
->>>         oh = uart->oh;
->>> -       uart->dma_enabled = 0;
->>>         name = DRIVER_NAME;
->>>
->>>         omap_up.dma_enabled = uart->dma_enabled;
->>>         omap_up.uartclk = OMAP24XX_BASE_BAUD * 16;
->>>         omap_up.flags = UPF_BOOT_AUTOCONF;
->>>         omap_up.get_context_loss_count =
->>> omap_pm_get_dev_context_loss_count;
->>> +       omap_up.set_forceidle = omap_uart_set_forceidle;
->>> +       omap_up.set_noidle = omap_uart_set_noidle;
->>> +
->>> +       /* Enable the MDR1 errata for OMAP2/3/4 */
->>> +       if ((cpu_is_omap2430() || cpu_is_omap34xx() ||
->>> cpu_is_omap44xx())&&
->>> +                                               !cpu_is_ti816x())
->>> +               omap_up.errata |= UART_ERRATA_i202_MDR1_ACCESS;
->>
->> I am not sure that this will apply the errata for OMAP3630 devices. I think
->> we need cpu_is_omap36xx() above too. Or you may wish to do
->> !cpu_class_is_omap1 and !cpu_is_omap2420.
->>
->
-> Yes correct, I have updated this patch as here [1].
+Use the generic name serial and the address: uart1: serial@1234abcd
 
-Thanks! Looks good.
+> +			compatible = "ti,omap-uart";
+> +			ti,hwmods = "uart1";
+> +		};
+> +
+> +		uart2: uart@2 {
+> +			compatible = "ti,omap-uart";
+> +			ti,hwmods = "uart2";
+> +		};
+> +
+> +		uart3: uart@3 {
+> +			compatible = "ti,omap-uart";
+> +			ti,hwmods = "uart3";
+> +		};
+> +
+> +		uart4: uart@4 {
+> +			compatible = "ti,omap-uart";
+> +			ti,hwmods = "uart4";
+> +		};
+>  	};
+>  };
+> diff --git a/arch/arm/boot/dts/omap4-panda.dts b/arch/arm/boot/dts/omap4-panda.dts
+> index c702657..aa65449 100644
+> --- a/arch/arm/boot/dts/omap4-panda.dts
+> +++ b/arch/arm/boot/dts/omap4-panda.dts
+> @@ -27,3 +27,20 @@
+>  		reg = <0x80000000 0x40000000>; /* 1 GB */
+>  	};
+>  };
+> +
+> +&uart1 {
+> +	clock-frequency = <48000000>;
+> +};
+> +
+> +&uart2 {
+> +	clock-frequency = <48000000>;
+> +};
+> +
+> +&uart3 {
+> +	ti,console_hwmod;
+> +	clock-frequency = <48000000>;
+> +};
+> +
+> +&uart4 {
+> +	clock-frequency = <48000000>;
+> +};
+> diff --git a/arch/arm/boot/dts/omap4-sdp.dts b/arch/arm/boot/dts/omap4-sdp.dts
+> index 066e28c..524f5bf 100644
+> --- a/arch/arm/boot/dts/omap4-sdp.dts
+> +++ b/arch/arm/boot/dts/omap4-sdp.dts
+> @@ -27,3 +27,20 @@
+>  		reg = <0x80000000 0x40000000>; /* 1 GB */
+>  	};
+>  };
+> +
+> +&uart1 {
+> +	clock-frequency = <48000000>;
+> +};
+> +
+> +&uart2 {
+> +	clock-frequency = <48000000>;
+> +};
+> +
+> +&uart3 {
+> +	ti,console_hwmod;
+> +	clock-frequency = <48000000>;
+> +};
+> +
+> +&uart4 {
+> +	clock-frequency = <48000000>;
 
-> btw, omap-serial is applicable only for omap2+ so
-> I think cpu_class_is omap1 not applicable here
-> need to be handled in /mach-omap1/serial.c.
+It doesn't seem that this frequency ever varies and is likely to be
+replaced with clock bindings, so maybe just put it in the dtsi files.
 
-Duh! I missed that. We are good then.
+Rob
 
-Cheers
-Jon
