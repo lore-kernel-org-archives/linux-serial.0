@@ -1,163 +1,21 @@
-From: Rob Herring <robherring2@gmail.com>
-Subject: Re: [PATCH 3/3] ARM: omap: pass minimal SoC/board data for UART from
- dt
-Date: Wed, 16 Nov 2011 19:04:27 -0600
-Message-ID: <4EC45D9B.5020006@gmail.com>
-References: <1321441346-19591-1-git-send-email-rnayak@ti.com> <1321441346-19591-4-git-send-email-rnayak@ti.com>
+From: Richard Zhao <richard.zhao-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH V4 00/14] add clk_prepare/clk_unprepare to imx drivers
+Date: Thu, 17 Nov 2011 09:22:11 +0800
+Message-ID: <20111117012210.GA23392@b20223-02.ap.freescale.net>
+References: <1321339689-25256-1-git-send-email-richard.zhao@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-yx0-f174.google.com ([209.85.213.174]:43105 "EHLO
-	mail-yx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754803Ab1KQBEb (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Nov 2011 20:04:31 -0500
-In-Reply-To: <1321441346-19591-4-git-send-email-rnayak@ti.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Return-path: <linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1321339689-25256-1-git-send-email-richard.zhao-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Sender: linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: amit.kucheria-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, eric.miao-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, ben-linux-elnMNo+KYs3YtjvyW6yDsg@public.gmane.org, cjb-2X9k7bc8m7Mdnm+yROfE0A@public.gmane.org, alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Rajendra Nayak <rnayak@ti.com>
-Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, khilman@ti.com, linaro-dev@lists.linaro.org, tony@atomide.com, govindraj.raja@ti.com, linux-arm-kernel@lists.infradead.org
 
-On 11/16/2011 05:02 AM, Rajendra Nayak wrote:
-> Pass minimal data needed for console boot, from dt, for
-> OMAP4 panda/sdp and OMAP3 beagle boards, and get rid of the
-> static initialization from generic board file.
-> 
-> Signed-off-by: Rajendra Nayak <rnayak@ti.com>
-> ---
->  arch/arm/boot/dts/omap3-beagle.dts  |   17 +++++++++++++++++
->  arch/arm/boot/dts/omap3.dtsi        |   27 +++++++++++++++++++++++++++
->  arch/arm/boot/dts/omap4-panda.dts   |   17 +++++++++++++++++
->  arch/arm/boot/dts/omap4-sdp.dts     |   17 +++++++++++++++++
->  arch/arm/boot/dts/omap4.dtsi        |   24 ++++++++++++++++++++++++
->  arch/arm/mach-omap2/board-generic.c |    1 -
->  6 files changed, 102 insertions(+), 1 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/omap3-beagle.dts b/arch/arm/boot/dts/omap3-beagle.dts
-> index 9486be6..4c8f11e 100644
-> --- a/arch/arm/boot/dts/omap3-beagle.dts
-> +++ b/arch/arm/boot/dts/omap3-beagle.dts
-> @@ -27,3 +27,20 @@
->  		reg = <0x80000000 0x20000000>; /* 512 MB */
->  	};
->  };
-> +
-> +&uart1 {
-> +	clock-frequency = <48000000>;
-> +};
-> +
-> +&uart2 {
-> +	clock-frequency = <48000000>;
-> +};
-> +
-> +&uart3 {
-> +	ti,console_hwmod;
-> +	clock-frequency = <48000000>;
-> +};
-> +
-> +&uart4 {
-> +	clock-frequency = <48000000>;
-> +};
-> diff --git a/arch/arm/boot/dts/omap3.dtsi b/arch/arm/boot/dts/omap3.dtsi
-> index d202bb5..ea591c5 100644
-> --- a/arch/arm/boot/dts/omap3.dtsi
-> +++ b/arch/arm/boot/dts/omap3.dtsi
-> @@ -13,6 +13,13 @@
->  / {
->  	compatible = "ti,omap3430", "ti,omap3";
->  
-> +	aliases {
-> +		uart1 = &uart1;
-> +		uart2 = &uart2;
-> +		uart3 = &uart3;
-> +		uart4 = &uart4;
-> +	};
-> +
->  	cpus {
->  		cpu@0 {
->  			compatible = "arm,cortex-a8";
-> @@ -59,5 +66,25 @@
->  			interrupt-controller;
->  			#interrupt-cells = <1>;
->  		};
-> +
-> +		uart1: uart@1 {
+Hi Sascha,
 
-Use the generic name serial and the address: uart1: serial@1234abcd
+Would you merge this patch series?
 
-> +			compatible = "ti,omap-uart";
-> +			ti,hwmods = "uart1";
-> +		};
-> +
-> +		uart2: uart@2 {
-> +			compatible = "ti,omap-uart";
-> +			ti,hwmods = "uart2";
-> +		};
-> +
-> +		uart3: uart@3 {
-> +			compatible = "ti,omap-uart";
-> +			ti,hwmods = "uart3";
-> +		};
-> +
-> +		uart4: uart@4 {
-> +			compatible = "ti,omap-uart";
-> +			ti,hwmods = "uart4";
-> +		};
->  	};
->  };
-> diff --git a/arch/arm/boot/dts/omap4-panda.dts b/arch/arm/boot/dts/omap4-panda.dts
-> index c702657..aa65449 100644
-> --- a/arch/arm/boot/dts/omap4-panda.dts
-> +++ b/arch/arm/boot/dts/omap4-panda.dts
-> @@ -27,3 +27,20 @@
->  		reg = <0x80000000 0x40000000>; /* 1 GB */
->  	};
->  };
-> +
-> +&uart1 {
-> +	clock-frequency = <48000000>;
-> +};
-> +
-> +&uart2 {
-> +	clock-frequency = <48000000>;
-> +};
-> +
-> +&uart3 {
-> +	ti,console_hwmod;
-> +	clock-frequency = <48000000>;
-> +};
-> +
-> +&uart4 {
-> +	clock-frequency = <48000000>;
-> +};
-> diff --git a/arch/arm/boot/dts/omap4-sdp.dts b/arch/arm/boot/dts/omap4-sdp.dts
-> index 066e28c..524f5bf 100644
-> --- a/arch/arm/boot/dts/omap4-sdp.dts
-> +++ b/arch/arm/boot/dts/omap4-sdp.dts
-> @@ -27,3 +27,20 @@
->  		reg = <0x80000000 0x40000000>; /* 1 GB */
->  	};
->  };
-> +
-> +&uart1 {
-> +	clock-frequency = <48000000>;
-> +};
-> +
-> +&uart2 {
-> +	clock-frequency = <48000000>;
-> +};
-> +
-> +&uart3 {
-> +	ti,console_hwmod;
-> +	clock-frequency = <48000000>;
-> +};
-> +
-> +&uart4 {
-> +	clock-frequency = <48000000>;
-
-It doesn't seem that this frequency ever varies and is likely to be
-replaced with clock bindings, so maybe just put it in the dtsi files.
-
-Rob
-
+Thanks
+Richard 
