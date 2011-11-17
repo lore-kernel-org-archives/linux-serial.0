@@ -1,93 +1,65 @@
-From: "Cousson, Benoit" <b-cousson@ti.com>
-Subject: Re: [PATCH 1/3] ARM: omap_device: handle first time activation of
- console device
-Date: Thu, 17 Nov 2011 10:52:44 +0100
-Message-ID: <4EC4D96C.9050804@ti.com>
-References: <1321441346-19591-1-git-send-email-rnayak@ti.com> <1321441346-19591-2-git-send-email-rnayak@ti.com> <4EC3D037.6020901@ti.com> <4EC4B56F.2040504@ti.com>
+From: Wolfram Sang <w.sang@pengutronix.de>
+Subject: Re: [PATCH 2/8] serial: 8250: Add ioctl to enable auto rs485 mode
+ with some Exar UARTs
+Date: Thu, 17 Nov 2011 11:09:57 +0100
+Message-ID: <20111117100957.GC2535@pengutronix.de>
+References: <1321460685-15753-1-git-send-email-w.sang@pengutronix.de>
+ <1321460685-15753-3-git-send-email-w.sang@pengutronix.de>
+ <4EC4D67E.1050102@evidence.eu.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="mvpLiMfbWzRoNl4x"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:49546 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756198Ab1KQJw7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Nov 2011 04:52:59 -0500
-In-Reply-To: <4EC4B56F.2040504@ti.com>
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:49034 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751243Ab1KQKKA (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 17 Nov 2011 05:10:00 -0500
+Content-Disposition: inline
+In-Reply-To: <4EC4D67E.1050102@evidence.eu.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Rajendra Nayak <rnayak@ti.com>
-Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, tony@atomide.com, khilman@ti.com, govindraj.raja@ti.com, linux-arm-kernel@lists.infradead.org, linaro-dev@lists.linaro.org
+To: Claudio Scordino <claudio@evidence.eu.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Juergen Beisert <jbe@pengutronix.de>, Matthias Fuchs <mfuchs@ma-fu.de>
 
-Hi Rajendra,
 
-On 11/17/2011 8:19 AM, Rajendra Nayak wrote:
-> [...]
->>> +static int omap_console_hwmod_enable(struct omap_device *od)
->>> +{
->>> + console_lock();
->>> + /*
->>> + * For early console we prevented hwmod reset and idle
->>
->> A period is missing. Or maybe it should a comma with not capital letter.
->>
->>> + * So before we enable the uart clocks idle the console
->>> + * uart clocks, then enable back the console uart hwmod.
->>> + */
->>> + omap_hwmod_idle(od->hwmods[0]);
->>> + omap_hwmod_enable(od->hwmods[0]);
->>
->> Why do we have to idle -> enable? The module is already enabled, isn't
->> it?
->> The comment is not super clear for me :-)
->> Is the goal is to reset the IP?
->
-> Yes, now that I read it, it does sound confusing. I should have at-least
-> read it once before I picked it from serial.c
->
-> But anyway, here's what the problem is.
->
-> I feel its partly to do with the inability of hwmod to handle some
-> modules which are left enabled post a setup, due to the
-> 'HWMOD_INIT_NO_IDLE' flag set.
-> Such modules end up with a hwmod state as '_HWMOD_STATE_ENABLED' post
-> a setup. Now when a driver for such devices/modules tries to enable the
-> module the first time, hwmod throws up a big WARN stating the hwmod is
-> already in an enabled state.
+--mvpLiMfbWzRoNl4x
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-OK, now, that makes sense :-)
-We have hwmod in ENABLE state whereas the omap_device is still in IDLE 
-or even DISABLE.
 
-> [uart used as console is one such module, which cannot be idled post a
-> setup by hwmod]
->
-> If hwmod could be made in some way intelligent enough to know that the
-> module is in enabled state because of the 'HWMOD_INIT_NO_IDLE' itself,
-> a lot of this hackery might not be needed at all.
+> > +		if (serial_inp(up, UART_FCTR)&  UART_FCTR_RS485)
+> > +			rs485ctrl.flags =3D SER_RS485_ENABLED;
+> > +		else
+> > +			rs485ctrl.flags =3D 0;
+>=20
+> This else branch may be removed, since the structure has been already mem=
+setted to 0.
 
-Fully agree, the fmwk should handle that.
-
-> Simplest way to do it could be to just add another intermediate state,
-> something like '_HWMOD_STATE_ENABLED_AT_INIT'.
-> I will post a patch for this, see if you like it being handled that way.
-
-That seems to be good. I'm just wondering if we need to introduce a new 
-state for that or use a dedicated flag.
-My concern is just that we will have two flavors of HWMOD_STATE_ENABLED 
-that we will have to check in various places in the hwmod core code.
-
-Maybe that's not such a big deal. Go ahead, and we will see how it looks 
-like.
-
-> The other part of the problem is also with the inability to hook up
-> 'custom' omap_device_pm_latency for omap devices created from DT.
-> Maybe a lot of such cases which need custom activate/deactivate
-> functions might have to be handled in some way in the framework
-> itself like the one above.
-
-For the moment, it looks like only the serial is requiring such custom 
-stuff, but anyway, we should have a mechanism to allow that...
+Correct, yet I didn't want to change Matthias' code, so reviewers can
+skip this patch if they reviewed his old code already. Flag handling
+will be handled different with the next patch anyway.
 
 Thanks,
-Benoit
 
+   Wolfram
+
+--=20
+Pengutronix e.K.                           | Wolfram Sang                |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+
+--mvpLiMfbWzRoNl4x
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+
+iEYEARECAAYFAk7E3XUACgkQD27XaX1/VRvK1ACeOCUbtz7ToYJRme43QLSlEBX7
+FBMAoKMsRe/OJ/4j57Q68dcZbHkpYYod
+=QyTP
+-----END PGP SIGNATURE-----
+
+--mvpLiMfbWzRoNl4x--
