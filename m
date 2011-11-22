@@ -1,74 +1,64 @@
-From: Greg KH <gregkh@suse.de>
-Subject: [GIT PATCH] TTY/serial driver fixes for 3.2
-Date: Mon, 21 Nov 2011 16:59:17 -0800
-Message-ID: <20111122005917.GD25420@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+From: Greg Kroah-Hartman <gregkh@suse.de>
+Subject: [PATCH 02/13] tty: hvc_dcc: Fix duplicate character inputs
+Date: Mon, 21 Nov 2011 17:11:32 -0800
+Message-ID: <1321924303-26475-2-git-send-email-gregkh@suse.de>
+References: <20111122005917.GD25420@kroah.com>
+ <1321924303-26475-1-git-send-email-gregkh@suse.de>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from cantor2.suse.de ([195.135.220.15]:42043 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753648Ab1KVBM4 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 21 Nov 2011 20:12:56 -0500
+In-Reply-To: <1321924303-26475-1-git-send-email-gregkh@suse.de>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Stephen Boyd <sboyd@codeaurora.org>, stable <stable@vger.kernel.org>, Greg Kroah-Hartman <gregkh@suse.de>
 
-Here are some tty/serial driver fixes for your 3.2 tree.
+From: Stephen Boyd <sboyd@codeaurora.org>
 
-Not many patches here, just an assortment of fixes and a few new devices
-supported, full details are in the shortlog below.
+Reading from the DCC grabs a character from the buffer and
+clears the status bit. Since this is a context-changing
+operation, instructions following the character read that rely on
+the status bit being accurate need to be synchronized with an
+ISB.
 
-Please pull from:
-	git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
+In this case, the status bit check needs to execute after the
+character read otherwise we run the risk of reading the character
+and checking the status bit before the read can clear the status
+bit in the first place. When this happens, the user will see the
+same character they typed twice, instead of once.
 
-All of these patches have been in the -mm and -next trees for a while.
+Add an ISB after the read and the write, so that the status check
+is synchronized with the read/write operations.
 
-Patches will be sent to the linux-serial mailing list, if anyone wants
-to see them.
+Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+---
+ drivers/tty/hvc/hvc_dcc.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
 
-thanks,
+diff --git a/drivers/tty/hvc/hvc_dcc.c b/drivers/tty/hvc/hvc_dcc.c
+index 435f6fa..44fbeba 100644
+--- a/drivers/tty/hvc/hvc_dcc.c
++++ b/drivers/tty/hvc/hvc_dcc.c
+@@ -46,6 +46,7 @@ static inline char __dcc_getchar(void)
+ 
+ 	asm volatile("mrc p14, 0, %0, c0, c5, 0	@ read comms data reg"
+ 		: "=r" (__c));
++	isb();
+ 
+ 	return __c;
+ }
+@@ -55,6 +56,7 @@ static inline void __dcc_putchar(char c)
+ 	asm volatile("mcr p14, 0, %0, c0, c5, 0	@ write a char"
+ 		: /* no output register */
+ 		: "r" (c));
++	isb();
+ }
+ 
+ static int hvc_dcc_put_chars(uint32_t vt, const char *buf, int count)
+-- 
+1.7.7.3
 
-greg k-h
-
-------------
-
- Documentation/serial/serial-rs485.txt |   14 +++++++++++---
- MAINTAINERS                           |    2 +-
- drivers/tty/hvc/hvc_dcc.c             |    2 ++
- drivers/tty/serial/Kconfig            |   14 +++++++-------
- drivers/tty/serial/atmel_serial.c     |   16 +++-------------
- drivers/tty/serial/crisv10.c          |   10 ++--------
- drivers/tty/serial/mfd.c              |    4 +---
- drivers/tty/serial/pch_uart.c         |   19 ++++++++++++++-----
- drivers/tty/tty_ldisc.c               |   30 +++++++++++++++++++++++-------
- include/linux/serial.h                |   14 ++++++++------
- 10 files changed, 72 insertions(+), 53 deletions(-)
-
----------------
-
-Alan Cox (1):
-      serial,mfd: Fix CMSPAR setup
-
-Claudio Scordino (1):
-      RS485: fix inconsistencies in the meaning of some variables
-
-Doug Anderson (1):
-      tty/serial: Prevent drop of DCD on suspend for Tegra UARTs
-
-Greg Kroah-Hartman (1):
-      Revert "tty/serial: Prevent drop of DCD on suspend for Tegra UARTs"
-
-Jiri Slaby (3):
-      TTY: ldisc, allow waiting for ldisc arbitrarily long
-      TTY: ldisc, move wait idle to caller
-      TTY: ldisc, wait for ldisc infinitely in hangup
-
-Lucas Kannebley Tavares (1):
-      jsm: Change maintainership
-
-Stephen Boyd (1):
-      tty: hvc_dcc: Fix duplicate character inputs
-
-Tomoya MORINAGA (4):
-      pch_uart: Fix hw-flow control issue
-      pch_uart: Support new device LAPIS Semiconductor ML7831 IOH
-      pch_uart: Change company name OKI SEMICONDUCTOR to LAPIS Semiconductor
-      pch_uart: Fix DMA resource leak issue
