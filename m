@@ -1,47 +1,63 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [GIT PULL] ARM: amba: Enable module alias
- autogeneration for AMBA drivers
-Date: Tue, 22 Nov 2011 11:20:30 -0800
-Message-ID: <20111122192030.GA4930@kroah.com>
-References: <1321961573-4562-1-git-send-email-dave.martin@linaro.org>
-	<20111122115632.GA5165@mail.gnudd.com>
+From: Dan Williams <dan.j.williams@intel.com>
+Subject: [PATCH v3 2/2] serial/8250_pci: init-quirk msi support for kt serial
+ controller
+Date: Tue, 22 Nov 2011 13:41:29 -0800
+Message-ID: <20111122214129.13786.92888.stgit@localhost6.localdomain6>
+References: <20111122213859.13786.7738.stgit@localhost6.localdomain6>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <alsa-devel-bounces@alsa-project.org>
-Content-Disposition: inline
-In-Reply-To: <20111122115632.GA5165@mail.gnudd.com>
-List-Unsubscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
-	<mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
-List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel>
-List-Post: <mailto:alsa-devel@alsa-project.org>
-List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
-List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
-	<mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
-Sender: alsa-devel-bounces@alsa-project.org
-Errors-To: alsa-devel-bounces@alsa-project.org
-To: Alessandro Rubini <rubini@unipv.it>
-Cc: dave.martin@linaro.org, Pawel.Moll@arm.com, tiwai@suse.de, linus.walleij@linaro.org, alsa-devel@alsa-project.org, grant.likely@secretlab.ca, wim@iguana.be, julia@diku.dk, linux@arm.linux.org.uk, vinod.koul@intel.com, jassisinghbrar@gmail.com, linux-serial@vger.kernel.org, linux-input@vger.kernel.org, cjb@laptop.org, linux-watchdog@vger.kernel.org, rtc-linux@googlegroups.com, patches@linaro.org, linux-fbdev@vger.kernel.org, dan.j.williams@intel.com, linux-arm-kernel@lists.infradead.org, alan@linux.intel.com, a.zummo@towertech.it, dmitry.torokhov@gmail.com, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, lethal@linux-sh.org, spi-devel-general@lists.sourceforge.net
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mga11.intel.com ([192.55.52.93]:55377 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753278Ab1KVVla (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 22 Nov 2011 16:41:30 -0500
+In-Reply-To: <20111122213859.13786.7738.stgit@localhost6.localdomain6>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: gregkh@suse.de
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, alan@linux.intel.com
 
-On Tue, Nov 22, 2011 at 12:56:32PM +0100, Alessandro Rubini wrote:
-> > I have Acks on some of the driver patches and no comments on the
-> > rest.  I've been circulating these for some time, so if you're
-> > happy to pull those driver patches via your tree, please go ahead.
-> 
-> Sure I have no problem with the nomadik-rng.c, (so please have my
-> Acked-by: -- sorry for not noting it earlier) but I think this
-> file2alias thing needs a serious rework to split each bus in a
-> different file, using ELF sections like we do elsewhere.
-> 
-> I posted a patch last week but I got no comment at all. Maybe this
-> is the time to ask for comments? I can rebase and repost if needed.
-> 
->   lkml.org/lkml/2011/11/4/125 (0/2: description of the work)
->   lkml.org/lkml/2011/11/4/126 (1/2: turn the if plethora to table lookup)
->   lkml.org/lkml/2011/11/4/127 (2/2: partial split to type-specific files).
+The semantics of UPF_IIR_ONCE (once per serial irq) are only guaranteed
+if the kt irq is not shared (once per serial isr in the shared case ==
+potentially unwanted reads of the IIR).
 
-Ah, I missed that, yes, this would be a good thing to have, we've been
-wanting it for _years_.
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+---
+ drivers/tty/serial/8250_pci.c |   14 ++++++++++++++
+ 1 files changed, 14 insertions(+), 0 deletions(-)
 
-greg k-h
+diff --git a/drivers/tty/serial/8250_pci.c b/drivers/tty/serial/8250_pci.c
+index 8742ef5..2cbf78f 100644
+--- a/drivers/tty/serial/8250_pci.c
++++ b/drivers/tty/serial/8250_pci.c
+@@ -1118,6 +1118,18 @@ pci_xr17c154_setup(struct serial_private *priv,
+ 	return pci_default_setup(priv, board, port, idx);
+ }
+ 
++static int try_enable_msi(struct pci_dev *dev)
++{
++	/* use msi if available, but fallback to legacy otherwise */
++	pci_enable_msi(dev);
++	return 0;
++}
++
++static void disable_msi(struct pci_dev *dev)
++{
++	pci_disable_msi(dev);
++}
++
+ #define PCI_VENDOR_ID_SBSMODULARIO	0x124B
+ #define PCI_SUBVENDOR_ID_SBSMODULARIO	0x124B
+ #define PCI_DEVICE_ID_OCTPRO		0x0001
+@@ -1233,7 +1245,9 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.device		= PCI_DEVICE_ID_INTEL_PATSBURG_KT,
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
++		.init		= try_enable_msi,
+ 		.setup		= kt_serial_setup,
++		.exit		= disable_msi,
+ 	},
+ 	/*
+ 	 * ITE
+
