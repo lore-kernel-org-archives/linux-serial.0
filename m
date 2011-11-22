@@ -1,98 +1,54 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 13/13] TTY: ldisc, wait for ldisc infinitely in hangup
-Date: Mon, 21 Nov 2011 17:11:43 -0800
-Message-ID: <1321924303-26475-13-git-send-email-gregkh@suse.de>
+Subject: [PATCH 07/13] serial,mfd: Fix CMSPAR setup
+Date: Mon, 21 Nov 2011 17:11:37 -0800
+Message-ID: <1321924303-26475-7-git-send-email-gregkh@suse.de>
 References: <20111122005917.GD25420@kroah.com>
  <1321924303-26475-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:42026 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:42095 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753637Ab1KVBMw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 21 Nov 2011 20:12:52 -0500
+	id S1753513Ab1KVBNN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 21 Nov 2011 20:13:13 -0500
 In-Reply-To: <1321924303-26475-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Jiri Slaby <jslaby@suse.cz>, Dave Young <hidave.darkstar@gmail.com>, Dave Jones <davej@redhat.com>, Ben Hutchings <ben@decadent.org.uk>, Dmitriy Matrosov <sgf.dma@gmail.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>, stable <stable@vger.kernel.org>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Jiri Slaby <jslaby@suse.cz>
+From: Alan Cox <alan@linux.intel.com>
 
-For /dev/console case, we do not kill all ldisc users. It's due to
-redirected_tty_write test in __tty_hangup. In that case there still
-might be a process waiting e.g. in n_tty_read for input.
+This is referenced the wrong way. Mika Westerberg added some checks to the
+tty to support multiple console, but the real problem is simply referencing the
+termios object via the wrong path.
 
-We wait for such processes to disappear. The problem is that we use a
-timeout. After this timeout, we continue closing the ldisc and start
-freeing tty resources. It obviously leads to crashes when the other
-process is woken.
-
-So to fix this, we wait infinitely before reiniting the ldisc. (The
-tiocsetd remains untouched -- times out after 5s.)
-
-This is nicely reproducible with this run from shell:
-  exec 0<>/dev/console 1<>/dev/console 2<>/dev/console
-and stopping a getty like:
-  systemctl stop serial-getty@ttyS0.service
-
-The crash proper may be produced only under load or with constified
-timing the same as for 92f6fa09b.
-
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: Dave Young <hidave.darkstar@gmail.com>
-Cc: Dave Jones <davej@redhat.com>
-Cc: Ben Hutchings <ben@decadent.org.uk>
-Cc: Dmitriy Matrosov <sgf.dma@gmail.com>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Alan Cox <alan@linux.intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/tty_ldisc.c |   19 +++++++++++++++++--
- 1 files changed, 17 insertions(+), 2 deletions(-)
+ drivers/tty/serial/mfd.c |    4 +---
+ 1 files changed, 1 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index a69a755..8e0924f 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -36,6 +36,7 @@
+diff --git a/drivers/tty/serial/mfd.c b/drivers/tty/serial/mfd.c
+index 286c386..e272d39 100644
+--- a/drivers/tty/serial/mfd.c
++++ b/drivers/tty/serial/mfd.c
+@@ -884,7 +884,6 @@ serial_hsu_set_termios(struct uart_port *port, struct ktermios *termios,
+ {
+ 	struct uart_hsu_port *up =
+ 			container_of(port, struct uart_hsu_port, port);
+-	struct tty_struct *tty = port->state->port.tty;
+ 	unsigned char cval, fcr = 0;
+ 	unsigned long flags;
+ 	unsigned int baud, quot;
+@@ -907,8 +906,7 @@ serial_hsu_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	}
  
- #include <linux/kmod.h>
- #include <linux/nsproxy.h>
-+#include <linux/ratelimit.h>
+ 	/* CMSPAR isn't supported by this driver */
+-	if (tty)
+-		tty->termios->c_cflag &= ~CMSPAR;
++	termios->c_cflag &= ~CMSPAR;
  
- /*
-  *	This guards the refcounted line discipline lists. The lock
-@@ -837,7 +838,7 @@ void tty_ldisc_hangup(struct tty_struct *tty)
- 	tty_unlock();
- 	cancel_work_sync(&tty->buf.work);
- 	mutex_unlock(&tty->ldisc_mutex);
--
-+retry:
- 	tty_lock();
- 	mutex_lock(&tty->ldisc_mutex);
- 
-@@ -846,7 +847,21 @@ void tty_ldisc_hangup(struct tty_struct *tty)
- 	   it means auditing a lot of other paths so this is
- 	   a FIXME */
- 	if (tty->ldisc) {	/* Not yet closed */
--		WARN_ON_ONCE(tty_ldisc_wait_idle(tty, 5 * HZ));
-+		if (atomic_read(&tty->ldisc->users) != 1) {
-+			char cur_n[TASK_COMM_LEN], tty_n[64];
-+			long timeout = 3 * HZ;
-+			tty_unlock();
-+
-+			while (tty_ldisc_wait_idle(tty, timeout) == -EBUSY) {
-+				timeout = MAX_SCHEDULE_TIMEOUT;
-+				printk_ratelimited(KERN_WARNING
-+					"%s: waiting (%s) for %s took too long, but we keep waiting...\n",
-+					__func__, get_task_comm(cur_n, current),
-+					tty_name(tty, tty_n));
-+			}
-+			mutex_unlock(&tty->ldisc_mutex);
-+			goto retry;
-+		}
- 
- 		if (reset == 0) {
- 
+ 	if (termios->c_cflag & CSTOPB)
+ 		cval |= UART_LCR_STOP;
 -- 
 1.7.7.3
 
