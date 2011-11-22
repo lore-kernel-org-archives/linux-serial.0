@@ -1,97 +1,97 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 04/13] pch_uart: Support new device LAPIS Semiconductor ML7831 IOH
-Date: Mon, 21 Nov 2011 17:11:34 -0800
-Message-ID: <1321924303-26475-4-git-send-email-gregkh@suse.de>
+Subject: [PATCH 13/13] TTY: ldisc, wait for ldisc infinitely in hangup
+Date: Mon, 21 Nov 2011 17:11:43 -0800
+Message-ID: <1321924303-26475-13-git-send-email-gregkh@suse.de>
 References: <20111122005917.GD25420@kroah.com>
  <1321924303-26475-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:42069 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:42026 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756555Ab1KVBND (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 21 Nov 2011 20:13:03 -0500
+	id S1753637Ab1KVBMw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 21 Nov 2011 20:12:52 -0500
 In-Reply-To: <1321924303-26475-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com>, stable <stable@vger.kernel.org>, Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Jiri Slaby <jslaby@suse.cz>, Dave Young <hidave.darkstar@gmail.com>, Dave Jones <davej@redhat.com>, Ben Hutchings <ben@decadent.org.uk>, Dmitriy Matrosov <sgf.dma@gmail.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>, stable <stable@vger.kernel.org>, Greg Kroah-Hartman <gregkh@suse.de>
 
-From: Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com>
+From: Jiri Slaby <jslaby@suse.cz>
 
-ML7831 is companion chip for Intel Atom E6xx series.
+For /dev/console case, we do not kill all ldisc users. It's due to
+redirected_tty_write test in __tty_hangup. In that case there still
+might be a process waiting e.g. in n_tty_read for input.
 
-Signed-off-by: Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com>
-Acked-by: Alan Cox <alan@linux.intel.com>
+We wait for such processes to disappear. The problem is that we use a
+timeout. After this timeout, we continue closing the ldisc and start
+freeing tty resources. It obviously leads to crashes when the other
+process is woken.
+
+So to fix this, we wait infinitely before reiniting the ldisc. (The
+tiocsetd remains untouched -- times out after 5s.)
+
+This is nicely reproducible with this run from shell:
+  exec 0<>/dev/console 1<>/dev/console 2<>/dev/console
+and stopping a getty like:
+  systemctl stop serial-getty@ttyS0.service
+
+The crash proper may be produced only under load or with constified
+timing the same as for 92f6fa09b.
+
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Cc: Dave Young <hidave.darkstar@gmail.com>
+Cc: Dave Jones <davej@redhat.com>
+Cc: Ben Hutchings <ben@decadent.org.uk>
+Cc: Dmitriy Matrosov <sgf.dma@gmail.com>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Cc: stable <stable@vger.kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/serial/Kconfig    |   14 +++++++-------
- drivers/tty/serial/pch_uart.c |    8 ++++++++
- 2 files changed, 15 insertions(+), 7 deletions(-)
+ drivers/tty/tty_ldisc.c |   19 +++++++++++++++++--
+ 1 files changed, 17 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 5f479da..925a1e5 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1560,7 +1560,7 @@ config SERIAL_IFX6X60
- 	  Support for the IFX6x60 modem devices on Intel MID platforms.
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index a69a755..8e0924f 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -36,6 +36,7 @@
  
- config SERIAL_PCH_UART
--	tristate "Intel EG20T PCH / OKI SEMICONDUCTOR IOH(ML7213/ML7223) UART"
-+	tristate "Intel EG20T PCH/LAPIS Semicon IOH(ML7213/ML7223/ML7831) UART"
- 	depends on PCI
- 	select SERIAL_CORE
- 	help
-@@ -1568,12 +1568,12 @@ config SERIAL_PCH_UART
- 	  which is an IOH(Input/Output Hub) for x86 embedded processor.
- 	  Enabling PCH_DMA, this PCH UART works as DMA mode.
+ #include <linux/kmod.h>
+ #include <linux/nsproxy.h>
++#include <linux/ratelimit.h>
  
--	  This driver also can be used for OKI SEMICONDUCTOR IOH(Input/
--	  Output Hub), ML7213 and ML7223.
--	  ML7213 IOH is for IVI(In-Vehicle Infotainment) use and ML7223 IOH is
--	  for MP(Media Phone) use.
--	  ML7213/ML7223 is companion chip for Intel Atom E6xx series.
--	  ML7213/ML7223 is completely compatible for Intel EG20T PCH.
-+	  This driver also can be used for LAPIS Semiconductor IOH(Input/
-+	  Output Hub), ML7213, ML7223 and ML7831.
-+	  ML7213 IOH is for IVI(In-Vehicle Infotainment) use, ML7223 IOH is
-+	  for MP(Media Phone) use and ML7831 IOH is for general purpose use.
-+	  ML7213/ML7223/ML7831 is companion chip for Intel Atom E6xx series.
-+	  ML7213/ML7223/ML7831 is completely compatible for Intel EG20T PCH.
+ /*
+  *	This guards the refcounted line discipline lists. The lock
+@@ -837,7 +838,7 @@ void tty_ldisc_hangup(struct tty_struct *tty)
+ 	tty_unlock();
+ 	cancel_work_sync(&tty->buf.work);
+ 	mutex_unlock(&tty->ldisc_mutex);
+-
++retry:
+ 	tty_lock();
+ 	mutex_lock(&tty->ldisc_mutex);
  
- config SERIAL_MSM_SMD
- 	bool "Enable tty device interface for some SMD ports"
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 2f07a67..2ef0e7d 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -258,6 +258,8 @@ enum pch_uart_num_t {
- 	pch_ml7213_uart2,
- 	pch_ml7223_uart0,
- 	pch_ml7223_uart1,
-+	pch_ml7831_uart0,
-+	pch_ml7831_uart1,
- };
+@@ -846,7 +847,21 @@ void tty_ldisc_hangup(struct tty_struct *tty)
+ 	   it means auditing a lot of other paths so this is
+ 	   a FIXME */
+ 	if (tty->ldisc) {	/* Not yet closed */
+-		WARN_ON_ONCE(tty_ldisc_wait_idle(tty, 5 * HZ));
++		if (atomic_read(&tty->ldisc->users) != 1) {
++			char cur_n[TASK_COMM_LEN], tty_n[64];
++			long timeout = 3 * HZ;
++			tty_unlock();
++
++			while (tty_ldisc_wait_idle(tty, timeout) == -EBUSY) {
++				timeout = MAX_SCHEDULE_TIMEOUT;
++				printk_ratelimited(KERN_WARNING
++					"%s: waiting (%s) for %s took too long, but we keep waiting...\n",
++					__func__, get_task_comm(cur_n, current),
++					tty_name(tty, tty_n));
++			}
++			mutex_unlock(&tty->ldisc_mutex);
++			goto retry;
++		}
  
- static struct pch_uart_driver_data drv_dat[] = {
-@@ -270,6 +272,8 @@ static struct pch_uart_driver_data drv_dat[] = {
- 	[pch_ml7213_uart2] = {PCH_UART_2LINE, 2},
- 	[pch_ml7223_uart0] = {PCH_UART_8LINE, 0},
- 	[pch_ml7223_uart1] = {PCH_UART_2LINE, 1},
-+	[pch_ml7831_uart0] = {PCH_UART_8LINE, 0},
-+	[pch_ml7831_uart1] = {PCH_UART_2LINE, 1},
- };
- 
- static unsigned int default_baud = 9600;
-@@ -1553,6 +1557,10 @@ static DEFINE_PCI_DEVICE_TABLE(pch_uart_pci_id) = {
- 	 .driver_data = pch_ml7223_uart0},
- 	{PCI_DEVICE(PCI_VENDOR_ID_ROHM, 0x800D),
- 	 .driver_data = pch_ml7223_uart1},
-+	{PCI_DEVICE(PCI_VENDOR_ID_ROHM, 0x8811),
-+	 .driver_data = pch_ml7831_uart0},
-+	{PCI_DEVICE(PCI_VENDOR_ID_ROHM, 0x8812),
-+	 .driver_data = pch_ml7831_uart1},
- 	{0,},
- };
+ 		if (reset == 0) {
  
 -- 
 1.7.7.3
