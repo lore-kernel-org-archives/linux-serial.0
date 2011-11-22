@@ -1,14 +1,14 @@
 From: Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH 03/13] pch_uart: Fix hw-flow control issue
-Date: Mon, 21 Nov 2011 17:11:33 -0800
-Message-ID: <1321924303-26475-3-git-send-email-gregkh@suse.de>
+Subject: [PATCH 04/13] pch_uart: Support new device LAPIS Semiconductor ML7831 IOH
+Date: Mon, 21 Nov 2011 17:11:34 -0800
+Message-ID: <1321924303-26475-4-git-send-email-gregkh@suse.de>
 References: <20111122005917.GD25420@kroah.com>
  <1321924303-26475-1-git-send-email-gregkh@suse.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:42062 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:42069 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756555Ab1KVBM7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 21 Nov 2011 20:12:59 -0500
+	id S1756555Ab1KVBND (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 21 Nov 2011 20:13:03 -0500
 In-Reply-To: <1321924303-26475-1-git-send-email-gregkh@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -17,30 +17,82 @@ Cc: Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com>, stable <stable@vger.kerne
 
 From: Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com>
 
-Using hardware flow control,
-currently, register of the control-bit(AFE) is not set.
-This patch fixes the issue.
+ML7831 is companion chip for Intel Atom E6xx series.
 
 Signed-off-by: Tomoya MORINAGA <tomoya-linux@dsn.lapis-semi.com>
 Acked-by: Alan Cox <alan@linux.intel.com>
 Cc: stable <stable@vger.kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 ---
- drivers/tty/serial/pch_uart.c |    1 +
- 1 files changed, 1 insertions(+), 0 deletions(-)
+ drivers/tty/serial/Kconfig    |   14 +++++++-------
+ drivers/tty/serial/pch_uart.c |    8 ++++++++
+ 2 files changed, 15 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 5f479da..925a1e5 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1560,7 +1560,7 @@ config SERIAL_IFX6X60
+ 	  Support for the IFX6x60 modem devices on Intel MID platforms.
+ 
+ config SERIAL_PCH_UART
+-	tristate "Intel EG20T PCH / OKI SEMICONDUCTOR IOH(ML7213/ML7223) UART"
++	tristate "Intel EG20T PCH/LAPIS Semicon IOH(ML7213/ML7223/ML7831) UART"
+ 	depends on PCI
+ 	select SERIAL_CORE
+ 	help
+@@ -1568,12 +1568,12 @@ config SERIAL_PCH_UART
+ 	  which is an IOH(Input/Output Hub) for x86 embedded processor.
+ 	  Enabling PCH_DMA, this PCH UART works as DMA mode.
+ 
+-	  This driver also can be used for OKI SEMICONDUCTOR IOH(Input/
+-	  Output Hub), ML7213 and ML7223.
+-	  ML7213 IOH is for IVI(In-Vehicle Infotainment) use and ML7223 IOH is
+-	  for MP(Media Phone) use.
+-	  ML7213/ML7223 is companion chip for Intel Atom E6xx series.
+-	  ML7213/ML7223 is completely compatible for Intel EG20T PCH.
++	  This driver also can be used for LAPIS Semiconductor IOH(Input/
++	  Output Hub), ML7213, ML7223 and ML7831.
++	  ML7213 IOH is for IVI(In-Vehicle Infotainment) use, ML7223 IOH is
++	  for MP(Media Phone) use and ML7831 IOH is for general purpose use.
++	  ML7213/ML7223/ML7831 is companion chip for Intel Atom E6xx series.
++	  ML7213/ML7223/ML7831 is completely compatible for Intel EG20T PCH.
+ 
+ config SERIAL_MSM_SMD
+ 	bool "Enable tty device interface for some SMD ports"
 diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 21febef..2f07a67 100644
+index 2f07a67..2ef0e7d 100644
 --- a/drivers/tty/serial/pch_uart.c
 +++ b/drivers/tty/serial/pch_uart.c
-@@ -1280,6 +1280,7 @@ static void pch_uart_set_termios(struct uart_port *port,
- 	if (rtn)
- 		goto out;
+@@ -258,6 +258,8 @@ enum pch_uart_num_t {
+ 	pch_ml7213_uart2,
+ 	pch_ml7223_uart0,
+ 	pch_ml7223_uart1,
++	pch_ml7831_uart0,
++	pch_ml7831_uart1,
+ };
  
-+	pch_uart_set_mctrl(&priv->port, priv->port.mctrl);
- 	/* Don't rewrite B0 */
- 	if (tty_termios_baud_rate(termios))
- 		tty_termios_encode_baud_rate(termios, baud, baud);
+ static struct pch_uart_driver_data drv_dat[] = {
+@@ -270,6 +272,8 @@ static struct pch_uart_driver_data drv_dat[] = {
+ 	[pch_ml7213_uart2] = {PCH_UART_2LINE, 2},
+ 	[pch_ml7223_uart0] = {PCH_UART_8LINE, 0},
+ 	[pch_ml7223_uart1] = {PCH_UART_2LINE, 1},
++	[pch_ml7831_uart0] = {PCH_UART_8LINE, 0},
++	[pch_ml7831_uart1] = {PCH_UART_2LINE, 1},
+ };
+ 
+ static unsigned int default_baud = 9600;
+@@ -1553,6 +1557,10 @@ static DEFINE_PCI_DEVICE_TABLE(pch_uart_pci_id) = {
+ 	 .driver_data = pch_ml7223_uart0},
+ 	{PCI_DEVICE(PCI_VENDOR_ID_ROHM, 0x800D),
+ 	 .driver_data = pch_ml7223_uart1},
++	{PCI_DEVICE(PCI_VENDOR_ID_ROHM, 0x8811),
++	 .driver_data = pch_ml7831_uart0},
++	{PCI_DEVICE(PCI_VENDOR_ID_ROHM, 0x8812),
++	 .driver_data = pch_ml7831_uart1},
+ 	{0,},
+ };
+ 
 -- 
 1.7.7.3
 
