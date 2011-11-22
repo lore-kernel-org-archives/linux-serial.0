@@ -1,45 +1,55 @@
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: [PATCH 1/2] serial/imx: propagate error of platform_driver_register in init routine
-Date: Tue, 22 Nov 2011 14:22:55 +0100
-Message-ID: <1321968177-16039-1-git-send-email-u.kleine-koenig@pengutronix.de>
+From: Rajendra Nayak <rnayak@ti.com>
+Subject: [PATCH v2 2/4] omap-serial: Use default clock speed (48Mhz) if not specified
+Date: Tue, 22 Nov 2011 19:14:14 +0530
+Message-ID: <1321969456-24266-3-git-send-email-rnayak@ti.com>
+References: <1321969456-24266-1-git-send-email-rnayak@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:43000 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751472Ab1KVNXc (ORCPT
+Received: from devils.ext.ti.com ([198.47.26.153]:48686 "EHLO
+	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752671Ab1KVNpC (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 22 Nov 2011 08:23:32 -0500
+	Tue, 22 Nov 2011 08:45:02 -0500
+In-Reply-To: <1321969456-24266-1-git-send-email-rnayak@ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: kernel@pengutronix.de, linux-serial@vger.kernel.org
-Cc: Alan Cox <alan@linux.intel.com>
+To: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
+Cc: tony@atomide.com, khilman@ti.com, govindraj.raja@ti.com, b-cousson@ti.com, linux-arm-kernel@lists.infradead.org, linaro-dev@lists.linaro.org, patches@linaro.org, robherring2@gmail.com, Rajendra Nayak <rnayak@ti.com>
 
-Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+Use a default clock speed of 48Mhz, instead of ending up with 0,
+if platforms fail to specify a valid clock speed.
+
+Signed-off-by: Rajendra Nayak <rnayak@ti.com>
 ---
- drivers/tty/serial/imx.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ drivers/tty/serial/omap-serial.c |    7 +++++++
+ 1 files changed, 7 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 163fc90..962cafa 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1476,7 +1476,7 @@ static int __init imx_serial_init(void)
- 	if (ret !=3D 0)
- 		uart_unregister_driver(&imx_reg);
-=20
--	return 0;
-+	return ret;
- }
-=20
- static void __exit imx_serial_exit(void)
---=20
-1.7.7.3
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index a02cc9f..f14b9c5 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -43,6 +43,8 @@
+ #include <plat/dmtimer.h>
+ #include <plat/omap-serial.h>
+ 
++#define DEFAULT_CLK_SPEED 48000000 /* 48Mhz*/
++
+ static struct uart_omap_port *ui[OMAP_MAX_HSUART_PORTS];
+ 
+ /* Forward declaration of functions */
+@@ -1386,6 +1388,11 @@ static int serial_omap_probe(struct platform_device *pdev)
+ 
+ 	up->port.flags = omap_up_info->flags;
+ 	up->port.uartclk = omap_up_info->uartclk;
++	if (!up->port.uartclk) {
++		up->port.uartclk = DEFAULT_CLK_SPEED;
++		dev_warn(&pdev->dev, "No clock speed specified: using default:"
++						"%d\n", DEFAULT_CLK_SPEED);
++	}
+ 	up->uart_dma.uart_base = mem->start;
+ 	up->errata = omap_up_info->errata;
+ 
+-- 
+1.7.1
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
