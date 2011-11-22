@@ -1,66 +1,74 @@
-From: Govindraj <govindraj.ti@gmail.com>
-Subject: Re: [PATCH v8 17/20] OMAP2+: UART: Use custom activate func for
- console uart.
-Date: Mon, 21 Nov 2011 19:21:53 +0530
-Message-ID: <CAAL8m4yAfzVEH7wW5zrOrnjCi_QnvCvXAZ0wfJ-6cKWNZ25Mfg@mail.gmail.com>
-References: <1321005712-21871-1-git-send-email-govindraj.raja@ti.com>
- <1321005712-21871-3-git-send-email-govindraj.raja@ti.com> <87vcqhuns9.fsf@ti.com>
- <CAAL8m4yft7_SQFrXtDZg5X5SJrKep0_j5D9_y1-QooSox+HZpg@mail.gmail.com>
+From: Greg KH <gregkh@suse.de>
+Subject: [GIT PATCH] TTY/serial driver fixes for 3.2
+Date: Mon, 21 Nov 2011 16:59:17 -0800
+Message-ID: <20111122005917.GD25420@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bw0-f46.google.com ([209.85.214.46]:42667 "EHLO
-	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752371Ab1KUNwP (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 21 Nov 2011 08:52:15 -0500
-In-Reply-To: <CAAL8m4yft7_SQFrXtDZg5X5SJrKep0_j5D9_y1-QooSox+HZpg@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kevin Hilman <khilman@ti.com>
-Cc: "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Partha Basak <p-basak2@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Rajendra Nayak <rnayak@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>
 
-On Mon, Nov 21, 2011 at 7:17 PM, Govindraj <govindraj.ti@gmail.com> wrote:
-> On Sat, Nov 19, 2011 at 2:54 AM, Kevin Hilman <khilman@ti.com> wrote:
->> "Govindraj.R" <govindraj.raja@ti.com> writes:
->>
->>> Omap-uart can be used as console uart to print early boot
->>> messages using earlyprintk so for console uart prevent
->>> hwmod reset or idling during bootup.
->>>
->>> Identify the console_uart set the id and use the custom
->>> pm_latency ops for console uart for the first time
->>> to idle console uart left enabled from bootup and then enable
->>> them back and reset pm_latency ops to default ops.
->>>
->>> Thanks to Kevin Hilman <khilman@ti.com> for suggesting
->>> this approach.
->>
->> You're welcome, but Rajendra's solution is much better. ;)
->
-> Agree.
->
->>
->> Can you updated your branch without these custom hooks and using
->> Rajendra's INIT_NO_IDLE change to the hwmod core.
->>
->
-> Yes done, rebased on 3.2-rc2 and created a new branch [1].
->
-> Removed custom activate function usage and used Rajendra's hwmod patch[2]
->
-> --
-> Thanks,
-> Govindraj.R
->
-> [1]:
-> git://gitorious.org/runtime_3-0/runtime_3-0.git
-> 3.2-rc1_uart_runtime
-   ^^^^^^^^^^^^^^^^^^^^^^^^^
+Here are some tty/serial driver fixes for your 3.2 tree.
 
-small correction new branch is
-3.2-rc2_uart_runtime
+Not many patches here, just an assortment of fixes and a few new devices
+supported, full details are in the shortlog below.
 
---
-Thanks,
-Govindraj.R
+Please pull from:
+	git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
+
+All of these patches have been in the -mm and -next trees for a while.
+
+Patches will be sent to the linux-serial mailing list, if anyone wants
+to see them.
+
+thanks,
+
+greg k-h
+
+------------
+
+ Documentation/serial/serial-rs485.txt |   14 +++++++++++---
+ MAINTAINERS                           |    2 +-
+ drivers/tty/hvc/hvc_dcc.c             |    2 ++
+ drivers/tty/serial/Kconfig            |   14 +++++++-------
+ drivers/tty/serial/atmel_serial.c     |   16 +++-------------
+ drivers/tty/serial/crisv10.c          |   10 ++--------
+ drivers/tty/serial/mfd.c              |    4 +---
+ drivers/tty/serial/pch_uart.c         |   19 ++++++++++++++-----
+ drivers/tty/tty_ldisc.c               |   30 +++++++++++++++++++++++-------
+ include/linux/serial.h                |   14 ++++++++------
+ 10 files changed, 72 insertions(+), 53 deletions(-)
+
+---------------
+
+Alan Cox (1):
+      serial,mfd: Fix CMSPAR setup
+
+Claudio Scordino (1):
+      RS485: fix inconsistencies in the meaning of some variables
+
+Doug Anderson (1):
+      tty/serial: Prevent drop of DCD on suspend for Tegra UARTs
+
+Greg Kroah-Hartman (1):
+      Revert "tty/serial: Prevent drop of DCD on suspend for Tegra UARTs"
+
+Jiri Slaby (3):
+      TTY: ldisc, allow waiting for ldisc arbitrarily long
+      TTY: ldisc, move wait idle to caller
+      TTY: ldisc, wait for ldisc infinitely in hangup
+
+Lucas Kannebley Tavares (1):
+      jsm: Change maintainership
+
+Stephen Boyd (1):
+      tty: hvc_dcc: Fix duplicate character inputs
+
+Tomoya MORINAGA (4):
+      pch_uart: Fix hw-flow control issue
+      pch_uart: Support new device LAPIS Semiconductor ML7831 IOH
+      pch_uart: Change company name OKI SEMICONDUCTOR to LAPIS Semiconductor
+      pch_uart: Fix DMA resource leak issue
