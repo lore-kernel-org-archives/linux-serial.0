@@ -1,103 +1,70 @@
-From: Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 02/11] TTY: Remove redundant spi driver bus initialization
-Date: Thu, 24 Nov 2011 16:29:12 +0100
-Message-ID: <1322148561-25138-2-git-send-email-lars@metafoo.de>
-References: <1322148561-25138-1-git-send-email-lars@metafoo.de>
+From: Claudio Scordino <claudio@evidence.eu.com>
+Subject: Re: [PATCH 0/8] serial: 8250: support hw-based RS485 direction control
+ (finally!)
+Date: Thu, 24 Nov 2011 17:05:27 +0100
+Message-ID: <4ECE6B47.90202@evidence.eu.com>
+References: <1321460685-15753-1-git-send-email-w.sang@pengutronix.de> <20111123150312.GH4063@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1322148561-25138-1-git-send-email-lars@metafoo.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Lars-Peter Clausen <lars@metafoo.de>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-vx0-f174.google.com ([209.85.220.174]:64460 "EHLO
+	mail-vx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752130Ab1KXQFb (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 24 Nov 2011 11:05:31 -0500
+In-Reply-To: <20111123150312.GH4063@pengutronix.de>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Wolfram Sang <w.sang@pengutronix.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Juergen Beisert <jbe@pengutronix.de>, Matthias Fuchs <mfuchs@ma-fu.de>
 
-In ancient times it was necessary to manually initialize the bus field of an
-spi_driver to spi_bus_type. These days this is done in spi_driver_register(),
-so we can drop the manual assignment.
+Il 23/11/2011 16:03, Wolfram Sang ha scritto:
+> On Wed, Nov 16, 2011 at 05:24:37PM +0100, Wolfram Sang wrote:
+>> Some 8250-variants control the direction pin for RS485 in hardware. =
+Linux has
+>> RS485 support these days, so update the 8250-driver to adhere to tha=
+t. There
+>> have been attempts for mainlining this before. So, I started with th=
+e version
+>> from Matthias which got no further comments, a proof-of-concept for =
+the 16V2750
+>> from J=FCrgen, and reworked it to match the current state of RS485 i=
+n Linux. Some
+>> minor cleanup patches came along the way. Really looking forward to
+>> comments/tags, because I think it is really time to get this functio=
+nality into
+>> mainline once and for all ;)
+>=20
+> Ping. Claudio? What do you think?=20
 
-The patch was generated using the following coccinelle semantic patch:
-// <smpl>
-@@
-identifier _driver;
-@@
-struct spi_driver _driver = {
-	.driver = {
--		.bus = &spi_bus_type,
-	},
-};
-// </smpl>
+Hi Wolfram,
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Alan Cox <alan@linux.intel.com> (maintainer:SERIAL DRIVERS)
-Cc: linux-serial@vger.kernel.org (open list:SERIAL DRIVERS)
----
- drivers/tty/serial/ifx6x60.c      |    1 -
- drivers/tty/serial/max3100.c      |    1 -
- drivers/tty/serial/max3107-aava.c |    1 -
- drivers/tty/serial/max3107.c      |    1 -
- drivers/tty/serial/mrst_max3110.c |    1 -
- 5 files changed, 0 insertions(+), 5 deletions(-)
+	sorry for the delay, but I'm very busy these days.
 
-diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
-index 426434e..7e925e2 100644
---- a/drivers/tty/serial/ifx6x60.c
-+++ b/drivers/tty/serial/ifx6x60.c
-@@ -1334,7 +1334,6 @@ MODULE_DEVICE_TABLE(spi, ifx_id_table);
- static const struct spi_driver ifx_spi_driver = {
- 	.driver = {
- 		.name = DRVNAME,
--		.bus = &spi_bus_type,
- 		.pm = &ifx_spi_pm,
- 		.owner = THIS_MODULE},
- 	.probe = ifx_spi_spi_probe,
-diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
-index 8a6cc8c..b4902b9 100644
---- a/drivers/tty/serial/max3100.c
-+++ b/drivers/tty/serial/max3100.c
-@@ -901,7 +901,6 @@ static int max3100_resume(struct spi_device *spi)
- static struct spi_driver max3100_driver = {
- 	.driver = {
- 		.name		= "max3100",
--		.bus		= &spi_bus_type,
- 		.owner		= THIS_MODULE,
- 	},
- 
-diff --git a/drivers/tty/serial/max3107-aava.c b/drivers/tty/serial/max3107-aava.c
-index 90c40f2..aae772a 100644
---- a/drivers/tty/serial/max3107-aava.c
-+++ b/drivers/tty/serial/max3107-aava.c
-@@ -315,7 +315,6 @@ static int __devinit max3107_probe_aava(struct spi_device *spi)
- static struct spi_driver max3107_driver = {
- 	.driver = {
- 		.name		= "aava-max3107",
--		.bus		= &spi_bus_type,
- 		.owner		= THIS_MODULE,
- 	},
- 	.probe		= max3107_probe_aava,
-diff --git a/drivers/tty/serial/max3107.c b/drivers/tty/serial/max3107.c
-index 7827000..17c7ba8 100644
---- a/drivers/tty/serial/max3107.c
-+++ b/drivers/tty/serial/max3107.c
-@@ -1181,7 +1181,6 @@ static int max3107_probe_generic(struct spi_device *spi)
- static struct spi_driver max3107_driver = {
- 	.driver = {
- 		.name		= "max3107",
--		.bus		= &spi_bus_type,
- 		.owner		= THIS_MODULE,
- 	},
- 	.probe		= max3107_probe_generic,
-diff --git a/drivers/tty/serial/mrst_max3110.c b/drivers/tty/serial/mrst_max3110.c
-index 4c309e8..df2a224 100644
---- a/drivers/tty/serial/mrst_max3110.c
-+++ b/drivers/tty/serial/mrst_max3110.c
-@@ -876,7 +876,6 @@ static int __devexit serial_m3110_remove(struct spi_device *dev)
- static struct spi_driver uart_max3110_driver = {
- 	.driver = {
- 			.name	= "spi_max3111",
--			.bus	= &spi_bus_type,
- 			.owner	= THIS_MODULE,
- 	},
- 	.probe		= serial_m3110_probe,
--- 
-1.7.7.1
+I noticed that some of your patches revert the changes made by the prev=
+ious patches in the=20
+same series. So I would have preferred having only one patch with the w=
+hole changes wrt to=20
+the mainline.=20
+
+However, I've understood that some of those patches come from a previou=
+s submission that you
+preferred to not touch. And I can apply the whole series to check what =
+are the actual changes,
+so its' fine.
+
+The RS485 part looks right.=20
+
+I had a superficial look also at the rest of the code, and its seems OK=
+ too.  But, honestly, I couldn't=20
+find the time to read it carefully.
+
+Best regards,
+
+	Claudio
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
