@@ -1,68 +1,48 @@
-From: Wolfram Sang <w.sang@pengutronix.de>
-Subject: Re: [PATCH 0/8] serial: 8250: support hw-based RS485 direction
- control (finally!)
-Date: Wed, 23 Nov 2011 16:03:12 +0100
-Message-ID: <20111123150312.GH4063@pengutronix.de>
-References: <1321460685-15753-1-git-send-email-w.sang@pengutronix.de>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ZYOWEO2dMm2Af3e3"
+From: Kumar Gala <galak@kernel.crashing.org>
+Subject: Re: [PATCH] 8250: add workaround for MPC8[356]xx UART break IRQ storm
+Date: Thu, 24 Nov 2011 02:14:03 -0600
+Message-ID: <82B7F47D-C7BF-4BD1-9982-7E7AEDC23530@kernel.crashing.org>
+References: <1267212301-26851-1-git-send-email-paul.gortmaker@windriver.com>
+Mime-Version: 1.0 (Apple Message framework v1251.1)
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:33140 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756176Ab1KWPDO (ORCPT
+Received: from gate.crashing.org ([63.228.1.57]:38664 "EHLO gate.crashing.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752995Ab1KXIOK convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 23 Nov 2011 10:03:14 -0500
-Content-Disposition: inline
-In-Reply-To: <1321460685-15753-1-git-send-email-w.sang@pengutronix.de>
+	Thu, 24 Nov 2011 03:14:10 -0500
+In-Reply-To: <1267212301-26851-1-git-send-email-paul.gortmaker@windriver.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Claudio Scordino <claudio@evidence.eu.com>, Juergen Beisert <jbe@pengutronix.de>, Matthias Fuchs <mfuchs@ma-fu.de>
+To: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
 
 
---ZYOWEO2dMm2Af3e3
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Feb 26, 2010, at 1:25 PM, Paul Gortmaker wrote:
 
-On Wed, Nov 16, 2011 at 05:24:37PM +0100, Wolfram Sang wrote:
-> Some 8250-variants control the direction pin for RS485 in hardware. Linux=
- has
-> RS485 support these days, so update the 8250-driver to adhere to that. Th=
-ere
-> have been attempts for mainlining this before. So, I started with the ver=
-sion
-> from Matthias which got no further comments, a proof-of-concept for the 1=
-6V2750
-> from J=FCrgen, and reworked it to match the current state of RS485 in Lin=
-ux. Some
-> minor cleanup patches came along the way. Really looking forward to
-> comments/tags, because I think it is really time to get this functionalit=
-y into
-> mainline once and for all ;)
+> Sending a break on the SOC UARTs found in some MPC83xx/85xx/86xx
+> chips seems to cause a short lived IRQ storm (/proc/interrupts
+> typically shows somewhere between 300 and 1500 events).  Unfortunately
+> this renders SysRQ over the serial console completely inoperable.
+> Testing with obvious things like ACKing the event doesn't seem to
+> change anything vs. a completely dumb approach of just ignoring
+> it and waiting for it to stop, so that is what is implemented here.
+> 
+> Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+> ---
+> 
+> This is a refresh of a patch I'd done earlier -- I've tried to make
+> the bug support as generic as possible to minimize having board
+> specific ifdef crap in 8250.c -- any suggestions on how to further
+> improve it are welcome.
+> 
+> drivers/serial/8250.c      |    6 ++++++
+> drivers/serial/8250.h      |   20 ++++++++++++++++++++
+> drivers/serial/Kconfig     |   14 ++++++++++++++
+> include/linux/serial_reg.h |    2 ++
+> 4 files changed, 42 insertions(+), 0 deletions(-)
 
-Ping. Claudio? What do you think? Matthias, are you still there?
+Did we ever decide what to do with this or trying to get it accepted upstream?
 
-Regards,
-
-   Wolfram
-
---=20
-Pengutronix e.K.                           | Wolfram Sang                |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-
---ZYOWEO2dMm2Af3e3
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-
-iEYEARECAAYFAk7NCzAACgkQD27XaX1/VRtKDQCfX90JuzHxBmNyE93y7FdKO+VQ
-OrAAnRy2LiZtXAJCRgctO/fVYMh2rGuu
-=HgFy
------END PGP SIGNATURE-----
-
---ZYOWEO2dMm2Af3e3--
+- k
