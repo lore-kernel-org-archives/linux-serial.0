@@ -1,56 +1,63 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 01/16] pmac_zilog: fix unexpected irq
-Date: Thu, 24 Nov 2011 14:56:24 +0000
-Message-ID: <20111124145624.24438832@lxorguk.ukuu.org.uk>
-References: <20111023141108.856998818@telegraphics.com.au>
-	<20111023141115.208699274@telegraphics.com.au>
-	<alpine.LNX.2.00.1111250133321.6314@nippy.intranet>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: Re: [PATCH] 8250: add workaround for MPC8[356]xx UART break IRQ storm
+Date: Thu, 24 Nov 2011 10:26:59 -0500
+Message-ID: <4ECE6243.3020604@windriver.com>
+References: <1267212301-26851-1-git-send-email-paul.gortmaker@windriver.com> <82B7F47D-C7BF-4BD1-9982-7E7AEDC23530@kernel.crashing.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-m68k-owner@vger.kernel.org>
-In-Reply-To: <alpine.LNX.2.00.1111250133321.6314@nippy.intranet>
-Sender: linux-m68k-owner@vger.kernel.org
-To: Finn Thain <fthain@telegraphics.com.au>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>, linux-serial@vger.kernel.org, linux-m68k@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, Geert Uytterhoeven <geert@linux-m68k.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.windriver.com ([147.11.1.11]:42283 "EHLO
+	mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752024Ab1KXP1J (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 24 Nov 2011 10:27:09 -0500
+In-Reply-To: <82B7F47D-C7BF-4BD1-9982-7E7AEDC23530@kernel.crashing.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Kumar Gala <galak@kernel.crashing.org>
+Cc: linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
 
-On Fri, 25 Nov 2011 01:34:58 +1100 (EST)
-Finn Thain <fthain@telegraphics.com.au> wrote:
+On 11-11-24 03:14 AM, Kumar Gala wrote:
+> 
+> On Feb 26, 2010, at 1:25 PM, Paul Gortmaker wrote:
+> 
+>> Sending a break on the SOC UARTs found in some MPC83xx/85xx/86xx
+>> chips seems to cause a short lived IRQ storm (/proc/interrupts
+>> typically shows somewhere between 300 and 1500 events).  Unfortunately
+>> this renders SysRQ over the serial console completely inoperable.
+>> Testing with obvious things like ACKing the event doesn't seem to
+>> change anything vs. a completely dumb approach of just ignoring
+>> it and waiting for it to stop, so that is what is implemented here.
+>>
+>> Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+>> ---
+>>
+>> This is a refresh of a patch I'd done earlier -- I've tried to make
+>> the bug support as generic as possible to minimize having board
+>> specific ifdef crap in 8250.c -- any suggestions on how to further
+>> improve it are welcome.
+>>
+>> drivers/serial/8250.c      |    6 ++++++
+>> drivers/serial/8250.h      |   20 ++++++++++++++++++++
+>> drivers/serial/Kconfig     |   14 ++++++++++++++
+>> include/linux/serial_reg.h |    2 ++
+>> 4 files changed, 42 insertions(+), 0 deletions(-)
+> 
+> Did we ever decide what to do with this or trying to get it accepted upstream?
+
+That is an old version.  ScottW gave me the errata information
+which allowed me to fix the problem in a cleaner way.
+
+http://patchwork.ozlabs.org/patch/46609/
+
+I think the above version is OK as-is; the only thing I
+think we could do to improve it is to go and automatically
+select the thing based on known impacted CPU types (which
+could be a separate commit or commits, as various CPUs are
+confirmed to have the issue.)
+
+Paul.
 
 > 
-> On most 68k Macs the SCC IRQ is an autovector interrupt and cannot be 
-> masked. This can be a problem when pmac_zilog starts up.
-> 
-> For example, the serial debugging code in arch/m68k/kernel/head.S may be 
-> used beforehand. It disables the SCC interrupts at the chip but doesn't 
-> ack them. Then when a pmac_zilog port is opened and SCC chip interrupts 
-> become enabled, the machine locks up with "unexpected interrupt" because 
-> request_irq() hasn't happened yet.
-> 
-> Fix this by setting the SCC master interrupt enable bit only after the 
-> handler is installed. This is achieved by extracting that operation out of 
-> __pmz_startup() and placing it into a seperate routine.
-> 
-> A similar problem arises when the irq is freed. Fix this by resetting the 
-> chip first (on m68k mac).
-> 
-> Signed-off-by: Finn Thain <fthain@telegraphics.com.au>
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> 
-> ---
-> 
-> This patch has been tested on a variety of m68k Macs but no PowerMacs.
-> 
-> I am re-sending this patch Cc linux-serial. It still needs a suitable ack 
-> so that Geert can push it through his tree.
-
-Given the change should work for all hardware do we really need the
-ifdefs. Far better I would have thought to just change it so we don't
-have to maintain what is effectively two versions of the code between now
-and 2038.
-
-So no ack from me yet - I'd like to understand the ifdef decision first.
-Otherwise it looks sensible.
-
-Alan
+> - k
