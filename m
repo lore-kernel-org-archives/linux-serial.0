@@ -1,70 +1,65 @@
-From: Claudio Scordino <claudio@evidence.eu.com>
-Subject: Re: [PATCH 0/8] serial: 8250: support hw-based RS485 direction control
- (finally!)
-Date: Thu, 24 Nov 2011 17:05:27 +0100
-Message-ID: <4ECE6B47.90202@evidence.eu.com>
-References: <1321460685-15753-1-git-send-email-w.sang@pengutronix.de> <20111123150312.GH4063@pengutronix.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Kumar Gala <galak@kernel.crashing.org>
+Subject: Re: [PATCH] 8250: add workaround for MPC8[356]xx UART break IRQ storm
+Date: Thu, 24 Nov 2011 13:07:28 -0600
+Message-ID: <8B62203D-2025-4045-84F2-99DBCF22E9C8@kernel.crashing.org>
+References: <1267212301-26851-1-git-send-email-paul.gortmaker@windriver.com> <82B7F47D-C7BF-4BD1-9982-7E7AEDC23530@kernel.crashing.org> <4ECE6243.3020604@windriver.com>
+Mime-Version: 1.0 (Apple Message framework v1251.1)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vx0-f174.google.com ([209.85.220.174]:64460 "EHLO
-	mail-vx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752130Ab1KXQFb (ORCPT
+Received: from gate.crashing.org ([63.228.1.57]:45833 "EHLO gate.crashing.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752809Ab1KXTHd convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 24 Nov 2011 11:05:31 -0500
-In-Reply-To: <20111123150312.GH4063@pengutronix.de>
+	Thu, 24 Nov 2011 14:07:33 -0500
+In-Reply-To: <4ECE6243.3020604@windriver.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Wolfram Sang <w.sang@pengutronix.de>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Juergen Beisert <jbe@pengutronix.de>, Matthias Fuchs <mfuchs@ma-fu.de>
+To: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
 
-Il 23/11/2011 16:03, Wolfram Sang ha scritto:
-> On Wed, Nov 16, 2011 at 05:24:37PM +0100, Wolfram Sang wrote:
->> Some 8250-variants control the direction pin for RS485 in hardware. =
-Linux has
->> RS485 support these days, so update the 8250-driver to adhere to tha=
-t. There
->> have been attempts for mainlining this before. So, I started with th=
-e version
->> from Matthias which got no further comments, a proof-of-concept for =
-the 16V2750
->> from J=FCrgen, and reworked it to match the current state of RS485 i=
-n Linux. Some
->> minor cleanup patches came along the way. Really looking forward to
->> comments/tags, because I think it is really time to get this functio=
-nality into
->> mainline once and for all ;)
->=20
-> Ping. Claudio? What do you think?=20
 
-Hi Wolfram,
+On Nov 24, 2011, at 9:26 AM, Paul Gortmaker wrote:
 
-	sorry for the delay, but I'm very busy these days.
+> On 11-11-24 03:14 AM, Kumar Gala wrote:
+>> 
+>> On Feb 26, 2010, at 1:25 PM, Paul Gortmaker wrote:
+>> 
+>>> Sending a break on the SOC UARTs found in some MPC83xx/85xx/86xx
+>>> chips seems to cause a short lived IRQ storm (/proc/interrupts
+>>> typically shows somewhere between 300 and 1500 events).  Unfortunately
+>>> this renders SysRQ over the serial console completely inoperable.
+>>> Testing with obvious things like ACKing the event doesn't seem to
+>>> change anything vs. a completely dumb approach of just ignoring
+>>> it and waiting for it to stop, so that is what is implemented here.
+>>> 
+>>> Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+>>> ---
+>>> 
+>>> This is a refresh of a patch I'd done earlier -- I've tried to make
+>>> the bug support as generic as possible to minimize having board
+>>> specific ifdef crap in 8250.c -- any suggestions on how to further
+>>> improve it are welcome.
+>>> 
+>>> drivers/serial/8250.c      |    6 ++++++
+>>> drivers/serial/8250.h      |   20 ++++++++++++++++++++
+>>> drivers/serial/Kconfig     |   14 ++++++++++++++
+>>> include/linux/serial_reg.h |    2 ++
+>>> 4 files changed, 42 insertions(+), 0 deletions(-)
+>> 
+>> Did we ever decide what to do with this or trying to get it accepted upstream?
+> 
+> That is an old version.  ScottW gave me the errata information
+> which allowed me to fix the problem in a cleaner way.
+> 
+> http://patchwork.ozlabs.org/patch/46609/
+> 
+> I think the above version is OK as-is; the only thing I
+> think we could do to improve it is to go and automatically
+> select the thing based on known impacted CPU types (which
+> could be a separate commit or commits, as various CPUs are
+> confirmed to have the issue.)
 
-I noticed that some of your patches revert the changes made by the prev=
-ious patches in the=20
-same series. So I would have preferred having only one patch with the w=
-hole changes wrt to=20
-the mainline.=20
+Seems as if we could have ->bugs passed in via plat_serial8250_port and than we can get the info from the device tree.
 
-However, I've understood that some of those patches come from a previou=
-s submission that you
-preferred to not touch. And I can apply the whole series to check what =
-are the actual changes,
-so its' fine.
-
-The RS485 part looks right.=20
-
-I had a superficial look also at the rest of the code, and its seems OK=
- too.  But, honestly, I couldn't=20
-find the time to read it carefully.
-
-Best regards,
-
-	Claudio
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+- k
