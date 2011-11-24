@@ -1,48 +1,124 @@
-From: Kumar Gala <galak@kernel.crashing.org>
-Subject: Re: [PATCH] 8250: add workaround for MPC8[356]xx UART break IRQ storm
-Date: Thu, 24 Nov 2011 02:14:03 -0600
-Message-ID: <82B7F47D-C7BF-4BD1-9982-7E7AEDC23530@kernel.crashing.org>
-References: <1267212301-26851-1-git-send-email-paul.gortmaker@windriver.com>
-Mime-Version: 1.0 (Apple Message framework v1251.1)
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gate.crashing.org ([63.228.1.57]:38664 "EHLO gate.crashing.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752995Ab1KXIOK convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 24 Nov 2011 03:14:10 -0500
-In-Reply-To: <1267212301-26851-1-git-send-email-paul.gortmaker@windriver.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Finn Thain <fthain@telegraphics.com.au>
+Subject: [PATCH 01/16] pmac_zilog: fix unexpected irq
+Date: Fri, 25 Nov 2011 01:34:58 +1100 (EST)
+Message-ID: <alpine.LNX.2.00.1111250133321.6314@nippy.intranet>
+References: <20111023141108.856998818@telegraphics.com.au> <20111023141115.208699274@telegraphics.com.au>
+Mime-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <20111023141115.208699274@telegraphics.com.au>
+Sender: linux-m68k-owner@vger.kernel.org
+To: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: linux-serial@vger.kernel.org, linux-m68k@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, Geert Uytterhoeven <geert@linux-m68k.org>
 List-Id: linux-serial@vger.kernel.org
-To: Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc: linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
 
 
-On Feb 26, 2010, at 1:25 PM, Paul Gortmaker wrote:
+On most 68k Macs the SCC IRQ is an autovector interrupt and cannot be 
+masked. This can be a problem when pmac_zilog starts up.
 
-> Sending a break on the SOC UARTs found in some MPC83xx/85xx/86xx
-> chips seems to cause a short lived IRQ storm (/proc/interrupts
-> typically shows somewhere between 300 and 1500 events).  Unfortunately
-> this renders SysRQ over the serial console completely inoperable.
-> Testing with obvious things like ACKing the event doesn't seem to
-> change anything vs. a completely dumb approach of just ignoring
-> it and waiting for it to stop, so that is what is implemented here.
-> 
-> Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
-> ---
-> 
-> This is a refresh of a patch I'd done earlier -- I've tried to make
-> the bug support as generic as possible to minimize having board
-> specific ifdef crap in 8250.c -- any suggestions on how to further
-> improve it are welcome.
-> 
-> drivers/serial/8250.c      |    6 ++++++
-> drivers/serial/8250.h      |   20 ++++++++++++++++++++
-> drivers/serial/Kconfig     |   14 ++++++++++++++
-> include/linux/serial_reg.h |    2 ++
-> 4 files changed, 42 insertions(+), 0 deletions(-)
+For example, the serial debugging code in arch/m68k/kernel/head.S may be 
+used beforehand. It disables the SCC interrupts at the chip but doesn't 
+ack them. Then when a pmac_zilog port is opened and SCC chip interrupts 
+become enabled, the machine locks up with "unexpected interrupt" because 
+request_irq() hasn't happened yet.
 
-Did we ever decide what to do with this or trying to get it accepted upstream?
+Fix this by setting the SCC master interrupt enable bit only after the 
+handler is installed. This is achieved by extracting that operation out of 
+__pmz_startup() and placing it into a seperate routine.
 
-- k
+A similar problem arises when the irq is freed. Fix this by resetting the 
+chip first (on m68k mac).
+
+Signed-off-by: Finn Thain <fthain@telegraphics.com.au>
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+
+---
+
+This patch has been tested on a variety of m68k Macs but no PowerMacs.
+
+I am re-sending this patch Cc linux-serial. It still needs a suitable ack 
+so that Geert can push it through his tree.
+
+Index: linux-m68k/drivers/tty/serial/pmac_zilog.c
+===================================================================
+--- linux-m68k.orig/drivers/tty/serial/pmac_zilog.c	2011-10-22 23:02:22.000000000 +1100
++++ linux-m68k/drivers/tty/serial/pmac_zilog.c	2011-10-22 23:02:38.000000000 +1100
+@@ -910,8 +910,8 @@ static int __pmz_startup(struct uart_pma
+ 	/* Clear handshaking, enable BREAK interrupts */
+ 	uap->curregs[R15] = BRKIE;
+ 
+-	/* Master interrupt enable */
+-	uap->curregs[R9] |= NV | MIE;
++	/* No vector */
++	uap->curregs[R9] |= NV;
+ 
+ 	pmz_load_zsregs(uap, uap->curregs);
+ 
+@@ -925,6 +925,17 @@ static int __pmz_startup(struct uart_pma
+ 	return pwr_delay;
+ }
+ 
++static void pmz_master_int_control(struct uart_pmac_port *uap, int enable)
++{
++	if (enable) {
++		uap->curregs[R9] |= MIE; /* Master interrupt enable */
++		write_zsreg(uap, R9, uap->curregs[R9]);
++	} else {
++		uap->curregs[R9] &= ~MIE;
++		write_zsreg(uap, 9, FHWRES);
++	}
++}
++
+ static void pmz_irda_reset(struct uart_pmac_port *uap)
+ {
+ 	uap->curregs[R5] |= DTR;
+@@ -976,6 +987,19 @@ static int pmz_startup(struct uart_port
+ 		return -ENXIO;
+ 	}
+ 
++	/*
++	 * Most 68k Mac models cannot mask the SCC IRQ so they must enable
++	 * interrupts after the handler is installed and not before.
++	 */
++#ifndef CONFIG_MAC
++	if (!ZS_IS_CONS(uap))
++#endif
++	{
++		spin_lock_irqsave(&port->lock, flags);
++		pmz_master_int_control(uap, 1);
++		spin_unlock_irqrestore(&port->lock, flags);
++	}
++
+ 	mutex_unlock(&pmz_irq_mutex);
+ 
+ 	/* Right now, we deal with delay by blocking here, I'll be
+@@ -1015,6 +1039,11 @@ static void pmz_shutdown(struct uart_por
+ 
+ 	mutex_lock(&pmz_irq_mutex);
+ 
++#ifdef CONFIG_MAC
++	if (!ZS_IS_OPEN(uap->mate))
++		pmz_master_int_control(uap, 0);
++#endif
++
+ 	/* Release interrupt handler */
+ 	free_irq(uap->port.irq, uap);
+ 
+@@ -1734,6 +1763,7 @@ static int pmz_resume(struct macio_dev *
+ 		goto bail;
+ 	}
+ 	pwr_delay = __pmz_startup(uap);
++	pmz_master_int_control(uap, 1);
+ 
+ 	/* Take care of config that may have changed while asleep */
+ 	__pmz_set_termios(&uap->port, &uap->termios_cache, NULL);
+@@ -2178,6 +2208,9 @@ static int __init pmz_console_setup(stru
+ 	 * Enable the hardware
+ 	 */
+ 	pwr_delay = __pmz_startup(uap);
++#ifndef CONFIG_MAC
++	pmz_master_int_control(uap, 1);
++#endif
+ 	if (pwr_delay)
+ 		mdelay(pwr_delay);
+ 	
