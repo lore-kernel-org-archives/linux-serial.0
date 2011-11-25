@@ -1,21 +1,22 @@
-From: =?utf-8?B?5L+d6K+B5pyJ5Lmw5a625Zue5aSN?= <test@greencity.cn>
+From: =?utf-8?B?5L+d6K+B5pyJ5Lmw5a625Zue5aSN?= <admin@siamfukoku.co.th>
 Subject: =?utf-8?B?MjAxMeeni+Wto+W5v+S6pOS8muS5sOWutu+8jOe+pOWPkei9r+S7tivkubDlrrbmkJw=?=
 	=?utf-8?B?57Si5py644CB5rW35YWz5pWw5o2uLEIyQuivouebmOS5sOWutjUwMOS4h+OAgg==?=
-Date: Fri, 25 Nov 2011 15:54:41 +0000 (UTC)
-Message-ID: <20151125234741238762@greencity.cn>
+Date: Fri, 25 Nov 2011 16:38:06 +0000 (UTC)
+Message-ID: <20151126003855650605@siamfukoku.co.th>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain;
+	charset="utf-8"
 Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [112.64.127.130] ([112.64.127.130]:37597 "EHLO
-	mail.greencity.cn" rhost-flags-FAIL-FAIL-OK-OK) by vger.kernel.org
-	with ESMTP id S1753803Ab1KYPyg (ORCPT
+Received: from mail.siamfukoku.co.th ([58.137.12.182]:54165 "EHLO
+	fkk-server.siamfukoku.co.th" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751248Ab1KYQh7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Nov 2011 10:54:36 -0500
-Date: Wed, 25 Nov 2015 23:47:32 +0800
+	Fri, 25 Nov 2011 11:37:59 -0500
+Date: Thu, 26 Nov 2015 00:38:45 +0800
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: annina@yeah.net, qunwei598@126.com, minmingg@msn.com, skyportsales5@sina.com, redacted@233wmedns.com, linux-serial@vger.kernel.org, phjirodomb@connellthai.com, scdjyc@vip.163.com, sales@tpu168.com, master@jlrope.com, xiaocry_yy91@hotmail.com
+To: peter_wu@263.net, onlyrope@163.com, danielle-babycakes.x@msn.com, linux-serial@vger.kernel.org, phjirodomb@connellthai.com, scdjyc@vip.163.com, sales@tpu168.com, changliangyan@sina.cn, firebirdcreations2010@gmail.com, ane.wiersma@gmail.com, jw253765158@163.com
 
 576k5Y+R6L2v5Lu2K+S5sOWutuaQnOe0ouacuisxMTDlsYrlub/kuqTkvJrkubDlrrbjgIHlsZXk
 vJrkubDlrrbjgIHmtbflhbPmlbDmja4sQjJC6K+i55uY5Lmw5a62NTAw5LiH44CCDQoNCuS4gOWF
