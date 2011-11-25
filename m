@@ -1,53 +1,59 @@
-From: Finn Thain <fthain@telegraphics.com.au>
-Subject: Re: [PATCH 01/16] pmac_zilog: fix unexpected irq
-Date: Fri, 25 Nov 2011 14:15:10 +1100 (EST)
-Message-ID: <alpine.LNX.2.00.1111250207040.6314@nippy.intranet>
-References: <20111023141108.856998818@telegraphics.com.au> <20111023141115.208699274@telegraphics.com.au> <alpine.LNX.2.00.1111250133321.6314@nippy.intranet> <20111124145624.24438832@lxorguk.ukuu.org.uk>
+From: =?utf-8?B?5L+d6K+B5pyJ5Lmw5a625Zue5aSN?= <test@greencity.cn>
+Subject: =?utf-8?B?MjAxMeeni+Wto+W5v+S6pOS8muS5sOWutu+8jOe+pOWPkei9r+S7tivkubDlrrbmkJw=?=
+	=?utf-8?B?57Si5py644CB5rW35YWz5pWw5o2uLEIyQuivouebmOS5sOWutjUwMOS4h+OAgg==?=
+Date: Fri, 25 Nov 2011 15:54:41 +0000 (UTC)
+Message-ID: <20151125234741238762@greencity.cn>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-m68k-owner@vger.kernel.org>
-In-Reply-To: <20111124145624.24438832@lxorguk.ukuu.org.uk>
-Sender: linux-m68k-owner@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>, linux-serial@vger.kernel.org, linux-m68k@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, Geert Uytterhoeven <geert@linux-m68k.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from [112.64.127.130] ([112.64.127.130]:37597 "EHLO
+	mail.greencity.cn" rhost-flags-FAIL-FAIL-OK-OK) by vger.kernel.org
+	with ESMTP id S1753803Ab1KYPyg (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 25 Nov 2011 10:54:36 -0500
+Date: Wed, 25 Nov 2015 23:47:32 +0800
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: annina@yeah.net, qunwei598@126.com, minmingg@msn.com, skyportsales5@sina.com, redacted@233wmedns.com, linux-serial@vger.kernel.org, phjirodomb@connellthai.com, scdjyc@vip.163.com, sales@tpu168.com, master@jlrope.com, xiaocry_yy91@hotmail.com
+
+576k5Y+R6L2v5Lu2K+S5sOWutuaQnOe0ouacuisxMTDlsYrlub/kuqTkvJrkubDlrrbjgIHlsZXk
+vJrkubDlrrbjgIHmtbflhbPmlbDmja4sQjJC6K+i55uY5Lmw5a62NTAw5LiH44CCDQoNCuS4gOWF
+sTjkuKrljIUo5pWw5o2u5piv5YWo6KGM5Lia55qE77yM5oyJ54Wn6KGM5Lia5YiG5aW957G777yM
+5bm25LiU5Y+v5Lul5oyJ54Wn5YWz6ZSu6K+N5p+l6K+i55qEKe+8miANCjHvvIwyMDEx5pil5a2j
+K+eni+Wto+W5v+S6pOS8muS5sOWutuaVsOaNruW6k+aWsOmynOWHuueCie+8jOi2hee6p+aWsOmy
+nOS5sOWutu+8jOaWsOmynOaVsOaNru+8jOWuueaYk+aIkOWNle+8gSANCjLvvIzmnIDmlrDlhajn
+kIPkubDlrrblupMs5YWxNDUxNjYw5p2h5pWw5o2u44CCIA0KM++8jDIwMDjlubQsMjAwOeW5tCwy
+MDEw5bm0IOaYpeWtoyvnp4vlraPlub/kuqTkvJrkubDlrrblkI3lvZXvvIwxMDMgMTA0IDEwNSAx
+MDYgMTA3IDEwOCDlhbHlha3lsYog5YWxMTIwLjbkuIfmlbDmja7jgIINCjTvvIwyMDEw5bm05Zu9
+6ZmF5L+D6ZSA5Y2P5Lya77yIUFBBSe+8ieaIkOWRmOWQjeWNlSBQUEFJIE1lbWJlcnMgRGlyZWN0
+b3J577yM6Z2e5bi46YeN6KaB55qE5aSn5Lmw5a6244CCDQo177yMMjAxMOW5tOWIsOmmmea4r+mH
+h+i0reeahOWbveWkluWuouS6uuWQjeW9lSjpppnmuK/otLjlj5HlsYDmj5Dkvpsp77yM5YWxNy4y
+5LiH5pWw5o2u77yM6LaF57qn6YeN6KaB55qE5Lmw5a6244CCDQo277yMNjAuOOS4h+adoeacgOaW
+sOWbveWklkIyQuS5sOWutuivouebmOOAgg0KN++8jDIwMDnlubTmtbflhbPmj5DljZXmlbDmja5w
+aWVyc+eJiOaVsOaNriAx5Y2D5LiH44CCDQo477yM576k5Y+R6L2v5Lu277yM576k5Y+R6L2v5Lu2
+55qE6YOo572y5LiO5a6J6KOF44CCDQoNCuWFsSA1MDDkuIfkuKrkubDlrrbvvIzmr4/kuKrlnYfm
+nIlFbWFpbC4gDQoNCuimgeeahOaKk+e0p+iBlOezu1FROiA0Njc2NDM5NzUgICANCuimgeeahOaK
+k+e0p+iBlOezu1FROiA0Njc2NDM5NzUgICANCuimgeeahOaKk+e0p+iBlOezu1FROiA0Njc2NDM5
+NzUNCiAgDQoNCuivmuS/oeS4uuacrO+8jOWmguaenOS4jeS/oeS7u+acrOS6uizlj6/ku6XotbDm
+t5jlrp3kuqTmmJMs5pS26LSn6aqM6K+B5ZCO5YaN5LuY5qy+LOi/meaYr+WvueaCqOacgOWlveea
+hOS/nemanOS6huOAgiANCg0K5L+d6K+B5q+P5aSp6YO95pyJ5Lmw5a625Zue5aSN44CCDQrkv53o
+r4Hmr4/lpKnpg73mnInkubDlrrblm57lpI3jgIINCuS/neivgeavj+WkqemDveacieS5sOWutuWb
+nuWkjeOAgg0KDQoNCg0KDQrlub/kuqTkvJrkubDlrrbmjInkuqflk4HnsbvliKvliIbnsbvvvIzl
+iIbkuLrku6XkuIvlh6DnsbvvvJoNCjEg5Yqe5YWs6K6+5aSHDQoyIOe8lue7h+WPiuiXpOmTgeW3
+peiJuuWTgQ0KMyDnjrvnkoMNCjQg6aSQ5Y6o55So5YW3DQo1IOi9pui+hg0KNiDlpKflnovmnLrm
+orDlj4rorr7lpIcNCjcg55S15a2Q55S15rCUDQo4IOeUteWtkOa2iOi0ueWTgQ0KOSDnurrnu4cN
+CjEwIOacjeijhQ0KMTEg5Liq5Lq65oqk55CGDQoxMiDlt6XnqIvmnLrmorANCjEzIOW3peWFtw0K
+MTQg5YyW5belDQoxNSDorqHnrpfmnLrlj4rpgJrorq8NCjE2IOWutuWxheeUqOWTgQ0KMTcg5a62
+5bGF6KOF6aWwDQoxOCDlrrblhbcNCjE5IOWutueUqOeUteWZqA0KMjAg5bu6562R5Y+K6KOF6aWw
+5p2Q5paZDQoyMSDoioLml6XnlKjlk4ENCjIyIOekvOWTgeWPiui1oOWTgQ0KMjMg5pGp5omY6L2m
+DQoyNCDmsb3ovabphY3ku7YNCjI1IOmjn+WTgQ0KMjYg6Zm255O3DQoyNyDpk4Hnn7MNCjI4IOeO
+qeWFtw0KMjkg5Y2r5rW0DQozMCDkupTph5ENCjMxIOWwj+Wei+acuuaisA0KMzIg6Z6LDQozMyDk
+vJHpl7LnlKjlk4ENCjM0IOWMu+eWlw0KMzUg5rW05a6k5Lqn5ZOBDQozNiDlm63mnpcNCjM3IOeF
+p+aYjuS6p+WTgQ0KMzgg6ZKf6KGo55y86ZWcDQozOSDoh6rooYzovaYNCjQwIOWMhQ0KDQoNCuS/
+neivgeavj+WkqemDveacieS5sOWutuWbnuWkjeOAgg0K5L+d6K+B5q+P5aSp6YO95pyJ5Lmw5a62
+5Zue5aSN44CCDQrkv53or4Hmr4/lpKnpg73mnInkubDlrrblm57lpI3jgIINCuS/neivgeavj+Wk
+qemDveacieS5sOWutuWbnuWkjeOAgg0K5L+d6K+B5q+P5aSp6YO95pyJ5Lmw5a625Zue5aSN44CC
+DQo=
 
 
-On Thu, 24 Nov 2011, Alan Cox wrote:
-
-> Given the change should work for all hardware do we really need the 
-> ifdefs. Far better I would have thought to just change it so we don't 
-> have to maintain what is effectively two versions of the code between 
-> now and 2038.
-
-I agree.
-
-> 
-> So no ack from me yet - I'd like to understand the ifdef decision first.
-
-Removing ifdefs makes the changes more invasive and the suspend/resume 
-code then has to be addressed, which I've avoided.
-
-The suspend/resume code path can't be tested on m68k macs and the common 
-code paths I can't easily test on a powermac.
-
-This patch should not be needed because the chip reset shouldn't leave the 
-tx and rx interrupts enabled. Those interrupts are explicitly enabled only 
-after request_irq(), so patching the master interrupt enable behaviour 
-should be redundant. But that's not the case in practice.
-
-The chip reset code is already messy. I was inclined towards ifdefs and 
-reluctant to share more code after practical experience suggested possible 
-differences in the SCC/ESCC devices.
-
-I guess I was hoping that the powermac maintainers might prefer ifdefs to 
-increased risk of destabilising the driver on powermacs...
-
-But a more invasive patch would make for better code. I will see if I can 
-borrow a suitable PCI PowerMac.
-
-Finn
-
-> Otherwise it looks sensible.
-> 
-> Alan
