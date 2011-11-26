@@ -1,21 +1,22 @@
-From: =?utf-8?B?5LuFMTDlhYPmr4/lpKk=?= <test@jiangcal.com>
+From: =?utf-8?B?5LuFMTDlhYPmr4/lpKk=?= <user@danben.com.tw>
 Subject: =?utf-8?B?MjAxMeeni+Wto+W5v+S6pOS8muS5sOWutu+8jOe+pOWPkei9r+S7tivkubDlrrbmkJw=?=
 	=?utf-8?B?57Si5py644CB5rW35YWz5pWw5o2uLEIyQuivouebmOS5sOWutjUwMOS4h+OAgg==?=
-Date: Sat, 26 Nov 2011 01:05:02 +0000 (UTC)
-Message-ID: <20151126090106868116@jiangcal.com>
+Date: Sat, 26 Nov 2011 01:45:09 +0000 (UTC)
+Message-ID: <20151126094635681012@danben.com.tw>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain;
+	charset="utf-8"
 Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 99.45.17.58.adsl-pool.jx.chinaunicom.com ([58.17.45.99]:21666
-	"EHLO fnetnc.jiangcal.com" rhost-flags-OK-FAIL-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1754244Ab1KZBE6 (ORCPT
+Received: from 220-130-220-220.HINET-IP.hinet.net ([220.130.220.220]:14499
+	"EHLO exchange.danben.com.tw" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751760Ab1KZBpC (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Nov 2011 20:04:58 -0500
-Date: Thu, 26 Nov 2015 09:00:54 +0800
+	Fri, 25 Nov 2011 20:45:02 -0500
+Date: Thu, 26 Nov 2015 09:46:30 +0800
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: bb59jl8@hotmail.com, merryli026@yahoo.cn, hangfeiyarn@gmail.com, xhwk2007@yahoo.com.cn, nancy871008@163.com, niceniceshop@hotmail.com, eble0627@126.com, -wzd@163.com, stephen_hq@yahoo.com.cn, linux-serial@vger.kernel.org, phjirodomb@connellthai.com
+To: 20000520013736.15313.00000244@ng-df1.aol.com, broint@hotmail.com, joachim-pilling@goldkuhle.org, orff@mickeyslinen.com, vmhl@163.com, sales@xlnylon.com, xinxi0421@yahoo.com.cn, redacted@233wmedns.com, ring218-829-0088jerryring@msn.com, linux-serial@vger.kernel.org, bj_sshf18@yahoo.com.cn
 
 576k5Y+R6L2v5Lu2KzIwMTHnp4vlraPlub/kuqTkvJrkubDlrrbjgIHmtbflhbPmlbDmja7jgIHm
 kJzntKLlvJXmk47kubDlrrYsQjJC6K+i55uY5Lmw5a625YWxNTAw5LiHLOS7hTEw5YWD5q+P5aSp
