@@ -1,22 +1,21 @@
-From: =?utf-8?B?5LuFMTDlhYPmr4/lpKk=?= <user@danben.com.tw>
+From: =?utf-8?B?5LuFMTDlhYPmr4/lpKk=?= <admin@hsharing.com>
 Subject: =?utf-8?B?MjAxMeeni+Wto+W5v+S6pOS8muS5sOWutu+8jOe+pOWPkei9r+S7tivkubDlrrbmkJw=?=
 	=?utf-8?B?57Si5py644CB5rW35YWz5pWw5o2uLEIyQuivouebmOS5sOWutjUwMOS4h+OAgg==?=
-Date: Sat, 26 Nov 2011 01:45:09 +0000 (UTC)
-Message-ID: <20151126094635681012@danben.com.tw>
+Date: Sat, 26 Nov 2011 02:23:39 +0000 (UTC)
+Message-ID: <20151126102440222576@hsharing.com>
 Mime-Version: 1.0
 Content-Type: text/plain;
 	charset="utf-8"
 Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 220-130-220-220.HINET-IP.hinet.net ([220.130.220.220]:14499
-	"EHLO exchange.danben.com.tw" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751760Ab1KZBpC (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Nov 2011 20:45:02 -0500
-Date: Thu, 26 Nov 2015 09:46:30 +0800
+Received: from [218.249.243.163] ([218.249.243.163]:15285 "HELO hsharing.com"
+	rhost-flags-FAIL-FAIL-OK-OK) by vger.kernel.org with SMTP
+	id S1752082Ab1KZCX3 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 25 Nov 2011 21:23:29 -0500
+Date: Thu, 26 Nov 2015 10:24:28 +0800
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 20000520013736.15313.00000244@ng-df1.aol.com, broint@hotmail.com, joachim-pilling@goldkuhle.org, orff@mickeyslinen.com, vmhl@163.com, sales@xlnylon.com, xinxi0421@yahoo.com.cn, redacted@233wmedns.com, ring218-829-0088jerryring@msn.com, linux-serial@vger.kernel.org, bj_sshf18@yahoo.com.cn
+To: cwjxiaoguai@sina.com, peter_wu@263.net, msnliandanikesaler@hotmail.com, 78364813@qq.com, shwetoverseas@hotmail.com, lhy5@yahoo.com, kate@larkworth.com, minmingg@msn.com, eble0627@126.com, linux-serial@vger.kernel.org
 
 576k5Y+R6L2v5Lu2KzIwMTHnp4vlraPlub/kuqTkvJrkubDlrrbjgIHmtbflhbPmlbDmja7jgIHm
 kJzntKLlvJXmk47kubDlrrYsQjJC6K+i55uY5Lmw5a625YWxNTAw5LiHLOS7hTEw5YWD5q+P5aSp
