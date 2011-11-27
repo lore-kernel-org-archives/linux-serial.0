@@ -1,61 +1,34 @@
-From: =?utf-8?B?5LuFMTDlhYPmr4/lpKk=?= <test@bessemerutilities.com>
-Subject: =?utf-8?B?MjAxMeeni+Wto+W5v+S6pOS8muS5sOWutu+8jOe+pOWPkei9r+S7tivkubDlrrbmkJw=?=
-	=?utf-8?B?57Si5py644CB5rW35YWz5pWw5o2uLEIyQuivouebmOS5sOWutjUwMOS4h+OAgg==?=
-Date: Sat, 26 Nov 2011 03:06:37 +0000 (UTC)
-Message-ID: <20151126110143286471@bessemerutilities.com>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH v2 0/4] OMAP serial device tree support
+Date: Sat, 26 Nov 2011 19:36:42 -0800
+Message-ID: <20111127033642.GA28378@kroah.com>
+References: <1321969456-24266-1-git-send-email-rnayak@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from bumail.bessemerutilities.com ([67.78.238.78]:8944 "EHLO
-	bessemerutilities.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1754324Ab1KZDG3 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Nov 2011 22:06:29 -0500
-Date: Thu, 26 Nov 2015 11:01:31 +0800
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1321969456-24266-1-git-send-email-rnayak@ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Rajendra Nayak <rnayak@ti.com>
+Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, tony@atomide.com, khilman@ti.com, govindraj.raja@ti.com, b-cousson@ti.com, linux-arm-kernel@lists.infradead.org, linaro-dev@lists.linaro.org, patches@linaro.org, robherring2@gmail.com
 List-Id: linux-serial@vger.kernel.org
-To: webleon@gmail.com, szsense@yeah.net, mcha@163.net, bluestonechina@gmail.com, danny.yue1107@yahoo.com.cn, jfttzz@163.com, ouyangwenchang@163.com, lockersolution@gmail.com, hfqinjian@sina.com, linux-serial@vger.kernel.org, webmaster@pornteens.com
 
-576k5Y+R6L2v5Lu2KzIwMTHnp4vlraPlub/kuqTkvJrkubDlrrbjgIHmtbflhbPmlbDmja7jgIHm
-kJzntKLlvJXmk47kubDlrrYsQjJC6K+i55uY5Lmw5a625YWxNTAw5LiHLOS7hTEw5YWD5q+P5aSp
-44CCIA0K576k5Y+R6L2v5Lu2KzIwMTHnp4vlraPlub/kuqTkvJrkubDlrrbjgIHmtbflhbPmlbDm
-ja7jgIHmkJzntKLlvJXmk47kubDlrrYsQjJC6K+i55uY5Lmw5a625YWxNTAw5LiHLOS7hTEw5YWD
-5q+P5aSp44CCIA0K5L+d6K+B5q+P5aSp6YO95pyJ5Lmw5a625Zue5aSN44CCDQrkv53or4Hmr4/l
-pKnpg73mnInkubDlrrblm57lpI3jgIINCuS/neivgeavj+WkqemDveacieS5sOWutuWbnuWkjeOA
-gg0KDQox44CB576k5Y+R6L2v5Lu277yaIOaTjeS9nOeugOWNle+8jOWKn+iDveW8uuWkp++8jOao
-oeS7v+S6uuW3peaTjeS9nOaooeW8j++8jOWIsOi+vueOh+mrmO+8jOaXpeWPkemAgTXkuIflsIHk
-u6XkuIrjgIIgDQoy44CBNTAw5LiH5Lmw5a626LWE5rqQ77yaIOi1oOmAgeeahDUwMOS4h+S5sOWu
-tui1hOa6kOW6k++8jOabtOaWsCAo5Y+v5Lul5oyJ54Wn5oKo55qE5Lqn5ZOB5o+Q5Y+W5Ye65p2l
-77yM5pu057K+5YeG5byA5Y+RKeOAgiANCjPjgIHotoXnuqfmtbflpJbkubDlrrZFbWFpbOaQnOe0
-ouacuu+8miDlhoXnva7kuoY2MDDkuIfooYzkuJrlhbPplK7or43vvIzmoLnmja7plb/lsL7or43m
-kJzntKLvvIznu5Pmnpzmm7Tnsr7noa7ljLnphY3vvJvmr4/lpKnog73mkJzntKIxLTLkuIfku6Xk
-uIrkubDlrrbnnJ/lrp5FTUFJTO+8jOaIkOWNleeOh+mrmOOAgiANCiANCg0K6KaB55qE5oqT57Sn
-6IGU57O7UVE6IDQ2NzY0Mzk3NSAgDQropoHnmoTmipPntKfogZTns7tRUTogNDY3NjQzOTc1DQro
-poHnmoTmipPntKfogZTns7tRUTogNDY3NjQzOTc1DQogDQrlhY3otLnotaDpgIE6DQrkuIDlhbE4
-5Liq5YyFKOaVsOaNruaYr+WFqOihjOS4mueahO+8jOaMieeFp+ihjOS4muWIhuWlveexu++8jOW5
-tuS4lOWPr+S7peaMieeFp+WFs+mUruivjeafpeivoueahCnvvJogDQox77yMMjAxMeaYpeWtoysy
-MDEx56eL5a2j5bm/5Lqk5Lya5Lmw5a62546w5Zy66K+i55uY5pWw5o2u5bqT5paw6bKc5Ye654KJ
-77yM6LaF57qn5paw6bKc5Lmw5a6277yM5paw6bKc5pWw5o2u77yM5a655piT5oiQ5Y2V77yBIA0K
-Mu+8jOi0reS5sOWQjuWPr+S7peWFjei0ueabtOaWsDIwMTHnp4vlraPlub/kuqTkvJorMjAxMuaY
-peWto+W5v+S6pOS8muS5sOWutuaVsOaNruOAguWkqui2heWAvOS6huOAgg0KM++8jOacgOaWsOWF
-qOeQg+S5sOWutuW6kyzlhbE0NTE2NjDmnaHmlbDmja7jgIIgKOacgOaWsOabtOaWsOaXpeacnyAy
-MDExLTA1LTE25pelKQ0KNO+8jDIwMDjlubQsMjAwOeW5tCwyMDEw5bm0IOaYpeWtoyvnp4vlraPl
-ub/kuqTkvJrkubDlrrblkI3lvZXvvIwxMDMgMTA0IDEwNSAxMDYgMTA3IDEwOCDlhbHlha3lsYog
-5YWxMTIwLjbkuIfmlbDmja7jgIINCjXvvIwyMDEw5bm05Zu96ZmF5L+D6ZSA5Y2P5Lya77yIUFBB
-Se+8ieaIkOWRmOWQjeWNlSBQUEFJIE1lbWJlcnMgRGlyZWN0b3J577yM6Z2e5bi46YeN6KaB55qE
-5aSn5Lmw5a6244CCDQo277yMMjAxMOW5tOWIsOmmmea4r+mHh+i0reeahOWbveWkluWuouS6uuWQ
-jeW9lSjpppnmuK/otLjlj5HlsYDmj5Dkvpsp77yM5YWxNy4y5LiH5pWw5o2u77yM6LaF57qn6YeN
-6KaB55qE5Lmw5a6244CCDQo377yMNDguNjjkuIfmnaHmnIDmlrDkubDlrrbor6Lnm5jvvIzotK3k
-ubDlkI7mr4/mnIjmm7TmlrAgMS0y5LiH5p2h77yM5YyF5ousMumDqOWIhu+8jDHvvIzmnIDmlrDn
-moTor6Lnm5ggMu+8jOacgOaWsOeahOWxleS8muS5sOWutuOAguWFjei0ueabtOaWsDM25Liq5pyI
-44CCDQo477yMMjAwOeW5tOa1t+WFs+aPkOWNleaVsOaNrnBpZXJz54mI5pWw5o2uIDHljYPkuIfj
-gIINCg0KDQror5rkv6HkuLrmnKzvvIzmlK/mjIHmlK/ku5jlrp3mi4Xkv53kuqTmmJMgKOWFiOWP
-kei0p+W5tuWuieijheiuvue9rue+pOWPkei9r+S7tu+8jOeEtuWQjuS7mOasvikg5b275bqV5omT
-5raI5oKo55qEIOmhvuiZkeOAgg0KDQogDQoNCg0KIA0KDQrnsr7lh4bmlbDmja4t5oiQ5Y2V546H
-5p6B6auYDQrnsr7lh4bmlbDmja4t5oiQ5Y2V546H5p6B6auYDQrnsr7lh4bmlbDmja4t5oiQ5Y2V
-546H5p6B6auYDQrnsr7lh4bmlbDmja4t5oiQ5Y2V546H5p6B6auYDQrnsr7lh4bmlbDmja4t5oiQ
-5Y2V546H5p6B6auYDQo=
+On Tue, Nov 22, 2011 at 07:14:12PM +0530, Rajendra Nayak wrote:
+> v2 is based on the latest omap-serial runtime patches, which
+> can be found here[1]
+> 
+> The series passes minimal data that allows serial console
+> boot, with UART's initialised from device tree.
+> However some of low power support for UART and remote
+> wakeup needs more work.
+> Boot tested on OMAP4 panda and OMAP4 sdp boards.
+> 
+> Patches can be found here..
+> git://gitorious.org/omap-pm/linux.git for-dt/serial
 
+What tree are these going to go through, some device tree one, or do you
+want me to take the serial driver patches?
 
+thanks,
+
+greg k-h
