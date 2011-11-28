@@ -1,51 +1,53 @@
-From: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Subject: Re: [PATCH 01/16] pmac_zilog: fix unexpected irq
-Date: Mon, 28 Nov 2011 11:30:06 +1100
-Message-ID: <1322440206.23348.35.camel@pasglop>
-References: <20111023141108.856998818@telegraphics.com.au>
-	 <20111023141115.208699274@telegraphics.com.au>
-	 <alpine.LNX.2.00.1111250133321.6314@nippy.intranet>
-	 <20111124145624.24438832@lxorguk.ukuu.org.uk>
-	 <alpine.LNX.2.00.1111250207040.6314@nippy.intranet>
+From: Rajendra Nayak <rnayak@ti.com>
+Subject: Re: [PATCH v2 0/4] OMAP serial device tree support
+Date: Mon, 28 Nov 2011 11:36:56 +0530
+Message-ID: <4ED32500.5060908@ti.com>
+References: <1321969456-24266-1-git-send-email-rnayak@ti.com> <20111127033642.GA28378@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gate.crashing.org ([63.228.1.57]:34584 "EHLO gate.crashing.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751466Ab1K1Aac (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 27 Nov 2011 19:30:32 -0500
-In-Reply-To: <alpine.LNX.2.00.1111250207040.6314@nippy.intranet>
+Received: from na3sys009aog105.obsmtp.com ([74.125.149.75]:36980 "EHLO
+	na3sys009aog105.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750865Ab1K1GHG (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 28 Nov 2011 01:07:06 -0500
+In-Reply-To: <20111127033642.GA28378@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Finn Thain <fthain@telegraphics.com.au>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-m68k@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, Geert Uytterhoeven <geert@linux-m68k.org>
+To: Greg KH <greg@kroah.com>
+Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, tony@atomide.com, khilman@ti.com, govindraj.raja@ti.com, b-cousson@ti.com, linux-arm-kernel@lists.infradead.org, linaro-dev@lists.linaro.org, patches@linaro.org, robherring2@gmail.com
 
+On Sunday 27 November 2011 09:06 AM, Greg KH wrote:
+> On Tue, Nov 22, 2011 at 07:14:12PM +0530, Rajendra Nayak wrote:
+>> v2 is based on the latest omap-serial runtime patches, which
+>> can be found here[1]
+>>
+>> The series passes minimal data that allows serial console
+>> boot, with UART's initialised from device tree.
+>> However some of low power support for UART and remote
+>> wakeup needs more work.
+>> Boot tested on OMAP4 panda and OMAP4 sdp boards.
+>>
+>> Patches can be found here..
+>> git://gitorious.org/omap-pm/linux.git for-dt/serial
+>
+> What tree are these going to go through, some device tree one, or do you
+> want me to take the serial driver patches?
 
-> Removing ifdefs makes the changes more invasive and the suspend/resume 
-> code then has to be addressed, which I've avoided.
-> 
-> The suspend/resume code path can't be tested on m68k macs and the common 
-> code paths I can't easily test on a powermac.
-> 
-> This patch should not be needed because the chip reset shouldn't leave the 
-> tx and rx interrupts enabled. Those interrupts are explicitly enabled only 
-> after request_irq(), so patching the master interrupt enable behaviour 
-> should be redundant. But that's not the case in practice.
-> 
-> The chip reset code is already messy. I was inclined towards ifdefs and 
-> reluctant to share more code after practical experience suggested possible 
-> differences in the SCC/ESCC devices.
-> 
-> I guess I was hoping that the powermac maintainers might prefer ifdefs to 
-> increased risk of destabilising the driver on powermacs...
-> 
-> But a more invasive patch would make for better code. I will see if I can 
-> borrow a suitable PCI PowerMac.
+Hi Greg,
 
-Please do the more invasive patch, I'll beat it up on powermacs.
+These patches have a dependency on the omap-serial runtime series.
+So once that makes it in, through the serial driver tree, and once we
+have the necessary Acks from the Device Tree maintainers on the relevant
+patches from this series, these could go through the serial driver tree
+as well.
 
-Cheers,
-Ben.
+thanks,
+Rajendra
 
+>
+> thanks,
+>
+> greg k-h
 
