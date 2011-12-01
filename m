@@ -1,77 +1,91 @@
-From: Tomas Lastovicka <tomas.lastovicka@gmail.com>
-Subject: Re: RS-485 automatic RTS toggle in Linux (on Winbond W83627UHG)
-Date: Tue, 29 Nov 2011 18:15:00 -0500
-Message-ID: <CAFnDbmBN=TWzVfNhf41A441L3Fcq4u=MnkWKU7PD8LiK2UXcRg@mail.gmail.com>
-References: <CAFnDbmD-LG1O45d9s8GPxcbmjeFJ=vSp450oJ_75ooxBMtZFCg@mail.gmail.com>
-	<20111129175728.GH5455@pengutronix.de>
-	<CAFnDbmAAZZFNJAc=Y92xrkUujemTK63_2-H3TVkvbjVrsjUKgg@mail.gmail.com>
-	<20111129222002.GA12314@pengutronix.de>
-	<CAFnDbmA1u041X4LQv0pbdAAoR=LBqgdmOGRj_J5MhA2euMKFOw@mail.gmail.com>
-	<20111129223626.GB12314@pengutronix.de>
+From: Maciej Szmigiero <mhej@o2.pl>
+Subject: [SERIAL]fix serial_cs I/O windows for Argosy RS-COM 2P
+Date: Thu, 01 Dec 2011 22:39:22 +0100
+Message-ID: <4ED7F40A.4040001@o2.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pz0-f42.google.com ([209.85.210.42]:39840 "EHLO
-	mail-pz0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755941Ab1K2XPA convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 Nov 2011 18:15:00 -0500
-Received: by pzk36 with SMTP id 36so8488751pzk.1
-        for <linux-serial@vger.kernel.org>; Tue, 29 Nov 2011 15:15:00 -0800 (PST)
-In-Reply-To: <20111129223626.GB12314@pengutronix.de>
+Received: from moh1-ve1.go2.pl ([193.17.41.131]:35119 "EHLO moh1-ve1.go2.pl"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754392Ab1LAVjn (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 1 Dec 2011 16:39:43 -0500
+Received: from moh1-ve1.go2.pl (unknown [10.0.0.131])
+	by moh1-ve1.go2.pl (Postfix) with ESMTP id 3A8E8928820
+	for <linux-serial@vger.kernel.org>; Thu,  1 Dec 2011 22:39:27 +0100 (CET)
+Received: from unknown (unknown [10.0.0.108])
+	by moh1-ve1.go2.pl (Postfix) with SMTP
+	for <linux-serial@vger.kernel.org>; Thu,  1 Dec 2011 22:39:27 +0100 (CET)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Wolfram Sang <w.sang@pengutronix.de>
-Cc: linux-serial@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Thanks for both links Wolfram! I will find out what revision i actually=
- have.
+Current serial_cs driver has a problem when trying to detect whether
+a card has multiple ports: serial_config() calls pcmcia_loop_config()
+which iterates over card CIS configurations by calling
+serial_check_for_multi() for each of them.
 
-Best,
-Tomas
+This function wants to check (and select) a configuration
+that has either one long I/O window spanning multiple ports or two 8-port
+windows for two serial ports.
 
+Problem is, that every pcmcia_loop_config() iteration only updates
+the windows (via pcmcia_do_loop_config() in resource[0] and resource[1])
+when CONF_AUTO_SET_IO flag is set on the device, which is set only later
+in the code.
 
-On Tue, Nov 29, 2011 at 5:36 PM, Wolfram Sang <w.sang@pengutronix.de> w=
-rote:
-> On Tue, Nov 29, 2011 at 05:25:32PM -0500, Tomas Lastovicka wrote:
->
->> Then i definitely have a different datasheet (v1.41). No 485 matches=
- were found.
->
-> I got v1.7:
->
-> http://www.nuvoton.com/NuvotonMOSS/Community/ProductInfo.aspx?tp_GUID=
-=3D8310ab06-af65-4ec9-92a6-17cf791aa9f2
->
-> Ah, it says RS485 is only available on Revision E. Hopefully, you hav=
-e that.
->
->> Indeed, if it has support then there is no need for software toggle
->> (although i still think it is done this way in the Etrax driver comi=
-ng
->> with the kernel).
->
-> I think that was the first RS485 one, so probably just lucky ;)
->
-> If you are interested, another series adding support for 8250-variant=
-s that
-> have HW support can be found here:
->
-> http://lkml.org/lkml/2011/11/16/270
->
-> Regards,
->
-> =A0 Wolfram
->
-> --
-> Pengutronix e.K. =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-| Wolfram Sang =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0|
-> Industrial Linux Solutions =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 | http://w=
-ww.pengutronix.de/ =A0|
->
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Fix it by setting this flag earlier.
+
+In addition to this, when multi-port card is detected
+and it does not have an one, long I/O window
+multi_config_check_notpicky() tries to locate two I/O windows and assumes
+they are continuous without checking.
+
+On an Argosy RS-COM 2P this selects first configuration, which
+unfortunately has two non-continuous I/O windows.
+The net effect is that the second serial port on the card does not work.
+
+Fix it by checking whether the windows are really continuous.
+
+Signed-off-by: Maciej Szmigiero <mhej@o2.pl>
+
+diff --git a/drivers/tty/serial/serial_cs.c b/drivers/tty/serial/serial_cs.c
+index eef736f..8609060 100644
+--- a/drivers/tty/serial/serial_cs.c
++++ b/drivers/tty/serial/serial_cs.c
+@@ -317,7 +317,7 @@ static int serial_probe(struct pcmcia_device *link)
+ 	info->p_dev = link;
+ 	link->priv = info;
+ 
+-	link->config_flags |= CONF_ENABLE_IRQ;
++	link->config_flags |= CONF_ENABLE_IRQ | CONF_AUTO_SET_IO;
+ 	if (do_sound)
+ 		link->config_flags |= CONF_ENABLE_SPKR;
+ 
+@@ -445,7 +445,7 @@ static int simple_config(struct pcmcia_device *link)
+ 
+ 	/* First pass: look for a config entry that looks normal.
+ 	 * Two tries: without IO aliases, then with aliases */
+-	link->config_flags |= CONF_AUTO_SET_VPP | CONF_AUTO_SET_IO;
++	link->config_flags |= CONF_AUTO_SET_VPP;
+ 	for (try = 0; try < 4; try++)
+ 		if (!pcmcia_loop_config(link, simple_config_check, &try))
+ 			goto found_port;
+@@ -501,7 +501,8 @@ static int multi_config_check_notpicky(struct pcmcia_device *p_dev,
+ {
+ 	int *base2 = priv_data;
+ 
+-	if (!p_dev->resource[0]->end || !p_dev->resource[1]->end)
++	if (!p_dev->resource[0]->end || !p_dev->resource[1]->end ||
++		p_dev->resource[0]->start + 8 != p_dev->resource[1]->start)
+ 		return -ENODEV;
+ 
+ 	p_dev->resource[0]->end = p_dev->resource[1]->end = 8;
+@@ -520,7 +521,6 @@ static int multi_config(struct pcmcia_device *link)
+ 	struct serial_info *info = link->priv;
+ 	int i, base2 = 0;
+ 
+-	link->config_flags |= CONF_AUTO_SET_IO;
+ 	/* First, look for a generic full-sized window */
+ 	if (!pcmcia_loop_config(link, multi_config_check, &info->multi))
+ 		base2 = link->resource[0]->start + 8;
