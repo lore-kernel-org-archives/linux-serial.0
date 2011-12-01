@@ -1,91 +1,106 @@
-From: Maciej Szmigiero <mhej@o2.pl>
-Subject: [SERIAL]fix serial_cs I/O windows for Argosy RS-COM 2P
-Date: Thu, 01 Dec 2011 22:39:22 +0100
-Message-ID: <4ED7F40A.4040001@o2.pl>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: [PATCH 2/3] serial: allow passing in hardware bug info via platform device
+Date: Thu,  1 Dec 2011 18:47:37 -0500
+Message-ID: <1322783258-20443-3-git-send-email-paul.gortmaker@windriver.com>
+References: <1322783258-20443-1-git-send-email-paul.gortmaker@windriver.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moh1-ve1.go2.pl ([193.17.41.131]:35119 "EHLO moh1-ve1.go2.pl"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754392Ab1LAVjn (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 1 Dec 2011 16:39:43 -0500
-Received: from moh1-ve1.go2.pl (unknown [10.0.0.131])
-	by moh1-ve1.go2.pl (Postfix) with ESMTP id 3A8E8928820
-	for <linux-serial@vger.kernel.org>; Thu,  1 Dec 2011 22:39:27 +0100 (CET)
-Received: from unknown (unknown [10.0.0.108])
-	by moh1-ve1.go2.pl (Postfix) with SMTP
-	for <linux-serial@vger.kernel.org>; Thu,  1 Dec 2011 22:39:27 +0100 (CET)
+Received: from mail.windriver.com ([147.11.1.11]:33230 "EHLO
+	mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755516Ab1LAXrw (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 1 Dec 2011 18:47:52 -0500
+In-Reply-To: <1322783258-20443-1-git-send-email-paul.gortmaker@windriver.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: gregkh@suse.de, alan@linux.intel.com, galak@kernel.crashing.org, scottwood@freescale.com
+Cc: linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
 
-Current serial_cs driver has a problem when trying to detect whether
-a card has multiple ports: serial_config() calls pcmcia_loop_config()
-which iterates over card CIS configurations by calling
-serial_check_for_multi() for each of them.
+The normal arch hook into the 8250 serial world is via passing
+in a plat_serial8250_port struct.  However, this struct does
+not have a bugs field, so there is no way to have the arch
+code pass in info about known uart issues.
 
-This function wants to check (and select) a configuration
-that has either one long I/O window spanning multiple ports or two 8-port
-windows for two serial ports.
+Add a bug field to the plat_serial8250_port struct, so that the
+arch can pass in this information.  Also don't do a blanket
+overwrite of the bugs setting in the 8250.c driver.  Finally,
+relocate the known bug #define list to a globally visible header
+so that the arch can assign any appropriate values from the list.
 
-Problem is, that every pcmcia_loop_config() iteration only updates
-the windows (via pcmcia_do_loop_config() in resource[0] and resource[1])
-when CONF_AUTO_SET_IO flag is set on the device, which is set only later
-in the code.
+Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+---
+ drivers/tty/serial/8250.c   |    3 ++-
+ drivers/tty/serial/8250.h   |    5 -----
+ include/linux/serial_8250.h |    6 ++++++
+ 3 files changed, 8 insertions(+), 6 deletions(-)
 
-Fix it by setting this flag earlier.
-
-In addition to this, when multi-port card is detected
-and it does not have an one, long I/O window
-multi_config_check_notpicky() tries to locate two I/O windows and assumes
-they are continuous without checking.
-
-On an Argosy RS-COM 2P this selects first configuration, which
-unfortunately has two non-continuous I/O windows.
-The net effect is that the second serial port on the card does not work.
-
-Fix it by checking whether the windows are really continuous.
-
-Signed-off-by: Maciej Szmigiero <mhej@o2.pl>
-
-diff --git a/drivers/tty/serial/serial_cs.c b/drivers/tty/serial/serial_cs.c
-index eef736f..8609060 100644
---- a/drivers/tty/serial/serial_cs.c
-+++ b/drivers/tty/serial/serial_cs.c
-@@ -317,7 +317,7 @@ static int serial_probe(struct pcmcia_device *link)
- 	info->p_dev = link;
- 	link->priv = info;
+diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
+index 7c94dbc..f99f27c 100644
+--- a/drivers/tty/serial/8250.c
++++ b/drivers/tty/serial/8250.c
+@@ -1101,7 +1101,6 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
+ 	spin_lock_irqsave(&up->port.lock, flags);
  
--	link->config_flags |= CONF_ENABLE_IRQ;
-+	link->config_flags |= CONF_ENABLE_IRQ | CONF_AUTO_SET_IO;
- 	if (do_sound)
- 		link->config_flags |= CONF_ENABLE_SPKR;
+ 	up->capabilities = 0;
+-	up->port.bugs = 0;
  
-@@ -445,7 +445,7 @@ static int simple_config(struct pcmcia_device *link)
+ 	if (!(up->port.flags & UPF_BUGGY_UART)) {
+ 		/*
+@@ -3075,6 +3074,7 @@ static int __devinit serial8250_probe(struct platform_device *dev)
+ 		port.serial_out		= p->serial_out;
+ 		port.handle_irq		= p->handle_irq;
+ 		port.set_termios	= p->set_termios;
++		port.bugs		= p->bugs;
+ 		port.pm			= p->pm;
+ 		port.dev		= &dev->dev;
+ 		port.irqflags		|= irqflag;
+@@ -3225,6 +3225,7 @@ int serial8250_register_port(struct uart_port *port)
+ 		uart->port.regshift     = port->regshift;
+ 		uart->port.iotype       = port->iotype;
+ 		uart->port.flags        = port->flags | UPF_BOOT_AUTOCONF;
++		uart->port.bugs         = port->bugs;
+ 		uart->port.mapbase      = port->mapbase;
+ 		uart->port.private_data = port->private_data;
+ 		if (port->dev)
+diff --git a/drivers/tty/serial/8250.h b/drivers/tty/serial/8250.h
+index 6edf4a6..caefe00 100644
+--- a/drivers/tty/serial/8250.h
++++ b/drivers/tty/serial/8250.h
+@@ -44,11 +44,6 @@ struct serial8250_config {
+ #define UART_CAP_UUE	(1 << 12)	/* UART needs IER bit 6 set (Xscale) */
+ #define UART_CAP_RTOIE	(1 << 13)	/* UART needs IER bit 4 set (Xscale, Tegra) */
  
- 	/* First pass: look for a config entry that looks normal.
- 	 * Two tries: without IO aliases, then with aliases */
--	link->config_flags |= CONF_AUTO_SET_VPP | CONF_AUTO_SET_IO;
-+	link->config_flags |= CONF_AUTO_SET_VPP;
- 	for (try = 0; try < 4; try++)
- 		if (!pcmcia_loop_config(link, simple_config_check, &try))
- 			goto found_port;
-@@ -501,7 +501,8 @@ static int multi_config_check_notpicky(struct pcmcia_device *p_dev,
- {
- 	int *base2 = priv_data;
+-#define UART_BUG_QUOT	(1 << 0)	/* UART has buggy quot LSB */
+-#define UART_BUG_TXEN	(1 << 1)	/* UART has buggy TX IIR status */
+-#define UART_BUG_NOMSR	(1 << 2)	/* UART has buggy MSR status bits (Au1x00) */
+-#define UART_BUG_THRE	(1 << 3)	/* UART has buggy THRE reassertion */
+-
+ #define PROBE_RSA	(1 << 0)
+ #define PROBE_ANY	(~0)
  
--	if (!p_dev->resource[0]->end || !p_dev->resource[1]->end)
-+	if (!p_dev->resource[0]->end || !p_dev->resource[1]->end ||
-+		p_dev->resource[0]->start + 8 != p_dev->resource[1]->start)
- 		return -ENODEV;
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index 1f05bbe..8c660af 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -14,6 +14,11 @@
+ #include <linux/serial_core.h>
+ #include <linux/platform_device.h>
  
- 	p_dev->resource[0]->end = p_dev->resource[1]->end = 8;
-@@ -520,7 +521,6 @@ static int multi_config(struct pcmcia_device *link)
- 	struct serial_info *info = link->priv;
- 	int i, base2 = 0;
- 
--	link->config_flags |= CONF_AUTO_SET_IO;
- 	/* First, look for a generic full-sized window */
- 	if (!pcmcia_loop_config(link, multi_config_check, &info->multi))
- 		base2 = link->resource[0]->start + 8;
++#define UART_BUG_QUOT	(1 << 0)	/* buggy quot LSB */
++#define UART_BUG_TXEN	(1 << 1)	/* buggy TX IIR status */
++#define UART_BUG_NOMSR	(1 << 2)	/* buggy MSR status bits (Au1x00) */
++#define UART_BUG_THRE	(1 << 3)	/* buggy THRE reassertion */
++
+ /*
+  * This is the platform device platform_data structure
+  */
+@@ -30,6 +35,7 @@ struct plat_serial8250_port {
+ 	unsigned char	hub6;
+ 	upf_t		flags;		/* UPF_* flags */
+ 	unsigned int	type;		/* If UPF_FIXED_TYPE */
++	unsigned short	bugs;		/* hardware specific bugs */
+ 	unsigned int	(*serial_in)(struct uart_port *, int);
+ 	void		(*serial_out)(struct uart_port *, int, int);
+ 	void		(*set_termios)(struct uart_port *,
+-- 
+1.7.7
+
