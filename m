@@ -1,35 +1,31 @@
-From: Richard Zhao <richard.zhao@linaro.org>
-Subject: Re: [PATCH V4 00/14] add clk_prepare/clk_unprepare to imx drivers
-Date: Fri, 2 Dec 2011 19:07:14 +0800
-Message-ID: <20111202110713.GG8684@b20223-02.ap.freescale.net>
-References: <1321339689-25256-1-git-send-email-richard.zhao@linaro.org>
- <20111117012210.GA23392@b20223-02.ap.freescale.net>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 3/3] 8250: add workaround for MPC8[356]xx UART break IRQ
+ storm
+Date: Fri, 2 Dec 2011 11:30:59 +0000
+Message-ID: <20111202113059.15d73840@lxorguk.ukuu.org.uk>
+References: <1322783258-20443-1-git-send-email-paul.gortmaker@windriver.com>
+	<1322783258-20443-4-git-send-email-paul.gortmaker@windriver.com>
+	<4ED812E4.60905@freescale.com>
+	<4ED81632.3030809@windriver.com>
+	<176AE2A1-6AA2-4F14-942F-8ED77AB1DBEC@kernel.crashing.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Return-path: <linux-mmc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20111117012210.GA23392@b20223-02.ap.freescale.net>
-Sender: linux-mmc-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org, netdev@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: amit.kucheria@canonical.com, linux@arm.linux.org.uk, kernel@pengutronix.de, eric.miao@linaro.org, ben-linux@fluff.org, cjb@laptop.org, alan@linux.intel.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:39286 "EHLO
+	earthlight.etchedpixels.co.uk" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754100Ab1LBL3m (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 2 Dec 2011 06:29:42 -0500
+In-Reply-To: <176AE2A1-6AA2-4F14-942F-8ED77AB1DBEC@kernel.crashing.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Kumar Gala <galak@kernel.crashing.org>
+Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, Scott Wood <scottwood@freescale.com>, gregkh@suse.de, alan@linux.intel.com, linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
 
-Is there any body merged this patch series?
+> > OK, I'll simply change the above to CONFIG_PPC then.
+> 
+> It does, the bug is in the uart IP which I don't think we ever plan on fixing, so 32 or 64-bit parts will have it for ever and ever ;)
 
-Thanks
-Richard
-On Thu, Nov 17, 2011 at 09:22:11AM +0800, Richard Zhao wrote:
-> Hi Sascha,
-> 
-> Would you merge this patch series?
-> 
-> Thanks
-> Richard 
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> 
+It should be runtime selected, there should be no ifdefs here.
 
