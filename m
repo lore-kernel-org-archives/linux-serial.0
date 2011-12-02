@@ -1,52 +1,40 @@
-From: Richard Zhao <richard.zhao@linaro.org>
-Subject: Re: [PATCH V4 00/14] add clk_prepare/clk_unprepare to imx drivers
-Date: Fri, 2 Dec 2011 19:40:35 +0800
-Message-ID: <20111202114034.GH8684@b20223-02.ap.freescale.net>
-References: <1321339689-25256-1-git-send-email-richard.zhao@linaro.org>
- <20111117012210.GA23392@b20223-02.ap.freescale.net>
- <20111202110713.GG8684@b20223-02.ap.freescale.net>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 1/3] serial: make bugs field not specific to 8250 type
+ uarts.
+Date: Fri, 2 Dec 2011 11:49:30 +0000
+Message-ID: <20111202114930.74b65569@lxorguk.ukuu.org.uk>
+References: <1322783258-20443-1-git-send-email-paul.gortmaker@windriver.com>
+	<1322783258-20443-2-git-send-email-paul.gortmaker@windriver.com>
+	<20111202005150.2e9fde43@bob.linux.org.uk>
+	<CAP=VYLpn7kJJ6we3diqhCR+QzjQtzTmkEzSP-uw07=udJKYK6g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from tx2ehsobe005.messaging.microsoft.com ([65.55.88.15]:26981 "EHLO
-	TX2EHSOBE010.bigfish.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754065Ab1LBLkk (ORCPT
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:39305 "EHLO
+	earthlight.etchedpixels.co.uk" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754231Ab1LBLsD (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Dec 2011 06:40:40 -0500
-Content-Disposition: inline
-In-Reply-To: <20111202110713.GG8684@b20223-02.ap.freescale.net>
+	Fri, 2 Dec 2011 06:48:03 -0500
+In-Reply-To: <CAP=VYLpn7kJJ6we3diqhCR+QzjQtzTmkEzSP-uw07=udJKYK6g@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org, netdev@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: amit.kucheria@canonical.com, linux@arm.linux.org.uk, kernel@pengutronix.de, eric.miao@linaro.org, ben-linux@fluff.org, cjb@laptop.org, alan@linux.intel.com
+To: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: Alan Cox <alan@linux.intel.com>, gregkh@suse.de, galak@kernel.crashing.org, scottwood@freescale.com, linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
 
-On Fri, Dec 02, 2011 at 07:07:14PM +0800, Richard Zhao wrote:
-> Is there any body merged this patch series?
-Thanks, Sascha! Just found it's in your imx-features branch.
+> If you have an idea in mind how arch/platform code should cleanly
+> pass data about known uart bugs to the uart driver, then let me know
+> what you have in mind.  I've no real attachment to what I proposed
+> here -- it just happened to be the solution I thought would be the least
+> offensive.  If there is a better idea floating around, I'll go ahead and
+> try to implement it.
 
-Richard
-> 
-> Thanks
-> Richard
-> On Thu, Nov 17, 2011 at 09:22:11AM +0800, Richard Zhao wrote:
-> > Hi Sascha,
-> > 
-> > Would you merge this patch series?
-> > 
-> > Thanks
-> > Richard 
-> > 
-> > 
-> > _______________________________________________
-> > linux-arm-kernel mailing list
-> > linux-arm-kernel@lists.infradead.org
-> > http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> > 
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> 
+My first guess is that "the uart driver" is our first historical mistake.
+Non standard 8250ish uarts should be their own platform driver which uses
+8250.c for support.
 
+Things like 8250_dw.c is perhaps more the style we want to be looking at
+for other devices and adjusting 8250.c as needed to export or split
+methods up so they can be used as helpers.
+
+Alan
