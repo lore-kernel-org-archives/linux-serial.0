@@ -1,41 +1,83 @@
-From: Scott Wood <scottwood@freescale.com>
-Subject: Re: [PATCH 3/3] 8250: add workaround for MPC8[356]xx UART break IRQ
- storm
-Date: Fri, 2 Dec 2011 11:27:12 -0600
-Message-ID: <4ED90A70.8000902@freescale.com>
-References: <1322783258-20443-1-git-send-email-paul.gortmaker@windriver.com>	<1322783258-20443-4-git-send-email-paul.gortmaker@windriver.com>	<4ED812E4.60905@freescale.com>	<4ED81632.3030809@windriver.com>	<176AE2A1-6AA2-4F14-942F-8ED77AB1DBEC@kernel.crashing.org> <20111202113059.15d73840@lxorguk.ukuu.org.uk> <4ED8FE14.7020007@windriver.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: [PATCH 0/6] RFCv2 Fix Fsl 8250 BRK bug
+Date: Sun,  4 Dec 2011 18:42:17 -0500
+Message-ID: <1323042143-25330-1-git-send-email-paul.gortmaker@windriver.com>
+References: <1322783258-20443-1-git-send-email-paul.gortmaker@windriver.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from va3ehsobe010.messaging.microsoft.com ([216.32.180.30]:32682
-	"EHLO VA3EHSOBE010.bigfish.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1757157Ab1LBR1U (ORCPT
+Received: from mail.windriver.com ([147.11.1.11]:63545 "EHLO
+	mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755286Ab1LDXmi (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Dec 2011 12:27:20 -0500
-In-Reply-To: <4ED8FE14.7020007@windriver.com>
+	Sun, 4 Dec 2011 18:42:38 -0500
+In-Reply-To: <1322783258-20443-1-git-send-email-paul.gortmaker@windriver.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Kumar Gala <galak@kernel.crashing.org>, gregkh@suse.de, alan@linux.intel.com, linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+To: alan@linux.intel.com, gregkh@suse.de, scottwood@freescale.com, galak@kernel.crashing.org
+Cc: linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
 
-On 12/02/2011 10:34 AM, Paul Gortmaker wrote:
-> On 11-12-02 06:30 AM, Alan Cox wrote:
->>>> OK, I'll simply change the above to CONFIG_PPC then.
->>>
->>> It does, the bug is in the uart IP which I don't think we ever plan on fixing, so 32 or 64-bit parts will have it for ever and ever ;)
->>
->> It should be runtime selected, there should be no ifdefs here.
-> 
-> The ifdef wasn't strictly required; it just made it so gcc would
-> toss the errata code out of the irq handler for !PPC.  Anyway it
-> will be a moot point if I can somehow hide all the mess by snooping
-> serial_inp() traffic and deploying the errata fix from there....
 
-Eww.
+Alan wrote:
 
-If it's not to be allowed in the main 8250 code (even for ppc builds
-only), a custom handle_port sounds like a saner option.
+> Things like 8250_dw.c is perhaps more the style we want to be looking at
+> for other devices and adjusting 8250.c as needed to export or split
+> methods up so they can be used as helpers.
 
--Scott
+[...]
+
+> Sorting out a ->handle_port override is probably ultimately the right
+> thing to do and then we can push some of the other funnies out further.
+
+I never figured spending this much time on this, but I think this is
+a lot better, and 8250.c comes out slightly smaller and cleaner too,
+hopefully satisfying Alan's other request "...we want less not more".
+
+The errata is firewalled off in 8250_fsl.c (as per Alan's 1st comment),
+and 8250.c now exports a couple more things to be used as helpers.
+
+When I started looking at a handle_port override, I realized that it
+really didn't need to exist at all, and the existing handle_irq
+override we already have does the job nicely.  In the process, I found
+an interesting quirk while cleaning up duplicated code in the timeout
+handler, where we don't use the custom IRQ handler if there is one.
+
+So, the errata is dealt with by installing a custom IRQ handler, and
+it doesn't have the "eew ick" factor that Scott mentioned, in regards
+to trying to learn state from watching serial_in() traffic.
+
+The timeout cleanup seemed so obvious, that I was convinced I must
+be missing some subtle thing.  So I confirmed it by stripping my IRQ
+properties from my dts file and running the serial console IRQ-less.
+
+I also re-tested the sysRq feature on sbc8349, to ensure the WAR was
+actually doing its job, and I also tested with serial console on
+an old SocketA board to make sure non-ppc didn't get hosed somehow.
+
+Anyway, have a look and see if this version of things is acceptable
+to all.  (Again, the dts update from Kumar isn't shown here).
+
+Thanks to all who provided the feedback on v1.
+Paul.
+
+------
+
+Paul Gortmaker (6):
+  serial: move struct uart_8250_port from 8250.c to 8250.h
+  serial: clean up parameter passing for 8250 Rx IRQ handling
+  serial: export the key functions for an 8250 IRQ handler
+  serial: make 8250 timeout use the specified IRQ handler
+  serial: manually inline serial8250_handle_port
+  serial: add irq handler for Freescale 16550 errata.
+
+ arch/powerpc/kernel/legacy_serial.c |    3 +
+ drivers/tty/serial/8250.c           |   92 ++++++++++++-----------------------
+ drivers/tty/serial/8250.h           |   26 ++++++++++
+ drivers/tty/serial/8250_fsl.c       |   63 ++++++++++++++++++++++++
+ drivers/tty/serial/Kconfig          |    5 ++
+ drivers/tty/serial/Makefile         |    1 +
+ include/linux/serial_8250.h         |    5 ++
+ 7 files changed, 134 insertions(+), 61 deletions(-)
+ create mode 100644 drivers/tty/serial/8250_fsl.c
+
+-- 
+1.7.7
 
