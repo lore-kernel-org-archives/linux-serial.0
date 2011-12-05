@@ -1,79 +1,83 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: [PATCH 5/6] serial: manually inline serial8250_handle_port
-Date: Sun,  4 Dec 2011 18:42:22 -0500
-Message-ID: <1323042143-25330-6-git-send-email-paul.gortmaker@windriver.com>
-References: <1322783258-20443-1-git-send-email-paul.gortmaker@windriver.com>
- <1323042143-25330-1-git-send-email-paul.gortmaker@windriver.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1323042143-25330-1-git-send-email-paul.gortmaker@windriver.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: alan@linux.intel.com, gregkh@suse.de, scottwood@freescale.com, galak@kernel.crashing.org
-Cc: linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+From: Sonic Zhang <sonic.adi@gmail.com>
+Subject: [PATCH] serial: bfin-uart: Request CTS GPIO PIN when the serial device starts up.
+Date: Mon, 5 Dec 2011 15:12:50 +0800
+Message-ID: <1323069170-5881-1-git-send-email-sonic.adi@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from am1ehsobe002.messaging.microsoft.com ([213.199.154.205]:51044
+	"EHLO AM1EHSOBE002.bigfish.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751661Ab1LEHUA (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 5 Dec 2011 02:20:00 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
+Cc: LKML <linux-kernel@vger.kernel.org>, uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
 
-Currently serial8250_handle_irq is a trivial wrapper around
-serial8250_handle_port, which actually does all the work.
+From: Sonic Zhang <sonic.zhang@analog.com>
 
-Since there are no other callers of serial8250_handle_port, we
-can just move it inline into serial8250_handle_irq.  This also
-makes it more clear what functionality any custom IRQ handlers
-need to provide if not using serial8250_default_handle_irq.
+Serial device may be probed earlier before GPIOLIB is initialized. Requesting and
+configuring CTS GPIO PIN fails in that early stage. Do it when the serial device
+really starts up.
 
-Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
 ---
- drivers/tty/serial/8250.c |   23 ++++++++---------------
- 1 files changed, 8 insertions(+), 15 deletions(-)
+ drivers/tty/serial/bfin_uart.c |   19 +++++++++----------
+ 1 files changed, 9 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
-index 9e7780d..23332cb 100644
---- a/drivers/tty/serial/8250.c
-+++ b/drivers/tty/serial/8250.c
-@@ -1528,10 +1528,15 @@ EXPORT_SYMBOL_GPL(serial8250_modem_status);
- /*
-  * This handles the interrupt from one port.
-  */
--static void serial8250_handle_port(struct uart_8250_port *up)
-+int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
- {
- 	unsigned char status;
- 	unsigned long flags;
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
-+
-+	if (iir & UART_IIR_NO_INT)
-+		return 0;
+diff --git a/drivers/tty/serial/bfin_uart.c b/drivers/tty/serial/bfin_uart.c
+index c7e592d..61af5ae 100644
+--- a/drivers/tty/serial/bfin_uart.c
++++ b/drivers/tty/serial/bfin_uart.c
+@@ -739,8 +739,13 @@ static int bfin_serial_startup(struct uart_port *port)
+ 			pr_info("Unable to attach BlackFin UART CTS interrupt. So, disable it.\n");
+ 		}
+ 	}
+-	if (uart->rts_pin >= 0)
+-		gpio_direction_output(uart->rts_pin, 0);
++	if (uart->rts_pin >= 0) {
++		if (gpio_request(uart->rts_pin, DRIVER_NAME)) {
++			pr_info("fail to request RTS PIN at GPIO_%d\n", uart->rts_pin);
++			uart->rts_pin = -1;
++		} else
++			gpio_direction_output(uart->rts_pin, 0);
++	}
+ #endif
+ #ifdef CONFIG_SERIAL_BFIN_HARD_CTSRTS
+ 	if (uart->cts_pin >= 0 && request_irq(uart->status_irq,
+@@ -792,6 +797,8 @@ static void bfin_serial_shutdown(struct uart_port *port)
+ #ifdef CONFIG_SERIAL_BFIN_CTSRTS
+ 	if (uart->cts_pin >= 0)
+ 		free_irq(gpio_to_irq(uart->cts_pin), uart);
++	if (uart->rts_pin >= 0)
++		gpio_free(uart->rts_pin);
+ #endif
+ #ifdef CONFIG_SERIAL_BFIN_HARD_CTSRTS
+ 	if (uart->cts_pin >= 0)
+@@ -1378,10 +1385,6 @@ static int bfin_serial_probe(struct platform_device *pdev)
+ 			uart->rts_pin = -1;
+ 		else
+ 			uart->rts_pin = res->start;
+-# if defined(CONFIG_SERIAL_BFIN_CTSRTS)
+-		if (uart->rts_pin >= 0)
+-			gpio_request(uart->rts_pin, DRIVER_NAME);
+-# endif
+ #endif
+ 	}
  
- 	spin_lock_irqsave(&up->port.lock, flags);
+@@ -1421,10 +1424,6 @@ static int __devexit bfin_serial_remove(struct platform_device *pdev)
  
-@@ -1546,19 +1551,7 @@ static void serial8250_handle_port(struct uart_8250_port *up)
- 		serial8250_tx_chars(up);
- 
- 	spin_unlock_irqrestore(&up->port.lock, flags);
--}
--
--int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
--{
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
--
--	if (!(iir & UART_IIR_NO_INT)) {
--		serial8250_handle_port(up);
--		return 1;
--	}
--
--	return 0;
-+	return 1;
- }
- EXPORT_SYMBOL_GPL(serial8250_handle_irq);
- 
-@@ -2825,7 +2818,7 @@ serial8250_console_write(struct console *co, const char *s, unsigned int count)
- 
- 	local_irq_save(flags);
- 	if (up->port.sysrq) {
--		/* serial8250_handle_port() already took the lock */
-+		/* serial8250_handle_irq() already took the lock */
- 		locked = 0;
- 	} else if (oops_in_progress) {
- 		locked = spin_trylock(&up->port.lock);
+ 	if (uart) {
+ 		uart_remove_one_port(&bfin_serial_reg, &uart->port);
+-#ifdef CONFIG_SERIAL_BFIN_CTSRTS
+-		if (uart->rts_pin >= 0)
+-			gpio_free(uart->rts_pin);
+-#endif
+ 		iounmap(uart->port.membase);
+ 		peripheral_free_list(
+ 			(unsigned short *)pdev->dev.platform_data);
 -- 
-1.7.7
+1.7.0.4
+
+
