@@ -1,89 +1,77 @@
-From: Dave Martin <dave.martin@linaro.org>
-Subject: [GIT PULL] ARM: amba: Enable module alias autogeneration for AMBA
- drivers
-Date: Tue, 6 Dec 2011 15:15:41 +0000
-Message-ID: <20111206151541.GA13774@linaro.org>
-References: <1321961573-4562-1-git-send-email-dave.martin@linaro.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 01/16 v2] pmac_zilog: fix unexpected irq
+Date: Tue, 6 Dec 2011 16:27:20 +0100
+Message-ID: <CAMuHMdUB-jQQB=ieumYTehdZz1EnoSazEAhsnEunHSnK2o=k8Q@mail.gmail.com>
+References: <20111023141108.856998818@telegraphics.com.au>
+	<20111023141115.208699274@telegraphics.com.au>
+	<alpine.LNX.2.00.1112070203310.14968@nippy.intranet>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-mmc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1321961573-4562-1-git-send-email-dave.martin@linaro.org>
-Sender: linux-mmc-owner@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: patches@linaro.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>, Alessandro Rubini <rubini@unipv.it>, Alessandro Zummo <a.zummo@towertech.it>, alsa-devel@alsa-project.org, Chris Ball <cjb@laptop.org>, Dan Williams <dan.j.williams@intel.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Grant Likely <grant.likely@secretlab.ca>, Jaroslav Kysela <perex@perex.cz>, Jassi Brar <jassisinghbrar@gmail.com>, Julia Lawall <julia@diku.dk>, Linus Walleij <linus.walleij@linaro.org>, linux-fbdev@vger.kernel.org, linux-input@vger.kernel.org, linux-mmc@vger.kernel.org, linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, =?utf-8?B?UGF3ZcWC?= Moll <Pawel.Moll@arm.com>, rtc-linux@googlegroups.com, spi-devel-general@lists.sourceforge.net, Takashi Iwai <tiwai@suse.de>, Vinod Koul <vinod.>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <alpine.LNX.2.00.1112070203310.14968@nippy.intranet>
+Sender: linux-m68k-owner@vger.kernel.org
+To: Finn Thain <fthain@telegraphics.com.au>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>, linux-m68k@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Russell,
+Hi Finn,
 
-Further to my previous pull request:
+On Tue, Dec 6, 2011 at 16:13, Finn Thain <fthain@telegraphics.com.au> w=
+rote:
+> +static void pmz_interrupt_control(struct uart_pmac_port *uap, int en=
+able)
+> +{
+> + =C2=A0 =C2=A0 =C2=A0 if (enable) {
+> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 uap->curregs[1] |=3D=
+ INT_ALL_Rx | TxINT_ENAB;
+> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!ZS_IS_EXTCLK(=
+uap))
+> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 uap->curregs[1] |=3D EXT_INT_ENAB;
+> + =C2=A0 =C2=A0 =C2=A0 } else {
+> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 uap->curregs[1] &=3D=
+ ~(EXT_INT_ENAB | TxINT_ENAB | RxINT_MASK);
 
-> The following changes since commit cfcfc9eca2bcbd26a8e206baeb005b055dbf8e37:
-> 
->   Linux 3.2-rc2 (2011-11-15 15:02:59 -0200)
-> 
-> are available in the git repository at:
->   git://git.linaro.org/people/dmart/linux-2.6-arm.git arm/amba-modalias+for-rmk
-> 
-> Dave Martin (16):
->       ARM: amba: Move definition of struct amba_id to mod_devicetable.h
->       ARM: amba: Auto-generate AMBA driver module aliases during modpost
-[...]
+Should there be a call to zssync() here?
+The old code always did that after disabling interrupts.
 
-... it looks like Alessandro's proposed change to tidy up scripts/mod/
-ile2alias.c may get merged soon -- if that happens, you will get a
-conflict with the second patch of the series referenced by the previous
-pull request.  Fixing it up is straightforward -- if you prefer to
-resolve the conflict yourself, that's fine by me.  Alternatively, you
-can pull the following modified series instead.
+> + =C2=A0 =C2=A0 =C2=A0 }
+> + =C2=A0 =C2=A0 =C2=A0 write_zsreg(uap, R1, uap->curregs[1]);
+> +}
+> +
+> =C2=A0static struct tty_struct *pmz_receive_chars(struct uart_pmac_po=
+rt *uap)
+> =C2=A0{
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0struct tty_struct *tty =3D NULL;
+> @@ -339,9 +351,7 @@ static struct tty_struct *pmz_receive_ch
+>
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0return tty;
+> =C2=A0flood:
+> - =C2=A0 =C2=A0 =C2=A0 uap->curregs[R1] &=3D ~(EXT_INT_ENAB | TxINT_E=
+NAB | RxINT_MASK);
+> - =C2=A0 =C2=A0 =C2=A0 write_zsreg(uap, R1, uap->curregs[R1]);
+> - =C2=A0 =C2=A0 =C2=A0 zssync(uap);
 
-The only difference is in the second patch
-("ARM: amba: Auto-generate AMBA driver module aliases during modpost").
+Cfr. e.g. here.
 
-Cheers
----Dave
+> + =C2=A0 =C2=A0 =C2=A0 pmz_interrupt_control(uap, 0);
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0pmz_error("pmz: rx irq flood !\n");
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0return tty;
+> =C2=A0}
 
-The following changes since commit 114339d31aa813995461866c659bbf07e1cf2267:
+Gr{oetje,eeting}s,
 
-  modpost: use table-lookup to build module aliases (2011-12-02 15:18:08 +0000)
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 Geert
 
-are available in the git repository at:
-  git://git.linaro.org/people/dmart/linux-2.6-arm.git arm/amba-modalias+alessandro-modalias-v2+for-rmk
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-=
+m68k.org
 
-Dave Martin (16):
-      ARM: amba: Move definition of struct amba_id to mod_devicetable.h
-      ARM: amba: Auto-generate AMBA driver module aliases during modpost
-      hwrng: nomadik: Enable module alias autogeneration for AMBA drivers
-      dmaengine: pl08x: Enable module alias autogeneration for AMBA drivers
-      dmaengine: pl330: Enable module alias autogeneration for AMBA drivers
-      gpio: pl061: Enable module alias autogeneration for AMBA drivers
-      input: ambakmi: Enable module alias autogeneration for AMBA drivers
-      mmc: mmci: Enable module alias autogeneration for AMBA drivers
-      rtc: pl030: Enable module alias autogeneration for AMBA drivers
-      rtc: pl031: Enable module alias autogeneration for AMBA drivers
-      spi: pl022: Enable module alias autogeneration for AMBA drivers
-      serial: pl010: Enable module alias autogeneration for AMBA drivers
-      serial: pl011: Enable module alias autogeneration for AMBA drivers
-      fbdev: amba: Enable module alias autogeneration for AMBA drivers
-      watchdog: sp805: Enable module alias autogeneration for AMBA drivers
-      sound: aaci: Enable module alias autogeneration for AMBA drivers
-
- drivers/amba/bus.c                   |    4 ++
- drivers/char/hw_random/nomadik-rng.c |    2 +
- drivers/dma/amba-pl08x.c             |    2 +
- drivers/dma/pl330.c                  |    2 +
- drivers/gpio/gpio-pl061.c            |    2 +
- drivers/input/serio/ambakmi.c        |    2 +
- drivers/mmc/host/mmci.c              |    2 +
- drivers/rtc/rtc-pl030.c              |    2 +
- drivers/rtc/rtc-pl031.c              |    2 +
- drivers/spi/spi-pl022.c              |    2 +
- drivers/tty/serial/amba-pl010.c      |    2 +
- drivers/tty/serial/amba-pl011.c      |    2 +
- drivers/video/amba-clcd.c            |    2 +
- drivers/watchdog/sp805_wdt.c         |    2 +
- include/linux/amba/bus.h             |    7 +---
- include/linux/mod_devicetable.h      |   18 +++++++++
- scripts/mod/file2alias.c             |   71 +++++++++++++++++++++++++++++++++-
- sound/arm/aaci.c                     |    2 +
- 18 files changed, 121 insertions(+), 7 deletions(-)
+In personal conversations with technical people, I call myself a hacker=
+=2E But
+when I'm talking to journalists I just say "programmer" or something li=
+ke that.
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0=C2=A0 =C2=A0=C2=A0 -- Linus Torvalds
