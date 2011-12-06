@@ -1,220 +1,89 @@
-From: Finn Thain <fthain@telegraphics.com.au>
-Subject: [PATCH 01/16 v2] pmac_zilog: fix unexpected irq
-Date: Wed, 7 Dec 2011 02:13:41 +1100 (EST)
-Message-ID: <alpine.LNX.2.00.1112070203310.14968@nippy.intranet>
-References: <20111023141108.856998818@telegraphics.com.au> <20111023141115.208699274@telegraphics.com.au>
+From: Dave Martin <dave.martin@linaro.org>
+Subject: [GIT PULL] ARM: amba: Enable module alias autogeneration for AMBA
+ drivers
+Date: Tue, 6 Dec 2011 15:15:41 +0000
+Message-ID: <20111206151541.GA13774@linaro.org>
+References: <1321961573-4562-1-git-send-email-dave.martin@linaro.org>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-m68k-owner@vger.kernel.org>
-In-Reply-To: <20111023141115.208699274@telegraphics.com.au>
-Sender: linux-m68k-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>, linux-m68k@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-mmc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1321961573-4562-1-git-send-email-dave.martin@linaro.org>
+Sender: linux-mmc-owner@vger.kernel.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: patches@linaro.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>, Alessandro Rubini <rubini@unipv.it>, Alessandro Zummo <a.zummo@towertech.it>, alsa-devel@alsa-project.org, Chris Ball <cjb@laptop.org>, Dan Williams <dan.j.williams@intel.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Grant Likely <grant.likely@secretlab.ca>, Jaroslav Kysela <perex@perex.cz>, Jassi Brar <jassisinghbrar@gmail.com>, Julia Lawall <julia@diku.dk>, Linus Walleij <linus.walleij@linaro.org>, linux-fbdev@vger.kernel.org, linux-input@vger.kernel.org, linux-mmc@vger.kernel.org, linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, =?utf-8?B?UGF3ZcWC?= Moll <Pawel.Moll@arm.com>, rtc-linux@googlegroups.com, spi-devel-general@lists.sourceforge.net, Takashi Iwai <tiwai@suse.de>, Vinod Koul <vinod.>
 List-Id: linux-serial@vger.kernel.org
 
+Hi Russell,
 
-On most 68k Macs the SCC IRQ is an autovector interrupt and cannot be 
-masked. This can be a problem when pmac_zilog starts up.
+Further to my previous pull request:
 
-For example, the serial debugging code in arch/m68k/kernel/head.S may be 
-used beforehand. It disables the SCC interrupts at the chip but doesn't 
-ack them. Then when a pmac_zilog port is opened and SCC chip interrupts 
-become enabled, the machine locks up with "unexpected interrupt" because 
-request_irq() hasn't happened yet.
+> The following changes since commit cfcfc9eca2bcbd26a8e206baeb005b055dbf8e37:
+> 
+>   Linux 3.2-rc2 (2011-11-15 15:02:59 -0200)
+> 
+> are available in the git repository at:
+>   git://git.linaro.org/people/dmart/linux-2.6-arm.git arm/amba-modalias+for-rmk
+> 
+> Dave Martin (16):
+>       ARM: amba: Move definition of struct amba_id to mod_devicetable.h
+>       ARM: amba: Auto-generate AMBA driver module aliases during modpost
+[...]
 
-Fix this by setting the interrupt enable bits only after the handler is 
-installed and before it is uninstalled. Also move this bit flipping into a 
-separate pmz_interrupt_control() routine. Replace all instances of these 
-operations with calls to this routine.
+... it looks like Alessandro's proposed change to tidy up scripts/mod/
+ile2alias.c may get merged soon -- if that happens, you will get a
+conflict with the second patch of the series referenced by the previous
+pull request.  Fixing it up is straightforward -- if you prefer to
+resolve the conflict yourself, that's fine by me.  Alternatively, you
+can pull the following modified series instead.
 
-Signed-off-by: Finn Thain <fthain@telegraphics.com.au>
+The only difference is in the second patch
+("ARM: amba: Auto-generate AMBA driver module aliases during modpost").
 
----
+Cheers
+---Dave
 
-Re-implemented since v1 using a simpler approach that avoids messing with 
-the Master Interrupt Enable bit. As well as the ifdef problem, it turns 
-out that v1 was not sufficient to entirely fix the problem.
+The following changes since commit 114339d31aa813995461866c659bbf07e1cf2267:
 
-This patch has been tested on a PowerBook 520 but no PowerMacs yet.
+  modpost: use table-lookup to build module aliases (2011-12-02 15:18:08 +0000)
 
-Index: linux-git/drivers/tty/serial/pmac_zilog.c
-===================================================================
---- linux-git.orig/drivers/tty/serial/pmac_zilog.c	2011-12-07 01:56:43.000000000 +1100
-+++ linux-git/drivers/tty/serial/pmac_zilog.c	2011-12-07 01:56:55.000000000 +1100
-@@ -216,6 +216,18 @@ static void pmz_maybe_update_regs(struct
- 	}
- }
- 
-+static void pmz_interrupt_control(struct uart_pmac_port *uap, int enable)
-+{
-+	if (enable) {
-+		uap->curregs[1] |= INT_ALL_Rx | TxINT_ENAB;
-+		if (!ZS_IS_EXTCLK(uap))
-+			uap->curregs[1] |= EXT_INT_ENAB;
-+	} else {
-+		uap->curregs[1] &= ~(EXT_INT_ENAB | TxINT_ENAB | RxINT_MASK);
-+	}
-+	write_zsreg(uap, R1, uap->curregs[1]);
-+}
-+
- static struct tty_struct *pmz_receive_chars(struct uart_pmac_port *uap)
- {
- 	struct tty_struct *tty = NULL;
-@@ -339,9 +351,7 @@ static struct tty_struct *pmz_receive_ch
- 
- 	return tty;
-  flood:
--	uap->curregs[R1] &= ~(EXT_INT_ENAB | TxINT_ENAB | RxINT_MASK);
--	write_zsreg(uap, R1, uap->curregs[R1]);
--	zssync(uap);
-+	pmz_interrupt_control(uap, 0);
- 	pmz_error("pmz: rx irq flood !\n");
- 	return tty;
- }
-@@ -990,12 +1000,9 @@ static int pmz_startup(struct uart_port
- 	if (ZS_IS_IRDA(uap))
- 		pmz_irda_reset(uap);
- 
--	/* Enable interrupts emission from the chip */
-+	/* Enable interrupt requests for the channel */
- 	spin_lock_irqsave(&port->lock, flags);
--	uap->curregs[R1] |= INT_ALL_Rx | TxINT_ENAB;
--	if (!ZS_IS_EXTCLK(uap))
--		uap->curregs[R1] |= EXT_INT_ENAB;
--	write_zsreg(uap, R1, uap->curregs[R1]);
-+	pmz_interrupt_control(uap, 1);
- 	spin_unlock_irqrestore(&port->lock, flags);
- 
- 	pmz_debug("pmz: startup() done.\n");
-@@ -1015,6 +1022,25 @@ static void pmz_shutdown(struct uart_por
- 
- 	mutex_lock(&pmz_irq_mutex);
- 
-+	if (!ZS_IS_ASLEEP(uap)) {
-+		spin_lock_irqsave(&port->lock, flags);
-+
-+		if (!ZS_IS_CONS(uap)) {
-+			/* Disable receiver and transmitter */
-+			uap->curregs[R3] &= ~RxENABLE;
-+			uap->curregs[R5] &= ~TxENABLE;
-+
-+			/* Disable BRK assertion */
-+			uap->curregs[R5] &= ~SND_BRK;
-+			pmz_maybe_update_regs(uap);
-+		}
-+
-+		/* Disable interrupt requests for the channel */
-+		pmz_interrupt_control(uap, 0);
-+
-+		spin_unlock_irqrestore(&port->lock, flags);
-+	}
-+
- 	/* Release interrupt handler */
- 	free_irq(uap->port.irq, uap);
- 
-@@ -1025,29 +1051,8 @@ static void pmz_shutdown(struct uart_por
- 	if (!ZS_IS_OPEN(uap->mate))
- 		pmz_get_port_A(uap)->flags &= ~PMACZILOG_FLAG_IS_IRQ_ON;
- 
--	/* Disable interrupts */
--	if (!ZS_IS_ASLEEP(uap)) {
--		uap->curregs[R1] &= ~(EXT_INT_ENAB | TxINT_ENAB | RxINT_MASK);
--		write_zsreg(uap, R1, uap->curregs[R1]);
--		zssync(uap);
--	}
--
--	if (ZS_IS_CONS(uap) || ZS_IS_ASLEEP(uap)) {
--		spin_unlock_irqrestore(&port->lock, flags);
--		mutex_unlock(&pmz_irq_mutex);
--		return;
--	}
--
--	/* Disable receiver and transmitter.  */
--	uap->curregs[R3] &= ~RxENABLE;
--	uap->curregs[R5] &= ~TxENABLE;
--
--	/* Disable all interrupts and BRK assertion.  */
--	uap->curregs[R5] &= ~SND_BRK;
--	pmz_maybe_update_regs(uap);
--
--	/* Shut the chip down */
--	pmz_set_scc_power(uap, 0);
-+	if (!ZS_IS_ASLEEP(uap) && !ZS_IS_CONS(uap))
-+		pmz_set_scc_power(uap, 0);	/* Shut the chip down */
- 
- 	spin_unlock_irqrestore(&port->lock, flags);
- 
-@@ -1352,19 +1357,15 @@ static void pmz_set_termios(struct uart_
- 	spin_lock_irqsave(&port->lock, flags);	
- 
- 	/* Disable IRQs on the port */
--	uap->curregs[R1] &= ~(EXT_INT_ENAB | TxINT_ENAB | RxINT_MASK);
--	write_zsreg(uap, R1, uap->curregs[R1]);
-+	pmz_interrupt_control(uap, 0);
- 
- 	/* Setup new port configuration */
- 	__pmz_set_termios(port, termios, old);
- 
- 	/* Re-enable IRQs on the port */
--	if (ZS_IS_OPEN(uap)) {
--		uap->curregs[R1] |= INT_ALL_Rx | TxINT_ENAB;
--		if (!ZS_IS_EXTCLK(uap))
--			uap->curregs[R1] |= EXT_INT_ENAB;
--		write_zsreg(uap, R1, uap->curregs[R1]);
--	}
-+	if (ZS_IS_OPEN(uap))
-+		pmz_interrupt_control(uap, 1);
-+
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
- 
-@@ -1670,15 +1671,13 @@ static int pmz_suspend(struct macio_dev
- 
- 	spin_lock_irqsave(&uap->port.lock, flags);
- 
-+	/* Disable receiver and transmitter.  */
-+	uap->curregs[R3] &= ~RxENABLE;
-+	uap->curregs[R5] &= ~TxENABLE;
-+
-+	pmz_interrupt_control(uap, 0);
-+
- 	if (ZS_IS_OPEN(uap) || ZS_IS_CONS(uap)) {
--		/* Disable receiver and transmitter.  */
--		uap->curregs[R3] &= ~RxENABLE;
--		uap->curregs[R5] &= ~TxENABLE;
--
--		/* Disable all interrupts and BRK assertion.  */
--		uap->curregs[R1] &= ~(EXT_INT_ENAB | TxINT_ENAB | RxINT_MASK);
--		uap->curregs[R5] &= ~SND_BRK;
--		pmz_load_zsregs(uap, uap->curregs);
- 		uap->flags |= PMACZILOG_FLAG_IS_ASLEEP;
- 		mb();
- 	}
-@@ -1738,14 +1737,6 @@ static int pmz_resume(struct macio_dev *
- 	/* Take care of config that may have changed while asleep */
- 	__pmz_set_termios(&uap->port, &uap->termios_cache, NULL);
- 
--	if (ZS_IS_OPEN(uap)) {
--		/* Enable interrupts */		
--		uap->curregs[R1] |= INT_ALL_Rx | TxINT_ENAB;
--		if (!ZS_IS_EXTCLK(uap))
--			uap->curregs[R1] |= EXT_INT_ENAB;
--		write_zsreg(uap, R1, uap->curregs[R1]);
--	}
--
- 	spin_unlock_irqrestore(&uap->port.lock, flags);
- 
- 	if (ZS_IS_CONS(uap))
-@@ -1757,6 +1748,12 @@ static int pmz_resume(struct macio_dev *
- 		enable_irq(uap->port.irq);
- 	}
- 
-+	if (ZS_IS_OPEN(uap)) {
-+		spin_lock_irqsave(&uap->port.lock, flags);
-+		pmz_interrupt_control(uap, 1);
-+		spin_unlock_irqrestore(&uap->port.lock, flags);
-+	}
-+
-  bail:
- 	mutex_unlock(&state->port.mutex);
- 	mutex_unlock(&pmz_irq_mutex);
+are available in the git repository at:
+  git://git.linaro.org/people/dmart/linux-2.6-arm.git arm/amba-modalias+alessandro-modalias-v2+for-rmk
+
+Dave Martin (16):
+      ARM: amba: Move definition of struct amba_id to mod_devicetable.h
+      ARM: amba: Auto-generate AMBA driver module aliases during modpost
+      hwrng: nomadik: Enable module alias autogeneration for AMBA drivers
+      dmaengine: pl08x: Enable module alias autogeneration for AMBA drivers
+      dmaengine: pl330: Enable module alias autogeneration for AMBA drivers
+      gpio: pl061: Enable module alias autogeneration for AMBA drivers
+      input: ambakmi: Enable module alias autogeneration for AMBA drivers
+      mmc: mmci: Enable module alias autogeneration for AMBA drivers
+      rtc: pl030: Enable module alias autogeneration for AMBA drivers
+      rtc: pl031: Enable module alias autogeneration for AMBA drivers
+      spi: pl022: Enable module alias autogeneration for AMBA drivers
+      serial: pl010: Enable module alias autogeneration for AMBA drivers
+      serial: pl011: Enable module alias autogeneration for AMBA drivers
+      fbdev: amba: Enable module alias autogeneration for AMBA drivers
+      watchdog: sp805: Enable module alias autogeneration for AMBA drivers
+      sound: aaci: Enable module alias autogeneration for AMBA drivers
+
+ drivers/amba/bus.c                   |    4 ++
+ drivers/char/hw_random/nomadik-rng.c |    2 +
+ drivers/dma/amba-pl08x.c             |    2 +
+ drivers/dma/pl330.c                  |    2 +
+ drivers/gpio/gpio-pl061.c            |    2 +
+ drivers/input/serio/ambakmi.c        |    2 +
+ drivers/mmc/host/mmci.c              |    2 +
+ drivers/rtc/rtc-pl030.c              |    2 +
+ drivers/rtc/rtc-pl031.c              |    2 +
+ drivers/spi/spi-pl022.c              |    2 +
+ drivers/tty/serial/amba-pl010.c      |    2 +
+ drivers/tty/serial/amba-pl011.c      |    2 +
+ drivers/video/amba-clcd.c            |    2 +
+ drivers/watchdog/sp805_wdt.c         |    2 +
+ include/linux/amba/bus.h             |    7 +---
+ include/linux/mod_devicetable.h      |   18 +++++++++
+ scripts/mod/file2alias.c             |   71 +++++++++++++++++++++++++++++++++-
+ sound/arm/aaci.c                     |    2 +
+ 18 files changed, 121 insertions(+), 7 deletions(-)
