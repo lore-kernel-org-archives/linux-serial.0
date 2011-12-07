@@ -1,113 +1,59 @@
-From: Finn Thain <fthain@telegraphics.com.au>
-Subject: Re: [PATCH 01/16 v2] pmac_zilog: fix unexpected irq
-Date: Wed, 7 Dec 2011 12:26:19 +1100 (EST)
-Message-ID: <alpine.LNX.2.00.1112070959380.2418@nippy.intranet>
-References: <20111023141108.856998818@telegraphics.com.au> <20111023141115.208699274@telegraphics.com.au> <alpine.LNX.2.00.1112070203310.14968@nippy.intranet> <CAMuHMdUB-jQQB=ieumYTehdZz1EnoSazEAhsnEunHSnK2o=k8Q@mail.gmail.com>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: [GIT PULL] tty-next: Fix Fsl 8250 BRK bug
+Date: Tue, 6 Dec 2011 22:39:57 -0500
+Message-ID: <20111207033957.GB20556@windriver.com>
 Mime-Version: 1.0
-Content-Type: MULTIPART/MIXED; BOUNDARY="-1463806400-1463890039-1323221179=:2418"
-Return-path: <linux-m68k-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdUB-jQQB=ieumYTehdZz1EnoSazEAhsnEunHSnK2o=k8Q@mail.gmail.com>
-Sender: linux-m68k-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>, linux-m68k@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.windriver.com ([147.11.1.11]:49935 "EHLO
+	mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754425Ab1LGDkL (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 6 Dec 2011 22:40:11 -0500
+Content-Disposition: inline
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: gregkh@suse.de
+Cc: alan@linux.intel.com, galak@kernel.crashing.org, linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Hi Greg,
 
----1463806400-1463890039-1323221179=:2418
-Content-Type: TEXT/PLAIN; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+This is the Freescale hardware bug fix which turned into a
+six-pack of 8250 updates.  This is exactly what was posted
+in the v2 review, with just Alan's ack added[1].  Since nobody
+else has had any follow-on comments since then, I'm assuming
+that it is now good to go.
 
+[1] https://lkml.org/lkml/2011/12/5/156
 
-On Tue, 6 Dec 2011, Geert Uytterhoeven wrote:
+Thanks,
+Paul.
+---
 
-> Hi Finn,
->=20
-> On Tue, Dec 6, 2011 at 16:13, Finn Thain <fthain@telegraphics.com.au> wro=
-te:
-> > +static void pmz_interrupt_control(struct uart_pmac_port *uap, int enab=
-le)
-> > +{
-> > + =C2=A0 =C2=A0 =C2=A0 if (enable) {
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 uap->curregs[1] |=3D=
- INT_ALL_Rx | TxINT_ENAB;
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!ZS_IS_EXTCLK(ua=
-p))
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 uap->curregs[1] |=3D EXT_INT_ENAB;
-> > + =C2=A0 =C2=A0 =C2=A0 } else {
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 uap->curregs[1] &=3D=
- ~(EXT_INT_ENAB | TxINT_ENAB | RxINT_MASK);
->=20
-> Should there be a call to zssync() here?
+Please pull for tty-next to get:
 
-I don't think so. Though I should have mentioned the change in the patch=20
-header.
+The following changes since commit 5611cc4572e889b62a7b4c72a413536bf6a9c416:
 
-> The old code always did that after disabling interrupts.
+  Linux 3.2-rc4 (2011-12-01 14:56:01 -0800)
 
-pmz_load_zsregs(), pmz_set_termios() and pmz_suspend() don't do it.
+are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/paulg/linux fsl-uart-fix
 
-sunzilog only does it on sparc64 and only when writing to the data=20
-register or writing command modifiers to the control register ("On 64-bit=
-=20
-sparc we only need to flush single writes to ensure completion.")
+Paul Gortmaker (6):
+      serial: move struct uart_8250_port from 8250.c to 8250.h
+      serial: clean up parameter passing for 8250 Rx IRQ handling
+      serial: export the key functions for an 8250 IRQ handler
+      serial: make 8250 timeout use the specified IRQ handler
+      serial: manually inline serial8250_handle_port
+      serial: add irq handler for Freescale 16550 errata.
 
-I can't find any purpose for control register reads in the chip manual.
+ arch/powerpc/kernel/legacy_serial.c |    3 +
+ drivers/tty/serial/8250.c           |   92 ++++++++++++-----------------------
+ drivers/tty/serial/8250.h           |   26 ++++++++++
+ drivers/tty/serial/8250_fsl.c       |   63 ++++++++++++++++++++++++
+ drivers/tty/serial/Kconfig          |    5 ++
+ drivers/tty/serial/Makefile         |    1 +
+ include/linux/serial_8250.h         |    5 ++
+ 7 files changed, 134 insertions(+), 61 deletions(-)
+ create mode 100644 drivers/tty/serial/8250_fsl.c
 
-The zssync() calls following some WR1 writes originate here:=20
-http://git.kernel.org/?p=3Dlinux/kernel/git/tglx/history.git;a=3Dcommitdiff=
-;h=3D9e9d9f693c7def3900725c04c6b64311655eea51
-
-So I don't see any need for control register reads but hopefully Ben can=20
-say for sure.
-
-Reading the patch now I notice that I dropped a pmz_maybe_update_regs() or=
-=20
-pmz_load_zsregs() in the suspend path. I will send a new patch.
-
-Finn
-
->=20
-> > + =C2=A0 =C2=A0 =C2=A0 }
-> > + =C2=A0 =C2=A0 =C2=A0 write_zsreg(uap, R1, uap->curregs[1]);
-> > +}
-> > +
-> > =C2=A0static struct tty_struct *pmz_receive_chars(struct uart_pmac_port=
- *uap)
-> > =C2=A0{
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0struct tty_struct *tty =3D NULL;
-> > @@ -339,9 +351,7 @@ static struct tty_struct *pmz_receive_ch
-> >
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0return tty;
-> > =C2=A0flood:
-> > - =C2=A0 =C2=A0 =C2=A0 uap->curregs[R1] &=3D ~(EXT_INT_ENAB | TxINT_ENA=
-B | RxINT_MASK);
-> > - =C2=A0 =C2=A0 =C2=A0 write_zsreg(uap, R1, uap->curregs[R1]);
-> > - =C2=A0 =C2=A0 =C2=A0 zssync(uap);
->=20
-> Cfr. e.g. here.
->=20
-> > + =C2=A0 =C2=A0 =C2=A0 pmz_interrupt_control(uap, 0);
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0pmz_error("pmz: rx irq flood !\n");
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0return tty;
-> > =C2=A0}
->=20
-> Gr{oetje,eeting}s,
->=20
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 Geert
->=20
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m6=
-8k.org
->=20
-> In personal conversations with technical people, I call myself a hacker. =
-But
-> when I'm talking to journalists I just say "programmer" or something like=
- that.
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0=C2=A0 =C2=A0=C2=A0 -- Linus Torvalds
->=20
----1463806400-1463890039-1323221179=:2418--
