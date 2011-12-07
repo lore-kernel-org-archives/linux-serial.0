@@ -1,43 +1,42 @@
-From: Dave Martin <dave.martin@linaro.org>
-Subject: Re: [GIT PULL] ARM: amba: Enable module alias autogeneration for
- AMBA drivers
-Date: Tue, 6 Dec 2011 16:18:15 +0000
-Message-ID: <20111206161815.GD13769@linaro.org>
-References: <20111206151541.GA13774@linaro.org>
- <1321961573-4562-1-git-send-email-dave.martin@linaro.org>
- <20111206155911.GA11902@mail.gnudd.com>
+From: Kevin Hilman <khilman@ti.com>
+Subject: Re: [PATCH v8 00/20] OMAP2+: UART: Runtime adaptation + cleanup
+Date: Tue, 06 Dec 2011 16:21:20 -0800
+Message-ID: <874nxd5j0f.fsf@ti.com>
+References: <1321005446-21741-1-git-send-email-govindraj.raja@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-input-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20111206155911.GA11902@mail.gnudd.com>
-Sender: linux-input-owner@vger.kernel.org
-To: Alessandro Rubini <rubini@unipv.it>
-Cc: linux@arm.linux.org.uk, patches@linaro.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, alan@linux.intel.com, a.zummo@towertech.it, alsa-devel@alsa-project.org, cjb@laptop.org, dan.j.williams@intel.com, dmitry.torokhov@gmail.com, grant.likely@secretlab.ca, perex@perex.cz, jassisinghbrar@gmail.com, julia@diku.dk, linus.walleij@linaro.org, linux-fbdev@vger.kernel.org, linux-input@vger.kernel.org, linux-mmc@vger.kernel.org, linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org, lethal@linux-sh.org, Pawel.Moll@arm.com, rtc-linux@googlegroups.com, spi-devel-general@lists.sourceforge.net, tiwai@suse.de, vinod.koul@intel.com, wim@iguana.be
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1321005446-21741-1-git-send-email-govindraj.raja@ti.com>
+ (Govindraj R.'s message of "Fri, 11 Nov 2011 15:27:17 +0530")
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: linux-arm-kernel-bounces@lists.infradead.org
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Alan Cox <alan@linux.intel.com>, Greg KH <greg@kroah.com>
+Cc: Tony Lindgren <tony@atomide.com>, Rajendra Nayak <rnayak@ti.com>, Partha Basak <p-basak2@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, linux-serial@vger.kernel.org, Vishwanath Sripathy <vishwanath.bs@ti.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Dec 06, 2011 at 04:59:11PM +0100, Alessandro Rubini wrote:
-> > ... it looks like Alessandro's proposed change to tidy up scripts/mod/
-> > ile2alias.c may get merged soon
-> 
-> No, I don't think it will happen. Rusty disagrees, and his own
-> suggestion is in the queue. I'm waiting a while to understand
-> what is happening.
-> 
-> Anyways, I think it's better for me to wait for amba to come in, and
-> work on scripts/mod later on. After all, it's meant to ease adding new
-> buses later, not to make it more difficult for already scheduled ones.
+"Govindraj.R" <govindraj.raja@ti.com> writes:
 
-OK -- thanks for the clarification.
+> Converting uart driver to adapt to pm runtime API's.
+> Code re-org + cleanup.
+> Moving some functionality from serial.c to omap-serial.c
 
+Alan, can you confirm your Ack's are still valid on the drivers/tty
+parts of this series?  It has gone through quite a few changes since
+your original ack.
 
-Russell, it sounds like you shouldn't get a merge conflict with the
-original version of the series after all.
+Greg, are you ok with this series merging via the OMAP tree since it is
+changing arch/arm/mach-omap2/* code as well as the driver, and should go
+together.  If so, with your ack (on the drivers/tty/* parts), I'll
+handle this series through the OMAP tree.
 
-For reference, the original pull request is here:
+Thanks,
 
-http://lists.infradead.org/pipermail/linux-arm-kernel/2011-November/073619.html
-
-
-Cheers
----Dave
+Kevin
