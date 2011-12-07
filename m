@@ -1,42 +1,34 @@
-From: Kevin Hilman <khilman@ti.com>
+From: Alan Cox <alan@linux.intel.com>
 Subject: Re: [PATCH v8 00/20] OMAP2+: UART: Runtime adaptation + cleanup
-Date: Tue, 06 Dec 2011 16:21:20 -0800
-Message-ID: <874nxd5j0f.fsf@ti.com>
+Date: Wed, 7 Dec 2011 00:46:32 +0000
+Message-ID: <20111207004632.15c2a5d4@bob.linux.org.uk>
 References: <1321005446-21741-1-git-send-email-govindraj.raja@ti.com>
+	<874nxd5j0f.fsf@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1321005446-21741-1-git-send-email-govindraj.raja@ti.com>
- (Govindraj R.'s message of "Fri, 11 Nov 2011 15:27:17 +0530")
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: linux-arm-kernel-bounces@lists.infradead.org
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Alan Cox <alan@linux.intel.com>, Greg KH <greg@kroah.com>
-Cc: Tony Lindgren <tony@atomide.com>, Rajendra Nayak <rnayak@ti.com>, Partha Basak <p-basak2@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, linux-serial@vger.kernel.org, Vishwanath Sripathy <vishwanath.bs@ti.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mga03.intel.com ([143.182.124.21]:49562 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755014Ab1LGAed (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 6 Dec 2011 19:34:33 -0500
+In-Reply-To: <874nxd5j0f.fsf@ti.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Kevin Hilman <khilman@ti.com>
+Cc: Greg KH <greg@kroah.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Partha Basak <p-basak2@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Rajendra Nayak <rnayak@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>
 
-"Govindraj.R" <govindraj.raja@ti.com> writes:
+On Tue, 06 Dec 2011 16:21:20 -0800
+Kevin Hilman <khilman@ti.com> wrote:
 
-> Converting uart driver to adapt to pm runtime API's.
-> Code re-org + cleanup.
-> Moving some functionality from serial.c to omap-serial.c
+> "Govindraj.R" <govindraj.raja@ti.com> writes:
+> 
+> > Converting uart driver to adapt to pm runtime API's.
+> > Code re-org + cleanup.
+> > Moving some functionality from serial.c to omap-serial.c
+> 
+> Alan, can you confirm your Ack's are still valid on the drivers/tty
+> parts of this series?  It has gone through quite a few changes since
+> your original ack.
 
-Alan, can you confirm your Ack's are still valid on the drivers/tty
-parts of this series?  It has gone through quite a few changes since
-your original ack.
-
-Greg, are you ok with this series merging via the OMAP tree since it is
-changing arch/arm/mach-omap2/* code as well as the driver, and should go
-together.  If so, with your ack (on the drivers/tty/* parts), I'll
-handle this series through the OMAP tree.
-
-Thanks,
-
-Kevin
+Yes
