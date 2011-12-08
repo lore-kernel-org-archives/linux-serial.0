@@ -1,99 +1,65 @@
 From: Mayank Rana <mrana@codeaurora.org>
-Subject: [PATCH 1/2] msm_serial_hs: Fix type inconsistency for tx and rx command_ptr_ptr
-Date: Thu,  8 Dec 2011 09:06:08 +0530
-Message-ID: <1323315369-19260-1-git-send-email-mrana@codeaurora.org>
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
+Subject: [PATCH 2/2] msm_serial_hs: Fix spinlock recursion in handling CTS
+Date: Thu,  8 Dec 2011 09:06:09 +0530
+Message-ID: <1323315369-19260-2-git-send-email-mrana@codeaurora.org>
+References: <1323315369-19260-1-git-send-email-mrana@codeaurora.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from wolverine02.qualcomm.com ([199.106.114.251]:48432 "EHLO
+	wolverine02.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757092Ab1LHDhs (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 7 Dec 2011 22:37:48 -0500
+In-Reply-To: <1323315369-19260-1-git-send-email-mrana@codeaurora.org>
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: gregkh@suse.de
 Cc: linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, imirkin@alum.mit.edu, npelly@google.com, Mayank Rana <mrana@codeaurora.org>
-List-Id: linux-serial@vger.kernel.org
 
-Both tx and rx command_ptr_ptr are of type u32*. While allocating
-memory for it, sizeof(u32 *) is used as part of kmalloc API instead
-of sizeof(u32). ADM Hardare requires size of command_ptr_ptr as 1 Word.
-Both sizeof(u32 *) and sizeof(u32) are same on 32-bit architecture
-whereas sizeof(u32 *) would be different in size compare to sizeof(u32)
-on anyother architecture.
-
-Hence correct usage of sizeof(command_ptr_ptr) for Tx and Rx with
-kmalloc and dma_(map/unmap)_single APIs.
+msm_hs_handle_delta_cts tries to acquire port->lock already acquired
+by the callee function msm_hs_isr. Change function name to follow
+"_locked" convention.
 
 Signed-off-by: Mayank Rana <mrana@codeaurora.org>
-Reported-by: Ilia Mirkin <imirkin@alum.mit.edu>
 ---
- drivers/tty/serial/msm_serial_hs.c |   16 ++++++++--------
- 1 files changed, 8 insertions(+), 8 deletions(-)
+ drivers/tty/serial/msm_serial_hs.c |    7 ++-----
+ 1 files changed, 2 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/tty/serial/msm_serial_hs.c b/drivers/tty/serial/msm_serial_hs.c
-index 624701f..f1d5695 100644
+index f1d5695..ec16037 100644
 --- a/drivers/tty/serial/msm_serial_hs.c
 +++ b/drivers/tty/serial/msm_serial_hs.c
-@@ -420,9 +420,9 @@ static int __devexit msm_hs_remove(struct platform_device *pdev)
- 		      msm_uport->rx.rbuffer);
- 	dma_pool_destroy(msm_uport->rx.pool);
+@@ -1085,12 +1085,10 @@ static void msm_hs_config_port(struct uart_port *uport, int cfg_flags)
+ }
  
--	dma_unmap_single(dev, msm_uport->rx.cmdptr_dmaaddr, sizeof(u32 *),
-+	dma_unmap_single(dev, msm_uport->rx.cmdptr_dmaaddr, sizeof(u32),
- 			 DMA_TO_DEVICE);
--	dma_unmap_single(dev, msm_uport->tx.mapped_cmd_ptr_ptr, sizeof(u32 *),
-+	dma_unmap_single(dev, msm_uport->tx.mapped_cmd_ptr_ptr, sizeof(u32),
- 			 DMA_TO_DEVICE);
- 	dma_unmap_single(dev, msm_uport->tx.mapped_cmd_ptr, sizeof(dmov_box),
- 			 DMA_TO_DEVICE);
-@@ -810,7 +810,7 @@ static void msm_hs_submit_tx_locked(struct uart_port *uport)
- 	*tx->command_ptr_ptr = CMD_PTR_LP | DMOV_CMD_ADDR(tx->mapped_cmd_ptr);
+ /*  Handle CTS changes (Called from interrupt handler) */
+-static void msm_hs_handle_delta_cts(struct uart_port *uport)
++static void msm_hs_handle_delta_cts_locked(struct uart_port *uport)
+ {
+-	unsigned long flags;
+ 	struct msm_hs_port *msm_uport = UARTDM_TO_MSM(uport);
  
- 	dma_sync_single_for_device(uport->dev, tx->mapped_cmd_ptr_ptr,
--				   sizeof(u32 *), DMA_TO_DEVICE);
-+				   sizeof(u32), DMA_TO_DEVICE);
+-	spin_lock_irqsave(&uport->lock, flags);
+ 	clk_enable(msm_uport->clk);
  
- 	/* Save tx_count to use in Callback */
- 	tx->tx_count = tx_count;
-@@ -1535,7 +1535,7 @@ static int __devinit uartdm_init_port(struct uart_port *uport)
- 	if (!tx->command_ptr)
- 		return -ENOMEM;
+ 	/* clear interrupt */
+@@ -1098,7 +1096,6 @@ static void msm_hs_handle_delta_cts(struct uart_port *uport)
+ 	uport->icount.cts++;
  
--	tx->command_ptr_ptr = kmalloc(sizeof(u32 *), GFP_KERNEL | __GFP_DMA);
-+	tx->command_ptr_ptr = kmalloc(sizeof(u32), GFP_KERNEL | __GFP_DMA);
- 	if (!tx->command_ptr_ptr) {
- 		ret = -ENOMEM;
- 		goto err_tx_command_ptr_ptr;
-@@ -1545,7 +1545,7 @@ static int __devinit uartdm_init_port(struct uart_port *uport)
- 					    sizeof(dmov_box), DMA_TO_DEVICE);
- 	tx->mapped_cmd_ptr_ptr = dma_map_single(uport->dev,
- 						tx->command_ptr_ptr,
--						sizeof(u32 *), DMA_TO_DEVICE);
-+						sizeof(u32), DMA_TO_DEVICE);
- 	tx->xfer.cmdptr = DMOV_CMD_ADDR(tx->mapped_cmd_ptr_ptr);
+ 	clk_disable(msm_uport->clk);
+-	spin_unlock_irqrestore(&uport->lock, flags);
  
- 	init_waitqueue_head(&rx->wait);
-@@ -1573,7 +1573,7 @@ static int __devinit uartdm_init_port(struct uart_port *uport)
- 		goto err_rx_command_ptr;
- 	}
+ 	/* clear the IOCTL TIOCMIWAIT if called */
+ 	wake_up_interruptible(&uport->state->port.delta_msr_wait);
+@@ -1246,7 +1243,7 @@ static irqreturn_t msm_hs_isr(int irq, void *dev)
  
--	rx->command_ptr_ptr = kmalloc(sizeof(u32 *), GFP_KERNEL | __GFP_DMA);
-+	rx->command_ptr_ptr = kmalloc(sizeof(u32), GFP_KERNEL | __GFP_DMA);
- 	if (!rx->command_ptr_ptr) {
- 		pr_err("%s(): cannot allocate rx->command_ptr_ptr", __func__);
- 		ret = -ENOMEM;
-@@ -1591,7 +1591,7 @@ static int __devinit uartdm_init_port(struct uart_port *uport)
- 	*rx->command_ptr_ptr = CMD_PTR_LP | DMOV_CMD_ADDR(rx->mapped_cmd_ptr);
+ 	/* Change in CTS interrupt */
+ 	if (isr_status & UARTDM_ISR_DELTA_CTS_BMSK)
+-		msm_hs_handle_delta_cts(uport);
++		msm_hs_handle_delta_cts_locked(uport);
  
- 	rx->cmdptr_dmaaddr = dma_map_single(uport->dev, rx->command_ptr_ptr,
--					    sizeof(u32 *), DMA_TO_DEVICE);
-+					    sizeof(u32), DMA_TO_DEVICE);
- 	rx->xfer.cmdptr = DMOV_CMD_ADDR(rx->cmdptr_dmaaddr);
+ 	spin_unlock_irqrestore(&uport->lock, flags);
  
- 	INIT_WORK(&rx->tty_work, msm_hs_tty_flip_buffer_work);
-@@ -1607,7 +1607,7 @@ err_dma_pool_alloc:
- 	dma_pool_destroy(msm_uport->rx.pool);
- err_dma_pool_create:
- 	dma_unmap_single(uport->dev, msm_uport->tx.mapped_cmd_ptr_ptr,
--				sizeof(u32 *), DMA_TO_DEVICE);
-+				sizeof(u32), DMA_TO_DEVICE);
- 	dma_unmap_single(uport->dev, msm_uport->tx.mapped_cmd_ptr,
- 				sizeof(dmov_box), DMA_TO_DEVICE);
- 	kfree(msm_uport->tx.command_ptr_ptr);
 -- 
 Sent by an employee of the Qualcomm Innovation Center, Inc.
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum.
+
