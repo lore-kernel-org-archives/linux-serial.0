@@ -1,65 +1,49 @@
-From: Mayank Rana <mrana@codeaurora.org>
-Subject: [PATCH 2/2] msm_serial_hs: Fix spinlock recursion in handling CTS
-Date: Thu,  8 Dec 2011 09:06:09 +0530
-Message-ID: <1323315369-19260-2-git-send-email-mrana@codeaurora.org>
-References: <1323315369-19260-1-git-send-email-mrana@codeaurora.org>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from wolverine02.qualcomm.com ([199.106.114.251]:48432 "EHLO
-	wolverine02.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757092Ab1LHDhs (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 7 Dec 2011 22:37:48 -0500
-In-Reply-To: <1323315369-19260-1-git-send-email-mrana@codeaurora.org>
-Sender: linux-serial-owner@vger.kernel.org
+From: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Subject: Re: [PATCH 01/16 v3] pmac_zilog: fix unexpected irq
+Date: Thu, 08 Dec 2011 15:20:04 +1100
+Message-ID: <1323318004.12793.21.camel@pasglop>
+References: <20111023141108.856998818@telegraphics.com.au>
+	 <20111023141115.208699274@telegraphics.com.au>
+	 <alpine.LNX.2.00.1112070203310.14968@nippy.intranet>
+	 <alpine.LNX.2.00.1112071427280.28552@nippy.intranet>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <alpine.LNX.2.00.1112071427280.28552@nippy.intranet>
+Sender: linux-m68k-owner@vger.kernel.org
+To: Finn Thain <fthain@telegraphics.com.au>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@suse.de
-Cc: linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, imirkin@alum.mit.edu, npelly@google.com, Mayank Rana <mrana@codeaurora.org>
 
-msm_hs_handle_delta_cts tries to acquire port->lock already acquired
-by the callee function msm_hs_isr. Change function name to follow
-"_locked" convention.
+On Wed, 2011-12-07 at 14:49 +1100, Finn Thain wrote:
+> On most 68k Macs the SCC IRQ is an autovector interrupt and cannot be 
+> masked. This can be a problem when pmac_zilog starts up.
+> 
+> For example, the serial debugging code in arch/m68k/kernel/head.S may be 
+> used beforehand. It disables the SCC interrupts at the chip but doesn't 
+> ack them. Then when a pmac_zilog port is used, the machine locks up with 
+> "unexpected interrupt".
+> 
+> This can happen in pmz_shutdown() since the irq is freed before the 
+> channel interrupts are disabled.
+> 
+> Fix this by clearing interrupt enable bits before the handler is 
+> uninstalled. Also move the interrupt control bit flipping into a separate 
+> pmz_interrupt_control() routine. Replace all instances of these operations 
+> with calls to this routine. Omit the zssync() calls that seem to serve no 
+> purpose.
+> 
+> Signed-off-by: Finn Thain <fthain@telegraphics.com.au>
+> Acked-by: Alan Cox <alan@linux.intel.com>
+> 
+> ---
 
-Signed-off-by: Mayank Rana <mrana@codeaurora.org>
----
- drivers/tty/serial/msm_serial_hs.c |    7 ++-----
- 1 files changed, 2 insertions(+), 5 deletions(-)
+So basic operations seem to work, I've applied the patch to
+powerpc-next.
 
-diff --git a/drivers/tty/serial/msm_serial_hs.c b/drivers/tty/serial/msm_serial_hs.c
-index f1d5695..ec16037 100644
---- a/drivers/tty/serial/msm_serial_hs.c
-+++ b/drivers/tty/serial/msm_serial_hs.c
-@@ -1085,12 +1085,10 @@ static void msm_hs_config_port(struct uart_port *uport, int cfg_flags)
- }
- 
- /*  Handle CTS changes (Called from interrupt handler) */
--static void msm_hs_handle_delta_cts(struct uart_port *uport)
-+static void msm_hs_handle_delta_cts_locked(struct uart_port *uport)
- {
--	unsigned long flags;
- 	struct msm_hs_port *msm_uport = UARTDM_TO_MSM(uport);
- 
--	spin_lock_irqsave(&uport->lock, flags);
- 	clk_enable(msm_uport->clk);
- 
- 	/* clear interrupt */
-@@ -1098,7 +1096,6 @@ static void msm_hs_handle_delta_cts(struct uart_port *uport)
- 	uport->icount.cts++;
- 
- 	clk_disable(msm_uport->clk);
--	spin_unlock_irqrestore(&uport->lock, flags);
- 
- 	/* clear the IOCTL TIOCMIWAIT if called */
- 	wake_up_interruptible(&uport->state->port.delta_msr_wait);
-@@ -1246,7 +1243,7 @@ static irqreturn_t msm_hs_isr(int irq, void *dev)
- 
- 	/* Change in CTS interrupt */
- 	if (isr_status & UARTDM_ISR_DELTA_CTS_BMSK)
--		msm_hs_handle_delta_cts(uport);
-+		msm_hs_handle_delta_cts_locked(uport);
- 
- 	spin_unlock_irqrestore(&uport->lock, flags);
- 
--- 
-Sent by an employee of the Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum.
+However, the internal modem on my Pismo powerbook doesn't appear to
+survive suspend/resume. I'll dig into that and merge a fixup patch asap.
 
+Cheers,
+Ben.
