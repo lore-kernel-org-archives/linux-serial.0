@@ -1,41 +1,68 @@
-From: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+From: Finn Thain <fthain@telegraphics.com.au>
 Subject: Re: [PATCH 01/16 v3] pmac_zilog: fix unexpected irq
-Date: Thu, 08 Dec 2011 15:30:38 +1100
-Message-ID: <1323318638.12793.23.camel@pasglop>
-References: <20111023141108.856998818@telegraphics.com.au>
-	 <20111023141115.208699274@telegraphics.com.au>
-	 <alpine.LNX.2.00.1112070203310.14968@nippy.intranet>
-	 <alpine.LNX.2.00.1112071427280.28552@nippy.intranet>
-	 <1323318004.12793.21.camel@pasglop>
+Date: Thu, 8 Dec 2011 22:26:46 +1100 (EST)
+Message-ID: <alpine.LNX.2.00.1112082128330.2357@nippy.intranet>
+References: <20111023141108.856998818@telegraphics.com.au>  <20111023141115.208699274@telegraphics.com.au>  <alpine.LNX.2.00.1112070203310.14968@nippy.intranet>  <alpine.LNX.2.00.1112071427280.28552@nippy.intranet>  <1323318004.12793.21.camel@pasglop>
+ <1323318638.12793.23.camel@pasglop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-m68k-owner@vger.kernel.org>
-In-Reply-To: <1323318004.12793.21.camel@pasglop>
+In-Reply-To: <1323318638.12793.23.camel@pasglop>
 Sender: linux-m68k-owner@vger.kernel.org
-To: Finn Thain <fthain@telegraphics.com.au>
+To: Benjamin Herrenschmidt <benh@kernel.crashing.org>
 Cc: Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 2011-12-08 at 15:20 +1100, Benjamin Herrenschmidt wrote:
 
-> So basic operations seem to work, I've applied the patch to
-> powerpc-next.
+On Thu, 8 Dec 2011, Benjamin Herrenschmidt wrote:
+
+> On Thu, 2011-12-08 at 15:20 +1100, Benjamin Herrenschmidt wrote:
 > 
-> However, the internal modem on my Pismo powerbook doesn't appear to
-> survive suspend/resume. I'll dig into that and merge a fixup patch asap.
+> > So basic operations seem to work, I've applied the patch to 
+> > powerpc-next.
 
-BTW. I applied anyway because suspend/resume was already broken (you
-spotted that we don't clear the suspended flag for example).
+Then I guess Geert should not push this for 3.3 -- or does it make no 
+difference?
 
-Fixing the flag alone helps a bit. We can't use the modem if we
-suspend/resume with the open port, but closing and re-opening works.
+> > However, the internal modem on my Pismo powerbook doesn't appear to 
+> > survive suspend/resume. I'll dig into that and merge a fixup patch 
+> > asap.
+> 
+> BTW. I applied anyway because suspend/resume was already broken (you 
+> spotted that we don't clear the suspended flag for example).
+> 
+> Fixing the flag alone helps a bit. We can't use the modem if we 
+> suspend/resume with the open port,
 
-Lockdep also picked-up a A->B B->A between the port mutex and the pmz
-irq mutex on suspend.
+If the SCC IRQ counters change across suspend/resume, perhaps the modem 
+itself is not powering up...
 
-I'll try to fix all these, and will let you know (I may not have time
-today).
+> but closing and re-opening works.
 
-Cheers,
-Ben.
+Maybe the modem wants a transition on DTR or similar, but it hasn't had 
+time to initialise when that happens during SCC resumption.
+
+If so, calling pmz_shutdown() then pmz_startup() from the tail of 
+pmz_resume() without delay should probably fail to revive it...
+
+> 
+> Lockdep also picked-up a A->B B->A between the port mutex and the pmz 
+> irq mutex on suspend.
+> 
+> I'll try to fix all these, and will let you know (I may not have time 
+> today).
+
+Thanks.
+
+Finn
+
+> 
+> Cheers,
+> Ben.
+> 
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-m68k" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
