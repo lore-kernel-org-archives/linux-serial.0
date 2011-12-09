@@ -1,38 +1,65 @@
-From: Wolfram Sang <w.sang@pengutronix.de>
-Subject: [PATCH RESEND 8/8] serial: 8250: fix comment about accessing EMSR
-Date: Fri,  9 Dec 2011 18:07:20 +0100
-Message-ID: <1323450440-414-9-git-send-email-w.sang@pengutronix.de>
-References: <1323450440-414-1-git-send-email-w.sang@pengutronix.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1323450440-414-1-git-send-email-w.sang@pengutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Greg KH <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, Claudio Scordino <claudio@evidence.eu.com>, Wolfram Sang <w.sang@pengutronix.de>
+From: Mike Frysinger <vapier@gentoo.org>
+Subject: Re: [uclinux-dist-devel] [PATCH 2/2] serial: bfin-uart: Remove ASYNC_CTS_FLOW flag for hardware automatic CTS.
+Date: Fri, 9 Dec 2011 12:17:05 -0500
+Message-ID: <201112091217.07781.vapier@gentoo.org>
+References: <1323410421-10465-1-git-send-email-sonic.adi@gmail.com> <1323410421-10465-2-git-send-email-sonic.adi@gmail.com> <20111209111205.04780196@pyramind.ukuu.org.uk>
+Mime-Version: 1.0
+Content-Type: multipart/signed;
+  boundary="nextPart7932394.Jhr7JSu9ic";
+  protocol="application/pgp-signature";
+  micalg=pgp-sha1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp.gentoo.org ([140.211.166.183]:37203 "EHLO smtp.gentoo.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752086Ab1LIRQ5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 9 Dec 2011 12:16:57 -0500
+In-Reply-To: <20111209111205.04780196@pyramind.ukuu.org.uk>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: uclinux-dist-devel@blackfin.uclinux.org
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Sonic Zhang <sonic.adi@gmail.com>, Greg Kroah-Hartman <gregkh@suse.de>, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 
-All docs I checked do say LCR should NOT be 0xBF (16c850, 16c854,
-16v2750). Fix it according to that, since the only usage of the register
-currently implements the revised access method. If somebody later finds
-a derivate which actually does need 0xBF to enable that register, we can
-update the comment again with precise references.
+--nextPart7932394.Jhr7JSu9ic
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Wolfram Sang <w.sang@pengutronix.de>
----
- include/linux/serial_reg.h |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+On Friday 09 December 2011 06:12:05 Alan Cox wrote:
+> > +#ifdef CONFIG_SERIAL_BFIN_CTSRTS
+> >=20
+> >  			uart->port.flags |=3D ASYNC_CTS_FLOW;
+> >=20
+> > +#endif
+>=20
+> As an aside could the cts/hard cts etc be passed as properties to the
+> platform device rather than ifdeffed ?
 
-diff --git a/include/linux/serial_reg.h b/include/linux/serial_reg.h
-index 0267bab6..0a1beca 100644
---- a/include/linux/serial_reg.h
-+++ b/include/linux/serial_reg.h
-@@ -211,7 +211,7 @@
- #define UART_FCTR_TX		0x80  /* Programmable trigger mode select */
- 
- /*
-- * LCR=0xBF, FCTR[6]=1
-+ * LCR!=0xBF (some docs say =0), FCTR[6]=1, XR16C85x
-  */
- #define UART_EMSR	7	/* Extended Mode Select Register */
- #define UART_EMSR_FIFO_COUNT	0x01  /* Rx/Tx select */
--- 
-1.7.7.3
+most platforms don't bother with flow control, so we made support in the dr=
+iver=20
+optional to keep things smaller.
+=2Dmike
+
+--nextPart7932394.Jhr7JSu9ic
+Content-Type: application/pgp-signature; name=signature.asc 
+Content-Description: This is a digitally signed message part.
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.17 (GNU/Linux)
+
+iQIcBAABAgAGBQJO4kKTAAoJEEFjO5/oN/WBzYUQAMl7PfoQfpgop0CqEqMcFlod
++b3hYpHew2RHmi5eX4QJ/6c4FHJiZdnDm/tFU3Ntm5Jr7KdGwRZpN5OK8b2wkFaq
+X2AhEWVUARckcJns0B9w7A9qtVtVbiJ23HIsv9AVBczJu9wxjZgfH1n0a9ppAG5N
+5Srp4usVxpOjdiZvqtm2p92vB8Txu4w9+9taCw5Tq/vTAUnylejvJQvn/Omk69m6
+cMjNwDu9F8kMIzo1t23Ro9qqt3hKX2yblMdCDtMhkO4dEF18AMMApkoso+4IfxZW
+Q6gMYKrDItiMA/Y25N/6PcFYKkVpSR1cBDpAEqoIMVieiwF/62uiNHsyiv3xxRTc
+GnoEabH70emJNaMhkZ3Hhlk1Gg20iY7Xy6AVRxvcV029nprQmWgxWS8jpPURTxWF
+qCOf+Mds5uEK26Z6ygXsFXtxQSFBA0KfdJu+cRGnO5C9LagUNDUcZ1h0QjsMglWw
+DwpZGORsvJ4weC+Sn1I7kvT+f9mAZuO2AOSetoRU6b4438KHFcDvubj0CfnSHDv2
+kzNaw/bsIVTusQdZWKUBEtB2WPnXouWd9gSNH0ALKWR0gsoc6sbBOTx+vOrqvwb7
+eXkq3RSa0WG0cVvzu6fE/F1sROtJTEn7aXOKkYsKqME8/INs4B/nRcCe1R1HAstZ
+vTaH63tyTrSFUR4YBroH
+=czfR
+-----END PGP SIGNATURE-----
+
+--nextPart7932394.Jhr7JSu9ic--
