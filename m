@@ -1,65 +1,32 @@
-From: Mike Frysinger <vapier@gentoo.org>
-Subject: Re: [uclinux-dist-devel] [PATCH 2/2] serial: bfin-uart: Remove ASYNC_CTS_FLOW flag for hardware automatic CTS.
-Date: Fri, 9 Dec 2011 12:17:05 -0500
-Message-ID: <201112091217.07781.vapier@gentoo.org>
-References: <1323410421-10465-1-git-send-email-sonic.adi@gmail.com> <1323410421-10465-2-git-send-email-sonic.adi@gmail.com> <20111209111205.04780196@pyramind.ukuu.org.uk>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH RESEND 1/8] serial: 8250: replace hardcoded 0xbf with
+ #define
+Date: Fri, 9 Dec 2011 18:58:18 +0000
+Message-ID: <20111209185818.589039f9@pyramind.ukuu.org.uk>
+References: <1323450440-414-1-git-send-email-w.sang@pengutronix.de>
+	<1323450440-414-2-git-send-email-w.sang@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed;
-  boundary="nextPart7932394.Jhr7JSu9ic";
-  protocol="application/pgp-signature";
-  micalg=pgp-sha1
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.gentoo.org ([140.211.166.183]:37203 "EHLO smtp.gentoo.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752086Ab1LIRQ5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 9 Dec 2011 12:16:57 -0500
-In-Reply-To: <20111209111205.04780196@pyramind.ukuu.org.uk>
+Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:36264 "EHLO
+	pyramind.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752518Ab1LIS5o (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 9 Dec 2011 13:57:44 -0500
+In-Reply-To: <1323450440-414-2-git-send-email-w.sang@pengutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: uclinux-dist-devel@blackfin.uclinux.org
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Sonic Zhang <sonic.adi@gmail.com>, Greg Kroah-Hartman <gregkh@suse.de>, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+To: Wolfram Sang <w.sang@pengutronix.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Greg KH <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, Claudio Scordino <claudio@evidence.eu.com>
 
---nextPart7932394.Jhr7JSu9ic
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+On Fri,  9 Dec 2011 18:07:13 +0100
+Wolfram Sang <w.sang@pengutronix.de> wrote:
 
-On Friday 09 December 2011 06:12:05 Alan Cox wrote:
-> > +#ifdef CONFIG_SERIAL_BFIN_CTSRTS
-> >=20
-> >  			uart->port.flags |=3D ASYNC_CTS_FLOW;
-> >=20
-> > +#endif
->=20
-> As an aside could the cts/hard cts etc be passed as properties to the
-> platform device rather than ifdeffed ?
+> Makes it easier to find all occurences requesting CONF_MODE_B.
+> 
+> Signed-off-by: Wolfram Sang <w.sang@pengutronix.de>
 
-most platforms don't bother with flow control, so we made support in the dr=
-iver=20
-optional to keep things smaller.
-=2Dmike
+Acked-by: Alan Cox <alan@linux.intel.com>
 
---nextPart7932394.Jhr7JSu9ic
-Content-Type: application/pgp-signature; name=signature.asc 
-Content-Description: This is a digitally signed message part.
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.17 (GNU/Linux)
-
-iQIcBAABAgAGBQJO4kKTAAoJEEFjO5/oN/WBzYUQAMl7PfoQfpgop0CqEqMcFlod
-+b3hYpHew2RHmi5eX4QJ/6c4FHJiZdnDm/tFU3Ntm5Jr7KdGwRZpN5OK8b2wkFaq
-X2AhEWVUARckcJns0B9w7A9qtVtVbiJ23HIsv9AVBczJu9wxjZgfH1n0a9ppAG5N
-5Srp4usVxpOjdiZvqtm2p92vB8Txu4w9+9taCw5Tq/vTAUnylejvJQvn/Omk69m6
-cMjNwDu9F8kMIzo1t23Ro9qqt3hKX2yblMdCDtMhkO4dEF18AMMApkoso+4IfxZW
-Q6gMYKrDItiMA/Y25N/6PcFYKkVpSR1cBDpAEqoIMVieiwF/62uiNHsyiv3xxRTc
-GnoEabH70emJNaMhkZ3Hhlk1Gg20iY7Xy6AVRxvcV029nprQmWgxWS8jpPURTxWF
-qCOf+Mds5uEK26Z6ygXsFXtxQSFBA0KfdJu+cRGnO5C9LagUNDUcZ1h0QjsMglWw
-DwpZGORsvJ4weC+Sn1I7kvT+f9mAZuO2AOSetoRU6b4438KHFcDvubj0CfnSHDv2
-kzNaw/bsIVTusQdZWKUBEtB2WPnXouWd9gSNH0ALKWR0gsoc6sbBOTx+vOrqvwb7
-eXkq3RSa0WG0cVvzu6fE/F1sROtJTEn7aXOKkYsKqME8/INs4B/nRcCe1R1HAstZ
-vTaH63tyTrSFUR4YBroH
-=czfR
------END PGP SIGNATURE-----
-
---nextPart7932394.Jhr7JSu9ic--
+That should go in anyway
