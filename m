@@ -1,25 +1,90 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 2/2] serial: bfin-uart: Remove ASYNC_CTS_FLOW flag for
- hardware automatic CTS.
-Date: Fri, 9 Dec 2011 11:12:05 +0000
-Message-ID: <20111209111205.04780196@pyramind.ukuu.org.uk>
-References: <1323410421-10465-1-git-send-email-sonic.adi@gmail.com>
-	<1323410421-10465-2-git-send-email-sonic.adi@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1323410421-10465-2-git-send-email-sonic.adi@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sonic Zhang <sonic.adi@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
+From: Wolfram Sang <w.sang@pengutronix.de>
+Subject: [PATCH RESEND 4/8] serial: 8250: add RX_DURING_TX capability to RS485 mode
+Date: Fri,  9 Dec 2011 18:07:16 +0100
+Message-ID: <1323450440-414-5-git-send-email-w.sang@pengutronix.de>
+References: <1323450440-414-1-git-send-email-w.sang@pengutronix.de>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:49430 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752182Ab1LIRHf (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 9 Dec 2011 12:07:35 -0500
+In-Reply-To: <1323450440-414-1-git-send-email-w.sang@pengutronix.de>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Greg KH <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, Claudio Scordino <claudio@evidence.eu.com>, Wolfram Sang <w.sang@pengutronix.de>, Juergen Beisert <jbe@pengutronix.de>
 
-> +#ifdef CONFIG_SERIAL_BFIN_CTSRTS
->  			uart->port.flags |= ASYNC_CTS_FLOW;
-> +#endif
+To prevent echo in some configurations, make sure we do not read back
+when we are sending if RS485 is configured this way. We need to shuffle
+stop_rx() around, implement start_rx() and call it in apropriate places.
 
-As an aside could the cts/hard cts etc be passed as properties to the
-platform device rather than ifdeffed ?
+Signed-off-by: Juergen Beisert <jbe@pengutronix.de>
+Signed-off-by: Wolfram Sang <w.sang@pengutronix.de>
+---
+ drivers/tty/serial/8250.c |   34 +++++++++++++++++++++++++---------
+ 1 files changed, 25 insertions(+), 9 deletions(-)
 
-Alan
+diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
+index b5d3248..6a2f47f 100644
+--- a/drivers/tty/serial/8250.c
++++ b/drivers/tty/serial/8250.c
+@@ -1304,6 +1304,26 @@ static void autoconfig_irq(struct uart_8250_port *up)
+ 	up->port.irq = (irq > 0) ? irq : 0;
+ }
+ 
++static void serial8250_stop_rx(struct uart_port *port)
++{
++	struct uart_8250_port *up =
++		container_of(port, struct uart_8250_port, port);
++
++	up->ier &= ~UART_IER_RLSI;
++	up->port.read_status_mask &= ~UART_LSR_DR;
++	serial_out(up, UART_IER, up->ier);
++}
++
++static void serial8250_start_rx(struct uart_port *port)
++{
++	struct uart_8250_port *up =
++		container_of(port, struct uart_8250_port, port);
++
++	up->ier |= UART_IER_RLSI;
++	up->port.read_status_mask |= UART_LSR_DR;
++	serial_out(up, UART_IER, up->ier);
++}
++
+ static inline void __stop_tx(struct uart_8250_port *p)
+ {
+ 	if (p->ier & UART_IER_THRI) {
+@@ -1326,6 +1346,9 @@ static void serial8250_stop_tx(struct uart_port *port)
+ 		up->acr |= UART_ACR_TXDIS;
+ 		serial_icr_write(up, UART_ACR, up->acr);
+ 	}
++
++	if (!(up->rs485_flags & SER_RS485_RX_DURING_TX))
++		serial8250_start_rx(port);
+ }
+ 
+ static void transmit_chars(struct uart_8250_port *up);
+@@ -1357,16 +1380,9 @@ static void serial8250_start_tx(struct uart_port *port)
+ 		up->acr &= ~UART_ACR_TXDIS;
+ 		serial_icr_write(up, UART_ACR, up->acr);
+ 	}
+-}
+ 
+-static void serial8250_stop_rx(struct uart_port *port)
+-{
+-	struct uart_8250_port *up =
+-		container_of(port, struct uart_8250_port, port);
+-
+-	up->ier &= ~UART_IER_RLSI;
+-	up->port.read_status_mask &= ~UART_LSR_DR;
+-	serial_out(up, UART_IER, up->ier);
++	if (!(up->rs485_flags & SER_RS485_RX_DURING_TX))
++		serial8250_stop_rx(port);
+ }
+ 
+ static void serial8250_enable_ms(struct uart_port *port)
+-- 
+1.7.7.3
+
