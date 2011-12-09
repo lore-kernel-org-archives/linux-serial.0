@@ -1,53 +1,35 @@
 From: Wolfram Sang <w.sang@pengutronix.de>
-Subject: [PATCH RESEND 0/8] serial: 8250: support hw-based RS485 direction control
-Date: Fri,  9 Dec 2011 18:07:12 +0100
-Message-ID: <1323450440-414-1-git-send-email-w.sang@pengutronix.de>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:49423 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752120Ab1LIRHf (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 9 Dec 2011 12:07:35 -0500
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Subject: [PATCH RESEND 6/8] serial: 8250: update rs485 flags with polarity settings
+Date: Fri,  9 Dec 2011 18:07:18 +0100
+Message-ID: <1323450440-414-7-git-send-email-w.sang@pengutronix.de>
+References: <1323450440-414-1-git-send-email-w.sang@pengutronix.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1323450440-414-1-git-send-email-w.sang@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org, Greg KH <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, Claudio Scordino <claudio@evidence.eu.com>, Wolfram Sang <w.sang@pengutronix.de>
+List-Id: linux-serial@vger.kernel.org
 
-Some 8250-variants control the direction pin for RS485 in hardware. Linux has
-RS485 support these days, so update the 8250-driver to adhere to that.
+Report the only mode we can support with the 16C850.
 
-Code is based on 3.2-rc4, tested on a OMAP-based custom board with a 16V2750.
-A git tree can be found here:
+Signed-off-by: Wolfram Sang <w.sang@pengutronix.de>
+---
+ drivers/tty/serial/8250.c |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
 
-	git://git.pengutronix.de/git/wsa/linux-2.6.git 8250_rs485
-
-There is no code change since the initial post of this series. I updated some
-of the patch descriptions, though. A kind-of-ack from Claudio can be found here
-[1]. Please consider for inclusion.
-
-Thanks and regards,
-
-   Wolfram
-
-[1] http://lkml.org/lkml/2011/11/24/201
-
-Matthias Fuchs (1):
-  serial: 8250: Add ioctl to enable auto rs485 mode with some Exar UARTs
-
-Wolfram Sang (7):
-  serial: 8250: replace hardcoded 0xbf with #define
-  serial: 8250: save rs485_flags per instance
-  serial: 8250: add RX_DURING_TX capability to RS485 mode
-  serial: 8250: reject delaying RTS with RS485
-  serial: 8250: update rs485 flags with polarity settings
-  serial: 8250: add Exar 16V2750 support
-  serial: 8250: fix comment about accessing EMSR
-
- drivers/tty/serial/8250.c   |  143 +++++++++++++++++++++++++++++++++++++++---
- include/linux/serial_core.h |    3 +-
- include/linux/serial_reg.h  |    4 +-
- 3 files changed, 137 insertions(+), 13 deletions(-)
-
+diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
+index 28b3608..8cf6d76 100644
+--- a/drivers/tty/serial/8250.c
++++ b/drivers/tty/serial/8250.c
+@@ -2750,6 +2750,9 @@ static int serial8250_ioctl_port(struct uart_port *port,
+ 		serial_outp(up, UART_LCR, lcr);
+ 		spin_unlock_irqrestore(&up->port.lock, flags);
+ 
++		/* only mode supported by the 16C850 */
++		rs485ctrl.flags &= ~SER_RS485_RTS_ON_SEND;
++		rs485ctrl.flags |= SER_RS485_RTS_AFTER_SEND;
+ 		up->rs485_flags = rs485ctrl.flags;
+ 
+ 		return 0;
 -- 
 1.7.7.3
-
