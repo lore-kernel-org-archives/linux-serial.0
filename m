@@ -1,71 +1,25 @@
-From: Sonic Zhang <sonic.adi@gmail.com>
-Subject: [PATCH 2/2] serial: bfin-uart: Remove ASYNC_CTS_FLOW flag for hardware automatic CTS.
-Date: Fri, 9 Dec 2011 14:00:21 +0800
-Message-ID: <1323410421-10465-2-git-send-email-sonic.adi@gmail.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 2/2] serial: bfin-uart: Remove ASYNC_CTS_FLOW flag for
+ hardware automatic CTS.
+Date: Fri, 9 Dec 2011 11:12:05 +0000
+Message-ID: <20111209111205.04780196@pyramind.ukuu.org.uk>
 References: <1323410421-10465-1-git-send-email-sonic.adi@gmail.com>
+	<1323410421-10465-2-git-send-email-sonic.adi@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from tx2ehsobe001.messaging.microsoft.com ([65.55.88.11]:50895 "EHLO
-	TX2EHSOBE001.bigfish.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751739Ab1LIGHo (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 9 Dec 2011 01:07:44 -0500
-In-Reply-To: <1323410421-10465-1-git-send-email-sonic.adi@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1323410421-10465-2-git-send-email-sonic.adi@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sonic Zhang <sonic.adi@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
-Cc: LKML <linux-kernel@vger.kernel.org>, uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
 
-From: Sonic Zhang <sonic.zhang@analog.com>
+> +#ifdef CONFIG_SERIAL_BFIN_CTSRTS
+>  			uart->port.flags |= ASYNC_CTS_FLOW;
+> +#endif
 
-Blackfin uart supports automatic CTS trigger when hardware flow control is enabled.
-No need to start and top tx in CTS interrupt. So, remote ASYNC_CTS_FLOW flag.
+As an aside could the cts/hard cts etc be passed as properties to the
+platform device rather than ifdeffed ?
 
-Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
----
- drivers/tty/serial/bfin_uart.c |   17 ++++++++++++++---
- 1 files changed, 14 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/serial/bfin_uart.c b/drivers/tty/serial/bfin_uart.c
-index 57747c4..929dd11 100644
---- a/drivers/tty/serial/bfin_uart.c
-+++ b/drivers/tty/serial/bfin_uart.c
-@@ -116,11 +116,20 @@ static void bfin_serial_set_mctrl(struct uart_port *port, unsigned int mctrl)
- static irqreturn_t bfin_serial_mctrl_cts_int(int irq, void *dev_id)
- {
- 	struct bfin_serial_port *uart = dev_id;
--	unsigned int status;
--
--	status = bfin_serial_get_mctrl(&uart->port);
-+	unsigned int status = bfin_serial_get_mctrl(&uart->port);
- #ifdef CONFIG_SERIAL_BFIN_HARD_CTSRTS
-+	struct tty_struct *tty = uart->port.state->port.tty;
-+
- 	UART_CLEAR_SCTS(uart);
-+	if (tty->hw_stopped) {
-+		if (status) {
-+			tty->hw_stopped = 0;
-+			uart_write_wakeup(&uart->port);
-+		}
-+	} else {
-+		if (!status)
-+			tty->hw_stopped = 1;
-+	}
- #endif
- 	uart_handle_cts_change(&uart->port, status & TIOCM_CTS);
- 
-@@ -1358,7 +1367,9 @@ static int bfin_serial_probe(struct platform_device *pdev)
- 			uart->cts_pin = -1;
- 		else {
- 			uart->cts_pin = res->start;
-+#ifdef CONFIG_SERIAL_BFIN_CTSRTS
- 			uart->port.flags |= ASYNC_CTS_FLOW;
-+#endif
- 		}
- 
- 		res = platform_get_resource(pdev, IORESOURCE_IO, 1);
--- 
-1.7.0.4
-
-
+Alan
