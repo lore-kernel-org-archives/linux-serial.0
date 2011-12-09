@@ -1,90 +1,137 @@
 From: Wolfram Sang <w.sang@pengutronix.de>
-Subject: [PATCH RESEND 4/8] serial: 8250: add RX_DURING_TX capability to RS485 mode
-Date: Fri,  9 Dec 2011 18:07:16 +0100
-Message-ID: <1323450440-414-5-git-send-email-w.sang@pengutronix.de>
+Subject: [PATCH RESEND 2/8] serial: 8250: Add ioctl to enable auto rs485 mode with some Exar UARTs
+Date: Fri,  9 Dec 2011 18:07:14 +0100
+Message-ID: <1323450440-414-3-git-send-email-w.sang@pengutronix.de>
 References: <1323450440-414-1-git-send-email-w.sang@pengutronix.de>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:49430 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752182Ab1LIRHf (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 9 Dec 2011 12:07:35 -0500
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1323450440-414-1-git-send-email-w.sang@pengutronix.de>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Greg KH <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, Claudio Scordino <claudio@evidence.eu.com>, Wolfram Sang <w.sang@pengutronix.de>, Juergen Beisert <jbe@pengutronix.de>
+Cc: linux-kernel@vger.kernel.org, Greg KH <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, Claudio Scordino <claudio@evidence.eu.com>, Matthias Fuchs <mfuchs@ma-fu.de>, Wolfram Sang <w.sang@pengutronix.de>
+List-Id: linux-serial@vger.kernel.org
 
-To prevent echo in some configurations, make sure we do not read back
-when we are sending if RS485 is configured this way. We need to shuffle
-stop_rx() around, implement start_rx() and call it in apropriate places.
+From: Matthias Fuchs <mfuchs@ma-fu.de>
 
-Signed-off-by: Juergen Beisert <jbe@pengutronix.de>
+Some Exar UARTs support an auto rs485 mode. In this mode
+the UART's RTS# pin is activated during transmitting and
+can be used to enable a rs485 line driver. This has nothing
+to do with attempts to do this by manually asserting/
+deasserting handshake lines in software.
+
+Signed-off-by: Matthias Fuchs <mfuchs@ma-fu.de>
+
+[wsa] Replaced 0xbf with define, saved some line-breaks.
+
 Signed-off-by: Wolfram Sang <w.sang@pengutronix.de>
 ---
- drivers/tty/serial/8250.c |   34 +++++++++++++++++++++++++---------
- 1 files changed, 25 insertions(+), 9 deletions(-)
+ drivers/tty/serial/8250.c  |   68 ++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/serial_reg.h |    1 +
+ 2 files changed, 69 insertions(+), 0 deletions(-)
 
 diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
-index b5d3248..6a2f47f 100644
+index f8f2320..920b4df 100644
 --- a/drivers/tty/serial/8250.c
 +++ b/drivers/tty/serial/8250.c
-@@ -1304,6 +1304,26 @@ static void autoconfig_irq(struct uart_8250_port *up)
- 	up->port.irq = (irq > 0) ? irq : 0;
+@@ -38,6 +38,7 @@
+ #include <linux/nmi.h>
+ #include <linux/mutex.h>
+ #include <linux/slab.h>
++#include <linux/uaccess.h>
+ 
+ #include <asm/io.h>
+ #include <asm/irq.h>
+@@ -2698,6 +2699,72 @@ serial8250_type(struct uart_port *port)
+ 	return uart_config[type].name;
  }
  
-+static void serial8250_stop_rx(struct uart_port *port)
++static int serial8250_ioctl_port(struct uart_port *port,
++		      unsigned int cmd, unsigned long arg)
 +{
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
++	struct uart_8250_port *up = (struct uart_8250_port *)port;
++	unsigned long flags;
 +
-+	up->ier &= ~UART_IER_RLSI;
-+	up->port.read_status_mask &= ~UART_LSR_DR;
-+	serial_out(up, UART_IER, up->ier);
++	switch (cmd) {
++	case TIOCSRS485:
++	{
++		struct serial_rs485 rs485ctrl;
++		unsigned char fctr, lcr;
++
++		if (port->type != PORT_16850)
++			return -ENOTTY;
++
++		if (copy_from_user(&rs485ctrl, (struct serial_rs485 *)arg,
++				   sizeof(rs485ctrl)))
++			return -EFAULT;
++
++		spin_lock_irqsave(&up->port.lock, flags);
++		lcr = serial_inp(up, UART_LCR);
++		serial_outp(up, UART_LCR, UART_LCR_CONF_MODE_B);
++		fctr = serial_inp(up, UART_FCTR);
++		if (rs485ctrl.flags & SER_RS485_ENABLED)
++			fctr |= UART_FCTR_RS485;
++		else
++			fctr &= ~UART_FCTR_RS485;
++		serial_outp(up, UART_FCTR, fctr);
++		serial_outp(up, UART_LCR, lcr);
++		spin_unlock_irqrestore(&up->port.lock, flags);
++		return 0;
++	}
++
++	case TIOCGRS485:
++	{
++		struct serial_rs485 rs485ctrl;
++		unsigned char lcr;
++
++		if (port->type != PORT_16850)
++			return -ENOTTY;
++
++		memset(&rs485ctrl, 0, sizeof(rs485ctrl));
++
++		spin_lock_irqsave(&up->port.lock, flags);
++		lcr = serial_inp(up, UART_LCR);
++		serial_outp(up, UART_LCR, UART_LCR_CONF_MODE_B);
++		if (serial_inp(up, UART_FCTR) & UART_FCTR_RS485)
++			rs485ctrl.flags = SER_RS485_ENABLED;
++		else
++			rs485ctrl.flags = 0;
++		serial_outp(up, UART_LCR, lcr);
++		spin_unlock_irqrestore(&up->port.lock, flags);
++
++		if (copy_to_user((struct serial_rs485 *)arg, &rs485ctrl,
++				 sizeof(rs485ctrl)))
++			return -EFAULT;
++		return 0;
++	}
++
++	default:
++		return -ENOIOCTLCMD;
++	}
++
++	return 0;
 +}
 +
-+static void serial8250_start_rx(struct uart_port *port)
-+{
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
-+
-+	up->ier |= UART_IER_RLSI;
-+	up->port.read_status_mask |= UART_LSR_DR;
-+	serial_out(up, UART_IER, up->ier);
-+}
-+
- static inline void __stop_tx(struct uart_8250_port *p)
- {
- 	if (p->ier & UART_IER_THRI) {
-@@ -1326,6 +1346,9 @@ static void serial8250_stop_tx(struct uart_port *port)
- 		up->acr |= UART_ACR_TXDIS;
- 		serial_icr_write(up, UART_ACR, up->acr);
- 	}
-+
-+	if (!(up->rs485_flags & SER_RS485_RX_DURING_TX))
-+		serial8250_start_rx(port);
- }
- 
- static void transmit_chars(struct uart_8250_port *up);
-@@ -1357,16 +1380,9 @@ static void serial8250_start_tx(struct uart_port *port)
- 		up->acr &= ~UART_ACR_TXDIS;
- 		serial_icr_write(up, UART_ACR, up->acr);
- 	}
--}
- 
--static void serial8250_stop_rx(struct uart_port *port)
--{
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
--
--	up->ier &= ~UART_IER_RLSI;
--	up->port.read_status_mask &= ~UART_LSR_DR;
--	serial_out(up, UART_IER, up->ier);
-+	if (!(up->rs485_flags & SER_RS485_RX_DURING_TX))
-+		serial8250_stop_rx(port);
- }
- 
- static void serial8250_enable_ms(struct uart_port *port)
+ static struct uart_ops serial8250_pops = {
+ 	.tx_empty	= serial8250_tx_empty,
+ 	.set_mctrl	= serial8250_set_mctrl,
+@@ -2717,6 +2784,7 @@ static struct uart_ops serial8250_pops = {
+ 	.request_port	= serial8250_request_port,
+ 	.config_port	= serial8250_config_port,
+ 	.verify_port	= serial8250_verify_port,
++	.ioctl		= serial8250_ioctl_port,
+ #ifdef CONFIG_CONSOLE_POLL
+ 	.poll_get_char = serial8250_get_poll_char,
+ 	.poll_put_char = serial8250_put_poll_char,
+diff --git a/include/linux/serial_reg.h b/include/linux/serial_reg.h
+index 8ce70d7..fb37c4f 100644
+--- a/include/linux/serial_reg.h
++++ b/include/linux/serial_reg.h
+@@ -201,6 +201,7 @@
+ #define UART_FCTR_RTS_8DELAY	0x03
+ #define UART_FCTR_IRDA		0x04  /* IrDa data encode select */
+ #define UART_FCTR_TX_INT	0x08  /* Tx interrupt type select */
++#define UART_FCTR_RS485		0x08  /* Auto RS485 mode */
+ #define UART_FCTR_TRGA		0x00  /* Tx/Rx 550 trigger table select */
+ #define UART_FCTR_TRGB		0x10  /* Tx/Rx 650 trigger table select */
+ #define UART_FCTR_TRGC		0x20  /* Tx/Rx 654 trigger table select */
 -- 
 1.7.7.3
-
