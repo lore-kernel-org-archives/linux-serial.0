@@ -1,54 +1,44 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH RESEND 6/8] serial: 8250: update rs485 flags with
- polarity settings
-Date: Fri, 9 Dec 2011 19:13:39 +0000
-Message-ID: <20111209191339.0d9c3dd5@pyramind.ukuu.org.uk>
-References: <1323450440-414-1-git-send-email-w.sang@pengutronix.de>
-	<1323450440-414-7-git-send-email-w.sang@pengutronix.de>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH 1/2] serial: bfin-uart: Enable hardware automatic CTS
+ only when CTS pin is available.
+Date: Fri, 9 Dec 2011 19:09:34 -0800
+Message-ID: <20111210030934.GA2897@kroah.com>
+References: <1323410421-10465-1-git-send-email-sonic.adi@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from earthlight.etchedpixels.co.uk ([81.2.110.250]:36288 "EHLO
-	pyramind.ukuu.org.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752153Ab1LITNK (ORCPT
+Received: from out2.smtp.messagingengine.com ([66.111.4.26]:38363 "EHLO
+	out2.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751256Ab1LJDVS (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 9 Dec 2011 14:13:10 -0500
-In-Reply-To: <1323450440-414-7-git-send-email-w.sang@pengutronix.de>
+	Fri, 9 Dec 2011 22:21:18 -0500
+Received: from compute2.internal (compute2.nyi.mail.srv.osa [10.202.2.42])
+	by gateway1.nyi.mail.srv.osa (Postfix) with ESMTP id D894F20D98
+	for <linux-serial@vger.kernel.org>; Fri,  9 Dec 2011 22:21:17 -0500 (EST)
+Content-Disposition: inline
+In-Reply-To: <1323410421-10465-1-git-send-email-sonic.adi@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Wolfram Sang <w.sang@pengutronix.de>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Greg KH <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, Claudio Scordino <claudio@evidence.eu.com>
+To: Sonic Zhang <sonic.adi@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
 
-On Fri,  9 Dec 2011 18:07:18 +0100
-Wolfram Sang <w.sang@pengutronix.de> wrote:
-
-> Report the only mode we can support with the 16C850.
+On Fri, Dec 09, 2011 at 02:00:20PM +0800, Sonic Zhang wrote:
+> From: Sonic Zhang <sonic.zhang@analog.com>
 > 
-> Signed-off-by: Wolfram Sang <w.sang@pengutronix.de>
+> Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
 > ---
->  drivers/tty/serial/8250.c |    3 +++
->  1 files changed, 3 insertions(+), 0 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
-> index 28b3608..8cf6d76 100644
-> --- a/drivers/tty/serial/8250.c
-> +++ b/drivers/tty/serial/8250.c
-> @@ -2750,6 +2750,9 @@ static int serial8250_ioctl_port(struct uart_port *port,
->  		serial_outp(up, UART_LCR, lcr);
->  		spin_unlock_irqrestore(&up->port.lock, flags);
->  
-> +		/* only mode supported by the 16C850 */
-> +		rs485ctrl.flags &= ~SER_RS485_RTS_ON_SEND;
-> +		rs485ctrl.flags |= SER_RS485_RTS_AFTER_SEND;
->  		up->rs485_flags = rs485ctrl.flags;
+>  drivers/tty/serial/bfin_uart.c |   19 ++++++++++---------
+>  1 files changed, 10 insertions(+), 9 deletions(-)
 
-Chip specific stuff all wants to be in a port method so while #3 sorts
-out much of #2 this goes back to wanting port-> methods and flags to
-avoid assumptions about chip types in the core bits.
+This patch does not apply on top of your other patches:
 
-#7 really makes the point why it is needed.
+patching file drivers/tty/serial/bfin_uart.c
+Hunk #1 FAILED at 726.
+1 out of 1 hunk FAILED -- saving rejects to file drivers/tty/serial/bfin_uart.c.rej
 
-So pardon the confused series of review comments but I think the summary
-is port->ops for RS485 stuff please.
+Care to redo it on top of the next linux-next tree and resend both of
+these in the series?
 
+thanks,
+
+greg k-h
