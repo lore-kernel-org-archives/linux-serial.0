@@ -1,53 +1,50 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [GIT PULL] tty-next: Fix Fsl 8250 BRK bug
-Date: Fri, 9 Dec 2011 19:14:54 -0800
-Message-ID: <20111210031454.GA8265@kroah.com>
-References: <20111207033957.GB20556@windriver.com>
+From: Philip Prindeville <philipp_subx@redfish-solutions.com>
+Subject: Perle octal serial boards
+Date: Sun, 11 Dec 2011 13:10:02 -0700
+Message-ID: <4EE50E1A.6050408@redfish-solutions.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out2.smtp.messagingengine.com ([66.111.4.26]:42997 "EHLO
-	out2.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751884Ab1LJDVe (ORCPT
+Received: from mail.redfish-solutions.com ([66.232.79.143]:56353 "EHLO
+	mail.redfish-solutions.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752267Ab1LKUUg (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 9 Dec 2011 22:21:34 -0500
-Received: from compute5.internal (compute5.nyi.mail.srv.osa [10.202.2.45])
-	by gateway1.nyi.mail.srv.osa (Postfix) with ESMTP id 89DB120417
-	for <linux-serial@vger.kernel.org>; Fri,  9 Dec 2011 22:21:34 -0500 (EST)
-Content-Disposition: inline
-In-Reply-To: <20111207033957.GB20556@windriver.com>
+	Sun, 11 Dec 2011 15:20:36 -0500
+Received: from macbook.redfish-solutions.com (macbook.redfish-solutions.com [192.168.1.17])
+	(authenticated bits=0)
+	by mail.redfish-solutions.com (8.14.5/8.14.5) with ESMTP id pBBKA2EU012549
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-CAMELLIA256-SHA bits=256 verify=NO)
+	for <linux-serial@vger.kernel.org>; Sun, 11 Dec 2011 13:10:02 -0700
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc: gregkh@suse.de, alan@linux.intel.com, galak@kernel.crashing.org, linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On Tue, Dec 06, 2011 at 10:39:57PM -0500, Paul Gortmaker wrote:
-> Hi Greg,
-> 
-> This is the Freescale hardware bug fix which turned into a
-> six-pack of 8250 updates.  This is exactly what was posted
-> in the v2 review, with just Alan's ack added[1].  Since nobody
-> else has had any follow-on comments since then, I'm assuming
-> that it is now good to go.
-> 
-> [1] https://lkml.org/lkml/2011/12/5/156
-> 
-> Thanks,
-> Paul.
-> ---
-> 
-> Please pull for tty-next to get:
-> 
-> The following changes since commit 5611cc4572e889b62a7b4c72a413536bf6a9c416:
-> 
->   Linux 3.2-rc4 (2011-12-01 14:56:01 -0800)
-> 
-> are available in the git repository at:
->   git://git.kernel.org/pub/scm/linux/kernel/git/paulg/linux fsl-uart-fix
+I've got a Perle Systems "Speed8 LE" board, which seems to have the Oxford Semi 954 (16PCI954 + 16PCI954N) chips on it:
 
-I took the "raw" patches from the emails, so you can delete this branch
-now.
+$ sudo lspci -n -v -s 04:07
+04:07.0 0700: 155f:b008 (prog-if 06 [16950])
+	Subsystem: 1415:9501
+	Flags: medium devsel, IRQ 21
+	I/O ports at ec00 [size=32]
+	Memory at fbfff000 (32-bit, non-prefetchable) [size=4K]
+	I/O ports at e880 [size=32]
+	Memory at fbffe000 (32-bit, non-prefetchable) [size=4K]
+	Capabilities: [40] Power Management version 1
 
-thanks,
+04:07.1 0680: 155f:b008
+	Subsystem: 1415:9511
+	Flags: medium devsel, IRQ 10
+	I/O ports at e800 [size=32]
+	Memory at fbffd000 (32-bit, non-prefetchable) [size=4K]
+	I/O ports at e480 [size=32]
+	Memory at fbffc000 (32-bit, non-prefetchable) [size=4K]
+	Capabilities: [40] Power Management version 1
 
-greg k-h
+$
+
+I was wondering if the 8250_pci.c driver can be made to work with it.
+
+And if not, what's an 8-port serial PCI card that gives good performance for not a lot of money?
+
+-Philip
