@@ -1,40 +1,64 @@
 From: Sonic Zhang <sonic.adi@gmail.com>
-Subject: Re: [PATCH 2/2] serial: bfin-uart: Remove ASYNC_CTS_FLOW flag for
- hardware automatic CTS.
-Date: Mon, 12 Dec 2011 13:20:29 +0800
-Message-ID: <CAJxxZ0OPPHeusg-u89i5SOsSeVTH44jP3_x5BbJ8w=nB-Qh5Pw@mail.gmail.com>
-References: <1323410421-10465-1-git-send-email-sonic.adi@gmail.com>
-	<1323410421-10465-2-git-send-email-sonic.adi@gmail.com>
-	<20111209111205.04780196@pyramind.ukuu.org.uk>
+Subject: [PATCH 2/2 v2] serial: bfin-uart: Remove ASYNC_CTS_FLOW flag for hardware automatic CTS.
+Date: Mon, 12 Dec 2011 14:59:51 +0800
+Message-ID: <1323673191-9210-2-git-send-email-sonic.adi@gmail.com>
+References: <1323673191-9210-1-git-send-email-sonic.adi@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20111209111205.04780196@pyramind.ukuu.org.uk>
+In-Reply-To: <1323673191-9210-1-git-send-email-sonic.adi@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
+To: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
+Cc: LKML <linux-kernel@vger.kernel.org>, uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Alan,
+From: Sonic Zhang <sonic.zhang@analog.com>
 
+Blackfin uart supports automatic CTS trigger when hardware flow control is enabled.
+No need to start and top tx in CTS interrupt. So, remote ASYNC_CTS_FLOW flag.
 
-On Fri, Dec 9, 2011 at 7:12 PM, Alan Cox <alan@lxorguk.ukuu.org.uk> wro=
-te:
->> +#ifdef CONFIG_SERIAL_BFIN_CTSRTS
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 uart->port.flags |=3D AS=
-YNC_CTS_FLOW;
->> +#endif
->
-> As an aside could the cts/hard cts etc be passed as properties to the
-> platform device rather than ifdeffed ?
->
-> Alan
+Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+---
+ drivers/tty/serial/bfin_uart.c |   17 ++++++++++++++---
+ 1 files changed, 14 insertions(+), 3 deletions(-)
 
-As Mike mentioned, these Macros are used to keep the code smaller when
-user doesn't want to enable UART flow control feature.
-
-I will sent out V2 against the latest kernel next tree.
-
-
-Sonic
+diff --git a/drivers/tty/serial/bfin_uart.c b/drivers/tty/serial/bfin_uart.c
+index a6c1c08..6bb3698 100644
+--- a/drivers/tty/serial/bfin_uart.c
++++ b/drivers/tty/serial/bfin_uart.c
+@@ -116,11 +116,20 @@ static void bfin_serial_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ static irqreturn_t bfin_serial_mctrl_cts_int(int irq, void *dev_id)
+ {
+ 	struct bfin_serial_port *uart = dev_id;
+-	unsigned int status;
+-
+-	status = bfin_serial_get_mctrl(&uart->port);
++	unsigned int status = bfin_serial_get_mctrl(&uart->port);
+ #ifdef CONFIG_SERIAL_BFIN_HARD_CTSRTS
++	struct tty_struct *tty = uart->port.state->port.tty;
++
+ 	UART_CLEAR_SCTS(uart);
++	if (tty->hw_stopped) {
++		if (status) {
++			tty->hw_stopped = 0;
++			uart_write_wakeup(&uart->port);
++		}
++	} else {
++		if (!status)
++			tty->hw_stopped = 1;
++	}
+ #endif
+ 	uart_handle_cts_change(&uart->port, status & TIOCM_CTS);
+ 
+@@ -1358,7 +1367,9 @@ static int bfin_serial_probe(struct platform_device *pdev)
+ 			uart->cts_pin = -1;
+ 		else {
+ 			uart->cts_pin = res->start;
++#ifdef CONFIG_SERIAL_BFIN_CTSRTS
+ 			uart->port.flags |= ASYNC_CTS_FLOW;
++#endif
+ 		}
+ 
+ 		res = platform_get_resource(pdev, IORESOURCE_IO, 1);
+-- 
+1.7.0.4
