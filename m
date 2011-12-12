@@ -1,43 +1,160 @@
-From: Claudio Scordino <claudio@evidence.eu.com>
-Subject: Re: [PATCH RESEND 0/8] serial: 8250: support hw-based RS485 direction
- control
-Date: Mon, 12 Dec 2011 15:42:43 +0100
-Message-ID: <4EE612E3.1010801@evidence.eu.com>
-References: <1323450440-414-1-git-send-email-w.sang@pengutronix.de>
+From: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Subject: Re: [PATCH 01/16 v3] pmac_zilog: fix unexpected irq
+Date: Tue, 13 Dec 2011 07:06:23 +1100
+Message-ID: <1323720383.19891.21.camel@pasglop>
+References: <20111023141108.856998818@telegraphics.com.au>
+	 <20111023141115.208699274@telegraphics.com.au>
+	 <alpine.LNX.2.00.1112070203310.14968@nippy.intranet>
+	 <alpine.LNX.2.00.1112071427280.28552@nippy.intranet>
+	 <1323318004.12793.21.camel@pasglop> <1323318638.12793.23.camel@pasglop>
+	 <alpine.LNX.2.00.1112082128330.2357@nippy.intranet>
+	 <1323647315.19891.10.camel@pasglop>
+	 <alpine.LNX.2.00.1112130020000.2550@nippy.intranet>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-lpp01m010-f46.google.com ([209.85.215.46]:32859 "EHLO
-	mail-lpp01m010-f46.google.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752693Ab1LLOmt (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 12 Dec 2011 09:42:49 -0500
-In-Reply-To: <1323450440-414-1-git-send-email-w.sang@pengutronix.de>
+Received: from gate.crashing.org ([63.228.1.57]:38895 "EHLO gate.crashing.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753965Ab1LLUGk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 12 Dec 2011 15:06:40 -0500
+In-Reply-To: <alpine.LNX.2.00.1112130020000.2550@nippy.intranet>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Wolfram Sang <w.sang@pengutronix.de>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Greg KH <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>
+To: Finn Thain <fthain@telegraphics.com.au>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
 
-Il 09/12/2011 18:07, Wolfram Sang ha scritto:
-> Some 8250-variants control the direction pin for RS485 in hardware. Linux has
-> RS485 support these days, so update the 8250-driver to adhere to that.
->
-> Code is based on 3.2-rc4, tested on a OMAP-based custom board with a 16V2750.
-> A git tree can be found here:
->
-> 	git://git.pengutronix.de/git/wsa/linux-2.6.git 8250_rs485
->
-> There is no code change since the initial post of this series. I updated some
-> of the patch descriptions, though. A kind-of-ack from Claudio can be found here
-> [1]. Please consider for inclusion.
+On Tue, 2011-12-13 at 00:34 +1100, Finn Thain wrote:
+> On Mon, 12 Dec 2011, Benjamin Herrenschmidt wrote:
+> 
+> > Any chance you can test this patch ? I would not be surprised if it 
+> > broke m68k since I had to do some of the changes in there "blind", so 
+> > let me know... with this, I can again suspend/resume properly on a Pismo 
+> > while using the internal modem among other things.
+> 
+> The patch works on a PowerBook 520 given a few changes (below). This 
+> PowerBook only has one serial port that I can test (the internal modem is 
+> not supported on 68k Macs).
+
+Interesting. The modem is a soft-modem "geoport" or a hw serial modem ?
+In the later case it's probably just a matter of finding the right GPIO
+bit in Apple ASIC to turn the power on :-)
+
+>  Can you test a machine with two ports? The 
+> rest of my Mac hardware is in storage since I moved house last week.
+
+I tried on 2 port powermacs, but I only have one adapter, so I've
+basically been running with one serial port open and shooting irda frame
+on the other (with nothing to check wether I got the frames on the other
+hand), oh well ...
+
+I'll apply your patch and commit via my tree.
+
+Cheers,
+Ben.
+
+> Finn
+> 
+> 
+> Index: linux-git/drivers/tty/serial/pmac_zilog.c
+> ===================================================================
+> --- linux-git.orig/drivers/tty/serial/pmac_zilog.c	2011-12-13 00:18:02.000000000 +1100
+> +++ linux-git/drivers/tty/serial/pmac_zilog.c	2011-12-13 00:23:55.000000000 +1100
+> @@ -1705,8 +1705,8 @@ static int __init pmz_init_port(struct u
+>  	struct resource *r_ports;
+>  	int irq;
+>  
+> -	r_ports = platform_get_resource(uap->node, IORESOURCE_MEM, 0);
+> -	irq = platform_get_irq(uap->node, 0);
+> +	r_ports = platform_get_resource(uap->pdev, IORESOURCE_MEM, 0);
+> +	irq = platform_get_irq(uap->pdev, 0);
+>  	if (!r_ports || !irq)
+>  		return -ENODEV;
+>  
+> @@ -1763,8 +1763,10 @@ static void pmz_dispose_port(struct uart
+>  
+>  static int __init pmz_attach(struct platform_device *pdev)
+>  {
+> +	struct uart_pmac_port *uap;
+>  	int i;
+>  
+> +	/* Iterate the pmz_ports array to find a matching entry */
+>  	for (i = 0; i < pmz_ports_count; i++)
+>  		if (pmz_ports[i].pdev == pdev)
+>  			break;
+> @@ -1773,15 +1775,23 @@ static int __init pmz_attach(struct plat
+>  
+>  	uap = &pmz_ports[i];
+>  	uap->port.dev = &pdev->dev;
+> -	dev_set_drvdata(&mdev->ofdev.dev, uap);
+> +	platform_set_drvdata(pdev, uap);
+>  
+> -			return uart_add_one_port(&pmz_uart_reg,
+> -						 &pmz_ports[i]->port);
+> +	return uart_add_one_port(&pmz_uart_reg, &uap->port);
+>  }
+>  
+>  static int __exit pmz_detach(struct platform_device *pdev)
+>  {
+> +	struct uart_pmac_port *uap = platform_get_drvdata(pdev);
+> +
+> +	if (!uap)
+> +		return -ENODEV;
+> +
+>  	uart_remove_one_port(&pmz_uart_reg, &uap->port);
+> +
+> +	platform_set_drvdata(pdev, NULL);
+> +	uap->port.dev = NULL;
+> +
+>  	return 0;
+>  }
+>  
+> @@ -1918,8 +1928,13 @@ static void __exit exit_pmz(void)
+>  
+>  	for (i = 0; i < pmz_ports_count; i++) {
+>  		struct uart_pmac_port *uport = &pmz_ports[i];
+> +#ifdef CONFIG_PPC_PMAC
+>  		if (uport->node != NULL)
+>  			pmz_dispose_port(uport);
+> +#else
+> +		if (uport->pdev != NULL)
+> +			pmz_dispose_port(uport);
+> +#endif
+>  	}
+>  	/* Unregister UART driver */
+>  	uart_unregister_driver(&pmz_uart_reg);
+> @@ -1993,6 +2008,9 @@ static int __init pmz_console_setup(stru
+>  #ifdef CONFIG_PPC_PMAC
+>  	if (uap->node == NULL)
+>  		return -ENODEV;
+> +#else
+> +	if (uap->pdev == NULL)
+> +		return -ENODEV;
+>  #endif
+>  	port = &uap->port;
+>  
+> Index: linux-git/drivers/tty/serial/pmac_zilog.h
+> ===================================================================
+> --- linux-git.orig/drivers/tty/serial/pmac_zilog.h	2011-12-13 00:18:02.000000000 +1100
+> +++ linux-git/drivers/tty/serial/pmac_zilog.h	2011-12-13 00:23:55.000000000 +1100
+> @@ -1,18 +1,9 @@
+>  #ifndef __PMAC_ZILOG_H__
+>  #define __PMAC_ZILOG_H__
+>  
+> -#ifdef CONFIG_PPC_PMAC
+> -/* We cannot use dev_* because this can be called early, way before
+> - * we are matched with a device (when using it as a kernel console)
+> - */
+>  #define pmz_debug(fmt, arg...)	pr_debug("ttyPZ%d: " fmt, uap->port.line, ## arg)
+>  #define pmz_error(fmt, arg...)	pr_err("ttyPZ%d: " fmt, uap->port.line, ## arg)
+>  #define pmz_info(fmt, arg...)	pr_info("ttyPZ%d: " fmt, uap->port.line, ## arg)
+> -#else
+> -#define pmz_debug(fmt, arg...)	dev_dbg(&uap->node->dev, fmt, ## arg)
+> -#define pmz_error(fmt, arg...)	dev_err(&uap->node->dev, fmt, ## arg)
+> -#define pmz_info(fmt, arg...)	dev_info(&uap->node->dev, fmt, ## arg)
+> -#endif
+>  
+>  /*
+>   * At most 2 ESCCs with 2 ports each
 
 
-Hi Wolfram,
-
-	since the code has not been changed, my opinion remains that it is fine 
-and it should enter mainline.
-
-Best regards,
-
-	Claudio
