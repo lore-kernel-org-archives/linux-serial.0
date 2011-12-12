@@ -1,160 +1,150 @@
-From: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Subject: Re: [PATCH 01/16 v3] pmac_zilog: fix unexpected irq
-Date: Tue, 13 Dec 2011 07:06:23 +1100
-Message-ID: <1323720383.19891.21.camel@pasglop>
-References: <20111023141108.856998818@telegraphics.com.au>
-	 <20111023141115.208699274@telegraphics.com.au>
-	 <alpine.LNX.2.00.1112070203310.14968@nippy.intranet>
-	 <alpine.LNX.2.00.1112071427280.28552@nippy.intranet>
-	 <1323318004.12793.21.camel@pasglop> <1323318638.12793.23.camel@pasglop>
-	 <alpine.LNX.2.00.1112082128330.2357@nippy.intranet>
-	 <1323647315.19891.10.camel@pasglop>
-	 <alpine.LNX.2.00.1112130020000.2550@nippy.intranet>
+From: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
+Subject: Re: [PATCH 01/10] GPIO: gpio-generic: Move initialization up to postcore
+Date: Tue, 13 Dec 2011 00:05:34 +0100
+Message-ID: <201112130005.35386.jkrzyszt@tis.icnet.pl>
+References: <1323634328-856-1-git-send-email-jkrzyszt@tis.icnet.pl> <1323634328-856-2-git-send-email-jkrzyszt@tis.icnet.pl> <20111212180456.GF31337@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gate.crashing.org ([63.228.1.57]:38895 "EHLO gate.crashing.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753965Ab1LLUGk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 12 Dec 2011 15:06:40 -0500
-In-Reply-To: <alpine.LNX.2.00.1112130020000.2550@nippy.intranet>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20111212180456.GF31337@atomide.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: Grant Likely <grant.likely@secretlab.ca>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Finn Thain <fthain@telegraphics.com.au>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
 
-On Tue, 2011-12-13 at 00:34 +1100, Finn Thain wrote:
-> On Mon, 12 Dec 2011, Benjamin Herrenschmidt wrote:
+(adding Greg Kroah-Hartman and linux-serial@vger.kernel.org to Cc:)
+
+On Monday 12 of December 2011 at 19:04:56, Tony Lindgren wrote:
+> * Janusz Krzysztofik <jkrzyszt@tis.icnet.pl> [111211 11:41]:
+> > This will allow boards with custom memory mapped GPIO ports to set up
+> > and use those port pins while initializing devices from arch init.
 > 
-> > Any chance you can test this patch ? I would not be surprised if it 
-> > broke m68k since I had to do some of the changes in there "blind", so 
-> > let me know... with this, I can again suspend/resume properly on a Pismo 
-> > while using the internal modem among other things.
-> 
-> The patch works on a PowerBook 520 given a few changes (below). This 
-> PowerBook only has one serial port that I can test (the internal modem is 
-> not supported on 68k Macs).
+> Care to explain a bit more why you need to initialize those devices
+> early on?
 
-Interesting. The modem is a soft-modem "geoport" or a hw serial modem ?
-In the later case it's probably just a matter of finding the right GPIO
-bit in Apple ASIC to turn the power on :-)
+Let me try.
 
->  Can you test a machine with two ports? The 
-> rest of my Mac hardware is in storage since I moved house last week.
+>From patch 2/10 "ARM: OMAP1: ams-delta: Convert latches to 
+basic_mmio_gpio":
 
-I tried on 2 port powermacs, but I only have one adapter, so I've
-basically been running with one serial port open and shooting irda frame
-on the other (with nothing to check wether I got the frames on the other
-hand), oh well ...
+> @@ -307,8 +487,8 @@ static void __init ams_delta_init(void)
+>  	omap_serial_init();
+>  	omap_register_i2c_bus(1, 100, NULL, 0);
+>  
+> -	/* Clear latch2 (NAND, LCD, modem enable) */
+> -	ams_delta_latch2_write(~0, 0);
+> +	platform_add_devices(_latch_devices, ARRAY_SIZE(_latch_devices));
+> +	BUG_ON(gpio_request_array(_latch_gpios, ARRAY_SIZE(_latch_gpios)));
+>  
+>  	omap1_usb_init(&ams_delta_usb_config);
+>  	omap1_set_camera_info(&ams_delta_camera_platform_data);
 
-I'll apply your patch and commit via my tree.
+Here I'm accessing the latches from ams_delta_init() (.init_machine 
+hook) with gpio_request_array() in order to:
+a) clear their contents,
+b) avoid accessing them, from ams_delta_latch_write(), never requested.
 
-Cheers,
-Ben.
+I could imagine clearing their contents with something like
 
-> Finn
-> 
-> 
-> Index: linux-git/drivers/tty/serial/pmac_zilog.c
-> ===================================================================
-> --- linux-git.orig/drivers/tty/serial/pmac_zilog.c	2011-12-13 00:18:02.000000000 +1100
-> +++ linux-git/drivers/tty/serial/pmac_zilog.c	2011-12-13 00:23:55.000000000 +1100
-> @@ -1705,8 +1705,8 @@ static int __init pmz_init_port(struct u
->  	struct resource *r_ports;
->  	int irq;
->  
-> -	r_ports = platform_get_resource(uap->node, IORESOURCE_MEM, 0);
-> -	irq = platform_get_irq(uap->node, 0);
-> +	r_ports = platform_get_resource(uap->pdev, IORESOURCE_MEM, 0);
-> +	irq = platform_get_irq(uap->pdev, 0);
->  	if (!r_ports || !irq)
->  		return -ENODEV;
->  
-> @@ -1763,8 +1763,10 @@ static void pmz_dispose_port(struct uart
->  
->  static int __init pmz_attach(struct platform_device *pdev)
->  {
-> +	struct uart_pmac_port *uap;
->  	int i;
->  
-> +	/* Iterate the pmz_ports array to find a matching entry */
->  	for (i = 0; i < pmz_ports_count; i++)
->  		if (pmz_ports[i].pdev == pdev)
->  			break;
-> @@ -1773,15 +1775,23 @@ static int __init pmz_attach(struct plat
->  
->  	uap = &pmz_ports[i];
->  	uap->port.dev = &pdev->dev;
-> -	dev_set_drvdata(&mdev->ofdev.dev, uap);
-> +	platform_set_drvdata(pdev, uap);
->  
-> -			return uart_add_one_port(&pmz_uart_reg,
-> -						 &pmz_ports[i]->port);
-> +	return uart_add_one_port(&pmz_uart_reg, &uap->port);
+	*(volatile __u8 *) AMS_DELTA_LATCH2_VIRT = 0;
+	*(volatile __u16 *) AMS_DELTA_LATCH2_VIRT = 0;
+
+instead, i.e., the way the old code used to, than accessing those GPIO 
+pins not requested, until they are finally requested by drivers updated 
+to use gpiolib with successive patche. Would this be acceptable?
+
+However,
+>From patch 6/10 "ARM: OMAP1: ams-delta: Use GPIO API in modem setup":
+
+> @@ -482,6 +472,12 @@ static void __init ams_delta_init(void)
+>  	omap_writew(omap_readw(ARM_RSTCT1) | 0x0004, ARM_RSTCT1);
 >  }
 >  
->  static int __exit pmz_detach(struct platform_device *pdev)
+> +static void _modem_pm(struct uart_port *port, unsigned int state, unsigned old)
+> +{
+> +	if (state != old)
+> +		gpio_set_value(AMS_DELTA_GPIO_PIN_MODEM_NRESET, state == 0);
+> +}
+> +
+>  static struct plat_serial8250_port ams_delta_modem_ports[] = {
+>  	{
+>  		.membase	= IOMEM(_MODEM_VIRT),
+> @@ -492,6 +488,7 @@ static struct plat_serial8250_port ams_delta_modem_ports[] = {
+>  		.iotype		= UPIO_MEM,
+>  		.regshift	= 1,
+>  		.uartclk	= BASE_BAUD * 16,
+> +		.pm		= _modem_pm,
+>  	},
+>  	{ },
+>  };
+> @@ -504,6 +501,24 @@ static struct platform_device ams_delta_modem_device = {
+>  	},
+>  };
+>  
+> +static struct gpio _modem_gpios[] __initconst = {
+> +	{
+> +		.gpio	= AMS_DELTA_GPIO_PIN_MODEM_IRQ,
+> +		.flags	= GPIOF_DIR_IN,
+> +		.label	= "modem_irq",
+> +	},
+> +	{
+> +		.gpio	= AMS_DELTA_GPIO_PIN_MODEM_NRESET,
+> +		.flags	= GPIOF_OUT_INIT_HIGH,
+> +		.label	= "modem_nreset",
+> +	},
+> +	{
+> +		.gpio	= AMS_DELTA_GPIO_PIN_MODEM_CODEC,
+> +		.flags	= GPIOF_OUT_INIT_HIGH,
+> +		.label	= "modem_codec",
+> +	},
+> +};
+> +
+>  static int __init ams_delta_modem_init(void)
 >  {
-> +	struct uart_pmac_port *uap = platform_get_drvdata(pdev);
-> +
-> +	if (!uap)
-> +		return -ENODEV;
-> +
->  	uart_remove_one_port(&pmz_uart_reg, &uap->port);
-> +
-> +	platform_set_drvdata(pdev, NULL);
-> +	uap->port.dev = NULL;
-> +
->  	return 0;
->  }
+>  	int err;
+> @@ -515,16 +530,11 @@ static int __init ams_delta_modem_init(void)
+>  	ams_delta_modem_ports[0].irq =
+>  			gpio_to_irq(AMS_DELTA_GPIO_PIN_MODEM_IRQ);
 >  
-> @@ -1918,8 +1928,13 @@ static void __exit exit_pmz(void)
->  
->  	for (i = 0; i < pmz_ports_count; i++) {
->  		struct uart_pmac_port *uport = &pmz_ports[i];
-> +#ifdef CONFIG_PPC_PMAC
->  		if (uport->node != NULL)
->  			pmz_dispose_port(uport);
-> +#else
-> +		if (uport->pdev != NULL)
-> +			pmz_dispose_port(uport);
-> +#endif
+> -	err = gpio_request(AMS_DELTA_GPIO_PIN_MODEM_IRQ, "modem");
+> +	err = gpio_request_array(_modem_gpios, ARRAY_SIZE(_modem_gpios));
+>  	if (err) {
+> -		pr_err("Couldn't request gpio pin for modem\n");
+> +		pr_err("Couldn't request gpio pins for modem\n");
+>  		return err;
 >  	}
->  	/* Unregister UART driver */
->  	uart_unregister_driver(&pmz_uart_reg);
-> @@ -1993,6 +2008,9 @@ static int __init pmz_console_setup(stru
->  #ifdef CONFIG_PPC_PMAC
->  	if (uap->node == NULL)
->  		return -ENODEV;
-> +#else
-> +	if (uap->pdev == NULL)
-> +		return -ENODEV;
->  #endif
->  	port = &uap->port;
+> -	gpio_direction_input(AMS_DELTA_GPIO_PIN_MODEM_IRQ);
+> -
+> -	ams_delta_latch2_write(
+> -		AMS_DELTA_LATCH2_MODEM_NRESET | AMS_DELTA_LATCH2_MODEM_CODEC,
+> -		AMS_DELTA_LATCH2_MODEM_NRESET | AMS_DELTA_LATCH2_MODEM_CODEC);
 >  
-> Index: linux-git/drivers/tty/serial/pmac_zilog.h
-> ===================================================================
-> --- linux-git.orig/drivers/tty/serial/pmac_zilog.h	2011-12-13 00:18:02.000000000 +1100
-> +++ linux-git/drivers/tty/serial/pmac_zilog.h	2011-12-13 00:23:55.000000000 +1100
-> @@ -1,18 +1,9 @@
->  #ifndef __PMAC_ZILOG_H__
->  #define __PMAC_ZILOG_H__
->  
-> -#ifdef CONFIG_PPC_PMAC
-> -/* We cannot use dev_* because this can be called early, way before
-> - * we are matched with a device (when using it as a kernel console)
-> - */
->  #define pmz_debug(fmt, arg...)	pr_debug("ttyPZ%d: " fmt, uap->port.line, ## arg)
->  #define pmz_error(fmt, arg...)	pr_err("ttyPZ%d: " fmt, uap->port.line, ## arg)
->  #define pmz_info(fmt, arg...)	pr_info("ttyPZ%d: " fmt, uap->port.line, ## arg)
-> -#else
-> -#define pmz_debug(fmt, arg...)	dev_dbg(&uap->node->dev, fmt, ## arg)
-> -#define pmz_error(fmt, arg...)	dev_err(&uap->node->dev, fmt, ## arg)
-> -#define pmz_info(fmt, arg...)	dev_info(&uap->node->dev, fmt, ## arg)
-> -#endif
->  
->  /*
->   * At most 2 ESCCs with 2 ports each
+>  	return platform_device_register(&ams_delta_modem_device);
+>  }
 
+Before the change, only one GPIO pin, that IRQ, driven with omap_gpio 
+driver which is registered from postcore, was gpio_request()ed. Now, two 
+more, gpio-generic driven pins, are also requested _and_ initialized in 
+order to make the modem accessible. The ams_delta_modem_init() is 
+installed with arch_initcall().
 
+I could imagine initializing those modem pins the old way I've suggested 
+above, but I can see no good solution to delegate calling of that 
+gpio_request*() to the 8250 driver. For me, the only hook passed to the 
+driver with platform_data that can be suitable is the .pm hook. However, 
+when I tried to remove powering up the modem (rising up 
+AMS_DELTA_GPIO_PIN_MODEM_NRESET) from the arch init and do this only 
+from that .pm hook, the device was not detected, so I wonder if and when 
+that hook is called, and if it is before probe, then perhaps powering 
+up the modem chip from there is too late for the device to get up before 
+being examined. But then, maybe if we initialize the pin the old way 
+from arch init, it would be enough for the device to be detected, while 
+consecutive open() response times may not be so critical. Perhaps Greg 
+or another serial guru can shed some more light on this.
+
+But this way or another, we are talking about dirty hacks here IMHO.
+
+Thanks,
+Janusz
