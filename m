@@ -1,58 +1,43 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH 1/2 v2] serial: bfin-uart: Enable hardware automatic CTS
- only when CTS pin is available.
-Date: Mon, 12 Dec 2011 16:03:02 -0800
-Message-ID: <20111213000302.GA18722@kroah.com>
-References: <1323673191-9210-1-git-send-email-sonic.adi@gmail.com>
+From: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
+Subject: Re: [PATCH 01/10] GPIO: gpio-generic: Move initialization up to postcore
+Date: Tue, 13 Dec 2011 01:15:31 +0100
+Message-ID: <201112130115.31927.jkrzyszt@tis.icnet.pl>
+References: <1323634328-856-1-git-send-email-jkrzyszt@tis.icnet.pl> <201112130044.02007.jkrzyszt@tis.icnet.pl> <20111212235544.GM32251@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out2.smtp.messagingengine.com ([66.111.4.26]:33318 "EHLO
-	out2.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753546Ab1LMADO (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 12 Dec 2011 19:03:14 -0500
-Received: from compute4.internal (compute4.nyi.mail.srv.osa [10.202.2.44])
-	by gateway1.nyi.mail.srv.osa (Postfix) with ESMTP id 311DE217FC
-	for <linux-serial@vger.kernel.org>; Mon, 12 Dec 2011 19:03:14 -0500 (EST)
-Content-Disposition: inline
-In-Reply-To: <1323673191-9210-1-git-send-email-sonic.adi@gmail.com>
+Received: from d1.icnet.pl ([212.160.220.21]:41156 "EHLO d1.icnet.pl"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752764Ab1LMAQU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 12 Dec 2011 19:16:20 -0500
+In-Reply-To: <20111212235544.GM32251@atomide.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sonic Zhang <sonic.adi@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
+To: Tony Lindgren <tony@atomide.com>
+Cc: Grant Likely <grant.likely@secretlab.ca>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
 
-On Mon, Dec 12, 2011 at 02:59:50PM +0800, Sonic Zhang wrote:
-> From: Sonic Zhang <sonic.zhang@analog.com>
+On Tuesday 13 of December 2011 at 00:55:44, Tony Lindgren wrote:
+> * Janusz Krzysztofik <jkrzyszt@tis.icnet.pl> [111212 15:13]:
+> > On Tuesday 13 of December 2011 at 00:15:20, Tony Lindgren wrote:
+> > > 
+> > > Might be worth checking if some board specific __initcall helps here
+> > > too?
+> > 
+> > If I only knew how I could insert a board specific __initcall between 
+> > two points from where the generic-gpio first, then the 8250 driver, are 
+> > called.
+> > 
+> > Any hints?
 > 
-> Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
-> ---
->  drivers/tty/serial/bfin_uart.c |   19 ++++++++++---------
->  1 files changed, 10 insertions(+), 9 deletions(-)
+> Hmm, can't you do all that in the order you want in
+> ams_delta_modem_init()?  Or make that into a late_initcall so
+> you have generic-gpio available?
 > 
-> diff --git a/drivers/tty/serial/bfin_uart.c b/drivers/tty/serial/bfin_uart.c
-> index abac237..a6c1c08 100644
-> --- a/drivers/tty/serial/bfin_uart.c
-> +++ b/drivers/tty/serial/bfin_uart.c
-> @@ -726,16 +726,17 @@ static int bfin_serial_startup(struct uart_port *port)
->  	}
->  #endif
->  #ifdef CONFIG_SERIAL_BFIN_HARD_CTSRTS
-> -	if (uart->cts_pin >= 0 && request_irq(uart->status_irq,
-> -		bfin_serial_mctrl_cts_int,
-> -		0, "BFIN_UART_MODEM_STATUS", uart)) {
-> -		uart->cts_pin = -1;
-> -		pr_info("Unable to attach BlackFin UART Modem Status interrupt.\n");
-> -	}
-> +	if (uart->cts_pin >= 0) {
-> +		if (request_irq(uart->status_irq, bfin_serial_mctrl_cts_int,
-> +			IRQF_DISABLED, "BFIN_UART_MODEM_STATUS", uart)) {
-> +			uart->cts_pin = -1;
-> +			pr_info("Unable to attach BlackFin UART Modem Status interrupt.\n");
+> It seems that the pieces of code you're talking about don't need
+> to be initialized early, just needs to be done in the right
+> order to get things working.
 
-Please use dev_info() here instead, that properly identifies the exact
-device you are having problems with.
-
-thanks,
-
-greg k-h
+I think I've got it, thanks!
+Janusz
