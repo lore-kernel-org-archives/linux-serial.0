@@ -1,63 +1,53 @@
-From: Antti Palosaari <crope@iki.fi>
-Subject: Re: serial device name for smart card reader that is integrated to
- Anysee DVB USB device
-Date: Tue, 13 Dec 2011 18:30:33 +0200
-Message-ID: <4EE77DA9.9060102@iki.fi>
-References: <4E8B7901.2050700@iki.fi> <4E8BF6DE.1010105@iki.fi> <201110051016.06291.oneukum@suse.de> <201110141932.51378.oliver@neukum.org>
+From: Kevin Hilman <khilman@ti.com>
+Subject: Re: [PATCH v8 00/20] OMAP2+: UART: Runtime adaptation + cleanup
+Date: Tue, 13 Dec 2011 09:35:56 -0800
+Message-ID: <87pqfsxtkz.fsf@ti.com>
+References: <1321005446-21741-1-git-send-email-govindraj.raja@ti.com>
+	<874nxd5j0f.fsf@ti.com> <4EE75E1A.7080101@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-media-owner@vger.kernel.org>
-In-Reply-To: <201110141932.51378.oliver@neukum.org>
-Sender: linux-media-owner@vger.kernel.org
-To: Greg KH <greg@kroah.com>
-Cc: Oliver Neukum <oliver@neukum.org>, linux-serial@vger.kernel.org, linux-media@vger.kernel.org, linux-usb@vger.kernel.org, =?ISO-8859-1?Q?Bj=F8rn_Mork?= <bjorn@mork.no>, James Courtier-Dutton <james.dutton@gmail.com>, HoP <jpetrous@gmail.com>, =?ISO-8859-1?Q?Istv=E1n_V=E1radi?= <ivaradi@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from na3sys009aog120.obsmtp.com ([74.125.149.140]:47749 "EHLO
+	na3sys009aog120.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755330Ab1LMRgF (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 13 Dec 2011 12:36:05 -0500
+In-Reply-To: <4EE75E1A.7080101@ti.com> (Rajendra Nayak's message of "Tue, 13
+	Dec 2011 19:45:54 +0530")
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Rajendra Nayak <rnayak@ti.com>
+Cc: Alan Cox <alan@linux.intel.com>, Greg KH <greg@kroah.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Partha Basak <p-basak2@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>
 
-On 10/14/2011 08:32 PM, Oliver Neukum wrote:
-> Am Mittwoch, 5. Oktober 2011, 10:16:06 schrieb Oliver Neukum:
->> Am Mittwoch, 5. Oktober 2011, 08:19:10 schrieb Antti Palosaari:
->>> On 10/05/2011 09:15 AM, Oliver Neukum wrote:
->>
->>>> But, Greg, Antti makes a very valid point here. The generic code assumes that
->>>> it owns intfdata, that is you cannot use it as is for access to anything that lacks
->>>> its own interface. But this is not a fatal flaw. We can alter the generic code to use
->>>> an accessor function the driver can provide and make it default to get/set_intfdata
->>>>
->>>> What do you think?
->>>
->>> Oliver, I looked your old thread reply but I didn't catch how you meant
->>> it to happen. Could you give some small example?
+Rajendra Nayak <rnayak@ti.com> writes:
+
+> Hi Kevin,
 >
-> here is the code I come up with at an early, extremely incomplete stage.
-> Just for your information because I'll stop working on this for a few days.
+> On Wednesday 07 December 2011 05:51 AM, Kevin Hilman wrote:
+>> "Govindraj.R"<govindraj.raja@ti.com>  writes:
+>>
+>>> Converting uart driver to adapt to pm runtime API's.
+>>> Code re-org + cleanup.
+>>> Moving some functionality from serial.c to omap-serial.c
+>>
+>> Alan, can you confirm your Ack's are still valid on the drivers/tty
+>> parts of this series?  It has gone through quite a few changes since
+>> your original ack.
+>>
+>> Greg, are you ok with this series merging via the OMAP tree since it is
+>> changing arch/arm/mach-omap2/* code as well as the driver, and should go
+>> together.  If so, with your ack (on the drivers/tty/* parts), I'll
+>> handle this series through the OMAP tree.
+>
+> I had a series to add DT support for omap-serial, which I did on top
+> of the runtime series from Govindraj. Its already acked by Rob Herring
+> for the DT parts. Would you be able to pick those up as well if its
+> fine with Greg?
 
-I am back with that issue again. I just analysed both Oliver's code and 
-usb-serial.c.
+Yes, those should go on top of Govindraj's series.
 
-Problem are only these functions:
-extern int usb_serial_probe(struct usb_interface *iface, const struct 
-usb_device_id *id);
-extern void usb_serial_disconnect(struct usb_interface *iface);
-extern int usb_serial_suspend(struct usb_interface *intf, pm_message_t 
-message);
-extern int usb_serial_resume(struct usb_interface *intf);
+I'm OK with taking them, but I'd like to see them rebased on Govidraj's
+latest and see several Tested-by reports from various people since it is
+pretty late in the merge cycle.
 
-as all those takes struct usb_interface as parameter. For the 
-disconnect, suspend and resume it usb_interface param is used just for 
-getting pointer to struct usb_serial. That's easy. The probe is more 
-complex and needs some deeper changes. Main problem for probe seems to 
-be also it saves struct usb_serial pointer to struct usb_interface 
-usb_set_intfdata(interface, serial);
-
-Anyhow, I would like now ask how to proceed. Should I export four new 
-functions as replacement of those leaving old functionality as 
-currently. Or should I change existing ones like adding new pointer for 
-struct usb_serial and use it instead of struct usb_interface when not NULL.
-
-
-regards
-Antti
-
--- 
-http://palosaari.fi/
+Kevin
