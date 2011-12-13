@@ -1,43 +1,84 @@
-From: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
-Subject: Re: [PATCH 01/10] GPIO: gpio-generic: Move initialization up to postcore
-Date: Tue, 13 Dec 2011 01:15:31 +0100
-Message-ID: <201112130115.31927.jkrzyszt@tis.icnet.pl>
-References: <1323634328-856-1-git-send-email-jkrzyszt@tis.icnet.pl> <201112130044.02007.jkrzyszt@tis.icnet.pl> <20111212235544.GM32251@atomide.com>
+From: Finn Thain <fthain@telegraphics.com.au>
+Subject: Re: [PATCH 01/16 v3] pmac_zilog: fix unexpected irq
+Date: Tue, 13 Dec 2011 12:24:40 +1100 (EST)
+Message-ID: <alpine.LNX.2.00.1112131224330.2562@nippy.intranet>
+References: <20111023141108.856998818@telegraphics.com.au>  <20111023141115.208699274@telegraphics.com.au>  <alpine.LNX.2.00.1112070203310.14968@nippy.intranet>  <alpine.LNX.2.00.1112071427280.28552@nippy.intranet>  <1323318004.12793.21.camel@pasglop>
+ <1323318638.12793.23.camel@pasglop>  <alpine.LNX.2.00.1112082128330.2357@nippy.intranet>  <1323647315.19891.10.camel@pasglop>  <alpine.LNX.2.00.1112130020000.2550@nippy.intranet> <1323720383.19891.21.camel@pasglop>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from d1.icnet.pl ([212.160.220.21]:41156 "EHLO d1.icnet.pl"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752764Ab1LMAQU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 12 Dec 2011 19:16:20 -0500
-In-Reply-To: <20111212235544.GM32251@atomide.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <1323720383.19891.21.camel@pasglop>
+Sender: linux-m68k-owner@vger.kernel.org
+To: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Grant Likely <grant.likely@secretlab.ca>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
 
-On Tuesday 13 of December 2011 at 00:55:44, Tony Lindgren wrote:
-> * Janusz Krzysztofik <jkrzyszt@tis.icnet.pl> [111212 15:13]:
-> > On Tuesday 13 of December 2011 at 00:15:20, Tony Lindgren wrote:
-> > > 
-> > > Might be worth checking if some board specific __initcall helps here
-> > > too?
-> > 
-> > If I only knew how I could insert a board specific __initcall between 
-> > two points from where the generic-gpio first, then the 8250 driver, are 
-> > called.
-> > 
-> > Any hints?
-> 
-> Hmm, can't you do all that in the order you want in
-> ams_delta_modem_init()?  Or make that into a late_initcall so
-> you have generic-gpio available?
-> 
-> It seems that the pieces of code you're talking about don't need
-> to be initialized early, just needs to be done in the right
-> order to get things working.
 
-I think I've got it, thanks!
-Janusz
+On Tue, 13 Dec 2011, Benjamin Herrenschmidt wrote:
+
+> On Tue, 2011-12-13 at 00:34 +1100, Finn Thain wrote:
+> > On Mon, 12 Dec 2011, Benjamin Herrenschmidt wrote:
+> > 
+> > > Any chance you can test this patch ? I would not be surprised if it 
+> > > broke m68k since I had to do some of the changes in there "blind", 
+> > > so let me know... with this, I can again suspend/resume properly on 
+> > > a Pismo while using the internal modem among other things.
+> > 
+> > The patch works on a PowerBook 520 given a few changes (below). This 
+> > PowerBook only has one serial port that I can test (the internal modem 
+> > is not supported on 68k Macs).
+> 
+> Interesting. The modem is a soft-modem "geoport" or a hw serial modem ? 
+
+It's the latter.
+
+> In the later case it's probably just a matter of finding the right GPIO 
+> bit in Apple ASIC to turn the power on :-)
+
+Surely feasible, but not high on the list of missing hardware support.
+
+> 
+> >  Can you test a machine with two ports? The rest of my Mac hardware is 
+> > in storage since I moved house last week.
+> 
+> I tried on 2 port powermacs, but I only have one adapter, so I've 
+> basically been running with one serial port open and shooting irda frame 
+> on the other (with nothing to check wether I got the frames on the other 
+> hand), oh well ...
+> 
+> I'll apply your patch and commit via my tree.
+
+I forgot to include this fix for your logging change.
+
+Finn
+
+Index: linux-git/drivers/tty/serial/pmac_zilog.c
+===================================================================
+--- linux-git.orig/drivers/tty/serial/pmac_zilog.c	2011-12-13 12:12:05.000000000 +1100
++++ linux-git/drivers/tty/serial/pmac_zilog.c	2011-12-13 12:13:29.000000000 +1100
+@@ -99,6 +99,10 @@ MODULE_LICENSE("GPL");
+ #define PMACZILOG_NAME		"ttyPZ"
+ #endif
+ 
++#define pmz_debug(fmt, arg...)	pr_debug(PMACZILOG_NAME "%d: " fmt, uap->port.line, ## arg)
++#define pmz_error(fmt, arg...)	pr_err(PMACZILOG_NAME "%d: " fmt, uap->port.line, ## arg)
++#define pmz_info(fmt, arg...)	pr_info(PMACZILOG_NAME "%d: " fmt, uap->port.line, ## arg)
++
+ 
+ /*
+  * For the sake of early serial console, we can do a pre-probe
+Index: linux-git/drivers/tty/serial/pmac_zilog.h
+===================================================================
+--- linux-git.orig/drivers/tty/serial/pmac_zilog.h	2011-12-13 12:12:05.000000000 +1100
++++ linux-git/drivers/tty/serial/pmac_zilog.h	2011-12-13 12:12:28.000000000 +1100
+@@ -1,10 +1,6 @@
+ #ifndef __PMAC_ZILOG_H__
+ #define __PMAC_ZILOG_H__
+ 
+-#define pmz_debug(fmt, arg...)	pr_debug("ttyPZ%d: " fmt, uap->port.line, ## arg)
+-#define pmz_error(fmt, arg...)	pr_err("ttyPZ%d: " fmt, uap->port.line, ## arg)
+-#define pmz_info(fmt, arg...)	pr_info("ttyPZ%d: " fmt, uap->port.line, ## arg)
+-
+ /*
+  * At most 2 ESCCs with 2 ports each
+  */
