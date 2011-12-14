@@ -1,173 +1,67 @@
-From: Rajendra Nayak <rnayak@ti.com>
-Subject: [PATCH v3 1/4] omap-serial: Get rid of all pdev->id usage
-Date: Wed, 14 Dec 2011 17:25:43 +0530
-Message-ID: <1323863746-18145-2-git-send-email-rnayak@ti.com>
-References: <1323863746-18145-1-git-send-email-rnayak@ti.com>
+From: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
+Subject: Re: [PATCH 01/10] GPIO: gpio-generic: Move initialization up to postcore
+Date: Wed, 14 Dec 2011 14:10:53 +0100
+Message-ID: <201112141410.53522.jkrzyszt@tis.icnet.pl>
+References: <1323634328-856-1-git-send-email-jkrzyszt@tis.icnet.pl> <201112130044.02007.jkrzyszt@tis.icnet.pl> <20111212235544.GM32251@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1323863746-18145-1-git-send-email-rnayak@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, khilman@ti.com
-Cc: tony@atomide.com, govindraj.raja@ti.com, b-cousson@ti.com, linux-arm-kernel@lists.infradead.org, linaro-dev@lists.linaro.org, patches@linaro.org, robherring2@gmail.com, Rajendra Nayak <rnayak@ti.com>
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from d1.icnet.pl ([212.160.220.21]:51792 "EHLO d1.icnet.pl"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753323Ab1LNNMQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 14 Dec 2011 08:12:16 -0500
+In-Reply-To: <20111212235544.GM32251@atomide.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: Grant Likely <grant.likely@secretlab.ca>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
 
-With Device tree, pdev->id would no longer be Valid.
-Hence get rid of all instances of its usage in the
-driver. Device tree support for the driver is added
-in subsequent patches.
+On Tuesday 13 of December 2011 at 00:55:44, Tony Lindgren wrote:
+> * Janusz Krzysztofik <jkrzyszt@tis.icnet.pl> [111212 15:13]:
+> > On Tuesday 13 of December 2011 at 00:15:20, Tony Lindgren wrote:
+> > > 
+> > > Might be worth checking if some board specific __initcall helps here
+> > > too?
+> > 
+> > If I only knew how I could insert a board specific __initcall between 
+> > two points from where the generic-gpio first, then the 8250 driver, are 
+> > called.
+> > 
+> > Any hints?
+> 
+> Hmm, can't you do all that in the order you want in
+> ams_delta_modem_init()?  Or make that into a late_initcall so
+> you have generic-gpio available?
+> 
+> It seems that the pieces of code you're talking about don't need
+> to be initialized early, just needs to be done in the right
+> order to get things working.
 
-Signed-off-by: Rajendra Nayak <rnayak@ti.com>
----
- drivers/tty/serial/omap-serial.c |   30 +++++++++++++++---------------
- 1 files changed, 15 insertions(+), 15 deletions(-)
+Hi,
+I'm almost done with moving registration of all latch dependent devices 
+down to a late_initcall hook, however while working on this, I've found 
+still another arrangement, yet better in my opinion:
+1) generic-gpio driver registration moved from device_initcall up to 
+   subsys_initcall,
+2) latch dependent device registration left at arch_initcall, as it is 
+   now,
+3) a temporary hack, removed with the last patch in the series, that 
+   requests GPIO pins on behalf of device drivers before those are 
+   updated, placed between subsys_initcall and device_initcall, i.e., at 
+   fs_initcall or rootfs_initcall; both look ugly, but this is only for 
+   a while, in order to keep things working while in the transition,
+4) the modem init hook, once updated with extra GPIO setup that must be 
+   done on behalf of the 8250 driver, which is not prepared for 
+   accepting any extra init hooks passed with the device platform data, 
+   moved down to late_initcall, as suggested,
+5) once all drivers are updated, the hack is removed, and an 
+   initialization of unused pins added to that late_initcall modem hook, 
+   perhaps renamed in order to not suggest it is still modem only 
+   related.
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index f3ff0ca..a02cc9f 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -115,7 +115,7 @@ static void serial_omap_enable_ms(struct uart_port *port)
- {
- 	struct uart_omap_port *up = (struct uart_omap_port *)port;
- 
--	dev_dbg(up->port.dev, "serial_omap_enable_ms+%d\n", up->pdev->id);
-+	dev_dbg(up->port.dev, "serial_omap_enable_ms+%d\n", up->port.line);
- 
- 	pm_runtime_get_sync(&up->pdev->dev);
- 	up->ier |= UART_IER_MSI;
-@@ -418,7 +418,7 @@ static unsigned int serial_omap_tx_empty(struct uart_port *port)
- 	unsigned int ret = 0;
- 
- 	pm_runtime_get_sync(&up->pdev->dev);
--	dev_dbg(up->port.dev, "serial_omap_tx_empty+%d\n", up->pdev->id);
-+	dev_dbg(up->port.dev, "serial_omap_tx_empty+%d\n", up->port.line);
- 	spin_lock_irqsave(&up->port.lock, flags);
- 	ret = serial_in(up, UART_LSR) & UART_LSR_TEMT ? TIOCSER_TEMT : 0;
- 	spin_unlock_irqrestore(&up->port.lock, flags);
-@@ -436,7 +436,7 @@ static unsigned int serial_omap_get_mctrl(struct uart_port *port)
- 	status = check_modem_status(up);
- 	pm_runtime_put(&up->pdev->dev);
- 
--	dev_dbg(up->port.dev, "serial_omap_get_mctrl+%d\n", up->pdev->id);
-+	dev_dbg(up->port.dev, "serial_omap_get_mctrl+%d\n", up->port.line);
- 
- 	if (status & UART_MSR_DCD)
- 		ret |= TIOCM_CAR;
-@@ -454,7 +454,7 @@ static void serial_omap_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 	struct uart_omap_port *up = (struct uart_omap_port *)port;
- 	unsigned char mcr = 0;
- 
--	dev_dbg(up->port.dev, "serial_omap_set_mctrl+%d\n", up->pdev->id);
-+	dev_dbg(up->port.dev, "serial_omap_set_mctrl+%d\n", up->port.line);
- 	if (mctrl & TIOCM_RTS)
- 		mcr |= UART_MCR_RTS;
- 	if (mctrl & TIOCM_DTR)
-@@ -478,7 +478,7 @@ static void serial_omap_break_ctl(struct uart_port *port, int break_state)
- 	struct uart_omap_port *up = (struct uart_omap_port *)port;
- 	unsigned long flags = 0;
- 
--	dev_dbg(up->port.dev, "serial_omap_break_ctl+%d\n", up->pdev->id);
-+	dev_dbg(up->port.dev, "serial_omap_break_ctl+%d\n", up->port.line);
- 	pm_runtime_get_sync(&up->pdev->dev);
- 	spin_lock_irqsave(&up->port.lock, flags);
- 	if (break_state == -1)
-@@ -504,7 +504,7 @@ static int serial_omap_startup(struct uart_port *port)
- 	if (retval)
- 		return retval;
- 
--	dev_dbg(up->port.dev, "serial_omap_startup+%d\n", up->pdev->id);
-+	dev_dbg(up->port.dev, "serial_omap_startup+%d\n", up->port.line);
- 
- 	pm_runtime_get_sync(&up->pdev->dev);
- 	/*
-@@ -545,7 +545,7 @@ static int serial_omap_startup(struct uart_port *port)
- 			0);
- 		init_timer(&(up->uart_dma.rx_timer));
- 		up->uart_dma.rx_timer.function = serial_omap_rxdma_poll;
--		up->uart_dma.rx_timer.data = up->pdev->id;
-+		up->uart_dma.rx_timer.data = up->port.line;
- 		/* Currently the buffer size is 4KB. Can increase it */
- 		up->uart_dma.rx_buf = dma_alloc_coherent(NULL,
- 			up->uart_dma.rx_buf_size,
-@@ -573,7 +573,7 @@ static void serial_omap_shutdown(struct uart_port *port)
- 	struct uart_omap_port *up = (struct uart_omap_port *)port;
- 	unsigned long flags = 0;
- 
--	dev_dbg(up->port.dev, "serial_omap_shutdown+%d\n", up->pdev->id);
-+	dev_dbg(up->port.dev, "serial_omap_shutdown+%d\n", up->port.line);
- 
- 	pm_runtime_get_sync(&up->pdev->dev);
- 	/*
-@@ -883,7 +883,7 @@ serial_omap_set_termios(struct uart_port *port, struct ktermios *termios,
- 
- 	spin_unlock_irqrestore(&up->port.lock, flags);
- 	pm_runtime_put(&up->pdev->dev);
--	dev_dbg(up->port.dev, "serial_omap_set_termios+%d\n", up->pdev->id);
-+	dev_dbg(up->port.dev, "serial_omap_set_termios+%d\n", up->port.line);
- }
- 
- static void
-@@ -893,7 +893,7 @@ serial_omap_pm(struct uart_port *port, unsigned int state,
- 	struct uart_omap_port *up = (struct uart_omap_port *)port;
- 	unsigned char efr;
- 
--	dev_dbg(up->port.dev, "serial_omap_pm+%d\n", up->pdev->id);
-+	dev_dbg(up->port.dev, "serial_omap_pm+%d\n", up->port.line);
- 
- 	pm_runtime_get_sync(&up->pdev->dev);
- 	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
-@@ -932,7 +932,7 @@ static void serial_omap_config_port(struct uart_port *port, int flags)
- 	struct uart_omap_port *up = (struct uart_omap_port *)port;
- 
- 	dev_dbg(up->port.dev, "serial_omap_config_port+%d\n",
--							up->pdev->id);
-+							up->port.line);
- 	up->port.type = PORT_OMAP;
- }
- 
-@@ -949,7 +949,7 @@ serial_omap_type(struct uart_port *port)
- {
- 	struct uart_omap_port *up = (struct uart_omap_port *)port;
- 
--	dev_dbg(up->port.dev, "serial_omap_type+%d\n", up->pdev->id);
-+	dev_dbg(up->port.dev, "serial_omap_type+%d\n", up->port.line);
- 	return up->name;
- }
- 
-@@ -1110,7 +1110,7 @@ static struct console serial_omap_console = {
- 
- static void serial_omap_add_console_port(struct uart_omap_port *up)
- {
--	serial_omap_console_ports[up->pdev->id] = up;
-+	serial_omap_console_ports[up->port.line] = up;
- }
- 
- #define OMAP_CONSOLE	(&serial_omap_console)
-@@ -1364,7 +1364,6 @@ static int serial_omap_probe(struct platform_device *pdev)
- 		ret = -ENOMEM;
- 		goto do_release_region;
- 	}
--	sprintf(up->name, "OMAP UART%d", pdev->id);
- 	up->pdev = pdev;
- 	up->port.dev = &pdev->dev;
- 	up->port.type = PORT_OMAP;
-@@ -1375,6 +1374,7 @@ static int serial_omap_probe(struct platform_device *pdev)
- 	up->port.fifosize = 64;
- 	up->port.ops = &serial_omap_pops;
- 	up->port.line = pdev->id;
-+	sprintf(up->name, "OMAP UART%d", up->port.line);
- 
- 	up->port.mapbase = mem->start;
- 	up->port.membase = ioremap(mem->start, resource_size(mem));
-@@ -1417,7 +1417,7 @@ static int serial_omap_probe(struct platform_device *pdev)
- 	pm_runtime_enable(&pdev->dev);
- 	pm_runtime_get_sync(&pdev->dev);
- 
--	ui[pdev->id] = up;
-+	ui[up->port.line] = up;
- 	serial_omap_add_console_port(up);
- 
- 	ret = uart_add_one_port(&serial_omap_reg, &up->port);
--- 
-1.7.1
+What do you think?
 
+Thanks,
+Janusz
