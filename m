@@ -1,68 +1,104 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH 01/10] GPIO: gpio-generic: Move initialization up to
- postcore
-Date: Wed, 14 Dec 2011 10:21:49 -0800
-Message-ID: <20111214182149.GF32251@atomide.com>
-References: <1323634328-856-1-git-send-email-jkrzyszt@tis.icnet.pl>
- <201112130044.02007.jkrzyszt@tis.icnet.pl>
- <20111212235544.GM32251@atomide.com>
- <201112141410.53522.jkrzyszt@tis.icnet.pl>
+From: Kevin Hilman <khilman@ti.com>
+Subject: Re: [PATCH v8 00/20] OMAP2+: UART: Runtime adaptation + cleanup
+Date: Wed, 14 Dec 2011 10:56:21 -0800
+Message-ID: <87r507oucq.fsf@ti.com>
+References: <1321005446-21741-1-git-send-email-govindraj.raja@ti.com>
+	<CAAL8m4wGN5ykm3-+xrGPe-WJUDBdterxAyZ=C3kH862+n1DprQ@mail.gmail.com>
+	<87fwgow9vz.fsf@ti.com>
+	<CAAL8m4wR-3WDYf_c56-h1ZtCg=Ob2T+FvOOaXLSKK1pyo9oh8Q@mail.gmail.com>
+	<877h1znpdo.fsf@ti.com>
+	<CAAL8m4x6ToG5uuKebqSvJaYg6YQjwFK017AiOFVm0-6BtmiCCA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <201112141410.53522.jkrzyszt@tis.icnet.pl>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
-Cc: Grant Likely <grant.likely@secretlab.ca>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from na3sys009aog112.obsmtp.com ([74.125.149.207]:35300 "EHLO
+	na3sys009aog112.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1757797Ab1LNS4b convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 14 Dec 2011 13:56:31 -0500
+In-Reply-To: <CAAL8m4x6ToG5uuKebqSvJaYg6YQjwFK017AiOFVm0-6BtmiCCA@mail.gmail.com>
+	(Govindraj's message of "Wed, 14 Dec 2011 21:50:08 +0530")
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Govindraj <govindraj.ti@gmail.com>
+Cc: Tony Lindgren <tony@atomide.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Partha Basak <p-basak2@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Rajendra Nayak <rnayak@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>
 
-* Janusz Krzysztofik <jkrzyszt@tis.icnet.pl> [111214 04:40]:
-> On Tuesday 13 of December 2011 at 00:55:44, Tony Lindgren wrote:
-> > * Janusz Krzysztofik <jkrzyszt@tis.icnet.pl> [111212 15:13]:
-> > > On Tuesday 13 of December 2011 at 00:15:20, Tony Lindgren wrote:
-> > > > 
-> > > > Might be worth checking if some board specific __initcall helps here
-> > > > too?
-> > > 
-> > > If I only knew how I could insert a board specific __initcall between 
-> > > two points from where the generic-gpio first, then the 8250 driver, are 
-> > > called.
-> > > 
-> > > Any hints?
-> > 
-> > Hmm, can't you do all that in the order you want in
-> > ams_delta_modem_init()?  Or make that into a late_initcall so
-> > you have generic-gpio available?
-> > 
-> > It seems that the pieces of code you're talking about don't need
-> > to be initialized early, just needs to be done in the right
-> > order to get things working.
-> 
-> Hi,
-> I'm almost done with moving registration of all latch dependent devices 
-> down to a late_initcall hook, however while working on this, I've found 
-> still another arrangement, yet better in my opinion:
-> 1) generic-gpio driver registration moved from device_initcall up to 
->    subsys_initcall,
-> 2) latch dependent device registration left at arch_initcall, as it is 
->    now,
-> 3) a temporary hack, removed with the last patch in the series, that 
->    requests GPIO pins on behalf of device drivers before those are 
->    updated, placed between subsys_initcall and device_initcall, i.e., at 
->    fs_initcall or rootfs_initcall; both look ugly, but this is only for 
->    a while, in order to keep things working while in the transition,
-> 4) the modem init hook, once updated with extra GPIO setup that must be 
->    done on behalf of the 8250 driver, which is not prepared for 
->    accepting any extra init hooks passed with the device platform data, 
->    moved down to late_initcall, as suggested,
-> 5) once all drivers are updated, the hack is removed, and an 
->    initialization of unused pins added to that late_initcall modem hook, 
->    perhaps renamed in order to not suggest it is still modem only 
->    related.
-> 
-> What do you think?
+Govindraj <govindraj.ti@gmail.com> writes:
 
-Sounds better for sure than what we currently have :)
+> On Wed, Dec 14, 2011 at 8:59 PM, Kevin Hilman <khilman@ti.com> wrote:
+>> Govindraj <govindraj.ti@gmail.com> writes:
+>>
+>>> On Wed, Dec 14, 2011 at 12:56 AM, Kevin Hilman <khilman@ti.com> wro=
+te:
+>>>> Govindraj <govindraj.ti@gmail.com> writes:
+>>>>
+>>>> [...]
+>>>>
+>>>>> I have re-based this patch series against LO master
+>>>>> commit id: deee6d5359969a0ce4e2760cfd7b9f379bd5698a
+>>>>>
+>>>>> Same is available here [1]
+>>>>>
+>>>>> I have tested this patch series along with:
+>>>>>
+>>>>> 1.) Tero's V11 irq chaining series
+>>>>> =C2=A0 =C2=A0 =C2=A0http://www.spinics.net/lists/linux-omap/msg61=
+445.html
+>>>>> =C2=A0 =C2=A0 (This patch series is used for uart wakeup handling=
+ using
+>>>>> =C2=A0 =C2=A0 =C2=A0 prcm_irq chaining)
+>>>>>
+>>>>> 2.) Rajendra's hwmod change
+>>>>> =C2=A0 =C2=A0 =C2=A0http://www.spinics.net/lists/arm-kernel/msg14=
+8632.html
+>>>>> =C2=A0 =C2=A0 =C2=A0(This patch handles init_no_idle flag setting
+>>>>> =C2=A0 =C2=A0 =C2=A0 without this patch there will be boot warnin=
+g however
+>>>>> =C2=A0 =C2=A0 =C2=A0 all pm features will work after boot up.)
+>>>>>
+>>>>> 3.) Vishwa's io daisy chain changes.
+>>>>> =C2=A0 =C2=A0 =C2=A0http://permalink.gmane.org/gmane.linux.ports.=
+arm.omap/65500
+>>>>> =C2=A0 =C2=A0 =C2=A0(tested with and without this patch series pm=
+ features works).
+>>>>>
+>>>>> Same combination of patches based on above commit id
+>>>>> used for testing is available here [2].
+>>>>
+>>>> Please have a closer look at your branch.
+>>>>
+>>>> The second commit[1] commits the .rej file from a failed patch app=
+ly,
+>>>> so obviously doesn't do what was intended.
+>>>>
+>>>
+>>> Sorry my bad I have refreshed the uart runtime branch [1]
+>>> & test branch [2].
+>>
+>> Can you add another patch which fixes these compiler warnings:
+>>
+>> /work/kernel/omap/pm/drivers/tty/serial/omap-serial.c: In function '=
+serial_omap_irq':
+>> /work/kernel/omap/pm/drivers/tty/serial/omap-serial.c:228:29: warnin=
+g: 'ch' may be used uninitialized in this function [-Wuninitialized]
+>> /work/kernel/omap/pm/drivers/tty/serial/omap-serial.c:176:16: note: =
+'ch' was declared here
+>> /work/kernel/omap/pm/drivers/tty/serial/omap-serial.c:228:29: warnin=
+g: 'ch' may be used uninitialized in this function [-Wuninitialized]
+>> /work/kernel/omap/pm/drivers/tty/serial/omap-serial.c:176:16: note: =
+'ch' was declared here
+>>
+>
+> Here is the patch [1] and pushed to
+> git://gitorious.org/runtime_3-0/runtime_3-0.git for_3_3/lo_rc4_uartru=
+ntime
 
-Tony
+Thanks!
+
+Kevin
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
