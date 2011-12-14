@@ -1,59 +1,54 @@
-From: Govindraj <govindraj.ti@gmail.com>
-Subject: Re: [PATCH v8 00/20] OMAP2+: UART: Runtime adaptation + cleanup
-Date: Wed, 14 Dec 2011 14:51:00 +0530
-Message-ID: <CAAL8m4w28C3nWO65w=0bwoEvsOT3K9DS67dc5C0e-yuR+rc4Uw@mail.gmail.com>
-References: <1321005446-21741-1-git-send-email-govindraj.raja@ti.com>
- <CAAL8m4wGN5ykm3-+xrGPe-WJUDBdterxAyZ=C3kH862+n1DprQ@mail.gmail.com> <87zkewt5e0.fsf@ti.com>
+From: Rajendra Nayak <rnayak@ti.com>
+Subject: [PATCH v3 2/4] omap-serial: Use default clock speed (48Mhz) if not specified
+Date: Wed, 14 Dec 2011 17:25:44 +0530
+Message-ID: <1323863746-18145-3-git-send-email-rnayak@ti.com>
+References: <1323863746-18145-1-git-send-email-rnayak@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <87zkewt5e0.fsf@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Kevin Hilman <khilman@ti.com>
-Cc: Tony Lindgren <tony@atomide.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Partha Basak <p-basak2@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Rajendra Nayak <rnayak@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from comal.ext.ti.com ([198.47.26.152]:37515 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754200Ab1LNL4N (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 14 Dec 2011 06:56:13 -0500
+In-Reply-To: <1323863746-18145-1-git-send-email-rnayak@ti.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, khilman@ti.com
+Cc: tony@atomide.com, govindraj.raja@ti.com, b-cousson@ti.com, linux-arm-kernel@lists.infradead.org, linaro-dev@lists.linaro.org, patches@linaro.org, robherring2@gmail.com, Rajendra Nayak <rnayak@ti.com>
 
-On Wed, Dec 14, 2011 at 5:02 AM, Kevin Hilman <khilman@ti.com> wrote:
-> Govindraj <govindraj.ti@gmail.com> writes:
->
-> [...]
->
->> I have re-based this patch series against LO master
->> commit id: deee6d5359969a0ce4e2760cfd7b9f379bd5698a
->>
->> Same is available here [1]
->>
->> I have tested this patch series along with:
->>
->> 1.) Tero's V11 irq chaining series
->> =A0 =A0 =A0http://www.spinics.net/lists/linux-omap/msg61445.html
->> =A0 =A0 (This patch series is used for uart wakeup handling using
->> =A0 =A0 =A0 prcm_irq chaining)
->>
->> 2.) Rajendra's hwmod change
->> =A0 =A0 =A0http://www.spinics.net/lists/arm-kernel/msg148632.html
->> =A0 =A0 =A0(This patch handles init_no_idle flag setting
->> =A0 =A0 =A0 without this patch there will be boot warning however
->> =A0 =A0 =A0 all pm features will work after boot up.)
->
-> Actually, without Rajendra's patch all features do not work. =A0I don=
-'t
-> get UART console wakeups from idle (with runtime PM autosuspend enabl=
-ed)
-> on 3430/n900 or 3530/Overo without Rajendra's patch.
+Use a default clock speed of 48Mhz, instead of ending up with 0,
+if platforms fail to specify a valid clock speed.
 
-okay, I forgot last time when I tested without rajendra's patch was
-with a custom activate func.
-and now we have removed it.
-Yes you are correct Rajendra's  patch + Tero's v11 series is a needed
-for proper uart_runtime_pm functioning.
+Signed-off-by: Rajendra Nayak <rnayak@ti.com>
+---
+ drivers/tty/serial/omap-serial.c |    7 +++++++
+ 1 files changed, 7 insertions(+), 0 deletions(-)
 
---
-Thanks,
-Govindraj.R
---
-To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index a02cc9f..f14b9c5 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -43,6 +43,8 @@
+ #include <plat/dmtimer.h>
+ #include <plat/omap-serial.h>
+ 
++#define DEFAULT_CLK_SPEED 48000000 /* 48Mhz*/
++
+ static struct uart_omap_port *ui[OMAP_MAX_HSUART_PORTS];
+ 
+ /* Forward declaration of functions */
+@@ -1386,6 +1388,11 @@ static int serial_omap_probe(struct platform_device *pdev)
+ 
+ 	up->port.flags = omap_up_info->flags;
+ 	up->port.uartclk = omap_up_info->uartclk;
++	if (!up->port.uartclk) {
++		up->port.uartclk = DEFAULT_CLK_SPEED;
++		dev_warn(&pdev->dev, "No clock speed specified: using default:"
++						"%d\n", DEFAULT_CLK_SPEED);
++	}
+ 	up->uart_dma.uart_base = mem->start;
+ 	up->errata = omap_up_info->errata;
+ 
+-- 
+1.7.1
+
