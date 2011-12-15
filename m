@@ -1,8 +1,8 @@
 From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH v3 4/4] ARM: omap: pass minimal SoC/board data for UART
- from dt
-Date: Thu, 15 Dec 2011 13:37:22 -0800
-Message-ID: <20111215213722.GV32251@atomide.com>
+Subject: [PATCH] arm/dts: Add minimal device tree support for omap2420 and
+ omap2430
+Date: Thu, 15 Dec 2011 13:39:41 -0800
+Message-ID: <20111215213940.GW32251@atomide.com>
 References: <1323863746-18145-1-git-send-email-rnayak@ti.com>
  <1323863746-18145-5-git-send-email-rnayak@ti.com>
  <20111214192509.GH32251@atomide.com>
@@ -10,65 +10,93 @@ References: <1323863746-18145-1-git-send-email-rnayak@ti.com>
  <4EE9C697.4010604@ti.com>
  <20111215211320.GU32251@atomide.com>
  <4EEA6686.3010504@ti.com>
+ <20111215213722.GV32251@atomide.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mho-02-ewr.mailhop.org ([204.13.248.72]:17206 "EHLO
-	mho-02-ewr.mailhop.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754146Ab1LOVh0 (ORCPT
+Received: from mho-03-ewr.mailhop.org ([204.13.248.66]:33806 "EHLO
+	mho-01-ewr.mailhop.org" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1759541Ab1LOVjq (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 15 Dec 2011 16:37:26 -0500
+	Thu, 15 Dec 2011 16:39:46 -0500
 Content-Disposition: inline
-In-Reply-To: <4EEA6686.3010504@ti.com>
+In-Reply-To: <20111215213722.GV32251@atomide.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: "Cousson, Benoit" <b-cousson@ti.com>
 Cc: Rajendra Nayak <rnayak@ti.com>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, khilman@ti.com, govindraj.raja@ti.com, linux-arm-kernel@lists.infradead.org, linaro-dev@lists.linaro.org, patches@linaro.org, robherring2@gmail.com
 
-* Cousson, Benoit <b-cousson@ti.com> [111215 12:56]:
-> 
-> Nit: The convention is without the 0x prefix.
+Add minimal device tree support for omap2420 and omap2430
 
-OK will post an updated version as a reply to this
-email.
- 
-> Beside that, that looks good top me. But I'll not be able to try it :-)
-
-Boots fine with the following n8x0.dts patch. Currently
-MMC of course won't mount and the file should be separate
-for n800 and and n810.. So this patch is not yet quite
-ready to go.
-
-Regards,
-
-Tony
-
-
-From: Tony Lindgren <tony@atomide.com>
-Date: Thu, 15 Dec 2011 13:04:31 -0800
-Subject: [PATCH] arm/dts: Add minimal n8x0 device tree support
-
-Add minimal n8x0 device tree support
-
-Not-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 
 --- /dev/null
-+++ b/arch/arm/boot/dts/nokia-n8x0.dts
-@@ -0,0 +1,17 @@
-+/dts-v1/;
++++ b/arch/arm/boot/dts/omap2.dtsi
+@@ -0,0 +1,67 @@
++/*
++ * Device Tree Source for OMAP2 SoC
++ *
++ * Copyright (C) 2011 Texas Instruments Incorporated - http://www.ti.com/
++ *
++ * This file is licensed under the terms of the GNU General Public License
++ * version 2.  This program is licensed "as is" without any warranty of any
++ * kind, whether express or implied.
++ */
 +
-+/include/ "omap2.dtsi"
++/include/ "skeleton.dtsi"
 +
 +/ {
-+	model = "Nokia N8x0";
-+	compatible = "nokia,n8x0", "ti,omap2420", "ti,omap2";
++	compatible = "ti,omap2430", "ti,omap2420", "ti,omap2";
 +
-+	chosen {
-+		bootargs = "root=/dev/mmcblk2p2 rw console=ttyO2,115200n8 debug earlyprintk";
++	aliases {
++		serial0 = &uart1;
++		serial1 = &uart2;
++		serial2 = &uart3;
 +	};
 +
-+	memory {
-+		device_type = "memory";
-+		reg = <0x80000000 0x08000000>; /* 128 MB */
++	cpus {
++		cpu@0 {
++			compatible = "arm,arm1136jf-s";
++		};
++	};
++
++	soc {
++		compatible = "ti,omap-infra";
++		mpu {
++			compatible = "ti,omap2-mpu";
++			ti,hwmods = "mpu";
++		};
++	};
++
++	ocp {
++		compatible = "simple-bus";
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges;
++		ti,hwmods = "l3_main";
++
++		intc: interrupt-controller@1 {
++			compatible = "ti,omap2-intc";
++			interrupt-controller;
++			#interrupt-cells = <1>;
++		};
++
++		uart1: serial@4806a000 {
++			compatible = "ti,omap2-uart";
++			ti,hwmods = "uart1";
++			clock-frequency = <48000000>;
++		};
++
++		uart2: serial@4806c000 {
++			compatible = "ti,omap2-uart";
++			ti,hwmods = "uart2";
++			clock-frequency = <48000000>;
++		};
++
++		uart3: serial@4806e000 {
++			compatible = "ti,omap2-uart";
++			ti,hwmods = "uart3";
++			clock-frequency = <48000000>;
++		};
 +	};
 +};
