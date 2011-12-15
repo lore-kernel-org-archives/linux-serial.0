@@ -1,112 +1,145 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH] atmel_serial: fix spinlock lockup in RS485 code
-Date: Thu, 15 Dec 2011 10:58:14 -0800
-Message-ID: <20111215185814.GD18791@kroah.com>
-References: <4EE9B42F.50004@evidence.eu.com>
- <4EE9C532.5050607@atmel.com>
- <4EE9D44A.6010300@evidence.eu.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH v3 4/4] ARM: omap: pass minimal SoC/board data for UART
+ from dt
+Date: Thu, 15 Dec 2011 13:13:21 -0800
+Message-ID: <20111215211320.GU32251@atomide.com>
+References: <1323863746-18145-1-git-send-email-rnayak@ti.com>
+ <1323863746-18145-5-git-send-email-rnayak@ti.com>
+ <20111214192509.GH32251@atomide.com>
+ <4EE99923.4030902@ti.com>
+ <4EE9C697.4010604@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out3.smtp.messagingengine.com ([66.111.4.27]:59899 "EHLO
-	out3.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1759363Ab1LOTD1 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 15 Dec 2011 14:03:27 -0500
-Received: from compute3.internal (compute3.nyi.mail.srv.osa [10.202.2.43])
-	by gateway1.nyi.mail.srv.osa (Postfix) with ESMTP id C8AAD21918
-	for <linux-serial@vger.kernel.org>; Thu, 15 Dec 2011 14:03:26 -0500 (EST)
+Return-path: <linux-omap-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <4EE9D44A.6010300@evidence.eu.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <4EE9C697.4010604@ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: "Cousson, Benoit" <b-cousson@ti.com>
+Cc: Rajendra Nayak <rnayak@ti.com>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, khilman@ti.com, govindraj.raja@ti.com, linux-arm-kernel@lists.infradead.org, linaro-dev@lists.linaro.org, patches@linaro.org, robherring2@gmail.com
 List-Id: linux-serial@vger.kernel.org
-To: Claudio Scordino <claudio@evidence.eu.com>
-Cc: Alan Cox <alan@linux.intel.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Linux Kernel <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Dave Bender <codehero@gmail.com>
 
-On Thu, Dec 15, 2011 at 12:04:42PM +0100, Claudio Scordino wrote:
-> Il 15/12/2011 11:00, Nicolas Ferre ha scritto:
-> >On 12/15/2011 09:47 AM, Claudio Scordino :
-> >>Hi all.
-> >>
-> >>We have encountered a spinlock lockup in the RS485 part of the
-> >>atmel_serial driver.
-> >>
-> >>Here is the trace:
-> >>
-> >>[   68.030000] BUG: spinlock lockup on CPU#0, dnp_master/244, c07e82c0
-> >>[   68.040000] [<c002a790>] (unwind_backtrace+0x0/0xf0) from
-> >>[<c012f8f0>] (do_raw_spin_lock+0x10c/0x148)
-> >>[   68.050000] [<c012f8f0>] (do_raw_spin_lock+0x10c/0x148) from
-> >>[<c015152c>] (atmel_tasklet_func+0x10/0x708)
-> >>[   68.060000] [<c015152c>] (atmel_tasklet_func+0x10/0x708) from
-> >>[<c003bfd4>] (tasklet_action+0x8c/0xf4)
-> >>[   68.070000] [<c003bfd4>] (tasklet_action+0x8c/0xf4) from [<c003c630>]
-> >>(__do_softirq+0xa4/0x180)
-> >>[   68.080000] [<c003c630>] (__do_softirq+0xa4/0x180) from [<c003c764>]
-> >>(irq_exit+0x58/0xb0)
-> >>[   68.090000] [<c003c764>] (irq_exit+0x58/0xb0) from [<c0021084>]
-> >>(asm_do_IRQ+0x84/0xa4)
-> >>[   68.100000] [<c0021084>] (asm_do_IRQ+0x84/0xa4) from [<c002622c>]
-> >>(__irq_svc+0x4c/0x98)
-> >>[   68.110000] Exception stack(0xc341fdc8 to 0xc341fe10)
-> >>[   68.110000] fdc0:                   c07e82c0 00000000 00000200
-> >>c4818000 c341fe10 c07e82c0
-> >>[   68.120000] fde0: 00000000 c07e82c0 c38d3318 c341e000 bebcee00
-> >>010a0b60 c07e83fc c341fe10
-> >>[   68.130000] fe00: c0151d54 c023d9c0 60000013 ffffffff
-> >>[   68.140000] [<c002622c>] (__irq_svc+0x4c/0x98) from [<c023d9c0>]
-> >>(_raw_spin_unlock+0x0/0x48)
-> >>[   68.140000] [<c023d9c0>] (_raw_spin_unlock+0x0/0x48) from
-> >>[<00000000>] (  (null))
-> >>
-> >>The soft lockup occurs later
-> >>
-> >>[  126.750000] BUG: soft lockup - CPU#0 stuck for 61s! [dnp_master:244]
-> >>[  126.750000] irq event stamp: 0
-> >>[  126.750000] hardirqs last  enabled at (0): [<   (null)>]   (null)
-> >>[  126.750000] hardirqs last disabled at (0): [<c0035e30>]
-> >>copy_process+0x308/0xe78
-> >>[  126.750000] softirqs last  enabled at (0): [<c0035e30>]
-> >>copy_process+0x308/0xe78
-> >>[  126.750000] softirqs last disabled at (0): [<   (null)>]   (null)
-> >>
-> >>
-> >>The following patch (already tested by Dave, who also reported the bug)
-> >>fixes the problem.
-> >>
-> >>Regards,
-> >>
-> >>     Claudio
-> >>
-> >>
-> >>
-> >>
-> >>Subject: atmel_serial: fix spinlock lockup in RS485 code
-> >>
-> >>Patch to fix a spinlock lockup in the driver that sometimes happens when
-> >>the
-> >>tasklet starts.
-> >>
-> >>Signed-off-by: Claudio Scordino<claudio@evidence.eu.com>
-> >>Signed-off-by: Dave Bender<codehero@gmail.com>
-> >>Tested-by: Dave Bender<codehero@gmail.com>
-> >
-> >Acked-by: Nicolas Ferre<nicolas.ferre@atmel.com>
-> >
-> >Claudio, can you please send the patch to Alan with my "Acked-by" and an
-> >addition to Linux stable just after the signature lines:
-> >
-> >Cc: stable<stable@kernel.org>
-
-That address has been invalid since August, please use
-stable@vger.kernel.org now.
-
-> Dear Alan,
+* Cousson, Benoit <b-cousson@ti.com> [111215 01:34]:
+> Hi Tony,
 > 
-> 	here is the patch with all the acked-bys.
+> On 12/15/2011 7:52 AM, Rajendra Nayak wrote:
+> >On Thursday 15 December 2011 12:55 AM, Tony Lindgren wrote:
+> >>* Rajendra Nayak<rnayak@ti.com> [111214 03:24]:
+> >>>Pass minimal data needed for console boot, from dt, for
+> >>>OMAP4 panda/sdp and OMAP3 beagle boards, and get rid of the
+> >>>static initialization from generic board file.
+> >>>
+> >>>Acked-by: Rob Herring<rob.herring@calxeda.com>
+> >>>Signed-off-by: Rajendra Nayak<rnayak@ti.com>
+> >>
+> >>This we can't merge because this breaks serial console for
+> >>omap2 because you're not adding the omap2 specific dtsi
+> >>entries for omap2..
+> >
+> >But we never had omap2 working with DT, because we never added
+> >a .dtsi file for omap2 or a .dts file for any omap2 board variants.
+> >
+> >Until now the DT support on OMAP has been limited to OMAP3 and OMAP4
+> >with boards limited to omap3beagle/omap4Panda and omap4sdp.
+> >
+> >So when we do add base support for omap2, we could update those
+> >with the serial entries.
+> 
+> I'm quite confused as well... Have you tried the current 3.2 kernel
+> on an OMAP2 board?
+> 
+> So far I've been taking care of keeping the OMAP2 support into the
+> board-generic.c file, but I've never added any omap2.dtsi or
+> omap2-board.dts file to support it.
 
-I'll take care of this.
+Yeah adding it is trivial, so let's just add it :)
 
-thanks,
+How about we just add the following patch before the last patch
+in this series?
 
-greg k-h
+I don't have iva there as that's different between 2420 and 2430.
+But omap2.dtsi can be included later on into omap2420.dtsi and
+omap2430.dtsi.
+
+Regards,
+
+Tony
+
+
+From: Tony Lindgren <tony@atomide.com>
+Date: Thu, 15 Dec 2011 12:48:43 -0800
+Subject: [PATCH] arm/dts: Add minimal device tree support for omap2420 and omap2430
+
+Add minimal device tree support for omap2420 and omap2430
+
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+
+--- /dev/null
++++ b/arch/arm/boot/dts/omap2.dtsi
+@@ -0,0 +1,67 @@
++/*
++ * Device Tree Source for OMAP2 SoC
++ *
++ * Copyright (C) 2011 Texas Instruments Incorporated - http://www.ti.com/
++ *
++ * This file is licensed under the terms of the GNU General Public License
++ * version 2.  This program is licensed "as is" without any warranty of any
++ * kind, whether express or implied.
++ */
++
++/include/ "skeleton.dtsi"
++
++/ {
++	compatible = "ti,omap2430", "ti,omap2420", "ti,omap2";
++
++	aliases {
++		serial0 = &uart1;
++		serial1 = &uart2;
++		serial2 = &uart3;
++	};
++
++	cpus {
++		cpu@0 {
++			compatible = "arm,arm1136jf-s";
++		};
++	};
++
++	soc {
++		compatible = "ti,omap-infra";
++		mpu {
++			compatible = "ti,omap2-mpu";
++			ti,hwmods = "mpu";
++		};
++	};
++
++	ocp {
++		compatible = "simple-bus";
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges;
++		ti,hwmods = "l3_main";
++
++		intc: interrupt-controller@1 {
++			compatible = "ti,omap2-intc";
++			interrupt-controller;
++			#interrupt-cells = <1>;
++		};
++
++		uart1: serial@0x4806a000 {
++			compatible = "ti,omap2-uart";
++			ti,hwmods = "uart1";
++			clock-frequency = <48000000>;
++		};
++
++		uart2: serial@0x4806c000 {
++			compatible = "ti,omap2-uart";
++			ti,hwmods = "uart2";
++			clock-frequency = <48000000>;
++		};
++
++		uart3: serial@0x4806e000 {
++			compatible = "ti,omap2-uart";
++			ti,hwmods = "uart3";
++			clock-frequency = <48000000>;
++		};
++	};
++};
