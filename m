@@ -1,89 +1,62 @@
-From: Kevin Hilman <khilman@ti.com>
-Subject: [GIT PULL] OMAP: UART cleanup and runtime PM conversion for v3.3
-Date: Wed, 14 Dec 2011 16:53:50 -0800
-Message-ID: <878vmeodsx.fsf@ti.com>
+From: Rajendra Nayak <rnayak@ti.com>
+Subject: Re: [PATCH v3 4/4] ARM: omap: pass minimal SoC/board data for UART
+ from dt
+Date: Thu, 15 Dec 2011 12:22:19 +0530
+Message-ID: <4EE99923.4030902@ti.com>
+References: <1323863746-18145-1-git-send-email-rnayak@ti.com> <1323863746-18145-5-git-send-email-rnayak@ti.com> <20111214192509.GH32251@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog113.obsmtp.com ([74.125.149.209]:43725 "EHLO
-	na3sys009aog113.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1758380Ab1LOAxx (ORCPT
+Received: from na3sys009aog118.obsmtp.com ([74.125.149.244]:34849 "EHLO
+	na3sys009aog118.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S932268Ab1LOGw2 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 14 Dec 2011 19:53:53 -0500
+	Thu, 15 Dec 2011 01:52:28 -0500
+In-Reply-To: <20111214192509.GH32251@atomide.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Tony Lindgren <tony@atomide.com>
-Cc: linux-omap <linux-omap@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Govindraj Raja <govindraj.raja@ti.com>
+Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, khilman@ti.com, govindraj.raja@ti.com, b-cousson@ti.com, linux-arm-kernel@lists.infradead.org, linaro-dev@lists.linaro.org, patches@linaro.org, robherring2@gmail.com
 
-Tony,
+On Thursday 15 December 2011 12:55 AM, Tony Lindgren wrote:
+> * Rajendra Nayak<rnayak@ti.com>  [111214 03:24]:
+>> Pass minimal data needed for console boot, from dt, for
+>> OMAP4 panda/sdp and OMAP3 beagle boards, and get rid of the
+>> static initialization from generic board file.
+>>
+>> Acked-by: Rob Herring<rob.herring@calxeda.com>
+>> Signed-off-by: Rajendra Nayak<rnayak@ti.com>
+>
+> This we can't merge because this breaks serial console for
+> omap2 because you're not adding the omap2 specific dtsi
+> entries for omap2..
 
-Please pull the OMAP UART cleanup and conversion to runtime PM.  I had
-to rebase it onto your soc branch due to the serial.c changes there.
+But we never had omap2 working with DT, because we never added
+a .dtsi file for omap2 or a .dts file for any omap2 board variants.
 
-This includes changes to drivers/tty/serial/omap-serial.c and those
-changes have Acks from Greg KH and Alan Cox and I got the OK from them
-to merge this all together via the OMAP tree.
+Until now the DT support on OMAP has been limited to OMAP3 and OMAP4
+with boards limited to omap3beagle/omap4Panda and omap4sdp.
 
-Thanks to Govindraj for his persistence with this series.
+So when we do add base support for omap2, we could update those
+with the serial entries.
 
-Boot tested on 2420/n810, 4430/Blaze, 4430/Panda
-Additional PM testing on 3430/n900, 3530/Overo, 3630/Zoom3.
+>
+>> --- a/arch/arm/mach-omap2/board-generic.c
+>> +++ b/arch/arm/mach-omap2/board-generic.c
+>> @@ -69,7 +69,6 @@ static void __init omap_generic_init(void)
+>>   	if (node)
+>>   		irq_domain_add_simple(node, 0);
+>>
+>> -	omap_serial_init();
+>>   	omap_sdrc_init(NULL, NULL);
+>>
+>>   	of_platform_populate(NULL, omap_dt_match_table, NULL, NULL);
+>
+> ..and you're removing the call for omap_serial_init.
+>
+> Please just update this patch with the omap2 entries
+> as well. Other than that looks good to me.
+>
+> Tony
 
-NOTE: while normal UART behavior works fine with this series, including
-      suspend/resume, in order for wakeups from runtime PM to work, this
-      series depends on the PRCM IRQ chaining series from Tero and the
-      the new hwmod init state from Rajendra[1].  However, since runtime
-      PM is disabled by default for the UARTs, they will behave normally
-      even without those dependencies.
-
-Kevin
-
-[1] http://marc.info/?l=linux-omap&m=132187766930901&w=2
-
-
-The following changes since commit 4390f5b2cb1f568c1d4b3e5bbf57158f6809627a:
-
-  ARM: OMAP: TI814X: Add cpu type macros and detection support (2011-12-13 10:46:45 -0800)
-
-are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/khilman/linux-omap-pm.git for_3.3/uart/runtime-pm
-
-Deepak K (1):
-      ARM: OMAP2+: UART: Allow UART parameters to be configured from board file.
-
-Govindraj.R (19):
-      ARM: OMAP2+: UART: cleanup + remove uart pm specific API
-      ARM: OMAP2+: UART: cleanup 8250 console driver support
-      ARM: OMAP2+: UART: Cleanup part of clock gating mechanism for uart
-      ARM: OMAP2+: UART: Add default mux for all uarts.
-      ARM: OMAP2+: UART: Remove mapbase/membase fields from pdata.
-      ARM: OMAP2+: UART: Add runtime pm support for omap-serial driver
-      ARM: OMAP2+: UART: Remove context_save and move context restore to driver
-      ARM: OMAP2+: UART: Ensure all reg values configured are available from port structure
-      ARM: OMAP2+: UART: Remove uart reset function.
-      ARM: OMAP2+: UART: Get context loss count to context restore
-      ARM: OMAP2+: UART: Move errata handling from serial.c to omap-serial
-      ARM: OMAP2+: UART: Add wakeup mechanism for omap-uarts
-      ARM: OMAP2+: UART: Remove old and unused clocks handling funcs
-      ARM: OMAP2+: UART: remove temporary variable used to count uart instance
-      ARM: OMAP2+: UART: Avoid console uart idling during bootup
-      ARM: OMAP2+: UART: Avoid uart idling on suspend for no_console_suspend usecase
-      ARM: OMAP2+: UART: Do not gate uart clocks if used for debug_prints
-      ARM: OMAP2+: UART: Remove omap_uart_can_sleep and add pm_qos
-      ARM: OMAP2+: UART: Fix compilation/sparse warnings
-
-Jon Hunter (1):
-      ARM: OMAP2+: UART: Make the RX_TIMEOUT for DMA configurable for each UART
-
- arch/arm/mach-omap2/board-3430sdp.c           |  100 +---
- arch/arm/mach-omap2/board-4430sdp.c           |   68 +--
- arch/arm/mach-omap2/board-n8x0.c              |    6 +-
- arch/arm/mach-omap2/board-omap4panda.c        |   68 +--
- arch/arm/mach-omap2/cpuidle34xx.c             |    6 -
- arch/arm/mach-omap2/pm24xx.c                  |   20 -
- arch/arm/mach-omap2/pm34xx.c                  |   43 --
- arch/arm/mach-omap2/serial.c                  |  907 +++++++------------------
- arch/arm/plat-omap/include/plat/omap-serial.h |   37 +-
- arch/arm/plat-omap/include/plat/serial.h      |   10 +-
- drivers/tty/serial/omap-serial.c              |  350 +++++++++--
- 11 files changed, 588 insertions(+), 1027 deletions(-)
