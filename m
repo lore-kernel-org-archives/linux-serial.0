@@ -1,69 +1,52 @@
-From: "Cousson, Benoit" <b-cousson@ti.com>
-Subject: Re: [PATCH v3 4/4] ARM: omap: pass minimal SoC/board data for UART
- from dt
-Date: Fri, 16 Dec 2011 16:21:43 +0100
-Message-ID: <4EEB6207.9090200@ti.com>
-References: <1323863746-18145-1-git-send-email-rnayak@ti.com> <1323863746-18145-5-git-send-email-rnayak@ti.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [GIT PULL] OMAP: UART cleanup and runtime PM conversion for
+ v3.3
+Date: Fri, 16 Dec 2011 10:24:16 -0800
+Message-ID: <20111216182416.GD32251@atomide.com>
+References: <878vmeodsx.fsf@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:41345 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756324Ab1LPPV5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 16 Dec 2011 10:21:57 -0500
-In-Reply-To: <1323863746-18145-5-git-send-email-rnayak@ti.com>
+Received: from mho-02-ewr.mailhop.org ([204.13.248.72]:38206 "EHLO
+	mho-02-ewr.mailhop.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752121Ab1LPSYS (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 16 Dec 2011 13:24:18 -0500
+Content-Disposition: inline
+In-Reply-To: <878vmeodsx.fsf@ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Rajendra Nayak <rnayak@ti.com>
-Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, khilman@ti.com, tony@atomide.com, govindraj.raja@ti.com, linux-arm-kernel@lists.infradead.org, linaro-dev@lists.linaro.org, patches@linaro.org, robherring2@gmail.com
+To: Kevin Hilman <khilman@ti.com>
+Cc: linux-omap <linux-omap@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Govindraj Raja <govindraj.raja@ti.com>
 
-Hi Rajendra,
+* Kevin Hilman <khilman@ti.com> [111214 16:22]:
+> Tony,
+> 
+> Please pull the OMAP UART cleanup and conversion to runtime PM.  I had
+> to rebase it onto your soc branch due to the serial.c changes there.
+> 
+> This includes changes to drivers/tty/serial/omap-serial.c and those
+> changes have Acks from Greg KH and Alan Cox and I got the OK from them
+> to merge this all together via the OMAP tree.
+> 
+> Thanks to Govindraj for his persistence with this series.
+> 
+> Boot tested on 2420/n810, 4430/Blaze, 4430/Panda
+> Additional PM testing on 3430/n900, 3530/Overo, 3630/Zoom3.
+> 
+> NOTE: while normal UART behavior works fine with this series, including
+>       suspend/resume, in order for wakeups from runtime PM to work, this
+>       series depends on the PRCM IRQ chaining series from Tero and the
+>       the new hwmod init state from Rajendra[1].  However, since runtime
+>       PM is disabled by default for the UARTs, they will behave normally
+>       even without those dependencies.
+> 
+> Kevin
+> 
+> [1] http://marc.info/?l=linux-omap&m=132187766930901&w=2
 
-Just one minor comment if you plan to repost.
+Thanks pulling this into uart branch.
 
-On 12/14/2011 12:55 PM, Rajendra Nayak wrote:
-> Pass minimal data needed for console boot, from dt, for
-> OMAP4 panda/sdp and OMAP3 beagle boards, and get rid of the
-> static initialization from generic board file.
->
-> Acked-by: Rob Herring<rob.herring@calxeda.com>
-> Signed-off-by: Rajendra Nayak<rnayak@ti.com>
+Regards,
 
-Tested-by: Benoit Cousson <b-cousson@ti.com>
-
->   arch/arm/boot/dts/omap3.dtsi        |   31 +++++++++++++++++++++++++++++++
->   arch/arm/boot/dts/omap4.dtsi        |   28 ++++++++++++++++++++++++++++
->   arch/arm/mach-omap2/board-generic.c |    1 -
->   3 files changed, 59 insertions(+), 1 deletions(-)
->
-> diff --git a/arch/arm/boot/dts/omap3.dtsi b/arch/arm/boot/dts/omap3.dtsi
-> index d202bb5..216c331 100644
-> --- a/arch/arm/boot/dts/omap3.dtsi
-> +++ b/arch/arm/boot/dts/omap3.dtsi
-> @@ -13,6 +13,13 @@
->   / {
->   	compatible = "ti,omap3430", "ti,omap3";
->
-> +	aliases {
-> +		serial0 =&uart1;
-> +		serial1 =&uart2;
-> +		serial2 =&uart3;
-> +		serial3 =&uart4;
-> +	};
-> +
->   	cpus {
->   		cpu@0 {
->   			compatible = "arm,cortex-a8";
-> @@ -59,5 +66,29 @@
->   			interrupt-controller;
->   			#interrupt-cells =<1>;
->   		};
-> +
-> +		uart1: serial@0x4806a000 {
-
-Could you get rid of the 0x prefix for consistency?
-This is applicable for the omap4.dtsi as well.
-
-Thanks,
-Benoit
+Tony
