@@ -1,95 +1,152 @@
-From: Rajendra Nayak <rnayak@ti.com>
-Subject: Re: [PATCH] arm/dts: Add minimal device tree support for omap2420
- and omap2430
-Date: Fri, 16 Dec 2011 09:31:05 +0530
-Message-ID: <4EEAC281.7010705@ti.com>
-References: <1323863746-18145-1-git-send-email-rnayak@ti.com> <1323863746-18145-5-git-send-email-rnayak@ti.com> <20111214192509.GH32251@atomide.com> <4EE99923.4030902@ti.com> <4EE9C697.4010604@ti.com> <20111215211320.GU32251@atomide.com> <4EEA6686.3010504@ti.com> <20111215213722.GV32251@atomide.com> <20111215213940.GW32251@atomide.com>
+From: Claudio Scordino <claudio@evidence.eu.com>
+Subject: Re: [PATCH] atmel_serial: fix spinlock lockup in RS485 code
+Date: Fri, 16 Dec 2011 15:08:49 +0100
+Message-ID: <4EEB50F1.3040106@evidence.eu.com>
+References: <4EE9B42F.50004@evidence.eu.com> <4EE9C532.5050607@atmel.com> <4EE9D44A.6010300@evidence.eu.com> <20111215185814.GD18791@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20111215213940.GW32251@atomide.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: "Cousson, Benoit" <b-cousson@ti.com>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, khilman@ti.com, govindraj.raja@ti.com, linux-arm-kernel@lists.infradead.org, linaro-dev@lists.linaro.org, patches@linaro.org, robherring2@gmail.com
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from bishop.asidev.net ([95.141.38.214]:43945 "EHLO
+	bishop.asidev.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751966Ab1LPOQX (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 16 Dec 2011 09:16:23 -0500
+In-Reply-To: <20111215185814.GD18791@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <greg@kroah.com>
+Cc: Alan Cox <alan@linux.intel.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Linux Kernel <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Dave Bender <codehero@gmail.com>, stable@vger.kernel.org
 
-On Friday 16 December 2011 03:09 AM, Tony Lindgren wrote:
-> Add minimal device tree support for omap2420 and omap2430
-
-Looks good to me.
-
+Il 15/12/2011 19:58, Greg KH ha scritto:
+> On Thu, Dec 15, 2011 at 12:04:42PM +0100, Claudio Scordino wrote:
+>> Il 15/12/2011 11:00, Nicolas Ferre ha scritto:
+>>> On 12/15/2011 09:47 AM, Claudio Scordino :
+>>>> Hi all.
+>>>>
+>>>> We have encountered a spinlock lockup in the RS485 part of the
+>>>> atmel_serial driver.
+>>>>
+>>>> Here is the trace:
+>>>>
+>>>> [   68.030000] BUG: spinlock lockup on CPU#0, dnp_master/244, c07e82c0
+>>>> [   68.040000] [<c002a790>] (unwind_backtrace+0x0/0xf0) from
+>>>> [<c012f8f0>] (do_raw_spin_lock+0x10c/0x148)
+>>>> [   68.050000] [<c012f8f0>] (do_raw_spin_lock+0x10c/0x148) from
+>>>> [<c015152c>] (atmel_tasklet_func+0x10/0x708)
+>>>> [   68.060000] [<c015152c>] (atmel_tasklet_func+0x10/0x708) from
+>>>> [<c003bfd4>] (tasklet_action+0x8c/0xf4)
+>>>> [   68.070000] [<c003bfd4>] (tasklet_action+0x8c/0xf4) from [<c003c630>]
+>>>> (__do_softirq+0xa4/0x180)
+>>>> [   68.080000] [<c003c630>] (__do_softirq+0xa4/0x180) from [<c003c764>]
+>>>> (irq_exit+0x58/0xb0)
+>>>> [   68.090000] [<c003c764>] (irq_exit+0x58/0xb0) from [<c0021084>]
+>>>> (asm_do_IRQ+0x84/0xa4)
+>>>> [   68.100000] [<c0021084>] (asm_do_IRQ+0x84/0xa4) from [<c002622c>]
+>>>> (__irq_svc+0x4c/0x98)
+>>>> [   68.110000] Exception stack(0xc341fdc8 to 0xc341fe10)
+>>>> [   68.110000] fdc0:                   c07e82c0 00000000 00000200
+>>>> c4818000 c341fe10 c07e82c0
+>>>> [   68.120000] fde0: 00000000 c07e82c0 c38d3318 c341e000 bebcee00
+>>>> 010a0b60 c07e83fc c341fe10
+>>>> [   68.130000] fe00: c0151d54 c023d9c0 60000013 ffffffff
+>>>> [   68.140000] [<c002622c>] (__irq_svc+0x4c/0x98) from [<c023d9c0>]
+>>>> (_raw_spin_unlock+0x0/0x48)
+>>>> [   68.140000] [<c023d9c0>] (_raw_spin_unlock+0x0/0x48) from
+>>>> [<00000000>] (  (null))
+>>>>
+>>>> The soft lockup occurs later
+>>>>
+>>>> [  126.750000] BUG: soft lockup - CPU#0 stuck for 61s! [dnp_master:244]
+>>>> [  126.750000] irq event stamp: 0
+>>>> [  126.750000] hardirqs last  enabled at (0): [<    (null)>]   (null)
+>>>> [  126.750000] hardirqs last disabled at (0): [<c0035e30>]
+>>>> copy_process+0x308/0xe78
+>>>> [  126.750000] softirqs last  enabled at (0): [<c0035e30>]
+>>>> copy_process+0x308/0xe78
+>>>> [  126.750000] softirqs last disabled at (0): [<    (null)>]   (null)
+>>>>
+>>>>
+>>>> The following patch (already tested by Dave, who also reported the bug)
+>>>> fixes the problem.
+>>>>
+>>>> Regards,
+>>>>
+>>>>      Claudio
+>>>>
+>>>>
+>>>>
+>>>>
+>>>> Subject: atmel_serial: fix spinlock lockup in RS485 code
+>>>>
+>>>> Patch to fix a spinlock lockup in the driver that sometimes happens when
+>>>> the
+>>>> tasklet starts.
+>>>>
+>>>> Signed-off-by: Claudio Scordino<claudio@evidence.eu.com>
+>>>> Signed-off-by: Dave Bender<codehero@gmail.com>
+>>>> Tested-by: Dave Bender<codehero@gmail.com>
+>>>
+>>> Acked-by: Nicolas Ferre<nicolas.ferre@atmel.com>
+>>>
+>>> Claudio, can you please send the patch to Alan with my "Acked-by" and an
+>>> addition to Linux stable just after the signature lines:
+>>>
+>>> Cc: stable<stable@kernel.org>
 >
-> Signed-off-by: Tony Lindgren<tony@atomide.com>
->
-> --- /dev/null
-> +++ b/arch/arm/boot/dts/omap2.dtsi
-> @@ -0,0 +1,67 @@
-> +/*
-> + * Device Tree Source for OMAP2 SoC
-> + *
-> + * Copyright (C) 2011 Texas Instruments Incorporated - http://www.ti.com/
-> + *
-> + * This file is licensed under the terms of the GNU General Public License
-> + * version 2.  This program is licensed "as is" without any warranty of any
-> + * kind, whether express or implied.
-> + */
-> +
-> +/include/ "skeleton.dtsi"
-> +
-> +/ {
-> +	compatible = "ti,omap2430", "ti,omap2420", "ti,omap2";
-> +
-> +	aliases {
-> +		serial0 =&uart1;
-> +		serial1 =&uart2;
-> +		serial2 =&uart3;
-> +	};
-> +
-> +	cpus {
-> +		cpu@0 {
-> +			compatible = "arm,arm1136jf-s";
-> +		};
-> +	};
-> +
-> +	soc {
-> +		compatible = "ti,omap-infra";
-> +		mpu {
-> +			compatible = "ti,omap2-mpu";
-> +			ti,hwmods = "mpu";
-> +		};
-> +	};
-> +
-> +	ocp {
-> +		compatible = "simple-bus";
-> +		#address-cells =<1>;
-> +		#size-cells =<1>;
-> +		ranges;
-> +		ti,hwmods = "l3_main";
-> +
-> +		intc: interrupt-controller@1 {
-> +			compatible = "ti,omap2-intc";
-> +			interrupt-controller;
-> +			#interrupt-cells =<1>;
-> +		};
-> +
-> +		uart1: serial@4806a000 {
-> +			compatible = "ti,omap2-uart";
-> +			ti,hwmods = "uart1";
-> +			clock-frequency =<48000000>;
-> +		};
-> +
-> +		uart2: serial@4806c000 {
-> +			compatible = "ti,omap2-uart";
-> +			ti,hwmods = "uart2";
-> +			clock-frequency =<48000000>;
-> +		};
-> +
-> +		uart3: serial@4806e000 {
-> +			compatible = "ti,omap2-uart";
-> +			ti,hwmods = "uart3";
-> +			clock-frequency =<48000000>;
-> +		};
-> +	};
-> +};
+> That address has been invalid since August, please use
+> stable@vger.kernel.org now.
+
+Hi Greg,
+
+	here is the patch with the right address.
+
+Many thanks for taking care of it.
+
+Best regards,
+
+	Claudio
+
+
+Subject: atmel_serial: fix spinlock lockup in RS485 code
+
+Patch to fix a spinlock lockup in the driver that sometimes happens when the
+tasklet starts.
+
+Signed-off-by: Claudio Scordino <claudio@evidence.eu.com>
+Signed-off-by: Dave Bender <codehero@gmail.com>
+Tested-by: Dave Bender <codehero@gmail.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+Acked-by: Alan Cox <alan@linux.intel.com>
+Cc: stable <stable@vger.kernel.org>
+---
+  drivers/tty/serial/atmel_serial.c |    5 +++--
+  1 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 4c823f3..90c8e3a 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -212,8 +212,9 @@ void atmel_config_rs485(struct uart_port *port, struct serial_rs485 *rs485conf)
+  {
+  	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+  	unsigned int mode;
++	unsigned long flags;
+  
+-	spin_lock(&port->lock);
++	spin_lock_irqsave(&port->lock, flags);
+  
+  	/* Disable interrupts */
+  	UART_PUT_IDR(port, atmel_port->tx_done_mask);
+@@ -244,7 +245,7 @@ void atmel_config_rs485(struct uart_port *port, struct serial_rs485 *rs485conf)
+  	/* Enable interrupts */
+  	UART_PUT_IER(port, atmel_port->tx_done_mask);
+  
+-	spin_unlock(&port->lock);
++	spin_unlock_irqrestore(&port->lock, flags);
+  
+  }
+  
+-- 
+1.7.1
 
