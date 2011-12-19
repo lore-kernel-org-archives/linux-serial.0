@@ -1,25 +1,25 @@
-From: Shawn Guo <shawn.guo@freescale.com>
+From: Sascha Hauer <s.hauer@pengutronix.de>
 Subject: Re: [PATCH 1/2] imx: Add save/restore functions for UART control regs
-Date: Mon, 19 Dec 2011 15:20:17 +0800
-Message-ID: <20111219072017.GI4962@S2100-06.ap.freescale.net>
+Date: Mon, 19 Dec 2011 11:10:23 +0100
+Message-ID: <20111219101023.GE27267@pengutronix.de>
 References: <1324229655-5538-1-git-send-email-dirk.behme@gmail.com>
  <20111219034902.GC4962@S2100-06.ap.freescale.net>
  <4EEEDE94.3080804@googlemail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=iso-8859-15
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from db3ehsobe001.messaging.microsoft.com ([213.199.154.139]:1848
-	"EHLO DB3EHSOBE001.bigfish.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751201Ab1LSHHH convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Dec 2011 02:07:07 -0500
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:36987 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751752Ab1LSKKb (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 19 Dec 2011 05:10:31 -0500
 Content-Disposition: inline
 In-Reply-To: <4EEEDE94.3080804@googlemail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Dirk Behme <dirk.behme@googlemail.com>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>, linux-arm-kernel@lists.infradead.org, Dirk Behme <dirk.behme@gmail.com>, linux-serial@vger.kernel.org, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, Saleem Abdulrasool <compnerd@compnerd.org>
+Cc: Shawn Guo <shawn.guo@freescale.com>, linux-arm-kernel@lists.infradead.org, Dirk Behme <dirk.behme@gmail.com>, linux-serial@vger.kernel.org, Uwe =?iso-8859-15?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, Saleem Abdulrasool <compnerd@compnerd.org>
 
 On Mon, Dec 19, 2011 at 07:49:56AM +0100, Dirk Behme wrote:
 > On 19.12.2011 04:49, Shawn Guo wrote:
@@ -87,17 +87,28 @@ cr3);
 > (?)
 >=20
 > Sascha, Shawn: Could you agree on what we should use?
+
+I think save/restore are better names.
+Maybe I thought about a function which saves the current values *and*
+sets ucrx to other values. In that case imx_port_ucrs_save() would be
+the wrong name.
+
 >=20
 > Once you agreed, I will send an update of both two patches.
->=20
-Please Cc Alan Cox <alan@linux.intel.com> for these patches.  Though we
-could possibly send them through arm-soc tree, we need to ask for his a=
-ck.
+
++1 for save/restore
+
+Sascha
 
 --=20
-Regards,
-Shawn
-
+Pengutronix e.K.                           |                           =
+  |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0  =
+  |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-555=
+5 |
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
  in
