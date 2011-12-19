@@ -1,160 +1,98 @@
-From: Shawn Guo <shawn.guo@freescale.com>
-Subject: Re: [PATCH 2/2 v2] imx: add polled io uart methods
-Date: Mon, 19 Dec 2011 11:52:09 +0800
-Message-ID: <20111219035208.GD4962@S2100-06.ap.freescale.net>
-References: <1324229655-5538-1-git-send-email-dirk.behme@gmail.com>
- <1324229655-5538-2-git-send-email-dirk.behme@gmail.com>
+From: Dirk Behme <dirk.behme@googlemail.com>
+Subject: Re: [PATCH 1/2] imx: Add save/restore functions for UART control
+ regs
+Date: Mon, 19 Dec 2011 07:49:56 +0100
+Message-ID: <4EEEDE94.3080804@googlemail.com>
+References: <1324229655-5538-1-git-send-email-dirk.behme@gmail.com> <20111219034902.GC4962@S2100-06.ap.freescale.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=ISO-8859-1;
+	format=flowed
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from tx2ehsobe001.messaging.microsoft.com ([65.55.88.11]:22496 "EHLO
-	TX2EHSOBE001.bigfish.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752079Ab1LSDiy convert rfc822-to-8bit (ORCPT
+Received: from mail-ee0-f46.google.com ([74.125.83.46]:37458 "EHLO
+	mail-ee0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750933Ab1LSGuT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 18 Dec 2011 22:38:54 -0500
-Content-Disposition: inline
-In-Reply-To: <1324229655-5538-2-git-send-email-dirk.behme@gmail.com>
+	Mon, 19 Dec 2011 01:50:19 -0500
+Received: by eekc4 with SMTP id c4so5144892eek.19
+        for <linux-serial@vger.kernel.org>; Sun, 18 Dec 2011 22:50:18 -0800 (PST)
+In-Reply-To: <20111219034902.GC4962@S2100-06.ap.freescale.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Dirk Behme <dirk.behme@googlemail.com>
-Cc: linux-arm-kernel@lists.infradead.org, Sascha Hauer <s.hauer@pengutronix.de>, Dirk Behme <dirk.behme@gmail.com>, linux-serial@vger.kernel.org, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, Saleem Abdulrasool <compnerd@compnerd.org>
+To: Shawn Guo <shawn.guo@freescale.com>, Sascha Hauer <s.hauer@pengutronix.de>
+Cc: linux-arm-kernel@lists.infradead.org, Dirk Behme <dirk.behme@gmail.com>, linux-serial@vger.kernel.org, =?ISO-8859-1?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, Saleem Abdulrasool <compnerd@compnerd.org>
 
-On Sun, Dec 18, 2011 at 06:34:15PM +0100, Dirk Behme wrote:
-> From: Saleem Abdulrasool <compnerd@compnerd.org>
->=20
-> These methods are invoked if the iMX uart is used in conjuction with =
-kgdb during
-> early boot.  In order to access the UART without the interrupts, the =
-kernel uses
-> the basic polling methods for IO with the device.  With these methods
-> implemented, it is now possible to enable kgdb during early boot over=
- serial.
->=20
-> Signed-off-by: Saleem Abdulrasool <compnerd@compnerd.org>
-> Signed-off-by: Dirk Behme <dirk.behme@gmail.com>
-> CC: Sascha Hauer <s.hauer@pengutronix.de>
-> CC: Fabio Estevam <festevam@gmail.com>
-> CC: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> CC: linux-serial@vger.kernel.org
-> ---
-> Note: Changes in the v2 compared to Saleem's original version:
->        * Remove volatile form status variable
->        * Remove blank line
->        * Factor out imx_console_mode/restore()
->=20
->  drivers/tty/serial/imx.c |   66 ++++++++++++++++++++++++++++++++++++=
-++++++++++
->  1 files changed, 66 insertions(+), 0 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 6a01c2a..cd81ac0 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -102,6 +102,7 @@
->  #define  UCR2_STPB       (1<<6)	 /* Stop */
->  #define  UCR2_WS         (1<<5)	 /* Word size */
->  #define  UCR2_RTSEN      (1<<4)	 /* Request to send interrupt enable=
- */
-> +#define  UCR2_ATEN       (1<<3)  /* Aging Timer Enable */
->  #define  UCR2_TXEN       (1<<2)	 /* Transmitter enabled */
->  #define  UCR2_RXEN       (1<<1)	 /* Receiver enabled */
->  #define  UCR2_SRST 	 (1<<0)	 /* SW reset */
-> @@ -1104,6 +1105,66 @@ imx_verify_port(struct uart_port *port, struct=
- serial_struct *ser)
->  	return ret;
->  }
-> =20
-> +#if defined(CONFIG_CONSOLE_POLL)
-> +static int imx_poll_get_char(struct uart_port *port)
-> +{
-> +	unsigned int status, cr1, cr2, cr3;
-> +	unsigned char c;
-> +
-> +	/* save control registers */
-> +	imx_console_mode(port, &cr1, &cr2, &cr3);
-> +
-> +	/* disable interrupts */
-> +	writel(UCR1_UARTEN, port->membase + UCR1);
-> +	writel(cr2 & ~(UCR2_ATEN | UCR2_RTSEN | UCR2_ESCI),
-> +	       port->membase + UCR2);
-> +	writel(cr3 & ~(UCR3_DCD | UCR3_RI | UCR3_DTREN), port->membase + UC=
-R3);
-> +
-> +	/* poll */
-> +	do {
-> +		status =3D readl(port->membase + USR2);
-> +	} while (~status & USR2_RDR);
-> +
-> +	/* read */
-> +	c =3D readl(port->membase + URXD0);
-> +
-> +	/* restore control registers */
-> +	imx_console_restore(port, cr1, cr2, cr3);
-> +
-> +	return c & 0xff;
+On 19.12.2011 04:49, Shawn Guo wrote:
+> On Sun, Dec 18, 2011 at 06:34:14PM +0100, Dirk Behme wrote:
+>> Factor out the uart save/restore functionality instead of
+>> having the same code several times in the driver.
+>>
+>> Signed-off-by: Dirk Behme<dirk.behme@gmail.com>
+>> CC: Saleem Abdulrasool<compnerd@compnerd.org>
+>> CC: Sascha Hauer<s.hauer@pengutronix.de>
+>> CC: Fabio Estevam<festevam@gmail.com>
+>> CC: Uwe Kleine-K=F6nig<u.kleine-koenig@pengutronix.de>
+>> CC: linux-serial@vger.kernel.org
+>> ---
+>>   drivers/tty/serial/imx.c |   38 +++++++++++++++++++++++++++++++---=
+----
+>>   1 files changed, 31 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+>> index 163fc90..6a01c2a 100644
+>> --- a/drivers/tty/serial/imx.c
+>> +++ b/drivers/tty/serial/imx.c
+>> @@ -260,6 +260,31 @@ static inline int is_imx21_uart(struct imx_port=
+ *sport)
+>>   }
+>>
+>>   /*
+>> + * Save and restore functions for UCR1, UCR2 and UCR3 registers
+>> + */
+>> +static void imx_console_mode(struct uart_port *port,
+>
+> Function name imx_console_mode seems not like a couple with
+> imx_console_restore.  And I guess something like
+> imx_port_ucrs_save[restore] would be better?
+>
+>> +			     unsigned int *ucr1,
+>> +			     unsigned int *ucr2,
+>> +			     unsigned int *ucr3)
+>
+> Can we define something like 'struct imx_port_ucrs' to contains these=
+?
 
-The 'c' is defined an 'unsigned char'.  Do we still need '& 0xff'?
+Yes, we could have different function names above and use a struct.
 
-> +}
-> +
-> +static void imx_poll_put_char(struct uart_port *port, unsigned char =
-c)
-> +{
-> +	unsigned int status, cr1, cr2, cr3;
-> +
-> +	/* save control registers */
-> +	imx_console_mode(port, &cr1, &cr2, &cr3);
-> +
-> +	/* disable interrupts */
-> +	writel(UCR1_UARTEN, port->membase + UCR1);
-> +	writel(cr2 & ~(UCR2_ATEN | UCR2_RTSEN | UCR2_ESCI),
-> +	       port->membase + UCR2);
-> +	writel(cr3 & ~(UCR3_DCD | UCR3_RI | UCR3_DTREN), port->membase + UC=
-R3);
-> +
-> +	/* drain */
-> +	do {
-> +		status =3D readl(port->membase + USR1);
-> +	} while (~status & USR1_TRDY);
-> +
-> +	/* write */
-> +	writel(c, port->membase + URTX0);
-> +
-> +	/* flush */
-> +	do {
-> +		status =3D readl(port->membase + USR2);
-> +	} while (~status & USR2_TXDC);
-> +
-> +	/* restore control registers */
-> +	imx_console_restore(port, cr1, cr2, cr3);
-> +}
-> +#endif
-> +
->  static struct uart_ops imx_pops =3D {
->  	.tx_empty	=3D imx_tx_empty,
->  	.set_mctrl	=3D imx_set_mctrl,
-> @@ -1121,6 +1182,11 @@ static struct uart_ops imx_pops =3D {
->  	.request_port	=3D imx_request_port,
->  	.config_port	=3D imx_config_port,
->  	.verify_port	=3D imx_verify_port,
-> +
+I implemented what Sascha asked for in
 
-Unnecessary blank line?
+http://www.spinics.net/lists/arm-kernel/msg144960.html
 
-Regards,
-Shawn
+though:
 
-> +#if defined(CONFIG_CONSOLE_POLL)
-> +	.poll_get_char  =3D imx_poll_get_char,
-> +	.poll_put_char  =3D imx_poll_put_char,
-> +#endif
->  };
-> =20
->  static struct imx_port *imx_ports[UART_NR];
-> --=20
-> 1.7.7.4
+-- Sascha wrote: --
+I'm thinking about:
 
+imx_console_mode(struct uart_port *port, u32 *ucr1, u32 *ucr2, u32 *ucr=
+2);
+imx_console_restore(struct uart_port *port, u32 ucr1, u32 ucr2, u32 ucr=
+3);
+-- Sascha end --
+
+It seems Shawn proposes
+
+imx_port_ucrs_save(struct uart_port *port, struct *imx_port_ucrs);
+imx_port_ucrs_restore(struct uart_port *port, struct *imx_port_ucrs);
+
+(?)
+
+Sascha, Shawn: Could you agree on what we should use?
+
+Once you agreed, I will send an update of both two patches.
+
+Many thanks and best regards
+
+Dirk
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
  in
