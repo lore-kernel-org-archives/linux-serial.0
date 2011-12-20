@@ -1,67 +1,48 @@
-From: Shawn Guo <shawn.guo@freescale.com>
-Subject: Re: [PATCH V3 10/14] ARM: mxs: add clk_prepare/clk_unprepare
-Date: Tue, 20 Dec 2011 10:15:33 +0800
-Message-ID: <20111220021532.GA2995@S2101-09.ap.freescale.net>
-References: <1321008637-19999-1-git-send-email-richard.zhao@linaro.org>
- <1321008637-19999-11-git-send-email-richard.zhao@linaro.org>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: [PATCH] serial: use DIV_ROUND_CLOSEST instead of open coding it
+Date: Tue, 20 Dec 2011 11:47:44 +0100
+Message-ID: <1324378064-7208-1-git-send-email-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from am1ehsobe005.messaging.microsoft.com ([213.199.154.208]:41437
-	"EHLO AM1EHSOBE005.bigfish.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752715Ab1LTCGg (ORCPT
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:40583 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751819Ab1LTKrs (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Dec 2011 21:06:36 -0500
-Content-Disposition: inline
-In-Reply-To: <1321008637-19999-11-git-send-email-richard.zhao@linaro.org>
+	Tue, 20 Dec 2011 05:47:48 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Richard Zhao <richard.zhao@linaro.org>, Sascha Hauer <s.hauer@pengutronix.de>
-Cc: linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org, netdev@vger.kernel.org, linux-serial@vger.kernel.org, linux@arm.linux.org.uk, amit.kucheria@canonical.com, kernel@pengutronix.de, ben-linux@fluff.org, cjb@laptop.org, alan@linux.intel.com, eric.miao@linaro.org
+To: Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hi Sascha,
+Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+---
+ drivers/tty/serial/serial_core.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-Can you drop this patch from your tree?  This patch is not complete
-even for mxs platform/arch code, and will conflict with my mxs
-clk-prepare series.
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seri=
+al_core.c
+index 0406d7f..a05afc3 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -423,7 +423,7 @@ uart_get_divisor(struct uart_port *port, unsigned i=
+nt baud)
+ 	if (baud =3D=3D 38400 && (port->flags & UPF_SPD_MASK) =3D=3D UPF_SPD_=
+CUST)
+ 		quot =3D port->custom_divisor;
+ 	else
+-		quot =3D (port->uartclk + (8 * baud)) / (16 * baud);
++		quot =3D DIV_ROUND_CLOSEST(port->uartclk, 16 * baud);
+=20
+ 	return quot;
+ }
+--=20
+1.7.7.3
 
--- 
-Regards,
-Shawn
-
-On Fri, Nov 11, 2011 at 06:50:33PM +0800, Richard Zhao wrote:
-> Signed-off-by: Richard Zhao <richard.zhao@linaro.org>
-> ---
->  arch/arm/mach-mxs/system.c |    2 +-
->  arch/arm/mach-mxs/timer.c  |    2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/arm/mach-mxs/system.c b/arch/arm/mach-mxs/system.c
-> index 20ec3bd..9760a12 100644
-> --- a/arch/arm/mach-mxs/system.c
-> +++ b/arch/arm/mach-mxs/system.c
-> @@ -66,7 +66,7 @@ static int __init mxs_arch_reset_init(void)
->  
->  	clk = clk_get_sys("rtc", NULL);
->  	if (!IS_ERR(clk))
-> -		clk_enable(clk);
-> +		clk_prepare_enable(clk);
->  
->  	return 0;
->  }
-> diff --git a/arch/arm/mach-mxs/timer.c b/arch/arm/mach-mxs/timer.c
-> index cace0d2..564a632 100644
-> --- a/arch/arm/mach-mxs/timer.c
-> +++ b/arch/arm/mach-mxs/timer.c
-> @@ -245,7 +245,7 @@ static int __init mxs_clocksource_init(struct clk *timer_clk)
->  
->  void __init mxs_timer_init(struct clk *timer_clk, int irq)
->  {
-> -	clk_enable(timer_clk);
-> +	clk_prepare_enable(timer_clk);
->  
->  	/*
->  	 * Initialize timers to a known state
-> -- 
-> 1.7.5.4
-
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
