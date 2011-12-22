@@ -1,88 +1,125 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] serial/efm32: add new driver
-Date: Thu, 22 Dec 2011 09:57:06 +0100
-Message-ID: <20111222085706.GD24496@pengutronix.de>
-References: <1324479959-7343-1-git-send-email-u.kleine-koenig@pengutronix.de>
- <20111221202847.4ffeba10@bob.linux.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20111221202847.4ffeba10@bob.linux.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, kernel@pengutronix.de
+From: Dirk Behme <dirk.behme@googlemail.com>
+Subject: [PATCH 1/2 v2] imx: Add save/restore functions for UART control regs
+Date: Thu, 22 Dec 2011 09:57:52 +0100
+Message-ID: <1324544273-9820-1-git-send-email-dirk.behme@gmail.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ee0-f46.google.com ([74.125.83.46]:56237 "EHLO
+	mail-ee0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754867Ab1LVI6S (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 22 Dec 2011 03:58:18 -0500
+Received: by eekc4 with SMTP id c4so8231865eek.19
+        for <linux-serial@vger.kernel.org>; Thu, 22 Dec 2011 00:58:17 -0800 (PST)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Dirk Behme <dirk.behme@gmail.com>, Saleem Abdulrasool <compnerd@compnerd.org>, Sascha Hauer <s.hauer@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
 
-Hello,
+Factor out the uart save/restore functionality instead of
+having the same code several times in the driver.
 
-On Wed, Dec 21, 2011 at 08:28:47PM +0000, Alan Cox wrote:
-> On Wed, 21 Dec 2011 16:05:59 +0100
-> Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> wrote:
->=20
-> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> > ---
-> > Hello,
-> >=20
-> > note that ARCH_EFM32 isn't in mainline yet, so to be actually usabl=
-e
-> > some arch patches are needed.
->=20
-> Start by running it through the CodingStyle scripts as I see a //
-> comment in there 8)
-oops
+Signed-off-by: Dirk Behme <dirk.behme@gmail.com>
+CC: Saleem Abdulrasool <compnerd@compnerd.org>
+CC: Sascha Hauer <s.hauer@pengutronix.de>
+CC: Fabio Estevam <festevam@gmail.com>
+CC: Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>
+CC: linux-serial@vger.kernel.org
+CC: Alan Cox <alan@linux.intel.com>
+---
+Changes in v2:
+* Rename imx_console_mode/restore() to imx_port_ucrs_save/restore()
+* Introduce struct imx_port_ucrs
+* Add Alan Cox to CC
 
-> > +static void efm32_usart_rx_chars(struct efm32_usart_port *efm_port=
-)
-> > +{
-> > +	struct uart_port *port =3D &efm_port->port;
-> > +	struct tty_struct *tty =3D port->state->port.tty;
->=20
-> Needs to be using krefs and checking the tty is not NULL
-> (tty_port_tty_get)
-ah, I copied from mxs-auart. Will try to find a better example.=20
-=20
-> > +static void efm32_usart_set_termios(struct uart_port *port,
-> > +		struct ktermios *new, struct ktermios *old)
-> > +{
-> > +	struct efm32_usart_port *efm_port =3D to_efm_port(port);
-> > +	unsigned long flags;
-> > +	unsigned baud;
-> > +	u32 clkdiv;
-> > +
-> > +	/* no modem control lines */
-> > +	new->c_cflag &=3D ~(HUPCL | CRTSCTS | CMSPAR);
->=20
-> Minor item - HUPCL shouldn't get cleared - its a request for hangup
-> behaviour not a port feature.
-ah, I copied that from imx (in an if(0) though).
-=20
-> > +	/* currently only some features are implemented */
-> > +	new->c_cflag &=3D ~CSIZE;
-> > +	new->c_cflag |=3D CS8;
-> > +	new->c_cflag |=3D CSTOPB;
-> > +	new->c_cflag &=3D ~PARENB;
->=20
-> If you can do CS8 without parity you can do CS7 with parity.
-I sticked to the things I use and tested. According to the manual the
-hardware can do 4 up to 16 data bits with and without parity :-)
-=20
-> > +	new->c_iflag =3D 0;
->=20
-> This seems broken. Lots of the iflgs are user requests and stack
-> properties not port features. For example you can do xon/xoff as its
-> pure software. As far as I can see you should leave c_iflag alone.
-ok.
+ drivers/tty/serial/imx.c |   43 +++++++++++++++++++++++++++++++++++--------
+ 1 files changed, 35 insertions(+), 8 deletions(-)
 
-I will send an update and fix the drivers I copied from.
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 163fc90..3daa008 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -207,6 +207,12 @@ struct imx_port {
+ 	struct imx_uart_data	*devdata;
+ };
+ 
++struct imx_port_ucrs {
++	unsigned int	ucr1;
++	unsigned int	ucr2;
++	unsigned int	ucr3;
++};
++
+ #ifdef CONFIG_IRDA
+ #define USE_IRDA(sport)	((sport)->use_irda)
+ #else
+@@ -260,6 +266,27 @@ static inline int is_imx21_uart(struct imx_port *sport)
+ }
+ 
+ /*
++ * Save and restore functions for UCR1, UCR2 and UCR3 registers
++ */
++static void imx_port_ucrs_save(struct uart_port *port,
++			       struct imx_port_ucrs *ucr)
++{
++	/* save control registers */
++	ucr->ucr1 = readl(port->membase + UCR1);
++	ucr->ucr2 = readl(port->membase + UCR2);
++	ucr->ucr3 = readl(port->membase + UCR3);
++}
++
++static void imx_port_ucrs_restore(struct uart_port *port,
++				  struct imx_port_ucrs *ucr)
++{
++	/* restore control registers */
++	writel(ucr->ucr1, port->membase + UCR1);
++	writel(ucr->ucr2, port->membase + UCR2);
++	writel(ucr->ucr3, port->membase + UCR3);
++}
++
++/*
+  * Handle any change of modem status signal since we were last called.
+  */
+ static void imx_mctrl_check(struct imx_port *sport)
+@@ -1118,13 +1145,14 @@ static void
+ imx_console_write(struct console *co, const char *s, unsigned int count)
+ {
+ 	struct imx_port *sport = imx_ports[co->index];
+-	unsigned int old_ucr1, old_ucr2, ucr1;
++	struct imx_port_ucrs old_ucr;
++	unsigned int ucr1;
+ 
+ 	/*
+-	 *	First, save UCR1/2 and then disable interrupts
++	 *	First, save UCR1/2/3 and then disable interrupts
+ 	 */
+-	ucr1 = old_ucr1 = readl(sport->port.membase + UCR1);
+-	old_ucr2 = readl(sport->port.membase + UCR2);
++	imx_port_ucrs_save(&sport->port, &old_ucr);
++	ucr1 = old_ucr.ucr1;
+ 
+ 	if (is_imx1_uart(sport))
+ 		ucr1 |= IMX1_UCR1_UARTCLKEN;
+@@ -1133,18 +1161,17 @@ imx_console_write(struct console *co, const char *s, unsigned int count)
+ 
+ 	writel(ucr1, sport->port.membase + UCR1);
+ 
+-	writel(old_ucr2 | UCR2_TXEN, sport->port.membase + UCR2);
++	writel(old_ucr.ucr2 | UCR2_TXEN, sport->port.membase + UCR2);
+ 
+ 	uart_console_write(&sport->port, s, count, imx_console_putchar);
+ 
+ 	/*
+ 	 *	Finally, wait for transmitter to become empty
+-	 *	and restore UCR1/2
++	 *	and restore UCR1/2/3
+ 	 */
+ 	while (!(readl(sport->port.membase + USR2) & USR2_TXDC));
+ 
+-	writel(old_ucr1, sport->port.membase + UCR1);
+-	writel(old_ucr2, sport->port.membase + UCR2);
++	imx_port_ucrs_restore(&sport->port, &old_ucr);
+ }
+ 
+ /*
+-- 
+1.7.7.4
 
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
-    |
-Industrial Linux Solutions                 | http://www.pengutronix.de/=
-  |
