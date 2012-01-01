@@ -1,61 +1,64 @@
-From: Yegor Yefremov <yegor_sub1@visionsystems.de>
-Subject: serial: add support for 400 and 800 v3 series Titan cards
-Date: Tue, 27 Dec 2011 15:47:37 +0100
-Message-ID: <4EF9DA89.5030700@visionsystems.de>
-Reply-To: yegor_sub1@visionsystems.de
+From: Shawn Guo <shawn.guo@freescale.com>
+Subject: [GIT PULL] tty: serial: imx changes for 3.3
+Date: Sun, 1 Jan 2012 09:04:12 +0800
+Message-ID: <20120101010411.GB13061@S2100-06.ap.freescale.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ns.visionsystems.de ([62.145.30.242]:51174 "EHLO
-	mail.visionsystems.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754445Ab1L0PGS (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 27 Dec 2011 10:06:18 -0500
+Received: from db3ehsobe002.messaging.microsoft.com ([213.199.154.140]:54777
+	"EHLO DB3EHSOBE002.bigfish.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750773Ab2AAAu0 convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 31 Dec 2011 19:50:26 -0500
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: gregkh@suse.de
+To: Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Alan Cox <alan@linux.intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
-add support for 400Hv3, 410Hv3 and 800Hv3
- 
-Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
----
- drivers/tty/serial/8250_pci.c |   16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+Hi Greg,
 
-Index: b/drivers/tty/serial/8250_pci.c
-===================================================================
---- a/drivers/tty/serial/8250_pci.c
-+++ b/drivers/tty/serial/8250_pci.c
-@@ -1152,6 +1152,10 @@
- #define PCI_DEVICE_ID_TITAN_800E	0xA014
- #define PCI_DEVICE_ID_TITAN_200EI	0xA016
- #define PCI_DEVICE_ID_TITAN_200EISI	0xA017
-+#define PCI_DEVICE_ID_TITAN_400V3	0xA310
-+#define PCI_DEVICE_ID_TITAN_410V3	0xA312
-+#define PCI_DEVICE_ID_TITAN_800V3	0xA314
-+#define PCI_DEVICE_ID_TITAN_800V3B	0xA315
- #define PCI_DEVICE_ID_OXSEMI_16PCI958	0x9538
- #define PCIE_DEVICE_ID_NEO_2_OX_IBM	0x00F6
- #define PCI_DEVICE_ID_PLX_CRONYX_OMEGA	0xc001
-@@ -3443,6 +3447,18 @@
- 	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_200EISI,
- 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
- 		pbn_oxsemi_2_4000000 },
-+	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_400V3,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b0_4_921600 },
-+	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_410V3,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b0_4_921600 },
-+	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_800V3,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b0_4_921600 },
-+	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_800V3B,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b0_4_921600 },
- 
- 	{	PCI_VENDOR_ID_SIIG, PCI_DEVICE_ID_SIIG_1S_10x_550,
- 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+I collected a few imx tty/serial changes below for 3.3.  Can you please
+take a look and consider to pull the branch for 3.3 if it looks all
+good to you?
 
+Regards,
+Shawn
+
+The following changes since commit 5f0a6e2d503896062f641639dacfe5055c2f=
+593b:
+
+  Linux 3.2-rc7 (2011-12-23 21:51:06 -0800)
+
+are available in the git repository at:
+  git://git.linaro.org/people/shawnguo/linux-2.6.git imx/serial
+
+Dirk Behme (1):
+      imx: Add save/restore functions for UART control regs
+
+Eric Miao (1):
+      tty: serial: imx: move del_timer_sync() to avoid potential deadlo=
+ck
+
+=46abio Estevam (1):
+      tty: serial: imx: Allow UART to be a source for wakeup
+
+Saleem Abdulrasool (1):
+      imx: add polled io uart methods
+
+Uwe Kleine-K=F6nig (2):
+      serial/imx: propagate error from of_alias_get_id instead of using=
+ -ENODEV
+      serial/imx: let probing fail for the dt case without a valid alia=
+s
+
+ drivers/tty/serial/imx.c |  146 ++++++++++++++++++++++++++++++++++++++=
++++-----
+ 1 files changed, 132 insertions(+), 14 deletions(-)
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
