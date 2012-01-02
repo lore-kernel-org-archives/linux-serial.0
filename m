@@ -1,64 +1,47 @@
-From: Shawn Guo <shawn.guo@freescale.com>
-Subject: [GIT PULL] tty: serial: imx changes for 3.3
-Date: Sun, 1 Jan 2012 09:04:12 +0800
-Message-ID: <20120101010411.GB13061@S2100-06.ap.freescale.net>
+From: "Bedia, Vaibhav" <vaibhav.bedia@ti.com>
+Subject: RE: [PATCH v8 19/20] OMAP2+: UART: Do not gate uart clocks if used
+ for debug_prints
+Date: Mon, 2 Jan 2012 09:25:34 +0000
+Message-ID: <B5906170F1614E41A8A28DE3B8D1214304B3E2@DBDE01.ent.ti.com>
+References: <1321005712-21871-1-git-send-email-govindraj.raja@ti.com>
+ <1321005712-21871-5-git-send-email-govindraj.raja@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from db3ehsobe002.messaging.microsoft.com ([213.199.154.140]:54777
-	"EHLO DB3EHSOBE002.bigfish.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750773Ab2AAAu0 convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 31 Dec 2011 19:50:26 -0500
-Content-Disposition: inline
+Received: from arroyo.ext.ti.com ([192.94.94.40]:38034 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751084Ab2ABJZq convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 2 Jan 2012 04:25:46 -0500
+In-Reply-To: <1321005712-21871-5-git-send-email-govindraj.raja@ti.com>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@suse.de>
-Cc: Alan Cox <alan@linux.intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+To: "R, Govindraj" <govindraj.raja@ti.com>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
+Cc: "Hilman, Kevin" <khilman@ti.com>, Tony Lindgren <tony@atomide.com>, "Nayak, Rajendra" <rnayak@ti.com>, "Basak, Partha" <p-basak2@ti.com>, "Shilimkar, Santosh" <santosh.shilimkar@ti.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Sripathy, Vishwanath" <vishwanath.bs@ti.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-Hi Greg,
+Hello,
 
-I collected a few imx tty/serial changes below for 3.3.  Can you please
-take a look and consider to pull the branch for 3.3 if it looks all
-good to you?
+On Fri, Nov 11, 2011 at 15:31:52, R, Govindraj wrote:
+[...]
+>  
+> -	if ((cpu_is_omap34xx() || cpu_is_omap44xx()) && bdata->pads)
+> +	if (((cpu_is_omap34xx() || cpu_is_omap44xx()) && bdata->pads)
+> +			&& !uart_debug)
+>  		device_init_wakeup(&pdev->dev, true);
+>  }
+
+I was testing this on AM335x and realized that this leads to creation of two
+'wakeup' entries for UART. One is created by the tty layer in serial-core.c
+and the other is created here.
+
+Here's what I see on a branch based on Tony's 3.2-rc6:
+
+./sys/devices/platform/omap/omap_uart.0/power/wakeup
+./sys/devices/platform/omap/omap_uart.0/tty/ttyO0/power/wakeup
+
+Shouldn't the OMAP serial just enable the 'wakeup' entry created by serial-core.c?
 
 Regards,
-Shawn
-
-The following changes since commit 5f0a6e2d503896062f641639dacfe5055c2f=
-593b:
-
-  Linux 3.2-rc7 (2011-12-23 21:51:06 -0800)
-
-are available in the git repository at:
-  git://git.linaro.org/people/shawnguo/linux-2.6.git imx/serial
-
-Dirk Behme (1):
-      imx: Add save/restore functions for UART control regs
-
-Eric Miao (1):
-      tty: serial: imx: move del_timer_sync() to avoid potential deadlo=
-ck
-
-=46abio Estevam (1):
-      tty: serial: imx: Allow UART to be a source for wakeup
-
-Saleem Abdulrasool (1):
-      imx: add polled io uart methods
-
-Uwe Kleine-K=F6nig (2):
-      serial/imx: propagate error from of_alias_get_id instead of using=
- -ENODEV
-      serial/imx: let probing fail for the dt case without a valid alia=
-s
-
- drivers/tty/serial/imx.c |  146 ++++++++++++++++++++++++++++++++++++++=
-+++-----
- 1 files changed, 132 insertions(+), 14 deletions(-)
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Vaibhav
