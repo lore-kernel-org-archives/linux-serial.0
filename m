@@ -1,74 +1,50 @@
-From: Govindraj <govindraj.ti@gmail.com>
-Subject: Re: [PATCH v8 19/20] OMAP2+: UART: Do not gate uart clocks if used
- for debug_prints
-Date: Tue, 3 Jan 2012 19:42:46 +0530
-Message-ID: <CAAL8m4z-AsVzfubqBy=nP6EN=m6MjTma1+50+aywQ=hmoF6Ejg@mail.gmail.com>
-References: <1321005712-21871-1-git-send-email-govindraj.raja@ti.com>
- <1321005712-21871-5-git-send-email-govindraj.raja@ti.com> <B5906170F1614E41A8A28DE3B8D1214304B3E2@DBDE01.ent.ti.com>
- <CAAL8m4yXD-gpeXNVsCOYeDkYDWmVX8FUcpXKjx6k=AXSF4V9iA@mail.gmail.com>
- <B5906170F1614E41A8A28DE3B8D1214304BAD3@DBDE01.ent.ti.com>
- <CAAL8m4yhtUNjoKwECnQEYNoaL-M+RaHXACanAeJW64DPsJ_hWg@mail.gmail.com> <B5906170F1614E41A8A28DE3B8D1214304BB42@DBDE01.ent.ti.com>
+From: Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+Subject: Re: USB disconnect -> kernel panic
+Date: Tue, 3 Jan 2012 15:58:47 -0800
+Message-ID: <20120103235847.GF21311@kroah.com>
+References: <87mxahk3d1.fsf@gag.com>
+ <20120102182255.GC8562@xanatos>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ey0-f174.google.com ([209.85.215.174]:58231 "EHLO
-	mail-ey0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753430Ab2ACONK convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 3 Jan 2012 09:13:10 -0500
-In-Reply-To: <B5906170F1614E41A8A28DE3B8D1214304BB42@DBDE01.ent.ti.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20120102182255.GC8562@xanatos>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sarah Sharp <sarah.a.sharp-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Oliver Neukum <oliver-Q6YOFhsQ4GZ7tPAFqOLdPg@public.gmane.org>
+Cc: Bdale Garbee <bdale-wvU4uTqWWAI@public.gmane.org>, keithp-aN4HjG94KOLQT0dZR+AlfA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: "Bedia, Vaibhav" <vaibhav.bedia@ti.com>
-Cc: "R, Govindraj" <govindraj.raja@ti.com>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "Hilman, Kevin" <khilman@ti.com>, Tony Lindgren <tony@atomide.com>, "Nayak, Rajendra" <rnayak@ti.com>, "Basak, Partha" <p-basak2@ti.com>, "Shilimkar, Santosh" <santosh.shilimkar@ti.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Sripathy, Vishwanath" <vishwanath.bs@ti.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-On Tue, Jan 3, 2012 at 5:22 PM, Bedia, Vaibhav <vaibhav.bedia@ti.com> w=
-rote:
-> On Tue, Jan 03, 2012 at 16:01:52, Govindraj wrote:
->> >
->> > I have basic suspend-resume working on it. Strangely this works ir=
-respective
->> > of the value of tty_dev wakeup entry. Do you know if this is expec=
-ted on OMAP?
->> >
->>
->> AFAIK yes.
->
-> Ok.
->
->>
->> > The other issue concerning runtime PM is that as soon as I set a n=
-on-zero to
->> > the autosuspend_delay_ms I get some garbage characters and eventua=
-lly the
->> > console stops responding.
->> >
->> > [root@arago /]# cat .../omap_uart.0/power/autosuspend_delay_ms
->> > -1
->> > [root@arago /]# echo 3000 > =D6KW=EB=E9=AB+=D7=E9=AB+wU.=C9=D1=B9,=
-z,=BD=DD.=C9=BDosuspend_delay=D5=A3=BD=CD=D5=CD...
->> > [root@arago /]# <- No response after some time
->> >
->>
->> try enabling CONFIG_CPU_IDLE for pm qos_usage from uart driver.
->>
->
-> Its enabled.
+On Mon, Jan 02, 2012 at 10:22:55AM -0800, Sarah Sharp wrote:
+> On Sat, Dec 24, 2011 at 03:32:26PM -0700, Bdale Garbee wrote:
+> > Hi Sarah!  Merry Christmas!
+> > 
+> > I've been working on another production run of Altus Metrum products
+> > today, and in the process of flashing and calibrating a pile of our
+> > TeleDongle units, I've been seeing sporadic kernel panics when
+> > unplugging them from my notebook USB.  Has now happened three times this
+> > morning. 
+> > 
+> > I'm running 3.1.6 now, but I saw this under 3.1.5 too, at least once.
+> > The notebook is an HP 2540p.
+> > 
+> > Keith suggested I send you the attached photo of my screen showing the
+> > panic info. 
+> 
+> It's somewhere in the tty layer, and doesn't look USB related.  I think
+> Greg KH is the tty maintainer right now, so you might want to ask him.
 
-I checked on Beagle-xm with latest LO master I don't see that issue.
+We've had some cdc_acm driver problems in the past, but I thought they
+were all resolved.  3.1.3 should have fixed those problems.  We have
+some more cleanups queued up for 3.3, but nothing that should be fixing
+something like this.
 
-Lo master commit used
-commit: 6489f6de3a219dfd23a91261eea1b09fba7ae128
+Oliver, any thoughts about this (see the original post on linux-usb for
+the crash dump.)
 
-Logs:
-http://pastebin.pandaboard.org/index.php/view/55509914
+thanks,
 
+greg k-h
 --
-Thanks,
-Govindraj.R
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 More majordomo info at  http://vger.kernel.org/majordomo-info.html
