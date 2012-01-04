@@ -1,44 +1,42 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: [PATCH] serial: driver for m32 arch should not have DEC alpha errata
-Date: Wed,  4 Jan 2012 15:16:24 -0500
-Message-ID: <1325708184-9861-1-git-send-email-paul.gortmaker@windriver.com>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: Re: [PATCH] serial: relocate remaining serial drivers from tty/ to
+ tty/serial/
+Date: Wed, 04 Jan 2012 21:34:36 +0100
+Message-ID: <4F04B7DC.70809@suse.cz>
+References: <1325707287-31038-1-git-send-email-paul.gortmaker@windriver.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-2
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.windriver.com ([147.11.1.11]:40829 "EHLO
-	mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753900Ab2ADUQ2 (ORCPT
+Received: from mail-ee0-f46.google.com ([74.125.83.46]:50628 "EHLO
+	mail-ee0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752506Ab2ADUek (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Jan 2012 15:16:28 -0500
+	Wed, 4 Jan 2012 15:34:40 -0500
+In-Reply-To: <1325707287-31038-1-git-send-email-paul.gortmaker@windriver.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: alan@linux.intel.com, gregkh@suse.de
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: alan@linux.intel.com, gregkh@suse.de, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@gmail.com>
 
-This driver was copied from the original 8250 driver and hence
-got the DEC alpha errata workaround.  But the workaround is ugly
-and we don't really want it in any more places than it absolutely
-needs to be.  Obviously ARCH=m32r means ARCH != alpha, so just
-remove the references to the ALPHA_KLUDGE_MCR define.
+On 01/04/2012 09:01 PM, Paul Gortmaker wrote:
+>  rename drivers/tty/{ => serial}/amiserial.c (100%)
+>  rename drivers/tty/{ => serial}/cyclades.c (100%)
+>  rename drivers/tty/{ => serial}/isicom.c (100%)
+>  rename drivers/tty/{ => serial}/moxa.c (100%)
+>  rename drivers/tty/{ => serial}/moxa.h (100%)
+>  rename drivers/tty/{ => serial}/mxser.c (100%)
+>  rename drivers/tty/{ => serial}/mxser.h (100%)
+>  rename drivers/tty/{ => serial}/rocket.c (100%)
+>  rename drivers/tty/{ => serial}/rocket.h (100%)
+>  rename drivers/tty/{ => serial}/rocket_int.h (100%)
+>  rename drivers/tty/{ => serial}/synclink.c (100%)
+>  rename drivers/tty/{ => serial}/synclink_gt.c (100%)
+>  rename drivers/tty/{ => serial}/synclinkmp.c (100%)
 
-Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+Hmm, tty/serial/* used to be for those using serial-core. And tty/ for
+those who don't. But FWIW I don't mind the change.
 
-diff --git a/drivers/tty/serial/m32r_sio.c b/drivers/tty/serial/m32r_sio.c
-index 0801893..94a6792 100644
---- a/drivers/tty/serial/m32r_sio.c
-+++ b/drivers/tty/serial/m32r_sio.c
-@@ -1000,11 +1000,8 @@ static void __init m32r_sio_register_ports(struct uart_driver *drv)
- 		init_timer(&up->timer);
- 		up->timer.function = m32r_sio_timeout;
- 
--		/*
--		 * ALPHA_KLUDGE_MCR needs to be killed.
--		 */
--		up->mcr_mask = ~ALPHA_KLUDGE_MCR;
--		up->mcr_force = ALPHA_KLUDGE_MCR;
-+		up->mcr_mask = ~0;
-+		up->mcr_force = 0;
- 
- 		uart_add_one_port(drv, &up->port);
- 	}
 -- 
-1.7.7
-
+js
+suse labs
