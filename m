@@ -1,55 +1,44 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Subject: Re: [PATCH] serial: relocate remaining serial drivers from tty/ to
  tty/serial/
-Date: Wed, 4 Jan 2012 16:07:52 -0500
-Message-ID: <4F04BFA8.9010100@windriver.com>
-References: <1325707287-31038-1-git-send-email-paul.gortmaker@windriver.com> <4F04B7DC.70809@suse.cz> <20120104205146.GA21430@suse.de>
+Date: Wed, 4 Jan 2012 22:01:58 +0000
+Message-ID: <20120104220158.3300d65b@pyramind.ukuu.org.uk>
+References: <1325707287-31038-1-git-send-email-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.windriver.com ([147.11.1.11]:48387 "EHLO
-	mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756904Ab2ADVIX (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Jan 2012 16:08:23 -0500
-In-Reply-To: <20120104205146.GA21430@suse.de>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1325707287-31038-1-git-send-email-paul.gortmaker@windriver.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: alan@linux.intel.com, gregkh@suse.de, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@suse.de>
-Cc: Jiri Slaby <jslaby@suse.cz>, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@gmail.com>
 
-On 12-01-04 03:51 PM, Greg KH wrote:
-> On Wed, Jan 04, 2012 at 09:34:36PM +0100, Jiri Slaby wrote:
->> On 01/04/2012 09:01 PM, Paul Gortmaker wrote:
->>>  rename drivers/tty/{ => serial}/amiserial.c (100%)
->>>  rename drivers/tty/{ => serial}/cyclades.c (100%)
->>>  rename drivers/tty/{ => serial}/isicom.c (100%)
->>>  rename drivers/tty/{ => serial}/moxa.c (100%)
->>>  rename drivers/tty/{ => serial}/moxa.h (100%)
->>>  rename drivers/tty/{ => serial}/mxser.c (100%)
->>>  rename drivers/tty/{ => serial}/mxser.h (100%)
->>>  rename drivers/tty/{ => serial}/rocket.c (100%)
->>>  rename drivers/tty/{ => serial}/rocket.h (100%)
->>>  rename drivers/tty/{ => serial}/rocket_int.h (100%)
->>>  rename drivers/tty/{ => serial}/synclink.c (100%)
->>>  rename drivers/tty/{ => serial}/synclink_gt.c (100%)
->>>  rename drivers/tty/{ => serial}/synclinkmp.c (100%)
->>
->> Hmm, tty/serial/* used to be for those using serial-core. And tty/ for
->> those who don't. But FWIW I don't mind the change.
+On Wed,  4 Jan 2012 15:01:27 -0500
+Paul Gortmaker <paul.gortmaker@windriver.com> wrote:
+
+> The commit ab4382d27412e7e3e7c936e8d50d8888dfac3df8,
 > 
-> Yes, that is what I used when splitting them up, so this patch doesn't
-> make much sense.
+>    "tty: move drivers/serial/ to drivers/tty/serial/"
 > 
-> Paul, why do you want these all mixed together?
-
-My thinking was that having a drivers/tty/serial dir and then
-not having all the serial drivers in that dir violated the
-principle of least surprise.  Is there a reason why the dir should
-be the exclusive domain of drivers with a dependency on SERIAL_CORE?
-
-Paul.
-
+> put most of the serial drivers together in one place, but the ones
+> that were hiding in drivers/char didn't get picked up in that change.
 > 
-> greg k-h
+> They did get moved in commit a6afd9f3e819de4795fcd356e5bfad446e4323f2
+> 
+>    "tty: move a number of tty drivers from drivers/char/ to drivers/tty/"
+> 
+> but there was no distinction of serial vs. non-serial in the above.
+> 
+> Here we take the remaining serial drivers (mostly legacy multiport
+> drivers) and put them alongside all the others in tty/serial/ dir.
+> 
+> We can drop SERIAL_NONSTANDARD's dependency on HAS_IOMEM, since the
+> encompassing menu block already has that dependency called out.
+
+NAK
+
+The tty/serial directory is the stuff using serial_core. I'm not averse
+to moving the others down a layer into more appropriate places but its
+already too crowded and in need of re-ordering (eg tty/serial/8250/...
+might be an improvement)
