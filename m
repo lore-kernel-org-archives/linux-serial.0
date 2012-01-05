@@ -1,53 +1,38 @@
-From: Sam Ravnborg <sam@ravnborg.org>
+From: Alan Cox <alan@linux.intel.com>
 Subject: Re: [PATCH] serial: relocate remaining serial drivers from tty/ to
-	tty/serial/
-Date: Thu, 5 Jan 2012 06:42:40 +0100
-Message-ID: <20120105054240.GA9093@merkur.ravnborg.org>
-References: <1325707287-31038-1-git-send-email-paul.gortmaker@windriver.com> <4F04BFA8.9010100@windriver.com> <20120104220332.GA22985@suse.de> <201201042327.33739.arnd@arndb.de>
+ tty/serial/
+Date: Thu, 5 Jan 2012 12:45:05 +0000
+Message-ID: <20120105124505.73c88f2c@bob.linux.org.uk>
+References: <1325707287-31038-1-git-send-email-paul.gortmaker@windriver.com>
+	<4F04BFA8.9010100@windriver.com>
+	<20120104220332.GA22985@suse.de>
+	<201201042327.33739.arnd@arndb.de>
+	<20120105054240.GA9093@merkur.ravnborg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <201201042327.33739.arnd@arndb.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg KH <gregkh@suse.de>, Paul Gortmaker <paul.gortmaker@windriver.com>, Jiri Slaby <jslaby@suse.cz>, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mga14.intel.com ([143.182.124.37]:7548 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755248Ab2AEMcJ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 5 Jan 2012 07:32:09 -0500
+In-Reply-To: <20120105054240.GA9093@merkur.ravnborg.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Sam Ravnborg <sam@ravnborg.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Greg KH <gregkh@suse.de>, Paul Gortmaker <paul.gortmaker@windriver.com>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@gmail.com>
 
-On Wed, Jan 04, 2012 at 11:27:33PM +0000, Arnd Bergmann wrote:
-> On Wednesday 04 January 2012, Greg KH wrote:
-> > > 
-> > > My thinking was that having a drivers/tty/serial dir and then
-> > > not having all the serial drivers in that dir violated the
-> > > principle of least surprise.  Is there a reason why the dir should
-> > > be the exclusive domain of drivers with a dependency on SERIAL_CORE?
-> > 
-> > Because that is what the directory is for?  :)
-> > 
-> > We have other "serial" like drivers all over the kernel, this was for
-> > the SERIAL_CORE drivers only at the moment.
+> drivers/tty/serial_core  <= drivers based on SERIAL_CORE
+> drivers/tty/serial       <= the rest
 > 
-> My initial plan when moving some files to drivers/tty was to have a separate
-> directory for the non-SERIAL_CORE serial drivers next to drivers/tty/serial.
+> This makes it obvious that one directory is for drivers based on
+> SERIAL_CORE - and the other is sort of the "rest".
 > 
-> I would still prefer this solution, but I think we never agreed on a good
-> name for that directory. IIRC, I had suggested drivers/tty/legacy believing
-> that SERIAL_CORE was the modern way to implement a serial driver, but that
-> turned out not to be true and at lease one of these (bfin_jtag) is not
-> a legacy driver in practice.
-> 
-> Maybe drivers/tty/hw? I think that one has been suggested before, too.
-> I don't remember any argument against it and I think it would be nice
-> to separate the core implementation from actual device drivers.
+> I know this imply moving files around again :-(
 
-How about:
+And putting one lot where the other were. Merge time is closed so we've
+got plenty of time to sort this right. For the moment can we just tidy
+up 8250, then think about it in more detail rather than play musical
+chairs ?
 
-drivers/tty/serial_core  <= drivers based on SERIAL_CORE
-drivers/tty/serial       <= the rest
-
-This makes it obvious that one directory is for drivers based on
-SERIAL_CORE - and the other is sort of the "rest".
-
-I know this imply moving files around again :-(
-
-	Sam
+Alan
