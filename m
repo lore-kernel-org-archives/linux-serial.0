@@ -1,47 +1,42 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] serial: relocate remaining serial drivers from tty/ to tty/serial/
-Date: Wed, 4 Jan 2012 23:27:33 +0000
-Message-ID: <201201042327.33739.arnd@arndb.de>
-References: <1325707287-31038-1-git-send-email-paul.gortmaker@windriver.com> <4F04BFA8.9010100@windriver.com> <20120104220332.GA22985@suse.de>
+From: Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+Subject: Re: USB disconnect -> kernel panic
+Date: Wed, 4 Jan 2012 16:11:22 -0800
+Message-ID: <20120105001122.GA9974@kroah.com>
+References: <87mxahk3d1.fsf@gag.com>
+ <20120102182255.GC8562@xanatos>
+ <20120103235847.GF21311@kroah.com>
+ <87fwfwmaeo.fsf@gag.com>
+ <20120104230149.GA16655@kroah.com>
+ <20120104232659.05da01ee@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.17.10]:53365 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932225Ab2ADX2M (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Jan 2012 18:28:12 -0500
-In-Reply-To: <20120104220332.GA22985@suse.de>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20120104232659.05da01ee-38n7/U1jhRXW96NNrWNlrekiAK3p4hvP@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alan Cox <alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
+Cc: Bdale Garbee <bdale-wvU4uTqWWAI@public.gmane.org>, Sarah Sharp <sarah.a.sharp-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Oliver Neukum <oliver-Q6YOFhsQ4GZ7tPAFqOLdPg@public.gmane.org>, keithp-aN4HjG94KOLQT0dZR+AlfA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@suse.de>
-Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, Jiri Slaby <jslaby@suse.cz>, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@gmail.com>
 
-On Wednesday 04 January 2012, Greg KH wrote:
-> > 
-> > My thinking was that having a drivers/tty/serial dir and then
-> > not having all the serial drivers in that dir violated the
-> > principle of least surprise.  Is there a reason why the dir should
-> > be the exclusive domain of drivers with a dependency on SERIAL_CORE?
+On Wed, Jan 04, 2012 at 11:26:59PM +0000, Alan Cox wrote:
+> > Ok, can you try the patch below and let me know if it solves the problem
+> > or not?
 > 
-> Because that is what the directory is for?  :)
-> 
-> We have other "serial" like drivers all over the kernel, this was for
-> the SERIAL_CORE drivers only at the moment.
+> If it does the right fix is to stop clearing tty->driver_data. If
+> tty->driver_data can go NULL outside of the final release then its
+> probably an exploitable hole.
 
-My initial plan when moving some files to drivers/tty was to have a separate
-directory for the non-SERIAL_CORE serial drivers next to drivers/tty/serial.
+So in acm_tty_close() we shouldn't set driver_data to NULL after we
+unregister the device?
 
-I would still prefer this solution, but I think we never agreed on a good
-name for that directory. IIRC, I had suggested drivers/tty/legacy believing
-that SERIAL_CORE was the modern way to implement a serial driver, but that
-turned out not to be true and at lease one of these (bfin_jtag) is not
-a legacy driver in practice.
+Ah, that should happen in tty_operations->cleanup()?  It seems that
+cdc_acm.c doesn't have that function, which is causing this problem now,
+right?
 
-Maybe drivers/tty/hw? I think that one has been suggested before, too.
-I don't remember any argument against it and I think it would be nice
-to separate the core implementation from actual device drivers.
+thanks,
 
-	Arnd
+greg k-h
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
