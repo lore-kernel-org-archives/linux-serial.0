@@ -1,48 +1,55 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [GIT PULL] tty: serial: imx changes for 3.3
-Date: Wed, 4 Jan 2012 16:30:14 -0800
-Message-ID: <20120105003014.GA5456@kroah.com>
-References: <20120101010411.GB13061@S2100-06.ap.freescale.net>
- <20120105002826.GA2764@kroah.com>
+From: Bdale Garbee <bdale@gag.com>
+Subject: Re: USB disconnect -> kernel panic
+Date: Wed, 04 Jan 2012 22:36:48 -0700
+Message-ID: <87mxa2ww0f.fsf@gag.com>
+References: <87mxahk3d1.fsf@gag.com> <20120102182255.GC8562@xanatos> <20120103235847.GF21311@kroah.com> <87fwfwmaeo.fsf@gag.com> <20120104230149.GA16655@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; boundary="=-=-=";
+	micalg=pgp-sha512; protocol="application/pgp-signature"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out5.smtp.messagingengine.com ([66.111.4.29]:55307 "EHLO
-	out5.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932294Ab2AEAbw (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Jan 2012 19:31:52 -0500
-Received: from compute4.internal (compute4.nyi.mail.srv.osa [10.202.2.44])
-	by gateway1.nyi.mail.srv.osa (Postfix) with ESMTP id 08E73206A3
-	for <linux-serial@vger.kernel.org>; Wed,  4 Jan 2012 19:31:52 -0500 (EST)
-Content-Disposition: inline
-In-Reply-To: <20120105002826.GA2764@kroah.com>
+Received: from winfree.gag.com ([192.133.104.8]:38027 "EHLO winfree.gag.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750913Ab2AEFhN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 5 Jan 2012 00:37:13 -0500
+In-Reply-To: <20120104230149.GA16655@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Shawn Guo <shawn.guo@freescale.com>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+To: Greg KH <greg@kroah.com>
+Cc: Sarah Sharp <sarah.a.sharp@linux.intel.com>, Oliver Neukum <oliver@neukum.name>, keithp@keithp.com, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Wed, Jan 04, 2012 at 04:28:26PM -0800, Greg KH wrote:
-> On Sun, Jan 01, 2012 at 09:04:12AM +0800, Shawn Guo wrote:
-> > Hi Greg,
-> > 
-> > I collected a few imx tty/serial changes below for 3.3.  Can you please
-> > take a look and consider to pull the branch for 3.3 if it looks all
-> > good to you?
-> > 
-> > Regards,
-> > Shawn
-> > 
-> > The following changes since commit 5f0a6e2d503896062f641639dacfe5055c2f593b:
-> > 
-> >   Linux 3.2-rc7 (2011-12-23 21:51:06 -0800)
-> 
-> Ugh, my tty-next tree is not based on this branch, and I don't see the
-> need to cause the merge, so can you just send me the patches as emails
-> so that I can apply them that way?
+--=-=-=
 
-Nevermind, I've picked them out and applied them now.
+On Wed, 4 Jan 2012 15:01:49 -0800, Greg KH <greg@kroah.com> wrote:
+> Ok, can you try the patch below and let me know if it solves the problem
+> or not?
 
-thanks,
+It's hard to prove a negative, but after applying the patch to 3.2.0-rc7
+and running with it for a while doing frequent power cycles on our
+devices attached via USB, abruptly disconnecting USB during active
+serial connections, etc .. I haven't seen the panic again.
 
-greg k-h
+Will report if it happens again with the patch in place, but so far so good.
+
+Bdale
+
+--=-=-=
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iQIVAwUBTwU28DqTYZbAldlBAQqGDhAAxlwlTVTAb03iWckBvieCiCue/zZmjHRz
+zeE783qg/Wx9741yEyW9pIed7Q3tPoSqD9SImXDhiblXX2wt03hyIPkG9/x90pcx
+3z4I6yaxZMs8MYDFcYUK1mwFrKMmcPflF1nC0gmnq5L6nEl5KLAPf71DAFrZJEaZ
+rRx8JuhTSqzuDW8io0Vpz1LHBD1PNuUxiySFI8XP1h8oM0CG0EgoVwLT3oUY6NQB
+30rxA3bdnkXVtR/fqmqoC0zo3E/1PlJH252MsUbW3OajRKlBmA7SUEx2FkO/Qmgn
+5FwTnMkdhXAqwTvOVjddQYssCDHqZA63bGm21FIH4DDlwcVS83efhU20/tCQHUT5
+13lcNeDaIQOQf5OaEwP7EkmmhtyUVfb7zhTaA/ruNRpTQzhhU3rtFzQdEY0g8o7Z
+M7ig+PvWXTAzhJP9WBppnS2HwEbxk4wWlSnsESZaEA4bqd9jv14A/8pGqKBjT/K5
+i6NewWk7VcH3R6S/lvKv9HMSu3YsABQkh3OFhh42RUFwkb0lJnfZ9l/NOL6GUd1z
+gSSF7EsQlIF9E/nrj/66IPxItSInEFWAZd8bKKswhVPZVQgENqklurmgI7JkzIZS
+647Bl3SrcgNwgfzL+utyWEvuwj0yx/xwFFOpg34suaOvMCaWa7UptYVsQcM9jpMP
+gYlw04Re5Qk=
+=iDsx
+-----END PGP SIGNATURE-----
+--=-=-=--
