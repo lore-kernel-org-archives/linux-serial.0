@@ -1,53 +1,33 @@
-From: Greg KH <gregkh@suse.de>
-Subject: Re: [PATCH] serial: relocate remaining serial drivers from tty/ to
- tty/serial/
-Date: Fri, 6 Jan 2012 05:42:01 -0800
-Message-ID: <20120106134201.GD9453@suse.de>
-References: <1325707287-31038-1-git-send-email-paul.gortmaker@windriver.com>
- <4F04BFA8.9010100@windriver.com>
- <20120104220332.GA22985@suse.de>
- <201201042327.33739.arnd@arndb.de>
- <20120105054240.GA9093@merkur.ravnborg.org>
- <20120105124505.73c88f2c@bob.linux.org.uk>
- <20120105232142.GA10870@windriver.com>
+From: Lucas Kannebley Tavares <lucaskt@linux.vnet.ibm.com>
+Subject: Re: [PATCH 29/29] Drivers: tty: serial: jsm: jsm_tty: fixed a brace
+ coding style issue
+Date: Fri, 06 Jan 2012 16:26:59 -0200
+Message-ID: <4F073CF3.70604@linux.vnet.ibm.com>
+References: <1321596182-11031-1-git-send-email-zac.3.14159@gmail.com> <4EC66C07.9020009@br.ibm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:37639 "EHLO mx2.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755481Ab2AFNms (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 6 Jan 2012 08:42:48 -0500
-Content-Disposition: inline
-In-Reply-To: <20120105232142.GA10870@windriver.com>
+Received: from e24smtp02.br.ibm.com ([32.104.18.86]:35956 "EHLO
+	e24smtp02.br.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1030515Ab2AFS1M (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 6 Jan 2012 13:27:12 -0500
+Received: from /spool/local
+	by e24smtp02.br.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+	for <linux-serial@vger.kernel.org> from <lucaskt@linux.vnet.ibm.com>;
+	Fri, 6 Jan 2012 16:27:10 -0200
+In-Reply-To: <4EC66C07.9020009@br.ibm.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc: Alan Cox <alan@linux.intel.com>, Sam Ravnborg <sam@ravnborg.org>, Arnd Bergmann <arnd@arndb.de>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@gmail.com>
+To: Breno Leitao <brenohl@br.ibm.com>
+Cc: Zac Storer <zac.3.14159@gmail.com>, leitao@linux.vnet.ibm.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Thu, Jan 05, 2012 at 06:21:43PM -0500, Paul Gortmaker wrote:
-> [Re: [PATCH] serial: relocate remaining serial drivers from tty/ to tty/serial/] On 05/01/2012 (Thu 12:45) Alan Cox wrote:
-> 
-> > > drivers/tty/serial_core  <= drivers based on SERIAL_CORE
-> > > drivers/tty/serial       <= the rest
-> > > 
-> > > This makes it obvious that one directory is for drivers based on
-> > > SERIAL_CORE - and the other is sort of the "rest".
-> > > 
-> > > I know this imply moving files around again :-(
-> > 
-> > And putting one lot where the other were. Merge time is closed so we've
-> > got plenty of time to sort this right. For the moment can we just tidy
-> > up 8250, then think about it in more detail rather than play musical
-> > chairs ?
-> 
-> Presumably too late for 3.3, but I figured I'd send the 8250 tidy up
-> for review while the discussion was still fresh in everyone's mind.
+On 11/18/2011 12:30 PM, Breno Leitao wrote:
+> On 11/18/2011 03:03 AM, Zac Storer wrote:
+>> Fixed a brace coding style issue.
+>>
+>> Signed-off-by: Zac Storer<zac.3.14159@gmail.com>
+> Acked-by: Breno Leitao<brenohl@br.ibm.com>
+Acked-by: Lucas Kannebley Tavares<lucaskt@linux.vnet.ibm.com>
 
-That looks good, I'll see if I can get this in after -rc1 is out as
-moving files then is usually easier.
-
-Unless anyone objects to this patch?
-
-thanks,
-
-greg k-h
