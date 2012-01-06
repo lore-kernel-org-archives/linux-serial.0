@@ -1,66 +1,80 @@
 From: Lucas Kannebley Tavares <lucaskt@linux.vnet.ibm.com>
-Subject: Re: [PATCH 29/29] Drivers: tty: serial: jsm: jsm_tty: fixed a brace
- coding style issue
-Date: Fri, 06 Jan 2012 18:08:26 -0200
-Message-ID: <4F0754BA.8070708@linux.vnet.ibm.com>
-References: <1321596182-11031-1-git-send-email-zac.3.14159@gmail.com> <4EC66C07.9020009@br.ibm.com> <4F073CF3.70604@linux.vnet.ibm.com> <4F074F89.6060300@linux.vnet.ibm.com> <20120106195332.GA10814@kroah.com>
+Subject: Re: [PATCH] jsm: Fixed EEH recovery error
+Date: Fri, 06 Jan 2012 18:43:46 -0200
+Message-ID: <4F075D02.3010407@linux.vnet.ibm.com>
+References: <1315834565-9280-1-git-send-email-lucaskt@linux.vnet.ibm.com> <20110912153508.GA8851@oc1711230544.ibm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from e24smtp04.br.ibm.com ([32.104.18.25]:45318 "EHLO
-	e24smtp04.br.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759028Ab2AFUIp (ORCPT
+Received: from e24smtp03.br.ibm.com ([32.104.18.24]:34118 "EHLO
+	e24smtp03.br.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759136Ab2AFUn7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 6 Jan 2012 15:08:45 -0500
+	Fri, 6 Jan 2012 15:43:59 -0500
 Received: from /spool/local
-	by e24smtp04.br.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+	by e24smtp03.br.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
 	for <linux-serial@vger.kernel.org> from <lucaskt@linux.vnet.ibm.com>;
-	Fri, 6 Jan 2012 18:08:39 -0200
-In-Reply-To: <20120106195332.GA10814@kroah.com>
+	Fri, 6 Jan 2012 18:43:55 -0200
+In-Reply-To: <20110912153508.GA8851@oc1711230544.ibm.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <greg@kroah.com>
-Cc: Breno Leitao <brenohl@br.ibm.com>, Zac Storer <zac.3.14159@gmail.com>, leitao@linux.vnet.ibm.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
+To: Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>
+Cc: Breno Leitao <leitao@linux.vnet.ibm.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Greg KH <greg@kroah.com>
 
-On 01/06/2012 05:53 PM, Greg KH wrote:
-> On Fri, Jan 06, 2012 at 05:46:17PM -0200, Lucas Kannebley Tavares wrote:
->> On 01/06/2012 04:26 PM, Lucas Kannebley Tavares wrote:
->>> On 11/18/2011 12:30 PM, Breno Leitao wrote:
->>>> On 11/18/2011 03:03 AM, Zac Storer wrote:
->>>>> Fixed a brace coding style issue.
->>>>>
->>>>> Signed-off-by: Zac Storer<zac.3.14159@gmail.com>
->>>> Acked-by: Breno Leitao<brenohl@br.ibm.com>
->>> Acked-by: Lucas Kannebley Tavares<lucaskt@linux.vnet.ibm.com>
->>>
+
+On 09/12/2011 12:35 PM, Thadeu Lima de Souza Cascardo wrote:
+> On Mon, Sep 12, 2011 at 10:36:05AM -0300, Lucas Kannebley Tavares wrote:
+>> There was an error on the jsm driver that would cause it to be unable to
+>> recover after a second error is detected.
 >>
->> Adding Alan and Greg so they can catch this up on their trees.
->
-> Catch what up with what?
->
-> What patch is this?  Where is it?  Why wasn't it sent to me in the first
-> place?
->
-> Also note, the merge window for new patches to be sent to subsystem
-> maintainers has been over for a week or so now, all of of the
-> maintainers are now busy merging stuff with Linus, so trivial stuff like
-> this is going to have to wait a few weeks at the earliest before it can
-> start to be queued up.
->
-> thanks,
->
-> greg k-h
->
+>> At the first error, the device recovers properly:
+>>
+>> [72521.485691] EEH: Detected PCI bus error on device 0003:02:00.0
+>> [72521.485695] EEH: This PCI device has failed 1 times in the last hour:
+>> ...
+>> [72532.035693] ttyn3 at MMIO 0x0 (irq = 49) is a jsm
+>> [72532.105689] jsm: Port 3 added
+>>
+>> However, at the second error, it cascades until EEH disables the device:
+>>
+>> [72631.229549] Call Trace:
+>> ...
+>> [72641.725687] jsm: Port 3 added
+>> [72641.725695] EEH: Detected PCI bus error on device 0003:02:00.0
+>> [72641.725698] EEH: This PCI device has failed 3 times in the last hour:
+>>
+>> It was caused because the PCI state was not being saved after the first
+>> restore. Therefore, at the second recovery the PCI state would not be
+>> restored.
+>>
+>> Signed-off-by: Lucas Kannebley Tavares<lucaskt@linux.vnet.ibm.com>
+>Signed-off-by: Breno Leitao <brenohl@br.ibm.com>
+> Acked-by: Thadeu Lima de Souza Cascardo<cascardo@linux.vnet.ibm.com>
 
-I said catch up because I didn't see it on any trees I looked and 
-figured it had been passed over.
-As for not sending it to you earlier, I and Breno had only replied to 
-Zac's original CC list, and I only noticed you were missing now. But, as 
-you've said it, it's a trivial patch, without great consequences 
-(although good to have). No rush in it.
+Adding Greg to the CC list. It wasn't added earlier because 
+get_maintainers.pl only listed Alan's name. I apologize for the delay.
 
-Thanks
+This is a bugfix to EEH handling on jsm.
 
-Lucas
+>
+>> ---
+>>   drivers/tty/serial/jsm/jsm_driver.c |    1 +
+>>   1 files changed, 1 insertions(+), 0 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/jsm/jsm_driver.c b/drivers/tty/serial/jsm/jsm_driver.c
+>> index 96da178..8941b15 100644
+>> --- a/drivers/tty/serial/jsm/jsm_driver.c
+>> +++ b/drivers/tty/serial/jsm/jsm_driver.c
+>> @@ -270,6 +270,7 @@ static void jsm_io_resume(struct pci_dev *pdev)
+>>   	struct jsm_board *brd = pci_get_drvdata(pdev);
+>>
+>>   	pci_restore_state(pdev);
+>> +	pci_save_state(pdev);
+>>
+>>   	jsm_uart_port_init(brd);
+>>   }
+>> --
+>> 1.7.4.4
+>>
 
