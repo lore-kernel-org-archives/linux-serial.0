@@ -1,215 +1,44 @@
-From: Greg KH <gregkh@suse.de>
-Subject: [GIT PATCH] TTY/serial driver merge for 3.3
-Date: Mon, 9 Jan 2012 11:09:00 -0800
-Message-ID: <20120109190900.GC9440@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+From: Lucas Kannebley Tavares <lucaskt@linux.vnet.ibm.com>
+Subject: [PATCH] Updated TTY MAINTAINERS info
+Date: Mon,  9 Jan 2012 17:39:24 -0200
+Message-ID: <1326137964-10671-1-git-send-email-lucaskt@linux.vnet.ibm.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from e24smtp03.br.ibm.com ([32.104.18.24]:42941 "EHLO
+	e24smtp03.br.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933046Ab2AITjc (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 9 Jan 2012 14:39:32 -0500
+Received: from /spool/local
+	by e24smtp03.br.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+	for <linux-serial@vger.kernel.org> from <lucaskt@linux.vnet.ibm.com>;
+	Mon, 9 Jan 2012 17:39:30 -0200
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@suse.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>
 
-Here is the big tty/serial merge for 3.3.
+Greg Kroah-Hartman is the current TTY maintainer, however he wouldn't appear
+listed as such upon running get_maintainers.pl for drivers under
+drivers/tty/serial.
 
-Lots of good fixes and reworks by Jiri on the tty and serial drivers,
-resolving some nasty issues, and a number of driver updates as well.
-=46ull details are in the shortlog below.
+Signed-off-by: Lucas Kannebley Tavares <lucaskt@linux.vnet.ibm.com>
+---
+ MAINTAINERS |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-Please pull from:
-	git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
+diff --git a/MAINTAINERS b/MAINTAINERS
+index cc6a466..6a856df 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6641,7 +6641,7 @@ TTY LAYER
+ M:	Greg Kroah-Hartman <gregkh@suse.de>
+ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty-2.6.git
+-F:	drivers/tty/*
++F:	drivers/tty/
+ F:	drivers/tty/serial/serial_core.c
+ F:	include/linux/serial_core.h
+ F:	include/linux/serial.h
+-- 
+1.7.4.4
 
-All of these patches have been in the -mm and -next trees for a while.
-
-thanks,
-
-greg k-h
-
-------------
-
- Documentation/serial/driver                |    2 +-
- arch/powerpc/kernel/legacy_serial.c        |    3 +
- arch/x86/include/asm/mrst.h                |    2 +-
- arch/x86/kernel/early_printk.c             |    2 +-
- arch/x86/platform/mrst/early_printk_mrst.c |   16 +-
- drivers/parport/parport_ax88796.c          |   13 +-
- drivers/parport/parport_sunbpp.c           |   13 +-
- drivers/tty/n_hdlc.c                       |    6 +-
- drivers/tty/n_tty.c                        |    8 +-
- drivers/tty/pty.c                          |   26 +-
- drivers/tty/serial/8250.c                  |   98 ++---
- drivers/tty/serial/8250.h                  |   26 +
- drivers/tty/serial/8250_dw.c               |   12 +-
- drivers/tty/serial/8250_fsl.c              |   63 +++
- drivers/tty/serial/8250_pci.c              |   47 ++-
- drivers/tty/serial/Kconfig                 |   37 ++-
- drivers/tty/serial/Makefile                |    2 +
- drivers/tty/serial/atmel_serial.c          |   12 +-
- drivers/tty/serial/bfin_sport_uart.c       |   22 +-
- drivers/tty/serial/bfin_sport_uart.h       |    5 +-
- drivers/tty/serial/bfin_uart.c             |   83 ++--
- drivers/tty/serial/ifx6x60.c               |    1 -
- drivers/tty/serial/imx.c                   |  148 +++++-
- drivers/tty/serial/m32r_sio.c              |    7 +-
- drivers/tty/serial/max3100.c               |    1 -
- drivers/tty/serial/max3107-aava.c          |    1 -
- drivers/tty/serial/max3107.c               |    1 -
- drivers/tty/serial/mfd.c                   |   18 +-
- drivers/tty/serial/mrst_max3110.c          |    1 -
- drivers/tty/serial/msm_serial_hs.c         |   23 +-
- drivers/tty/serial/mxs-auart.c             |    5 +-
- drivers/tty/serial/omap-serial.c           |    2 +-
- drivers/tty/serial/pch_uart.c              |  160 ++++++-
- drivers/tty/serial/sc26xx.c                |   14 +-
- drivers/tty/serial/serial_core.c           |  325 +++++++-----
- drivers/tty/serial/serial_cs.c             |    8 +-
- drivers/tty/serial/sirfsoc_uart.c          |  783 ++++++++++++++++++++=
-++++++++
- drivers/tty/serial/sirfsoc_uart.h          |  185 +++++++
- drivers/tty/serial/timbuart.c              |   15 +-
- drivers/tty/serial/vr41xx_siu.c            |   13 +-
- drivers/tty/tty_io.c                       |  309 +++++++-----
- drivers/tty/tty_ldisc.c                    |   22 +-
- drivers/tty/vt/consolemap.c                |    2 +-
- include/linux/serial_8250.h                |    5 +
- include/linux/serial_core.h                |  100 +---
- 45 files changed, 1989 insertions(+), 658 deletions(-)
- create mode 100644 drivers/tty/serial/8250_fsl.c
- create mode 100644 drivers/tty/serial/sirfsoc_uart.c
- create mode 100644 drivers/tty/serial/sirfsoc_uart.h
-
----------------
-
-Alexander Stein (1):
-      drivers/tty/serial/pch_uart.c: add console support
-
-Axel Lin (2):
-      parport: convert drivers/parport/* to use module_platform_driver(=
-)
-      TTY: serial: convert drivers/tty/serial/* to use module_platform_=
-driver()
-
-Claudio Scordino (1):
-      atmel_serial: fix spinlock lockup in RS485 code
-
-Dan Williams (2):
-      serial/8250_pci: setup-quirk workaround for the kt serial control=
-ler
-      serial/8250_pci: init-quirk msi support for kt serial controller
-
-Dave Young (1):
-      tty_ldisc: remove unnecessary negative return check for wait_even=
-t_timeout
-
-Dirk Behme (1):
-      imx: Add save/restore functions for UART control regs
-
-Eric Miao (1):
-      tty: serial: imx: move del_timer_sync() to avoid potential deadlo=
-ck
-
-=46abio Estevam (1):
-      tty: serial: imx: Allow UART to be a source for wakeup
-
-Ilya Zykov (1):
-      tty: n_hdlc not atomic use tty->flags.
-
-Jiri Slaby (19):
-      TTY: move pgrp killing
-      TTY: extract /dev/tty handling from tty_open
-      TTY: extract driver lookup from tty_open
-      TTY: coalesce fail paths in tty_open
-      TTY: move tty_lookup_driver to switch-cases
-      TTY: move debug checking out of tty_release
-      TTY: open/release, cleanup printks
-      TTY: serial, cleanup include file
-      TTY: serial, cleanup atmel_set_ldisc
-      TTY: serial, switch closing_wait and close_delay to jiffies
-      TTY: serial, use tty_port_close_start helper
-      TTY: serial, document few functions
-      TTY: serial, do not touch tty->alt_speed
-      TTY: serial, inline uart_get
-      TTY: serial, define uart_port_activate/shutdown
-      TTY: serial, fill uart_port_shutdown
-      TTY: serial, extract uart_port_startup
-      TTY: pty, cleanup the pty counting
-      TTY: ldisc, remove some unneeded includes
-
-Lars-Peter Clausen (1):
-      TTY: Remove redundant spi driver bus initialization
-
-Maciej Szmigiero (1):
-      serial: fix serial_cs I/O windows for Argosy RS-COM 2P
-
-Mayank Rana (2):
-      msm_serial_hs: Fix type inconsistency for tx and rx command_ptr_p=
-tr
-      msm_serial_hs: Fix spinlock recursion in handling CTS
-
-Mika Westerberg (1):
-      serial, mfd: don't hardcode the console
-
-Paul Gortmaker (8):
-      serial: move struct uart_8250_port from 8250.c to 8250.h
-      serial: clean up parameter passing for 8250 Rx IRQ handling
-      serial: export the key functions for an 8250 IRQ handler
-      serial: make 8250 timeout use the specified IRQ handler
-      serial: manually inline serial8250_handle_port
-      serial: add irq handler for Freescale 16550 errata.
-      serial: make FSL errata depend on 8250_CONSOLE, not just 8250
-      serial: driver for m32 arch should not have DEC alpha errata
-
-Rong Wang (1):
-      UART: add CSR SiRFprimaII SoC on-chip uart drivers
-
-Saleem Abdulrasool (1):
-      imx: add polled io uart methods
-
-Shubhrajyoti D (2):
-      serial: OMAP2+: UART: Make the SERIAL_OMAP depend on ARCH_OMAP2PL=
-US
-      OMAP: UART: fix the return type of check_modem_status
-
-Sonic Zhang (8):
-      serial: bfin-uart: Request CTS GPIO PIN when the serial device st=
-arts up.
-      serial: bfin-uart: Add tty ASYNC_CTS_FLOW flag to do CTS flow con=
-trol.
-      serial: bfin-uart: remove redundant CTS check for hardware CTS co=
-ntrol.
-      tty: bfin-sport-uart: Rx interrupt is not called always with irq =
-disabled.
-      serial: bfin-sport-uart: Request CTS GPIO PIN when the sport emul=
-ated serial device starts up.
-      serial: bfin-sport-uart: Add tty ASYNC_CTS_FLOW flag to do CTS fl=
-ow control.
-      serial: bfin-uart: Enable hardware automatic CTS only when CTS pi=
-n is available.
-      serial: bfin-uart: Remove ASYNC_CTS_FLOW flag for hardware automa=
-tic CTS.
-
-Thorsten Wi=DFmann (1):
-      drivers/tty: Remove unneeded spaces
-
-Uwe Kleine-K=F6nig (6):
-      serial/imx: propagate error of platform_driver_register in init r=
-outine
-      serial/mxs-auart: only wake up tty layer once
-      serial: use DIV_ROUND_CLOSEST instead of open coding it
-      serial/documentation: fix documented name of DCD cpp symbol
-      serial/imx: propagate error from of_alias_get_id instead of using=
- -ENODEV
-      serial/imx: let probing fail for the dt case without a valid alia=
-s
-
-Wolfram Sang (1):
-      serial: 8250: replace hardcoded 0xbf with #define
-
-Yegor Yefremov (1):
-      serial: add support for 400 and 800 v3 series Titan cards
-
-Zeng Zhaoming (1):
-      tty: Fix memory leak in virtual console when enable unicode trans=
-lation
