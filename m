@@ -1,86 +1,64 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] serial/efm32: add new driver
-Date: Mon, 9 Jan 2012 11:34:58 +0100
-Message-ID: <20120109103458.GD14252@pengutronix.de>
-References: <20111221202847.4ffeba10@bob.linux.org.uk>
- <1324561092-1945-1-git-send-email-u.kleine-koenig@pengutronix.de>
- <201112231035.23215.arnd@arndb.de>
- <20111223204428.GI24496@pengutronix.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20111223204428.GI24496@pengutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: linux-kernel@vger.kernel.org, Alan Cox <alan@linux.intel.com>, devicetree-discuss@lists.ozlabs.org, Greg Kroah-Hartman <gregkh@suse.de>, kernel@pengutronix.de, linux-serial@vger.kernel.org
+From: Lucas Kannebley Tavares <lucaskt@linux.vnet.ibm.com>
+Subject: [PATCH] jsm: Fixed EEH recovery error
+Date: Mon,  9 Jan 2012 10:58:06 -0200
+Message-ID: <1326113886-10830-1-git-send-email-lucaskt@linux.vnet.ibm.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from e24smtp03.br.ibm.com ([32.104.18.24]:34163 "EHLO
+	e24smtp03.br.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753964Ab2AIM6Z (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 9 Jan 2012 07:58:25 -0500
+Received: from /spool/local
+	by e24smtp03.br.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+	for <linux-serial@vger.kernel.org> from <lucaskt@linux.vnet.ibm.com>;
+	Mon, 9 Jan 2012 10:58:21 -0200
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <greg@kroah.com>
+Cc: Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>, Breno Leitao <leitao@linux.vnet.ibm.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Breno Leitao <brenohl@br.ibm.com>
 
-Hello,
+There was an error on the jsm driver that would cause it to be unable to
+recover after a second error is detected.
 
-On Fri, Dec 23, 2011 at 09:44:28PM +0100, Uwe Kleine-K=F6nig wrote:
-> On Fri, Dec 23, 2011 at 10:35:22AM +0000, Arnd Bergmann wrote:
-> > On Thursday 22 December 2011, Uwe Kleine-K=F6nig wrote:
-> >=20
-> > > @@ -0,0 +1,14 @@
-> > > +* Energymicro efm32 UART
-> > > +
-> > > +Required properties:
-> > > +- compatible : Should be "efm32,usart"
-> > > +- reg : Address and length of the register set
-> > > +- interrupts : Should contain uart interrupt
-> > > +
-> > > +Example:
-> > > +
-> > > +uart@0x4000c400 {
-> > > +	compatible =3D "efm32,usart";
-> > > +	reg =3D <0x4000c400 0x400>;
-> > > +	interrupts =3D <15>;
-> > > +};
-> >=20
-> > Do you know if the usart was actually designed by energymicro or li=
-censed
-> > from another party? If it is a licensed part, it would be better to
-> > list the "compatible" value under the company name that made it.
-> I don't know so I passed the question to them.
-I got an answer here over the holidays and Energy Micro designed the
-part.
-=20
-> > I would suggest that you also support the "clock-frequency" and/or
-> > "current-speed" properties that are defined for serial ports, see t=
-he
-> > of_serial driver.
-> I will have a look to find out what they mean and update the patch
-> accordingly.
-I took that look and I don't understand what they are good for in my
-case.
-clock-frequency is used to initialize port->uartclk (and helps setting
-up port->custom_divisor if current-speed is given). The driver I posted
-uses the clk API to determine the clock frequency. So shouldn't the fre=
-quency
-better be specified in the clk part of the dt? (I don't know yet how a
-dt binding for clks should/can look like, so this is a bit speculative,
-but I'd expect to have nothing more clk related in a device
-specification but a reference to a clk definition.)
+At the first error, the device recovers properly:
 
-Independant of my driver I wonder if defining current-speed should also
-result in
+[72521.485691] EEH: Detected PCI bus error on device 0003:02:00.0
+[72521.485695] EEH: This PCI device has failed 1 times in the last hour:
+...
+[72532.035693] ttyn3 at MMIO 0x0 (irq = 49) is a jsm
+[72532.105689] jsm: Port 3 added
 
-	port->flags |=3D UPF_SPD_CUST;
+However, at the second error, it cascades until EEH disables the device:
 
-(in of_platform_serial_setup()).
+[72631.229549] Call Trace:
+...
+[72641.725687] jsm: Port 3 added
+[72641.725695] EEH: Detected PCI bus error on device 0003:02:00.0
+[72641.725698] EEH: This PCI device has failed 3 times in the last hour:
 
-Having said that and taking into account that my driver doesn't use
-port->custom_divisor, do you keep suggesting that I should use
-"clock-frequency" and/or "current-speed"?
+It was caused because the PCI state was not being saved after the first
+restore. Therefore, at the second recovery the PCI state would not be
+restored.
 
-Best regards
-Uwe
+Signed-off-by: Lucas Kannebley Tavares <lucaskt@linux.vnet.ibm.com>
+Signed-off-by: Breno Leitao <brenohl@br.ibm.com>
+Acked-by: Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com> 
+---
+ drivers/tty/serial/jsm/jsm_driver.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
-    |
-Industrial Linux Solutions                 | http://www.pengutronix.de/=
-  |
+diff --git a/drivers/tty/serial/jsm/jsm_driver.c b/drivers/tty/serial/jsm/jsm_driver.c
+index 7c867a0..7545fe1 100644
+--- a/drivers/tty/serial/jsm/jsm_driver.c
++++ b/drivers/tty/serial/jsm/jsm_driver.c
+@@ -251,6 +251,7 @@ static void jsm_io_resume(struct pci_dev *pdev)
+ 	struct jsm_board *brd = pci_get_drvdata(pdev);
+ 
+ 	pci_restore_state(pdev);
++	pci_save_state(pdev);
+ 
+ 	jsm_uart_port_init(brd);
+ }
+-- 
+1.7.4.4
+
