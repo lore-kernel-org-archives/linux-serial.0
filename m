@@ -1,68 +1,70 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH] jsm: Fixed EEH recovery error
-Date: Fri, 6 Jan 2012 13:04:23 -0800
-Message-ID: <20120106210423.GA19379@kroah.com>
-References: <1315834565-9280-1-git-send-email-lucaskt@linux.vnet.ibm.com>
- <20110912153508.GA8851@oc1711230544.ibm.com>
- <4F075D02.3010407@linux.vnet.ibm.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Subject: Kconfig option for compile time build coverage (Was: Re: [PATCH]
+ serial/efm32: add new driver)
+Date: Mon, 9 Jan 2012 10:59:03 +0100
+Message-ID: <20120109095903.GC14252@pengutronix.de>
+References: <20111221202847.4ffeba10@bob.linux.org.uk>
+ <1324561092-1945-1-git-send-email-u.kleine-koenig@pengutronix.de>
+ <201112231035.23215.arnd@arndb.de>
+ <20111223204428.GI24496@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out5.smtp.messagingengine.com ([66.111.4.29]:58635 "EHLO
-	out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1030473Ab2AFVVG (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 6 Jan 2012 16:21:06 -0500
-Received: from compute1.internal (compute1.nyi.mail.srv.osa [10.202.2.41])
-	by gateway1.nyi.mail.srv.osa (Postfix) with ESMTP id ED89D20F00
-	for <linux-serial@vger.kernel.org>; Fri,  6 Jan 2012 16:21:04 -0500 (EST)
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <4F075D02.3010407@linux.vnet.ibm.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <20111223204428.GI24496-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss>
+List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
+Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Sender: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Greg Kroah-Hartman <gregkh-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: Lucas Kannebley Tavares <lucaskt@linux.vnet.ibm.com>
-Cc: Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>, Breno Leitao <leitao@linux.vnet.ibm.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Fri, Jan 06, 2012 at 06:43:46PM -0200, Lucas Kannebley Tavares wrote:
-> 
-> On 09/12/2011 12:35 PM, Thadeu Lima de Souza Cascardo wrote:
-> >On Mon, Sep 12, 2011 at 10:36:05AM -0300, Lucas Kannebley Tavares wrote:
-> >>There was an error on the jsm driver that would cause it to be unable to
-> >>recover after a second error is detected.
-> >>
-> >>At the first error, the device recovers properly:
-> >>
-> >>[72521.485691] EEH: Detected PCI bus error on device 0003:02:00.0
-> >>[72521.485695] EEH: This PCI device has failed 1 times in the last hour:
-> >>...
-> >>[72532.035693] ttyn3 at MMIO 0x0 (irq = 49) is a jsm
-> >>[72532.105689] jsm: Port 3 added
-> >>
-> >>However, at the second error, it cascades until EEH disables the device:
-> >>
-> >>[72631.229549] Call Trace:
-> >>...
-> >>[72641.725687] jsm: Port 3 added
-> >>[72641.725695] EEH: Detected PCI bus error on device 0003:02:00.0
-> >>[72641.725698] EEH: This PCI device has failed 3 times in the last hour:
-> >>
-> >>It was caused because the PCI state was not being saved after the first
-> >>restore. Therefore, at the second recovery the PCI state would not be
-> >>restored.
-> >>
-> >>Signed-off-by: Lucas Kannebley Tavares<lucaskt@linux.vnet.ibm.com>
-> >Signed-off-by: Breno Leitao <brenohl@br.ibm.com>
-> >Acked-by: Thadeu Lima de Souza Cascardo<cascardo@linux.vnet.ibm.com>
-> 
-> Adding Greg to the CC list. It wasn't added earlier because
-> get_maintainers.pl only listed Alan's name. I apologize for the
-> delay.
-> 
-> This is a bugfix to EEH handling on jsm.
+Hello,
 
-Can someone send me a patch in a format that I could actually apply it
-in?
+On Fri, Dec 23, 2011 at 09:44:28PM +0100, Uwe Kleine-K=F6nig wrote:
+> On Fri, Dec 23, 2011 at 10:35:22AM +0000, Arnd Bergmann wrote:
+> > On Thursday 22 December 2011, Uwe Kleine-K=F6nig wrote:
+> > > [...]
+> > > +config SERIAL_EFM32_USART
+> > > +	bool "EFM32 USART port."
+> > > +	depends on ARCH_EFM32
+> > > +	select SERIAL_CORE
+> [...]
+> > I would generally prefer not to make the driver depend on the
+> > platform, so we can get better compile time coverage. I think a better
+> > set of dependencies would be
+> > =
 
-thanks,
+> > 	depends on HAVE_CLK
+> > 	depends on OF
+> > 	default ARCH_EFM32
+> I'd prefer something like:
+> =
 
-greg k-h
+> 	depends on HAVE_CLK
+> 	depends on ARCH_EFM32 || I_DO_BUILD_COVERAGE_TESTING
+> =
+
+> This would make it easier for Joe User to pick the right options for his
+> kernel (assuming he found out to better keep I_DO_BUILD_COVERAGE_TESTING
+> disabled). [...]
+What do you think about this I_DO_BUILD_COVERAGE_TESTING option? It
+would allow testers to get all possible options enabled (though there
+will never be an EFM32 USART port on a non-EFM32 machine I guess) and
+still users and distribution packagers would easily keep the option off
+even without cluttering .config and {menu,n,x,whatever}config.
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
