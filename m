@@ -1,44 +1,65 @@
-From: Greg KH <gregkh@suse.de>
+From: Lucas Kannebley Tavares <lucaskt@linux.vnet.ibm.com>
 Subject: Re: [PATCH] Updated TTY MAINTAINERS info
-Date: Mon, 9 Jan 2012 12:07:51 -0800
-Message-ID: <20120109200751.GA8337@suse.de>
-References: <1326137964-10671-1-git-send-email-lucaskt@linux.vnet.ibm.com>
+Date: Mon, 09 Jan 2012 18:34:46 -0200
+Message-ID: <4F0B4F66.8000302@linux.vnet.ibm.com>
+References: <1326137964-10671-1-git-send-email-lucaskt@linux.vnet.ibm.com> <20120109200751.GA8337@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:51639 "EHLO mx2.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S933375Ab2AIUPL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 9 Jan 2012 15:15:11 -0500
-Content-Disposition: inline
-In-Reply-To: <1326137964-10671-1-git-send-email-lucaskt@linux.vnet.ibm.com>
+Received: from e24smtp02.br.ibm.com ([32.104.18.86]:54881 "EHLO
+	e24smtp02.br.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933034Ab2AIUex (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 9 Jan 2012 15:34:53 -0500
+Received: from /spool/local
+	by e24smtp02.br.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+	for <linux-serial@vger.kernel.org> from <lucaskt@linux.vnet.ibm.com>;
+	Mon, 9 Jan 2012 18:34:51 -0200
+In-Reply-To: <20120109200751.GA8337@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Lucas Kannebley Tavares <lucaskt@linux.vnet.ibm.com>
+To: Greg KH <gregkh@suse.de>
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>
 
-On Mon, Jan 09, 2012 at 05:39:24PM -0200, Lucas Kannebley Tavares wrote:
-> Greg Kroah-Hartman is the current TTY maintainer, however he wouldn't appear
-> listed as such upon running get_maintainers.pl for drivers under
-> drivers/tty/serial.
-> 
-> Signed-off-by: Lucas Kannebley Tavares <lucaskt@linux.vnet.ibm.com>
-> ---
->  MAINTAINERS |    2 +-
->  1 files changed, 1 insertions(+), 1 deletions(-)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index cc6a466..6a856df 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -6641,7 +6641,7 @@ TTY LAYER
->  M:	Greg Kroah-Hartman <gregkh@suse.de>
->  S:	Maintained
->  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty-2.6.git
-> -F:	drivers/tty/*
-> +F:	drivers/tty/
+On 01/09/2012 06:07 PM, Greg KH wrote:
+> On Mon, Jan 09, 2012 at 05:39:24PM -0200, Lucas Kannebley Tavares wrote:
+>> Greg Kroah-Hartman is the current TTY maintainer, however he wouldn't appear
+>> listed as such upon running get_maintainers.pl for drivers under
+>> drivers/tty/serial.
+>>
+>> Signed-off-by: Lucas Kannebley Tavares<lucaskt@linux.vnet.ibm.com>
+>> ---
+>>   MAINTAINERS |    2 +-
+>>   1 files changed, 1 insertions(+), 1 deletions(-)
+>>
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+>> index cc6a466..6a856df 100644
+>> --- a/MAINTAINERS
+>> +++ b/MAINTAINERS
+>> @@ -6641,7 +6641,7 @@ TTY LAYER
+>>   M:	Greg Kroah-Hartman<gregkh@suse.de>
+>>   S:	Maintained
+>>   T:	git git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty-2.6.git
+>> -F:	drivers/tty/*
+>> +F:	drivers/tty/
+>
+> Isn't this just a bug in the get_maintainers.pl script?  Why does this
+> patch fix the problem?
+>
+> greg k-h
+>
 
-Isn't this just a bug in the get_maintainers.pl script?  Why does this
-patch fix the problem?
+To quote from MAINTAINERS
 
-greg k-h
+ >	F: Files and directories with wildcard patterns.
+ >	   A trailing slash includes all files and subdirectory files.
+ >	   F:	drivers/net/	all files in and below drivers/net
+ >	   F:	drivers/net/*	all files in drivers/net, but not below
+
+In this case I believe you are the maintainer for the entire tree, or am 
+I mistaken? If so, the documentation states that it shouldn't have an 
+asterisk.
+
+Lucas
+
