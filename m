@@ -1,61 +1,32 @@
-From: Wolfram Sang <w.sang@pengutronix.de>
+From: Lauri Hintsala <lauri.hintsala@bluegiga.com>
 Subject: Re: mxs-auart serial driver DMA support?
-Date: Thu, 12 Jan 2012 10:42:45 +0100
-Message-ID: <20120112094244.GA2775@pengutronix.de>
-References: <4F0E7EB0.2060906@bluegiga.com>
+Date: Thu, 12 Jan 2012 12:28:11 +0200
+Message-ID: <4F0EB5BB.1060008@bluegiga.com>
+References: <4F0E7EB0.2060906@bluegiga.com> <20120112094244.GA2775@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="0F1p//8PRICkK4MW"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:60161 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753197Ab2ALJmw (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 12 Jan 2012 04:42:52 -0500
-Content-Disposition: inline
-In-Reply-To: <4F0E7EB0.2060906@bluegiga.com>
+Received: from bluegiga.fi ([194.100.31.45]:37028 "EHLO darkblue.bluegiga.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751317Ab2ALK2O (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 12 Jan 2012 05:28:14 -0500
+In-Reply-To: <20120112094244.GA2775@pengutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Lauri Hintsala <lauri.hintsala@bluegiga.com>
+To: Wolfram Sang <w.sang@pengutronix.de>
 Cc: Sascha Hauer <s.hauer@pengutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org
 
+On 01/12/2012 11:42 AM, Wolfram Sang wrote:
+>
+>> Any plans to add DMA support for mxs-auart serial driver? I noticed
+>> it is impossible to archive full 3.25 Mbs speed with current one.
+>
+> No plans from our side, currently.
 
---0F1p//8PRICkK4MW
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-
-> Any plans to add DMA support for mxs-auart serial driver? I noticed
-> it is impossible to archive full 3.25 Mbs speed with current one.
-
-No plans from our side, currently.
-
-> As I understood porting DMA support from freescale's driver is not
-> trivial because MXS DMA implementation has been changed to mainline
-> version.
-
-Yes, luckily. DMAENGINE is really the way to go.
+OK, AUART works fine with 115200 bps but over that it loose data 
+randomly. I have seen fifo overrun errors during receiving data with 
+1Mbs and over. So current driver is unuseful with higher baud rates.
 
 Regards,
-
-   Wolfram
-
---=20
-Pengutronix e.K.                           | Wolfram Sang                |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-
---0F1p//8PRICkK4MW
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-
-iEYEARECAAYFAk8OqxQACgkQD27XaX1/VRse0wCfVXQN7EUxohj0oMOsEec5jiUv
-KLkAoMByQul5yNiogeKqTec5Izec7Blq
-=gJRU
------END PGP SIGNATURE-----
-
---0F1p//8PRICkK4MW--
+Lauri
