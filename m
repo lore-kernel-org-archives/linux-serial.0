@@ -1,111 +1,61 @@
-From: Shubhrajyoti D <shubhrajyoti@ti.com>
-Subject: [PATCH RFC] omap-serial: Fix the error handling in the omap_serial probe
-Date: Thu, 12 Jan 2012 15:02:04 +0530
-Message-ID: <1326360724-7898-1-git-send-email-shubhrajyoti@ti.com>
+From: Wolfram Sang <w.sang@pengutronix.de>
+Subject: Re: mxs-auart serial driver DMA support?
+Date: Thu, 12 Jan 2012 10:42:45 +0100
+Message-ID: <20120112094244.GA2775@pengutronix.de>
+References: <4F0E7EB0.2060906@bluegiga.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="0F1p//8PRICkK4MW"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:58810 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753103Ab2ALJcN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 12 Jan 2012 04:32:13 -0500
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:60161 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753197Ab2ALJmw (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 12 Jan 2012 04:42:52 -0500
+Content-Disposition: inline
+In-Reply-To: <4F0E7EB0.2060906@bluegiga.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Shubhrajyoti D <shubhrajyoti@ti.com>
+To: Lauri Hintsala <lauri.hintsala@bluegiga.com>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org
 
-The patch does the following
 
-- The pm_runtime_disable is called in the remove not in the error
-  case of probe.The patch calls the pm_runtime_disable in the error
-  case.
-- The  up is not freed in the error path. Fix the memory leak by calling
- kfree in the error path.
-- Also the iounmap is not called fix the same by calling iounmap in the
-  error case of probe and remove .
-- Make the name of the error tags more meaningful.
+--0F1p//8PRICkK4MW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
----
- drivers/tty/serial/omap-serial.c |   27 +++++++++++++++++----------
- 1 files changed, 17 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index eb90a01..29fe6fd 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -1369,14 +1369,14 @@ static int serial_omap_probe(struct platform_device *pdev)
- 
- 	dma_rx = platform_get_resource_byname(pdev, IORESOURCE_DMA, "rx");
- 	if (!dma_rx) {
--		ret = -EINVAL;
--		goto err;
-+		ret = -ENXIO;
-+		goto do_release_region;
- 	}
- 
- 	dma_tx = platform_get_resource_byname(pdev, IORESOURCE_DMA, "tx");
- 	if (!dma_tx) {
--		ret = -EINVAL;
--		goto err;
-+		ret = -ENXIO;
-+		goto do_release_region;
- 	}
- 
- 	up = kzalloc(sizeof(*up), GFP_KERNEL);
-@@ -1403,7 +1403,7 @@ static int serial_omap_probe(struct platform_device *pdev)
- 		dev_err(&pdev->dev, "failed to get alias/pdev id, errno %d\n",
- 								up->port.line);
- 		ret = -ENODEV;
--		goto err;
-+		goto err_port_line;
- 	}
- 
- 	sprintf(up->name, "OMAP UART%d", up->port.line);
-@@ -1412,7 +1412,7 @@ static int serial_omap_probe(struct platform_device *pdev)
- 	if (!up->port.membase) {
- 		dev_err(&pdev->dev, "can't ioremap UART\n");
- 		ret = -ENOMEM;
--		goto err;
-+		goto err_ioremap;
- 	}
- 
- 	up->port.flags = omap_up_info->flags;
-@@ -1458,16 +1458,22 @@ static int serial_omap_probe(struct platform_device *pdev)
- 
- 	ret = uart_add_one_port(&serial_omap_reg, &up->port);
- 	if (ret != 0)
--		goto do_release_region;
-+		goto err_add_port;
- 
- 	pm_runtime_put(&pdev->dev);
- 	platform_set_drvdata(pdev, up);
- 	return 0;
--err:
--	dev_err(&pdev->dev, "[UART%d]: failure [%s]: %d\n",
--				pdev->id, __func__, ret);
-+
-+err_add_port:
-+	pm_runtime_disable(&pdev->dev);
-+	iounmap(up->port.membase);
-+err_ioremap:
-+err_port_line:
-+	kfree(up);
- do_release_region:
- 	release_mem_region(mem->start, resource_size(mem));
-+	dev_err(&pdev->dev, "[UART%d]: failure [%s]: %d\n",
-+				pdev->id, __func__, ret);
- 	return ret;
- }
- 
-@@ -1476,6 +1482,7 @@ static int serial_omap_remove(struct platform_device *dev)
- 	struct uart_omap_port *up = platform_get_drvdata(dev);
- 
- 	if (up) {
-+		iounmap(up->port.membase);
- 		pm_runtime_disable(&up->pdev->dev);
- 		uart_remove_one_port(&serial_omap_reg, &up->port);
- 		pm_qos_remove_request(&up->pm_qos_request);
--- 
-1.7.1
+> Any plans to add DMA support for mxs-auart serial driver? I noticed
+> it is impossible to archive full 3.25 Mbs speed with current one.
 
+No plans from our side, currently.
+
+> As I understood porting DMA support from freescale's driver is not
+> trivial because MXS DMA implementation has been changed to mainline
+> version.
+
+Yes, luckily. DMAENGINE is really the way to go.
+
+Regards,
+
+   Wolfram
+
+--=20
+Pengutronix e.K.                           | Wolfram Sang                |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+
+--0F1p//8PRICkK4MW
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+
+iEYEARECAAYFAk8OqxQACgkQD27XaX1/VRse0wCfVXQN7EUxohj0oMOsEec5jiUv
+KLkAoMByQul5yNiogeKqTec5Izec7Blq
+=gJRU
+-----END PGP SIGNATURE-----
+
+--0F1p//8PRICkK4MW--
