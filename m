@@ -1,32 +1,53 @@
-From: Lauri Hintsala <lauri.hintsala@bluegiga.com>
-Subject: Re: mxs-auart serial driver DMA support?
-Date: Thu, 12 Jan 2012 12:28:11 +0200
-Message-ID: <4F0EB5BB.1060008@bluegiga.com>
-References: <4F0E7EB0.2060906@bluegiga.com> <20120112094244.GA2775@pengutronix.de>
+From: Rajanikanth H V <rajanikanth.hv@stericsson.com>
+Subject: RE: tty/serial: Need clarification on Support for 4+M Baudrate
+Date: Thu, 12 Jan 2012 10:49:38 +0100
+Message-ID: <2B1D156D95AE9B4EAD379CB9E465FE7324AF2A605A@EXDCVYMBSTM005.EQ1STM.local>
+References: <20120111121901.GA4034@bnru05>
+ <20120111123025.244a9cf5@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from bluegiga.fi ([194.100.31.45]:37028 "EHLO darkblue.bluegiga.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751317Ab2ALK2O (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 12 Jan 2012 05:28:14 -0500
-In-Reply-To: <20120112094244.GA2775@pengutronix.de>
+Received: from eu1sys200aog117.obsmtp.com ([207.126.144.143]:50226 "EHLO
+	eu1sys200aog117.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751153Ab2ALKla convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 12 Jan 2012 05:41:30 -0500
+In-Reply-To: <20120111123025.244a9cf5@pyramind.ukuu.org.uk>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Wolfram Sang <w.sang@pengutronix.de>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "gregkh@sude.de" <gregkh@sude.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Rajanikanth H V <rajanikanth.hv@stericsson.com>
 
-On 01/12/2012 11:42 AM, Wolfram Sang wrote:
->
->> Any plans to add DMA support for mxs-auart serial driver? I noticed
->> it is impossible to archive full 3.25 Mbs speed with current one.
->
-> No plans from our side, currently.
+Alan,
 
-OK, AUART works fine with 115200 bps but over that it loose data 
-randomly. I have seen fifo overrun errors during receiving data with 
-1Mbs and over. So current driver is unuseful with higher baud rates.
+Thanks for your response, suggested modification helped to get 4.8M baud
+but not 4.05M as this is being approximated to 4.0M baud which happens in
+tty_termios_encode_baud_rate(...).
 
-Regards,
-Lauri
+I have precise and weird requirement to get 4.05M baud as uart
+baud clock divisor value changes between 4.0M and 4.05M Baud.
+
+Any suggestion?
+
+Thanks,
+Rajanikanth
+
+-----Original Message-----
+From: Alan Cox [mailto:alan@lxorguk.ukuu.org.uk] 
+Sent: Wednesday, January 11, 2012 6:00 PM
+To: Rajanikanth H V
+Cc: linux-serial@vger.kernel.org; linux-kernel@vger.kernel.org; gregkh@sude.de; linux-arm-kernel@lists.infradead.org
+Subject: Re: tty/serial: Need clarification on Support for 4+M Baudrate
+
+On Wed, 11 Jan 2012 17:49:01 +0530
+> I have a requirement to interface UART with an external microcontroller 
+> using baud rate above 4Mbps, hence following is my approach to apply
+> the changes. Can any one review/provide me appropriate approach.
+
+See TCGETS2/TCSETS2 and the BOTHER flag.
+
+The kernel supports aetting arbitary baud rates already.
+
+Alan
