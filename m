@@ -1,30 +1,56 @@
-From: Lauri Hintsala <lauri.hintsala@bluegiga.com>
-Subject: mxs-auart serial driver DMA support?
-Date: Thu, 12 Jan 2012 08:30:31 +0200
-Message-ID: <4F0E7E07.1020306@bluegiga.com>
+From: Govindraj <govindraj.ti@gmail.com>
+Subject: Re: [PATCH RFC] omap-serial: make serial_omap_restore_context depend
+ on CONFIG_PM_RUNTIME
+Date: Thu, 12 Jan 2012 13:02:27 +0530
+Message-ID: <CAAL8m4x5wf_XtPSe=GEG9tokrZmbVy4j5rbuwmoLYBuiVaWMWg@mail.gmail.com>
+References: <1326261400-3929-1-git-send-email-shubhrajyoti@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from bluegiga.fi ([194.100.31.45]:28438 "EHLO darkblue.bluegiga.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751184Ab2ALGkt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 12 Jan 2012 01:40:49 -0500
+Received: from mail-gx0-f174.google.com ([209.85.161.174]:63895 "EHLO
+	mail-gx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752685Ab2ALHcs convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 12 Jan 2012 02:32:48 -0500
+In-Reply-To: <1326261400-3929-1-git-send-email-shubhrajyoti@ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel-request@lists.infradead.org
+To: Shubhrajyoti D <shubhrajyoti@ti.com>
+Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Hi,
+On Wed, Jan 11, 2012 at 11:26 AM, Shubhrajyoti D <shubhrajyoti@ti.com> =
+wrote:
+> The function serial_omap_restore_context is called only from
+> serial_omap_runtime_resume which depends on CONFIG_PM_RUNTIME. Make
+> serial_omap_restore_context also compile conditionally.
+>
+> if CONFIG_PM_RUNTIME is not defined below warn may be seen.
+>
+> =A0LD =A0 =A0 =A0net/xfrm/built-in.o
+> drivers/tty/serial/omap-serial.c:1524: warning: 'serial_omap_restore_=
+context' defined but not used
+> =A0CC =A0 =A0 =A0drivers/tty/vt/selection.o
+>
+> Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
 
-Any plans to add DMA support for mxs-auart serial driver? I noticed it 
-is impossible to archive full 3.25 Mbs speed with current one.
+Acked-by: Govindraj.R <govindraj.raja@ti.com>
 
-There is DMA supported driver on freescale's git tree:
-http://opensource.freescale.com/git?p=imx/linux-2.6-imx.git;a=blob;f=drivers/serial/mxs-auart.c;hb=imx_2.6.35_11.09.01
+> ---
+> applies on Tony's uart branch
+>
 
-As I understood porting DMA support from freescale's driver is not 
-trivial because MXS DMA implementation has been changed to mainline version.
+Should apply on cleanly on mainline also
+Please check.
 
-Regards,
-Lauri Hintsala
+Same comments for other patch (omap-serial :Make the
+suspend/resume functions depend on CONFIG_PM_SLEEP)
+
+--
+Thanks,
+Govindraj.R
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
