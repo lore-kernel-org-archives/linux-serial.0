@@ -1,66 +1,38 @@
-From: Wolfram Sang <w.sang@pengutronix.de>
-Subject: Re: mxs-auart serial driver DMA support?
-Date: Thu, 12 Jan 2012 12:00:11 +0100
-Message-ID: <20120112110010.GF2775@pengutronix.de>
-References: <4F0E7EB0.2060906@bluegiga.com>
- <20120112094244.GA2775@pengutronix.de>
- <4F0EB5BB.1060008@bluegiga.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: tty/serial: Need clarification on Support for 4+M Baudrate
+Date: Thu, 12 Jan 2012 11:49:13 +0000
+Message-ID: <20120112114913.21809bed@pyramind.ukuu.org.uk>
+References: <20120111121901.GA4034@bnru05>
+	<20120111123025.244a9cf5@pyramind.ukuu.org.uk>
+	<2B1D156D95AE9B4EAD379CB9E465FE7324AF2A605A@EXDCVYMBSTM005.EQ1STM.local>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="0rSojgWGcpz+ezC3"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:43835 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752506Ab2ALLAP (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:50582 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751937Ab2ALLsc (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 12 Jan 2012 06:00:15 -0500
-Content-Disposition: inline
-In-Reply-To: <4F0EB5BB.1060008@bluegiga.com>
+	Thu, 12 Jan 2012 06:48:32 -0500
+In-Reply-To: <2B1D156D95AE9B4EAD379CB9E465FE7324AF2A605A@EXDCVYMBSTM005.EQ1STM.local>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Lauri Hintsala <lauri.hintsala@bluegiga.com>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org
+To: Rajanikanth H V <rajanikanth.hv@stericsson.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "gregkh@sude.de" <gregkh@sude.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
+On Thu, 12 Jan 2012 10:49:38 +0100
+Rajanikanth H V <rajanikanth.hv@stericsson.com> wrote:
 
---0rSojgWGcpz+ezC3
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Alan,
+> 
+> Thanks for your response, suggested modification helped to get 4.8M baud
+> but not 4.05M as this is being approximated to 4.0M baud which happens in
+> tty_termios_encode_baud_rate(...).
 
-On Thu, Jan 12, 2012 at 12:28:11PM +0200, Lauri Hintsala wrote:
-> On 01/12/2012 11:42 AM, Wolfram Sang wrote:
-> >
-> >>Any plans to add DMA support for mxs-auart serial driver? I noticed
-> >>it is impossible to archive full 3.25 Mbs speed with current one.
-> >
-> >No plans from our side, currently.
->=20
-> OK, AUART works fine with 115200 bps but over that it loose data
-> randomly. I have seen fifo overrun errors during receiving data with
-> 1Mbs and over. So current driver is unuseful with higher baud rates.
+Only if you don't have the BOTHER flag set and only for returned data to
+user space.
 
-Care to send a patch adding this information to Kconfig help text and/or
-source code? Would be much more useful there, I think.
+When you do a TCSETS2 ioctl and have BOTHER set as the rate as well as a
+c_ispeed/c_ospeed the exactly value is given to the driver.
 
-Regards,
-
-   Wolfram
-
---=20
-Pengutronix e.K.                           | Wolfram Sang                |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-
---0rSojgWGcpz+ezC3
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-
-iEYEARECAAYFAk8OvToACgkQD27XaX1/VRvURwCcCcsM1Or07Z7tGAvVHtF1Snzw
-Gt8AoMI6sLWvwl6evKor4EIAEHqWx04p
-=+5Rd
------END PGP SIGNATURE-----
-
---0rSojgWGcpz+ezC3--
+Alan
