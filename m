@@ -1,60 +1,76 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: tty/serial: Need clarification on Support for 4+M Baudrate
-Date: Thu, 12 Jan 2012 14:39:00 +0000
-Message-ID: <20120112143900.27b92668@pyramind.ukuu.org.uk>
-References: <20120111121901.GA4034@bnru05>
-	<20120111123025.244a9cf5@pyramind.ukuu.org.uk>
-	<2B1D156D95AE9B4EAD379CB9E465FE7324AF2A605A@EXDCVYMBSTM005.EQ1STM.local>
-	<20120112114913.21809bed@pyramind.ukuu.org.uk>
-	<2B1D156D95AE9B4EAD379CB9E465FE7324AF2A630D@EXDCVYMBSTM005.EQ1STM.local>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:59580 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753168Ab2ALOi0 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 12 Jan 2012 09:38:26 -0500
-In-Reply-To: <2B1D156D95AE9B4EAD379CB9E465FE7324AF2A630D@EXDCVYMBSTM005.EQ1STM.local>
-Sender: linux-serial-owner@vger.kernel.org
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH] TTY: fix UV serial console regression
+Date: Thu, 12 Jan 2012 22:55:15 +0100
+Message-ID: <1326405315-6601-1-git-send-email-jslaby@suse.cz>
+References: <4EDE988B.6010501@suse.cz>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <4EDE988B.6010501@suse.cz>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@suse.de
+Cc: Arnd Bergmann <arnd@arndb.de>, alan@linux.intel.com, linux-serial@vger.kernel.org, jirislaby@gmail.com, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, "3.0 3.1 3.2" <stable@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: Rajanikanth H V <rajanikanth.hv@stericsson.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "gregkh@sude.de" <gregkh@sude.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-On Thu, 12 Jan 2012 15:20:46 +0100
-Rajanikanth H V <rajanikanth.hv@stericsson.com> wrote:
+Commit 74c2107759d (serial: Use block_til_ready helper) and its fixup
+3f582b8c110 (serial: fix termios settings in open) introduced a
+regression on UV systems. The serial eventually freezes while being
+used. It's completely unpredictable and sometimes needs a heap of
+traffic to happen first.
 
-> Alan,
-> 
-> FYI: I am not using application, rather I have a Bluetooth driver invoking
-> encode_baud_rate(...), please find log below.
-> 
-> I made sure that c_ispeed = c_ospeed = 4.05M Baud, however I see 
-> tty_termios_encode_baud_rate(...) is normalizing to 4.0
-> 
-> 
-> manual trace log below:
-> ======================================================================================
-> 
-> 4.05M Arbitrary Baud Setting Sequence:
-> [    9.664703] alloc_set_baud_rate_cmd Setting arbitrary baudrate using BOTHER baudrate:89 c_cflag:020000016262
-> [    9.774658] XXXXXX_hci_uart_set_baudrate c_cflag:020000016262 baud:4050000
+To reproduce this, yast installation was used as it turned out to be
+pretty reliable in reproducing. Especially during installation process
+where one doesn't have an SSH daemon running. And no monitor as the HW
+is completely headless. So this was fun to find. Given the machine
+doesn't boot on vanilla before 2.6.36 final. (And the commits above
+are older.)
 
-4050000 seems a bit odd - you want cflag&CBAUD == BOTHER so I'd expect
-the low bits to end rather different things to 6262 ?
+Unless there is some bad race in the code, the hardware seems to be
+pretty broken. Otherwise pure MSR read should not cause such a bug,
+or?
 
-So something like
+So to prevent the bug, revert to the old behavior. I.e. read modem
+status only if we really have to -- for non-CLOCAL set serials.
+Non-CLOCAL works on this hardware OK, I tried. See? I don't.
 
-	struct ktermios new = *tty->termios;
-	new.c_cflag &= ~(CBAUD|CIBAUD);
-	new.c_cflag |= BOTHER;
-	new.c_ispeed = 4050000;
-	new.c_ospeed = 4050000;
-	tty_set_termios(tty, &new);	/* Can sleep */
+And document that shit.
 
-	/* Returned new will now hold actual values selected */
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Cc: 3.0 3.1 3.2 <stable@vger.kernel.org>
+References: https://lkml.org/lkml/2011/12/6/573
+References: https://bugzilla.novell.com/show_bug.cgi?id=718518
+---
+ drivers/tty/tty_port.c |   12 +++++++-----
+ 1 files changed, 7 insertions(+), 5 deletions(-)
 
-should do the trick providing the low level driver supports the rate.
-
-Alan
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index 7a4fb1c..1109e1b 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -227,7 +227,6 @@ int tty_port_block_til_ready(struct tty_port *port,
+ 	int do_clocal = 0, retval;
+ 	unsigned long flags;
+ 	DEFINE_WAIT(wait);
+-	int cd;
+ 
+ 	/* block if port is in the process of being closed */
+ 	if (tty_hung_up_p(filp) || port->flags & ASYNC_CLOSING) {
+@@ -284,11 +283,14 @@ int tty_port_block_til_ready(struct tty_port *port,
+ 				retval = -ERESTARTSYS;
+ 			break;
+ 		}
+-		/* Probe the carrier. For devices with no carrier detect this
+-		   will always return true */
+-		cd = tty_port_carrier_raised(port);
++		/*
++		 * Probe the carrier. For devices with no carrier detect
++		 * tty_port_carrier_raised will always return true.
++		 * Never ask drivers if CLOCAL is set, this causes troubles
++		 * on some hardware.
++		 */
+ 		if (!(port->flags & ASYNC_CLOSING) &&
+-				(do_clocal || cd))
++				(do_clocal || tty_port_carrier_raised(port)))
+ 			break;
+ 		if (signal_pending(current)) {
+ 			retval = -ERESTARTSYS;
+-- 
+1.7.8.3
