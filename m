@@ -1,38 +1,44 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: tty/serial: Need clarification on Support for 4+M Baudrate
-Date: Thu, 12 Jan 2012 11:49:13 +0000
-Message-ID: <20120112114913.21809bed@pyramind.ukuu.org.uk>
-References: <20120111121901.GA4034@bnru05>
-	<20120111123025.244a9cf5@pyramind.ukuu.org.uk>
-	<2B1D156D95AE9B4EAD379CB9E465FE7324AF2A605A@EXDCVYMBSTM005.EQ1STM.local>
+From: Shubhrajyoti D <shubhrajyoti@ti.com>
+Subject: [PATCH RFC 1/2] ARM : OMAP : serial : Make context_loss_cnt signed
+Date: Thu, 12 Jan 2012 19:33:38 +0530
+Message-ID: <1326377019-23688-1-git-send-email-shubhrajyoti@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:50582 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751937Ab2ALLsc (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 12 Jan 2012 06:48:32 -0500
-In-Reply-To: <2B1D156D95AE9B4EAD379CB9E465FE7324AF2A605A@EXDCVYMBSTM005.EQ1STM.local>
+Received: from bear.ext.ti.com ([192.94.94.41]:39432 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753525Ab2ALODs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 12 Jan 2012 09:03:48 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Rajanikanth H V <rajanikanth.hv@stericsson.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "gregkh@sude.de" <gregkh@sude.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: linux-serial@vger.kernel.org
+Cc: linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Shubhrajyoti D <shubhrajyoti@ti.com>
 
-On Thu, 12 Jan 2012 10:49:38 +0100
-Rajanikanth H V <rajanikanth.hv@stericsson.com> wrote:
+get_context_loss_count returns an int however it is stored in
+unsigned integer context_loss_cnt . This patch tries to make
+context_loss_cnt int. So that in case of errors(which may be negative)
+the value is not interpreted wrongly.
 
-> Alan,
-> 
-> Thanks for your response, suggested modification helped to get 4.8M baud
-> but not 4.05M as this is being approximated to 4.0M baud which happens in
-> tty_termios_encode_baud_rate(...).
+Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
+---
+applies on Tony's uart branch
 
-Only if you don't have the BOTHER flag set and only for returned data to
-user space.
+ arch/arm/plat-omap/include/plat/omap-serial.h |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-When you do a TCSETS2 ioctl and have BOTHER set as the rate as well as a
-c_ispeed/c_ospeed the exactly value is given to the driver.
+diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/plat-omap/include/plat/omap-serial.h
+index 9ff4444..b7fb6dc 100644
+--- a/arch/arm/plat-omap/include/plat/omap-serial.h
++++ b/arch/arm/plat-omap/include/plat/omap-serial.h
+@@ -128,7 +128,7 @@ struct uart_omap_port {
+ 	unsigned char		msr_saved_flags;
+ 	char			name[20];
+ 	unsigned long		port_activity;
+-	u32			context_loss_cnt;
++	int			context_loss_cnt;
+ 	u32			errata;
+ 	u8			wakeups_enabled;
+ 
+-- 
+1.7.1
 
-Alan
