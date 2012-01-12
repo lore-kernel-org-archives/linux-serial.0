@@ -1,23 +1,19 @@
 From: Lauri Hintsala <lauri.hintsala@bluegiga.com>
 Subject: mxs-auart serial driver DMA support?
-Date: Thu, 12 Jan 2012 08:33:20 +0200
-Message-ID: <4F0E7EB0.2060906@bluegiga.com>
+Date: Thu, 12 Jan 2012 08:30:31 +0200
+Message-ID: <4F0E7E07.1020306@bluegiga.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: linux-arm-kernel-bounces@lists.infradead.org
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from bluegiga.fi ([194.100.31.45]:28438 "EHLO darkblue.bluegiga.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751184Ab2ALGkt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 12 Jan 2012 01:40:49 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: linux-serial@vger.kernel.org, linux-arm-kernel-request@lists.infradead.org
 
 Hi,
 
