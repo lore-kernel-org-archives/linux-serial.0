@@ -1,40 +1,28 @@
-From: Shubhrajyoti D <shubhrajyoti@ti.com>
-Subject: [PATCH 4/5] ARM : OMAP : serial : Make context_loss_cnt signed
-Date: Mon, 16 Jan 2012 15:52:39 +0530
-Message-ID: <1326709360-26020-5-git-send-email-shubhrajyoti@ti.com>
-References: <1326709360-26020-1-git-send-email-shubhrajyoti@ti.com>
+From: Jiri Slaby <jirislaby@gmail.com>
+Subject: Re: [PATCH] TTY: fix UV serial console regression
+Date: Mon, 16 Jan 2012 14:28:11 +0100
+Message-ID: <4F1425EB.6050703@gmail.com>
+References: <4EDE988B.6010501@suse.cz> <1326405315-6601-1-git-send-email-jslaby@suse.cz> <20120112234132.0a973cb9@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1326709360-26020-1-git-send-email-shubhrajyoti@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Shubhrajyoti D <shubhrajyoti@ti.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20120112234132.0a973cb9@pyramind.ukuu.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Jiri Slaby <jslaby@suse.cz>, gregkh@suse.de, Arnd Bergmann <arnd@arndb.de>, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "3.0 3.1 3.2" <stable@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-get_context_loss_count returns an int however it is stored in
-unsigned integer context_loss_cnt . This patch tries to make
-context_loss_cnt int. So that in case of errors(which may be negative)
-the value is not interpreted wrongly.
+On 01/13/2012 12:41 AM, Alan Cox wrote:
+>> Unless there is some bad race in the code, the hardware seems to
+>> be pretty broken. Otherwise pure MSR read should not cause such a
+>> bug, or?
+> 
+> UV serial being what actual hardware and system ?
 
-Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
----
- arch/arm/plat-omap/include/plat/omap-serial.h |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+What exact paramteres are you interested in? dmidecode on this machine
+says it's an Altix XE310.
 
-diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/plat-omap/include/plat/omap-serial.h
-index 9ff4444..b7fb6dc 100644
---- a/arch/arm/plat-omap/include/plat/omap-serial.h
-+++ b/arch/arm/plat-omap/include/plat/omap-serial.h
-@@ -128,7 +128,7 @@ struct uart_omap_port {
- 	unsigned char		msr_saved_flags;
- 	char			name[20];
- 	unsigned long		port_activity;
--	u32			context_loss_cnt;
-+	int			context_loss_cnt;
- 	u32			errata;
- 	u8			wakeups_enabled;
- 
+thanks,
 -- 
-1.7.1
-
+js
