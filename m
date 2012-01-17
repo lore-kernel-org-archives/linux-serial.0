@@ -1,28 +1,97 @@
-From: Jiri Slaby <jirislaby@gmail.com>
-Subject: Re: [PATCH] TTY: fix UV serial console regression
-Date: Mon, 16 Jan 2012 14:28:11 +0100
-Message-ID: <4F1425EB.6050703@gmail.com>
-References: <4EDE988B.6010501@suse.cz> <1326405315-6601-1-git-send-email-jslaby@suse.cz> <20120112234132.0a973cb9@pyramind.ukuu.org.uk>
+From: Shreshtha Kumar SAHU <shreshthakumar.sahu@stericsson.com>
+Subject: [PATCH] amba-pl011: do not disable RTS during shutdown
+Date: Tue, 17 Jan 2012 15:59:49 +0530
+Message-ID: <1326796189-21722-1-git-send-email-shreshthakumar.sahu@stericsson.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20120112234132.0a973cb9@pyramind.ukuu.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Jiri Slaby <jslaby@suse.cz>, gregkh@suse.de, Arnd Bergmann <arnd@arndb.de>, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "3.0 3.1 3.2" <stable@vger.kernel.org>
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from eu1sys200aog111.obsmtp.com ([207.126.144.131]:51699 "EHLO
+	eu1sys200aog111.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752400Ab2AQKaL (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 17 Jan 2012 05:30:11 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: gregkh@suse.de, linux-serial@vger.kernel.org, rmk+kernel@arm.linux.org.uk
+Cc: linux-kernel@vger.kernel.org, Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
 
-On 01/13/2012 12:41 AM, Alan Cox wrote:
->> Unless there is some bad race in the code, the hardware seems to
->> be pretty broken. Otherwise pure MSR read should not cause such a
->> bug, or?
-> 
-> UV serial being what actual hardware and system ?
+From: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
 
-What exact paramteres are you interested in? dmidecode on this machine
-says it's an Altix XE310.
+In present driver, shutdown clears RTS in CR register. But the
+documentation "Documentation/serial/driver" suggests not to
+disable RTS in shutdown(). Also RTS is preserved between shutdown
+and startup calls, i.e. it is restored in startup if it was enabled
+during shutdown. So that if autorts is set and RTS is set using
+pl011_set_mctrl then it should continue even after shutdown->startup
+sequence. And hence during set_termios it will enable RTS only if RTS
+bit is set in UARTx_CR register. For throttling/unthrottling user
+should call pl011_set_mctrl.
 
-thanks,
+Change-Id: I743f33fb10e7e655657cd5dae1ec585e914a65bc
+Signed-off-by: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/tty/serial/amba-pl011.c |   17 ++++++++++++++++-
+ 1 files changed, 16 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 6958594..46a4690 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -160,6 +160,7 @@ struct uart_amba_port {
+ 	unsigned int		lcrh_tx;	/* vendor-specific */
+ 	unsigned int		lcrh_rx;	/* vendor-specific */
+ 	bool			autorts;
++	bool			rts_state;	/* state during shutdown */
+ 	char			type[12];
+ 	bool			interrupt_may_hang; /* vendor-specific */
+ #ifdef CONFIG_DMA_ENGINE
+@@ -1412,6 +1413,8 @@ static int pl011_startup(struct uart_port *port)
+ 		barrier();
+ 
+ 	cr = UART01x_CR_UARTEN | UART011_CR_RXE | UART011_CR_TXE;
++	if (uap->rts_state)
++		cr |= UART011_CR_RTS;
+ 	writew(cr, uap->port.membase + UART011_CR);
+ 
+ 	/* Clear pending error interrupts */
+@@ -1469,6 +1472,7 @@ static void pl011_shutdown_channel(struct uart_amba_port *uap,
+ static void pl011_shutdown(struct uart_port *port)
+ {
+ 	struct uart_amba_port *uap = (struct uart_amba_port *)port;
++	unsigned int cr;
+ 
+ 	/*
+ 	 * disable all interrupts
+@@ -1488,9 +1492,19 @@ static void pl011_shutdown(struct uart_port *port)
+ 
+ 	/*
+ 	 * disable the port
++	 * disable the port. It should not disable RTS.
++	 * Also RTS state should be preserved to restore
++	 * it during startup().
+ 	 */
+ 	uap->autorts = false;
+-	writew(UART01x_CR_UARTEN | UART011_CR_TXE, uap->port.membase + UART011_CR);
++	cr = readw(uap->port.membase + UART011_CR);
++	if (cr & UART011_CR_RTS) {
++		uap->rts_state = true;
++		cr = UART011_CR_RTS;
++	} else
++		uap->rts_state = false;
++	cr |= UART01x_CR_UARTEN | UART011_CR_TXE;
++	writew(cr, uap->port.membase + UART011_CR);
+ 
+ 	/*
+ 	 * disable break condition and fifos
+@@ -1905,6 +1919,7 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ 	uap->vendor = vendor;
+ 	uap->lcrh_rx = vendor->lcrh_rx;
+ 	uap->lcrh_tx = vendor->lcrh_tx;
++	uap->rts_state = false;
+ 	uap->fifosize = vendor->fifosize;
+ 	uap->interrupt_may_hang = vendor->interrupt_may_hang;
+ 	uap->port.dev = &dev->dev;
 -- 
-js
+1.7.4.3
+
