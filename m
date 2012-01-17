@@ -1,74 +1,41 @@
-From: Simon Glass <sjg@chromium.org>
-Subject: [PATCH 3/3] serial: 8250: Add a wakeup_capable module param
-Date: Tue, 17 Jan 2012 10:56:03 -0800
-Message-ID: <1326826563-32215-3-git-send-email-sjg@chromium.org>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 2/3] serial: Make wakeup_capable a flag to reduce boot
+ time
+Date: Tue, 17 Jan 2012 20:09:42 +0000
+Message-ID: <20120117200942.7e7adf09@pyramind.ukuu.org.uk>
 References: <1326826563-32215-1-git-send-email-sjg@chromium.org>
+	<1326826563-32215-2-git-send-email-sjg@chromium.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-yx0-f202.google.com ([209.85.213.202]:46448 "EHLO
-	mail-yx0-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751927Ab2AQS4l (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:50844 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751959Ab2AQUIZ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 17 Jan 2012 13:56:41 -0500
-Received: by yenl12 with SMTP id l12so88283yen.1
-        for <linux-serial@vger.kernel.org>; Tue, 17 Jan 2012 10:56:40 -0800 (PST)
-In-Reply-To: <1326826563-32215-1-git-send-email-sjg@chromium.org>
+	Tue, 17 Jan 2012 15:08:25 -0500
+In-Reply-To: <1326826563-32215-2-git-send-email-sjg@chromium.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: LKML <linux-kernel@vger.kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, Simon Glass <sjg@chromium.org>
+To: Simon Glass <sjg@chromium.org>
+Cc: LKML <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
 
-Since serial_core now does not make serial ports wake-up capable by
-default, add a parameter to support this feature in the 8250 UART.
-This is the only UART where I think this feature is useful.
+On Tue, 17 Jan 2012 10:56:02 -0800
+Simon Glass <sjg@chromium.org> wrote:
 
-Signed-off-by: Simon Glass <sjg@chromium.org>
----
- drivers/tty/serial/8250.c |    7 +++++++
- 1 files changed, 7 insertions(+), 0 deletions(-)
+> The synchronize_rcu() call resulting from making every serial driver
+> wake-up capable (commit b3b708fa) slows boot down by 600ms on my Tegra2x
+> system (with CONFIG_PREEMPT disabled).
+> 
+> Waking up the machine from a serial port seems to be an unlikely
+> requirement, so make serial_core default to not using the behaviour.
 
-diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
-index 54f8920..78feee4 100644
---- a/drivers/tty/serial/8250.c
-+++ b/drivers/tty/serial/8250.c
-@@ -65,6 +65,7 @@ static int serial_index(struct uart_port *port)
- }
- 
- static unsigned int skip_txen_test; /* force skip of txen test at init time */
-+static unsigned int wakeup_capable; /* device can wake up system */
- 
- /*
-  * Debugging.
-@@ -2786,6 +2787,7 @@ serial8250_register_ports(struct uart_driver *drv, struct device *dev)
- 
- 		if (up->port.flags & UPF_FIXED_TYPE)
- 			serial8250_init_fixed_type_port(up, up->port.type);
-+		up->port.wakeup_capable = wakeup_capable;
- 
- 		uart_add_one_port(drv, &up->port);
- 	}
-@@ -3219,6 +3221,7 @@ int serial8250_register_port(struct uart_port *port)
- 			uart->port.set_termios = port->set_termios;
- 		if (port->pm)
- 			uart->port.pm = port->pm;
-+		uart->port.wakeup_capable = wakeup_capable;
- 
- 		if (serial8250_isa_config != NULL)
- 			serial8250_isa_config(0, &uart->port,
-@@ -3252,6 +3255,7 @@ void serial8250_unregister_port(int line)
- 		uart->port.type = PORT_UNKNOWN;
- 		uart->port.dev = &serial8250_isa_devs->dev;
- 		uart->capabilities = uart_config[uart->port.type].flags;
-+		uart->port.wakeup_capable = wakeup_capable;
- 		uart_add_one_port(&serial8250_reg, &uart->port);
- 	} else {
- 		uart->port.dev = NULL;
-@@ -3355,3 +3359,6 @@ module_param_array(probe_rsa, ulong, &probe_rsa_count, 0444);
- MODULE_PARM_DESC(probe_rsa, "Probe I/O ports for RSA");
- #endif
- MODULE_ALIAS_CHARDEV_MAJOR(TTY_MAJOR);
-+
-+module_param(wakeup_capable, uint, 0644);
-+MODULE_PARM_DESC(wakeup_capable, "Allow driver to wake up the system");
--- 
-1.7.7.3
+Its quite normal on x86, and very very common on embedded. Sorry someone
+needs to fix the root cause not hack the driver.
+
+The other question would be whether in PC space you can deduce the wake
+up situation from ACPI data ? One for Len ?
+
+Alan
+
 
