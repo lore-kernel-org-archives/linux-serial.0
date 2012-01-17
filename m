@@ -1,55 +1,78 @@
-From: Shreshtha Kumar SAHU <shreshthakumar.sahu@stericsson.com>
-Subject: [PATCH] amba-pl011: clear previous interrupts before request_irq
-Date: Tue, 17 Jan 2012 16:04:53 +0530
-Message-ID: <1326796493-16080-1-git-send-email-shreshthakumar.sahu@stericsson.com>
+From: Linus Walleij <linus.walleij@stericsson.com>
+Subject: [PATCH] serial: amba-pl011: lock console writes against interrupts
+Date: Tue, 17 Jan 2012 11:52:28 +0100
+Message-ID: <1326797548-3353-1-git-send-email-linus.walleij@stericsson.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from eu1sys200aog115.obsmtp.com ([207.126.144.139]:50235 "EHLO
-	eu1sys200aog115.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752960Ab2AQKfY (ORCPT
+Received: from eu1sys200aog118.obsmtp.com ([207.126.144.145]:38888 "EHLO
+	eu1sys200aog118.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752960Ab2AQKxF (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 17 Jan 2012 05:35:24 -0500
+	Tue, 17 Jan 2012 05:53:05 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@suse.de, linux-serial@vger.kernel.org, rmk+kernel@arm.linux.org.uk
-Cc: linux-kernel@vger.kernel.org, Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
+To: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, Rabin Vincent <rabin.vincent@stericsson.com>, stable@kernel.org, Linus Walleij <linus.walleij@linaro.org>
 
-From: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
+From: Rabin Vincent <rabin.vincent@stericsson.com>
 
-All previous interrupts should be cleared before installing
-interrupt handler i.e. before request_irq. pl011_shutdown
-clears the interrupt register but there may be case where
-bootloader transfers control to kernel and there are some
-pending interrupts. In this case interrupt handler will get
-called even before interrupt mask is enabled.
+Protect against pl011_console_write() and the interrupt for
+the console UART running concurrently on different CPUs.
 
-Change-Id: Ie58ca0a36dec76ac38babc057ce1d66b3129d8f9
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Otherwise the console_write could spin for a long time
+waiting for the UART to become not busy, while the other
+CPU continuously services UART interrupts and keeps the
+UART busy.
+
+The checks for sysrq and oops_in_progress are taken
+from 8250.c.
+
+Cc: stable@kernel.org
+Signed-off-by: Rabin Vincent <rabin.vincent@stericsson.com>
+Reviewed-by: Srinidhi Kasagar <srinidhi.kasagar@stericsson.com>
+Reviewed-by: Bibek Basu <bibek.basu@stericsson.com>
+Reviewed-by: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/tty/serial/amba-pl011.c |    9 +++++++++
- 1 files changed, 9 insertions(+), 0 deletions(-)
+ drivers/tty/serial/amba-pl011.c |   14 ++++++++++++++
+ 1 files changed, 14 insertions(+), 0 deletions(-)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 6958594..6dafaa2 100644
+index 6958594..89178b4 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -1381,6 +1381,15 @@ static int pl011_startup(struct uart_port *port)
- 	uap->port.uartclk = clk_get_rate(uap->clk);
+@@ -1740,9 +1740,19 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
+ {
+ 	struct uart_amba_port *uap = amba_ports[co->index];
+ 	unsigned int status, old_cr, new_cr;
++	unsigned long flags;
++	int locked = 1;
  
- 	/*
-+	 * Clear previous interrupts before installing interrupt handler
-+	 */
-+	spin_lock_irq(&uap->port.lock);
-+	uap->im = 0;
-+	writew(uap->im, uap->port.membase + UART011_IMSC);
-+	writew(0xffff, uap->port.membase + UART011_ICR);
-+	spin_unlock_irq(&uap->port.lock);
+ 	clk_enable(uap->clk);
+ 
++	local_irq_save(flags);
++	if (uap->port.sysrq)
++		locked = 0;
++	else if (oops_in_progress)
++		locked = spin_trylock(&uap->port.lock);
++	else
++		spin_lock(&uap->port.lock);
 +
-+	/*
- 	 * Allocate the IRQ
+ 	/*
+ 	 *	First save the CR then disable the interrupts
  	 */
- 	retval = request_irq(uap->port.irq, pl011_int, 0, "uart-pl011", uap);
+@@ -1762,6 +1772,10 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
+ 	} while (status & UART01x_FR_BUSY);
+ 	writew(old_cr, uap->port.membase + UART011_CR);
+ 
++	if (locked)
++		spin_unlock(&uap->port.lock);
++	local_irq_restore(flags);
++
+ 	clk_disable(uap->clk);
+ }
+ 
 -- 
-1.7.4.3
+1.7.8
 
