@@ -1,40 +1,76 @@
 From: Simon Glass <sjg@chromium.org>
-Subject: [PATCH 1/3] serial: 8250: Remove trailing space in 8250 driver
-Date: Tue, 17 Jan 2012 10:56:01 -0800
-Message-ID: <1326826563-32215-1-git-send-email-sjg@chromium.org>
+Subject: [PATCH 2/3] serial: Make wakeup_capable a flag to reduce boot time
+Date: Tue, 17 Jan 2012 10:56:02 -0800
+Message-ID: <1326826563-32215-2-git-send-email-sjg@chromium.org>
+References: <1326826563-32215-1-git-send-email-sjg@chromium.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-gy0-f202.google.com ([209.85.160.202]:36817 "EHLO
-	mail-gy0-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753524Ab2AQS4N (ORCPT
+Received: from mail-ee0-f74.google.com ([74.125.83.74]:37417 "EHLO
+	mail-ee0-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751927Ab2AQS4h (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 17 Jan 2012 13:56:13 -0500
-Received: by ghbg20 with SMTP id g20so332826ghb.1
-        for <linux-serial@vger.kernel.org>; Tue, 17 Jan 2012 10:56:13 -0800 (PST)
+	Tue, 17 Jan 2012 13:56:37 -0500
+Received: by eekb15 with SMTP id b15so94145eek.1
+        for <linux-serial@vger.kernel.org>; Tue, 17 Jan 2012 10:56:35 -0800 (PST)
+In-Reply-To: <1326826563-32215-1-git-send-email-sjg@chromium.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: LKML <linux-kernel@vger.kernel.org>
 Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, Simon Glass <sjg@chromium.org>
 
-Trivial change to remove a trailing space.
+The synchronize_rcu() call resulting from making every serial driver
+wake-up capable (commit b3b708fa) slows boot down by 600ms on my Tegra2x
+system (with CONFIG_PREEMPT disabled).
+
+Waking up the machine from a serial port seems to be an unlikely
+requirement, so make serial_core default to not using the behaviour.
+
+Before:
+[    0.338809] Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+[    0.951861] serial8250.0: ttyS0 at MMIO 0x70006040 (irq = 69) is a Tegra
+[    1.666042] console [ttyS0] enabled
+
+After:
+[    0.338452] Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+[    0.339016] serial8250.0: ttyS0 at MMIO 0x70006040 (irq = 69) is a Tegra
+[    1.041860] console [ttyS0] enabled
 
 Signed-off-by: Simon Glass <sjg@chromium.org>
 ---
- drivers/tty/serial/8250.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ drivers/tty/serial/serial_core.c |    6 ++++--
+ include/linux/serial_core.h      |    3 ++-
+ 2 files changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
-index 9f50c4e..54f8920 100644
---- a/drivers/tty/serial/8250.c
-+++ b/drivers/tty/serial/8250.c
-@@ -865,7 +865,7 @@ static int broken_efr(struct uart_8250_port *up)
- 	/*
- 	 * Exar ST16C2550 "A2" devices incorrectly detect as
- 	 * having an EFR, and report an ID of 0x0201.  See
--	 * http://linux.derkeiler.com/Mailing-Lists/Kernel/2004-11/4812.html 
-+	 * http://linux.derkeiler.com/Mailing-Lists/Kernel/2004-11/4812.html
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index c7bf31a..0129551 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2348,8 +2348,10 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
  	 */
- 	if (autoconfig_read_divisor_id(up) == 0x0201 && size_fifo(up) == 16)
- 		return 1;
+ 	tty_dev = tty_register_device(drv->tty_driver, uport->line, uport->dev);
+ 	if (likely(!IS_ERR(tty_dev))) {
+-		device_init_wakeup(tty_dev, 1);
+-		device_set_wakeup_enable(tty_dev, 0);
++		if (uport->wakeup_capable) {
++			device_init_wakeup(tty_dev, 1);
++			device_set_wakeup_enable(tty_dev, 0);
++		}
+ 	} else
+ 		printk(KERN_ERR "Cannot register tty device on line %d\n",
+ 		       uport->line);
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index c91ace7..9a87975 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -377,7 +377,8 @@ struct uart_port {
+ 	unsigned char		hub6;			/* this should be in the 8250 driver */
+ 	unsigned char		suspended;
+ 	unsigned char		irq_wake;
+-	unsigned char		unused[2];
++	unsigned char		wakeup_capable;	/* 1 if wake-up capable */
++	unsigned char		unused;
+ 	void			*private_data;		/* generic platform data pointer */
+ };
+ 
 -- 
 1.7.7.3
 
