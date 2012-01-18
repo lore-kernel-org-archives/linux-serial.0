@@ -1,55 +1,103 @@
-From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Subject: [PATCH 5/7] serial: sh-sci: prepare for conversion to simple DMA
-Date: Wed, 18 Jan 2012 11:22:34 +0100 (CET)
-Message-ID: <Pine.LNX.4.64.1201181118550.28782@axis700.grange>
-References: <Pine.LNX.4.64.1201181025280.28782@axis700.grange>
+From: Shreshtha Kumar SAHU <shreshthakumar.sahu@stericsson.com>
+Subject: Re: [PATCH] amba-pl011: do not disable RTS during shutdown
+Date: Wed, 18 Jan 2012 15:53:59 +0530
+Message-ID: <20120118102359.GA3917@bnru02.bnr.st.com>
+References: <1326796189-21722-1-git-send-email-shreshthakumar.sahu@stericsson.com>
+ <20120117184047.GE22472@flint.arm.linux.org.uk>
+ <20120118094505.GA889@bnru02.bnr.st.com>
+ <20120118101013.GF22472@flint.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <Pine.LNX.4.64.1201181025280.28782@axis700.grange>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: linux-sh@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, Magnus Damm <magnus.damm@gmail.com>, "Shimoda, Yoshihiro" <yoshihiro.shimoda.uh@renesas.com>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from eu1sys200aog101.obsmtp.com ([207.126.144.111]:43093 "EHLO
+	eu1sys200aog101.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1757352Ab2ARKYU (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 18 Jan 2012 05:24:20 -0500
+Content-Disposition: inline
+In-Reply-To: <20120118101013.GF22472@flint.arm.linux.org.uk>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Russell King <rmk@arm.linux.org.uk>
+Cc: "gregkh@suse.de" <gregkh@suse.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+
+>From 1b9b0de2d7fd099d775e03065ad96414e7c4ed60 Mon Sep 17 00:00:00 2001
+From: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
+Date: Tue, 17 Jan 2012 11:00:26 +0530
+Subject: [PATCH v4] amba-pl011: do not disable RTS during shutdown
+
+In present driver, shutdown clears RTS and DTR in CR register. But the
+documentation "Documentation/serial/driver" suggests not to disable
+RTS and DTR in shutdown(). Also RTS and DTR is preserved between shutdown
+and startup calls, i.e. these are restored in startup if they were enabled
+while doing shutdown. So that if RTS and DTR are set using pl011_set_mctrl
+then it should continue even after shutdown->startup sequence.
+For throttling/unthrottling user should call pl011_set_mctrl.
+
+Signed-off-by: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/tty/serial/sh-sci.c |    8 ++++----
- 1 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/tty/serial/amba-pl011.c |   16 ++++++++++++++--
+ 1 files changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index aff9d61..2a8ffda 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -1463,9 +1463,9 @@ static bool filter(struct dma_chan *chan, void *slave)
- 	struct sh_dmae_slave *param = slave;
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 6958594..d155e45 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -159,6 +159,7 @@ struct uart_amba_port {
+ 	unsigned int		fifosize;	/* vendor-specific */
+ 	unsigned int		lcrh_tx;	/* vendor-specific */
+ 	unsigned int		lcrh_rx;	/* vendor-specific */
++	unsigned int		old_cr;		/* state during shutdown */
+ 	bool			autorts;
+ 	char			type[12];
+ 	bool			interrupt_may_hang; /* vendor-specific */
+@@ -1411,7 +1412,9 @@ static int pl011_startup(struct uart_port *port)
+ 	while (readw(uap->port.membase + UART01x_FR) & UART01x_FR_BUSY)
+ 		barrier();
  
- 	dev_dbg(chan->device->dev, "%s: slave ID %d\n", __func__,
--		param->slave_id);
-+		param->simple_slave.slave_id);
+-	cr = UART01x_CR_UARTEN | UART011_CR_RXE | UART011_CR_TXE;
++	/* restore RTS and DTR */
++	cr = uap->old_cr & (UART011_CR_RTS | UART011_CR_DTR);
++	cr |= UART01x_CR_UARTEN | UART011_CR_RXE | UART011_CR_TXE;
+ 	writew(cr, uap->port.membase + UART011_CR);
  
--	chan->private = param;
-+	chan->private = &param->simple_slave;
- 	return true;
- }
+ 	/* Clear pending error interrupts */
+@@ -1469,6 +1472,7 @@ static void pl011_shutdown_channel(struct uart_amba_port *uap,
+ static void pl011_shutdown(struct uart_port *port)
+ {
+ 	struct uart_amba_port *uap = (struct uart_amba_port *)port;
++	unsigned int cr;
  
-@@ -1504,7 +1504,7 @@ static void sci_request_dma(struct uart_port *port)
- 	param = &s->param_tx;
+ 	/*
+ 	 * disable all interrupts
+@@ -1488,9 +1492,16 @@ static void pl011_shutdown(struct uart_port *port)
  
- 	/* Slave ID, e.g., SHDMA_SLAVE_SCIF0_TX */
--	param->slave_id = s->cfg->dma_slave_tx;
-+	param->simple_slave.slave_id = s->cfg->dma_slave_tx;
+ 	/*
+ 	 * disable the port
++	 * disable the port. It should not disable RTS and DTR.
++	 * Also RTS and DTR state should be preserved to restore
++	 * it during startup().
+ 	 */
+ 	uap->autorts = false;
+-	writew(UART01x_CR_UARTEN | UART011_CR_TXE, uap->port.membase + UART011_CR);
++	cr = readw(uap->port.membase + UART011_CR);
++	uap->old_cr = cr;
++	cr &= UART011_CR_RTS | UART011_CR_DTR;
++	cr |= UART01x_CR_UARTEN | UART011_CR_TXE;
++	writew(cr, uap->port.membase + UART011_CR);
  
- 	s->cookie_tx = -EINVAL;
- 	chan = dma_request_channel(mask, filter, param);
-@@ -1532,7 +1532,7 @@ static void sci_request_dma(struct uart_port *port)
- 	param = &s->param_rx;
- 
- 	/* Slave ID, e.g., SHDMA_SLAVE_SCIF0_RX */
--	param->slave_id = s->cfg->dma_slave_rx;
-+	param->simple_slave.slave_id = s->cfg->dma_slave_rx;
- 
- 	chan = dma_request_channel(mask, filter, param);
- 	dev_dbg(port->dev, "%s: RX: got channel %p\n", __func__, chan);
+ 	/*
+ 	 * disable break condition and fifos
+@@ -1905,6 +1916,7 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ 	uap->vendor = vendor;
+ 	uap->lcrh_rx = vendor->lcrh_rx;
+ 	uap->lcrh_tx = vendor->lcrh_tx;
++	uap->old_cr = 0;
+ 	uap->fifosize = vendor->fifosize;
+ 	uap->interrupt_may_hang = vendor->interrupt_may_hang;
+ 	uap->port.dev = &dev->dev;
 -- 
-1.7.2.5
+1.7.4.3
+
