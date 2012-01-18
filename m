@@ -1,47 +1,157 @@
-From: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
-Subject: Re: [PATCH 3/3] serial: 8250: Add a wakeup_capable module param
-Date: Tue, 17 Jan 2012 20:17:21 -0800
-Message-ID: <20120118041720.GA2431@linux.vnet.ibm.com>
-References: <1326826563-32215-1-git-send-email-sjg@chromium.org>
- <1326826563-32215-3-git-send-email-sjg@chromium.org>
- <20120117201036.6d99f98f@pyramind.ukuu.org.uk>
-Reply-To: paulmck@linux.vnet.ibm.com
+From: Shreshtha Kumar SAHU <shreshthakumar.sahu@stericsson.com>
+Subject: Re: [PATCH] amba-pl011: do not disable RTS during shutdown
+Date: Wed, 18 Jan 2012 15:06:05 +0530
+Message-ID: <20120118093549.GA20412@bnru02.bnr.st.com>
+References: <1326796189-21722-1-git-send-email-shreshthakumar.sahu@stericsson.com>
+ <20120117184047.GE22472@flint.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from e32.co.us.ibm.com ([32.97.110.150]:37531 "EHLO
-	e32.co.us.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756836Ab2ARERa (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 17 Jan 2012 23:17:30 -0500
-Received: from /spool/local
-	by e32.co.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-	for <linux-serial@vger.kernel.org> from <paulmck@linux.vnet.ibm.com>;
-	Tue, 17 Jan 2012 21:17:29 -0700
+Content-Type: text/plain; charset="us-ascii"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20120117201036.6d99f98f@pyramind.ukuu.org.uk>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <20120117184047.GE22472@flint.arm.linux.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Russell King <rmk@arm.linux.org.uk>
+Cc: "gregkh@suse.de" <gregkh@suse.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Simon Glass <sjg@chromium.org>, LKML <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
 
-On Tue, Jan 17, 2012 at 08:10:36PM +0000, Alan Cox wrote:
-> On Tue, 17 Jan 2012 10:56:03 -0800
-> Simon Glass <sjg@chromium.org> wrote:
+On Tue, Jan 17, 2012 at 19:40:48 +0100, Russell King wrote:
+> On Tue, Jan 17, 2012 at 03:59:49PM +0530, Shreshtha Kumar SAHU wrote:
+> > From: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
+> > 
+> > In present driver, shutdown clears RTS in CR register. But the
+> > documentation "Documentation/serial/driver" suggests not to
+> > disable RTS in shutdown(). Also RTS is preserved between shutdown
+> > and startup calls, i.e. it is restored in startup if it was enabled
+> > during shutdown. So that if autorts is set and RTS is set using
+> > pl011_set_mctrl then it should continue even after shutdown->startup
+> > sequence. And hence during set_termios it will enable RTS only if RTS
+> > bit is set in UARTx_CR register. For throttling/unthrottling user
+> > should call pl011_set_mctrl.
+> > 
+> > Change-Id: I743f33fb10e7e655657cd5dae1ec585e914a65bc
 > 
-> > Since serial_core now does not make serial ports wake-up capable by
-> > default, add a parameter to support this feature in the 8250 UART.
-> > This is the only UART where I think this feature is useful.
+> Please get rid of this line.
 > 
-> NAK
+done.
+> > Signed-off-by: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
+> > Acked-by: Linus Walleij <linus.walleij@linaro.org>
+> > ---
+> >  drivers/tty/serial/amba-pl011.c |   17 ++++++++++++++++-
+> >  1 files changed, 16 insertions(+), 1 deletions(-)
+> > 
+> > diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> > index 6958594..46a4690 100644
+> > --- a/drivers/tty/serial/amba-pl011.c
+> > +++ b/drivers/tty/serial/amba-pl011.c
+> > @@ -160,6 +160,7 @@ struct uart_amba_port {
+> >  	unsigned int		lcrh_tx;	/* vendor-specific */
+> >  	unsigned int		lcrh_rx;	/* vendor-specific */
+> >  	bool			autorts;
+> > +	bool			rts_state;	/* state during shutdown */
 > 
-> Things should just work for users. Magic parameters is not an
-> improvement. If its a performance problem someone needs to fix the rcu
-> sync overhead or stop using rcu on that path.
+> Do we really need a variable to track this?
+>
+As register content will be reset during low power state after shutdown.
+Hence we have to preserve it during shutdown.
 
-I must say that I lack context here, even after looking at the patch,
-but the synchronize_rcu_expedited() primitives can be used if the latency
-of synchronize_rcu() is too large.
+> >  	char			type[12];
+> >  	bool			interrupt_may_hang; /* vendor-specific */
+> >  #ifdef CONFIG_DMA_ENGINE
+> > @@ -1412,6 +1413,8 @@ static int pl011_startup(struct uart_port *port)
+> >  		barrier();
+> >  
+> >  	cr = UART01x_CR_UARTEN | UART011_CR_RXE | UART011_CR_TXE;
+> > +	if (uap->rts_state)
+> > +		cr |= UART011_CR_RTS;
+> >  	writew(cr, uap->port.membase + UART011_CR);
+> 
+> Note that this should preserve DTR as well.
+>
+In the attached patch, DTR is preserved and restored.
 
-							Thanx, Paul
+> -- 
+> Russell King
+>  Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
+>  maintainer of:
 
+Best Regards,
+Shreshtha
+
+>From 2a9062f4c3fd198a64a96779d6e74b324ddb81e4 Mon Sep 17 00:00:00 2001
+From: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
+Date: Tue, 17 Jan 2012 11:00:26 +0530
+Subject: [PATCHv2] amba-pl011: do not disable RTS during shutdown
+
+In present driver, shutdown clears RTS and DTR in CR register. But the
+documentation "Documentation/serial/driver" suggests not to disable
+RTS and DTR in shutdown(). Also RTS and DTR is preserved between shutdown
+and startup calls, i.e. these are restored in startup if they were enabled
+while doing shutdown. So that if RTS and DTR are set using pl011_set_mctrl
+then it should continue even after shutdown->startup sequence.
+For throttling/unthrottling user should call pl011_set_mctrl.
+
+Signed-off-by: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/tty/serial/amba-pl011.c |   16 ++++++++++++++--
+ 1 files changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 6958594..673be75 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -160,6 +160,7 @@ struct uart_amba_port {
+ 	unsigned int		lcrh_tx;	/* vendor-specific */
+ 	unsigned int		lcrh_rx;	/* vendor-specific */
+ 	bool			autorts;
++	bool			old_cr;		/* state during shutdown */
+ 	char			type[12];
+ 	bool			interrupt_may_hang; /* vendor-specific */
+ #ifdef CONFIG_DMA_ENGINE
+@@ -1411,7 +1412,9 @@ static int pl011_startup(struct uart_port *port)
+ 	while (readw(uap->port.membase + UART01x_FR) & UART01x_FR_BUSY)
+ 		barrier();
+ 
+-	cr = UART01x_CR_UARTEN | UART011_CR_RXE | UART011_CR_TXE;
++	/* restore RTS and DTR */
++	cr = (uap->old_cr & (UART011_CR_RTS | UART011_CR_DTR));
++	cr |= UART01x_CR_UARTEN | UART011_CR_RXE | UART011_CR_TXE;
+ 	writew(cr, uap->port.membase + UART011_CR);
+ 
+ 	/* Clear pending error interrupts */
+@@ -1469,6 +1472,7 @@ static void pl011_shutdown_channel(struct uart_amba_port *uap,
+ static void pl011_shutdown(struct uart_port *port)
+ {
+ 	struct uart_amba_port *uap = (struct uart_amba_port *)port;
++	unsigned int cr;
+ 
+ 	/*
+ 	 * disable all interrupts
+@@ -1488,9 +1492,16 @@ static void pl011_shutdown(struct uart_port *port)
+ 
+ 	/*
+ 	 * disable the port
++	 * disable the port. It should not disable RTS and DTR.
++	 * Also RTS and DTR state should be preserved to restore
++	 * it during startup().
+ 	 */
+ 	uap->autorts = false;
+-	writew(UART01x_CR_UARTEN | UART011_CR_TXE, uap->port.membase + UART011_CR);
++	cr = readw(uap->port.membase + UART011_CR);
++	uap->old_cr = cr;
++	cr &= (UART011_CR_RTS | UART011_CR_DTR);
++	cr |= UART01x_CR_UARTEN | UART011_CR_TXE;
++	writew(cr, uap->port.membase + UART011_CR);
+ 
+ 	/*
+ 	 * disable break condition and fifos
+@@ -1905,6 +1916,7 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ 	uap->vendor = vendor;
+ 	uap->lcrh_rx = vendor->lcrh_rx;
+ 	uap->lcrh_tx = vendor->lcrh_tx;
++	uap->old_cr = 0;
+ 	uap->fifosize = vendor->fifosize;
+ 	uap->interrupt_may_hang = vendor->interrupt_may_hang;
+ 	uap->port.dev = &dev->dev;
+-- 
+1.7.4.3
