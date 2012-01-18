@@ -1,80 +1,43 @@
-From: Russell King <rmk@arm.linux.org.uk>
-Subject: Re: [PATCH] amba-pl011: clear previous interrupts before
-	request_irq
-Date: Wed, 18 Jan 2012 10:15:55 +0000
-Message-ID: <20120118101555.GG22472@flint.arm.linux.org.uk>
-References: <1326796493-16080-1-git-send-email-shreshthakumar.sahu@stericsson.com> <20120118100410.GB889@bnru02.bnr.st.com>
+From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Subject: [PATCH 0/7] extract a simple dmaengine library from
+	shdma.c
+Date: Wed, 18 Jan 2012 11:22:14 +0100 (CET)
+Message-ID: <Pine.LNX.4.64.1201181025280.28782@axis700.grange>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([78.32.30.218]:35804 "EHLO
-	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756306Ab2ARKQJ (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 18 Jan 2012 05:16:09 -0500
-Content-Disposition: inline
-In-Reply-To: <20120118100410.GB889@bnru02.bnr.st.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <alsa-devel-bounces@alsa-project.org>
+List-Unsubscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
+	<mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
+	<mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Sender: alsa-devel-bounces@alsa-project.org
+Errors-To: alsa-devel-bounces@alsa-project.org
+To: linux-kernel@vger.kernel.org
+Cc: alsa-devel@alsa-project.org, linux-sh@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, Magnus Damm <magnus.damm@gmail.com>, "Shimoda,
+	Yoshihiro" <yoshihiro.shimoda.uh@renesas.com>, linux-mmc@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Shreshtha Kumar SAHU <shreshthakumar.sahu@stericsson.com>
-Cc: "gregkh@suse.de" <gregkh@suse.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-On Wed, Jan 18, 2012 at 03:34:11PM +0530, Shreshtha Kumar SAHU wrote:
-> 
-> >From 0742fc49405b2a6f562981f61d93198e1595f30d Mon Sep 17 00:00:00 2001
-> From: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
-> Date: Tue, 17 Jan 2012 12:23:19 +0530
-> Subject: [PATCH v2] amba-pl011: clear previous interrupts before request_irq
-> 
-> All previous interrupts should be cleared before installing
-> interrupt handler i.e. before request_irq. pl011_shutdown
-> clears the interrupt register but there may be case where
-> bootloader transfers control to kernel and there are some
-> pending interrupts. In this case interrupt handler will get
-> called even before interrupt mask is enabled.
-> 
-> Acked-by: Linus Walleij <linus.walleij@linaro.org>
+This patch series has been triggered by a recent series by Shimoda-san
+http://www.spinics.net/lists/linux-sh/index.html#09895
+In a follow up to that thread it has been decided to extract a common 
+library from the current shdma driver to be re-used by other dmaengine 
+drivers. Primarily this library provides a flexible transfer descriptor 
+management for hardware, that does not dupport scatter-gather lists 
+natively. In such cases this library can be used to split transfer 
+requests into smaller chunks, up to the size, supported by the specific 
+hardware, enter them onto a linked list, thack their completion and call 
+user callbacks. This is a first shot, aimed to be used by the SUDMAC 
+driver. Once it is confirmed, that this version can be conveniently used 
+with it, I'll do some cosmetic clean up, notably, add / improve 
+documentation:-)
 
-No sign-off, and I don't understand the problem being aluded to in the
-description above - particularly the last sentence.
-
-In theory, we should be prepared for the interrupt handler to be called
-immediately after request_irq() returns, and not have the driver misbehave
-because of that.  Maybe a better solution would be to move request_irq()
-a bit later?
-
-But first, having a clearer description of the problem you're seeing
-would be beneficial.
-
-> ---
->  drivers/tty/serial/amba-pl011.c |    9 +++++++++
->  1 files changed, 9 insertions(+), 0 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> index 6958594..6dafaa2 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -1381,6 +1381,15 @@ static int pl011_startup(struct uart_port *port)
->  	uap->port.uartclk = clk_get_rate(uap->clk);
->  
->  	/*
-> +	 * Clear previous interrupts before installing interrupt handler
-> +	 */
-> +	spin_lock_irq(&uap->port.lock);
-> +	uap->im = 0;
-> +	writew(uap->im, uap->port.membase + UART011_IMSC);
-> +	writew(0xffff, uap->port.membase + UART011_ICR);
-> +	spin_unlock_irq(&uap->port.lock);
-> +
-> +	/*
->  	 * Allocate the IRQ
->  	 */
->  	retval = request_irq(uap->port.irq, pl011_int, 0, "uart-pl011", uap);
-> -- 
-> 1.7.4.3
-> 
-
--- 
-Russell King
- Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
- maintainer of:
+Thanks
+Guennadi
+---
+Guennadi Liakhovetski, Ph.D.
+Freelance Open-Source Software Developer
+http://www.open-technology.de/
