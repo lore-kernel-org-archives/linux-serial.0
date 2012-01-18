@@ -1,86 +1,30 @@
 From: Shreshtha Kumar SAHU <shreshthakumar.sahu@stericsson.com>
 Subject: Re: [PATCH] amba-pl011: do not disable RTS during shutdown
-Date: Wed, 18 Jan 2012 15:06:05 +0530
-Message-ID: <20120118093549.GA20412@bnru02.bnr.st.com>
+Date: Wed, 18 Jan 2012 15:15:06 +0530
+Message-ID: <20120118094505.GA889@bnru02.bnr.st.com>
 References: <1326796189-21722-1-git-send-email-shreshthakumar.sahu@stericsson.com>
  <20120117184047.GE22472@flint.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from eu1sys200aog105.obsmtp.com ([207.126.144.119]:54305 "EHLO
+	eu1sys200aog105.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1757104Ab2ARJp2 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 18 Jan 2012 04:45:28 -0500
 Content-Disposition: inline
 In-Reply-To: <20120117184047.GE22472@flint.arm.linux.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: Russell King <rmk@arm.linux.org.uk>
 Cc: "gregkh@suse.de" <gregkh@suse.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jan 17, 2012 at 19:40:48 +0100, Russell King wrote:
-> On Tue, Jan 17, 2012 at 03:59:49PM +0530, Shreshtha Kumar SAHU wrote:
-> > From: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
-> > 
-> > In present driver, shutdown clears RTS in CR register. But the
-> > documentation "Documentation/serial/driver" suggests not to
-> > disable RTS in shutdown(). Also RTS is preserved between shutdown
-> > and startup calls, i.e. it is restored in startup if it was enabled
-> > during shutdown. So that if autorts is set and RTS is set using
-> > pl011_set_mctrl then it should continue even after shutdown->startup
-> > sequence. And hence during set_termios it will enable RTS only if RTS
-> > bit is set in UARTx_CR register. For throttling/unthrottling user
-> > should call pl011_set_mctrl.
-> > 
-> > Change-Id: I743f33fb10e7e655657cd5dae1ec585e914a65bc
-> 
-> Please get rid of this line.
-> 
-done.
-> > Signed-off-by: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
-> > Acked-by: Linus Walleij <linus.walleij@linaro.org>
-> > ---
-> >  drivers/tty/serial/amba-pl011.c |   17 ++++++++++++++++-
-> >  1 files changed, 16 insertions(+), 1 deletions(-)
-> > 
-> > diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> > index 6958594..46a4690 100644
-> > --- a/drivers/tty/serial/amba-pl011.c
-> > +++ b/drivers/tty/serial/amba-pl011.c
-> > @@ -160,6 +160,7 @@ struct uart_amba_port {
-> >  	unsigned int		lcrh_tx;	/* vendor-specific */
-> >  	unsigned int		lcrh_rx;	/* vendor-specific */
-> >  	bool			autorts;
-> > +	bool			rts_state;	/* state during shutdown */
-> 
-> Do we really need a variable to track this?
->
-As register content will be reset during low power state after shutdown.
-Hence we have to preserve it during shutdown.
+data type of old_cr was bool in patchv2, corrected in this patchv3
 
-> >  	char			type[12];
-> >  	bool			interrupt_may_hang; /* vendor-specific */
-> >  #ifdef CONFIG_DMA_ENGINE
-> > @@ -1412,6 +1413,8 @@ static int pl011_startup(struct uart_port *port)
-> >  		barrier();
-> >  
-> >  	cr = UART01x_CR_UARTEN | UART011_CR_RXE | UART011_CR_TXE;
-> > +	if (uap->rts_state)
-> > +		cr |= UART011_CR_RTS;
-> >  	writew(cr, uap->port.membase + UART011_CR);
-> 
-> Note that this should preserve DTR as well.
->
-In the attached patch, DTR is preserved and restored.
-
-> -- 
-> Russell King
->  Linux kernel    2.6 ARM Linux   - http://www.arm.linux.org.uk/
->  maintainer of:
-
-Best Regards,
-Shreshtha
-
->From 2a9062f4c3fd198a64a96779d6e74b324ddb81e4 Mon Sep 17 00:00:00 2001
+>From 5500b7d25b5382026bc9392a9b44c3c69bf172b0 Mon Sep 17 00:00:00 2001
 From: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
 Date: Tue, 17 Jan 2012 11:00:26 +0530
-Subject: [PATCHv2] amba-pl011: do not disable RTS during shutdown
+Subject: [PATCHv3] amba-pl011: do not disable RTS during shutdown
 
 In present driver, shutdown clears RTS and DTR in CR register. But the
 documentation "Documentation/serial/driver" suggests not to disable
@@ -97,17 +41,17 @@ Acked-by: Linus Walleij <linus.walleij@linaro.org>
  1 files changed, 14 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 6958594..673be75 100644
+index 6958594..62ff7da 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -160,6 +160,7 @@ struct uart_amba_port {
+@@ -159,6 +159,7 @@ struct uart_amba_port {
+ 	unsigned int		fifosize;	/* vendor-specific */
  	unsigned int		lcrh_tx;	/* vendor-specific */
  	unsigned int		lcrh_rx;	/* vendor-specific */
++	unsigned int		old_cr;		/* state during shutdown */
  	bool			autorts;
-+	bool			old_cr;		/* state during shutdown */
  	char			type[12];
  	bool			interrupt_may_hang; /* vendor-specific */
- #ifdef CONFIG_DMA_ENGINE
 @@ -1411,7 +1412,9 @@ static int pl011_startup(struct uart_port *port)
  	while (readw(uap->port.membase + UART01x_FR) & UART01x_FR_BUSY)
  		barrier();
@@ -155,3 +99,4 @@ index 6958594..673be75 100644
  	uap->port.dev = &dev->dev;
 -- 
 1.7.4.3
+
