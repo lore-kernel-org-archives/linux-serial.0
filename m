@@ -1,66 +1,75 @@
-From: Kevin Hilman <khilman@ti.com>
-Subject: Re: [PATCH RFC 2/2] OMAP : serial : Check for error in get_context_loss_count
-Date: Thu, 19 Jan 2012 14:59:59 -0800
-Message-ID: <87hazrti1c.fsf@ti.com>
-References: <1326377019-23688-1-git-send-email-shubhrajyoti@ti.com>
-	<1326377019-23688-2-git-send-email-shubhrajyoti@ti.com>
+From: "Rafael J. Wysocki" <rjw@sisk.pl>
+Subject: Re: [PATCH] serial: Fix wakeup init logic to speed up startup
+Date: Fri, 20 Jan 2012 00:46:59 +0100
+Message-ID: <201201200046.59766.rjw@sisk.pl>
+References: <1327001336-28703-1-git-send-email-sjg@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog117.obsmtp.com ([74.125.149.242]:34616 "EHLO
-	na3sys009aog117.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750827Ab2ASXAD (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 19 Jan 2012 18:00:03 -0500
-In-Reply-To: <1326377019-23688-2-git-send-email-shubhrajyoti@ti.com>
-	(Shubhrajyoti D.'s message of "Thu, 12 Jan 2012 19:33:39 +0530")
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: Text/Plain;
+  charset="iso-8859-2"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1327001336-28703-1-git-send-email-sjg@chromium.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Simon Glass <sjg@chromium.org>
+Cc: LKML <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
 List-Id: linux-serial@vger.kernel.org
-To: Shubhrajyoti D <shubhrajyoti@ti.com>
-Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Shubhrajyoti D <shubhrajyoti@ti.com> writes:
+On Thursday, January 19, 2012, Simon Glass wrote:
+> The synchronize_rcu() call resulting from making every serial driver
+> wake-up capable (commit b3b708fa) slows boot down on my Tegra2x system
+> (with CONFIG_PREEMPT disabled).
+> 
+> But this is avoidable since it is the device_set_wakeup_enable() and then
+> subsequence disable which causes the delay. We might as well just make
+> the device wakeup capable but not actually enable it for wakeup until
+> needed.
+> 
+> Effectively the current code does this:
+> 
+> 	device_set_wakeup_capable(dev, 1);
+> 	device_set_wakeup_enable(dev, 1);
+> 	device_set_wakeup_enable(dev, 0);
+> 
+> We can just drop the last two lines.
+> 
+> Before this change my boot log says:
+> [    0.227062] Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+> [    0.702928] serial8250.0: ttyS0 at MMIO 0x70006040 (irq = 69) is a Tegra
+> 
+> after:
+> [    0.227264] Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+> [    0.227983] serial8250.0: ttyS0 at MMIO 0x70006040 (irq = 69) is a Tegra
+> 
+> for saving of 450ms.
+> 
+> Suggested-by: Rafael J. Wysocki <rjw@sisk.pl>
+> Signed-off-by: Simon Glass <sjg@chromium.org>
 
-> In serial_omap_runtime_resume in case of errors returned by
-> get_context_loss_count print a warning and do a restore.
->
-> Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
+Acked-by: Rafael J. Wysocki <rjw@sisk.pl>
 
-These two patches should be combined into a single patch.
-
-Also, please Cc Govindraj since he's the maintainer of this driver and
-should Ack.
-
-Thanks,
-
-Kevin
+Thanks!
 
 > ---
-> applies on Tony's uart branch
->
->  drivers/tty/serial/omap-serial.c |   10 ++++++++--
->  1 files changed, 8 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-> index 29fe6fd..6008612 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -1602,10 +1602,16 @@ static int serial_omap_runtime_resume(struct device *dev)
+>  drivers/tty/serial/serial_core.c |    6 +++---
+>  1 files changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index c7bf31a..1305618 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -2348,11 +2348,11 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
+>  	 */
+>  	tty_dev = tty_register_device(drv->tty_driver, uport->line, uport->dev);
+>  	if (likely(!IS_ERR(tty_dev))) {
+> -		device_init_wakeup(tty_dev, 1);
+> -		device_set_wakeup_enable(tty_dev, 0);
+> -	} else
+> +		device_set_wakeup_capable(tty_dev, 1);
+> +	} else {
+>  		printk(KERN_ERR "Cannot register tty device on line %d\n",
+>  		       uport->line);
+> +	}
 >  
->  	if (up) {
->  		if (pdata->get_context_loss_count) {
-> -			u32 loss_cnt = pdata->get_context_loss_count(dev);
-> +			int loss_cnt = pdata->get_context_loss_count(dev);
->  
-> -			if (up->context_loss_cnt != loss_cnt)
-> +			if (loss_cnt < 0) {
-> +				dev_err(dev,
-> +					"get_context_loss_count failed : %d\n",
-> +					loss_cnt);
->  				serial_omap_restore_context(up);
-> +			} else if (up->context_loss_cnt != loss_cnt) {
-> +				serial_omap_restore_context(up);
-> +			}
->  		}
->  
->  		/* Errata i291 */
+>  	/*
+>  	 * Ensure UPF_DEAD is not set.
+> 
