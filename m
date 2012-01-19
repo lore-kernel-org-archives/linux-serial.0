@@ -1,111 +1,120 @@
-From: Joe Perches <joe@perches.com>
-Subject: Re: [PATCH] serial: trivial checkpatch fixes in
- drivers/tty/serial/8250.c
-Date: Thu, 19 Jan 2012 11:49:54 -0800
-Message-ID: <1327002594.6404.27.camel@joe2Laptop>
-References: <1327001868-29941-1-git-send-email-sjg@chromium.org>
+From: Simon Glass <sjg@chromium.org>
+Subject: Re: [PATCH] serial: Fix wakeup init logic to speed up startup
+Date: Thu, 19 Jan 2012 11:51:47 -0800
+Message-ID: <CAPnjgZ0kB8L6fFrcjq_0MSoh7KkL-051JHYptNQMaZNi89MavQ@mail.gmail.com>
+References: <1327001336-28703-1-git-send-email-sjg@chromium.org>
+	<20120119194242.GE2373@linux.vnet.ibm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from perches-mx.perches.com ([206.117.179.246]:43268 "EHLO
-	labridge.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S932670Ab2ASTtz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 19 Jan 2012 14:49:55 -0500
-In-Reply-To: <1327001868-29941-1-git-send-email-sjg@chromium.org>
+Received: from mail-tul01m020-f174.google.com ([209.85.214.174]:39813 "EHLO
+	mail-tul01m020-f174.google.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S932829Ab2ASTvs convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 19 Jan 2012 14:51:48 -0500
+Received: by obcva7 with SMTP id va7so316395obc.19
+        for <linux-serial@vger.kernel.org>; Thu, 19 Jan 2012 11:51:47 -0800 (PST)
+In-Reply-To: <20120119194242.GE2373@linux.vnet.ibm.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Simon Glass <sjg@chromium.org>
-Cc: LKML <linux-kernel@vger.kernel.org>, Jiri Kosina <trivial@kernel.org>, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
+To: paulmck@linux.vnet.ibm.com
+Cc: LKML <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, "Rafael J. Wysocki" <rjw@sisk.pl>, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-On Thu, 2012-01-19 at 11:37 -0800, Simon Glass wrote:
-> This makes the file checkpatch clean, fixing these warnings:
+Hi Paul,
 
-Some comments...
+On Thu, Jan 19, 2012 at 11:42 AM, Paul E. McKenney
+<paulmck@linux.vnet.ibm.com> wrote:
+> On Thu, Jan 19, 2012 at 11:28:56AM -0800, Simon Glass wrote:
+>> The synchronize_rcu() call resulting from making every serial driver
+>> wake-up capable (commit b3b708fa) slows boot down on my Tegra2x syst=
+em
+>> (with CONFIG_PREEMPT disabled).
+>>
+>> But this is avoidable since it is the device_set_wakeup_enable() and=
+ then
+>> subsequence disable which causes the delay. We might as well just ma=
+ke
+>> the device wakeup capable but not actually enable it for wakeup unti=
+l
+>> needed.
+>>
+>> Effectively the current code does this:
+>>
+>> =A0 =A0 =A0 device_set_wakeup_capable(dev, 1);
+>> =A0 =A0 =A0 device_set_wakeup_enable(dev, 1);
+>> =A0 =A0 =A0 device_set_wakeup_enable(dev, 0);
+>>
+>> We can just drop the last two lines.
+>>
+>> Before this change my boot log says:
+>> [ =A0 =A00.227062] Serial: 8250/16550 driver, 4 ports, IRQ sharing d=
+isabled
+>> [ =A0 =A00.702928] serial8250.0: ttyS0 at MMIO 0x70006040 (irq =3D 6=
+9) is a Tegra
+>>
+>> after:
+>> [ =A0 =A00.227264] Serial: 8250/16550 driver, 4 ports, IRQ sharing d=
+isabled
+>> [ =A0 =A00.227983] serial8250.0: ttyS0 at MMIO 0x70006040 (irq =3D 6=
+9) is a Tegra
+>>
+>> for saving of 450ms.
+>
+> You have multiple CPUs running at this point, correct? =A0Before that
+> second CPU starts up, synchronize_rcu() is a no-op.
 
-> This warning remains, since I am not sure how to fix it:
-> error: drivers/tty/serial/8250.c,2929: Macros with complex values should
-> 	be enclosed in parenthesis
+Yes that's right, although I didn't get different behavior with 'nosmp'=
+=2E
 
-you can ignore this warning.
+>
+> The patch looks good to me, but then again, I do not consider myself
+> qualified to have an opinion on the TTY layer. =A0;-)
 
-> diff --git a/drivers/tty/serial/8250.c b/drivers/tty/serial/8250.c
-[]
-> @@ -669,7 +669,8 @@ static void disable_rsa(struct uart_8250_port *up)
->  		result = !(mode & UART_RSA_MSR_FIFO);
->  
->  		if (!result) {
-> -
-> 			serial_outp(up, UART_RSA_MSR, mode & ~UART_RSA_MSR_FIFO);
-> +			serial_outp(up, UART_RSA_MSR, mode
-> +					& ~UART_RSA_MSR_FIFO);
+Thanks, me neither :-)
 
-If it's really necessary to use 80 columns,
-I'd prefer this sort of change be:
-			serial_outp(up, UART_RSA_MSR,
-				    mode & ~UART_RSA_MSR_FIFO);
+Regards,
+Simon
 
-[]
-> @@ -2006,7 +2010,8 @@ static int serial8250_startup(struct uart_port *port)
->  	 */
->  	if (!(up->port.flags & UPF_BUGGY_UART) &&
->  	    (serial_inp(up, UART_LSR) == 0xff)) {
-> -		printk_ratelimited(KERN_INFO "ttyS%d: LSR safety check engaged!\n",
-> +		printk_ratelimited(KERN_INFO
-
-		pr_info_ratelimited()
-
-
-> @@ -2019,10 +2024,13 @@ static int serial8250_startup(struct uart_port *port)
->  
->  		serial_outp(up, UART_LCR, UART_LCR_CONF_MODE_B);
->  
-> -		fctr = serial_inp(up, UART_FCTR) & ~(UART_FCTR_RX|UART_FCTR_TX);
-> -		serial_outp(up, UART_FCTR, fctr | UART_FCTR_TRGD | UART_FCTR_RX);
-> +		fctr = serial_inp(up, UART_FCTR) &
-> +				  ~(UART_FCTR_RX | UART_FCTR_TX);
-> +		serial_outp(up, UART_FCTR, fctr | UART_FCTR_TRGD |
-> +			    UART_FCTR_RX);
-
-I think it's better to have all the or's
-on the same line where possible.
-
-		serial_outp(up, UART_FCTR,
-			    fctr | UART_FCTR_TRGD | UART_FCTR_RX);
-
-
-> @@ -3130,7 +3139,8 @@ static struct platform_device *serial8250_isa_devs;
->   */
->  static DEFINE_MUTEX(serial_mutex);
->  
-> -static struct uart_8250_port *serial8250_find_match_or_unused(struct uart_port *port)
-> +static struct uart_8250_port *serial8250_find_match_or_unused(
-> +						struct uart_port *port)
-
-It might be better to use
-
-static struct uart_8250_port *
-serial8250_find_match_or_unused(struct uart_port *port)
-{
-> @ -3345,10 +3352,12 @@ MODULE_PARM_DESC(share_irqs, "Share IRQs with other non-8250/16x50 devices"
->  	" (unsafe)");
->  
->  module_param(nr_uarts, uint, 0644);
-> -MODULE_PARM_DESC(nr_uarts, "Maximum number of UARTs supported. (1-" __MODULE_STRING(CONFIG_SERIAL_8250_NR_UARTS) ")");
-> +MODULE_PARM_DESC(nr_uarts, "Maximum number of UARTs supported. (1-" \
-> +		 __MODULE_STRING(CONFIG_SERIAL_8250_NR_UARTS) ")");
-
-Broken.
-
-Don't use line continuations with whitespace on the next line.
-Better not use line continations at all except in #defines
-
- 
->  module_param(skip_txen_test, uint, 0644);
-> -MODULE_PARM_DESC(skip_txen_test, "Skip checking for the TXEN bug at init time");
-> +MODULE_PARM_DESC(skip_txen_test, \
-> +		"Skip checking for the TXEN bug at init time");
-
-Useless line continuation.
-
-
+>
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Thanx, Paul
+>
+>> Suggested-by: Rafael J. Wysocki <rjw@sisk.pl>
+>> Signed-off-by: Simon Glass <sjg@chromium.org>
+>> ---
+>> =A0drivers/tty/serial/serial_core.c | =A0 =A06 +++---
+>> =A01 files changed, 3 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/s=
+erial_core.c
+>> index c7bf31a..1305618 100644
+>> --- a/drivers/tty/serial/serial_core.c
+>> +++ b/drivers/tty/serial/serial_core.c
+>> @@ -2348,11 +2348,11 @@ int uart_add_one_port(struct uart_driver *dr=
+v, struct uart_port *uport)
+>> =A0 =A0 =A0 =A0*/
+>> =A0 =A0 =A0 tty_dev =3D tty_register_device(drv->tty_driver, uport->=
+line, uport->dev);
+>> =A0 =A0 =A0 if (likely(!IS_ERR(tty_dev))) {
+>> - =A0 =A0 =A0 =A0 =A0 =A0 device_init_wakeup(tty_dev, 1);
+>> - =A0 =A0 =A0 =A0 =A0 =A0 device_set_wakeup_enable(tty_dev, 0);
+>> - =A0 =A0 } else
+>> + =A0 =A0 =A0 =A0 =A0 =A0 device_set_wakeup_capable(tty_dev, 1);
+>> + =A0 =A0 } else {
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 printk(KERN_ERR "Cannot register tty dev=
+ice on line %d\n",
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0uport->line);
+>> + =A0 =A0 }
+>>
+>> =A0 =A0 =A0 /*
+>> =A0 =A0 =A0 =A0* Ensure UPF_DEAD is not set.
+>> --
+>> 1.7.7.3
+>>
+>
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
