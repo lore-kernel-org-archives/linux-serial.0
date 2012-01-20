@@ -1,59 +1,64 @@
-From: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
-Subject: Re: [PATCH 3/3] serial: 8250: Add a wakeup_capable module param
-Date: Thu, 19 Jan 2012 22:12:14 -0800
-Message-ID: <20120120061214.GA2551@linux.vnet.ibm.com>
-References: <1326826563-32215-1-git-send-email-sjg@chromium.org>
- <201201190102.58788.rjw@sisk.pl>
- <20120119013731.GK2431@linux.vnet.ibm.com>
- <201201200103.34296.rjw@sisk.pl>
-Reply-To: paulmck@linux.vnet.ibm.com
+From: Govindraj <govindraj.ti@gmail.com>
+Subject: Re: [PATCH 0/5] uart updates
+Date: Fri, 20 Jan 2012 14:15:15 +0530
+Message-ID: <CAAL8m4x3uOgWFvaVP9BK1L6myDayf94fZqcQS5NvaLEvhwKnsQ@mail.gmail.com>
+References: <1326709360-26020-1-git-send-email-shubhrajyoti@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from e34.co.us.ibm.com ([32.97.110.152]:59356 "EHLO
-	e34.co.us.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751353Ab2ATGMs (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 20 Jan 2012 01:12:48 -0500
-Received: from /spool/local
-	by e34.co.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-	for <linux-serial@vger.kernel.org> from <paulmck@linux.vnet.ibm.com>;
-	Thu, 19 Jan 2012 23:12:47 -0700
-Content-Disposition: inline
-In-Reply-To: <201201200103.34296.rjw@sisk.pl>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <1326709360-26020-1-git-send-email-shubhrajyoti@ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Shubhrajyoti D <shubhrajyoti@ti.com>
+Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
-To: "Rafael J. Wysocki" <rjw@sisk.pl>
-Cc: Simon Glass <sjg@chromium.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, LKML <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
 
-On Fri, Jan 20, 2012 at 01:03:34AM +0100, Rafael J. Wysocki wrote:
-> On Thursday, January 19, 2012, Paul E. McKenney wrote:
-> > On Thu, Jan 19, 2012 at 01:02:58AM +0100, Rafael J. Wysocki wrote:
-> > > On Wednesday, January 18, 2012, Paul E. McKenney wrote:
-> > > > On Wed, Jan 18, 2012 at 02:15:59PM -0800, Simon Glass wrote:
-> [...] 
-> > > Yes, you can, but then I'd say it's not necessary for user space to
-> > > be able to carry that out in a tight loop.  So, it seems, alternatively,
-> > > we could make that loop a bit less tight, e.g. by adding an arbitrary
-> > > sleep to the user space interface for the "disable" case.
-> > 
-> > Good point, that would work just as well and be simpler.
-> 
-> Thanks for the confirmation! :-)
-> 
-> By the way, I wonder, would it help to add synchronize_rcu() to
-> wakeup_source_add() too?  Then, even if device_wakeup_enable() and
-> device_wakeup_disable() are executed in a tight loop for the same
-> device, the list_add/list_del operations will always happen in
-> different RCU cycles (or at least it seems so).
+On Mon, Jan 16, 2012 at 3:52 PM, Shubhrajyoti D <shubhrajyoti@ti.com> w=
+rote:
+> The patch series does the following
+>
+> - Make the Make the suspend/resume functions depend on
+> =A0 =A0CONFIG_PM_SLEEP
+> - Fix the serial omap probe's error handling
+> - Make he context_loss_cnt signed so that error handling is
+> =A0possible.
+>
+>
 
-I cannot immediately see how adding a synchronize_rcu() to
-wakeup_source_add() would help anything.  You only need to wait for a
-grace period on removal, not (normally) on addition.  The single grace
-period during removal will catch up all other asynchronous RCU grace
-period requests on that CPU.
+After fixing Kevin's comment's,
 
-Or am I missing your point?
+If can add some testing updates it be nice.
 
-							Thanx, Paul
+like :
+boot tested or any other tests done on xxx boards.
 
+--
+Thanks,
+Govindraj.R
+
+
+
+> Shubhrajyoti D (5):
+> =A0omap-serial :Make the suspend/resume functions depend on
+> =A0 =A0CONFIG_PM_SLEEP.
+> =A0omap-serial: make serial_omap_restore_context depend on
+> =A0 =A0CONFIG_PM_RUNTIME
+> =A0omap-serial: Fix the error handling in the omap_serial probe
+> =A0ARM : OMAP : serial : Make context_loss_cnt signed
+> =A0OMAP : serial : Check for error in get_context_loss_count
+>
+> =A0arch/arm/plat-omap/include/plat/omap-serial.h | =A0 =A02 +-
+> =A0drivers/tty/serial/omap-serial.c =A0 =A0 =A0 =A0 =A0 =A0 =A0| =A0 =
+41 ++++++++++++++++--------
+> =A02 files changed, 28 insertions(+), 15 deletions(-)
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-seria=
+l" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at =A0http://vger.kernel.org/majordomo-info.html
+--
+To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
+n
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
