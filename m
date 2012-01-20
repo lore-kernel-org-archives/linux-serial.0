@@ -1,75 +1,123 @@
-From: Govindraj <govindraj.ti@gmail.com>
-Subject: Re: [PATCH 4/5] ARM : OMAP : serial : Make context_loss_cnt signed
-Date: Fri, 20 Jan 2012 14:22:23 +0530
-Message-ID: <CAAL8m4zEs4H6o3svnkRVG8ejChD-kshF40XKrGfA_ERH--5Oyw@mail.gmail.com>
-References: <1326709360-26020-1-git-send-email-shubhrajyoti@ti.com> <1326709360-26020-5-git-send-email-shubhrajyoti@ti.com>
+From: Shubhrajyoti <shubhrajyoti@ti.com>
+Subject: Re: [PATCH 3/5] omap-serial: Fix the error handling in the omap_serial
+ probe
+Date: Fri, 20 Jan 2012 15:05:06 +0530
+Message-ID: <4F19354A.4040707@ti.com>
+References: <1326709360-26020-1-git-send-email-shubhrajyoti@ti.com> <1326709360-26020-4-git-send-email-shubhrajyoti@ti.com> <CAAL8m4xVOiGjOHvf=Uy4m9QbqxO21pFeB2HcC_zGijj-+VF_jw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-lpp01m010-f46.google.com ([209.85.215.46]:39569 "EHLO
-	mail-lpp01m010-f46.google.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752207Ab2ATIwo convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 20 Jan 2012 03:52:44 -0500
-In-Reply-To: <1326709360-26020-5-git-send-email-shubhrajyoti@ti.com>
+Received: from na3sys009aog122.obsmtp.com ([74.125.149.147]:39945 "EHLO
+	na3sys009aog122.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752663Ab2ATJfN (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 20 Jan 2012 04:35:13 -0500
+In-Reply-To: <CAAL8m4xVOiGjOHvf=Uy4m9QbqxO21pFeB2HcC_zGijj-+VF_jw@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Shubhrajyoti D <shubhrajyoti@ti.com>
+To: Govindraj <govindraj.ti@gmail.com>
 Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Mon, Jan 16, 2012 at 3:52 PM, Shubhrajyoti D <shubhrajyoti@ti.com> w=
-rote:
-> get_context_loss_count returns an int however it is stored in
-> unsigned integer context_loss_cnt . This patch tries to make
-> context_loss_cnt int. So that in case of errors(which may be negative=
-)
-> the value is not interpreted wrongly.
+On Friday 20 January 2012 02:19 PM, Govindraj wrote:
+> On Mon, Jan 16, 2012 at 3:52 PM, Shubhrajyoti D <shubhrajyoti@ti.com> wrote:
+>> The patch does the following
+>>
+>> - The pm_runtime_disable is called in the remove not in the error
+>>  case of probe.The patch calls the pm_runtime_disable in the error
+>>  case.
+>> - The  up is not freed in the error path. Fix the memory leak by calling
+>>  kfree in the error path.
+>> - Also the iounmap is not called fix the same by calling iounmap in the
+>>  error case of probe and remove .
+>> - Make the name of the error tags more meaningful.
+>>
+>> Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
+>> ---
+>>  drivers/tty/serial/omap-serial.c |   27 +++++++++++++++++----------
+>>  1 files changed, 17 insertions(+), 10 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+>> index 1c24269..8c6f137 100644
+>> --- a/drivers/tty/serial/omap-serial.c
+>> +++ b/drivers/tty/serial/omap-serial.c
+>> @@ -1369,14 +1369,14 @@ static int serial_omap_probe(struct platform_device *pdev)
+>>
+>>        dma_rx = platform_get_resource_byname(pdev, IORESOURCE_DMA, "rx");
+>>        if (!dma_rx) {
+>> -               ret = -EINVAL;
+>> -               goto err;
+>> +               ret = -ENXIO;
+>> +               goto do_release_region;
+>>        }
+>>
+>>        dma_tx = platform_get_resource_byname(pdev, IORESOURCE_DMA, "tx");
+>>        if (!dma_tx) {
+>> -               ret = -EINVAL;
+>> -               goto err;
+>> +               ret = -ENXIO;
+>> +               goto do_release_region;
+>>        }
+>>
+>>        up = kzalloc(sizeof(*up), GFP_KERNEL);
+>> @@ -1403,7 +1403,7 @@ static int serial_omap_probe(struct platform_device *pdev)
+>>                dev_err(&pdev->dev, "failed to get alias/pdev id, errno %d\n",
+>>                                                                up->port.line);
+>>                ret = -ENODEV;
+>> -               goto err;
+>> +               goto err_port_line;
+>>        }
+>>
+>>        sprintf(up->name, "OMAP UART%d", up->port.line);
+>> @@ -1412,7 +1412,7 @@ static int serial_omap_probe(struct platform_device *pdev)
+>>        if (!up->port.membase) {
+>>                dev_err(&pdev->dev, "can't ioremap UART\n");
+>>                ret = -ENOMEM;
+>> -               goto err;
+>> +               goto err_ioremap;
+>>        }
+>>
+>>        up->port.flags = omap_up_info->flags;
+>> @@ -1458,16 +1458,22 @@ static int serial_omap_probe(struct platform_device *pdev)
+>>
+>>        ret = uart_add_one_port(&serial_omap_reg, &up->port);
+>>        if (ret != 0)
+>> -               goto do_release_region;
+>> +               goto err_add_port;
+>>
+>>        pm_runtime_put(&pdev->dev);
+>>        platform_set_drvdata(pdev, up);
+>>        return 0;
+>> -err:
+>> -       dev_err(&pdev->dev, "[UART%d]: failure [%s]: %d\n",
+>> -                               pdev->id, __func__, ret);
+>> +
+>> +err_add_port:
+>> +       pm_runtime_disable(&pdev->dev);
+>> +       iounmap(up->port.membase);
+>> +err_ioremap:
+>> +err_port_line:
+>> +       kfree(up);
+>>  do_release_region:
+>>        release_mem_region(mem->start, resource_size(mem));
+>> +       dev_err(&pdev->dev, "[UART%d]: failure [%s]: %d\n",
+>> +                               pdev->id, __func__, ret);
+>>        return ret;
+>>  }
+>>
+>> @@ -1476,6 +1482,7 @@ static int serial_omap_remove(struct platform_device *dev)
+>>        struct uart_omap_port *up = platform_get_drvdata(dev);
+>>
+>>        if (up) {
+>> +               iounmap(up->port.membase);
+> you can build omap-serial as module insmod and rmmod
+> the module and test this patch.
 >
+> This can be done on zoom board which uses a non-omap uart
+> as console.
 
-This change should be part [1] patch of itself
-
-[1]:
-
-[PATCH 5/5] OMAP : serial : Check for error in get_context_loss_count
-
---
-Thanks,
-Govindraj.R
-
-
-> Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
-> ---
-> =A0arch/arm/plat-omap/include/plat/omap-serial.h | =A0 =A02 +-
-> =A01 files changed, 1 insertions(+), 1 deletions(-)
->
-> diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm=
-/plat-omap/include/plat/omap-serial.h
-> index 9ff4444..b7fb6dc 100644
-> --- a/arch/arm/plat-omap/include/plat/omap-serial.h
-> +++ b/arch/arm/plat-omap/include/plat/omap-serial.h
-> @@ -128,7 +128,7 @@ struct uart_omap_port {
-> =A0 =A0 =A0 =A0unsigned char =A0 =A0 =A0 =A0 =A0 msr_saved_flags;
-> =A0 =A0 =A0 =A0char =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0name[20];
-> =A0 =A0 =A0 =A0unsigned long =A0 =A0 =A0 =A0 =A0 port_activity;
-> - =A0 =A0 =A0 u32 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 context_los=
-s_cnt;
-> + =A0 =A0 =A0 int =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 context_los=
-s_cnt;
-> =A0 =A0 =A0 =A0u32 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 errata;
-> =A0 =A0 =A0 =A0u8 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0wakeups_=
-enabled;
->
+Yes will do that and post another version.
 > --
-> 1.7.1
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-seria=
-l" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at =A0http://vger.kernel.org/majordomo-info.html
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Thanks,
+> Govindraj.R
+
