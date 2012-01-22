@@ -1,33 +1,43 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+From: Paul Walmsley <paul@pwsan.com>
 Subject: Re: [PATCH 0/2] tty: serial: OMAP: work around broken driver, IP
  block
-Date: Sat, 21 Jan 2012 20:46:32 +0000
-Message-ID: <20120121204632.17ce598e@pyramind.ukuu.org.uk>
+Date: Sun, 22 Jan 2012 07:04:10 -0700 (MST)
+Message-ID: <alpine.DEB.2.00.1201220609290.26641@utopia.booyaka.com>
 References: <20120121071934.18707.64258.stgit@dusk>
-	<20120121125522.GA19027@kroah.com>
-	<alpine.DEB.2.00.1201211323410.28153@utopia.booyaka.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:46276 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750863Ab2AUUpl (ORCPT
+Received: from utopia.booyaka.com ([72.9.107.138]:55710 "EHLO
+	utopia.booyaka.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751897Ab2AVOEL (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 21 Jan 2012 15:45:41 -0500
-In-Reply-To: <alpine.DEB.2.00.1201211323410.28153@utopia.booyaka.com>
+	Sun, 22 Jan 2012 09:04:11 -0500
+In-Reply-To: <20120121071934.18707.64258.stgit@dusk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Paul Walmsley <paul@pwsan.com>
-Cc: Greg KH <greg@kroah.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Govindraj Raja <govindraj.raja@ti.com>, Kevin Hilman <khilman@ti.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>
+To: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, alan@linux.intel.com, greg@kroah.com
+Cc: Govindraj Raja <govindraj.raja@ti.com>, Kevin Hilman <khilman@ti.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>
 
-> I will do it, although I do cling to the hope that others will help.
+On Sat, 21 Jan 2012, Paul Walmsley wrote:
 
-I always work on the basis that if its had some coverage testing then the
-other folks who might have been affected should have reviewed the patch.
-They opted not to, within reason - their lookout.
+> [ This series is targeted for merging during v3.3-rc ]
+> 
+> On v3.3-rc1, the OMAP serial console doesn't behave properly when
+> power management is enabled (the default with omap2plus_defconfig).
+> This seems to be due to a combination of a silicon bug in the UART IP
+> block and broken FIFO settings in the OMAP serial driver.
+> 
+> This patch series attempts to work around these problems.  The workarounds
+> are not perfect; see the patch descriptions for more details.
+> 
+> Tested on OMAP3530 BeagleBoard.  This series will need to be tested on
+> OMAP2 and OMAP4 before it is ready to merge.
 
-They'll only test it later when it his the tree if they don't do it
-earlier 8)
+Just did a quick test on an OMAP4430 ES2 Pandaboard and the 
+(OMAP2420-based) N800.  This series has no obvious effect on either N800 
+or OMAP4430 Pandaboard, aside from the expected increase in interrupts in 
+the non-CPUIdle case.  Probably this is due to the relative immaturity of 
+the PM code on those two chip families.
 
-Alan
+
+- Paul
