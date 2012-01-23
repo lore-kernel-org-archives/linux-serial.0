@@ -1,57 +1,101 @@
-From: Paul Walmsley <paul@pwsan.com>
+From: Govindraj <govindraj.ti@gmail.com>
 Subject: Re: omap-serial RX DMA polling?
-Date: Mon, 23 Jan 2012 03:47:23 -0700 (MST)
-Message-ID: <alpine.DEB.2.00.1201230304310.29673@utopia.booyaka.com>
-References: <alpine.DEB.2.00.1201221718190.26641@utopia.booyaka.com> <CAAL8m4wcSfhjxg0Lyo-W7DQ85rikb6asRds95hwQQNTDXe2YKQ@mail.gmail.com>
+Date: Mon, 23 Jan 2012 20:06:57 +0530
+Message-ID: <CAAL8m4wBuFQYkyFUwNWrUZTBWuQHggy=y3Oi=6DBHNB_rqU9tA@mail.gmail.com>
+References: <alpine.DEB.2.00.1201221718190.26641@utopia.booyaka.com>
+ <CAAL8m4wcSfhjxg0Lyo-W7DQ85rikb6asRds95hwQQNTDXe2YKQ@mail.gmail.com> <alpine.DEB.2.00.1201230304310.29673@utopia.booyaka.com>
 Mime-Version: 1.0
-Content-Type: MULTIPART/MIXED; BOUNDARY="155748971-781067979-1327315643=:29673"
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <CAAL8m4wcSfhjxg0Lyo-W7DQ85rikb6asRds95hwQQNTDXe2YKQ@mail.gmail.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Govindraj <govindraj.ti@gmail.com>
-Cc: govindraj.raja@ti.com, khilman@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-List-Id: linux-serial@vger.kernel.org
-
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---155748971-781067979-1327315643=:29673
-Content-Type: TEXT/PLAIN; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-lpp01m010-f46.google.com ([209.85.215.46]:39025 "EHLO
+	mail-lpp01m010-f46.google.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752961Ab2AWOhT convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 23 Jan 2012 09:37:19 -0500
+In-Reply-To: <alpine.DEB.2.00.1201230304310.29673@utopia.booyaka.com>
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
+To: Paul Walmsley <paul@pwsan.com>
+Cc: govindraj.raja@ti.com, khilman@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Mon, 23 Jan 2012, Govindraj wrote:
+On Mon, Jan 23, 2012 at 4:17 PM, Paul Walmsley <paul@pwsan.com> wrote:
+> On Mon, 23 Jan 2012, Govindraj wrote:
+>
+>> On Mon, Jan 23, 2012 at 6:03 AM, Paul Walmsley <paul@pwsan.com> wrot=
+e:
+>> >
+>> > while trying to track down some of the serial-related PM issues in
+>> > v3.3-rc1, I noticed that the omap-serial.c driver sets a 1 microse=
+cond
+>> > polling timer when DMA is enabled (uart_dma.rx_timer) (!) =A0This =
+seems
+>> > quite broken from both the DMA and PM points of view.
+>>
+>> Poll rate is used for doing tty_insert_flip_string for pushing data =
+to
+>> user space to keep faster response to any client device over uart, s=
+ome
+>> Bt chips expect faster response when data on uart arrives and packet
+>> should be pushed out immediately.
+>
+> Hmm. =A0Let's say that the BT transceiver uses the fastest transmissi=
+on rate
+> supported by the OMAP UARTs -- 3,686,400 bits per second, according t=
+o
+> Table 17-1 in the 34xx TRM vZR. =A0So the RX poll timer would go off =
+about
+> ~2.7 times per input character[1]. =A0That seems like overkill...
+>
 
-> On Mon, Jan 23, 2012 at 6:03 AM, Paul Walmsley <paul@pwsan.com> wrote:
-> >
-> > while trying to track down some of the serial-related PM issues in
-> > v3.3-rc1, I noticed that the omap-serial.c driver sets a 1 microsecond
-> > polling timer when DMA is enabled (uart_dma.rx_timer) (!) =A0This seems
-> > quite broken from both the DMA and PM points of view.
->=20
-> Poll rate is used for doing tty_insert_flip_string for pushing data to=20
-> user space to keep faster response to any client device over uart, some=
-=20
-> Bt chips expect faster response when data on uart arrives and packet=20
-> should be pushed out immediately.
+Yes correct, Looks like the poll rate is to aggressive
+it should be calculated based on baud rate provided from user apace
+in termios function.
 
-Hmm.  Let's say that the BT transceiver uses the fastest transmission rate=
-=20
-supported by the OMAP UARTs -- 3,686,400 bits per second, according to=20
-Table 17-1 in the 34xx TRM vZR.  So the RX poll timer would go off about=20
-~2.7 times per input character[1].  That seems like overkill...
-
-For minimum receive latency, how about calling tty_insert_flip_string()=20
-from the RX DMA callback, and using a smaller transfer count?  Or even=20
-better, use PIO for the receive path and set the RX FIFO threshold to 1?
-
-No poll timer should be needed in either case.
+I had a patch to do the same in termios but,
+if you have something similar you can post out as I am currently busy w=
+ith
+some other activities and may take more time.
 
 
-- Paul
+> For minimum receive latency, how about calling tty_insert_flip_string=
+()
+> from the RX DMA callback, and using a smaller transfer count? =A0Or e=
+ven
+> better, use PIO for the receive path and set the RX FIFO threshold to=
+ 1?
+>
+> No poll timer should be needed in either case.
 
-1. At 10 line bits per character (start + byte + stop), each character=20
-should take about 2.7 microseconds to transfer (the reciprocal of (3 686=20
-400 line bits per second / 10 line bits per character / 1 000 000=20
-microseconds per second)).
+I remember doing similar excercise with BT + uart on zoom board
+but performance numbers where impacted.
 
---155748971-781067979-1327315643=:29673--
+I made buffer size as 1 byte and removed polling function and got rx_ca=
+llback
+for every byte completion and pushed same to tty layer.
+
+BT FTP throughput got impacted a lot.
+
+--
+Thanks,
+Govindraj.R
+
+note: I little busy currently and replies might be delayed.
+         sorry for any inconvenience.
+
+
+>
+>
+> - Paul
+>
+> 1. At 10 line bits per character (start + byte + stop), each characte=
+r
+> should take about 2.7 microseconds to transfer (the reciprocal of (3 =
+686
+> 400 line bits per second / 10 line bits per character / 1 000 000
+> microseconds per second)).
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
