@@ -1,101 +1,70 @@
-From: Govindraj <govindraj.ti@gmail.com>
-Subject: Re: omap-serial RX DMA polling?
-Date: Mon, 23 Jan 2012 20:06:57 +0530
-Message-ID: <CAAL8m4wBuFQYkyFUwNWrUZTBWuQHggy=y3Oi=6DBHNB_rqU9tA@mail.gmail.com>
-References: <alpine.DEB.2.00.1201221718190.26641@utopia.booyaka.com>
- <CAAL8m4wcSfhjxg0Lyo-W7DQ85rikb6asRds95hwQQNTDXe2YKQ@mail.gmail.com> <alpine.DEB.2.00.1201230304310.29673@utopia.booyaka.com>
+From: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
+Subject: Re: [PATCH 3/3] serial: 8250: Add a wakeup_capable module param
+Date: Mon, 23 Jan 2012 08:45:11 -0800
+Message-ID: <20120123164511.GE2434@linux.vnet.ibm.com>
+References: <1326826563-32215-1-git-send-email-sjg@chromium.org>
+ <201201200103.34296.rjw@sisk.pl>
+ <20120120061214.GA2551@linux.vnet.ibm.com>
+ <201201210049.35254.rjw@sisk.pl>
+Reply-To: paulmck@linux.vnet.ibm.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-lpp01m010-f46.google.com ([209.85.215.46]:39025 "EHLO
-	mail-lpp01m010-f46.google.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752961Ab2AWOhT convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 23 Jan 2012 09:37:19 -0500
-In-Reply-To: <alpine.DEB.2.00.1201230304310.29673@utopia.booyaka.com>
+Received: from e38.co.us.ibm.com ([32.97.110.159]:56816 "EHLO
+	e38.co.us.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751995Ab2AWQtN (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 23 Jan 2012 11:49:13 -0500
+Received: from /spool/local
+	by e38.co.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+	for <linux-serial@vger.kernel.org> from <paulmck@linux.vnet.ibm.com>;
+	Mon, 23 Jan 2012 09:49:12 -0700
+Content-Disposition: inline
+In-Reply-To: <201201210049.35254.rjw@sisk.pl>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Paul Walmsley <paul@pwsan.com>
-Cc: govindraj.raja@ti.com, khilman@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: "Rafael J. Wysocki" <rjw@sisk.pl>
+Cc: Simon Glass <sjg@chromium.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, LKML <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
 
-On Mon, Jan 23, 2012 at 4:17 PM, Paul Walmsley <paul@pwsan.com> wrote:
-> On Mon, 23 Jan 2012, Govindraj wrote:
->
->> On Mon, Jan 23, 2012 at 6:03 AM, Paul Walmsley <paul@pwsan.com> wrot=
-e:
->> >
->> > while trying to track down some of the serial-related PM issues in
->> > v3.3-rc1, I noticed that the omap-serial.c driver sets a 1 microse=
-cond
->> > polling timer when DMA is enabled (uart_dma.rx_timer) (!) =A0This =
-seems
->> > quite broken from both the DMA and PM points of view.
->>
->> Poll rate is used for doing tty_insert_flip_string for pushing data =
-to
->> user space to keep faster response to any client device over uart, s=
-ome
->> Bt chips expect faster response when data on uart arrives and packet
->> should be pushed out immediately.
->
-> Hmm. =A0Let's say that the BT transceiver uses the fastest transmissi=
-on rate
-> supported by the OMAP UARTs -- 3,686,400 bits per second, according t=
-o
-> Table 17-1 in the 34xx TRM vZR. =A0So the RX poll timer would go off =
-about
-> ~2.7 times per input character[1]. =A0That seems like overkill...
->
+On Sat, Jan 21, 2012 at 12:49:35AM +0100, Rafael J. Wysocki wrote:
+> On Friday, January 20, 2012, Paul E. McKenney wrote:
+> > On Fri, Jan 20, 2012 at 01:03:34AM +0100, Rafael J. Wysocki wrote:
+> > > On Thursday, January 19, 2012, Paul E. McKenney wrote:
+> > > > On Thu, Jan 19, 2012 at 01:02:58AM +0100, Rafael J. Wysocki wrote:
+> > > > > On Wednesday, January 18, 2012, Paul E. McKenney wrote:
+> > > > > > On Wed, Jan 18, 2012 at 02:15:59PM -0800, Simon Glass wrote:
+> > > [...] 
+> > > > > Yes, you can, but then I'd say it's not necessary for user space to
+> > > > > be able to carry that out in a tight loop.  So, it seems, alternatively,
+> > > > > we could make that loop a bit less tight, e.g. by adding an arbitrary
+> > > > > sleep to the user space interface for the "disable" case.
+> > > > 
+> > > > Good point, that would work just as well and be simpler.
+> > > 
+> > > Thanks for the confirmation! :-)
+> > > 
+> > > By the way, I wonder, would it help to add synchronize_rcu() to
+> > > wakeup_source_add() too?  Then, even if device_wakeup_enable() and
+> > > device_wakeup_disable() are executed in a tight loop for the same
+> > > device, the list_add/list_del operations will always happen in
+> > > different RCU cycles (or at least it seems so).
+> > 
+> > I cannot immediately see how adding a synchronize_rcu() to
+> > wakeup_source_add() would help anything.  You only need to wait for a
+> > grace period on removal, not (normally) on addition.  The single grace
+> > period during removal will catch up all other asynchronous RCU grace
+> > period requests on that CPU.
+> > 
+> > Or am I missing your point?
+> 
+> Well, I was thinking about the failure scenario you mentioned where
+> executing enable/disable in a tight loop might exhaust system memory
+> (if I understood it correctly).
 
-Yes correct, Looks like the poll rate is to aggressive
-it should be calculated based on baud rate provided from user apace
-in termios function.
+Ah, got it.  If they are executing this in a tight loop, there will be
+little difference between doing one synchronize_rcu() per pass through
+the loop or doing two.  So we should be just fine with the single instance
+of synchronize_rcu() per loop.
 
-I had a patch to do the same in termios but,
-if you have something similar you can post out as I am currently busy w=
-ith
-some other activities and may take more time.
+							Thanx, Paul
 
-
-> For minimum receive latency, how about calling tty_insert_flip_string=
-()
-> from the RX DMA callback, and using a smaller transfer count? =A0Or e=
-ven
-> better, use PIO for the receive path and set the RX FIFO threshold to=
- 1?
->
-> No poll timer should be needed in either case.
-
-I remember doing similar excercise with BT + uart on zoom board
-but performance numbers where impacted.
-
-I made buffer size as 1 byte and removed polling function and got rx_ca=
-llback
-for every byte completion and pushed same to tty layer.
-
-BT FTP throughput got impacted a lot.
-
---
-Thanks,
-Govindraj.R
-
-note: I little busy currently and replies might be delayed.
-         sorry for any inconvenience.
-
-
->
->
-> - Paul
->
-> 1. At 10 line bits per character (start + byte + stop), each characte=
-r
-> should take about 2.7 microseconds to transfer (the reciprocal of (3 =
-686
-> 400 line bits per second / 10 line bits per character / 1 000 000
-> microseconds per second)).
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
