@@ -1,46 +1,64 @@
-From: Paul Walmsley <paul@pwsan.com>
-Subject: omap-serial RX DMA polling?
-Date: Sun, 22 Jan 2012 17:33:07 -0700 (MST)
-Message-ID: <alpine.DEB.2.00.1201221718190.26641@utopia.booyaka.com>
+From: Tomi Valkeinen <tomi.valkeinen@ti.com>
+Subject: Re: [PATCH 0/2] tty: serial: OMAP: work around broken driver, IP
+ block
+Date: Mon, 23 Jan 2012 10:15:22 +0200
+Message-ID: <1327306522.1916.11.camel@deskari>
+References: <20120121071934.18707.64258.stgit@dusk>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: multipart/signed; micalg="pgp-sha1"; protocol="application/pgp-signature"; boundary="=-jY5qxMinCoTnvW6hu+Fs"
 Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <20120121071934.18707.64258.stgit@dusk>
 Sender: linux-omap-owner@vger.kernel.org
-To: govindraj.raja@ti.com
-Cc: khilman@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Paul Walmsley <paul@pwsan.com>
+Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Govindraj Raja <govindraj.r@ti.com>, Kevin Hilman <khilman@ti.com>, alan@linux.intel.com
 List-Id: linux-serial@vger.kernel.org
 
 
-Hello Govindraj
+--=-jY5qxMinCoTnvW6hu+Fs
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-while trying to track down some of the serial-related PM issues in 
-v3.3-rc1, I noticed that the omap-serial.c driver sets a 1 microsecond 
-polling timer when DMA is enabled (uart_dma.rx_timer) (!)  This seems 
-quite broken from both the DMA and PM points of view.
+On Sat, 2012-01-21 at 00:27 -0700, Paul Walmsley wrote:
+> [ This series is targeted for merging during v3.3-rc ]
+>=20
+> On v3.3-rc1, the OMAP serial console doesn't behave properly when
+> power management is enabled (the default with omap2plus_defconfig).
+> This seems to be due to a combination of a silicon bug in the UART IP
+> block and broken FIFO settings in the OMAP serial driver.
+>=20
+> This patch series attempts to work around these problems.  The workaround=
+s
+> are not perfect; see the patch descriptions for more details.
+>=20
+> Tested on OMAP3530 BeagleBoard.  This series will need to be tested on
+> OMAP2 and OMAP4 before it is ready to merge.
 
->From a DMA point of view, the DMA transfer should automatically start 
-when there is data to transfer, and stop when there is no data left, based 
-on the DMA request lines.  So timer-driven polling should not be needed at 
-all.
+Thanks, this makes the console usable on my OMAP3 overo.
 
->From a PM point of view, this short timer will effectively prevent the MPU 
-from going into a low-power state whenever there is data in the FIFO.  
-This will more than erase any energy consumption or CPU efficiency 
-benefits of doing DMA.  Interrupt-driven PIO should be much more efficient 
-than this, since at least the MPU can enter a low-power state while 
-waiting for the FIFO to fill.
-
-So basically, the broken timeout calculations used in the interrupt-driven 
-PIO mode (which set a 1 microsecond PM QoS constraint), plus the 1 
-microsecond polling timer used in DMA mode, mean that this driver is 
-pretty bad from a PM perspective.
-
-I sent some patches to fix the interrupt-driven PIO receive part of the 
-problem, which you've probably seen.  But I'm hoping that you can describe 
-further why the driver needs this RX DMA polling timer?  Shouldn't it be 
-unnecessary?  If it's truly unavoidable, then we should presumably not 
-even bother with RX DMA at all.
+ Tomi
 
 
+--=-jY5qxMinCoTnvW6hu+Fs
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
 
- - Paul
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iQIcBAABAgAGBQJPHRcaAAoJEPo9qoy8lh71Hr0P/3zPpkcmmfc/A48xuSFfzQiJ
+D/cLuUL1uIvyXIh/iLeFRHo33z/c62eCZjl3sGuiqCryySHTsaoqxBiKVJUCDxoG
+TTnx6iVZ+dpQoVbU0/htF0St5eBEjonISiYl2+8G5EBFGGO+bOexGoGIc8BpSdNI
+xi5RXjtmTDEOQWaD6huCgQfNbQZiO3lLYdWiJdqIlEddoH5T5tcWIs0ki4NDvPge
+PXwbmrW2EAIJLiPy17B2zalhIWoBAHUHvWxhanzXvU/lYrjRAVSkfV+FRb8XjH7k
+RZf2MoJiCSZgWLPhwFynNHiy6tSmimyei1+QYHAFTV9oVkFujyDCFtb7nDw2HzSJ
+KmVwCAaWJijsMIBrxPe/b/+6WC0qdquEPDUvfQUlVAy+S9zK0vwwOl2BiNareoka
+Gjre25FrS/ECp64zixYjoDqwJwBHz7QVCPTYo0bOLuR5v2zOvCVS69E2FlCDxt/i
+OeyLACYa0wT+wSZG68L9BJKkrm+SJr0Jg2+vew/qBN6r7kB0YXO+6uQQsmrUWMIS
+0OlUnVLcWa6006XVPrJ5P/G/0k7fg2ktoXE0FXbz4rjrDR9FfuwTvi7NF1OVa7EF
+yGwYmlxILE3QjEcxr9XnJ231TPdUHTY5G96yeQEVUPkSjo+AtQkDQlKd+SUTvIE+
+bpv0BPkF9TDKERfhF7A1
+=cgOZ
+-----END PGP SIGNATURE-----
+
+--=-jY5qxMinCoTnvW6hu+Fs--
+
