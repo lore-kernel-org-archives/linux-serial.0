@@ -1,103 +1,122 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+From: Paul Walmsley <paul@pwsan.com>
 Subject: Re: omap-serial RX DMA polling?
-Date: Tue, 24 Jan 2012 09:00:21 +0000
-Message-ID: <20120124090021.GQ16726@n2100.arm.linux.org.uk>
-References: <alpine.DEB.2.00.1201221718190.26641@utopia.booyaka.com> <CAAL8m4wcSfhjxg0Lyo-W7DQ85rikb6asRds95hwQQNTDXe2YKQ@mail.gmail.com> <alpine.DEB.2.00.1201230304310.29673@utopia.booyaka.com> <CAAL8m4wBuFQYkyFUwNWrUZTBWuQHggy=y3Oi=6DBHNB_rqU9tA@mail.gmail.com> <alpine.DEB.2.00.1201231228310.29673@utopia.booyaka.com> <CAAL8m4zE6wD67GCeVe9BOBZ=5yrCkrXUUu26y2GAXrdiDD3R8g@mail.gmail.com> <alpine.DEB.2.00.1201240010100.29673@utopia.booyaka.com>
+Date: Tue, 24 Jan 2012 03:47:29 -0700 (MST)
+Message-ID: <alpine.DEB.2.00.1201240210310.29673@utopia.booyaka.com>
+References: <alpine.DEB.2.00.1201221718190.26641@utopia.booyaka.com> <CAAL8m4wcSfhjxg0Lyo-W7DQ85rikb6asRds95hwQQNTDXe2YKQ@mail.gmail.com> <alpine.DEB.2.00.1201230304310.29673@utopia.booyaka.com> <CAAL8m4wBuFQYkyFUwNWrUZTBWuQHggy=y3Oi=6DBHNB_rqU9tA@mail.gmail.com>
+ <alpine.DEB.2.00.1201231228310.29673@utopia.booyaka.com> <CAAL8m4zE6wD67GCeVe9BOBZ=5yrCkrXUUu26y2GAXrdiDD3R8g@mail.gmail.com> <alpine.DEB.2.00.1201240010100.29673@utopia.booyaka.com> <20120124090021.GQ16726@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-omap-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.00.1201240010100.29673@utopia.booyaka.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Paul Walmsley <paul@pwsan.com>
-Cc: Govindraj <govindraj.ti@gmail.com>, khilman@ti.com, govindraj.raja@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from utopia.booyaka.com ([72.9.107.138]:33127 "EHLO
+	utopia.booyaka.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755002Ab2AXKra (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 24 Jan 2012 05:47:30 -0500
+In-Reply-To: <20120124090021.GQ16726@n2100.arm.linux.org.uk>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Govindraj <govindraj.ti@gmail.com>, khilman@ti.com, govindraj.raja@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
-On Tue, Jan 24, 2012 at 12:58:57AM -0700, Paul Walmsley wrote:
-> On Tue, 24 Jan 2012, Govindraj wrote:
->=20
-> > On Tue, Jan 24, 2012 at 1:18 AM, Paul Walmsley <paul@pwsan.com> wro=
-te:
-> > > On Mon, 23 Jan 2012, Govindraj wrote:
-> > >> On Mon, Jan 23, 2012 at 4:17 PM, Paul Walmsley <paul@pwsan.com> =
-wrote:
-> > >
-> > > The point is that if you want tty_insert_flip_string() to be call=
-ed after
-> > > every character is received, there seems little point in using RX=
- DMA.
-> > > It should be less efficient than PIO. =A0And the current way that=
- it is used
-> > > is pointless from a power management point of view.
-> >=20
-> > Yes, Its between power and performance, current way gives a better
-> > response for most devices
->=20
-> That seems rather unlikely.  And I don't agree that there is a balanc=
-e to=20
-> be struck in this case.  Compared to a correctly-working RX PIO path,=
- the=20
-> RX DMA in the current driver is likely to be much worse in energy=20
-> consumption, and to be equal at best in receive latency.
->=20
-> In a correctly-working RX PIO path, the driver is going to receive an=
-=20
-> interrupt the moment the data is ready to be transferred from the FIF=
-O. =20
+On Tue, 24 Jan 2012, Russell King - ARM Linux wrote:
 
-That's hellishly inefficient.  In a correctly working RX PIO path with
-=46IFO, this is how most hardware is designed to work:
+> On Tue, Jan 24, 2012 at 12:58:57AM -0700, Paul Walmsley wrote:
+> 
+> > In a correctly-working RX PIO path, the driver is going to receive an 
+> > interrupt the moment the data is ready to be transferred from the FIFO.  
+> 
+> That's hellishly inefficient.  
 
-- The UART receives a character.  It places it into its FIFO, and it st=
-arts
-  a timer based on the bit rate.
-- If another character is being received, this will be received and pla=
-ced
-  into the FIFO.  The timer is restarted.  This continues until the FIF=
-O
-  hits the watermark level which raises the receive interrupt.
-- If no character is received, the timer eventually expires and a
-  receive timeout interrupt is raised instead.
+If the point is to minimize the receive latency, as Govindraj described 
+earlier, then setting an RX FIFO threshold to one byte is the way to go.  
+It certainly seems preferable to the use of a DMA RX path with a 1 
+microsecond polling timer.  Ideally this would be something that the 
+serial user could tune.
 
-Generally, what you want for transmit is to wait for the TX FIFO to
-drain to maybe half full, and then reload it until it is completely
-full.
+> Generally, what you want for transmit is to wait for the TX FIFO to
+> drain to maybe half full, and then reload it until it is completely
+> full.
 
-=46or the RX FIFO, you want to set the watermark such that you get a
-decent number of bytes in there before the receive interrupt is
-raised, but not soo many that an overrun is likely.
+Interesting rule of thumb.  For OMAP there are also power management 
+considerations.  For example, if we can estimate the maximum amount of 
+time it will take for the CPU to refill the transmit FIFO, then the TX 
+FIFO threshold can be adjusted down to reduce the number of 
+wakeups/interrupts needed to transmit a buffer.
 
-One of the point of having FIFOs is that they batch up the transmit and
-receive activity to make it more efficient at servicing the UART.
+In fact from a narrow PM perspective, the ideal TX FIFO threshold would 
+basically be zero: to allow the entire FIFO to drain before waking the CPU 
+back up to refill it.  There's no data loss restriction as there is with 
+the RX FIFO.  Of course, many serial users couldn't tolerate such an 
+setting and still work acceptably.  It would be nice if the driver could 
+allow serial users to override the estimate that it generates.
 
-Setting the FIFO levels to one character virtually negates the point
-of having FIFOs - there is no point setting the TX FIFO to raise an
-interrupt when there's one character space left.  As has already been
-reported, this just puts the interrupt rate up, and means you waste a
-lot more CPU (or bus) time servicing the transmit path.
+> For the RX FIFO, you want to set the watermark such that you get a
+> decent number of bytes in there before the receive interrupt is
+> raised, but not soo many that an overrun is likely.
 
-As for RX DMA vs RX PIO, that depends on the UART (I don't know how
-OMAPs UARTs behave.)  To sanely use RX DMA, you need the UART to raise
-the RX timeout interrupt after characters have been offloaded by the
-RX DMA.  Lets saying that RX FIFO is 32 bytes deep, and it's set to
-raise the RX DMA request at 16 bytes full.  If you program the DMA
-controller to burst 16 bytes off the RX FIFO, you'll empty it and
-it'll never raise the RX timeout interrupt.  So you'll need to know
-how many characters you're expecting.
+One other constraint.  If the RX FIFO threshold is set too high, then the 
+CPU is effectively prevented from entering a deep sleep state, since the 
+CPU has to be able to wake up in time to prevent an RX overrun.  The lower 
+the RX FIFO threshold, the more time the CPU has to wake up, and the 
+deeper the sleep state the CPU can enter.
 
-If on the other hand you burst 8 bytes off the RX FIFO, you'll leave
-8 bytes in the FIFO.  If the UART works properly, it will raise an
-RX timeout interrupt after N bit periods where the RX line is inactive.
+> One of the point of having FIFOs is that they batch up the transmit and
+> receive activity to make it more efficient at servicing the UART.
 
-What that means is that during a burst of RX activity, your DMA takes
-the strain of receiving characters, and you process those characters
-when either the RX buffer becomes full or when there's a pause in
-reception.  This gives good efficiency during bursts while maintaining
-interactivity - to the same levels as that expected by RX PIO using
-the FIFO.
---
-To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Yep.  Also, another point is to allow the servicer to enter a low power 
+state while the FIFOs fill or drain.
+
+> Setting the FIFO levels to one character virtually negates the point of 
+> having FIFOs - there is no point setting the TX FIFO to raise an 
+> interrupt when there's one character space left.  As has already been 
+> reported, this just puts the interrupt rate up, and means you waste a 
+> lot more CPU (or bus) time servicing the transmit path.
+
+In the case of this particular patchset, there was indeed a point to 
+setting the TX FIFO to 1; it was to work around a hardware bug.  As the 
+patch description stated, it's a pretty nasty penalty that is worth 
+avoiding if at all possible[*].  I'm not endorsing that as an appropriate 
+setting outside of a bug workaround.
+
+> As for RX DMA vs RX PIO, that depends on the UART (I don't know how
+> OMAPs UARTs behave.)  To sanely use RX DMA, you need the UART to raise
+> the RX timeout interrupt after characters have been offloaded by the
+> RX DMA.  Lets saying that RX FIFO is 32 bytes deep, and it's set to
+> raise the RX DMA request at 16 bytes full.  If you program the DMA
+> controller to burst 16 bytes off the RX FIFO, you'll empty it and
+> it'll never raise the RX timeout interrupt.  So you'll need to know
+> how many characters you're expecting.
+>
+> If on the other hand you burst 8 bytes off the RX FIFO, you'll leave
+> 8 bytes in the FIFO.  If the UART works properly, it will raise an
+> RX timeout interrupt after N bit periods where the RX line is inactive.
+> 
+> What that means is that during a burst of RX activity, your DMA takes
+> the strain of receiving characters, and you process those characters
+> when either the RX buffer becomes full or when there's a pause in
+> reception.  This gives good efficiency during bursts while maintaining
+> interactivity - to the same levels as that expected by RX PIO using
+> the FIFO.
+
+Well, Govindraj has some low-latency requirement, and no way to specify 
+how many bytes he's expecting.  So if RX DMA is going to be used, the 
+driver will still need some kind of timer to flush any bytes that could be 
+stuck in the middle of a DMA transfer.  This still seems like a case where 
+RX PIO would do a better job; no need for a timer, and immediate 
+notification when a character arrives, if the threshold is set that way.
+
+As far as the RX timeout goes, those don't seem to be delivered properly 
+when the CPU is in a low-power state.  This is probably due to the 
+previously-mentioned hardware bug, although it could be due to a driver 
+bug.  So we may be out of luck there.  We (meaning the people working on 
+OMAP) also need to figure out here what the OMAP UART RX timeout would 
+theoretically be, since it doesn't appear to be documented.
+
+Thanks for the comments.
+
+
+- Paul
+
+* There is another workaround for this bug under development here that
+  shouldn't require changing the TX FIFO.  If it passes testing here, then 
+  the TX FIFO of 1 shouldn't be needed.
