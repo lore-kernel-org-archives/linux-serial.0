@@ -1,122 +1,102 @@
-From: Paul Walmsley <paul@pwsan.com>
-Subject: Re: omap-serial RX DMA polling?
-Date: Tue, 24 Jan 2012 03:47:29 -0700 (MST)
-Message-ID: <alpine.DEB.2.00.1201240210310.29673@utopia.booyaka.com>
-References: <alpine.DEB.2.00.1201221718190.26641@utopia.booyaka.com> <CAAL8m4wcSfhjxg0Lyo-W7DQ85rikb6asRds95hwQQNTDXe2YKQ@mail.gmail.com> <alpine.DEB.2.00.1201230304310.29673@utopia.booyaka.com> <CAAL8m4wBuFQYkyFUwNWrUZTBWuQHggy=y3Oi=6DBHNB_rqU9tA@mail.gmail.com>
- <alpine.DEB.2.00.1201231228310.29673@utopia.booyaka.com> <CAAL8m4zE6wD67GCeVe9BOBZ=5yrCkrXUUu26y2GAXrdiDD3R8g@mail.gmail.com> <alpine.DEB.2.00.1201240010100.29673@utopia.booyaka.com> <20120124090021.GQ16726@n2100.arm.linux.org.uk>
+From: Ville Tervo <ville.tervo@nokia.com>
+Subject: tty: n_gsm: System lockup when closing n_gsm ldisc
+Date: Tue, 24 Jan 2012 13:52:59 +0200
+Message-ID: <4F1E9B9B.1090008@nokia.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from utopia.booyaka.com ([72.9.107.138]:33127 "EHLO
-	utopia.booyaka.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755002Ab2AXKra (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 24 Jan 2012 05:47:30 -0500
-In-Reply-To: <20120124090021.GQ16726@n2100.arm.linux.org.uk>
+Received: from smtp.nokia.com ([147.243.1.48]:58461 "EHLO mgw-sa02.nokia.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756261Ab2AXLxs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 24 Jan 2012 06:53:48 -0500
+Received: from [172.21.22.171] (helruo-dhcp022171.ntc.nokia.com [172.21.22.171])
+	by mgw-sa02.nokia.com (Switch-3.4.4/Switch-3.4.4) with ESMTP id q0OBrkQK030278
+	for <linux-serial@vger.kernel.org>; Tue, 24 Jan 2012 13:53:46 +0200
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Govindraj <govindraj.ti@gmail.com>, khilman@ti.com, govindraj.raja@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On Tue, 24 Jan 2012, Russell King - ARM Linux wrote:
+Hi,
 
-> On Tue, Jan 24, 2012 at 12:58:57AM -0700, Paul Walmsley wrote:
-> 
-> > In a correctly-working RX PIO path, the driver is going to receive an 
-> > interrupt the moment the data is ready to be transferred from the FIFO.  
-> 
-> That's hellishly inefficient.  
+n_gsm seems to lockup when I do following actions.
 
-If the point is to minimize the receive latency, as Govindraj described 
-earlier, then setting an RX FIFO threshold to one byte is the way to go.  
-It certainly seems preferable to the use of a DMA RX path with a 1 
-microsecond polling timer.  Ideally this would be something that the 
-serial user could tune.
+1) open n_gsm on tty
+2) open /dev/ttygsm1 and keep it open
+4) close n_gsm
 
-> Generally, what you want for transmit is to wait for the TX FIFO to
-> drain to maybe half full, and then reload it until it is completely
-> full.
+Now I get following warning from lockdep. tty_vhangup() in n_gsm.c is 
+trying to acquire BTM while tty_set_ldisc is already holding it.
 
-Interesting rule of thumb.  For OMAP there are also power management 
-considerations.  For example, if we can estimate the maximum amount of 
-time it will take for the CPU to refill the transmit FIFO, then the TX 
-FIFO threshold can be adjusted down to reduce the number of 
-wakeups/interrupts needed to transmit a buffer.
+Inserting tty_unlock()/tty_lock() pair around tty_vhangup "solves" the 
+lockup problem, but still leaves lockdep warning for 
+lock(&tty->ldisc_mutex) and lock(big_tty_mutex) in SMP case.
 
-In fact from a narrow PM perspective, the ideal TX FIFO threshold would 
-basically be zero: to allow the entire FIFO to drain before waking the CPU 
-back up to refill it.  There's no data loss restriction as there is with 
-the RX FIFO.  Of course, many serial users couldn't tolerate such an 
-setting and still work acceptably.  It would be nice if the driver could 
-allow serial users to override the estimate that it generates.
+Any ideas how to fix this for real?
 
-> For the RX FIFO, you want to set the watermark such that you get a
-> decent number of bytes in there before the receive interrupt is
-> raised, but not soo many that an overrun is likely.
+=============================================
+[ INFO: possible recursive locking detected ]
+3.3.0-rc1-2-generic+ #51 Not tainted
+---------------------------------------------
+n_gsm_test/891 is trying to acquire lock:
+  (big_tty_mutex){+.+.+.}, at: [<c1497a74>] tty_lock+0x14/0x20
 
-One other constraint.  If the RX FIFO threshold is set too high, then the 
-CPU is effectively prevented from entering a deep sleep state, since the 
-CPU has to be able to wake up in time to prevent an RX overrun.  The lower 
-the RX FIFO threshold, the more time the CPU has to wake up, and the 
-deeper the sleep state the CPU can enter.
+but task is already holding lock:
+  (big_tty_mutex){+.+.+.}, at: [<c1497a74>] tty_lock+0x14/0x20
 
-> One of the point of having FIFOs is that they batch up the transmit and
-> receive activity to make it more efficient at servicing the UART.
+other info that might help us debug this:
+  Possible unsafe locking scenario:
 
-Yep.  Also, another point is to allow the servicer to enter a low power 
-state while the FIFOs fill or drain.
+        CPU0
+        ----
+   lock(big_tty_mutex);
+   lock(big_tty_mutex);
 
-> Setting the FIFO levels to one character virtually negates the point of 
-> having FIFOs - there is no point setting the TX FIFO to raise an 
-> interrupt when there's one character space left.  As has already been 
-> reported, this just puts the interrupt rate up, and means you waste a 
-> lot more CPU (or bus) time servicing the transmit path.
+  *** DEADLOCK ***
 
-In the case of this particular patchset, there was indeed a point to 
-setting the TX FIFO to 1; it was to work around a hardware bug.  As the 
-patch description stated, it's a pretty nasty penalty that is worth 
-avoiding if at all possible[*].  I'm not endorsing that as an appropriate 
-setting outside of a bug workaround.
+  May be due to missing lock nesting notation
 
-> As for RX DMA vs RX PIO, that depends on the UART (I don't know how
-> OMAPs UARTs behave.)  To sanely use RX DMA, you need the UART to raise
-> the RX timeout interrupt after characters have been offloaded by the
-> RX DMA.  Lets saying that RX FIFO is 32 bytes deep, and it's set to
-> raise the RX DMA request at 16 bytes full.  If you program the DMA
-> controller to burst 16 bytes off the RX FIFO, you'll empty it and
-> it'll never raise the RX timeout interrupt.  So you'll need to know
-> how many characters you're expecting.
->
-> If on the other hand you burst 8 bytes off the RX FIFO, you'll leave
-> 8 bytes in the FIFO.  If the UART works properly, it will raise an
-> RX timeout interrupt after N bit periods where the RX line is inactive.
-> 
-> What that means is that during a burst of RX activity, your DMA takes
-> the strain of receiving characters, and you process those characters
-> when either the RX buffer becomes full or when there's a pause in
-> reception.  This gives good efficiency during bursts while maintaining
-> interactivity - to the same levels as that expected by RX PIO using
-> the FIFO.
+2 locks held by n_gsm_test/891:
+  #0:  (big_tty_mutex){+.+.+.}, at: [<c1497a74>] tty_lock+0x14/0x20
+  #1:  (&tty->ldisc_mutex){+.+.+.}, at: [<c1279ea3>] 
+tty_set_ldisc+0x173/0x2b0
 
-Well, Govindraj has some low-latency requirement, and no way to specify 
-how many bytes he's expecting.  So if RX DMA is going to be used, the 
-driver will still need some kind of timer to flush any bytes that could be 
-stuck in the middle of a DMA transfer.  This still seems like a case where 
-RX PIO would do a better job; no need for a timer, and immediate 
-notification when a character arrives, if the threshold is set that way.
-
-As far as the RX timeout goes, those don't seem to be delivered properly 
-when the CPU is in a low-power state.  This is probably due to the 
-previously-mentioned hardware bug, although it could be due to a driver 
-bug.  So we may be out of luck there.  We (meaning the people working on 
-OMAP) also need to figure out here what the OMAP UART RX timeout would 
-theoretically be, since it doesn't appear to be documented.
-
-Thanks for the comments.
+stack backtrace:
+Pid: 891, comm: n_gsm_test Not tainted 3.3.0-rc1-2-generic+ #51
+Call Trace:
+  [<c1488e16>] ? printk+0x1d/0x1f
+  [<c10763ea>] print_deadlock_bug+0xda/0xe0
+  [<c1077ab2>] validate_chain.isra.35+0x5d2/0x6b0
+  [<c107977b>] __lock_acquire+0x34b/0x810
+  [<c107b7d0>] lock_acquire+0x90/0x1c0
+  [<c1497a74>] ? tty_lock+0x14/0x20
+  [<c10607d5>] ? local_clock+0x65/0x70
+  [<c149457d>] mutex_lock_nested+0x6d/0x340
+  [<c1497a74>] ? tty_lock+0x14/0x20
+  [<c127270d>] ? __tty_hangup+0x4d/0x3d0
+  [<c1497a74>] ? tty_lock+0x14/0x20
+  [<c1497a74>] tty_lock+0x14/0x20
+  [<c1272712>] __tty_hangup+0x52/0x3d0
+  [<c10784bb>] ? trace_hardirqs_on+0xb/0x10
+  [<c1272abd>] tty_vhangup+0xd/0x10
+  [<c127f514>] gsm_cleanup_mux+0xd4/0x1d0
+  [<c104e200>] ? abort_exclusive_wait+0x80/0x80
+  [<c127fbc2>] gsmld_close+0x42/0x80
+  [<c1279905>] tty_ldisc_close.isra.5+0x35/0x50
+  [<c1279ec6>] tty_set_ldisc+0x196/0x2b0
+  [<c10da815>] ? might_fault+0x95/0xa0
+  [<c1274d5a>] tty_ioctl+0x65a/0x7c0
+  [<c112b032>] ? fsnotify+0x252/0x680
+  [<c112ae56>] ? fsnotify+0x76/0x680
+  [<c1279c9d>] ? tty_ldisc_deref+0xd/0x10
+  [<c127203f>] ? tty_write+0x17f/0x230
+  [<c1077e42>] ? check_flags+0x12/0x20
+  [<c1274700>] ? no_tty+0x30/0x30
+  [<c11029a9>] do_vfs_ioctl+0x79/0x300
+  [<c1498415>] ? sysenter_exit+0xf/0x1a
+  [<c1102c62>] sys_ioctl+0x32/0x60
+  [<c14983dc>] sysenter_do_call+0x12/0x3c
 
 
-- Paul
-
-* There is another workaround for this bug under development here that
-  shouldn't require changing the TX FIFO.  If it passes testing here, then 
-  the TX FIFO of 1 shouldn't be needed.
+-- 
+Ville
