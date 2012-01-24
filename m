@@ -1,102 +1,51 @@
-From: Ville Tervo <ville.tervo@nokia.com>
-Subject: tty: n_gsm: System lockup when closing n_gsm ldisc
-Date: Tue, 24 Jan 2012 13:52:59 +0200
-Message-ID: <4F1E9B9B.1090008@nokia.com>
+From: "Govindraj.R" <govindraj.raja@ti.com>
+Subject: [RFC PATCH] OMAP: UART: Enable tx wakeup bit in wer
+Date: Tue, 24 Jan 2012 19:07:29 +0530
+Message-ID: <1327412249-31575-1-git-send-email-govindraj.raja@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.nokia.com ([147.243.1.48]:58461 "EHLO mgw-sa02.nokia.com"
+Received: from comal.ext.ti.com ([198.47.26.152]:34377 "EHLO comal.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756261Ab2AXLxs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 24 Jan 2012 06:53:48 -0500
-Received: from [172.21.22.171] (helruo-dhcp022171.ntc.nokia.com [172.21.22.171])
-	by mgw-sa02.nokia.com (Switch-3.4.4/Switch-3.4.4) with ESMTP id q0OBrkQK030278
-	for <linux-serial@vger.kernel.org>; Tue, 24 Jan 2012 13:53:46 +0200
+	id S1755036Ab2AXNkA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 24 Jan 2012 08:40:00 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux-omap@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, "Govindraj.R" <govindraj.raja@ti.com>, Kevin Hilman <khilman@ti.com>, Paul Walmsley <paul@pwsan.com>, Partha Basak <p-basak2@ti.com>
 
-Hi,
+From: "Govindraj.R" <govindraj.raja@ti.com>
 
-n_gsm seems to lockup when I do following actions.
+On omap3630 onwards uart wer reg has bit 7
+for tx wakeup enable.
 
-1) open n_gsm on tty
-2) open /dev/ttygsm1 and keep it open
-4) close n_gsm
+Without this bit set some uart sluggishness might be seen
+while printing data on console, response is better when
+enabling this bit.
+Tested with Beagle XM (OMAP3630)
 
-Now I get following warning from lockdep. tty_vhangup() in n_gsm.c is 
-trying to acquire BTM while tty_set_ldisc is already holding it.
+Cc: Kevin Hilman <khilman@ti.com>
+Cc: Paul Walmsley <paul@pwsan.com>
+Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+---
+But on omap3430 the bit is not available.
 
-Inserting tty_unlock()/tty_lock() pair around tty_vhangup "solves" the 
-lockup problem, but still leaves lockdep warning for 
-lock(&tty->ldisc_mutex) and lock(big_tty_mutex) in SMP case.
+ arch/arm/plat-omap/include/plat/omap-serial.h |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-Any ideas how to fix this for real?
-
-=============================================
-[ INFO: possible recursive locking detected ]
-3.3.0-rc1-2-generic+ #51 Not tainted
----------------------------------------------
-n_gsm_test/891 is trying to acquire lock:
-  (big_tty_mutex){+.+.+.}, at: [<c1497a74>] tty_lock+0x14/0x20
-
-but task is already holding lock:
-  (big_tty_mutex){+.+.+.}, at: [<c1497a74>] tty_lock+0x14/0x20
-
-other info that might help us debug this:
-  Possible unsafe locking scenario:
-
-        CPU0
-        ----
-   lock(big_tty_mutex);
-   lock(big_tty_mutex);
-
-  *** DEADLOCK ***
-
-  May be due to missing lock nesting notation
-
-2 locks held by n_gsm_test/891:
-  #0:  (big_tty_mutex){+.+.+.}, at: [<c1497a74>] tty_lock+0x14/0x20
-  #1:  (&tty->ldisc_mutex){+.+.+.}, at: [<c1279ea3>] 
-tty_set_ldisc+0x173/0x2b0
-
-stack backtrace:
-Pid: 891, comm: n_gsm_test Not tainted 3.3.0-rc1-2-generic+ #51
-Call Trace:
-  [<c1488e16>] ? printk+0x1d/0x1f
-  [<c10763ea>] print_deadlock_bug+0xda/0xe0
-  [<c1077ab2>] validate_chain.isra.35+0x5d2/0x6b0
-  [<c107977b>] __lock_acquire+0x34b/0x810
-  [<c107b7d0>] lock_acquire+0x90/0x1c0
-  [<c1497a74>] ? tty_lock+0x14/0x20
-  [<c10607d5>] ? local_clock+0x65/0x70
-  [<c149457d>] mutex_lock_nested+0x6d/0x340
-  [<c1497a74>] ? tty_lock+0x14/0x20
-  [<c127270d>] ? __tty_hangup+0x4d/0x3d0
-  [<c1497a74>] ? tty_lock+0x14/0x20
-  [<c1497a74>] tty_lock+0x14/0x20
-  [<c1272712>] __tty_hangup+0x52/0x3d0
-  [<c10784bb>] ? trace_hardirqs_on+0xb/0x10
-  [<c1272abd>] tty_vhangup+0xd/0x10
-  [<c127f514>] gsm_cleanup_mux+0xd4/0x1d0
-  [<c104e200>] ? abort_exclusive_wait+0x80/0x80
-  [<c127fbc2>] gsmld_close+0x42/0x80
-  [<c1279905>] tty_ldisc_close.isra.5+0x35/0x50
-  [<c1279ec6>] tty_set_ldisc+0x196/0x2b0
-  [<c10da815>] ? might_fault+0x95/0xa0
-  [<c1274d5a>] tty_ioctl+0x65a/0x7c0
-  [<c112b032>] ? fsnotify+0x252/0x680
-  [<c112ae56>] ? fsnotify+0x76/0x680
-  [<c1279c9d>] ? tty_ldisc_deref+0xd/0x10
-  [<c127203f>] ? tty_write+0x17f/0x230
-  [<c1077e42>] ? check_flags+0x12/0x20
-  [<c1274700>] ? no_tty+0x30/0x30
-  [<c11029a9>] do_vfs_ioctl+0x79/0x300
-  [<c1498415>] ? sysenter_exit+0xf/0x1a
-  [<c1102c62>] sys_ioctl+0x32/0x60
-  [<c14983dc>] sysenter_do_call+0x12/0x3c
-
-
+diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/plat-omap/include/plat/omap-serial.h
+index 9ff4444..0c22d8d 100644
+--- a/arch/arm/plat-omap/include/plat/omap-serial.h
++++ b/arch/arm/plat-omap/include/plat/omap-serial.h
+@@ -39,7 +39,7 @@
+ /* WER = 0x7F
+  * Enable module level wakeup in WER reg
+  */
+-#define OMAP_UART_WER_MOD_WKUP	0X7F
++#define OMAP_UART_WER_MOD_WKUP	0xFF
+ 
+ /* Enable XON/XOFF flow control on output */
+ #define OMAP_UART_SW_TX		0x04
 -- 
-Ville
+1.7.5.4
+
