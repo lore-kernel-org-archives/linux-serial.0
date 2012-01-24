@@ -1,51 +1,66 @@
-From: "Govindraj.R" <govindraj.raja@ti.com>
-Subject: [RFC PATCH] OMAP: UART: Enable tx wakeup bit in wer
-Date: Tue, 24 Jan 2012 19:07:29 +0530
-Message-ID: <1327412249-31575-1-git-send-email-govindraj.raja@ti.com>
+From: Greg KH <greg@kroah.com>
+Subject: Re: Support for Perle Systems Speed/LE-8
+Date: Tue, 24 Jan 2012 09:11:41 -0800
+Message-ID: <20120124171141.GA26908@kroah.com>
+References: <4F1E4D69.3040907@redfish-solutions.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:34377 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755036Ab2AXNkA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 24 Jan 2012 08:40:00 -0500
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:35242 "EHLO
+	out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753393Ab2AXRTT (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 24 Jan 2012 12:19:19 -0500
+Received: from compute4.internal (compute4.nyi.mail.srv.osa [10.202.2.44])
+	by gateway1.nyi.mail.srv.osa (Postfix) with ESMTP id 60D2C21145
+	for <linux-serial@vger.kernel.org>; Tue, 24 Jan 2012 12:19:19 -0500 (EST)
+Content-Disposition: inline
+In-Reply-To: <4F1E4D69.3040907@redfish-solutions.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-omap@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, "Govindraj.R" <govindraj.raja@ti.com>, Kevin Hilman <khilman@ti.com>, Paul Walmsley <paul@pwsan.com>, Partha Basak <p-basak2@ti.com>
+To: Philip Prindeville <philipp@redfish-solutions.com>
+Cc: linux-serial@vger.kernel.org
 
-From: "Govindraj.R" <govindraj.raja@ti.com>
+On Mon, Jan 23, 2012 at 11:19:21PM -0700, Philip Prindeville wrote:
+> Hi.
+> 
+> I have a Perle Speed/LE-8 card that's poorly supported (cough) by the vendor.
+> 
+> The design seems to be plain-vanilla enough: it uses Oxford 9501 and 9511 chips.
+> 
+> $ lspci -v -n -s 04:07
+> 04:07.0 0700: 155f:b008 (prog-if 06 [16950])
+> 	Subsystem: 1415:9501
+> 	Flags: medium devsel, IRQ 21
+> 	I/O ports at ec00 [size=32]
+> 	Memory at fbfff000 (32-bit, non-prefetchable) [size=4K]
+> 	I/O ports at e880 [size=32]
+> 	Memory at fbffe000 (32-bit, non-prefetchable) [size=4K]
+> 	Capabilities: [40] Power Management version 1
+> 	Kernel driver in use: perle-serial
+> 	Kernel modules: perle-serial
+> 
+> 04:07.1 0680: 155f:b008
+> 	Subsystem: 1415:9511
+> 	Flags: medium devsel, IRQ 21
+> 	I/O ports at e800 [size=32]
+> 	Memory at fbffd000 (32-bit, non-prefetchable) [size=4K]
+> 	I/O ports at e480 [size=32]
+> 	Memory at fbffc000 (32-bit, non-prefetchable) [size=4K]
+> 	Capabilities: [40] Power Management version 1
+> 	Kernel driver in use: perle-serial
+> 	Kernel modules: perle-serial
+> 
+> 
+> $
+> 
+> There's nothing funky about this card except that one of the lines is
+> either DTR or RTS if I've understood the scarce documentation.
+> 
+> Anyway, I was wondering what's involved in getting the
+> drivers/tty/serial/8250_pci.c to support this?
 
-On omap3630 onwards uart wer reg has bit 7
-for tx wakeup enable.
+Have you tried adding the pci device ids to the driver and see how well
+it works, or not?
 
-Without this bit set some uart sluggishness might be seen
-while printing data on console, response is better when
-enabling this bit.
-Tested with Beagle XM (OMAP3630)
-
-Cc: Kevin Hilman <khilman@ti.com>
-Cc: Paul Walmsley <paul@pwsan.com>
-Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
----
-But on omap3430 the bit is not available.
-
- arch/arm/plat-omap/include/plat/omap-serial.h |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/plat-omap/include/plat/omap-serial.h
-index 9ff4444..0c22d8d 100644
---- a/arch/arm/plat-omap/include/plat/omap-serial.h
-+++ b/arch/arm/plat-omap/include/plat/omap-serial.h
-@@ -39,7 +39,7 @@
- /* WER = 0x7F
-  * Enable module level wakeup in WER reg
-  */
--#define OMAP_UART_WER_MOD_WKUP	0X7F
-+#define OMAP_UART_WER_MOD_WKUP	0xFF
- 
- /* Enable XON/XOFF flow control on output */
- #define OMAP_UART_SW_TX		0x04
--- 
-1.7.5.4
-
+greg k-h
