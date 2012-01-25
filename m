@@ -1,54 +1,1040 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH v3] serial/efm32: add new driver
-Date: Tue, 24 Jan 2012 14:05:22 -0800
-Message-ID: <20120124220522.GA10590@kroah.com>
-References: <1324561092-1945-1-git-send-email-u.kleine-koenig@pengutronix.de>
- <1326127447-20284-1-git-send-email-u.kleine-koenig@pengutronix.de>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v4] serial/efm32: add new driver
+Date: Wed, 25 Jan 2012 09:05:04 +0100
+Message-ID: <1327478704-4233-1-git-send-email-u.kleine-koenig@pengutronix.de>
+References: <20120124220522.GA10590@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:37076 "EHLO
-	out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751702Ab2AXWQS (ORCPT
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:35028 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751104Ab2AYIFY (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 24 Jan 2012 17:16:18 -0500
-Received: from compute5.internal (compute5.nyi.mail.srv.osa [10.202.2.45])
-	by gateway1.nyi.mail.srv.osa (Postfix) with ESMTP id DF42E2139A
-	for <linux-serial@vger.kernel.org>; Tue, 24 Jan 2012 17:16:17 -0500 (EST)
-Content-Disposition: inline
-In-Reply-To: <1326127447-20284-1-git-send-email-u.kleine-koenig@pengutronix.de>
+	Wed, 25 Jan 2012 03:05:24 -0500
+In-Reply-To: <20120124220522.GA10590@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+To: Greg KH <greg@kroah.com>
 Cc: linux-kernel@vger.kernel.org, Alan Cox <alan@linux.intel.com>, kernel@pengutronix.de, devicetree-discuss@lists.ozlabs.org, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org
 
-On Mon, Jan 09, 2012 at 05:44:07PM +0100, Uwe Kleine-K=F6nig wrote:
-> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> ---
-> Hello,
+Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+---
+changes since v3 (id:1326127447-20284-1-git-send-email-u.kleine-koenig@=
+pengutronix.de)
+ - increase number of ports to support UART additionally to USART ports
+ - implement choosing route location
+ - implement setting stopbit config
+   (before one stop bit was configured and CSTOPB was set unconditional=
+ly which
+   is wrong. Spotted by Russell King.)
+ - implement break, sysrq and overflow detection
+ - drop unrelated changing to make patch apply on v3.3-rc1
+
+Hello Greg,
+
+On Tue, Jan 24, 2012 at 02:05:22PM -0800, Greg KH wrote:
+> On Mon, Jan 09, 2012 at 05:44:07PM +0100, Uwe Kleine-K=C3=B6nig wrote=
+:
+> > Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.d=
+e>
+> > ---
+> > Hello,
+> >=20
+> > changes since v2:
+> > - use {read,write}l_relaxed
+> > - rename driver to efm32-uart as USARTs and UARTs can be handled bo=
+th
+> >   with it
+> > - disable TX in .stop_tx (which needs some changes related to
+> >   USARTn_IF_TXC)
+> >=20
+> > Best regards
+> > Uwe
+> >=20
+> >  .../devicetree/bindings/tty/serial/efm32-uart.txt  |   14 +
+> >  arch/arm/boot/dts/efm32gg-dk3750.dts               |    2 +-
+> >  arch/arm/mach-efm32/devices/pdev-efm32-usart.c     |    6 +-
 >=20
-> changes since v2:
-> - use {read,write}l_relaxed
-> - rename driver to efm32-uart as USARTs and UARTs can be handled both
->   with it
-> - disable TX in .stop_tx (which needs some changes related to
->   USARTn_IF_TXC)
+> This file isn't in 3.3-rc1, so I can't apply this patch :(
 >=20
-> Best regards
-> Uwe
->=20
->  .../devicetree/bindings/tty/serial/efm32-uart.txt  |   14 +
->  arch/arm/boot/dts/efm32gg-dk3750.dts               |    2 +-
->  arch/arm/mach-efm32/devices/pdev-efm32-usart.c     |    6 +-
+> What tree is it supposed to be against?
+Sorry, I messed this up, it bases on my private development tree. These
+two changes should go independant of the driver patch via an ARM tree
+(if at all).
 
-This file isn't in 3.3-rc1, so I can't apply this patch :(
+I added a few more features in the meantime, so the options are:
+ - take v3 simply droping the hunks changing
+   arch/arm/boot/dts/efm32gg-dk3750.dts and
+   arch/arm/mach-efm32/devices/pdev-efm32-usart.c
+ - take this for 3.3
+ - take this for 3.4
 
-What tree is it supposed to be against?
+My preference would be of course the second option, but for me the othe=
+r two
+would be OK if you don't like taking the update that late, too.
 
-thanks,
+Thanks
+Uwe
 
-greg k-h
+---
+ .../devicetree/bindings/tty/serial/efm32-uart.txt  |   14 +
+ drivers/tty/serial/Kconfig                         |   13 +
+ drivers/tty/serial/Makefile                        |    1 +
+ drivers/tty/serial/efm32-uart.c                    |  830 ++++++++++++=
+++++++++
+ include/linux/platform_data/efm32-uart.h           |   18 +
+ include/linux/serial_core.h                        |    2 +
+ 6 files changed, 878 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/tty/serial/efm32-=
+uart.txt
+ create mode 100644 drivers/tty/serial/efm32-uart.c
+ create mode 100644 include/linux/platform_data/efm32-uart.h
+
+diff --git a/Documentation/devicetree/bindings/tty/serial/efm32-uart.tx=
+t b/Documentation/devicetree/bindings/tty/serial/efm32-uart.txt
+new file mode 100644
+index 0000000..6588b69
+--- /dev/null
++++ b/Documentation/devicetree/bindings/tty/serial/efm32-uart.txt
+@@ -0,0 +1,14 @@
++* Energymicro efm32 UART
++
++Required properties:
++- compatible : Should be "efm32,uart"
++- reg : Address and length of the register set
++- interrupts : Should contain uart interrupt
++
++Example:
++
++uart@0x4000c400 {
++	compatible =3D "efm32,uart";
++	reg =3D <0x4000c400 0x400>;
++	interrupts =3D <15>;
++};
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index aca2386..6e24a8f 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1628,4 +1628,17 @@ config SERIAL_AR933X_NR_UARTS
+ 	  Set this to the number of serial ports you want the driver
+ 	  to support.
+=20
++config SERIAL_EFM32_UART
++	tristate "EFM32 UART/USART port."
++	depends on ARCH_EFM32
++	select SERIAL_CORE
++	help
++	  This driver support the USART and UART ports on
++	  Energy Micro's efm32 SoCs.
++
++config SERIAL_EFM32_UART_CONSOLE
++	bool "EFM32 UART/USART console support"
++	depends on SERIAL_EFM32_UART=3Dy
++	select SERIAL_CORE_CONSOLE
++
+ endmenu
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index f5b01f2..1997ad4 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -92,3 +92,4 @@ obj-$(CONFIG_SERIAL_LANTIQ)	+=3D lantiq.o
+ obj-$(CONFIG_SERIAL_XILINX_PS_UART) +=3D xilinx_uartps.o
+ obj-$(CONFIG_SERIAL_SIRFSOC) +=3D sirfsoc_uart.o
+ obj-$(CONFIG_SERIAL_AR933X)   +=3D ar933x_uart.o
++obj-$(CONFIG_SERIAL_EFM32_UART) +=3D efm32-uart.o
+diff --git a/drivers/tty/serial/efm32-uart.c b/drivers/tty/serial/efm32=
+-uart.c
+new file mode 100644
+index 0000000..615e464
+--- /dev/null
++++ b/drivers/tty/serial/efm32-uart.c
+@@ -0,0 +1,830 @@
++#if defined(CONFIG_SERIAL_EFM32_UART_CONSOLE) && defined(CONFIG_MAGIC_=
+SYSRQ)
++#define SUPPORT_SYSRQ
++#endif
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/io.h>
++#include <linux/platform_device.h>
++#include <linux/console.h>
++#include <linux/sysrq.h>
++#include <linux/serial_core.h>
++#include <linux/tty_flip.h>
++#include <linux/slab.h>
++#include <linux/clk.h>
++#include <linux/of.h>
++#include <linux/of_device.h>
++
++#include <linux/platform_data/efm32-uart.h>
++
++#define DRIVER_NAME "efm32-uart"
++#define DEV_NAME "ttyefm"
++
++#define UARTn_CTRL		0x00
++#define UARTn_CTRL_SYNC		0x0001
++#define UARTn_CTRL_TXBIL		0x1000
++
++#define UARTn_FRAME		0x04
++#define UARTn_FRAME_DATABITS__MASK	0x000f
++#define UARTn_FRAME_DATABITS(n)		((n) - 3)
++#define UARTn_FRAME_PARITY_NONE		0x0000
++#define UARTn_FRAME_PARITY_EVEN		0x0200
++#define UARTn_FRAME_PARITY_ODD		0x0300
++#define UARTn_FRAME_STOPBITS_HALF	0x0000
++#define UARTn_FRAME_STOPBITS_ONE	0x1000
++#define UARTn_FRAME_STOPBITS_TWO	0x3000
++
++#define UARTn_CMD		0x0c
++#define UARTn_CMD_RXEN			0x0001
++#define UARTn_CMD_RXDIS		0x0002
++#define UARTn_CMD_TXEN			0x0004
++#define UARTn_CMD_TXDIS		0x0008
++
++#define UARTn_STATUS		0x10
++#define UARTn_STATUS_TXENS		0x0002
++#define UARTn_STATUS_TXC		0x0020
++#define UARTn_STATUS_TXBL		0x0040
++#define UARTn_STATUS_RXDATAV		0x0080
++
++#define UARTn_CLKDIV		0x14
++
++#define UARTn_RXDATAX		0x18
++#define UARTn_RXDATAX_RXDATA__MASK	0x01ff
++#define UARTn_RXDATAX_PERR		0x4000
++#define UARTn_RXDATAX_FERR		0x8000
++/*
++ * This is a software only flag used for ignore_status_mask and
++ * read_status_mask! It's used for breaks that the hardware doesn't re=
+port
++ * explicitly.
++ */
++#define SW_UARTn_RXDATAX_BERR		0x2000
++
++#define UARTn_TXDATA		0x34
++
++#define UARTn_IF		0x40
++#define UARTn_IF_TXC			0x0001
++#define UARTn_IF_TXBL			0x0002
++#define UARTn_IF_RXDATAV		0x0004
++#define UARTn_IF_RXOF			0x0010
++
++#define UARTn_IFS		0x44
++#define UARTn_IFC		0x48
++#define UARTn_IEN		0x4c
++
++#define UARTn_ROUTE		0x54
++#define UARTn_ROUTE_LOCATION__MASK	0x0700
++#define UARTn_ROUTE_LOCATION(n)		(((n) << 8) & UARTn_ROUTE_LOCATION__M=
+ASK)
++#define UARTn_ROUTE_RXPEN		0x0001
++#define UARTn_ROUTE_TXPEN		0x0002
++
++struct efm32_uart_port {
++	struct uart_port port;
++	unsigned int txirq;
++	struct clk *clk;
++};
++#define to_efm_port(_port) container_of(_port, struct efm32_uart_port,=
+ port)
++#define efm_debug(efm_port, format, arg...)			\
++	dev_dbg(efm_port->port.dev, format, ##arg)
++
++static void efm32_uart_write32(struct efm32_uart_port *efm_port,
++		u32 value, unsigned offset)
++{
++	writel_relaxed(value, efm_port->port.membase + offset);
++}
++
++static u32 efm32_uart_read32(struct efm32_uart_port *efm_port,
++		unsigned offset)
++{
++	return readl_relaxed(efm_port->port.membase + offset);
++}
++
++static unsigned int efm32_uart_tx_empty(struct uart_port *port)
++{
++	struct efm32_uart_port *efm_port =3D to_efm_port(port);
++	u32 status =3D efm32_uart_read32(efm_port, UARTn_STATUS);
++
++	if (status & UARTn_STATUS_TXC)
++		return TIOCSER_TEMT;
++	else
++		return 0;
++}
++
++static void efm32_uart_set_mctrl(struct uart_port *port, unsigned int =
+mctrl)
++{
++	/* sorry, neither handshaking lines nor loop functionallity */
++}
++
++static unsigned int efm32_uart_get_mctrl(struct uart_port *port)
++{
++	/* sorry, no handshaking lines available */
++	return TIOCM_CAR | TIOCM_CTS | TIOCM_DSR;
++}
++
++static void efm32_uart_stop_tx(struct uart_port *port)
++{
++	struct efm32_uart_port *efm_port =3D to_efm_port(port);
++	u32 ien =3D efm32_uart_read32(efm_port,  UARTn_IEN);
++
++	efm32_uart_write32(efm_port, UARTn_CMD_TXDIS, UARTn_CMD);
++	ien &=3D ~(UARTn_IF_TXC | UARTn_IF_TXBL);
++	efm32_uart_write32(efm_port, ien, UARTn_IEN);
++}
++
++static void efm32_uart_tx_chars(struct efm32_uart_port *efm_port)
++{
++	struct uart_port *port =3D &efm_port->port;
++	struct circ_buf *xmit =3D &port->state->xmit;
++
++	while (efm32_uart_read32(efm_port, UARTn_STATUS) &
++			UARTn_STATUS_TXBL) {
++		if (port->x_char) {
++			port->icount.tx++;
++			efm32_uart_write32(efm_port, port->x_char,
++					UARTn_TXDATA);
++			port->x_char =3D 0;
++			continue;
++		}
++		if (!uart_circ_empty(xmit) && !uart_tx_stopped(port)) {
++			port->icount.tx++;
++			efm32_uart_write32(efm_port, xmit->buf[xmit->tail],
++					UARTn_TXDATA);
++			xmit->tail =3D (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
++		} else
++			break;
++	}
++
++	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
++		uart_write_wakeup(port);
++
++	if (!port->x_char && uart_circ_empty(xmit) &&
++			efm32_uart_read32(efm_port, UARTn_STATUS) &
++				UARTn_STATUS_TXC)
++		efm32_uart_stop_tx(port);
++}
++
++static void efm32_uart_start_tx(struct uart_port *port)
++{
++	struct efm32_uart_port *efm_port =3D to_efm_port(port);
++	u32 ien;
++
++	efm32_uart_write32(efm_port,
++			UARTn_IF_TXBL | UARTn_IF_TXC, UARTn_IFC);
++	ien =3D efm32_uart_read32(efm_port, UARTn_IEN);
++	efm32_uart_write32(efm_port,
++			ien | UARTn_IF_TXBL | UARTn_IF_TXC, UARTn_IEN);
++	efm32_uart_write32(efm_port, UARTn_CMD_TXEN, UARTn_CMD);
++
++	efm32_uart_tx_chars(efm_port);
++}
++
++static void efm32_uart_stop_rx(struct uart_port *port)
++{
++	struct efm32_uart_port *efm_port =3D to_efm_port(port);
++
++	efm32_uart_write32(efm_port, UARTn_CMD_RXDIS, UARTn_CMD);
++}
++
++static void efm32_uart_enable_ms(struct uart_port *port)
++{
++	/* no handshake lines, no modem status interrupts */
++}
++
++static void efm32_uart_break_ctl(struct uart_port *port, int ctl)
++{
++	/* not possible without fiddling with gpios */
++}
++
++static void efm32_uart_rx_chars(struct efm32_uart_port *efm_port,
++		struct tty_struct *tty)
++{
++	struct uart_port *port =3D &efm_port->port;
++
++	while (efm32_uart_read32(efm_port, UARTn_STATUS) &
++			UARTn_STATUS_RXDATAV) {
++		u32 rxdata =3D efm32_uart_read32(efm_port, UARTn_RXDATAX);
++		int flag =3D 0;
++
++		/*
++		 * This is a reserved bit and I only saw it read as 0. But to be
++		 * sure not to be confused too much by new devices adhere to the
++		 * warning in the reference manual that reserverd bits might
++		 * read as 1 in the future.
++		 */
++		rxdata &=3D ~SW_UARTn_RXDATAX_BERR;
++
++		port->icount.rx++;
++
++		if ((rxdata & UARTn_RXDATAX_FERR) &&
++				!(rxdata & UARTn_RXDATAX_RXDATA__MASK)) {
++			rxdata |=3D SW_UARTn_RXDATAX_BERR;
++			port->icount.brk++;
++			if (uart_handle_break(port))
++				continue;
++		} else if (rxdata & UARTn_RXDATAX_PERR)
++			port->icount.parity++;
++		else if (rxdata & UARTn_RXDATAX_FERR)
++			port->icount.frame++;
++
++		rxdata &=3D port->read_status_mask;
++
++		if (rxdata & SW_UARTn_RXDATAX_BERR)
++			flag =3D TTY_BREAK;
++		else if (rxdata & UARTn_RXDATAX_PERR)
++			flag =3D TTY_PARITY;
++		else if (rxdata & UARTn_RXDATAX_FERR)
++			flag =3D TTY_FRAME;
++		else if (uart_handle_sysrq_char(port,
++					rxdata & UARTn_RXDATAX_RXDATA__MASK))
++			continue;
++
++		if (tty && (rxdata & port->ignore_status_mask) =3D=3D 0)
++			tty_insert_flip_char(tty,
++					rxdata & UARTn_RXDATAX_RXDATA__MASK, flag);
++	}
++}
++
++static irqreturn_t efm32_uart_rxirq(int irq, void *data)
++{
++	struct efm32_uart_port *efm_port =3D data;
++	u32 irqflag =3D efm32_uart_read32(efm_port, UARTn_IF);
++	int handled =3D IRQ_NONE;
++	struct uart_port *port =3D &efm_port->port;
++	struct tty_struct *tty;
++
++	spin_lock(&port->lock);
++
++	tty =3D tty_kref_get(port->state->port.tty);
++
++	if (irqflag & UARTn_IF_RXDATAV) {
++		efm32_uart_write32(efm_port, UARTn_IF_RXDATAV, UARTn_IFC);
++		efm32_uart_rx_chars(efm_port, tty);
++
++		handled =3D IRQ_HANDLED;
++	}
++
++	if (irqflag & UARTn_IF_RXOF) {
++		efm32_uart_write32(efm_port, UARTn_IF_RXOF, UARTn_IFC);
++		port->icount.overrun++;
++		if (tty)
++			tty_insert_flip_char(tty, 0, TTY_OVERRUN);
++
++		handled =3D IRQ_HANDLED;
++	}
++
++	if (tty) {
++		tty_flip_buffer_push(tty);
++		tty_kref_put(tty);
++	}
++
++	spin_unlock(&port->lock);
++
++	return handled;
++}
++
++static irqreturn_t efm32_uart_txirq(int irq, void *data)
++{
++	struct efm32_uart_port *efm_port =3D data;
++	u32 irqflag =3D efm32_uart_read32(efm_port, UARTn_IF);
++
++	/* TXBL doesn't need to be cleared */
++	if (irqflag & UARTn_IF_TXC)
++		efm32_uart_write32(efm_port, UARTn_IF_TXC, UARTn_IFC);
++
++	if (irqflag & (UARTn_IF_TXC | UARTn_IF_TXBL)) {
++		efm32_uart_tx_chars(efm_port);
++		return IRQ_HANDLED;
++	} else
++		return IRQ_NONE;
++}
++
++static int efm32_uart_startup(struct uart_port *port)
++{
++	struct efm32_uart_port *efm_port =3D to_efm_port(port);
++	u32 location =3D 0;
++	struct efm32_uart_pdata *pdata =3D dev_get_platdata(port->dev);
++	int ret;
++
++	if (pdata)
++		location =3D UARTn_ROUTE_LOCATION(pdata->location);
++
++	ret =3D clk_enable(efm_port->clk);
++	if (ret) {
++		efm_debug(efm_port, "failed to enable clk\n");
++		goto err_clk_enable;
++	}
++	port->uartclk =3D clk_get_rate(efm_port->clk);
++
++	/* Enable pins at configured location */
++	efm32_uart_write32(efm_port, location | UARTn_ROUTE_RXPEN | UARTn_ROU=
+TE_TXPEN,
++			UARTn_ROUTE);
++
++	ret =3D request_irq(port->irq, efm32_uart_rxirq, 0,
++			DRIVER_NAME, efm_port);
++	if (ret) {
++		efm_debug(efm_port, "failed to register rxirq\n");
++		goto err_request_irq_rx;
++	}
++
++	/* disable all irqs */
++	efm32_uart_write32(efm_port, 0, UARTn_IEN);
++
++	ret =3D request_irq(efm_port->txirq, efm32_uart_txirq, 0,
++			DRIVER_NAME, efm_port);
++	if (ret) {
++		efm_debug(efm_port, "failed to register txirq\n");
++		free_irq(port->irq, efm_port);
++err_request_irq_rx:
++
++		clk_disable(efm_port->clk);
++	} else {
++		efm32_uart_write32(efm_port,
++				UARTn_IF_RXDATAV | UARTn_IF_RXOF, UARTn_IEN);
++		efm32_uart_write32(efm_port, UARTn_CMD_RXEN, UARTn_CMD);
++	}
++
++err_clk_enable:
++	return ret;
++}
++
++static void efm32_uart_shutdown(struct uart_port *port)
++{
++	struct efm32_uart_port *efm_port =3D to_efm_port(port);
++
++	efm32_uart_write32(efm_port, 0, UARTn_IEN);
++	free_irq(port->irq, efm_port);
++
++	clk_disable(efm_port->clk);
++}
++
++static void efm32_uart_set_termios(struct uart_port *port,
++		struct ktermios *new, struct ktermios *old)
++{
++	struct efm32_uart_port *efm_port =3D to_efm_port(port);
++	unsigned long flags;
++	unsigned baud;
++	u32 clkdiv;
++	u32 frame =3D 0;
++
++	/* no modem control lines */
++	new->c_cflag &=3D ~(CRTSCTS | CMSPAR);
++
++	baud =3D uart_get_baud_rate(port, new, old,
++			DIV_ROUND_CLOSEST(port->uartclk, 16 * 8192),
++			DIV_ROUND_CLOSEST(port->uartclk, 16));
++
++	switch (new->c_cflag & CSIZE) {
++	case CS5:
++		frame |=3D UARTn_FRAME_DATABITS(5);
++		break;
++	case CS6:
++		frame |=3D UARTn_FRAME_DATABITS(6);
++		break;
++	case CS7:
++		frame |=3D UARTn_FRAME_DATABITS(7);
++		break;
++	case CS8:
++		frame |=3D UARTn_FRAME_DATABITS(8);
++		break;
++	}
++
++	if (new->c_cflag & CSTOPB)
++		/* the receiver only verifies the first stop bit */
++		frame |=3D UARTn_FRAME_STOPBITS_TWO;
++	else
++		frame |=3D UARTn_FRAME_STOPBITS_ONE;
++
++	if (new->c_cflag & PARENB) {
++		if (new->c_cflag & PARODD)
++			frame |=3D UARTn_FRAME_PARITY_ODD;
++		else
++			frame |=3D UARTn_FRAME_PARITY_EVEN;
++	} else
++		frame |=3D UARTn_FRAME_PARITY_NONE;
++
++	/*
++	 * the 6 lowest bits of CLKDIV are dc, bit 6 has value 0.25.
++	 * port->uartclk <=3D 14e6, so 4 * port->uartclk doesn't overflow.
++	 */
++	clkdiv =3D (DIV_ROUND_CLOSEST(4 * port->uartclk, 16 * baud) - 4) << 6=
+;
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	efm32_uart_write32(efm_port,
++			UARTn_CMD_TXDIS | UARTn_CMD_RXDIS, UARTn_CMD);
++
++	port->read_status_mask =3D UARTn_RXDATAX_RXDATA__MASK;
++	if (new->c_iflag & INPCK)
++		port->read_status_mask |=3D
++			UARTn_RXDATAX_FERR | UARTn_RXDATAX_PERR;
++	if (new->c_iflag & (BRKINT | PARMRK))
++		port->read_status_mask |=3D SW_UARTn_RXDATAX_BERR;
++
++	port->ignore_status_mask =3D 0;
++	if (new->c_iflag & IGNPAR)
++		port->ignore_status_mask |=3D
++			UARTn_RXDATAX_FERR | UARTn_RXDATAX_PERR;
++	if (new->c_iflag & IGNBRK)
++		port->ignore_status_mask |=3D SW_UARTn_RXDATAX_BERR;
++
++	uart_update_timeout(port, new->c_cflag, baud);
++
++	efm32_uart_write32(efm_port, UARTn_CTRL_TXBIL, UARTn_CTRL);
++	efm32_uart_write32(efm_port, frame, UARTn_FRAME);
++	efm32_uart_write32(efm_port, clkdiv, UARTn_CLKDIV);
++
++	efm32_uart_write32(efm_port, UARTn_CMD_TXEN | UARTn_CMD_RXEN,
++			UARTn_CMD);
++
++	spin_unlock_irqrestore(&port->lock, flags);
++}
++
++static const char *efm32_uart_type(struct uart_port *port)
++{
++	return port->type =3D=3D PORT_EFMUART ? "efm32-uart" : NULL;
++}
++
++static void efm32_uart_release_port(struct uart_port *port)
++{
++	struct efm32_uart_port *efm_port =3D to_efm_port(port);
++
++	clk_unprepare(efm_port->clk);
++	clk_put(efm_port->clk);
++	iounmap(port->membase);
++}
++
++static int efm32_uart_request_port(struct uart_port *port)
++{
++	struct efm32_uart_port *efm_port =3D to_efm_port(port);
++	int ret;
++
++	port->membase =3D ioremap(port->mapbase, 60);
++	if (!efm_port->port.membase) {
++		ret =3D -ENOMEM;
++		efm_debug(efm_port, "failed to remap\n");
++		goto err_ioremap;
++	}
++
++	efm_port->clk =3D clk_get(port->dev, NULL);
++	if (IS_ERR(efm_port->clk)) {
++		ret =3D PTR_ERR(efm_port->clk);
++		efm_debug(efm_port, "failed to get clock\n");
++		goto err_clk_get;
++	}
++
++	ret =3D clk_prepare(efm_port->clk);
++	if (ret) {
++		clk_put(efm_port->clk);
++err_clk_get:
++
++		iounmap(port->membase);
++err_ioremap:
++		return ret;
++	}
++	return 0;
++}
++
++static void efm32_uart_config_port(struct uart_port *port, int type)
++{
++	if (type & UART_CONFIG_TYPE &&
++			!efm32_uart_request_port(port))
++		port->type =3D PORT_EFMUART;
++}
++
++static int efm32_uart_verify_port(struct uart_port *port,
++		struct serial_struct *serinfo)
++{
++	int ret =3D 0;
++
++	if (serinfo->type !=3D PORT_UNKNOWN && serinfo->type !=3D PORT_EFMUAR=
+T)
++		ret =3D -EINVAL;
++
++	return ret;
++}
++
++static struct uart_ops efm32_uart_pops =3D {
++	.tx_empty =3D efm32_uart_tx_empty,
++	.set_mctrl =3D efm32_uart_set_mctrl,
++	.get_mctrl =3D efm32_uart_get_mctrl,
++	.stop_tx =3D efm32_uart_stop_tx,
++	.start_tx =3D efm32_uart_start_tx,
++	.stop_rx =3D efm32_uart_stop_rx,
++	.enable_ms =3D efm32_uart_enable_ms,
++	.break_ctl =3D efm32_uart_break_ctl,
++	.startup =3D efm32_uart_startup,
++	.shutdown =3D efm32_uart_shutdown,
++	.set_termios =3D efm32_uart_set_termios,
++	.type =3D efm32_uart_type,
++	.release_port =3D efm32_uart_release_port,
++	.request_port =3D efm32_uart_request_port,
++	.config_port =3D efm32_uart_config_port,
++	.verify_port =3D efm32_uart_verify_port,
++};
++
++static struct efm32_uart_port *efm32_uart_ports[5];
++
++#ifdef CONFIG_SERIAL_EFM32_UART_CONSOLE
++static void efm32_uart_console_putchar(struct uart_port *port, int ch)
++{
++	struct efm32_uart_port *efm_port =3D to_efm_port(port);
++	unsigned int timeout =3D 0x400;
++	u32 status;
++
++	while (1) {
++		status =3D efm32_uart_read32(efm_port, UARTn_STATUS);
++
++		if (status & UARTn_STATUS_TXBL)
++			break;
++		if (!timeout--)
++			return;
++	}
++	efm32_uart_write32(efm_port, ch, UARTn_TXDATA);
++}
++
++static void efm32_uart_console_write(struct console *co, const char *s=
+,
++		unsigned int count)
++{
++	struct efm32_uart_port *efm_port =3D efm32_uart_ports[co->index];
++	u32 status =3D efm32_uart_read32(efm_port, UARTn_STATUS);
++	unsigned int timeout =3D 0x400;
++
++	if (!(status & UARTn_STATUS_TXENS))
++		efm32_uart_write32(efm_port, UARTn_CMD_TXEN, UARTn_CMD);
++
++	uart_console_write(&efm_port->port, s, count,
++			efm32_uart_console_putchar);
++
++	/* Wait for the transmitter to become empty */
++	while (1) {
++		u32 status =3D efm32_uart_read32(efm_port, UARTn_STATUS);
++		if (status & UARTn_STATUS_TXC)
++			break;
++		if (!timeout--)
++			break;
++	}
++
++	if (!(status & UARTn_STATUS_TXENS))
++		efm32_uart_write32(efm_port, UARTn_CMD_TXDIS, UARTn_CMD);
++}
++
++static void efm32_uart_console_get_options(struct efm32_uart_port *efm=
+_port,
++		int *baud, int *parity, int *bits)
++{
++	u32 ctrl =3D efm32_uart_read32(efm_port, UARTn_CTRL);
++	u32 route, clkdiv, frame;
++
++	if (ctrl & UARTn_CTRL_SYNC)
++		/* not operating in async mode */
++		return;
++
++	route =3D efm32_uart_read32(efm_port, UARTn_ROUTE);
++	if (!(route & UARTn_ROUTE_TXPEN))
++		/* tx pin not routed */
++		return;
++
++	clkdiv =3D efm32_uart_read32(efm_port, UARTn_CLKDIV);
++
++	*baud =3D DIV_ROUND_CLOSEST(4 * efm_port->port.uartclk,
++			16 * (4 + (clkdiv >> 6)));
++
++	frame =3D efm32_uart_read32(efm_port, UARTn_FRAME);
++	if (frame & UARTn_FRAME_PARITY_ODD)
++		*parity =3D 'o';
++	else if (frame & UARTn_FRAME_PARITY_EVEN)
++		*parity =3D 'e';
++	else
++		*parity =3D 'n';
++
++	*bits =3D (frame & UARTn_FRAME_DATABITS__MASK) -
++			UARTn_FRAME_DATABITS(4) + 4;
++
++	efm_debug(efm_port, "get_opts: options=3D%d%c%d\n",
++			*baud, *parity, *bits);
++}
++
++static int efm32_uart_console_setup(struct console *co, char *options)
++{
++	struct efm32_uart_port *efm_port;
++	int baud =3D 115200;
++	int bits =3D 8;
++	int parity =3D 'n';
++	int flow =3D 'n';
++	int ret;
++
++	if (co->index < 0 || co->index >=3D ARRAY_SIZE(efm32_uart_ports)) {
++		unsigned i;
++		for (i =3D 0; i < ARRAY_SIZE(efm32_uart_ports); ++i) {
++			if (efm32_uart_ports[i]) {
++				pr_warn("efm32-console: fall back to console index %u (from %hhi)\=
+n",
++						i, co->index);
++				co->index =3D i;
++				break;
++			}
++		}
++	}
++
++	efm_port =3D efm32_uart_ports[co->index];
++	if (!efm_port) {
++		pr_warn("efm32-console: No port at %d\n", co->index);
++		return -ENODEV;
++	}
++
++	ret =3D clk_prepare(efm_port->clk);
++	if (ret) {
++		dev_warn(efm_port->port.dev,
++				"console: clk_prepare failed: %d\n", ret);
++		return ret;
++	}
++
++	efm_port->port.uartclk =3D clk_get_rate(efm_port->clk);
++
++	if (options)
++		uart_parse_options(options, &baud, &parity, &bits, &flow);
++	else
++		efm32_uart_console_get_options(efm_port,
++				&baud, &parity, &bits);
++
++	return uart_set_options(&efm_port->port, co, baud, parity, bits, flow=
+);
++}
++
++static struct uart_driver efm32_uart_reg;
++
++static struct console efm32_uart_console =3D {
++	.name =3D DEV_NAME,
++	.write =3D efm32_uart_console_write,
++	.device =3D uart_console_device,
++	.setup =3D efm32_uart_console_setup,
++	.flags =3D CON_PRINTBUFFER,
++	.index =3D -1,
++	.data =3D &efm32_uart_reg,
++};
++
++#else
++#define efm32_uart_console (*(struct console *)NULL)
++#endif /* ifdef CONFIG_SERIAL_EFM32_UART_CONSOLE / else */
++
++static struct uart_driver efm32_uart_reg =3D {
++	.owner =3D THIS_MODULE,
++	.driver_name =3D DRIVER_NAME,
++	.dev_name =3D DEV_NAME,
++	.nr =3D ARRAY_SIZE(efm32_uart_ports),
++	.cons =3D &efm32_uart_console,
++};
++
++static int efm32_uart_probe_dt(struct platform_device *pdev,
++		struct efm32_uart_port *efm_port)
++{
++	struct device_node *np =3D pdev->dev.of_node;
++	int ret;
++
++	if (!np)
++		return 1;
++
++	ret =3D of_alias_get_id(np, "serial");
++	if (ret < 0) {
++		dev_err(&pdev->dev, "failed to get alias id: %d\n", ret);
++		return ret;
++	} else {
++		efm_port->port.line =3D ret;
++		return 0;
++	}
++
++}
++
++static int __devinit efm32_uart_probe(struct platform_device *pdev)
++{
++	struct efm32_uart_port *efm_port;
++	struct resource *res;
++	int ret;
++
++	efm_port =3D kzalloc(sizeof(*efm_port), GFP_KERNEL);
++	if (!efm_port) {
++		dev_dbg(&pdev->dev, "failed to allocate private data\n");
++		return -ENOMEM;
++	}
++
++	res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res) {
++		ret =3D -ENODEV;
++		dev_dbg(&pdev->dev, "failed to determine base address\n");
++		goto err_get_base;
++	}
++
++	if (resource_size(res) < 60) {
++		ret =3D -EINVAL;
++		dev_dbg(&pdev->dev, "memory resource too small\n");
++		goto err_too_small;
++	}
++
++	ret =3D platform_get_irq(pdev, 0);
++	if (ret <=3D 0) {
++		dev_dbg(&pdev->dev, "failed to get rx irq\n");
++		goto err_get_rxirq;
++	}
++
++	efm_port->port.irq =3D ret;
++
++	ret =3D platform_get_irq(pdev, 1);
++	if (ret <=3D 0)
++		ret =3D efm_port->port.irq + 1;
++
++	efm_port->txirq =3D ret;
++
++	efm_port->port.dev =3D &pdev->dev;
++	efm_port->port.mapbase =3D res->start;
++	efm_port->port.type =3D PORT_EFMUART;
++	efm_port->port.iotype =3D UPIO_MEM32;
++	efm_port->port.fifosize =3D 2;
++	efm_port->port.ops =3D &efm32_uart_pops;
++	efm_port->port.flags =3D UPF_BOOT_AUTOCONF;
++
++	ret =3D efm32_uart_probe_dt(pdev, efm_port);
++	if (ret > 0)
++		/* not created by device tree */
++		efm_port->port.line =3D pdev->id;
++
++	if (efm_port->port.line >=3D 0 &&
++			efm_port->port.line < ARRAY_SIZE(efm32_uart_ports))
++		efm32_uart_ports[efm_port->port.line] =3D efm_port;
++
++	ret =3D uart_add_one_port(&efm32_uart_reg, &efm_port->port);
++	if (ret) {
++		dev_dbg(&pdev->dev, "failed to add port: %d\n", ret);
++
++		if (pdev->id >=3D 0 && pdev->id < ARRAY_SIZE(efm32_uart_ports))
++			efm32_uart_ports[pdev->id] =3D NULL;
++err_get_rxirq:
++err_too_small:
++err_get_base:
++		kfree(efm_port);
++	} else {
++		platform_set_drvdata(pdev, efm_port);
++		dev_dbg(&pdev->dev, "\\o/\n");
++	}
++
++	return ret;
++}
++
++static int __devexit efm32_uart_remove(struct platform_device *pdev)
++{
++	struct efm32_uart_port *efm_port =3D platform_get_drvdata(pdev);
++
++	platform_set_drvdata(pdev, NULL);
++
++	uart_remove_one_port(&efm32_uart_reg, &efm_port->port);
++
++	if (pdev->id >=3D 0 && pdev->id < ARRAY_SIZE(efm32_uart_ports))
++		efm32_uart_ports[pdev->id] =3D NULL;
++
++	kfree(efm_port);
++
++	return 0;
++}
++
++static struct of_device_id efm32_uart_dt_ids[] =3D {
++	{
++		.compatible =3D "efm32,uart",
++	}, {
++		/* sentinel */
++	}
++};
++MODULE_DEVICE_TABLE(of, efm32_uart_dt_ids);
++
++static struct platform_driver efm32_uart_driver =3D {
++	.probe =3D efm32_uart_probe,
++	.remove =3D __devexit_p(efm32_uart_remove),
++
++	.driver =3D {
++		.name =3D DRIVER_NAME,
++		.owner =3D THIS_MODULE,
++		.of_match_table =3D efm32_uart_dt_ids,
++	},
++};
++
++static int __init efm32_uart_init(void)
++{
++	int ret;
++
++	ret =3D uart_register_driver(&efm32_uart_reg);
++	if (ret)
++		return ret;
++
++	ret =3D platform_driver_register(&efm32_uart_driver);
++	if (ret)
++		uart_unregister_driver(&efm32_uart_reg);
++
++	pr_info("EFM32 UART/USART driver\n");
++
++	return ret;
++}
++module_init(efm32_uart_init);
++
++static void __exit efm32_uart_exit(void)
++{
++	platform_driver_unregister(&efm32_uart_driver);
++	uart_unregister_driver(&efm32_uart_reg);
++}
++
++MODULE_AUTHOR("Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>");
++MODULE_DESCRIPTION("EFM32 UART/USART driver");
++MODULE_LICENSE("GPL v2");
++MODULE_ALIAS("platform:" DRIVER_NAME);
+diff --git a/include/linux/platform_data/efm32-uart.h b/include/linux/p=
+latform_data/efm32-uart.h
+new file mode 100644
+index 0000000..ed0e975
+--- /dev/null
++++ b/include/linux/platform_data/efm32-uart.h
+@@ -0,0 +1,18 @@
++/*
++ *
++ *
++ */
++#ifndef __LINUX_PLATFORM_DATA_EFM32_UART_H__
++#define __LINUX_PLATFORM_DATA_EFM32_UART_H__
++
++#include <linux/types.h>
++
++/**
++ * struct efm32_uart_pdata
++ * @location: pinmux location for the I/O pins (to be written to the R=
+OUTE
++ * 	register)
++ */
++struct efm32_uart_pdata {
++	u8 location;
++};
++#endif /* ifndef __LINUX_PLATFORM_DATA_EFM32_UART_H__ */
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index c91ace7..585bfd0 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -210,6 +210,8 @@
+ /* Atheros AR933X SoC */
+ #define PORT_AR933X	99
+=20
++/* Energy Micro efm32 SoC */
++#define PORT_EFMUART   100
+=20
+ #ifdef __KERNEL__
+=20
+--=20
+1.7.8.3
+
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
  in
