@@ -1,84 +1,103 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] serial/efm32: add new driver
-Date: Wed, 25 Jan 2012 16:56:55 +0000
-Message-ID: <201201251656.55514.arnd@arndb.de>
-References: <20111221202847.4ffeba10@bob.linux.org.uk> <20111223204428.GI24496@pengutronix.de> <20120109103458.GD14252@pengutronix.de>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v4] serial/efm32: add new driver
+Date: Wed, 25 Jan 2012 19:36:37 +0100
+Message-ID: <20120125183637.GM6305@pengutronix.de>
+References: <20120124220522.GA10590@kroah.com>
+ <1327478704-4233-1-git-send-email-u.kleine-koenig@pengutronix.de>
+ <20120125155258.GB3608@suse.de>
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-1
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.17.8]:50904 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754883Ab2AYQ5H (ORCPT
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:45378 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751431Ab2AYSgr (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 25 Jan 2012 11:57:07 -0500
-In-Reply-To: <20120109103458.GD14252@pengutronix.de>
+	Wed, 25 Jan 2012 13:36:47 -0500
+Content-Disposition: inline
+In-Reply-To: <20120125155258.GB3608@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Uwe =?iso-8859-1?q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: linux-kernel@vger.kernel.org, Alan Cox <alan@linux.intel.com>, devicetree-discuss@lists.ozlabs.org, Greg Kroah-Hartman <gregkh@suse.de>, kernel@pengutronix.de, linux-serial@vger.kernel.org
+To: Greg KH <gregkh@suse.de>
+Cc: Greg KH <greg@kroah.com>, linux-kernel@vger.kernel.org, Alan Cox <alan@linux.intel.com>, kernel@pengutronix.de, devicetree-discuss@lists.ozlabs.org, linux-serial@vger.kernel.org
 
-On Monday 09 January 2012, Uwe Kleine-K=F6nig wrote:
-> On Fri, Dec 23, 2011 at 09:44:28PM +0100, Uwe Kleine-K=F6nig wrote:
-> =20
-> > > I would suggest that you also support the "clock-frequency" and/o=
-r
-> > > "current-speed" properties that are defined for serial ports, see=
- the
-> > > of_serial driver.
-> > I will have a look to find out what they mean and update the patch
-> > accordingly.
-> I took that look and I don't understand what they are good for in my
-> case.
-> clock-frequency is used to initialize port->uartclk (and helps settin=
-g
-> up port->custom_divisor if current-speed is given). The driver I post=
-ed
-> uses the clk API to determine the clock frequency. So shouldn't the f=
-requency
-> better be specified in the clk part of the dt? (I don't know yet how =
-a
-> dt binding for clks should/can look like, so this is a bit speculativ=
-e,
-> but I'd expect to have nothing more clk related in a device
-> specification but a reference to a clk definition.)
+Hello Greg,
 
-The binding for 8250 serial ports is documented at
-http://www.openfirmware.org/1275/bindings/devices/html/serial.html
-
-If you can always use the clk API to find out the base clock rate,
-that's probably fine, I was mostly trying to make sure we don't
-introduce another duplicate API for this.
-
-The "current-speed" property is used to describe the baud rate that
-should be used by the kernel for this port in order to talk to
-devices connected to the port. This is very useful if you need to
-connect the boot console to a fixed-rate device, and would get
-used instead of the 115200 default you have when nothing else
-is configured on the command line. I don't really know why
-there is no respective option to set parity or flow control
-
-> Independant of my driver I wonder if defining current-speed should al=
-so
-> result in
+On Wed, Jan 25, 2012 at 07:52:58AM -0800, Greg KH wrote:
+> On Wed, Jan 25, 2012 at 09:05:04AM +0100, Uwe Kleine-K=F6nig wrote:
+> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> > ---
+> > changes since v3 (id:1326127447-20284-1-git-send-email-u.kleine-koe=
+nig@pengutronix.de)
+> >  - increase number of ports to support UART additionally to USART p=
+orts
+> >  - implement choosing route location
+> >  - implement setting stopbit config
+> >    (before one stop bit was configured and CSTOPB was set unconditi=
+onally which
+> >    is wrong. Spotted by Russell King.)
+> >  - implement break, sysrq and overflow detection
+> >  - drop unrelated changing to make patch apply on v3.3-rc1
+> >=20
+> > Hello Greg,
+> >=20
+> > On Tue, Jan 24, 2012 at 02:05:22PM -0800, Greg KH wrote:
+> > > On Mon, Jan 09, 2012 at 05:44:07PM +0100, Uwe Kleine-K=F6nig wrot=
+e:
+> > > > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.=
+de>
+> > > > ---
+> > > > Hello,
+> > > >=20
+> > > > changes since v2:
+> > > > - use {read,write}l_relaxed
+> > > > - rename driver to efm32-uart as USARTs and UARTs can be handle=
+d both
+> > > >   with it
+> > > > - disable TX in .stop_tx (which needs some changes related to
+> > > >   USARTn_IF_TXC)
+> > > >=20
+> > > > Best regards
+> > > > Uwe
+> > > >=20
+> > > >  .../devicetree/bindings/tty/serial/efm32-uart.txt  |   14 +
+> > > >  arch/arm/boot/dts/efm32gg-dk3750.dts               |    2 +-
+> > > >  arch/arm/mach-efm32/devices/pdev-efm32-usart.c     |    6 +-
+> > >=20
+> > > This file isn't in 3.3-rc1, so I can't apply this patch :(
+> > >=20
+> > > What tree is it supposed to be against?
+> > Sorry, I messed this up, it bases on my private development tree. T=
+hese
+> > two changes should go independant of the driver patch via an ARM tr=
+ee
+> > (if at all).
+> >=20
+> > I added a few more features in the meantime, so the options are:
+> >  - take v3 simply droping the hunks changing
+> >    arch/arm/boot/dts/efm32gg-dk3750.dts and
+> >    arch/arm/mach-efm32/devices/pdev-efm32-usart.c
+> >  - take this for 3.3
+> >  - take this for 3.4
+> >=20
+> > My preference would be of course the second option, but for me the =
+other two
+> > would be OK if you don't like taking the update that late, too.
 >=20
-> 	port->flags |=3D UPF_SPD_CUST;
->=20
-> (in of_platform_serial_setup()).
+> I was going to take this for the 3.4 merge, adding it to my tree now.
+> It should be ok to drop those hunks, right?
+Yeah, but if you were taking v4 then you wouldn't need to drop these hu=
+nks.
 
-I believe that is not needed because you don't call uart_get_divisor,
-which would be the only place that looks at this flag.
+Best regards
+Uwe
 
-> Having said that and taking into account that my driver doesn't use
-> port->custom_divisor, do you keep suggesting that I should use
-> "clock-frequency" and/or "current-speed"?
-
-clock-frequency seems to be unnecessary, but current-speed would
-still make sense. custom_divisor is simply the method that of_serial
-uses to communicate the bit rate to the 8250 base driver, but you
-could set the divisor directly.
-
-	Arnd
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
+    |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
  in
