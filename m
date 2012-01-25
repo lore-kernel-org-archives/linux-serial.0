@@ -1,79 +1,78 @@
-From: Greg KH <gregkh@suse.de>
-Subject: Re: [PATCH v4] serial/efm32: add new driver
-Date: Wed, 25 Jan 2012 07:52:58 -0800
-Message-ID: <20120125155258.GB3608@suse.de>
-References: <20120124220522.GA10590@kroah.com>
- <1327478704-4233-1-git-send-email-u.kleine-koenig@pengutronix.de>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: Kconfig option for compile time build coverage (Was: Re: [PATCH] serial/efm32: add new driver)
+Date: Wed, 25 Jan 2012 16:16:26 +0000
+Message-ID: <201201251616.27019.arnd@arndb.de>
+References: <20111221202847.4ffeba10@bob.linux.org.uk> <20111223204428.GI24496@pengutronix.de> <20120109095903.GC14252@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: Text/Plain; charset=iso-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1327478704-4233-1-git-send-email-u.kleine-koenig@pengutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Greg KH <greg@kroah.com>, linux-kernel@vger.kernel.org, Alan Cox <alan@linux.intel.com>, kernel@pengutronix.de, devicetree-discuss@lists.ozlabs.org, linux-serial@vger.kernel.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from moutng.kundenserver.de ([212.227.126.171]:55074 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752904Ab2AYQQc (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 25 Jan 2012 11:16:32 -0500
+In-Reply-To: <20120109095903.GC14252@pengutronix.de>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Uwe =?iso-8859-1?q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: linux-kernel@vger.kernel.org, Alan Cox <alan@linux.intel.com>, devicetree-discuss@lists.ozlabs.org, Greg Kroah-Hartman <gregkh@suse.de>, kernel@pengutronix.de, linux-serial@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
 
-On Wed, Jan 25, 2012 at 09:05:04AM +0100, Uwe Kleine-K=F6nig wrote:
-> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> ---
-> changes since v3 (id:1326127447-20284-1-git-send-email-u.kleine-koeni=
-g@pengutronix.de)
->  - increase number of ports to support UART additionally to USART por=
-ts
->  - implement choosing route location
->  - implement setting stopbit config
->    (before one stop bit was configured and CSTOPB was set uncondition=
-ally which
->    is wrong. Spotted by Russell King.)
->  - implement break, sysrq and overflow detection
->  - drop unrelated changing to make patch apply on v3.3-rc1
->=20
-> Hello Greg,
->=20
-> On Tue, Jan 24, 2012 at 02:05:22PM -0800, Greg KH wrote:
-> > On Mon, Jan 09, 2012 at 05:44:07PM +0100, Uwe Kleine-K=F6nig wrote:
-> > > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de=
+On Monday 09 January 2012, Uwe Kleine-K=F6nig wrote:
+> On Fri, Dec 23, 2011 at 09:44:28PM +0100, Uwe Kleine-K=F6nig wrote:
+> > On Fri, Dec 23, 2011 at 10:35:22AM +0000, Arnd Bergmann wrote:
+> > > On Thursday 22 December 2011, Uwe Kleine-K=F6nig wrote:
+> > > > [...]
+> > > > +config SERIAL_EFM32_USART
+> > > > + bool "EFM32 USART port."
+> > > > + depends on ARCH_EFM32
+> > > > + select SERIAL_CORE
+> > [...]
+> > > I would generally prefer not to make the driver depend on the
+> > > platform, so we can get better compile time coverage. I think a b=
+etter
+> > > set of dependencies would be
+> > >=20
+> > >     depends on HAVE_CLK
+> > >     depends on OF
+> > >     default ARCH_EFM32
+> > I'd prefer something like:
+> >=20
+> >       depends on HAVE_CLK
+> >       depends on ARCH_EFM32 || I_DO_BUILD_COVERAGE_TESTING
+> >=20
+> > This would make it easier for Joe User to pick the right options fo=
+r his
+> > kernel (assuming he found out to better keep I_DO_BUILD_COVERAGE_TE=
+STING
+> > disabled). [...]
 >
-> > > ---
-> > > Hello,
-> > >=20
-> > > changes since v2:
-> > > - use {read,write}l_relaxed
-> > > - rename driver to efm32-uart as USARTs and UARTs can be handled =
-both
-> > >   with it
-> > > - disable TX in .stop_tx (which needs some changes related to
-> > >   USARTn_IF_TXC)
-> > >=20
-> > > Best regards
-> > > Uwe
-> > >=20
-> > >  .../devicetree/bindings/tty/serial/efm32-uart.txt  |   14 +
-> > >  arch/arm/boot/dts/efm32gg-dk3750.dts               |    2 +-
-> > >  arch/arm/mach-efm32/devices/pdev-efm32-usart.c     |    6 +-
-> >=20
-> > This file isn't in 3.3-rc1, so I can't apply this patch :(
-> >=20
-> > What tree is it supposed to be against?
-> Sorry, I messed this up, it bases on my private development tree. The=
-se
-> two changes should go independant of the driver patch via an ARM tree
-> (if at all).
->=20
-> I added a few more features in the meantime, so the options are:
->  - take v3 simply droping the hunks changing
->    arch/arm/boot/dts/efm32gg-dk3750.dts and
->    arch/arm/mach-efm32/devices/pdev-efm32-usart.c
->  - take this for 3.3
->  - take this for 3.4
->=20
-> My preference would be of course the second option, but for me the ot=
-her two
-> would be OK if you don't like taking the update that late, too.
+> What do you think about this I_DO_BUILD_COVERAGE_TESTING option? It
+> would allow testers to get all possible options enabled (though there
+> will never be an EFM32 USART port on a non-EFM32 machine I guess) and
+> still users and distribution packagers would easily keep the option o=
+ff
+> even without cluttering .config and {menu,n,x,whatever}config.
 
-I was going to take this for the 3.4 merge, adding it to my tree now.
-It should be ok to drop those hunks, right?
+Sorry for the late reply. The same topic has been discussed a lot of
+times. We have different ways to handle this in the kernel, but the
+way most common way is to use defconfig to decide which drivers to
+use on a given machine but give the user the freedom to both enable
+and disable any driver whereever possible, even if that would be
+a silly thing to do. What we do require normally is that anything
+that can be enabled is also able to be built without errors. A lot
+of drivers have dependencies on platform specific header files
+or other interfaces, so they require that platform to be enabled.
 
-greg k-h
+=46or all others I would not make such a restriction and I would always
+recommend to be specific in the dependencies, e.g depending on HAVE_CLK
+when you use the clock interfaces, instead of depending on other option=
+s
+that implicitly enable HAVE_CLK.
+
+	Arnd
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
