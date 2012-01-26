@@ -1,60 +1,40 @@
-From: Paul Walmsley <paul@pwsan.com>
-Subject: Re: [RFC PATCH] OMAP: UART: Enable tx wakeup bit in wer
-Date: Wed, 25 Jan 2012 12:18:06 -0700 (MST)
-Message-ID: <alpine.DEB.2.00.1201251217120.5324@utopia.booyaka.com>
-References: <1327412249-31575-1-git-send-email-govindraj.raja@ti.com>
+From: "Ramirez Luna, Omar" <omar.ramirez@ti.com>
+Subject: 3.3-rc1 console lag (was: Re: [PATCH v8 00/20] OMAP2+: UART: Runtime
+ adaptation + cleanup)
+Date: Wed, 25 Jan 2012 18:22:26 -0600
+Message-ID: <CAB-zwWg4RS4J1YCcbfMWjLSCcV=oHqk9vaUKKKr0WjnTEuOmxQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from utopia.booyaka.com ([72.9.107.138]:50331 "EHLO
-	utopia.booyaka.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751265Ab2AYTSI (ORCPT
+Received: from na3sys009aog110.obsmtp.com ([74.125.149.203]:41564 "EHLO
+	na3sys009aog110.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751451Ab2AZAW2 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 25 Jan 2012 14:18:08 -0500
-In-Reply-To: <1327412249-31575-1-git-send-email-govindraj.raja@ti.com>
+	Wed, 25 Jan 2012 19:22:28 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Govindraj.R" <govindraj.raja@ti.com>
-Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, Kevin Hilman <khilman@ti.com>, Partha Basak <p-basak2@ti.com>, linux-arm-kernel@lists.infradead.org
+To: Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>, Govindraj Raja <govindraj.raja@ti.com>
+Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Partha Basak <p-basak2@ti.com>, Vishwanath Sripathy <vishwanath.bs@ti.com>, Rajendra Nayak <rnayak@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>
 
-cc'ing linux-arm-kernel also (correct address this time)
+Hi,
 
-Hi
+On Fri, Nov 11, 2011 at 3:57 AM, Govindraj.R <govindraj.raja@ti.com> wrote:
+> Converting uart driver to adapt to pm runtime API's.
+> Code re-org + cleanup.
+> Moving some functionality from serial.c to omap-serial.c
+...
+>
+> Ensure CONFIG_OMAP_PRM is set while testing irq_chaining with uart.
+> And for pm_qos usage ensure CONFIG_CPU_IDLE is selected other wise
+> console might be sluggish.
 
-some comments
+There is console lag for omap2plus_defconfig given that
+CONFIG_CPU_IDLE is not enabled. Is the intention to force CPU_IDLE
+into the defconfig or find an alternative for the new pm_qos when cpu
+idle is disabled.
 
-On Tue, 24 Jan 2012, Govindraj.R wrote:
+Seen on beagle-xm and 3.3-rc1.
 
-> From: "Govindraj.R" <govindraj.raja@ti.com>
-> 
-> On omap3630 onwards uart wer reg has bit 7
-> for tx wakeup enable.
-> 
-> Without this bit set some uart sluggishness might be seen
-> while printing data on console, response is better when
-> enabling this bit.
-> Tested with Beagle XM (OMAP3630)
-> 
-> Cc: Kevin Hilman <khilman@ti.com>
-> Cc: Paul Walmsley <paul@pwsan.com>
-> Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
-> ---
-> But on omap3430 the bit is not available.
+Regards,
 
-Well that's good news that it exists on 36xx+ at least.
- 
-But please make a few changes.
-
-This shouldn't set this bit on UARTs that don't support it.  It should 
-only be set if a hwmod dev_attr flag was set to indicate the presence of 
-this feature.  Using a flag is also important since it will allow us to 
-disable the workaround that we'll need for earlier OMAPs.
-
-Also, I assume that this does not fix the RX sluggishness due to the 
-missing RX timeout wakeup?
-
-Also, this assignment should be using symbolic macros rather than raw 
-bits.
-
-
-- Paul
+Omar
