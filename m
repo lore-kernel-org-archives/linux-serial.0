@@ -1,45 +1,59 @@
-From: Paul Walmsley <paul@pwsan.com>
-Subject: Re: patch "tty: serial: OMAP: ensure FIFO levels are set correctly
- in non-DMA" added to tty tree
-Date: Thu, 26 Jan 2012 12:34:50 -0700 (MST)
-Message-ID: <alpine.DEB.2.00.1201261225520.32667@utopia.booyaka.com>
-References: <13274430881471@kroah.org> <alpine.DEB.2.00.1201251156361.5324@utopia.booyaka.com> <20120126042155.GA3185@suse.de> <alpine.DEB.2.00.1201252124470.11174@utopia.booyaka.com> <20120126191604.GA15516@suse.de>
+From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Subject: Re: [alsa-devel] [PATCH 1/7 v2] dmaengine: add a simple dma library
+Date: Thu, 26 Jan 2012 22:07:50 +0100 (CET)
+Message-ID: <Pine.LNX.4.64.1201262206530.10057@axis700.grange>
+References: <1327589784-4287-1-git-send-email-g.liakhovetski@gmx.de>
+ <1327589784-4287-2-git-send-email-g.liakhovetski@gmx.de>
+ <20120126173444.GM5446@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20120126191604.GA15516@suse.de>
-Sender: linux-omap-owner@vger.kernel.org
-To: Greg KH <gregkh@suse.de>
-Cc: khilman@ti.com, govindraj.raja@ti.com, tomi.valkeinen@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-mmc-owner@vger.kernel.org>
+In-Reply-To: <20120126173444.GM5446@pengutronix.de>
+Sender: linux-mmc-owner@vger.kernel.org
+To: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org, linux-sh@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, Magnus Damm <magnus.damm@gmail.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, linux-mmc@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 26 Jan 2012, Greg KH wrote:
+Hi Sascha
 
-> Ok, I've just reverted both of these patches for now, please send new
-> ones when you have them.
+On Thu, 26 Jan 2012, Sascha Hauer wrote:
 
-Thanks.  A pull request is at the bottom of this message.  The patches 
-are also available from the mailing list archives here:
+> Hi Guennadi,
+> 
+> On Thu, Jan 26, 2012 at 03:56:18PM +0100, Guennadi Liakhovetski wrote:
+> > This patch adds a library of functions, helping to implement dmaengine
+> > drivers for hardware, unable to handle scatter-gather lists natively.
+> > The first version of this driver only supports memcpy and slave DMA
+> > operation.
+> > 
+> > Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+> > ---
+> > 
+> 
+> [...]
+> 
+> > +
+> > +/*
+> > + * For slave DMA we assume, that there is a finite number of DMA slaves in the
+> > + * system, and that each such slave can only use a finite number of channels.
+> > + * We use slave channel IDs to make sure, that no such slave channel ID is
+> > + * allocated more than once.
+> > + */
+> > +static unsigned int slave_num = 256;
+> > +module_param(slave_num, uint, 0444);
+> > +
+> > +/* A bitmask with slave_num bits */
+> > +static unsigned long *simple_slave_used;
+> 
+> You never check that the slave ids passed into this code are
+> within the range of slave_num. Given that this is a user changeable
+> value this is a bit flawy.
 
-http://marc.info/?l=linux-arm-kernel&m=132754676014389&w=2
-http://marc.info/?l=linux-arm-kernel&m=132754677914395&w=2
-http://marc.info/?l=linux-arm-kernel&m=132754676014388&w=2
+Right, never trust the user;-) I'll fix that.
 
-
-- Paul
-
-The following changes since commit dcd6c92267155e70a94b3927bce681ce74b80d1f:
-
-  Linux 3.3-rc1 (2012-01-19 15:04:48 -0800)
-
-are available in the git repository at:
-  git://git.pwsan.com/linux-2.6 omap_serial_fixes_3.3rc
-
-Paul Walmsley (3):
-      tty: serial: OMAP: use a 1-byte RX FIFO threshold in PIO mode
-      tty: serial: OMAP: block idle while the UART is transferring data in PIO mode
-      tty: serial: OMAP: wakeup latency constraint is in microseconds, not milliseconds
-
- arch/arm/mach-omap2/serial.c     |    8 ++++----
- drivers/tty/serial/omap-serial.c |   30 +++++++++++++++++++++++++-----
- 2 files changed, 29 insertions(+), 9 deletions(-)
+Thanks
+Guennadi
+---
+Guennadi Liakhovetski, Ph.D.
+Freelance Open-Source Software Developer
+http://www.open-technology.de/
