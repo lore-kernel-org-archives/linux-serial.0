@@ -1,63 +1,68 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: [PATCH 1/7 v2] dmaengine: add a simple dma library
-Date: Thu, 26 Jan 2012 18:34:44 +0100
-Message-ID: <20120126173444.GM5446@pengutronix.de>
-References: <1327589784-4287-1-git-send-email-g.liakhovetski@gmx.de>
-	<1327589784-4287-2-git-send-email-g.liakhovetski@gmx.de>
+From: Greg KH <gregkh@suse.de>
+Subject: Re: patch "tty: serial: OMAP: ensure FIFO levels are set correctly
+ in non-DMA" added to tty tree
+Date: Thu, 26 Jan 2012 11:16:04 -0800
+Message-ID: <20120126191604.GA15516@suse.de>
+References: <13274430881471@kroah.org>
+ <alpine.DEB.2.00.1201251156361.5324@utopia.booyaka.com>
+ <20120126042155.GA3185@suse.de>
+ <alpine.DEB.2.00.1201252124470.11174@utopia.booyaka.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <alsa-devel-bounces@alsa-project.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from cantor2.suse.de ([195.135.220.15]:45762 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752232Ab2AZTU1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 26 Jan 2012 14:20:27 -0500
 Content-Disposition: inline
-In-Reply-To: <1327589784-4287-2-git-send-email-g.liakhovetski@gmx.de>
-List-Unsubscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
-	<mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
-List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel>
-List-Post: <mailto:alsa-devel@alsa-project.org>
-List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
-List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
-	<mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
-Sender: alsa-devel-bounces@alsa-project.org
-Errors-To: alsa-devel-bounces@alsa-project.org
-To: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Cc: alsa-devel@alsa-project.org, linux-sh@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, linux-mmc@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, linux-serial@vger.kernel.org
+In-Reply-To: <alpine.DEB.2.00.1201252124470.11174@utopia.booyaka.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Paul Walmsley <paul@pwsan.com>
+Cc: govindraj.raja@ti.com, khilman@ti.com, tomi.valkeinen@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
-Hi Guennadi,
-
-On Thu, Jan 26, 2012 at 03:56:18PM +0100, Guennadi Liakhovetski wrote:
-> This patch adds a library of functions, helping to implement dmaengine
-> drivers for hardware, unable to handle scatter-gather lists natively.
-> The first version of this driver only supports memcpy and slave DMA
-> operation.
+On Wed, Jan 25, 2012 at 09:31:53PM -0700, Paul Walmsley wrote:
+> On Wed, 25 Jan 2012, Greg KH wrote:
 > 
-> Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-> ---
+> > On Wed, Jan 25, 2012 at 08:02:09PM -0700, Paul Walmsley wrote:
+> > > On Tue, 24 Jan 2012, gregkh@suse.de wrote:
+> > > > 
+> > > > This is a note to let you know that I've just added the patch titled
+> > > > 
+> > > >     tty: serial: OMAP: ensure FIFO levels are set correctly in non-DMA
+> > > > 
+> > > > to my tty git tree which can be found at
+> > > >     git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
+> > > > in the tty-linus branch.
+> > > 
+> > > If it's not too late, I was wondering if you could drop this patch and the 
+> > > subsequent one ("tty: serial: OMAP: transmit FIFO threshold interrupts 
+> > > don't wake the"), in favor of the second version of this series that was 
+> > > just posted at
+> > > 
+> > >    http://marc.info/?l=linux-arm-kernel&m=132754676814391&w=2
+> > > 
+> > > If it is too late, we'll deal with it in 3.4.
+> > 
+> > What is wrong with the patches that I applied?
 > 
+> A new workaround is used that reduces the number of interrupts to normal.  
+> The commit messages are improved since we have a better idea of what was 
+> wrong.  There is also a new patch (patch 3) for a power management 
+> regression in the driver.
+>  
+> > How about a fix-up patch on top of what I have applied instead of whole 
+> > new ones?
+> 
+> That's fine, if that's your preference.  It will be several patches, 
+> though.  And about 75% of the previous series would be reverted, since a 
+> different workaround would be used.
+> 
+> Let me know if that is indeed what you'd like.
 
-[...]
+Ok, I've just reverted both of these patches for now, please send new
+ones when you have them.
 
-> +
-> +/*
-> + * For slave DMA we assume, that there is a finite number of DMA slaves in the
-> + * system, and that each such slave can only use a finite number of channels.
-> + * We use slave channel IDs to make sure, that no such slave channel ID is
-> + * allocated more than once.
-> + */
-> +static unsigned int slave_num = 256;
-> +module_param(slave_num, uint, 0444);
-> +
-> +/* A bitmask with slave_num bits */
-> +static unsigned long *simple_slave_used;
+thanks,
 
-You never check that the slave ids passed into this code are
-within the range of slave_num. Given that this is a user changeable
-value this is a bit flawy.
-
-Sascha
-
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+greg k-h
