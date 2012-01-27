@@ -1,121 +1,37 @@
-From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Subject: Re: [PATCH 1/7 v2] dmaengine: add a simple dma library
-Date: Fri, 27 Jan 2012 09:48:17 +0100 (CET)
-Message-ID: <Pine.LNX.4.64.1201270946150.32661@axis700.grange>
-References: <1327589784-4287-1-git-send-email-g.liakhovetski@gmx.de>
- <1327589784-4287-2-git-send-email-g.liakhovetski@gmx.de> <4F22624E.2090201@renesas.com>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: 8250 regression: infinite interrupts
+Date: Fri, 27 Jan 2012 15:22:30 +0100
+Message-ID: <4F22B326.4060605@suse.cz>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-2
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.17.8]:58134 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750984Ab2A0IsX (ORCPT
+Received: from mail-ww0-f44.google.com ([74.125.82.44]:40792 "EHLO
+	mail-ww0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752510Ab2A0OWh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 27 Jan 2012 03:48:23 -0500
-In-Reply-To: <4F22624E.2090201@renesas.com>
+	Fri, 27 Jan 2012 09:22:37 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Shimoda, Yoshihiro" <yoshihiro.shimoda.uh@renesas.com>
-Cc: linux-kernel@vger.kernel.org, linux-sh@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, Magnus Damm <magnus.damm@gmail.com>, linux-mmc@vger.kernel.org, alsa-devel@alsa-project.org, linux-serial@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>
+To: philippe.langlais@stericsson.com, Alan Cox <alan@lxorguk.ukuu.org.uk>, Greg KH <gregkh@suse.de>, Linux kernel mailing list <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 
-Hi Shimoda-san
+Hi,
 
-On Fri, 27 Jan 2012, Shimoda, Yoshihiro wrote:
+the commit below causes infinite interrupts to be generated on some
+chips. Namely on IBM x3850 M2.
 
-> Hello Guennadi-san,
-> 
-> 2012/01/26 23:56, Guennadi Liakhovetski wrote:
-> > This patch adds a library of functions, helping to implement dmaengine
-> > drivers for hardware, unable to handle scatter-gather lists natively.
-> > The first version of this driver only supports memcpy and slave DMA
-> > operation.
-> > 
-> > Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-> > ---
-> > 
-> > v2:
-> > 
-> > 1. switch from using a tasklet to threaded IRQ, which allowed to
-> 
-> I tested this driver on 2 environment, but it could not work correctly.
->  - renesas_usbhs driver with shdma driver on the mackerel board
->  - renesas_usbhs driver with experimental SUDMAC driver
-> 
-> In this case, should we modify the renesas_usbhs driver?
+commit 235dae5d094c415fcf0fc79fa637f1901bc8afe2
+Author: Philippe Langlais <philippe.langlais@stericsson.com>
+Date:   Thu Jul 29 17:13:57 2010 +0200
 
-Yes, you do. Please, see the respective version of the shdma patch. It 
-doesn't request channel IRQs any more directly, instead, it uses a 
-dma-simple wrapper function. Also operations change a bit.
+    U6715 16550A serial driver support
 
-Thanks
-Guennadi
+The culprit is the added size_fifo call proper in autoconfig_16550a. It
+returns 16, but the chip is confused by what the function does at that
+point. It is yet to be investigated why. Any ideas at this stage why
+this could be a problem?
 
-> For reference, if I changed the threaded IRQ to tasklet,
-> the 2 environment worked correctly:
-> ==============
-> diff --git a/drivers/dma/dma-simple.c b/drivers/dma/dma-simple.c
-> index 49d8f7d..65a5170 100644
-> --- a/drivers/dma/dma-simple.c
-> +++ b/drivers/dma/dma-simple.c
-> @@ -715,16 +715,18 @@ static irqreturn_t chan_irq(int irq, void *dev)
-> 
->  	spin_lock(&schan->chan_lock);
-> 
-> -	ret = ops->chan_irq(schan, irq) ? IRQ_WAKE_THREAD : IRQ_NONE;
-> +	ret = ops->chan_irq(schan, irq) ? IRQ_HANDLED : IRQ_NONE;
-> +	if (ret == IRQ_HANDLED)
-> +		tasklet_schedule(&schan->tasklet);
-> 
->  	spin_unlock(&schan->chan_lock);
-> 
->  	return ret;
->  }
-> 
-> -static irqreturn_t chan_irqt(int irq, void *dev)
-> +static void chan_irqt(unsigned long dev)
->  {
-> -	struct dma_simple_chan *schan = dev;
-> +	struct dma_simple_chan *schan = (struct dma_simple_chan *)dev;
->  	const struct dma_simple_ops *ops =
->  		to_simple_dev(schan->dma_chan.device)->ops;
->  	struct dma_simple_desc *sdesc;
-> @@ -744,15 +746,13 @@ static irqreturn_t chan_irqt(int irq, void *dev)
->  	spin_unlock_irq(&schan->chan_lock);
-> 
->  	simple_chan_ld_cleanup(schan, false);
-> -
-> -	return IRQ_HANDLED;
->  }
-> 
->  int dma_simple_request_irq(struct dma_simple_chan *schan, int irq,
->  			   unsigned long flags, const char *name)
->  {
-> -	int ret = request_threaded_irq(irq, chan_irq, chan_irqt,
-> -				       flags, name, schan);
-> +	int ret = request_irq(irq, chan_irq, flags, name, schan);
-> +	tasklet_init(&schan->tasklet, chan_irqt, (unsigned long)schan);
-> 
->  	schan->irq = ret < 0 ? ret : irq;
-> 
-> diff --git a/include/linux/dma-simple.h b/include/linux/dma-simple.h
-> index 5336674..beb1489 100644
-> --- a/include/linux/dma-simple.h
-> +++ b/include/linux/dma-simple.h
-> @@ -68,6 +68,7 @@ struct dma_simple_chan {
->  	int id;				/* Raw id of this channel */
->  	int irq;			/* Channel IRQ */
->  	enum dma_simple_pm_state pm_state;
-> +	struct tasklet_struct tasklet;
->  };
-> 
->  /**
-> ==============
-> 
-> Best regards,
-> Yoshihiro Shimoda
-> 
-
----
-Guennadi Liakhovetski, Ph.D.
-Freelance Open-Source Software Developer
-http://www.open-technology.de/
+thanks,
+-- 
+js
+suse labs
