@@ -1,30 +1,140 @@
-From: Kevin Hilman <khilman@ti.com>
-Subject: Re: [PATCH v2 0/3] tty: serial: OMAP: work around broken IP block, driver
-Date: Mon, 30 Jan 2012 11:13:34 -0800
-Message-ID: <87ty3drokh.fsf@ti.com>
-References: <20120126024903.31613.24730.stgit@dusk>
+From: Greg KH <gregkh@suse.de>
+Subject: [GIT PATCH] TTY/serial patches for 3.3-rc1
+Date: Mon, 30 Jan 2012 13:12:41 -0800
+Message-ID: <20120130211241.GA12941@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20120126024903.31613.24730.stgit@dusk> (Paul Walmsley's message
-	of "Wed, 25 Jan 2012 19:50:32 -0700")
-Sender: linux-omap-owner@vger.kernel.org
-To: Paul Walmsley <paul@pwsan.com>
-Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, "Govindraj.R" <govindraj.raja@ti.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:50638 "EHLO
+	out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753285Ab2A3VMq (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 30 Jan 2012 16:12:46 -0500
+Received: from compute2.internal (compute2.nyi.mail.srv.osa [10.202.2.42])
+	by gateway1.nyi.mail.srv.osa (Postfix) with ESMTP id 71801208DF
+	for <linux-serial@vger.kernel.org>; Mon, 30 Jan 2012 16:12:45 -0500 (EST)
+Content-Disposition: inline
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Paul Walmsley <paul@pwsan.com> writes:
+Here are some tty/serial patches for 3.3-rc1
 
-> [ This series is targeted for merging during v3.3-rc ]
->
-> Hi
->
-> Here's an updated version of OMAP serial bugfix series against v3.3-rc1.
-> This revision has:
+Big thing here is the movement of the 8250 serial drivers to their own
+directory, now that the patch churn has calmed down.
 
-Reviewed-by: Kevin Hilman <khilman@ti.com>
-Tested-by: Kevin Hilman <khilman@ti.com>
+Other than that, only minor stuff (omap patches were reverted as they
+were found to be wrong), and another broken driver removed from the
+system.
 
-Tested on 3430/n900, 3530/Overo and 4430/Panda
+Please pull from:
+	git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-3.1-rc1
 
-Kevin
+All of these patches have been in the -mm and -next trees for a while.
+
+Patches will be sent to the linux-serial mailing list, if anyone wants
+to see them.
+
+thanks,
+
+greg k-h
+
+------------
+
+ Documentation/DocBook/device-drivers.tmpl          |    1 -
+ MAINTAINERS                                        |    2 +-
+ drivers/tty/serial/{ => 8250}/8250.c               |    0
+ drivers/tty/serial/{ => 8250}/8250.h               |    0
+ drivers/tty/serial/{ => 8250}/8250_accent.c        |    0
+ drivers/tty/serial/{ => 8250}/8250_acorn.c         |    0
+ drivers/tty/serial/{ => 8250}/8250_boca.c          |    0
+ drivers/tty/serial/{ => 8250}/8250_dw.c            |    0
+ drivers/tty/serial/{ => 8250}/8250_early.c         |    0
+ drivers/tty/serial/{ => 8250}/8250_exar_st16c554.c |    0
+ drivers/tty/serial/{ => 8250}/8250_fourport.c      |    0
+ drivers/tty/serial/{ => 8250}/8250_fsl.c           |    0
+ drivers/tty/serial/{ => 8250}/8250_gsc.c           |    0
+ drivers/tty/serial/{ => 8250}/8250_hp300.c         |    0
+ drivers/tty/serial/{ => 8250}/8250_hub6.c          |    0
+ drivers/tty/serial/{ => 8250}/8250_mca.c           |    0
+ drivers/tty/serial/{ => 8250}/8250_pci.c           |    0
+ drivers/tty/serial/{ => 8250}/8250_pnp.c           |    0
+ drivers/tty/serial/8250/Kconfig                    |  280 ++++++++++++++++
+ drivers/tty/serial/8250/Makefile                   |   20 ++
+ drivers/tty/serial/{ => 8250}/m32r_sio.c           |    0
+ drivers/tty/serial/{ => 8250}/m32r_sio.h           |    0
+ drivers/tty/serial/{ => 8250}/m32r_sio_reg.h       |    0
+ drivers/tty/serial/{ => 8250}/serial_cs.c          |    0
+ drivers/tty/serial/Kconfig                         |  283 +----------------
+ drivers/tty/serial/Makefile                        |   20 +-
+ drivers/tty/serial/amba-pl011.c                    |   30 ++-
+ drivers/tty/serial/jsm/jsm_driver.c                |    1 +
+ drivers/tty/serial/max3107-aava.c                  |  344 --------------------
+ drivers/tty/serial/omap-serial.c                   |    4 +-
+ drivers/tty/serial/serial_core.c                   |    6 +-
+ drivers/tty/tty_port.c                             |   12 +-
+ 32 files changed, 346 insertions(+), 657 deletions(-)
+ rename drivers/tty/serial/{ => 8250}/8250.c (100%)
+ rename drivers/tty/serial/{ => 8250}/8250.h (100%)
+ rename drivers/tty/serial/{ => 8250}/8250_accent.c (100%)
+ rename drivers/tty/serial/{ => 8250}/8250_acorn.c (100%)
+ rename drivers/tty/serial/{ => 8250}/8250_boca.c (100%)
+ rename drivers/tty/serial/{ => 8250}/8250_dw.c (100%)
+ rename drivers/tty/serial/{ => 8250}/8250_early.c (100%)
+ rename drivers/tty/serial/{ => 8250}/8250_exar_st16c554.c (100%)
+ rename drivers/tty/serial/{ => 8250}/8250_fourport.c (100%)
+ rename drivers/tty/serial/{ => 8250}/8250_fsl.c (100%)
+ rename drivers/tty/serial/{ => 8250}/8250_gsc.c (100%)
+ rename drivers/tty/serial/{ => 8250}/8250_hp300.c (100%)
+ rename drivers/tty/serial/{ => 8250}/8250_hub6.c (100%)
+ rename drivers/tty/serial/{ => 8250}/8250_mca.c (100%)
+ rename drivers/tty/serial/{ => 8250}/8250_pci.c (100%)
+ rename drivers/tty/serial/{ => 8250}/8250_pnp.c (100%)
+ create mode 100644 drivers/tty/serial/8250/Kconfig
+ create mode 100644 drivers/tty/serial/8250/Makefile
+ rename drivers/tty/serial/{ => 8250}/m32r_sio.c (100%)
+ rename drivers/tty/serial/{ => 8250}/m32r_sio.h (100%)
+ rename drivers/tty/serial/{ => 8250}/m32r_sio_reg.h (100%)
+ rename drivers/tty/serial/{ => 8250}/serial_cs.c (100%)
+ delete mode 100644 drivers/tty/serial/max3107-aava.c
+
+---------------
+
+Alan Cox (1):
+      serial: Kill off Moorestown code
+
+Greg Kroah-Hartman (2):
+      Revert "tty: serial: OMAP: transmit FIFO threshold interrupts don't wake the chip"
+      Revert "tty: serial: OMAP: ensure FIFO levels are set correctly in non-DMA mode"
+
+Jiri Slaby (1):
+      TTY: fix UV serial console regression
+
+Lucas Kannebley Tavares (2):
+      Updated TTY MAINTAINERS info
+      jsm: Fixed EEH recovery error
+
+Paul Gortmaker (1):
+      serial: group all the 8250 related code together
+
+Paul Walmsley (2):
+      tty: serial: OMAP: ensure FIFO levels are set correctly in non-DMA mode
+      tty: serial: OMAP: transmit FIFO threshold interrupts don't wake the chip
+
+Rabin Vincent (1):
+      serial: amba-pl011: lock console writes against interrupts
+
+Randy Dunlap (1):
+      docbook: don't use serial_core.h in device-drivers book
+
+Shreshtha Kumar Sahu (1):
+      amba-pl011: do not disable RTS during shutdown
+
+Shubhrajyoti D (2):
+      omap-serial :Make the suspend/resume functions depend on CONFIG_PM_SLEEP.
+      omap-serial: make serial_omap_restore_context depend on CONFIG_PM_RUNTIME
+
+Simon Glass (1):
+      serial: Fix wakeup init logic to speed up startup
+
