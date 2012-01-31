@@ -1,51 +1,82 @@
-From: Greg KH <gregkh@suse.de>
-Subject: Re: [GIT PATCH] TTY/serial patches for 3.3-rc1
-Date: Mon, 30 Jan 2012 17:11:01 -0800
-Message-ID: <20120131011101.GA31748@suse.de>
-References: <20120130211241.GA12941@kroah.com>
- <CA+55aFxFtsOj+9RYQGj+WEk3ovg4+d_syn8TooKjvBq2_B463Q@mail.gmail.com>
- <CA+55aFxGf8-Bv8Jrhm1dbTg6AkTi37Vfuw5OOC7hDokKRa4hjw@mail.gmail.com>
- <20120131001308.GB20588@suse.de>
- <CA+55aFxXwZmhC4USJSOk_itatwkg1m8gkQRTqKHNRGDWD8MCOw@mail.gmail.com>
+From: Vinod Koul <vinod.koul@intel.com>
+Subject: Re: [PATCH 1/7 v2] dmaengine: add a simple dma library
+Date: Tue, 31 Jan 2012 12:11:30 +0530
+Message-ID: <1327992090.1527.116.camel@vkoul-udesk3>
+References: <1327589784-4287-1-git-send-email-g.liakhovetski@gmx.de>
+	 <1327589784-4287-2-git-send-email-g.liakhovetski@gmx.de>
+	 <1327912346.1527.13.camel@vkoul-udesk3>
+	 <Pine.LNX.4.64.1201300944360.7932@axis700.grange>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:38794 "EHLO mx2.suse.de"
+Received: from mga11.intel.com ([192.55.52.93]:49171 "EHLO mga11.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752166Ab2AaBN2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 30 Jan 2012 20:13:28 -0500
-Content-Disposition: inline
-In-Reply-To: <CA+55aFxXwZmhC4USJSOk_itatwkg1m8gkQRTqKHNRGDWD8MCOw@mail.gmail.com>
+	id S1751646Ab2AaGk1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 31 Jan 2012 01:40:27 -0500
+In-Reply-To: <Pine.LNX.4.64.1201300944360.7932@axis700.grange>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Cc: linux-kernel@vger.kernel.org, linux-sh@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, linux-mmc@vger.kernel.org, alsa-devel@alsa-project.org, linux-serial@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>
 
-On Mon, Jan 30, 2012 at 04:27:22PM -0800, Linus Torvalds wrote:
-> On Mon, Jan 30, 2012 at 4:13 PM, Greg KH <gregkh@suse.de> wrote:
-> >
-> > Or I can spend the time to get the new version of git installed.
-> > Wrestling with my scripts or rpm, I don't know which is worse...
+On Mon, 2012-01-30 at 10:34 +0100, Guennadi Liakhovetski wrote:
+> > I don't still comprehend the need for a library on top of dmaengine
+> > which gain is just a library between clients and dmacs. Surely we don't
+> > want to write another abstraction on top of one provided?
+> > 
+> > If the question is to handle scatter-gather even if the hardware doesn't
+> > have the capability, then why don't add that in dmaengine itself rather
+> > than one more layer?
 > 
-> Why do either?
+> Well, yes, adding new abstraction layers is always a decision, that has to 
+> be well justified. In this case it does at least make the life easier for 
+> two sh-mobile drivers: shdma and the new SUDMAC driver.
 > 
-> The sane way to do things is to just
+> However, I did name the library in a generic way without reference to sh, 
+> assuming, that it might with time become useful for other architectures 
+> too. The reasons why I prefered to keep it as an optional addition to 
+> dmaengine core, instead of tightly integrating it with it are, that (1) I 
+> did not want to add useless code to drivers, that do not need it, 
+So are we sure that only sh-mobile drivers need this capablity?
+Btw does you hardware only support single transfers and no sg support,
+would this remain the same in future?
+> (2) I am 
+> not sure if and when this library will become useful for other drivers: 
+> apart from sh I am only familiar with one more dmaengine driver: 
+> ipu/ipu_idmac.c, and that one supports scatter-gather lists in a limited 
+> way and has some further peculiarities, that would likely make it a bad 
+> match for the simple DMA library,
+typically the dmacs will support this in some form or other, so your
+point is valid :)
+>  (3) keeping it separate makes its 
+> further development easier.
 > 
->     cd
->     mkdir src
->     cd src
->     git clone git://github.com/gitster/git
->     cd git
->     make
->     make install
+> OTOH, I'm certainly fine with a tighter library integration with the 
+> dmaengine core. I think, it still would be better to keep it in a separate 
+> file and only build it if needed, right? This woult also simplify code 
+> debugging and further development. I can remove the "simple" notation, 
+> which does make it look like an additional abstraction layer, and replace 
+> it with, say, sgsoft (scatter-gather software implementation)?
+that would be more apt :)
+>  A more 
+> interesting question is what to do with struct dma_simple_dev, struct 
+> dma_simple_chan, struct dma_simple_desc, that embed struct dma_device, 
+> struct dma_chan and struct dma_async_tx_descriptor respectively. I don't 
+> think we want to merge all the additions from those wrapping structs back 
+> into their dmaengine counterparts?
+Sure they should be kept separate. I like the wrapping, this keeps it
+simple.
 > 
-> all as a regular user. It will install in your $(HOME)/bin, so just
-> put that first in the path. No need to fight rpm, no need to fight
-> your scripts, you should be pretty much all done.
+> How would you like to do this? Don't you think, it would be good to allow 
+> both: either implement a dmaengine driver directly, exactly as all drivers 
+> are doing now, or use the additional helper library for suitable (simple) 
+> hardware types? I see it similar to I2C, where you either implement an I2C 
+> driver directly, or you use the bitbanging abstraction for simpler 
+> hardware.
+I think it would be good to have both, this can be used by folks who
+don't have sg support available.
 
-Nice, for some reason I thought it would do the horrible /usr/local/
-thing, and get all messed up with the installed version.
+-- 
+~Vinod
 
-Ok, now done, so much for fighting with rpm, thanks, that made my day.
-
-greg k-h
