@@ -1,39 +1,42 @@
-From: Greg KH <gregkh@suse.de>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 Subject: Re: [GIT PATCH] TTY/serial patches for 3.3-rc1
-Date: Mon, 30 Jan 2012 16:13:08 -0800
-Message-ID: <20120131001308.GB20588@suse.de>
-References: <20120130211241.GA12941@kroah.com>
- <CA+55aFxFtsOj+9RYQGj+WEk3ovg4+d_syn8TooKjvBq2_B463Q@mail.gmail.com>
- <CA+55aFxGf8-Bv8Jrhm1dbTg6AkTi37Vfuw5OOC7hDokKRa4hjw@mail.gmail.com>
+Date: Mon, 30 Jan 2012 16:27:22 -0800
+Message-ID: <CA+55aFxXwZmhC4USJSOk_itatwkg1m8gkQRTqKHNRGDWD8MCOw@mail.gmail.com>
+References: <20120130211241.GA12941@kroah.com> <CA+55aFxFtsOj+9RYQGj+WEk3ovg4+d_syn8TooKjvBq2_B463Q@mail.gmail.com>
+ <CA+55aFxGf8-Bv8Jrhm1dbTg6AkTi37Vfuw5OOC7hDokKRa4hjw@mail.gmail.com> <20120131001308.GB20588@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CA+55aFxGf8-Bv8Jrhm1dbTg6AkTi37Vfuw5OOC7hDokKRa4hjw@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-gx0-f174.google.com ([209.85.161.174]:50987 "EHLO
+	mail-gx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752903Ab2AaA1m (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 30 Jan 2012 19:27:42 -0500
+In-Reply-To: <20120131001308.GB20588@suse.de>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@suse.de>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Mon, Jan 30, 2012 at 03:20:52PM -0800, Linus Torvalds wrote:
-> On Mon, Jan 30, 2012 at 3:19 PM, Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
-> >
-> > Tssk. Your script is broken, or your manual fixup is broken. Look at
-> > the tag-name again.
-> >
-> > I pulled the correct one, but please be more careful.
-> 
-> Oh, and if it's because your old script can't verify the tag-names, so
-> you fix things up by hand instead of scripting it, try using
-> "tags/<tagname>" instead of just "<tagname>". That makes old git
-> versions at least see the reference, even if they don't then react to
-> the signing itself (ie they just treat it as the commit it points to,
-> rather than as a tag with interesting contents in itself)
+On Mon, Jan 30, 2012 at 4:13 PM, Greg KH <gregkh@suse.de> wrote:
+>
+> Or I can spend the time to get the new version of git installed.
+> Wrestling with my scripts or rpm, I don't know which is worse...
 
-Ah, ok, I'll try that out.
+Why do either?
 
-Or I can spend the time to get the new version of git installed.
-Wrestling with my scripts or rpm, I don't know which is worse...
+The sane way to do things is to just
 
-greg k-h
+    cd
+    mkdir src
+    cd src
+    git clone git://github.com/gitster/git
+    cd git
+    make
+    make install
+
+all as a regular user. It will install in your $(HOME)/bin, so just
+put that first in the path. No need to fight rpm, no need to fight
+your scripts, you should be pretty much all done.
+
+                 Linus
