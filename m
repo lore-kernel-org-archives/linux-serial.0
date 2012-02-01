@@ -1,7 +1,8 @@
 From: Thomas Tuttle <ttuttle-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: [PATCH 3/4] qcserial: remove unused "debug" parameter
-Date: Wed, 1 Feb 2012 16:07:35 -0500
-Message-ID: <20120201210735.GC16802@google.com>
+Subject: [PATCH 2/4] qcserial: log when an interface has too many
+ altsettings
+Date: Wed, 1 Feb 2012 16:07:23 -0500
+Message-ID: <20120201210723.GB16802@google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
@@ -13,23 +14,31 @@ List-Id: linux-serial@vger.kernel.org
 
 Signed-off-by: Thomas Tuttle <ttuttle-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 ---
- drivers/usb/serial/qcserial.c |    5 -----
- 1 files changed, 0 insertions(+), 5 deletions(-)
+ drivers/usb/serial/qcserial.c |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
 
 diff --git a/drivers/usb/serial/qcserial.c b/drivers/usb/serial/qcserial.c
-index 5a817d6..0f549c6 100644
+index 26e3e30..5a817d6 100644
 --- a/drivers/usb/serial/qcserial.c
 +++ b/drivers/usb/serial/qcserial.c
-@@ -22,8 +22,6 @@
- #define DRIVER_AUTHOR "Qualcomm Inc"
- #define DRIVER_DESC "Qualcomm USB Serial driver"
+@@ -145,8 +145,12 @@ static int qcprobe(struct usb_serial *serial, const struct usb_device_id *id)
+ 		/* Gobi 2000 has a single altsetting, older ones have two */
+ 		if (serial->interface->num_altsetting == 2)
+ 			intf = &serial->interface->altsetting[1];
+-		else if (serial->interface->num_altsetting > 2)
++		else if (serial->interface->num_altsetting > 2) {
++			dev_err(&serial->dev->dev,
++				"too many altsettings: %u",
++				serial->interface->num_altsetting);
+ 			break;
++		}
  
--static bool debug;
--
- static const struct usb_device_id id_table[] = {
- 	{USB_DEVICE(0x05c6, 0x9211)},	/* Acer Gobi QDL device */
- 	{USB_DEVICE(0x05c6, 0x9212)},	/* Acer Gobi Modem Device */
-@@ -298,6 +296,3 @@ module_exit(qcexit);
- MODULE_AUTHOR(DRIVER_AUTHOR);
- MODULE_DESCRIPTION(DRIVER_DESC);
- MODULE_LICENSE("GPL v2");
+ 		if (intf->desc.bNumEndpoints == 2 &&
+ 		    usb_endpoint_is_bulk_in(&intf->endpoint[0].desc) &&
+-- 
+1.7.7.3
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
