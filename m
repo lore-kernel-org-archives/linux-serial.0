@@ -1,42 +1,35 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] qcserial: several fixes
-Date: Wed, 1 Feb 2012 12:43:41 -0800
-Message-ID: <20120201204341.GA28366@kroah.com>
-References: <20120201203950.GA14586@google.com>
+From: Thomas Tuttle <ttuttle-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: [PATCH 3/4] qcserial: remove unused "debug" parameter
+Date: Wed, 1 Feb 2012 16:07:35 -0500
+Message-ID: <20120201210735.GC16802@google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:35373 "EHLO
-	out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754472Ab2BAUoA (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 1 Feb 2012 15:44:00 -0500
-Received: from compute6.internal (compute6.nyi.mail.srv.osa [10.202.2.46])
-	by gateway1.nyi.mail.srv.osa (Postfix) with ESMTP id 437CB20E86
-	for <linux-serial@vger.kernel.org>; Wed,  1 Feb 2012 15:43:59 -0500 (EST)
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20120201203950.GA14586@google.com>
-Sender: linux-serial-owner@vger.kernel.org
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: ttuttle <ttuttle@chromium.org>
-Cc: linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
 
-On Wed, Feb 01, 2012 at 03:39:50PM -0500, ttuttle wrote:
-> 1. Remove the unused "debug" parameter.
-> 2. Add several new serial devices.
-> 3. Disable autosuspend, as it has been flaky.
-> 4. Log if we find too many altsettings.
-> 
-> Signed-off-by: ttuttle <ttuttle@chromium.org>
+Signed-off-by: Thomas Tuttle <ttuttle-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+---
+ drivers/usb/serial/qcserial.c |    5 -----
+ 1 files changed, 0 insertions(+), 5 deletions(-)
 
-Can you split this up into 4 different patches, as you are doing 4
-different things?
-
-Remember, one patch per "thing you do".
-
-Also, I need a "real" name in the signed-off-by area, odds are "ttuttle"
-is not your "full" name, right?
-
-thanks,
-
-greg k-h
+diff --git a/drivers/usb/serial/qcserial.c b/drivers/usb/serial/qcserial.c
+index 5a817d6..0f549c6 100644
+--- a/drivers/usb/serial/qcserial.c
++++ b/drivers/usb/serial/qcserial.c
+@@ -22,8 +22,6 @@
+ #define DRIVER_AUTHOR "Qualcomm Inc"
+ #define DRIVER_DESC "Qualcomm USB Serial driver"
+ 
+-static bool debug;
+-
+ static const struct usb_device_id id_table[] = {
+ 	{USB_DEVICE(0x05c6, 0x9211)},	/* Acer Gobi QDL device */
+ 	{USB_DEVICE(0x05c6, 0x9212)},	/* Acer Gobi Modem Device */
+@@ -298,6 +296,3 @@ module_exit(qcexit);
+ MODULE_AUTHOR(DRIVER_AUTHOR);
+ MODULE_DESCRIPTION(DRIVER_DESC);
+ MODULE_LICENSE("GPL v2");
