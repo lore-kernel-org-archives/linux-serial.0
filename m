@@ -1,30 +1,29 @@
-From: ttuttle <ttuttle@chromium.org>
-Subject: Re: [PATCH 2/4] qcserial: log when an interface has too many altsettings
-Date: Wed, 1 Feb 2012 17:25:51 -0500
-Message-ID: <CADyrwZQEXSzYck1F_qmEfMT3Tqr1XNM5-AcXZiRvwHofBEOwOw@mail.gmail.com>
-References: <20120201210723.GB16802@google.com> <20120201211116.GA30758@kroah.com>
- <CADyrwZSN6xeibZzgaPCL7qZfpwrTLipkXwQUOTOMZGpg0uRhHw@mail.gmail.com>
- <20120201220232.GB893@kroah.com> <CADyrwZQNMpxh5yTBnH68+0KK9r5NFvFMgad1K8qXouWAHY=1Rg@mail.gmail.com>
- <20120201222322.GA2333@kroah.com>
+From: Oliver Neukum <oliver-GvhC2dPhHPQdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 4/4] qcserial: don't enable autosuspend
+Date: Thu, 2 Feb 2012 09:40:11 +0100
+Message-ID: <201202020940.11910.oliver@neukum.org>
+References: <20120201210745.GD16802@google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-tul01m020-f174.google.com ([209.85.214.174]:47731 "EHLO
-	mail-tul01m020-f174.google.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753858Ab2BAW0b (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 1 Feb 2012 17:26:31 -0500
-Received: by obcva7 with SMTP id va7so1885606obc.19
-        for <linux-serial@vger.kernel.org>; Wed, 01 Feb 2012 14:26:31 -0800 (PST)
-In-Reply-To: <20120201222322.GA2333@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20120201210745.GD16802-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thomas Tuttle <ttuttle-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
 
-On Wed, Feb 1, 2012 at 17:23, Greg KH <gregkh@linuxfoundation.org> wrote:
-> No problem, I'll just pick the 2 good ones, thanks.
+Am Mittwoch, 1. Februar 2012, 22:07:45 schrieb Thomas Tuttle:
+> We've found that qcserial devices will not always wake up reliably
+> from autosuspend, so disable it.
 
-Thanks!
+This might quite hurt power consumption. Can you also solve this
+with the RESET_RESUME quirk?
 
--- ttuttle
+	Regards
+		Oliver
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
