@@ -1,63 +1,133 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: patch "tty: serial: OMAP: ensure FIFO levels are set correctly
-	in non-DMA" added to tty tree
-Date: Fri, 3 Feb 2012 12:20:53 +0000
-Message-ID: <20120203122053.GF1275@n2100.arm.linux.org.uk>
-References: <13274430881471@kroah.org> <alpine.DEB.2.00.1201251156361.5324@utopia.booyaka.com> <20120126042155.GA3185@suse.de> <alpine.DEB.2.00.1201252124470.11174@utopia.booyaka.com> <20120126191604.GA15516@suse.de> <alpine.DEB.2.00.1201261225520.32667@utopia.booyaka.com> <alpine.DEB.2.00.1202021302070.586@utopia.booyaka.com> <20120203150708.386951d2@notabene.brown> <CAAL8m4ztuB-kJvLGd=8PqPCLFcvPW9AQcdcFQ+e03vDT240vog@mail.gmail.com> <20120203230720.28666cc6@notabene.brown>
+From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Subject: [PATCH/RFC] usb: fix renesas_usbhs to not schedule in atomic context
+Date: Fri, 3 Feb 2012 16:43:20 +0100 (CET)
+Message-ID: <Pine.LNX.4.64.1202031623000.6211@axis700.grange>
+References: <1327589784-4287-1-git-send-email-g.liakhovetski@gmx.de>
+ <1327589784-4287-2-git-send-email-g.liakhovetski@gmx.de> <4F22624E.2090201@renesas.com>
+ <Pine.LNX.4.64.1201270946150.32661@axis700.grange> <4F27CA7D.601@renesas.com>
+ <Pine.LNX.4.64.1202022317560.13860@axis700.grange> <4F2B9F34.60308@renesas.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-omap-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20120203230720.28666cc6@notabene.brown>
-Sender: linux-omap-owner@vger.kernel.org
-To: NeilBrown <neilb@suse.de>
-Cc: Govindraj <govindraj.ti@gmail.com>, khilman@ti.com, Paul Walmsley <paul@pwsan.com>, greg@kroah.com, govindraj.raja@ti.com, tomi.valkeinen@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <4F2B9F34.60308@renesas.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: "Shimoda, Yoshihiro" <yoshihiro.shimoda.uh@renesas.com>
+Cc: linux-kernel@vger.kernel.org, linux-sh@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, Magnus Damm <magnus.damm@gmail.com>, linux-mmc@vger.kernel.org, alsa-devel@alsa-project.org, linux-serial@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, linux-usb@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Feb 03, 2012 at 11:07:20PM +1100, NeilBrown wrote:
-> However what it really shows me is that I was misunderstanding the code
-> (If I spent the time to verify every conclusion that I jumped to, I'd never
-> get anywhere :-( ).  Better clarify that now.
-> 
-> So this function - serial_omap_tx_empty() is called to test if the
-> tx queue is empty.
+The current renesas_usbhs driver triggers
 
-Not just the queue.  The documentation for that function is accurate:
+BUG: scheduling while atomic: ksoftirqd/0/3/0x00000102
 
-  tx_empty(port)
-        This function tests whether the transmitter fifo and shifter
-        for the port described by 'port' is empty.  If it is empty,
-        this function should return TIOCSER_TEMT, otherwise return 0.
-        If the port does not support this operation, then it should
-        return TIOCSER_TEMT.
+with enabled CONFIG_DEBUG_ATOMIC_SLEEP, by submitting DMA transfers from 
+an atomic (tasklet) context, which is not supported by the shdma dmaengine 
+driver. Fix it by switching to a work. Also simplify some list 
+manipulations.
 
-So, if this is returning TIOCSER_TEMT while there's still a transmission
-in progress, then it's buggy.
+Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+---
 
-> So when I
-> 
->    cat somefile
-> 
-> to the serial console, most of the file comes out fine.  But after 'cat'
-> finishes and returns to the shell - while some chars are still in the FIFO - 
-> the shell does an 'stty' ioctl to make sure the settings are still OK.
-> This ioctl calls serial_omap_tx_empty which calls pm_resume_put() which
-> immediately suspends the uart, which seems to stop some clock - even though
-> we think it shouldn't.
+Shimoda-san, this is the problem, that you were observing. However, it 
+exists with the present version of shdma just as well as with the new one 
+- on top of the simple DMA library. I marked it an RFC because (1) I only 
+lightly tested it with the gadget device on mackerel with the mass storage 
+gadget, and (2) I am somewhat concerned about races. Currently the work 
+function runs with no locking and there are no usual cancel_work_sync() 
+points in the patch. However, it has also been like this before with the 
+tasklet implementation, which is not much better, and it looks like there 
+are no asynchronous operations on the same packets like timeouts. Only 
+asynchronous events, that I can think about are things like unloading the 
+driver or unplugging the cable, but these have been there before too. It 
+would become worse on SMP, I think. Comments welcome.
 
-If there's an on-going transmission, why is the runtime PM count zero,
-meaning that the UART can sleep at the point where serial_omap_tx_empty()
-is being called - and obviously there's still characters in the FIFO?
-
-I guess this is highlighting a problem with doing runtime PM with
-serial ports: you don't know when the port has _actually_ finished
-sending its final character, which is even more of a problem if the
-port does hardware CTS flow control itself.
-
-It seems that runtime PM should be checking whether the TX FIFO is empty
-before shutting the port down - and that probably means a hook into the
-idle stuff.
-
-Note though, that serial_omap_tx_empty() can be called via ioctl from
-userspace, so this function would still need the runtime callbacks in
-it so that the register is readable at _any_ time that the port is open.
+diff --git a/drivers/usb/renesas_usbhs/fifo.c b/drivers/usb/renesas_usbhs/fifo.c
+index 72339bd..4d739ec 100644
+--- a/drivers/usb/renesas_usbhs/fifo.c
++++ b/drivers/usb/renesas_usbhs/fifo.c
+@@ -75,8 +75,7 @@ void usbhs_pkt_push(struct usbhs_pipe *pipe, struct usbhs_pkt *pkt,
+ 		pipe->handler = &usbhsf_null_handler;
+ 	}
+ 
+-	list_del_init(&pkt->node);
+-	list_add_tail(&pkt->node, &pipe->list);
++	list_move_tail(&pkt->node, &pipe->list);
+ 
+ 	/*
+ 	 * each pkt must hold own handler.
+@@ -106,7 +105,7 @@ static struct usbhs_pkt *__usbhsf_pkt_get(struct usbhs_pipe *pipe)
+ 	if (list_empty(&pipe->list))
+ 		return NULL;
+ 
+-	return list_entry(pipe->list.next, struct usbhs_pkt, node);
++	return list_first_entry(&pipe->list, struct usbhs_pkt, node);
+ }
+ 
+ struct usbhs_pkt *usbhs_pkt_pop(struct usbhs_pipe *pipe, struct usbhs_pkt *pkt)
+@@ -762,9 +761,9 @@ static int __usbhsf_dma_map_ctrl(struct usbhs_pkt *pkt, int map)
+ }
+ 
+ static void usbhsf_dma_complete(void *arg);
+-static void usbhsf_dma_prepare_tasklet(unsigned long data)
++static void xfer_work(struct work_struct *work)
+ {
+-	struct usbhs_pkt *pkt = (struct usbhs_pkt *)data;
++	struct usbhs_pkt *pkt = container_of(work, struct usbhs_pkt, work);
+ 	struct usbhs_pipe *pipe = pkt->pipe;
+ 	struct usbhs_fifo *fifo = usbhs_pipe_to_fifo(pipe);
+ 	struct usbhs_priv *priv = usbhs_pipe_to_priv(pipe);
+@@ -844,11 +843,8 @@ static int usbhsf_dma_prepare_push(struct usbhs_pkt *pkt, int *is_done)
+ 
+ 	pkt->trans = len;
+ 
+-	tasklet_init(&fifo->tasklet,
+-		     usbhsf_dma_prepare_tasklet,
+-		     (unsigned long)pkt);
+-
+-	tasklet_schedule(&fifo->tasklet);
++	INIT_WORK(&pkt->work, xfer_work);
++	schedule_work(&pkt->work);
+ 
+ 	return 0;
+ 
+@@ -938,11 +934,8 @@ static int usbhsf_dma_try_pop(struct usbhs_pkt *pkt, int *is_done)
+ 
+ 	pkt->trans = len;
+ 
+-	tasklet_init(&fifo->tasklet,
+-		     usbhsf_dma_prepare_tasklet,
+-		     (unsigned long)pkt);
+-
+-	tasklet_schedule(&fifo->tasklet);
++	INIT_WORK(&pkt->work, xfer_work);
++	schedule_work(&pkt->work);
+ 
+ 	return 0;
+ 
+diff --git a/drivers/usb/renesas_usbhs/fifo.h b/drivers/usb/renesas_usbhs/fifo.h
+index f68609c..c31731a 100644
+--- a/drivers/usb/renesas_usbhs/fifo.h
++++ b/drivers/usb/renesas_usbhs/fifo.h
+@@ -19,6 +19,7 @@
+ 
+ #include <linux/interrupt.h>
+ #include <linux/sh_dma.h>
++#include <linux/workqueue.h>
+ #include <asm/dma.h>
+ #include "pipe.h"
+ 
+@@ -31,7 +32,6 @@ struct usbhs_fifo {
+ 	u32 ctr;	/* xFIFOCTR */
+ 
+ 	struct usbhs_pipe	*pipe;
+-	struct tasklet_struct	tasklet;
+ 
+ 	struct dma_chan		*tx_chan;
+ 	struct dma_chan		*rx_chan;
+@@ -53,6 +53,7 @@ struct usbhs_pkt {
+ 	struct usbhs_pkt_handle *handler;
+ 	void (*done)(struct usbhs_priv *priv,
+ 		     struct usbhs_pkt *pkt);
++	struct work_struct work;
+ 	dma_addr_t dma;
+ 	void *buf;
+ 	int length;
