@@ -1,155 +1,85 @@
 From: Paul Walmsley <paul@pwsan.com>
 Subject: Re: patch "tty: serial: OMAP: ensure FIFO levels are set correctly
  in non-DMA" added to tty tree
-Date: Fri, 3 Feb 2012 12:34:08 -0700 (MST)
-Message-ID: <alpine.DEB.2.00.1202031216320.27947@utopia.booyaka.com>
+Date: Fri, 3 Feb 2012 12:42:22 -0700 (MST)
+Message-ID: <alpine.DEB.2.00.1202031234120.27947@utopia.booyaka.com>
 References: <13274430881471@kroah.org> <alpine.DEB.2.00.1201251156361.5324@utopia.booyaka.com> <20120126042155.GA3185@suse.de> <alpine.DEB.2.00.1201252124470.11174@utopia.booyaka.com> <20120126191604.GA15516@suse.de> <alpine.DEB.2.00.1201261225520.32667@utopia.booyaka.com>
  <alpine.DEB.2.00.1202021302070.586@utopia.booyaka.com> <20120203150708.386951d2@notabene.brown> <alpine.DEB.2.00.1202022137150.586@utopia.booyaka.com> <20120203205401.5ddf241d@notabene.brown>
+ <CANOLnONsZKHJPbEx2+ic3EZ1PqcD30VT4Z2bR5iW-JNQJQL0GA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: MULTIPART/MIXED; BOUNDARY="155748971-666378285-1328298142=:27947"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from utopia.booyaka.com ([72.9.107.138]:50332 "EHLO
+Received: from utopia.booyaka.com ([72.9.107.138]:60918 "EHLO
 	utopia.booyaka.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755191Ab2BCTeK (ORCPT
+	with ESMTP id S1753372Ab2BCTmX (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 3 Feb 2012 14:34:10 -0500
-In-Reply-To: <20120203205401.5ddf241d@notabene.brown>
+	Fri, 3 Feb 2012 14:42:23 -0500
+In-Reply-To: <CANOLnONsZKHJPbEx2+ic3EZ1PqcD30VT4Z2bR5iW-JNQJQL0GA@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: NeilBrown <neilb@suse.de>
-Cc: Greg KH <gregkh@suse.de>, greg@kroah.com, khilman@ti.com, govindraj.raja@ti.com, tomi.valkeinen@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Grazvydas Ignotas <notasas@gmail.com>
+Cc: NeilBrown <neilb@suse.de>, Greg KH <gregkh@suse.de>, greg@kroah.com, khilman@ti.com, govindraj.raja@ti.com, tomi.valkeinen@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Fri, 3 Feb 2012, NeilBrown wrote:
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-> On Thu, 2 Feb 2012 22:45:53 -0700 (MST) Paul Walmsley <paul@pwsan.com> wrote:
-> 
-> > On Fri, 3 Feb 2012, NeilBrown wrote:
-> > 
-> > > If I enable runtime pm by setting power/autosuspend_delay_ms (e.g. to 5000)
-> > 
-> > Runtime PM should be enabled even with power/autosuspend_delay_ms = 0.  
-> > I think you are simply enabling the autosuspend timer.  There was a 
-> > significant behavior change here from 3.2, I believe.
-> 
-> However the default autosuspend_delay_ms is "-1", not "0", and "-1" does
-> disable runbtime_pm completely.  It increments usage_count (see
-> update_autosuspend()) so runtime_pm can never suspend the device.
+--155748971-666378285-1328298142=:27947
+Content-Type: TEXT/PLAIN; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-OK good, so you are indeed keeping the clocks enabled, then.
+On Fri, 3 Feb 2012, Grazvydas Ignotas wrote:
 
-> Hmm... I thought it was the other way around - CLKEN could gate the clock
-> off, and PRCM could also turn it off after a handshake.  But I finally found
-> the relevant text:
-> 
->    The software effect is immediate and direct. The functional clock is
->    turned on as soon as the bit is set, and turned off if the bit is cleared
->    and the clock is not required by any module.
-> 
-> so it seems I was wrong.
+> On Fri, Feb 3, 2012 at 11:54 AM, NeilBrown <neilb@suse.de> wrote:
+> > On Thu, 2 Feb 2012 22:45:53 -0700 (MST) Paul Walmsley <paul@pwsan.com> =
+wrote:
+> >> On Fri, 3 Feb 2012, NeilBrown wrote:
+> >>
+> >> > then CPUIDLE enters lower states and I think it uses less power but =
+I
+> >> > sometimes lose the first char I type (that is known) but also I some=
+times get
+> >> > corruption on output.
+> >>
+> >> I don't see any output corruption on 35xx BeagleBoard, either with or
+> >> without these patches. =C2=A0So this is presumably a 37xx-centric prob=
+lem, and
+> >> unrelated to these patches, I would guess.
+> >
+> > Maybe it is 37xx specific. =C2=A0I think this is a DM3730.
+>=20
+> Not sure if it's the same problem but with 3530 on 3.2 with
+> sleep_timeout set, I usually get first char dropped (as expected) but
+> sometimes I get corrupted char instead too. Corrupt char seems to
+> almost always happen if I set cpufreq to powersave, on performace it's
+> almost always ok, so maybe it's some timing problem,
 
-Well, one shouldn't take the TRM too seriously.  But in this case, yes I 
-think you had a slightly different idea than what the hardware people
-intended ;-)
+OK so let's distinguish between two corruption situations:
 
-> Still - something is definitely going wrong because I definitely an regularly
-> see garbage characters.  And the patch fixes it.  So some runtime-suspend
-> handler must be doing something bad, and it must happen while characters
-> are being written.
+1. The first character transmitted to the OMAP UART in a serial console=20
+when the UART powerdomain is in a non-functional, low power state (e.g.,=20
+RET or below) is corrupted.  This is not actually output corruption, this=
+=20
+is input corruption.
 
-It's certainly possible that there is another idle bug in the UART where 
-it could be mistakenly idle-acking when there are bytes left to be 
-transmitted.  But the patch 'tty: serial: OMAP: block idle while the UART 
-is transferring data in PIO mode' should fix that.  Are you running with 
-those patches applied?  Also, are you using PIO or DMA?
+2. Characters are corrupted while the OMAP UART is transmitting data, but=
+=20
+there has been no recent data sent to the OMAP.
 
-> > > i.e. when the tx buffer is empty, so turn the clocks off immediately, 
-> > > but wait a while for the fifo to empty.  Hopefully the auto-suspend time 
-> > > is enough.
-> > 
-> > Hmm, this statement is a little unclear to me.  The clocks won't be turned 
-> > off immediately - the request to disable the clocks only happens when the 
-> > autosuspend timer expires.  And even then, as mentioned above, it's just a 
-> > request.  The hardware should not actually disable the functional clock 
-> > until the UART FIFO is drained...
-> 
-> If you pm_runtime_put_autosuspend(), the suspend won't happen immediately but
-> will wait the timeout.
-> If you pm_runtime_put_sync(), the suspend happens straight away.
-> If you pm_runtime_put(), the suspend is schedule immediately in another
-> thread, so it happens very soon.  It doesn't wait for a timer to expire (no
-> timer is ticking at this point).
-> 
-> Just because an autosuspend timeout was set earlier, that won't cause
-> pm_runtime_put() to delay in suspending the device when it is called.
-> 
-> So I think it does request that the clocks be turned off immediately.
+Case 1 is expected and is almost certainly not a bug.  As Neil mentioned=20
+it should be bps-rate dependent.  It occurs when the first character=20
+transmitted to the OMAP wakes the chip up via I/O ring/chain wakeup.
+I/O ring/chain wakeup is driven by a 32KiHz clock and is therefore=20
+relatively high-latency.  So this could easily cause the first character=20
+or first few characters to be lost or corrupted, depending on the exact=20
+sequence of events, the low power state that the chip was in, etc.
 
-I was under the impression you were referring to the behavior after your 
-patch was applied, rather than before it.  My misunderstanding.
+Case 2 is not expected.  That is likely a bug somewhere.  Neil, this is=20
+what I understood that you are experiencing.  Is that correct?
 
-> > Anyway, consider trying a different CLOCKACTIVITY setting for the UARTs. 
-> 
-> My TRM saids that SYSC for the UARTs doesn't have CLOCKACTIVITY. Only
->  AUTOIDLE SOFTRESET ENAWAKEUP IDLEMODE
-> 
-> Is it worth trying anyway?
-
-Sure, why not.  It's fast to try, and if it happens to work, it's better 
-than hacking the driver..  
-
-> > Incidentally, I have some patches to fix the latency calculation here that 
-> > are in the works, similar to the ones you describe.  The current 
-> > calculation in the driver is pretty broken, but since the changes to fix 
-> > the calculation are rather involved, Kevin and I thought it would be best 
-> > to defer most of them to the v3.4 merge window.  The calculation fix in 
-> > the 3.3-rc series is simply intended to deal with a very basic power 
-> > management regression, as you know - not to make it ideal, which is more 
-> > complicated.  Anyway, the patches are at git://git.pwsan.com/linux-2.6 in 
-> > the branch 'omap_serial_fix_pm_qos_formula_devel_3.4'.  Keep in mind that 
-> > at least one patch in that branch is broken, but perhaps you might get an 
-> > idea of where they are trying to go.  Comments welcome.
-> > 
-> > > However I am using a lot more power than in 3.2.  
-> > 
-> > Is this without disabling the UART clocks?  If the driver is keeping the 
-> > UART clocks enabled, then increased power consumption is definitely 
-> > expected.
-> 
-> Both. With clocks kept on (autosuspend == -1) I'm using about 30 mA more than
-> before.  With clocks allowed to go off it is closer to 40mA more !!! Weird,
-> isn't it?
-
-Interesting.  A few questions.  Do you have the PMIC and the OMAP 
-configured to scale voltage in retention?  Also, does the power effect 
-differ if you use different autosuspend timeouts?
-
-> > > If I then enabled runtime_pm with a 5 second autosuspend delay:
-> > >   CORE is still permanently ON (I think the USB might be doing that).
-> > >   PER  is OFF (7 seconds) RET (15 seconds) and ON (8 seconds).
-> > > but more surprising
-> > >   MPU  is OFF (8 sec) RET (8 sec) INA (9 sec) ON (4 secs).
-> > > 
-> > > So we get to turn PER off at the cost of turning the MPU on a lot.
-> > > (the periods in each state are only repeatable to a precision of 20%-50%).
-
-Hmmm yeah, that does seem weird that the MPU would stay out of a low power 
-state just because the autosuspend timer was enabled.  
-
-> > > p.s. who should I formally submit OMAP-UART patches to?  I have a couple of
-> > > others such as the below that I should submit somewhere.
-> > 
-> > Would suggest sending them to linux-serial@vger.kernel.org, 
-> > linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, and Alan 
-> > Cox since he is the serial maintainer?  And you should probably also cc 
-> > me, since I seem to be stuck with fixing this driver so I can test my 
-> > other patches; and cc Govindraj as well.
->
-> Thanks for your time.
-
-Thanks for helping us clean up this driver :-)
-
-By the way, you might want to cc Kevin Hilman on any serial patches too, 
-since he has been working in this area also.
+Gra=C5=BEvydas, are you seeing case 1 or 2 (or something completely differe=
+nt=20
+;-) ?
 
 
 - Paul
+--155748971-666378285-1328298142=:27947--
