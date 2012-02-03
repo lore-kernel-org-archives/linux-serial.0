@@ -1,38 +1,57 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [Patch] tty: fix a build failure on sparc
-Date: Fri, 3 Feb 2012 07:53:49 -0800
-Message-ID: <20120203155349.GC20638@kroah.com>
-References: <1328246540-5824-1-git-send-email-xiyou.wangcong@gmail.com>
+From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Subject: Re: [PATCH 1/7 v2] dmaengine: add a simple dma library
+Date: Fri, 3 Feb 2012 17:38:07 +0100 (CET)
+Message-ID: <Pine.LNX.4.64.1202031736090.6211@axis700.grange>
+References: <1327589784-4287-1-git-send-email-g.liakhovetski@gmx.de>
+ <1327589784-4287-2-git-send-email-g.liakhovetski@gmx.de>
+ <1327912346.1527.13.camel@vkoul-udesk3>  <Pine.LNX.4.64.1201300944360.7932@axis700.grange>
+  <1327992090.1527.116.camel@vkoul-udesk3>  <Pine.LNX.4.64.1201310746470.31226@axis700.grange>
+ <1328074726.1610.1.camel@vkoul-udesk3>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:46094 "EHLO
-	out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755309Ab2BCPyq (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 3 Feb 2012 10:54:46 -0500
-Received: from compute5.internal (compute5.nyi.mail.srv.osa [10.202.2.45])
-	by gateway1.nyi.mail.srv.osa (Postfix) with ESMTP id 0364E211F2
-	for <linux-serial@vger.kernel.org>; Fri,  3 Feb 2012 10:54:46 -0500 (EST)
-Content-Disposition: inline
-In-Reply-To: <1328246540-5824-1-git-send-email-xiyou.wangcong@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-mmc-owner@vger.kernel.org>
+In-Reply-To: <1328074726.1610.1.camel@vkoul-udesk3>
+Sender: linux-mmc-owner@vger.kernel.org
+To: Vinod Koul <vinod.koul@intel.com>
+Cc: linux-kernel@vger.kernel.org, linux-sh@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, linux-mmc@vger.kernel.org, alsa-devel@alsa-project.org, linux-serial@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>
 List-Id: linux-serial@vger.kernel.org
-To: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, Alan Cox <alan@linux.intel.com>, Jamie Iles <jamie@jamieiles.com>, Stephen Warren <swarren@nvidia.com>, linux-serial@vger.kernel.org
 
-On Fri, Feb 03, 2012 at 01:22:10PM +0800, Cong Wang wrote:
-> On sparc, there is a build failure:
-> 
-> drivers/tty/serial/8250/8250.c:48:21: error: suncore.h: No such file or directory
-> drivers/tty/serial/8250/8250.c:3275: error: implicit declaration of function 'sunserial_register_minors'
-> drivers/tty/serial/8250/8250.c:3305: error: implicit declaration of function 'sunserial_unregister_minors'
-> 
-> this is due to commit 9bef3d4197379a995fa80f81950bbbf8d32e9e8b
-> (serial: group all the 8250 related code together) moved these files
-> into 8250/ subdirectory, but forgot to change the reference
-> to drivers/tty/serial/suncore.h.
+Hi Vinod
 
-Ah, thanks, I'll go queue this up, sorry for the problem.
+On Wed, 1 Feb 2012, Vinod Koul wrote:
 
-greg k-h
+> On Tue, 2012-01-31 at 09:59 +0100, Guennadi Liakhovetski wrote:
+> > Hi Vinod
+> > 
+> > Thanks for your reply.
+> > 
+> > On Tue, 31 Jan 2012, Vinod Koul wrote:
+> > 
+> > > On Mon, 2012-01-30 at 10:34 +0100, Guennadi Liakhovetski wrote:
+
+[snip]
+
+> > > > How would you like to do this? Don't you think, it would be good to allow 
+> > > > both: either implement a dmaengine driver directly, exactly as all drivers 
+> > > > are doing now, or use the additional helper library for suitable (simple) 
+> > > > hardware types? I see it similar to I2C, where you either implement an I2C 
+> > > > driver directly, or you use the bitbanging abstraction for simpler 
+> > > > hardware.
+> > > I think it would be good to have both, this can be used by folks who
+> > > don't have sg support available.
+> > 
+> > Ok, so, should I just rename the driver to sgsoft? Is this the only 
+> > change, that you'd like to see?
+> That would be one :)
+> Also, I would review the other patch patches by today/tomorrow, you can
+> add any changes in next version as well
+
+Do I understand it right, that I'm waiting for your review before 
+submitting the next version?
+
+Thanks
+Guennadi
+---
+Guennadi Liakhovetski, Ph.D.
+Freelance Open-Source Software Developer
+http://www.open-technology.de/
