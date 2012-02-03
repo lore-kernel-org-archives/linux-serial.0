@@ -1,37 +1,59 @@
-From: Paul Walmsley <paul@pwsan.com>
-Subject: Re: patch "tty: serial: OMAP: ensure FIFO levels are set correctly
- in non-DMA" added to tty tree
-Date: Fri, 3 Feb 2012 12:54:18 -0700 (MST)
-Message-ID: <alpine.DEB.2.00.1202031249590.27947@utopia.booyaka.com>
-References: <13274430881471@kroah.org> <alpine.DEB.2.00.1201251156361.5324@utopia.booyaka.com> <20120126042155.GA3185@suse.de> <alpine.DEB.2.00.1201252124470.11174@utopia.booyaka.com> <20120126191604.GA15516@suse.de> <alpine.DEB.2.00.1201261225520.32667@utopia.booyaka.com>
- <alpine.DEB.2.00.1202021302070.586@utopia.booyaka.com> <20120203150708.386951d2@notabene.brown> <CAAL8m4ztuB-kJvLGd=8PqPCLFcvPW9AQcdcFQ+e03vDT240vog@mail.gmail.com> <20120203230720.28666cc6@notabene.brown> <20120203122053.GF1275@n2100.arm.linux.org.uk>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: Re: [Patch] tty: fix a build failure on sparc
+Date: Fri, 3 Feb 2012 11:06:30 -0500
+Message-ID: <4F2C0606.7000409@windriver.com>
+References: <1328246540-5824-1-git-send-email-xiyou.wangcong@gmail.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from utopia.booyaka.com ([72.9.107.138]:60895 "EHLO
-	utopia.booyaka.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755204Ab2BCTyT (ORCPT
+Received: from mail1.windriver.com ([147.11.146.13]:63729 "EHLO
+	mail1.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752828Ab2BCUIn (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 3 Feb 2012 14:54:19 -0500
-In-Reply-To: <20120203122053.GF1275@n2100.arm.linux.org.uk>
+	Fri, 3 Feb 2012 15:08:43 -0500
+In-Reply-To: <1328246540-5824-1-git-send-email-xiyou.wangcong@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: NeilBrown <neilb@suse.de>, Govindraj <govindraj.ti@gmail.com>, khilman@ti.com, greg@kroah.com, govindraj.raja@ti.com, tomi.valkeinen@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, Jamie Iles <jamie@jamieiles.com>, Stephen Warren <swarren@nvidia.com>, linux-serial@vger.kernel.org
 
-On Fri, 3 Feb 2012, Russell King - ARM Linux wrote:
+On 12-02-03 12:22 AM, Cong Wang wrote:
+> On sparc, there is a build failure:
+> 
+> drivers/tty/serial/8250/8250.c:48:21: error: suncore.h: No such file or directory
+> drivers/tty/serial/8250/8250.c:3275: error: implicit declaration of function 'sunserial_register_minors'
+> drivers/tty/serial/8250/8250.c:3305: error: implicit declaration of function 'sunserial_unregister_minors'
+> 
+> this is due to commit 9bef3d4197379a995fa80f81950bbbf8d32e9e8b
+> (serial: group all the 8250 related code together) moved these files
+> into 8250/ subdirectory, but forgot to change the reference
+> to drivers/tty/serial/suncore.h.
 
-> If there's an on-going transmission, why is the runtime PM count zero,
-> meaning that the UART can sleep at the point where serial_omap_tx_empty()
-> is being called - and obviously there's still characters in the FIFO?
+Thanks, I explicitly left sunsu out of the move but missed
+that 8250 was sourcing its related header.  I did defconfig
+builds, but in going back to check, I see that neither sparc
+32/64 defconfig enable 8250 by default, so those builds didn't
+help me much at all...  :(
 
-In the case of OMAP, that's the point of the idle protocol.  If there's 
-data left in the TX FIFO, the UART should prevent the rest of the chip 
-from cutting its clocks until the TX FIFO is drained.  Even if the MPU has 
-requested that the UART clocks be cut.
+Acked-by: Paul Gortmaker <paul.gortmaker@windriver.com>
 
-Of course, there may well be a bug that prevents this from working the 
-way it was intended.
-
-
-- Paul
+> 
+> Cc: Paul Gortmaker <paul.gortmaker@windriver.com>
+> Cc: Greg Kroah-Hartman <gregkh@suse.de>
+> Signed-off-by: WANG Cong <xiyou.wangcong@gmail.com>
+> 
+> ---
+> diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
+> index 9f50c4e..9b7336f 100644
+> --- a/drivers/tty/serial/8250/8250.c
+> +++ b/drivers/tty/serial/8250/8250.c
+> @@ -45,7 +45,7 @@
+>  #include "8250.h"
+>  
+>  #ifdef CONFIG_SPARC
+> -#include "suncore.h"
+> +#include "../suncore.h"
+>  #endif
+>  
+>  /*
