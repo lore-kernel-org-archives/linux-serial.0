@@ -1,64 +1,86 @@
 From: Paul Walmsley <paul@pwsan.com>
 Subject: Re: patch "tty: serial: OMAP: ensure FIFO levels are set correctly
  in non-DMA" added to tty tree
-Date: Fri, 3 Feb 2012 15:30:54 -0700 (MST)
-Message-ID: <alpine.DEB.2.00.1202031528200.27947@utopia.booyaka.com>
+Date: Fri, 3 Feb 2012 16:02:42 -0700 (MST)
+Message-ID: <alpine.DEB.2.00.1202031532540.27947@utopia.booyaka.com>
 References: <13274430881471@kroah.org> <alpine.DEB.2.00.1201251156361.5324@utopia.booyaka.com> <20120126042155.GA3185@suse.de> <alpine.DEB.2.00.1201252124470.11174@utopia.booyaka.com> <20120126191604.GA15516@suse.de> <alpine.DEB.2.00.1201261225520.32667@utopia.booyaka.com>
- <alpine.DEB.2.00.1202021302070.586@utopia.booyaka.com> <20120203150708.386951d2@notabene.brown> <alpine.DEB.2.00.1202022137150.586@utopia.booyaka.com> <20120203205401.5ddf241d@notabene.brown> <CANOLnONsZKHJPbEx2+ic3EZ1PqcD30VT4Z2bR5iW-JNQJQL0GA@mail.gmail.com>
- <20120203231113.25ae2d3a@notabene.brown> <alpine.DEB.2.00.1202031243270.27947@utopia.booyaka.com> <alpine.DEB.2.00.1202031432080.27947@utopia.booyaka.com> <20120204091048.00c7e027@notabene.brown>
+ <alpine.DEB.2.00.1202021302070.586@utopia.booyaka.com> <20120203150708.386951d2@notabene.brown> <alpine.DEB.2.00.1202022137150.586@utopia.booyaka.com> <20120203205401.5ddf241d@notabene.brown> <alpine.DEB.2.00.1202031255330.27947@utopia.booyaka.com>
+ <20120204085940.2de44594@notabene.brown>
 Mime-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from utopia.booyaka.com ([72.9.107.138]:53142 "EHLO
+Received: from utopia.booyaka.com ([72.9.107.138]:58640 "EHLO
 	utopia.booyaka.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756659Ab2BCWaz (ORCPT
+	with ESMTP id S1750732Ab2BCXCn (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 3 Feb 2012 17:30:55 -0500
-In-Reply-To: <20120204091048.00c7e027@notabene.brown>
+	Fri, 3 Feb 2012 18:02:43 -0500
+In-Reply-To: <20120204085940.2de44594@notabene.brown>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: NeilBrown <neilb@suse.de>
-Cc: Grazvydas Ignotas <notasas@gmail.com>, Greg KH <gregkh@suse.de>, greg@kroah.com, khilman@ti.com, govindraj.raja@ti.com, tomi.valkeinen@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: greg@kroah.com, khilman@ti.com, govindraj.raja@ti.com, tomi.valkeinen@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
 On Sat, 4 Feb 2012, NeilBrown wrote:
 
-> On Fri, 3 Feb 2012 14:42:09 -0700 (MST) Paul Walmsley <paul@pwsan.com> wrote:
+> On Fri, 3 Feb 2012 13:10:28 -0700 (MST) Paul Walmsley <paul@pwsan.com> wrote:
 > 
-> > On Fri, 3 Feb 2012, Paul Walmsley wrote:
+> > Considering your theory that the UART clocks are being cut while there's 
+> > still data in the FIFO, you might consider removing this code at the end 
+> > of transmit_chars():
 > > 
-> > > On Fri, 3 Feb 2012, NeilBrown wrote:
-> > > 
-> > > > My theory is that there is a delay between the falling RX line waking the
-> > > > system up, and the CPU enabling the UART - whether enabling the clocks or
-> > > > doing a full config, I am not sure - though I think the former.
-> > > > 
-> > > > Maybe if we could enable the UART clocks immediately after returning from the
-> > > > WFI instruction we could avoid the corruption....
-> > > 
-> > > The PRCM should be re-enabling the UART's functional clock itself, with no 
-> > > kernel involvement.  The sequence should go something like this 
-> > > (simplified):
-> > > 
-> > > 1. I/O wakeup occurs
-> > > 
-> > > 2. CORE & PER powerdomains are awakened
-> > > 
-> > > 3. The UART notices an event on its input lines and deasserts its idle-ack
-> > 
-> > It just occurred to me that, supposedly, the only UART input line that is 
-> > attached to the SWAKEUP signal is CTS.  So the UART may not in fact be 
-> > able to deassert its idle-ack autonomously at this point.
+> > 	if (uart_circ_empty(xmit))
+> > 		serial_omap_stop_tx(&up->port);
 > 
-> How does that relate to the RX_CTS_WU_EN bit which enables an interrupt on 
->     "a falling edge of pins RX, nCTS, or nDSR"
+> I read the code and chickened out of just removing that.
+> serial_omap_stop_tx seem to do 2 things:
+>  1/ tell the uart to stop sending interrupts when the tx fifo is empty
+>  2/ set forceidle (really smartidle) on the uart.
+> 
+> I didn't feel comfortable removing '1' as I thought it might generate an
+> interrupt storm .. maybe not.
 
-That's the bit I'm talking about :-)  Maybe it might work appropriately, 
-then, if it also tests RX.  Section 19.3.2.3 "Wake-up Request" only 
-mentions the CTS lines.  Flip a coin ;-)
+Might be worth a try.  In theory, since the current UART driver sets the 
+TX_EMPTY flag in the SCR register, the UART should only raise a TX 
+interrupt when the FIFO + shift register are totally empty.  So hopefully 
+you should only get one extra interrupt per TTY transmit operation.
 
-> This seems to be a "wakeup interrupt", bit it isn't clear what it wakes us.
+> Instead I just removed '2'.  In fact I replaced the 'set_forceidle' call with
+> 'set_noidle'.  So the uart should never report that it was idle.
+> 
+> I did this with my other patch removed so pm_runtime_put() was still being
+> called.
+> 
+> Result:  I still get corruption.
+> So having the UART say "no, I'm not idle" does *not* stop the clock
+> being turned off when we use omap_hwmod_idle() to turn off the clocks.
 
-The UART.  It should send an SWAKEUP to the PRCM and bring the UART out of 
-idle-ack.
+Hmm that's doubtful.  If that's really so, then we should be seeing 
+massive UART transmit problems.  I'd expect that the driver wouldn't be 
+able to get any transmit buffers out the door at all before the UART's 
+fclk is cut.
+
+What's probably happening in this case is that the hwmod code is rewriting 
+the UART SIDLEMODE bits in the hwmod code's _idle() function.  This gets 
+called as part of the PM runtime suspend operation.  So it's bypassing 
+your debugging hack :-)  The hwmod code expects to control the SYSCONFIG 
+register bits itself, and the current way that the UART driver messes with 
+the SYSCONFIG bits is a total hack that that hwmod code is not expecting.  
+You could try disabling that behavior in _idle_sysc() by adding a hack to 
+skip it if it's the UART3 hwmod.
+
+> When we turn off a clock, if that is the last clock in the clock-domain, we
+> also turn off the clock-domain (I think).
+
+That's only true if the clockdomain is programmed to use 
+software-supervised idle.  CORE & PER should both be programmed to 
+hardware-supervised idle by mach-omap2/pm34xx.c.  In that case, we let the 
+PRCM put the clockdomain to sleep by itself.
+
+> Could it be that the clock-domain doesn't do any handshaking with modules,
+> and so turns off the clocks even though they are being used?
+
+Probably not -- I'd think that hardware-supervised idle wouldn't work at 
+all if that were true.
+
 
 - Paul
