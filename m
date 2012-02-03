@@ -1,61 +1,49 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: Re: [Patch] tty: fix a build failure on sparc
-Date: Fri, 3 Feb 2012 14:46:09 -0500
-Message-ID: <20120203194608.GA23948@windriver.com>
-References: <1328246540-5824-1-git-send-email-xiyou.wangcong@gmail.com>
+From: Paul Walmsley <paul@pwsan.com>
+Subject: Re: patch "tty: serial: OMAP: ensure FIFO levels are set correctly
+ in non-DMA" added to tty tree
+Date: Fri, 3 Feb 2012 12:49:43 -0700 (MST)
+Message-ID: <alpine.DEB.2.00.1202031243270.27947@utopia.booyaka.com>
+References: <13274430881471@kroah.org> <alpine.DEB.2.00.1201251156361.5324@utopia.booyaka.com> <20120126042155.GA3185@suse.de> <alpine.DEB.2.00.1201252124470.11174@utopia.booyaka.com> <20120126191604.GA15516@suse.de> <alpine.DEB.2.00.1201261225520.32667@utopia.booyaka.com>
+ <alpine.DEB.2.00.1202021302070.586@utopia.booyaka.com> <20120203150708.386951d2@notabene.brown> <alpine.DEB.2.00.1202022137150.586@utopia.booyaka.com> <20120203205401.5ddf241d@notabene.brown> <CANOLnONsZKHJPbEx2+ic3EZ1PqcD30VT4Z2bR5iW-JNQJQL0GA@mail.gmail.com>
+ <20120203231113.25ae2d3a@notabene.brown>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.windriver.com ([147.11.1.11]:50517 "EHLO
-	mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754126Ab2BCTqU (ORCPT
+Received: from utopia.booyaka.com ([72.9.107.138]:52069 "EHLO
+	utopia.booyaka.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754059Ab2BCTto (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 3 Feb 2012 14:46:20 -0500
-Content-Disposition: inline
-In-Reply-To: <1328246540-5824-1-git-send-email-xiyou.wangcong@gmail.com>
+	Fri, 3 Feb 2012 14:49:44 -0500
+In-Reply-To: <20120203231113.25ae2d3a@notabene.brown>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Jamie Iles <jamie@jamieiles.com>, Stephen Warren <swarren@nvidia.com>, linux-serial@vger.kernel.org
+To: NeilBrown <neilb@suse.de>
+Cc: Grazvydas Ignotas <notasas@gmail.com>, Greg KH <gregkh@suse.de>, greg@kroah.com, khilman@ti.com, govindraj.raja@ti.com, tomi.valkeinen@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-[Resending with updated address for Greg]
+On Fri, 3 Feb 2012, NeilBrown wrote:
 
-On 12-02-03 12:22 AM, Cong Wang wrote:
-> On sparc, there is a build failure:
+> My theory is that there is a delay between the falling RX line waking the
+> system up, and the CPU enabling the UART - whether enabling the clocks or
+> doing a full config, I am not sure - though I think the former.
 > 
-> drivers/tty/serial/8250/8250.c:48:21: error: suncore.h: No such file or directory
-> drivers/tty/serial/8250/8250.c:3275: error: implicit declaration of function 'sunserial_register_minors'
-> drivers/tty/serial/8250/8250.c:3305: error: implicit declaration of function 'sunserial_unregister_minors'
-> 
-> this is due to commit 9bef3d4197379a995fa80f81950bbbf8d32e9e8b
-> (serial: group all the 8250 related code together) moved these files
-> into 8250/ subdirectory, but forgot to change the reference
-> to drivers/tty/serial/suncore.h.
+> Maybe if we could enable the UART clocks immediately after returning from the
+> WFI instruction we could avoid the corruption....
 
-Thanks, I explicitly left sunsu out of the move but missed
-that 8250 was sourcing its related header.  I did defconfig
-builds, but in going back to check, I see that neither sparc
-32/64 defconfig enable 8250 by default, so those builds didn't
-help me much at all...  :(
+The PRCM should be re-enabling the UART's functional clock itself, with no 
+kernel involvement.  The sequence should go something like this 
+(simplified):
 
-Acked-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+1. I/O wakeup occurs
 
-> 
-> Cc: Paul Gortmaker <paul.gortmaker@windriver.com>
-> Cc: Greg Kroah-Hartman <gregkh@suse.de>
-> Signed-off-by: WANG Cong <xiyou.wangcong@gmail.com>
-> 
-> ---
-> diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
-> index 9f50c4e..9b7336f 100644
-> --- a/drivers/tty/serial/8250/8250.c
-> +++ b/drivers/tty/serial/8250/8250.c
-> @@ -45,7 +45,7 @@
->  #include "8250.h"
->  
->  #ifdef CONFIG_SPARC
-> -#include "suncore.h"
-> +#include "../suncore.h"
->  #endif
->  
->  /*
+2. CORE & PER powerdomains are awakened
+
+3. The UART notices an event on its input lines and deasserts its idle-ack
+
+4. The PRCM re-enables the clocks to the UART
+
+5. The UART receives the input character into its FIFO and raises an MPU 
+   interrupt
+
+That's the theory, anyway.
+
+- Paul
