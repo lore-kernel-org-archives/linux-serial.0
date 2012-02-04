@@ -1,8 +1,8 @@
-From: NeilBrown <neilb@suse.de>
-Subject: Re: patch "tty: serial: OMAP: ensure FIFO levels are set correctly
- in non-DMA" added to tty tree
-Date: Sat, 4 Feb 2012 15:17:38 +1100
-Message-ID: <20120204151738.0cbafa47@notabene.brown>
+From: Grazvydas Ignotas <notasas@gmail.com>
+Subject: Re: patch "tty: serial: OMAP: ensure FIFO levels are set correctly in
+ non-DMA" added to tty tree
+Date: Sat, 4 Feb 2012 18:00:56 +0200
+Message-ID: <CANOLnOPm-ZKRvu1PVs-jU2sceehRiwNPd=ysu2SDsLbarAPVbw@mail.gmail.com>
 References: <13274430881471@kroah.org>
 	<alpine.DEB.2.00.1201251156361.5324@utopia.booyaka.com>
 	<20120126042155.GA3185@suse.de>
@@ -13,89 +13,91 @@ References: <13274430881471@kroah.org>
 	<20120203150708.386951d2@notabene.brown>
 	<alpine.DEB.2.00.1202022137150.586@utopia.booyaka.com>
 	<20120203205401.5ddf241d@notabene.brown>
-	<alpine.DEB.2.00.1202031255330.27947@utopia.booyaka.com>
-	<20120204085940.2de44594@notabene.brown>
-	<alpine.DEB.2.00.1202031532540.27947@utopia.booyaka.com>
-	<20120204110131.7378b8fe@notabene.brown>
-	<alpine.DEB.2.00.1202031900460.9453@utopia.booyaka.com>
-	<20120204140923.063706c8@notabene.brown>
-	<alpine.DEB.2.00.1202032014170.9453@utopia.booyaka.com>
-	<20120204144353.0803fe23@notabene.brown>
-	<alpine.DEB.2.00.1202032050560.9453@utopia.booyaka.com>
+	<CANOLnONsZKHJPbEx2+ic3EZ1PqcD30VT4Z2bR5iW-JNQJQL0GA@mail.gmail.com>
+	<alpine.DEB.2.00.1202031234120.27947@utopia.booyaka.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=PGP-SHA1;
- boundary="Sig_/e/9FKqPZP=jDlCInRWfybtP"; protocol="application/pgp-signature"
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <alpine.DEB.2.00.1202032050560.9453@utopia.booyaka.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Paul Walmsley <paul@pwsan.com>
-Cc: greg@kroah.com, khilman@ti.com, govindraj.raja@ti.com, tomi.valkeinen@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-iy0-f174.google.com ([209.85.210.174]:55586 "EHLO
+	mail-iy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750847Ab2BDQA5 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 4 Feb 2012 11:00:57 -0500
+In-Reply-To: <alpine.DEB.2.00.1202031234120.27947@utopia.booyaka.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Paul Walmsley <paul@pwsan.com>
+Cc: NeilBrown <neilb@suse.de>, khilman@ti.com, govindraj.raja@ti.com, tomi.valkeinen@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
---Sig_/e/9FKqPZP=jDlCInRWfybtP
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Fri, Feb 3, 2012 at 9:42 PM, Paul Walmsley <paul@pwsan.com> wrote:
+> On Fri, 3 Feb 2012, Grazvydas Ignotas wrote:
+>> On Fri, Feb 3, 2012 at 11:54 AM, NeilBrown <neilb@suse.de> wrote:
+>> > Maybe it is 37xx specific. =C2=A0I think this is a DM3730.
+>>
+>> Not sure if it's the same problem but with 3530 on 3.2 with
+>> sleep_timeout set, I usually get first char dropped (as expected) bu=
+t
+>> sometimes I get corrupted char instead too. Corrupt char seems to
+>> almost always happen if I set cpufreq to powersave, on performace it=
+'s
+>> almost always ok, so maybe it's some timing problem,
+>
+> OK so let's distinguish between two corruption situations:
+>
+> 1. The first character transmitted to the OMAP UART in a serial conso=
+le
+> when the UART powerdomain is in a non-functional, low power state (e.=
+g.,
+> RET or below) is corrupted. =C2=A0This is not actually output corrupt=
+ion, this
+> is input corruption.
+>
+> 2. Characters are corrupted while the OMAP UART is transmitting data,=
+ but
+> there has been no recent data sent to the OMAP.
+>
+> Case 1 is expected and is almost certainly not a bug.  As Neil mentio=
+ned
+> it should be bps-rate dependent.  It occurs when the first character
+> transmitted to the OMAP wakes the chip up via I/O ring/chain wakeup.
+> I/O ring/chain wakeup is driven by a 32KiHz clock and is therefore
+> relatively high-latency.  So this could easily cause the first charac=
+ter
+> or first few characters to be lost or corrupted, depending on the exa=
+ct
+> sequence of events, the low power state that the chip was in, etc.
+>
+> Case 2 is not expected.  That is likely a bug somewhere.  Neil, this =
+is
+> what I understood that you are experiencing.  Is that correct?
+>
+> Gra=C5=BEvydas, are you seeing case 1 or 2 (or something completely d=
+ifferent
+> ;-) ?
 
-On Fri, 3 Feb 2012 20:56:07 -0700 (MST) Paul Walmsley <paul@pwsan.com> wrot=
-e:
+It's case 1. What I wanted to say is that first char is most often
+nicely dropped and does not get into the terminal, so I can just type
+the command after it. But in some cases terminal gets corrupted char
+instead, so I must then first get rid of it somehow to successfully
+send a command, which is annoying a bit. I thought that maybe there is
+code somewhere that gets rid of first bad char received and maybe it
+can be tuned, but judging on further discussions it's all done by
+hardware?
 
-> On Sat, 4 Feb 2012, NeilBrown wrote:
->=20
-> > I have to set autosuspend_delay_ms for omap_uart.3 as well before the
-> > behaviour is significant.
-> > But then I see no output corruption.  Lots of input corruption of cours=
-e but
-> > the output looks fine.
->=20
-> OK.  Is the input corruption at the beginning of the pasted buffer, or th=
-e=20
-> middle?  And this is with CPUIdle enabled?
->=20
-> With CPUIdle disabled here, what I thought was output corruption occurs i=
-n=20
-> the middle of the pasted buffer occasionally.  But it might be input=20
-> corruption, if the CPU manages to empty the RX FIFO while the TX FIFO is=
-=20
-> empty.
->=20
->=20
-> - Paul
-
-Yes, cpu-idle is enabled.
-
-I think corruption is mostly early, though it isn't very consistent.
-
-e.g.
-
-# C!jHhzys/Y?omap/omap_uart.2/power/autosuspend_delay_ms
--bash: !jHhzys/Y?omap/omap_uart.2/power/autosuspend_delay_ms: event not fou=
-nd
-# echo 0 > /sys/devices/platFK/////mpWWt.]au%e_mHHHhQ 5
--bash: /sys/devices/platFK/////mpWWt.]au%e_mHHHhQ: No such file or directory
+I've also noticed if I paste a command instead, up to 3 characters can
+be lost, and in some cases I get 3 corrupted chars there instead. I
+paste a command to both wake the board and read the fuel gauge just
+before it updates to see how much current board was draining while
+suspended. I insert 3 spaces at the start of command to be eaten by
+wakeup, but if it decides to corrupt those chars instead of dropping,
+the whole command is ruined. It's all at 115200 baud rate.
 
 
-NeilBrown
-
---Sig_/e/9FKqPZP=jDlCInRWfybtP
-Content-Type: application/pgp-signature; name=signature.asc
-Content-Disposition: attachment; filename=signature.asc
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.18 (GNU/Linux)
-
-iQIVAwUBTyyxYjnsnt1WYoG5AQL2/Q/+LlCccSQWsCO2QEI3zLwf2QHi0DnK6u2Y
-ZSUlVt0SYGYT71Ck73jmJs+6OVwsiJqx5Nn5EKKVbttoSoc5985xFsot5FBwa96p
-YpUkAgZp/dOCpx2XAY6FBHxGHmmuKTXq+VCADSCQHVgr8ojopLao6roEPNyEK0VZ
-n3B59ySRa4IPsmv9tpo8Yh1axJ5XtUQuHhiqpipOZG9ysPVJj/Fw/HbZzPItx01M
-D/ZJYvu+Nqx0GBXnpSJ6ANuhQTUFx3EFy6bKlAgFyWf7z6f75I1VrS3ZX1yN9Iwh
-lpCM9PfTQDjbLLVVzYz/ScfEXhlG9h63EuELirjU8qI9tgFFymY1cj9SWruh1Y2R
-B9vxaLrYrpSnVXeQOW5nkWPBrGfYmBN0Y483dj26jgz+Fj1DmK+uQxb9QDrQMAex
-NVp1mNi71xDcIQj/kEYXQ6si03Hx5RQGvBV6tE1Hi9xOTuwnJoRUWy8xC0bee6xw
-A1NULObyKDDTqHdcKgzyemclkLItM9Y6YfiJoqNcB2WKJ8Hk8CZEmfFPq5UhgqTJ
-rnMlNGeDVKNjAowFyy0Wch8OZuRBQsJy3uMGLTrfCSrgEURh08VvQR5910w5CBUe
-6wsnZIQpcF7qtcQ0b0bMq3mDV0408/0XNK45sIO0UP4g7V8whegeIQX4bby4nRlD
-YFSySChZBVw=
-=pHA4
------END PGP SIGNATURE-----
-
---Sig_/e/9FKqPZP=jDlCInRWfybtP--
+--=20
+Gra=C5=BEvydas
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
