@@ -1,130 +1,54 @@
-From: Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH/RFC] usb: fix renesas_usbhs to not schedule in atomic
- context
-Date: Sun, 5 Feb 2012 16:54:00 +0200
-Message-ID: <20120205145358.GA13762@legolas.emea.dhcp.ti.com>
-References: <1327589784-4287-1-git-send-email-g.liakhovetski@gmx.de>
- <1327589784-4287-2-git-send-email-g.liakhovetski@gmx.de>
- <4F22624E.2090201@renesas.com>
- <Pine.LNX.4.64.1201270946150.32661@axis700.grange>
- <4F27CA7D.601@renesas.com>
- <Pine.LNX.4.64.1202022317560.13860@axis700.grange>
- <4F2B9F34.60308@renesas.com>
- <Pine.LNX.4.64.1202031623000.6211@axis700.grange>
-Reply-To: balbi@ti.com
+From: "Woodruff, Richard" <r-woodruff2@ti.com>
+Subject: RE: patch "tty: serial: OMAP: ensure FIFO levels are set correctly
+	in non-DMA" added to tty tree
+Date: Sun, 5 Feb 2012 15:37:21 +0000
+Message-ID: <EF62F09C0797D947AD4180A1043C0DF734934E36@DLEE10.ent.ti.com>
+References: <alpine.DEB.2.00.1201252124470.11174@utopia.booyaka.com>
+ <20120126191604.GA15516@suse.de>
+ <alpine.DEB.2.00.1201261225520.32667@utopia.booyaka.com>
+ <alpine.DEB.2.00.1202021302070.586@utopia.booyaka.com>
+ <20120203150708.386951d2@notabene.brown>
+ <alpine.DEB.2.00.1202022137150.586@utopia.booyaka.com>
+ <20120203205401.5ddf241d@notabene.brown>
+ <CANOLnONsZKHJPbEx2+ic3EZ1PqcD30VT4Z2bR5iW-JNQJQL0GA@mail.gmail.com>
+ <alpine.DEB.2.00.1202031234120.27947@utopia.booyaka.com>
+ <CANOLnOPm-ZKRvu1PVs-jU2sceehRiwNPd=ysu2SDsLbarAPVbw@mail.gmail.com>
+ <20120204163931.GH1275@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="LZvS9be/3tNcYl/X"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog116.obsmtp.com ([74.125.149.240]:56727 "EHLO
-	na3sys009aog116.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754182Ab2BEOyH (ORCPT
+Received: from bear.ext.ti.com ([192.94.94.41]:37537 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752994Ab2BEPhj convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 5 Feb 2012 09:54:07 -0500
-Content-Disposition: inline
-In-Reply-To: <Pine.LNX.4.64.1202031623000.6211@axis700.grange>
+	Sun, 5 Feb 2012 10:37:39 -0500
+In-Reply-To: <20120204163931.GH1275@n2100.arm.linux.org.uk>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Cc: "Shimoda, Yoshihiro" <yoshihiro.shimoda.uh@renesas.com>, linux-kernel@vger.kernel.org, linux-sh@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, Magnus Damm <magnus.damm@gmail.com>, linux-mmc@vger.kernel.org, alsa-devel@alsa-project.org, linux-serial@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, linux-usb@vger.kernel.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>, Grazvydas Ignotas <notasas@gmail.com>
+Cc: Paul Walmsley <paul@pwsan.com>, "Hilman, Kevin" <khilman@ti.com>, NeilBrown <neilb@suse.de>, "R, Govindraj" <govindraj.raja@ti.com>, "Valkeinen, Tomi" <tomi.valkeinen@ti.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
 
---LZvS9be/3tNcYl/X
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> From: linux-omap-owner@vger.kernel.org [mailto:linux-omap-
+> owner@vger.kernel.org] On Behalf Of Russell King - ARM Linux
+> Sent: Saturday, February 04, 2012 10:40 AM
 
-Hi,
+> It is entirely unacceptable to drop characters on a serial port through
+> the use of PM.  Many serial protocols just will not cope with that kind
+> of behaviour - yes, serial protocols may have retry built-in, but will
+> they retry _before_ the port re-idles and the PLL shuts down?  Can you
+> be sure?
 
-On Fri, Feb 03, 2012 at 04:43:20PM +0100, Guennadi Liakhovetski wrote:
-> The current renesas_usbhs driver triggers
->=20
-> BUG: scheduling while atomic: ksoftirqd/0/3/0x00000102
->=20
-> with enabled CONFIG_DEBUG_ATOMIC_SLEEP, by submitting DMA transfers from=
-=20
-> an atomic (tasklet) context, which is not supported by the shdma dmaengin=
-e=20
-> driver. Fix it by switching to a work. Also simplify some list=20
-> manipulations.
+What is acceptable depends on the hardware and applications stack ups being used. There are ways to work around issues along whole path in SW and HW.  There is no single setup which makes all combinations work. Some old PC chassis may define 1 of many standards but they probably were not defined with very low power tradeoffs in mind.
 
-you are doing much more than what you say. Also, instead of using a
-workqueue, have you considered using threaded_irqs ?
+If the board designer hooks up all possible serial signals for uart/rs232/rs422/standard-xyz or just rx/tx, or adds some glue logic, or adds smart peripheral, or ..., there are will be constraints and ways to cope with issue being discussed.
 
-(I didn't go over the driver again to see if it makes sense to use
-threaded_irqs in this case, but doesn't hurt asking)
+For most OMAP reference platforms the HW design links available UARTs with likely peripherals used in that timeframe. When it comes to making each UART work with PM some changes are usually needed per interface. Depending on the given stack up (to include bugs/limitations) some per interface tweak is always needed. It might be as you say you have to defeat PM on a port and only release after protocol handshaking with some modem firmware or it might be the debug UART expectation is lowered and allowed to work in a lossy mode so as not to destroy platform power for non-production port.
 
-> Shimoda-san, this is the problem, that you were observing. However, it=20
-> exists with the present version of shdma just as well as with the new one=
-=20
-> - on top of the simple DMA library. I marked it an RFC because (1) I only=
-=20
-> lightly tested it with the gadget device on mackerel with the mass storag=
-e=20
-> gadget, and (2) I am somewhat concerned about races. Currently the work=
-=20
-> function runs with no locking and there are no usual cancel_work_sync()=
-=20
-> points in the patch. However, it has also been like this before with the=
-=20
-> tasklet implementation, which is not much better, and it looks like there=
-=20
-> are no asynchronous operations on the same packets like timeouts. Only=20
-> asynchronous events, that I can think about are things like unloading the=
-=20
-> driver or unplugging the cable, but these have been there before too. It=
-=20
-> would become worse on SMP, I think. Comments welcome.
->=20
-> diff --git a/drivers/usb/renesas_usbhs/fifo.c b/drivers/usb/renesas_usbhs=
-/fifo.c
-> index 72339bd..4d739ec 100644
-> --- a/drivers/usb/renesas_usbhs/fifo.c
-> +++ b/drivers/usb/renesas_usbhs/fifo.c
-> @@ -75,8 +75,7 @@ void usbhs_pkt_push(struct usbhs_pipe *pipe, struct usb=
-hs_pkt *pkt,
->  		pipe->handler =3D &usbhsf_null_handler;
->  	}
-> =20
-> -	list_del_init(&pkt->node);
-> -	list_add_tail(&pkt->node, &pipe->list);
-> +	list_move_tail(&pkt->node, &pipe->list);
-> =20
->  	/*
->  	 * each pkt must hold own handler.
-> @@ -106,7 +105,7 @@ static struct usbhs_pkt *__usbhsf_pkt_get(struct usbh=
-s_pipe *pipe)
->  	if (list_empty(&pipe->list))
->  		return NULL;
-> =20
-> -	return list_entry(pipe->list.next, struct usbhs_pkt, node);
-> +	return list_first_entry(&pipe->list, struct usbhs_pkt, node);
+[x] What is acceptable depends is not black and white.  Is there some QOS mapping which can be set per channel which allows runtime PM to pick a best chose (which may allow for loss and frame issues)?.
 
-these two hunks are not part of $SUBJECT
+Regards,
+Richard W.
 
---=20
-balbi
-
---LZvS9be/3tNcYl/X
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-
-iQIcBAEBAgAGBQJPLpgGAAoJEIaOsuA1yqREgUsQAKftHUUHLtmaN3Da2aZaMfKh
-q38adVUYSnu0K0Ubr8MfGtBpJW+Z9lnDPiIES+YLPpZY7AMvdXEgTwj0R3wsMCul
-Z5IcpiVyoMnQGVoRGMCH99w4gxRNj9iLiFJFtts5v6jqplrnWzMxHVyEocOc3blW
-t3hZrj2ABEkgyKQ80nDiZJ2sXJ7b5F4wvotuC4Ip0W77rVUffBrN6IdDr38ZcR20
-IO2lj8uLhKIuf5B05Z5wAM2lGLw+HXcJpMJNUSud4NIAhuUdqAQkEU+CUpHzZ4DZ
-FoN8DfWMcoyUu/iqeOZ8OojZzVa3GgwoyG+sxnF+GvUfyDvCoqLhdLoIm0kzeuO8
-kHRYxtNdFRDindDrTLyjfhaW1epT7HwY4LNmfOFfQb0GjaE00jPQ9Qva3XOzm/Wy
-+ILnmgmpPFczBKfItGD9ySqt8lvICl6rWCDtze3DEw9NYI4Apl+nz0oWq6u6Ro0O
-nWKvIKJTIhjtx07VF/XKGXQfxt84r8VRfz/dVZz+OmmHJV347RTKZ1XI+bTHATVO
-jMBMJ+Dbu4PcPAncff4ntalKfMjpUiBm3JUsbgBtWxAowDQ42KalXhYI7ef1Kod8
-khissC3+sq4xE5Hd0o6muy8IVm80DBongcP4Yl6wXo+WJNll19SGu+0aaEjY8quk
-yMQD9C88flraWq+1vB6p
-=f+lE
------END PGP SIGNATURE-----
-
---LZvS9be/3tNcYl/X--
