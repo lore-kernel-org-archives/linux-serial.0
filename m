@@ -1,92 +1,112 @@
-From: "Woodruff, Richard" <r-woodruff2@ti.com>
-Subject: RE: patch "tty: serial: OMAP: ensure FIFO levels are set correctly
-	in non-DMA" added to tty tree
-Date: Sun, 5 Feb 2012 17:57:40 +0000
-Message-ID: <EF62F09C0797D947AD4180A1043C0DF734934E9D@DLEE10.ent.ti.com>
-References: <alpine.DEB.2.00.1201261225520.32667@utopia.booyaka.com>
- <alpine.DEB.2.00.1202021302070.586@utopia.booyaka.com>
- <20120203150708.386951d2@notabene.brown>
- <alpine.DEB.2.00.1202022137150.586@utopia.booyaka.com>
- <20120203205401.5ddf241d@notabene.brown>
- <CANOLnONsZKHJPbEx2+ic3EZ1PqcD30VT4Z2bR5iW-JNQJQL0GA@mail.gmail.com>
- <alpine.DEB.2.00.1202031234120.27947@utopia.booyaka.com>
- <CANOLnOPm-ZKRvu1PVs-jU2sceehRiwNPd=ysu2SDsLbarAPVbw@mail.gmail.com>
- <20120204163931.GH1275@n2100.arm.linux.org.uk>
- <EF62F09C0797D947AD4180A1043C0DF734934E36@DLEE10.ent.ti.com>
- <20120205160329.GO1275@n2100.arm.linux.org.uk>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] Add sc16is7x2 driver
+Date: Sun, 5 Feb 2012 19:56:25 +0000
+Message-ID: <20120205195625.1b594909@pyramind.ukuu.org.uk>
+References: <1328424925-645-1-git-send-email-thomas@tweber.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:55274 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753201Ab2BER5z convert rfc822-to-8bit (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:33142 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753260Ab2BETzF (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 5 Feb 2012 12:57:55 -0500
-In-Reply-To: <20120205160329.GO1275@n2100.arm.linux.org.uk>
-Content-Language: en-US
+	Sun, 5 Feb 2012 14:55:05 -0500
+In-Reply-To: <1328424925-645-1-git-send-email-thomas@tweber.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Grazvydas Ignotas <notasas@gmail.com>, Paul Walmsley <paul@pwsan.com>, "Hilman, Kevin" <khilman@ti.com>, NeilBrown <neilb@suse.de>, "R, Govindraj" <govindraj.raja@ti.com>, "Valkeinen, Tomi" <tomi.valkeinen@ti.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Thomas Weber <thomas@tweber.de>
+Cc: linux-serial@vger.kernel.org, Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+
+> +/* ******************************** IRQ ********************************* */
+> +
+> +static void sc16is7x2_handle_rx(struct sc16is7x2_chip *ts, unsigned ch)
+> +{
+> +	struct sc16is7x2_channel *chan = &ts->channel[ch];
+> +	struct uart_port *uart = &chan->uart;
+> +	struct tty_struct *tty = uart->state->port.tty;
+
+What guarantees tty cannot go NULL during this ? - I think you need to
+hold references and check ? (tty_port_tty_get)
 
 
-> From: Russell King - ARM Linux [mailto:linux@arm.linux.org.uk]
-> Sent: Sunday, February 05, 2012 10:03 AM
-> To: Woodruff, Richard
+> +/* Trigger work thread*/
+> +static void sc16is7x2_dowork(struct sc16is7x2_channel *chan)
+> +{
+> +	if (!freezing(current))
+> +		queue_work(chan->workqueue, &chan->work);
+> +}
 
-> On Sun, Feb 05, 2012 at 03:37:21PM +0000, Woodruff, Richard wrote:
-> > [x] What is acceptable depends is not black and white.  Is there some
-> > QOS mapping which can be set per channel which allows runtime PM to
-> > pick a best chose (which may allow for loss and frame issues)?.
-> 
-> What you're asking is whether there's anything in the kernel which can
-> predict when the next character is to arrive.
+Threaded interrupt handler or is the single queue for work in tx and rx
+actually a nicer way to do it - just asking the question.
 
-No, this was not the comment's intent.
 
-> But, the fact of the matter is that deriving the UART clocks from a PLL
-> which takes a finite time to lock, and the PLL is shut down during runtime
-> PM _is_ _going_ _to_ _cause_ _problems_.  There is absolutely no getting
-> away from that.
+> +static void sc16is7x2_set_mctrl(struct uart_port *port, unsigned int mctrl)
+> +{
+> +	struct sc16is7x2_channel *chan = to_sc16is7x2_channel(port);
+> +	struct sc16is7x2_chip *ts = chan->chip;
+> +
+> +	dev_dbg(&ts->spi->dev, "%s (0x%02x)\n", __func__, mctrl);
+> +
+> +	/* TODO: set DCD and DSR
+> +	 * CTS/RTS is handled automatically
+> +	 */
 
-Yes this is one of the issues to be worked around.
+Looks like it's not yet finished and ready for merging ?
 
-> Let's take your modem example.  Modems today would typically be used with
-> some IP based protocol, probably PPP based.  Incoming traffic on IP is
-> entirely unpredictable.  You wouldn't know when the next character would
-> be received.
-> 
-> One solution to this is to transmit an 0xff character before your real
-> data to ensure that your end is awake and properly synchronized...
+> +static void sc16is7x2_stop_rx(struct uart_port *port)
+> +{
+> +	struct sc16is7x2_channel *chan = to_sc16is7x2_channel(port);
+> +	struct sc16is7x2_chip *ts = chan->chip;
+> +
+> +	dev_dbg(&ts->spi->dev, "%s\n", __func__);
+> +
+> +	chan->ier &= ~UART_IER_RLSI;
+> +	chan->uart.read_status_mask &= ~UART_LSR_DR;
+> +	chan->handle_regs = true;
+> +	/* Trigger work thread for doing the actual configuration change */
+> +	sc16is7x2_dowork(chan);
+> +}
 
-This approach as you say has issues.  This is solved in different ways for modems.
+> +static void sc16is7x2_break_ctl(struct uart_port *port, int break_state)
+> +{
+> +	/* We don't support break control yet, do nothing */
+> +}
 
-<sleep>My observation is modem software which many talk over ppp over ip over serial of some sort (might be uart, might be usb), will send a command to the modem to go into a low power mode. Now you can cut clocks with out hurting modem and getting SOC power.
+More unfinished bits
 
-<wake>When some event happens at modem or processor (timer near beacon or other) the modem or apps processor can signal the other with some wake event (maybe over gpio) which then puts system in a state where it can receive data in trusted manner.
+> +	/* Setup IRQ. Actually we have a low active IRQ, but we want
+> +	 * one shot behaviour */
+> +	if (request_irq(ts->spi->irq, sc16is7x2_irq,
+> +			IRQF_TRIGGER_FALLING | IRQF_SHARED,
+> +			"sc16is7x2", chan)) {
 
-The modem channel driver try's to inform kernel about entering/exiting modes to set expectation.
+Is this a property of the device or of your board ?
 
-> So, go ahead with having PM drop random characters if you want, but don't
-> expect anyone in their right mind to accept broken workarounds to the
-> kernel serial driver to try to drop maybe 16 characters or more at a time
-> on the floor when a framing error occurs just because the PM is broken.
 
-No character was dropped in modem example.  On the UART-to-Debug console it may be ok to drop a character.  Ether needs a coordination hook.
+> +static void
+> +sc16is7x2_set_termios(struct uart_port *port, struct ktermios *termios,
+> +		       struct ktermios *old)
+> +{
 
-Each stack needs some way to adjust expectations.  Finding a way to isolate to a sub-layer of stack and not break everything is always the quest.
+> +#ifdef CMSPAR
+> +	if (termios->c_cflag & CMSPAR)
+> +		lcr |= UART_LCR_SPAR;
+> +#endif
 
-> And let's not forget the problem that current kernels have on OMAP34xx
-> platforms.  Literally minutes to get a dmesg out over a 115200 baud serial
-> port, 16 characters at a time.  I guess you're going to try to justify
-> that as 'acceptable behaviour' from the system.  Yes, of course it is.
-> If you're dealing with a 1960s computer which processes that slowly.
-> 
-> And I thought we were in 2012.
+ifdef shouldn't be needed
 
-This looks like a different issue.  Years back with custom kernels with lots of hacks hack this was not the case.  These days the job is harder to make it work more generally.  Evolving for PM tradeoffs is painful in HW and SW.
 
-Regards,
-Richard W.
+termios should write back the actual baud (see how 8250.c does it)
 
+
+> +#ifdef CONFIG_GPIOLIB
+
+I wonder if this should be a separate driver and the device an MFD -
+would anyone ever be using it as gpio only ?
+
+
+Looks basically sound. The GPIO question I think needs figuring out, and
+there are a few bits of unfinished code that need glancing it.
+
+Alan
