@@ -1,66 +1,80 @@
-From: "Shimoda, Yoshihiro" <yoshihiro.shimoda.uh@renesas.com>
-Subject: Re: [PATCH/RFC] usb: fix renesas_usbhs to not schedule
- in atomic context
-Date: Mon, 06 Feb 2012 17:52:33 +0900
-Message-ID: <4F2F94D1.1080308@renesas.com>
+From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Subject: Re: [PATCH 6/7 v2] ASoC: SIU: prepare for conversion to simple DMA
+Date: Mon, 6 Feb 2012 10:11:25 +0100 (CET)
+Message-ID: <Pine.LNX.4.64.1202061010300.10363@axis700.grange>
 References: <1327589784-4287-1-git-send-email-g.liakhovetski@gmx.de>
-	<1327589784-4287-2-git-send-email-g.liakhovetski@gmx.de>
-	<4F22624E.2090201@renesas.com>
-	<Pine.LNX.4.64.1201270946150.32661@axis700.grange>
-	<4F27CA7D.601@renesas.com>
-	<Pine.LNX.4.64.1202022317560.13860@axis700.grange>
-	<4F2B9F34.60308@renesas.com>
-	<Pine.LNX.4.64.1202031623000.6211@axis700.grange>
+ <1327589784-4287-7-git-send-email-g.liakhovetski@gmx.de>
+ <1328495625.26182.55.camel@vkoul-udesk3>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <alsa-devel-bounces@alsa-project.org>
-In-reply-to: <Pine.LNX.4.64.1202031623000.6211@axis700.grange>
-List-Unsubscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
-	<mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
-List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel>
-List-Post: <mailto:alsa-devel@alsa-project.org>
-List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
-List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
-	<mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
-Sender: alsa-devel-bounces@alsa-project.org
-Errors-To: alsa-devel-bounces@alsa-project.org
-To: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Cc: alsa-devel@alsa-project.org, linux-sh@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, Magnus Damm <magnus.damm@gmail.com>, linux-usb@vger.kernel.org, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, linux-serial@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-mmc-owner@vger.kernel.org>
+In-Reply-To: <1328495625.26182.55.camel@vkoul-udesk3>
+Sender: linux-mmc-owner@vger.kernel.org
+To: Vinod Koul <vinod.koul@intel.com>
+Cc: linux-kernel@vger.kernel.org, linux-sh@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, linux-mmc@vger.kernel.org, alsa-devel@alsa-project.org, linux-serial@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Guennadi-san,
+Hi Vinod
 
-2012/02/04 0:43, Guennadi Liakhovetski wrote:
-> The current renesas_usbhs driver triggers
-> 
-> BUG: scheduling while atomic: ksoftirqd/0/3/0x00000102
-> 
-> with enabled CONFIG_DEBUG_ATOMIC_SLEEP, by submitting DMA transfers from 
-> an atomic (tasklet) context, which is not supported by the shdma dmaengine 
-> driver. Fix it by switching to a work. Also simplify some list 
-> manipulations.
-> 
-> Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-> ---
-> 
-> Shimoda-san, this is the problem, that you were observing. However, it 
-> exists with the present version of shdma just as well as with the new one 
-> - on top of the simple DMA library. I marked it an RFC because (1) I only 
-> lightly tested it with the gadget device on mackerel with the mass storage 
-> gadget, and (2) I am somewhat concerned about races. Currently the work 
-> function runs with no locking and there are no usual cancel_work_sync() 
-> points in the patch. However, it has also been like this before with the 
-> tasklet implementation, which is not much better, and it looks like there 
-> are no asynchronous operations on the same packets like timeouts. Only 
-> asynchronous events, that I can think about are things like unloading the 
-> driver or unplugging the cable, but these have been there before too. It 
-> would become worse on SMP, I think. Comments welcome.
+On Mon, 6 Feb 2012, Vinod Koul wrote:
 
-Thank you for the patch and comments.
-I also tested this patch using the g_mass_storage and g_ether.
-About your points, I think so, too.
-So, I will write such a code.
+> On Thu, 2012-01-26 at 15:56 +0100, Guennadi Liakhovetski wrote:
+> > Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+> > ---
+> >  sound/soc/sh/siu_pcm.c |    8 ++++----
+> >  1 files changed, 4 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/sound/soc/sh/siu_pcm.c b/sound/soc/sh/siu_pcm.c
+> > index 0193e59..414bb35 100644
+> > --- a/sound/soc/sh/siu_pcm.c
+> > +++ b/sound/soc/sh/siu_pcm.c
+> > @@ -330,12 +330,12 @@ static bool filter(struct dma_chan *chan, void *slave)
+> >  {
+> >  	struct sh_dmae_slave *param = slave;
+> >  
+> > -	pr_debug("%s: slave ID %d\n", __func__, param->slave_id);
+> > +	pr_debug("%s: slave ID %d\n", __func__, param->simple_slave.slave_id);
+> >  
+> >  	if (unlikely(param->dma_dev != chan->device->dev))
+> >  		return false;
+> >  
+> > -	chan->private = param;
+> > +	chan->private = &param->simple_slave;
+> While at it, Can you fix the sh-mobile driver to NOT use chan->private?
 
-Best regards,
-Yoshihiro Shimoda
+This is an independent change and for it I need my recent RFC PATCH 
+"[PATCH/RFC] dmaengine: add a slave parameter to __dma_request_channel()"
+
+http://marc.info/?l=linux-kernel&m=132811019930675&w=2
+
+Thanks
+Guennadi
+
+> >  	return true;
+> >  }
+> >  
+> > @@ -360,12 +360,12 @@ static int siu_pcm_open(struct snd_pcm_substream *ss)
+> >  	if (ss->stream == SNDRV_PCM_STREAM_PLAYBACK) {
+> >  		siu_stream = &port_info->playback;
+> >  		param = &siu_stream->param;
+> > -		param->slave_id = port ? pdata->dma_slave_tx_b :
+> > +		param->simple_slave.slave_id = port ? pdata->dma_slave_tx_b :
+> >  			pdata->dma_slave_tx_a;
+> >  	} else {
+> >  		siu_stream = &port_info->capture;
+> >  		param = &siu_stream->param;
+> > -		param->slave_id = port ? pdata->dma_slave_rx_b :
+> > +		param->simple_slave.slave_id = port ? pdata->dma_slave_rx_b :
+> >  			pdata->dma_slave_rx_a;
+> >  	}
+> >  
+> 
+> 
+> -- 
+> ~Vinod
+> 
+
+---
+Guennadi Liakhovetski, Ph.D.
+Freelance Open-Source Software Developer
+http://www.open-technology.de/
