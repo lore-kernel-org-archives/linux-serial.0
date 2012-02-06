@@ -1,80 +1,163 @@
-From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Subject: Re: [PATCH 6/7 v2] ASoC: SIU: prepare for conversion to simple DMA
-Date: Mon, 6 Feb 2012 10:11:25 +0100 (CET)
-Message-ID: <Pine.LNX.4.64.1202061010300.10363@axis700.grange>
-References: <1327589784-4287-1-git-send-email-g.liakhovetski@gmx.de>
- <1327589784-4287-7-git-send-email-g.liakhovetski@gmx.de>
- <1328495625.26182.55.camel@vkoul-udesk3>
-Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-mmc-owner@vger.kernel.org>
-In-Reply-To: <1328495625.26182.55.camel@vkoul-udesk3>
-Sender: linux-mmc-owner@vger.kernel.org
-To: Vinod Koul <vinod.koul@intel.com>
-Cc: linux-kernel@vger.kernel.org, linux-sh@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, linux-mmc@vger.kernel.org, alsa-devel@alsa-project.org, linux-serial@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>
+From: Feng Tang <feng.tang@intel.com>
+Subject: [PATCH 1/3] serial: pch_uart: add debugfs hook for register dump
+Date: Mon,  6 Feb 2012 17:24:43 +0800
+Message-ID: <1328520285-10826-1-git-send-email-feng.tang@intel.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mga02.intel.com ([134.134.136.20]:34694 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754075Ab2BFJZn (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 6 Feb 2012 04:25:43 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, alan@linux.intel.com, tomoya.rohm@gmail.com
+Cc: Feng Tang <feng.tang@intel.com>
 
-Hi Vinod
+This driver will be use as interfaces for multiple kinds of
+devices like Bluetooth/GPS etc, this debug hook will make driver
+debugging much easier.
 
-On Mon, 6 Feb 2012, Vinod Koul wrote:
-
-> On Thu, 2012-01-26 at 15:56 +0100, Guennadi Liakhovetski wrote:
-> > Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-> > ---
-> >  sound/soc/sh/siu_pcm.c |    8 ++++----
-> >  1 files changed, 4 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/sound/soc/sh/siu_pcm.c b/sound/soc/sh/siu_pcm.c
-> > index 0193e59..414bb35 100644
-> > --- a/sound/soc/sh/siu_pcm.c
-> > +++ b/sound/soc/sh/siu_pcm.c
-> > @@ -330,12 +330,12 @@ static bool filter(struct dma_chan *chan, void *slave)
-> >  {
-> >  	struct sh_dmae_slave *param = slave;
-> >  
-> > -	pr_debug("%s: slave ID %d\n", __func__, param->slave_id);
-> > +	pr_debug("%s: slave ID %d\n", __func__, param->simple_slave.slave_id);
-> >  
-> >  	if (unlikely(param->dma_dev != chan->device->dev))
-> >  		return false;
-> >  
-> > -	chan->private = param;
-> > +	chan->private = &param->simple_slave;
-> While at it, Can you fix the sh-mobile driver to NOT use chan->private?
-
-This is an independent change and for it I need my recent RFC PATCH 
-"[PATCH/RFC] dmaengine: add a slave parameter to __dma_request_channel()"
-
-http://marc.info/?l=linux-kernel&m=132811019930675&w=2
-
-Thanks
-Guennadi
-
-> >  	return true;
-> >  }
-> >  
-> > @@ -360,12 +360,12 @@ static int siu_pcm_open(struct snd_pcm_substream *ss)
-> >  	if (ss->stream == SNDRV_PCM_STREAM_PLAYBACK) {
-> >  		siu_stream = &port_info->playback;
-> >  		param = &siu_stream->param;
-> > -		param->slave_id = port ? pdata->dma_slave_tx_b :
-> > +		param->simple_slave.slave_id = port ? pdata->dma_slave_tx_b :
-> >  			pdata->dma_slave_tx_a;
-> >  	} else {
-> >  		siu_stream = &port_info->capture;
-> >  		param = &siu_stream->param;
-> > -		param->slave_id = port ? pdata->dma_slave_rx_b :
-> > +		param->simple_slave.slave_id = port ? pdata->dma_slave_rx_b :
-> >  			pdata->dma_slave_rx_a;
-> >  	}
-> >  
-> 
-> 
-> -- 
-> ~Vinod
-> 
-
+Signed-off-by: Feng Tang <feng.tang@intel.com>
 ---
-Guennadi Liakhovetski, Ph.D.
-Freelance Open-Source Software Developer
-http://www.open-technology.de/
+ drivers/tty/serial/pch_uart.c |   84 +++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 84 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index 17ae657..6d9ca29 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -29,6 +29,7 @@
+ #include <linux/nmi.h>
+ #include <linux/delay.h>
+ 
++#include <linux/debugfs.h>
+ #include <linux/dmaengine.h>
+ #include <linux/pch_dma.h>
+ 
+@@ -144,6 +145,8 @@ enum {
+ #define PCH_UART_DLL		0x00
+ #define PCH_UART_DLM		0x01
+ 
++#define PCH_UART_BRCSR		0x0E
++
+ #define PCH_UART_IID_RLS	(PCH_UART_IIR_REI)
+ #define PCH_UART_IID_RDR	(PCH_UART_IIR_RRI)
+ #define PCH_UART_IID_RDR_TO	(PCH_UART_IIR_RRI | PCH_UART_IIR_TOI)
+@@ -243,6 +246,8 @@ struct eg20t_port {
+ 	int				tx_dma_use;
+ 	void				*rx_buf_virt;
+ 	dma_addr_t			rx_buf_dma;
++
++	struct dentry	*debugfs;
+ };
+ 
+ /**
+@@ -292,6 +297,73 @@ static const int trigger_level_64[4] = { 1, 16, 32, 56 };
+ static const int trigger_level_16[4] = { 1, 4, 8, 14 };
+ static const int trigger_level_1[4] = { 1, 1, 1, 1 };
+ 
++#ifdef CONFIG_DEBUG_FS
++
++#define PCH_REGS_BUFSIZE	1024
++static int pch_show_regs_open(struct inode *inode, struct file *file)
++{
++	file->private_data = inode->i_private;
++	return 0;
++}
++
++static ssize_t port_show_regs(struct file *file, char __user *user_buf,
++				size_t count, loff_t *ppos)
++{
++	struct eg20t_port *priv = file->private_data;
++	char *buf;
++	u32 len = 0;
++	ssize_t ret;
++	unsigned char lcr;
++
++	buf = kzalloc(PCH_REGS_BUFSIZE, GFP_KERNEL);
++	if (!buf)
++		return 0;
++
++	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
++			"PCH EG20T port[%d] regs:\n", priv->port.line);
++
++	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
++			"=================================\n");
++	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
++			"IER: \t0x%02x\n", ioread8(priv->membase + UART_IER));
++	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
++			"IIR: \t0x%02x\n", ioread8(priv->membase + UART_IIR));
++	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
++			"LCR: \t0x%02x\n", ioread8(priv->membase + UART_LCR));
++	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
++			"MCR: \t0x%02x\n", ioread8(priv->membase + UART_MCR));
++	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
++			"LSR: \t0x%02x\n", ioread8(priv->membase + UART_LSR));
++	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
++			"MSR: \t0x%02x\n", ioread8(priv->membase + UART_MSR));
++	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
++			"BRCSR: \t0x%02x\n",
++			ioread8(priv->membase + PCH_UART_BRCSR));
++
++	lcr = ioread8(priv->membase + UART_LCR);
++	iowrite8(PCH_UART_LCR_DLAB, priv->membase + UART_LCR);
++	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
++			"DLL: \t0x%02x\n", ioread8(priv->membase + UART_DLL));
++	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
++			"DLM: \t0x%02x\n", ioread8(priv->membase + UART_DLM));
++	iowrite8(lcr, priv->membase + UART_LCR);
++
++	if (len > PCH_REGS_BUFSIZE)
++		len = PCH_REGS_BUFSIZE;
++
++	ret =  simple_read_from_buffer(user_buf, count, ppos, buf, len);
++	kfree(buf);
++	return ret;
++}
++
++static const struct file_operations port_regs_ops = {
++	.owner		= THIS_MODULE,
++	.open		= pch_show_regs_open,
++	.read		= port_show_regs,
++	.llseek		= default_llseek,
++};
++#endif	/* CONFIG_DEBUG_FS */
++
+ static void pch_uart_hal_request(struct pci_dev *pdev, int fifosize,
+ 				 int base_baud)
+ {
+@@ -1554,6 +1626,7 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
+ 	int port_type;
+ 	struct pch_uart_driver_data *board;
+ 	const char *board_name;
++	char name[32];	/* for debugfs file name */
+ 
+ 	board = &drv_dat[id->driver_data];
+ 	port_type = board->port_type;
+@@ -1623,6 +1696,12 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
+ 	if (ret < 0)
+ 		goto init_port_hal_free;
+ 
++#ifdef CONFIG_DEBUG_FS
++	snprintf(name, sizeof(name), "uart%d_regs", board->line_no);
++	priv->debugfs = debugfs_create_file(name, S_IFREG | S_IRUGO,
++				NULL, priv, &port_regs_ops);
++#endif
++
+ 	return priv;
+ 
+ init_port_hal_free:
+@@ -1639,6 +1718,11 @@ init_port_alloc_err:
+ 
+ static void pch_uart_exit_port(struct eg20t_port *priv)
+ {
++
++#ifdef CONFIG_DEBUG_FS
++	if (priv->debugfs)
++		debugfs_remove(priv->debugfs);
++#endif
+ 	uart_remove_one_port(&pch_uart_driver, &priv->port);
+ 	pci_set_drvdata(priv->pdev, NULL);
+ 	free_page((unsigned long)priv->rxbuf.buf);
+-- 
+1.7.1
+
