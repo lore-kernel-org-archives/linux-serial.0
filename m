@@ -1,127 +1,155 @@
-From: Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH/RFC] usb: fix renesas_usbhs to not schedule
- in atomic context
-Date: Mon, 6 Feb 2012 12:31:59 +0200
-Message-ID: <20120206103158.GK15652@legolas.emea.dhcp.ti.com>
-References: <1327589784-4287-1-git-send-email-g.liakhovetski@gmx.de>
-	<1327589784-4287-2-git-send-email-g.liakhovetski@gmx.de>
-	<4F22624E.2090201@renesas.com>
-	<Pine.LNX.4.64.1201270946150.32661@axis700.grange>
-	<4F27CA7D.601@renesas.com>
-	<Pine.LNX.4.64.1202022317560.13860@axis700.grange>
-	<4F2B9F34.60308@renesas.com>
-	<Pine.LNX.4.64.1202031623000.6211@axis700.grange>
-	<20120205145358.GA13762@legolas.emea.dhcp.ti.com>
-	<Pine.LNX.4.64.1202061058430.10363@axis700.grange>
-Reply-To: balbi@ti.com
+From: NeilBrown <neilb@suse.de>
+Subject: Re: patch "tty: serial: OMAP: ensure FIFO levels are set correctly
+ in non-DMA" added to tty tree
+Date: Tue, 7 Feb 2012 10:58:20 +1100
+Message-ID: <20120207105820.367361c5@notabene.brown>
+References: <alpine.DEB.2.00.1201261225520.32667@utopia.booyaka.com>
+	<alpine.DEB.2.00.1202021302070.586@utopia.booyaka.com>
+	<20120203150708.386951d2@notabene.brown>
+	<alpine.DEB.2.00.1202022137150.586@utopia.booyaka.com>
+	<20120203205401.5ddf241d@notabene.brown>
+	<CANOLnONsZKHJPbEx2+ic3EZ1PqcD30VT4Z2bR5iW-JNQJQL0GA@mail.gmail.com>
+	<alpine.DEB.2.00.1202031234120.27947@utopia.booyaka.com>
+	<CANOLnOPm-ZKRvu1PVs-jU2sceehRiwNPd=ysu2SDsLbarAPVbw@mail.gmail.com>
+	<20120204163931.GH1275@n2100.arm.linux.org.uk>
+	<EF62F09C0797D947AD4180A1043C0DF734934E36@DLEE10.ent.ti.com>
+	<20120205160329.GO1275@n2100.arm.linux.org.uk>
+	<EF62F09C0797D947AD4180A1043C0DF734934E9D@DLEE10.ent.ti.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============8166782711436196878=="
-Return-path: <alsa-devel-bounces@alsa-project.org>
-In-Reply-To: <Pine.LNX.4.64.1202061058430.10363@axis700.grange>
-List-Unsubscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
-	<mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
-List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel>
-List-Post: <mailto:alsa-devel@alsa-project.org>
-List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
-List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
-	<mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
-Sender: alsa-devel-bounces@alsa-project.org
-Errors-To: alsa-devel-bounces@alsa-project.org
-To: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Cc: alsa-devel@alsa-project.org, linux-sh@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, linux-mmc@vger.kernel.org, "Shimoda, Yoshihiro" <yoshihiro.shimoda.uh@renesas.com>, linux-usb@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org, Felipe Balbi <balbi@ti.com>, Paul Mundt <lethal@linux-sh.org>, linux-serial@vger.kernel.org
+Content-Type: multipart/signed; micalg=PGP-SHA1;
+ boundary="Sig_/1QndOpipS7gKlhrfFZw4jRu"; protocol="application/pgp-signature"
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <EF62F09C0797D947AD4180A1043C0DF734934E9D@DLEE10.ent.ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: "Woodruff, Richard" <r-woodruff2@ti.com>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Grazvydas Ignotas <notasas@gmail.com>, Paul Walmsley <paul@pwsan.com>, "Hilman, Kevin" <khilman@ti.com>, "R, Govindraj" <govindraj.raja@ti.com>, "Valkeinen, Tomi" <tomi.valkeinen@ti.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-
---===============8166782711436196878==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="73fGQZLCrFzENemP"
-Content-Disposition: inline
-
-
---73fGQZLCrFzENemP
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+--Sig_/1QndOpipS7gKlhrfFZw4jRu
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+On Sun, 5 Feb 2012 17:57:40 +0000 "Woodruff, Richard" <r-woodruff2@ti.com>
+wrote:
 
-On Mon, Feb 06, 2012 at 11:11:45AM +0100, Guennadi Liakhovetski wrote:
-> Hi Felipe
 >=20
-> On Sun, 5 Feb 2012, Felipe Balbi wrote:
+> > From: Russell King - ARM Linux [mailto:linux@arm.linux.org.uk]
+> > Sent: Sunday, February 05, 2012 10:03 AM
+> > To: Woodruff, Richard
 >=20
-> > Hi,
+> > On Sun, Feb 05, 2012 at 03:37:21PM +0000, Woodruff, Richard wrote:
+> > > [x] What is acceptable depends is not black and white.  Is there some
+> > > QOS mapping which can be set per channel which allows runtime PM to
+> > > pick a best chose (which may allow for loss and frame issues)?.
 > >=20
-> > On Fri, Feb 03, 2012 at 04:43:20PM +0100, Guennadi Liakhovetski wrote:
-> > > The current renesas_usbhs driver triggers
-> > >=20
-> > > BUG: scheduling while atomic: ksoftirqd/0/3/0x00000102
-> > >=20
-> > > with enabled CONFIG_DEBUG_ATOMIC_SLEEP, by submitting DMA transfers f=
-rom=20
-> > > an atomic (tasklet) context, which is not supported by the shdma dmae=
-ngine=20
-> > > driver. Fix it by switching to a work. Also simplify some list=20
-> > > manipulations.
-> >=20
-> > you are doing much more than what you say.
+> > What you're asking is whether there's anything in the kernel which can
+> > predict when the next character is to arrive.
 >=20
-> Are those two list macro changes what you refer to as "a lot?" ;-) You're=
-=20
-> right in principle, they are not directly related to the purpose of this=
-=20
-> patch, they are just something that occurred to me, while tracking down=
-=20
-> DMA packets. But yes, it can be extracted to a separate cosmetic patch...
-
-please do so ;-)
-
-> > Also, instead of using a
-> > workqueue, have you considered using threaded_irqs ?
-> >=20
-> > (I didn't go over the driver again to see if it makes sense to use
-> > threaded_irqs in this case, but doesn't hurt asking)
+> No, this was not the comment's intent.
 >=20
-> From a first glance these tasklets are not directly enough related to=20
-> IRQs, so, doing that is either impossible, or would require a _much_=20
-> deeper change to the driver and _this_ would indeed be a much bigger=20
-> change than just fixing the Oops.
+> > But, the fact of the matter is that deriving the UART clocks from a PLL
+> > which takes a finite time to lock, and the PLL is shut down during runt=
+ime
+> > PM _is_ _going_ _to_ _cause_ _problems_.  There is absolutely no getting
+> > away from that.
+>=20
+> Yes this is one of the issues to be worked around.
+>=20
+> > Let's take your modem example.  Modems today would typically be used wi=
+th
+> > some IP based protocol, probably PPP based.  Incoming traffic on IP is
+> > entirely unpredictable.  You wouldn't know when the next character would
+> > be received.
+> >=20
+> > One solution to this is to transmit an 0xff character before your real
+> > data to ensure that your end is awake and properly synchronized...
+>=20
+> This approach as you say has issues.  This is solved in different ways fo=
+r modems.
+>=20
+> <sleep>My observation is modem software which many talk over ppp over ip =
+over serial of some sort (might be uart, might be usb), will send a command=
+ to the modem to go into a low power mode. Now you can cut clocks with out =
+hurting modem and getting SOC power.
+>=20
+> <wake>When some event happens at modem or processor (timer near beacon or=
+ other) the modem or apps processor can signal the other with some wake eve=
+nt (maybe over gpio) which then puts system in a state where it can receive=
+ data in trusted manner.
+>=20
+> The modem channel driver try's to inform kernel about entering/exiting mo=
+des to set expectation.
 
-I see.. so please just split the list changes to separate patch and
-resend.
+I think the correct way to "inform the kernel" would be with the 'CREAD'
+c_cflag in termios.  Clearing it indicates that we don't expect to read whi=
+ch
+would allow the UART to go to sleep.
+When the GPIO interrupt arrives, we would use termios to set CREAD and then
+start talking to the modem.
 
---=20
-balbi
+However it is easy to imagine situations where this wouldn't be enough.
+A fairly obvious way to wake a sleeping serial connection is with a 'break'.
+I have a GPS which can be put to sleep and then woken by sending a 'break'.
+Similarly the OMAP uart can reliably receive a break when asleep, but cannot
+reliably receive any other input.
 
---73fGQZLCrFzENemP
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+Though maybe if BRKINT is set in c_iflag, then we could still receive a bre=
+ak
+even when CREAD is clear.  Then clearing CREAD would be enough to allow
+low-power mode.
+
+>=20
+> > So, go ahead with having PM drop random characters if you want, but don=
+'t
+> > expect anyone in their right mind to accept broken workarounds to the
+> > kernel serial driver to try to drop maybe 16 characters or more at a ti=
+me
+> > on the floor when a framing error occurs just because the PM is broken.
+>=20
+> No character was dropped in modem example.  On the UART-to-Debug console =
+it may be ok to drop a character.  Ether needs a coordination hook.
+
+I don't think it is really OK to drop chars on the UART-to-Debug console.
+However it is OK to drop the BAUD rate to 57600 where we can wake up in time
+for to catch the first bit.  So if you want power saving, drop the console
+buad rate.
+
+So I would suggest:
+ - remove the autosuspend timeouts
+ - allow runtime_pm to shutdown the device when it is not open, or when
+   rate is 57600 or below, or when 'CREAD' is clear
+ - keep runtime_pm active whenever there are bytes in the output queue or
+   fifo
+
+The only case that wouldn't support is when a device will wake up the SOC by
+sending a non-break character which it is OK to receive corrupted.  The tty
+would have to be in !CREAD for that to happen, and then there would be no w=
+ay
+for the app to know that a non-break character was received.
+Would it be reasonable to treat any input while CREAD is clear as a break?
+
+NeilBrown
+
+--Sig_/1QndOpipS7gKlhrfFZw4jRu
+Content-Type: application/pgp-signature; name=signature.asc
+Content-Disposition: attachment; filename=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
+Version: GnuPG v2.0.18 (GNU/Linux)
 
-iQIcBAEBAgAGBQJPL6weAAoJEIaOsuA1yqRE+ZIP/RXcXb6Ngvg56+KXRbkDSjz+
-JC4osfRUhv70f8rIJNeKKoX/ZgAJ1DkBu/bGimR+j8h6cNzsRe/NCRUc0rwbiEAk
-/OYU5C2j9r8zyJD6x/1J3+ipClh6t5EPmrZPOJJOol4UnPdmBFjMBEQ1urON9ZVV
-c28/lL16973n966Rn+nzEHJEVPlhCx7UN02YxY6OJILP9+jXdLvJZ1PQhRO3ydwp
-2GGNtYKguMXpk4fEI32NvyhT7Bh2eYE8SejooJpTcHEUHLDSHc8gV/OGnUsdfEld
-5Kj5HNKrMzaMl8JlisM+q/yD1tjYqwAyAH9dh5svRGpPQwhbtSmwoU4xuU09XWi0
-vPig5ceSnDZWQKFCSMfz2Srmw+c8isz+bQ/GffEO0zT3C7icMLqo2iY+2DmF6UTV
-a6DQkr2KG4+Ng5A01HelIDLs6iYcuHItATT08l3rZnMWOcUxYupPr6rF7c8QHq6v
-1g64HapmsmKKplFNI6U3PdqHKHO8OU9QXAYq0goem12vLf43pTr+H+StQxO08YLp
-Q6QBVpY8zKF9ZjQ+jAxutvFk2H7OO+2ufSrKTwB+QcWhlw/aUrv0apuUOlXXdSO7
-WGTev0cxEKCJrR5cNM7aLDE3pFFkQf+n+EleUiq2XzJ5IphKXLQo3iFh53WjfnQt
-mXUhc3tmrRXvKj+GmoF4
-=gLHG
+iQIVAwUBTzBpHDnsnt1WYoG5AQJvYQ/9F3vBknf13yQY8ErmdDYvDsqqlHxO2PKs
+gGhVaxsPJB1s5lzlvG8xl+duKvkQayJd1pSNNX+wDqt0DuMDn6U2keHkfvlI/u0t
+mMK9LqzcdgKJTCJH64VLgQt7ixqMCd2SuJVwylPY6PWwM3B81XsYLXdNX3QePGmY
+/IvD3F3UAbEbmM+hqnLAFjDHJVjPJgwH7ERAfRKw6G84a43RN1ZOezwNbFuexQO5
+WgJyM11qCXUTF/yOBM1ZkL0WQvtuI5pxw1ysV0SiqUasQVCI83K2wDljL8Ov+kfv
+GHZ+NIZgkOkYBkg9zKhaWLy9Mqo2uhOOE6E+WmRODU+BmUwc9TnyLBl+X2HoN7tl
+yvqIIwZZYgnYVb5LZ38Fr80YkRu5f99K3efIalzvAxyoMTkNlk4pQUCdFHfYWD2y
+c2sCKzqJMlIZp4BF8z856JXQjRPPugiZYLcNlc62zdP2sXycqYKMS0OxUm3gTzVg
+nkZe9dnaljQL0bhwqo2xTpq/VNbBbnIRVda9yFBFVodLQN/CCd5EX/7njvEjgS8r
+BGNFEhdHm9MXOnhtTpEasMBethBEF/9L1g1a24uF2YP/7XbkWvsp+CllVTlv9mna
+Up2Y1HNUY1cTmkCXznOoW7f2ZCG89f9NnQzIHJXMCo+i1UeTledja6yM6L8PAY9F
+2wj9+UvSngw=
+=M72O
 -----END PGP SIGNATURE-----
 
---73fGQZLCrFzENemP--
-
---===============8166782711436196878==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============8166782711436196878==--
+--Sig_/1QndOpipS7gKlhrfFZw4jRu--
