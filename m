@@ -1,112 +1,62 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] Add sc16is7x2 driver
-Date: Sun, 5 Feb 2012 19:56:25 +0000
-Message-ID: <20120205195625.1b594909@pyramind.ukuu.org.uk>
-References: <1328424925-645-1-git-send-email-thomas@tweber.de>
+From: Vinod Koul <vinod.koul@intel.com>
+Subject: Re: [PATCH 6/7 v2] ASoC: SIU: prepare for conversion to simple DMA
+Date: Mon, 06 Feb 2012 08:03:45 +0530
+Message-ID: <1328495625.26182.55.camel@vkoul-udesk3>
+References: <1327589784-4287-1-git-send-email-g.liakhovetski@gmx.de>
+	 <1327589784-4287-7-git-send-email-g.liakhovetski@gmx.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:33142 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753260Ab2BETzF (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 5 Feb 2012 14:55:05 -0500
-In-Reply-To: <1328424925-645-1-git-send-email-thomas@tweber.de>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-mmc-owner@vger.kernel.org>
+In-Reply-To: <1327589784-4287-7-git-send-email-g.liakhovetski@gmx.de>
+Sender: linux-mmc-owner@vger.kernel.org
+To: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Cc: linux-kernel@vger.kernel.org, linux-sh@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, linux-mmc@vger.kernel.org, alsa-devel@alsa-project.org, linux-serial@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>
 List-Id: linux-serial@vger.kernel.org
-To: Thomas Weber <thomas@tweber.de>
-Cc: linux-serial@vger.kernel.org, Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
 
-> +/* ******************************** IRQ ********************************* */
-> +
-> +static void sc16is7x2_handle_rx(struct sc16is7x2_chip *ts, unsigned ch)
-> +{
-> +	struct sc16is7x2_channel *chan = &ts->channel[ch];
-> +	struct uart_port *uart = &chan->uart;
-> +	struct tty_struct *tty = uart->state->port.tty;
-
-What guarantees tty cannot go NULL during this ? - I think you need to
-hold references and check ? (tty_port_tty_get)
-
-
-> +/* Trigger work thread*/
-> +static void sc16is7x2_dowork(struct sc16is7x2_channel *chan)
-> +{
-> +	if (!freezing(current))
-> +		queue_work(chan->workqueue, &chan->work);
-> +}
-
-Threaded interrupt handler or is the single queue for work in tx and rx
-actually a nicer way to do it - just asking the question.
-
-
-> +static void sc16is7x2_set_mctrl(struct uart_port *port, unsigned int mctrl)
-> +{
-> +	struct sc16is7x2_channel *chan = to_sc16is7x2_channel(port);
-> +	struct sc16is7x2_chip *ts = chan->chip;
-> +
-> +	dev_dbg(&ts->spi->dev, "%s (0x%02x)\n", __func__, mctrl);
-> +
-> +	/* TODO: set DCD and DSR
-> +	 * CTS/RTS is handled automatically
-> +	 */
-
-Looks like it's not yet finished and ready for merging ?
-
-> +static void sc16is7x2_stop_rx(struct uart_port *port)
-> +{
-> +	struct sc16is7x2_channel *chan = to_sc16is7x2_channel(port);
-> +	struct sc16is7x2_chip *ts = chan->chip;
-> +
-> +	dev_dbg(&ts->spi->dev, "%s\n", __func__);
-> +
-> +	chan->ier &= ~UART_IER_RLSI;
-> +	chan->uart.read_status_mask &= ~UART_LSR_DR;
-> +	chan->handle_regs = true;
-> +	/* Trigger work thread for doing the actual configuration change */
-> +	sc16is7x2_dowork(chan);
-> +}
-
-> +static void sc16is7x2_break_ctl(struct uart_port *port, int break_state)
-> +{
-> +	/* We don't support break control yet, do nothing */
-> +}
-
-More unfinished bits
-
-> +	/* Setup IRQ. Actually we have a low active IRQ, but we want
-> +	 * one shot behaviour */
-> +	if (request_irq(ts->spi->irq, sc16is7x2_irq,
-> +			IRQF_TRIGGER_FALLING | IRQF_SHARED,
-> +			"sc16is7x2", chan)) {
-
-Is this a property of the device or of your board ?
+On Thu, 2012-01-26 at 15:56 +0100, Guennadi Liakhovetski wrote:
+> Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+> ---
+>  sound/soc/sh/siu_pcm.c |    8 ++++----
+>  1 files changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/sound/soc/sh/siu_pcm.c b/sound/soc/sh/siu_pcm.c
+> index 0193e59..414bb35 100644
+> --- a/sound/soc/sh/siu_pcm.c
+> +++ b/sound/soc/sh/siu_pcm.c
+> @@ -330,12 +330,12 @@ static bool filter(struct dma_chan *chan, void *slave)
+>  {
+>  	struct sh_dmae_slave *param = slave;
+>  
+> -	pr_debug("%s: slave ID %d\n", __func__, param->slave_id);
+> +	pr_debug("%s: slave ID %d\n", __func__, param->simple_slave.slave_id);
+>  
+>  	if (unlikely(param->dma_dev != chan->device->dev))
+>  		return false;
+>  
+> -	chan->private = param;
+> +	chan->private = &param->simple_slave;
+While at it, Can you fix the sh-mobile driver to NOT use chan->private?
+>  	return true;
+>  }
+>  
+> @@ -360,12 +360,12 @@ static int siu_pcm_open(struct snd_pcm_substream *ss)
+>  	if (ss->stream == SNDRV_PCM_STREAM_PLAYBACK) {
+>  		siu_stream = &port_info->playback;
+>  		param = &siu_stream->param;
+> -		param->slave_id = port ? pdata->dma_slave_tx_b :
+> +		param->simple_slave.slave_id = port ? pdata->dma_slave_tx_b :
+>  			pdata->dma_slave_tx_a;
+>  	} else {
+>  		siu_stream = &port_info->capture;
+>  		param = &siu_stream->param;
+> -		param->slave_id = port ? pdata->dma_slave_rx_b :
+> +		param->simple_slave.slave_id = port ? pdata->dma_slave_rx_b :
+>  			pdata->dma_slave_rx_a;
+>  	}
+>  
 
 
-> +static void
-> +sc16is7x2_set_termios(struct uart_port *port, struct ktermios *termios,
-> +		       struct ktermios *old)
-> +{
+-- 
+~Vinod
 
-> +#ifdef CMSPAR
-> +	if (termios->c_cflag & CMSPAR)
-> +		lcr |= UART_LCR_SPAR;
-> +#endif
-
-ifdef shouldn't be needed
-
-
-termios should write back the actual baud (see how 8250.c does it)
-
-
-> +#ifdef CONFIG_GPIOLIB
-
-I wonder if this should be a separate driver and the device an MFD -
-would anyone ever be using it as gpio only ?
-
-
-Looks basically sound. The GPIO question I think needs figuring out, and
-there are a few bits of unfinished code that need glancing it.
-
-Alan
