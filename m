@@ -1,69 +1,68 @@
-From: "Woodruff, Richard" <r-woodruff2@ti.com>
-Subject: RE: patch "tty: serial: OMAP: ensure FIFO levels are set correctly
- in non-DMA" added to tty tree
-Date: Tue, 7 Feb 2012 01:13:04 +0000
-Message-ID: <EF62F09C0797D947AD4180A1043C0DF734938ED1@DLEE10.ent.ti.com>
-References: <alpine.DEB.2.00.1201261225520.32667@utopia.booyaka.com>
-	<alpine.DEB.2.00.1202021302070.586@utopia.booyaka.com>
-	<20120203150708.386951d2@notabene.brown>
-	<alpine.DEB.2.00.1202022137150.586@utopia.booyaka.com>
-	<20120203205401.5ddf241d@notabene.brown>
-	<CANOLnONsZKHJPbEx2+ic3EZ1PqcD30VT4Z2bR5iW-JNQJQL0GA@mail.gmail.com>
-	<alpine.DEB.2.00.1202031234120.27947@utopia.booyaka.com>
-	<CANOLnOPm-ZKRvu1PVs-jU2sceehRiwNPd=ysu2SDsLbarAPVbw@mail.gmail.com>
-	<20120204163931.GH1275@n2100.arm.linux.org.uk>
-	<EF62F09C0797D947AD4180A1043C0DF734934E36@DLEE10.ent.ti.com>
-	<20120205160329.GO1275@n2100.arm.linux.org.uk>
-	<EF62F09C0797D947AD4180A1043C0DF734934E9D@DLEE10.ent.ti.com>
- <20120207105820.367361c5@notabene.brown>
+From: Jiri Slaby <jirislaby@gmail.com>
+Subject: Re: [PATCH] serial: relocate remaining serial drivers from tty/ to
+ tty/serial/
+Date: Wed, 08 Feb 2012 11:30:35 +0100
+Message-ID: <4F324ECB.7040102@gmail.com>
+References: <1325707287-31038-1-git-send-email-paul.gortmaker@windriver.com> <4F04BFA8.9010100@windriver.com> <20120104220332.GA22985@suse.de> <201201042327.33739.arnd@arndb.de> <20120105054240.GA9093@merkur.ravnborg.org> <20120105124505.73c88f2c@bob.linux.org.uk> <20120105232142.GA10870@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20120207105820.367361c5@notabene.brown>
-Content-Language: en-US
-Sender: linux-omap-owner@vger.kernel.org
-To: NeilBrown <neilb@suse.de>
-Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Grazvydas Ignotas <notasas@gmail.com>, Paul Walmsley <paul@pwsan.com>, "Hilman, Kevin" <khilman@ti.com>, "R, Govindraj" <govindraj.raja@ti.com>, "Valkeinen, Tomi" <tomi.valkeinen@ti.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ey0-f174.google.com ([209.85.215.174]:44435 "EHLO
+	mail-ey0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755241Ab2BHKak (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 8 Feb 2012 05:30:40 -0500
+In-Reply-To: <20120105232142.GA10870@windriver.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: Alan Cox <alan@linux.intel.com>, Sam Ravnborg <sam@ravnborg.org>, Arnd Bergmann <arnd@arndb.de>, Greg KH <gregkh@suse.de>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
+On 01/06/2012 12:21 AM, Paul Gortmaker wrote:
+> --- /dev/null
+> +++ b/drivers/tty/serial/8250/Makefile
+> @@ -0,0 +1,20 @@
+> +#
+> +# Makefile for the 8250 serial device drivers.
+> +#
+> +
+> +obj-$(CONFIG_SERIAL_8250)		+= 8250.o
+> +obj-$(CONFIG_SERIAL_8250_PNP)		+= 8250_pnp.o
+> +obj-$(CONFIG_SERIAL_8250_GSC)		+= 8250_gsc.o
+> +obj-$(CONFIG_SERIAL_8250_PCI)		+= 8250_pci.o
+> +obj-$(CONFIG_SERIAL_8250_HP300)		+= 8250_hp300.o
+> +obj-$(CONFIG_SERIAL_8250_CS)		+= serial_cs.o
+> +obj-$(CONFIG_SERIAL_8250_ACORN)		+= 8250_acorn.o
+> +obj-$(CONFIG_SERIAL_8250_CONSOLE)	+= 8250_early.o
+> +obj-$(CONFIG_SERIAL_8250_FOURPORT)	+= 8250_fourport.o
+> +obj-$(CONFIG_SERIAL_8250_ACCENT)	+= 8250_accent.o
+> +obj-$(CONFIG_SERIAL_8250_BOCA)		+= 8250_boca.o
+> +obj-$(CONFIG_SERIAL_8250_EXAR_ST16C554)	+= 8250_exar_st16c554.o
+> +obj-$(CONFIG_SERIAL_8250_HUB6)		+= 8250_hub6.o
+> +obj-$(CONFIG_SERIAL_8250_MCA)		+= 8250_mca.o
+> +obj-$(CONFIG_SERIAL_8250_FSL)		+= 8250_fsl.o
+> +obj-$(CONFIG_SERIAL_8250_DW)		+= 8250_dw.o
 
-> From: NeilBrown [mailto:neilb@suse.de]
-> Sent: Monday, February 06, 2012 5:58 PM
-> To: Woodruff, Richard
+...
 
-Apologies for mangled mails... I am years over due ditching current method.
+> diff --git a/drivers/tty/serial/m32r_sio.c b/drivers/tty/serial/8250/m32r_sio.c
+> similarity index 100%
+> rename from drivers/tty/serial/m32r_sio.c
+> rename to drivers/tty/serial/8250/m32r_sio.c
+> diff --git a/drivers/tty/serial/m32r_sio.h b/drivers/tty/serial/8250/m32r_sio.h
+> similarity index 100%
+> rename from drivers/tty/serial/m32r_sio.h
+> rename to drivers/tty/serial/8250/m32r_sio.h
+> diff --git a/drivers/tty/serial/m32r_sio_reg.h b/drivers/tty/serial/8250/m32r_sio_reg.h
+> similarity index 100%
+> rename from drivers/tty/serial/m32r_sio_reg.h
+> rename to drivers/tty/serial/8250/m32r_sio_reg.h
 
-> I don't think it is really OK to drop chars on the UART-to-Debug console.
-> However it is OK to drop the BAUD rate to 57600 where we can wake up in
-> time
-> for to catch the first bit.  So if you want power saving, drop the console
-> buad rate.
-> 
-> So I would suggest:
->  - remove the autosuspend timeouts
->  - allow runtime_pm to shutdown the device when it is not open, or when
->    rate is 57600 or below, or when 'CREAD' is clear
->  - keep runtime_pm active whenever there are bytes in the output queue or
->    fifo
+Hmm, these cannot be built now :(. Why did you move them?
 
-Yes slower baud + use of flow control should help. OMAP4 is like 10x better than OMAP2 with OMAP3 in middle.
+It looks like they should be moved back.
 
-> The only case that wouldn't support is when a device will wake up the SOC
-> by
-> sending a non-break character which it is OK to receive corrupted.  The
-> tty
-> would have to be in !CREAD for that to happen, and then there would be no
-> way
-> for the app to know that a non-break character was received.
-> Would it be reasonable to treat any input while CREAD is clear as a break?
-
-Others would have to comment on this.  I never took this step as I was ok with degradation on debug console.
-
-If ever I wanted better logs I tended to telnet/ssh in on a network port which was better at retry at higher level.
-
-Regards,
-Richard W.
-
-
-
+regards,
+-- 
+js
