@@ -1,71 +1,85 @@
-From: Jiri Slaby <jirislaby@gmail.com>
-Subject: Re: [PATCH] serial: relocate remaining serial drivers from tty/ to
- tty/serial/
-Date: Wed, 08 Feb 2012 11:32:43 +0100
-Message-ID: <4F324F4B.3090500@gmail.com>
-References: <1325707287-31038-1-git-send-email-paul.gortmaker@windriver.com> <4F04BFA8.9010100@windriver.com> <20120104220332.GA22985@suse.de> <201201042327.33739.arnd@arndb.de> <20120105054240.GA9093@merkur.ravnborg.org> <20120105124505.73c88f2c@bob.linux.org.uk> <20120105232142.GA10870@windriver.com> <4F324ECB.7040102@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+From: Tobias Klauser <tklauser@distanz.ch>
+Subject: [PATCH] tty: serial: altera_uart: Add CONSOLE_POLL support
+Date: Wed,  8 Feb 2012 14:36:09 +0100
+Message-ID: <1328708169-25134-1-git-send-email-tklauser@distanz.ch>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ey0-f174.google.com ([209.85.215.174]:48396 "EHLO
-	mail-ey0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750845Ab2BHKcs (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 8 Feb 2012 05:32:48 -0500
-In-Reply-To: <4F324ECB.7040102@gmail.com>
+Received: from mx1.zhaw.ch ([160.85.104.50]:35029 "EHLO mx1.zhaw.ch"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750751Ab2BHNph (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 8 Feb 2012 08:45:37 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc: Alan Cox <alan@linux.intel.com>, Sam Ravnborg <sam@ravnborg.org>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>
+Cc: linux-serial@vger.kernel.org
 
-Damnit! They didn't manage to forward Greg's email. What a crap.
+This allows altera_uart to be used for KGDB debugging over serial line.
 
-On 02/08/2012 11:30 AM, Jiri Slaby wrote:
-> On 01/06/2012 12:21 AM, Paul Gortmaker wrote:
->> --- /dev/null
->> +++ b/drivers/tty/serial/8250/Makefile
->> @@ -0,0 +1,20 @@
->> +#
->> +# Makefile for the 8250 serial device drivers.
->> +#
->> +
->> +obj-$(CONFIG_SERIAL_8250)		+= 8250.o
->> +obj-$(CONFIG_SERIAL_8250_PNP)		+= 8250_pnp.o
->> +obj-$(CONFIG_SERIAL_8250_GSC)		+= 8250_gsc.o
->> +obj-$(CONFIG_SERIAL_8250_PCI)		+= 8250_pci.o
->> +obj-$(CONFIG_SERIAL_8250_HP300)		+= 8250_hp300.o
->> +obj-$(CONFIG_SERIAL_8250_CS)		+= serial_cs.o
->> +obj-$(CONFIG_SERIAL_8250_ACORN)		+= 8250_acorn.o
->> +obj-$(CONFIG_SERIAL_8250_CONSOLE)	+= 8250_early.o
->> +obj-$(CONFIG_SERIAL_8250_FOURPORT)	+= 8250_fourport.o
->> +obj-$(CONFIG_SERIAL_8250_ACCENT)	+= 8250_accent.o
->> +obj-$(CONFIG_SERIAL_8250_BOCA)		+= 8250_boca.o
->> +obj-$(CONFIG_SERIAL_8250_EXAR_ST16C554)	+= 8250_exar_st16c554.o
->> +obj-$(CONFIG_SERIAL_8250_HUB6)		+= 8250_hub6.o
->> +obj-$(CONFIG_SERIAL_8250_MCA)		+= 8250_mca.o
->> +obj-$(CONFIG_SERIAL_8250_FSL)		+= 8250_fsl.o
->> +obj-$(CONFIG_SERIAL_8250_DW)		+= 8250_dw.o
-> 
-> ...
-> 
->> diff --git a/drivers/tty/serial/m32r_sio.c b/drivers/tty/serial/8250/m32r_sio.c
->> similarity index 100%
->> rename from drivers/tty/serial/m32r_sio.c
->> rename to drivers/tty/serial/8250/m32r_sio.c
->> diff --git a/drivers/tty/serial/m32r_sio.h b/drivers/tty/serial/8250/m32r_sio.h
->> similarity index 100%
->> rename from drivers/tty/serial/m32r_sio.h
->> rename to drivers/tty/serial/8250/m32r_sio.h
->> diff --git a/drivers/tty/serial/m32r_sio_reg.h b/drivers/tty/serial/8250/m32r_sio_reg.h
->> similarity index 100%
->> rename from drivers/tty/serial/m32r_sio_reg.h
->> rename to drivers/tty/serial/8250/m32r_sio_reg.h
-> 
-> Hmm, these cannot be built now :(. Why did you move them?
-> 
-> It looks like they should be moved back.
-> 
-> regards,
+Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
+---
+ drivers/tty/serial/Makefile      |    2 +-
+ drivers/tty/serial/altera_uart.c |   24 ++++++++++++++++++++++++
+ 2 files changed, 25 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index fee0690..d469771 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -81,12 +81,12 @@ obj-$(CONFIG_SERIAL_OF_PLATFORM) += of_serial.o
+ obj-$(CONFIG_SERIAL_OF_PLATFORM_NWPSERIAL) += nwpserial.o
+ obj-$(CONFIG_SERIAL_KS8695) += serial_ks8695.o
+ obj-$(CONFIG_SERIAL_OMAP) += omap-serial.o
++obj-$(CONFIG_SERIAL_ALTERA_UART) += altera_uart.o
+ obj-$(CONFIG_KGDB_SERIAL_CONSOLE) += kgdboc.o
+ obj-$(CONFIG_SERIAL_QE) += ucc_uart.o
+ obj-$(CONFIG_SERIAL_TIMBERDALE)	+= timbuart.o
+ obj-$(CONFIG_SERIAL_GRLIB_GAISLER_APBUART) += apbuart.o
+ obj-$(CONFIG_SERIAL_ALTERA_JTAGUART) += altera_jtaguart.o
+-obj-$(CONFIG_SERIAL_ALTERA_UART) += altera_uart.o
+ obj-$(CONFIG_SERIAL_VT8500) += vt8500_serial.o
+ obj-$(CONFIG_SERIAL_MRST_MAX3110)	+= mrst_max3110.o
+ obj-$(CONFIG_SERIAL_MFD_HSU)	+= mfd.o
+diff --git a/drivers/tty/serial/altera_uart.c b/drivers/tty/serial/altera_uart.c
+index 3a9cffa..fefaa4c 100644
+--- a/drivers/tty/serial/altera_uart.c
++++ b/drivers/tty/serial/altera_uart.c
+@@ -377,6 +377,26 @@ static int altera_uart_verify_port(struct uart_port *port,
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_CONSOLE_POLL
++static int altera_uart_poll_get_char(struct uart_port *port)
++{
++	while (!(altera_uart_readl(port, ALTERA_UART_STATUS_REG) &
++		 ALTERA_UART_STATUS_RRDY_MSK))
++		cpu_relax();
++
++	return altera_uart_readl(port, ALTERA_UART_RXDATA_REG);
++}
++
++static void altera_uart_poll_put_char(struct uart_port *port, unsigned char c)
++{
++	while (!(altera_uart_readl(port, ALTERA_UART_STATUS_REG) &
++		 ALTERA_UART_STATUS_TRDY_MSK))
++		cpu_relax();
++
++	altera_uart_writel(port, c, ALTERA_UART_TXDATA_REG);
++}
++#endif
++
+ /*
+  *	Define the basic serial functions we support.
+  */
+@@ -397,6 +417,10 @@ static struct uart_ops altera_uart_ops = {
+ 	.release_port	= altera_uart_release_port,
+ 	.config_port	= altera_uart_config_port,
+ 	.verify_port	= altera_uart_verify_port,
++#ifdef CONFIG_CONSOLE_POLL
++	.poll_get_char	= altera_uart_poll_get_char,
++	.poll_put_char	= altera_uart_poll_put_char,
++#endif
+ };
+ 
+ static struct altera_uart altera_uart_ports[CONFIG_SERIAL_ALTERA_UART_MAXPORTS];
 -- 
-js
+1.7.5.4
+
