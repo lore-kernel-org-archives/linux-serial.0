@@ -1,26 +1,42 @@
-From: Paul Walmsley <paul@pwsan.com>
-Subject: Re: patch "tty: serial: OMAP: ensure FIFO levels are set correctly
- in non-DMA" added to tty tree
-Date: Wed, 8 Feb 2012 08:50:29 -0700 (MST)
-Message-ID: <alpine.DEB.2.00.1202080848530.31161@utopia.booyaka.com>
-References: <alpine.DEB.2.00.1202021302070.586@utopia.booyaka.com> <20120203150708.386951d2@notabene.brown> <alpine.DEB.2.00.1202022137150.586@utopia.booyaka.com> <20120203205401.5ddf241d@notabene.brown> <CANOLnONsZKHJPbEx2+ic3EZ1PqcD30VT4Z2bR5iW-JNQJQL0GA@mail.gmail.com>
- <alpine.DEB.2.00.1202031234120.27947@utopia.booyaka.com> <CANOLnOPm-ZKRvu1PVs-jU2sceehRiwNPd=ysu2SDsLbarAPVbw@mail.gmail.com> <alpine.DEB.2.00.1202040928320.9453@utopia.booyaka.com> <20120204165736.GI1275@n2100.arm.linux.org.uk>
- <alpine.DEB.2.00.1202041029520.9453@utopia.booyaka.com> <20120204175528.GL1275@n2100.arm.linux.org.uk>
+From: Shubhrajyoti D <shubhrajyoti@ti.com>
+Subject: [PATCH RFC] OMAP: serial: Remove the hardcode serial_omap_console_ports array.
+Date: Thu, 9 Feb 2012 19:18:16 +0530
+Message-ID: <1328795296-22935-1-git-send-email-shubhrajyoti@ti.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20120204175528.GL1275@n2100.arm.linux.org.uk>
-Sender: linux-omap-owner@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Grazvydas Ignotas <notasas@gmail.com>, khilman@ti.com, NeilBrown <neilb@suse.de>, govindraj.raja@ti.com, tomi.valkeinen@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from comal.ext.ti.com ([198.47.26.152]:43627 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753291Ab2BINsZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 9 Feb 2012 08:48:25 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Shubhrajyoti D <shubhrajyoti@ti.com>, Govindraj Raja <govindraj.raja@ti.com>
 
+Currently the array serial_omap_console_ports is hard coded to 4.
+Make it depend on the macro OMAP_MAX_HSUART_PORTS(which is 4) which
+the maximum uart count.
 
-Hi
+Cc: Govindraj Raja <govindraj.raja@ti.com>
+Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
+---
+ drivers/tty/serial/omap-serial.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-Just a quick note.  Haven't had the chance to follow up on these threads 
-due to travel and other obligations, but plan to do so soon.
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 1c24269..c570696 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -1021,7 +1021,7 @@ static int serial_omap_poll_get_char(struct uart_port *port)
+ 
+ #ifdef CONFIG_SERIAL_OMAP_CONSOLE
+ 
+-static struct uart_omap_port *serial_omap_console_ports[4];
++static struct uart_omap_port *serial_omap_console_ports[OMAP_MAX_HSUART_PORTS];
+ 
+ static struct uart_driver serial_omap_reg;
+ 
+-- 
+1.7.1
 
-regards -
-
-- Paul
