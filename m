@@ -1,60 +1,64 @@
-From: Govindraj <govindraj.ti@gmail.com>
-Subject: Re: [PATCH RFC] OMAP: serial: Remove the hardcode serial_omap_console_ports
- array.
-Date: Thu, 9 Feb 2012 19:28:31 +0530
-Message-ID: <CAAL8m4yU5KPqO11FY2Rwpuqns+EBtGuAMna0gxcYwK0QZ1fSjA@mail.gmail.com>
-References: <1328795296-22935-1-git-send-email-shubhrajyoti@ti.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PATCH] TTY/serial patches for 3.3-rc3
+Date: Thu, 9 Feb 2012 12:21:22 -0800
+Message-ID: <20120209202122.GA22154@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1328795296-22935-1-git-send-email-shubhrajyoti@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Shubhrajyoti D <shubhrajyoti@ti.com>
-Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Govindraj Raja <govindraj.raja@ti.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Feb 9, 2012 at 7:18 PM, Shubhrajyoti D <shubhrajyoti@ti.com> wr=
-ote:
-> Currently the array serial_omap_console_ports is hard coded to 4.
-> Make it depend on the macro OMAP_MAX_HSUART_PORTS(which is 4) which
-> the maximum uart count.
->
-> Cc: Govindraj Raja <govindraj.raja@ti.com>
-> Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
+The following changes since commit 62aa2b537c6f5957afd98e29f96897419ed5ebab:
 
-Acked-by: Govindraj.R <govindraj.raja@ti.com>
+  Linux 3.3-rc2 (2012-01-31 13:31:54 -0800)
 
-> ---
-> =A0drivers/tty/serial/omap-serial.c | =A0 =A02 +-
-> =A01 files changed, 1 insertions(+), 1 deletions(-)
->
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/om=
-ap-serial.c
-> index 1c24269..c570696 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -1021,7 +1021,7 @@ static int serial_omap_poll_get_char(struct uar=
-t_port *port)
->
-> =A0#ifdef CONFIG_SERIAL_OMAP_CONSOLE
->
-> -static struct uart_omap_port *serial_omap_console_ports[4];
-> +static struct uart_omap_port *serial_omap_console_ports[OMAP_MAX_HSU=
-ART_PORTS];
->
-> =A0static struct uart_driver serial_omap_reg;
->
-> --
-> 1.7.1
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-seria=
-l" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at =A0http://vger.kernel.org/majordomo-info.html
---
-To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-3.3-rc3
+
+for you to fetch changes up to 197234520bd83aba2199add57a9d2678ee7f9781:
+
+  tty: serial: omap-serial: wakeup latency constraint is in microseconds, not milliseconds (2012-02-09 10:48:36 -0800)
+
+----------------------------------------------------------------
+Serial/TTY fixes for the 3.3-rc3 tree
+
+Just a few new device ids, omap serial driver regression fixes, and a
+build fix for the 8250 driver movement.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Cong Wang (1):
+      tty: fix a build failure on sparc
+
+Kukjin Kim (2):
+      serial: samsung: Add support for EXYNOS4212 and EXYNOS4412
+      serial: samsung: Add support for EXYNOS5250
+
+Paul Gortmaker (1):
+      m32r: relocate drivers back out of 8250 dir
+
+Paul Walmsley (3):
+      tty: serial: OMAP: use a 1-byte RX FIFO threshold in PIO mode
+      tty: serial: OMAP: block idle while the UART is transferring data in PIO mode
+      tty: serial: omap-serial: wakeup latency constraint is in microseconds, not milliseconds
+
+Samuel Thibault (1):
+      drivers/tty/vt/vt_ioctl.c: fix KDFONTOP 32bit compatibility layer
+
+ arch/arm/mach-omap2/serial.c                 |    8 +++---
+ drivers/tty/serial/8250/8250.c               |    2 +-
+ drivers/tty/serial/{8250 => }/m32r_sio.c     |    0
+ drivers/tty/serial/{8250 => }/m32r_sio.h     |    0
+ drivers/tty/serial/{8250 => }/m32r_sio_reg.h |    0
+ drivers/tty/serial/omap-serial.c             |   30 +++++++++++++++++++++----
+ drivers/tty/serial/samsung.c                 |    3 +-
+ drivers/tty/vt/vt_ioctl.c                    |    1 -
+ 8 files changed, 32 insertions(+), 12 deletions(-)
+ rename drivers/tty/serial/{8250 => }/m32r_sio.c (100%)
+ rename drivers/tty/serial/{8250 => }/m32r_sio.h (100%)
+ rename drivers/tty/serial/{8250 => }/m32r_sio_reg.h (100%)
