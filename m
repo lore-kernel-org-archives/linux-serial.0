@@ -1,43 +1,51 @@
-From: Kevin Hilman <khilman@ti.com>
-Subject: Re: [PATCH] ARM: OMAP2xxx: PM: fix OMAP2xxx-specific UART idle bug in v3.3
-Date: Thu, 09 Feb 2012 18:33:46 -0800
-Message-ID: <8762ffzab9.fsf@ti.com>
-References: <alpine.DEB.2.00.1202091822170.5059@utopia.booyaka.com>
+From: Shubhrajyoti D <shubhrajyoti@ti.com>
+Subject: [PATCH RFC] OMAP: serial: Release the claimed memory region in remove
+Date: Fri, 10 Feb 2012 11:28:02 +0530
+Message-ID: <1328853482-3687-1-git-send-email-shubhrajyoti@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog101.obsmtp.com ([74.125.149.67]:43846 "EHLO
-	na3sys009aog101.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1758132Ab2BJCdu (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 9 Feb 2012 21:33:50 -0500
-In-Reply-To: <alpine.DEB.2.00.1202091822170.5059@utopia.booyaka.com> (Paul
-	Walmsley's message of "Thu, 9 Feb 2012 18:24:03 -0700 (MST)")
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-omap-owner@vger.kernel.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Shubhrajyoti D <shubhrajyoti@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>
 List-Id: linux-serial@vger.kernel.org
-To: Paul Walmsley <paul@pwsan.com>
-Cc: Tony Lindgren <tony@atomide.com>, Mark Brown <broonie@opensource.wolfsonmicro.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Jarkko Nikula <jarkko.nikula@bitmer.com>, Greg KH <gregkh@linuxfoundation.org>, Grazvydas Ignotas <notasas@gmail.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, linux-serial@vger.kernel.org
 
-Paul Walmsley <paul@pwsan.com> writes:
+Currently the memory region is not released the folowing error is
+observed.
 
-> [ This patch is targeted for v3.3-rc ]
->
-> On OMAP2420-based systems, the PM code ignores the state of the UART
-> functional clocks when determining what idle state to enter.  This
-> breaks the serial port now that the UART driver's clock behavior can
-> be controlled via the PM autosuspend timeout.
->
-> To fix, remove the special-case idle handling for the UARTs in the
-> OMAP2420/2430 PM idle code added by commit
-> 4af4016c53f52b26461b8030211f8427a58fa5ed ("OMAP3: PM: UART: disable
-> clocks when idle and off-mode support").
->
-> Tested on Nokia N800.  This patch is a collaboration between Tony
-> Lindgren <tony@atomide.com> and Paul Walmsley <paul@pwsan.com>.
->
-> Cc: Kevin Hilman <khilman@ti.com>
-> Cc: Tony Lindgren <tony@atomide.com>
-> Signed-off-by: Paul Walmsley <paul@pwsan.com>
+/testsuites # insmod omap-serial.ko
+[  130.746917] omap_uart omap_uart.0: memory region already claimed
+[  130.753143] omap_uart: probe of omap_uart.0 failed with error -16
+[  130.759338] omap_uart omap_uart.1: memory region already claimed
+[  130.765380] omap_uart: probe of omap_uart.1 failed with error -16
+[  130.771606] omap_uart omap_uart.2: memory region already claimed
+[  130.777679] omap_uart: probe of omap_uart.2 failed with error -16
+[  130.783905] omap_uart omap_uart.3: memory region already claimed
+[  130.789947] omap_uart: probe of omap_uart.3 failed with error -16
 
-Acked-by: Kevin Hilman <khilman@ti.com>
+Fix it by releasing the memory region.
+
+Cc: Govindraj.R <govindraj.raja@ti.com>
+Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
+---
+ drivers/tty/serial/omap-serial.c |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 130f7f8..4def6c3 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -1480,6 +1480,10 @@ do_release_region:
+ static int serial_omap_remove(struct platform_device *dev)
+ {
+ 	struct uart_omap_port *up = platform_get_drvdata(dev);
++	struct resource		*r;
++
++	r = platform_get_resource(dev, IORESOURCE_MEM, 0);
++	release_mem_region(r->start, resource_size(r));
+ 
+ 	if (up) {
+ 		iounmap(up->port.membase);
+-- 
+1.7.1
 
