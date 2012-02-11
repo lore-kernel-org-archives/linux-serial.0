@@ -1,87 +1,60 @@
-From: "Datta, Shubhrajyoti" <shubhrajyoti@ti.com>
-Subject: Re: [PATCH RFC] OMAP: serial: Release the claimed memory region in remove
-Date: Fri, 10 Feb 2012 23:31:47 +0530
-Message-ID: <CANQgH-Zy6XN+fqxx0eeVDERRSpBrU8zuOAkeSqtuL2un=6xmxA@mail.gmail.com>
-References: <1328853482-3687-1-git-send-email-shubhrajyoti@ti.com>
-	<CAOMWX4f0Mpj=NRBXZgtLbvCg3uo+8tZY8OAkriPu2YucRGoPkw@mail.gmail.com>
+From: Shubhrajyoti D <shubhrajyoti@ti.com>
+Subject: [PATCH] OMAP: serial: Release the claimed memory region in remove
+Date: Sat, 11 Feb 2012 13:03:27 +0530
+Message-ID: <1328945607-4025-1-git-send-email-shubhrajyoti@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <CAOMWX4f0Mpj=NRBXZgtLbvCg3uo+8tZY8OAkriPu2YucRGoPkw@mail.gmail.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: "Menon, Nishanth" <nm@ti.com>
-Cc: linux-serial@vger.kernel.org, "Govindraj.R" <govindraj.raja@ti.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from comal.ext.ti.com ([198.47.26.152]:48118 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751127Ab2BKHdq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 11 Feb 2012 02:33:46 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Shubhrajyoti D <shubhrajyoti@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>
 
-On Fri, Feb 10, 2012 at 8:53 PM, Menon, Nishanth <nm@ti.com> wrote:
-> On Thu, Feb 9, 2012 at 23:58, Shubhrajyoti D <shubhrajyoti@ti.com> wr=
-ote:
->> Currently the memory region is not released the folowing error is
->> observed.
->>
->> /testsuites # insmod omap-serial.ko
->> [ =A0130.746917] omap_uart omap_uart.0: memory region already claime=
-d
->> [ =A0130.753143] omap_uart: probe of omap_uart.0 failed with error -=
-16
->> [ =A0130.759338] omap_uart omap_uart.1: memory region already claime=
-d
->> [ =A0130.765380] omap_uart: probe of omap_uart.1 failed with error -=
-16
->> [ =A0130.771606] omap_uart omap_uart.2: memory region already claime=
-d
->> [ =A0130.777679] omap_uart: probe of omap_uart.2 failed with error -=
-16
->> [ =A0130.783905] omap_uart omap_uart.3: memory region already claime=
-d
->> [ =A0130.789947] omap_uart: probe of omap_uart.3 failed with error -=
-16
->>
->> Fix it by releasing the memory region.
->>
->> Cc: Govindraj.R <govindraj.raja@ti.com>
->> Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
->> ---
->> =A0drivers/tty/serial/omap-serial.c | =A0 =A04 ++++
->> =A01 files changed, 4 insertions(+), 0 deletions(-)
->>
->> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/o=
-map-serial.c
->> index 130f7f8..4def6c3 100644
->> --- a/drivers/tty/serial/omap-serial.c
->> +++ b/drivers/tty/serial/omap-serial.c
->> @@ -1480,6 +1480,10 @@ do_release_region:
->> =A0static int serial_omap_remove(struct platform_device *dev)
->> =A0{
->> =A0 =A0 =A0 =A0struct uart_omap_port *up =3D platform_get_drvdata(de=
-v);
->> + =A0 =A0 =A0 struct resource =A0 =A0 =A0 =A0 *r;
->> +
->> + =A0 =A0 =A0 r =3D platform_get_resource(dev, IORESOURCE_MEM, 0);
->> + =A0 =A0 =A0 release_mem_region(r->start, resource_size(r));
-> if this is the same region which ioremapped to up->port.membase, then
-> please release mem region after the unmap.
+Currently the memory region is not released the folowing error is
+observed.
 
-My bad will send an updated patch.
-Thanks ,
+/testsuites # insmod omap-serial.ko
+[  130.746917] omap_uart omap_uart.0: memory region already claimed
+[  130.753143] omap_uart: probe of omap_uart.0 failed with error -16
+[  130.759338] omap_uart omap_uart.1: memory region already claimed
+[  130.765380] omap_uart: probe of omap_uart.1 failed with error -16
+[  130.771606] omap_uart omap_uart.2: memory region already claimed
+[  130.777679] omap_uart: probe of omap_uart.2 failed with error -16
+[  130.783905] omap_uart omap_uart.3: memory region already claimed
+[  130.789947] omap_uart: probe of omap_uart.3 failed with error -16
 
-> Regards,
-> Nishanth Menon
->
->>
->> =A0 =A0 =A0 =A0if (up) {
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0iounmap(up->port.membase);
->> --
->> 1.7.1
->>
->>
->> _______________________________________________
->> linux-arm-kernel mailing list
->> linux-arm-kernel@lists.infradead.org
->> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
---
-To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Fix it by releasing the memory region.
+
+Cc: Govindraj.R <govindraj.raja@ti.com>
+Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
+---
+changes from the rfc version - 
+move the release after the unmap.
+
+ drivers/tty/serial/omap-serial.c |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 8c6f137..16aa4f0 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -1480,9 +1480,12 @@ do_release_region:
+ static int serial_omap_remove(struct platform_device *dev)
+ {
+ 	struct uart_omap_port *up = platform_get_drvdata(dev);
++	struct resource		*r;
+ 
+ 	if (up) {
+ 		iounmap(up->port.membase);
++		r = platform_get_resource(dev, IORESOURCE_MEM, 0);
++		release_mem_region(r->start, resource_size(r));
+ 		pm_runtime_disable(&up->pdev->dev);
+ 		uart_remove_one_port(&serial_omap_reg, &up->port);
+ 		pm_qos_remove_request(&up->pm_qos_request);
+-- 
+1.7.1
+
