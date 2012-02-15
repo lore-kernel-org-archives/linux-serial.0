@@ -1,49 +1,32 @@
-From: johnny@ch.cablemas.com
-Subject: Hi Dear
-Date: Tue, 14 Feb 2012 10:30:02 -0000
-Message-ID: <fc0eef21a9efff47bbfa6396ac9817e2.squirrel__49943.8305073001$1329225026$gmane$org@200.79.192.5>
-Reply-To: katenorman0211@yahoo.com
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from deliver-003.cablemas.com ([200.95.144.83]:23647 "EHLO
-	deliver-003.cablemas.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1760282Ab2BNNJq (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 14 Feb 2012 08:09:46 -0500
-Sender: linux-serial-owner@vger.kernel.org
+From: Danny Kukawka <danny.kukawka@bisect.de>
+Subject: [PATCH] tty/serial/mux.c: linux/tty.h included twice
+Date: Wed, 15 Feb 2012 18:55:41 +0100
+Message-ID: <1329328541-4902-1-git-send-email-danny.kukawka@bisect.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>
+Cc: Danny Kukawka <dkukawka@suse.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+drivers/tty/serial/mux.c included 'linux/tty.h' twice, remove
+the duplicate.
 
+Signed-off-by: Danny Kukawka <danny.kukawka@bisect.de>
+---
+ drivers/tty/serial/mux.c |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
 
-
-Hello
-
-My name is Kate i would like to be a  friend with you
-
-i have more to discuss with you once i hear from you
-
-thanks
-
-ms kate
-
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D
-
-Hallo
-
-Mein Name ist Kate Ich m=F6chte ein Freund mit dir sein
-
-Ich habe mehr zu besprechen mit Ihnen, sobald ich von Ihnen zu h=F6ren
-
-dank
-
-=46rau Kate
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/tty/serial/mux.c b/drivers/tty/serial/mux.c
+index 06f6aef..d080bc5 100644
+--- a/drivers/tty/serial/mux.c
++++ b/drivers/tty/serial/mux.c
+@@ -17,7 +17,6 @@
+ */
+ 
+ #include <linux/module.h>
+-#include <linux/tty.h>
+ #include <linux/ioport.h>
+ #include <linux/init.h>
+ #include <linux/serial.h>
+-- 
+1.7.8.3
