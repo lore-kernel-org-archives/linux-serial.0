@@ -1,45 +1,39 @@
-From: Stephen Warren <swarren@nvidia.com>
-Subject: RE: [PATCH] serial/sirf: fixup for changes to pin control
-Date: Thu, 16 Feb 2012 11:01:17 -0800
-Message-ID: <74CDBE0F657A3D45AFBB94109FB122FF1790EC8791@HQMAIL01.nvidia.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH] serial/sirf: fixup for changes to pin control
+Date: Thu, 16 Feb 2012 20:39:39 +0100
+Message-ID: <CACRpkdavPdK13cJ-mdDXwbz3jNCSCzaa8LTdMDXOy4mi+pmdmw@mail.gmail.com>
 References: <1329417828-6005-1-git-send-email-linus.walleij@linaro.org>
+	<74CDBE0F657A3D45AFBB94109FB122FF1790EC8791@HQMAIL01.nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from hqemgate03.nvidia.com ([216.228.121.140]:12336 "EHLO
-	hqemgate03.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751943Ab2BPTBU convert rfc822-to-8bit (ORCPT
+Received: from mail-iy0-f174.google.com ([209.85.210.174]:49025 "EHLO
+	mail-iy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751791Ab2BPTjj (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 16 Feb 2012 14:01:20 -0500
-In-Reply-To: <1329417828-6005-1-git-send-email-linus.walleij@linaro.org>
-Content-Language: en-US
+	Thu, 16 Feb 2012 14:39:39 -0500
+In-Reply-To: <74CDBE0F657A3D45AFBB94109FB122FF1790EC8791@HQMAIL01.nvidia.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
-Cc: Shawn Guo <shawn.guo@freescale.com>, Thomas Abraham <thomas.abraham@linaro.org>, Dong Aisheng <dong.aisheng@linaro.org>, Rajendra Nayak <rajendra.nayak@linaro.org>, Haojian Zhuang <haojian.zhuang@marvell.com>, Barry Song <21cnbao@gmail.com>, Tony Lindgren <tony@atomide.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Stephen Warren <swarren@nvidia.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Shawn Guo <shawn.guo@freescale.com>, Thomas Abraham <thomas.abraham@linaro.org>, Dong Aisheng <dong.aisheng@linaro.org>, Rajendra Nayak <rajendra.nayak@linaro.org>, Haojian Zhuang <haojian.zhuang@marvell.com>, Barry Song <21cnbao@gmail.com>, Tony Lindgren <tony@atomide.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-Linus Walleij wrote at Thursday, February 16, 2012 11:44 AM:
-> We changed the signature of the pin multiplexing functions to
-> handle any pin business, so fix up the Sirf driver to call this
-> new interface and rename some variables to make the semantics
-> understandable.
-> 
-> Cc: linux-serial@vger.kernel.org
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+On Thu, Feb 16, 2012 at 8:01 PM, Stephen Warren <swarren@nvidia.com> wrote:
 
-Looks good to me for now.
+> Should this patch be put into the pinctrl tree since that's where the
+> API changed, perhaps even squashed into the original commit to avoid
+> git bisect breakage, unless your branch needs to be stable?
 
-I'll have to do another similar change when I implement the pinctrl_get
-API changes we discussed at Linaro Connect (I should start implementing
-that today), but I guess that's no big deal.
+Hm yeah I will for sure put it into the pinctrl tree.
+The Sirf doesn't even have a defconfig so it was just my memory of
+the Sirf that got me to remember it. I might squash if I don't get any
+comments on this patch.
 
-Should this patch be put into the pinctrl tree since that's where the
-API changed, perhaps even squashed into the original commit to avoid
-git bisect breakage, unless your branch needs to be stable? Otherwise,
-this change will conflict with my future similar change if pulled for
-the same kernel version.
+> Otherwise,
+> this change will conflict with my future similar change if pulled for
+> the same kernel version.
 
--- 
-nvpublic
+It'll be in linux-next tomorrow or so.
 
+Yours,
+Linus Walleij
