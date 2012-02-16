@@ -1,92 +1,45 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH] serial/sirf: fixup for changes to pin control
-Date: Thu, 16 Feb 2012 19:43:48 +0100
-Message-ID: <1329417828-6005-1-git-send-email-linus.walleij@linaro.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Stephen Warren <swarren@nvidia.com>, Shawn Guo <shawn.guo@freescale.com>, Thomas Abraham <thomas.abraham@linaro.org>, Dong Aisheng <dong.aisheng@linaro.org>, Rajendra Nayak <rajendra.nayak@linaro.org>, Haojian Zhuang <haojian.zhuang@marvell.com>, Barry Song <21cnbao@gmail.com>, Tony Lindgren <tony@atomide.com>, Linus Walleij <linus.walleij@linaro.org>, linux-serial@vger.kernel.org
+From: Stephen Warren <swarren@nvidia.com>
+Subject: RE: [PATCH] serial/sirf: fixup for changes to pin control
+Date: Thu, 16 Feb 2012 11:01:17 -0800
+Message-ID: <74CDBE0F657A3D45AFBB94109FB122FF1790EC8791@HQMAIL01.nvidia.com>
+References: <1329417828-6005-1-git-send-email-linus.walleij@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from hqemgate03.nvidia.com ([216.228.121.140]:12336 "EHLO
+	hqemgate03.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751943Ab2BPTBU convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 16 Feb 2012 14:01:20 -0500
+In-Reply-To: <1329417828-6005-1-git-send-email-linus.walleij@linaro.org>
+Content-Language: en-US
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Cc: Shawn Guo <shawn.guo@freescale.com>, Thomas Abraham <thomas.abraham@linaro.org>, Dong Aisheng <dong.aisheng@linaro.org>, Rajendra Nayak <rajendra.nayak@linaro.org>, Haojian Zhuang <haojian.zhuang@marvell.com>, Barry Song <21cnbao@gmail.com>, Tony Lindgren <tony@atomide.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-We changed the signature of the pin multiplexing functions to
-handle any pin business, so fix up the Sirf driver to call this
-new interface and rename some variables to make the semantics
-understandable.
+Linus Walleij wrote at Thursday, February 16, 2012 11:44 AM:
+> We changed the signature of the pin multiplexing functions to
+> handle any pin business, so fix up the Sirf driver to call this
+> new interface and rename some variables to make the semantics
+> understandable.
+> 
+> Cc: linux-serial@vger.kernel.org
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 
-Cc: linux-serial@vger.kernel.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
- drivers/tty/serial/sirfsoc_uart.c |   20 ++++++++++----------
- drivers/tty/serial/sirfsoc_uart.h |    2 +-
- 2 files changed, 11 insertions(+), 11 deletions(-)
+Looks good to me for now.
 
-diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
-index a60523f..c1a871e 100644
---- a/drivers/tty/serial/sirfsoc_uart.c
-+++ b/drivers/tty/serial/sirfsoc_uart.c
-@@ -22,7 +22,7 @@
- #include <linux/io.h>
- #include <asm/irq.h>
- #include <asm/mach/irq.h>
--#include <linux/pinctrl/pinmux.h>
-+#include <linux/pinctrl/consumer.h>
- 
- #include "sirfsoc_uart.h"
- 
-@@ -673,12 +673,12 @@ int sirfsoc_uart_probe(struct platform_device *pdev)
- 	port->irq = res->start;
- 
- 	if (sirfport->hw_flow_ctrl) {
--		sirfport->pmx = pinmux_get(&pdev->dev, NULL);
--		ret = IS_ERR(sirfport->pmx);
-+		sirfport->p = pinctrl_get(&pdev->dev, NULL);
-+		ret = IS_ERR(sirfport->p);
- 		if (ret)
--			goto pmx_err;
-+			goto pin_err;
- 
--		pinmux_enable(sirfport->pmx);
-+		pinctrl_enable(sirfport->p);
- 	}
- 
- 	port->ops = &sirfsoc_uart_ops;
-@@ -696,10 +696,10 @@ int sirfsoc_uart_probe(struct platform_device *pdev)
- port_err:
- 	platform_set_drvdata(pdev, NULL);
- 	if (sirfport->hw_flow_ctrl) {
--		pinmux_disable(sirfport->pmx);
--		pinmux_put(sirfport->pmx);
-+		pinctrl_disable(sirfport->p);
-+		pinctrl_put(sirfport->p);
- 	}
--pmx_err:
-+pin_err:
- irq_err:
- 	devm_iounmap(&pdev->dev, port->membase);
- err:
-@@ -712,8 +712,8 @@ static int sirfsoc_uart_remove(struct platform_device *pdev)
- 	struct uart_port *port = &sirfport->port;
- 	platform_set_drvdata(pdev, NULL);
- 	if (sirfport->hw_flow_ctrl) {
--		pinmux_disable(sirfport->pmx);
--		pinmux_put(sirfport->pmx);
-+		pinctrl_disable(sirfport->p);
-+		pinctrl_put(sirfport->p);
- 	}
- 	devm_iounmap(&pdev->dev, port->membase);
- 	uart_remove_one_port(&sirfsoc_uart_drv, port);
-diff --git a/drivers/tty/serial/sirfsoc_uart.h b/drivers/tty/serial/sirfsoc_uart.h
-index fc64260..6e207fd 100644
---- a/drivers/tty/serial/sirfsoc_uart.h
-+++ b/drivers/tty/serial/sirfsoc_uart.h
-@@ -162,7 +162,7 @@ struct sirfsoc_uart_port {
- 	unsigned char			ms_enabled;
- 
- 	struct uart_port		port;
--	struct pinmux			*pmx;
-+	struct pinctrl			*p;
- };
- 
- /* Hardware Flow Control */
+I'll have to do another similar change when I implement the pinctrl_get
+API changes we discussed at Linaro Connect (I should start implementing
+that today), but I guess that's no big deal.
+
+Should this patch be put into the pinctrl tree since that's where the
+API changed, perhaps even squashed into the original commit to avoid
+git bisect breakage, unless your branch needs to be stable? Otherwise,
+this change will conflict with my future similar change if pulled for
+the same kernel version.
+
 -- 
-1.7.7.6
+nvpublic
+
