@@ -1,72 +1,92 @@
-From: Chanho Min <chanho0207@gmail.com>
-Subject: [PATCH] amba-pl011/dma: Add check for the residue in DMA callback
-Date: Thu, 16 Feb 2012 11:44:12 +0900
-Message-ID: <CAOAMb1AVoJts+OVCm1L-n1t1mdyu=3eDxpC=+3Ums1BbHo4K3Q@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-iy0-f174.google.com ([209.85.210.174]:61347 "EHLO
-	mail-iy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756909Ab2BPCoN (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 15 Feb 2012 21:44:13 -0500
-Sender: linux-serial-owner@vger.kernel.org
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH] serial/sirf: fixup for changes to pin control
+Date: Thu, 16 Feb 2012 19:43:48 +0100
+Message-ID: <1329417828-6005-1-git-send-email-linus.walleij@linaro.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Stephen Warren <swarren@nvidia.com>, Shawn Guo <shawn.guo@freescale.com>, Thomas Abraham <thomas.abraham@linaro.org>, Dong Aisheng <dong.aisheng@linaro.org>, Rajendra Nayak <rajendra.nayak@linaro.org>, Haojian Zhuang <haojian.zhuang@marvell.com>, Barry Song <21cnbao@gmail.com>, Tony Lindgren <tony@atomide.com>, Linus Walleij <linus.walleij@linaro.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <linux@arm.linux.org.uk>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-In DMA-operated uart, I found that rx data can be taken by the UART
-interrupts during
-the DMA irq handler. pl011_int is occurred just before it goes inside
-spin_lock_irq.
-When it returns to the callback, DMA buffer already has been flushed.
-Then, pl011_dma_rx_chars
-gets invalid data. So I add check for the residue as the patch bellow.
+We changed the signature of the pin multiplexing functions to
+handle any pin business, so fix up the Sirf driver to call this
+new interface and rename some variables to make the semantics
+understandable.
 
-Signed-off-by: Chanho Min <chanho.min@lge.com>
+Cc: linux-serial@vger.kernel.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/tty/serial/amba-pl011.c |   17 ++++++++++++++++-
- 1 files changed, 16 insertions(+), 1 deletions(-)
+ drivers/tty/serial/sirfsoc_uart.c |   20 ++++++++++----------
+ drivers/tty/serial/sirfsoc_uart.h |    2 +-
+ 2 files changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 6800f5f..cc3ea06 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -827,7 +827,12 @@ static void pl011_dma_rx_callback(void *data)
- {
- 	struct uart_amba_port *uap = data;
- 	struct pl011_dmarx_data *dmarx = &uap->dmarx;
-+	struct dma_chan *rxchan = dmarx->chan;
- 	bool lastbuf = dmarx->use_buf_b;
-+	struct pl011_sgbuf *sgbuf = dmarx->use_buf_b ?
-+		&dmarx->sgbuf_b : &dmarx->sgbuf_a;
-+	size_t pending;
-+	struct dma_tx_state state;
- 	int ret;
-
- 	/*
-@@ -838,11 +843,21 @@ static void pl011_dma_rx_callback(void *data)
- 	 * we immediately trigger the next DMA job.
- 	 */
- 	spin_lock_irq(&uap->port.lock);
-+	/*
-+	 * Rx data can be taken by the UART interrupts during
-+	 * the DMA irq handler. So we check the residue here.
-+	 */
-+	rxchan->device->device_tx_status(rxchan, dmarx->cookie, &state);
-+	pending = sgbuf->sg.length - state.residue;
-+	BUG_ON(pending > PL011_DMA_BUFFER_SIZE);
-+	/* Then we terminate the transfer - we now know our residue */
-+	dmaengine_terminate_all(rxchan);
-+
- 	uap->dmarx.running = false;
- 	dmarx->use_buf_b = !lastbuf;
- 	ret = pl011_dma_rx_trigger_dma(uap);
-
--	pl011_dma_rx_chars(uap, PL011_DMA_BUFFER_SIZE, lastbuf, false);
-+	pl011_dma_rx_chars(uap, pending, lastbuf, false);
- 	spin_unlock_irq(&uap->port.lock);
- 	/*
- 	 * Do this check after we picked the DMA chars so we don't
+diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
+index a60523f..c1a871e 100644
+--- a/drivers/tty/serial/sirfsoc_uart.c
++++ b/drivers/tty/serial/sirfsoc_uart.c
+@@ -22,7 +22,7 @@
+ #include <linux/io.h>
+ #include <asm/irq.h>
+ #include <asm/mach/irq.h>
+-#include <linux/pinctrl/pinmux.h>
++#include <linux/pinctrl/consumer.h>
+ 
+ #include "sirfsoc_uart.h"
+ 
+@@ -673,12 +673,12 @@ int sirfsoc_uart_probe(struct platform_device *pdev)
+ 	port->irq = res->start;
+ 
+ 	if (sirfport->hw_flow_ctrl) {
+-		sirfport->pmx = pinmux_get(&pdev->dev, NULL);
+-		ret = IS_ERR(sirfport->pmx);
++		sirfport->p = pinctrl_get(&pdev->dev, NULL);
++		ret = IS_ERR(sirfport->p);
+ 		if (ret)
+-			goto pmx_err;
++			goto pin_err;
+ 
+-		pinmux_enable(sirfport->pmx);
++		pinctrl_enable(sirfport->p);
+ 	}
+ 
+ 	port->ops = &sirfsoc_uart_ops;
+@@ -696,10 +696,10 @@ int sirfsoc_uart_probe(struct platform_device *pdev)
+ port_err:
+ 	platform_set_drvdata(pdev, NULL);
+ 	if (sirfport->hw_flow_ctrl) {
+-		pinmux_disable(sirfport->pmx);
+-		pinmux_put(sirfport->pmx);
++		pinctrl_disable(sirfport->p);
++		pinctrl_put(sirfport->p);
+ 	}
+-pmx_err:
++pin_err:
+ irq_err:
+ 	devm_iounmap(&pdev->dev, port->membase);
+ err:
+@@ -712,8 +712,8 @@ static int sirfsoc_uart_remove(struct platform_device *pdev)
+ 	struct uart_port *port = &sirfport->port;
+ 	platform_set_drvdata(pdev, NULL);
+ 	if (sirfport->hw_flow_ctrl) {
+-		pinmux_disable(sirfport->pmx);
+-		pinmux_put(sirfport->pmx);
++		pinctrl_disable(sirfport->p);
++		pinctrl_put(sirfport->p);
+ 	}
+ 	devm_iounmap(&pdev->dev, port->membase);
+ 	uart_remove_one_port(&sirfsoc_uart_drv, port);
+diff --git a/drivers/tty/serial/sirfsoc_uart.h b/drivers/tty/serial/sirfsoc_uart.h
+index fc64260..6e207fd 100644
+--- a/drivers/tty/serial/sirfsoc_uart.h
++++ b/drivers/tty/serial/sirfsoc_uart.h
+@@ -162,7 +162,7 @@ struct sirfsoc_uart_port {
+ 	unsigned char			ms_enabled;
+ 
+ 	struct uart_port		port;
+-	struct pinmux			*pmx;
++	struct pinctrl			*p;
+ };
+ 
+ /* Hardware Flow Control */
 -- 
-1.7.0.4
+1.7.7.6
