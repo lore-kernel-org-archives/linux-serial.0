@@ -1,25 +1,23 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Feng Tang <feng.tang@intel.com>
 Subject: Re: pch_uart and pch_phub clock selection
-Date: Thu, 16 Feb 2012 17:30:12 -0800
-Message-ID: <20120217013012.GA18530@kroah.com>
+Date: Fri, 17 Feb 2012 15:28:08 +0800
+Message-ID: <20120217072808.GA26800@feng-i7>
 References: <4F3DA617.5030805@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:60756 "EHLO
-	out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755323Ab2BQBf2 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 16 Feb 2012 20:35:28 -0500
-Received: from compute4.internal (compute4.nyi.mail.srv.osa [10.202.2.44])
-	by gateway1.nyi.mail.srv.osa (Postfix) with ESMTP id F299420939
-	for <linux-serial@vger.kernel.org>; Thu, 16 Feb 2012 20:35:27 -0500 (EST)
+Received: from mga11.intel.com ([192.55.52.93]:3210 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750800Ab2BQH3T (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 17 Feb 2012 02:29:19 -0500
 Content-Disposition: inline
 In-Reply-To: <4F3DA617.5030805@linux.intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Darren Hart <dvhart@linux.intel.com>
-Cc: "lkml, " <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+To: Darren Hart <dvhart@linux.intel.com>, Tomoya MORINAGA <tomoya.rohm@gmail.com>
+Cc: "lkml, " <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+
+Hi Darren,
 
 On Thu, Feb 16, 2012 at 04:57:59PM -0800, Darren Hart wrote:
 > I'm working on a tunnel creek (atom e6xx + topcliff PCH) development platform
@@ -31,6 +29,83 @@ On Thu, Feb 16, 2012 at 04:57:59PM -0800, Darren Hart wrote:
 > This is done in pch_uart.c code, but there is some register manipulation done in
 > the pch_phub.c driver and I don't understand the connection. How are the two
 > related?
+
+I've met similar problem about the base clock rate for pch_uart on EG20T/ML7213,
+which is controller by the phub clock configuration register. 
+
+My thought is to use a unified base clock rate 192MHz for all pch_uart devices
+which could be found on EG20T/ML7213/ML72xx chipsets, so that we don't need to
+worry about the different clock rate on all kinds of boards, nor do we need
+the CM-iTC quirk any more. I've tested the below patch on one EG20T board and
+one ML7213 board, and both work fine with it.
+
+Adding Tomoya for his comments as he is most familiar with pch_uart driver.
+
+Tomoya, do you know if we can also set it to 192MHz for ML7223 IOH Bus-m/n?
+
+Thanks,
+Feng
+
+----------------------------
+>From 091952dc27d3bf76e28b2afbc2fb36f0d6caada1 Mon Sep 17 00:00:00 2001
+From: Feng Tang <feng.tang@intel.com>
+Date: Fri, 17 Feb 2012 13:59:43 +0800
+Subject: [PATCH] pch_phub: unify the inital UART clock rate for EG20T and ML7213
+
+Set the base clk rate to 192MHz, so that the pch_uart driver can
+have the unique uartclk value, and don't need to add quirks for
+different boards and configurations.
+
+Signed-off-by: Feng Tang <feng.tang@intel.com>
+---
+ drivers/misc/pch_phub.c |   16 ++++++++++++----
+ 1 files changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/misc/pch_phub.c b/drivers/misc/pch_phub.c
+index 10fc478..bbe4db9 100644
+--- a/drivers/misc/pch_phub.c
++++ b/drivers/misc/pch_phub.c
+@@ -731,10 +731,8 @@ static int __devinit pch_phub_probe(struct pci_dev *pdev,
+ 					       CLKCFG_CAN_50MHZ,
+ 					       CLKCFG_CANCLK_MASK);
+ 
+-		/* quirk for CM-iTC board */
+-		board_name = dmi_get_system_info(DMI_BOARD_NAME);
+-		if (board_name && strstr(board_name, "CM-iTC"))
+-			pch_phub_read_modify_write_reg(chip,
++		/* Set the UART base clk rate to 192MHz */
++		pch_phub_read_modify_write_reg(chip,
+ 						(unsigned int)CLKCFG_REG_OFFSET,
+ 						CLKCFG_UART_48MHZ | CLKCFG_BAUDDIV |
+ 						CLKCFG_PLL2VCO | CLKCFG_UARTCLKSEL,
+@@ -747,6 +745,14 @@ static int __devinit pch_phub_probe(struct pci_dev *pdev,
+ 		chip->pch_opt_rom_start_address = PCH_PHUB_ROM_START_ADDR_EG20T;
+ 		chip->pch_mac_start_address = PCH_PHUB_MAC_START_ADDR_EG20T;
+ 	} else if (id->driver_data == 2) { /* ML7213 IOH */
++
++		/* Set the UART base clk rate to 192MHz */
++		pch_phub_read_modify_write_reg(chip,
++						(unsigned int)CLKCFG_REG_OFFSET,
++						CLKCFG_UART_48MHZ | CLKCFG_BAUDDIV |
++						CLKCFG_PLL2VCO | CLKCFG_UARTCLKSEL,
++						CLKCFG_UART_MASK);
++
+ 		retval = sysfs_create_bin_file(&pdev->dev.kobj, &pch_bin_attr);
+ 		if (retval)
+ 			goto err_sysfs_create;
+@@ -804,6 +810,8 @@ static int __devinit pch_phub_probe(struct pci_dev *pdev,
+ 		chip->pch_mac_start_address = PCH_PHUB_MAC_START_ADDR_EG20T;
+ 	}
+ 
++	pr_info("PHUB controller: CLKCFG register is set to 0x%08x\n",
++		ioread32(chip->pch_phub_base_address + CLKCFG_REG_OFFSET));
+ 	chip->ioh_type = id->driver_data;
+ 	pci_set_drvdata(pdev, chip);
+ 
+-- 
+1.7.1
+
+
 > 
 > Is the pch_phub.c register manipulation required for proper related? It seems to
 > work without touching those registers if I just force the clock.
@@ -38,11 +113,6 @@ On Thu, Feb 16, 2012 at 04:57:59PM -0800, Darren Hart wrote:
 > The device I'm working with is EFI, and the dmi_get_system_info(DMI_BOARD_NAME)
 > returns "(null)", so I can't use the same test to identify this board. Is there
 > another common mechanism I might be able to use?
-
-There's no relevant DMI information for the board at all?  What does:
-	grep . /sys/class/dmi/id/*
-show?
-
 > 
 > The following patch (by way of example, not meant for inclusion) gets things
 > working for this particular board with this command line:
@@ -57,20 +127,3 @@ show?
 > Thanks,
 > 
 > Darren
-> 
-> 
-> >From f83fa6cb575844d8e37f136890fe32258eb88dd2 Mon Sep 17 00:00:00 2001
-> Message-Id: <f83fa6cb575844d8e37f136890fe32258eb88dd2.1329439822.git.dvhart@linux.intel.com>
-> From: Darren Hart <dvhart@linux.intel.com>
-> Date: Wed, 15 Feb 2012 15:44:18 -0800
-> Subject: [PATCH] pch_uart: Add clock parameter
-> 
-> Allow for the specification of the clock as a module parameter. This is useful
-> when a board uses a non-standard clock, or when different versions of a board
-> use different clocks, and that board name or the version are not available to
-> the kernel.
-
-You also rename base_baud to uart_clock here, so you might want to
-mention it in the changelog entry :)
-
-greg k-h
