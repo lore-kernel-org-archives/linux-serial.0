@@ -1,65 +1,42 @@
-From: Tomoya MORINAGA <tomoya.rohm@gmail.com>
-Subject: Re: pch_uart and pch_phub clock selection
-Date: Fri, 17 Feb 2012 18:50:33 +0900
-Message-ID: <CANKRQnhfQyUrMWaXJVsjmL-yFnHa9WuR5LfTkqv=QmRGnC2aTw@mail.gmail.com>
-References: <4F3DA617.5030805@linux.intel.com>
-	<20120217072808.GA26800@feng-i7>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-2022-JP
-Content-Transfer-Encoding: 7bit
+From: John Crispin <blogic@openwrt.org>
+Subject: [PATCH 7/9] SERIAL: MIPS: lantiq: convert serial driver to clkdev api
+Date: Fri, 17 Feb 2012 11:33:18 +0100
+Message-ID: <1329474800-20979-8-git-send-email-blogic@openwrt.org>
+References: <1329474800-20979-1-git-send-email-blogic@openwrt.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pw0-f46.google.com ([209.85.160.46]:50293 "EHLO
-	mail-pw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752394Ab2BQJue (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 17 Feb 2012 04:50:34 -0500
-In-Reply-To: <20120217072808.GA26800@feng-i7>
+Received: from nbd.name ([46.4.11.11]:38940 "EHLO nbd.name"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752484Ab2BQKdl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 17 Feb 2012 05:33:41 -0500
+In-Reply-To: <1329474800-20979-1-git-send-email-blogic@openwrt.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Feng Tang <feng.tang@intel.com>, Darren Hart <dvhart@linux.intel.com>
-Cc: "lkml," <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+To: Ralf Baechle <ralf@linux-mips.org>
+Cc: linux-mips@linux-mips.org, John Crispin <blogic@openwrt.org>, linux-serial@vger.kernel.org
 
-Hi
+Update from old pmu_{dis,en}able() to ckldev api.
 
-2012年2月17日16:28 Feng Tang <feng.tang@intel.com>:
-> I see that the the CM-iTC board is special-cased to set a 192MHz uart_clock.
-> This is done in pch_uart.c code, but there is some register manipulation done in
-> the pch_phub.c driver and I don't understand the connection. How are the two
-> related?
-According to your use, need to configure clock registers which are in pch_phub .
-Upstreamed version, UART_CLK can be used directly(neither multiple nor
-division) as UART clock.
+Signed-off-by: John Crispin <blogic@openwrt.org>
+Cc: linux-serial@vger.kernel.org
+---
+This patch should go via MIPS with the rest of the series.
 
-You can get clock configuration information from SourceForge.
-(http://sourceforge.net/projects/ml7213/files/Kernel%202.6.37/Release/Ver1.2.0/EG20TPCH_ML7213_ML7223_ML7831_linux-2.6.37_v120_20110930.tar.bz2/
-and extract pch_phub. you can find readme.)
-I extract it and show below.
+ drivers/tty/serial/lantiq.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-<Configuration>
-=======================
-
-1. Over 115K baud rate UART settings
-    By default, UART can communicate less than 115Kbps.
-    In case you want UART to work more than 115Kbps, the following
-clock configuration is necessary.
-    - Clock setting
-          Set BAUDSEL = usb_48mhz
-          Set PLL2VCO = "x 8" the clock
-          Set BAUDDIV = "x 1/6" the clock
-          Set UARTCLKSEL = PLL2 output
-    For details, please refer to ML7213/ML7223 EDS "5 Chip Configuration"
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-In case we want UART to work high baud rate(e.g.4Mbps), we set like above.
-and execute "setserial /dev/ttyPCH0 baud_base 4000000".
-I can see PCH_UART with 4Mbps works well.
-
-Darren, is this answer for your question ?
-
-> Tomoya, do you know if we can also set it to 192MHz for ML7223 IOH Bus-m/n?
-Yes, you can.
-
+diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
+index 96c1cac..136dae8 100644
+--- a/drivers/tty/serial/lantiq.c
++++ b/drivers/tty/serial/lantiq.c
+@@ -686,7 +686,7 @@ lqasc_probe(struct platform_device *pdev)
+ 	if (lqasc_port[pdev->id] != NULL)
+ 		return -EBUSY;
+ 
+-	clk = clk_get(&pdev->dev, "fpi");
++	clk = clk_get_sys("fpi", NULL);
+ 	if (IS_ERR(clk)) {
+ 		pr_err("failed to get fpi clk\n");
+ 		return -ENOENT;
 -- 
-ROHM Co., Ltd.
-tomoya
+1.7.7.1
+
