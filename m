@@ -1,51 +1,91 @@
-From: Sergei Shtylyov <sshtylyov@mvista.com>
-Subject: Re: [PATCH 7/9] SERIAL: MIPS: lantiq: convert serial driver to clkdev
- api
-Date: Fri, 17 Feb 2012 20:53:39 +0300
-Message-ID: <4F3E9423.2000502@mvista.com>
-References: <1329474800-20979-1-git-send-email-blogic@openwrt.org> <1329474800-20979-8-git-send-email-blogic@openwrt.org> <4F3E90C4.8010904@mvista.com> <4F3E84B3.1030201@openwrt.org>
+From: Darren Hart <dvhart@linux.intel.com>
+Subject: Re: pch_uart and pch_phub clock selection
+Date: Fri, 17 Feb 2012 09:46:54 -0800
+Message-ID: <4F3E928E.8060908@linux.intel.com>
+References: <4F3DA617.5030805@linux.intel.com> <20120217013012.GA18530@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bk0-f46.google.com ([209.85.214.46]:35180 "EHLO
-	mail-bk0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751942Ab2BQQyU (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 17 Feb 2012 11:54:20 -0500
-Received: by bkcjm19 with SMTP id jm19so3214218bkc.19
-        for <linux-serial@vger.kernel.org>; Fri, 17 Feb 2012 08:54:18 -0800 (PST)
-In-Reply-To: <4F3E84B3.1030201@openwrt.org>
+Received: from mga02.intel.com ([134.134.136.20]:38816 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751547Ab2BQSVo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 17 Feb 2012 13:21:44 -0500
+In-Reply-To: <20120217013012.GA18530@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: John Crispin <blogic@openwrt.org>
-Cc: Ralf Baechle <ralf@linux-mips.org>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "lkml, " <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
 
-Hello.
 
-On 02/17/2012 07:47 PM, John Crispin wrote:
 
->>     The comment doesn't match the essence of patch.
+On 02/16/2012 05:30 PM, Greg Kroah-Hartman wrote:
+> On Thu, Feb 16, 2012 at 04:57:59PM -0800, Darren Hart wrote:
+>> I'm working on a tunnel creek (atom e6xx + topcliff PCH) development platform
+>> that uses a 48MHz or 64MHz clock to drive the pch_uart. I've found that if I
+>> force the uart_clock to 48MHz (or 64MHz on the latest rev) I can get the kernel
+>> messages and getty on the serial port.
+>>
+>> I see that the the CM-iTC board is special-cased to set a 192MHz uart_clock.
+>> This is done in pch_uart.c code, but there is some register manipulation done in
+>> the pch_phub.c driver and I don't understand the connection. How are the two
+>> related?
+>>
+>> Is the pch_phub.c register manipulation required for proper related? It seems to
+>> work without touching those registers if I just force the clock.
+>>
+>> The device I'm working with is EFI, and the dmi_get_system_info(DMI_BOARD_NAME)
+>> returns "(null)", so I can't use the same test to identify this board. Is there
+>> another common mechanism I might be able to use?
+> 
+> There's no relevant DMI information for the board at all?  What does:
+> 	grep . /sys/class/dmi/id/*
+> show?
 
-> sorry
+Duh.
 
->>     Why not just clk_get(&pdev->dev, NULL)?
+# cat /sys/class/dmi/id/product_name
+Fish River Island II
 
->> WBR, Sergei
 
-> clk_get_sys uses the clkdev lookup table, which is added by this series.
+> 
+>>
+>> The following patch (by way of example, not meant for inclusion) gets things
+>> working for this particular board with this command line:
+>>
+>> console=ttyPCH1,115200 pch_uart.clock_param=48000000
+>>
+>> I believe the right thing to do here is to discover a way to identify the board
+>> and special case the clock as is done for the CM-iTC, but I would like to
+>> understand the purpose of the pch_phub register manipulation code. Does this
+>> make sense?
+>>
+>> Thanks,
+>>
+>> Darren
+>>
+>>
+>> >From f83fa6cb575844d8e37f136890fe32258eb88dd2 Mon Sep 17 00:00:00 2001
+>> Message-Id: <f83fa6cb575844d8e37f136890fe32258eb88dd2.1329439822.git.dvhart@linux.intel.com>
+>> From: Darren Hart <dvhart@linux.intel.com>
+>> Date: Wed, 15 Feb 2012 15:44:18 -0800
+>> Subject: [PATCH] pch_uart: Add clock parameter
+>>
+>> Allow for the specification of the clock as a module parameter. This is useful
+>> when a board uses a non-standard clock, or when different versions of a board
+>> use different clocks, and that board name or the version are not available to
+>> the kernel.
+> 
+> You also rename base_baud to uart_clock here, so you might want to
+> mention it in the changelog entry :)
+> 
 
-    clk_get() does the same, indirectly.
+Right, thanks. I suspect I'll end up breaking that change out as a
+semantic patch :-)
 
-> it makes the clock code consistent throughout the lantiq related files.
-> we use clk connections other places, which we cannot reference with
-> clk_get that easily
+> greg k-h
 
-    clkdev assumes you don't need to use connection ID if the clock is bound to 
-be matched by device ID via the lookup table. clk_get() is a common case when 
-using clkdev, that's why your use of clk_get_sys() stands out as something 
-unusual. I'll have to have a look at your lookup tables...
-
-> John
-
-WBR, Sergei
+-- 
+Darren Hart
+Intel Open Source Technology Center
+Yocto Project - Linux Kernel
