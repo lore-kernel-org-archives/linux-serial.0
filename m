@@ -1,77 +1,37 @@
-From: Darren Hart <dvhart@linux.intel.com>
-Subject: Re: pch_uart and pch_phub clock selection
-Date: Fri, 17 Feb 2012 10:14:33 -0800
-Message-ID: <4F3E9909.7010301@linux.intel.com>
-References: <4F3DA617.5030805@linux.intel.com> <20120217072808.GA26800@feng-i7> <CANKRQnhfQyUrMWaXJVsjmL-yFnHa9WuR5LfTkqv=QmRGnC2aTw@mail.gmail.com>
+From: NeilBrown <neilb@suse.de>
+Subject: [PATCH 0/2] Two trivial omap/serial patches
+Date: Sun, 19 Feb 2012 13:29:31 +1100
+Message-ID: <20120219022841.8254.86264.stgit@notabene.brown>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-2022-JP
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CANKRQnhfQyUrMWaXJVsjmL-yFnHa9WuR5LfTkqv=QmRGnC2aTw@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tomoya MORINAGA <tomoya.rohm@gmail.com>
-Cc: Feng Tang <feng.tang@intel.com>, "lkml," <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from cantor2.suse.de ([195.135.220.15]:34724 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753282Ab2BSCaH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 18 Feb 2012 21:30:07 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>
+Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Paul Walmsley <paul@pwsan.com>, "Govindraj . R" <govindraj.raja@ti.com>
 
-On 02/17/2012 01:50 AM, Tomoya MORINAGA wrote:
-> Hi
-> 
-> 2012年2月17日16:28 Feng Tang <feng.tang@intel.com>:
->> I see that the the CM-iTC board is special-cased to set a 192MHz uart_clock.
->> This is done in pch_uart.c code, but there is some register manipulation done in
->> the pch_phub.c driver and I don't understand the connection. How are the two
->> related?
-> According to your use, need to configure clock registers which are in pch_phub .
-> Upstreamed version, UART_CLK can be used directly(neither multiple nor
-> division) as UART clock.
+Just a couple of small clean-ups following the recent major changes.
 
-I'm not following. I think you are saying that I need to configure the
-clock registers - but in my patch I don't touch them and it works. Are
-the registers intended to be read so I can determine HOW the device is
-configured, are they intended to be written in order to change how it is
-configured, or both.
+Thanks,
+NeilBrown
 
-Firmware sets up some initial state and this has been what I'm trying to
-match in order to get an early serial console.
+---
 
-> 
-> You can get clock configuration information from SourceForge.
-> (http://sourceforge.net/projects/ml7213/files/Kernel%202.6.37/Release/Ver1.2.0/EG20TPCH_ML7213_ML7223_ML7831_linux-2.6.37_v120_20110930.tar.bz2/
-> and extract pch_phub. you can find readme.)
-> I extract it and show below.
-> 
-> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> <Configuration>
-> =======================
-> 
-> 1. Over 115K baud rate UART settings
->     By default, UART can communicate less than 115Kbps.
->     In case you want UART to work more than 115Kbps, the following
-> clock configuration is necessary.
->     - Clock setting
->           Set BAUDSEL = usb_48mhz
->           Set PLL2VCO = "x 8" the clock
->           Set BAUDDIV = "x 1/6" the clock
->           Set UARTCLKSEL = PLL2 output
->     For details, please refer to ML7213/ML7223 EDS "5 Chip Configuration"
-> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> 
-> In case we want UART to work high baud rate(e.g.4Mbps), we set like above.
-> and execute "setserial /dev/ttyPCH0 baud_base 4000000".
-> I can see PCH_UART with 4Mbps works well.
-> 
-> Darren, is this answer for your question ?
+NeilBrown (2):
+      ARM: OMAP2: remove some orphan function declarations.
+      ARM: OMAP2+: UART: remove unused fields in omap_uart_state.
 
-Not quite. I need to be able to use the UART at boot as an early serial
-console. So I believe I need to match the firmware UART configuration
-early on (well before we could call setserial).
 
-> 
->> Tomoya, do you know if we can also set it to 192MHz for ML7223 IOH Bus-m/n?
-> Yes, you can.
-> 
+ arch/arm/mach-omap2/pm.h                 |    1 -
+ arch/arm/mach-omap2/serial.c             |    4 ----
+ arch/arm/plat-omap/include/plat/serial.h |    1 -
+ 3 files changed, 0 insertions(+), 6 deletions(-)
 
 -- 
-Darren Hart
-Intel Open Source Technology Center
-Yocto Project - Linux Kernel
+Signature
+
