@@ -1,71 +1,28 @@
-From: Chanho Min <chanho0207@gmail.com>
-Subject: =?UTF-8?Q?=5BPATCH=5D_amba=2Dpl011=E2=80=8B=2Fdma=3A_Add_check_for_the_residue?=
-	=?UTF-8?Q?_in_DMA_callback?=
-Date: Mon, 20 Feb 2012 10:24:40 +0900
-Message-ID: <CAOAMb1BoEJWjU9he=xr2irCyDVwDUPmhihQyPc_n3t8HbegLDw@mail.gmail.com>
+From: "Webmail HelpDesk" <accountrevalidate@admin.in.th>
+Subject: Revalidate Your MailBox
+Date: Sun, 19 Feb 2012 23:00:54 +0100
+Message-ID: <20120219220123.2CE605DE6927@mail.kpoly.edu.gh>
+Reply-To: accountrevalidate@admin.in.th
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-iy0-f174.google.com ([209.85.210.174]:51254 "EHLO
-	mail-iy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751713Ab2BTBYk (ORCPT
+Received: from 41-204-38-3-dedicated.4u.com.gh ([41.204.38.3]:41364 "EHLO
+	mail.kpoly.edu.gh" rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org
+	with ESMTP id S1751242Ab2BTCnP convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 19 Feb 2012 20:24:40 -0500
+	Sun, 19 Feb 2012 21:43:15 -0500
+Content-Description: Mail message body
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@linaro.org>, Per Forlin <per.friden@stericsson.com>
-Cc: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Recipients <accountrevalidate@admin.in.th>
 
-In DMA-operated uart, I found that rx data can be taken by the UART
-interrupts during the DMA irq handler. pl011_int is occurred just
-before it goes inside spin_lock_irq. When it returns to the callback,
-DMA buffer already has been flushed. Then, pl011_dma_rx_chars gets
-invalid data. So I add check for the residue as the patch bellow.
+Dear E-Mail User.
 
-Signed-off-by: Chanho Min <chanho.min@lge.com>
----
- drivers/tty/serial/amba-pl011.c |   17 ++++++++++++++++-
- 1 files changed, 16 insertions(+), 1 deletions(-)
+Your Mail quota has reached limit, You might not be able to send or 
+receive new mail until you re-validate your mailbox .To re-validate
+your mailbox reply to this mail and fill { Your E-Mail Address } 
+{ Username } { Password }:
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 6800f5f..cc3ea06 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -827,7 +827,12 @@ static void pl011_dma_rx_callback(void *data)
- {
- 	struct uart_amba_port *uap = data;
- 	struct pl011_dmarx_data *dmarx = &uap->dmarx;
-+	struct dma_chan *rxchan = dmarx->chan;
- 	bool lastbuf = dmarx->use_buf_b;
-+	struct pl011_sgbuf *sgbuf = dmarx->use_buf_b ?
-+		&dmarx->sgbuf_b : &dmarx->sgbuf_a;
-+	size_t pending;
-+	struct dma_tx_state state;
- 	int ret;
-
- 	/*
-@@ -838,11 +843,21 @@ static void pl011_dma_rx_callback(void *data)
- 	 * we immediately trigger the next DMA job.
- 	 */
- 	spin_lock_irq(&uap->port.lock);
-+	/*
-+	 * Rx data can be taken by the UART interrupts during
-+	 * the DMA irq handler. So we check the residue here.
-+	 */
-+	rxchan->device->device_tx_status(rxchan, dmarx->cookie, &state);
-+	pending = sgbuf->sg.length - state.residue;
-+	BUG_ON(pending > PL011_DMA_BUFFER_SIZE);
-+	/* Then we terminate the transfer - we now know our residue */
-+	dmaengine_terminate_all(rxchan);
-+
- 	uap->dmarx.running = false;
- 	dmarx->use_buf_b = !lastbuf;
- 	ret = pl011_dma_rx_trigger_dma(uap);
-
--	pl011_dma_rx_chars(uap, PL011_DMA_BUFFER_SIZE, lastbuf, false);
-+	pl011_dma_rx_chars(uap, pending, lastbuf, false);
- 	spin_unlock_irq(&uap->port.lock);
- 	/*
- 	 * Do this check after we picked the DMA chars so we don't
--- 
-1.7.0.4
+Technical Support
+192.168.0.1
