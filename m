@@ -1,86 +1,38 @@
-From: Feng Tang <feng.tang@intel.com>
+From: Tomoya MORINAGA <tomoya.rohm@gmail.com>
 Subject: Re: pch_uart and pch_phub clock selection
-Date: Mon, 20 Feb 2012 12:43:22 +0800
-Message-ID: <20120220044322.GA4113@feng-i7>
+Date: Mon, 20 Feb 2012 14:42:32 +0900
+Message-ID: <CANKRQniP+OxrqhL=7eE1NpGf_umyA-GHLSYaiF+o-o=OT2iL_w@mail.gmail.com>
 References: <4F3DA617.5030805@linux.intel.com>
- <20120217072808.GA26800@feng-i7>
- <CANKRQnhfQyUrMWaXJVsjmL-yFnHa9WuR5LfTkqv=QmRGnC2aTw@mail.gmail.com>
- <4F3E9909.7010301@linux.intel.com>
- <CANKRQnihp+CO9yz3SfEL=kFO18SMUJnU_LdELViPsNmd-Ew8yw@mail.gmail.com>
+	<20120217072808.GA26800@feng-i7>
+	<CANKRQnhfQyUrMWaXJVsjmL-yFnHa9WuR5LfTkqv=QmRGnC2aTw@mail.gmail.com>
+	<4F3E9909.7010301@linux.intel.com>
+	<CANKRQnihp+CO9yz3SfEL=kFO18SMUJnU_LdELViPsNmd-Ew8yw@mail.gmail.com>
+	<20120220044322.GA4113@feng-i7>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-2022-JP
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:30852 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751374Ab2BTEo2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 19 Feb 2012 23:44:28 -0500
-Content-Disposition: inline
-In-Reply-To: <CANKRQnihp+CO9yz3SfEL=kFO18SMUJnU_LdELViPsNmd-Ew8yw@mail.gmail.com>
+Received: from mail-pw0-f46.google.com ([209.85.160.46]:51903 "EHLO
+	mail-pw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750737Ab2BTFmc (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 20 Feb 2012 00:42:32 -0500
+In-Reply-To: <20120220044322.GA4113@feng-i7>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tomoya MORINAGA <tomoya.rohm@gmail.com>
-Cc: Darren Hart <dvhart@linux.intel.com>, "lkml," <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, feng.tang@intel.com
+To: Feng Tang <feng.tang@intel.com>
+Cc: Darren Hart <dvhart@linux.intel.com>, "lkml," <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
 
-Hi Tomoya,
+2012年2月20日13:43 Feng Tang <feng.tang@intel.com>:
+> Can we also set ML7213/7223's
+> default clk to 192MHz? 192MHz works fine on my ML7213 board. And using an
+> unified default clock rate for all EG20T compatible IOHs will save extra
+> effort of setting the uart clock.
+>
+Yes, you can also use 192MHz for both ML7213 and ML7223.
+In fact, we've already confirmed 192MHz works fine. (Windows driver).
+thanks,
 
-On Mon, Feb 20, 2012 at 01:28:33PM +0900, Tomoya MORINAGA wrote:
-> Hi
-> 
-> Considering Feng's/Darren's proposal/question,
-> I should have set 192MHz as default uart clock setting.
-> So, I created the following patch. (not formal patch but for review)
-> Let me know your opinion.
-> 
-> ---
->  drivers/misc/pch_phub.c       |   17 ++++++-----------
->  drivers/tty/serial/pch_uart.c |   15 +++++++--------
->  2 files changed, 13 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/misc/pch_phub.c b/drivers/misc/pch_phub.c
-> index 10fc478..8f9c1db 100644
-> --- a/drivers/misc/pch_phub.c
-> +++ b/drivers/misc/pch_phub.c
-> @@ -55,7 +55,7 @@
->  #define CLKCFG_CANCLK_MASK 0xFF000000
->  #define CLKCFG_UART_MASK			0xFFFFFF
-> 
-> -/* CM-iTC */
-> +/* 192MHz Clock configuration. USB_48MHz / 2 * 8 = 192 */
->  #define CLKCFG_UART_48MHZ			(1 << 16)
->  #define CLKCFG_BAUDDIV				(2 << 20)
->  #define CLKCFG_PLL2VCO				(8 << 9)
-> @@ -715,8 +715,6 @@ static int __devinit pch_phub_probe(struct pci_dev *pdev,
->  	chip->pdev = pdev; /* Save pci device struct */
-> 
->  	if (id->driver_data == 1) { /* EG20T PCH */
-> -		const char *board_name;
-> -
->  		retval = sysfs_create_file(&pdev->dev.kobj,
->  					   &dev_attr_pch_mac.attr);
->  		if (retval)
-> @@ -731,14 +729,11 @@ static int __devinit pch_phub_probe(struct pci_dev *pdev,
->  					       CLKCFG_CAN_50MHZ,
->  					       CLKCFG_CANCLK_MASK);
-> 
-> -		/* quirk for CM-iTC board */
-> -		board_name = dmi_get_system_info(DMI_BOARD_NAME);
-> -		if (board_name && strstr(board_name, "CM-iTC"))
-> -			pch_phub_read_modify_write_reg(chip,
-> -						(unsigned int)CLKCFG_REG_OFFSET,
-> -						CLKCFG_UART_48MHZ | CLKCFG_BAUDDIV |
-> -						CLKCFG_PLL2VCO | CLKCFG_UARTCLKSEL,
-> -						CLKCFG_UART_MASK);
-> +		pch_phub_read_modify_write_reg(chip,
-> +					(unsigned int)CLKCFG_REG_OFFSET,
-> +					CLKCFG_UART_48MHZ | CLKCFG_BAUDDIV |
-> +					CLKCFG_PLL2VCO | CLKCFG_UARTCLKSEL,
-> +					CLKCFG_UART_MASK);
-
-All the code looks fine to me except one point: Can we also set ML7213/7223's
-default clk to 192MHz? 192MHz works fine on my ML7213 board. And using an
-unified default clock rate for all EG20T compatible IOHs will save extra
-effort of setting the uart clock.
-
-Thanks,
-Feng
-
+---
+ROHM Co., Ltd.
+tomoya
