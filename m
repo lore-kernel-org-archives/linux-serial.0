@@ -1,34 +1,35 @@
-From: Tomoya MORINAGA <tomoya.rohm@gmail.com>
-Subject: Re: pch_uart and pch_phub clock selection
-Date: Mon, 20 Feb 2012 15:22:57 +0900
-Message-ID: <CANKRQnh75ay4kifp4LSHxOy+QaD9G+NJD8vuOO9e__5GbDMWmQ@mail.gmail.com>
-References: <4F3DA617.5030805@linux.intel.com>
-	<20120217072808.GA26800@feng-i7>
-	<CANKRQnhfQyUrMWaXJVsjmL-yFnHa9WuR5LfTkqv=QmRGnC2aTw@mail.gmail.com>
-	<4F3E9909.7010301@linux.intel.com>
-	<CANKRQnihp+CO9yz3SfEL=kFO18SMUJnU_LdELViPsNmd-Ew8yw@mail.gmail.com>
-	<20120220044322.GA4113@feng-i7>
-	<CANKRQniP+OxrqhL=7eE1NpGf_umyA-GHLSYaiF+o-o=OT2iL_w@mail.gmail.com>
-	<20120220055708.GA4903@feng-i7>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: =?UTF-8?Q?Re=3A_=5BPATCH=5D_amba=2Dpl011=E2=80=8B=2Fdma=3A_Add_check_for_the_res?=
+	=?UTF-8?Q?idue_in_DMA_callback?=
+Date: Mon, 20 Feb 2012 09:31:21 +0100
+Message-ID: <CACRpkdZ4fJEBa4uDQ6P3UC50wyWarD-owC3tjC=FRMno-UOk5Q@mail.gmail.com>
+References: <CAOAMb1BoEJWjU9he=xr2irCyDVwDUPmhihQyPc_n3t8HbegLDw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-2022-JP
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20120220055708.GA4903@feng-i7>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Feng Tang <feng.tang@intel.com>
-Cc: Darren Hart <dvhart@linux.intel.com>, "lkml," <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-iy0-f174.google.com ([209.85.210.174]:43667 "EHLO
+	mail-iy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751794Ab2BTIbW (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 20 Feb 2012 03:31:22 -0500
+In-Reply-To: <CAOAMb1BoEJWjU9he=xr2irCyDVwDUPmhihQyPc_n3t8HbegLDw@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Chanho Min <chanho0207@gmail.com>
+Cc: Russell King <linux@arm.linux.org.uk>, Per Forlin <per.friden@stericsson.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Rabin VINCENT <rabin.vincent@stericsson.com>
 
-2012年2月20日14:57 Feng Tang <feng.tang@intel.com>:
-> Great! and glad to hear that. Could you update your patch which only touches
-> the EG20T UART clock setting? like taking the register setting code out of
-> the "switch/case" loop. something like:
+On Mon, Feb 20, 2012 at 2:24 AM, Chanho Min <chanho0207@gmail.com> wrote:
 
-OK.
-I will modify like you said and post the patch.
+> In DMA-operated uart, I found that rx data can be taken by the UART
+> interrupts during the DMA irq handler. pl011_int is occurred just
+> before it goes inside spin_lock_irq. When it returns to the callback,
+> DMA buffer already has been flushed. Then, pl011_dma_rx_chars gets
+> invalid data. So I add check for the residue as the patch bellow.
+>
+> Signed-off-by: Chanho Min <chanho.min@lge.com>
 
-thanks.
----
-ROHM Co., Ltd.
-tomoya
+Looks correct!
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
+
+Thanks,
+Linus Walleij
