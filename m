@@ -1,65 +1,52 @@
 From: Darren Hart <dvhart@linux.intel.com>
-Subject: Re: [PATCH] pch_uart: Change default UART clock setting 192MHz
-Date: Tue, 21 Feb 2012 16:20:52 -0800
-Message-ID: <4F4434E4.7040703@linux.intel.com>
-References: <1329800140-4279-1-git-send-email-tomoya.rohm@gmail.com> <4F43C15D.6080401@linux.intel.com> <CANKRQnjMAVBf2wn01eFD1CKTgtWyhzk2_epz-YprZp3eS1wmMg@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-2022-JP
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:50674 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752631Ab2BVAVh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 21 Feb 2012 19:21:37 -0500
-In-Reply-To: <CANKRQnjMAVBf2wn01eFD1CKTgtWyhzk2_epz-YprZp3eS1wmMg@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Subject: [PATCH 0/4] pch_uart: Cleanups, board quirks, and user uartclk parameter
+Date: Tue, 21 Feb 2012 17:59:24 -0800
+Message-ID: <cover.1329875301.git.dvhart@linux.intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Cc: Tomoya MORINAGA <tomoya.rohm@gmail.com>, Feng Tang <feng.tang@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, Darren Hart <dvhart@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
-To: Tomoya MORINAGA <tomoya.rohm@gmail.com>
-Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, qi.wang@intel.com, yong.y.wang@intel.com, joel.clark@intel.com, kok.howg.ewe@intel.com, feng.tang@intel.com
 
-On 02/21/2012 03:43 PM, Tomoya MORINAGA wrote:
-> 2012年2月22日1:07 Darren Hart <dvhart@linux.intel.com>:
->>  When does the phub driver update the clock registers?
-> 
-> I've already posted pch_phub patch for 192MHz setting.
-> You can see the patch form below.
+This series does some minor clean-up to the pch_uart driver, adds support
+for the Fish River Island II UART clock, and introduces a user_uartclk
+parameter to aid in developing for early and changing hardware.
 
-Yes, I applied the patch. The problem seems to be this:
+Note that this series is my proposed alternative solution to that provided
+by Tomoya MORNIAGA and Feng Tang which drops the board quirks and opts to
+assume a 192 MHz clock on all boards. The problem with this approach is
+that the CLKCFG register may have been set to something other than the
+192MHz configuration by the firmware. If so, then the pch_uart will send
+garbage between the time the boot console is disabled and the pch_phub
+sets the CLKCFG register again. In my case, the pch_phub PCI probe occurs
+after the pch_uart_console_setup. Even if it happened before, the output
+up until the PCI probing would be garbage.
 
-DVHART: parse_options (8250_early.c)
-DVHART: pch_console_setup                                                           
-DVHART: pch_console_setup                                                           
-DVHART: pch_phub_probe: set CLKCFG UART to 192MHz      
-
-As you can see, the pch_phub_probe happens much too late.
-
-I can get it to work with a boot command line like this:
-earlycon=uart8250,io,0x2050,115200n8 console=ttyPCH1,115200n8
-
-And hacking all the BASE_BAUD references to be 48000000
-(my current hardware sets the clock to 48MHz in firmware).
-This gets things working until pch_phub gets around to setting
-the CLKCFG register for the UART clock.
-
-I'd prefer to not have to use the earlycon parameter/code,
-but we need a way for the pch_uart to understand the difference
-between early boot and post-phub setup. Can we read the CLKCFG
-register in pch_console_setup to dynamically configure the
-port->uartclk? (not sure that's even the right place to do it).
+In order to support an early serial console, we cannot rely on the pch_phub
+probe function to setup the CFGCLK register. This series relies on the board
+quirks and doesn't force the setting of the CLKREG in the pch_phub code.
+Instead, it aligns with what is the default configuration (defined by firmware)
+for a given board. The user_uartclk provides a mechanism to force a specific
+uartclk if necessary.
 
 --
 Darren
 
->>> Signed-off-by: Tomoya MORINAGA <tomoya.rohm@gmail.com>
->>> ---
->>> Related patch is
->>> http://marc.info/?l=linux-kernel&m=132979974907774&w=2
-> 
-> ---
-> ROHM Co., Ltd.
-> tomoya
+The following changes since commit 27e74da9800289e69ba907777df1e2085231eff7:
+
+  i387: export 'fpu_owner_task' per-cpu variable (2012-02-20 19:34:10 -0800)
+
+are available in the git repository at:
+  git://git.infradead.org/users/dvhart/linux-2.6.git pch_uart
+  http://git.infradead.org/users/dvhart/linux-2.6.git/shortlog/refs/heads/pch_uart
+Darren Hart (4):
+  pch_uart: Use uartclk instead of base_baud
+  pch_uart: Add Fish River Island II uart clock quirks
+  pch_uart: Add user_uartclk parameter
+  pch_uart: Use existing default_baud in setup_console
+
+ drivers/tty/serial/pch_uart.c |   52 +++++++++++++++++++++++++++++-----------
+ 1 files changed, 37 insertions(+), 15 deletions(-)
 
 -- 
-Darren Hart
-Intel Open Source Technology Center
-Yocto Project - Linux Kernel
+1.7.6.5
