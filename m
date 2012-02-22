@@ -1,40 +1,140 @@
-From: Darren Hart <dvhart@linux.intel.com>
-Subject: Re: [PATCH 0/4] pch_uart: Cleanups, board quirks, and user uartclk
- parameter
-Date: Wed, 22 Feb 2012 00:59:03 -0800
-Message-ID: <4F44AE57.10302@linux.intel.com>
-References: <cover.1329875301.git.dvhart@linux.intel.com> <CANKRQni9E6NO39MFSak6MjQ0DtmQeviGo966Ex9ZUvai56wCjg@mail.gmail.com> <4F4462B8.6030607@linux.intel.com> <CANKRQnhckD5Dt+0PbD3h=Ggz+U8RoDs0qUn5CgVnsYcH08tRkw@mail.gmail.com> <4F448DAA.6000207@linux.intel.com> <CANKRQngnFhTY3-YxhDH3oufbqUu5pe36Fi58DjKWm=9uTigr-A@mail.gmail.com>
+From: Barry Song <21cnbao@gmail.com>
+Subject: Re: [PATCH] serial/sirf: fixup for changes to pin control
+Date: Wed, 22 Feb 2012 17:14:40 +0800
+Message-ID: <CAGsJ_4yLTPhLJEf9GHw694U9iYmtLgYPvYe3VGdyKKKcuX6pUA@mail.gmail.com>
+References: <1329417828-6005-1-git-send-email-linus.walleij@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-2022-JP
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga14.intel.com ([143.182.124.37]:8236 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751770Ab2BVI7j (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 22 Feb 2012 03:59:39 -0500
-In-Reply-To: <CANKRQngnFhTY3-YxhDH3oufbqUu5pe36Fi58DjKWm=9uTigr-A@mail.gmail.com>
+Received: from mail-bk0-f46.google.com ([209.85.214.46]:65299 "EHLO
+	mail-bk0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754167Ab2BVJPC convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 22 Feb 2012 04:15:02 -0500
+In-Reply-To: <1329417828-6005-1-git-send-email-linus.walleij@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tomoya MORINAGA <tomoya.rohm@gmail.com>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Feng Tang <feng.tang@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Stephen Warren <swarren@nvidia.com>, Shawn Guo <shawn.guo@freescale.com>, Thomas Abraham <thomas.abraham@linaro.org>, Dong Aisheng <dong.aisheng@linaro.org>, Rajendra Nayak <rajendra.nayak@linaro.org>, Haojian Zhuang <haojian.zhuang@marvell.com>, Tony Lindgren <tony@atomide.com>, linux-serial@vger.kernel.org, DL-SHA-WorkGroupLinux <workgroup.linux@csr.com>
 
+2012/2/17 Linus Walleij <linus.walleij@linaro.org>:
+> We changed the signature of the pin multiplexing functions to
+> handle any pin business, so fix up the Sirf driver to call this
+> new interface and rename some variables to make the semantics
+> understandable.
+>
+> Cc: linux-serial@vger.kernel.org
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 
+Acked-by: Barry Song <Baohua.Song@csr.com>
 
-On 02/22/2012 12:16 AM, Tomoya MORINAGA wrote:
-> 2012年2月22日15:39 Darren Hart <dvhart@linux.intel.com>:
->> We can add a patch to this series that sets the
->> default to 192MHz, drops the CM-iTC quirk, and does nothing in pch_phub
->> probe for the FRI2.
-> 
-> If you set  the clock of pch_uart as 64MHz,
-> do you need to add quirk for FRI2 to pch_phub so as to provide 64MHz clock?
-
-I admit the value of pch_phub eludes me a bit. In my case, the firmware
-sets up the CLKCFG register, so there is no need to set it manually
-after boot. Instead, I'm making sure the pch_uart driver defaults to
-what the firmware sets up.
-
--- 
-Darren Hart
-Intel Open Source Technology Center
-Yocto Project - Linux Kernel
+> ---
+> =C2=A0drivers/tty/serial/sirfsoc_uart.c | =C2=A0 20 ++++++++++-------=
+---
+> =C2=A0drivers/tty/serial/sirfsoc_uart.h | =C2=A0 =C2=A02 +-
+> =C2=A02 files changed, 11 insertions(+), 11 deletions(-)
+>
+> diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/s=
+irfsoc_uart.c
+> index a60523f..c1a871e 100644
+> --- a/drivers/tty/serial/sirfsoc_uart.c
+> +++ b/drivers/tty/serial/sirfsoc_uart.c
+> @@ -22,7 +22,7 @@
+> =C2=A0#include <linux/io.h>
+> =C2=A0#include <asm/irq.h>
+> =C2=A0#include <asm/mach/irq.h>
+> -#include <linux/pinctrl/pinmux.h>
+> +#include <linux/pinctrl/consumer.h>
+>
+> =C2=A0#include "sirfsoc_uart.h"
+>
+> @@ -673,12 +673,12 @@ int sirfsoc_uart_probe(struct platform_device *=
+pdev)
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0port->irq =3D res->start;
+>
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0if (sirfport->hw_flow_ctrl) {
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 sirfport->pmx =3D =
+pinmux_get(&pdev->dev, NULL);
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ret =3D IS_ERR(sir=
+fport->pmx);
+> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 sirfport->p =3D pi=
+nctrl_get(&pdev->dev, NULL);
+> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ret =3D IS_ERR(sir=
+fport->p);
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0if (ret)
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 goto pmx_err;
+> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 goto pin_err;
+>
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 pinmux_enable(sirf=
+port->pmx);
+> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 pinctrl_enable(sir=
+fport->p);
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0}
+>
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0port->ops =3D &sirfsoc_uart_ops;
+> @@ -696,10 +696,10 @@ int sirfsoc_uart_probe(struct platform_device *=
+pdev)
+> =C2=A0port_err:
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0platform_set_drvdata(pdev, NULL);
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0if (sirfport->hw_flow_ctrl) {
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 pinmux_disable(sir=
+fport->pmx);
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 pinmux_put(sirfpor=
+t->pmx);
+> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 pinctrl_disable(si=
+rfport->p);
+> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 pinctrl_put(sirfpo=
+rt->p);
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0}
+> -pmx_err:
+> +pin_err:
+> =C2=A0irq_err:
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0devm_iounmap(&pdev->dev, port->membase);
+> =C2=A0err:
+> @@ -712,8 +712,8 @@ static int sirfsoc_uart_remove(struct platform_de=
+vice *pdev)
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0struct uart_port *port =3D &sirfport->port=
+;
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0platform_set_drvdata(pdev, NULL);
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0if (sirfport->hw_flow_ctrl) {
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 pinmux_disable(sir=
+fport->pmx);
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 pinmux_put(sirfpor=
+t->pmx);
+> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 pinctrl_disable(si=
+rfport->p);
+> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 pinctrl_put(sirfpo=
+rt->p);
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0}
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0devm_iounmap(&pdev->dev, port->membase);
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0uart_remove_one_port(&sirfsoc_uart_drv, po=
+rt);
+> diff --git a/drivers/tty/serial/sirfsoc_uart.h b/drivers/tty/serial/s=
+irfsoc_uart.h
+> index fc64260..6e207fd 100644
+> --- a/drivers/tty/serial/sirfsoc_uart.h
+> +++ b/drivers/tty/serial/sirfsoc_uart.h
+> @@ -162,7 +162,7 @@ struct sirfsoc_uart_port {
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0unsigned char =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ms_enabled;
+>
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0struct uart_port =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 =C2=A0port;
+> - =C2=A0 =C2=A0 =C2=A0 struct pinmux =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 *pmx;
+> + =C2=A0 =C2=A0 =C2=A0 struct pinctrl =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0*p;
+> =C2=A0};
+>
+> =C2=A0/* Hardware Flow Control */
+> --
+> 1.7.7.6
+>
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
