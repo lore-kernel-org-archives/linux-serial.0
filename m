@@ -1,39 +1,35 @@
-From: Mayank Rana <mrana@codeaurora.org>
-Subject: About changing Line Discipline  from Kernel
-Date: Wed, 22 Feb 2012 12:35:16 +0530
-Message-ID: <4F4493AC.5010405@codeaurora.org>
+From: Tomoya MORINAGA <tomoya.rohm@gmail.com>
+Subject: Re: [PATCH 0/4] pch_uart: Cleanups, board quirks, and user uartclk parameter
+Date: Wed, 22 Feb 2012 17:16:21 +0900
+Message-ID: <CANKRQngnFhTY3-YxhDH3oufbqUu5pe36Fi58DjKWm=9uTigr-A@mail.gmail.com>
+References: <cover.1329875301.git.dvhart@linux.intel.com>
+	<CANKRQni9E6NO39MFSak6MjQ0DtmQeviGo966Ex9ZUvai56wCjg@mail.gmail.com>
+	<4F4462B8.6030607@linux.intel.com>
+	<CANKRQnhckD5Dt+0PbD3h=Ggz+U8RoDs0qUn5CgVnsYcH08tRkw@mail.gmail.com>
+	<4F448DAA.6000207@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-2022-JP
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from wolverine02.qualcomm.com ([199.106.114.251]:44065 "EHLO
-	wolverine02.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750798Ab2BVHFZ (ORCPT
+Received: from mail-pz0-f46.google.com ([209.85.210.46]:49274 "EHLO
+	mail-pz0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750783Ab2BVIQW (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 22 Feb 2012 02:05:25 -0500
-Received: from [10.44.21.72] (pdmz-snip-v218.qualcomm.com [192.168.218.1])
-	by mostmsg01.qualcomm.com (Postfix) with ESMTPA id 720EE10004B6
-	for <linux-serial@vger.kernel.org>; Tue, 21 Feb 2012 23:05:24 -0800 (PST)
+	Wed, 22 Feb 2012 03:16:22 -0500
+In-Reply-To: <4F448DAA.6000207@linux.intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Darren Hart <dvhart@linux.intel.com>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Feng Tang <feng.tang@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
 
-Hi ,
+2012年2月22日15:39 Darren Hart <dvhart@linux.intel.com>:
+> We can add a patch to this series that sets the
+> default to 192MHz, drops the CM-iTC quirk, and does nothing in pch_phub
+> probe for the FRI2.
 
-I have few queries related to using Line Discipline.
+If you set  the clock of pch_uart as 64MHz,
+do you need to add quirk for FRI2 to pch_phub so as to provide 64MHz clock?
 
-1. I understand that line discipline can be changed from user space 
-application by opening the device and doing ioctl with required Line 
-Discipline ID. Is it possible to do the same from kernel module who 
-would be communicating with that line discipline ?
-
-2. Is it way to set default line discipline for particular tty device
-to required Line Discipline instead of N_TTY one ?
-
-Appreciate your help on this.
-
-Regards,
-_-_Mayank Rana_-_
--- 
-Sent by a consultant of the Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum.
+---
+ROHM Co., Ltd.
+tomoya
