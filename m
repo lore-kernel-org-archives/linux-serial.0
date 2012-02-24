@@ -1,68 +1,53 @@
-From: "Cousson, Benoit" <b-cousson@ti.com>
-Subject: Re: [PATCH 2/3] tty: serial: OMAP: block idle while the UART is transferring
- data in PIO mode
-Date: Fri, 24 Feb 2012 15:35:44 +0100
-Message-ID: <4F47A040.6030502@ti.com>
-References: <20120126024903.31613.24730.stgit@dusk> <20120126025036.31613.67819.stgit@dusk> <4F423E28.3040404@ti.com> <alpine.DEB.2.00.1202211456160.25023@utopia.booyaka.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 2/4] pch_uart: Add Fish River Island II uart clock quirks
+Date: Fri, 24 Feb 2012 13:53:15 -0800
+Message-ID: <20120224215315.GC25330@kroah.com>
+References: <26a433d1bdb5805cac69efb20d3e32dbf790339b.1329875301.git.dvhart@linux.intel.com>
+ <4982ca7a73cfe208a2a5ff0a7e0da54b99ca2d2e.1329875301.git.dvhart@linux.intel.com>
+ <20120222085250.193096c9@pyramind.ukuu.org.uk>
+ <4F44B95E.3030307@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <alpine.DEB.2.00.1202211456160.25023@utopia.booyaka.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Paul Walmsley <paul@pwsan.com>
-Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Kevin Hilman <khilman@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, "Nayak, Rajendra" <rnayak@ti.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pz0-f46.google.com ([209.85.210.46]:58009 "EHLO
+	mail-pz0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756791Ab2BXVzt (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 24 Feb 2012 16:55:49 -0500
+Received: by mail-pz0-f46.google.com with SMTP id d14so2943247dae.19
+        for <linux-serial@vger.kernel.org>; Fri, 24 Feb 2012 13:55:49 -0800 (PST)
+Content-Disposition: inline
+In-Reply-To: <4F44B95E.3030307@linux.intel.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Darren Hart <dvhart@linux.intel.com>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Tomoya MORINAGA <tomoya.rohm@gmail.com>, Feng Tang <feng.tang@intel.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
 
-Salut Paul,
+On Wed, Feb 22, 2012 at 01:46:06AM -0800, Darren Hart wrote:
+> 
+> 
+> On 02/22/2012 12:52 AM, Alan Cox wrote:
+> >> +	/* Setup UART clock, checking for board specific clocks. */
+> >> +	uartclk = DEFAULT_UARTCLK;
+> >> +
+> >> +	board_name = dmi_get_system_info(DMI_BOARD_NAME);
+> >> +	if (board_name && strstr(board_name, "CM-iTC"))
+> >> +		uartclk = CMITC_UARTCLK;
+> >> +
+> >> +	board_name = dmi_get_system_info(DMI_PRODUCT_NAME);
+> >> +	if (board_name && strstr(board_name, "Fish River Island II"))
+> >> +		uartclk = FRI2_UARTCLK;
+> >> +
+> >> +	port->uartclk = uartclk;
+> > 
+> > This is confusing, you load product name into a variable called
+> > board_name ?? perhaps "name" would be clearer ?
+> 
+> OK, done.
 
-On 2/21/2012 11:02 PM, Paul Walmsley wrote:
-> Salut Beno=EEt,
->
-> On Mon, 20 Feb 2012, Cousson, Benoit wrote:
->
->> 3.3-rc4 is broken in the DT case because of the serial driver. And i=
-t
->> looks like it is due to this fix.  We cannot rely on pdata anymore i=
-n
->> DT, and in that case it leads to an Oops due to NULL pdata.
->
-> Sorry about the breakage.  I agree with the diagnosis.  That code was=
- just
-> copied from the DMA errata part of the driver, so it will need to be =
-fixed
-> as well.  Otherwise the same problem will happen when DMA is enabled.
->
->> And then we will have to add the support for all these OMAP custom h=
-ooks without pdata.
->
-> That's really the key question for the medium- to long-term...
+"Done" where?  Is there a newer patch series I should be looking at
+here to apply?  I'm guessing I can ignore this one, right?
 
-I know you know, I'm always hoping that someone will step up and propos=
-e=20
-some cool idea to fix that :-)
+consider it ignored :)
 
->> A basic fix (below) for the moment is to test for valid pdata inside=
- the driver.
->> I'll repost it properly if you are fine with it.
->
-> Looks fine to me, although I'd suggest fixing the DMA workaround path=
- as
-> well.
-
-Mmm, I've tried to fix every instances of pdata in the code, you think =
-I=20
-missed some?
-
-I'll check again.
-
-> Reviewed-by: Paul Walmsley<paul@pwsan.com>
-
-Thanks,
-Benoit
---
-To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+greg k-h
