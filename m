@@ -1,40 +1,68 @@
-From: John Crispin <blogic@openwrt.org>
-Subject: [PATCH V2 09/14] SERIAL: MIPS: lantiq: convert serial driver to clkdev api
-Date: Thu, 23 Feb 2012 17:03:08 +0100
-Message-ID: <1330012993-13510-9-git-send-email-blogic@openwrt.org>
-References: <1330012993-13510-1-git-send-email-blogic@openwrt.org>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nbd.name ([46.4.11.11]:42867 "EHLO nbd.name"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751851Ab2BWQDg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 23 Feb 2012 11:03:36 -0500
-In-Reply-To: <1330012993-13510-1-git-send-email-blogic@openwrt.org>
-Sender: linux-serial-owner@vger.kernel.org
+From: "Cousson, Benoit" <b-cousson@ti.com>
+Subject: Re: [PATCH 2/3] tty: serial: OMAP: block idle while the UART is transferring
+ data in PIO mode
+Date: Fri, 24 Feb 2012 15:35:44 +0100
+Message-ID: <4F47A040.6030502@ti.com>
+References: <20120126024903.31613.24730.stgit@dusk> <20120126025036.31613.67819.stgit@dusk> <4F423E28.3040404@ti.com> <alpine.DEB.2.00.1202211456160.25023@utopia.booyaka.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-15;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <alpine.DEB.2.00.1202211456160.25023@utopia.booyaka.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Paul Walmsley <paul@pwsan.com>
+Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Kevin Hilman <khilman@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>, Greg Kroah-Hartman <gregkh@suse.de>, Alan Cox <alan@linux.intel.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, "Nayak, Rajendra" <rnayak@ti.com>
 List-Id: linux-serial@vger.kernel.org
-To: Ralf Baechle <ralf@linux-mips.org>
-Cc: linux-mips@linux-mips.org, John Crispin <blogic@openwrt.org>, linux-serial@vger.kernel.org
 
-Reference the FPI clock via its new access function.
+Salut Paul,
 
-Signed-off-by: John Crispin <blogic@openwrt.org>
-Cc: linux-serial@vger.kernel.org
----
- drivers/tty/serial/lantiq.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+On 2/21/2012 11:02 PM, Paul Walmsley wrote:
+> Salut Beno=EEt,
+>
+> On Mon, 20 Feb 2012, Cousson, Benoit wrote:
+>
+>> 3.3-rc4 is broken in the DT case because of the serial driver. And i=
+t
+>> looks like it is due to this fix.  We cannot rely on pdata anymore i=
+n
+>> DT, and in that case it leads to an Oops due to NULL pdata.
+>
+> Sorry about the breakage.  I agree with the diagnosis.  That code was=
+ just
+> copied from the DMA errata part of the driver, so it will need to be =
+fixed
+> as well.  Otherwise the same problem will happen when DMA is enabled.
+>
+>> And then we will have to add the support for all these OMAP custom h=
+ooks without pdata.
+>
+> That's really the key question for the medium- to long-term...
 
-diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
-index 96c1cac..99fb70f 100644
---- a/drivers/tty/serial/lantiq.c
-+++ b/drivers/tty/serial/lantiq.c
-@@ -686,7 +686,7 @@ lqasc_probe(struct platform_device *pdev)
- 	if (lqasc_port[pdev->id] != NULL)
- 		return -EBUSY;
- 
--	clk = clk_get(&pdev->dev, "fpi");
-+	clk = clk_get_fpi();
- 	if (IS_ERR(clk)) {
- 		pr_err("failed to get fpi clk\n");
- 		return -ENOENT;
--- 
-1.7.7.1
+I know you know, I'm always hoping that someone will step up and propos=
+e=20
+some cool idea to fix that :-)
 
+>> A basic fix (below) for the moment is to test for valid pdata inside=
+ the driver.
+>> I'll repost it properly if you are fine with it.
+>
+> Looks fine to me, although I'd suggest fixing the DMA workaround path=
+ as
+> well.
+
+Mmm, I've tried to fix every instances of pdata in the code, you think =
+I=20
+missed some?
+
+I'll check again.
+
+> Reviewed-by: Paul Walmsley<paul@pwsan.com>
+
+Thanks,
+Benoit
+--
+To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
+n
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
