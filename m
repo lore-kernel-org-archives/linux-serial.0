@@ -1,53 +1,40 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 2/4] pch_uart: Add Fish River Island II uart clock quirks
-Date: Fri, 24 Feb 2012 13:53:15 -0800
-Message-ID: <20120224215315.GC25330@kroah.com>
-References: <26a433d1bdb5805cac69efb20d3e32dbf790339b.1329875301.git.dvhart@linux.intel.com>
- <4982ca7a73cfe208a2a5ff0a7e0da54b99ca2d2e.1329875301.git.dvhart@linux.intel.com>
- <20120222085250.193096c9@pyramind.ukuu.org.uk>
- <4F44B95E.3030307@linux.intel.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial/amba-pl011: Return early in deadlock work-around
+ if there is no tty
+Date: Fri, 24 Feb 2012 13:47:43 -0800
+Message-ID: <20120224214743.GA25330@kroah.com>
+References: <1329718024-23623-1-git-send-email-kalle.vahlman@movial.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pz0-f46.google.com ([209.85.210.46]:58009 "EHLO
-	mail-pz0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756791Ab2BXVzt (ORCPT
+Received: from mail-pw0-f46.google.com ([209.85.160.46]:42929 "EHLO
+	mail-pw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755462Ab2BXVzq (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 24 Feb 2012 16:55:49 -0500
-Received: by mail-pz0-f46.google.com with SMTP id d14so2943247dae.19
-        for <linux-serial@vger.kernel.org>; Fri, 24 Feb 2012 13:55:49 -0800 (PST)
+	Fri, 24 Feb 2012 16:55:46 -0500
+Received: by pbcun15 with SMTP id un15so3097855pbc.19
+        for <linux-serial@vger.kernel.org>; Fri, 24 Feb 2012 13:55:45 -0800 (PST)
 Content-Disposition: inline
-In-Reply-To: <4F44B95E.3030307@linux.intel.com>
+In-Reply-To: <1329718024-23623-1-git-send-email-kalle.vahlman@movial.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Darren Hart <dvhart@linux.intel.com>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Tomoya MORINAGA <tomoya.rohm@gmail.com>, Feng Tang <feng.tang@intel.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+To: Kalle Vahlman <kalle.vahlman@movial.com>
+Cc: linux-serial@vger.kernel.org, stable@kernel.org
 
-On Wed, Feb 22, 2012 at 01:46:06AM -0800, Darren Hart wrote:
+On Mon, Feb 20, 2012 at 08:07:04AM +0200, Kalle Vahlman wrote:
+> The first amba port does not always have an attached tty, which will
+> result in a crash if the work-around is activated.
 > 
-> 
-> On 02/22/2012 12:52 AM, Alan Cox wrote:
-> >> +	/* Setup UART clock, checking for board specific clocks. */
-> >> +	uartclk = DEFAULT_UARTCLK;
-> >> +
-> >> +	board_name = dmi_get_system_info(DMI_BOARD_NAME);
-> >> +	if (board_name && strstr(board_name, "CM-iTC"))
-> >> +		uartclk = CMITC_UARTCLK;
-> >> +
-> >> +	board_name = dmi_get_system_info(DMI_PRODUCT_NAME);
-> >> +	if (board_name && strstr(board_name, "Fish River Island II"))
-> >> +		uartclk = FRI2_UARTCLK;
-> >> +
-> >> +	port->uartclk = uartclk;
-> > 
-> > This is confusing, you load product name into a variable called
-> > board_name ?? perhaps "name" would be clearer ?
-> 
-> OK, done.
+> This seems to be the case for example on Snowball which has no modem
+> hw, which seems to be the main use-case for this work-around.
+> ---
+>  drivers/tty/serial/amba-pl011.c |    4 ++++
+>  1 files changed, 4 insertions(+), 0 deletions(-)
 
-"Done" where?  Is there a newer patch series I should be looking at
-here to apply?  I'm guessing I can ignore this one, right?
+Can you re-read Documentation/SubmittingPatches and resend this patch
+with the needed information so that I can apply it (hint, you forgot a
+signed-off-by: line...)
 
-consider it ignored :)
+thanks,
 
 greg k-h
