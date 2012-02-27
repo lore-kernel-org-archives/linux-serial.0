@@ -1,50 +1,32 @@
 From: Russell King - ARM Linux <linux@arm.linux.org.uk>
 Subject: Re: [PATCH] Clear previous interrupts after fifo is disabled
-Date: Mon, 27 Feb 2012 10:48:58 +0000
-Message-ID: <20120227104858.GR22562@n2100.arm.linux.org.uk>
-References: <CAOAMb1ASB0zznSSOAU9HgPNW2e=Do+8hSJ6JZ00DxtAxqsXyXQ@mail.gmail.com>
+Date: Mon, 27 Feb 2012 11:02:04 +0000
+Message-ID: <20120227110204.GA30199@n2100.arm.linux.org.uk>
+References: <CAOAMb1ASB0zznSSOAU9HgPNW2e=Do+8hSJ6JZ00DxtAxqsXyXQ@mail.gmail.com> <20120227104858.GR22562@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([78.32.30.218]:45685 "EHLO
+Received: from caramon.arm.linux.org.uk ([78.32.30.218]:60269 "EHLO
 	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752559Ab2B0KtY (ORCPT
+	with ESMTP id S1753139Ab2B0LC0 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 27 Feb 2012 05:49:24 -0500
+	Mon, 27 Feb 2012 06:02:26 -0500
 Content-Disposition: inline
-In-Reply-To: <CAOAMb1ASB0zznSSOAU9HgPNW2e=Do+8hSJ6JZ00DxtAxqsXyXQ@mail.gmail.com>
+In-Reply-To: <20120227104858.GR22562@n2100.arm.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Chanho Min <chanho0207@gmail.com>
 Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>, "Kim, Jong-Sung" <neidhard.kim@lge.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Mon, Feb 27, 2012 at 06:30:20PM +0900, Chanho Min wrote:
-> This is another workaroud of  'https://lkml.org/lkml/2012/1/17/104'
-> with additional analysis.Bootloader can transfer control to kernel and
-> there are some pending interrupts. In this case, RXFE of the flag
-> register is set by clearing FEN(LCRH) even if rx data remains in the
-> fifo. It seems that the fifo's status is initiailized. Interrupt
-> handler can not get any data from data register because of the below
-> break condtion.
-> 
-> pl011_fifo_to_tty
->  while (max_count--) {
->    if (status & UART01x_FR_RXFE)
-> 	break;
-> 
-> Then, Rx interrupt is never cleared. cpu is looping in ISR. System is
-> hang. If we don't guarantee that no interrupt is pended until fifo is
-> disabled by calling 'writew(0, uap->port.membase + uap->lcrh_rx)',
-> this misbehave of the interrupt handelr can be occurred. So, All
-> pending interrupts should be cleared just after fifo is disabled under
-> the protection from interrupt. Also,'clear error interrupts' routine
-> can be removed becuase all interrupts are cleared before.
+On Mon, Feb 27, 2012 at 10:48:58AM +0000, Russell King - ARM Linux wrote:
+> I'd much prefer to only clear those interrupts which actually need to be
+> cleared at this point.  So, I'd suggest this approach instead:
 
-I'd much prefer to only clear those interrupts which actually need to be
-cleared at this point.  So, I'd suggest this approach instead:
+Thinking about this a little more, we definitely want to mask and clear
+interrupts at probe time as well:
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 6800f5f..a13a825 100644
+index 6800f5f..6b781bd 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
 @@ -1381,6 +1381,10 @@ static int pl011_startup(struct uart_port *port)
@@ -69,3 +51,14 @@ index 6800f5f..a13a825 100644
  	/*
  	 * initialise the old status of the modem signals
  	 */
+@@ -1927,6 +1927,10 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ 		goto unmap;
+ 	}
+ 
++	/* Ensure interrupts from this UART are masked and cleared */
++	writew(0, uap->port.membase + UART011_IMSC);
++	writew(0xffff, uap->port.membase + UART011_ICR);
++
+ 	uap->vendor = vendor;
+ 	uap->lcrh_rx = vendor->lcrh_rx;
+ 	uap->lcrh_tx = vendor->lcrh_tx;
