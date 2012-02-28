@@ -1,42 +1,43 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH] Clear previous interrupts after fifo is disabled
-Date: Tue, 28 Feb 2012 10:23:37 +0000
-Message-ID: <20120228102337.GF18045@n2100.arm.linux.org.uk>
-References: <CAOAMb1ASB0zznSSOAU9HgPNW2e=Do+8hSJ6JZ00DxtAxqsXyXQ@mail.gmail.com> <20120227104858.GR22562@n2100.arm.linux.org.uk> <20120227110204.GA30199@n2100.arm.linux.org.uk> <CAOAMb1BjC2bF=rpJAhRUrB_U2mp8HGWxfcp+=TZ1etWzjUEwig@mail.gmail.com> <20120228083545.GA18045@n2100.arm.linux.org.uk> <CAOAMb1CJ=G45G3JsxwP23GSdEOnDmY5xVoQmWLXaKJJv2cLOLg@mail.gmail.com> <20120228092140.GD18045@n2100.arm.linux.org.uk> <CAOAMb1Cqfrk-b-yd1CMt2Hac7_j3i6WL8D8yQJDWjg_S18dAsw@mail.gmail.com>
+From: Paul Walmsley <paul@pwsan.com>
+Subject: Re: [PATCH 2/3] tty: serial: OMAP: block idle while the UART is
+ transferring data in PIO mode
+Date: Tue, 28 Feb 2012 10:13:43 -0700 (MST)
+Message-ID: <alpine.DEB.2.00.1202281012130.11716@utopia.booyaka.com>
+References: <20120126024903.31613.24730.stgit@dusk> <20120126025036.31613.67819.stgit@dusk> <4F423E28.3040404@ti.com> <alpine.DEB.2.00.1202211456160.25023@utopia.booyaka.com> <4F47A040.6030502@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: TEXT/PLAIN; CHARSET=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([78.32.30.218]:46778 "EHLO
-	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965010Ab2B1K1T (ORCPT
+Received: from utopia.booyaka.com ([72.9.107.138]:42706 "EHLO
+	utopia.booyaka.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755704Ab2B1RNo (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 28 Feb 2012 05:27:19 -0500
-Content-Disposition: inline
-In-Reply-To: <CAOAMb1Cqfrk-b-yd1CMt2Hac7_j3i6WL8D8yQJDWjg_S18dAsw@mail.gmail.com>
+	Tue, 28 Feb 2012 12:13:44 -0500
+In-Reply-To: <4F47A040.6030502@ti.com>
+Content-ID: <alpine.DEB.2.00.1202281012401.11716@utopia.booyaka.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Chanho Min <chanho0207@gmail.com>
-Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>, "Kim, Jong-Sung" <neidhard.kim@lge.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: "Cousson, Benoit" <b-cousson@ti.com>
+Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Kevin Hilman <khilman@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, "Nayak, Rajendra" <rnayak@ti.com>
 
-On Tue, Feb 28, 2012 at 06:46:12PM +0900, Chanho Min wrote:
-> > Because the flags are manipulated to give the illusion of a one byte
-> > FIFO, as stated in the TRM.
-> Yes. It is the problem that rx interrupt is pended with this status as
-> I mentioned.
+Hi
 
-Which is why my patch explicitly clears the receive interrupt status
-before requesting the interrupt.  Have you read my patch?
- 
-> > And we don't set the mask register to 1 until later.
-> In the last part of startup, set to 1. Interrupt can be occurred just
-> after it.
+On Fri, 24 Feb 2012, Cousson, Benoit wrote:
+
+> On 2/21/2012 11:02 PM, Paul Walmsley wrote:
+>
+> > Looks fine to me, although I'd suggest fixing the DMA workaround path as
+> > well.
 > 
-> uap->im = UART011_RTIM;
-> if (!pl011_dma_rx_running(uap))
->  uap->im |= UART011_RXIM;
->  writew(uap->im, uap->port.membase + UART011_IMSC);
+> Mmm, I've tried to fix every instances of pdata in the code, you think I
+> missed some?
 > 
-> > But we want to do the transmit interrupt provocation with the FIFO disabled.
-> I know. It's test only.
+> I'll check again.
+> 
+> > Reviewed-by: Paul Walmsley<paul@pwsan.com>
 
-Wrong, it's fundamental to the UARTs operation.
+I just doublechecked the code paths and looks like you covered them all.  
+Sorry about the confusion.
+
+Reviewed-by: Paul Walmsley <paul@pwsan.com>
+
+- Paul
