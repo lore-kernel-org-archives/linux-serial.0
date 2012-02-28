@@ -1,40 +1,42 @@
-From: Chanho Min <chanho0207@gmail.com>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
 Subject: Re: [PATCH] Clear previous interrupts after fifo is disabled
-Date: Tue, 28 Feb 2012 18:46:12 +0900
-Message-ID: <CAOAMb1Cqfrk-b-yd1CMt2Hac7_j3i6WL8D8yQJDWjg_S18dAsw@mail.gmail.com>
-References: <CAOAMb1ASB0zznSSOAU9HgPNW2e=Do+8hSJ6JZ00DxtAxqsXyXQ@mail.gmail.com>
-	<20120227104858.GR22562@n2100.arm.linux.org.uk>
-	<20120227110204.GA30199@n2100.arm.linux.org.uk>
-	<CAOAMb1BjC2bF=rpJAhRUrB_U2mp8HGWxfcp+=TZ1etWzjUEwig@mail.gmail.com>
-	<20120228083545.GA18045@n2100.arm.linux.org.uk>
-	<CAOAMb1CJ=G45G3JsxwP23GSdEOnDmY5xVoQmWLXaKJJv2cLOLg@mail.gmail.com>
-	<20120228092140.GD18045@n2100.arm.linux.org.uk>
+Date: Tue, 28 Feb 2012 10:23:37 +0000
+Message-ID: <20120228102337.GF18045@n2100.arm.linux.org.uk>
+References: <CAOAMb1ASB0zznSSOAU9HgPNW2e=Do+8hSJ6JZ00DxtAxqsXyXQ@mail.gmail.com> <20120227104858.GR22562@n2100.arm.linux.org.uk> <20120227110204.GA30199@n2100.arm.linux.org.uk> <CAOAMb1BjC2bF=rpJAhRUrB_U2mp8HGWxfcp+=TZ1etWzjUEwig@mail.gmail.com> <20120228083545.GA18045@n2100.arm.linux.org.uk> <CAOAMb1CJ=G45G3JsxwP23GSdEOnDmY5xVoQmWLXaKJJv2cLOLg@mail.gmail.com> <20120228092140.GD18045@n2100.arm.linux.org.uk> <CAOAMb1Cqfrk-b-yd1CMt2Hac7_j3i6WL8D8yQJDWjg_S18dAsw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-iy0-f174.google.com ([209.85.210.174]:33952 "EHLO
-	mail-iy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753665Ab2B1JqN (ORCPT
+Received: from caramon.arm.linux.org.uk ([78.32.30.218]:46778 "EHLO
+	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S965010Ab2B1K1T (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 28 Feb 2012 04:46:13 -0500
-In-Reply-To: <20120228092140.GD18045@n2100.arm.linux.org.uk>
+	Tue, 28 Feb 2012 05:27:19 -0500
+Content-Disposition: inline
+In-Reply-To: <CAOAMb1Cqfrk-b-yd1CMt2Hac7_j3i6WL8D8yQJDWjg_S18dAsw@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+To: Chanho Min <chanho0207@gmail.com>
 Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>, "Kim, Jong-Sung" <neidhard.kim@lge.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-> Because the flags are manipulated to give the illusion of a one byte
-> FIFO, as stated in the TRM.
-Yes. It is the problem that rx interrupt is pended with this status as
-I mentioned.
+On Tue, Feb 28, 2012 at 06:46:12PM +0900, Chanho Min wrote:
+> > Because the flags are manipulated to give the illusion of a one byte
+> > FIFO, as stated in the TRM.
+> Yes. It is the problem that rx interrupt is pended with this status as
+> I mentioned.
 
-> And we don't set the mask register to 1 until later.
-In the last part of startup, set to 1. Interrupt can be occurred just after it.
+Which is why my patch explicitly clears the receive interrupt status
+before requesting the interrupt.  Have you read my patch?
+ 
+> > And we don't set the mask register to 1 until later.
+> In the last part of startup, set to 1. Interrupt can be occurred just
+> after it.
+> 
+> uap->im = UART011_RTIM;
+> if (!pl011_dma_rx_running(uap))
+>  uap->im |= UART011_RXIM;
+>  writew(uap->im, uap->port.membase + UART011_IMSC);
+> 
+> > But we want to do the transmit interrupt provocation with the FIFO disabled.
+> I know. It's test only.
 
-uap->im = UART011_RTIM;
-if (!pl011_dma_rx_running(uap))
- uap->im |= UART011_RXIM;
- writew(uap->im, uap->port.membase + UART011_IMSC);
-
-> But we want to do the transmit interrupt provocation with the FIFO disabled.
-I know. It's test only.
+Wrong, it's fundamental to the UARTs operation.
