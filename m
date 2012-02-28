@@ -1,77 +1,47 @@
 From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: USB Smart Card reader
-Date: Mon, 27 Feb 2012 12:36:20 -0800
-Message-ID: <20120227203620.GA11896@kroah.com>
-References: <CAAMvbhFzJv4EpQt4LavFeFusJsCDrFQ1EGhCdvgPG9q63s2AyA@mail.gmail.com>
- <20120225164118.GA21495@kroah.com>
- <CAAMvbhH5wyiWf+1i4FWkAwGRtAK=xdZejbrtThzEdgTURo+uqg@mail.gmail.com>
+Subject: Re: [RFC PATCH] vt:tackle kbd_table
+Date: Mon, 27 Feb 2012 17:11:00 -0800
+Message-ID: <20120228011100.GA18378@kroah.com>
+References: <20120227160739.8711.95344.stgit@bob.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pw0-f46.google.com ([209.85.160.46]:44958 "EHLO
-	mail-pw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754002Ab2B0Ug2 (ORCPT
+Received: from mail-pz0-f46.google.com ([209.85.210.46]:57828 "EHLO
+	mail-pz0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S965399Ab2B1BMt (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 27 Feb 2012 15:36:28 -0500
-Received: by pbcup15 with SMTP id up15so2451014pbc.19
-        for <linux-serial@vger.kernel.org>; Mon, 27 Feb 2012 12:36:27 -0800 (PST)
+	Mon, 27 Feb 2012 20:12:49 -0500
+Received: by mail-pz0-f46.google.com with SMTP id d14so1723608dae.19
+        for <linux-serial@vger.kernel.org>; Mon, 27 Feb 2012 17:12:49 -0800 (PST)
 Content-Disposition: inline
-In-Reply-To: <CAAMvbhH5wyiWf+1i4FWkAwGRtAK=xdZejbrtThzEdgTURo+uqg@mail.gmail.com>
+In-Reply-To: <20120227160739.8711.95344.stgit@bob.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: James Courtier-Dutton <james.dutton@gmail.com>
-Cc: linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Mon, Feb 27, 2012 at 08:17:50PM +0000, James Courtier-Dutton wrote:
-> On 25 February 2012 16:41, Greg KH <greg@kroah.com> wrote:
-> > On Sat, Feb 25, 2012 at 10:01:17AM +0000, James Courtier-Dutton wro=
-te:
-> >> Hi,
-> >>
-> >> I have done some development work on the iuu_phoenix.c driver in t=
-he
-> >> Linux kernel.
-> >> The iuu_phoenix is a smart card reader.
-> >> The smart card reader can be given a unique identification string =
-of
-> >> 16 characters/hex bytes. This ID can be read when the card reader =
-is
-> >> inserted into the USB port.
-> >> I would like to be able to set up device names in /dev so that whe=
-n
-> >> inserting a card reader into the USB port, it always will appear w=
-ithudev
-> >> the same unique name in /dev.
-> >> Similar to the by-uuid used for hard disk drives.
-> >
-> > Your distro should already have /dev/serial/ which provides this fo=
-r you
-> > automatically. =A0Have you used that and found it somehow lacking?
-> >
->=20
-> My question is how to I get the card reader ID, that is going to be
-> read by a special usb request, to influence the name of the
-> /dev/serial device name.
-> If the first card reader has ID: 0001, and the second has the ID:
-> 0002. The IDs are programmed into the EEPROM of the card reader. I
-> would like the IDs to be passed to udev so that even if only one card
-> reader with ID:0002 is plugged in, it always gets the same name in
-> /dev/serial
-> The reason for this, is so that someone can look at the device name i=
-n
-> /dev/serial and then know exactly which physical device it applies to=
-=2E
+On Mon, Feb 27, 2012 at 04:10:23PM +0000, Alan Cox wrote:
+> This could do with some extra eyes and double checking. With this one out of
+> the day we can start to make a dent in the console locking logic and thus
+> eventually into tty_lock().
+> 
+> From: Alan Cox <alan@linux.intel.com>
+> 
+> Keyboard struct lifetime is easy, but the locking is not and is completely
+> ignored by the existing code. Tackle this one head on
+> 
+> - Make the kbd_table private so we can run down all direct users
+> - Hoick the relevant ioctl handlers into the keyboard layer
+> - Lock them with the keyboard lock so they don't change mid keypress
+> - Add helpers for things like console stop/start so we isolate the poking
+>   around properly
+> - Tweak the braille console so it still builds
 
-If the card reader's "id" shows up in the serial number of the USB
-device, /dev/serial/ will reflect this in the naming of the symlinks it
-generates for the device.
+The drivers/staging/speakup/main.c code also would need to be tweaked in
+this same manner, but that's not a big deal.
 
-Try it and see :)
+Other than that, at first glance, this looks good, nice job.  Care to
+make the speakup change and resend it so we can try it out in
+linux-next?
 
 greg k-h
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
