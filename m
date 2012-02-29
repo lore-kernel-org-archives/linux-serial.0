@@ -1,40 +1,92 @@
-From: Kevin Hilman <khilman@ti.com>
-Subject: Re: [PATCH] tty: serial: OMAP: Fix oops due to NULL pdata in DT boot
-Date: Tue, 28 Feb 2012 10:23:45 -0800
-Message-ID: <87y5rmyfym.fsf@ti.com>
-References: <20120126024903.31613.24730.stgit@dusk>
-	<20120126025036.31613.67819.stgit@dusk> <4F4D0D44.3010604@ti.com>
-	<20120228172851.GA13653@kroah.com>
+From: Chanho Min <chanho0207@gmail.com>
+Subject: Re: [PATCH] Clear previous interrupts after fifo is disabled
+Date: Wed, 29 Feb 2012 11:47:02 +0900
+Message-ID: <CAOAMb1CvjxGHSekURXAhw5DL2W2-3Smw3ZTWuAi2E-1UBxHEFg@mail.gmail.com>
+References: <CAOAMb1ASB0zznSSOAU9HgPNW2e=Do+8hSJ6JZ00DxtAxqsXyXQ@mail.gmail.com>
+	<20120227104858.GR22562@n2100.arm.linux.org.uk>
+	<20120227110204.GA30199@n2100.arm.linux.org.uk>
+	<CAOAMb1BjC2bF=rpJAhRUrB_U2mp8HGWxfcp+=TZ1etWzjUEwig@mail.gmail.com>
+	<20120228083545.GA18045@n2100.arm.linux.org.uk>
+	<CAOAMb1CJ=G45G3JsxwP23GSdEOnDmY5xVoQmWLXaKJJv2cLOLg@mail.gmail.com>
+	<20120228092140.GD18045@n2100.arm.linux.org.uk>
+	<CAOAMb1Cqfrk-b-yd1CMt2Hac7_j3i6WL8D8yQJDWjg_S18dAsw@mail.gmail.com>
+	<20120228102337.GF18045@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog105.obsmtp.com ([74.125.149.75]:60862 "EHLO
-	na3sys009aog105.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753502Ab2B1SXt (ORCPT
+Received: from mail-iy0-f174.google.com ([209.85.210.174]:33688 "EHLO
+	mail-iy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S966223Ab2B2CrD convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 28 Feb 2012 13:23:49 -0500
-Received: by mail-pz0-f48.google.com with SMTP id p13so7023035dad.21
-        for <linux-serial@vger.kernel.org>; Tue, 28 Feb 2012 10:23:48 -0800 (PST)
-In-Reply-To: <20120228172851.GA13653@kroah.com> (Greg KH's message of "Tue, 28
-	Feb 2012 09:28:51 -0800")
+	Tue, 28 Feb 2012 21:47:03 -0500
+In-Reply-To: <20120228102337.GF18045@n2100.arm.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: "Cousson, Benoit" <b-cousson@ti.com>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Paul Walmsley <paul@pwsan.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, "Govindraj.R" <govindraj.raja@ti.com>
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>, "Kim, Jong-Sung" <neidhard.kim@lge.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Greg KH <gregkh@linuxfoundation.org> writes:
+> Which is why my patch explicitly clears the receive interrupt status
+> before requesting the interrupt. =A0Have you read my patch?
+This is the hang-up scenario with your patch.
 
-> On Tue, Feb 28, 2012 at 06:22:12PM +0100, Cousson, Benoit wrote:
->> The following commit: be4b0281956c5cae4f63f31f11d07625a6988766
->> (tty: serial: OMAP: block idle while the UART is transferring data in PIO mode),
->> is introducing an oops if OMAP is booted using device tree blob because
->> the pdata will not be initialized.
->
-> Is that something that happens today on systems?  Does this need to go
-> in for 3.3-final, or can it wait for 3.4?
+pl011_startup(struct uart_port *port)
+ 	uap->port.uartclk =3D clk_get_rate(uap->clk);
 
-It is needed for 3.3-final.
+	/* Clear pending error and receive interrupts */
+	writew(UART011_OEIS | UART011_BEIS | UART011_PEIS | UART011_FEIS |
+	       UART011_RTIS | UART011_RXIS, uap->port.membase + UART011_ICR);
+=2E..
+1. RX Interrupt is occurred after interrupt is cleared. Even if
+interrupt is masked/disabled before(or probe time), RIS's Rx interrupt
+is set to 1. Of course, masked status is zero.
+=2E..
+2. RXFE of flag register is zero and fifo is not empty before LCRH is c=
+leared.
+	writew(0, uap->port.membase + uap->lcrh_rx);
+3. RXFE of flag register is changed to '1'  after LCRH is cleared. but
+the fifo is not actually empty.
+=2E..
+4. Finally, We enable interrupts.
+	spin_lock_irq(&uap->port.lock);
+	uap->im =3D UART011_RTIM;
+	if (!pl011_dma_rx_running(uap))
+		uap->im |=3D UART011_RXIM;
+	writew(uap->im, uap->port.membase + UART011_IMSC);
+	spin_unlock_irq(&uap->port.lock);
+5. The RIS's field which is enabled by IMSC is reflected to MIS as
+soon as the interrupt enable. (We checked this on our ARM platform )
+6. IRQ context is started. pl011_fifo_to_tty is called by pl011_int.
+static int pl011_fifo_to_tty(struct uart_amba_port *uap)
+=2E..
+	while (max_count--) {
+		status =3D readw(uap->port.membase + UART01x_FR);
+		if (status & UART01x_FR_RXFE)
+			break;
+=2E..
+7. pl011_fifo_to_tty can't read any data from DR because of the break
+condition for RXFE. Rx interrupt can't be cleared. cpu is looping in
+irq context.
+
+This is why we need to be cleared just after LCRH is cleared not
+before irq_request. Let's get back to my patch. Even if data is
+received before or after interrupt is cleared, flag register will show
+actual fifo status. Interrupt handler runs normally after the uart
+operation is started up by enabling interrupt.
+
++       spin_lock_irq(&uap->port.lock);
+        writew(0, uap->port.membase + uap->lcrh_rx);
++       /* Clear pending error and receive interrupts */
++       writew(UART011_OEIS | UART011_BEIS | UART011_PEIS | UART011_FEI=
+S |
++               UART011_RTIS | UART011_RXIS, uap->port.membase + UART01=
+1_ICR);
++       spin_unlock_irq(&uap->port.lock);
 
 Thanks,
-
-Kevin
+Chanho Min
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
