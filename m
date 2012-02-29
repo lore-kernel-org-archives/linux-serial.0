@@ -1,92 +1,136 @@
-From: Chanho Min <chanho0207@gmail.com>
-Subject: Re: [PATCH] Clear previous interrupts after fifo is disabled
-Date: Wed, 29 Feb 2012 11:47:02 +0900
-Message-ID: <CAOAMb1CvjxGHSekURXAhw5DL2W2-3Smw3ZTWuAi2E-1UBxHEFg@mail.gmail.com>
-References: <CAOAMb1ASB0zznSSOAU9HgPNW2e=Do+8hSJ6JZ00DxtAxqsXyXQ@mail.gmail.com>
-	<20120227104858.GR22562@n2100.arm.linux.org.uk>
-	<20120227110204.GA30199@n2100.arm.linux.org.uk>
-	<CAOAMb1BjC2bF=rpJAhRUrB_U2mp8HGWxfcp+=TZ1etWzjUEwig@mail.gmail.com>
-	<20120228083545.GA18045@n2100.arm.linux.org.uk>
-	<CAOAMb1CJ=G45G3JsxwP23GSdEOnDmY5xVoQmWLXaKJJv2cLOLg@mail.gmail.com>
-	<20120228092140.GD18045@n2100.arm.linux.org.uk>
-	<CAOAMb1Cqfrk-b-yd1CMt2Hac7_j3i6WL8D8yQJDWjg_S18dAsw@mail.gmail.com>
-	<20120228102337.GF18045@n2100.arm.linux.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Darren Hart <dvhart@linux.intel.com>
+Subject: [PATCH 1/4] pch_uart: Use uartclk instead of base_baud
+Date: Wed, 29 Feb 2012 10:24:44 -0800
+Message-ID: <8b7e59a1f360a5f1ca9382ff53d9be941ef07f7b.1330539597.git.dvhart@linux.intel.com>
+References: <cover.1330539597.git.dvhart@linux.intel.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-iy0-f174.google.com ([209.85.210.174]:33688 "EHLO
-	mail-iy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S966223Ab2B2CrD convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 28 Feb 2012 21:47:03 -0500
-In-Reply-To: <20120228102337.GF18045@n2100.arm.linux.org.uk>
+Received: from mga14.intel.com ([143.182.124.37]:44140 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S964877Ab2B2SZ2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 29 Feb 2012 13:25:28 -0500
+In-Reply-To: <cover.1330539597.git.dvhart@linux.intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>, "Kim, Jong-Sung" <neidhard.kim@lge.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Cc: Darren Hart <dvhart@linux.intel.com>, Tomoya MORINAGA <tomoya.rohm@gmail.com>, Feng Tang <feng.tang@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
 
-> Which is why my patch explicitly clears the receive interrupt status
-> before requesting the interrupt. =A0Have you read my patch?
-This is the hang-up scenario with your patch.
+The term "base baud" refers to the fastest baud rate the device can communicate
+at. This is clock/16. pch_uart is using base_baud as the clock itself. Rename
+the variables to be semantically correct.
 
-pl011_startup(struct uart_port *port)
- 	uap->port.uartclk =3D clk_get_rate(uap->clk);
+Signed-off-by: Darren Hart <dvhart@linux.intel.com>
+CC: Tomoya MORINAGA <tomoya.rohm@gmail.com>
+CC: Feng Tang <feng.tang@intel.com>
+CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC: Alan Cox <alan@linux.intel.com>
+CC: linux-serial@vger.kernel.org
+---
+ drivers/tty/serial/pch_uart.c |   24 ++++++++++++------------
+ 1 files changed, 12 insertions(+), 12 deletions(-)
 
-	/* Clear pending error and receive interrupts */
-	writew(UART011_OEIS | UART011_BEIS | UART011_PEIS | UART011_FEIS |
-	       UART011_RTIS | UART011_RXIS, uap->port.membase + UART011_ICR);
-=2E..
-1. RX Interrupt is occurred after interrupt is cleared. Even if
-interrupt is masked/disabled before(or probe time), RIS's Rx interrupt
-is set to 1. Of course, masked status is zero.
-=2E..
-2. RXFE of flag register is zero and fifo is not empty before LCRH is c=
-leared.
-	writew(0, uap->port.membase + uap->lcrh_rx);
-3. RXFE of flag register is changed to '1'  after LCRH is cleared. but
-the fifo is not actually empty.
-=2E..
-4. Finally, We enable interrupts.
-	spin_lock_irq(&uap->port.lock);
-	uap->im =3D UART011_RTIM;
-	if (!pl011_dma_rx_running(uap))
-		uap->im |=3D UART011_RXIM;
-	writew(uap->im, uap->port.membase + UART011_IMSC);
-	spin_unlock_irq(&uap->port.lock);
-5. The RIS's field which is enabled by IMSC is reflected to MIS as
-soon as the interrupt enable. (We checked this on our ARM platform )
-6. IRQ context is started. pl011_fifo_to_tty is called by pl011_int.
-static int pl011_fifo_to_tty(struct uart_amba_port *uap)
-=2E..
-	while (max_count--) {
-		status =3D readw(uap->port.membase + UART01x_FR);
-		if (status & UART01x_FR_RXFE)
-			break;
-=2E..
-7. pl011_fifo_to_tty can't read any data from DR because of the break
-condition for RXFE. Rx interrupt can't be cleared. cpu is looping in
-irq context.
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index 17ae657..c565817 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -203,7 +203,7 @@ enum {
+ 
+ #define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
+ 
+-#define DEFAULT_BAUD_RATE 1843200 /* 1.8432MHz */
++#define DEFAULT_UARTCLK 1843200 /* 1.8432MHz */
+ 
+ struct pch_uart_buffer {
+ 	unsigned char *buf;
+@@ -218,7 +218,7 @@ struct eg20t_port {
+ 	unsigned int iobase;
+ 	struct pci_dev *pdev;
+ 	int fifo_size;
+-	int base_baud;
++	int uartclk;
+ 	int start_tx;
+ 	int start_rx;
+ 	int tx_empty;
+@@ -293,7 +293,7 @@ static const int trigger_level_16[4] = { 1, 4, 8, 14 };
+ static const int trigger_level_1[4] = { 1, 1, 1, 1 };
+ 
+ static void pch_uart_hal_request(struct pci_dev *pdev, int fifosize,
+-				 int base_baud)
++				 int uartclk)
+ {
+ 	struct eg20t_port *priv = pci_get_drvdata(pdev);
+ 
+@@ -332,7 +332,7 @@ static int pch_uart_hal_set_line(struct eg20t_port *priv, int baud,
+ 	unsigned int dll, dlm, lcr;
+ 	int div;
+ 
+-	div = DIV_ROUND_CLOSEST(priv->base_baud / 16, baud);
++	div = DIV_ROUND_CLOSEST(priv->uartclk / 16, baud);
+ 	if (div < 0 || USHRT_MAX <= div) {
+ 		dev_err(priv->port.dev, "Invalid Baud(div=0x%x)\n", div);
+ 		return -EINVAL;
+@@ -1153,9 +1153,9 @@ static int pch_uart_startup(struct uart_port *port)
+ 	priv->tx_empty = 1;
+ 
+ 	if (port->uartclk)
+-		priv->base_baud = port->uartclk;
++		priv->uartclk = port->uartclk;
+ 	else
+-		port->uartclk = priv->base_baud;
++		port->uartclk = priv->uartclk;
+ 
+ 	pch_uart_hal_disable_interrupt(priv, PCH_UART_HAL_ALL_INT);
+ 	ret = pch_uart_hal_set_line(priv, default_baud,
+@@ -1507,7 +1507,7 @@ static int __init pch_console_setup(struct console *co, char *options)
+ 		return -ENODEV;
+ 
+ 	/* setup uartclock */
+-	port->uartclk = DEFAULT_BAUD_RATE;
++	port->uartclk = DEFAULT_UARTCLK;
+ 
+ 	if (options)
+ 		uart_parse_options(options, &baud, &parity, &bits, &flow);
+@@ -1550,7 +1550,7 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
+ 	unsigned int iobase;
+ 	unsigned int mapbase;
+ 	unsigned char *rxbuf;
+-	int fifosize, base_baud;
++	int fifosize, uartclk;
+ 	int port_type;
+ 	struct pch_uart_driver_data *board;
+ 	const char *board_name;
+@@ -1566,12 +1566,12 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
+ 	if (!rxbuf)
+ 		goto init_port_free_txbuf;
+ 
+-	base_baud = DEFAULT_BAUD_RATE;
++	uartclk = DEFAULT_UARTCLK;
+ 
+ 	/* quirk for CM-iTC board */
+ 	board_name = dmi_get_system_info(DMI_BOARD_NAME);
+ 	if (board_name && strstr(board_name, "CM-iTC"))
+-		base_baud = 192000000; /* 192.0MHz */
++		uartclk = 192000000; /* 192.0MHz */
+ 
+ 	switch (port_type) {
+ 	case PORT_UNKNOWN:
+@@ -1597,7 +1597,7 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
+ 	priv->rxbuf.size = PAGE_SIZE;
+ 
+ 	priv->fifo_size = fifosize;
+-	priv->base_baud = base_baud;
++	priv->uartclk = uartclk;
+ 	priv->port_type = PORT_MAX_8250 + port_type + 1;
+ 	priv->port.dev = &pdev->dev;
+ 	priv->port.iobase = iobase;
+@@ -1614,7 +1614,7 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
+ 	spin_lock_init(&priv->port.lock);
+ 
+ 	pci_set_drvdata(pdev, priv);
+-	pch_uart_hal_request(pdev, fifosize, base_baud);
++	pch_uart_hal_request(pdev, fifosize, uartclk);
+ 
+ #ifdef CONFIG_SERIAL_PCH_UART_CONSOLE
+ 	pch_uart_ports[board->line_no] = priv;
+-- 
+1.7.6.5
 
-This is why we need to be cleared just after LCRH is cleared not
-before irq_request. Let's get back to my patch. Even if data is
-received before or after interrupt is cleared, flag register will show
-actual fifo status. Interrupt handler runs normally after the uart
-operation is started up by enabling interrupt.
-
-+       spin_lock_irq(&uap->port.lock);
-        writew(0, uap->port.membase + uap->lcrh_rx);
-+       /* Clear pending error and receive interrupts */
-+       writew(UART011_OEIS | UART011_BEIS | UART011_PEIS | UART011_FEI=
-S |
-+               UART011_RTIS | UART011_RXIS, uap->port.membase + UART01=
-1_ICR);
-+       spin_unlock_irq(&uap->port.lock);
-
-Thanks,
-Chanho Min
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
