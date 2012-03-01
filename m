@@ -1,43 +1,39 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH 2/6] vt: push down the tty lock so we can see what is
- left to tackle
-Date: Thu, 01 Mar 2012 21:31:11 +0100
-Message-ID: <4F4FDC8F.2010300@suse.cz>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 2/6] vt: push down the tty lock so we can see what is left to tackle
+Date: Thu, 1 Mar 2012 21:51:20 +0000
+Message-ID: <201203012151.20940.arnd@arndb.de>
 References: <20120301194831.11322.38295.stgit@bob.linux.org.uk> <20120301195005.11322.78572.stgit@bob.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: Text/Plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ee0-f46.google.com ([74.125.83.46]:44749 "EHLO
-	mail-ee0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757334Ab2CAUbO (ORCPT
+Received: from moutng.kundenserver.de ([212.227.126.186]:55843 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757888Ab2CAVvc (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 1 Mar 2012 15:31:14 -0500
+	Thu, 1 Mar 2012 16:51:32 -0500
 In-Reply-To: <20120301195005.11322.78572.stgit@bob.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@gmail.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On 03/01/2012 08:50 PM, Alan Cox wrote:
-> --- a/drivers/tty/vt/vt_ioctl.c
-> +++ b/drivers/tty/vt/vt_ioctl.c
-> @@ -281,7 +281,6 @@ int vt_ioctl(struct tty_struct *tty,
->  
->  	console = vc->vc_num;
->  
-> -	tty_lock();
+On Thursday 01 March 2012, Alan Cox wrote:
+> @@ -1407,6 +1425,7 @@ int vt_move_to_console(unsigned int vt, int alloc)
+>                 return -EIO;
+>         }
+>         console_unlock();
+> +       /* Review: I don't see why we need tty_lock here FIXME */
+>         tty_lock();
+>         if (vt_waitactive(vt + 1)) {
+>                 pr_debug("Suspend: Can't switch VCs.");
 
-Note that this breaks bisection. Further in vt_ioctl, there is a call to
-vt_event_wait_ioctl which calls vt_event_wait and that calls
-wait_event_interruptible_tty which unlocks BTM.
+I'm pretty sure I only added this in be1bc288 "tty: introduce
+wait_event_interruptible_tty" so I could release the mutex again in
+vt_event_wait.
 
-You change wait_event_interruptible_tty to wait_event_interruptible even
-in 4/6.
+All other callers of that function hold it, so it needs to be released
+in vt_event_wait and that can only be done if it's known to be held first.
 
-The VT_WAITEVENT case should have tty_lock until 4/6 (and not longer).
-
-thanks,
--- 
-js
-suse labs
+	Arnd
