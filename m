@@ -1,39 +1,32 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 2/6] vt: push down the tty lock so we can see what is left to tackle
-Date: Thu, 1 Mar 2012 21:51:20 +0000
-Message-ID: <201203012151.20940.arnd@arndb.de>
-References: <20120301194831.11322.38295.stgit@bob.linux.org.uk> <20120301195005.11322.78572.stgit@bob.linux.org.uk>
+Subject: Re: [PATCH 0/6] Remove tty_lock from the console drivers
+Date: Thu, 1 Mar 2012 22:10:19 +0000
+Message-ID: <201203012210.19222.arnd@arndb.de>
+References: <20120301194831.11322.38295.stgit@bob.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: Text/Plain;
   charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.126.186]:55843 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757888Ab2CAVvc (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 1 Mar 2012 16:51:32 -0500
-In-Reply-To: <20120301195005.11322.78572.stgit@bob.linux.org.uk>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20120301194831.11322.38295.stgit@bob.linux.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 
 On Thursday 01 March 2012, Alan Cox wrote:
-> @@ -1407,6 +1425,7 @@ int vt_move_to_console(unsigned int vt, int alloc)
->                 return -EIO;
->         }
->         console_unlock();
-> +       /* Review: I don't see why we need tty_lock here FIXME */
->         tty_lock();
->         if (vt_waitactive(vt + 1)) {
->                 pr_debug("Suspend: Can't switch VCs.");
+> 
+> This needs a fair bit of testing and a bit of review wouldn't go amiss, but
+> it does drive the tty_lock() mess out of the console and correct chunks of
+> console locking in the process.
 
-I'm pretty sure I only added this in be1bc288 "tty: introduce
-wait_event_interruptible_tty" so I could release the mutex again in
-vt_event_wait.
+I've spent an hour looking at the patches and trying to understand the code
+paths you touch.  The use of console_lock for more stuff than it's currently
+used for is slightly worrying, mostly because it's still an old-style
+semaphore and not covered by lockdep because of that, which might make testing
+harder, but it also seems to be the logical thing to do as you write.
 
-All other callers of that function hold it, so it needs to be released
-in vt_event_wait and that can only be done if it's known to be held first.
+Other than that and the VT_WAITEVENT issue that Jiri pointed out, nothing
+else caught my eye, it all looks good.
 
 	Arnd
