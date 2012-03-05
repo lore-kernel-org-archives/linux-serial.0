@@ -1,39 +1,49 @@
-From: matthieu castet <castet.matthieu@free.fr>
-Subject: [PATCH 0/9] [RFC] tty : make receive_room internal to N_TTY line
- discipline
-Date: Sun, 4 Mar 2012 19:05:13 +0100
-Message-ID: <20120304190513.0b7a881b@mat-laptop>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 4/9] tty : kill receive_room usage in vt
+Date: Mon, 5 Mar 2012 10:29:52 +0000
+Message-ID: <20120305102952.779a33e6@pyramind.ukuu.org.uk>
+References: <1330883960-8563-1-git-send-email-castet.matthieu@free.fr>
+	<1330883960-8563-5-git-send-email-castet.matthieu@free.fr>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp6-g21.free.fr ([212.27.42.6]:51023 "EHLO smtp6-g21.free.fr"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754476Ab2CDSFW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 4 Mar 2012 13:05:22 -0500
-Received: from mat-laptop (unknown [81.57.151.96])
-	by smtp6-g21.free.fr (Postfix) with ESMTP id BBB6F8237C
-	for <linux-serial@vger.kernel.org>; Sun,  4 Mar 2012 19:05:15 +0100 (CET)
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:38036 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756418Ab2CEK2A (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 5 Mar 2012 05:28:00 -0500
+In-Reply-To: <1330883960-8563-5-git-send-email-castet.matthieu@free.fr>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, Felipe Balbi <balbi@ti.com>, Toby Gray <toby.gray@realvnc.com>, Stefan Bigler <stefan.bigler@keymile.com>
+To: Matthieu CASTET <castet.matthieu@free.fr>
+Cc: linux-serial@vger.kernel.org, Felipe Balbi <balbi@ti.com>, Toby Gray <toby.gray@realvnc.com>, Stefan Bigler <stefan.bigler@keymile.com>
 
-These patches try to solve issue exposed on
-https://lkml.org/lkml/2011/6/7/700
+On Sun,  4 Mar 2012 18:59:15 +0100
+Matthieu CASTET <castet.matthieu@free.fr> wrote:
 
-On Tue, Jun 07, 2011 at 07:44:48PM -0700, Linus Torvalds wrote
-> I'd love to get rid of receive_room entirely - and just letting the
-> tty line discipline handler say how much it actually received. in
-> other words, having receive_buf() just tell us how much it used, and
-> not looking at receive_room in the caller is absolutely the right
-> thing.
+> Signed-off-by: Matthieu CASTET <castet.matthieu@free.fr>
+> ---
+>  drivers/tty/vt/selection.c |    3 +--
+>  1 files changed, 1 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/vt/selection.c b/drivers/tty/vt/selection.c
+> index 7a0a12a..3e9a914 100644
+> --- a/drivers/tty/vt/selection.c
+> +++ b/drivers/tty/vt/selection.c
+> @@ -332,8 +332,7 @@ int paste_selection(struct tty_struct *tty)
+>  			continue;
+>  		}
+>  		count = sel_buffer_lth - pasted;
+> -		count = min(count, tty->receive_room);
+> -		tty->ldisc->ops->receive_buf(tty, sel_buffer + pasted,
+> +		count = tty->ldisc->ops->receive_buf(tty, sel_buffer + pasted,
+>  								NULL, count);
 
-GIT: [PATCH 1/9] tty: make receive_buf() return the amout of bytes
-GIT: [PATCH 2/9] tty : make n_tty_receive_buf return bytes received in
-GIT: [PATCH 3/9] tty: make hci_uart_tty_receive return bytes received
-GIT: [PATCH 4/9] tty : kill receive_room usage in vt
-GIT: [PATCH 5/9] tty : kill receive_room usage in speakup
-GIT: [PATCH 6/9] tty : don't use receive_room in tty_set_ldisc
-GIT: [PATCH 7/9] tty : kill receive_room usage in tty_buffer
-GIT: [PATCH 8/9] tty : kill receive_room usage in mxser
-GIT: [PATCH 9/9] tty : make receive_room internal to N_TTY line
+This is unsafe in your model - it's not valid to call it as selection
+does in the first place. You have two parallel consumers here so any
+result is nonsense (and it'll make messes elsewhere)
+
+It's unsafe in the existing model too, but the existing one will recover
+whereas once you switch behaviour the new one won't.
+
