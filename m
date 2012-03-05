@@ -1,129 +1,71 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 12/68] TTY: srmcons, convert to use tty_port
-Date: Mon,  5 Mar 2012 14:51:59 +0100
-Message-ID: <1330955575-26641-13-git-send-email-jslaby@suse.cz>
+Subject: [PATCH 42/68] TTY: simserial, remove tmp_buf
+Date: Mon,  5 Mar 2012 14:52:29 +0100
+Message-ID: <1330955575-26641-43-git-send-email-jslaby@suse.cz>
 References: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.pripojeni.net ([178.22.112.14]:34643 "EHLO
-	smtp.pripojeni.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932345Ab2CENxJ (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 5 Mar 2012 08:53:09 -0500
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org
-Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>
+List-Id: linux-serial@vger.kernel.org
 
-This is needed because the tty buffer will become a tty_port member
-later. That will help us to wipe out most of the races and checks for
-the tty pointer in hot paths.
+It is totally unused.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
+Cc: Tony Luck <tony.luck@intel.com>
+Cc: Fenghua Yu <fenghua.yu@intel.com>
 ---
- arch/alpha/kernel/srmcons.c |   32 +++++++++++++++++---------------
- 1 file changed, 17 insertions(+), 15 deletions(-)
+ arch/ia64/hp/sim/simserial.c |   16 ++--------------
+ 1 file changed, 2 insertions(+), 14 deletions(-)
 
-diff --git a/arch/alpha/kernel/srmcons.c b/arch/alpha/kernel/srmcons.c
-index 2c89ce5c..3ea8094 100644
---- a/arch/alpha/kernel/srmcons.c
-+++ b/arch/alpha/kernel/srmcons.c
-@@ -30,9 +30,8 @@ static int srm_is_registered_console = 0;
- #define MAX_SRM_CONSOLE_DEVICES 1	/* only support 1 console device */
+diff --git a/arch/ia64/hp/sim/simserial.c b/arch/ia64/hp/sim/simserial.c
+index 64ab004..45df0f4 100644
+--- a/arch/ia64/hp/sim/simserial.c
++++ b/arch/ia64/hp/sim/simserial.c
+@@ -55,8 +55,6 @@ struct tty_driver *hp_simserial_driver;
  
- struct srmcons_private {
--	struct tty_struct *tty;
-+	struct tty_port port;
- 	struct timer_list timer;
--	spinlock_t lock;
- } srmcons_singleton;
+ static struct console *console;
  
- typedef union _srmcons_result {
-@@ -68,20 +67,21 @@ static void
- srmcons_receive_chars(unsigned long data)
- {
- 	struct srmcons_private *srmconsp = (struct srmcons_private *)data;
-+	struct tty_port *port = &srmconsp->port;
+-static unsigned char *tmp_buf;
+-
+ extern struct console *console_drivers; /* from kernel/printk.c */
+ 
+ /*
+@@ -237,7 +235,8 @@ static int rs_write(struct tty_struct * tty,
+ 	int	c, ret = 0;
  	unsigned long flags;
- 	int incr = 10;
+ 
+-	if (!tty || !info->xmit.buf || !tmp_buf) return 0;
++	if (!tty || !info->xmit.buf)
++		return 0;
  
  	local_irq_save(flags);
- 	if (spin_trylock(&srmcons_callback_lock)) {
--		if (!srmcons_do_receive_chars(srmconsp->tty))
-+		if (!srmcons_do_receive_chars(port->tty))
- 			incr = 100;
- 		spin_unlock(&srmcons_callback_lock);
- 	} 
- 
--	spin_lock(&srmconsp->lock);
--	if (srmconsp->tty)
-+	spin_lock(&port->lock);
-+	if (port->tty)
- 		mod_timer(&srmconsp->timer, jiffies + incr);
--	spin_unlock(&srmconsp->lock);
-+	spin_unlock(&port->lock);
- 
- 	local_irq_restore(flags);
- }
-@@ -157,18 +157,19 @@ static int
- srmcons_open(struct tty_struct *tty, struct file *filp)
+ 	while (1) {
+@@ -618,7 +617,6 @@ static int rs_open(struct tty_struct *tty, struct file * filp)
  {
- 	struct srmcons_private *srmconsp = &srmcons_singleton;
-+	struct tty_port *port = &srmconsp->port;
- 	unsigned long flags;
+ 	struct serial_state *info = rs_table + tty->index;
+ 	int			retval;
+-	unsigned long		page;
  
--	spin_lock_irqsave(&srmconsp->lock, flags);
-+	spin_lock_irqsave(&port->lock, flags);
+ 	info->tport.count++;
+ 	info->tport.tty = tty;
+@@ -630,16 +628,6 @@ static int rs_open(struct tty_struct *tty, struct file * filp)
+ #endif
+ 	tty->low_latency = (info->tport.flags & ASYNC_LOW_LATENCY) ? 1 : 0;
  
--	if (!srmconsp->tty) {
-+	if (!port->tty) {
- 		tty->driver_data = srmconsp;
+-	if (!tmp_buf) {
+-		page = get_zeroed_page(GFP_KERNEL);
+-		if (!page)
+-			return -ENOMEM;
+-		if (tmp_buf)
+-			free_page(page);
+-		else
+-			tmp_buf = (unsigned char *) page;
+-	}
 -
--		srmconsp->tty = tty;
-+		tty->port = port;
-+		port->tty = tty; /* XXX proper refcounting */
- 		mod_timer(&srmconsp->timer, jiffies + 10);
- 	}
- 
--	spin_unlock_irqrestore(&srmconsp->lock, flags);
-+	spin_unlock_irqrestore(&port->lock, flags);
- 
- 	return 0;
- }
-@@ -177,16 +178,17 @@ static void
- srmcons_close(struct tty_struct *tty, struct file *filp)
- {
- 	struct srmcons_private *srmconsp = tty->driver_data;
-+	struct tty_port *port = &srmconsp->port;
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&srmconsp->lock, flags);
-+	spin_lock_irqsave(&port->lock, flags);
- 
- 	if (tty->count == 1) {
--		srmconsp->tty = NULL;
-+		port->tty = NULL;
- 		del_timer(&srmconsp->timer);
- 	}
- 
--	spin_unlock_irqrestore(&srmconsp->lock, flags);
-+	spin_unlock_irqrestore(&port->lock, flags);
- }
- 
- 
-@@ -203,7 +205,7 @@ static const struct tty_operations srmcons_ops = {
- static int __init
- srmcons_init(void)
- {
--	spin_lock_init(&srmcons_singleton.lock);
-+	tty_port_init(&srmcons_singleton.port);
- 	setup_timer(&srmcons_singleton.timer, srmcons_receive_chars,
- 			(unsigned long)&srmcons_singleton);
- 	if (srm_is_registered_console) {
+ 	/*
+ 	 * If the port is the middle of closing, bail out now
+ 	 */
 -- 
 1.7.9.2
-
-
