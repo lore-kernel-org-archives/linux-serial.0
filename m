@@ -1,78 +1,77 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 49/68] TTY: simserial, properly refcount tty_port->tty
-Date: Mon,  5 Mar 2012 14:52:36 +0100
-Message-ID: <1330955575-26641-50-git-send-email-jslaby@suse.cz>
+Subject: [PATCH 44/68] TTY: simserial no longer needs serialP
+Date: Mon,  5 Mar 2012 14:52:31 +0100
+Message-ID: <1330955575-26641-45-git-send-email-jslaby@suse.cz>
 References: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.pripojeni.net ([178.22.112.14]:34637 "EHLO
+Received: from mail.pripojeni.net ([178.22.112.14]:34627 "EHLO
 	smtp.pripojeni.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932341Ab2CENxJ (ORCPT
+	with ESMTP id S932314Ab2CENxI (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 5 Mar 2012 08:53:09 -0500
+	Mon, 5 Mar 2012 08:53:08 -0500
 In-Reply-To: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org
 Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>
 
-So that we will not be surprised in the ISR anymore.
+Let's do a spin-off of serial_state structure with only needed
+elements.
+
+And remove serialP crap from includes.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 Cc: Tony Luck <tony.luck@intel.com>
 Cc: Fenghua Yu <fenghua.yu@intel.com>
 ---
- arch/ia64/hp/sim/simserial.c |    9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ arch/ia64/hp/sim/simserial.c |    9 ++++++++-
+ include/linux/serialP.h      |    2 --
+ 2 files changed, 8 insertions(+), 3 deletions(-)
 
 diff --git a/arch/ia64/hp/sim/simserial.c b/arch/ia64/hp/sim/simserial.c
-index 2cd6d23..b3ec91c 100644
+index 3698a2f..120aad4 100644
 --- a/arch/ia64/hp/sim/simserial.c
 +++ b/arch/ia64/hp/sim/simserial.c
-@@ -107,7 +107,7 @@ static void receive_chars(struct tty_struct *tty)
- static irqreturn_t rs_interrupt_single(int irq, void *dev_id)
- {
- 	struct serial_state *info = dev_id;
--	struct tty_struct *tty = info->port.tty;
-+	struct tty_struct *tty = tty_port_tty_get(&info->port);
+@@ -27,10 +27,10 @@
+ #include <linux/seq_file.h>
+ #include <linux/slab.h>
+ #include <linux/capability.h>
++#include <linux/circ_buf.h>
+ #include <linux/console.h>
+ #include <linux/module.h>
+ #include <linux/serial.h>
+-#include <linux/serialP.h>
+ #include <linux/sysrq.h>
  
- 	if (!tty) {
- 		printk(KERN_INFO "simrs_interrupt_single: info|tty=0 info=%p problem\n", info);
-@@ -118,6 +118,7 @@ static irqreturn_t rs_interrupt_single(int irq, void *dev_id)
- 	 * on inbound traffic
- 	 */
- 	receive_chars(tty);
-+	tty_kref_put(tty);
- 	return IRQ_HANDLED;
- }
+ #include <asm/irq.h>
+@@ -46,6 +46,13 @@
  
-@@ -443,9 +444,9 @@ static void rs_close(struct tty_struct *tty, struct file * filp)
- 	 */
- 	shutdown(tty, info);
- 	rs_flush_buffer(tty);
--	port->tty = NULL;
+ #define NR_PORTS	1	/* only one port for now */
  
- 	tty_port_close_end(port, tty);
-+	tty_port_tty_set(port, NULL);
- }
++struct serial_state {
++	struct tty_port tport;
++	struct circ_buf xmit;
++	int irq;
++	int x_char;
++};
++
+ static char *serial_name = "SimSerial driver";
+ static char *serial_version = "0.6";
  
- /*
-@@ -467,7 +468,7 @@ static void rs_hangup(struct tty_struct *tty)
- 
- 	port->count = 0;
- 	port->flags &= ~ASYNC_NORMAL_ACTIVE;
--	port->tty = NULL;
-+	tty_port_tty_set(port, NULL);
- 	wake_up_interruptible(&port->open_wait);
- }
- 
-@@ -556,7 +557,7 @@ static int rs_open(struct tty_struct *tty, struct file * filp)
- 	int retval;
- 
- 	port->count++;
--	port->tty = tty;
-+	tty_port_tty_set(port, tty);
- 	tty->driver_data = info;
- 	tty->port = port;
+diff --git a/include/linux/serialP.h b/include/linux/serialP.h
+index e5e8442..9a04dec 100644
+--- a/include/linux/serialP.h
++++ b/include/linux/serialP.h
+@@ -44,10 +44,8 @@ struct serial_state {
+ 	int			quot;
+ 	int			IER; 	/* Interrupt Enable Register */
+ 	int			MCR; 	/* Modem control register */
+-	/* simserial */
+ 	int			x_char;	/* xon/xoff character */
+  	struct circ_buf		xmit;
+-	/* /simserial */
+ 	/* /amiserial */
+ };
  
 -- 
 1.7.9.2
