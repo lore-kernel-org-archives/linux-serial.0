@@ -1,77 +1,28 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH 67/68] TTY: isdn/gigaset, do not set tty->driver_data
- to NULL
-Date: Mon, 05 Mar 2012 18:12:08 +0100
-Message-ID: <4F54F3E8.1070404@suse.cz>
-References: <1330955575-26641-1-git-send-email-jslaby@suse.cz> <1330955575-26641-68-git-send-email-jslaby@suse.cz> <4F54F270.8030108@imap.cc>
+From: Paul Walmsley <paul@pwsan.com>
+Subject: Re: [RFC PATCH] OMAP: UART: Enable tx wakeup bit in wer
+Date: Mon, 5 Mar 2012 13:23:16 -0700 (MST)
+Message-ID: <alpine.DEB.2.00.1203051321580.1430@utopia.booyaka.com>
+References: <1327412249-31575-1-git-send-email-govindraj.raja@ti.com> <alpine.DEB.2.00.1201251217120.5324@utopia.booyaka.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <4F54F270.8030108@imap.cc>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tilman Schmidt <tilman@imap.cc>
-Cc: Jiri Slaby <jirislaby@gmail.com>, gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Hansjoerg Lipp <hjlipp@web.de>, gigaset307x-common@lists.sourceforge.net
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from utopia.booyaka.com ([72.9.107.138]:51808 "EHLO
+	utopia.booyaka.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757496Ab2CEUXR (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 5 Mar 2012 15:23:17 -0500
+In-Reply-To: <alpine.DEB.2.00.1201251217120.5324@utopia.booyaka.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: "Govindraj.R" <govindraj.raja@ti.com>
+Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, Kevin Hilman <khilman@ti.com>, Partha Basak <p-basak2@ti.com>, linux-arm-kernel@lists.infradead.org
 
-On 03/05/2012 06:05 PM, Tilman Schmidt wrote:
-> Am 05.03.2012 14:52, schrieb Jiri Slaby:
->> Close the window in open where driver_data is reset to NULL on
->> each open. It could cause other processes to get invalid retval
->> from the tty->ops operations because of the checks all over the
->> code.
-> 
->> With this change we may do other cleanups. Now, the only valid
->> check for tty->driver_data != NULL is in close. This can happen
->> only if open fails at gigaset_get_cs_by_tty or try_module_get.
->> The rest of checks in various tty->ops->* are invalid as
->> driver_data cannot be NULL there. The same holds for
->> cs->open_count. So remove them.
-> 
-> Thanks for that nice cleanup. It's most welcome. Just one question
-> and a small nit:
-> 
->> --- a/drivers/isdn/gigaset/interface.c +++
->> b/drivers/isdn/gigaset/interface.c
-> [...]
->> @@ -178,12 +176,11 @@ static int if_open(struct tty_struct *tty,
->> struct file *filp)
-> 
->> static void if_close(struct tty_struct *tty, struct file *filp) 
->> { -	struct cardstate *cs; +	struct cardstate *cs =
->> tty->driver_data; unsigned long flags;
-> 
->> -	cs = (struct cardstate *) tty->driver_data; -	if (!cs) { -
->> pr_err("%s: no cardstate\n", __func__); +	if (!cs) { /* happens
->> if we didn't find cs in open */ +		printk(KERN_DEBUG "%s: no
->> cardstate\n", __func__); return; }
-> 
-> 
-> Why are you downgrading the error message from KERN_ERR to
-> KERN_DEBUG here? I would think that condition would warrant a
-> message with KERN_ERR severity. Also, the driver does KERN_DEBUG
-> output uniformly through the gig_dbg macro, so if you are sure it
-> should be turned into a debug message then please write it as
-> 
-> gig_dbg(DEBUG_IF, "%s: no cardstate", __func__);
-> 
-> like four lines later.
 
-<citing myself from the commit log>
-Now, the only valid check for tty->driver_data != NULL is in close.
-This can happen only if open fails at gigaset_get_cs_by_tty or
-try_module_get.
-</citing>
+Hello Govindraj
 
-I.e. when the module behind the device is going away, driver_data can
-be NULL. In that case we don't want to threaten the user by ERR messages.
+Do you intend to update and repost this serial patch?  Or should someone 
+else deal with it?  It would be good to get support for this additional 
+wakeup bit.
 
-You are maybe right, that we should switch it to gig_dbg or remove the
-print completely (as it is a legitimate path). I'll wait until the
-patches settles down a bit and fix it. If I, by a chance, forget to do
-so, poke me or feel free to do it yourself ;).
 
-thanks,
--- 
-js
-suse labs
+- Paul
