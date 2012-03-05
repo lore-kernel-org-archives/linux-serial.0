@@ -1,12 +1,12 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 02/68] TTY: tty_io, remove buffer re-assignments
-Date: Mon,  5 Mar 2012 14:51:49 +0100
-Message-ID: <1330955575-26641-3-git-send-email-jslaby@suse.cz>
+Subject: [PATCH 01/68] USB: cdc-acm, use tty_standard_install
+Date: Mon,  5 Mar 2012 14:51:48 +0100
+Message-ID: <1330955575-26641-2-git-send-email-jslaby@suse.cz>
 References: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.pripojeni.net ([178.22.112.14]:34613 "EHLO
+Received: from mail.pripojeni.net ([178.22.112.14]:34615 "EHLO
 	smtp.pripojeni.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932222Ab2CENxH (ORCPT
+	with ESMTP id S932294Ab2CENxH (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
 	Mon, 5 Mar 2012 08:53:07 -0500
 In-Reply-To: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
@@ -15,27 +15,39 @@ List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org
 Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com
 
-TTY buffer head and tail are initialized in tty_buffer_init. No need
-to do it once again in initialize_tty_struct where tty_buffer_init is
-called.
+This is a piece I missed the last time.
+
+Do not copy the functionality all over the tree. Instead, use the
+helper the tty layer provides us with.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/tty_io.c |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/usb/class/cdc-acm.c |    7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 44736f9..f105ce5 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -2933,7 +2933,6 @@ void initialize_tty_struct(struct tty_struct *tty,
- 	tty->session = NULL;
- 	tty->pgrp = NULL;
- 	tty->overrun_time = jiffies;
--	tty->buf.head = tty->buf.tail = NULL;
- 	tty_buffer_init(tty);
- 	mutex_init(&tty->termios_mutex);
- 	mutex_init(&tty->ldisc_mutex);
+diff --git a/drivers/usb/class/cdc-acm.c b/drivers/usb/class/cdc-acm.c
+index 6dcc3a3..b3fd449 100644
+--- a/drivers/usb/class/cdc-acm.c
++++ b/drivers/usb/class/cdc-acm.c
+@@ -509,17 +509,12 @@ static int acm_tty_install(struct tty_driver *driver, struct tty_struct *tty)
+ 	if (!acm)
+ 		return -ENODEV;
+ 
+-	retval = tty_init_termios(tty);
++	retval = tty_standard_install(driver, tty);
+ 	if (retval)
+ 		goto error_init_termios;
+ 
+ 	tty->driver_data = acm;
+ 
+-	/* Final install (we use the default method) */
+-	tty_driver_kref_get(driver);
+-	tty->count++;
+-	driver->ttys[tty->index] = tty;
+-
+ 	return 0;
+ 
+ error_init_termios:
 -- 
 1.7.9.2
 
