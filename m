@@ -1,7 +1,7 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 45/68] TTY: simserial, define local tty_port pointer
-Date: Mon,  5 Mar 2012 14:52:32 +0100
-Message-ID: <1330955575-26641-46-git-send-email-jslaby@suse.cz>
+Subject: [PATCH 50/68] TTY: simserial, use tty_port_open
+Date: Mon,  5 Mar 2012 14:52:37 +0100
+Message-ID: <1330955575-26641-51-git-send-email-jslaby@suse.cz>
 References: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
@@ -10,222 +10,149 @@ To: gregkh@linuxfoundation.org
 Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-And use it to make the code more readable.
+So now we convert startup to be ->activate of tty_port. This means we
+no longer care about INITIALIZED and TTY_IO_ERROR flags.
 
-Since tport doesn't conflict with port anymore and there are not many
-tport accessors left, do also s/\<tport\>/port/g.
+After we have ->activate much of the code may go as it duplicates what
+tty_port_open does. In this case tty_port_open adds block_til_ready to
+the path. But we do not define carrier hooks, so it is a noop.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 Cc: Tony Luck <tony.luck@intel.com>
 Cc: Fenghua Yu <fenghua.yu@intel.com>
 ---
- arch/ia64/hp/sim/simserial.c |   84 ++++++++++++++++++++++--------------------
- 1 file changed, 44 insertions(+), 40 deletions(-)
+ arch/ia64/hp/sim/simserial.c |   64 ++++--------------------------------------
+ 1 file changed, 5 insertions(+), 59 deletions(-)
 
 diff --git a/arch/ia64/hp/sim/simserial.c b/arch/ia64/hp/sim/simserial.c
-index 120aad4..909357e 100644
+index b3ec91c..e9c5fb7 100644
 --- a/arch/ia64/hp/sim/simserial.c
 +++ b/arch/ia64/hp/sim/simserial.c
-@@ -47,7 +47,7 @@
- #define NR_PORTS	1	/* only one port for now */
- 
- struct serial_state {
--	struct tty_port tport;
-+	struct tty_port port;
- 	struct circ_buf xmit;
- 	int irq;
- 	int x_char;
-@@ -132,8 +132,9 @@ static  void receive_chars(struct tty_struct *tty)
- static irqreturn_t rs_interrupt_single(int irq, void *dev_id)
- {
- 	struct serial_state *info = dev_id;
-+	struct tty_struct *tty = info->port.tty;
- 
--	if (!info->tport.tty) {
-+	if (!tty) {
- 		printk(KERN_INFO "simrs_interrupt_single: info|tty=0 info=%p problem\n", info);
- 		return IRQ_NONE;
- 	}
-@@ -141,7 +142,7 @@ static irqreturn_t rs_interrupt_single(int irq, void *dev_id)
- 	 * pretty simple in our case, because we only get interrupts
- 	 * on inbound traffic
- 	 */
--	receive_chars(info->tport.tty);
-+	receive_chars(tty);
- 	return IRQ_HANDLED;
- }
- 
-@@ -416,7 +417,7 @@ static void shutdown(struct tty_struct *tty, struct serial_state *info)
- {
- 	unsigned long	flags;
- 
--	if (!(info->tport.flags & ASYNC_INITIALIZED))
-+	if (!(info->port.flags & ASYNC_INITIALIZED))
- 		return;
- 
- #ifdef SIMSERIAL_DEBUG
-@@ -436,7 +437,7 @@ static void shutdown(struct tty_struct *tty, struct serial_state *info)
- 
- 		set_bit(TTY_IO_ERROR, &tty->flags);
- 
--		info->tport.flags &= ~ASYNC_INITIALIZED;
-+		info->port.flags &= ~ASYNC_INITIALIZED;
- 	}
- 	local_irq_restore(flags);
- }
-@@ -454,6 +455,7 @@ static void shutdown(struct tty_struct *tty, struct serial_state *info)
- static void rs_close(struct tty_struct *tty, struct file * filp)
- {
- 	struct serial_state *info = tty->driver_data;
-+	struct tty_port *port = &info->port;
- 	unsigned long flags;
- 
- 	if (!info)
-@@ -468,30 +470,30 @@ static void rs_close(struct tty_struct *tty, struct file * filp)
- 		return;
- 	}
- #ifdef SIMSERIAL_DEBUG
--	printk("rs_close ttys%d, count = %d\n", info->line, info->tport.count);
-+	printk("rs_close ttys%d, count = %d\n", info->line, port->count);
- #endif
--	if ((tty->count == 1) && (info->tport.count != 1)) {
-+	if ((tty->count == 1) && (port->count != 1)) {
- 		/*
- 		 * Uh, oh.  tty->count is 1, which means that the tty
--		 * structure will be freed.  info->tport.count should always
-+		 * structure will be freed.  port->count should always
- 		 * be one in these conditions.  If it's greater than
- 		 * one, we've got real problems, since it means the
- 		 * serial port won't be shutdown.
- 		 */
- 		printk(KERN_ERR "rs_close: bad serial port count; tty->count is 1, "
--		       "info->tport.count is %d\n", info->tport.count);
--		info->tport.count = 1;
-+		       "port->count is %d\n", port->count);
-+		port->count = 1;
- 	}
--	if (--info->tport.count < 0) {
-+	if (--port->count < 0) {
- 		printk(KERN_ERR "rs_close: bad serial port count for ttys%d: %d\n",
--		       tty->index, info->tport.count);
--		info->tport.count = 0;
-+		       tty->index, port->count);
-+		port->count = 0;
- 	}
--	if (info->tport.count) {
-+	if (port->count) {
- 		local_irq_restore(flags);
- 		return;
- 	}
--	info->tport.flags |= ASYNC_CLOSING;
-+	port->flags |= ASYNC_CLOSING;
- 	local_irq_restore(flags);
- 
- 	/*
-@@ -501,14 +503,14 @@ static void rs_close(struct tty_struct *tty, struct file * filp)
- 	shutdown(tty, info);
- 	rs_flush_buffer(tty);
- 	tty_ldisc_flush(tty);
--	info->tport.tty = NULL;
--	if (info->tport.blocked_open) {
--		if (info->tport.close_delay)
--			schedule_timeout_interruptible(info->tport.close_delay);
--		wake_up_interruptible(&info->tport.open_wait);
-+	port->tty = NULL;
-+	if (port->blocked_open) {
-+		if (port->close_delay)
-+			schedule_timeout_interruptible(port->close_delay);
-+		wake_up_interruptible(&port->open_wait);
- 	}
--	info->tport.flags &= ~(ASYNC_NORMAL_ACTIVE|ASYNC_CLOSING);
--	wake_up_interruptible(&info->tport.close_wait);
-+	port->flags &= ~(ASYNC_NORMAL_ACTIVE|ASYNC_CLOSING);
-+	wake_up_interruptible(&port->close_wait);
- }
- 
- /*
-@@ -525,26 +527,27 @@ static void rs_wait_until_sent(struct tty_struct *tty, int timeout)
- static void rs_hangup(struct tty_struct *tty)
- {
- 	struct serial_state *info = tty->driver_data;
-+	struct tty_port *port = &info->port;
- 
- #ifdef SIMSERIAL_DEBUG
- 	printk("rs_hangup: called\n");
- #endif
- 
- 	rs_flush_buffer(tty);
--	if (info->tport.flags & ASYNC_CLOSING)
-+	if (port->flags & ASYNC_CLOSING)
- 		return;
- 	shutdown(tty, info);
- 
--	info->tport.count = 0;
--	info->tport.flags &= ~ASYNC_NORMAL_ACTIVE;
--	info->tport.tty = NULL;
--	wake_up_interruptible(&info->tport.open_wait);
-+	port->count = 0;
-+	port->flags &= ~ASYNC_NORMAL_ACTIVE;
-+	port->tty = NULL;
-+	wake_up_interruptible(&port->open_wait);
+@@ -473,9 +473,10 @@ static void rs_hangup(struct tty_struct *tty)
  }
  
  
- static int startup(struct tty_struct *tty, struct serial_state *state)
+-static int startup(struct tty_struct *tty, struct serial_state *state)
++static int activate(struct tty_port *port, struct tty_struct *tty)
  {
--	struct tty_port *port = &state->tport;
-+	struct tty_port *port = &state->port;
+-	struct tty_port *port = &state->port;
++	struct serial_state *state = container_of(port, struct serial_state,
++			port);
  	unsigned long flags;
  	int	retval=0;
  	unsigned long page;
-@@ -622,26 +625,27 @@ errout:
- static int rs_open(struct tty_struct *tty, struct file * filp)
+@@ -486,20 +487,11 @@ static int startup(struct tty_struct *tty, struct serial_state *state)
+ 
+ 	local_irq_save(flags);
+ 
+-	if (port->flags & ASYNC_INITIALIZED) {
+-		free_page(page);
+-		goto errout;
+-	}
+-
+ 	if (state->xmit.buf)
+ 		free_page(page);
+ 	else
+ 		state->xmit.buf = (unsigned char *) page;
+ 
+-#ifdef SIMSERIAL_DEBUG
+-	printk("startup: ttys%d (irq %d)...", state->line, state->irq);
+-#endif
+-
+ 	/*
+ 	 * Allocate the IRQ if necessary
+ 	 */
+@@ -510,18 +502,8 @@ static int startup(struct tty_struct *tty, struct serial_state *state)
+ 			goto errout;
+ 	}
+ 
+-	clear_bit(TTY_IO_ERROR, &tty->flags);
+-
+ 	state->xmit.head = state->xmit.tail = 0;
+ 
+-#if 0
+-	/*
+-	 * Set up serial timers...
+-	 */
+-	timer_table[RS_TIMER].expires = jiffies + 2*HZ/100;
+-	timer_active |= 1 << RS_TIMER;
+-#endif
+-
+ 	/*
+ 	 * Set up the tty->alt_speed kludge
+ 	 */
+@@ -534,10 +516,6 @@ static int startup(struct tty_struct *tty, struct serial_state *state)
+ 	if ((port->flags & ASYNC_SPD_MASK) == ASYNC_SPD_WARP)
+ 		tty->alt_speed = 460800;
+ 
+-	port->flags |= ASYNC_INITIALIZED;
+-	local_irq_restore(flags);
+-	return 0;
+-
+ errout:
+ 	local_irq_restore(flags);
+ 	return retval;
+@@ -554,41 +532,11 @@ static int rs_open(struct tty_struct *tty, struct file * filp)
  {
  	struct serial_state *info = rs_table + tty->index;
--	int			retval;
-+	struct tty_port *port = &info->port;
-+	int retval;
+ 	struct tty_port *port = &info->port;
+-	int retval;
  
--	info->tport.count++;
--	info->tport.tty = tty;
-+	port->count++;
-+	port->tty = tty;
+-	port->count++;
+-	tty_port_tty_set(port, tty);
  	tty->driver_data = info;
--	tty->port = &info->tport;
-+	tty->port = port;
- 
- #ifdef SIMSERIAL_DEBUG
--	printk("rs_open %s, count = %d\n", tty->name, info->tport.count);
-+	printk("rs_open %s, count = %d\n", tty->name, port->count);
- #endif
--	tty->low_latency = (info->tport.flags & ASYNC_LOW_LATENCY) ? 1 : 0;
-+	tty->low_latency = (port->flags & ASYNC_LOW_LATENCY) ? 1 : 0;
+-	tty->port = port;
+-
+-#ifdef SIMSERIAL_DEBUG
+-	printk("rs_open %s, count = %d\n", tty->name, port->count);
+-#endif
+ 	tty->low_latency = (port->flags & ASYNC_LOW_LATENCY) ? 1 : 0;
  
  	/*
- 	 * If the port is the middle of closing, bail out now
+-	 * If the port is the middle of closing, bail out now
+-	 */
+-	if (tty_hung_up_p(filp) || (port->flags & ASYNC_CLOSING)) {
+-		if (port->flags & ASYNC_CLOSING)
+-			interruptible_sleep_on(&port->close_wait);
+-#ifdef SERIAL_DO_RESTART
+-		return ((port->flags & ASYNC_HUP_NOTIFY) ?
+-			-EAGAIN : -ERESTARTSYS);
+-#else
+-		return -EAGAIN;
+-#endif
+-	}
+-
+-	/*
+-	 * Start up serial port
+-	 */
+-	retval = startup(tty, info);
+-	if (retval) {
+-		return retval;
+-	}
+-
+-	/*
+ 	 * figure out which console to use (should be one already)
  	 */
--	if (tty_hung_up_p(filp) || (info->tport.flags & ASYNC_CLOSING)) {
--		if (info->tport.flags & ASYNC_CLOSING)
--			interruptible_sleep_on(&info->tport.close_wait);
-+	if (tty_hung_up_p(filp) || (port->flags & ASYNC_CLOSING)) {
-+		if (port->flags & ASYNC_CLOSING)
-+			interruptible_sleep_on(&port->close_wait);
- #ifdef SERIAL_DO_RESTART
--		return ((info->tport.flags & ASYNC_HUP_NOTIFY) ?
-+		return ((port->flags & ASYNC_HUP_NOTIFY) ?
- 			-EAGAIN : -ERESTARTSYS);
- #else
- 		return -EAGAIN;
-@@ -774,8 +778,8 @@ static int __init simrs_init(void)
- 	 * Let's have a little bit of fun !
- 	 */
- 	state = rs_table;
--	tty_port_init(&state->tport);
--	state->tport.close_delay = 0; /* XXX really 0? */
-+	tty_port_init(&state->port);
-+	state->port.close_delay = 0; /* XXX really 0? */
+ 	console = console_drivers;
+@@ -597,10 +545,7 @@ static int rs_open(struct tty_struct *tty, struct file * filp)
+ 		console = console->next;
+ 	}
  
- 	retval = hpsim_get_irq(KEYBOARD_INTR);
- 	if (retval < 0) {
+-#ifdef SIMSERIAL_DEBUG
+-	printk("rs_open ttys%d successful\n", info->line);
+-#endif
+-	return 0;
++	return tty_port_open(port, tty, filp);
+ }
+ 
+ /*
+@@ -669,6 +614,7 @@ static const struct tty_operations hp_ops = {
+ };
+ 
+ static const struct tty_port_operations hp_port_ops = {
++	.activate = activate,
+ };
+ 
+ /*
 -- 
 1.7.9.2
