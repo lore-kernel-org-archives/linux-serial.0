@@ -1,71 +1,82 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 10/68] ALPHA: srmcons, use timer functions
-Date: Mon,  5 Mar 2012 14:51:57 +0100
-Message-ID: <1330955575-26641-11-git-send-email-jslaby@suse.cz>
+Subject: [PATCH 16/68] NET: pc300, do not zero global variables
+Date: Mon,  5 Mar 2012 14:52:03 +0100
+Message-ID: <1330955575-26641-17-git-send-email-jslaby@suse.cz>
 References: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.pripojeni.net ([178.22.112.14]:34628 "EHLO
-	smtp.pripojeni.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932325Ab2CENxI (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 5 Mar 2012 08:53:08 -0500
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org
-Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com, netdev@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 
-It makes the code more readable. We move the setup to the allocation
-location because we need to initialize timers only once.
+They are in .bss which is initialized to zeros when the module is
+loaded/kernel booted.
+
+What a strange way to do the initialization once in the pci probe
+routine...
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
+Cc: netdev@vger.kernel.org
 ---
- arch/alpha/kernel/srmcons.c |   14 +++++---------
- 1 file changed, 5 insertions(+), 9 deletions(-)
+ drivers/net/wan/pc300_drv.c |    4 ----
+ drivers/net/wan/pc300_tty.c |   18 ------------------
+ 2 files changed, 22 deletions(-)
 
-diff --git a/arch/alpha/kernel/srmcons.c b/arch/alpha/kernel/srmcons.c
-index 783f4e5..f1fdf17 100644
---- a/arch/alpha/kernel/srmcons.c
-+++ b/arch/alpha/kernel/srmcons.c
-@@ -79,10 +79,8 @@ srmcons_receive_chars(unsigned long data)
- 	} 
+diff --git a/drivers/net/wan/pc300_drv.c b/drivers/net/wan/pc300_drv.c
+index 1eeedd6..a6dd00d 100644
+--- a/drivers/net/wan/pc300_drv.c
++++ b/drivers/net/wan/pc300_drv.c
+@@ -299,7 +299,6 @@ void cpc_tty_init(pc300dev_t * dev);
+ void cpc_tty_unregister_service(pc300dev_t * pc300dev);
+ void cpc_tty_receive(pc300dev_t * pc300dev);
+ void cpc_tty_trigger_poll(pc300dev_t * pc300dev);
+-void cpc_tty_reset_var(void);
+ #endif
  
- 	spin_lock(&srmconsp->lock);
--	if (srmconsp->tty) {
--		srmconsp->timer.expires = jiffies + incr;
--		add_timer(&srmconsp->timer);
--	}
-+	if (srmconsp->tty)
-+		mod_timer(&srmconsp->timer, jiffies + incr);
- 	spin_unlock(&srmconsp->lock);
- 
- 	local_irq_restore(flags);
-@@ -172,7 +170,8 @@ srmcons_get_private_struct(struct srmcons_private **ps)
- 		else {
- 			srmconsp->tty = NULL;
- 			spin_lock_init(&srmconsp->lock);
--			init_timer(&srmconsp->timer);
-+			setup_timer(&srmconsp->timer, srmcons_receive_chars,
-+					(unsigned long)srmconsp);
- 		}
- 
- 		spin_unlock_irqrestore(&srmconsp_lock, flags);
-@@ -199,10 +198,7 @@ srmcons_open(struct tty_struct *tty, struct file *filp)
- 		tty->driver_data = srmconsp;
- 
- 		srmconsp->tty = tty;
--		srmconsp->timer.function = srmcons_receive_chars;
--		srmconsp->timer.data = (unsigned long)srmconsp;
--		srmconsp->timer.expires = jiffies + 10;
--		add_timer(&srmconsp->timer);
-+		mod_timer(&srmconsp->timer, jiffies + 10);
+ /************************/
+@@ -3421,9 +3420,6 @@ cpc_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	if (first_time) {
+ 		first_time = 0;
+ 		show_version();
+-#ifdef CONFIG_PC300_MLPPP
+-		cpc_tty_reset_var();
+-#endif
  	}
  
- 	spin_unlock_irqrestore(&srmconsp->lock, flags);
+ 	if ((err = pci_enable_device(pdev)) < 0)
+diff --git a/drivers/net/wan/pc300_tty.c b/drivers/net/wan/pc300_tty.c
+index d47d2cd..4709f42 100644
+--- a/drivers/net/wan/pc300_tty.c
++++ b/drivers/net/wan/pc300_tty.c
+@@ -139,7 +139,6 @@ void cpc_tty_init(pc300dev_t *dev);
+ void cpc_tty_unregister_service(pc300dev_t *pc300dev);
+ void cpc_tty_receive(pc300dev_t *pc300dev);
+ void cpc_tty_trigger_poll(pc300dev_t *pc300dev);
+-void cpc_tty_reset_var(void);
+ 
+ /*
+  * PC300 TTY clear "signal"
+@@ -1078,20 +1077,3 @@ void cpc_tty_trigger_poll(pc300dev_t *pc300dev)
+ 	}
+ 	schedule_work(&(cpc_tty->tty_tx_work)); 
+ } 
+-
+-/*
+- * PC300 TTY reset var routine
+- * This routine is called by pc300driver to init the TTY area. 
+- */
+-
+-void cpc_tty_reset_var(void)
+-{
+-	int i ; 
+-
+-	CPC_TTY_DBG("hdlcX-tty: reset variables\n");
+-	/* reset  the tty_driver structure - serial_drv */ 
+-	memset(&serial_drv, 0, sizeof(struct tty_driver));
+-	for (i=0; i < CPC_TTY_NPORTS; i++){
+-		memset(&cpc_tty_area[i],0, sizeof(st_cpc_tty_area)); 
+-	}
+-}
 -- 
 1.7.9.2
-
-
