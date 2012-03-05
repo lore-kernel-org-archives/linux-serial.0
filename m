@@ -1,45 +1,30 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PATCH] TTY/serial patches for 3.3-rc6
-Date: Mon, 5 Mar 2012 15:35:25 -0800
-Message-ID: <20120305233525.GA18774@kroah.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 01/68] USB: cdc-acm, use tty_standard_install
+Date: Mon, 5 Mar 2012 23:39:10 +0000
+Message-ID: <20120305233910.728e60d7@pyramind.ukuu.org.uk>
+References: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
+	<1330955575-26641-2-git-send-email-jslaby@suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pz0-f52.google.com ([209.85.210.52]:39441 "EHLO
-	mail-pz0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757794Ab2CEXf4 (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:57305 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757794Ab2CEXhW (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 5 Mar 2012 18:35:56 -0500
-Received: by dadp12 with SMTP id p12so5763035dad.11
-        for <linux-serial@vger.kernel.org>; Mon, 05 Mar 2012 15:35:56 -0800 (PST)
-Content-Disposition: inline
+	Mon, 5 Mar 2012 18:37:22 -0500
+In-Reply-To: <1330955575-26641-2-git-send-email-jslaby@suse.cz>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Jiri Slaby <jslaby@suse.cz>
+Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com
 
-The following changes since commit b01543dfe67bb1d191998e90d20534dc354de059:
+On Mon,  5 Mar 2012 14:51:48 +0100
+Jiri Slaby <jslaby@suse.cz> wrote:
 
-  Linux 3.3-rc4 (2012-02-18 15:53:33 -0800)
+> This is a piece I missed the last time.
+> 
+> Do not copy the functionality all over the tree. Instead, use the
+> helper the tty layer provides us with.
 
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tty-3.3-rc6
-
-for you to fetch changes up to f21c6d4a49179f91fd70a41382382f08c780d425:
-
-  tty/powerpc: early udbg consoles can't be modules (2012-02-24 16:11:50 -0800)
-
-----------------------------------------------------------------
-tty: build fix for 3.3-rc6
-
-This contains one build fix for the powerpc udbg driver that was reported.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Stephen Rothwell (1):
-      tty/powerpc: early udbg consoles can't be modules
-
- drivers/tty/Kconfig |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+All looks sane to me
