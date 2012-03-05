@@ -1,124 +1,82 @@
-From: Frank Benkert <frank.benkert@avat.de>
-Subject: [PATCH] mpc5200b/uart: select more tolerant uart prescaler on low baudrates
-Date: Mon,  5 Mar 2012 16:14:29 +0100
-Message-ID: <13309604692481-git-send-email-frank.benkert@avat.de>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from host05.ganssloser.com ([212.71.208.5]:2117 "EHLO
-	mail.ganssloser.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S964837Ab2CEPXl (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 5 Mar 2012 10:23:41 -0500
-Sender: linux-serial-owner@vger.kernel.org
+From: Tilman Schmidt <tilman@imap.cc>
+Subject: Re: [PATCH 67/68] TTY: isdn/gigaset, do not set tty->driver_data
+ to NULL
+Date: Mon, 05 Mar 2012 18:05:52 +0100
+Message-ID: <4F54F270.8030108@imap.cc>
+References: <1330955575-26641-1-git-send-email-jslaby@suse.cz> <1330955575-26641-68-git-send-email-jslaby@suse.cz>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1330955575-26641-68-git-send-email-jslaby@suse.cz>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jiri Slaby <jslaby@suse.cz>
+Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com, Hansjoerg Lipp <hjlipp@web.de>, gigaset307x-common@lists.sourceforge.net
 List-Id: linux-serial@vger.kernel.org
-To: alan@linux.intel.com
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Frank Benkert <frank.benkert@avat.de>
 
-In addition to the /32 prescaler, the MPC5200B supports a second baudrate 
-prescaler /4 to reach higher baudrates.
-The current calculation (introduced with commit 0d1f22e4) in the kernel 
-preferes this low prescaler as often as possible, but with some imprecise 
-counterparts the communication on low baudrates fails. 
-According a support-mail from freescale the low prescaler (/4) allows just 
-1% tolerance in bittiming in contrast to 4% of the high prescaler (/32). 
-The prescaler not only affects the baudrate-calculation, but also the sampling 
-of the bits on the wire.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-With this patch, we use the slightly less precise, but higher tolerant 
-prescaler calculation on low baudrates up to (and including) 115200 baud and 
-the more precise calculation above.
+Am 05.03.2012 14:52, schrieb Jiri Slaby:
+> Close the window in open where driver_data is reset to NULL on each
+> open. It could cause other processes to get invalid retval from the
+> tty->ops operations because of the checks all over the code.
+>=20
+> With this change we may do other cleanups. Now, the only valid check
+> for tty->driver_data !=3D NULL is in close. This can happen only if o=
+pen
+> fails at gigaset_get_cs_by_tty or try_module_get. The rest of checks
+> in various tty->ops->* are invalid as driver_data cannot be NULL
+> there. The same holds for cs->open_count. So remove them.
 
-Tested on a custom MPC5200B board with "fsl,mpc5200b-psc-uart".
+Thanks for that nice cleanup. It's most welcome.
+Just one question and a small nit:
 
-Signed-off-by: Frank Benkert <frank.benkert@avat.de>
+> --- a/drivers/isdn/gigaset/interface.c
+> +++ b/drivers/isdn/gigaset/interface.c
+[...]
+> @@ -178,12 +176,11 @@ static int if_open(struct tty_struct *tty, stru=
+ct file *filp)
+> =20
+>  static void if_close(struct tty_struct *tty, struct file *filp)
+>  {
+> -	struct cardstate *cs;
+> +	struct cardstate *cs =3D tty->driver_data;
+>  	unsigned long flags;
+> =20
+> -	cs =3D (struct cardstate *) tty->driver_data;
+> -	if (!cs) {
+> -		pr_err("%s: no cardstate\n", __func__);
+> +	if (!cs) { /* happens if we didn't find cs in open */
+> +		printk(KERN_DEBUG "%s: no cardstate\n", __func__);
+>  		return;
+>  	}
+> =20
 
----
+Why are you downgrading the error message from KERN_ERR to KERN_DEBUG
+here? I would think that condition would warrant a message with
+KERN_ERR severity.
+Also, the driver does KERN_DEBUG output uniformly through the gig_dbg
+macro, so if you are sure it should be turned into a debug message
+then please write it as
 
-Calculation Examples with prescaler (PS) 4 and 32 and divisor (DIV) on various 
-baudrates. Real stands for the real baudrate generated and Diff for the 
-differences between:
-     50 Baud PS 32 DIV 0xa122 Real      50 Diff   0.00%
-     75 Baud PS 32 DIV 0x6b6c Real      75 Diff   0.00%
-    110 Baud PS 32 DIV 0x493e Real     110 Diff   0.00%
-    134 Baud PS 32 DIV 0x3c20 Real     133 Diff   0.75%
-    150 Baud PS 32 DIV 0x35b6 Real     150 Diff   0.00%
-    200 Baud PS 32 DIV 0x2849 Real     199 Diff   0.50%
-    300 Baud PS  4 DIV 0xd6d8 Real     300 Diff   0.00%
-             PS 32 DIV 0x1adb Real     300 Diff   0.00%
-    600 Baud PS  4 DIV 0x6b6c Real     600 Diff   0.00%
-             PS 32 DIV 0x0d6e Real     599 Diff   0.17%
-   1200 Baud PS  4 DIV 0x35b6 Real    1200 Diff   0.00%
-             PS 32 DIV 0x06b7 Real    1199 Diff   0.08%
-   1800 Baud PS  4 DIV 0x23cf Real    1799 Diff   0.06%
-             PS 32 DIV 0x047a Real    1799 Diff   0.06%
-   2400 Baud PS  4 DIV 0x1adb Real    2400 Diff   0.00%
-             PS 32 DIV 0x035b Real    2401 Diff - 0.04%
-   4800 Baud PS  4 DIV 0x0d6e Real    4799 Diff   0.02%
-             PS 32 DIV 0x01ae Real    4796 Diff   0.08%
-   9600 Baud PS  4 DIV 0x06b7 Real    9598 Diff   0.02%
-             PS 32 DIV 0x00d7 Real    9593 Diff   0.07%
-  19200 Baud PS  4 DIV 0x035b Real   19208 Diff - 0.04%
-             PS 32 DIV 0x006b Real   19275 Diff - 0.39%
-  38400 Baud PS  4 DIV 0x01ae Real   38372 Diff   0.07%
-             PS 32 DIV 0x0036 Real   38194 Diff   0.54%
-  57600 Baud PS  4 DIV 0x011e Real   57692 Diff - 0.16%
-             PS 32 DIV 0x0024 Real   57291 Diff   0.54%
-  76800 Baud PS  4 DIV 0x00d7 Real   76744 Diff   0.07%
-             PS 32 DIV 0x001b Real   76388 Diff   0.54%
- 115200 Baud PS  4 DIV 0x008f Real  115384 Diff - 0.16%
-             PS 32 DIV 0x0012 Real  114583 Diff   0.54%
- 153600 Baud PS  4 DIV 0x006b Real  154205 Diff - 0.39%
-             PS 32 DIV 0x000d Real  158653 Diff - 3.29%
- 230400 Baud PS  4 DIV 0x0048 Real  229166 Diff   0.54%
-             PS 32 DIV 0x0009 Real  229166 Diff   0.54%
- 307200 Baud PS  4 DIV 0x0036 Real  305555 Diff   0.54%
-             PS 32 DIV 0x0007 Real  294642 Diff   4.09%
- 460800 Baud PS  4 DIV 0x0024 Real  458333 Diff   0.54%
-             PS 32 DIV 0x0005 Real  412500 Diff  10.48%
- 500000 Baud PS  4 DIV 0x0021 Real  500000 Diff   0.00%
-             PS 32 DIV 0x0004 Real  515625 Diff - 3.13%
- 576000 Baud PS  4 DIV 0x001d Real  568965 Diff   1.22%
-             PS 32 DIV 0x0004 Real  515625 Diff  10.48%
- 614400 Baud PS  4 DIV 0x001b Real  611111 Diff   0.54%
-             PS 32 DIV 0x0003 Real  687500 Diff -11.90%
- 921600 Baud PS  4 DIV 0x0012 Real  916666 Diff   0.54%
-             PS 32 DIV 0x0002 Real 1031250 Diff -11.90%
-1000000 Baud PS  4 DIV 0x0011 Real  970588 Diff   2.94%
-             PS 32 DIV 0x0002 Real 1031250 Diff - 3.13%
-1152000 Baud PS  4 DIV 0x000e Real 1178571 Diff - 2.31%
-             PS 32 DIV 0x0002 Real 1031250 Diff  10.48%
-1500000 Baud PS  4 DIV 0x000b Real 1500000 Diff   0.00%
-             PS 32 DIV 0x0001 Real 2062500 Diff -37.50%
-2000000 Baud PS  4 DIV 0x0008 Real 2062500 Diff - 3.13%
-             PS 32 DIV 0x0001 Real 2062500 Diff - 3.13%
-2500000 Baud PS  4 DIV 0x0007 Real 2357142 Diff   5.71%
-             PS 32 DIV 0x0001 Real 2062500 Diff  17.50%
-3000000 Baud PS  4 DIV 0x0006 Real 2750000 Diff   8.33%
-             PS 32 DIV 0x0001 Real 2062500 Diff  31.25%
-3500000 Baud PS  4 DIV 0x0005 Real 3300000 Diff   5.71%
-             PS 32 DIV 0x0001 Real 2062500 Diff  41.07%
-4000000 Baud PS  4 DIV 0x0004 Real 4125000 Diff - 3.13%
-             PS 32 DIV 0x0001 Real 2062500 Diff  48.44%
+	gig_dbg(DEBUG_IF, "%s: no cardstate", __func__);
 
- drivers/tty/serial/mpc52xx_uart.c |    5 +++--
- 1 files changed, 3 insertions(+), 2 deletions(-)
+like four lines later.
 
-diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
-index 1093a88..5e2c6fe 100644
---- a/drivers/tty/serial/mpc52xx_uart.c
-+++ b/drivers/tty/serial/mpc52xx_uart.c
-@@ -262,8 +262,9 @@ static unsigned int mpc5200b_psc_set_baudrate(struct uart_port *port,
- 				  port->uartclk / 4);
- 	divisor = (port->uartclk + 2 * baud) / (4 * baud);
- 
--	/* select the proper prescaler and set the divisor */
--	if (divisor > 0xffff) {
-+	/* select the proper prescaler and set the divisor
-+	 * prefer high prescaler for more tolerance on low baudrates */
-+	if (divisor > 0xffff || baud <= 115200) {
- 		divisor = (divisor + 4) / 8;
- 		prescaler = 0xdd00; /* /32 */
- 	} else
--- 
-1.5.2.1
+Thanks,
+Tilman
 
+- --=20
+Tilman Schmidt                    E-Mail: tilman@imap.cc
+Bonn, Germany
+Diese Nachricht besteht zu 100% aus wiederverwerteten Bits.
+Unge=F6ffnet mindestens haltbar bis: (siehe R=FCckseite)
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.16 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
 
+iEYEARECAAYFAk9U8nAACgkQQ3+did9BuFsaiwCeKiL8hghkVcjstG5azxYoIXOK
+Yl0Anj2FWsaiE4zx3ioVvCo6xgFVKBTk
+=3Di3+X
+-----END PGP SIGNATURE-----
