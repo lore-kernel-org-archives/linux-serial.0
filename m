@@ -1,48 +1,71 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 63/68] TTY: pdc_cons, fix racy tty test
-Date: Mon,  5 Mar 2012 14:52:50 +0100
-Message-ID: <1330955575-26641-64-git-send-email-jslaby@suse.cz>
+Subject: [PATCH 34/68] TTY: amiserial, simplify set_serial_info
+Date: Mon,  5 Mar 2012 14:52:21 +0100
+Message-ID: <1330955575-26641-35-git-send-email-jslaby@suse.cz>
 References: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org
-Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com, Kyle McMartin <kyle@mcmartin.ca>, Helge Deller <deller@gmx.de>, "James E.J. Bottomley" <jejb@parisc-linux.org>
+Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com, Geert Uytterhoeven <geert@linux-m68k.org>
 List-Id: linux-serial@vger.kernel.org
 
-The tty->count test in the timer was racy. Let's remove the test and
-properly delete the timer and wait for the body to finish using _sync
-version of del_timer.
+Do not copy whole serial_state. We only need to know whether the speed
+is to be changed. Hence store the info in advance and use it later.
+A simple bool is enough.
+
+Also remove reduntant assignments and move the tests directly to the
+'if'.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: Kyle McMartin <kyle@mcmartin.ca>
-Cc: Helge Deller <deller@gmx.de>
-Cc: "James E.J. Bottomley" <jejb@parisc-linux.org>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
 ---
- arch/parisc/kernel/pdc_cons.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/amiserial.c |   20 ++++++++------------
+ 1 file changed, 8 insertions(+), 12 deletions(-)
 
-diff --git a/arch/parisc/kernel/pdc_cons.c b/arch/parisc/kernel/pdc_cons.c
-index fc770be..c1db65f 100644
---- a/arch/parisc/kernel/pdc_cons.c
-+++ b/arch/parisc/kernel/pdc_cons.c
-@@ -103,7 +103,7 @@ static int pdc_console_tty_open(struct tty_struct *tty, struct file *filp)
- static void pdc_console_tty_close(struct tty_struct *tty, struct file *filp)
+diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
+index 410e8e7..165cd79 100644
+--- a/drivers/tty/amiserial.c
++++ b/drivers/tty/amiserial.c
+@@ -1042,21 +1042,19 @@ static int set_serial_info(struct serial_state *state,
+ 			   struct serial_struct __user * new_info)
  {
- 	if (!tty->count)
--		del_timer(&pdc_console_timer);
-+		del_timer_sync(&pdc_console_timer);
- }
+ 	struct serial_struct new_serial;
+-	struct serial_state old_state;
+-	unsigned int		change_irq,change_port;
++	bool change_spd;
+ 	int 			retval = 0;
  
- static int pdc_console_tty_write(struct tty_struct *tty, const unsigned char *buf, int count)
-@@ -153,7 +153,7 @@ static void pdc_console_poll(unsigned long unused)
- 	if (count)
- 		tty_flip_buffer_push(tty);
+ 	if (copy_from_user(&new_serial,new_info,sizeof(new_serial)))
+ 		return -EFAULT;
  
--	if (tty->count && (pdc_cons.flags & CON_ENABLED))
-+	if (pdc_cons.flags & CON_ENABLED)
- 		mod_timer(&pdc_console_timer, jiffies + PDC_CONS_POLL_DELAY);
- }
+ 	tty_lock();
+-	old_state = *state;
+-  
+-	change_irq = new_serial.irq != state->irq;
+-	change_port = (new_serial.port != state->port);
+-	if(change_irq || change_port || (new_serial.xmit_fifo_size != state->xmit_fifo_size)) {
+-	  tty_unlock();
+-	  return -EINVAL;
++	change_spd = ((new_serial.flags ^ state->flags) & ASYNC_SPD_MASK) ||
++		new_serial.custom_divisor != state->custom_divisor;
++	if (new_serial.irq != state->irq || new_serial.port != state->port ||
++			new_serial.xmit_fifo_size != state->xmit_fifo_size) {
++		tty_unlock();
++		return -EINVAL;
+ 	}
+   
+ 	if (!serial_isroot()) {
+@@ -1092,9 +1090,7 @@ static int set_serial_info(struct serial_state *state,
  
+ check_and_exit:
+ 	if (state->flags & ASYNC_INITIALIZED) {
+-		if (((old_state.flags & ASYNC_SPD_MASK) !=
+-		     (state->flags & ASYNC_SPD_MASK)) ||
+-		    (old_state.custom_divisor != state->custom_divisor)) {
++		if (change_spd) {
+ 			if ((state->flags & ASYNC_SPD_MASK) == ASYNC_SPD_HI)
+ 				state->tty->alt_speed = 57600;
+ 			if ((state->flags & ASYNC_SPD_MASK) == ASYNC_SPD_VHI)
 -- 
 1.7.9.2
