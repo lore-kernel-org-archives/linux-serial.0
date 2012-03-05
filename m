@@ -1,28 +1,45 @@
-From: Paul Walmsley <paul@pwsan.com>
-Subject: Re: [RFC PATCH] OMAP: UART: Enable tx wakeup bit in wer
-Date: Mon, 5 Mar 2012 13:23:16 -0700 (MST)
-Message-ID: <alpine.DEB.2.00.1203051321580.1430@utopia.booyaka.com>
-References: <1327412249-31575-1-git-send-email-govindraj.raja@ti.com> <alpine.DEB.2.00.1201251217120.5324@utopia.booyaka.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PATCH] TTY/serial patches for 3.3-rc6
+Date: Mon, 5 Mar 2012 15:35:25 -0800
+Message-ID: <20120305233525.GA18774@kroah.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from utopia.booyaka.com ([72.9.107.138]:51808 "EHLO
-	utopia.booyaka.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757496Ab2CEUXR (ORCPT
+Received: from mail-pz0-f52.google.com ([209.85.210.52]:39441 "EHLO
+	mail-pz0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757794Ab2CEXf4 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 5 Mar 2012 15:23:17 -0500
-In-Reply-To: <alpine.DEB.2.00.1201251217120.5324@utopia.booyaka.com>
+	Mon, 5 Mar 2012 18:35:56 -0500
+Received: by dadp12 with SMTP id p12so5763035dad.11
+        for <linux-serial@vger.kernel.org>; Mon, 05 Mar 2012 15:35:56 -0800 (PST)
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Govindraj.R" <govindraj.raja@ti.com>
-Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, Kevin Hilman <khilman@ti.com>, Partha Basak <p-basak2@ti.com>, linux-arm-kernel@lists.infradead.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
+The following changes since commit b01543dfe67bb1d191998e90d20534dc354de059:
 
-Hello Govindraj
+  Linux 3.3-rc4 (2012-02-18 15:53:33 -0800)
 
-Do you intend to update and repost this serial patch?  Or should someone 
-else deal with it?  It would be good to get support for this additional 
-wakeup bit.
+are available in the git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tty-3.3-rc6
 
-- Paul
+for you to fetch changes up to f21c6d4a49179f91fd70a41382382f08c780d425:
+
+  tty/powerpc: early udbg consoles can't be modules (2012-02-24 16:11:50 -0800)
+
+----------------------------------------------------------------
+tty: build fix for 3.3-rc6
+
+This contains one build fix for the powerpc udbg driver that was reported.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Stephen Rothwell (1):
+      tty/powerpc: early udbg consoles can't be modules
+
+ drivers/tty/Kconfig |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
