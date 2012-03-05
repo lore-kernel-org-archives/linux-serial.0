@@ -1,47 +1,42 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 1/9] tty: make receive_buf() return the amout of bytes
- received
-Date: Mon, 5 Mar 2012 10:40:29 +0000
-Message-ID: <20120305104029.262908cc@pyramind.ukuu.org.uk>
-References: <1330883960-8563-1-git-send-email-castet.matthieu@free.fr>
-	<1330883960-8563-2-git-send-email-castet.matthieu@free.fr>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 02/68] TTY: tty_io, remove buffer re-assignments
+Date: Mon,  5 Mar 2012 14:51:49 +0100
+Message-ID: <1330955575-26641-3-git-send-email-jslaby@suse.cz>
+References: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:53169 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756473Ab2CEKim (ORCPT
+Received: from mail.pripojeni.net ([178.22.112.14]:34613 "EHLO
+	smtp.pripojeni.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932222Ab2CENxH (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 5 Mar 2012 05:38:42 -0500
-In-Reply-To: <1330883960-8563-2-git-send-email-castet.matthieu@free.fr>
+	Mon, 5 Mar 2012 08:53:07 -0500
+In-Reply-To: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Matthieu CASTET <castet.matthieu@free.fr>
-Cc: linux-serial@vger.kernel.org, Felipe Balbi <balbi@ti.com>, Toby Gray <toby.gray@realvnc.com>, Stefan Bigler <stefan.bigler@keymile.com>
+To: gregkh@linuxfoundation.org
+Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com
 
-> For a first step, will always return that we received everything.
-> This make sure to we don't break anything when we will check receive_buf
-> return value.
+TTY buffer head and tail are initialized in tty_buffer_init. No need
+to do it once again in initialize_tty_struct where tty_buffer_init is
+called.
+
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+---
+ drivers/tty/tty_io.c |    1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 44736f9..f105ce5 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -2933,7 +2933,6 @@ void initialize_tty_struct(struct tty_struct *tty,
+ 	tty->session = NULL;
+ 	tty->pgrp = NULL;
+ 	tty->overrun_time = jiffies;
+-	tty->buf.head = tty->buf.tail = NULL;
+ 	tty_buffer_init(tty);
+ 	mutex_init(&tty->termios_mutex);
+ 	mutex_init(&tty->ldisc_mutex);
+-- 
+1.7.9.2
 
 
-What about recursive calls ? We have some of those due to bugs elsewhere
-in the code - eg selection.c. I don't wish to throw spanners in the works
-of this effort but you can't actually make it work until you fix
-
-selection.c
-tty_io.c: tiocsti
-n_tty: n_tty_set_room
-
-The first two are unsafe recursive calls, the third one is totally broken
-on any port with low latency set and can result in all kinds of
-interesting failure cases.
-
-Basically you've got to actually address the fact that code is calling
-the ldisc methods wrongly, in parallel, without locking, and in an unsafe
-fashion that in some cases can arbitarily recurse.
-
-Until that is done you are never going to be able to debug the changes
-because it'll crash anyway if you poke it the right way.
-
-Alan
