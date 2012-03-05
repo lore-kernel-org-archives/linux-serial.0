@@ -1,30 +1,39 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 01/68] USB: cdc-acm, use tty_standard_install
-Date: Mon, 5 Mar 2012 23:39:10 +0000
-Message-ID: <20120305233910.728e60d7@pyramind.ukuu.org.uk>
-References: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
-	<1330955575-26641-2-git-send-email-jslaby@suse.cz>
+Subject: Re: [PATCH 0/9] [RFC] tty : make receive_room internal to N_TTY
+ line discipline
+Date: Mon, 5 Mar 2012 23:42:34 +0000
+Message-ID: <20120305234234.12df898f@pyramind.ukuu.org.uk>
+References: <20120304190513.0b7a881b@mat-laptop>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:57305 "EHLO
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:56806 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757794Ab2CEXhW (ORCPT
+	with ESMTP id S1752687Ab2CEXkk (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 5 Mar 2012 18:37:22 -0500
-In-Reply-To: <1330955575-26641-2-git-send-email-jslaby@suse.cz>
+	Mon, 5 Mar 2012 18:40:40 -0500
+In-Reply-To: <20120304190513.0b7a881b@mat-laptop>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com
+To: matthieu castet <castet.matthieu@free.fr>
+Cc: linux-serial@vger.kernel.org, Felipe Balbi <balbi@ti.com>, Toby Gray <toby.gray@realvnc.com>, Stefan Bigler <stefan.bigler@keymile.com>
 
-On Mon,  5 Mar 2012 14:51:48 +0100
-Jiri Slaby <jslaby@suse.cz> wrote:
+I had a bigger dig into this and I think the path to make it workable is
+probably
 
-> This is a piece I missed the last time.
-> 
-> Do not copy the functionality all over the tree. Instead, use the
-> helper the tty layer provides us with.
+- Finish getting rid of the tty_lock (ie the last remnants of the BKL)
 
-All looks sane to me
+- At that point we can rework the logic in tty_ldisc a bit and you can
+  then hold tty->ldisc_mutex across the entire ldisc_receive. That will
+  be a natural sane way to lock the ldisc.
+
+- Once that is in place it is possible to fix TIOCSTI and selection using
+  that mutex to single thread.
+
+- Which then lets you fix the receive_room logic because its all running
+  under a sensible locking model.
+
+I don't see any shortcuts here.
+
+Alan
