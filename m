@@ -1,14 +1,13 @@
 From: Tilman Schmidt <tilman@imap.cc>
-Subject: Re: [PATCH 67/68] TTY: isdn/gigaset, do not set tty->driver_data
- to NULL
-Date: Mon, 05 Mar 2012 18:05:52 +0100
-Message-ID: <4F54F270.8030108@imap.cc>
-References: <1330955575-26641-1-git-send-email-jslaby@suse.cz> <1330955575-26641-68-git-send-email-jslaby@suse.cz>
+Subject: Re: [PATCH 68/68] TTY: isdn/gigaset, use tty_port
+Date: Mon, 05 Mar 2012 18:08:00 +0100
+Message-ID: <4F54F2F0.8090909@imap.cc>
+References: <1330955575-26641-1-git-send-email-jslaby@suse.cz> <1330955575-26641-69-git-send-email-jslaby@suse.cz>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1330955575-26641-68-git-send-email-jslaby@suse.cz>
+In-Reply-To: <1330955575-26641-69-git-send-email-jslaby@suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Jiri Slaby <jslaby@suse.cz>
 Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com, Hansjoerg Lipp <hjlipp@web.de>, gigaset307x-common@lists.sourceforge.net
@@ -18,54 +17,23 @@ List-Id: linux-serial@vger.kernel.org
 Hash: SHA1
 
 Am 05.03.2012 14:52, schrieb Jiri Slaby:
-> Close the window in open where driver_data is reset to NULL on each
-> open. It could cause other processes to get invalid retval from the
-> tty->ops operations because of the checks all over the code.
+> Let us port the code to use tty_port. We now use open_count and tty
+> from there. This allows us also to use tty_port_tty_set with tty
+> refcounting instead of hand-written locking and logic.
 >=20
-> With this change we may do other cleanups. Now, the only valid check
-> for tty->driver_data !=3D NULL is in close. This can happen only if o=
-pen
-> fails at gigaset_get_cs_by_tty or try_module_get. The rest of checks
-> in various tty->ops->* are invalid as driver_data cannot be NULL
-> there. The same holds for cs->open_count. So remove them.
+> Note that tty and open_count are no longer protected by cs->lock. It =
+is
+> protected by tty_port->lock. But since all the places where they were
+> used are now switched to the helpers, we are fine.
+>=20
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> Cc: Hansjoerg Lipp <hjlipp@web.de>
+> Cc: Tilman Schmidt <tilman@imap.cc>
+> Cc: gigaset307x-common@lists.sourceforge.net
 
-Thanks for that nice cleanup. It's most welcome.
-Just one question and a small nit:
+Very nice. Thanks!
 
-> --- a/drivers/isdn/gigaset/interface.c
-> +++ b/drivers/isdn/gigaset/interface.c
-[...]
-> @@ -178,12 +176,11 @@ static int if_open(struct tty_struct *tty, stru=
-ct file *filp)
-> =20
->  static void if_close(struct tty_struct *tty, struct file *filp)
->  {
-> -	struct cardstate *cs;
-> +	struct cardstate *cs =3D tty->driver_data;
->  	unsigned long flags;
-> =20
-> -	cs =3D (struct cardstate *) tty->driver_data;
-> -	if (!cs) {
-> -		pr_err("%s: no cardstate\n", __func__);
-> +	if (!cs) { /* happens if we didn't find cs in open */
-> +		printk(KERN_DEBUG "%s: no cardstate\n", __func__);
->  		return;
->  	}
-> =20
-
-Why are you downgrading the error message from KERN_ERR to KERN_DEBUG
-here? I would think that condition would warrant a message with
-KERN_ERR severity.
-Also, the driver does KERN_DEBUG output uniformly through the gig_dbg
-macro, so if you are sure it should be turned into a debug message
-then please write it as
-
-	gig_dbg(DEBUG_IF, "%s: no cardstate", __func__);
-
-like four lines later.
-
-Thanks,
-Tilman
+Acked-by: Tilman Schmidt <tilman@imap.cc>
 
 - --=20
 Tilman Schmidt                    E-Mail: tilman@imap.cc
@@ -76,7 +44,7 @@ Unge=F6ffnet mindestens haltbar bis: (siehe R=FCckseite)
 Version: GnuPG v2.0.16 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk9U8nAACgkQQ3+did9BuFsaiwCeKiL8hghkVcjstG5azxYoIXOK
-Yl0Anj2FWsaiE4zx3ioVvCo6xgFVKBTk
-=3Di3+X
+iEYEARECAAYFAk9U8vAACgkQQ3+did9BuFv8RACeLMRSUGhjotg0il1LtWqtfrzR
+sakAn0LJr66dYyUXteH44p5+KFQuS5v9
+=3DIs+Q
 -----END PGP SIGNATURE-----
