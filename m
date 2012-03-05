@@ -1,85 +1,129 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 48/68] TTY: simserial, use tty_port_close_start
-Date: Mon,  5 Mar 2012 14:52:35 +0100
-Message-ID: <1330955575-26641-49-git-send-email-jslaby@suse.cz>
+Subject: [PATCH 12/68] TTY: srmcons, convert to use tty_port
+Date: Mon,  5 Mar 2012 14:51:59 +0100
+Message-ID: <1330955575-26641-13-git-send-email-jslaby@suse.cz>
 References: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.pripojeni.net ([178.22.112.14]:34643 "EHLO
+	smtp.pripojeni.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932345Ab2CENxJ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 5 Mar 2012 08:53:09 -0500
 In-Reply-To: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
 
-I.e. remove more copied bloat.
-
-The only change is that we wait_until_sent now. Which is what we
-really should do.
+This is needed because the tty buffer will become a tty_port member
+later. That will help us to wipe out most of the races and checks for
+the tty pointer in hot paths.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: Tony Luck <tony.luck@intel.com>
-Cc: Fenghua Yu <fenghua.yu@intel.com>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
 ---
- arch/ia64/hp/sim/simserial.c |   36 +-----------------------------------
- 1 file changed, 1 insertion(+), 35 deletions(-)
+ arch/alpha/kernel/srmcons.c |   32 +++++++++++++++++---------------
+ 1 file changed, 17 insertions(+), 15 deletions(-)
 
-diff --git a/arch/ia64/hp/sim/simserial.c b/arch/ia64/hp/sim/simserial.c
-index 53db99a..2cd6d23 100644
---- a/arch/ia64/hp/sim/simserial.c
-+++ b/arch/ia64/hp/sim/simserial.c
-@@ -430,45 +430,12 @@ static void rs_close(struct tty_struct *tty, struct file * filp)
+diff --git a/arch/alpha/kernel/srmcons.c b/arch/alpha/kernel/srmcons.c
+index 2c89ce5c..3ea8094 100644
+--- a/arch/alpha/kernel/srmcons.c
++++ b/arch/alpha/kernel/srmcons.c
+@@ -30,9 +30,8 @@ static int srm_is_registered_console = 0;
+ #define MAX_SRM_CONSOLE_DEVICES 1	/* only support 1 console device */
+ 
+ struct srmcons_private {
+-	struct tty_struct *tty;
++	struct tty_port port;
+ 	struct timer_list timer;
+-	spinlock_t lock;
+ } srmcons_singleton;
+ 
+ typedef union _srmcons_result {
+@@ -68,20 +67,21 @@ static void
+ srmcons_receive_chars(unsigned long data)
  {
- 	struct serial_state *info = tty->driver_data;
- 	struct tty_port *port = &info->port;
--	unsigned long flags;
+ 	struct srmcons_private *srmconsp = (struct srmcons_private *)data;
++	struct tty_port *port = &srmconsp->port;
+ 	unsigned long flags;
+ 	int incr = 10;
  
- 	if (!info)
- 		return;
+ 	local_irq_save(flags);
+ 	if (spin_trylock(&srmcons_callback_lock)) {
+-		if (!srmcons_do_receive_chars(srmconsp->tty))
++		if (!srmcons_do_receive_chars(port->tty))
+ 			incr = 100;
+ 		spin_unlock(&srmcons_callback_lock);
+ 	} 
  
--	local_irq_save(flags);
--	if (tty_hung_up_p(filp)) {
--#ifdef SIMSERIAL_DEBUG
--		printk("rs_close: hung_up\n");
--#endif
--		local_irq_restore(flags);
--		return;
--	}
--#ifdef SIMSERIAL_DEBUG
--	printk("rs_close ttys%d, count = %d\n", info->line, port->count);
--#endif
--	if ((tty->count == 1) && (port->count != 1)) {
--		/*
--		 * Uh, oh.  tty->count is 1, which means that the tty
--		 * structure will be freed.  port->count should always
--		 * be one in these conditions.  If it's greater than
--		 * one, we've got real problems, since it means the
--		 * serial port won't be shutdown.
--		 */
--		printk(KERN_ERR "rs_close: bad serial port count; tty->count is 1, "
--		       "port->count is %d\n", port->count);
--		port->count = 1;
--	}
--	if (--port->count < 0) {
--		printk(KERN_ERR "rs_close: bad serial port count for ttys%d: %d\n",
--		       tty->index, port->count);
--		port->count = 0;
--	}
--	if (port->count) {
--		local_irq_restore(flags);
-+	if (tty_port_close_start(port, tty, filp) == 0)
- 		return;
--	}
--	port->flags |= ASYNC_CLOSING;
--	local_irq_restore(flags);
+-	spin_lock(&srmconsp->lock);
+-	if (srmconsp->tty)
++	spin_lock(&port->lock);
++	if (port->tty)
+ 		mod_timer(&srmconsp->timer, jiffies + incr);
+-	spin_unlock(&srmconsp->lock);
++	spin_unlock(&port->lock);
  
- 	/*
- 	 * Now we wait for the transmit buffer to clear; and we notify
-@@ -476,7 +443,6 @@ static void rs_close(struct tty_struct *tty, struct file * filp)
- 	 */
- 	shutdown(tty, info);
- 	rs_flush_buffer(tty);
--	tty_ldisc_flush(tty);
- 	port->tty = NULL;
+ 	local_irq_restore(flags);
+ }
+@@ -157,18 +157,19 @@ static int
+ srmcons_open(struct tty_struct *tty, struct file *filp)
+ {
+ 	struct srmcons_private *srmconsp = &srmcons_singleton;
++	struct tty_port *port = &srmconsp->port;
+ 	unsigned long flags;
  
- 	tty_port_close_end(port, tty);
+-	spin_lock_irqsave(&srmconsp->lock, flags);
++	spin_lock_irqsave(&port->lock, flags);
+ 
+-	if (!srmconsp->tty) {
++	if (!port->tty) {
+ 		tty->driver_data = srmconsp;
+-
+-		srmconsp->tty = tty;
++		tty->port = port;
++		port->tty = tty; /* XXX proper refcounting */
+ 		mod_timer(&srmconsp->timer, jiffies + 10);
+ 	}
+ 
+-	spin_unlock_irqrestore(&srmconsp->lock, flags);
++	spin_unlock_irqrestore(&port->lock, flags);
+ 
+ 	return 0;
+ }
+@@ -177,16 +178,17 @@ static void
+ srmcons_close(struct tty_struct *tty, struct file *filp)
+ {
+ 	struct srmcons_private *srmconsp = tty->driver_data;
++	struct tty_port *port = &srmconsp->port;
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&srmconsp->lock, flags);
++	spin_lock_irqsave(&port->lock, flags);
+ 
+ 	if (tty->count == 1) {
+-		srmconsp->tty = NULL;
++		port->tty = NULL;
+ 		del_timer(&srmconsp->timer);
+ 	}
+ 
+-	spin_unlock_irqrestore(&srmconsp->lock, flags);
++	spin_unlock_irqrestore(&port->lock, flags);
+ }
+ 
+ 
+@@ -203,7 +205,7 @@ static const struct tty_operations srmcons_ops = {
+ static int __init
+ srmcons_init(void)
+ {
+-	spin_lock_init(&srmcons_singleton.lock);
++	tty_port_init(&srmcons_singleton.port);
+ 	setup_timer(&srmcons_singleton.timer, srmcons_receive_chars,
+ 			(unsigned long)&srmcons_singleton);
+ 	if (srm_is_registered_console) {
 -- 
 1.7.9.2
+
+
