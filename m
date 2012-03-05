@@ -1,202 +1,133 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 54/68] TTY: simserial, reindent some code
-Date: Mon,  5 Mar 2012 14:52:41 +0100
-Message-ID: <1330955575-26641-55-git-send-email-jslaby@suse.cz>
+Subject: [PATCH 57/68] TTY: amiserial, stop using serial_state->{irq,type,line}
+Date: Mon,  5 Mar 2012 14:52:44 +0100
+Message-ID: <1330955575-26641-58-git-send-email-jslaby@suse.cz>
 References: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org
-Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>
+Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com, Geert Uytterhoeven <geert@linux-m68k.org>
 List-Id: linux-serial@vger.kernel.org
 
-Make the code to conform to the standard. Also make it readable.
+* instead of line, use tty->index or iterator...
+* irq and type are left unset. So get rid of them.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: Tony Luck <tony.luck@intel.com>
-Cc: Fenghua Yu <fenghua.yu@intel.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
 ---
- arch/ia64/hp/sim/simserial.c |  120 ++++++++++++++++--------------------------
- 1 file changed, 44 insertions(+), 76 deletions(-)
+ drivers/tty/amiserial.c |   23 ++++++++++-------------
+ include/linux/serialP.h |    3 ---
+ 2 files changed, 10 insertions(+), 16 deletions(-)
 
-diff --git a/arch/ia64/hp/sim/simserial.c b/arch/ia64/hp/sim/simserial.c
-index 24d6ca0..516ad09 100644
---- a/arch/ia64/hp/sim/simserial.c
-+++ b/arch/ia64/hp/sim/simserial.c
-@@ -62,28 +62,25 @@ static void receive_chars(struct tty_struct *tty)
- 	static unsigned char seen_esc = 0;
- 
- 	while ( (ch = ia64_ssc(0, 0, 0, 0, SSC_GETCHAR)) ) {
--		if ( ch == 27 && seen_esc == 0 ) {
-+		if (ch == 27 && seen_esc == 0) {
- 			seen_esc = 1;
- 			continue;
--		} else {
--			if ( seen_esc==1 && ch == 'O' ) {
--				seen_esc = 2;
--				continue;
--			} else if ( seen_esc == 2 ) {
--				if ( ch == 'P' ) /* F1 */
--					show_state();
-+		} else if (seen_esc == 1 && ch == 'O') {
-+			seen_esc = 2;
-+			continue;
-+		} else if (seen_esc == 2) {
-+			if (ch == 'P') /* F1 */
-+				show_state();
- #ifdef CONFIG_MAGIC_SYSRQ
--				if ( ch == 'S' ) { /* F4 */
--					do
--						ch = ia64_ssc(0, 0, 0, 0,
--							      SSC_GETCHAR);
--					while (!ch);
--					handle_sysrq(ch);
--				}
--#endif
--				seen_esc = 0;
--				continue;
-+			if (ch == 'S') { /* F4 */
-+				do {
-+					ch = ia64_ssc(0, 0, 0, 0, SSC_GETCHAR);
-+				} while (!ch);
-+				handle_sysrq(ch);
- 			}
-+#endif
-+			seen_esc = 0;
-+			continue;
- 		}
- 		seen_esc = 0;
- 
-@@ -195,8 +192,8 @@ static void rs_flush_chars(struct tty_struct *tty)
- {
- 	struct serial_state *info = tty->driver_data;
- 
--	if (info->xmit.head == info->xmit.tail || tty->stopped || tty->hw_stopped ||
--	    !info->xmit.buf)
-+	if (info->xmit.head == info->xmit.tail || tty->stopped ||
-+			tty->hw_stopped || !info->xmit.buf)
- 		return;
- 
- 	transmit_chars(tty, info, NULL);
-@@ -232,10 +229,10 @@ static int rs_write(struct tty_struct * tty,
- 	/*
- 	 * Hey, we transmit directly from here in our case
- 	 */
--	if (CIRC_CNT(info->xmit.head, info->xmit.tail, SERIAL_XMIT_SIZE)
--	    && !tty->stopped && !tty->hw_stopped) {
-+	if (CIRC_CNT(info->xmit.head, info->xmit.tail, SERIAL_XMIT_SIZE) &&
-+			!tty->stopped && !tty->hw_stopped)
- 		transmit_chars(tty, info, NULL);
--	}
-+
- 	return ret;
- }
- 
-@@ -293,7 +290,8 @@ static void rs_send_xchar(struct tty_struct *tty, char ch)
+diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
+index a9f5da6..b182bcc 100644
+--- a/drivers/tty/amiserial.c
++++ b/drivers/tty/amiserial.c
+@@ -1008,7 +1008,7 @@ static void rs_unthrottle(struct tty_struct * tty)
+  * ------------------------------------------------------------
   */
- static void rs_throttle(struct tty_struct * tty)
- {
--	if (I_IXOFF(tty)) rs_send_xchar(tty, STOP_CHAR(tty));
-+	if (I_IXOFF(tty))
-+		rs_send_xchar(tty, STOP_CHAR(tty));
  
- 	printk(KERN_INFO "simrs_throttle called\n");
- }
-@@ -322,48 +320,21 @@ static int rs_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
- 	}
+-static int get_serial_info(struct serial_state *state,
++static int get_serial_info(struct tty_struct *tty, struct serial_state *state,
+ 			   struct serial_struct __user * retinfo)
+ {
+ 	struct serial_struct tmp;
+@@ -1017,10 +1017,8 @@ static int get_serial_info(struct serial_state *state,
+ 		return -EFAULT;
+ 	memset(&tmp, 0, sizeof(tmp));
+ 	tty_lock();
+-	tmp.type = state->type;
+-	tmp.line = state->line;
++	tmp.line = tty->index;
+ 	tmp.port = state->port;
+-	tmp.irq = state->irq;
+ 	tmp.flags = state->tport.flags;
+ 	tmp.xmit_fifo_size = state->xmit_fifo_size;
+ 	tmp.baud_base = state->baud_base;
+@@ -1047,7 +1045,7 @@ static int set_serial_info(struct tty_struct *tty, struct serial_state *state,
+ 	tty_lock();
+ 	change_spd = ((new_serial.flags ^ port->flags) & ASYNC_SPD_MASK) ||
+ 		new_serial.custom_divisor != state->custom_divisor;
+-	if (new_serial.irq != state->irq || new_serial.port != state->port ||
++	if (new_serial.irq || new_serial.port != state->port ||
+ 			new_serial.xmit_fifo_size != state->xmit_fifo_size) {
+ 		tty_unlock();
+ 		return -EINVAL;
+@@ -1250,7 +1248,7 @@ static int rs_ioctl(struct tty_struct *tty,
  
  	switch (cmd) {
--		case TIOCGSERIAL:
--			printk(KERN_INFO "simrs_ioctl TIOCGSERIAL called\n");
--			return 0;
--		case TIOCSSERIAL:
--			printk(KERN_INFO "simrs_ioctl TIOCSSERIAL called\n");
--			return 0;
--		case TIOCSERCONFIG:
--			printk(KERN_INFO "rs_ioctl: TIOCSERCONFIG called\n");
--			return -EINVAL;
--
--		case TIOCSERGETLSR: /* Get line status register */
--			printk(KERN_INFO "rs_ioctl: TIOCSERGETLSR called\n");
--			return  -EINVAL;
--
--		case TIOCSERGSTRUCT:
--			printk(KERN_INFO "rs_ioctl: TIOCSERGSTRUCT called\n");
--#if 0
--			if (copy_to_user((struct async_struct *) arg,
--					 info, sizeof(struct async_struct)))
--				return -EFAULT;
--#endif
--			return 0;
--
--		/*
--		 * Wait for any of the 4 modem inputs (DCD,RI,DSR,CTS) to change
--		 * - mask passed in arg for lines of interest
--		 *   (use |'ed TIOCM_RNG/DSR/CD/CTS for masking)
--		 * Caller should use TIOCGICOUNT to see which one it was
--		 */
--		case TIOCMIWAIT:
--			printk(KERN_INFO "rs_ioctl: TIOCMIWAIT: called\n");
--			return 0;
--		case TIOCSERGWILD:
--		case TIOCSERSWILD:
--			/* "setserial -W" is called in Debian boot */
--			printk (KERN_INFO "TIOCSER?WILD ioctl obsolete, ignored.\n");
--			return 0;
--
--		default:
--			return -ENOIOCTLCMD;
--		}
--	return 0;
-+	case TIOCGSERIAL:
-+	case TIOCSSERIAL:
-+	case TIOCSERGSTRUCT:
-+	case TIOCMIWAIT:
-+		return 0;
-+	case TIOCSERCONFIG:
-+	case TIOCSERGETLSR: /* Get line status register */
-+		return -EINVAL;
-+	case TIOCSERGWILD:
-+	case TIOCSERSWILD:
-+		/* "setserial -W" is called in Debian boot */
-+		printk (KERN_INFO "TIOCSER?WILD ioctl obsolete, ignored.\n");
-+		return 0;
-+	}
-+	return -ENOIOCTLCMD;
- }
+ 		case TIOCGSERIAL:
+-			return get_serial_info(info, argp);
++			return get_serial_info(tty, info, argp);
+ 		case TIOCSSERIAL:
+ 			return set_serial_info(tty, info, argp);
+ 		case TIOCSERCONFIG:
+@@ -1403,7 +1401,7 @@ static void rs_close(struct tty_struct *tty, struct file * filp)
+ 	}
+ 	if (--port->count < 0) {
+ 		printk("rs_close: bad serial port count for ttys%d: %d\n",
+-		       state->line, port->count);
++		       tty->index, port->count);
+ 		port->count = 0;
+ 	}
+ 	if (port->count) {
+@@ -1720,12 +1718,13 @@ static int rs_open(struct tty_struct *tty, struct file * filp)
+  * /proc fs routines....
+  */
  
- #define RELEVANT_IFLAG(iflag) (iflag & (IGNBRK|BRKINT|IGNPAR|PARMRK|INPCK))
-@@ -387,14 +358,12 @@ static void shutdown(struct tty_port *port)
+-static inline void line_info(struct seq_file *m, struct serial_state *state)
++static inline void line_info(struct seq_file *m, int line,
++		struct serial_state *state)
+ {
+ 	char	stat_buf[30], control, status;
  	unsigned long flags;
  
+-	seq_printf(m, "%d: uart:amiga_builtin",state->line);
++	seq_printf(m, "%d: uart:amiga_builtin", line);
+ 
  	local_irq_save(flags);
--	{
--		if (info->irq)
--			free_irq(info->irq, info);
-+	if (info->irq)
-+		free_irq(info->irq, info);
- 
--		if (info->xmit.buf) {
--			free_page((unsigned long) info->xmit.buf);
--			info->xmit.buf = NULL;
--		}
-+	if (info->xmit.buf) {
-+		free_page((unsigned long) info->xmit.buf);
-+		info->xmit.buf = NULL;
- 	}
- 	local_irq_restore(flags);
- }
-@@ -418,9 +387,8 @@ static int activate(struct tty_port *port, struct tty_struct *tty)
+ 	status = ciab.pra;
+@@ -1771,7 +1770,7 @@ static inline void line_info(struct seq_file *m, struct serial_state *state)
+ static int rs_proc_show(struct seq_file *m, void *v)
  {
- 	struct serial_state *state = container_of(port, struct serial_state,
- 			port);
--	unsigned long flags;
--	int	retval=0;
--	unsigned long page;
-+	unsigned long flags, page;
-+	int retval = 0;
+ 	seq_printf(m, "serinfo:1.0 driver:%s\n", serial_version);
+-	line_info(m, &rs_table[0]);
++	line_info(m, 0, &rs_table[0]);
+ 	return 0;
+ }
  
- 	page = get_zeroed_page(GFP_KERNEL);
- 	if (!page)
+@@ -1867,7 +1866,6 @@ static int __init amiga_serial_probe(struct platform_device *pdev)
+ 
+ 	state = rs_table;
+ 	state->port = (int)&custom.serdatr; /* Just to give it a value */
+-	state->line = 0;
+ 	state->custom_divisor = 0;
+ 	state->icount.cts = state->icount.dsr = 
+ 	  state->icount.rng = state->icount.dcd = 0;
+@@ -1876,8 +1874,7 @@ static int __init amiga_serial_probe(struct platform_device *pdev)
+ 	state->icount.overrun = state->icount.brk = 0;
+ 	tty_port_init(&state->tport);
+ 
+-	printk(KERN_INFO "ttyS%d is the amiga builtin serial port\n",
+-		       state->line);
++	printk(KERN_INFO "ttyS0 is the amiga builtin serial port\n");
+ 
+ 	/* Hardware set up */
+ 
+diff --git a/include/linux/serialP.h b/include/linux/serialP.h
+index 9a04dec..77afbdb 100644
+--- a/include/linux/serialP.h
++++ b/include/linux/serialP.h
+@@ -29,9 +29,6 @@
+ struct serial_state {
+ 	int	baud_base;
+ 	unsigned long	port;
+-	int	irq;
+-	int	type;
+-	int	line;
+ 	int	xmit_fifo_size;
+ 	int	custom_divisor;
+ 	struct async_icount	icount;	
 -- 
 1.7.9.2
