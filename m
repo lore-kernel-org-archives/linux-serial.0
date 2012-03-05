@@ -1,53 +1,26 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 20/68] TTY: iss/console, use tty_port
-Date: Mon,  5 Mar 2012 14:52:07 +0100
-Message-ID: <1330955575-26641-21-git-send-email-jslaby@suse.cz>
-References: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
+From: Oliver Neukum <oneukum@suse.de>
+Subject: Re: [PATCH 01/68] USB: cdc-acm, use tty_standard_install
+Date: Mon, 5 Mar 2012 15:14:19 +0100
+Message-ID: <201203051514.19274.oneukum@suse.de>
+References: <1330955575-26641-1-git-send-email-jslaby@suse.cz> <1330955575-26641-2-git-send-email-jslaby@suse.cz> <4F54C7BD.1020105@suse.cz>
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-2
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1330955575-26641-1-git-send-email-jslaby@suse.cz>
+In-Reply-To: <4F54C7BD.1020105@suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com, Chris Zankel <chris@zankel.net>
+To: Jiri Slaby <jslaby@suse.cz>
+Cc: Jiri Slaby <jirislaby@gmail.com>, gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Oliver Neukum <oliver@neukum.name>, USB list <linux-usb@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Even though the port is not used for anything real there yet, this
-will change as tty buffers will be in tty_port in the near future. So
-the port will be needed in all drivers.
-
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: Chris Zankel <chris@zankel.net>
----
- arch/xtensa/platforms/iss/console.c |    4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/arch/xtensa/platforms/iss/console.c b/arch/xtensa/platforms/iss/console.c
-index 94ab8ec..d1a7861 100644
---- a/arch/xtensa/platforms/iss/console.c
-+++ b/arch/xtensa/platforms/iss/console.c
-@@ -37,6 +37,7 @@
- #define SERIAL_TIMER_VALUE (20 * HZ)
- 
- static struct tty_driver *serial_driver;
-+static struct tty_port serial_port;
- static struct timer_list serial_timer;
- 
- static DEFINE_SPINLOCK(timer_lock);
-@@ -68,6 +69,7 @@ static void rs_poll(unsigned long);
- 
- static int rs_open(struct tty_struct *tty, struct file * filp)
- {
-+	tty->port = &serial_port;
- 	spin_lock(&timer_lock);
- 	if (tty->count == 1) {
- 		setup_timer(&serial_timer, rs_poll, (unsigned long)tty);
-@@ -202,6 +204,8 @@ static const struct tty_operations serial_ops = {
- 
- int __init rs_init(void)
- {
-+	tty_port_init(&serial_port);
-+
- 	serial_driver = alloc_tty_driver(SERIAL_MAX_NUM_LINES);
- 
- 	printk ("%s %s\n", serial_name, serial_version);
--- 
-1.7.9.2
+Am Montag, 5. M=E4rz 2012, 15:03:41 schrieb Jiri Slaby:
+> Forgot to CC maintainers. Done now.
+>=20
+> On 03/05/2012 02:51 PM, Jiri Slaby wrote:
+> > This is a piece I missed the last time.
+> >=20
+> > Do not copy the functionality all over the tree. Instead, use the
+> > helper the tty layer provides us with.
+> >=20
+> > Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Acked-by: Oliver Neukum <oneukum@suse.de>
