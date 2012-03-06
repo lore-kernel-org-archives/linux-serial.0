@@ -1,16 +1,16 @@
 From: "Mr.Liu Tai Ling" <coliva@peihap.gob.pe>
 Subject: Partnership
-Date: Tue, 6 Mar 2012 01:40:51 -0500 (PET)
-Message-ID: <29035619.6544.1331016051538.JavaMail.root@mail.peihap.gob.pe>
-Reply-To: "Mr.Liu Tai Ling" <l_lingtia@yahoo.com.hk>
+Date: Tue, 6 Mar 2012 01:43:17 -0500 (PET)
+Message-ID: <6367382.6546.1331016197830.JavaMail.root@mail.peihap.gob.pe>
+Reply-To: "Mr.Liu Tai Ling" <ligtia_liu2011@yahoo.cn>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [200.60.59.213] ([200.60.59.213]:42361 "EHLO mail.peihap.gob.pe"
+Received: from [200.60.59.213] ([200.60.59.213]:57243 "EHLO mail.peihap.gob.pe"
 	rhost-flags-FAIL-FAIL-OK-OK) by vger.kernel.org with ESMTP
-	id S1752776Ab2CFGu0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 6 Mar 2012 01:50:26 -0500
+	id S1750871Ab2CFGyS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 6 Mar 2012 01:54:18 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
