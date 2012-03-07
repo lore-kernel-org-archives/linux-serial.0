@@ -1,51 +1,34 @@
-From: Paul Walmsley <paul@pwsan.com>
-Subject: Re: [RFC PATCH] OMAP: UART: Enable tx wakeup bit in wer
-Date: Tue, 6 Mar 2012 22:57:22 -0700 (MST)
-Message-ID: <alpine.DEB.2.00.1203062251270.23214@utopia.booyaka.com>
-References: <1327412249-31575-1-git-send-email-govindraj.raja@ti.com> <alpine.DEB.2.00.1201251217120.5324@utopia.booyaka.com> <alpine.DEB.2.00.1203051321580.1430@utopia.booyaka.com> <CAMrsUdJqmJ75=X_Qg3vQCr7zezs0jOK8L1ri8p5K=+6ZKsRFcg@mail.gmail.com>
+From: "RICHARD TANG" <tagnrichard@yahoo.com.hk>
+Subject: MAIL
+Date: Wed, 07 Mar 2012 17:46:54 +0200
+Message-ID: <20120307174654.10753aya0pmgq1ny__18183.604538399$1331144137$gmane$org@82.137.248.25>
+Reply-To: trichad@yahoo.cn
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain;
+	charset=ISO-8859-1;
+	DelSp="Yes";
+	format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from utopia.booyaka.com ([72.9.107.138]:52612 "EHLO
-	utopia.booyaka.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751410Ab2CGF5X (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 7 Mar 2012 00:57:23 -0500
-In-Reply-To: <CAMrsUdJqmJ75=X_Qg3vQCr7zezs0jOK8L1ri8p5K=+6ZKsRFcg@mail.gmail.com>
+Received: from mgw06.190.sy ([82.137.248.25]:42484 "EHLO smtp6.190.sy"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S932197Ab2CGSOt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 7 Mar 2012 13:14:49 -0500
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Raja, Govindraj" <govindraj.raja@ti.com>
-Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, Kevin Hilman <khilman@ti.com>, Partha Basak <p-basak2@ti.com>, linux-arm-kernel@lists.infradead.org
-
-Hi
-
-On Tue, 6 Mar 2012, Raja, Govindraj wrote:
-
-> I see two ways of adding this tx wake-up flag.
-> 
-> 1.) passing a feature flag from pdata and populating the feature value to wer.
-> 
-> 2.) Duplicating the uart1/2/3 hwmod for omap3430 without dev attrib
-> and uart1/2/3/4
->      hwmod for omap3630 with dev attribs.
-> 
-> Approach-2 adds unnecessary code duplication in hwmod file with and without
-> dev_attribs, So right now here is the patch to follow approach [1],
-> 
-> If its strongly recommended to use approach-2 will add it.
-> (My concern is the diffstat it might produce with approach-2)
-
-Both 1 and 2 are needed.
-
-The current way that errata are handled in arch/arm/mach-omap2/serial.c 
-needs to be changed.  Those should be flags that are passed from hwmod 
-dev_attr data.  The presence of the TX wakeup bit should simply be another 
-dev_attr flag.  These flags should be passed to the driver via the 
-omap_up.errata field for the time being.
-
-The exception to this is if the IP block's revision register was changed 
-when TX wakeups became possible.  If that's the case, then that mechanism 
-can be used in lieu of dev_attr and platform_data in this situation.
 
 
-- Paul
+
+Mail From Tang.
+
+I work with the hang seng Bank Hong Kong.I have a business proposition  
+for you involving a trade in my bank which I know we will be of mutual  
+benefit to both of us, If interested mail me at:trichad@yahoo.cn
+
+Regards,
+Richard Tang.
+
+----------------------------------------------------------------
+This message was sent using IMP, the Internet Messaging Program.
+
