@@ -1,87 +1,80 @@
 From: Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: [PATCH 0/7] powerpc: remove the legacy iSeries platform specific
- drivers
-Date: Thu, 8 Mar 2012 15:28:53 +1100
-Message-ID: <20120308152853.b5010336abbb8f90e8a2500c@canb.auug.org.au>
+Subject: [PATCH 5/7] tty: powerpc: remove SERIAL_ICOM dependency on
+ PPC_ISERIES
+Date: Thu, 8 Mar 2012 15:39:31 +1100
+Message-ID: <20120308153931.b1b8b4f27d8e4a94b219bf4c@canb.auug.org.au>
+References: <20120308152853.b5010336abbb8f90e8a2500c@canb.auug.org.au>
 Mime-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pgp-signature";
  micalg="PGP-SHA256";
- boundary="Signature=_Thu__8_Mar_2012_15_28_53_+1100_FAEEpVFrow/u5bwP"
+ boundary="Signature=_Thu__8_Mar_2012_15_39_31_+1100_R04eX+iOgbS1NNt5"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from haggis.pcug.org.au ([203.10.76.10]:53029 "EHLO
+Received: from haggis.pcug.org.au ([203.10.76.10]:34224 "EHLO
 	members.tip.net.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750794Ab2CHEnj (ORCPT
+	with ESMTP id S1752393Ab2CHEnn (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 7 Mar 2012 23:43:39 -0500
+	Wed, 7 Mar 2012 23:43:43 -0500
+In-Reply-To: <20120308152853.b5010336abbb8f90e8a2500c@canb.auug.org.au>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: ppc-dev <linuxppc-dev@lists.ozlabs.org>, "James E.J. Bottomley" <JBottomley@parallels.com>, netdev@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Brian King <brking@linux.vnet.ibm.com>, David Miller <davem@davemloft.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, Jens Axboe <axboe@kernel.dk>, LKML <linux-kernel@vger.kernel.org>
+Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, ppc-dev <linuxppc-dev@lists.ozlabs.org>, LKML <linux-kernel@vger.kernel.org>
 
---Signature=_Thu__8_Mar_2012_15_28_53_+1100_FAEEpVFrow/u5bwP
+--Signature=_Thu__8_Mar_2012_15_39_31_+1100_R04eX+iOgbS1NNt5
 Content-Type: text/plain; charset=US-ASCII
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hi all,
+The PowerPC legacy iSeries platform is being removed so this is no
+longer selectable.
 
-This series of patches removes all the legacy iSeries platform specific
-drivers (and the iSeries specific part of one).  The legacy iSeries
-platform main code has already bee removed along with CONFIG_PPC_ISERIES,
-so none of this code is selectable or needed any more.
+Cc: Alan Cox <alan@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+---
+ drivers/tty/serial/Kconfig |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-It would probably be easiest if all these patches were merged via the
-powerpc tree to eliminate any dependencies between them.  Their impact on
-generic code is very small.
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 2de9924..59e7983 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -853,7 +853,7 @@ config SERIAL_MPC52xx_CONSOLE_BAUD
+=20
+ config SERIAL_ICOM
+ 	tristate "IBM Multiport Serial Adapter"
+-	depends on PCI && (PPC_ISERIES || PPC_PSERIES)
++	depends on PCI && PPC_PSERIES
+ 	select SERIAL_CORE
+ 	select FW_LOADER
+ 	help
+--=20
+1.7.9.1
 
 --=20
 Cheers,
 Stephen Rothwell                    sfr@canb.auug.org.au
 
- arch/powerpc/include/asm/iseries/hv_call_event.h |  201 ---
- arch/powerpc/include/asm/iseries/hv_lp_event.h   |  162 --
- arch/powerpc/include/asm/iseries/iommu.h         |   37 -
- arch/powerpc/include/asm/iseries/vio.h           |  265 ----
- arch/powerpc/kernel/vio.c                        |   18 +-
- drivers/base/driver.c                            |   30 -
- drivers/block/viodasd.c                          |  809 ----------
- drivers/cdrom/viocd.c                            |  739 ----------
- drivers/char/viotape.c                           | 1041 -------------
- drivers/net/ethernet/ibm/Kconfig                 |    4 -
- drivers/net/ethernet/ibm/Makefile                |    1 -
- drivers/net/ethernet/ibm/iseries_veth.c          | 1710 ------------------=
-----
- drivers/scsi/Kconfig                             |    3 +-
- drivers/scsi/ibmvscsi/Makefile                   |    1 -
- drivers/scsi/ibmvscsi/ibmvscsi.c                 |   12 +-
- drivers/scsi/ibmvscsi/ibmvscsi.h                 |    1 -
- drivers/scsi/ibmvscsi/iseries_vscsi.c            |  173 ---
- drivers/tty/hvc/Kconfig                          |   10 -
- drivers/tty/hvc/Makefile                         |    1 -
- drivers/tty/hvc/hvc_iseries.c                    |  599 --------
- drivers/tty/serial/Kconfig                       |    2 +-
- include/linux/device.h                           |    4 -
- 22 files changed, 5 insertions(+), 5818 deletions(-)
-
---Signature=_Thu__8_Mar_2012_15_28_53_+1100_FAEEpVFrow/u5bwP
+--Signature=_Thu__8_Mar_2012_15_39_31_+1100_R04eX+iOgbS1NNt5
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.12 (GNU/Linux)
 
-iQIcBAEBCAAGBQJPWDWFAAoJEECxmPOUX5FEbBAP/ibeDxIYy4XOacIv4XHMxS6w
-1w4/Ubt50Mn/iXAcumqfQZPcbWjuIhmsfozJ71v12svc4XyGAvyfabnmyYdFtsaz
-/jFUmB2RHYeMh1qbpMRvhV4UDws5g63w/IRbuFNIMOLf4SptuUsGLIWD/AIamFeO
-OiEel64pSbrUY1ZihHDunnSA0Pl9riE0uvfMtmlFiF7Fdvum9VP6PLGKQssjFya4
-//B4D4U1yWj5mw/a6oUY4HAuartCDXRKI5m9/lFdbkaWBjxneAez0ogynEYY2tqT
-IIfPbRO64DVMZPEae4hg+h4o1MAu+HP+0UFOKazSh2oN9BJjAs3UZjqBPNQz3969
-xZvH2TtTEkNu8qBu55/FZ9awutBWNESAnvhh1kAVal6pNmL998KOLht/LDzywacl
-jPNSxOnv+6bCPvTFHW3j2MLDKslSfZkb40SyWamvm0Pp/uSqBSf6L+3DEpYg9VRH
-MHXGaX9B8YFqkHEARCsw31v+SMoB9+RQtag5mzqQWYEouC+2VjUp1KFFQ+ltqWxX
-wozF7KGZD5pIZKqtJMH6k/2Ju5rfOflzhqEwaBDSi1457fPAdRB4TK0RcoxujMpx
-Ez9ahrKk03qRrDv1xSHX1Szzs3jj7X4RfEVbhmPLeVcIlz6puNpI53vB5dXTYK42
-HkNbjPVfY4LyHm1bmGd6
-=1lw0
+iQIcBAEBCAAGBQJPWDgDAAoJEECxmPOUX5FE7nEP/1VKdbI5IpjGcv13R6mszDdS
+6wvNIM1nZKE05EECB7tNys4xSB9D9vwiYFTH+H5cY7gLPdmqbDqxMZ0q/yVI2zxE
+jvbeS3ASyVVzBNiDlUByS9xy7Rpdy7gY+VYz0fvCmxad07FuRGHgqr18o2pNt7f+
+Qa9MAy+Xifn59nEGjGQhkmSXv4hpXE1NrJQmJ0rt7vhHTmtO531Q45uoJ142Yci4
+9Yy/Bc3Mh4LSihhZoikkFEgQDObZDOTpohHJ0nkfiCVTGYTXSvFf8yv8Ih77vNq6
+UGQ9RLZTUgJPm9tZHblBzWNJu5YTFVgLafa9+id7ycBVdqtrGeVaP+vAVaEVxqRs
+MoIapV9PE0isdgDuF4HtNMH8XFJXTSobsGhbOcVNdCTYkQ0PEUnFB8/Vd7FKT2Bf
+tOTkFNZEp/MjPh8omN13aLPwG1KCvv66N02JBJ0FGJ/nyNEN+7hKVFKBrEAxcDMD
+UoMHsZEisfnfEEkc8rckc+yH4+LKmRr1tHA6ClL3kyd/x1G1wA9zAZTWuBwSoEPx
+GXlK1H+FU1L8qAOF+WnlXtQA2ZedFZxclXoodxilTLnGdXZvCuYzHP0eN2yjsWut
+N5FsgMCu+X4F8eIUCHKOzfetdRr6DapQHCa5WFqAuIvPKGSdqJSDZTleFYbSphZC
+iZk0BGt2/KefUK/kOo0b
+=HssQ
 -----END PGP SIGNATURE-----
 
---Signature=_Thu__8_Mar_2012_15_28_53_+1100_FAEEpVFrow/u5bwP--
+--Signature=_Thu__8_Mar_2012_15_39_31_+1100_R04eX+iOgbS1NNt5--
