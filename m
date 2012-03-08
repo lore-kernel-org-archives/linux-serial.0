@@ -1,80 +1,24 @@
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: [PATCH 5/7] tty: powerpc: remove SERIAL_ICOM dependency on
- PPC_ISERIES
-Date: Thu, 8 Mar 2012 15:39:31 +1100
-Message-ID: <20120308153931.b1b8b4f27d8e4a94b219bf4c@canb.auug.org.au>
+From: David Miller <davem@davemloft.net>
+Subject: Re: [PATCH 0/7] powerpc: remove the legacy iSeries platform
+ specific drivers
+Date: Wed, 07 Mar 2012 22:53:01 -0800 (PST)
+Message-ID: <20120307.225301.360050313988337392.davem@davemloft.net>
 References: <20120308152853.b5010336abbb8f90e8a2500c@canb.auug.org.au>
 Mime-Version: 1.0
-Content-Type: multipart/signed; protocol="application/pgp-signature";
- micalg="PGP-SHA256";
- boundary="Signature=_Thu__8_Mar_2012_15_39_31_+1100_R04eX+iOgbS1NNt5"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from haggis.pcug.org.au ([203.10.76.10]:34224 "EHLO
-	members.tip.net.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752393Ab2CHEnn (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 7 Mar 2012 23:43:43 -0500
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-scsi-owner@vger.kernel.org>
 In-Reply-To: <20120308152853.b5010336abbb8f90e8a2500c@canb.auug.org.au>
-Sender: linux-serial-owner@vger.kernel.org
+Sender: linux-scsi-owner@vger.kernel.org
+To: sfr@canb.auug.org.au
+Cc: benh@kernel.crashing.org, linuxppc-dev@lists.ozlabs.org, JBottomley@parallels.com, netdev@vger.kernel.org, alan@linux.intel.com, brking@linux.vnet.ibm.com, gregkh@linuxfoundation.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, axboe@kernel.dk, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, ppc-dev <linuxppc-dev@lists.ozlabs.org>, LKML <linux-kernel@vger.kernel.org>
 
---Signature=_Thu__8_Mar_2012_15_39_31_+1100_R04eX+iOgbS1NNt5
-Content-Type: text/plain; charset=US-ASCII
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Thu, 8 Mar 2012 15:28:53 +1100
 
-The PowerPC legacy iSeries platform is being removed so this is no
-longer selectable.
+> It would probably be easiest if all these patches were merged via the
+> powerpc tree to eliminate any dependencies between them.  Their impact on
+> generic code is very small.
 
-Cc: Alan Cox <alan@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- drivers/tty/serial/Kconfig |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 2de9924..59e7983 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -853,7 +853,7 @@ config SERIAL_MPC52xx_CONSOLE_BAUD
-=20
- config SERIAL_ICOM
- 	tristate "IBM Multiport Serial Adapter"
--	depends on PCI && (PPC_ISERIES || PPC_PSERIES)
-+	depends on PCI && PPC_PSERIES
- 	select SERIAL_CORE
- 	select FW_LOADER
- 	help
---=20
-1.7.9.1
-
---=20
-Cheers,
-Stephen Rothwell                    sfr@canb.auug.org.au
-
---Signature=_Thu__8_Mar_2012_15_39_31_+1100_R04eX+iOgbS1NNt5
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-
-iQIcBAEBCAAGBQJPWDgDAAoJEECxmPOUX5FE7nEP/1VKdbI5IpjGcv13R6mszDdS
-6wvNIM1nZKE05EECB7tNys4xSB9D9vwiYFTH+H5cY7gLPdmqbDqxMZ0q/yVI2zxE
-jvbeS3ASyVVzBNiDlUByS9xy7Rpdy7gY+VYz0fvCmxad07FuRGHgqr18o2pNt7f+
-Qa9MAy+Xifn59nEGjGQhkmSXv4hpXE1NrJQmJ0rt7vhHTmtO531Q45uoJ142Yci4
-9Yy/Bc3Mh4LSihhZoikkFEgQDObZDOTpohHJ0nkfiCVTGYTXSvFf8yv8Ih77vNq6
-UGQ9RLZTUgJPm9tZHblBzWNJu5YTFVgLafa9+id7ycBVdqtrGeVaP+vAVaEVxqRs
-MoIapV9PE0isdgDuF4HtNMH8XFJXTSobsGhbOcVNdCTYkQ0PEUnFB8/Vd7FKT2Bf
-tOTkFNZEp/MjPh8omN13aLPwG1KCvv66N02JBJ0FGJ/nyNEN+7hKVFKBrEAxcDMD
-UoMHsZEisfnfEEkc8rckc+yH4+LKmRr1tHA6ClL3kyd/x1G1wA9zAZTWuBwSoEPx
-GXlK1H+FU1L8qAOF+WnlXtQA2ZedFZxclXoodxilTLnGdXZvCuYzHP0eN2yjsWut
-N5FsgMCu+X4F8eIUCHKOzfetdRr6DapQHCa5WFqAuIvPKGSdqJSDZTleFYbSphZC
-iZk0BGt2/KefUK/kOo0b
-=HssQ
------END PGP SIGNATURE-----
-
---Signature=_Thu__8_Mar_2012_15_39_31_+1100_R04eX+iOgbS1NNt5--
+No objections.
