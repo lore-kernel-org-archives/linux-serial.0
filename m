@@ -1,36 +1,72 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 1/4] pch_uart: Use uartclk instead of base_baud
-Date: Thu, 8 Mar 2012 10:58:07 -0800
-Message-ID: <20120308185807.GA19040@kroah.com>
-References: <cover.1330539597.git.dvhart@linux.intel.com>
- <8b7e59a1f360a5f1ca9382ff53d9be941ef07f7b.1330539597.git.dvhart@linux.intel.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 6/6] vt: push the tty_lock down into the map handling
+Date: Thu, 8 Mar 2012 11:14:36 -0800
+Message-ID: <20120308191436.GA30341@kroah.com>
+References: <20120302145628.32320.53944.stgit@bob.linux.org.uk>
+ <20120302150012.32320.70608.stgit@bob.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-yw0-f46.google.com ([209.85.213.46]:55381 "EHLO
-	mail-yw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755170Ab2CHS6M (ORCPT
+Received: from mail-iy0-f174.google.com ([209.85.210.174]:36520 "EHLO
+	mail-iy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757957Ab2CHTOk (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 8 Mar 2012 13:58:12 -0500
-Received: by yhmm54 with SMTP id m54so437831yhm.19
-        for <linux-serial@vger.kernel.org>; Thu, 08 Mar 2012 10:58:11 -0800 (PST)
+	Thu, 8 Mar 2012 14:14:40 -0500
+Received: by iagz16 with SMTP id z16so1081373iag.19
+        for <linux-serial@vger.kernel.org>; Thu, 08 Mar 2012 11:14:40 -0800 (PST)
 Content-Disposition: inline
-In-Reply-To: <8b7e59a1f360a5f1ca9382ff53d9be941ef07f7b.1330539597.git.dvhart@linux.intel.com>
+In-Reply-To: <20120302150012.32320.70608.stgit@bob.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Darren Hart <dvhart@linux.intel.com>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Tomoya MORINAGA <tomoya.rohm@gmail.com>, Feng Tang <feng.tang@intel.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Wed, Feb 29, 2012 at 10:24:44AM -0800, Darren Hart wrote:
-> The term "base baud" refers to the fastest baud rate the device can communicate
-> at. This is clock/16. pch_uart is using base_baud as the clock itself. Rename
-> the variables to be semantically correct.
+On Fri, Mar 02, 2012 at 03:00:14PM +0000, Alan Cox wrote:
+> From: Alan Cox <alan@linux.intel.com>
+>=20
+> When we do this it becomes clear the lock we should be holding is the=
+ vc
+> lock, and in fact many of our other helpers are properly invoked this=
+ way.
+>=20
+> We don't at this point guarantee not to race the keyboard code but th=
+e results
+> of that appear harmless and that was true before we started as well.
+>=20
+> We now have no users of tty_lock in the console driver...
+>=20
+> Signed-off-by: Alan Cox <alan@linux.intel.com>
+> ---
+>=20
+>  drivers/tty/vt/consolemap.c |  119 ++++++++++++++++++++++++++++++++-=
+----------
+>  drivers/tty/vt/vt_ioctl.c   |   25 ++-------
+>  include/linux/vt_kern.h     |    1=20
+>  3 files changed, 93 insertions(+), 52 deletions(-)
+>=20
 
-This patch doesn't apply to my tree, what did you make it against?
+With this patch applied, I get the following build error:
 
-Care to refresh these against the linux-next tree and resend them so
-that I can apply them?
+drivers/tty/vt/consolemap.c: In function =E2=80=98con_set_trans_old=E2=80=
+=99:
+drivers/tty/vt/consolemap.c:315:2: error: implicit declaration of funct=
+ion =E2=80=98console_lock=E2=80=99 [-Werror=3Dimplicit-function-declara=
+tion]
+drivers/tty/vt/consolemap.c:323:2: error: implicit declaration of funct=
+ion =E2=80=98console_unlock=E2=80=99 [-Werror=3Dimplicit-function-decla=
+ration]
+
+what went wrong?
+
+I've applied the first 5 in this series to my tree now, but not this
+one.
 
 thanks,
 
 greg k-h
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
