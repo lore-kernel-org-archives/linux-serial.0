@@ -1,31 +1,44 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 0/7] powerpc: remove the legacy iSeries platform specific
- drivers
-Date: Thu, 8 Mar 2012 09:59:41 -0800
-Message-ID: <20120308175941.GB26516@kroah.com>
-References: <20120308152853.b5010336abbb8f90e8a2500c@canb.auug.org.au>
+Subject: Re: [PATCH] Clear previous interrupts after fifo is disabled
+Date: Thu, 8 Mar 2012 10:49:54 -0800
+Message-ID: <20120308184954.GA1275@kroah.com>
+References: <CAOAMb1ASB0zznSSOAU9HgPNW2e=Do+8hSJ6JZ00DxtAxqsXyXQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-yw0-f46.google.com ([209.85.213.46]:48018 "EHLO
+	mail-yw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753357Ab2CHSt7 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 8 Mar 2012 13:49:59 -0500
+Received: by yhmm54 with SMTP id m54so431776yhm.19
+        for <linux-serial@vger.kernel.org>; Thu, 08 Mar 2012 10:49:59 -0800 (PST)
 Content-Disposition: inline
-In-Reply-To: <20120308152853.b5010336abbb8f90e8a2500c@canb.auug.org.au>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>, ppc-dev <linuxppc-dev@lists.ozlabs.org>, "James E.J. Bottomley" <JBottomley@parallels.com>, netdev@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Brian King <brking@linux.vnet.ibm.com>, David Miller <davem@davemloft.net>, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, Jens Axboe <axboe@kernel.dk>, LKML <linux-kernel@vger.kernel.org>
+In-Reply-To: <CAOAMb1ASB0zznSSOAU9HgPNW2e=Do+8hSJ6JZ00DxtAxqsXyXQ@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Chanho Min <chanho0207@gmail.com>
+Cc: Russell King <linux@arm.linux.org.uk>, Alan Cox <alan@linux.intel.com>, Linus Walleij <linus.walleij@linaro.org>, Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>, "Kim, Jong-Sung" <neidhard.kim@lge.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Thu, Mar 08, 2012 at 03:28:53PM +1100, Stephen Rothwell wrote:
-> Hi all,
+On Mon, Feb 27, 2012 at 06:30:20PM +0900, Chanho Min wrote:
+> This is another workaroud of  'https://lkml.org/lkml/2012/1/17/104'
+> with additional analysis.Bootloader can transfer control to kernel and
+> there are some pending interrupts. In this case, RXFE of the flag
+> register is set by clearing FEN(LCRH) even if rx data remains in the
+> fifo. It seems that the fifo's status is initiailized. Interrupt
+> handler can not get any data from data register because of the below
+> break condtion.
 > 
-> This series of patches removes all the legacy iSeries platform specific
-> drivers (and the iSeries specific part of one).  The legacy iSeries
-> platform main code has already bee removed along with CONFIG_PPC_ISERIES,
-> so none of this code is selectable or needed any more.
-> 
-> It would probably be easiest if all these patches were merged via the
-> powerpc tree to eliminate any dependencies between them.  Their impact on
-> generic code is very small.
+> pl011_fifo_to_tty
+>  while (max_count--) {
+>    if (status & UART01x_FR_RXFE)
+> 	break;
 
-No objection from me at all.
+This patch never seemed to be agreed on, so I'm not taking it.
+
+Can someone, if this is still needed, and everyone agrees on how to
+solve it, please send me the needed fix?
+
+thanks,
 
 greg k-h
