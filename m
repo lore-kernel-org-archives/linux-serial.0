@@ -1,70 +1,27 @@
-From: "Raja, Govindraj" <govindraj.raja@ti.com>
-Subject: Re: [RFC PATCH] OMAP: UART: Enable tx wakeup bit in wer
-Date: Fri, 9 Mar 2012 11:49:51 +0530
-Message-ID: <CAMrsUdL6jPguVLDnEkg-T9fyvv+XY5tkNiooZOXszUYrdrUwPw@mail.gmail.com>
-References: <1327412249-31575-1-git-send-email-govindraj.raja@ti.com>
- <alpine.DEB.2.00.1201251217120.5324@utopia.booyaka.com> <alpine.DEB.2.00.1203051321580.1430@utopia.booyaka.com>
- <CAMrsUdJqmJ75=X_Qg3vQCr7zezs0jOK8L1ri8p5K=+6ZKsRFcg@mail.gmail.com> <alpine.DEB.2.00.1203062251270.23214@utopia.booyaka.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH v2 0/7] serial: cleanups that strive to do nothing
+Date: Fri, 9 Mar 2012 10:29:45 +0000
+Message-ID: <20120309102945.3b057fb7@pyramind.ukuu.org.uk>
+References: <1331251934-25540-1-git-send-email-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <alpine.DEB.2.00.1203062251270.23214@utopia.booyaka.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Paul Walmsley <paul@pwsan.com>
-Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, Kevin Hilman <khilman@ti.com>, Partha Basak <p-basak2@ti.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:37033 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754224Ab2CIK1s (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 9 Mar 2012 05:27:48 -0500
+In-Reply-To: <1331251934-25540-1-git-send-email-paul.gortmaker@windriver.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org
 
-On Wed, Mar 7, 2012 at 11:27 AM, Paul Walmsley <paul@pwsan.com> wrote:
-> Hi
->
-> On Tue, 6 Mar 2012, Raja, Govindraj wrote:
->
->> I see two ways of adding this tx wake-up flag.
->>
->> 1.) passing a feature flag from pdata and populating the feature val=
-ue to wer.
->>
->> 2.) Duplicating the uart1/2/3 hwmod for omap3430 without dev attrib
->> and uart1/2/3/4
->> =A0 =A0 =A0hwmod for omap3630 with dev attribs.
->>
->> Approach-2 adds unnecessary code duplication in hwmod file with and =
-without
->> dev_attribs, So right now here is the patch to follow approach [1],
->>
->> If its strongly recommended to use approach-2 will add it.
->> (My concern is the diffstat it might produce with approach-2)
->
-> Both 1 and 2 are needed.
->
-> The current way that errata are handled in arch/arm/mach-omap2/serial=
-=2Ec
-> needs to be changed. =A0Those should be flags that are passed from hw=
-mod
-> dev_attr data. =A0The presence of the TX wakeup bit should simply be =
-another
-> dev_attr flag. =A0These flags should be passed to the driver via the
-> omap_up.errata field for the time being.
+> Aside from Alan's one comment (now fixed) there were no other
+> issues pointed out, so it would be nice to have these applied
+> to tty-next.
 
-okay.
+I'm happy with them
 
->
-> The exception to this is if the IP block's revision register was chan=
-ged
-> when TX wakeups became possible. =A0If that's the case, then that mec=
-hanism
-> can be used in lieu of dev_attr and platform_data in this situation.
-
-I will check on the MVR reg available for uart-rev on different omap so=
-cs,
-and will get back by end on next of week with a possible patch.
-
---
-Thanks,
-Govindraj.R
---
-To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Acked-by: Alan Cox <alan@linux.intel.com>
