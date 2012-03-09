@@ -1,124 +1,97 @@
-From: Darren Hart <dvhart@linux.intel.com>
-Subject: [PATCH 2/5] pch_uart: Add Fish River Island II uart clock quirks
-Date: Fri,  9 Mar 2012 09:51:49 -0800
-Message-ID: <d300c2195b9903a64b114e1bd38b02a03f19b230.1331315372.git.dvhart@linux.intel.com>
-References: <ae0029b9e1131467232389e4dfa630f50e159de0.1331315372.git.dvhart@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <ae0029b9e1131467232389e4dfa630f50e159de0.1331315372.git.dvhart@linux.intel.com>
-In-Reply-To: <cover.1331315372.git.dvhart@linux.intel.com>
-References: <cover.1331315372.git.dvhart@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Cc: Darren Hart <dvhart@linux.intel.com>, Tomoya MORINAGA <tomoya.rohm@gmail.com>, Feng Tang <feng.tang@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+From: Thomas Schwinge <thomas@codesourcery.com>
+Subject: Re: [PATCH 3/7] serial: sh-sci: restore big-endian operation.
+Date: Fri, 09 Mar 2012 21:23:46 +0100
+Message-ID: <87lin9mskt.fsf@schwinge.name>
+References: <1331311133-26937-1-git-send-email-thomas@codesourcery.com> <1331311133-26937-3-git-send-email-thomas@codesourcery.com> <20120309171007.GA25965@kroah.com>
+Mime-Version: 1.0
+Content-Type: multipart/signed; boundary="=-=-=";
+	micalg=pgp-sha1; protocol="application/pgp-signature"
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from relay1.mentorg.com ([192.94.38.131]:33187 "EHLO
+	relay1.mentorg.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1030512Ab2CIUYD (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 9 Mar 2012 15:24:03 -0500
+In-Reply-To: <20120309171007.GA25965@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Paul Mundt <lethal@linux-sh.org>, linux-sh@vger.kernel.org, linux-serial@vger.kernel.org
 
-Add support for the Fish River Island II (FRI2) UART clock following the CM-iTC
-quirk handling mechanism. Depending on the firmware installed on the device, the
-FRI2 uses a 48MHz or a 64MHz UART clock. This is detected with DMI strings.
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Add similar UART clock quirk handling to the pch_console_setup() function to
-enable kernel messages on boards with non-standard UART clocks.
+Hi Greg!
 
-Per Alan's suggestion, abstract out UART clock selection into
-pch_uart_get_uartclk() to avoid code duplication.
+First -- as you probably have guessed already -- I'm not (not yet?) :-)
+too familiar with the Linux kernel patch submission process.  I have
+spent quite some time reading the included documentation, but apparently
+missed some details...  :-)
 
-Signed-off-by: Darren Hart <dvhart@linux.intel.com>
-CC: Tomoya MORINAGA <tomoya.rohm@gmail.com>
-CC: Feng Tang <feng.tang@intel.com>
-CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC: Alan Cox <alan@linux.intel.com>
-CC: linux-serial@vger.kernel.org
----
- drivers/tty/serial/pch_uart.c |   40 +++++++++++++++++++++++++++-------------
- 1 files changed, 27 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 5178213..88a1be0 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -206,7 +206,10 @@ enum {
- 
- #define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
- 
--#define DEFAULT_UARTCLK 1843200 /* 1.8432MHz */
-+#define DEFAULT_UARTCLK   1843200 /*   1.8432 MHz */
-+#define CMITC_UARTCLK   192000000 /* 192.0000 MHz */
-+#define FRI2_64_UARTCLK  64000000 /*  64.0000 MHz */
-+#define FRI2_48_UARTCLK  48000000 /*  48.0000 MHz */
- 
- struct pch_uart_buffer {
- 	unsigned char *buf;
-@@ -364,6 +367,26 @@ static const struct file_operations port_regs_ops = {
- };
- #endif	/* CONFIG_DEBUG_FS */
- 
-+/* Return UART clock, checking for board specific clocks. */
-+static int pch_uart_get_uartclk(void)
-+{
-+	const char *cmp;
-+
-+	cmp = dmi_get_system_info(DMI_BOARD_NAME);
-+	if (cmp && strstr(cmp, "CM-iTC"))
-+		return CMITC_UARTCLK;
-+
-+	cmp = dmi_get_system_info(DMI_BIOS_VERSION);
-+	if (cmp && strnstr(cmp, "FRI2", 4))
-+		return FRI2_64_UARTCLK;
-+
-+	cmp = dmi_get_system_info(DMI_PRODUCT_NAME);
-+	if (cmp && strstr(cmp, "Fish River Island II"))
-+		return FRI2_48_UARTCLK;
-+
-+	return DEFAULT_UARTCLK;
-+}
-+
- static void pch_uart_hal_enable_interrupt(struct eg20t_port *priv,
- 					  unsigned int flag)
- {
-@@ -1556,8 +1579,7 @@ static int __init pch_console_setup(struct console *co, char *options)
- 	if (!port || (!port->iobase && !port->membase))
- 		return -ENODEV;
- 
--	/* setup uartclock */
--	port->uartclk = DEFAULT_UARTCLK;
-+	port->uartclk = pch_uart_get_uartclk();
- 
- 	if (options)
- 		uart_parse_options(options, &baud, &parity, &bits, &flow);
-@@ -1600,10 +1622,9 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
- 	unsigned int iobase;
- 	unsigned int mapbase;
- 	unsigned char *rxbuf;
--	int fifosize, uartclk;
-+	int fifosize;
- 	int port_type;
- 	struct pch_uart_driver_data *board;
--	const char *board_name;
- 	char name[32];	/* for debugfs file name */
- 
- 	board = &drv_dat[id->driver_data];
-@@ -1617,13 +1638,6 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
- 	if (!rxbuf)
- 		goto init_port_free_txbuf;
- 
--	uartclk = DEFAULT_UARTCLK;
--
--	/* quirk for CM-iTC board */
--	board_name = dmi_get_system_info(DMI_BOARD_NAME);
--	if (board_name && strstr(board_name, "CM-iTC"))
--		uartclk = 192000000; /* 192.0MHz */
--
- 	switch (port_type) {
- 	case PORT_UNKNOWN:
- 		fifosize = 256; /* EG20T/ML7213: UART0 */
-@@ -1648,7 +1662,7 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
- 	priv->rxbuf.size = PAGE_SIZE;
- 
- 	priv->fifo_size = fifosize;
--	priv->uartclk = uartclk;
-+	priv->uartclk = pch_uart_get_uartclk();
- 	priv->port_type = PORT_MAX_8250 + port_type + 1;
- 	priv->port.dev = &pdev->dev;
- 	priv->port.iobase = iobase;
--- 
-1.7.6.5
+On Fri, 9 Mar 2012 09:10:07 -0800, Greg KH <gregkh@linuxfoundation.org> wro=
+te:
+> On Fri, Mar 09, 2012 at 05:38:49PM +0100, Thomas Schwinge wrote:
+> > As of 37b7a97884ba64bf7d403351ac2a9476ab4f1bba we have to use the
+> > endianess-agnostic I/O accessor functions.
+>=20
+> Please always put a human readable description of what the git id is, so
+> that we have a chance to understand what is going on.
+
+Sorry.  ``sh: machvec IO death.'' -- well, the essential part what I'm
+fixing here is that before this commit readw (and friends, such as
+ioread16) didn't do any endianess modification of the data, but directly
+invoked __raw_readw, whereas after 37b7a978 they do such modification by
+means of filtering through le16_to_cpu (in the readw/ioread16 case).
+This is where things break for big endian (but not little endian, where
+this is a no-op).
+
+
+> Are these patches supposed to be going through the sh tree, or the
+> serial tree to Linus?
+
+I'm assuming that Paul Mundt will handle the whole lot in an SH tree.
+
+Paul, by the way, if that's more convenient I can also publish my Git
+tree.
+
+
+> And watch your To: line, it seemed to be munged :(
+
+Yes.  By means of scripts/get_maintainer.pl (and some manual adjustments)
+I created the Cc: lists that are part of my commits' log messages.  Then,
+I just had git send-email send that out, without explicitly specifying a
+primary recipient (To: line).  I assume I should have put Paul there?
+
+On this patch, the linux-serial was Cced (as suggested by
+scripts/get_maintainer.pl), as it touches a TTY/serial driver, and I
+wanted to make sure to give you an opportunity to review that the patch
+doesn't introduce any breakage on non-SH architectures, for example.
+(Despite its indicative name, sh-sci also seems to be used on some ARM
+boards.)
+
+
+> confused,
+
+Sorry; will hopefully improve.  :-)
+
+
+Gr=C3=BC=C3=9Fe,
+ Thomas
+
+--=-=-=
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iQEcBAEBAgAGBQJPWmbSAAoJENuKOtuXzphJR5EIAKslGo7+zlQGhPiZ3sOGl+3g
+8nrO/kbTl8SrZYV2fjFjVWkRRbWrGT/WA/d1LRQ4wZVNDFgbqH8QfH0yovzZwHVf
+Os3hsr0LLZYQYZs6lqmGy6HjNy8YNXKok3/zAoOWE90HyCJMHeVo5LIwYtpzwYGb
+Mnu87HDb82TCf7kpF66+uQ/lbcvl6/41HbudTnLQOAhgT/52XKBC0irdxxopkdmB
+8h+fzfVxaJ+yaTy2YZai/Pf9jCJkazvcXQhXOMhsYjr5ETBHnSkUVLOBPPVtc3zn
+Vy17x5qBPIMPUImd6H6CzWnznoeQbE3GWDlcMFpQGg4AkHe99q8rplguc9UrZsc=
+=gifc
+-----END PGP SIGNATURE-----
+--=-=-=--
