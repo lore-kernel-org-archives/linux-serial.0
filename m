@@ -1,60 +1,103 @@
-From: "Kim, Jong-Sung" <neidhard.kim@lge.com>
-Subject: RE: [PATCH] Clear previous interrupts after fifo is disabled
-Date: Mon, 12 Mar 2012 10:24:17 +0900
-Message-ID: <018601ccffee$d9a8cf00$8cfa6d00$@lge.com>
-References: <CAOAMb1ASB0zznSSOAU9HgPNW2e=Do+8hSJ6JZ00DxtAxqsXyXQ@mail.gmail.com>	<20120308184954.GA1275@kroah.com>	<CACRpkdY3A_k_ywWgnFYG_3Jp+EssfULO0R59=GWUG2a0VS3--g@mail.gmail.com>	<20120309163739.GA9545@kroah.com> <CAOAMb1Bpx4ucHgKy+oT2rvt16cubFR3Vi8o3fjwrT65DdJko_Q@mail.gmail.com>
+From: Linus Walleij <linus.walleij@stericsson.com>
+Subject: [PATCH] serial: PL011: clear pending interrupts
+Date: Mon, 12 Mar 2012 09:25:50 +0100
+Message-ID: <1331540750-25697-1-git-send-email-linus.walleij@stericsson.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAOAMb1Bpx4ucHgKy+oT2rvt16cubFR3Vi8o3fjwrT65DdJko_Q@mail.gmail.com>
-Content-Language: ko
-Sender: linux-kernel-owner@vger.kernel.org
-To: 'Chanho Min' <chanho0207@gmail.com>, 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
-Cc: 'Linus Walleij' <linus.walleij@linaro.org>, 'Russell King' <linux@arm.linux.org.uk>, 'Alan Cox' <alan@linux.intel.com>, 'Shreshtha Kumar Sahu' <shreshthakumar.sahu@stericsson.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from eu1sys200aog117.obsmtp.com ([207.126.144.143]:39067 "EHLO
+	eu1sys200aog117.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754285Ab2CLI1X (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 12 Mar 2012 04:27:23 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, Chanho Min <chanho0207@gmail.com>
+Cc: linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Jong-Sung Kim <neidhard.kim@lge.com>, Linus Walleij <linus.walleij@linaro.org>, stable@kernel.org, Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
 
-> -----Original Message-----
-> From: Chanho Min [mailto:chanho0207@gmail.com]
-> Sent: Saturday, March 10, 2012 11:15 AM
-> To: Greg Kroah-Hartman
-> Cc: Linus Walleij; Russell King; Alan Cox; Shreshtha Kumar Sahu; Kim,
-Jong-
-> Sung; linux-kernel@vger.kernel.org; linux-serial@vger.kernel.org
-> Subject: Re: [PATCH] Clear previous interrupts after fifo is disabled
-> 
-> >> To me it seems Russell's patch solves part of the problem, and
-> >> Jong-Sung Kim's patch on top of that solves the entire problem, but
-> >> Chanho need to come back and tell whether this is the case in
-> >> practice.
-> >
-> > Ok, then, once it is tested, can someone resend them to me?
-> >
-> > thanks,
-> >
-> > greg k-h
-> 
-> I checked that Jong-Sung Kim's patch solved this hang-up issue and agree
-on
-> it. But, RTIS seems to be cleared as well.
+From: Linus Walleij <linus.walleij@linaro.org>
 
-You're right. RTIS should be cleared as well as RXIS. Revised patch:
+Chanho Min reported that when the boot loader transfers
+control to the kernel, there may be pending interrupts
+causing the UART to lock up in an eternal loop trying to
+pick tokens from the FIFO (since the RX interrupt flag
+indicates there are tokens) while in practice there are
+no tokens - in fact there is only a pending IRQ flag.
 
-diff --git a/drivers/tty/serial/amba-pl011.c
-b/drivers/tty/serial/amba-pl011.c
-index 6800f5f..39520db 100644
+This patch address the issue with a combination of a patch
+from Russell King that clears and mask all interrupts at
+probe() and clears any pending error and RX interrupts at
+port startup time, and a patch from Jong-Sung Kim that
+clears any RX interrupts (including timeouts) even if if
+there are zero tokens in the FIFO.
+
+This way these pending interrupts should be addressed in
+two ways and solidify the driver in both probe() and
+IRQ paths.
+
+Cc: stable@kernel.org
+Cc: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
+Reported-by: Chanho Min <chanho0207@gmail.com>
+Suggested-by: Russell King <linux@arm.linux.org.uk>
+Suggested-by: Jong-Sung Kim <neidhard.kim@lge.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+OK Greg requested that we send out this combined approach, can
+addressees (Chanho especially) please confirm that the patch
+solves the problem? Tested on U300 and U8500.
+---
+ drivers/tty/serial/amba-pl011.c |   17 +++++++++++++----
+ 1 files changed, 13 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 6800f5f..ff3fed0 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -224,6 +224,11 @@ static int pl011_fifo_to_tty(struct uart_amba_port
-*uap)
+@@ -224,6 +224,11 @@ static int pl011_fifo_to_tty(struct uart_amba_port *uap)
  		uart_insert_char(&uap->port, ch, UART011_DR_OE, ch, flag);
  	}
  
-+	/* RTIS and/or RXIS, but RXFE? Just clear the interrupt(s) */
++	/* RXIS but RXFE? Just clear the interrupt */
 +	if(unlikely(fifotaken == 0))
-+		writew(UART011_RTIS | UART011_RXIS, uap->port.membase +
-+		       UART011_ICR);
++		writew(UART011_RTIS | UART011_RXIS,
++		       uap->port.membase + UART011_ICR);
 +
  	return fifotaken;
  }
+ 
+@@ -1381,6 +1386,10 @@ static int pl011_startup(struct uart_port *port)
+ 
+ 	uap->port.uartclk = clk_get_rate(uap->clk);
+ 
++	/* Clear pending error and receive interrupts */
++	writew(UART011_OEIS | UART011_BEIS | UART011_PEIS | UART011_FEIS |
++	       UART011_RTIS | UART011_RXIS, uap->port.membase + UART011_ICR);
++
+ 	/*
+ 	 * Allocate the IRQ
+ 	 */
+@@ -1417,10 +1426,6 @@ static int pl011_startup(struct uart_port *port)
+ 	cr |= UART01x_CR_UARTEN | UART011_CR_RXE | UART011_CR_TXE;
+ 	writew(cr, uap->port.membase + UART011_CR);
+ 
+-	/* Clear pending error interrupts */
+-	writew(UART011_OEIS | UART011_BEIS | UART011_PEIS | UART011_FEIS,
+-	       uap->port.membase + UART011_ICR);
+-
+ 	/*
+ 	 * initialise the old status of the modem signals
+ 	 */
+@@ -1927,6 +1932,10 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ 		goto unmap;
+ 	}
+ 
++	/* Ensure interrupts from this UART are masked and cleared */
++	writew(0, uap->port.membase + UART011_IMSC);
++	writew(0xffff, uap->port.membase + UART011_ICR);
++
+ 	uap->vendor = vendor;
+ 	uap->lcrh_rx = vendor->lcrh_rx;
+ 	uap->lcrh_tx = vendor->lcrh_tx;
+-- 
+1.7.8
+
