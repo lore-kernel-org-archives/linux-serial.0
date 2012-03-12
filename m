@@ -1,53 +1,60 @@
-From: Wolfram Sang <w.sang@pengutronix.de>
-Subject: [PATCH] tty: serial: vt8500: fix annotations for probe/remove
-Date: Sun, 11 Mar 2012 15:02:38 +0100
-Message-ID: <1331474558-14281-1-git-send-email-w.sang@pengutronix.de>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:48049 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753056Ab2CKOCF (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 11 Mar 2012 10:02:05 -0400
-Sender: linux-serial-owner@vger.kernel.org
+From: "Kim, Jong-Sung" <neidhard.kim@lge.com>
+Subject: RE: [PATCH] Clear previous interrupts after fifo is disabled
+Date: Mon, 12 Mar 2012 10:24:17 +0900
+Message-ID: <018601ccffee$d9a8cf00$8cfa6d00$@lge.com>
+References: <CAOAMb1ASB0zznSSOAU9HgPNW2e=Do+8hSJ6JZ00DxtAxqsXyXQ@mail.gmail.com>	<20120308184954.GA1275@kroah.com>	<CACRpkdY3A_k_ywWgnFYG_3Jp+EssfULO0R59=GWUG2a0VS3--g@mail.gmail.com>	<20120309163739.GA9545@kroah.com> <CAOAMb1Bpx4ucHgKy+oT2rvt16cubFR3Vi8o3fjwrT65DdJko_Q@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAOAMb1Bpx4ucHgKy+oT2rvt16cubFR3Vi8o3fjwrT65DdJko_Q@mail.gmail.com>
+Content-Language: ko
+Sender: linux-kernel-owner@vger.kernel.org
+To: 'Chanho Min' <chanho0207@gmail.com>, 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
+Cc: 'Linus Walleij' <linus.walleij@linaro.org>, 'Russell King' <linux@arm.linux.org.uk>, 'Alan Cox' <alan@linux.intel.com>, 'Shreshtha Kumar Sahu' <shreshthakumar.sahu@stericsson.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexey Charkov <alchark@gmail.com>, Wolfram Sang <w.sang@pengutronix.de>
 
-Fixes:
+> -----Original Message-----
+> From: Chanho Min [mailto:chanho0207@gmail.com]
+> Sent: Saturday, March 10, 2012 11:15 AM
+> To: Greg Kroah-Hartman
+> Cc: Linus Walleij; Russell King; Alan Cox; Shreshtha Kumar Sahu; Kim,
+Jong-
+> Sung; linux-kernel@vger.kernel.org; linux-serial@vger.kernel.org
+> Subject: Re: [PATCH] Clear previous interrupts after fifo is disabled
+> 
+> >> To me it seems Russell's patch solves part of the problem, and
+> >> Jong-Sung Kim's patch on top of that solves the entire problem, but
+> >> Chanho need to come back and tell whether this is the case in
+> >> practice.
+> >
+> > Ok, then, once it is tested, can someone resend them to me?
+> >
+> > thanks,
+> >
+> > greg k-h
+> 
+> I checked that Jong-Sung Kim's patch solved this hang-up issue and agree
+on
+> it. But, RTIS seems to be cleared as well.
 
-WARNING: drivers/tty/serial/built-in.o(.data+0x30): Section mismatch in reference from the variable vt8500_platform_driver to the function .init.text:vt8500_serial_probe()
-The variable vt8500_platform_driver references
-the function __init vt8500_serial_probe()
+You're right. RTIS should be cleared as well as RXIS. Revised patch:
 
-And mark the remove pointer while we are here.
-
-Signed-off-by: Wolfram Sang <w.sang@pengutronix.de>
----
- drivers/tty/serial/vt8500_serial.c |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
-index 026cb9e..2be006f 100644
---- a/drivers/tty/serial/vt8500_serial.c
-+++ b/drivers/tty/serial/vt8500_serial.c
-@@ -544,7 +544,7 @@ static struct uart_driver vt8500_uart_driver = {
- 	.cons		= VT8500_CONSOLE,
- };
+diff --git a/drivers/tty/serial/amba-pl011.c
+b/drivers/tty/serial/amba-pl011.c
+index 6800f5f..39520db 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -224,6 +224,11 @@ static int pl011_fifo_to_tty(struct uart_amba_port
+*uap)
+ 		uart_insert_char(&uap->port, ch, UART011_DR_OE, ch, flag);
+ 	}
  
--static int __init vt8500_serial_probe(struct platform_device *pdev)
-+static int __devinit vt8500_serial_probe(struct platform_device *pdev)
- {
- 	struct vt8500_port *vt8500_port;
- 	struct resource *mmres, *irqres;
-@@ -605,7 +605,7 @@ static int __devexit vt8500_serial_remove(struct platform_device *pdev)
- 
- static struct platform_driver vt8500_platform_driver = {
- 	.probe  = vt8500_serial_probe,
--	.remove = vt8500_serial_remove,
-+	.remove = __devexit_p(vt8500_serial_remove),
- 	.driver = {
- 		.name = "vt8500_serial",
- 		.owner = THIS_MODULE,
--- 
-1.7.2.5
-
++	/* RTIS and/or RXIS, but RXFE? Just clear the interrupt(s) */
++	if(unlikely(fifotaken == 0))
++		writew(UART011_RTIS | UART011_RXIS, uap->port.membase +
++		       UART011_ICR);
++
+ 	return fifotaken;
+ }
