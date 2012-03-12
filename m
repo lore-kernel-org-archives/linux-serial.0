@@ -1,35 +1,36 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH] Clear previous interrupts after fifo is disabled
-Date: Mon, 12 Mar 2012 09:29:25 +0100
-Message-ID: <CACRpkdayeUPFCzcKftAnkkLkB5QHhghtSxb4=uziDLDgGnsyGw@mail.gmail.com>
-References: <CAOAMb1ASB0zznSSOAU9HgPNW2e=Do+8hSJ6JZ00DxtAxqsXyXQ@mail.gmail.com>
-	<20120308184954.GA1275@kroah.com>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH] serial: PL011: clear pending interrupts
+Date: Mon, 12 Mar 2012 08:32:22 +0000
+Message-ID: <20120312083221.GW17370@n2100.arm.linux.org.uk>
+References: <1331540750-25697-1-git-send-email-linus.walleij@stericsson.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-yw0-f46.google.com ([209.85.213.46]:52748 "EHLO
-	mail-yw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754697Ab2CLI30 (ORCPT
+Received: from caramon.arm.linux.org.uk ([78.32.30.218]:49382 "EHLO
+	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751571Ab2CLIci (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 12 Mar 2012 04:29:26 -0400
-Received: by yhmm54 with SMTP id m54so2261391yhm.19
-        for <linux-serial@vger.kernel.org>; Mon, 12 Mar 2012 01:29:25 -0700 (PDT)
-In-Reply-To: <20120308184954.GA1275@kroah.com>
+	Mon, 12 Mar 2012 04:32:38 -0400
+Content-Disposition: inline
+In-Reply-To: <1331540750-25697-1-git-send-email-linus.walleij@stericsson.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Chanho Min <chanho0207@gmail.com>, Russell King <linux@arm.linux.org.uk>, Alan Cox <alan@linux.intel.com>, Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>, "Kim, Jong-Sung" <neidhard.kim@lge.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Linus Walleij <linus.walleij@stericsson.com>
+Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, Chanho Min <chanho0207@gmail.com>, linux-arm-kernel@lists.infradead.org, Jong-Sung Kim <neidhard.kim@lge.com>, Linus Walleij <linus.walleij@linaro.org>, stable@kernel.org, Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
 
-On Thu, Mar 8, 2012 at 7:49 PM, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+On Mon, Mar 12, 2012 at 09:25:50AM +0100, Linus Walleij wrote:
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index 6800f5f..ff3fed0 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -224,6 +224,11 @@ static int pl011_fifo_to_tty(struct uart_amba_port *uap)
+>  		uart_insert_char(&uap->port, ch, UART011_DR_OE, ch, flag);
+>  	}
+>  
 
-> Can someone, if this is still needed, and everyone agrees on how to
-> solve it, please send me the needed fix?
+What if we really do end up receiving some characters here?
 
-I've send a patch combining the probe() and startup() fixes from Russell
-with the latest patch from Jong-Sung Kim into what may very well
-be the silver bullet.
-Subject "serial: PL011: clear pending interrupts"
-
-Yours,
-Linus Walleij
+> +	/* RXIS but RXFE? Just clear the interrupt */
+> +	if(unlikely(fifotaken == 0))
+> +		writew(UART011_RTIS | UART011_RXIS,
+> +		       uap->port.membase + UART011_ICR);
