@@ -1,53 +1,103 @@
-From: Sonic Zhang <sonic.adi@gmail.com>
-Subject: [PATCH] serial: bfin-uart: Don't access tty circular buffer in TX DMA interrupt after it is reset.
-Date: Tue, 13 Mar 2012 15:51:55 +0800
-Message-ID: <1331625115-28850-1-git-send-email-sonic.adi@gmail.com>
+From: Linus Walleij <linus.walleij@stericsson.com>
+Subject: [PATCH v3] serial: PL011: clear pending interrupts
+Date: Tue, 13 Mar 2012 13:27:23 +0100
+Message-ID: <1331641643-25929-1-git-send-email-linus.walleij@stericsson.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from tx2ehsobe003.messaging.microsoft.com ([65.55.88.13]:6271 "EHLO
-	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1758953Ab2CMH7R (ORCPT
+Received: from eu1sys200aog118.obsmtp.com ([207.126.144.145]:36012 "EHLO
+	eu1sys200aog118.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751345Ab2CMM2W (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 13 Mar 2012 03:59:17 -0400
+	Tue, 13 Mar 2012 08:28:22 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>
-Cc: LKML <linux-kernel@vger.kernel.org>, Sonic Zhang <sonic.zhang@analog.com>
+To: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, Chanho Min <chanho0207@gmail.com>
+Cc: linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Jong-Sung Kim <neidhard.kim@lge.com>, Linus Walleij <linus.walleij@linaro.org>, stable@kernel.org, Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
 
-From: Sonic Zhang <sonic.zhang@analog.com>
+From: Linus Walleij <linus.walleij@linaro.org>
 
-When kernel reboot, tty circular buffer is reset before last TX DMA interrupt is called,
-while the buffer tail is updated in TX DMA interrupt handler. So, don't update the buffer
-tail if it is reset.
+Chanho Min reported that when the boot loader transfers
+control to the kernel, there may be pending interrupts
+causing the UART to lock up in an eternal loop trying to
+pick tokens from the FIFO (since the RX interrupt flag
+indicates there are tokens) while in practice there are
+no tokens - in fact there is only a pending IRQ flag.
 
-Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+This patch address the issue with a combination of two
+patches suggested by Russell King that clears and mask
+all interrupts at probe() and clears any pending error
+and RX interrupts at port startup time.
+
+We suspect the spurious interrupts are a side-effect of
+switching the UART from FIFO to non-FIFO mode.
+
+Cc: stable@kernel.org
+Cc: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
+Cc: Jong-Sung Kim <neidhard.kim@lge.com>
+Reported-by: Chanho Min <chanho0207@gmail.com>
+Suggested-by: Russell King <linux@arm.linux.org.uk>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/tty/serial/bfin_uart.c |    8 +++++---
- 1 files changed, 5 insertions(+), 3 deletions(-)
+ChangeLog v1->v2:
+- Instead of making the IRQ fastpath account for spurious
+  IRQs with zero characters, make sure to clear out any
+  pending IRQ flags in startup().
+ChangeLog v2->v3:
+- Attempt to clear out any spuriously appearing RX interrups
+  in startup() instead of in the interrupt handler. Let's
+  see if this works.
+---
+ drivers/tty/serial/amba-pl011.c |   15 +++++++++++----
+ 1 files changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/bfin_uart.c b/drivers/tty/serial/bfin_uart.c
-index 5856407..a92626a 100644
---- a/drivers/tty/serial/bfin_uart.c
-+++ b/drivers/tty/serial/bfin_uart.c
-@@ -537,11 +537,13 @@ static irqreturn_t bfin_serial_dma_tx_int(int irq, void *dev_id)
- 		 *		when start a new tx.
- 		 */
- 		UART_CLEAR_IER(uart, ETBEI);
--		xmit->tail = (xmit->tail + uart->tx_count) & (UART_XMIT_SIZE - 1);
- 		uart->port.icount.tx += uart->tx_count;
-+		if (!uart_circ_empty(xmit)) {
-+			xmit->tail = (xmit->tail + uart->tx_count) & (UART_XMIT_SIZE - 1);
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 6800f5f..7e01399 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1381,6 +1381,10 @@ static int pl011_startup(struct uart_port *port)
  
--		if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
--			uart_write_wakeup(&uart->port);
-+			if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-+				uart_write_wakeup(&uart->port);
-+		}
+ 	uap->port.uartclk = clk_get_rate(uap->clk);
  
- 		bfin_serial_dma_tx_chars(uart);
++	/* Clear pending error and receive interrupts */
++	writew(UART011_OEIS | UART011_BEIS | UART011_PEIS | UART011_FEIS |
++	       UART011_RTIS | UART011_RXIS, uap->port.membase + UART011_ICR);
++
+ 	/*
+ 	 * Allocate the IRQ
+ 	 */
+@@ -1417,10 +1421,6 @@ static int pl011_startup(struct uart_port *port)
+ 	cr |= UART01x_CR_UARTEN | UART011_CR_RXE | UART011_CR_TXE;
+ 	writew(cr, uap->port.membase + UART011_CR);
+ 
+-	/* Clear pending error interrupts */
+-	writew(UART011_OEIS | UART011_BEIS | UART011_PEIS | UART011_FEIS,
+-	       uap->port.membase + UART011_ICR);
+-
+ 	/*
+ 	 * initialise the old status of the modem signals
+ 	 */
+@@ -1435,6 +1435,9 @@ static int pl011_startup(struct uart_port *port)
+ 	 * as well.
+ 	 */
+ 	spin_lock_irq(&uap->port.lock);
++	/* Clear out any spuriously appearing RX interrupts */
++	 writew(UART011_RTIS | UART011_RXIS,
++		uap->port.membase + UART011_ICR);
+ 	uap->im = UART011_RTIM;
+ 	if (!pl011_dma_rx_running(uap))
+ 		uap->im |= UART011_RXIM;
+@@ -1927,6 +1930,10 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ 		goto unmap;
  	}
+ 
++	/* Ensure interrupts from this UART are masked and cleared */
++	writew(0, uap->port.membase + UART011_IMSC);
++	writew(0xffff, uap->port.membase + UART011_ICR);
++
+ 	uap->vendor = vendor;
+ 	uap->lcrh_rx = vendor->lcrh_rx;
+ 	uap->lcrh_tx = vendor->lcrh_tx;
 -- 
-1.7.0.4
-
+1.7.8
 
