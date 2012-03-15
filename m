@@ -1,81 +1,71 @@
-From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Subject: Re: [PATCH] sh-sci: fix a race of DMA submit_tx on transfer
-Date: Thu, 15 Mar 2012 11:50:28 +0100 (CET)
-Message-ID: <Pine.LNX.4.64.1203151127030.2988@axis700.grange>
-References: <4F5DC485.8020607@renesas.com> <Pine.LNX.4.64.1203121109360.3744@axis700.grange>
- <4F5F2AC1.8060305@renesas.com> <Pine.LNX.4.64.1203131227470.14461@axis700.grange>
- <4F604563.90000@renesas.com> <20120315060938.GB10046@linux-sh.org>
+From: Philipp Zabel <philipp.zabel@gmail.com>
+Subject: [PATCH] serial: pxa: add clk_prepare/clk_unprepare calls
+Date: Thu, 15 Mar 2012 19:15:15 +0100
+Message-ID: <1331835315.14662.7.camel@flow>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <20120315060938.GB10046@linux-sh.org>
-Sender: linux-sh-owner@vger.kernel.org
-To: Paul Mundt <lethal@linux-sh.org>
-Cc: Takashi Yoshii <takashi.yoshii.zj@renesas.com>, SH-Linux <linux-sh@vger.kernel.org>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ey0-f174.google.com ([209.85.215.174]:36137 "EHLO
+	mail-ey0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751750Ab2COSPS (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 15 Mar 2012 14:15:18 -0400
+Received: by eaaq12 with SMTP id q12so1805528eaa.19
+        for <linux-serial@vger.kernel.org>; Thu, 15 Mar 2012 11:15:17 -0700 (PDT)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Haojian Zhuang <haojian.zhuang@marvell.com>, Eric Miao <eric.y.miao@gmail.com>, Alan Cox <alan@linux.intel.com>, GregKroah-Hartman <gregkh@linuxfoundation.org>
 
-Hi Paul
+This patch adds clk_prepare/clk_unprepare calls to the serial/pxa
+driver by using the helper functions clk_prepare_enable and
+clk_disable_unprepare.
 
-On Thu, 15 Mar 2012, Paul Mundt wrote:
-
-> On Wed, Mar 14, 2012 at 04:14:43PM +0900, Takashi Yoshii wrote:
-> >     serial: sh-sci: fix a race of DMA submit_tx on transfer
-> >     
-> >     When DMA is enabled, sh-sci transfer begins with
-> >      uart_start()
-> >       sci_start_tx()
-> >         if (cookie_tx < 0) schedule_work()
-> >     Then, starts DMA when wq scheduled, -- (A)
-> >      process_one_work()
-> >       work_fn_rx()
-> >        cookie_tx = desc->submit_tx()
-> >     And finishes when DMA transfer ends, -- (B)
-> >      sci_dma_tx_complete()
-> >       async_tx_ack()
-> >       cookie_tx = -EINVAL
-> >       (possible another schedule_work())
-> >     
-> >     This A to B sequence is not reentrant, since controlling variables
-> >     (for example, cookie_tx above) are not queues nor lists. So, they
-> >     must be invoked as A B A B..., otherwise results in kernel crash.
-> >     
-> >     To ensure the sequence, sci_start_tx() seems to test if cookie_tx < 0
-> >     (represents "not used") to call schedule_work().
-> >     But cookie_tx will not be set (to a cookie, also means "used") until
-> >     in the middle of work queue scheduled function work_fn_tx().
-> >     
-> >     This gap between the test and set allows the breakage of the sequence
-> >     under the very frequently call of uart_start().
-> >     Another gap between async_tx_ack() and another schedule_work() results
-> >     in the same issue, too.
-> >     
-> >     This patch introduces a new condition "cookie_tx == 0" just to mark
-> >     it is "busy" and assign it within spin-locked region to fill the gaps.
-> >     
-> >     Signed-off-by: Takashi Yoshii <takashi.yoshii.zj@renesas.com>
-> >     Reviewed-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-> 
-> Looks good to me. I'll apply it unless Guennadi has any other concerns.
-
-No, I don't - my ack holds:) However, I do have some concerns regarding a 
-couple of other possible issues with SCI DMA:
-
-1. As I mentioned earlier, I think, sci_start_tx() should always be called 
-under the port spinlock to get consistent ->cookie_tx and ->chan_tx 
-values. This is the case, when called from serial core as 
-->start_tx() from most locations, but not from uart_handle_cts_change(), 
-which is an exported function. It is also called internally in the SCI 
-driver itself several times - with no locking. This might need fixing, 
-especially in sci_tx_dma_release().
-
-2. The DMA Tx work might need to be cancelled from time to time... E.g., 
-when DMA is disabled to switch to PIO, or when shutting down the port.
-
-Both of these might require a bit more thinking and testing.
-
-Thanks
-Guennadi
+Signed-off-by: Philipp Zabel <philipp.zabel@gmail.com>
+Cc: Haojian Zhuang <haojian.zhuang@marvell.com>
+Cc: Eric Miao <eric.y.miao@gmail.com>
+Cc: Alan Cox <alan@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-Guennadi Liakhovetski, Ph.D.
-Freelance Open-Source Software Developer
-http://www.open-technology.de/
+ drivers/tty/serial/pxa.c |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
+index 5c8e3bb..e2fd3d8 100644
+--- a/drivers/tty/serial/pxa.c
++++ b/drivers/tty/serial/pxa.c
+@@ -579,9 +579,9 @@ serial_pxa_pm(struct uart_port *port, unsigned int state,
+ 	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
+ 
+ 	if (!state)
+-		clk_enable(up->clk);
++		clk_prepare_enable(up->clk);
+ 	else
+-		clk_disable(up->clk);
++		clk_disable_unprepare(up->clk);
+ }
+ 
+ static void serial_pxa_release_port(struct uart_port *port)
+@@ -668,7 +668,7 @@ serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
+ 	struct uart_pxa_port *up = serial_pxa_ports[co->index];
+ 	unsigned int ier;
+ 
+-	clk_enable(up->clk);
++	clk_prepare_enable(up->clk);
+ 
+ 	/*
+ 	 *	First save the IER then disable the interrupts
+@@ -685,7 +685,7 @@ serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
+ 	wait_for_xmitr(up);
+ 	serial_out(up, UART_IER, ier);
+ 
+-	clk_disable(up->clk);
++	clk_disable_unprepare(up->clk);
+ }
+ 
+ static int __init
+-- 
+1.7.9.1
+
+
