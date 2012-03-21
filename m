@@ -1,44 +1,70 @@
-From: Kevin Hilman <khilman@ti.com>
-Subject: Re: [PATCH 0/3] OMAP2+: UART: Enable tx wakeup + remove cpu checks
-Date: Wed, 21 Mar 2012 07:28:46 -0700
-Message-ID: <87limurpsx.fsf@ti.com>
-References: <1332325501-10467-1-git-send-email-govindraj.raja@ti.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v3] serial: PL011: clear pending interrupts
+Date: Wed, 21 Mar 2012 20:08:43 +0100
+Message-ID: <CACRpkdZ-epTV8dAY4gT9HKgPifRS_wfooy0QqEGsSgCqZ98MYw@mail.gmail.com>
+References: <1331641643-25929-1-git-send-email-linus.walleij@stericsson.com>
+	<CAOh2x=nh-aiJ1FQecm=5WsNw=Fph5osNh5C2YU6x9TGrKBoMmA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1332325501-10467-1-git-send-email-govindraj.raja@ti.com>
-	(Govindraj R.'s message of "Wed, 21 Mar 2012 15:54:58 +0530")
-Sender: linux-omap-owner@vger.kernel.org
-To: "Govindraj.R" <govindraj.raja@ti.com>
-Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Paul Walmsley <paul@pwsan.com>, Felipe Balbi <balbi@ti.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-yw0-f46.google.com ([209.85.213.46]:61930 "EHLO
+	mail-yw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753000Ab2CUTIn convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 21 Mar 2012 15:08:43 -0400
+Received: by yhmm54 with SMTP id m54so1243445yhm.19
+        for <linux-serial@vger.kernel.org>; Wed, 21 Mar 2012 12:08:43 -0700 (PDT)
+In-Reply-To: <CAOh2x=nh-aiJ1FQecm=5WsNw=Fph5osNh5C2YU6x9TGrKBoMmA@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: viresh kumar <viresh.linux@gmail.com>
+Cc: Linus Walleij <linus.walleij@stericsson.com>, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, Chanho Min <chanho0207@gmail.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Jong-Sung Kim <neidhard.kim@lge.com>, stable@kernel.org, Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>, spear-devel <spear-devel@list.st.com>
 
-"Govindraj.R" <govindraj.raja@ti.com> writes:
-
-> From: "Govindraj.R" <govindraj.raja@ti.com>
+On Wed, Mar 21, 2012 at 12:58 PM, viresh kumar <viresh.linux@gmail.com>=
+ wrote:
+> On Tue, Mar 13, 2012 at 5:57 PM, Linus Walleij
+> <linus.walleij@stericsson.com> wrote:
+>> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/am=
+ba-pl011.c
+>> @@ -1927,6 +1930,10 @@ static int pl011_probe(struct amba_device *de=
+v, const struct amba_id *id)
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0goto unmap;
+>> =A0 =A0 =A0 =A0}
+>>
+>> + =A0 =A0 =A0 /* Ensure interrupts from this UART are masked and cle=
+ared */
+>> + =A0 =A0 =A0 writew(0, uap->port.membase + UART011_IMSC);
+>> + =A0 =A0 =A0 writew(0xffff, uap->port.membase + UART011_ICR);
+>> +
 >
-> Based on Linux-OMAP tree uart branch.
-> (git://git.kernel.org/pub/scm/linux/kernel/git/tmlind/linux-omap.git
-> remotes/origin/uart)
+> I was working on v3.3 and found a crash for my SoC. When i checked i =
+got a crash
+> due to above changes.
+
+Strange, because these changes are not even in 3.3. Did you mean 3.4
+HEAD?
+
+> There are two issues here
+> =A0- uap->port is uninitialized
+> =A0- clk is not enabled.
 >
-> * Removes the cpu checks wherever possible and use version reg
->   for populating features and errata's
-> * enable tx wakeup available in wer reg for applicable
->   module revision's
+> How is this working for you?
 
-As this affects multiple SoCs, please report what SoCs it was tested on
-as well.
+The uap->port is likely the problem. The clock does not need to be
+enabled for this, the clock that need to be enabled is the pclk and tha=
+t
+should be taken care of by the amba/primecell core.
 
-Thanks,
+It worked because I had some system which didn't scream when it wrote
+into that NULL-address for some reason :-(
 
-Kevin
+I'm sending a fixup patch to sort out my own screwing up.
 
-> Govindraj.R (3):
->   OMAP2+: UART: Remove cpu checks for populating errata flags
->   OMAP2+: UART: enable tx wakeup bit for wer reg
->   OMAP2+: UART: replace omap34xx/omap4xx cpu checks with not omap24xx
->
->  arch/arm/mach-omap2/serial.c                  |   13 +----
->  arch/arm/plat-omap/include/plat/omap-serial.h |    8 +++-
->  drivers/tty/serial/omap-serial.c              |   71 ++++++++++++++++++++++++-
->  3 files changed, 78 insertions(+), 14 deletions(-)
+Yours,
+Linus Walleij
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
