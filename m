@@ -1,51 +1,44 @@
-From: "Mrs. Laora Fernandez" <howusu-agyemang@parliament.gh>
-Subject: Easter Bonanza. (Congratulations)
-Date: Wed, 21 Mar 2012 12:40:13 -0500 (CDT)
-Message-ID: <15352697.2994.1332351613551.JavaMail.root__13414.0341113836$1332334606$gmane$org@mail>
-Reply-To: "Mrs. Laora Fernandez" <howusu-agyemang@parliament.gh>
+From: Kevin Hilman <khilman@ti.com>
+Subject: Re: [PATCH 0/3] OMAP2+: UART: Enable tx wakeup + remove cpu checks
+Date: Wed, 21 Mar 2012 07:28:46 -0700
+Message-ID: <87limurpsx.fsf@ti.com>
+References: <1332325501-10467-1-git-send-email-govindraj.raja@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.parliament.gh ([196.29.125.26]:58364 "EHLO
-	mail.parliament.gh" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758653Ab2CUM4L convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 21 Mar 2012 08:56:11 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <1332325501-10467-1-git-send-email-govindraj.raja@ti.com>
+	(Govindraj R.'s message of "Wed, 21 Mar 2012 15:54:58 +0530")
+Sender: linux-omap-owner@vger.kernel.org
+To: "Govindraj.R" <govindraj.raja@ti.com>
+Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Paul Walmsley <paul@pwsan.com>, Felipe Balbi <balbi@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
+"Govindraj.R" <govindraj.raja@ti.com> writes:
 
+> From: "Govindraj.R" <govindraj.raja@ti.com>
+>
+> Based on Linux-OMAP tree uart branch.
+> (git://git.kernel.org/pub/scm/linux/kernel/git/tmlind/linux-omap.git
+> remotes/origin/uart)
+>
+> * Removes the cpu checks wherever possible and use version reg
+>   for populating features and errata's
+> * enable tx wakeup available in wer reg for applicable
+>   module revision's
 
-Sorteo 12, domingo, 18/03/2012=20
+As this affects multiple SoCs, please report what SoCs it was tested on
+as well.
 
-ELGR/idsorteo.793205012=20
+Thanks,
 
-ATTN: Lucky Winner,=20
+Kevin
 
-This is to announce to you that your email attached to Elgordo De La Pr=
-imitiva ticket number 1-13-26-29-54, Clave 4 won in the 2nd category ba=
-lloting held 18/03/2012. Your category payout is =E2=82=AC295.436,09 Eu=
-ro. A copy of the ticket would be forwarded to you as evidence of play.=
-=20
-
-View results here: http://www.loteriasyapuestas.es/index.php/mod.sorteo=
-s/mem.sorteos/juego.ELGR/idsorteo.793205012=20
-
-Contact your Claims Representative:=20
-Name: Mr. David Santiago=20
-Email: elgordo_processing@aol.com=20
-Tel: +34-686-902-277=20
-
-Congratulations.=20
-
-Regards,=20
-Mrs Laora Fernandez=20
-Coordinator.=20
-
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Govindraj.R (3):
+>   OMAP2+: UART: Remove cpu checks for populating errata flags
+>   OMAP2+: UART: enable tx wakeup bit for wer reg
+>   OMAP2+: UART: replace omap34xx/omap4xx cpu checks with not omap24xx
+>
+>  arch/arm/mach-omap2/serial.c                  |   13 +----
+>  arch/arm/plat-omap/include/plat/omap-serial.h |    8 +++-
+>  drivers/tty/serial/omap-serial.c              |   71 ++++++++++++++++++++++++-
+>  3 files changed, 78 insertions(+), 14 deletions(-)
