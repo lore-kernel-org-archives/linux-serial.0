@@ -1,133 +1,57 @@
-From: Shubhrajyoti D <shubhrajyoti@ti.com>
-Subject: [PATCH v2] omap-serial: Fix the error handling in the omap_serial probe
-Date: Wed, 21 Mar 2012 17:22:22 +0530
-Message-ID: <1332330742-22375-1-git-send-email-shubhrajyoti@ti.com>
+From: viresh kumar <viresh.linux@gmail.com>
+Subject: Re: [PATCH v3] serial: PL011: clear pending interrupts
+Date: Wed, 21 Mar 2012 17:28:27 +0530
+Message-ID: <CAOh2x=nh-aiJ1FQecm=5WsNw=Fph5osNh5C2YU6x9TGrKBoMmA@mail.gmail.com>
+References: <1331641643-25929-1-git-send-email-linus.walleij@stericsson.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-omap-owner@vger.kernel.org>
-Sender: linux-omap-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Shubhrajyoti D <shubhrajyoti@ti.com>, Mark Brown <broonie@opensource.wolfsonmicro.com>, "Govindraj.R" <govindraj.raja@ti.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-wg0-f44.google.com ([74.125.82.44]:64062 "EHLO
+	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751321Ab2CUL62 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 21 Mar 2012 07:58:28 -0400
+Received: by wgbdr13 with SMTP id dr13so608049wgb.1
+        for <linux-serial@vger.kernel.org>; Wed, 21 Mar 2012 04:58:27 -0700 (PDT)
+In-Reply-To: <1331641643-25929-1-git-send-email-linus.walleij@stericsson.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Linus Walleij <linus.walleij@stericsson.com>
+Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, Chanho Min <chanho0207@gmail.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Jong-Sung Kim <neidhard.kim@lge.com>, Linus Walleij <linus.walleij@linaro.org>, stable@kernel.org, Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>, spear-devel <spear-devel@list.st.com>
 
-The patch does the following
+On Tue, Mar 13, 2012 at 5:57 PM, Linus Walleij
+<linus.walleij@stericsson.com> wrote:
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amb=
+a-pl011.c
+> @@ -1927,6 +1930,10 @@ static int pl011_probe(struct amba_device *dev=
+, const struct amba_id *id)
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0goto unmap;
+> =A0 =A0 =A0 =A0}
+>
+> + =A0 =A0 =A0 /* Ensure interrupts from this UART are masked and clea=
+red */
+> + =A0 =A0 =A0 writew(0, uap->port.membase + UART011_IMSC);
+> + =A0 =A0 =A0 writew(0xffff, uap->port.membase + UART011_ICR);
+> +
 
-- The pm_runtime_disable is called in the remove not in the error
-  case of probe.The patch calls the pm_runtime_disable in the error
-  case.
-- Calls pm_runtime_put in the error case.
-- The  up is not freed in the error path. Fix the memory leak by using
-  devm_* so that the memory need not be freed in the driver.
-- Also the iounmap is not called fix the same by calling using devm_ioremap.
-- Make the name of the error tags more meaningful.
 
-Cc: Mark Brown <broonie@opensource.wolfsonmicro.com>
-Cc: Govindraj.R <govindraj.raja@ti.com>
-Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
----
-Changes from the v1:
-Use devm_* functions instead of freeing in the driver.
+Hey Linus,
 
- drivers/tty/serial/omap-serial.c |   43 +++++++++++++++++--------------------
- 1 files changed, 20 insertions(+), 23 deletions(-)
+I was working on v3.3 and found a crash for my SoC. When i checked i go=
+t a crash
+due to above changes.
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 1e193fc..5386239 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -1381,29 +1381,24 @@ static int serial_omap_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
- 
--	if (!request_mem_region(mem->start, resource_size(mem),
-+	if (!devm_request_mem_region(&pdev->dev, mem->start, resource_size(mem),
- 				pdev->dev.driver->name)) {
- 		dev_err(&pdev->dev, "memory region already claimed\n");
- 		return -EBUSY;
- 	}
- 
- 	dma_rx = platform_get_resource_byname(pdev, IORESOURCE_DMA, "rx");
--	if (!dma_rx) {
--		ret = -EINVAL;
--		goto err;
--	}
-+	if (!dma_rx)
-+		return -ENXIO;
- 
- 	dma_tx = platform_get_resource_byname(pdev, IORESOURCE_DMA, "tx");
--	if (!dma_tx) {
--		ret = -EINVAL;
--		goto err;
--	}
-+	if (!dma_tx)
-+		return -ENXIO;
-+
-+	up = devm_kzalloc(&pdev->dev, sizeof(*up), GFP_KERNEL);
-+	if (!up)
-+		return -ENOMEM;
- 
--	up = kzalloc(sizeof(*up), GFP_KERNEL);
--	if (up == NULL) {
--		ret = -ENOMEM;
--		goto do_release_region;
--	}
- 	up->pdev = pdev;
- 	up->port.dev = &pdev->dev;
- 	up->port.type = PORT_OMAP;
-@@ -1423,16 +1418,17 @@ static int serial_omap_probe(struct platform_device *pdev)
- 		dev_err(&pdev->dev, "failed to get alias/pdev id, errno %d\n",
- 								up->port.line);
- 		ret = -ENODEV;
--		goto err;
-+		goto err_port_line;
- 	}
- 
- 	sprintf(up->name, "OMAP UART%d", up->port.line);
- 	up->port.mapbase = mem->start;
--	up->port.membase = ioremap(mem->start, resource_size(mem));
-+	up->port.membase = devm_ioremap(&pdev->dev, mem->start,
-+						resource_size(mem));
- 	if (!up->port.membase) {
- 		dev_err(&pdev->dev, "can't ioremap UART\n");
- 		ret = -ENOMEM;
--		goto err;
-+		goto err_ioremap;
- 	}
- 
- 	up->port.flags = omap_up_info->flags;
-@@ -1478,16 +1474,19 @@ static int serial_omap_probe(struct platform_device *pdev)
- 
- 	ret = uart_add_one_port(&serial_omap_reg, &up->port);
- 	if (ret != 0)
--		goto do_release_region;
-+		goto err_add_port;
- 
- 	pm_runtime_put(&pdev->dev);
- 	platform_set_drvdata(pdev, up);
- 	return 0;
--err:
-+
-+err_add_port:
-+	pm_runtime_put(&pdev->dev);
-+	pm_runtime_disable(&pdev->dev);
-+err_ioremap:
-+err_port_line:
- 	dev_err(&pdev->dev, "[UART%d]: failure [%s]: %d\n",
- 				pdev->id, __func__, ret);
--do_release_region:
--	release_mem_region(mem->start, resource_size(mem));
- 	return ret;
- }
- 
-@@ -1499,8 +1498,6 @@ static int serial_omap_remove(struct platform_device *dev)
- 		pm_runtime_disable(&up->pdev->dev);
- 		uart_remove_one_port(&serial_omap_reg, &up->port);
- 		pm_qos_remove_request(&up->pm_qos_request);
--
--		kfree(up);
- 	}
- 
- 	platform_set_drvdata(dev, NULL);
--- 
-1.7.1
+There are two issues here
+ - uap->port is uninitialized
+ - clk is not enabled.
 
+How is this working for you?
+
+--
+viresh
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
