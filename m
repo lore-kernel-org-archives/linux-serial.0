@@ -1,64 +1,43 @@
-From: Michael Brunner <mibru@gmx.de>
-Subject: Re: [PATCH] pch_uart: Add Kontron COMe-mTT10 uart clock quirk
-Date: Fri, 23 Mar 2012 00:34:56 +0100
-Message-ID: <20120323003456.6f7fea2e@mail.gmx.de>
-References: <20120322211903.6776ab18@mail.gmx.de>
-	<4F6B8E1B.9080802@linux.intel.com>
-	<20120322223112.291e0c59@mail.gmx.de>
-	<4F6B9E7B.9090005@linux.intel.com>
+From: Paul Walmsley <paul@pwsan.com>
+Subject: Re: [PATCH 0/3] OMAP2+: UART: Enable tx wakeup + remove cpu checks
+Date: Thu, 22 Mar 2012 17:40:50 -0600 (MDT)
+Message-ID: <alpine.DEB.2.00.1203221740140.24425@utopia.booyaka.com>
+References: <1332325501-10467-1-git-send-email-govindraj.raja@ti.com> <87limurpsx.fsf@ti.com> <CAMrsUdLtC0iVk2qDDDXj2tteAzP5UQJXNvsCoJLEC9Yty2QjvQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout-de.gmx.net ([213.165.64.22]:48044 "HELO
-	mailout-de.gmx.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1031479Ab2CVXe7 (ORCPT
+Received: from utopia.booyaka.com ([72.9.107.138]:39241 "EHLO
+	utopia.booyaka.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752664Ab2CVXkv (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 22 Mar 2012 19:34:59 -0400
-In-Reply-To: <4F6B9E7B.9090005@linux.intel.com>
+	Thu, 22 Mar 2012 19:40:51 -0400
+In-Reply-To: <CAMrsUdLtC0iVk2qDDDXj2tteAzP5UQJXNvsCoJLEC9Yty2QjvQ@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Darren Hart <dvhart@linux.intel.com>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+To: "Raja, Govindraj" <govindraj.raja@ti.com>
+Cc: Kevin Hilman <khilman@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Felipe Balbi <balbi@ti.com>
 
-> OK, my board has DMI_BOARD_NAME as:
+Hi
+
+On Thu, 22 Mar 2012, Raja, Govindraj wrote:
+
+> Sorry I for got to add that, here are details on what was tested.
 > 
-> "nETXe-TT 1.0GHz E2 KDMS-FRI" but will also undergo a rename in the
-> near future. I'm concerned about colliding as I believe this kit may
-> use the same board you are working with. This COM Express module will
-> be renamed "COMe-mTT10" which will match your strstr compare.
+> 1.) OMAP2430 SDP : Boot tested with uart1 as console.
+> 
+> 2.) OMAP3430 SDP: Boot test, suspend/resume tests, retention off mode
+>                                (checking retention and off mode count
+> in cpu idle cases)
+> 
+> 3.) OMAP3630 - Beagle XM:  Boot test, suspend/resume tests, retention off mode
+>                                             (checking retention and
+> off mode count in cpu idle cases)
+> 
+> 4.) OMAP4430 - PANDA: Boot test, suspend/resume tests
+> 
+> 5.) OMAP4460 - PANDA: Boot test.
 
-You are right, the development kit uses a customized version of the
-COMe-mTT10.
+What kernel .config was used for these tests?
 
-> So what does your DMI_BIOS_VERSION report?
 
-The BIOS for the stock COMe-mTT10 is prefixed with NTC1.
-
-> I didn't like basing this on BIOS_VERSION, but I did so at Kontron's
-> preference. Now we're seeing the fallout (sooner than I expected).
-
-Basically this is not a wrong decision, as the FRI2 project code is
-unique for the firmware used on the development kit.
-
-> So the question is, do we treat these as separate devices (the board
-> and the development kit which I believe includes your board) or do we
-> lump them together.
-
-To be safe we should treat them as separate devices and make sure we
-are able to differentiate between them.
-
-> Since it is the firmware that ultimately decides what the initial
-> UARTCLK is, we can't base this on the hardware alone. The hardware in
-> fact should be default if a firmware match isn't found first. So, my
-> preference would be that you move your new comparison AFTER the FRI2
-> DMI_BIOS_VERSION comparison. This ensures the FRI2 doesn't match your
-> new comparison which might get a different UARTCLK in the future for
-> whatever reason.
-
-I understand your concerns and agree with you that in this case the BIOS
-version should be checked before the board name, same goes for the
-product name. So I will prepare a new patch that puts my BOARD_NAME
-comparison to the end.
-
-Michael
+- Paul
