@@ -1,47 +1,60 @@
-From: viresh kumar <viresh.linux@gmail.com>
-Subject: Re: [PATCH] serial: PL011: move interrupt clearing
-Date: Fri, 23 Mar 2012 09:09:16 +0530
-Message-ID: <CAOh2x=kqTZxzyEMEF0bYFQ0a0zMEQNZWrzw48e1WFiMxYpRSeg@mail.gmail.com>
-References: <1332357318-8017-1-git-send-email-linus.walleij@linaro.org>
-	<CAOh2x==5QHEcA3h216p8rJukx0LR=cVcGYN84aqzw=fnhu8Y-g@mail.gmail.com>
-	<CACRpkdate+sQJvS8H7qNXiwe6c+F58g=OF0Qg=TxxnTwPXBrYQ@mail.gmail.com>
+From: "Raja, Govindraj" <govindraj.raja@ti.com>
+Subject: Re: [PATCH 0/3] OMAP2+: UART: Enable tx wakeup + remove cpu checks
+Date: Fri, 23 Mar 2012 13:17:29 +0530
+Message-ID: <CAMrsUdKn6i9cNfHia+TqZ2By7V3NhXHF+1Bt-eadJd0ZWkERNQ@mail.gmail.com>
+References: <1332325501-10467-1-git-send-email-govindraj.raja@ti.com>
+ <87limurpsx.fsf@ti.com> <CAMrsUdLtC0iVk2qDDDXj2tteAzP5UQJXNvsCoJLEC9Yty2QjvQ@mail.gmail.com>
+ <alpine.DEB.2.00.1203221740140.24425@utopia.booyaka.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f44.google.com ([74.125.82.44]:42804 "EHLO
-	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753083Ab2CWDjS (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 22 Mar 2012 23:39:18 -0400
-In-Reply-To: <CACRpkdate+sQJvS8H7qNXiwe6c+F58g=OF0Qg=TxxnTwPXBrYQ@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <alpine.DEB.2.00.1203221740140.24425@utopia.booyaka.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Paul Walmsley <paul@pwsan.com>
+Cc: Kevin Hilman <khilman@ti.com>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Felipe Balbi <balbi@ti.com>
 List-Id: linux-serial@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@arm.linux.org.uk>, Jong-Sung Kim <neidhard.kim@lge.com>, stable <stable@vger.kernel.org>, Chanho Min <chanho0207@gmail.com>, linux-arm-kernel@lists.infradead.org, Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>, spear-devel <spear-devel@list.st.com>
 
-On Thu, Mar 22, 2012 at 1:30 PM, Linus Walleij <linus.walleij@linaro.org> wrote:
-> On Thu, Mar 22, 2012 at 2:04 AM, viresh kumar <viresh.linux@gmail.com> wrote:
->> You missed me in CC??
+Hi Paul,
+
+On Fri, Mar 23, 2012 at 5:10 AM, Paul Walmsley <paul@pwsan.com> wrote:
+> Hi
 >
-> I put you in Reported-by, then used --cc at the prompt because git send-email
-> still does not realize it must put Reported-by: tags on the CC list.
+> On Thu, 22 Mar 2012, Raja, Govindraj wrote:
+>
+>> Sorry I for got to add that, here are details on what was tested.
+>>
+>> 1.) OMAP2430 SDP : Boot tested with uart1 as console.
+>>
+>> 2.) OMAP3430 SDP: Boot test, suspend/resume tests, retention off mod=
+e
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0(chec=
+king retention and off mode count
+>> in cpu idle cases)
+>>
+>> 3.) OMAP3630 - Beagle XM: =A0Boot test, suspend/resume tests, retent=
+ion off mode
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 (checking retention and
+>> off mode count in cpu idle cases)
+>>
+>> 4.) OMAP4430 - PANDA: Boot test, suspend/resume tests
+>>
+>> 5.) OMAP4460 - PANDA: Boot test.
+>
+> What kernel .config was used for these tests?
 
-That's strange. When i check my mail on @st.com id, i see myself in cc
-list, but on
-gmail i see following cc list in your first mail.
+omap2plus_defconfig was used.
 
-linux-serial@vger.kernel.org, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org>, Russell King <linux@arm.linux.org.uk>,
-Jong-Sung Kim <neidhard.kim@lge.com>, stable <stable@vger.kernel.org>,
-Chanho Min <chanho0207@gmail.com>,
-linux-arm-kernel@lists.infradead.org, Shreshtha Kumar Sahu
-<shreshthakumar.sahu@stericsson.com>
-
-Why don't i see myself in cc here?
-
-I have seen similar issues earlier too, with our ST internal and
-Mainline mailing lists.
-Any ideas?
+the same kernel image was tested with all these boards.
+(kernel image was built along with initramfs support
+using minimal busybox filesystem)
 
 --
-viresh
+Thanks,
+Govindraj.R
+--
+To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
+n
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
