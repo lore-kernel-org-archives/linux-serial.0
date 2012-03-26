@@ -1,63 +1,27 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [GIT PATCH] TTY/serial patches for 3.4-rc1
-Date: Mon, 26 Mar 2012 10:12:51 +0200
-Message-ID: <4F702503.3060009@suse.cz>
-References: <20120319195649.GD9883@kroah.com> <20120325171837.67310140074@xenon.ts.pxnet.com>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH] serial: pl011: implement workaround for CTS clear
+	event issue
+Date: Mon, 26 Mar 2012 09:17:56 +0100
+Message-ID: <20120326081756.GI5611@n2100.arm.linux.org.uk>
+References: <1332748868-10172-1-git-send-email-linus.walleij@stericsson.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20120325171837.67310140074@xenon.ts.pxnet.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tilman Schmidt <tilman@imap.cc>
-Cc: Greg KH <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, netdev@vger.kernel.org, hjlipp@web.de
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from caramon.arm.linux.org.uk ([78.32.30.218]:50624 "EHLO
+	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754780Ab2CZISJ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 26 Mar 2012 04:18:09 -0400
+Content-Disposition: inline
+In-Reply-To: <1332748868-10172-1-git-send-email-linus.walleij@stericsson.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Linus Walleij <linus.walleij@stericsson.com>
+Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Christophe Arnal <christophe.arnal@stericsson.com>, Guillaume Jaunet <guillaume.jaunet@stericsson.com>, Matthias Locher <Matthias.Locher@stericsson.com>, Chanho Min <chanho0207@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, "Rajanikanth H.V" <rajanikanth.hv@stericsson.com>
 
-On 03/25/2012 07:12 PM, Tilman Schmidt wrote:
-> Jiri, Greg,
-> 
-> On 19.03.2012 20:56, Greg KH wrote:
->> tty and serial merge for 3.4-rc1
-> [...]
->> Jiri Slaby (77):
-> [...]
->>       TTY: isdn/gigaset, do not set tty->driver_data to NULL
-> 
-> It seems that the amendment we discussed on 05.03.2012 did not
-> make it into this patch. It would be nice if the following patch
-> could still be added on top of it.
+On Mon, Mar 26, 2012 at 10:01:08AM +0200, Linus Walleij wrote:
+> -	unsigned int status, pass_counter = AMBA_ISR_PASS_LIMIT;
+> +	unsigned int status;
 
-Ah, yes, I forgot, of course. Thanks for posting it.
-
-> From: Tilman Schmidt <tilman@imap.cc>
-> Date: Sun, 25 Mar 2012 12:21:57 +0200
-> Subject: [PATCH] isdn/gigaset: use gig_dbg() for debugging output
-> 
-> The "TTY buffer in tty_port" patchset introduced an opencoded
-> debug message in the Gigaset tty device if_close() function.
-> Change it to use the gig_dbg() macro like everywhere else in
-> the driver.
-> 
-> Signed-off-by: Tilman Schmidt <tilman@imap.cc>
-> ---
->  drivers/isdn/gigaset/interface.c |    2 +-
->  1 files changed, 1 insertions(+), 1 deletions(-)
-> 
-> diff --git a/drivers/isdn/gigaset/interface.c b/drivers/isdn/gigaset/interface.c
-> index b3d6ac1..a6d9fd2 100644
-> --- a/drivers/isdn/gigaset/interface.c
-> +++ b/drivers/isdn/gigaset/interface.c
-> @@ -176,7 +176,7 @@ static void if_close(struct tty_struct *tty, struct file *filp)
->  	struct cardstate *cs = tty->driver_data;
->  
->  	if (!cs) { /* happens if we didn't find cs in open */
-> -		printk(KERN_DEBUG "%s: no cardstate\n", __func__);
-> +		gig_dbg(DEBUG_IF, "%s: no cardstate", __func__);
->  		return;
->  	}
->  
-
-
--- 
-js
-suse labs
+Why are you removing the pass counter and associated code, which was
+there before your work-around patch was applied?
