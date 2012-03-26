@@ -1,44 +1,40 @@
 From: Tomoya MORINAGA <tomoya.rohm@gmail.com>
-Subject: [PATCH 1/7] pch_uart: Delete unused structure member
-Date: Mon, 26 Mar 2012 14:43:00 +0900
-Message-ID: <1332740586-28496-1-git-send-email-tomoya.rohm@gmail.com>
+Subject: [PATCH 3/7] pch_uart: change type to %d to %02x
+Date: Mon, 26 Mar 2012 14:43:02 +0900
+Message-ID: <1332740586-28496-3-git-send-email-tomoya.rohm@gmail.com>
+References: <1332740586-28496-1-git-send-email-tomoya.rohm@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-gx0-f174.google.com ([209.85.161.174]:62027 "EHLO
-	mail-gx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752570Ab2CZFmZ (ORCPT
+Received: from mail-iy0-f174.google.com ([209.85.210.174]:52552 "EHLO
+	mail-iy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753089Ab2CZFm3 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 26 Mar 2012 01:42:25 -0400
+	Mon, 26 Mar 2012 01:42:29 -0400
+In-Reply-To: <1332740586-28496-1-git-send-email-tomoya.rohm@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc: qi.wang@intel.com, yong.y.wang@intel.com, joel.clark@intel.com, kok.howg.ewe@intel.com, Tomoya MORINAGA <tomoya.rohm@gmail.com>
 
+%02x format is easier to understand better than %d.
 
 Signed-off-by: Tomoya MORINAGA <tomoya.rohm@gmail.com>
 ---
- drivers/tty/serial/pch_uart.c |    2 --
- 1 files changed, 0 insertions(+), 2 deletions(-)
+ drivers/tty/serial/pch_uart.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
 diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 332f2eb..80609e4 100644
+index 6347f01..c025c4b 100644
 --- a/drivers/tty/serial/pch_uart.c
 +++ b/drivers/tty/serial/pch_uart.c
-@@ -236,7 +236,6 @@ struct eg20t_port {
- 	unsigned int fcr;
- 	unsigned int mcr;
- 	unsigned int use_dma;
--	unsigned int use_dma_flag;
- 	struct dma_async_tx_descriptor	*desc_tx;
- 	struct dma_async_tx_descriptor	*desc_rx;
- 	struct pch_dma_slave		param_tx;
-@@ -1445,7 +1444,6 @@ static int pch_uart_verify_port(struct uart_port *port,
- 		return -EOPNOTSUPP;
- #endif
- 		priv->use_dma = 1;
--		priv->use_dma_flag = 1;
- 		dev_info(priv->port.dev, "PCH UART : Use DMA Mode\n");
- 	}
- 
+@@ -1087,7 +1087,7 @@ static irqreturn_t pch_uart_interrupt(int irq, void *dev_id)
+ 			ret = PCH_UART_HANDLED_MS_INT;
+ 			break;
+ 		default:	/* Never junp to this label */
+-			dev_err(priv->port.dev, "%s:iid=%d (%lu)\n", __func__,
++			dev_err(priv->port.dev, "%s:iid=%02x (%lu)\n", __func__,
+ 				iid, jiffies);
+ 			ret = -1;
+ 			break;
 -- 
 1.7.7.6
 
