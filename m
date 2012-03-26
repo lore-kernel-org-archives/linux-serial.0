@@ -1,65 +1,44 @@
-From: Tilman Schmidt <tilman@imap.cc>
-Subject: Re: [GIT PATCH] TTY/serial patches for 3.4-rc1
-Date: Sun, 25 Mar 2012 19:12:37 +0200
-Message-ID: <20120325171837.67310140074@xenon.ts.pxnet.com>
-References: <20120319195649.GD9883@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+From: Tomoya MORINAGA <tomoya.rohm@gmail.com>
+Subject: [PATCH 1/7] pch_uart: Delete unused structure member
+Date: Mon, 26 Mar 2012 14:43:00 +0900
+Message-ID: <1332740586-28496-1-git-send-email-tomoya.rohm@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.pxnet.com ([89.1.7.7]:38165 "EHLO mail.pxnet.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756574Ab2CYSIu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 25 Mar 2012 14:08:50 -0400
-In-Reply-To: <20120319195649.GD9883@kroah.com>
+Received: from mail-gx0-f174.google.com ([209.85.161.174]:62027 "EHLO
+	mail-gx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752570Ab2CZFmZ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 26 Mar 2012 01:42:25 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, netdev@vger.kernel.org, hjlipp@web.de
+To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: qi.wang@intel.com, yong.y.wang@intel.com, joel.clark@intel.com, kok.howg.ewe@intel.com, Tomoya MORINAGA <tomoya.rohm@gmail.com>
 
-Jiri, Greg,
 
-On 19.03.2012 20:56, Greg KH wrote:
-> tty and serial merge for 3.4-rc1
-[...]
-> Jiri Slaby (77):
-[...]
->       TTY: isdn/gigaset, do not set tty->driver_data to NULL
-
-It seems that the amendment we discussed on 05.03.2012 did not
-make it into this patch. It would be nice if the following patch
-could still be added on top of it.
-
-Thanks,
-Tilman
-
-From: Tilman Schmidt <tilman@imap.cc>
-Date: Sun, 25 Mar 2012 12:21:57 +0200
-Subject: [PATCH] isdn/gigaset: use gig_dbg() for debugging output
-
-The "TTY buffer in tty_port" patchset introduced an opencoded
-debug message in the Gigaset tty device if_close() function.
-Change it to use the gig_dbg() macro like everywhere else in
-the driver.
-
-Signed-off-by: Tilman Schmidt <tilman@imap.cc>
+Signed-off-by: Tomoya MORINAGA <tomoya.rohm@gmail.com>
 ---
- drivers/isdn/gigaset/interface.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ drivers/tty/serial/pch_uart.c |    2 --
+ 1 files changed, 0 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/isdn/gigaset/interface.c b/drivers/isdn/gigaset/interface.c
-index b3d6ac1..a6d9fd2 100644
---- a/drivers/isdn/gigaset/interface.c
-+++ b/drivers/isdn/gigaset/interface.c
-@@ -176,7 +176,7 @@ static void if_close(struct tty_struct *tty, struct file *filp)
- 	struct cardstate *cs = tty->driver_data;
- 
- 	if (!cs) { /* happens if we didn't find cs in open */
--		printk(KERN_DEBUG "%s: no cardstate\n", __func__);
-+		gig_dbg(DEBUG_IF, "%s: no cardstate", __func__);
- 		return;
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index 332f2eb..80609e4 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -236,7 +236,6 @@ struct eg20t_port {
+ 	unsigned int fcr;
+ 	unsigned int mcr;
+ 	unsigned int use_dma;
+-	unsigned int use_dma_flag;
+ 	struct dma_async_tx_descriptor	*desc_tx;
+ 	struct dma_async_tx_descriptor	*desc_rx;
+ 	struct pch_dma_slave		param_tx;
+@@ -1445,7 +1444,6 @@ static int pch_uart_verify_port(struct uart_port *port,
+ 		return -EOPNOTSUPP;
+ #endif
+ 		priv->use_dma = 1;
+-		priv->use_dma_flag = 1;
+ 		dev_info(priv->port.dev, "PCH UART : Use DMA Mode\n");
  	}
  
 -- 
-1.7.3.4
+1.7.7.6
 
