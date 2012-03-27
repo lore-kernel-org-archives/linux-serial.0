@@ -1,59 +1,40 @@
-From: Tomoya MORINAGA <tomoya.rohm@gmail.com>
-Subject: [PATCH] pch_uart: Fix dma channel unallocated issue
-Date: Tue, 27 Mar 2012 18:56:02 +0900
-Message-ID: <1332842162-26113-1-git-send-email-tomoya.rohm@gmail.com>
+From: Sergei Shtylyov <sshtylyov@mvista.com>
+Subject: Re: [PATCH] amba-pl011: fix panic introduced by "clear pending interrupts"
+Date: Tue, 27 Mar 2012 16:12:05 +0400
+Message-ID: <4F71AE95.9080600@mvista.com>
+References: <20120326203209.GA8182@mail.gnudd.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-gx0-f174.google.com ([209.85.161.174]:60955 "EHLO
-	mail-gx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757895Ab2C0JvN (ORCPT
+Received: from mail-bk0-f46.google.com ([209.85.214.46]:62042 "EHLO
+	mail-bk0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751126Ab2C0MNe (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 27 Mar 2012 05:51:13 -0400
+	Tue, 27 Mar 2012 08:13:34 -0400
+Received: by bkcik5 with SMTP id ik5so4814520bkc.19
+        for <linux-serial@vger.kernel.org>; Tue, 27 Mar 2012 05:13:33 -0700 (PDT)
+In-Reply-To: <20120326203209.GA8182@mail.gnudd.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: qi.wang@intel.com, yong.y.wang@intel.com, joel.clark@intel.com, kok.howg.ewe@intel.com, Tomoya MORINAGA <tomoya.rohm@gmail.com>
+To: Alessandro Rubini <rubini@gnudd.com>
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Giancarlo Asnaghi <giancarlo.asnaghi@st.com>, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
 
-This driver anticipates pch_uart_verify_port() is not called
-during installation.
-However, actually pch_uart_verify_port() is called during
-installation.
-As a result, memory access violation occurs like below.
+Hello.
 
-0. initial value: use_dma=0
-1. starup()
-    - dma channel is not allocated because use_dma=0
-2. pch_uart_verify_port()
-    - Set use_dma=1
-3. UART processing acts DMA mode because use_dma=1
-     - memory access violation occurs!
+On 27-03-2012 0:32, Alessandro Rubini wrote:
 
-This patch fixes the issue.
+> patch 9b96fba, currently in linux-next, clears interrupts using
 
-Solution:
-Whenever pch_uart_verify_port() is called and then
-dma channel is not allocated, the channel should be allocated.
+    Please also specify the summary of this commit in parens.
 
-Signed-off-by: Tomoya MORINAGA <tomoya.rohm@gmail.com>
----
- drivers/tty/serial/pch_uart.c |    4 +++-
- 1 files changed, 3 insertions(+), 1 deletions(-)
+> uap->port.membase that has not been assigned.  My x86 system,
+> that uses a pci-to-amba bridge, panics with a message like:
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 803847b..e297b7c 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -1452,8 +1452,10 @@ static int pch_uart_verify_port(struct uart_port *port,
- 			__func__);
- 		return -EOPNOTSUPP;
- #endif
--		priv->use_dma = 1;
- 		dev_info(priv->port.dev, "PCH UART : Use DMA Mode\n");
-+		if (!priv->use_dma)
-+			pch_request_dma(port);
-+		priv->use_dma = 1;
- 	}
- 
- 	return 0;
--- 
-1.7.7.6
+>     BUG: unable to handle kernel NULL pointer dereference at 00000038
+>     IP: [<c12c85ed>] pl011_probe+0x119/0x303
 
+> Signed-off-by: Alessandro Rubini<rubini@gnudd.com>
+> Acked-by: Giancarlo Asnaghi<giancarlo.asnaghi@st.com>
+
+WBR, Sergei
