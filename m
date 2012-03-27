@@ -1,53 +1,59 @@
-From: Alexander Shiyan <shc_work@mail.ru>
-Subject: [PATCH] ARM: clps711x: serial driver hungs are a result of call disable_irq within ISR
-Date: Tue, 27 Mar 2012 12:22:49 +0400
-Message-ID: <1332836569-11726-1-git-send-email-shc_work@mail.ru>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alexander Shiyan <shc_work@mail.ru>
+From: Tomoya MORINAGA <tomoya.rohm@gmail.com>
+Subject: [PATCH] pch_uart: Fix dma channel unallocated issue
+Date: Tue, 27 Mar 2012 18:56:02 +0900
+Message-ID: <1332842162-26113-1-git-send-email-tomoya.rohm@gmail.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-gx0-f174.google.com ([209.85.161.174]:60955 "EHLO
+	mail-gx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757895Ab2C0JvN (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 27 Mar 2012 05:51:13 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: qi.wang@intel.com, yong.y.wang@intel.com, joel.clark@intel.com, kok.howg.ewe@intel.com, Tomoya MORINAGA <tomoya.rohm@gmail.com>
 
-Since 2.6.30-rc1 clps711x serial driver hungs system. This is a result
-of call disable_irq from ISR. synchronize_irq waits for end of interrupt
-and goes to infinite loop. This patch fix this problem.
+This driver anticipates pch_uart_verify_port() is not called
+during installation.
+However, actually pch_uart_verify_port() is called during
+installation.
+As a result, memory access violation occurs like below.
 
-Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
+0. initial value: use_dma=0
+1. starup()
+    - dma channel is not allocated because use_dma=0
+2. pch_uart_verify_port()
+    - Set use_dma=1
+3. UART processing acts DMA mode because use_dma=1
+     - memory access violation occurs!
+
+This patch fixes the issue.
+
+Solution:
+Whenever pch_uart_verify_port() is called and then
+dma channel is not allocated, the channel should be allocated.
+
+Signed-off-by: Tomoya MORINAGA <tomoya.rohm@gmail.com>
 ---
- drivers/tty/serial/clps711x.c |   14 ++++++++------
- 1 files changed, 8 insertions(+), 6 deletions(-)
+ drivers/tty/serial/pch_uart.c |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
 
-diff --git a/drivers/tty/serial/clps711x.c b/drivers/tty/serial/clps711x.c
-index e6c3dbd..836fe273 100644
---- a/drivers/tty/serial/clps711x.c
-+++ b/drivers/tty/serial/clps711x.c
-@@ -154,10 +154,9 @@ static irqreturn_t clps711xuart_int_tx(int irq, void *dev_id)
- 		port->x_char = 0;
- 		return IRQ_HANDLED;
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index 803847b..e297b7c 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -1452,8 +1452,10 @@ static int pch_uart_verify_port(struct uart_port *port,
+ 			__func__);
+ 		return -EOPNOTSUPP;
+ #endif
+-		priv->use_dma = 1;
+ 		dev_info(priv->port.dev, "PCH UART : Use DMA Mode\n");
++		if (!priv->use_dma)
++			pch_request_dma(port);
++		priv->use_dma = 1;
  	}
--	if (uart_circ_empty(xmit) || uart_tx_stopped(port)) {
--		clps711xuart_stop_tx(port);
--		return IRQ_HANDLED;
--	}
-+
-+	if (uart_circ_empty(xmit) || uart_tx_stopped(port))
-+		goto disable_tx_irq;
  
- 	count = port->fifosize >> 1;
- 	do {
-@@ -171,8 +170,11 @@ static irqreturn_t clps711xuart_int_tx(int irq, void *dev_id)
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(port);
- 
--	if (uart_circ_empty(xmit))
--		clps711xuart_stop_tx(port);
-+	if (uart_circ_empty(xmit)) {
-+	disable_tx_irq:
-+		disable_irq_nosync(TX_IRQ(port));
-+		tx_enabled(port) = 0;
-+	}
- 
- 	return IRQ_HANDLED;
- }
+ 	return 0;
 -- 
-1.7.3.4
+1.7.7.6
+
