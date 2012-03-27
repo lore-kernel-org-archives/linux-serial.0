@@ -1,131 +1,91 @@
-From: Jon Hunter <jon-hunter@ti.com>
-Subject: Re: [PATCH 1/3] OMAP2+: UART: Remove cpu checks for populating errata
- flags
-Date: Tue, 27 Mar 2012 16:08:51 -0500
-Message-ID: <4F722C63.9080900@ti.com>
-References: <1332325501-10467-1-git-send-email-govindraj.raja@ti.com> <1332325501-10467-2-git-send-email-govindraj.raja@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: [PATCH] staging: evict abandoned 68360serial.c driver from 3.4
+Date: Tue, 27 Mar 2012 19:07:11 -0400
+Message-ID: <1332889631-21316-1-git-send-email-paul.gortmaker@windriver.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:43901 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754594Ab2C0VI4 (ORCPT
+Received: from mail.windriver.com ([147.11.1.11]:58443 "EHLO
+	mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755658Ab2C0XHz (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 27 Mar 2012 17:08:56 -0400
-In-Reply-To: <1332325501-10467-2-git-send-email-govindraj.raja@ti.com>
+	Tue, 27 Mar 2012 19:07:55 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Govindraj.R" <govindraj.raja@ti.com>
-Cc: linux-omap@vger.kernel.org, Kevin Hilman <khilman@ti.com>, Paul Walmsley <paul@pwsan.com>, Felipe Balbi <balbi@ti.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, Paul Gortmaker <paul.gortmaker@windriver.com>, Jiri Slaby <jslaby@suse.cz>, Geert Uytterhoeven <geert@linux-m68k.org>, Alan Cox <alan@linux.intel.com>
 
-Hi Govindraj,
+commit 3a0db7215c88077b61a673215756ec4a0dc0c7a5
 
-On 3/21/2012 5:24, Govindraj.R wrote:
-> From: "Govindraj.R"<govindraj.raja@ti.com>
->
-> Currently the errata is populated based on cpu checks this can
-> be removed and replaced with module version check of uart ip block.
-> MVR reg is provided within the uart reg map use the same
-> to populate the errata and thus now errata population and handling
-> can be managed within the driver itself.
->
-> Cc: Paul Walmsley<paul@pwsan.com>
-> Cc: Kevin Hilman<khilman@ti.com>
-> Signed-off-by: Felipe Balbi<balbi@ti.com>
-> Signed-off-by: Govindraj.R<govindraj.raja@ti.com>
-> ---
->   arch/arm/mach-omap2/serial.c                  |    8 ---
->   arch/arm/plat-omap/include/plat/omap-serial.h |    1 -
->   drivers/tty/serial/omap-serial.c              |   62 ++++++++++++++++++++++++-
->   3 files changed, 61 insertions(+), 10 deletions(-)
->
-> diff --git a/arch/arm/mach-omap2/serial.c b/arch/arm/mach-omap2/serial.c
-> index f590afc..330ee04 100644
-> --- a/arch/arm/mach-omap2/serial.c
-> +++ b/arch/arm/mach-omap2/serial.c
-> @@ -357,14 +357,6 @@ void __init omap_serial_init_port(struct omap_board_data *bdata,
->   	omap_up.dma_rx_poll_rate = info->dma_rx_poll_rate;
->   	omap_up.autosuspend_timeout = info->autosuspend_timeout;
->
-> -	/* Enable the MDR1 Errata i202 for OMAP2430/3xxx/44xx */
-> -	if (!cpu_is_omap2420()&&  !cpu_is_ti816x())
-> -		omap_up.errata |= UART_ERRATA_i202_MDR1_ACCESS;
-> -
-> -	/* Enable DMA Mode Force Idle Errata i291 for omap34xx/3630 */
-> -	if (cpu_is_omap34xx() || cpu_is_omap3630())
-> -		omap_up.errata |= UART_ERRATA_i291_DMA_FORCEIDLE;
-> -
->   	pdata =&omap_up;
->   	pdata_size = sizeof(struct omap_uart_port_info);
->
-> diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/plat-omap/include/plat/omap-serial.h
-> index 9ff4444..1a52725 100644
-> --- a/arch/arm/plat-omap/include/plat/omap-serial.h
-> +++ b/arch/arm/plat-omap/include/plat/omap-serial.h
-> @@ -65,7 +65,6 @@ struct omap_uart_port_info {
->   	bool			dma_enabled;	/* To specify DMA Mode */
->   	unsigned int		uartclk;	/* UART clock rate */
->   	upf_t			flags;		/* UPF_* flags */
-> -	u32			errata;
->   	unsigned int		dma_rx_buf_size;
->   	unsigned int		dma_rx_timeout;
->   	unsigned int		autosuspend_timeout;
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-> index f809041..c7666d6 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -44,6 +44,13 @@
->   #include<plat/dmtimer.h>
->   #include<plat/omap-serial.h>
->
-> +#define UART_BUILD_REVISION(x, y)	(((x)<<  8) | (y))
-> +
-> +#define OMAP_UART_REV_42 0x0402
-> +#define OMAP_UART_REV_46 0x0406
-> +#define OMAP_UART_REV_52 0x0502
-> +#define OMAP_UART_REV_63 0x0603
-> +
->   #define DEFAULT_CLK_SPEED 48000000 /* 48Mhz*/
->
->   /* SCR register bitmasks */
-> @@ -1346,6 +1353,58 @@ static void uart_tx_dma_callback(int lch, u16 ch_status, void *data)
->   	return;
->   }
->
-> +static void omap_serial_fill_features_erratas(struct uart_omap_port *up)
-> +{
-> +	u32 mvr, scheme;
-> +	u16 revision, major, minor;
-> +
-> +	mvr = serial_in(up, UART_OMAP_MVER);
-> +
-> +	/* Check revision register scheme */
-> +	scheme = mvr&  (0x03<<  30);
-> +	scheme>>= 30;
+    "TTY: serial, move 68360 driver to staging"
 
-Minor nit-pick, why not ...
+did so because the driver had remained broken since 2008.  It also
+added this text to the TODO file:
 
-	scheme = mvr >> 30;
+   "If no one steps up to adopt any of these drivers, they will
+    be removed in the 3.4 release."
 
-> +	switch (scheme) {
-> +	case 0: /* Legacy Scheme: OMAP2/3 */
-> +		/* MINOR_REV[0:4], MAJOR_REV[4:7] */
+A quick search on the internet doesn't reveal anyone actively
+trying to update/fix this driver, so follow through on the above
+and remove it from the pending 3.4 release.
 
-This scheme is also true from OMAP1 devices. Maybe we could include in 
-the comment.
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Alan Cox <alan@linux.intel.com>
+Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+---
 
-> +		major = (mvr&  0xf0)>>  4;
-> +		minor = (mvr&  0x0f);
-> +		break;
-> +	case 1:
-> +		/* New Scheme: OMAP4+ */
-> +		/* MINOR_REV[0:5], MAJOR_REV[8:10] */
-> +		major = (mvr&  0x7<<  8)>>  8;
+[ commit 3a0db72 was present in v3.2 in case people were wondering.
+  Geert - I know you'd said "uClinux" wrt. 3a0db72, but I left you
+  on the CC since the CONFIG_M68360 dependency comes from m68k. ]
 
-Nit-pick ...
+ drivers/staging/Kconfig              |    2 -
+ drivers/staging/Makefile             |    1 -
+ drivers/staging/serial/68360serial.c | 2979 ----------------------------------
+ drivers/staging/serial/Kconfig       |   16 -
+ drivers/staging/serial/Makefile      |    1 -
+ drivers/staging/serial/TODO          |    6 -
+ 6 files changed, 0 insertions(+), 3005 deletions(-)
+ delete mode 100644 drivers/staging/serial/68360serial.c
+ delete mode 100644 drivers/staging/serial/Kconfig
+ delete mode 100644 drivers/staging/serial/Makefile
+ delete mode 100644 drivers/staging/serial/TODO
 
-	major = (mvr >> 8) & 0x7;
+diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
+index 97d412d..4c99b4c 100644
+--- a/drivers/staging/Kconfig
++++ b/drivers/staging/Kconfig
+@@ -24,8 +24,6 @@ menuconfig STAGING
+ 
+ if STAGING
+ 
+-source "drivers/staging/serial/Kconfig"
+-
+ source "drivers/staging/et131x/Kconfig"
+ 
+ source "drivers/staging/slicoss/Kconfig"
+diff --git a/drivers/staging/Makefile b/drivers/staging/Makefile
+index ffe7d44..74662ce 100644
+--- a/drivers/staging/Makefile
++++ b/drivers/staging/Makefile
+@@ -3,7 +3,6 @@
+ # fix for build system bug...
+ obj-$(CONFIG_STAGING)		+= staging.o
+ 
+-obj-y				+= serial/
+ obj-y				+= media/
+ obj-$(CONFIG_ET131X)		+= et131x/
+ obj-$(CONFIG_SLICOSS)		+= slicoss/
+diff --git a/drivers/staging/serial/68360serial.c b/drivers/staging/serial/68360serial.c
+deleted file mode 100644
+index daf0b1d..0000000
+diff --git a/drivers/staging/serial/Kconfig b/drivers/staging/serial/Kconfig
+deleted file mode 100644
+index 9489688..0000000
+diff --git a/drivers/staging/serial/Makefile b/drivers/staging/serial/Makefile
+deleted file mode 100644
+index 37a6a0b..0000000
+diff --git a/drivers/staging/serial/TODO b/drivers/staging/serial/TODO
+deleted file mode 100644
+index a19cda8..0000000
+-- 
+1.7.9.1
 
-Cheers
-Jon
