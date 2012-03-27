@@ -1,48 +1,53 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH] amba-pl011: fix panic introduced by "clear pending interrupts"
-Date: Tue, 27 Mar 2012 09:07:22 +0200
-Message-ID: <CACRpkdZXhJn241n8wMU8yUFwL7mpWrV3hP6C-_r_P1GGWgd_Og@mail.gmail.com>
-References: <20120326203209.GA8182@mail.gnudd.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ob0-f174.google.com ([209.85.214.174]:47746 "EHLO
-	mail-ob0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754038Ab2C0HHX convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 27 Mar 2012 03:07:23 -0400
-Received: by obbeh20 with SMTP id eh20so6161715obb.19
-        for <linux-serial@vger.kernel.org>; Tue, 27 Mar 2012 00:07:22 -0700 (PDT)
-In-Reply-To: <20120326203209.GA8182@mail.gnudd.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Alexander Shiyan <shc_work@mail.ru>
+Subject: [PATCH] ARM: clps711x: serial driver hungs are a result of call disable_irq within ISR
+Date: Tue, 27 Mar 2012 12:22:49 +0400
+Message-ID: <1332836569-11726-1-git-send-email-shc_work@mail.ru>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alexander Shiyan <shc_work@mail.ru>
 List-Id: linux-serial@vger.kernel.org
-To: Alessandro Rubini <rubini@gnudd.com>
-Cc: linux-kernel@vger.kernel.org, Giancarlo Asnaghi <giancarlo.asnaghi@st.com>, Alan Cox <alan@linux.intel.com>, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Mon, Mar 26, 2012 at 10:32 PM, Alessandro Rubini <rubini@gnudd.com> =
-wrote:
+Since 2.6.30-rc1 clps711x serial driver hungs system. This is a result
+of call disable_irq from ISR. synchronize_irq waits for end of interrupt
+and goes to infinite loop. This patch fix this problem.
 
-> patch 9b96fba, currently in linux-next, clears interrupts using
-> uap->port.membase that has not been assigned. =A0My x86 system,
-> that uses a pci-to-amba bridge, panics with a message like:
->
-> =A0 BUG: unable to handle kernel NULL pointer dereference at 00000038
-> =A0 IP: [<c12c85ed>] pl011_probe+0x119/0x303
->
-> Signed-off-by: Alessandro Rubini <rubini@gnudd.com>
-> Acked-by: Giancarlo Asnaghi <giancarlo.asnaghi@st.com>
+Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
+---
+ drivers/tty/serial/clps711x.c |   14 ++++++++------
+ 1 files changed, 8 insertions(+), 6 deletions(-)
 
-Yep I know, already sent the remedy, just waiting for Greg to pick it u=
-p:
-http://marc.info/?l=3Dlinux-serial&m=3D133235774423240&w=3D2
-
-But thanks for the quick attention :-)
-
-Yours,
-Linus Walleij
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/tty/serial/clps711x.c b/drivers/tty/serial/clps711x.c
+index e6c3dbd..836fe273 100644
+--- a/drivers/tty/serial/clps711x.c
++++ b/drivers/tty/serial/clps711x.c
+@@ -154,10 +154,9 @@ static irqreturn_t clps711xuart_int_tx(int irq, void *dev_id)
+ 		port->x_char = 0;
+ 		return IRQ_HANDLED;
+ 	}
+-	if (uart_circ_empty(xmit) || uart_tx_stopped(port)) {
+-		clps711xuart_stop_tx(port);
+-		return IRQ_HANDLED;
+-	}
++
++	if (uart_circ_empty(xmit) || uart_tx_stopped(port))
++		goto disable_tx_irq;
+ 
+ 	count = port->fifosize >> 1;
+ 	do {
+@@ -171,8 +170,11 @@ static irqreturn_t clps711xuart_int_tx(int irq, void *dev_id)
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		uart_write_wakeup(port);
+ 
+-	if (uart_circ_empty(xmit))
+-		clps711xuart_stop_tx(port);
++	if (uart_circ_empty(xmit)) {
++	disable_tx_irq:
++		disable_irq_nosync(TX_IRQ(port));
++		tx_enabled(port) = 0;
++	}
+ 
+ 	return IRQ_HANDLED;
+ }
+-- 
+1.7.3.4
