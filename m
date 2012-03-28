@@ -1,139 +1,171 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] staging: evict abandoned 68360serial.c driver from 3.4
-Date: Wed, 28 Mar 2012 09:31:10 +0200
-Message-ID: <CAMuHMdXrVeQqJUAwE2si-pzd6OA7kNykzovwUqxjXaPAuEnqVA@mail.gmail.com>
-References: <1332889631-21316-1-git-send-email-paul.gortmaker@windriver.com>
+From: "Raja, Govindraj" <govindraj.raja@ti.com>
+Subject: Re: [PATCH 1/3] OMAP2+: UART: Remove cpu checks for populating errata flags
+Date: Wed, 28 Mar 2012 16:39:37 +0530
+Message-ID: <CAMrsUdKfsoks4fB4GhrRcEur8niJsaWuYGE34+j5Bk6u2XiZQQ@mail.gmail.com>
+References: <1332325501-10467-1-git-send-email-govindraj.raja@ti.com>
+ <1332325501-10467-2-git-send-email-govindraj.raja@ti.com> <4F722C63.9080900@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f178.google.com ([209.85.212.178]:51764 "EHLO
-	mail-wi0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752686Ab2C1HbM convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 28 Mar 2012 03:31:12 -0400
-Received: by wibhq7 with SMTP id hq7so658259wib.1
-        for <linux-serial@vger.kernel.org>; Wed, 28 Mar 2012 00:31:10 -0700 (PDT)
-In-Reply-To: <1332889631-21316-1-git-send-email-paul.gortmaker@windriver.com>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <4F722C63.9080900@ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Jon Hunter <jon-hunter@ti.com>
+Cc: linux-omap@vger.kernel.org, Kevin Hilman <khilman@ti.com>, Paul Walmsley <paul@pwsan.com>, Felipe Balbi <balbi@ti.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
-To: Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>, Greg Ungerer <gerg@snapgear.com>
 
-CC added.
-m68k and m68knommu got merged, but Greg still handles the nommu
-and coldfire parts.
+On Wed, Mar 28, 2012 at 2:38 AM, Jon Hunter <jon-hunter@ti.com> wrote:
+> Hi Govindraj,
+>
+>
+> On 3/21/2012 5:24, Govindraj.R wrote:
+>>
+>> From: "Govindraj.R"<govindraj.raja@ti.com>
+>>
+>> Currently the errata is populated based on cpu checks this can
+>> be removed and replaced with module version check of uart ip block.
+>> MVR reg is provided within the uart reg map use the same
+>> to populate the errata and thus now errata population and handling
+>> can be managed within the driver itself.
+>>
+>> Cc: Paul Walmsley<paul@pwsan.com>
+>> Cc: Kevin Hilman<khilman@ti.com>
+>> Signed-off-by: Felipe Balbi<balbi@ti.com>
+>> Signed-off-by: Govindraj.R<govindraj.raja@ti.com>
+>> ---
+>> =A0arch/arm/mach-omap2/serial.c =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0|=
+ =A0 =A08 ---
+>> =A0arch/arm/plat-omap/include/plat/omap-serial.h | =A0 =A01 -
+>> =A0drivers/tty/serial/omap-serial.c =A0 =A0 =A0 =A0 =A0 =A0 =A0| =A0=
+ 62
+>> ++++++++++++++++++++++++-
+>> =A03 files changed, 61 insertions(+), 10 deletions(-)
+>>
+>> diff --git a/arch/arm/mach-omap2/serial.c b/arch/arm/mach-omap2/seri=
+al.c
+>> index f590afc..330ee04 100644
+>> --- a/arch/arm/mach-omap2/serial.c
+>> +++ b/arch/arm/mach-omap2/serial.c
+>> @@ -357,14 +357,6 @@ void __init omap_serial_init_port(struct
+>> omap_board_data *bdata,
+>> =A0 =A0 =A0 =A0omap_up.dma_rx_poll_rate =3D info->dma_rx_poll_rate;
+>> =A0 =A0 =A0 =A0omap_up.autosuspend_timeout =3D info->autosuspend_tim=
+eout;
+>>
+>> - =A0 =A0 =A0 /* Enable the MDR1 Errata i202 for OMAP2430/3xxx/44xx =
+*/
+>> - =A0 =A0 =A0 if (!cpu_is_omap2420()&& =A0!cpu_is_ti816x())
+>>
+>> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 omap_up.errata |=3D UART_ERRATA_i202_M=
+DR1_ACCESS;
+>> -
+>> - =A0 =A0 =A0 /* Enable DMA Mode Force Idle Errata i291 for omap34xx=
+/3630 */
+>> - =A0 =A0 =A0 if (cpu_is_omap34xx() || cpu_is_omap3630())
+>> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 omap_up.errata |=3D UART_ERRATA_i291_D=
+MA_FORCEIDLE;
+>> -
+>> =A0 =A0 =A0 =A0pdata =3D&omap_up;
+>> =A0 =A0 =A0 =A0pdata_size =3D sizeof(struct omap_uart_port_info);
+>>
+>> diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h
+>> b/arch/arm/plat-omap/include/plat/omap-serial.h
+>> index 9ff4444..1a52725 100644
+>> --- a/arch/arm/plat-omap/include/plat/omap-serial.h
+>> +++ b/arch/arm/plat-omap/include/plat/omap-serial.h
+>> @@ -65,7 +65,6 @@ struct omap_uart_port_info {
+>> =A0 =A0 =A0 =A0bool =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0dma_enabl=
+ed; =A0 =A0/* To specify DMA Mode */
+>> =A0 =A0 =A0 =A0unsigned int =A0 =A0 =A0 =A0 =A0 =A0uartclk; =A0 =A0 =
+=A0 =A0/* UART clock rate */
+>> =A0 =A0 =A0 =A0upf_t =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 flags; =A0 =
+=A0 =A0 =A0 =A0/* UPF_* flags */
+>> - =A0 =A0 =A0 u32 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 errata;
+>> =A0 =A0 =A0 =A0unsigned int =A0 =A0 =A0 =A0 =A0 =A0dma_rx_buf_size;
+>> =A0 =A0 =A0 =A0unsigned int =A0 =A0 =A0 =A0 =A0 =A0dma_rx_timeout;
+>> =A0 =A0 =A0 =A0unsigned int =A0 =A0 =A0 =A0 =A0 =A0autosuspend_timeo=
+ut;
+>> diff --git a/drivers/tty/serial/omap-serial.c
+>> b/drivers/tty/serial/omap-serial.c
+>> index f809041..c7666d6 100644
+>> --- a/drivers/tty/serial/omap-serial.c
+>> +++ b/drivers/tty/serial/omap-serial.c
+>> @@ -44,6 +44,13 @@
+>> =A0#include<plat/dmtimer.h>
+>> =A0#include<plat/omap-serial.h>
+>>
+>> +#define UART_BUILD_REVISION(x, y) =A0 =A0 =A0(((x)<< =A08) | (y))
+>> +
+>> +#define OMAP_UART_REV_42 0x0402
+>> +#define OMAP_UART_REV_46 0x0406
+>> +#define OMAP_UART_REV_52 0x0502
+>> +#define OMAP_UART_REV_63 0x0603
+>> +
+>> =A0#define DEFAULT_CLK_SPEED 48000000 /* 48Mhz*/
+>>
+>> =A0/* SCR register bitmasks */
+>> @@ -1346,6 +1353,58 @@ static void uart_tx_dma_callback(int lch, u16
+>> ch_status, void *data)
+>> =A0 =A0 =A0 =A0return;
+>> =A0}
+>>
+>> +static void omap_serial_fill_features_erratas(struct uart_omap_port=
+ *up)
+>> +{
+>> + =A0 =A0 =A0 u32 mvr, scheme;
+>> + =A0 =A0 =A0 u16 revision, major, minor;
+>> +
+>> + =A0 =A0 =A0 mvr =3D serial_in(up, UART_OMAP_MVER);
+>> +
+>> + =A0 =A0 =A0 /* Check revision register scheme */
+>> + =A0 =A0 =A0 scheme =3D mvr& =A0(0x03<< =A030);
+>> + =A0 =A0 =A0 scheme>>=3D 30;
+>
+>
+> Minor nit-pick, why not ...
+>
+> =A0 =A0 =A0 =A0scheme =3D mvr >> 30;
+>
 
-On Wed, Mar 28, 2012 at 01:07, Paul Gortmaker
-<paul.gortmaker@windriver.com> wrote:
-> commit 3a0db7215c88077b61a673215756ec4a0dc0c7a5
->
-> =C2=A0 =C2=A0"TTY: serial, move 68360 driver to staging"
->
-> did so because the driver had remained broken since 2008. =C2=A0It al=
-so
-> added this text to the TODO file:
->
-> =C2=A0 "If no one steps up to adopt any of these drivers, they will
-> =C2=A0 =C2=A0be removed in the 3.4 release."
->
-> A quick search on the internet doesn't reveal anyone actively
-> trying to update/fix this driver, so follow through on the above
-> and remove it from the pending 3.4 release.
->
-> Cc: Jiri Slaby <jslaby@suse.cz>
-> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> Cc: Alan Cox <alan@linux.intel.com>
-> Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
-> ---
->
-> [ commit 3a0db72 was present in v3.2 in case people were wondering.
-> =C2=A0Geert - I know you'd said "uClinux" wrt. 3a0db72, but I left yo=
-u
-> =C2=A0on the CC since the CONFIG_M68360 dependency comes from m68k. ]
->
-> =C2=A0drivers/staging/Kconfig =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0| =C2=A0 =C2=A02 -
-> =C2=A0drivers/staging/Makefile =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 | =C2=A0 =C2=A01 -
-> =C2=A0drivers/staging/serial/68360serial.c | 2979 -------------------=
----------------
-> =C2=A0drivers/staging/serial/Kconfig =C2=A0 =C2=A0 =C2=A0 | =C2=A0 16=
- -
-> =C2=A0drivers/staging/serial/Makefile =C2=A0 =C2=A0 =C2=A0| =C2=A0 =C2=
-=A01 -
-> =C2=A0drivers/staging/serial/TODO =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0|=
- =C2=A0 =C2=A06 -
-> =C2=A06 files changed, 0 insertions(+), 3005 deletions(-)
-> =C2=A0delete mode 100644 drivers/staging/serial/68360serial.c
-> =C2=A0delete mode 100644 drivers/staging/serial/Kconfig
-> =C2=A0delete mode 100644 drivers/staging/serial/Makefile
-> =C2=A0delete mode 100644 drivers/staging/serial/TODO
->
-> diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
-> index 97d412d..4c99b4c 100644
-> --- a/drivers/staging/Kconfig
-> +++ b/drivers/staging/Kconfig
-> @@ -24,8 +24,6 @@ menuconfig STAGING
->
-> =C2=A0if STAGING
->
-> -source "drivers/staging/serial/Kconfig"
-> -
-> =C2=A0source "drivers/staging/et131x/Kconfig"
->
-> =C2=A0source "drivers/staging/slicoss/Kconfig"
-> diff --git a/drivers/staging/Makefile b/drivers/staging/Makefile
-> index ffe7d44..74662ce 100644
-> --- a/drivers/staging/Makefile
-> +++ b/drivers/staging/Makefile
-> @@ -3,7 +3,6 @@
-> =C2=A0# fix for build system bug...
-> =C2=A0obj-$(CONFIG_STAGING) =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0+=3D st=
-aging.o
->
-> -obj-y =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0 =C2=A0+=3D serial/
-> =C2=A0obj-y =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0+=3D media/
-> =C2=A0obj-$(CONFIG_ET131X) =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 +=3D et=
-131x/
-> =C2=A0obj-$(CONFIG_SLICOSS) =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0+=3D sl=
-icoss/
-> diff --git a/drivers/staging/serial/68360serial.c b/drivers/staging/s=
-erial/68360serial.c
-> deleted file mode 100644
-> index daf0b1d..0000000
-> diff --git a/drivers/staging/serial/Kconfig b/drivers/staging/serial/=
-Kconfig
-> deleted file mode 100644
-> index 9489688..0000000
-> diff --git a/drivers/staging/serial/Makefile b/drivers/staging/serial=
-/Makefile
-> deleted file mode 100644
-> index 37a6a0b..0000000
-> diff --git a/drivers/staging/serial/TODO b/drivers/staging/serial/TOD=
-O
-> deleted file mode 100644
-> index a19cda8..0000000
+yes will correct it.
 
-Gr{oetje,eeting}s,
+>
+>> + =A0 =A0 =A0 switch (scheme) {
+>> + =A0 =A0 =A0 case 0: /* Legacy Scheme: OMAP2/3 */
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 /* MINOR_REV[0:4], MAJOR_REV[4:7] */
+>
+>
+> This scheme is also true from OMAP1 devices. Maybe we could include i=
+n the
+> comment.
 
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 Geert
+No omap1 from $SUBJECT also reason,
+
+mach-omap1/serial.c =3D> 8250.c
+mach-omap2/serial.c =3D> omap-serial.c
+
+>
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 major =3D (mvr& =A00xf0)>> =A04;
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 minor =3D (mvr& =A00x0f);
+>>
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 break;
+>> + =A0 =A0 =A0 case 1:
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 /* New Scheme: OMAP4+ */
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 /* MINOR_REV[0:5], MAJOR_REV[8:10] */
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 major =3D (mvr& =A00x7<< =A08)>> =A08;
+>
+>
+> Nit-pick ...
+>
+> =A0 =A0 =A0 =A0major =3D (mvr >> 8) & 0x7;
+
+yes fine will correct this.
 
 --
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-=
-m68k.org
-
-In personal conversations with technical people, I call myself a hacker=
-=2E But
-when I'm talking to journalists I just say "programmer" or something li=
-ke that.
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0=C2=A0 =C2=A0=C2=A0 -- Linus Torvalds
+Thanks,
+Govindraj.R
 --
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
+To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
+n
 the body of a message to majordomo@vger.kernel.org
 More majordomo info at  http://vger.kernel.org/majordomo-info.html
