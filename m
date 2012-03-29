@@ -1,85 +1,51 @@
-From: Linus Walleij <linus.walleij@linaro.org>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Subject: Re: [PATCH] serial: PL011: move interrupt clearing
-Date: Thu, 29 Mar 2012 23:22:55 +0200
-Message-ID: <CACRpkdZ4pxUDpe3aEv3y_Smn5K17f_Q5G-k=EVPzw8NvxpF2iw@mail.gmail.com>
+Date: Thu, 29 Mar 2012 14:33:33 -0700
+Message-ID: <20120329213333.GA15231@kroah.com>
 References: <1332357318-8017-1-git-send-email-linus.walleij@linaro.org>
-	<CACxGe6u+KeYzWwiJ7MK7pWG444Y99CQ1LLCZP4m3R=zdYFR_pg@mail.gmail.com>
+ <CACxGe6u+KeYzWwiJ7MK7pWG444Y99CQ1LLCZP4m3R=zdYFR_pg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-gy0-f174.google.com ([209.85.160.174]:44337 "EHLO
-	mail-gy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1760069Ab2C2VW4 convert rfc822-to-8bit (ORCPT
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:36071 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1760074Ab2C2Vdi (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 29 Mar 2012 17:22:56 -0400
-Received: by ghrr11 with SMTP id r11so1882831ghr.19
-        for <linux-serial@vger.kernel.org>; Thu, 29 Mar 2012 14:22:55 -0700 (PDT)
+	Thu, 29 Mar 2012 17:33:38 -0400
+Received: by pbcun15 with SMTP id un15so655987pbc.19
+        for <linux-serial@vger.kernel.org>; Thu, 29 Mar 2012 14:33:37 -0700 (PDT)
 In-Reply-To: <CACxGe6u+KeYzWwiJ7MK7pWG444Y99CQ1LLCZP4m3R=zdYFR_pg@mail.gmail.com>
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Grant Likely <grant.likely@secretlab.ca>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@arm.linux.org.uk>, Jong-Sung Kim <neidhard.kim@lge.com>, stable <stable@vger.kernel.org>, Chanho Min <chanho0207@gmail.com>, linux-arm-kernel@lists.infradead.org, Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>, linux-serial@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Jong-Sung Kim <neidhard.kim@lge.com>, stable <stable@vger.kernel.org>, Chanho Min <chanho0207@gmail.com>, linux-arm-kernel@lists.infradead.org, Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
 
-On Thu, Mar 29, 2012 at 10:49 PM, Grant Likely
-<grant.likely@secretlab.ca> wrote:
-
->> Commit 360f748b204275229f8398cb2f9f53955db1503b
->> "serial: PL011: clear pending interrupts"
->> attempts to clear interrupts by writing to a
->> yet-unassigned memory address. This fixes the issue.
->
-> Ugh; the original patch is obviously broken. =A0How did it get applie=
-d
+On Thu, Mar 29, 2012 at 02:49:37PM -0600, Grant Likely wrote:
+> On Wed, Mar 21, 2012 at 1:15 PM, Linus Walleij <linus.walleij@linaro.org> wrote:
+> > Commit 360f748b204275229f8398cb2f9f53955db1503b
+> > "serial: PL011: clear pending interrupts"
+> > attempts to clear interrupts by writing to a
+> > yet-unassigned memory address. This fixes the issue.
+> >
+> > The breaking patch is marked for stable so should be
+> > carried along with the other patch.
+> >
+> > Cc: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
+> > Cc: Russell King <linux@arm.linux.org.uk>
+> > Cc: stable <stable@vger.kernel.org>
+> > Reported-by: Viresh Kumar <viresh.kumar@st.com>
+> > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> 
+> Ugh; the original patch is obviously broken.  How did it get applied
 > without testing?
-
-I've felt bad about that for a while, but to the best of my knowledge I=
- did
-test it. Either I did some manual slip with the boot images or there wa=
-s
-something else causing it to actually work as it looked... Chanho also
-had it working IIRC.
-
-> Greg, can you get this out to Linus ASAP please? =A0I have one commen=
-t
+> 
+> Greg, can you get this out to Linus ASAP please?  I have one comment
 > below, but I don't think it should block merging this patch.
->
+> 
 > Tested-by: Grant Likely <grant.likely@secretlab.ca>
 
-Thanks.
+Thanks, I'll get it to him after 3.4-rc1 is out, in a few days, along
+with other tty fixes being queued up.
 
->> - =A0 =A0 =A0 /* Ensure interrupts from this UART are masked and cle=
-ared */
->> - =A0 =A0 =A0 writew(0, uap->port.membase + UART011_IMSC);
->> - =A0 =A0 =A0 writew(0xffff, uap->port.membase + UART011_ICR);
->> -
->> =A0 =A0 =A0 =A0uap->vendor =3D vendor;
->> =A0 =A0 =A0 =A0uap->lcrh_rx =3D vendor->lcrh_rx;
->> =A0 =A0 =A0 =A0uap->lcrh_tx =3D vendor->lcrh_tx;
->> @@ -1951,6 +1947,10 @@ static int pl011_probe(struct amba_device *de=
-v, const struct amba_id *id)
->> =A0 =A0 =A0 =A0uap->port.line =3D i;
->> =A0 =A0 =A0 =A0pl011_dma_probe(uap);
->>
->> + =A0 =A0 =A0 /* Ensure interrupts from this UART are masked and cle=
-ared */
->> + =A0 =A0 =A0 writew(0, uap->port.membase + UART011_IMSC);
->> + =A0 =A0 =A0 writew(0xffff, uap->port.membase + UART011_ICR);
->> +
->
-> Is it correct to move the interrupt clearing below the
-> pl011_dma_probe() call? =A0I've tested the fix with the interrupt
-> clearing both above and below the pl011_dma_probe() call and versatil=
-e
-> qemu boots in both cases.
-
-pl011_dma_probe() basically just make logical setup so we do the
-clear-out as the last step of setup.
-
-Yours,
-Linus Walleij
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+greg k-h
