@@ -1,54 +1,124 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: Re: [PATCH] staging: evict abandoned 68360serial.c driver from 3.4
-Date: Wed, 28 Mar 2012 13:02:29 -0400
-Message-ID: <4F734425.9010204@windriver.com>
-References: <1332889631-21316-1-git-send-email-paul.gortmaker@windriver.com> <20120328150528.GD19862@kroah.com>
+From: "Raja, Govindraj" <govindraj.raja@ti.com>
+Subject: Re: [PATCH 1/3] OMAP2+: UART: Remove cpu checks for populating errata flags
+Date: Thu, 29 Mar 2012 13:05:24 +0530
+Message-ID: <CAMrsUdKAAcc=tnC_vGRosEsqUmJBVaDQ9T=n898+9n30QwsSag@mail.gmail.com>
+References: <1332325501-10467-1-git-send-email-govindraj.raja@ti.com>
+ <1332325501-10467-2-git-send-email-govindraj.raja@ti.com> <4F722C63.9080900@ti.com>
+ <CAMrsUdKfsoks4fB4GhrRcEur8niJsaWuYGE34+j5Bk6u2XiZQQ@mail.gmail.com> <4F733FC4.9010506@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail1.windriver.com ([147.11.146.13]:34317 "EHLO
-	mail1.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753118Ab2C1RDA (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 28 Mar 2012 13:03:00 -0400
-In-Reply-To: <20120328150528.GD19862@kroah.com>
+Received: from na3sys009aog102.obsmtp.com ([74.125.149.69]:52882 "EHLO
+	na3sys009aog102.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750839Ab2C2Hfq convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 29 Mar 2012 03:35:46 -0400
+Received: by obbup19 with SMTP id up19so2477263obb.15
+        for <linux-serial@vger.kernel.org>; Thu, 29 Mar 2012 00:35:44 -0700 (PDT)
+In-Reply-To: <4F733FC4.9010506@ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Geert Uytterhoeven <geert@linux-m68k.org>, Alan Cox <alan@linux.intel.com>
+To: Jon Hunter <jon-hunter@ti.com>
+Cc: linux-omap@vger.kernel.org, Kevin Hilman <khilman@ti.com>, Paul Walmsley <paul@pwsan.com>, Felipe Balbi <balbi@ti.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On 12-03-28 11:05 AM, Greg KH wrote:
-> On Tue, Mar 27, 2012 at 07:07:11PM -0400, Paul Gortmaker wrote:
->> commit 3a0db7215c88077b61a673215756ec4a0dc0c7a5
+On Wed, Mar 28, 2012 at 10:13 PM, Jon Hunter <jon-hunter@ti.com> wrote:
+> Hi Govindraj,
+>
+>
+> On 3/28/2012 6:09, Raja, Govindraj wrote:
 >>
->>     "TTY: serial, move 68360 driver to staging"
->>
->> did so because the driver had remained broken since 2008.  It also
->> added this text to the TODO file:
->>
->>    "If no one steps up to adopt any of these drivers, they will
->>     be removed in the 3.4 release."
->>
->> A quick search on the internet doesn't reveal anyone actively
->> trying to update/fix this driver, so follow through on the above
->> and remove it from the pending 3.4 release.
->>
->> Cc: Jiri Slaby <jslaby@suse.cz>
->> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
->> Cc: Alan Cox <alan@linux.intel.com>
->> Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
-> 
-> Thanks for this, but as I missed the merge window for 3.4, I'll queue it
-> up for 3.5 just to be safe.
+>> On Wed, Mar 28, 2012 at 2:38 AM, Jon Hunter<jon-hunter@ti.com> =A0wr=
+ote:
+>>>
+>>> Hi Govindraj,
+>>>
+>>>
 
-Thanks Greg,
+[...]
 
-I only happened to stumble upon it last night or I would have
-sent it earlier. No harm in it sitting there another release.
-Feel free to prune the "from 3.4" off the end of the shortlog.
+>>>> + =A0 =A0 =A0 u32 mvr, scheme;
+>>>> + =A0 =A0 =A0 u16 revision, major, minor;
+>>>> +
+>>>> + =A0 =A0 =A0 mvr =3D serial_in(up, UART_OMAP_MVER);
+>>>> +
+>>>> + =A0 =A0 =A0 /* Check revision register scheme */
+>>>> + =A0 =A0 =A0 scheme =3D mvr& =A0 =A0(0x03<< =A0 =A030);
+>>>> + =A0 =A0 =A0 scheme>>=3D 30;
+>>>
+>>>
+>>>
+>>> Minor nit-pick, why not ...
+>>>
+>>> =A0 =A0 =A0 =A0scheme =3D mvr>> =A030;
+>>>
+>>
+>> yes will correct it.
+>
+>
+> Thinking some more, could be better to add some #defines for
+> OMAP_MVR_VERSION_MASK/SHIFT here.
+>
 
-Paul.
+Yes sure.
 
-> 
-> greg k-h
+>
+>>>
+>>>> + =A0 =A0 =A0 switch (scheme) {
+>>>> + =A0 =A0 =A0 case 0: /* Legacy Scheme: OMAP2/3 */
+>>>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 /* MINOR_REV[0:4], MAJOR_REV[4:7] */
+>>>
+>>>
+>>>
+>>> This scheme is also true from OMAP1 devices. Maybe we could include=
+ in
+>>> the
+>>> comment.
+>>
+>>
+>> No omap1 from $SUBJECT also reason,
+>>
+>> mach-omap1/serial.c =3D> =A08250.c
+>> mach-omap2/serial.c =3D> =A0omap-serial.c
+>
+>
+> Got it! Thanks.
+>
+>>>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 major =3D (mvr& =A0 =A00xf0)>> =A0 =A0=
+4;
+>>>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 minor =3D (mvr& =A0 =A00x0f);
+>>>>
+>>>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 break;
+>>>> + =A0 =A0 =A0 case 1:
+>>>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 /* New Scheme: OMAP4+ */
+>>>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 /* MINOR_REV[0:5], MAJOR_REV[8:10] *=
+/
+>>>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 major =3D (mvr& =A0 =A00x7<< =A0 =A0=
+8)>> =A0 =A08;
+>>>
+>>>
+>>>
+>>> Nit-pick ...
+>>>
+>>> =A0 =A0 =A0 =A0major =3D (mvr>> =A08)& =A00x7;
+>>
+>>
+>> yes fine will correct this.
+>
+>
+> May be we should add #defines here to for OMAP_UART_MVR1_MAJ_MASK/SHI=
+=46T,
+> OMAP_UART_MVR1_MIN_MASK/SHIFT, OMAP_UART_MVR2_MAJ_MASK/SHIFT and
+> OMAP_UART_MVR2_MIN_MASK/SHIFT.
+>
+
+okay will add this.
+
+--
+Thanks,
+Govindraj.R
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
