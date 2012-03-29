@@ -1,49 +1,80 @@
-From: Tobias Klauser <tklauser@distanz.ch>
-Subject: [PATCH] tty: serial: altera_uart: Check for NULL platform_data in probe.
-Date: Thu, 29 Mar 2012 09:55:27 +0200
-Message-ID: <1333007727-24045-1-git-send-email-tklauser@distanz.ch>
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
+Subject: [PATCH] tty/serial: atmel_serial: fix RS485 half-duplex problem
+Date: Thu, 29 Mar 2012 15:40:05 +0200
+Message-ID: <1333028405-10051-1-git-send-email-nicolas.ferre@atmel.com>
+References: <20120327202628.GB15798@kroah.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx1.zhaw.ch ([160.85.104.50]:43306 "EHLO mx1.zhaw.ch"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751013Ab2C2IER (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 29 Mar 2012 04:04:17 -0400
+Received: from newsmtp5.atmel.com ([204.2.163.5]:24722 "EHLO
+	sjogate2.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753865Ab2C2Nkw (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 29 Mar 2012 09:40:52 -0400
+In-Reply-To: <20120327202628.GB15798@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Yuriy Kozlov <ykozlov@ptcusa.com>
+To: gregkh@linuxfoundation.org
+Cc: Gabe.Siftar@getingeusa.com, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, plagnioj@jcrosoft.com, linux@maxim.org.za, claudio@evidence.eu.com, br@pwrnet.de, Nicolas Ferre <nicolas.ferre@atmel.com>
 
-From: Yuriy Kozlov <ykozlov@ptcusa.com>
+From: "Siftar, Gabe" <Gabe.Siftar@getingeusa.com>
 
-Follow altera_jtag_uart.  This fixes a crash if there is a mistake in the DTS.
+On our custom board, we are using RS485 in half-duplex mode on an AT91SAM9G45.
+SER_RS485_RX_DURING_TX is not set as we do not want to receive the data we
+transmit (our transceiver will receive transmitted data).
+Although the current driver attempts to disable and enable the receiver at the
+appropriate points, incoming data is still loaded into the receive register
+causing our code to receive the very last byte that was sent once the receiver
+is enabled.
 
-Signed-off-by: Yuriy Kozlov <ykozlov@ptcusa.com>
-Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
+I ran this by Atmel support and they wrote: "The issue comes from the fact
+that you disable the PDC/DMA Reception and not the USART Reception channel. In
+your case, the[n] you will still receive data into the USART_RHR register, and
+maybe you [h]ave the overrun flag set. So please disable the USART reception
+channel."
+
+The following patch should force the driver to enable/disable the receiver via
+RXEN/RXDIS fields of the USART control register. It fixed the issue I was
+having.
+
+Signed-off-by: Gabe Siftar <gabe.siftar@getingeusa.com>
+[nicolas.ferre@atmel.com: slightly modify commit message]
+Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
 ---
- drivers/tty/serial/altera_uart.c |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+Greg,
 
-diff --git a/drivers/tty/serial/altera_uart.c b/drivers/tty/serial/altera_uart.c
-index e790375..1f03309 100644
---- a/drivers/tty/serial/altera_uart.c
-+++ b/drivers/tty/serial/altera_uart.c
-@@ -556,7 +556,7 @@ static int __devinit altera_uart_probe(struct platform_device *pdev)
- 	res_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (res_mem)
- 		port->mapbase = res_mem->start;
--	else if (platp->mapbase)
-+	else if (platp)
- 		port->mapbase = platp->mapbase;
- 	else
- 		return -EINVAL;
-@@ -564,7 +564,7 @@ static int __devinit altera_uart_probe(struct platform_device *pdev)
- 	res_irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
- 	if (res_irq)
- 		port->irq = res_irq->start;
--	else if (platp->irq)
-+	else if (platp)
- 		port->irq = platp->irq;
+Here is an updated version of the patch that you received from Gabe. I have
+removed a superfluous tab in empty line, remove commit message non needed parts
+and added my "Signed-off-by" line.
+
+Feel free to queue this version for 3.4-rc.
+
+Thanks, best regards,
+  Nicolas
+
+ drivers/tty/serial/atmel_serial.c |    4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 10605ec..bc3cece 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -389,6 +389,8 @@ static void atmel_start_rx(struct uart_port *port)
+ {
+ 	UART_PUT_CR(port, ATMEL_US_RSTSTA);  /* reset status and receiver */
  
- 	/* Check platform data first so we can override device node data */
++	UART_PUT_CR(port, ATMEL_US_RXEN);
++
+ 	if (atmel_use_dma_rx(port)) {
+ 		/* enable PDC controller */
+ 		UART_PUT_IER(port, ATMEL_US_ENDRX | ATMEL_US_TIMEOUT |
+@@ -404,6 +406,8 @@ static void atmel_start_rx(struct uart_port *port)
+  */
+ static void atmel_stop_rx(struct uart_port *port)
+ {
++	UART_PUT_CR(port, ATMEL_US_RXDIS);
++
+ 	if (atmel_use_dma_rx(port)) {
+ 		/* disable PDC receive */
+ 		UART_PUT_PTCR(port, ATMEL_PDC_RXTDIS);
 -- 
-1.7.5.4
+1.7.9.4
 
