@@ -1,51 +1,69 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: PL011: move interrupt clearing
-Date: Thu, 29 Mar 2012 14:33:33 -0700
-Message-ID: <20120329213333.GA15231@kroah.com>
-References: <1332357318-8017-1-git-send-email-linus.walleij@linaro.org>
- <CACxGe6u+KeYzWwiJ7MK7pWG444Y99CQ1LLCZP4m3R=zdYFR_pg@mail.gmail.com>
+Subject: Re: [PATCH] tty: serial: altera_uart: Check for NULL platform_data
+ in probe.
+Date: Thu, 29 Mar 2012 14:39:57 -0700
+Message-ID: <20120329213957.GC15231@kroah.com>
+References: <1333007727-24045-1-git-send-email-tklauser@distanz.ch>
+ <20120329193855.GW21503@distanz.ch>
+ <20120329194711.GB12194@kroah.com>
+ <2271072.B4UpndiPVz@hyrum>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:36071 "EHLO
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:34464 "EHLO
 	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1760074Ab2C2Vdi (ORCPT
+	with ESMTP id S933272Ab2C2VkB (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 29 Mar 2012 17:33:38 -0400
-Received: by pbcun15 with SMTP id un15so655987pbc.19
-        for <linux-serial@vger.kernel.org>; Thu, 29 Mar 2012 14:33:37 -0700 (PDT)
-In-Reply-To: <CACxGe6u+KeYzWwiJ7MK7pWG444Y99CQ1LLCZP4m3R=zdYFR_pg@mail.gmail.com>
+	Thu, 29 Mar 2012 17:40:01 -0400
+Received: by pbcun15 with SMTP id un15so662899pbc.19
+        for <linux-serial@vger.kernel.org>; Thu, 29 Mar 2012 14:40:01 -0700 (PDT)
+In-Reply-To: <2271072.B4UpndiPVz@hyrum>
 Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Grant Likely <grant.likely@secretlab.ca>
-Cc: Linus Walleij <linus.walleij@linaro.org>, linux-serial@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Jong-Sung Kim <neidhard.kim@lge.com>, stable <stable@vger.kernel.org>, Chanho Min <chanho0207@gmail.com>, linux-arm-kernel@lists.infradead.org, Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
+To: Yuriy Kozlov <ykozlov@ptcusa.com>
+Cc: Tobias Klauser <tklauser@distanz.ch>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
 
-On Thu, Mar 29, 2012 at 02:49:37PM -0600, Grant Likely wrote:
-> On Wed, Mar 21, 2012 at 1:15 PM, Linus Walleij <linus.walleij@linaro.org> wrote:
-> > Commit 360f748b204275229f8398cb2f9f53955db1503b
-> > "serial: PL011: clear pending interrupts"
-> > attempts to clear interrupts by writing to a
-> > yet-unassigned memory address. This fixes the issue.
-> >
-> > The breaking patch is marked for stable so should be
-> > carried along with the other patch.
-> >
-> > Cc: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
-> > Cc: Russell King <linux@arm.linux.org.uk>
-> > Cc: stable <stable@vger.kernel.org>
-> > Reported-by: Viresh Kumar <viresh.kumar@st.com>
-> > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+On Thu, Mar 29, 2012 at 04:02:07PM -0400, Yuriy Kozlov wrote:
+> On Thursday, March 29, 2012 12:47:11 Greg Kroah-Hartman wrote:
+> > On Thu, Mar 29, 2012 at 09:38:55PM +0200, Tobias Klauser wrote:
+> > > On 2012-03-29 at 18:13:37 +0200, Greg Kroah-Hartman 
+> <gregkh@linuxfoundation.org> wrote:
+> > > > On Thu, Mar 29, 2012 at 09:55:27AM +0200, Tobias Klauser wrote:
+> > > > > From: Yuriy Kozlov <ykozlov@ptcusa.com>
+> > > > > 
+> > > > > Follow altera_jtag_uart.  This fixes a crash if there is a mistake in
+> > > > > the DTS.> > 
+> > > > Is this something you have seen in the wild?  Is this something to be
+> > > > backported to stable kernels?
+> > > 
+> > > Not that I know of. But nevertheless it might be worthwhile. Shall I
+> > > send the patch again with Cc: stable@kernel.org?
+> > 
+> > Nope, I can add it.
+> > 
+> > But, if this isn't something that you have seen, why is it needed to be
+> > checked for?  What is this making work properly that isn't working
+> > properly now?
+> > 
+> > thanks,
+> > 
+> > greg k-h
 > 
-> Ugh; the original patch is obviously broken.  How did it get applied
-> without testing?
-> 
-> Greg, can you get this out to Linus ASAP please?  I have one comment
-> below, but I don't think it should block merging this patch.
-> 
-> Tested-by: Grant Likely <grant.likely@secretlab.ca>
+> The driver is designed to use Device Tree to get hardware information, so 
+> platp (platform_data) is usually NULL.  platform_data is still used as a 
+> fallback mechanism.  The problem arises when the device is in the DT, but is 
+> missing a required property (address or irq).  The driver falls back to 
+> looking for it in the null platp and panics.  The function actually already 
+> checks platp for other properties later on, but under this condition it tried 
+> to dereference it before the null checks.
 
-Thanks, I'll get it to him after 3.4-rc1 is out, in a few days, along
-with other tty fixes being queued up.
+And again, does this happen today in the 3.4-rc1 kernel?  3.3?  3.2?
+3.0?  Something else?
+
+If not, then why make this change?  If so, it needs to go to older
+kernels, right?
+
+thanks,
 
 greg k-h
