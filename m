@@ -1,51 +1,46 @@
-From: Tomoya MORINAGA <tomoya.rohm@gmail.com>
-Subject: [PATCH] pch_uart: Fix MSI setting issue
-Date: Mon,  2 Apr 2012 14:36:22 +0900
-Message-ID: <1333344982-5130-1-git-send-email-tomoya.rohm@gmail.com>
+From: mathieu.poirier@linaro.org
+Subject: [PATCH 5/9] tty/serial/omap: console can only be built-in
+Date: Mon,  2 Apr 2012 16:32:17 -0600
+Message-ID: <1333405937-655-1-git-send-email-mathieu.poirier@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:46795 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751240Ab2DBFgz (ORCPT
+Received: from mail-pz0-f52.google.com ([209.85.210.52]:48555 "EHLO
+	mail-pz0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751755Ab2DBWcX (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 2 Apr 2012 01:36:55 -0400
+	Mon, 2 Apr 2012 18:32:23 -0400
+Received: by dake40 with SMTP id e40so2957322dak.11
+        for <linux-serial@vger.kernel.org>; Mon, 02 Apr 2012 15:32:22 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: qi.wang@intel.com, yong.y.wang@intel.com, joel.clark@intel.com, kok.howg.ewe@intel.com, Tomoya MORINAGA <tomoya.rohm@gmail.com>, Alexander Stein <alexander.stein@systec-electronic.com>
+To: linux-serial@vger.kernel.org
+Cc: arnd@arndb.de, tony@atomide.com
 
-The following patch (MSI setting) is not enough.
+From: Arnd Bergmann <arnd@arndb.de>
 
+When the omap serial driver is built as a module, we must
+not allow the console driver to be selected, because consoles
+can not be loadable modules.
 
-commit e463595fd9c752fa4bf06b47df93ef9ade3c7cf0
-Author: Alexander Stein <alexander.stein@systec-electronic.com>
-Date:   Mon Jul 4 08:58:31 2011 +0200
-
-    pch_uart: Add MSI support
-    
-    Signed-off-by: Alexander Stein <alexander.stein@systec-electronic.com>
-    Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
-
-To enable MSI mode, PCI bus-mastering must be enabled.
-This patch enables the setting.
-
-cc: Alexander Stein <alexander.stein@systec-electronic.com>
-Signed-off-by: Tomoya MORINAGA <tomoya.rohm@gmail.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+Acked-by: Govindraj.R <govindraj.raja@ti.com>
 ---
- drivers/tty/serial/pch_uart.c |    1 +
- 1 files changed, 1 insertions(+), 0 deletions(-)
+ drivers/tty/serial/Kconfig |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 5928877..ae8f848 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -1586,6 +1586,7 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
- 	}
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 2de9924..bcf7e24 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1041,7 +1041,7 @@ config SERIAL_OMAP
  
- 	pci_enable_msi(pdev);
-+	pci_set_master(pdev);
- 
- 	iobase = pci_resource_start(pdev, 0);
- 	mapbase = pci_resource_start(pdev, 1);
+ config SERIAL_OMAP_CONSOLE
+ 	bool "Console on OMAP serial port"
+-	depends on SERIAL_OMAP
++	depends on SERIAL_OMAP=y
+ 	select SERIAL_CORE_CONSOLE
+ 	help
+ 	  Select this option if you would like to use omap serial port as
 -- 
-1.7.7.6
+1.7.5.4
 
