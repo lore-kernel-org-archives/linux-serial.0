@@ -1,185 +1,79 @@
-From: "Govindraj.R" <govindraj.raja@ti.com>
-Subject: [PATCH v3] OMAP2+: UART: Remove cpu checks for populating errata flags
-Date: Tue, 3 Apr 2012 19:12:34 +0530
-Message-ID: <1333460554-7356-1-git-send-email-govindraj.raja@ti.com>
-References: <1333356489-5816-1-git-send-email-govindraj.raja@ti.com>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: Re: [PATCH] serial: PL011: move interrupt clearing
+Date: Tue, 3 Apr 2012 11:36:23 -0400
+Message-ID: <CAP=VYLrbZNxYWT-TQt6SzXc3OpYnFVgiQqW-2pM+9V=z4LREow@mail.gmail.com>
+References: <1332357318-8017-1-git-send-email-linus.walleij@linaro.org>
+	<CACxGe6u+KeYzWwiJ7MK7pWG444Y99CQ1LLCZP4m3R=zdYFR_pg@mail.gmail.com>
+	<20120329213333.GA15231@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:60947 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752428Ab2DCNnO (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 3 Apr 2012 09:43:14 -0400
-In-Reply-To: <1333356489-5816-1-git-send-email-govindraj.raja@ti.com>
+Received: from mail-lpp01m010-f46.google.com ([209.85.215.46]:36739 "EHLO
+	mail-lpp01m010-f46.google.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754823Ab2DCPg0 convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 3 Apr 2012 11:36:26 -0400
+In-Reply-To: <20120329213333.GA15231@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-omap@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, "Govindraj.R" <govindraj.raja@ti.com>, Jon Hunter <jon-hunter@ti.com>, Paul Walmsley <paul@pwsan.com>, Kevin Hilman <khilman@ti.com>, Felipe Balbi <balbi@ti.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Grant Likely <grant.likely@secretlab.ca>, Linus Walleij <linus.walleij@linaro.org>, linux-serial@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Jong-Sung Kim <neidhard.kim@lge.com>, stable <stable@vger.kernel.org>, Chanho Min <chanho0207@gmail.com>, linux-arm-kernel@lists.infradead.org, Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
 
-From: "Govindraj.R" <govindraj.raja@ti.com>
+On Thu, Mar 29, 2012 at 5:33 PM, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+> On Thu, Mar 29, 2012 at 02:49:37PM -0600, Grant Likely wrote:
+>> On Wed, Mar 21, 2012 at 1:15 PM, Linus Walleij <linus.walleij@linaro=
+=2Eorg> wrote:
+>> > Commit 360f748b204275229f8398cb2f9f53955db1503b
+>> > "serial: PL011: clear pending interrupts"
+>> > attempts to clear interrupts by writing to a
+>> > yet-unassigned memory address. This fixes the issue.
+>> >
+>> > The breaking patch is marked for stable so should be
+>> > carried along with the other patch.
+>> >
+>> > Cc: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
+>> > Cc: Russell King <linux@arm.linux.org.uk>
+>> > Cc: stable <stable@vger.kernel.org>
+>> > Reported-by: Viresh Kumar <viresh.kumar@st.com>
+>> > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+>>
+>> Ugh; the original patch is obviously broken. =A0How did it get appli=
+ed
+>> without testing?
+>>
+>> Greg, can you get this out to Linus ASAP please? =A0I have one comme=
+nt
+>> below, but I don't think it should block merging this patch.
+>>
+>> Tested-by: Grant Likely <grant.likely@secretlab.ca>
+>
+> Thanks, I'll get it to him after 3.4-rc1 is out, in a few days, along
+> with other tty fixes being queued up.
 
-Currently the errata is populated based on cpu checks this can
-be removed and replaced with module version check of uart ip block.
-MVR reg is provided within the uart reg map use the same
-to populate the errata and thus now errata population and handling
-can be managed within the driver itself.
+Hi Greg,
 
-Cc: Jon Hunter <jon-hunter@ti.com>
-Cc: Paul Walmsley <paul@pwsan.com>
-Cc: Kevin Hilman <khilman@ti.com>
-Signed-off-by: Felipe Balbi <balbi@ti.com>
-Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
----
- arch/arm/mach-omap2/serial.c                  |    8 ---
- arch/arm/plat-omap/include/plat/omap-serial.h |    1 -
- drivers/tty/serial/omap-serial.c              |   74 ++++++++++++++++++++++++-
- 3 files changed, 73 insertions(+), 10 deletions(-)
+Just wanted to check this didn't fall through the cracks, as I don't
+see it in your tty-next or tty-linus branches.
 
-diff --git a/arch/arm/mach-omap2/serial.c b/arch/arm/mach-omap2/serial.c
-index 0cdd359..6affdd4 100644
---- a/arch/arm/mach-omap2/serial.c
-+++ b/arch/arm/mach-omap2/serial.c
-@@ -355,14 +355,6 @@ void __init omap_serial_init_port(struct omap_board_data *bdata,
- 	omap_up.dma_rx_poll_rate = info->dma_rx_poll_rate;
- 	omap_up.autosuspend_timeout = info->autosuspend_timeout;
- 
--	/* Enable the MDR1 Errata i202 for OMAP2430/3xxx/44xx */
--	if (!cpu_is_omap2420() && !cpu_is_ti816x())
--		omap_up.errata |= UART_ERRATA_i202_MDR1_ACCESS;
--
--	/* Enable DMA Mode Force Idle Errata i291 for omap34xx/3630 */
--	if (cpu_is_omap34xx() || cpu_is_omap3630())
--		omap_up.errata |= UART_ERRATA_i291_DMA_FORCEIDLE;
--
- 	pdata = &omap_up;
- 	pdata_size = sizeof(struct omap_uart_port_info);
- 
-diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/plat-omap/include/plat/omap-serial.h
-index 9ff4444..1a52725 100644
---- a/arch/arm/plat-omap/include/plat/omap-serial.h
-+++ b/arch/arm/plat-omap/include/plat/omap-serial.h
-@@ -65,7 +65,6 @@ struct omap_uart_port_info {
- 	bool			dma_enabled;	/* To specify DMA Mode */
- 	unsigned int		uartclk;	/* UART clock rate */
- 	upf_t			flags;		/* UPF_* flags */
--	u32			errata;
- 	unsigned int		dma_rx_buf_size;
- 	unsigned int		dma_rx_timeout;
- 	unsigned int		autosuspend_timeout;
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 0121486..0555c96 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -44,6 +44,13 @@
- #include <plat/dmtimer.h>
- #include <plat/omap-serial.h>
- 
-+#define UART_BUILD_REVISION(x, y)	(((x) << 8) | (y))
-+
-+#define OMAP_UART_REV_42 0x0402
-+#define OMAP_UART_REV_46 0x0406
-+#define OMAP_UART_REV_52 0x0502
-+#define OMAP_UART_REV_63 0x0603
-+
- #define DEFAULT_CLK_SPEED 48000000 /* 48Mhz*/
- 
- /* SCR register bitmasks */
-@@ -53,6 +60,17 @@
- #define OMAP_UART_FCR_RX_FIFO_TRIG_SHIFT		6
- #define OMAP_UART_FCR_RX_FIFO_TRIG_MASK			(0x3 << 6)
- 
-+/* MVR register bitmasks */
-+#define OMAP_UART_MVR_SCHEME_SHIFT	30
-+
-+#define OMAP_UART_LEGACY_MVR_MAJ_MASK	0xf0
-+#define OMAP_UART_LEGACY_MVR_MAJ_SHIFT	4
-+#define OMAP_UART_LEGACY_MVR_MIN_MASK	0x0f
-+
-+#define OMAP_UART_MVR_MAJ_MASK		0x700
-+#define OMAP_UART_MVR_MAJ_SHIFT		8
-+#define OMAP_UART_MVR_MIN_MASK		0x3f
-+
- static struct uart_omap_port *ui[OMAP_MAX_HSUART_PORTS];
- 
- /* Forward declaration of functions */
-@@ -1346,6 +1364,59 @@ static void uart_tx_dma_callback(int lch, u16 ch_status, void *data)
- 	return;
- }
- 
-+static void omap_serial_fill_features_erratas(struct uart_omap_port *up)
-+{
-+	u32 mvr, scheme;
-+	u16 revision, major, minor;
-+
-+	mvr = serial_in(up, UART_OMAP_MVER);
-+
-+	/* Check revision register scheme */
-+	scheme = mvr >> OMAP_UART_MVR_SCHEME_SHIFT;
-+
-+	switch (scheme) {
-+	case 0: /* Legacy Scheme: OMAP2/3 */
-+		/* MINOR_REV[0:4], MAJOR_REV[4:7] */
-+		major = (mvr & OMAP_UART_LEGACY_MVR_MAJ_MASK) >>
-+					OMAP_UART_LEGACY_MVR_MAJ_SHIFT;
-+		minor = (mvr & OMAP_UART_LEGACY_MVR_MIN_MASK);
-+		break;
-+	case 1:
-+		/* New Scheme: OMAP4+ */
-+		/* MINOR_REV[0:5], MAJOR_REV[8:10] */
-+		major = (mvr & OMAP_UART_MVR_MAJ_MASK) >>
-+					OMAP_UART_MVR_MAJ_SHIFT;
-+		minor = (mvr & OMAP_UART_MVR_MIN_MASK);
-+		break;
-+	default:
-+		dev_warn(&up->pdev->dev,
-+			"Unknown %s revision, defaulting to highest\n",
-+			up->name);
-+		/* highest possible revision */
-+		major = 0xff;
-+		minor = 0xff;
-+	}
-+
-+	/* normalize revision for the driver */
-+	revision = UART_BUILD_REVISION(major, minor);
-+
-+	switch (revision) {
-+	case OMAP_UART_REV_46:
-+		up->errata |= (UART_ERRATA_i202_MDR1_ACCESS |
-+				UART_ERRATA_i291_DMA_FORCEIDLE);
-+		break;
-+	case OMAP_UART_REV_52:
-+		up->errata |= (UART_ERRATA_i202_MDR1_ACCESS |
-+				UART_ERRATA_i291_DMA_FORCEIDLE);
-+		break;
-+	case OMAP_UART_REV_63:
-+		up->errata |= UART_ERRATA_i202_MDR1_ACCESS;
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+
- static struct omap_uart_port_info *of_get_uart_port_info(struct device *dev)
- {
- 	struct omap_uart_port_info *omap_up_info;
-@@ -1443,7 +1514,6 @@ static int serial_omap_probe(struct platform_device *pdev)
- 						"%d\n", DEFAULT_CLK_SPEED);
- 	}
- 	up->uart_dma.uart_base = mem->start;
--	up->errata = omap_up_info->errata;
- 
- 	if (omap_up_info->dma_enabled) {
- 		up->uart_dma.uart_dma_tx = dma_tx->start;
-@@ -1473,6 +1543,8 @@ static int serial_omap_probe(struct platform_device *pdev)
- 	pm_runtime_enable(&pdev->dev);
- 	pm_runtime_get_sync(&pdev->dev);
- 
-+	omap_serial_fill_features_erratas(up);
-+
- 	ui[up->port.line] = up;
- 	serial_omap_add_console_port(up);
- 
--- 
-1.7.5.4
+The original bad commit causes Silent Boot Death on qemu ARM
+versatile, which is kind of nasty.  It pretty much forces a bisection,
+which I did, which then led me here.
 
+Thanks,
+Paul.
+--
+
+>
+> greg k-h
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-seria=
+l" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at =A0http://vger.kernel.org/majordomo-info.html
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
