@@ -1,78 +1,133 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: PL011: move interrupt clearing
-Date: Tue, 3 Apr 2012 09:19:23 -0700
-Message-ID: <20120403161923.GB4894@kroah.com>
-References: <1332357318-8017-1-git-send-email-linus.walleij@linaro.org>
- <CACxGe6u+KeYzWwiJ7MK7pWG444Y99CQ1LLCZP4m3R=zdYFR_pg@mail.gmail.com>
- <20120329213333.GA15231@kroah.com>
- <CAP=VYLrbZNxYWT-TQt6SzXc3OpYnFVgiQqW-2pM+9V=z4LREow@mail.gmail.com>
+From: sudhakar <sudhakar@fb.com>
+Subject: [PATCH 1/2]  8250_pci: Replace commits 448ac154 and e86ff4a
+Date: Tue, 3 Apr 2012 12:43:20 -0700
+Message-ID: <4F7B52D8.101@fb.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:34656 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755220Ab2DCQT2 (ORCPT
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:36968 "EHLO
+	mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753048Ab2DCTnZ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 3 Apr 2012 12:19:28 -0400
-Received: by pbcun15 with SMTP id un15so60545pbc.19
-        for <linux-serial@vger.kernel.org>; Tue, 03 Apr 2012 09:19:28 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <CAP=VYLrbZNxYWT-TQt6SzXc3OpYnFVgiQqW-2pM+9V=z4LREow@mail.gmail.com>
+	Tue, 3 Apr 2012 15:43:25 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc: Grant Likely <grant.likely@secretlab.ca>, Linus Walleij <linus.walleij@linaro.org>, linux-serial@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Jong-Sung Kim <neidhard.kim@lge.com>, stable <stable@vger.kernel.org>, Chanho Min <chanho0207@gmail.com>, linux-arm-kernel@lists.infradead.org, Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
+To: linux-serial@vger.kernel.org
+Cc: alan@linux.intel.com, gregkh@linuxfoundation.org, dan.j.williams@intel.com, nhan.h.mai@intel.com, linux-kernel@vger.kernel.org
 
-On Tue, Apr 03, 2012 at 11:36:23AM -0400, Paul Gortmaker wrote:
-> On Thu, Mar 29, 2012 at 5:33 PM, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> > On Thu, Mar 29, 2012 at 02:49:37PM -0600, Grant Likely wrote:
-> >> On Wed, Mar 21, 2012 at 1:15 PM, Linus Walleij <linus.walleij@lina=
-ro.org> wrote:
-> >> > Commit 360f748b204275229f8398cb2f9f53955db1503b
-> >> > "serial: PL011: clear pending interrupts"
-> >> > attempts to clear interrupts by writing to a
-> >> > yet-unassigned memory address. This fixes the issue.
-> >> >
-> >> > The breaking patch is marked for stable so should be
-> >> > carried along with the other patch.
-> >> >
-> >> > Cc: Shreshtha Kumar Sahu <shreshthakumar.sahu@stericsson.com>
-> >> > Cc: Russell King <linux@arm.linux.org.uk>
-> >> > Cc: stable <stable@vger.kernel.org>
-> >> > Reported-by: Viresh Kumar <viresh.kumar@st.com>
-> >> > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> >>
-> >> Ugh; the original patch is obviously broken. =A0How did it get app=
-lied
-> >> without testing?
-> >>
-> >> Greg, can you get this out to Linus ASAP please? =A0I have one com=
-ment
-> >> below, but I don't think it should block merging this patch.
-> >>
-> >> Tested-by: Grant Likely <grant.likely@secretlab.ca>
-> >
-> > Thanks, I'll get it to him after 3.4-rc1 is out, in a few days, alo=
-ng
-> > with other tty fixes being queued up.
->=20
-> Hi Greg,
->=20
-> Just wanted to check this didn't fall through the cracks, as I don't
-> see it in your tty-next or tty-linus branches.
->=20
-> The original bad commit causes Silent Boot Death on qemu ARM
-> versatile, which is kind of nasty.  It pretty much forces a bisection=
-,
-> which I did, which then led me here.
 
-It's still in my "to-apply" queue, don't worry, it's not lost.
+From: Sudhakar Mamillapalli <sudhakar@fb.com>
 
-greg k-h
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+The following commits don't completely fix the KT serial missing
+interrupt problems.  So they have been replaced instead by
+enabling serial backup timer.  The iir-once + msi tried approach tried
+to enforce one read of the iir per THRE event, but its defeated by any
+other event occurring at the wrong time, particularly MSR events.
+
+448ac15 serial/8250_pci: setup-quirk workaround for the kt serial controller
+e86ff4a serial/8250_pci: init-quirk msi support for kt serial controller
+
+Signed-off-by: Sudhakar Mamillapalli <sudhakar@fb.com>
+Acked-by: Dan Williams <dan.j.williams@intel.com>
+Acked-by: Nhan H Mai <nhan.h.mai@intel.com>
+---
+ drivers/tty/serial/8250/8250.c     |   12 ++++++------
+ drivers/tty/serial/8250/8250_pci.c |   16 +---------------
+ include/linux/serial_core.h        |    2 +-
+ 3 files changed, 8 insertions(+), 22 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
+index 5b149b4..5fb0157 100644
+--- a/drivers/tty/serial/8250/8250.c
++++ b/drivers/tty/serial/8250/8250.c
+@@ -1572,13 +1572,11 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
+ 	do {
+ 		struct uart_8250_port *up;
+ 		struct uart_port *port;
+-		bool skip;
+ 
+ 		up = list_entry(l, struct uart_8250_port, list);
+ 		port = &up->port;
+-		skip = pass_counter && up->port.flags & UPF_IIR_ONCE;
+ 
+-		if (!skip && port->handle_irq(port)) {
++		if (port->handle_irq(port)) {
+ 			handled = 1;
+ 			end = NULL;
+ 		} else if (end == NULL)
+@@ -2037,10 +2035,12 @@ static int serial8250_startup(struct uart_port *port)
+ 		spin_unlock_irqrestore(&port->lock, flags);
+ 
+ 		/*
+-		 * If the interrupt is not reasserted, setup a timer to
+-		 * kick the UART on a regular basis.
++		 * If the interrupt is not reasserted, or we otherwise
++		 * don't trust the iir, setup a timer to kick the UART
++		 * on a regular basis.
+ 		 */
+-		if (!(iir1 & UART_IIR_NO_INT) && (iir & UART_IIR_NO_INT)) {
++		if ((!(iir1 & UART_IIR_NO_INT) && (iir & UART_IIR_NO_INT)) ||
++			up->port.flags & UPF_BUG_THRE) {
+ 			up->bugs |= UART_BUG_THRE;
+ 			pr_debug("ttyS%d - using backup timer\n",
+ 				 serial_index(port));
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index da2b0b0..858dca8 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1096,7 +1096,7 @@ static int kt_serial_setup(struct serial_private *priv,
+ 			   const struct pciserial_board *board,
+ 			   struct uart_port *port, int idx)
+ {
+-	port->flags |= UPF_IIR_ONCE;
++	port->flags |= UPF_BUG_THRE;
+ 	return skip_tx_en_setup(priv, board, port, idx);
+ }
+ 
+@@ -1118,18 +1118,6 @@ pci_xr17c154_setup(struct serial_private *priv,
+ 	return pci_default_setup(priv, board, port, idx);
+ }
+ 
+-static int try_enable_msi(struct pci_dev *dev)
+-{
+-	/* use msi if available, but fallback to legacy otherwise */
+-	pci_enable_msi(dev);
+-	return 0;
+-}
+-
+-static void disable_msi(struct pci_dev *dev)
+-{
+-	pci_disable_msi(dev);
+-}
+-
+ #define PCI_VENDOR_ID_SBSMODULARIO	0x124B
+ #define PCI_SUBVENDOR_ID_SBSMODULARIO	0x124B
+ #define PCI_DEVICE_ID_OCTPRO		0x0001
+@@ -1249,9 +1237,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.device		= PCI_DEVICE_ID_INTEL_PATSBURG_KT,
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
+-		.init		= try_enable_msi,
+ 		.setup		= kt_serial_setup,
+-		.exit		= disable_msi,
+ 	},
+ 	/*
+ 	 * ITE
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index f51bf2e..2db407a 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -357,7 +357,7 @@ struct uart_port {
+ #define UPF_CONS_FLOW		((__force upf_t) (1 << 23))
+ #define UPF_SHARE_IRQ		((__force upf_t) (1 << 24))
+ #define UPF_EXAR_EFR		((__force upf_t) (1 << 25))
+-#define UPF_IIR_ONCE		((__force upf_t) (1 << 26))
++#define UPF_BUG_THRE		((__force upf_t) (1 << 26))
+ /* The exact UART type is known and should not be probed.  */
+ #define UPF_FIXED_TYPE		((__force upf_t) (1 << 27))
+ #define UPF_BOOT_AUTOCONF	((__force upf_t) (1 << 28))
+-- 
+1.7.8.4
+
