@@ -1,193 +1,69 @@
-From: Jon Hunter <jon-hunter@ti.com>
-Subject: Re: [PATCH v3] OMAP2+: UART: Remove cpu checks for populating errata
- flags
-Date: Wed, 4 Apr 2012 09:10:21 -0500
-Message-ID: <4F7C564D.6050602@ti.com>
-References: <1333356489-5816-1-git-send-email-govindraj.raja@ti.com> <1333460554-7356-1-git-send-email-govindraj.raja@ti.com>
+From: "Shankarmurthy, Akshay" <akshay.s-l0cyMroinI0@public.gmane.org>
+Subject: RE: [PATCH] serial: 8250: Add cpufreq support
+Date: Thu, 5 Apr 2012 10:40:55 +0000
+Message-ID: <6F6B80BD2E18844D97BB4B51FE3705C831790EA0@DBDE01.ent.ti.com>
+References: <1333433022-5455-1-git-send-email-akshay.s@ti.com>
+	<20120403105530.7fa3bce7@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:46905 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756302Ab2DDOKZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Apr 2012 10:10:25 -0400
-In-Reply-To: <1333460554-7356-1-git-send-email-govindraj.raja@ti.com>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <davinci-linux-open-source-bounces+gld-davinci-linux-open-source=gmane.org-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
+In-Reply-To: <20120403105530.7fa3bce7-38n7/U1jhRXW96NNrWNlrekiAK3p4hvP@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <http://linux.davincidsp.com/mailman/options/davinci-linux-open-source>,
+	<mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://linux.davincidsp.com/pipermail/davinci-linux-open-source>
+List-Post: <mailto:davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
+List-Help: <mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=help>
+List-Subscribe: <http://linux.davincidsp.com/mailman/listinfo/davinci-linux-open-source>,
+	<mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=subscribe>
+Sender: <davinci-linux-open-source-bounces+gld-davinci-linux-open-source=gmane.org-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
+Errors-To: davinci-linux-open-source-bounces+gld-davinci-linux-open-source=gmane.org-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org
+To: Alan Cox <alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
+Cc: "davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org" <davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>, "swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org" <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org" <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "jamie-wmLquQDDieKakBO8gow8eQ@public.gmane.org" <jamie-wmLquQDDieKakBO8gow8eQ@public.gmane.org>, "alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: "Govindraj.R" <govindraj.raja@ti.com>
-Cc: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Paul Walmsley <paul@pwsan.com>, Kevin Hilman <khilman@ti.com>, Felipe Balbi <balbi@ti.com>
 
-Hi Govindraj,
+Hi,
 
-On 04/03/2012 08:42 AM, Govindraj.R wrote:
-> From: "Govindraj.R"<govindraj.raja@ti.com>
->
-> Currently the errata is populated based on cpu checks this can
-> be removed and replaced with module version check of uart ip block.
-> MVR reg is provided within the uart reg map use the same
-> to populate the errata and thus now errata population and handling
-> can be managed within the driver itself.
->
-> Cc: Jon Hunter<jon-hunter@ti.com>
-> Cc: Paul Walmsley<paul@pwsan.com>
-> Cc: Kevin Hilman<khilman@ti.com>
-> Signed-off-by: Felipe Balbi<balbi@ti.com>
-> Signed-off-by: Govindraj.R<govindraj.raja@ti.com>
-> ---
->   arch/arm/mach-omap2/serial.c                  |    8 ---
->   arch/arm/plat-omap/include/plat/omap-serial.h |    1 -
->   drivers/tty/serial/omap-serial.c              |   74 ++++++++++++++++++++++++-
->   3 files changed, 73 insertions(+), 10 deletions(-)
->
-> diff --git a/arch/arm/mach-omap2/serial.c b/arch/arm/mach-omap2/serial.c
-> index 0cdd359..6affdd4 100644
-> --- a/arch/arm/mach-omap2/serial.c
-> +++ b/arch/arm/mach-omap2/serial.c
-> @@ -355,14 +355,6 @@ void __init omap_serial_init_port(struct omap_board_data *bdata,
->   	omap_up.dma_rx_poll_rate = info->dma_rx_poll_rate;
->   	omap_up.autosuspend_timeout = info->autosuspend_timeout;
->
-> -	/* Enable the MDR1 Errata i202 for OMAP2430/3xxx/44xx */
-> -	if (!cpu_is_omap2420()&&  !cpu_is_ti816x())
-> -		omap_up.errata |= UART_ERRATA_i202_MDR1_ACCESS;
-> -
-> -	/* Enable DMA Mode Force Idle Errata i291 for omap34xx/3630 */
-> -	if (cpu_is_omap34xx() || cpu_is_omap3630())
-> -		omap_up.errata |= UART_ERRATA_i291_DMA_FORCEIDLE;
-> -
->   	pdata =&omap_up;
->   	pdata_size = sizeof(struct omap_uart_port_info);
->
-> diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/plat-omap/include/plat/omap-serial.h
-> index 9ff4444..1a52725 100644
-> --- a/arch/arm/plat-omap/include/plat/omap-serial.h
-> +++ b/arch/arm/plat-omap/include/plat/omap-serial.h
-> @@ -65,7 +65,6 @@ struct omap_uart_port_info {
->   	bool			dma_enabled;	/* To specify DMA Mode */
->   	unsigned int		uartclk;	/* UART clock rate */
->   	upf_t			flags;		/* UPF_* flags */
-> -	u32			errata;
->   	unsigned int		dma_rx_buf_size;
->   	unsigned int		dma_rx_timeout;
->   	unsigned int		autosuspend_timeout;
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-> index 0121486..0555c96 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -44,6 +44,13 @@
->   #include<plat/dmtimer.h>
->   #include<plat/omap-serial.h>
->
-> +#define UART_BUILD_REVISION(x, y)	(((x)<<  8) | (y))
-> +
-> +#define OMAP_UART_REV_42 0x0402
-> +#define OMAP_UART_REV_46 0x0406
-> +#define OMAP_UART_REV_52 0x0502
-> +#define OMAP_UART_REV_63 0x0603
-> +
->   #define DEFAULT_CLK_SPEED 48000000 /* 48Mhz*/
->
->   /* SCR register bitmasks */
-> @@ -53,6 +60,17 @@
->   #define OMAP_UART_FCR_RX_FIFO_TRIG_SHIFT		6
->   #define OMAP_UART_FCR_RX_FIFO_TRIG_MASK			(0x3<<  6)
->
-> +/* MVR register bitmasks */
-> +#define OMAP_UART_MVR_SCHEME_SHIFT	30
-> +
-> +#define OMAP_UART_LEGACY_MVR_MAJ_MASK	0xf0
-> +#define OMAP_UART_LEGACY_MVR_MAJ_SHIFT	4
-> +#define OMAP_UART_LEGACY_MVR_MIN_MASK	0x0f
-> +
-> +#define OMAP_UART_MVR_MAJ_MASK		0x700
-> +#define OMAP_UART_MVR_MAJ_SHIFT		8
-> +#define OMAP_UART_MVR_MIN_MASK		0x3f
-> +
->   static struct uart_omap_port *ui[OMAP_MAX_HSUART_PORTS];
->
->   /* Forward declaration of functions */
-> @@ -1346,6 +1364,59 @@ static void uart_tx_dma_callback(int lch, u16 ch_status, void *data)
->   	return;
->   }
->
-> +static void omap_serial_fill_features_erratas(struct uart_omap_port *up)
-> +{
-> +	u32 mvr, scheme;
-> +	u16 revision, major, minor;
-> +
-> +	mvr = serial_in(up, UART_OMAP_MVER);
-> +
-> +	/* Check revision register scheme */
-> +	scheme = mvr>>  OMAP_UART_MVR_SCHEME_SHIFT;
-> +
-> +	switch (scheme) {
-> +	case 0: /* Legacy Scheme: OMAP2/3 */
-> +		/* MINOR_REV[0:4], MAJOR_REV[4:7] */
-> +		major = (mvr&  OMAP_UART_LEGACY_MVR_MAJ_MASK)>>
-> +					OMAP_UART_LEGACY_MVR_MAJ_SHIFT;
-> +		minor = (mvr&  OMAP_UART_LEGACY_MVR_MIN_MASK);
-> +		break;
-> +	case 1:
-> +		/* New Scheme: OMAP4+ */
-> +		/* MINOR_REV[0:5], MAJOR_REV[8:10] */
-> +		major = (mvr&  OMAP_UART_MVR_MAJ_MASK)>>
-> +					OMAP_UART_MVR_MAJ_SHIFT;
-> +		minor = (mvr&  OMAP_UART_MVR_MIN_MASK);
-> +		break;
-> +	default:
-> +		dev_warn(&up->pdev->dev,
-> +			"Unknown %s revision, defaulting to highest\n",
-> +			up->name);
-> +		/* highest possible revision */
-> +		major = 0xff;
-> +		minor = 0xff;
-> +	}
-> +
-> +	/* normalize revision for the driver */
-> +	revision = UART_BUILD_REVISION(major, minor);
-> +
-> +	switch (revision) {
-> +	case OMAP_UART_REV_46:
-> +		up->errata |= (UART_ERRATA_i202_MDR1_ACCESS |
-> +				UART_ERRATA_i291_DMA_FORCEIDLE);
-> +		break;
-> +	case OMAP_UART_REV_52:
-> +		up->errata |= (UART_ERRATA_i202_MDR1_ACCESS |
-> +				UART_ERRATA_i291_DMA_FORCEIDLE);
-> +		break;
-> +	case OMAP_UART_REV_63:
-> +		up->errata |= UART_ERRATA_i202_MDR1_ACCESS;
-> +		break;
-> +	default:
-> +		break;
-> +	}
-> +}
-> +
->   static struct omap_uart_port_info *of_get_uart_port_info(struct device *dev)
->   {
->   	struct omap_uart_port_info *omap_up_info;
-> @@ -1443,7 +1514,6 @@ static int serial_omap_probe(struct platform_device *pdev)
->   						"%d\n", DEFAULT_CLK_SPEED);
->   	}
->   	up->uart_dma.uart_base = mem->start;
-> -	up->errata = omap_up_info->errata;
->
->   	if (omap_up_info->dma_enabled) {
->   		up->uart_dma.uart_dma_tx = dma_tx->start;
-> @@ -1473,6 +1543,8 @@ static int serial_omap_probe(struct platform_device *pdev)
->   	pm_runtime_enable(&pdev->dev);
->   	pm_runtime_get_sync(&pdev->dev);
->
-> +	omap_serial_fill_features_erratas(up);
-> +
->   	ui[up->port.line] = up;
->   	serial_omap_add_console_port(up);
->
+On Tue, Apr 03, 2012 at 15:25:30, Alan Cox wrote:
+> > This patch was submitted 2 years ago but didn't make it to the mainline. Now i am reposting it.
+> 
+> Can you fix it instead of just reposting it ?
+> 
+> 
+> > +#ifdef CONFIG_CPU_FREQ
+> > +static int serial8250_cpufreq_transition(struct notifier_block *nb,
+> > +					     unsigned long val, void *data)
+> > +{
+> > +	struct uart_8250_port *p;
+> > +	struct uart_port *uport;
+> 
+> What is your locking model ?
+> 
 
-Thanks!
+I will have a look at this and add the lock if necessary.
 
-Reviewed-by: Jon Hunter <jon-hunter@ti.com>
+> 
+> > +static inline void serial8250_cpufreq_deregister(struct uart_8250_port *p)
+> 
+> unregister
 
-Cheers
-Jon
+Ok. I will change it.
+
+> 
+> > +		ret = serial8250_cpufreq_register(uart);
+> > +		if (ret < 0)
+> > +			printk(KERN_ERR "Failed to add cpufreq notifier\n");
+> 
+> Why do this for devices that don't care.
+
+This is taken care in the code. If the device's frequency doesn't change after the
+change in the cpu frequency then it doesn't go for execution of the function "serial8250_set_termios".
+It does execute only if the uart clk frequency is changed with a change in the cpu frequency. 
+So registering this for the devices that doesn't care will not affect the system. 
+
+
+Regards,
+Akshay
+    
+ 
