@@ -1,73 +1,61 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 0/3] OMAP2+: UART: Enable tx wakeup + remove cpu checks
-Date: Thu, 5 Apr 2012 09:47:11 -0700
-Message-ID: <20120405164711.GC16688@kroah.com>
-References: <1332325501-10467-1-git-send-email-govindraj.raja@ti.com>
- <CAMrsUd+_coW7ebuN_o=yZbbSVKnkx5R6=yHjUEUc0EcQGtgSRQ@mail.gmail.com>
- <20120405132617.76e04217@bob.linux.org.uk>
+From: Dan Williams <dan.j.williams@intel.com>
+Subject: [PATCH 0/6] rework quirks for the "kt" serial port
+Date: Fri, 06 Apr 2012 11:44:22 -0700
+Message-ID: <20120406184346.21744.18004.stgit@dwillia2-linux.jf.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-gx0-f174.google.com ([209.85.161.174]:39715 "EHLO
-	mail-gx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752169Ab2DEQrR (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 5 Apr 2012 12:47:17 -0400
-Received: by gghe5 with SMTP id e5so804967ggh.19
-        for <linux-serial@vger.kernel.org>; Thu, 05 Apr 2012 09:47:17 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <20120405132617.76e04217@bob.linux.org.uk>
+Received: from mga01.intel.com ([192.55.52.88]:52303 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754070Ab2DFS25 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 6 Apr 2012 14:28:57 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: "Raja, Govindraj" <govindraj.raja@ti.com>, Tony Lindgren <tony@atomide.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Kevin Hilman <khilman@ti.com>, Paul Walmsley <paul@pwsan.com>, Felipe Balbi <balbi@ti.com>, linux-omap@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, alan@linux.intel.com
 
-On Thu, Apr 05, 2012 at 01:26:17PM +0100, Alan Cox wrote:
-> On Thu, 5 Apr 2012 16:54:03 +0530
-> "Raja, Govindraj" <govindraj.raja@ti.com> wrote:
->=20
-> > On Wed, Mar 21, 2012 at 3:54 PM, Govindraj.R <govindraj.raja@ti.com=
->
-> > wrote:
-> > > From: "Govindraj.R" <govindraj.raja@ti.com>
-> > >
-> > > Based on Linux-OMAP tree uart branch.
-> > > (git://git.kernel.org/pub/scm/linux/kernel/git/tmlind/linux-omap.=
-git
-> > > remotes/origin/uart)
-> > >
-> > > * Removes the cpu checks wherever possible and use version reg
-> > > =A0for populating features and errata's
-> > > * enable tx wakeup available in wer reg for applicable
-> > > =A0module revision's
-> > >
-> > > Govindraj.R (3):
-> > > =A0OMAP2+: UART: Remove cpu checks for populating errata flags
-> > > =A0OMAP2+: UART: enable tx wakeup bit for wer reg
-> > > =A0OMAP2+: UART: replace omap34xx/omap4xx cpu checks with not oma=
-p24xx
-> > >
-> > > =A0arch/arm/mach-omap2/serial.c =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
-| =A0 13 +----
-> > > =A0arch/arm/plat-omap/include/plat/omap-serial.h | =A0 =A08 +++-
-> > > =A0drivers/tty/serial/omap-serial.c =A0 =A0 =A0 =A0 =A0 =A0 =A0| =
-=A0 71
-> > > ++++++++++++++++++++++++- 3 files changed, 78 insertions(+), 14
-> > > deletions(-)
-> >=20
-> > Alan / Greg,
-> >=20
-> > With you ack on tty parts can this series be upstreamed from
-> > omap tree ?
->=20
-> Fine by me - this seems primarily to be architectural details.
+The kt serial port intermittently reports unreliable data in its IIR
+register and needs to reset fifos to stay in sync with firmware when the
+device is reset.
 
-=46ine by me as well:
-	Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The IIR fixes that went into 3.3 were not complete so patch 3 replaces
+them with an explicit way to turn on UART_BUG_THRE (i.e. the "I don't
+trust my iir" flag).
+
+A new fix for resetting the fifos on device reset is patch 5.  Alan
+asked to make this a new quirk rather than add more workarounds to the
+core (patch 4).
+
+Patch 6 is an untested RFC / RFT from anyone that has a serial
+suspend/resume use case with an 'init' quirk that has resources that
+need de-allocation at 'exit'.
 
 --
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Dan
+
+---
+
+Dan Williams (5):
+      Revert "serial/8250_pci: init-quirk msi support for kt serial controller"
+      Revert "serial/8250_pci: setup-quirk workaround for the kt serial controller"
+      serial/8250_pci: add a "force background timer" flag and use it for the "kt" serial port
+      tegra, serial8250: add ->handle_break() uart_port op
+      serial/8250_pci: fix suspend/resume vs init/exit quirks
+
+Sudhakar Mamillapalli (1):
+      serial/8250_pci: Clear FIFOs for Intel ME Serial Over Lan device on BI
+
+
+ arch/arm/mach-tegra/board-harmony.c   |    1 +
+ arch/arm/mach-tegra/board-paz00.c     |    2 +
+ arch/arm/mach-tegra/board-seaboard.c  |    1 +
+ arch/arm/mach-tegra/board-trimslice.c |    1 +
+ arch/arm/mach-tegra/devices.c         |   18 ++++++++++
+ arch/arm/mach-tegra/devices.h         |    2 +
+ drivers/tty/serial/8250/8250.c        |   56 ++++++++++--------------------
+ drivers/tty/serial/8250/8250.h        |    2 +
+ drivers/tty/serial/8250/8250_pci.c    |   61 +++++++++++++++++++++++++--------
+ include/linux/serial_8250.h           |    1 +
+ include/linux/serial_core.h           |    7 +++-
+ 11 files changed, 99 insertions(+), 53 deletions(-)
