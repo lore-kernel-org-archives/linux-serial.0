@@ -1,8 +1,7 @@
 From: Dan Williams <dan.j.williams@intel.com>
-Subject: [PATCH 2/6] Revert "serial/8250_pci: setup-quirk workaround for the
- kt serial controller"
-Date: Fri, 06 Apr 2012 11:49:44 -0700
-Message-ID: <20120406184942.22088.75958.stgit@dwillia2-linux.jf.intel.com>
+Subject: [PATCH 4/6] tegra, serial8250: add ->handle_break() uart_port op
+Date: Fri, 06 Apr 2012 11:49:57 -0700
+Message-ID: <20120406184956.22088.85217.stgit@dwillia2-linux.jf.intel.com>
 References: <20120406184346.21744.18004.stgit@dwillia2-linux.jf.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -11,108 +10,246 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20120406184346.21744.18004.stgit@dwillia2-linux.jf.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org
-Cc: Sudhakar Mamillapalli <sudhakar@fb.com>, linux-kernel@vger.kernel.org, stable@vger.kernel.org, linux-serial@vger.kernel.org, Nhan H Mai <nhan.h.mai@intel.com>, Alan Cox <alan@linux.intel.com>
+Cc: Sudhakar Mamillapalli <sudhakar@fb.com>, Stephen Warren <swarren@nvidia.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Colin Cross <ccross@android.com>, Olof Johansson <olof@lixom.net>, Nhan H Mai <nhan.h.mai@intel.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>, alan@linux.intel.com
 List-Id: linux-serial@vger.kernel.org
 
-This reverts commit 448ac154c957c4580531fa0c8f2045816fe2f0e7.
+The "KT" serial port has another use case for a "received break" quirk,
+so before adding another special case to the 8250 core take this
+opportunity to push such quirks out of the core and into a uart_port op.
 
-The semantic of UPF_IIR_ONCE is only guaranteed to workaround the race
-condition in the kt serial's iir register if the only source of
-interrupts is THRE (fifo-empty) events.  An modem status event at the
-wrong time can again cause an iir read to drop the 'empty' status
-leading to a hang.  So, revert this in preparation for using the
-existing "I don't trust my iir register" workaround in the 8250 core
-(UART_BUG_THRE).
-
-[stable: 3.3.x]
-Cc: <stable@vger.kernel.org>
-Cc: Alan Cox <alan@linux.intel.com>
-Cc: Sudhakar Mamillapalli <sudhakar@fb.com>
-Reported-by: Nhan H Mai <nhan.h.mai@intel.com>
+Cc: Nhan H Mai <nhan.h.mai@intel.com>
+Cc: Colin Cross <ccross@android.com>
+Cc: Olof Johansson <olof@lixom.net>
+Cc: Stephen Warren <swarren@nvidia.com>
+Acked-by: Sudhakar Mamillapalli <sudhakar@fb.com>
+Reported-by: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Signed-off-by: Dan Williams <dan.j.williams@intel.com>
 ---
- drivers/tty/serial/8250/8250.c     |    4 +---
- drivers/tty/serial/8250/8250_pci.c |   17 +----------------
- include/linux/serial_core.h        |    1 -
- 3 files changed, 2 insertions(+), 20 deletions(-)
+ arch/arm/mach-tegra/board-harmony.c   |    1 +
+ arch/arm/mach-tegra/board-paz00.c     |    2 ++
+ arch/arm/mach-tegra/board-seaboard.c  |    1 +
+ arch/arm/mach-tegra/board-trimslice.c |    1 +
+ arch/arm/mach-tegra/devices.c         |   18 +++++++++++++++++
+ arch/arm/mach-tegra/devices.h         |    2 ++
+ drivers/tty/serial/8250/8250.c        |   34 +++------------------------------
+ include/linux/serial_8250.h           |    1 +
+ include/linux/serial_core.h           |    5 +++++
+ 9 files changed, 34 insertions(+), 31 deletions(-)
 
+diff --git a/arch/arm/mach-tegra/board-harmony.c b/arch/arm/mach-tegra/board-harmony.c
+index 789bdc9..7a4755b 100644
+--- a/arch/arm/mach-tegra/board-harmony.c
++++ b/arch/arm/mach-tegra/board-harmony.c
+@@ -52,6 +52,7 @@ static struct plat_serial8250_port debug_uart_platform_data[] = {
+ 		.irq		= INT_UARTD,
+ 		.flags		= UPF_BOOT_AUTOCONF | UPF_FIXED_TYPE,
+ 		.type		= PORT_TEGRA,
++		.handle_break	= tegra_serial_handle_break,
+ 		.iotype		= UPIO_MEM,
+ 		.regshift	= 2,
+ 		.uartclk	= 216000000,
+diff --git a/arch/arm/mach-tegra/board-paz00.c b/arch/arm/mach-tegra/board-paz00.c
+index 330afdf..9426e76 100644
+--- a/arch/arm/mach-tegra/board-paz00.c
++++ b/arch/arm/mach-tegra/board-paz00.c
+@@ -55,6 +55,7 @@ static struct plat_serial8250_port debug_uart_platform_data[] = {
+ 		.irq		= INT_UARTA,
+ 		.flags		= UPF_BOOT_AUTOCONF | UPF_FIXED_TYPE,
+ 		.type		= PORT_TEGRA,
++		.handle_break	= tegra_serial_handle_break,
+ 		.iotype		= UPIO_MEM,
+ 		.regshift	= 2,
+ 		.uartclk	= 216000000,
+@@ -65,6 +66,7 @@ static struct plat_serial8250_port debug_uart_platform_data[] = {
+ 		.irq		= INT_UARTC,
+ 		.flags		= UPF_BOOT_AUTOCONF | UPF_FIXED_TYPE,
+ 		.type		= PORT_TEGRA,
++		.handle_break	= tegra_serial_handle_break,
+ 		.iotype		= UPIO_MEM,
+ 		.regshift	= 2,
+ 		.uartclk	= 216000000,
+diff --git a/arch/arm/mach-tegra/board-seaboard.c b/arch/arm/mach-tegra/board-seaboard.c
+index ebac65f..11b8d27 100644
+--- a/arch/arm/mach-tegra/board-seaboard.c
++++ b/arch/arm/mach-tegra/board-seaboard.c
+@@ -47,6 +47,7 @@ static struct plat_serial8250_port debug_uart_platform_data[] = {
+ 		/* Memory and IRQ filled in before registration */
+ 		.flags		= UPF_BOOT_AUTOCONF | UPF_FIXED_TYPE,
+ 		.type		= PORT_TEGRA,
++		.handle_break	= tegra_serial_handle_break,
+ 		.iotype		= UPIO_MEM,
+ 		.regshift	= 2,
+ 		.uartclk	= 216000000,
+diff --git a/arch/arm/mach-tegra/board-trimslice.c b/arch/arm/mach-tegra/board-trimslice.c
+index cd52820..e7763ff 100644
+--- a/arch/arm/mach-tegra/board-trimslice.c
++++ b/arch/arm/mach-tegra/board-trimslice.c
+@@ -48,6 +48,7 @@ static struct plat_serial8250_port debug_uart_platform_data[] = {
+ 		.irq		= INT_UARTA,
+ 		.flags		= UPF_BOOT_AUTOCONF | UPF_FIXED_TYPE,
+ 		.type		= PORT_TEGRA,
++		.handle_break	= tegra_serial_handle_break,
+ 		.iotype		= UPIO_MEM,
+ 		.regshift	= 2,
+ 		.uartclk	= 216000000,
+diff --git a/arch/arm/mach-tegra/devices.c b/arch/arm/mach-tegra/devices.c
+index 7a2a02d..d9301bc 100644
+--- a/arch/arm/mach-tegra/devices.c
++++ b/arch/arm/mach-tegra/devices.c
+@@ -17,11 +17,13 @@
+  */
+ 
+ 
++#include <linux/delay.h>
+ #include <linux/resource.h>
+ #include <linux/platform_device.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/fsl_devices.h>
+ #include <linux/serial_8250.h>
++#include <linux/serial_reg.h>
+ #include <linux/i2c-tegra.h>
+ #include <linux/platform_data/tegra_usb.h>
+ #include <asm/pmu.h>
+@@ -704,3 +706,19 @@ struct platform_device tegra_pcm_device = {
+ 	.name = "tegra-pcm-audio",
+ 	.id = -1,
+ };
++
++void tegra_serial_handle_break(struct uart_port *p)
++{
++	unsigned int status, tmout = 10000;
++
++	do {
++		status = p->serial_in(p, UART_LSR);
++		if (status & (UART_LSR_FIFOE | UART_LSR_BRK_ERROR_BITS))
++			status = p->serial_in(p, UART_RX);
++		else
++			break;
++		if (--tmout == 0)
++			break;
++		udelay(1);
++	} while (1);
++}
+diff --git a/arch/arm/mach-tegra/devices.h b/arch/arm/mach-tegra/devices.h
+index 873ecb2..c2253be 100644
+--- a/arch/arm/mach-tegra/devices.h
++++ b/arch/arm/mach-tegra/devices.h
+@@ -20,6 +20,7 @@
+ #define __MACH_TEGRA_DEVICES_H
+ 
+ #include <linux/platform_device.h>
++#include <linux/serial_8250.h>
+ 
+ extern struct platform_device tegra_gpio_device;
+ extern struct platform_device tegra_pinmux_device;
+@@ -49,4 +50,5 @@ extern struct platform_device tegra_i2s_device2;
+ extern struct platform_device tegra_das_device;
+ extern struct platform_device tegra_pcm_device;
+ 
++void tegra_serial_handle_break(struct uart_port *p);
+ #endif
 diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
-index 9b7336f..ec7d99b 100644
+index 0e2c703..d1e0b3d 100644
 --- a/drivers/tty/serial/8250/8250.c
 +++ b/drivers/tty/serial/8250/8250.c
-@@ -1592,13 +1592,11 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
- 	do {
- 		struct uart_8250_port *up;
- 		struct uart_port *port;
--		bool skip;
- 
- 		up = list_entry(l, struct uart_8250_port, list);
- 		port = &up->port;
--		skip = pass_counter && up->port.flags & UPF_IIR_ONCE;
- 
--		if (!skip && port->handle_irq(port)) {
-+		if (port->handle_irq(port)) {
- 			handled = 1;
- 			end = NULL;
- 		} else if (end == NULL)
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 1d4ccf8..105dcfb 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1092,14 +1092,6 @@ static int skip_tx_en_setup(struct serial_private *priv,
- 	return pci_default_setup(priv, board, port, idx);
+@@ -1353,27 +1353,6 @@ static void serial8250_enable_ms(struct uart_port *port)
  }
  
--static int kt_serial_setup(struct serial_private *priv,
--			   const struct pciserial_board *board,
--			   struct uart_port *port, int idx)
+ /*
+- * Clear the Tegra rx fifo after a break
+- *
+- * FIXME: This needs to become a port specific callback once we have a
+- * framework for this
+- */
+-static void clear_rx_fifo(struct uart_8250_port *up)
 -{
--	port->flags |= UPF_IIR_ONCE;
--	return skip_tx_en_setup(priv, board, port, idx);
+-	unsigned int status, tmout = 10000;
+-	do {
+-		status = serial_in(up, UART_LSR);
+-		if (status & (UART_LSR_FIFOE | UART_LSR_BRK_ERROR_BITS))
+-			status = serial_in(up, UART_RX);
+-		else
+-			break;
+-		if (--tmout == 0)
+-			break;
+-		udelay(1);
+-	} while (1);
 -}
 -
- static int pci_eg20t_init(struct pci_dev *dev)
- {
- #if defined(CONFIG_SERIAL_PCH_UART) || defined(CONFIG_SERIAL_PCH_UART_MODULE)
-@@ -1118,6 +1110,7 @@ pci_xr17c154_setup(struct serial_private *priv,
- 	return pci_default_setup(priv, board, port, idx);
- }
+-/*
+  * serial8250_rx_chars: processes according to the passed in LSR
+  * value, and returns the remaining LSR bits not handled
+  * by this Rx routine.
+@@ -1406,20 +1385,10 @@ serial8250_rx_chars(struct uart_8250_port *up, unsigned char lsr)
+ 		up->lsr_saved_flags = 0;
  
-+/* This should be in linux/pci_ids.h */
- #define PCI_VENDOR_ID_SBSMODULARIO	0x124B
- #define PCI_SUBVENDOR_ID_SBSMODULARIO	0x124B
- #define PCI_DEVICE_ID_OCTPRO		0x0001
-@@ -1147,7 +1140,6 @@ pci_xr17c154_setup(struct serial_private *priv,
- #define PCI_DEVICE_ID_OXSEMI_16PCI958	0x9538
- #define PCIE_DEVICE_ID_NEO_2_OX_IBM	0x00F6
- #define PCI_DEVICE_ID_PLX_CRONYX_OMEGA	0xc001
--#define PCI_DEVICE_ID_INTEL_PATSBURG_KT 0x1d3d
+ 		if (unlikely(lsr & UART_LSR_BRK_ERROR_BITS)) {
+-			/*
+-			 * For statistics only
+-			 */
+ 			if (lsr & UART_LSR_BI) {
+ 				lsr &= ~(UART_LSR_FE | UART_LSR_PE);
+ 				up->port.icount.brk++;
+ 				/*
+-				 * If tegra port then clear the rx fifo to
+-				 * accept another break/character.
+-				 */
+-				if (up->port.type == PORT_TEGRA)
+-					clear_rx_fifo(up);
+-
+-				/*
+ 				 * We do the SysRQ and SAK checking
+ 				 * here because otherwise the break
+ 				 * may get masked by ignore_status_mask
+@@ -3047,6 +3016,7 @@ static int __devinit serial8250_probe(struct platform_device *dev)
+ 		port.serial_in		= p->serial_in;
+ 		port.serial_out		= p->serial_out;
+ 		port.handle_irq		= p->handle_irq;
++		port.handle_break	= p->handle_break;
+ 		port.set_termios	= p->set_termios;
+ 		port.pm			= p->pm;
+ 		port.dev		= &dev->dev;
+@@ -3219,6 +3189,8 @@ int serial8250_register_port(struct uart_port *port)
+ 			uart->port.set_termios = port->set_termios;
+ 		if (port->pm)
+ 			uart->port.pm = port->pm;
++		if (port->handle_break)
++			uart->port.handle_break = port->handle_break;
  
- /* Unknown vendors/cards - this should not be in linux/pci_ids.h */
- #define PCI_SUBDEVICE_ID_UNKNOWN_0x1584	0x1584
-@@ -1232,13 +1224,6 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
- 		.subdevice	= PCI_ANY_ID,
- 		.setup		= ce4100_serial_setup,
- 	},
--	{
--		.vendor		= PCI_VENDOR_ID_INTEL,
--		.device		= PCI_DEVICE_ID_INTEL_PATSBURG_KT,
--		.subvendor	= PCI_ANY_ID,
--		.subdevice	= PCI_ANY_ID,
--		.setup		= kt_serial_setup,
--	},
- 	/*
- 	 * ITE
- 	 */
+ 		if (serial8250_isa_config != NULL)
+ 			serial8250_isa_config(0, &uart->port,
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index 8f012f8..a522fd9 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -38,6 +38,7 @@ struct plat_serial8250_port {
+ 	int		(*handle_irq)(struct uart_port *);
+ 	void		(*pm)(struct uart_port *, unsigned int state,
+ 			      unsigned old);
++	void		(*handle_break)(struct uart_port *);
+ };
+ 
+ /*
 diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index c91ace7..c56d114 100644
+index cbb3d12..82f6147 100644
 --- a/include/linux/serial_core.h
 +++ b/include/linux/serial_core.h
-@@ -355,7 +355,6 @@ struct uart_port {
- #define UPF_CONS_FLOW		((__force upf_t) (1 << 23))
- #define UPF_SHARE_IRQ		((__force upf_t) (1 << 24))
- #define UPF_EXAR_EFR		((__force upf_t) (1 << 25))
--#define UPF_IIR_ONCE		((__force upf_t) (1 << 26))
- /* The exact UART type is known and should not be probed.  */
- #define UPF_FIXED_TYPE		((__force upf_t) (1 << 27))
- #define UPF_BOOT_AUTOCONF	((__force upf_t) (1 << 28))
+@@ -308,6 +308,7 @@ struct uart_port {
+ 	int			(*handle_irq)(struct uart_port *);
+ 	void			(*pm)(struct uart_port *, unsigned int state,
+ 				      unsigned int old);
++	void			(*handle_break)(struct uart_port *);
+ 	unsigned int		irq;			/* irq number */
+ 	unsigned long		irqflags;		/* irq flags  */
+ 	unsigned int		uartclk;		/* base uart clock */
+@@ -521,6 +522,10 @@ uart_handle_sysrq_char(struct uart_port *port, unsigned int ch)
+ static inline int uart_handle_break(struct uart_port *port)
+ {
+ 	struct uart_state *state = port->state;
++
++	if (port->handle_break)
++		port->handle_break(port);
++
+ #ifdef SUPPORT_SYSRQ
+ 	if (port->cons && port->cons->index == port->line) {
+ 		if (!port->sysrq) {
