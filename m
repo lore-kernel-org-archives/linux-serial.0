@@ -1,8 +1,8 @@
 From: Dan Williams <dan.j.williams@intel.com>
-Subject: [PATCH 3/6] serial/8250_pci: add a "force background timer" flag
- and use it for the "kt" serial port
-Date: Fri, 06 Apr 2012 11:49:50 -0700
-Message-ID: <20120406184949.22088.91501.stgit@dwillia2-linux.jf.intel.com>
+Subject: [PATCH 5/6] serial/8250_pci: Clear FIFOs for Intel ME Serial Over
+ Lan device on BI
+Date: Fri, 06 Apr 2012 11:50:05 -0700
+Message-ID: <20120406185002.22088.20641.stgit@dwillia2-linux.jf.intel.com>
 References: <20120406184346.21744.18004.stgit@dwillia2-linux.jf.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -11,111 +11,126 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20120406184346.21744.18004.stgit@dwillia2-linux.jf.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org
-Cc: Sudhakar Mamillapalli <sudhakar@fb.com>, linux-kernel@vger.kernel.org, stable@vger.kernel.org, linux-serial@vger.kernel.org, Nhan H Mai <nhan.h.mai@intel.com>, Alan Cox <alan@linux.intel.com>
+Cc: Sudhakar Mamillapalli <sudhakar@fb.com>, Nhan H Mai <nhan.h.mai@intel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Workaround dropped notifications in the iir register.  Register reads
-coincident with new interrupt notifications sometimes result in this
-device clearing the interrupt event without reporting it in the read
-data.
+From: Sudhakar Mamillapalli <sudhakar@fb.com>
 
-The serial core already has a heuristic for determining when a device
-has an untrustworthy iir register.  In this case when we apriori know
-that the iir is faulty use a flag (UPF_BUG_THRE) to bypass the test and
-force usage of the background timer.
+When using Serial Over Lan (SOL) over the virtual serial port in a Intel
+management engine (ME) device, on device reset the serial FIFOs need to
+be cleared to keep the FIFO indexes in-sync between the host and the
+engine.
+
+On a reset the serial device assertes BI, so using that as a cue FIFOs
+are cleared.  So for this purpose a new handle_break callback has been
+added.  One other problem is that the serial registers might temporarily
+go to 0 on reset of this device.  So instead of using the IER register
+read, if 0 returned use the ier value in uart_8250_port. This is hidden
+under a custom serial_in.
 
 Cc: Alan Cox <alan@linux.intel.com>
-[stable: 3.3.x]
-Cc: <stable@vger.kernel.org>
-Reported-by: Nhan H Mai <nhan.h.mai@intel.com>
-Reported-by: Sudhakar Mamillapalli <sudhakar@fb.com>
-Tested-by: Nhan H Mai <nhan.h.mai@intel.com>
-Tested-by: Sudhakar Mamillapalli <sudhakar@fb.com>
+Cc: Nhan H Mai <nhan.h.mai@intel.com>
+Signed-off-by: Sudhakar Mamillapalli <sudhakar@fb.com>
 Signed-off-by: Dan Williams <dan.j.williams@intel.com>
 ---
- drivers/tty/serial/8250/8250.c     |    8 +++++---
- drivers/tty/serial/8250/8250_pci.c |   17 ++++++++++++++++-
- include/linux/serial_core.h        |    1 +
- 3 files changed, 22 insertions(+), 4 deletions(-)
+ drivers/tty/serial/8250/8250.c     |   10 +++++++++
+ drivers/tty/serial/8250/8250.h     |    2 ++
+ drivers/tty/serial/8250/8250_pci.c |   39 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 51 insertions(+), 0 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
-index ec7d99b..0e2c703 100644
+index d1e0b3d..3fc7619 100644
 --- a/drivers/tty/serial/8250/8250.c
 +++ b/drivers/tty/serial/8250/8250.c
-@@ -2055,10 +2055,12 @@ static int serial8250_startup(struct uart_port *port)
- 		spin_unlock_irqrestore(&up->port.lock, flags);
+@@ -590,6 +590,16 @@ static void serial8250_clear_fifos(struct uart_8250_port *p)
+ 	}
+ }
  
- 		/*
--		 * If the interrupt is not reasserted, setup a timer to
--		 * kick the UART on a regular basis.
-+		 * If the interrupt is not reasserted, or we otherwise
-+		 * don't trust the iir, setup a timer to kick the UART
-+		 * on a regular basis.
- 		 */
--		if (!(iir1 & UART_IIR_NO_INT) && (iir & UART_IIR_NO_INT)) {
-+		if ((!(iir1 & UART_IIR_NO_INT) && (iir & UART_IIR_NO_INT)) ||
-+		    up->port.flags & UPF_BUG_THRE) {
- 			up->bugs |= UART_BUG_THRE;
- 			pr_debug("ttyS%d - using backup timer\n",
- 				 serial_index(port));
++void serial8250_clear_and_reinit_fifos(struct uart_8250_port *p)
++{
++	unsigned char fcr;
++
++	serial8250_clear_fifos(p);
++	fcr = uart_config[p->port.type].fcr;
++	serial_out(p, UART_FCR, fcr);
++}
++EXPORT_SYMBOL_GPL(serial8250_clear_and_reinit_fifos);
++
+ /*
+  * IER sleep support.  UARTs which have EFRs need the "extended
+  * capability" bit enabled.  Note that on XR16C850s, we need to
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index ae027be..5efa6c5 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -86,6 +86,8 @@ struct serial8250_config {
+ #define SERIAL8250_SHARE_IRQS 0
+ #endif
+ 
++void serial8250_clear_and_reinit_fifos(struct uart_8250_port *p);
++
+ #if defined(__alpha__) && !defined(CONFIG_PCI)
+ /*
+  * Digital did something really horribly wrong with the OUT1 and OUT2
 diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 105dcfb..858dca8 100644
+index 858dca8..024551a 100644
 --- a/drivers/tty/serial/8250/8250_pci.c
 +++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1092,6 +1092,14 @@ static int skip_tx_en_setup(struct serial_private *priv,
+@@ -17,6 +17,7 @@
+ #include <linux/slab.h>
+ #include <linux/delay.h>
+ #include <linux/tty.h>
++#include <linux/serial_reg.h>
+ #include <linux/serial_core.h>
+ #include <linux/8250_pci.h>
+ #include <linux/bitops.h>
+@@ -1092,11 +1093,49 @@ static int skip_tx_en_setup(struct serial_private *priv,
  	return pci_default_setup(priv, board, port, idx);
  }
  
-+static int kt_serial_setup(struct serial_private *priv,
-+			   const struct pciserial_board *board,
-+			   struct uart_port *port, int idx)
++static void kt_handle_break(struct uart_port *p)
 +{
-+	port->flags |= UPF_BUG_THRE;
-+	return skip_tx_en_setup(priv, board, port, idx);
++	struct uart_8250_port *up =
++		container_of(p, struct uart_8250_port, port);
++	/*
++	 * On receipt of a BI, serial device in Intel ME (Intel
++	 * management engine) needs to have its fifos cleared for sane
++	 * SOL (Serial Over Lan) output.
++	 */
++	serial8250_clear_and_reinit_fifos(up);
 +}
 +
- static int pci_eg20t_init(struct pci_dev *dev)
++static unsigned int kt_serial_in(struct uart_port *p, int offset)
++{
++	struct uart_8250_port *up =
++		container_of(p, struct uart_8250_port, port);
++	unsigned int val;
++
++	/*
++	 * When the Intel ME (management engine) gets reset its serial
++	 * port registers could return 0 momentarily.  Functions like
++	 * serial8250_console_write, read and save the IER, perform
++	 * some operation and then restore it.  In order to avoid
++	 * setting IER register inadvertently to 0, if the value read
++	 * is 0, double check with ier value in uart_8250_port and use
++	 * that instead.  up->ier should be the same value as what is
++	 * currently configured.
++	 */
++	val = inb(p->iobase + offset);
++	if (offset == UART_IER) {
++		if (val == 0)
++			val = up->ier;
++	}
++	return val;
++}
++
+ static int kt_serial_setup(struct serial_private *priv,
+ 			   const struct pciserial_board *board,
+ 			   struct uart_port *port, int idx)
  {
- #if defined(CONFIG_SERIAL_PCH_UART) || defined(CONFIG_SERIAL_PCH_UART_MODULE)
-@@ -1110,7 +1118,6 @@ pci_xr17c154_setup(struct serial_private *priv,
- 	return pci_default_setup(priv, board, port, idx);
+ 	port->flags |= UPF_BUG_THRE;
++	port->serial_in = kt_serial_in;
++	port->handle_break = kt_handle_break;
+ 	return skip_tx_en_setup(priv, board, port, idx);
  }
  
--/* This should be in linux/pci_ids.h */
- #define PCI_VENDOR_ID_SBSMODULARIO	0x124B
- #define PCI_SUBVENDOR_ID_SBSMODULARIO	0x124B
- #define PCI_DEVICE_ID_OCTPRO		0x0001
-@@ -1140,6 +1147,7 @@ pci_xr17c154_setup(struct serial_private *priv,
- #define PCI_DEVICE_ID_OXSEMI_16PCI958	0x9538
- #define PCIE_DEVICE_ID_NEO_2_OX_IBM	0x00F6
- #define PCI_DEVICE_ID_PLX_CRONYX_OMEGA	0xc001
-+#define PCI_DEVICE_ID_INTEL_PATSBURG_KT 0x1d3d
- 
- /* Unknown vendors/cards - this should not be in linux/pci_ids.h */
- #define PCI_SUBDEVICE_ID_UNKNOWN_0x1584	0x1584
-@@ -1224,6 +1232,13 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
- 		.subdevice	= PCI_ANY_ID,
- 		.setup		= ce4100_serial_setup,
- 	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTEL,
-+		.device		= PCI_DEVICE_ID_INTEL_PATSBURG_KT,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.setup		= kt_serial_setup,
-+	},
- 	/*
- 	 * ITE
- 	 */
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index c56d114..cbb3d12 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -355,6 +355,7 @@ struct uart_port {
- #define UPF_CONS_FLOW		((__force upf_t) (1 << 23))
- #define UPF_SHARE_IRQ		((__force upf_t) (1 << 24))
- #define UPF_EXAR_EFR		((__force upf_t) (1 << 25))
-+#define UPF_BUG_THRE		((__force upf_t) (1 << 26))
- /* The exact UART type is known and should not be probed.  */
- #define UPF_FIXED_TYPE		((__force upf_t) (1 << 27))
- #define UPF_BOOT_AUTOCONF	((__force upf_t) (1 << 28))
