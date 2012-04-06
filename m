@@ -1,59 +1,41 @@
-From: "Williams, Dan J" <dan.j.williams@intel.com>
-Subject: Re: [PATCH 0/6] rework quirks for the "kt" serial port
-Date: Fri, 6 Apr 2012 12:49:39 -0700
-Message-ID: <CABE8wwuLjqF1um8eJMap+6f_L3_upJL1VkQrxRfHXn-6R1Kuwg@mail.gmail.com>
-References: <20120406184346.21744.18004.stgit@dwillia2-linux.jf.intel.com>
-	<20120406191451.GA14211@kroah.com>
+From: Stephen Warren <swarren@wwwdotorg.org>
+Subject: Re: [PATCH 4/6] tegra, serial8250: add ->handle_break() uart_port
+ op
+Date: Fri, 06 Apr 2012 15:01:38 -0600
+Message-ID: <4F7F59B2.4090400@wwwdotorg.org>
+References: <20120406184346.21744.18004.stgit@dwillia2-linux.jf.intel.com> <20120406184956.22088.85217.stgit@dwillia2-linux.jf.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20120406191451.GA14211@kroah.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, alan@linux.intel.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from avon.wwwdotorg.org ([70.85.31.133]:41326 "EHLO
+	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755384Ab2DFVBo (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 6 Apr 2012 17:01:44 -0400
+In-Reply-To: <20120406184956.22088.85217.stgit@dwillia2-linux.jf.intel.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Dan Williams <dan.j.williams@intel.com>
+Cc: gregkh@linuxfoundation.org, Sudhakar Mamillapalli <sudhakar@fb.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Colin Cross <ccross@android.com>, Olof Johansson <olof@lixom.net>, Nhan H Mai <nhan.h.mai@intel.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>, alan@linux.intel.com
 
-On Fri, Apr 6, 2012 at 12:14 PM, Greg KH <gregkh@linuxfoundation.org> w=
-rote:
-> On Fri, Apr 06, 2012 at 11:44:22AM -0700, Dan Williams wrote:
->> The kt serial port intermittently reports unreliable data in its IIR
->> register and needs to reset fifos to stay in sync with firmware when=
- the
->> device is reset.
->>
->> The IIR fixes that went into 3.3 were not complete so patch 3 replac=
-es
->> them with an explicit way to turn on UART_BUG_THRE (i.e. the "I don'=
-t
->> trust my iir" flag).
->>
->
-> So the first 3 patches should go into 3.4 (and 3.3-stable) kernels,
-> right?
+On 04/06/2012 12:49 PM, Dan Williams wrote:
+> The "KT" serial port has another use case for a "received break" quirk,
+> so before adding another special case to the 8250 core take this
+> opportunity to push such quirks out of the core and into a uart_port op.
 
-Yes, since this fixes the workaround that went into 3.3 properly and
-addresses a regression.
+This doesn't seem quite right. Why do the board files have to set up
+this .handle_break function; they're already setting .type=PORT_TEGRA,
+which should be enough to drive the setup of any required quirks.
 
->> A new fix for resetting the fifos on device reset is patch 5. =A0Ala=
-n
->> asked to make this a new quirk rather than add more workarounds to t=
-he
->> core (patch 4).
->
-> These can wait for 3.5?
+If plat_serial8250_port must contain this field, then
+drivers/tty/serial/of_serial.c needs a similar change so that this all
+works when booting using device tree.
 
-I think they can wait especially because of the cross tree changes.
+I'm not sure what the implication is of moving the call to clr_fifo()
+into uart_handle_break(). What's the benefit of one location over the other?
 
->> Patch 6 is an untested RFC / RFT from anyone that has a serial
->> suspend/resume use case with an 'init' quirk that has resources that
->> need de-allocation at 'exit'.
->
-> And I'll hold off on this one entirely for now, right?
-
-Yeah, if anyone runs into a similar problem with serial suspend /
-resume they may want to take a look at this patch.  But for now I
-don't have a valid test case for it.
-
---
-Dan
+If the callback function is to no longer live in 8250.c itself,
+arch/arm/mach-tegra/devices.c isn't logically a good place to put it,
+and that file will be going away once we get rid of all the board files
+and move solely to device tree.
