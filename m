@@ -1,30 +1,48 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 1/6] Revert "serial/8250_pci: init-quirk msi support for
- kt serial controller"
-Date: Fri, 6 Apr 2012 20:05:12 +0100
-Message-ID: <20120406200512.7d2b6152@pyramind.ukuu.org.uk>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 0/6] rework quirks for the "kt" serial port
+Date: Fri, 6 Apr 2012 12:14:51 -0700
+Message-ID: <20120406191451.GA14211@kroah.com>
 References: <20120406184346.21744.18004.stgit@dwillia2-linux.jf.intel.com>
-	<20120406184934.22088.63056.stgit@dwillia2-linux.jf.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:35580 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753976Ab2DFTCr (ORCPT
+Received: from mail-pz0-f52.google.com ([209.85.210.52]:47052 "EHLO
+	mail-pz0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754152Ab2DFTOz (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 6 Apr 2012 15:02:47 -0400
-In-Reply-To: <20120406184934.22088.63056.stgit@dwillia2-linux.jf.intel.com>
+	Fri, 6 Apr 2012 15:14:55 -0400
+Received: by dake40 with SMTP id e40so3047298dak.11
+        for <linux-serial@vger.kernel.org>; Fri, 06 Apr 2012 12:14:54 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <20120406184346.21744.18004.stgit@dwillia2-linux.jf.intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Dan Williams <dan.j.williams@intel.com>
-Cc: gregkh@linuxfoundation.org, Sudhakar Mamillapalli <sudhakar@fb.com>, linux-kernel@vger.kernel.org, stable@vger.kernel.org, linux-serial@vger.kernel.org, Nhan H Mai <nhan.h.mai@intel.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, alan@linux.intel.com
 
-On Fri, 06 Apr 2012 11:49:37 -0700
-Dan Williams <dan.j.williams@intel.com> wrote:
+On Fri, Apr 06, 2012 at 11:44:22AM -0700, Dan Williams wrote:
+> The kt serial port intermittently reports unreliable data in its IIR
+> register and needs to reset fifos to stay in sync with firmware when the
+> device is reset.
+> 
+> The IIR fixes that went into 3.3 were not complete so patch 3 replaces
+> them with an explicit way to turn on UART_BUG_THRE (i.e. the "I don't
+> trust my iir" flag).
+> 
 
-> This reverts commit e86ff4a63c9fdd875ba8492577cd1ad2252f525c.
+So the first 3 patches should go into 3.4 (and 3.3-stable) kernels,
+right?
 
-Series
+> A new fix for resetting the fifos on device reset is patch 5.  Alan
+> asked to make this a new quirk rather than add more workarounds to the
+> core (patch 4).
 
-Acked-by: Alan Cox <alan@linux.intel.com>
+These can wait for 3.5?
+
+> Patch 6 is an untested RFC / RFT from anyone that has a serial
+> suspend/resume use case with an 'init' quirk that has resources that
+> need de-allocation at 'exit'.
+
+And I'll hold off on this one entirely for now, right?
+
+greg k-h
