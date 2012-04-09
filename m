@@ -1,58 +1,52 @@
-From: Paul Walmsley <paul@pwsan.com>
-Subject: Re: Suspend broken on 3.3?
-Date: Mon, 9 Apr 2012 10:01:24 -0600 (MDT)
-Message-ID: <alpine.DEB.2.00.1204090944191.6640@utopia.booyaka.com>
-References: <WC20120329112755.541787@terrafix.co.uk> <WC20120329114024.43178C@terrafix.co.uk> <CAMrsUdKR4nwbBEOx9JPeS=GLDPyioHuijK2596=q2OwJ+ARbxA@mail.gmail.com> <WC20120330075339.4017FC@terrafix.co.uk> <CAMrsUdKTx84_oHyS9JTCBTqtV-7907snCGFDrOXnPuNVSnvz7w@mail.gmail.com>
- <WC20120330092609.901834@terrafix.co.uk> <CAMrsUdJrJZXjYOs87xmT_J0w7S=VZyfR0tBmhhuYOFmFsOB3SA@mail.gmail.com> <WC20120330110442.381887@terrafix.co.uk> <CAMrsUd+AvVp3n1oAREEEmCSBaeA-m68j7gLjXEeJKimX1erfUw@mail.gmail.com> <CAMrsUd+K_EwXfypgYWNyAhR7b47avTpWDemS87OTkpH81cJ6Aw@mail.gmail.com>
- <alpine.DEB.2.00.1204040852460.8000@utopia.booyaka.com> <CAMrsUd+WZcUvHGdR4WyF4uh35D17K9DXFAqpLHKBUbL1_5viDA@mail.gmail.com> <alpine.DEB.2.00.1204051812320.10302@utopia.booyaka.com> <87iphdeyaf.fsf@ti.com> <CAMrsUdLMYVwd3rupHtrNKC0rMvx1-3B=4usOh8cwTUy8DX_hVg@mail.gmail.com>
- <87zkalc75h.fsf@ti.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 1/2]  8250_pci: Replace commits 448ac154 and e86ff4a
+Date: Mon, 9 Apr 2012 09:47:59 -0700
+Message-ID: <20120409164759.GA8800@kroah.com>
+References: <4F7B52D8.101@fb.com>
+ <20120403215832.0520f93d@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from utopia.booyaka.com ([72.9.107.138]:41625 "EHLO
-	utopia.booyaka.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754540Ab2DIQBZ (ORCPT
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:52145 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751672Ab2DIQsE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 9 Apr 2012 12:01:25 -0400
-In-Reply-To: <87zkalc75h.fsf@ti.com>
+	Mon, 9 Apr 2012 12:48:04 -0400
+Received: by pbcun15 with SMTP id un15so5202521pbc.19
+        for <linux-serial@vger.kernel.org>; Mon, 09 Apr 2012 09:48:04 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <20120403215832.0520f93d@pyramind.ukuu.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kevin Hilman <khilman@ti.com>
-Cc: "Raja\\, Govindraj" <govindraj.raja@ti.com>, Joe Woodward <jw@terrafix.co.uk>, linux-omap@vger.kernel.org, Felipe Balbi <balbi@ti.com>, neilb@suse.de, linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: sudhakar <sudhakar@fb.com>, linux-serial@vger.kernel.org, alan@linux.intel.com, dan.j.williams@intel.com, nhan.h.mai@intel.com, linux-kernel@vger.kernel.org
 
-cc linux-serial 
+On Tue, Apr 03, 2012 at 09:58:32PM +0100, Alan Cox wrote:
+> On Tue, 3 Apr 2012 12:43:20 -0700
+> sudhakar <sudhakar@fb.com> wrote:
+> 
+> > 
+> > From: Sudhakar Mamillapalli <sudhakar@fb.com>
+> > 
+> > 
+> > The following commits don't completely fix the KT serial missing
+> > interrupt problems.  So they have been replaced instead by
+> > enabling serial backup timer.  The iir-once + msi tried approach tried
+> > to enforce one read of the iir per THRE event, but its defeated by any
+> > other event occurring at the wrong time, particularly MSR events.
+> > 
+> > 448ac15 serial/8250_pci: setup-quirk workaround for the kt serial controller
+> > e86ff4a serial/8250_pci: init-quirk msi support for kt serial controller
+> 
+> These are already in tree. If you are reversing them and adding a
+> different fix then please post the series as
+> 
+> - two revert patches exactly reverting the two commits
+> - a follow on patch or two adding the replacement
+> 
+> That makes it much easier to review and much more obvious. It also helps
+> make testing simpler.
 
-Hi
+I agree, Sudhakar, can you please redo these 2 patches?
 
-On Mon, 9 Apr 2012, Kevin Hilman wrote:
-
-> Presumably, if a user disables UART wakeups, it means either 1) that
-> UART is not used
-
-#1 seems easy enough to handle without the use of power/wakeup.  If there 
-are no users of the TTY, then the driver can simply not configure hardware 
-wakeups.
-
-> or 2) performance is not critical.
-
-Can you think of a use-case for #2?
-
-> IMO, we simply need to ensure that the defaults are correct.  When UARTs
-> are initialized/enabled wakeups should be enabled by default.  The user
-> can then override this if desired, and will obviously see a performance
-> impact.  But that's what happens with wakeups disabled.
-
-I don't understand why a user would ever want to disable dynamic wakeups 
-on an in-use serial port via the sysfs power/wakeup file.  (Disabling 
-wakeups from suspend is a different matter, of course.)  The OMAP UART 
-driver needs hardware wakeups to function for FIFO drain wakeups, etc.  
-So to me it really doesn't make sense to disable those types of wakeup 
-events, ever.  But maybe you know of some use-case that I don't?
-
-If the user just wants a transmit-only serial port, they could use the 
-termios CREAD flag as Neil mentioned a few months ago, and the driver 
-could disable wakeups on incoming RXD (modulo any active flow control of 
-course).
-
-
-- Paul
+greg k-h
