@@ -1,79 +1,63 @@
-From: "Williams, Dan J" <dan.j.williams@intel.com>
-Subject: Re: [PATCH 1/2] 8250_pci: Replace commits 448ac154 and e86ff4a
-Date: Mon, 9 Apr 2012 09:53:47 -0700
-Message-ID: <CABE8wwsHZLiihEReRQwkk+SufkmBw2W4n-WibQgS-rEOnKNGMA@mail.gmail.com>
-References: <4F7B52D8.101@fb.com>
-	<20120403215832.0520f93d@pyramind.ukuu.org.uk>
-	<20120409164759.GA8800@kroah.com>
+From: Kevin Hilman <khilman@ti.com>
+Subject: Re: Suspend broken on 3.3?
+Date: Mon, 09 Apr 2012 10:10:50 -0700
+Message-ID: <874nssde5h.fsf@ti.com>
+References: <WC20120329112755.541787@terrafix.co.uk>
+	<WC20120329114024.43178C@terrafix.co.uk>
+	<CAMrsUdKR4nwbBEOx9JPeS=GLDPyioHuijK2596=q2OwJ+ARbxA@mail.gmail.com>
+	<WC20120330075339.4017FC@terrafix.co.uk>
+	<CAMrsUdKTx84_oHyS9JTCBTqtV-7907snCGFDrOXnPuNVSnvz7w@mail.gmail.com>
+	<WC20120330092609.901834@terrafix.co.uk>
+	<CAMrsUdJrJZXjYOs87xmT_J0w7S=VZyfR0tBmhhuYOFmFsOB3SA@mail.gmail.com>
+	<WC20120330110442.381887@terrafix.co.uk>
+	<CAMrsUd+AvVp3n1oAREEEmCSBaeA-m68j7gLjXEeJKimX1erfUw@mail.gmail.com>
+	<CAMrsUd+K_EwXfypgYWNyAhR7b47avTpWDemS87OTkpH81cJ6Aw@mail.gmail.com>
+	<alpine.DEB.2.00.1204040852460.8000@utopia.booyaka.com>
+	<CAMrsUd+WZcUvHGdR4WyF4uh35D17K9DXFAqpLHKBUbL1_5viDA@mail.gmail.com>
+	<alpine.DEB.2.00.1204051812320.10302@utopia.booyaka.com>
+	<87iphdeyaf.fsf@ti.com>
+	<CAMrsUdLMYVwd3rupHtrNKC0rMvx1-3B=4usOh8cwTUy8DX_hVg@mail.gmail.com>
+	<87zkalc75h.fsf@ti.com>
+	<alpine.DEB.2.00.1204090944191.6640@utopia.booyaka.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga10.intel.com ([192.55.52.92]:36994 "EHLO
-	fmsmga102.fm.intel.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752362Ab2DIQxu convert rfc822-to-8bit (ORCPT
+Received: from na3sys009aog124.obsmtp.com ([74.125.149.151]:39125 "EHLO
+	na3sys009aog124.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751701Ab2DIRKp (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 9 Apr 2012 12:53:50 -0400
-Received: by bkcjm19 with SMTP id jm19so3415127bkc.25
-        for <linux-serial@vger.kernel.org>; Mon, 09 Apr 2012 09:53:48 -0700 (PDT)
-In-Reply-To: <20120409164759.GA8800@kroah.com>
+	Mon, 9 Apr 2012 13:10:45 -0400
+Received: by pbcuo1 with SMTP id uo1so6025180pbc.26
+        for <linux-serial@vger.kernel.org>; Mon, 09 Apr 2012 10:10:44 -0700 (PDT)
+In-Reply-To: <alpine.DEB.2.00.1204090944191.6640@utopia.booyaka.com> (Paul
+	Walmsley's message of "Mon, 9 Apr 2012 10:01:24 -0600 (MDT)")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, sudhakar <sudhakar@fb.com>, linux-serial@vger.kernel.org, alan@linux.intel.com, nhan.h.mai@intel.com, linux-kernel@vger.kernel.org
+To: Paul Walmsley <paul@pwsan.com>
+Cc: "Raja, Govindraj" <govindraj.raja@ti.com>, Joe Woodward <jw@terrafix.co.uk>, linux-omap@vger.kernel.org, Felipe Balbi <balbi@ti.com>, neilb@suse.de, linux-serial@vger.kernel.org
 
-On Mon, Apr 9, 2012 at 9:47 AM, Greg KH <gregkh@linuxfoundation.org> wr=
-ote:
-> On Tue, Apr 03, 2012 at 09:58:32PM +0100, Alan Cox wrote:
->> On Tue, 3 Apr 2012 12:43:20 -0700
->> sudhakar <sudhakar@fb.com> wrote:
->>
->> >
->> > From: Sudhakar Mamillapalli <sudhakar@fb.com>
->> >
->> >
->> > The following commits don't completely fix the KT serial missing
->> > interrupt problems. =A0So they have been replaced instead by
->> > enabling serial backup timer. =A0The iir-once + msi tried approach=
- tried
->> > to enforce one read of the iir per THRE event, but its defeated by=
- any
->> > other event occurring at the wrong time, particularly MSR events.
->> >
->> > 448ac15 serial/8250_pci: setup-quirk workaround for the kt serial =
-controller
->> > e86ff4a serial/8250_pci: init-quirk msi support for kt serial cont=
-roller
->>
->> These are already in tree. If you are reversing them and adding a
->> different fix then please post the series as
->>
->> - two revert patches exactly reverting the two commits
->> - a follow on patch or two adding the replacement
->>
->> That makes it much easier to review and much more obvious. It also h=
-elps
->> make testing simpler.
->
-> I agree, Sudhakar, can you please redo these 2 patches?
->
+Paul Walmsley <paul@pwsan.com> writes:
 
-Hi Greg,
+[...]
 
-This was in the series:
+> I don't understand why a user would ever want to disable dynamic wakeups 
+> on an in-use serial port via the sysfs power/wakeup file.  (Disabling 
+> wakeups from suspend is a different matter, of course.)  The OMAP UART 
+> driver needs hardware wakeups to function for FIFO drain wakeups, etc.  
+> So to me it really doesn't make sense to disable those types of wakeup 
+> events, ever.  But maybe you know of some use-case that I don't?
 
-[PATCH 0/6] rework quirks for the "kt" serial port [1]
+No, I don't have a use-case in mind.
 
-=2E..but I have just noticed it collides with current git, and I also
-need to address Stephen's comments for Tegra.  Expect a v2 shortly.
+The more I try to remember why we added support to use the sysfs wakeup
+attribute to manage idle, the more I think we can probably drop it now.
+IIRC, it was added because on most boards we used to blindly initialize
+all the UARTs, including default wakeup settings (we still do this on
+many boards.)  
 
---
-Dan
+However, now that we have a real PM-aware driver for OMAP UARTs, this
+should all be handled from the driver itself, so the sysfs wakeup
+attribute should go back to only managing wakeups from suspend and
+wakeups during idle should always be on for in-use UARTs.
 
-
-[1]: http://marc.info/?l=3Dlinux-serial&m=3D133373702606784&w=3D2
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Kevin
