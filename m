@@ -1,8 +1,7 @@
 From: Dan Williams <dan.j.williams@intel.com>
-Subject: [PATCH v2 3/4] serial/8250_pci: Clear FIFOs for Intel ME Serial
- Over Lan device on BI
-Date: Mon, 09 Apr 2012 11:22:14 -0700
-Message-ID: <20120409182213.317.15475.stgit@dwillia2-linux.jf.intel.com>
+Subject: [PATCH v2 1/4] of_serial: add support for setup quirks
+Date: Mon, 09 Apr 2012 11:22:03 -0700
+Message-ID: <20120409182203.317.81835.stgit@dwillia2-linux.jf.intel.com>
 References: <20120409182041.317.33360.stgit@dwillia2-linux.jf.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -11,126 +10,165 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20120409182041.317.33360.stgit@dwillia2-linux.jf.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org
-Cc: Sudhakar Mamillapalli <sudhakar@fb.com>, Nhan H Mai <nhan.h.mai@intel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
+Cc: Stephen Warren <swarren@nvidia.com>, Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org, Grant Likely <grant.likely@secretlab.ca>, linux-serial@vger.kernel.org, Colin Cross <ccross@android.com>, Olof Johansson <olof@lixom.net>, alan@linux.intel.com
 List-Id: linux-serial@vger.kernel.org
 
-From: Sudhakar Mamillapalli <sudhakar@fb.com>
+Benign conversion of of_serial.c to offer the option of 'setup' quirks
+similar to how 8250_pci.c houses the pci-serial-device quirks.
 
-When using Serial Over Lan (SOL) over the virtual serial port in a Intel
-management engine (ME) device, on device reset the serial FIFOs need to
-be cleared to keep the FIFO indexes in-sync between the host and the
-engine.
+A setup quirk allows custom uart_port ops to specified in the
+of_serial_info data fed to each serial of_device_id.
 
-On a reset the serial device assertes BI, so using that as a cue FIFOs
-are cleared.  So for this purpose a new handle_break callback has been
-added.  One other problem is that the serial registers might temporarily
-go to 0 on reset of this device.  So instead of using the IER register
-read, if 0 returned use the ier value in uart_8250_port. This is hidden
-under a custom serial_in.
+Tegra's 'break' quirk is the target consumer.
 
-Cc: Nhan H Mai <nhan.h.mai@intel.com>
-Signed-off-by: Sudhakar Mamillapalli <sudhakar@fb.com>
-Acked-by: Alan Cox <alan@linux.intel.com>
+Cc: Colin Cross <ccross@android.com>
+Cc: Olof Johansson <olof@lixom.net>
+Cc: Stephen Warren <swarren@nvidia.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Grant Likely <grant.likely@secretlab.ca>
 Signed-off-by: Dan Williams <dan.j.williams@intel.com>
 ---
- drivers/tty/serial/8250/8250.c     |   10 +++++++++
- drivers/tty/serial/8250/8250.h     |    2 ++
- drivers/tty/serial/8250/8250_pci.c |   39 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 51 insertions(+), 0 deletions(-)
+ drivers/tty/serial/of_serial.c |   68 ++++++++++++++++++++++++++++------------
+ 1 files changed, 47 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
-index cbd94c3..182efcc 100644
---- a/drivers/tty/serial/8250/8250.c
-+++ b/drivers/tty/serial/8250/8250.c
-@@ -568,6 +568,16 @@ static void serial8250_clear_fifos(struct uart_8250_port *p)
- 	}
- }
+diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+index e8c9cee..4621cf9 100644
+--- a/drivers/tty/serial/of_serial.c
++++ b/drivers/tty/serial/of_serial.c
+@@ -22,13 +22,15 @@
+ struct of_serial_info {
+ 	int type;
+ 	int line;
++	void (*setup)(struct uart_port *);
+ };
  
-+void serial8250_clear_and_reinit_fifos(struct uart_8250_port *p)
-+{
-+	unsigned char fcr;
-+
-+	serial8250_clear_fifos(p);
-+	fcr = uart_config[p->port.type].fcr;
-+	serial_out(p, UART_FCR, fcr);
-+}
-+EXPORT_SYMBOL_GPL(serial8250_clear_and_reinit_fifos);
-+
  /*
-  * IER sleep support.  UARTs which have EFRs need the "extended
-  * capability" bit enabled.  Note that on XR16C850s, we need to
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index 2868a1d..c9d0ebe 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -96,6 +96,8 @@ static inline void serial_out(struct uart_8250_port *up, int offset, int value)
- 	up->port.serial_out(&up->port, offset, value);
- }
- 
-+void serial8250_clear_and_reinit_fifos(struct uart_8250_port *p);
-+
- #if defined(__alpha__) && !defined(CONFIG_PCI)
- /*
-  * Digital did something really horribly wrong with the OUT1 and OUT2
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 858dca8..024551a 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -17,6 +17,7 @@
- #include <linux/slab.h>
- #include <linux/delay.h>
- #include <linux/tty.h>
-+#include <linux/serial_reg.h>
- #include <linux/serial_core.h>
- #include <linux/8250_pci.h>
- #include <linux/bitops.h>
-@@ -1092,11 +1093,49 @@ static int skip_tx_en_setup(struct serial_private *priv,
- 	return pci_default_setup(priv, board, port, idx);
- }
- 
-+static void kt_handle_break(struct uart_port *p)
-+{
-+	struct uart_8250_port *up =
-+		container_of(p, struct uart_8250_port, port);
-+	/*
-+	 * On receipt of a BI, serial device in Intel ME (Intel
-+	 * management engine) needs to have its fifos cleared for sane
-+	 * SOL (Serial Over Lan) output.
-+	 */
-+	serial8250_clear_and_reinit_fifos(up);
-+}
-+
-+static unsigned int kt_serial_in(struct uart_port *p, int offset)
-+{
-+	struct uart_8250_port *up =
-+		container_of(p, struct uart_8250_port, port);
-+	unsigned int val;
-+
-+	/*
-+	 * When the Intel ME (management engine) gets reset its serial
-+	 * port registers could return 0 momentarily.  Functions like
-+	 * serial8250_console_write, read and save the IER, perform
-+	 * some operation and then restore it.  In order to avoid
-+	 * setting IER register inadvertently to 0, if the value read
-+	 * is 0, double check with ier value in uart_8250_port and use
-+	 * that instead.  up->ier should be the same value as what is
-+	 * currently configured.
-+	 */
-+	val = inb(p->iobase + offset);
-+	if (offset == UART_IER) {
-+		if (val == 0)
-+			val = up->ier;
-+	}
-+	return val;
-+}
-+
- static int kt_serial_setup(struct serial_private *priv,
- 			   const struct pciserial_board *board,
- 			   struct uart_port *port, int idx)
+  * Fill a struct uart_port for a given device node
+  */
+ static int __devinit of_platform_serial_setup(struct platform_device *ofdev,
+-					int type, struct uart_port *port)
++					      struct of_serial_info *info,
++					      struct uart_port *port)
  {
- 	port->flags |= UPF_BUG_THRE;
-+	port->serial_in = kt_serial_in;
-+	port->handle_break = kt_handle_break;
- 	return skip_tx_en_setup(priv, board, port, idx);
+ 	struct resource resource;
+ 	struct device_node *np = ofdev->dev.of_node;
+@@ -78,12 +80,15 @@ static int __devinit of_platform_serial_setup(struct platform_device *ofdev,
+ 		}
+ 	}
+ 
+-	port->type = type;
++	port->type = info->type;
+ 	port->uartclk = clk;
+ 	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
+ 		| UPF_FIXED_PORT | UPF_FIXED_TYPE;
+ 	port->dev = &ofdev->dev;
+ 
++	if (info->setup)
++		info->setup(port);
++
+ 	return 0;
  }
  
+@@ -96,7 +101,6 @@ static int __devinit of_platform_serial_probe(struct platform_device *ofdev)
+ 	const struct of_device_id *match;
+ 	struct of_serial_info *info;
+ 	struct uart_port port;
+-	int port_type;
+ 	int ret;
+ 
+ 	match = of_match_device(of_platform_serial_table, &ofdev->dev);
+@@ -106,16 +110,12 @@ static int __devinit of_platform_serial_probe(struct platform_device *ofdev)
+ 	if (of_find_property(ofdev->dev.of_node, "used-by-rtas", NULL))
+ 		return -EBUSY;
+ 
+-	info = kmalloc(sizeof(*info), GFP_KERNEL);
+-	if (info == NULL)
+-		return -ENOMEM;
+-
+-	port_type = (unsigned long)match->data;
+-	ret = of_platform_serial_setup(ofdev, port_type, &port);
++	info = match->data;
++	ret = of_platform_serial_setup(ofdev, info, &port);
+ 	if (ret)
+ 		goto out;
+ 
+-	switch (port_type) {
++	switch (info->type) {
+ #ifdef CONFIG_SERIAL_8250
+ 	case PORT_8250 ... PORT_MAX_8250:
+ 		ret = serial8250_register_port(&port);
+@@ -136,12 +136,10 @@ static int __devinit of_platform_serial_probe(struct platform_device *ofdev)
+ 	if (ret < 0)
+ 		goto out;
+ 
+-	info->type = port_type;
+ 	info->line = ret;
+ 	dev_set_drvdata(&ofdev->dev, info);
+ 	return 0;
+ out:
+-	kfree(info);
+ 	irq_dispose_mapping(port.irq);
+ 	return ret;
+ }
+@@ -167,24 +165,52 @@ static int of_platform_serial_remove(struct platform_device *ofdev)
+ 		/* need to add code for these */
+ 		break;
+ 	}
+-	kfree(info);
+ 	return 0;
+ }
+ 
+ /*
++ * contiguous OF_ number space for serial port types so the
++ * __sinfo array does not have holes, and to allow cases of:
++ *  .type = 'common type', .setup = 'device specific quirk'
++ */
++enum {
++	OF_PORT_8250,
++	OF_PORT_16450,
++	OF_PORT_16550A,
++	OF_PORT_16550,
++	OF_PORT_16750,
++	OF_PORT_16850,
++	OF_PORT_TEGRA,
++	OF_PORT_NWPSERIAL,
++	OF_PORT_UNKNOWN,
++};
++
++static struct of_serial_info __refdata __sinfo[] = {
++	[OF_PORT_8250] = { .type = PORT_8250, },
++	[OF_PORT_16450] = { .type = PORT_16450, },
++	[OF_PORT_16550A] = { .type = PORT_16550A, },
++	[OF_PORT_16550] = { .type = PORT_16550, },
++	[OF_PORT_16750] = { .type = PORT_16750, },
++	[OF_PORT_16850] = { .type = PORT_16850, },
++	[OF_PORT_TEGRA] = { .type = PORT_TEGRA, },
++	[OF_PORT_NWPSERIAL] = { .type = PORT_NWPSERIAL, },
++	[OF_PORT_UNKNOWN] = { .type = PORT_UNKNOWN,  },
++};
++
++/*
+  * A few common types, add more as needed.
+  */
+ static struct of_device_id __devinitdata of_platform_serial_table[] = {
+-	{ .compatible = "ns8250",   .data = (void *)PORT_8250, },
+-	{ .compatible = "ns16450",  .data = (void *)PORT_16450, },
+-	{ .compatible = "ns16550a", .data = (void *)PORT_16550A, },
+-	{ .compatible = "ns16550",  .data = (void *)PORT_16550, },
+-	{ .compatible = "ns16750",  .data = (void *)PORT_16750, },
+-	{ .compatible = "ns16850",  .data = (void *)PORT_16850, },
+-	{ .compatible = "nvidia,tegra20-uart", .data = (void *)PORT_TEGRA, },
++	{ .compatible = "ns8250",   .data = &__sinfo[OF_PORT_8250], },
++	{ .compatible = "ns16450",  .data = &__sinfo[OF_PORT_16450], },
++	{ .compatible = "ns16550a", .data = &__sinfo[OF_PORT_16550A], },
++	{ .compatible = "ns16550",  .data = &__sinfo[OF_PORT_16550], },
++	{ .compatible = "ns16750",  .data = &__sinfo[OF_PORT_16750], },
++	{ .compatible = "ns16850",  .data = &__sinfo[OF_PORT_16850], },
++	{ .compatible = "nvidia,tegra20-uart", .data = &__sinfo[OF_PORT_TEGRA], },
+ #ifdef CONFIG_SERIAL_OF_PLATFORM_NWPSERIAL
+ 	{ .compatible = "ibm,qpace-nwp-serial",
+-		.data = (void *)PORT_NWPSERIAL, },
++		.data = &__sinfo[OF_PORT_NWPSERIAL], },
+ #endif
+ 	{ .type = "serial",         .data = (void *)PORT_UNKNOWN, },
+ 	{ /* end of list */ },
