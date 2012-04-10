@@ -1,141 +1,40 @@
-From: Dan Williams <dan.j.williams@intel.com>
-Subject: [PATCH v4 2/3] serial/8250_pci: Clear FIFOs for Intel ME Serial
- Over Lan device on BI
-Date: Tue, 10 Apr 2012 14:10:58 -0700
-Message-ID: <20120410211058.13805.75833.stgit@dwillia2-linux.jf.intel.com>
-References: <20120410210438.13805.40525.stgit@dwillia2-linux.jf.intel.com>
+From: Stephen Warren <swarren@wwwdotorg.org>
+Subject: Re: [PATCH v4 1/3] tegra, serial8250: add ->handle_break() uart_port
+ op
+Date: Tue, 10 Apr 2012 15:14:51 -0600
+Message-ID: <4F84A2CB.8040301@wwwdotorg.org>
+References: <20120410210438.13805.40525.stgit@dwillia2-linux.jf.intel.com> <20120410211053.13805.18954.stgit@dwillia2-linux.jf.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:2094 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1759454Ab2DJUzU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 10 Apr 2012 16:55:20 -0400
-In-Reply-To: <20120410210438.13805.40525.stgit@dwillia2-linux.jf.intel.com>
+Received: from avon.wwwdotorg.org ([70.85.31.133]:34011 "EHLO
+	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755473Ab2DJVO4 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 10 Apr 2012 17:14:56 -0400
+In-Reply-To: <20120410211053.13805.18954.stgit@dwillia2-linux.jf.intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: Sudhakar Mamillapalli <sudhakar@fb.com>, Nhan H Mai <nhan.h.mai@intel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
+To: Dan Williams <dan.j.williams@intel.com>
+Cc: gregkh@linuxfoundation.org, Sudhakar Mamillapalli <sudhakar@fb.com>, Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org, Grant Likely <grant.likely@secretlab.ca>, linux-serial@vger.kernel.org, Colin Cross <ccross@android.com>, Olof Johansson <olof@lixom.net>, Nhan H Mai <nhan.h.mai@intel.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Alan Cox <alan@linux.intel.com>
 
-From: Sudhakar Mamillapalli <sudhakar@fb.com>
+On 04/10/2012 03:10 PM, Dan Williams wrote:
+> The "KT" serial port has another use case for a "received break" quirk,
+> so before adding another special case to the 8250 core take this
+> opportunity to push such quirks out of the core and into a uart_port op.
+> 
+> Stephen says:
+> "If the callback function is to no longer live in 8250.c itself,
+>  arch/arm/mach-tegra/devices.c isn't logically a good place to put it,
+>  and that file will be going away once we get rid of all the board files
+>  and move solely to device tree."
+> 
+> ...so since 8250_pci.c houses all the quirks for pci serial devices this
+> quirk is similarly housed in of_serial.c.  Once the open firmware
+> conversion completes the infrastructure details
+> (include/linux/of_serial.h, and the export) can all be removed to make
+> this self contained to of_serial.c.
 
-When using Serial Over Lan (SOL) over the virtual serial port in a Intel
-management engine (ME) device, on device reset the serial FIFOs need to
-be cleared to keep the FIFO indexes in-sync between the host and the
-engine.
-
-On a reset the serial device assertes BI, so using that as a cue FIFOs
-are cleared.  So for this purpose a new handle_break callback has been
-added.  One other problem is that the serial registers might temporarily
-go to 0 on reset of this device.  So instead of using the IER register
-read, if 0 returned use the ier value in uart_8250_port. This is hidden
-under a custom serial_in.
-
-Cc: Nhan H Mai <nhan.h.mai@intel.com>
-Signed-off-by: Sudhakar Mamillapalli <sudhakar@fb.com>
-Acked-by: Alan Cox <alan@linux.intel.com>
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
----
- drivers/tty/serial/8250/8250.c     |   10 +++++++++
- drivers/tty/serial/8250/8250.h     |    2 ++
- drivers/tty/serial/8250/8250_pci.c |   39 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 51 insertions(+)
-
-diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
-index cbd94c3..182efcc 100644
---- a/drivers/tty/serial/8250/8250.c
-+++ b/drivers/tty/serial/8250/8250.c
-@@ -568,6 +568,16 @@ static void serial8250_clear_fifos(struct uart_8250_port *p)
- 	}
- }
- 
-+void serial8250_clear_and_reinit_fifos(struct uart_8250_port *p)
-+{
-+	unsigned char fcr;
-+
-+	serial8250_clear_fifos(p);
-+	fcr = uart_config[p->port.type].fcr;
-+	serial_out(p, UART_FCR, fcr);
-+}
-+EXPORT_SYMBOL_GPL(serial8250_clear_and_reinit_fifos);
-+
- /*
-  * IER sleep support.  UARTs which have EFRs need the "extended
-  * capability" bit enabled.  Note that on XR16C850s, we need to
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index 2868a1d..c9d0ebe 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -96,6 +96,8 @@ static inline void serial_out(struct uart_8250_port *up, int offset, int value)
- 	up->port.serial_out(&up->port, offset, value);
- }
- 
-+void serial8250_clear_and_reinit_fifos(struct uart_8250_port *p);
-+
- #if defined(__alpha__) && !defined(CONFIG_PCI)
- /*
-  * Digital did something really horribly wrong with the OUT1 and OUT2
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 858dca8..024551a 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -17,6 +17,7 @@
- #include <linux/slab.h>
- #include <linux/delay.h>
- #include <linux/tty.h>
-+#include <linux/serial_reg.h>
- #include <linux/serial_core.h>
- #include <linux/8250_pci.h>
- #include <linux/bitops.h>
-@@ -1092,11 +1093,49 @@ static int skip_tx_en_setup(struct serial_private *priv,
- 	return pci_default_setup(priv, board, port, idx);
- }
- 
-+static void kt_handle_break(struct uart_port *p)
-+{
-+	struct uart_8250_port *up =
-+		container_of(p, struct uart_8250_port, port);
-+	/*
-+	 * On receipt of a BI, serial device in Intel ME (Intel
-+	 * management engine) needs to have its fifos cleared for sane
-+	 * SOL (Serial Over Lan) output.
-+	 */
-+	serial8250_clear_and_reinit_fifos(up);
-+}
-+
-+static unsigned int kt_serial_in(struct uart_port *p, int offset)
-+{
-+	struct uart_8250_port *up =
-+		container_of(p, struct uart_8250_port, port);
-+	unsigned int val;
-+
-+	/*
-+	 * When the Intel ME (management engine) gets reset its serial
-+	 * port registers could return 0 momentarily.  Functions like
-+	 * serial8250_console_write, read and save the IER, perform
-+	 * some operation and then restore it.  In order to avoid
-+	 * setting IER register inadvertently to 0, if the value read
-+	 * is 0, double check with ier value in uart_8250_port and use
-+	 * that instead.  up->ier should be the same value as what is
-+	 * currently configured.
-+	 */
-+	val = inb(p->iobase + offset);
-+	if (offset == UART_IER) {
-+		if (val == 0)
-+			val = up->ier;
-+	}
-+	return val;
-+}
-+
- static int kt_serial_setup(struct serial_private *priv,
- 			   const struct pciserial_board *board,
- 			   struct uart_port *port, int idx)
- {
- 	port->flags |= UPF_BUG_THRE;
-+	port->serial_in = kt_serial_in;
-+	port->handle_break = kt_handle_break;
- 	return skip_tx_en_setup(priv, board, port, idx);
- }
- 
-
+Acked-by: Stephen Warren <swarren@wwwdotorg.org>
+Tested-by: Stephen Warren <swarren@wwwdotorg.org>
