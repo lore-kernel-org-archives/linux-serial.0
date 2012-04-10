@@ -1,85 +1,79 @@
-From: Tomoya MORINAGA <tomoya.rohm@gmail.com>
-Subject: Re: [PATCH] pch_uart: Fix dma channel unallocated issue
-Date: Tue, 10 Apr 2012 10:26:25 +0900
-Message-ID: <CANKRQniAUT232kGLY0PmHi_kmXdFWKeX6289qCXkSw6N179yTg@mail.gmail.com>
-References: <1332842162-26113-1-git-send-email-tomoya.rohm@gmail.com>
-	<20120409174405.GA25990@kroah.com>
+From: "Raja, Govindraj" <govindraj.raja@ti.com>
+Subject: Re: Suspend broken on 3.3?
+Date: Tue, 10 Apr 2012 14:56:56 +0530
+Message-ID: <CAMrsUd+SLko-L=B9gfqSpdcYQrqmAgXa0yFVWrR2YXuW9FBLmQ@mail.gmail.com>
+References: <WC20120329112755.541787@terrafix.co.uk> <WC20120329114024.43178C@terrafix.co.uk>
+ <CAMrsUdKR4nwbBEOx9JPeS=GLDPyioHuijK2596=q2OwJ+ARbxA@mail.gmail.com>
+ <WC20120330075339.4017FC@terrafix.co.uk> <CAMrsUdKTx84_oHyS9JTCBTqtV-7907snCGFDrOXnPuNVSnvz7w@mail.gmail.com>
+ <WC20120330092609.901834@terrafix.co.uk> <CAMrsUdJrJZXjYOs87xmT_J0w7S=VZyfR0tBmhhuYOFmFsOB3SA@mail.gmail.com>
+ <WC20120330110442.381887@terrafix.co.uk> <CAMrsUd+AvVp3n1oAREEEmCSBaeA-m68j7gLjXEeJKimX1erfUw@mail.gmail.com>
+ <CAMrsUd+K_EwXfypgYWNyAhR7b47avTpWDemS87OTkpH81cJ6Aw@mail.gmail.com>
+ <alpine.DEB.2.00.1204040852460.8000@utopia.booyaka.com> <CAMrsUd+WZcUvHGdR4WyF4uh35D17K9DXFAqpLHKBUbL1_5viDA@mail.gmail.com>
+ <alpine.DEB.2.00.1204051812320.10302@utopia.booyaka.com> <87iphdeyaf.fsf@ti.com>
+ <CAMrsUdLMYVwd3rupHtrNKC0rMvx1-3B=4usOh8cwTUy8DX_hVg@mail.gmail.com>
+ <87zkalc75h.fsf@ti.com> <alpine.DEB.2.00.1204090944191.6640@utopia.booyaka.com>
+ <874nssde5h.fsf@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pz0-f52.google.com ([209.85.210.52]:41235 "EHLO
-	mail-pz0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752277Ab2DJB00 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 9 Apr 2012 21:26:26 -0400
-In-Reply-To: <20120409174405.GA25990@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <874nssde5h.fsf@ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Kevin Hilman <khilman@ti.com>
+Cc: Paul Walmsley <paul@pwsan.com>, Joe Woodward <jw@terrafix.co.uk>, linux-omap@vger.kernel.org, Felipe Balbi <balbi@ti.com>, neilb@suse.de, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, qi.wang@intel.com, yong.y.wang@intel.com, joel.clark@intel.com, kok.howg.ewe@intel.com
 
-On Tue, Apr 10, 2012 at 2:44 AM, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->> This driver anticipates pch_uart_verify_port() is not called
->> during installation.
->> However, actually pch_uart_verify_port() is called during
->> installation.
->> As a result, memory access violation occurs like below.
->>
->> 0. initial value: use_dma=3D0
->> 1. starup()
->> =A0 =A0 - dma channel is not allocated because use_dma=3D0
->> 2. pch_uart_verify_port()
->> =A0 =A0 - Set use_dma=3D1
->> 3. UART processing acts DMA mode because use_dma=3D1
->> =A0 =A0 =A0- memory access violation occurs!
->>
->> This patch fixes the issue.
->>
->> Solution:
->> Whenever pch_uart_verify_port() is called and then
->> dma channel is not allocated, the channel should be allocated.
->>
->> Signed-off-by: Tomoya MORINAGA <tomoya.rohm@gmail.com>
->> ---
->> =A0drivers/tty/serial/pch_uart.c | =A0 =A04 +++-
->> =A01 files changed, 3 insertions(+), 1 deletions(-)
+Hi Kevin,
+
+On Mon, Apr 9, 2012 at 10:40 PM, Kevin Hilman <khilman@ti.com> wrote:
+> Paul Walmsley <paul@pwsan.com> writes:
 >
-> This patch does not apply to 3.4-rc2, so I can not apply it, sorry.
+> [...]
 >
-> Care to redo it?
+>> I don't understand why a user would ever want to disable dynamic wak=
+eups
+>> on an in-use serial port via the sysfs power/wakeup file. =A0(Disabl=
+ing
+>> wakeups from suspend is a different matter, of course.) =A0The OMAP =
+UART
+>> driver needs hardware wakeups to function for FIFO drain wakeups, et=
+c.
+>> So to me it really doesn't make sense to disable those types of wake=
+up
+>> events, ever. =A0But maybe you know of some use-case that I don't?
+>
+> No, I don't have a use-case in mind.
+>
+> The more I try to remember why we added support to use the sysfs wake=
+up
+> attribute to manage idle, the more I think we can probably drop it no=
+w.
+> IIRC, it was added because on most boards we used to blindly initiali=
+ze
+> all the UARTs, including default wakeup settings (we still do this on
+> many boards.)
+>
+> However, now that we have a real PM-aware driver for OMAP UARTs, this
+> should all be handled from the driver itself, so the sysfs wakeup
+> attribute should go back to only managing wakeups from suspend and
+> wakeups during idle should always be on for in-use UARTs.
 
-This patch depends on the following patch you've already accepted.
+Just to summarize on how the behavior should be IIUC if user disables u=
+art
+wakeup from sysfs and does system wide suspend it should _not_ wakeup
+from uart.
 
-=46rom 44db113212d86a5870c2bfe8fb767fa842d68805 Mon Sep 17 00:00:00 200=
-1
-=46rom: Tomoya MORINAGA <tomoya.rohm@gmail.com>
-Date: Mon, 26 Mar 2012 14:43:00 +0900
-Subject: pch_uart: Delete unused structure member
+And if the system is woken up from suspend due to keypad press and
+uart resumes we have keep module level wakeup enabled from here.
 
-Signed-off-by: Tomoya MORINAGA <tomoya.rohm@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tty/serial/pch_uart.c |    2 --
- 1 file changed, 2 deletions(-)
+We might need some minor changes in omap-serial to have this behavior
+which I plan to do once we are aligned on this.
 
-
-So now,  this patch can be applied.
-In fact, I've confirmed this patch can be applied to 3.4-rc2 with the
-following order.
-1st: pch_uart: Delete unused structure member
-2nd: pch_uart: Fix dma channel unallocated issue
-
-I should have written the dependency.
-Could you try to apply this patch again ?
-
-thanks
---=20
-ROHM Co., Ltd.
-tomoya
 --
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
+Thanks,
+Govindraj.R
+--
+To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
+n
 the body of a message to majordomo@vger.kernel.org
 More majordomo info at  http://vger.kernel.org/majordomo-info.html
