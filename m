@@ -1,98 +1,83 @@
-From: "Williams, Dan J" <dan.j.williams@intel.com>
-Subject: Re: [PATCH v3 1/3] tegra, serial8250: add ->handle_break() uart_port op
-Date: Mon, 9 Apr 2012 13:48:32 -0700
-Message-ID: <CABE8wwtqUsgTd5cwJPu3MebuJUB0jHfpiA7LavFYn87kRhnDrw@mail.gmail.com>
-References: <20120409194514.8004.53204.stgit@dwillia2-linux.jf.intel.com>
-	<20120409194857.8004.86352.stgit@dwillia2-linux.jf.intel.com>
-	<4F833CFC.9020809@wwwdotorg.org>
+From: Tomoya MORINAGA <tomoya.rohm@gmail.com>
+Subject: Re: [PATCH] pch_uart: Fix dma channel unallocated issue
+Date: Tue, 10 Apr 2012 10:26:25 +0900
+Message-ID: <CANKRQniAUT232kGLY0PmHi_kmXdFWKeX6289qCXkSw6N179yTg@mail.gmail.com>
+References: <1332842162-26113-1-git-send-email-tomoya.rohm@gmail.com>
+	<20120409174405.GA25990@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga05.intel.com ([192.55.52.89]:24376 "EHLO
-	fmsmga101.fm.intel.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1755648Ab2DIUsf convert rfc822-to-8bit (ORCPT
+Received: from mail-pz0-f52.google.com ([209.85.210.52]:41235 "EHLO
+	mail-pz0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752277Ab2DJB00 convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 9 Apr 2012 16:48:35 -0400
-Received: by bkcjm19 with SMTP id jm19so3567710bkc.25
-        for <linux-serial@vger.kernel.org>; Mon, 09 Apr 2012 13:48:32 -0700 (PDT)
-In-Reply-To: <4F833CFC.9020809@wwwdotorg.org>
+	Mon, 9 Apr 2012 21:26:26 -0400
+In-Reply-To: <20120409174405.GA25990@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Stephen Warren <swarren@wwwdotorg.org>
-Cc: gregkh@linuxfoundation.org, Sudhakar Mamillapalli <sudhakar@fb.com>, linux-kernel@vger.kernel.org, arnd@arndb.de, Grant Likely <grant.likely@secretlab.ca>, linux-serial@vger.kernel.org, Colin Cross <ccross@android.com>, Olof Johansson <olof@lixom.net>, Nhan H Mai <nhan.h.mai@intel.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Alan Cox <alan@linux.intel.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, qi.wang@intel.com, yong.y.wang@intel.com, joel.clark@intel.com, kok.howg.ewe@intel.com
 
-On Mon, Apr 9, 2012 at 12:48 PM, Stephen Warren <swarren@wwwdotorg.org>=
- wrote:
-> On 04/09/2012 01:48 PM, Dan Williams wrote:
->> The "KT" serial port has another use case for a "received break" qui=
-rk,
->> so before adding another special case to the 8250 core take this
->> opportunity to push such quirks out of the core and into a uart_port=
- op.
+On Tue, Apr 10, 2012 at 2:44 AM, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>> This driver anticipates pch_uart_verify_port() is not called
+>> during installation.
+>> However, actually pch_uart_verify_port() is called during
+>> installation.
+>> As a result, memory access violation occurs like below.
 >>
->> Stephen says:
->> "If the callback function is to no longer live in 8250.c itself,
->> =A0arch/arm/mach-tegra/devices.c isn't logically a good place to put=
- it,
->> =A0and that file will be going away once we get rid of all the board=
- files
->> =A0and move solely to device tree."
+>> 0. initial value: use_dma=3D0
+>> 1. starup()
+>> =A0 =A0 - dma channel is not allocated because use_dma=3D0
+>> 2. pch_uart_verify_port()
+>> =A0 =A0 - Set use_dma=3D1
+>> 3. UART processing acts DMA mode because use_dma=3D1
+>> =A0 =A0 =A0- memory access violation occurs!
 >>
->> ...so since 8250_pci.c houses all the quirks for pci serial devices =
-this
->> quirk is similarly housed in of_serial.c. =A0Once the open firmware
->> conversion completes the infrastructure details (CONFIG_TEGRA_SERIAL=
-,
->> include/linux/of_serial.h, and the export) can all be removed to mak=
-e
->> this self contained to of_serial.c.
+>> This patch fixes the issue.
+>>
+>> Solution:
+>> Whenever pch_uart_verify_port() is called and then
+>> dma channel is not allocated, the channel should be allocated.
+>>
+>> Signed-off-by: Tomoya MORINAGA <tomoya.rohm@gmail.com>
+>> ---
+>> =A0drivers/tty/serial/pch_uart.c | =A0 =A04 +++-
+>> =A01 files changed, 3 insertions(+), 1 deletions(-)
 >
-> This still seems much to invasive.
+> This patch does not apply to 3.4-rc2, so I can not apply it, sorry.
+>
+> Care to redo it?
 
-I agree that the arch/arm/mach-tegra/ and Kconfig touches are messy,
-but those are also things that will just be deleted when Tegra
-completes its transition to open firmware.
+This patch depends on the following patch you've already accepted.
 
-If you take those changes out of the equation this patch is actually
-net-positive in terms deleting more lines than it adds.
+=46rom 44db113212d86a5870c2bfe8fb767fa842d68805 Mon Sep 17 00:00:00 200=
+1
+=46rom: Tomoya MORINAGA <tomoya.rohm@gmail.com>
+Date: Mon, 26 Mar 2012 14:43:00 +0900
+Subject: pch_uart: Delete unused structure member
 
- drivers/tty/serial/8250/8250.c |   34 +++-----------------------------=
---
- drivers/tty/serial/of_serial.c |   25 +++++++++++++++++++++++++
- 2 files changed, 28 insertions(+), 31 deletions(-)
+Signed-off-by: Tomoya MORINAGA <tomoya.rohm@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/tty/serial/pch_uart.c |    2 --
+ 1 file changed, 2 deletions(-)
 
-> Again, what's wrong with simply keeping the quirk implementation wher=
-e
-> it is, and driving everything off the already-extant
-> plat_serial8250_port.type =3D=3D PORT_TEGRA flag?
 
-Because Alan said to Sudhakar's new "break" quirk:
+So now,  this patch can be applied.
+In fact, I've confirmed this patch can be applied to 3.4-rc2 with the
+following order.
+1st: pch_uart: Delete unused structure member
+2nd: pch_uart: Fix dma channel unallocated issue
 
-"This wants to be some kind of call back handled case not more stuff in
-the core 8250.c which we are trying to drive all the special cases back
-out of."
+I should have written the dependency.
+Could you try to apply this patch again ?
 
-=2E..and a certain Stephen Warren ;-) said in a comment:
-
-" * FIXME: This needs to become a port specific callback once we have a
-  * framework for this"
-
-> I believe all that's required here is to enhance struct struct
-> serial8250_config (and hence 8250.c's uart_config[] quirk table) to b=
-e
-> able to set the quirk function pointers as well as all the other exit=
-ing
-> quirked variables.
-
-That does not provide the necessary amount of flexibility.  The "KT"
-device is a good example it's a standard 8250 with a handle_break
-quirk.  We could not express that if quirks were tied to
-serial8250_config... outside of requiring a new type for every
-variation of quirk.
-
---
-Dan
+thanks
+--=20
+ROHM Co., Ltd.
+tomoya
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
  in
