@@ -1,54 +1,101 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v3 1/3] tegra, serial8250: add ->handle_break() uart_port op
-Date: Tue, 10 Apr 2012 10:51:36 +0000
-Message-ID: <201204101051.36541.arnd@arndb.de>
-References: <20120409194514.8004.53204.stgit@dwillia2-linux.jf.intel.com> <20120409194857.8004.86352.stgit@dwillia2-linux.jf.intel.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] pch_uart: Fix dma channel unallocated issue
+Date: Tue, 10 Apr 2012 07:41:10 -0700
+Message-ID: <20120410144110.GE14703@kroah.com>
+References: <1332842162-26113-1-git-send-email-tomoya.rohm@gmail.com>
+ <20120409174405.GA25990@kroah.com>
+ <CANKRQniAUT232kGLY0PmHi_kmXdFWKeX6289qCXkSw6N179yTg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20120409194857.8004.86352.stgit@dwillia2-linux.jf.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Dan Williams <dan.j.williams@intel.com>
-Cc: gregkh@linuxfoundation.org, Sudhakar Mamillapalli <sudhakar@fb.com>, Stephen Warren <swarren@nvidia.com>, linux-kernel@vger.kernel.org, ArndBergmannarnd@arndb.de, Grant Likely <grant.likely@secretlab.ca>, linux-serial@vger.kernel.org, Colin Cross <ccross@android.com>, Olof Johansson <olof@lixom.net>, Nhan H Mai <nhan.h.mai@intel.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Alan Cox <alan@linux.intel.com>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pz0-f52.google.com ([209.85.210.52]:44657 "EHLO
+	mail-pz0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755514Ab2DJOlP (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 10 Apr 2012 10:41:15 -0400
+Received: by dake40 with SMTP id e40so6732310dak.11
+        for <linux-serial@vger.kernel.org>; Tue, 10 Apr 2012 07:41:14 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <CANKRQniAUT232kGLY0PmHi_kmXdFWKeX6289qCXkSw6N179yTg@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Tomoya MORINAGA <tomoya.rohm@gmail.com>
+Cc: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, qi.wang@intel.com, yong.y.wang@intel.com, joel.clark@intel.com, kok.howg.ewe@intel.com
 
-On Monday 09 April 2012, Dan Williams wrote:
-> The "KT" serial port has another use case for a "received break" quirk,
-> so before adding another special case to the 8250 core take this
-> opportunity to push such quirks out of the core and into a uart_port op.
-> 
-> Stephen says:
-> "If the callback function is to no longer live in 8250.c itself,
->  arch/arm/mach-tegra/devices.c isn't logically a good place to put it,
->  and that file will be going away once we get rid of all the board files
->  and move solely to device tree."
-> 
-> ...so since 8250_pci.c houses all the quirks for pci serial devices this
-> quirk is similarly housed in of_serial.c.  Once the open firmware
-> conversion completes the infrastructure details (CONFIG_TEGRA_SERIAL,
-> include/linux/of_serial.h, and the export) can all be removed to make
-> this self contained to of_serial.c.
+On Tue, Apr 10, 2012 at 10:26:25AM +0900, Tomoya MORINAGA wrote:
+> On Tue, Apr 10, 2012 at 2:44 AM, Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >> This driver anticipates pch_uart_verify_port() is not called
+> >> during installation.
+> >> However, actually pch_uart_verify_port() is called during
+> >> installation.
+> >> As a result, memory access violation occurs like below.
+> >>
+> >> 0. initial value: use_dma=3D0
+> >> 1. starup()
+> >> =A0 =A0 - dma channel is not allocated because use_dma=3D0
+> >> 2. pch_uart_verify_port()
+> >> =A0 =A0 - Set use_dma=3D1
+> >> 3. UART processing acts DMA mode because use_dma=3D1
+> >> =A0 =A0 =A0- memory access violation occurs!
+> >>
+> >> This patch fixes the issue.
+> >>
+> >> Solution:
+> >> Whenever pch_uart_verify_port() is called and then
+> >> dma channel is not allocated, the channel should be allocated.
+> >>
+> >> Signed-off-by: Tomoya MORINAGA <tomoya.rohm@gmail.com>
+> >> ---
+> >> =A0drivers/tty/serial/pch_uart.c | =A0 =A04 +++-
+> >> =A01 files changed, 3 insertions(+), 1 deletions(-)
+> >
+> > This patch does not apply to 3.4-rc2, so I can not apply it, sorry.
+> >
+> > Care to redo it?
+>=20
+> This patch depends on the following patch you've already accepted.
+>=20
+> >From 44db113212d86a5870c2bfe8fb767fa842d68805 Mon Sep 17 00:00:00 20=
+01
+> From: Tomoya MORINAGA <tomoya.rohm@gmail.com>
+> Date: Mon, 26 Mar 2012 14:43:00 +0900
+> Subject: pch_uart: Delete unused structure member
+>=20
+> Signed-off-by: Tomoya MORINAGA <tomoya.rohm@gmail.com>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+>  drivers/tty/serial/pch_uart.c |    2 --
+>  1 file changed, 2 deletions(-)
+>=20
+>=20
+> So now,  this patch can be applied.
+> In fact, I've confirmed this patch can be applied to 3.4-rc2 with the
+> following order.
+> 1st: pch_uart: Delete unused structure member
 
-Looks much better to me, thanks!
+That patch is not applicable for the 3.4-release.
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+> 2nd: pch_uart: Fix dma channel unallocated issue
 
-> @@ -81,7 +83,9 @@ static struct platform_device trimslice_audio_device = {
->  };
->  
->  static struct platform_device *trimslice_devices[] __initdata = {
-> +#if IS_ENABLED(CONFIG_SERIAL_TEGRA)
->  	&debug_uart,
-> +#endif
->  	&tegra_sdhci_device1,
->  	&tegra_sdhci_device4,
->  	&tegra_i2s_device1,
+But I thought this one would be, which is why I did not try to apply
+anything else before it.
 
-FWIW, I'd prefer to see this without the #if, I generally think the devices
-that are present should not depend on the drivers that are built into the
-kernel. However, since this code is going away soon, I don't care all that
-much about it.
+> I should have written the dependency.
 
-	Arnd
+Yes, you always should.
+
+> Could you try to apply this patch again ?
+
+Don't you want this patch in the 3.4-final release?  If so, I need it
+without the dependancy.
+
+thanks,
+
+greg k-h
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
