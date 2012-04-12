@@ -1,64 +1,86 @@
-From: Tomoya MORINAGA <tomoya.rohm@gmail.com>
-Subject: [PATCH v2][RESEND] pch_uart: Fix dma channel unallocated issue
-Date: Thu, 12 Apr 2012 10:47:50 +0900
-Message-ID: <1334195270-2302-1-git-send-email-tomoya.rohm@gmail.com>
+From: "Shankarmurthy, Akshay" <akshay.s@ti.com>
+Subject: RE: [PATCH] serial: 8250: Add cpufreq support
+Date: Thu, 12 Apr 2012 05:21:31 +0000
+Message-ID: <6F6B80BD2E18844D97BB4B51FE3705C83179146B@DBDE01.ent.ti.com>
+References: <1333433022-5455-1-git-send-email-akshay.s@ti.com>
+	<20120403105530.7fa3bce7@pyramind.ukuu.org.uk>
+	<6F6B80BD2E18844D97BB4B51FE3705C831790EA0@DBDE01.ent.ti.com>
+ <20120405115322.15e6088c@pyramind.ukuu.org.uk>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:35288 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757090Ab2DLBsR (ORCPT
+Received: from arroyo.ext.ti.com ([192.94.94.40]:59811 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754588Ab2DLFVw convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 11 Apr 2012 21:48:17 -0400
+	Thu, 12 Apr 2012 01:21:52 -0400
+In-Reply-To: <20120405115322.15e6088c@pyramind.ukuu.org.uk>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: qi.wang@intel.com, yong.y.wang@intel.com, joel.clark@intel.com, kok.howg.ewe@intel.com, Tomoya MORINAGA <tomoya.rohm@gmail.com>
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "alan@linux.intel.com" <alan@linux.intel.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "paul.gortmaker@windriver.com" <paul.gortmaker@windriver.com>, "jamie@jamieiles.com" <jamie@jamieiles.com>, "swarren@nvidia.com" <swarren@nvidia.com>, "dianders@chromium.org" <dianders@chromium.org>, "davinci-linux-open-source@linux.davincidsp.com" <davinci-linux-open-source@linux.davincidsp.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-This driver anticipates pch_uart_verify_port() is not called
-during installation.
-However, actually pch_uart_verify_port() is called during
-installation.
-As a result, memory access violation occurs like below.
 
-0. initial value: use_dma=0
-1. starup()
-    - dma channel is not allocated because use_dma=0
-2. pch_uart_verify_port()
-    - Set use_dma=1
-3. UART processing acts DMA mode because use_dma=1
-     - memory access violation occurs!
+On Thu, Apr 05, 2012 at 16:23:22, Alan Cox wrote:
+> On Thu, 5 Apr 2012 10:40:55 +0000
+> "Shankarmurthy, Akshay" <akshay.s@ti.com> wrote:
+> 
+> > Hi,
+> > 
+> > On Tue, Apr 03, 2012 at 15:25:30, Alan Cox wrote:
+> > > > This patch was submitted 2 years ago but didn't make it to the mainline. Now i am reposting it.
+> > > 
+> > > Can you fix it instead of just reposting it ?
+> > > 
+> > > 
+> > > > +#ifdef CONFIG_CPU_FREQ
+> > > > +static int serial8250_cpufreq_transition(struct notifier_block *nb,
+> > > > +					     unsigned long val, void *data) {
+> > > > +	struct uart_8250_port *p;
+> > > > +	struct uart_port *uport;
+> > > 
+> > > What is your locking model ?
+> > > 
+> > 
+> > I will have a look at this and add the lock if necessary.
+> 
+> At the very least you need reference counts held on the tty struct and to allow for the tty having vanished under you.
+> 
 
-This patch fixes the issue.
+I am planning to add "tty->termios_mutex" lock. Any comments ?
 
-Solution:
-Whenever pch_uart_verify_port() is called and then
-dma channel is not allocated, the channel should be allocated.
+> > > 
+> > > > +static inline void serial8250_cpufreq_deregister(struct 
+> > > > +uart_8250_port *p)
+> > > 
+> > > unregister
+> > 
+> > Ok. I will change it.
+> > 
+> > > 
+> > > > +		ret = serial8250_cpufreq_register(uart);
+> > > > +		if (ret < 0)
+> > > > +			printk(KERN_ERR "Failed to add cpufreq notifier\n");
+> > > 
+> > > Why do this for devices that don't care.
+> > 
+> > This is taken care in the code. If the device's frequency doesn't 
+> > change after the change in the cpu frequency then it doesn't go for execution of the function "serial8250_set_termios".
+> 
+> But you still call each function and walk the list for each port on each CPU transition. There are people with 128 ports in their systems and the cpu frequency change is latency critical.
+> 
+> Nothing should even be getting registered in such cases.
+> 
 
-Signed-off-by: Tomoya MORINAGA <tomoya.rohm@gmail.com>
----
-v2:  Re-create this patch for 3.4-rc2.
-(RESEND) 1st v2 was sent to stable@vger.kernel.org. So, resend this patch
-         with correct destination address.
----
- drivers/tty/serial/pch_uart.c |    4 +++-
- 1 files changed, 3 insertions(+), 1 deletions(-)
+I understand this and planning to avoid unnecessary registration like these. 
+As a solution, UART port's cpu freq status will be sent from the board file.
+Adding a member to the structure "plat_serial8250_port" which says whether
+a port requires cpu freq registration or not. cpu freq register function is
+called in the driver depending upon the status of this structure member.
+I can update the patch accordingly and send out a version 2 to the list.
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 08b9962..80a32cf 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -1440,9 +1440,11 @@ static int pch_uart_verify_port(struct uart_port *port,
- 			__func__);
- 		return -EOPNOTSUPP;
- #endif
--		priv->use_dma = 1;
- 		priv->use_dma_flag = 1;
- 		dev_info(priv->port.dev, "PCH UART : Use DMA Mode\n");
-+		if (!priv->use_dma)
-+			pch_request_dma(port);
-+		priv->use_dma = 1;
- 	}
- 
- 	return 0;
--- 
-1.7.7.6
+Regards,
+Akshay
 
