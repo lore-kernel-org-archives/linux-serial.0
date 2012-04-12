@@ -1,122 +1,88 @@
-From: "Raja, Govindraj" <govindraj.raja@ti.com>
-Subject: Re: Suspend broken on 3.3?
-Date: Thu, 12 Apr 2012 17:21:36 +0530
-Message-ID: <CAMrsUdLb-KUqa1ydCF3KweqHzJDftEnNF+5U67SLi=GyE-NfPg@mail.gmail.com>
-References: <WC20120329112755.541787@terrafix.co.uk> <CAMrsUdKTx84_oHyS9JTCBTqtV-7907snCGFDrOXnPuNVSnvz7w@mail.gmail.com>
- <WC20120330092609.901834@terrafix.co.uk> <CAMrsUdJrJZXjYOs87xmT_J0w7S=VZyfR0tBmhhuYOFmFsOB3SA@mail.gmail.com>
- <WC20120330110442.381887@terrafix.co.uk> <CAMrsUd+AvVp3n1oAREEEmCSBaeA-m68j7gLjXEeJKimX1erfUw@mail.gmail.com>
- <CAMrsUd+K_EwXfypgYWNyAhR7b47avTpWDemS87OTkpH81cJ6Aw@mail.gmail.com>
- <alpine.DEB.2.00.1204040852460.8000@utopia.booyaka.com> <CAMrsUd+WZcUvHGdR4WyF4uh35D17K9DXFAqpLHKBUbL1_5viDA@mail.gmail.com>
- <alpine.DEB.2.00.1204051812320.10302@utopia.booyaka.com> <87iphdeyaf.fsf@ti.com>
- <CAMrsUdLMYVwd3rupHtrNKC0rMvx1-3B=4usOh8cwTUy8DX_hVg@mail.gmail.com>
- <87zkalc75h.fsf@ti.com> <alpine.DEB.2.00.1204090944191.6640@utopia.booyaka.com>
- <874nssde5h.fsf@ti.com> <CAMrsUd+SLko-L=B9gfqSpdcYQrqmAgXa0yFVWrR2YXuW9FBLmQ@mail.gmail.com>
- <87fwcb5urr.fsf@ti.com> <CAMrsUd+-5_6dFxcj=BCt+gHwnzA7zBev0t_nQ3dQAGZzWq8X0w@mail.gmail.com>
- <alpine.DEB.2.00.1204111323210.29473@utopia.booyaka.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PATCH] TTY/serial patches for 3.4-rc2
+Date: Thu, 12 Apr 2012 15:26:55 -0700
+Message-ID: <20120412222655.GC11612@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <alpine.DEB.2.00.1204111323210.29473@utopia.booyaka.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Paul Walmsley <paul@pwsan.com>
-Cc: Kevin Hilman <khilman@ti.com>, Joe Woodward <jw@terrafix.co.uk>, linux-omap@vger.kernel.org, Felipe Balbi <balbi@ti.com>, neilb@suse.de, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Apr 12, 2012 at 1:04 AM, Paul Walmsley <paul@pwsan.com> wrote:
-> Hi
->
-> a few brief comments based on a quick scan:
->
-> On Wed, 11 Apr 2012, Raja, Govindraj wrote:
->
->> Here is the patch [1] to do the same.
->
-> - I don't see where it affects I/O wakeups for the UART. =A0If I/O wa=
-keups
-> are still set on the UART pads, won't that still wake the chip up fro=
-m
-> suspend, even if module-level wakeups are disabled?
+The following changes since commit dd775ae2549217d3ae09363e3edb305d0fa19928:
 
-pdata->enable_wakeup =3D> omap_uart_enable_wakeup
-was disabling both module level and pad wakeup.
+  Linux 3.4-rc1 (2012-03-31 16:24:09 -0700)
 
-omap_uart_enable_wakeup =3D> has enabling/disabling both
-module level and pad wakeup together.
+are available in the git repository at:
 
->
-> - The UART driver and integration code should not be reading from or
-> writing to registers outside the UART IP block. =A0PRM register reads=
- and
-> writes belong in the PRM code, which should then export a higher-leve=
-l
-> interface to the calling code. =A0This is because, aside from making =
-the
-> code easier to read and debug, we're trying to move the PRM and CM co=
-de to
-> drivers/.
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-3.4-rc2
 
-okay.
+for you to fetch changes up to 11bbd5b6dae49fd7072ebf5eb63735827bd72f42:
 
->
-> - The code to change the PM_WKEN* and test the PM_WKST* bits should
-> probably be called from omap_hwmod_{enable,disable}_wakeup(), not the=
- UART
-> code directly. =A0The UART code shouldn't need to care about the hard=
-ware
-> details; it should just ask the integration layer to enable or disabl=
-e
-> module-level wakeups.
+  pch_uart: Add Kontron COMe-mTT10 uart clock quirk (2012-04-09 10:58:41 -0700)
 
-To implement this I plan to extend the omap_hwmod_omap2_prcm structure
-like this:
+----------------------------------------------------------------
+tty and serial fixes for 3.4-rc2
 
-(unaligned tmp code snippet)
+Here are some tty and serial fixes for 3.4-rc2.
 
-diff --git a/arch/arm/plat-omap/include/plat/omap_hwmod.h
-b/arch/arm/plat-omap/include/plat/omap_hwmod.h
-index 8070145..5c7711b 100644
---- a/arch/arm/plat-omap/include/plat/omap_hwmod.h
-+++ b/arch/arm/plat-omap/include/plat/omap_hwmod.h
-@@ -343,6 +343,8 @@ struct omap_hwmod_class_sysconfig {
-  * @idlest_reg_id: IDLEST register ID (e.g., 3 for CM_IDLEST3)
-  * @idlest_idle_bit: register bit shift for CM_IDLEST slave idle bit
-  * @idlest_stdby_bit: register bit shift for CM_IDLEST master standby =
-bit
-+ * @module_wakeup_offs: PRCM register offset for PM_WKEN
-+ * @module_wakeup_bit: regiter bit mask for PM_WKEN
-  *
-  * @prcm_reg_id and @module_bit are specific to the AUTOIDLE, WKST,
-  * WKEN, GRPSEL registers.  In an ideal world, no extra information
-@@ -357,6 +359,8 @@ struct omap_hwmod_omap2_prcm {
-        u8 idlest_reg_id;
-        u8 idlest_idle_bit;
-        u8 idlest_stdby_bit;
-+       s16 module_wakeup_offs;
-+       u32 module_wakeup_bit;
- };
+Most important here is the pl011 fix, which has been reported by about
+100 different people, which means more people use it than I expected :)
 
->
-> As you work on these changes, please split them up into several diffe=
-rent
-> topic series - one for the PRM changes, one for hwmod code/data chang=
-es,
-> and one for the UART driver/integration changes. =A0Just note the
-> dependencies in the series description E-mails. =A0That way, we can a=
-void
-> merge conflicts.
->
+There are also some 8250 driver reverts due to some problems reported by
+them.  And other minor fixes as well.
 
-Yes fine. Since most changes will be on /mach-omap2/omap_hwmod*.c
-Do you prefer the patches to be on any particular tree/branch where hwm=
-od fixes
-are already queued.
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
---
-Thanks,
-Govindraj.R
---
-To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+----------------------------------------------------------------
+Arnd Bergmann (1):
+      tty/serial/omap: console can only be built-in
+
+Dan Williams (3):
+      Revert "serial/8250_pci: init-quirk msi support for kt serial controller"
+      Revert "serial/8250_pci: setup-quirk workaround for the kt serial controller"
+      serial/8250_pci: add a "force background timer" flag and use it for the "kt" serial port
+
+Kay Sievers (1):
+      printk(): add KERN_CONT where needed in hpet and vt code
+
+Kukjin Kim (1):
+      serial: samsung: fix omission initialize ulcon in reset port fn()
+
+Linus Walleij (1):
+      serial: PL011: move interrupt clearing
+
+Michael Brunner (1):
+      pch_uart: Add Kontron COMe-mTT10 uart clock quirk
+
+Shubhrajyoti D (1):
+      omap-serial: Fix the error handling in the omap_serial probe
+
+Siftar, Gabe (1):
+      tty/serial: atmel_serial: fix RS485 half-duplex problem
+
+Tilman Schmidt (1):
+      isdn/gigaset: use gig_dbg() for debugging output
+
+Tomoya MORINAGA (1):
+      pch_uart: Fix MSI setting issue
+
+Yuriy Kozlov (1):
+      tty: serial: altera_uart: Check for NULL platform_data in probe.
+
+ drivers/char/hpet.c                |    4 ++--
+ drivers/isdn/gigaset/interface.c   |    2 +-
+ drivers/tty/serial/8250/8250.c     |   12 +++++-----
+ drivers/tty/serial/8250/8250_pci.c |   16 +-------------
+ drivers/tty/serial/Kconfig         |    2 +-
+ drivers/tty/serial/altera_uart.c   |    4 ++--
+ drivers/tty/serial/amba-pl011.c    |    8 +++----
+ drivers/tty/serial/atmel_serial.c  |    4 ++++
+ drivers/tty/serial/omap-serial.c   |   43 +++++++++++++++++-------------------
+ drivers/tty/serial/pch_uart.c      |    8 +++++++
+ drivers/tty/serial/samsung.c       |    1 +
+ drivers/tty/vt/vt.c                |    3 +--
+ include/linux/serial_core.h        |    2 +-
+ 13 files changed, 52 insertions(+), 57 deletions(-)
