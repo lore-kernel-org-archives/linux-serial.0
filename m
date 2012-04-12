@@ -1,50 +1,64 @@
-From: Paul Walmsley <paul@pwsan.com>
-Subject: Re: Suspend broken on 3.3?
-Date: Wed, 11 Apr 2012 13:34:06 -0600 (MDT)
-Message-ID: <alpine.DEB.2.00.1204111323210.29473@utopia.booyaka.com>
-References: <WC20120329112755.541787@terrafix.co.uk> <CAMrsUdKTx84_oHyS9JTCBTqtV-7907snCGFDrOXnPuNVSnvz7w@mail.gmail.com> <WC20120330092609.901834@terrafix.co.uk> <CAMrsUdJrJZXjYOs87xmT_J0w7S=VZyfR0tBmhhuYOFmFsOB3SA@mail.gmail.com> <WC20120330110442.381887@terrafix.co.uk>
- <CAMrsUd+AvVp3n1oAREEEmCSBaeA-m68j7gLjXEeJKimX1erfUw@mail.gmail.com> <CAMrsUd+K_EwXfypgYWNyAhR7b47avTpWDemS87OTkpH81cJ6Aw@mail.gmail.com> <alpine.DEB.2.00.1204040852460.8000@utopia.booyaka.com> <CAMrsUd+WZcUvHGdR4WyF4uh35D17K9DXFAqpLHKBUbL1_5viDA@mail.gmail.com>
- <alpine.DEB.2.00.1204051812320.10302@utopia.booyaka.com> <87iphdeyaf.fsf@ti.com> <CAMrsUdLMYVwd3rupHtrNKC0rMvx1-3B=4usOh8cwTUy8DX_hVg@mail.gmail.com> <87zkalc75h.fsf@ti.com> <alpine.DEB.2.00.1204090944191.6640@utopia.booyaka.com> <874nssde5h.fsf@ti.com>
- <CAMrsUd+SLko-L=B9gfqSpdcYQrqmAgXa0yFVWrR2YXuW9FBLmQ@mail.gmail.com> <87fwcb5urr.fsf@ti.com> <CAMrsUd+-5_6dFxcj=BCt+gHwnzA7zBev0t_nQ3dQAGZzWq8X0w@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <CAMrsUd+-5_6dFxcj=BCt+gHwnzA7zBev0t_nQ3dQAGZzWq8X0w@mail.gmail.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: "Raja, Govindraj" <govindraj.raja@ti.com>
-Cc: Kevin Hilman <khilman@ti.com>, Joe Woodward <jw@terrafix.co.uk>, linux-omap@vger.kernel.org, Felipe Balbi <balbi@ti.com>, neilb@suse.de, linux-serial@vger.kernel.org
+From: Tomoya MORINAGA <tomoya.rohm@gmail.com>
+Subject: [PATCH v2][RESEND] pch_uart: Fix dma channel unallocated issue
+Date: Thu, 12 Apr 2012 10:47:50 +0900
+Message-ID: <1334195270-2302-1-git-send-email-tomoya.rohm@gmail.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:35288 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757090Ab2DLBsR (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 11 Apr 2012 21:48:17 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: qi.wang@intel.com, yong.y.wang@intel.com, joel.clark@intel.com, kok.howg.ewe@intel.com, Tomoya MORINAGA <tomoya.rohm@gmail.com>
 
-Hi
+This driver anticipates pch_uart_verify_port() is not called
+during installation.
+However, actually pch_uart_verify_port() is called during
+installation.
+As a result, memory access violation occurs like below.
 
-a few brief comments based on a quick scan:
+0. initial value: use_dma=0
+1. starup()
+    - dma channel is not allocated because use_dma=0
+2. pch_uart_verify_port()
+    - Set use_dma=1
+3. UART processing acts DMA mode because use_dma=1
+     - memory access violation occurs!
 
-On Wed, 11 Apr 2012, Raja, Govindraj wrote:
+This patch fixes the issue.
 
-> Here is the patch [1] to do the same.
+Solution:
+Whenever pch_uart_verify_port() is called and then
+dma channel is not allocated, the channel should be allocated.
 
-- I don't see where it affects I/O wakeups for the UART.  If I/O wakeups 
-are still set on the UART pads, won't that still wake the chip up from 
-suspend, even if module-level wakeups are disabled?
+Signed-off-by: Tomoya MORINAGA <tomoya.rohm@gmail.com>
+---
+v2:  Re-create this patch for 3.4-rc2.
+(RESEND) 1st v2 was sent to stable@vger.kernel.org. So, resend this patch
+         with correct destination address.
+---
+ drivers/tty/serial/pch_uart.c |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
 
-- The UART driver and integration code should not be reading from or 
-writing to registers outside the UART IP block.  PRM register reads and 
-writes belong in the PRM code, which should then export a higher-level 
-interface to the calling code.  This is because, aside from making the 
-code easier to read and debug, we're trying to move the PRM and CM code to 
-drivers/.
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index 08b9962..80a32cf 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -1440,9 +1440,11 @@ static int pch_uart_verify_port(struct uart_port *port,
+ 			__func__);
+ 		return -EOPNOTSUPP;
+ #endif
+-		priv->use_dma = 1;
+ 		priv->use_dma_flag = 1;
+ 		dev_info(priv->port.dev, "PCH UART : Use DMA Mode\n");
++		if (!priv->use_dma)
++			pch_request_dma(port);
++		priv->use_dma = 1;
+ 	}
+ 
+ 	return 0;
+-- 
+1.7.7.6
 
-- The code to change the PM_WKEN* and test the PM_WKST* bits should 
-probably be called from omap_hwmod_{enable,disable}_wakeup(), not the UART 
-code directly.  The UART code shouldn't need to care about the hardware 
-details; it should just ask the integration layer to enable or disable 
-module-level wakeups.
-
-As you work on these changes, please split them up into several different 
-topic series - one for the PRM changes, one for hwmod code/data changes, 
-and one for the UART driver/integration changes.  Just note the 
-dependencies in the series description E-mails.  That way, we can avoid 
-merge conflicts.
-
-
-- Paul
