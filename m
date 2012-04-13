@@ -1,88 +1,24 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PATCH] TTY/serial patches for 3.4-rc2
-Date: Thu, 12 Apr 2012 15:26:55 -0700
-Message-ID: <20120412222655.GC11612@kroah.com>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: omap-serial: transmission of x-char with DMA (and other issues)
+Date: Fri, 13 Apr 2012 11:41:11 +0100
+Message-ID: <20120413104111.GF25053@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-omap-owner@vger.kernel.org>
 Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Sender: linux-omap-owner@vger.kernel.org
+To: linux-omap@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The following changes since commit dd775ae2549217d3ae09363e3edb305d0fa19928:
+Can someone tell me how this works with the current omap-serial driver
+please?  It looks to me like this has been broken when DMA support was
+added to the driver.
 
-  Linux 3.4-rc1 (2012-03-31 16:24:09 -0700)
+Moreover, please look at the probe function error paths.  They seem to
+be lacking any kind of realistic cleanup, so are a potential memory leak.
 
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-3.4-rc2
-
-for you to fetch changes up to 11bbd5b6dae49fd7072ebf5eb63735827bd72f42:
-
-  pch_uart: Add Kontron COMe-mTT10 uart clock quirk (2012-04-09 10:58:41 -0700)
-
-----------------------------------------------------------------
-tty and serial fixes for 3.4-rc2
-
-Here are some tty and serial fixes for 3.4-rc2.
-
-Most important here is the pl011 fix, which has been reported by about
-100 different people, which means more people use it than I expected :)
-
-There are also some 8250 driver reverts due to some problems reported by
-them.  And other minor fixes as well.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Arnd Bergmann (1):
-      tty/serial/omap: console can only be built-in
-
-Dan Williams (3):
-      Revert "serial/8250_pci: init-quirk msi support for kt serial controller"
-      Revert "serial/8250_pci: setup-quirk workaround for the kt serial controller"
-      serial/8250_pci: add a "force background timer" flag and use it for the "kt" serial port
-
-Kay Sievers (1):
-      printk(): add KERN_CONT where needed in hpet and vt code
-
-Kukjin Kim (1):
-      serial: samsung: fix omission initialize ulcon in reset port fn()
-
-Linus Walleij (1):
-      serial: PL011: move interrupt clearing
-
-Michael Brunner (1):
-      pch_uart: Add Kontron COMe-mTT10 uart clock quirk
-
-Shubhrajyoti D (1):
-      omap-serial: Fix the error handling in the omap_serial probe
-
-Siftar, Gabe (1):
-      tty/serial: atmel_serial: fix RS485 half-duplex problem
-
-Tilman Schmidt (1):
-      isdn/gigaset: use gig_dbg() for debugging output
-
-Tomoya MORINAGA (1):
-      pch_uart: Fix MSI setting issue
-
-Yuriy Kozlov (1):
-      tty: serial: altera_uart: Check for NULL platform_data in probe.
-
- drivers/char/hpet.c                |    4 ++--
- drivers/isdn/gigaset/interface.c   |    2 +-
- drivers/tty/serial/8250/8250.c     |   12 +++++-----
- drivers/tty/serial/8250/8250_pci.c |   16 +-------------
- drivers/tty/serial/Kconfig         |    2 +-
- drivers/tty/serial/altera_uart.c   |    4 ++--
- drivers/tty/serial/amba-pl011.c    |    8 +++----
- drivers/tty/serial/atmel_serial.c  |    4 ++++
- drivers/tty/serial/omap-serial.c   |   43 +++++++++++++++++-------------------
- drivers/tty/serial/pch_uart.c      |    8 +++++++
- drivers/tty/serial/samsung.c       |    1 +
- drivers/tty/vt/vt.c                |    3 +--
- include/linux/serial_core.h        |    2 +-
- 13 files changed, 52 insertions(+), 57 deletions(-)
+Then there's the issue of fiddling with the xmit buffer so that it's
+using coherent memory in the startup and shutdown functions (why?  when
+other serial drivers cope just fine without doing this).  If we want to
+use DMA coherent memory there, there should be a clean way to do this,
+rather than going behind the upper layers.
