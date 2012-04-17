@@ -1,79 +1,50 @@
-From: Shubhrajyoti D <shubhrajyoti@ti.com>
-Subject: [PATCH 3/7] UART: OMAP: fix software flow control
-Date: Mon, 16 Apr 2012 20:36:57 +0530
-Message-ID: <1334588821-5224-4-git-send-email-shubhrajyoti@ti.com>
-References: <1334588821-5224-1-git-send-email-shubhrajyoti@ti.com>
+From: "Shankarmurthy, Akshay" <akshay.s@ti.com>
+Subject: RE: [PATCH] serial: 8250: Add cpufreq support
+Date: Tue, 17 Apr 2012 09:43:30 +0000
+Message-ID: <6F6B80BD2E18844D97BB4B51FE3705C83E92A183@DBDE01.ent.ti.com>
+References: <1333433022-5455-1-git-send-email-akshay.s@ti.com>
+	<20120403105530.7fa3bce7@pyramind.ukuu.org.uk>
+	<6F6B80BD2E18844D97BB4B51FE3705C831790EA0@DBDE01.ent.ti.com>
+	<20120405115322.15e6088c@pyramind.ukuu.org.uk>
+	<6F6B80BD2E18844D97BB4B51FE3705C83179146B@DBDE01.ent.ti.com>
+ <20120412104758.3fc8085d@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1334588821-5224-1-git-send-email-shubhrajyoti@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Vikram Pandita <vikram.pandita@ti.com>, stable@vger.kernel.org, "Govindraj.R" <govindraj.raja@ti.com>, Shubhrajyoti D <shubhrajyoti@ti.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from bear.ext.ti.com ([192.94.94.41]:44074 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755993Ab2DQJnt convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 17 Apr 2012 05:43:49 -0400
+In-Reply-To: <20120412104758.3fc8085d@pyramind.ukuu.org.uk>
+Content-Language: en-US
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "alan@linux.intel.com" <alan@linux.intel.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "paul.gortmaker@windriver.com" <paul.gortmaker@windriver.com>, "jamie@jamieiles.com" <jamie@jamieiles.com>, "swarren@nvidia.com" <swarren@nvidia.com>, "dianders@chromium.org" <dianders@chromium.org>, "davinci-linux-open-source@linux.davincidsp.com" <davinci-linux-open-source@linux.davincidsp.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-From: Vikram Pandita <vikram.pandita@ti.com>
+On Thu, Apr 12, 2012 at 15:17:58, Alan Cox wrote:
+> > > > I will have a look at this and add the lock if necessary.
+> > > 
+> > > At the very least you need reference counts held on the tty struct and to allow for the tty having vanished under you.
+> > > 
+> > 
+> > I am planning to add "tty->termios_mutex" lock. Any comments ?
+> 
+> Explain how this will help. You need a reference count to the tty itself.
+> 
 
-Software flow control register bits were not defined correctly.
 
-Also clarify the IXON and IXOFF logic to reflect what userspace wants.
+I have gone through the serial driver, still I am not able to figure out the requirement
+of tty reference count here. Correct me if I am wrong. 
+As per my understanding, tty count keeps the count of tty_open and tty_release, that is
+how many open and close happened on the tty device file(/dev/ttyS*).
+The requirement here is a tty count check, if it is greater than zero then only it should
+proceed for further execution. 
+Kindly elaborate more on the same if it's not correct.
 
-Cc: stable@vger.kernel.org
-Cc: Govindraj.R <govindraj.raja@ti.com>
-Signed-off-by: Vikram Pandita <vikram.pandita@ti.com>
-Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
----
- arch/arm/plat-omap/include/plat/omap-serial.h |    4 ++--
- drivers/tty/serial/omap-serial.c              |   12 ++++++------
- 2 files changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/plat-omap/include/plat/omap-serial.h
-index b7fb6dc..6edc30a 100644
---- a/arch/arm/plat-omap/include/plat/omap-serial.h
-+++ b/arch/arm/plat-omap/include/plat/omap-serial.h
-@@ -42,10 +42,10 @@
- #define OMAP_UART_WER_MOD_WKUP	0X7F
- 
- /* Enable XON/XOFF flow control on output */
--#define OMAP_UART_SW_TX		0x04
-+#define OMAP_UART_SW_TX		0x8
- 
- /* Enable XON/XOFF flow control on input */
--#define OMAP_UART_SW_RX		0x04
-+#define OMAP_UART_SW_RX		0x2
- 
- #define OMAP_UART_SYSC_RESET	0X07
- #define OMAP_UART_TCR_TRIG	0X0F
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 10e80bb..887d578 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -651,19 +651,19 @@ serial_omap_configure_xonxoff
- 
- 	/*
- 	 * IXON Flag:
--	 * Enable XON/XOFF flow control on output.
--	 * Transmit XON1, XOFF1
-+	 * Flow control for OMAP.TX
-+	 * OMAP.RX should listen for XON/XOFF
- 	 */
- 	if (termios->c_iflag & IXON)
--		up->efr |= OMAP_UART_SW_TX;
-+		up->efr |= OMAP_UART_SW_RX;
- 
- 	/*
- 	 * IXOFF Flag:
--	 * Enable XON/XOFF flow control on input.
--	 * Receiver compares XON1, XOFF1.
-+	 * Flow control for OMAP.RX
-+	 * OMAP.TX should send XON/XOFF
- 	 */
- 	if (termios->c_iflag & IXOFF)
--		up->efr |= OMAP_UART_SW_RX;
-+		up->efr |= OMAP_UART_SW_TX;
- 
- 	serial_out(up, UART_EFR, up->efr | UART_EFR_ECB);
- 	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_A);
--- 
-1.7.4.1
+> 
+> Alan
+> 
 
