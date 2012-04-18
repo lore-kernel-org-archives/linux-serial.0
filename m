@@ -1,39 +1,50 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] serial: 8250: Add cpufreq support
-Date: Wed, 18 Apr 2012 20:47:01 +0100
-Message-ID: <20120418204701.31238fe7@pyramind.ukuu.org.uk>
-References: <1333433022-5455-1-git-send-email-akshay.s@ti.com>
-	<20120403105530.7fa3bce7@pyramind.ukuu.org.uk>
-	<6F6B80BD2E18844D97BB4B51FE3705C831790EA0@DBDE01.ent.ti.com>
-	<20120405115322.15e6088c@pyramind.ukuu.org.uk>
-	<6F6B80BD2E18844D97BB4B51FE3705C83179146B@DBDE01.ent.ti.com>
-	<20120412104758.3fc8085d@pyramind.ukuu.org.uk>
-	<6F6B80BD2E18844D97BB4B51FE3705C83E92A183@DBDE01.ent.ti.com>
+From: Online Giveaway Team <googleuk.anniversarydraws@shqiptar.eu>
+Subject: THE G00GLE 13TH ANNIVERSARY GIVEAWAYS
+Date: Wed, 18 Apr 2012 13:00:21 -0300
+Message-ID: <8b5b3af2962943be23f4f23ab87b00d0@121.254.133.150>
+Reply-To: Online Giveaway Team <googleuk.anniversarydraws@shqiptar.eu>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:45222 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753066Ab2DRToj (ORCPT
+Received: from reverso71.hoteldaweb.com.br ([50.23.195.127]:34802 "EHLO
+	binformatica48.hoteldaweb.com.br" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751238Ab2DRUM3 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 18 Apr 2012 15:44:39 -0400
-In-Reply-To: <6F6B80BD2E18844D97BB4B51FE3705C83E92A183@DBDE01.ent.ti.com>
+	Wed, 18 Apr 2012 16:12:29 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Shankarmurthy, Akshay" <akshay.s@ti.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "alan@linux.intel.com" <alan@linux.intel.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "paul.gortmaker@windriver.com" <paul.gortmaker@windriver.com>, "jamie@jamieiles.com" <jamie@jamieiles.com>, "swarren@nvidia.com" <swarren@nvidia.com>, "dianders@chromium.org" <dianders@chromium.org>, "davinci-linux-open-source@linux.davincidsp.com" <davinci-linux-open-source@linux.davincidsp.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-> As per my understanding, tty count keeps the count of tty_open and tty_release, that is
-> how many open and close happened on the tty device file(/dev/ttyS*).
-> The requirement here is a tty count check, if it is greater than zero then only it should
-> proceed for further execution. 
 
-The physical port has a different lifetime to the struct tty_struct
-(which may change many times within the lifetime of the port). You can't
-simply go from the port to a tty struct and assume this is safe and will
-not change.
+--
+The owner of this email acct. has w o n =A3850,000 UK Pounds ( with C.G=
+=2EP.N
+:AS/MY/0010/011| E-T!CKET#: 899-633/UK-11-001).
+As indicated in your coupon, your C.G.P.N and E-TICKET # falls under ou=
+r
+Asia Zone Disbursement booklet /Payout Center.
+=20
+To get full info from your payout center, Please verify this email acct=
+=2E is
+Still in Use.
+Inquiry #: +44 7031988569
 
-> Kindly elaborate more on the same if it's not correct.
 
-Look at how tty_port_tty_get is used
+
+
+
+
+
+
+
+
+_____________________________________________________________________
+=46lorianonet Ltda.
+
+
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
