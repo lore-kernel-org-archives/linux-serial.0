@@ -1,67 +1,61 @@
 From: Kevin Hilman <khilman@ti.com>
-Subject: Re: [PATCH 2/7] UART: OMAP: Cut the clock in the error cases
-Date: Wed, 18 Apr 2012 07:00:31 -0700
-Message-ID: <87bompp2bk.fsf@ti.com>
-References: <1334588821-5224-1-git-send-email-shubhrajyoti@ti.com>
-	<1334588821-5224-3-git-send-email-shubhrajyoti@ti.com>
-	<87bomprjic.fsf@ti.com> <4F8E62D2.9080206@ti.com>
+Subject: Re: [PATCH] tty: omap-serial: Keep the wakeup mechanism enabled by default
+Date: Wed, 18 Apr 2012 07:21:33 -0700
+Message-ID: <87mx69nms2.fsf@ti.com>
+References: <1334579407-16970-1-git-send-email-govindraj.raja@ti.com>
+	<87vckyq6ti.fsf@ti.com>
+	<CAMrsUdL1S5GiyG0egS=CHg2fdNkyZVF-wuCNGDg547kfTUODng@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <4F8E62D2.9080206@ti.com> (shubhrajyoti@ti.com's message of "Wed,
-	18 Apr 2012 12:14:34 +0530")
+In-Reply-To: <CAMrsUdL1S5GiyG0egS=CHg2fdNkyZVF-wuCNGDg547kfTUODng@mail.gmail.com>
+	(Govindraj Raja's message of "Wed, 18 Apr 2012 18:46:31 +0530")
 Sender: linux-omap-owner@vger.kernel.org
-To: Shubhrajyoti <shubhrajyoti@ti.com>
-Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, stable@vger.kernel.org, "Govindraj.R" <govindraj.raja@ti.com>
+To: "Raja, Govindraj" <govindraj.raja@ti.com>
+Cc: linux-omap@vger.kernel.org, Paul Walmsley <paul@pwsan.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Shubhrajyoti <shubhrajyoti@ti.com> writes:
+"Raja, Govindraj" <govindraj.raja@ti.com> writes:
 
-> Hi Kevin,
-> Thanks for the review.
->
-> On Wednesday 18 April 2012 05:36 AM, Kevin Hilman wrote:
->> Shubhrajyoti D <shubhrajyoti@ti.com> writes:
+> On Wed, Apr 18, 2012 at 4:55 AM, Kevin Hilman <khilman@ti.com> wrote:
+>> "Govindraj.R" <govindraj.raja@ti.com> writes:
 >>
->>> In the error cases the clock cut is missed. This patch intends to fix the
->>> same.
->> Please change the references to 'cut clocks' in subject/changelog here
->> (and in other patches) to use runtime suspend instead.   First, runtime PM
->> calls do more than cut clocks, but they only do so when
->> usecounting/autosuspend timeouts permit.
-> Yes thanks will fix it.
->>
->>
->>> Cc: stable@vger.kernel.org
->> Please hold off on Cc'ing stable until your patches are reviewed and accepted.
-> OK
->>> Cc: Govindraj.R <govindraj.raja@ti.com>
->>> Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
->>> ---
->>>  drivers/tty/serial/omap-serial.c |    6 +++++-
->>>  1 files changed, 5 insertions(+), 1 deletions(-)
+>>> From: "Govindraj.R" <govindraj.raja@ti.com>
 >>>
->>> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
->>> index fe099bb..10e80bb 100644
->>> --- a/drivers/tty/serial/omap-serial.c
->>> +++ b/drivers/tty/serial/omap-serial.c
->>> @@ -319,6 +319,8 @@ static void serial_omap_start_tx(struct uart_port *port)
->>>  
->>>  		if (ret < 0) {
->>>  			serial_omap_enable_ier_thri(up);
->>> +			pm_runtime_mark_last_busy(&up->pdev->dev);
->>> +			pm_runtime_put_autosuspend(&up->pdev->dev);
->> Why the autosuspend version here?
+>>> The wakeups can be left enabled by default and should be disabled
+>>> only when disabled from sysfs and while entering suspend.
 >>
->> Kevin
+>> Left enabled? =C2=A0That assumes something else has initizlied them,=
+ but we
+>> can't make that assumption.
 >>
+>> First, wakeups should be disabled when ->probe has finished. =C2=A0T=
+hen,
+>> they should be enabled whenever driver is in use, and disabled when
+>> the driver is not in use.
 >>
-> In case the request_dma fails we enable the thri( effectively like intr
-> mode) so
-> I thought of using the autosuspend version here .
+>> I'm not familiar enough with uart_ops, but it looks like they should
+>> probably be enabled in uart_ops->startup and disabled in
+>> uart_ops->shutdown.
 >
-> Do you prefer put version instead ?
+> uart_ops->shutdown gets called in suspend path also
+> serial_omap_suspend =3D> uart_suspend_port =3D > ops->shutdown(uport)=
+;
+>
+> This will leave uart wakeup disabled in suspend path.
 
-Not necessarily, it should just be well described in the changelog.
+As I said, I'm not familiar enough with uart_ops to know which are the
+right ones.
+
+Maybe ->request_port and ->release_port are the right ones?
+
+The point is that wakeups should be enabled whenever driver is in use,
+and disabled when the driver is not in use.
 
 Kevin
+--
+To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
+n
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
