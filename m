@@ -1,50 +1,76 @@
-From: "Raja, Govindraj" <govindraj.raja@ti.com>
-Subject: Re: [PATCH] tty: omap-serial: Keep the wakeup mechanism enabled by default
-Date: Thu, 19 Apr 2012 20:00:12 +0530
-Message-ID: <CAMrsUdJ_ewe1td9nOO+0ociP4O_tyPgjH=w11r_mFW_yc7PDAQ@mail.gmail.com>
-References: <1334579407-16970-1-git-send-email-govindraj.raja@ti.com>
- <87vckyq6ti.fsf@ti.com> <CAMrsUdL1S5GiyG0egS=CHg2fdNkyZVF-wuCNGDg547kfTUODng@mail.gmail.com>
- <87mx69nms2.fsf@ti.com> <20120418200833.24ef25ff@pyramind.ukuu.org.uk>
+From: Ivo Sieben <meltedpianoman@gmail.com>
+Subject: Re: Deterministic behavior for TTY serial
+Date: Thu, 19 Apr 2012 17:37:56 +0200
+Message-ID: <CAMSQXEEkssPGWYgC4dkpKEhfrB4s8yOoxiNNVdRRX7r+b91EMQ@mail.gmail.com>
+References: <CAMSQXEENByqSmK2bSxMngY2WuV86AAcX_LxTbA5JSOjT3ta_FA@mail.gmail.com>
+	<20120419001407.GA24710@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog101.obsmtp.com ([74.125.149.67]:54217 "EHLO
-	na3sys009aog101.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753551Ab2DSOad (ORCPT
+Received: from mail-ob0-f174.google.com ([209.85.214.174]:40993 "EHLO
+	mail-ob0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752335Ab2DSPh5 convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 19 Apr 2012 10:30:33 -0400
-Received: by yenl11 with SMTP id l11so5385501yen.30
-        for <linux-serial@vger.kernel.org>; Thu, 19 Apr 2012 07:30:32 -0700 (PDT)
-In-Reply-To: <20120418200833.24ef25ff@pyramind.ukuu.org.uk>
+	Thu, 19 Apr 2012 11:37:57 -0400
+In-Reply-To: <20120419001407.GA24710@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Kevin Hilman <khilman@ti.com>, linux-omap@vger.kernel.org, Paul Walmsley <paul@pwsan.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, RT <linux-rt-users@vger.kernel.org>
 
-On Thu, Apr 19, 2012 at 12:38 AM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
->> The point is that wakeups should be enabled whenever driver is in use,
->> and disabled when the driver is not in use.
+Hi Greg,
+
+Op 19 april 2012 02:14 heeft Greg KH <gregkh@linuxfoundation.org> het
+volgende geschreven:
+> On Tue, Apr 17, 2012 at 04:38:30PM +0200, Ivo Sieben wrote:
+>> Hello,
+>>
+>> We are currently using the TTY framework for serial communication.
+>>
+>> We are wondering if it is possible to give the TTY device in more
+>> deterministic behavior (as in "less locks & no sleeping")
 >
+> What specifically are you looking for?
 >
-> Which is the tty_port methods for initialisation and shutdown, which are
-> mutex protected against each other and hang up.
+
+We run an application with a real-time thread, running on a high priori=
+ty.
+This thread does serial communication, using non blocking read/write
+file I/O on a tty device, with small amounts of data (=3D 24 bytes).
+This application runs on a AT2AM9261 processor, 200 MHz
+The maximum execution time of both the read & write go up to 200 us
+
+>> So in case of non blocking read/write behavior:
+>> - We want directly write data to the serial_core transmit buffer and
+>> return immediately.
 >
-> Not sure how the uart layer glue exposes that.
+> What is "immediately"?
+>
 
-Is it okay to read the port flags to identify the port state in
-driver whether the serial port shutdown ops is called from
-port_suspend or due to port closure.
+We use non blocking read & write functions
+We would like the read/write functions to always execute less than 100u=
+s
 
-Since port_shutdown gets called even from uart_suspend_port
+>> - Incoming data should be buffered, on a read data is read directly
+>> from that buffer and when no data available return immediately
+>
+> That doesn't happen today?
+>
+> What type of latencies are you seeing today that is bothering you? =A0=
+What
+> hardware are you expecting to work in this manner? =A0What exact UART=
+ are
+> you using? =A0What happens when the UART buffers data?
+>
+> thanks,
+>
+> greg k-h
 
-Is things like
-
-test_bit(ASYNCB_SUSPENDED, &port->flags);
-or
-test_bit(ASYNCB_CLOSING, &port->flags);
-
-allowed in low level driver ?
-
+We use a self written serial_core device uart driver that implements a
+driver for a UART peripheral in a FPGA on our target board..
 --
-Thanks,
-Govindraj.R
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
