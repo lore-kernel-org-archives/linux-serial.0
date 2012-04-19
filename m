@@ -1,47 +1,50 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: Deterministic behavior for TTY serial
-Date: Thu, 19 Apr 2012 12:19:38 +0100
-Message-ID: <20120419121938.1215b8c1@bob.linux.org.uk>
-References: <CAMSQXEENByqSmK2bSxMngY2WuV86AAcX_LxTbA5JSOjT3ta_FA@mail.gmail.com>
+From: "Raja, Govindraj" <govindraj.raja@ti.com>
+Subject: Re: [PATCH] tty: omap-serial: Keep the wakeup mechanism enabled by default
+Date: Thu, 19 Apr 2012 20:00:12 +0530
+Message-ID: <CAMrsUdJ_ewe1td9nOO+0ociP4O_tyPgjH=w11r_mFW_yc7PDAQ@mail.gmail.com>
+References: <1334579407-16970-1-git-send-email-govindraj.raja@ti.com>
+ <87vckyq6ti.fsf@ti.com> <CAMrsUdL1S5GiyG0egS=CHg2fdNkyZVF-wuCNGDg547kfTUODng@mail.gmail.com>
+ <87mx69nms2.fsf@ti.com> <20120418200833.24ef25ff@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga03.intel.com ([143.182.124.21]:29848 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752601Ab2DSLEh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 19 Apr 2012 07:04:37 -0400
-In-Reply-To: <CAMSQXEENByqSmK2bSxMngY2WuV86AAcX_LxTbA5JSOjT3ta_FA@mail.gmail.com>
+Received: from na3sys009aog101.obsmtp.com ([74.125.149.67]:54217 "EHLO
+	na3sys009aog101.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753551Ab2DSOad (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 19 Apr 2012 10:30:33 -0400
+Received: by yenl11 with SMTP id l11so5385501yen.30
+        for <linux-serial@vger.kernel.org>; Thu, 19 Apr 2012 07:30:32 -0700 (PDT)
+In-Reply-To: <20120418200833.24ef25ff@pyramind.ukuu.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ivo Sieben <meltedpianoman@gmail.com>
-Cc: linux-serial@vger.kernel.org, RT <linux-rt-users@vger.kernel.org>
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Kevin Hilman <khilman@ti.com>, linux-omap@vger.kernel.org, Paul Walmsley <paul@pwsan.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
-> We are wondering if it is possible to give the TTY device in more
-> deterministic behavior (as in "less locks & no sleeping")
-> So in case of non blocking read/write behavior:
-> - We want directly write data to the serial_core transmit buffer and
-> return immediately.
+On Thu, Apr 19, 2012 at 12:38 AM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
+>> The point is that wakeups should be enabled whenever driver is in use,
+>> and disabled when the driver is not in use.
+>
+>
+> Which is the tty_port methods for initialisation and shutdown, which are
+> mutex protected against each other and hang up.
+>
+> Not sure how the uart layer glue exposes that.
 
-If you have the tty in raw mode then that is basically what the ldisc
-code does (plus any flow control you may have selected).
+Is it okay to read the port flags to identify the port state in
+driver whether the serial port shutdown ops is called from
+port_suspend or due to port closure.
 
-> - Incoming data should be buffered, on a read data is read directly
-> from that buffer and when no data available return immediately
+Since port_shutdown gets called even from uart_suspend_port
 
-Ditto in raw mode, and you can use O_NDELAY or the VMIN/VTIME fields to
-optimise block transfer behaviour. We do actually do an additional
-memcpy but memory copies of cached memory are so cheap it should be
-irrelevant unless trying to do megabit speeds on low end embedded
-processors.
+Is things like
 
-> We have the idea that the default N_TTY line discipline introduces too
+test_bit(ASYNCB_SUSPENDED, &port->flags);
+or
+test_bit(ASYNCB_CLOSING, &port->flags);
 
-Based upon what analysis ?
+allowed in low level driver ?
 
-> much overhead & locking behavior what makes it less suitable for
-> deterministic serial communication on a PREEMT_RT platform.
-
-Are you using USB ports ?
-
-Alan
+--
+Thanks,
+Govindraj.R
