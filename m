@@ -1,85 +1,74 @@
-From: "Govindraj.R" <govindraj.raja@ti.com>
-Subject: [PATCH] tty: serial_core: Add mechanism to identify port closure.
-Date: Fri, 20 Apr 2012 16:27:53 +0530
-Message-ID: <1334919473-18870-1-git-send-email-govindraj.raja@ti.com>
+From: Shubhrajyoti Datta <omaplinuxkernel@gmail.com>
+Subject: Re: [PATCH 2/7] UART: OMAP: Cut the clock in the error cases
+Date: Fri, 20 Apr 2012 18:50:25 +0530
+Message-ID: <CAM=Q2cvRs2z7sf1ZeU-tMAZLgjPSM5V2fABLyj7087drThf44A@mail.gmail.com>
+References: <1334588821-5224-1-git-send-email-shubhrajyoti@ti.com>
+	<1334588821-5224-3-git-send-email-shubhrajyoti@ti.com>
+	<87bomprjic.fsf@ti.com>
+	<4F8E62D2.9080206@ti.com>
+	<87bompp2bk.fsf@ti.com>
+	<4F8EDA24.5020209@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:57059 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755121Ab2DTK6X (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 20 Apr 2012 06:58:23 -0400
+Received: from mail-gy0-f174.google.com ([209.85.160.174]:60294 "EHLO
+	mail-gy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754012Ab2DTNU1 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 20 Apr 2012 09:20:27 -0400
+In-Reply-To: <4F8EDA24.5020209@ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-omap@vger.kernel.org, "Govindraj.R" <govindraj.raja@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>
+To: Shubhrajyoti <shubhrajyoti@ti.com>
+Cc: Kevin Hilman <khilman@ti.com>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, stable@vger.kernel.org, "Govindraj.R" <govindraj.raja@ti.com>
 
-From: "Govindraj.R" <govindraj.raja@ti.com>
+On Wed, Apr 18, 2012 at 8:43 PM, Shubhrajyoti <shubhrajyoti@ti.com> wrote:
+>>
+>> Kevin
+> Yes agree completely. Will describe that in the changelog.
+> --
+Does the following changelog look ok?
 
-Currently all low level uart driver register to serial_core layer
-this core layer exposes various serial uart ops.
+>From 37fdc2d40c9b2b19b8c5a9a4b8f7dd547d420f55 Mon Sep 17 00:00:00 2001
+From: Shubhrajyoti D <shubhrajyoti@ti.com>
+Date: Wed, 4 Apr 2012 16:32:37 +0530
+Subject: [PATCH] UART: OMAP: call pm_runtime_put/autosuspend in the error cases
 
-Currently the core layer provides startup and shutdown hooks
-to low level driver, but in port suspend case the shutdown gets called
-from uart_suspend_port this makes little difficult in low level driver
-to any action specific to port closure.
+In the error cases the runtime_put call is missed. This patch intends to fix the
+same. In case dma request fails, we fall back to the nondma mode so after
+enabling the threshold call put_autosuspend.
 
-For example if low level driver tries to disable uart platform
-specific wakeups after port closure in low level driver it can be only done
-in shutdown ops since this ops is called even in suspend case low level
-driver needs some info whether the current shutdown ops is result of
-port close or if its suspend ops.
-
-To differentiate this expand the core layer uart_port info with closing flag
-this flag is set to true during shutdown and set to false while port open.
-
-Thus closing flag added with this patch can be used in low level driver to
-identify the port close.
-
-Discussion reference:
-http://marc.info/?l=linux-omap&m=133491321605924&w=2
-
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Alan Cox <alan@linux.intel.com>
-Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+Cc: Govindraj.R <govindraj.raja@ti.com>
+Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
 ---
- drivers/tty/serial/serial_core.c |    3 +++
- include/linux/serial_core.h      |    1 +
- 2 files changed, 4 insertions(+), 0 deletions(-)
+ drivers/tty/serial/omap-serial.c |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 9c4c05b..0dc246d 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1284,6 +1284,8 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
- 		uart_wait_until_sent(tty, uport->timeout);
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index fe099bb..10e80bb 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -319,6 +319,8 @@ static void serial_omap_start_tx(struct uart_port *port)
+
+ 		if (ret < 0) {
+ 			serial_omap_enable_ier_thri(up);
++			pm_runtime_mark_last_busy(&up->pdev->dev);
++			pm_runtime_put_autosuspend(&up->pdev->dev);
+ 			return;
+ 		}
  	}
- 
-+	state->uart_port->closing = true;
-+
- 	mutex_lock(&port->mutex);
- 	uart_shutdown(tty, state);
- 	uart_flush_buffer(tty);
-@@ -1518,6 +1520,7 @@ static int uart_open(struct tty_struct *tty, struct file *filp)
- 	if (port->count == 1)
- 		uart_change_pm(state, 0);
- 
-+	state->uart_port->closing = false;
- 	/*
- 	 * Start up the serial port.
- 	 */
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 2db407a..f5cd1ee 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -381,6 +381,7 @@ struct uart_port {
- 	unsigned char		irq_wake;
- 	unsigned char		unused[2];
- 	void			*private_data;		/* generic platform data pointer */
-+	unsigned char		closing;
- };
- 
- static inline int serial_port_in(struct uart_port *up, int offset)
--- 
-1.7.9
+@@ -1029,8 +1031,10 @@ static int serial_omap_poll_get_char(struct
+uart_port *port)
 
+ 	pm_runtime_get_sync(&up->pdev->dev);
+ 	status = serial_in(up, UART_LSR);
+-	if (!(status & UART_LSR_DR))
++	if (!(status & UART_LSR_DR)) {
++		pm_runtime_put(&up->pdev->dev);
+ 		return NO_POLL_CHAR;
++	}
+
+ 	status = serial_in(up, UART_RX);
+ 	pm_runtime_put(&up->pdev->dev);
+-- 
+1.7.5.4
