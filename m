@@ -1,48 +1,85 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] tty: omap-serial: Keep the wakeup mechanism enabled by
- default
-Date: Fri, 20 Apr 2012 10:13:49 +0100
-Message-ID: <20120420101349.357dac72@pyramind.ukuu.org.uk>
-References: <1334579407-16970-1-git-send-email-govindraj.raja@ti.com>
-	<87vckyq6ti.fsf@ti.com>
-	<CAMrsUdL1S5GiyG0egS=CHg2fdNkyZVF-wuCNGDg547kfTUODng@mail.gmail.com>
-	<87mx69nms2.fsf@ti.com>
-	<20120418200833.24ef25ff@pyramind.ukuu.org.uk>
-	<CAMrsUdJ_ewe1td9nOO+0ociP4O_tyPgjH=w11r_mFW_yc7PDAQ@mail.gmail.com>
+From: "Govindraj.R" <govindraj.raja@ti.com>
+Subject: [PATCH] tty: serial_core: Add mechanism to identify port closure.
+Date: Fri, 20 Apr 2012 16:27:53 +0530
+Message-ID: <1334919473-18870-1-git-send-email-govindraj.raja@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <CAMrsUdJ_ewe1td9nOO+0ociP4O_tyPgjH=w11r_mFW_yc7PDAQ@mail.gmail.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: "Raja, Govindraj" <govindraj.raja@ti.com>
-Cc: Kevin Hilman <khilman@ti.com>, linux-omap@vger.kernel.org, Paul Walmsley <paul@pwsan.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:57059 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755121Ab2DTK6X (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 20 Apr 2012 06:58:23 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-omap@vger.kernel.org, "Govindraj.R" <govindraj.raja@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>
 
-On Thu, 19 Apr 2012 20:00:12 +0530
-"Raja, Govindraj" <govindraj.raja@ti.com> wrote:
+From: "Govindraj.R" <govindraj.raja@ti.com>
 
-> On Thu, Apr 19, 2012 at 12:38 AM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
-> >> The point is that wakeups should be enabled whenever driver is in use,
-> >> and disabled when the driver is not in use.
-> >
-> >
-> > Which is the tty_port methods for initialisation and shutdown, which are
-> > mutex protected against each other and hang up.
-> >
-> > Not sure how the uart layer glue exposes that.
-> 
-> Is it okay to read the port flags to identify the port state in
-> driver whether the serial port shutdown ops is called from
-> port_suspend or due to port closure.
-> 
-> Since port_shutdown gets called even from uart_suspend_port
+Currently all low level uart driver register to serial_core layer
+this core layer exposes various serial uart ops.
 
-That sounds like someone needs to fix the uart code to avoid muddling up
-suspend/resume/open/close then, or at least pass the needed information
-down.
+Currently the core layer provides startup and shutdown hooks
+to low level driver, but in port suspend case the shutdown gets called
+from uart_suspend_port this makes little difficult in low level driver
+to any action specific to port closure.
 
-Don't rely on port->flags ideally, they may well go away in part as they
-cease to be needed by the lock changes.
+For example if low level driver tries to disable uart platform
+specific wakeups after port closure in low level driver it can be only done
+in shutdown ops since this ops is called even in suspend case low level
+driver needs some info whether the current shutdown ops is result of
+port close or if its suspend ops.
 
-Alan
+To differentiate this expand the core layer uart_port info with closing flag
+this flag is set to true during shutdown and set to false while port open.
+
+Thus closing flag added with this patch can be used in low level driver to
+identify the port close.
+
+Discussion reference:
+http://marc.info/?l=linux-omap&m=133491321605924&w=2
+
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Alan Cox <alan@linux.intel.com>
+Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+---
+ drivers/tty/serial/serial_core.c |    3 +++
+ include/linux/serial_core.h      |    1 +
+ 2 files changed, 4 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 9c4c05b..0dc246d 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1284,6 +1284,8 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
+ 		uart_wait_until_sent(tty, uport->timeout);
+ 	}
+ 
++	state->uart_port->closing = true;
++
+ 	mutex_lock(&port->mutex);
+ 	uart_shutdown(tty, state);
+ 	uart_flush_buffer(tty);
+@@ -1518,6 +1520,7 @@ static int uart_open(struct tty_struct *tty, struct file *filp)
+ 	if (port->count == 1)
+ 		uart_change_pm(state, 0);
+ 
++	state->uart_port->closing = false;
+ 	/*
+ 	 * Start up the serial port.
+ 	 */
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 2db407a..f5cd1ee 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -381,6 +381,7 @@ struct uart_port {
+ 	unsigned char		irq_wake;
+ 	unsigned char		unused[2];
+ 	void			*private_data;		/* generic platform data pointer */
++	unsigned char		closing;
+ };
+ 
+ static inline int serial_port_in(struct uart_port *up, int offset)
+-- 
+1.7.9
+
