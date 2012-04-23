@@ -1,53 +1,127 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PATCH] TTY/serial patches for 3.4-rc4
-Date: Fri, 20 Apr 2012 10:21:27 -0700
-Message-ID: <20120420172127.GB21573@kroah.com>
+From: "Raja, Govindraj" <govindraj.raja@ti.com>
+Subject: Re: [PATCH] tty: serial_core: Add mechanism to identify port closure.
+Date: Mon, 23 Apr 2012 14:25:35 +0530
+Message-ID: <CAMrsUdLaamf9boyMF824iTXdDce0qB3AiUfMiM3a1gL2DcVPqA@mail.gmail.com>
+References: <1334919473-18870-1-git-send-email-govindraj.raja@ti.com> <20120420142740.053b9981@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pz0-f52.google.com ([209.85.210.52]:36898 "EHLO
-	mail-pz0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755994Ab2DTRVb (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 20 Apr 2012 13:21:31 -0400
-Received: by dake40 with SMTP id e40so13274624dak.11
-        for <linux-serial@vger.kernel.org>; Fri, 20 Apr 2012 10:21:30 -0700 (PDT)
-Content-Disposition: inline
+Received: from na3sys009aog119.obsmtp.com ([74.125.149.246]:34298 "EHLO
+	na3sys009aog119.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751690Ab2DWIz5 convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 23 Apr 2012 04:55:57 -0400
+Received: by obbwc20 with SMTP id wc20so20438464obb.39
+        for <linux-serial@vger.kernel.org>; Mon, 23 Apr 2012 01:55:56 -0700 (PDT)
+In-Reply-To: <20120420142740.053b9981@pyramind.ukuu.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>
 
-The following changes since commit e816b57a337ea3b755de72bec38c10c864f23015:
+Hi Alan,
 
-  Linux 3.4-rc3 (2012-04-15 18:28:29 -0700)
+On Fri, Apr 20, 2012 at 6:57 PM, Alan Cox <alan@lxorguk.ukuu.org.uk> wr=
+ote:
+>> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/s=
+erial_core.c
+>> index 9c4c05b..0dc246d 100644
+>> --- a/drivers/tty/serial/serial_core.c
+>> +++ b/drivers/tty/serial/serial_core.c
+>> @@ -1284,6 +1284,8 @@ static void uart_close(struct tty_struct *tty,=
+ struct file *filp)
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 uart_wait_until_sent(tty, uport->timeout=
+);
+>> =A0 =A0 =A0 }
+>>
+>> + =A0 =A0 state->uart_port->closing =3D true;
+>
+> So what are the locking rules for this - when is it valid and when ca=
+n it
+> be tested.
+>
+> This also still seems a hack to me - the core tty code doesn't have
+> suspend/resume/open/close confused. The uart layer does, so really th=
+e
+> uart layer needs untangling. I'm skeptical yet another magic state
+> variable is the answer, particularly when the locking model for the
+> variable appears undefined.
+>
+> Teach the uart core code to pass an extra argument indicating whether=
+ its
+> really doing shutdown/open or merely doing suspend/resume. It's perfe=
+ctly
+> sensible that it tries to use the same helper for both, its broken th=
+at
+> the called code cannot tell which.
+>
+> The parameter would also be a local variable which avoids all the loc=
+king
+> questions.
 
-are available in the git repository at:
+Yes adding a _state_ local variable from port_shutdown from serial_core=
+ layer
+and passing the same to low level driver can inform the low level drive=
+r.
+whether current ops is shutdown or a suspend.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.4-rc4
+Also, looking into the struct uart_ops.
 
-for you to fetch changes up to d3a7b83f865b46bb7b5e1ed18a129ce1af349db4:
+struct uart_ops {
+=2E
+=2E
+        int             (*set_wake)(struct uart_port *, unsigned int st=
+ate);
+=2E
+=2E
+};
 
-  drivers/tty/amiserial.c: add missing tty_unlock (2012-04-19 19:15:35 -0700)
+Unfortunately set wake is not being used in serial_core.c
+So this uart ops can be used to enable wakeups
+when port is opened and disable wakeups when port
+is closed.
 
-----------------------------------------------------------------
-TTY fixes for 3.4-rc4
+If set_wake is not supposed to be used in this manner I
+will fall back to option1 to use state variable for shutdown ops.
 
-Here are 3 tiny bugfixes for 3.4-rc4.
+tmp patch as in here[1] to use set_wake.
 
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+--
+Thanks,
+Govindraj.R
 
-----------------------------------------------------------------
-Alexander Shiyan (1):
-      ARM: clps711x: serial driver hungs are a result of call disable_irq within ISR
+[1]:
 
-Julia Lawall (1):
-      drivers/tty/amiserial.c: add missing tty_unlock
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seri=
+al_core.c
+index 9c4c05b..c176ff2 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1426,6 +1426,9 @@ static void uart_port_shutdown(struct tty_port *p=
+ort)
+ 	 */
+ 	uport->ops->shutdown(uport);
 
-Tomoya MORINAGA (1):
-      pch_uart: Fix dma channel unallocated issue
++	if (uport->ops->set_wake)
++		uport->ops->set_wake(uport, false);
++
+ 	/*
+ 	 * Ensure that the IRQ handler isn't running on another CPU.
+ 	 */
+@@ -1512,6 +1515,9 @@ static int uart_open(struct tty_struct *tty,
+struct file *filp)
+ 		goto err_dec_count;
+ 	}
 
- drivers/tty/amiserial.c       |    4 +++-
- drivers/tty/serial/clps711x.c |   14 ++++++++------
- drivers/tty/serial/pch_uart.c |    4 +++-
- 3 files changed, 14 insertions(+), 8 deletions(-)
++	if (uport->ops->set_wake)
++		uport->ops->set_wake(uport, true);
++
+ 	/*
+ 	 * Make sure the device is in D0 state.
+ 	 */
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
