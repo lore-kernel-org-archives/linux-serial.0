@@ -1,70 +1,172 @@
 From: "Govindraj.R" <govindraj.raja@ti.com>
-Subject: [PATCH] tty: serial_core: Utilise/Enable the set_wake uart ops
-Date: Mon, 23 Apr 2012 18:30:07 +0530
-Message-ID: <1335186007-24452-1-git-send-email-govindraj.raja@ti.com>
+Subject: [PATCH] tty: omap-serial: configure wakeup mechanism based on port usage.
+Date: Mon, 23 Apr 2012 18:45:37 +0530
+Message-ID: <1335186937-24822-1-git-send-email-govindraj.raja@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:42568 "EHLO arroyo.ext.ti.com"
+Received: from arroyo.ext.ti.com ([192.94.94.40]:43616 "EHLO arroyo.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752454Ab2DWNAV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 23 Apr 2012 09:00:21 -0400
+	id S1753786Ab2DWNPq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 23 Apr 2012 09:15:46 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: linux-omap@vger.kernel.org, "Govindraj.R" <govindraj.raja@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>
+Cc: linux-omap@vger.kernel.org, "Govindraj.R" <govindraj.raja@ti.com>, Paul Walmsley <paul@pwsan.com>, Kevin Hilman <khilman@ti.com>
 
 From: "Govindraj.R" <govindraj.raja@ti.com>
 
-Currently all low level uart driver register to serial_core layer
-this core layer exposes various serial uart ops.
+With set_wakeup port ops availability from serial_core layer
+which will be called when port is opened with state as true
+indicating the wakeups can be enabled for this port and state
+as false while port shutdown where we can disable the wakeups.
 
-Whenever port is opened the low level platform specific wakeup
-capability can be enabled use the already available set_wakeup uart ops
-to configure wakeup capability.
+But wakeup can be also enabled/disabled when requested from sysfs.
+If disabled wakeup will be disabled while entering suspend and be
+enabled back based on pm state while resuming.
 
-When port is opened the wakeup can be enabled and when port is shutdown
-the wakeups can be disabled.
+Thanks to Kevin Hilman <khilman@ti.com> for suggesting this.
+Discussion References:
+http://www.spinics.net/lists/linux-omap/msg67764.html
+http://www.spinics.net/lists/linux-omap/msg67838.html
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Alan Cox <alan@linux.intel.com>
+Cc: Paul Walmsley <paul@pwsan.com>
+Signed-off-by: Kevin Hilman <khilman@ti.com>
+[suggestion and modification to enable and disable wakeup
+capability based on port usage]
 Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
 ---
- drivers/tty/serial/serial_core.c |   14 ++++++++++++++
- 1 files changed, 14 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 9c4c05b..44b81aa 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -185,6 +185,13 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
+Patch is tested using the patch as in here[1]
+Tested on beagle-XM by enabling and disabling wakeups
+from sysfs and opening and closing a uart port.
+
+[1]: http://marc.info/?l=linux-omap&m=133518614022144&w=2
+
+
+ arch/arm/plat-omap/include/plat/omap-serial.h |    1 -
+ drivers/tty/serial/omap-serial.c              |   45 +++++++++++++++----------
+ 2 files changed, 27 insertions(+), 19 deletions(-)
+
+diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/plat-omap/include/plat/omap-serial.h
+index 9ff4444..8e6d734 100644
+--- a/arch/arm/plat-omap/include/plat/omap-serial.h
++++ b/arch/arm/plat-omap/include/plat/omap-serial.h
+@@ -130,7 +130,6 @@ struct uart_omap_port {
+ 	unsigned long		port_activity;
+ 	u32			context_loss_cnt;
+ 	u32			errata;
+-	u8			wakeups_enabled;
+ 
+ 	struct pm_qos_request	pm_qos_request;
+ 	u32			latency;
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index d00b38e..b8f328e 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -525,6 +525,7 @@ static int serial_omap_startup(struct uart_port *port)
+ 	dev_dbg(up->port.dev, "serial_omap_startup+%d\n", up->port.line);
+ 
+ 	pm_runtime_get_sync(&up->pdev->dev);
++
+ 	/*
+ 	 * Clear the FIFO buffers and disable them.
+ 	 * (they will be reenabled in set_termios())
+@@ -910,11 +911,27 @@ serial_omap_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	dev_dbg(up->port.dev, "serial_omap_set_termios+%d\n", up->port.line);
+ }
+ 
++static int serial_omap_set_wake(struct uart_port *port, unsigned int state)
++{
++	struct uart_omap_port *up = (struct uart_omap_port *)port;
++	struct omap_uart_port_info *pdata = up->pdev->dev.platform_data;
++	u8 enable_wakeup = false;
++
++	if (state)
++		enable_wakeup = true;
++
++	if (pdata->enable_wakeup)
++		pdata->enable_wakeup(up->pdev, enable_wakeup);
++
++	return 0;
++}
++
+ static void
+ serial_omap_pm(struct uart_port *port, unsigned int state,
+ 	       unsigned int oldstate)
+ {
+ 	struct uart_omap_port *up = (struct uart_omap_port *)port;
++	struct omap_uart_port_info *pdata = up->pdev->dev.platform_data;
+ 	unsigned char efr;
+ 
+ 	dev_dbg(up->port.dev, "serial_omap_pm+%d\n", up->port.line);
+@@ -930,12 +947,8 @@ serial_omap_pm(struct uart_port *port, unsigned int state,
+ 	serial_out(up, UART_EFR, efr);
+ 	serial_out(up, UART_LCR, 0);
+ 
+-	if (!device_may_wakeup(&up->pdev->dev)) {
+-		if (!state)
+-			pm_runtime_forbid(&up->pdev->dev);
+-		else
+-			pm_runtime_allow(&up->pdev->dev);
+-	}
++	if (!state && pdata->enable_wakeup)
++		pdata->enable_wakeup(up->pdev, true);
+ 
+ 	pm_runtime_put(&up->pdev->dev);
+ }
+@@ -1161,6 +1174,7 @@ static struct uart_ops serial_omap_pops = {
+ 	.shutdown	= serial_omap_shutdown,
+ 	.set_termios	= serial_omap_set_termios,
+ 	.pm		= serial_omap_pm,
++	.set_wake	= serial_omap_set_wake,
+ 	.type		= serial_omap_type,
+ 	.release_port	= serial_omap_release_port,
+ 	.request_port	= serial_omap_request_port,
+@@ -1184,10 +1198,14 @@ static struct uart_driver serial_omap_reg = {
+ static int serial_omap_suspend(struct device *dev)
+ {
+ 	struct uart_omap_port *up = dev_get_drvdata(dev);
++	struct omap_uart_port_info *pdata = dev->platform_data;
+ 
+ 	if (up) {
+ 		uart_suspend_port(&serial_omap_reg, &up->port);
+ 		flush_work_sync(&up->qos_work);
++
++		if (!device_may_wakeup(dev))
++			pdata->enable_wakeup(up->pdev, false);
  	}
  
- 	/*
-+	 * Now with port open enable any platform specific wakeup
-+	 * capability for the port if available.
-+	 */
-+	if (uport->ops->set_wake)
-+		uport->ops->set_wake(uport, true);
-+
-+	/*
- 	 * This is to allow setserial on this port. People may want to set
- 	 * port/irq/type and then reconfigure the port properly if it failed
- 	 * now.
-@@ -1427,6 +1434,13 @@ static void uart_port_shutdown(struct tty_port *port)
- 	uport->ops->shutdown(uport);
+ 	return 0;
+@@ -1476,6 +1494,9 @@ static int serial_omap_probe(struct platform_device *pdev)
+ 	if (ret != 0)
+ 		goto err_add_port;
  
- 	/*
-+	 * now port is closed disable any platform
-+	 * specific wakeup capability that might be enabled.
-+	 */
-+	if (uport->ops->set_wake)
-+		uport->ops->set_wake(uport, false);
++	if (omap_up_info->enable_wakeup)
++		omap_up_info->enable_wakeup(pdev, false);
 +
-+	/*
- 	 * Ensure that the IRQ handler isn't running on another CPU.
- 	 */
- 	synchronize_irq(uport->irq);
+ 	pm_runtime_put(&pdev->dev);
+ 	platform_set_drvdata(pdev, up);
+ 	return 0;
+@@ -1582,18 +1603,6 @@ static int serial_omap_runtime_suspend(struct device *dev)
+ 	if (pdata->get_context_loss_count)
+ 		up->context_loss_cnt = pdata->get_context_loss_count(dev);
+ 
+-	if (device_may_wakeup(dev)) {
+-		if (!up->wakeups_enabled) {
+-			pdata->enable_wakeup(up->pdev, true);
+-			up->wakeups_enabled = true;
+-		}
+-	} else {
+-		if (up->wakeups_enabled) {
+-			pdata->enable_wakeup(up->pdev, false);
+-			up->wakeups_enabled = false;
+-		}
+-	}
+-
+ 	/* Errata i291 */
+ 	if (up->use_dma && pdata->set_forceidle &&
+ 			(up->errata & UART_ERRATA_i291_DMA_FORCEIDLE))
 -- 
 1.7.9
 
