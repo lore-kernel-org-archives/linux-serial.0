@@ -1,71 +1,70 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [Query] serial: AT91:  Add SIM Driver
-Date: Mon, 23 Apr 2012 11:54:40 +0100
-Message-ID: <20120423115440.5bb1c7eb@pyramind.ukuu.org.uk>
-References: <7AD597EA49E297498E79AFA326C986BB0D317277@penmbx01>
+From: "Govindraj.R" <govindraj.raja@ti.com>
+Subject: [PATCH] tty: serial_core: Utilise/Enable the set_wake uart ops
+Date: Mon, 23 Apr 2012 18:30:07 +0530
+Message-ID: <1335186007-24452-1-git-send-email-govindraj.raja@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <7AD597EA49E297498E79AFA326C986BB0D317277@penmbx01>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Chen, Bo" <Bo.Chen@atmel.com>
-Cc: "alan@linux.intel.com" <alan@linux.intel.com>, "rick@efn.org" <rick@efn.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.arm.linux.org.uk" <linux-arm-kernel@lists.arm.linux.org.uk>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:42568 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752454Ab2DWNAV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 23 Apr 2012 09:00:21 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-omap@vger.kernel.org, "Govindraj.R" <govindraj.raja@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>
 
-> I mean to create a char driver which contains ioctl interface to control GPIOs connected to SIM card VCC and RESET.
+From: "Govindraj.R" <govindraj.raja@ti.com>
 
-We have a GPIO layer and existing GPIO interface support so the gpio side
-if they are kept independent ought to be easy. However I wonder if the
-separate gpio control will make the userspace side harder ?
+Currently all low level uart driver register to serial_core layer
+this core layer exposes various serial uart ops.
 
-> Thirdly, I want to use usual tty function (read / write) to implement the ATR / send or receive command / PPS.
-> That means tty usual driver read or write will be called by user space application such as openct or else to realize the ATR and PPS.
-> Openct may also call above char driver to realize the power or reset function.
+Whenever port is opened the low level platform specific wakeup
+capability can be enabled use the already available set_wakeup uart ops
+to configure wakeup capability.
 
-That may be difficult to get right because of the tty object lifetime
-and the locking rules. One way would be to make ISO7816 a line discipline
-(the layer which sits about the tty).
+When port is opened the wakeup can be enabled and when port is shutdown
+the wakeups can be disabled.
 
-Your user space interface would then be
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Alan Cox <alan@linux.intel.com>
+Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
+---
+ drivers/tty/serial/serial_core.c |   14 ++++++++++++++
+ 1 files changed, 14 insertions(+), 0 deletions(-)
 
-	int ldisc = N_ISO7816;
-	ioctl(tty_fd, TIOCSETD, &ldisc);
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 9c4c05b..44b81aa 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -185,6 +185,13 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
+ 	}
+ 
+ 	/*
++	 * Now with port open enable any platform specific wakeup
++	 * capability for the port if available.
++	 */
++	if (uport->ops->set_wake)
++		uport->ops->set_wake(uport, true);
++
++	/*
+ 	 * This is to allow setserial on this port. People may want to set
+ 	 * port/irq/type and then reconfigure the port properly if it failed
+ 	 * now.
+@@ -1427,6 +1434,13 @@ static void uart_port_shutdown(struct tty_port *port)
+ 	uport->ops->shutdown(uport);
+ 
+ 	/*
++	 * now port is closed disable any platform
++	 * specific wakeup capability that might be enabled.
++	 */
++	if (uport->ops->set_wake)
++		uport->ops->set_wake(uport, false);
++
++	/*
+ 	 * Ensure that the IRQ handler isn't running on another CPU.
+ 	 */
+ 	synchronize_irq(uport->irq);
+-- 
+1.7.9
 
-at which point the read/write/ioctl etc calls on your tty will also be
-routed via your ldisc so you can manage them and provide ISO7816 sensible
-interfaces.
-
-You'd still need a way for the ldisc to ask the tty device to manage the
-GPIO lines but I don't think that is too tricky to add.
-
-That way it would at least keep everything in one place and avoid adding
-new strange paths calling into the tty layer code via non tty devices.
-
-
-Take a look at the gsmld_ parts of drivers/tty/n_gsm.c for a fairly full
-example of a line discipline. You can ignore most of the rest of the code
-there, the rest is implementing GSM mux and virtual ttys.
-
-The two thing s it doesn't use are
-
-tty_set_termios(tty, &whatever)
-
-which is a helper for the ldisc or similar to set the terminal state
-itself. 
-
-and
-
-tty->driver->ops->tiocmget/tiocmset/etc
-
-for doing things like modem lines. One way to handle the gpios
-transparently might be to map them to the nearest equivalent 'modem' line
-when in ISO7816 mode.
-
-The tty also sees the ldisc change via tty->ops->set_ldisc(). This is
-used by some drivers already for things like automatically selecting IRDA
-FIR mode when in IRDA modes.
-
-In your case the driver would set/exit ISO7816 mode when it saw this.
-
-Alan
