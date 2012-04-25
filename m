@@ -1,155 +1,63 @@
-From: "Govindraj.R" <govindraj.raja@ti.com>
-Subject: [PATCH v2] tty: omap-serial: configure wakeup mechanism based on port usage.
-Date: Tue, 24 Apr 2012 19:23:48 +0530
-Message-ID: <1335275628-24200-1-git-send-email-govindraj.raja@ti.com>
+From: Christian Melki <christian.melki@ericsson.com>
+Subject: 8250.c less than 2400 baud fix.
+Date: Wed, 25 Apr 2012 14:26:36 +0200
+Message-ID: <1346E68D3A5B2043907CF4BF466383411A07E00CF0@ESESSCMS0353.eemea.ericsson.se>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-omap-owner@vger.kernel.org>
-Sender: linux-omap-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-omap@vger.kernel.org, "Govindraj.R" <govindraj.raja@ti.com>, Kevin Hilman <khilman@ti.com>, Paul Walmsley <paul@pwsan.com>
+Content-Type: multipart/mixed;
+	boundary="_002_1346E68D3A5B2043907CF4BF466383411A07E00CF0ESESSCMS0353e_"
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailgw1.ericsson.se ([193.180.251.45]:46916 "EHLO
+	mailgw1.ericsson.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750972Ab2DYM0j (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 25 Apr 2012 08:26:39 -0400
+Content-Language: en-US
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-From: "Govindraj.R" <govindraj.raja@ti.com>
+--_002_1346E68D3A5B2043907CF4BF466383411A07E00CF0ESESSCMS0353e_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-With set_wakeup port ops availability from serial_core layer
-which will be called when port is opened with state as true
-indicating the wakeups can be enabled for this port and state
-as false while port shutdown where we can disable the wakeups.
+Hi.
 
-But wakeup can be also enabled/disabled when requested from sysfs.
-If wakeups are disabled while entering suspend we have to enable them
-back while port is used from resume. This can be done with serial_omap_pm
-this uart ops has state flag indicating if port is going to be used.
-serial_omap_pm gets called from serial_core layer.
+We noticed that we were loosing data at speed less than 2400 baud.
+It turned out our (TI16750 compatible) uart with 64 byte outgoing fifo was =
+truncated to 16 byte (bit 5 sets fifo len) when modifying the fcr reg.
+The input code still fills the buffer with 64 bytes if I remember correctly=
+ and thus data is lost.
+Our fix was to remove whiping of the fcr content and just add the TRIGGER_1=
+ which we want for latency.
+I can't see why this would not work on less than 2400 always, for all uarts=
+...
+Otherwise one would have to make sure the filling of the fifo re-checks the=
+ current state of available fifo size (urrk).
 
-Thanks to Kevin Hilman <khilman@ti.com> for suggesting this.
-Discussion References:
-http://www.spinics.net/lists/linux-omap/msg67764.html
-http://www.spinics.net/lists/linux-omap/msg67838.html
+Best regards,
+Christian Melki
 
-Cc: Kevin Hilman <khilman@ti.com>
-Cc: Paul Walmsley <paul@pwsan.com>
-Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
----
 
-Patch is tested using the patch as in here[1]
-Tested on beagle-XM by enabling and disabling wakeups
-from sysfs and opening and closing a uart port.
+--_002_1346E68D3A5B2043907CF4BF466383411A07E00CF0ESESSCMS0353e_
+Content-Type: application/octet-stream; name="8250-fix.patch"
+Content-Description: 8250-fix.patch
+Content-Disposition: attachment; filename="8250-fix.patch"; size=694;
+	creation-date="Wed, 25 Apr 2012 06:21:33 GMT";
+	modification-date="Wed, 25 Apr 2012 06:21:35 GMT"
+Content-Transfer-Encoding: base64
 
-[1]: http://marc.info/?l=linux-omap&m=133518614022144&w=2
+ZGlmZiAtdXJwTiBsaW51eC0zLjMuMi5vcmlnLy9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUw
+LmMgbGludXgtMy4zLjIvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MC5jCi0tLSBsaW51eC0z
+LjMuMi5vcmlnLy9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwLmMJMjAxMi0wNC0yNSAwODox
+OTozNS4wMDAwMDAwMDAgKzAyMDAKKysrIGxpbnV4LTMuMy4yL2RyaXZlcnMvdHR5L3NlcmlhbC84
+MjUwLzgyNTAuYwkyMDEyLTA0LTI1IDA4OjIwOjM1LjAwMDAwMDAwMCArMDIwMApAQCAtMjI5OSwx
+MCArMjI5OSwxMSBAQCBzZXJpYWw4MjUwX2RvX3NldF90ZXJtaW9zKHN0cnVjdCB1YXJ0X3BvCiAJ
+CXF1b3QrKzsKIAogCWlmICh1cC0+Y2FwYWJpbGl0aWVzICYgVUFSVF9DQVBfRklGTyAmJiB1cC0+
+cG9ydC5maWZvc2l6ZSA+IDEpIHsKLQkJaWYgKGJhdWQgPCAyNDAwKQotCQkJZmNyID0gVUFSVF9G
+Q1JfRU5BQkxFX0ZJRk8gfCBVQVJUX0ZDUl9UUklHR0VSXzE7Ci0JCWVsc2UKLQkJCWZjciA9IHVh
+cnRfY29uZmlnW3VwLT5wb3J0LnR5cGVdLmZjcjsKKwkJZmNyID0gdWFydF9jb25maWdbdXAtPnBv
+cnQudHlwZV0uZmNyOworCQlpZiAoYmF1ZCA8IDI0MDApIHsKKwkJICAgIGZjciAmPSB+VUFSVF9G
+Q1JfVFJJR0dFUl9NQVNLOworCQkgICAgZmNyIHw9IFVBUlRfRkNSX1RSSUdHRVJfMTsKKwkJfQog
+CX0KIAogCS8qCg==
 
- arch/arm/plat-omap/include/plat/omap-serial.h |    1 -
- drivers/tty/serial/omap-serial.c              |   40 +++++++++++++-----------
- 2 files changed, 22 insertions(+), 19 deletions(-)
-
-diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/plat-omap/include/plat/omap-serial.h
-index 9ff4444..8e6d734 100644
---- a/arch/arm/plat-omap/include/plat/omap-serial.h
-+++ b/arch/arm/plat-omap/include/plat/omap-serial.h
-@@ -130,7 +130,6 @@ struct uart_omap_port {
- 	unsigned long		port_activity;
- 	u32			context_loss_cnt;
- 	u32			errata;
--	u8			wakeups_enabled;
- 
- 	struct pm_qos_request	pm_qos_request;
- 	u32			latency;
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index d00b38e..b66818b 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -910,11 +910,23 @@ serial_omap_set_termios(struct uart_port *port, struct ktermios *termios,
- 	dev_dbg(up->port.dev, "serial_omap_set_termios+%d\n", up->port.line);
- }
- 
-+static int serial_omap_set_wake(struct uart_port *port, unsigned int state)
-+{
-+	struct uart_omap_port *up = (struct uart_omap_port *)port;
-+	struct omap_uart_port_info *pdata = up->pdev->dev.platform_data;
-+
-+	if (pdata->enable_wakeup)
-+		pdata->enable_wakeup(up->pdev, state ? true : false);
-+
-+	return 0;
-+}
-+
- static void
- serial_omap_pm(struct uart_port *port, unsigned int state,
- 	       unsigned int oldstate)
- {
- 	struct uart_omap_port *up = (struct uart_omap_port *)port;
-+	struct omap_uart_port_info *pdata = up->pdev->dev.platform_data;
- 	unsigned char efr;
- 
- 	dev_dbg(up->port.dev, "serial_omap_pm+%d\n", up->port.line);
-@@ -930,12 +942,8 @@ serial_omap_pm(struct uart_port *port, unsigned int state,
- 	serial_out(up, UART_EFR, efr);
- 	serial_out(up, UART_LCR, 0);
- 
--	if (!device_may_wakeup(&up->pdev->dev)) {
--		if (!state)
--			pm_runtime_forbid(&up->pdev->dev);
--		else
--			pm_runtime_allow(&up->pdev->dev);
--	}
-+	if (!state && pdata->enable_wakeup)
-+		pdata->enable_wakeup(up->pdev, true);
- 
- 	pm_runtime_put(&up->pdev->dev);
- }
-@@ -1161,6 +1169,7 @@ static struct uart_ops serial_omap_pops = {
- 	.shutdown	= serial_omap_shutdown,
- 	.set_termios	= serial_omap_set_termios,
- 	.pm		= serial_omap_pm,
-+	.set_wake	= serial_omap_set_wake,
- 	.type		= serial_omap_type,
- 	.release_port	= serial_omap_release_port,
- 	.request_port	= serial_omap_request_port,
-@@ -1184,10 +1193,14 @@ static struct uart_driver serial_omap_reg = {
- static int serial_omap_suspend(struct device *dev)
- {
- 	struct uart_omap_port *up = dev_get_drvdata(dev);
-+	struct omap_uart_port_info *pdata = dev->platform_data;
- 
- 	if (up) {
- 		uart_suspend_port(&serial_omap_reg, &up->port);
- 		flush_work_sync(&up->qos_work);
-+
-+		if (!device_may_wakeup(dev))
-+			pdata->enable_wakeup(up->pdev, false);
- 	}
- 
- 	return 0;
-@@ -1476,6 +1489,9 @@ static int serial_omap_probe(struct platform_device *pdev)
- 	if (ret != 0)
- 		goto err_add_port;
- 
-+	if (omap_up_info->enable_wakeup)
-+		omap_up_info->enable_wakeup(pdev, false);
-+
- 	pm_runtime_put(&pdev->dev);
- 	platform_set_drvdata(pdev, up);
- 	return 0;
-@@ -1582,18 +1598,6 @@ static int serial_omap_runtime_suspend(struct device *dev)
- 	if (pdata->get_context_loss_count)
- 		up->context_loss_cnt = pdata->get_context_loss_count(dev);
- 
--	if (device_may_wakeup(dev)) {
--		if (!up->wakeups_enabled) {
--			pdata->enable_wakeup(up->pdev, true);
--			up->wakeups_enabled = true;
--		}
--	} else {
--		if (up->wakeups_enabled) {
--			pdata->enable_wakeup(up->pdev, false);
--			up->wakeups_enabled = false;
--		}
--	}
--
- 	/* Errata i291 */
- 	if (up->use_dma && pdata->set_forceidle &&
- 			(up->errata & UART_ERRATA_i291_DMA_FORCEIDLE))
--- 
-1.7.9
-
+--_002_1346E68D3A5B2043907CF4BF466383411A07E00CF0ESESSCMS0353e_--
