@@ -1,52 +1,32 @@
-From: Christian Melki <christian.melki@ericsson.com>
-Subject: [PATCH] 8250.c: less than 2400 baud fix.
-Date: Thu, 26 Apr 2012 08:59:50 +0200
-Message-ID: <1346E68D3A5B2043907CF4BF466383411A07E00DBB@ESESSCMS0353.eemea.ericsson.se>
+From: Huang Shijie <b32955@freescale.com>
+Subject: [PATCH 0/2] add DMA support to uart
+Date: Thu, 26 Apr 2012 18:37:10 +0800
+Message-ID: <1335436632-29499-1-git-send-email-b32955@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailgw7.ericsson.se ([193.180.251.48]:63816 "EHLO
-	mailgw7.ericsson.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753184Ab2DZHOx convert rfc822-to-8bit (ORCPT
+Received: from ch1ehsobe002.messaging.microsoft.com ([216.32.181.182]:46188
+	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755487Ab2DZKdc (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 26 Apr 2012 03:14:53 -0400
-Content-Language: en-US
+	Thu, 26 Apr 2012 06:33:32 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: alan@linux.intel.com
+Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, shawn.guo@linaro.org, linux-arm-kernel@lists.infradead.org, B20223@freescale.com, r58066@freescale.com, B20596@freescale.com, s.hauer@pengutronix.de, Huang Shijie <b32955@freescale.com>
 
-From: Christian Melki <christian.melki@ericsson.se>
+Add DMA support to UART driver.
 
-We noticed that we were loosing data at speed less than 2400 baud.
-It turned out our (TI16750 compatible) uart with 64 byte outgoing fifo was truncated to 16 byte (bit 5 sets fifo len) when modifying the fcr reg.
-The input code still fills the buffer with 64 bytes if I remember correctly and thus data is lost.
-Our fix was to remove whiping of the fcr content and just add the TRIGGER_1 which we want for latency.
-I can't see why this would not work on less than 2400 always, for all uarts...
-Otherwise one would have to make sure the filling of the fifo re-checks the current state of available fifo size (urrk).
+Tested this patch on imx6q(arm2) board with a new SDMA firmware.
 
-Signed-off-by: Christian Melki <christian.melki@ericsson.se>
----
 
-diff -urpN linux-3.3.2.orig//drivers/tty/serial/8250/8250.c linux-3.3.2/drivers/tty/serial/8250/8250.c
---- linux-3.3.2.orig//drivers/tty/serial/8250/8250.c	2012-04-25 10:31:29.000000000 +0200
-+++ linux-3.3.2/drivers/tty/serial/8250/8250.c	2012-04-26 08:46:29.000000000 +0200
-@@ -2299,10 +2299,11 @@ serial8250_do_set_termios(struct uart_po
- 		quot++;
- 
- 	if (up->capabilities & UART_CAP_FIFO && up->port.fifosize > 1) {
--		if (baud < 2400)
--			fcr = UART_FCR_ENABLE_FIFO | UART_FCR_TRIGGER_1;
--		else
--			fcr = uart_config[up->port.type].fcr;
-+		fcr = uart_config[up->port.type].fcr;
-+		if (baud < 2400) {
-+			fcr &= ~UART_FCR_TRIGGER_MASK;
-+			fcr |= UART_FCR_TRIGGER_1;
-+		}
- 	}
- 
- 	/*
+Huang Shijie (2):
+  serial/imx: add DMA support
+  ARM: MX6q: enable DMA support for UART2
+
+ .../bindings/tty/serial/fsl-imx-uart.txt           |    7 +
+ arch/arm/boot/dts/imx6q-arm2.dts                   |    8 +
+ drivers/tty/serial/imx.c                           |  386 +++++++++++++++++++-
+ 3 files changed, 397 insertions(+), 4 deletions(-)
 
 
