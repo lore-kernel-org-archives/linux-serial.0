@@ -1,103 +1,96 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: [PATCH 1/2] serial/imx: add DMA support
-Date: Thu, 26 Apr 2012 14:00:43 +0200
-Message-ID: <20120426120043.GH17184@pengutronix.de>
-References: <1335436632-29499-1-git-send-email-b32955@freescale.com>
- <1335436632-29499-2-git-send-email-b32955@freescale.com>
+From: Ivo Sieben <meltedpianoman@gmail.com>
+Subject: Re: Deterministic behavior for TTY serial
+Date: Thu, 26 Apr 2012 16:27:56 +0200
+Message-ID: <CAMSQXEEN=6M59CR3riNA5-kFFv7QAsn_g3PHi3A8P9mh3SfdeQ@mail.gmail.com>
+References: <CAMSQXEENByqSmK2bSxMngY2WuV86AAcX_LxTbA5JSOjT3ta_FA@mail.gmail.com>
+	<20120419001407.GA24710@kroah.com>
+	<CAMSQXEEkssPGWYgC4dkpKEhfrB4s8yOoxiNNVdRRX7r+b91EMQ@mail.gmail.com>
+	<20120419154609.GA9263@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:45000 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752111Ab2DZMAr (ORCPT
+Received: from mail-qc0-f174.google.com ([209.85.216.174]:42667 "EHLO
+	mail-qc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756875Ab2DZOwI convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 26 Apr 2012 08:00:47 -0400
-Content-Disposition: inline
-In-Reply-To: <1335436632-29499-2-git-send-email-b32955@freescale.com>
+	Thu, 26 Apr 2012 10:52:08 -0400
+In-Reply-To: <20120419154609.GA9263@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Huang Shijie <b32955@freescale.com>
-Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, shawn.guo@linaro.org, linux-arm-kernel@lists.infradead.org, B20223@freescale.com, r58066@freescale.com, B20596@freescale.com
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, RT <linux-rt-users@vger.kernel.org>
 
-On Thu, Apr 26, 2012 at 06:37:11PM +0800, Huang Shijie wrote:
-> Add the DMA support for uart RX and TX.
-> 
-> Signed-off-by: Huang Shijie <b32955@freescale.com>
-> ---
->  .../bindings/tty/serial/fsl-imx-uart.txt           |    7 +
->  drivers/tty/serial/imx.c                           |  386 +++++++++++++++++++-
->  2 files changed, 389 insertions(+), 4 deletions(-)
-> 
-> +	enum dma_status status;
-> +	unsigned long flags;
-> +	int ret;
-> +
-> +	status = chan->device->device_tx_status(chan, (dma_cookie_t)NULL, NULL);
-> +	if (DMA_IN_PROGRESS == status)
-> +		return;
-> +
-> +	spin_lock_irqsave(&sport->port.lock, flags);
-> +	sport->tx_bytes = uart_circ_chars_pending(xmit);
-> +	if (sport->tx_bytes > 0) {
+Hi
 
-Instead of putting nearly the whole body of this function inside a 'if'
-you should return here.
+>> We use a self written serial_core device uart driver that implements=
+ a
+>> driver for a UART peripheral in a FPGA on our target board..
+>
+> Do you have a pointer to the driver anywhere? =A0Why isn't it submitt=
+ed
+> for inclusion in the main kernel tree?
 
-> +		if (xmit->tail > xmit->head) {
-> +			sport->dma_tx_nents = 2;
-> +			sg_init_table(sgl, 2);
-> +			sg_set_buf(sgl, xmit->buf + xmit->tail,
-> +					UART_XMIT_SIZE - xmit->tail);
-> +			sg_set_buf(&sgl[1], xmit->buf, xmit->head);
-> +		} else {
-> +			sport->dma_tx_nents = 1;
-> +			sg_init_one(sgl, xmit->buf + xmit->tail,
-> +					sport->tx_bytes);
-> +		}
-> +		spin_unlock_irqrestore(&sport->port.lock, flags);
-> +
-> +		ret = dma_map_sg(sport->port.dev, sgl,
-> +				sport->dma_tx_nents, DMA_TO_DEVICE);
-> +		if (ret == 0) {
-> +			pr_err("DMA mapping error for TX.\n");
+This driver is work in progress and not yet mature enough for
+inclusion in the main kernel tree.
 
-Use dev_* functions. Whoever reads the above in the logs won't have a
-clue that it comes from the serial driver.
+> Have you done profiling to determine exactly what it taking "too long=
+"
+> for you?  If so, what is the delay?  If not, you should do this :)
+>
+
+I did some analyses using the ftrace 'function_graph' tracer to find
+out what causes the TTY read to take longer than expected.
+I use a test application, running on RT prioirty 99 that writes bursts
+of 24 Bytes data to a my TTY device. A loop back connector is used, so
+the application also reads back these 24 bytes. Non blocking reads &
+writes are used.
+
+This analyses is still ongoing...
+But I found two issues that you might can help me to explain (but  as
+I said: I still need to "dive" further into the source)
+
+1)
+In some cases the tty_flush_to_ldisc() function (called by
+drivers/tty/n_tty.c, line 1599) takes a rather long time than with
+other TTY reads...
+=46or trace see: http://pastebin.com/zXCYTLNj
+
+If I understand it correctly, the TTY flip buffer uses a workqueue to
+transfer receive read data from the TTY flip buffer into the buffer of
+the line discipline. It seems like the N_TTY line discipline tries to
+actively flush data from the TTY flip buffer into the line discipline
+buffer. But my serial device drive initiates a tty_flip_buffer_push()
+every time after a number of bytes were received (this is intiated
+from threaded irq context by the way).
+
+In the case of this trace: is the workqueue currently already busy
+transferring data to the ldisc because of the UART receive interrupt
+handling has queued that a new work item? So is the N_TTY read()
+function actually waiting for that work item to be finished? I guess
+in that case for non blocking reads you would like to return with an
+EAGAIN, and try to read the data the next time you call the read
+function... right?
+
+2)
+In some cases the tty_ldisc_deref() function (called by
+drivers/tty/tty_io.c, line 977) takes a rather long time than with
+other TTY reads
+=46or trace see: http://pastebin.com/Nuh5cLGv
+
+After a successful read from the N_TTY line discipline, the TTY
+framework dereferences the line discipline.
+Can the TTY read() block here because other processes are currently
+try to get or release a reference to the N_TTY line discpline at the
+same time?
+So in that case: does the high priority TTY read has to wait for a
+lower priority TTY read/write operation (e.g. from the terminal I/O).
 
 
-> +			return;
-> +		}
-> +		desc = dmaengine_prep_slave_sg(chan, sgl,
-> +				sport->dma_tx_nents, DMA_MEM_TO_DEV, 0);
-> +		if (!desc) {
-> +			pr_err("We cannot prepare for the TX slave dma!\n");
-> +			return;
-> +		}
-> +		desc->callback = dma_tx_callback;
-> +		desc->callback_param = sport;
-> +
-> +		/* fire it */
-> +		dmaengine_submit(desc);
-> +		dma_async_issue_pending(chan);
-> +		return;
-> +	}
-> +	spin_unlock_irqrestore(&sport->port.lock, flags);
-> +	return;
-> +}
-> +
-
-> +/* see the "i.MX61 SDMA Scripts User Manual.doc" for the parameters */
-
-I can't see how the manual helps here.
-
-Please test this patch at least on one more SoC. There should be nothing
-i.MX6 specific in here, the fact that the i.MX6 is mentioned several
-times in the comments make me suspicious.
-
-Sascha
-
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Regards,
+Ivo Sieben
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
