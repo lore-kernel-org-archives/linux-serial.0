@@ -1,37 +1,31 @@
-From: Huang Shijie <b32955@freescale.com>
-Subject: Re: [PATCH 1/2] serial/imx: add DMA support
-Date: Fri, 27 Apr 2012 14:09:53 +0800
-Message-ID: <4F9A3831.1020203@freescale.com>
-References: <1335436632-29499-1-git-send-email-b32955@freescale.com> <1335436632-29499-2-git-send-email-b32955@freescale.com> <20120426120043.GH17184@pengutronix.de>
+From: Christian Melki <christian.melki@ericsson.com>
+Subject: 8250.c: Generic support for RTS disabling once shiftreg and fifo is
+ empty. (low latency RS485 etc).
+Date: Fri, 27 Apr 2012 08:23:23 +0200
+Message-ID: <1346E68D3A5B2043907CF4BF466383411A07E01021@ESESSCMS0353.eemea.ericsson.se>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ch1ehsobe001.messaging.microsoft.com ([216.32.181.181]:13117
-	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751788Ab2D0GGE (ORCPT
+Received: from mailgw7.ericsson.se ([193.180.251.48]:45640 "EHLO
+	mailgw7.ericsson.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752571Ab2D0GX1 convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 27 Apr 2012 02:06:04 -0400
-In-Reply-To: <20120426120043.GH17184@pengutronix.de>
+	Fri, 27 Apr 2012 02:23:27 -0400
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, shawn.guo@linaro.org, linux-arm-kernel@lists.infradead.org, B20223@freescale.com, r58066@freescale.com, B20596@freescale.com
+To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-Hi,
->> +/* see the "i.MX61 SDMA Scripts User Manual.doc" for the parameters */
-> I can't see how the manual helps here.
-sorry, the comment is in the wrong place. it should placed at 
-configuring the `slave_config`.
-> Please test this patch at least on one more SoC. There should be nothing
-> i.MX6 specific in here, the fact that the i.MX6 is mentioned several
-> times in the comments make me suspicious.
-There are bugs in the UART DMA code in the firmware before the imx6q.  
-So we can not test the UART DMA except the imx6q arm2 board.
+Hi.
 
-thanks
+I have written a patch for 8250.c that introduces a new ioctl to tell the uart driver to shift disable RTS when uart has been completely emptied.
+This idea is to set the ioctl once the master is finished and wants to shift the bus.
+We needed this to be in the kernel since we have very little time to shift RTS according to the implemented protocol on top of RS485.
 
-Huang Shijie
+Is there any interest in the community for such a behavior?
 
+The patch is a little ugly right now. It busywaits a maximum amount of time for the shift register to become empty. I don't know how to do it without introducing a latency that is more than our max RTS time shift requirement (50us). I think it could be useful with a generic 8250.c support for this.
 
-
+Regards,
+Christian Melki
