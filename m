@@ -1,169 +1,41 @@
-From: =?GB2312?B?v6q89cPiy7C3osaxMTM5Mjg0NzI0MjHVxQ==?=
-	<sharawbwaddell@yahoo.com>
-Subject: 222012-4-28
-Date: Sat, 28 Apr 2012 03:42:32 +0800
-Message-ID: <201204280342322659124@yahoo.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 1/2] serial/imx: add DMA support
+Date: Fri, 27 Apr 2012 17:24:44 +0000
+Message-ID: <201204271724.45435.arnd@arndb.de>
+References: <1335436632-29499-1-git-send-email-b32955@freescale.com> <1335436632-29499-2-git-send-email-b32955@freescale.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="----=twaei607_4338_177975796.394972"
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nm7-vm8.bullet.mail.sg3.yahoo.com ([106.10.148.183]:37094 "HELO
-	nm7-vm8.bullet.mail.sg3.yahoo.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with SMTP id S1750811Ab2D0Tsq (ORCPT
+Received: from moutng.kundenserver.de ([212.227.17.8]:57125 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759736Ab2D0UPE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 27 Apr 2012 15:48:46 -0400
+	Fri, 27 Apr 2012 16:15:04 -0400
+In-Reply-To: <1335436632-29499-2-git-send-email-b32955@freescale.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial <linux-serial@vger.kernel.org>
+To: linux-arm-kernel@lists.infradead.org
+Cc: Huang Shijie <b32955@freescale.com>, alan@linux.intel.com, B20596@freescale.com, B20223@freescale.com, gregkh@linuxfoundation.org, r58066@freescale.com, linux-serial@vger.kernel.org, shawn.guo@linaro.org, s.hauer@pengutronix.de
 
-This is a multi-part message in MIME format.
+On Thursday 26 April 2012, Huang Shijie wrote:
+> diff --git a/Documentation/devicetree/bindings/tty/serial/fsl-imx-uart.txt b/Documentation/devicetree/bindings/tty/serial/fsl-imx-uart.txt
+> index a9c0406..f27489d 100644
+> --- a/Documentation/devicetree/bindings/tty/serial/fsl-imx-uart.txt
+> +++ b/Documentation/devicetree/bindings/tty/serial/fsl-imx-uart.txt
+> @@ -8,6 +8,10 @@ Required properties:
+>  Optional properties:
+>  - fsl,uart-has-rtscts : Indicate the uart has rts and cts
+>  - fsl,irda-mode : Indicate the uart supports irda mode
+> +- fsl,enable-dma : Indicate the uart supports DMA
+> +- fsl,uart-dma-events : contains the DMA events for RX and TX,
+> +                 The first is the RX event, while the other is TX.
+> +- fsl,enable-dte: Indicate the uart works in DTE mode
+>  
 
-------=twaei607_4338_177975796.394972
-Content-Type: text/plain;
-	charset="GB2312"
-Content-Transfer-Encoding: base64
+I think we should not add any ad-hoc DMA bindings for device drivers
+until we have a proper generic binding for DMA.
 
-linux-serial@vger.kernel.org
-=C4=E3--=BA=C3=A3=A1
-79.35.150.186
+	Arnd
 
-
-------=twaei607_4338_177975796.394972
-Content-Type: image/gif;
-	name="Bfjnswi530.gif"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
-	filename="Bfjnswi530.gif"
-
-GIF87aN=01>=00w=00=00,=00=00=00=00N=01>=00=87=00=00=00=00=003=00=00f=
-=00=0
-0=99=00=00=CC=00=00=FF=003=00=0033=003f=003=99=003=CC=003=FF=00f=
-=00=00f3=
-00ff=00f=99=00f=CC=00f=FF=00=99=00=00=993=00=99f=00=99=99=00=
-=99=CC=00=99=
-FF=00=CC=00=00=CC3=00=CCf=00=CC=99=00=CC=CC=00=CC=FF=00=
-=FF=00=00=FF3=00=F
-Ff=00=FF=99=00=FF=CC=00=FF=FF3=00=003=0033=00f3=00=
-=993=00=CC3=00=FF33=003
-3333f33=9933=CC33=FF3f=003f33ff3f=993f=CC3f=FF3=
-=99=003=9933=99f3=99=993=9
-9=CC3=99=FF3=CC=003=CC33=CCf3=CC=993=CC=CC3=
-=CC=FF3=FF=003=FF33=FFf3=FF=99
-3=FF=CC3=FF=FFf=00=00f=003f=00ff=00=99f=
-=00=CCf=00=FFf3=00f33f3ff3=99f3=CC
-f3=FFff=00ff3fffff=99ff=CCff=FFf=99=
-=00f=993f=99ff=99=99f=99=CCf=99=FFf=CC
-=00f=CC3f=CCff=CC=99f=CC=CCf=CC=
-=FFf=FF=00f=FF3f=FFff=FF=99f=FF=CCf=FF=FF=
-99=00=00=99=003=99=00f=99=00=
-=99=99=00=CC=99=00=FF=993=00=9933=993f=993=99
-=993=CC=993=FF=99f=00=99f=
-3=99ff=99f=99=99f=CC=99f=FF=99=99=00=99=993=99=9
-9f=99=99=99=99=99=CC=
-=99=99=FF=99=CC=00=99=CC3=99=CCf=99=CC=99=99=CC=CC=99
-=CC=FF=99=FF=00=
-=99=FF3=99=FFf=99=FF=99=99=FF=CC=99=FF=FF=CC=00=00=CC=003=
-CC=00f=CC=00=
-=99=CC=00=CC=CC=00=FF=CC3=00=CC33=CC3f=CC3=99=CC3=CC=CC3=FF=C
-Cf=00=CCf=
-3=CCff=CCf=99=CCf=CC=CCf=FF=CC=99=00=CC=993=CC=99f=CC=99=99=CC=9
-9=CC=
-=CC=99=FF=CC=CC=00=CC=CC3=CC=CCf=CC=CC=99=CC=CC=CC=CC=CC=FF=CC=FF=00=
-
-=CC=FF3=CC=FFf=CC=FF=99=CC=FF=CC=CC=FF=FF=FF=00=00=FF=003=FF=00f=FF=00=
-=
-99=FF=00=CC=FF=00=FF=FF3=00=FF33=FF3f=FF3=99=FF3=CC=FF3=FF=FFf=00=FFf=
-3=FF
-ff=FFf=99=FFf=CC=FFf=FF=FF=99=00=FF=993=FF=99f=FF=99=99=FF=99=CC=
-=FF=99=FF
-=FF=CC=00=FF=CC3=FF=CCf=FF=CC=99=FF=CC=CC=FF=CC=FF=FF=FF=00=
-=FF=FF3=FF=FFf
-=FF=FF=99=FF=FF=CC=FF=FF=FF=00=00=00=00=00=00=00=00=00=
-=00=00=00=00=00=00=
-00=00=00=00=00=00=00=00=00=00=00=00=00=00=00=00=00=
-=00=00=00=00=00=00=00=0
-0=00=00=00=00=00=00=00=00=00=00=00=00=00=00=00=
-=00=00=00=00=00=00=00=00=00
-=00=00=00=00=00=00=00=00=00=00=00=00=00=00=
-=00=00=00=00=00=00=00=00=00=00=
-00=00=00=00=00=00=00=00=00=00=00=00=00=
-=00=00=00=00=00=00=00=00=00=00=00=0
-0=00=00=00=00=00=00=00=08=FF=00i=08=
-=1CH=B0=A0=C1=83=08=13*\=C8=B0=A1=C3=8
-7=10#J=9CH=B1=A2=C5=8B=183j=DC=
-=C8=B1=A3=C7=8F C=8A=1CI=B2=A4=C9=93(S=AA\=
-C9=B2=A5=CB=970c=CA=9CI=B3=
-=A6=CD=9B8s=EA=DC=C9=B3=A7=CF=9F@=83
-=1DJ=B4=A
-8=D1=A3H=93*]=CA=B4=A9=D3=A7P=A3J=9DJ=B5=AA=D5=ABX=B3j=DD=CA=
-=B5=AB=D7=AF`
-=C3=8A=1DK=B6=AC=D9=B3h=D3=AA]=CB=B6=AD=DB=B7p=E3=CA=9DK=
-=B7=AE=DD=BBx=F3=
-EA=DD=CB=B7=AF=DF=BF=80=03=0B=1EL=B8=B0=E1=C3=88=13+^=
-=CC=B8=B1=E3=C7=90#K
-=9EL=B9=B2=E5=CB=983?=9Dq=80=05`=16=07fhn9=03=00=
-=00=D1=7FK=9F=1E=ADR5=EA=
-96-=02=B0x=CD=D4=B5=E1=19,f=D3=98=81`5
-=16=A6i;=9C=11=C0=B4=F1=E3=A6=03=08G
-h=9B!o=CF4z=FB=DEm=D1=F8=81=8B=A5=
-=11=ECN>=908=F4=94=CD=01=CF=FFh=81|=86=E
-A=00=02=81=03=F8~=90=85=EC=16=
-=A0g=ABGN=BF=85=F3=E0=F7Mk=FFm=DA=B3=EA=E9=C
-C=D1'=A0=80=CB=19=F4=9F}=
-=F3=89=F6_=81=05I7=A0=80=080=D8=1D~}=917=A0h=EAa=
-08=C0~=08=1D =E0l
-=06g=A1=82=12N=08`A=E3=D1=87=9Az=B3=1DW"
-=1E=1A=C7B=0B4=
-1EG=E3=8D4=96=88=DBq=D0%=F8=DF=89=06=CD=F7 =81=F9=BD8=
-=17n=A0=F5=87=A2n=E6
--=E4=A0=85=EB	=F9 z	=85W=90=94J=0E=A4^=8D=EB=19)=
-=D0=8FC=AEW=E5=87Z=1A=B7[
-=93
-y=87=9A=8C=02=3D=99=E3p=14=EE5^=0B1=F6=E7=A0=80=D7=B5=A7=A4=85t>=D8=82=
-
-t=EC=A1=18=A7A=C5!w=1Dq=86=E2=E8%
-P=DEh#|=C61X(r=04=CD=97=DB=A4=CAA=C4&=7
-F=A6Md=E5]X=86=E9=E2A=8DF=CAb=
-=7F,=16j=DFA=9F
-=8A=DC=8C=A2F=FF=BA=10=98a&
-=04=A5=8B=93=0E=99=A7C=8F=1EGQ=ABt=19=E7=E0=
-~[=12d=E1=AE=05=DD=1A=A9=B2=17
-=B2:(s=1AF=19=AB=98=0C=C9J=C3=A6=AA!=1B=
-=E4=B42=B6Pb=A8=DC=1A=B7=AAB=C0=D6
-=F5=A3=7FY=A6=97n=B2=E2F=CA=19=90=DB=
-=85v=90=87=8B=AA=DB=E5k=85=16=0B=11=B
-8=F4=05=8A=90=94=B2=D5=E9=EF=BF=
-=E1=0E9=B0=81=00hk=17=AD=A1
-9.=BB=00 =88=
-1F=AD=E5=05=08/=C1=D4~i\=A1=F5v=A7=DB=B5Y=02=B7=E8|=04=FD=
-=C8=AB=8CM=1Eh=E
-Fi=EE=1D=A7=B0=B3=17=CB=C5,=AA=0F28=B3=82=80=E2=98=A3=
-=84=E5n=9B1=A7=D2=BD
-=0C-=BF=F4=C9=BB=10=C9=04=8D=EA=DCr=0B
-=04e=C9=B9=A5=F9,]=EF=BE=EA=9Aj=FA=D
-AJ =C5=0F=1Am=A2=97,=9A=B8=DE=BA=
-=0B%=87=9Cl=C0}=B7=E3=C3=18=03p=A5u=15!=C
-D=A8=B5=10=F5=0C=97=90;=FE=BC=
-%=D9=06Y=FF=E8Y=86=05sX=F2=D4>=7F=97 =DF=18=
-F3=D6_=88=C1a=ED=90=DC=1Ao=
-=1A=D1=7F=1CB=D9=F1v1=C7=B5i=D6 =9Ff=A6B~s=9A=1
-B=88=A2=01j=E2=C1=98=BF=
-=186=A7=A7YH%=8Ahb=EE=B9=80=99=D6	=F6=E7=C6=F28=B9
-=8D=03Y^7=E1z=E9=8B=
-=A8=98=F9z=FC=F1=DC=F5=B5=19=DC=96=D2yiw=D0B=A2=DB-|=B
-6G=9E=B0=C7=AF=
-=D2=CD=10=E4=03=DDI&=C2=C7	=EE;=9C=99=E3=C5b=D5=00P=C9=EFk=
-14G{=1D=8B=
-=0E:=0F|=E7=C8q=18=E6=AE=F3=B1=BD=9B=F7=03z])=EE=833=18=D4=8A=F
-6=B6N=
-=91=EFrr	=95=DA=06=14=A8=DC=90(Z=D0AY=C5f=05<=1Eu)=80=CD=B2=1E=E8DU 
-=
-=EE=89=8D=80=18=94\=99=0CX$=C2=B0=C8=3D=C7=FBR=AE6=94=A6=03 =00K=AB=DAQ
-
-=C7=04/=11=82=EFU=B0=93Z=06}&8=9F=85=8F9=C5=D1=9F@A
-=F5:r=CD=8F/v=DB=8D{=FC
-G>=FDX=843=03=8B=8D=F3=14=C7D=89=E4=CD4B=ECN=EC=
-=C8=E5=A1=19=FE=AE|=E9=A9"
-k=96=86=C01=9A=F1=8ChL=A3=1A=D7=C8=C66=BA=F1=
-=8D9	=08=00;
-
-------=twaei607_4338_177975796.394972--
