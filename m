@@ -1,70 +1,113 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH 1/2] serial/imx: add DMA support
-Date: Fri, 27 Apr 2012 10:50:03 +0100
-Message-ID: <20120427095003.GK24211@n2100.arm.linux.org.uk>
-References: <1335436632-29499-1-git-send-email-b32955@freescale.com> <1335436632-29499-2-git-send-email-b32955@freescale.com> <20120426111116.GF24211@n2100.arm.linux.org.uk> <4F9A4417.7080107@freescale.com> <20120427082245.GJ24211@n2100.arm.linux.org.uk> <4F9A6AEE.30005@freescale.com>
+From: "Chen, Bo" <Bo.Chen@atmel.com>
+Subject: RE: [Query] serial: AT91:  Add SIM Driver
+Date: Fri, 27 Apr 2012 11:19:18 +0000
+Message-ID: <7AD597EA49E297498E79AFA326C986BB0D31A5CE@penmbx02>
+References: <7AD597EA49E297498E79AFA326C986BB0D317277@penmbx01>
+ <20120423115440.5bb1c7eb@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="iso-2022-jp"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([78.32.30.218]:46974 "EHLO
-	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759924Ab2D0JuU (ORCPT
+Received: from nasmtp01.atmel.com ([192.199.1.245]:52301 "EHLO
+	nasmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755389Ab2D0LUN convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 27 Apr 2012 05:50:20 -0400
-Content-Disposition: inline
-In-Reply-To: <4F9A6AEE.30005@freescale.com>
+	Fri, 27 Apr 2012 07:20:13 -0400
+In-Reply-To: <20120423115440.5bb1c7eb@pyramind.ukuu.org.uk>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Huang Shijie <b32955@freescale.com>
-Cc: alan@linux.intel.com, B20596@freescale.com, B20223@freescale.com, gregkh@linuxfoundation.org, r58066@freescale.com, linux-serial@vger.kernel.org, shawn.guo@linaro.org, s.hauer@pengutronix.de, linux-arm-kernel@lists.infradead.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: "alan@linux.intel.com" <alan@linux.intel.com>, "rick@efn.org" <rick@efn.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.arm.linux.org.uk" <linux-arm-kernel@lists.arm.linux.org.uk>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-On Fri, Apr 27, 2012 at 05:46:22PM +0800, Huang Shijie wrote:
->>>> 1. How do you deal with transmitting the high-priority XON/XOFF
->>>>      characters (port->x_char) which occur with s/w flow control and
->>>>      the tty buffers fill up?
->>>> 2. How do you deal with flow control in general?  IOW, what happens
->>>>      when the remote end deasserts your CTS with h/w flow control enabled.
-> If the remote end deasserts my CTS, it means the remote will not send  
-> any data.
->
-> My DMA for RX will expire in the following steps:
-> [1] the UART only waits for 32 bytes time long
-> [2] the UART triggers an IDLE Condition Detect DMA.
-> [3] the dma_rx_callback() will release the DMA for Rx.
+Hi Alan,
 
-Err, hang on.  I think you're totally confused about hardware flow
-control.  Certainly you're not using the correct terms for what you're
-describing.
+> One way would be to make ISO7816 a line discipline (the layer which sits about the tty).
 
-The CTS input normally controls the transmitter.  In many hardware
-assisted hardware flow control setups, the deassertion of CTS merely
-prevents the transmitter starting a new character.
+>Your user space interface would then be
 
-This shouldn't have any effect on the receiver of the same UART at all.
+>	int ldisc = N_ISO7816;
+>	ioctl(tty_fd, TIOCSETD, &ldisc);
 
->>>>      How does your end deal with sending RTS according to flow control
->>>>      conditions?
->>>>
-> If a CTS is received after we sent out a RTS, it will follow the steps:
->  imx_int() --> imx_rtsint() --> uart_handle_cts_change() -->start_tx()
->
-> The start_tx() will create an TX DMA operation, and send out the data.
+Make ISO7816 a line discipline would register it in driver(atmel_serial.c or a new named driver) via tty_register_ldisc(N_ISO7816, &tty_ldisc_ops)
+If I use ioctl(tty_fd, TIOCSETD, &ldisc), it will close current line discipline and open a new line discipline related to ISO7816 (tty_register_ldisc(N_ISO7816, &tty_ldisc_ops))?
 
-The generation of RTS (connected to the remote ends CTS signal) is
-supposed to control whether the remote end sends you characters.  RTS
-gets deasserted either by software control when you're running out of
-space to store the received characters, or (in the case of hardware
-assisted hardware flow control) your receivers FIFO fills above a
-certain watermark.
+> at which point the read/write/ioctl etc calls on your tty will also be    > routed via your ldisc so you can manage them and provide ISO7816 sensible > interfaces
 
->> It should not.  prep_slave_sg() must be callable from atomic contexts.
->>
-> the Documentation/dmaengine.txt does not explicitly force all the  dma  
-> engine driver
-> to do so.
->
-> Add more comments for it in Documentation/dmaengine.txt?
+Does it mean when I call read/write/ioctl in user space, it will call tty_ldisc_ops functions (ISO7816 line discipline has been opened) such as gsmld_read/gsmld_write/gsmld_ioctl in N_gsm.c? What I need to do is to implement the interface in tty_ldisc_ops?
 
-Nevertheless, it is common practice for drivers to call prep_slave_sg()
-from atomic contexts.  It sounds like your DMA driver is being fixed
-anyway, so these tasklets can be killed.
+
+> Take a look at the gsmld_ parts of drivers/tty/n_gsm.c for a fairly full  > example of a line discipline. You can ignore most of the rest of the code  > there, the rest is implementing GSM mux and virtual ttys.
+
+What is the reasonable way to add this line discipline, in atmel_serial.c or create a new driver (build as a module and dynamically load)? Would it be accepted by kernel mainline?
+
+Thanks,
+Bo Chen
+
+
+
+
+
+-----Original Message-----
+From: Alan Cox [mailto:alan@lxorguk.ukuu.org.uk] 
+Sent: 2012年4月23日 18:55
+To: Chen, Bo
+Cc: alan@linux.intel.com; rick@efn.org; linux-serial@vger.kernel.org; linux-arm-kernel@lists.arm.linux.org.uk; linux-kernel@vger.kernel.org
+Subject: Re: [Query] serial: AT91: Add SIM Driver
+
+> I mean to create a char driver which contains ioctl interface to control GPIOs connected to SIM card VCC and RESET.
+
+We have a GPIO layer and existing GPIO interface support so the gpio side
+if they are kept independent ought to be easy. However I wonder if the
+separate gpio control will make the userspace side harder ?
+
+> Thirdly, I want to use usual tty function (read / write) to implement the ATR / send or receive command / PPS.
+> That means tty usual driver read or write will be called by user space application such as openct or else to realize the ATR and PPS.
+> Openct may also call above char driver to realize the power or reset function.
+
+That may be difficult to get right because of the tty object lifetime
+and the locking rules. One way would be to make ISO7816 a line discipline
+(the layer which sits about the tty).
+
+Your user space interface would then be
+
+	int ldisc = N_ISO7816;
+	ioctl(tty_fd, TIOCSETD, &ldisc);
+
+at which point the read/write/ioctl etc calls on your tty will also be
+routed via your ldisc so you can manage them and provide ISO7816 sensible
+interfaces.
+
+You'd still need a way for the ldisc to ask the tty device to manage the
+GPIO lines but I don't think that is too tricky to add.
+
+That way it would at least keep everything in one place and avoid adding
+new strange paths calling into the tty layer code via non tty devices.
+
+
+Take a look at the gsmld_ parts of drivers/tty/n_gsm.c for a fairly full
+example of a line discipline. You can ignore most of the rest of the code
+there, the rest is implementing GSM mux and virtual ttys.
+
+The two thing s it doesn't use are
+
+tty_set_termios(tty, &whatever)
+
+which is a helper for the ldisc or similar to set the terminal state
+itself. 
+
+and
+
+tty->driver->ops->tiocmget/tiocmset/etc
+
+for doing things like modem lines. One way to handle the gpios
+transparently might be to map them to the nearest equivalent 'modem' line
+when in ISO7816 mode.
+
+The tty also sees the ldisc change via tty->ops->set_ldisc(). This is
+used by some drivers already for things like automatically selecting IRDA
+FIR mode when in IRDA modes.
+
+In your case the driver would set/exit ISO7816 mode when it saw this.
+
+Alan
