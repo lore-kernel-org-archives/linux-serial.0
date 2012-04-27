@@ -1,121 +1,169 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH 1/2] serial/imx: add DMA support
-Date: Fri, 27 Apr 2012 16:30:31 +0100
-Message-ID: <20120427153031.GA27792@n2100.arm.linux.org.uk>
-References: <1335436632-29499-1-git-send-email-b32955@freescale.com> <1335436632-29499-2-git-send-email-b32955@freescale.com> <20120426111116.GF24211@n2100.arm.linux.org.uk> <4F9A4417.7080107@freescale.com> <20120427082245.GJ24211@n2100.arm.linux.org.uk> <4F9A6AEE.30005@freescale.com> <20120427095003.GK24211@n2100.arm.linux.org.uk> <CAMiH66FoEYEqudAOx7Y8GpgjfT-gX2qOi0BjG0-X8xH8u24kSw@mail.gmail.com>
+From: =?GB2312?B?v6q89cPiy7C3osaxMTM5Mjg0NzI0MjHVxQ==?=
+	<sharawbwaddell@yahoo.com>
+Subject: 222012-4-28
+Date: Sat, 28 Apr 2012 03:42:32 +0800
+Message-ID: <201204280342322659124@yahoo.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: multipart/mixed; boundary="----=twaei607_4338_177975796.394972"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([78.32.30.218]:49662 "EHLO
-	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1760294Ab2D0Pax (ORCPT
+Received: from nm7-vm8.bullet.mail.sg3.yahoo.com ([106.10.148.183]:37094 "HELO
+	nm7-vm8.bullet.mail.sg3.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1750811Ab2D0Tsq (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 27 Apr 2012 11:30:53 -0400
-Content-Disposition: inline
-In-Reply-To: <CAMiH66FoEYEqudAOx7Y8GpgjfT-gX2qOi0BjG0-X8xH8u24kSw@mail.gmail.com>
+	Fri, 27 Apr 2012 15:48:46 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Huang Shijie <shijie8@gmail.com>
-Cc: Huang Shijie <b32955@freescale.com>, B20596@freescale.com, B20223@freescale.com, gregkh@linuxfoundation.org, r58066@freescale.com, linux-serial@vger.kernel.org, shawn.guo@linaro.org, s.hauer@pengutronix.de, linux-arm-kernel@lists.infradead.org, alan@linux.intel.com
+To: linux-serial <linux-serial@vger.kernel.org>
 
-On Fri, Apr 27, 2012 at 11:18:15AM -0400, Huang Shijie wrote:
-> On Fri, Apr 27, 2012 at 5:50 AM, Russell King - ARM Linux
-> <linux@arm.linux.org.uk> wrote:
-> > On Fri, Apr 27, 2012 at 05:46:22PM +0800, Huang Shijie wrote:
-> >>>>> 1. How do you deal with transmitting the high-priority XON/XOFF
-> >>>>> =A0 =A0 =A0characters (port->x_char) which occur with s/w flow =
-control and
-> >>>>> =A0 =A0 =A0the tty buffers fill up?
-> >>>>> 2. How do you deal with flow control in general? =A0IOW, what h=
-appens
-> >>>>> =A0 =A0 =A0when the remote end deasserts your CTS with h/w flow=
- control enabled.
-> >> If the remote end deasserts my CTS, it means the remote will not s=
-end
-> >> any data.
-> >>
-> >> My DMA for RX will expire in the following steps:
-> >> [1] the UART only waits for 32 bytes time long
-> >> [2] the UART triggers an IDLE Condition Detect DMA.
-> >> [3] the dma_rx_callback() will release the DMA for Rx.
-> >
-> > Err, hang on. =A0I think you're totally confused about hardware flo=
-w
-> > control. =A0Certainly you're not using the correct terms for what y=
-ou're
-> > describing.
-> >
-> > The CTS input normally controls the transmitter. =A0In many hardwar=
-e
-> > assisted hardware flow control setups, the deassertion of CTS merel=
-y
-> > prevents the transmitter starting a new character.
-> >
-> > This shouldn't have any effect on the receiver of the same UART at =
-all.
-> >
-> >>>>> =A0 =A0 =A0How does your end deal with sending RTS according to=
- flow control
-> >>>>> =A0 =A0 =A0conditions?
-> >>>>>
-> >> If a CTS is received after we sent out a RTS, it will follow the s=
-teps:
-> >> =A0imx_int() --> imx_rtsint() --> uart_handle_cts_change() -->star=
-t_tx()
-> >>
-> >> The start_tx() will create an TX DMA operation, and send out the d=
-ata.
-> >
-> > The generation of RTS (connected to the remote ends CTS signal) is
-> > supposed to control whether the remote end sends you characters. =A0=
-RTS
-> http://en.wikipedia.org/wiki/Flow_control#Hardware_flow_control
->=20
-> >From the wiki, the generation of RTS (assert by the  "master end") i=
-s
-> used to send data
-> from the master to slave(the remote), not control the remote end send=
-s
-> me characters.
+This is a multi-part message in MIME format.
 
-Well, there's a lot of confusion over RTS.  Most implementations of it
-are as per this paragraph on the above page:
+------=twaei607_4338_177975796.394972
+Content-Type: text/plain;
+	charset="GB2312"
+Content-Transfer-Encoding: base64
 
- A non-standard symmetric alternative, commonly called "RTS/CTS handsha=
-king,"
- was developed by various equipment manufacturers. In this scheme, CTS =
-is no
- longer a response to RTS; instead, CTS indicates permission from the D=
-CE
- for the DTE to send data to the DCE, and RTS indicates permission from
- the DTE for the DCE to send data to the DTE. RTS and CTS are controlle=
-d
- by the DTE and DCE respectively, each independent of the other. This w=
-as
- eventually codified in version RS-232-E (actually TIA-232-E by that ti=
-me)
- by defining a new signal, "RTR (Ready to Receive)," which is CCITT V.2=
-4
- circuit 133. TIA-232-E and the corresponding international standards w=
-ere
- updated to show that circuit 133, when implemented, shares the same pi=
-n
- as RTS (Request to Send), and that when 133 is in use, RTS is assumed =
-by
- the DCE to be ON at all times
+linux-serial@vger.kernel.org
+=C4=E3--=BA=C3=A3=A1
+79.35.150.186
 
-This is what is actually used by all NULL modem cables, serial consoles=
-,
-and many modems can be (sensibly) configured to support it.  Many
-modems can be configured via AT commands to respond as per the above
-paragraph too.
 
-And this is the hardware flow control scheme implemented by the Linux
-Kernel for CRTSCTS, plus the hardware assisted hardware flow control
-provided by industry standard UARTs such as the 1675x and later UARTs.
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+------=twaei607_4338_177975796.394972
+Content-Type: image/gif;
+	name="Bfjnswi530.gif"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+	filename="Bfjnswi530.gif"
+
+GIF87aN=01>=00w=00=00,=00=00=00=00N=01>=00=87=00=00=00=00=003=00=00f=
+=00=0
+0=99=00=00=CC=00=00=FF=003=00=0033=003f=003=99=003=CC=003=FF=00f=
+=00=00f3=
+00ff=00f=99=00f=CC=00f=FF=00=99=00=00=993=00=99f=00=99=99=00=
+=99=CC=00=99=
+FF=00=CC=00=00=CC3=00=CCf=00=CC=99=00=CC=CC=00=CC=FF=00=
+=FF=00=00=FF3=00=F
+Ff=00=FF=99=00=FF=CC=00=FF=FF3=00=003=0033=00f3=00=
+=993=00=CC3=00=FF33=003
+3333f33=9933=CC33=FF3f=003f33ff3f=993f=CC3f=FF3=
+=99=003=9933=99f3=99=993=9
+9=CC3=99=FF3=CC=003=CC33=CCf3=CC=993=CC=CC3=
+=CC=FF3=FF=003=FF33=FFf3=FF=99
+3=FF=CC3=FF=FFf=00=00f=003f=00ff=00=99f=
+=00=CCf=00=FFf3=00f33f3ff3=99f3=CC
+f3=FFff=00ff3fffff=99ff=CCff=FFf=99=
+=00f=993f=99ff=99=99f=99=CCf=99=FFf=CC
+=00f=CC3f=CCff=CC=99f=CC=CCf=CC=
+=FFf=FF=00f=FF3f=FFff=FF=99f=FF=CCf=FF=FF=
+99=00=00=99=003=99=00f=99=00=
+=99=99=00=CC=99=00=FF=993=00=9933=993f=993=99
+=993=CC=993=FF=99f=00=99f=
+3=99ff=99f=99=99f=CC=99f=FF=99=99=00=99=993=99=9
+9f=99=99=99=99=99=CC=
+=99=99=FF=99=CC=00=99=CC3=99=CCf=99=CC=99=99=CC=CC=99
+=CC=FF=99=FF=00=
+=99=FF3=99=FFf=99=FF=99=99=FF=CC=99=FF=FF=CC=00=00=CC=003=
+CC=00f=CC=00=
+=99=CC=00=CC=CC=00=FF=CC3=00=CC33=CC3f=CC3=99=CC3=CC=CC3=FF=C
+Cf=00=CCf=
+3=CCff=CCf=99=CCf=CC=CCf=FF=CC=99=00=CC=993=CC=99f=CC=99=99=CC=9
+9=CC=
+=CC=99=FF=CC=CC=00=CC=CC3=CC=CCf=CC=CC=99=CC=CC=CC=CC=CC=FF=CC=FF=00=
+
+=CC=FF3=CC=FFf=CC=FF=99=CC=FF=CC=CC=FF=FF=FF=00=00=FF=003=FF=00f=FF=00=
+=
+99=FF=00=CC=FF=00=FF=FF3=00=FF33=FF3f=FF3=99=FF3=CC=FF3=FF=FFf=00=FFf=
+3=FF
+ff=FFf=99=FFf=CC=FFf=FF=FF=99=00=FF=993=FF=99f=FF=99=99=FF=99=CC=
+=FF=99=FF
+=FF=CC=00=FF=CC3=FF=CCf=FF=CC=99=FF=CC=CC=FF=CC=FF=FF=FF=00=
+=FF=FF3=FF=FFf
+=FF=FF=99=FF=FF=CC=FF=FF=FF=00=00=00=00=00=00=00=00=00=
+=00=00=00=00=00=00=
+00=00=00=00=00=00=00=00=00=00=00=00=00=00=00=00=00=
+=00=00=00=00=00=00=00=0
+0=00=00=00=00=00=00=00=00=00=00=00=00=00=00=00=
+=00=00=00=00=00=00=00=00=00
+=00=00=00=00=00=00=00=00=00=00=00=00=00=00=
+=00=00=00=00=00=00=00=00=00=00=
+00=00=00=00=00=00=00=00=00=00=00=00=00=
+=00=00=00=00=00=00=00=00=00=00=00=0
+0=00=00=00=00=00=00=00=08=FF=00i=08=
+=1CH=B0=A0=C1=83=08=13*\=C8=B0=A1=C3=8
+7=10#J=9CH=B1=A2=C5=8B=183j=DC=
+=C8=B1=A3=C7=8F C=8A=1CI=B2=A4=C9=93(S=AA\=
+C9=B2=A5=CB=970c=CA=9CI=B3=
+=A6=CD=9B8s=EA=DC=C9=B3=A7=CF=9F@=83
+=1DJ=B4=A
+8=D1=A3H=93*]=CA=B4=A9=D3=A7P=A3J=9DJ=B5=AA=D5=ABX=B3j=DD=CA=
+=B5=AB=D7=AF`
+=C3=8A=1DK=B6=AC=D9=B3h=D3=AA]=CB=B6=AD=DB=B7p=E3=CA=9DK=
+=B7=AE=DD=BBx=F3=
+EA=DD=CB=B7=AF=DF=BF=80=03=0B=1EL=B8=B0=E1=C3=88=13+^=
+=CC=B8=B1=E3=C7=90#K
+=9EL=B9=B2=E5=CB=983?=9Dq=80=05`=16=07fhn9=03=00=
+=00=D1=7FK=9F=1E=ADR5=EA=
+96-=02=B0x=CD=D4=B5=E1=19,f=D3=98=81`5
+=16=A6i;=9C=11=C0=B4=F1=E3=A6=03=08G
+h=9B!o=CF4z=FB=DEm=D1=F8=81=8B=A5=
+=11=ECN>=908=F4=94=CD=01=CF=FFh=81|=86=E
+A=00=02=81=03=F8~=90=85=EC=16=
+=A0g=ABGN=BF=85=F3=E0=F7Mk=FFm=DA=B3=EA=E9=C
+C=D1'=A0=80=CB=19=F4=9F}=
+=F3=89=F6_=81=05I7=A0=80=080=D8=1D~}=917=A0h=EAa=
+08=C0~=08=1D =E0l
+=06g=A1=82=12N=08`A=E3=D1=87=9Az=B3=1DW"
+=1E=1A=C7B=0B4=
+1EG=E3=8D4=96=88=DBq=D0%=F8=DF=89=06=CD=F7 =81=F9=BD8=
+=17n=A0=F5=87=A2n=E6
+-=E4=A0=85=EB	=F9 z	=85W=90=94J=0E=A4^=8D=EB=19)=
+=D0=8FC=AEW=E5=87Z=1A=B7[
+=93
+y=87=9A=8C=02=3D=99=E3p=14=EE5^=0B1=F6=E7=A0=80=D7=B5=A7=A4=85t>=D8=82=
+
+t=EC=A1=18=A7A=C5!w=1Dq=86=E2=E8%
+P=DEh#|=C61X(r=04=CD=97=DB=A4=CAA=C4&=7
+F=A6Md=E5]X=86=E9=E2A=8DF=CAb=
+=7F,=16j=DFA=9F
+=8A=DC=8C=A2F=FF=BA=10=98a&
+=04=A5=8B=93=0E=99=A7C=8F=1EGQ=ABt=19=E7=E0=
+~[=12d=E1=AE=05=DD=1A=A9=B2=17
+=B2:(s=1AF=19=AB=98=0C=C9J=C3=A6=AA!=1B=
+=E4=B42=B6Pb=A8=DC=1A=B7=AAB=C0=D6
+=F5=A3=7FY=A6=97n=B2=E2F=CA=19=90=DB=
+=85v=90=87=8B=AA=DB=E5k=85=16=0B=11=B
+8=F4=05=8A=90=94=B2=D5=E9=EF=BF=
+=E1=0E9=B0=81=00hk=17=AD=A1
+9.=BB=00 =88=
+1F=AD=E5=05=08/=C1=D4~i\=A1=F5v=A7=DB=B5Y=02=B7=E8|=04=FD=
+=C8=AB=8CM=1Eh=E
+Fi=EE=1D=A7=B0=B3=17=CB=C5,=AA=0F28=B3=82=80=E2=98=A3=
+=84=E5n=9B1=A7=D2=BD
+=0C-=BF=F4=C9=BB=10=C9=04=8D=EA=DCr=0B
+=04e=C9=B9=A5=F9,]=EF=BE=EA=9Aj=FA=D
+AJ =C5=0F=1Am=A2=97,=9A=B8=DE=BA=
+=0B%=87=9Cl=C0}=B7=E3=C3=18=03p=A5u=15!=C
+D=A8=B5=10=F5=0C=97=90;=FE=BC=
+%=D9=06Y=FF=E8Y=86=05sX=F2=D4>=7F=97 =DF=18=
+F3=D6_=88=C1a=ED=90=DC=1Ao=
+=1A=D1=7F=1CB=D9=F1v1=C7=B5i=D6 =9Ff=A6B~s=9A=1
+B=88=A2=01j=E2=C1=98=BF=
+=186=A7=A7YH%=8Ahb=EE=B9=80=99=D6	=F6=E7=C6=F28=B9
+=8D=03Y^7=E1z=E9=8B=
+=A8=98=F9z=FC=F1=DC=F5=B5=19=DC=96=D2yiw=D0B=A2=DB-|=B
+6G=9E=B0=C7=AF=
+=D2=CD=10=E4=03=DDI&=C2=C7	=EE;=9C=99=E3=C5b=D5=00P=C9=EFk=
+14G{=1D=8B=
+=0E:=0F|=E7=C8q=18=E6=AE=F3=B1=BD=9B=F7=03z])=EE=833=18=D4=8A=F
+6=B6N=
+=91=EFrr	=95=DA=06=14=A8=DC=90(Z=D0AY=C5f=05<=1Eu)=80=CD=B2=1E=E8DU 
+=
+=EE=89=8D=80=18=94\=99=0CX$=C2=B0=C8=3D=C7=FBR=AE6=94=A6=03 =00K=AB=DAQ
+
+=C7=04/=11=82=EFU=B0=93Z=06}&8=9F=85=8F9=C5=D1=9F@A
+=F5:r=CD=8F/v=DB=8D{=FC
+G>=FDX=843=03=8B=8D=F3=14=C7D=89=E4=CD4B=ECN=EC=
+=C8=E5=A1=19=FE=AE|=E9=A9"
+k=96=86=C01=9A=F1=8ChL=A3=1A=D7=C8=C66=BA=F1=
+=8D9	=08=00;
+
+------=twaei607_4338_177975796.394972--
