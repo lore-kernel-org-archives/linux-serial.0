@@ -1,44 +1,212 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: 8250.c: Generic support for RTS disabling once shiftreg and
- fifo is empty. (low latency RS485 etc).
-Date: Fri, 27 Apr 2012 10:02:07 +0100
-Message-ID: <20120427100207.48c04654@pyramind.ukuu.org.uk>
-References: <1346E68D3A5B2043907CF4BF466383411A07E01021@ESESSCMS0353.eemea.ericsson.se>
+From: Huang Shijie <b32955@freescale.com>
+Subject: Re: [PATCH 1/2] serial/imx: add DMA support
+Date: Fri, 27 Apr 2012 17:46:22 +0800
+Message-ID: <4F9A6AEE.30005@freescale.com>
+References: <1335436632-29499-1-git-send-email-b32955@freescale.com> <1335436632-29499-2-git-send-email-b32955@freescale.com> <20120426111116.GF24211@n2100.arm.linux.org.uk> <4F9A4417.7080107@freescale.com> <20120427082245.GJ24211@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:43345 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759677Ab2D0I7W (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 27 Apr 2012 04:59:22 -0400
-In-Reply-To: <1346E68D3A5B2043907CF4BF466383411A07E01021@ESESSCMS0353.eemea.ericsson.se>
+Received: from db3ehsobe002.messaging.microsoft.com ([213.199.154.140]:38594
+	"EHLO db3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753913Ab2D0Jm7 convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 27 Apr 2012 05:42:59 -0400
+In-Reply-To: <20120427082245.GJ24211@n2100.arm.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Christian Melki <christian.melki@ericsson.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: alan@linux.intel.com, B20596@freescale.com, B20223@freescale.com, gregkh@linuxfoundation.org, r58066@freescale.com, linux-serial@vger.kernel.org, shawn.guo@linaro.org, s.hauer@pengutronix.de, linux-arm-kernel@lists.infradead.org
 
-On Fri, 27 Apr 2012 08:23:23 +0200
-Christian Melki <christian.melki@ericsson.com> wrote:
+=E4=BA=8E 2012=E5=B9=B404=E6=9C=8827=E6=97=A5 16:22, Russell King - ARM=
+ Linux =E5=86=99=E9=81=93:
+> On Fri, Apr 27, 2012 at 03:00:39PM +0800, Huang Shijie wrote:
+>> =E4=BA=8E 2012=E5=B9=B404=E6=9C=8826=E6=97=A5 19:11, Russell King - =
+ARM Linux =E5=86=99=E9=81=93:
+>>> On Thu, Apr 26, 2012 at 06:37:11PM +0800, Huang Shijie wrote:
+>>>> Add the DMA support for uart RX and TX.
+>>>>
+>>>> Signed-off-by: Huang Shijie<b32955@freescale.com>
+>>>> ---
+>>> Apart from the comments below,
+>>>
+>>> 1. How do you deal with transmitting the high-priority XON/XOFF
+>>>      characters (port->x_char) which occur with s/w flow control an=
+d
+>>>      the tty buffers fill up?
+>>> 2. How do you deal with flow control in general?  IOW, what happens
+>>>      when the remote end deasserts your CTS with h/w flow control e=
+nabled.
+If the remote end deasserts my CTS, it means the remote will not send=20
+any data.
 
-> Hi.
-> 
-> I have written a patch for 8250.c that introduces a new ioctl to tell the uart driver to shift disable RTS when uart has been completely emptied.
-> This idea is to set the ioctl once the master is finished and wants to shift the bus.
-> We needed this to be in the kernel since we have very little time to shift RTS according to the implemented protocol on top of RS485.
-> 
-> Is there any interest in the community for such a behavior?
+My DMA for RX will expire in the following steps:
+[1] the UART only waits for 32 bytes time long
+[2] the UART triggers an IDLE Condition Detect DMA.
+[3] the dma_rx_callback() will release the DMA for Rx.
 
-We have a set of RS485 ioctls that provide a standard interface for
-assisting RS485 handling. The interface should probably use those if
-possible.
+>>>      How does your end deal with sending RTS according to flow cont=
+rol
+>>>      conditions?
+>>>
+If a CTS is received after we sent out a RTS, it will follow the steps:
+  imx_int() --> imx_rtsint() --> uart_handle_cts_change() -->start_tx()
 
-> The patch is a little ugly right now. It busywaits a maximum amount of time for the shift register to become empty. I don't know how to do it without introducing a latency that is more than our max RTS time shift requirement (50us). I think it could be useful with a generic 8250.c support for this.
+The start_tx() will create an TX DMA operation, and send out the data.
 
-We've hit the same hardware limit in a couple of other places where you
-end up having to spin on the last byte. I don't think it's a problem
-providing it is only triggered when trying to do the RS485 bits with that
-feature.
 
-Alan
+
+>>> i
+>> The UART uses the DMA for RX/TX with the hardware flow control (RTS/=
+CTS)
+>> enabled all the time.
+> Your answer is too vague.  Please try again.
+>
+>> If we use the software flow control(XON/XOFF), we should not enable =
+the DMA.
+>> I think i should add more comments about this issue.
+>>
+>> For example:
+>> The MX6Q arm2 has two uarts, one with the DMA disabled is used for d=
+ebug,
+>> the other one with the DMA/RTS.CTS enabled can be used for the Bluet=
+ooth.
+>>>>    .../bindings/tty/serial/fsl-imx-uart.txt           |    7 +
+>>>>    drivers/tty/serial/imx.c                           |  386 +++++=
+++++++++++++++-
+>>>>    2 files changed, 389 insertions(+), 4 deletions(-)
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/tty/serial/fsl-imx-=
+uart.txt b/Documentation/devicetree/bindings/tty/serial/fsl-imx-uart.tx=
+t
+>>>> index a9c0406..f27489d 100644
+>>>> --- a/Documentation/devicetree/bindings/tty/serial/fsl-imx-uart.tx=
+t
+>>>> +++ b/Documentation/devicetree/bindings/tty/serial/fsl-imx-uart.tx=
+t
+>>>> @@ -8,6 +8,10 @@ Required properties:
+>>>>    Optional properties:
+>>>>    - fsl,uart-has-rtscts : Indicate the uart has rts and cts
+>>>>    - fsl,irda-mode : Indicate the uart supports irda mode
+>>>> +- fsl,enable-dma : Indicate the uart supports DMA
+>>>> +- fsl,uart-dma-events : contains the DMA events for RX and TX,
+>>>> +	          The first is the RX event, while the other is TX.
+>>>> +- fsl,enable-dte: Indicate the uart works in DTE mode
+>>>>
+>>>>    Example:
+>>>>
+>>>> @@ -16,4 +20,7 @@ uart@73fbc000 {
+>>>>    	reg =3D<0x73fbc000 0x4000>;
+>>>>    	interrupts =3D<31>;
+>>>>    	fsl,uart-has-rtscts;
+>>>> +	fsl,enable-dma;
+>>>> +	fsl,uart-dma-events =3D<xx xx>;
+>>>> +	fsl,enable-dte;
+>>>>    };
+>>>> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+>>>> index e7fecee..65ba24d 100644
+>>>> --- a/drivers/tty/serial/imx.c
+>>>> +++ b/drivers/tty/serial/imx.c
+>>>> @@ -47,9 +47,11 @@
+>>>>    #include<linux/slab.h>
+>>>>    #include<linux/of.h>
+>>>>    #include<linux/of_device.h>
+>>>> +#include<linux/dma-mapping.h>
+>>>>
+>>>>    #include<asm/io.h>
+>>>>    #include<asm/irq.h>
+>>>> +#include<mach/dma.h>
+>>>>    #include<mach/imx-uart.h>
+>>>>
+>>>>    /* Register definitions */
+>>>> @@ -82,6 +84,7 @@
+>>>>    #define  UCR1_ADBR       (1<<14) /* Auto detect baud rate */
+>>>>    #define  UCR1_TRDYEN     (1<<13) /* Transmitter ready interrupt=
+ enable */
+>>>>    #define  UCR1_IDEN       (1<<12) /* Idle condition interrupt */
+>>>> +#define  UCR1_ICD_REG(x) (((x)&   3)<<   10) /* idle condition de=
+tect */
+>>>>    #define  UCR1_RRDYEN     (1<<9)	 /* Recv ready interrupt enable=
+ */
+>>>>    #define  UCR1_RDMAEN     (1<<8)	 /* Recv ready DMA enable */
+>>>>    #define  UCR1_IREN       (1<<7)	 /* Infrared interface enable *=
+/
+>>>> @@ -125,6 +128,7 @@
+>>>>    #define  UCR4_ENIRI 	 (1<<8)  /* Serial infrared interrupt enab=
+le */
+>>>>    #define  UCR4_WKEN  	 (1<<7)  /* Wake interrupt enable */
+>>>>    #define  UCR4_REF16 	 (1<<6)  /* Ref freq 16 MHz */
+>>>> +#define  UCR4_IDDMAEN    (1<<6)  /* DMA IDLE Condition Detected *=
+/
+>>>>    #define  UCR4_IRSC  	 (1<<5)  /* IR special case */
+>>>>    #define  UCR4_TCEN  	 (1<<3)  /* Transmit complete interrupt en=
+able */
+>>>>    #define  UCR4_BKEN  	 (1<<2)  /* Break condition interrupt enab=
+le */
+>>>> @@ -134,6 +138,7 @@
+>>>>    #define  UFCR_RFDIV      (7<<7)  /* Reference freq divider mask=
+ */
+>>>>    #define  UFCR_RFDIV_REG(x)	(((x)<   7 ? 6 - (x) : 6)<<   7)
+>>>>    #define  UFCR_TXTL_SHF   10      /* Transmitter trigger level s=
+hift */
+>>>> +#define  UFCR_DCEDTE	 (1<<6)
+>>>>    #define  USR1_PARITYERR  (1<<15) /* Parity error interrupt flag=
+ */
+>>>>    #define  USR1_RTSS  	 (1<<14) /* RTS pin status */
+>>>>    #define  USR1_TRDY  	 (1<<13) /* Transmitter ready interrupt/dm=
+a flag */
+>>>> @@ -200,12 +205,27 @@ struct imx_port {
+>>>>    	unsigned int		old_status;
+>>>>    	int			txirq,rxirq,rtsirq;
+>>>>    	unsigned int		have_rtscts:1;
+>>>> +	unsigned int		enable_dte:1;
+>>>> +	unsigned int		enable_dma:1;
+>>>>    	unsigned int		use_irda:1;
+>>>>    	unsigned int		irda_inv_rx:1;
+>>>>    	unsigned int		irda_inv_tx:1;
+>>>>    	unsigned short		trcv_delay; /* transceiver delay */
+>>>>    	struct clk		*clk;
+>>>>    	struct imx_uart_data	*devdata;
+>>>> +
+>>>> +	/* DMA fields */
+>>>> +	unsigned int		dma_req_rx;
+>>>> +	unsigned int		dma_req_tx;
+>>>> +	struct imx_dma_data	dma_data;
+>>>> +	struct dma_chan		*dma_chan_rx, *dma_chan_tx;
+>>>> +	struct scatterlist	rx_sgl, tx_sgl[2];
+>>>> +	void			*rx_buf;
+>>>> +	unsigned int		rx_bytes, tx_bytes;
+>>>> +	struct work_struct	tsk_dma_rx, tsk_dma_tx;
+>>> Why do you need a work struct to deal with DMA?
+>>>
+>> The uart uses the SDMA (drivers/dma/imx-sdma.c). And the SDMA may
+>> schedule out in :
+>> sdma_prep_slave_sg() -->  sdma_load_contex() -->sdma_run_channel() .
+> It should not.  prep_slave_sg() must be callable from atomic contexts=
+=2E
+>
+the Documentation/dmaengine.txt does not explicitly force all the  dma=20
+engine driver
+to do so.
+
+Add more comments for it in Documentation/dmaengine.txt?
+>> This callback is called from IRQ context, with all the IRQ disabled.=
+ see:
+>> sdma_int_handler() -->mxc_sdma_handle_channel() -->
+>> mxc_sdma_handle_channel_normal()
+>> -->  .callback().
+> That's a bug in your dmaengine driver.
+>
+OK, it's really a bug in the sdma driver.
+thanks.
+
+Best Regards
+Huang Shijie
+
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
