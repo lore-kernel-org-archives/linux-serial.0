@@ -1,38 +1,43 @@
-From: Uwe Bonnes <bon@elektron.ikp.physik.tu-darmstadt.de>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Subject: Re: [PATCH] usb: cp210x: Added support for GPIO (CP2103/4/5)
-Date: Sat, 28 Apr 2012 20:17:07 +0200
-Message-ID: <20380.13347.472373.965813@elektron.ikp.physik.tu-darmstadt.de>
+Date: Sat, 28 Apr 2012 20:33:22 +0100
+Message-ID: <20120428203322.7680594f@pyramind.ukuu.org.uk>
 References: <1335632134-2488-1-git-send-email-preston.fick@silabs.com>
 	<20120428190502.32eaf294@pyramind.ukuu.org.uk>
+	<20380.13347.472373.965813@elektron.ikp.physik.tu-darmstadt.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lnx141.hrz.tu-darmstadt.de ([130.83.156.236]:42333 "EHLO
-	lnx141.hrz.tu-darmstadt.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751638Ab2D1S2R (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:42137 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751480Ab2D1Taj (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 28 Apr 2012 14:28:17 -0400
-In-Reply-To: <20120428190502.32eaf294@pyramind.ukuu.org.uk>
+	Sat, 28 Apr 2012 15:30:39 -0400
+In-Reply-To: <20380.13347.472373.965813@elektron.ikp.physik.tu-darmstadt.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Uwe Bonnes <bon@elektron.ikp.physik.tu-darmstadt.de>
+Cc: linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
->>>>> "Alan" == Alan Cox <alan@lxorguk.ukuu.org.uk> writes:
+On Sat, 28 Apr 2012 20:17:07 +0200
+Uwe Bonnes <bon@elektron.ikp.physik.tu-darmstadt.de> wrote:
 
-...
-    Alan> The other question is whether having some custom gpio poking
-    Alan> interface is actually a good idea. I suspect probably not. The
-    Alan> kernel gpio layer can help a bit but doesn't really solve the
-    Alan> problem as there is no way to tie a gpio to a port. Given how many
-    Alan> devices seem to have gpios these days I wonder if we need a gpio
-    Alan> setting interface via termiox.
+> >>>>> "Alan" == Alan Cox <alan@lxorguk.ukuu.org.uk> writes:
+> 
+> ...
+>     Alan> The other question is whether having some custom gpio poking
+>     Alan> interface is actually a good idea. I suspect probably not. The
+>     Alan> kernel gpio layer can help a bit but doesn't really solve the
+>     Alan> problem as there is no way to tie a gpio to a port. Given how many
+>     Alan> devices seem to have gpios these days I wonder if we need a gpio
+>     Alan> setting interface via termiox.
+> 
+> Is this really kernel stuff or better handled in libusb(x)
 
-Is this really kernel stuff or better handled in libusb(x)?
+Tricky to do it that way when the kernel driver owns the interface. Also
+it's looking increasingly like we'll need to support a variety of "serial
+and a couple of extra magic lines" type interfaces for things like SIM
+readers.
 
-Bye
--- 
-Uwe Bonnes                bon@elektron.ikp.physik.tu-darmstadt.de
-
-Institut fuer Kernphysik  Schlossgartenstrasse 9  64289 Darmstadt
---------- Tel. 06151 162516 -------- Fax. 06151 164321 ----------
+Alan
