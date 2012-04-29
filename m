@@ -1,65 +1,48 @@
-From: Uwe Bonnes <bon@elektron.ikp.physik.tu-darmstadt.de>
+From: Xiaofan Chen <xiaofanc@gmail.com>
 Subject: Re: [PATCH] usb: cp210x: Added support for GPIO (CP2103/4/5)
-Date: Sun, 29 Apr 2012 15:02:32 +0200
-Message-ID: <20381.15336.604590.461744@elektron.ikp.physik.tu-darmstadt.de>
+Date: Sun, 29 Apr 2012 22:35:21 +0800
+Message-ID: <CAGjSPUB9s2ZvSUyb+45VfPQGZK_w13HVvnoCxt+Df5bgWAsnbw@mail.gmail.com>
 References: <1335632134-2488-1-git-send-email-preston.fick@silabs.com>
 	<20120428190502.32eaf294@pyramind.ukuu.org.uk>
 	<20380.13347.472373.965813@elektron.ikp.physik.tu-darmstadt.de>
 	<20120428203322.7680594f@pyramind.ukuu.org.uk>
+	<20381.15336.604590.461744@elektron.ikp.physik.tu-darmstadt.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lnx500.hrz.tu-darmstadt.de ([130.83.156.225]:36090 "EHLO
-	lnx500.hrz.tu-darmstadt.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750896Ab2D2NCl (ORCPT
+Received: from mail-yw0-f46.google.com ([209.85.213.46]:45414 "EHLO
+	mail-yw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750896Ab2D2OfW (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 29 Apr 2012 09:02:41 -0400
-In-Reply-To: <20120428203322.7680594f@pyramind.ukuu.org.uk>
+	Sun, 29 Apr 2012 10:35:22 -0400
+In-Reply-To: <20381.15336.604590.461744@elektron.ikp.physik.tu-darmstadt.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Uwe Bonnes <bon@elektron.ikp.physik.tu-darmstadt.de>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
->>>>> "Alan" == Alan Cox <alan@lxorguk.ukuu.org.uk> writes:
+On Sun, Apr 29, 2012 at 9:02 PM, Uwe Bonnes
+<bon@elektron.ikp.physik.tu-darmstadt.de> wrote:
+> most RS232/USB Adapter don't supply and most applications working with these
+> adapters don't need hard realtime. So even writing and reading the serial
+> lines can be handled with libusb, like libftdi does.
+>
+> But as soon as higher level protocols based on the serial line get involved,
+> a kernel driver is needed...
+>
+> So when thinking some termiox, some thoughts for the FTDI special modes,
+> like MPSSE or synchronous FIFO should be spent. It would come handy if I
+> could open /dev/ttyUSBx, set som termiox and could use the kernel driver for
+> sending and receiving MPSSE commands. MPSSE is e.g. used in OpenOCD and
+> xc3sprog to talk e.g. JTAG to external devices.
 
-    Alan> On Sat, 28 Apr 2012 20:17:07 +0200 Uwe Bonnes
-    Alan> <bon@elektron.ikp.physik.tu-darmstadt.de> wrote:
+On the other hand, OpenOCD and your xc3sprog will probably remain
+to be cross-plattform and in that case libusb/libftdi is a good option
+to go. There is a patch under review in OpenOCD where libusb-1.0
+is used for the MPSSE engine instead of libftdi/ftd2xx and the
+performance seems to be better.
 
-    >> >>>>> "Alan" == Alan Cox <alan@lxorguk.ukuu.org.uk> writes:
-    >> 
-    >> ...
-    Alan> The other question is whether having some custom gpio poking
-    Alan> interface is actually a good idea. I suspect probably not. The
-    Alan> kernel gpio layer can help a bit but doesn't really solve the
-    Alan> problem as there is no way to tie a gpio to a port. Given how many
-    Alan> devices seem to have gpios these days I wonder if we need a gpio
-    Alan> setting interface via termiox.
-    >>  Is this really kernel stuff or better handled in libusb(x)
 
-    Alan> Tricky to do it that way when the kernel driver owns the
-    Alan> interface. Also it's looking increasingly like we'll need to
-    Alan> support a variety of "serial and a couple of extra magic lines"
-    Alan> type interfaces for things like SIM readers.
 
-Well,
-
-most RS232/USB Adapter don't supply and most applications working with these
-adapters don't need hard realtime. So even writing and reading the serial
-lines can be handled with libusb, like libftdi does.
-
-But as soon as higher level protocols based on the serial line get involved,
-a kernel driver is needed...
-
-So when thinking some termiox, some thoughts for the FTDI special modes,
-like MPSSE or synchronous FIFO should be spent. It would come handy if I
-could open /dev/ttyUSBx, set som termiox and could use the kernel driver for
-sending and receiving MPSSE commands. MPSSE is e.g. used in OpenOCD and
-xc3sprog to talk e.g. JTAG to external devices.
-
-Bye 
 -- 
-Uwe Bonnes                bon@elektron.ikp.physik.tu-darmstadt.de
-
-Institut fuer Kernphysik  Schlossgartenstrasse 9  64289 Darmstadt
---------- Tel. 06151 162516 -------- Fax. 06151 164321 ----------
+Xiaofan
