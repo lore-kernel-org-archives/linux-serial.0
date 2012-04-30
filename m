@@ -1,48 +1,67 @@
-From: Xiaofan Chen <xiaofanc@gmail.com>
-Subject: Re: [PATCH] usb: cp210x: Added support for GPIO (CP2103/4/5)
-Date: Sun, 29 Apr 2012 22:35:21 +0800
-Message-ID: <CAGjSPUB9s2ZvSUyb+45VfPQGZK_w13HVvnoCxt+Df5bgWAsnbw@mail.gmail.com>
-References: <1335632134-2488-1-git-send-email-preston.fick@silabs.com>
-	<20120428190502.32eaf294@pyramind.ukuu.org.uk>
-	<20380.13347.472373.965813@elektron.ikp.physik.tu-darmstadt.de>
-	<20120428203322.7680594f@pyramind.ukuu.org.uk>
-	<20381.15336.604590.461744@elektron.ikp.physik.tu-darmstadt.de>
+From: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] 8250.c: less than 2400 baud fix.
+Date: Sun, 29 Apr 2012 22:07:10 -0400
+Message-ID: <20120430020710.GA18098@kroah.com>
+References: <1346E68D3A5B2043907CF4BF466383411A07E00DBB@ESESSCMS0353.eemea.ericsson.se>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-yw0-f46.google.com ([209.85.213.46]:45414 "EHLO
-	mail-yw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750896Ab2D2OfW (ORCPT
+Received: from mail-vx0-f174.google.com ([209.85.220.174]:37904 "EHLO
+	mail-vx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750806Ab2D3FJG (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 29 Apr 2012 10:35:22 -0400
-In-Reply-To: <20381.15336.604590.461744@elektron.ikp.physik.tu-darmstadt.de>
+	Mon, 30 Apr 2012 01:09:06 -0400
+Received: by mail-vx0-f174.google.com with SMTP id p1so1808975vcq.19
+        for <linux-serial@vger.kernel.org>; Sun, 29 Apr 2012 22:09:06 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <1346E68D3A5B2043907CF4BF466383411A07E00DBB@ESESSCMS0353.eemea.ericsson.se>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Uwe Bonnes <bon@elektron.ikp.physik.tu-darmstadt.de>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Christian Melki <christian.melki@ericsson.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On Sun, Apr 29, 2012 at 9:02 PM, Uwe Bonnes
-<bon@elektron.ikp.physik.tu-darmstadt.de> wrote:
-> most RS232/USB Adapter don't supply and most applications working with these
-> adapters don't need hard realtime. So even writing and reading the serial
-> lines can be handled with libusb, like libftdi does.
->
-> But as soon as higher level protocols based on the serial line get involved,
-> a kernel driver is needed...
->
-> So when thinking some termiox, some thoughts for the FTDI special modes,
-> like MPSSE or synchronous FIFO should be spent. It would come handy if I
-> could open /dev/ttyUSBx, set som termiox and could use the kernel driver for
-> sending and receiving MPSSE commands. MPSSE is e.g. used in OpenOCD and
-> xc3sprog to talk e.g. JTAG to external devices.
+On Thu, Apr 26, 2012 at 08:59:50AM +0200, Christian Melki wrote:
+> From: Christian Melki <christian.melki@ericsson.se>
+> 
+> We noticed that we were loosing data at speed less than 2400 baud.
+> It turned out our (TI16750 compatible) uart with 64 byte outgoing fifo
+> was truncated to 16 byte (bit 5 sets fifo len) when modifying the fcr
+> reg.
+> The input code still fills the buffer with 64 bytes if I remember
+> correctly and thus data is lost.
+> Our fix was to remove whiping of the fcr content and just add the
+> TRIGGER_1 which we want for latency.
+> I can't see why this would not work on less than 2400 always, for all
+> uarts ...
+> Otherwise one would have to make sure the filling of the fifo re-checks
+> the current state of available fifo size (urrk).
+> 
+> Signed-off-by: Christian Melki <christian.melki@ericsson.se>
+> ---
+> 
+> diff -urpN linux-3.3.2.orig//drivers/tty/serial/8250/8250.c linux-3.3.2/drivers/tty/serial/8250/8250.c
+> --- linux-3.3.2.orig//drivers/tty/serial/8250/8250.c	2012-04-25 10:31:29.000000000 +0200
+> +++ linux-3.3.2/drivers/tty/serial/8250/8250.c	2012-04-26 08:46:29.000000000 +0200
+> @@ -2299,10 +2299,11 @@ serial8250_do_set_termios(struct uart_po
+>  		quot++;
+>  
+>  	if (up->capabilities & UART_CAP_FIFO && up->port.fifosize > 1) {
+> -		if (baud < 2400)
+> -			fcr = UART_FCR_ENABLE_FIFO | UART_FCR_TRIGGER_1;
+> -		else
+> -			fcr = uart_config[up->port.type].fcr;
+> +		fcr = uart_config[up->port.type].fcr;
+> +		if (baud < 2400) {
+> +			fcr &= ~UART_FCR_TRIGGER_MASK;
+> +			fcr |= UART_FCR_TRIGGER_1;
+> +		}
+>  	}
 
-On the other hand, OpenOCD and your xc3sprog will probably remain
-to be cross-plattform and in that case libusb/libftdi is a good option
-to go. There is a patch under review in OpenOCD where libusb-1.0
-is used for the MPSSE engine instead of libftdi/ftd2xx and the
-performance seems to be better.
+This patch doesn't apply at all to my tree, and I can't see why with a
+quick glance :(
 
+Can you redo this against the linux-next tree and resend it please?
 
+thanks,
 
--- 
-Xiaofan
+greg k-h
