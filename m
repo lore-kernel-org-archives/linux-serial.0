@@ -1,67 +1,66 @@
-From: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] 8250.c: less than 2400 baud fix.
-Date: Sun, 29 Apr 2012 22:07:10 -0400
-Message-ID: <20120430020710.GA18098@kroah.com>
-References: <1346E68D3A5B2043907CF4BF466383411A07E00DBB@ESESSCMS0353.eemea.ericsson.se>
+From: Christian Melki <christian.melki@ericsson.com>
+Subject: RE: 8250.c: Generic support for RTS disabling once shiftreg and
+ fifo is empty. (low latency RS485 etc).
+Date: Mon, 30 Apr 2012 09:05:10 +0200
+Message-ID: <1346E68D3A5B2043907CF4BF466383411A07E011F7@ESESSCMS0353.eemea.ericsson.se>
+References: <1346E68D3A5B2043907CF4BF466383411A07E01021@ESESSCMS0353.eemea.ericsson.se>
+ <20120427100207.48c04654@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vx0-f174.google.com ([209.85.220.174]:37904 "EHLO
-	mail-vx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750806Ab2D3FJG (ORCPT
+Received: from mailgw2.ericsson.se ([193.180.251.37]:52349 "EHLO
+	mailgw2.ericsson.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751609Ab2D3HFN convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 30 Apr 2012 01:09:06 -0400
-Received: by mail-vx0-f174.google.com with SMTP id p1so1808975vcq.19
-        for <linux-serial@vger.kernel.org>; Sun, 29 Apr 2012 22:09:06 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <1346E68D3A5B2043907CF4BF466383411A07E00DBB@ESESSCMS0353.eemea.ericsson.se>
+	Mon, 30 Apr 2012 03:05:13 -0400
+In-Reply-To: <20120427100207.48c04654@pyramind.ukuu.org.uk>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Christian Melki <christian.melki@ericsson.com>
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On Thu, Apr 26, 2012 at 08:59:50AM +0200, Christian Melki wrote:
-> From: Christian Melki <christian.melki@ericsson.se>
+> On Fri, 27 Apr 2012 08:23:23 +0200
+> Christian Melki <christian.melki@ericsson.com> wrote:
 > 
-> We noticed that we were loosing data at speed less than 2400 baud.
-> It turned out our (TI16750 compatible) uart with 64 byte outgoing fifo
-> was truncated to 16 byte (bit 5 sets fifo len) when modifying the fcr
-> reg.
-> The input code still fills the buffer with 64 bytes if I remember
-> correctly and thus data is lost.
-> Our fix was to remove whiping of the fcr content and just add the
-> TRIGGER_1 which we want for latency.
-> I can't see why this would not work on less than 2400 always, for all
-> uarts ...
-> Otherwise one would have to make sure the filling of the fifo re-checks
-> the current state of available fifo size (urrk).
+> > Hi.
+> > 
+> > I have written a patch for 8250.c that introduces a new 
+> > ioctl to tell the uart driver to shift disable RTS when uart 
+> > has been completely emptied.
+> > This idea is to set the ioctl once the master is finished 
+> > and wants to shift the bus.
+> > We needed this to be in the kernel since we have very 
+> > little time to shift RTS according to the implemented 
+> > protocol on top of RS485.
+> > 
+> > Is there any interest in the community for such a behavior?
 > 
-> Signed-off-by: Christian Melki <christian.melki@ericsson.se>
-> ---
+> We have a set of RS485 ioctls that provide a standard 
+> interface for assisting RS485 handling. The interface should 
+> probably use those if possible.
+
+Ok, didn't see that ioctl. Don't like the naming though.
+I know I have used RS485 as a reference, but this can be used for
+any half duplex protocol control. Maybe something like RTSCTL
+would be more appropriate. (I was looking for ioctls with RTS names).
+Anyway, no more whining :). I'll redo it with that ioctl instead.
+ 
+> > The patch is a little ugly right now. It busywaits a 
+> > maximum amount of time for the shift register to become 
+> > empty. I don't know how to do it without introducing a 
+> > latency that is more than our max RTS time shift requirement 
+> > (50us). I think it could be useful with a generic 8250.c 
+> > support for this.
 > 
-> diff -urpN linux-3.3.2.orig//drivers/tty/serial/8250/8250.c linux-3.3.2/drivers/tty/serial/8250/8250.c
-> --- linux-3.3.2.orig//drivers/tty/serial/8250/8250.c	2012-04-25 10:31:29.000000000 +0200
-> +++ linux-3.3.2/drivers/tty/serial/8250/8250.c	2012-04-26 08:46:29.000000000 +0200
-> @@ -2299,10 +2299,11 @@ serial8250_do_set_termios(struct uart_po
->  		quot++;
->  
->  	if (up->capabilities & UART_CAP_FIFO && up->port.fifosize > 1) {
-> -		if (baud < 2400)
-> -			fcr = UART_FCR_ENABLE_FIFO | UART_FCR_TRIGGER_1;
-> -		else
-> -			fcr = uart_config[up->port.type].fcr;
-> +		fcr = uart_config[up->port.type].fcr;
-> +		if (baud < 2400) {
-> +			fcr &= ~UART_FCR_TRIGGER_MASK;
-> +			fcr |= UART_FCR_TRIGGER_1;
-> +		}
->  	}
+> We've hit the same hardware limit in a couple of other places 
+> where you end up having to spin on the last byte. I don't 
+> think it's a problem providing it is only triggered when 
+> trying to do the RS485 bits with that feature.
 
-This patch doesn't apply at all to my tree, and I can't see why with a
-quick glance :(
+It will be exactly like that in the tx-path. So it won't disturb
+"normal" users beside one more feature check.
 
-Can you redo this against the linux-next tree and resend it please?
-
-thanks,
-
-greg k-h
+> Alan
+> 
