@@ -1,58 +1,79 @@
-From: Mark Brown <broonie@opensource.wolfsonmicro.com>
+From: NeilBrown <neilb@suse.de>
 Subject: Re: Question:  How to power-manage UART-attached devices.
-Date: Tue, 1 May 2012 17:33:03 +0100
-Message-ID: <20120501163303.GA4089@opensource.wolfsonmicro.com>
+Date: Wed, 2 May 2012 09:15:16 +1000
+Message-ID: <20120502091516.20d87fc8@notabene.brown>
 References: <20120501082209.0b560708@notabene.brown>
- <20120430223322.GA3951@sirena.org.uk>
- <20120501093559.5c14087d@notabene.brown>
+	<20120430223322.GA3951@sirena.org.uk>
+	<20120501093559.5c14087d@notabene.brown>
+	<20120501163303.GA4089@opensource.wolfsonmicro.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="qDbXVdCdHGoSgWSk"
+Content-Type: multipart/signed; micalg=PGP-SHA1;
+ boundary="Sig_/Z/qVR5Ol0lURzcSZffP9xmg"; protocol="application/pgp-signature"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20120501093559.5c14087d@notabene.brown>
+In-Reply-To: <20120501163303.GA4089@opensource.wolfsonmicro.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: NeilBrown <neilb@suse.de>
+To: Mark Brown <broonie@opensource.wolfsonmicro.com>
 Cc: linux-serial@vger.kernel.org, linux-pm@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
+--Sig_/Z/qVR5Ol0lURzcSZffP9xmg
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
---qDbXVdCdHGoSgWSk
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+On Tue, 1 May 2012 17:33:03 +0100 Mark Brown
+<broonie@opensource.wolfsonmicro.com> wrote:
 
-On Tue, May 01, 2012 at 09:35:59AM +1000, NeilBrown wrote:
-> On Mon, 30 Apr 2012 23:33:22 +0100 Mark Brown
-> > On Tue, May 01, 2012 at 08:22:09AM +1000, NeilBrown wrote:
+> On Tue, May 01, 2012 at 09:35:59AM +1000, NeilBrown wrote:
+> > On Mon, 30 Apr 2012 23:33:22 +0100 Mark Brown
+> > > On Tue, May 01, 2012 at 08:22:09AM +1000, NeilBrown wrote:
+>=20
+> > > The userspace consumer was added for users like this that live entire=
+ly
+> > > in userspace.
+>=20
+> >  I assume you mean REGULATOR_VIRTUAL_CONSUMER (drivers/regulator/virtua=
+l.c)?
+>=20
+> No, that's just for testing drivers in development.  I mean the
+> userspace consumer which is hidden away in userspace-consumer.c.
 
-> > The userspace consumer was added for users like this that live entirely
-> > in userspace.
+Ahhh, of course.  What a cunning hiding place! :-)
 
->  I assume you mean REGULATOR_VIRTUAL_CONSUMER (drivers/regulator/virtual.c)?
+However it doesn't suit my need - I want something more abstracted.
 
-No, that's just for testing drivers in development.  I mean the
-userspace consumer which is hidden away in userspace-consumer.c.
+I can see there may well be a place for a simple on/off switch for some
+components, but then I would prefer to see it as
 
---qDbXVdCdHGoSgWSk
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+   /sys/class/power-switch/$devicename/state
+
+rather than
+
+  /sys/devices/platform/reg-userspace-consumer.X/{name,state}
+
+
+Thanks,
+NeilBrown
+
+--Sig_/Z/qVR5Ol0lURzcSZffP9xmg
+Content-Type: application/pgp-signature; name=signature.asc
+Content-Disposition: attachment; filename=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
+Version: GnuPG v2.0.18 (GNU/Linux)
 
-iQIcBAEBAgAGBQJPoA+KAAoJEBus8iNuMP3dECgP/RcaI324J21ggRHxNxgEsE5/
-4Z1trO7mUivhfYmbvTFyW+H4pwM8qZeJe9boq91UXrS8jOBG+La7r/dnhc0l+mjk
-3kLzmUhRpXBC+eEY9I3uzuTeDXjre68sMFBID4QpoBSBHU0wr36q3NqohiZhpcXV
-ALxDWq8Gn4UqS4IeWoW5astovX4mJh0ZZ2Hlpr5nW0iMhnonOqZFh+kb7gWag9dT
-hoY3bE/ythqq6w237nn+KFfvXPoxB6NQNSKEv4iTJAPOVAZoQmNQu411a6jYy0xx
-/Ssq3CtzO8X974ym56o9f3fAdQzgEJx4nm6qoXHgZoYQEM7+Mjn09H80Ot/HJsxV
-GaXIZ6afJcEzxcF+k7VYJoaIOk2p5SAJHmMimOzTgGDCJfue0wPzwZt6TZpSWvUh
-iBtWLeD1g0DME3qnwpqsWV8KyaofwoYpBMdNtNGqha5DSF6Zk8R3tDfLKRBJd6ei
-OHtvINRoTonI2RedjbIPf1DSHDjXNoMQaO3Yom4HqCIjDht4NQT7bfuC1Fm1zFY2
-LK9PrB99iplj8o8LYvyqRZuuqIoy79w9hoBkohzkysRRN2poVJ04aBzYDIGpmH+t
-pl4RYgYkv7cWrpQFDgWQBdV/v1JCZkTo9YJmZJpJ6IIO2D4YX2ZyUwoOCTWGjwwQ
-a/vQibXLw4yenl0uohoq
-=GqiH
+iQIVAwUBT6BuhDnsnt1WYoG5AQKlCA/+KRtmstwTK2E2uh7Nd/K8F+B9MI7fNylw
+ySNjUqloOCUALZrYwS1SOb9fIVbw/fd0WGvY9xJnswVkZ4YwAUwaKzfNqfeLnANd
+hm8YSQ3p72IzuxiyuhqCk9hdGcDYg52uEW6TtfsriyzlLMouGamQpFhmu/C2Vb7o
+usD5IdIe9OMwuZtfZ/91wH2tRB7BA544/j0gz6fChe6BzwBuFFYxHRlV9BwEE//K
+6TSSabwdrv3PzCh5IBcUELIyha+uor2ct5bhwcmYd6I4XoFVfP1JGLT6mXFg3ncU
+eZ/Ebf5Ey7yiWdHcTzFWmm513daMehKLRDfN/iWQ0IWCAUFuwZ6e6HO4P5uJnNI7
+pFmDq+J0fTO4s1vfx7PIWZu+FwBcuqpICfj7ZHJ65yOJwMR3KodK2JQMWz/qoc+z
+WADc8hHK84oKB4rl3zNbeIz8rWmrom618vTnuEZyrXHWEuMr1QG5xWEHInL/7nm/
+hZTIc2SO3WetCEnFxlCZO6Ii66JHBuOKdzXuFLKUu0IE1G5/tBMCGNJFmU0TcSrj
+zCEQWVykuq0jWjWKgmAWijY4BhOQcvx9kXZh3igkZ0WBrhvZS2O3BejiX0ORj+Sp
+LrrmG2auSKhIAVxAuhUKKPR6a2waMh4YYDM3Efy58R5JTsGcL5hgWMIwecXYZv8+
+x4Gf4ThVgaU=
+=qyQD
 -----END PGP SIGNATURE-----
 
---qDbXVdCdHGoSgWSk--
+--Sig_/Z/qVR5Ol0lURzcSZffP9xmg--
