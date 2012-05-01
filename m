@@ -1,160 +1,73 @@
-From: Preston Fick <pffick@gmail.com>
-Subject: [PATCH 3/3] usb: cp210x: Add ioctl for GPIO support
-Date: Mon, 30 Apr 2012 23:06:50 -0500
-Message-ID: <1335845210-5147-3-git-send-email-preston.fick@silabs.com>
-References: <1335845210-5147-1-git-send-email-preston.fick@silabs.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1335845210-5147-1-git-send-email-preston.fick@silabs.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: preston.fick@silabs.com
+From: Ivo Sieben <meltedpianoman@gmail.com>
+Subject: Re: Deterministic behavior for TTY serial
+Date: Tue, 1 May 2012 16:30:10 +0200
+Message-ID: <CAMSQXEGb9moJbCQwwXgEq7H-HvaSiuS5JBL55jr0ZhEEeAmqzw@mail.gmail.com>
+References: <CAMSQXEENByqSmK2bSxMngY2WuV86AAcX_LxTbA5JSOjT3ta_FA@mail.gmail.com>
+	<20120419001407.GA24710@kroah.com>
+	<CAMSQXEEkssPGWYgC4dkpKEhfrB4s8yOoxiNNVdRRX7r+b91EMQ@mail.gmail.com>
+	<20120419154609.GA9263@kroah.com>
+	<CAMSQXEEN=6M59CR3riNA5-kFFv7QAsn_g3PHi3A8P9mh3SfdeQ@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ob0-f174.google.com ([209.85.214.174]:36488 "EHLO
+	mail-ob0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753045Ab2EAOaL (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 1 May 2012 10:30:11 -0400
+In-Reply-To: <CAMSQXEEN=6M59CR3riNA5-kFFv7QAsn_g3PHi3A8P9mh3SfdeQ@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, RT <linux-rt-users@vger.kernel.org>
 
-This patch adds support for GPIO for CP210x devices that support it through two
-IOCTLs to get or set the GPIO latch on a CP210x device. The specification for
-this can be found in Silicon Labs AN571 document on section 5.27.1-4.
+Hello,
 
-Signed-off-by: Preston Fick <preston.fick@silabs.com>
----
- drivers/usb/serial/cp210x.c |   98 +++++++++++++++++++++++++++++++++++++++++++
- 1 files changed, 98 insertions(+), 0 deletions(-)
+2012/4/26 Ivo Sieben <meltedpianoman@gmail.com>:
+>
+> I did some analyses using the ftrace 'function_graph' tracer to find
+> out what causes the TTY read to take longer than expected.
+> I use a test application, running on RT prioirty 99 that writes bursts
+> of 24 Bytes data to a my TTY device. A loop back connector is used, so
+> the application also reads back these 24 bytes. Non blocking reads &
+> writes are used.
+>
+> This analyses is still ongoing...
+> Regards,
+> Ivo Sieben
 
-diff --git a/drivers/usb/serial/cp210x.c b/drivers/usb/serial/cp210x.c
-index b3646b8..9d1e542 100644
---- a/drivers/usb/serial/cp210x.c
-+++ b/drivers/usb/serial/cp210x.c
-@@ -35,6 +35,8 @@
-  */
- static int cp210x_open(struct tty_struct *tty, struct usb_serial_port *);
- static void cp210x_close(struct usb_serial_port *);
-+static int cp210x_ioctl(struct tty_struct *tty,
-+	unsigned int cmd, unsigned long arg);
- static void cp210x_get_termios(struct tty_struct *,
- 	struct usb_serial_port *port);
- static void cp210x_get_termios_port(struct usb_serial_port *port,
-@@ -175,6 +177,7 @@ static struct usb_serial_driver cp210x_device = {
- 	.bulk_out_size		= 256,
- 	.open			= cp210x_open,
- 	.close			= cp210x_close,
-+	.ioctl			= cp210x_ioctl,
- 	.break_ctl		= cp210x_break_ctl,
- 	.set_termios		= cp210x_set_termios,
- 	.tiocmget 		= cp210x_tiocmget,
-@@ -195,6 +198,10 @@ static struct usb_serial_driver * const serial_drivers[] = {
- #define CP2104_PARTNUM		0x04
- #define CP2105_PARTNUM		0x05
- 
-+/* IOCTLs */
-+#define IOCTL_GPIOGET		0x8000
-+#define IOCTL_GPIOSET		0x8001
-+
- /* Config request types */
- #define REQTYPE_HOST_TO_INTERFACE	0x41
- #define REQTYPE_INTERFACE_TO_HOST	0xc1
-@@ -235,6 +242,8 @@ static struct usb_serial_driver * const serial_drivers[] = {
- #define UART_DISABLE		0x0000
- 
- /* CP210X_VENDOR_SPECIFIC */
-+#define CP210X_WRITE_LATCH	0x37E1
-+#define CP210X_READ_LATCH	0x00C2
- #define CP210X_GET_PARTNUM	0x370B
- 
- /* CP210X_(SET|GET)_BAUDDIV */
-@@ -467,6 +476,95 @@ static void cp210x_close(struct usb_serial_port *port)
- 	mutex_unlock(&port->serial->disc_mutex);
- }
- 
-+static int cp210x_ioctl(struct tty_struct *tty,
-+	unsigned int cmd, unsigned long arg)
-+{
-+	struct usb_serial_port *port = tty->driver_data;
-+	struct cp210x_port_private *port_priv = usb_get_serial_port_data(port);
-+	int result = 0;
-+	unsigned int latch_setting = 0;
-+
-+	switch (cmd) {
-+
-+	case IOCTL_GPIOGET:
-+		if ((port_priv->bPartNumber == CP2103_PARTNUM) ||
-+			(port_priv->bPartNumber == CP2104_PARTNUM)) {
-+			result = usb_control_msg(port->serial->dev,
-+					usb_rcvctrlpipe(port->serial->dev, 0),
-+					CP210X_VENDOR_SPECIFIC,
-+					REQTYPE_DEVICE_TO_HOST,
-+					CP210X_READ_LATCH,
-+					port_priv->bInterfaceNumber,
-+					&latch_setting, 1,
-+					USB_CTRL_GET_TIMEOUT);
-+			if (result != 1)
-+				return -EPROTO;
-+			*(unsigned long *)arg = (unsigned long)latch_setting;
-+			return 0;
-+		} else if (port_priv->bPartNumber == CP2105_PARTNUM) {
-+			result = usb_control_msg(port->serial->dev,
-+					usb_rcvctrlpipe(port->serial->dev, 0),
-+					CP210X_VENDOR_SPECIFIC,
-+					REQTYPE_INTERFACE_TO_HOST,
-+					CP210X_READ_LATCH,
-+					port_priv->bInterfaceNumber,
-+					&latch_setting, 1,
-+					USB_CTRL_GET_TIMEOUT);
-+			if (result != 1)
-+				return -EPROTO;
-+			*(unsigned long *)arg = (unsigned long)latch_setting;
-+			return 0;
-+		} else {
-+			return -ENOTSUPP;
-+		}
-+		break;
-+
-+	case IOCTL_GPIOSET:
-+		if ((port_priv->bPartNumber == CP2103_PARTNUM) ||
-+			(port_priv->bPartNumber == CP2104_PARTNUM)) {
-+			latch_setting =
-+				*(unsigned int *)arg & 0x000000FF;
-+			latch_setting |=
-+				(*(unsigned int *)arg & 0x00FF0000) >> 8;
-+			result = usb_control_msg(port->serial->dev,
-+					usb_sndctrlpipe(port->serial->dev, 0),
-+					CP210X_VENDOR_SPECIFIC,
-+					REQTYPE_HOST_TO_DEVICE,
-+					CP210X_WRITE_LATCH,
-+					latch_setting,
-+					NULL, 0,
-+					USB_CTRL_SET_TIMEOUT);
-+			if (result != 0)
-+				return -EPROTO;
-+			return 0;
-+		} else if (port_priv->bPartNumber == CP2105_PARTNUM) {
-+			latch_setting =
-+				*(unsigned int *)arg & 0x000000FF;
-+			latch_setting |=
-+				(*(unsigned int *)arg & 0x00FF0000) >> 8;
-+			result = usb_control_msg(port->serial->dev,
-+					usb_sndctrlpipe(port->serial->dev, 0),
-+					CP210X_VENDOR_SPECIFIC,
-+					REQTYPE_HOST_TO_INTERFACE,
-+					CP210X_WRITE_LATCH,
-+					port_priv->bInterfaceNumber,
-+					&latch_setting, 2,
-+					USB_CTRL_SET_TIMEOUT);
-+			if (result != 2)
-+				return -EPROTO;
-+			return 0;
-+		} else {
-+			return -ENOTSUPP;
-+		}
-+		break;
-+
-+	default:
-+		break;
-+	}
-+
-+	return -ENOIOCTLCMD;
-+}
-+
- /*
-  * cp210x_get_termios
-  * Reads the baud rate, data bits, parity, stop bits and flow control mode
--- 
-1.7.5.4
+I've proceeded with my analyses, and I think I've found one cause for
+the non deterministic read behavior ...
+(there is also an issue with the flip buffer read handling, but I'm
+still investigating that)
+
+On line 47 of tty_ldisc.c a Spin Lock is defined that guards the line
+discipline administration.
+It protects two reference counters:
+"users", atomic counter in the tty_ldisc struct, that holds the number
+of active users of the ldisc in each tty instance. Used for "idle"
+handling.
+"refcount", counter in the tty_ldisc_ops struct, that holds the number
+of lines using the discipline. (when the user count of a line reaches
+0, the refcount of the line discipline is decreased by one) Only when
+the refcount is 0, it is allowed to unregister the line discipline.
+
+This Spin Lock is defined globally, This causes that my high priority
+process to get blocked because of a lower priority process that holds
+this spin lock. Of course you get priority inheritance, but this adds
+quite a lot of extra execution time to the read function (because of
+additional spin lock behavior, and scheduling to the lower priority
+process)
+
+Since the "user" and "refcount" reference counters have combined
+behavior (refcount is decremented when users reaches zero), I don't
+see a way to remove this global lock. Any ideas how this can be
+improved?
+
+We are considering to implement our UART device driver as a "normal"
+character device driver and bypass the TTY framework. But that would
+be a pitty, since we would have to re-implement some functionality
+that is already in the TTY framework.
+
+Regards,
+Ivo Sieben
