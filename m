@@ -1,112 +1,97 @@
 From: NeilBrown <neilb@suse.de>
 Subject: Re: Question:  How to power-manage UART-attached devices.
-Date: Tue, 1 May 2012 10:12:10 +1000
-Message-ID: <20120501101210.508190eb@notabene.brown>
+Date: Tue, 1 May 2012 10:27:58 +1000
+Message-ID: <20120501102758.03aa9cb2@notabene.brown>
 References: <20120501082209.0b560708@notabene.brown>
 	<4F9F178F.3030408@zytor.com>
-	<20120501003420.028b57ec@pyramind.ukuu.org.uk>
+	<20120501094752.2ea16f23@notabene.brown>
+	<4F9F2538.4080407@zytor.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=PGP-SHA1;
- boundary="Sig_/l0YFVpK+6Xzry/kzbXpiHW5"; protocol="application/pgp-signature"
+ boundary="Sig_/3v+ngJgKTGN3DjeU/V=7_Y2"; protocol="application/pgp-signature"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:43361 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:44005 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756584Ab2EAAMN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 30 Apr 2012 20:12:13 -0400
-In-Reply-To: <20120501003420.028b57ec@pyramind.ukuu.org.uk>
+	id S1756896Ab2EAA2C (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 30 Apr 2012 20:28:02 -0400
+In-Reply-To: <4F9F2538.4080407@zytor.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: "H. Peter Anvin" <hpa@zytor.com>, linux-serial@vger.kernel.org, linux-pm@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>
+To: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-pm@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>
 
---Sig_/l0YFVpK+6Xzry/kzbXpiHW5
+--Sig_/3v+ngJgKTGN3DjeU/V=7_Y2
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 1 May 2012 00:34:20 +0100 Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
+On Mon, 30 Apr 2012 16:50:16 -0700 "H. Peter Anvin" <hpa@zytor.com> wrote:
 
-> On Mon, 30 Apr 2012 15:51:59 -0700
-> "H. Peter Anvin" <hpa@zytor.com> wrote:
->=20
-> > On 04/30/2012 03:22 PM, NeilBrown wrote:
-> > >=20
-> > > What I would really like is to integrate it closely with the state
-> > > of the UART.  i.e. if the /dev/ttyO1 device is open, then the GPS
-> > > is "on".  If not then it is "off".  Similarly if /dev/tty/O0 is
-> > > open, bluetooth is "on", else "off". However I cannot find any way
-> > > to "plug in" to the tty or serial drivers to perform an arbitrary
-> > > action on first-open or last-close.  Is something like that
-> > > possible? If not, is it a reasonable thing to ask? Any suggests
-> > > about where to put such a hook?
-> > >=20
+> On 04/30/2012 04:47 PM, NeilBrown wrote:
 > >=20
-> > I don't think that's the right interface.  Just because the port is
-> > currently open doesn't mean the device is active, nor vice versa.  ALL
-> > it means is that someone currently has an access handle to it.
+> > I imagine this proposal as being like a virtual DTR line.  It may
+> > not always be appropriate to connect DTR to the power switch, but
+> > sometimes it is.
 > >=20
-> > Since a serial port models, well, a *port*, it is logical to think of
-> > a (hypothetical) socket containing an RS-232 connector as well as a
-> > power outlet.  Given that, it would be logical to drive the "power
-> > connector" using the same type of interface used for the other parts
-> > of an RS-232 control, meaning either with termios flags or via a
-> > dedicated control ioctl (TIOCPOWER?).
 >=20
-> Actually several of our virtual tty interfaces treat open as meaning
-> powered up. It's a fairly logical power management model. A lot of our
-> real tty ports do the same as well and kill power on the last close.
+> Yeah, that's pretty much what I'm suggesting.
 >=20
-> At the tty layer the tty_port helper callbacks port->activate() and
-> port->shutdown() provide the needed functionality.
->=20
-> You don't however want to be "hooking" this - your platform needs to
-> provide its own versions of the relevant operations in the OMAP serial
-> driver.
+> 	-hpa
 
-Hi Alan,
- thanks for the pointers.
+Yes, so you are :-)
 
- Looking at serial_core.c, which appears the be the gateway between tty_port
- and the OMAP serial driver, the activate() function it provides is a no-op,
- and the shutdown() function calls uport->ops->shutdown() (and a couple of
- other things).
- However there is  a uart_port_startup() which claims to be called
- once-per-open even though activate() doesn't call it (tty_operations.open()
- does).  And it calls uport->ops->startup().
+I was distracted by the TIOCPOWER suggestion, and I really didn't want any
+new action by user-space, I would much prefer it all "just works".
+But you also mentioned "termios flags" but by that I suspect you are
+referring to HUPCL which is documented as:
 
- The omap-serial handlers for these are serial_omap_startup() and
- serial_omap_shutdown().  I think you are suggesting that I should plug in
- there somehow.  I wonder how.
+       HUPCL  Lower modem control lines after last process closes  the  dev=
+ice
+              (hang up).
 
- Maybe I could teach it to use a given GPIO as a 'DTR', and then write a
- separate driver which registers with gpiolib as providing an output GPIO a=
-nd
- which responds to changes on that GPIO by turning the device 'on' or 'off'.
+without really saying which modem control lines.  Looking at the code it
+seems to be talking about DTR and RTS.  It only says "lower on last close"
+but doesn't say "raise on first open" but maybe that is assumed.
+So as long as HUPCL is the default, defining a virtual DTR line might be ju=
+st
+what I want, and HUPCL could be disabled of someone want to keep the device
+powered on while it is closed.
 
- Does that sound reasonably sane?
+So I think I want to:
+ 1/ teach omap-serial to drive a given GPIO as a DTR line
+ 2/ write a 'gpio-regulator' driver which provides a single GPIO and
+    turns a given regulator 'on' or 'off' depending on the state of the GPIO
+ 3/ write a special-purpose GPIO driver which provides a single GPIO
+    and toggles another GPIO whenever the state of the first changes, and a=
+lso
+    monitors the serial RX pin when the device should be 'off', and toggles
+    again if it sees RX activity.
+ 4/ Keeping using rfkill to power the GPS antenna.
+
+Sounds like a plan.
 
 Thanks,
 NeilBrown
 
---Sig_/l0YFVpK+6Xzry/kzbXpiHW5
+--Sig_/3v+ngJgKTGN3DjeU/V=7_Y2
 Content-Type: application/pgp-signature; name=signature.asc
 Content-Disposition: attachment; filename=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.18 (GNU/Linux)
 
-iQIVAwUBT58qWjnsnt1WYoG5AQLBRg/+N4dqmPDUZXQR0MaHVgAdzeIOmnpCcRKT
-t7BTD7wS/Lyu7RwLIGRiybPAhGU235RCu5kyAUkN9VVXQ4kZ/ZAn0FF8cDRciWo6
-CQm/EawGeUCwv34vyD4tXgZTm5LP6brmlMY45/cfRrwXfbLsVUZuASPnqWAD+9Ec
-XYkZZjhbA1LvjYnEJ+8arPzp2NflqxwEQ6Y1uVdKOMyit/u4e//S0D3+efCi+cVx
-YNCckjWdchSZwsvkR+UPCdKkYQ4avRBTk9Swu/pDpNXla42OZitFz3rPA4vJr5rA
-DulAn4BCB9ofOjjJirFMp/3z1QJD+zdP973RSoz4JYReOXOZ4sDilhffRN2xi60A
-XI3JIQnXGEJLDum8b2cdNH/2l+bpKSpTVXX+Q4E2GQDq183F4yEGqSrKMp6M2w12
-Lz9vegyqVkaGCKYrKfe1NnUrhEjyJjKS1eZl7VpLmZlW9gKVR2oVzG3r8g1oUWaT
-m9OKwn7kOPrai7TAP5b2dMFqMzIGP7+LHCG9HlP9u8AZhkhtWYCpDeCCj4gCAMPi
-WCBgKgij1iCfqds4oQRkP58akVNZekptlOimCgjSePWCLrlWqKqjfgqoLeY2OdSn
-8y0CXnsfMP6rfwkti1XI6OB7VD/CYhdliEHJvokSlKdOwxh0rYL+LBMNQJJGUQxS
-ZafFeY/Y2Hs=
-=vQfJ
+iQIVAwUBT58uDjnsnt1WYoG5AQIY3g/9E6xuWnL+7EjFmNLVRnP9gauOACrOBzLF
+xfdAvV2V0m+/ZxbkA4VsS2bmPCfyTA1113cLyNMTNBYXv01bBs7Xw8jnLpkt4XL7
+BEGqXkrWqGAv99p7usqur8DiNO2/9SiMUcpZd6cTU2UEq0g68hvk0zbpfiW2LaTk
+ltwY9xZ+nMgNs7G5n/rH0uBgIO/hfqT3ygmNRG1FEfmxp1TwDEjTw6x52tcSDvwx
+Zb0PkG9JW8GKFSPFQFKQ2bXDxmUAPRpFvCALvPmfszv8pftGTBzNS4a87DEBxy+M
+j+WE5Y8Mwf3TlaRNUfFfuW0W5swoUAZ1IIuaIEHKNS2v7DKr3gGM8vURVXwyIk7S
+9YiPVuqFuk0iXTes/mXuBD3dvM+AJNX1qlc46caVsHypRQIfLVcP5ZMBBTOssdfo
+sdbB1WMfHGEGdcWrJTyl0QS6UAWImq67aQEJZ/FfT2xh59snhDAemwoSJDYm36cn
+eV3idZtJMOHcsL8YNx5F5JPsjagkYk/y16z1+g/ARa6HBH6fNwmr2Vgekt7Usk6x
+ZsFpw8Eih3TMOfkFCw1ADBdUQI/0hJ/nLBpZ1I0csw107Fl7G9GabRP4K+MnVYPN
+/abFtNI0SFM8z71EMJC0zPLhKXb+4I6h5CGTrrx8aOsieliTP0PgrbKg9PwSI4c0
+n4f7dQ/Esjc=
+=GUkV
 -----END PGP SIGNATURE-----
 
---Sig_/l0YFVpK+6Xzry/kzbXpiHW5--
+--Sig_/3v+ngJgKTGN3DjeU/V=7_Y2--
