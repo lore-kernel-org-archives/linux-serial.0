@@ -1,27 +1,20 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 00/06] serial8250: DLL/DLM rework, Emma Mobile UART
- driver
-Date: Wed, 2 May 2012 14:03:21 +0100
-Message-ID: <20120502140321.54f7af9c@pyramind.ukuu.org.uk>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 00/06] serial8250: DLL/DLM rework, Emma Mobile UART driver
+Date: Wed, 2 May 2012 13:12:08 +0000
+Message-ID: <201205021312.08308.arnd@arndb.de>
 References: <20120502124642.30480.41373.sendpatchset@w520>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: Text/Plain;
+  charset="iso-8859-15"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:55953 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751565Ab2EBNBC (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 2 May 2012 09:01:02 -0400
+Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <20120502124642.30480.41373.sendpatchset@w520>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-sh-owner@vger.kernel.org
 To: Magnus Damm <magnus.damm@gmail.com>
-Cc: linux-serial@vger.kernel.org, horms@verge.net.au, arnd@arndb.de, linux-sh@vger.kernel.org, gregkh@linuxfoundation.org, swarren@wwwdotorg.org, linux-kernel@vger.kernel.org, rjw@sisk.pl, paul.gortmaker@windriver.com, lethal@linux-sh.org, olof@lixom.net, dan.j.williams@intel.com, alan@linux.intel.com
+Cc: linux-serial@vger.kernel.org, horms@verge.net.au, linux-sh@vger.kernel.org, gregkh@linuxfoundation.org, swarren@wwwdotorg.org, linux-kernel@vger.kernel.org, rjw@sisk.pl, paul.gortmaker@windriver.com, lethal@linux-sh.org, olof@lixom.net, dan.j.williams@intel.com, alan@linux.intel.com
+List-Id: linux-serial@vger.kernel.org
 
-On Wed, 02 May 2012 21:46:42 +0900
-Magnus Damm <magnus.damm@gmail.com> wrote:
-
+On Wednesday 02 May 2012, Magnus Damm wrote:
 > serial8250: DLL/DLM rework, Emma Mobile UART driver
 > 
 > [PATCH 01/06] serial8250: Add dl_read()/dl_write() callbacks
@@ -51,4 +44,8 @@ Magnus Damm <magnus.damm@gmail.com> wrote:
 > 
 > Signed-off-by: Magnus Damm <damm@opensource.se>
 
-Acked-by: Alan Cox <alan@linux.intel.com>
+Looks good,
+
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+
+	Arnd
