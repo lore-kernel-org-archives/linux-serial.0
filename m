@@ -1,51 +1,65 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: Re: [PATCH 06/06] serial8250-em: Add Emma Mobile UART driver
-Date: Wed, 2 May 2012 10:41:12 -0400
-Message-ID: <4FA14788.6090000@windriver.com>
-References: <20120502124642.30480.41373.sendpatchset@w520> <20120502124736.30480.48207.sendpatchset@w520>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 3/3] usb: cp210x: Add ioctl for GPIO support
+Date: Wed, 2 May 2012 13:03:56 -0700
+Message-ID: <20120502200356.GA25915@kroah.com>
+References: <1335845210-5147-1-git-send-email-preston.fick@silabs.com>
+ <1335845210-5147-3-git-send-email-preston.fick@silabs.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail1.windriver.com ([147.11.146.13]:38529 "EHLO
-	mail1.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753428Ab2EBOlk (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 2 May 2012 10:41:40 -0400
-In-Reply-To: <20120502124736.30480.48207.sendpatchset@w520>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1335845210-5147-3-git-send-email-preston.fick@silabs.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Preston Fick <pffick@gmail.com>
+Cc: linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, preston.fick@silabs.com
 List-Id: linux-serial@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>
-Cc: linux-serial@vger.kernel.org, horms@verge.net.au, arnd@arndb.de, linux-sh@vger.kernel.org, gregkh@linuxfoundation.org, swarren@wwwdotorg.org, linux-kernel@vger.kernel.org, rjw@sisk.pl, lethal@linux-sh.org, olof@lixom.net, dan.j.williams@intel.com, alan@linux.intel.com
 
-On 12-05-02 08:47 AM, Magnus Damm wrote:
-> From: Magnus Damm <damm@opensource.se>
+On Mon, Apr 30, 2012 at 11:06:50PM -0500, Preston Fick wrote:
+> This patch adds support for GPIO for CP210x devices that support it through two
+> IOCTLs to get or set the GPIO latch on a CP210x device. The specification for
+> this can be found in Silicon Labs AN571 document on section 5.27.1-4.
 > 
-> Add a platform driver for Emma Mobile 8250 hardware.
+> Signed-off-by: Preston Fick <preston.fick@silabs.com>
+> ---
+>  drivers/usb/serial/cp210x.c |   98 +++++++++++++++++++++++++++++++++++++++++++
+>  1 files changed, 98 insertions(+), 0 deletions(-)
+> 
+> diff --git a/drivers/usb/serial/cp210x.c b/drivers/usb/serial/cp210x.c
+> index b3646b8..9d1e542 100644
+> --- a/drivers/usb/serial/cp210x.c
+> +++ b/drivers/usb/serial/cp210x.c
+> @@ -35,6 +35,8 @@
+>   */
+>  static int cp210x_open(struct tty_struct *tty, struct usb_serial_port *);
+>  static void cp210x_close(struct usb_serial_port *);
+> +static int cp210x_ioctl(struct tty_struct *tty,
+> +	unsigned int cmd, unsigned long arg);
+>  static void cp210x_get_termios(struct tty_struct *,
+>  	struct usb_serial_port *port);
+>  static void cp210x_get_termios_port(struct usb_serial_port *port,
+> @@ -175,6 +177,7 @@ static struct usb_serial_driver cp210x_device = {
+>  	.bulk_out_size		= 256,
+>  	.open			= cp210x_open,
+>  	.close			= cp210x_close,
+> +	.ioctl			= cp210x_ioctl,
+>  	.break_ctl		= cp210x_break_ctl,
+>  	.set_termios		= cp210x_set_termios,
+>  	.tiocmget 		= cp210x_tiocmget,
+> @@ -195,6 +198,10 @@ static struct usb_serial_driver * const serial_drivers[] = {
+>  #define CP2104_PARTNUM		0x04
+>  #define CP2105_PARTNUM		0x05
+>  
+> +/* IOCTLs */
+> +#define IOCTL_GPIOGET		0x8000
+> +#define IOCTL_GPIOSET		0x8001
 
+As Alan pointed out, we can't just add random ioctls for individual
+drivers for this type of thing.  We need to standardize on this.
 
-[...]
+Actually, why can't you use the GPIO subsystem for something like this?
+Can't you export your device as both a usb-serial device and a gpio
+device and have things work properly that way?
 
-> +
-> +config SERIAL_8250_EM
-> +	tristate "Support for Emma Mobile intergrated serial port"
-> +	depends on SERIAL_8250
+thanks,
 
-Should we depend on arch=ARM or something similar?  Even if the
-driver is written to be arch independent, if the Emma itself is
-physically tied to ARM platforms, we probably don't need to be
-building it for sparc allyesconfig etc.
-
-P.
-
-> +	help
-> +	  Selecting this option will add support for the integrated serial
-> +	  port hardware found on the Emma Mobile line of processors.
-> +	  If unsure, say N.
-> --- 0001/drivers/tty/serial/8250/Makefile
-> +++ work/drivers/tty/serial/8250/Makefile	2012-05-02 17:25:19.000000000 +0900
-> @@ -18,3 +18,4 @@ obj-$(CONFIG_SERIAL_8250_HUB6)		+= 8250_
->  obj-$(CONFIG_SERIAL_8250_MCA)		+= 8250_mca.o
->  obj-$(CONFIG_SERIAL_8250_FSL)		+= 8250_fsl.o
->  obj-$(CONFIG_SERIAL_8250_DW)		+= 8250_dw.o
-> +obj-$(CONFIG_SERIAL_8250_EM)		+= 8250_em.o
+greg k-h
