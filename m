@@ -1,75 +1,40 @@
-From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: Re: [PATCH 2/3] usb: cp210x: Added in support to get and store part
- number
-Date: Wed, 2 May 2012 13:04:30 -0700
-Message-ID: <20120502200430.GB25915@kroah.com>
-References: <1335845210-5147-1-git-send-email-preston.fick@silabs.com>
- <1335845210-5147-2-git-send-email-preston.fick@silabs.com>
- <4FA00C49.7000105@mvista.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PATCH] TTY VT bugfix for 3.4-rc5
+Date: Wed, 2 May 2012 13:28:23 -0700
+Message-ID: <20120502202823.GA27129@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <4FA00C49.7000105-Igf4POYTYCDQT0dZR+AlfA@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Sergei Shtylyov <sshtylyov-Igf4POYTYCDQT0dZR+AlfA@public.gmane.org>
-Cc: Preston Fick <pffick-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, preston.fick-S6d6foEdJf7QT0dZR+AlfA@public.gmane.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, May 01, 2012 at 08:16:09PM +0400, Sergei Shtylyov wrote:
-> Hello.
-> 
-> On 01-05-2012 8:06, Preston Fick wrote:
-> 
-> >This change gets the part number of the device when the driver is loaded and
-> >stores it in the private portion of the port structure. This addition will
-> >allow for part specific functionality to be added to the driver if needed.
-> 
-> >Signed-off-by: Preston Fick<preston.fick-S6d6foEdJf7QT0dZR+AlfA@public.gmane.org>
-> >---
-> >  drivers/usb/serial/cp210x.c |   24 ++++++++++++++++++++++++
-> >  1 files changed, 24 insertions(+), 0 deletions(-)
-> 
-> >diff --git a/drivers/usb/serial/cp210x.c b/drivers/usb/serial/cp210x.c
-> >index e67ccf3..b3646b8 100644
-> >--- a/drivers/usb/serial/cp210x.c
-> >+++ b/drivers/usb/serial/cp210x.c
-> [...]
-> >@@ -862,6 +874,7 @@ static int cp210x_startup(struct usb_serial *serial)
-> >  {
-> >  	struct cp210x_port_private *port_priv;
-> >  	int i;
-> >+	unsigned int partNum;
-> >
-> >  	/* cp210x buffers behave strangely unless device is reset */
-> >  	usb_reset_device(serial->dev);
-> >@@ -876,6 +889,17 @@ static int cp210x_startup(struct usb_serial *serial)
-> >  		    serial->interface->cur_altsetting->desc.bInterfaceNumber;
-> >
-> >  		usb_set_serial_port_data(serial->port[i], port_priv);
-> >+
-> >+		/* Get the 1-byte part number of the cp210x device */
-> >+		usb_control_msg(serial->dev,
-> 
->    This may involve DMA...
-> 
-> >+			usb_rcvctrlpipe(serial->dev, 0),
-> >+			CP210X_VENDOR_SPECIFIC,
-> >+			REQTYPE_DEVICE_TO_HOST,
-> >+			CP210X_GET_PARTNUM,
-> >+			port_priv->bInterfaceNumber,
-> >+			&partNum, 1,
-> 
->    You can't do DMA to a buffer situated on stack. You should
-> kmalloc() the buffer.
+The following changes since commit 69964ea4c7b68c9399f7977aa5b9aa6539a6a98a:
 
-You "must" kmalloc() the buffer, otherwise the driver will break on some
-systems.
+  Linux 3.4-rc5 (2012-04-29 15:19:10 -0700)
 
-Sorry, I can't accept this patch because of this.  Please redo it.
+are available in the git repository at:
 
-greg k-h
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.4-rc6
+
+for you to fetch changes up to 84f904ecd3aa2ccb5779b815b69c1cb592f07bb5:
+
+  vt: Fix deadlock on scroll-lock (2012-05-01 14:01:28 -0400)
+
+----------------------------------------------------------------
+TTY fix for 3.4-rc5
+
+This is a deadlock bugfix that was easy to hit, and that the vt layer lock
+rework got wrong, so it reverts the logic back to the way it was in 3.3 and
+earlier kernels to prevent problems.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Alan Cox (1):
+      vt: Fix deadlock on scroll-lock
+
+ drivers/tty/vt/keyboard.c |   26 +++++++++++++++++++-------
+ 1 file changed, 19 insertions(+), 7 deletions(-)
