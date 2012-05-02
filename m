@@ -1,120 +1,38 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 3/3] usb: cp210x: Add ioctl for GPIO support
-Date: Wed, 2 May 2012 23:59:39 +0100
-Message-ID: <20120502235939.5086eb7d@pyramind.ukuu.org.uk>
-References: <1335845210-5147-1-git-send-email-preston.fick@silabs.com>
-	<1335845210-5147-3-git-send-email-preston.fick@silabs.com>
-	<20120502200356.GA25915@kroah.com>
-	<20120502214901.6b6e031c@pyramind.ukuu.org.uk>
-	<20120502215226.GD27281@kroah.com>
-	<20120502231027.1c45105d@pyramind.ukuu.org.uk>
-	<20120502222728.GA2871@kroah.com>
+From: Sarah Sharp <sarah.a.sharp@linux.intel.com>
+Subject: Re: 3.4-rc5: usbserial pl2303 attached via Texas Instruments USB3.0
+ chip Oopses
+Date: Wed, 2 May 2012 16:46:39 -0700
+Message-ID: <20120502234639.GH22341@xanatos>
+References: <4FA10506.7020203@fold.natur.cuni.cz>
+ <201205021222.30133.oneukum@suse.de>
+ <4FA11113.6060901@fold.natur.cuni.cz>
+ <201205021444.07823.oneukum@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:56661 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755927Ab2EBW4z (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 2 May 2012 18:56:55 -0400
-In-Reply-To: <20120502222728.GA2871@kroah.com>
+Received: from mga02.intel.com ([134.134.136.20]:11964 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753871Ab2EBXqr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 2 May 2012 19:46:47 -0400
+Content-Disposition: inline
+In-Reply-To: <201205021444.07823.oneukum@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Preston Fick <pffick@gmail.com>, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, preston.fick@silabs.com
+To: Oliver Neukum <oneukum@suse.de>
+Cc: Martin Mokrejs <mmokrejs@fold.natur.cuni.cz>, "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
 
-> > Ok now in your user application how are you going to find which gpio
-> > numbers to use that are associated with this specific port,
-> 
-> Just look at the gpio device that has ttyUSB0 as its parent.
-
-Taking care of course that you keep the ttyUSB file handle open while you
-do so, ugly from user space, hideous from kernel space.
-
-> 
-> > and how is udev going to do that to manage permissions ?
-> 
-> How does udev handle permissions for gpio devices today?
-
-It sticks its fingers in its ears and goes "la la la"
-
-> > So you need an ioctl to give you the range that is mapped to this (or a
-> > sysfs node, but the sysfs node makes the security problem pretty
-> > much insoluble)
-> 
-> range for what?  Doesn't the gpio interfac provide the size of the gpio
-> registers to userspace?
-
-If you fish them out via sysfs trees yes.
-
->> > 	open /dev/ttyUSB0 [or sysfs node]
-> > 	read gpio numbers
-> > 	close 
+On Wed, May 02, 2012 at 02:44:07PM +0200, Oliver Neukum wrote:
+> Am Mittwoch, 2. Mai 2012, 12:48:51 schrieb Martin Mokrejs:
+> > > Does it work if you boot with nomsi?
 > > 
-> > 	open gpio foo
-> > 
-> > Oh dear... so random shell scripting user is going to screw up horribly.
+> > Yes, dmesg attached.
 > 
-> What's the odds that the data going across the tty link corrisponds with
-> the gpio control?
-
-I think you missed the problem - which speaks volumes for the interface
-issue
-
-	open sysfs node
-	read gpio numbers
-	close
-
-			unplug 
-			new device
-				assigned the same gpio numbers
-	open gpio
-	whoops - that was the milling machine not the smartcard
-
-> And shell scripting the gpio interface is used today, I've seen it on
-> the beaglebone machine.
-
-Yes it works very well but that isn't the issue.
-
-> > I think it basically boils down to this
-> > 
-> > If you have a serial port with some gpio lines that drive arbitary
-> > unrelated electronics then the gpio interface is handy because you can
-> > use the same code logic as if it was wired to other pins elsewhere
-> > 
-> > If you are using them as part of the tty interface as extra control lines
-> > (eg for smartcard protocols) then you want them driven via the tty
-> > interface and doubly so once we add some of the smartcard/sim ldisc
-> > support.
-> > 
-> > Hence we really need to expose them both ways because end users are doing
-> > both things with the gpio pins on these ports.
-> > 
-> > So I'd suggest we expose them via termiox bits and also via the tty
-> > providing gpio range info in a standardised way.
+> Sorry, I was referring to pci=nomsi
 > 
-> Ok, I'll wait for your proposed standardised way before complaining any
-> more :)
+> So it works if you simply add "nomsi" to the kernel command line?
+> Can you check whether this is repeatable?
 
-I think I'd suggest we support the following
+If it's repeatable, we can just add the XHCI_BROKEN_MSI quirk to that TI
+host.
 
-
-open /dev/ttyUSB0
-get gpio info somehow
-run via gpio interface
-close /dev/ttyUSB0
-
-and
-
-open /dev/ttyUSB0
-via termiox( what gpios do you have )
-via termiox( set/get gpio values)
-close /dev/ttyUSB0
-
-that would support the ldisc use of them. I need to go read the specs on
-that and look at some hardware. I think we may need a mapping ioctl too
-because the pin allocations may need to be described in terms of "pin 0
-is this reader signal", "pin 1 is that"
-
-Alan
+Sarah Sharp
