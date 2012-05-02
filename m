@@ -1,40 +1,36 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PATCH] TTY VT bugfix for 3.4-rc5
-Date: Wed, 2 May 2012 13:28:23 -0700
-Message-ID: <20120502202823.GA27129@kroah.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 3/3] usb: cp210x: Add ioctl for GPIO support
+Date: Wed, 2 May 2012 21:49:01 +0100
+Message-ID: <20120502214901.6b6e031c@pyramind.ukuu.org.uk>
+References: <1335845210-5147-1-git-send-email-preston.fick@silabs.com>
+	<1335845210-5147-3-git-send-email-preston.fick@silabs.com>
+	<20120502200356.GA25915@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:56508 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756646Ab2EBUqQ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 2 May 2012 16:46:16 -0400
+In-Reply-To: <20120502200356.GA25915@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Preston Fick <pffick@gmail.com>, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, preston.fick@silabs.com
 
-The following changes since commit 69964ea4c7b68c9399f7977aa5b9aa6539a6a98a:
+> Actually, why can't you use the GPIO subsystem for something like this?
+> Can't you export your device as both a usb-serial device and a gpio
+> device and have things work properly that way?
 
-  Linux 3.4-rc5 (2012-04-29 15:19:10 -0700)
+You still need the ioctls even then in order to discover the gpio
+numbers, and having done that youi've got potential races with unload
+when you try and open them. You've also got permissions considerations
+and synchronization between gpio and data problems.
 
-are available in the git repository at:
+It's not a good way to go. It might make sense in some platforms to
+expose them as both but its not a good general model.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.4-rc6
-
-for you to fetch changes up to 84f904ecd3aa2ccb5779b815b69c1cb592f07bb5:
-
-  vt: Fix deadlock on scroll-lock (2012-05-01 14:01:28 -0400)
-
-----------------------------------------------------------------
-TTY fix for 3.4-rc5
-
-This is a deadlock bugfix that was easy to hit, and that the vt layer lock
-rework got wrong, so it reverts the logic back to the way it was in 3.3 and
-earlier kernels to prevent problems.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Alan Cox (1):
-      vt: Fix deadlock on scroll-lock
-
- drivers/tty/vt/keyboard.c |   26 +++++++++++++++++++-------
- 1 file changed, 19 insertions(+), 7 deletions(-)
+I'm currently favouring adding some 'additional control line' bits to
+termiox.
