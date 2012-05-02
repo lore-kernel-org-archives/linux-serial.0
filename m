@@ -1,51 +1,51 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 00/06] serial8250: DLL/DLM rework, Emma Mobile UART driver
-Date: Wed, 2 May 2012 13:12:08 +0000
-Message-ID: <201205021312.08308.arnd@arndb.de>
-References: <20120502124642.30480.41373.sendpatchset@w520>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: Re: [PATCH 06/06] serial8250-em: Add Emma Mobile UART driver
+Date: Wed, 2 May 2012 10:41:12 -0400
+Message-ID: <4FA14788.6090000@windriver.com>
+References: <20120502124642.30480.41373.sendpatchset@w520> <20120502124736.30480.48207.sendpatchset@w520>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-15"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <20120502124642.30480.41373.sendpatchset@w520>
-Sender: linux-sh-owner@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>
-Cc: linux-serial@vger.kernel.org, horms@verge.net.au, linux-sh@vger.kernel.org, gregkh@linuxfoundation.org, swarren@wwwdotorg.org, linux-kernel@vger.kernel.org, rjw@sisk.pl, paul.gortmaker@windriver.com, lethal@linux-sh.org, olof@lixom.net, dan.j.williams@intel.com, alan@linux.intel.com
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail1.windriver.com ([147.11.146.13]:38529 "EHLO
+	mail1.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753428Ab2EBOlk (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 2 May 2012 10:41:40 -0400
+In-Reply-To: <20120502124736.30480.48207.sendpatchset@w520>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Magnus Damm <magnus.damm@gmail.com>
+Cc: linux-serial@vger.kernel.org, horms@verge.net.au, arnd@arndb.de, linux-sh@vger.kernel.org, gregkh@linuxfoundation.org, swarren@wwwdotorg.org, linux-kernel@vger.kernel.org, rjw@sisk.pl, lethal@linux-sh.org, olof@lixom.net, dan.j.williams@intel.com, alan@linux.intel.com
 
-On Wednesday 02 May 2012, Magnus Damm wrote:
-> serial8250: DLL/DLM rework, Emma Mobile UART driver
+On 12-05-02 08:47 AM, Magnus Damm wrote:
+> From: Magnus Damm <damm@opensource.se>
 > 
-> [PATCH 01/06] serial8250: Add dl_read()/dl_write() callbacks
-> [PATCH 02/06] serial8250: Use dl_read()/dl_write() on Alchemy
-> [PATCH 03/06] serial8250: Use dl_read()/dl_write() on RM9K
-> [PATCH 04/06] serial8250: Clean up default map and dl code
-> [PATCH 05/06] serial8250: Introduce serial8250_register_8250_port()
-> [PATCH 06/06] serial8250-em: Add Emma Mobile UART driver
-> 
-> This series cleans up and adjusts the 8250 code base to allow
-> hooking in a driver for the UART in Emma Mobile SoCs.
-> 
-> In short:
-> - Patch 1-4 tie in 8250-specific dl_read()/dl_write() callbacks.
-> - Patch 5 adds a new register function to use new callbacks.
-> - Patch 6 adds a new driver that makes use of the above.
-> 
-> I'd be happy to rework the above patches if needed. The
-> main challenge for Emma Mobile UART support is the non-
-> standard offsets for DLL and DLM registers.
-> 
-> Note that there is no DT support included at this point,
-> but it boils down to a 10 line change. The boot loader on
-> my board does not do DT so I'd like to use kexec for DT
-> development (as usual), but to use kexec I first need to
-> get a non-DT kernel working. Which is basically this. =)
-> 
-> Signed-off-by: Magnus Damm <damm@opensource.se>
+> Add a platform driver for Emma Mobile 8250 hardware.
 
-Looks good,
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+[...]
 
-	Arnd
+> +
+> +config SERIAL_8250_EM
+> +	tristate "Support for Emma Mobile intergrated serial port"
+> +	depends on SERIAL_8250
+
+Should we depend on arch=ARM or something similar?  Even if the
+driver is written to be arch independent, if the Emma itself is
+physically tied to ARM platforms, we probably don't need to be
+building it for sparc allyesconfig etc.
+
+P.
+
+> +	help
+> +	  Selecting this option will add support for the integrated serial
+> +	  port hardware found on the Emma Mobile line of processors.
+> +	  If unsure, say N.
+> --- 0001/drivers/tty/serial/8250/Makefile
+> +++ work/drivers/tty/serial/8250/Makefile	2012-05-02 17:25:19.000000000 +0900
+> @@ -18,3 +18,4 @@ obj-$(CONFIG_SERIAL_8250_HUB6)		+= 8250_
+>  obj-$(CONFIG_SERIAL_8250_MCA)		+= 8250_mca.o
+>  obj-$(CONFIG_SERIAL_8250_FSL)		+= 8250_fsl.o
+>  obj-$(CONFIG_SERIAL_8250_DW)		+= 8250_dw.o
+> +obj-$(CONFIG_SERIAL_8250_EM)		+= 8250_em.o
