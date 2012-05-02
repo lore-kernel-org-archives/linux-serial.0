@@ -1,59 +1,55 @@
-From: Ivo Sieben <meltedpianoman@gmail.com>
-Subject: Re: Deterministic behavior for TTY serial
-Date: Wed, 2 May 2012 14:39:07 +0200
-Message-ID: <CAMSQXEG+O86t10AF5gN875RoEHkMcGFQE_-G6TdeYVc4NJoBLw@mail.gmail.com>
-References: <CAMSQXEENByqSmK2bSxMngY2WuV86AAcX_LxTbA5JSOjT3ta_FA@mail.gmail.com>
-	<20120419001407.GA24710@kroah.com>
-	<CAMSQXEEkssPGWYgC4dkpKEhfrB4s8yOoxiNNVdRRX7r+b91EMQ@mail.gmail.com>
-	<20120419154609.GA9263@kroah.com>
-	<CAMSQXEEN=6M59CR3riNA5-kFFv7QAsn_g3PHi3A8P9mh3SfdeQ@mail.gmail.com>
-	<CAMSQXEGb9moJbCQwwXgEq7H-HvaSiuS5JBL55jr0ZhEEeAmqzw@mail.gmail.com>
-	<20120501160456.3b0b5e34@pyramind.ukuu.org.uk>
-	<CAMSQXEHAyPOF6YghsYmqqyx+N0oMgn5E=znhgFyspMUnaH78ig@mail.gmail.com>
-	<CAMSQXEHHOHeNYPJZT0b4s62T3uuNXSt9WucSrGOTfjXOU_guzg@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Magnus Damm <magnus.damm@gmail.com>
+Subject: [PATCH 00/06] serial8250: DLL/DLM rework, Emma Mobile UART driver
+Date: Wed, 02 May 2012 21:46:42 +0900
+Message-ID: <20120502124642.30480.41373.sendpatchset@w520>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-gy0-f174.google.com ([209.85.160.174]:58217 "EHLO
-	mail-gy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750753Ab2EBMjI convert rfc822-to-8bit (ORCPT
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:51182 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750795Ab2EBMp4 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 2 May 2012 08:39:08 -0400
-In-Reply-To: <CAMSQXEHHOHeNYPJZT0b4s62T3uuNXSt9WucSrGOTfjXOU_guzg@mail.gmail.com>
+	Wed, 2 May 2012 08:45:56 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, RT <linux-rt-users@vger.kernel.org>
+To: linux-serial@vger.kernel.org
+Cc: horms@verge.net.au, arnd@arndb.de, linux-sh@vger.kernel.org, gregkh@linuxfoundation.org, swarren@wwwdotorg.org, linux-kernel@vger.kernel.org, rjw@sisk.pl, paul.gortmaker@windriver.com, lethal@linux-sh.org, olof@lixom.net, Magnus Damm <magnus.damm@gmail.com>, dan.j.williams@intel.com, alan@linux.intel.com
 
-Hi,
+serial8250: DLL/DLM rework, Emma Mobile UART driver
 
-> 2012/5/2 Ivo Sieben <meltedpianoman@gmail.com>:
->> Hi,
->>
->> Indeed the lock is only taken for a very short time. So =A0in most
->> situations it works fine, the lock is free, and can be taken quickly=
-=2E
->> But when I stress my system (e.g. by continuously dumpling a lot of
->> text data to another serial terminal from the background), my high
->> priority task sometimes finds the lock is taken. In that case
->> additional lock handling comes in: priority inheritance, a context
->> switch to the background task that holds the lock, and a context
->> switch back after the lock is released again. This makes a normal re=
-ad
->> that takes about 50us, to increase in execution time to 150us.
+[PATCH 01/06] serial8250: Add dl_read()/dl_write() callbacks
+[PATCH 02/06] serial8250: Use dl_read()/dl_write() on Alchemy
+[PATCH 03/06] serial8250: Use dl_read()/dl_write() on RM9K
+[PATCH 04/06] serial8250: Clean up default map and dl code
+[PATCH 05/06] serial8250: Introduce serial8250_register_8250_port()
+[PATCH 06/06] serial8250-em: Add Emma Mobile UART driver
 
-The PREEMPT_RT uses mutexes for "normal" spin locks that do not
-disable interrupts...
-I'll try to use raw spinlocks in this code section and for the tty flip=
- buffer
-See if that can solve my problem.
+This series cleans up and adjusts the 8250 code base to allow
+hooking in a driver for the UART in Emma Mobile SoCs.
 
-If you have other ideas... let me know!
+In short:
+- Patch 1-4 tie in 8250-specific dl_read()/dl_write() callbacks.
+- Patch 5 adds a new register function to use new callbacks.
+- Patch 6 adds a new driver that makes use of the above.
 
-Regards,
-Ivo
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+I'd be happy to rework the above patches if needed. The
+main challenge for Emma Mobile UART support is the non-
+standard offsets for DLL and DLM registers.
+
+Note that there is no DT support included at this point,
+but it boils down to a 10 line change. The boot loader on
+my board does not do DT so I'd like to use kexec for DT
+development (as usual), but to use kexec I first need to
+get a non-DT kernel working. Which is basically this. =)
+
+Signed-off-by: Magnus Damm <damm@opensource.se>
+---
+
+ Builds on top of linux-next 20120501.
+
+ drivers/tty/serial/8250/8250.c    |  373 ++++++++++++++++++-------------------
+ drivers/tty/serial/8250/8250.h    |   14 +
+ drivers/tty/serial/8250/8250_em.c |  179 +++++++++++++++++
+ drivers/tty/serial/8250/Kconfig   |    8 
+ drivers/tty/serial/8250/Makefile  |    1 
+ include/linux/serial_8250.h       |    1 
+ 6 files changed, 392 insertions(+), 184 deletions(-)
+
