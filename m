@@ -1,68 +1,69 @@
-From: Magnus Damm <magnus.damm@gmail.com>
-Subject: Re: [PATCH 06/06] serial8250-em: Add Emma Mobile UART driver
-Date: Thu, 3 May 2012 21:19:40 +0900
-Message-ID: <CANqRtoR7rtJW65jY3urnTcaS5S6swY84C-Xa8NMQkZP66m+==w@mail.gmail.com>
-References: <20120502124642.30480.41373.sendpatchset@w520>
-	<20120502124736.30480.48207.sendpatchset@w520>
-	<4FA14788.6090000@windriver.com>
-	<20120502212205.GA12212@kroah.com>
+From: Ivo Sieben <meltedpianoman@gmail.com>
+Subject: [PATCH 1/3] RFC: Solved unnecessary schedule latency in the TTY layer (1/3)
+Date: Thu, 3 May 2012 14:37:41 +0200
+Message-ID: <1336048663-21882-1-git-send-email-meltedpianoman@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <20120502212205.GA12212@kroah.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, linux-serial@vger.kernel.org, horms@verge.net.au, arnd@arndb.de, linux-sh@vger.kernel.org, swarren@wwwdotorg.org, linux-kernel@vger.kernel.org, rjw@sisk.pl, lethal@linux-sh.org, olof@lixom.net, dan.j.williams@intel.com, alan@linux.intel.com
+Content-Type: text/plain
+Return-path: <linux-rt-users-owner@vger.kernel.org>
+Sender: linux-rt-users-owner@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, RT <linux-rt-users@vger.kernel.org>
+Cc: Ivo Sieben <meltedpianoman@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 3, 2012 at 6:22 AM, Greg KH <gregkh@linuxfoundation.org> wr=
-ote:
-> On Wed, May 02, 2012 at 10:41:12AM -0400, Paul Gortmaker wrote:
->> On 12-05-02 08:47 AM, Magnus Damm wrote:
->> > From: Magnus Damm <damm@opensource.se>
->> >
->> > Add a platform driver for Emma Mobile 8250 hardware.
->>
->>
->> [...]
->>
->> > +
->> > +config SERIAL_8250_EM
->> > + =A0 tristate "Support for Emma Mobile intergrated serial port"
->> > + =A0 depends on SERIAL_8250
->>
->> Should we depend on arch=3DARM or something similar? =A0Even if the
->> driver is written to be arch independent, if the Emma itself is
->> physically tied to ARM platforms, we probably don't need to be
->> building it for sparc allyesconfig etc.
->
-> Yeah, it doesn't build on x86-64, I get the following build problems:
-> =A0 =A0 =A0 =A0ERROR: "clk_get_rate" [drivers/tty/serial/8250/8250_em=
-=2Eko] undefined!
-> =A0 =A0 =A0 =A0ERROR: "clk_enable" [drivers/tty/serial/8250/8250_em.k=
-o] undefined!
-> =A0 =A0 =A0 =A0ERROR: "clk_get" [drivers/tty/serial/8250/8250_em.ko] =
-undefined!
-> =A0 =A0 =A0 =A0ERROR: "clk_put" [drivers/tty/serial/8250/8250_em.ko] =
-undefined!
-> =A0 =A0 =A0 =A0ERROR: "clk_disable" [drivers/tty/serial/8250/8250_em.=
-ko] undefined!
->
-> So it should depend on some arch that has clk at the least.
->
-> Magnus, care to redo just this one patch that fixes this up? =A0I've
-> applied the first 5 already.
+Solved unnecessary schedule latency in the TTY layer when used in
+realtime context:
+In case of PREEMPT_RT or when low_latency flag is set by the serial driver
+the TTY receive flip buffer is copied to the line discipline directly
+instead of using a workqueue in the background. Therefor only in case a
+workqueue is actually used for copying data to the line discipline
+we'll have to wait for the workqueue to finish. For a PREEMPT system this
+prevents us from unnecessary blocking by the workqueue spin lock.
 
-Done!
+Note: In a PREEMPT_RT system "normal" spin locks behave like mutexes and
+no interrupts (and therefor no scheduling) is disabled.
 
-I decided to go with SERIAL_8250 && ARM && HAVE_CLK to limit the
-exposure a bit but not hinder any single ARM kernel image work. Hope
-this balance is making everyone happy.
+Signed-off-by: Ivo Sieben <meltedpianoman@gmail.com>
+---
+ drivers/tty/tty_buffer.c |   18 +++++++++++-------
+ 1 files changed, 11 insertions(+), 7 deletions(-)
 
-It is not impossible that this driver can be used on older MIPS based
-SoCs from NEC, but that can easily be dealt with later if needed.
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index 6c9b7cd..ed86359 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -317,12 +317,7 @@ EXPORT_SYMBOL(tty_insert_flip_string_flags);
+ 
+ void tty_schedule_flip(struct tty_struct *tty)
+ {
+-	unsigned long flags;
+-	spin_lock_irqsave(&tty->buf.lock, flags);
+-	if (tty->buf.tail != NULL)
+-		tty->buf.tail->commit = tty->buf.tail->used;
+-	spin_unlock_irqrestore(&tty->buf.lock, flags);
+-	schedule_work(&tty->buf.work);
++	tty_flip_buffer_push(tty);
+ }
+ EXPORT_SYMBOL(tty_schedule_flip);
+ 
+@@ -469,7 +464,16 @@ static void flush_to_ldisc(struct work_struct *work)
+  */
+ void tty_flush_to_ldisc(struct tty_struct *tty)
+ {
+-	flush_work(&tty->buf.work);
++	/*
++	 * Only in case a workqueue is actually used for copying data to the
++	 * line discipline, we'll have to wait for the workqueue to finish. In
++	 * other cases this prevents us from unnecessary blocking by the workqueue
++	 * spin lock.
++	 */
++#ifndef CONFIG_PREEMPT_RT_FULL
++	if (!tty->low_latency)
++		flush_work(&tty->buf.work);
++#endif
+ }
+ 
+ /**
+-- 
+1.7.0.4
 
-Thanks for your help!
 
-/ magnus
