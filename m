@@ -1,36 +1,96 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 2/3] RFC: Solved unnecessary schedule latency in the TTY
- layer (2/3)
-Date: Thu, 3 May 2012 09:25:29 -0700
-Message-ID: <20120503162529.GB3063@kroah.com>
-References: <1336048663-21882-1-git-send-email-meltedpianoman@gmail.com>
- <1336048663-21882-2-git-send-email-meltedpianoman@gmail.com>
+From: Alan Cox <alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
+Subject: Re: [PATCH] usb: cp210x: Added support for GPIO (CP2103/4/5)
+Date: Thu, 3 May 2012 21:34:56 +0100
+Message-ID: <20120503213456.77c55c51@pyramind.ukuu.org.uk>
+References: <1335817637-2862-1-git-send-email-preston.fick@silabs.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:63503 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752948Ab2ECQZd (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 3 May 2012 12:25:33 -0400
-Received: by pbbrp8 with SMTP id rp8so2682797pbb.19
-        for <linux-serial@vger.kernel.org>; Thu, 03 May 2012 09:25:33 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <1336048663-21882-2-git-send-email-meltedpianoman@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1335817637-2862-1-git-send-email-preston.fick-S6d6foEdJf7QT0dZR+AlfA@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Preston Fick <pffick-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, preston.fick-S6d6foEdJf7QT0dZR+AlfA@public.gmane.org, "linux-arm-kernel-xIg/pKzrS19vn6HldHNs0ANdhmdF6hFW@public.gmane.org" <linux-arm-kernel-xIg/pKzrS19vn6HldHNs0ANdhmdF6hFW@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: Ivo Sieben <meltedpianoman@gmail.com>
-Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, RT <linux-rt-users@vger.kernel.org>
 
-On Thu, May 03, 2012 at 02:37:42PM +0200, Ivo Sieben wrote:
-> Solved unnecessary schedule latency in the TTY layer when used in
-> realtime context:
-> The global "normal" spin lock that guards the line discipline
-> administration is replaced by a raw spin lock.
 
-Why, what does this cause to have happen?  What's the difference here
-that causes any speedups or latency fixes?
+Ok this is my suggestion based on GregKH comments and a couple of others
+plus some other driver and ldisc stuff that is pending
 
-thanks,
+- register the gpio lines with the gpio layer dynamically
+- put them in the right place in the device tree (I'll let Greg advise on
+  the best way to do that bit), plus make them visible via the ioctls for
+  convenience and as they will be needed anyway in kernel
 
-greg k-h
+That provides the user space API
+
+After that I'll add the hooks to the core tty layer code which allow an
+ldisc to adjust the gpio lines.
+
+For that we'll need
+
+struct tty_gpio {
+	u32 base;
+	u16 num;
+	u16 reserved;
+#define NR_TTY_GPIOMAP 8
+	u16 map[NR_TTY_GPIOMAP];
+	u32 reserved2[4];
+};
+
+and
+
+tty->gpiomap
+
+which will be NULL for most users.
+
+
+Plus
+
+struct tty_gpio d;
+ioctl(tty, TIOCGPIO, &d)
+
+and
+
+ioctl(tty, TIOCSGPIO, &d)
+
+where the only bits that can be updated will be the map.
+
+
+
+So the normal use case from user space would be
+
+struct tty_gpio d;
+int fd = open("/dev/ttyUSB0", O_RDWR);
+ioctl(tty, TIOCSGPIO, &d);
+
+stuff using the gpio driver interfaces
+
+close(fd);
+
+
+And setting up for a kernel ldisc something like
+
+
+/* Set a GPIO to LDISC signal mapping for ISO7816 */
+ioctl(tty, TIOCGPIO, &d);
+d.map[TTY_GPIO_ISO7816_RESET] = d.base;
+d.map]TTY_GPIO_ISO7816_VCC] = d.base + 1;
+ioctl(tty, TIOCSGPIO, &d);
+
+/* Switch to the ldisc */
+ld = N_ISO7816;
+ioctl(tty, TCSETD, &ld);
+
+
+and we can then abstract all the wiring details away to keep the ldisc
+portable.
+
+
+Thoughts ?
+
+Alan
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
