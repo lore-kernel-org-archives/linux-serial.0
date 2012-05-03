@@ -1,38 +1,51 @@
-From: Sarah Sharp <sarah.a.sharp@linux.intel.com>
-Subject: Re: 3.4-rc5: usbserial pl2303 attached via Texas Instruments USB3.0
- chip Oopses
-Date: Wed, 2 May 2012 16:46:39 -0700
-Message-ID: <20120502234639.GH22341@xanatos>
-References: <4FA10506.7020203@fold.natur.cuni.cz>
- <201205021222.30133.oneukum@suse.de>
- <4FA11113.6060901@fold.natur.cuni.cz>
- <201205021444.07823.oneukum@suse.de>
+From: =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+Subject: Re: [PATCH 1/3] usb: cp210x: Corrected USB request type definitions
+Date: Thu, 03 May 2012 10:58:31 +0200
+Message-ID: <87ipgd3ako.fsf@nemi.mork.no>
+References: <1335845210-5147-1-git-send-email-preston.fick@silabs.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:11964 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753871Ab2EBXqr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 2 May 2012 19:46:47 -0400
-Content-Disposition: inline
-In-Reply-To: <201205021444.07823.oneukum@suse.de>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1335845210-5147-1-git-send-email-preston.fick@silabs.com>
+	(Preston Fick's message of "Mon, 30 Apr 2012 23:06:48 -0500")
+Sender: linux-kernel-owner@vger.kernel.org
+To: Preston Fick <pffick@gmail.com>
+Cc: gregkh@linuxfoundation.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, preston.fick@silabs.com
 List-Id: linux-serial@vger.kernel.org
-To: Oliver Neukum <oneukum@suse.de>
-Cc: Martin Mokrejs <mmokrejs@fold.natur.cuni.cz>, "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
 
-On Wed, May 02, 2012 at 02:44:07PM +0200, Oliver Neukum wrote:
-> Am Mittwoch, 2. Mai 2012, 12:48:51 schrieb Martin Mokrejs:
-> > > Does it work if you boot with nomsi?
-> > 
-> > Yes, dmesg attached.
-> 
-> Sorry, I was referring to pci=nomsi
-> 
-> So it works if you simply add "nomsi" to the kernel command line?
-> Can you check whether this is repeatable?
+Preston Fick <pffick@gmail.com> writes:
 
-If it's repeatable, we can just add the XHCI_BROKEN_MSI quirk to that TI
-host.
+> diff --git a/drivers/usb/serial/cp210x.c b/drivers/usb/serial/cp210x.=
+c
+> index ec30f95..e67ccf3 100644
+> --- a/drivers/usb/serial/cp210x.c
+> +++ b/drivers/usb/serial/cp210x.c
+> @@ -188,8 +188,10 @@ static struct usb_serial_driver * const serial_d=
+rivers[] =3D {
+>  };
+> =20
+>  /* Config request types */
+> -#define REQTYPE_HOST_TO_DEVICE	0x41
+> -#define REQTYPE_DEVICE_TO_HOST	0xc1
+> +#define REQTYPE_HOST_TO_INTERFACE	0x41
+> +#define REQTYPE_INTERFACE_TO_HOST	0xc1
+> +#define REQTYPE_HOST_TO_DEVICE	0x40
+> +#define REQTYPE_DEVICE_TO_HOST	0xc0
 
-Sarah Sharp
+
+Any particular reason you need to define these instead of just using th=
+e
+standard flags from linux/usb/ch9.h directly in the requests?:
+
+(USB_TYPE_VENDOR | USB_RECIP_INTERFACE | USB_DIR_OUT)
+(USB_TYPE_VENDOR | USB_RECIP_INTERFACE | USB_DIR_IN)
+(USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT)
+(USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN)
+
+If nothing else, using those from the beginning would have avoided the
+mis-labelling you are fixing up.
+
+
+
+Bj=C3=B8rn
