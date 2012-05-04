@@ -1,208 +1,117 @@
-From: John Crispin <blogic@openwrt.org>
-Subject: [PATCH 10/14] SERIAL: MIPS: lantiq: implement OF support
-Date: Fri,  4 May 2012 14:18:35 +0200
-Message-ID: <1336133919-26525-10-git-send-email-blogic@openwrt.org>
-References: <1336133919-26525-1-git-send-email-blogic@openwrt.org>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nbd.name ([46.4.11.11]:50463 "EHLO nbd.name"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757649Ab2EDMUS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 4 May 2012 08:20:18 -0400
-In-Reply-To: <1336133919-26525-1-git-send-email-blogic@openwrt.org>
-Sender: linux-serial-owner@vger.kernel.org
+From: Preston Fick <Preston.Fick-S6d6foEdJf7QT0dZR+AlfA@public.gmane.org>
+Subject: RE: [PATCH] usb: cp210x: Added support for GPIO (CP2103/4/5)
+Date: Fri, 4 May 2012 10:27:09 -0500
+Message-ID: <00374F755A5C474884D69FBCA77349D105227D97FB@EXCAUS002.silabs.com>
+References: <1335817637-2862-1-git-send-email-preston.fick@silabs.com>
+ <20120503213456.77c55c51@pyramind.ukuu.org.uk>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20120503213456.77c55c51-38n7/U1jhRXW96NNrWNlrekiAK3p4hvP@public.gmane.org>
+Content-Language: en-US
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alan Cox <alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Preston Fick <pffick-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-xIg/pKzrS19vn6HldHNs0ANdhmdF6hFW@public.gmane.org" <linux-arm-kernel-xIg/pKzrS19vn6HldHNs0ANdhmdF6hFW@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: Ralf Baechle <ralf@linux-mips.org>
-Cc: linux-mips@linux-mips.org, John Crispin <blogic@openwrt.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
 
-Add devicetree and handling for our new clkdev clocks. The patch is rather
-straightforward. .of_match_table is set and the 3 irqs are now loaded from the
-devicetree.
+Hi Alan -
 
-This series converts the lantiq target to clkdev amongst other things. The
-driver needs to handle two clocks now. The fpi bus clock used to derive the
-divider and the clock gate needed on some socs to make the secondary port work.
+Thanks for this detailed explanation - I'll continue to look deeper into this, a lot of this is new to me. If Greg is in agreement here, then I will work on this as a solution to our GPIO support and submit a series of patches for this when it's ready and tested.
 
-Signed-off-by: John Crispin <blogic@openwrt.org>
-Cc: Alan Cox <alan@linux.intel.com>
-Cc: linux-serial@vger.kernel.org
----
-This patch is part of a series moving the mips/lantiq target to OF and clkdev
-support. The patch, once Acked, should go upstream via Ralf's MIPS tree.
+Kind Regards -
+Preston
 
- drivers/tty/serial/lantiq.c |   83 ++++++++++++++++++++++++++----------------
- 1 files changed, 51 insertions(+), 32 deletions(-)
+-----Original Message-----
+From: Alan Cox [mailto:alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org] 
+Sent: Thursday, May 03, 2012 3:35 PM
+To: Preston Fick
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org; linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Preston Fick; linux-arm-kernel-xIg/pKzrS19vn6HldHNs0ANdhmdF6hFW@public.gmane.org
+Subject: Re: [PATCH] usb: cp210x: Added support for GPIO (CP2103/4/5)
 
-diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
-index 96c1cac..b5044fa 100644
---- a/drivers/tty/serial/lantiq.c
-+++ b/drivers/tty/serial/lantiq.c
-@@ -31,16 +31,19 @@
- #include <linux/tty_flip.h>
- #include <linux/serial_core.h>
- #include <linux/serial.h>
--#include <linux/platform_device.h>
-+#include <linux/of_platform.h>
-+#include <linux/of_address.h>
-+#include <linux/of_irq.h>
- #include <linux/io.h>
- #include <linux/clk.h>
-+#include <linux/gpio.h>
- 
- #include <lantiq_soc.h>
- 
- #define PORT_LTQ_ASC		111
- #define MAXPORTS		2
- #define UART_DUMMY_UER_RX	1
--#define DRVNAME			"ltq_asc"
-+#define DRVNAME			"lantiq,asc"
- #ifdef __BIG_ENDIAN
- #define LTQ_ASC_TBUF		(0x0020 + 3)
- #define LTQ_ASC_RBUF		(0x0024 + 3)
-@@ -114,6 +117,9 @@ static DEFINE_SPINLOCK(ltq_asc_lock);
- 
- struct ltq_uart_port {
- 	struct uart_port	port;
-+	/* clock used to derive divider */
-+	struct clk		*fpiclk;
-+	/* clock gating of the ASC core */
- 	struct clk		*clk;
- 	unsigned int		tx_irq;
- 	unsigned int		rx_irq;
-@@ -316,7 +322,9 @@ lqasc_startup(struct uart_port *port)
- 	struct ltq_uart_port *ltq_port = to_ltq_uart_port(port);
- 	int retval;
- 
--	port->uartclk = clk_get_rate(ltq_port->clk);
-+	if (ltq_port->clk)
-+		clk_enable(ltq_port->clk);
-+	port->uartclk = clk_get_rate(ltq_port->fpiclk);
- 
- 	ltq_w32_mask(ASCCLC_DISS | ASCCLC_RMCMASK, (1 << ASCCLC_RMCOFFSET),
- 		port->membase + LTQ_ASC_CLC);
-@@ -382,6 +390,8 @@ lqasc_shutdown(struct uart_port *port)
- 		port->membase + LTQ_ASC_RXFCON);
- 	ltq_w32_mask(ASCTXFCON_TXFEN, ASCTXFCON_TXFFLU,
- 		port->membase + LTQ_ASC_TXFCON);
-+	if (ltq_port->clk)
-+		clk_disable(ltq_port->clk);
- }
- 
- static void
-@@ -630,7 +640,7 @@ lqasc_console_setup(struct console *co, char *options)
- 
- 	port = &ltq_port->port;
- 
--	port->uartclk = clk_get_rate(ltq_port->clk);
-+	port->uartclk = clk_get_rate(ltq_port->fpiclk);
- 
- 	if (options)
- 		uart_parse_options(options, &baud, &parity, &bits, &flow);
-@@ -668,37 +678,32 @@ static struct uart_driver lqasc_reg = {
- static int __init
- lqasc_probe(struct platform_device *pdev)
- {
-+	struct device_node *node = pdev->dev.of_node;
- 	struct ltq_uart_port *ltq_port;
- 	struct uart_port *port;
--	struct resource *mmres, *irqres;
--	int tx_irq, rx_irq, err_irq;
--	struct clk *clk;
-+	struct resource *mmres, irqres[3];
-+	int line = 0;
- 	int ret;
- 
- 	mmres = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	irqres = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
--	if (!mmres || !irqres)
-+	ret = of_irq_to_resource_table(node, irqres, 3);
-+	if (!mmres || (ret != 3)) {
-+		dev_err(&pdev->dev,
-+			"failed to get memory/irq for serial port\n");
- 		return -ENODEV;
-+	}
- 
--	if (pdev->id >= MAXPORTS)
--		return -EBUSY;
-+	/* check if this is the console port */
-+	if (mmres->start != LTQ_ASC1_BASE_ADDR)
-+		line = 1;
- 
--	if (lqasc_port[pdev->id] != NULL)
-+	if (lqasc_port[line]) {
-+		dev_err(&pdev->dev, "port %d already allocated\n", line);
- 		return -EBUSY;
--
--	clk = clk_get(&pdev->dev, "fpi");
--	if (IS_ERR(clk)) {
--		pr_err("failed to get fpi clk\n");
--		return -ENOENT;
- 	}
- 
--	tx_irq = platform_get_irq_byname(pdev, "tx");
--	rx_irq = platform_get_irq_byname(pdev, "rx");
--	err_irq = platform_get_irq_byname(pdev, "err");
--	if ((tx_irq < 0) | (rx_irq < 0) | (err_irq < 0))
--		return -ENODEV;
--
--	ltq_port = kzalloc(sizeof(struct ltq_uart_port), GFP_KERNEL);
-+	ltq_port = devm_kzalloc(&pdev->dev, sizeof(struct ltq_uart_port),
-+			GFP_KERNEL);
- 	if (!ltq_port)
- 		return -ENOMEM;
- 
-@@ -709,19 +714,26 @@ lqasc_probe(struct platform_device *pdev)
- 	port->ops	= &lqasc_pops;
- 	port->fifosize	= 16;
- 	port->type	= PORT_LTQ_ASC,
--	port->line	= pdev->id;
-+	port->line	= line;
- 	port->dev	= &pdev->dev;
--
--	port->irq	= tx_irq; /* unused, just to be backward-compatibe */
-+	/* unused, just to be backward-compatible */
-+	port->irq	= irqres[0].start;
- 	port->mapbase	= mmres->start;
- 
--	ltq_port->clk	= clk;
-+	ltq_port->fpiclk = clk_get_fpi();
-+	if (IS_ERR(ltq_port->fpiclk)) {
-+		pr_err("failed to get fpi clk\n");
-+		return -ENOENT;
-+	}
- 
--	ltq_port->tx_irq = tx_irq;
--	ltq_port->rx_irq = rx_irq;
--	ltq_port->err_irq = err_irq;
-+	/* not all asc ports have clock gates, lets ignore the return code */
-+	ltq_port->clk = clk_get(&pdev->dev, NULL);
- 
--	lqasc_port[pdev->id] = ltq_port;
-+	ltq_port->tx_irq = irqres[0].start;
-+	ltq_port->rx_irq = irqres[1].start;
-+	ltq_port->err_irq = irqres[2].start;
-+
-+	lqasc_port[line] = ltq_port;
- 	platform_set_drvdata(pdev, ltq_port);
- 
- 	ret = uart_add_one_port(&lqasc_reg, port);
-@@ -729,10 +741,17 @@ lqasc_probe(struct platform_device *pdev)
- 	return ret;
- }
- 
-+static const struct of_device_id ltq_asc_match[] = {
-+	{ .compatible = DRVNAME },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, ltq_asc_match);
-+
- static struct platform_driver lqasc_driver = {
- 	.driver		= {
- 		.name	= DRVNAME,
- 		.owner	= THIS_MODULE,
-+		.of_match_table = ltq_asc_match,
- 	},
- };
- 
--- 
-1.7.9.1
 
+Ok this is my suggestion based on GregKH comments and a couple of others
+plus some other driver and ldisc stuff that is pending
+
+- register the gpio lines with the gpio layer dynamically
+- put them in the right place in the device tree (I'll let Greg advise on
+  the best way to do that bit), plus make them visible via the ioctls for
+  convenience and as they will be needed anyway in kernel
+
+That provides the user space API
+
+After that I'll add the hooks to the core tty layer code which allow an
+ldisc to adjust the gpio lines.
+
+For that we'll need
+
+struct tty_gpio {
+	u32 base;
+	u16 num;
+	u16 reserved;
+#define NR_TTY_GPIOMAP 8
+	u16 map[NR_TTY_GPIOMAP];
+	u32 reserved2[4];
+};
+
+and
+
+tty->gpiomap
+
+which will be NULL for most users.
+
+
+Plus
+
+struct tty_gpio d;
+ioctl(tty, TIOCGPIO, &d)
+
+and
+
+ioctl(tty, TIOCSGPIO, &d)
+
+where the only bits that can be updated will be the map.
+
+
+
+So the normal use case from user space would be
+
+struct tty_gpio d;
+int fd = open("/dev/ttyUSB0", O_RDWR);
+ioctl(tty, TIOCSGPIO, &d);
+
+stuff using the gpio driver interfaces
+
+close(fd);
+
+
+And setting up for a kernel ldisc something like
+
+
+/* Set a GPIO to LDISC signal mapping for ISO7816 */
+ioctl(tty, TIOCGPIO, &d);
+d.map[TTY_GPIO_ISO7816_RESET] = d.base;
+d.map]TTY_GPIO_ISO7816_VCC] = d.base + 1;
+ioctl(tty, TIOCSGPIO, &d);
+
+/* Switch to the ldisc */
+ld = N_ISO7816;
+ioctl(tty, TCSETD, &ld);
+
+
+and we can then abstract all the wiring details away to keep the ldisc
+portable.
+
+
+Thoughts ?
+
+Alan
+This message (including any attachments) is intended only for the use of the individual or entity to which it is addressed and may contain information that is non-public, proprietary, privileged, confidential, and exempt from disclosure under applicable law or may constitute as attorney work product.  If you are not the intended recipient, you are hereby notified that any use, dissemination, distribution, or copying of this communication is strictly prohibited. If you have received this communication in error, notify us immediately by telephone and (i) destroy this message if a facsimile or (ii) delete this message immediately if this is an electronic communication.  
+
+Thank you.
+
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
