@@ -1,51 +1,25 @@
-From: Dmitriy Alekseev <alexeev6@yahoo.com>
-Subject: Using quad uart st16c554 on at91rm9200 linux 2.6.30 board
-Date: Fri, 4 May 2012 01:34:23 -0700 (PDT)
-Message-ID: <1336120463.81282.YahooMailNeo@web44901.mail.sp1.yahoo.com>
-Reply-To: Dmitriy Alekseev <alexeev6@yahoo.com>
+From: "Microsoft  Notification" <Atrida.Hadianti@ait.ac.th>
+Subject: Urgent Letter
+Date: Fri, 04 May 2012 19:08:13 +0800
+Message-ID: <201205041108.q44B2dU4013367__25427.9659748592$1336131285$gmane$org@mail.ucla.edu>
+Reply-To: claims_dept25@kimo.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nm21.bullet.mail.sp2.yahoo.com ([98.139.91.91]:28600 "HELO
-	nm21.bullet.mail.sp2.yahoo.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with SMTP id S1752131Ab2EDIeY convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 4 May 2012 04:34:24 -0400
+Received: from out-51.smtp.ucla.edu ([169.232.46.164]:54376 "EHLO
+	out-51.smtp.ucla.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754928Ab2EDLe1 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 4 May 2012 07:34:27 -0400
+Content-Description: Mail message body
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Recipients <Atrida.Hadianti@ait.ac.th>
 
-Hello, Developers.
+We wish to inform you that you have won (One Million British Pound Sterlings) in the Microsoft Online Monthly Lottery held this month of April with Ticket Number (EKT/LTUK/3410) and the Lucky Numbers (BTUK5890BD) (01) For claim of Prize,please forward to us 1.Name: 2.Address 3.Age: 4.Sex: 5.Phone: 6.Country:7:Ticket Number and Lucky Number Contact: Mrs.Rita Hall. claims_dept25@kimo.com
 
-
-
-Trying to add support of st16c554 quad uart in at91rm9200 based board.
-=46irst, doing menuconfig...
-=46rom /drivers/serial/Konfig:
-config SERIAL_8250_EXAR_ST16C554
-tristate "Support Exar ST16C554/554D Quad UART"
-depends on SERIAL_8250 !=3D n && ISA && SERIAL_8250_MANY_PORTS
-ISA required, but isn't avaiable for at91 system type:
-Symbol: ISA [=3Dn] =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0
-=A0 Type =A0: boolean =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0
-=A0 =A0 =A0Selected by: ARCH_EBSA110 [=3Dn] && <choice> || ARCH_SA1100 =
-[=3Dn] && ...=A0no AT91
-
-
-Nevertheless, this message=A0http://www.spinics.net/lists/arm-kernel/ms=
-g55077.html=A0gives hope that it is possible.
-But how?=A0
-If this device is not supporting, suggest me please, what better to use=
- instead.
-
-Thanks.
-Best regards,
-Dmitriy Alekseev
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Congratulations once again.
+Yours faithfully,
+Mrs.Rita Hall.
+On-line Coordinator
