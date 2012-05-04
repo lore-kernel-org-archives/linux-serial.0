@@ -1,117 +1,38 @@
-From: Preston Fick <Preston.Fick-S6d6foEdJf7QT0dZR+AlfA@public.gmane.org>
-Subject: RE: [PATCH] usb: cp210x: Added support for GPIO (CP2103/4/5)
-Date: Fri, 4 May 2012 10:27:09 -0500
-Message-ID: <00374F755A5C474884D69FBCA77349D105227D97FB@EXCAUS002.silabs.com>
+From: Alexander Stein <a.stein@systec-electronic.com>
+Subject: Re: [PATCH] usb: cp210x: Added support for GPIO (CP2103/4/5)
+Date: Fri, 04 May 2012 18:26:58 +0200
+Message-ID: <1436626.86ImxHLlqB@ws-stein>
 References: <1335817637-2862-1-git-send-email-preston.fick@silabs.com>
- <20120503213456.77c55c51@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20120503213456.77c55c51-38n7/U1jhRXW96NNrWNlrekiAK3p4hvP@public.gmane.org>
-Content-Language: en-US
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Alan Cox <alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Preston Fick <pffick-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-xIg/pKzrS19vn6HldHNs0ANdhmdF6hFW@public.gmane.org" <linux-arm-kernel-xIg/pKzrS19vn6HldHNs0ANdhmdF6hFW@public.gmane.org>
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from webbox1416.server-home.net ([77.236.96.61]:59260 "EHLO
+	webbox1416.server-home.net" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751182Ab2EDQ1D (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 4 May 2012 12:27:03 -0400
+In-Reply-To: <1335817637-2862-1-git-send-email-preston.fick@silabs.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Preston Fick <pffick@gmail.com>
+Cc: gregkh@linuxfoundation.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, preston.fick@silabs.com
 
-Hi Alan -
+Am Montag, 30. April 2012, 15:27:17 schrieb Preston Fick:
+> This fix contains several changes that allow toggling of GPIO on CP210x
+> devices that support it. Changes include:
+> * Added in part number support, necessary to see if the connected device
+> supports the GPIO functionality
+> * Added two IOCTLs and ioctl function to allow GET/SET of GPIO
+> * Added in new #defines for partnum support, new USB requests
+> * Changed "Config request types" section to contain more correct definitions
+> for request recipient
+> 
+> Signed-off-by: Preston Fick <preston.fick@silabs.com>
 
-Thanks for this detailed explanation - I'll continue to look deeper into this, a lot of this is new to me. If Greg is in agreement here, then I will work on this as a solution to our GPIO support and submit a series of patches for this when it's ready and tested.
+Do you actually need to create new ioctls? You also could support gpiolib and 
+create a gpiochip for that.
 
-Kind Regards -
-Preston
+just my 2 cents,
+Alexander
 
------Original Message-----
-From: Alan Cox [mailto:alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org] 
-Sent: Thursday, May 03, 2012 3:35 PM
-To: Preston Fick
-Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org; linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Preston Fick; linux-arm-kernel-xIg/pKzrS19vn6HldHNs0ANdhmdF6hFW@public.gmane.org
-Subject: Re: [PATCH] usb: cp210x: Added support for GPIO (CP2103/4/5)
-
-
-Ok this is my suggestion based on GregKH comments and a couple of others
-plus some other driver and ldisc stuff that is pending
-
-- register the gpio lines with the gpio layer dynamically
-- put them in the right place in the device tree (I'll let Greg advise on
-  the best way to do that bit), plus make them visible via the ioctls for
-  convenience and as they will be needed anyway in kernel
-
-That provides the user space API
-
-After that I'll add the hooks to the core tty layer code which allow an
-ldisc to adjust the gpio lines.
-
-For that we'll need
-
-struct tty_gpio {
-	u32 base;
-	u16 num;
-	u16 reserved;
-#define NR_TTY_GPIOMAP 8
-	u16 map[NR_TTY_GPIOMAP];
-	u32 reserved2[4];
-};
-
-and
-
-tty->gpiomap
-
-which will be NULL for most users.
-
-
-Plus
-
-struct tty_gpio d;
-ioctl(tty, TIOCGPIO, &d)
-
-and
-
-ioctl(tty, TIOCSGPIO, &d)
-
-where the only bits that can be updated will be the map.
-
-
-
-So the normal use case from user space would be
-
-struct tty_gpio d;
-int fd = open("/dev/ttyUSB0", O_RDWR);
-ioctl(tty, TIOCSGPIO, &d);
-
-stuff using the gpio driver interfaces
-
-close(fd);
-
-
-And setting up for a kernel ldisc something like
-
-
-/* Set a GPIO to LDISC signal mapping for ISO7816 */
-ioctl(tty, TIOCGPIO, &d);
-d.map[TTY_GPIO_ISO7816_RESET] = d.base;
-d.map]TTY_GPIO_ISO7816_VCC] = d.base + 1;
-ioctl(tty, TIOCSGPIO, &d);
-
-/* Switch to the ldisc */
-ld = N_ISO7816;
-ioctl(tty, TCSETD, &ld);
-
-
-and we can then abstract all the wiring details away to keep the ldisc
-portable.
-
-
-Thoughts ?
-
-Alan
-This message (including any attachments) is intended only for the use of the individual or entity to which it is addressed and may contain information that is non-public, proprietary, privileged, confidential, and exempt from disclosure under applicable law or may constitute as attorney work product.  If you are not the intended recipient, you are hereby notified that any use, dissemination, distribution, or copying of this communication is strictly prohibited. If you have received this communication in error, notify us immediately by telephone and (i) destroy this message if a facsimile or (ii) delete this message immediately if this is an electronic communication.  
-
-Thank you.
-
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
