@@ -1,58 +1,32 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: Deterministic behavior for TTY serial
-Date: Fri, 4 May 2012 17:32:57 -0700
-Message-ID: <20120505003257.GA5169@kroah.com>
-References: <20120419001407.GA24710@kroah.com>
- <CAMSQXEEkssPGWYgC4dkpKEhfrB4s8yOoxiNNVdRRX7r+b91EMQ@mail.gmail.com>
- <20120419154609.GA9263@kroah.com>
- <CAMSQXEEN=6M59CR3riNA5-kFFv7QAsn_g3PHi3A8P9mh3SfdeQ@mail.gmail.com>
- <CAMSQXEGb9moJbCQwwXgEq7H-HvaSiuS5JBL55jr0ZhEEeAmqzw@mail.gmail.com>
- <20120501160456.3b0b5e34@pyramind.ukuu.org.uk>
- <CAMSQXEHAyPOF6YghsYmqqyx+N0oMgn5E=znhgFyspMUnaH78ig@mail.gmail.com>
- <CAMSQXEHHOHeNYPJZT0b4s62T3uuNXSt9WucSrGOTfjXOU_guzg@mail.gmail.com>
- <CAMSQXEG+O86t10AF5gN875RoEHkMcGFQE_-G6TdeYVc4NJoBLw@mail.gmail.com>
- <CAMSQXEEnvpBoq7m5hMTtYObj4FsMAtUbpEaiftZ1CDmF56LZAQ@mail.gmail.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] usb: cp210x: Added support for GPIO (CP2103/4/5)
+Date: Sat, 5 May 2012 12:01:37 +0100
+Message-ID: <20120505120137.11a45c86@pyramind.ukuu.org.uk>
+References: <1335817637-2862-1-git-send-email-preston.fick@silabs.com>
+	<20120503213456.77c55c51@pyramind.ukuu.org.uk>
+	<20120505003208.GA30718@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-rt-users-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAMSQXEEnvpBoq7m5hMTtYObj4FsMAtUbpEaiftZ1CDmF56LZAQ@mail.gmail.com>
-Sender: linux-rt-users-owner@vger.kernel.org
-To: Ivo Sieben <meltedpianoman@gmail.com>
-Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, RT <linux-rt-users@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:59958 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754491Ab2EEK6y (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 5 May 2012 06:58:54 -0400
+In-Reply-To: <20120505003208.GA30718@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Preston Fick <pffick@gmail.com>, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, preston.fick@silabs.com, "linux-arm-kernel@lists.arm.linux.org.uk" <linux-arm-kernel@lists.arm.linux.org.uk>
 
-On Thu, May 03, 2012 at 05:28:47PM +0200, Ivo Sieben wrote:
-> Hi,
-> 
-> >
-> > The PREEMPT_RT uses mutexes for "normal" spin locks that do not
-> > disable interrupts...
-> > I'll try to use raw spinlocks in this code section and for the tty flip buffer
-> > See if that can solve my problem.
-> >
-> > If you have other ideas... let me know!
-> >
-> > Regards,
-> > Ivo
-> 
-> I've changed some small things to the tty layer (see my other 3 RFC
-> patches I've send).
-> Performance increased with my loopback stress test:
-> - Old situation: average read call last for 50us, with peaks up to 230 us
-> - New situation: average read call still 50us, peak up to 60 us
-> - Write was stable in both situations: average of 90 us, peak up to 100 us
-> 
-> Only the very first read & write took extra time (128 us for read, 143
-> for write)
-> I'm still investigating that...
-> 
-> Feedback is very appreciated.
+> Will the new ldisc mess with the tty stuff to prevent "normal" serial
+> data and line settings from being handled properly?  If not, that all
+> looks very good to me, thanks for working this out.
 
-Why are raw spinlocks "faster" here?  I like the end-result of what you
-have accomplished, but I had some questions on your patches, care to
-answer them?
+It'll have no effect on that. What it will do is provide a way for things
+like ISO7816 ldiscs to use the extra pins (as they can call from the
+ldisc into the gpio layer) and to know the mapping of the extra control
+wires, which varies by device.
 
-thanks,
-
-greg k-h
+Alan
