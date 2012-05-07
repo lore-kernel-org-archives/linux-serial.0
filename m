@@ -1,66 +1,50 @@
-From: Ivo Sieben <meltedpianoman@gmail.com>
-Subject: Re: [PATCH 1/3] RFC: Solved unnecessary schedule latency in the TTY
- layer (1/3)
-Date: Mon, 7 May 2012 16:10:15 +0200
-Message-ID: <CAMSQXEEczyknnRaPhktaDj3e6GPCo6YpVFC-Nczk6uDpO6-ytA@mail.gmail.com>
-References: <1336048663-21882-1-git-send-email-meltedpianoman@gmail.com>
+From: Sasha Levin <levinsasha928@gmail.com>
+Subject: Re: [PATCH 3/3] tty_lock: Localise the lock
+Date: Mon, 7 May 2012 18:03:07 +0200
+Message-ID: <CA+1xoqezLCQh_fqJ1iNAs25X7Fm24W=-0J8zTZuVVJQnWTtSLg@mail.gmail.com>
+References: <20120503212151.568.91854.stgit@bob.linux.org.uk> <20120503212219.568.15653.stgit@bob.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qa0-f49.google.com ([209.85.216.49]:52002 "EHLO
-	mail-qa0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756194Ab2EGOKR convert rfc822-to-8bit (ORCPT
+Received: from mail-gg0-f174.google.com ([209.85.161.174]:47509 "EHLO
+	mail-gg0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756571Ab2EGQD3 convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 7 May 2012 10:10:17 -0400
-In-Reply-To: <1336048663-21882-1-git-send-email-meltedpianoman@gmail.com>
+	Mon, 7 May 2012 12:03:29 -0400
+In-Reply-To: <20120503212219.568.15653.stgit@bob.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, RT <linux-rt-users@vger.kernel.org>
-Cc: Ivo Sieben <meltedpianoman@gmail.com>
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Hi,
+Hi Alan,
 
-2012/5/3 Ivo Sieben <meltedpianoman@gmail.com>:
-> --- a/drivers/tty/tty_buffer.c
-> +++ b/drivers/tty/tty_buffer.c
-> @@ -317,12 +317,7 @@ EXPORT_SYMBOL(tty_insert_flip_string_flags);
->
-> =A0void tty_schedule_flip(struct tty_struct *tty)
-> =A0{
-> - =A0 =A0 =A0 unsigned long flags;
-> - =A0 =A0 =A0 spin_lock_irqsave(&tty->buf.lock, flags);
-> - =A0 =A0 =A0 if (tty->buf.tail !=3D NULL)
-> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 tty->buf.tail->commit =3D tty->buf.tail=
-->used;
-> - =A0 =A0 =A0 spin_unlock_irqrestore(&tty->buf.lock, flags);
-> - =A0 =A0 =A0 schedule_work(&tty->buf.work);
-> + =A0 =A0 =A0 tty_flip_buffer_push(tty);
+On Thu, May 3, 2012 at 11:24 PM, Alan Cox <alan@lxorguk.ukuu.org.uk> wr=
+ote:
+> diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+> index 5505ffc..d6fa842 100644
+> --- a/drivers/tty/pty.c
+> +++ b/drivers/tty/pty.c
+> @@ -62,9 +63,7 @@ static void pty_close(struct tty_struct *tty, struc=
+t file *filp)
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0mutex_unlock(&devpts_m=
+utex);
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0}
+> =A0#endif
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 tty_unlock();
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0tty_vhangup(tty->link);
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 tty_lock();
+> =A0 =A0 =A0 =A0}
 > =A0}
-> =A0EXPORT_SYMBOL(tty_schedule_flip);
->
 
-I have an additional question on the above change in the patch that I'v=
-e send:
+I don't believe that this change is correct.
 
-I found that two functions in drivers/tty/tty_buffer.c implement
-almost the same functionality:
-- tty_schedule_flip
-- tty_flip_buffer_push
+Consider the following scenario:
 
-Only difference was that tty_schedule_flip() always uses the work
-queue, while the tty_flip_buffer_push only uses the work queue in case
-of a non prempt_rt system and low_latency flag unset.
+tty_release -> tty_lock -> pty_close -> tty_vhangup -> tty_lock
 
-But is my change correct? I see that most serial drivers use the
-tty_flip_buffer_push() function. But still a number of drivers use the
-tty_schedule_flip() function. I even found one driver that uses both
-(drivers/staging/serqt_usb2/serqt_usb2.c). Does my patch introduce
-bugs to these drivers? Or is the tty_schedule_flip() a legacy
-function, and would it be better to remove it completely?
-
-Regards,
-Ivo Sieben
+Which would cause a deadlock.
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
  in
