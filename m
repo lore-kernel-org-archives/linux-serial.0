@@ -1,28 +1,46 @@
-From: Sasha Levin <levinsasha928@gmail.com>
-Subject: Re: [PATCH 3/3] tty_lock: Localise the lock
-Date: Mon, 7 May 2012 19:00:24 +0200
-Message-ID: <CA+1xoqez0PaX2KBHHN-etztwbFoU1cKx3NwMXX+PO4SguA3bRg@mail.gmail.com>
-References: <20120503212151.568.91854.stgit@bob.linux.org.uk>
- <20120503212219.568.15653.stgit@bob.linux.org.uk> <CA+1xoqezLCQh_fqJ1iNAs25X7Fm24W=-0J8zTZuVVJQnWTtSLg@mail.gmail.com>
- <20120507171126.5beddc27@pyramind.ukuu.org.uk> <1336408208.3638.15.camel@lappy>
- <20120507174240.4209c5cb@pyramind.ukuu.org.uk>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH -next] tty/amiserial: Add missing argument for tty_unlock()
+Date: Mon,  7 May 2012 21:36:06 +0200
+Message-ID: <1336419366-23555-1-git-send-email-geert@linux-m68k.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-gh0-f174.google.com ([209.85.160.174]:65025 "EHLO
-	mail-gy0-f174.google.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1756791Ab2EGRAq (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 7 May 2012 13:00:46 -0400
-In-Reply-To: <20120507174240.4209c5cb@pyramind.ukuu.org.uk>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-next-owner@vger.kernel.org>
+Sender: linux-next-owner@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-next@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-> So whatever your trace is showing, that's not the bug. Something more
-> complicated would appear to be afoot.
+commit d29f3ef39be4eec0362b985305fc526d9be318cf ("tty_lock: Localise th=
+e lock")
+missed that d3a7b83f865b46bb7b5e1ed18a129ce1af349db4 ("drivers/tty/amis=
+erial.c:
+add missing tty_unlock") just added a new caller of tty_unlock():
 
-Oddly enough, tty != tty->link, but the lockdep warning triggers.
+drivers/tty/amiserial.c: In function =E2=80=98set_serial_info=E2=80=99:
+drivers/tty/amiserial.c:1077: error: too few arguments to function =E2=80=
+=98tty_unlock=E2=80=99
 
-Any idea why it might happen?
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+---
+http://kisskb.ellerman.id.au/kisskb/buildresult/6271985/
+
+ drivers/tty/amiserial.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
+index b88a65c..35819e3 100644
+--- a/drivers/tty/amiserial.c
++++ b/drivers/tty/amiserial.c
+@@ -1074,7 +1074,7 @@ static int set_serial_info(struct tty_struct *tty=
+, struct serial_state *state,
+ 		    (new_serial.xmit_fifo_size !=3D state->xmit_fifo_size) ||
+ 		    ((new_serial.flags & ~ASYNC_USR_MASK) !=3D
+ 		     (port->flags & ~ASYNC_USR_MASK))) {
+-			tty_unlock();
++			tty_unlock(tty);
+ 			return -EPERM;
+ 		}
+ 		port->flags =3D ((port->flags & ~ASYNC_USR_MASK) |
+--=20
+1.7.0.4
