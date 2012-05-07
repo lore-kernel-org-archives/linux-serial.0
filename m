@@ -1,49 +1,66 @@
-From: Shawn Guo <shawn.guo@linaro.org>
-Subject: Re: [PATCH RESEND 0/5] Adopt pinctrl support for a few outstanding
- imx drivers
-Date: Mon, 7 May 2012 15:34:06 +0800
-Message-ID: <20120507073403.GG19389@S2101-09.ap.freescale.net>
-References: <1336352040-28447-1-git-send-email-shawn.guo@linaro.org>
- <20120507065001.GA23607@shlinux2.ap.freescale.net>
+From: Ivo Sieben <meltedpianoman@gmail.com>
+Subject: Re: [PATCH 2/3] RFC: Solved unnecessary schedule latency in the TTY
+ layer (2/3)
+Date: Mon, 7 May 2012 09:45:51 +0200
+Message-ID: <CAMSQXEEofb_4mLjNffTK1ZEHXA0UcY1dXm5NR-GD1jJzDgDu+w@mail.gmail.com>
+References: <1336048663-21882-1-git-send-email-meltedpianoman@gmail.com>
+	<1336048663-21882-2-git-send-email-meltedpianoman@gmail.com>
+	<20120503162529.GB3063@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-can-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20120507065001.GA23607@shlinux2.ap.freescale.net>
-Sender: linux-can-owner@vger.kernel.org
-To: Dong Aisheng <aisheng.dong@freescale.com>
-Cc: linux-arm-kernel@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>, Wolfram Sang <w.sang@pengutronix.de>, linux-can@vger.kernel.org, Grant Likely <grant.likely@secretlab.ca>, Marc Kleine-Budde <mkl@pengutronix.de>, linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Olof Johansson <olof@lixom.net>, spi-devel-general@lists.sourceforge.net, Dong Aisheng <dong.aisheng@linaro.org>, "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ob0-f174.google.com ([209.85.214.174]:60719 "EHLO
+	mail-ob0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754721Ab2EGHpw convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 7 May 2012 03:45:52 -0400
+In-Reply-To: <20120503162529.GB3063@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, RT <linux-rt-users@vger.kernel.org>
 
-On Mon, May 07, 2012 at 02:50:02PM +0800, Dong Aisheng wrote:
-> Shouldn't we add the pinctrl states in dts file at the same time
-> with this patch series or using another separate patch to add them
-> before this series to avoid breaking the exist mx6q platforms?
-> 
-Ah, I just noticed that your patch "ARM: imx: enable pinctrl dummy
-states" did not cover imx6q.  I think we should do the same for imx6q,
-so that we can separate dts update from the driver change.  When all
-imx6q boards' dts files get updated to have pins defined for the
-devices, we can then remove dummy state for imx6q.  Doing so will ease
-the pinctrl migration for those imx6q boards.
+Hi,
 
-Will update your patch on my branch to have dummy state enabled for
-imx6q.
+2012/5/3 Greg KH <gregkh@linuxfoundation.org>:
+>
+> Why, what does this cause to have happen? =A0What's the difference he=
+re
+> that causes any speedups or latency fixes?
+>
 
-> >   net: fec: adopt pinctrl support
-> >   can: flexcan: adopt pinctrl support
-> This two also depends on another patch you sent.
-> [PATCH RESEND 1/9] ARM: mxs: enable pinctrl dummy states
-> http://www.spinics.net/lists/arm-kernel/msg173341.html
-> 
-> Maybe you can put this two in the mxs convert series to avoid breaking
-> mxs platforms.
-> [PATCH 0/9] Enable pinctrl support for mach-mxs
-> http://www.spinics.net/lists/arm-kernel/msg173312.html
-> 
-Right.  I'm going to merge these two series into one since there are
-device drives shared between imx and mxs.
+This patch solves the following scenario:
+- A low priority process starts to send data to serial port A
+- In order to do this, the low priority process calls the
+tty_ldisc_ref_wait() function to retrieve a reference to its line
+discipline.
+- In the tty_ldisc_ref_wait() function, the global ldisc spinlock is lo=
+cked.
+- While the spin lock is still locked, a context switch takes place
+and a second process on high real-time priority starts reading data
+from another serial port B (this is a possible scenario on a
+PREEMPT_RT system where a "normal" spin lock behaves like a mutex and
+no interrupts are actually disabled, although the "irqsave" postfix in
+the spinlock function name suggests otherwise)
+- The second project also calls the tty_ldisc_ref_wait() function, and
+therefor gets blocked on the global ldisc spin lock.
+- As a result priority inversion takes place, and the second process
+is scheduled out, the first process is scheduled in on high priority.
+After the first process has released the spin lock, the second process
+is scheduled again.
 
--- 
+The above scenario is not wrong, it works fine... but the scheduling &
+mutex handling requires a lot of extra processing time what makes that
+a normal read operation of about 50us sometimes can last up to 230us.
+By using raw spin locks this situation is prevented. I think it is
+legitimate to use raw spin locks because the critical sections in
+ldisc are small.
+
 Regards,
-Shawn
+Ivo Sieben
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
