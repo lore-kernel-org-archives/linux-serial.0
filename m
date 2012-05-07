@@ -1,50 +1,62 @@
 From: Shawn Guo <shawn.guo@linaro.org>
-Subject: [PATCH RESEND 0/5] Adopt pinctrl support for a few outstanding imx drivers
-Date: Mon,  7 May 2012 08:53:55 +0800
-Message-ID: <1336352040-28447-1-git-send-email-shawn.guo@linaro.org>
+Subject: [PATCH RESEND 1/5] tty: serial: imx: adopt pinctrl support
+Date: Mon,  7 May 2012 08:53:56 +0800
+Message-ID: <1336352040-28447-2-git-send-email-shawn.guo@linaro.org>
+References: <1336352040-28447-1-git-send-email-shawn.guo@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:37828 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755012Ab2EGAxq (ORCPT
+Received: from mail-pz0-f46.google.com ([209.85.210.46]:33196 "EHLO
+	mail-pz0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755062Ab2EGAxw (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 6 May 2012 20:53:46 -0400
-Received: by pbbrp8 with SMTP id rp8so6011296pbb.19
-        for <linux-serial@vger.kernel.org>; Sun, 06 May 2012 17:53:46 -0700 (PDT)
+	Sun, 6 May 2012 20:53:52 -0400
+Received: by mail-pz0-f46.google.com with SMTP id y13so591064dad.19
+        for <linux-serial@vger.kernel.org>; Sun, 06 May 2012 17:53:52 -0700 (PDT)
+In-Reply-To: <1336352040-28447-1-git-send-email-shawn.guo@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-arm-kernel@lists.infradead.org
-Cc: Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sascha Hauer <s.hauer@pengutronix.de>, Dong Aisheng <dong.aisheng@linaro.org>, Shawn Guo <shawn.guo@linaro.org>, spi-devel-general@lists.sourceforge.net, Grant Likely <grant.likely@secretlab.ca>, linux-i2c@vger.kernel.org, Wolfram Sang <w.sang@pengutronix.de>, linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>, netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sascha Hauer <s.hauer@pengutronix.de>, Dong Aisheng <dong.aisheng@linaro.org>, Shawn Guo <shawn.guo@linaro.org>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-With patch 5b3aa5f (pinctrl: add pinctrl_provide_dummies interface for
-platforms to use) applied on pinctrl tree, and patch "ARM: imx: enable
-pinctrl dummy states" [1] being there, we are ready to adopt pinctrl
-API for imx drivers.  So let's start from a few outstanding ones.
+Cc: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+---
+ drivers/tty/serial/imx.c |    8 ++++++++
+ 1 files changed, 8 insertions(+), 0 deletions(-)
 
-I would expect to ask Arnd and Olof to pull pinctrl tree into arm-soc
-as a dependency and then have series [1] and this patch set go through
-arm-soc tree to ease the merge process.
-
-Resend to have subsystem lists Cc-ed.
-
-Regards,
-Shawn
-
-[1] http://thread.gmane.org/gmane.linux.kernel.mmc/14180
-
-Shawn Guo (5):
-  tty: serial: imx: adopt pinctrl support
-  net: fec: adopt pinctrl support
-  can: flexcan: adopt pinctrl support
-  i2c: imx: adopt pinctrl support
-  spi/imx: adopt pinctrl support
-
- drivers/i2c/busses/i2c-imx.c         |    8 ++++++++
- drivers/net/can/flexcan.c            |    6 ++++++
- drivers/net/ethernet/freescale/fec.c |    9 +++++++++
- drivers/spi/spi-imx.c                |    8 ++++++++
- drivers/tty/serial/imx.c             |    8 ++++++++
- 5 files changed, 39 insertions(+), 0 deletions(-)
-
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index e7fecee..ec20673 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -47,6 +47,7 @@
+ #include <linux/slab.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
++#include <linux/pinctrl/consumer.h>
+ 
+ #include <asm/io.h>
+ #include <asm/irq.h>
+@@ -1464,6 +1465,7 @@ static int serial_imx_probe(struct platform_device *pdev)
+ 	void __iomem *base;
+ 	int ret = 0;
+ 	struct resource *res;
++	struct pinctrl *pinctrl;
+ 
+ 	sport = kzalloc(sizeof(*sport), GFP_KERNEL);
+ 	if (!sport)
+@@ -1503,6 +1505,12 @@ static int serial_imx_probe(struct platform_device *pdev)
+ 	sport->timer.function = imx_timeout;
+ 	sport->timer.data     = (unsigned long)sport;
+ 
++	pinctrl = devm_pinctrl_get_select_default(&pdev->dev);
++	if (IS_ERR(pinctrl)) {
++		ret = PTR_ERR(pinctrl);
++		goto unmap;
++	}
++
+ 	sport->clk = clk_get(&pdev->dev, "uart");
+ 	if (IS_ERR(sport->clk)) {
+ 		ret = PTR_ERR(sport->clk);
 -- 
 1.7.5.4
 
