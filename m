@@ -1,66 +1,49 @@
-From: Ivo Sieben <meltedpianoman@gmail.com>
-Subject: Re: [PATCH 2/3] RFC: Solved unnecessary schedule latency in the TTY
- layer (2/3)
-Date: Mon, 7 May 2012 09:45:51 +0200
-Message-ID: <CAMSQXEEofb_4mLjNffTK1ZEHXA0UcY1dXm5NR-GD1jJzDgDu+w@mail.gmail.com>
-References: <1336048663-21882-1-git-send-email-meltedpianoman@gmail.com>
-	<1336048663-21882-2-git-send-email-meltedpianoman@gmail.com>
-	<20120503162529.GB3063@kroah.com>
+From: Shawn Guo <shawn.guo@linaro.org>
+Subject: Re: [alsa-devel] [PATCH RESEND 0/9] Enable pinctrl support for
+ mach-mxs
+Date: Mon, 7 May 2012 15:47:00 +0800
+Message-ID: <20120507074658.GH19389@S2101-09.ap.freescale.net>
+References: <1336353374-28939-1-git-send-email-shawn.guo@linaro.org>
+ <20120507071400.GB23607@shlinux2.ap.freescale.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ob0-f174.google.com ([209.85.214.174]:60719 "EHLO
-	mail-ob0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754721Ab2EGHpw convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 7 May 2012 03:45:52 -0400
-In-Reply-To: <20120503162529.GB3063@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-mmc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20120507071400.GB23607@shlinux2.ap.freescale.net>
+Sender: linux-mmc-owner@vger.kernel.org
+To: Dong Aisheng <aisheng.dong@freescale.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-fbdev@vger.kernel.org, Chris Ball <cjb@laptop.org>, Arnd Bergmann <arnd@arndb.de>, Florian Tobias Schandinat <FlorianSchandinat@gmx.de>, Artem Bityutskiy <artem.bityutskiy@linux.intel.com>, Mark Brown <broonie@opensource.wolfsonmicro.com>, linux-mmc@vger.kernel.org, alsa-devel@alsa-project.org, Wolfram Sang <w.sang@pengutronix.de>, linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Olof Johansson <olof@lixom.net>
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, RT <linux-rt-users@vger.kernel.org>
 
-Hi,
+On Mon, May 07, 2012 at 03:14:00PM +0800, Dong Aisheng wrote:
+> As IMX, basically i'd prefer to add pinctrl states in dts file at the
+> same time within the patch or using a separate patch to add them before
+> this series to avoid breaking the exist platforms.
+> 
+> However i noted that for mxs, most drivers here are still not dt capable,
+> so it may be ok to not add their pinctrl state at this time.
+> 
+There no mxs driver on mainline that has been DT aware of.  What I'm
+going to do is to ask Arnd abandon the mxs/dt branch I sent him before
+and send him an updated one with the whole mxs DT support based on
+mxs common clk and pinctrl series.
 
-2012/5/3 Greg KH <gregkh@linuxfoundation.org>:
->
-> Why, what does this cause to have happen? =A0What's the difference he=
-re
-> that causes any speedups or latency fixes?
->
+> But for the patch "serial: amba-pl011: adopt pinctrl support" since it is
+> dt capable, so with this patch applied, the mx28 dt boot will fail.
+> Maybe we should at least add pinctrl states for amba-pl011 first.
+> 
+The updated mxs/dt will have pinctrl defined in dts for each device
+that is converted to DT.
 
-This patch solves the following scenario:
-- A low priority process starts to send data to serial port A
-- In order to do this, the low priority process calls the
-tty_ldisc_ref_wait() function to retrieve a reference to its line
-discipline.
-- In the tty_ldisc_ref_wait() function, the global ldisc spinlock is lo=
-cked.
-- While the spin lock is still locked, a context switch takes place
-and a second process on high real-time priority starts reading data
-from another serial port B (this is a possible scenario on a
-PREEMPT_RT system where a "normal" spin lock behaves like a mutex and
-no interrupts are actually disabled, although the "irqsave" postfix in
-the spinlock function name suggests otherwise)
-- The second project also calls the tty_ldisc_ref_wait() function, and
-therefor gets blocked on the global ldisc spin lock.
-- As a result priority inversion takes place, and the second process
-is scheduled out, the first process is scheduled in on high priority.
-After the first process has released the spin lock, the second process
-is scheduled again.
+> > Shawn Guo (9):
+> >   ARM: mxs: enable pinctrl dummy states
+> >   serial: amba-pl011: adopt pinctrl support
+> BTW, will this one break other platforms using this driver?
+> 
+If the platforms do not turn on CONFIG_PINCTRL, they are fine.  If they
+turn on the support, they should provide pinctrl state either dummy or
+real one.
 
-The above scenario is not wrong, it works fine... but the scheduling &
-mutex handling requires a lot of extra processing time what makes that
-a normal read operation of about 50us sometimes can last up to 230us.
-By using raw spin locks this situation is prevented. I think it is
-legitimate to use raw spin locks because the critical sections in
-ldisc are small.
-
+-- 
 Regards,
-Ivo Sieben
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Shawn
