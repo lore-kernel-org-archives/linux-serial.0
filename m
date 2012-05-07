@@ -1,36 +1,50 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] usb: cp210x: Added support for GPIO (CP2103/4/5)
-Date: Sat, 5 May 2012 07:57:32 -0700
-Message-ID: <20120505145732.GA27577@kroah.com>
-References: <1335817637-2862-1-git-send-email-preston.fick@silabs.com>
- <20120503213456.77c55c51@pyramind.ukuu.org.uk>
- <20120505003208.GA30718@kroah.com>
- <20120505120137.11a45c86@pyramind.ukuu.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Shawn Guo <shawn.guo@linaro.org>
+Subject: [PATCH RESEND 0/5] Adopt pinctrl support for a few outstanding imx drivers
+Date: Mon,  7 May 2012 08:53:55 +0800
+Message-ID: <1336352040-28447-1-git-send-email-shawn.guo@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:50879 "EHLO
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:37828 "EHLO
 	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755469Ab2EEO5f (ORCPT
+	with ESMTP id S1755012Ab2EGAxq (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 5 May 2012 10:57:35 -0400
-Received: by pbbrp8 with SMTP id rp8so4971090pbb.19
-        for <linux-serial@vger.kernel.org>; Sat, 05 May 2012 07:57:35 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <20120505120137.11a45c86@pyramind.ukuu.org.uk>
+	Sun, 6 May 2012 20:53:46 -0400
+Received: by pbbrp8 with SMTP id rp8so6011296pbb.19
+        for <linux-serial@vger.kernel.org>; Sun, 06 May 2012 17:53:46 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Preston Fick <pffick@gmail.com>, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, preston.fick@silabs.com, "linux-arm-kernel@lists.arm.linux.org.uk" <linux-arm-kernel@lists.arm.linux.org.uk>
+To: linux-arm-kernel@lists.infradead.org
+Cc: Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sascha Hauer <s.hauer@pengutronix.de>, Dong Aisheng <dong.aisheng@linaro.org>, Shawn Guo <shawn.guo@linaro.org>, spi-devel-general@lists.sourceforge.net, Grant Likely <grant.likely@secretlab.ca>, linux-i2c@vger.kernel.org, Wolfram Sang <w.sang@pengutronix.de>, linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>, netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-On Sat, May 05, 2012 at 12:01:37PM +0100, Alan Cox wrote:
-> > Will the new ldisc mess with the tty stuff to prevent "normal" serial
-> > data and line settings from being handled properly?  If not, that all
-> > looks very good to me, thanks for working this out.
-> 
-> It'll have no effect on that. What it will do is provide a way for things
-> like ISO7816 ldiscs to use the extra pins (as they can call from the
-> ldisc into the gpio layer) and to know the mapping of the extra control
-> wires, which varies by device.
+With patch 5b3aa5f (pinctrl: add pinctrl_provide_dummies interface for
+platforms to use) applied on pinctrl tree, and patch "ARM: imx: enable
+pinctrl dummy states" [1] being there, we are ready to adopt pinctrl
+API for imx drivers.  So let's start from a few outstanding ones.
 
-Ok, that sounds good to me.
+I would expect to ask Arnd and Olof to pull pinctrl tree into arm-soc
+as a dependency and then have series [1] and this patch set go through
+arm-soc tree to ease the merge process.
+
+Resend to have subsystem lists Cc-ed.
+
+Regards,
+Shawn
+
+[1] http://thread.gmane.org/gmane.linux.kernel.mmc/14180
+
+Shawn Guo (5):
+  tty: serial: imx: adopt pinctrl support
+  net: fec: adopt pinctrl support
+  can: flexcan: adopt pinctrl support
+  i2c: imx: adopt pinctrl support
+  spi/imx: adopt pinctrl support
+
+ drivers/i2c/busses/i2c-imx.c         |    8 ++++++++
+ drivers/net/can/flexcan.c            |    6 ++++++
+ drivers/net/ethernet/freescale/fec.c |    9 +++++++++
+ drivers/spi/spi-imx.c                |    8 ++++++++
+ drivers/tty/serial/imx.c             |    8 ++++++++
+ 5 files changed, 39 insertions(+), 0 deletions(-)
+
+-- 
+1.7.5.4
+
