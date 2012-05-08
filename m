@@ -1,34 +1,69 @@
-From: Dong Aisheng <aisheng.dong@freescale.com>
-Subject: Re: [PATCH RESEND 1/5] tty: serial: imx: adopt pinctrl support
-Date: Tue, 8 May 2012 11:43:52 +0800
-Message-ID: <20120508034351.GF23607@shlinux2.ap.freescale.net>
-References: <1336352040-28447-1-git-send-email-shawn.guo@linaro.org>
- <1336352040-28447-2-git-send-email-shawn.guo@linaro.org>
+From: Preston Fick <Preston.Fick@silabs.com>
+Subject: RE: [PATCH 1/3] usb: cp210x: Corrected USB request type definitions
+Date: Tue, 8 May 2012 08:56:33 -0500
+Message-ID: <00374F755A5C474884D69FBCA77349D105227D9ED9@EXCAUS002.silabs.com>
+References: <1335845210-5147-1-git-send-email-preston.fick@silabs.com>
+ <87ipgd3ako.fsf@nemi.mork.no>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from am1ehsobe002.messaging.microsoft.com ([213.199.154.205]:4946
-	"EHLO am1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752997Ab2EHDhF (ORCPT
+Received: from na3sys009aog107.obsmtp.com ([74.125.149.197]:53561 "EHLO
+	na3sys009aog107.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753815Ab2EHN4m (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 7 May 2012 23:37:05 -0400
-Content-Disposition: inline
-In-Reply-To: <1336352040-28447-2-git-send-email-shawn.guo@linaro.org>
+	Tue, 8 May 2012 09:56:42 -0400
+In-Reply-To: <87ipgd3ako.fsf@nemi.mork.no>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Shawn Guo <shawn.guo@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, linux-serial@vger.kernel.org, Olof Johansson <olof@lixom.net>, Dong Aisheng <dong.aisheng@linaro.org>
+To: =?utf-8?B?QmrDuHJuIE1vcms=?= <bjorn@mork.no>, Preston Fick <pffick@gmail.com>
+Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On Mon, May 07, 2012 at 08:53:56AM +0800, Shawn Guo wrote:
-> Cc: linux-serial@vger.kernel.org
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
-> ---
->  drivers/tty/serial/imx.c |    8 ++++++++
->  1 files changed, 8 insertions(+), 0 deletions(-)
-> 
-Acked-by: Dong Aisheng <dong.aisheng@linaro.org>
-
-Regards
-Dong Aisheng
-
+SGkgQmpvcm4gLQ0KDQpJIGFncmVlIC0gSSB3YXMgbm90IHRoZSBvcmlnaW5hbCBhdXRob3Ig
+b2YgdGhpcyBkcml2ZXIsIGJ1dCBhbSBoZWxwaW5nIHRvIGJyaW5nIGl0IHVwIHRvIGRhdGUg
+dG8gZml4IHNvbWUgaXNzdWVzIGFuZCBhZGQgbWlzc2luZyBzdXBwb3J0IGZyb20gb3VyIHBy
+b2R1Y3QgbGluZS4gSSBqdXN0IHNpbXBseSBhZGRlZCB0aGlzIGluIHRvIHN0aWNrIHdpdGgg
+dGhlIHdheSB0aGF0IGl0IGhhZCBhbHJlYWR5IGJlZW4gZGV2ZWxvcGVkLCBob3dldmVyIEkg
+Y2FuIHN1Ym1pdCBhbm90aGVyIHBhdGNoIHRvIHNldHVwIHRob3NlIGRlZmluZXMgdXNpbmcg
+dGhlIHN0YW5kYXJkIFVTQiBkZWZpbml0aW9ucy4gVGhhbmtzIGZvciB0aGUgc3VnZ2VzdGlv
+bi4NCg0KS2luZCBSZWdhcmRzIC0NClByZXN0b24NCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdl
+LS0tLS0NCkZyb206IEJqw7hybiBNb3JrIFttYWlsdG86Ympvcm5AbW9yay5ub10gDQpTZW50
+OiBUaHVyc2RheSwgTWF5IDAzLCAyMDEyIDM6NTkgQU0NClRvOiBQcmVzdG9uIEZpY2sNCkNj
+OiBncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZzsgbGludXgtdXNiQHZnZXIua2VybmVsLm9y
+ZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgbGludXgtc2VyaWFsQHZnZXIua2Vy
+bmVsLm9yZzsgUHJlc3RvbiBGaWNrDQpTdWJqZWN0OiBSZTogW1BBVENIIDEvM10gdXNiOiBj
+cDIxMHg6IENvcnJlY3RlZCBVU0IgcmVxdWVzdCB0eXBlIGRlZmluaXRpb25zDQoNClByZXN0
+b24gRmljayA8cGZmaWNrQGdtYWlsLmNvbT4gd3JpdGVzOg0KDQo+IGRpZmYgLS1naXQgYS9k
+cml2ZXJzL3VzYi9zZXJpYWwvY3AyMTB4LmMgYi9kcml2ZXJzL3VzYi9zZXJpYWwvY3AyMTB4
+LmMNCj4gaW5kZXggZWMzMGY5NS4uZTY3Y2NmMyAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy91
+c2Ivc2VyaWFsL2NwMjEweC5jDQo+ICsrKyBiL2RyaXZlcnMvdXNiL3NlcmlhbC9jcDIxMHgu
+Yw0KPiBAQCAtMTg4LDggKzE4OCwxMCBAQCBzdGF0aWMgc3RydWN0IHVzYl9zZXJpYWxfZHJp
+dmVyICogY29uc3Qgc2VyaWFsX2RyaXZlcnNbXSA9IHsNCj4gIH07DQo+ICANCj4gIC8qIENv
+bmZpZyByZXF1ZXN0IHR5cGVzICovDQo+IC0jZGVmaW5lIFJFUVRZUEVfSE9TVF9UT19ERVZJ
+Q0UJMHg0MQ0KPiAtI2RlZmluZSBSRVFUWVBFX0RFVklDRV9UT19IT1NUCTB4YzENCj4gKyNk
+ZWZpbmUgUkVRVFlQRV9IT1NUX1RPX0lOVEVSRkFDRQkweDQxDQo+ICsjZGVmaW5lIFJFUVRZ
+UEVfSU5URVJGQUNFX1RPX0hPU1QJMHhjMQ0KPiArI2RlZmluZSBSRVFUWVBFX0hPU1RfVE9f
+REVWSUNFCTB4NDANCj4gKyNkZWZpbmUgUkVRVFlQRV9ERVZJQ0VfVE9fSE9TVAkweGMwDQoN
+Cg0KQW55IHBhcnRpY3VsYXIgcmVhc29uIHlvdSBuZWVkIHRvIGRlZmluZSB0aGVzZSBpbnN0
+ZWFkIG9mIGp1c3QgdXNpbmcgdGhlDQpzdGFuZGFyZCBmbGFncyBmcm9tIGxpbnV4L3VzYi9j
+aDkuaCBkaXJlY3RseSBpbiB0aGUgcmVxdWVzdHM/Og0KDQooVVNCX1RZUEVfVkVORE9SIHwg
+VVNCX1JFQ0lQX0lOVEVSRkFDRSB8IFVTQl9ESVJfT1VUKQ0KKFVTQl9UWVBFX1ZFTkRPUiB8
+IFVTQl9SRUNJUF9JTlRFUkZBQ0UgfCBVU0JfRElSX0lOKQ0KKFVTQl9UWVBFX1ZFTkRPUiB8
+IFVTQl9SRUNJUF9ERVZJQ0UgfCBVU0JfRElSX09VVCkNCihVU0JfVFlQRV9WRU5ET1IgfCBV
+U0JfUkVDSVBfREVWSUNFIHwgVVNCX0RJUl9JTikNCg0KSWYgbm90aGluZyBlbHNlLCB1c2lu
+ZyB0aG9zZSBmcm9tIHRoZSBiZWdpbm5pbmcgd291bGQgaGF2ZSBhdm9pZGVkIHRoZQ0KbWlz
+LWxhYmVsbGluZyB5b3UgYXJlIGZpeGluZyB1cC4NCg0KDQoNCkJqw7hybg0KDQpUaGlzIG1l
+c3NhZ2UgKGluY2x1ZGluZyBhbnkgYXR0YWNobWVudHMpIGlzIGludGVuZGVkIG9ubHkgZm9y
+IHRoZSB1c2Ugb2YgdGhlIGluZGl2aWR1YWwgb3IgZW50aXR5IHRvIHdoaWNoIGl0IGlzIGFk
+ZHJlc3NlZCBhbmQgbWF5IGNvbnRhaW4gaW5mb3JtYXRpb24gdGhhdCBpcyBub24tcHVibGlj
+LCBwcm9wcmlldGFyeSwgcHJpdmlsZWdlZCwgY29uZmlkZW50aWFsLCBhbmQgZXhlbXB0IGZy
+b20gZGlzY2xvc3VyZSB1bmRlciBhcHBsaWNhYmxlIGxhdyBvciBtYXkgY29uc3RpdHV0ZSBh
+cyBhdHRvcm5leSB3b3JrIHByb2R1Y3QuICBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQg
+cmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZCB0aGF0IGFueSB1c2UsIGRpc3Nl
+bWluYXRpb24sIGRpc3RyaWJ1dGlvbiwgb3IgY29weWluZyBvZiB0aGlzIGNvbW11bmljYXRp
+b24gaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBj
+b21tdW5pY2F0aW9uIGluIGVycm9yLCBub3RpZnkgdXMgaW1tZWRpYXRlbHkgYnkgdGVsZXBo
+b25lIGFuZCAoaSkgZGVzdHJveSB0aGlzIG1lc3NhZ2UgaWYgYSBmYWNzaW1pbGUgb3IgKGlp
+KSBkZWxldGUgdGhpcyBtZXNzYWdlIGltbWVkaWF0ZWx5IGlmIHRoaXMgaXMgYW4gZWxlY3Ry
+b25pYyBjb21tdW5pY2F0aW9uLiAgDQoNClRoYW5rIHlvdS4NCg0K
