@@ -1,55 +1,38 @@
-From: Magnus Damm <magnus.damm@gmail.com>
-Subject: Re: [PATCH 00/06] serial8250: DLL/DLM rework, Emma Mobile UART driver
-Date: Wed, 9 May 2012 01:34:47 +0900
-Message-ID: <CANqRtoSypEnwgYM+VDL1rn_XvrKCpuKbhDMRkj=c2WSJE38Thw@mail.gmail.com>
-References: <20120502124642.30480.41373.sendpatchset@w520>
-	<201205041628.20024.arnd@arndb.de>
+From: Sasha Levin <levinsasha928@gmail.com>
+Subject: Re: [PATCH 3/3] tty_lock: Localise the lock
+Date: Tue, 8 May 2012 20:12:37 +0200
+Message-ID: <CA+1xoqdi1Jdkrjtj9bmnDfs4Ok=o=AsmpP=MY0V8cDXjcSNm1w@mail.gmail.com>
+References: <20120503212151.568.91854.stgit@bob.linux.org.uk>
+ <20120503212219.568.15653.stgit@bob.linux.org.uk> <CA+1xoqezLCQh_fqJ1iNAs25X7Fm24W=-0J8zTZuVVJQnWTtSLg@mail.gmail.com>
+ <20120507171126.5beddc27@pyramind.ukuu.org.uk> <1336408208.3638.15.camel@lappy>
+ <20120507174240.4209c5cb@pyramind.ukuu.org.uk> <CA+1xoqez0PaX2KBHHN-etztwbFoU1cKx3NwMXX+PO4SguA3bRg@mail.gmail.com>
+ <4FA838D2.9000908@suse.cz>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vb0-f46.google.com ([209.85.212.46]:36519 "EHLO
-	mail-vb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755957Ab2EHQes (ORCPT
+Received: from mail-yw0-f46.google.com ([209.85.213.46]:36381 "EHLO
+	mail-yw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753961Ab2EHSM6 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 8 May 2012 12:34:48 -0400
-In-Reply-To: <201205041628.20024.arnd@arndb.de>
+	Tue, 8 May 2012 14:12:58 -0400
+In-Reply-To: <4FA838D2.9000908@suse.cz>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: linux-serial@vger.kernel.org, horms@verge.net.au, linux-sh@vger.kernel.org, gregkh@linuxfoundation.org, swarren@wwwdotorg.org, linux-kernel@vger.kernel.org, rjw@sisk.pl, paul.gortmaker@windriver.com, lethal@linux-sh.org, olof@lixom.net, dan.j.williams@intel.com, alan@linux.intel.com
+To: Jiri Slaby <jslaby@suse.cz>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@gmail.com>
 
-On Sat, May 5, 2012 at 1:28 AM, Arnd Bergmann <arnd@arndb.de> wrote:
-> On Wednesday 02 May 2012, Magnus Damm wrote:
->> Note that there is no DT support included at this point,
->> but it boils down to a 10 line change. The boot loader on
->> my board does not do DT so I'd like to use kexec for DT
->> development (as usual), but to use kexec I first need to
->> get a non-DT kernel working. Which is basically this. =)
+On Mon, May 7, 2012 at 11:04 PM, Jiri Slaby <jslaby@suse.cz> wrote:
+> On 05/07/2012 07:00 PM, Sasha Levin wrote:
+>>> So whatever your trace is showing, that's not the bug. Something more
+>>> complicated would appear to be afoot.
+>>
+>> Oddly enough, tty != tty->link, but the lockdep warning triggers.
+>>
+>> Any idea why it might happen?
 >
-> As a follow-up on this, based on my comments to your emma platform
-> code, I think it would be easy enough to just use the appended
-> dtb support that we have, which allows you to boot a DT-enabled
-> kernel with a legacy boot loader.
+> I think so, both locks are the same lockdep class. So lockdep thinks it
+> is the same lock. However this is a false positive. I guess we need
+> mutex_lock_nested...
 
-Thanks for your comments! I have some code going with DT now. Will
-post tomorrow.
-
-As for the appended dtb support, do you know the recommended way to
-include it in the uImage? It feels a bit odd to recommend customers to
-patch their kernel source to build a bootable kernel.  I ended up with
-this local hackery, but there must be better ways:
-
---- 0001/arch/arm/boot/Makefile
-+++ work/arch/arm/boot/Makefile 2012-05-09 00:40:17.000000000 +0900
-@@ -53,6 +53,7 @@ $(obj)/compressed/vmlinux: $(obj)/Image
-
- $(obj)/zImage: $(obj)/compressed/vmlinux FORCE
-        $(call if_changed,objcopy)
-+       cat $(obj)/emev2-kzm9d.dtb >> $@
-        @echo '  Kernel: $@ is ready'
-
- endif
-
-Cheers,
-
-/ magnus
+It looks like it causes an actual deadlock, and hung_tasks screams if
+left alone for a bit, so it doesn't look like a lockdep issue.
