@@ -1,38 +1,51 @@
-From: Sasha Levin <levinsasha928@gmail.com>
-Subject: Re: [PATCH 3/3] tty_lock: Localise the lock
-Date: Tue, 8 May 2012 20:12:37 +0200
-Message-ID: <CA+1xoqdi1Jdkrjtj9bmnDfs4Ok=o=AsmpP=MY0V8cDXjcSNm1w@mail.gmail.com>
-References: <20120503212151.568.91854.stgit@bob.linux.org.uk>
- <20120503212219.568.15653.stgit@bob.linux.org.uk> <CA+1xoqezLCQh_fqJ1iNAs25X7Fm24W=-0J8zTZuVVJQnWTtSLg@mail.gmail.com>
- <20120507171126.5beddc27@pyramind.ukuu.org.uk> <1336408208.3638.15.camel@lappy>
- <20120507174240.4209c5cb@pyramind.ukuu.org.uk> <CA+1xoqez0PaX2KBHHN-etztwbFoU1cKx3NwMXX+PO4SguA3bRg@mail.gmail.com>
- <4FA838D2.9000908@suse.cz>
+From: "H. Peter Anvin" <hpa@zytor.com>
+Subject: Re: [PATCH 2/3] pty: Lock the devpts bits privately
+Date: Tue, 08 May 2012 11:18:35 -0700
+Message-ID: <4FA9637B.1060609@zytor.com>
+References: <20120503212151.568.91854.stgit@bob.linux.org.uk> <20120503212205.568.25804.stgit@bob.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-yw0-f46.google.com ([209.85.213.46]:36381 "EHLO
-	mail-yw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753961Ab2EHSM6 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 8 May 2012 14:12:58 -0400
-In-Reply-To: <4FA838D2.9000908@suse.cz>
+Received: from terminus.zytor.com ([198.137.202.10]:59001 "EHLO mail.zytor.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752489Ab2EHSTA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 8 May 2012 14:19:00 -0400
+In-Reply-To: <20120503212205.568.25804.stgit@bob.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@gmail.com>
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Mon, May 7, 2012 at 11:04 PM, Jiri Slaby <jslaby@suse.cz> wrote:
-> On 05/07/2012 07:00 PM, Sasha Levin wrote:
->>> So whatever your trace is showing, that's not the bug. Something more
->>> complicated would appear to be afoot.
->>
->> Oddly enough, tty != tty->link, but the lockdep warning triggers.
->>
->> Any idea why it might happen?
->
-> I think so, both locks are the same lockdep class. So lockdep thinks it
-> is the same lock. However this is a false positive. I guess we need
-> mutex_lock_nested...
+On 05/03/2012 02:22 PM, Alan Cox wrote:
+> From: Alan Cox <alan@linux.intel.com>
+> 
+> This is a private pty affair, we don't want to tangle it with the tty_lock
+> any more as we know all the other non tty locking is now handled by the vfs
+> so we too can move.
+> 
+> Signed-off-by: Alan Cox <alan@linux.intel.com>
 
-It looks like it causes an actual deadlock, and hung_tasks screams if
-left alone for a bit, so it doesn't look like a lockdep issue.
+> +		        mutex_lock(&devpts_mutex);
+>  			devpts_pty_kill(tty->link);
+> +		        mutex_unlock(&devpts_mutex);
+
+> +	mutex_lock(&devpts_mutex);
+> +	tty = devpts_get_tty(pts_inode, idx);
+> +	mutex_unlock(&devpts_mutex);
+
+> +	mutex_lock(&devpts_mutex);
+>  	tty = tty_init_dev(ptm_driver, index);
+> +	mutex_unlock(&devpts_mutex);
+
+Conceptually this seems fine, but it would seem cleaner to me to push
+this mutex into the called functions in devpts; I suspect the lock could
+be eliminated or at least be made per instance there (which would make
+massive-container people happy...)
+
+	-hpa
+
+-- 
+H. Peter Anvin, Intel Open Source Technology Center
+I work for Intel.  I don't speak on their behalf.
+
