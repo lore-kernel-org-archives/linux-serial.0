@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm@gmail.com>
-Subject: [PATCH] serial8250-em: clk_get() IS_ERR() error handling fix
-Date: Wed, 09 May 2012 15:49:57 +0900
-Message-ID: <20120509064957.18494.11270.sendpatchset@w520>
+Subject: [PATCH] serial8250-em: Add DT support
+Date: Wed, 09 May 2012 15:55:14 +0900
+Message-ID: <20120509065514.18528.83245.sendpatchset@w520>
 Return-path: <linux-sh-owner@vger.kernel.org>
 Sender: linux-sh-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
@@ -10,31 +10,34 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Magnus Damm <damm@opensource.se>
 
-Update the 8250_em driver to correctly handle the case
-where no clock is associated with the device.
-
-The return value of clk_get() needs to be checked with
-IS_ERR() to avoid NULL pointer referencing.
+Update the 8250_em driver to support DT.
 
 Signed-off-by: Magnus Damm <damm@opensource.se>
 ---
 
  Applies of top of "[PATCH] serial8250-em: Emma Mobile UART driver V2"
- included in linux-next 20120508.
+ (included in linux-next 20120508) and the recently posted
+ "[PATCH] serial8250-em: clk_get() IS_ERR() error handling fix".
 
- drivers/tty/serial/8250/8250_em.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_em.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- 0001/drivers/tty/serial/8250/8250_em.c
-+++ work/drivers/tty/serial/8250/8250_em.c	2012-05-09 15:35:10.000000000 +0900
-@@ -110,8 +110,9 @@ static int __devinit serial8250_em_probe
- 	}
+--- 0002/drivers/tty/serial/8250/8250_em.c
++++ work/drivers/tty/serial/8250/8250_em.c	2012-05-09 15:39:22.000000000 +0900
+@@ -163,9 +163,16 @@ static int __devexit serial8250_em_remov
+ 	return 0;
+ }
  
- 	priv->sclk = clk_get(&pdev->dev, "sclk");
--	if (!priv->sclk) {
-+	if (IS_ERR(priv->sclk)) {
- 		dev_err(&pdev->dev, "unable to get clock\n");
-+		ret = PTR_ERR(priv->sclk);
- 		goto err1;
- 	}
- 
++static const struct of_device_id serial8250_em_dt_ids[] __devinitconst = {
++	{ .compatible = "renesas,em-uart", },
++	{},
++};
++MODULE_DEVICE_TABLE(of, serial8250_em_dt_ids);
++
+ static struct platform_driver serial8250_em_platform_driver = {
+ 	.driver = {
+ 		.name		= "serial8250-em",
++		.of_match_table = serial8250_em_dt_ids,
+ 		.owner		= THIS_MODULE,
+ 	},
+ 	.probe			= serial8250_em_probe,
