@@ -1,43 +1,30 @@
-From: Magnus Damm <magnus.damm@gmail.com>
-Subject: [PATCH] serial8250-em: Add DT support
-Date: Wed, 09 May 2012 15:55:14 +0900
-Message-ID: <20120509065514.18528.83245.sendpatchset@w520>
-Return-path: <linux-sh-owner@vger.kernel.org>
-Sender: linux-sh-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: horms@verge.net.au, arnd@arndb.de, linux-sh@vger.kernel.org, gregkh@linuxfoundation.org, swarren@wwwdotorg.org, linux-kernel@vger.kernel.org, rjw@sisk.pl, paul.gortmaker@windriver.com, lethal@linux-sh.org, olof@lixom.net, Magnus Damm <magnus.damm@gmail.com>, dan.j.williams@intel.com, alan@linux.intel.com
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] serial8250-em: Add DT support
+Date: Wed, 9 May 2012 11:21:38 +0000
+Message-ID: <201205091121.38313.arnd@arndb.de>
+References: <20120509065514.18528.83245.sendpatchset@w520>
+Mime-Version: 1.0
+Content-Type: Text/Plain;
+  charset="iso-8859-15"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from moutng.kundenserver.de ([212.227.17.10]:63061 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757959Ab2EILVt (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 9 May 2012 07:21:49 -0400
+In-Reply-To: <20120509065514.18528.83245.sendpatchset@w520>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Magnus Damm <magnus.damm@gmail.com>
+Cc: linux-serial@vger.kernel.org, horms@verge.net.au, linux-sh@vger.kernel.org, gregkh@linuxfoundation.org, swarren@wwwdotorg.org, linux-kernel@vger.kernel.org, rjw@sisk.pl, paul.gortmaker@windriver.com, lethal@linux-sh.org, olof@lixom.net, dan.j.williams@intel.com, alan@linux.intel.com
 
-From: Magnus Damm <damm@opensource.se>
+On Wednesday 09 May 2012, Magnus Damm wrote:
+> 
+> From: Magnus Damm <damm@opensource.se>
+> 
+> Update the 8250_em driver to support DT.
+> 
+> Signed-off-by: Magnus Damm <damm@opensource.se>
 
-Update the 8250_em driver to support DT.
-
-Signed-off-by: Magnus Damm <damm@opensource.se>
----
-
- Applies of top of "[PATCH] serial8250-em: Emma Mobile UART driver V2"
- (included in linux-next 20120508) and the recently posted
- "[PATCH] serial8250-em: clk_get() IS_ERR() error handling fix".
-
- drivers/tty/serial/8250/8250_em.c |    7 +++++++
- 1 file changed, 7 insertions(+)
-
---- 0002/drivers/tty/serial/8250/8250_em.c
-+++ work/drivers/tty/serial/8250/8250_em.c	2012-05-09 15:39:22.000000000 +0900
-@@ -163,9 +163,16 @@ static int __devexit serial8250_em_remov
- 	return 0;
- }
- 
-+static const struct of_device_id serial8250_em_dt_ids[] __devinitconst = {
-+	{ .compatible = "renesas,em-uart", },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, serial8250_em_dt_ids);
-+
- static struct platform_driver serial8250_em_platform_driver = {
- 	.driver = {
- 		.name		= "serial8250-em",
-+		.of_match_table = serial8250_em_dt_ids,
- 		.owner		= THIS_MODULE,
- 	},
- 	.probe			= serial8250_em_probe,
+Acked-by: Arnd Bergmann <arnd@arndb.de>
