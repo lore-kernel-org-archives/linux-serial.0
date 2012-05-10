@@ -1,30 +1,42 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] serial8250-em: Add DT support
-Date: Wed, 9 May 2012 11:21:38 +0000
-Message-ID: <201205091121.38313.arnd@arndb.de>
-References: <20120509065514.18528.83245.sendpatchset@w520>
+From: Alan Cox <alan@linux.intel.com>
+Subject: Re: [PATCH 1/3] RFC: Solved unnecessary schedule latency in the TTY
+ layer (1/3)
+Date: Thu, 10 May 2012 16:26:21 +0100
+Message-ID: <20120510162621.4b5d7907@bob.linux.org.uk>
+References: <1336048663-21882-1-git-send-email-meltedpianoman@gmail.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-15"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.17.10]:63061 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757959Ab2EILVt (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 9 May 2012 07:21:49 -0400
-In-Reply-To: <20120509065514.18528.83245.sendpatchset@w520>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-rt-users-owner@vger.kernel.org>
+In-Reply-To: <1336048663-21882-1-git-send-email-meltedpianoman@gmail.com>
+Sender: linux-rt-users-owner@vger.kernel.org
+To: Ivo Sieben <meltedpianoman@gmail.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, RT <linux-rt-users@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>
-Cc: linux-serial@vger.kernel.org, horms@verge.net.au, linux-sh@vger.kernel.org, gregkh@linuxfoundation.org, swarren@wwwdotorg.org, linux-kernel@vger.kernel.org, rjw@sisk.pl, paul.gortmaker@windriver.com, lethal@linux-sh.org, olof@lixom.net, dan.j.williams@intel.com, alan@linux.intel.com
 
-On Wednesday 09 May 2012, Magnus Damm wrote:
+> Note: In a PREEMPT_RT system "normal" spin locks behave like mutexes
+> and no interrupts (and therefor no scheduling) is disabled.
 > 
-> From: Magnus Damm <damm@opensource.se>
-> 
-> Update the 8250_em driver to support DT.
-> 
-> Signed-off-by: Magnus Damm <damm@opensource.se>
+> Signed-off-by: Ivo Sieben <meltedpianoman@gmail.com>
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+(Coming back round to these patches now the urgent stuff is buried for
+a bit)
+
+>  void tty_schedule_flip(struct tty_struct *tty)
+>  {
+> -	unsigned long flags;
+> -	spin_lock_irqsave(&tty->buf.lock, flags);
+> -	if (tty->buf.tail != NULL)
+> -		tty->buf.tail->commit = tty->buf.tail->used;
+> -	spin_unlock_irqrestore(&tty->buf.lock, flags);
+> -	schedule_work(&tty->buf.work);
+> +	tty_flip_buffer_push(tty);
+>  }
+
+You'd need to ifdef both of these for non RT cases. I think it may be
+right for RT although I'm not 100% sure on the locking.
+
+At this point I think we'd be better off sorting out our tty locking in
+general before tackling RT optimisations. However as an RT patch it
+looks good and its interesting to see RT simplifying code not making it
+more complex.
