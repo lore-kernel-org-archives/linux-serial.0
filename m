@@ -1,22 +1,58 @@
-From: abi <abiokom88@yahoo.com>
-Subject: haalloo,
-Date: Sat, 12 May 2012 18:54:45 +0200 (CEST)
-Message-ID: <9970802.8670301336841685289.JavaMail.defaultUser__26672.819912392$1336841761$gmane$org@defaultHost>
-Reply-To: abi <abiokom88@yahoo.com>
-Mime-Version: 1.0
-Content-Type: text/plain;charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+From: eric@cloudluca.com
+Subject: Dedicated server rental
+Date: Mon, 14 May 2012 12:14:05 +0800 (HKT)
+Message-ID: <AQpXArNu@party.seed.net.tw>
+Content-Type: text/plain;
+Content-Transfer-Encoding: Quoted-Printable
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from outrelay02.libero.it ([212.52.84.102]:34302 "EHLO
-	outrelay02.libero.it" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752521Ab2ELQz4 (ORCPT
+Received: from 124-248-200-91.sunnyvision.com ([124.248.200.91]:41818 "EHLO
+	teamb04.edmhongkong.com" rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org
+	with ESMTP id S1751363Ab2ENEmN (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 12 May 2012 12:55:56 -0400
+	Mon, 14 May 2012 00:42:13 -0400
+Received: from teamb01.edmhongkong.com (unknown [124.248.200.39])
+	by teamb04.edmhongkong.com (Postfix) with ESMTP id A99335151B
+	for <linux-serial@vger.kernel.org>; Mon, 14 May 2012 12:14:06 +0800 (HKT)
+Received: from TeamB3-WS (unknown [124.248.200.14])
+	by teamb01.edmhongkong.com (Postfix) with SMTP id E965D4FB30
+	for <linux-serial@vger.kernel.org>; Mon, 14 May 2012 12:14:05 +0800 (HKT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-haalloo,
-how are you doing,i hope you are fine,my name is miss abi okom i got your
-contact and want us to be a good friend,
-please try and write back to me so that i will give you my pictures and tell
-you more about me,
+Dear Sir/Madam,
+
+Please see below our Server Rental Package,
+
+HKD1980/month + one-time setup fee HKD2000
+
+Dell=3F PowerEdge=3F Enterprise Rack Mount Server
+-          Intel(R) Xeon(R) E3-1220 Processor (3.10GHz, 8M Cache, Turbo, 4C/4T, 80W)
+-          4GB RAM, 1x4GB, 1333MHz, DDR-3, Single Ranked UDIMMs
+-          500GB, 3.5", SATA II x 1 Enterprise Hard Disk
+-          Remote KVM (iDRAC6 Enterprise)
+-          8x SATA slim DVD-ROM Drive 
+-          Dell OpenManage
+-          Broadcom 5716 dual-port Gigabit Ethernet without TOE enabled
+-          Dell BMC Info Mod
+
+Software Specification
+-     CentOS 5/6 Linux Operating System
+
+
+Data Center Facilities
+-          1Gbps Share Internet Connectivity with 10/BASE-T
+-          One IP Addresses Allocation
+-          Un-interruptible Power Supply (UPS) backed up by private diesel generator
+-          FM200 gas=A1Vbased fire suppression system
+-          24x7 CRAC Air Conditioning and Humidity Control
+-          24x7 Security Control
+
+Should you have any query, please feel free to contact me. Thanks.
+
+Best,
+Eric Chan
+Senior Sales Executive
+
+If you do not wish to further receive this event message, meail subscriber@dedicatedserver.com.hk to unsubscribe this message.
+
+
