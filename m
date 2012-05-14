@@ -1,79 +1,42 @@
-From: Ivo Sieben <meltedpianoman@gmail.com>
-Subject: Re: [PATCH 1/3] RFC: Solved unnecessary schedule latency in the TTY
- layer (1/3)
-Date: Mon, 14 May 2012 14:25:58 +0200
-Message-ID: <CAMSQXEG5okiqKasmh3_niGh_WCKNvekiwK9oSDnQkokcMPqArg@mail.gmail.com>
-References: <1336048663-21882-1-git-send-email-meltedpianoman@gmail.com>
-	<20120510162621.4b5d7907@bob.linux.org.uk>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: [PATCH] tty: Allow uart_register/unregister/register
+Date: Mon, 14 May 2012 14:51:22 +0100
+Message-ID: <20120514135110.22791.13351.stgit@bluebook>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-gg0-f174.google.com ([209.85.161.174]:43248 "EHLO
-	mail-gg0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755698Ab2ENM0A (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:43129 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756689Ab2ENNwV (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 14 May 2012 08:26:00 -0400
-In-Reply-To: <20120510162621.4b5d7907@bob.linux.org.uk>
+	Mon, 14 May 2012 09:52:21 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, RT <linux-rt-users@vger.kernel.org>
+To: greg@kroah.com, linux-serial@vger.kernel.org
 
-Hi,
+From: Alan Cox <alan@linux.intel.com>
 
-2012/5/10 Alan Cox <alan@linux.intel.com>:
->
-> You'd need to ifdef both of these for non RT cases. I think it may be
-> right for RT although I'm not 100% sure on the locking.
+This is legitimate but because we don't clear the drv->state pointer in the
+unregister code causes a bogus BUG().
 
-Alan, I don't completely understand what you mean with "ifdef both".
+Resolves-bug: https://bugzilla.kernel.org/show_bug.cgi?id=42880
+Signed-off-by: Alan Cox <alan@linux.intel.com>
+---
 
-Regarding the following two functions defined in drivers/tty/tty_buffer.c
-- tty_schedule_flip
-- tty_flip_buffer_push
+ drivers/tty/serial/serial_core.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
-They both implement almost the same functionality:
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 9c4c05b..246b823 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2282,6 +2282,7 @@ void uart_unregister_driver(struct uart_driver *drv)
+ 	tty_unregister_driver(p);
+ 	put_tty_driver(p);
+ 	kfree(drv->state);
++	drv->state = NULL;
+ 	drv->tty_driver = NULL;
+ }
+ 
 
-void tty_schedule_flip(struct tty_struct *tty)
-{
-	unsigned long flags;
-	spin_lock_irqsave(&tty->buf.lock, flags);
-	if (tty->buf.tail != NULL)
-		tty->buf.tail->commit = tty->buf.tail->used;
-	spin_unlock_irqrestore(&tty->buf.lock, flags);
-	schedule_work(&tty->buf.work);
-}
-
-void tty_flip_buffer_push(struct tty_struct *tty)
-{
-	unsigned long flags;
-	spin_lock_irqsave(&tty->buf.lock, flags);
-	if (tty->buf.tail != NULL)
-		tty->buf.tail->commit = tty->buf.tail->used;
-	spin_unlock_irqrestore(&tty->buf.lock, flags);
-
-#ifndef CONFIG_PREEMPT_RT_FULL
-	if (tty->low_latency)
-		flush_to_ldisc(&tty->buf.work);
-	else
-		schedule_work(&tty->buf.work);
-#else
-	flush_to_ldisc(&tty->buf.work);
-#endif
-}
-
-Only difference is that tty_schedule_flip() always uses the work
-queue, while the tty_flip_buffer_push only uses the work queue in case
-of a non prempt_rt system and low_latency flag unset.
-
-I see that most serial drivers use the tty_flip_buffer_push()
-function. But still a number of drivers use the tty_schedule_flip()
-function. I even found one driver that uses both
-(drivers/staging/serqt_usb2/serqt_usb2.c). Is is there a reason for
-these two functions implementing slightly different behavior?
-
-If not, I think it would be better to remove the tty_schedule_flip()
-function completely in a separate patch...
-
-Regards,
-Ivo Sieben
