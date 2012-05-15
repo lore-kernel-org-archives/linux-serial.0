@@ -1,38 +1,75 @@
-From: "Shankarmurthy, Akshay" <akshay.s@ti.com>
-Subject: RE: [PATCH v2] serial: 8250: Add cpufreq support
-Date: Tue, 15 May 2012 13:57:20 +0000
-Message-ID: <6F6B80BD2E18844D97BB4B51FE3705C83E935134@DBDE01.ent.ti.com>
-References: <1335353194-2621-1-git-send-email-akshay.s@ti.com>
-	<6F6B80BD2E18844D97BB4B51FE3705C83E935014@DBDE01.ent.ti.com>
- <20120515144414.23065741@bob.linux.org.uk>
+From: Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH 1/3] RFC: Solved unnecessary schedule latency in the TTY
+ layer (1/3)
+Date: Tue, 15 May 2012 11:04:41 -0400
+Message-ID: <1337094281.14207.308.camel@gandalf.stny.rr.com>
+References: <1336048663-21882-1-git-send-email-meltedpianoman@gmail.com>
+	 <20120510162621.4b5d7907@bob.linux.org.uk>
+	 <CAMSQXEG5okiqKasmh3_niGh_WCKNvekiwK9oSDnQkokcMPqArg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:35613 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754431Ab2EON5d convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 15 May 2012 09:57:33 -0400
-In-Reply-To: <20120515144414.23065741@bob.linux.org.uk>
-Content-Language: en-US
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-rt-users-owner@vger.kernel.org>
+In-Reply-To: <CAMSQXEG5okiqKasmh3_niGh_WCKNvekiwK9oSDnQkokcMPqArg@mail.gmail.com>
+Sender: linux-rt-users-owner@vger.kernel.org
+To: Ivo Sieben <meltedpianoman@gmail.com>
+Cc: Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, RT <linux-rt-users@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "paul.gortmaker@windriver.com" <paul.gortmaker@windriver.com>, "jamie@jamieiles.com" <jamie@jamieiles.com>, "swarren@nvidia.com" <swarren@nvidia.com>, "dianders@chromium.org" <dianders@chromium.org>, "davinci-linux-open-source@linux.davincidsp.com" <davinci-linux-open-source@linux.davincidsp.com>
 
-On Tue, May 15, 2012 at 19:14:14, Alan Cox wrote:
-> > > Changes are as per these discussions 
-> > > http://www.mail-archive.com/davinci-linux-open-source@linux.davincid
-> > > sp.com/msg22841.html
-> > > 
-> > 
-> > Please let me know if there are any comments on this patch?
+On Mon, 2012-05-14 at 14:25 +0200, Ivo Sieben wrote:
+
+> void tty_flip_buffer_push(struct tty_struct *tty)
+> {
+> 	unsigned long flags;
+> 	spin_lock_irqsave(&tty->buf.lock, flags);
+> 	if (tty->buf.tail != NULL)
+> 		tty->buf.tail->commit = tty->buf.tail->used;
+> 	spin_unlock_irqrestore(&tty->buf.lock, flags);
 > 
-> It never got here for some reason. Last I have in my mailbox is the discussion of the 17th April ?
+> #ifndef CONFIG_PREEMPT_RT_FULL
+> 	if (tty->low_latency)
+> 		flush_to_ldisc(&tty->buf.work);
+> 	else
+> 		schedule_work(&tty->buf.work);
+> #else
+> 	flush_to_ldisc(&tty->buf.work);
+> #endif
+> }
 > 
 
-Ok, I will resend the patch.
+Note, just to keep ugly #ifdefs out of C code, or at least C functions,
+it is usually better to wrap the above in something like:
 
-Regards,
-Akshay
+
+#ifdef CONFIG_PREEMPT_RT_FULL
+static inline void tty_flush_work(struct tty_struct *tty)
+{
+	flush_to_ldisc(&tty->buf.work);
+}
+#else
+static inline void tty_flush_work(struct tty_struct *tty)
+{
+	if (tty->low_latency)
+		flush_to_ldisc(&tty->buf.work);
+	else
+		schedule_work(&tty->buf.work);
+}
+#endif
+
+
+Then the C function would just look like:
+
+void tty_flip_buffer_push(struct tty_struct *tty)
+{
+        unsigned long flags;
+        spin_lock_irqsave(&tty->buf.lock, flags);
+        if (tty->buf.tail != NULL)
+                tty->buf.tail->commit = tty->buf.tail->used;
+        spin_unlock_irqrestore(&tty->buf.lock, flags);
+
+	tty_flush_work(tty);
+}
+
+-- Steve
+
+
