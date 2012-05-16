@@ -1,41 +1,154 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: Excessive logging causing rcu_sched_state stall (wait_for_xmitr
- 8250.c)
-Date: Wed, 16 May 2012 08:12:06 -0700
-Message-ID: <20120516151206.GA9153@kroah.com>
-References: <1337128888.46194.YahooMailNeo@web160804.mail.bf1.yahoo.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] usb: cp210x: Added support for GPIO (CP2103/4/5)
+Date: Wed, 16 May 2012 16:33:47 +0100
+Message-ID: <20120516163347.1721406e@pyramind.ukuu.org.uk>
+References: <1335817637-2862-1-git-send-email-preston.fick@silabs.com>
+	<20120503213456.77c55c51@pyramind.ukuu.org.uk>
+	<20120505003208.GA30718@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pz0-f46.google.com ([209.85.210.46]:61831 "EHLO
-	mail-pz0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754183Ab2EPPMK (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:47162 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754686Ab2EPPbA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 May 2012 11:12:10 -0400
-Received: by dady13 with SMTP id y13so1104958dad.19
-        for <linux-serial@vger.kernel.org>; Wed, 16 May 2012 08:12:10 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <1337128888.46194.YahooMailNeo@web160804.mail.bf1.yahoo.com>
+	Wed, 16 May 2012 11:31:00 -0400
+In-Reply-To: <20120505003208.GA30718@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: joe shmoe <joeshmoeypeter@yahoo.com>
-Cc: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Preston Fick <pffick@gmail.com>, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, preston.fick@silabs.com, "linux-arm-kernel@lists.arm.linux.org.uk" <linux-arm-kernel@lists.arm.linux.org.uk>
 
-On Tue, May 15, 2012 at 05:41:28PM -0700, joe shmoe wrote:
-> Hi, 
-> It's been more than a week since I am stuck with this. I am relatively a newbie venturing into linux 
-> kernel, so please be gentle. 
-> 
-> I have a non-tained 2.6.35.14 kernel that needs to output a lot using the serial console. To reproduce I 
-> simply run klogd -2 -c 7 and this causes rcu_sched_state to detect stall with a trace such as pasted 
-> below. 
+So the patch looks like this, which seems nice and compact (UNTESTED)
 
-Does running 3.3, or 3.4-rc6 show the same problems?  I ask as 2.6.35
-really is very old and not supported much at all, and tens of thousands
-of changes to the kernel have happened since then.
+commit 4164f9b7074e682fe71dad3b57e78521ef9df492
+Author: Alan Cox <alan@linux.intel.com>
+Date:   Wed May 16 15:13:02 2012 +0100
 
-So if you could check the latest kernel, that would be great.
+    tty: Add a gpio helper set
+    
+    Various tty devices have additional control lines which are sometimes used
+    as GPIO pins and sometimes also tied with the serial port to implement
+    protocols such as ISO7816.
+    
+    This code provides a kernel interface for querying the GPIO range of a tty,
+    and to describe the mapping between GPIO pins and control lines. The latter
+    will be needed for some upcoming line discipline support.
+    
+    [Proposal do not merge yet]
+    
+    Not-Signed-off-by: Alan Cox <alan@linux.intel.com>
 
-thanks,
-
-greg k-h
+diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
+index a1b9a2f..60550e7 100644
+--- a/drivers/tty/tty_ioctl.c
++++ b/drivers/tty/tty_ioctl.c
+@@ -1071,6 +1071,39 @@ int tty_mode_ioctl(struct tty_struct *tty, struct file *file,
+ 	case TCSETXF:
+ 		return set_termiox(real_tty, p, TERMIOS_FLUSH);
+ #endif		
++#ifdef TCGGPIO
++	case TCGGPIO: {
++		struct tcgpio gpio;
++
++		if (tty->gpio == NULL)
++			return -EOPNOTSUPP;
++		mutex_lock(&real_tty->termios_mutex);
++		memset(&gpio, 0, sizeof(gpio));
++		gpio.base = tty->gpio->base;
++		gpio.num = tty->gpio->num;
++		memcpy(gpio.map, tty->gpio->map, sizeof(gpio.map));
++		mutex_unlock(&real_tty->termios_mutex);
++		if (copy_to_user(p, &gpio, sizeof(gpio)))
++			return -EFAULT;
++		return 0;
++	}
++	case TCSGPIO:
++        {
++		struct tcgpio gpio;
++
++		if (tty->gpio == NULL)
++			return -EOPNOTSUPP;
++		if (copy_from_user(&gpio, p, sizeof(gpio)))
++			return -EFAULT;
++		mutex_lock(&real_tty->termios_mutex);
++		memcpy(tty->gpio->map, gpio.map, sizeof(tty->gpio->map));
++		/* An ldisc can see this by watching the ioctl go through
++		but we may want to add a hook */
++		mutex_unlock(&real_tty->termios_mutex);
++                return 0;
++        }
++                
++#endif
+ 	case TIOCGSOFTCAR:
+ 		copy_termios(real_tty, &kterm);
+ 		ret = put_user((kterm.c_cflag & CLOCAL) ? 1 : 0,
+diff --git a/include/asm-generic/ioctls.h b/include/asm-generic/ioctls.h
+index 199975f..fee17d3 100644
+--- a/include/asm-generic/ioctls.h
++++ b/include/asm-generic/ioctls.h
+@@ -74,6 +74,8 @@
+ #define TCSETXW		0x5435
+ #define TIOCSIG		_IOW('T', 0x36, int)  /* pty: generate signal */
+ #define TIOCVHANGUP	0x5437
++#define TCGGPIO		_IOR('T', 0x38, struct tcgpio)
++#define TCSGPIO		_IOW('T', 0x39, struct tcgpio)
+ 
+ #define FIONCLEX	0x5450
+ #define FIOCLEX		0x5451
+diff --git a/include/asm-generic/termios.h b/include/asm-generic/termios.h
+index d0922ad..3adda38 100644
+--- a/include/asm-generic/termios.h
++++ b/include/asm-generic/termios.h
+@@ -18,6 +18,18 @@ struct winsize {
+ 	unsigned short ws_ypixel;
+ };
+ 
++
++/* GPIO handling */
++#define NR_TTY_GPIOMAP	8
++struct tcgpio			/* User copied version */
++{
++	u32 base;
++	u16 num;
++	u16 reserved;
++	u32 map[NR_TTY_GPIOMAP];
++	u32 reserved2[6];
++};
++
+ #define NCC 8
+ struct termio {
+ 	unsigned short c_iflag;		/* input mode flags */
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 9f47ab5..19daf03 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -243,6 +243,18 @@ struct tty_port {
+ };
+ 
+ /*
++ * GPIO block, optional
++ */
++
++struct tty_kgpio		/* Kernel gpio struct */
++{
++	u32 base;
++	u16 num;
++	u16 reserved;
++	u32 map[NR_TTY_GPIOMAP];
++};
++	
++/* 
+  * Where all of the state associated with a tty is kept while the tty
+  * is open.  Since the termios state should be kept even if the tty
+  * has been closed --- for things like the baud rate, etc --- it is
+@@ -331,6 +343,8 @@ struct tty_struct {
+ 	/* If the tty has a pending do_SAK, queue it here - akpm */
+ 	struct work_struct SAK_work;
+ 	struct tty_port *port;
++
++	struct tty_kgpio *gpio;	/* Optional */
+ };
+ 
+ /* Each of a tty's open files has private_data pointing to tty_file_private */
