@@ -1,34 +1,132 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: kmscon: replacing CONFIG_VT
-Date: Wed, 16 May 2012 17:14:21 +0100
-Message-ID: <20120516171421.5fca49f3@pyramind.ukuu.org.uk>
-References: <CANq1E4SGoRZaGjNZqPOA6g4COQmXxNr4kFBPMhxAonZqO_aOtQ@mail.gmail.com>
+From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: Re: [PATCH] usb: cp210x: Added support for GPIO (CP2103/4/5)
+Date: Wed, 16 May 2012 16:41:28 -0700
+Message-ID: <20120516234128.GB2641@kroah.com>
+References: <1335817637-2862-1-git-send-email-preston.fick@silabs.com>
+ <20120503213456.77c55c51@pyramind.ukuu.org.uk>
+ <20120505003208.GA30718@kroah.com>
+ <20120516163347.1721406e@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:47245 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751991Ab2EPQL0 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 May 2012 12:11:26 -0400
-In-Reply-To: <CANq1E4SGoRZaGjNZqPOA6g4COQmXxNr4kFBPMhxAonZqO_aOtQ@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20120516163347.1721406e-38n7/U1jhRXW96NNrWNlrekiAK3p4hvP@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alan Cox <alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
+Cc: Preston Fick <pffick-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, preston.fick-S6d6foEdJf7QT0dZR+AlfA@public.gmane.org, "linux-arm-kernel-xIg/pKzrS19vn6HldHNs0ANdhmdF6hFW@public.gmane.org" <linux-arm-kernel-xIg/pKzrS19vn6HldHNs0ANdhmdF6hFW@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: David Herrmann <dh.herrmann@googlemail.com>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-> That's just some of my ideas on this topic. Maybe you can give me some
-> hints whether it actually makes sense ;)
+On Wed, May 16, 2012 at 04:33:47PM +0100, Alan Cox wrote:
+> So the patch looks like this, which seems nice and compact (UNTESTED)
+> 
+> commit 4164f9b7074e682fe71dad3b57e78521ef9df492
+> Author: Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Date:   Wed May 16 15:13:02 2012 +0100
+> 
+>     tty: Add a gpio helper set
+>     
+>     Various tty devices have additional control lines which are sometimes used
+>     as GPIO pins and sometimes also tied with the serial port to implement
+>     protocols such as ISO7816.
+>     
+>     This code provides a kernel interface for querying the GPIO range of a tty,
+>     and to describe the mapping between GPIO pins and control lines. The latter
+>     will be needed for some upcoming line discipline support.
+>     
+>     [Proposal do not merge yet]
+>     
+>     Not-Signed-off-by: Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 
-For a lot of hardware it may not matter. If it goes bang you boot with a
-debugging kernel (one containing a vt driver)
+Wow, that looks really nice and tiny, if that's all that is needed in
+the core, that's great.
 
-If your user space goes castors up early then you are going to need input
-facilities anyway (consider the fedora rescue mode in dracut for example) 
+> diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
+> index a1b9a2f..60550e7 100644
+> --- a/drivers/tty/tty_ioctl.c
+> +++ b/drivers/tty/tty_ioctl.c
+> @@ -1071,6 +1071,39 @@ int tty_mode_ioctl(struct tty_struct *tty, struct file *file,
+>  	case TCSETXF:
+>  		return set_termiox(real_tty, p, TERMIOS_FLUSH);
+>  #endif		
+> +#ifdef TCGGPIO
+> +	case TCGGPIO: {
+> +		struct tcgpio gpio;
+> +
+> +		if (tty->gpio == NULL)
+> +			return -EOPNOTSUPP;
+> +		mutex_lock(&real_tty->termios_mutex);
+> +		memset(&gpio, 0, sizeof(gpio));
+> +		gpio.base = tty->gpio->base;
+> +		gpio.num = tty->gpio->num;
+> +		memcpy(gpio.map, tty->gpio->map, sizeof(gpio.map));
+> +		mutex_unlock(&real_tty->termios_mutex);
+> +		if (copy_to_user(p, &gpio, sizeof(gpio)))
+> +			return -EFAULT;
+> +		return 0;
+> +	}
+> +	case TCSGPIO:
+> +        {
+> +		struct tcgpio gpio;
+> +
+> +		if (tty->gpio == NULL)
+> +			return -EOPNOTSUPP;
+> +		if (copy_from_user(&gpio, p, sizeof(gpio)))
+> +			return -EFAULT;
+> +		mutex_lock(&real_tty->termios_mutex);
+> +		memcpy(tty->gpio->map, gpio.map, sizeof(tty->gpio->map));
+> +		/* An ldisc can see this by watching the ioctl go through
+> +		but we may want to add a hook */
+> +		mutex_unlock(&real_tty->termios_mutex);
+> +                return 0;
 
-As far as compatibility goes we have the ttyprintk driver which just
-provides a fake tty which types nothing and whose output goes to the
-console.
+So how would the lower tty driver get the ioctl to know to now set these
+values to the hardware?  I think we at least need a hook for that,
+right?  Or would that go through the ldisc?
 
-Alan
+
+> +        }
+> +                
+> +#endif
+>  	case TIOCGSOFTCAR:
+>  		copy_termios(real_tty, &kterm);
+>  		ret = put_user((kterm.c_cflag & CLOCAL) ? 1 : 0,
+> diff --git a/include/asm-generic/ioctls.h b/include/asm-generic/ioctls.h
+> index 199975f..fee17d3 100644
+> --- a/include/asm-generic/ioctls.h
+> +++ b/include/asm-generic/ioctls.h
+> @@ -74,6 +74,8 @@
+>  #define TCSETXW		0x5435
+>  #define TIOCSIG		_IOW('T', 0x36, int)  /* pty: generate signal */
+>  #define TIOCVHANGUP	0x5437
+> +#define TCGGPIO		_IOR('T', 0x38, struct tcgpio)
+> +#define TCSGPIO		_IOW('T', 0x39, struct tcgpio)
+>  
+>  #define FIONCLEX	0x5450
+>  #define FIOCLEX		0x5451
+> diff --git a/include/asm-generic/termios.h b/include/asm-generic/termios.h
+> index d0922ad..3adda38 100644
+> --- a/include/asm-generic/termios.h
+> +++ b/include/asm-generic/termios.h
+> @@ -18,6 +18,18 @@ struct winsize {
+>  	unsigned short ws_ypixel;
+>  };
+>  
+> +
+> +/* GPIO handling */
+> +#define NR_TTY_GPIOMAP	8
+> +struct tcgpio			/* User copied version */
+> +{
+> +	u32 base;
+> +	u16 num;
+> +	u16 reserved;
+> +	u32 map[NR_TTY_GPIOMAP];
+> +	u32 reserved2[6];
+> +};
+
+__u32 and friends instead?
+
+greg k-h
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
