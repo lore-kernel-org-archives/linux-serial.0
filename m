@@ -1,37 +1,41 @@
-From: Huang Shijie <b32955@freescale.com>
-Subject: Re: [PATCH 1/2] serial/imx: add DMA support
-Date: Wed, 16 May 2012 17:42:49 +0800
-Message-ID: <4FB37699.7050004@freescale.com>
-References: <1335436632-29499-1-git-send-email-b32955@freescale.com> <20120426120043.GH17184@pengutronix.de> <4F9A3831.1020203@freescale.com> <4474267.dxHCC3PlP5@laptop>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: Excessive logging causing rcu_sched_state stall (wait_for_xmitr
+ 8250.c)
+Date: Wed, 16 May 2012 08:12:06 -0700
+Message-ID: <20120516151206.GA9153@kroah.com>
+References: <1337128888.46194.YahooMailNeo@web160804.mail.bf1.yahoo.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ch1ehsobe002.messaging.microsoft.com ([216.32.181.182]:35839
-	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S966479Ab2EPJi0 convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 May 2012 05:38:26 -0400
-In-Reply-To: <4474267.dxHCC3PlP5@laptop>
+Received: from mail-pz0-f46.google.com ([209.85.210.46]:61831 "EHLO
+	mail-pz0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754183Ab2EPPMK (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 May 2012 11:12:10 -0400
+Received: by dady13 with SMTP id y13so1104958dad.19
+        for <linux-serial@vger.kernel.org>; Wed, 16 May 2012 08:12:10 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <1337128888.46194.YahooMailNeo@web160804.mail.bf1.yahoo.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: =?UTF-8?B?UGhpbGlwcGUgUsOpdG9ybmF6?= <philippe.retornaz@epfl.ch>
-Cc: linux-arm-kernel@lists.infradead.org, Sascha Hauer <s.hauer@pengutronix.de>, B20596@freescale.com, B20223@freescale.com, gregkh@linuxfoundation.org, r58066@freescale.com, linux-serial@vger.kernel.org, shawn.guo@linaro.org, alan@linux.intel.com
+To: joe shmoe <joeshmoeypeter@yahoo.com>
+Cc: linux-serial@vger.kernel.org
 
-=E4=BA=8E 2012=E5=B9=B405=E6=9C=8816=E6=97=A5 17:37, Philippe R=C3=A9to=
-rnaz =E5=86=99=E9=81=93:
-> Does this mean that there is no hope for a working uart dma on imx31 =
-?
-yes.
+On Tue, May 15, 2012 at 05:41:28PM -0700, joe shmoe wrote:
+> Hi, 
+> It's been more than a week since I am stuck with this. I am relatively a newbie venturing into linux 
+> kernel, so please be gentle. 
+> 
+> I have a non-tained 2.6.35.14 kernel that needs to output a lot using the serial console. To reproduce I 
+> simply run klogd -2 -c 7 and this causes rcu_sched_state to detect stall with a trace such as pasted 
+> below. 
 
-only works in mx6q now.
+Does running 3.3, or 3.4-rc6 show the same problems?  I ask as 2.6.35
+really is very old and not supported much at all, and tens of thousands
+of changes to the kernel have happened since then.
 
-BR
-Huang Shijie
+So if you could check the latest kernel, that would be great.
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+thanks,
+
+greg k-h
