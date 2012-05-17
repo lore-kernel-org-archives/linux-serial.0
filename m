@@ -1,132 +1,125 @@
-From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: Re: [PATCH] usb: cp210x: Added support for GPIO (CP2103/4/5)
-Date: Wed, 16 May 2012 16:41:28 -0700
-Message-ID: <20120516234128.GB2641@kroah.com>
-References: <1335817637-2862-1-git-send-email-preston.fick@silabs.com>
- <20120503213456.77c55c51@pyramind.ukuu.org.uk>
- <20120505003208.GA30718@kroah.com>
- <20120516163347.1721406e@pyramind.ukuu.org.uk>
+From: Kukjin Kim <kgene.kim@samsung.com>
+Subject: RE: [PATCH v2] serial: samsung: Fixed wrong comparison for	baudclk_rate
+Date: Thu, 17 May 2012 15:55:03 +0900
+Message-ID: <0b1f01cd33f9$fc9503f0$f5bf0bd0$%kim@samsung.com>
+References: <000501cd3297$75fba910$61f2fb30$%kim@samsung.com>
+ <20120515124538.GN10453@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20120516163347.1721406e-38n7/U1jhRXW96NNrWNlrekiAK3p4hvP@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Alan Cox <alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
-Cc: Preston Fick <pffick-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, preston.fick-S6d6foEdJf7QT0dZR+AlfA@public.gmane.org, "linux-arm-kernel-xIg/pKzrS19vn6HldHNs0ANdhmdF6hFW@public.gmane.org" <linux-arm-kernel-xIg/pKzrS19vn6HldHNs0ANdhmdF6hFW@public.gmane.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <20120515124538.GN10453@n2100.arm.linux.org.uk>
+Content-language: ko
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: 'Russell King - ARM Linux' <linux@arm.linux.org.uk>, 'Kyoungil Kim' <ki0351.kim@samsung.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, 'Jun-Ho Yoon' <junho78.yoon@samsung.com>, 'Alan Cox' <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, May 16, 2012 at 04:33:47PM +0100, Alan Cox wrote:
-> So the patch looks like this, which seems nice and compact (UNTESTED)
+Russell King - ARM Linux wrote:
 > 
-> commit 4164f9b7074e682fe71dad3b57e78521ef9df492
-> Author: Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> Date:   Wed May 16 15:13:02 2012 +0100
+> On Tue, May 15, 2012 at 09:37:16PM +0900, Kyoungil Kim wrote:
+> > port->baudclk_rate should be compared to the rate of port->baudclk,
+> > because port->baudclk_rate was assigned as the rate of port->baudclk
+> previously.
+> > So to check that the current baudclk rate is same as previous rate,
+> > the target of comparison sholud be the rate of port->baudclk.
+> >
+> > Signed-off-by: Jun-Ho, Yoon <junho78.yoon@samsung.com>
+> > Signed-off-by: Kyoungil Kim <ki0351.kim@samsung.com>
+> > ---
+> >  drivers/tty/serial/samsung.c |    4 ++--
+> >  1 files changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+> > index d8b0aee..6a6a86a 100644
+> > --- a/drivers/tty/serial/samsung.c
+> > +++ b/drivers/tty/serial/samsung.c
+> > @@ -1014,10 +1014,10 @@ static int
+> s3c24xx_serial_cpufreq_transition(struct notifier_block *nb,
+> >  	 * a disturbance in the clock-rate over the change.
+> >  	 */
+> >
+> > -	if (IS_ERR(port->clk))
+> > +	if (IS_ERR(port->baudclk) || port->baudclk == NULL)
 > 
->     tty: Add a gpio helper set
->     
->     Various tty devices have additional control lines which are sometimes used
->     as GPIO pins and sometimes also tied with the serial port to implement
->     protocols such as ISO7816.
->     
->     This code provides a kernel interface for querying the GPIO range of a tty,
->     and to describe the mapping between GPIO pins and control lines. The latter
->     will be needed for some upcoming line discipline support.
->     
->     [Proposal do not merge yet]
->     
->     Not-Signed-off-by: Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Still no.  Why are you wanting to detect a NULL baud clock?
+> 
+> As I said, drivers have no business interpreting anything but IS_ERR(clk)
+> as being an error.  They should not make any other assumptions.
+> 
+> Now that I look at this driver, it makes this mistake all over the place.
+> This needs to be fixed.  Something like the below should do it.  Please
+> check.
+> 
 
-Wow, that looks really nice and tiny, if that's all that is needed in
-the core, that's great.
+Russell, thanks for your kindly pointing out.
 
-> diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
-> index a1b9a2f..60550e7 100644
-> --- a/drivers/tty/tty_ioctl.c
-> +++ b/drivers/tty/tty_ioctl.c
-> @@ -1071,6 +1071,39 @@ int tty_mode_ioctl(struct tty_struct *tty, struct file *file,
->  	case TCSETXF:
->  		return set_termiox(real_tty, p, TERMIOS_FLUSH);
->  #endif		
-> +#ifdef TCGGPIO
-> +	case TCGGPIO: {
-> +		struct tcgpio gpio;
-> +
-> +		if (tty->gpio == NULL)
-> +			return -EOPNOTSUPP;
-> +		mutex_lock(&real_tty->termios_mutex);
-> +		memset(&gpio, 0, sizeof(gpio));
-> +		gpio.base = tty->gpio->base;
-> +		gpio.num = tty->gpio->num;
-> +		memcpy(gpio.map, tty->gpio->map, sizeof(gpio.map));
-> +		mutex_unlock(&real_tty->termios_mutex);
-> +		if (copy_to_user(p, &gpio, sizeof(gpio)))
-> +			return -EFAULT;
-> +		return 0;
-> +	}
-> +	case TCSGPIO:
-> +        {
-> +		struct tcgpio gpio;
-> +
-> +		if (tty->gpio == NULL)
-> +			return -EOPNOTSUPP;
-> +		if (copy_from_user(&gpio, p, sizeof(gpio)))
-> +			return -EFAULT;
-> +		mutex_lock(&real_tty->termios_mutex);
-> +		memcpy(tty->gpio->map, gpio.map, sizeof(tty->gpio->map));
-> +		/* An ldisc can see this by watching the ioctl go through
-> +		but we may want to add a hook */
-> +		mutex_unlock(&real_tty->termios_mutex);
-> +                return 0;
+Kyoungil, could you please re-submit for this as per Russell's suggestion
+(with Russell's patch)?
 
-So how would the lower tty driver get the ioctl to know to now set these
-values to the hardware?  I think we at least need a hook for that,
-right?  Or would that go through the ldisc?
+Thanks.
 
-
-> +        }
-> +                
-> +#endif
->  	case TIOCGSOFTCAR:
->  		copy_termios(real_tty, &kterm);
->  		ret = put_user((kterm.c_cflag & CLOCAL) ? 1 : 0,
-> diff --git a/include/asm-generic/ioctls.h b/include/asm-generic/ioctls.h
-> index 199975f..fee17d3 100644
-> --- a/include/asm-generic/ioctls.h
-> +++ b/include/asm-generic/ioctls.h
-> @@ -74,6 +74,8 @@
->  #define TCSETXW		0x5435
->  #define TIOCSIG		_IOW('T', 0x36, int)  /* pty: generate signal */
->  #define TIOCVHANGUP	0x5437
-> +#define TCGGPIO		_IOR('T', 0x38, struct tcgpio)
-> +#define TCSGPIO		_IOW('T', 0x39, struct tcgpio)
->  
->  #define FIONCLEX	0x5450
->  #define FIOCLEX		0x5451
-> diff --git a/include/asm-generic/termios.h b/include/asm-generic/termios.h
-> index d0922ad..3adda38 100644
-> --- a/include/asm-generic/termios.h
-> +++ b/include/asm-generic/termios.h
-> @@ -18,6 +18,18 @@ struct winsize {
->  	unsigned short ws_ypixel;
->  };
->  
-> +
-> +/* GPIO handling */
-> +#define NR_TTY_GPIOMAP	8
-> +struct tcgpio			/* User copied version */
-> +{
-> +	u32 base;
-> +	u16 num;
-> +	u16 reserved;
-> +	u32 map[NR_TTY_GPIOMAP];
-> +	u32 reserved2[6];
-> +};
-
-__u32 and friends instead?
-
-greg k-h
+Best regards,
+Kgene.
 --
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Kukjin Kim <kgene.kim@samsung.com>, Senior Engineer,
+SW Solution Development Team, Samsung Electronics Co., Ltd.
+
+
+> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+> index d8b0aee..6a952b1 100644
+> --- a/drivers/tty/serial/samsung.c
+> +++ b/drivers/tty/serial/samsung.c
+> @@ -529,7 +529,7 @@ static void s3c24xx_serial_pm(struct uart_port *port,
+> unsigned int level,
+> 
+>  	switch (level) {
+>  	case 3:
+> -		if (!IS_ERR(ourport->baudclk) && ourport->baudclk != NULL)
+> +		if (!IS_ERR(ourport->baudclk))
+>  			clk_disable(ourport->baudclk);
+> 
+>  		clk_disable(ourport->clk);
+> @@ -538,7 +538,7 @@ static void s3c24xx_serial_pm(struct uart_port *port,
+> unsigned int level,
+>  	case 0:
+>  		clk_enable(ourport->clk);
+> 
+> -		if (!IS_ERR(ourport->baudclk) && ourport->baudclk != NULL)
+> +		if (!IS_ERR(ourport->baudclk))
+>  			clk_enable(ourport->baudclk);
+> 
+>  		break;
+> @@ -713,9 +713,9 @@ static void s3c24xx_serial_set_termios(struct
+> uart_port *port,
+>  	if (ourport->baudclk != clk) {
+>  		s3c24xx_serial_setsource(port, clk_sel);
+> 
+> -		if (ourport->baudclk != NULL && !IS_ERR(ourport->baudclk)) {
+> +		if (!IS_ERR(ourport->baudclk)) {
+>  			clk_disable(ourport->baudclk);
+> -			ourport->baudclk  = NULL;
+> +			ourport->baudclk = ERR_PTR(-EINVAL);
+>  		}
+> 
+>  		clk_enable(clk);
+> @@ -1160,6 +1160,9 @@ static ssize_t s3c24xx_serial_show_clksrc(struct
+> device *dev,
+>  	struct uart_port *port = s3c24xx_dev_to_port(dev);
+>  	struct s3c24xx_uart_port *ourport = to_ourport(port);
+> 
+> +	if (IS_ERR(ourport->baudclk))
+> +		return -EINVAL;
+> +
+>  	return snprintf(buf, PAGE_SIZE, "* %s\n", ourport->baudclk->name);
+>  }
+> 
+> @@ -1200,6 +1203,7 @@ static int s3c24xx_serial_probe(struct
+> platform_device *pdev)
+>  		return -ENODEV;
+>  	}
+> 
+> +	ourport->baudclk = ERR_PTR(-EINVAL);
+>  	ourport->info = ourport->drv_data->info;
+>  	ourport->cfg = (pdev->dev.platform_data) ?
+>  			(struct s3c2410_uartcfg *)pdev->dev.platform_data :
