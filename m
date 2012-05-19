@@ -1,48 +1,53 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: Re: [PATCH 3/5] serial: delete the MCA specific 8250 support.
-Date: Thu, 17 May 2012 17:02:20 -0400
-Message-ID: <20120517210219.GB27789@windriver.com>
-References: <1337272841-25931-4-git-send-email-paul.gortmaker@windriver.com>
- <20120517164610.GA22327@kroah.com>
- <20120517165905.GA27789@windriver.com>
- <20120517.161656.1149344441984193661.davem@davemloft.net>
+From: David Herrmann <dh.herrmann@googlemail.com>
+Subject: Re: kmscon: replacing CONFIG_VT
+Date: Sat, 19 May 2012 10:48:38 +0200
+Message-ID: <CANq1E4SwyzLW61v-nrYu2gBvqbuzUNqTkK2cZzbv1ZZNBmWBBg@mail.gmail.com>
+References: <CANq1E4SGoRZaGjNZqPOA6g4COQmXxNr4kFBPMhxAonZqO_aOtQ@mail.gmail.com>
+	<20120516171421.5fca49f3@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.windriver.com ([147.11.1.11]:49610 "EHLO
-	mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754498Ab2EQVC2 (ORCPT
+Received: from mail-we0-f174.google.com ([74.125.82.174]:55117 "EHLO
+	mail-we0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932596Ab2ESIsk (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 May 2012 17:02:28 -0400
-Content-Disposition: inline
-In-Reply-To: <20120517.161656.1149344441984193661.davem@davemloft.net>
+	Sat, 19 May 2012 04:48:40 -0400
+Received: by weyu7 with SMTP id u7so2243689wey.19
+        for <linux-serial@vger.kernel.org>; Sat, 19 May 2012 01:48:38 -0700 (PDT)
+In-Reply-To: <20120516171421.5fca49f3@pyramind.ukuu.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: David Miller <davem@davemloft.net>
-Cc: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, JBottomley@parallels.com, torvalds@linux-foundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-[Re: [PATCH 3/5] serial: delete the MCA specific 8250 support.] On 17/05/2012 (Thu 16:16) David Miller wrote:
+Hi Alan
 
-> From: Paul Gortmaker <paul.gortmaker@windriver.com>
-> Date: Thu, 17 May 2012 12:59:06 -0400
-> 
-> > Since it depends on Linus pulling net-next 1st (otherwise we'll
-> > get allyesconfig fails in tokenring), it probably makes sense for
-> > me to just sit on all of it and then feed it to Linus after I've
-> > seen him pull Dave's net-next with the token ring removal.
-> > 
-> > Unless someone has a better plan?
-> 
-> Sounds good.
-> 
-> Meanwhile, Paul, if you respin patch #2 I can toss that directly into
-> my net-next tree since that's all networking stuff anyways.
+On Wed, May 16, 2012 at 6:14 PM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
+>> That's just some of my ideas on this topic. Maybe you can give me some
+>> hints whether it actually makes sense ;)
+>
+> For a lot of hardware it may not matter. If it goes bang you boot with a
+> debugging kernel (one containing a vt driver)
+>
+> If your user space goes castors up early then you are going to need input
+> facilities anyway (consider the fedora rescue mode in dracut for example)
 
-OK.  I'm just double checking with an allyesconfig on the respin of
-the #2 in isolation and then I'll follow up in the #2 thread with it.
+So you are basically saying that such an drmcon driver isn't needed,
+anyway? If we keep backwards compatibility to CONFIG_VT, everyone who
+wants a boot-log on the display just needs to enable CONFIG_VT. Sounds
+reasonable.
 
-Thanks,
-Paul.
+> As far as compatibility goes we have the ttyprintk driver which just
+> provides a fake tty which types nothing and whose output goes to the
+> console.
 
-> 
-> Thanks.
+I haven't found any applications that fail without /dev/tty, however,
+thanks for the hint.
+
+> Alan
+
+Thanks for the answers. So I can concentrate on the user-space parts
+and maybe later implement some drmcon'ish driver.
+
+Regards
+David
