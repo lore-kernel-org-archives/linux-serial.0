@@ -1,44 +1,60 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 1/1] serial_core: Update buffer overrun statistics.
-Date: Mon, 21 May 2012 17:05:53 +0100
-Message-ID: <20120521170553.7822c01c@pyramind.ukuu.org.uk>
-References: <1336152910-5276-1-git-send-email-corbin.atkinson@ni.com>
-	<20120515165339.6b142cd2@pyramind.ukuu.org.uk>
-	<20120515155833.GA24878@kroah.com>
-	<CAA0x6_-6tAHspcjFmD9Gz7NV4dUwP6St-UtivXTTQiANfBcX7A@mail.gmail.com>
-	<20120515172710.0d0ce47b@pyramind.ukuu.org.uk>
-	<CAA0x6_9dTE6zFaJOAqsrj2OcehARKG9KgicQPdf1yv2RjDbZwA@mail.gmail.com>
-	<20120515220831.11f04213@bob.linux.org.uk>
-	<CAA0x6_8mPs_JLxnjrzNYc4qej-c0kkhbVyuJPsaPg8xBvmThqQ@mail.gmail.com>
-	<OF12D97EE0.DCA5956B-ON86257A05.00532260-86257A05.00537F9F@ni.com>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: [PATCH] serial/imx: make devdata member point to const data
+Date: Mon, 21 May 2012 21:57:39 +0200
+Message-ID: <1337630259-9510-1-git-send-email-u.kleine-koenig@pengutronix.de>
+References: <1335171381-24869-1-git-send-email-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:53601 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752797Ab2EUQDG (ORCPT
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:36419 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756333Ab2EUT5s (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 21 May 2012 12:03:06 -0400
-In-Reply-To: <OF12D97EE0.DCA5956B-ON86257A05.00532260-86257A05.00537F9F@ni.com>
+	Mon, 21 May 2012 15:57:48 -0400
+In-Reply-To: <1335171381-24869-1-git-send-email-u.kleine-koenig@pengutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jason Smith <jason.smith@ni.com>
-Cc: Corbin <corbinat@gmail.com>, Alan Cox <alan@linux.intel.com>, Corbin Atkinson <corbin.atkinson@ni.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: kernel@pengutronix.de, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, Arnd Bergmann <arnd@arndb.de>
 
-> Has anyone had a chance to think about this anymore? We would really like 
-> the capability to recognize that data has been discarded, even if it is 
-> because no flow control is used and the user is ignoring the port. There 
-> are cases, such as with RS-485, where there is no real flow control 
-> mechanism is available, so we should not depend on flow-control as always 
-> being an option. As Corbin mentioned, there are some other drivers using 
-> buf_overrun (as opposed to overrun, which indicates FIFO overruns) for 
-> this purpose, but we don't know if this was the original intention of this 
-> field.
+This is only cosmetic for now. In case that
 
-I was hopng Jiri would chip in.
+	http://mid.gmane.org/1335171381-24869-1-git-send-email-u.kleine-koenig=
+@pengutronix.de
 
-If you think its important and want to argue for it, I'm not going to
-fight against it.
+will be applied, it fixes a warning
 
-Alan
+	drivers/tty/serial/imx.c: In function 'serial_imx_probe_dt':
+	drivers/tty/serial/imx.c:1430:17: warning: assignment discards 'const'=
+ qualifier from pointer target type [enabled by default]
+
+though.
+
+Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+---
+ drivers/tty/serial/imx.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index e7fecee..d409bbb 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -205,7 +205,7 @@ struct imx_port {
+ 	unsigned int		irda_inv_tx:1;
+ 	unsigned short		trcv_delay; /* transceiver delay */
+ 	struct clk		*clk;
+-	struct imx_uart_data	*devdata;
++	const struct imx_uart_data *devdata;
+ };
+=20
+ struct imx_port_ucrs {
+--=20
+1.7.10
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
