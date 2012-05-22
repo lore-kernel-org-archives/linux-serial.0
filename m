@@ -1,46 +1,17 @@
-From: Haojian Zhuang <hzhuang1@marvell.com>
-Subject: RE: [PATCH] serial: pxa: add spin lock for console write
-Date: Mon, 21 May 2012 20:07:16 -0700
-Message-ID: <25B60CDC2F704E4E9D88FFD52780CB4C060E55D550@SC-VEXCH1.marvell.com>
-References: <1337567628-22180-1-git-send-email-chao.xie@marvell.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+From: Chao Xie <chao.xie@marvell.com>
+Subject: [PATCH V2] serial: pxa: add spin lock for console write
+Date: Tue, 22 May 2012 12:43:00 +0800
+Message-ID: <1337661780-26446-1-git-send-email-chao.xie@marvell.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog128.obsmtp.com ([74.125.149.141]:45170 "EHLO
-	na3sys009aog128.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754098Ab2EVDMm convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 21 May 2012 23:12:42 -0400
-In-Reply-To: <1337567628-22180-1-git-send-email-chao.xie@marvell.com>
-Content-Language: en-US
+Received: from na3sys009aog102.obsmtp.com ([74.125.149.69]:35534 "HELO
+	na3sys009aog102.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1751503Ab2EVEks (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 22 May 2012 00:40:48 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Cc: Chao Xie <cxie4@marvell.com>
-
-int clk_prepare(struct clk *clk)
-{
-        int ret;
-
-        mutex_lock(&prepare_lock);
-        ret = __clk_prepare(clk);
-        mutex_unlock(&prepare_lock);
-
-        return ret;
-}
-EXPORT_SYMBOL_GPL(clk_prepare);
-
-So invoking local_irq_save() before clk_prepare_enable() is wrong behavior.
-
-Regards
-Haojian
-________________________________________
-From: Chao Xie [chao.xie@marvell.com]
-Sent: Monday, May 21, 2012 10:33 AM
-To: linux-serial@vger.kernel.org; Haojian Zhuang
-Cc: Chao Xie
-Subject: [PATCH] serial: pxa: add spin lock for console write
+To: linux-serial@vger.kernel.org, haojian.zhuang@marvell.com
+Cc: Chao Xie <chao.xie@marvell.com>
 
 at UP mode, when cpu want to print message in kernel, it will invoke
 peempt_disable and disable irq. So it is safe for UP mode.
@@ -63,38 +34,42 @@ Signed-off-by: Chao Xie <chao.xie@marvell.com>
  1 files changed, 15 insertions(+), 0 deletions(-)
 
 diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
-index 5847a4b..d94387f 100644
+index 5847a4b..aca62f6 100644
 --- a/drivers/tty/serial/pxa.c
 +++ b/drivers/tty/serial/pxa.c
-@@ -670,6 +670,16 @@ serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
+@@ -670,9 +670,19 @@ serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
  {
-        struct uart_pxa_port *up = serial_pxa_ports[co->index];
-        unsigned int ier;
-+       unsigned long flags;
-+       int locked = 1;
+ 	struct uart_pxa_port *up = serial_pxa_ports[co->index];
+ 	unsigned int ier;
++	unsigned long flags;
++	int locked = 1;
+ 
+ 	clk_prepare_enable(up->clk);
+ 
++	local_irq_save(flags);
++	if (up->port.sysrq)
++		locked = 0;
++	else if (oops_in_progress)
++		locked = spin_trylock(&up->port.lock);
++	else
++		spin_lock(&up->port.lock);
 +
-+       local_irq_save(flags);
-+       if (up->port.sysrq)
-+               locked = 0;
-+       else if (oops_in_progress)
-+               locked = spin_trylock(&up->port.lock);
-+       else
-+               spin_lock(&up->port.lock);
-
-        clk_prepare_enable(up->clk);
-
-@@ -689,6 +699,11 @@ serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
-        serial_out(up, UART_IER, ier);
-
-        clk_disable_unprepare(up->clk);
+ 	/*
+ 	 *	First save the IER then disable the interrupts
+ 	 */
+@@ -688,7 +698,12 @@ serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
+ 	wait_for_xmitr(up);
+ 	serial_out(up, UART_IER, ier);
+ 
++	if (locked)
++		spin_unlock(&up->port.lock);
++	local_irq_restore(flags);
 +
-+       if (locked)
-+               spin_unlock(&up->port.lock);
-+       local_irq_restore(flags);
+ 	clk_disable_unprepare(up->clk);
 +
  }
-
+ 
  static int __init
---
+-- 
 1.7.0.4
 
