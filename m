@@ -1,75 +1,39 @@
-From: Chao Xie <chao.xie@marvell.com>
-Subject: [PATCH V2] serial: pxa: add spin lock for console write
-Date: Tue, 22 May 2012 12:43:00 +0800
-Message-ID: <1337661780-26446-1-git-send-email-chao.xie@marvell.com>
+From: Jack Stone <jwjstone@fastmail.fm>
+Subject: Fwd: struct tty_flip_buffer replacement in newer kernels
+Date: Tue, 22 May 2012 13:32:02 +0100
+Message-ID: <4FBB8742.7050504@fastmail.fm>
+References: <CAMMxdh1Ak2LWeL=3qxTmvfR43E=wSHz5OmSj_irMubz0aK+TgA@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog102.obsmtp.com ([74.125.149.69]:35534 "HELO
-	na3sys009aog102.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with SMTP id S1751503Ab2EVEks (ORCPT
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:35558 "EHLO
+	out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753360Ab2EVMkc (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 22 May 2012 00:40:48 -0400
+	Tue, 22 May 2012 08:40:32 -0400
+In-Reply-To: <CAMMxdh1Ak2LWeL=3qxTmvfR43E=wSHz5OmSj_irMubz0aK+TgA@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, haojian.zhuang@marvell.com
-Cc: Chao Xie <chao.xie@marvell.com>
+To: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org
 
-at UP mode, when cpu want to print message in kernel, it will invoke
-peempt_disable and disable irq. So it is safe for UP mode.
-For SMP mode, it is not safe to protect the HW reigsters.
-one CPU will run a program which will invoke printf.
-another CPU will run a program in kernel that invoke printk.
-So when second CPU is trying to printk, it will do
-1. save ier register
-2. enable uue bit of ier register
-3. push buffer to uart fifo
-4 .restore ier register
-when first CPU want to printf, and it happens between 1 and 4, it will
-enable thre bit of ier, and waiting for transmit intterupt. while step 4
-will make the ier lost thre bit.
-add spin lock here to protect the ier register for console write.
+[Add CCs]
 
-Signed-off-by: Chao Xie <chao.xie@marvell.com>
----
- drivers/tty/serial/pxa.c |   15 +++++++++++++++
- 1 files changed, 15 insertions(+), 0 deletions(-)
+-------- Original Message --------
+Subject: struct tty_flip_buffer replacement in newer kernels
+Date: Tue, 22 May 2012 16:17:02 +0400
+From: Dmitriy Alekseev <deathonfuneral@gmail.com>
+To: linux-kernel@vger.kernel.org
 
-diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
-index 5847a4b..aca62f6 100644
---- a/drivers/tty/serial/pxa.c
-+++ b/drivers/tty/serial/pxa.c
-@@ -670,9 +670,19 @@ serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
- {
- 	struct uart_pxa_port *up = serial_pxa_ports[co->index];
- 	unsigned int ier;
-+	unsigned long flags;
-+	int locked = 1;
- 
- 	clk_prepare_enable(up->clk);
- 
-+	local_irq_save(flags);
-+	if (up->port.sysrq)
-+		locked = 0;
-+	else if (oops_in_progress)
-+		locked = spin_trylock(&up->port.lock);
-+	else
-+		spin_lock(&up->port.lock);
-+
- 	/*
- 	 *	First save the IER then disable the interrupts
- 	 */
-@@ -688,7 +698,12 @@ serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
- 	wait_for_xmitr(up);
- 	serial_out(up, UART_IER, ier);
- 
-+	if (locked)
-+		spin_unlock(&up->port.lock);
-+	local_irq_restore(flags);
-+
- 	clk_disable_unprepare(up->clk);
-+
- }
- 
- static int __init
+Hello
+
+I'm newbie, working under existed serial driver, adapting it for 2.6.32.
+During the compilation I have had several problems, which I
+succesfully solved except this one:
+error: 'struct tty_struct' has no member named 'flip'
+In particular, cound you advice correct replacement of "tty->flip.count"
+
+Thanks
 -- 
-1.7.0.4
-
+Best Regards,
+Dmitriy Alekseev
