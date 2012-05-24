@@ -1,137 +1,163 @@
-From: Kyoungil Kim <ki0351.kim@samsung.com>
-Subject: RE: [PATCH 1/2] serial: samsung: Remove NULL checking for baud clock
-Date: Thu, 24 May 2012 17:39:37 +0900
-Message-ID: <002d01cd3988$c0d914c0$428b3e40$%kim@samsung.com>
+From: Dmitriy Alekseev <alexeev6@yahoo.com>
+Subject: Fw: struct tty_flip_buffer replacement in newer kernels
+Date: Thu, 24 May 2012 03:38:42 -0700 (PDT)
+Message-ID: <1337855922.24203.YahooMailNeo@web44913.mail.sp1.yahoo.com>
+References: <CAMMxdh1Ak2LWeL=3qxTmvfR43E=wSHz5OmSj_irMubz0aK+TgA@mail.gmail.com> <4FBB8742.7050504@fastmail.fm> <20120522151033.33ef577a@pyramind.ukuu.org.uk> <1337697508.72614.YahooMailNeo@web44911.mail.sp1.yahoo.com> <20120522172700.02d7915d@pyramind.ukuu.org.uk> <1337855090.9672.YahooMailNeo@web44908.mail.sp1.yahoo.com>
+Reply-To: Dmitriy Alekseev <alexeev6@yahoo.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout3.samsung.com ([203.254.224.33]:32309 "EHLO
-	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753370Ab2EXIjj (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 24 May 2012 04:39:39 -0400
-References: 
-In-reply-to: 
-Content-language: ko
+Received: from nm7.bullet.mail.sp2.yahoo.com ([98.139.91.77]:40023 "HELO
+	nm7.bullet.mail.sp2.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1755564Ab2EXKio convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 24 May 2012 06:38:44 -0400
+In-Reply-To: <1337855090.9672.YahooMailNeo@web44908.mail.sp1.yahoo.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Kyoungil Kim' <ki0351.kim@samsung.com>, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: 'Kukjin Kim' <kgene.kim@samsung.com>, 'Alan Cox' <alan@linux.intel.com>, 'Russell King' <rmk+kernel@arm.linux.org.uk>
+To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-Kyoungil Kim wrote:
+Hi, Alan.
 
-I missed following.
+Thank You very much for the answer!
+So, if I understand correctly, I took for example this:=A0arch/arm/mach=
+-omap1/board-voiceblue.c
+And made in my board specific file:
+static struct plat_serial8250_port exar_ports[] =3D {
+=A0 =A0 =A0 =A0 {
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 .mapbase =A0 =A0 =A0 =A0=3D (unsigned l=
+ong)(0x30000300), // according to at91rm9200 CS2 memory map
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 .flags =A0 =A0 =A0 =A0 =A0=3D UPF_BOOT_=
+AUTOCONF | UPF_IOREMAP, // I don't know, what kind of flags is suitable=
+ for me
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 .iotype =A0 =A0 =A0 =A0 =3D UPIO_MEM, /=
+/ similar problem
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 .regshift =A0 =A0 =A0 =3D 1,=A0
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 .uartclk =A0 =A0 =A0 =A0=3D 14745600, /=
+/ Our chip clock frequency
+=A0 =A0 =A0 =A0 },
+=A0 =A0 =A0 =A0 {
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 .mapbase =A0 =A0 =A0 =A0=3D (unsigned l=
+ong)(0x30000200),
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 .flags =A0 =A0 =A0 =A0 =A0=3D UPF_BOOT_=
+AUTOCONF | UPF_IOREMAP,
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 .iotype =A0 =A0 =A0 =A0 =3D UPIO_MEM,
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 .regshift =A0 =A0 =A0 =3D 1,
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 .uartclk =A0 =A0 =A0 =A0=3D 14745600,
+=A0 =A0 =A0 =A0 },
+=A0 =A0 =A0 =A0 {
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 .mapbase =A0 =A0 =A0 =A0=3D (unsigned l=
+ong)(0x30000100),
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 .flags =A0 =A0 =A0 =A0 =A0=3D UPF_BOOT_=
+AUTOCONF | UPF_IOREMAP,
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 .iotype =A0 =A0 =A0 =A0 =3D UPIO_MEM,
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 .regshift =A0 =A0 =A0 =3D 1,
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 .uartclk =A0 =A0 =A0 =A0=3D 14745600,
+=A0 =A0 =A0 =A0 },
+=A0 =A0 =A0 =A0 {
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 .mapbase =A0 =A0 =A0 =A0=3D (unsigned l=
+ong)(0x30000000),
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 .flags =A0 =A0 =A0 =A0 =A0=3D UPF_BOOT_=
+AUTOCONF | UPF_IOREMAP,
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 .iotype =A0 =A0 =A0 =A0 =3D UPIO_MEM,
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 .regshift =A0 =A0 =A0 =3D 1,
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 .uartclk =A0 =A0 =A0 =A0=3D 14745600,
+=A0 =A0 =A0 =A0 },
+=A0 =A0 =A0 =A0 { },
+};
+static struct platform_device serial_device =3D {
+=2Ename =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =3D "serial8250",
+=A0 =A0 =A0 =A0 .id =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =3D PLAT825=
+0_DEV_EXAR_ST16C554,
+=A0 =A0 =A0 =A0 .dev =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=3D {
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0.platform_data =A0=3D exar_ports,
+=A0 =A0 =A0 =A0 =A0},
+};
 
-Russell King suggested:
+in my board __init func:
+platform_device_register(&serial_device);
 
-As I said, drivers have no business interpreting anything but IS_ERR(clk) as being an error.  They should not make any other
-assumptions.
-
-Suggested-by: Russell King <rmk+kernel@arm.linux.org.uk>
-
-> Signed-off-by: Kyoungil Kim <ki0351.kim@samsung.com>
-> ---
->  drivers/tty/serial/samsung.c |   21 ++++++++++++---------
->  1 files changed, 12 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-> index d8b0aee..5668538 100644
-> --- a/drivers/tty/serial/samsung.c
-> +++ b/drivers/tty/serial/samsung.c
-> @@ -529,7 +529,7 @@ static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
-> 
->  	switch (level) {
->  	case 3:
-> -		if (!IS_ERR(ourport->baudclk) && ourport->baudclk != NULL)
-> +		if (!IS_ERR(ourport->baudclk))
->  			clk_disable(ourport->baudclk);
-> 
->  		clk_disable(ourport->clk);
-> @@ -538,7 +538,7 @@ static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
->  	case 0:
->  		clk_enable(ourport->clk);
-> 
-> -		if (!IS_ERR(ourport->baudclk) && ourport->baudclk != NULL)
-> +		if (!IS_ERR(ourport->baudclk))
->  			clk_enable(ourport->baudclk);
-> 
->  		break;
-> @@ -604,7 +604,6 @@ static unsigned int s3c24xx_serial_getclk(struct s3c24xx_uart_port *ourport,
->  	char clkname[MAX_CLK_NAME_LENGTH];
->  	int calc_deviation, deviation = (1 << 30) - 1;
-> 
-> -	*best_clk = NULL;
->  	clk_sel = (ourport->cfg->clk_sel) ? ourport->cfg->clk_sel :
->  			ourport->info->def_clk_sel;
->  	for (cnt = 0; cnt < info->num_clks; cnt++) {
-> @@ -613,7 +612,7 @@ static unsigned int s3c24xx_serial_getclk(struct s3c24xx_uart_port *ourport,
-> 
->  		sprintf(clkname, "clk_uart_baud%d", cnt);
->  		clk = clk_get(ourport->port.dev, clkname);
-> -		if (IS_ERR_OR_NULL(clk))
-> +		if (IS_ERR(clk))
->  			continue;
-> 
->  		rate = clk_get_rate(clk);
-> @@ -684,7 +683,7 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
->  {
->  	struct s3c2410_uartcfg *cfg = s3c24xx_port_to_cfg(port);
->  	struct s3c24xx_uart_port *ourport = to_ourport(port);
-> -	struct clk *clk = NULL;
-> +	struct clk *clk = ERR_PTR(-EINVAL);
->  	unsigned long flags;
->  	unsigned int baud, quot, clk_sel = 0;
->  	unsigned int ulcon;
-> @@ -705,7 +704,7 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
->  	quot = s3c24xx_serial_getclk(ourport, baud, &clk, &clk_sel);
->  	if (baud == 38400 && (port->flags & UPF_SPD_MASK) == UPF_SPD_CUST)
->  		quot = port->custom_divisor;
-> -	if (!clk)
-> +	if (IS_ERR(clk))
->  		return;
-> 
->  	/* check to see if we need  to change clock source */
-> @@ -713,9 +712,9 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
->  	if (ourport->baudclk != clk) {
->  		s3c24xx_serial_setsource(port, clk_sel);
-> 
-> -		if (ourport->baudclk != NULL && !IS_ERR(ourport->baudclk)) {
-> +		if (!IS_ERR(ourport->baudclk)) {
->  			clk_disable(ourport->baudclk);
-> -			ourport->baudclk  = NULL;
-> +			ourport->baudclk = ERR_PTR(-EINVAL);
->  		}
-> 
->  		clk_enable(clk);
-> @@ -1160,6 +1159,9 @@ static ssize_t s3c24xx_serial_show_clksrc(struct device *dev,
->  	struct uart_port *port = s3c24xx_dev_to_port(dev);
->  	struct s3c24xx_uart_port *ourport = to_ourport(port);
-> 
-> +	if (IS_ERR(ourport->baudclk))
-> +		return -EINVAL;
-> +
->  	return snprintf(buf, PAGE_SIZE, "* %s\n", ourport->baudclk->name);
->  }
-> 
-> @@ -1200,6 +1202,7 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
->  		return -ENODEV;
->  	}
-> 
-> +	ourport->baudclk = ERR_PTR(-EINVAL);
->  	ourport->info = ourport->drv_data->info;
->  	ourport->cfg = (pdev->dev.platform_data) ?
->  			(struct s3c2410_uartcfg *)pdev->dev.platform_data :
-> @@ -1387,7 +1390,7 @@ s3c24xx_serial_get_options(struct uart_port *port, int *baud,
->  		sprintf(clk_name, "clk_uart_baud%d", clk_sel);
-> 
->  		clk = clk_get(port->dev, clk_name);
-> -		if (!IS_ERR(clk) && clk != NULL)
-> +		if (!IS_ERR(clk))
->  			rate = clk_get_rate(clk);
->  		else
->  			rate = 1;
-> --
-> 1.7.1
+at .config I made:
+#
+# Serial drivers
+#
+CONFIG_SERIAL_8250=3Dy
+# CONFIG_SERIAL_8250_CONSOLE is not set
+CONFIG_SERIAL_8250_NR_UARTS=3D4
+CONFIG_SERIAL_8250_RUNTIME_UARTS=3D4
+CONFIG_SERIAL_8250_EXTENDED=3Dy
+CONFIG_SERIAL_8250_MANY_PORTS=3Dy
+# CONFIG_SERIAL_8250_SHARE_IRQ is not set
+# CONFIG_SERIAL_8250_DETECT_IRQ is not set
+# CONFIG_SERIAL_8250_RSA is not set
 
 
+dmesg gives:
+[ =A0 =A00.695312] Serial: 8250/16550 driver, 4 ports, IRQ sharing disa=
+bled =A0 =A0 =A0 =A0=A0
+
+
+New devices in filesystem has been registered, but they didn't related =
+with hardware chip yet.
+#cat /proc/tty/driver/serial =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0 =A0 =A0 =A0 =A0=A0
+serinfo:1.0 driver revision: =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0
+0: uart:unknown mmio:0x30000000 irq:0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=A0
+1: uart:unknown port:00000000 irq:0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=A0
+2: uart:unknown port:00000000 irq:0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=A0
+3: uart:unknown port:00000000 irq:0 =A0 =A0
+
+What shoud I check, learn, do for solving this problem?
+
+
+Very grateful,
+Dmitriy Alekseev
+
+
+----- Original Message -----
+=46rom: Alan Cox <alan@lxorguk.ukuu.org.uk>
+To: Dmitriy Alekseev <alexeev6@yahoo.com>
+Cc: "linux-serial@vger.kernel.org"
+<linux-serial@vger.kernel.org>
+Sent: Tuesday, May 22, 2012 8:27 PM
+Subject: Re: struct tty_flip_buffer replacement in newer kernels
+
+On Tue, 22 May 2012 07:38:28 -0700 (PDT)
+Dmitriy Alekseev <alexeev6@yahoo.com> wrote:
+
+> This is driver source I found:
+> http://www.codeforge.com/read/118181/st16c554_serial.c__html
+>=20
+> It was written for quad uart st16c554 for arm chip s3c2410, which I t=
+ried to adapt for at91rm9200 board and newer kernel version.
+
+Why not use the in kernel 8250 driver (which will drive a stamdard
+16540/550/554 as well ?)
+
+To ressurect one you'll need to add kref handling, rework the termios c=
+ode
+and maybe some other bits too.
+
+Take a look how other arm boards use struct plat_serial8250_port and th=
+e
+serial8250 platform driver. You should just be able to declare the
+structures and register the platform device.
+
+Alan
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a
+message to majordomo@vger.kernel.org
+More majordomo info at=A0 http://vger.kernel.org/majordomo-info.html
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
