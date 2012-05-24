@@ -1,232 +1,137 @@
-From: Linus Walleij <linus.walleij@stericsson.com>
-Subject: [PATCH] serial/amba-pl011: move custom pin control to driver
-Date: Wed, 23 May 2012 21:18:46 +0200
-Message-ID: <1337800726-4076-1-git-send-email-linus.walleij@stericsson.com>
+From: Kyoungil Kim <ki0351.kim@samsung.com>
+Subject: RE: [PATCH 1/2] serial: samsung: Remove NULL checking for baud clock
+Date: Thu, 24 May 2012 17:39:37 +0900
+Message-ID: <002d01cd3988$c0d914c0$428b3e40$%kim@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from eu1sys200aog116.obsmtp.com ([207.126.144.141]:41469 "EHLO
-	eu1sys200aog116.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S965474Ab2EWTTP (ORCPT
+Received: from mailout3.samsung.com ([203.254.224.33]:32309 "EHLO
+	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753370Ab2EXIjj (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 23 May 2012 15:19:15 -0400
+	Thu, 24 May 2012 04:39:39 -0400
+References: 
+In-reply-to: 
+Content-language: ko
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, Lee Jones <lee.jones@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, Shawn Guo <shawn.guo@linaro.org>, Russell King <rmk+kernel@arm.linux.org.uk>
+To: 'Kyoungil Kim' <ki0351.kim@samsung.com>, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: 'Kukjin Kim' <kgene.kim@samsung.com>, 'Alan Cox' <alan@linux.intel.com>, 'Russell King' <rmk+kernel@arm.linux.org.uk>
 
-From: Linus Walleij <linus.walleij@linaro.org>
+Kyoungil Kim wrote:
 
-We had a boot regression in Ux500 in the merge window because
-two orthogonal pin control schemes for the PL011 were merged
-at the same time:
+I missed following.
 
-- One using the .init() and .exit() hooks into the platform
-  for Ux500 putting the pins into default vs sleep state
-  respectively as the port was started/stopped.
-  commit a09806607fd20bed2f8c41fe22793386790a14aa
-  "ARM: ux500: switch to using pinctrl for uart0"
+Russell King suggested:
 
-- One hogging the default setting at PL011 probe()
-  commit 258e055111d3cde2607e0d04eb91da2f7a59b591
-  "serial: amba-pl011: adopt pinctrl support"
+As I said, drivers have no business interpreting anything but IS_ERR(clk) as being an error.  They should not make any other
+assumptions.
 
-To get a solution that works for both let's scrap the stuff
-in the platform callbacks, instead have the driver itself
-select default and sleep states when the port is
-started/stopped. Hopefully this works for all clients.
-Platform callbacks are bad for device tree migration anyway,
-so this rids us of another problem in Ux500.
+Suggested-by: Russell King <rmk+kernel@arm.linux.org.uk>
 
-Cc: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Shawn Guo <shawn.guo@linaro.org>
-Cc: Russell King <rmk+kernel@arm.linux.org.uk>
-Reported-by: Lee Jones <lee.jones@linaro.org>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
- arch/arm/mach-ux500/board-mop500.c |   54 +-----------------------------------
- drivers/tty/serial/amba-pl011.c    |   45 +++++++++++++++++++++++++++---
- 2 files changed, 42 insertions(+), 57 deletions(-)
+> Signed-off-by: Kyoungil Kim <ki0351.kim@samsung.com>
+> ---
+>  drivers/tty/serial/samsung.c |   21 ++++++++++++---------
+>  1 files changed, 12 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+> index d8b0aee..5668538 100644
+> --- a/drivers/tty/serial/samsung.c
+> +++ b/drivers/tty/serial/samsung.c
+> @@ -529,7 +529,7 @@ static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
+> 
+>  	switch (level) {
+>  	case 3:
+> -		if (!IS_ERR(ourport->baudclk) && ourport->baudclk != NULL)
+> +		if (!IS_ERR(ourport->baudclk))
+>  			clk_disable(ourport->baudclk);
+> 
+>  		clk_disable(ourport->clk);
+> @@ -538,7 +538,7 @@ static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
+>  	case 0:
+>  		clk_enable(ourport->clk);
+> 
+> -		if (!IS_ERR(ourport->baudclk) && ourport->baudclk != NULL)
+> +		if (!IS_ERR(ourport->baudclk))
+>  			clk_enable(ourport->baudclk);
+> 
+>  		break;
+> @@ -604,7 +604,6 @@ static unsigned int s3c24xx_serial_getclk(struct s3c24xx_uart_port *ourport,
+>  	char clkname[MAX_CLK_NAME_LENGTH];
+>  	int calc_deviation, deviation = (1 << 30) - 1;
+> 
+> -	*best_clk = NULL;
+>  	clk_sel = (ourport->cfg->clk_sel) ? ourport->cfg->clk_sel :
+>  			ourport->info->def_clk_sel;
+>  	for (cnt = 0; cnt < info->num_clks; cnt++) {
+> @@ -613,7 +612,7 @@ static unsigned int s3c24xx_serial_getclk(struct s3c24xx_uart_port *ourport,
+> 
+>  		sprintf(clkname, "clk_uart_baud%d", cnt);
+>  		clk = clk_get(ourport->port.dev, clkname);
+> -		if (IS_ERR_OR_NULL(clk))
+> +		if (IS_ERR(clk))
+>  			continue;
+> 
+>  		rate = clk_get_rate(clk);
+> @@ -684,7 +683,7 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
+>  {
+>  	struct s3c2410_uartcfg *cfg = s3c24xx_port_to_cfg(port);
+>  	struct s3c24xx_uart_port *ourport = to_ourport(port);
+> -	struct clk *clk = NULL;
+> +	struct clk *clk = ERR_PTR(-EINVAL);
+>  	unsigned long flags;
+>  	unsigned int baud, quot, clk_sel = 0;
+>  	unsigned int ulcon;
+> @@ -705,7 +704,7 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
+>  	quot = s3c24xx_serial_getclk(ourport, baud, &clk, &clk_sel);
+>  	if (baud == 38400 && (port->flags & UPF_SPD_MASK) == UPF_SPD_CUST)
+>  		quot = port->custom_divisor;
+> -	if (!clk)
+> +	if (IS_ERR(clk))
+>  		return;
+> 
+>  	/* check to see if we need  to change clock source */
+> @@ -713,9 +712,9 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
+>  	if (ourport->baudclk != clk) {
+>  		s3c24xx_serial_setsource(port, clk_sel);
+> 
+> -		if (ourport->baudclk != NULL && !IS_ERR(ourport->baudclk)) {
+> +		if (!IS_ERR(ourport->baudclk)) {
+>  			clk_disable(ourport->baudclk);
+> -			ourport->baudclk  = NULL;
+> +			ourport->baudclk = ERR_PTR(-EINVAL);
+>  		}
+> 
+>  		clk_enable(clk);
+> @@ -1160,6 +1159,9 @@ static ssize_t s3c24xx_serial_show_clksrc(struct device *dev,
+>  	struct uart_port *port = s3c24xx_dev_to_port(dev);
+>  	struct s3c24xx_uart_port *ourport = to_ourport(port);
+> 
+> +	if (IS_ERR(ourport->baudclk))
+> +		return -EINVAL;
+> +
+>  	return snprintf(buf, PAGE_SIZE, "* %s\n", ourport->baudclk->name);
+>  }
+> 
+> @@ -1200,6 +1202,7 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+>  		return -ENODEV;
+>  	}
+> 
+> +	ourport->baudclk = ERR_PTR(-EINVAL);
+>  	ourport->info = ourport->drv_data->info;
+>  	ourport->cfg = (pdev->dev.platform_data) ?
+>  			(struct s3c2410_uartcfg *)pdev->dev.platform_data :
+> @@ -1387,7 +1390,7 @@ s3c24xx_serial_get_options(struct uart_port *port, int *baud,
+>  		sprintf(clk_name, "clk_uart_baud%d", clk_sel);
+> 
+>  		clk = clk_get(port->dev, clk_name);
+> -		if (!IS_ERR(clk) && clk != NULL)
+> +		if (!IS_ERR(clk))
+>  			rate = clk_get_rate(clk);
+>  		else
+>  			rate = 1;
+> --
+> 1.7.1
 
-diff --git a/arch/arm/mach-ux500/board-mop500.c b/arch/arm/mach-ux500/board-mop500.c
-index 4bc0cbc..e7af625 100644
---- a/arch/arm/mach-ux500/board-mop500.c
-+++ b/arch/arm/mach-ux500/board-mop500.c
-@@ -540,43 +540,12 @@ static void ux500_uart0_reset(void)
- 	udelay(1);
- }
- 
--/* This needs to be referenced by callbacks */
--struct pinctrl *u0_p;
--struct pinctrl_state *u0_def;
--struct pinctrl_state *u0_sleep;
--
--static void ux500_uart0_init(void)
--{
--	int ret;
--
--	if (IS_ERR(u0_p) || IS_ERR(u0_def))
--		return;
--
--	ret = pinctrl_select_state(u0_p, u0_def);
--	if (ret)
--		pr_err("could not set UART0 defstate\n");
--}
--
--static void ux500_uart0_exit(void)
--{
--	int ret;
--
--	if (IS_ERR(u0_p) || IS_ERR(u0_sleep))
--		return;
--
--	ret = pinctrl_select_state(u0_p, u0_sleep);
--	if (ret)
--		pr_err("could not set UART0 idlestate\n");
--}
--
- static struct amba_pl011_data uart0_plat = {
- #ifdef CONFIG_STE_DMA40
- 	.dma_filter = stedma40_filter,
- 	.dma_rx_param = &uart0_dma_cfg_rx,
- 	.dma_tx_param = &uart0_dma_cfg_tx,
- #endif
--	.init = ux500_uart0_init,
--	.exit = ux500_uart0_exit,
- 	.reset = ux500_uart0_reset,
- };
- 
-@@ -598,28 +567,7 @@ static struct amba_pl011_data uart2_plat = {
- 
- static void __init mop500_uart_init(struct device *parent)
- {
--	struct amba_device *uart0_device;
--
--	uart0_device = db8500_add_uart0(parent, &uart0_plat);
--	if (uart0_device) {
--		u0_p = pinctrl_get(&uart0_device->dev);
--		if (IS_ERR(u0_p))
--			dev_err(&uart0_device->dev,
--				"could not get UART0 pinctrl\n");
--		else {
--			u0_def = pinctrl_lookup_state(u0_p,
--						      PINCTRL_STATE_DEFAULT);
--			if (IS_ERR(u0_def)) {
--				dev_err(&uart0_device->dev,
--					"could not get UART0 defstate\n");
--			}
--			u0_sleep = pinctrl_lookup_state(u0_p,
--							PINCTRL_STATE_SLEEP);
--			if (IS_ERR(u0_sleep))
--				dev_err(&uart0_device->dev,
--					"could not get UART0 idlestate\n");
--		}
--	}
-+	db8500_add_uart0(parent, &uart0_plat);
- 	db8500_add_uart1(parent, &uart1_plat);
- 	db8500_add_uart2(parent, &uart2_plat);
- }
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 4ad721f..c17923e 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -133,6 +133,10 @@ struct pl011_dmatx_data {
- struct uart_amba_port {
- 	struct uart_port	port;
- 	struct clk		*clk;
-+	/* Two optional pin states - default & sleep */
-+	struct pinctrl		*pinctrl;
-+	struct pinctrl_state	*pins_default;
-+	struct pinctrl_state	*pins_sleep;
- 	const struct vendor_data *vendor;
- 	unsigned int		dmacr;		/* dma control reg */
- 	unsigned int		im;		/* interrupt mask */
-@@ -1312,6 +1316,14 @@ static int pl011_startup(struct uart_port *port)
- 	unsigned int cr;
- 	int retval;
- 
-+	/* Optionaly enable pins to be muxed in and configured */
-+	if (!IS_ERR(uap->pins_default)) {
-+		retval = pinctrl_select_state(uap->pinctrl, uap->pins_default);
-+		if (retval)
-+			dev_err(port->dev,
-+				"could not set default pins\n");
-+	}
-+
- 	retval = clk_prepare(uap->clk);
- 	if (retval)
- 		goto out;
-@@ -1420,6 +1432,7 @@ static void pl011_shutdown(struct uart_port *port)
- {
- 	struct uart_amba_port *uap = (struct uart_amba_port *)port;
- 	unsigned int cr;
-+	int retval;
- 
- 	/*
- 	 * disable all interrupts
-@@ -1462,6 +1475,14 @@ static void pl011_shutdown(struct uart_port *port)
- 	 */
- 	clk_disable(uap->clk);
- 	clk_unprepare(uap->clk);
-+	/* Optionally let pins go into sleep states */
-+	if (!IS_ERR(uap->pins_sleep)) {
-+		retval = pinctrl_select_state(uap->pinctrl, uap->pins_sleep);
-+		if (retval)
-+			dev_err(port->dev,
-+				"could not set pins to sleep state\n");
-+	}
-+
- 
- 	if (uap->port.dev->platform_data) {
- 		struct amba_pl011_data *plat;
-@@ -1792,6 +1813,14 @@ static int __init pl011_console_setup(struct console *co, char *options)
- 	if (!uap)
- 		return -ENODEV;
- 
-+	/* Allow pins to be muxed in and configured */
-+	if (!IS_ERR(uap->pins_default)) {
-+		ret = pinctrl_select_state(uap->pinctrl, uap->pins_default);
-+		if (ret)
-+			dev_err(uap->port.dev,
-+				"could not set default pins\n");
-+	}
-+
- 	ret = clk_prepare(uap->clk);
- 	if (ret)
- 		return ret;
-@@ -1844,7 +1873,6 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- {
- 	struct uart_amba_port *uap;
- 	struct vendor_data *vendor = id->data;
--	struct pinctrl *pinctrl;
- 	void __iomem *base;
- 	int i, ret;
- 
-@@ -1869,11 +1897,20 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- 		goto free;
- 	}
- 
--	pinctrl = devm_pinctrl_get_select_default(&dev->dev);
--	if (IS_ERR(pinctrl)) {
--		ret = PTR_ERR(pinctrl);
-+	uap->pinctrl = devm_pinctrl_get(&dev->dev);
-+	if (IS_ERR(uap->pinctrl)) {
-+		ret = PTR_ERR(uap->pinctrl);
- 		goto unmap;
- 	}
-+	uap->pins_default = pinctrl_lookup_state(uap->pinctrl,
-+						 PINCTRL_STATE_DEFAULT);
-+	if (IS_ERR(uap->pins_default))
-+		dev_err(&dev->dev, "could not get default pinstate\n");
-+
-+	uap->pins_sleep = pinctrl_lookup_state(uap->pinctrl,
-+					       PINCTRL_STATE_SLEEP);
-+	if (IS_ERR(uap->pins_sleep))
-+		dev_dbg(&dev->dev, "could not get sleep pinstate\n");
- 
- 	uap->clk = clk_get(&dev->dev, NULL);
- 	if (IS_ERR(uap->clk)) {
--- 
-1.7.9.2
 
