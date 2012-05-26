@@ -1,45 +1,47 @@
-From: Alessandro Rubini <rubini@gnudd.com>
-Subject: Re: [PATCH 6/6] serial: add amba-pl011-pci
-Date: Sat, 26 May 2012 11:27:12 +0200
-Message-ID: <20120526092712.GA4092@mail.gnudd.com>
-References: <20120526084328.GE24149@n2100.arm.linux.org.uk>
-  <cover.1337959750.git.rubini@gnudd.com>
- <b166cb0fce2a67b24da5808604553b4196258f45.1337959750.git.rubini@gnudd.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-arch-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20120526084328.GE24149@n2100.arm.linux.org.uk>
-Sender: linux-arch-owner@vger.kernel.org
-To: linux@arm.linux.org.uk
-Cc: linux-kernel@vger.kernel.org, giancarlo.asnaghi@st.com, alan@linux.intel.com, x86@kernel.org, gregkh@linuxfoundation.org, arnd@arndb.de, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-arch@vger.kernel.org
+From: Roland Stigge <stigge@antcom.de>
+Subject: [PATCH RFC] serial/8250: Adjusting FIFO parameters for LPC32xx
+Date: Sat, 26 May 2012 18:11:18 +0200
+Message-ID: <1338048678-23991-1-git-send-email-stigge@antcom.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: alan@linux.intel.com, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, arnd@arndb.de, kevin.wells@nxp.com, srinivas.bakki@nxp.com, linux-arm-kernel@lists.infradead.org
+Cc: Roland Stigge <stigge@antcom.de>
 List-Id: linux-serial@vger.kernel.org
 
->> +	default y if STA2X11
-> 
-> I don't think we want to encourage an ever growing list of platforms
-> here.  If we did this on ARM, this would be hellishly long.
+Hi,
 
-Ok.
+this is how the modified FIFO is handled in the repositories at
+git.lpclinux.com. Is there a better way for doing this (without ifdef)?  Looks
+like registering additional types (like PORT_16550A) isn't encouraged.  Maybe
+extending of_serial.c? The latter currently doesn't handle .fifosize and
+.tx_loadsz, though.
 
-> NAK.  We have interfaces in the AMBA code for dynamically allocating
-> AMBA devices now - please use them instead of coding your own.  They
-> avoid bugs.
+Any suggestions appreciated.
 
-Sure. Thanks for noting. Maybe it wasn't there when I coded this
-initially. Will do.
+Thanks in advance,
 
->> +	printk(KERN_INFO "%s %i\n", __func__, __LINE__);
-> 
-> This looks like debugging.
+Roland
+ 
+---
+ drivers/tty/serial/8250/8250.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Yes. After sending I noted this and another point. I apologize.
-Version 2 will be fixed in all respects.
-
-> This comes nowhere close to being sane with the driver model. [...]
-> In other words, save off the platform data pointer, unregister the struct
-> device, and then free the platform data (it will not be used at that point.)
-
-Thanks a lot for this and also the comments on APB/AHB in the other message.
-
-/alessandro
+--- linux-2.6.orig/drivers/tty/serial/8250/8250.c
++++ linux-2.6/drivers/tty/serial/8250/8250.c
+@@ -158,9 +158,16 @@ static const struct serial8250_config ua
+ 	},
+ 	[PORT_16550A] = {
+ 		.name		= "16550A",
++#ifdef CONFIG_ARCH_LPC32XX
++		.fifo_size	= 64,
++		.tx_loadsz	= 32,
++		.fcr		= UART_FCR_DMA_SELECT | UART_FCR_ENABLE_FIFO |
++				  UART_FCR_R_TRIG_00 | UART_FCR_T_TRIG_00,
++#else
+ 		.fifo_size	= 16,
+ 		.tx_loadsz	= 16,
+ 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
++#endif
+ 		.flags		= UART_CAP_FIFO,
+ 	},
+ 	[PORT_CIRRUS] = {
