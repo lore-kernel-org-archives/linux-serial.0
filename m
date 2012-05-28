@@ -1,63 +1,49 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+From: Roland Stigge <stigge@antcom.de>
 Subject: Re: [PATCH] serial/of-serial: Add 16654 chip to compatible string
-	list
-Date: Mon, 28 May 2012 16:03:11 +0100
-Message-ID: <20120528150311.GA28290@n2100.arm.linux.org.uk>
-References: <1338199134-23885-1-git-send-email-stigge@antcom.de> <20120528100338.GI24149@n2100.arm.linux.org.uk> <4FC35F97.2030400@antcom.de>
+ list
+Date: Mon, 28 May 2012 18:27:20 +0200
+Message-ID: <4FC3A768.3060208@antcom.de>
+References: <1338199134-23885-1-git-send-email-stigge@antcom.de> <20120528100338.GI24149@n2100.arm.linux.org.uk> <4FC35F97.2030400@antcom.de> <20120528150311.GA28290@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([78.32.30.218]:46555 "EHLO
-	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750802Ab2E1PD1 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 28 May 2012 11:03:27 -0400
-Content-Disposition: inline
-In-Reply-To: <4FC35F97.2030400@antcom.de>
+Received: from antcom.de ([188.40.178.216]:58575 "EHLO chuck.antcom.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751214Ab2E1Q1X (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 28 May 2012 12:27:23 -0400
+In-Reply-To: <20120528150311.GA28290@n2100.arm.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Roland Stigge <stigge@antcom.de>
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
 Cc: alan@linux.intel.com, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kevin.wells@nxp.com, srinivas.bakki@nxp.com, linux-arm-kernel@lists.infradead.org, arnd@arndb.de
 
-On Mon, May 28, 2012 at 01:20:55PM +0200, Roland Stigge wrote:
-> On 28/05/12 12:03, Russell King - ARM Linux wrote:
-> > Something which occurs to me.  Normally, the digit at the end indicates
-> > how many ports are integrated into the device (0=1port, 2=2port, 4=4port.)
-> > Are you sure there isn't a ST16650 which has the same characteristics?
-> > 
-> > We really should stick with naming these using the single port versions if
-> > at all possible.
+On 28/05/12 17:03, Russell King - ARM Linux wrote:
+>> Initially, with my RFC patch, there was an #ifdef for bigger FIFO in
+>> case of LPC32xx where we have a 16550A variant with 64 byte fifos.
 > 
-> Right.
-> 
-> This indicates to me that maybe this is not the right solution for my
-> original problem, anyway. :-)
-> 
-> Initially, with my RFC patch, there was an #ifdef for bigger FIFO in
-> case of LPC32xx where we have a 16550A variant with 64 byte fifos.
+> What are all the differences?  Is it just a larger FIFO?
 
-What are all the differences?  Is it just a larger FIFO?
+Yes, this is how it's summarized in the manual (LPC32xx SoC).
 
-> Looking at the 16x50 line:
+>> So maybe 16750 is the better choice for me, anyway. Already supported in
+>> of-serial. Works for now, but need more testing. Another hint is that
+>> 16750 is advertised as "IP core for Soc" which matches the case of LPC32xx.
 > 
-> 16550A  16 bytes FIFOs
-> 16650V2 32 bytes FIFOs
-> 16750   64 bytes FIFOs
+> 16750 also has automatic hardware flow control support, selectable through
+> bit 5 in the MCR register.  If your UART has that, then it's probably a
+> 16750 derivative rather than a 16550 or 16650 derivative.
 > 
-> (?)
-> 
-> So maybe 16750 is the better choice for me, anyway. Already supported in
-> of-serial. Works for now, but need more testing. Another hint is that
-> 16750 is advertised as "IP core for Soc" which matches the case of LPC32xx.
+> 16650s have an EFR register at offset 2, selectable by writing 0xBF into
+> the LCR register, which the 16750 doesn't have.  16650 also has automatic
+> hardware flow control, bit this is selected through a couple of bits in
+> the EFR.
 
-16750 also has automatic hardware flow control support, selectable through
-bit 5 in the MCR register.  If your UART has that, then it's probably a
-16750 derivative rather than a 16550 or 16650 derivative.
+The 4 LPC32xx's "Standard" UARTs have neither of those.
 
-16650s have an EFR register at offset 2, selectable by writing 0xBF into
-the LCR register, which the 16750 doesn't have.  16650 also has automatic
-hardware flow control, bit this is selected through a couple of bits in
-the EFR.
+Is it ok to use "ns16650", i.e. PORT_16650, or do I need to introduce a
+FIFO depth configuration?
 
-With that information, you should be able to track down which of these
-your UART is derived from.
+Thanks in advance,
+
+Roland
