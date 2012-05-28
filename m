@@ -1,39 +1,40 @@
-From: Alessandro Rubini <rubini@gnudd.com>
-Subject: [PATCH V2 4/6] serial: use the new linux/sizes.h
-Date: Mon, 28 May 2012 18:37:48 +0200
-Message-ID: <f9488ee124f2101fc284d7375e545e7d96c93f1c.1338222461.git.rubini@gnudd.com>
-References: <cover.1338222460.git.rubini@gnudd.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: struct tty_flip_buffer replacement in newer kernels
+Date: Mon, 28 May 2012 18:12:51 +0100
+Message-ID: <20120528181251.7d5e6d9b@pyramind.ukuu.org.uk>
+References: <CAMMxdh1Ak2LWeL=3qxTmvfR43E=wSHz5OmSj_irMubz0aK+TgA@mail.gmail.com>
+	<4FBB8742.7050504@fastmail.fm>
+	<20120522151033.33ef577a@pyramind.ukuu.org.uk>
+	<1337697508.72614.YahooMailNeo@web44911.mail.sp1.yahoo.com>
+	<20120522172700.02d7915d@pyramind.ukuu.org.uk>
+	<1337855090.9672.YahooMailNeo@web44908.mail.sp1.yahoo.com>
+	<1337855922.24203.YahooMailNeo@web44913.mail.sp1.yahoo.com>
+	<20120524142219.6606e57a@pyramind.ukuu.org.uk>
+	<1337871912.83081.YahooMailNeo@web44916.mail.sp1.yahoo.com>
+	<20120524170025.6ca0407f@pyramind.ukuu.org.uk>
+	<1338208815.57140.YahooMailNeo@web44914.mail.sp1.yahoo.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-arch-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <cover.1338222460.git.rubini@gnudd.com>
-Sender: linux-arch-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Giancarlo Asnaghi <giancarlo.asnaghi@st.com>, Alan Cox <alan@linux.intel.com>, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Arnd Bergmann <arnd@arndb.de>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-arch@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:34924 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751520Ab2E1RJw (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 28 May 2012 13:09:52 -0400
+In-Reply-To: <1338208815.57140.YahooMailNeo@web44914.mail.sp1.yahoo.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Dmitriy Alekseev <alexeev6@yahoo.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, =?utf-8?B?0K7RgNC40Lkg0JfQstC10YDQtdCy?= <yury.zverev@gmail.com>
 
-Signed-off-by: Alessandro Rubini <rubini@gnudd.com>
-Acked-by: Giancarlo Asnaghi <giancarlo.asnaghi@st.com>
-Cc: Russell King <linux@arm.linux.org.uk>
----
- drivers/tty/serial/amba-pl011.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+On Mon, 28 May 2012 05:40:15 -0700 (PDT)
+Dmitriy Alekseev <alexeev6@yahoo.com> wrote:
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 4ad721f..d394b93 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -53,9 +53,9 @@
- #include <linux/delay.h>
- #include <linux/types.h>
- #include <linux/pinctrl/consumer.h>
-+#include <linux/sizes.h>
- 
- #include <asm/io.h>
--#include <asm/sizes.h>
- 
- #define UART_NR			14
- 
--- 
-1.7.7.2
+> Hi,
+> 
+> My st16c554 chip is connected with cpu (at91rm9200) in 68 (Motorola) mode, and formally works as 68c554.
+> Is 8250 driver supports the 68 mode?
+> I thought the driver maintains whole 16c554 IC, or it means only mode 16 is supported?
+
+Not sure I understand the question
