@@ -1,32 +1,47 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH RFC] serial/8250: Adjusting FIFO parameters for LPC32xx
-Date: Sun, 27 May 2012 12:07:36 +0000
-Message-ID: <201205271207.36770.arnd@arndb.de>
-References: <1338048678-23991-1-git-send-email-stigge@antcom.de> <201205271023.16742.arnd@arndb.de> <4FC21214.7060804@antcom.de>
-Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
+From: Roland Stigge <stigge@antcom.de>
+Subject: [PATCH] serial/of-serial: Add 16654 chip to compatible string list
+Date: Mon, 28 May 2012 11:58:54 +0200
+Message-ID: <1338199134-23885-1-git-send-email-stigge@antcom.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.17.8]:61555 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751024Ab2E0MIZ (ORCPT
+Received: from mail.work-microwave.de ([62.245.205.51]:50669 "EHLO
+	work-microwave.de" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751938Ab2E1J7X (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 27 May 2012 08:08:25 -0400
-In-Reply-To: <4FC21214.7060804@antcom.de>
+	Mon, 28 May 2012 05:59:23 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Roland Stigge <stigge@antcom.de>
-Cc: alan@linux.intel.com, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kevin.wells@nxp.com, srinivas.bakki@nxp.com, linux-arm-kernel@lists.infradead.org
+To: alan@linux.intel.com, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kevin.wells@nxp.com, srinivas.bakki@nxp.com, linux-arm-kernel@lists.infradead.org, arnd@arndb.de
+Cc: Roland Stigge <stigge@antcom.de>
 
-On Sunday 27 May 2012, Roland Stigge wrote:
-> > Actually some of the other entries are wrong, too. The ns8250 entry should
-> > be i8250, and I guess the 16750 and 16850 were also not made by national.
-> 
-> But maybe we should keep the existing compatible strings because
-> existing boards/bootloaders are providing them already?
+The (ST)16654 chip was missing in the list of supported chips in of-serial.
+This patch adds the string "st16654" to it, and to the documentation.
 
-Right, we should only add to the list. Any entry that's already used potentially
-needs to stay in there as you say.
+Signed-off-by: Roland Stigge <stigge@antcom.de>
 
-	Arnd
+---
+Applies to v3.4
+
+ Documentation/devicetree/bindings/tty/serial/of-serial.txt |    1 +
+ drivers/tty/serial/of_serial.c                             |    1 +
+ 2 files changed, 2 insertions(+)
+
+--- linux-2.6.orig/Documentation/devicetree/bindings/tty/serial/of-serial.txt
++++ linux-2.6/Documentation/devicetree/bindings/tty/serial/of-serial.txt
+@@ -6,6 +6,7 @@ Required properties:
+ 	- "ns16450"
+ 	- "ns16550a"
+ 	- "ns16550"
++	- "st16654"
+ 	- "ns16750"
+ 	- "ns16850"
+ 	- "nvidia,tegra20-uart"
+--- linux-2.6.orig/drivers/tty/serial/of_serial.c
++++ linux-2.6/drivers/tty/serial/of_serial.c
+@@ -179,6 +179,7 @@ static struct of_device_id __devinitdata
+ 	{ .compatible = "ns16450",  .data = (void *)PORT_16450, },
+ 	{ .compatible = "ns16550a", .data = (void *)PORT_16550A, },
+ 	{ .compatible = "ns16550",  .data = (void *)PORT_16550, },
++	{ .compatible = "st16654",  .data = (void *)PORT_16654, },
+ 	{ .compatible = "ns16750",  .data = (void *)PORT_16750, },
+ 	{ .compatible = "ns16850",  .data = (void *)PORT_16850, },
+ 	{ .compatible = "nvidia,tegra20-uart", .data = (void *)PORT_TEGRA, },
