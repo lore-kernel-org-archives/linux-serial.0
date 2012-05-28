@@ -1,49 +1,68 @@
-From: Roland Stigge <stigge@antcom.de>
-Subject: Re: [PATCH] serial/of-serial: Add 16654 chip to compatible string
- list
-Date: Mon, 28 May 2012 13:20:55 +0200
-Message-ID: <4FC35F97.2030400@antcom.de>
-References: <1338199134-23885-1-git-send-email-stigge@antcom.de> <20120528100338.GI24149@n2100.arm.linux.org.uk>
+From: Dmitriy Alekseev <alexeev6@yahoo.com>
+Subject: Fw: struct tty_flip_buffer replacement in newer kernels
+Date: Mon, 28 May 2012 05:52:55 -0700 (PDT)
+Message-ID: <1338209575.52083.YahooMailNeo@web44915.mail.sp1.yahoo.com>
+References: <CAMMxdh1Ak2LWeL=3qxTmvfR43E=wSHz5OmSj_irMubz0aK+TgA@mail.gmail.com> <4FBB8742.7050504@fastmail.fm> <20120522151033.33ef577a@pyramind.ukuu.org.uk> <1337697508.72614.YahooMailNeo@web44911.mail.sp1.yahoo.com> <20120522172700.02d7915d@pyramind.ukuu.org.uk> <1337855090.9672.YahooMailNeo@web44908.mail.sp1.yahoo.com> <1337855922.24203.YahooMailNeo@web44913.mail.sp1.yahoo.com> <20120524142219.6606e57a@pyramind.ukuu.org.uk> <1337871912.83081.YahooMailNeo@web44916.mail.sp1.yahoo.com> <20120524170025.6ca0407f@pyramind.ukuu.org.uk> <1338208815.57140.YahooMailNeo@web44914.mail.sp1.yahoo.com>
+Reply-To: Dmitriy Alekseev <alexeev6@yahoo.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20120528100338.GI24149@n2100.arm.linux.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: alan@linux.intel.com, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kevin.wells@nxp.com, srinivas.bakki@nxp.com, linux-arm-kernel@lists.infradead.org, arnd@arndb.de
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from nm19-vm0.bullet.mail.sp2.yahoo.com ([98.139.91.216]:21144 "HELO
+	nm19-vm0.bullet.mail.sp2.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1753901Ab2E1Mwz convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 28 May 2012 08:52:55 -0400
+In-Reply-To: <1338208815.57140.YahooMailNeo@web44914.mail.sp1.yahoo.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Cc: =?utf-8?B?0K7RgNC40Lkg0JfQstC10YDQtdCy?= <yury.zverev@gmail.com>
 
-On 28/05/12 12:03, Russell King - ARM Linux wrote:
-> Something which occurs to me.  Normally, the digit at the end indicates
-> how many ports are integrated into the device (0=1port, 2=2port, 4=4port.)
-> Are you sure there isn't a ST16650 which has the same characteristics?
-> 
-> We really should stick with naming these using the single port versions if
-> at all possible.
+Hi,
 
-Right.
+My st16c554 chip is connected with cpu (at91rm9200) in 68 (Motorola) mo=
+de, and formally works as 68c554.
+Is 8250 driver supports the 68 mode?
+I thought the driver maintains whole 16c554 IC, or it means only mode 1=
+6 is supported?
 
-This indicates to me that maybe this is not the right solution for my
-original problem, anyway. :-)
+Thanks.
 
-Initially, with my RFC patch, there was an #ifdef for bigger FIFO in
-case of LPC32xx where we have a 16550A variant with 64 byte fifos.
+Best regards,
+Dmitriy Alekseev
 
-Looking at the 16x50 line:
+________________________________
 
-16550A  16 bytes FIFOs
-16650V2 32 bytes FIFOs
-16750   64 bytes FIFOs
+=46rom: Alan Cox <alan@lxorguk.ukuu.org.uk>
+To: Dmitriy Alekseev <alexeev6@yahoo.com>=20
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>=20
+Sent: Thursday, May 24, 2012 8:00 PM
+Subject: Re: struct tty_flip_buffer replacement in newer kernels
 
-(?)
+On Thu, 24 May 2012 08:05:12 -0700 (PDT)
+Dmitriy Alekseev <alexeev6@yahoo.com> wrote:
 
-So maybe 16750 is the better choice for me, anyway. Already supported in
-of-serial. Works for now, but need more testing. Another hint is that
-16750 is advertised as "IP core for Soc" which matches the case of LPC32xx.
+> The link I gave is original source, which I afterwards changed accord=
+ing to my parameters - clock and processor memory map.
+>=20
+> You right about offset 0x8, this is=C2=A0offset between ports in my 6=
+8 mode, I corrected, but it doesn't give any result.
 
-Maybe NXP can comment on this?
+You may have to stick some traces into drivers/tty/8250.c at this point
+and see what is going on. It's clearly trying to do the set up right, a=
+nd
+created the ports but didn't believe the hardware. That usually implies
+that a parameter is wrong somewhere.
 
-Thanks in advance,
-
-Roland
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo
+info at=C2=A0 http://vger.kernel.org/majordomo-info.html
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
