@@ -1,40 +1,55 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: struct tty_flip_buffer replacement in newer kernels
-Date: Mon, 28 May 2012 18:12:51 +0100
-Message-ID: <20120528181251.7d5e6d9b@pyramind.ukuu.org.uk>
-References: <CAMMxdh1Ak2LWeL=3qxTmvfR43E=wSHz5OmSj_irMubz0aK+TgA@mail.gmail.com>
-	<4FBB8742.7050504@fastmail.fm>
-	<20120522151033.33ef577a@pyramind.ukuu.org.uk>
-	<1337697508.72614.YahooMailNeo@web44911.mail.sp1.yahoo.com>
-	<20120522172700.02d7915d@pyramind.ukuu.org.uk>
-	<1337855090.9672.YahooMailNeo@web44908.mail.sp1.yahoo.com>
-	<1337855922.24203.YahooMailNeo@web44913.mail.sp1.yahoo.com>
-	<20120524142219.6606e57a@pyramind.ukuu.org.uk>
-	<1337871912.83081.YahooMailNeo@web44916.mail.sp1.yahoo.com>
-	<20120524170025.6ca0407f@pyramind.ukuu.org.uk>
-	<1338208815.57140.YahooMailNeo@web44914.mail.sp1.yahoo.com>
+From: Roland Stigge <stigge@antcom.de>
+Subject: Re: [PATCH] serial/of-serial: Add 16654 chip to compatible string
+ list
+Date: Mon, 28 May 2012 19:48:57 +0200
+Message-ID: <4FC3BA89.4060804@antcom.de>
+References: <1338199134-23885-1-git-send-email-stigge@antcom.de> <20120528100338.GI24149@n2100.arm.linux.org.uk> <4FC35F97.2030400@antcom.de> <20120528150311.GA28290@n2100.arm.linux.org.uk> <4FC3A768.3060208@antcom.de> <20120528163151.GB28290@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:34924 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751520Ab2E1RJw (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 28 May 2012 13:09:52 -0400
-In-Reply-To: <1338208815.57140.YahooMailNeo@web44914.mail.sp1.yahoo.com>
+Received: from antcom.de ([188.40.178.216]:44772 "EHLO chuck.antcom.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753396Ab2E1RtA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 28 May 2012 13:49:00 -0400
+In-Reply-To: <20120528163151.GB28290@n2100.arm.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Dmitriy Alekseev <alexeev6@yahoo.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, =?utf-8?B?0K7RgNC40Lkg0JfQstC10YDQtdCy?= <yury.zverev@gmail.com>
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: alan@linux.intel.com, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kevin.wells@nxp.com, srinivas.bakki@nxp.com, linux-arm-kernel@lists.infradead.org, arnd@arndb.de
 
-On Mon, 28 May 2012 05:40:15 -0700 (PDT)
-Dmitriy Alekseev <alexeev6@yahoo.com> wrote:
-
-> Hi,
+On 28/05/12 18:31, Russell King - ARM Linux wrote:
+>>>> So maybe 16750 is the better choice for me, anyway. Already supported in
+>>>> of-serial. Works for now, but need more testing. Another hint is that
+>>>> 16750 is advertised as "IP core for Soc" which matches the case of LPC32xx.
+>>>
+>>> 16750 also has automatic hardware flow control support, selectable through
+>>> bit 5 in the MCR register.  If your UART has that, then it's probably a
+>>> 16750 derivative rather than a 16550 or 16650 derivative.
+>>>
+>>> 16650s have an EFR register at offset 2, selectable by writing 0xBF into
+>>> the LCR register, which the 16750 doesn't have.  16650 also has automatic
+>>> hardware flow control, bit this is selected through a couple of bits in
+>>> the EFR.
+>>
+>> The 4 LPC32xx's "Standard" UARTs have neither of those.
+>>
+>> Is it ok to use "ns16650", i.e. PORT_16650, or do I need to introduce a
+>> FIFO depth configuration?
 > 
-> My st16c554 chip is connected with cpu (at91rm9200) in 68 (Motorola) mode, and formally works as 68c554.
-> Is 8250 driver supports the 68 mode?
-> I thought the driver maintains whole 16c554 IC, or it means only mode 16 is supported?
+> I think you need a new type, because as I said above, 16650s have that
+> additional EFR, and we will attempt to access that register which
+> isn't present in yours.
 
-Not sure I understand the question
+I actually meant 16750 instead of 16650, sorry, but this basically means
+the same - I would refer to extensions that are actually not there...
+
+Now, introducing a new type, can I add to 8250.c's uart_config[] by
+introducing a new type (no. 22) after PORT_XR17D15X? Unfortunately,
+there are the "ARM specific type numbers" after current PORT_MAX_8250
+(21), but those are not listed in 8250.c's uart_config[]. Or how am I
+supposed to add a new type?
+
+Thanks in advance,
+
+Roland
