@@ -1,36 +1,31 @@
-From: Ubdfu <ubdfu@student.kit.edu>
-Subject: Using the MAX3107
-Date: Tue, 29 May 2012 17:02:41 +0200
-Message-ID: <4FC4E511.7010501@student.kit.edu>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 1/2] serial/8250: Add LPC3220 standard UART type
+Date: Tue, 29 May 2012 15:39:44 +0000
+Message-ID: <201205291539.44705.arnd@arndb.de>
+References: <1338282570-19799-1-git-send-email-stigge@antcom.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: Text/Plain;
+  charset="iso-8859-15"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout.scc.kit.edu ([129.13.185.202]:35896 "EHLO
-	mailout.scc.kit.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751989Ab2E2PSE (ORCPT
+Received: from moutng.kundenserver.de ([212.227.126.187]:62691 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750860Ab2E2PlR (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 May 2012 11:18:04 -0400
+	Tue, 29 May 2012 11:41:17 -0400
+In-Reply-To: <1338282570-19799-1-git-send-email-stigge@antcom.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Roland Stigge <stigge@antcom.de>
+Cc: alan@linux.intel.com, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kevin.wells@nxp.com, srinivas.bakki@nxp.com, linux-arm-kernel@lists.infradead.org, linux@arm.linux.org.uk
 
-Hello,
+On Tuesday 29 May 2012, Roland Stigge wrote:
+> 
+> LPC32xx has "Standard" UARTs that are actually 16550A compatible but have
+> bigger FIFOs. Since the already supported 16X50 line still doesn't match here,
+> we agreed on adding a new type.
+> 
+> Signed-off-by: Roland Stigge <stigge@antcom.de>
+> 
 
-Please excuse my and be aware that I'm quite new to kernel hacking :-)
-
-I'm currently trying to enable the RS485 support on the MAX3107 and 
-continuously getting the error:
-"max3107 spi2.0: interrup isn't serviced normally!"
-Assuming it means interrupt it nevertheless does not help me to find the 
-cause of the problem.
-
-Added some patches form:
-http://marc.info/?l=linux-serial&w=2&r=1&s=max3107&q=b
-
-And changed the baudrate to the appropriate, set bit for rs458 mode.
-
-Has anyone tried working with the MAX3107?
-
-Thanks in advance
-Marcel
+Acked-by: Arnd Bergmann <arnd@arndb.de>
