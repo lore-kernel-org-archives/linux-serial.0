@@ -1,52 +1,49 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: Using the MAX3107
-Date: Tue, 29 May 2012 16:55:43 +0100
-Message-ID: <20120529165543.4224a22a@pyramind.ukuu.org.uk>
-References: <4FC4E511.7010501@student.kit.edu>
+From: Kyoungil Kim <ki0351.kim@samsung.com>
+Subject: [PATCH] serial: samsung: protect NULL dereference of clock name
+Date: Wed, 30 May 2012 17:29:55 +0900
+Message-ID: <001401cd3e3e$644fd3a0$2cef7ae0$%kim@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:36040 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751902Ab2E2Pw4 (ORCPT
+Received: from mailout1.samsung.com ([203.254.224.24]:40184 "EHLO
+	mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757153Ab2E3I35 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 May 2012 11:52:56 -0400
-In-Reply-To: <4FC4E511.7010501@student.kit.edu>
+	Wed, 30 May 2012 04:29:57 -0400
+Content-language: ko
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ubdfu <ubdfu@student.kit.edu>
-Cc: linux-serial@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: 'Kukjin Kim' <kgene.kim@samsung.com>, 'Alan Cox' <alan@linux.intel.com>, 'Kyoungil Kim' <ki0351.kim@samsung.com>, 'KeyYoung Park' <keyyoung.park@samsung.com>, 'Huisung Kang' <hs1218.kang@samsung.com>
 
-On Tue, 29 May 2012 17:02:41 +0200
-Ubdfu <ubdfu@student.kit.edu> wrote:
+From: KeyYoung Park <keyyoung.park@samsung.com>
 
-> Hello,
-> 
-> Please excuse my and be aware that I'm quite new to kernel hacking :-)
-> 
-> I'm currently trying to enable the RS485 support on the MAX3107 and 
-> continuously getting the error:
-> "max3107 spi2.0: interrup isn't serviced normally!"
-> Assuming it means interrupt it nevertheless does not help me to find the 
-> cause of the problem.
-> 
-> Added some patches form:
-> http://marc.info/?l=linux-serial&w=2&r=1&s=max3107&q=b
-> 
-> And changed the baudrate to the appropriate, set bit for rs458 mode.
-> 
-> Has anyone tried working with the MAX3107?
+When priting the serial clock source, if clock source name is null,
+kernel reference NULL point.
 
-Not in rs485 mode and not for a while. The base code in drivers/tty/serial
-should work for RS232 mode at least.
+Signed-off-by: KeyYoung Park <keyyoung.park@samsung.com>
+Signed-off-by: Huisung Kang <hs1218.kang@samsung.com>
+Signed-off-by: Kyoungil Kim <ki0351.kim@samsung.com>
+---
+ drivers/tty/serial/samsung.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
-The trigger you are hitting implies that it got an event during
-suspend/freezing or somehow tried to queue work when work was already
-queued.
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index ea76b40..77484e0 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -1160,7 +1160,8 @@ static ssize_t s3c24xx_serial_show_clksrc(struct device *dev,
+ 	struct uart_port *port = s3c24xx_dev_to_port(dev);
+ 	struct s3c24xx_uart_port *ourport = to_ourport(port);
+ 
+-	return snprintf(buf, PAGE_SIZE, "* %s\n", ourport->baudclk->name);
++	return snprintf(buf, PAGE_SIZE, "* %s\n",
++			ourport->baudclk->name ?: "(null)");
+ }
+ 
+ static DEVICE_ATTR(clock_source, S_IRUGO, s3c24xx_serial_show_clksrc, NULL);
+-- 
+1.7.1
 
-The current code doesn't cope with the device being on a shared interrupt
-line, so my first guess would be that might be the problem ?
-
-Alan
 
