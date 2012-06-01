@@ -1,70 +1,84 @@
-From: Tomoya MORINAGA <tomoya.rohm@gmail.com>
-Subject: Re: [RFC PATCH] pch_uart: Add eg20t_port lock field, avoid recursive spinlocks
-Date: Fri, 1 Jun 2012 17:30:25 +0900
-Message-ID: <CANKRQnhZErpvcsRW3ukNzY0_zv4x=5OzQ-sr+aeuxL63=tQ=4A@mail.gmail.com>
-References: <8854635ac5471f8671b93c65e3663eb1cb204c9d.1338454156.git.dvhart@linux.intel.com>
+From: Darren Hart <dvhart@linux.intel.com>
+Subject: Re: [RFC PATCH] pch_uart: Add eg20t_port lock field, avoid recursive
+ spinlocks
+Date: Fri, 01 Jun 2012 11:36:29 -0700
+Message-ID: <4FC90BAD.3080606@linux.intel.com>
+References: <8854635ac5471f8671b93c65e3663eb1cb204c9d.1338454156.git.dvhart@linux.intel.com> <CANKRQnhZErpvcsRW3ukNzY0_zv4x=5OzQ-sr+aeuxL63=tQ=4A@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:59889 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758929Ab2FAIaZ convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 1 Jun 2012 04:30:25 -0400
-In-Reply-To: <8854635ac5471f8671b93c65e3663eb1cb204c9d.1338454156.git.dvhart@linux.intel.com>
+Received: from mga11.intel.com ([192.55.52.93]:61689 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932756Ab2FAShd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 1 Jun 2012 14:37:33 -0400
+In-Reply-To: <CANKRQnhZErpvcsRW3ukNzY0_zv4x=5OzQ-sr+aeuxL63=tQ=4A@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Darren Hart <dvhart@linux.intel.com>
+To: Tomoya MORINAGA <tomoya.rohm@gmail.com>
 Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Feng Tang <feng.tang@intel.com>, Alexander Stein <alexander.stein@systec-electronic.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
 
-On Thu, May 31, 2012 at 5:54 PM, Darren Hart <dvhart@linux.intel.com> w=
-rote:
-> @@ -1376,7 +1379,8 @@ static void pch_uart_set_termios(struct uart_po=
-rt *port,
->
-> =A0 =A0 =A0 =A0baud =3D uart_get_baud_rate(port, termios, old, 0, por=
-t->uartclk / 16);
->
-> - =A0 =A0 =A0 spin_lock_irqsave(&port->lock, flags);
-> + =A0 =A0 =A0 spin_lock_irqsave(&priv->lock, flags);
-> + =A0 =A0 =A0 spin_lock(&port->lock);
->
-> =A0 =A0 =A0 =A0uart_update_timeout(port, termios->c_cflag, baud);
-> =A0 =A0 =A0 =A0rtn =3D pch_uart_hal_set_line(priv, baud, parity, bits=
-, stb);
-> @@ -1389,7 +1393,8 @@ static void pch_uart_set_termios(struct uart_po=
-rt *port,
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0tty_termios_encode_baud_rate(termios, =
-baud, baud);
->
-> =A0out:
-> - =A0 =A0 =A0 spin_unlock_irqrestore(&port->lock, flags);
-> + =A0 =A0 =A0 spin_unlock(&port->lock);
-> + =A0 =A0 =A0 spin_unlock_irqrestore(&priv->lock, flags);
-> =A0}
-
-Are both port->lock and priv->lock really necessary ?
 
 
-> @@ -1572,7 +1578,9 @@ pch_console_write(struct console *co, const cha=
-r *s, unsigned int count)
->
-> =A0 =A0 =A0 =A0if (locked)
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0spin_unlock(&priv->port.lock);
-> + =A0 =A0 =A0 spin_unlock(&priv->lock);
-> =A0 =A0 =A0 =A0local_irq_restore(flags);
-> +
-> =A0}
+On 06/01/2012 01:30 AM, Tomoya MORINAGA wrote:
+> On Thu, May 31, 2012 at 5:54 PM, Darren Hart <dvhart@linux.intel.com> wrote:
+>> @@ -1376,7 +1379,8 @@ static void pch_uart_set_termios(struct uart_port *port,
+>>
+>>        baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk / 16);
+>>
+>> -       spin_lock_irqsave(&port->lock, flags);
+>> +       spin_lock_irqsave(&priv->lock, flags);
+>> +       spin_lock(&port->lock);
+>>
+>>        uart_update_timeout(port, termios->c_cflag, baud);
+>>        rtn = pch_uart_hal_set_line(priv, baud, parity, bits, stb);
+>> @@ -1389,7 +1393,8 @@ static void pch_uart_set_termios(struct uart_port *port,
+>>                tty_termios_encode_baud_rate(termios, baud, baud);
+>>
+>>  out:
+>> -       spin_unlock_irqrestore(&port->lock, flags);
+>> +       spin_unlock(&port->lock);
+>> +       spin_unlock_irqrestore(&priv->lock, flags);
+>>  }
+> 
+> Are both port->lock and priv->lock really necessary ?
 
-Looks spare blank line.
+The priv lock protects the pch_uart_hal* calls and the io access.
 
-thanks.
---=20
-ROHM Co., Ltd.
-tomoya
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+The port lock protects the uart_update_timeout call. I'm assuming the
+8250.c driver is correct in holding the port lock before making this
+call and making other modifcations to the port struct.
+
+So yes, I believe both are required. The port->lock was used as the lock
+to protect the private data in the interrupt handler,
+pch_uart_interrupt. If we could avoid holding that lock across the
+entire function, limiting it to just around the pch_uart_hal calls
+(perhaps by adding it to the hal calls and adding lockless __pch_uart*
+calls) we could avoid the recursive lock that occurs with handle_rx. I
+still think a priv-lock is a good idea though, even if just to clarify
+what is being protected.
+
+Thoughts?
+
+> 
+> 
+>> @@ -1572,7 +1578,9 @@ pch_console_write(struct console *co, const char *s, unsigned int count)
+>>
+>>        if (locked)
+>>                spin_unlock(&priv->port.lock);
+>> +       spin_unlock(&priv->lock);
+>>        local_irq_restore(flags);
+>> +
+>>  }
+> 
+> Looks spare blank line.
+
+Thanks, will fix for V2 after this discussion wraps up.
+
+> 
+> thanks.
+
+-- 
+Darren Hart
+Intel Open Source Technology Center
+Yocto Project - Linux Kernel
