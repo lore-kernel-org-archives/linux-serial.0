@@ -1,84 +1,59 @@
-From: Darren Hart <dvhart@linux.intel.com>
-Subject: Re: [RFC PATCH] pch_uart: Add eg20t_port lock field, avoid recursive
- spinlocks
-Date: Fri, 01 Jun 2012 11:36:29 -0700
-Message-ID: <4FC90BAD.3080606@linux.intel.com>
-References: <8854635ac5471f8671b93c65e3663eb1cb204c9d.1338454156.git.dvhart@linux.intel.com> <CANKRQnhZErpvcsRW3ukNzY0_zv4x=5OzQ-sr+aeuxL63=tQ=4A@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+From: Roland Stigge <stigge@antcom.de>
+Subject: [PATCH RESEND 1/2] serial/8250: Add LPC3220 standard UART type
+Date: Mon,  4 Jun 2012 21:02:54 +0200
+Message-ID: <1338836575-21738-1-git-send-email-stigge@antcom.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:61689 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932756Ab2FAShd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 1 Jun 2012 14:37:33 -0400
-In-Reply-To: <CANKRQnhZErpvcsRW3ukNzY0_zv4x=5OzQ-sr+aeuxL63=tQ=4A@mail.gmail.com>
+Received: from mail.work-microwave.de ([62.245.205.51]:30192 "EHLO
+	work-microwave.de" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1755546Ab2FDTDb (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 4 Jun 2012 15:03:31 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tomoya MORINAGA <tomoya.rohm@gmail.com>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Feng Tang <feng.tang@intel.com>, Alexander Stein <alexander.stein@systec-electronic.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+To: alan@linux.intel.com, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kevin.wells@nxp.com, srinivas.bakki@nxp.com, linux-arm-kernel@lists.infradead.org, arnd@arndb.de, linux@arm.linux.org.uk
+Cc: Roland Stigge <stigge@antcom.de>
 
+LPC32xx has "Standard" UARTs that are actually 16550A compatible but have
+bigger FIFOs. Since the already supported 16X50 line still doesn't match here,
+we agreed on adding a new type.
 
+Signed-off-by: Roland Stigge <stigge@antcom.de>
+Acked-by: Alan Cox <alan@linux.intel.com>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
 
-On 06/01/2012 01:30 AM, Tomoya MORINAGA wrote:
-> On Thu, May 31, 2012 at 5:54 PM, Darren Hart <dvhart@linux.intel.com> wrote:
->> @@ -1376,7 +1379,8 @@ static void pch_uart_set_termios(struct uart_port *port,
->>
->>        baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk / 16);
->>
->> -       spin_lock_irqsave(&port->lock, flags);
->> +       spin_lock_irqsave(&priv->lock, flags);
->> +       spin_lock(&port->lock);
->>
->>        uart_update_timeout(port, termios->c_cflag, baud);
->>        rtn = pch_uart_hal_set_line(priv, baud, parity, bits, stb);
->> @@ -1389,7 +1393,8 @@ static void pch_uart_set_termios(struct uart_port *port,
->>                tty_termios_encode_baud_rate(termios, baud, baud);
->>
->>  out:
->> -       spin_unlock_irqrestore(&port->lock, flags);
->> +       spin_unlock(&port->lock);
->> +       spin_unlock_irqrestore(&priv->lock, flags);
->>  }
-> 
-> Are both port->lock and priv->lock really necessary ?
+---
+Applies to v3.5-rc1
 
-The priv lock protects the pch_uart_hal* calls and the io access.
+ drivers/tty/serial/8250/8250.c |    8 ++++++++
+ include/linux/serial_core.h    |    3 ++-
+ 2 files changed, 10 insertions(+), 1 deletion(-)
 
-The port lock protects the uart_update_timeout call. I'm assuming the
-8250.c driver is correct in holding the port lock before making this
-call and making other modifcations to the port struct.
-
-So yes, I believe both are required. The port->lock was used as the lock
-to protect the private data in the interrupt handler,
-pch_uart_interrupt. If we could avoid holding that lock across the
-entire function, limiting it to just around the pch_uart_hal calls
-(perhaps by adding it to the hal calls and adding lockless __pch_uart*
-calls) we could avoid the recursive lock that occurs with handle_rx. I
-still think a priv-lock is a good idea though, even if just to clarify
-what is being protected.
-
-Thoughts?
-
-> 
-> 
->> @@ -1572,7 +1578,9 @@ pch_console_write(struct console *co, const char *s, unsigned int count)
->>
->>        if (locked)
->>                spin_unlock(&priv->port.lock);
->> +       spin_unlock(&priv->lock);
->>        local_irq_restore(flags);
->> +
->>  }
-> 
-> Looks spare blank line.
-
-Thanks, will fix for V2 after this discussion wraps up.
-
-> 
-> thanks.
-
--- 
-Darren Hart
-Intel Open Source Technology Center
-Yocto Project - Linux Kernel
+--- linux-2.6.orig/drivers/tty/serial/8250/8250.c
++++ linux-2.6/drivers/tty/serial/8250/8250.c
+@@ -282,6 +282,14 @@ static const struct serial8250_config ua
+ 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
+ 		.flags		= UART_CAP_FIFO | UART_CAP_AFE | UART_CAP_EFR,
+ 	},
++	[PORT_LPC3220] = {
++		.name		= "LPC3220",
++		.fifo_size	= 64,
++		.tx_loadsz	= 32,
++		.fcr		= UART_FCR_DMA_SELECT | UART_FCR_ENABLE_FIFO |
++				  UART_FCR_R_TRIG_00 | UART_FCR_T_TRIG_00,
++		.flags		= UART_CAP_FIFO,
++	},
+ };
+ 
+ /* Uart divisor latch read */
+--- linux-2.6.orig/include/linux/serial_core.h
++++ linux-2.6/include/linux/serial_core.h
+@@ -47,7 +47,8 @@
+ #define PORT_U6_16550A	19	/* ST-Ericsson U6xxx internal UART */
+ #define PORT_TEGRA	20	/* NVIDIA Tegra internal UART */
+ #define PORT_XR17D15X	21	/* Exar XR17D15x UART */
+-#define PORT_MAX_8250	21	/* max port ID */
++#define PORT_LPC3220	22	/* NXP LPC32xx SoC "Standard" UART */
++#define PORT_MAX_8250	22	/* max port ID */
+ 
+ /*
+  * ARM specific type numbers.  These are not currently guaranteed
