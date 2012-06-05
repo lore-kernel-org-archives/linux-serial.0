@@ -1,41 +1,96 @@
-From: Randy Dunlap <rdunlap@xenotime.net>
-Subject: serial: fix serial_txx9.c build warning/typo
-Date: Tue, 05 Jun 2012 09:46:07 -0700
-Message-ID: <4FCE37CF.90902@xenotime.net>
+From: Darren Hart <dvhart@linux.intel.com>
+Subject: Re: [RFC PATCH] pch_uart: Add eg20t_port lock field, avoid recursive
+ spinlocks
+Date: Tue, 05 Jun 2012 15:07:03 -0700
+Message-ID: <4FCE8307.3050901@linux.intel.com>
+References: <8854635ac5471f8671b93c65e3663eb1cb204c9d.1338454156.git.dvhart@linux.intel.com> <CANKRQnhZErpvcsRW3ukNzY0_zv4x=5OzQ-sr+aeuxL63=tQ=4A@mail.gmail.com> <4FC90BAD.3080606@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from oproxy8-pub.bluehost.com ([69.89.22.20]:60422 "HELO
-	oproxy8-pub.bluehost.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1753140Ab2FEQqP (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Jun 2012 12:46:15 -0400
+Received: from mga14.intel.com ([143.182.124.37]:33708 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751117Ab2FEWIN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 5 Jun 2012 18:08:13 -0400
+In-Reply-To: <4FC90BAD.3080606@linux.intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
-Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Geert Uytterhoeven <geert@linux-m68k.org>
+To: Tomoya MORINAGA <tomoya.rohm@gmail.com>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Feng Tang <feng.tang@intel.com>, Alexander Stein <alexander.stein@systec-electronic.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@xenotime.net>
 
-Fix kconfig symbol test to use "defined":
 
-drivers/tty/serial/serial_txx9.c: warning: "CONFIG_CONSOLE_POLL" is not defined [-Wundef]
+On 06/01/2012 11:36 AM, Darren Hart wrote:
+> 
+> 
+> On 06/01/2012 01:30 AM, Tomoya MORINAGA wrote:
+>> On Thu, May 31, 2012 at 5:54 PM, Darren Hart <dvhart@linux.intel.com> wrote:
+>>> @@ -1376,7 +1379,8 @@ static void pch_uart_set_termios(struct uart_port *port,
+>>>
+>>>        baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk / 16);
+>>>
+>>> -       spin_lock_irqsave(&port->lock, flags);
+>>> +       spin_lock_irqsave(&priv->lock, flags);
+>>> +       spin_lock(&port->lock);
+>>>
+>>>        uart_update_timeout(port, termios->c_cflag, baud);
+>>>        rtn = pch_uart_hal_set_line(priv, baud, parity, bits, stb);
+>>> @@ -1389,7 +1393,8 @@ static void pch_uart_set_termios(struct uart_port *port,
+>>>                tty_termios_encode_baud_rate(termios, baud, baud);
+>>>
+>>>  out:
+>>> -       spin_unlock_irqrestore(&port->lock, flags);
+>>> +       spin_unlock(&port->lock);
+>>> +       spin_unlock_irqrestore(&priv->lock, flags);
+>>>  }
+>>
+>> Are both port->lock and priv->lock really necessary ?
+> 
+> The priv lock protects the pch_uart_hal* calls and the io access.
+> 
+> The port lock protects the uart_update_timeout call. I'm assuming the
+> 8250.c driver is correct in holding the port lock before making this
+> call and making other modifcations to the port struct.
+> 
+> So yes, I believe both are required. The port->lock was used as the lock
+> to protect the private data in the interrupt handler,
+> pch_uart_interrupt. If we could avoid holding that lock across the
+> entire function, limiting it to just around the pch_uart_hal calls
+> (perhaps by adding it to the hal calls and adding lockless __pch_uart*
+> calls) we could avoid the recursive lock that occurs with handle_rx. I
+> still think a priv-lock is a good idea though, even if just to clarify
+> what is being protected.
+> 
+> Thoughts?
 
-Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Randy Dunlap <rdunlap@xenotime.net>
----
- drivers/tty/serial/serial_txx9.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Are there still concerns about the additional lock? I'll resend V2
+tomorrow with the single whitespace fix if I don't hear anything back today.
 
---- lnx-35-rc1.orig/drivers/tty/serial/serial_txx9.c
-+++ lnx-35-rc1/drivers/tty/serial/serial_txx9.c
-@@ -466,7 +466,7 @@ static void serial_txx9_break_ctl(struct
- 	spin_unlock_irqrestore(&up->port.lock, flags);
- }
- 
--#if defined(CONFIG_SERIAL_TXX9_CONSOLE) || (CONFIG_CONSOLE_POLL)
-+#if defined(CONFIG_SERIAL_TXX9_CONSOLE) || defined(CONFIG_CONSOLE_POLL)
- /*
-  *	Wait for transmitter & holding register to empty
-  */
+Thanks,
+
+Darren
+
+> 
+>>
+>>
+>>> @@ -1572,7 +1578,9 @@ pch_console_write(struct console *co, const char *s, unsigned int count)
+>>>
+>>>        if (locked)
+>>>                spin_unlock(&priv->port.lock);
+>>> +       spin_unlock(&priv->lock);
+>>>        local_irq_restore(flags);
+>>> +
+>>>  }
+>>
+>> Looks spare blank line.
+> 
+> Thanks, will fix for V2 after this discussion wraps up.
+> 
+>>
+>> thanks.
+> 
+
+-- 
+Darren Hart
+Intel Open Source Technology Center
+Yocto Project - Linux Kernel
