@@ -1,37 +1,38 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH V2 0/6] Bridging PCI to amba
-Date: Sun, 10 Jun 2012 18:36:17 +0200
-Message-ID: <CACRpkdbPtR5MDjd1YZ5GhOdp61HQe2PJusudNPOhDQHUAt1kJA@mail.gmail.com>
-References: <cover.1338220457.git.rubini@gnudd.com>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: Re: [PATCH] serial/imx: enable the clock when we really use the uart port
+Date: Sun, 10 Jun 2012 14:31:26 -0300
+Message-ID: <CAOMZO5DtC3yK7RgtbjefepQXk2jE+tODmivw+CC_hd5TCCe-oA@mail.gmail.com>
+References: <1335946770-17120-1-git-send-email-b32955@freescale.com>
+	<20120502081902.GT4141@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <cover.1338220457.git.rubini@gnudd.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: linux-arm-kernel-bounces@lists.infradead.org
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Alessandro Rubini <rubini@gnudd.com>
-Cc: linux-arch@vger.kernel.org, Giancarlo Asnaghi <giancarlo.asnaghi@st.com>, Russell King <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, x86@kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-bk0-f46.google.com ([209.85.214.46]:49687 "EHLO
+	mail-bk0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753106Ab2FJRb1 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 10 Jun 2012 13:31:27 -0400
+Received: by bkcji2 with SMTP id ji2so2946288bkc.19
+        for <linux-serial@vger.kernel.org>; Sun, 10 Jun 2012 10:31:26 -0700 (PDT)
+In-Reply-To: <20120502081902.GT4141@pengutronix.de>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Huang Shijie <b32955@freescale.com>, gregkh@linuxfoundation.org, shawn.guo@linaro.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, alan@linux.intel.com
 
-On Mon, May 28, 2012 at 6:36 PM, Alessandro Rubini <rubini@gnudd.com> wrote:
+Huang,
 
-> V2: accepted comments I got on V1; rewritten the driver to be generic;
-> =A0 =A0made it tristate instead of boolean. Rebased on new next.
+On Wed, May 2, 2012 at 5:19 AM, Sascha Hauer <s.hauer@pengutronix.de> wrote:
+> On Wed, May 02, 2012 at 04:19:30PM +0800, Huang Shijie wrote:
+>> The current code keeps the clock enabled even when we do not really
+>> use the uart port. But keep the clock enabled will consume some power.
+>>
+>> In order to save more power, disable the clock when we do not use
+>> the uart, and enable the clock when we really use the uart port.
+>>
+>> Signed-off-by: Huang Shijie <b32955@freescale.com>
+>
+> This conflicts with my series converting i.MX to the common clock
+> framework. Please lets delay this until this has been merged.
 
-This looks good to me.
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
-
-I think this patch set could go through Arnd as arch maintainer?
-It's fun with these cross-arch things. You'll need an ACK from
-Russell first.
-
-Yours,
-Linus Walleij
+I think it is OK to resubmit this patch now.
