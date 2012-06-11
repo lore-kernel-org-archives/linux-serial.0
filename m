@@ -1,98 +1,34 @@
-From: Shawn Guo <shawn.guo@freescale.com>
-Subject: Re: [PATCH 11/15] serial: mxs-auart: Use
- clk_prepare_enable/clk_disable_unprepare
-Date: Mon, 11 Jun 2012 10:36:02 +0800
-Message-ID: <20120611023601.GA14180@S2100-06.ap.freescale.net>
-References: <1337987696-31728-1-git-send-email-festevam@gmail.com>
- <1337987696-31728-11-git-send-email-festevam@gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH V2 0/6] Bridging PCI to amba
+Date: Mon, 11 Jun 2012 15:28:22 +0000
+Message-ID: <201206111528.23034.arnd@arndb.de>
+References: <cover.1338220457.git.rubini@gnudd.com> <CACRpkdbPtR5MDjd1YZ5GhOdp61HQe2PJusudNPOhDQHUAt1kJA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ch1ehsobe003.messaging.microsoft.com ([216.32.181.183]:57852
-	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751219Ab2FKCPg (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 10 Jun 2012 22:15:36 -0400
-Content-Disposition: inline
-In-Reply-To: <1337987696-31728-11-git-send-email-festevam@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CACRpkdbPtR5MDjd1YZ5GhOdp61HQe2PJusudNPOhDQHUAt1kJA@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Alessandro Rubini <rubini@gnudd.com>, linux-kernel@vger.kernel.org, Giancarlo Asnaghi <giancarlo.asnaghi@st.com>, Alan Cox <alan@linux.intel.com>, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-arch@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>
-Cc: kernel@pengutronix.de, Fabio Estevam <fabio.estevam@freescale.com>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-On Fri, May 25, 2012 at 08:14:52PM -0300, Fabio Estevam wrote:
-> From: Fabio Estevam <fabio.estevam@freescale.com>
+On Sunday 10 June 2012, Linus Walleij wrote:
+> On Mon, May 28, 2012 at 6:36 PM, Alessandro Rubini <rubini@gnudd.com> wrote:
 > 
-> Prepare the clock before enabling it.
+> > V2: accepted comments I got on V1; rewritten the driver to be generic;
+> >    made it tristate instead of boolean. Rebased on new next.
 > 
-> Cc: Alan Cox <alan@linux.intel.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: <linux-serial@vger.kernel.org>
-> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
-> ---
->  drivers/tty/serial/mxs-auart.c |    4 ++--
->  1 files changed, 2 insertions(+), 2 deletions(-)
+> This looks good to me.
+> Acked-by: Linus Walleij <linus.walleij@linaro.org>
 > 
-> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-> index ec56d83..c109642 100644
-> --- a/drivers/tty/serial/mxs-auart.c
-> +++ b/drivers/tty/serial/mxs-auart.c
-> @@ -552,7 +552,7 @@ auart_console_write(struct console *co, const char *str, unsigned int count)
->  	s = auart_port[co->index];
->  	port = &s->port;
->  
-> -	clk_enable(s->clk);
-> +	clk_prepare_enable(s->clk);
->  
->  	/* First save the CR then disable the interrupts */
->  	old_ctrl2 = readl(port->membase + AUART_CTRL2);
-> @@ -578,7 +578,7 @@ auart_console_write(struct console *co, const char *str, unsigned int count)
->  	writel(old_ctrl0, port->membase + AUART_CTRL0);
->  	writel(old_ctrl2, port->membase + AUART_CTRL2);
->  
-> -	clk_disable(s->clk);
-> +	clk_disable_unprepare(s->clk);
->  }
->  
->  static void __init
-> -- 
-> 1.7.1
-> 
-No, clk_prepare() should not be called in auart_console_write() which
-is an atomic context.  However it reminds me that auart_console_setup()
-needs a fix as below.
+> I think this patch set could go through Arnd as arch maintainer?
+> It's fun with these cross-arch things. You'll need an ACK from
+> Russell first.
 
-Regards,
-Shawn
+I don't think it has much to do with code I maintain. Russell
+as the Primecell maintainer is the right person to take it through
+his tree.
 
---8<---
-
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index ec56d83..a3bb06b 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -638,18 +638,16 @@ auart_console_setup(struct console *co, char *options)
-        if (!s)
-                return -ENODEV;
-
--       clk_prepare_enable(s->clk);
-+       clk_prepare(s->clk);
-+       if (ret)
-+               return ret;
-
-        if (options)
-                uart_parse_options(options, &baud, &parity, &bits, &flow);
-        else
-                auart_console_get_options(&s->port, &baud, &parity, &bits);
-
--       ret = uart_set_options(&s->port, co, baud, parity, bits, flow);
--
--       clk_disable_unprepare(s->clk);
--
--       return ret;
-+       return uart_set_options(&s->port, co, baud, parity, bits, flow);
- }
-
- static struct console auart_console = {
-
-
+	Arnd
