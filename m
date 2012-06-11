@@ -1,34 +1,59 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH V2 0/6] Bridging PCI to amba
-Date: Mon, 11 Jun 2012 15:28:22 +0000
-Message-ID: <201206111528.23034.arnd@arndb.de>
-References: <cover.1338220457.git.rubini@gnudd.com> <CACRpkdbPtR5MDjd1YZ5GhOdp61HQe2PJusudNPOhDQHUAt1kJA@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CACRpkdbPtR5MDjd1YZ5GhOdp61HQe2PJusudNPOhDQHUAt1kJA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Alessandro Rubini <rubini@gnudd.com>, linux-kernel@vger.kernel.org, Giancarlo Asnaghi <giancarlo.asnaghi@st.com>, Alan Cox <alan@linux.intel.com>, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-arch@vger.kernel.org
+From: Roland Stigge <stigge@antcom.de>
+Subject: [PATCH RESEND 1/2] serial/8250: Add LPC3220 standard UART type
+Date: Mon, 11 Jun 2012 21:57:13 +0200
+Message-ID: <1339444634-15475-1-git-send-email-stigge@antcom.de>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.work-microwave.de ([62.245.205.51]:37612 "EHLO
+	work-microwave.de" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1750885Ab2FKT50 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 11 Jun 2012 15:57:26 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: alan@linux.intel.com, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kevin.wells@nxp.com, srinivas.bakki@nxp.com, linux-arm-kernel@lists.infradead.org, arnd@arndb.de, linux@arm.linux.org.uk
+Cc: Roland Stigge <stigge@antcom.de>
 
-On Sunday 10 June 2012, Linus Walleij wrote:
-> On Mon, May 28, 2012 at 6:36 PM, Alessandro Rubini <rubini@gnudd.com> wrote:
-> 
-> > V2: accepted comments I got on V1; rewritten the driver to be generic;
-> >    made it tristate instead of boolean. Rebased on new next.
-> 
-> This looks good to me.
-> Acked-by: Linus Walleij <linus.walleij@linaro.org>
-> 
-> I think this patch set could go through Arnd as arch maintainer?
-> It's fun with these cross-arch things. You'll need an ACK from
-> Russell first.
+LPC32xx has "Standard" UARTs that are actually 16550A compatible but have
+bigger FIFOs. Since the already supported 16X50 line still doesn't match here,
+we agreed on adding a new type.
 
-I don't think it has much to do with code I maintain. Russell
-as the Primecell maintainer is the right person to take it through
-his tree.
+Signed-off-by: Roland Stigge <stigge@antcom.de>
+Acked-by: Alan Cox <alan@linux.intel.com>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
 
-	Arnd
+---
+Applies to v3.5-rc2
+
+ drivers/tty/serial/8250/8250.c |    8 ++++++++
+ include/linux/serial_core.h    |    3 ++-
+ 2 files changed, 10 insertions(+), 1 deletion(-)
+
+--- linux-2.6.orig/drivers/tty/serial/8250/8250.c
++++ linux-2.6/drivers/tty/serial/8250/8250.c
+@@ -282,6 +282,14 @@ static const struct serial8250_config ua
+ 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
+ 		.flags		= UART_CAP_FIFO | UART_CAP_AFE | UART_CAP_EFR,
+ 	},
++	[PORT_LPC3220] = {
++		.name		= "LPC3220",
++		.fifo_size	= 64,
++		.tx_loadsz	= 32,
++		.fcr		= UART_FCR_DMA_SELECT | UART_FCR_ENABLE_FIFO |
++				  UART_FCR_R_TRIG_00 | UART_FCR_T_TRIG_00,
++		.flags		= UART_CAP_FIFO,
++	},
+ };
+ 
+ /* Uart divisor latch read */
+--- linux-2.6.orig/include/linux/serial_core.h
++++ linux-2.6/include/linux/serial_core.h
+@@ -47,7 +47,8 @@
+ #define PORT_U6_16550A	19	/* ST-Ericsson U6xxx internal UART */
+ #define PORT_TEGRA	20	/* NVIDIA Tegra internal UART */
+ #define PORT_XR17D15X	21	/* Exar XR17D15x UART */
+-#define PORT_MAX_8250	21	/* max port ID */
++#define PORT_LPC3220	22	/* NXP LPC32xx SoC "Standard" UART */
++#define PORT_MAX_8250	22	/* max port ID */
+ 
+ /*
+  * ARM specific type numbers.  These are not currently guaranteed
