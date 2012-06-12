@@ -1,65 +1,46 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH] serial/amba-pl011: move custom pin control to driver
-Date: Tue, 12 Jun 2012 20:54:17 +0200
-Message-ID: <CACRpkdahoqUEc74eEcf=KcYRoUMEYQ456nZ85qGViLGBxUpdbw@mail.gmail.com>
-References: <1337800726-4076-1-git-send-email-linus.walleij@stericsson.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: [PATCH 2/2] serial: sh-sci: Make probe fail for ports that exceed the maximum count
+Date: Wed, 13 Jun 2012 00:28:24 +0200
+Message-ID: <1339540104-25003-2-git-send-email-laurent.pinchart@ideasonboard.com>
+References: <1339540104-25003-1-git-send-email-laurent.pinchart@ideasonboard.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qc0-f174.google.com ([209.85.216.174]:46160 "EHLO
-	mail-qc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751997Ab2FLSyS convert rfc822-to-8bit (ORCPT
+Received: from perceval.ideasonboard.com ([95.142.166.194]:48099 "EHLO
+	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753431Ab2FLW2U (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 12 Jun 2012 14:54:18 -0400
-Received: by qcro28 with SMTP id o28so1283225qcr.19
-        for <linux-serial@vger.kernel.org>; Tue, 12 Jun 2012 11:54:18 -0700 (PDT)
-In-Reply-To: <1337800726-4076-1-git-send-email-linus.walleij@stericsson.com>
+	Tue, 12 Jun 2012 18:28:20 -0400
+In-Reply-To: <1339540104-25003-1-git-send-email-laurent.pinchart@ideasonboard.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Lee Jones <lee.jones@linaro.org>, Shawn Guo <shawn.guo@linaro.org>, Russell King <rmk+kernel@arm.linux.org.uk>
+To: Paul Mundt <lethal@linux-sh.org>
+Cc: linux-serial@vger.kernel.org, linux-sh@vger.kernel.org
 
-On Wed, May 23, 2012 at 9:18 PM, Linus Walleij
-<linus.walleij@stericsson.com> wrote:
+The driver supports a maximum number of ports configurable at compile
+time. Make sure the probe() method fails when registering a port that
+exceeds the maximum instead of returning success without registering the
+port.
 
-> From: Linus Walleij <linus.walleij@linaro.org>
->
-> We had a boot regression in Ux500 in the merge window because
-> two orthogonal pin control schemes for the PL011 were merged
-> at the same time:
->
-> - One using the .init() and .exit() hooks into the platform
-> =A0for Ux500 putting the pins into default vs sleep state
-> =A0respectively as the port was started/stopped.
-> =A0commit a09806607fd20bed2f8c41fe22793386790a14aa
-> =A0"ARM: ux500: switch to using pinctrl for uart0"
->
-> - One hogging the default setting at PL011 probe()
-> =A0commit 258e055111d3cde2607e0d04eb91da2f7a59b591
-> =A0"serial: amba-pl011: adopt pinctrl support"
->
-> To get a solution that works for both let's scrap the stuff
-> in the platform callbacks, instead have the driver itself
-> select default and sleep states when the port is
-> started/stopped. Hopefully this works for all clients.
-> Platform callbacks are bad for device tree migration anyway,
-> so this rids us of another problem in Ux500.
->
-> Cc: linux-serial@vger.kernel.org
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Shawn Guo <shawn.guo@linaro.org>
-> Cc: Russell King <rmk+kernel@arm.linux.org.uk>
-> Reported-by: Lee Jones <lee.jones@linaro.org>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+This fixes a crash at system suspend time, when the driver tried to
+suspend a non-registered port using the UART core.
 
-A friendly poke at Greg to push this for the -rc series whenever
-time permits (if OK) as it's regressing Ux500 for the moment.
+Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+---
+ drivers/tty/serial/sh-sci.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-Yours,
-Linus Walleij
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index a779663..55dada3 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -2352,7 +2352,7 @@ static int __devinit sci_probe_single(struct platform_device *dev,
+ 			   index+1, SCI_NPORTS);
+ 		dev_notice(&dev->dev, "Consider bumping "
+ 			   "CONFIG_SERIAL_SH_SCI_NR_UARTS!\n");
+-		return 0;
++		return -EINVAL;
+ 	}
+ 
+ 	ret = sci_init_single(dev, sciport, index, p);
+-- 
+1.7.3.4
+
