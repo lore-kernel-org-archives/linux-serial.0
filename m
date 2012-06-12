@@ -1,108 +1,87 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: [PATCH 1/2] serial: sh-sci: Fix probe error paths
-Date: Wed, 13 Jun 2012 00:28:23 +0200
-Message-ID: <1339540104-25003-1-git-send-email-laurent.pinchart@ideasonboard.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH V2] serial: pxa: add spin lock for console write
+Date: Tue, 12 Jun 2012 15:35:15 -0700
+Message-ID: <20120612223515.GA14008@kroah.com>
+References: <1337661780-26446-1-git-send-email-chao.xie@marvell.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from perceval.ideasonboard.com ([95.142.166.194]:48096 "EHLO
-	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753426Ab2FLW2U (ORCPT
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:45504 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751116Ab2FLWfS (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 12 Jun 2012 18:28:20 -0400
+	Tue, 12 Jun 2012 18:35:18 -0400
+Received: by pbbrp8 with SMTP id rp8so1425322pbb.19
+        for <linux-serial@vger.kernel.org>; Tue, 12 Jun 2012 15:35:18 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <1337661780-26446-1-git-send-email-chao.xie@marvell.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Paul Mundt <lethal@linux-sh.org>
-Cc: linux-serial@vger.kernel.org, linux-sh@vger.kernel.org
+To: Chao Xie <chao.xie@marvell.com>
+Cc: linux-serial@vger.kernel.org, haojian.zhuang@marvell.com
 
-When probing fails, the driver must not try to cleanup resources that
-have not been initialized. Fix this.
+On Tue, May 22, 2012 at 12:43:00PM +0800, Chao Xie wrote:
+> at UP mode, when cpu want to print message in kernel, it will invoke
+> peempt_disable and disable irq. So it is safe for UP mode.
+> For SMP mode, it is not safe to protect the HW reigsters.
+> one CPU will run a program which will invoke printf.
+> another CPU will run a program in kernel that invoke printk.
+> So when second CPU is trying to printk, it will do
+> 1. save ier register
+> 2. enable uue bit of ier register
+> 3. push buffer to uart fifo
+> 4 .restore ier register
+> when first CPU want to printf, and it happens between 1 and 4, it will
+> enable thre bit of ier, and waiting for transmit intterupt. while step 4
+> will make the ier lost thre bit.
+> add spin lock here to protect the ier register for console write.
+> 
+> Signed-off-by: Chao Xie <chao.xie@marvell.com>
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
----
- drivers/tty/serial/sh-sci.c |   36 +++++++++++++++++++++++-------------
- 1 files changed, 23 insertions(+), 13 deletions(-)
+What is different from patch v1?
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 3158e17..a779663 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2140,6 +2140,16 @@ static int __devinit sci_init_single(struct platform_device *dev,
- 	return 0;
- }
- 
-+static void sci_cleanup_single(struct sci_port *port)
-+{
-+	sci_free_gpios(port);
-+
-+	clk_put(port->iclk);
-+	clk_put(port->fclk);
-+
-+	pm_runtime_disable(port->port.dev);
-+}
-+
- #ifdef CONFIG_SERIAL_SH_SCI_CONSOLE
- static void serial_console_putchar(struct uart_port *port, int ch)
- {
-@@ -2321,14 +2331,10 @@ static int sci_remove(struct platform_device *dev)
- 	cpufreq_unregister_notifier(&port->freq_transition,
- 				    CPUFREQ_TRANSITION_NOTIFIER);
- 
--	sci_free_gpios(port);
--
- 	uart_remove_one_port(&sci_uart_driver, &port->port);
- 
--	clk_put(port->iclk);
--	clk_put(port->fclk);
-+	sci_cleanup_single(port);
- 
--	pm_runtime_disable(&dev->dev);
- 	return 0;
- }
- 
-@@ -2353,7 +2359,13 @@ static int __devinit sci_probe_single(struct platform_device *dev,
- 	if (ret)
- 		return ret;
- 
--	return uart_add_one_port(&sci_uart_driver, &sciport->port);
-+	ret = uart_add_one_port(&sci_uart_driver, &sciport->port);
-+	if (ret) {
-+		sci_cleanup_single(sciport);
-+		return ret;
-+	}
-+
-+	return 0;
- }
- 
- static int __devinit sci_probe(struct platform_device *dev)
-@@ -2374,24 +2386,22 @@ static int __devinit sci_probe(struct platform_device *dev)
- 
- 	ret = sci_probe_single(dev, dev->id, p, sp);
- 	if (ret)
--		goto err_unreg;
-+		return ret;
- 
- 	sp->freq_transition.notifier_call = sci_notifier;
- 
- 	ret = cpufreq_register_notifier(&sp->freq_transition,
- 					CPUFREQ_TRANSITION_NOTIFIER);
--	if (unlikely(ret < 0))
--		goto err_unreg;
-+	if (unlikely(ret < 0)) {
-+		sci_cleanup_single(sp);
-+		return ret;
-+	}
- 
- #ifdef CONFIG_SH_STANDARD_BIOS
- 	sh_bios_gdb_detach();
- #endif
- 
- 	return 0;
--
--err_unreg:
--	sci_remove(dev);
--	return ret;
- }
- 
- static int sci_suspend(struct device *dev)
--- 
-1.7.3.4
+> ---
+>  drivers/tty/serial/pxa.c |   15 +++++++++++++++
+>  1 files changed, 15 insertions(+), 0 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
+> index 5847a4b..aca62f6 100644
+> --- a/drivers/tty/serial/pxa.c
+> +++ b/drivers/tty/serial/pxa.c
+> @@ -670,9 +670,19 @@ serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
+>  {
+>  	struct uart_pxa_port *up = serial_pxa_ports[co->index];
+>  	unsigned int ier;
+> +	unsigned long flags;
+> +	int locked = 1;
+>  
+>  	clk_prepare_enable(up->clk);
+>  
+> +	local_irq_save(flags);
+> +	if (up->port.sysrq)
+> +		locked = 0;
+> +	else if (oops_in_progress)
+> +		locked = spin_trylock(&up->port.lock);
+> +	else
+> +		spin_lock(&up->port.lock);
+> +
+>  	/*
+>  	 *	First save the IER then disable the interrupts
+>  	 */
+> @@ -688,7 +698,12 @@ serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
+>  	wait_for_xmitr(up);
+>  	serial_out(up, UART_IER, ier);
+>  
+> +	if (locked)
+> +		spin_unlock(&up->port.lock);
+> +	local_irq_restore(flags);
+> +
+>  	clk_disable_unprepare(up->clk);
+> +
+>  }
 
+Why the extra line at the end of the function?
+
+thanks,
+
+greg k-h
