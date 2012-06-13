@@ -1,87 +1,34 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH V2] serial: pxa: add spin lock for console write
-Date: Tue, 12 Jun 2012 15:35:15 -0700
-Message-ID: <20120612223515.GA14008@kroah.com>
-References: <1337661780-26446-1-git-send-email-chao.xie@marvell.com>
+From: Paul Mundt <lethal@linux-sh.org>
+Subject: Re: [PATCH 1/2] serial: sh-sci: Fix probe error paths
+Date: Wed, 13 Jun 2012 10:36:52 +0900
+Message-ID: <20120613013652.GK10170@linux-sh.org>
+References: <1339540104-25003-2-git-send-email-laurent.pinchart@ideasonboard.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:45504 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751116Ab2FLWfS (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 12 Jun 2012 18:35:18 -0400
-Received: by pbbrp8 with SMTP id rp8so1425322pbb.19
-        for <linux-serial@vger.kernel.org>; Tue, 12 Jun 2012 15:35:18 -0700 (PDT)
+Received: from linux-sh.org ([111.68.239.195]:33817 "EHLO linux-sh.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750918Ab2FMBg5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 12 Jun 2012 21:36:57 -0400
 Content-Disposition: inline
-In-Reply-To: <1337661780-26446-1-git-send-email-chao.xie@marvell.com>
+In-Reply-To: <1339540104-25003-2-git-send-email-laurent.pinchart@ideasonboard.com>
+ <1339540104-25003-1-git-send-email-laurent.pinchart@ideasonboard.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Chao Xie <chao.xie@marvell.com>
-Cc: linux-serial@vger.kernel.org, haojian.zhuang@marvell.com
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: linux-serial@vger.kernel.org, linux-sh@vger.kernel.org
 
-On Tue, May 22, 2012 at 12:43:00PM +0800, Chao Xie wrote:
-> at UP mode, when cpu want to print message in kernel, it will invoke
-> peempt_disable and disable irq. So it is safe for UP mode.
-> For SMP mode, it is not safe to protect the HW reigsters.
-> one CPU will run a program which will invoke printf.
-> another CPU will run a program in kernel that invoke printk.
-> So when second CPU is trying to printk, it will do
-> 1. save ier register
-> 2. enable uue bit of ier register
-> 3. push buffer to uart fifo
-> 4 .restore ier register
-> when first CPU want to printf, and it happens between 1 and 4, it will
-> enable thre bit of ier, and waiting for transmit intterupt. while step 4
-> will make the ier lost thre bit.
-> add spin lock here to protect the ier register for console write.
+On Wed, Jun 13, 2012 at 12:28:23AM +0200, Laurent Pinchart wrote:
+> When probing fails, the driver must not try to cleanup resources that
+> have not been initialized. Fix this.
+
+On Wed, Jun 13, 2012 at 12:28:24AM +0200, Laurent Pinchart wrote:
+> The driver supports a maximum number of ports configurable at compile
+> time. Make sure the probe() method fails when registering a port that
+> exceeds the maximum instead of returning success without registering the
+> port.
 > 
-> Signed-off-by: Chao Xie <chao.xie@marvell.com>
+> This fixes a crash at system suspend time, when the driver tried to
+> suspend a non-registered port using the UART core.
 
-What is different from patch v1?
-
-> ---
->  drivers/tty/serial/pxa.c |   15 +++++++++++++++
->  1 files changed, 15 insertions(+), 0 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
-> index 5847a4b..aca62f6 100644
-> --- a/drivers/tty/serial/pxa.c
-> +++ b/drivers/tty/serial/pxa.c
-> @@ -670,9 +670,19 @@ serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
->  {
->  	struct uart_pxa_port *up = serial_pxa_ports[co->index];
->  	unsigned int ier;
-> +	unsigned long flags;
-> +	int locked = 1;
->  
->  	clk_prepare_enable(up->clk);
->  
-> +	local_irq_save(flags);
-> +	if (up->port.sysrq)
-> +		locked = 0;
-> +	else if (oops_in_progress)
-> +		locked = spin_trylock(&up->port.lock);
-> +	else
-> +		spin_lock(&up->port.lock);
-> +
->  	/*
->  	 *	First save the IER then disable the interrupts
->  	 */
-> @@ -688,7 +698,12 @@ serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
->  	wait_for_xmitr(up);
->  	serial_out(up, UART_IER, ier);
->  
-> +	if (locked)
-> +		spin_unlock(&up->port.lock);
-> +	local_irq_restore(flags);
-> +
->  	clk_disable_unprepare(up->clk);
-> +
->  }
-
-Why the extra line at the end of the function?
-
-thanks,
-
-greg k-h
+Both applied, thanks.
