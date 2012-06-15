@@ -1,21 +1,21 @@
 From: Fabio Estevam <festevam@gmail.com>
-Subject: [PATCH 3/5] serial: mxs-auart: Allow device tree probing
-Date: Fri, 15 Jun 2012 00:33:03 -0300
-Message-ID: <1339731185-4889-3-git-send-email-festevam@gmail.com>
-References: <1339731185-4889-1-git-send-email-festevam@gmail.com>
+Subject: [PATCH v2 2/3] serial: mxs-auart: Allow device tree probing
+Date: Fri, 15 Jun 2012 08:32:29 -0300
+Message-ID: <1339759950-5507-2-git-send-email-festevam@gmail.com>
+References: <1339759950-5507-1-git-send-email-festevam@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-gh0-f174.google.com ([209.85.160.174]:36862 "EHLO
-	mail-gh0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753036Ab2FODeH (ORCPT
+Received: from mail-yw0-f46.google.com ([209.85.213.46]:33243 "EHLO
+	mail-yw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755862Ab2FOLco (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 14 Jun 2012 23:34:07 -0400
-Received: by ghrr11 with SMTP id r11so1980301ghr.19
-        for <linux-serial@vger.kernel.org>; Thu, 14 Jun 2012 20:34:06 -0700 (PDT)
-In-Reply-To: <1339731185-4889-1-git-send-email-festevam@gmail.com>
+	Fri, 15 Jun 2012 07:32:44 -0400
+Received: by yhmm54 with SMTP id m54so2327694yhm.19
+        for <linux-serial@vger.kernel.org>; Fri, 15 Jun 2012 04:32:43 -0700 (PDT)
+In-Reply-To: <1339759950-5507-1-git-send-email-festevam@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-arm-kernel@lists.infradead.org
-Cc: shawn.guo@linaro.org, kernel@pengutronix.de, marex@denx.de, matt@grid-net.com, snijsure@grid-net.com, Fabio Estevam <fabio.estevam@freescale.com>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+Cc: shawn.guo@linaro.org, kernel@pengutronix.de, marex@denx.de, matt@grid-net.com, snijsure@grid-net.com, rob.herring@calxeda.com, Fabio Estevam <fabio.estevam@freescale.com>, Grant Likely <grant.likely@secretlab.ca>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
 
 From: Fabio Estevam <fabio.estevam@freescale.com>
 
@@ -27,11 +27,34 @@ Cc: Alan Cox <alan@linux.intel.com>
 Cc: <linux-serial@vger.kernel.org>
 Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
 ---
- drivers/tty/serial/mxs-auart.c |   55 +++++++++++++++++++++++++++++++++++++++-
- 1 files changed, 54 insertions(+), 1 deletions(-)
+Changes since v1:
+- Merged patches 3 and 5 from v1 into this one
+ .../bindings/tty/serial/fsl-mxs-auart.txt          |   13 +++++
+ drivers/tty/serial/mxs-auart.c                     |   55 +++++++++++++++++++-
+ 2 files changed, 67 insertions(+), 1 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt
 
+diff --git a/Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt b/Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt
+new file mode 100644
+index 0000000..1b28b1c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt
+@@ -0,0 +1,13 @@
++* Freescale MXS Application UART (AUART)
++
++Required properties:
++- compatible : Should be "fsl,mxs-uart"
++- reg : Address and length of the register set for the device
++- interrupts : Should contain the auart interrupt
++
++Example:
++auart0: serial@8006a000 {
++	compatible = "fsl,mxs-auart";
++	reg = <0x8006a000 0x2000>;
++	interrupts = <112 70 71>;
++};
 diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index ec56d83..467b8a2 100644
+index ec56d83..21e2ce7 100644
 --- a/drivers/tty/serial/mxs-auart.c
 +++ b/drivers/tty/serial/mxs-auart.c
 @@ -33,6 +33,7 @@
