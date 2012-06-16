@@ -1,7 +1,7 @@
 From: David Herrmann <dh.herrmann@googlemail.com>
-Subject: [PATCH 10/10] fblog: add "activate" module parameter
-Date: Sun, 17 Jun 2012 00:04:26 +0200
-Message-ID: <1339884266-9201-11-git-send-email-dh.herrmann@googlemail.com>
+Subject: [PATCH 09/10] fblog: register all handlers on module-init
+Date: Sun, 17 Jun 2012 00:04:25 +0200
+Message-ID: <1339884266-9201-10-git-send-email-dh.herrmann@googlemail.com>
 References: <1339884266-9201-1-git-send-email-dh.herrmann@googlemail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1339884266-9201-1-git-send-email-dh.herrmann@googlemail.com>
@@ -10,52 +10,99 @@ To: linux-serial@vger.kernel.org
 Cc: Florian Tobias Schandinat <FlorianSchandinat@gmx.de>, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, David Herrmann <dh.herrmann@googlemail.com>
 List-Id: linux-serial@vger.kernel.org
 
-This new parameter controls whether fblog is automatically activated when
-it is loaded. This defaults to "true".
-
-We can now compile with CONFIG_VT=n and CONFIG_FBLOG=y and control fblog
-with fblog.activate=0/1 on the kernel command line to enable/disable
-debugging.
+We now create a new "fblog" device when initializing the fblog module. We
+register the "active" sysfs-file with it so user-space can now access
+fblog. We also register the framebuffer-notifier and console-handler so
+fblog is ready to go.
 
 Signed-off-by: David Herrmann <dh.herrmann@googlemail.com>
 ---
- drivers/video/console/fblog.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/video/console/fblog.c |   59 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 59 insertions(+)
 
 diff --git a/drivers/video/console/fblog.c b/drivers/video/console/fblog.c
-index 9d3b072..cabc550 100644
+index 79bfbcc..9d3b072 100644
 --- a/drivers/video/console/fblog.c
 +++ b/drivers/video/console/fblog.c
-@@ -94,6 +94,7 @@ struct fblog_fb {
+@@ -92,6 +92,7 @@ struct fblog_fb {
+ };
+ 
  static struct fblog_fb *fblog_fbs[FB_MAX];
- static struct device *fblog_device;
++static struct device *fblog_device;
  static atomic_t fblog_active;
-+static bool activate = 1;
  
  static void fblog_buf_resize(struct fblog_buf *buf, size_t width,
- 			     size_t height)
-@@ -653,6 +654,12 @@ static int __init fblog_init(void)
+@@ -609,13 +610,71 @@ static ssize_t fblog_dev_active_store(struct device *dev,
+ static DEVICE_ATTR(active, S_IRUGO | S_IWUSR | S_IWGRP, fblog_dev_active_show,
+ 		   fblog_dev_active_store);
  
- 	register_console(&fblog_con_driver);
- 
-+	if (activate) {
-+		console_lock();
-+		fblog_activate();
-+		console_unlock();
++static void fblog_dev_release(struct device *dev)
++{
++	kfree(dev);
++	module_put(THIS_MODULE);
++}
++
+ static int __init fblog_init(void)
+ {
++	int ret;
++
++	fblog_device = kzalloc(sizeof(*fblog_device), GFP_KERNEL);
++	if (!fblog_device) {
++		pr_err("fblog: cannot allocate device\n");
++		ret = -ENOMEM;
++		goto err_out;
 +	}
 +
++	__module_get(THIS_MODULE);
++	device_initialize(fblog_device);
++	fblog_device->class = fb_class;
++	fblog_device->release = fblog_dev_release;
++	dev_set_name(fblog_device, "fblog");
++
++	ret = device_add(fblog_device);
++	if (ret) {
++		pr_err("fblog: cannot add device\n");
++		goto err_dev;
++	}
++
++	ret = fb_register_client(&fblog_notifier);
++	if (ret) {
++		pr_err("fblog: cannot register framebuffer notifier\n");
++		goto err_dev_rm;
++	}
++
++	ret = device_create_file(fblog_device, &dev_attr_active);
++	if (ret) {
++		pr_err("fblog: cannot create sysfs entry\n");
++		goto err_fb;
++	}
++
++	register_console(&fblog_con_driver);
++
  	return 0;
- 
- err_fb:
-@@ -677,6 +684,9 @@ static void __exit fblog_exit(void)
- 	put_device(fblog_device);
++
++err_fb:
++	fb_unregister_client(&fblog_notifier);
++err_dev_rm:
++	device_del(fblog_device);
++err_dev:
++	put_device(fblog_device);
++err_out:
++	return ret;
  }
  
-+module_param(activate, bool, S_IRUGO);
-+MODULE_PARM_DESC(activate, "Activate fblog by default");
-+
+ static void __exit fblog_exit(void)
+ {
++	unregister_console(&fblog_con_driver);
++	device_remove_file(fblog_device, &dev_attr_active);
++	device_del(fblog_device);
++	fb_unregister_client(&fblog_notifier);
++	console_lock();
++	fblog_deactivate();
++	console_unlock();
++	put_device(fblog_device);
+ }
+ 
  module_init(fblog_init);
- module_exit(fblog_exit);
- MODULE_LICENSE("GPL");
 -- 
 1.7.10.4
