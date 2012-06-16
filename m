@@ -1,81 +1,150 @@
 From: David Herrmann <dh.herrmann@googlemail.com>
-Subject: [RFC 00/10] fblog: framebuffer kernel log driver
-Date: Sun, 17 Jun 2012 00:04:16 +0200
-Message-ID: <1339884266-9201-1-git-send-email-dh.herrmann@googlemail.com>
+Subject: [PATCH 08/10] fblog: react on framebuffer events
+Date: Sun, 17 Jun 2012 00:04:24 +0200
+Message-ID: <1339884266-9201-9-git-send-email-dh.herrmann@googlemail.com>
+References: <1339884266-9201-1-git-send-email-dh.herrmann@googlemail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1339884266-9201-1-git-send-email-dh.herrmann@googlemail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: Florian Tobias Schandinat <FlorianSchandinat@gmx.de>, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, David Herrmann <dh.herrmann@googlemail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi
+This provides an fb-notifier object that can be registered with the
+framebuffer subsystem. We are then notified about events on all
+framebuffers.
+Most of the events are only of interest for fbcon so we can safely ignore
+them. However, we need to handle REGISTERED/UNBIND to add new framebbufers
+and we need to react on mode-changes (probably triggered by user-space).
 
-As some might know I am working on making CONFIG_VT obsolete. But as a developer
-it is often useful to have a kernel-log on the screen during boot to debug many
-common kernel(-config) errors. However, without CONFIG_VT we cannot use the
-VGA/framebbufer consoles either. Therefore, I am working on a small driver
-called "fblog".
+Signed-off-by: David Herrmann <dh.herrmann@googlemail.com>
+---
+ drivers/video/console/fblog.c |  113 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 113 insertions(+)
 
-This driver simply writes the kernel log to all connected framebuffers. It works
-similar to fbcon but removes all the complexity of the virtual terminals. There
-is a sysfs attribute called "active" that allows to enable/disable fblog so
-user-space can start an xserver or similar.
-
-The main purpose is debugging kernel boot problems. Therefore, it is not
-optimized for speed and I tried keeping it simple. I splitted the patches
-into 10 small chunks to make review easier.
-
-I would be glad if someone could review this and tell me whether this is
-something we could include in mainline or not.
-
-
-There are still some issues but apart from them it works fine on my
-machine (x86):
-  - I register the fblog device during module_init and need to call
-    module_get(). However, this means it is impossible to call "rmmod fblog" as
-    fblog has a reference to itself. Using "rmmod -f fblog" works fine but is a
-    bit ugly. Is there a nice way to fix this? Otherwise I would need to call
-    device_get() in module_exit() if there is a pending user of the fblog-device
-    even though I unregistered it.
-  - I redraw all framebuffers while holding the console-lock. This may slow down
-    machines with more than 2 framebuffers (like 10 or 20). However, as this is
-    supposed to be a debug driver, I think I can ignore this? If someone wants
-    to improve the redraw logic to avoid redrawing the whole screen all the
-    time, I would be glad to include it in this patchset :)
-  - I am really no expert regarding the framebuffer subsystem. So I would
-    appreciate it if someone could comment whether I need to handle the events
-    in a different way or whether it is ok the way it is now.
-
-I run this on my machine with CONFIG_VT=n and it works quite nice. If someone
-wants to test it, this also works with CONFIG_VT=y and x11 running. Just load
-the driver from your xserver and it will redraw the screen with the console.
-Switching VTs back and forth will make the xserver redraw the whole screen
-again. You need to remove "depends on !VT" of course.
-
-Thanks and regards
-David
-
-David Herrmann (10):
-  fblog: new framebuffer kernel log dummy driver
-  fblog: implement buffer management
-  fblog: register framebuffer objects
-  fblog: implement fblog_redraw()
-  fblog: add framebuffer helpers
-  fblog: allow enabling/disabling fblog on runtime
-  fblog: forward kernel log messages to all framebuffers
-  fblog: react on framebuffer events
-  fblog: register all handlers on module-init
-  fblog: add "activate" module parameter
-
- Documentation/ABI/testing/sysfs-fblog |    9 +
- drivers/video/Kconfig                 |    5 +-
- drivers/video/Makefile                |    2 +-
- drivers/video/console/Kconfig         |   37 +-
- drivers/video/console/Makefile        |    1 +
- drivers/video/console/fblog.c         |  694 +++++++++++++++++++++++++++++++++
- 6 files changed, 735 insertions(+), 13 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-fblog
- create mode 100644 drivers/video/console/fblog.c
-
+diff --git a/drivers/video/console/fblog.c b/drivers/video/console/fblog.c
+index 5297eca..79bfbcc 100644
+--- a/drivers/video/console/fblog.c
++++ b/drivers/video/console/fblog.c
+@@ -449,6 +449,119 @@ static void fblog_deactivate(void)
+ 	fblog_unregister_all();
+ }
+ 
++static int fblog_event(struct notifier_block *self, unsigned long action,
++		       void *data)
++{
++	struct fb_event *event = data;
++	struct fb_info *info = event->info;
++	struct fblog_fb *fb = fblog_info2fb(info);
++	int *blank;
++
++	if (action == FB_EVENT_FB_REGISTERED) {
++		/* This is called when a low-level system driver registers a new
++		 * framebuffer. The registration lock is held but the console
++		 * lock might not be held when this is called (really?). */
++		fblog_register(info);
++		return 0;
++	}
++
++	if (!fb)
++		return 0;
++
++	switch(action) {
++	case FB_EVENT_FB_UNREGISTERED:
++		/* This is called when a low-level system driver unregisters a
++		 * framebuffer. The registration lock is held but the console
++		 * lock might not be held (really?). */
++		/* ignore; see UNBIND */
++		break;
++	case FB_EVENT_FB_UNBIND:
++		/* Called directly before unregistering an FB. The FB is still
++		 * valid here and the registration lock is held but the console
++		 * lock might not be held (really?). */
++		fblog_unregister(fb);
++		break;
++	case FB_EVENT_SUSPEND:
++		/* This is called when the low-level display driver suspends the
++		 * video system. We should not access the video system while it
++		 * is suspended. This is called with the console lock held. */
++		set_bit(FBLOG_SUSPENDED, &fb->flags);
++		break;
++	case FB_EVENT_RESUME:
++		/* This is called when the low-level display driver resumes
++		 * operating. It is called with the console lock held. */
++		clear_bit(FBLOG_SUSPENDED, &fb->flags);
++		break;
++	case FB_EVENT_MODE_DELETE:
++		/* This is sent when a video mode is removed. The current video
++		 * mode is never removed! The console lock is held while this is
++		 * called. */
++		/* fallthrough */
++	case FB_EVENT_NEW_MODELIST:
++		/* This is sent when the modelist got changed. The console-lock
++		 * is held and we should reset the mode. */
++		/* fallthrough */
++	case FB_EVENT_MODE_CHANGE_ALL:
++		/* This is the same as below but notifies us that the user used
++		 * the FB_ACTIVATE_ALL flag when setting the video mode. */
++		/* fallthrough */
++	case FB_EVENT_MODE_CHANGE:
++		/* This is called when the _user_ changes the video mode via
++		 * ioctls. It is not sent, when the kernel changes the mode
++		 * internally. This callback is called inside fb_set_var() so
++		 * the console lock is held. */
++		fblog_refresh(fb);
++		break;
++	case FB_EVENT_BLANK:
++		/* This gets called _after_ the framebuffer was successfully
++		 * blanked. The console-lock is always held while fb_blank is
++		 * called and during this callback. */
++		blank = (int*)event->data;
++		if (*blank == FB_BLANK_UNBLANK)
++			clear_bit(FBLOG_BLANKED, &fb->flags);
++		else
++			set_bit(FBLOG_BLANKED, &fb->flags);
++		break;
++	case FB_EVENT_GET_REQ:
++		/* When fb_set_var() is called, this callback is called to get
++		 * our display requirements. They are then compared with the
++		 * display properties and only if they fulfill the requirements,
++		 * the new mode is activated. The console-lock should be held
++		 * while calling fb_set_var() so we can assume it is locked
++		 * here. */
++		/* ignore */
++		break;
++	case FB_EVENT_CONBLANK:
++		/* This is sent by fbcon when doing a fake blank. That
++		 * is, blanking the screen when the fb driver failed to perform
++		 * an fb_blank(). It simply writes empty lines to the screen.
++		 * We are not interested in this signal. We should also never
++		 * run together with fbcon so this should never be catched. */
++		/* ignore */
++		break;
++	case FB_EVENT_GET_CONSOLE_MAP:
++		/* fallthrough */
++	case FB_EVENT_SET_CONSOLE_MAP:
++		/* Is there any reason why we should support this? We
++		 * ignore it as we consider ourself not to be the classic linux
++		 * console. Hence, this request is not targeted at us. */
++		/* ignore */
++		break;
++	case FB_EVENT_REMAP_ALL_CONSOLE:
++		/* What are we supposed to do here? Do we have to remap
++		 * the primary device to the framebuffer given by \info? Like
++		 * above we currently ignore it for the same reasons. */
++		/* ignore */
++		break;
++	}
++
++	return 0;
++}
++
++static struct notifier_block fblog_notifier = {
++	.notifier_call = fblog_event,
++};
++
+ static void fblog_con_write(struct console *con, const char *buf,
+ 			    unsigned int len)
+ {
 -- 
 1.7.10.4
