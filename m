@@ -1,7 +1,7 @@
 From: David Herrmann <dh.herrmann@googlemail.com>
-Subject: [PATCH 04/10] fblog: implement fblog_redraw()
-Date: Sun, 17 Jun 2012 00:04:20 +0200
-Message-ID: <1339884266-9201-5-git-send-email-dh.herrmann@googlemail.com>
+Subject: [PATCH 02/10] fblog: implement buffer management
+Date: Sun, 17 Jun 2012 00:04:18 +0200
+Message-ID: <1339884266-9201-3-git-send-email-dh.herrmann@googlemail.com>
 References: <1339884266-9201-1-git-send-email-dh.herrmann@googlemail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1339884266-9201-1-git-send-email-dh.herrmann@googlemail.com>
@@ -10,11 +10,14 @@ To: linux-serial@vger.kernel.org
 Cc: Florian Tobias Schandinat <FlorianSchandinat@gmx.de>, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, David Herrmann <dh.herrmann@googlemail.com>
 List-Id: linux-serial@vger.kernel.org
 
-This mostly copies the functionality from drivers/video/console/bitblit.c
-so we can draw the console content on all available framebuffers.
+Each available framebuffer can have a different font and buffer size
+inside of fblog. Therefore, we need to remember all the log messages that
+are currently printed on screen. We save them as an array of lines which
+can be rotated and traversed very fast.
 
-All speed optimizations have been removed for simplicity. The original
-code depends heavily on CONFIG_VT so we cannot share the codebase here.
+This also implements a very trivial way of resizing the buffer but still
+keeping the content. As there is no need to improve this for speed, we can
+keep it this way.
 
 Signed-off-by: David Herrmann <dh.herrmann@googlemail.com>
 ---
@@ -22,148 +25,141 @@ Signed-off-by: David Herrmann <dh.herrmann@googlemail.com>
  1 file changed, 126 insertions(+)
 
 diff --git a/drivers/video/console/fblog.c b/drivers/video/console/fblog.c
-index 8038dcc..e790971 100644
+index ea83643..1504ba9 100644
 --- a/drivers/video/console/fblog.c
 +++ b/drivers/video/console/fblog.c
-@@ -197,6 +197,131 @@ static void fblog_buf_write(struct fblog_buf *buf, const char *str, size_t len)
- 	}
- }
+@@ -39,6 +39,132 @@
+ #include <linux/font.h>
+ #include <linux/module.h>
  
-+static void fblog_redraw_aligned(struct fblog_fb *fb, const char *s, u32 cnt,
-+				 u32 d_pitch, u32 s_pitch, u32 cellsize,
-+				 struct fb_image *image, u8 *dst)
++/**
++ * struct fblog_buf: Console text buffer
++ *
++ * Each framebuffer has its own text buffer which contains all characters that
++ * are currently printed on screen. The buffers might have different sizes and
++ * can be resized during runtime. When the buffer content changes, we redraw the
++ * screen.
++ *
++ * width: Width of buffer in characters
++ * height: Height of buffer in characters
++ * lines: Array of lines
++ * pos_x: Cursor x-position
++ * pos_y: Cursor y-position
++ */
++struct fblog_buf {
++	size_t width;
++	size_t height;
++	char **lines;
++	size_t pos_x;
++	size_t pos_y;
++};
++
++static void fblog_buf_resize(struct fblog_buf *buf, size_t width,
++			     size_t height)
 +{
-+	struct fb_info *info = fb->info;
-+	const struct font_desc *font = fb->font;
-+	u32 idx = font->width >> 3;
-+	u8 *src;
++	char **lines = NULL;
++	size_t i, j, minw, minh;
 +
-+	while (cnt--) {
-+		src = (void*)(font->data + (*s++ & 0xff) * cellsize);
-+		fb_pad_aligned_buffer(dst, d_pitch, src, idx, image->height);
-+		dst += s_pitch;
-+	}
-+
-+	info->fbops->fb_imageblit(info, image);
-+}
-+
-+static void fblog_redraw_unaligned(struct fblog_fb *fb, const char *s, u32 cnt,
-+				   u32 d_pitch, u32 s_pitch, u32 cellsize,
-+				   struct fb_image *image, u8 *dst)
-+{
-+	struct fb_info *info = fb->info;
-+	const struct font_desc *font = fb->font;
-+	u32 shift_low = 0, mod = font->width % 8;
-+	u32 shift_high = 8;
-+	u32 idx = font->width >> 3;
-+	u8 *src;
-+
-+	while (cnt--) {
-+		src = (void*)(font->data + (*s++ & 0xff) * cellsize);
-+		fb_pad_unaligned_buffer(dst, d_pitch, src, idx,
-+					image->height, shift_high,
-+					shift_low, mod);
-+		shift_low += mod;
-+		dst += (shift_low >= 8) ? s_pitch : s_pitch - 1;
-+		shift_low &= 7;
-+		shift_high = 8 - shift_low;
-+	}
-+
-+	info->fbops->fb_imageblit(info, image);
-+}
-+
-+static void fblog_redraw_line(struct fblog_fb *fb, size_t line,
-+			      const char *str, size_t len)
-+{
-+	struct fb_info *info = fb->info;
-+	const struct font_desc *font = fb->font;
-+	struct fb_image image;
-+	u32 width = DIV_ROUND_UP(font->width, 8);
-+	u32 cellsize = width * font->height;
-+	u32 maxcnt = info->pixmap.size / cellsize;
-+	u32 scan_align = info->pixmap.scan_align - 1;
-+	u32 buf_align = info->pixmap.buf_align - 1;
-+	u32 mod = font->width % 8;
-+	u32 cnt, pitch, size;
-+	u8 *dst;
-+
-+	image.fg_color = 7;
-+	image.bg_color = 0;
-+	image.dx = 0;
-+	image.dy = line * font->height;
-+	image.height = font->height;
-+	image.depth = 1;
-+
-+	while (len) {
-+		if (len > maxcnt)
-+			cnt = maxcnt;
-+		else
-+			cnt = len;
-+
-+		image.width = font->width * cnt;
-+		pitch = DIV_ROUND_UP(image.width, 8) + scan_align;
-+		pitch &= ~scan_align;
-+		size = pitch * image.height + buf_align;
-+		size &= ~buf_align;
-+		dst = fb_get_buffer_offset(info, &info->pixmap, size);
-+		image.data = dst;
-+
-+		if (!mod)
-+			fblog_redraw_aligned(fb, str, cnt, pitch, width,
-+					     cellsize, &image, dst);
-+		else
-+			fblog_redraw_unaligned(fb, str, cnt, pitch, width,
-+					       cellsize, &image, dst);
-+
-+		image.dx += cnt * font->width;
-+		len -= cnt;
-+		str += cnt;
-+	}
-+}
-+
-+static void fblog_redraw_clear(struct fblog_fb *fb)
-+{
-+	struct fb_fillrect region;
-+	struct fb_info *info = fb->info;
-+
-+	region.color = 0;
-+	region.dx = 0;
-+	region.dy = 0;
-+	region.width = info->var.xres;
-+	region.height = info->var.yres;
-+	region.rop = ROP_COPY;
-+
-+	info->fbops->fb_fillrect(info, &region);
-+}
-+
-+static void fblog_redraw(struct fblog_fb *fb)
-+{
-+	size_t i, len;
-+
-+	if (!fb || !fb->font || test_bit(FBLOG_KILLED, &fb->flags) ||
-+	    test_bit(FBLOG_SUSPENDED, &fb->flags) ||
-+	    test_bit(FBLOG_BLANKED, &fb->flags))
++	if (buf->height == height && buf->width == width)
 +		return;
 +
-+	fblog_redraw_clear(fb);
++	if (width && height) {
++		lines = kzalloc(height * sizeof(char*), GFP_KERNEL);
++		if (!lines)
++			return;
 +
-+	for (i = 0; i < fb->buf.height; ++i) {
-+		len = strnlen(fb->buf.lines[i], fb->buf.width);
-+		if (len)
-+			fblog_redraw_line(fb, i, fb->buf.lines[i], len);
++		for (i = 0; i < height; ++i) {
++			lines[i] = kzalloc(width * sizeof(char), GFP_KERNEL);
++			if (!lines[i]) {
++				while (i--)
++					kfree(lines[i]);
++				return;
++			}
++		}
++
++		/* copy old lines */
++		minw = min(width, buf->width);
++		minh = min(height, buf->height);
++		if (height >= buf->height)
++			i = 0;
++		else
++			i = buf->height - height;
++
++		for (j = 0; j < minh; ++i, ++j)
++			memcpy(lines[j], buf->lines[i], minw * sizeof(char));
++	} else {
++		width = 0;
++		height = 0;
++	}
++
++	for (i = 0; i < buf->height; ++i)
++		kfree(buf->lines[i]);
++	kfree(buf->lines);
++
++	buf->lines = lines;
++	buf->width = width;
++	buf->height = height;
++}
++
++static void fblog_buf_init(struct fblog_buf *buf)
++{
++	fblog_buf_resize(buf, 80, 24);
++}
++
++static void fblog_buf_deinit(struct fblog_buf *buf)
++{
++	fblog_buf_resize(buf, 0, 0);
++}
++
++static void fblog_buf_rotate(struct fblog_buf *buf)
++{
++	char *line;
++
++	if (!buf->height)
++		return;
++
++	line = buf->lines[0];
++	memset(line, 0, sizeof(char) * buf->width);
++
++	memmove(buf->lines, &buf->lines[1], sizeof(char*) * (buf->height - 1));
++	buf->lines[buf->height - 1] = line;
++}
++
++static void fblog_buf_write(struct fblog_buf *buf, const char *str, size_t len)
++{
++	char c;
++
++	if (!buf->height)
++		return;
++
++	while (len--) {
++		c = *str++;
++
++		if (c == '\n') {
++			buf->pos_x = 0;
++			if (++buf->pos_y >= buf->height) {
++				buf->pos_y = buf->height - 1;
++				fblog_buf_rotate(buf);
++			}
++		} else if (c == 0) {
++			/* ignore */
++		} else {
++			if (buf->pos_x >= buf->width) {
++				buf->pos_x = 0;
++				++buf->pos_y;
++			}
++			if (buf->pos_y >= buf->height) {
++				buf->pos_y = buf->height - 1;
++				fblog_buf_rotate(buf);
++			}
++
++			buf->lines[buf->pos_y][buf->pos_x++] = c;
++		}
 +	}
 +}
 +
- static struct fblog_fb *fblog_info2fb(struct fb_info *info)
+ static int __init fblog_init(void)
  {
- 	if (!info || info->node < 0 || info->node >= FB_MAX ||
-@@ -244,6 +369,7 @@ static void fblog_register(struct fb_info *info)
- 		width = info->var.xres / fb->font->width;
- 		height = info->var.yres / fb->font->height;
- 		fblog_buf_resize(&fb->buf, width, height);
-+		fblog_redraw(fb);
- 	}
- 
- 	return;
+ 	return 0;
 -- 
 1.7.10.4
