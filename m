@@ -1,7 +1,7 @@
 From: David Herrmann <dh.herrmann@googlemail.com>
-Subject: [PATCH 07/10] fblog: forward kernel log messages to all framebuffers
-Date: Sun, 17 Jun 2012 00:04:23 +0200
-Message-ID: <1339884266-9201-8-git-send-email-dh.herrmann@googlemail.com>
+Subject: [PATCH 06/10] fblog: allow enabling/disabling fblog on runtime
+Date: Sun, 17 Jun 2012 00:04:22 +0200
+Message-ID: <1339884266-9201-7-git-send-email-dh.herrmann@googlemail.com>
 References: <1339884266-9201-1-git-send-email-dh.herrmann@googlemail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1339884266-9201-1-git-send-email-dh.herrmann@googlemail.com>
@@ -10,48 +10,114 @@ To: linux-serial@vger.kernel.org
 Cc: Florian Tobias Schandinat <FlorianSchandinat@gmx.de>, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, David Herrmann <dh.herrmann@googlemail.com>
 List-Id: linux-serial@vger.kernel.org
 
-This provides a console-driver that forwards all log messages to all
-framebuffers and redraws them.
+A sysfs file called "active" can be used to enable and disable fblog on
+runtime. For example, the init-process can run "echo '0' >.../active"
+after booting the system. This will allow other applications like X11 to
+use the graphics subsystem. During shutdown, we can write '1' to get
+system messages again.
 
-To avoid redrawing multiple times in short intervals, we could use a
-work-queue here by simply pushing the task onto the system work-queue.
-However, fblog is not performance critical and only used for debugging so
-we avoid the complexity for now. This may change in the future, though.
+When disabling fblog, we remove all framebuffers and will prevent new
+hotplugged framebuffers from being added. When enabling fblog again, we
+rescan the system for all framebuffers and resume operating.
+
+The sysfs file is not registered, yet, as we do not have a "struct device"
+yet. This will follow shortly, though.
 
 Signed-off-by: David Herrmann <dh.herrmann@googlemail.com>
 ---
- drivers/video/console/fblog.c |   19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ Documentation/ABI/testing/sysfs-fblog |    9 ++++++
+ drivers/video/console/fblog.c         |   49 +++++++++++++++++++++++++++++++++
+ 2 files changed, 58 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-fblog
 
+diff --git a/Documentation/ABI/testing/sysfs-fblog b/Documentation/ABI/testing/sysfs-fblog
+new file mode 100644
+index 0000000..596393c
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-fblog
+@@ -0,0 +1,9 @@
++What:		/sys/class/graphics/fblog/active
++Date:		June 2012
++KernelVersion:	3.6
++Contact:	David Herrmann <dh.herrmann@googlemail.com>
++Description:	Enable/Disable fblog. When setting this to 0, fblog will stop
++		writing to framebuffers and other applications can use the
++		graphics subsystem. When setting this to 1, fblog will rescan
++		the system for all framebuffers and resume drawing the kernel
++		log onto all framebuffers.
 diff --git a/drivers/video/console/fblog.c b/drivers/video/console/fblog.c
-index 9b05c56..5297eca 100644
+index 7d4032e..9b05c56 100644
 --- a/drivers/video/console/fblog.c
 +++ b/drivers/video/console/fblog.c
-@@ -449,6 +449,25 @@ static void fblog_deactivate(void)
- 	fblog_unregister_all();
+@@ -92,6 +92,7 @@ struct fblog_fb {
+ };
+ 
+ static struct fblog_fb *fblog_fbs[FB_MAX];
++static atomic_t fblog_active;
+ 
+ static void fblog_buf_resize(struct fblog_buf *buf, size_t width,
+ 			     size_t height)
+@@ -338,6 +339,8 @@ static void fblog_register(struct fb_info *info)
+ 	const struct fb_videomode *mode;
+ 	unsigned int width, height;
+ 
++	if (!atomic_read(&fblog_active))
++		return;
+ 	if (!info || info->node < 0 || info->node >= FB_MAX)
+ 		return;
+ 	if (!registered_fb[info->node] || fblog_fbs[info->node])
+@@ -428,6 +431,52 @@ static void fblog_refresh(struct fblog_fb *fb)
+ 	fblog_redraw(fb);
  }
  
-+static void fblog_con_write(struct console *con, const char *buf,
-+			    unsigned int len)
++static void fblog_activate(void)
 +{
-+	int i;
++	if (atomic_read(&fblog_active))
++		return;
 +
-+	for (i = 0; i < FB_MAX; ++i) {
-+		if (fblog_fbs[i]) {
-+			fblog_buf_write(&fblog_fbs[i]->buf, buf, len);
-+			fblog_redraw(fblog_fbs[i]);
-+		}
-+	}
++	atomic_set(&fblog_active, 1);
++	fblog_register_all();
 +}
 +
-+static struct console fblog_con_driver = {
-+	.name = "fblog",
-+	.write = fblog_con_write,
-+	.flags = CON_PRINTBUFFER | CON_ENABLED,
-+};
++static void fblog_deactivate(void)
++{
++	if (!atomic_read(&fblog_active))
++		return;
 +
- static ssize_t fblog_dev_active_show(struct device *dev,
- 				     struct device_attribute *attr,
- 				     char *buf)
++	atomic_set(&fblog_active, 0);
++	fblog_unregister_all();
++}
++
++static ssize_t fblog_dev_active_show(struct device *dev,
++				     struct device_attribute *attr,
++				     char *buf)
++{
++	return snprintf(buf, PAGE_SIZE, "%d\n", atomic_read(&fblog_active));
++}
++
++static ssize_t fblog_dev_active_store(struct device *dev,
++				      struct device_attribute *attr,
++				      const char *buf,
++				      size_t count)
++{
++	unsigned long num;
++
++	num = simple_strtoul(buf, NULL, 10);
++	console_lock();
++	if (num)
++		fblog_activate();
++	else
++		fblog_deactivate();
++	console_unlock();
++
++	return count;
++}
++
++static DEVICE_ATTR(active, S_IRUGO | S_IWUSR | S_IWGRP, fblog_dev_active_show,
++		   fblog_dev_active_store);
++
+ static int __init fblog_init(void)
+ {
+ 	return 0;
 -- 
 1.7.10.4
