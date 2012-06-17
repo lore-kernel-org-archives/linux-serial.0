@@ -1,107 +1,34 @@
-From: Linus Walleij <linus.walleij@stericsson.com>
-Subject: [PATCH 1/2] serial/amba-pl011: use devm_* allocators
-Date: Sun, 17 Jun 2012 15:44:08 +0200
-Message-ID: <1339940648-6847-1-git-send-email-linus.walleij@stericsson.com>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: Re: [PATCH 1/2] serial/amba-pl011: use devm_* allocators
+Date: Sun, 17 Jun 2012 11:13:28 -0300
+Message-ID: <CAOMZO5DGxPQyHpPLLJk1P5kmyfB+9jct1rwEZj918wM84ePRKA@mail.gmail.com>
+References: <1339940648-6847-1-git-send-email-linus.walleij@stericsson.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from eu1sys200aog108.obsmtp.com ([207.126.144.125]:36841 "EHLO
-	eu1sys200aog108.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1757204Ab2FQNpE (ORCPT
+Received: from mail-bk0-f46.google.com ([209.85.214.46]:48579 "EHLO
+	mail-bk0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757374Ab2FQON3 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 17 Jun 2012 09:45:04 -0400
+	Sun, 17 Jun 2012 10:13:29 -0400
+Received: by bkcji2 with SMTP id ji2so3384521bkc.19
+        for <linux-serial@vger.kernel.org>; Sun, 17 Jun 2012 07:13:28 -0700 (PDT)
+In-Reply-To: <1339940648-6847-1-git-send-email-linus.walleij@stericsson.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, Linus Walleij <linus.walleij@linaro.org>
+To: Linus Walleij <linus.walleij@stericsson.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, linux-arm-kernel@lists.infradead.org
 
-From: Linus Walleij <linus.walleij@linaro.org>
-
-This switches a bunch of allocation and remapping to use the
-devm_* garbage collected methods and cleans up the error
-path and remove() paths consequently.
-
-devm_ioremap() is only in <linux/io.h> so fix up the
-erroneous <asm/*> include as well.
-
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
- drivers/tty/serial/amba-pl011.c |   20 ++++++++------------
- 1 file changed, 8 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index c17923e..3ce984f 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -53,8 +53,8 @@
- #include <linux/delay.h>
- #include <linux/types.h>
- #include <linux/pinctrl/consumer.h>
-+#include <linux/io.h>
- 
--#include <asm/io.h>
- #include <asm/sizes.h>
- 
- #define UART_NR			14
-@@ -1885,22 +1885,24 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- 		goto out;
- 	}
- 
--	uap = kzalloc(sizeof(struct uart_amba_port), GFP_KERNEL);
-+	uap = devm_kzalloc(&dev->dev, sizeof(struct uart_amba_port),
-+			   GFP_KERNEL);
- 	if (uap == NULL) {
- 		ret = -ENOMEM;
- 		goto out;
- 	}
- 
--	base = ioremap(dev->res.start, resource_size(&dev->res));
-+	base = devm_ioremap(&dev->dev, dev->res.start,
-+			    resource_size(&dev->res));
- 	if (!base) {
- 		ret = -ENOMEM;
--		goto free;
-+		goto out;
- 	}
- 
- 	uap->pinctrl = devm_pinctrl_get(&dev->dev);
- 	if (IS_ERR(uap->pinctrl)) {
- 		ret = PTR_ERR(uap->pinctrl);
--		goto unmap;
-+		goto out;
- 	}
- 	uap->pins_default = pinctrl_lookup_state(uap->pinctrl,
- 						 PINCTRL_STATE_DEFAULT);
-@@ -1915,7 +1917,7 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- 	uap->clk = clk_get(&dev->dev, NULL);
- 	if (IS_ERR(uap->clk)) {
- 		ret = PTR_ERR(uap->clk);
--		goto unmap;
-+		goto out;
- 	}
- 
- 	uap->vendor = vendor;
-@@ -1950,10 +1952,6 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- 		amba_ports[i] = NULL;
- 		pl011_dma_remove(uap);
- 		clk_put(uap->clk);
-- unmap:
--		iounmap(base);
-- free:
--		kfree(uap);
- 	}
-  out:
- 	return ret;
-@@ -1973,9 +1971,7 @@ static int pl011_remove(struct amba_device *dev)
- 			amba_ports[i] = NULL;
- 
- 	pl011_dma_remove(uap);
--	iounmap(uap->port.membase);
- 	clk_put(uap->clk);
--	kfree(uap);
- 	return 0;
- }
- 
--- 
-1.7.9.2
-
+T24gU3VuLCBKdW4gMTcsIDIwMTIgYXQgMTA6NDQgQU0sIExpbnVzIFdhbGxlaWoKPGxpbnVzLndh
+bGxlaWpAc3Rlcmljc3Nvbi5jb20+IHdyb3RlOgoKPiDCoCDCoCDCoCDCoHVhcC0+cGluY3RybCA9
+IGRldm1fcGluY3RybF9nZXQoJmRldi0+ZGV2KTsKPiDCoCDCoCDCoCDCoGlmIChJU19FUlIodWFw
+LT5waW5jdHJsKSkgewo+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgcmV0ID0gUFRSX0VSUih1YXAt
+PnBpbmN0cmwpOwo+IC0gwqAgwqAgwqAgwqAgwqAgwqAgwqAgZ290byB1bm1hcDsKPiArIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIGdvdG8gb3V0Owo+IMKgIMKgIMKgIMKgfQo+IMKgIMKgIMKgIMKgdWFw
+LT5waW5zX2RlZmF1bHQgPSBwaW5jdHJsX2xvb2t1cF9zdGF0ZSh1YXAtPnBpbmN0cmwsCj4gwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgUElOQ1RSTF9TVEFURV9ERUZBVUxUKTsKPiBAQCAtMTkxNSw3ICsxOTE3LDcg
+QEAgc3RhdGljIGludCBwbDAxMV9wcm9iZShzdHJ1Y3QgYW1iYV9kZXZpY2UgKmRldiwgY29uc3Qg
+c3RydWN0IGFtYmFfaWQgKmlkKQo+IMKgIMKgIMKgIMKgdWFwLT5jbGsgPSBjbGtfZ2V0KCZkZXYt
+PmRldiwgTlVMTCk7CgpNYXliZSB5b3UgY2FuIHVzZSBkZXZtX2Nsa19nZXQgaGVyZSB0b28uCg==
