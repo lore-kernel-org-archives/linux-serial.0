@@ -1,132 +1,60 @@
-From: "Donald" <donald@asix.com.tw>
-Subject: RE: Questions regarding adding a patch in linux/drivers/char/8250.c
-Date: Mon, 18 Jun 2012 11:07:05 +0800
-Message-ID: <002101cd4cff$74643c70$5d2cb550$@com.tw>
-References: <00a301cd3719$b3faa370$1befea50$@com.tw> <20120521102848.7bfb49e0@pyramind.ukuu.org.uk>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH 1/2] serial/amba-pl011: use devm_* allocators
+Date: Mon, 18 Jun 2012 08:37:20 +0200
+Message-ID: <CACRpkdahAYSd+H1hgUwwZh3UY7oS1QTym8uyggpmOgBAuSOaxg@mail.gmail.com>
+References: <1339940648-6847-1-git-send-email-linus.walleij@stericsson.com>
+	<CAOMZO5DGxPQyHpPLLJk1P5kmyfB+9jct1rwEZj918wM84ePRKA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from asix.com.tw ([113.196.140.82]:52416 "EHLO asix.com.tw"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752553Ab2FRDIb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 17 Jun 2012 23:08:31 -0400
-In-Reply-To: 
-Content-Language: zh-tw
+Received: from mail-qa0-f42.google.com ([209.85.216.42]:33576 "EHLO
+	mail-qa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751461Ab2FRGhV convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 18 Jun 2012 02:37:21 -0400
+Received: by qafi31 with SMTP id i31so1279312qaf.1
+        for <linux-serial@vger.kernel.org>; Sun, 17 Jun 2012 23:37:20 -0700 (PDT)
+In-Reply-To: <CAOMZO5DGxPQyHpPLLJk1P5kmyfB+9jct1rwEZj918wM84ePRKA@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Donald' <donald@asix.com.tw>, 'Alan Cox' <alan@lxorguk.ukuu.org.uk>
-Cc: linux-serial@vger.kernel.org
+To: Fabio Estevam <festevam@gmail.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Linus Walleij <linus.walleij@stericsson.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Hi Alan,
+On Sun, Jun 17, 2012 at 4:13 PM, Fabio Estevam <festevam@gmail.com> wro=
+te:
+> On Sun, Jun 17, 2012 at 10:44 AM, Linus Walleij
+> <linus.walleij@stericsson.com> wrote:
+>
+>> =A0 =A0 =A0 =A0uap->pinctrl =3D devm_pinctrl_get(&dev->dev);
+>> =A0 =A0 =A0 =A0if (IS_ERR(uap->pinctrl)) {
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0ret =3D PTR_ERR(uap->pinctrl);
+>> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 goto unmap;
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 goto out;
+>> =A0 =A0 =A0 =A0}
+>> =A0 =A0 =A0 =A0uap->pins_default =3D pinctrl_lookup_state(uap->pinct=
+rl,
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 PINCTRL_STATE_DEFAULT);
+>> @@ -1915,7 +1917,7 @@ static int pl011_probe(struct amba_device *dev=
+, const struct amba_id *id)
+>> =A0 =A0 =A0 =A0uap->clk =3D clk_get(&dev->dev, NULL);
+>
+> Maybe you can use devm_clk_get here too.
 
-It's been about three weeks since my last email. It's highly appreciated if you could keep me posted for any update regarding the
-patch request.
+That requires all users of the driver to be using CONFIG_CLKDEV, which
+I *think* is safe to do, but better check: Russell, do you know if
+it's safe to use
+this feature from clkdev in the PL011 driver?
 
-Regards,
-Donald
+It seems so to me and most likely works on the systems I have (Ux500, U=
+300,
+Nomadik, Integrator, RealView) but the world of PL011 is so big...
 
------Original Message-----
-From: Donald [mailto:donald@asix.com.tw] 
-Sent: Tuesday, May 29, 2012 4:38 PM
-To: 'Alan Cox'
-Cc: 'linux-serial@vger.kernel.org'
-Subject: RE: Questions regarding adding a patch in linux/drivers/char/8250.c
-
-Hi Alan,
-
-Sorry for my late reply. Below are my answers for your questions in previous emails:
-
-1. Regarding how to detect the presence of the UART devices with this erratum, it's feasible to check the device's vendor
-identification, which can be acquired by using " container_of" macro.
-
-2. Regarding doing parity check by software, it's not feasible mainly because that the parity bit will be stripped off by the
-hardware, the software can only get the data portion; hence no chance to do parity check.
-
-3. Regarding the performance concern of the proposed software workaround, we had been verified this workaround and didn't see any
-performance issue. For example, in a file transfer test at 115200 bps, the performance and CPU utilization rate are almost the same
-between test drivers with and without this workaround.
-
-4. Below is the complete patch for your preview, upon your approve, I will submit the formal patch by another email. Thank you for
-your help.
-
-drivers/tty/serial/8250/8250.c |   10 ++++++++++
- 1 files changed, 10 insertions(+), 0 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c index 5c27f7e..be493b0 100644
---- a/drivers/tty/serial/8250/8250.c
-+++ b/drivers/tty/serial/8250/8250.c
-@@ -38,6 +38,7 @@
- #include <linux/nmi.h>
- #include <linux/mutex.h>
- #include <linux/slab.h>
-+#include <linux/pci.h>
- #ifdef CONFIG_SPARC
- #include <linux/sunserialcore.h>
- #endif
-@@ -2238,6 +2239,8 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 	unsigned long flags;
- 	unsigned int baud, quot;
- 
-+	struct pci_dev *pdev = container_of(port->dev, struct pci_dev, dev);
-+
- 	switch (termios->c_cflag & CSIZE) {
- 	case CS5:
- 		cval = UART_LCR_WLEN5;
-@@ -2351,6 +2354,13 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 	if (up->capabilities & UART_CAP_RTOIE)
- 		up->ier |= UART_IER_RTOIE;
- 
-+	if ((termios->c_cflag & PARENB) && (pdev->vendor == 0x9710)) {
-+		fcr = UART_FCR_ENABLE_FIFO | UART_FCR_TRIGGER_1;
-+		up->ier &= ~UART_IER_RLSI;
-+	} else {
-+		up->ier |= UART_IER_RLSI;
-+	}
-+
- 	serial_port_out(port, UART_IER, up->ier);
- 
- 	if (up->capabilities & UART_CAP_EFR) {
+Yours,
+Linus Walleij
 --
-1.7.7.6
-
-Regards,
-Donald
-
------Original Message-----
-From: Alan Cox [mailto:alan@lxorguk.ukuu.org.uk]
-Sent: Monday, May 21, 2012 5:29 PM
-To: Donald
-Cc: linux-serial@vger.kernel.org
-Subject: Re: Questions regarding adding a patch in linux/drivers/char/8250.c
-
-On Mon, 21 May 2012 14:19:34 +0800
-"Donald" <donald@asix.com.tw> wrote:
-
-> Hi,
-> 
-> This is Donald from ASIX Electronics Corp. My company has three PCI to Serial controllers, including MCS9845, MCS9835, and
-MCS9820.
-> Currently those serial devices using these three chips can directly 
-> use the Linux kernel's serial driver in linux/drivers/char/8250.c.
-> Recently we find these three chips have a hardware bug relating to parity error count function. We have a software workaround for
-this issue. Below for reference is a pseudo code for this workaround.
-> 
-> serial8250_do_set_termios() {
-> 	If ((PID == MCS9845 || PID == MCS935 || PID == MCS9820) && ((termios->c_cflag & PARENB))) {
-> 		port->fifosize = 1; /* Change RX FIFO size to 1 byte */
-> 		up->ier &= ~UART_IER_RLSI; /* Disable RLSI interrupt */
-> 	}	
-> }
-> 
-> Is it possible to add a patch into linux/drivers/char/8250.c for our chips' hardware issue? 
-
-Sure.
-
-The only question I would have is how do we reliably detect the presence of the UART devices with this erratum. Can we do it from
-the PCI identifier ?
-
-Alan
-
-
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
