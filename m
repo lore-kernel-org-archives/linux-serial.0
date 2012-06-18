@@ -1,26 +1,28 @@
-From: Marek Vasut <marex@denx.de>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Subject: Re: [PATCH v4 2/2] serial: mxs-auart: Allow device tree probing
-Date: Mon, 18 Jun 2012 15:36:15 +0200
-Message-ID: <201206181536.16011.marex@denx.de>
-References: <1339774557-23588-1-git-send-email-fabio.estevam@freescale.com> <1340024769-7122-1-git-send-email-fabio.estevam@freescale.com> <20120618133338.GD19249@S2101-09.ap.freescale.net>
+Date: Mon, 18 Jun 2012 08:25:43 -0700
+Message-ID: <20120618152543.GA15267@kroah.com>
+References: <1339774557-23588-1-git-send-email-fabio.estevam@freescale.com>
+ <1340024769-7122-1-git-send-email-fabio.estevam@freescale.com>
+ <20120618133338.GD19249@S2101-09.ap.freescale.net>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:41828 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750756Ab2FRNgV (ORCPT
+Received: from mail-pz0-f46.google.com ([209.85.210.46]:55595 "EHLO
+	mail-pz0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751510Ab2FRPZt (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Jun 2012 09:36:21 -0400
+	Mon, 18 Jun 2012 11:25:49 -0400
+Received: by dady13 with SMTP id y13so7091184dad.19
+        for <linux-serial@vger.kernel.org>; Mon, 18 Jun 2012 08:25:48 -0700 (PDT)
+Content-Disposition: inline
 In-Reply-To: <20120618133338.GD19249@S2101-09.ap.freescale.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Shawn Guo <shawn.guo@linaro.org>
-Cc: Fabio Estevam <fabio.estevam@freescale.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, rob.herring@calxeda.com, Grant Likely <grant.likely@secretlab.ca>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+Cc: Fabio Estevam <fabio.estevam@freescale.com>, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, marex@denx.de, rob.herring@calxeda.com, Grant Likely <grant.likely@secretlab.ca>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
 
-Dear Shawn Guo,
-
+On Mon, Jun 18, 2012 at 09:33:40PM +0800, Shawn Guo wrote:
 > On Mon, Jun 18, 2012 at 10:06:09AM -0300, Fabio Estevam wrote:
 > > Allow device tree probing.
 > > 
@@ -45,8 +47,8 @@ Dear Shawn Guo,
 > 
 > May I have your ack to have the patch go through arm-soc tree, so that
 > we can possibly start converting those non-DT board files over to DT?
-> 
-> Regards,
-> Shawn
 
-Good, I should be back on 20th to the denx board.
+Fine with me:
+
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
