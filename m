@@ -1,60 +1,40 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH 1/2] serial/amba-pl011: use devm_* allocators
-Date: Mon, 18 Jun 2012 08:37:20 +0200
-Message-ID: <CACRpkdahAYSd+H1hgUwwZh3UY7oS1QTym8uyggpmOgBAuSOaxg@mail.gmail.com>
-References: <1339940648-6847-1-git-send-email-linus.walleij@stericsson.com>
-	<CAOMZO5DGxPQyHpPLLJk1P5kmyfB+9jct1rwEZj918wM84ePRKA@mail.gmail.com>
+From: Dong Aisheng <aisheng.dong@freescale.com>
+Subject: Re: [PATCH 14/16] tty: serial: imx: remove the use of
+ MXC_INTERNAL_IRQS
+Date: Mon, 18 Jun 2012 16:22:08 +0800
+Message-ID: <20120618082207.GE25447@shlinux2.ap.freescale.net>
+References: <1339653587-4832-1-git-send-email-shawn.guo@linaro.org>
+ <1339653587-4832-15-git-send-email-shawn.guo@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="us-ascii"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qa0-f42.google.com ([209.85.216.42]:33576 "EHLO
-	mail-qa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751461Ab2FRGhV convert rfc822-to-8bit (ORCPT
+Received: from ch1ehsobe002.messaging.microsoft.com ([216.32.181.182]:21884
+	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751317Ab2FRIZS (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Jun 2012 02:37:21 -0400
-Received: by qafi31 with SMTP id i31so1279312qaf.1
-        for <linux-serial@vger.kernel.org>; Sun, 17 Jun 2012 23:37:20 -0700 (PDT)
-In-Reply-To: <CAOMZO5DGxPQyHpPLLJk1P5kmyfB+9jct1rwEZj918wM84ePRKA@mail.gmail.com>
+	Mon, 18 Jun 2012 04:25:18 -0400
+Content-Disposition: inline
+In-Reply-To: <1339653587-4832-15-git-send-email-shawn.guo@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Linus Walleij <linus.walleij@stericsson.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Shawn Guo <shawn.guo@linaro.org>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Sascha Hauer <s.hauer@pengutronix.de>, Arnd Bergmann <arnd@arndb.de>, Rob Herring <rob.herring@calxeda.com>, Grant Likely <grant.likely@secretlab.ca>, Dong Aisheng-B29396 <B29396@freescale.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-On Sun, Jun 17, 2012 at 4:13 PM, Fabio Estevam <festevam@gmail.com> wro=
-te:
-> On Sun, Jun 17, 2012 at 10:44 AM, Linus Walleij
-> <linus.walleij@stericsson.com> wrote:
->
->> =A0 =A0 =A0 =A0uap->pinctrl =3D devm_pinctrl_get(&dev->dev);
->> =A0 =A0 =A0 =A0if (IS_ERR(uap->pinctrl)) {
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0ret =3D PTR_ERR(uap->pinctrl);
->> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 goto unmap;
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 goto out;
->> =A0 =A0 =A0 =A0}
->> =A0 =A0 =A0 =A0uap->pins_default =3D pinctrl_lookup_state(uap->pinct=
-rl,
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 PINCTRL_STATE_DEFAULT);
->> @@ -1915,7 +1917,7 @@ static int pl011_probe(struct amba_device *dev=
-, const struct amba_id *id)
->> =A0 =A0 =A0 =A0uap->clk =3D clk_get(&dev->dev, NULL);
->
-> Maybe you can use devm_clk_get here too.
+On Thu, Jun 14, 2012 at 01:59:45PM +0800, Shawn Guo wrote:
+> As the part of the effort to enable SPARE_IRQ for imx platform,
+> the macro MXC_INTERNAL_IRQS will be removed.  The imx serial driver
+> has a references to it for a decision on flags of request_irq call
+> based on rtsirq is beyond MXC_INTERNAL_IRQS.  However the searching
+> on imx platform code tells that rtsirq will never be beyond
+> MXC_INTERNAL_IRQS.  That said, the check, consequently the reference
+> to MXC_INTERNAL_IRQS are not needed, so remove them.
+> 
+> Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+> Cc: linux-serial@vger.kernel.org
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-That requires all users of the driver to be using CONFIG_CLKDEV, which
-I *think* is safe to do, but better check: Russell, do you know if
-it's safe to use
-this feature from clkdev in the PL011 driver?
+Acked-by: Dong Aisheng <dong.aisheng@linaro.org>
 
-It seems so to me and most likely works on the systems I have (Ux500, U=
-300,
-Nomadik, Integrator, RealView) but the world of PL011 is so big...
+Regards
+Dong Aisheng
 
-Yours,
-Linus Walleij
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
