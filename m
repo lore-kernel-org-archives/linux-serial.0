@@ -1,71 +1,43 @@
-From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: My pledge as a maintainer to the developers sending me patches.
-Date: Mon, 18 Jun 2012 14:15:10 -0700
-Message-ID: <20120618211510.GA11479@kroah.com>
+From: Darren Hart <dvhart@linux.intel.com>
+Subject: Re: [RFC PATCH] pch_uart: Add eg20t_port lock field, avoid recursive
+ spinlocks
+Date: Mon, 18 Jun 2012 14:41:46 -0700
+Message-ID: <4FDFA09A.4030405@linux.intel.com>
+References: <8854635ac5471f8671b93c65e3663eb1cb204c9d.1338454156.git.dvhart@linux.intel.com> <CANKRQnhZErpvcsRW3ukNzY0_zv4x=5OzQ-sr+aeuxL63=tQ=4A@mail.gmail.com> <4FC90BAD.3080606@linux.intel.com> <4FCE8307.3050901@linux.intel.com> <CANKRQnj5mxHLprMt4VMMa7sCwLZb=PAktnVVD1MZVkkUG4eLoA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mga02.intel.com ([134.134.136.20]:64931 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753658Ab2FRVnE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 18 Jun 2012 17:43:04 -0400
+In-Reply-To: <CANKRQnj5mxHLprMt4VMMa7sCwLZb=PAktnVVD1MZVkkUG4eLoA@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-
-As I recently posted here:
-	http://www.kroah.com/log/linux/maintainer_pledge.html
-there's been lots of discussion about maintainers, their general
-grumpiness, and how to handle this.  I don't want to duplicate what was
-said in that post, except for the following.
-
-Here's what I, as a kernel subsystem maintainer, will strive to do for
-all patches sent to me by developers:
-
- 1) I will review your patch within 1-2 weeks (see details below).
- 2) I will offer semi-constructive criticism of your patches.
- 3) I will let you know the status of your patch if it is rejected, or if
-    it is accepted, what tree it has gone into, where you can find it,
-    and when you can expect to see it merged into Linus's tree.
-
-Notes on the above:
-
-1) Of course, if I'm sick, or traveling on insane Asia trips, my
-response time will be delayed, but feel free to email me asking the
-status of a patch you have sent me, I'm happy to respond back that I
-just haven't gotten to it.  I would much rather field these kinds of
-inquiries (after waiting a few weeks) then loose patches and make people
-mad.
-
-Also, consider the kernel merge window requirements, during the merge
-window, I can't accept new patches into my tree that are not bugfixes
-for this specific kernel release, so that means there is usually a 3
-week window starting about 1 week before Linus's release,
-lasting until after a -rc1 kernel is released, before I can get to your
-patch.  During that time period hundreds of patches accrue, so please
-give me some time to dig out from all of them.  Usually by -rc3 I'm
-caught up, if not, email me and ask.
-
-2) Sorry, it can't always be constructive, but I'll try my best.  I'll
-also try to not cast aversions about your cat, but if you taunt me, all
-bets are off.
-
-3) I have scripts that automatically do this, that were based on Andrew
-Morton's older scripts, that any maintainer is more than willing to have
-a copy of.  Here's the most recent copy at the moment, if you want to
-look at it:
-	https://github.com/gregkh/gregkh-linux/blob/master/work/do.sh
+To: Tomoya MORINAGA <tomoya.rohm@gmail.com>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Feng Tang <feng.tang@intel.com>, Alexander Stein <alexander.stein@systec-electronic.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
 
 
-So, that's it, comments?  Criticism?
 
-Note, I don't expect anyone else to do this, it's just what I am willing
-to do.  I know some subsystem maintainers do a much better job than I do
-(some subsystem response times to patches is amazing!), but I figured
-I'd put this out there if anyone else wanted to rift on it.
+On 06/05/2012 04:48 PM, Tomoya MORINAGA wrote:
+> On Wed, Jun 6, 2012 at 7:07 AM, Darren Hart <dvhart@linux.intel.com> wrote:
+>> Are there still concerns about the additional lock? I'll resend V2
+>> tomorrow with the single whitespace fix if I don't hear anything back today.
+> 
+> I understand your saying. Looks good.
+> However, I am not expert of linux-uart core system.
+> So, I'd like UART maintainer to give us your opinion.
 
-thanks,
+Greg, Alan,
 
-greg k-h
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+any concerns with the locking approach I've adopted in the patch?
+
+Thanks,
+
+-- 
+Darren Hart
+Intel Open Source Technology Center
+Yocto Project - Linux Kernel
+
+
