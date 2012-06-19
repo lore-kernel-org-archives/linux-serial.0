@@ -1,61 +1,111 @@
-From: "Donald" <donald@asix.com.tw>
-Subject: RE: Questions regarding adding a patch in linux/drivers/char/8250.c
-Date: Tue, 19 Jun 2012 20:35:28 +0800
-Message-ID: <006301cd4e18$05d79ad0$1186d070$@com.tw>
-References: <00a301cd3719$b3faa370$1befea50$@com.tw>	<20120521102848.7bfb49e0@pyramind.ukuu.org.uk>	<002101cd4cff$74643c70$5d2cb550$@com.tw> <20120619101827.150d3968@pyramind.ukuu.org.uk>
+From: Darren Hart <dvhart@linux.intel.com>
+Subject: Re: [RFC PATCH] pch_uart: Add eg20t_port lock field, avoid recursive
+ spinlocks
+Date: Tue, 19 Jun 2012 10:35:15 -0700
+Message-ID: <4FE0B853.5060203@linux.intel.com>
+References: <8854635ac5471f8671b93c65e3663eb1cb204c9d.1338454156.git.dvhart@linux.intel.com> <CANKRQnhZErpvcsRW3ukNzY0_zv4x=5OzQ-sr+aeuxL63=tQ=4A@mail.gmail.com> <4FC90BAD.3080606@linux.intel.com> <4FCE8307.3050901@linux.intel.com> <CANKRQnj5mxHLprMt4VMMa7sCwLZb=PAktnVVD1MZVkkUG4eLoA@mail.gmail.com> <4FDFA09A.4030405@linux.intel.com> <20120619101447.74cbd9a1@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="US-ASCII"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from asix.com.tw ([113.196.140.82]:60795 "EHLO asix.com.tw"
+Received: from mga09.intel.com ([134.134.136.24]:30616 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754209Ab2FSMgo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Jun 2012 08:36:44 -0400
-In-Reply-To: <20120619101827.150d3968@pyramind.ukuu.org.uk>
-Content-Language: zh-tw
+	id S1752373Ab2FSRgy (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 19 Jun 2012 13:36:54 -0400
+In-Reply-To: <20120619101447.74cbd9a1@pyramind.ukuu.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Alan Cox' <alan@lxorguk.ukuu.org.uk>
-Cc: linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Tomoya MORINAGA <tomoya.rohm@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Feng Tang <feng.tang@intel.com>, Alexander Stein <alexander.stein@systec-electronic.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+
+
+
+On 06/19/2012 02:14 AM, Alan Cox wrote:
+> On Mon, 18 Jun 2012 14:41:46 -0700
+> Darren Hart <dvhart@linux.intel.com> wrote:
+> 
+>>
+>>
+>> On 06/05/2012 04:48 PM, Tomoya MORINAGA wrote:
+>>> On Wed, Jun 6, 2012 at 7:07 AM, Darren Hart <dvhart@linux.intel.com> wrote:
+>>>> Are there still concerns about the additional lock? I'll resend V2
+>>>> tomorrow with the single whitespace fix if I don't hear anything back today.
+>>>
+>>> I understand your saying. Looks good.
+>>> However, I am not expert of linux-uart core system.
+>>> So, I'd like UART maintainer to give us your opinion.
+>>
+>> Greg, Alan,
+>>
+>> any concerns with the locking approach I've adopted in the patch?
+> 
+> Only the one I noted in my reply the first time around
 
 Hi Alan,
 
-Thank you for your nice update. I will try to reproduce the crash case on my end and do further analysis. Any update I will keep you
-posted. Thanks.
+I've hunted, but I can't seem to find this reply. :-/
 
-Donald
+> which is that you
+> can't permit tty->low_latency=1 unless your tty receive path is not an
+> IRQ path. From a locking point of view the change makes sense anyway.
 
------Original Message-----
-From: Alan Cox [mailto:alan@lxorguk.ukuu.org.uk] 
-Sent: Tuesday, June 19, 2012 5:18 PM
-To: Donald
-Cc: linux-serial@vger.kernel.org
-Subject: Re: Questions regarding adding a patch in linux/drivers/char/8250.c
+I ran into this on the PREEMPT_RT kernel which always uses
+tty->low_latency and converts the interrupt handler into a thread.
+
+There is a follow-on patch for RT only to address a sleeping while
+atomic bug in pch_console_write(), but I felt _this_ locking structure
+change was appropriate for mainline.
+
+> 
+> Going back over it your console locking also needs care - an oops or
+> printk within the areas the private lock covers will hang the box. That
+> should also probably be a trylock style lock as with the other lock on
+> that path
+
+I presume you are referring to pch_console_write()?
+
+> static void
+> pch_console_write(struct console *co, const char *s, unsigned int count)
+> {
+> 	struct eg20t_port *priv;
+> 	unsigned long flags;
+> 	u8 ier;
+> 	int locked = 1;
+> 
+> 	priv = pch_uart_ports[co->index];
+> 
+> 	touch_nmi_watchdog();
+> 
+> 	local_irq_save(flags);
+> 	spin_lock(&priv->lock);
+> 	if (priv->port.sysrq) {
+> 		/* serial8250_handle_port() already took the lock */
+> 		locked = 0;
+> 	} else if (oops_in_progress) {
+> 		locked = spin_trylock(&priv->port.lock);
+> 	} else
+> 		spin_lock(&priv->port.lock);
 
 
-> +	struct pci_dev *pdev = container_of(port->dev, struct pci_dev, dev);
-> +
->  	switch (termios->c_cflag & CSIZE) {
->  	case CS5:
->  		cval = UART_LCR_WLEN5;
-> @@ -2351,6 +2354,13 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
->  	if (up->capabilities & UART_CAP_RTOIE)
->  		up->ier |= UART_IER_RTOIE;
->  
-> +	if ((termios->c_cflag & PARENB) && (pdev->vendor == 0x9710)) {
-> +		fcr = UART_FCR_ENABLE_FIFO | UART_FCR_TRIGGER_1;
-> +		up->ier &= ~UART_IER_RLSI;
-> +	} else {
-> +		up->ier |= UART_IER_RLSI;
-> +	}
-> +
+I see, the oops_in_progress test right? My thinking was that the
+oops_in_progress was only relevant to the port.lock as that could be
+taken outside of the pch_uart driver, while the priv.lock is only used
+within the driver. But, as the oops uses the pch_console_write itself, I
+can see the recursive spinlock failure case there.
 
-It's on my TODO list for the 3.6 merge. Your patch doesn't work (in fact it crashes in some cases) because it blindly assumes an
-8250 port is on the PCI bus.
+As for the printk, it seems the 8250 driver would also suffer from that
+in the serial8250_console_write function on the port.lock, and it does
+not make any allowances for printk.
 
-However it documents everything I need to know to push an actual fix.
+I would like to hold the priv.lock for a smaller window, but ordering
+requires that I take it prior to the port.lock.
 
-Alan
+So I can test for oops_in_progress on the priv->lock too, but that won't
+address the printk issue. Is the oops the bigger concern?
+
+-- 
+Darren Hart
+Intel Open Source Technology Center
+Yocto Project - Linux Kernel
 
 
