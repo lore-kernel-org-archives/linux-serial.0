@@ -1,41 +1,45 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 1/2] serial/amba-pl011: use devm_* allocators
-Date: Mon, 18 Jun 2012 17:34:27 -0700
-Message-ID: <20120619003427.GA3114@kroah.com>
-References: <1339940648-6847-1-git-send-email-linus.walleij@stericsson.com>
+From: Jeff Liu <jeff.liu@oracle.com>
+Subject: Re: [PATCH] drivers/tty/tty_io.c: fix a potential memleak at do_tty_write()
+Date: Tue, 19 Jun 2012 11:44:35 +0800
+Message-ID: <4FDFF5A3.9050306@oracle.com>
+References: <4FDF1DDA.3030704@oracle.com> <20120618170415.4d035911@pyramind.ukuu.org.uk> <4FDF6CCE.7090709@microgate.com>
+Reply-To: jeff.liu@oracle.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:52820 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753110Ab2FSAeb (ORCPT
+Received: from acsinet15.oracle.com ([141.146.126.227]:31613 "EHLO
+	acsinet15.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752838Ab2FSDpH (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Jun 2012 20:34:31 -0400
-Received: by pbbrp8 with SMTP id rp8so8900867pbb.19
-        for <linux-serial@vger.kernel.org>; Mon, 18 Jun 2012 17:34:31 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <1339940648-6847-1-git-send-email-linus.walleij@stericsson.com>
+	Mon, 18 Jun 2012 23:45:07 -0400
+In-Reply-To: <4FDF6CCE.7090709@microgate.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Walleij <linus.walleij@stericsson.com>
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Linus Walleij <linus.walleij@linaro.org>
+To: Paul Fulghum <paulkf@microgate.com>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
 
-On Sun, Jun 17, 2012 at 03:44:08PM +0200, Linus Walleij wrote:
-> From: Linus Walleij <linus.walleij@linaro.org>
-> 
-> This switches a bunch of allocation and remapping to use the
-> devm_* garbage collected methods and cleans up the error
-> path and remove() paths consequently.
-> 
-> devm_ioremap() is only in <linux/io.h> so fix up the
-> erroneous <asm/*> include as well.
-> 
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
->  drivers/tty/serial/amba-pl011.c |   20 ++++++++------------
->  1 file changed, 8 insertions(+), 12 deletions(-)
-> 
+On 06/19/2012 02:00 AM, Paul Fulghum wrote:
 
-This patch doesn't apply, what tree did you make it against?
+> On 6/18/2012 11:04 AM, Alan Cox wrote:
+>> On Mon, 18 Jun 2012 20:23:54 +0800
+>> Jeff Liu <jeff.liu@oracle.com> wrote:
+>>
+>>> Hello,
+>>>
+>>> Looks there is a potential memory leak at drivers/tty/tty_io.c: do_tty_write().
+>>> It did allocate a buf_chunk if tty->write_cnt < chunk, however, buf_chunk was not
+>>> freed after the writing is done.  Below tiny patch could fix it.
+>>
+>> Why should it be freed, we still have a reference to it.
+> 
+> Yeah, it would be messy on the next write()
+> when the now freed tty->write_buf is accessed ;-)
+> *boom*
 
-greg k-h
+Oops! I took for granted previously. Duh. :(
+
+Sorry for the noise!
+
+-Jeff
+
