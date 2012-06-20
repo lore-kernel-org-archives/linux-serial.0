@@ -1,63 +1,39 @@
-From: Kukjin Kim <kgene.kim@samsung.com>
-Subject: RE: [PATCH] serial: samsung: protect NULL dereference of clock name
-Date: Wed, 20 Jun 2012 13:28:47 +0900
-Message-ID: <029001cd4e9d$2f2af9b0$8d80ed10$%kim@samsung.com>
-References: <001401cd3e3e$644fd3a0$2cef7ae0$%kim@samsung.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH 1/2] serial/amba-pl011: use devm_* allocators
+Date: Wed, 20 Jun 2012 11:16:39 +0200
+Message-ID: <CACRpkda_-JNO0o-FqV2n83ae-sszfPyXef73qoZg=2fZc+vfnA@mail.gmail.com>
+References: <1339940648-6847-1-git-send-email-linus.walleij@stericsson.com>
+	<20120619003427.GA3114@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <001401cd3e3e$644fd3a0$2cef7ae0$%kim@samsung.com>
-Content-language: ko
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: 'Kyoungil Kim' <ki0351.kim@samsung.com>, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: 'Alan Cox' <alan@linux.intel.com>, 'KeyYoung Park' <keyyoung.park@samsung.com>, 'Huisung Kang' <hs1218.kang@samsung.com>, gregkh@linuxfoundation.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-qa0-f50.google.com ([209.85.216.50]:40257 "EHLO
+	mail-qa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755422Ab2FTJQl (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 20 Jun 2012 05:16:41 -0400
+Received: by qafl39 with SMTP id l39so184998qaf.2
+        for <linux-serial@vger.kernel.org>; Wed, 20 Jun 2012 02:16:40 -0700 (PDT)
+In-Reply-To: <20120619003427.GA3114@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Linus Walleij <linus.walleij@stericsson.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Kyoungil Kim wrote:
-> 
-> From: KeyYoung Park <keyyoung.park@samsung.com>
-> 
-> When priting the serial clock source, if clock source name is null,
-> kernel reference NULL point.
-> 
-> Signed-off-by: KeyYoung Park <keyyoung.park@samsung.com>
-> Signed-off-by: Huisung Kang <hs1218.kang@samsung.com>
-> Signed-off-by: Kyoungil Kim <ki0351.kim@samsung.com>
+On Tue, Jun 19, 2012 at 2:34 AM, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+> On Sun, Jun 17, 2012 at 03:44:08PM +0200, Linus Walleij wrote:
+>>
+>> This switches a bunch of allocation and remapping to use the
+>> devm_* garbage collected methods and cleans up the error
+>> path and remove() paths consequently.
+>> (...)
+>
+> This patch doesn't apply, what tree did you make it against?
 
-(Cc'ed Greg)
+It was on top of the patch pending for inclusion into the -rc:s,
+I can sure wait for that to be upstream and resend this then,
+no hurry.
 
-Acked-by: Kukjin Kim <kgene.kim@samsung.com>
-
-Greg, could you please pick this up?
-
-Thanks.
-
-Best regards,
-Kgene.
---
-Kukjin Kim <kgene.kim@samsung.com>, Senior Engineer,
-SW Solution Development Team, Samsung Electronics Co., Ltd.
-
-> ---
->  drivers/tty/serial/samsung.c |    3 ++-
->  1 files changed, 2 insertions(+), 1 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-> index ea76b40..77484e0 100644
-> --- a/drivers/tty/serial/samsung.c
-> +++ b/drivers/tty/serial/samsung.c
-> @@ -1160,7 +1160,8 @@ static ssize_t s3c24xx_serial_show_clksrc(struct
-> device *dev,
->  	struct uart_port *port = s3c24xx_dev_to_port(dev);
->  	struct s3c24xx_uart_port *ourport = to_ourport(port);
-> 
-> -	return snprintf(buf, PAGE_SIZE, "* %s\n", ourport->baudclk->name);
-> +	return snprintf(buf, PAGE_SIZE, "* %s\n",
-> +			ourport->baudclk->name ?: "(null)");
->  }
-> 
->  static DEVICE_ATTR(clock_source, S_IRUGO, s3c24xx_serial_show_clksrc,
-> NULL);
-> --
-> 1.7.1
+Yours,
+Linus Walleij
