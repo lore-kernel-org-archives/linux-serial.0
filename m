@@ -1,71 +1,173 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH V3] pch_uart: Add eg20t_port lock field, avoid recursive
- spinlocks
-Date: Tue, 19 Jun 2012 23:04:46 +0100
-Message-ID: <20120619230446.2b933b3b@pyramind.ukuu.org.uk>
-References: <34b5e216a6dbd83d282dad22c2644136c652c34a.1340139586.git.dvhart@linux.intel.com>
+From: Kukjin Kim <kgene.kim@samsung.com>
+Subject: RE: [PATCH 1/2] serial: samsung: Remove NULL checking for baud clock
+Date: Wed, 20 Jun 2012 13:28:36 +0900
+Message-ID: <028e01cd4e9d$28cbcf90$7a636eb0$%kim@samsung.com>
+References: <002d01cd3988$c0d914c0$428b3e40$%kim@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:36428 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755171Ab2FSWBP (ORCPT
+Received: from mailout2.samsung.com ([203.254.224.25]:37611 "EHLO
+	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751169Ab2FTE2h (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Jun 2012 18:01:15 -0400
-In-Reply-To: <34b5e216a6dbd83d282dad22c2644136c652c34a.1340139586.git.dvhart@linux.intel.com>
+	Wed, 20 Jun 2012 00:28:37 -0400
+In-reply-to: 
+Content-language: ko
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Darren Hart <dvhart@linux.intel.com>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Tomoya MORINAGA <tomoya.rohm@gmail.com>, Feng Tang <feng.tang@intel.com>, Alexander Stein <alexander.stein@systec-electronic.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+To: 'Kukjin Kim' <kgene.kim@samsung.com>, 'Kyoungil Kim' <ki0351.kim@samsung.com>, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: 'Alan Cox' <alan@linux.intel.com>, 'Russell King' <rmk+kernel@arm.linux.org.uk>, gregkh@linuxfoundation.org
 
-On Tue, 19 Jun 2012 14:00:18 -0700
-Darren Hart <dvhart@linux.intel.com> wrote:
+Kukjin Kim wrote:
+> 
+> Kyoungil Kim wrote:
+> >
+> > Kyoungil Kim wrote:
+> >
+> > I missed following.
+> >
+> > Russell King suggested:
+> >
+> > As I said, drivers have no business interpreting anything but
+IS_ERR(clk)
+> > as being an error.  They should not make any other
+> > assumptions.
+> >
+> > Suggested-by: Russell King <rmk+kernel@arm.linux.org.uk>
+> >
+> > > Signed-off-by: Kyoungil Kim <ki0351.kim@samsung.com>
+> > > ---
+> > >  drivers/tty/serial/samsung.c |   21 ++++++++++++---------
+> > >  1 files changed, 12 insertions(+), 9 deletions(-)
+> > >
+> > > diff --git a/drivers/tty/serial/samsung.c
+> b/drivers/tty/serial/samsung.c
+> > > index d8b0aee..5668538 100644
+> > > --- a/drivers/tty/serial/samsung.c
+> > > +++ b/drivers/tty/serial/samsung.c
+> > > @@ -529,7 +529,7 @@ static void s3c24xx_serial_pm(struct uart_port
+> *port,
+> > unsigned int level,
+> > >
+> > >  	switch (level) {
+> > >  	case 3:
+> > > -		if (!IS_ERR(ourport->baudclk) && ourport->baudclk != NULL)
+> > > +		if (!IS_ERR(ourport->baudclk))
+> > >  			clk_disable(ourport->baudclk);
+> > >
+> > >  		clk_disable(ourport->clk);
+> > > @@ -538,7 +538,7 @@ static void s3c24xx_serial_pm(struct uart_port
+> *port,
+> > unsigned int level,
+> > >  	case 0:
+> > >  		clk_enable(ourport->clk);
+> > >
+> > > -		if (!IS_ERR(ourport->baudclk) && ourport->baudclk != NULL)
+> > > +		if (!IS_ERR(ourport->baudclk))
+> > >  			clk_enable(ourport->baudclk);
+> > >
+> > >  		break;
+> > > @@ -604,7 +604,6 @@ static unsigned int s3c24xx_serial_getclk(struct
+> > s3c24xx_uart_port *ourport,
+> > >  	char clkname[MAX_CLK_NAME_LENGTH];
+> > >  	int calc_deviation, deviation = (1 << 30) - 1;
+> > >
+> > > -	*best_clk = NULL;
+> > >  	clk_sel = (ourport->cfg->clk_sel) ? ourport->cfg->clk_sel :
+> > >  			ourport->info->def_clk_sel;
+> > >  	for (cnt = 0; cnt < info->num_clks; cnt++) {
+> > > @@ -613,7 +612,7 @@ static unsigned int s3c24xx_serial_getclk(struct
+> > s3c24xx_uart_port *ourport,
+> > >
+> > >  		sprintf(clkname, "clk_uart_baud%d", cnt);
+> > >  		clk = clk_get(ourport->port.dev, clkname);
+> > > -		if (IS_ERR_OR_NULL(clk))
+> > > +		if (IS_ERR(clk))
+> > >  			continue;
+> > >
+> > >  		rate = clk_get_rate(clk);
+> > > @@ -684,7 +683,7 @@ static void s3c24xx_serial_set_termios(struct
+> > uart_port *port,
+> > >  {
+> > >  	struct s3c2410_uartcfg *cfg = s3c24xx_port_to_cfg(port);
+> > >  	struct s3c24xx_uart_port *ourport = to_ourport(port);
+> > > -	struct clk *clk = NULL;
+> > > +	struct clk *clk = ERR_PTR(-EINVAL);
+> > >  	unsigned long flags;
+> > >  	unsigned int baud, quot, clk_sel = 0;
+> > >  	unsigned int ulcon;
+> > > @@ -705,7 +704,7 @@ static void s3c24xx_serial_set_termios(struct
+> > uart_port *port,
+> > >  	quot = s3c24xx_serial_getclk(ourport, baud, &clk, &clk_sel);
+> > >  	if (baud == 38400 && (port->flags & UPF_SPD_MASK) == UPF_SPD_CUST)
+> > >  		quot = port->custom_divisor;
+> > > -	if (!clk)
+> > > +	if (IS_ERR(clk))
+> > >  		return;
+> > >
+> > >  	/* check to see if we need  to change clock source */
+> > > @@ -713,9 +712,9 @@ static void s3c24xx_serial_set_termios(struct
+> > uart_port *port,
+> > >  	if (ourport->baudclk != clk) {
+> > >  		s3c24xx_serial_setsource(port, clk_sel);
+> > >
+> > > -		if (ourport->baudclk != NULL && !IS_ERR(ourport->baudclk)) {
+> > > +		if (!IS_ERR(ourport->baudclk)) {
+> > >  			clk_disable(ourport->baudclk);
+> > > -			ourport->baudclk  = NULL;
+> > > +			ourport->baudclk = ERR_PTR(-EINVAL);
+> > >  		}
+> > >
+> > >  		clk_enable(clk);
+> > > @@ -1160,6 +1159,9 @@ static ssize_t s3c24xx_serial_show_clksrc(struct
+> > device *dev,
+> > >  	struct uart_port *port = s3c24xx_dev_to_port(dev);
+> > >  	struct s3c24xx_uart_port *ourport = to_ourport(port);
+> > >
+> > > +	if (IS_ERR(ourport->baudclk))
+> > > +		return -EINVAL;
+> > > +
+> > >  	return snprintf(buf, PAGE_SIZE, "* %s\n", ourport->baudclk->name);
+> > >  }
+> > >
+> > > @@ -1200,6 +1202,7 @@ static int s3c24xx_serial_probe(struct
+> > platform_device *pdev)
+> > >  		return -ENODEV;
+> > >  	}
+> > >
+> > > +	ourport->baudclk = ERR_PTR(-EINVAL);
+> > >  	ourport->info = ourport->drv_data->info;
+> > >  	ourport->cfg = (pdev->dev.platform_data) ?
+> > >  			(struct s3c2410_uartcfg *)pdev->dev.platform_data :
+> > > @@ -1387,7 +1390,7 @@ s3c24xx_serial_get_options(struct uart_port
+> *port,
+> > int *baud,
+> > >  		sprintf(clk_name, "clk_uart_baud%d", clk_sel);
+> > >
+> > >  		clk = clk_get(port->dev, clk_name);
+> > > -		if (!IS_ERR(clk) && clk != NULL)
+> > > +		if (!IS_ERR(clk))
+> > >  			rate = clk_get_rate(clk);
+> > >  		else
+> > >  			rate = 1;
+> > > --
+> > > 1.7.1
+> 
+> Looks ok to me, will apply.
+> Thanks.
+> 
+(Cc'ed Greg)
 
-> pch_uart_interrupt() takes priv->port.lock which leads to two recursive
-> spinlock calls if low_latency==1 or CONFIG_PREEMPT_RT_FULL=y (one
-> otherwise):
-> 
-> pch_uart_interrupt
->   spin_lock_irqsave(priv->port.lock, flags)
->   case PCH_UART_IID_RDR_TO (data ready)
->   handle_rx_to
->     push_rx
->       tty_port_tty_get
->         spin_lock_irqsave(&port->lock, flags) <--- already hold this lock
->         ...
->       tty_flip_buffer_push
->         ...
->         flush_to_ldisc
->           spin_lock_irqsave(&tty->buf.lock)
->             spin_lock_irqsave(&tty->buf.lock)
->             disc->ops->receive_buf(tty, char_buf)
->               n_tty_receive_buf
->                 tty->ops->flush_chars()
->                 uart_flush_chars
->                   uart_start
->                     spin_lock_irqsave(&port->lock) <--- already hold this lock
-> 
-> Avoid this by using a dedicated lock to protect the eg20t_port structure
-> and IO access to its membase. This is more consistent with the 8250
-> driver.  Ensure priv->lock is always take prior to priv->port.lock when
-> taken at the same time.
-> 
-> V2: Remove inadvertent whitespace change.
-> V3: Account for oops_in_progress for the private lock in
->     pch_console_write().
-> 
-> Note: Like the 8250 driver, if a printk is introduced anywhere inside
->       the pch_console_write() critical section, the kernel will hang
->       on a recursive spinlock on the private lock. The oops case is
->       handled by using a trylock in the oops_in_progress case.
-> 
-> Signed-off-by: Darren Hart <dvhart@linux.intel.com>
-> CC: Tomoya MORINAGA <tomoya.rohm@gmail.com>
-> CC: Feng Tang <feng.tang@intel.com>
-> CC: Alexander Stein <alexander.stein@systec-electronic.com>
-> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> CC: Alan Cox <alan@linux.intel.com>
-> CC: linux-serial@vger.kernel.org
+I think, would be better if Greg could pick this up in his tree.
 
-Acked-by: Alan Cox <alan@linux.intel.com>
+Acked-by: Kukjin Kim <kgene.kim@samsung.com>
+
+Thanks.
+
+Best regards,
+Kgene.
+--
+Kukjin Kim <kgene.kim@samsung.com>, Senior Engineer,
+SW Solution Development Team, Samsung Electronics Co., Ltd.
+
