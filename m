@@ -1,54 +1,47 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 02/12] usb: fix sillies in the metro USB driver
-Date: Fri, 22 Jun 2012 16:38:45 +0100
-Message-ID: <20120622153655.1405.21453.stgit@localhost.localdomain>
+Subject: [PATCH 03/12] tty: note race we need to fix
+Date: Fri, 22 Jun 2012 16:40:20 +0100
+Message-ID: <20120622153900.1405.47389.stgit@localhost.localdomain>
 References: <20120622153600.1405.15575.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:40734 "EHLO
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:40738 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1762276Ab2FVPWx (ORCPT
+	with ESMTP id S1762296Ab2FVPYc (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 22 Jun 2012 11:22:53 -0400
+	Fri, 22 Jun 2012 11:24:32 -0400
 In-Reply-To: <20120622153600.1405.15575.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: greg@kroah.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Bits noticed doing the termios conversion
+This was identified by Vincent Pillet with a high speed interface that uses
+low latency mode. In the low latency case we have a tiny race but it can
+be hit.
 
 Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
 
- drivers/usb/serial/metro-usb.c |    8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ drivers/tty/n_tty.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/usb/serial/metro-usb.c b/drivers/usb/serial/metro-usb.c
-index 81423f7..bad5f0c 100644
---- a/drivers/usb/serial/metro-usb.c
-+++ b/drivers/usb/serial/metro-usb.c
-@@ -130,20 +130,14 @@ static void metrousb_read_int_callback(struct urb *urb)
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index ee1c268..4f34491 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -1432,6 +1432,12 @@ static void n_tty_receive_buf(struct tty_struct *tty, const unsigned char *cp,
+ 	 */
+ 	if (tty->receive_room < TTY_THRESHOLD_THROTTLE)
+ 		tty_throttle(tty);
++
++        /* FIXME: there is a tiny race here if the receive room check runs
++           before the other work executes and empties the buffer (upping
++           the receiving room and unthrottling. We then throttle and get
++           stuck. This has been observed and traced down by Vincent Pillet/
++           We need to address this when we sort out out the rx path locking */
+ }
  
- 	/* Set the data read from the usb port into the serial port buffer. */
- 	tty = tty_port_tty_get(&port->port);
--	if (!tty) {
--		dev_err(&port->dev, "%s - bad tty pointer - exiting\n",
--			__func__);
--		return;
--	}
--
- 	if (tty && urb->actual_length) {
- 		/* Loop through the data copying each byte to the tty layer. */
- 		tty_insert_flip_string(tty, data, urb->actual_length);
- 
- 		/* Force the data to the tty layer. */
- 		tty_flip_buffer_push(tty);
-+		tty_kref_put(tty);
- 	}
--	tty_kref_put(tty);
- 
- 	/* Set any port variables. */
- 	spin_lock_irqsave(&metro_priv->lock, flags);
+ int is_ignored(int sig)
 
