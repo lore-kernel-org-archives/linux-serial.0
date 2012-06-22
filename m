@@ -1,47 +1,40 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 03/12] tty: note race we need to fix
-Date: Fri, 22 Jun 2012 16:40:20 +0100
-Message-ID: <20120622153900.1405.47389.stgit@localhost.localdomain>
+Subject: [PATCH 04/12] gpio-sch: Fix resource leak
+Date: Fri, 22 Jun 2012 16:42:40 +0100
+Message-ID: <20120622154040.1405.28472.stgit@localhost.localdomain>
 References: <20120622153600.1405.15575.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:40738 "EHLO
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:40750 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1762296Ab2FVPYc (ORCPT
+	with ESMTP id S933196Ab2FVP0o (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 22 Jun 2012 11:24:32 -0400
+	Fri, 22 Jun 2012 11:26:44 -0400
 In-Reply-To: <20120622153600.1405.15575.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: greg@kroah.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-This was identified by Vincent Pillet with a high speed interface that uses
-low latency mode. In the low latency case we have a tiny race but it can
-be hit.
-
 Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
 
- drivers/tty/n_tty.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/gpio/gpio-sch.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index ee1c268..4f34491 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1432,6 +1432,12 @@ static void n_tty_receive_buf(struct tty_struct *tty, const unsigned char *cp,
- 	 */
- 	if (tty->receive_room < TTY_THRESHOLD_THROTTLE)
- 		tty_throttle(tty);
-+
-+        /* FIXME: there is a tiny race here if the receive room check runs
-+           before the other work executes and empties the buffer (upping
-+           the receiving room and unthrottling. We then throttle and get
-+           stuck. This has been observed and traced down by Vincent Pillet/
-+           We need to address this when we sort out out the rx path locking */
- }
+diff --git a/drivers/gpio/gpio-sch.c b/drivers/gpio/gpio-sch.c
+index 424dce8..8707d45 100644
+--- a/drivers/gpio/gpio-sch.c
++++ b/drivers/gpio/gpio-sch.c
+@@ -241,7 +241,8 @@ static int __devinit sch_gpio_probe(struct platform_device *pdev)
+ 			break;
  
- int is_ignored(int sig)
+ 		default:
+-			return -ENODEV;
++			err = -ENODEV;
++			goto err_sch_gpio_core;
+ 	}
+ 
+ 	sch_gpio_core.dev = &pdev->dev;
 
