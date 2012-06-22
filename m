@@ -1,37 +1,36 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: samsung: protect NULL dereference of clock name
-Date: Wed, 20 Jun 2012 16:55:26 -0700
-Message-ID: <20120620235526.GB31520@kroah.com>
-References: <001401cd3e3e$644fd3a0$2cef7ae0$%kim@samsung.com>
- <029001cd4e9d$2f2af9b0$8d80ed10$%kim@samsung.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: [PATCH 01/12] f81232: correct stubbed termios handler
+Date: Fri, 22 Jun 2012 16:36:42 +0100
+Message-ID: <20120622153600.1405.15575.stgit@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <029001cd4e9d$2f2af9b0$8d80ed10$%kim@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Kukjin Kim <kgene.kim@samsung.com>
-Cc: 'Kyoungil Kim' <ki0351.kim@samsung.com>, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, 'Alan Cox' <alan@linux.intel.com>, 'KeyYoung Park' <keyyoung.park@samsung.com>, 'Huisung Kang' <hs1218.kang@samsung.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:40730 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1762237Ab2FVPUt (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 22 Jun 2012 11:20:49 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: greg@kroah.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Wed, Jun 20, 2012 at 01:28:47PM +0900, Kukjin Kim wrote:
-> Kyoungil Kim wrote:
-> > 
-> > From: KeyYoung Park <keyyoung.park@samsung.com>
-> > 
-> > When priting the serial clock source, if clock source name is null,
-> > kernel reference NULL point.
-> > 
-> > Signed-off-by: KeyYoung Park <keyyoung.park@samsung.com>
-> > Signed-off-by: Huisung Kang <hs1218.kang@samsung.com>
-> > Signed-off-by: Kyoungil Kim <ki0351.kim@samsung.com>
-> 
-> (Cc'ed Greg)
-> 
-> Acked-by: Kukjin Kim <kgene.kim@samsung.com>
-> 
-> Greg, could you please pick this up?
+Signed-off-by: Alan Cox <alan@linux.intel.com>
+---
 
-Already have, thanks.
+ drivers/usb/serial/f81232.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-greg k-h
+diff --git a/drivers/usb/serial/f81232.c b/drivers/usb/serial/f81232.c
+index 499b15f..acd3267 100644
+--- a/drivers/usb/serial/f81232.c
++++ b/drivers/usb/serial/f81232.c
+@@ -177,6 +177,7 @@ static void f81232_set_termios(struct tty_struct *tty,
+ 		return;
+ 
+ 	/* Do the real work here... */
++	tty_termios_copy_hw(&tty->termios, old_termios);
+ }
+ 
+ static int f81232_tiocmget(struct tty_struct *tty)
+
