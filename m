@@ -1,43 +1,23 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 09/12] commit 22126843cb3c2a782c2d52614486115f3e9db478
-Date: Fri, 22 Jun 2012 18:04:23 +0100
-Message-ID: <20120622180423.24c0001b@pyramind.ukuu.org.uk>
-References: <20120622153600.1405.15575.stgit@localhost.localdomain>
-	<20120622154438.1405.43658.stgit@localhost.localdomain>
-	<20120622153657.GB6081@kroah.com>
+From: Shawnee Hollingshead <paulchhj@yahoo.com>
+Subject: What'd u say if I offer meeting???
+Date: Sat, 23 Jun 2012 16:04:02 +0100 (BST)
+Message-ID: <1340463842.28297.YahooMailNeo@web132101.mail.ird.yahoo.com>
+Reply-To: Shawnee Hollingshead <shawnee.hollingshead@singapore.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:40936 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756138Ab2FVRAh (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 22 Jun 2012 13:00:37 -0400
-In-Reply-To: <20120622153657.GB6081@kroah.com>
+Received: from nm10-vm0.bullet.mail.ird.yahoo.com ([77.238.189.90]:48498 "HELO
+	nm10-vm0.bullet.mail.ird.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1752048Ab2FWPEE convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 23 Jun 2012 11:04:04 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: "sibyjc@yahoo.co.in" <sibyjc@yahoo.co.in>
 
-On Fri, 22 Jun 2012 08:36:57 -0700
-Greg KH <gregkh@linuxfoundation.org> wrote:
-
-> On Fri, Jun 22, 2012 at 04:44:59PM +0100, Alan Cox wrote:
-> > From: Alan Cox <alan@linux.intel.com>
-> > 
-> > tty: move the termios object into the tty
-> > 
-> >     This will let us sort out a whole pile of tty related races. The
-> >     alternative would be to keep points and refcount the termios objects.
-> >     However
-> >     1. They are tiny anyway
-> >     2. Many devices don't use the stored copies
-> >     3. We can remove a pty special case
-> > 
-> >     Signed-off-by: Alan Cox <alan@linux.intel.com>
-> 
-> Odd subject line, and formatting, did something go wrong with your
-> scripts?
-
-Apparently so. I will given them a stern talking to and repost
+How are you doing, 
+I am Shawnee - playful babe with a lot of mad thoughts in a head! 
+What I look for here? You know, I am not sure! It could be just interesting conversations with guys, maybe some flirt, maybe some bedroom relations or maybe something like serious relations if we're lucky. Who knows, maybe you're what I wanted to find here?!  
+Well, bye-bye, give me a message, my sweet boy. I gonna wait for it! Kissing
+Shawnee
