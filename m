@@ -1,76 +1,47 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: serial/mxs-auart: Unable to get interrupt counter from user space
-Date: Sun, 24 Jun 2012 10:53:07 -0700
-Message-ID: <20120624175307.GB29455@kroah.com>
-References: <4FE616CC.9000709@lategoodbye.de>
- <20120624022547.GA7307@kroah.com>
- <4FE6DA89.50503@lategoodbye.de>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: Re: [PATCH 02/12] usb: fix sillies in the metro USB driver
+Date: Sun, 24 Jun 2012 23:49:22 +0200
+Message-ID: <4FE78B62.4090106@suse.cz>
+References: <20120622153600.1405.15575.stgit@localhost.localdomain> <20120622153655.1405.21453.stgit@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pz0-f46.google.com ([209.85.210.46]:65199 "EHLO
-	mail-pz0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751545Ab2FXRxM (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 24 Jun 2012 13:53:12 -0400
-Received: by dady13 with SMTP id y13so4362264dad.19
-        for <linux-serial@vger.kernel.org>; Sun, 24 Jun 2012 10:53:11 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <4FE6DA89.50503@lategoodbye.de>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20120622153655.1405.21453.stgit@localhost.localdomain>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: greg@kroah.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@gmail.com>
 List-Id: linux-serial@vger.kernel.org
-To: Stefan Wahren <info@lategoodbye.de>
-Cc: linux-serial@vger.kernel.org
 
-On Sun, Jun 24, 2012 at 11:14:49AM +0200, Stefan Wahren wrote:
-> Hi,
+On 06/22/2012 05:38 PM, Alan Cox wrote:
+> Bits noticed doing the termios conversion
 > 
-> Am 24.06.2012 04:25, schrieb Greg KH:
-> >On Sat, Jun 23, 2012 at 09:19:40PM +0200, Stefan Wahren wrote:
-> >>Hello,
-> >>
-> >>i'm using Linux 2.6.35 at ARM and i experience the following issue
-> >>with the mxs-auart (App UART). If i transmit and receive data over
-> >>the serial port (using mxs-auart), all the interrupt counter (RX,
-> >>TX, frame, parity, break) accessed from user space (ioctl with
-> >>TIOCGICOUNT or /proc/tty/driver/auart) are zero.
-> >>
-> >>Here is the scenario to reproduce the problem:
-> >>
-> >>1. echoing some characters to the uart device
-> >>2. fetch the statistics from proc-Filesystem
-> >>
-> >>Expected results: transmit counter greater than zero
-> >>
-> >>Observed results: transmit counter is always zero
-> >>
-> >>The same szenario on the mxs-duart (Debug UART) doesn't show this problem.
-> >>
-> >>Is this a bug in mxs-auart or just not implemented?
-> >
-> >We disabled the transmit counter from being displayed a while ago for
-> >security reasons, perhaps that is what you are seeing?
+> Signed-off-by: Alan Cox <alan@linux.intel.com>
+> ---
 > 
-> Does this security fix affect serial_core or only mxs-auart?
-
-I do not recall, sorry.
-
-> Prevent this security fix from reading all counter (TX, RX, frame
-> erros, parity errors, breaks)?
+>  drivers/usb/serial/metro-usb.c |    8 +-------
+>  1 file changed, 1 insertion(+), 7 deletions(-)
 > 
-> Do you mean this security issue (
-> https://bugzilla.redhat.com/show_bug.cgi?id=648660 ) ?
+> diff --git a/drivers/usb/serial/metro-usb.c b/drivers/usb/serial/metro-usb.c
+> index 81423f7..bad5f0c 100644
+> --- a/drivers/usb/serial/metro-usb.c
+> +++ b/drivers/usb/serial/metro-usb.c
+> @@ -130,20 +130,14 @@ static void metrousb_read_int_callback(struct urb *urb)
+...
+>  	if (tty && urb->actual_length) {
+>  		/* Loop through the data copying each byte to the tty layer. */
+>  		tty_insert_flip_string(tty, data, urb->actual_length);
+>  
+>  		/* Force the data to the tty layer. */
+>  		tty_flip_buffer_push(tty);
+> +		tty_kref_put(tty);
+>  	}
+> -	tty_kref_put(tty);
 
-Nope, a different one.
+This doesn't seem right. (Depends on whether tty is non-null iff
+urb->actual_length is non-zero.)
 
-> >Also, you do realize just how old 2.6.35 really is, right?
-> 
-> Unfortunaley yes, Freescale the vendor delivers the Board Support
-> Package only with 2.6.35.
-
-I suggest you contact Freescale for support for this issue then, as
-there's nothing we can do about that old kernel version, sorry.
-
-good luck,
-
-greg k-h
+thanks,
+-- 
+js
+suse labs
