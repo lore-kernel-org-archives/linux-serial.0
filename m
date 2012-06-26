@@ -1,47 +1,41 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH] serial/amba-pl011: move custom pin control to driver
-Date: Tue, 26 Jun 2012 02:46:57 +0800
-Message-ID: <CACRpkdb9=m7Qiv+hQy3sDYAQNO5+_y5fW=av0-eW589qjL5TxQ@mail.gmail.com>
-References: <1337800726-4076-1-git-send-email-linus.walleij@stericsson.com>
-	<CAOh2x==OPVVLeKxCT0mkYX3NmOjGQRcsSY=GHCaHEJfy6wOg3Q@mail.gmail.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: Patch for panic in n_tty_read()
+Date: Tue, 26 Jun 2012 15:21:59 +0100
+Message-ID: <20120626152159.2a34dcaf@pyramind.ukuu.org.uk>
+References: <4FE886C6.7090606@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qa0-f46.google.com ([209.85.216.46]:52214 "EHLO
-	mail-qa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754029Ab2FYSq6 (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:44736 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756894Ab2FZOSN (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 25 Jun 2012 14:46:58 -0400
-Received: by qadb17 with SMTP id b17so1518152qad.19
-        for <linux-serial@vger.kernel.org>; Mon, 25 Jun 2012 11:46:57 -0700 (PDT)
-In-Reply-To: <CAOh2x==OPVVLeKxCT0mkYX3NmOjGQRcsSY=GHCaHEJfy6wOg3Q@mail.gmail.com>
+	Tue, 26 Jun 2012 10:18:13 -0400
+In-Reply-To: <4FE886C6.7090606@redhat.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: viresh kumar <viresh.kumar@linaro.org>
-Cc: Linus Walleij <linus.walleij@stericsson.com>, Vipul Kumar SAMAR <vipulkumar.samar@st.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Lee Jones <lee.jones@linaro.org>, Shawn Guo <shawn.guo@linaro.org>, Russell King <rmk+kernel@arm.linux.org.uk>, spear-devel <spear-devel@list.st.com>
+To: Stanislav Kozina <skozina@redhat.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-On Mon, Jun 25, 2012 at 7:31 PM, viresh kumar <viresh.kumar@linaro.org> wrote:
+> We had few customers who met panics in n_tty_read() with following 
+> backtrace:
+> 
+>       #8 [ffff880018b8dcd0] page_fault at ffffffff814ddfe5
+>          [exception RIP: n_tty_read+0x2c9]
+> <register output removed>
+>       #9 [ffff880018b8dea0] tty_read at ffffffff81300b16
+>      #10 [ffff880018b8def0] vfs_read at ffffffff81172f85
+>      #11 [ffff880018b8df30] sys_read at ffffffff811730c1
+>      #12 [ffff880018b8df80] system_call_fastpath at ffffffff8100b172
 
-> People testing SPEAr with v3.5-rc1 saw that serial devices don't show
-> up during boot and they
-> actually return with error from this point, after Shawn's last patch.
-> That will still happen with
-> this patch i believe.
->
-> What is expected from Platforms to handle this? AFAICR, we haven't
-> done anything special
-> to bind a pinctrl node to a struct dev for uart.
+What serial driver are they using when they hit this ?
 
-Yeah as Fabio pointed out, activate dummies is the quick
-fix.
+> 
+> My patch for this panic is attached (tty_panic.patch), in short - I 
+> believe that we need to hold &tty->read_lock while checking 
+> tty->read_cnt in while-loop condition in n_tty_read() here:
 
-The "real" fix is to provide atleast a default pin map table
-entry (sleep is not needed).
+We can't hold the lock for the loop because we touch user space memory.
 
-However I think you could benefit from using this on
-SPEAr by providing two different pinconf lists for
-the default and sleep modes as the ux500 does:
-usually this saves some power.
-
-Yours,
-Linus Walleij
+Alan
