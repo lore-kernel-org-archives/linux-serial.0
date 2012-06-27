@@ -1,61 +1,64 @@
 From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH 01/12] f81232: correct stubbed termios handler
-Date: Tue, 26 Jun 2012 19:22:32 -0700
-Message-ID: <20120627022232.GA32709@kroah.com>
+Subject: Re: [PATCH 05/12] kobil_sct: Fix some bogus tty handling
+Date: Tue, 26 Jun 2012 19:24:04 -0700
+Message-ID: <20120627022404.GA3314@kroah.com>
 References: <20120622153600.1405.15575.stgit@localhost.localdomain>
+ <20120622154251.1405.12270.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:40713 "EHLO
-	out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751159Ab2F0CWe (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 26 Jun 2012 22:22:34 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20120622153600.1405.15575.stgit@localhost.localdomain>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+In-Reply-To: <20120622154251.1405.12270.stgit@localhost.localdomain>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jun 22, 2012 at 04:36:42PM +0100, Alan Cox wrote:
+On Fri, Jun 22, 2012 at 04:43:22PM +0100, Alan Cox wrote:
+> Stuff noticed while doing the termios conversion.
+>=20
 > Signed-off-by: Alan Cox <alan@linux.intel.com>
 > ---
 >=20
->  drivers/usb/serial/f81232.c |    1 +
->  1 file changed, 1 insertion(+)
+>  drivers/usb/serial/kobil_sct.c |    6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 >=20
-> diff --git a/drivers/usb/serial/f81232.c b/drivers/usb/serial/f81232.=
-c
-> index 499b15f..acd3267 100644
-> --- a/drivers/usb/serial/f81232.c
-> +++ b/drivers/usb/serial/f81232.c
-> @@ -177,6 +177,7 @@ static void f81232_set_termios(struct tty_struct =
-*tty,
->  		return;
-> =20
->  	/* Do the real work here... */
-> +	tty_termios_copy_hw(&tty->termios, old_termios);
+> diff --git a/drivers/usb/serial/kobil_sct.c b/drivers/usb/serial/kobi=
+l_sct.c
+> index fafeabb..0852472 100644
+> --- a/drivers/usb/serial/kobil_sct.c
+> +++ b/drivers/usb/serial/kobil_sct.c
+> @@ -192,8 +192,8 @@ static void kobil_init_termios(struct tty_struct =
+*tty)
+>  {
+>  	/* Default to echo off and other sane device settings */
+>  	tty->termios->c_lflag =3D 0;
+> -	tty->termios->c_lflag &=3D ~(ISIG | ICANON | ECHO | IEXTEN | XCASE)=
+;
+> -	tty->termios->c_iflag =3D IGNBRK | IGNPAR | IXOFF;
+> +	tty->termios->c_iflag &=3D ~(ISIG | ICANON | ECHO | IEXTEN | XCASE)=
+;
+> +	tty->termios->c_iflag |=3D IGNBRK | IGNPAR | IXOFF;
+>  	/* do NOT translate CR to CR-NL (0x0A -> 0x0A 0x0D) */
+>  	tty->termios->c_oflag &=3D ~ONLCR;
 >  }
+> @@ -588,7 +588,7 @@ static void kobil_set_termios(struct tty_struct *=
+tty,
+>  	if (priv->device_type =3D=3D KOBIL_USBTWIN_PRODUCT_ID ||
+>  			priv->device_type =3D=3D KOBIL_KAAN_SIM_PRODUCT_ID) {
+>  		/* This device doesn't support ioctl calls */
+> -		*tty->termios =3D *old;
+> +		tty_termios_copy_hw(tty->termios, old_termios);
+>  		return;
+>  	}
+> =20
 
-This patch breaks the build:
+This patch also breaks the build:
 
-drivers/usb/serial/f81232.c: In function =E2=80=98f81232_set_termios=E2=
+drivers/usb/serial/kobil_sct.c: In function =E2=80=98kobil_set_termios=E2=
 =80=99:
-drivers/usb/serial/f81232.c:180:2: warning: passing argument 1 of =E2=80=
-=98tty_termios_copy_hw=E2=80=99 from incompatible pointer type [enabled=
- by default]
-include/linux/tty.h:454:13: note: expected =E2=80=98struct ktermios *=E2=
-=80=99 but argument is of type =E2=80=98struct ktermios **=E2=80=99
-
-I know the driver isn't complete, but it should at least build :)
-
-thanks,
-
-greg k-h
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+drivers/usb/serial/kobil_sct.c:591:37: error: =E2=80=98old_termios=E2=80=
+=99 undeclared (first use in this function)
+drivers/usb/serial/kobil_sct.c:591:37: note: each undeclared identifier=
+ is reported only once for each function it appears in
