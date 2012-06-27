@@ -1,34 +1,45 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 04/12] gpio-sch: Fix leak of resource
-Date: Wed, 27 Jun 2012 12:32:51 -0700
-Message-ID: <20120627193251.GA2358@kroah.com>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH 01/12] f81232: correct stubbed termios handler
+Date: Wed, 27 Jun 2012 12:35:32 -0700
+Message-ID: <20120627193532.GA5654@kroah.com>
 References: <20120627112102.5678.4141.stgit@localhost.localdomain>
- <20120627112140.5678.79917.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:64660 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755636Ab2F0Tc4 (ORCPT
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:42972 "EHLO
+	out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1757040Ab2F0Tfe (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 27 Jun 2012 15:32:56 -0400
-Received: by pbbrp8 with SMTP id rp8so1976432pbb.19
-        for <linux-serial@vger.kernel.org>; Wed, 27 Jun 2012 12:32:56 -0700 (PDT)
+	Wed, 27 Jun 2012 15:35:34 -0400
 Content-Disposition: inline
-In-Reply-To: <20120627112140.5678.79917.stgit@localhost.localdomain>
+In-Reply-To: <20120627112102.5678.4141.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Cc: linux-serial@vger.kernel.org
 
-On Wed, Jun 27, 2012 at 12:21:42PM +0100, Alan Cox wrote:
+On Wed, Jun 27, 2012 at 12:21:04PM +0100, Alan Cox wrote:
 > From: Alan Cox <alan@linux.intel.com>
 > 
 > Signed-off-by: Alan Cox <alan@linux.intel.com>
 > ---
 > 
->  drivers/gpio/gpio-sch.c |    3 ++-
+>  drivers/usb/serial/f81232.c |    1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/usb/serial/f81232.c b/drivers/usb/serial/f81232.c
+> index 499b15f..acd3267 100644
+> --- a/drivers/usb/serial/f81232.c
+> +++ b/drivers/usb/serial/f81232.c
+> @@ -177,6 +177,7 @@ static void f81232_set_termios(struct tty_struct *tty,
+>  		return;
+>  
+>  	/* Do the real work here... */
+> +	tty_termios_copy_hw(&tty->termios, old_termios);
 
-Again, I can't take this patch, it should go to the GPIO maintainer.
+This patch still breaks the build, so I'm guessing the others still have
+the same issues I reported yesterday?
+
+Care to redo these?
 
 greg k-h
