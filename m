@@ -1,49 +1,61 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: [PATCH 3/3] serial/8250: delete WR SBC850 UART quirk handling
-Date: Tue, 26 Jun 2012 15:54:29 -0400
-Message-ID: <1340740469-31445-4-git-send-email-paul.gortmaker@windriver.com>
-References: <1340740469-31445-1-git-send-email-paul.gortmaker@windriver.com>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH 01/12] f81232: correct stubbed termios handler
+Date: Tue, 26 Jun 2012 19:22:32 -0700
+Message-ID: <20120627022232.GA32709@kroah.com>
+References: <20120622153600.1405.15575.stgit@localhost.localdomain>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.windriver.com ([147.11.1.11]:64962 "EHLO
-	mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751590Ab2FZTzE (ORCPT
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:40713 "EHLO
+	out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751159Ab2F0CWe (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 26 Jun 2012 15:55:04 -0400
-In-Reply-To: <1340740469-31445-1-git-send-email-paul.gortmaker@windriver.com>
+	Tue, 26 Jun 2012 22:22:34 -0400
+Content-Disposition: inline
+In-Reply-To: <20120622153600.1405.15575.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: benh@kernel.crashing.org
-Cc: linuxppc-dev@lists.ozlabs.org, Paul Gortmaker <paul.gortmaker@windriver.com>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-We've are dropping the support for the EOL SBC8560, so we can
-also delete this variant of the Alpha quirk support.
+On Fri, Jun 22, 2012 at 04:36:42PM +0100, Alan Cox wrote:
+> Signed-off-by: Alan Cox <alan@linux.intel.com>
+> ---
+>=20
+>  drivers/usb/serial/f81232.c |    1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/drivers/usb/serial/f81232.c b/drivers/usb/serial/f81232.=
+c
+> index 499b15f..acd3267 100644
+> --- a/drivers/usb/serial/f81232.c
+> +++ b/drivers/usb/serial/f81232.c
+> @@ -177,6 +177,7 @@ static void f81232_set_termios(struct tty_struct =
+*tty,
+>  		return;
+> =20
+>  	/* Do the real work here... */
+> +	tty_termios_copy_hw(&tty->termios, old_termios);
+>  }
 
-Cc: Alan Cox <alan@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
----
- drivers/tty/serial/8250/8250.h |    7 -------
- 1 files changed, 0 insertions(+), 7 deletions(-)
+This patch breaks the build:
 
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index f9719d1..ffd1e6e 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -119,13 +119,6 @@ static inline void serial_dl_write(struct uart_8250_port *up, int value)
-  * is cleared, the machine locks up with endless interrupts.
-  */
- #define ALPHA_KLUDGE_MCR  (UART_MCR_OUT2 | UART_MCR_OUT1)
--#elif defined(CONFIG_SBC8560)
--/*
-- * WindRiver did something similarly broken on their SBC8560 board. The
-- * UART tristates its IRQ output while OUT2 is clear, but they pulled
-- * the interrupt line _up_ instead of down, so if we register the IRQ
-- * while the UART is in that state, we die in an IRQ storm. */
--#define ALPHA_KLUDGE_MCR (UART_MCR_OUT2)
- #else
- #define ALPHA_KLUDGE_MCR 0
- #endif
--- 
-1.7.9.1
+drivers/usb/serial/f81232.c: In function =E2=80=98f81232_set_termios=E2=
+=80=99:
+drivers/usb/serial/f81232.c:180:2: warning: passing argument 1 of =E2=80=
+=98tty_termios_copy_hw=E2=80=99 from incompatible pointer type [enabled=
+ by default]
+include/linux/tty.h:454:13: note: expected =E2=80=98struct ktermios *=E2=
+=80=99 but argument is of type =E2=80=98struct ktermios **=E2=80=99
 
+I know the driver isn't complete, but it should at least build :)
+
+thanks,
+
+greg k-h
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
