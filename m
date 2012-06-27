@@ -1,45 +1,43 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH 06/12] 8250: use the 8250 register interface not the
- legacy one
-Date: Tue, 26 Jun 2012 19:30:24 -0700
-Message-ID: <20120627023024.GA13576@kroah.com>
-References: <20120622153600.1405.15575.stgit@localhost.localdomain>
- <20120622154333.1405.21372.stgit@localhost.localdomain>
+From: System Administrator <ggunes@adu.edu.tr>
+Subject: sua caixa de correio
+Date: Wed, 27 Jun 2012 12:04:14 +0300 (EEST)
+Message-ID: <33373008.6813.1340787854089.JavaMail.root@zimbra>
+Reply-To: System Administrator <"upgrade..unit24"@inMail24.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:39355 "EHLO
-	out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751159Ab2F0Ca0 (ORCPT
+Received: from trendimss.adu.edu.tr ([194.27.38.11]:52156 "EHLO
+	TRENDIMSS.adu.edu.tr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753605Ab2F0JhQ convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 26 Jun 2012 22:30:26 -0400
-Content-Disposition: inline
-In-Reply-To: <20120622154333.1405.21372.stgit@localhost.localdomain>
+	Wed, 27 Jun 2012 05:37:16 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Fri, Jun 22, 2012 at 04:43:51PM +0100, Alan Cox wrote:
-> @@ -69,7 +69,6 @@ struct uart_port;
->  struct uart_8250_port;
->  
->  int serial8250_register_8250_port(struct uart_8250_port *);
-> -int serial8250_register_port(struct uart_port *);
 
-There are still in-kernel callers of this function, so I don't think
-it's safe to remove just yet, otherwise the build will break:
+ATEN=C3=87=C3=83O;
 
-drivers/char/mwave/mwavedd.c:   return serial8250_register_port(&uart);
-drivers/misc/ibmasm/uart.c:     sp->serial_line = serial8250_register_port(&uport);
-drivers/net/ethernet/sgi/ioc3-eth.c:    serial8250_register_port(&port);
-drivers/tty/serial/of_serial.c:         ret = serial8250_register_port(&port);
+Sua caixa de correio excedeu o limite de armazenamento que =C3=A9 de 5 =
+GB, como definido pelo administrador, que est=C3=A1 atualmente em execu=
+=C3=A7=C3=A3o no 10.9GB, voc=C3=AA pode n=C3=A3o ser capaz de enviar ou=
+ receber novas mensagens at=C3=A9 que voc=C3=AA re-validar a sua caixa =
+de correio. Para revalidar sua caixa postal, envie os seguintes dados a=
+baixo:
 
-I'm stopping here on this series, I've only applied the one that added
-the comment, that seems to be the only one that compiled properly :(
+nome:
+Nome de usu=C3=A1rio:
+senha:
+Confirme a Senha:
+E-mail:
 
-Care to redo these please?
+Se voc=C3=AA n=C3=A3o conseguir revalidar sua caixa de correio, o corre=
+io ser=C3=A1 desactivado!
 
-thanks,
-
-greg k-h
+obrigado
+Administrador do Sistema
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
