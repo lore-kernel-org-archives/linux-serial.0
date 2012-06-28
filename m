@@ -1,50 +1,172 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: artpec.c / serial_core.c hardware flow control problem
-Date: Thu, 28 Jun 2012 17:24:21 +0100
-Message-ID: <20120628172421.4cb91ada@pyramind.ukuu.org.uk>
-References: <4FEC7857.6010006@axis.com>
+From: "H. Peter Anvin" <hpa@zytor.com>
+Subject: Re: [PATCH V2 5/6] x86: add CONFIG_ARM_AMBA, selected by STA2X11
+Date: Thu, 28 Jun 2012 13:06:53 -0700
+Message-ID: <4FECB95D.7010200@zytor.com>
+References: <cover.1338222460.git.rubini@gnudd.com> <f85fefb10b7a7407b77180be65b18bf0426145b9.1338222461.git.rubini@gnudd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:43099 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754949Ab2F1QU0 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 28 Jun 2012 12:20:26 -0400
-In-Reply-To: <4FEC7857.6010006@axis.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <f85fefb10b7a7407b77180be65b18bf0426145b9.1338222461.git.rubini@gnudd.com>
+Sender: linux-arch-owner@vger.kernel.org
+To: Alessandro Rubini <rubini@gnudd.com>
+Cc: linux-kernel@vger.kernel.org, Giancarlo Asnaghi <giancarlo.asnaghi@st.com>, Alan Cox <alan@linux.intel.com>, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Arnd Bergmann <arnd@arndb.de>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-arch@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Mikael Johansson <mikael.lars.johansson@axis.com>
-Cc: linux-serial@vger.kernel.org, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jespern@axis.com>, Johan Adolfsson <johana@axis.com>
 
-On Thu, 28 Jun 2012 17:29:27 +0200
-Mikael Johansson <mikael.lars.johansson@axis.com> wrote:
+On 05/28/2012 09:37 AM, Alessandro Rubini wrote:
+> The sta2x11 I/O Hub is a bridge from PCIe to AMBA. It reuses a number
+> of amba drivers and needs to activate core bus support.
+>
+> Signed-off-by: Alessandro Rubini <rubini@gnudd.com>
+> Acked-by: Giancarlo Asnaghi <giancarlo.asnaghi@st.com>
+> ---
+>   arch/x86/Kconfig |    4 ++++
+>   1 files changed, 4 insertions(+), 0 deletions(-)
 
-> Greetings,
-> 
-> We have a problem with drivers/serial/artpec.c (Not yet in main tree) 
-> which uses hardware supported flow control (XON/XOFF). We do cfmakeraw() 
-> and tcsetattr() from userspace to set a termios struct where (c_iflag & 
-> IXON) is not set. The problem is that the call to tcsetattr() is not 
-> propagated down to serial_artpec_set_termios(), the reason being that 
-> uart_set_termios() doesn't think that IXON is a RELEVANT_IFLAG and 
-> returns prematurely instead of calling uart_change_speed --> 
-> ops->set_termios().
-> 
-> Could this be fixed by making IXON a RELEVANT_IFLAG?:
-
-That's actually insufficient for those cases - you can set the characters
-used for things as well plus IXANY and IXOFF.
-
-It's a stupid "optimisation" and the only reason I didn't get rid of it
-before was in case it broke something else. Time for it to go.
-
-So yeah - I'd just delete it.
-
-If you are doing hardware XON/XOFF watch c_cc[VSTART] and c_cc[VSTOP].
-Those control the symbol used for soft flow control.
-
-Alan
+> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+> index 91dea918..112718f 100644
+> --- a/arch/x86/Kconfig
+> +++ b/arch/x86/Kconfig
+> @@ -500,6 +500,7 @@ config STA2X11
+>  	select SWIOTLB
+>  	select MFD_STA2X11
+>  	select ARCH_REQUIRE_GPIOLIB
+> +	select ARM_AMBA
+>  	default n
+>  	---help---
+>  	  This adds support for boards based on the STA2X11 IO-Hub,
+> @@ -2173,6 +2174,9 @@ config GEOS
+>
+>  endif # X86_32
+>
+> +config ARM_AMBA
+> +        bool
+> +
+>  config AMD_NB
+>  	def_bool y
+>  	depends on CPU_SUP_AMD && PCI
 
 
+Nacked-by: H. Peter Anvin <hpa@zytor.com>
+
+This brings in tons of code into the x86 all{yes,mod}config builds, and=
+=20
+as perhaps one could expect some of it doesn't compile.  For example:
+
+
+/home/hpa/kernel/tip.x86-platform/drivers/dma/pl330.c: In function=20
+=E2=80=98dmac_alloc_resources=E2=80=99:
+/home/hpa/kernel/tip.x86-platform/drivers/dma/pl330.c:2056:2: warning:=20
+passing argument 3 of =E2=80=98dma_alloc_attrs=E2=80=99 from incompatib=
+le
+  pointer type [enabled by default]
+In file included from=20
+/home/hpa/kernel/tip.x86-platform/include/linux/dma-mapping.h:73:0,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/drivers/dma/pl330.c:22:
+/home/hpa/kernel/tip.x86-platform/arch/x86/include/asm/dma-mapping.h:13=
+0:1:=20
+note: expected =E2=80=98dma_addr_t *=E2=80=99 but argument is of typ
+e =E2=80=98u32 *=E2=80=99
+   CC      sound/pci/au88x0/au8830.o
+/home/hpa/kernel/tip.x86-platform/drivers/dma/pl330.c:73:0: warning:=20
+"DS" redefined [enabled by default]
+In file included from=20
+/home/hpa/kernel/tip.x86-platform/arch/x86/include/asm/ptrace.h:5:0,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/arch/x86/include/asm/vm86.h:130,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/arch/x86/include/asm/processor.h:10,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/arch/x86/include/asm/thread_info.h:22=
+,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/include/linux/thread_info.h:54,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/include/linux/preempt.h:9,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/include/linux/spinlock.h:50,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/include/linux/vmalloc.h:4,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/arch/x86/include/asm/io.h:195,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/include/linux/io.h:22,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/drivers/dma/pl330.c:15:
+/home/hpa/kernel/tip.x86-platform/arch/x86/include/asm/ptrace-abi.h:13:=
+0: note:=20
+this is the location of the previous definition
+/home/hpa/kernel/tip.x86-platform/drivers/dma/pl330.c:89:0: warning:=20
+"ES" redefined [enabled by default]
+In file included from=20
+/home/hpa/kernel/tip.x86-platform/arch/x86/include/asm/ptrace.h:5:0,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/arch/x86/include/asm/vm86.h:130,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/arch/x86/include/asm/processor.h:10,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/arch/x86/include/asm/thread_info.h:22=
+,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/include/linux/thread_info.h:54,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/include/linux/preempt.h:9,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/include/linux/spinlock.h:50,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/include/linux/vmalloc.h:4,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/arch/x86/include/asm/io.h:195,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/include/linux/io.h:22,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/drivers/dma/pl330.c:15:
+/home/hpa/kernel/tip.x86-platform/arch/x86/include/asm/ptrace-abi.h:14:=
+0: note:=20
+this is the location of the previous definition
+/home/hpa/kernel/tip.x86-platform/drivers/dma/pl330.c:100:0: warning:=20
+"CS" redefined [enabled by default]
+In file included from=20
+/home/hpa/kernel/tip.x86-platform/arch/x86/include/asm/ptrace.h:5:0,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/arch/x86/include/asm/vm86.h:130,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/arch/x86/include/asm/processor.h:10,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/arch/x86/include/asm/thread_info.h:22=
+,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/include/linux/thread_info.h:54,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/include/linux/preempt.h:9,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/include/linux/spinlock.h:50,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/include/linux/vmalloc.h:4,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/arch/x86/include/asm/io.h:195,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/include/linux/io.h:22,
+                  from=20
+/home/hpa/kernel/tip.x86-platform/drivers/dma/pl330.c:15:
+/home/hpa/kernel/tip.x86-platform/arch/x86/include/asm/ptrace-abi.h:19:=
+0: note:=20
+this is the location of the previous definition
+   CC      drivers/dma/pch_dma.o
+   CC      drivers/dma/amba-pl08x.o
+/home/hpa/kernel/tip.x86-platform/drivers/dma/amba-pl08x.c:86:32: fatal=
+=20
+error: asm/hardware/pl080.h: No such file or directory
+compilation terminated.
+make[4]: *** [drivers/dma/amba-pl08x.o] Error 1
+make[3]: *** [drivers/dma] Error 2
+make[2]: *** [drivers] Error 2
+make[2]: *** Waiting for unfinished jobs....
+
+
+
+--=20
+H. Peter Anvin, Intel Open Source Technology Center
+I work for Intel.  I don't speak on their behalf.
