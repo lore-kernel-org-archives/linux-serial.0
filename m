@@ -1,75 +1,67 @@
-From: Mark Brown <broonie@opensource.wolfsonmicro.com>
+From: Alessandro Rubini <rubini@gnudd.com>
 Subject: Re: [PATCH V2 5/6] x86: add CONFIG_ARM_AMBA, selected by STA2X11
-Date: Tue, 3 Jul 2012 12:05:21 +0100
-Message-ID: <20120703110520.GI29030@opensource.wolfsonmicro.com>
-References: <4FECB95D.7010200@zytor.com>
+Date: Tue, 3 Jul 2012 15:00:42 +0200
+Message-ID: <20120703130042.GA10007@mail.gnudd.com>
+References: <2b797c83-6a3c-4051-841a-a4cfa9d1cae1@email.android.com>
+  <4FECB95D.7010200@zytor.com> <cover.1338222460.git.rubini@gnudd.com>
+ <f85fefb10b7a7407b77180be65b18bf0426145b9.1338222461.git.rubini@gnudd.com>
  <20120701104401.GA4352@mail.gnudd.com>
- <2b797c83-6a3c-4051-841a-a4cfa9d1cae1@email.android.com>
- <201207021658.27755.arnd@arndb.de>
- <20120702180518.GA25995@sirena.org.uk>
- <4FF1E37D.7050103@zytor.com>
- <20120702183324.GA29030@opensource.wolfsonmicro.com>
- <4FF1F987.3030501@zytor.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="WHz+neNWvhIGAO8A"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-arch-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <4FF1F987.3030501@zytor.com>
+In-Reply-To: <2b797c83-6a3c-4051-841a-a4cfa9d1cae1@email.android.com>
 Sender: linux-arch-owner@vger.kernel.org
-To: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Alessandro Rubini <rubini@gnudd.com>, linux-kernel@vger.kernel.org, giancarlo.asnaghi@st.com, alan@linux.intel.com, linux@arm.linux.org.uk, x86@kernel.org, gregkh@linuxfoundation.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-arch@vger.kernel.org
+To: hpa@zytor.com
+Cc: linux-kernel@vger.kernel.org, giancarlo.asnaghi@st.com, alan@linux.intel.com, linux@arm.linux.org.uk, x86@kernel.org, gregkh@linuxfoundation.org, arnd@arndb.de, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-arch@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+Peter Anvin:
+> There is no problem with adding ARM or !X86 dependencies to drivers
+> now and fixing them later or as required.
 
---WHz+neNWvhIGAO8A
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Ok. This is my summary of the compilation errors I have when
+enabling ARM_AMBA undex x86 and enabling everything that appears
+in "make oldconfig":
 
-On Mon, Jul 02, 2012 at 12:41:59PM -0700, H. Peter Anvin wrote:
-> On 07/02/2012 11:33 AM, Mark Brown wrote:
 
-> >> Last I saw I saw a patch to that effect, asked what the benefit
-> >> was, and got no answer.
+This is a sum up of the errors in all driver that are
+enabled by telling "CONFIG_ARM_AMBA=y" in the x86 config.
 
-> > Are you positive about that?  I don't recall you replying any of
-> > the times I sent out the patch and my mail archive isn't
-> > contradicting me either.
+   drivers/dma/pl330.c: register names conflict with arch symbols
+     proposed fix: use proper prefix names
 
-> I said last time I saw a patch to that effect; it might not have been
-> from you.  I might not have seen yours for whatever reason (including
-> losing it on my end.)
+   drivers/dma/amba-pl08x.c: needs <asm/hardware/pl080.h>
+     proposed fix: move pl080.h to include/linux
 
-I'm kind of surprised anyone else has been sending stuff (unless mine
-got resent by someone else, I did include it in some of my serises for
-the clock API); I know I've posted mine several times now.  In any case,
-I hope the mail you're replying to answers your question about why it's
-useful.
+   drivers/gpio/gpio-pl061.c: uses chained_irq_enter/exit
+     proposed fix: depend on CONFIG_ARM (the function only exists in arm)
 
-In general I'd probably go further and say that (at least when a generic
-implementation is available) there should be a very good reason for not
-enabling an API on an architecture rather than the other way around.
+   drivers/mmc/host/mmci.c: uses <asm/sizes.h>
+   drivers/mmc/host/mmci.c: uses readsl/writesl
+     proposed fix: use linux/sizes.h and provide readsl/writesl like others do
 
---WHz+neNWvhIGAO8A
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+   drivers/spi/spi-pl022.c: warning for an integer size mismatch
+     proposed fix: none by now
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
+   drivers/watchdog/sp805_wdt.c: uses writel_relaxed
+     proposed fix: depend on CONFIG_ARM (this is a spear-only cell by now)
 
-iQIcBAEBAgAGBQJP8tHWAAoJEBus8iNuMP3d5sUP/RGmlvwsVzYuojMtOmKiG5Ce
-ipKXHvQWqnuFbMcW0ZgauSYVy8vq4C1R/gjkAB9Kt/2zGWPWfTozVk8Qazti+WPK
-ASgxVmpX4vY2ArzXMuxnMPuMoINS2kM9G2te1Fi4iyauuuSZH0Fnue0FNkAQu4lN
-T+/fLBJJg2ONl+XjTPsXqSmKeCuBzZJayLDWoUjdNnzBMSCEB0dCQxETxUXMdOVz
-xIVBTki/His8rhgSkrZ4p0vvNayJYfqPLCLv7vnfYnt6kyGahUsUmMWgU6Fglzc5
-+AiotwP5s7FkkmP8x6S8oCQdG2ouzy1YPN9oKQi0KH7yJhj1wQeq5MMTNbY/uuLo
-37Ikj3OYp2mD6WT/oMSU4fIe5/TNDa/tqb4qZUafo8pbDtb7K5cYNVA1fTukEkmq
-w4GlQ/oJy6G+kHcVbzUCST8qxy6ENnNljafgGFxFEorDPZdnPfL9FYkjIgWz4/by
-GuZU/yFbVHTAE1lLR2iZsN0rM5u9PQ0ozz8mJOxEKLC4VZDGc6KVg/tu30tgWhSl
-yqSQ3JmkNuCiW+FMdBaD7wwX6fRSOhBs/7XYABrkpmL9dU9m01jb8svh1lIZYWAM
-yv6BriIm0Z0JJvCQagFrFPcnaeKCIOYkrFwJuorXw7KmwEXkw2uHXybNqhbrMOGN
-OV49/m5b+ukYwNADndAI
-=brpJ
------END PGP SIGNATURE-----
 
---WHz+neNWvhIGAO8A--
+So, if you agree, I would:
+
+    - fix the two dma engines (checking pl080 against russell's pending
+    patches)
+
+    - make pl061 and sp805_wdt.c depends on CONFIG_ARM
+
+    - temporarily do the same for mmci, which I'll make work soon as
+    I have it under my pci bridge
+
+    - ignore the warning on spi-pl022 until I find a fix
+
+    - resubmit my enabling of arm_amba for x86 and my pci-to-amba bridge
+    driver.
+
+thanks
+/alessandro
