@@ -1,328 +1,89 @@
-From: David Herrmann <dh.herrmann@googlemail.com>
-Subject: [PATCH 2/2] fbcon: move bit_putcs() into separate source file
-Date: Wed,  4 Jul 2012 23:48:34 +0200
-Message-ID: <1341438514-1786-3-git-send-email-dh.herrmann@googlemail.com>
-References: <1341438514-1786-1-git-send-email-dh.herrmann@googlemail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1341438514-1786-1-git-send-email-dh.herrmann@googlemail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Florian Tobias Schandinat <FlorianSchandinat@gmx.de>, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, alan@lxorguk.ukuu.org.uk, gregkh@linuxfoundation.org, David Herrmann <dh.herrmann@googlemail.com>
+From: Tomoya MORINAGA <tomoya.rohm@gmail.com>
+Subject: [PATCH 1/2] pch_uart: Fix rx error interrupt setting issue
+Date: Fri,  6 Jul 2012 17:19:42 +0900
+Message-ID: <1341562783-5571-1-git-send-email-tomoya.rohm@gmail.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:44122 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751031Ab2GFITa (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 6 Jul 2012 04:19:30 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Tomoya MORINAGA <tomoya.rohm@gmail.com>
 
-If we want to use font-draw-operations in other modules than fbcon, we
-need to split this function off of fbcon headers and sources. This also
-makes bit_putcs() totally independent of vc_* and fbcon_* structures.
+Rx Error interrupt(E.G. parity error) is not enabled.
+So, when parity error occurs, error interrupt is not occurred.
+As a result, the received data is not dropped.
 
-As scr_read() cannot be called inside of non-fbcon/vt functions, we need
-to assemble the buffer before passing it to fbdraw_font(). This slows down
-this operations a little bit but my rough benchmark showed that it didn't
-really matter. Anyway, if it does, we can still put it into VT_BUF_HAVE_RW
-conditions so platforms that don't use it won't be affected. And for other
-platforms we can add the buffer to the vc-struct so we can reuse it.
+This patch adds enable/disable rx error interrupt code.
 
-Signed-off-by: David Herrmann <dh.herrmann@googlemail.com>
+Signed-off-by: Tomoya MORINAGA <tomoya.rohm@gmail.com>
 ---
- drivers/video/console/bitblit.c | 127 ++++------------------------------------
- drivers/video/console/fbdraw.c  | 125 +++++++++++++++++++++++++++++++++++++++
- drivers/video/console/fbdraw.h  |   4 ++
- 3 files changed, 139 insertions(+), 117 deletions(-)
+ drivers/tty/serial/pch_uart.c |   18 ++++++++++++------
+ 1 files changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/video/console/bitblit.c b/drivers/video/console/bitblit.c
-index 6ec2905..c5d897b 100644
---- a/drivers/video/console/bitblit.c
-+++ b/drivers/video/console/bitblit.c
-@@ -54,132 +54,25 @@ static void bit_clear(struct vc_data *vc, struct fb_info *info, int sy,
- 	info->fbops->fb_fillrect(info, &region);
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index 4fdec6a..4d84ad0 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -754,7 +754,8 @@ static void pch_dma_rx_complete(void *arg)
+ 		tty_flip_buffer_push(tty);
+ 	tty_kref_put(tty);
+ 	async_tx_ack(priv->desc_rx);
+-	pch_uart_hal_enable_interrupt(priv, PCH_UART_HAL_RX_INT);
++	pch_uart_hal_enable_interrupt(priv, PCH_UART_HAL_RX_INT |
++					    PCH_UART_HAL_RX_ERR_INT);
  }
  
--static inline void bit_putcs_aligned(struct vc_data *vc, struct fb_info *info,
--				     const u16 *s, u32 attr, u32 cnt,
--				     u32 d_pitch, u32 s_pitch, u32 cellsize,
--				     struct fb_image *image, u8 *buf, u8 *dst)
--{
--	u16 charmask = vc->vc_hi_font_mask ? 0x1ff : 0xff;
--	u32 idx = vc->vc_font.width >> 3;
--	u8 *src;
--
--	while (cnt--) {
--		src = vc->vc_font.data + (scr_readw(s++)&
--					  charmask)*cellsize;
--
--		if (attr) {
--			fbdraw_update_attr(buf, src, attr, &vc->vc_font);
--			src = buf;
--		}
--
--		if (likely(idx == 1))
--			__fb_pad_aligned_buffer(dst, d_pitch, src, idx,
--						image->height);
--		else
--			fb_pad_aligned_buffer(dst, d_pitch, src, idx,
--					      image->height);
--
--		dst += s_pitch;
--	}
--
--	info->fbops->fb_imageblit(info, image);
--}
--
--static inline void bit_putcs_unaligned(struct vc_data *vc,
--				       struct fb_info *info, const u16 *s,
--				       u32 attr, u32 cnt, u32 d_pitch,
--				       u32 s_pitch, u32 cellsize,
--				       struct fb_image *image, u8 *buf,
--				       u8 *dst)
--{
--	u16 charmask = vc->vc_hi_font_mask ? 0x1ff : 0xff;
--	u32 shift_low = 0, mod = vc->vc_font.width % 8;
--	u32 shift_high = 8;
--	u32 idx = vc->vc_font.width >> 3;
--	u8 *src;
--
--	while (cnt--) {
--		src = vc->vc_font.data + (scr_readw(s++)&
--					  charmask)*cellsize;
--
--		if (attr) {
--			fbdraw_update_attr(buf, src, attr, &vc->vc_font);
--			src = buf;
--		}
--
--		fb_pad_unaligned_buffer(dst, d_pitch, src, idx,
--					image->height, shift_high,
--					shift_low, mod);
--		shift_low += mod;
--		dst += (shift_low >= 8) ? s_pitch : s_pitch - 1;
--		shift_low &= 7;
--		shift_high = 8 - shift_low;
--	}
--
--	info->fbops->fb_imageblit(info, image);
--
--}
--
- static void bit_putcs(struct vc_data *vc, struct fb_info *info,
- 		      const unsigned short *s, int count, int yy, int xx,
- 		      int fg, int bg)
- {
--	struct fb_image image;
--	u32 width = DIV_ROUND_UP(vc->vc_font.width, 8);
--	u32 cellsize = width * vc->vc_font.height;
--	u32 maxcnt = info->pixmap.size/cellsize;
--	u32 scan_align = info->pixmap.scan_align - 1;
--	u32 buf_align = info->pixmap.buf_align - 1;
--	u32 mod = vc->vc_font.width % 8, cnt, pitch, size;
-+	u16 *buf;
-+	int i;
- 	u32 attribute = get_attribute(info, scr_readw(s));
--	u8 *dst, *buf = NULL;
- 
--	image.fg_color = fg;
--	image.bg_color = bg;
--	image.dx = xx * vc->vc_font.width;
--	image.dy = yy * vc->vc_font.height;
--	image.height = vc->vc_font.height;
--	image.depth = 1;
-+	buf = kmalloc(sizeof(*buf) * count, GFP_KERNEL);
-+	if (!buf)
-+		return;
- 
--	if (attribute) {
--		buf = kmalloc(cellsize, GFP_KERNEL);
--		if (!buf)
--			return;
--	}
--
--	while (count) {
--		if (count > maxcnt)
--			cnt = maxcnt;
--		else
--			cnt = count;
--
--		image.width = vc->vc_font.width * cnt;
--		pitch = DIV_ROUND_UP(image.width, 8) + scan_align;
--		pitch &= ~scan_align;
--		size = pitch * image.height + buf_align;
--		size &= ~buf_align;
--		dst = fb_get_buffer_offset(info, &info->pixmap, size);
--		image.data = dst;
--
--		if (!mod)
--			bit_putcs_aligned(vc, info, s, attribute, cnt, pitch,
--					  width, cellsize, &image, buf, dst);
--		else
--			bit_putcs_unaligned(vc, info, s, attribute, cnt,
--					    pitch, width, cellsize, &image,
--					    buf, dst);
--
--		image.dx += cnt * vc->vc_font.width;
--		count -= cnt;
--		s += cnt;
--	}
-+	for (i = 0; i < count; ++i)
-+		buf[i] = scr_readw(s++);
- 
--	/* buf is always NULL except when in monochrome mode, so in this case
--	   it's a gain to check buf against NULL even though kfree() handles
--	   NULL pointers just fine */
--	if (unlikely(buf))
--		kfree(buf);
-+	fbdraw_font(info, &vc->vc_font, vc->vc_hi_font_mask, xx, yy, fg, bg,
-+		    attribute, buf, count);
- 
-+	kfree(buf);
+ static void pch_dma_tx_complete(void *arg)
+@@ -809,7 +810,8 @@ static int handle_rx_to(struct eg20t_port *priv)
+ 	int rx_size;
+ 	int ret;
+ 	if (!priv->start_rx) {
+-		pch_uart_hal_disable_interrupt(priv, PCH_UART_HAL_RX_INT);
++		pch_uart_hal_disable_interrupt(priv, PCH_UART_HAL_RX_INT |
++						     PCH_UART_HAL_RX_ERR_INT);
+ 		return 0;
+ 	}
+ 	buf = &priv->rxbuf;
+@@ -1078,11 +1080,13 @@ static irqreturn_t pch_uart_interrupt(int irq, void *dev_id)
+ 		case PCH_UART_IID_RDR:	/* Received Data Ready */
+ 			if (priv->use_dma) {
+ 				pch_uart_hal_disable_interrupt(priv,
+-							PCH_UART_HAL_RX_INT);
++						PCH_UART_HAL_RX_INT |
++						PCH_UART_HAL_RX_ERR_INT);
+ 				ret = dma_handle_rx(priv);
+ 				if (!ret)
+ 					pch_uart_hal_enable_interrupt(priv,
+-							PCH_UART_HAL_RX_INT);
++						PCH_UART_HAL_RX_INT |
++						PCH_UART_HAL_RX_ERR_INT);
+ 			} else {
+ 				ret = handle_rx(priv);
+ 			}
+@@ -1208,7 +1212,8 @@ static void pch_uart_stop_rx(struct uart_port *port)
+ 	struct eg20t_port *priv;
+ 	priv = container_of(port, struct eg20t_port, port);
+ 	priv->start_rx = 0;
+-	pch_uart_hal_disable_interrupt(priv, PCH_UART_HAL_RX_INT);
++	pch_uart_hal_disable_interrupt(priv, PCH_UART_HAL_RX_INT |
++					     PCH_UART_HAL_RX_ERR_INT);
  }
  
- static void bit_clear_margins(struct vc_data *vc, struct fb_info *info,
-diff --git a/drivers/video/console/fbdraw.c b/drivers/video/console/fbdraw.c
-index 65e7003..e2e0661 100644
---- a/drivers/video/console/fbdraw.c
-+++ b/drivers/video/console/fbdraw.c
-@@ -41,6 +41,131 @@ void fbdraw_update_attr(u8 *dst, const u8 *src, int attribute,
- }
- EXPORT_SYMBOL(fbdraw_update_attr);
+ /* Enable the modem status interrupts. */
+@@ -1300,7 +1305,8 @@ static int pch_uart_startup(struct uart_port *port)
+ 		pch_request_dma(port);
  
-+static inline void bit_putcs_aligned(struct fb_info *info, bool hi_font,
-+				     struct console_font *font, u32 attribute,
-+				     u32 d_pitch, u32 s_pitch, u32 cellsize,
-+				     struct fb_image *image, u8 *buf, u8 *dst,
-+				     const u16 *chars, size_t cnt)
-+{
-+	u16 charmask = hi_font ? 0x1ff : 0xff;
-+	u32 idx = font->width >> 3;
-+	u8 *src;
-+
-+	while (cnt--) {
-+		src = font->data + ((*chars++) & charmask) * cellsize;
-+
-+		if (attribute) {
-+			fbdraw_update_attr(buf, src, attribute, font);
-+			src = buf;
-+		}
-+
-+		if (likely(idx == 1))
-+			__fb_pad_aligned_buffer(dst, d_pitch, src, idx,
-+						image->height);
-+		else
-+			fb_pad_aligned_buffer(dst, d_pitch, src, idx,
-+					      image->height);
-+
-+		dst += s_pitch;
-+	}
-+
-+	info->fbops->fb_imageblit(info, image);
-+}
-+
-+static inline void bit_putcs_unaligned(struct fb_info *info, bool hi_font,
-+				       struct console_font *font, u32 attribute,
-+				       u32 d_pitch, u32 s_pitch, u32 cellsize,
-+				       struct fb_image *image, u8 *buf, u8 *dst,
-+				       const u16 *chars, size_t cnt)
-+{
-+	u16 charmask = hi_font ? 0x1ff : 0xff;
-+	u32 shift_low = 0, mod = font->width % 8;
-+	u32 shift_high = 8;
-+	u32 idx = font->width >> 3;
-+	u8 *src;
-+
-+	while (cnt--) {
-+		src = font->data + ((*chars++) & charmask) * cellsize;
-+
-+		if (attribute) {
-+			fbdraw_update_attr(buf, src, attribute, font);
-+			src = buf;
-+		}
-+
-+		fb_pad_unaligned_buffer(dst, d_pitch, src, idx,
-+					image->height, shift_high,
-+					shift_low, mod);
-+		shift_low += mod;
-+		dst += (shift_low >= 8) ? s_pitch : s_pitch - 1;
-+		shift_low &= 7;
-+		shift_high = 8 - shift_low;
-+	}
-+
-+	info->fbops->fb_imageblit(info, image);
-+}
-+
-+void fbdraw_font(struct fb_info *info, struct console_font *font, bool hi_font,
-+		 unsigned int xpos, unsigned int ypos, int fg, int bg,
-+		 u32 attribute, const u16 *chars, size_t count)
-+{
-+	struct fb_image image;
-+	u32 width = DIV_ROUND_UP(font->width, 8);
-+	u32 cellsize = width * font->height;
-+	u32 maxcnt = info->pixmap.size / cellsize;
-+	u32 scan_align = info->pixmap.scan_align - 1;
-+	u32 buf_align = info->pixmap.buf_align - 1;
-+	u32 mod = font->width % 8, cnt, pitch, size;
-+	u8 *dst, *buf = NULL;
-+
-+	image.fg_color = fg;
-+	image.bg_color = bg;
-+	image.dx = xpos * font->width;
-+	image.dy = ypos * font->height;
-+	image.height = font->height;
-+	image.depth = 1;
-+
-+	if (attribute) {
-+		buf = kmalloc(cellsize, GFP_KERNEL);
-+		if (!buf)
-+			return;
-+	}
-+
-+	while (count) {
-+		if (count > maxcnt)
-+			cnt = maxcnt;
-+		else
-+			cnt = count;
-+
-+		image.width = font->width * cnt;
-+		pitch = DIV_ROUND_UP(image.width, 8) + scan_align;
-+		pitch &= ~scan_align;
-+		size = pitch * image.height + buf_align;
-+		size &= ~buf_align;
-+		dst = fb_get_buffer_offset(info, &info->pixmap, size);
-+		image.data = dst;
-+
-+		if (!mod)
-+			bit_putcs_aligned(info, hi_font, font, attribute,
-+					  pitch, width, cellsize, &image, buf,
-+					  dst, chars, cnt);
-+		else
-+			bit_putcs_unaligned(info, hi_font, font, attribute,
-+					    pitch, width, cellsize, &image, buf,
-+					    dst, chars, cnt);
-+
-+		image.dx += cnt * font->width;
-+		count -= cnt;
-+		chars += cnt;
-+	}
-+
-+	/* buf is always NULL except when in monochrome mode, so in this case
-+	   it's a gain to check buf against NULL even though kfree() handles
-+	   NULL pointers just fine */
-+	if (unlikely(buf))
-+		kfree(buf);
-+}
-+EXPORT_SYMBOL(fbdraw_font);
-+
- MODULE_LICENSE("GPL v2");
- MODULE_AUTHOR("David Herrmann <dh.herrmann@googlemail.com>");
- MODULE_DESCRIPTION("Framebuffer helpers for image draw-operations");
-diff --git a/drivers/video/console/fbdraw.h b/drivers/video/console/fbdraw.h
-index 77edd7f..b9f1ffa 100644
---- a/drivers/video/console/fbdraw.h
-+++ b/drivers/video/console/fbdraw.h
-@@ -23,4 +23,8 @@
- void fbdraw_update_attr(u8 *dst, const u8 *src, int attribute,
- 			struct console_font *font);
+ 	priv->start_rx = 1;
+-	pch_uart_hal_enable_interrupt(priv, PCH_UART_HAL_RX_INT);
++	pch_uart_hal_enable_interrupt(priv, PCH_UART_HAL_RX_INT |
++					    PCH_UART_HAL_RX_ERR_INT);
+ 	uart_update_timeout(port, CS8, default_baud);
  
-+void fbdraw_font(struct fb_info *info, struct console_font *font, bool hi_font,
-+		 unsigned int xpos, unsigned int ypos, int fg, int bg,
-+		 u32 attribute, const u16 *chars, size_t count);
-+
- #endif /* _VIDEO_FBDRAW_H */
+ 	return 0;
 -- 
-1.7.11.1
+1.7.4.4
+
