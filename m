@@ -1,7 +1,7 @@
 From: David Herrmann <dh.herrmann@googlemail.com>
-Subject: [PATCH v2 09/11] fblog: register console driver
-Date: Sun,  8 Jul 2012 23:56:52 +0200
-Message-ID: <1341784614-2797-10-git-send-email-dh.herrmann@googlemail.com>
+Subject: [PATCH v2 05/11] fblog: register one fblog object per framebuffer
+Date: Sun,  8 Jul 2012 23:56:48 +0200
+Message-ID: <1341784614-2797-6-git-send-email-dh.herrmann@googlemail.com>
 References: <1341784614-2797-1-git-send-email-dh.herrmann@googlemail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1341784614-2797-1-git-send-email-dh.herrmann@googlemail.com>
@@ -10,234 +10,231 @@ To: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org, florianschandinat@gmx.de, linux-fbdev@vger.kernel.org, gregkh@linuxfoundation.org, alan@lxorguk.ukuu.org.uk, bonbons@linux-vserver.org, David Herrmann <dh.herrmann@googlemail.com>
 List-Id: linux-serial@vger.kernel.org
 
-We want to print the kernel log to all FBs so we need a console driver.
-This registers the driver on startup and writes all messages to all
-registered fblog instances.
+One fblog object is associated to each registered framebuffer. This way,
+we can draw the console to each framebuffer. When a framebuffer driver
+unregisters a framebuffer, we also unregister our fblog object. That is,
+our lifetime is coupled to the lifetime of the framebuffer. However, this
+does not mean that we are always active. On the contrary, we do not even
+own a reference to the framebuffer. We don't need it as we are notified
+_before_ the last reference is dropped.
 
-We cannot share a console buffer between FBs because they might have
-different resolutions. Therefore, we create one buffer per object. We
-destroy the buffer during close() so we do not waste memory if it is not
-used.
+However, if other users have a reference to our object, we simply mark it
+as dead when the associated framebuffer dies and leave it alone. When the
+last reference is dropped, it will be automatically freed.
 
 Signed-off-by: David Herrmann <dh.herrmann@googlemail.com>
 ---
- drivers/video/console/fblog.c | 150 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 150 insertions(+)
+ drivers/video/console/fblog.c | 189 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 189 insertions(+)
 
 diff --git a/drivers/video/console/fblog.c b/drivers/video/console/fblog.c
-index fd1f3d6..e447f98 100644
+index fb39737..3e0b471 100644
 --- a/drivers/video/console/fblog.c
 +++ b/drivers/video/console/fblog.c
-@@ -23,11 +23,34 @@
+@@ -23,15 +23,204 @@
   * all fblog instances before running other graphics applications.
   */
  
-+#include <linux/console.h>
- #include <linux/device.h>
- #include <linux/fb.h>
++#include <linux/device.h>
++#include <linux/fb.h>
  #include <linux/module.h>
- #include <linux/mutex.h>
- 
-+/**
-+ * struct fblog_buf: Console text buffer
-+ *
-+ * Each framebuffer has its own text buffer which contains all characters that
-+ * are currently printed on screen. The buffers might have different sizes and
-+ * can be resized during runtime. When the buffer content changes, we redraw the
-+ * screen.
-+ *
-+ * width: Width of buffer in characters
-+ * height: Height of buffer in characters
-+ * lines: Array of lines
-+ * pos_x: Cursor x-position
-+ * pos_y: Cursor y-position
-+ */
-+struct fblog_buf {
-+	size_t width;
-+	size_t height;
-+	u16 **lines;
-+	size_t pos_x;
-+	size_t pos_y;
++#include <linux/mutex.h>
++
++enum fblog_flags {
++	FBLOG_KILLED,
 +};
 +
- enum fblog_flags {
- 	FBLOG_KILLED,
- 	FBLOG_OPEN,
-@@ -40,6 +63,7 @@ struct fblog_fb {
- 	struct fb_info *info;
- 	struct device dev;
- 	struct mutex lock;
-+	struct fblog_buf buf;
- };
- 
- static DEFINE_MUTEX(fblog_registration_lock);
-@@ -47,6 +71,107 @@ static struct fblog_fb *fblog_fbs[FB_MAX];
- static bool active = 1;
- 
- #define to_fblog_dev(_d) container_of(_d, struct fblog_fb, dev)
-+#define FBLOG_STR(x) x, sizeof(x) - 1
++struct fblog_fb {
++	unsigned long flags;
++	struct fb_info *info;
++	struct device dev;
++};
 +
-+static void fblog_buf_resize(struct fblog_buf *buf, size_t width,
-+			     size_t height)
++static DEFINE_MUTEX(fblog_registration_lock);
++static struct fblog_fb *fblog_fbs[FB_MAX];
++
++#define to_fblog_dev(_d) container_of(_d, struct fblog_fb, dev)
++
++/*
++ * fblog framebuffer list
++ * The fblog_fbs[] array contains all currently registered framebuffers. If a
++ * framebuffer is in that list, we always must make sure that we own a reference
++ * to it. If it is added through the notifier callbacks, then this is always
++ * guaranteed.
++ * We are only interested in registered framebuffers. That is, if a driver calls
++ * unregister_framebuffer() we directly unlink it from our list. This guarantees
++ * that the associated fb_info is always valid. However, we might still have
++ * pending users so we mark it as dead so no further framebuffer actions are
++ * done. If the last user then drops a reference, the memory gets freed
++ * automatically.
++ */
++
++static void fblog_release(struct device *dev)
 +{
-+	u16 **lines = NULL;
-+	size_t i, j, minw, minh;
++	struct fblog_fb *fb = to_fblog_dev(dev);
 +
-+	if (buf->height == height && buf->width == width)
++	kfree(fb);
++	module_put(THIS_MODULE);
++}
++
++static void fblog_do_unregister(struct fb_info *info)
++{
++	struct fblog_fb *fb;
++
++	fb = fblog_fbs[info->node];
++	if (!fb || fb->info != info)
 +		return;
 +
-+	if (width && height) {
-+		lines = kzalloc(height * sizeof(char*), GFP_KERNEL);
-+		if (!lines)
++	fblog_fbs[info->node] = NULL;
++
++	device_del(&fb->dev);
++	put_device(&fb->dev);
++}
++
++static void fblog_do_register(struct fb_info *info, bool force)
++{
++	struct fblog_fb *fb;
++	int ret;
++
++	fb = fblog_fbs[info->node];
++	if (fb && fb->info != info) {
++		if (!force)
 +			return;
 +
-+		for (i = 0; i < height; ++i) {
-+			lines[i] = kzalloc(width * sizeof(u16), GFP_KERNEL);
-+			if (!lines[i]) {
-+				while (i--)
-+					kfree(lines[i]);
-+				return;
-+			}
-+		}
-+
-+		/* copy old lines */
-+		minw = min(width, buf->width);
-+		minh = min(height, buf->height);
-+		if (height >= buf->height)
-+			i = 0;
-+		else
-+			i = buf->height - height;
-+
-+		for (j = 0; j < minh; ++i, ++j)
-+			memcpy(lines[j], buf->lines[i], minw * sizeof(u16));
-+	} else {
-+		width = 0;
-+		height = 0;
++		fblog_do_unregister(fb->info);
 +	}
 +
-+	for (i = 0; i < buf->height; ++i)
-+		kfree(buf->lines[i]);
-+	kfree(buf->lines);
-+
-+	buf->lines = lines;
-+	buf->width = width;
-+	buf->height = height;
-+}
-+
-+static void fblog_buf_deinit(struct fblog_buf *buf)
-+{
-+	fblog_buf_resize(buf, 0, 0);
-+}
-+
-+static void fblog_buf_rotate(struct fblog_buf *buf)
-+{
-+	u16 *line;
-+
-+	if (!buf->height)
++	fb = kzalloc(sizeof(*fb), GFP_KERNEL);
++	if (!fb)
 +		return;
 +
-+	line = buf->lines[0];
-+	memset(line, 0, sizeof(u16) * buf->width);
++	fb->info = info;
++	__module_get(THIS_MODULE);
++	device_initialize(&fb->dev);
++	fb->dev.class = fb_class;
++	fb->dev.release = fblog_release;
++	dev_set_name(&fb->dev, "fblog%d", info->node);
++	fblog_fbs[info->node] = fb;
 +
-+	memmove(buf->lines, &buf->lines[1], sizeof(char*) * (buf->height - 1));
-+	buf->lines[buf->height - 1] = line;
-+}
-+
-+static void fblog_buf_write(struct fblog_buf *buf, const char *str, size_t len)
-+{
-+	char c;
-+
-+	if (!buf->height)
++	ret = device_add(&fb->dev);
++	if (ret) {
++		fblog_fbs[info->node] = NULL;
++		set_bit(FBLOG_KILLED, &fb->flags);
++		put_device(&fb->dev);
 +		return;
-+
-+	while (len--) {
-+		c = *str++;
-+
-+		if (c == 0)
-+			c = '?';
-+
-+		if (c == '\n') {
-+			buf->pos_x = 0;
-+			if (++buf->pos_y >= buf->height) {
-+				buf->pos_y = buf->height - 1;
-+				fblog_buf_rotate(buf);
-+			}
-+		} else {
-+			if (buf->pos_x >= buf->width) {
-+				buf->pos_x = 0;
-+				++buf->pos_y;
-+			}
-+			if (buf->pos_y >= buf->height) {
-+				buf->pos_y = buf->height - 1;
-+				fblog_buf_rotate(buf);
-+			}
-+
-+			buf->lines[buf->pos_y][buf->pos_x++] = c;
-+		}
 +	}
 +}
- 
- static int fblog_open(struct fblog_fb *fb, bool locked)
- {
-@@ -80,6 +205,8 @@ static int fblog_open(struct fblog_fb *fb, bool locked)
- 	if (!locked)
- 		mutex_unlock(&fb->info->lock);
- 
-+	fblog_buf_resize(&fb->buf, 80, 24);
-+	fblog_buf_write(&fb->buf, FBLOG_STR("Framebuffer log initialized\n"));
- 	set_bit(FBLOG_OPEN, &fb->flags);
- 	mutex_unlock(&fb->lock);
- 	return 0;
-@@ -111,6 +238,7 @@ static void fblog_close(struct fblog_fb *fb, bool kill_dev, bool locked)
- 			mutex_unlock(&fb->info->lock);
- 
- 		clear_bit(FBLOG_OPEN, &fb->flags);
-+		fblog_buf_deinit(&fb->buf);
- 	}
- 
- 	if (kill_dev)
-@@ -368,6 +496,26 @@ static struct notifier_block fblog_notifier = {
- 	.notifier_call = fblog_event,
- };
- 
-+static void fblog_con_write(struct console *con, const char *buf,
-+			    unsigned int len)
-+{
-+	int i;
 +
++static void fblog_register(struct fb_info *info, bool force)
++{
 +	mutex_lock(&fblog_registration_lock);
-+	for (i = 0; i < FB_MAX; ++i) {
-+		if (fblog_fbs[i]) {
-+			fblog_buf_write(&fblog_fbs[i]->buf, buf, len);
-+		}
-+	}
++	fblog_do_register(info, force);
 +	mutex_unlock(&fblog_registration_lock);
 +}
 +
-+static struct console fblog_con_driver = {
-+	.name = "fblog",
-+	.write = fblog_con_write,
-+	.flags = CON_PRINTBUFFER | CON_ENABLED,
-+};
++static void fblog_unregister(struct fb_info *info)
++{
++	mutex_lock(&fblog_registration_lock);
++	fblog_do_unregister(info);
++	mutex_unlock(&fblog_registration_lock);
++}
 +
++static int fblog_event(struct notifier_block *self, unsigned long action,
++		       void *data)
++{
++	struct fb_event *event = data;
++	struct fb_info *info = event->info;
++
++	switch(action) {
++	case FB_EVENT_FB_REGISTERED:
++		/* This is called when a low-level system driver registers a new
++		 * framebuffer. The registration lock is held but the console
++		 * lock might not be held when this is called. */
++		fblog_register(info, true);
++		break;
++	case FB_EVENT_FB_UNREGISTERED:
++		/* This is called when a low-level system driver unregisters a
++		 * framebuffer. The registration lock is held but the console
++		 * lock might not be held. */
++		fblog_unregister(info);
++		break;
++	}
++
++	return 0;
++}
++
++static void fblog_scan(void)
++{
++	unsigned int i;
++	struct fb_info *info, *tmp;
++
++	for (i = 0; i < FB_MAX; ++i) {
++		info = get_fb_info(i);
++		if (!info || IS_ERR(info))
++			continue;
++
++		fblog_register(info, false);
++
++		/* There is a very subtle race-condition. Even though we might
++		 * own a reference to the fb, it may still get unregistered
++		 * between our call from get_fb_info() and fblog_register().
++		 * Therefore, we simply check whether the same fb still is
++		 * registered by calling get_fb_info() again. Only if they
++		 * differ we know that it got unregistered, therefore, we
++		 * call fblog_unregister() with the old pointer. */
++
++		tmp = get_fb_info(i);
++		if (tmp && !IS_ERR(tmp))
++			put_fb_info(tmp);
++		if (tmp != info)
++			fblog_unregister(info);
++
++		/* Here we either called fblog_unregister() and therefore do not
++		 * need any reference to the fb, or we can be sure that the FB
++		 * is registered and FB_EVENT_FB_UNREGISTERED will be called
++		 * before the last reference is dropped. Hence, we can drop our
++		 * reference here. */
++
++		put_fb_info(info);
++	}
++}
++
++static struct notifier_block fblog_notifier = {
++	.notifier_call = fblog_event,
++};
+ 
  static int __init fblog_init(void)
  {
- 	int ret;
-@@ -379,6 +527,7 @@ static int __init fblog_init(void)
- 	}
- 
- 	fblog_scan();
-+	register_console(&fblog_con_driver);
- 
++	int ret;
++
++	ret = fb_register_client(&fblog_notifier);
++	if (ret) {
++		pr_err("fblog: cannot register framebuffer notifier");
++		return ret;
++	}
++
++	fblog_scan();
++
  	return 0;
  }
-@@ -388,6 +537,7 @@ static void __exit fblog_exit(void)
- 	unsigned int i;
- 	struct fb_info *info;
  
-+	unregister_console(&fblog_con_driver);
- 	fb_unregister_client(&fblog_notifier);
+ static void __exit fblog_exit(void)
+ {
++	unsigned int i;
++	struct fb_info *info;
++
++	fb_unregister_client(&fblog_notifier);
++
++	for (i = 0; i < FB_MAX; ++i) {
++		info = get_fb_info(i);
++		if (!info || IS_ERR(info))
++			continue;
++
++		fblog_unregister(info);
++		put_fb_info(info);
++	}
+ }
  
- 	for (i = 0; i < FB_MAX; ++i) {
+ module_init(fblog_init);
 -- 
 1.7.11.1
