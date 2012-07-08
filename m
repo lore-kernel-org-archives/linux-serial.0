@@ -1,225 +1,140 @@
 From: David Herrmann <dh.herrmann@googlemail.com>
-Subject: [PATCH v2 03/11] fblog: new framebuffer kernel log dummy driver
-Date: Sun,  8 Jul 2012 23:56:46 +0200
-Message-ID: <1341784614-2797-4-git-send-email-dh.herrmann@googlemail.com>
+Subject: [PATCH v2 07/11] fblog: allow selecting fbs via sysfs
+Date: Sun,  8 Jul 2012 23:56:50 +0200
+Message-ID: <1341784614-2797-8-git-send-email-dh.herrmann@googlemail.com>
 References: <1341784614-2797-1-git-send-email-dh.herrmann@googlemail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-we0-f174.google.com ([74.125.82.174]:42390 "EHLO
-	mail-we0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752475Ab2GHV4z (ORCPT
+Received: from mail-wg0-f44.google.com ([74.125.82.44]:64593 "EHLO
+	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752484Ab2GHV5E (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 8 Jul 2012 17:56:55 -0400
+	Sun, 8 Jul 2012 17:57:04 -0400
 In-Reply-To: <1341784614-2797-1-git-send-email-dh.herrmann@googlemail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org, florianschandinat@gmx.de, linux-fbdev@vger.kernel.org, gregkh@linuxfoundation.org, alan@lxorguk.ukuu.org.uk, bonbons@linux-vserver.org, David Herrmann <dh.herrmann@googlemail.com>
 
-Fblog displays all kernel log messages on all connected framebuffers. It
-replaces fbcon when CONFIG_VT=n is selected. Its main purpose is to debug
-boot problems by displaying the whole boot log on the screen. This patch
-provides the first dummy module-init/deinit functions.
+fblog is mainly useful during boot, reboot, panics and maintenance. In all
+cases you often want to control which monitors are used for console
+output. Moreover, in multi-seat environments it is desireable to reduce
+system-overhead by not drawing the console to all framebuffers. Two
+mechanisms to select framebuffers for fblog are added:
 
-As it uses all the font and fb functions I placed it in
-drivers/video/console. However, this means that we need to move the check
-for CONFIG_VT in Makefile/Kconfig from drivers/video into
-drivers/video/console as fblog does not depend on CONFIG_VT.
+1) "active" module parameter: This parameter selects whether new
+framebuffers are opened automatically. By default this is on, that is, all
+framebuffers are automatically used by fblog during boot. By passing
+fblog.active=0 you can deactivate this.
+The init process can set this to 0 via
+/sys/modules/fblog/parameters/active, too. However, this does not affect
+already available and used framebuffers in any way.
+
+2) "active" sysfs attribute for each fblog object. Reading this value
+returns whether a framebuffer is currently active. Writing it opens/closes
+the framebuffer. This allows runtime control which fbs are used. For
+instance, init can set these to 0 after bootup.
 
 Signed-off-by: David Herrmann <dh.herrmann@googlemail.com>
 ---
- drivers/video/Kconfig          |  5 +----
- drivers/video/Makefile         |  2 +-
- drivers/video/console/Kconfig  | 37 +++++++++++++++++++++++++++++--------
- drivers/video/console/Makefile |  1 +
- drivers/video/console/fblog.c  | 41 +++++++++++++++++++++++++++++++++++++++++
- 5 files changed, 73 insertions(+), 13 deletions(-)
- create mode 100644 drivers/video/console/fblog.c
+ drivers/video/console/fblog.c | 50 ++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 49 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/video/Kconfig b/drivers/video/Kconfig
-index 0217f74..e8fd53d 100644
---- a/drivers/video/Kconfig
-+++ b/drivers/video/Kconfig
-@@ -2448,10 +2448,7 @@ source "drivers/video/omap/Kconfig"
- source "drivers/video/omap2/Kconfig"
- source "drivers/video/exynos/Kconfig"
- source "drivers/video/backlight/Kconfig"
--
--if VT
--	source "drivers/video/console/Kconfig"
--endif
-+source "drivers/video/console/Kconfig"
- 
- if FB || SGI_NEWPORT_CONSOLE
- 	source "drivers/video/logo/Kconfig"
-diff --git a/drivers/video/Makefile b/drivers/video/Makefile
-index ee8dafb..9f8a7f0 100644
---- a/drivers/video/Makefile
-+++ b/drivers/video/Makefile
-@@ -11,7 +11,7 @@ fb-y                              := fbmem.o fbmon.o fbcmap.o fbsysfs.o \
-                                      modedb.o fbcvt.o
- fb-objs                           := $(fb-y)
- 
--obj-$(CONFIG_VT)		  += console/
-+obj-y				  += console/
- obj-$(CONFIG_LOGO)		  += logo/
- obj-y				  += backlight/
- 
-diff --git a/drivers/video/console/Kconfig b/drivers/video/console/Kconfig
-index e2c96d0..7374362 100644
---- a/drivers/video/console/Kconfig
-+++ b/drivers/video/console/Kconfig
-@@ -6,7 +6,7 @@ menu "Console display driver support"
- 
- config VGA_CONSOLE
- 	bool "VGA text console" if EXPERT || !X86
--	depends on !4xx && !8xx && !SPARC && !M68K && !PARISC && !FRV && !SUPERH && !BLACKFIN && !AVR32 && !MN10300 && (!ARM || ARCH_FOOTBRIDGE || ARCH_INTEGRATOR || ARCH_NETWINDER)
-+	depends on VT && !4xx && !8xx && !SPARC && !M68K && !PARISC && !FRV && !SUPERH && !BLACKFIN && !AVR32 && !MN10300 && (!ARM || ARCH_FOOTBRIDGE || ARCH_INTEGRATOR || ARCH_NETWINDER)
- 	default y
- 	help
- 	  Saying Y here will allow you to use Linux in text mode through a
-@@ -45,7 +45,7 @@ config VGACON_SOFT_SCROLLBACK_SIZE
- 	 screenfuls of scrollback buffer
- 
- config MDA_CONSOLE
--	depends on !M68K && !PARISC && ISA
-+	depends on VT && !M68K && !PARISC && ISA
- 	tristate "MDA text console (dual-headed) (EXPERIMENTAL)"
- 	---help---
- 	  Say Y here if you have an old MDA or monochrome Hercules graphics
-@@ -61,14 +61,14 @@ config MDA_CONSOLE
- 
- config SGI_NEWPORT_CONSOLE
-         tristate "SGI Newport Console support"
--        depends on SGI_IP22 
-+        depends on VT && SGI_IP22
-         help
-           Say Y here if you want the console on the Newport aka XL graphics
-           card of your Indy.  Most people say Y here.
- 
- config DUMMY_CONSOLE
- 	bool
--	depends on VGA_CONSOLE!=y || SGI_NEWPORT_CONSOLE!=y 
-+	depends on VT && (VGA_CONSOLE!=y || SGI_NEWPORT_CONSOLE!=y)
- 	default y
- 
- config DUMMY_CONSOLE_COLUMNS
-@@ -89,7 +89,7 @@ config DUMMY_CONSOLE_ROWS
- 
- config FRAMEBUFFER_CONSOLE
- 	tristate "Framebuffer Console support"
--	depends on FB
-+	depends on VT && FB
- 	select CRC32
- 	help
- 	  Low-level framebuffer-based console driver.
-@@ -122,16 +122,37 @@ config FRAMEBUFFER_CONSOLE_ROTATION
- 
- config STI_CONSOLE
-         bool "STI text console"
--        depends on PARISC
-+        depends on VT && PARISC
-         default y
-         help
-           The STI console is the builtin display/keyboard on HP-PARISC
-           machines.  Say Y here to build support for it into your kernel.
-           The alternative is to use your primary serial port as a console.
- 
-+config FBLOG
-+	tristate "Framebuffer Kernel Log Driver"
-+	depends on !VT && FB
-+	default n
-+	help
-+	  This driver displays all kernel log messages on all connected
-+	  framebuffers. It is mutually exclusive with CONFIG_FRAMEBUFFER_CONSOLE
-+	  and CONFIG_VT. It was mainly created for debugging purposes when
-+	  CONFIG_VT is not selected but you still want kernel boot messages on
-+	  the screen.
-+
-+	  This driver overwrites all other graphics output on the framebuffer as
-+	  long as it is active so the kernel log will always be visible. You
-+	  need to disable this driver via sysfs to be able to start another
-+	  graphics application.
-+
-+	  If unsure, say N.
-+
-+	  To compile this driver as a module, choose M here: the module will
-+	  be called fblog.
-+
- config FONTS
- 	bool "Select compiled-in fonts"
--	depends on FRAMEBUFFER_CONSOLE || STI_CONSOLE
-+	depends on FRAMEBUFFER_CONSOLE || STI_CONSOLE || FBLOG
- 	help
- 	  Say Y here if you would like to use fonts other than the default
- 	  your frame buffer console usually use.
-@@ -158,7 +179,7 @@ config FONT_8x8
- 
- config FONT_8x16
- 	bool "VGA 8x16 font" if FONTS
--	depends on FRAMEBUFFER_CONSOLE || SGI_NEWPORT_CONSOLE || STI_CONSOLE || USB_SISUSBVGA_CON
-+	depends on FRAMEBUFFER_CONSOLE || SGI_NEWPORT_CONSOLE || STI_CONSOLE || USB_SISUSBVGA_CON || FBLOG
- 	default y if !SPARC && !FONTS
- 	help
- 	  This is the "high resolution" font for the VGA frame buffer (the one
-diff --git a/drivers/video/console/Makefile b/drivers/video/console/Makefile
-index 9a52226..ec0e155 100644
---- a/drivers/video/console/Makefile
-+++ b/drivers/video/console/Makefile
-@@ -20,6 +20,7 @@ font-objs += $(font-objs-y)
- 
- # Each configuration option enables a list of files.
- 
-+obj-$(CONFIG_FBLOG)               += fblog.o font.o
- obj-$(CONFIG_DUMMY_CONSOLE)       += dummycon.o
- obj-$(CONFIG_SGI_NEWPORT_CONSOLE) += newport_con.o font.o
- obj-$(CONFIG_STI_CONSOLE)         += sticon.o sticore.o font.o
 diff --git a/drivers/video/console/fblog.c b/drivers/video/console/fblog.c
-new file mode 100644
-index 0000000..fb39737
---- /dev/null
+index 113be36..b490dba 100644
+--- a/drivers/video/console/fblog.c
 +++ b/drivers/video/console/fblog.c
-@@ -0,0 +1,41 @@
-+/*
-+ * Framebuffer Kernel Log Driver
-+ * Copyright (c) 2012 David Herrmann <dh.herrmann@googlemail.com>
-+ */
-+
-+/*
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License as published by the Free
-+ * Software Foundation; either version 2 of the License, or (at your option)
-+ * any later version.
-+ */
-+
-+/*
-+ * Framebuffer Kernel Log
-+ * This driver prints the kernel log to all connected display devices. It
-+ * replaces CONFIG_VT and cannot run simultaneously with it. It does not provide
-+ * any virtual-terminal, though. It should only be used to get kernel boot
-+ * messages to debug kernel errors.
-+ * Hence, this driver is neither optimized for speed, nor does it provide any
-+ * fancy features like colored text output.
-+ * This driver forcibly writes to the framebuffer while active, therefore, you
-+ * cannot run other graphics applications simultaneously. You need to disable
-+ * all fblog instances before running other graphics applications.
-+ */
-+
-+#include <linux/module.h>
-+
-+static int __init fblog_init(void)
+@@ -42,6 +42,7 @@ struct fblog_fb {
+ 
+ static DEFINE_MUTEX(fblog_registration_lock);
+ static struct fblog_fb *fblog_fbs[FB_MAX];
++static bool active = 1;
+ 
+ #define to_fblog_dev(_d) container_of(_d, struct fblog_fb, dev)
+ 
+@@ -116,6 +117,37 @@ static void fblog_close(struct fblog_fb *fb, bool kill_dev, bool locked)
+ 	mutex_unlock(&fb->lock);
+ }
+ 
++static ssize_t fblog_dev_active_show(struct device *dev,
++				     struct device_attribute *attr,
++				     char *buf)
 +{
-+	return 0;
++	struct fblog_fb *fb = to_fblog_dev(dev);
++
++	return snprintf(buf, PAGE_SIZE, "%d\n",
++			!!test_bit(FBLOG_OPEN, &fb->flags));
 +}
 +
-+static void __exit fblog_exit(void)
++static ssize_t fblog_dev_active_store(struct device *dev,
++				      struct device_attribute *attr,
++				      const char *buf,
++				      size_t count)
 +{
++	struct fblog_fb *fb = to_fblog_dev(dev);
++	unsigned long num;
++	int ret = 0;
++
++	num = simple_strtoul(buf, NULL, 10);
++	if (num)
++		ret = fblog_open(fb, false);
++	else
++		fblog_close(fb, false, false);
++
++	return ret ? ret : count;
 +}
 +
-+module_init(fblog_init);
-+module_exit(fblog_exit);
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("David Herrmann <dh.herrmann@googlemail.com>");
-+MODULE_DESCRIPTION("Framebuffer Kernel Log Driver");
++static DEVICE_ATTR(active, S_IRUGO | S_IWUSR | S_IWGRP, fblog_dev_active_show,
++		   fblog_dev_active_store);
++
+ /*
+  * fblog framebuffer list
+  * The fblog_fbs[] array contains all currently registered framebuffers. If a
+@@ -149,6 +181,7 @@ static void fblog_do_unregister(struct fb_info *info)
+ 	fblog_fbs[info->node] = NULL;
+ 
+ 	fblog_close(fb, true, false);
++	device_remove_file(&fb->dev, &dev_attr_active);
+ 	device_del(&fb->dev);
+ 	put_device(&fb->dev);
+ }
+@@ -157,6 +190,7 @@ static void fblog_do_register(struct fb_info *info, bool force)
+ {
+ 	struct fblog_fb *fb;
+ 	int ret;
++	bool do_open = true;
+ 
+ 	fb = fblog_fbs[info->node];
+ 	if (fb && fb->info != info) {
+@@ -187,7 +221,18 @@ static void fblog_do_register(struct fb_info *info, bool force)
+ 		return;
+ 	}
+ 
+-	fblog_open(fb, true);
++	ret = device_create_file(&fb->dev, &dev_attr_active);
++	if (ret) {
++		pr_err("fblog: cannot create sysfs entry");
++		/* do not open fb if we cannot create control file */
++		do_open = false;
++	}
++
++	if (!active)
++		do_open = false;
++
++	if (do_open)
++		fblog_open(fb, true);
+ }
+ 
+ static void fblog_register(struct fb_info *info, bool force)
+@@ -314,6 +359,9 @@ static void __exit fblog_exit(void)
+ 	}
+ }
+ 
++module_param(active, bool, S_IRUGO);
++MODULE_PARM_DESC(active, "Activate fblog by default");
++
+ module_init(fblog_init);
+ module_exit(fblog_exit);
+ MODULE_LICENSE("GPL");
 -- 
 1.7.11.1
 
