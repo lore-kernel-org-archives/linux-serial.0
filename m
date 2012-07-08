@@ -1,84 +1,334 @@
 From: David Herrmann <dh.herrmann@googlemail.com>
-Subject: [PATCH v2 00/11] fblog: framebuffer kernel log driver
-Date: Sun,  8 Jul 2012 23:56:43 +0200
-Message-ID: <1341784614-2797-1-git-send-email-dh.herrmann@googlemail.com>
+Subject: [PATCH v2 02/11] fbcon: move bit_putcs() into separate source file
+Date: Sun,  8 Jul 2012 23:56:45 +0200
+Message-ID: <1341784614-2797-3-git-send-email-dh.herrmann@googlemail.com>
+References: <1341784614-2797-1-git-send-email-dh.herrmann@googlemail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
 Received: from mail-we0-f174.google.com ([74.125.82.174]:42390 "EHLO
 	mail-we0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752320Ab2GHV4w (ORCPT
+	with ESMTP id S1752426Ab2GHV4y (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 8 Jul 2012 17:56:52 -0400
+	Sun, 8 Jul 2012 17:56:54 -0400
+In-Reply-To: <1341784614-2797-1-git-send-email-dh.herrmann@googlemail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org, florianschandinat@gmx.de, linux-fbdev@vger.kernel.org, gregkh@linuxfoundation.org, alan@lxorguk.ukuu.org.uk, bonbons@linux-vserver.org, David Herrmann <dh.herrmann@googlemail.com>
 
-Hi
+If we want to use font-draw-operations in other modules than fbcon, we
+need to split this function off of fbcon headers and sources. This also
+makes bit_putcs() totally independent of vc_* and fbcon_* structures.
 
-This is version 2 of the fblog driver. The fblog driver allows showing the
-kernel console on all available framebuffers. It's a replacement for CONFIG_VT
-and fbcon that is much, much smaller and simpler. It should be used for
-debugging purposes only, therefore, it is currently not optimized for speed.
+As scr_read() cannot be called inside of non-fbcon/vt functions, we need
+to assemble the buffer before passing it to fbdraw_font(). This slows down
+this operations a little bit but my rough benchmark showed that it didn't
+really matter. Anyway, if it does, we can still put it into VT_BUF_HAVE_RW
+conditions so platforms that don't use it won't be affected. And for other
+platforms we can add the buffer to the vc-struct so we can reuse it.
 
-Three patches extract update_attr(), bit_putcs() and get/put_fb_info() so they
-can be used from fblog, the other patches actually implement fblog.
+Signed-off-by: David Herrmann <dh.herrmann@googlemail.com>
+---
+ drivers/video/console/bitblit.c | 127 ++++------------------------------------
+ drivers/video/console/fbdraw.c  | 125 +++++++++++++++++++++++++++++++++++++++
+ drivers/video/console/fbdraw.h  |   4 ++
+ 3 files changed, 139 insertions(+), 117 deletions(-)
 
-Version 2 addresses the issues from the last series. I extracted bit_putcs()
-into fbdraw_font() so we have a single function shared between fbcon and fblog
-to draw text. Furthermore, I reworked the framebuffer-registration logic inside
-of fblog so there shouldn't be any more races with fbmem.c fb registration.
-There is also a new configuration parameter that allows enabling fblog only on
-specific framebuffers as requested from several people.
-
-I also redid the whole patch-split so it should be much easier to follow. I am
-using this driver on my x86_64 machine without any problems. If you remove the
-"!VT" line in Kconfig then this can even be used with VTs enabled (even though
-this is kind of racy between fbcon and fblog, obviously). Unloading the module
-still has to be done with "rmmod -f fblog" as we still have a reference to our
-own module. I haven't found a way to avoid this.
-
-The reason why I wrote this driver is to make CONFIG_VT obsolete. This way I can
-drop a lot of code from the kernel and make it much smaller. In combination with
-user-space terminals like "kmscon" there is actually no need for in-kernel
-terminals anymore.
-
-This patchset is built based on linux-next as I have no idea whose tree this is
-going through.
-
-Feedback is appreciated.
-Regards
-David
-
-David Herrmann (11):
-  fbcon: move update_attr() into separate source file
-  fbcon: move bit_putcs() into separate source file
-  fblog: new framebuffer kernel log dummy driver
-  fbdev: export get_fb_info()/put_fb_info()
-  fblog: register one fblog object per framebuffer
-  fblog: open fb on registration
-  fblog: allow selecting fbs via sysfs
-  fblog: cache framebuffer BLANK and SUSPEND states
-  fblog: register console driver
-  fblog: draw console to framebuffers
-  MAINTAINERS: add fblog entry
-
- MAINTAINERS                     |   6 +
- drivers/video/Kconfig           |   5 +-
- drivers/video/Makefile          |   2 +-
- drivers/video/console/Kconfig   |  37 ++-
- drivers/video/console/Makefile  |   4 +-
- drivers/video/console/bitblit.c | 149 +--------
- drivers/video/console/fbcon.h   |   5 +-
- drivers/video/console/fbdraw.c  | 171 +++++++++++
- drivers/video/console/fbdraw.h  |  30 ++
- drivers/video/console/fblog.c   | 665 ++++++++++++++++++++++++++++++++++++++++
- drivers/video/fbmem.c           |   6 +-
- include/linux/fb.h              |   3 +
- 12 files changed, 925 insertions(+), 158 deletions(-)
- create mode 100644 drivers/video/console/fbdraw.c
- create mode 100644 drivers/video/console/fbdraw.h
- create mode 100644 drivers/video/console/fblog.c
-
+diff --git a/drivers/video/console/bitblit.c b/drivers/video/console/bitblit.c
+index 6ec2905..c5d897b 100644
+--- a/drivers/video/console/bitblit.c
++++ b/drivers/video/console/bitblit.c
+@@ -54,132 +54,25 @@ static void bit_clear(struct vc_data *vc, struct fb_info *info, int sy,
+ 	info->fbops->fb_fillrect(info, &region);
+ }
+ 
+-static inline void bit_putcs_aligned(struct vc_data *vc, struct fb_info *info,
+-				     const u16 *s, u32 attr, u32 cnt,
+-				     u32 d_pitch, u32 s_pitch, u32 cellsize,
+-				     struct fb_image *image, u8 *buf, u8 *dst)
+-{
+-	u16 charmask = vc->vc_hi_font_mask ? 0x1ff : 0xff;
+-	u32 idx = vc->vc_font.width >> 3;
+-	u8 *src;
+-
+-	while (cnt--) {
+-		src = vc->vc_font.data + (scr_readw(s++)&
+-					  charmask)*cellsize;
+-
+-		if (attr) {
+-			fbdraw_update_attr(buf, src, attr, &vc->vc_font);
+-			src = buf;
+-		}
+-
+-		if (likely(idx == 1))
+-			__fb_pad_aligned_buffer(dst, d_pitch, src, idx,
+-						image->height);
+-		else
+-			fb_pad_aligned_buffer(dst, d_pitch, src, idx,
+-					      image->height);
+-
+-		dst += s_pitch;
+-	}
+-
+-	info->fbops->fb_imageblit(info, image);
+-}
+-
+-static inline void bit_putcs_unaligned(struct vc_data *vc,
+-				       struct fb_info *info, const u16 *s,
+-				       u32 attr, u32 cnt, u32 d_pitch,
+-				       u32 s_pitch, u32 cellsize,
+-				       struct fb_image *image, u8 *buf,
+-				       u8 *dst)
+-{
+-	u16 charmask = vc->vc_hi_font_mask ? 0x1ff : 0xff;
+-	u32 shift_low = 0, mod = vc->vc_font.width % 8;
+-	u32 shift_high = 8;
+-	u32 idx = vc->vc_font.width >> 3;
+-	u8 *src;
+-
+-	while (cnt--) {
+-		src = vc->vc_font.data + (scr_readw(s++)&
+-					  charmask)*cellsize;
+-
+-		if (attr) {
+-			fbdraw_update_attr(buf, src, attr, &vc->vc_font);
+-			src = buf;
+-		}
+-
+-		fb_pad_unaligned_buffer(dst, d_pitch, src, idx,
+-					image->height, shift_high,
+-					shift_low, mod);
+-		shift_low += mod;
+-		dst += (shift_low >= 8) ? s_pitch : s_pitch - 1;
+-		shift_low &= 7;
+-		shift_high = 8 - shift_low;
+-	}
+-
+-	info->fbops->fb_imageblit(info, image);
+-
+-}
+-
+ static void bit_putcs(struct vc_data *vc, struct fb_info *info,
+ 		      const unsigned short *s, int count, int yy, int xx,
+ 		      int fg, int bg)
+ {
+-	struct fb_image image;
+-	u32 width = DIV_ROUND_UP(vc->vc_font.width, 8);
+-	u32 cellsize = width * vc->vc_font.height;
+-	u32 maxcnt = info->pixmap.size/cellsize;
+-	u32 scan_align = info->pixmap.scan_align - 1;
+-	u32 buf_align = info->pixmap.buf_align - 1;
+-	u32 mod = vc->vc_font.width % 8, cnt, pitch, size;
++	u16 *buf;
++	int i;
+ 	u32 attribute = get_attribute(info, scr_readw(s));
+-	u8 *dst, *buf = NULL;
+ 
+-	image.fg_color = fg;
+-	image.bg_color = bg;
+-	image.dx = xx * vc->vc_font.width;
+-	image.dy = yy * vc->vc_font.height;
+-	image.height = vc->vc_font.height;
+-	image.depth = 1;
++	buf = kmalloc(sizeof(*buf) * count, GFP_KERNEL);
++	if (!buf)
++		return;
+ 
+-	if (attribute) {
+-		buf = kmalloc(cellsize, GFP_KERNEL);
+-		if (!buf)
+-			return;
+-	}
+-
+-	while (count) {
+-		if (count > maxcnt)
+-			cnt = maxcnt;
+-		else
+-			cnt = count;
+-
+-		image.width = vc->vc_font.width * cnt;
+-		pitch = DIV_ROUND_UP(image.width, 8) + scan_align;
+-		pitch &= ~scan_align;
+-		size = pitch * image.height + buf_align;
+-		size &= ~buf_align;
+-		dst = fb_get_buffer_offset(info, &info->pixmap, size);
+-		image.data = dst;
+-
+-		if (!mod)
+-			bit_putcs_aligned(vc, info, s, attribute, cnt, pitch,
+-					  width, cellsize, &image, buf, dst);
+-		else
+-			bit_putcs_unaligned(vc, info, s, attribute, cnt,
+-					    pitch, width, cellsize, &image,
+-					    buf, dst);
+-
+-		image.dx += cnt * vc->vc_font.width;
+-		count -= cnt;
+-		s += cnt;
+-	}
++	for (i = 0; i < count; ++i)
++		buf[i] = scr_readw(s++);
+ 
+-	/* buf is always NULL except when in monochrome mode, so in this case
+-	   it's a gain to check buf against NULL even though kfree() handles
+-	   NULL pointers just fine */
+-	if (unlikely(buf))
+-		kfree(buf);
++	fbdraw_font(info, &vc->vc_font, vc->vc_hi_font_mask, xx, yy, fg, bg,
++		    attribute, buf, count);
+ 
++	kfree(buf);
+ }
+ 
+ static void bit_clear_margins(struct vc_data *vc, struct fb_info *info,
+diff --git a/drivers/video/console/fbdraw.c b/drivers/video/console/fbdraw.c
+index 65e7003..e2e0661 100644
+--- a/drivers/video/console/fbdraw.c
++++ b/drivers/video/console/fbdraw.c
+@@ -41,6 +41,131 @@ void fbdraw_update_attr(u8 *dst, const u8 *src, int attribute,
+ }
+ EXPORT_SYMBOL(fbdraw_update_attr);
+ 
++static inline void bit_putcs_aligned(struct fb_info *info, bool hi_font,
++				     struct console_font *font, u32 attribute,
++				     u32 d_pitch, u32 s_pitch, u32 cellsize,
++				     struct fb_image *image, u8 *buf, u8 *dst,
++				     const u16 *chars, size_t cnt)
++{
++	u16 charmask = hi_font ? 0x1ff : 0xff;
++	u32 idx = font->width >> 3;
++	u8 *src;
++
++	while (cnt--) {
++		src = font->data + ((*chars++) & charmask) * cellsize;
++
++		if (attribute) {
++			fbdraw_update_attr(buf, src, attribute, font);
++			src = buf;
++		}
++
++		if (likely(idx == 1))
++			__fb_pad_aligned_buffer(dst, d_pitch, src, idx,
++						image->height);
++		else
++			fb_pad_aligned_buffer(dst, d_pitch, src, idx,
++					      image->height);
++
++		dst += s_pitch;
++	}
++
++	info->fbops->fb_imageblit(info, image);
++}
++
++static inline void bit_putcs_unaligned(struct fb_info *info, bool hi_font,
++				       struct console_font *font, u32 attribute,
++				       u32 d_pitch, u32 s_pitch, u32 cellsize,
++				       struct fb_image *image, u8 *buf, u8 *dst,
++				       const u16 *chars, size_t cnt)
++{
++	u16 charmask = hi_font ? 0x1ff : 0xff;
++	u32 shift_low = 0, mod = font->width % 8;
++	u32 shift_high = 8;
++	u32 idx = font->width >> 3;
++	u8 *src;
++
++	while (cnt--) {
++		src = font->data + ((*chars++) & charmask) * cellsize;
++
++		if (attribute) {
++			fbdraw_update_attr(buf, src, attribute, font);
++			src = buf;
++		}
++
++		fb_pad_unaligned_buffer(dst, d_pitch, src, idx,
++					image->height, shift_high,
++					shift_low, mod);
++		shift_low += mod;
++		dst += (shift_low >= 8) ? s_pitch : s_pitch - 1;
++		shift_low &= 7;
++		shift_high = 8 - shift_low;
++	}
++
++	info->fbops->fb_imageblit(info, image);
++}
++
++void fbdraw_font(struct fb_info *info, struct console_font *font, bool hi_font,
++		 unsigned int xpos, unsigned int ypos, int fg, int bg,
++		 u32 attribute, const u16 *chars, size_t count)
++{
++	struct fb_image image;
++	u32 width = DIV_ROUND_UP(font->width, 8);
++	u32 cellsize = width * font->height;
++	u32 maxcnt = info->pixmap.size / cellsize;
++	u32 scan_align = info->pixmap.scan_align - 1;
++	u32 buf_align = info->pixmap.buf_align - 1;
++	u32 mod = font->width % 8, cnt, pitch, size;
++	u8 *dst, *buf = NULL;
++
++	image.fg_color = fg;
++	image.bg_color = bg;
++	image.dx = xpos * font->width;
++	image.dy = ypos * font->height;
++	image.height = font->height;
++	image.depth = 1;
++
++	if (attribute) {
++		buf = kmalloc(cellsize, GFP_KERNEL);
++		if (!buf)
++			return;
++	}
++
++	while (count) {
++		if (count > maxcnt)
++			cnt = maxcnt;
++		else
++			cnt = count;
++
++		image.width = font->width * cnt;
++		pitch = DIV_ROUND_UP(image.width, 8) + scan_align;
++		pitch &= ~scan_align;
++		size = pitch * image.height + buf_align;
++		size &= ~buf_align;
++		dst = fb_get_buffer_offset(info, &info->pixmap, size);
++		image.data = dst;
++
++		if (!mod)
++			bit_putcs_aligned(info, hi_font, font, attribute,
++					  pitch, width, cellsize, &image, buf,
++					  dst, chars, cnt);
++		else
++			bit_putcs_unaligned(info, hi_font, font, attribute,
++					    pitch, width, cellsize, &image, buf,
++					    dst, chars, cnt);
++
++		image.dx += cnt * font->width;
++		count -= cnt;
++		chars += cnt;
++	}
++
++	/* buf is always NULL except when in monochrome mode, so in this case
++	   it's a gain to check buf against NULL even though kfree() handles
++	   NULL pointers just fine */
++	if (unlikely(buf))
++		kfree(buf);
++}
++EXPORT_SYMBOL(fbdraw_font);
++
+ MODULE_LICENSE("GPL v2");
+ MODULE_AUTHOR("David Herrmann <dh.herrmann@googlemail.com>");
+ MODULE_DESCRIPTION("Framebuffer helpers for image draw-operations");
+diff --git a/drivers/video/console/fbdraw.h b/drivers/video/console/fbdraw.h
+index 77edd7f..b9f1ffa 100644
+--- a/drivers/video/console/fbdraw.h
++++ b/drivers/video/console/fbdraw.h
+@@ -23,4 +23,8 @@
+ void fbdraw_update_attr(u8 *dst, const u8 *src, int attribute,
+ 			struct console_font *font);
+ 
++void fbdraw_font(struct fb_info *info, struct console_font *font, bool hi_font,
++		 unsigned int xpos, unsigned int ypos, int fg, int bg,
++		 u32 attribute, const u16 *chars, size_t count);
++
+ #endif /* _VIDEO_FBDRAW_H */
 -- 
 1.7.11.1
 
