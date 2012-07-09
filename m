@@ -1,61 +1,54 @@
 From: David Herrmann <dh.herrmann@googlemail.com>
-Subject: Re: [PATCH v2 09/11] fblog: register console driver
-Date: Mon, 9 Jul 2012 20:25:30 +0200
-Message-ID: <CANq1E4QHuAtAQ5F9i99JVquy1Ae9rA1ovKXhD4Upnm2sOF+bLg@mail.gmail.com>
+Subject: Re: [PATCH v2 11/11] MAINTAINERS: add fblog entry
+Date: Mon, 9 Jul 2012 20:38:17 +0200
+Message-ID: <CANq1E4RyFpqxH=uG+dDA1=kfc3r8rCoEesZ31op9rCLjxyk6mQ@mail.gmail.com>
 References: <1341784614-2797-1-git-send-email-dh.herrmann@googlemail.com>
-	<1341784614-2797-10-git-send-email-dh.herrmann@googlemail.com>
-	<1341785361.13174.25.camel@joe2Laptop>
+	<1341784614-2797-12-git-send-email-dh.herrmann@googlemail.com>
+	<CAMuHMdX_aC1hzKf1eRqoSsQ4oALBev8p77v7++aoB2KrkOUaEw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-we0-f174.google.com ([74.125.82.174]:47838 "EHLO
-	mail-we0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752077Ab2GISZd (ORCPT
+Received: from mail-wg0-f44.google.com ([74.125.82.44]:52330 "EHLO
+	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752652Ab2GISiT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 9 Jul 2012 14:25:33 -0400
-In-Reply-To: <1341785361.13174.25.camel@joe2Laptop>
+	Mon, 9 Jul 2012 14:38:19 -0400
+In-Reply-To: <CAMuHMdX_aC1hzKf1eRqoSsQ4oALBev8p77v7++aoB2KrkOUaEw@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Joe Perches <joe@perches.com>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, florianschandinat@gmx.de, linux-fbdev@vger.kernel.org, gregkh@linuxfoundation.org, alan@lxorguk.ukuu.org.uk, bonbons@linux-vserver.org
 
-Hi Joe
+Hi Geert
 
-On Mon, Jul 9, 2012 at 12:09 AM, Joe Perches <joe@perches.com> wrote:
-> On Sun, 2012-07-08 at 23:56 +0200, David Herrmann wrote:
->> We want to print the kernel log to all FBs so we need a console driver.
->> This registers the driver on startup and writes all messages to all
->> registered fblog instances.
->
-> Hi David.  Trivia only:
->
->> diff --git a/drivers/video/console/fblog.c b/drivers/video/console/fblog.c
-> []
->> @@ -47,6 +71,107 @@ static struct fblog_fb *fblog_fbs[FB_MAX];
->>  static bool active = 1;
+On Mon, Jul 9, 2012 at 9:33 AM, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> On Sun, Jul 8, 2012 at 11:56 PM, David Herrmann
+> <dh.herrmann@googlemail.com> wrote:
+>> Add myself as maintainer for the fblog driver to the MAINTAINERS file.
 >>
->>  #define to_fblog_dev(_d) container_of(_d, struct fblog_fb, dev)
->> +#define FBLOG_STR(x) x, sizeof(x) - 1
+>> Signed-off-by: David Herrmann <dh.herrmann@googlemail.com>
+>> ---
+>>  MAINTAINERS | 6 ++++++
+>>  1 file changed, 6 insertions(+)
+>>
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+>> index ae8fe46..249b02a 100644
+>> --- a/MAINTAINERS
+>> +++ b/MAINTAINERS
+>> @@ -2854,6 +2854,12 @@ F:       drivers/video/
+>>  F:     include/video/
+>>  F:     include/linux/fb.h
+>>
+>> +FRAMEBUFFER LOG DRIVER
+>> +M:     David Herrmann <dh.herrmann@googlemail.com>
+>> +L:     linux-serial@vger.kernel.org
 >
-> That's a rather ugly macro.
+> Why linux-serial, and not linux-fbdev?
 
-But handy ;) I've removed it and replaced the call below with a local
-variable which works fine too and seems to be even shorter than with
-this macro.
+I thought fbcon was maintained on linux-serial as it is very related
+to the vt/tty layer. If linux-fbdev is the better place, I can move
+this. I CC'ed both lists, anyway.
+I have actually no idea where it fits in best.
 
->> +static void fblog_buf_resize(struct fblog_buf *buf, size_t width,
->> +                          size_t height)
->> +{
->> +     u16 **lines = NULL;
->> +     size_t i, j, minw, minh;
->> +
->> +     if (buf->height == height && buf->width == width)
->> +             return;
->> +
->> +     if (width && height) {
->> +             lines = kzalloc(height * sizeof(char*), GFP_KERNEL);
->
-> sizeof(char *) is a bit more kernel style like.
-
-Thanks, both fixed.
+Thanks
 David
