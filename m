@@ -1,56 +1,50 @@
 From: David Herrmann <dh.herrmann@googlemail.com>
-Subject: Re: [PATCH v2 04/11] fbdev: export get_fb_info()/put_fb_info()
-Date: Mon, 9 Jul 2012 19:34:44 +0200
-Message-ID: <CANq1E4S-7LVw-CoD=nvn3npffSZgw9V3Ec9x3XGt-j3ps5-XPA@mail.gmail.com>
+Subject: Re: [PATCH v2 05/11] fblog: register one fblog object per framebuffer
+Date: Mon, 9 Jul 2012 19:55:07 +0200
+Message-ID: <CANq1E4TPk_Lu_+=npR2QHeY5HkKssga5sUcBskoQAeWa0odhqQ@mail.gmail.com>
 References: <1341784614-2797-1-git-send-email-dh.herrmann@googlemail.com>
-	<1341784614-2797-5-git-send-email-dh.herrmann@googlemail.com>
-	<CAMuHMdWsSqMjqDuE_qgNUjc1eCWZqLLo1GNxwLYZNih=YBFh0g@mail.gmail.com>
+	<1341784614-2797-6-git-send-email-dh.herrmann@googlemail.com>
+	<1341785628.13174.28.camel@joe2Laptop>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdWsSqMjqDuE_qgNUjc1eCWZqLLo1GNxwLYZNih=YBFh0g@mail.gmail.com>
+In-Reply-To: <1341785628.13174.28.camel@joe2Laptop>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
+To: Joe Perches <joe@perches.com>
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, florianschandinat@gmx.de, linux-fbdev@vger.kernel.org, gregkh@linuxfoundation.org, alan@lxorguk.ukuu.org.uk, bonbons@linux-vserver.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Geert
+Hi Joe
 
-On Mon, Jul 9, 2012 at 9:34 AM, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> On Sun, Jul 8, 2012 at 11:56 PM, David Herrmann
-> <dh.herrmann@googlemail.com> wrote:
->> --- a/drivers/video/fbmem.c
->> +++ b/drivers/video/fbmem.c
->> @@ -46,7 +46,7 @@ static DEFINE_MUTEX(registration_lock);
->>  struct fb_info *registered_fb[FB_MAX] __read_mostly;
->>  int num_registered_fb __read_mostly;
+On Mon, Jul 9, 2012 at 12:13 AM, Joe Perches <joe@perches.com> wrote:
+> On Sun, 2012-07-08 at 23:56 +0200, David Herrmann wrote:
 >>
->> -static struct fb_info *get_fb_info(unsigned int idx)
->> +struct fb_info *get_fb_info(unsigned int idx)
->>  {
->>         struct fb_info *fb_info;
->>
->> @@ -61,14 +61,16 @@ static struct fb_info *get_fb_info(unsigned int idx)
->>
->>         return fb_info;
->>  }
->> +EXPORT_SYMBOL(get_fb_info);
 >
-> EXPORT_SYMBOL_GPL?
-
-Thanks, that seems more appropriate here. I've fixed it.
-
->> -static void put_fb_info(struct fb_info *fb_info)
->> +void put_fb_info(struct fb_info *fb_info)
->>  {
->>         if (!atomic_dec_and_test(&fb_info->count))
->>                 return;
->>         if (fb_info->fbops->fb_destroy)
->>                 fb_info->fbops->fb_destroy(fb_info);
->>  }
->> +EXPORT_SYMBOL(put_fb_info);
+> Hi David.  Trivial comments only:
 >
-> EXPORT_SYMBOL_GPL?
+>> diff --git a/drivers/video/console/fblog.c b/drivers/video/console/fblog.c
+> []
+>> @@ -23,15 +23,204 @@
+>>   * all fblog instances before running other graphics applications.
+>>   */
+>
+> Please add
+> #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+> before any #include and...
 
-Thanks
+Thanks, I've added it.
+
+>>  static int __init fblog_init(void)
+>>  {
+>> +     int ret;
+>> +
+>> +     ret = fb_register_client(&fblog_notifier);
+>> +     if (ret) {
+>> +             pr_err("fblog: cannot register framebuffer notifier");
+>
+> Missing newline, pr_fmt would add module name.
+>
+>                 pr_err("cannot register framebuffer notifier\n");
+
+Fixed, too. Thanks!
 David
