@@ -1,47 +1,39 @@
 From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH 03/10] usb, kobil: Sort out some bogus tty handling
-Date: Thu, 12 Jul 2012 14:38:26 -0700
-Message-ID: <20120712213826.GA18316@kroah.com>
+Subject: Re: [PATCH 07/10] tty: move the termios object into the tty
+Date: Thu, 12 Jul 2012 14:53:23 -0700
+Message-ID: <20120712215323.GA9952@kroah.com>
 References: <20120712115643.1321.63498.stgit@localhost.localdomain>
- <20120712115928.1321.42145.stgit@localhost.localdomain>
+ <20120712120042.1321.81017.stgit@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:56558 "EHLO
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:59354 "EHLO
 	out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S964796Ab2GLVi3 (ORCPT
+	by vger.kernel.org with ESMTP id S1161578Ab2GLVxZ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 12 Jul 2012 17:38:29 -0400
+	Thu, 12 Jul 2012 17:53:25 -0400
 Content-Disposition: inline
-In-Reply-To: <20120712115928.1321.42145.stgit@localhost.localdomain>
+In-Reply-To: <20120712120042.1321.81017.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Cc: linux-serial@vger.kernel.org
 
-On Thu, Jul 12, 2012 at 12:59:33PM +0100, Alan Cox wrote:
+On Thu, Jul 12, 2012 at 01:00:53PM +0100, Alan Cox wrote:
 > From: Alan Cox <alan@linux.intel.com>
->=20
-> Stuff noticed while doing the termios conversion.
->=20
+> 
+> This will let us sort out a whole pile of tty related races. The
+> alternative would be to keep points and refcount the termios objects.
+> However
+> 1. They are tiny anyway
+> 2. Many devices don't use the stored copies
+> 3. We can remove a pty special case
+> 
 > Signed-off-by: Alan Cox <alan@linux.intel.com>
-> ---
->=20
->  drivers/usb/serial/kobil_sct.c |    6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
 
-This breaks the build with:
+Because I couldn't include a few of the previous patches, this one fails
+to apply.  Care to fix those up and resend the remaining ones?
 
-drivers/usb/serial/kobil_sct.c: In function =E2=80=98kobil_set_termios=E2=
-=80=99:
-drivers/usb/serial/kobil_sct.c:591:37: error: =E2=80=98old_termios=E2=80=
-=99 undeclared (first use in this function)
-drivers/usb/serial/kobil_sct.c:591:37: note: each undeclared identifier=
- is reported only once for each function it appears in
+thanks,
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+greg k-h
