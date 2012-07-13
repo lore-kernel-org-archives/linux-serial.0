@@ -1,69 +1,58 @@
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: Re: [PATCH v4 2/2] serial: mxs-auart: Allow device tree probing
-Date: Fri, 13 Jul 2012 12:35:45 +0200
-Message-ID: <4FFFFA01.6070306@pengutronix.de>
-References: <1339774557-23588-1-git-send-email-fabio.estevam@freescale.com> <1340024769-7122-1-git-send-email-fabio.estevam@freescale.com> <4FDF929B.7000809@grid-net.com> <4FFFF968.5000801@pengutronix.de>
+From: y@pengutronix.de
+Subject: [PATCH 02/11] serial/imx: make imx_port.devdata member point to const data
+Date: Fri, 13 Jul 2012 14:32:05 +0200
+Message-ID: <47813.9285035015$1342182787@news.gmane.org>
+References: <1342182734-321-1-git-send-email-y>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature";
- boundary="------------enigBCE4CB1DB44D85F9341B1C5F"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:37867 "EHLO
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:52218 "EHLO
 	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932463Ab2GMKfz (ORCPT
+	with ESMTP id S932653Ab2GMMc7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 13 Jul 2012 06:35:55 -0400
-In-Reply-To: <4FFFF968.5000801@pengutronix.de>
+	Fri, 13 Jul 2012 08:32:59 -0400
+In-Reply-To: <1342182734-321-1-git-send-email-y>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Subodh Nijsure <snijsure@grid-net.com>
-Cc: Fabio Estevam <fabio.estevam@freescale.com>, marex@denx.de, kernel@pengutronix.de, rob.herring@calxeda.com, Grant Likely <grant.likely@secretlab.ca>, linux-serial@vger.kernel.org, shawn.guo@linaro.org, "Matt@grid-net.com" <Matt@grid-net.com>, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
+To: Grant Likely <grant.likely@secretlab.ca>, Arnd Bergmann <arnd@arndb.de>
+Cc: kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org, devicetree-discuss@lists.ozlabs.org, Rob Herring <rob.herring@calxeda.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigBCE4CB1DB44D85F9341B1C5F
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+=46rom: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
 
-On 07/13/2012 12:33 PM, Marc Kleine-Budde wrote:
-> On 06/18/2012 10:42 PM, Subodh Nijsure wrote:
->>
->> If one were to try run console on one of the /dev/ttyAPP* ports, as is=
+This prepares of_device_id.data becoming const. Without this change the
+following warning would occur:
 
->> the case for hardware I am working with, console output wouldn't show =
-up
->> without the following diff:
->>
->> Let me know if should send formal patch or we can include it as part o=
-f v5?
->=20
-> Has this patch been applied?
+	drivers/tty/serial/imx.c: In function 'serial_imx_probe_dt':
+	drivers/tty/serial/imx.c:1430:17: warning: assignment discards 'const'=
+ qualifier from pointer target type [enabled by default]
 
-Yes. [1]
+Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+Cc: Alan Cox <alan@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/tty/serial/imx.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Marc
-
-[1]
-http://git.linaro.org/gitweb?p=3Dpeople/shawnguo/linux-2.6.git;a=3Dcommit=
-;h=3D1ea6607d4cdc917987e7e6cfaafc4a630d97a297
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 4ef7473..0af4eec 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -207,7 +207,7 @@ struct imx_port {
+ 	unsigned short		trcv_delay; /* transceiver delay */
+ 	struct clk		*clk_ipg;
+ 	struct clk		*clk_per;
+-	struct imx_uart_data	*devdata;
++	const struct imx_uart_data *devdata;
+ };
+=20
+ struct imx_port_ucrs {
 --=20
-Pengutronix e.K.                  | Marc Kleine-Budde           |
-Industrial Linux Solutions        | Phone: +49-231-2826-924     |
-Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
-Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
+1.7.10.4
 
-
---------------enigBCE4CB1DB44D85F9341B1C5F
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk//+gEACgkQjTAFq1RaXHM8bQCgh0+R+j71op+Pz8qcQT+1jEQC
-6xMAn1qiwW/S7/i6P7s/ana6v4vFZTG8
-=ii8L
------END PGP SIGNATURE-----
-
---------------enigBCE4CB1DB44D85F9341B1C5F--
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
