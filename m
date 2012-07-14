@@ -1,41 +1,60 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: Re: [PATCH 00/11] make struct of_device_id.data const
-Date: Fri, 13 Jul 2012 14:39:08 +0200
-Message-ID: <20120713123908.GF592@pengutronix.de>
-References: <1342182734-321-1-git-send-email-y>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1342182734-321-1-git-send-email-y>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: "devicetree-discuss"
- <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-To: Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Cc: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Linus Walleij <linus.walleij-0IS4wlFg1OjSUeElwK9/Pw@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Adrian Hunter <adrian.hunter-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Wolfram Sang <w.sang-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, spi-devel-general-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Chris Ball <cjb-2X9k7bc8m7Mdnm+yROfE0A@public.gmane.org>, Balaji T K <balajitk-l0cyMroinI0@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+From: Gabor Juhos <juhosg@openwrt.org>
+Subject: [PATCH] tty: of_serial: add no-loopback-test property
+Date: Sat, 14 Jul 2012 14:06:20 +0200
+Message-ID: <1342267580-3672-1-git-send-email-juhosg@openwrt.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from arrakis.dune.hu ([78.24.191.176]:49692 "EHLO arrakis.dune.hu"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753108Ab2GNMOi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 14 Jul 2012 08:14:38 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Grant Likely <grant.likely@secretlab.ca>
+Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Landley <rob@landley.net>, devicetree-discuss@lists.ozlabs.org, linux-serial@vger.kernel.org, Gabor Juhos <juhosg@openwrt.org>
 
-Hello,
+The loopback test mode is not implemented in all
+NS16550 compatible UARTs. The 8250 driver uses the
+UPF_SKIP_TEST flag to indicate this, however it is
+not possible to set this flag via device-tree.
 
-On Fri, Jul 13, 2012 at 02:32:02PM +0200, y@pengutronix.de wrote:
-This is utter non-sense, it was me who sent these mails (and pressed 'y'
-when git send-email asked if "Uwe Kleine-K=F6nig
-<u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>" is the right sender). Please make sure
-to correct this when replying to the patches.
+Add a new 'no-loopback-test' property, and modify
+the of_serial driver to set the UPF_SKIP_TEST flag
+if the property is present.
 
-Sorry for the inconvenience.
+Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
+---
+ .../devicetree/bindings/tty/serial/of-serial.txt   |    2 ++
+ drivers/tty/serial/of_serial.c                     |    4 ++++
+ 2 files changed, 6 insertions(+), 0 deletions(-)
 
-Best regards
-Uwe
--- =
+diff --git a/Documentation/devicetree/bindings/tty/serial/of-serial.txt b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
+index b8b27b0..0e83e45 100644
+--- a/Documentation/devicetree/bindings/tty/serial/of-serial.txt
++++ b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
+@@ -24,6 +24,8 @@ Optional properties:
+   accesses to the UART (e.g. TI davinci).
+ - used-by-rtas : set to indicate that the port is in use by the OpenFirmware
+   RTAS and should not be registered.
++- no-loopback-test: set to indicate that the port does not implements loopback
++  test mode
+ 
+ Example:
+ 
+diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+index 5410c06..301e5e3 100644
+--- a/drivers/tty/serial/of_serial.c
++++ b/drivers/tty/serial/of_serial.c
+@@ -105,6 +105,10 @@ static int __devinit of_platform_serial_setup(struct platform_device *ofdev,
+ 	port->uartclk = clk;
+ 	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
+ 		| UPF_FIXED_PORT | UPF_FIXED_TYPE;
++
++	if (of_find_property(np, "no-loopback-test", NULL))
++		port->flags |= UPF_SKIP_TEST;
++
+ 	port->dev = &ofdev->dev;
+ 
+ 	if (type == PORT_TEGRA)
+-- 
+1.7.2.1
 
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
