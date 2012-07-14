@@ -1,17 +1,17 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 10/12] vt: fix the keyboard/led locking
-Date: Sat, 14 Jul 2012 15:34:20 +0100
-Message-ID: <20120714143415.26945.43818.stgit@localhost.localdomain>
+Subject: [PATCH 11/12] tty: Move the handling of the tty release logic
+Date: Sat, 14 Jul 2012 15:34:34 +0100
+Message-ID: <20120714143430.26945.21368.stgit@localhost.localdomain>
 References: <20120714142740.26945.98609.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:34158 "EHLO
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:34161 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752655Ab2GNOR1 (ORCPT
+	with ESMTP id S1752655Ab2GNORl (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 14 Jul 2012 10:17:27 -0400
+	Sat, 14 Jul 2012 10:17:41 -0400
 In-Reply-To: <20120714142740.26945.98609.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -19,158 +19,160 @@ To: greg@kroah.com, linux-serial@vger.kernel.org
 
 From: Alan Cox <alan@linux.intel.com>
 
-We touch the LED from both keyboard callback and direct paths. In
-one case we've got the lock held way up the call chain and in the
-other we haven't. This leads to complete insanity so fix it by giving
-the LED bits their own lock.
+Now that we don't have tty->termios tied to drivers->tty we can untangle
+the logic here. In addition we can push the removal logic out of the
+destructor path.
+
+At that point we can think about sorting out tty_port and console and all
+the other ugly hangovers.
 
 Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
 
- drivers/tty/vt/keyboard.c |   41 +++++++++++++++++++++++------------------
- include/linux/kbd_kern.h  |    1 -
- 2 files changed, 23 insertions(+), 19 deletions(-)
+ drivers/tty/pty.c               |   12 ++----------
+ drivers/tty/tty_io.c            |   16 +++++-----------
+ drivers/tty/vt/vt.c             |    1 -
+ drivers/usb/serial/usb-serial.c |    3 +--
+ include/linux/tty.h             |    1 -
+ include/linux/tty_driver.h      |   11 +++--------
+ 6 files changed, 11 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
-index 9b4f60a..681765b 100644
---- a/drivers/tty/vt/keyboard.c
-+++ b/drivers/tty/vt/keyboard.c
-@@ -119,6 +119,7 @@ static const int NR_TYPES = ARRAY_SIZE(max_vals);
- 
- static struct input_handler kbd_handler;
- static DEFINE_SPINLOCK(kbd_event_lock);
-+static DEFINE_SPINLOCK(led_lock);
- static unsigned long key_down[BITS_TO_LONGS(KEY_CNT)];	/* keyboard key bitmap */
- static unsigned char shift_down[NR_SHIFT];		/* shift state counters.. */
- static bool dead_key_next;
-@@ -984,7 +985,7 @@ static void k_brl(struct vc_data *vc, unsigned char value, char up_flag)
-  * or (ii) whatever pattern of lights people want to show using KDSETLED,
-  * or (iii) specified bits of specified words in kernel memory.
-  */
--unsigned char getledstate(void)
-+static unsigned char getledstate(void)
- {
- 	return ledstate;
- }
-@@ -992,7 +993,7 @@ unsigned char getledstate(void)
- void setledstate(struct kbd_struct *kbd, unsigned int led)
- {
-         unsigned long flags;
--        spin_lock_irqsave(&kbd_event_lock, flags);
-+        spin_lock_irqsave(&led_lock, flags);
- 	if (!(led & ~7)) {
- 		ledioctl = led;
- 		kbd->ledmode = LED_SHOW_IOCTL;
-@@ -1000,7 +1001,7 @@ void setledstate(struct kbd_struct *kbd, unsigned int led)
- 		kbd->ledmode = LED_SHOW_FLAGS;
- 
- 	set_leds();
--	spin_unlock_irqrestore(&kbd_event_lock, flags);
-+	spin_unlock_irqrestore(&led_lock, flags);
+diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+index 5ad7ccc..60c08ce 100644
+--- a/drivers/tty/pty.c
++++ b/drivers/tty/pty.c
+@@ -527,12 +527,6 @@ static struct tty_struct *pts_unix98_lookup(struct tty_driver *driver,
+ 	return tty;
  }
  
- static inline unsigned char getleds(void)
-@@ -1051,8 +1052,11 @@ int vt_get_leds(int console, int flag)
- {
- 	struct kbd_struct * kbd = kbd_table + console;
- 	int ret;
-+	unsigned long flags;
+-static void pty_unix98_shutdown(struct tty_struct *tty)
+-{
+-	tty_driver_remove_tty(tty->driver, tty);
+-	/* We have our own method as we don't use the tty index */
+-}
+-
+ /* We have no need to install and remove our tty objects as devpts does all
+    the work for us */
  
-+	spin_lock_irqsave(&led_lock, flags);
- 	ret = vc_kbd_led(kbd, flag);
-+	spin_unlock_irqrestore(&led_lock, flags);
+@@ -558,9 +552,8 @@ static const struct tty_operations ptm_unix98_ops = {
+ 	.unthrottle = pty_unthrottle,
+ 	.set_termios = pty_set_termios,
+ 	.ioctl = pty_unix98_ioctl,
+-	.shutdown = pty_unix98_shutdown,
+-	.cleanup = pty_cleanup,
+-	.resize = pty_resize
++	.resize = pty_resize,
++	.cleanup = pty_cleanup
+ };
  
- 	return ret;
+ static const struct tty_operations pty_unix98_ops = {
+@@ -575,7 +568,6 @@ static const struct tty_operations pty_unix98_ops = {
+ 	.chars_in_buffer = pty_chars_in_buffer,
+ 	.unthrottle = pty_unthrottle,
+ 	.set_termios = pty_set_termios,
+-	.shutdown = pty_unix98_shutdown,
+ 	.cleanup = pty_cleanup,
+ };
+ 
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index d6feca1..e991a4b 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -1446,12 +1446,6 @@ void tty_free_termios(struct tty_struct *tty)
  }
-@@ -1088,11 +1092,11 @@ void vt_set_led_state(int console, int leds)
- void vt_kbd_con_start(int console)
- {
- 	struct kbd_struct * kbd = kbd_table + console;
--/*	unsigned long flags; */
--/*	spin_lock_irqsave(&kbd_event_lock, flags); */
-+	unsigned long flags;
-+	spin_lock_irqsave(&led_lock, flags);
- 	clr_vc_kbd_led(kbd, VC_SCROLLOCK);
- 	set_leds();
--/*	spin_unlock_irqrestore(&kbd_event_lock, flags); */
-+	spin_unlock_irqrestore(&led_lock, flags);
- }
+ EXPORT_SYMBOL(tty_free_termios);
+ 
+-void tty_shutdown(struct tty_struct *tty)
+-{
+-	tty_driver_remove_tty(tty->driver, tty);
+-	tty_free_termios(tty);
+-}
+-EXPORT_SYMBOL(tty_shutdown);
  
  /**
-@@ -1101,21 +1105,15 @@ void vt_kbd_con_start(int console)
-  *
-  *	Handle console stop. This is a wrapper for the VT layer
-  *	so that we can keep kbd knowledge internal
-- *
-- *	FIXME: We eventually need to hold the kbd lock here to protect
-- *	the LED updating. We can't do it yet because fn_hold calls stop_tty
-- *	and start_tty under the kbd_event_lock, while normal tty paths
-- *	don't hold the lock. We probably need to split out an LED lock
-- *	but not during an -rc release!
-  */
- void vt_kbd_con_stop(int console)
+  *	release_one_tty		-	release tty structure memory
+@@ -1495,11 +1489,6 @@ static void queue_release_one_tty(struct kref *kref)
  {
- 	struct kbd_struct * kbd = kbd_table + console;
--/*	unsigned long flags; */
--/*	spin_lock_irqsave(&kbd_event_lock, flags); */
-+	unsigned long flags;
-+	spin_lock_irqsave(&led_lock, flags);
- 	set_vc_kbd_led(kbd, VC_SCROLLOCK);
- 	set_leds();
--/*	spin_unlock_irqrestore(&kbd_event_lock, flags); */
-+	spin_unlock_irqrestore(&led_lock, flags);
+ 	struct tty_struct *tty = container_of(kref, struct tty_struct, kref);
+ 
+-	if (tty->ops->shutdown)
+-		tty->ops->shutdown(tty);
+-	else
+-		tty_shutdown(tty);
+-
+ 	/* The hangup queue is now free so we can reuse it rather than
+ 	   waste a chunk of memory for each port */
+ 	INIT_WORK(&tty->hangup_work, release_one_tty);
+@@ -1539,6 +1528,11 @@ static void release_tty(struct tty_struct *tty, int idx)
+ 	/* This should always be true but check for the moment */
+ 	WARN_ON(tty->index != idx);
+ 
++	if (tty->ops->shutdown)
++		tty->ops->shutdown(tty);
++	tty_free_termios(tty);
++	tty_driver_remove_tty(tty->driver, tty);
++
+ 	if (tty->link)
+ 		tty_kref_put(tty->link);
+ 	tty_kref_put(tty);
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index dbceaeb..e07ded3 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -2850,7 +2850,6 @@ static void con_shutdown(struct tty_struct *tty)
+ 	console_lock();
+ 	vc->port.tty = NULL;
+ 	console_unlock();
+-	tty_shutdown(tty);
  }
  
- /*
-@@ -1127,7 +1125,12 @@ void vt_kbd_con_stop(int console)
+ static int default_italic_color    = 2; // green (ASCII)
+diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-serial.c
+index 5fe2135..aa4b0d7 100644
+--- a/drivers/usb/serial/usb-serial.c
++++ b/drivers/usb/serial/usb-serial.c
+@@ -305,8 +305,7 @@ static void serial_close(struct tty_struct *tty, struct file *filp)
+  * Do the resource freeing and refcount dropping for the port.
+  * Avoid freeing the console.
+  *
+- * Called asynchronously after the last tty kref is dropped,
+- * and the tty layer has already done the tty_shutdown(tty);
++ * Called asynchronously after the last tty kref is dropped.
   */
- static void kbd_bh(unsigned long dummy)
+ static void serial_cleanup(struct tty_struct *tty)
  {
--	unsigned char leds = getleds();
-+	unsigned char leds;
-+	unsigned long flags;
-+	
-+	spin_lock_irqsave(&led_lock, flags);
-+	leds = getleds();
-+	spin_unlock_irqrestore(&led_lock, flags);
- 
- 	if (leds != ledstate) {
- 		input_handler_for_each_handle(&kbd_handler, &leds,
-@@ -2032,11 +2035,11 @@ int vt_do_kdskled(int console, int cmd, unsigned long arg, int perm)
- 			return -EPERM;
- 		if (arg & ~0x77)
- 			return -EINVAL;
--                spin_lock_irqsave(&kbd_event_lock, flags);
-+                spin_lock_irqsave(&led_lock, flags);
- 		kbd->ledflagstate = (arg & 7);
- 		kbd->default_ledflagstate = ((arg >> 4) & 7);
- 		set_leds();
--                spin_unlock_irqrestore(&kbd_event_lock, flags);
-+                spin_unlock_irqrestore(&led_lock, flags);
- 		return 0;
- 
- 	/* the ioctls below only set the lights, not the functions */
-@@ -2131,8 +2134,10 @@ void vt_reset_keyboard(int console)
- 	clr_vc_kbd_mode(kbd, VC_CRLF);
- 	kbd->lockstate = 0;
- 	kbd->slockstate = 0;
-+	spin_lock(&led_lock);
- 	kbd->ledmode = LED_SHOW_FLAGS;
- 	kbd->ledflagstate = kbd->default_ledflagstate;
-+	spin_unlock(&led_lock);
- 	/* do not do set_leds here because this causes an endless tasklet loop
- 	   when the keyboard hasn't been initialized yet */
- 	spin_unlock_irqrestore(&kbd_event_lock, flags);
-diff --git a/include/linux/kbd_kern.h b/include/linux/kbd_kern.h
-index af9137d..b7c8cdc 100644
---- a/include/linux/kbd_kern.h
-+++ b/include/linux/kbd_kern.h
-@@ -65,7 +65,6 @@ struct kbd_struct {
- 
- extern int kbd_init(void);
- 
--extern unsigned char getledstate(void);
- extern void setledstate(struct kbd_struct *kbd, unsigned int led);
- 
- extern int do_poke_blanked_console;
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index d5e75ee..a39e723 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -423,7 +423,6 @@ extern void tty_unthrottle(struct tty_struct *tty);
+ extern int tty_do_resize(struct tty_struct *tty, struct winsize *ws);
+ extern void tty_driver_remove_tty(struct tty_driver *driver,
+ 				  struct tty_struct *tty);
+-extern void tty_shutdown(struct tty_struct *tty);
+ extern void tty_free_termios(struct tty_struct *tty);
+ extern int is_current_pgrp_orphaned(void);
+ extern struct pid *tty_get_pgrp(struct tty_struct *tty);
+diff --git a/include/linux/tty_driver.h b/include/linux/tty_driver.h
+index 04419c1..80e72dc 100644
+--- a/include/linux/tty_driver.h
++++ b/include/linux/tty_driver.h
+@@ -45,14 +45,9 @@
+  *
+  * void (*shutdown)(struct tty_struct * tty);
+  *
+- * 	This routine is called synchronously when a particular tty device
+- *	is closed for the last time freeing up the resources.
+- *	Note that tty_shutdown() is not called if ops->shutdown is defined.
+- *	This means one is responsible to take care of calling ops->remove (e.g.
+- *	via tty_driver_remove_tty) and releasing tty->termios.
+- *	Note that this hook may be called from *all* the contexts where one
+- *	uses tty refcounting (e.g. tty_port_tty_get).
+- *
++ * 	This routine is called under the tty lock when a particular tty device
++ *	is closed for the last time. It executes before the tty resources
++ *	are freed so may execute while another function holds a tty kref.
+  *
+  * void (*cleanup)(struct tty_struct * tty);
+  *
 
