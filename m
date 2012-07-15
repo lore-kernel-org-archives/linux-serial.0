@@ -1,224 +1,204 @@
 From: David Herrmann <dh.herrmann@googlemail.com>
-Subject: [PATCH v3 01/11] fbcon: move update_attr() into separate source file
-Date: Sun, 15 Jul 2012 21:04:36 +0200
-Message-ID: <1342379086-7583-2-git-send-email-dh.herrmann@googlemail.com>
+Subject: [PATCH v3 06/11] fblog: open fb on registration
+Date: Sun, 15 Jul 2012 21:04:41 +0200
+Message-ID: <1342379086-7583-7-git-send-email-dh.herrmann@googlemail.com>
 References: <1342379086-7583-1-git-send-email-dh.herrmann@googlemail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f44.google.com ([74.125.82.44]:45118 "EHLO
-	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751017Ab2GOTFV (ORCPT
+Received: from mail-we0-f174.google.com ([74.125.82.174]:50941 "EHLO
+	mail-we0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751568Ab2GOTF3 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 15 Jul 2012 15:05:21 -0400
+	Sun, 15 Jul 2012 15:05:29 -0400
 In-Reply-To: <1342379086-7583-1-git-send-email-dh.herrmann@googlemail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 Cc: Florian Tobias Schandinat <FlorianSchandinat@gmx.de>, Andrew Morton <akpm@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-fbdev@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, David Herrmann <dh.herrmann@googlemail.com>
 
-If we want to use update_attr() independently from fbcon, we need to split
-it off from bitblit.c and fbcon.h. Therefore, introduce a new header and
-source file (fbdraw.[ch]) which does not depende on vc_* and fbcon_*
-structures in any way.
+This opens the framebuffer upon registration so we can use it for
+drawing-operations. On unregistration we close it again.
 
-This does not introduce any new code nor does it make the paths deeper,
-it simply splits the function off.
-
-The other update_attr() functions (inside the rotation sources) seem
-similar but are significantly different and I haven't found a way to merge
-them efficiently (which is probably the reason why they are split off
-now). Furthermore, I do not intend to use them in the coming code so there
-is no need to split them off.
+While opening/closing or accessing the fb in any other way, we must hold
+the fb-mutex. However, since the notifiers are often called with the mutex
+already held, we cannot lock it _after_ taking the
+fblog_registration_lock. Therefore, we require the caller to make sure the
+fb-mutex is held.
 
 Signed-off-by: David Herrmann <dh.herrmann@googlemail.com>
 ---
- drivers/video/console/Makefile  |  3 ++-
- drivers/video/console/bitblit.c | 26 +++--------------------
- drivers/video/console/fbcon.h   |  5 +----
- drivers/video/console/fbdraw.c  | 46 +++++++++++++++++++++++++++++++++++++++++
- drivers/video/console/fbdraw.h  | 26 +++++++++++++++++++++++
- 5 files changed, 78 insertions(+), 28 deletions(-)
- create mode 100644 drivers/video/console/fbdraw.c
- create mode 100644 drivers/video/console/fbdraw.h
+ drivers/video/console/fblog.c | 94 ++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 93 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/video/console/Makefile b/drivers/video/console/Makefile
-index a862e91..9a52226 100644
---- a/drivers/video/console/Makefile
-+++ b/drivers/video/console/Makefile
-@@ -25,7 +25,8 @@ obj-$(CONFIG_SGI_NEWPORT_CONSOLE) += newport_con.o font.o
- obj-$(CONFIG_STI_CONSOLE)         += sticon.o sticore.o font.o
- obj-$(CONFIG_VGA_CONSOLE)         += vgacon.o
- obj-$(CONFIG_MDA_CONSOLE)         += mdacon.o
--obj-$(CONFIG_FRAMEBUFFER_CONSOLE) += fbcon.o bitblit.o font.o softcursor.o
-+obj-$(CONFIG_FRAMEBUFFER_CONSOLE) += fbcon.o bitblit.o font.o softcursor.o \
-+                                     fbdraw.o
- ifeq ($(CONFIG_FB_TILEBLITTING),y)
- obj-$(CONFIG_FRAMEBUFFER_CONSOLE)     += tileblit.o
- endif
-diff --git a/drivers/video/console/bitblit.c b/drivers/video/console/bitblit.c
-index 28b1a83..6ec2905 100644
---- a/drivers/video/console/bitblit.c
-+++ b/drivers/video/console/bitblit.c
-@@ -22,26 +22,6 @@
+diff --git a/drivers/video/console/fblog.c b/drivers/video/console/fblog.c
+index 279f4d8..1c526c5 100644
+--- a/drivers/video/console/fblog.c
++++ b/drivers/video/console/fblog.c
+@@ -32,12 +32,14 @@
+ 
+ enum fblog_flags {
+ 	FBLOG_KILLED,
++	FBLOG_OPEN,
+ };
+ 
+ struct fblog_fb {
+ 	unsigned long flags;
+ 	struct fb_info *info;
+ 	struct device dev;
++	struct mutex lock;
+ };
+ 
+ static DEFINE_MUTEX(fblog_registration_lock);
+@@ -46,6 +48,74 @@ static struct fblog_fb *fblog_fbs[FB_MAX];
+ #define to_fblog_dev(_d) container_of(_d, struct fblog_fb, dev)
+ 
  /*
-  * Accelerated handlers.
-  */
--static void update_attr(u8 *dst, u8 *src, int attribute,
--			       struct vc_data *vc)
--{
--	int i, offset = (vc->vc_font.height < 10) ? 1 : 2;
--	int width = DIV_ROUND_UP(vc->vc_font.width, 8);
--	unsigned int cellsize = vc->vc_font.height * width;
--	u8 c;
--
--	offset = cellsize - (offset * width);
--	for (i = 0; i < cellsize; i++) {
--		c = src[i];
--		if (attribute & FBCON_ATTRIBUTE_UNDERLINE && i >= offset)
--			c = 0xff;
--		if (attribute & FBCON_ATTRIBUTE_BOLD)
--			c |= c >> 1;
--		if (attribute & FBCON_ATTRIBUTE_REVERSE)
--			c = ~c;
--		dst[i] = c;
--	}
--}
++ * fblog_open/close()
++ * These functions manage access to the underlying framebuffer. While opened, we
++ * have a valid reference to the fb and can use it for drawing operations. When
++ * the fb is unregistered, we drop our reference and close the fb so it can get
++ * deleted properly. We also mark it as dead so no further fblog_open() call
++ * will succeed.
++ * Both functions must be called with the fb->info->lock mutex held! But make
++ * sure to lock it _before_ locking the fblog-registration-lock. Otherwise, we
++ * will dead-lock with fb-registration.
++ */
++
++static int fblog_open(struct fblog_fb *fb)
++{
++	int ret;
++
++	mutex_lock(&fb->lock);
++
++	if (test_bit(FBLOG_KILLED, &fb->flags)) {
++		ret = -ENODEV;
++		goto unlock;
++	}
++
++	if (test_bit(FBLOG_OPEN, &fb->flags)) {
++		ret = 0;
++		goto unlock;
++	}
++
++	if (!try_module_get(fb->info->fbops->owner)) {
++		ret = -ENODEV;
++		goto out_killed;
++	}
++
++	if (fb->info->fbops->fb_open && fb->info->fbops->fb_open(fb->info, 0)) {
++		ret = -EIO;
++		goto out_unref;
++	}
++
++	set_bit(FBLOG_OPEN, &fb->flags);
++	mutex_unlock(&fb->lock);
++	return 0;
++
++out_unref:
++	module_put(fb->info->fbops->owner);
++out_killed:
++	set_bit(FBLOG_KILLED, &fb->flags);
++unlock:
++	mutex_unlock(&fb->lock);
++	return ret;
++}
++
++static void fblog_close(struct fblog_fb *fb, bool kill_dev)
++{
++	mutex_lock(&fb->lock);
++
++	if (test_bit(FBLOG_OPEN, &fb->flags)) {
++		if (fb->info->fbops->fb_release)
++			fb->info->fbops->fb_release(fb->info, 0);
++		module_put(fb->info->fbops->owner);
++		clear_bit(FBLOG_OPEN, &fb->flags);
++	}
++
++	if (kill_dev)
++		set_bit(FBLOG_KILLED, &fb->flags);
++
++	mutex_unlock(&fb->lock);
++}
++
++/*
+  * fblog framebuffer list
+  * The fblog_fbs[] array contains all currently registered framebuffers. If a
+  * framebuffer is in that list, we always must make sure that we own a reference
+@@ -77,6 +147,7 @@ static void fblog_do_unregister(struct fb_info *info)
  
- static void bit_bmove(struct vc_data *vc, struct fb_info *info, int sy,
- 		      int sx, int dy, int dx, int height, int width)
-@@ -88,7 +68,7 @@ static inline void bit_putcs_aligned(struct vc_data *vc, struct fb_info *info,
- 					  charmask)*cellsize;
+ 	fblog_fbs[info->node] = NULL;
  
- 		if (attr) {
--			update_attr(buf, src, attr, vc);
-+			fbdraw_update_attr(buf, src, attr, &vc->vc_font);
- 			src = buf;
- 		}
++	fblog_close(fb, true);
+ 	device_del(&fb->dev);
+ 	put_device(&fb->dev);
+ }
+@@ -99,6 +170,7 @@ static void fblog_do_register(struct fb_info *info, bool force)
+ 		return;
  
-@@ -123,7 +103,7 @@ static inline void bit_putcs_unaligned(struct vc_data *vc,
- 					  charmask)*cellsize;
+ 	fb->info = info;
++	mutex_init(&fb->lock);
+ 	__module_get(THIS_MODULE);
+ 	device_initialize(&fb->dev);
+ 	fb->dev.class = fb_class;
+@@ -113,6 +185,8 @@ static void fblog_do_register(struct fb_info *info, bool force)
+ 		put_device(&fb->dev);
+ 		return;
+ 	}
++
++	fblog_open(fb);
+ }
  
- 		if (attr) {
--			update_attr(buf, src, attr, vc);
-+			fbdraw_update_attr(buf, src, attr, &vc->vc_font);
- 			src = buf;
- 		}
+ static void fblog_register(struct fb_info *info, bool force)
+@@ -134,6 +208,7 @@ static int fblog_event(struct notifier_block *self, unsigned long action,
+ {
+ 	struct fb_event *event = data;
+ 	struct fb_info *info = event->info;
++	struct fblog_fb *fb;
  
-@@ -275,7 +255,7 @@ static void bit_cursor(struct vc_data *vc, struct fb_info *info, int mode,
- 			return;
- 		kfree(ops->cursor_data);
- 		ops->cursor_data = dst;
--		update_attr(dst, src, attribute, vc);
-+		fbdraw_update_attr(dst, src, attribute, &vc->vc_font);
- 		src = dst;
+ 	switch(action) {
+ 	case FB_EVENT_FB_REGISTERED:
+@@ -145,8 +220,21 @@ static int fblog_event(struct notifier_block *self, unsigned long action,
+ 	case FB_EVENT_FB_UNREGISTERED:
+ 		/* This is called when a low-level system driver unregisters a
+ 		 * framebuffer. The registration lock is held but the console
+-		 * lock might not be held. */
++		 * lock might not be held. The fb-lock is not held, either! */
++		mutex_lock(&info->lock);
+ 		fblog_unregister(info);
++		mutex_unlock(&info->lock);
++		break;
++	case FB_EVENT_FB_UNBIND:
++		/* Called directly before unregistering an FB. The FB is still
++		 * valid here and the registration lock is held but the console
++		 * lock might not be held (really?). */
++		mutex_lock(&fblog_registration_lock);
++		fb = fblog_fbs[info->node];
++		mutex_unlock(&fblog_registration_lock);
++
++		if (fb)
++			fblog_close(fb, true);
+ 		break;
  	}
  
-diff --git a/drivers/video/console/fbcon.h b/drivers/video/console/fbcon.h
-index 6bd2e0c..8623bac 100644
---- a/drivers/video/console/fbcon.h
-+++ b/drivers/video/console/fbcon.h
-@@ -16,6 +16,7 @@
- #include <linux/vt_kern.h>
+@@ -163,7 +251,9 @@ static void fblog_scan(void)
+ 		if (!info || IS_ERR(info))
+ 			continue;
  
- #include <asm/io.h>
-+#include "fbdraw.h"
++		mutex_lock(&info->lock);
+ 		fblog_register(info, false);
++		mutex_unlock(&info->lock);
  
- #define FBCON_FLAGS_INIT         1
- #define FBCON_FLAGS_CURSOR_TIMER 2
-@@ -219,10 +220,6 @@ extern void fbcon_set_tileops(struct vc_data *vc, struct fb_info *info);
- extern void fbcon_set_bitops(struct fbcon_ops *ops);
- extern int  soft_cursor(struct fb_info *info, struct fb_cursor *cursor);
+ 		/* There is a very subtle race-condition. Even though we might
+ 		 * own a reference to the fb, it may still get unregistered
+@@ -224,7 +314,9 @@ static void __exit fblog_exit(void)
+ 		if (!info || IS_ERR(info))
+ 			continue;
  
--#define FBCON_ATTRIBUTE_UNDERLINE 1
--#define FBCON_ATTRIBUTE_REVERSE   2
--#define FBCON_ATTRIBUTE_BOLD      4
--
- static inline int real_y(struct display *p, int ypos)
- {
- 	int rows = p->vrows;
-diff --git a/drivers/video/console/fbdraw.c b/drivers/video/console/fbdraw.c
-new file mode 100644
-index 0000000..aa18f7e
---- /dev/null
-+++ b/drivers/video/console/fbdraw.c
-@@ -0,0 +1,46 @@
-+/*
-+ * Framebuffer helpers for image draw-operations
-+ *
-+ * Copyright (c) 2004 Antonino Daplas <adaplas @pol.net>
-+ * Copyright (c) 2012 David Herrmann <dh.herrmann@googlemail.com>
-+ *
-+ * Originally from drivers/video/console/bitblit.c which itself originally is
-+ * from the 'accel_*' routines in drivers/video/console/fbcon.c.
-+ *
-+ * This file is subject to the terms and conditions of the GNU General Public
-+ * License.  See the file COPYING in the main directory of this archive for
-+ * more details.
-+ */
-+
-+#include <linux/console.h>
-+#include <linux/fb.h>
-+#include <linux/kd.h>
-+#include <linux/module.h>
-+#include <linux/string.h>
-+#include "fbdraw.h"
-+
-+void fbdraw_update_attr(u8 *dst, const u8 *src, int attribute,
-+			struct console_font *font)
-+{
-+	int i, offset = (font->height < 10) ? 1 : 2;
-+	int width = DIV_ROUND_UP(font->width, 8);
-+	unsigned int cellsize = font->height * width;
-+	u8 c;
-+
-+	offset = cellsize - (offset * width);
-+	for (i = 0; i < cellsize; i++) {
-+		c = src[i];
-+		if (attribute & FBCON_ATTRIBUTE_UNDERLINE && i >= offset)
-+			c = 0xff;
-+		if (attribute & FBCON_ATTRIBUTE_BOLD)
-+			c |= c >> 1;
-+		if (attribute & FBCON_ATTRIBUTE_REVERSE)
-+			c = ~c;
-+		dst[i] = c;
-+	}
-+}
-+EXPORT_SYMBOL_GPL(fbdraw_update_attr);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("David Herrmann <dh.herrmann@googlemail.com>");
-+MODULE_DESCRIPTION("Framebuffer helpers for image draw-operations");
-diff --git a/drivers/video/console/fbdraw.h b/drivers/video/console/fbdraw.h
-new file mode 100644
-index 0000000..77edd7f
---- /dev/null
-+++ b/drivers/video/console/fbdraw.h
-@@ -0,0 +1,26 @@
-+/*
-+ * Framebuffer helpers for image draw-operations
-+ *
-+ * Copyright (c) 2012 David Herrmann <dh.herrmann@googlemail.com>
-+ *
-+ * This file is subject to the terms and conditions of the GNU General Public
-+ * License.  See the file COPYING in the main directory of this archive for
-+ * more details.
-+ */
-+
-+#ifndef _VIDEO_FBDRAW_H
-+#define _VIDEO_FBDRAW_H
-+
-+#include <linux/console.h>
-+#include <linux/fb.h>
-+#include <linux/kd.h>
-+
-+/* fbcon character attributes */
-+#define FBCON_ATTRIBUTE_UNDERLINE 1
-+#define FBCON_ATTRIBUTE_REVERSE   2
-+#define FBCON_ATTRIBUTE_BOLD      4
-+
-+void fbdraw_update_attr(u8 *dst, const u8 *src, int attribute,
-+			struct console_font *font);
-+
-+#endif /* _VIDEO_FBDRAW_H */
++		mutex_lock(&info->lock);
+ 		fblog_unregister(info);
++		mutex_unlock(&info->lock);
+ 		put_fb_info(info);
+ 	}
+ }
 -- 
 1.7.11.2
 
