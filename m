@@ -1,143 +1,246 @@
 From: David Herrmann <dh.herrmann@googlemail.com>
-Subject: [PATCH v3 07/11] fblog: allow selecting fbs via sysfs
-Date: Sun, 15 Jul 2012 21:04:42 +0200
-Message-ID: <1342379086-7583-8-git-send-email-dh.herrmann@googlemail.com>
+Subject: [PATCH v3 05/11] fblog: register one fblog object per framebuffer
+Date: Sun, 15 Jul 2012 21:04:40 +0200
+Message-ID: <1342379086-7583-6-git-send-email-dh.herrmann@googlemail.com>
 References: <1342379086-7583-1-git-send-email-dh.herrmann@googlemail.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-we0-f174.google.com ([74.125.82.174]:57636 "EHLO
-	mail-we0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751580Ab2GOTFb (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 15 Jul 2012 15:05:31 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1342379086-7583-1-git-send-email-dh.herrmann@googlemail.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 Cc: Florian Tobias Schandinat <FlorianSchandinat@gmx.de>, Andrew Morton <akpm@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-fbdev@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, David Herrmann <dh.herrmann@googlemail.com>
+List-Id: linux-serial@vger.kernel.org
 
-fblog is mainly useful during boot, reboot, panics and maintenance. In all
-cases you often want to control which monitors are used for console
-output. Moreover, in multi-seat environments it is desireable to reduce
-system-overhead by not drawing the console to all framebuffers. Two
-mechanisms to select framebuffers for fblog are added:
+One fblog object is associated to each registered framebuffer. This way,
+we can draw the console to each framebuffer. When a framebuffer driver
+unregisters a framebuffer, we also unregister our fblog object. That is,
+our lifetime is coupled to the lifetime of the framebuffer. However, this
+does not mean that we are always active. On the contrary, we do not even
+own a reference to the framebuffer. We don't need it as we are notified
+_before_ the last reference is dropped.
 
-1) "active" module parameter: This parameter selects whether new
-framebuffers are opened automatically. By default this is on, that is, all
-framebuffers are automatically used by fblog during boot. By passing
-fblog.active=0 you can deactivate this.
-The init process can set this to 0 via
-/sys/modules/fblog/parameters/active, too. However, this does not affect
-already available and used framebuffers in any way.
-
-2) "active" sysfs attribute for each fblog object. Reading this value
-returns whether a framebuffer is currently active. Writing it opens/closes
-the framebuffer. This allows runtime control which fbs are used. For
-instance, init can set these to 0 after bootup.
+However, if other users have a reference to our object, we simply mark it
+as dead when the associated framebuffer dies and leave it alone. When the
+last reference is dropped, it will be automatically freed.
 
 Signed-off-by: David Herrmann <dh.herrmann@googlemail.com>
 ---
- drivers/video/console/fblog.c | 53 ++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 52 insertions(+), 1 deletion(-)
+ drivers/video/console/fblog.c | 195 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 195 insertions(+)
 
 diff --git a/drivers/video/console/fblog.c b/drivers/video/console/fblog.c
-index 1c526c5..5519f91 100644
+index fb39737..279f4d8 100644
 --- a/drivers/video/console/fblog.c
 +++ b/drivers/video/console/fblog.c
-@@ -44,6 +44,7 @@ struct fblog_fb {
+@@ -23,15 +23,210 @@
+  * all fblog instances before running other graphics applications.
+  */
  
- static DEFINE_MUTEX(fblog_registration_lock);
- static struct fblog_fb *fblog_fbs[FB_MAX];
-+static bool active = 1;
- 
- #define to_fblog_dev(_d) container_of(_d, struct fblog_fb, dev)
- 
-@@ -115,6 +116,40 @@ static void fblog_close(struct fblog_fb *fb, bool kill_dev)
- 	mutex_unlock(&fb->lock);
- }
- 
-+static ssize_t fblog_dev_active_show(struct device *dev,
-+				     struct device_attribute *attr,
-+				     char *buf)
++#define pr_fmt(_fmt) KBUILD_MODNAME ": " _fmt
++
++#include <linux/device.h>
++#include <linux/fb.h>
+ #include <linux/module.h>
++#include <linux/mutex.h>
++
++enum fblog_flags {
++	FBLOG_KILLED,
++};
++
++struct fblog_fb {
++	unsigned long flags;
++	struct fb_info *info;
++	struct device dev;
++};
++
++static DEFINE_MUTEX(fblog_registration_lock);
++static struct fblog_fb *fblog_fbs[FB_MAX];
++
++#define to_fblog_dev(_d) container_of(_d, struct fblog_fb, dev)
++
++/*
++ * fblog framebuffer list
++ * The fblog_fbs[] array contains all currently registered framebuffers. If a
++ * framebuffer is in that list, we always must make sure that we own a reference
++ * to it. If it is added through the notifier callbacks, then this is always
++ * guaranteed.
++ * We are only interested in registered framebuffers. That is, if a driver calls
++ * unregister_framebuffer() we directly unlink it from our list. This guarantees
++ * that the associated fb_info is always valid. However, we might still have
++ * pending users so we mark it as dead so no further framebuffer actions are
++ * done. If the last user then drops a reference, the memory gets freed
++ * automatically.
++ */
++
++static void fblog_release(struct device *dev)
 +{
 +	struct fblog_fb *fb = to_fblog_dev(dev);
 +
-+	return snprintf(buf, PAGE_SIZE, "%d\n",
-+			!!test_bit(FBLOG_OPEN, &fb->flags));
++	kfree(fb);
++	module_put(THIS_MODULE);
 +}
 +
-+static ssize_t fblog_dev_active_store(struct device *dev,
-+				      struct device_attribute *attr,
-+				      const char *buf,
-+				      size_t count)
++static void fblog_do_unregister(struct fb_info *info)
 +{
-+	struct fblog_fb *fb = to_fblog_dev(dev);
-+	unsigned long num;
-+	int ret = 0;
++	struct fblog_fb *fb;
 +
-+	num = simple_strtoul(buf, NULL, 10);
++	fb = fblog_fbs[info->node];
++	if (!fb || fb->info != info)
++		return;
 +
-+	mutex_lock(&fb->info->lock);
-+	if (num)
-+		ret = fblog_open(fb);
-+	else
-+		fblog_close(fb, false);
-+	mutex_unlock(&fb->info->lock);
++	fblog_fbs[info->node] = NULL;
 +
-+	return ret ? ret : count;
++	device_del(&fb->dev);
++	put_device(&fb->dev);
 +}
 +
-+static DEVICE_ATTR(active, S_IRUGO | S_IWUSR | S_IWGRP, fblog_dev_active_show,
-+		   fblog_dev_active_store);
++static void fblog_do_register(struct fb_info *info, bool force)
++{
++	struct fblog_fb *fb;
++	int ret;
 +
- /*
-  * fblog framebuffer list
-  * The fblog_fbs[] array contains all currently registered framebuffers. If a
-@@ -148,6 +183,7 @@ static void fblog_do_unregister(struct fb_info *info)
- 	fblog_fbs[info->node] = NULL;
- 
- 	fblog_close(fb, true);
-+	device_remove_file(&fb->dev, &dev_attr_active);
- 	device_del(&fb->dev);
- 	put_device(&fb->dev);
- }
-@@ -156,6 +192,7 @@ static void fblog_do_register(struct fb_info *info, bool force)
- {
- 	struct fblog_fb *fb;
- 	int ret;
-+	bool do_open = true;
- 
- 	fb = fblog_fbs[info->node];
- 	if (fb && fb->info != info) {
-@@ -186,7 +223,18 @@ static void fblog_do_register(struct fb_info *info, bool force)
- 		return;
- 	}
- 
--	fblog_open(fb);
-+	ret = device_create_file(&fb->dev, &dev_attr_active);
-+	if (ret) {
-+		pr_err("fblog: cannot create sysfs entry");
-+		/* do not open fb if we cannot create control file */
-+		do_open = false;
++	fb = fblog_fbs[info->node];
++	if (fb && fb->info != info) {
++		if (!force)
++			return;
++
++		fblog_do_unregister(fb->info);
 +	}
 +
-+	if (!active)
-+		do_open = false;
++	fb = kzalloc(sizeof(*fb), GFP_KERNEL);
++	if (!fb)
++		return;
 +
-+	if (do_open)
-+		fblog_open(fb);
++	fb->info = info;
++	__module_get(THIS_MODULE);
++	device_initialize(&fb->dev);
++	fb->dev.class = fb_class;
++	fb->dev.release = fblog_release;
++	dev_set_name(&fb->dev, "fblog%d", info->node);
++	fblog_fbs[info->node] = fb;
++
++	ret = device_add(&fb->dev);
++	if (ret) {
++		fblog_fbs[info->node] = NULL;
++		set_bit(FBLOG_KILLED, &fb->flags);
++		put_device(&fb->dev);
++		return;
++	}
++}
++
++static void fblog_register(struct fb_info *info, bool force)
++{
++	mutex_lock(&fblog_registration_lock);
++	fblog_do_register(info, force);
++	mutex_unlock(&fblog_registration_lock);
++}
++
++static void fblog_unregister(struct fb_info *info)
++{
++	mutex_lock(&fblog_registration_lock);
++	fblog_do_unregister(info);
++	mutex_unlock(&fblog_registration_lock);
++}
++
++static int fblog_event(struct notifier_block *self, unsigned long action,
++		       void *data)
++{
++	struct fb_event *event = data;
++	struct fb_info *info = event->info;
++
++	switch(action) {
++	case FB_EVENT_FB_REGISTERED:
++		/* This is called when a low-level system driver registers a new
++		 * framebuffer. The registration lock is held but the console
++		 * lock might not be held when this is called. */
++		fblog_register(info, true);
++		break;
++	case FB_EVENT_FB_UNREGISTERED:
++		/* This is called when a low-level system driver unregisters a
++		 * framebuffer. The registration lock is held but the console
++		 * lock might not be held. */
++		fblog_unregister(info);
++		break;
++	}
++
++	return 0;
++}
++
++static void fblog_scan(void)
++{
++	unsigned int i;
++	struct fb_info *info, *tmp;
++
++	for (i = 0; i < FB_MAX; ++i) {
++		info = get_fb_info(i);
++		if (!info || IS_ERR(info))
++			continue;
++
++		fblog_register(info, false);
++
++		/* There is a very subtle race-condition. Even though we might
++		 * own a reference to the fb, it may still get unregistered
++		 * between our call from get_fb_info() and fblog_register().
++		 * Therefore, we simply check whether the same fb still is
++		 * registered by calling get_fb_info() again. Only if they
++		 * differ we know that it got unregistered, therefore, we
++		 * call fblog_unregister() with the old pointer. */
++
++		tmp = get_fb_info(i);
++		if (tmp && !IS_ERR(tmp))
++			put_fb_info(tmp);
++		if (tmp != info)
++			fblog_unregister(info);
++
++		/* Here we either called fblog_unregister() and therefore do not
++		 * need any reference to the fb, or we can be sure that the FB
++		 * is registered and FB_EVENT_FB_UNREGISTERED will be called
++		 * before the last reference is dropped. Hence, we can drop our
++		 * reference here. */
++
++		put_fb_info(info);
++	}
++}
++
++static struct notifier_block fblog_notifier = {
++	.notifier_call = fblog_event,
++};
+ 
+ static int __init fblog_init(void)
+ {
++	int ret;
++
++	ret = fb_register_client(&fblog_notifier);
++	if (ret) {
++		pr_err("cannot register framebuffer notifier\n");
++		return ret;
++	}
++
++	fblog_scan();
++
+ 	return 0;
  }
  
- static void fblog_register(struct fb_info *info, bool force)
-@@ -321,6 +369,9 @@ static void __exit fblog_exit(void)
- 	}
+ static void __exit fblog_exit(void)
+ {
++	unsigned int i;
++	struct fb_info *info;
++
++	fb_unregister_client(&fblog_notifier);
++
++	/* We scan through the whole registered_fb array here instead of
++	 * fblog_fbs because we need to get the device lock _before_ the
++	 * fblog-registration-lock. */
++
++	for (i = 0; i < FB_MAX; ++i) {
++		info = get_fb_info(i);
++		if (!info || IS_ERR(info))
++			continue;
++
++		fblog_unregister(info);
++		put_fb_info(info);
++	}
  }
  
-+module_param(active, bool, S_IRUGO | S_IWUSR | S_IWGRP);
-+MODULE_PARM_DESC(active, "Activate fblog by default");
-+
  module_init(fblog_init);
- module_exit(fblog_exit);
- MODULE_LICENSE("GPL");
 -- 
 1.7.11.2
-
