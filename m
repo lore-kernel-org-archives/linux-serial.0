@@ -1,51 +1,36 @@
-From: David Herrmann <dh.herrmann@googlemail.com>
-Subject: Re: [PATCH v2 11/11] MAINTAINERS: add fblog entry
-Date: Tue, 17 Jul 2012 15:15:43 +0200
-Message-ID: <CANq1E4SmdRaN5YEVdGrJohD2ZdXrhzAar6VmM6RyErKXjadN5A@mail.gmail.com>
-References: <1341784614-2797-1-git-send-email-dh.herrmann@googlemail.com>
-	<1341784614-2797-12-git-send-email-dh.herrmann@googlemail.com>
-	<CAMuHMdX_aC1hzKf1eRqoSsQ4oALBev8p77v7++aoB2KrkOUaEw@mail.gmail.com>
-	<CANq1E4RyFpqxH=uG+dDA1=kfc3r8rCoEesZ31op9rCLjxyk6mQ@mail.gmail.com>
-	<CAMuHMdXFfMv-DV-89nueyDJ5AvFN3AXR_6ysWOfCMDFL46s-Cg@mail.gmail.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: ST16C654 stoppes transmitting after a while
+Date: Tue, 17 Jul 2012 17:38:47 +0100
+Message-ID: <20120717173847.1c5b4863@pyramind.ukuu.org.uk>
+References: <20120717074355.80180@gmx.net>
+	<20120717105229.17b578a5@pyramind.ukuu.org.uk>
+	<20120717100521.219440@gmx.net>
+	<20120717122140.075aa7ae@pyramind.ukuu.org.uk>
+	<20120717113603.9830@gmx.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f172.google.com ([209.85.212.172]:39726 "EHLO
-	mail-wi0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752824Ab2GQNPo (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:37454 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755005Ab2GQQfD (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 17 Jul 2012 09:15:44 -0400
-In-Reply-To: <CAMuHMdXFfMv-DV-89nueyDJ5AvFN3AXR_6ysWOfCMDFL46s-Cg@mail.gmail.com>
+	Tue, 17 Jul 2012 12:35:03 -0400
+In-Reply-To: <20120717113603.9830@gmx.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, florianschandinat@gmx.de, linux-fbdev@vger.kernel.org, gregkh@linuxfoundation.org, alan@lxorguk.ukuu.org.uk, bonbons@linux-vserver.org
+To: Tobias Arp <tobiasarp@gmx.de>
+Cc: linux-serial@vger.kernel.org
 
-Hi Geert
+On Tue, 17 Jul 2012 13:36:03 +0200
+"Tobias Arp" <tobiasarp@gmx.de> wrote:
 
-On Tue, Jul 17, 2012 at 2:57 PM, Geert Uytterhoeven
-<geert@linux-m68k.org> wrote:
-> On Mon, Jul 9, 2012 at 8:38 PM, David Herrmann
-> <dh.herrmann@googlemail.com> wrote:
->>>> diff --git a/MAINTAINERS b/MAINTAINERS
->>>> index ae8fe46..249b02a 100644
->>>> --- a/MAINTAINERS
->>>> +++ b/MAINTAINERS
->>>> @@ -2854,6 +2854,12 @@ F:       drivers/video/
->>>>  F:     include/video/
->>>>  F:     include/linux/fb.h
->>>>
->>>> +FRAMEBUFFER LOG DRIVER
->>>> +M:     David Herrmann <dh.herrmann@googlemail.com>
->>>> +L:     linux-serial@vger.kernel.org
->>>
->>> Why linux-serial, and not linux-fbdev?
->>
->> I thought fbcon was maintained on linux-serial as it is very related
->
-> It has always been maintained on linux-fbdev.
+> This is a single core arm processor (Cirrus EP9315), could this race condition happen in this case? 
 
-Thanks! Then I will change this to linux-fbdev.
+In theory, otoh it ought to be quite easy to test for.
 
-Regards
-David
+How fast are your links - would it be fair to characterise your
+environment as a fairly slow CPU handling a lot of fast serial links
+
+(just trying to understand what the likely places to look might be)
+
