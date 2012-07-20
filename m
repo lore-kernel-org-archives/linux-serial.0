@@ -1,7 +1,7 @@
 From: "Tobias Arp" <tobiasarp@gmx.de>
 Subject: Re: ST16C654 stoppes transmitting after a while
-Date: Fri, 20 Jul 2012 06:25:29 +0200
-Message-ID: <20120720042529.19870@gmx.net>
+Date: Fri, 20 Jul 2012 12:10:56 +0200
+Message-ID: <20120720101056.257640@gmx.net>
 References: <20120717074355.80180@gmx.net>
 	<20120717105229.17b578a5@pyramind.ukuu.org.uk>
 	<20120717100521.219440@gmx.net>
@@ -11,23 +11,55 @@ Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout-de.gmx.net ([213.165.64.23]:51983 "HELO
+Received: from mailout-de.gmx.net ([213.165.64.22]:51057 "HELO
 	mailout-de.gmx.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1750709Ab2GTEZd (ORCPT
+	with SMTP id S1751490Ab2GTKLA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 20 Jul 2012 00:25:33 -0400
+	Fri, 20 Jul 2012 06:11:00 -0400
 In-Reply-To: <20120718063704.130240@gmx.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Tobias Arp <tobiasarp@gmx.de>, alan@lxorguk.ukuu.org.uk
 Cc: linux-serial@vger.kernel.org
 
-BTW:
+I could track down the problem:
 
-all interfaces work fine with our old kernel version 2.6.15.
+The interrupt if the MSR change (DCTS) gets lost on this point:
+
+An interrupt is handled and CTS changes during transmit_chars() and this change is not recognized.
+
+Is spin_lock_irqsave() too slow (on my platform and this circumstanmces? How can i avoid this ?
+
+in 8250.c:
+
+
+/*
+ * This handles the interrupt from one port.
+ */
+static void serial8250_handle_port(struct uart_8250_port *up)
+{
+	unsigned int status;
+	unsigned int status2;
+	unsigned long flags;
+
+	spin_lock_irqsave(&up->port.lock, flags);
+
+	status = serial_inp(up, UART_LSR);
+
+	DEBUG_INTR("status = %x...", status);
+
+	if (status & (UART_LSR_DR | UART_LSR_BI))
+		receive_chars(up, &status);
+	check_modem_status(up);
+	if (status & UART_LSR_THRE)
+		transmit_chars(up);
+	spin_unlock_irqrestore(&up->port.lock, flags);
+}
+
+
+Thanks
 
 Tobias
-
 
 
 -------- Original-Nachricht --------
@@ -91,4 +123,5 @@ Tobias
 > To unsubscribe from this list: send the line "unsubscribe linux-serial" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
 
