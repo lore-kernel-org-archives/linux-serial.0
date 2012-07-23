@@ -1,91 +1,55 @@
-From: Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
-Subject: [PATCHv2 2/2] ARM: vt8500: Minor update to vt8500-uart for devicetree
- support
-Date: Sat, 21 Jul 2012 23:22:12 +1200
-Message-ID: <1342869732-11232-1-git-send-email-linux@prisktech.co.nz>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 03/25] serial/imx: make imx_port.devdata member point to const data
+Date: Mon, 23 Jul 2012 11:13:08 +0200
+Message-ID: <1343034810-3386-4-git-send-email-u.kleine-koenig@pengutronix.de>
+References: <1343034810-3386-1-git-send-email-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: "devicetree-discuss"
- <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-To: Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, VT8500 mailing list <vt8500-wm8505-linux-kernel-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:35876 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751582Ab2GWJOF (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 23 Jul 2012 05:14:05 -0400
+In-Reply-To: <1343034810-3386-1-git-send-email-u.kleine-koenig@pengutronix.de>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Grant Likely <grant.likely@secretlab.ca>, Arnd Bergmann <arnd@arndb.de>, Rob Herring <rob.herring@calxeda.com>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
-Signed-off-by: Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
-Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+This prepares *of_device_id.data becoming const. Without this change th=
+e
+following warning would occur:
+
+	drivers/tty/serial/imx.c: In function 'serial_imx_probe_dt':
+	drivers/tty/serial/imx.c:1430:17: warning: assignment discards 'const'=
+ qualifier from pointer target type [enabled by default]
+
+Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
 ---
-v2:
-Split single patch into seperate patches.
- .../devicetree/bindings/tty/serial/vt8500-uart.txt |   14 ++++++++++++++
- drivers/tty/serial/vt8500_serial.c                 |    8 ++++++++
- 2 files changed, 22 insertions(+), 0 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/tty/serial/vt8500-uart.txt
+ drivers/tty/serial/imx.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/tty/serial/vt8500-uart.txt b/Documentation/devicetree/bindings/tty/serial/vt8500-uart.txt
-new file mode 100644
-index 0000000..745070a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/tty/serial/vt8500-uart.txt
-@@ -0,0 +1,14 @@
-+* VIA/Wondermedia Universal Asynchronous Receiver/Transmitter (UART)
-+
-+Required properties:
-+- compatible: Should be "via,vt8500-uart"
-+- reg: Should contain registers location and length
-+- interrupts: Should contain interrupt
-+
-+Example:
-+	uart0: serial@d8200000 {
-+		compatible = "via,vt8500-uart";
-+		reg = <0xd8200000 0x1040>;
-+		interrupts = <32>;
-+	};
-+
-diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
-index 2be006f..b9ea0b9 100644
---- a/drivers/tty/serial/vt8500_serial.c
-+++ b/drivers/tty/serial/vt8500_serial.c
-@@ -34,6 +34,7 @@
- #include <linux/slab.h>
- #include <linux/clk.h>
- #include <linux/platform_device.h>
-+#include <linux/of.h>
- 
- /*
-  * UART Register offsets
-@@ -603,12 +604,18 @@ static int __devexit vt8500_serial_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
-+static const struct of_device_id vt8500_uart_ids[] = {
-+	{ .compatible = "via,vt8500-uart", },
-+	{}
-+};
-+
- static struct platform_driver vt8500_platform_driver = {
- 	.probe  = vt8500_serial_probe,
- 	.remove = __devexit_p(vt8500_serial_remove),
- 	.driver = {
- 		.name = "vt8500_serial",
- 		.owner = THIS_MODULE,
-+		.of_match_table = of_match_ptr(vt8500_uart_ids),
- 	},
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 4ef7473..0af4eec 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -207,7 +207,7 @@ struct imx_port {
+ 	unsigned short		trcv_delay; /* transceiver delay */
+ 	struct clk		*clk_ipg;
+ 	struct clk		*clk_per;
+-	struct imx_uart_data	*devdata;
++	const struct imx_uart_data *devdata;
  };
- 
-@@ -643,3 +650,4 @@ module_exit(vt8500_serial_exit);
- MODULE_AUTHOR("Alexey Charkov <alchark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>");
- MODULE_DESCRIPTION("Driver for vt8500 serial device");
- MODULE_LICENSE("GPL");
-+MODULE_DEVICE_TABLE(of, vt8500_uart_ids);
--- 
-1.7.2.5
+=20
+ struct imx_port_ucrs {
+--=20
+1.7.10.4
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
