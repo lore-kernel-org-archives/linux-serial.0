@@ -1,44 +1,65 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: No big TTY/serial patch merge for 3.6-rc1
-Date: Thu, 26 Jul 2012 23:56:51 +0100
-Message-ID: <20120726235651.28a44eb1@pyramind.ukuu.org.uk>
-References: <20120726190814.GA2194@kroah.com>
-	<20120726222313.5993a550@pyramind.ukuu.org.uk>
-	<20120726212807.GA9049@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From: Jaeden Amero <jaeden.amero@ni.com>
+Subject: [PATCH] n_tty: Don't lose characters when PARMRK is enabled
+Date: Thu, 26 Jul 2012 17:12:31 -0500
+Message-ID: <1343340751-1942-1-git-send-email-jaeden.amero@ni.com>
+References: <y>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:49643 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752729Ab2GZWxQ (ORCPT
+Received: from mailserver6.natinst.com ([130.164.80.6]:50981 "EHLO
+	spamkiller06.natinst.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753043Ab2GZXSt (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 26 Jul 2012 18:53:16 -0400
-In-Reply-To: <20120726212807.GA9049@kroah.com>
+	Thu, 26 Jul 2012 19:18:49 -0400
+In-Reply-To: <y>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jaeden Amero <jaeden.amero@ni.com>
 
-On Thu, 26 Jul 2012 14:28:07 -0700
-Greg KH <gregkh@linuxfoundation.org> wrote:
+When PARMRK is set and large transfers of characters that will get
+marked are being received, n_tty could drop data silently (i.e.
+without reporting any error to the client). This is because
+characters have the potential to take up to three bytes in the line
+discipline (when they get marked with parity or framing errors), but
+the amount of free space reported to tty_buffer flush_to_ldisc (via
+tty->receive_room) is based on the pre-marked data size.
 
-> On Thu, Jul 26, 2012 at 10:23:13PM +0100, Alan Cox wrote:
-> > On Thu, 26 Jul 2012 12:08:14 -0700
-> > Greg KH <gregkh@linuxfoundation.org> wrote:
-> > 
-> > >       tty: Move the handling of the tty release logic
-> > 
-> > Can we lose that one specifically. I've chased down Ian Abbotts problem
-> > and replicated it and that is the offending patch not the lock localise
-> > (which still needs to be kept out as it depends upon this one)
-> > 
-> > I have it fixed but it's not had enough testing for -rc1 and moving the
-> > termios data has enough spectacular hits all drivers fallout for 3.6
-> 
-> Yes, I can go revert it.  I'm working on building up a small tty-linus
-> branch at the moment for just the "must haves" for 3.6.  Right now it's
-> just 10 patches listed below.  Any objection to me sending these after
-> a round trip through linux-next?
+With this patch, the n_tty layer will no longer assume that each byte
+will only take up one byte in the line discipline. Instead, it will
+make an overly conservative estimate that each byte will take up
+three bytes in the line discipline when PARMRK is set.
 
-All look good to me
+Signed-off-by: Jaeden Amero <jaeden.amero@ni.com>
+---
+ drivers/tty/n_tty.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 101790c..5299cda 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -92,10 +92,20 @@ static inline int tty_put_user(struct tty_struct *tty, unsigned char x,
+ 
+ static void n_tty_set_room(struct tty_struct *tty)
+ {
+-	/* tty->read_cnt is not read locked ? */
+-	int	left = N_TTY_BUF_SIZE - tty->read_cnt - 1;
++	int left;
+ 	int old_left;
+ 
++	/* tty->read_cnt is not read locked ? */
++	if (I_PARMRK(tty))
++	{
++		/* Multiply read_cnt by 3, since each byte might take up to
++		 * three times as many spaces when PARMRK is set (depending on
++		 * its flags, e.g. parity error). */
++		left = N_TTY_BUF_SIZE - tty->read_cnt * 3 - 1;
++	}
++	else
++		left = N_TTY_BUF_SIZE - tty->read_cnt - 1;
++
+ 	/*
+ 	 * If we are doing input canonicalization, and there are no
+ 	 * pending newlines, let characters through without limit, so
+-- 
+1.7.11.1
+
