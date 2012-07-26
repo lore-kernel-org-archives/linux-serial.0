@@ -1,28 +1,34 @@
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Greg KH <gregkh@linuxfoundation.org>
 Subject: Re: No big TTY/serial patch merge for 3.6-rc1
-Date: Thu, 26 Jul 2012 12:17:21 -0700
-Message-ID: <CA+55aFzqY=bk_ceVOb41EeR=v0N-UfF-6pGGWFTuRT6oiqDqgw@mail.gmail.com>
+Date: Thu, 26 Jul 2012 12:20:33 -0700
+Message-ID: <20120726192033.GA3488@kroah.com>
 References: <20120726190814.GA2194@kroah.com>
+ <5011969D.5030902@suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-we0-f174.google.com ([74.125.82.174]:58286 "EHLO
-	mail-we0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752312Ab2GZTRm (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 26 Jul 2012 15:17:42 -0400
-In-Reply-To: <20120726190814.GA2194@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <5011969D.5030902@suse.cz>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jiri Slaby <jslaby@suse.cz>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Thu, Jul 26, 2012 at 12:08 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> I don't really feel comfortable sending you the tty tree at the present
-> time to have merged for 3.6-rc1.
+On Thu, Jul 26, 2012 at 09:12:29PM +0200, Jiri Slaby wrote:
+> On 07/26/2012 09:08 PM, Greg KH wrote:
+> > Jiri, I know this postpones your patches from being merged, sorry about
+> > that, but this gives us a few more months to ensure that they are
+> > working properly :)
+> 
+> Fine with me.
+> 
+> When should I send you 3.7 material I have in my local queue -- now or
+> after 3.6-rc1 is out as usual?
 
-Good. This is what I like to see. If it's not ready to be merged,
-let's not merge it. I don't think anybody will mind horribly.
+After 3.6-rc1 is out is good, as I'll just be ignoring any new stuff
+until then, with the exception of patches to fix build errors in the
+tty-next tree :)
 
-                  Linus
+thanks,
+
+greg k-h
