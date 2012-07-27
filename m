@@ -1,65 +1,77 @@
-From: Jaeden Amero <jaeden.amero@ni.com>
-Subject: [PATCH] n_tty: Don't lose characters when PARMRK is enabled
-Date: Thu, 26 Jul 2012 17:12:31 -0500
-Message-ID: <1343340751-1942-1-git-send-email-jaeden.amero@ni.com>
-References: <y>
+From: Stanislav Kozina <skozina@redhat.com>
+Subject: Re: Patch for panic in n_tty_read()
+Date: Fri, 27 Jul 2012 14:05:16 +0200
+Message-ID: <501283FC.8070409@redhat.com>
+References: <4FE886C6.7090606@redhat.com> <20120626152159.2a34dcaf@pyramind.ukuu.org.uk> <50094C8E.5010308@redhat.com> <20120720161123.58fc9703@pyramind.ukuu.org.uk>
+Mime-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="------------040802070406000305040103"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailserver6.natinst.com ([130.164.80.6]:50981 "EHLO
-	spamkiller06.natinst.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753043Ab2GZXSt (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 26 Jul 2012 19:18:49 -0400
-In-Reply-To: <y>
+Received: from mx1.redhat.com ([209.132.183.28]:15419 "EHLO mx1.redhat.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751004Ab2G0MF1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 27 Jul 2012 08:05:27 -0400
+In-Reply-To: <20120720161123.58fc9703@pyramind.ukuu.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jaeden Amero <jaeden.amero@ni.com>
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-When PARMRK is set and large transfers of characters that will get
-marked are being received, n_tty could drop data silently (i.e.
-without reporting any error to the client). This is because
-characters have the potential to take up to three bytes in the line
-discipline (when they get marked with parity or framing errors), but
-the amount of free space reported to tty_buffer flush_to_ldisc (via
-tty->receive_room) is based on the pre-marked data size.
+This is a multi-part message in MIME format.
+--------------040802070406000305040103
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-With this patch, the n_tty layer will no longer assume that each byte
-will only take up one byte in the line discipline. Instead, it will
-make an overly conservative estimate that each byte will take up
-three bytes in the line discipline when PARMRK is set.
+Alan,
 
-Signed-off-by: Jaeden Amero <jaeden.amero@ni.com>
----
- drivers/tty/n_tty.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+Thank you, updated fix (tested on bits based on commit 
+bdc0077af574800d24318b6945cf2344e8dbb050) is attached.
+Is this correct now?
+
+Thanks and regards,
+-Stanislav Kozina
+
+>> You mean call to tty_put_user(), correct? Thanks for this catch.
+>> So what about to unlock the lock for this time? Because we need to hold
+>> the lock while checking tty->read_cnt in the while loop condition, correct?
+> I think you are right on that yes.
+>
+> Alan
+
+
+--------------040802070406000305040103
+Content-Type: text/plain;
+ name="tty_panic_2.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="tty_panic_2.patch"
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 101790c..5299cda 100644
+index ee1c268..54d1fc5 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -92,10 +92,20 @@ static inline int tty_put_user(struct tty_struct *tty, unsigned char x,
+@@ -1832,13 +1832,13 @@ do_it_again:
  
- static void n_tty_set_room(struct tty_struct *tty)
- {
--	/* tty->read_cnt is not read locked ? */
--	int	left = N_TTY_BUF_SIZE - tty->read_cnt - 1;
-+	int left;
- 	int old_left;
+ 		if (tty->icanon && !L_EXTPROC(tty)) {
+ 			/* N.B. avoid overrun if nr == 0 */
++			spin_lock_irqsave(&tty->read_lock, flags);
+ 			while (nr && tty->read_cnt) {
+ 				int eol;
  
-+	/* tty->read_cnt is not read locked ? */
-+	if (I_PARMRK(tty))
-+	{
-+		/* Multiply read_cnt by 3, since each byte might take up to
-+		 * three times as many spaces when PARMRK is set (depending on
-+		 * its flags, e.g. parity error). */
-+		left = N_TTY_BUF_SIZE - tty->read_cnt * 3 - 1;
-+	}
-+	else
-+		left = N_TTY_BUF_SIZE - tty->read_cnt - 1;
-+
- 	/*
- 	 * If we are doing input canonicalization, and there are no
- 	 * pending newlines, let characters through without limit, so
--- 
-1.7.11.1
+ 				eol = test_and_clear_bit(tty->read_tail,
+ 						tty->read_flags);
+ 				c = tty->read_buf[tty->read_tail];
+-				spin_lock_irqsave(&tty->read_lock, flags);
+ 				tty->read_tail = ((tty->read_tail+1) &
+ 						  (N_TTY_BUF_SIZE-1));
+ 				tty->read_cnt--;
+@@ -1864,6 +1864,7 @@ do_it_again:
+ 					tty_audit_push(tty);
+ 					break;
+ 				}
++				spin_lock_irqsave(&tty->read_lock, flags);
+ 			}
+ 			if (retval)
+ 				break;
 
+--------------040802070406000305040103--
