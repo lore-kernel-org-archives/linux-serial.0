@@ -1,38 +1,42 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: Patch for panic in n_tty_read()
-Date: Fri, 27 Jul 2012 13:50:44 +0100
-Message-ID: <20120727135044.356823f4@pyramind.ukuu.org.uk>
-References: <4FE886C6.7090606@redhat.com>
-	<20120626152159.2a34dcaf@pyramind.ukuu.org.uk>
-	<50094C8E.5010308@redhat.com>
-	<20120720161123.58fc9703@pyramind.ukuu.org.uk>
-	<501283FC.8070409@redhat.com>
+Subject: Re: [PATCH] n_tty: Don't lose characters when PARMRK is enabled
+Date: Fri, 27 Jul 2012 14:09:31 +0100
+Message-ID: <20120727140931.19ed2bf4@pyramind.ukuu.org.uk>
+References: <y>
+	<1343340751-1942-1-git-send-email-jaeden.amero@ni.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:50330 "EHLO
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:50369 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752950Ab2G0Mq5 (ORCPT
+	with ESMTP id S1751113Ab2G0NFt (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 27 Jul 2012 08:46:57 -0400
-In-Reply-To: <501283FC.8070409@redhat.com>
+	Fri, 27 Jul 2012 09:05:49 -0400
+In-Reply-To: <1343340751-1942-1-git-send-email-jaeden.amero@ni.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Stanislav Kozina <skozina@redhat.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+To: Jaeden Amero <jaeden.amero@ni.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Fri, 27 Jul 2012 14:05:16 +0200
-Stanislav Kozina <skozina@redhat.com> wrote:
+On Thu, 26 Jul 2012 17:12:31 -0500
+Jaeden Amero <jaeden.amero@ni.com> wrote:
 
-> Alan,
+> When PARMRK is set and large transfers of characters that will get
+> marked are being received, n_tty could drop data silently (i.e.
+> without reporting any error to the client). This is because
+> characters have the potential to take up to three bytes in the line
+> discipline (when they get marked with parity or framing errors), but
+> the amount of free space reported to tty_buffer flush_to_ldisc (via
+> tty->receive_room) is based on the pre-marked data size.
 > 
-> Thank you, updated fix (tested on bits based on commit 
-> bdc0077af574800d24318b6945cf2344e8dbb050) is attached.
-> Is this correct now?
+> With this patch, the n_tty layer will no longer assume that each byte
+> will only take up one byte in the line discipline. Instead, it will
+> make an overly conservative estimate that each byte will take up
+> three bytes in the line discipline when PARMRK is set.
+> 
+> Signed-off-by: Jaeden Amero <jaeden.amero@ni.com>
 
-Looks good to me. However it changes the locking rules on
-tty_audit_push() so please check the audit folks are ok with it. I don't
-think that causes any problems.
+What a fun corner case. Patch looks good to me.
 
-Alan
+Acked-by: Alan Cox <alan@linux.intel.com>
