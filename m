@@ -1,41 +1,207 @@
-From: Fengguang Wu <fengguang.wu@intel.com>
-Subject: [PATCH] pch_uart: check kzalloc result in dma_handle_tx()
-Date: Sat, 28 Jul 2012 20:43:57 +0800
-Message-ID: <20120728124357.GA13192@localhost>
+From: NeilBrown <neilb@suse.de>
+Subject: [PATCH] OMAP/serial:  Add support for driving a GPIO as DTR.
+Date: Mon, 30 Jul 2012 10:30:26 +1000
+Message-ID: <20120730103026.6b17f9e2@notabene.brown>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:16435 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751316Ab2G1MoF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 28 Jul 2012 08:44:05 -0400
-Content-Disposition: inline
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=PGP-SHA1;
+ boundary="Sig_/4EK4HFChfRZVgbd33GY3fo7"; protocol="application/pgp-signature"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Tony Lindgren <tony@atomide.com>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "Govindraj.R" <govindraj.raja@ti.com>, Kevin Hilman <khilman@ti.com>, "H. Peter Anvin" <hpa@zytor.com>
 List-Id: linux-serial@vger.kernel.org
-To: Tomoya MORINAGA <tomoya.rohm@gmail.com>
-Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
 
-Reported by coccinelle:
+--Sig_/4EK4HFChfRZVgbd33GY3fo7
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-drivers/tty/serial/pch_uart.c:979:1-14: alloc with no test, possible model on line 994
 
-Signed-off-by: Fengguang Wu <fengguang.wu@intel.com>
----
- drivers/tty/serial/pch_uart.c |    4 ++++
- 1 file changed, 4 insertions(+)
+Hi all,
+ this is my current patch which answers my question from May:
+     Question:  How to power-manage UART-attached devices.
 
-WARNING: this may be a superficial fix!
+ It teaches omap2/serial about the possibility of a GPIO which is to be
+ driven as a DTR line.=20
+ This allows me to power on/off devices that are accessed via a serial port
+ (GPS, Bluetooth) when the port is opened/closed.  I simply write a driver
+ which exports a GPIO line and does the required magic when it is driven
+ high or low.
 
---- linux.orig/drivers/tty/serial/pch_uart.c	2012-06-07 05:39:57.550846385 +0800
-+++ linux/drivers/tty/serial/pch_uart.c	2012-07-28 20:37:27.803145392 +0800
-@@ -974,6 +974,10 @@ static unsigned int dma_handle_tx(struct
- 	priv->tx_dma_use = 1;
- 
- 	priv->sg_tx_p = kzalloc(sizeof(struct scatterlist)*num, GFP_ATOMIC);
-+	if (!priv->sg_tx_p) {
-+		dev_err(priv->port.dev, "%s:kzalloc Failed\n", __func__);
-+		return 0;
+ - because '0' is a valid GPIO number, I added an extra port_info field
+   call 'DTR_present' so existing code wouldn't accidentally request to
+   use GPIO-0 as a DTR - is there a better way to handle this?
+ - I added a DTR_inverted field so you could choose the polarity of the
+   GPIO line ... I'm not really sure this is needed so I'll probably drop it
+   unless encouraged otherwise.
+
+ - If the gpio 'can_sleep', then I need a work-queue to effect the change, =
+and
+   I currently use the 'qos_work' rather than adding another work handler.
+   As both the qos_work and the gpio work tasks are idempotent and rare, th=
+is
+   seems reasonable.  Is it OK?  should I make another work_struct? or
+   something else?
+
+Thanks,
+NeilBrown
+
+
+
+
+---------------------
+OMAP hardware doesn't provide a phyisical DTR line, but
+some configurations may need a DTR line which tracks whether
+the device is open or not.
+
+So allow a gpio to be configured as the DTR line.
+
+Signed-off-by: NeilBrown <neilb@suse.de>
+
+diff --git a/arch/arm/mach-omap2/serial.c b/arch/arm/mach-omap2/serial.c
+index c1b93c7..25d53b2 100644
+--- a/arch/arm/mach-omap2/serial.c
++++ b/arch/arm/mach-omap2/serial.c
+@@ -304,6 +304,9 @@ void __init omap_serial_init_port(struct omap_board_dat=
+a *bdata,
+ 	omap_up.dma_rx_timeout =3D info->dma_rx_timeout;
+ 	omap_up.dma_rx_poll_rate =3D info->dma_rx_poll_rate;
+ 	omap_up.autosuspend_timeout =3D info->autosuspend_timeout;
++	omap_up.DTR_gpio =3D info->DTR_gpio;
++	omap_up.DTR_inverted =3D info->DTR_inverted;
++	omap_up.DTR_present =3D info->DTR_present;
+=20
+ 	pdata =3D &omap_up;
+ 	pdata_size =3D sizeof(struct omap_uart_port_info);
+diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/plat-=
+omap/include/plat/omap-serial.h
+index 1a52725..52d3de4 100644
+--- a/arch/arm/plat-omap/include/plat/omap-serial.h
++++ b/arch/arm/plat-omap/include/plat/omap-serial.h
+@@ -69,6 +69,9 @@ struct omap_uart_port_info {
+ 	unsigned int		dma_rx_timeout;
+ 	unsigned int		autosuspend_timeout;
+ 	unsigned int		dma_rx_poll_rate;
++	int			DTR_gpio;
++	int			DTR_inverted;
++	int			DTR_present;
+=20
+ 	int (*get_context_loss_count)(struct device *);
+ 	void (*set_forceidle)(struct platform_device *);
+@@ -131,6 +134,10 @@ struct uart_omap_port {
+ 	u32			errata;
+ 	u8			wakeups_enabled;
+=20
++	int			DTR_gpio;
++	int			DTR_inverted;
++	int			DTR_active;
++
+ 	struct pm_qos_request	pm_qos_request;
+ 	u32			latency;
+ 	u32			calc_latency;
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-ser=
+ial.c
+index d3cda0c..aa603f2 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -39,6 +39,7 @@
+ #include <linux/irq.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/of.h>
++#include <linux/gpio.h>
+=20
+ #include <plat/dma.h>
+ #include <plat/dmtimer.h>
+@@ -507,6 +508,16 @@ static void serial_omap_set_mctrl(struct uart_port *po=
+rt, unsigned int mctrl)
+ 	up->mcr |=3D mcr;
+ 	serial_out(up, UART_MCR, up->mcr);
+ 	pm_runtime_put(&up->pdev->dev);
++
++	if (gpio_is_valid(up->DTR_gpio) &&
++	    !!(mctrl & TIOCM_DTR) !=3D up->DTR_active) {
++		up->DTR_active =3D !up->DTR_active;
++		if (gpio_cansleep(up->DTR_gpio))
++			schedule_work(&up->qos_work);
++		else
++			gpio_set_value(up->DTR_gpio,
++				       up->DTR_active !=3D up->DTR_inverted);
 +	}
- 
- 	sg_init_table(priv->sg_tx_p, num); /* Initialize SG table */
- 	sg = priv->sg_tx_p;
+ }
+=20
+ static void serial_omap_break_ctl(struct uart_port *port, int break_state)
+@@ -715,6 +726,9 @@ static void serial_omap_uart_qos_work(struct work_struc=
+t *work)
+ 						qos_work);
+=20
+ 	pm_qos_update_request(&up->pm_qos_request, up->latency);
++	if (gpio_is_valid(up->DTR_gpio))
++		gpio_set_value_cansleep(up->DTR_gpio,
++					up->DTR_active !=3D up->DTR_inverted);
+ }
+=20
+ static void
+@@ -1435,7 +1449,7 @@ static int serial_omap_probe(struct platform_device *=
+pdev)
+ 	struct uart_omap_port	*up;
+ 	struct resource		*mem, *irq, *dma_tx, *dma_rx;
+ 	struct omap_uart_port_info *omap_up_info =3D pdev->dev.platform_data;
+-	int ret =3D -ENOSPC;
++	int ret;
+=20
+ 	if (pdev->dev.of_node)
+ 		omap_up_info =3D of_get_uart_port_info(&pdev->dev);
+@@ -1466,10 +1480,29 @@ static int serial_omap_probe(struct platform_device=
+ *pdev)
+ 	if (!dma_tx)
+ 		return -ENXIO;
+=20
++	if (gpio_is_valid(omap_up_info->DTR_gpio) &&
++	    omap_up_info->DTR_present) {
++		ret =3D gpio_request(omap_up_info->DTR_gpio, "omap-serial");
++		if (ret < 0)
++			return ret;
++		ret =3D gpio_direction_output(omap_up_info->DTR_gpio,
++					    omap_up_info->DTR_inverted);
++		if (ret < 0)
++			return ret;
++	}
++
+ 	up =3D devm_kzalloc(&pdev->dev, sizeof(*up), GFP_KERNEL);
+ 	if (!up)
+ 		return -ENOMEM;
+=20
++	if (gpio_is_valid(omap_up_info->DTR_gpio) &&
++	    omap_up_info->DTR_present) {
++		up->DTR_gpio =3D omap_up_info->DTR_gpio;
++		up->DTR_inverted =3D omap_up_info->DTR_inverted;
++	} else
++		up->DTR_gpio =3D -EINVAL;
++	up->DTR_active =3D 0;
++
+ 	up->pdev =3D pdev;
+ 	up->port.dev =3D &pdev->dev;
+ 	up->port.type =3D PORT_OMAP;
+
+--Sig_/4EK4HFChfRZVgbd33GY3fo7
+Content-Type: application/pgp-signature; name=signature.asc
+Content-Disposition: attachment; filename=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.18 (GNU/Linux)
+
+iQIVAwUBUBXVojnsnt1WYoG5AQLxvg/9HNtWUhfWentLvETuJUWestrweilhpOgQ
+uwCZ9TzMLLkL19o0FRyVSQzGIZsLYMJ5qakFEXicCBxspEuE27wVEEyEyX+giXCD
+KNzSxLcq2mow56bUkrMKac2lC4M9Zpn4wLrUfi0gLqb1e7tq+SNwAULYRd92rOov
+0OmXkSJ8FTP8m4Vr9+67xuLIKZPdFozvwb1g4hnQnjv//JOEEWsCmfJ8poWxdpX/
+8atB+fxDRa7bjthKu4pqaWGkWtF0mZ+4QjLwhoIrgOWaVJNtZAT5U1A60Yuv/U7f
+Ng1mJC74uZQEguRyQDmy5tMlpS40dwJZ8qL60wt5/JMKt5KwCkN0GuCVrf64dU8E
+H01jDGaLrlWjn63AQjJdyEdrN2/SEF6+SrCY41aq4LCHQeP89hbbUGZpZz2Fc2tt
+xFNXkH0gXkOh04OnE86qlTP8ImOdOyqsn63ogz84lqVeaKGzDOieE+YtH04IbP3U
+Fpy+E0A/byGGmFuPgKoivMcLZnF6KnNX8lBDV6ugFgz5SIbENW7ATZh3e/63C2P6
+g1Bls9E9L5gP5GITD9Vt7m3MuljkKx7snWWumyBTYNfXknBJpP3+f/oAiqKNMdO1
+T6BJFFn9ha8PbVlXNDZ+OvjBvD2s/rAUUYatmqbkIq8NdKfkqQhLMrCJcut87NlS
+oYNaqpDB450=
+=w208
+-----END PGP SIGNATURE-----
+
+--Sig_/4EK4HFChfRZVgbd33GY3fo7--
