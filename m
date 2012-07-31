@@ -1,84 +1,58 @@
-From: Sean Young <sean@mess.org>
-Subject: [PATCH] [media] winbond-cir: Fix initialization
-Date: Tue, 31 Jul 2012 11:37:03 +0100
-Message-ID: <1343731023-9822-1-git-send-email-sean@mess.org>
-Return-path: <linux-media-owner@vger.kernel.org>
-Sender: linux-media-owner@vger.kernel.org
-To: Mauro Carvalho Chehab <mchehab@redhat.com>, Jarod Wilson <jarod@wilsonet.com>, =?UTF-8?q?David=20H=C3=A4rdeman?= <david@hardeman.nu>, Alan Cox <alan@linux.intel.com>, linux-media@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: lirc-list@lists.sourceforge.net, Sean Young <sean@mess.org>
+From: Alexander Shiyan <shc_work@mail.ru>
+Subject: [PATCH] serial: Change Kconfig entry for CLPS711X-target
+Date: Tue, 31 Jul 2012 18:29:08 +0400
+Message-ID: <1343744948-9473-1-git-send-email-shc_work@mail.ru>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp26.mail.ru ([94.100.176.179]:38769 "EHLO smtp26.mail.ru"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751618Ab2GaO3Q (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 31 Jul 2012 10:29:16 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexander Shiyan <shc_work@mail.ru>
 
-The serial driver will detect the winbond cir device as a serial port,
-since it looks exactly like a serial port unless you know what it is
-from the PNP ID.
+This trivial patch adds a short description for SERIAL_CLPS711X Kconfig
+entry, removes excess dependence on the ARM-platform (this is done
+globally for the platform), allows the driver to be compiled by default
+and removes unnecessary description about GRUB and LILO, because these
+bootloaders do not supported this platform.
 
-Winbond CIR 00:04: Region 0x2f8-0x2ff already in use!
-Winbond CIR 00:04: disabled
-Winbond CIR: probe of 00:04 failed with error -16
-
-Signed-off-by: Sean Young <sean@mess.org>
+Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
 ---
- drivers/media/rc/winbond-cir.c | 21 ++++++++++++++++++++-
- drivers/tty/serial/8250/8250.c |  1 +
- 2 files changed, 21 insertions(+), 1 deletion(-)
+ drivers/tty/serial/Kconfig |   10 +++++-----
+ 1 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/media/rc/winbond-cir.c b/drivers/media/rc/winbond-cir.c
-index 54ee348..20a0bbb 100644
---- a/drivers/media/rc/winbond-cir.c
-+++ b/drivers/media/rc/winbond-cir.c
-@@ -55,6 +55,7 @@
- #include <linux/slab.h>
- #include <linux/wait.h>
- #include <linux/sched.h>
-+#include <linux/serial_8250.h>
- #include <media/rc-core.h>
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 4ecef98..0300493 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -160,10 +160,12 @@ config SERIAL_KS8695_CONSOLE
  
- #define DRVNAME "winbond-cir"
-@@ -957,6 +958,7 @@ wbcir_probe(struct pnp_dev *device, const struct pnp_device_id *dev_id)
- 	struct device *dev = &device->dev;
- 	struct wbcir_data *data;
- 	int err;
-+	struct resource *io;
+ config SERIAL_CLPS711X
+ 	tristate "CLPS711X serial port support"
+-	depends on ARM && ARCH_CLPS711X
++	depends on ARCH_CLPS711X
+ 	select SERIAL_CORE
++	default y
+ 	help
+-	  ::: To be written :::
++	  This enables the driver for the on-chip UARTs of the Cirrus
++	  Logic EP711x/EP721x/EP731x processors.
  
- 	if (!(pnp_port_len(device, 0) == EHFUNC_IOMEM_LEN &&
- 	      pnp_port_len(device, 1) == WAKEUP_IOMEM_LEN &&
-@@ -1049,7 +1051,24 @@ wbcir_probe(struct pnp_dev *device, const struct pnp_device_id *dev_id)
- 		goto exit_release_wbase;
- 	}
+ config SERIAL_CLPS711X_CONSOLE
+ 	bool "Support for console on CLPS711X serial port"
+@@ -173,9 +175,7 @@ config SERIAL_CLPS711X_CONSOLE
+ 	  Even if you say Y here, the currently visible virtual console
+ 	  (/dev/tty0) will still be used as the system console by default, but
+ 	  you can alter that using a kernel command line option such as
+-	  "console=ttyCL1". (Try "man bootparam" or see the documentation of
+-	  your boot loader (lilo or loadlin) about how to pass options to the
+-	  kernel at boot time.)
++	  "console=ttyCL1".
  
--	if (!request_region(data->sbase, SP_IOMEM_LEN, DRVNAME)) {
-+	io = request_region(data->sbase, SP_IOMEM_LEN, DRVNAME);
-+
-+	/*
-+	 * The winbond cir device looks exactly like an NS16550A serial port
-+	 * unless you know what it is. We've got here via the PNP ID.
-+	 */
-+#ifdef CONFIG_SERIAL_8250
-+	if (!io) {
-+		struct uart_port port = { .iobase = data->sbase };
-+		int line = serial8250_find_port(&port);
-+		if (line >= 0) {
-+			serial8250_unregister_port(line);
-+
-+			io = request_region(data->sbase, SP_IOMEM_LEN, DRVNAME);
-+		}
-+	}
-+#endif
-+	if (!io) {
- 		dev_err(dev, "Region 0x%lx-0x%lx already in use!\n",
- 			data->sbase, data->sbase + SP_IOMEM_LEN - 1);
- 		err = -EBUSY;
-diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
-index 5c27f7e..d38615f 100644
---- a/drivers/tty/serial/8250/8250.c
-+++ b/drivers/tty/serial/8250/8250.c
-@@ -2914,6 +2914,7 @@ int serial8250_find_port(struct uart_port *p)
- 	}
- 	return -ENODEV;
- }
-+EXPORT_SYMBOL(serial8250_find_port);
- 
- #define SERIAL8250_CONSOLE	&serial8250_console
- #else
+ config SERIAL_SAMSUNG
+ 	tristate "Samsung SoC serial support"
 -- 
-1.7.11.2
+1.7.3.4
+
