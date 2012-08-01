@@ -1,70 +1,56 @@
-From: Alexander Shiyan <shc_work@mail.ru>
-Subject: Re: [PATCH] serial: sc26xx: Fix compile breakage
-Date: Wed, 1 Aug 2012 21:44:16 +0400
-Message-ID: <20120801214416.36e82420.shc_work@mail.ru>
-References: <1343808020-26812-1-git-send-email-shc_work@mail.ru>
-	<20120801125637.GB3019@kroah.com>
-	<1343832930.238398280@f48.mail.ru>
-	<20120801150440.GA20956@kroah.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: n_gsm issues
+Date: Wed, 1 Aug 2012 22:23:22 +0100
+Message-ID: <20120801222322.345d0bc2@pyramind.ukuu.org.uk>
+References: <440_1343835403_50194D0B_440_1588_1_OF108ABE84.7A08D19F-ONC1257A4D.00556998-C1257A4D.0055C11D@sagemcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=KOI8-R
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp24.mail.ru ([94.100.176.177]:43360 "EHLO smtp24.mail.ru"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754281Ab2HARoY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 1 Aug 2012 13:44:24 -0400
-In-Reply-To: <20120801150440.GA20956@kroah.com>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:56901 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753898Ab2HAVTb (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 1 Aug 2012 17:19:31 -0400
+In-Reply-To: <440_1343835403_50194D0B_440_1588_1_OF108ABE84.7A08D19F-ONC1257A4D.00556998-C1257A4D.0055C11D@sagemcom.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
+To: Guillaume JUAN <guillaume.juan@sagemcom.com>
+Cc: linux-serial@vger.kernel.org
 
-On Wed, 1 Aug 2012 08:04:40 -0700
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+> Who can I contact to discuss issues / submit fixes ?
 
-> On Wed, Aug 01, 2012 at 06:55:30PM +0400, Alexander Shiyan wrote:
-> > Wed, 1 Aug 2012 05:56:37 -0700 =CF=D4 Greg Kroah-Hartman <gregkh@li=
-nuxfoundation.org>:
-> > > On Wed, Aug 01, 2012 at 12:00:20PM +0400, Alexander Shiyan wrote:
-> > > > This patch fixes the following compile breakage:
-> > > >   CC      drivers/tty/serial/sc26xx.o
-> > > > drivers/tty/serial/sc26xx.c: In function 'read_sc_port':
-> > > > drivers/tty/serial/sc26xx.c:100: error: implicit declaration of=
- function 'readb'
-> > > > drivers/tty/serial/sc26xx.c: In function 'write_sc_port':
-> > > > drivers/tty/serial/sc26xx.c:105: error: implicit declaration of=
- function 'writeb'
-> > > > drivers/tty/serial/sc26xx.c: In function 'sc26xx_probe':
-> > > > drivers/tty/serial/sc26xx.c:652: error: implicit declaration of=
- function 'ioremap_nocache'
-> > > > drivers/tty/serial/sc26xx.c:652: warning: assignment makes poin=
-ter from integer without a cast
-> > > > make[3]: *** [drivers/tty/serial/sc26xx.o] Error 1
-> > > > make[2]: *** [drivers/tty/serial] Error 2
-> > > > make[1]: *** [drivers/tty] Error 2
-> > > > make: *** [drivers] Error 2
-> > >=20
-> > > Breakage in what tree?  What caused this to break?
-> > Breakage due to missing header linux/io.h.
->=20
-> Again, where did this break (3.4, 3.5, 3.6-rc1, 2.6.32, etc.) and wha=
-t
-> caused it to break (what patch?)
+This list and me more specifically.
 
-I'm using kernel 3.4.5. Perhaps, the problem not in header that missing=
-, but is that I build
-a driver for ARM platform, i.e. with a patched Makefile. In any case, y=
-ou can just drop this
-patch. I use these ICs with ARM architecture, and so I write an improve=
-d version of the driver
-that will support all ICs from this series and do not depend on the arc=
-hitecture.
+> - When a virtual tty is closed from user-space, the operation is not fully
+> synchronous: DISC requests can be sent on the DLCI after the system call
+> has returned.
+> This is because gsmtty_close does not wait for event DLCI_CLOSED after
+> calling gsm_dlci_begin_close.
 
---=20
-Alexander Shiyan <shc_work@mail.ru>
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+That one is intentional.
+
+> - On line discipline attach, n_gsm use default settings that have no chance
+> to match what I set in the modem
+> and when I do the TIOCSETCONF ioctl to configure it correctly, this
+> previous settings cause it to call gsm_cleanup_mux(), leading to delays and
+> useless commands to the modem (that won't be answered).
+
+We start in passive mode to tyr and avoid useless commands but could
+certainly be improved.
+
+> - The CLD command encoding is not strictly compliant with 3GPP 27.010
+> The TLV built does not have any L byte, whereas it should have one
+> indicating a zero length for the value field.
+> The modem I use accept this variant but some may not.
+
+What kernel verison is this ?
+
+> This issue is the most disturbing for me, as I consequently can see no way
+> to end mux session in a fully satisfying way.
+
+Probably we need to split 'ldisc close' and 'ending a mux'
+
+(eg have an ioctl for 'mux shutdown')
+
+Alan
