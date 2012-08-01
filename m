@@ -1,82 +1,49 @@
-From: Yinghai Lu <yinghai@kernel.org>
-Subject: Re: [PATCH 09/12] commit 22126843cb3c2a782c2d52614486115f3e9db478
-Date: Tue, 31 Jul 2012 17:51:42 -0700
-Message-ID: <CAE9FiQX7HjcitKU7OWRS5m_r9YCBSPLBj6e3+d87fAYnwjDq=A@mail.gmail.com>
-References: <20120622153600.1405.15575.stgit@localhost.localdomain>
-	<20120622154438.1405.43658.stgit@localhost.localdomain>
-	<20120622153657.GB6081@kroah.com>
-	<20120622180423.24c0001b@pyramind.ukuu.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+From: Alexander Shiyan <shc_work@mail.ru>
+Subject: [PATCH] serial: sc26xx: Fix compile breakage
+Date: Wed,  1 Aug 2012 12:00:20 +0400
+Message-ID: <1343808020-26812-1-git-send-email-shc_work@mail.ru>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vc0-f174.google.com ([209.85.220.174]:38152 "EHLO
-	mail-vc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751835Ab2HAAvn (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 31 Jul 2012 20:51:43 -0400
-In-Reply-To: <20120622180423.24c0001b@pyramind.ukuu.org.uk>
+Received: from smtp14.mail.ru ([94.100.176.91]:47256 "EHLO smtp14.mail.ru"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753095Ab2HAIA2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 1 Aug 2012 04:00:28 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Greg KH <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexander Shiyan <shc_work@mail.ru>
 
-On Fri, Jun 22, 2012 at 10:04 AM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
-> On Fri, 22 Jun 2012 08:36:57 -0700
-> Greg KH <gregkh@linuxfoundation.org> wrote:
->
->> On Fri, Jun 22, 2012 at 04:44:59PM +0100, Alan Cox wrote:
->> > From: Alan Cox <alan@linux.intel.com>
->> >
->> > tty: move the termios object into the tty
->> >
->> >     This will let us sort out a whole pile of tty related races. The
->> >     alternative would be to keep points and refcount the termios objects.
->> >     However
->> >     1. They are tiny anyway
->> >     2. Many devices don't use the stored copies
->> >     3. We can remove a pty special case
->> >
->> >     Signed-off-by: Alan Cox <alan@linux.intel.com>
->>
->> Odd subject line, and formatting, did something go wrong with your
->> scripts?
->
-> Apparently so. I will given them a stern talking to and repost
+This patch fixes the following compile breakage:
 
-looks the one in tty-next still missed some changes...
+  CC      drivers/tty/serial/sc26xx.o
+drivers/tty/serial/sc26xx.c: In function 'read_sc_port':
+drivers/tty/serial/sc26xx.c:100: error: implicit declaration of function 'readb'
+drivers/tty/serial/sc26xx.c: In function 'write_sc_port':
+drivers/tty/serial/sc26xx.c:105: error: implicit declaration of function 'writeb'
+drivers/tty/serial/sc26xx.c: In function 'sc26xx_probe':
+drivers/tty/serial/sc26xx.c:652: error: implicit declaration of function 'ioremap_nocache'
+drivers/tty/serial/sc26xx.c:652: warning: assignment makes pointer from integer without a cast
+make[3]: *** [drivers/tty/serial/sc26xx.o] Error 1
+make[2]: *** [drivers/tty/serial] Error 2
+make[1]: *** [drivers/tty] Error 2
+make: *** [drivers] Error 2
 
-commit adc8d746caa67fff4b53ba3e5163a6cbacc3b523
-Author: Alan Cox <alan@linux.intel.com>
-Date:   Sat Jul 14 15:31:47 2012 +0100
+Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
+---
+ drivers/tty/serial/sc26xx.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
-    tty: move the termios object into the tty
+diff --git a/drivers/tty/serial/sc26xx.c b/drivers/tty/serial/sc26xx.c
+index e0b4b0a..3992e48 100644
+--- a/drivers/tty/serial/sc26xx.c
++++ b/drivers/tty/serial/sc26xx.c
+@@ -20,6 +20,7 @@
+ #include <linux/init.h>
+ #include <linux/platform_device.h>
+ #include <linux/irq.h>
++#include <linux/io.h>
+ 
+ #if defined(CONFIG_MAGIC_SYSRQ)
+ #define SUPPORT_SYSRQ
+-- 
+1.7.3.4
 
-    This will let us sort out a whole pile of tty related races. The
-    alternative would be to keep points and refcount the termios objects.
-    However
-    1. They are tiny anyway
-    2. Many devices don't use the stored copies
-    3. We can remove a pty special case
-
-    Signed-off-by: Alan Cox <alan@linux.intel.com>
-    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-...
-
-still need
-
-diff --git a/drivers/usb/serial/console.c b/drivers/usb/serial/console.c
-index b9cca6d..9a56428 100644
---- a/drivers/usb/serial/console.c
-+++ b/drivers/usb/serial/console.c
-@@ -165,8 +165,8 @@ static int usb_console_setup(struct console *co,
-char *options)
-                }
-
-                if (serial->type->set_termios) {
--                       tty->termios->c_cflag = cflag;
--                       tty_termios_encode_baud_rate(tty->termios, baud, baud);
-+                       tty->termios.c_cflag = cflag;
-+                       tty_termios_encode_baud_rate(&tty->termios, baud, baud);
-                        memset(&dummy, 0, sizeof(struct ktermios));
-                        serial->type->set_termios(tty, port, &dummy);
