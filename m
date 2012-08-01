@@ -1,58 +1,78 @@
-From: Alexander Shiyan <shc_work@mail.ru>
-Subject: [PATCH] serial: Change Kconfig entry for CLPS711X-target
-Date: Tue, 31 Jul 2012 18:29:08 +0400
-Message-ID: <1343744948-9473-1-git-send-email-shc_work@mail.ru>
+From: Yinghai Lu <yinghai@kernel.org>
+Subject: Re: [PATCH 12/12] tty: move the handling of the tty release logic
+Date: Tue, 31 Jul 2012 17:47:45 -0700
+Message-ID: <CAE9FiQXfHYTM7PQcfeENHa+WXtrc1vJ2WKKFX=DT3tvJJFGb0w@mail.gmail.com>
+References: <20120622153600.1405.15575.stgit@localhost.localdomain>
+	<20120622154645.1405.7749.stgit@localhost.localdomain>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp26.mail.ru ([94.100.176.179]:38769 "EHLO smtp26.mail.ru"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751618Ab2GaO3Q (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 31 Jul 2012 10:29:16 -0400
+Received: from mail-vc0-f174.google.com ([209.85.220.174]:50668 "EHLO
+	mail-vc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754042Ab2HAArs (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 31 Jul 2012 20:47:48 -0400
+In-Reply-To: <20120622154645.1405.7749.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexander Shiyan <shc_work@mail.ru>
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: greg@kroah.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-This trivial patch adds a short description for SERIAL_CLPS711X Kconfig
-entry, removes excess dependence on the ARM-platform (this is done
-globally for the platform), allows the driver to be compiled by default
-and removes unnecessary description about GRUB and LILO, because these
-bootloaders do not supported this platform.
+On Fri, Jun 22, 2012 at 8:47 AM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
+> Now that we don't have tty->termios tied to drivers->tty we can untangle
+> the logic here. In addition we can push the removal logic out of the
+> destructor path.
+>
+> At that point we can think about sorting out tty_port and console and all
+> the other ugly hangovers.
+>
+> An important other property we now have is that the tty mutex does now cover
+> the drivers array. An assumption other bits of the code made and which is
+> necessary for the tty lock patch.
+>
+> Signed-off-by: Alan Cox <alan@linux.intel.com>
+> ---
+>
+>  drivers/tty/pty.c               |    8 --------
+>  drivers/tty/tty_io.c            |   16 +++++-----------
+>  drivers/tty/vt/vt.c             |    1 -
+>  drivers/usb/serial/usb-serial.c |    3 +--
+>  include/linux/tty.h             |    1 -
+>  include/linux/tty_driver.h      |   11 +++--------
+>  6 files changed, 9 insertions(+), 31 deletions(-)
 
-Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
----
- drivers/tty/serial/Kconfig |   10 +++++-----
- 1 files changed, 5 insertions(+), 5 deletions(-)
+Hi, Alan
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 4ecef98..0300493 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -160,10 +160,12 @@ config SERIAL_KS8695_CONSOLE
- 
- config SERIAL_CLPS711X
- 	tristate "CLPS711X serial port support"
--	depends on ARM && ARCH_CLPS711X
-+	depends on ARCH_CLPS711X
- 	select SERIAL_CORE
-+	default y
- 	help
--	  ::: To be written :::
-+	  This enables the driver for the on-chip UARTs of the Cirrus
-+	  Logic EP711x/EP721x/EP731x processors.
- 
- config SERIAL_CLPS711X_CONSOLE
- 	bool "Support for console on CLPS711X serial port"
-@@ -173,9 +175,7 @@ config SERIAL_CLPS711X_CONSOLE
- 	  Even if you say Y here, the currently visible virtual console
- 	  (/dev/tty0) will still be used as the system console by default, but
- 	  you can alter that using a kernel command line option such as
--	  "console=ttyCL1". (Try "man bootparam" or see the documentation of
--	  your boot loader (lilo or loadlin) about how to pass options to the
--	  kernel at boot time.)
-+	  "console=ttyCL1".
- 
- config SERIAL_SAMSUNG
- 	tristate "Samsung SoC serial support"
--- 
-1.7.3.4
+This one cause regression on my test setup.
 
+that setup is booting from pxe and initrd is updated from opensuse
+11.3 rescue disk.
+
+kernel has command line 115200, and later serial console will use
+115200 automatically.
+
+but with this one, serial console will switch back to 9600 instead.
+
+bisect said:
+
+36b3c070d2346c890d690d71f6eab02f8c511137 is the first bad commit
+commit 36b3c070d2346c890d690d71f6eab02f8c511137
+Author: Alan Cox <alan@linux.intel.com>
+Date:   Tue Jul 17 17:06:57 2012 +0100
+
+    tty: Move the handling of the tty release logic
+
+    Now that we don't have tty->termios tied to drivers->tty we can untangle
+    the logic here. In addition we can push the removal logic out of the
+    destructor path.
+
+    At that point we can think about sorting out tty_port and console and all
+    the other ugly hangovers.
+
+    Signed-off-by: Alan Cox <alan@linux.intel.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+:040000 040000 44db8111f7e5be2f60ae2b41328108a6e533f8a4
+d0af41e84b2657e308a92e2ebad04ea5594e6bb4 M	drivers
+:040000 040000 f75618c564287072c6a6a9d5462355ab780b06b8
+4606b8b123694a2e8aaf1d3708fda66bda843742 M	include
