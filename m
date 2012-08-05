@@ -1,86 +1,63 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: n_gsm issues
-Date: Fri, 3 Aug 2012 14:42:19 +0100
-Message-ID: <20120803144219.302c23b1@pyramind.ukuu.org.uk>
-References: <440_1343835403_50194D0B_440_1588_1_OF108ABE84.7A08D19F-ONC1257A4D.00556998-C1257A4D.0055C11D@sagemcom.com>
-	<20120801222322.345d0bc2@pyramind.ukuu.org.uk>
-	<18908_1343911065_501A7498_18908_1370_1_OFCB0326AC.108F61B0-ONC1257A4E.002F0361-C1257A4E.00455DD9@sagemcom.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH V2 5/6] x86: add CONFIG_ARM_AMBA, selected by STA2X11
+Date: Sun, 5 Aug 2012 22:28:36 +0200
+Message-ID: <CACRpkdZLGhgpUJy_3QGYvGRqyxMkkPPSdyP==h5YurWqKnctBw@mail.gmail.com>
+References: <2b797c83-6a3c-4051-841a-a4cfa9d1cae1@email.android.com>
+	<20120701104401.GA4352@mail.gnudd.com>
+	<20120703130042.GA10007@mail.gnudd.com>
+	<201207031319.40884.arnd@arndb.de>
+	<20120703193403.GA26355@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:59011 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753385Ab2HCNhr (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 3 Aug 2012 09:37:47 -0400
-In-Reply-To: <18908_1343911065_501A7498_18908_1370_1_OFCB0326AC.108F61B0-ONC1257A4E.002F0361-C1257A4E.00455DD9@sagemcom.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <20120703193403.GA26355@n2100.arm.linux.org.uk>
+Sender: linux-arch-owner@vger.kernel.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>, Alim Akhtar <alim.akhtar@gmail.com>, Kukjin Kim <kgene.kim@samsung.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Alessandro Rubini <rubini@gnudd.com>, hpa@zytor.com, linux-kernel@vger.kernel.org, giancarlo.asnaghi@st.com, alan@linux.intel.com, x86@kernel.org, gregkh@linuxfoundation.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-arch@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Guillaume JUAN <guillaume.juan@sagemcom.com>
-Cc: linux-serial@vger.kernel.org
 
-> I'm using a 2.6.35 kernel, but I have upgraded specifically n_gsm.c to the
-> latest version I found in
->       git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-> ('git describe' tells me it is v3.5-8833-g2d53492)
-> I also checked that I had all the n_gsm changes from
->       git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
-> Is there anything newer ?
+On Tue, Jul 3, 2012 at 9:34 PM, Russell King - ARM Linux
+<linux@arm.linux.org.uk> wrote:
+> On Tue, Jul 03, 2012 at 01:19:40PM +0000, Arnd Bergmann wrote:
+>> On Tuesday 03 July 2012, Alessandro Rubini wrote:
+>> >    drivers/dma/amba-pl08x.c: needs <asm/hardware/pl080.h>
+>> >      proposed fix: move pl080.h to include/linux
+>>
+>> Note that there is already an include/linux/amba/pl08x.h.
+>> I would just move the few parts of pl080.h that are actually
+>> needed with global visibility there, and move the rest
+>> to drivers/dma/.
+>
+> NAK.  It's the entire register definitions for the PL08x, which we really
+> should not be exporting to common code.
 
-No - the Linux tty git and linux-next are the current tree. All
-development that matters is done upstream.
+The major reason why that file is there is that there is *another*
+PL080 driver in arch/arm/mach-s3c64xx/dma.c which I repeatedly
+asked the Samsung people to replace with the
+drivers/dma/amba-pl08x.c driver. :-(
 
-> > > gsmtty_close does not wait for event DLCI_CLOSED after
-> > > calling gsm_dlci_begin_close.
-> >
-> > That one is intentional.
-> 
-> Oh. I thought it was safer for close to be synchronous.
-> Is it intentional in gsmtty_hangup too ?
+When I worked on the PL08x driver in drivers/dma I reused
+this header to avoid code duplication.
 
-Yes. The underlying serial events are modelled on the way actual physical
-serial links operate
+Now that thing is stranding in the way. Alim, Kukjin, what's happening?
 
-	hangup blocks all further access to that user app
+I feel tempted to update Alim's patch myself and push it on you
+soon...
 
-	open waits until the port is back ready to use
+> Please wait until _after_ my DMA engine stuff (which is now in linux-next)
+> makes its way upstream before touching any of this stuff, otherwise there's
+> going to be conflicts.
 
-	close does not normally block for long (this is actually
-	configurable on some drivers and maybe n_gsm should support that
-	too)
+That stuff is in now, looking real good. Good work on this!
 
-> I am not very familiar with the concept of tty hangup but I believed it
-> imposed to cease I/O on the tty after the function returns.
-> Moreover the call to tty_vhangup() from gsm_cleanup_mux() will lead to arm
-> the T1 timer and if left asynchronous, to try to send stuff after
-> gsmld_detach_gsm has set gsm->tty NULL.
+> As part of my patch series, this gets rid of a number of uses of it in
+> arch/arm, but there's still the .cctl_memcpy initializer which does. I've
+> not yet checked whether all implementations use the same value (they
+> probably do), and if so then it should be eliminated from platform code
+> and moved into the driver.
 
-Which would be a bug!
+Sounds like a plan. If we just get rid of the duplicate implementation
+we're going somewhere.
 
-The basic idea of hangup goes back to modems. You want to prevent an end
-user leaving an app hanging on a dial in port pretending to be the login
-process and collecting authentication data.
-
-(its basically using carrier a secure attention key)
-
-> I was half-hoping you would identify other line discipline callbacks that
-> could be useful for this purpose, or ways for the ld to tell the tty layer
-> it needs to access the tty at closing time.
-
-There is no facility for this in the tty layer currently.
-
-> BTW what is the meaning of "flush" here ? Is it "push the last bytes to the
-> tty" or "discard the bytes you have in store" ?
-
-discard
-
-> If the latter meaning, isn't there a lack for a callback that would give a
-> last opportunity for the line discipline to send bytes ? Is n_gsm the only
-> to have this need ?
-
-It is - and trying to block there causes lots of difficult locking
-problems. It's something that eventually wants addressing but we have a
-lot of other locking to sort out first !
-
-Alan
+Yours,
+Linus Walleij
