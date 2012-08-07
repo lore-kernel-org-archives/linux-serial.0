@@ -1,75 +1,49 @@
-From: Huang Shijie <b32955@freescale.com>
-Subject: [PATCH] serial: mxs-auart: fix the wrong RTS hardware flow control
-Date: Tue, 7 Aug 2012 16:10:52 +0800
-Message-ID: <1344327052-8127-1-git-send-email-b32955@freescale.com>
+From: Kukjin Kim <kgene.kim@samsung.com>
+Subject: RE: [PATCH V2 5/6] x86: add CONFIG_ARM_AMBA, selected by STA2X11
+Date: Tue, 07 Aug 2012 19:06:37 +0900
+Message-ID: <098e01cd7484$553871c0$ffa95540$%kim@samsung.com>
+References: <2b797c83-6a3c-4051-841a-a4cfa9d1cae1@email.android.com>
+ <20120701104401.GA4352@mail.gnudd.com> <20120703130042.GA10007@mail.gnudd.com>
+ <201207031319.40884.arnd@arndb.de>
+ <20120703193403.GA26355@n2100.arm.linux.org.uk>
+ <CACRpkdZLGhgpUJy_3QGYvGRqyxMkkPPSdyP==h5YurWqKnctBw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: alan@linux.intel.com
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, shawn.guo@linaro.org, Huang Shijie <b32955@freescale.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-reply-to: <CACRpkdZLGhgpUJy_3QGYvGRqyxMkkPPSdyP==h5YurWqKnctBw@mail.gmail.com>
+Content-language: ko
+Sender: linux-arch-owner@vger.kernel.org
+To: 'Linus Walleij' <linus.walleij@linaro.org>, 'Russell King - ARM Linux' <linux@arm.linux.org.uk>, 'Alim Akhtar' <alim.akhtar@gmail.com>
+Cc: 'Arnd Bergmann' <arnd@arndb.de>, 'Alessandro Rubini' <rubini@gnudd.com>, hpa@zytor.com, linux-kernel@vger.kernel.org, giancarlo.asnaghi@st.com, alan@linux.intel.com, x86@kernel.org, gregkh@linuxfoundation.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-arch@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Without checking if the auart supports the hardware flow control or not,
-the old mxs_auart_set_mctrl() asserted the RTS pin blindly.
+Linus Walleij wrote:
+> 
 
-This will causes the auart receives wrong data in the following case:
-   The far-end has already started the write operation, and wait for
-the auart asserts the RTS pin. Then the auart starts the read operation,
-but mxs_auart_set_mctrl() may be called before we set the RTSCTS in the
-mxs_auart_settermios(). So the RTS pin is asserted in a wrong situation,
-and we get the wrong data in the end.
+[...]
 
-This bug has been catched when I connect the mx23(DTE) to the mx53(DCE).
+> The major reason why that file is there is that there is *another*
+> PL080 driver in arch/arm/mach-s3c64xx/dma.c which I repeatedly
+> asked the Samsung people to replace with the
+> drivers/dma/amba-pl08x.c driver. :-(
+> 
+> When I worked on the PL08x driver in drivers/dma I reused
+> this header to avoid code duplication.
+> 
+> Now that thing is stranding in the way. Alim, Kukjin, what's happening?
+> 
+Afaik, Alim was working on that but I'm not sure how long he needs more?
 
-This patch also replaces the AUART_CTRL2_RTS with AUART_CTRL2_RTSEN.
-We should use the real the hardware flow control, not the software-controled
-hardware flow control.
+Alim, please share the progress of the pl080 work?
 
-Signed-off-by: Huang Shijie <b32955@freescale.com>
----
- drivers/tty/serial/mxs-auart.c |   14 +++++++++-----
- 1 files changed, 9 insertions(+), 5 deletions(-)
+> I feel tempted to update Alim's patch myself and push it on you
+> soon...
 
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index 2e341b8..97f32e3 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -73,6 +73,7 @@
- #define AUART_CTRL0_CLKGATE			(1 << 30)
- 
- #define AUART_CTRL2_CTSEN			(1 << 15)
-+#define AUART_CTRL2_RTSEN			(1 << 14)
- #define AUART_CTRL2_RTS				(1 << 11)
- #define AUART_CTRL2_RXE				(1 << 9)
- #define AUART_CTRL2_TXE				(1 << 8)
-@@ -259,9 +260,12 @@ static void mxs_auart_set_mctrl(struct uart_port *u, unsigned mctrl)
- 
- 	u32 ctrl = readl(u->membase + AUART_CTRL2);
- 
--	ctrl &= ~AUART_CTRL2_RTS;
--	if (mctrl & TIOCM_RTS)
--		ctrl |= AUART_CTRL2_RTS;
-+	ctrl &= ~AUART_CTRL2_RTSEN;
-+	if (mctrl & TIOCM_RTS) {
-+		if (u->flags & ASYNC_CTS_FLOW)
-+			ctrl |= AUART_CTRL2_RTSEN;
-+	}
-+
- 	s->ctrl = mctrl;
- 	writel(ctrl, u->membase + AUART_CTRL2);
- }
-@@ -359,9 +363,9 @@ static void mxs_auart_settermios(struct uart_port *u,
- 
- 	/* figure out the hardware flow control settings */
- 	if (cflag & CRTSCTS)
--		ctrl2 |= AUART_CTRL2_CTSEN;
-+		ctrl2 |= AUART_CTRL2_CTSEN | AUART_CTRL2_RTSEN;
- 	else
--		ctrl2 &= ~AUART_CTRL2_CTSEN;
-+		ctrl2 &= ~(AUART_CTRL2_CTSEN | AUART_CTRL2_RTSEN);
- 
- 	/* set baud rate */
- 	baud = uart_get_baud_rate(u, termios, old, 0, u->uartclk);
--- 
-1.7.0.4
+Thanks.
+
+Best regards,
+Kgene.
+--
+Kukjin Kim <kgene.kim@samsung.com>, Senior Engineer,
+SW Solution Development Team, Samsung Electronics Co., Ltd.
