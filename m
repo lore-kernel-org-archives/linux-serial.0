@@ -1,49 +1,36 @@
-From: Kukjin Kim <kgene.kim@samsung.com>
-Subject: RE: [PATCH V2 5/6] x86: add CONFIG_ARM_AMBA, selected by STA2X11
-Date: Tue, 07 Aug 2012 19:06:37 +0900
-Message-ID: <098e01cd7484$553871c0$ffa95540$%kim@samsung.com>
-References: <2b797c83-6a3c-4051-841a-a4cfa9d1cae1@email.android.com>
- <20120701104401.GA4352@mail.gnudd.com> <20120703130042.GA10007@mail.gnudd.com>
- <201207031319.40884.arnd@arndb.de>
- <20120703193403.GA26355@n2100.arm.linux.org.uk>
- <CACRpkdZLGhgpUJy_3QGYvGRqyxMkkPPSdyP==h5YurWqKnctBw@mail.gmail.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] serial: ifx6x60: fix paging fault on
+ spi_register_driver
+Date: Tue, 7 Aug 2012 11:13:39 +0100
+Message-ID: <20120807111339.4a369066@pyramind.ukuu.org.uk>
+References: <20120807051247.GA24140@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-reply-to: <CACRpkdZLGhgpUJy_3QGYvGRqyxMkkPPSdyP==h5YurWqKnctBw@mail.gmail.com>
-Content-language: ko
-Sender: linux-arch-owner@vger.kernel.org
-To: 'Linus Walleij' <linus.walleij@linaro.org>, 'Russell King - ARM Linux' <linux@arm.linux.org.uk>, 'Alim Akhtar' <alim.akhtar@gmail.com>
-Cc: 'Arnd Bergmann' <arnd@arndb.de>, 'Alessandro Rubini' <rubini@gnudd.com>, hpa@zytor.com, linux-kernel@vger.kernel.org, giancarlo.asnaghi@st.com, alan@linux.intel.com, x86@kernel.org, gregkh@linuxfoundation.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-arch@vger.kernel.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:34944 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753492Ab2HGKJK (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 7 Aug 2012 06:09:10 -0400
+In-Reply-To: <20120807051247.GA24140@localhost>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Fengguang Wu <fengguang.wu@intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Russ Gorby <russ.gorby@intel.com>
 
-Linus Walleij wrote:
+On Tue, 7 Aug 2012 13:12:47 +0800
+Fengguang Wu <fengguang.wu@intel.com> wrote:
+
+> [  117.240866] BUG: unable to handle kernel paging request at 815b627c
+> [  117.240866] IP: [<813fe94b>] spi_register_driver+0xb/0x50
+> ...
+> [  117.240866] Call Trace:
+> [  117.240866]  [<817de977>] ifx_spi_init+0xbe/0xf0
 > 
-
-[...]
-
-> The major reason why that file is there is that there is *another*
-> PL080 driver in arch/arm/mach-s3c64xx/dma.c which I repeatedly
-> asked the Samsung people to replace with the
-> drivers/dma/amba-pl08x.c driver. :-(
+> The root cause is, spi_register_driver() is trying to write into the
+> passed *const* struct spi_driver.
 > 
-> When I worked on the PL08x driver in drivers/dma I reused
-> this header to avoid code duplication.
-> 
-> Now that thing is stranding in the way. Alim, Kukjin, what's happening?
-> 
-Afaik, Alim was working on that but I'm not sure how long he needs more?
+> Signed-off-by: Fengguang Wu <fengguang.wu@intel.com>
 
-Alim, please share the progress of the pl080 work?
-
-> I feel tempted to update Alim's patch myself and push it on you
-> soon...
-
-Thanks.
-
-Best regards,
-Kgene.
---
-Kukjin Kim <kgene.kim@samsung.com>, Senior Engineer,
-SW Solution Development Team, Samsung Electronics Co., Ltd.
+Acked-by: Alan Cox <alan@linux.intel.com>
