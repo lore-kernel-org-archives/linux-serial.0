@@ -1,51 +1,69 @@
-From: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [rtc-linux] [PATCH 8/8] ARM: vt8500: gpio: Devicetree support for arch-vt8500
-Date: Wed, 8 Aug 2012 16:28:24 +0200
-Message-ID: <CACRpkdabUWpDsBhz4ZEJNhEuqw-U+v-HrX7NcWoNLeuenv5t9A@mail.gmail.com>
-References: <1344389967-8465-1-git-send-email-linux@prisktech.co.nz>
-	<1344389967-8465-9-git-send-email-linux@prisktech.co.nz>
-	<CACRpkdbYxpN9RCu8j8KMBgrb=-DsYZHq7hx-ifmHhJ0ZZcRYjw@mail.gmail.com>
-	<201208080919.52592.arnd@arndb.de>
+From: Stanislav Kozina <skozina@redhat.com>
+Subject: [PATCH V2] [tty] Fix possible race in n_tty_read()
+Date: Wed, 08 Aug 2012 16:28:47 +0200
+Message-ID: <5022779F.8060309@redhat.com>
+References: <4FE886C6.7090606@redhat.com> <20120626152159.2a34dcaf@pyramind.ukuu.org.uk> <50094C8E.5010308@redhat.com> <20120720161123.58fc9703@pyramind.ukuu.org.uk> <50221C30.20607@redhat.com> <20120808100019.6ca011a9@pyramind.ukuu.org.uk> <502256E8.5040300@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <201208080919.52592.arnd-r2nGTMty4D4@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: vt8500-wm8505-linux-kernel-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, Hauke Mehrtens <hauke-5/S+JYg5SzeELgA04lAiVw@public.gmane.org>, Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>, Neil Zhang <zhangwm-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Florian Tobias Schandinat <FlorianSchandinat-Mmb7MZpHnFY@public.gmane.org>, Rob Landley <rob-VoJi6FS/r0vR7s880joybQ@public.gmane.org>, Mark Brown <broonie-yzvPICuk2AATkU/dhu1WVueM+bqZidxxQQ4Iyu8u01E@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Eric Andersson <eric.andersson-TStm8jYLEPpl57MIdRCFDg@public.gmane.org>, Linus Walleij <linus.walleij-0IS4wlFg1OjSUeElwK9/Pw@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mx1.redhat.com ([209.132.183.28]:13712 "EHLO mx1.redhat.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754763Ab2HHO26 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 8 Aug 2012 10:28:58 -0400
+In-Reply-To: <502256E8.5040300@redhat.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Stanislaw Gruszka <sgruszka@redhat.com>
 
-On Wed, Aug 8, 2012 at 11:19 AM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
+Fix possible panic caused by unlocked access to tty->read_cnt in 
+while-loop condition in n_tty_read().
 
->> What on earth are all those magic numbers?
->>
->> I *guess* they're enabling some default GPIO settings etc.
->
-> No, they are the register offsets you quoted above, per bank.
+Signed-off-by: Stanislav Kozina <skozina@redhat.com>
+---
+  drivers/tty/n_tty.c |    6 +++++-
+  1 files changed, 5 insertions(+), 1 deletions(-)
+  v1->v2: Add spin_unlock_irqrestore() call after the while loop
 
-Aha I was fooled by this:
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index ee1c268..df21f39 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -1832,13 +1832,13 @@ do_it_again:
 
-+struct vt8500_gpio_bank_regs {
-+       int     en;
-+       int     dir;
-+       int     data_out;
-+       int     data_in;
-+       int     ngpio;
-+};
+  		if (tty->icanon && !L_EXTPROC(tty)) {
+  			/* N.B. avoid overrun if nr == 0 */
++			spin_lock_irqsave(&tty->read_lock, flags);
+  			while (nr && tty->read_cnt) {
+  				int eol;
 
-This needs to be named something intuitive like "vt8500_gpio_bank_regoffsets"
-
-Some kerneldoc intsead of the opaque comment above will also improve
-readability a lot:
-
-/**
-  * struct vt8500_gpio_bank_regoffsets
-  * @en: offset to enable register in the bank
-  * ...
-
-Yours,
-Linus Walleij
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+  				eol = test_and_clear_bit(tty->read_tail,
+  						tty->read_flags);
+  				c = tty->read_buf[tty->read_tail];
+-				spin_lock_irqsave(&tty->read_lock, flags);
+  				tty->read_tail = ((tty->read_tail+1) &
+  						  (N_TTY_BUF_SIZE-1));
+  				tty->read_cnt--;
+@@ -1856,15 +1856,19 @@ do_it_again:
+  					if (tty_put_user(tty, c, b++)) {
+  						retval = -EFAULT;
+  						b--;
++						spin_lock_irqsave(&tty->read_lock, flags);
+  						break;
+  					}
+  					nr--;
+  				}
+  				if (eol) {
+  					tty_audit_push(tty);
++					spin_lock_irqsave(&tty->read_lock, flags);
+  					break;
+  				}
++				spin_lock_irqsave(&tty->read_lock, flags);
+  			}
++			spin_unlock_irqrestore(&tty->read_lock, flags);
+  			if (retval)
+  				break;
+  		} else {
+-- 
+1.7.1
