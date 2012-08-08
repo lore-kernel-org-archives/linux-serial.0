@@ -1,138 +1,62 @@
-From: Tony Prisk <linux@prisktech.co.nz>
-Subject: [PATCH 0/8] *** ARM: Update arch-vt8500 to Devicetree ***
-Date: Wed,  8 Aug 2012 13:39:18 +1200
-Message-ID: <1344389967-8465-1-git-send-email-linux@prisktech.co.nz>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: vt8500-wm8505-linux-kernel@googlegroups.com
-Cc: Tony Prisk <linux@prisktech.co.nz>, Russell King <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, Alessandro Zummo <a.zummo@towertech.it>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, Hauke Mehrtens <hauke@hauke-m.de>, Felipe Balbi <balbi@ti.com>, Neil Zhang <zhangwm@marvell.com>, Florian Tobias Schandinat <FlorianSchandinat@gmx.de>, Rob Landley <rob@landley.net>, Mark Brown <broonie@opensource.wolfsonmicro.com>, Stephen Warren <swarren@nvidia.com>, Eric Andersson <eric.andersson@unixphere.com>, Linus Walleij <linus.walleij@stericsson.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-serial@
+From: Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
+Subject: [PATCH 3/8] serial: vt8500: Add devicetree support for vt8500-serial
+Date: Wed,  8 Aug 2012 13:39:21 +1200
+Message-ID: <1344389967-8465-4-git-send-email-linux@prisktech.co.nz>
+References: <1344389967-8465-1-git-send-email-linux@prisktech.co.nz>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+In-Reply-To: <1344389967-8465-1-git-send-email-linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
+List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
+Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Sender: "devicetree-discuss"
+ <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: vt8500-wm8505-linux-kernel-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Cc: linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Florian Tobias Schandinat <FlorianSchandinat-Mmb7MZpHnFY@public.gmane.org>, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, Eric Andersson <eric.andersson-TStm8jYLEPpl57MIdRCFDg@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hauke Mehrtens <hauke-5/S+JYg5SzeELgA04lAiVw@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Neil Zhang <zhangwm-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, Linus Walleij <linus.walleij-0IS4wlFg1OjSUeElwK9/Pw@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Mark Brown <broonie-yzvPICuk2AATkU/dhu1WVueM+bqZidxxQQ4Iyu8u01E@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-This patchset updates arch-vt8500 to devicetree and removes all the old-style
-code. Support for WM8650 has also been added.
+Signed-off-by: Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
+---
+ drivers/tty/serial/vt8500_serial.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Example dts/dtsi files are given for the three currently supported models.
-
-Major changes:
-
-GPIO code has been converted to a platform_device and rewritten as WM8505
-support was broken. Add support for WM8650 gpio controller.
-
-UHCI support was missing. Added this as a generic non-pci uhci controller as
-it doesn't require anything special. Should be usable by any system that doesn't
-have special requirements to get the UHCI controller working.
-
-Framebuffer code patched to support WM8650. The bindings for this are of concern
-but there doesn't seem to be a formalized binding yet. This patch is based off
-Sascha Hauer's current patch on the dri-devel mailing list and should be easily
-patched out when its finalized.
-
-Patchset based on Arnd's arm-soc/for-next branch.
-
-
-Could I get this reviewed, hopefully for inclusion into v3.7.
-
-Regards
-Tony Prisk
-
-
-Tony Prisk (8):
-  arm: vt8500: Add device tree files for VIA/Wondermedia SoC's
-  rtc: vt8500: Add devicetree support for vt8500-rtc
-  serial: vt8500: Add devicetree support for vt8500-serial
-  usb: vt8500: Add devicetree support for vt8500-ehci and -uhci.
-  video: vt8500: Add devicetree support for vt8500-fb and wm8505-fb
-  arm: vt8500: Update arch-vt8500 to devicetree support.
-  arm: vt8500: doc: Add device tree bindings for arch-vt8500 devices
-  ARM: vt8500: gpio: Devicetree support for arch-vt8500
-
- Documentation/devicetree/bindings/arm/vt8500.txt   |   15 +
- .../bindings/arm/vt8500/via,vt8500-intc.txt        |   16 +
- .../bindings/arm/vt8500/via,vt8500-pmc.txt         |   13 +
- .../bindings/arm/vt8500/via,vt8500-timer.txt       |   15 +
- .../devicetree/bindings/gpio/gpio_vt8500.txt       |   24 ++
- .../devicetree/bindings/rtc/via,vt8500-rtc.txt     |   15 +
- .../bindings/tty/serial/via,vt8500-uart.txt        |   15 +
- .../devicetree/bindings/usb/platform-uhci.txt      |   15 +
- .../devicetree/bindings/usb/via,vt8500-ehci.txt    |   15 +
- .../devicetree/bindings/vendor-prefixes.txt        |    2 +
- .../devicetree/bindings/video/via,vt8500-fb.txt    |   46 +++
- .../devicetree/bindings/video/wm,prizm-ge-rops.txt |   13 +
- .../devicetree/bindings/video/wm,wm8505-fb.txt     |   20 ++
- arch/arm/Kconfig                                   |    2 +
- arch/arm/boot/dts/vt8500.dtsi                      |   99 ++++++
- arch/arm/boot/dts/vt8500_ref.dts                   |   31 ++
- arch/arm/boot/dts/wm8505.dtsi                      |  125 ++++++++
- arch/arm/boot/dts/wm8505_ref.dts                   |   31 ++
- arch/arm/boot/dts/wm8650.dtsi                      |   95 ++++++
- arch/arm/boot/dts/wm8650_ref.dts                   |   31 ++
- arch/arm/mach-vt8500/Kconfig                       |   72 +----
- arch/arm/mach-vt8500/Makefile                      |    9 +-
- arch/arm/mach-vt8500/bv07.c                        |   80 -----
- arch/arm/mach-vt8500/common.h                      |   25 ++
- arch/arm/mach-vt8500/devices-vt8500.c              |   91 ------
- arch/arm/mach-vt8500/devices-wm8505.c              |   99 ------
- arch/arm/mach-vt8500/devices.c                     |  270 -----------------
- arch/arm/mach-vt8500/devices.h                     |   88 ------
- arch/arm/mach-vt8500/gpio.c                        |  240 ---------------
- arch/arm/mach-vt8500/include/mach/restart.h        |    4 +-
- arch/arm/mach-vt8500/include/mach/vt8500_irqs.h    |   88 ------
- arch/arm/mach-vt8500/include/mach/vt8500_regs.h    |   79 -----
- arch/arm/mach-vt8500/include/mach/wm8505_irqs.h    |  115 -------
- arch/arm/mach-vt8500/include/mach/wm8505_regs.h    |   78 -----
- arch/arm/mach-vt8500/irq.c                         |  160 +++++-----
- arch/arm/mach-vt8500/restart.c                     |   54 ----
- arch/arm/mach-vt8500/timer.c                       |   56 +++-
- arch/arm/mach-vt8500/vt8500.c                      |  192 ++++++++++++
- arch/arm/mach-vt8500/wm8505_7in.c                  |   79 -----
- drivers/gpio/Kconfig                               |    6 +
- drivers/gpio/Makefile                              |    1 +
- drivers/gpio/gpio-vt8500.c                         |  318 ++++++++++++++++++++
- drivers/rtc/rtc-vt8500.c                           |    7 +
- drivers/tty/serial/vt8500_serial.c                 |    7 +
- drivers/usb/host/Kconfig                           |    4 +-
- drivers/usb/host/ehci-vt8500.c                     |   24 +-
- drivers/usb/host/uhci-hcd.c                        |    5 +
- drivers/usb/host/uhci-platform.c                   |  166 ++++++++++
- drivers/video/Kconfig                              |    6 +-
- drivers/video/vt8500lcdfb.c                        |   77 ++++-
- drivers/video/wm8505fb.c                           |   95 +++++-
- drivers/video/wmt_ge_rops.c                        |    7 +
- 52 files changed, 1674 insertions(+), 1566 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/arm/vt8500.txt
- create mode 100644 Documentation/devicetree/bindings/arm/vt8500/via,vt8500-intc.txt
- create mode 100644 Documentation/devicetree/bindings/arm/vt8500/via,vt8500-pmc.txt
- create mode 100644 Documentation/devicetree/bindings/arm/vt8500/via,vt8500-timer.txt
- create mode 100644 Documentation/devicetree/bindings/gpio/gpio_vt8500.txt
- create mode 100644 Documentation/devicetree/bindings/rtc/via,vt8500-rtc.txt
- create mode 100644 Documentation/devicetree/bindings/tty/serial/via,vt8500-uart.txt
- create mode 100644 Documentation/devicetree/bindings/usb/platform-uhci.txt
- create mode 100644 Documentation/devicetree/bindings/usb/via,vt8500-ehci.txt
- create mode 100644 Documentation/devicetree/bindings/video/via,vt8500-fb.txt
- create mode 100644 Documentation/devicetree/bindings/video/wm,prizm-ge-rops.txt
- create mode 100644 Documentation/devicetree/bindings/video/wm,wm8505-fb.txt
- create mode 100644 arch/arm/boot/dts/vt8500.dtsi
- create mode 100644 arch/arm/boot/dts/vt8500_ref.dts
- create mode 100644 arch/arm/boot/dts/wm8505.dtsi
- create mode 100644 arch/arm/boot/dts/wm8505_ref.dts
- create mode 100644 arch/arm/boot/dts/wm8650.dtsi
- create mode 100644 arch/arm/boot/dts/wm8650_ref.dts
- delete mode 100644 arch/arm/mach-vt8500/bv07.c
- create mode 100644 arch/arm/mach-vt8500/common.h
- delete mode 100644 arch/arm/mach-vt8500/devices-vt8500.c
- delete mode 100644 arch/arm/mach-vt8500/devices-wm8505.c
- delete mode 100644 arch/arm/mach-vt8500/devices.c
- delete mode 100644 arch/arm/mach-vt8500/devices.h
- delete mode 100644 arch/arm/mach-vt8500/gpio.c
- delete mode 100644 arch/arm/mach-vt8500/include/mach/vt8500_irqs.h
- delete mode 100644 arch/arm/mach-vt8500/include/mach/vt8500_regs.h
- delete mode 100644 arch/arm/mach-vt8500/include/mach/wm8505_irqs.h
- delete mode 100644 arch/arm/mach-vt8500/include/mach/wm8505_regs.h
- delete mode 100644 arch/arm/mach-vt8500/restart.c
- create mode 100644 arch/arm/mach-vt8500/vt8500.c
- delete mode 100644 arch/arm/mach-vt8500/wm8505_7in.c
- create mode 100644 drivers/gpio/gpio-vt8500.c
- create mode 100644 drivers/usb/host/uhci-platform.c
-
+diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
+index 2be006f..a7f58c9 100644
+--- a/drivers/tty/serial/vt8500_serial.c
++++ b/drivers/tty/serial/vt8500_serial.c
+@@ -34,6 +34,7 @@
+ #include <linux/slab.h>
+ #include <linux/clk.h>
+ #include <linux/platform_device.h>
++#include <linux/of.h>
+ 
+ /*
+  * UART Register offsets
+@@ -603,12 +604,18 @@ static int __devexit vt8500_serial_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static const struct of_device_id wmt_dt_ids[] = {
++	{ .compatible = "via,vt8500-uart", },
++	{}
++};
++
+ static struct platform_driver vt8500_platform_driver = {
+ 	.probe  = vt8500_serial_probe,
+ 	.remove = __devexit_p(vt8500_serial_remove),
+ 	.driver = {
+ 		.name = "vt8500_serial",
+ 		.owner = THIS_MODULE,
++		.of_match_table = of_match_ptr(wmt_dt_ids),
+ 	},
+ };
+ 
 -- 
 1.7.9.5
