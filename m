@@ -1,46 +1,53 @@
 From: Stephen Warren <swarren@wwwdotorg.org>
-Subject: Re: [PATCH 1/8] arm: vt8500: Add device tree files for VIA/Wondermedia
- SoC's
-Date: Wed, 08 Aug 2012 12:43:14 -0600
-Message-ID: <5022B342.7080606@wwwdotorg.org>
-References: <1344389967-8465-1-git-send-email-linux@prisktech.co.nz> <1344389967-8465-2-git-send-email-linux@prisktech.co.nz>
+Subject: Re: [PATCH 5/8] video: vt8500: Add devicetree support for vt8500-fb
+ and wm8505-fb
+Date: Wed, 08 Aug 2012 12:47:32 -0600
+Message-ID: <5022B444.2020501@wwwdotorg.org>
+References: <1344389967-8465-1-git-send-email-linux@prisktech.co.nz> <1344389967-8465-6-git-send-email-linux@prisktech.co.nz>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from avon.wwwdotorg.org ([70.85.31.133]:34551 "EHLO
+Received: from avon.wwwdotorg.org ([70.85.31.133]:58597 "EHLO
 	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752631Ab2HHSnT (ORCPT
+	with ESMTP id S932561Ab2HHSrh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 8 Aug 2012 14:43:19 -0400
-In-Reply-To: <1344389967-8465-2-git-send-email-linux@prisktech.co.nz>
+	Wed, 8 Aug 2012 14:47:37 -0400
+In-Reply-To: <1344389967-8465-6-git-send-email-linux@prisktech.co.nz>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Tony Prisk <linux@prisktech.co.nz>
 Cc: vt8500-wm8505-linux-kernel@googlegroups.com, linux-fbdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-doc@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, rtc-linux@googlegroups.com, Florian Tobias Schandinat <FlorianSchandinat@gmx.de>, Alan Stern <stern@rowland.harvard.edu>, Eric Andersson <eric.andersson@unixphere.com>, linux-serial@vger.kernel.org, Hauke Mehrtens <hauke@hauke-m.de>, devicetree-discuss@lists.ozlabs.org, Rob Herring <rob.herring@calxeda.com>, Stephen Warren <swarren@nvidia.com>, Neil Zhang <zhangwm@marvell.com>, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>, Alessandro Zummo <a.zummo@towertech.it>, Linus Walleij <linus.walleij@stericsson.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@opensource.wolfsonmicro.com>, linux-kernel@vger.kernel.org, Felipe Balbi <balbi@ti.com>
 
 On 08/07/2012 07:39 PM, Tony Prisk wrote:
-> Add device tree files for VT8500, WM8505 and WM8650 SoC's and
-> reference boards.
+> Update vt8500-fb, wm8505-fb and wmt-ge-rops to support device
+> tree bindings.
 
-> diff --git a/arch/arm/boot/dts/vt8500_ref.dts b/arch/arm/boot/dts/vt8500_ref.dts
+> Small change in wm8505-fb.c to support WM8650 framebuffer color
+> format.
 
-It appears more typical to use "-" rather than "_" in the filename to
-join SoC and board names.
+That might warrant a separate patch?
 
-I guess "_ref" means "reference". Is that how the boards are commonly
-known? Are you sure there will never be another reference board for
-these SoCs? Given the "model" values in the file, something more like
-vt8500-bv07.dts might be more appropriate?
+> diff --git a/drivers/video/vt8500lcdfb.c b/drivers/video/vt8500lcdfb.c
 
-> +	/*
-> +	 * Display node is based on Sascha Hauer's patch on dri-devel.
-> +	 * Added a bpp property to calculate the size of the framebuffer
-> +	 * until the binding is formalized.
-> +	 */
-> +	display {
+> +	np = of_find_node_by_name(NULL, "display");
+> +	if (!np) {
+> +		pr_err("%s: No display description in Device Tree\n", __func__);
+> +		ret = -EINVAL;
+> +		goto failed_free_res;
+> +	}
 
-Maybe it's better to just hold off on adding this node, to wait until
-the binding is complete so this file doesn't churn? Certainly it sounded
-like Sascha was going to change the binding a little in response to
-comments it received.
+I believe that using hard-coded node names is frowned upon. Better would
+be to put a phandle into the display controller's node that points at
+the node representing the display, e.g.:
+
+    fb@d800e400 {
+        compatible = "via,vt8500-fb";
+        reg = <0xd800e400 0x400>;
+        interrupts = <12>;
+        via,display = <&display>;
+    };
+    display: display {
+        ...
+    };
+
