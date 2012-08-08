@@ -1,36 +1,51 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] serial: ifx6x60: fix paging fault on
- spi_register_driver
-Date: Tue, 7 Aug 2012 11:13:39 +0100
-Message-ID: <20120807111339.4a369066@pyramind.ukuu.org.uk>
-References: <20120807051247.GA24140@localhost>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:34944 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753492Ab2HGKJK (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 7 Aug 2012 06:09:10 -0400
-In-Reply-To: <20120807051247.GA24140@localhost>
-Sender: linux-serial-owner@vger.kernel.org
+From: Tony Prisk <linux@prisktech.co.nz>
+Subject: [PATCH 2/8] rtc: vt8500: Add devicetree support for vt8500-rtc
+Date: Wed,  8 Aug 2012 13:39:20 +1200
+Message-ID: <1344389967-8465-3-git-send-email-linux@prisktech.co.nz>
+References: <1344389967-8465-1-git-send-email-linux@prisktech.co.nz>
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <1344389967-8465-1-git-send-email-linux@prisktech.co.nz>
+Sender: linux-doc-owner@vger.kernel.org
+To: vt8500-wm8505-linux-kernel@googlegroups.com
+Cc: Tony Prisk <linux@prisktech.co.nz>, Russell King <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, Alessandro Zummo <a.zummo@towertech.it>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, Hauke Mehrtens <hauke@hauke-m.de>, Felipe Balbi <balbi@ti.com>, Neil Zhang <zhangwm@marvell.com>, Florian Tobias Schandinat <FlorianSchandinat@gmx.de>, Rob Landley <rob@landley.net>, Mark Brown <broonie@opensource.wolfsonmicro.com>, Stephen Warren <swarren@nvidia.com>, Eric Andersson <eric.andersson@unixphere.com>, Linus Walleij <linus.walleij@stericsson.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-serial@
 List-Id: linux-serial@vger.kernel.org
-To: Fengguang Wu <fengguang.wu@intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Russ Gorby <russ.gorby@intel.com>
 
-On Tue, 7 Aug 2012 13:12:47 +0800
-Fengguang Wu <fengguang.wu@intel.com> wrote:
+Signed-off-by: Tony Prisk <linux@prisktech.co.nz>
+---
+ drivers/rtc/rtc-vt8500.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
-> [  117.240866] BUG: unable to handle kernel paging request at 815b627c
-> [  117.240866] IP: [<813fe94b>] spi_register_driver+0xb/0x50
-> ...
-> [  117.240866] Call Trace:
-> [  117.240866]  [<817de977>] ifx_spi_init+0xbe/0xf0
-> 
-> The root cause is, spi_register_driver() is trying to write into the
-> passed *const* struct spi_driver.
-> 
-> Signed-off-by: Fengguang Wu <fengguang.wu@intel.com>
+diff --git a/drivers/rtc/rtc-vt8500.c b/drivers/rtc/rtc-vt8500.c
+index 9e94fb1..7364564 100644
+--- a/drivers/rtc/rtc-vt8500.c
++++ b/drivers/rtc/rtc-vt8500.c
+@@ -23,6 +23,7 @@
+ #include <linux/bcd.h>
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
++#include <linux/of.h>
+ 
+ /*
+  * Register definitions
+@@ -302,12 +303,18 @@ static int __devexit vt8500_rtc_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static const struct of_device_id wmt_dt_ids[] = {
++	{ .compatible = "via,vt8500-rtc", },
++	{}
++};
++
+ static struct platform_driver vt8500_rtc_driver = {
+ 	.probe		= vt8500_rtc_probe,
+ 	.remove		= __devexit_p(vt8500_rtc_remove),
+ 	.driver		= {
+ 		.name	= "vt8500-rtc",
+ 		.owner	= THIS_MODULE,
++		.of_match_table = of_match_ptr(wmt_dt_ids),
+ 	},
+ };
+ 
+-- 
+1.7.9.5
 
-Acked-by: Alan Cox <alan@linux.intel.com>
