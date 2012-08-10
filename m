@@ -1,37 +1,30 @@
 From: Stas Sergeev <stsp@list.ru>
-Subject: Q: how to control the TTY output queue in real time?
-Date: Fri, 10 Aug 2012 23:17:05 +0400
-Message-ID: <50255E31.8060904@list.ru>
+Subject: Re: Q: how to control the TTY output queue in real time?
+Date: Fri, 10 Aug 2012 23:54:19 +0400
+Message-ID: <502566EB.3070304@list.ru>
+References: <50255E31.8060904@list.ru> <20120810203355.224622cc@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from fallback6.mail.ru ([94.100.176.134]:51969 "EHLO
-	fallback6.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751831Ab2HJT3w (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Aug 2012 15:29:52 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20120810203355.224622cc@pyramind.ukuu.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Linux kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linux kernel <linux-kernel@vger.kernel.org>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org
 
-Hello.
+Hi Alan, thanks, clear enough now. :)
 
-I am writing an app that needs to control the
-serial xmit in real-time. What I need is a notification
-that the TTY output queue fillup (returned by TIOCOUTQ
-ioctl) have dropped below the specified value.
-I haven't found anything that can help implementing
-this. If I can't get an async notification, the sync
-notification will do too, like, for instance, the tcdrain()
-call, but with the argument to specify the needed fillup,
-below which the function will return.
-If there is nothing like this, then even the notification
-on every transmitted char will do.
-But I've found nothing of the above. :(
-
-Any suggestions how the real-time control can be
-implemented?
-
-(please CC me the replies)
+10.08.2012 23:33, Alan Cox wrote:
+> 	if (bytes_left < constant)
+> 		write_wakeup
+>
+>
+> and I suspect if you made that adjustable and turned off the fifo and any
+> other funnies you'd at least make it work for a sufficiently rigged demo.
+You suggest to turn off the fifo, sounds worrysome,
+does this mean that tcdrain() and TIOCOUTQ do not
+account the fifo too?
+If they do quite fine with the fifo, then maybe the new
+function will do too? Its basically a tcdrain(), just with
+the controllable watermark I guess.
