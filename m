@@ -1,47 +1,38 @@
-From: Stanislav Kozina <skozina@redhat.com>
-Subject: Re: [PATCH] Remove BUG_ON from n_tty_read()
-Date: Fri, 10 Aug 2012 16:53:59 +0200
-Message-ID: <50252087.6020607@redhat.com>
-References: <20120626152159.2a34dcaf@pyramind.ukuu.org.uk> <50094C8E.5010308@redhat.com> <20120720161123.58fc9703@pyramind.ukuu.org.uk> <50221C30.20607@redhat.com> <20120808100019.6ca011a9@pyramind.ukuu.org.uk> <502256E8.5040300@redhat.com> <5022779F.8060309@redhat.com> <20120808162725.713e7a61@pyramind.ukuu.org.uk> <50239DFA.1090004@redhat.com> <5024E7B2.4030205@redhat.com> <20120810122935.GA2410@redhat.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 08/14] tty: atmel_serial: add pinctrl support
+Date: Fri, 10 Aug 2012 09:10:46 -0700
+Message-ID: <20120810161046.GA2510@kroah.com>
+References: <20120810124820.GA20557@game.jcrosoft.org>
+ <1344603731-32667-1-git-send-email-plagnioj@jcrosoft.com>
+ <1344603731-32667-8-git-send-email-plagnioj@jcrosoft.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([209.132.183.28]:7974 "EHLO mx1.redhat.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1759205Ab2HJOyK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Aug 2012 10:54:10 -0400
-In-Reply-To: <20120810122935.GA2410@redhat.com>
+Received: from mail-gh0-f174.google.com ([209.85.160.174]:58511 "EHLO
+	mail-gh0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753335Ab2HJQKv (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 10 Aug 2012 12:10:51 -0400
+Received: by ghrr11 with SMTP id r11so1754557ghr.19
+        for <linux-serial@vger.kernel.org>; Fri, 10 Aug 2012 09:10:50 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <1344603731-32667-8-git-send-email-plagnioj@jcrosoft.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Stanislaw Gruszka <sgruszka@redhat.com>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+To: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+Cc: linux-arm-kernel@lists.infradead.org, Linus Walleij <linus.walleij@linaro.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-serial@vger.kernel.org
 
+On Fri, Aug 10, 2012 at 03:02:05PM +0200, Jean-Christophe PLAGNIOL-VILLARD wrote:
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
+> Signed-off-by: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+> Cc: linux-serial@vger.kernel.org
+> ---
+> Hi Greg,
+> 
+> 	if you don't mind I would like to apply with the rest of the pinctrl
+> 	patch series
 
-> Subject should include "tty:" prefix.
+No objection from me:
+	Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Sorry, just forgot about it for the second time;-/
-Can I force git format-patch to add it somehow?
-
-> This usually is done in two lines:
->
-> if (WARN_ON())
-> 	return;
-
-Thanks, good point, new patch sent.
-
-> Additionally, second BUG_ON(!tty->read_buf) in n_tty_read() should be
-> probably replaced too.
-
-I don't think so.
-In the first case, we are not running, so there might be no operation on 
-tty running. We still don't understand how it can happen that someone 
-closes the tty, and then read operation is called, however at least 
-there is no (known) running operation.
-In the other case, we have just be rescheduled - so we are definitely in 
-operation, and if tty is closed while we are just sleeping, I would 
-still keep BUG_ON() there. Despite we haven't seen any panics on that 
-place, have we?
-
-Thanks,
--Stanislav
