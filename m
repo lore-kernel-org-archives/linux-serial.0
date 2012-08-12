@@ -1,98 +1,69 @@
-From: Mauro Carvalho Chehab <mchehab@redhat.com>
-Subject: Re: [PATCH] [media] winbond-cir: Fix initialization
-Date: Sat, 11 Aug 2012 17:20:08 -0300
-Message-ID: <5026BE78.80902@redhat.com>
-References: <1343731023-9822-1-git-send-email-sean@mess.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-media-owner@vger.kernel.org>
-In-Reply-To: <1343731023-9822-1-git-send-email-sean@mess.org>
-Sender: linux-media-owner@vger.kernel.org
-To: =?ISO-8859-1?Q?David_H=E4rdeman?= <david@hardeman.nu>
-Cc: Sean Young <sean@mess.org>, Jarod Wilson <jarod@wilsonet.com>, Alan Cox <alan@linux.intel.com>, linux-media@vger.kernel.org, linux-serial@vger.kernel.org, lirc-list@lists.sourceforge.net
+From: David Herrmann <dh.herrmann@googlemail.com>
+Subject: [PATCH 00/11] fblog: Framebuffer kernel log driver v4
+Date: Sun, 12 Aug 2012 16:53:14 +0200
+Message-ID: <1344783205-2384-1-git-send-email-dh.herrmann@googlemail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-fbdev@vger.kernel.org
+Cc: Florian Tobias Schandinat <FlorianSchandinat@gmx.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, David Herrmann <dh.herrmann@googlemail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi David,
+Hi
 
-Em 31-07-2012 07:37, Sean Young escreveu:
-> The serial driver will detect the winbond cir device as a serial port,
-> since it looks exactly like a serial port unless you know what it is
-> from the PNP ID.
-> 
-> Winbond CIR 00:04: Region 0x2f8-0x2ff already in use!
-> Winbond CIR 00:04: disabled
-> Winbond CIR: probe of 00:04 failed with error -16
+This is revision 4 of the fblog driver. It is a replacement for fbcon for
+systems that do not want/need CONFIG_VT. It simply prints the kernel-log to all
+connected framebuffers. Previous versions are available here:
+  v3: http://thread.gmane.org/gmane.linux.kernel/1328164
+  v2: http://thread.gmane.org/gmane.linux.serial/8133
+  v1: http://marc.info/?l=linux-kernel&m=133988465602225&w=2
 
-Please review this patch.
+This patchset is based on linux-next.
 
-> 
-> Signed-off-by: Sean Young <sean@mess.org>
-> ---
->  drivers/media/rc/winbond-cir.c | 21 ++++++++++++++++++++-
->  drivers/tty/serial/8250/8250.c |  1 +
->  2 files changed, 21 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/media/rc/winbond-cir.c b/drivers/media/rc/winbond-cir.c
-> index 54ee348..20a0bbb 100644
-> --- a/drivers/media/rc/winbond-cir.c
-> +++ b/drivers/media/rc/winbond-cir.c
-> @@ -55,6 +55,7 @@
->  #include <linux/slab.h>
->  #include <linux/wait.h>
->  #include <linux/sched.h>
-> +#include <linux/serial_8250.h>
->  #include <media/rc-core.h>
->  
->  #define DRVNAME "winbond-cir"
-> @@ -957,6 +958,7 @@ wbcir_probe(struct pnp_dev *device, const struct pnp_device_id *dev_id)
->  	struct device *dev = &device->dev;
->  	struct wbcir_data *data;
->  	int err;
-> +	struct resource *io;
->  
->  	if (!(pnp_port_len(device, 0) == EHFUNC_IOMEM_LEN &&
->  	      pnp_port_len(device, 1) == WAKEUP_IOMEM_LEN &&
-> @@ -1049,7 +1051,24 @@ wbcir_probe(struct pnp_dev *device, const struct pnp_device_id *dev_id)
->  		goto exit_release_wbase;
->  	}
->  
-> -	if (!request_region(data->sbase, SP_IOMEM_LEN, DRVNAME)) {
-> +	io = request_region(data->sbase, SP_IOMEM_LEN, DRVNAME);
-> +
-> +	/*
-> +	 * The winbond cir device looks exactly like an NS16550A serial port
-> +	 * unless you know what it is. We've got here via the PNP ID.
-> +	 */
-> +#ifdef CONFIG_SERIAL_8250
-> +	if (!io) {
-> +		struct uart_port port = { .iobase = data->sbase };
-> +		int line = serial8250_find_port(&port);
-> +		if (line >= 0) {
-> +			serial8250_unregister_port(line);
+Changes from previous version:
+  - Changed mailinglist to linux-fbdev instead of linux-serial
+  - Added "main_only" and "activate_on_hotplug" module parameters to provide
+    more fine-grained control over which framebuffers are used
 
-Hmm... Not sure if it makes sense, but perhaps the unregistering code
-should be reverting serial8250_unregister_port(line).
+As always simply remove the !VT dependency if you want to test this with VTs
+enabled. Some more background information on deprecating CONFIG_VT can be found
+here:
+  http://dvdhrm.wordpress.com/2012/08/12/killing-off-config_vt/
 
-> +
-> +			io = request_region(data->sbase, SP_IOMEM_LEN, DRVNAME);
-> +		}
-> +	}
-> +#endif
-> +	if (!io) {
->  		dev_err(dev, "Region 0x%lx-0x%lx already in use!\n",
->  			data->sbase, data->sbase + SP_IOMEM_LEN - 1);
->  		err = -EBUSY;
-> diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
-> index 5c27f7e..d38615f 100644
-> --- a/drivers/tty/serial/8250/8250.c
-> +++ b/drivers/tty/serial/8250/8250.c
-> @@ -2914,6 +2914,7 @@ int serial8250_find_port(struct uart_port *p)
->  	}
->  	return -ENODEV;
->  }
-> +EXPORT_SYMBOL(serial8250_find_port);
->  
->  #define SERIAL8250_CONSOLE	&serial8250_console
->  #else
-> 
+I am still looking for someone who is willing to push this to linux-next through
+his or her tree. Feedback is much appreciated!
+
+Thanks
+David
+
+David Herrmann (11):
+  fbcon: move update_attr() into separate source file
+  fbcon: move bit_putcs() into separate source file
+  fblog: new framebuffer kernel log dummy driver
+  fbdev: export get_fb_info()/put_fb_info()
+  fblog: register one fblog object per framebuffer
+  fblog: open fb on registration
+  fblog: allow selecting fbs via sysfs and module-parameters
+  fblog: cache framebuffer BLANK and SUSPEND states
+  fblog: register console driver
+  fblog: draw console to framebuffers
+  MAINTAINERS: add fblog entry
+
+ MAINTAINERS                     |   6 +
+ drivers/video/Kconfig           |   5 +-
+ drivers/video/Makefile          |   2 +-
+ drivers/video/console/Kconfig   |  37 ++-
+ drivers/video/console/Makefile  |   4 +-
+ drivers/video/console/bitblit.c | 149 +--------
+ drivers/video/console/fbcon.h   |   5 +-
+ drivers/video/console/fbdraw.c  | 171 ++++++++++
+ drivers/video/console/fbdraw.h  |  30 ++
+ drivers/video/console/fblog.c   | 691 ++++++++++++++++++++++++++++++++++++++++
+ drivers/video/fbmem.c           |   6 +-
+ include/linux/fb.h              |   3 +
+ 12 files changed, 951 insertions(+), 158 deletions(-)
+ create mode 100644 drivers/video/console/fbdraw.c
+ create mode 100644 drivers/video/console/fbdraw.h
+ create mode 100644 drivers/video/console/fblog.c
+
+-- 
+1.7.11.4
