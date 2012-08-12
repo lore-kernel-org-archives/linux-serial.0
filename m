@@ -1,246 +1,89 @@
-From: David Herrmann <dh.herrmann@googlemail.com>
-Subject: [PATCH 05/11] fblog: register one fblog object per framebuffer
-Date: Sun, 12 Aug 2012 16:53:19 +0200
-Message-ID: <1344783205-2384-6-git-send-email-dh.herrmann@googlemail.com>
+From: Florian Tobias Schandinat <FlorianSchandinat@gmx.de>
+Subject: Re: [PATCH 00/11] fblog: Framebuffer kernel log driver v4
+Date: Sun, 12 Aug 2012 15:28:56 +0000
+Message-ID: <5027CBB8.7030201@gmx.de>
 References: <1344783205-2384-1-git-send-email-dh.herrmann@googlemail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout-de.gmx.net ([213.165.64.22]:34430 "HELO
+	mailout-de.gmx.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1750963Ab2HLP3C (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 12 Aug 2012 11:29:02 -0400
 In-Reply-To: <1344783205-2384-1-git-send-email-dh.herrmann@googlemail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-fbdev@vger.kernel.org
-Cc: Florian Tobias Schandinat <FlorianSchandinat@gmx.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, David Herrmann <dh.herrmann@googlemail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: David Herrmann <dh.herrmann@googlemail.com>
+Cc: linux-fbdev@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>
 
-One fblog object is associated to each registered framebuffer. This way,
-we can draw the console to each framebuffer. When a framebuffer driver
-unregisters a framebuffer, we also unregister our fblog object. That is,
-our lifetime is coupled to the lifetime of the framebuffer. However, this
-does not mean that we are always active. On the contrary, we do not even
-own a reference to the framebuffer. We don't need it as we are notified
-_before_ the last reference is dropped.
+On 08/12/2012 02:53 PM, David Herrmann wrote:
+> Hi
+> 
+> This is revision 4 of the fblog driver. It is a replacement for fbcon for
+> systems that do not want/need CONFIG_VT. It simply prints the kernel-log to all
+> connected framebuffers. Previous versions are available here:
+>   v3: http://thread.gmane.org/gmane.linux.kernel/1328164
+>   v2: http://thread.gmane.org/gmane.linux.serial/8133
+>   v1: http://marc.info/?l=linux-kernel&m=133988465602225&w=2
+> 
+> This patchset is based on linux-next.
+> 
+> Changes from previous version:
+>   - Changed mailinglist to linux-fbdev instead of linux-serial
+>   - Added "main_only" and "activate_on_hotplug" module parameters to provide
+>     more fine-grained control over which framebuffers are used
+> 
+> As always simply remove the !VT dependency if you want to test this with VTs
+> enabled. Some more background information on deprecating CONFIG_VT can be found
+> here:
+>   http://dvdhrm.wordpress.com/2012/08/12/killing-off-config_vt/
+> 
+> I am still looking for someone who is willing to push this to linux-next through
+> his or her tree. Feedback is much appreciated!
 
-However, if other users have a reference to our object, we simply mark it
-as dead when the associated framebuffer dies and leave it alone. When the
-last reference is dropped, it will be automatically freed.
+I'll take care of this. But I'm currently very busy writing a thesis, so
+it could take some time. It would be great if someone would find time to
+give this a complete thorough review.
 
-Signed-off-by: David Herrmann <dh.herrmann@googlemail.com>
----
- drivers/video/console/fblog.c | 195 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 195 insertions(+)
 
-diff --git a/drivers/video/console/fblog.c b/drivers/video/console/fblog.c
-index fb39737..279f4d8 100644
---- a/drivers/video/console/fblog.c
-+++ b/drivers/video/console/fblog.c
-@@ -23,15 +23,210 @@
-  * all fblog instances before running other graphics applications.
-  */
- 
-+#define pr_fmt(_fmt) KBUILD_MODNAME ": " _fmt
-+
-+#include <linux/device.h>
-+#include <linux/fb.h>
- #include <linux/module.h>
-+#include <linux/mutex.h>
-+
-+enum fblog_flags {
-+	FBLOG_KILLED,
-+};
-+
-+struct fblog_fb {
-+	unsigned long flags;
-+	struct fb_info *info;
-+	struct device dev;
-+};
-+
-+static DEFINE_MUTEX(fblog_registration_lock);
-+static struct fblog_fb *fblog_fbs[FB_MAX];
-+
-+#define to_fblog_dev(_d) container_of(_d, struct fblog_fb, dev)
-+
-+/*
-+ * fblog framebuffer list
-+ * The fblog_fbs[] array contains all currently registered framebuffers. If a
-+ * framebuffer is in that list, we always must make sure that we own a reference
-+ * to it. If it is added through the notifier callbacks, then this is always
-+ * guaranteed.
-+ * We are only interested in registered framebuffers. That is, if a driver calls
-+ * unregister_framebuffer() we directly unlink it from our list. This guarantees
-+ * that the associated fb_info is always valid. However, we might still have
-+ * pending users so we mark it as dead so no further framebuffer actions are
-+ * done. If the last user then drops a reference, the memory gets freed
-+ * automatically.
-+ */
-+
-+static void fblog_release(struct device *dev)
-+{
-+	struct fblog_fb *fb = to_fblog_dev(dev);
-+
-+	kfree(fb);
-+	module_put(THIS_MODULE);
-+}
-+
-+static void fblog_do_unregister(struct fb_info *info)
-+{
-+	struct fblog_fb *fb;
-+
-+	fb = fblog_fbs[info->node];
-+	if (!fb || fb->info != info)
-+		return;
-+
-+	fblog_fbs[info->node] = NULL;
-+
-+	device_del(&fb->dev);
-+	put_device(&fb->dev);
-+}
-+
-+static void fblog_do_register(struct fb_info *info, bool force)
-+{
-+	struct fblog_fb *fb;
-+	int ret;
-+
-+	fb = fblog_fbs[info->node];
-+	if (fb && fb->info != info) {
-+		if (!force)
-+			return;
-+
-+		fblog_do_unregister(fb->info);
-+	}
-+
-+	fb = kzalloc(sizeof(*fb), GFP_KERNEL);
-+	if (!fb)
-+		return;
-+
-+	fb->info = info;
-+	__module_get(THIS_MODULE);
-+	device_initialize(&fb->dev);
-+	fb->dev.class = fb_class;
-+	fb->dev.release = fblog_release;
-+	dev_set_name(&fb->dev, "fblog%d", info->node);
-+	fblog_fbs[info->node] = fb;
-+
-+	ret = device_add(&fb->dev);
-+	if (ret) {
-+		fblog_fbs[info->node] = NULL;
-+		set_bit(FBLOG_KILLED, &fb->flags);
-+		put_device(&fb->dev);
-+		return;
-+	}
-+}
-+
-+static void fblog_register(struct fb_info *info, bool force)
-+{
-+	mutex_lock(&fblog_registration_lock);
-+	fblog_do_register(info, force);
-+	mutex_unlock(&fblog_registration_lock);
-+}
-+
-+static void fblog_unregister(struct fb_info *info)
-+{
-+	mutex_lock(&fblog_registration_lock);
-+	fblog_do_unregister(info);
-+	mutex_unlock(&fblog_registration_lock);
-+}
-+
-+static int fblog_event(struct notifier_block *self, unsigned long action,
-+		       void *data)
-+{
-+	struct fb_event *event = data;
-+	struct fb_info *info = event->info;
-+
-+	switch(action) {
-+	case FB_EVENT_FB_REGISTERED:
-+		/* This is called when a low-level system driver registers a new
-+		 * framebuffer. The registration lock is held but the console
-+		 * lock might not be held when this is called. */
-+		fblog_register(info, true);
-+		break;
-+	case FB_EVENT_FB_UNREGISTERED:
-+		/* This is called when a low-level system driver unregisters a
-+		 * framebuffer. The registration lock is held but the console
-+		 * lock might not be held. */
-+		fblog_unregister(info);
-+		break;
-+	}
-+
-+	return 0;
-+}
-+
-+static void fblog_scan(void)
-+{
-+	unsigned int i;
-+	struct fb_info *info, *tmp;
-+
-+	for (i = 0; i < FB_MAX; ++i) {
-+		info = get_fb_info(i);
-+		if (!info || IS_ERR(info))
-+			continue;
-+
-+		fblog_register(info, false);
-+
-+		/* There is a very subtle race-condition. Even though we might
-+		 * own a reference to the fb, it may still get unregistered
-+		 * between our call from get_fb_info() and fblog_register().
-+		 * Therefore, we simply check whether the same fb still is
-+		 * registered by calling get_fb_info() again. Only if they
-+		 * differ we know that it got unregistered, therefore, we
-+		 * call fblog_unregister() with the old pointer. */
-+
-+		tmp = get_fb_info(i);
-+		if (tmp && !IS_ERR(tmp))
-+			put_fb_info(tmp);
-+		if (tmp != info)
-+			fblog_unregister(info);
-+
-+		/* Here we either called fblog_unregister() and therefore do not
-+		 * need any reference to the fb, or we can be sure that the FB
-+		 * is registered and FB_EVENT_FB_UNREGISTERED will be called
-+		 * before the last reference is dropped. Hence, we can drop our
-+		 * reference here. */
-+
-+		put_fb_info(info);
-+	}
-+}
-+
-+static struct notifier_block fblog_notifier = {
-+	.notifier_call = fblog_event,
-+};
- 
- static int __init fblog_init(void)
- {
-+	int ret;
-+
-+	ret = fb_register_client(&fblog_notifier);
-+	if (ret) {
-+		pr_err("cannot register framebuffer notifier\n");
-+		return ret;
-+	}
-+
-+	fblog_scan();
-+
- 	return 0;
- }
- 
- static void __exit fblog_exit(void)
- {
-+	unsigned int i;
-+	struct fb_info *info;
-+
-+	fb_unregister_client(&fblog_notifier);
-+
-+	/* We scan through the whole registered_fb array here instead of
-+	 * fblog_fbs because we need to get the device lock _before_ the
-+	 * fblog-registration-lock. */
-+
-+	for (i = 0; i < FB_MAX; ++i) {
-+		info = get_fb_info(i);
-+		if (!info || IS_ERR(info))
-+			continue;
-+
-+		fblog_unregister(info);
-+		put_fb_info(info);
-+	}
- }
- 
- module_init(fblog_init);
--- 
-1.7.11.4
+Thanks,
+
+Florian Tobias Schandinat
+
+> 
+> Thanks
+> David
+> 
+> David Herrmann (11):
+>   fbcon: move update_attr() into separate source file
+>   fbcon: move bit_putcs() into separate source file
+>   fblog: new framebuffer kernel log dummy driver
+>   fbdev: export get_fb_info()/put_fb_info()
+>   fblog: register one fblog object per framebuffer
+>   fblog: open fb on registration
+>   fblog: allow selecting fbs via sysfs and module-parameters
+>   fblog: cache framebuffer BLANK and SUSPEND states
+>   fblog: register console driver
+>   fblog: draw console to framebuffers
+>   MAINTAINERS: add fblog entry
+> 
+>  MAINTAINERS                     |   6 +
+>  drivers/video/Kconfig           |   5 +-
+>  drivers/video/Makefile          |   2 +-
+>  drivers/video/console/Kconfig   |  37 ++-
+>  drivers/video/console/Makefile  |   4 +-
+>  drivers/video/console/bitblit.c | 149 +--------
+>  drivers/video/console/fbcon.h   |   5 +-
+>  drivers/video/console/fbdraw.c  | 171 ++++++++++
+>  drivers/video/console/fbdraw.h  |  30 ++
+>  drivers/video/console/fblog.c   | 691 ++++++++++++++++++++++++++++++++++++++++
+>  drivers/video/fbmem.c           |   6 +-
+>  include/linux/fb.h              |   3 +
+>  12 files changed, 951 insertions(+), 158 deletions(-)
+>  create mode 100644 drivers/video/console/fbdraw.c
+>  create mode 100644 drivers/video/console/fbdraw.h
+>  create mode 100644 drivers/video/console/fblog.c
+> 
+
