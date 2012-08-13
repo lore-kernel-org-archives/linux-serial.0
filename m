@@ -1,18 +1,18 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 5/8] n_gsm: added interlocking for gsm_data_lock for certain
- code paths
-Date: Mon, 13 Aug 2012 13:44:40 +0100
-Message-ID: <20120813124433.6125.4800.stgit@localhost.localdomain>
+Subject: [PATCH 6/8] n_gsm: avoid accessing freed memory during CMD_FCOFF
+ condition
+Date: Mon, 13 Aug 2012 13:44:59 +0100
+Message-ID: <20120813124451.6125.35751.stgit@localhost.localdomain>
 References: <20120813124254.6125.70371.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:43383 "EHLO
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:43386 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751665Ab2HMM1V (ORCPT
+	with ESMTP id S1751665Ab2HMM1i (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 13 Aug 2012 08:27:21 -0400
+	Mon, 13 Aug 2012 08:27:38 -0400
 In-Reply-To: <20120813124254.6125.70371.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -20,15 +20,14 @@ To: greg@kroah.com, linux-serial@vger.kernel.org
 
 From: Russ Gorby <russ.gorby@intel.com>
 
-There were some locking holes in the management of the MUX's
-message queue for 2 code paths:
-1) gsmld_write_wakeup
-2) receipt of CMD_FCON flow-control message
-In both cases gsm_data_kick is called w/o locking so it can collide
-with other other instances of gsm_data_kick (pulling messages tx_tail)
-or potentially other instances of __gsm_data_queu (adding messages to tx_head)
+gsm_data_kick was recently modified to allow messages on the
+tx queue bound for DLCI0 to flow even during FCOFF conditions.
+Unfortunately we introduced a bug discovered by code inspection
+where subsequent list traversers can access freed memory if
+the DLCI0 messages were not all at the head of the list.
 
-Changed to take the tx_lock in these 2 cases
+Replaced singly linked tx list w/ a list_head and used
+provided interfaces for traversing and deleting members.
 
 Signed-off-by: Russ Gorby <russ.gorby@intel.com>
 Tested-by: Yin, Fengwei <fengwei.yin@intel.com>
@@ -36,45 +35,120 @@ Signed-off-by: Alan Cox <alan@linux.intel.com>
 Cc: Riding School <stable@kernel.org>
 ---
 
- drivers/tty/n_gsm.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/tty/n_gsm.c |   40 +++++++++++++---------------------------
+ 1 file changed, 13 insertions(+), 27 deletions(-)
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 9854edf..51ba2f2 100644
+index 51ba2f2..e2bdb8b 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -1205,6 +1205,8 @@ static void gsm_control_message(struct gsm_mux *gsm, unsigned int command,
- 							u8 *data, int clen)
- {
- 	u8 buf[1];
-+	unsigned long flags;
-+
- 	switch (command) {
- 	case CMD_CLD: {
- 		struct gsm_dlci *dlci = gsm->dlci[0];
-@@ -1225,7 +1227,9 @@ static void gsm_control_message(struct gsm_mux *gsm, unsigned int command,
- 		gsm->constipated = 0;
- 		gsm_control_reply(gsm, CMD_FCON, NULL, 0);
- 		/* Kick the link in case it is idling */
-+		spin_lock_irqsave(&gsm->tx_lock, flags);
- 		gsm_data_kick(gsm);
-+		spin_unlock_irqrestore(&gsm->tx_lock, flags);
- 		break;
- 	case CMD_FCOFF:
- 		/* Modem wants us to STFU */
-@@ -2392,12 +2396,12 @@ static void gsmld_write_wakeup(struct tty_struct *tty)
+@@ -108,7 +108,7 @@ struct gsm_mux_net {
+  */
  
- 	/* Queue poll */
- 	clear_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
-+	spin_lock_irqsave(&gsm->tx_lock, flags);
- 	gsm_data_kick(gsm);
- 	if (gsm->tx_bytes < TX_THRESH_LO) {
--		spin_lock_irqsave(&gsm->tx_lock, flags);
- 		gsm_dlci_data_sweep(gsm);
--		spin_unlock_irqrestore(&gsm->tx_lock, flags);
+ struct gsm_msg {
+-	struct gsm_msg *next;
++	struct list_head list;
+ 	u8 addr;		/* DLCI address + flags */
+ 	u8 ctrl;		/* Control byte + flags */
+ 	unsigned int len;	/* Length of data block (can be zero) */
+@@ -245,8 +245,7 @@ struct gsm_mux {
+ 	unsigned int tx_bytes;		/* TX data outstanding */
+ #define TX_THRESH_HI		8192
+ #define TX_THRESH_LO		2048
+-	struct gsm_msg *tx_head;	/* Pending data packets */
+-	struct gsm_msg *tx_tail;
++	struct list_head tx_list;	/* Pending data packets */
+ 
+ 	/* Control messages */
+ 	struct timer_list t2_timer;	/* Retransmit timer for commands */
+@@ -663,7 +662,7 @@ static struct gsm_msg *gsm_data_alloc(struct gsm_mux *gsm, u8 addr, int len,
+ 	m->len = len;
+ 	m->addr = addr;
+ 	m->ctrl = ctrl;
+-	m->next = NULL;
++	INIT_LIST_HEAD(&m->list);
+ 	return m;
+ }
+ 
+@@ -681,16 +680,13 @@ static struct gsm_msg *gsm_data_alloc(struct gsm_mux *gsm, u8 addr, int len,
+ 
+ static void gsm_data_kick(struct gsm_mux *gsm)
+ {
+-	struct gsm_msg *msg = gsm->tx_head;
+-	struct gsm_msg *free_msg;
++	struct gsm_msg *msg, *nmsg;
+ 	int len;
+ 	int skip_sof = 0;
+ 
+-	while (msg) {
+-		if (gsm->constipated && msg->addr) {
+-			msg = msg->next;
++	list_for_each_entry_safe(msg, nmsg, &gsm->tx_list, list) {
++		if (gsm->constipated && msg->addr)
+ 			continue;
+-		}
+ 		if (gsm->encoding != 0) {
+ 			gsm->txframe[0] = GSM1_SOF;
+ 			len = gsm_stuff_frame(msg->data,
+@@ -718,14 +714,9 @@ static void gsm_data_kick(struct gsm_mux *gsm)
+ 		   burst */
+ 		skip_sof = 1;
+ 
+-		if (gsm->tx_head == msg)
+-			gsm->tx_head = msg->next;
+-		free_msg = msg;
+-		msg = msg->next;
+-		kfree(free_msg);
++		list_del(&msg->list);
++		kfree(msg);
  	}
-+	spin_unlock_irqrestore(&gsm->tx_lock, flags);
+-	if (!gsm->tx_head)
+-		gsm->tx_tail = NULL;
  }
  
  /**
+@@ -774,11 +765,7 @@ static void __gsm_data_queue(struct gsm_dlci *dlci, struct gsm_msg *msg)
+ 	msg->data = dp;
+ 
+ 	/* Add to the actual output queue */
+-	if (gsm->tx_tail)
+-		gsm->tx_tail->next = msg;
+-	else
+-		gsm->tx_head = msg;
+-	gsm->tx_tail = msg;
++	list_add_tail(&msg->list, &gsm->tx_list);
+ 	gsm->tx_bytes += msg->len;
+ 	gsm_data_kick(gsm);
+ }
+@@ -2026,7 +2013,7 @@ void gsm_cleanup_mux(struct gsm_mux *gsm)
+ {
+ 	int i;
+ 	struct gsm_dlci *dlci = gsm->dlci[0];
+-	struct gsm_msg *txq;
++	struct gsm_msg *txq, *utxq;
+ 	struct gsm_control *gc;
+ 
+ 	gsm->dead = 1;
+@@ -2061,11 +2048,9 @@ void gsm_cleanup_mux(struct gsm_mux *gsm)
+ 		if (gsm->dlci[i])
+ 			gsm_dlci_release(gsm->dlci[i]);
+ 	/* Now wipe the queues */
+-	for (txq = gsm->tx_head; txq != NULL; txq = gsm->tx_head) {
+-		gsm->tx_head = txq->next;
++	list_for_each_entry_safe(txq, ntxq, &gsm->tx_list, list)
+ 		kfree(txq);
+-	}
+-	gsm->tx_tail = NULL;
++	INIT_LIST_HEAD(&gsm->tx_list);
+ }
+ EXPORT_SYMBOL_GPL(gsm_cleanup_mux);
+ 
+@@ -2176,6 +2161,7 @@ struct gsm_mux *gsm_alloc_mux(void)
+ 	}
+ 	spin_lock_init(&gsm->lock);
+ 	kref_init(&gsm->ref);
++	INIT_LIST_HEAD(&gsm->tx_list);
+ 
+ 	gsm->t1 = T1;
+ 	gsm->t2 = T2;
 
