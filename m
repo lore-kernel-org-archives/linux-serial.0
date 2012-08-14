@@ -1,29 +1,31 @@
-From: Christophe Leroy <christophe.leroy@c-s.fr>
-Subject: [PATCH] Powerpc 8xx CPM_UART desynchronisation
-Date: Tue, 14 Aug 2012 16:26:26 +0200
-Message-ID: <201208141426.q7EEQQmD003947@localhost.localdomain>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] Powerpc 8xx CPM_UART delay in receive
+Date: Tue, 14 Aug 2012 15:52:27 +0100
+Message-ID: <20120814155227.018988da@pyramind.ukuu.org.uk>
+References: <201208141426.q7EEQSPc003956@localhost.localdomain>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <201208141426.q7EEQSPc003956@localhost.localdomain>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>, Vitaly Bordug <vitb@kernel.crashing.org>, Marcelo Tosatti <marcelo@kvack.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+To: Christophe Leroy <christophe.leroy@c-s.fr>
+Cc: Alan Cox <alan@linux.intel.com>, Vitaly Bordug <vitb@kernel.crashing.org>, Marcelo Tosatti <marcelo@kvack.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
+On Tue, 14 Aug 2012 16:26:28 +0200
+Christophe Leroy <christophe.leroy@c-s.fr> wrote:
 
-I'm not sure who to address this Patch to.
+> Hello,
+> 
+> I'm not sure who to address this Patch to either
+> 
+> It fixes a delay issue with CPM UART driver on Powerpc MPC8xx.
+> The problem is that with the actual code, the driver waits 32 IDLE patterns before returning the received data to the upper level. It means for instance about 1 second at 300 bauds.
+> This fix limits to one byte the waiting period.
 
-It fixes a desynchronisation problem with CPM UART driver on Powerpc MPC8xx.
-The problem happens if data is received before the device is open by the user application.
+Take a look how the 8250 does it - I think you want to set the value
+based upon the data rate. Your patch will break it for everyone doing
+high seed I/O.
 
-Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
-
---- linux-3.5-vanilla/drivers/tty/serial/cpm_uart/cpm_uart_core.c	2012-07-21 22:58:29.000000000 +0200
-+++ linux-3.5/drivers/tty/serial/cpm_uart/cpm_uart_core.c	2012-08-09 17:38:37.000000000 +0200
-@@ -417,6 +417,7 @@
- 			clrbits32(&pinfo->sccp->scc_gsmrl, SCC_GSMRL_ENR);
- 			clrbits16(&pinfo->sccp->scc_sccm, UART_SCCM_RX);
- 		}
-+		cpm_uart_initbd(pinfo);
- 		cpm_line_cr_cmd(pinfo, CPM_CR_INIT_TRX);
- 	}
- 	/* Install interrupt handler. */
+Alan
