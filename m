@@ -1,88 +1,48 @@
-From: David Herrmann <dh.herrmann@googlemail.com>
-Subject: Re: [PATCH 07/11] fblog: allow selecting fbs via sysfs and module-parameters
-Date: Tue, 14 Aug 2012 13:07:06 +0200
-Message-ID: <CANq1E4TawZ7d=dvKjCi_r3ai9yo3kyMMYJAPh_0wV4T68Xpqng@mail.gmail.com>
-References: <1344783205-2384-1-git-send-email-dh.herrmann@googlemail.com>
-	<1344783205-2384-8-git-send-email-dh.herrmann@googlemail.com>
-	<5028447E.7000208@gmail.com>
+From: Stanislav Kozina <skozina@redhat.com>
+Subject: Re: [PATCH V2] [tty] Fix possible race in n_tty_read()
+Date: Tue, 14 Aug 2012 13:15:57 +0200
+Message-ID: <502A336D.7070304@redhat.com>
+References: <4FE886C6.7090606@redhat.com> <20120626152159.2a34dcaf@pyramind.ukuu.org.uk> <50094C8E.5010308@redhat.com> <20120720161123.58fc9703@pyramind.ukuu.org.uk> <50221C30.20607@redhat.com> <20120808100019.6ca011a9@pyramind.ukuu.org.uk> <502256E8.5040300@redhat.com> <5022779F.8060309@redhat.com> <20120808162725.713e7a61@pyramind.ukuu.org.uk> <20120809111620.GA3516@redhat.com> <20120813152654.GA5091@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5028447E.7000208@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Ryan Mallon <rmallon@gmail.com>
-Cc: linux-fbdev@vger.kernel.org, Florian Tobias Schandinat <FlorianSchandinat@gmx.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mx1.redhat.com ([209.132.183.28]:29249 "EHLO mx1.redhat.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755815Ab2HNLQI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 14 Aug 2012 07:16:08 -0400
+In-Reply-To: <20120813152654.GA5091@redhat.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Stanislaw Gruszka <sgruszka@redhat.com>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-Hi Ryan
 
-On Mon, Aug 13, 2012 at 2:04 AM, Ryan Mallon <rmallon@gmail.com> wrote:
-> On 13/08/12 00:53, David Herrmann wrote:
->> +static ssize_t fblog_dev_active_show(struct device *dev,
->> +                                  struct device_attribute *attr,
->> +                                  char *buf)
->> +{
->> +     struct fblog_fb *fb = to_fblog_dev(dev);
->> +
->> +     return snprintf(buf, PAGE_SIZE, "%d\n",
->> +                     !!test_bit(FBLOG_OPEN, &fb->flags));
->
-> Nitpick. sprintf is okay here, %d is rarely longer than PAGE_SIZE :-).
->
->> +}
->> +
->> +static ssize_t fblog_dev_active_store(struct device *dev,
->> +                                   struct device_attribute *attr,
->> +                                   const char *buf,
->> +                                   size_t count)
->> +{
->> +     struct fblog_fb *fb = to_fblog_dev(dev);
->> +     unsigned long num;
->> +     int ret = 0;
->> +
->> +     num = simple_strtoul(buf, NULL, 10);
->
-> kstrtoul is preferred these days I think, it also catches errors.
->
->> +
->> +     mutex_lock(&fb->info->lock);
->> +     if (num)
->> +             ret = fblog_open(fb);
->> +     else
->> +             fblog_close(fb, false);
->> +     mutex_unlock(&fb->info->lock);
->> +
->> +     return ret ? ret : count;
->
-> Nitpick, you can use gcc's shortcut form of the ? operator here:
->
->         return ret ?: count;
->
->> @@ -186,7 +228,20 @@ static void fblog_do_register(struct fb_info *info, bool force)
->>               return;
->>       }
->>
->> -     fblog_open(fb);
->> +     ret = device_create_file(&fb->dev, &dev_attr_active);
->> +     if (ret) {
->> +             pr_err("fblog: cannot create sysfs entry");
->
-> Shouldn't need the "fblog: " prefix, since you have pr_fmt defined.
->
->> +             /* do not open fb if we cannot create control file */
->> +             do_open = false;
->> +     }
->> +
->> +     if (!activate_on_hotplug)
->> +             do_open = false;
->> +     if (main_only && info->node != 0)
->> +             do_open = false;
->> +
->> +     if (do_open)
->> +             fblog_open(fb);
->>  }
->>
->>  static void fblog_register(struct fb_info *info, bool force)
+> I looked a bit more at this. Excluding memory corruption which could
+> zero tty struct, the only possibility to nullify tty->read_buf is
+> call to n_tty_close(). So NULL pointer dereference on n_tty_read,
+> in "while (nr&&  tty->read_cnt)" loop can only be caused by calling
+> n_tty_close(), while performing n_tty_read().
 
-All four fixes make sense, thanks!
-David
+Correct.
+
+> Stanislav patch solve that problem because we do not touch tty->read_buf
+> any longer once tty->read_cnt become 0, and because n_tty_close() clear
+> tty->read_cnt (by calling n_tty_flush_buffer() ->  reset_buffer_flags()).
+
+Correct.
+
+> However looks like main problem persist, we should never do
+> n_tty_read() after/during n_tty_close() and before n_tty_open(). That
+> must be an issue in upper layer i.e. tty_io and tty_ldisc, which should
+> give guarantee about ->close(), ->read(), ->open() ordering.
+
+Correct.
+
+> I'm going
+> to look at that more closely.
+
+Thanks a lot;-)
+
+Regards,
+-Stanislav
