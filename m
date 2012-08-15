@@ -1,36 +1,91 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH 08/14] tty: atmel_serial: add pinctrl support
-Date: Wed, 15 Aug 2012 11:01:28 +0200
-Message-ID: <CACRpkdbPUTGYUR4iVaJ39zZjadtkDBjGDCYLZhksgMXTGnsqPA@mail.gmail.com>
-References: <20120810124820.GA20557@game.jcrosoft.org>
-	<1344603731-32667-1-git-send-email-plagnioj@jcrosoft.com>
-	<1344603731-32667-8-git-send-email-plagnioj@jcrosoft.com>
+From: Tomas Hlavacek <tmshlvck@gmail.com>
+Subject: Re: [PATCH 1/1] [RFC] uartclk from serial_core exposed to sysfs
+Date: Wed, 15 Aug 2012 19:09:05 +0200
+Message-ID: <CAEB7QLCgUJzq+7nqDoBLp8hRpKXAxhajPFnMEZ82MfzesUqZ6A@mail.gmail.com>
+References: <CAEB7QLAJXkK6NDPVDi36n_U_X_DGh5niHJhH6FpqBUZFmXQ2Xg@mail.gmail.com>
+	<1344929718-22736-1-git-send-email-tmshlvck@gmail.com>
+	<201208141450.23453.marek.vasut@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vb0-f46.google.com ([209.85.212.46]:38389 "EHLO
-	mail-vb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751662Ab2HOJB3 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 15 Aug 2012 05:01:29 -0400
-Received: by vbbff1 with SMTP id ff1so1247536vbb.19
-        for <linux-serial@vger.kernel.org>; Wed, 15 Aug 2012 02:01:28 -0700 (PDT)
-In-Reply-To: <1344603731-32667-8-git-send-email-plagnioj@jcrosoft.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <201208141450.23453.marek.vasut@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Marek Vasut <marek.vasut@gmail.com>
+Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-Cc: linux-arm-kernel@lists.infradead.org, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-serial@vger.kernel.org
 
-On Fri, Aug 10, 2012 at 3:02 PM, Jean-Christophe PLAGNIOL-VILLARD
-<plagnioj@jcrosoft.com> wrote:
+Hello Marek,
 
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
-> Signed-off-by: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-> Cc: linux-serial@vger.kernel.org
+On Tue, Aug 14, 2012 at 2:50 PM, Marek Vasut <marek.vasut@gmail.com> wr=
+ote:
+> Dear Tomas Hlavacek,
+>
+>> +static ssize_t get_attr_uartclk(struct device *dev,
+>> +             struct device_attribute *attr, char *buf)
+>> +{
+>> +     int ret;
+>> +
+>> +     struct uart_state *state =3D (struct uart_state *)(dev_get_drv=
+data(dev));
+>
+> You don't need this cast here.
 
-Looking good,
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Yes, you are right. Thanks.
 
-Yours,
-Linus Walleij
+>
+>> +     mutex_lock(&state->port.mutex);
+>> +     ret =3D snprintf(buf, PAGE_SIZE, "%d\n", state->uart_port->uar=
+tclk);
+>
+> Do you really need such a large buffer (PAGE_SIZE) ?
+
+Well no, but I believe that I get the buffer of length equal to
+PAGE_SIZE anyway. Documentation/filesystems/sysfs.txt says so on line
+179.
+
+>
+>> +     mutex_unlock(&state->port.mutex);
+>> +     return ret;
+>> +}
+>> +
+>> +static ssize_t set_attr_uartclk(struct device *dev,
+>> +             struct device_attribute *attr, const char *buf, size_t=
+ count)
+>> +{
+>> +     struct uart_state *state =3D (struct uart_state *)(dev_get_drv=
+data(dev));
+>> +     unsigned int val;
+>> +     int ret;
+>> +
+>> +     ret =3D kstrtouint(buf, 10, &val);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     mutex_lock(&state->port.mutex);
+>> +
+>> +     /*
+>> +      * Check value: baud_base has to be more than 9600
+>> +      * and uartclock =3D baud_base * 16 .
+>> +      */
+>> +     if (val >=3D 153600)
+>> +             state->uart_port->uartclk =3D val;
+>
+> This magic value here would use some documentation.
+
+OK. Do you think this would be sufficient comment?:
+
+/*
+ * Check value: baud_base does not make sense to be set below 9600
+ * and since uartclock =3D (baud_base * 16) it has to be equal or great=
+er than
+ * 9600 * 16 =3D 153600.
+ */
+
+PATCHv2 follows.
+
+Tomas
+
+
+--=20
+Tom=C3=A1=C5=A1 Hlav=C3=A1=C4=8Dek <tmshlvck@gmail.com>
