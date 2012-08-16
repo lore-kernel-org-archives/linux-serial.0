@@ -1,47 +1,53 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 2/2] Remove BUG_ON from n_tty_read()
-Date: Thu, 16 Aug 2012 12:01:47 +0100
-Message-ID: <20120816110146.774.73249.stgit@localhost.localdomain>
-References: <20120816110130.774.87642.stgit@localhost.localdomain>
+From: leroy christophe <christophe.leroy@c-s.fr>
+Subject: Re: [PATCH] Powerpc 8xx CPM_UART delay in receive
+Date: Thu, 16 Aug 2012 15:16:16 +0200
+Message-ID: <502CF2A0.8080109@c-s.fr>
+References: <201208141426.q7EEQSPc003956@localhost.localdomain> <20120814155227.018988da@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:48650 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753731Ab2HPKoY (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 16 Aug 2012 06:44:24 -0400
-In-Reply-To: <20120816110130.774.87642.stgit@localhost.localdomain>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20120814155227.018988da@pyramind.ukuu.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Alan Cox <alan@linux.intel.com>, Vitaly Bordug <vitb@kernel.crashing.org>, Marcelo Tosatti <marcelo@kvack.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 List-Id: linux-serial@vger.kernel.org
-To: greg@kroah.com, linux-serial@vger.kernel.org
 
-From: Stanislav Kozina <skozina@redhat.com>
 
-Change the BUG_ON to WARN_ON and return in case of tty->read_buf==NULL. We want to track a
-couple of long standing reports of this but at the same time we can avoid killing the box.
+Le 14/08/2012 16:52, Alan Cox a =E9crit :
+> On Tue, 14 Aug 2012 16:26:28 +0200
+> Christophe Leroy <christophe.leroy@c-s.fr> wrote:
+>
+>> Hello,
+>>
+>> I'm not sure who to address this Patch to either
+>>
+>> It fixes a delay issue with CPM UART driver on Powerpc MPC8xx.
+>> The problem is that with the actual code, the driver waits 32 IDLE p=
+atterns before returning the received data to the upper level. It means=
+ for instance about 1 second at 300 bauds.
+>> This fix limits to one byte the waiting period.
+> Take a look how the 8250 does it - I think you want to set the value
+> based upon the data rate. Your patch will break it for everyone doing
+> high seed I/O.
+>
+> Alan
+>
+I'm not sure I understand what you mean. As far as I can see 8250/16550=
+=20
+is working a bit different, as it is based on a fifo and triggers an=20
+interrupt as soon as a given number of bytes is received. I also see=20
+that in case this amount is not reached, there is a receive-timeout=20
+which goes on after no byte is received for a duration of more than 4 b=
+ytes.
 
-Signed-off-by: Stanislav Kozina <skozina@redhat.com>
-Signed-off-by: Alan Cox <alan@linux.intel.com>
-Cc: Horses <stable@kernel.org>
----
+The PowerPC CPM is working differently. It doesn't use a fifo but=20
+buffers. Buffers are handed to the microprocessor only when they are=20
+full or after a timeout period which is adjustable. In the driver, the=20
+buffers are configured with a size of 32 bytes. And the timeout is set=20
+to the size of the buffer. That is this timeout that I'm reducing to 1=20
+byte in my proposed patch. I can't see what it would break for high=20
+speed I/O.
 
- drivers/tty/n_tty.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 4776aa2..ece22c0 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1734,7 +1734,8 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
- 
- do_it_again:
- 
--	BUG_ON(!tty->read_buf);
-+	if (WARN_ON(!tty->read_buf))
-+		return -EAGAIN;
- 
- 	c = job_control(tty, file);
- 	if (c < 0)
-
+Christophe
