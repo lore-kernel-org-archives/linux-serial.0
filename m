@@ -1,47 +1,62 @@
-From: Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
-Subject: RE: [PATCHv2 0/8] *** ARM: Update arch-vt8500 to Devicetree ***
-Date: Thu, 16 Aug 2012 10:18:52 +0000
-Message-ID: <76F764B079F92A4E843589C893D0A022D62814E9@SERVER.prisktech.co.nz>
-References: <1344477300-25251-1-git-send-email-linux@prisktech.co.nz>,
- <502BF734.9000608@wwwdotorg.org>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 1/1] [RFC] uartclk from serial_core exposed to sysfs
+Date: Thu, 16 Aug 2012 11:31:52 +0100
+Message-ID: <20120816113152.73838695@pyramind.ukuu.org.uk>
+References: <CAEB7QLAJXkK6NDPVDi36n_U_X_DGh5niHJhH6FpqBUZFmXQ2Xg@mail.gmail.com>
+	<1344929718-22736-1-git-send-email-tmshlvck@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-In-Reply-To: <502BF734.9000608-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: "devicetree-discuss"
- <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-To: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Cc: "linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Mark Brown <broonie-yzvPICuk2AATkU/dhu1WVueM+bqZidxxQQ4Iyu8u01E@public.gmane.org>, "vt8500-wm8505-linux-kernel-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org" <vt8500-wm8505-linux-kernel-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, "rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org" <rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, Florian Tobias Schandinat <FlorianSchandinat-Mmb7MZpHnFY@public.gmane.org>, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, Eric Andersson <eric.andersson-TStm8jYLEPpl57MIdRCFDg@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Hauke Mehrtens <hauke-5/S+JYg5SzeELgA04lAiVw@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Neil Zhang <zhangwm-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:48618 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750854Ab2HPK1R (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 16 Aug 2012 06:27:17 -0400
+In-Reply-To: <1344929718-22736-1-git-send-email-tmshlvck@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Tomas Hlavacek <tmshlvck@gmail.com>
+Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, marek.vasut@gmail.com
 
->>On 08/08/2012 07:54 PM, Tony Prisk wrote:
->> This patchset updates arch-vt8500 to devicetree and removes all the old-style
->> code. Support for WM8650 has also been added.
 
->Sorry for taking such a long time to re-review this.
+> +	/*
+> +	 * Check value: baud_base has to be more than 9600
+> +	 * and uartclock = baud_base * 16 .
+> +	 */
+> +	if (val >= 153600)
+> +		state->uart_port->uartclk = val;
+> +
+> +	mutex_unlock(&state->port.mutex);
+> +
+> +	return count;
 
->I scanned the series looking for just the changes to the issues I raised
->on v1, and I do see almost everything has been fixed up OK, except for
->the one issue I just commented on. So, aside from that, this series is
->fine by me. I'll defer to others about whether it's necessary to fix the
->display node-name-vs.-phandle issue I pointed out, or defer that until
->later.
+This breaks if for example the port is in use. Fixing that looks pretty
+horrible as you need a valid tty pointer to stop and restart the pot.
 
-Thanks for the review Stephen.
+It's also not calling the verfy method of the port as is expected.
 
-There will be a v3 shortly - I noticed a few other issues that needed to
-be corrected as well. I agree with the display-node/phandle comment
-and will make sure its included for v3. To be honest, it just slipped my
-memory at the time.
+At minimum I think you need to be able to do the same work
+uart_get_info/uart_set_info perform and with the same checks on ->verify
+etc.
 
-Tony Prisk
+I'm not 100% sure the drvdata on the tty_dev is clear to use. It does
+seem to be in all the drivers I looked at. I'd rather however it pointed
+to the tty_port that each tty device has (or very soon will be required
+to have). You can still find the uart_foo structs from that but it means
+we can do the dev_set_drvdata() in a consistent manner for all tty
+devices in the kernel. That in turn means we can make some of the sysfs
+valid the same way.
+
+I want to have think about the setting side of it. Can you submit a
+revised version that just allows the user to read the value this way but
+does the drvdata setting etc and sysfs node create/delete.
+
+I'll merge that and we can throw it over the parapet and see if anything
+explodes.
+
+To make the setting part work properly I think I need to sort out
+uart_get_info/set_info so the core part of it can be called with kernel
+space structures and the caller handling locks.
+
+Alan
