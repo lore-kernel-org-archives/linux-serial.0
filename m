@@ -1,53 +1,41 @@
-From: leroy christophe <christophe.leroy@c-s.fr>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Subject: Re: [PATCH] Powerpc 8xx CPM_UART delay in receive
-Date: Thu, 16 Aug 2012 15:16:16 +0200
-Message-ID: <502CF2A0.8080109@c-s.fr>
-References: <201208141426.q7EEQSPc003956@localhost.localdomain> <20120814155227.018988da@pyramind.ukuu.org.uk>
+Date: Thu, 16 Aug 2012 15:29:18 +0100
+Message-ID: <20120816152918.5ed2649f@pyramind.ukuu.org.uk>
+References: <201208141426.q7EEQSPc003956@localhost.localdomain>
+ <20120814155227.018988da@pyramind.ukuu.org.uk>
+ <502CF2A0.8080109@c-s.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20120814155227.018988da@pyramind.ukuu.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Alan Cox <alan@linux.intel.com>, Vitaly Bordug <vitb@kernel.crashing.org>, Marcelo Tosatti <marcelo@kvack.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+In-Reply-To: <502CF2A0.8080109@c-s.fr>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+To: leroy christophe <christophe.leroy@c-s.fr>
+Cc: Marcelo Tosatti <marcelo@kvack.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
+> The PowerPC CPM is working differently. It doesn't use a fifo but 
+> buffers. Buffers are handed to the microprocessor only when they are 
+> full or after a timeout period which is adjustable. In the driver, the 
 
-Le 14/08/2012 16:52, Alan Cox a =E9crit :
-> On Tue, 14 Aug 2012 16:26:28 +0200
-> Christophe Leroy <christophe.leroy@c-s.fr> wrote:
->
->> Hello,
->>
->> I'm not sure who to address this Patch to either
->>
->> It fixes a delay issue with CPM UART driver on Powerpc MPC8xx.
->> The problem is that with the actual code, the driver waits 32 IDLE p=
-atterns before returning the received data to the upper level. It means=
- for instance about 1 second at 300 bauds.
->> This fix limits to one byte the waiting period.
-> Take a look how the 8250 does it - I think you want to set the value
-> based upon the data rate. Your patch will break it for everyone doing
-> high seed I/O.
->
-> Alan
->
-I'm not sure I understand what you mean. As far as I can see 8250/16550=
-=20
-is working a bit different, as it is based on a fifo and triggers an=20
-interrupt as soon as a given number of bytes is received. I also see=20
-that in case this amount is not reached, there is a receive-timeout=20
-which goes on after no byte is received for a duration of more than 4 b=
-ytes.
+Which is different how - remembering we empty the FIFO on an IRQ
 
-The PowerPC CPM is working differently. It doesn't use a fifo but=20
-buffers. Buffers are handed to the microprocessor only when they are=20
-full or after a timeout period which is adjustable. In the driver, the=20
-buffers are configured with a size of 32 bytes. And the timeout is set=20
-to the size of the buffer. That is this timeout that I'm reducing to 1=20
-byte in my proposed patch. I can't see what it would break for high=20
-speed I/O.
+> buffers are configured with a size of 32 bytes. And the timeout is set 
+> to the size of the buffer. That is this timeout that I'm reducing to 1 
+> byte in my proposed patch. I can't see what it would break for high 
+> speed I/O.
 
-Christophe
+How can a timeout be measured in "bytes". Can we have a bit more clarity
+on how the hardware works and take it from there ?
+
+Alan
