@@ -1,79 +1,110 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH 1/8] n_gsm.c: Implement 3GPP27.010 DLC start-up procedure
- in MUX
-Date: Thu, 16 Aug 2012 12:17:02 -0700
-Message-ID: <20120816191702.GA15430@kroah.com>
-References: <20120813124254.6125.70371.stgit@localhost.localdomain>
- <20120816190104.GA3160@kroah.com>
- <20120816201255.7303f38f@pyramind.ukuu.org.uk>
+From: Sean Young <sean@mess.org>
+Subject: Re: [PATCH] [media] winbond-cir: Fix initialization
+Date: Thu, 16 Aug 2012 22:16:30 +0100
+Message-ID: <20120816211630.GA25873@pequod.mess.org>
+References: <1343731023-9822-1-git-send-email-sean@mess.org>
+ <20120816161909.GB29199@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:57576 "EHLO
-	out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754967Ab2HPTRE (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 16 Aug 2012 15:17:04 -0400
+Received: from pequod.mess.org ([93.97.41.153]:33185 "EHLO pequod.mess.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S933346Ab2HPVQd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 16 Aug 2012 17:16:33 -0400
 Content-Disposition: inline
-In-Reply-To: <20120816201255.7303f38f@pyramind.ukuu.org.uk>
+In-Reply-To: <20120816161909.GB29199@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-serial@vger.kernel.org
+To: Greg KH <greg@kroah.com>
+Cc: Mauro Carvalho Chehab <mchehab@redhat.com>, Jarod Wilson <jarod@wilsonet.com>, David =?iso-8859-1?Q?H=E4rdeman?= <david@hardeman.nu>, Alan Cox <alan@linux.intel.com>, linux-media@vger.kernel.org, linux-serial@vger.kernel.org, lirc-list@lists.sourceforge.net
 
-On Thu, Aug 16, 2012 at 08:12:55PM +0100, Alan Cox wrote:
-> On Thu, 16 Aug 2012 12:01:04 -0700
-> Greg KH <greg@kroah.com> wrote:
-> 
-> > On Mon, Aug 13, 2012 at 01:43:15PM +0100, Alan Cox wrote:
-> > > From: xiaojin <jin.xiao@intel.com>
-> > > 
-> > > In 3GPP27.010 5.8.1, it defined:
-> > > The TE multiplexer initiates the establishment of the multiplexer control channel by sending a SABM frame on DLCI 0 using the procedures of clause 5.4.1.
-> > > Once the multiplexer channel is established other DLCs may be established using the procedures of clause 5.4.1.
-> > > This patch implement 5.8.1 in MUX level, it make sure DLC0 is the first channel to be setup.
-> > > 
-> > > [or for those not familiar with the specification: it was possible to try
-> > >  and open a data connection while the control channel was not yet fully
-> > >  open, which is a spec violation and confuses some modems]
-> > > 
-> > > Signed-off-by: xiaojin <jin.xiao@intel.com>
-> > > Tested-by: Yin, Fengwei <fengwei.yin@intel.com>
-> > > [tweaked the order we check things and error code]
-> > > Signed-off-by: Alan Cox <alan@linux.intel.com>
-> > > Cc: The Horsebox <stable@vger.kernel.org>
-> > > ---
-> > > 
-> > >  drivers/tty/n_gsm.c |    4 ++++
-> > >  1 file changed, 4 insertions(+)
-> > > 
-> > > diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> > > index 7a4bf30..5c6c2e2 100644
-> > > --- a/drivers/tty/n_gsm.c
-> > > +++ b/drivers/tty/n_gsm.c
-> > > @@ -2889,6 +2889,10 @@ static int gsmtty_open(struct tty_struct *tty, struct file *filp)
-> > >  	gsm = gsm_mux[mux];
-> > >  	if (gsm->dead)
-> > >  		return -EL2HLT;
-> > > +	/* If DLCI 0 is not yet fully open return an error. This is ok from a locking
-> > > +	   perspective as we don't have to worry about this if DLCI0 is lost */
-> > > +	if (gsm->dlci[0] && gsm->dlci[0]->state != DLCI_OPEN) 
-> > > +		return -EL2NSYNC;
+On Thu, Aug 16, 2012 at 09:19:09AM -0700, Greg KH wrote:
+> On Tue, Jul 31, 2012 at 11:37:03AM +0100, Sean Young wrote:
+> > The serial driver will detect the winbond cir device as a serial port,
+> > since it looks exactly like a serial port unless you know what it is
+> > from the PNP ID.
 > > 
-> > Odd, what tree did you make this against?
+> > Winbond CIR 00:04: Region 0x2f8-0x2ff already in use!
+> > Winbond CIR 00:04: disabled
+> > Winbond CIR: probe of 00:04 failed with error -16
 > > 
-> > This applies in the gsmtty_init() function, not gsmtty_open(), is that
-> > correct?  It also has a bunch of fuzz.
+> > Signed-off-by: Sean Young <sean@mess.org>
+> > ---
+> >  drivers/media/rc/winbond-cir.c | 21 ++++++++++++++++++++-
+> >  drivers/tty/serial/8250/8250.c |  1 +
+> >  2 files changed, 21 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/media/rc/winbond-cir.c b/drivers/media/rc/winbond-cir.c
+> > index 54ee348..20a0bbb 100644
+> > --- a/drivers/media/rc/winbond-cir.c
+> > +++ b/drivers/media/rc/winbond-cir.c
+> > @@ -55,6 +55,7 @@
+> >  #include <linux/slab.h>
+> >  #include <linux/wait.h>
+> >  #include <linux/sched.h>
+> > +#include <linux/serial_8250.h>
+> >  #include <media/rc-core.h>
+> >  
+> >  #define DRVNAME "winbond-cir"
+> > @@ -957,6 +958,7 @@ wbcir_probe(struct pnp_dev *device, const struct pnp_device_id *dev_id)
+> >  	struct device *dev = &device->dev;
+> >  	struct wbcir_data *data;
+> >  	int err;
+> > +	struct resource *io;
+> >  
+> >  	if (!(pnp_port_len(device, 0) == EHFUNC_IOMEM_LEN &&
+> >  	      pnp_port_len(device, 1) == WAKEUP_IOMEM_LEN &&
+> > @@ -1049,7 +1051,24 @@ wbcir_probe(struct pnp_dev *device, const struct pnp_device_id *dev_id)
+> >  		goto exit_release_wbase;
+> >  	}
+> >  
+> > -	if (!request_region(data->sbase, SP_IOMEM_LEN, DRVNAME)) {
+> > +	io = request_region(data->sbase, SP_IOMEM_LEN, DRVNAME);
+> > +
+> > +	/*
+> > +	 * The winbond cir device looks exactly like an NS16550A serial port
+> > +	 * unless you know what it is. We've got here via the PNP ID.
+> > +	 */
+> > +#ifdef CONFIG_SERIAL_8250
+> > +	if (!io) {
+> > +		struct uart_port port = { .iobase = data->sbase };
+> > +		int line = serial8250_find_port(&port);
+> > +		if (line >= 0) {
+> > +			serial8250_unregister_port(line);
+> > +
+> > +			io = request_region(data->sbase, SP_IOMEM_LEN, DRVNAME);
+> > +		}
+> > +	}
+> > +#endif
+> > +	if (!io) {
+> >  		dev_err(dev, "Region 0x%lx-0x%lx already in use!\n",
+> >  			data->sbase, data->sbase + SP_IOMEM_LEN - 1);
+> >  		err = -EBUSY;
+> > diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
+> > index 5c27f7e..d38615f 100644
+> > --- a/drivers/tty/serial/8250/8250.c
+> > +++ b/drivers/tty/serial/8250/8250.c
+> > @@ -2914,6 +2914,7 @@ int serial8250_find_port(struct uart_port *p)
+> >  	}
+> >  	return -ENODEV;
+> >  }
+> > +EXPORT_SYMBOL(serial8250_find_port);
 > 
-> No it's not correct..  
+> EXPORT_SYMBOL_GPL please.
 
-Odd, git's 3-way merge thinks it figured it out as being ok.
+Ah yes.
 
-> Ah its colliding with the tty_port changes - my bad. I'll rebase my tree.
+> But can't this be done as a quirk to the 8250 driver so that it just
+> does not bind to this device in the first place?  Wouldn't that make
+> more sense?
 
-Ok, I've applied it now, if there's a fixup needed, please send it
-instead.
+Absolutely. However for such a quirk to work, it'll need to detect the
+IR port. The problem is, based just the I/O ports for the serial port, 
+it seems impossible. I've been banging my head against a brick wall 
+trying to find a way to do this. As soon as you start looking at
+the other I/O ports for the IR then it becomes clear, but you'll need
+to glean from PNP what the port numbers are. Either that or some sort
+of Super I/O detection.
 
-thanks,
 
-greg k-h
+Sean
