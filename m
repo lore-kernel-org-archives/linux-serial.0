@@ -1,19 +1,17 @@
-From: Greg KH <gregkh@linuxfoundation.org>
+From: Greg KH <greg@kroah.com>
 Subject: Re: [PATCH 1/8] n_gsm.c: Implement 3GPP27.010 DLC start-up procedure
  in MUX
-Date: Thu, 16 Aug 2012 11:57:44 -0700
-Message-ID: <20120816185744.GA2978@kroah.com>
+Date: Thu, 16 Aug 2012 12:01:04 -0700
+Message-ID: <20120816190104.GA3160@kroah.com>
 References: <20120813124254.6125.70371.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:65322 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753163Ab2HPS5s (ORCPT
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:53936 "EHLO
+	out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751547Ab2HPTBH (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 16 Aug 2012 14:57:48 -0400
-Received: by pbbrr13 with SMTP id rr13so1991062pbb.19
-        for <linux-serial@vger.kernel.org>; Thu, 16 Aug 2012 11:57:47 -0700 (PDT)
+	Thu, 16 Aug 2012 15:01:07 -0400
 Content-Disposition: inline
 In-Reply-To: <20120813124254.6125.70371.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
@@ -37,10 +35,31 @@ On Mon, Aug 13, 2012 at 01:43:15PM +0100, Alan Cox wrote:
 > Tested-by: Yin, Fengwei <fengwei.yin@intel.com>
 > [tweaked the order we check things and error code]
 > Signed-off-by: Alan Cox <alan@linux.intel.com>
-> Cc: The Horsebox <stable@kernel.org>
+> Cc: The Horsebox <stable@vger.kernel.org>
+> ---
+> 
+>  drivers/tty/n_gsm.c |    4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+> index 7a4bf30..5c6c2e2 100644
+> --- a/drivers/tty/n_gsm.c
+> +++ b/drivers/tty/n_gsm.c
+> @@ -2889,6 +2889,10 @@ static int gsmtty_open(struct tty_struct *tty, struct file *filp)
+>  	gsm = gsm_mux[mux];
+>  	if (gsm->dead)
+>  		return -EL2HLT;
+> +	/* If DLCI 0 is not yet fully open return an error. This is ok from a locking
+> +	   perspective as we don't have to worry about this if DLCI0 is lost */
+> +	if (gsm->dlci[0] && gsm->dlci[0]->state != DLCI_OPEN) 
+> +		return -EL2NSYNC;
 
-In the future, it's <stable@vger.kernel.org>, I can catch these
-addresses, but it's not as automated.
+Odd, what tree did you make this against?
+
+This applies in the gsmtty_init() function, not gsmtty_open(), is that
+correct?  It also has a bunch of fuzz.
+
+I'll apply it, but can you verify I didn't do anything wrong?
 
 thanks,
 
