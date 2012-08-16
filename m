@@ -1,61 +1,95 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: [PATCH] Powerpc 8xx CPM_UART delay in receive
-Date: Thu, 16 Aug 2012 16:21:36 +0100
-Message-ID: <20120816162136.059b64b4@bob.linux.org.uk>
-References: <201208141426.q7EEQSPc003956@localhost.localdomain>
-	<20120814155227.018988da@pyramind.ukuu.org.uk>
-	<502CF2A0.8080109@c-s.fr>
-	<20120816152918.5ed2649f@pyramind.ukuu.org.uk>
-	<502D054B.3010606@c-s.fr>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH] [media] winbond-cir: Fix initialization
+Date: Thu, 16 Aug 2012 09:19:09 -0700
+Message-ID: <20120816161909.GB29199@kroah.com>
+References: <1343731023-9822-1-git-send-email-sean@mess.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:26420 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751524Ab2HPPEJ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 16 Aug 2012 11:04:09 -0400
-In-Reply-To: <502D054B.3010606@c-s.fr>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-media-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1343731023-9822-1-git-send-email-sean@mess.org>
+Sender: linux-media-owner@vger.kernel.org
+To: Sean Young <sean@mess.org>
+Cc: Mauro Carvalho Chehab <mchehab@redhat.com>, Jarod Wilson <jarod@wilsonet.com>, David =?iso-8859-1?Q?H=E4rdeman?= <david@hardeman.nu>, Alan Cox <alan@linux.intel.com>, linux-media@vger.kernel.org, linux-serial@vger.kernel.org, lirc-list@lists.sourceforge.net
 List-Id: linux-serial@vger.kernel.org
-To: leroy christophe <christophe.leroy@c-s.fr>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Vitaly Bordug <vitb@kernel.crashing.org>, Marcelo Tosatti <marcelo@kvack.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 
-> MAX_IDL: Maximum idle characters. When a character is received, the=20
-> receiver begins counting idle characters. If MAX_IDL idle characters
-> are received before the next data character, an idle timeout occurs
-> and the buffer is closed,
-> generating a maskable interrupt request to the core to receive the
-> data from the buffer. Thus, MAX_IDL offers a way to demarcate frames.
-> To disable the feature, clear MAX_IDL. The bit length of an idle
-> character is calculated as follows: 1 + data length (5=969) + 1 (if
-> parity is used)=20
-> + number of stop bits (1=962). For 8 data bits, no parity, and 1 stop
-> bit, the character length is 10 bits
+On Tue, Jul 31, 2012 at 11:37:03AM +0100, Sean Young wrote:
+> The serial driver will detect the winbond cir device as a serial port,
+> since it looks exactly like a serial port unless you know what it is
+> from the PNP ID.
+> 
+> Winbond CIR 00:04: Region 0x2f8-0x2ff already in use!
+> Winbond CIR 00:04: disabled
+> Winbond CIR: probe of 00:04 failed with error -16
+> 
+> Signed-off-by: Sean Young <sean@mess.org>
+> ---
+>  drivers/media/rc/winbond-cir.c | 21 ++++++++++++++++++++-
+>  drivers/tty/serial/8250/8250.c |  1 +
+>  2 files changed, 21 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/media/rc/winbond-cir.c b/drivers/media/rc/winbond-cir.c
+> index 54ee348..20a0bbb 100644
+> --- a/drivers/media/rc/winbond-cir.c
+> +++ b/drivers/media/rc/winbond-cir.c
+> @@ -55,6 +55,7 @@
+>  #include <linux/slab.h>
+>  #include <linux/wait.h>
+>  #include <linux/sched.h>
+> +#include <linux/serial_8250.h>
+>  #include <media/rc-core.h>
+>  
+>  #define DRVNAME "winbond-cir"
+> @@ -957,6 +958,7 @@ wbcir_probe(struct pnp_dev *device, const struct pnp_device_id *dev_id)
+>  	struct device *dev = &device->dev;
+>  	struct wbcir_data *data;
+>  	int err;
+> +	struct resource *io;
+>  
+>  	if (!(pnp_port_len(device, 0) == EHFUNC_IOMEM_LEN &&
+>  	      pnp_port_len(device, 1) == WAKEUP_IOMEM_LEN &&
+> @@ -1049,7 +1051,24 @@ wbcir_probe(struct pnp_dev *device, const struct pnp_device_id *dev_id)
+>  		goto exit_release_wbase;
+>  	}
+>  
+> -	if (!request_region(data->sbase, SP_IOMEM_LEN, DRVNAME)) {
+> +	io = request_region(data->sbase, SP_IOMEM_LEN, DRVNAME);
+> +
+> +	/*
+> +	 * The winbond cir device looks exactly like an NS16550A serial port
+> +	 * unless you know what it is. We've got here via the PNP ID.
+> +	 */
+> +#ifdef CONFIG_SERIAL_8250
+> +	if (!io) {
+> +		struct uart_port port = { .iobase = data->sbase };
+> +		int line = serial8250_find_port(&port);
+> +		if (line >= 0) {
+> +			serial8250_unregister_port(line);
+> +
+> +			io = request_region(data->sbase, SP_IOMEM_LEN, DRVNAME);
+> +		}
+> +	}
+> +#endif
+> +	if (!io) {
+>  		dev_err(dev, "Region 0x%lx-0x%lx already in use!\n",
+>  			data->sbase, data->sbase + SP_IOMEM_LEN - 1);
+>  		err = -EBUSY;
+> diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
+> index 5c27f7e..d38615f 100644
+> --- a/drivers/tty/serial/8250/8250.c
+> +++ b/drivers/tty/serial/8250/8250.c
+> @@ -2914,6 +2914,7 @@ int serial8250_find_port(struct uart_port *p)
+>  	}
+>  	return -ENODEV;
+>  }
+> +EXPORT_SYMBOL(serial8250_find_port);
 
+EXPORT_SYMBOL_GPL please.
 
-So if you have slightly bursty high speed data as its quite typical
-before your change you would get one interrupt per buffer of 32 bytes,
-with it you'll get a lot more interrupts.
+But can't this be done as a quirk to the 8250 driver so that it just
+does not bind to this device in the first place?  Wouldn't that make
+more sense?
 
-You have two available hints about the way to set this - one of them is
-the baud rate (low baud rates mean the fifo isn't a big win and the
-latency is high), the other is the low_latency flag if the driver
-supports the low latency feature (and arguably you can still use a
-request for it as a hint even if you refuse the actual feature).
+thanks,
 
-So I think a reasonable approach would be set the idle timeout down for
-low baud rates or if low_latency is requested.
-
-> generated if there is at least one word in the FIFO and for a time=20
-> equivalent to the transmission of four characters
-
-Which is a bit more reasonable than one, although problematic at low
-speed (hence the fifo on/off).
-
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+greg k-h
