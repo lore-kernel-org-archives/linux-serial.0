@@ -1,110 +1,132 @@
-From: Sean Young <sean@mess.org>
-Subject: Re: [PATCH] [media] winbond-cir: Fix initialization
-Date: Thu, 16 Aug 2012 22:16:30 +0100
-Message-ID: <20120816211630.GA25873@pequod.mess.org>
-References: <1343731023-9822-1-git-send-email-sean@mess.org>
- <20120816161909.GB29199@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Tomas Hlavacek <tmshlvck@gmail.com>
+Subject: [PATCHv3 1/1] [RFC] uartclk from serial_core exposed to sysfs
+Date: Fri, 17 Aug 2012 16:43:57 +0200
+Message-ID: <1345214637-4189-1-git-send-email-tmshlvck@gmail.com>
+References: <1344929718-22736-1-git-send-email-tmshlvck@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from pequod.mess.org ([93.97.41.153]:33185 "EHLO pequod.mess.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S933346Ab2HPVQd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 16 Aug 2012 17:16:33 -0400
-Content-Disposition: inline
-In-Reply-To: <20120816161909.GB29199@kroah.com>
+Received: from mail-wi0-f170.google.com ([209.85.212.170]:37311 "EHLO
+	mail-wi0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758133Ab2HQOoE (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 17 Aug 2012 10:44:04 -0400
+In-Reply-To: <1344929718-22736-1-git-send-email-tmshlvck@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <greg@kroah.com>
-Cc: Mauro Carvalho Chehab <mchehab@redhat.com>, Jarod Wilson <jarod@wilsonet.com>, David =?iso-8859-1?Q?H=E4rdeman?= <david@hardeman.nu>, Alan Cox <alan@linux.intel.com>, linux-media@vger.kernel.org, linux-serial@vger.kernel.org, lirc-list@lists.sourceforge.net
+To: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: marek.vasut@gmail.com, Tomas Hlavacek <tmshlvck@gmail.com>
 
-On Thu, Aug 16, 2012 at 09:19:09AM -0700, Greg KH wrote:
-> On Tue, Jul 31, 2012 at 11:37:03AM +0100, Sean Young wrote:
-> > The serial driver will detect the winbond cir device as a serial port,
-> > since it looks exactly like a serial port unless you know what it is
-> > from the PNP ID.
-> > 
-> > Winbond CIR 00:04: Region 0x2f8-0x2ff already in use!
-> > Winbond CIR 00:04: disabled
-> > Winbond CIR: probe of 00:04 failed with error -16
-> > 
-> > Signed-off-by: Sean Young <sean@mess.org>
-> > ---
-> >  drivers/media/rc/winbond-cir.c | 21 ++++++++++++++++++++-
-> >  drivers/tty/serial/8250/8250.c |  1 +
-> >  2 files changed, 21 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/media/rc/winbond-cir.c b/drivers/media/rc/winbond-cir.c
-> > index 54ee348..20a0bbb 100644
-> > --- a/drivers/media/rc/winbond-cir.c
-> > +++ b/drivers/media/rc/winbond-cir.c
-> > @@ -55,6 +55,7 @@
-> >  #include <linux/slab.h>
-> >  #include <linux/wait.h>
-> >  #include <linux/sched.h>
-> > +#include <linux/serial_8250.h>
-> >  #include <media/rc-core.h>
-> >  
-> >  #define DRVNAME "winbond-cir"
-> > @@ -957,6 +958,7 @@ wbcir_probe(struct pnp_dev *device, const struct pnp_device_id *dev_id)
-> >  	struct device *dev = &device->dev;
-> >  	struct wbcir_data *data;
-> >  	int err;
-> > +	struct resource *io;
-> >  
-> >  	if (!(pnp_port_len(device, 0) == EHFUNC_IOMEM_LEN &&
-> >  	      pnp_port_len(device, 1) == WAKEUP_IOMEM_LEN &&
-> > @@ -1049,7 +1051,24 @@ wbcir_probe(struct pnp_dev *device, const struct pnp_device_id *dev_id)
-> >  		goto exit_release_wbase;
-> >  	}
-> >  
-> > -	if (!request_region(data->sbase, SP_IOMEM_LEN, DRVNAME)) {
-> > +	io = request_region(data->sbase, SP_IOMEM_LEN, DRVNAME);
-> > +
-> > +	/*
-> > +	 * The winbond cir device looks exactly like an NS16550A serial port
-> > +	 * unless you know what it is. We've got here via the PNP ID.
-> > +	 */
-> > +#ifdef CONFIG_SERIAL_8250
-> > +	if (!io) {
-> > +		struct uart_port port = { .iobase = data->sbase };
-> > +		int line = serial8250_find_port(&port);
-> > +		if (line >= 0) {
-> > +			serial8250_unregister_port(line);
-> > +
-> > +			io = request_region(data->sbase, SP_IOMEM_LEN, DRVNAME);
-> > +		}
-> > +	}
-> > +#endif
-> > +	if (!io) {
-> >  		dev_err(dev, "Region 0x%lx-0x%lx already in use!\n",
-> >  			data->sbase, data->sbase + SP_IOMEM_LEN - 1);
-> >  		err = -EBUSY;
-> > diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
-> > index 5c27f7e..d38615f 100644
-> > --- a/drivers/tty/serial/8250/8250.c
-> > +++ b/drivers/tty/serial/8250/8250.c
-> > @@ -2914,6 +2914,7 @@ int serial8250_find_port(struct uart_port *p)
-> >  	}
-> >  	return -ENODEV;
-> >  }
-> > +EXPORT_SYMBOL(serial8250_find_port);
-> 
-> EXPORT_SYMBOL_GPL please.
+Added file /sys/devices/.../tty/ttySX/uartclk to allow reading
+uartclk value in struct uart_port in serial_core via sysfs.
 
-Ah yes.
+It simplifies initialization verification of no-name cards that
+have non-standard oscillator speed while having no distinguishing
+PCI IDs to allow autodetection.
 
-> But can't this be done as a quirk to the 8250 driver so that it just
-> does not bind to this device in the first place?  Wouldn't that make
-> more sense?
+Signed-off-by: Tomas Hlavacek <tmshlvck@gmail.com>
+---
+ drivers/tty/serial/serial_core.c |   32 ++++++++++++++++++++++++++++++++
+ drivers/tty/tty_io.c             |   17 +++++++++++++++++
+ include/linux/tty.h              |    2 ++
+ 3 files changed, 51 insertions(+)
 
-Absolutely. However for such a quirk to work, it'll need to detect the
-IR port. The problem is, based just the I/O ports for the serial port, 
-it seems impossible. I've been banging my head against a brick wall 
-trying to find a way to do this. As soon as you start looking at
-the other I/O ports for the IR then it becomes clear, but you'll need
-to glean from PNP what the port numbers are. Either that or some sort
-of Super I/O detection.
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index a21dc8e..454e9d3 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2293,6 +2293,24 @@ struct tty_driver *uart_console_device(struct console *co, int *index)
+ 	return p->tty_driver;
+ }
+ 
++static ssize_t uart_get_attr_uartclk(struct device *dev,
++		struct device_attribute *attr, char *buf)
++{
++	int ret;
++
++	struct tty_port *port = dev_get_drvdata(dev);
++	struct uart_state *state = container_of(port, struct uart_state, port);
++
++	mutex_lock(&state->port.mutex);
++	ret = snprintf(buf, PAGE_SIZE, "%d\n", state->uart_port->uartclk);
++	mutex_unlock(&state->port.mutex);
++
++	return ret;
++}
++
++static DEVICE_ATTR(uartclk, S_IRUSR | S_IRGRP, uart_get_attr_uartclk,
++		NULL);
++
+ /**
+  *	uart_add_one_port - attach a driver-defined port structure
+  *	@drv: pointer to the uart low level driver structure for this port
+@@ -2355,6 +2373,14 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
+ 	}
+ 
+ 	/*
++	 * Expose uartclk in sysfs. Use driverdata of the tty device for
++	 * referencing the UART port.
++	 */
++	dev_set_drvdata(tty_dev, port);
++	if (device_create_file(tty_dev, &dev_attr_uartclk) < 0)
++		dev_err(tty_dev, "Failed to add uartclk attr\n");
++
++	/*
+ 	 * Ensure UPF_DEAD is not set.
+ 	 */
+ 	uport->flags &= ~UPF_DEAD;
+@@ -2397,6 +2423,12 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
+ 	mutex_unlock(&port->mutex);
+ 
+ 	/*
++	 * Remove uartclk file from sysfs.
++	 */
++	device_remove_file(tty_lookup_device(drv->tty_driver, uport->line),
++			&dev_attr_uartclk);
++
++	/*
+ 	 * Remove the devices from the tty layer
+ 	 */
+ 	tty_unregister_device(drv->tty_driver, uport->line);
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index b425c79..8ea8622 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -3049,6 +3049,23 @@ void tty_unregister_device(struct tty_driver *driver, unsigned index)
+ }
+ EXPORT_SYMBOL(tty_unregister_device);
+ 
++/*
++ *	tty_lookup_device - lookup a tty device
++ *	@driver: the tty driver that describes the tty device
++ *	@index: the index in the tty driver for this tty device
++ *
++ *	This function returns a struct device pointer when device has
++ *	been found and NULL otherwise.
++ *
++ *	Locking: ??
++ */
++struct device *tty_lookup_device(struct tty_driver *driver, unsigned index)
++{
++	dev_t devt = MKDEV(driver->major, driver->minor_start) + index;
++	return class_find_device(tty_class, NULL, &devt, dev_match_devt);
++}
++EXPORT_SYMBOL(tty_lookup_device);
++
+ struct tty_driver *__alloc_tty_driver(int lines, struct module *owner)
+ {
+ 	struct tty_driver *driver;
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 9f47ab5..5d408a1 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -410,6 +410,8 @@ extern int tty_register_driver(struct tty_driver *driver);
+ extern int tty_unregister_driver(struct tty_driver *driver);
+ extern struct device *tty_register_device(struct tty_driver *driver,
+ 					  unsigned index, struct device *dev);
++extern struct device *tty_lookup_device(struct tty_driver *driver,
++					unsigned index);
+ extern void tty_unregister_device(struct tty_driver *driver, unsigned index);
+ extern int tty_read_raw_data(struct tty_struct *tty, unsigned char *bufp,
+ 			     int buflen);
+-- 
+1.7.10.4
 
-
-Sean
