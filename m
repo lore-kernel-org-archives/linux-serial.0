@@ -1,114 +1,81 @@
-From: Tomas Hlavacek <tmshlvck@gmail.com>
-Subject: Re: [PATCHv3 1/1] [RFC] uartclk from serial_core exposed to sysfs
-Date: Fri, 17 Aug 2012 22:25:52 +0200
-Message-ID: <CAEB7QLDuzAjGfajnogJz5B638jNoRo30xogDqUV+ODfcV1BydQ@mail.gmail.com>
-References: <1344929718-22736-1-git-send-email-tmshlvck@gmail.com>
-	<CAEB7QLBEdNArtKz9zP7R4Za54049jJqCEqhPvE6rS59j1tD0PQ@mail.gmail.com>
-	<20120817165446.GA12361@kroah.com>
-	<201208172044.14868.marek.vasut@gmail.com>
-	<20120817190114.GA31011@kroah.com>
+From: Emil Goode <emilgoode@gmail.com>
+Subject: [PATCH 1/2] tty: serial: Check return code of gpiochip_remove
+Date: Sat, 18 Aug 2012 18:12:48 +0200
+Message-ID: <1345306369-10407-1-git-send-email-emilgoode@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-gh0-f174.google.com ([209.85.160.174]:37274 "EHLO
-	mail-gh0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752499Ab2HQUZx convert rfc822-to-8bit (ORCPT
+Received: from mail-lpp01m010-f46.google.com ([209.85.215.46]:55057 "EHLO
+	mail-lpp01m010-f46.google.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751817Ab2HRQJO (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 17 Aug 2012 16:25:53 -0400
-In-Reply-To: <20120817190114.GA31011@kroah.com>
+	Sat, 18 Aug 2012 12:09:14 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Marek Vasut <marek.vasut@gmail.com>, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: alan@linux.intel.com, gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, Emil Goode <emilgoode@gmail.com>
 
-Hello!
+The gpiochip_remove function may fail to remove a gpio_chip
+if any GPIOs are still requested. This patch informs the caller
+of such a senario.
 
-On Fri, Aug 17, 2012 at 9:01 PM, Greg KH <gregkh@linuxfoundation.org> w=
-rote:
-> On Fri, Aug 17, 2012 at 08:44:14PM +0200, Marek Vasut wrote:
->> Dear Greg KH,
->>
->> > On Fri, Aug 17, 2012 at 06:30:36PM +0200, Tomas Hlavacek wrote:
->> > > Hello Greg!
->> > >
->> > > On Fri, Aug 17, 2012 at 5:06 PM, Greg KH <gregkh@linuxfoundation=
-=2Eorg> wrote:
->> > > >> @@ -2355,6 +2373,14 @@ int uart_add_one_port(struct uart_driv=
-er *drv,
->> > > >> struct uart_port *uport)
->> > > >>
->> > > >>       }
->> > > >>
->> > > >>       /*
->> > > >>
->> > > >> +      * Expose uartclk in sysfs. Use driverdata of the tty d=
-evice for
->> > > >> +      * referencing the UART port.
->> > > >> +      */
->> > > >> +     dev_set_drvdata(tty_dev, port);
->> > > >> +     if (device_create_file(tty_dev, &dev_attr_uartclk) < 0)
->> > > >> +             dev_err(tty_dev, "Failed to add uartclk attr\n"=
-);
->> > > >
->> > > > I think you just raced with userspace in creating the file aft=
-er the
->> > > > device was announced to userspace.  Are you sure it's ok?
->> > > >
->> > > > If not (hint, I don't think so), please make it a default attr=
-ibute of
->> > > > the device, which will then cause the file to be created befor=
-e it is
->> > > > announced to userspace.  It will also be less code as you don'=
-t have to
->> > > > clean it up by hand :)
->> > >
->> > > Do you mean I should modify the tty_register_device() function n=
-ot to
->> > > use device_create() but it should rather do the device initializ=
-ation
->> > > on it's own.
->> >
->> > No, not at all.
->> >
->> > > And I should add add the attribute (via struct attribute_group) =
-to
->> > > struct device in between device_initialize() and device_add() ca=
-lls.
->> > > Did I get it right?
->> >
->> > No, make this a driver attribute, that way when the device is
->> > registered, it adds the attribute automagically to the device that=
- is
->> > bound to it.
->>
->> (hint, DEVICE_ATTR), right ?
->
-> No, that's just a macro that creates the structure for the attribute.
-> You need to take that structure and tie it to the driver itself, usin=
-g
-> the struct device_driver->groups; field.
+Sparse is warning because the function prototype has a
+__must_check annotation.
 
-Please forgive me my ignorance, but I am lost in this. I tried to read
-through the serial_core and tty_io.c over and over to figure out how
-the drivers are registered and where could I hook the driver
-initialization for all UART ports, but I do not get it.
+Sparse warning:
+drivers/tty/serial/max310x.c:1223:18: warning:
+	ignoring return value of =E2=80=98gpiochip_remove=E2=80=99,
+	declared with attribute warn_unused_result
+	[-Wunused-result]
 
-And there is another thing I am confused of: Should I use macro
-DEVICE_ATTR or DRIVER_ATTR? There is a different signature of
-callbacks in case of DRIVER_ATTR and I do not know how to find out
-from struct device_driver which particular UART port it is associated
-to? (Is it indeed associated with one particular port?) Value uartclk
-could be, AFAIK, different on each port of the same chip and therefore
-I need to know which particular TTY device I want to operate on. More
-precisely, I have to get to proper struct uart_state associated with
-the particular port.
+Signed-off-by: Emil Goode <emilgoode@gmail.com>
+---
+ drivers/tty/serial/max310x.c |   10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-Thanks,
-Tomas
-
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.=
+c
+index 534e448..06ff5ad 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -1207,6 +1207,7 @@ static int __devexit max310x_remove(struct spi_de=
+vice *spi)
+ {
+ 	struct device *dev =3D &spi->dev;
+ 	struct max310x_port *s =3D dev_get_drvdata(dev);
++	int ret =3D 0;
+=20
+ 	dev_dbg(dev, "Removing port\n");
+=20
+@@ -1219,8 +1220,11 @@ static int __devexit max310x_remove(struct spi_d=
+evice *spi)
+ 	uart_unregister_driver(&s->uart);
+=20
+ #ifdef CONFIG_GPIOLIB
+-	if (s->pdata->gpio_base)
+-		gpiochip_remove(&s->gpio);
++	if (s->pdata->gpio_base) {
++		ret =3D gpiochip_remove(&s->gpio);
++		if (ret)
++			dev_err(dev, "Failed to remove gpio chip: %d\n", ret);
++	}
+ #endif
+=20
+ 	dev_set_drvdata(dev, NULL);
+@@ -1232,7 +1236,7 @@ static int __devexit max310x_remove(struct spi_de=
+vice *spi)
+=20
+ 	devm_kfree(dev, s);
+=20
+-	return 0;
++	return ret;
+ }
+=20
+ static const struct spi_device_id max310x_id_table[] =3D {
 --=20
-Tom=C3=A1=C5=A1 Hlav=C3=A1=C4=8Dek <tmshlvck@gmail.com>
+1.7.10.4
+
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
  in
