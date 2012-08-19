@@ -1,53 +1,53 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] serial: add a new helper function
-Date: Sun, 19 Aug 2012 16:46:58 +0100
-Message-ID: <20120819164658.1737bb74@pyramind.ukuu.org.uk>
-References: <1345400832-23572-1-git-send-email-shijie8@gmail.com>
-	<20120819064429.GA3252@kroah.com>
+Subject: Re: [PATCH] [media] winbond-cir: Fix initialization
+Date: Sun, 19 Aug 2012 17:00:04 +0100
+Message-ID: <20120819170004.579ee640@pyramind.ukuu.org.uk>
+References: <1343731023-9822-1-git-send-email-sean@mess.org>
+	<5026BE78.80902@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20120819064429.GA3252@kroah.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Huang Shijie <shijie8@gmail.com>, alan@linux.intel.com, jirislaby@gmail.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, netdev@vger.kernel.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:52348 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753853Ab2HSPzn (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 19 Aug 2012 11:55:43 -0400
+In-Reply-To: <5026BE78.80902@redhat.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Mauro Carvalho Chehab <mchehab@redhat.com>
+Cc: David =?ISO-8859-1?B?SORyZGVtYW4=?= <david@hardeman.nu>, Sean Young <sean@mess.org>, Jarod Wilson <jarod@wilsonet.com>, Alan Cox <alan@linux.intel.com>, linux-media@vger.kernel.org, linux-serial@vger.kernel.org, lirc-list@lists.sourceforge.net
 
-On Sat, 18 Aug 2012 23:44:29 -0700
-Greg KH <gregkh@linuxfoundation.org> wrote:
+> > +#ifdef CONFIG_SERIAL_8250
 
-> On Sun, Aug 19, 2012 at 02:27:12PM -0400, Huang Shijie wrote:
-> > --- a/include/linux/tty.h
-> > +++ b/include/linux/tty.h
-> > @@ -43,6 +43,7 @@
-> >  #include <linux/tty_driver.h>
-> >  #include <linux/tty_ldisc.h>
-> >  #include <linux/mutex.h>
-> > +#include <linux/serial.h>
-> >  
-> >  
-> >  
-> > @@ -513,6 +514,12 @@ static inline struct tty_port *tty_port_get(struct tty_port *port)
-> >  	return port;
+Coule be modular
+
+> > +	if (!io) {
+> > +		struct uart_port port = { .iobase = data->sbase };
+> > +		int line = serial8250_find_port(&port);
+> > +		if (line >= 0) {
+> > +			serial8250_unregister_port(line);
+> 
+> Hmm... Not sure if it makes sense, but perhaps the unregistering code
+> should be reverting serial8250_unregister_port(line).
+
+Can't do that anyway it may well be busy.
+
+> > --- a/drivers/tty/serial/8250/8250.c
+> > +++ b/drivers/tty/serial/8250/8250.c
+> > @@ -2914,6 +2914,7 @@ int serial8250_find_port(struct uart_port *p)
+> >  	}
+> >  	return -ENODEV;
 > >  }
-> >  
-> > +/* If the cts flow control is enabled, return true. */
-> > +static inline bool tty_port_cts_enabled(struct tty_port *port)
-> > +{
-> > +	return port->flags & ASYNC_CTS_FLOW;
-> > +}
-> > +
-> 
-> The fact that you have to add serial.h to this file kind of implies that
-> this function shouldn't be here, right?
-> 
-> How about serial.h instead?  Not all tty drivers are serial drivers :)
+> > +EXPORT_SYMBOL(serial8250_find_port);
 
-tty_port is tty generic so possibly if there is a generic helper the
-flags and helper should likewise be this way.
+No - this leaks all the uart internal abstractions into the tree. We
+really don't want that happening.
 
-As it stands at the moment ASYNC_CTS_FLOW is a convention a few drivers
-use. So calling it tty_port_xxx is going to misleading.
+The right way to fix this (and a couple of other uglies) is to make 8250
+on x86 scan for PnP ports *before* generic ports and to make a note of
+any ports to skip on the PnP scan (so that the port poking scan ignores
+them too)
 
 Alan
