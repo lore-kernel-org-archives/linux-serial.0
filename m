@@ -1,102 +1,44 @@
 From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: [PATCH 3/3] serial: diminish usage of struct serial_uart_config
-Date: Mon, 20 Aug 2012 19:56:28 -0400
-Message-ID: <1345506988-15390-4-git-send-email-paul.gortmaker@windriver.com>
-References: <1345506988-15390-1-git-send-email-paul.gortmaker@windriver.com>
+Subject: [PATCH 0/3] serial: make serial_uart_config non-global
+Date: Mon, 20 Aug 2012 19:56:25 -0400
+Message-ID: <1345506988-15390-1-git-send-email-paul.gortmaker@windriver.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.windriver.com ([147.11.1.11]:57547 "EHLO
+Received: from mail.windriver.com ([147.11.1.11]:57559 "EHLO
 	mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752645Ab2HTX7n (ORCPT
+	with ESMTP id S1751749Ab2HTX7w (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 20 Aug 2012 19:59:43 -0400
-In-Reply-To: <1345506988-15390-1-git-send-email-paul.gortmaker@windriver.com>
+	Mon, 20 Aug 2012 19:59:52 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, "David S. Miller" <davem@davemloft.net>
+Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, Hirokazu Takata <takata@linux-m32r.org>, "David S. Miller" <davem@davemloft.net>
 
-This structure might have made sense many years ago, but at this
-point it is only used in one specific driver, and referenced in
-stale comments elsewhere.  Rather than change the sunsu.c driver,
-simply move the struct to be within the exclusive domain of that
-driver, so it won't get inadvertently picked up and used by other
-serial drivers going forward.  The comments referencing the now
-driver specific struct are updated accordingly.
+I happened to notice that serial_uart_config was largely a relic
+of the past and only used by two drivers (one of which was just
+a trivial use case) so it seemed to make sense to reduce its scope
+by removing the trivial use case and giving exclusive ownership
+of the struct to the one real remaining user (sparc's sunsu.c).
 
-Note that 8250.c has a struct that is similar in usage, with the
-name serial8250_config; but is 100% independent and untouched here.
+Build tested on sparc64 defconfig and m32r defconfig.
 
-Cc: "David S. Miller" <davem@davemloft.net>
-Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+Paul.
 ---
- drivers/staging/speakup/serialio.h | 3 +--
- drivers/tty/serial/8250/8250.h     | 3 ---
- drivers/tty/serial/sunsu.c         | 6 ++++++
- include/linux/serial.h             | 6 ------
- 4 files changed, 7 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/staging/speakup/serialio.h b/drivers/staging/speakup/serialio.h
-index 614271f..55d68b5 100644
---- a/drivers/staging/speakup/serialio.h
-+++ b/drivers/staging/speakup/serialio.h
-@@ -1,8 +1,7 @@
- #ifndef _SPEAKUP_SERIAL_H
- #define _SPEAKUP_SERIAL_H
- 
--#include <linux/serial.h>	/* for rs_table, serial constants &
--				   serial_uart_config */
-+#include <linux/serial.h>	/* for rs_table, serial constants */
- #include <linux/serial_reg.h>	/* for more serial constants */
- #ifndef __sparc__
- #include <asm/serial.h>
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index 972b521..0c5e908 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -26,9 +26,6 @@ struct old_serial_port {
- 	unsigned long irqflags;
- };
- 
--/*
-- * This replaces serial_uart_config in include/linux/serial.h
-- */
- struct serial8250_config {
- 	const char	*name;
- 	unsigned short	fifo_size;
-diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
-index d919095..b97913d 100644
---- a/drivers/tty/serial/sunsu.c
-+++ b/drivers/tty/serial/sunsu.c
-@@ -58,6 +58,12 @@
- enum su_type { SU_PORT_NONE, SU_PORT_MS, SU_PORT_KBD, SU_PORT_PORT };
- static char *su_typev[] = { "su(???)", "su(mouse)", "su(kbd)", "su(serial)" };
- 
-+struct serial_uart_config {
-+	char	*name;
-+	int	dfl_xmit_fifo_size;
-+	int	flags;
-+};
-+
- /*
-  * Here we define the default xmit fifo size used for each type of UART.
-  */
-diff --git a/include/linux/serial.h b/include/linux/serial.h
-index 90e9f98..11f365c 100644
---- a/include/linux/serial.h
-+++ b/include/linux/serial.h
-@@ -83,12 +83,6 @@ struct serial_struct {
- #define SERIAL_IO_HUB6	1
- #define SERIAL_IO_MEM	2
- 
--struct serial_uart_config {
--	char	*name;
--	int	dfl_xmit_fifo_size;
--	int	flags;
--};
--
- #define UART_CLEAR_FIFO		0x01
- #define UART_USE_FIFO		0x02
- #define UART_STARTECH		0x04
+Cc: Hirokazu Takata <takata@linux-m32r.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+
+Paul Gortmaker (3):
+  m32r_sio: remove dependency on struct serial_uart_config
+  serial: sunsu.c - don't explicitly tie array size to dynamic entity
+  serial: diminish usage of struct serial_uart_config
+
+ drivers/staging/speakup/serialio.h |  3 +--
+ drivers/tty/serial/8250/8250.h     |  3 ---
+ drivers/tty/serial/m32r_sio.c      | 36 ++----------------------------------
+ drivers/tty/serial/sunsu.c         |  8 +++++++-
+ include/linux/serial.h             |  6 ------
+ 5 files changed, 10 insertions(+), 46 deletions(-)
+
 -- 
 1.7.11.1
 
