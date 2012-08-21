@@ -1,64 +1,33 @@
-From: Huang Shijie <shijie8@gmail.com>
-Subject: Re: [PATCH] serial: add a new helper function
-Date: Tue, 21 Aug 2012 10:52:04 +0800
-Message-ID: <CAMiH66GaSg4RHNyLg_9X49c1FbjKr2_ag=oiCSfv2HRSTd4Qiw@mail.gmail.com>
-References: <1345400832-23572-1-git-send-email-shijie8@gmail.com>
-	<20120819064429.GA3252@kroah.com>
-	<20120819164658.1737bb74@pyramind.ukuu.org.uk>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 0/3] serial: make serial_uart_config non-global
+Date: Tue, 21 Aug 2012 10:06:11 +0100
+Message-ID: <20120821100611.2cfd43c6@pyramind.ukuu.org.uk>
+References: <1345506988-15390-1-git-send-email-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20120819164658.1737bb74@pyramind.ukuu.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Greg KH <gregkh@linuxfoundation.org>, alan@linux.intel.com, jirislaby@gmail.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:54793 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752903Ab2HUJBx (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 21 Aug 2012 05:01:53 -0400
+In-Reply-To: <1345506988-15390-1-git-send-email-paul.gortmaker@windriver.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Hirokazu Takata <takata@linux-m32r.org>, "David S. Miller" <davem@davemloft.net>
 
-On Sun, Aug 19, 2012 at 11:46 PM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
-> On Sat, 18 Aug 2012 23:44:29 -0700
-> Greg KH <gregkh@linuxfoundation.org> wrote:
->
->> On Sun, Aug 19, 2012 at 02:27:12PM -0400, Huang Shijie wrote:
->> > --- a/include/linux/tty.h
->> > +++ b/include/linux/tty.h
->> > @@ -43,6 +43,7 @@
->> >  #include <linux/tty_driver.h>
->> >  #include <linux/tty_ldisc.h>
->> >  #include <linux/mutex.h>
->> > +#include <linux/serial.h>
->> >
->> >
->> >
->> > @@ -513,6 +514,12 @@ static inline struct tty_port *tty_port_get(struct tty_port *port)
->> >     return port;
->> >  }
->> >
->> > +/* If the cts flow control is enabled, return true. */
->> > +static inline bool tty_port_cts_enabled(struct tty_port *port)
->> > +{
->> > +   return port->flags & ASYNC_CTS_FLOW;
->> > +}
->> > +
->>
->> The fact that you have to add serial.h to this file kind of implies that
->> this function shouldn't be here, right?
->>
->> How about serial.h instead?  Not all tty drivers are serial drivers :)
->
-> tty_port is tty generic so possibly if there is a generic helper the
-> flags and helper should likewise be this way.
->
-> As it stands at the moment ASYNC_CTS_FLOW is a convention a few drivers
-> use. So calling it tty_port_xxx is going to misleading.
+On Mon, 20 Aug 2012 19:56:25 -0400
+Paul Gortmaker <paul.gortmaker@windriver.com> wrote:
 
-this patch makes the header files in a mess.
-Please just ignore this patch if it is not good enough.
+> I happened to notice that serial_uart_config was largely a relic
+> of the past and only used by two drivers (one of which was just
+> a trivial use case) so it seemed to make sense to reduce its scope
+> by removing the trivial use case and giving exclusive ownership
+> of the struct to the one real remaining user (sparc's sunsu.c).
+> 
+> Build tested on sparc64 defconfig and m32r defconfig.
 
-thanks
-Huang Shijie
+Looks good to me from the tty side.
 
->
-
-
-
-> Alan
