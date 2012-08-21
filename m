@@ -1,37 +1,41 @@
-From: Pavan Savoy <pavan_savoy@ti.com>
-Subject: pm_qos usage in omap-serial.c
-Date: Tue, 21 Aug 2012 15:50:16 -0500
-Message-ID: <CABUK1ah4=FOSUGSc3LwHwUF1_nt-cNZ+Jw9-6DBuC7dg7Xozfg@mail.gmail.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v2] serial: pl011: honour serial aliases in device tree
+Date: Wed, 22 Aug 2012 00:04:23 +0200
+Message-ID: <CACRpkdbh-PhFKU54FCti-7RwQLJ8Q0d9_XLPEk5vNemjDOa-wQ@mail.gmail.com>
+References: <1345564094-16565-1-git-send-email-matthew.leach@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qc0-f174.google.com ([209.85.216.174]:51137 "EHLO
-	mail-qc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758542Ab2HUUuR (ORCPT
+Received: from mail-vc0-f174.google.com ([209.85.220.174]:51357 "EHLO
+	mail-vc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758425Ab2HUWEY (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 21 Aug 2012 16:50:17 -0400
-Received: by qcro28 with SMTP id o28so193951qcr.19
-        for <linux-serial@vger.kernel.org>; Tue, 21 Aug 2012 13:50:16 -0700 (PDT)
+	Tue, 21 Aug 2012 18:04:24 -0400
+Received: by vcbfk26 with SMTP id fk26so376797vcb.19
+        for <linux-serial@vger.kernel.org>; Tue, 21 Aug 2012 15:04:23 -0700 (PDT)
+In-Reply-To: <1345564094-16565-1-git-send-email-matthew.leach@arm.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, ruchika@ti.com, paul@pwsan.com, Govindraj Raja <govindraj.ti@gmail.com>
+To: Matthew Leach <matthew.leach@arm.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, will.deacon@arm.com, gregkh@linuxfoundation.org, devicetree-discuss@lists.ozlabs.org, robherring2@gmail.com
 
-Paul, Govindraj,
+On Tue, Aug 21, 2012 at 5:48 PM, Matthew Leach <matthew.leach@arm.com> wrote:
 
-I saw a few comments from you on the omap-serial driver that the PM
-qos was required because of a silicion bug which failed to wake-up via
-the PRCM interrupts when the tx fifo threshold reached.
+> If the order of UART nodes is changed in the device tree, then tty dev
+> devices are attached to different serial ports causing the console to
+> be directed to a different physical serial port. The "serial" aliases
+> in the device tree should prevent this.
+>
+> This patch ensures that the UART driver creates tty devices that
+> honour these aliases if a device tree is present.
+>
+> Acked-by: Rob Herring <rob.herring@calxeda.com>
+> Signed-off-by: Matthew Leach <matthew.leach@arm.com>
+> ---
+> v2: use IS_ENABLED instead of ifdefs
 
-What I wasnted to ask was - does that still hold good? Which OMAP was
-this seen on ? omap3 or omap4?
-As of today as you mention in your patch comments we do see an impact
-on the power numbers because of this constraints held in the serial
-driver, and removing this doesn't seem to impact performance
-(through-put) either.
-(All this being done in interrupt mode..)
+Looks good to me.
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
 
-Also, could you let me know - How exactly was the PRCM interrupts not
-being generated tested ?
-
-Thanks & Regards,
-Pavan Savoy.
+Yours,
+Linus Walleij
