@@ -1,82 +1,56 @@
-From: Felipe Balbi <balbi@ti.com>
+From: "Shilimkar, Santosh" <santosh.shilimkar@ti.com>
 Subject: Re: [RFC/PATCH 05/13] serial: omap: drop DMA support
-Date: Tue, 21 Aug 2012 13:20:46 +0300
-Message-ID: <20120821102045.GL10347@arwen.pp.htv.fi>
+Date: Tue, 21 Aug 2012 16:05:22 +0530
+Message-ID: <CAMQu2gyGVhB63rn+G6B3nFLki5ib40C_2o2Bh1mBd8sw8wT_Ng@mail.gmail.com>
 References: <1345540555-24359-1-git-send-email-balbi@ti.com>
- <1345540555-24359-6-git-send-email-balbi@ti.com>
- <CAMQu2gw93ES=u9J1FfWK_CKkgUq8V487+tmKtQ34p8O7VJ6aHA@mail.gmail.com>
-Reply-To: balbi@ti.com
+ <1345540555-24359-6-git-send-email-balbi@ti.com> <CAMQu2gw93ES=u9J1FfWK_CKkgUq8V487+tmKtQ34p8O7VJ6aHA@mail.gmail.com>
+ <20120821102045.GL10347@arwen.pp.htv.fi>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="L1EIGrW/+75u5Nmw"
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog104.obsmtp.com ([74.125.149.73]:41295 "EHLO
-	na3sys009aog104.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755989Ab2HUKYp (ORCPT
+Received: from na3sys009aog137.obsmtp.com ([74.125.149.18]:45420 "EHLO
+	na3sys009aog137.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1756353Ab2HUKfo (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 21 Aug 2012 06:24:45 -0400
-Received: by lbol12 with SMTP id l12so8793747lbo.16
-        for <linux-serial@vger.kernel.org>; Tue, 21 Aug 2012 03:24:43 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <CAMQu2gw93ES=u9J1FfWK_CKkgUq8V487+tmKtQ34p8O7VJ6aHA@mail.gmail.com>
+	Tue, 21 Aug 2012 06:35:44 -0400
+Received: by ialo24 with SMTP id o24so4156001ial.5
+        for <linux-serial@vger.kernel.org>; Tue, 21 Aug 2012 03:35:43 -0700 (PDT)
+In-Reply-To: <20120821102045.GL10347@arwen.pp.htv.fi>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Shilimkar, Santosh" <santosh.shilimkar@ti.com>
-Cc: Felipe Balbi <balbi@ti.com>, alan@linux.intel.com, Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Shubhrajyoti Datta <shubhrajyoti@ti.com>
+To: balbi@ti.com
+Cc: alan@linux.intel.com, Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Shubhrajyoti Datta <shubhrajyoti@ti.com>
 
+On Tue, Aug 21, 2012 at 3:50 PM, Felipe Balbi <balbi@ti.com> wrote:
+> On Tue, Aug 21, 2012 at 03:14:19PM +0530, Shilimkar, Santosh wrote:
+>> On Tue, Aug 21, 2012 at 2:45 PM, Felipe Balbi <balbi@ti.com> wrote:
+>> > The current support is known to be broken and
+>> > a later patch will come re-adding it using
+>> > dma engine API.
+>> >
+>> > Signed-off-by: Felipe Balbi <balbi@ti.com>
+>> > ---
+>> Thanks Felipe !!
+>
+> no problem.
+>
+>> One less driver now towards OMAP DMA
+>> engine conversion.
+>
+> indeed :-) I'll take a closer look into rx timeout IRQ, but it looks
+> like we can use it to kick dma only for "big" transfers... need to play
+> with it for a while first, though.
+>
+Yep. The RX path with DMA is bit of difficult part to manage for
+UART.
 
---L1EIGrW/+75u5Nmw
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+>> FWIW,
+>> Acked-by: Santosh Shilimkar <santosh.shilimkar@ti.com>
+>
+> is this Ack for this patch only or the entire series ??
+>
+Two more patches to review and then I will do it for
+full series on top of the cover-letter :-)
 
-On Tue, Aug 21, 2012 at 03:14:19PM +0530, Shilimkar, Santosh wrote:
-> On Tue, Aug 21, 2012 at 2:45 PM, Felipe Balbi <balbi@ti.com> wrote:
-> > The current support is known to be broken and
-> > a later patch will come re-adding it using
-> > dma engine API.
-> >
-> > Signed-off-by: Felipe Balbi <balbi@ti.com>
-> > ---
-> Thanks Felipe !!
-
-no problem.
-
-> One less driver now towards OMAP DMA
-> engine conversion.
-
-indeed :-) I'll take a closer look into rx timeout IRQ, but it looks
-like we can use it to kick dma only for "big" transfers... need to play
-with it for a while first, though.
-
-> FWIW,
-> Acked-by: Santosh Shilimkar <santosh.shilimkar@ti.com>
-
-is this Ack for this patch only or the entire series ??
-
---=20
-balbi
-
---L1EIGrW/+75u5Nmw
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-
-iQIcBAEBAgAGBQJQM2D9AAoJEIaOsuA1yqRE8KAP/2i8rFk1bFTBjZgONPFW/J6a
-3sWWHuK6WOnwohLJkDhiKkFlXTIlEW8jMhSu1xyRpQnDWo+c9Z1pL9hzze2SrmGp
-yEQGPZw7c03cDAiH7shMkjPuTZeow+wHl8B1nCsGJNgtDwbVESvj95+yktUcmn9h
-pdI0nd99s5jo/DCtPp3+EdAnN9Uj0REV9pvTCV27IDnuncHiY8QiCAQnmtwyW6sw
-PftX1NGY/Wbv8tSLDXFvnmTq3Ln4EfceA5PCJHadmZ/5KrKOhsu3L15MluQhw9pm
-bx6S91NTgiZiLcj8iUp9WOTqI+aUbVPfWP++G8duTSczQyElxQy0hQm9rHi13ief
-RnshZNXhdAMHhzCzx6pOEn5EggatWYgNoosNOgFVgd2KSr9BG8PWwCjUtL4T16s3
-9/HRjlTocE9BSWvBSZ2viSep52WgYFqYzSREmgc4GKHkz6BY7Wn+fZSuTcx5jZyW
-2qO61Qpf2O9KWNLz06pkqpkdN2E3FzvhwBglg8kRw/4wGmSQluvrtC2PbEWzgQkj
-dlDIyTCxctBXUMp2yvpH5jrDGv019FC3xfdSjM1M516i83LddyG03fifB54lIraH
-6OrRCOlxBDhXWxbJqfSHffwU3FJLYB7FK+1XK3T6nhiAOX3xInWHTYCfjyWEEuj6
-2JIFEUCXmMPakW6Vr6a2
-=TOAs
------END PGP SIGNATURE-----
-
---L1EIGrW/+75u5Nmw--
+Regards
+Santosh
