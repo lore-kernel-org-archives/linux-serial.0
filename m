@@ -1,274 +1,154 @@
-From: Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH v2 00/13] OMAP Serial patches
-Date: Tue, 21 Aug 2012 18:07:04 +0300
-Message-ID: <20120821150702.GN10347@arwen.pp.htv.fi>
-References: <1345540555-24359-1-git-send-email-balbi@ti.com>
- <1345551371-18862-1-git-send-email-balbi@ti.com>
- <20120821130134.GH10347@arwen.pp.htv.fi>
-Reply-To: balbi@ti.com
+From: Huang Shijie <shijie8@gmail.com>
+Subject: Re: [PATCH] tty: move the async flags from the serial code into the
+ tty includes
+Date: Tue, 21 Aug 2012 23:13:16 +0800
+Message-ID: <CAMiH66FiPLKHMkwsUMfrmE-vxdFFzL_R4NRNMP4VxSo3_wMaxA@mail.gmail.com>
+References: <20120821133455.9090.24759.stgit@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="z7bbLlDR+qKEHzO8"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog125.obsmtp.com ([74.125.149.153]:43834 "EHLO
-	na3sys009aog125.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752726Ab2HUPLD (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 21 Aug 2012 11:11:03 -0400
-Received: by lahm15 with SMTP id m15so4888707lah.17
-        for <linux-serial@vger.kernel.org>; Tue, 21 Aug 2012 08:11:00 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <20120821130134.GH10347@arwen.pp.htv.fi>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20120821133455.9090.24759.stgit@localhost.localdomain>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Felipe Balbi <balbi@ti.com>
-Cc: alan@linux.intel.com, Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Shubhrajyoti Datta <shubhrajyoti@ti.com>
 
+On Tue, Aug 21, 2012 at 9:35 PM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
+> Huang - how about we add this patch first which moves the flags somewhere more sensible
+thanks.
 
---z7bbLlDR+qKEHzO8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I am really happy with this patch.
 
-Hi,
+Huang Shijie
 
-On Tue, Aug 21, 2012 at 04:01:36PM +0300, Felipe Balbi wrote:
-> Hi,
->=20
-> On Tue, Aug 21, 2012 at 03:15:58PM +0300, Felipe Balbi wrote:
-> > Hi guys,
-> >=20
-> > here's a series of cleanup patches to the OMAP serial
-> > driver. A later series could be made re-implementing
-> > DMA using the DMA Engine API. Note that for RX DMA
-> > we could be using RX Timeout IRQ as a hint that we better
-> > use PIO instead ;-)
-> >=20
-> > All patches were tested on my pandaboard, but I'd really
-> > like to receive Tested-by on other platforms.
-> >=20
-> > After this goes in, I'll probably try to get UART wakeup
-> > working again and only after that look at DMA.
-> >=20
-> > Changes since v1:
-> >=20
-> > 	. improved commit log on patch 9/13 (formerly 10/13)
-> > 	. removed patch 2/13
-> > 	. added a new patch switching from spin_lock_irqsave() to spin_lock and
-> > 		spin_unlock_irqrestore to spin_unlock
-> >=20
-> > Retested with my pandaboard, UART continues to work:
-> >=20
-> >  # grep -i uart /proc/interrupts
-> >  106:        124          0       GIC  OMAP UART2
-> >  #  grep -i uart /proc/interrupts
-> >  106:        189          0       GIC  OMAP UART2
-> >  #  grep -i uart /proc/interrupts
-> >  106:        255          0       GIC  OMAP UART2
-> >  #  grep -i uart /proc/interrupts
-> >  106:        321          0       GIC  OMAP UART2
-> >  #  grep -i uart /proc/interrupts
-> >  106:        387          0       GIC  OMAP UART2
-> >  #  grep -i uart /proc/interrupts
-> >  106:        453          0       GIC  OMAP UART2
-> >  #  grep -i uart /proc/interrupts
-> >  106:        519          0       GIC  OMAP UART2
-> >=20
-> > cheers
-> >=20
-> > ps: if anyone knows a better test for UART, let me know.
-> >=20
-> > for convenience of anyone testing, patches are available on my git tree=
- [1] on
-> > branch uart
-> >=20
-> > [1] git://git.kernel.org/pub/scm/linux/kernel/git/balbi/usb.git uart
->=20
-> I have added one extra patch to this series:
->=20
-> From 6921efdb13dda7af216b331bb35535d4b53f004a Mon Sep 17 00:00:00 2001
-> From: Felipe Balbi <balbi@ti.com>
-> Date: Tue, 21 Aug 2012 15:48:35 +0300
-> Subject: [PATCH] serial: omap: drop pm_runtime_irq_safe() usage
->=20
-> pm_runtime_irq_safe() will essentially do an
-> unbalanced pm_runtime_get_sync() on our parent
-> device, which might cause problems when trying
-> to suspend.
->=20
-> In order to prevent that we drop pm_runtime_irq_safe
-> usage in exchange for a little performance hit
-> when we enter our IRQ handler while still suspended.
->=20
-> If that happens, what we will do is set the irq_pending
-> flag, do an asynchronous pm_runtime_get() call and
-> return IRQ_HANDLED. When our runtime_resume() callback
-> is executed, we check for that flag, and run our
-> IRQ handler so that we receive/transmit the pending
-> characters.
->=20
-> Signed-off-by: Felipe Balbi <balbi@ti.com>
+> and then your helper function (and probably a few others) would merge cleanly ?
+>
+> Alan
+> --
+>
+>
+> From: Alan Cox <alan@linux.intel.com>
+>
+> These are used with the tty_port flags which are tty generic so move the
+> flags into a more sensible place. This then makes it possible to add
+> helpers such as those suggested by Huang Shijie.
+>
+> Signed-off-by: Alan Cox <alan@linux.intel.com>
 > ---
->=20
-> One extra patch to OMAP UART driver. This seems to be working
-> pretty well even after echo mem > /sys/power/state. I can
-> see that I can even wake my pandaboard up by sending a character
-> through serial:
->=20
->  #  echo mem > /sys/power/state
->  [ 1335.679260] PM: Syncing filesystems ... done.
->  [ 1335.684387] Freezing user space processes ... (elapsed 0.00 seconds) =
-done.
->  [ 1335.691741] Freezing remaining freezable tasks ... (elapsed 0.02 seco=
-nds) done.
->  [ 1335.720886] Suspending console(s) (use no_console_suspend to debug)
-> =20
->  [ 1335.734405] PM: suspend of devices complete after 5.492 msecs
->  [ 1335.735534] PM: late suspend of devices complete after 1.128 msecs
->  [ 1335.737518] PM: noirq suspend of devices complete after 1.952 msecs
->  [ 1335.737518] Disabling non-boot CPUs ...
->  [ 1335.738525] CPU1: shutdown
->  [ 1338.543762] Successfully put all powerdomains to target state
->  [ 1338.543853] Enabling non-boot CPUs ...
->  [ 1338.545654] CPU1: Booted secondary processor
->  [ 1338.546020] CPU1 is up
->  [ 1338.547027] PM: noirq resume of devices complete after 0.976 msecs
->  [ 1338.548400] PM: early resume of devices complete after 0.762 msecs
->  [ 1339.827087] PM: resume of devices complete after 1278.686 msecs
->  [ 1339.890960] Restarting tasks ... done.
->  # # grep -i uart /proc/interrupts
->  106:       3385          0       GIC  OMAP UART2
->  # echo mem > /sys/power/state
->  [ 1358.015624] PM: Syncing filesystems ... done.
->  [ 1358.020812] Freezing user space processes ... (elapsed 0.00 seconds) =
-done.
->  [ 1358.028167] Freezing remaining freezable tasks ... (elapsed 0.01 seco=
-nds) done.
->  [ 1358.055084] Suspending console(s) (use no_console_suspend to debug)
-> =20
->  [ 1358.068847] PM: suspend of devices complete after 5.633 msecs
->  [ 1358.070007] PM: late suspend of devices complete after 1.126 msecs
->  [ 1358.072051] PM: noirq suspend of devices complete after 2.040 msecs
->  [ 1358.072051] Disabling non-boot CPUs ...
->  [ 1358.073211] CPU1: shutdown
->  [ 1359.104156] Successfully put all powerdomains to target state
->  [ 1359.104278] Enabling non-boot CPUs ...
->  [ 1359.106079] CPU1: Booted secondary processor
->  [ 1359.106475] CPU1 is up
->  [ 1359.107482] PM: noirq resume of devices complete after 1.004 msecs
->  [ 1359.108886] PM: early resume of devices complete after 0.761 msecs
->  [ 1360.414794] PM: resume of devices complete after 1305.836 msecs
->  [ 1360.478668] Restarting tasks ... done.
->  # # grep -i uart /proc/interrupts
->  106:       3511          0       GIC  OMAP UART2
->=20
->  arch/arm/plat-omap/include/plat/omap-serial.h |  1 +
->  drivers/tty/serial/omap-serial.c              | 16 +++++++++++++---
->  2 files changed, 14 insertions(+), 3 deletions(-)
->=20
-> diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/pla=
-t-omap/include/plat/omap-serial.h
-> index 743ac80..52328ca 100644
-> --- a/arch/arm/plat-omap/include/plat/omap-serial.h
-> +++ b/arch/arm/plat-omap/include/plat/omap-serial.h
-> @@ -130,6 +130,7 @@ struct uart_omap_port {
->  	u32			context_loss_cnt;
->  	u32			errata;
->  	u8			wakeups_enabled;
-> +	unsigned int		irq_pending:1;
-> =20
->  	struct pm_qos_request	pm_qos_request;
->  	u32			latency;
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-s=
-erial.c
-> index a79658d..7e237f3 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -353,9 +353,13 @@ static inline irqreturn_t serial_omap_irq(int irq, v=
-oid *dev_id)
->  	irqreturn_t ret =3D IRQ_HANDLED;
->  	int max_count =3D 256;
-> =20
-> -	spin_lock(&up->port.lock);
-> -	pm_runtime_get_sync(up->dev);
-> +	if (pm_runtime_suspended(up->dev)) {
-> +		up->irq_pending =3D true;
-> +		pm_runtime_get(up->dev);
-> +		return IRQ_HANDLED;
-> +	}
-> =20
-> +	spin_lock(&up->port.lock);
->  	do {
->  		iir =3D serial_in(up, UART_IIR);
->  		if (iir & UART_IIR_NO_INT) {
-> @@ -400,6 +404,7 @@ static inline irqreturn_t serial_omap_irq(int irq, vo=
-id *dev_id)
->  	pm_runtime_mark_last_busy(up->dev);
->  	pm_runtime_put_autosuspend(up->dev);
->  	up->port_activity =3D jiffies;
-> +	up->irq_pending =3D false;
-> =20
->  	return ret;
->  }
-> @@ -1305,7 +1310,6 @@ static int serial_omap_probe(struct platform_device=
- *pdev)
->  	pm_runtime_set_autosuspend_delay(&pdev->dev,
->  			omap_up_info->autosuspend_timeout);
-> =20
-> -	pm_runtime_irq_safe(&pdev->dev);
->  	pm_runtime_enable(&pdev->dev);
->  	pm_runtime_get_sync(&pdev->dev);
-> =20
-> @@ -1416,6 +1420,9 @@ static int serial_omap_runtime_suspend(struct devic=
-e *dev)
->  	if (!up)
->  		return -EINVAL;
-> =20
-> +	if (up->irq_pending)
-> +		return -EBUSY;
+>
+>  include/linux/serial.h    |    2 +
+>  include/linux/tty.h       |    1 +
+>  include/linux/tty_flags.h |   78 +++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 81 insertions(+)
+>  create mode 100644 include/linux/tty_flags.h
+>
+> diff --git a/include/linux/serial.h b/include/linux/serial.h
+> index 90e9f98..d63866d 100644
+> --- a/include/linux/serial.h
+> +++ b/include/linux/serial.h
+> @@ -15,6 +15,8 @@
+>  #ifdef __KERNEL__
+>  #include <asm/page.h>
+>
+> +#include <linux/tty_flags.h>
 > +
->  	if (!pdata)
->  		return 0;
-> =20
-> @@ -1452,6 +1459,9 @@ static int serial_omap_runtime_resume(struct device=
- *dev)
-> =20
->  		up->latency =3D up->calc_latency;
->  		schedule_work(&up->qos_work);
+>  /*
+>   * Counters of the input lines (CTS, DSR, RI, CD) interrupts
+>   */
+> diff --git a/include/linux/tty.h b/include/linux/tty.h
+> index 69a787f..dbebd1e 100644
+> --- a/include/linux/tty.h
+> +++ b/include/linux/tty.h
+> @@ -43,6 +43,7 @@
+>  #include <linux/tty_driver.h>
+>  #include <linux/tty_ldisc.h>
+>  #include <linux/mutex.h>
+> +#include <linux/tty_flags.h>
+>
+>
+>
+> diff --git a/include/linux/tty_flags.h b/include/linux/tty_flags.h
+> new file mode 100644
+> index 0000000..eefcb48
+> --- /dev/null
+> +++ b/include/linux/tty_flags.h
+> @@ -0,0 +1,78 @@
+> +#ifndef _LINUX_TTY_FLAGS_H
+> +#define _LINUX_TTY_FLAGS_H
 > +
-> +		if (up->irq_pending)
-> +			serial_omap_irq(up->port.irq, up);
->  	}
-> =20
->  	return 0;
-
-let's not apply this extra patch. It actually caused a regression which
-was pretty difficult to trigger. I have now dropped it from my series.
-Sorry for the noise.
-
---=20
-balbi
-
---z7bbLlDR+qKEHzO8
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-
-iQIcBAEBAgAGBQJQM6QWAAoJEIaOsuA1yqREcGsP/3/LnqPIezpnAX6p6mIkuykZ
-udnyaZUubsDjQXVMHD6KWPFYeDzHqPNzgL0eQqrzmg8OeUK8XtRXXalpiGCIWsic
-Ym4EDZUmJlDSNFRJsccHvxiErtRG8rHLOld+ux8pSJDsuUSyB0c+DSEfAPMnLI3Z
-GdxW+TDIF6dQrdzjDsLtrWtVxLUFL34qIMj29C1+sj9lSqs1fcHD8SZOR5TYINRm
-Nhrh6giPPzVqVQI4NZDJIItnPRoFFRfYOyhV6VSELaZp+tDUITA29OX5viHGCyGJ
-ENkILq2wrwlVm5LQlAg+vi2z6ixOGSdtumZ+/93q5TVSceAj5mDaA2om8++A5eto
-wX0nWvbH/CmhpzU5XI55IZz2r46O0srPbsmmNiT9GIfkIqCEuGgATbLyOr4VhLaB
-JLVB8EL0wx/uj+7u56b/4KW9xDZyOfI4b4J0cMXGxPFlFUDn1a22xFYLQD8ZopDE
-0LEyTvMVt1bpe7rKaI/FP2osemvR9Kr1llxYP84M+b47JidA15VQeGBZj/hXHVAU
-KBUrkfR/hpCP5if54sGR/+p9JMgE8Xht/od9ohMczSoVrpR0tDUc1xJjbECf/DXZ
-utmfb05obdIrWgYX3BlOYhvNZtZApXF54lvZAte0KjNkjn/zWukDgLYTx2KAvzwE
-3YusHn1QugUAd0GHyOcF
-=IDF6
------END PGP SIGNATURE-----
-
---z7bbLlDR+qKEHzO8--
+> +/*
+> + * Definitions for async_struct (and serial_struct) flags field also
+> + * shared by the tty_port flags structures.
+> + *
+> + * Define ASYNCB_* for convenient use with {test,set,clear}_bit.
+> + */
+> +#define ASYNCB_HUP_NOTIFY       0 /* Notify getty on hangups and closes
+> +                                   * on the callout port */
+> +#define ASYNCB_FOURPORT                 1 /* Set OU1, OUT2 per AST Fourport settings */
+> +#define ASYNCB_SAK              2 /* Secure Attention Key (Orange book) */
+> +#define ASYNCB_SPLIT_TERMIOS    3 /* Separate termios for dialin/callout */
+> +#define ASYNCB_SPD_HI           4 /* Use 56000 instead of 38400 bps */
+> +#define ASYNCB_SPD_VHI          5 /* Use 115200 instead of 38400 bps */
+> +#define ASYNCB_SKIP_TEST        6 /* Skip UART test during autoconfiguration */
+> +#define ASYNCB_AUTO_IRQ                 7 /* Do automatic IRQ during
+> +                                   * autoconfiguration */
+> +#define ASYNCB_SESSION_LOCKOUT  8 /* Lock out cua opens based on session */
+> +#define ASYNCB_PGRP_LOCKOUT     9 /* Lock out cua opens based on pgrp */
+> +#define ASYNCB_CALLOUT_NOHUP   10 /* Don't do hangups for cua device */
+> +#define ASYNCB_HARDPPS_CD      11 /* Call hardpps when CD goes high  */
+> +#define ASYNCB_SPD_SHI         12 /* Use 230400 instead of 38400 bps */
+> +#define ASYNCB_LOW_LATENCY     13 /* Request low latency behaviour */
+> +#define ASYNCB_BUGGY_UART      14 /* This is a buggy UART, skip some safety
+> +                                   * checks.  Note: can be dangerous! */
+> +#define ASYNCB_AUTOPROBE       15 /* Port was autoprobed by PCI or PNP code */
+> +#define ASYNCB_LAST_USER       15
+> +
+> +/* Internal flags used only by kernel */
+> +#define ASYNCB_INITIALIZED     31 /* Serial port was initialized */
+> +#define ASYNCB_SUSPENDED       30 /* Serial port is suspended */
+> +#define ASYNCB_NORMAL_ACTIVE   29 /* Normal device is active */
+> +#define ASYNCB_BOOT_AUTOCONF   28 /* Autoconfigure port on bootup */
+> +#define ASYNCB_CLOSING         27 /* Serial port is closing */
+> +#define ASYNCB_CTS_FLOW                26 /* Do CTS flow control */
+> +#define ASYNCB_CHECK_CD                25 /* i.e., CLOCAL */
+> +#define ASYNCB_SHARE_IRQ       24 /* for multifunction cards, no longer used */
+> +#define ASYNCB_CONS_FLOW       23 /* flow control for console  */
+> +#define ASYNCB_FIRST_KERNEL    22
+> +
+> +#define ASYNC_HUP_NOTIFY       (1U << ASYNCB_HUP_NOTIFY)
+> +#define ASYNC_SUSPENDED                (1U << ASYNCB_SUSPENDED)
+> +#define ASYNC_FOURPORT         (1U << ASYNCB_FOURPORT)
+> +#define ASYNC_SAK              (1U << ASYNCB_SAK)
+> +#define ASYNC_SPLIT_TERMIOS    (1U << ASYNCB_SPLIT_TERMIOS)
+> +#define ASYNC_SPD_HI           (1U << ASYNCB_SPD_HI)
+> +#define ASYNC_SPD_VHI          (1U << ASYNCB_SPD_VHI)
+> +#define ASYNC_SKIP_TEST                (1U << ASYNCB_SKIP_TEST)
+> +#define ASYNC_AUTO_IRQ         (1U << ASYNCB_AUTO_IRQ)
+> +#define ASYNC_SESSION_LOCKOUT  (1U << ASYNCB_SESSION_LOCKOUT)
+> +#define ASYNC_PGRP_LOCKOUT     (1U << ASYNCB_PGRP_LOCKOUT)
+> +#define ASYNC_CALLOUT_NOHUP    (1U << ASYNCB_CALLOUT_NOHUP)
+> +#define ASYNC_HARDPPS_CD       (1U << ASYNCB_HARDPPS_CD)
+> +#define ASYNC_SPD_SHI          (1U << ASYNCB_SPD_SHI)
+> +#define ASYNC_LOW_LATENCY      (1U << ASYNCB_LOW_LATENCY)
+> +#define ASYNC_BUGGY_UART       (1U << ASYNCB_BUGGY_UART)
+> +#define ASYNC_AUTOPROBE                (1U << ASYNCB_AUTOPROBE)
+> +
+> +#define ASYNC_FLAGS            ((1U << (ASYNCB_LAST_USER + 1)) - 1)
+> +#define ASYNC_USR_MASK         (ASYNC_SPD_MASK|ASYNC_CALLOUT_NOHUP| \
+> +               ASYNC_LOW_LATENCY)
+> +#define ASYNC_SPD_CUST         (ASYNC_SPD_HI|ASYNC_SPD_VHI)
+> +#define ASYNC_SPD_WARP         (ASYNC_SPD_HI|ASYNC_SPD_SHI)
+> +#define ASYNC_SPD_MASK         (ASYNC_SPD_HI|ASYNC_SPD_VHI|ASYNC_SPD_SHI)
+> +
+> +#define ASYNC_INITIALIZED      (1U << ASYNCB_INITIALIZED)
+> +#define ASYNC_NORMAL_ACTIVE    (1U << ASYNCB_NORMAL_ACTIVE)
+> +#define ASYNC_BOOT_AUTOCONF    (1U << ASYNCB_BOOT_AUTOCONF)
+> +#define ASYNC_CLOSING          (1U << ASYNCB_CLOSING)
+> +#define ASYNC_CTS_FLOW         (1U << ASYNCB_CTS_FLOW)
+> +#define ASYNC_CHECK_CD         (1U << ASYNCB_CHECK_CD)
+> +#define ASYNC_SHARE_IRQ                (1U << ASYNCB_SHARE_IRQ)
+> +#define ASYNC_CONS_FLOW                (1U << ASYNCB_CONS_FLOW)
+> +#define ASYNC_INTERNAL_FLAGS   (~((1U << ASYNCB_FIRST_KERNEL) - 1))
+> +
+> +#endif
+>
