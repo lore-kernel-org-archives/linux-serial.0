@@ -1,115 +1,37 @@
-From: Rob Herring <robherring2@gmail.com>
-Subject: Re: [PATCH] serial: pl011: honour serial aliases in device tree
-Date: Tue, 21 Aug 2012 08:26:15 -0500
-Message-ID: <50338C77.4060700@gmail.com>
-References: <1345544302-12406-1-git-send-email-matthew.leach@arm.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCHv4 1/1] [RFC] uartclk from serial_core exposed to sysfs
+Date: Tue, 21 Aug 2012 14:44:39 +0100
+Message-ID: <20120821144439.2bfcfc8d@pyramind.ukuu.org.uk>
+References: <1344929718-22736-1-git-send-email-tmshlvck@gmail.com>
+	<1345401285-14473-1-git-send-email-tmshlvck@gmail.com>
+	<CAEB7QLDBjUp9GswRB20KdFNVLJme3WeX2Xd79-ovP6SWxVORpA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ob0-f174.google.com ([209.85.214.174]:53666 "EHLO
-	mail-ob0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751448Ab2HUN0U (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:55273 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751957Ab2HUNkC (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 21 Aug 2012 09:26:20 -0400
-Received: by obbuo13 with SMTP id uo13so11188365obb.19
-        for <linux-serial@vger.kernel.org>; Tue, 21 Aug 2012 06:26:19 -0700 (PDT)
-In-Reply-To: <1345544302-12406-1-git-send-email-matthew.leach@arm.com>
+	Tue, 21 Aug 2012 09:40:02 -0400
+In-Reply-To: <CAEB7QLDBjUp9GswRB20KdFNVLJme3WeX2Xd79-ovP6SWxVORpA@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Matthew Leach <matthew.leach@arm.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, Arnd Bergmann <arnd@arndb.de>
+To: Tomas Hlavacek <tmshlvck@gmail.com>
+Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, marek.vasut@gmail.com
 
-On 08/21/2012 05:18 AM, Matthew Leach wrote:
-> If the order of UART nodes is changed in the device tree, then tty dev
-> devices are attached to different serial ports causing the console to
-> be directed to a different physical serial port. The "serial" aliases
-> in the device tree should prevent this.
-> 
-> This patch ensures that the UART driver creates tty devices that
-> honour these aliases if a device tree is present.
-> 
-> Signed-off-by: Matthew Leach <matthew.leach@arm.com>
+> I have updated the patch to a new v4 in order to remove the race in
+> sysfs file creation and add sysfs file description to a Documentation
+> directory. But still the patch creates the sysfs file separately for
+> each serial TTY device by assigning attribute_groups to the struct
+> device and not for the whole driver at once as Greg advised because I
+> was unable to figure out how to do that (even though I tried pretty
+> hard). Does it make sense like this? Or do you have any hint for a
+> better way to do it, please?
 
-One comment/question below, but otherwise:
+I'm fine with it - dunno about GregKH. Given the way tty 'drivers' and
+tty devices fit together I'm not 100% sure it makes sense to do it per
+driver. Plus once we have the basis we can fix a lot of the detail
+afterwards.
 
-Acked-by: Rob Herring <rob.herring@calxeda.com>
-
-> ---
->  drivers/tty/serial/amba-pl011.c |   39 +++++++++++++++++++++++++++++++++++++++
->  1 files changed, 39 insertions(+), 0 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> index c17923e..5919599 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -52,6 +52,7 @@
->  #include <linux/scatterlist.h>
->  #include <linux/delay.h>
->  #include <linux/types.h>
-> +#include <linux/of_device.h>
->  #include <linux/pinctrl/consumer.h>
->  
->  #include <asm/io.h>
-> @@ -1869,6 +1870,42 @@ static struct uart_driver amba_reg = {
->  	.cons			= AMBA_CONSOLE,
->  };
->  
-> +#ifdef CONFIG_OF
-
-Now that we have IS_ENABLED, perhaps we want to put this inside the
-function instead?
-
-if (!IS_ENABLED(CONFIG_OF))
-	return index;
-
-
-> +static int pl011_probe_dt_alias(int index, struct device *dev)
-> +{
-> +	struct device_node *np;
-> +	static bool seen_dev_with_alias = false;
-> +	static bool seen_dev_without_alias = false;
-> +	int ret = index;
-> +
-> +	np = dev->of_node;
-> +	if (!np)
-> +		return ret;
-> +
-> +	ret = of_alias_get_id(np, "serial");
-> +	if (IS_ERR_VALUE(ret)) {
-> +		seen_dev_without_alias = true;
-> +		ret = index;
-> +	} else {
-> +		seen_dev_with_alias = true;
-> +		if (ret >= ARRAY_SIZE(amba_ports) || amba_ports[ret] != NULL) {
-> +			dev_warn(dev, "requested serial port %d  not available.\n", ret);
-> +			ret = index;
-> +		}
-> +	}
-> +
-> +	if (seen_dev_with_alias && seen_dev_without_alias)
-> +		dev_warn(dev, "aliased and non-aliased serial devices found in device tree. Serial port enumeration may be unpredictable.\n");
-> +
-> +	return ret;
-> +}
-> +#else
-> +static int pl011_probe_dt_alias(int index, struct device *dev)
-> +{
-> +	return index;
-> +}
-> +#endif
-> +
->  static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
->  {
->  	struct uart_amba_port *uap;
-> @@ -1891,6 +1928,8 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
->  		goto out;
->  	}
->  
-> +	i = pl011_probe_dt_alias(i, &dev->dev);
-> +
->  	base = ioremap(dev->res.start, resource_size(&dev->res));
->  	if (!base) {
->  		ret = -ENOMEM;
-> 
-
+Alan
