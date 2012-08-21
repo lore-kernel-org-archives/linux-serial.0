@@ -1,95 +1,34 @@
-From: Matthew Leach <matthew.leach@arm.com>
-Subject: [PATCH v2] serial: pl011: honour serial aliases in device tree
-Date: Tue, 21 Aug 2012 16:48:14 +0100
-Message-ID: <1345564094-16565-1-git-send-email-matthew.leach@arm.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:53547 "EHLO
-	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752929Ab2HUPsf (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 21 Aug 2012 11:48:35 -0400
-Sender: linux-serial-owner@vger.kernel.org
+From: Paul Bolle <pebolle@tiscali.nl>
+Subject: Re: [PATCH] serial: Remove orphaned header sc26198.h
+Date: Tue, 21 Aug 2012 18:43:12 +0200
+Message-ID: <1345567392.4564.30.camel@x61.thuisdomein>
+References: <1345564193-25994-1-git-send-email-shc_work@mail.ru>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1345564193-25994-1-git-send-email-shc_work@mail.ru>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alexander Shiyan <shc_work@mail.ru>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: linux-serial@vger.kernel.org, will.deacon@arm.com, gregkh@linuxfoundation.org, devicetree-discuss@lists.ozlabs.org, robherring2@gmail.com, Matthew Leach <matthew.leach@arm.com>
 
-If the order of UART nodes is changed in the device tree, then tty dev
-devices are attached to different serial ports causing the console to
-be directed to a different physical serial port. The "serial" aliases
-in the device tree should prevent this.
+On Tue, 2012-08-21 at 19:49 +0400, Alexander Shiyan wrote:
+> This header was used by the driver "stallion", but the driver has
+> been removed as a result of migration 2.4 -> 2.6 and the header is
+> still present in the system and is not currently used by any driver.
+> We can safely remove it.
+> 
+> Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
+> ---
+>  include/linux/sc26198.h |  533 -----------------------------------------------
 
-This patch ensures that the UART driver creates tty devices that
-honour these aliases if a device tree is present.
+commit afbaade3dc99838a0c39699bea175674f27322a1 ("delete seven tty
+headers"), in - I think - tty.git's tty-next branch, already deleted
+this and six other headers.
 
-Acked-by: Rob Herring <rob.herring@calxeda.com>
-Signed-off-by: Matthew Leach <matthew.leach@arm.com>
----
-v2: use IS_ENABLED instead of ifdefs
+>  1 files changed, 0 insertions(+), 533 deletions(-)
+>  delete mode 100644 include/linux/sc26198.h
 
- drivers/tty/serial/amba-pl011.c |   36 ++++++++++++++++++++++++++++++++++++
- 1 files changed, 36 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index d3553b5..33c90f6 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -52,6 +52,8 @@
- #include <linux/scatterlist.h>
- #include <linux/delay.h>
- #include <linux/types.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
- #include <linux/pinctrl/consumer.h>
- #include <linux/sizes.h>
- 
-@@ -1869,6 +1871,38 @@ static struct uart_driver amba_reg = {
- 	.cons			= AMBA_CONSOLE,
- };
- 
-+static int pl011_probe_dt_alias(int index, struct device *dev)
-+{
-+	struct device_node *np;
-+	static bool seen_dev_with_alias = false;
-+	static bool seen_dev_without_alias = false;
-+	int ret = index;
-+
-+	if (!IS_ENABLED(CONFIG_OF))
-+		return index;
-+
-+	np = dev->of_node;
-+	if (!np)
-+		return ret;
-+
-+	ret = of_alias_get_id(np, "serial");
-+	if (IS_ERR_VALUE(ret)) {
-+		seen_dev_without_alias = true;
-+		ret = index;
-+	} else {
-+		seen_dev_with_alias = true;
-+		if (ret >= ARRAY_SIZE(amba_ports) || amba_ports[ret] != NULL) {
-+			dev_warn(dev, "requested serial port %d  not available.\n", ret);
-+			ret = index;
-+		}
-+	}
-+
-+	if (seen_dev_with_alias && seen_dev_without_alias)
-+		dev_warn(dev, "aliased and non-aliased serial devices found in device tree. Serial port enumeration may be unpredictable.\n");
-+
-+	return ret;
-+}
-+
- static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- {
- 	struct uart_amba_port *uap;
-@@ -1891,6 +1925,8 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- 		goto out;
- 	}
- 
-+	i = pl011_probe_dt_alias(i, &dev->dev);
-+
- 	base = ioremap(dev->res.start, resource_size(&dev->res));
- 	if (!base) {
- 		ret = -ENOMEM;
--- 
-1.7.0.4
-
+Paul Bolle
