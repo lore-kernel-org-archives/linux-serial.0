@@ -1,385 +1,544 @@
 From: Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
-Subject: [PATCHv3 8/9] arm: vt8500: gpio: Devicetree support for arch-vt8500
-Date: Wed, 22 Aug 2012 08:47:37 +1200
-Message-ID: <1345582058-2291-9-git-send-email-linux@prisktech.co.nz>
+Subject: [PATCHv3 9/9] arm: vt8500: clk: Add Common Clock Framework support
+Date: Wed, 22 Aug 2012 08:47:38 +1200
+Message-ID: <1345582058-2291-10-git-send-email-linux@prisktech.co.nz>
 References: <1345582058-2291-1-git-send-email-linux@prisktech.co.nz>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <1345582058-2291-1-git-send-email-linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: "devicetree-discuss"
- <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: vt8500-wm8505-linux-kernel-/JYPxA39Uh6Zox4op4iWzw@public.gmane.org
-Cc: Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Linus Walleij <linus.walleij-0IS4wlFg1OjSUeElwK9/Pw@public.gmane.org>, Florian Tobias Schandinat <FlorianSchandinat-Mmb7MZpHnFY@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mike Turquette <mturquette-l0cyMroinI0@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Florian Tobias Schandinat <FlorianSchandinat-Mmb7MZpHnFY@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Rob Landley <rob-VoJi6FS/r0vR7s880joybQ@public.gmane.org>, Linus Walleij <linus.walleij-0IS4wlFg1OjSUeElwK9/Pw@public.gmane.org>, Mike Turquette <mturquette-l0cyMroinI0@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Converted the existing arch-vt8500 gpio to a platform_device.
-Added support for WM8505 and WM8650 GPIO controllers.
+This patch adds common clock framework support for arch-vt8500.
+Support for PLL and device clocks on VT8500, WM8505 and WM8650
+are included.
 
 Signed-off-by: Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
 ---
- drivers/gpio/Kconfig       |    6 +
- drivers/gpio/Makefile      |    1 +
- drivers/gpio/gpio-vt8500.c |  313 ++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 320 insertions(+)
- create mode 100644 drivers/gpio/gpio-vt8500.c
+ drivers/clk/Makefile     |    1 +
+ drivers/clk/clk-vt8500.c |  496 ++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 497 insertions(+)
+ create mode 100644 drivers/clk/clk-vt8500.c
 
-diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
-index 542f0c0..3c8897a 100644
---- a/drivers/gpio/Kconfig
-+++ b/drivers/gpio/Kconfig
-@@ -183,6 +183,12 @@ config GPIO_STA2X11
- 	  Say yes here to support the STA2x11/ConneXt GPIO device.
- 	  The GPIO module has 128 GPIO pins with alternate functions.
+diff --git a/drivers/clk/Makefile b/drivers/clk/Makefile
+index 5869ea3..42fb173 100644
+--- a/drivers/clk/Makefile
++++ b/drivers/clk/Makefile
+@@ -10,6 +10,7 @@ obj-$(CONFIG_ARCH_SOCFPGA)	+= socfpga/
+ obj-$(CONFIG_PLAT_SPEAR)	+= spear/
+ obj-$(CONFIG_ARCH_U300)		+= clk-u300.o
+ obj-$(CONFIG_ARCH_INTEGRATOR)	+= versatile/
++obj-$(CONFIG_ARCH_VT8500)	+= clk-vt8500.o
  
-+config GPIO_VT8500
-+	bool "VIA/Wondermedia SoC GPIO Support"
-+	depends on ARCH_VT8500
-+	help
-+	  Say yes here to support the VT8500/WM8505/WM8650 GPIO controller.
-+
- config GPIO_XILINX
- 	bool "Xilinx GPIO support"
- 	depends on PPC_OF || MICROBLAZE
-diff --git a/drivers/gpio/Makefile b/drivers/gpio/Makefile
-index 0f55662..2c014b9 100644
---- a/drivers/gpio/Makefile
-+++ b/drivers/gpio/Makefile
-@@ -66,6 +66,7 @@ obj-$(CONFIG_GPIO_TPS65912)	+= gpio-tps65912.o
- obj-$(CONFIG_GPIO_TWL4030)	+= gpio-twl4030.o
- obj-$(CONFIG_GPIO_UCB1400)	+= gpio-ucb1400.o
- obj-$(CONFIG_GPIO_VR41XX)	+= gpio-vr41xx.o
-+obj-$(CONFIG_GPIO_VT8500)	+= gpio-vt8500.o
- obj-$(CONFIG_GPIO_VX855)	+= gpio-vx855.o
- obj-$(CONFIG_GPIO_WM831X)	+= gpio-wm831x.o
- obj-$(CONFIG_GPIO_WM8350)	+= gpio-wm8350.o
-diff --git a/drivers/gpio/gpio-vt8500.c b/drivers/gpio/gpio-vt8500.c
+ # Chip specific
+ obj-$(CONFIG_COMMON_CLK_WM831X) += clk-wm831x.o
+diff --git a/drivers/clk/clk-vt8500.c b/drivers/clk/clk-vt8500.c
 new file mode 100644
-index 0000000..19b12d9
+index 0000000..524c479
 --- /dev/null
-+++ b/drivers/gpio/gpio-vt8500.c
-@@ -0,0 +1,313 @@
-+/* linux/arch/arm/mach-vt8500/gpio.c
-+ *
-+ * Copyright (C) 2012 Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
-+ * Based on gpio.c:
-+ * - Copyright (C) 2010 Alexey Charkov <alchark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-+ *
-+ * This software is licensed under the terms of the GNU General Public
-+ * License version 2, as published by the Free Software Foundation, and
-+ * may be copied, distributed, and modified under those terms.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/err.h>
++++ b/drivers/clk/clk-vt8500.c
+@@ -0,0 +1,496 @@
 +#include <linux/io.h>
-+#include <linux/gpio.h>
-+#include <linux/platform_device.h>
-+#include <linux/bitops.h>
 +#include <linux/of.h>
-+#include <linux/of_address.h>
-+#include <linux/of_irq.h>
-+#include <linux/of_device.h>
++#include <linux/slab.h>
++#include <linux/bitops.h>
++#include <linux/clkdev.h>
++#include <linux/clk-provider.h>
++
++/* All clocks share the same lock as none can be changed concurrently */
++static DEFINE_SPINLOCK(_lock);
++
++struct clk_device {
++	struct clk_hw	hw;
++	void __iomem	*div_reg;
++	unsigned int	div_mask;
++	void __iomem	*en_reg;
++	int		en_bit;
++	spinlock_t	*lock;
++};
 +
 +/*
-+	We handle GPIOs by bank, each bank containing up to 32 GPIOs covered
-+	by one set of registers (although not all may be valid).
-+
-+	Because different SoC's have different register offsets, we pass the
-+	register offsets as data in vt8500_gpio_dt_ids[].
-+
-+	A value of NO_REG is used to indicate that this register is not
-+	supported. Only used for ->en at the moment.
-+*/
-+
-+#define NO_REG	0xFFFF
-+
-+/*
-+ * struct vt8500_gpio_bank_regoffsets
-+ * @en: offset to enable register of the bank
-+ * @dir: offset to direction register of the bank
-+ * @data_out: offset to the data out register of the bank
-+ * @data_in: offset to the data in register of the bank
-+ * @ngpio: highest valid pin in this bank
++ * Add new PLL_TYPE_x definitions here as required. Use the first known model
++ * to support the new type as the name.
++ * Add case statements to vtwm_pll_recalc_rate(), vtwm_pll_round_round() and
++ * vtwm_pll_set_rate() to handle the new PLL_TYPE_x
 + */
 +
-+struct vt8500_gpio_bank_regoffsets {
-+	unsigned int	en;
-+	unsigned int	dir;
-+	unsigned int	data_out;
-+	unsigned int	data_in;
-+	unsigned char	ngpio;
++#define PLL_TYPE_VT8500		0
++#define PLL_TYPE_WM8650		1
++
++struct clk_pll {
++	struct clk_hw	hw;
++	void __iomem	*reg;
++	spinlock_t	*lock;
++	int		type;
 +};
 +
-+struct vt8500_gpio_data {
-+	unsigned int				num_banks;
-+	struct vt8500_gpio_bank_regoffsets	banks[];
-+};
++static void __iomem *pmc_base;
 +
-+#define VT8500_BANK(__en, __dir, __out, __in, __ngpio)		\
-+{								\
-+	.en = __en,						\
-+	.dir = __dir,						\
-+	.data_out = __out,					\
-+	.data_in = __in,					\
-+	.ngpio = __ngpio,					\
++#define to_clk_device(_hw) container_of(_hw, struct clk_device, hw)
++
++
++#define VT8500_PMC_BUSY_MASK		0x18
++
++static void vt8500_pmc_wait_busy(void)
++{
++	while (readl(pmc_base) & VT8500_PMC_BUSY_MASK)
++		cpu_relax();
 +}
 +
-+static struct vt8500_gpio_data vt8500_data = {
-+	.num_banks	= 7,
-+	.banks	= {
-+		VT8500_BANK(0x00, 0x20, 0x40, 0x60, 26),
-+		VT8500_BANK(0x04, 0x24, 0x44, 0x64, 28),
-+		VT8500_BANK(0x08, 0x28, 0x48, 0x68, 31),
-+		VT8500_BANK(0x0C, 0x2C, 0x4C, 0x6C, 19),
-+		VT8500_BANK(0x10, 0x30, 0x50, 0x70, 19),
-+		VT8500_BANK(0x14, 0x34, 0x54, 0x74, 23),
-+		VT8500_BANK(NO_REG, 0x3C, 0x5C, 0x7C, 9),
-+	},
-+};
-+
-+static struct vt8500_gpio_data wm8505_data = {
-+	.num_banks	= 10,
-+	.banks	= {
-+		VT8500_BANK(0x40, 0x68, 0x90, 0xB8, 8),
-+		VT8500_BANK(0x44, 0x6C, 0x94, 0xBC, 32),
-+		VT8500_BANK(0x48, 0x70, 0x98, 0xC0, 6),
-+		VT8500_BANK(0x4C, 0x74, 0x9C, 0xC4, 16),
-+		VT8500_BANK(0x50, 0x78, 0xA0, 0xC8, 25),
-+		VT8500_BANK(0x54, 0x7C, 0xA4, 0xCC, 5),
-+		VT8500_BANK(0x58, 0x80, 0xA8, 0xD0, 5),
-+		VT8500_BANK(0x5C, 0x84, 0xAC, 0xD4, 12),
-+		VT8500_BANK(0x60, 0x88, 0xB0, 0xD8, 16),
-+		VT8500_BANK(0x64, 0x8C, 0xB4, 0xDC, 22),
-+	},
-+};
-+
-+/*
-+ * No information about which bits are valid so we just make
-+ * them all available until its figured out.
-+ */
-+static struct vt8500_gpio_data wm8650_data = {
-+	.num_banks	= 9,
-+	.banks	= {
-+		VT8500_BANK(0x40, 0x80, 0xC0, 0x00, 32),
-+		VT8500_BANK(0x44, 0x84, 0xC4, 0x04, 32),
-+		VT8500_BANK(0x48, 0x88, 0xC8, 0x08, 32),
-+		VT8500_BANK(0x4C, 0x8C, 0xCC, 0x0C, 32),
-+		VT8500_BANK(0x50, 0x90, 0xD0, 0x10, 32),
-+		VT8500_BANK(0x54, 0x94, 0xD4, 0x14, 32),
-+		VT8500_BANK(0x58, 0x98, 0xD8, 0x18, 32),
-+		VT8500_BANK(0x5C, 0x9C, 0xDC, 0x1C, 32),
-+		VT8500_BANK(0x7C, 0xBC, 0xFC, 0x3C, 32),
-+	},
-+};
-+
-+struct vt8500_gpio_chip {
-+	struct gpio_chip		chip;
-+
-+	const struct vt8500_gpio_bank_regoffsets *regs;
-+	void __iomem	*base;
-+};
-+
-+
-+#define to_vt8500(__chip) container_of(__chip, struct vt8500_gpio_chip, chip)
-+
-+static int vt8500_gpio_request(struct gpio_chip *chip, unsigned offset)
++static void vt8500_dclk_endisable(struct clk_hw *hw, int enable)
 +{
-+	unsigned val;
-+	struct vt8500_gpio_chip *vt8500_chip = to_vt8500(chip);
++	struct clk_device *cdev = to_clk_device(hw);
++	u32 en_val;
++	unsigned long flags = 0;
 +
-+	if (vt8500_chip->regs->en == NO_REG)
-+		return 0;
++	spin_lock_irqsave(cdev->lock, flags);
 +
-+	val = readl(vt8500_chip->base + vt8500_chip->regs->en);
-+	val |= BIT(offset);
-+	writel(val, vt8500_chip->base + vt8500_chip->regs->en);
++	en_val = readl(cdev->en_reg);
++
++	if (enable)
++		en_val |= BIT(cdev->en_bit);
++	else
++		en_val &= ~BIT(cdev->en_bit);
++
++	writel(en_val, cdev->en_reg);
++
++	spin_unlock_irqrestore(cdev->lock, flags);
++}
++
++static int vt8500_dclk_enable(struct clk_hw *hw)
++{
++	vt8500_dclk_endisable(hw, 1);
++	return 0;
++}
++
++static void vt8500_dclk_disable(struct clk_hw *hw)
++{
++	vt8500_dclk_endisable(hw, 0);
++}
++
++static int vt8500_dclk_is_enabled(struct clk_hw *hw)
++{
++	struct clk_device *cdev = to_clk_device(hw);
++	u32 en_val = (readl(cdev->en_reg) & BIT(cdev->en_bit));
++
++	return en_val ? 1 : 0;
++}
++
++static unsigned long vt8500_dclk_recalc_rate(struct clk_hw *hw,
++				unsigned long parent_rate)
++{
++	struct clk_device *cdev = to_clk_device(hw);
++	u32 div = readl(cdev->div_reg) & cdev->div_mask;
++
++	/* Special case for SDMMC devices */
++	if ((cdev->div_mask == 0x3F) && (div & BIT(5)))
++		div = 64 * (div & 0x1f);
++
++	/* div == 0 is actually the highest divisor */
++	if (div == 0)
++		div = (cdev->div_mask + 1);
++
++	return parent_rate / div;
++}
++
++static long vt8500_dclk_round_rate(struct clk_hw *hw, unsigned long rate,
++				unsigned long *prate)
++{
++	u32 divisor = rate / *prate;
++
++	return *prate / divisor;
++}
++
++static int vt8500_dclk_set_rate(struct clk_hw *hw, unsigned long rate,
++				unsigned long parent_rate)
++{
++	struct clk_device *cdev = to_clk_device(hw);
++	u32 divisor = rate / parent_rate;
++	unsigned long flags = 0;
++
++	if (divisor == cdev->div_mask + 1)
++		divisor = 0;
++
++	if (divisor > cdev->div_mask) {
++		pr_err("%s: invalid divisor for clock\n", __func__);
++		return -EINVAL;
++	}
++
++	spin_lock_irqsave(cdev->lock, flags);
++
++	vt8500_pmc_wait_busy();
++	writel(divisor, cdev->div_reg);
++	vt8500_pmc_wait_busy();
++
++	spin_lock_irqsave(cdev->lock, flags);
 +
 +	return 0;
 +}
 +
-+static void vt8500_gpio_free(struct gpio_chip *chip, unsigned offset)
-+{
-+	struct vt8500_gpio_chip *vt8500_chip = to_vt8500(chip);
-+	unsigned val;
 +
-+	if (vt8500_chip->regs->en == NO_REG)
++static const struct clk_ops vt8500_gated_clk_ops = {
++	.enable = vt8500_dclk_enable,
++	.disable = vt8500_dclk_disable,
++	.is_enabled = vt8500_dclk_is_enabled,
++};
++
++static const struct clk_ops vt8500_divisor_clk_ops = {
++	.round_rate = vt8500_dclk_round_rate,
++	.set_rate = vt8500_dclk_set_rate,
++	.recalc_rate = vt8500_dclk_recalc_rate,
++};
++
++static const struct clk_ops vt8500_gated_divisor_clk_ops = {
++	.enable = vt8500_dclk_enable,
++	.disable = vt8500_dclk_disable,
++	.is_enabled = vt8500_dclk_is_enabled,
++	.round_rate = vt8500_dclk_round_rate,
++	.set_rate = vt8500_dclk_set_rate,
++	.recalc_rate = vt8500_dclk_recalc_rate,
++};
++
++#define CLK_INIT_GATED			BIT(0)
++#define CLK_INIT_DIVISOR		BIT(1)
++#define CLK_INIT_GATED_DIVISOR		(CLK_INIT_DIVISOR | CLK_INIT_GATED)
++
++static __init void vtwm_device_clk_init(struct device_node *node)
++{
++	u32 en_reg, div_reg;
++	struct clk *clk;
++	struct clk_device *dev_clk;
++	const char *clk_name = node->name;
++	const char *parent_name;
++	struct clk_init_data init;
++	int rc;
++	int clk_init_flags = 0;
++
++	dev_clk = kzalloc(sizeof(*dev_clk), GFP_KERNEL);
++	if (WARN_ON(!dev_clk))
 +		return;
 +
-+	val = readl(vt8500_chip->base + vt8500_chip->regs->en);
-+	val &= ~BIT(offset);
-+	writel(val, vt8500_chip->base + vt8500_chip->regs->en);
-+}
++	dev_clk->lock = &_lock;
 +
-+static int vt8500_gpio_direction_input(struct gpio_chip *chip, unsigned offset)
-+{
-+	struct vt8500_gpio_chip *vt8500_chip = to_vt8500(chip);
-+
-+	unsigned val = readl(vt8500_chip->base + vt8500_chip->regs->dir);
-+	val &= ~BIT(offset);
-+	writel(val, vt8500_chip->base + vt8500_chip->regs->dir);
-+
-+	return 0;
-+}
-+
-+static int vt8500_gpio_direction_output(struct gpio_chip *chip, unsigned offset,
-+								int value)
-+{
-+	struct vt8500_gpio_chip *vt8500_chip = to_vt8500(chip);
-+
-+	unsigned val = readl(vt8500_chip->base + vt8500_chip->regs->dir);
-+	val |= BIT(offset);
-+	writel(val, vt8500_chip->base + vt8500_chip->regs->dir);
-+
-+	if (value) {
-+		val = readl(vt8500_chip->base + vt8500_chip->regs->data_out);
-+		val |= BIT(offset);
-+		writel(val, vt8500_chip->base + vt8500_chip->regs->data_out);
++	rc = of_property_read_u32(node, "enable-reg", &en_reg);
++	if (!rc) {
++		dev_clk->en_reg = pmc_base + en_reg;
++		rc = of_property_read_u32(node, "enable-bit", &dev_clk->en_bit);
++		if (rc) {
++			pr_err("%s: enable-bit property required for gated clock\n",
++								__func__);
++			return;
++		}
++		clk_init_flags |= CLK_INIT_GATED;
 +	}
-+	return 0;
++
++	rc = of_property_read_u32(node, "divisor-reg", &div_reg);
++	if (!rc) {
++		dev_clk->div_reg = pmc_base + div_reg;
++		/*
++		 * use 0x1f as the default mask since it covers
++		 * almost all the clocks and reduces dts properties
++		 */
++		dev_clk->div_mask = 0x1f;
++
++		of_property_read_u32(node, "divisor-mask", &dev_clk->div_mask);
++		clk_init_flags |= CLK_INIT_DIVISOR;
++	}
++
++	of_property_read_string(node, "clock-output-names", &clk_name);
++
++	switch (clk_init_flags) {
++	case CLK_INIT_GATED:
++		init.ops = &vt8500_gated_clk_ops;
++		break;
++	case CLK_INIT_DIVISOR:
++		init.ops = &vt8500_divisor_clk_ops;
++		break;
++	case CLK_INIT_GATED_DIVISOR:
++		init.ops = &vt8500_gated_divisor_clk_ops;
++		break;
++	default:
++		pr_err("%s: Invalid clock description in device tree\n",
++								__func__);
++		kfree(dev_clk);
++		return;
++	}
++
++	init.name = clk_name;
++	init.flags = 0;
++	parent_name = of_clk_get_parent_name(node, 0);
++	init.parent_names = &parent_name;
++	init.num_parents = 1;
++
++	dev_clk->hw.init = &init;
++
++	clk = clk_register(NULL, &dev_clk->hw);
++	if (WARN_ON(IS_ERR(clk))) {
++		kfree(dev_clk);
++		return;
++	}
++	rc = of_clk_add_provider(node, of_clk_src_simple_get, clk);
++	clk_register_clkdev(clk, clk_name, NULL);
 +}
 +
-+static int vt8500_gpio_get_value(struct gpio_chip *chip, unsigned offset)
++
++/* PLL clock related functions */
++
++#define to_clk_pll(_hw) container_of(_hw, struct clk_pll, hw)
++
++/* Helper macros for PLL_VT8500 */
++#define VT8500_PLL_MUL(x)	((x & 0x1F) << 1)
++#define VT8500_PLL_DIV(x)	((x & 0x100) ? 1 : 2)
++
++#define VT8500_BITS_TO_FREQ(r, m, d)					\
++				((r / d) * m)
++
++#define VT8500_BITS_TO_VAL(m, d)					\
++				((d == 2 ? 0 : 0x100) | ((m >> 1) & 0x1F))
++
++/* Helper macros for PLL_WM8650 */
++#define WM8650_PLL_MUL(x)	(x & 0x3FF)
++#define WM8650_PLL_DIV(x)	(((x >> 10) & 7) * (1 << ((x >> 13) & 3)))
++
++#define WM8650_BITS_TO_FREQ(r, m, d1, d2)				\
++				(r * m / (d1 * (1 << d2)))
++
++#define WM8650_BITS_TO_VAL(m, d1, d2)					\
++				((d2 << 13) | (d1 << 10) | (m & 0x3FF))
++
++
++static void vt8500_find_pll_bits(unsigned long rate, unsigned long parent_rate,
++				u32 *multiplier, u32 *prediv)
 +{
-+	struct vt8500_gpio_chip *vt8500_chip = to_vt8500(chip);
++	unsigned long tclk;
 +
-+	return (readl(vt8500_chip->base + vt8500_chip->regs->data_in) >>
-+								offset) & 1;
-+}
-+
-+static void vt8500_gpio_set_value(struct gpio_chip *chip, unsigned offset,
-+								int value)
-+{
-+	struct vt8500_gpio_chip *vt8500_chip = to_vt8500(chip);
-+
-+	unsigned val = readl(vt8500_chip->base + vt8500_chip->regs->data_out);
-+	if (value)
-+		val |= BIT(offset);
++	/* sanity check */
++	if ((rate < parent_rate * 4) || (rate > parent_rate * 62)) {
++		pr_err("%s: requested rate out of range\n", __func__);
++		*multiplier = 0;
++		*prediv = 1;
++		return;
++	}
++	if (rate <= parent_rate * 31)
++		/* use the prediv to double the resolution */
++		*prediv = 2;
 +	else
-+		val &= ~BIT(offset);
++		*prediv = 1;
 +
-+	writel(val, vt8500_chip->base + vt8500_chip->regs->data_out);
++	*multiplier = rate / (parent_rate / *prediv);
++	tclk = (parent_rate / *prediv) * *multiplier;
++
++	if (tclk != rate)
++		pr_warn("%s: requested rate %lu, found rate %lu\n", __func__,
++								rate, tclk);
 +}
 +
-+static int vt8500_of_xlate(struct gpio_chip *gc,
-+			    const struct of_phandle_args *gpiospec, u32 *flags)
++static void wm8650_find_pll_bits(unsigned long rate, unsigned long parent_rate,
++				u32 *multiplier, u32 *divisor1, u32 *divisor2)
 +{
-+	/* bank if specificed in gpiospec->args[0] */
-+	if (flags)
-+		*flags = gpiospec->args[2];
++	u32 mul, div1, div2;
++	u32 best_mul, best_div1, best_div2;
++	unsigned long tclk, rate_err, best_err;
 +
-+	return gpiospec->args[1];
++	best_err = (unsigned long)-1;
++
++	/* Find the closest match (lower or equal to requested) */
++	for (div1 = 5; div1 >= 3; div1--)
++		for (div2 = 3; div2 >= 0; div2--)
++			for (mul = 3; mul <= 1023; mul++) {
++				tclk = parent_rate * mul / (div1 * (1 << div2));
++				if (tclk > rate)
++					continue;
++				/* error will always be +ve */
++				rate_err = rate - tclk;
++				if (rate_err == 0) {
++					*multiplier = mul;
++					*divisor1 = div1;
++					*divisor2 = div2;
++					return;
++				}
++
++				if (rate_err < best_err) {
++					best_err = rate_err;
++					best_mul = mul;
++					best_div1 = div1;
++					best_div2 = div2;
++				}
++			}
++
++	/* if we got here, it wasn't an exact match */
++	pr_warn("%s: requested rate %lu, found rate %lu\n", __func__, rate,
++							rate - best_err);
++	*multiplier = mul;
++	*divisor1 = div1;
++	*divisor2 = div2;
 +}
 +
-+static int vt8500_add_chips(struct platform_device *pdev, void __iomem *base,
-+				const struct vt8500_gpio_data *data)
++static int vtwm_pll_set_rate(struct clk_hw *hw, unsigned long rate,
++				unsigned long parent_rate)
 +{
-+	struct vt8500_gpio_chip *vtchip;
-+	struct gpio_chip *chip;
-+	int i;
-+	int pin_cnt = 0;
++	struct clk_pll *pll = to_clk_pll(hw);
++	u32 mul, div1, div2;
++	u32 pll_val;
++	unsigned long flags = 0;
 +
-+	vtchip = devm_kzalloc(&pdev->dev,
-+			sizeof(struct vt8500_gpio_chip) * data->num_banks,
-+			GFP_KERNEL);
-+	if (!vtchip) {
-+		pr_err("%s: failed to allocate chip memory\n", __func__);
-+		return -ENOMEM;
++	/* sanity check */
++
++	switch (pll->type) {
++	case PLL_TYPE_VT8500:
++		vt8500_find_pll_bits(rate, parent_rate, &mul, &div1);
++		pll_val = VT8500_BITS_TO_VAL(mul, div1);
++		break;
++	case PLL_TYPE_WM8650:
++		wm8650_find_pll_bits(rate, parent_rate, &mul, &div1, &div2);
++		pll_val = WM8650_BITS_TO_VAL(mul, div1, div2);
++		break;
++	default:
++		pr_err("%s: invalid pll type\n", __func__);
++		return 0;
 +	}
 +
-+	for (i = 0; i < data->num_banks; i++) {
-+		vtchip[i].base = base;
-+		vtchip[i].regs = &data->banks[i];
++	spin_lock_irqsave(pll->lock, flags);
 +
-+		chip = &vtchip[i].chip;
++	vt8500_pmc_wait_busy();
++	writel(pll_val, pll->reg);
++	vt8500_pmc_wait_busy();
 +
-+		chip->of_xlate = vt8500_of_xlate;
-+		chip->of_gpio_n_cells = 3;
-+		chip->of_node = pdev->dev.of_node;
-+
-+		chip->request = vt8500_gpio_request;
-+		chip->free = vt8500_gpio_free;
-+		chip->direction_input = vt8500_gpio_direction_input;
-+		chip->direction_output = vt8500_gpio_direction_output;
-+		chip->get = vt8500_gpio_get_value;
-+		chip->set = vt8500_gpio_set_value;
-+		chip->can_sleep = 0;
-+		chip->base = pin_cnt;
-+		chip->ngpio = data->banks[i].ngpio;
-+
-+		pin_cnt += data->banks[i].ngpio;
-+
-+		gpiochip_add(chip);
-+	}
-+	return 0;
-+}
-+
-+static struct of_device_id vt8500_gpio_dt_ids[] = {
-+	{ .compatible = "via,vt8500-gpio", .data = &vt8500_data, },
-+	{ .compatible = "wm,wm8505-gpio", .data = &wm8505_data, },
-+	{ .compatible = "wm,wm8650-gpio", .data = &wm8650_data, },
-+	{ /* Sentinel */ },
-+};
-+
-+static int __devinit vt8500_gpio_probe(struct platform_device *pdev)
-+{
-+	void __iomem *gpio_base;
-+	struct device_node *np;
-+	const struct of_device_id *of_id =
-+				of_match_device(vt8500_gpio_dt_ids, &pdev->dev);
-+
-+	if (!of_id) {
-+		dev_err(&pdev->dev, "Failed to find gpio controller\n");
-+		return -ENODEV;
-+	}
-+
-+	np = pdev->dev.of_node;
-+	if (!np) {
-+		dev_err(&pdev->dev, "Missing GPIO description in devicetree\n");
-+		return -EFAULT;
-+	}
-+
-+	gpio_base = of_iomap(np, 0);
-+	if (!gpio_base) {
-+		dev_err(&pdev->dev, "Unable to map GPIO registers\n");
-+		of_node_put(np);
-+		return -ENOMEM;
-+	}
-+
-+	vt8500_add_chips(pdev, gpio_base, of_id->data);
++	spin_unlock_irqrestore(pll->lock, flags);
 +
 +	return 0;
 +}
 +
-+static struct platform_driver vt8500_gpio_driver = {
-+	.probe		= vt8500_gpio_probe,
-+	.driver		= {
-+		.name	= "vt8500-gpio",
-+		.owner	= THIS_MODULE,
-+		.of_match_table = vt8500_gpio_dt_ids,
-+	},
++static long vtwm_pll_round_rate(struct clk_hw *hw, unsigned long rate,
++				unsigned long *prate)
++{
++	struct clk_pll *pll = to_clk_pll(hw);
++	u32 mul, div1, div2;
++	long round_rate;
++
++	switch (pll->type) {
++	case PLL_TYPE_VT8500:
++		vt8500_find_pll_bits(rate, *prate, &mul, &div1);
++		round_rate = VT8500_BITS_TO_FREQ(*prate, mul, div1);
++		break;
++	case PLL_TYPE_WM8650:
++		wm8650_find_pll_bits(rate, *prate, &mul, &div1, &div2);
++		round_rate = WM8650_BITS_TO_FREQ(*prate, mul, div1, div2);
++		break;
++	default:
++		round_rate = 0;
++	}
++
++	return round_rate;
++}
++
++static unsigned long vtwm_pll_recalc_rate(struct clk_hw *hw,
++				unsigned long parent_rate)
++{
++	struct clk_pll *pll = to_clk_pll(hw);
++	u32 pll_val = readl(pll->reg);
++	unsigned long pll_freq;
++
++	switch (pll->type) {
++	case PLL_TYPE_VT8500:
++		pll_freq = parent_rate * VT8500_PLL_MUL(pll_val);
++		pll_freq /= VT8500_PLL_DIV(pll_val);
++		break;
++	case PLL_TYPE_WM8650:
++		pll_freq = parent_rate * WM8650_PLL_MUL(pll_val);
++		pll_freq /= WM8650_PLL_DIV(pll_val);
++		break;
++	default:
++		pll_freq = 0;
++	}
++
++	return pll_freq;
++}
++
++const struct clk_ops vtwm_pll_ops = {
++	.round_rate = vtwm_pll_round_rate,
++	.set_rate = vtwm_pll_set_rate,
++	.recalc_rate = vtwm_pll_recalc_rate,
 +};
 +
-+module_platform_driver(vt8500_gpio_driver);
++static __init void vtwm_pll_clk_init(struct device_node *node, int pll_type)
++{
++	u32 reg;
++	struct clk *clk;
++	struct clk_pll *pll_clk;
++	const char *clk_name = node->name;
++	const char *parent_name;
++	struct clk_init_data init;
++	int rc;
 +
-+MODULE_DESCRIPTION("VT8500 GPIO Driver");
-+MODULE_AUTHOR("Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>");
-+MODULE_LICENSE("GPL v2");
-+MODULE_DEVICE_TABLE(of, vt8500_gpio_dt_ids);
++	rc = of_property_read_u32(node, "reg", &reg);
++	if (WARN_ON(rc))
++		return;
++
++	pll_clk = kzalloc(sizeof(*pll_clk), GFP_KERNEL);
++	if (WARN_ON(!pll_clk))
++		return;
++
++	pll_clk->reg = pmc_base + reg;
++	pll_clk->lock = &_lock;
++	pll_clk->type = pll_type;
++
++	of_property_read_string(node, "clock-output-names", &clk_name);
++
++	init.name = clk_name;
++	init.ops = &vtwm_pll_ops;
++	init.flags = 0;
++	parent_name = of_clk_get_parent_name(node, 0);
++	init.parent_names = &parent_name;
++	init.num_parents = 1;
++
++	pll_clk->hw.init = &init;
++
++	clk = clk_register(NULL, &pll_clk->hw);
++	if (WARN_ON(IS_ERR(clk))) {
++		kfree(pll_clk);
++		return;
++	}
++	rc = of_clk_add_provider(node, of_clk_src_simple_get, clk);
++	clk_register_clkdev(clk, clk_name, NULL);
++}
++
++
++/* Wrappers for initialization functions */
++
++static void __init vt8500_pll_init(struct device_node *node)
++{
++	vtwm_pll_clk_init(node, PLL_TYPE_VT8500);
++}
++
++static void __init wm8650_pll_init(struct device_node *node)
++{
++	vtwm_pll_clk_init(node, PLL_TYPE_WM8650);
++}
++
++static const __initconst struct of_device_id clk_match[] = {
++	{ .compatible = "fixed-clock", .data = of_fixed_clk_setup, },
++	{ .compatible = "via,vt8500-pll-clock", .data = vt8500_pll_init, },
++	{ .compatible = "wm,wm8650-pll-clock", .data = wm8650_pll_init, },
++	{ .compatible = "via,vt8500-device-clock",
++					.data = vtwm_device_clk_init, },
++	{ /* sentinel */ }
++};
++
++void __init vtwm_clk_init(void __iomem *base)
++{
++	if (!base)
++		return;
++
++	pmc_base = base;
++
++	of_clk_init(clk_match);
++}
 -- 
 1.7.9.5
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
