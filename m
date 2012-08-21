@@ -1,41 +1,40 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v2] serial: pl011: honour serial aliases in device tree
-Date: Wed, 22 Aug 2012 00:04:23 +0200
-Message-ID: <CACRpkdbh-PhFKU54FCti-7RwQLJ8Q0d9_XLPEk5vNemjDOa-wQ@mail.gmail.com>
-References: <1345564094-16565-1-git-send-email-matthew.leach@arm.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCHv3 3/9] serial: vt8500: Add devicetree support for
+ vt8500-serial
+Date: Tue, 21 Aug 2012 23:12:55 +0100
+Message-ID: <20120821231255.71a7515a@pyramind.ukuu.org.uk>
+References: <1345582058-2291-1-git-send-email-linux@prisktech.co.nz>
+ <1345582058-2291-4-git-send-email-linux@prisktech.co.nz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vc0-f174.google.com ([209.85.220.174]:51357 "EHLO
-	mail-vc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758425Ab2HUWEY (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 21 Aug 2012 18:04:24 -0400
-Received: by vcbfk26 with SMTP id fk26so376797vcb.19
-        for <linux-serial@vger.kernel.org>; Tue, 21 Aug 2012 15:04:23 -0700 (PDT)
-In-Reply-To: <1345564094-16565-1-git-send-email-matthew.leach@arm.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1345582058-2291-4-git-send-email-linux@prisktech.co.nz>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: linux-arm-kernel-bounces@lists.infradead.org
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Tony Prisk <linux@prisktech.co.nz>
+Cc: Alessandro Zummo <a.zummo@towertech.it>, linux-fbdev@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@stericsson.com>, Arnd Bergmann <arnd@arndb.de>, Florian Tobias Schandinat <FlorianSchandinat@gmx.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devicetree-discuss@lists.ozlabs.org, linux-usb@vger.kernel.org, vt8500-wm8505-linux-kernel@googlegroup.com, linux-kernel@vger.kernel.org, Rob Herring <rob.herring@calxeda.com>, Grant Likely <grant.likely@secretlab.ca>, Rob Landley <rob@landley.net>, linux-serial@vger.kernel.org, rtc-linux@googlegroups.com, Stephen Warren <swarren@nvidia.com>, Mike Turquette <mturquette@ti.com>, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
-To: Matthew Leach <matthew.leach@arm.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, will.deacon@arm.com, gregkh@linuxfoundation.org, devicetree-discuss@lists.ozlabs.org, robherring2@gmail.com
 
-On Tue, Aug 21, 2012 at 5:48 PM, Matthew Leach <matthew.leach@arm.com> wrote:
+On Wed, 22 Aug 2012 08:47:32 +1200
+Tony Prisk <linux@prisktech.co.nz> wrote:
 
-> If the order of UART nodes is changed in the device tree, then tty dev
-> devices are attached to different serial ports causing the console to
-> be directed to a different physical serial port. The "serial" aliases
-> in the device tree should prevent this.
->
-> This patch ensures that the UART driver creates tty devices that
-> honour these aliases if a device tree is present.
->
-> Acked-by: Rob Herring <rob.herring@calxeda.com>
-> Signed-off-by: Matthew Leach <matthew.leach@arm.com>
+> Signed-off-by: Tony Prisk <linux@prisktech.co.nz>
 > ---
-> v2: use IS_ENABLED instead of ifdefs
+>  drivers/tty/serial/vt8500_serial.c |   37 ++++++++++++++++++++++++++++++++----
+>  1 file changed, 33 insertions(+), 4 deletions(-)
 
-Looks good to me.
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Can we have a comment attached to a change this size. In particular one
+describing why it gone from 4 to 6 ports, and why the port id twiddling.
 
-Yours,
-Linus Walleij
+Is there a reason you can't use the device tree port id ?
+
+What are the regression risks for existing users expecting the pdev->id
+binding ?
