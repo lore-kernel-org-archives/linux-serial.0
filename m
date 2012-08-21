@@ -1,65 +1,90 @@
 From: Felipe Balbi <balbi@ti.com>
-Subject: Re: [RFC/PATCH 02/13] serial: omap: always return IRQ_HANDLED
-Date: Tue, 21 Aug 2012 14:54:27 +0300
-Message-ID: <20120821115426.GC10347@arwen.pp.htv.fi>
+Subject: [PATCH v2 00/13] OMAP Serial patches
+Date: Tue, 21 Aug 2012 15:15:58 +0300
+Message-ID: <1345551371-18862-1-git-send-email-balbi@ti.com>
 References: <1345540555-24359-1-git-send-email-balbi@ti.com>
- <1345540555-24359-3-git-send-email-balbi@ti.com>
- <20120821125005.235926e0@bob.linux.org.uk>
-Reply-To: balbi@ti.com
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="9uNR01GrImESOVvg"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20120821125005.235926e0@bob.linux.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: Felipe Balbi <balbi@ti.com>, Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Shubhrajyoti Datta <shubhrajyoti@ti.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from na3sys009aog107.obsmtp.com ([74.125.149.197]:41704 "EHLO
+	na3sys009aog107.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755205Ab2HUMUL (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 21 Aug 2012 08:20:11 -0400
+Received: by lbao2 with SMTP id o2so3246514lba.10
+        for <linux-serial@vger.kernel.org>; Tue, 21 Aug 2012 05:20:08 -0700 (PDT)
+In-Reply-To: <1345540555-24359-1-git-send-email-balbi@ti.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: alan@linux.intel.com
+Cc: Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Shubhrajyoti Datta <shubhrajyoti@ti.com>, Felipe Balbi <balbi@ti.com>
 
+Hi guys,
 
---9uNR01GrImESOVvg
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+here's a series of cleanup patches to the OMAP serial
+driver. A later series could be made re-implementing
+DMA using the DMA Engine API. Note that for RX DMA
+we could be using RX Timeout IRQ as a hint that we better
+use PIO instead ;-)
 
-On Tue, Aug 21, 2012 at 12:50:05PM +0100, Alan Cox wrote:
-> On Tue, 21 Aug 2012 12:15:44 +0300
-> Felipe Balbi <balbi@ti.com> wrote:
->=20
-> > Even if we enter our IRQ handler just to notice
-> > that the our device didn't generate the IRQ,
-> > that still means "handling" and IRQ, so let's
-> > return IRQ_HANDLED.
->=20
-> That looks wrong - you'll defeat the stuck IRQ protection. If we didn't
-> cause the IRQ then we are IRQ_NONE ?
+All patches were tested on my pandaboard, but I'd really
+like to receive Tested-by on other platforms.
 
-that's true. I'll drop this patch from the list. My bad.
+After this goes in, I'll probably try to get UART wakeup
+working again and only after that look at DMA.
 
---=20
-balbi
+Changes since v1:
 
---9uNR01GrImESOVvg
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+	. improved commit log on patch 9/13 (formerly 10/13)
+	. removed patch 2/13
+	. added a new patch switching from spin_lock_irqsave() to spin_lock and
+		spin_unlock_irqrestore to spin_unlock
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
+Retested with my pandaboard, UART continues to work:
 
-iQIcBAEBAgAGBQJQM3byAAoJEIaOsuA1yqREUO0P/AtKnPqH9TaUDrx6vMjdGugP
-0SsYwJTMErf9Ipt5bBvTzwLBixOnPu8yVJBayjoxQ/lvlSdeTLNQoo/oLYTG6oVI
-v5Fxi7sAG+FJQ9Kwiw6PC4sWUSLhA5wVmvIABqYVmYfIi1OewM5oOT1m/ER4QGnw
-2H4Hn1b7v7nsIagpsMkKkBJ1SqCoyQbq8S9VAC80IhVUwpglSTX7SiimxTiPKqwY
-MJ/5c/0KgD3GwXYvZ1iFeuNYnvO1E9XBpFVb8kGUc5PtUl4HRsaFiEd5uCsfxxzL
-13k0CnQR/vap1lzThBdzAvS6P3ZvekovMGB0mrZzalfJFU2P3reUDjI3jcF8uf/C
-sVyxEzymzQXV/BtIKmg0hPAzUBJd6CPoJqZ2j1TjszREPKDAe9qJ77pwKu+C+Tmt
-ZmOe/DOiXJuxFjcSsHEO3Fz4l5Q5tZDg3rCrlhjhIaW4pNCKYf9ChC4ABIQA30ES
-uJfRKNzwa0hGa8FqmWXaDBllgsNLGZ7tFJLxpY9kQROnZXmadSOxKzr5XRUhEntS
-ttkQjAqh8bKSMRr60PrLe1xEl+3g3fQX97vtYuJTdclnlaBZo6brkQLANaTJtzTn
-gYcpG1rbkOt563SORWOoQphgIbWGyreyaimzdIjhe4QjOQhkKFA9ojGBLufspqEi
-zbtNiNMCyFGdHrDnXDM8
-=ezih
------END PGP SIGNATURE-----
+ # grep -i uart /proc/interrupts
+ 106:        124          0       GIC  OMAP UART2
+ #  grep -i uart /proc/interrupts
+ 106:        189          0       GIC  OMAP UART2
+ #  grep -i uart /proc/interrupts
+ 106:        255          0       GIC  OMAP UART2
+ #  grep -i uart /proc/interrupts
+ 106:        321          0       GIC  OMAP UART2
+ #  grep -i uart /proc/interrupts
+ 106:        387          0       GIC  OMAP UART2
+ #  grep -i uart /proc/interrupts
+ 106:        453          0       GIC  OMAP UART2
+ #  grep -i uart /proc/interrupts
+ 106:        519          0       GIC  OMAP UART2
 
---9uNR01GrImESOVvg--
+cheers
+
+ps: if anyone knows a better test for UART, let me know.
+
+for convenience of anyone testing, patches are available on my git tree [1] on
+branch uart
+
+[1] git://git.kernel.org/pub/scm/linux/kernel/git/balbi/usb.git uart
+
+Felipe Balbi (13):
+  serial: omap: define and use to_uart_omap_port()
+  serial: omap: define helpers for pdata function pointers
+  serial: omap: don't access the platform_device
+  serial: omap: drop DMA support
+  serial: add OMAP-specific defines
+  serial: omap: simplify IRQ handling
+  serial: omap: refactor receive_chars() into rdi/rlsi handlers
+  serial: omap: move THRE check to transmit_chars()
+  serial: omap: stick to put_autosuspend
+  serial: omap: set dev->drvdata before enabling pm_runtime
+  serial: omap: drop unnecessary check from remove
+  serial: omap: make sure to suspend device before remove
+  serial: omap: don't save IRQ flags on hardirq
+
+ arch/arm/mach-omap2/serial.c                  |  15 +-
+ arch/arm/plat-omap/include/plat/omap-serial.h |  12 +-
+ drivers/tty/serial/omap-serial.c              | 713 +++++++++-----------------
+ include/linux/serial_reg.h                    |   4 +
+ 4 files changed, 254 insertions(+), 490 deletions(-)
+
+-- 
+1.7.12.rc3
+
