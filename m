@@ -1,231 +1,241 @@
-From: Huang Shijie <shijie8@gmail.com>
-Subject: [PATCH v3] serial: add a new helper function
-Date: Wed, 22 Aug 2012 22:13:36 -0400
-Message-ID: <1345688016-27506-1-git-send-email-shijie8@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: alan@linux.intel.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, netdev@vger.kernel.org, b32955@freescale.com, Huang Shijie <shijie8@gmail.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: [RFC PATCH] tty: move the async flags from the serial code into the
+ tty includes
+Date: Wed, 22 Aug 2012 15:44:50 +0100
+Message-ID: <20120822144426.27149.93723.stgit@localhost.localdomain>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:56968 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753085Ab2HVO11 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 22 Aug 2012 10:27:27 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: greg@kroah.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-In most of the time, the driver needs to check if the cts flow control
-is enabled. But now, the driver checks the ASYNC_CTS_FLOW flag manually,
-which is not a grace way. So add a new wraper function to make the code
-tidy and clean.
+Jiri - this seem more sensible ?
 
-Signed-off-by: Huang Shijie <shijie8@gmail.com>
+From: Alan Cox <alan@linux.intel.com>
+
+These are used with the tty_port flags which are tty generic so move the
+flags into a more sensible place. This then makes it possible to add
+helpers such as those suggested by Huang Shijie.
+
+Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
-v2 --> v3:
-	this patch is based on Alan's "tty: move the async flags from the seria.."
 
-v1 --> v2:
-	move the function tty.h to serial.h
----
- drivers/char/pcmcia/synclink_cs.c   |    2 +-
- drivers/tty/amiserial.c             |    2 +-
- drivers/tty/cyclades.c              |    2 +-
- drivers/tty/isicom.c                |    2 +-
- drivers/tty/mxser.c                 |    2 +-
- drivers/tty/serial/mxs-auart.c      |    2 +-
- drivers/tty/serial/serial_core.c    |    4 ++--
- drivers/tty/synclink.c              |    2 +-
- drivers/tty/synclink_gt.c           |    2 +-
- drivers/tty/synclinkmp.c            |    2 +-
- include/linux/tty.h                 |    6 ++++++
- net/irda/ircomm/ircomm_tty.c        |    4 ++--
- net/irda/ircomm/ircomm_tty_attach.c |    2 +-
- 13 files changed, 20 insertions(+), 14 deletions(-)
+ include/linux/Kbuild      |    1 +
+ include/linux/serial.h    |   75 ++-----------------------------------------
+ include/linux/tty.h       |    1 +
+ include/linux/tty_flags.h |   78 +++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 83 insertions(+), 72 deletions(-)
+ create mode 100644 include/linux/tty_flags.h
 
-diff --git a/drivers/char/pcmcia/synclink_cs.c b/drivers/char/pcmcia/synclink_cs.c
-index 5db08c7..3f57d5de 100644
---- a/drivers/char/pcmcia/synclink_cs.c
-+++ b/drivers/char/pcmcia/synclink_cs.c
-@@ -1050,7 +1050,7 @@ static void cts_change(MGSLPC_INFO *info, struct tty_struct *tty)
- 	wake_up_interruptible(&info->status_event_wait_q);
- 	wake_up_interruptible(&info->event_wait_q);
+diff --git a/include/linux/Kbuild b/include/linux/Kbuild
+index b3d6385..b45caff 100644
+--- a/include/linux/Kbuild
++++ b/include/linux/Kbuild
+@@ -370,6 +370,7 @@ header-y += tipc.h
+ header-y += tipc_config.h
+ header-y += toshiba.h
+ header-y += tty.h
++header-y += tty_flags.h
+ header-y += types.h
+ header-y += udf_fs_i.h
+ header-y += udp.h
+diff --git a/include/linux/serial.h b/include/linux/serial.h
+index 90e9f98..3504f42 100644
+--- a/include/linux/serial.h
++++ b/include/linux/serial.h
+@@ -12,9 +12,12 @@
  
--	if (info->port.flags & ASYNC_CTS_FLOW) {
-+	if (tty_port_cts_enabled(&info->port)) {
- 		if (tty->hw_stopped) {
- 			if (info->serial_signals & SerialSignal_CTS) {
- 				if (debug_level >= DEBUG_LEVEL_ISR)
-diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
-index 2b7535d..42d0a25 100644
---- a/drivers/tty/amiserial.c
-+++ b/drivers/tty/amiserial.c
-@@ -420,7 +420,7 @@ static void check_modem_status(struct serial_state *info)
- 				tty_hangup(port->tty);
- 		}
- 	}
--	if (port->flags & ASYNC_CTS_FLOW) {
-+	if (tty_port_cts_enabled(port)) {
- 		if (port->tty->hw_stopped) {
- 			if (!(status & SER_CTS)) {
- #if (defined(SERIAL_DEBUG_INTR) || defined(SERIAL_DEBUG_FLOW))
-diff --git a/drivers/tty/cyclades.c b/drivers/tty/cyclades.c
-index e3954da..0a6a0bc 100644
---- a/drivers/tty/cyclades.c
-+++ b/drivers/tty/cyclades.c
-@@ -727,7 +727,7 @@ static void cyy_chip_modem(struct cyclades_card *cinfo, int chip,
- 		else
- 			tty_hangup(tty);
- 	}
--	if ((mdm_change & CyCTS) && (info->port.flags & ASYNC_CTS_FLOW)) {
-+	if ((mdm_change & CyCTS) && tty_port_cts_enabled(&info->port)) {
- 		if (tty->hw_stopped) {
- 			if (mdm_status & CyCTS) {
- 				/* cy_start isn't used
-diff --git a/drivers/tty/isicom.c b/drivers/tty/isicom.c
-index 99cf22e..d7492e1 100644
---- a/drivers/tty/isicom.c
-+++ b/drivers/tty/isicom.c
-@@ -600,7 +600,7 @@ static irqreturn_t isicom_interrupt(int irq, void *dev_id)
- 					port->status &= ~ISI_DCD;
- 			}
+ #include <linux/types.h>
  
--			if (port->port.flags & ASYNC_CTS_FLOW) {
-+			if (tty_port_cts_enabled(&port->port)) {
- 				if (tty->hw_stopped) {
- 					if (header & ISI_CTS) {
- 						port->port.tty->hw_stopped = 0;
-diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index bb2da4c..cfda47d 100644
---- a/drivers/tty/mxser.c
-+++ b/drivers/tty/mxser.c
-@@ -830,7 +830,7 @@ static void mxser_check_modem_status(struct tty_struct *tty,
- 			wake_up_interruptible(&port->port.open_wait);
- 	}
++#include <linux/tty_flags.h>
++
+ #ifdef __KERNEL__
+ #include <asm/page.h>
  
--	if (port->port.flags & ASYNC_CTS_FLOW) {
-+	if (tty_port_cts_enabled(&port->port)) {
- 		if (tty->hw_stopped) {
- 			if (status & UART_MSR_CTS) {
- 				tty->hw_stopped = 0;
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index 3a667ee..dafeef2 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -262,7 +262,7 @@ static void mxs_auart_set_mctrl(struct uart_port *u, unsigned mctrl)
++
+ /*
+  * Counters of the input lines (CTS, DSR, RI, CD) interrupts
+  */
+@@ -94,78 +97,6 @@ struct serial_uart_config {
+ #define UART_STARTECH		0x04
+ #define UART_NATSEMI		0x08
  
- 	ctrl &= ~AUART_CTRL2_RTSEN;
- 	if (mctrl & TIOCM_RTS) {
--		if (u->state->port.flags & ASYNC_CTS_FLOW)
-+		if (tty_port_cts_enabled(&u->state->port))
- 			ctrl |= AUART_CTRL2_RTSEN;
- 	}
+-/*
+- * Definitions for async_struct (and serial_struct) flags field
+- *
+- * Define ASYNCB_* for convenient use with {test,set,clear}_bit.
+- */
+-#define ASYNCB_HUP_NOTIFY	 0 /* Notify getty on hangups and closes
+-				    * on the callout port */
+-#define ASYNCB_FOURPORT		 1 /* Set OU1, OUT2 per AST Fourport settings */
+-#define ASYNCB_SAK		 2 /* Secure Attention Key (Orange book) */
+-#define ASYNCB_SPLIT_TERMIOS	 3 /* Separate termios for dialin/callout */
+-#define ASYNCB_SPD_HI		 4 /* Use 56000 instead of 38400 bps */
+-#define ASYNCB_SPD_VHI		 5 /* Use 115200 instead of 38400 bps */
+-#define ASYNCB_SKIP_TEST	 6 /* Skip UART test during autoconfiguration */
+-#define ASYNCB_AUTO_IRQ		 7 /* Do automatic IRQ during
+-				    * autoconfiguration */
+-#define ASYNCB_SESSION_LOCKOUT	 8 /* Lock out cua opens based on session */
+-#define ASYNCB_PGRP_LOCKOUT	 9 /* Lock out cua opens based on pgrp */
+-#define ASYNCB_CALLOUT_NOHUP	10 /* Don't do hangups for cua device */
+-#define ASYNCB_HARDPPS_CD	11 /* Call hardpps when CD goes high  */
+-#define ASYNCB_SPD_SHI		12 /* Use 230400 instead of 38400 bps */
+-#define ASYNCB_LOW_LATENCY	13 /* Request low latency behaviour */
+-#define ASYNCB_BUGGY_UART	14 /* This is a buggy UART, skip some safety
+-				    * checks.  Note: can be dangerous! */
+-#define ASYNCB_AUTOPROBE	15 /* Port was autoprobed by PCI or PNP code */
+-#define ASYNCB_LAST_USER	15
+-
+-/* Internal flags used only by kernel */
+-#define ASYNCB_INITIALIZED	31 /* Serial port was initialized */
+-#define ASYNCB_SUSPENDED	30 /* Serial port is suspended */
+-#define ASYNCB_NORMAL_ACTIVE	29 /* Normal device is active */
+-#define ASYNCB_BOOT_AUTOCONF	28 /* Autoconfigure port on bootup */
+-#define ASYNCB_CLOSING		27 /* Serial port is closing */
+-#define ASYNCB_CTS_FLOW		26 /* Do CTS flow control */
+-#define ASYNCB_CHECK_CD		25 /* i.e., CLOCAL */
+-#define ASYNCB_SHARE_IRQ	24 /* for multifunction cards, no longer used */
+-#define ASYNCB_CONS_FLOW	23 /* flow control for console  */
+-#define ASYNCB_FIRST_KERNEL	22
+-
+-#define ASYNC_HUP_NOTIFY	(1U << ASYNCB_HUP_NOTIFY)
+-#define ASYNC_SUSPENDED		(1U << ASYNCB_SUSPENDED)
+-#define ASYNC_FOURPORT		(1U << ASYNCB_FOURPORT)
+-#define ASYNC_SAK		(1U << ASYNCB_SAK)
+-#define ASYNC_SPLIT_TERMIOS	(1U << ASYNCB_SPLIT_TERMIOS)
+-#define ASYNC_SPD_HI		(1U << ASYNCB_SPD_HI)
+-#define ASYNC_SPD_VHI		(1U << ASYNCB_SPD_VHI)
+-#define ASYNC_SKIP_TEST		(1U << ASYNCB_SKIP_TEST)
+-#define ASYNC_AUTO_IRQ		(1U << ASYNCB_AUTO_IRQ)
+-#define ASYNC_SESSION_LOCKOUT	(1U << ASYNCB_SESSION_LOCKOUT)
+-#define ASYNC_PGRP_LOCKOUT	(1U << ASYNCB_PGRP_LOCKOUT)
+-#define ASYNC_CALLOUT_NOHUP	(1U << ASYNCB_CALLOUT_NOHUP)
+-#define ASYNC_HARDPPS_CD	(1U << ASYNCB_HARDPPS_CD)
+-#define ASYNC_SPD_SHI		(1U << ASYNCB_SPD_SHI)
+-#define ASYNC_LOW_LATENCY	(1U << ASYNCB_LOW_LATENCY)
+-#define ASYNC_BUGGY_UART	(1U << ASYNCB_BUGGY_UART)
+-#define ASYNC_AUTOPROBE		(1U << ASYNCB_AUTOPROBE)
+-
+-#define ASYNC_FLAGS		((1U << (ASYNCB_LAST_USER + 1)) - 1)
+-#define ASYNC_USR_MASK		(ASYNC_SPD_MASK|ASYNC_CALLOUT_NOHUP| \
+-		ASYNC_LOW_LATENCY)
+-#define ASYNC_SPD_CUST		(ASYNC_SPD_HI|ASYNC_SPD_VHI)
+-#define ASYNC_SPD_WARP		(ASYNC_SPD_HI|ASYNC_SPD_SHI)
+-#define ASYNC_SPD_MASK		(ASYNC_SPD_HI|ASYNC_SPD_VHI|ASYNC_SPD_SHI)
+-
+-#define ASYNC_INITIALIZED	(1U << ASYNCB_INITIALIZED)
+-#define ASYNC_NORMAL_ACTIVE	(1U << ASYNCB_NORMAL_ACTIVE)
+-#define ASYNC_BOOT_AUTOCONF	(1U << ASYNCB_BOOT_AUTOCONF)
+-#define ASYNC_CLOSING		(1U << ASYNCB_CLOSING)
+-#define ASYNC_CTS_FLOW		(1U << ASYNCB_CTS_FLOW)
+-#define ASYNC_CHECK_CD		(1U << ASYNCB_CHECK_CD)
+-#define ASYNC_SHARE_IRQ		(1U << ASYNCB_SHARE_IRQ)
+-#define ASYNC_CONS_FLOW		(1U << ASYNCB_CONS_FLOW)
+-#define ASYNC_INTERNAL_FLAGS	(~((1U << ASYNCB_FIRST_KERNEL) - 1))
  
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 5b308c8..1920e5c 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -176,7 +176,7 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
- 				uart_set_mctrl(uport, TIOCM_RTS | TIOCM_DTR);
- 		}
- 
--		if (port->flags & ASYNC_CTS_FLOW) {
-+		if (tty_port_cts_enabled(port)) {
- 			spin_lock_irq(&uport->lock);
- 			if (!(uport->ops->get_mctrl(uport) & TIOCM_CTS))
- 				tty->hw_stopped = 1;
-@@ -2493,7 +2493,7 @@ void uart_handle_cts_change(struct uart_port *uport, unsigned int status)
- 
- 	uport->icount.cts++;
- 
--	if (port->flags & ASYNC_CTS_FLOW) {
-+	if (tty_port_cts_enabled(port)) {
- 		if (tty->hw_stopped) {
- 			if (status) {
- 				tty->hw_stopped = 0;
-diff --git a/drivers/tty/synclink.c b/drivers/tty/synclink.c
-index 666aa14..70e3a52 100644
---- a/drivers/tty/synclink.c
-+++ b/drivers/tty/synclink.c
-@@ -1359,7 +1359,7 @@ static void mgsl_isr_io_pin( struct mgsl_struct *info )
- 			}
- 		}
- 	
--		if ( (info->port.flags & ASYNC_CTS_FLOW) && 
-+		if (tty_port_cts_enabled(&info->port) &&
- 		     (status & MISCSTATUS_CTS_LATCHED) ) {
- 			if (info->port.tty->hw_stopped) {
- 				if (status & MISCSTATUS_CTS) {
-diff --git a/drivers/tty/synclink_gt.c b/drivers/tty/synclink_gt.c
-index 45f6136..b38e954 100644
---- a/drivers/tty/synclink_gt.c
-+++ b/drivers/tty/synclink_gt.c
-@@ -2053,7 +2053,7 @@ static void cts_change(struct slgt_info *info, unsigned short status)
- 	wake_up_interruptible(&info->event_wait_q);
- 	info->pending_bh |= BH_STATUS;
- 
--	if (info->port.flags & ASYNC_CTS_FLOW) {
-+	if (tty_port_cts_enabled(&info->port)) {
- 		if (info->port.tty) {
- 			if (info->port.tty->hw_stopped) {
- 				if (info->signals & SerialSignal_CTS) {
-diff --git a/drivers/tty/synclinkmp.c b/drivers/tty/synclinkmp.c
-index 53429c8..f17d9f3 100644
---- a/drivers/tty/synclinkmp.c
-+++ b/drivers/tty/synclinkmp.c
-@@ -2500,7 +2500,7 @@ static void isr_io_pin( SLMP_INFO *info, u16 status )
- 			}
- 		}
- 
--		if ( (info->port.flags & ASYNC_CTS_FLOW) &&
-+		if (tty_port_cts_enabled(&info->port) &&
- 		     (status & MISCSTATUS_CTS_LATCHED) ) {
- 			if ( info->port.tty ) {
- 				if (info->port.tty->hw_stopped) {
+ /*
+  * Multiport serial configuration structure --- external structure
 diff --git a/include/linux/tty.h b/include/linux/tty.h
-index dbebd1e..9892121 100644
+index 69a787f..dbebd1e 100644
 --- a/include/linux/tty.h
 +++ b/include/linux/tty.h
-@@ -514,6 +514,12 @@ static inline struct tty_port *tty_port_get(struct tty_port *port)
- 	return port;
- }
+@@ -43,6 +43,7 @@
+ #include <linux/tty_driver.h>
+ #include <linux/tty_ldisc.h>
+ #include <linux/mutex.h>
++#include <linux/tty_flags.h>
  
-+/* If the cts flow control is enabled, return true. */
-+static inline bool tty_port_cts_enabled(struct tty_port *port)
-+{
-+	return port->flags & ASYNC_CTS_FLOW;
-+}
+ 
+ 
+diff --git a/include/linux/tty_flags.h b/include/linux/tty_flags.h
+new file mode 100644
+index 0000000..eefcb48
+--- /dev/null
++++ b/include/linux/tty_flags.h
+@@ -0,0 +1,78 @@
++#ifndef _LINUX_TTY_FLAGS_H
++#define _LINUX_TTY_FLAGS_H
 +
- extern struct tty_struct *tty_port_tty_get(struct tty_port *port);
- extern void tty_port_tty_set(struct tty_port *port, struct tty_struct *tty);
- extern int tty_port_carrier_raised(struct tty_port *port);
-diff --git a/net/irda/ircomm/ircomm_tty.c b/net/irda/ircomm/ircomm_tty.c
-index 9668990..95a3a7a 100644
---- a/net/irda/ircomm/ircomm_tty.c
-+++ b/net/irda/ircomm/ircomm_tty.c
-@@ -1070,7 +1070,7 @@ void ircomm_tty_check_modem_status(struct ircomm_tty_cb *self)
- 			goto put;
- 		}
- 	}
--	if (tty && self->port.flags & ASYNC_CTS_FLOW) {
-+	if (tty && tty_port_cts_enabled(&self->port)) {
- 		if (tty->hw_stopped) {
- 			if (status & IRCOMM_CTS) {
- 				IRDA_DEBUG(2,
-@@ -1313,7 +1313,7 @@ static void ircomm_tty_line_info(struct ircomm_tty_cb *self, struct seq_file *m)
- 
- 	seq_puts(m, "Flags:");
- 	sep = ' ';
--	if (self->port.flags & ASYNC_CTS_FLOW) {
-+	if (tty_port_cts_enabled(&self->port)) {
- 		seq_printf(m, "%cASYNC_CTS_FLOW", sep);
- 		sep = '|';
- 	}
-diff --git a/net/irda/ircomm/ircomm_tty_attach.c b/net/irda/ircomm/ircomm_tty_attach.c
-index 3ab70e7..edab393 100644
---- a/net/irda/ircomm/ircomm_tty_attach.c
-+++ b/net/irda/ircomm/ircomm_tty_attach.c
-@@ -578,7 +578,7 @@ void ircomm_tty_link_established(struct ircomm_tty_cb *self)
- 	 * will have to wait for the peer device (DCE) to raise the CTS
- 	 * line.
- 	 */
--	if ((self->port.flags & ASYNC_CTS_FLOW) &&
-+	if (tty_port_cts_enabled(&self->port) &&
- 			((self->settings.dce & IRCOMM_CTS) == 0)) {
- 		IRDA_DEBUG(0, "%s(), waiting for CTS ...\n", __func__ );
- 		goto put;
--- 
-1.7.4.4
++/*
++ * Definitions for async_struct (and serial_struct) flags field also
++ * shared by the tty_port flags structures.
++ *
++ * Define ASYNCB_* for convenient use with {test,set,clear}_bit.
++ */
++#define ASYNCB_HUP_NOTIFY	 0 /* Notify getty on hangups and closes
++				    * on the callout port */
++#define ASYNCB_FOURPORT		 1 /* Set OU1, OUT2 per AST Fourport settings */
++#define ASYNCB_SAK		 2 /* Secure Attention Key (Orange book) */
++#define ASYNCB_SPLIT_TERMIOS	 3 /* Separate termios for dialin/callout */
++#define ASYNCB_SPD_HI		 4 /* Use 56000 instead of 38400 bps */
++#define ASYNCB_SPD_VHI		 5 /* Use 115200 instead of 38400 bps */
++#define ASYNCB_SKIP_TEST	 6 /* Skip UART test during autoconfiguration */
++#define ASYNCB_AUTO_IRQ		 7 /* Do automatic IRQ during
++				    * autoconfiguration */
++#define ASYNCB_SESSION_LOCKOUT	 8 /* Lock out cua opens based on session */
++#define ASYNCB_PGRP_LOCKOUT	 9 /* Lock out cua opens based on pgrp */
++#define ASYNCB_CALLOUT_NOHUP	10 /* Don't do hangups for cua device */
++#define ASYNCB_HARDPPS_CD	11 /* Call hardpps when CD goes high  */
++#define ASYNCB_SPD_SHI		12 /* Use 230400 instead of 38400 bps */
++#define ASYNCB_LOW_LATENCY	13 /* Request low latency behaviour */
++#define ASYNCB_BUGGY_UART	14 /* This is a buggy UART, skip some safety
++				    * checks.  Note: can be dangerous! */
++#define ASYNCB_AUTOPROBE	15 /* Port was autoprobed by PCI or PNP code */
++#define ASYNCB_LAST_USER	15
++
++/* Internal flags used only by kernel */
++#define ASYNCB_INITIALIZED	31 /* Serial port was initialized */
++#define ASYNCB_SUSPENDED	30 /* Serial port is suspended */
++#define ASYNCB_NORMAL_ACTIVE	29 /* Normal device is active */
++#define ASYNCB_BOOT_AUTOCONF	28 /* Autoconfigure port on bootup */
++#define ASYNCB_CLOSING		27 /* Serial port is closing */
++#define ASYNCB_CTS_FLOW		26 /* Do CTS flow control */
++#define ASYNCB_CHECK_CD		25 /* i.e., CLOCAL */
++#define ASYNCB_SHARE_IRQ	24 /* for multifunction cards, no longer used */
++#define ASYNCB_CONS_FLOW	23 /* flow control for console  */
++#define ASYNCB_FIRST_KERNEL	22
++
++#define ASYNC_HUP_NOTIFY	(1U << ASYNCB_HUP_NOTIFY)
++#define ASYNC_SUSPENDED		(1U << ASYNCB_SUSPENDED)
++#define ASYNC_FOURPORT		(1U << ASYNCB_FOURPORT)
++#define ASYNC_SAK		(1U << ASYNCB_SAK)
++#define ASYNC_SPLIT_TERMIOS	(1U << ASYNCB_SPLIT_TERMIOS)
++#define ASYNC_SPD_HI		(1U << ASYNCB_SPD_HI)
++#define ASYNC_SPD_VHI		(1U << ASYNCB_SPD_VHI)
++#define ASYNC_SKIP_TEST		(1U << ASYNCB_SKIP_TEST)
++#define ASYNC_AUTO_IRQ		(1U << ASYNCB_AUTO_IRQ)
++#define ASYNC_SESSION_LOCKOUT	(1U << ASYNCB_SESSION_LOCKOUT)
++#define ASYNC_PGRP_LOCKOUT	(1U << ASYNCB_PGRP_LOCKOUT)
++#define ASYNC_CALLOUT_NOHUP	(1U << ASYNCB_CALLOUT_NOHUP)
++#define ASYNC_HARDPPS_CD	(1U << ASYNCB_HARDPPS_CD)
++#define ASYNC_SPD_SHI		(1U << ASYNCB_SPD_SHI)
++#define ASYNC_LOW_LATENCY	(1U << ASYNCB_LOW_LATENCY)
++#define ASYNC_BUGGY_UART	(1U << ASYNCB_BUGGY_UART)
++#define ASYNC_AUTOPROBE		(1U << ASYNCB_AUTOPROBE)
++
++#define ASYNC_FLAGS		((1U << (ASYNCB_LAST_USER + 1)) - 1)
++#define ASYNC_USR_MASK		(ASYNC_SPD_MASK|ASYNC_CALLOUT_NOHUP| \
++		ASYNC_LOW_LATENCY)
++#define ASYNC_SPD_CUST		(ASYNC_SPD_HI|ASYNC_SPD_VHI)
++#define ASYNC_SPD_WARP		(ASYNC_SPD_HI|ASYNC_SPD_SHI)
++#define ASYNC_SPD_MASK		(ASYNC_SPD_HI|ASYNC_SPD_VHI|ASYNC_SPD_SHI)
++
++#define ASYNC_INITIALIZED	(1U << ASYNCB_INITIALIZED)
++#define ASYNC_NORMAL_ACTIVE	(1U << ASYNCB_NORMAL_ACTIVE)
++#define ASYNC_BOOT_AUTOCONF	(1U << ASYNCB_BOOT_AUTOCONF)
++#define ASYNC_CLOSING		(1U << ASYNCB_CLOSING)
++#define ASYNC_CTS_FLOW		(1U << ASYNCB_CTS_FLOW)
++#define ASYNC_CHECK_CD		(1U << ASYNCB_CHECK_CD)
++#define ASYNC_SHARE_IRQ		(1U << ASYNCB_SHARE_IRQ)
++#define ASYNC_CONS_FLOW		(1U << ASYNCB_CONS_FLOW)
++#define ASYNC_INTERNAL_FLAGS	(~((1U << ASYNCB_FIRST_KERNEL) - 1))
++
++#endif
+
