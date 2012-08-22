@@ -1,67 +1,62 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH] tty: move the async flags from the serial code into the
- tty includes
-Date: Wed, 22 Aug 2012 14:19:49 +0200
-Message-ID: <5034CE65.7040607@suse.cz>
-References: <20120821133455.9090.24759.stgit@localhost.localdomain>
+From: Tony Prisk <linux@prisktech.co.nz>
+Subject: RE: [rtc-linux] [PATCHv3 8/9] arm: vt8500: gpio: Devicetree support
+ for arch-vt8500
+Date: Wed, 22 Aug 2012 13:33:52 +0000
+Message-ID: <76F764B079F92A4E843589C893D0A022DAF67144@SERVER.prisktech.co.nz>
+References: <1345582058-2291-1-git-send-email-linux@prisktech.co.nz>
+	<1345582058-2291-9-git-send-email-linux@prisktech.co.nz>,<CACRpkdZnQyLSRQ6cRpFBurAv2cv44einGAsT86FLCqsj1euDMA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bk0-f46.google.com ([209.85.214.46]:47817 "EHLO
-	mail-bk0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755856Ab2HVMTz (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 22 Aug 2012 08:19:55 -0400
-In-Reply-To: <20120821133455.9090.24759.stgit@localhost.localdomain>
+Received: from 115-188-14-127.jetstream.xtra.co.nz ([115.188.14.127]:49502
+	"EHLO SERVER.prisktech.co.nz" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S932200Ab2HVNgr convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 22 Aug 2012 09:36:47 -0400
+In-Reply-To: <CACRpkdZnQyLSRQ6cRpFBurAv2cv44einGAsT86FLCqsj1euDMA@mail.gmail.com>
+Content-Language: en-GB
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: shijie8@gmail.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: "vt8500-wm8505-linux-kernel@googlegroup.com" <vt8500-wm8505-linux-kernel@googlegroup.com>, Russell King <linux@arm.linux.org.uk>, Alessandro Zummo <a.zummo@towertech.it>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Florian Tobias Schandinat <FlorianSchandinat@gmx.de>, Arnd Bergmann <arnd@arndb.de>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Rob Landley <rob@landley.net>, Linus Walleij <linus.walleij@stericsson.com>, Mike Turquette <mturquette@ti.com>, Stephen Warren <swarren@nvidia.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@v>
 
-On 08/21/2012 03:35 PM, Alan Cox wrote:
-> From: Alan Cox <alan@linux.intel.com>
-> 
-> These are used with the tty_port flags which are tty generic so move the
-> flags into a more sensible place. This then makes it possible to add
-> helpers such as those suggested by Huang Shijie.
+>> Converted the existing arch-vt8500 gpio to a platform_device.
+>> Added support for WM8505 and WM8650 GPIO controllers.
+>(...)
+>> +       unsigned val;
 
-Yes, the idea looks good to me. I was actually thinking of the same.
+>I asked about the datatype for this "val", it sure isn't "unsigned".
 
-But there are two issues with this patch (see below).
+>I suspected the registers were only 8bit and so it should be u8.
+>But atleast use u32 if you must use all these bits.
 
-> --- a/include/linux/serial.h
-> +++ b/include/linux/serial.h
-> @@ -15,6 +15,8 @@
->  #ifdef __KERNEL__
->  #include <asm/page.h>
->  
-> +#include <linux/tty_flags.h>
-> +
+Sorry - missed adding this to my list of fixes. I've used u32 as the
+datasheet advises these are 32-bit registers and must be
+read/written as such.
+Changes included in v4.
 
-There are no minus lines in serial.h -- we have two copies of the flags
-now? That looks insane.
+>(...)
+>> +       val = readl(vt8500_chip->base + vt8500_chip->regs->en);
+>> +       val |= BIT(offset);
+>> +       writel(val, vt8500_chip->base + vt8500_chip->regs->en);
 
-The flags are a user API. You concealed them by the #include inside the
-__KERNEL__ section (if I consider we do not have the flags defined twice).
+>BTW: have you considered [readl|writel]_relaxed?
 
-And if we move the include outside of the __KERNEL__ section, we shall
-update Kconfig, so that the new header is installed.
+I haven't - and to be honest I didn't know what difference it would
+make until I read up on it.
+Most of this code already existed in mainline in
+arch/arm/mach-vt8500/gpio.c and I simply moved it across to
+drivers/gpio and made some changes/additions. Having looked,
+I don't see any reason why it can't use the _relaxed variants.
+Changes included in v4.
 
->  /*
->   * Counters of the input lines (CTS, DSR, RI, CD) interrupts
->   */
-> diff --git a/include/linux/tty.h b/include/linux/tty.h
-> index 69a787f..dbebd1e 100644
-> --- a/include/linux/tty.h
-> +++ b/include/linux/tty.h
-> @@ -43,6 +43,7 @@
->  #include <linux/tty_driver.h>
->  #include <linux/tty_ldisc.h>
->  #include <linux/mutex.h>
-> +#include <linux/tty_flags.h>
 
-thanks,
--- 
-js
-suse labs
+I'll post up v4 for review when I get home in about 7 hours.
+
+Work always gets in the way of being productive :)
+
+
+Regards
+
+Tony Prisk
