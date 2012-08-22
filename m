@@ -1,241 +1,289 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [RFC PATCH] tty: move the async flags from the serial code into the
- tty includes
-Date: Wed, 22 Aug 2012 15:44:50 +0100
-Message-ID: <20120822144426.27149.93723.stgit@localhost.localdomain>
+Subject: [RF CPATCH] tty: Split the serial_core helpers for setserial into two
+Date: Wed, 22 Aug 2012 16:36:26 +0100
+Message-ID: <20120822144611.27192.38862.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:56968 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753085Ab2HVO11 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 22 Aug 2012 10:27:27 -0400
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: greg@kroah.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 
-Jiri - this seem more sensible ?
+For the sysctl work we should I think do something like this. At that point the
+sysctl helpers can get/set values via the existing driver interfaces
 
 From: Alan Cox <alan@linux.intel.com>
 
-These are used with the tty_port flags which are tty generic so move the
-flags into a more sensible place. This then makes it possible to add
-helpers such as those suggested by Huang Shijie.
+We want them split so that we can call them from setserial functionality
+where we copy to/from user space and do the locking, but also from sysfs
+where in future we'll want to came them within a sysfs context.
 
 Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
 
- include/linux/Kbuild      |    1 +
- include/linux/serial.h    |   75 ++-----------------------------------------
- include/linux/tty.h       |    1 +
- include/linux/tty_flags.h |   78 +++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 83 insertions(+), 72 deletions(-)
- create mode 100644 include/linux/tty_flags.h
+ drivers/tty/serial/serial_core.c |  158 +++++++++++++++++++++-----------------
+ 1 file changed, 87 insertions(+), 71 deletions(-)
 
-diff --git a/include/linux/Kbuild b/include/linux/Kbuild
-index b3d6385..b45caff 100644
---- a/include/linux/Kbuild
-+++ b/include/linux/Kbuild
-@@ -370,6 +370,7 @@ header-y += tipc.h
- header-y += tipc_config.h
- header-y += toshiba.h
- header-y += tty.h
-+header-y += tty_flags.h
- header-y += types.h
- header-y += udf_fs_i.h
- header-y += udp.h
-diff --git a/include/linux/serial.h b/include/linux/serial.h
-index 90e9f98..3504f42 100644
---- a/include/linux/serial.h
-+++ b/include/linux/serial.h
-@@ -12,9 +12,12 @@
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 5b308c8..bb5f236 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -634,38 +634,44 @@ static void uart_unthrottle(struct tty_struct *tty)
+ 		uart_set_mctrl(port, TIOCM_RTS);
+ }
  
- #include <linux/types.h>
- 
-+#include <linux/tty_flags.h>
-+
- #ifdef __KERNEL__
- #include <asm/page.h>
- 
-+
- /*
-  * Counters of the input lines (CTS, DSR, RI, CD) interrupts
-  */
-@@ -94,78 +97,6 @@ struct serial_uart_config {
- #define UART_STARTECH		0x04
- #define UART_NATSEMI		0x08
- 
--/*
-- * Definitions for async_struct (and serial_struct) flags field
-- *
-- * Define ASYNCB_* for convenient use with {test,set,clear}_bit.
-- */
--#define ASYNCB_HUP_NOTIFY	 0 /* Notify getty on hangups and closes
--				    * on the callout port */
--#define ASYNCB_FOURPORT		 1 /* Set OU1, OUT2 per AST Fourport settings */
--#define ASYNCB_SAK		 2 /* Secure Attention Key (Orange book) */
--#define ASYNCB_SPLIT_TERMIOS	 3 /* Separate termios for dialin/callout */
--#define ASYNCB_SPD_HI		 4 /* Use 56000 instead of 38400 bps */
--#define ASYNCB_SPD_VHI		 5 /* Use 115200 instead of 38400 bps */
--#define ASYNCB_SKIP_TEST	 6 /* Skip UART test during autoconfiguration */
--#define ASYNCB_AUTO_IRQ		 7 /* Do automatic IRQ during
--				    * autoconfiguration */
--#define ASYNCB_SESSION_LOCKOUT	 8 /* Lock out cua opens based on session */
--#define ASYNCB_PGRP_LOCKOUT	 9 /* Lock out cua opens based on pgrp */
--#define ASYNCB_CALLOUT_NOHUP	10 /* Don't do hangups for cua device */
--#define ASYNCB_HARDPPS_CD	11 /* Call hardpps when CD goes high  */
--#define ASYNCB_SPD_SHI		12 /* Use 230400 instead of 38400 bps */
--#define ASYNCB_LOW_LATENCY	13 /* Request low latency behaviour */
--#define ASYNCB_BUGGY_UART	14 /* This is a buggy UART, skip some safety
--				    * checks.  Note: can be dangerous! */
--#define ASYNCB_AUTOPROBE	15 /* Port was autoprobed by PCI or PNP code */
--#define ASYNCB_LAST_USER	15
+-static int uart_get_info(struct uart_state *state,
+-			 struct serial_struct __user *retinfo)
++static void uart_get_info(struct tty_port *port,
++                        struct uart_state *state,
++			struct serial_struct *retinfo)
+ {
+ 	struct uart_port *uport = state->uart_port;
+-	struct tty_port *port = &state->port;
+-	struct serial_struct tmp;
 -
--/* Internal flags used only by kernel */
--#define ASYNCB_INITIALIZED	31 /* Serial port was initialized */
--#define ASYNCB_SUSPENDED	30 /* Serial port is suspended */
--#define ASYNCB_NORMAL_ACTIVE	29 /* Normal device is active */
--#define ASYNCB_BOOT_AUTOCONF	28 /* Autoconfigure port on bootup */
--#define ASYNCB_CLOSING		27 /* Serial port is closing */
--#define ASYNCB_CTS_FLOW		26 /* Do CTS flow control */
--#define ASYNCB_CHECK_CD		25 /* i.e., CLOCAL */
--#define ASYNCB_SHARE_IRQ	24 /* for multifunction cards, no longer used */
--#define ASYNCB_CONS_FLOW	23 /* flow control for console  */
--#define ASYNCB_FIRST_KERNEL	22
+-	memset(&tmp, 0, sizeof(tmp));
+ 
+-	/* Ensure the state we copy is consistent and no hardware changes
+-	   occur as we go */
+-	mutex_lock(&port->mutex);
++	memset(retinfo, 0, sizeof(retinfo));
+ 
+-	tmp.type	    = uport->type;
+-	tmp.line	    = uport->line;
+-	tmp.port	    = uport->iobase;
++	retinfo->type	    = uport->type;
++	retinfo->line	    = uport->line;
++	retinfo->port	    = uport->iobase;
+ 	if (HIGH_BITS_OFFSET)
+-		tmp.port_high = (long) uport->iobase >> HIGH_BITS_OFFSET;
+-	tmp.irq		    = uport->irq;
+-	tmp.flags	    = uport->flags;
+-	tmp.xmit_fifo_size  = uport->fifosize;
+-	tmp.baud_base	    = uport->uartclk / 16;
+-	tmp.close_delay	    = jiffies_to_msecs(port->close_delay) / 10;
+-	tmp.closing_wait    = port->closing_wait == ASYNC_CLOSING_WAIT_NONE ?
++		retinfo->port_high = (long) uport->iobase >> HIGH_BITS_OFFSET;
++	retinfo->irq		    = uport->irq;
++	retinfo->flags	    = uport->flags;
++	retinfo->xmit_fifo_size  = uport->fifosize;
++	retinfo->baud_base	    = uport->uartclk / 16;
++	retinfo->close_delay	    = jiffies_to_msecs(port->close_delay) / 10;
++	retinfo->closing_wait    = port->closing_wait == ASYNC_CLOSING_WAIT_NONE ?
+ 				ASYNC_CLOSING_WAIT_NONE :
+ 				jiffies_to_msecs(port->closing_wait) / 10;
+-	tmp.custom_divisor  = uport->custom_divisor;
+-	tmp.hub6	    = uport->hub6;
+-	tmp.io_type         = uport->iotype;
+-	tmp.iomem_reg_shift = uport->regshift;
+-	tmp.iomem_base      = (void *)(unsigned long)uport->mapbase;
++	retinfo->custom_divisor  = uport->custom_divisor;
++	retinfo->hub6	    = uport->hub6;
++	retinfo->io_type         = uport->iotype;
++	retinfo->iomem_reg_shift = uport->regshift;
++	retinfo->iomem_base      = (void *)(unsigned long)uport->mapbase;
++}
++
++static int uart_get_info_user(struct uart_state *state,
++			 struct serial_struct __user *retinfo)
++{
++	struct tty_port *port = &state->port;
++	struct serial_struct tmp;
+ 
++	/* Ensure the state we copy is consistent and no hardware changes
++	   occur as we go */
++	mutex_lock(&port->mutex);
++	uart_get_info(port, state, &tmp);
+ 	mutex_unlock(&port->mutex);
+ 
+ 	if (copy_to_user(retinfo, &tmp, sizeof(*retinfo)))
+@@ -673,42 +679,30 @@ static int uart_get_info(struct uart_state *state,
+ 	return 0;
+ }
+ 
+-static int uart_set_info(struct tty_struct *tty, struct uart_state *state,
+-			 struct serial_struct __user *newinfo)
++static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
++			 struct uart_state *state,
++			 struct serial_struct *new_info)
+ {
+-	struct serial_struct new_serial;
+ 	struct uart_port *uport = state->uart_port;
+-	struct tty_port *port = &state->port;
+ 	unsigned long new_port;
+ 	unsigned int change_irq, change_port, closing_wait;
+ 	unsigned int old_custom_divisor, close_delay;
+ 	upf_t old_flags, new_flags;
+ 	int retval = 0;
+ 
+-	if (copy_from_user(&new_serial, newinfo, sizeof(new_serial)))
+-		return -EFAULT;
 -
--#define ASYNC_HUP_NOTIFY	(1U << ASYNCB_HUP_NOTIFY)
--#define ASYNC_SUSPENDED		(1U << ASYNCB_SUSPENDED)
--#define ASYNC_FOURPORT		(1U << ASYNCB_FOURPORT)
--#define ASYNC_SAK		(1U << ASYNCB_SAK)
--#define ASYNC_SPLIT_TERMIOS	(1U << ASYNCB_SPLIT_TERMIOS)
--#define ASYNC_SPD_HI		(1U << ASYNCB_SPD_HI)
--#define ASYNC_SPD_VHI		(1U << ASYNCB_SPD_VHI)
--#define ASYNC_SKIP_TEST		(1U << ASYNCB_SKIP_TEST)
--#define ASYNC_AUTO_IRQ		(1U << ASYNCB_AUTO_IRQ)
--#define ASYNC_SESSION_LOCKOUT	(1U << ASYNCB_SESSION_LOCKOUT)
--#define ASYNC_PGRP_LOCKOUT	(1U << ASYNCB_PGRP_LOCKOUT)
--#define ASYNC_CALLOUT_NOHUP	(1U << ASYNCB_CALLOUT_NOHUP)
--#define ASYNC_HARDPPS_CD	(1U << ASYNCB_HARDPPS_CD)
--#define ASYNC_SPD_SHI		(1U << ASYNCB_SPD_SHI)
--#define ASYNC_LOW_LATENCY	(1U << ASYNCB_LOW_LATENCY)
--#define ASYNC_BUGGY_UART	(1U << ASYNCB_BUGGY_UART)
--#define ASYNC_AUTOPROBE		(1U << ASYNCB_AUTOPROBE)
--
--#define ASYNC_FLAGS		((1U << (ASYNCB_LAST_USER + 1)) - 1)
--#define ASYNC_USR_MASK		(ASYNC_SPD_MASK|ASYNC_CALLOUT_NOHUP| \
--		ASYNC_LOW_LATENCY)
--#define ASYNC_SPD_CUST		(ASYNC_SPD_HI|ASYNC_SPD_VHI)
--#define ASYNC_SPD_WARP		(ASYNC_SPD_HI|ASYNC_SPD_SHI)
--#define ASYNC_SPD_MASK		(ASYNC_SPD_HI|ASYNC_SPD_VHI|ASYNC_SPD_SHI)
--
--#define ASYNC_INITIALIZED	(1U << ASYNCB_INITIALIZED)
--#define ASYNC_NORMAL_ACTIVE	(1U << ASYNCB_NORMAL_ACTIVE)
--#define ASYNC_BOOT_AUTOCONF	(1U << ASYNCB_BOOT_AUTOCONF)
--#define ASYNC_CLOSING		(1U << ASYNCB_CLOSING)
--#define ASYNC_CTS_FLOW		(1U << ASYNCB_CTS_FLOW)
--#define ASYNC_CHECK_CD		(1U << ASYNCB_CHECK_CD)
--#define ASYNC_SHARE_IRQ		(1U << ASYNCB_SHARE_IRQ)
--#define ASYNC_CONS_FLOW		(1U << ASYNCB_CONS_FLOW)
--#define ASYNC_INTERNAL_FLAGS	(~((1U << ASYNCB_FIRST_KERNEL) - 1))
+-	new_port = new_serial.port;
++	new_port = new_info->port;
+ 	if (HIGH_BITS_OFFSET)
+-		new_port += (unsigned long) new_serial.port_high << HIGH_BITS_OFFSET;
++		new_port += (unsigned long) new_info->port_high << HIGH_BITS_OFFSET;
  
- /*
-  * Multiport serial configuration structure --- external structure
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 69a787f..dbebd1e 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -43,6 +43,7 @@
- #include <linux/tty_driver.h>
- #include <linux/tty_ldisc.h>
- #include <linux/mutex.h>
-+#include <linux/tty_flags.h>
+-	new_serial.irq = irq_canonicalize(new_serial.irq);
+-	close_delay = msecs_to_jiffies(new_serial.close_delay * 10);
+-	closing_wait = new_serial.closing_wait == ASYNC_CLOSING_WAIT_NONE ?
++	new_info->irq = irq_canonicalize(new_info->irq);
++	close_delay = msecs_to_jiffies(new_info->close_delay * 10);
++	closing_wait = new_info->closing_wait == ASYNC_CLOSING_WAIT_NONE ?
+ 			ASYNC_CLOSING_WAIT_NONE :
+-			msecs_to_jiffies(new_serial.closing_wait * 10);
++			msecs_to_jiffies(new_info->closing_wait * 10);
  
+-	/*
+-	 * This semaphore protects port->count.  It is also
+-	 * very useful to prevent opens.  Also, take the
+-	 * port configuration semaphore to make sure that a
+-	 * module insertion/removal doesn't change anything
+-	 * under us.
+-	 */
+-	mutex_lock(&port->mutex);
  
+ 	change_irq  = !(uport->flags & UPF_FIXED_PORT)
+-		&& new_serial.irq != uport->irq;
++		&& new_info->irq != uport->irq;
  
-diff --git a/include/linux/tty_flags.h b/include/linux/tty_flags.h
-new file mode 100644
-index 0000000..eefcb48
---- /dev/null
-+++ b/include/linux/tty_flags.h
-@@ -0,0 +1,78 @@
-+#ifndef _LINUX_TTY_FLAGS_H
-+#define _LINUX_TTY_FLAGS_H
+ 	/*
+ 	 * Since changing the 'type' of the port changes its resource
+@@ -717,29 +711,29 @@ static int uart_set_info(struct tty_struct *tty, struct uart_state *state,
+ 	 */
+ 	change_port = !(uport->flags & UPF_FIXED_PORT)
+ 		&& (new_port != uport->iobase ||
+-		    (unsigned long)new_serial.iomem_base != uport->mapbase ||
+-		    new_serial.hub6 != uport->hub6 ||
+-		    new_serial.io_type != uport->iotype ||
+-		    new_serial.iomem_reg_shift != uport->regshift ||
+-		    new_serial.type != uport->type);
++		    (unsigned long)new_info->iomem_base != uport->mapbase ||
++		    new_info->hub6 != uport->hub6 ||
++		    new_info->io_type != uport->iotype ||
++		    new_info->iomem_reg_shift != uport->regshift ||
++		    new_info->type != uport->type);
+ 
+ 	old_flags = uport->flags;
+-	new_flags = new_serial.flags;
++	new_flags = new_info->flags;
+ 	old_custom_divisor = uport->custom_divisor;
+ 
+ 	if (!capable(CAP_SYS_ADMIN)) {
+ 		retval = -EPERM;
+ 		if (change_irq || change_port ||
+-		    (new_serial.baud_base != uport->uartclk / 16) ||
++		    (new_info->baud_base != uport->uartclk / 16) ||
+ 		    (close_delay != port->close_delay) ||
+ 		    (closing_wait != port->closing_wait) ||
+-		    (new_serial.xmit_fifo_size &&
+-		     new_serial.xmit_fifo_size != uport->fifosize) ||
++		    (new_info->xmit_fifo_size &&
++		     new_info->xmit_fifo_size != uport->fifosize) ||
+ 		    (((new_flags ^ old_flags) & ~UPF_USR_MASK) != 0))
+ 			goto exit;
+ 		uport->flags = ((uport->flags & ~UPF_USR_MASK) |
+ 			       (new_flags & UPF_USR_MASK));
+-		uport->custom_divisor = new_serial.custom_divisor;
++		uport->custom_divisor = new_info->custom_divisor;
+ 		goto check_and_exit;
+ 	}
+ 
+@@ -747,10 +741,10 @@ static int uart_set_info(struct tty_struct *tty, struct uart_state *state,
+ 	 * Ask the low level driver to verify the settings.
+ 	 */
+ 	if (uport->ops->verify_port)
+-		retval = uport->ops->verify_port(uport, &new_serial);
++		retval = uport->ops->verify_port(uport, new_info);
+ 
+-	if ((new_serial.irq >= nr_irqs) || (new_serial.irq < 0) ||
+-	    (new_serial.baud_base < 9600))
++	if ((new_info->irq >= nr_irqs) || (new_info->irq < 0) ||
++	    (new_info->baud_base < 9600))
+ 		retval = -EINVAL;
+ 
+ 	if (retval)
+@@ -790,11 +784,11 @@ static int uart_set_info(struct tty_struct *tty, struct uart_state *state,
+ 			uport->ops->release_port(uport);
+ 
+ 		uport->iobase = new_port;
+-		uport->type = new_serial.type;
+-		uport->hub6 = new_serial.hub6;
+-		uport->iotype = new_serial.io_type;
+-		uport->regshift = new_serial.iomem_reg_shift;
+-		uport->mapbase = (unsigned long)new_serial.iomem_base;
++		uport->type = new_info->type;
++		uport->hub6 = new_info->hub6;
++		uport->iotype = new_info->io_type;
++		uport->regshift = new_info->iomem_reg_shift;
++		uport->mapbase = (unsigned long)new_info->iomem_base;
+ 
+ 		/*
+ 		 * Claim and map the new regions
+@@ -835,16 +829,16 @@ static int uart_set_info(struct tty_struct *tty, struct uart_state *state,
+ 	}
+ 
+ 	if (change_irq)
+-		uport->irq      = new_serial.irq;
++		uport->irq      = new_info->irq;
+ 	if (!(uport->flags & UPF_FIXED_PORT))
+-		uport->uartclk  = new_serial.baud_base * 16;
++		uport->uartclk  = new_info->baud_base * 16;
+ 	uport->flags            = (uport->flags & ~UPF_CHANGE_MASK) |
+ 				 (new_flags & UPF_CHANGE_MASK);
+-	uport->custom_divisor   = new_serial.custom_divisor;
++	uport->custom_divisor   = new_info->custom_divisor;
+ 	port->close_delay     = close_delay;
+ 	port->closing_wait    = closing_wait;
+-	if (new_serial.xmit_fifo_size)
+-		uport->fifosize = new_serial.xmit_fifo_size;
++	if (new_info->xmit_fifo_size)
++		uport->fifosize = new_info->xmit_fifo_size;
+ 	if (port->tty)
+ 		port->tty->low_latency =
+ 			(uport->flags & UPF_LOW_LATENCY) ? 1 : 0;
+@@ -873,6 +867,28 @@ static int uart_set_info(struct tty_struct *tty, struct uart_state *state,
+ 	} else
+ 		retval = uart_startup(tty, state, 1);
+  exit:
++	return retval;
++}
 +
-+/*
-+ * Definitions for async_struct (and serial_struct) flags field also
-+ * shared by the tty_port flags structures.
-+ *
-+ * Define ASYNCB_* for convenient use with {test,set,clear}_bit.
-+ */
-+#define ASYNCB_HUP_NOTIFY	 0 /* Notify getty on hangups and closes
-+				    * on the callout port */
-+#define ASYNCB_FOURPORT		 1 /* Set OU1, OUT2 per AST Fourport settings */
-+#define ASYNCB_SAK		 2 /* Secure Attention Key (Orange book) */
-+#define ASYNCB_SPLIT_TERMIOS	 3 /* Separate termios for dialin/callout */
-+#define ASYNCB_SPD_HI		 4 /* Use 56000 instead of 38400 bps */
-+#define ASYNCB_SPD_VHI		 5 /* Use 115200 instead of 38400 bps */
-+#define ASYNCB_SKIP_TEST	 6 /* Skip UART test during autoconfiguration */
-+#define ASYNCB_AUTO_IRQ		 7 /* Do automatic IRQ during
-+				    * autoconfiguration */
-+#define ASYNCB_SESSION_LOCKOUT	 8 /* Lock out cua opens based on session */
-+#define ASYNCB_PGRP_LOCKOUT	 9 /* Lock out cua opens based on pgrp */
-+#define ASYNCB_CALLOUT_NOHUP	10 /* Don't do hangups for cua device */
-+#define ASYNCB_HARDPPS_CD	11 /* Call hardpps when CD goes high  */
-+#define ASYNCB_SPD_SHI		12 /* Use 230400 instead of 38400 bps */
-+#define ASYNCB_LOW_LATENCY	13 /* Request low latency behaviour */
-+#define ASYNCB_BUGGY_UART	14 /* This is a buggy UART, skip some safety
-+				    * checks.  Note: can be dangerous! */
-+#define ASYNCB_AUTOPROBE	15 /* Port was autoprobed by PCI or PNP code */
-+#define ASYNCB_LAST_USER	15
++static int uart_set_info_user(struct tty_struct *tty, struct uart_state *state,
++			 struct serial_struct __user *newinfo)
++{
++	struct serial_struct new_serial;
++	struct tty_port *port = &state->port;
++	int retval;
 +
-+/* Internal flags used only by kernel */
-+#define ASYNCB_INITIALIZED	31 /* Serial port was initialized */
-+#define ASYNCB_SUSPENDED	30 /* Serial port is suspended */
-+#define ASYNCB_NORMAL_ACTIVE	29 /* Normal device is active */
-+#define ASYNCB_BOOT_AUTOCONF	28 /* Autoconfigure port on bootup */
-+#define ASYNCB_CLOSING		27 /* Serial port is closing */
-+#define ASYNCB_CTS_FLOW		26 /* Do CTS flow control */
-+#define ASYNCB_CHECK_CD		25 /* i.e., CLOCAL */
-+#define ASYNCB_SHARE_IRQ	24 /* for multifunction cards, no longer used */
-+#define ASYNCB_CONS_FLOW	23 /* flow control for console  */
-+#define ASYNCB_FIRST_KERNEL	22
++	if (copy_from_user(&new_serial, newinfo, sizeof(new_serial)))
++		return -EFAULT;
 +
-+#define ASYNC_HUP_NOTIFY	(1U << ASYNCB_HUP_NOTIFY)
-+#define ASYNC_SUSPENDED		(1U << ASYNCB_SUSPENDED)
-+#define ASYNC_FOURPORT		(1U << ASYNCB_FOURPORT)
-+#define ASYNC_SAK		(1U << ASYNCB_SAK)
-+#define ASYNC_SPLIT_TERMIOS	(1U << ASYNCB_SPLIT_TERMIOS)
-+#define ASYNC_SPD_HI		(1U << ASYNCB_SPD_HI)
-+#define ASYNC_SPD_VHI		(1U << ASYNCB_SPD_VHI)
-+#define ASYNC_SKIP_TEST		(1U << ASYNCB_SKIP_TEST)
-+#define ASYNC_AUTO_IRQ		(1U << ASYNCB_AUTO_IRQ)
-+#define ASYNC_SESSION_LOCKOUT	(1U << ASYNCB_SESSION_LOCKOUT)
-+#define ASYNC_PGRP_LOCKOUT	(1U << ASYNCB_PGRP_LOCKOUT)
-+#define ASYNC_CALLOUT_NOHUP	(1U << ASYNCB_CALLOUT_NOHUP)
-+#define ASYNC_HARDPPS_CD	(1U << ASYNCB_HARDPPS_CD)
-+#define ASYNC_SPD_SHI		(1U << ASYNCB_SPD_SHI)
-+#define ASYNC_LOW_LATENCY	(1U << ASYNCB_LOW_LATENCY)
-+#define ASYNC_BUGGY_UART	(1U << ASYNCB_BUGGY_UART)
-+#define ASYNC_AUTOPROBE		(1U << ASYNCB_AUTOPROBE)
-+
-+#define ASYNC_FLAGS		((1U << (ASYNCB_LAST_USER + 1)) - 1)
-+#define ASYNC_USR_MASK		(ASYNC_SPD_MASK|ASYNC_CALLOUT_NOHUP| \
-+		ASYNC_LOW_LATENCY)
-+#define ASYNC_SPD_CUST		(ASYNC_SPD_HI|ASYNC_SPD_VHI)
-+#define ASYNC_SPD_WARP		(ASYNC_SPD_HI|ASYNC_SPD_SHI)
-+#define ASYNC_SPD_MASK		(ASYNC_SPD_HI|ASYNC_SPD_VHI|ASYNC_SPD_SHI)
-+
-+#define ASYNC_INITIALIZED	(1U << ASYNCB_INITIALIZED)
-+#define ASYNC_NORMAL_ACTIVE	(1U << ASYNCB_NORMAL_ACTIVE)
-+#define ASYNC_BOOT_AUTOCONF	(1U << ASYNCB_BOOT_AUTOCONF)
-+#define ASYNC_CLOSING		(1U << ASYNCB_CLOSING)
-+#define ASYNC_CTS_FLOW		(1U << ASYNCB_CTS_FLOW)
-+#define ASYNC_CHECK_CD		(1U << ASYNCB_CHECK_CD)
-+#define ASYNC_SHARE_IRQ		(1U << ASYNCB_SHARE_IRQ)
-+#define ASYNC_CONS_FLOW		(1U << ASYNCB_CONS_FLOW)
-+#define ASYNC_INTERNAL_FLAGS	(~((1U << ASYNCB_FIRST_KERNEL) - 1))
-+
-+#endif
-
++	/*
++	 * This semaphore protects port->count.  It is also
++	 * very useful to prevent opens.  Also, take the
++	 * port configuration semaphore to make sure that a
++	 * module insertion/removal doesn't change anything
++	 * under us.
++	 */
++	mutex_lock(&port->mutex);
++	retval = uart_set_info(tty, port, state, &new_serial);
+ 	mutex_unlock(&port->mutex);
+ 	return retval;
+ }
+@@ -1115,11 +1131,11 @@ uart_ioctl(struct tty_struct *tty, unsigned int cmd,
+ 	 */
+ 	switch (cmd) {
+ 	case TIOCGSERIAL:
+-		ret = uart_get_info(state, uarg);
++		ret = uart_get_info_user(state, uarg);
+ 		break;
+ 
+ 	case TIOCSSERIAL:
+-		ret = uart_set_info(tty, state, uarg);
++		ret = uart_set_info_user(tty, state, uarg);
+ 		break;
+ 
+ 	case TIOCSERCONFIG:
