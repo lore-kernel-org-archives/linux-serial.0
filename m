@@ -1,36 +1,44 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCHv3 3/9] serial: vt8500: Add devicetree support for
-Date: Wed, 22 Aug 2012 06:44:17 +0000
-Message-ID: <201208220644.18059.arnd@arndb.de>
-References: <1345582058-2291-1-git-send-email-linux@prisktech.co.nz> <20120821231255.71a7515a@pyramind.ukuu.org.uk> <1345617278.7491.4.camel@gitbox>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [rtc-linux] [PATCHv3 8/9] arm: vt8500: gpio: Devicetree support
+ for arch-vt8500
+Date: Wed, 22 Aug 2012 11:21:32 +0200
+Message-ID: <CACRpkdZnQyLSRQ6cRpFBurAv2cv44einGAsT86FLCqsj1euDMA@mail.gmail.com>
+References: <1345582058-2291-1-git-send-email-linux@prisktech.co.nz>
+	<1345582058-2291-9-git-send-email-linux@prisktech.co.nz>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1345617278.7491.4.camel@gitbox>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>, Alan Cox <alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Linus Walleij <linus.walleij-0IS4wlFg1OjSUeElwK9/Pw@public.gmane.org>, Florian Tobias Schandinat <FlorianSchandinat-Mmb7MZpHnFY@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, vt8500-wm8505-linux-kernel-/JYPxA39Uh6Zox4op4iWzw@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, Rob Landley <rob-VoJi6FS/r0vR7s880joybQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Mike Turquette <mturquette-l0cyMroinI0@public.gmane.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-vc0-f174.google.com ([209.85.220.174]:38686 "EHLO
+	mail-vc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758810Ab2HVJVd (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 22 Aug 2012 05:21:33 -0400
+Received: by vcbfk26 with SMTP id fk26so812420vcb.19
+        for <linux-serial@vger.kernel.org>; Wed, 22 Aug 2012 02:21:32 -0700 (PDT)
+In-Reply-To: <1345582058-2291-9-git-send-email-linux@prisktech.co.nz>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Tony Prisk <linux@prisktech.co.nz>
+Cc: vt8500-wm8505-linux-kernel@googlegroup.com, Russell King <linux@arm.linux.org.uk>, Alessandro Zummo <a.zummo@towertech.it>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Florian Tobias Schandinat <FlorianSchandinat@gmx.de>, Arnd Bergmann <arnd@arndb.de>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Rob Landley <rob@landley.net>, Linus Walleij <linus.walleij@stericsson.com>, Mike Turquette <mturquette@ti.com>, Stephen Warren <swarren@nvidia.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
 
-On Wednesday 22 August 2012, Tony Prisk wrote:
-> The original patch was very simple, but I revisited it to fix other
-> issues and forgot to add the relevant comments.
-> 
-> Port size is changed to fix a problem - WM8505 actually had 6 uart's
-> defined in platform data but the vt8500_ports variable was only 4.
-> 
-> I have added devicetree port id support as well.
+On Tue, Aug 21, 2012 at 10:47 PM, Tony Prisk <linux@prisktech.co.nz> wrote:
 
-If you do multiple things in one driver, you should normally send multiple
-patches as well, each with a description why that change is done.
-It may seem silly at first to send out a one-line patch next to a 100-line
-patch for the same file, but those cases are actually the ones where it's
-most important.
+> Converted the existing arch-vt8500 gpio to a platform_device.
+> Added support for WM8505 and WM8650 GPIO controllers.
+(...)
+> +       unsigned val;
 
-	Arnd
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+I asked about the datatype for this "val", it sure isn't "unsigned".
+
+I suspected the registers were only 8bit and so it should be u8.
+But atleast use u32 if you must use all these bits.
+
+(...)
+> +       val = readl(vt8500_chip->base + vt8500_chip->regs->en);
+> +       val |= BIT(offset);
+> +       writel(val, vt8500_chip->base + vt8500_chip->regs->en);
+
+BTW: have you considered [readl|writel]_relaxed?
+
+Yours,
+Linus Walleij
