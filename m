@@ -1,44 +1,143 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [rtc-linux] [PATCHv3 8/9] arm: vt8500: gpio: Devicetree support
- for arch-vt8500
-Date: Wed, 22 Aug 2012 11:21:32 +0200
-Message-ID: <CACRpkdZnQyLSRQ6cRpFBurAv2cv44einGAsT86FLCqsj1euDMA@mail.gmail.com>
-References: <1345582058-2291-1-git-send-email-linux@prisktech.co.nz>
-	<1345582058-2291-9-git-send-email-linux@prisktech.co.nz>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: [PATCH] tty: move the async flags from the serial code into the tty
+ includes
+Date: Wed, 22 Aug 2012 12:15:37 +0100
+Message-ID: <20120822111527.10022.69866.stgit@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vc0-f174.google.com ([209.85.220.174]:38686 "EHLO
-	mail-vc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758810Ab2HVJVd (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:56697 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752247Ab2HVK6M (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 22 Aug 2012 05:21:33 -0400
-Received: by vcbfk26 with SMTP id fk26so812420vcb.19
-        for <linux-serial@vger.kernel.org>; Wed, 22 Aug 2012 02:21:32 -0700 (PDT)
-In-Reply-To: <1345582058-2291-9-git-send-email-linux@prisktech.co.nz>
+	Wed, 22 Aug 2012 06:58:12 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tony Prisk <linux@prisktech.co.nz>
-Cc: vt8500-wm8505-linux-kernel@googlegroup.com, Russell King <linux@arm.linux.org.uk>, Alessandro Zummo <a.zummo@towertech.it>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Florian Tobias Schandinat <FlorianSchandinat@gmx.de>, Arnd Bergmann <arnd@arndb.de>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Rob Landley <rob@landley.net>, Linus Walleij <linus.walleij@stericsson.com>, Mike Turquette <mturquette@ti.com>, Stephen Warren <swarren@nvidia.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
+To: greg@kroah.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Tue, Aug 21, 2012 at 10:47 PM, Tony Prisk <linux@prisktech.co.nz> wrote:
+From: Alan Cox <alan@linux.intel.com>
 
-> Converted the existing arch-vt8500 gpio to a platform_device.
-> Added support for WM8505 and WM8650 GPIO controllers.
-(...)
-> +       unsigned val;
+These are used with the tty_port flags which are tty generic so move the
+flags into a more sensible place. This then makes it possible to add
+helpers such as those suggested by Huang Shijie.
 
-I asked about the datatype for this "val", it sure isn't "unsigned".
+Signed-off-by: Alan Cox <alan@linux.intel.com>
+---
 
-I suspected the registers were only 8bit and so it should be u8.
-But atleast use u32 if you must use all these bits.
+ include/linux/serial.h    |    2 +
+ include/linux/tty.h       |    1 +
+ include/linux/tty_flags.h |   78 +++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 81 insertions(+)
+ create mode 100644 include/linux/tty_flags.h
 
-(...)
-> +       val = readl(vt8500_chip->base + vt8500_chip->regs->en);
-> +       val |= BIT(offset);
-> +       writel(val, vt8500_chip->base + vt8500_chip->regs->en);
+diff --git a/include/linux/serial.h b/include/linux/serial.h
+index 90e9f98..d63866d 100644
+--- a/include/linux/serial.h
++++ b/include/linux/serial.h
+@@ -15,6 +15,8 @@
+ #ifdef __KERNEL__
+ #include <asm/page.h>
+ 
++#include <linux/tty_flags.h>
++
+ /*
+  * Counters of the input lines (CTS, DSR, RI, CD) interrupts
+  */
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 69a787f..dbebd1e 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -43,6 +43,7 @@
+ #include <linux/tty_driver.h>
+ #include <linux/tty_ldisc.h>
+ #include <linux/mutex.h>
++#include <linux/tty_flags.h>
+ 
+ 
+ 
+diff --git a/include/linux/tty_flags.h b/include/linux/tty_flags.h
+new file mode 100644
+index 0000000..eefcb48
+--- /dev/null
++++ b/include/linux/tty_flags.h
+@@ -0,0 +1,78 @@
++#ifndef _LINUX_TTY_FLAGS_H
++#define _LINUX_TTY_FLAGS_H
++
++/*
++ * Definitions for async_struct (and serial_struct) flags field also
++ * shared by the tty_port flags structures.
++ *
++ * Define ASYNCB_* for convenient use with {test,set,clear}_bit.
++ */
++#define ASYNCB_HUP_NOTIFY	 0 /* Notify getty on hangups and closes
++				    * on the callout port */
++#define ASYNCB_FOURPORT		 1 /* Set OU1, OUT2 per AST Fourport settings */
++#define ASYNCB_SAK		 2 /* Secure Attention Key (Orange book) */
++#define ASYNCB_SPLIT_TERMIOS	 3 /* Separate termios for dialin/callout */
++#define ASYNCB_SPD_HI		 4 /* Use 56000 instead of 38400 bps */
++#define ASYNCB_SPD_VHI		 5 /* Use 115200 instead of 38400 bps */
++#define ASYNCB_SKIP_TEST	 6 /* Skip UART test during autoconfiguration */
++#define ASYNCB_AUTO_IRQ		 7 /* Do automatic IRQ during
++				    * autoconfiguration */
++#define ASYNCB_SESSION_LOCKOUT	 8 /* Lock out cua opens based on session */
++#define ASYNCB_PGRP_LOCKOUT	 9 /* Lock out cua opens based on pgrp */
++#define ASYNCB_CALLOUT_NOHUP	10 /* Don't do hangups for cua device */
++#define ASYNCB_HARDPPS_CD	11 /* Call hardpps when CD goes high  */
++#define ASYNCB_SPD_SHI		12 /* Use 230400 instead of 38400 bps */
++#define ASYNCB_LOW_LATENCY	13 /* Request low latency behaviour */
++#define ASYNCB_BUGGY_UART	14 /* This is a buggy UART, skip some safety
++				    * checks.  Note: can be dangerous! */
++#define ASYNCB_AUTOPROBE	15 /* Port was autoprobed by PCI or PNP code */
++#define ASYNCB_LAST_USER	15
++
++/* Internal flags used only by kernel */
++#define ASYNCB_INITIALIZED	31 /* Serial port was initialized */
++#define ASYNCB_SUSPENDED	30 /* Serial port is suspended */
++#define ASYNCB_NORMAL_ACTIVE	29 /* Normal device is active */
++#define ASYNCB_BOOT_AUTOCONF	28 /* Autoconfigure port on bootup */
++#define ASYNCB_CLOSING		27 /* Serial port is closing */
++#define ASYNCB_CTS_FLOW		26 /* Do CTS flow control */
++#define ASYNCB_CHECK_CD		25 /* i.e., CLOCAL */
++#define ASYNCB_SHARE_IRQ	24 /* for multifunction cards, no longer used */
++#define ASYNCB_CONS_FLOW	23 /* flow control for console  */
++#define ASYNCB_FIRST_KERNEL	22
++
++#define ASYNC_HUP_NOTIFY	(1U << ASYNCB_HUP_NOTIFY)
++#define ASYNC_SUSPENDED		(1U << ASYNCB_SUSPENDED)
++#define ASYNC_FOURPORT		(1U << ASYNCB_FOURPORT)
++#define ASYNC_SAK		(1U << ASYNCB_SAK)
++#define ASYNC_SPLIT_TERMIOS	(1U << ASYNCB_SPLIT_TERMIOS)
++#define ASYNC_SPD_HI		(1U << ASYNCB_SPD_HI)
++#define ASYNC_SPD_VHI		(1U << ASYNCB_SPD_VHI)
++#define ASYNC_SKIP_TEST		(1U << ASYNCB_SKIP_TEST)
++#define ASYNC_AUTO_IRQ		(1U << ASYNCB_AUTO_IRQ)
++#define ASYNC_SESSION_LOCKOUT	(1U << ASYNCB_SESSION_LOCKOUT)
++#define ASYNC_PGRP_LOCKOUT	(1U << ASYNCB_PGRP_LOCKOUT)
++#define ASYNC_CALLOUT_NOHUP	(1U << ASYNCB_CALLOUT_NOHUP)
++#define ASYNC_HARDPPS_CD	(1U << ASYNCB_HARDPPS_CD)
++#define ASYNC_SPD_SHI		(1U << ASYNCB_SPD_SHI)
++#define ASYNC_LOW_LATENCY	(1U << ASYNCB_LOW_LATENCY)
++#define ASYNC_BUGGY_UART	(1U << ASYNCB_BUGGY_UART)
++#define ASYNC_AUTOPROBE		(1U << ASYNCB_AUTOPROBE)
++
++#define ASYNC_FLAGS		((1U << (ASYNCB_LAST_USER + 1)) - 1)
++#define ASYNC_USR_MASK		(ASYNC_SPD_MASK|ASYNC_CALLOUT_NOHUP| \
++		ASYNC_LOW_LATENCY)
++#define ASYNC_SPD_CUST		(ASYNC_SPD_HI|ASYNC_SPD_VHI)
++#define ASYNC_SPD_WARP		(ASYNC_SPD_HI|ASYNC_SPD_SHI)
++#define ASYNC_SPD_MASK		(ASYNC_SPD_HI|ASYNC_SPD_VHI|ASYNC_SPD_SHI)
++
++#define ASYNC_INITIALIZED	(1U << ASYNCB_INITIALIZED)
++#define ASYNC_NORMAL_ACTIVE	(1U << ASYNCB_NORMAL_ACTIVE)
++#define ASYNC_BOOT_AUTOCONF	(1U << ASYNCB_BOOT_AUTOCONF)
++#define ASYNC_CLOSING		(1U << ASYNCB_CLOSING)
++#define ASYNC_CTS_FLOW		(1U << ASYNCB_CTS_FLOW)
++#define ASYNC_CHECK_CD		(1U << ASYNCB_CHECK_CD)
++#define ASYNC_SHARE_IRQ		(1U << ASYNCB_SHARE_IRQ)
++#define ASYNC_CONS_FLOW		(1U << ASYNCB_CONS_FLOW)
++#define ASYNC_INTERNAL_FLAGS	(~((1U << ASYNCB_FIRST_KERNEL) - 1))
++
++#endif
 
-BTW: have you considered [readl|writel]_relaxed?
-
-Yours,
-Linus Walleij
