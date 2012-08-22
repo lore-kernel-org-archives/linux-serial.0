@@ -1,148 +1,36 @@
-From: Tony Prisk <linux@prisktech.co.nz>
-Subject: [PATCHv4 3/9] serial: vt8500: Add devicetree support for vt8500-serial
-Date: Wed, 22 Aug 2012 18:37:36 +1200
-Message-ID: <1345617456-10930-1-git-send-email-linux@prisktech.co.nz>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mta05.xtra.co.nz ([210.54.141.250]:62871 "EHLO mta02.xtra.co.nz"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751662Ab2HVGhv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 22 Aug 2012 02:37:51 -0400
-Sender: linux-serial-owner@vger.kernel.org
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCHv3 3/9] serial: vt8500: Add devicetree support for
+Date: Wed, 22 Aug 2012 06:44:17 +0000
+Message-ID: <201208220644.18059.arnd@arndb.de>
+References: <1345582058-2291-1-git-send-email-linux@prisktech.co.nz> <20120821231255.71a7515a@pyramind.ukuu.org.uk> <1345617278.7491.4.camel@gitbox>
+Mime-Version: 1.0
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1345617278.7491.4.camel@gitbox>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>, Alan Cox <alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Linus Walleij <linus.walleij-0IS4wlFg1OjSUeElwK9/Pw@public.gmane.org>, Florian Tobias Schandinat <FlorianSchandinat-Mmb7MZpHnFY@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, vt8500-wm8505-linux-kernel-/JYPxA39Uh6Zox4op4iWzw@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, Rob Landley <rob-VoJi6FS/r0vR7s880joybQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Mike Turquette <mturquette-l0cyMroinI0@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: alan@linux.intel.com
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Prisk <linux@prisktech.co.nz>
 
-Increase vt8500_max_ports to 6 as the WM8505 has 6 available uarts.
-Added max_ports range checking to prevent addressing overflow.
-Use devicetree port id as primary addressing for ports but allow
-auto-allocation if id not specified.
+On Wednesday 22 August 2012, Tony Prisk wrote:
+> The original patch was very simple, but I revisited it to fix other
+> issues and forgot to add the relevant comments.
+> 
+> Port size is changed to fix a problem - WM8505 actually had 6 uart's
+> defined in platform data but the vt8500_ports variable was only 4.
+> 
+> I have added devicetree port id support as well.
 
-Signed-off-by: Tony Prisk <linux@prisktech.co.nz>
----
- drivers/tty/serial/vt8500_serial.c |   44 ++++++++++++++++++++++++++++++++----
- 1 file changed, 40 insertions(+), 4 deletions(-)
+If you do multiple things in one driver, you should normally send multiple
+patches as well, each with a description why that change is done.
+It may seem silly at first to send out a one-line patch next to a 100-line
+patch for the same file, but those cases are actually the ones where it's
+most important.
 
-diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
-index 2be006f..c10e21a 100644
---- a/drivers/tty/serial/vt8500_serial.c
-+++ b/drivers/tty/serial/vt8500_serial.c
-@@ -34,6 +34,7 @@
- #include <linux/slab.h>
- #include <linux/clk.h>
- #include <linux/platform_device.h>
-+#include <linux/of.h>
- 
- /*
-  * UART Register offsets
-@@ -76,6 +77,8 @@
- #define RX_FIFO_INTS	(RXFAF | RXFF | RXOVER | PER | FER | RXTOUT)
- #define TX_FIFO_INTS	(TXFAE | TXFE | TXUDR)
- 
-+#define VT8500_MAX_PORTS	6
-+
- struct vt8500_port {
- 	struct uart_port	uart;
- 	char			name[16];
-@@ -83,6 +86,13 @@ struct vt8500_port {
- 	unsigned int		ier;
- };
- 
-+/*
-+ * we use this variable to keep track of which ports
-+ * have been allocated as we can't use pdev->id in
-+ * devicetree
-+ */
-+static unsigned long vt8500_ports_in_use;
-+
- static inline void vt8500_write(struct uart_port *port, unsigned int val,
- 			     unsigned int off)
- {
-@@ -431,7 +441,7 @@ static int vt8500_verify_port(struct uart_port *port,
- 	return 0;
- }
- 
--static struct vt8500_port *vt8500_uart_ports[4];
-+static struct vt8500_port *vt8500_uart_ports[VT8500_MAX_PORTS];
- static struct uart_driver vt8500_uart_driver;
- 
- #ifdef CONFIG_SERIAL_VT8500_CONSOLE
-@@ -548,7 +558,9 @@ static int __devinit vt8500_serial_probe(struct platform_device *pdev)
- {
- 	struct vt8500_port *vt8500_port;
- 	struct resource *mmres, *irqres;
-+	struct device_node *np = pdev->dev.of_node;
- 	int ret;
-+	int port;
- 
- 	mmres = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	irqres = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-@@ -559,13 +571,31 @@ static int __devinit vt8500_serial_probe(struct platform_device *pdev)
- 	if (!vt8500_port)
- 		return -ENOMEM;
- 
-+	if (np)
-+		port = of_alias_get_id(np, "serial");
-+
-+	if (port < 0) {
-+		/* calculate the port id */
-+		port = find_first_zero_bit(&vt8500_ports_in_use,
-+					sizeof(vt8500_ports_in_use));
-+	}
-+
-+	if (port > VT8500_MAX_PORTS)
-+		return -ENODEV;
-+
-+	/* reserve the port id */
-+	if (test_and_set_bit(port, &vt8500_ports_in_use)) {
-+		/* port already in use - shouldn't really happen */
-+		return -EBUSY;
-+	}
-+
- 	vt8500_port->uart.type = PORT_VT8500;
- 	vt8500_port->uart.iotype = UPIO_MEM;
- 	vt8500_port->uart.mapbase = mmres->start;
- 	vt8500_port->uart.irq = irqres->start;
- 	vt8500_port->uart.fifosize = 16;
- 	vt8500_port->uart.ops = &vt8500_uart_pops;
--	vt8500_port->uart.line = pdev->id;
-+	vt8500_port->uart.line = port;
- 	vt8500_port->uart.dev = &pdev->dev;
- 	vt8500_port->uart.flags = UPF_IOREMAP | UPF_BOOT_AUTOCONF;
- 	vt8500_port->uart.uartclk = 24000000;
-@@ -579,7 +609,7 @@ static int __devinit vt8500_serial_probe(struct platform_device *pdev)
- 		goto err;
- 	}
- 
--	vt8500_uart_ports[pdev->id] = vt8500_port;
-+	vt8500_uart_ports[port] = vt8500_port;
- 
- 	uart_add_one_port(&vt8500_uart_driver, &vt8500_port->uart);
- 
-@@ -603,12 +633,18 @@ static int __devexit vt8500_serial_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
-+static const struct of_device_id wmt_dt_ids[] = {
-+	{ .compatible = "via,vt8500-uart", },
-+	{}
-+};
-+
- static struct platform_driver vt8500_platform_driver = {
- 	.probe  = vt8500_serial_probe,
- 	.remove = __devexit_p(vt8500_serial_remove),
- 	.driver = {
- 		.name = "vt8500_serial",
- 		.owner = THIS_MODULE,
-+		.of_match_table = of_match_ptr(wmt_dt_ids),
- 	},
- };
- 
-@@ -642,4 +678,4 @@ module_exit(vt8500_serial_exit);
- 
- MODULE_AUTHOR("Alexey Charkov <alchark@gmail.com>");
- MODULE_DESCRIPTION("Driver for vt8500 serial device");
--MODULE_LICENSE("GPL");
-+MODULE_LICENSE("GPL v2");
--- 
-1.7.9.5
-
+	Arnd
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
