@@ -1,36 +1,62 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCHv4 0/9] *** ARM: Update arch-vt8500 to Devicetree ***
-Date: Thu, 23 Aug 2012 10:40:16 +0000
-Message-ID: <201208231040.16702.arnd@arndb.de>
-References: <1345707346-9035-1-git-send-email-linux@prisktech.co.nz>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-In-Reply-To: <1345707346-9035-1-git-send-email-linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: "devicetree-discuss"
- <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-To: Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
-Cc: Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Linus Walleij <linus.walleij-0IS4wlFg1OjSUeElwK9/Pw@public.gmane.org>, rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Florian Tobias Schandinat <FlorianSchandinat-Mmb7MZpHnFY@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, vt8500-wm8505-linux-kernel-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mike Turquette <mturquette-l0cyMroinI0@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+From: Felipe Balbi <balbi@ti.com>
+Subject: [PATCH v3 13/23] serial: omap: don't save IRQ flags on hardirq
+Date: Thu, 23 Aug 2012 13:32:53 +0300
+Message-ID: <1345717983-18179-14-git-send-email-balbi@ti.com>
+References: <1345717983-18179-1-git-send-email-balbi@ti.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from na3sys009aog129.obsmtp.com ([74.125.149.142]:55535 "EHLO
+	na3sys009aog129.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S933843Ab2HWKhn (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 23 Aug 2012 06:37:43 -0400
+Received: by lagz14 with SMTP id z14so400691lag.32
+        for <linux-serial@vger.kernel.org>; Thu, 23 Aug 2012 03:37:39 -0700 (PDT)
+In-Reply-To: <1345717983-18179-1-git-send-email-balbi@ti.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: alan@linux.intel.com
+Cc: Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Shubhrajyoti Datta <shubhrajyoti@ti.com>, Sourav Poddar <sourav.poddar@ti.com>, Felipe Balbi <balbi@ti.com>
 
-On Thursday 23 August 2012, Tony Prisk wrote:
-> Patchset based on Arnd's arm-soc/for-next branch.
-> 
-> 
-> Could I get this reviewed, hopefully for inclusion into v3.7.
+When we're running our hardirq handler, there's
+not need to disable IRQs with spin_lock_irqsave()
+because IRQs are already disabled. It also makes
+no difference if we save or not IRQ flags.
 
-I can take them into the arm-soc tree if there are no new comments.
-For the last two patches, you need to get an Acked-by comment from the
-gpio and clk maintainers, respectively, or you should send them
-the patches for inclusion in those subsystem trees.
+Switch over to simple spin_lock/spin_unlock and
+drop the "flags" variable.
 
-	Arnd
+Tested-by: Shubhrajyoti D <shubhrajyoti@ti.com>
+Signed-off-by: Felipe Balbi <balbi@ti.com>
+---
+ drivers/tty/serial/omap-serial.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 2df725b..8a60212 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -350,11 +350,10 @@ static inline irqreturn_t serial_omap_irq(int irq, void *dev_id)
+ 	struct tty_struct *tty = up->port.state->port.tty;
+ 	unsigned int iir, lsr;
+ 	unsigned int type;
+-	unsigned long flags;
+ 	irqreturn_t ret = IRQ_NONE;
+ 	int max_count = 256;
+ 
+-	spin_lock_irqsave(&up->port.lock, flags);
++	spin_lock(&up->port.lock);
+ 	pm_runtime_get_sync(up->dev);
+ 
+ 	do {
+@@ -393,7 +392,7 @@ static inline irqreturn_t serial_omap_irq(int irq, void *dev_id)
+ 		}
+ 	} while (!(iir & UART_IIR_NO_INT) && max_count--);
+ 
+-	spin_unlock_irqrestore(&up->port.lock, flags);
++	spin_unlock(&up->port.lock);
+ 
+ 	tty_flip_buffer_push(tty);
+ 
+-- 
+1.7.12.rc3
+
