@@ -1,383 +1,328 @@
 From: Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
-Subject: [PATCHv4 8/9] arm: vt8500: gpio: Devicetree support for arch-vt8500
-Date: Thu, 23 Aug 2012 19:35:44 +1200
-Message-ID: <1345707346-9035-9-git-send-email-linux@prisktech.co.nz>
+Subject: [PATCHv4 4/9] usb: vt8500: Add devicetree support for vt8500-ehci and
+ -uhci.
+Date: Thu, 23 Aug 2012 19:35:40 +1200
+Message-ID: <1345707346-9035-5-git-send-email-linux@prisktech.co.nz>
 References: <1345707346-9035-1-git-send-email-linux@prisktech.co.nz>
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 In-Reply-To: <1345707346-9035-1-git-send-email-linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
+List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
+Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Sender: "devicetree-discuss"
+ <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 To: vt8500-wm8505-linux-kernel-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-Cc: Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Florian Tobias Schandinat <FlorianSchandinat-Mmb7MZpHnFY@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Rob Landley <rob-VoJi6FS/r0vR7s880joybQ@public.gmane.org>, Linus Walleij <linus.walleij-0IS4wlFg1OjSUeElwK9/Pw@public.gmane.org>, Mike Turquette <mturquette-l0cyMroinI0@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Cc: Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Linus Walleij <linus.walleij-0IS4wlFg1OjSUeElwK9/Pw@public.gmane.org>, Florian Tobias Schandinat <FlorianSchandinat-Mmb7MZpHnFY@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mike Turquette <mturquette-l0cyMroinI0@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Converted the existing arch-vt8500 gpio to a platform_device.
-Added support for WM8505 and WM8650 GPIO controllers.
-Replaced existing readl/writel calls with _relaxed variants.
-Replaced existing unsigned variables with u32 to match register size.
+Add devicetree support for vt8500-ehci.
+Convert vt8500-uhci to a generic non-pci platform-uhci with
+device tree support.
 
 Signed-off-by: Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
 ---
- drivers/gpio/Kconfig       |    6 +
- drivers/gpio/Makefile      |    1 +
- drivers/gpio/gpio-vt8500.c |  316 ++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 323 insertions(+)
- create mode 100644 drivers/gpio/gpio-vt8500.c
+ drivers/usb/host/Kconfig         |    4 +-
+ drivers/usb/host/ehci-vt8500.c   |   25 ++++--
+ drivers/usb/host/uhci-hcd.c      |    5 ++
+ drivers/usb/host/uhci-platform.c |  169 ++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 195 insertions(+), 8 deletions(-)
+ create mode 100644 drivers/usb/host/uhci-platform.c
 
-diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
-index 542f0c0..3c8897a 100644
---- a/drivers/gpio/Kconfig
-+++ b/drivers/gpio/Kconfig
-@@ -183,6 +183,12 @@ config GPIO_STA2X11
- 	  Say yes here to support the STA2x11/ConneXt GPIO device.
- 	  The GPIO module has 128 GPIO pins with alternate functions.
+diff --git a/drivers/usb/host/Kconfig b/drivers/usb/host/Kconfig
+index dcfaaa9..d7a6b10 100644
+--- a/drivers/usb/host/Kconfig
++++ b/drivers/usb/host/Kconfig
+@@ -450,7 +450,7 @@ config USB_OHCI_LITTLE_ENDIAN
  
-+config GPIO_VT8500
-+	bool "VIA/Wondermedia SoC GPIO Support"
-+	depends on ARCH_VT8500
-+	help
-+	  Say yes here to support the VT8500/WM8505/WM8650 GPIO controller.
-+
- config GPIO_XILINX
- 	bool "Xilinx GPIO support"
- 	depends on PPC_OF || MICROBLAZE
-diff --git a/drivers/gpio/Makefile b/drivers/gpio/Makefile
-index 0f55662..2c014b9 100644
---- a/drivers/gpio/Makefile
-+++ b/drivers/gpio/Makefile
-@@ -66,6 +66,7 @@ obj-$(CONFIG_GPIO_TPS65912)	+= gpio-tps65912.o
- obj-$(CONFIG_GPIO_TWL4030)	+= gpio-twl4030.o
- obj-$(CONFIG_GPIO_UCB1400)	+= gpio-ucb1400.o
- obj-$(CONFIG_GPIO_VR41XX)	+= gpio-vr41xx.o
-+obj-$(CONFIG_GPIO_VT8500)	+= gpio-vt8500.o
- obj-$(CONFIG_GPIO_VX855)	+= gpio-vx855.o
- obj-$(CONFIG_GPIO_WM831X)	+= gpio-wm831x.o
- obj-$(CONFIG_GPIO_WM8350)	+= gpio-wm8350.o
-diff --git a/drivers/gpio/gpio-vt8500.c b/drivers/gpio/gpio-vt8500.c
-new file mode 100644
-index 0000000..bcd8e4a
---- /dev/null
-+++ b/drivers/gpio/gpio-vt8500.c
-@@ -0,0 +1,316 @@
-+/* drivers/gpio/gpio-vt8500.c
-+ *
-+ * Copyright (C) 2012 Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
-+ * Based on arch/arm/mach-vt8500/gpio.c:
-+ * - Copyright (C) 2010 Alexey Charkov <alchark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-+ *
-+ * This software is licensed under the terms of the GNU General Public
-+ * License version 2, as published by the Free Software Foundation, and
-+ * may be copied, distributed, and modified under those terms.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/err.h>
-+#include <linux/io.h>
-+#include <linux/gpio.h>
-+#include <linux/platform_device.h>
-+#include <linux/bitops.h>
+ config USB_UHCI_HCD
+ 	tristate "UHCI HCD (most Intel and VIA) support"
+-	depends on USB && (PCI || SPARC_LEON)
++	depends on USB && (PCI || SPARC_LEON || ARCH_VT8500)
+ 	---help---
+ 	  The Universal Host Controller Interface is a standard by Intel for
+ 	  accessing the USB hardware in the PC (which is also called the USB
+@@ -468,7 +468,7 @@ config USB_UHCI_HCD
+ config USB_UHCI_SUPPORT_NON_PCI_HC
+ 	bool
+ 	depends on USB_UHCI_HCD
+-	default y if SPARC_LEON
++	default y if (SPARC_LEON  || ARCH_VT8500)
+ 
+ config USB_UHCI_BIG_ENDIAN_MMIO
+ 	bool
+diff --git a/drivers/usb/host/ehci-vt8500.c b/drivers/usb/host/ehci-vt8500.c
+index c1eda73..0e1637b 100644
+--- a/drivers/usb/host/ehci-vt8500.c
++++ b/drivers/usb/host/ehci-vt8500.c
+@@ -16,6 +16,7 @@
+  *
+  */
+ 
 +#include <linux/of.h>
-+#include <linux/of_address.h>
-+#include <linux/of_irq.h>
-+#include <linux/of_device.h>
+ #include <linux/platform_device.h>
+ 
+ static int ehci_update_device(struct usb_hcd *hcd, struct usb_device *udev)
+@@ -84,20 +85,23 @@ static const struct hc_driver vt8500_ehci_hc_driver = {
+ 	.clear_tt_buffer_complete	= ehci_clear_tt_buffer_complete,
+ };
+ 
++static u64 wmt_ehci_dma_mask = DMA_BIT_MASK(32);
 +
-+/*
-+	We handle GPIOs by bank, each bank containing up to 32 GPIOs covered
-+	by one set of registers (although not all may be valid).
+ static int vt8500_ehci_drv_probe(struct platform_device *pdev)
+ {
+ 	struct usb_hcd *hcd;
+ 	struct ehci_hcd *ehci;
+ 	struct resource *res;
++	int irq;
+ 	int ret;
+ 
+ 	if (usb_disabled())
+ 		return -ENODEV;
+ 
+-	if (pdev->resource[1].flags != IORESOURCE_IRQ) {
+-		pr_debug("resource[1] is not IORESOURCE_IRQ");
+-		return -ENOMEM;
+-	}
++	/* devicetree created devices don't specify a dma mask */
++	if (!pdev->dev.dma_mask)
++		pdev->dev.dma_mask = &wmt_ehci_dma_mask;
 +
-+	Because different SoC's have different register offsets, we pass the
-+	register offsets as data in vt8500_gpio_dt_ids[].
+ 	hcd = usb_create_hcd(&vt8500_ehci_hc_driver, &pdev->dev, "VT8500");
+ 	if (!hcd)
+ 		return -ENOMEM;
+@@ -134,8 +138,9 @@ static int vt8500_ehci_drv_probe(struct platform_device *pdev)
+ 
+ 	ehci_reset(ehci);
+ 
+-	ret = usb_add_hcd(hcd, pdev->resource[1].start,
+-			  IRQF_SHARED);
++	irq = platform_get_irq(pdev, 0);
 +
-+	A value of NO_REG is used to indicate that this register is not
-+	supported. Only used for ->en at the moment.
-+*/
-+
-+#define NO_REG	0xFFFF
-+
-+/*
-+ * struct vt8500_gpio_bank_regoffsets
-+ * @en: offset to enable register of the bank
-+ * @dir: offset to direction register of the bank
-+ * @data_out: offset to the data out register of the bank
-+ * @data_in: offset to the data in register of the bank
-+ * @ngpio: highest valid pin in this bank
-+ */
-+
-+struct vt8500_gpio_bank_regoffsets {
-+	unsigned int	en;
-+	unsigned int	dir;
-+	unsigned int	data_out;
-+	unsigned int	data_in;
-+	unsigned char	ngpio;
++	ret = usb_add_hcd(hcd, irq, IRQF_SHARED);
+ 	if (ret == 0) {
+ 		platform_set_drvdata(pdev, hcd);
+ 		return ret;
+@@ -162,6 +167,11 @@ static int vt8500_ehci_drv_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static const struct of_device_id vt8500_ehci_ids[] = {
++	{ .compatible = "via,vt8500-ehci", },
++	{}
 +};
 +
-+struct vt8500_gpio_data {
-+	unsigned int				num_banks;
-+	struct vt8500_gpio_bank_regoffsets	banks[];
-+};
-+
-+#define VT8500_BANK(__en, __dir, __out, __in, __ngpio)		\
-+{								\
-+	.en = __en,						\
-+	.dir = __dir,						\
-+	.data_out = __out,					\
-+	.data_in = __in,					\
-+	.ngpio = __ngpio,					\
-+}
-+
-+static struct vt8500_gpio_data vt8500_data = {
-+	.num_banks	= 7,
-+	.banks	= {
-+		VT8500_BANK(0x00, 0x20, 0x40, 0x60, 26),
-+		VT8500_BANK(0x04, 0x24, 0x44, 0x64, 28),
-+		VT8500_BANK(0x08, 0x28, 0x48, 0x68, 31),
-+		VT8500_BANK(0x0C, 0x2C, 0x4C, 0x6C, 19),
-+		VT8500_BANK(0x10, 0x30, 0x50, 0x70, 19),
-+		VT8500_BANK(0x14, 0x34, 0x54, 0x74, 23),
-+		VT8500_BANK(NO_REG, 0x3C, 0x5C, 0x7C, 9),
-+	},
-+};
-+
-+static struct vt8500_gpio_data wm8505_data = {
-+	.num_banks	= 10,
-+	.banks	= {
-+		VT8500_BANK(0x40, 0x68, 0x90, 0xB8, 8),
-+		VT8500_BANK(0x44, 0x6C, 0x94, 0xBC, 32),
-+		VT8500_BANK(0x48, 0x70, 0x98, 0xC0, 6),
-+		VT8500_BANK(0x4C, 0x74, 0x9C, 0xC4, 16),
-+		VT8500_BANK(0x50, 0x78, 0xA0, 0xC8, 25),
-+		VT8500_BANK(0x54, 0x7C, 0xA4, 0xCC, 5),
-+		VT8500_BANK(0x58, 0x80, 0xA8, 0xD0, 5),
-+		VT8500_BANK(0x5C, 0x84, 0xAC, 0xD4, 12),
-+		VT8500_BANK(0x60, 0x88, 0xB0, 0xD8, 16),
-+		VT8500_BANK(0x64, 0x8C, 0xB4, 0xDC, 22),
-+	},
-+};
-+
-+/*
-+ * No information about which bits are valid so we just make
-+ * them all available until its figured out.
-+ */
-+static struct vt8500_gpio_data wm8650_data = {
-+	.num_banks	= 9,
-+	.banks	= {
-+		VT8500_BANK(0x40, 0x80, 0xC0, 0x00, 32),
-+		VT8500_BANK(0x44, 0x84, 0xC4, 0x04, 32),
-+		VT8500_BANK(0x48, 0x88, 0xC8, 0x08, 32),
-+		VT8500_BANK(0x4C, 0x8C, 0xCC, 0x0C, 32),
-+		VT8500_BANK(0x50, 0x90, 0xD0, 0x10, 32),
-+		VT8500_BANK(0x54, 0x94, 0xD4, 0x14, 32),
-+		VT8500_BANK(0x58, 0x98, 0xD8, 0x18, 32),
-+		VT8500_BANK(0x5C, 0x9C, 0xDC, 0x1C, 32),
-+		VT8500_BANK(0x7C, 0xBC, 0xFC, 0x3C, 32),
-+	},
-+};
-+
-+struct vt8500_gpio_chip {
-+	struct gpio_chip		chip;
-+
-+	const struct vt8500_gpio_bank_regoffsets *regs;
-+	void __iomem	*base;
-+};
-+
-+
-+#define to_vt8500(__chip) container_of(__chip, struct vt8500_gpio_chip, chip)
-+
-+static int vt8500_gpio_request(struct gpio_chip *chip, unsigned offset)
-+{
-+	u32 val;
-+	struct vt8500_gpio_chip *vt8500_chip = to_vt8500(chip);
-+
-+	if (vt8500_chip->regs->en == NO_REG)
-+		return 0;
-+
-+	val = readl_relaxed(vt8500_chip->base + vt8500_chip->regs->en);
-+	val |= BIT(offset);
-+	writel_relaxed(val, vt8500_chip->base + vt8500_chip->regs->en);
-+
-+	return 0;
-+}
-+
-+static void vt8500_gpio_free(struct gpio_chip *chip, unsigned offset)
-+{
-+	struct vt8500_gpio_chip *vt8500_chip = to_vt8500(chip);
-+	u32 val;
-+
-+	if (vt8500_chip->regs->en == NO_REG)
-+		return;
-+
-+	val = readl_relaxed(vt8500_chip->base + vt8500_chip->regs->en);
-+	val &= ~BIT(offset);
-+	writel_relaxed(val, vt8500_chip->base + vt8500_chip->regs->en);
-+}
-+
-+static int vt8500_gpio_direction_input(struct gpio_chip *chip, unsigned offset)
-+{
-+	struct vt8500_gpio_chip *vt8500_chip = to_vt8500(chip);
-+
-+	u32 val = readl_relaxed(vt8500_chip->base + vt8500_chip->regs->dir);
-+	val &= ~BIT(offset);
-+	writel_relaxed(val, vt8500_chip->base + vt8500_chip->regs->dir);
-+
-+	return 0;
-+}
-+
-+static int vt8500_gpio_direction_output(struct gpio_chip *chip, unsigned offset,
-+								int value)
-+{
-+	struct vt8500_gpio_chip *vt8500_chip = to_vt8500(chip);
-+
-+	u32 val = readl_relaxed(vt8500_chip->base + vt8500_chip->regs->dir);
-+	val |= BIT(offset);
-+	writel_relaxed(val, vt8500_chip->base + vt8500_chip->regs->dir);
-+
-+	if (value) {
-+		val = readl_relaxed(vt8500_chip->base +
-+						vt8500_chip->regs->data_out);
-+		val |= BIT(offset);
-+		writel_relaxed(val, vt8500_chip->base +
-+						vt8500_chip->regs->data_out);
-+	}
-+	return 0;
-+}
-+
-+static int vt8500_gpio_get_value(struct gpio_chip *chip, unsigned offset)
-+{
-+	struct vt8500_gpio_chip *vt8500_chip = to_vt8500(chip);
-+
-+	return (readl_relaxed(vt8500_chip->base + vt8500_chip->regs->data_in) >>
-+								offset) & 1;
-+}
-+
-+static void vt8500_gpio_set_value(struct gpio_chip *chip, unsigned offset,
-+								int value)
-+{
-+	struct vt8500_gpio_chip *vt8500_chip = to_vt8500(chip);
-+
-+	u32 val = readl_relaxed(vt8500_chip->base +
-+						vt8500_chip->regs->data_out);
-+	if (value)
-+		val |= BIT(offset);
-+	else
-+		val &= ~BIT(offset);
-+
-+	writel_relaxed(val, vt8500_chip->base + vt8500_chip->regs->data_out);
-+}
-+
-+static int vt8500_of_xlate(struct gpio_chip *gc,
-+			    const struct of_phandle_args *gpiospec, u32 *flags)
-+{
-+	/* bank if specificed in gpiospec->args[0] */
-+	if (flags)
-+		*flags = gpiospec->args[2];
-+
-+	return gpiospec->args[1];
-+}
-+
-+static int vt8500_add_chips(struct platform_device *pdev, void __iomem *base,
-+				const struct vt8500_gpio_data *data)
-+{
-+	struct vt8500_gpio_chip *vtchip;
-+	struct gpio_chip *chip;
-+	int i;
-+	int pin_cnt = 0;
-+
-+	vtchip = devm_kzalloc(&pdev->dev,
-+			sizeof(struct vt8500_gpio_chip) * data->num_banks,
-+			GFP_KERNEL);
-+	if (!vtchip) {
-+		pr_err("%s: failed to allocate chip memory\n", __func__);
-+		return -ENOMEM;
-+	}
-+
-+	for (i = 0; i < data->num_banks; i++) {
-+		vtchip[i].base = base;
-+		vtchip[i].regs = &data->banks[i];
-+
-+		chip = &vtchip[i].chip;
-+
-+		chip->of_xlate = vt8500_of_xlate;
-+		chip->of_gpio_n_cells = 3;
-+		chip->of_node = pdev->dev.of_node;
-+
-+		chip->request = vt8500_gpio_request;
-+		chip->free = vt8500_gpio_free;
-+		chip->direction_input = vt8500_gpio_direction_input;
-+		chip->direction_output = vt8500_gpio_direction_output;
-+		chip->get = vt8500_gpio_get_value;
-+		chip->set = vt8500_gpio_set_value;
-+		chip->can_sleep = 0;
-+		chip->base = pin_cnt;
-+		chip->ngpio = data->banks[i].ngpio;
-+
-+		pin_cnt += data->banks[i].ngpio;
-+
-+		gpiochip_add(chip);
-+	}
-+	return 0;
-+}
-+
-+static struct of_device_id vt8500_gpio_dt_ids[] = {
-+	{ .compatible = "via,vt8500-gpio", .data = &vt8500_data, },
-+	{ .compatible = "wm,wm8505-gpio", .data = &wm8505_data, },
-+	{ .compatible = "wm,wm8650-gpio", .data = &wm8650_data, },
-+	{ /* Sentinel */ },
-+};
-+
-+static int __devinit vt8500_gpio_probe(struct platform_device *pdev)
-+{
-+	void __iomem *gpio_base;
-+	struct device_node *np;
-+	const struct of_device_id *of_id =
-+				of_match_device(vt8500_gpio_dt_ids, &pdev->dev);
-+
-+	if (!of_id) {
-+		dev_err(&pdev->dev, "Failed to find gpio controller\n");
-+		return -ENODEV;
-+	}
-+
-+	np = pdev->dev.of_node;
-+	if (!np) {
-+		dev_err(&pdev->dev, "Missing GPIO description in devicetree\n");
-+		return -EFAULT;
-+	}
-+
-+	gpio_base = of_iomap(np, 0);
-+	if (!gpio_base) {
-+		dev_err(&pdev->dev, "Unable to map GPIO registers\n");
-+		of_node_put(np);
-+		return -ENOMEM;
-+	}
-+
-+	vt8500_add_chips(pdev, gpio_base, of_id->data);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver vt8500_gpio_driver = {
-+	.probe		= vt8500_gpio_probe,
-+	.driver		= {
-+		.name	= "vt8500-gpio",
-+		.owner	= THIS_MODULE,
-+		.of_match_table = vt8500_gpio_dt_ids,
-+	},
-+};
-+
-+module_platform_driver(vt8500_gpio_driver);
-+
-+MODULE_DESCRIPTION("VT8500 GPIO Driver");
-+MODULE_AUTHOR("Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>");
+ static struct platform_driver vt8500_ehci_driver = {
+ 	.probe		= vt8500_ehci_drv_probe,
+ 	.remove		= vt8500_ehci_drv_remove,
+@@ -169,7 +179,10 @@ static struct platform_driver vt8500_ehci_driver = {
+ 	.driver = {
+ 		.name	= "vt8500-ehci",
+ 		.owner	= THIS_MODULE,
++		.of_match_table = of_match_ptr(vt8500_ehci_ids),
+ 	}
+ };
+ 
+ MODULE_ALIAS("platform:vt8500-ehci");
 +MODULE_LICENSE("GPL v2");
-+MODULE_DEVICE_TABLE(of, vt8500_gpio_dt_ids);
++MODULE_DEVICE_TABLE(of, vt8500_ehci_ids);
+diff --git a/drivers/usb/host/uhci-hcd.c b/drivers/usb/host/uhci-hcd.c
+index e4db350..5da5c99 100644
+--- a/drivers/usb/host/uhci-hcd.c
++++ b/drivers/usb/host/uhci-hcd.c
+@@ -846,6 +846,11 @@ static const char hcd_name[] = "uhci_hcd";
+ #define PLATFORM_DRIVER		uhci_grlib_driver
+ #endif
+ 
++#ifdef CONFIG_ARCH_VT8500
++#include "uhci-platform.c"
++#define PLATFORM_DRIVER		uhci_platform_driver
++#endif
++
+ #if !defined(PCI_DRIVER) && !defined(PLATFORM_DRIVER)
+ #error "missing bus glue for uhci-hcd"
+ #endif
+diff --git a/drivers/usb/host/uhci-platform.c b/drivers/usb/host/uhci-platform.c
+new file mode 100644
+index 0000000..35ca094
+--- /dev/null
++++ b/drivers/usb/host/uhci-platform.c
+@@ -0,0 +1,169 @@
++/*
++ * Generic UHCI HCD (Host Controller Driver) for Platform Devices
++ *
++ * Copyright (c) 2011 Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
++ *
++ * This file is based on uhci-grlib.c
++ * (C) Copyright 2004-2007 Alan Stern, stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org
++ */
++
++#include <linux/of.h>
++#include <linux/platform_device.h>
++
++static int uhci_platform_init(struct usb_hcd *hcd)
++{
++	struct uhci_hcd *uhci = hcd_to_uhci(hcd);
++
++	uhci->rh_numports = uhci_count_ports(hcd);
++
++	/* Set up pointers to to generic functions */
++	uhci->reset_hc = uhci_generic_reset_hc;
++	uhci->check_and_reset_hc = uhci_generic_check_and_reset_hc;
++
++	/* No special actions need to be taken for the functions below */
++	uhci->configure_hc = NULL;
++	uhci->resume_detect_interrupts_are_broken = NULL;
++	uhci->global_suspend_mode_is_broken = NULL;
++
++	/* Reset if the controller isn't already safely quiescent. */
++	check_and_reset_hc(uhci);
++	return 0;
++}
++
++static const struct hc_driver uhci_platform_hc_driver = {
++	.description =          hcd_name,
++	.product_desc =         "Generic UHCI Host Controller",
++	.hcd_priv_size =        sizeof(struct uhci_hcd),
++
++	/* Generic hardware linkage */
++	.irq =                  uhci_irq,
++	.flags =                HCD_MEMORY | HCD_USB11,
++
++	/* Basic lifecycle operations */
++	.reset =                uhci_platform_init,
++	.start =                uhci_start,
++#ifdef CONFIG_PM
++	.pci_suspend =          NULL,
++	.pci_resume =           NULL,
++	.bus_suspend =          uhci_rh_suspend,
++	.bus_resume =           uhci_rh_resume,
++#endif
++	.stop =                 uhci_stop,
++
++	.urb_enqueue =          uhci_urb_enqueue,
++	.urb_dequeue =          uhci_urb_dequeue,
++
++	.endpoint_disable =     uhci_hcd_endpoint_disable,
++	.get_frame_number =     uhci_hcd_get_frame_number,
++
++	.hub_status_data =      uhci_hub_status_data,
++	.hub_control =          uhci_hub_control,
++};
++
++static u64 platform_uhci_dma_mask = DMA_BIT_MASK(32);
++
++static int __devinit uhci_hcd_platform_probe(struct platform_device *pdev)
++{
++	struct usb_hcd *hcd;
++	struct uhci_hcd *uhci;
++	struct resource *res;
++	int ret;
++
++	if (usb_disabled())
++		return -ENODEV;
++
++	/* Right now device-tree probed devices don't get dma_mask set.
++	 * Since shared usb code relies on it, set it here for now.
++	 * Once we have dma capability bindings this can go away.
++	 */
++	if (!pdev->dev.dma_mask)
++		pdev->dev.dma_mask = &platform_uhci_dma_mask;
++
++	hcd = usb_create_hcd(&uhci_platform_hc_driver, &pdev->dev,
++				pdev->name);
++	if (!hcd)
++		return -ENOMEM;
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	hcd->rsrc_start = res->start;
++	hcd->rsrc_len = resource_size(res);
++
++	if (!request_mem_region(hcd->rsrc_start, hcd->rsrc_len, hcd_name)) {
++		pr_err("%s: request_mem_region failed\n", __func__);
++		ret = -EBUSY;
++		goto err_rmr;
++	}
++
++	hcd->regs = ioremap(hcd->rsrc_start, hcd->rsrc_len);
++	if (!hcd->regs) {
++		pr_err("%s: ioremap failed\n", __func__);
++		ret = -ENOMEM;
++		goto err_irq;
++	}
++	uhci = hcd_to_uhci(hcd);
++
++	uhci->regs = hcd->regs;
++
++	ret = usb_add_hcd(hcd, pdev->resource[1].start, IRQF_DISABLED |
++								IRQF_SHARED);
++	if (ret)
++		goto err_uhci;
++
++	return 0;
++
++err_uhci:
++	iounmap(hcd->regs);
++err_irq:
++	release_mem_region(hcd->rsrc_start, hcd->rsrc_len);
++err_rmr:
++	usb_put_hcd(hcd);
++
++	return ret;
++}
++
++static int uhci_hcd_platform_remove(struct platform_device *pdev)
++{
++	struct usb_hcd *hcd = platform_get_drvdata(pdev);
++
++	usb_remove_hcd(hcd);
++	iounmap(hcd->regs);
++	release_mem_region(hcd->rsrc_start, hcd->rsrc_len);
++	usb_put_hcd(hcd);
++	platform_set_drvdata(pdev, NULL);
++
++	return 0;
++}
++
++/* Make sure the controller is quiescent and that we're not using it
++ * any more.  This is mainly for the benefit of programs which, like kexec,
++ * expect the hardware to be idle: not doing DMA or generating IRQs.
++ *
++ * This routine may be called in a damaged or failing kernel.  Hence we
++ * do not acquire the spinlock before shutting down the controller.
++ */
++static void uhci_hcd_platform_shutdown(struct platform_device *op)
++{
++	struct usb_hcd *hcd = dev_get_drvdata(&op->dev);
++
++	uhci_hc_died(hcd_to_uhci(hcd));
++}
++
++static const struct of_device_id platform_uhci_ids[] = {
++	{ .compatible = "platform-uhci", },
++	{}
++};
++
++static struct platform_driver uhci_platform_driver = {
++	.probe          = uhci_hcd_platform_probe,
++	.remove         = uhci_hcd_platform_remove,
++	.shutdown       = uhci_hcd_platform_shutdown,
++	.driver = {
++		.name = "platform-uhci",
++		.owner = THIS_MODULE,
++		.of_match_table = of_match_ptr(platform_uhci_ids),
++	},
++};
++
++MODULE_ALIAS("platform:platform-uhci");
++MODULE_LICENSE("GPL v2");
++MODULE_DEVICE_TABLE(of, platform_uhci_ids);
 -- 
 1.7.9.5
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
