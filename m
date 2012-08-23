@@ -1,31 +1,39 @@
-From: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [rtc-linux] RE: [PATCHv4 0/9] *** ARM: Update arch-vt8500 to
- Devicetree ***
-Date: Thu, 23 Aug 2012 15:34:08 +0200
-Message-ID: <CACRpkda-xuo1+cunCb6bYdRsCn4CWuSLdxTjib=Gz1kqMz-xEQ@mail.gmail.com>
-References: <1345707346-9035-1-git-send-email-linux@prisktech.co.nz>
-	<201208231040.16702.arnd@arndb.de>
-	<76F764B079F92A4E843589C893D0A022DAF68C14@SERVER.prisktech.co.nz>
+From: Rob Landley <rob@landley.net>
+Subject: Re: [PATCHv3 3/9] serial: vt8500: Add devicetree support for
+Date: Thu, 23 Aug 2012 16:29:37 -0500
+Message-ID: <5036A0C1.4030209@landley.net>
+References: <1345582058-2291-1-git-send-email-linux@prisktech.co.nz> <20120821231255.71a7515a@pyramind.ukuu.org.uk> <1345617278.7491.4.camel@gitbox> <201208220644.18059.arnd@arndb.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <76F764B079F92A4E843589C893D0A022DAF68C14-A1+cU8XkcJSYgi1/3OOQJ8krCUz0bFs7@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
-Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "vt8500-wm8505-linux-kernel-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org" <vt8500-wm8505-linux-kernel-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Florian Tobias Schandinat <FlorianSchandinat-Mmb7MZpHnFY@public.gmane.org>, Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Rob Landley <rob-VoJi6FS/r0vR7s880joybQ@public.gmane.org>, Linus Walleij <linus.walleij-0IS4wlFg1OjSUeElwK9/Pw@public.gmane.org>, Mike Turquette <mturquette-l0cyMroinI0@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <201208220644.18059.arnd@arndb.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-arm-kernel@lists.infradead.org, Tony Prisk <linux@prisktech.co.nz>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Alessandro Zummo <a.zummo@towertech.it>, linux-fbdev@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@stericsson.com>, Florian Tobias Schandinat <FlorianSchandinat@gmx.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devicetree-discuss@lists.ozlabs.org, linux-usb@vger.kernel.org, vt8500-wm8505-linux-kernel@googlegroup.com, linux-kernel@vger.kernel.org, Rob Herring <rob.herring@calxeda.com>, Grant Likely <grant.likely@secretlab.ca>, linux-serial@vger.kernel.org, rtc-linux@googlegroups.com, Stephen Warren <swarren@nvidia.com>, Alan Cox <alan@linux.intel.com>, Mike Turquette <mturquette@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Aug 23, 2012 at 2:58 PM, Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org> wrote:
+On 08/22/2012 01:44 AM, Arnd Bergmann wrote:
+> On Wednesday 22 August 2012, Tony Prisk wrote:
+>> The original patch was very simple, but I revisited it to fix other
+>> issues and forgot to add the relevant comments.
+>>
+>> Port size is changed to fix a problem - WM8505 actually had 6 uart's
+>> defined in platform data but the vt8500_ports variable was only 4.
+>>
+>> I have added devicetree port id support as well.
+> 
+> If you do multiple things in one driver, you should normally send multiple
+> patches as well, each with a description why that change is done.
+> It may seem silly at first to send out a one-line patch next to a 100-line
+> patch for the same file, but those cases are actually the ones where it's
+> most important.
 
-> Linus W has provided some feedback on the gpio driver - I missed the
-> issues he raised the first time around so just waiting for him to take a look
-> at v4 when he's got time.
+Think of us poor git-bisect monkeys who have no idea why something broke
+but can (purely mechanically) figure out which commit did it. If it's a
+patch that does three unrelated things, we're kinda stuck.
 
-Reviewed and OK:ed, looking good now.
-
-Yours,
-Linus Walleij
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Rob
+-- 
+GNU/Linux isn't: Linux=GPLv2, GNU=GPLv3+, they can't share code.
+Either it's "mere aggregation", or a license violation.  Pick one.
