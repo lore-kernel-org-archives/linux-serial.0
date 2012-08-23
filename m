@@ -1,559 +1,172 @@
 From: Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
-Subject: [PATCHv4 9/9] arm: vt8500: clk: Add Common Clock Framework support
-Date: Thu, 23 Aug 2012 19:35:45 +1200
-Message-ID: <1345707346-9035-10-git-send-email-linux@prisktech.co.nz>
+Subject: [PATCHv4 3/9] serial: vt8500: Add devicetree support for vt8500-serial
+Date: Thu, 23 Aug 2012 19:35:39 +1200
+Message-ID: <1345707346-9035-4-git-send-email-linux@prisktech.co.nz>
 References: <1345707346-9035-1-git-send-email-linux@prisktech.co.nz>
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 In-Reply-To: <1345707346-9035-1-git-send-email-linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
+List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
+Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Sender: "devicetree-discuss"
+ <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 To: vt8500-wm8505-linux-kernel-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-Cc: Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Florian Tobias Schandinat <FlorianSchandinat-Mmb7MZpHnFY@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Rob Landley <rob-VoJi6FS/r0vR7s880joybQ@public.gmane.org>, Linus Walleij <linus.walleij-0IS4wlFg1OjSUeElwK9/Pw@public.gmane.org>, Mike Turquette <mturquette-l0cyMroinI0@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Cc: Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Linus Walleij <linus.walleij-0IS4wlFg1OjSUeElwK9/Pw@public.gmane.org>, Florian Tobias Schandinat <FlorianSchandinat-Mmb7MZpHnFY@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mike Turquette <mturquette-l0cyMroinI0@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-This patch adds common clock framework support for arch-vt8500.
-Support for PLL and device clocks on VT8500, WM8505 and WM8650
-are included.
+Increase vt8500_max_ports to 6 as the WM8505 as 6 available uarts.
+Use devicetree port id as primary addressing for ports but allow
+auto-allocation if id not specified.
 
 Signed-off-by: Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
 ---
- drivers/clk/Makefile     |    1 +
- drivers/clk/clk-vt8500.c |  511 ++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 512 insertions(+)
- create mode 100644 drivers/clk/clk-vt8500.c
+ drivers/tty/serial/vt8500_serial.c |   58 ++++++++++++++++++++++++++++++++----
+ 1 file changed, 53 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/clk/Makefile b/drivers/clk/Makefile
-index 5869ea3..42fb173 100644
---- a/drivers/clk/Makefile
-+++ b/drivers/clk/Makefile
-@@ -10,6 +10,7 @@ obj-$(CONFIG_ARCH_SOCFPGA)	+= socfpga/
- obj-$(CONFIG_PLAT_SPEAR)	+= spear/
- obj-$(CONFIG_ARCH_U300)		+= clk-u300.o
- obj-$(CONFIG_ARCH_INTEGRATOR)	+= versatile/
-+obj-$(CONFIG_ARCH_VT8500)	+= clk-vt8500.o
- 
- # Chip specific
- obj-$(CONFIG_COMMON_CLK_WM831X) += clk-wm831x.o
-diff --git a/drivers/clk/clk-vt8500.c b/drivers/clk/clk-vt8500.c
-new file mode 100644
-index 0000000..2f7c77d
---- /dev/null
-+++ b/drivers/clk/clk-vt8500.c
-@@ -0,0 +1,511 @@
-+/* drivers/clk/clk-vt8500.c
-+ *
-+ * Copyright (C) 2012 Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
-+ *
-+ * This software is licensed under the terms of the GNU General Public
-+ * License version 2, as published by the Free Software Foundation, and
-+ * may be copied, distributed, and modified under those terms.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ */
-+
-+#include <linux/io.h>
+diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
+index 2be006f..205d4cf 100644
+--- a/drivers/tty/serial/vt8500_serial.c
++++ b/drivers/tty/serial/vt8500_serial.c
+@@ -34,6 +34,7 @@
+ #include <linux/slab.h>
+ #include <linux/clk.h>
+ #include <linux/platform_device.h>
 +#include <linux/of.h>
-+#include <linux/slab.h>
-+#include <linux/bitops.h>
-+#include <linux/clkdev.h>
-+#include <linux/clk-provider.h>
+ 
+ /*
+  * UART Register offsets
+@@ -76,6 +77,8 @@
+ #define RX_FIFO_INTS	(RXFAF | RXFF | RXOVER | PER | FER | RXTOUT)
+ #define TX_FIFO_INTS	(TXFAE | TXFE | TXUDR)
+ 
++#define VT8500_MAX_PORTS	6
 +
-+/* All clocks share the same lock as none can be changed concurrently */
-+static DEFINE_SPINLOCK(_lock);
-+
-+struct clk_device {
-+	struct clk_hw	hw;
-+	void __iomem	*div_reg;
-+	unsigned int	div_mask;
-+	void __iomem	*en_reg;
-+	int		en_bit;
-+	spinlock_t	*lock;
-+};
-+
+ struct vt8500_port {
+ 	struct uart_port	uart;
+ 	char			name[16];
+@@ -83,6 +86,13 @@ struct vt8500_port {
+ 	unsigned int		ier;
+ };
+ 
 +/*
-+ * Add new PLL_TYPE_x definitions here as required. Use the first known model
-+ * to support the new type as the name.
-+ * Add case statements to vtwm_pll_recalc_rate(), vtwm_pll_round_round() and
-+ * vtwm_pll_set_rate() to handle the new PLL_TYPE_x
++ * we use this variable to keep track of which ports
++ * have been allocated as we can't use pdev->id in
++ * devicetree
 + */
++static unsigned long vt8500_ports_in_use;
 +
-+#define PLL_TYPE_VT8500		0
-+#define PLL_TYPE_WM8650		1
-+
-+struct clk_pll {
-+	struct clk_hw	hw;
-+	void __iomem	*reg;
-+	spinlock_t	*lock;
-+	int		type;
-+};
-+
-+static void __iomem *pmc_base;
-+
-+#define to_clk_device(_hw) container_of(_hw, struct clk_device, hw)
-+
-+
-+#define VT8500_PMC_BUSY_MASK		0x18
-+
-+static void vt8500_pmc_wait_busy(void)
-+{
-+	while (readl(pmc_base) & VT8500_PMC_BUSY_MASK)
-+		cpu_relax();
-+}
-+
-+static void vt8500_dclk_endisable(struct clk_hw *hw, int enable)
-+{
-+	struct clk_device *cdev = to_clk_device(hw);
-+	u32 en_val;
-+	unsigned long flags = 0;
-+
-+	spin_lock_irqsave(cdev->lock, flags);
-+
-+	en_val = readl(cdev->en_reg);
-+
-+	if (enable)
-+		en_val |= BIT(cdev->en_bit);
+ static inline void vt8500_write(struct uart_port *port, unsigned int val,
+ 			     unsigned int off)
+ {
+@@ -431,7 +441,7 @@ static int vt8500_verify_port(struct uart_port *port,
+ 	return 0;
+ }
+ 
+-static struct vt8500_port *vt8500_uart_ports[4];
++static struct vt8500_port *vt8500_uart_ports[VT8500_MAX_PORTS];
+ static struct uart_driver vt8500_uart_driver;
+ 
+ #ifdef CONFIG_SERIAL_VT8500_CONSOLE
+@@ -548,7 +558,9 @@ static int __devinit vt8500_serial_probe(struct platform_device *pdev)
+ {
+ 	struct vt8500_port *vt8500_port;
+ 	struct resource *mmres, *irqres;
++	struct device_node *np = pdev->dev.of_node;
+ 	int ret;
++	int port;
+ 
+ 	mmres = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	irqres = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+@@ -559,16 +571,46 @@ static int __devinit vt8500_serial_probe(struct platform_device *pdev)
+ 	if (!vt8500_port)
+ 		return -ENOMEM;
+ 
++	if (np)
++		port = of_alias_get_id(np, "serial");
++		if (port > VT8500_MAX_PORTS)
++			port = -1;
 +	else
-+		en_val &= ~BIT(cdev->en_bit);
++		port = -1;
 +
-+	writel(en_val, cdev->en_reg);
-+
-+	spin_unlock_irqrestore(cdev->lock, flags);
-+}
-+
-+static int vt8500_dclk_enable(struct clk_hw *hw)
-+{
-+	vt8500_dclk_endisable(hw, 1);
-+	return 0;
-+}
-+
-+static void vt8500_dclk_disable(struct clk_hw *hw)
-+{
-+	vt8500_dclk_endisable(hw, 0);
-+}
-+
-+static int vt8500_dclk_is_enabled(struct clk_hw *hw)
-+{
-+	struct clk_device *cdev = to_clk_device(hw);
-+	u32 en_val = (readl(cdev->en_reg) & BIT(cdev->en_bit));
-+
-+	return en_val ? 1 : 0;
-+}
-+
-+static unsigned long vt8500_dclk_recalc_rate(struct clk_hw *hw,
-+				unsigned long parent_rate)
-+{
-+	struct clk_device *cdev = to_clk_device(hw);
-+	u32 div = readl(cdev->div_reg) & cdev->div_mask;
-+
-+	/* Special case for SDMMC devices */
-+	if ((cdev->div_mask == 0x3F) && (div & BIT(5)))
-+		div = 64 * (div & 0x1f);
-+
-+	/* div == 0 is actually the highest divisor */
-+	if (div == 0)
-+		div = (cdev->div_mask + 1);
-+
-+	return parent_rate / div;
-+}
-+
-+static long vt8500_dclk_round_rate(struct clk_hw *hw, unsigned long rate,
-+				unsigned long *prate)
-+{
-+	u32 divisor = rate / *prate;
-+
-+	return *prate / divisor;
-+}
-+
-+static int vt8500_dclk_set_rate(struct clk_hw *hw, unsigned long rate,
-+				unsigned long parent_rate)
-+{
-+	struct clk_device *cdev = to_clk_device(hw);
-+	u32 divisor = rate / parent_rate;
-+	unsigned long flags = 0;
-+
-+	if (divisor == cdev->div_mask + 1)
-+		divisor = 0;
-+
-+	if (divisor > cdev->div_mask) {
-+		pr_err("%s: invalid divisor for clock\n", __func__);
-+		return -EINVAL;
++	if (port < 0) {
++		/* calculate the port id */
++		port = find_first_zero_bit(&vt8500_ports_in_use,
++					sizeof(vt8500_ports_in_use));
 +	}
 +
-+	spin_lock_irqsave(cdev->lock, flags);
++	if (port > VT8500_MAX_PORTS)
++		return -ENODEV;
 +
-+	vt8500_pmc_wait_busy();
-+	writel(divisor, cdev->div_reg);
-+	vt8500_pmc_wait_busy();
++	/* reserve the port id */
++	if (test_and_set_bit(port, &vt8500_ports_in_use)) {
++		/* port already in use - shouldn't really happen */
++		return -EBUSY;
++	}
 +
-+	spin_lock_irqsave(cdev->lock, flags);
+ 	vt8500_port->uart.type = PORT_VT8500;
+ 	vt8500_port->uart.iotype = UPIO_MEM;
+ 	vt8500_port->uart.mapbase = mmres->start;
+ 	vt8500_port->uart.irq = irqres->start;
+ 	vt8500_port->uart.fifosize = 16;
+ 	vt8500_port->uart.ops = &vt8500_uart_pops;
+-	vt8500_port->uart.line = pdev->id;
++	vt8500_port->uart.line = port;
+ 	vt8500_port->uart.dev = &pdev->dev;
+ 	vt8500_port->uart.flags = UPF_IOREMAP | UPF_BOOT_AUTOCONF;
+-	vt8500_port->uart.uartclk = 24000000;
 +
-+	return 0;
-+}
-+
-+
-+static const struct clk_ops vt8500_gated_clk_ops = {
-+	.enable = vt8500_dclk_enable,
-+	.disable = vt8500_dclk_disable,
-+	.is_enabled = vt8500_dclk_is_enabled,
++	vt8500_port->clk = of_clk_get(pdev->dev.of_node, 0);
++	if (vt8500_port->clk) {
++		vt8500_port->uart.uartclk = clk_get_rate(vt8500_port->clk);
++	} else {
++		/* use the default of 24Mhz if not specified and warn */
++		pr_warn("%s: serial clock source not specified\n", __func__);
++		vt8500_port->uart.uartclk = 24000000;
++	}
+ 
+ 	snprintf(vt8500_port->name, sizeof(vt8500_port->name),
+ 		 "VT8500 UART%d", pdev->id);
+@@ -579,7 +621,7 @@ static int __devinit vt8500_serial_probe(struct platform_device *pdev)
+ 		goto err;
+ 	}
+ 
+-	vt8500_uart_ports[pdev->id] = vt8500_port;
++	vt8500_uart_ports[port] = vt8500_port;
+ 
+ 	uart_add_one_port(&vt8500_uart_driver, &vt8500_port->uart);
+ 
+@@ -603,12 +645,18 @@ static int __devexit vt8500_serial_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static const struct of_device_id wmt_dt_ids[] = {
++	{ .compatible = "via,vt8500-uart", },
++	{}
 +};
 +
-+static const struct clk_ops vt8500_divisor_clk_ops = {
-+	.round_rate = vt8500_dclk_round_rate,
-+	.set_rate = vt8500_dclk_set_rate,
-+	.recalc_rate = vt8500_dclk_recalc_rate,
-+};
-+
-+static const struct clk_ops vt8500_gated_divisor_clk_ops = {
-+	.enable = vt8500_dclk_enable,
-+	.disable = vt8500_dclk_disable,
-+	.is_enabled = vt8500_dclk_is_enabled,
-+	.round_rate = vt8500_dclk_round_rate,
-+	.set_rate = vt8500_dclk_set_rate,
-+	.recalc_rate = vt8500_dclk_recalc_rate,
-+};
-+
-+#define CLK_INIT_GATED			BIT(0)
-+#define CLK_INIT_DIVISOR		BIT(1)
-+#define CLK_INIT_GATED_DIVISOR		(CLK_INIT_DIVISOR | CLK_INIT_GATED)
-+
-+static __init void vtwm_device_clk_init(struct device_node *node)
-+{
-+	u32 en_reg, div_reg;
-+	struct clk *clk;
-+	struct clk_device *dev_clk;
-+	const char *clk_name = node->name;
-+	const char *parent_name;
-+	struct clk_init_data init;
-+	int rc;
-+	int clk_init_flags = 0;
-+
-+	dev_clk = kzalloc(sizeof(*dev_clk), GFP_KERNEL);
-+	if (WARN_ON(!dev_clk))
-+		return;
-+
-+	dev_clk->lock = &_lock;
-+
-+	rc = of_property_read_u32(node, "enable-reg", &en_reg);
-+	if (!rc) {
-+		dev_clk->en_reg = pmc_base + en_reg;
-+		rc = of_property_read_u32(node, "enable-bit", &dev_clk->en_bit);
-+		if (rc) {
-+			pr_err("%s: enable-bit property required for gated clock\n",
-+								__func__);
-+			return;
-+		}
-+		clk_init_flags |= CLK_INIT_GATED;
-+	}
-+
-+	rc = of_property_read_u32(node, "divisor-reg", &div_reg);
-+	if (!rc) {
-+		dev_clk->div_reg = pmc_base + div_reg;
-+		/*
-+		 * use 0x1f as the default mask since it covers
-+		 * almost all the clocks and reduces dts properties
-+		 */
-+		dev_clk->div_mask = 0x1f;
-+
-+		of_property_read_u32(node, "divisor-mask", &dev_clk->div_mask);
-+		clk_init_flags |= CLK_INIT_DIVISOR;
-+	}
-+
-+	of_property_read_string(node, "clock-output-names", &clk_name);
-+
-+	switch (clk_init_flags) {
-+	case CLK_INIT_GATED:
-+		init.ops = &vt8500_gated_clk_ops;
-+		break;
-+	case CLK_INIT_DIVISOR:
-+		init.ops = &vt8500_divisor_clk_ops;
-+		break;
-+	case CLK_INIT_GATED_DIVISOR:
-+		init.ops = &vt8500_gated_divisor_clk_ops;
-+		break;
-+	default:
-+		pr_err("%s: Invalid clock description in device tree\n",
-+								__func__);
-+		kfree(dev_clk);
-+		return;
-+	}
-+
-+	init.name = clk_name;
-+	init.flags = 0;
-+	parent_name = of_clk_get_parent_name(node, 0);
-+	init.parent_names = &parent_name;
-+	init.num_parents = 1;
-+
-+	dev_clk->hw.init = &init;
-+
-+	clk = clk_register(NULL, &dev_clk->hw);
-+	if (WARN_ON(IS_ERR(clk))) {
-+		kfree(dev_clk);
-+		return;
-+	}
-+	rc = of_clk_add_provider(node, of_clk_src_simple_get, clk);
-+	clk_register_clkdev(clk, clk_name, NULL);
-+}
-+
-+
-+/* PLL clock related functions */
-+
-+#define to_clk_pll(_hw) container_of(_hw, struct clk_pll, hw)
-+
-+/* Helper macros for PLL_VT8500 */
-+#define VT8500_PLL_MUL(x)	((x & 0x1F) << 1)
-+#define VT8500_PLL_DIV(x)	((x & 0x100) ? 1 : 2)
-+
-+#define VT8500_BITS_TO_FREQ(r, m, d)					\
-+				((r / d) * m)
-+
-+#define VT8500_BITS_TO_VAL(m, d)					\
-+				((d == 2 ? 0 : 0x100) | ((m >> 1) & 0x1F))
-+
-+/* Helper macros for PLL_WM8650 */
-+#define WM8650_PLL_MUL(x)	(x & 0x3FF)
-+#define WM8650_PLL_DIV(x)	(((x >> 10) & 7) * (1 << ((x >> 13) & 3)))
-+
-+#define WM8650_BITS_TO_FREQ(r, m, d1, d2)				\
-+				(r * m / (d1 * (1 << d2)))
-+
-+#define WM8650_BITS_TO_VAL(m, d1, d2)					\
-+				((d2 << 13) | (d1 << 10) | (m & 0x3FF))
-+
-+
-+static void vt8500_find_pll_bits(unsigned long rate, unsigned long parent_rate,
-+				u32 *multiplier, u32 *prediv)
-+{
-+	unsigned long tclk;
-+
-+	/* sanity check */
-+	if ((rate < parent_rate * 4) || (rate > parent_rate * 62)) {
-+		pr_err("%s: requested rate out of range\n", __func__);
-+		*multiplier = 0;
-+		*prediv = 1;
-+		return;
-+	}
-+	if (rate <= parent_rate * 31)
-+		/* use the prediv to double the resolution */
-+		*prediv = 2;
-+	else
-+		*prediv = 1;
-+
-+	*multiplier = rate / (parent_rate / *prediv);
-+	tclk = (parent_rate / *prediv) * *multiplier;
-+
-+	if (tclk != rate)
-+		pr_warn("%s: requested rate %lu, found rate %lu\n", __func__,
-+								rate, tclk);
-+}
-+
-+static void wm8650_find_pll_bits(unsigned long rate, unsigned long parent_rate,
-+				u32 *multiplier, u32 *divisor1, u32 *divisor2)
-+{
-+	u32 mul, div1, div2;
-+	u32 best_mul, best_div1, best_div2;
-+	unsigned long tclk, rate_err, best_err;
-+
-+	best_err = (unsigned long)-1;
-+
-+	/* Find the closest match (lower or equal to requested) */
-+	for (div1 = 5; div1 >= 3; div1--)
-+		for (div2 = 3; div2 >= 0; div2--)
-+			for (mul = 3; mul <= 1023; mul++) {
-+				tclk = parent_rate * mul / (div1 * (1 << div2));
-+				if (tclk > rate)
-+					continue;
-+				/* error will always be +ve */
-+				rate_err = rate - tclk;
-+				if (rate_err == 0) {
-+					*multiplier = mul;
-+					*divisor1 = div1;
-+					*divisor2 = div2;
-+					return;
-+				}
-+
-+				if (rate_err < best_err) {
-+					best_err = rate_err;
-+					best_mul = mul;
-+					best_div1 = div1;
-+					best_div2 = div2;
-+				}
-+			}
-+
-+	/* if we got here, it wasn't an exact match */
-+	pr_warn("%s: requested rate %lu, found rate %lu\n", __func__, rate,
-+							rate - best_err);
-+	*multiplier = mul;
-+	*divisor1 = div1;
-+	*divisor2 = div2;
-+}
-+
-+static int vtwm_pll_set_rate(struct clk_hw *hw, unsigned long rate,
-+				unsigned long parent_rate)
-+{
-+	struct clk_pll *pll = to_clk_pll(hw);
-+	u32 mul, div1, div2;
-+	u32 pll_val;
-+	unsigned long flags = 0;
-+
-+	/* sanity check */
-+
-+	switch (pll->type) {
-+	case PLL_TYPE_VT8500:
-+		vt8500_find_pll_bits(rate, parent_rate, &mul, &div1);
-+		pll_val = VT8500_BITS_TO_VAL(mul, div1);
-+		break;
-+	case PLL_TYPE_WM8650:
-+		wm8650_find_pll_bits(rate, parent_rate, &mul, &div1, &div2);
-+		pll_val = WM8650_BITS_TO_VAL(mul, div1, div2);
-+		break;
-+	default:
-+		pr_err("%s: invalid pll type\n", __func__);
-+		return 0;
-+	}
-+
-+	spin_lock_irqsave(pll->lock, flags);
-+
-+	vt8500_pmc_wait_busy();
-+	writel(pll_val, pll->reg);
-+	vt8500_pmc_wait_busy();
-+
-+	spin_unlock_irqrestore(pll->lock, flags);
-+
-+	return 0;
-+}
-+
-+static long vtwm_pll_round_rate(struct clk_hw *hw, unsigned long rate,
-+				unsigned long *prate)
-+{
-+	struct clk_pll *pll = to_clk_pll(hw);
-+	u32 mul, div1, div2;
-+	long round_rate;
-+
-+	switch (pll->type) {
-+	case PLL_TYPE_VT8500:
-+		vt8500_find_pll_bits(rate, *prate, &mul, &div1);
-+		round_rate = VT8500_BITS_TO_FREQ(*prate, mul, div1);
-+		break;
-+	case PLL_TYPE_WM8650:
-+		wm8650_find_pll_bits(rate, *prate, &mul, &div1, &div2);
-+		round_rate = WM8650_BITS_TO_FREQ(*prate, mul, div1, div2);
-+		break;
-+	default:
-+		round_rate = 0;
-+	}
-+
-+	return round_rate;
-+}
-+
-+static unsigned long vtwm_pll_recalc_rate(struct clk_hw *hw,
-+				unsigned long parent_rate)
-+{
-+	struct clk_pll *pll = to_clk_pll(hw);
-+	u32 pll_val = readl(pll->reg);
-+	unsigned long pll_freq;
-+
-+	switch (pll->type) {
-+	case PLL_TYPE_VT8500:
-+		pll_freq = parent_rate * VT8500_PLL_MUL(pll_val);
-+		pll_freq /= VT8500_PLL_DIV(pll_val);
-+		break;
-+	case PLL_TYPE_WM8650:
-+		pll_freq = parent_rate * WM8650_PLL_MUL(pll_val);
-+		pll_freq /= WM8650_PLL_DIV(pll_val);
-+		break;
-+	default:
-+		pll_freq = 0;
-+	}
-+
-+	return pll_freq;
-+}
-+
-+const struct clk_ops vtwm_pll_ops = {
-+	.round_rate = vtwm_pll_round_rate,
-+	.set_rate = vtwm_pll_set_rate,
-+	.recalc_rate = vtwm_pll_recalc_rate,
-+};
-+
-+static __init void vtwm_pll_clk_init(struct device_node *node, int pll_type)
-+{
-+	u32 reg;
-+	struct clk *clk;
-+	struct clk_pll *pll_clk;
-+	const char *clk_name = node->name;
-+	const char *parent_name;
-+	struct clk_init_data init;
-+	int rc;
-+
-+	rc = of_property_read_u32(node, "reg", &reg);
-+	if (WARN_ON(rc))
-+		return;
-+
-+	pll_clk = kzalloc(sizeof(*pll_clk), GFP_KERNEL);
-+	if (WARN_ON(!pll_clk))
-+		return;
-+
-+	pll_clk->reg = pmc_base + reg;
-+	pll_clk->lock = &_lock;
-+	pll_clk->type = pll_type;
-+
-+	of_property_read_string(node, "clock-output-names", &clk_name);
-+
-+	init.name = clk_name;
-+	init.ops = &vtwm_pll_ops;
-+	init.flags = 0;
-+	parent_name = of_clk_get_parent_name(node, 0);
-+	init.parent_names = &parent_name;
-+	init.num_parents = 1;
-+
-+	pll_clk->hw.init = &init;
-+
-+	clk = clk_register(NULL, &pll_clk->hw);
-+	if (WARN_ON(IS_ERR(clk))) {
-+		kfree(pll_clk);
-+		return;
-+	}
-+	rc = of_clk_add_provider(node, of_clk_src_simple_get, clk);
-+	clk_register_clkdev(clk, clk_name, NULL);
-+}
-+
-+
-+/* Wrappers for initialization functions */
-+
-+static void __init vt8500_pll_init(struct device_node *node)
-+{
-+	vtwm_pll_clk_init(node, PLL_TYPE_VT8500);
-+}
-+
-+static void __init wm8650_pll_init(struct device_node *node)
-+{
-+	vtwm_pll_clk_init(node, PLL_TYPE_WM8650);
-+}
-+
-+static const __initconst struct of_device_id clk_match[] = {
-+	{ .compatible = "fixed-clock", .data = of_fixed_clk_setup, },
-+	{ .compatible = "via,vt8500-pll-clock", .data = vt8500_pll_init, },
-+	{ .compatible = "wm,wm8650-pll-clock", .data = wm8650_pll_init, },
-+	{ .compatible = "via,vt8500-device-clock",
-+					.data = vtwm_device_clk_init, },
-+	{ /* sentinel */ }
-+};
-+
-+void __init vtwm_clk_init(void __iomem *base)
-+{
-+	if (!base)
-+		return;
-+
-+	pmc_base = base;
-+
-+	of_clk_init(clk_match);
-+}
+ static struct platform_driver vt8500_platform_driver = {
+ 	.probe  = vt8500_serial_probe,
+ 	.remove = __devexit_p(vt8500_serial_remove),
+ 	.driver = {
+ 		.name = "vt8500_serial",
+ 		.owner = THIS_MODULE,
++		.of_match_table = of_match_ptr(wmt_dt_ids),
+ 	},
+ };
+ 
+@@ -642,4 +690,4 @@ module_exit(vt8500_serial_exit);
+ 
+ MODULE_AUTHOR("Alexey Charkov <alchark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>");
+ MODULE_DESCRIPTION("Driver for vt8500 serial device");
+-MODULE_LICENSE("GPL");
++MODULE_LICENSE("GPL v2");
 -- 
 1.7.9.5
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
