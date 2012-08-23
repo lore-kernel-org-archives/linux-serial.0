@@ -1,69 +1,36 @@
-From: Felipe Balbi <balbi@ti.com>
-Subject: [PATCH v3 08/23] serial: omap: move THRE check to transmit_chars()
-Date: Thu, 23 Aug 2012 13:32:48 +0300
-Message-ID: <1345717983-18179-9-git-send-email-balbi@ti.com>
-References: <1345717983-18179-1-git-send-email-balbi@ti.com>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCHv4 0/9] *** ARM: Update arch-vt8500 to Devicetree ***
+Date: Thu, 23 Aug 2012 10:40:16 +0000
+Message-ID: <201208231040.16702.arnd@arndb.de>
+References: <1345707346-9035-1-git-send-email-linux@prisktech.co.nz>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1345717983-18179-1-git-send-email-balbi@ti.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: linux-arm-kernel-bounces@lists.infradead.org
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: alan@linux.intel.com
-Cc: Kevin Hilman <khilman@ti.com>, Tony Lindgren <tony@atomide.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Felipe Balbi <balbi@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, linux-serial@vger.kernel.org, Sourav Poddar <sourav.poddar@ti.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Shubhrajyoti Datta <shubhrajyoti@ti.com>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>
+Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+In-Reply-To: <1345707346-9035-1-git-send-email-linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
+List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
+Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Sender: "devicetree-discuss"
+ <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
+Cc: Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Linus Walleij <linus.walleij-0IS4wlFg1OjSUeElwK9/Pw@public.gmane.org>, rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Florian Tobias Schandinat <FlorianSchandinat-Mmb7MZpHnFY@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, vt8500-wm8505-linux-kernel-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mike Turquette <mturquette-l0cyMroinI0@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-since all other IRQ types now do all necessary
-checks inside their handlers, transmit_chars()
-was the only one left expecting serial_omap_irq()
-to check THRE for it. We can move THRE check to
-transmit_chars() in order to make serial_omap_irq()
-more uniform.
+On Thursday 23 August 2012, Tony Prisk wrote:
+> Patchset based on Arnd's arm-soc/for-next branch.
+> 
+> 
+> Could I get this reviewed, hopefully for inclusion into v3.7.
 
-Tested-by: Shubhrajyoti D <shubhrajyoti@ti.com>
-Acked-by: Santosh Shilimkar <santosh.shilimkar@ti.com>
-Signed-off-by: Felipe Balbi <balbi@ti.com>
----
- drivers/tty/serial/omap-serial.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+I can take them into the arm-soc tree if there are no new comments.
+For the last two patches, you need to get an Acked-by comment from the
+gpio and clk maintainers, respectively, or you should send them
+the patches for inclusion in those subsystem trees.
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index e55f9f1..50ba51e 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -195,11 +195,14 @@ static void serial_omap_stop_rx(struct uart_port *port)
- 	pm_runtime_put_autosuspend(up->dev);
- }
- 
--static void transmit_chars(struct uart_omap_port *up)
-+static void transmit_chars(struct uart_omap_port *up, unsigned int lsr)
- {
- 	struct circ_buf *xmit = &up->port.state->xmit;
- 	int count;
- 
-+	if (!(lsr & UART_LSR_THRE))
-+		return;
-+
- 	if (up->port.x_char) {
- 		serial_out(up, UART_TX, up->port.x_char);
- 		up->port.icount.tx++;
-@@ -369,8 +372,7 @@ static inline irqreturn_t serial_omap_irq(int irq, void *dev_id)
- 			check_modem_status(up);
- 			break;
- 		case UART_IIR_THRI:
--			if (lsr & UART_LSR_THRE)
--				transmit_chars(up);
-+			transmit_chars(up, lsr);
- 			break;
- 		case UART_IIR_RX_TIMEOUT:
- 			/* FALLTHROUGH */
--- 
-1.7.12.rc3
+	Arnd
