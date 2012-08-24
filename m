@@ -1,134 +1,67 @@
-From: Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH v3 00/23] OMAP UART patches
-Date: Fri, 24 Aug 2012 13:40:47 +0300
-Message-ID: <20120824104045.GC5172@arwen.pp.htv.fi>
-References: <1345717983-18179-1-git-send-email-balbi@ti.com>
-Reply-To: balbi@ti.com
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] tty: Added a CONFIG_TTY option to allow removal of TTY
+Date: Fri, 24 Aug 2012 14:15:37 +0100
+Message-ID: <20120824141537.63274081@pyramind.ukuu.org.uk>
+References: <1345499431-21658-1-git-send-email-jmillenbach@gmail.com>
+	<20120821142047.777e4bb0@pyramind.ukuu.org.uk>
+	<CADwDc1AvCvWbj8znN-1WbkZA9WYVAqaTkxi7+ENZfJ-qFNRAvw@mail.gmail.com>
+	<CADwDc1BgCM9AA4T3mUxfOGNaNoYwERP-x4y2ZS4mAhfF-K_qzA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="rQ2U398070+RC21q"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog117.obsmtp.com ([74.125.149.242]:44824 "EHLO
-	na3sys009aog117.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1757698Ab2HXKou (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:59879 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753970Ab2HXNLB (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 24 Aug 2012 06:44:50 -0400
-Received: by lahm15 with SMTP id m15so1093020lah.31
-        for <linux-serial@vger.kernel.org>; Fri, 24 Aug 2012 03:44:48 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <1345717983-18179-1-git-send-email-balbi@ti.com>
+	Fri, 24 Aug 2012 09:11:01 -0400
+In-Reply-To: <CADwDc1BgCM9AA4T3mUxfOGNaNoYwERP-x4y2ZS4mAhfF-K_qzA@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Felipe Balbi <balbi@ti.com>
-Cc: alan@linux.intel.com, Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Shubhrajyoti Datta <shubhrajyoti@ti.com>, Sourav Poddar <sourav.poddar@ti.com>, Greg KH <gregkh@linuxfoundation.org>
+To: Joe Millenbach <jmillenbach@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Josh Triplett <josh@joshtriplett.org>, team-fjord@googlegroups.com
 
+On Thu, 23 Aug 2012 18:14:48 -0700
+Joe Millenbach <jmillenbach@gmail.com> wrote:
 
---rQ2U398070+RC21q
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> ---------- Forwarded message ----------
+> From: Joe Millenbach <jmillenbach@gmail.com>
+> Date: Thu, Aug 23, 2012 at 5:56 PM
+> Subject: Re: [PATCH] tty: Added a CONFIG_TTY option to allow removal of TTY
+> To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox
+> <alan@linux.intel.com>, linux-serial@vger.kernel.org,
+> linux-kernel@vger.kernel.org, Josh Triplett <josh@joshtriplett.org>,
+> team-fjord@googlegroups.com
+> 
+> 
+> On Tue, Aug 21, 2012 at 6:20 AM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
+> >
+> > ...
+> >
+> > >  config MOUSE_PS2
+> > >       tristate "PS/2 mouse"
+> > > +     depends on TTY
+> >
+> > It shouldn't. It would be good to understand why this occurs.
+> 
+> 
+> If I enable this config option, and turn off TTY I get the below errors.
+> 
+> drivers/built-in.o: In function `serport_ldisc_read':
+> serport.c:(.text+0x1aace6): undefined reference to `tty_name'
+> serport.c:(.text+0x1aad57): undefined reference to `tty_name'
+> drivers/built-in.o: In function `serport_init':
+> serport.c:(.init.text+0x8478): undefined reference to `tty_register_ldisc'
+> drivers/built-in.o: In function `serport_exit':
+> serport.c:(.exit.text+0xb29): undefined reference to `tty_unregister_ldisc'
+> 
+> All because MOUSE_PS2 depends on SERIO, just like a lot of entries I
+> blocked.  I assume this means I should keep the dependency on TTY.
+> Unfortunately, I don't have time to dig deeper for the true cause of the
+> dependency right now.
 
-Forgot to Cc greg initially, my bad
+The true cause I think is that serio/serport.c should depend on tty to be
+built but the ps/2 mouse bits shouldn't.
 
-On Thu, Aug 23, 2012 at 01:32:40PM +0300, Felipe Balbi wrote:
-> Hi guys,
->=20
-> here's v3 and hopefully final version of this series. A whole bunch of new
-> patches added but the good thing is that now I had another engineer's hel=
-p to
-> test, so he's got his Tested-by in all patches.
->=20
-> Changes since v2:
-> 	. Added a bunch of new patches
-> 	. Fixed a problem where we would always return IRQ_NONE even though we
-> 		handled IRQ
->=20
-> Changes since v1:
->         . improved commit log on patch 9/13 (formerly 10/13)
->         . removed patch 2/13
->         . added a new patch switching from spin_lock_irqsave() to spin_lo=
-ck and
->                 spin_unlock_irqrestore to spin_unlock
->=20
-> Alan, if you prefer in pull request form, here it is:
->=20
-> The following changes since commit d9875690d9b89a866022ff49e3fcea892345ad=
-92:
->=20
->   Linux 3.6-rc2 (2012-08-16 14:51:24 -0700)
->=20
-> are available in the git repository at:
->=20
->   git://git.kernel.org/pub/scm/linux/kernel/git/balbi/usb.git uart
->=20
-> for you to fetch changes up to a29230f14d8466c9b8c25171715378bf52189453:
->=20
->   serial: omap: enable RX and TX FIFO usage (2012-08-23 09:25:16 +0300)
->=20
-> ----------------------------------------------------------------
-> Felipe Balbi (20):
->       serial: omap: define and use to_uart_omap_port()
->       serial: omap: define helpers for pdata function pointers
->       serial: omap: don't access the platform_device
->       serial: omap: drop DMA support
->       serial: add OMAP-specific defines
->       serial: omap: simplify IRQ handling
->       serial: omap: refactor receive_chars() into rdi/rlsi handlers
->       serial: omap: move THRE check to transmit_chars()
->       serial: omap: stick to put_autosuspend
->       serial: omap: set dev->drvdata before enabling pm_runtime
->       serial: omap: drop unnecessary check from remove
->       serial: omap: make sure to suspend device before remove
->       serial: omap: don't save IRQ flags on hardirq
->       serial: omap: optimization with section annotations
->       serial: omap: drop "inline" from IRQ handler prototype
->       serial: omap: implement set_wake
->       serial: omap: make sure to put() on poll_get_char
->       serial: omap: remove unnecessary header and add a missing one
->       serial: omap: move uart_omap_port definition to C file
->       serial: omap: enable RX and TX FIFO usage
->=20
-> Ruchika Kharwar (2):
->       serial: omap: fix sequence of pm_runtime_* calls.
->       serial: omap: unlock the port lock
->=20
-> Vikram Pandita (1):
->       serial: omap: fix software flow control
->=20
->  arch/arm/mach-omap2/serial.c                  |  15 +-
->  arch/arm/plat-omap/include/plat/omap-serial.h |  47 +-
->  drivers/tty/serial/omap-serial.c              | 808 ++++++++++----------=
-------
->  include/linux/serial_reg.h                    |   4 +
->  4 files changed, 330 insertions(+), 544 deletions(-)
->=20
-> --=20
-> 1.7.12.rc3
->=20
-
---=20
-balbi
-
---rQ2U398070+RC21q
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-
-iQIcBAEBAgAGBQJQN1otAAoJEIaOsuA1yqRENScQAIfdOpoN+cViqL+fghwV0BcL
-ePvUgKNvO71eBhIKDZ1kIxuPtyrv/kBRToVbrS9Deni35lngp3xuBwQEfwcsB29z
-xzXtlQsA9fUDoCe5EI2z1kQAVH2+aMyY/7qMOQ5cKWeTfOs5yAqJK0M/RkRhYs0i
-o8I06uCcu2ozK6/zaiwr8Y1bjZd/uEOlB9TxWcxHfhqCHKJyLjqsbbibXv/Nj2nb
-YkOQRWyAh68bxLdqEX/NbWuwCFb6+EiVQQD0m8ZMsZ2KZLW2W5WZtak+72bvFhlZ
-anS+d3X4Bb7RygefNYEZC3qK5a+abFHpZUkoydcDTVoEtib3fuwv6KNesFdhlKLr
-lRctOMv+LYga8oeAx8tpSoMOeNVMH23seS/ZnjP0ZqgiGHQOVXdYH4MfbdJZSRrh
-9GiJJMoD7t7kQ/kObRN6WsbHclhOm1WU/rbVkj9E6BOxS1zm0XLkvUFVdm8qCumK
-EwO/sMDQd1Kx9if7JO2KHMrv6ER9WhcbvXdSMQ5XDwN75O6HqPy0WCS2cGX4tc1D
-sVg+Pa2CyTJWVrgIPnL80z5gIYILm90diJB6H5pn0DrH8Yok7FFB2tQ7yr6Z6MEs
-L6qEnUXDoYojcWEwHmvIRim994hAUcKqpH8audrYz6NtC7+KX1R5Iq14ZlIU2FWI
-3aFZrkgDXxlvqr1OF+sT
-=6rEj
------END PGP SIGNATURE-----
-
---rQ2U398070+RC21q--
+Alan
