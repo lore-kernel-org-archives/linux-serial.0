@@ -1,50 +1,73 @@
-From: Wolfram Sang <w.sang@pengutronix.de>
-Subject: [PATCH] tty: serial: mpc5xxx: add support for mark/space parity
-Date: Mon, 27 Aug 2012 16:03:14 +0200
-Message-ID: <1346076194-1830-1-git-send-email-w.sang@pengutronix.de>
+From: Troy Kisky <troy.kisky@boundarydevices.com>
+Subject: Re: [PATCH 2/2] tty: serial: imx: don't reinit clock with enabled
+ console
+Date: Mon, 27 Aug 2012 11:20:10 -0700
+Message-ID: <503BBA5A.8040609@boundarydevices.com>
+References: <1346053012-25686-1-git-send-email-dirk.behme@de.bosch.com> <1346053012-25686-3-git-send-email-dirk.behme@de.bosch.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:55166 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751136Ab2H0ODW (ORCPT
+Received: from mail-pz0-f46.google.com ([209.85.210.46]:55559 "EHLO
+	mail-pz0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752691Ab2H0SUT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 27 Aug 2012 10:03:22 -0400
+	Mon, 27 Aug 2012 14:20:19 -0400
+Received: by mail-pz0-f46.google.com with SMTP id y13so2710274dad.19
+        for <linux-serial@vger.kernel.org>; Mon, 27 Aug 2012 11:20:19 -0700 (PDT)
+In-Reply-To: <1346053012-25686-3-git-send-email-dirk.behme@de.bosch.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Wolfram Sang <w.sang@pengutronix.de>, Anatolij Gustschin <agust@denx.de>, Greg KH <gregkh@linuxfoundation.org>
+To: Dirk Behme <dirk.behme@de.bosch.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, kernel@pengutronix.de, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, Xinyu Chen <xinyu.chen@freescale.com>, Shawn Guo <shawn.guo@linaro.org>, Alan Cox <alan@linux.intel.com>
 
-Tested on a custom MPC5200B-board using some fancy industrial protocol.
-Verified that MPC512x has identical bits, so should work there as well.
+On 8/27/2012 12:36 AM, Dirk Behme wrote:
+> From: Xinyu Chen <xinyu.chen@freescale.com>
+>
+> Remove the imx_setup_ufcr() call on startup when CONSOLE enabled,
+> as this will cause clock reinit, and output garbage.
+>
+> This patch is a port from Freescale's Android kernel.
+>
+> Signed-off-by: Xinyu Chen <xinyu.chen@freescale.com>
+> Tested-by: Dirk Behme <dirk.behme@de.bosch.com>
+> CC: Shawn Guo <shawn.guo@linaro.org>
+> CC: Sascha Hauer <s.hauer@pengutronix.de>
+> ---
+>   drivers/tty/serial/imx.c |    2 ++
+>   1 files changed, 2 insertions(+), 0 deletions(-)
+>
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 908178f..31ce414 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -695,7 +695,9 @@ static int imx_startup(struct uart_port *port)
+>   	int retval;
+>   	unsigned long flags, temp;
+>   
+> +#ifndef CONFIG_SERIAL_CORE_CONSOLE
+>   	imx_setup_ufcr(sport, 0);
+> +#endif
+>   
+>   	/* disable the DREN bit (Data Ready interrupt enable) before
+>   	 * requesting IRQs
 
-Signed-off-by: Wolfram Sang <w.sang@pengutronix.de>
-Cc: Anatolij Gustschin <agust@denx.de>
-Cc: Greg KH <gregkh@linuxfoundation.org>
----
- drivers/tty/serial/mpc52xx_uart.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
-index bedac0d..f19d04e 100644
---- a/drivers/tty/serial/mpc52xx_uart.c
-+++ b/drivers/tty/serial/mpc52xx_uart.c
-@@ -775,11 +775,15 @@ mpc52xx_uart_set_termios(struct uart_port *port, struct ktermios *new,
- 	}
- 
- 	if (new->c_cflag & PARENB) {
-+		if (new->c_cflag & CMSPAR)
-+			mr1 |= MPC52xx_PSC_MODE_PARFORCE;
-+
-+		/* With CMSPAR, PARODD also means high parity (same as termios) */
- 		mr1 |= (new->c_cflag & PARODD) ?
- 			MPC52xx_PSC_MODE_PARODD : MPC52xx_PSC_MODE_PAREVEN;
--	} else
-+	} else {
- 		mr1 |= MPC52xx_PSC_MODE_PARNONE;
--
-+	}
- 
- 	mr2 = 0;
- 
--- 
-1.7.10.4
+I'd rather do something like this
+
+static int imx_setup_ufcr(struct imx_port *sport, unsigned int mode)
+{
+         unsigned int val;
+
+         /* set receiver / transmitter trigger level. */
+         val = readl(sport->port.membase + UFCR) & UFCR_RFDIV;
+         val |= TXTL << 10 | RXTL;
+         writel(val, sport->port.membase + UFCR);
+         return 0;
+}
+
+There is no need for imx_setup_ufcr to change divisor.
+
+
+Troy
 
