@@ -1,134 +1,57 @@
-From: Julia Lawall <Julia.Lawall@lip6.fr>
-Subject: [PATCH 9/13] drivers/tty/serial/amba-pl0{10,11}.c: use clk_prepare_enable and clk_disable_unprepare
-Date: Sun, 26 Aug 2012 18:01:01 +0200
-Message-ID: <1345996865-32082-10-git-send-email-Julia.Lawall@lip6.fr>
-References: <1345996865-32082-1-git-send-email-Julia.Lawall@lip6.fr>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1345996865-32082-1-git-send-email-Julia.Lawall@lip6.fr>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: kernel-janitors@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Dirk Behme <dirk.behme@de.bosch.com>
+Subject: [PATCH 2/2] tty: serial: imx: don't reinit clock with enabled console
+Date: Mon, 27 Aug 2012 09:36:52 +0200
+Message-ID: <1346053012-25686-3-git-send-email-dirk.behme@de.bosch.com>
+References: <1346053012-25686-1-git-send-email-dirk.behme@de.bosch.com>
+Mime-Version: 1.0
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp2-v.fe.bosch.de ([139.15.237.6]:59417 "EHLO
+	smtp2-v.fe.bosch.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752736Ab2H0HhE (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 27 Aug 2012 03:37:04 -0400
+Received: from vsmta11.fe.internet.bosch.com (unknown [10.4.98.30])
+	by imta24.fe.bosch.de (Postfix) with ESMTP id 26265B0022D
+	for <linux-serial@vger.kernel.org>; Mon, 27 Aug 2012 09:37:02 +0200 (CEST)
+Received: from localhost (vsgw4.fe.internet.bosch.com [10.4.98.12])
+	by vsmta11.fe.internet.bosch.com (Postfix) with SMTP id 1AC3943C0665
+	for <linux-serial@vger.kernel.org>; Mon, 27 Aug 2012 09:37:02 +0200 (CEST)
+In-Reply-To: <1346053012-25686-1-git-send-email-dirk.behme@de.bosch.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, kernel@pengutronix.de, Xinyu Chen <xinyu.chen@freescale.com>, Shawn Guo <shawn.guo@linaro.org>, Sascha Hauer <s.hauer@pengutronix.de>
 
-From: Julia Lawall <Julia.Lawall@lip6.fr>
+From: Xinyu Chen <xinyu.chen@freescale.com>
 
-Clk_prepare_enable and clk_disable_unprepare combine clk_prepare and
-clk_enable, and clk_disable and clk_unprepare.  The9 make the code more
-concise, and ensure that clk_unprepare is called when clk_enable fails.
+Remove the imx_setup_ufcr() call on startup when CONSOLE enabled,
+as this will cause clock reinit, and output garbage.
 
-A simplified version of the semantic patch that introduces calls to these
-functions is as follows: (http://coccinelle.lip6.fr/)
+This patch is a port from Freescale's Android kernel.
 
-// <smpl>
-@@
-expression e;
-@@
-
-- clk_prepare(e);
-- clk_enable(e);
-+ clk_prepare_enable(e);
-
-@@
-expression e;
-@@
-
-- clk_disable(e);
-- clk_unprepare(e);
-+ clk_disable_unprepare(e);
-// </smpl>
-
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-
+Signed-off-by: Xinyu Chen <xinyu.chen@freescale.com>
+Tested-by: Dirk Behme <dirk.behme@de.bosch.com>
+CC: Shawn Guo <shawn.guo@linaro.org>
+CC: Sascha Hauer <s.hauer@pengutronix.de>
 ---
- drivers/tty/serial/amba-pl010.c |   15 ++++-----------
- drivers/tty/serial/amba-pl011.c |   15 ++++-----------
- 2 files changed, 8 insertions(+), 22 deletions(-)
+ drivers/tty/serial/imx.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
-index 0d91a54..22317dd 100644
---- a/drivers/tty/serial/amba-pl010.c
-+++ b/drivers/tty/serial/amba-pl010.c
-@@ -312,16 +312,12 @@ static int pl010_startup(struct uart_port *port)
- 	struct uart_amba_port *uap = (struct uart_amba_port *)port;
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 908178f..31ce414 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -695,7 +695,9 @@ static int imx_startup(struct uart_port *port)
  	int retval;
+ 	unsigned long flags, temp;
  
--	retval = clk_prepare(uap->clk);
--	if (retval)
--		goto out;
--
- 	/*
- 	 * Try to enable the clock producer.
- 	 */
--	retval = clk_enable(uap->clk);
-+	retval = clk_prepare_enable(uap->clk);
- 	if (retval)
--		goto clk_unprep;
-+		goto out;
++#ifndef CONFIG_SERIAL_CORE_CONSOLE
+ 	imx_setup_ufcr(sport, 0);
++#endif
  
- 	uap->port.uartclk = clk_get_rate(uap->clk);
- 
-@@ -346,9 +342,7 @@ static int pl010_startup(struct uart_port *port)
- 	return 0;
- 
-  clk_dis:
--	clk_disable(uap->clk);
-- clk_unprep:
--	clk_unprepare(uap->clk);
-+	clk_disable_unprepare(uap->clk);
-  out:
- 	return retval;
- }
-@@ -375,8 +369,7 @@ static void pl010_shutdown(struct uart_port *port)
- 	/*
- 	 * Shut down the clock producer
- 	 */
--	clk_disable(uap->clk);
--	clk_unprepare(uap->clk);
-+	clk_disable_unprepare(uap->clk);
- }
- 
- static void
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 92b1ac8..3322023 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1324,16 +1324,12 @@ static int pl011_startup(struct uart_port *port)
- 				"could not set default pins\n");
- 	}
- 
--	retval = clk_prepare(uap->clk);
--	if (retval)
--		goto out;
--
- 	/*
- 	 * Try to enable the clock producer.
- 	 */
--	retval = clk_enable(uap->clk);
-+	retval = clk_prepare_enable(uap->clk);
- 	if (retval)
--		goto clk_unprep;
-+		goto out;
- 
- 	uap->port.uartclk = clk_get_rate(uap->clk);
- 
-@@ -1411,9 +1407,7 @@ static int pl011_startup(struct uart_port *port)
- 	return 0;
- 
-  clk_dis:
--	clk_disable(uap->clk);
-- clk_unprep:
--	clk_unprepare(uap->clk);
-+	clk_disable_unprepare(uap->clk);
-  out:
- 	return retval;
- }
-@@ -1473,8 +1467,7 @@ static void pl011_shutdown(struct uart_port *port)
- 	/*
- 	 * Shut down the clock producer
- 	 */
--	clk_disable(uap->clk);
--	clk_unprepare(uap->clk);
-+	clk_disable_unprepare(uap->clk);
- 	/* Optionally let pins go into sleep states */
- 	if (!IS_ERR(uap->pins_sleep)) {
- 		retval = pinctrl_select_state(uap->pinctrl, uap->pins_sleep);
+ 	/* disable the DREN bit (Data Ready interrupt enable) before
+ 	 * requesting IRQs
+-- 
+1.7.0.4
+
