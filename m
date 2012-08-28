@@ -1,97 +1,95 @@
-From: Matthew Leach <matthew.leach@arm.com>
-Subject: [PATCH v3] serial: pl011: honour serial aliases in device tree
-Date: Tue, 28 Aug 2012 16:41:28 +0100
-Message-ID: <1346168488-9309-1-git-send-email-matthew.leach@arm.com>
+From: Troy Kisky <troy.kisky@boundarydevices.com>
+Subject: Re: [PATCH 2/2] tty: serial: imx: don't reinit clock with enabled
+ console
+Date: Tue, 28 Aug 2012 11:27:08 -0700
+Message-ID: <503D0D7C.2070509@boundarydevices.com>
+References: <1346053012-25686-1-git-send-email-dirk.behme@de.bosch.com> <1346053012-25686-3-git-send-email-dirk.behme@de.bosch.com> <503BBA5A.8040609@boundarydevices.com> <503CA183.70704@de.bosch.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:59238 "EHLO
-	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753048Ab2H1Ply (ORCPT
+Received: from mail-pz0-f46.google.com ([209.85.210.46]:33415 "EHLO
+	mail-pz0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751691Ab2H1S1Q (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 28 Aug 2012 11:41:54 -0400
+	Tue, 28 Aug 2012 14:27:16 -0400
+Received: by dady13 with SMTP id y13so3490023dad.19
+        for <linux-serial@vger.kernel.org>; Tue, 28 Aug 2012 11:27:15 -0700 (PDT)
+In-Reply-To: <503CA183.70704@de.bosch.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, alan@linux.intel.com
-Cc: linux-serial@vger.kernel.org, will.deacon@arm.com, gregkh@linuxfoundation.org, devicetree-discuss@lists.ozlabs.org, robherring2@gmail.com, Matthew Leach <matthew.leach@arm.com>
+To: Dirk Behme <dirk.behme@de.bosch.com>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, Xinyu Chen <xinyu.chen@freescale.com>, Shawn Guo <shawn.guo@linaro.org>, Alan Cox <alan@linux.intel.com>
 
-If the order of UART nodes is changed in the device tree, then tty dev
-devices are attached to different serial ports causing the console to
-be directed to a different physical serial port. The "serial" aliases
-in the device tree should prevent this.
+On 8/28/2012 3:46 AM, Dirk Behme wrote:
+> On 27.08.2012 20:20, Troy Kisky wrote:
+>> On 8/27/2012 12:36 AM, Dirk Behme wrote:
+>>> From: Xinyu Chen <xinyu.chen@freescale.com>
+>>>
+>>> Remove the imx_setup_ufcr() call on startup when CONSOLE enabled,
+>>> as this will cause clock reinit, and output garbage.
+>>>
+>>> This patch is a port from Freescale's Android kernel.
+>>>
+>>> Signed-off-by: Xinyu Chen <xinyu.chen@freescale.com>
+>>> Tested-by: Dirk Behme <dirk.behme@de.bosch.com>
+>>> CC: Shawn Guo <shawn.guo@linaro.org>
+>>> CC: Sascha Hauer <s.hauer@pengutronix.de>
+>>> ---
+>>>   drivers/tty/serial/imx.c |    2 ++
+>>>   1 files changed, 2 insertions(+), 0 deletions(-)
+>>>
+>>> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+>>> index 908178f..31ce414 100644
+>>> --- a/drivers/tty/serial/imx.c
+>>> +++ b/drivers/tty/serial/imx.c
+>>> @@ -695,7 +695,9 @@ static int imx_startup(struct uart_port *port)
+>>>       int retval;
+>>>       unsigned long flags, temp;
+>>>   +#ifndef CONFIG_SERIAL_CORE_CONSOLE
+>>>       imx_setup_ufcr(sport, 0);
+>>> +#endif
+>>>         /* disable the DREN bit (Data Ready interrupt enable) before
+>>>        * requesting IRQs
+>>
+>>
+>> I'd rather do something like this
+>>
+>> static int imx_setup_ufcr(struct imx_port *sport, unsigned int mode)
+>> {
+>>          unsigned int val;
+>>
+>>          /* set receiver / transmitter trigger level. */
+>>          val = readl(sport->port.membase + UFCR) & UFCR_RFDIV;
+>
+> Shouldn't it be
+>
+> ... & (UFCR_RFDIV | UFCR_DCEDTE);
+>
+> then? My i.MX6 manual has DCEDTE as bit 6, which we don't want to 
+> touch, too? We only want to touch TXTL and RXTL?
+>
 
-This patch ensures that the UART driver creates tty devices that
-honour these aliases if a device tree is present.
+If you do that, you should also change imx_set_termios
+to possibly clear the bit
 
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Will Deacon <will.deacon@arm.com>
-Acked-by: Rob Herring <rob.herring@calxeda.com>
-Signed-off-by: Matthew Leach <matthew.leach@arm.com>
----
-v3: minor consistency correction
-v2: use IS_ENABLED instead of ifdefs
- drivers/tty/serial/amba-pl011.c |   36 ++++++++++++++++++++++++++++++++++++
- 1 files changed, 36 insertions(+), 0 deletions(-)
+new_ufcr = (old_ufcr & (~UFCR_RFDIV)) | UFCR_RFDIV_REG(div);
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index d3553b5..dc05dd1 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -52,6 +52,8 @@
- #include <linux/scatterlist.h>
- #include <linux/delay.h>
- #include <linux/types.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
- #include <linux/pinctrl/consumer.h>
- #include <linux/sizes.h>
- 
-@@ -1869,6 +1871,38 @@ static struct uart_driver amba_reg = {
- 	.cons			= AMBA_CONSOLE,
- };
- 
-+static int pl011_probe_dt_alias(int index, struct device *dev)
-+{
-+	struct device_node *np;
-+	static bool seen_dev_with_alias = false;
-+	static bool seen_dev_without_alias = false;
-+	int ret = index;
-+
-+	if (!IS_ENABLED(CONFIG_OF))
-+		return ret;
-+
-+	np = dev->of_node;
-+	if (!np)
-+		return ret;
-+
-+	ret = of_alias_get_id(np, "serial");
-+	if (IS_ERR_VALUE(ret)) {
-+		seen_dev_without_alias = true;
-+		ret = index;
-+	} else {
-+		seen_dev_with_alias = true;
-+		if (ret >= ARRAY_SIZE(amba_ports) || amba_ports[ret] != NULL) {
-+			dev_warn(dev, "requested serial port %d  not available.\n", ret);
-+			ret = index;
-+		}
-+	}
-+
-+	if (seen_dev_with_alias && seen_dev_without_alias)
-+		dev_warn(dev, "aliased and non-aliased serial devices found in device tree. Serial port enumeration may be unpredictable.\n");
-+
-+	return ret;
-+}
-+
- static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- {
- 	struct uart_amba_port *uap;
-@@ -1891,6 +1925,8 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- 		goto out;
- 	}
- 
-+	i = pl011_probe_dt_alias(i, &dev->dev);
-+
- 	base = ioremap(dev->res.start, resource_size(&dev->res));
- 	if (!base) {
- 		ret = -ENOMEM;
--- 
-1.7.0.4
+to
+
+new_ufcr = (old_ufcr & (~(UFCR_RFDIV | UFCR_DCEDTE))) | UFCR_RFDIV_REG(div);
+
+>>          val |= TXTL << 10 | RXTL;
+>>          writel(val, sport->port.membase + UFCR);
+>>          return 0;
+>> }
+>>
+>> There is no need for imx_setup_ufcr to change divisor.
+>
+> Ok
+>
+> Thanks
+>
+> Dirk
+>
 
