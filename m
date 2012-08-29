@@ -1,45 +1,61 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 1/2] serial: New serial driver SCCNXP
-Date: Wed, 29 Aug 2012 21:15:38 +0100
-Message-ID: <20120829211538.1a9c972a@pyramind.ukuu.org.uk>
-References: <1345908260-6948-1-git-send-email-shc_work@mail.ru>
-	<20120829144607.5cad63e2@pyramind.ukuu.org.uk>
-	<20120829222642.bae75223.shc_work@mail.ru>
+From: Anatolij Gustschin <agust@denx.de>
+Subject: Re: [PATCH] tty: serial: mpc5xxx: add support for mark/space parity
+Date: Wed, 29 Aug 2012 23:56:53 +0200
+Message-ID: <20120829235653.7b96baf6@wker>
+References: <1346076194-1830-1-git-send-email-w.sang@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:37244 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751021Ab2H2ULD (ORCPT
+Received: from mail-out.m-online.net ([212.18.0.9]:44922 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752954Ab2H2V5J (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 29 Aug 2012 16:11:03 -0400
-In-Reply-To: <20120829222642.bae75223.shc_work@mail.ru>
+	Wed, 29 Aug 2012 17:57:09 -0400
+In-Reply-To: <1346076194-1830-1-git-send-email-w.sang@pengutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alexander Shiyan <shc_work@mail.ru>
-Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Wolfram Sang <w.sang@pengutronix.de>
+Cc: linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>
 
-On Wed, 29 Aug 2012 22:26:42 +0400
-Alexander Shiyan <shc_work@mail.ru> wrote:
+Hi Wolfram,
 
-> On Wed, 29 Aug 2012 14:46:07 +0100
-> Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
-> 
-> Thanks for review.
-> 
-> > > +	baud = uart_get_baud_rate(port, termios, old, 50,
-> > > +				  (s->flags & SCCNXP_HAVE_MR0) ?
-> > > +				  230400 : 38400);
-> > > +	sccnxp_set_baud(port, baud);
-> > You should also write the *actal* baud rate you end up with back into
-> > termios unless B0 is requested (see 8250.c for an example). The tty core
-> > code will deal with minor variations and the detail for you (eg a user
-> > asking for B9600 and getting 9605 will be told they got their baud rate
-> > as asked)
-> 
-> And AFAIK uart_get_baud_rate cannot return 0 for us, so check for zero baud
-> is not needed before call tty_termios_encode_baud_rate. Right?
+On Mon, 27 Aug 2012 16:03:14 +0200
+Wolfram Sang <w.sang@pengutronix.de> wrote:
 
-B0 is a bit weird. A request for 0 baud means "hang up" not "change the
-speed". So the check is needed really.
+> Tested on a custom MPC5200B-board using some fancy industrial protocol.
+> Verified that MPC512x has identical bits, so should work there as well.
+> 
+> Signed-off-by: Wolfram Sang <w.sang@pengutronix.de>
+> Cc: Anatolij Gustschin <agust@denx.de>
+> Cc: Greg KH <gregkh@linuxfoundation.org>
+> ---
+>  drivers/tty/serial/mpc52xx_uart.c |    8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+
+Looks good, so
+
+Acked-by: Anatolij Gustschin <agust@denx.de>
+
+> diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
+> index bedac0d..f19d04e 100644
+> --- a/drivers/tty/serial/mpc52xx_uart.c
+> +++ b/drivers/tty/serial/mpc52xx_uart.c
+> @@ -775,11 +775,15 @@ mpc52xx_uart_set_termios(struct uart_port *port, struct ktermios *new,
+>  	}
+>  
+>  	if (new->c_cflag & PARENB) {
+> +		if (new->c_cflag & CMSPAR)
+> +			mr1 |= MPC52xx_PSC_MODE_PARFORCE;
+> +
+> +		/* With CMSPAR, PARODD also means high parity (same as termios) */
+>  		mr1 |= (new->c_cflag & PARODD) ?
+>  			MPC52xx_PSC_MODE_PARODD : MPC52xx_PSC_MODE_PAREVEN;
+> -	} else
+> +	} else {
+>  		mr1 |= MPC52xx_PSC_MODE_PARNONE;
+> -
+> +	}
+>  
+>  	mr2 = 0;
+>  
