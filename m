@@ -1,44 +1,54 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCHv2] tty: Added a CONFIG_TTY option to allow removal of
- TTY
-Date: Mon, 03 Sep 2012 23:45:44 +0200
-Message-ID: <50452508.80008@suse.cz>
-References: <1346633072-29361-1-git-send-email-jmillenbach@gmail.com> <50451E0E.1050605@suse.cz> <CADwDc1DXb3o0i-7NGZKFGwKU6Ybj703OHhUWgh0he9TcCFpW4g@mail.gmail.com>
+From: Joe Millenbach <jmillenbach@gmail.com>
+Subject: Re: [PATCHv2] tty: Added a CONFIG_TTY option to allow removal of TTY
+Date: Mon, 3 Sep 2012 14:55:20 -0700
+Message-ID: <CADwDc1CragerUd_TqPSP6Ye2J+sM=k0148RnEz1ALRS1HJAwjQ@mail.gmail.com>
+References: <1346633072-29361-1-git-send-email-jmillenbach@gmail.com>
+	<50451E0E.1050605@suse.cz>
+	<CADwDc1DXb3o0i-7NGZKFGwKU6Ybj703OHhUWgh0he9TcCFpW4g@mail.gmail.com>
+	<50452508.80008@suse.cz>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f44.google.com ([74.125.82.44]:50267 "EHLO
-	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753692Ab2ICVps (ORCPT
+Received: from mail-iy0-f174.google.com ([209.85.210.174]:61292 "EHLO
+	mail-iy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753692Ab2ICVzV (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 3 Sep 2012 17:45:48 -0400
-In-Reply-To: <CADwDc1DXb3o0i-7NGZKFGwKU6Ybj703OHhUWgh0he9TcCFpW4g@mail.gmail.com>
+	Mon, 3 Sep 2012 17:55:21 -0400
+In-Reply-To: <50452508.80008@suse.cz>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Joe Millenbach <jmillenbach@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Josh Triplett <josh@joshtriplett.org>, team-fjord@googlegroups.com, Jiri Slaby <jirislaby@gmail.com>
+To: jslaby@suse.cz
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Josh Triplett <josh@joshtriplett.org>, team-fjord@googlegroups.com
 
-On 09/03/2012 11:24 PM, Joe Millenbach wrote:
-> I do not have a Power PC system to test on
+On Mon, Sep 3, 2012 at 2:45 PM, Jiri Slaby <jslaby@suse.cz> wrote:
+> On 09/03/2012 11:24 PM, Joe Millenbach wrote:
+>> I do not have a Power PC system to test on
+>
+> Neither do I. But that is no excuse to break it. There are
+> cross-compilers for instance.
 
-Neither do I. But that is no excuse to break it. There are
-cross-compilers for instance.
+True.  I was not saying I should leave it, only why I did not catch it
+sooner and was asking for a better way.
 
-> so during my testing I did
-> not notice that option would need TTY also.  Thanks for pointing that
-> out.  Before I spin a new patch is there anything else I should add?
-> I do not know of a way for me to easily test all the different CPU
-> specific configurations on my x86 based machines.
+>> so during my testing I did
+>> not notice that option would need TTY also.  Thanks for pointing that
+>> out.  Before I spin a new patch is there anything else I should add?
+>> I do not know of a way for me to easily test all the different CPU
+>> specific configurations on my x86 based machines.
+>
+> Basically everything that does alloc_tty_driver...
+>
+> You should minimize the risk of breaking !TTY builds (randconfig for
+> example) on other arches as much as possible. I'm not trying to force
+> you to do allmodconfig minus TTY on all arches, but at least do 'git
+> grep' thoroughly.
+>
+> thanks,
+> --
+> js
+> suse labs
 
-Basically everything that does alloc_tty_driver...
+Perfect, I'll go through this list and make sure I've handled all of them.
 
-You should minimize the risk of breaking !TTY builds (randconfig for
-example) on other arches as much as possible. I'm not trying to force
-you to do allmodconfig minus TTY on all arches, but at least do 'git
-grep' thoroughly.
-
-thanks,
--- 
-js
-suse labs
+Thanks for your time,
+Joe
