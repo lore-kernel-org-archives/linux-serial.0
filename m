@@ -1,150 +1,162 @@
-From: Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH v3 00/23] OMAP UART patches
-Date: Tue, 4 Sep 2012 14:45:41 +0300
-Message-ID: <20120904114540.GF12901@arwen.pp.htv.fi>
-References: <1345717983-18179-1-git-send-email-balbi@ti.com>
- <20120824104045.GC5172@arwen.pp.htv.fi>
-Reply-To: balbi@ti.com
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: [PATCH] parport_serial: Add support for the WCH353 2S/1P multi-IO card
+Date: Tue, 04 Sep 2012 15:44:24 +0100
+Message-ID: <20120904144416.25377.7952.stgit@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="+jhVVhN62yS6hEJ8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog123.obsmtp.com ([74.125.149.149]:42118 "EHLO
-	na3sys009aog123.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1756813Ab2IDLuB (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:43138 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757188Ab2IDO0n (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 Sep 2012 07:50:01 -0400
-Received: by lagy9 with SMTP id y9so4088478lag.19
-        for <linux-serial@vger.kernel.org>; Tue, 04 Sep 2012 04:49:58 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <20120824104045.GC5172@arwen.pp.htv.fi>
+	Tue, 4 Sep 2012 10:26:43 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Felipe Balbi <balbi@ti.com>
-Cc: alan@linux.intel.com, Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Shubhrajyoti Datta <shubhrajyoti@ti.com>, Sourav Poddar <sourav.poddar@ti.com>, Greg KH <gregkh@linuxfoundation.org>
+To: linux-serial@vger.kernel.org, greg@kroah.com
 
+From: Guainluca Anzolin <gianluca@sottospazio.it>
 
---+jhVVhN62yS6hEJ8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+To allow parport_serial to handle the card the same PCI ids are blacklisted
+in 8250_pci.c using the existing software blacklist mechanism.
 
-Hi,
+The blacklist array is also renamed because it now covers this new use
+case.
 
-On Fri, Aug 24, 2012 at 01:40:47PM +0300, Felipe Balbi wrote:
-> Forgot to Cc greg initially, my bad
+Since the two serial ports are auto-detected as XScale instead of 16550A
+clones, we also add a quirk to 8250_pci.c to skip autodetection and set the
+correct port type.
 
-a gentle ping on this series so we don't miss it for v3.7 merge window.
+Signed-off-by: Gianluca Anzolin <gianluca@sottospazio.it>
+Signed-off-by: Alan Cox <alan@linux.intel.com>
+---
 
-Greg, let me know if you need me to resend.
+ drivers/parport/parport_serial.c   |   11 +++++++++-
+ drivers/tty/serial/8250/8250_pci.c |   38 ++++++++++++++++++++++++++++--------
+ 2 files changed, 40 insertions(+), 9 deletions(-)
 
-cheers
+diff --git a/drivers/parport/parport_serial.c b/drivers/parport/parport_serial.c
+index e9c3227..1631eea 100644
+--- a/drivers/parport/parport_serial.c
++++ b/drivers/parport/parport_serial.c
+@@ -62,6 +62,7 @@ enum parport_pc_pci_cards {
+ 	timedia_9079a,
+ 	timedia_9079b,
+ 	timedia_9079c,
++	wch_ch353_2s1p,
+ };
+ 
+ /* each element directly indexed from enum list, above */
+@@ -145,6 +146,7 @@ static struct parport_pc_pci cards[] __devinitdata = {
+ 	/* timedia_9079a */             { 1, { { 2, 3 }, } },
+ 	/* timedia_9079b */             { 1, { { 2, 3 }, } },
+ 	/* timedia_9079c */             { 1, { { 2, 3 }, } },
++	/* wch_ch353_2s1p*/             { 1, { { 2, -1}, } },
+ };
+ 
+ static struct pci_device_id parport_serial_pci_tbl[] = {
+@@ -243,7 +245,8 @@ static struct pci_device_id parport_serial_pci_tbl[] = {
+ 	{ 0x1409, 0x7168, 0x1409, 0xb079, 0, 0, timedia_9079a },
+ 	{ 0x1409, 0x7168, 0x1409, 0xc079, 0, 0, timedia_9079b },
+ 	{ 0x1409, 0x7168, 0x1409, 0xd079, 0, 0, timedia_9079c },
+-
++	/* WCH CARDS */
++	{ 0x4348, 0x7053, 0x4348, 0x3253, 0, 0, wch_ch353_2s1p},
+ 	{ 0, } /* terminate list */
+ };
+ MODULE_DEVICE_TABLE(pci,parport_serial_pci_tbl);
+@@ -460,6 +463,12 @@ static struct pciserial_board pci_parport_serial_boards[] __devinitdata = {
+ 		.base_baud	= 921600,
+ 		.uart_offset	= 8,
+ 	},
++	[wch_ch353_2s1p] = {
++		.flags          = FL_BASE0|FL_BASE_BARS,
++		.num_ports      = 2,
++		.base_baud      = 115200,
++		.uart_offset    = 8,
++	},
+ };
+ 
+ struct parport_serial_private {
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index ad4bb8d..2d69117 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1164,6 +1164,16 @@ pci_xr17c154_setup(struct serial_private *priv,
+ 	return pci_default_setup(priv, board, port, idx);
+ }
+ 
++static int
++pci_wch_ch353_setup(struct serial_private *priv,
++                    const struct pciserial_board *board,
++                    struct uart_port *port, int idx)
++{
++	port->flags |= UPF_FIXED_TYPE;
++	port->type = PORT_16550A;
++	return pci_default_setup(priv, board, port, idx);
++}
++
+ #define PCI_VENDOR_ID_SBSMODULARIO	0x124B
+ #define PCI_SUBVENDOR_ID_SBSMODULARIO	0x124B
+ #define PCI_DEVICE_ID_OCTPRO		0x0001
+@@ -1737,6 +1747,14 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.subdevice	= PCI_ANY_ID,
+ 		.setup		= pci_omegapci_setup,
+ 	},
++	/* WCH CH353 2S1P card (16550 clone) */
++	{
++		.vendor         = 0x4348,
++		.device         = 0x7053,
++		.subvendor      = 0x4348,
++		.subdevice      = 0x3253,
++		.setup          = pci_wch_ch353_setup,
++	},
+ 	/*
+ 	 * ASIX devices with FIFO bug
+ 	 */
+@@ -2636,10 +2654,14 @@ static struct pciserial_board pci_boards[] __devinitdata = {
+ 	},
+ };
+ 
+-static const struct pci_device_id softmodem_blacklist[] = {
++static const struct pci_device_id blacklist[] = {
++	/* softmodems */
+ 	{ PCI_VDEVICE(AL, 0x5457), }, /* ALi Corporation M5457 AC'97 Modem */
+ 	{ PCI_VDEVICE(MOTOROLA, 0x3052), }, /* Motorola Si3052-based modem */
+ 	{ PCI_DEVICE(0x1543, 0x3052), }, /* Si3052-based modem, default IDs */
++
++	/* multi-io cards handled by parport_serial */
++	{ PCI_DEVICE(0x4348, 0x7053), }, /* WCH CH353 2S1P */
+ };
+ 
+ /*
+@@ -2650,7 +2672,7 @@ static const struct pci_device_id softmodem_blacklist[] = {
+ static int __devinit
+ serial_pci_guess_board(struct pci_dev *dev, struct pciserial_board *board)
+ {
+-	const struct pci_device_id *blacklist;
++	const struct pci_device_id *bldev;
+ 	int num_iomem, num_port, first_port = -1, i;
+ 
+ 	/*
+@@ -2667,13 +2689,13 @@ serial_pci_guess_board(struct pci_dev *dev, struct pciserial_board *board)
+ 
+ 	/*
+ 	 * Do not access blacklisted devices that are known not to
+-	 * feature serial ports.
++	 * feature serial ports or are handled by other modules.
+ 	 */
+-	for (blacklist = softmodem_blacklist;
+-	     blacklist < softmodem_blacklist + ARRAY_SIZE(softmodem_blacklist);
+-	     blacklist++) {
+-		if (dev->vendor == blacklist->vendor &&
+-		    dev->device == blacklist->device)
++	for (bldev = blacklist;
++	     bldev < blacklist + ARRAY_SIZE(blacklist);
++	     bldev++) {
++		if (dev->vendor == bldev->vendor &&
++		    dev->device == bldev->device)
+ 			return -ENODEV;
+ 	}
+ 
 
-> On Thu, Aug 23, 2012 at 01:32:40PM +0300, Felipe Balbi wrote:
-> > Hi guys,
-> >=20
-> > here's v3 and hopefully final version of this series. A whole bunch of =
-new
-> > patches added but the good thing is that now I had another engineer's h=
-elp to
-> > test, so he's got his Tested-by in all patches.
-> >=20
-> > Changes since v2:
-> > 	. Added a bunch of new patches
-> > 	. Fixed a problem where we would always return IRQ_NONE even though we
-> > 		handled IRQ
-> >=20
-> > Changes since v1:
-> >         . improved commit log on patch 9/13 (formerly 10/13)
-> >         . removed patch 2/13
-> >         . added a new patch switching from spin_lock_irqsave() to spin_=
-lock and
-> >                 spin_unlock_irqrestore to spin_unlock
-> >=20
-> > Alan, if you prefer in pull request form, here it is:
-> >=20
-> > The following changes since commit d9875690d9b89a866022ff49e3fcea892345=
-ad92:
-> >=20
-> >   Linux 3.6-rc2 (2012-08-16 14:51:24 -0700)
-> >=20
-> > are available in the git repository at:
-> >=20
-> >   git://git.kernel.org/pub/scm/linux/kernel/git/balbi/usb.git uart
-> >=20
-> > for you to fetch changes up to a29230f14d8466c9b8c25171715378bf52189453:
-> >=20
-> >   serial: omap: enable RX and TX FIFO usage (2012-08-23 09:25:16 +0300)
-> >=20
-> > ----------------------------------------------------------------
-> > Felipe Balbi (20):
-> >       serial: omap: define and use to_uart_omap_port()
-> >       serial: omap: define helpers for pdata function pointers
-> >       serial: omap: don't access the platform_device
-> >       serial: omap: drop DMA support
-> >       serial: add OMAP-specific defines
-> >       serial: omap: simplify IRQ handling
-> >       serial: omap: refactor receive_chars() into rdi/rlsi handlers
-> >       serial: omap: move THRE check to transmit_chars()
-> >       serial: omap: stick to put_autosuspend
-> >       serial: omap: set dev->drvdata before enabling pm_runtime
-> >       serial: omap: drop unnecessary check from remove
-> >       serial: omap: make sure to suspend device before remove
-> >       serial: omap: don't save IRQ flags on hardirq
-> >       serial: omap: optimization with section annotations
-> >       serial: omap: drop "inline" from IRQ handler prototype
-> >       serial: omap: implement set_wake
-> >       serial: omap: make sure to put() on poll_get_char
-> >       serial: omap: remove unnecessary header and add a missing one
-> >       serial: omap: move uart_omap_port definition to C file
-> >       serial: omap: enable RX and TX FIFO usage
-> >=20
-> > Ruchika Kharwar (2):
-> >       serial: omap: fix sequence of pm_runtime_* calls.
-> >       serial: omap: unlock the port lock
-> >=20
-> > Vikram Pandita (1):
-> >       serial: omap: fix software flow control
-> >=20
-> >  arch/arm/mach-omap2/serial.c                  |  15 +-
-> >  arch/arm/plat-omap/include/plat/omap-serial.h |  47 +-
-> >  drivers/tty/serial/omap-serial.c              | 808 ++++++++++--------=
---------
-> >  include/linux/serial_reg.h                    |   4 +
-> >  4 files changed, 330 insertions(+), 544 deletions(-)
-> >=20
-> > --=20
-> > 1.7.12.rc3
-> >=20
->=20
-> --=20
-> balbi
-
-
-
---=20
-balbi
-
---+jhVVhN62yS6hEJ8
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-
-iQIcBAEBAgAGBQJQRenkAAoJEIaOsuA1yqREBVcP/is/q8bsHKbEbwVcFSYN1nlM
-eJe8OjNgmo+gRA5bQtLTTkXoV8SXsO2ipBDN8hjczGbTc33eErklLe0uVYD3LgQN
-Qh74/voD5n7KBHXt8PhMSLQjglMIXoWqP+qCum6ZRvNsguzkqbt3D2LCfeNwSg/d
-sELZOX+ajkDo4cUQ+SHTrmWUFSKpt/kdD3KxGZUnsChVpY/BxEsLPq9wZjIyk9BS
-CtoY8yLDhA2zxcEYv12GchoDAKEPIBKkEt42lDBXNLz6kDLRiDhYK7YYpL9x12Nw
-GJwQodRZbSJkqNlO6VgGNy+SccLa8Frz1LLYyUA/lzxXQIoEzmNBLcFKRWgWr1kv
-Tag0Qj/Nh8Ie7oe1j9UzJgEojYArRqtosKQ36jiKWxK6iP3EloRE6jBO+c3oUL8u
-OxLR/FOYGdWencWwdAkdCWCNsUgVX5LMlpyTYBfxNR3kEvANFtoUPo6koF5XRHzK
-DuzsUpd19C22jmbc7ohToZZzKIvPnsB/D0ZbfH0ZeQVwvk2iuWKcG6yhOV4oDh2G
-RXGP8rTPXj+daUTYQfL3aBwu71dOq2Uy2ymd2jvKDjDlev9JY3HP/cSC4lInw2aD
-3VW6v3T5QM9MDhVxW5QBRD+MXZ58ma42a6HD48w9ltpX8DNOxTxy/NiZzyQ0+9z3
-dP3lEps0ybJcwgTKX73J
-=zWYQ
------END PGP SIGNATURE-----
-
---+jhVVhN62yS6hEJ8--
