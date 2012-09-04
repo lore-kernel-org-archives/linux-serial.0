@@ -1,164 +1,292 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCHv2] parport_serial: Add support for the WCH353 2S/1P multi-IO
- card
-Date: Tue, 04 Sep 2012 15:56:12 +0100
-Message-ID: <20120904145542.29133.76060.stgit@localhost.localdomain>
+Subject: [PATCH 1/2] tty: Split the serial_core helpers for setserial into two
+Date: Tue, 04 Sep 2012 16:34:45 +0100
+Message-ID: <20120904153434.854.42083.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:43168 "EHLO
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:43255 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757062Ab2IDOig (ORCPT
+	with ESMTP id S932384Ab2IDPRF (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 Sep 2012 10:38:36 -0400
+	Tue, 4 Sep 2012 11:17:05 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, greg@kroah.com
+To: greg@kroah.com, linux-serial@vger.kernel.org
 
-From: Guainluca Anzolin <gianluca@sottospazio.it>
+From: Alan Cox <alan@linux.intel.com>
 
-To allow parport_serial to handle the card the same PCI ids are blacklisted
-in 8250_pci.c using the existing software blacklist mechanism.
+We want them split so that we can call them from setserial functionality
+where we copy to/from user space and do the locking, but also from sysfs
+where in future we'll want to came them within a sysfs context.
 
-The blacklist array is also renamed because it now covers this new use
-case.
-
-Since the two serial ports are auto-detected as XScale instead of 16550A
-clones, we also add a quirk to 8250_pci.c to skip autodetection and set the
-correct port type.
-
-Signed-off-by: Gianluca Anzolin <gianluca@sottospazio.it>
-[Fold in fixes for the uart_8250 change]
 Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
 
- drivers/parport/parport_serial.c   |   11 +++++++++-
- drivers/tty/serial/8250/8250_pci.c |   38 ++++++++++++++++++++++++++++--------
- 2 files changed, 40 insertions(+), 9 deletions(-)
+ drivers/tty/serial/serial_core.c |  158 +++++++++++++++++++++-----------------
+ 1 file changed, 87 insertions(+), 71 deletions(-)
 
-diff --git a/drivers/parport/parport_serial.c b/drivers/parport/parport_serial.c
-index e9c3227..1631eea 100644
---- a/drivers/parport/parport_serial.c
-+++ b/drivers/parport/parport_serial.c
-@@ -62,6 +62,7 @@ enum parport_pc_pci_cards {
- 	timedia_9079a,
- 	timedia_9079b,
- 	timedia_9079c,
-+	wch_ch353_2s1p,
- };
- 
- /* each element directly indexed from enum list, above */
-@@ -145,6 +146,7 @@ static struct parport_pc_pci cards[] __devinitdata = {
- 	/* timedia_9079a */             { 1, { { 2, 3 }, } },
- 	/* timedia_9079b */             { 1, { { 2, 3 }, } },
- 	/* timedia_9079c */             { 1, { { 2, 3 }, } },
-+	/* wch_ch353_2s1p*/             { 1, { { 2, -1}, } },
- };
- 
- static struct pci_device_id parport_serial_pci_tbl[] = {
-@@ -243,7 +245,8 @@ static struct pci_device_id parport_serial_pci_tbl[] = {
- 	{ 0x1409, 0x7168, 0x1409, 0xb079, 0, 0, timedia_9079a },
- 	{ 0x1409, 0x7168, 0x1409, 0xc079, 0, 0, timedia_9079b },
- 	{ 0x1409, 0x7168, 0x1409, 0xd079, 0, 0, timedia_9079c },
--
-+	/* WCH CARDS */
-+	{ 0x4348, 0x7053, 0x4348, 0x3253, 0, 0, wch_ch353_2s1p},
- 	{ 0, } /* terminate list */
- };
- MODULE_DEVICE_TABLE(pci,parport_serial_pci_tbl);
-@@ -460,6 +463,12 @@ static struct pciserial_board pci_parport_serial_boards[] __devinitdata = {
- 		.base_baud	= 921600,
- 		.uart_offset	= 8,
- 	},
-+	[wch_ch353_2s1p] = {
-+		.flags          = FL_BASE0|FL_BASE_BARS,
-+		.num_ports      = 2,
-+		.base_baud      = 115200,
-+		.uart_offset    = 8,
-+	},
- };
- 
- struct parport_serial_private {
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index ad4bb8d..803d313 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1164,6 +1164,16 @@ pci_xr17c154_setup(struct serial_private *priv,
- 	return pci_default_setup(priv, board, port, idx);
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 5b308c8..bb5f236 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -634,38 +634,44 @@ static void uart_unthrottle(struct tty_struct *tty)
+ 		uart_set_mctrl(port, TIOCM_RTS);
  }
  
-+static int
-+pci_wch_ch353_setup(struct serial_private *priv,
-+                    const struct pciserial_board *board,
-+                    struct uart_8250_port *port, int idx)
-+{
-+	port->port.flags |= UPF_FIXED_TYPE;
-+	port->port.type = PORT_16550A;
-+	return pci_default_setup(priv, board, port, idx);
+-static int uart_get_info(struct uart_state *state,
+-			 struct serial_struct __user *retinfo)
++static void uart_get_info(struct tty_port *port,
++                        struct uart_state *state,
++			struct serial_struct *retinfo)
+ {
+ 	struct uart_port *uport = state->uart_port;
+-	struct tty_port *port = &state->port;
+-	struct serial_struct tmp;
+-
+-	memset(&tmp, 0, sizeof(tmp));
+ 
+-	/* Ensure the state we copy is consistent and no hardware changes
+-	   occur as we go */
+-	mutex_lock(&port->mutex);
++	memset(retinfo, 0, sizeof(retinfo));
+ 
+-	tmp.type	    = uport->type;
+-	tmp.line	    = uport->line;
+-	tmp.port	    = uport->iobase;
++	retinfo->type	    = uport->type;
++	retinfo->line	    = uport->line;
++	retinfo->port	    = uport->iobase;
+ 	if (HIGH_BITS_OFFSET)
+-		tmp.port_high = (long) uport->iobase >> HIGH_BITS_OFFSET;
+-	tmp.irq		    = uport->irq;
+-	tmp.flags	    = uport->flags;
+-	tmp.xmit_fifo_size  = uport->fifosize;
+-	tmp.baud_base	    = uport->uartclk / 16;
+-	tmp.close_delay	    = jiffies_to_msecs(port->close_delay) / 10;
+-	tmp.closing_wait    = port->closing_wait == ASYNC_CLOSING_WAIT_NONE ?
++		retinfo->port_high = (long) uport->iobase >> HIGH_BITS_OFFSET;
++	retinfo->irq		    = uport->irq;
++	retinfo->flags	    = uport->flags;
++	retinfo->xmit_fifo_size  = uport->fifosize;
++	retinfo->baud_base	    = uport->uartclk / 16;
++	retinfo->close_delay	    = jiffies_to_msecs(port->close_delay) / 10;
++	retinfo->closing_wait    = port->closing_wait == ASYNC_CLOSING_WAIT_NONE ?
+ 				ASYNC_CLOSING_WAIT_NONE :
+ 				jiffies_to_msecs(port->closing_wait) / 10;
+-	tmp.custom_divisor  = uport->custom_divisor;
+-	tmp.hub6	    = uport->hub6;
+-	tmp.io_type         = uport->iotype;
+-	tmp.iomem_reg_shift = uport->regshift;
+-	tmp.iomem_base      = (void *)(unsigned long)uport->mapbase;
++	retinfo->custom_divisor  = uport->custom_divisor;
++	retinfo->hub6	    = uport->hub6;
++	retinfo->io_type         = uport->iotype;
++	retinfo->iomem_reg_shift = uport->regshift;
++	retinfo->iomem_base      = (void *)(unsigned long)uport->mapbase;
 +}
 +
- #define PCI_VENDOR_ID_SBSMODULARIO	0x124B
- #define PCI_SUBVENDOR_ID_SBSMODULARIO	0x124B
- #define PCI_DEVICE_ID_OCTPRO		0x0001
-@@ -1737,6 +1747,14 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
- 		.subdevice	= PCI_ANY_ID,
- 		.setup		= pci_omegapci_setup,
- 	},
-+	/* WCH CH353 2S1P card (16550 clone) */
-+	{
-+		.vendor         = 0x4348,
-+		.device         = 0x7053,
-+		.subvendor      = 0x4348,
-+		.subdevice      = 0x3253,
-+		.setup          = pci_wch_ch353_setup,
-+	},
- 	/*
- 	 * ASIX devices with FIFO bug
- 	 */
-@@ -2636,10 +2654,14 @@ static struct pciserial_board pci_boards[] __devinitdata = {
- 	},
- };
++static int uart_get_info_user(struct uart_state *state,
++			 struct serial_struct __user *retinfo)
++{
++	struct tty_port *port = &state->port;
++	struct serial_struct tmp;
  
--static const struct pci_device_id softmodem_blacklist[] = {
-+static const struct pci_device_id blacklist[] = {
-+	/* softmodems */
- 	{ PCI_VDEVICE(AL, 0x5457), }, /* ALi Corporation M5457 AC'97 Modem */
- 	{ PCI_VDEVICE(MOTOROLA, 0x3052), }, /* Motorola Si3052-based modem */
- 	{ PCI_DEVICE(0x1543, 0x3052), }, /* Si3052-based modem, default IDs */
-+
-+	/* multi-io cards handled by parport_serial */
-+	{ PCI_DEVICE(0x4348, 0x7053), }, /* WCH CH353 2S1P */
- };
++	/* Ensure the state we copy is consistent and no hardware changes
++	   occur as we go */
++	mutex_lock(&port->mutex);
++	uart_get_info(port, state, &tmp);
+ 	mutex_unlock(&port->mutex);
  
- /*
-@@ -2650,7 +2672,7 @@ static const struct pci_device_id softmodem_blacklist[] = {
- static int __devinit
- serial_pci_guess_board(struct pci_dev *dev, struct pciserial_board *board)
+ 	if (copy_to_user(retinfo, &tmp, sizeof(*retinfo)))
+@@ -673,42 +679,30 @@ static int uart_get_info(struct uart_state *state,
+ 	return 0;
+ }
+ 
+-static int uart_set_info(struct tty_struct *tty, struct uart_state *state,
+-			 struct serial_struct __user *newinfo)
++static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
++			 struct uart_state *state,
++			 struct serial_struct *new_info)
  {
--	const struct pci_device_id *blacklist;
-+	const struct pci_device_id *bldev;
- 	int num_iomem, num_port, first_port = -1, i;
+-	struct serial_struct new_serial;
+ 	struct uart_port *uport = state->uart_port;
+-	struct tty_port *port = &state->port;
+ 	unsigned long new_port;
+ 	unsigned int change_irq, change_port, closing_wait;
+ 	unsigned int old_custom_divisor, close_delay;
+ 	upf_t old_flags, new_flags;
+ 	int retval = 0;
+ 
+-	if (copy_from_user(&new_serial, newinfo, sizeof(new_serial)))
+-		return -EFAULT;
+-
+-	new_port = new_serial.port;
++	new_port = new_info->port;
+ 	if (HIGH_BITS_OFFSET)
+-		new_port += (unsigned long) new_serial.port_high << HIGH_BITS_OFFSET;
++		new_port += (unsigned long) new_info->port_high << HIGH_BITS_OFFSET;
+ 
+-	new_serial.irq = irq_canonicalize(new_serial.irq);
+-	close_delay = msecs_to_jiffies(new_serial.close_delay * 10);
+-	closing_wait = new_serial.closing_wait == ASYNC_CLOSING_WAIT_NONE ?
++	new_info->irq = irq_canonicalize(new_info->irq);
++	close_delay = msecs_to_jiffies(new_info->close_delay * 10);
++	closing_wait = new_info->closing_wait == ASYNC_CLOSING_WAIT_NONE ?
+ 			ASYNC_CLOSING_WAIT_NONE :
+-			msecs_to_jiffies(new_serial.closing_wait * 10);
++			msecs_to_jiffies(new_info->closing_wait * 10);
+ 
+-	/*
+-	 * This semaphore protects port->count.  It is also
+-	 * very useful to prevent opens.  Also, take the
+-	 * port configuration semaphore to make sure that a
+-	 * module insertion/removal doesn't change anything
+-	 * under us.
+-	 */
+-	mutex_lock(&port->mutex);
+ 
+ 	change_irq  = !(uport->flags & UPF_FIXED_PORT)
+-		&& new_serial.irq != uport->irq;
++		&& new_info->irq != uport->irq;
  
  	/*
-@@ -2667,13 +2689,13 @@ serial_pci_guess_board(struct pci_dev *dev, struct pciserial_board *board)
- 
- 	/*
- 	 * Do not access blacklisted devices that are known not to
--	 * feature serial ports.
-+	 * feature serial ports or are handled by other modules.
+ 	 * Since changing the 'type' of the port changes its resource
+@@ -717,29 +711,29 @@ static int uart_set_info(struct tty_struct *tty, struct uart_state *state,
  	 */
--	for (blacklist = softmodem_blacklist;
--	     blacklist < softmodem_blacklist + ARRAY_SIZE(softmodem_blacklist);
--	     blacklist++) {
--		if (dev->vendor == blacklist->vendor &&
--		    dev->device == blacklist->device)
-+	for (bldev = blacklist;
-+	     bldev < blacklist + ARRAY_SIZE(blacklist);
-+	     bldev++) {
-+		if (dev->vendor == bldev->vendor &&
-+		    dev->device == bldev->device)
- 			return -ENODEV;
+ 	change_port = !(uport->flags & UPF_FIXED_PORT)
+ 		&& (new_port != uport->iobase ||
+-		    (unsigned long)new_serial.iomem_base != uport->mapbase ||
+-		    new_serial.hub6 != uport->hub6 ||
+-		    new_serial.io_type != uport->iotype ||
+-		    new_serial.iomem_reg_shift != uport->regshift ||
+-		    new_serial.type != uport->type);
++		    (unsigned long)new_info->iomem_base != uport->mapbase ||
++		    new_info->hub6 != uport->hub6 ||
++		    new_info->io_type != uport->iotype ||
++		    new_info->iomem_reg_shift != uport->regshift ||
++		    new_info->type != uport->type);
+ 
+ 	old_flags = uport->flags;
+-	new_flags = new_serial.flags;
++	new_flags = new_info->flags;
+ 	old_custom_divisor = uport->custom_divisor;
+ 
+ 	if (!capable(CAP_SYS_ADMIN)) {
+ 		retval = -EPERM;
+ 		if (change_irq || change_port ||
+-		    (new_serial.baud_base != uport->uartclk / 16) ||
++		    (new_info->baud_base != uport->uartclk / 16) ||
+ 		    (close_delay != port->close_delay) ||
+ 		    (closing_wait != port->closing_wait) ||
+-		    (new_serial.xmit_fifo_size &&
+-		     new_serial.xmit_fifo_size != uport->fifosize) ||
++		    (new_info->xmit_fifo_size &&
++		     new_info->xmit_fifo_size != uport->fifosize) ||
+ 		    (((new_flags ^ old_flags) & ~UPF_USR_MASK) != 0))
+ 			goto exit;
+ 		uport->flags = ((uport->flags & ~UPF_USR_MASK) |
+ 			       (new_flags & UPF_USR_MASK));
+-		uport->custom_divisor = new_serial.custom_divisor;
++		uport->custom_divisor = new_info->custom_divisor;
+ 		goto check_and_exit;
  	}
  
+@@ -747,10 +741,10 @@ static int uart_set_info(struct tty_struct *tty, struct uart_state *state,
+ 	 * Ask the low level driver to verify the settings.
+ 	 */
+ 	if (uport->ops->verify_port)
+-		retval = uport->ops->verify_port(uport, &new_serial);
++		retval = uport->ops->verify_port(uport, new_info);
+ 
+-	if ((new_serial.irq >= nr_irqs) || (new_serial.irq < 0) ||
+-	    (new_serial.baud_base < 9600))
++	if ((new_info->irq >= nr_irqs) || (new_info->irq < 0) ||
++	    (new_info->baud_base < 9600))
+ 		retval = -EINVAL;
+ 
+ 	if (retval)
+@@ -790,11 +784,11 @@ static int uart_set_info(struct tty_struct *tty, struct uart_state *state,
+ 			uport->ops->release_port(uport);
+ 
+ 		uport->iobase = new_port;
+-		uport->type = new_serial.type;
+-		uport->hub6 = new_serial.hub6;
+-		uport->iotype = new_serial.io_type;
+-		uport->regshift = new_serial.iomem_reg_shift;
+-		uport->mapbase = (unsigned long)new_serial.iomem_base;
++		uport->type = new_info->type;
++		uport->hub6 = new_info->hub6;
++		uport->iotype = new_info->io_type;
++		uport->regshift = new_info->iomem_reg_shift;
++		uport->mapbase = (unsigned long)new_info->iomem_base;
+ 
+ 		/*
+ 		 * Claim and map the new regions
+@@ -835,16 +829,16 @@ static int uart_set_info(struct tty_struct *tty, struct uart_state *state,
+ 	}
+ 
+ 	if (change_irq)
+-		uport->irq      = new_serial.irq;
++		uport->irq      = new_info->irq;
+ 	if (!(uport->flags & UPF_FIXED_PORT))
+-		uport->uartclk  = new_serial.baud_base * 16;
++		uport->uartclk  = new_info->baud_base * 16;
+ 	uport->flags            = (uport->flags & ~UPF_CHANGE_MASK) |
+ 				 (new_flags & UPF_CHANGE_MASK);
+-	uport->custom_divisor   = new_serial.custom_divisor;
++	uport->custom_divisor   = new_info->custom_divisor;
+ 	port->close_delay     = close_delay;
+ 	port->closing_wait    = closing_wait;
+-	if (new_serial.xmit_fifo_size)
+-		uport->fifosize = new_serial.xmit_fifo_size;
++	if (new_info->xmit_fifo_size)
++		uport->fifosize = new_info->xmit_fifo_size;
+ 	if (port->tty)
+ 		port->tty->low_latency =
+ 			(uport->flags & UPF_LOW_LATENCY) ? 1 : 0;
+@@ -873,6 +867,28 @@ static int uart_set_info(struct tty_struct *tty, struct uart_state *state,
+ 	} else
+ 		retval = uart_startup(tty, state, 1);
+  exit:
++	return retval;
++}
++
++static int uart_set_info_user(struct tty_struct *tty, struct uart_state *state,
++			 struct serial_struct __user *newinfo)
++{
++	struct serial_struct new_serial;
++	struct tty_port *port = &state->port;
++	int retval;
++
++	if (copy_from_user(&new_serial, newinfo, sizeof(new_serial)))
++		return -EFAULT;
++
++	/*
++	 * This semaphore protects port->count.  It is also
++	 * very useful to prevent opens.  Also, take the
++	 * port configuration semaphore to make sure that a
++	 * module insertion/removal doesn't change anything
++	 * under us.
++	 */
++	mutex_lock(&port->mutex);
++	retval = uart_set_info(tty, port, state, &new_serial);
+ 	mutex_unlock(&port->mutex);
+ 	return retval;
+ }
+@@ -1115,11 +1131,11 @@ uart_ioctl(struct tty_struct *tty, unsigned int cmd,
+ 	 */
+ 	switch (cmd) {
+ 	case TIOCGSERIAL:
+-		ret = uart_get_info(state, uarg);
++		ret = uart_get_info_user(state, uarg);
+ 		break;
+ 
+ 	case TIOCSSERIAL:
+-		ret = uart_set_info(tty, state, uarg);
++		ret = uart_set_info_user(tty, state, uarg);
+ 		break;
+ 
+ 	case TIOCSERCONFIG:
 
