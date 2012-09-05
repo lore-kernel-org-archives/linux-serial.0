@@ -1,94 +1,63 @@
 From: Sachin Kamat <sachin.kamat@linaro.org>
-Subject: [PATCH 1/2] serial: Samsung: Replace printk with dev_* functions
-Date: Wed,  5 Sep 2012 10:30:10 +0530
-Message-ID: <1346821211-23478-1-git-send-email-sachin.kamat@linaro.org>
+Subject: [PATCH 2/2] serial: Samsung: Silence some checkpatch errors and warnings
+Date: Wed,  5 Sep 2012 10:30:11 +0530
+Message-ID: <1346821211-23478-2-git-send-email-sachin.kamat@linaro.org>
+References: <1346821211-23478-1-git-send-email-sachin.kamat@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:33931 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751207Ab2IEFCz (ORCPT
+Received: from mail-pz0-f46.google.com ([209.85.210.46]:58765 "EHLO
+	mail-pz0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751207Ab2IEFC7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Sep 2012 01:02:55 -0400
-Received: by pbbrr13 with SMTP id rr13so312166pbb.19
-        for <linux-serial@vger.kernel.org>; Tue, 04 Sep 2012 22:02:55 -0700 (PDT)
+	Wed, 5 Sep 2012 01:02:59 -0400
+Received: by dady13 with SMTP id y13so87295dad.19
+        for <linux-serial@vger.kernel.org>; Tue, 04 Sep 2012 22:02:58 -0700 (PDT)
+In-Reply-To: <1346821211-23478-1-git-send-email-sachin.kamat@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: alan@linux.intel.com, gregkh@linuxfoundation.org, sachin.kamat@linaro.org, patches@linaro.org
 
-Silences checkpatch warnings regarding use of printks.
+Fixes the following errors and warnings:
+ERROR: trailing whitespace
+ERROR: return is not a function, parentheses are not required
+WARNING: suspect code indent for conditional statements (32, 36)
 
 Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
 ---
- drivers/tty/serial/samsung.c |   14 +++++++-------
- 1 files changed, 7 insertions(+), 7 deletions(-)
+ drivers/tty/serial/samsung.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index 5c5e7e0..8749a07 100644
+index 8749a07..bdaa06f 100644
 --- a/drivers/tty/serial/samsung.c
 +++ b/drivers/tty/serial/samsung.c
-@@ -459,7 +459,7 @@ static int s3c24xx_serial_startup(struct uart_port *port)
- 			  s3c24xx_serial_portname(port), ourport);
+@@ -82,7 +82,7 @@ static inline const char *s3c24xx_serial_portname(struct uart_port *port)
  
- 	if (ret != 0) {
--		printk(KERN_ERR "cannot get irq %d\n", ourport->rx_irq);
-+		dev_err(port->dev, "cannot get irq %d\n", ourport->rx_irq);
- 		return ret;
- 	}
- 
-@@ -473,7 +473,7 @@ static int s3c24xx_serial_startup(struct uart_port *port)
- 			  s3c24xx_serial_portname(port), ourport);
- 
- 	if (ret) {
--		printk(KERN_ERR "cannot get irq %d\n", ourport->tx_irq);
-+		dev_err(port->dev, "cannot get irq %d\n", ourport->tx_irq);
- 		goto err;
- 	}
- 
-@@ -502,7 +502,7 @@ static int s3c64xx_serial_startup(struct uart_port *port)
- 	ret = request_irq(port->irq, s3c64xx_serial_handle_irq, IRQF_SHARED,
- 			  s3c24xx_serial_portname(port), ourport);
- 	if (ret) {
--		printk(KERN_ERR "cannot get irq %d\n", port->irq);
-+		dev_err(port->dev, "cannot get irq %d\n", port->irq);
- 		return ret;
- 	}
- 
-@@ -543,7 +543,7 @@ static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
- 
- 		break;
- 	default:
--		printk(KERN_ERR "s3c24xx_serial: unknown pm %d\n", level);
-+		dev_err(port->dev, "s3c24xx_serial: unknown pm %d\n", level);
- 	}
+ static int s3c24xx_serial_txempty_nofifo(struct uart_port *port)
+ {
+-	return (rd_regl(port, S3C2410_UTRSTAT) & S3C2410_UTRSTAT_TXE);
++	return rd_regl(port, S3C2410_UTRSTAT) & S3C2410_UTRSTAT_TXE;
  }
  
-@@ -1038,7 +1038,7 @@ static int s3c24xx_serial_cpufreq_transition(struct notifier_block *nb,
- 		termios = &tty->termios;
+ /*
+@@ -268,7 +268,7 @@ s3c24xx_serial_rx_chars(int irq, void *dev_id)
+ 				dbg("break!\n");
+ 				port->icount.brk++;
+ 				if (uart_handle_break(port))
+-				    goto ignore_char;
++					goto ignore_char;
+ 			}
  
- 		if (termios == NULL) {
--			printk(KERN_WARNING "%s: no termios?\n", __func__);
-+			dev_warn(uport->dev, "%s: no termios?\n", __func__);
- 			goto exit;
- 		}
- 
-@@ -1113,7 +1113,7 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
- 
- 	res = platform_get_resource(platdev, IORESOURCE_MEM, 0);
- 	if (res == NULL) {
--		printk(KERN_ERR "failed to find memory resource for uart\n");
-+		dev_err(port->dev, "failed to find memory resource for uart\n");
- 		return -EINVAL;
+ 			if (uerstat & S3C2410_UERSTAT_FRAME)
+@@ -1129,7 +1129,7 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+ 		ourport->rx_irq = ret;
+ 		ourport->tx_irq = ret + 1;
  	}
- 
-@@ -1683,7 +1683,7 @@ static int __init s3c24xx_serial_modinit(void)
- 
- 	ret = uart_register_driver(&s3c24xx_uart_drv);
- 	if (ret < 0) {
--		printk(KERN_ERR "failed to register UART driver\n");
-+		pr_err("Failed to register Samsung UART driver\n");
- 		return -1;
- 	}
- 
+-	
++
+ 	ret = platform_get_irq(platdev, 1);
+ 	if (ret > 0)
+ 		ourport->tx_irq = ret;
 -- 
 1.7.4.1
 
