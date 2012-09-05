@@ -1,41 +1,56 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH v3 20/23] serial: omap: fix software flow control
-Date: Wed, 5 Sep 2012 13:27:49 -0700
-Message-ID: <20120905202749.GA2451@kroah.com>
-References: <1345717983-18179-1-git-send-email-balbi@ti.com>
- <1345717983-18179-21-git-send-email-balbi@ti.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCHv4 1/1] [RFC] uartclk from serial_core exposed to sysfs
+Date: Wed, 5 Sep 2012 13:36:41 -0700
+Message-ID: <20120905203641.GA21427@kroah.com>
+References: <1344929718-22736-1-git-send-email-tmshlvck@gmail.com>
+ <1345401285-14473-1-git-send-email-tmshlvck@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:56287 "EHLO
-	out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753566Ab2IEUaV (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Sep 2012 16:30:21 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1345717983-18179-21-git-send-email-balbi@ti.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <1345401285-14473-1-git-send-email-tmshlvck@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tomas Hlavacek <tmshlvck@gmail.com>
+Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, marek.vasut@gmail.com
 List-Id: linux-serial@vger.kernel.org
-To: Felipe Balbi <balbi@ti.com>
-Cc: alan@linux.intel.com, Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Shubhrajyoti Datta <shubhrajyoti@ti.com>, Sourav Poddar <sourav.poddar@ti.com>, Vikram Pandita <vikram.pandita@ti.com>, stable@vger.kernel.org
 
-On Thu, Aug 23, 2012 at 01:33:00PM +0300, Felipe Balbi wrote:
-> From: Vikram Pandita <vikram.pandita@ti.com>
+On Sun, Aug 19, 2012 at 08:34:45PM +0200, Tomas Hlavacek wrote:
+> Added file /sys/devices/.../tty/ttySX/uartclk to allow reading
+> uartclk value in struct uart_port in serial_core via sysfs.
 > 
-> Software flow control register bits were not defined correctly.
+> It simplifies initialization verification of no-name cards that
+> have non-standard oscillator speed while having no distinguishing
+> PCI IDs to allow autodetection.
 > 
-> Also clarify the IXON and IXOFF logic to reflect what userspace wants.
+> tty_register_device() has been generalized and refactored in order
+> to add support for setting drvdata and attribute_group to the device.
 > 
-> Cc: stable@vger.kernel.org
-> Tested-by: Shubhrajyoti D <shubhrajyoti@ti.com>
-> Signed-off-by: Vikram Pandita <vikram.pandita@ti.com>
-> Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
-> Signed-off-by: Felipe Balbi <balbi@ti.com>
-> Acked-by: Tony Lindgren <tony@atomide.com>
-> ---
+> Signed-off-by: Tomas Hlavacek <tmshlvck@gmail.com>
 
-If this is a stable patch, should it be pulled out and put also in for
-3.6?
+This looks good, but it doesn't apply to my tty-next branch in
+linux-next, so I can't apply it.
+
+But, when you redo it, here's one tiny thing to change:
+
+> +/**
+> + *	tty_register_device_attr - register a tty device
+> + *	@driver: the tty driver that describes the tty device
+> + *	@index: the index in the tty driver for this tty device
+> + *	@device: a struct device that is associated with this tty device.
+> + *		This field is optional, if there is no known struct device
+> + *		for this tty device it can be set to NULL safely.
+> + *	@drvdata: Driver data to be set to device (NULL = do not touch).
+> + *	@attr_grp: Attribute group to be set on device (NULL = do not touch).
+
+No need to mention the NULL thing here, "do not touch" doesn't mean
+much to me.
+
+> +	if (attr_grp)
+> +		dev->groups = attr_grp;
+> +	if (drvdata)
+> +		dev_set_drvdata(dev, drvdata);
+
+No need to test for NULL, just set them, it can't really hurt, right?
 
 thanks,
 
