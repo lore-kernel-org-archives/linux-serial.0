@@ -1,241 +1,94 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 2/2] tty: move the async flags from the serial code into the
- tty includes
-Date: Tue, 04 Sep 2012 16:35:08 +0100
-Message-ID: <20120904153456.854.4984.stgit@localhost.localdomain>
-References: <20120904153434.854.42083.stgit@localhost.localdomain>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+From: Sachin Kamat <sachin.kamat@linaro.org>
+Subject: [PATCH 1/2] serial: Samsung: Replace printk with dev_* functions
+Date: Wed,  5 Sep 2012 10:30:10 +0530
+Message-ID: <1346821211-23478-1-git-send-email-sachin.kamat@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:43259 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932145Ab2IDPR2 (ORCPT
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:33931 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751207Ab2IEFCz (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 Sep 2012 11:17:28 -0400
-In-Reply-To: <20120904153434.854.42083.stgit@localhost.localdomain>
+	Wed, 5 Sep 2012 01:02:55 -0400
+Received: by pbbrr13 with SMTP id rr13so312166pbb.19
+        for <linux-serial@vger.kernel.org>; Tue, 04 Sep 2012 22:02:55 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: greg@kroah.com, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: alan@linux.intel.com, gregkh@linuxfoundation.org, sachin.kamat@linaro.org, patches@linaro.org
 
-From: Alan Cox <alan@linux.intel.com>
+Silences checkpatch warnings regarding use of printks.
 
-These are used with the tty_port flags which are tty generic so move the
-flags into a more sensible place. This then makes it possible to add
-helpers such as those suggested by Huang Shijie.
-
-Signed-off-by: Alan Cox <alan@linux.intel.com>
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
 ---
+ drivers/tty/serial/samsung.c |   14 +++++++-------
+ 1 files changed, 7 insertions(+), 7 deletions(-)
 
- include/linux/Kbuild      |    1 +
- include/linux/serial.h    |   75 ++-----------------------------------------
- include/linux/tty.h       |    1 +
- include/linux/tty_flags.h |   78 +++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 83 insertions(+), 72 deletions(-)
- create mode 100644 include/linux/tty_flags.h
-
-diff --git a/include/linux/Kbuild b/include/linux/Kbuild
-index b3d6385..b45caff 100644
---- a/include/linux/Kbuild
-+++ b/include/linux/Kbuild
-@@ -370,6 +370,7 @@ header-y += tipc.h
- header-y += tipc_config.h
- header-y += toshiba.h
- header-y += tty.h
-+header-y += tty_flags.h
- header-y += types.h
- header-y += udf_fs_i.h
- header-y += udp.h
-diff --git a/include/linux/serial.h b/include/linux/serial.h
-index 90e9f98..3504f42 100644
---- a/include/linux/serial.h
-+++ b/include/linux/serial.h
-@@ -12,9 +12,12 @@
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index 5c5e7e0..8749a07 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -459,7 +459,7 @@ static int s3c24xx_serial_startup(struct uart_port *port)
+ 			  s3c24xx_serial_portname(port), ourport);
  
- #include <linux/types.h>
+ 	if (ret != 0) {
+-		printk(KERN_ERR "cannot get irq %d\n", ourport->rx_irq);
++		dev_err(port->dev, "cannot get irq %d\n", ourport->rx_irq);
+ 		return ret;
+ 	}
  
-+#include <linux/tty_flags.h>
-+
- #ifdef __KERNEL__
- #include <asm/page.h>
+@@ -473,7 +473,7 @@ static int s3c24xx_serial_startup(struct uart_port *port)
+ 			  s3c24xx_serial_portname(port), ourport);
  
-+
- /*
-  * Counters of the input lines (CTS, DSR, RI, CD) interrupts
-  */
-@@ -94,78 +97,6 @@ struct serial_uart_config {
- #define UART_STARTECH		0x04
- #define UART_NATSEMI		0x08
+ 	if (ret) {
+-		printk(KERN_ERR "cannot get irq %d\n", ourport->tx_irq);
++		dev_err(port->dev, "cannot get irq %d\n", ourport->tx_irq);
+ 		goto err;
+ 	}
  
--/*
-- * Definitions for async_struct (and serial_struct) flags field
-- *
-- * Define ASYNCB_* for convenient use with {test,set,clear}_bit.
-- */
--#define ASYNCB_HUP_NOTIFY	 0 /* Notify getty on hangups and closes
--				    * on the callout port */
--#define ASYNCB_FOURPORT		 1 /* Set OU1, OUT2 per AST Fourport settings */
--#define ASYNCB_SAK		 2 /* Secure Attention Key (Orange book) */
--#define ASYNCB_SPLIT_TERMIOS	 3 /* Separate termios for dialin/callout */
--#define ASYNCB_SPD_HI		 4 /* Use 56000 instead of 38400 bps */
--#define ASYNCB_SPD_VHI		 5 /* Use 115200 instead of 38400 bps */
--#define ASYNCB_SKIP_TEST	 6 /* Skip UART test during autoconfiguration */
--#define ASYNCB_AUTO_IRQ		 7 /* Do automatic IRQ during
--				    * autoconfiguration */
--#define ASYNCB_SESSION_LOCKOUT	 8 /* Lock out cua opens based on session */
--#define ASYNCB_PGRP_LOCKOUT	 9 /* Lock out cua opens based on pgrp */
--#define ASYNCB_CALLOUT_NOHUP	10 /* Don't do hangups for cua device */
--#define ASYNCB_HARDPPS_CD	11 /* Call hardpps when CD goes high  */
--#define ASYNCB_SPD_SHI		12 /* Use 230400 instead of 38400 bps */
--#define ASYNCB_LOW_LATENCY	13 /* Request low latency behaviour */
--#define ASYNCB_BUGGY_UART	14 /* This is a buggy UART, skip some safety
--				    * checks.  Note: can be dangerous! */
--#define ASYNCB_AUTOPROBE	15 /* Port was autoprobed by PCI or PNP code */
--#define ASYNCB_LAST_USER	15
--
--/* Internal flags used only by kernel */
--#define ASYNCB_INITIALIZED	31 /* Serial port was initialized */
--#define ASYNCB_SUSPENDED	30 /* Serial port is suspended */
--#define ASYNCB_NORMAL_ACTIVE	29 /* Normal device is active */
--#define ASYNCB_BOOT_AUTOCONF	28 /* Autoconfigure port on bootup */
--#define ASYNCB_CLOSING		27 /* Serial port is closing */
--#define ASYNCB_CTS_FLOW		26 /* Do CTS flow control */
--#define ASYNCB_CHECK_CD		25 /* i.e., CLOCAL */
--#define ASYNCB_SHARE_IRQ	24 /* for multifunction cards, no longer used */
--#define ASYNCB_CONS_FLOW	23 /* flow control for console  */
--#define ASYNCB_FIRST_KERNEL	22
--
--#define ASYNC_HUP_NOTIFY	(1U << ASYNCB_HUP_NOTIFY)
--#define ASYNC_SUSPENDED		(1U << ASYNCB_SUSPENDED)
--#define ASYNC_FOURPORT		(1U << ASYNCB_FOURPORT)
--#define ASYNC_SAK		(1U << ASYNCB_SAK)
--#define ASYNC_SPLIT_TERMIOS	(1U << ASYNCB_SPLIT_TERMIOS)
--#define ASYNC_SPD_HI		(1U << ASYNCB_SPD_HI)
--#define ASYNC_SPD_VHI		(1U << ASYNCB_SPD_VHI)
--#define ASYNC_SKIP_TEST		(1U << ASYNCB_SKIP_TEST)
--#define ASYNC_AUTO_IRQ		(1U << ASYNCB_AUTO_IRQ)
--#define ASYNC_SESSION_LOCKOUT	(1U << ASYNCB_SESSION_LOCKOUT)
--#define ASYNC_PGRP_LOCKOUT	(1U << ASYNCB_PGRP_LOCKOUT)
--#define ASYNC_CALLOUT_NOHUP	(1U << ASYNCB_CALLOUT_NOHUP)
--#define ASYNC_HARDPPS_CD	(1U << ASYNCB_HARDPPS_CD)
--#define ASYNC_SPD_SHI		(1U << ASYNCB_SPD_SHI)
--#define ASYNC_LOW_LATENCY	(1U << ASYNCB_LOW_LATENCY)
--#define ASYNC_BUGGY_UART	(1U << ASYNCB_BUGGY_UART)
--#define ASYNC_AUTOPROBE		(1U << ASYNCB_AUTOPROBE)
--
--#define ASYNC_FLAGS		((1U << (ASYNCB_LAST_USER + 1)) - 1)
--#define ASYNC_USR_MASK		(ASYNC_SPD_MASK|ASYNC_CALLOUT_NOHUP| \
--		ASYNC_LOW_LATENCY)
--#define ASYNC_SPD_CUST		(ASYNC_SPD_HI|ASYNC_SPD_VHI)
--#define ASYNC_SPD_WARP		(ASYNC_SPD_HI|ASYNC_SPD_SHI)
--#define ASYNC_SPD_MASK		(ASYNC_SPD_HI|ASYNC_SPD_VHI|ASYNC_SPD_SHI)
--
--#define ASYNC_INITIALIZED	(1U << ASYNCB_INITIALIZED)
--#define ASYNC_NORMAL_ACTIVE	(1U << ASYNCB_NORMAL_ACTIVE)
--#define ASYNC_BOOT_AUTOCONF	(1U << ASYNCB_BOOT_AUTOCONF)
--#define ASYNC_CLOSING		(1U << ASYNCB_CLOSING)
--#define ASYNC_CTS_FLOW		(1U << ASYNCB_CTS_FLOW)
--#define ASYNC_CHECK_CD		(1U << ASYNCB_CHECK_CD)
--#define ASYNC_SHARE_IRQ		(1U << ASYNCB_SHARE_IRQ)
--#define ASYNC_CONS_FLOW		(1U << ASYNCB_CONS_FLOW)
--#define ASYNC_INTERNAL_FLAGS	(~((1U << ASYNCB_FIRST_KERNEL) - 1))
+@@ -502,7 +502,7 @@ static int s3c64xx_serial_startup(struct uart_port *port)
+ 	ret = request_irq(port->irq, s3c64xx_serial_handle_irq, IRQF_SHARED,
+ 			  s3c24xx_serial_portname(port), ourport);
+ 	if (ret) {
+-		printk(KERN_ERR "cannot get irq %d\n", port->irq);
++		dev_err(port->dev, "cannot get irq %d\n", port->irq);
+ 		return ret;
+ 	}
  
- /*
-  * Multiport serial configuration structure --- external structure
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 69a787f..dbebd1e 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -43,6 +43,7 @@
- #include <linux/tty_driver.h>
- #include <linux/tty_ldisc.h>
- #include <linux/mutex.h>
-+#include <linux/tty_flags.h>
+@@ -543,7 +543,7 @@ static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
  
+ 		break;
+ 	default:
+-		printk(KERN_ERR "s3c24xx_serial: unknown pm %d\n", level);
++		dev_err(port->dev, "s3c24xx_serial: unknown pm %d\n", level);
+ 	}
+ }
  
+@@ -1038,7 +1038,7 @@ static int s3c24xx_serial_cpufreq_transition(struct notifier_block *nb,
+ 		termios = &tty->termios;
  
-diff --git a/include/linux/tty_flags.h b/include/linux/tty_flags.h
-new file mode 100644
-index 0000000..eefcb48
---- /dev/null
-+++ b/include/linux/tty_flags.h
-@@ -0,0 +1,78 @@
-+#ifndef _LINUX_TTY_FLAGS_H
-+#define _LINUX_TTY_FLAGS_H
-+
-+/*
-+ * Definitions for async_struct (and serial_struct) flags field also
-+ * shared by the tty_port flags structures.
-+ *
-+ * Define ASYNCB_* for convenient use with {test,set,clear}_bit.
-+ */
-+#define ASYNCB_HUP_NOTIFY	 0 /* Notify getty on hangups and closes
-+				    * on the callout port */
-+#define ASYNCB_FOURPORT		 1 /* Set OU1, OUT2 per AST Fourport settings */
-+#define ASYNCB_SAK		 2 /* Secure Attention Key (Orange book) */
-+#define ASYNCB_SPLIT_TERMIOS	 3 /* Separate termios for dialin/callout */
-+#define ASYNCB_SPD_HI		 4 /* Use 56000 instead of 38400 bps */
-+#define ASYNCB_SPD_VHI		 5 /* Use 115200 instead of 38400 bps */
-+#define ASYNCB_SKIP_TEST	 6 /* Skip UART test during autoconfiguration */
-+#define ASYNCB_AUTO_IRQ		 7 /* Do automatic IRQ during
-+				    * autoconfiguration */
-+#define ASYNCB_SESSION_LOCKOUT	 8 /* Lock out cua opens based on session */
-+#define ASYNCB_PGRP_LOCKOUT	 9 /* Lock out cua opens based on pgrp */
-+#define ASYNCB_CALLOUT_NOHUP	10 /* Don't do hangups for cua device */
-+#define ASYNCB_HARDPPS_CD	11 /* Call hardpps when CD goes high  */
-+#define ASYNCB_SPD_SHI		12 /* Use 230400 instead of 38400 bps */
-+#define ASYNCB_LOW_LATENCY	13 /* Request low latency behaviour */
-+#define ASYNCB_BUGGY_UART	14 /* This is a buggy UART, skip some safety
-+				    * checks.  Note: can be dangerous! */
-+#define ASYNCB_AUTOPROBE	15 /* Port was autoprobed by PCI or PNP code */
-+#define ASYNCB_LAST_USER	15
-+
-+/* Internal flags used only by kernel */
-+#define ASYNCB_INITIALIZED	31 /* Serial port was initialized */
-+#define ASYNCB_SUSPENDED	30 /* Serial port is suspended */
-+#define ASYNCB_NORMAL_ACTIVE	29 /* Normal device is active */
-+#define ASYNCB_BOOT_AUTOCONF	28 /* Autoconfigure port on bootup */
-+#define ASYNCB_CLOSING		27 /* Serial port is closing */
-+#define ASYNCB_CTS_FLOW		26 /* Do CTS flow control */
-+#define ASYNCB_CHECK_CD		25 /* i.e., CLOCAL */
-+#define ASYNCB_SHARE_IRQ	24 /* for multifunction cards, no longer used */
-+#define ASYNCB_CONS_FLOW	23 /* flow control for console  */
-+#define ASYNCB_FIRST_KERNEL	22
-+
-+#define ASYNC_HUP_NOTIFY	(1U << ASYNCB_HUP_NOTIFY)
-+#define ASYNC_SUSPENDED		(1U << ASYNCB_SUSPENDED)
-+#define ASYNC_FOURPORT		(1U << ASYNCB_FOURPORT)
-+#define ASYNC_SAK		(1U << ASYNCB_SAK)
-+#define ASYNC_SPLIT_TERMIOS	(1U << ASYNCB_SPLIT_TERMIOS)
-+#define ASYNC_SPD_HI		(1U << ASYNCB_SPD_HI)
-+#define ASYNC_SPD_VHI		(1U << ASYNCB_SPD_VHI)
-+#define ASYNC_SKIP_TEST		(1U << ASYNCB_SKIP_TEST)
-+#define ASYNC_AUTO_IRQ		(1U << ASYNCB_AUTO_IRQ)
-+#define ASYNC_SESSION_LOCKOUT	(1U << ASYNCB_SESSION_LOCKOUT)
-+#define ASYNC_PGRP_LOCKOUT	(1U << ASYNCB_PGRP_LOCKOUT)
-+#define ASYNC_CALLOUT_NOHUP	(1U << ASYNCB_CALLOUT_NOHUP)
-+#define ASYNC_HARDPPS_CD	(1U << ASYNCB_HARDPPS_CD)
-+#define ASYNC_SPD_SHI		(1U << ASYNCB_SPD_SHI)
-+#define ASYNC_LOW_LATENCY	(1U << ASYNCB_LOW_LATENCY)
-+#define ASYNC_BUGGY_UART	(1U << ASYNCB_BUGGY_UART)
-+#define ASYNC_AUTOPROBE		(1U << ASYNCB_AUTOPROBE)
-+
-+#define ASYNC_FLAGS		((1U << (ASYNCB_LAST_USER + 1)) - 1)
-+#define ASYNC_USR_MASK		(ASYNC_SPD_MASK|ASYNC_CALLOUT_NOHUP| \
-+		ASYNC_LOW_LATENCY)
-+#define ASYNC_SPD_CUST		(ASYNC_SPD_HI|ASYNC_SPD_VHI)
-+#define ASYNC_SPD_WARP		(ASYNC_SPD_HI|ASYNC_SPD_SHI)
-+#define ASYNC_SPD_MASK		(ASYNC_SPD_HI|ASYNC_SPD_VHI|ASYNC_SPD_SHI)
-+
-+#define ASYNC_INITIALIZED	(1U << ASYNCB_INITIALIZED)
-+#define ASYNC_NORMAL_ACTIVE	(1U << ASYNCB_NORMAL_ACTIVE)
-+#define ASYNC_BOOT_AUTOCONF	(1U << ASYNCB_BOOT_AUTOCONF)
-+#define ASYNC_CLOSING		(1U << ASYNCB_CLOSING)
-+#define ASYNC_CTS_FLOW		(1U << ASYNCB_CTS_FLOW)
-+#define ASYNC_CHECK_CD		(1U << ASYNCB_CHECK_CD)
-+#define ASYNC_SHARE_IRQ		(1U << ASYNCB_SHARE_IRQ)
-+#define ASYNC_CONS_FLOW		(1U << ASYNCB_CONS_FLOW)
-+#define ASYNC_INTERNAL_FLAGS	(~((1U << ASYNCB_FIRST_KERNEL) - 1))
-+
-+#endif
+ 		if (termios == NULL) {
+-			printk(KERN_WARNING "%s: no termios?\n", __func__);
++			dev_warn(uport->dev, "%s: no termios?\n", __func__);
+ 			goto exit;
+ 		}
+ 
+@@ -1113,7 +1113,7 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+ 
+ 	res = platform_get_resource(platdev, IORESOURCE_MEM, 0);
+ 	if (res == NULL) {
+-		printk(KERN_ERR "failed to find memory resource for uart\n");
++		dev_err(port->dev, "failed to find memory resource for uart\n");
+ 		return -EINVAL;
+ 	}
+ 
+@@ -1683,7 +1683,7 @@ static int __init s3c24xx_serial_modinit(void)
+ 
+ 	ret = uart_register_driver(&s3c24xx_uart_drv);
+ 	if (ret < 0) {
+-		printk(KERN_ERR "failed to register UART driver\n");
++		pr_err("Failed to register Samsung UART driver\n");
+ 		return -1;
+ 	}
+ 
+-- 
+1.7.4.1
 
