@@ -1,45 +1,38 @@
-From: Arnout Vandecappelle <arnout@mind.be>
-Subject: Re: Driver for SPI-based 8250 serial port
-Date: Wed, 05 Sep 2012 18:29:33 +0200
-Message-ID: <50477DED.602@mind.be>
-References: <504749CF.50709@mind.be> <20120905141218.7556f902@pyramind.ukuu.org.uk>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v3 00/23] OMAP UART patches
+Date: Wed, 5 Sep 2012 13:18:56 -0700
+Message-ID: <20120905201856.GA17634@kroah.com>
+References: <1345717983-18179-1-git-send-email-balbi@ti.com>
+ <20120824104045.GC5172@arwen.pp.htv.fi>
+ <20120904114540.GF12901@arwen.pp.htv.fi>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 132.79-246-81.adsl-static.isp.belgacom.be ([81.246.79.132]:53249
-	"EHLO viper.mind.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750800Ab2IEQ3g (ORCPT
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:35386 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754851Ab2IEUVb (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Sep 2012 12:29:36 -0400
-In-Reply-To: <20120905141218.7556f902@pyramind.ukuu.org.uk>
+	Wed, 5 Sep 2012 16:21:31 -0400
+Received: by pbbrr13 with SMTP id rr13so1496975pbb.19
+        for <linux-serial@vger.kernel.org>; Wed, 05 Sep 2012 13:21:31 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <20120904114540.GF12901@arwen.pp.htv.fi>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-serial@vger.kernel.org
+To: Felipe Balbi <balbi@ti.com>
+Cc: alan@linux.intel.com, Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Shubhrajyoti Datta <shubhrajyoti@ti.com>, Sourav Poddar <sourav.poddar@ti.com>
 
-On 09/05/12 15:12, Alan Cox wrote:
->> >  - Should I add a UPIO_SPI to the global I/O types, or should I override the
->> >  serial_in/serial_out functions in struct plat_serial8250_port?
-> I am not sure you'll make the 8250 driver handle the device because I
-> suspect a lot of the serial_in/serial_out calls occur with interrupts
-> disabled on the assumption that they are basically atomic fast operations.
+On Tue, Sep 04, 2012 at 02:45:41PM +0300, Felipe Balbi wrote:
+> Hi,
+> 
+> On Fri, Aug 24, 2012 at 01:40:47PM +0300, Felipe Balbi wrote:
+> > Forgot to Cc greg initially, my bad
+> 
+> a gentle ping on this series so we don't miss it for v3.7 merge window.
+> 
+> Greg, let me know if you need me to resend.
 
-  Argh, that's right.
+No need, sorry, was on vacation and then the Kernel summit.  I'll get to
+these now...
 
-  So it will be a completely new driver then.  Using the tty layer directly seems
-to be a good suggestion: it looks like the uart layer (like the 8250 driver) is
-carrying a lot of cruft for supporting all those quirks in the different devices.
-
-  ifx6x60 looks like a good source of inspiration.
-
-
-  Regards,
-  Arnout
--- 
-Arnout Vandecappelle                               arnout at mind be
-Senior Embedded Software Architect                 +32-16-286540
-Essensium/Mind                                     http://www.mind.be
-G.Geenslaan 9, 3001 Leuven, Belgium                BE 872 984 063 RPR Leuven
-LinkedIn profile: http://www.linkedin.com/in/arnoutvandecappelle
-GPG fingerprint:  7CB5 E4CC 6C2E EFD4 6E3D A754 F963 ECAB 2450 2F1F
+greg k-h
