@@ -1,45 +1,159 @@
-From: Tomas Hlavacek <tmshlvck@gmail.com>
-Subject: Re: [PATCH] tty_register_device_attr updated for tty-next
-Date: Thu, 6 Sep 2012 23:46:30 +0200
-Message-ID: <CAEB7QLBpf2HupqOR9xe2S6cZLk1vnxv7Oqvq4NdRQNaCKjfrNQ@mail.gmail.com>
-References: <1346966267-1780-1-git-send-email-tmshlvck@gmail.com>
+From: Kevin Hilman <khilman@deeprootsystems.com>
+Subject: Re: [PATCH v4 20/21] serial: omap: move uart_omap_port definition to C file
+Date: Thu, 06 Sep 2012 14:58:35 -0700
+Message-ID: <87fw6uizjo.fsf@deeprootsystems.com>
+References: <20120906122948.GC29202@arwen.pp.htv.fi>
+	<1346935540-1792-1-git-send-email-balbi@ti.com>
+	<1346935540-1792-21-git-send-email-balbi@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qa0-f46.google.com ([209.85.216.46]:50652 "EHLO
-	mail-qa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933187Ab2IFVqb (ORCPT
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:54130 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759534Ab2IFV6g (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Sep 2012 17:46:31 -0400
-In-Reply-To: <1346966267-1780-1-git-send-email-tmshlvck@gmail.com>
+	Thu, 6 Sep 2012 17:58:36 -0400
+Received: by pbbrr13 with SMTP id rr13so3112076pbb.19
+        for <linux-serial@vger.kernel.org>; Thu, 06 Sep 2012 14:58:36 -0700 (PDT)
+In-Reply-To: <1346935540-1792-21-git-send-email-balbi@ti.com> (Felipe Balbi's
+	message of "Thu, 6 Sep 2012 15:45:39 +0300")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: marek.vasut@gmail.com, Jiri Slaby <jslaby@suse.cz>
+To: Felipe Balbi <balbi@ti.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, alan@linux.intel.com, Tony Lindgren <tony@atomide.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Shubhrajyoti Datta <shubhrajyoti@ti.com>, Sourav Poddar <sourav.poddar@ti.com>
 
-Hello!
+Felipe Balbi <balbi@ti.com> writes:
 
-On Thu, Sep 6, 2012 at 11:17 PM, Tomas Hlavacek <tmshlvck@gmail.com> wrote:
-> Added tty_device_create_release() and bound to dev->release in
-> tty_register_device_attr().
-> Added tty_port_register_device_attr() and used in uart_add_one_port()
-> instead of tty_register_device_attr().
+> nobody needs to access the uart_omap_port structure
+> other than omap-serial.c file. Let's move that
+> structure definition to the C source file in order
+> to prevent anyone from accessing our structure.
 >
-> Signed-off-by: Tomas Hlavacek <tmshlvck@gmail.com>
+> Tested-by: Shubhrajyoti D <shubhrajyoti@ti.com>
+> Acked-by: Tony Lindgren <tony@atomide.com>
+> Signed-off-by: Felipe Balbi <balbi@ti.com>
+
+This one is clearly broken, and causes compile breakage...
+
 > ---
->  drivers/tty/serial/serial_core.c |    8 ++++----
->  drivers/tty/tty_io.c             |    7 +++++++
->  drivers/tty/tty_port.c           |   24 ++++++++++++++++++++++++
->  include/linux/tty.h              |    4 ++++
->  4 files changed, 39 insertions(+), 4 deletions(-)
+>  arch/arm/plat-omap/include/plat/omap-serial.h | 37 --------------------------
+>  drivers/tty/serial/omap-serial.c              | 38 +++++++++++++++++++++++++++
+>  2 files changed, 38 insertions(+), 37 deletions(-)
 >
+> diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/plat-omap/include/plat/omap-serial.h
+> index a79ed8b..3c9fd3e 100644
+> --- a/arch/arm/plat-omap/include/plat/omap-serial.h
+> +++ b/arch/arm/plat-omap/include/plat/omap-serial.h
+> @@ -105,45 +105,8 @@ struct uart_omap_dma {
+>  	unsigned int		rx_timeout;
+>  };
+>  
+> -struct uart_omap_port {
+> -	struct uart_port	port;
+> -	struct uart_omap_dma	uart_dma;
+> -	struct device		*dev;
+> -
+> -	unsigned char		ier;
+> -	unsigned char		lcr;
+> -	unsigned char		mcr;
+> -	unsigned char		fcr;
+> -	unsigned char		efr;
+> -	unsigned char		dll;
+> -	unsigned char		dlh;
+> -	unsigned char		mdr1;
+> -	unsigned char		scr;
+> -
+> -	int			use_dma;
+> -	/*
+> -	 * Some bits in registers are cleared on a read, so they must
+> -	 * be saved whenever the register is read but the bits will not
+> -	 * be immediately processed.
+> -	 */
+> -	unsigned int		lsr_break_flag;
+> -	unsigned char		msr_saved_flags;
+> -	char			name[20];
+> -	unsigned long		port_activity;
+> -	u32			context_loss_cnt;
+> -	u32			errata;
+> -	u8			wakeups_enabled;
+>  
+>  	int			DTR_gpio;
+>  	int			DTR_inverted;
+>  	int			DTR_active;
 
-A little bit more explanation regarding this patch: It fixes two
-problems with my previous patch (tty: uartclk value from serial_core
-exposed to sysfs) which Jiri has pointed out earlier today. Both are
-related to the changed interface in the tty-next branch and both
-should have been dealt with in the first patch. It also fixes minor
-problems (one const keyword added and newlines rearranged in the
-uart_get_attr_uartclk() function).
+The whole struct has moved, but some fields left behind?
 
-Tomas
+This looks to be caused by the rebase which includes Neil Brown's DTR
+GPIO change[1]
+
+> -
+> -	struct pm_qos_request	pm_qos_request;
+> -	u32			latency;
+> -	u32			calc_latency;
+> -	struct work_struct	qos_work;
+> -};
+> -
+> -#define to_uart_omap_port(p)	((container_of((p), struct uart_omap_port, port)))
+> -
+>  #endif /* __OMAP_SERIAL_H__ */
+> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+> index 881b652..164c3c9 100644
+> --- a/drivers/tty/serial/omap-serial.c
+> +++ b/drivers/tty/serial/omap-serial.c
+> @@ -70,6 +70,44 @@
+>  #define OMAP_UART_MVR_MAJ_SHIFT		8
+>  #define OMAP_UART_MVR_MIN_MASK		0x3f
+>  
+> +struct uart_omap_port {
+> +	struct uart_port	port;
+> +	struct uart_omap_dma	uart_dma;
+> +	struct device		*dev;
+> +
+> +	unsigned char		ier;
+> +	unsigned char		lcr;
+> +	unsigned char		mcr;
+> +	unsigned char		fcr;
+> +	unsigned char		efr;
+> +	unsigned char		dll;
+> +	unsigned char		dlh;
+> +	unsigned char		mdr1;
+> +	unsigned char		scr;
+> +
+> +	int			use_dma;
+> +	/*
+> +	 * Some bits in registers are cleared on a read, so they must
+> +	 * be saved whenever the register is read but the bits will not
+> +	 * be immediately processed.
+> +	 */
+> +	unsigned int		lsr_break_flag;
+> +	unsigned char		msr_saved_flags;
+> +	char			name[20];
+> +	unsigned long		port_activity;
+> +	u32			context_loss_cnt;
+> +	u32			errata;
+> +	u8			wakeups_enabled;
+> +	unsigned int		irq_pending:1;
+
+And this field was not in the original, yet the changelog describes this
+as a move.
+
+Why is a this new field added (and not described in the changelog.)
+
+Kevin
+
+
+[1]
+commit 9574f36fb801035f6ab0fbb1b53ce2c12c17d100
+Author: NeilBrown <neilb@suse.de>
+Date:   Mon Jul 30 10:30:26 2012 +1000
+
+    OMAP/serial: Add support for driving a GPIO as DTR.
+    
+    OMAP hardware doesn't provide a phyisical DTR line, but
+    some configurations may need a DTR line which tracks whether
+    the device is open or not.
+    
+    So allow a gpio to be configured as the DTR line.
+    
+    Signed-off-by: NeilBrown <neilb@suse.de>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
