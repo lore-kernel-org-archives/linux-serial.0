@@ -1,125 +1,72 @@
-From: Tomas Hlavacek <tmshlvck@gmail.com>
+From: Jiri Slaby <jslaby@suse.cz>
 Subject: Re: [PATCH v6] uartclk value from serial_core exposed to sysfs
-Date: Thu, 6 Sep 2012 21:41:09 +0200
-Message-ID: <CAEB7QLAk6pe9ih+P_621fZE3JpRcFpPA+Wzk57x3FmVaGmoOKg@mail.gmail.com>
-References: <1344929718-22736-1-git-send-email-tmshlvck@gmail.com>
-	<1346894238-12870-1-git-send-email-tmshlvck@gmail.com>
-	<5048E35F.5020304@suse.cz>
-	<CAEB7QLAWLuXFLWMYX70enP5X0z5EXTNo93hfOm7sH_kQteMAkA@mail.gmail.com>
-	<5048F161.3000805@suse.cz>
+Date: Thu, 06 Sep 2012 21:47:27 +0200
+Message-ID: <5048FDCF.8020602@suse.cz>
+References: <1344929718-22736-1-git-send-email-tmshlvck@gmail.com> <1346894238-12870-1-git-send-email-tmshlvck@gmail.com> <5048E35F.5020304@suse.cz> <CAEB7QLAWLuXFLWMYX70enP5X0z5EXTNo93hfOm7sH_kQteMAkA@mail.gmail.com> <5048F161.3000805@suse.cz> <CAEB7QLAk6pe9ih+P_621fZE3JpRcFpPA+Wzk57x3FmVaGmoOKg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qc0-f174.google.com ([209.85.216.174]:54645 "EHLO
-	mail-qc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755067Ab2IFTlL convert rfc822-to-8bit (ORCPT
+Received: from mail-wg0-f44.google.com ([74.125.82.44]:62937 "EHLO
+	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758690Ab2IFTrb (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Sep 2012 15:41:11 -0400
-In-Reply-To: <5048F161.3000805@suse.cz>
+	Thu, 6 Sep 2012 15:47:31 -0400
+In-Reply-To: <CAEB7QLAk6pe9ih+P_621fZE3JpRcFpPA+Wzk57x3FmVaGmoOKg@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>
+To: Tomas Hlavacek <tmshlvck@gmail.com>
 Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, marek.vasut@gmail.com
 
-Hello!
+On 09/06/2012 09:41 PM, Tomas Hlavacek wrote:
+>> * why are you passing tty_port to the struct device's private data a=
+nd
+>> not uart_port proper? Is this for some future use?
+>=20
+> I actually used the uart_port structure in older RFC versions of the
+> patch. Alan Cox advised to use struct tty_port because of consistency=
+=2E
+> More precisely he said (in an e-mail from Aug 12):
+>=20
+> I'd rather however it pointed
+> to the tty_port that each tty device has (or very soon will be requir=
+ed
+> to have).
 
-On Thu, Sep 6, 2012 at 8:54 PM, Jiri Slaby <jslaby@suse.cz> wrote:
-> On 09/06/2012 08:39 PM, Tomas Hlavacek wrote:
->> On Thu, Sep 6, 2012 at 7:54 PM, Jiri Slaby <jslaby@suse.cz> wrote:
->>> On 09/06/2012 03:17 AM, Tomas Hlavacek wrote:
->>>> @@ -2362,8 +2392,8 @@ int uart_add_one_port(struct uart_driver *dr=
-v, struct uart_port *uport)
->>>>        * Register the port whether it's detected or not.  This all=
-ows
->>>>        * setserial to be used to alter this ports parameters.
->>>>        */
->>>> -     tty_dev =3D tty_port_register_device(port, drv->tty_driver, =
-uport->line,
->>>> -                     uport->dev);
->>>> +     tty_dev =3D tty_register_device_attr(drv->tty_driver, uport-=
->line,
->>>> +                     uport->dev, port, tty_dev_attr_groups);
->>>
->>> This makes me believe you have not tested the change at all?
->>
->> Thanks! I can't believe I missed that. (And I actually tested that,
->> but I have to admit that it was not enough apparently.)
->>
->> I will re-send the patch (after some additional testing and double-c=
-hecking).
->
-> Ok. A couple more questions...
->
-> * why are you passing tty_port to the struct device's private data an=
-d
-> not uart_port proper? Is this for some future use?
+Yes, this is already a requirement in tty-next. And every driver has to
+provide us with the tty_port as you might persuaded yourself of that
+already ;).
 
-I actually used the uart_port structure in older RFC versions of the
-patch. Alan Cox advised to use struct tty_port because of consistency.
-More precisely he said (in an e-mail from Aug 12):
+> You can still find the uart_foo structs from that but it means
+> we can do the dev_set_drvdata() in a consistent manner for all tty
+> devices in the kernel. That in turn means we can make some of the sys=
+fs
+> valid the same way.
 
-I'd rather however it pointed
-to the tty_port that each tty device has (or very soon will be required
-to have). You can still find the uart_foo structs from that but it mean=
-s
-we can do the dev_set_drvdata() in a consistent manner for all tty
-devices in the kernel. That in turn means we can make some of the sysfs
-valid the same way.
+Ah, OK, makes sense.
 
-> * cannot be all those attribute structs const?
+>> * cannot be all those attribute structs const?
+>=20
+> It seems that making
+>=20
+> static const struct attribute *tty_dev_attrs[] =3D ...
+>=20
+> produces warning:
+>=20
+> drivers/tty/serial/serial_core.c:2334:2: warning: initialization from
+> incompatible pointer type [enabled by default]
+> drivers/tty/serial/serial_core.c:2334:2: warning: (near initializatio=
+n
+> for =E2=80=98tty_dev_attr_group.attrs=E2=80=99) [enabled by default]
+>=20
+> But others can. I am going to make them const in following patch.
 
-It seems that making
+Ok, it was only a suggestion. I did not know either.
 
-static const struct attribute *tty_dev_attrs[] =3D ...
-
-produces warning:
-
-drivers/tty/serial/serial_core.c:2334:2: warning: initialization from
-incompatible pointer type [enabled by default]
-drivers/tty/serial/serial_core.c:2334:2: warning: (near initialization
-for =E2=80=98tty_dev_attr_group.attrs=E2=80=99) [enabled by default]
-
-But others can. I am going to make them const in following patch.
-
-> * kdoc for tty_register_device_attr says that when
-> TTY_DRIVER_DYNAMIC_DEV is not set, tty_register_device_attr *should* =
-not
-> be called. But it must not be called, otherwise it will fail and emit=
- a
-> warning as a bonus, right?
-
-Yes. In fact it does the same thing as tty_register_device() did
-before itself. The _attr version is only slightly refactored and the
-doc regarding the TTY_DRIVER_DYNAMIC_DEV test is the same as in old
-non-_attr version.
-I am not sure that I am the right person to change the doc because I
-am not an author of this part of doc nor of the test in the function.
-
-> * final remark. I would prefer declaration and code be delimited by a
-> new line in uart_get_attr_uartclk:
-> <=3D=3D=3D>
-> +       int ret;
-> +
-> +       struct tty_port *port =3D dev_get_drvdata(dev);
-> +       struct uart_state *state =3D container_of(port, struct uart_s=
-tate,
-> port);
-> +       mutex_lock(&state->port.mutex);
-> <=3D=3D=3D>
->
-> Like:
-> <=3D=3D=3D>
->   struct tty_port *port =3D ...;
->   struct uart_state *state =3D ...;
->   int ret;
->
->   mutex_lock(&state->port.mutex);
-> <=3D=3D=3D>
-
-Yes, it looks better. I am going to it accordingly.
-
-Tomas
+regards,
+--=20
+js
+suse labs
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
  in
