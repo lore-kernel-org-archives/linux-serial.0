@@ -1,32 +1,45 @@
-From: Paul Walmsley <paul@pwsan.com>
-Subject: Re: [PATCH v4 00/21] OMAP UART Patches
-Date: Thu, 6 Sep 2012 21:37:23 +0000 (UTC)
-Message-ID: <alpine.DEB.2.00.1209062137000.11516@utopia.booyaka.com>
-References: <20120906122948.GC29202@arwen.pp.htv.fi> <1346935540-1792-1-git-send-email-balbi@ti.com>
+From: Tomas Hlavacek <tmshlvck@gmail.com>
+Subject: Re: [PATCH] tty_register_device_attr updated for tty-next
+Date: Thu, 6 Sep 2012 23:46:30 +0200
+Message-ID: <CAEB7QLBpf2HupqOR9xe2S6cZLk1vnxv7Oqvq4NdRQNaCKjfrNQ@mail.gmail.com>
+References: <1346966267-1780-1-git-send-email-tmshlvck@gmail.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1346935540-1792-1-git-send-email-balbi@ti.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Felipe Balbi <balbi@ti.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, alan@linux.intel.com, Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Shubhrajyoti Datta <shubhrajyoti@ti.com>, Sourav Poddar <sourav.poddar@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-qa0-f46.google.com ([209.85.216.46]:50652 "EHLO
+	mail-qa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933187Ab2IFVqb (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 6 Sep 2012 17:46:31 -0400
+In-Reply-To: <1346966267-1780-1-git-send-email-tmshlvck@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: marek.vasut@gmail.com, Jiri Slaby <jslaby@suse.cz>
 
-Hi
+Hello!
 
-On Thu, 6 Sep 2012, Felipe Balbi wrote:
+On Thu, Sep 6, 2012 at 11:17 PM, Tomas Hlavacek <tmshlvck@gmail.com> wrote:
+> Added tty_device_create_release() and bound to dev->release in
+> tty_register_device_attr().
+> Added tty_port_register_device_attr() and used in uart_add_one_port()
+> instead of tty_register_device_attr().
+>
+> Signed-off-by: Tomas Hlavacek <tmshlvck@gmail.com>
+> ---
+>  drivers/tty/serial/serial_core.c |    8 ++++----
+>  drivers/tty/tty_io.c             |    7 +++++++
+>  drivers/tty/tty_port.c           |   24 ++++++++++++++++++++++++
+>  include/linux/tty.h              |    4 ++++
+>  4 files changed, 39 insertions(+), 4 deletions(-)
+>
 
-> Hi guys,
-> 
-> here's v4 of the omap uart patchset. No changes other than a rebase on top of
-> Greg's tty-next branch and Tony's Acked-by being added to a couple patches
-> 
-> Note: I'm resending the series with Vikram's Software Flow Control fix anyway
-> as it can just be ignored if it's decided it needs to go into this merge
-> window.
+A little bit more explanation regarding this patch: It fixes two
+problems with my previous patch (tty: uartclk value from serial_core
+exposed to sysfs) which Jiri has pointed out earlier today. Both are
+related to the changed interface in the tty-next branch and both
+should have been dealt with in the first patch. It also fixes minor
+problems (one const keyword added and newlines rearranged in the
+uart_get_attr_uartclk() function).
 
-Was curious to know if these have been PM-tested, and if so, under what 
-configurations?
-
-
-- Paul
+Tomas
