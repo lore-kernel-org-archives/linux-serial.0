@@ -1,159 +1,41 @@
-From: Kevin Hilman <khilman@deeprootsystems.com>
-Subject: Re: [PATCH v4 20/21] serial: omap: move uart_omap_port definition to C file
-Date: Thu, 06 Sep 2012 14:58:35 -0700
-Message-ID: <87fw6uizjo.fsf@deeprootsystems.com>
-References: <20120906122948.GC29202@arwen.pp.htv.fi>
-	<1346935540-1792-1-git-send-email-balbi@ti.com>
-	<1346935540-1792-21-git-send-email-balbi@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Sean Young <sean@mess.org>
+Subject: [PATCH 0/2] winbond-cir: Fix initialization v2
+Date: Thu,  6 Sep 2012 23:20:30 +0100
+Message-ID: <cover.1346969721.git.sean@mess.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:54130 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759534Ab2IFV6g (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Sep 2012 17:58:36 -0400
-Received: by pbbrr13 with SMTP id rr13so3112076pbb.19
-        for <linux-serial@vger.kernel.org>; Thu, 06 Sep 2012 14:58:36 -0700 (PDT)
-In-Reply-To: <1346935540-1792-21-git-send-email-balbi@ti.com> (Felipe Balbi's
-	message of "Thu, 6 Sep 2012 15:45:39 +0300")
+Received: from pequod.mess.org ([93.97.41.153]:43599 "EHLO pequod.mess.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751461Ab2IFWUe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 6 Sep 2012 18:20:34 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Felipe Balbi <balbi@ti.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, alan@linux.intel.com, Tony Lindgren <tony@atomide.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Shubhrajyoti Datta <shubhrajyoti@ti.com>, Sourav Poddar <sourav.poddar@ti.com>
+To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+Cc: =?UTF-8?q?David=20H=C3=A4rdeman?= <david@hardeman.nu>, Mauro Carvalho Chehab <mchehab@redhat.com>
 
-Felipe Balbi <balbi@ti.com> writes:
+The serial driver will detect the winbond cir device as a serial port,
+since it looks exactly like a serial port unless you know what it is
+from the PNP ID.
 
-> nobody needs to access the uart_omap_port structure
-> other than omap-serial.c file. Let's move that
-> structure definition to the C source file in order
-> to prevent anyone from accessing our structure.
->
-> Tested-by: Shubhrajyoti D <shubhrajyoti@ti.com>
-> Acked-by: Tony Lindgren <tony@atomide.com>
-> Signed-off-by: Felipe Balbi <balbi@ti.com>
+Alan Cox pointed out[1] that the pnp serial probe should be done before
+the legacy probe and we should keep track of any IR ports during the
+pnp scan. This is an implementation of that idea.
 
-This one is clearly broken, and causes compile breakage...
+Diffed against tty-next.
 
-> ---
->  arch/arm/plat-omap/include/plat/omap-serial.h | 37 --------------------------
->  drivers/tty/serial/omap-serial.c              | 38 +++++++++++++++++++++++++++
->  2 files changed, 38 insertions(+), 37 deletions(-)
->
-> diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/plat-omap/include/plat/omap-serial.h
-> index a79ed8b..3c9fd3e 100644
-> --- a/arch/arm/plat-omap/include/plat/omap-serial.h
-> +++ b/arch/arm/plat-omap/include/plat/omap-serial.h
-> @@ -105,45 +105,8 @@ struct uart_omap_dma {
->  	unsigned int		rx_timeout;
->  };
->  
-> -struct uart_omap_port {
-> -	struct uart_port	port;
-> -	struct uart_omap_dma	uart_dma;
-> -	struct device		*dev;
-> -
-> -	unsigned char		ier;
-> -	unsigned char		lcr;
-> -	unsigned char		mcr;
-> -	unsigned char		fcr;
-> -	unsigned char		efr;
-> -	unsigned char		dll;
-> -	unsigned char		dlh;
-> -	unsigned char		mdr1;
-> -	unsigned char		scr;
-> -
-> -	int			use_dma;
-> -	/*
-> -	 * Some bits in registers are cleared on a read, so they must
-> -	 * be saved whenever the register is read but the bits will not
-> -	 * be immediately processed.
-> -	 */
-> -	unsigned int		lsr_break_flag;
-> -	unsigned char		msr_saved_flags;
-> -	char			name[20];
-> -	unsigned long		port_activity;
-> -	u32			context_loss_cnt;
-> -	u32			errata;
-> -	u8			wakeups_enabled;
->  
->  	int			DTR_gpio;
->  	int			DTR_inverted;
->  	int			DTR_active;
+[1] http://www.spinics.net/lists/linux-serial/msg06757.html
 
-The whole struct has moved, but some fields left behind?
+Sean Young (2):
+  8250_pnp: merge into 8250 module so pnp probe can done first
+  8250: blacklist IR ports
 
-This looks to be caused by the rebase which includes Neil Brown's DTR
-GPIO change[1]
+ drivers/tty/serial/8250/8250.c     | 47 ++++++++++++++++++++++++++------------
+ drivers/tty/serial/8250/8250.h     |  9 ++++++++
+ drivers/tty/serial/8250/8250_pnp.c | 34 ++++++++++++++++-----------
+ drivers/tty/serial/8250/Kconfig    | 16 ++++++-------
+ drivers/tty/serial/8250/Makefile   |  5 ++--
+ include/linux/serial_core.h        |  3 ++-
+ 6 files changed, 75 insertions(+), 39 deletions(-)
 
-> -
-> -	struct pm_qos_request	pm_qos_request;
-> -	u32			latency;
-> -	u32			calc_latency;
-> -	struct work_struct	qos_work;
-> -};
-> -
-> -#define to_uart_omap_port(p)	((container_of((p), struct uart_omap_port, port)))
-> -
->  #endif /* __OMAP_SERIAL_H__ */
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-> index 881b652..164c3c9 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -70,6 +70,44 @@
->  #define OMAP_UART_MVR_MAJ_SHIFT		8
->  #define OMAP_UART_MVR_MIN_MASK		0x3f
->  
-> +struct uart_omap_port {
-> +	struct uart_port	port;
-> +	struct uart_omap_dma	uart_dma;
-> +	struct device		*dev;
-> +
-> +	unsigned char		ier;
-> +	unsigned char		lcr;
-> +	unsigned char		mcr;
-> +	unsigned char		fcr;
-> +	unsigned char		efr;
-> +	unsigned char		dll;
-> +	unsigned char		dlh;
-> +	unsigned char		mdr1;
-> +	unsigned char		scr;
-> +
-> +	int			use_dma;
-> +	/*
-> +	 * Some bits in registers are cleared on a read, so they must
-> +	 * be saved whenever the register is read but the bits will not
-> +	 * be immediately processed.
-> +	 */
-> +	unsigned int		lsr_break_flag;
-> +	unsigned char		msr_saved_flags;
-> +	char			name[20];
-> +	unsigned long		port_activity;
-> +	u32			context_loss_cnt;
-> +	u32			errata;
-> +	u8			wakeups_enabled;
-> +	unsigned int		irq_pending:1;
+-- 
+1.7.11.4
 
-And this field was not in the original, yet the changelog describes this
-as a move.
-
-Why is a this new field added (and not described in the changelog.)
-
-Kevin
-
-
-[1]
-commit 9574f36fb801035f6ab0fbb1b53ce2c12c17d100
-Author: NeilBrown <neilb@suse.de>
-Date:   Mon Jul 30 10:30:26 2012 +1000
-
-    OMAP/serial: Add support for driving a GPIO as DTR.
-    
-    OMAP hardware doesn't provide a phyisical DTR line, but
-    some configurations may need a DTR line which tracks whether
-    the device is open or not.
-    
-    So allow a gpio to be configured as the DTR line.
-    
-    Signed-off-by: NeilBrown <neilb@suse.de>
-    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
