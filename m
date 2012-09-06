@@ -1,74 +1,79 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH v6] uartclk value from serial_core exposed to sysfs
-Date: Thu, 06 Sep 2012 21:47:27 +0200
-Message-ID: <5048FDCF.8020602@suse.cz>
-References: <1344929718-22736-1-git-send-email-tmshlvck@gmail.com> <1346894238-12870-1-git-send-email-tmshlvck@gmail.com> <5048E35F.5020304@suse.cz> <CAEB7QLAWLuXFLWMYX70enP5X0z5EXTNo93hfOm7sH_kQteMAkA@mail.gmail.com> <5048F161.3000805@suse.cz> <CAEB7QLAk6pe9ih+P_621fZE3JpRcFpPA+Wzk57x3FmVaGmoOKg@mail.gmail.com>
+From: Felipe Balbi <balbi@ti.com>
+Subject: Re: [PATCH 5/5] omap-serial: Request pins using pinctrl framework
+Date: Thu, 6 Sep 2012 22:56:06 +0300
+Message-ID: <20120906195605.GA32145@arwen.pp.htv.fi>
+References: <20120906185615.1172.23588.stgit@muffinssi.local>
+ <20120906185832.1172.31013.stgit@muffinssi.local>
+Reply-To: balbi@ti.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f44.google.com ([74.125.82.44]:62937 "EHLO
-	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758690Ab2IFTrb (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Sep 2012 15:47:31 -0400
-In-Reply-To: <CAEB7QLAk6pe9ih+P_621fZE3JpRcFpPA+Wzk57x3FmVaGmoOKg@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="82I3+IH0IqGh5yIs"
+Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20120906185832.1172.31013.stgit@muffinssi.local>
+Sender: linux-omap-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tomas Hlavacek <tmshlvck@gmail.com>
-Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, marek.vasut@gmail.com
 
-On 09/06/2012 09:41 PM, Tomas Hlavacek wrote:
->> * why are you passing tty_port to the struct device's private data a=
-nd
->> not uart_port proper? Is this for some future use?
->=20
-> I actually used the uart_port structure in older RFC versions of the
-> patch. Alan Cox advised to use struct tty_port because of consistency=
-=2E
-> More precisely he said (in an e-mail from Aug 12):
->=20
-> I'd rather however it pointed
-> to the tty_port that each tty device has (or very soon will be requir=
-ed
-> to have).
 
-Yes, this is already a requirement in tty-next. And every driver has to
-provide us with the tty_port as you might persuaded yourself of that
-already ;).
+--82I3+IH0IqGh5yIs
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> You can still find the uart_foo structs from that but it means
-> we can do the dev_set_drvdata() in a consistent manner for all tty
-> devices in the kernel. That in turn means we can make some of the sys=
-fs
-> valid the same way.
+Hi,
 
-Ah, OK, makes sense.
+On Thu, Sep 06, 2012 at 11:58:32AM -0700, Tony Lindgren wrote:
+> Request pins using pinctrl framework. Only show a warning
+> on error as some boards set the pins in the bootloader
+> even if CONFIG_PINCTRL is enabled.
+>=20
+> Cc: linux-serial@vger.kernel.org
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
+> ---
+>  arch/arm/plat-omap/include/plat/omap-serial.h |    1 +
+>  drivers/tty/serial/omap-serial.c              |   10 ++++++++++
+>  2 files changed, 11 insertions(+)
+>=20
+> diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/pla=
+t-omap/include/plat/omap-serial.h
+> index 1a52725..0f4de14 100644
+> --- a/arch/arm/plat-omap/include/plat/omap-serial.h
+> +++ b/arch/arm/plat-omap/include/plat/omap-serial.h
+> @@ -106,6 +106,7 @@ struct uart_omap_port {
+>  	struct uart_port	port;
+>  	struct uart_omap_dma	uart_dma;
+>  	struct platform_device	*pdev;
+> +	struct pinctrl		*pins;
 
->> * cannot be all those attribute structs const?
->=20
-> It seems that making
->=20
-> static const struct attribute *tty_dev_attrs[] =3D ...
->=20
-> produces warning:
->=20
-> drivers/tty/serial/serial_core.c:2334:2: warning: initialization from
-> incompatible pointer type [enabled by default]
-> drivers/tty/serial/serial_core.c:2334:2: warning: (near initializatio=
-n
-> for =E2=80=98tty_dev_attr_group.attrs=E2=80=99) [enabled by default]
->=20
-> But others can. I am going to make them const in following patch.
+this won't apply to Greg's tty-next as I moved this structure to the C
+file :-s
 
-Ok, it was only a suggestion. I did not know either.
-
-regards,
 --=20
-js
-suse labs
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+balbi
+
+--82I3+IH0IqGh5yIs
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+
+iQIcBAEBAgAGBQJQSP/VAAoJEIaOsuA1yqRE1noP/ieocy6FemKw5oRNhgs6bfLq
+sNjHjxjg77yVuwW2lWJv6IWa3J/9mqM5XaLwxbhFRwHQF6TWp3pyr3QsyfPrznT0
+QtzwLrWoxJ7bFzJWanAmwF6DrJ9lZBDuk+PCN42mwGWVt54EerUjGZ+qKVPmVJOr
+3meMMC86NVoaBXvQZLGCfZeA/I1cQcAVmC+m26r24Ft5MU5jeJPxYS4TjvWzOdKU
+uARWZjQgVsl55yBnJmcTp5eL8AccnAqQhnjznp9PV1DTTuU7Rti671zsY3NcTuBP
+5PPDfwuGWFCy0nc0mUaTabOAfo2nFZ0j9EWl6yKf1EP2AHs2VxF6PqJ3Xh0XVF88
+RWZP8gE6Q2+xcnTnJ8pjdIPJ9IHG4AAm7ReL9I0S80/LksSLHxX2qEC+O6ITDPSM
+RCObTiulN0E/xmP0wiiX0yweO/onu5msjGLeAXgtVGuQ0wh9Q3PeCnycCST7JLHP
+sWYqSXLrtb6nf//Rs6W60Wokw5ewy3PBgaaTG0QjEXw8zJ6Z2xhYwwxy1UBzvp0D
+12rBLRVhHFmcS3fpx4b1ngPLoRHeBEPHWCVHMCxPYi/nrRQJPjO/lfmnQ/edOfbT
+kECW0x/Einrjzk6WZdm1FeI6KuMf6G3NYcfJv/aN5Vu+6KgUtTZhHZxyHmX1rNgM
+TdJQjgDvpg3YruSp+piy
+=tn7l
+-----END PGP SIGNATURE-----
+
+--82I3+IH0IqGh5yIs--
