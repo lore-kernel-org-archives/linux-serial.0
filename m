@@ -1,95 +1,127 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH 5/5] omap-serial: Request pins using pinctrl framework
-Date: Thu, 6 Sep 2012 12:12:17 -0700
-Message-ID: <20120906191216.GA1303@atomide.com>
-References: <20120906185615.1172.23588.stgit@muffinssi.local>
- <20120906185832.1172.31013.stgit@muffinssi.local>
+From: Tomas Hlavacek <tmshlvck@gmail.com>
+Subject: Re: [PATCH v6] uartclk value from serial_core exposed to sysfs
+Date: Thu, 6 Sep 2012 21:41:09 +0200
+Message-ID: <CAEB7QLAk6pe9ih+P_621fZE3JpRcFpPA+Wzk57x3FmVaGmoOKg@mail.gmail.com>
+References: <1344929718-22736-1-git-send-email-tmshlvck@gmail.com>
+	<1346894238-12870-1-git-send-email-tmshlvck@gmail.com>
+	<5048E35F.5020304@suse.cz>
+	<CAEB7QLAWLuXFLWMYX70enP5X0z5EXTNo93hfOm7sH_kQteMAkA@mail.gmail.com>
+	<5048F161.3000805@suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mho-01-ewr.mailhop.org ([204.13.248.71]:64328 "EHLO
-	mho-01-ewr.mailhop.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751927Ab2IFTMU (ORCPT
+Received: from mail-qc0-f174.google.com ([209.85.216.174]:54645 "EHLO
+	mail-qc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755067Ab2IFTlL convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Sep 2012 15:12:20 -0400
-Content-Disposition: inline
-In-Reply-To: <20120906185832.1172.31013.stgit@muffinssi.local>
+	Thu, 6 Sep 2012 15:41:11 -0400
+In-Reply-To: <5048F161.3000805@suse.cz>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org
+To: Jiri Slaby <jslaby@suse.cz>
+Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, marek.vasut@gmail.com
 
-* Tony Lindgren <tony@atomide.com> [120906 11:59]:
-> Request pins using pinctrl framework. Only show a warning
-> on error as some boards set the pins in the bootloader
-> even if CONFIG_PINCTRL is enabled.
-> 
-> Cc: linux-serial@vger.kernel.org
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
-> ---
+Hello!
 
-Greg, this patch should be OK for you to pick, it should not break
-anything even if pinctrl is not available yet. Let me know if it
-needs rebasing on top of other things you've queued for omap-serial.
+On Thu, Sep 6, 2012 at 8:54 PM, Jiri Slaby <jslaby@suse.cz> wrote:
+> On 09/06/2012 08:39 PM, Tomas Hlavacek wrote:
+>> On Thu, Sep 6, 2012 at 7:54 PM, Jiri Slaby <jslaby@suse.cz> wrote:
+>>> On 09/06/2012 03:17 AM, Tomas Hlavacek wrote:
+>>>> @@ -2362,8 +2392,8 @@ int uart_add_one_port(struct uart_driver *dr=
+v, struct uart_port *uport)
+>>>>        * Register the port whether it's detected or not.  This all=
+ows
+>>>>        * setserial to be used to alter this ports parameters.
+>>>>        */
+>>>> -     tty_dev =3D tty_port_register_device(port, drv->tty_driver, =
+uport->line,
+>>>> -                     uport->dev);
+>>>> +     tty_dev =3D tty_register_device_attr(drv->tty_driver, uport-=
+>line,
+>>>> +                     uport->dev, port, tty_dev_attr_groups);
+>>>
+>>> This makes me believe you have not tested the change at all?
+>>
+>> Thanks! I can't believe I missed that. (And I actually tested that,
+>> but I have to admit that it was not enough apparently.)
+>>
+>> I will re-send the patch (after some additional testing and double-c=
+hecking).
+>
+> Ok. A couple more questions...
+>
+> * why are you passing tty_port to the struct device's private data an=
+d
+> not uart_port proper? Is this for some future use?
 
-Regards,
+I actually used the uart_port structure in older RFC versions of the
+patch. Alan Cox advised to use struct tty_port because of consistency.
+More precisely he said (in an e-mail from Aug 12):
 
-Tony
+I'd rather however it pointed
+to the tty_port that each tty device has (or very soon will be required
+to have). You can still find the uart_foo structs from that but it mean=
+s
+we can do the dev_set_drvdata() in a consistent manner for all tty
+devices in the kernel. That in turn means we can make some of the sysfs
+valid the same way.
 
->  arch/arm/plat-omap/include/plat/omap-serial.h |    1 +
->  drivers/tty/serial/omap-serial.c              |   10 ++++++++++
->  2 files changed, 11 insertions(+)
-> 
-> diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/plat-omap/include/plat/omap-serial.h
-> index 1a52725..0f4de14 100644
-> --- a/arch/arm/plat-omap/include/plat/omap-serial.h
-> +++ b/arch/arm/plat-omap/include/plat/omap-serial.h
-> @@ -106,6 +106,7 @@ struct uart_omap_port {
->  	struct uart_port	port;
->  	struct uart_omap_dma	uart_dma;
->  	struct platform_device	*pdev;
-> +	struct pinctrl		*pins;
->  
->  	unsigned char		ier;
->  	unsigned char		lcr;
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-> index d3cda0c..068e88c 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -39,6 +39,7 @@
->  #include <linux/irq.h>
->  #include <linux/pm_runtime.h>
->  #include <linux/of.h>
-> +#include <linux/pinctrl/consumer.h>
->  
->  #include <plat/dma.h>
->  #include <plat/dmtimer.h>
-> @@ -1492,6 +1493,13 @@ static int serial_omap_probe(struct platform_device *pdev)
->  		goto err_port_line;
->  	}
->  
-> +	up->pins = pinctrl_get_select_default(&pdev->dev);
-> +	if (IS_ERR(up->pins)) {
-> +		dev_warn(&pdev->dev, "did not get pins for uart%i error: %li\n",
-> +			 up->port.line, PTR_ERR(up->pins));
-> +		up->pins = NULL;
-> +	}
+> * cannot be all those attribute structs const?
+
+It seems that making
+
+static const struct attribute *tty_dev_attrs[] =3D ...
+
+produces warning:
+
+drivers/tty/serial/serial_core.c:2334:2: warning: initialization from
+incompatible pointer type [enabled by default]
+drivers/tty/serial/serial_core.c:2334:2: warning: (near initialization
+for =E2=80=98tty_dev_attr_group.attrs=E2=80=99) [enabled by default]
+
+But others can. I am going to make them const in following patch.
+
+> * kdoc for tty_register_device_attr says that when
+> TTY_DRIVER_DYNAMIC_DEV is not set, tty_register_device_attr *should* =
+not
+> be called. But it must not be called, otherwise it will fail and emit=
+ a
+> warning as a bonus, right?
+
+Yes. In fact it does the same thing as tty_register_device() did
+before itself. The _attr version is only slightly refactored and the
+doc regarding the TTY_DRIVER_DYNAMIC_DEV test is the same as in old
+non-_attr version.
+I am not sure that I am the right person to change the doc because I
+am not an author of this part of doc nor of the test in the function.
+
+> * final remark. I would prefer declaration and code be delimited by a
+> new line in uart_get_attr_uartclk:
+> <=3D=3D=3D>
+> +       int ret;
 > +
->  	sprintf(up->name, "OMAP UART%d", up->port.line);
->  	up->port.mapbase = mem->start;
->  	up->port.membase = devm_ioremap(&pdev->dev, mem->start,
-> @@ -1570,6 +1578,8 @@ static int serial_omap_remove(struct platform_device *dev)
->  		pm_runtime_disable(&up->pdev->dev);
->  		uart_remove_one_port(&serial_omap_reg, &up->port);
->  		pm_qos_remove_request(&up->pm_qos_request);
-> +		if (up->pins)
-> +			pinctrl_put(up->pins);
->  	}
->  
->  	platform_set_drvdata(dev, NULL);
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-omap" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> +       struct tty_port *port =3D dev_get_drvdata(dev);
+> +       struct uart_state *state =3D container_of(port, struct uart_s=
+tate,
+> port);
+> +       mutex_lock(&state->port.mutex);
+> <=3D=3D=3D>
+>
+> Like:
+> <=3D=3D=3D>
+>   struct tty_port *port =3D ...;
+>   struct uart_state *state =3D ...;
+>   int ret;
+>
+>   mutex_lock(&state->port.mutex);
+> <=3D=3D=3D>
+
+Yes, it looks better. I am going to it accordingly.
+
+Tomas
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
