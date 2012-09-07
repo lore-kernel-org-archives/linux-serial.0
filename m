@@ -1,70 +1,97 @@
 From: Felipe Balbi <balbi@ti.com>
-Subject: [PATCH v2] serial: omap: fix compile breakage
-Date: Fri,  7 Sep 2012 08:25:31 +0300
-Message-ID: <1346995531-3197-1-git-send-email-balbi@ti.com>
-References: <1346995312-2872-1-git-send-email-balbi@ti.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog102.obsmtp.com ([74.125.149.69]:56747 "EHLO
-	na3sys009aog102.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751501Ab2IGF36 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 7 Sep 2012 01:29:58 -0400
-Received: by lagy9 with SMTP id y9so1604931lag.19
-        for <linux-serial@vger.kernel.org>; Thu, 06 Sep 2012 22:29:55 -0700 (PDT)
-In-Reply-To: <1346995312-2872-1-git-send-email-balbi@ti.com>
-Sender: linux-serial-owner@vger.kernel.org
+Subject: Re: [PATCH 5/5] omap-serial: Request pins using pinctrl framework
+Date: Fri, 7 Sep 2012 08:26:14 +0300
+Message-ID: <20120907052613.GA3136@arwen.pp.htv.fi>
+References: <20120906185615.1172.23588.stgit@muffinssi.local>
+ <20120906185832.1172.31013.stgit@muffinssi.local>
+ <20120906195605.GA32145@arwen.pp.htv.fi>
+ <20120906211725.GQ1303@atomide.com>
+Reply-To: balbi@ti.com
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Nq2Wo0NMKNjxTN9z"
+Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20120906211725.GQ1303@atomide.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: Felipe Balbi <balbi@ti.com>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Tony Lindgren <tony@atomide.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, Felipe Balbi <balbi@ti.com>
 
-when rebasing patches on top of Greg's tty-next,
-it looks like automerge broke a few things which
-I didn't catch (for whatever reason I didn't
-have OMAP Serial enabled on .config) so I ended
-up breaking the build on Greg's tty-next branch.
 
-Fix the breakage by re-adding the three missing
-members on struct uart_omap_port.
+--Nq2Wo0NMKNjxTN9z
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Reported-by: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Felipe Balbi <balbi@ti.com>
----
+Hi,
 
-Changes since v1:
-	. remove the fields from <plat/omap-serial.h>
+On Thu, Sep 06, 2012 at 02:17:26PM -0700, Tony Lindgren wrote:
+> * Felipe Balbi <balbi@ti.com> [120906 13:01]:
+> > Hi,
+> >=20
+> > On Thu, Sep 06, 2012 at 11:58:32AM -0700, Tony Lindgren wrote:
+> > > Request pins using pinctrl framework. Only show a warning
+> > > on error as some boards set the pins in the bootloader
+> > > even if CONFIG_PINCTRL is enabled.
+> > >=20
+> > > Cc: linux-serial@vger.kernel.org
+> > > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > Signed-off-by: Tony Lindgren <tony@atomide.com>
+> > > ---
+> > >  arch/arm/plat-omap/include/plat/omap-serial.h |    1 +
+> > >  drivers/tty/serial/omap-serial.c              |   10 ++++++++++
+> > >  2 files changed, 11 insertions(+)
+> > >=20
+> > > diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm=
+/plat-omap/include/plat/omap-serial.h
+> > > index 1a52725..0f4de14 100644
+> > > --- a/arch/arm/plat-omap/include/plat/omap-serial.h
+> > > +++ b/arch/arm/plat-omap/include/plat/omap-serial.h
+> > > @@ -106,6 +106,7 @@ struct uart_omap_port {
+> > >  	struct uart_port	port;
+> > >  	struct uart_omap_dma	uart_dma;
+> > >  	struct platform_device	*pdev;
+> > > +	struct pinctrl		*pins;
+> >=20
+> > this won't apply to Greg's tty-next as I moved this structure to the C
+> > file :-s
+>=20
+> Hmm the tty-next fails to build right now for omaps:
+>=20
+> drivers/tty/serial/omap-serial.c: In function =E2=80=98serial_omap_set_mc=
+trl=E2=80=99:
+> drivers/tty/serial/omap-serial.c:514: error: =E2=80=98struct uart_omap_po=
+rt=E2=80=99 has no member named =E2=80=98DTR_gpio=E2=80=99
+>=20
+> Maybe check how you want to fix that first? I can then update
+> my patch for tty-next.
 
- arch/arm/plat-omap/include/plat/omap-serial.h | 4 ----
- drivers/tty/serial/omap-serial.c              | 4 ++++
- 2 files changed, 4 insertions(+), 4 deletions(-)
+oops, my bad. Patch sent.
 
-diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/plat-omap/include/plat/omap-serial.h
-index 57ff78c..74caddc 100644
---- a/arch/arm/plat-omap/include/plat/omap-serial.h
-+++ b/arch/arm/plat-omap/include/plat/omap-serial.h
-@@ -79,8 +79,4 @@ struct omap_uart_port_info {
- 	void (*enable_wakeup)(struct device *, bool);
- };
- 
--
--	int			DTR_gpio;
--	int			DTR_inverted;
--	int			DTR_active;
- #endif /* __OMAP_SERIAL_H__ */
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index e31d291..8e4a7aa 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -123,6 +123,10 @@ struct uart_omap_port {
- 	u8			wakeups_enabled;
- 	unsigned int		irq_pending:1;
- 
-+	int			DTR_gpio;
-+	int			DTR_inverted;
-+	int			DTR_active;
-+
- 	struct pm_qos_request	pm_qos_request;
- 	u32			latency;
- 	u32			calc_latency;
--- 
-1.7.12.rc3
+--=20
+balbi
 
+--Nq2Wo0NMKNjxTN9z
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+
+iQIcBAEBAgAGBQJQSYV1AAoJEIaOsuA1yqREyDwP/Ai/XqwS1t6N0dE6KDb8nGlv
+DSqoR2Jui2EZ1craBl6J1+Af/cZCFGmKOvJmrI3I0n3utnYu3hPfwFzX2qkQoo4M
+KAgMdzWQMZguCjcMqgsg/Ms20LB4U5yWXwur/Nd4NEIlcYo8RfqV3AIKMxKpFJBZ
+Z1KPW+6eDCfgk2Hm3yfdlaFJf+ZuRUeVamTz9vThj8q1DtYlQCwoazVODgcGEkmW
+1rfiD6Snlny6T5fokfncJltm+M6eWXq2iqVt/fdvivU657MsApUHoKwwwzLZB9Yv
+WC9KHXhh3v0c28FgLic6zH+HhaHkAkBtyyl6jHokic1i2BM/Mk4mxrXar2r+3uH4
+/fDbt9tcj1V8d/M6dX58o4WjolvKdH6dEzgMg4FZaAASDXeEtSV6P/uudjJ3F7wq
+LChC/Yf+xjc5bTZyFHrg7EhB9IR8avEBJmE8nGTvz7UR+hahF6BwnC0ce9y/4WMh
+TFESPu4dZLyeNqu6O7D4wQPoJC5gZnEfvzPKG9cBAQCWEJxaNz0GG1S/RPEDlfqf
+Ab7W4JaPydXwy+l1lKP2tjdQCQDLNZKRvZN3k5cF4pqbI9i8Co6ZFyssqVh36Hio
+sxiCdaBfrO7JlAZZGKOc0q7lIRzc9w2YUKRHTLTzHd1olbraWyDhUWugrRjlbEkb
+Mr2eCopgYBPKEfVOzy4+
+=huV/
+-----END PGP SIGNATURE-----
+
+--Nq2Wo0NMKNjxTN9z--
