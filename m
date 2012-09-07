@@ -1,7 +1,7 @@
 From: Linus Walleij <linus.walleij@stericsson.com>
-Subject: [PATCH 1/2] serial: pl011: delete dangling bug flag
-Date: Fri, 7 Sep 2012 10:02:36 +0200
-Message-ID: <1347004956-15294-1-git-send-email-linus.walleij@stericsson.com>
+Subject: [PATCH 2/2] serial: pl011: delete reset callback
+Date: Fri, 7 Sep 2012 10:02:48 +0200
+Message-ID: <1347004968-15329-1-git-send-email-linus.walleij@stericsson.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -21,53 +21,68 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Linus Walleij <linus.walleij@linaro.org>
 
-The bug flag .interrupt_may_hang is not used since commit
-4fd0690bb0c3955983560bb2767ee82e2b197f9b
+Since commit 4fd0690bb0c3955983560bb2767ee82e2b197f9b
 "serial: pl011: implement workaround for CTS clear event issue"
-so delete it.
+the PL011 UART is no longer at risk to hang up, so get rid
+of the callback altogether.
 
 Cc: Lee Jones <lee.jones@linaro.org>
 Cc: Rajanikanth H.V <rajanikanth.hv@stericsson.com>
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/tty/serial/amba-pl011.c | 4 ----
- 1 file changed, 4 deletions(-)
+ arch/arm/mach-ux500/board-mop500.c | 21 ---------------------
+ include/linux/amba/serial.h        |  1 -
+ 2 files changed, 22 deletions(-)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 05c15ec..cede938 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -77,7 +77,6 @@ struct vendor_data {
- 	unsigned int		lcrh_tx;
- 	unsigned int		lcrh_rx;
- 	bool			oversampling;
--	bool			interrupt_may_hang;   /* vendor-specific */
- 	bool			dma_threshold;
- 	bool			cts_event_workaround;
+diff --git a/arch/arm/mach-ux500/board-mop500.c b/arch/arm/mach-ux500/board-mop500.c
+index dd629b7..c8922bc 100644
+--- a/arch/arm/mach-ux500/board-mop500.c
++++ b/arch/arm/mach-ux500/board-mop500.c
+@@ -542,33 +542,12 @@ static struct stedma40_chan_cfg uart2_dma_cfg_tx = {
  };
-@@ -98,7 +97,6 @@ static struct vendor_data vendor_st = {
- 	.lcrh_tx		= ST_UART011_LCRH_TX,
- 	.lcrh_rx		= ST_UART011_LCRH_RX,
- 	.oversampling		= true,
--	.interrupt_may_hang	= true,
- 	.dma_threshold		= true,
- 	.cts_event_workaround	= true,
+ #endif
+ 
+-#define PRCC_K_SOFTRST_SET      0x18
+-#define PRCC_K_SOFTRST_CLEAR    0x1C
+-static void ux500_uart0_reset(void)
+-{
+-	void __iomem *prcc_rst_set, *prcc_rst_clr;
+-
+-	prcc_rst_set = (void __iomem *)IO_ADDRESS(U8500_CLKRST1_BASE +
+-			PRCC_K_SOFTRST_SET);
+-	prcc_rst_clr = (void __iomem *)IO_ADDRESS(U8500_CLKRST1_BASE +
+-			PRCC_K_SOFTRST_CLEAR);
+-
+-	/* Activate soft reset PRCC_K_SOFTRST_CLEAR */
+-	writel((readl(prcc_rst_clr) | 0x1), prcc_rst_clr);
+-	udelay(1);
+-
+-	/* Release soft reset PRCC_K_SOFTRST_SET */
+-	writel((readl(prcc_rst_set) | 0x1), prcc_rst_set);
+-	udelay(1);
+-}
+-
+ static struct amba_pl011_data uart0_plat = {
+ #ifdef CONFIG_STE_DMA40
+ 	.dma_filter = stedma40_filter,
+ 	.dma_rx_param = &uart0_dma_cfg_rx,
+ 	.dma_tx_param = &uart0_dma_cfg_tx,
+ #endif
+-	.reset = ux500_uart0_reset,
  };
-@@ -149,7 +147,6 @@ struct uart_amba_port {
- 	unsigned int		old_cr;		/* state during shutdown */
- 	bool			autorts;
- 	char			type[12];
--	bool			interrupt_may_hang; /* vendor-specific */
- #ifdef CONFIG_DMA_ENGINE
- 	/* DMA stuff */
- 	bool			using_tx_dma;
-@@ -1952,7 +1949,6 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- 	uap->lcrh_tx = vendor->lcrh_tx;
- 	uap->old_cr = 0;
- 	uap->fifosize = vendor->fifosize;
--	uap->interrupt_may_hang = vendor->interrupt_may_hang;
- 	uap->port.dev = &dev->dev;
- 	uap->port.mapbase = dev->res.start;
- 	uap->port.membase = base;
+ 
+ static struct amba_pl011_data uart1_plat = {
+diff --git a/include/linux/amba/serial.h b/include/linux/amba/serial.h
+index d117b29..f612c78 100644
+--- a/include/linux/amba/serial.h
++++ b/include/linux/amba/serial.h
+@@ -205,7 +205,6 @@ struct amba_pl011_data {
+ 	void *dma_tx_param;
+         void (*init) (void);
+ 	void (*exit) (void);
+-	void (*reset) (void);
+ };
+ #endif
+ 
 -- 
 1.7.11.3
