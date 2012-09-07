@@ -1,92 +1,52 @@
-From: Huang Shijie <b32955@freescale.com>
-Subject: Re: [PATCH 1/2] serial: mxs-auart: fix the wrong setting order
-Date: Fri, 7 Sep 2012 10:43:59 +0800
-Message-ID: <50495F6F.4040800@freescale.com>
-References: <1346985521-2248-1-git-send-email-shijie8@gmail.com> <20120907023841.GF26709@S2101-09.ap.freescale.net>
+From: Shawn Guo <shawn.guo@linaro.org>
+Subject: Re: [PATCH 2/2] serial: mxs-auart: put the device in
+ mxs_auart_probe()
+Date: Fri, 7 Sep 2012 10:43:52 +0800
+Message-ID: <20120907024349.GH26709@S2101-09.ap.freescale.net>
+References: <1346985521-2248-1-git-send-email-shijie8@gmail.com>
+ <1346985521-2248-2-git-send-email-shijie8@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from co1ehsobe005.messaging.microsoft.com ([216.32.180.188]:19747
-	"EHLO co1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752546Ab2IGCl5 convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Sep 2012 22:41:57 -0400
-In-Reply-To: <20120907023841.GF26709@S2101-09.ap.freescale.net>
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:50383 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757897Ab2IGCng (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 6 Sep 2012 22:43:36 -0400
+Received: by pbbrr13 with SMTP id rr13so3370269pbb.19
+        for <linux-serial@vger.kernel.org>; Thu, 06 Sep 2012 19:43:36 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <1346985521-2248-2-git-send-email-shijie8@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Shawn Guo <shawn.guo@linaro.org>
-Cc: Huang Shijie <shijie8@gmail.com>, gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Huang Shijie <shijie8@gmail.com>
+Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-=E4=BA=8E 2012=E5=B9=B409=E6=9C=8807=E6=97=A5 10:38, Shawn Guo =E5=86=99=
-=E9=81=93:
-> On Thu, Sep 06, 2012 at 10:38:40PM -0400, Huang Shijie wrote:
->> After set the AUART_CTRL0_CLKGATE, the UART will gate all the clocks=
- off.
->> So the following line will not take effect.
->>         ............................................................=
-=2E...
->>   	writel(AUART_INTR_RXIEN | AUART_INTR_RTIEN | AUART_INTR_CTSMIEN,
->>   			u->membase + AUART_INTR_CLR);
->>         ............................................................=
-=2E...
->>
->> To fix this issue, the patch moves this gate-off line to
->> the end of setting registers.
->>
->> Signed-off-by: Huang Shijie<shijie8@gmail.com>
-> Acked-by: Shawn Guo<shawn.guo@linaro.org>
->
-> Are you experiencing any user visible problem with this bug?
->
-I do not experience any user problem.
-I found this bug when i tried to add DMA support for MXS-AUART.
+On Thu, Sep 06, 2012 at 10:38:41PM -0400, Huang Shijie wrote:
+> We call the get_device() in the mxs_auart_probe().
+> For the balance of the reference count, we should put the
+> device in the mxs_auart_remove().
+> 
+> Signed-off-by: Huang Shijie <shijie8@gmail.com>
+> ---
+>  drivers/tty/serial/mxs-auart.c |    1 +
+>  1 files changed, 1 insertions(+), 0 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+> index ea5f888..6898413 100644
+> --- a/drivers/tty/serial/mxs-auart.c
+> +++ b/drivers/tty/serial/mxs-auart.c
+> @@ -796,6 +796,7 @@ static int __devexit mxs_auart_remove(struct platform_device *pdev)
+>  
+>  	auart_port[pdev->id] = NULL;
+>  
+> +	put_device(s->dev);
+>  	clk_put(s->clk);
+>  	free_irq(s->irq, s);
+>  	kfree(s);
 
-Best Regards
-Huang Shijie
+So the error path of probe needs function fixing too, right?
 
-
-> Regards,
-> Shawn
->
->> ---
->>   drivers/tty/serial/mxs-auart.c |    4 ++--
->>   1 files changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs=
--auart.c
->> index dafeef2..ea5f888 100644
->> --- a/drivers/tty/serial/mxs-auart.c
->> +++ b/drivers/tty/serial/mxs-auart.c
->> @@ -457,11 +457,11 @@ static void mxs_auart_shutdown(struct uart_por=
-t *u)
->>
->>   	writel(AUART_CTRL2_UARTEN, u->membase + AUART_CTRL2_CLR);
->>
->> -	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_SET);
->> -
->>   	writel(AUART_INTR_RXIEN | AUART_INTR_RTIEN | AUART_INTR_CTSMIEN,
->>   			u->membase + AUART_INTR_CLR);
->>
->> +	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_SET);
->> +
->>   	clk_disable_unprepare(s->clk);
->>   }
->>
->> --=20
->> 1.7.4.4
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-seria=
-l" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
-
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+-- 
+Regards,
+Shawn
