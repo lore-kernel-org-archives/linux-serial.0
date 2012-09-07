@@ -1,177 +1,100 @@
-From: Sean Young <sean@mess.org>
-Subject: [PATCH v3 2/2] 8250: blacklist Winbond CIR port
-Date: Fri,  7 Sep 2012 19:06:24 +0100
-Message-ID: <f497affe68650f7e1eed0c3b7bde6109ced33fa2.1347029782.git.sean@mess.org>
-References: <cover.1347029782.git.sean@mess.org>
+From: Felipe Balbi <balbi@ti.com>
+Subject: [PATCH] serial: omap: fix DeviceTree boot
+Date: Fri,  7 Sep 2012 21:10:33 +0300
+Message-ID: <1347041433-11723-1-git-send-email-balbi@ti.com>
+References: <20120907175721.GD1303@atomide.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from pequod.mess.org ([93.97.41.153]:53116 "EHLO pequod.mess.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753865Ab2IGSG0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 7 Sep 2012 14:06:26 -0400
-In-Reply-To: <cover.1347029782.git.sean@mess.org>
-In-Reply-To: <cover.1347029782.git.sean@mess.org>
-References: <cover.1347029782.git.sean@mess.org>
+Received: from na3sys009aog105.obsmtp.com ([74.125.149.75]:60812 "EHLO
+	na3sys009aog105.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753388Ab2IGSPB (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 7 Sep 2012 14:15:01 -0400
+Received: by lagy9 with SMTP id y9so2021736lag.19
+        for <linux-serial@vger.kernel.org>; Fri, 07 Sep 2012 11:14:58 -0700 (PDT)
+In-Reply-To: <20120907175721.GD1303@atomide.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
-Cc: =?UTF-8?q?David=20H=C3=A4rdeman?= <david@hardeman.nu>, Mauro Carvalho Chehab <mchehab@redhat.com>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, Tony Lindgren <tony@atomide.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, Felipe Balbi <balbi@ti.com>
 
-The legacy serial driver will detect the Winbond CIR device as a serial
-port, since it looks exactly like a serial port unless you know what
-it is from the PNP ID.
+OMAP Architecture code, passes a few function
+pointers for UART driver to use in order to
+properly implement Power Management and Wakeup
+capabilities.
 
-Here we track this port as a special PORT_8250_CIR type, preventing the
-legacy serial driver from probing it.
+The problem is that those function pointers,
+which are passed (ab)using platform_data on
+non-DT kernels, can't be passed down to drivers
+through DT.
 
-Signed-off-by: Sean Young <sean@mess.org>
+commit e5b57c0 (serial: omap: define helpers
+for pdata function pointers) failed to take DT
+kernels into consideration and caused a regression
+to DT kernel boot.
+
+Fix that by (re-)adding a check for valid pdata
+pointer together with valid pdata->$FUNCTION
+pointer.
+
+Reported-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Felipe Balbi <balbi@ti.com>
 ---
- drivers/tty/serial/8250/8250.c     |   16 ++++++++++++++--
- drivers/tty/serial/8250/8250_pnp.c |   20 +++++++++++++++-----
- include/linux/serial_core.h        |    3 ++-
- 3 files changed, 31 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
-index bc25874..5eaa6ba 100644
---- a/drivers/tty/serial/8250/8250.c
-+++ b/drivers/tty/serial/8250/8250.c
-@@ -290,6 +290,9 @@ static const struct serial8250_config uart_config[] = {
- 				  UART_FCR_R_TRIG_00 | UART_FCR_T_TRIG_00,
- 		.flags		= UART_CAP_FIFO,
- 	},
-+	[PORT_8250_CIR] = {
-+		.name		= "CIR port"
-+	}
- };
- 
- /* Uart divisor latch read */
-@@ -1897,6 +1900,9 @@ static int serial8250_startup(struct uart_port *port)
- 	unsigned char lsr, iir;
- 	int retval;
- 
-+	if (port->type == PORT_8250_CIR)
-+		return -ENODEV;
-+
- 	port->fifosize = uart_config[up->port.type].fifo_size;
- 	up->tx_loadsz = uart_config[up->port.type].tx_loadsz;
- 	up->capabilities = uart_config[up->port.type].flags;
-@@ -2554,7 +2560,10 @@ static int serial8250_request_port(struct uart_port *port)
+Tony, does this solve the issue ?
+
+ drivers/tty/serial/omap-serial.c | 20 +++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 0a6e78e..743e8e1 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -143,7 +143,7 @@ static int serial_omap_get_context_loss_count(struct uart_omap_port *up)
  {
- 	struct uart_8250_port *up =
- 		container_of(port, struct uart_8250_port, port);
--	int ret = 0;
-+	int ret;
-+
-+	if (port->type == PORT_8250_CIR)
-+		return -ENODEV;
+ 	struct omap_uart_port_info *pdata = up->dev->platform_data;
  
- 	ret = serial8250_request_std_resource(up);
- 	if (ret == 0 && port->type == PORT_RSA) {
-@@ -2573,6 +2582,9 @@ static void serial8250_config_port(struct uart_port *port, int flags)
- 	int probeflags = PROBE_ANY;
- 	int ret;
+-	if (!pdata->get_context_loss_count)
++	if (!pdata || !pdata->get_context_loss_count)
+ 		return 0;
  
-+	if (port->type == PORT_8250_CIR)
+ 	return pdata->get_context_loss_count(up->dev);
+@@ -153,24 +153,30 @@ static void serial_omap_set_forceidle(struct uart_omap_port *up)
+ {
+ 	struct omap_uart_port_info *pdata = up->dev->platform_data;
+ 
+-	if (pdata->set_forceidle)
+-		pdata->set_forceidle(up->dev);
++	if (!pdata || !pdata->set_forceidle)
 +		return;
 +
- 	/*
- 	 * Find the region that we can probe for.  This in turn
- 	 * tells us whether we can probe for the type of port.
-@@ -3144,7 +3156,7 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
- 	mutex_lock(&serial_mutex);
++	pdata->set_forceidle(up->dev);
+ }
  
- 	uart = serial8250_find_match_or_unused(&up->port);
--	if (uart) {
-+	if (uart && uart->port.type != PORT_8250_CIR) {
- 		if (uart->port.dev)
- 			uart_remove_one_port(&serial8250_reg, &uart->port);
- 
-diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/8250/8250_pnp.c
-index 28bf830..f8ee250 100644
---- a/drivers/tty/serial/8250/8250_pnp.c
-+++ b/drivers/tty/serial/8250/8250_pnp.c
-@@ -25,7 +25,7 @@
- #include "8250.h"
- 
- #define UNKNOWN_DEV 0x3000
--
-+#define CIR_PORT	0x0800
- 
- static const struct pnp_device_id pnp_dev_table[] = {
- 	/* Archtek America Corp. */
-@@ -362,6 +362,9 @@ static const struct pnp_device_id pnp_dev_table[] = {
- 	{	"PNPCXXX",		UNKNOWN_DEV	},
- 	/* More unknown PnP modems */
- 	{	"PNPDXXX",		UNKNOWN_DEV	},
-+	/* Winbond CIR port, should not be probed. We should keep track
-+	   of it to prevent the legacy serial driver from probing it */
-+	{	"WEC1022",		CIR_PORT	},
- 	{	"",			0	}
- };
- 
-@@ -409,7 +412,7 @@ static int __devinit check_resources(struct pnp_dev *dev)
-  * PnP modems, alternatively we must hardcode all modems in pnp_devices[]
-  * table.
-  */
--static int __devinit serial_pnp_guess_board(struct pnp_dev *dev, int *flags)
-+static int __devinit serial_pnp_guess_board(struct pnp_dev *dev)
+ static void serial_omap_set_noidle(struct uart_omap_port *up)
  {
- 	if (!(check_name(pnp_dev_name(dev)) ||
- 		(dev->card && check_name(dev->card->name))))
-@@ -428,7 +431,7 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
- 	int ret, line, flags = dev_id->driver_data;
+ 	struct omap_uart_port_info *pdata = up->dev->platform_data;
  
- 	if (flags & UNKNOWN_DEV) {
--		ret = serial_pnp_guess_board(dev, &flags);
-+		ret = serial_pnp_guess_board(dev);
- 		if (ret < 0)
- 			return ret;
- 	}
-@@ -436,7 +439,10 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
- 	memset(&uart, 0, sizeof(uart));
- 	if (pnp_irq_valid(dev, 0))
- 		uart.port.irq = pnp_irq(dev, 0);
--	if (pnp_port_valid(dev, 0)) {
-+	if ((flags & CIR_PORT) && pnp_port_valid(dev, 2)) {
-+		uart.port.iobase = pnp_port_start(dev, 2);
-+		uart.port.iotype = UPIO_PORT;
-+	} else if (pnp_port_valid(dev, 0)) {
- 		uart.port.iobase = pnp_port_start(dev, 0);
- 		uart.port.iotype = UPIO_PORT;
- 	} else if (pnp_mem_valid(dev, 0)) {
-@@ -451,6 +457,10 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
- 		"Setup PNP port: port %x, mem 0x%lx, irq %d, type %d\n",
- 		       uart.port.iobase, uart.port.mapbase, uart.port.irq, uart.port.iotype);
- #endif
-+	if (flags & CIR_PORT) {
-+		uart.port.flags |= UPF_FIXED_PORT | UPF_FIXED_TYPE;
-+		uart.port.type = PORT_8250_CIR;
-+	}
+-	if (pdata->set_noidle)
+-		pdata->set_noidle(up->dev);
++	if (!pdata || !pdata->set_noidle)
++		return;
++
++	pdata->set_noidle(up->dev);
+ }
  
- 	uart.port.flags |= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF;
- 	if (pnp_irq_flags(dev, 0) & IORESOURCE_IRQ_SHAREABLE)
-@@ -459,7 +469,7 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
- 	uart.port.dev = &dev->dev;
+ static void serial_omap_enable_wakeup(struct uart_omap_port *up, bool enable)
+ {
+ 	struct omap_uart_port_info *pdata = up->dev->platform_data;
  
- 	line = serial8250_register_8250_port(&uart);
--	if (line < 0)
-+	if (line < 0 || (flags & CIR_PORT))
- 		return -ENODEV;
- 
- 	pnp_set_drvdata(dev, (void *)((long)line + 1));
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 7cf0b68..bb01003 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -48,7 +48,8 @@
- #define PORT_TEGRA	20	/* NVIDIA Tegra internal UART */
- #define PORT_XR17D15X	21	/* Exar XR17D15x UART */
- #define PORT_LPC3220	22	/* NXP LPC32xx SoC "Standard" UART */
--#define PORT_MAX_8250	22	/* max port ID */
-+#define PORT_8250_CIR	23	/* CIR infrared port, has its own driver */
-+#define PORT_MAX_8250	23	/* max port ID */
+-	if (pdata->enable_wakeup)
+-		pdata->enable_wakeup(up->dev, enable);
++	if (!pdata || !pdata->enable_wakeup)
++		return;
++
++	pdata->enable_wakeup(up->dev, enable);
+ }
  
  /*
-  * ARM specific type numbers.  These are not currently guaranteed
 -- 
-1.7.2.5
+1.7.12.rc3
 
