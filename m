@@ -1,15 +1,17 @@
 From: Felipe Balbi <balbi@ti.com>
-Subject: [PATCH] serial: omap: fix compile breakage
-Date: Fri,  7 Sep 2012 08:21:52 +0300
-Message-ID: <1346995312-2872-1-git-send-email-balbi@ti.com>
+Subject: [PATCH v2] serial: omap: fix compile breakage
+Date: Fri,  7 Sep 2012 08:25:31 +0300
+Message-ID: <1346995531-3197-1-git-send-email-balbi@ti.com>
+References: <1346995312-2872-1-git-send-email-balbi@ti.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog123.obsmtp.com ([74.125.149.149]:48334 "EHLO
-	na3sys009aog123.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752463Ab2IGF0Y (ORCPT
+Received: from na3sys009aog102.obsmtp.com ([74.125.149.69]:56747 "EHLO
+	na3sys009aog102.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751501Ab2IGF36 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 7 Sep 2012 01:26:24 -0400
-Received: by lbbgj3 with SMTP id gj3so1637532lbb.19
-        for <linux-serial@vger.kernel.org>; Thu, 06 Sep 2012 22:26:16 -0700 (PDT)
+	Fri, 7 Sep 2012 01:29:58 -0400
+Received: by lagy9 with SMTP id y9so1604931lag.19
+        for <linux-serial@vger.kernel.org>; Thu, 06 Sep 2012 22:29:55 -0700 (PDT)
+In-Reply-To: <1346995312-2872-1-git-send-email-balbi@ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg KH <gregkh@linuxfoundation.org>
@@ -27,9 +29,27 @@ members on struct uart_omap_port.
 Reported-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Felipe Balbi <balbi@ti.com>
 ---
- drivers/tty/serial/omap-serial.c | 4 ++++
- 1 file changed, 4 insertions(+)
 
+Changes since v1:
+	. remove the fields from <plat/omap-serial.h>
+
+ arch/arm/plat-omap/include/plat/omap-serial.h | 4 ----
+ drivers/tty/serial/omap-serial.c              | 4 ++++
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/plat-omap/include/plat/omap-serial.h
+index 57ff78c..74caddc 100644
+--- a/arch/arm/plat-omap/include/plat/omap-serial.h
++++ b/arch/arm/plat-omap/include/plat/omap-serial.h
+@@ -79,8 +79,4 @@ struct omap_uart_port_info {
+ 	void (*enable_wakeup)(struct device *, bool);
+ };
+ 
+-
+-	int			DTR_gpio;
+-	int			DTR_inverted;
+-	int			DTR_active;
+ #endif /* __OMAP_SERIAL_H__ */
 diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
 index e31d291..8e4a7aa 100644
 --- a/drivers/tty/serial/omap-serial.c
