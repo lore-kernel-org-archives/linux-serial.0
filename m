@@ -1,61 +1,82 @@
-From: Shawn Guo <shawn.guo@linaro.org>
-Subject: Re: [PATCH] serial: mxs-auart: put the device when exit or error
-Date: Fri, 7 Sep 2012 11:14:19 +0800
-Message-ID: <20120907031416.GJ26709@S2101-09.ap.freescale.net>
-References: <20120907024349.GH26709@S2101-09.ap.freescale.net>
- <1346985187-30459-1-git-send-email-b32955@freescale.com>
+From: "AnilKumar, Chimata" <anilkumar@ti.com>
+Subject: RE: [PATCH 5/5] omap-serial: Request pins using pinctrl framework
+Date: Fri, 7 Sep 2012 03:27:13 +0000
+Message-ID: <331ABD5ECB02734CA317220B2BBEABC13EA291F9@DBDE01.ent.ti.com>
+References: <20120906185615.1172.23588.stgit@muffinssi.local>
+ <20120906185832.1172.31013.stgit@muffinssi.local>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:51031 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752487Ab2IGDOF (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Sep 2012 23:14:05 -0400
-Received: by pbbrr13 with SMTP id rr13so3396847pbb.19
-        for <linux-serial@vger.kernel.org>; Thu, 06 Sep 2012 20:14:05 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <1346985187-30459-1-git-send-email-b32955@freescale.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <20120906185832.1172.31013.stgit@muffinssi.local>
+Content-Language: en-US
+Sender: linux-omap-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: Huang Shijie <b32955@freescale.com>
-Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 
-On Fri, Sep 07, 2012 at 10:33:07AM +0800, Huang Shijie wrote:
-> We call the get_device() in the mxs_auart_probe().
-> For the balance of the reference count, we should put the
-> device in the mxs_auart_remove() or in the error path of
-> probe.
+Hi Tony,
+
+On Fri, Sep 07, 2012 at 00:28:32, Tony Lindgren wrote:
+> Request pins using pinctrl framework. Only show a warning
+> on error as some boards set the pins in the bootloader
+> even if CONFIG_PINCTRL is enabled.
 > 
-> Signed-off-by: Huang Shijie <b32955@freescale.com>
-
-Acked-by: Shawn Guo <shawn.guo@linaro.org>
-
+> Cc: linux-serial@vger.kernel.org
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
 > ---
->  drivers/tty/serial/mxs-auart.c |    2 ++
->  1 files changed, 2 insertions(+), 0 deletions(-)
+>  arch/arm/plat-omap/include/plat/omap-serial.h |    1 +
+>  drivers/tty/serial/omap-serial.c              |   10 ++++++++++
+>  2 files changed, 11 insertions(+)
 > 
-> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-> index 3a667ee..203e512 100644
-> --- a/drivers/tty/serial/mxs-auart.c
-> +++ b/drivers/tty/serial/mxs-auart.c
-> @@ -781,6 +781,7 @@ out_free_irq:
->  	auart_port[pdev->id] = NULL;
->  	free_irq(s->irq, s);
->  out_free_clk:
-> +	put_device(s->dev);
->  	clk_put(s->clk);
->  out_free:
->  	kfree(s);
-> @@ -796,6 +797,7 @@ static int __devexit mxs_auart_remove(struct platform_device *pdev)
+> diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm/plat-omap/include/plat/omap-serial.h
+> index 1a52725..0f4de14 100644
+> --- a/arch/arm/plat-omap/include/plat/omap-serial.h
+> +++ b/arch/arm/plat-omap/include/plat/omap-serial.h
+> @@ -106,6 +106,7 @@ struct uart_omap_port {
+>  	struct uart_port	port;
+>  	struct uart_omap_dma	uart_dma;
+>  	struct platform_device	*pdev;
+> +	struct pinctrl		*pins;
 >  
->  	auart_port[pdev->id] = NULL;
+>  	unsigned char		ier;
+>  	unsigned char		lcr;
+> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+> index d3cda0c..068e88c 100644
+> --- a/drivers/tty/serial/omap-serial.c
+> +++ b/drivers/tty/serial/omap-serial.c
+> @@ -39,6 +39,7 @@
+>  #include <linux/irq.h>
+>  #include <linux/pm_runtime.h>
+>  #include <linux/of.h>
+> +#include <linux/pinctrl/consumer.h>
 >  
-> +	put_device(s->dev);
->  	clk_put(s->clk);
->  	free_irq(s->irq, s);
->  	kfree(s);
-> -- 
-> 1.7.0.4
-> 
-> 
+>  #include <plat/dma.h>
+>  #include <plat/dmtimer.h>
+> @@ -1492,6 +1493,13 @@ static int serial_omap_probe(struct platform_device *pdev)
+>  		goto err_port_line;
+>  	}
+>  
+> +	up->pins = pinctrl_get_select_default(&pdev->dev);
+> +	if (IS_ERR(up->pins)) {
+> +		dev_warn(&pdev->dev, "did not get pins for uart%i error: %li\n",
+> +			 up->port.line, PTR_ERR(up->pins));
+> +		up->pins = NULL;
+> +	}
+> +
+>  	sprintf(up->name, "OMAP UART%d", up->port.line);
+>  	up->port.mapbase = mem->start;
+>  	up->port.membase = devm_ioremap(&pdev->dev, mem->start,
+> @@ -1570,6 +1578,8 @@ static int serial_omap_remove(struct platform_device *dev)
+>  		pm_runtime_disable(&up->pdev->dev);
+>  		uart_remove_one_port(&serial_omap_reg, &up->port);
+>  		pm_qos_remove_request(&up->pm_qos_request);
+> +		if (up->pins)
+> +			pinctrl_put(up->pins);
+
+I think this can be removed if we use devm_pinctrl_get_select_default()
+above.
+
+Thanks
+AnilKumar
