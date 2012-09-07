@@ -1,56 +1,67 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 2/2] 8250: blacklist IR ports
-Date: Fri, 7 Sep 2012 01:01:35 +0100
-Message-ID: <20120907010135.6a4d0a20@pyramind.ukuu.org.uk>
-References: <cover.1346969721.git.sean@mess.org>
-	<a9565dd624c186917c71a4e431e6bcab712dbf08.1346969721.git.sean@mess.org>
+From: Shawn Guo <shawn.guo@linaro.org>
+Subject: Re: [PATCH 1/2] serial: mxs-auart: fix the wrong setting order
+Date: Fri, 7 Sep 2012 10:38:44 +0800
+Message-ID: <20120907023841.GF26709@S2101-09.ap.freescale.net>
+References: <1346985521-2248-1-git-send-email-shijie8@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:47465 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753228Ab2IFX5D (ORCPT
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:36910 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932152Ab2IGCia (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Sep 2012 19:57:03 -0400
-In-Reply-To: <a9565dd624c186917c71a4e431e6bcab712dbf08.1346969721.git.sean@mess.org>
+	Thu, 6 Sep 2012 22:38:30 -0400
+Received: by pbbrr13 with SMTP id rr13so3365480pbb.19
+        for <linux-serial@vger.kernel.org>; Thu, 06 Sep 2012 19:38:30 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <1346985521-2248-1-git-send-email-shijie8@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sean Young <sean@mess.org>
-Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, David =?UTF-8?B?SMOkcmRlbWFu?= <david@hardeman.nu>, Mauro Carvalho Chehab <mchehab@redhat.com>
+To: Huang Shijie <shijie8@gmail.com>
+Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Thu,  6 Sep 2012 23:20:32 +0100
-Sean Young <sean@mess.org> wrote:
-
-> These ports should not be probed, but we need to keep track of them so we
-> can prevent the legacy (non-PNP) probe of serial ports from touching them
-> too.
-
-I want to have a think about getting the ordering right so we don't
-shuffle the ports on existing boxes for the first half. For the second
-part
-
+On Thu, Sep 06, 2012 at 10:38:40PM -0400, Huang Shijie wrote:
+> After set the AUART_CTRL0_CLKGATE, the UART will gate all the clocks off.
+> So the following line will not take effect.
+>        ................................................................
+>  	writel(AUART_INTR_RXIEN | AUART_INTR_RTIEN | AUART_INTR_CTSMIEN,
+>  			u->membase + AUART_INTR_CLR);
+>        ................................................................
 > 
-> Signed-off-by: Sean Young <sean@mess.org>
+> To fix this issue, the patch moves this gate-off line to
+> the end of setting registers.
+> 
+> Signed-off-by: Huang Shijie <shijie8@gmail.com>
+
+Acked-by: Shawn Guo <shawn.guo@linaro.org>
+
+Are you experiencing any user visible problem with this bug?
+
+Regards,
+Shawn
+
 > ---
->  drivers/tty/serial/8250/8250.c     | 16 ++++++++++++++--
->  drivers/tty/serial/8250/8250_pnp.c | 23 ++++++++++++++++++-----
->  include/linux/serial_core.h        |  3 ++-
->  3 files changed, 34 insertions(+), 8 deletions(-)
+>  drivers/tty/serial/mxs-auart.c |    4 ++--
+>  1 files changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
-> index bc25874..ea9166b 100644
-> --- a/drivers/tty/serial/8250/8250.c
-> +++ b/drivers/tty/serial/8250/8250.c
-> @@ -290,6 +290,9 @@ static const struct serial8250_config uart_config[] = {
->  				  UART_FCR_R_TRIG_00 | UART_FCR_T_TRIG_00,
->  		.flags		= UART_CAP_FIFO,
->  	},
-> +	[PORT_IR] = {
-> +		.name		= "IR port"
-
-Please use "CIR port". We have SIR and FIR serial ports (IrDA) too that we
-do drive via tty. PORT_8250_CIR for the type might be best too - it means
-the tools know what they are looking at and can report it sensibly.
-
-Alan
+> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+> index dafeef2..ea5f888 100644
+> --- a/drivers/tty/serial/mxs-auart.c
+> +++ b/drivers/tty/serial/mxs-auart.c
+> @@ -457,11 +457,11 @@ static void mxs_auart_shutdown(struct uart_port *u)
+>  
+>  	writel(AUART_CTRL2_UARTEN, u->membase + AUART_CTRL2_CLR);
+>  
+> -	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_SET);
+> -
+>  	writel(AUART_INTR_RXIEN | AUART_INTR_RTIEN | AUART_INTR_CTSMIEN,
+>  			u->membase + AUART_INTR_CLR);
+>  
+> +	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_SET);
+> +
+>  	clk_disable_unprepare(s->clk);
+>  }
+>  
+> -- 
+> 1.7.4.4
+> 
