@@ -1,97 +1,138 @@
 From: Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH 5/5] omap-serial: Request pins using pinctrl framework
-Date: Fri, 7 Sep 2012 08:26:14 +0300
-Message-ID: <20120907052613.GA3136@arwen.pp.htv.fi>
-References: <20120906185615.1172.23588.stgit@muffinssi.local>
- <20120906185832.1172.31013.stgit@muffinssi.local>
- <20120906195605.GA32145@arwen.pp.htv.fi>
- <20120906211725.GQ1303@atomide.com>
+Subject: Re: [PATCH v4 00/21] OMAP UART Patches
+Date: Fri, 7 Sep 2012 08:49:34 +0300
+Message-ID: <20120907054932.GB3136@arwen.pp.htv.fi>
+References: <20120906122948.GC29202@arwen.pp.htv.fi>
+ <1346935540-1792-1-git-send-email-balbi@ti.com>
+ <87harahiv6.fsf@deeprootsystems.com>
 Reply-To: balbi@ti.com
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Nq2Wo0NMKNjxTN9z"
+	protocol="application/pgp-signature"; boundary="DKU6Jbt7q3WqK7+M"
 Return-path: <linux-omap-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20120906211725.GQ1303@atomide.com>
+In-Reply-To: <87harahiv6.fsf@deeprootsystems.com>
 Sender: linux-omap-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Felipe Balbi <balbi@ti.com>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org
+To: Kevin Hilman <khilman@deeprootsystems.com>
+Cc: Felipe Balbi <balbi@ti.com>, Greg KH <gregkh@linuxfoundation.org>, Tony Lindgren <tony@atomide.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Santosh Shilimkar <santosh.shilimkar@ti.com>, linux-serial@vger.kernel.org, Sourav Poddar <sourav.poddar@ti.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Shubhrajyoti Datta <shubhrajyoti@ti.com>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, alan@linux.intel.com
 List-Id: linux-serial@vger.kernel.org
 
 
---Nq2Wo0NMKNjxTN9z
-Content-Type: text/plain; charset=utf-8
+--DKU6Jbt7q3WqK7+M
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-On Thu, Sep 06, 2012 at 02:17:26PM -0700, Tony Lindgren wrote:
-> * Felipe Balbi <balbi@ti.com> [120906 13:01]:
-> > Hi,
-> >=20
-> > On Thu, Sep 06, 2012 at 11:58:32AM -0700, Tony Lindgren wrote:
-> > > Request pins using pinctrl framework. Only show a warning
-> > > on error as some boards set the pins in the bootloader
-> > > even if CONFIG_PINCTRL is enabled.
-> > >=20
-> > > Cc: linux-serial@vger.kernel.org
-> > > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > Signed-off-by: Tony Lindgren <tony@atomide.com>
-> > > ---
-> > >  arch/arm/plat-omap/include/plat/omap-serial.h |    1 +
-> > >  drivers/tty/serial/omap-serial.c              |   10 ++++++++++
-> > >  2 files changed, 11 insertions(+)
-> > >=20
-> > > diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/arch/arm=
-/plat-omap/include/plat/omap-serial.h
-> > > index 1a52725..0f4de14 100644
-> > > --- a/arch/arm/plat-omap/include/plat/omap-serial.h
-> > > +++ b/arch/arm/plat-omap/include/plat/omap-serial.h
-> > > @@ -106,6 +106,7 @@ struct uart_omap_port {
-> > >  	struct uart_port	port;
-> > >  	struct uart_omap_dma	uart_dma;
-> > >  	struct platform_device	*pdev;
-> > > +	struct pinctrl		*pins;
-> >=20
-> > this won't apply to Greg's tty-next as I moved this structure to the C
-> > file :-s
+On Thu, Sep 06, 2012 at 03:44:13PM -0700, Kevin Hilman wrote:
+> Felipe Balbi <balbi@ti.com> writes:
 >=20
-> Hmm the tty-next fails to build right now for omaps:
+> > Hi guys,
+> >
+> > here's v4 of the omap uart patchset. No changes other than a rebase on =
+top of
+> > Greg's tty-next branch and Tony's Acked-by being added to a couple patc=
+hes
+> >
+> > Note: I'm resending the series with Vikram's Software Flow Control fix =
+anyway
+> > as it can just be ignored if it's decided it needs to go into this merge
+> > window.
 >=20
-> drivers/tty/serial/omap-serial.c: In function =E2=80=98serial_omap_set_mc=
-trl=E2=80=99:
-> drivers/tty/serial/omap-serial.c:514: error: =E2=80=98struct uart_omap_po=
-rt=E2=80=99 has no member named =E2=80=98DTR_gpio=E2=80=99
+> Sorry to be late to the party... just getting back from some time off.
 >=20
-> Maybe check how you want to fix that first? I can then update
-> my patch for tty-next.
+> I'm assuming that this was not tested with PM, so decided I better do it
 
-oops, my bad. Patch sent.
+you assumed wrong. See the previous versions of the series and you'll
+see I mention all the basic pm testing I did.
+
+> myself seeing that Greg is has already merge it.  To test, I merged
+> Greg's tty-next branch with v3.6-rc4 and did some PM testing.
+>=20
+> The bad news is that it doesn't even compile (see reply to [PATCH v4
+> 20/21]). =20
+
+yeah, that was an automerge issue when rebasing on greg's tty-next
+branch, plus me assuming omap serial was already enabled on my .config
+and not checking the compile output. Sent a patch now.
+
+> Also, there is a big WARNING on boot[1], which seems to be triggered by
+> a new check added for v3.6-rc3[2].  This appears to be introduced by
+> $SUBJECT series, because I don't see it on vanilla v3.6-rc4.
+>=20
+> The good news is that after hacking to fix up the compile problems,
+> basic PM testing seems to be fine: idle to retention and off as well as
+> suspend to retention and off work fine on 3430/n900, 3530/Overo,
+> 3730/OveroSTORM, 3730/Beagle-xM.
+>=20
+> Kevin
+>=20
+>=20
+> [1]
+> [    8.745666] WARNING: at /work/kernel/omap/pm/drivers/tty/tty_io.c:1420=
+ tty_init_dev+0x14c/0x17c()
+> [    8.755218] tty_init_dev: ttyO driver does not set tty->port. This wil=
+l crash the kernel later. Fix the driver!
+> [    8.765991] Modules linked in:
+> [    8.769287] [<c0013d90>] (unwind_backtrace+0x0/0xf0) from [<c0036eec>]=
+ (warn_slowpath_common+0x4c/0x64)
+> [    8.779327] [<c0036eec>] (warn_slowpath_common+0x4c/0x64) from [<c0036=
+f98>] (warn_slowpath_fmt+0x30/0x40)
+> [    8.789550] [<c0036f98>] (warn_slowpath_fmt+0x30/0x40) from [<c02c626c=
+>] (tty_init_dev+0x14c/0x17c)
+> [    8.799224] [<c02c626c>] (tty_init_dev+0x14c/0x17c) from [<c02c68a4>] =
+(tty_open+0x11c/0x52c)
+> [    8.808258] [<c02c68a4>] (tty_open+0x11c/0x52c) from [<c00f86ac>] (chr=
+dev_open+0x90/0x15c)
+> [    8.817108] [<c00f86ac>] (chrdev_open+0x90/0x15c) from [<c00f2b74>] (d=
+o_dentry_open+0x1e8/0x270)
+> [    8.826507] [<c00f2b74>] (do_dentry_open+0x1e8/0x270) from [<c00f2c30>=
+] (finish_open+0x34/0x4c)
+> [    8.835784] [<c00f2c30>] (finish_open+0x34/0x4c) from [<c0102028>] (do=
+_last.isra.21+0x5b0/0xbbc)
+> [    8.845184] [<c0102028>] (do_last.isra.21+0x5b0/0xbbc) from [<c01026dc=
+>] (path_openat+0xa8/0x44c)
+> [    8.854675] [<c01026dc>] (path_openat+0xa8/0x44c) from [<c0102d34>] (d=
+o_filp_open+0x2c/0x80)
+> [    8.863708] [<c0102d34>] (do_filp_open+0x2c/0x80) from [<c00f3b6c>] (d=
+o_sys_open+0xe8/0x184)
+> [    8.872711] [<c00f3b6c>] (do_sys_open+0xe8/0x184) from [<c000db20>] (r=
+et_fast_syscall+0x0/0x3c)
+> [    8.882019] ---[ end trace e9bf408c37051346 ]---
+
+This doesn't seem to be caused by $SUBJECT at all. See that we are
+calling uart_add_one_port() which will call tty_port_register_device()
+which, in turn, will call tty_port_link_device() and that will set
+driver->ports[index] correctly.
+
+Have you checked if this doesn't happen without my series before waving
+your blame hammer ? FWIW, that part of the code wasn't change by
+$SUBJECT at all.
 
 --=20
 balbi
 
---Nq2Wo0NMKNjxTN9z
+--DKU6Jbt7q3WqK7+M
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.12 (GNU/Linux)
 
-iQIcBAEBAgAGBQJQSYV1AAoJEIaOsuA1yqREyDwP/Ai/XqwS1t6N0dE6KDb8nGlv
-DSqoR2Jui2EZ1craBl6J1+Af/cZCFGmKOvJmrI3I0n3utnYu3hPfwFzX2qkQoo4M
-KAgMdzWQMZguCjcMqgsg/Ms20LB4U5yWXwur/Nd4NEIlcYo8RfqV3AIKMxKpFJBZ
-Z1KPW+6eDCfgk2Hm3yfdlaFJf+ZuRUeVamTz9vThj8q1DtYlQCwoazVODgcGEkmW
-1rfiD6Snlny6T5fokfncJltm+M6eWXq2iqVt/fdvivU657MsApUHoKwwwzLZB9Yv
-WC9KHXhh3v0c28FgLic6zH+HhaHkAkBtyyl6jHokic1i2BM/Mk4mxrXar2r+3uH4
-/fDbt9tcj1V8d/M6dX58o4WjolvKdH6dEzgMg4FZaAASDXeEtSV6P/uudjJ3F7wq
-LChC/Yf+xjc5bTZyFHrg7EhB9IR8avEBJmE8nGTvz7UR+hahF6BwnC0ce9y/4WMh
-TFESPu4dZLyeNqu6O7D4wQPoJC5gZnEfvzPKG9cBAQCWEJxaNz0GG1S/RPEDlfqf
-Ab7W4JaPydXwy+l1lKP2tjdQCQDLNZKRvZN3k5cF4pqbI9i8Co6ZFyssqVh36Hio
-sxiCdaBfrO7JlAZZGKOc0q7lIRzc9w2YUKRHTLTzHd1olbraWyDhUWugrRjlbEkb
-Mr2eCopgYBPKEfVOzy4+
-=huV/
+iQIcBAEBAgAGBQJQSYrsAAoJEIaOsuA1yqREavoP/R0QnNP2EK2/otekNmK8UlRv
+Bp3veviNWtMya53uaXINu9J1udhsGBHU69cYGh7PVB4PGo/glqAhlgFQs15CV11R
+WtJyzPVPuVCi8PeGcnptiEYzmFOpgAicBoRR/vXX/Rh5eh5+Ht8ZID4YyfsEqRwI
+KQ4j/g4aplI2k1qke5FAzuKSgB2SHkKGmJA/KEbRAPh3+vuWDtnqTBMMCg8oXT17
+9dFbe6CSUPOefR2oRQXjzhcoysJ3ro+ysVuBbi5cmAMvKjDgLNJS2F//7YW85srI
+xmE8AOmmmz19uyIU+SFQwouinKEDmm6Ma0OAbozfimjfSMzIuq7CSTbUlcvFprOm
+5yTIQQh27pw4LhLh+ECQo//yais4gzII7npnQGcUxA3iZ966/z46QBJhfW2E/pSa
+aHoWlm+COeq2NCoJu1WXoR/eoXbnwPC6x/XcsyCAssl30TAr7XWsIYQc+GSf1o6B
+yOj6tv0NHMrnzcgJ+iYF3PThj+FqqRyY7QmzmMT3l5rbYpqSli9Hcj0qe09qlTG2
+feBYg8iF/vDpAaWXWQTjCM6YQJVuzfGYecdieXfsqkURG+SAtX9HxZuHQQiZ+yuH
+fyls3OrvrH8i+YoH/f4ysrSyxO/Tmh1mA8MZgnPOqMSWu4firES60bx0dvt+pRYa
+3zJ+YFZ1PyYH3c9WxOMP
+=zxNy
 -----END PGP SIGNATURE-----
 
---Nq2Wo0NMKNjxTN9z--
+--DKU6Jbt7q3WqK7+M--
