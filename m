@@ -1,72 +1,37 @@
-From: leroy christophe <christophe.leroy@c-s.fr>
-Subject: Re: [PATCH] Powerpc 8xx CPM_UART delay in receive
-Date: Mon, 10 Sep 2012 09:09:32 +0200
-Message-ID: <504D922C.1030407@c-s.fr>
-References: <201208141426.q7EEQSPc003956@localhost.localdomain>
- <20120814155227.018988da@pyramind.ukuu.org.uk> <502CF2A0.8080109@c-s.fr>
- <20120816152918.5ed2649f@pyramind.ukuu.org.uk> <502D054B.3010606@c-s.fr>
- <20120816162136.059b64b4@bob.linux.org.uk>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 10/14] tty/serial: Add kgdb_nmi driver
+Date: Mon, 10 Sep 2012 12:11:05 +0100
+Message-ID: <20120910121105.724f982f@pyramind.ukuu.org.uk>
+References: <20120910040802.GA1261@lizard>
+	<20120910041412.GJ29537@lizard>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; Format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <20120816162136.059b64b4@bob.linux.org.uk>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: Alan Cox <alan@linux.intel.com>
-Cc: Marcelo Tosatti <marcelo@kvack.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:51414 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756749Ab2IJLHG (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 10 Sep 2012 07:07:06 -0400
+In-Reply-To: <20120910041412.GJ29537@lizard>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Anton Vorontsov <anton.vorontsov@linaro.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Arve =?UTF-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>, Colin Cross <ccross@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
 
-Le 16/08/2012 17:21, Alan Cox a =E9crit :
->> MAX_IDL: Maximum idle characters. When a character is received, the
->> receiver begins counting idle characters. If MAX_IDL idle characters
->> are received before the next data character, an idle timeout occurs
->> and the buffer is closed,
->> generating a maskable interrupt request to the core to receive the
->> data from the buffer. Thus, MAX_IDL offers a way to demarcate frames.
->> To disable the feature, clear MAX_IDL. The bit length of an idle
->> character is calculated as follows: 1 + data length (5=969) + 1 (if
->> parity is used)
->> + number of stop bits (1=962). For 8 data bits, no parity, and 1 stop
->> bit, the character length is 10 bits
->
-> So if you have slightly bursty high speed data as its quite typical
-> before your change you would get one interrupt per buffer of 32 bytes,
-> with it you'll get a lot more interrupts.
->
-> You have two available hints about the way to set this - one of them is
-> the baud rate (low baud rates mean the fifo isn't a big win and the
-> latency is high), the other is the low_latency flag if the driver
-> supports the low latency feature (and arguably you can still use a
-> request for it as a hint even if you refuse the actual feature).
->
-> So I think a reasonable approach would be set the idle timeout down for
-> low baud rates or if low_latency is requested.
->
->> generated if there is at least one word in the FIFO and for a time
->> equivalent to the transmission of four characters
-> Which is a bit more reasonable than one, although problematic at low
-> speed (hence the fifo on/off).
->
-What would then thing about:
-* a value of 1 for all rates below 2400 (On 8250, fifo is set to 1 for =
+On Sun, 9 Sep 2012 21:14:12 -0700
+Anton Vorontsov <anton.vorontsov@linaro.org> wrote:
 
-such rates)
-* a value of 2 for 2400 and 4800
-* a value of 4 for 9600 (which is the default on the 8250 for all rates =
+> This special driver makes it possible to temporary use NMI debugger port
+> as a normal console by issuing 'nmi_console' command (assuming that the
+> port is attached to KGDB).
 
-above 2400)
-* a value of 8 for 19200
-* a value of 16 for 38400 and above (on UCC_UART, maxidl is set to 16, =
+No ref counting, no tty port, no compliance with the tty behaviour.
+Concept looks fine but it needs porting to reflect a kernel newer than
+about 2.6.18 8)
 
-never 32)
+I would take a quick look at the tty_port helpers and also check v -next
+which makes the tty_port mandatory. That'll pretty much cover your needs
+for locking, semantics and the like.
 
-Christophe
+Alan
