@@ -1,7 +1,7 @@
 From: Anton Vorontsov <anton.vorontsov@linaro.org>
-Subject: [PATCH 09/14] tty/serial/amba-pl011: Implement clear_irqs callback
-Date: Sun, 9 Sep 2012 21:14:04 -0700
-Message-ID: <20120910041404.GI29537@lizard>
+Subject: [PATCH 11/14] ARM: Move some macros from entry-armv to entry-header
+Date: Sun, 9 Sep 2012 21:14:20 -0700
+Message-ID: <20120910041420.GK29537@lizard>
 References: <20120910040802.GA1261@lizard>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
@@ -13,46 +13,413 @@ To: Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org
 Cc: Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>, Colin Cross <ccross@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-It's all pretty straightforward, except for TXIM interrupt. The interrupt
-has meaning "ready to transmit", so it's almost always raised, and the
-only way to silence it is to mask it. But that's OK, ops->start_tx will
-unmask it.
+Just move the macros into header file as we would want to use them for
+KGDB FIQ entry code.
+
+The following macros were moved:
+
+ - svc_entry
+ - usr_entry
+ - kuser_cmpxchg_check
+ - vector_stub
+
+To make kuser_cmpxchg_check actually work across different files, we
+also have to make kuser_cmpxchg64_fixup global.
 
 Signed-off-by: Anton Vorontsov <anton.vorontsov@linaro.org>
 ---
- drivers/tty/serial/amba-pl011.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ arch/arm/kernel/entry-armv.S   | 167 +---------------------------------------
+ arch/arm/kernel/entry-header.S | 170 +++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 171 insertions(+), 166 deletions(-)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 88e2df2..7522d97 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1308,6 +1308,18 @@ static void pl011_put_poll_char(struct uart_port *port,
- 	writew(ch, uap->port.membase + UART01x_DR);
- }
+diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
+index 0f82098..0f15368 100644
+--- a/arch/arm/kernel/entry-armv.S
++++ b/arch/arm/kernel/entry-armv.S
+@@ -136,57 +136,6 @@ common_invalid:
+ 	b	bad_mode
+ ENDPROC(__und_invalid)
  
-+static void pl011_clear_irqs(struct uart_port *port)
-+{
-+	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-+	unsigned char __iomem *regs = uap->port.membase;
+-/*
+- * SVC mode handlers
+- */
+-
+-#if defined(CONFIG_AEABI) && (__LINUX_ARM_ARCH__ >= 5)
+-#define SPFIX(code...) code
+-#else
+-#define SPFIX(code...)
+-#endif
+-
+-	.macro	svc_entry, stack_hole=0
+- UNWIND(.fnstart		)
+- UNWIND(.save {r0 - pc}		)
+-	sub	sp, sp, #(S_FRAME_SIZE + \stack_hole - 4)
+-#ifdef CONFIG_THUMB2_KERNEL
+- SPFIX(	str	r0, [sp]	)	@ temporarily saved
+- SPFIX(	mov	r0, sp		)
+- SPFIX(	tst	r0, #4		)	@ test original stack alignment
+- SPFIX(	ldr	r0, [sp]	)	@ restored
+-#else
+- SPFIX(	tst	sp, #4		)
+-#endif
+- SPFIX(	subeq	sp, sp, #4	)
+-	stmia	sp, {r1 - r12}
+-
+-	ldmia	r0, {r3 - r5}
+-	add	r7, sp, #S_SP - 4	@ here for interlock avoidance
+-	mov	r6, #-1			@  ""  ""      ""       ""
+-	add	r2, sp, #(S_FRAME_SIZE + \stack_hole - 4)
+- SPFIX(	addeq	r2, r2, #4	)
+-	str	r3, [sp, #-4]!		@ save the "real" r0 copied
+-					@ from the exception stack
+-
+-	mov	r3, lr
+-
+-	@
+-	@ We are now ready to fill in the remaining blanks on the stack:
+-	@
+-	@  r2 - sp_svc
+-	@  r3 - lr_svc
+-	@  r4 - lr_<exception>, already fixed up for correct return/restart
+-	@  r5 - spsr_<exception>
+-	@  r6 - orig_r0 (see pt_regs definition in ptrace.h)
+-	@
+-	stmia	r7, {r2 - r6}
+-
+-#ifdef CONFIG_TRACE_IRQFLAGS
+-	bl	trace_hardirqs_off
+-#endif
+-	.endm
+-
+ 	.align	5
+ __dabt_svc:
+ 	svc_entry
+@@ -348,71 +297,8 @@ ENDPROC(__pabt_svc)
+ 
+ /*
+  * User mode handlers
+- *
+- * EABI note: sp_svc is always 64-bit aligned here, so should S_FRAME_SIZE
+  */
+ 
+-#if defined(CONFIG_AEABI) && (__LINUX_ARM_ARCH__ >= 5) && (S_FRAME_SIZE & 7)
+-#error "sizeof(struct pt_regs) must be a multiple of 8"
+-#endif
+-
+-	.macro	usr_entry
+- UNWIND(.fnstart	)
+- UNWIND(.cantunwind	)	@ don't unwind the user space
+-	sub	sp, sp, #S_FRAME_SIZE
+- ARM(	stmib	sp, {r1 - r12}	)
+- THUMB(	stmia	sp, {r0 - r12}	)
+-
+-	ldmia	r0, {r3 - r5}
+-	add	r0, sp, #S_PC		@ here for interlock avoidance
+-	mov	r6, #-1			@  ""  ""     ""        ""
+-
+-	str	r3, [sp]		@ save the "real" r0 copied
+-					@ from the exception stack
+-
+-	@
+-	@ We are now ready to fill in the remaining blanks on the stack:
+-	@
+-	@  r4 - lr_<exception>, already fixed up for correct return/restart
+-	@  r5 - spsr_<exception>
+-	@  r6 - orig_r0 (see pt_regs definition in ptrace.h)
+-	@
+-	@ Also, separately save sp_usr and lr_usr
+-	@
+-	stmia	r0, {r4 - r6}
+- ARM(	stmdb	r0, {sp, lr}^			)
+- THUMB(	store_user_sp_lr r0, r1, S_SP - S_PC	)
+-
+-	@
+-	@ Enable the alignment trap while in kernel mode
+-	@
+-	alignment_trap r0
+-
+-	@
+-	@ Clear FP to mark the first stack frame
+-	@
+-	zero_fp
+-
+-#ifdef CONFIG_IRQSOFF_TRACER
+-	bl	trace_hardirqs_off
+-#endif
+-	.endm
+-
+-	.macro	kuser_cmpxchg_check
+-#if !defined(CONFIG_CPU_32v6K) && !defined(CONFIG_NEEDS_SYSCALL_FOR_CMPXCHG)
+-#ifndef CONFIG_MMU
+-#warning "NPTL on non MMU needs fixing"
+-#else
+-	@ Make sure our user space atomic helper is restarted
+-	@ if it was interrupted in a critical region.  Here we
+-	@ perform a quick test inline since it should be false
+-	@ 99.9999% of the time.  The rest is done out of line.
+-	cmp	r4, #TASK_SIZE
+-	blhs	kuser_cmpxchg64_fixup
+-#endif
+-#endif
+-	.endm
+-
+ 	.align	5
+ __dabt_usr:
+ 	usr_entry
+@@ -846,6 +732,7 @@ __kuser_cmpxchg64:				@ 0xffff0f60
+ 	ldmfd	sp!, {r4, r5, r6, pc}
+ 
+ 	.text
++	.global kuser_cmpxchg64_fixup
+ kuser_cmpxchg64_fixup:
+ 	@ Called from kuser_cmpxchg_fixup.
+ 	@ r4 = address of interrupted insn (must be preserved).
+@@ -976,58 +863,6 @@ __kuser_helper_end:
+ 
+  THUMB(	.thumb	)
+ 
+-/*
+- * Vector stubs.
+- *
+- * This code is copied to 0xffff0200 so we can use branches in the
+- * vectors, rather than ldr's.  Note that this code must not
+- * exceed 0x300 bytes.
+- *
+- * Common stub entry macro:
+- *   Enter in IRQ mode, spsr = SVC/USR CPSR, lr = SVC/USR PC
+- *
+- * SP points to a minimal amount of processor-private memory, the address
+- * of which is copied into r0 for the mode specific abort handler.
+- */
+-	.macro	vector_stub, name, mode, correction=0
+-	.align	5
+-
+-vector_\name:
+-	.if \correction
+-	sub	lr, lr, #\correction
+-	.endif
+-
+-	@
+-	@ Save r0, lr_<exception> (parent PC) and spsr_<exception>
+-	@ (parent CPSR)
+-	@
+-	stmia	sp, {r0, lr}		@ save r0, lr
+-	mrs	lr, spsr
+-	str	lr, [sp, #8]		@ save spsr
+-
+-	@
+-	@ Prepare for SVC32 mode.  IRQs remain disabled.
+-	@
+-	mrs	r0, cpsr
+-	eor	r0, r0, #(\mode ^ SVC_MODE | PSR_ISETSTATE)
+-	msr	spsr_cxsf, r0
+-
+-	@
+-	@ the branch table must immediately follow this code
+-	@
+-	and	lr, lr, #0x0f
+- THUMB(	adr	r0, 1f			)
+- THUMB(	ldr	lr, [r0, lr, lsl #2]	)
+-	mov	r0, sp
+- ARM(	ldr	lr, [pc, lr, lsl #2]	)
+-	movs	pc, lr			@ branch to handler in SVC mode
+-ENDPROC(vector_\name)
+-
+-	.align	2
+-	@ handler addresses follow this label
+-1:
+-	.endm
+-
+ 	.globl	__stubs_start
+ __stubs_start:
+ /*
+diff --git a/arch/arm/kernel/entry-header.S b/arch/arm/kernel/entry-header.S
+index 9a8531e..c3c09ac 100644
+--- a/arch/arm/kernel/entry-header.S
++++ b/arch/arm/kernel/entry-header.S
+@@ -73,6 +73,109 @@
+ 	msr	cpsr_c, \rtemp			@ switch back to the SVC mode
+ 	.endm
+ 
++/*
++ * Vector stubs.
++ *
++ * This code is copied to 0xffff0200 so we can use branches in the
++ * vectors, rather than ldr's.  Note that this code must not
++ * exceed 0x300 bytes.
++ *
++ * Common stub entry macro:
++ *   Enter in IRQ mode, spsr = SVC/USR CPSR, lr = SVC/USR PC
++ *
++ * SP points to a minimal amount of processor-private memory, the address
++ * of which is copied into r0 for the mode specific abort handler.
++ */
++	.macro	vector_stub, name, mode, correction=0
++	.align	5
 +
-+	writew(readw(regs + UART011_MIS), regs + UART011_ICR);
-+	/*
-+	 * There is no way to clear TXIM, this is "ready to transmit IRQ", so
-+	 * we simply mask it. ops->start_tx will unmask it.
-+	 */
-+	writew(readw(regs + UART011_IMSC) & ~UART011_TXIM, regs + UART011_IMSC);
-+}
- #endif /* CONFIG_CONSOLE_POLL */
++vector_\name:
++	.if \correction
++	sub	lr, lr, #\correction
++	.endif
++
++	@
++	@ Save r0, lr_<exception> (parent PC) and spsr_<exception>
++	@ (parent CPSR)
++	@
++	stmia	sp, {r0, lr}		@ save r0, lr
++	mrs	lr, spsr
++	str	lr, [sp, #8]		@ save spsr
++
++	@
++	@ Prepare for SVC32 mode.  IRQs remain disabled.
++	@
++	mrs	r0, cpsr
++	eor	r0, r0, #(\mode ^ SVC_MODE | PSR_ISETSTATE)
++	msr	spsr_cxsf, r0
++
++	@
++	@ the branch table must immediately follow this code
++	@
++	and	lr, lr, #0x0f
++ THUMB(	adr	r0, 1f			)
++ THUMB(	ldr	lr, [r0, lr, lsl #2]	)
++	mov	r0, sp
++ ARM(	ldr	lr, [pc, lr, lsl #2]	)
++	movs	pc, lr			@ branch to handler in SVC mode
++ENDPROC(vector_\name)
++
++	.align	2
++	@ handler addresses follow this label
++1:
++	.endm
++
++/*
++ * SVC mode handlers
++ */
++
++#if defined(CONFIG_AEABI) && (__LINUX_ARM_ARCH__ >= 5)
++#define SPFIX(code...) code
++#else
++#define SPFIX(code...)
++#endif
++
++	.macro	svc_entry, stack_hole=0
++ UNWIND(.fnstart		)
++ UNWIND(.save {r0 - pc}		)
++	sub	sp, sp, #(S_FRAME_SIZE + \stack_hole - 4)
++#ifdef CONFIG_THUMB2_KERNEL
++ SPFIX(	str	r0, [sp]	)	@ temporarily saved
++ SPFIX(	mov	r0, sp		)
++ SPFIX(	tst	r0, #4		)	@ test original stack alignment
++ SPFIX(	ldr	r0, [sp]	)	@ restored
++#else
++ SPFIX(	tst	sp, #4		)
++#endif
++ SPFIX(	subeq	sp, sp, #4	)
++	stmia	sp, {r1 - r12}
++
++	ldmia	r0, {r3 - r5}
++	add	r7, sp, #S_SP - 4	@ here for interlock avoidance
++	mov	r6, #-1			@  ""  ""      ""       ""
++	add	r2, sp, #(S_FRAME_SIZE + \stack_hole - 4)
++ SPFIX(	addeq	r2, r2, #4	)
++	str	r3, [sp, #-4]!		@ save the "real" r0 copied
++					@ from the exception stack
++
++	mov	r3, lr
++
++	@
++	@ We are now ready to fill in the remaining blanks on the stack:
++	@
++	@  r2 - sp_svc
++	@  r3 - lr_svc
++	@  r4 - lr_<exception>, already fixed up for correct return/restart
++	@  r5 - spsr_<exception>
++	@  r6 - orig_r0 (see pt_regs definition in ptrace.h)
++	@
++	stmia	r7, {r2 - r6}
++
++#ifdef CONFIG_TRACE_IRQFLAGS
++	bl	trace_hardirqs_off
++#endif
++	.endm
++
+ #ifndef CONFIG_THUMB2_KERNEL
+ 	.macro	svc_exit, rpsr
+ 	msr	spsr_cxsf, \rpsr
+@@ -164,6 +267,73 @@
+ #endif	/* !CONFIG_THUMB2_KERNEL */
  
- static int pl011_hwinit(struct uart_port *port)
-@@ -1713,6 +1725,7 @@ static struct uart_ops amba_pl011_pops = {
- 	.poll_init     = pl011_hwinit,
- 	.poll_get_char = pl011_get_poll_char,
- 	.poll_put_char = pl011_put_poll_char,
-+	.clear_irqs    = pl011_clear_irqs,
- #endif
- };
- 
+ /*
++ * User mode handlers
++ *
++ * EABI note: sp_svc is always 64-bit aligned here, so should S_FRAME_SIZE
++ */
++
++#if defined(CONFIG_AEABI) && (__LINUX_ARM_ARCH__ >= 5) && (S_FRAME_SIZE & 7)
++#error "sizeof(struct pt_regs) must be a multiple of 8"
++#endif
++
++	.macro	usr_entry
++ UNWIND(.fnstart	)
++ UNWIND(.cantunwind	)	@ don't unwind the user space
++	sub	sp, sp, #S_FRAME_SIZE
++ ARM(	stmib	sp, {r1 - r12}	)
++ THUMB(	stmia	sp, {r0 - r12}	)
++
++	ldmia	r0, {r3 - r5}
++	add	r0, sp, #S_PC		@ here for interlock avoidance
++	mov	r6, #-1			@  ""  ""     ""        ""
++
++	str	r3, [sp]		@ save the "real" r0 copied
++					@ from the exception stack
++
++	@
++	@ We are now ready to fill in the remaining blanks on the stack:
++	@
++	@  r4 - lr_<exception>, already fixed up for correct return/restart
++	@  r5 - spsr_<exception>
++	@  r6 - orig_r0 (see pt_regs definition in ptrace.h)
++	@
++	@ Also, separately save sp_usr and lr_usr
++	@
++	stmia	r0, {r4 - r6}
++ ARM(	stmdb	r0, {sp, lr}^			)
++ THUMB(	store_user_sp_lr r0, r1, S_SP - S_PC	)
++
++	@
++	@ Enable the alignment trap while in kernel mode
++	@
++	alignment_trap r0
++
++	@
++	@ Clear FP to mark the first stack frame
++	@
++	zero_fp
++
++#ifdef CONFIG_IRQSOFF_TRACER
++	bl	trace_hardirqs_off
++#endif
++	.endm
++
++	.macro	kuser_cmpxchg_check
++#if !defined(CONFIG_CPU_32v6K) && !defined(CONFIG_NEEDS_SYSCALL_FOR_CMPXCHG)
++#ifndef CONFIG_MMU
++#warning "NPTL on non MMU needs fixing"
++#else
++	@ Make sure our user space atomic helper is restarted
++	@ if it was interrupted in a critical region.  Here we
++	@ perform a quick test inline since it should be false
++	@ 99.9999% of the time.  The rest is done out of line.
++	cmp	r4, #TASK_SIZE
++	blhs	kuser_cmpxchg64_fixup
++#endif
++#endif
++	.endm
++
++/*
+  * These are the registers used in the syscall handler, and allow us to
+  * have in theory up to 7 arguments to a function - r0 to r6.
+  *
 -- 
 1.7.11.5
