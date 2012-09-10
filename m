@@ -1,94 +1,72 @@
-From: Anton Vorontsov <anton.vorontsov@linaro.org>
-Subject: [PATCH 14/14] ARM: versatile: Make able to use UART ports for KGDB
- FIQ debugger
-Date: Sun, 9 Sep 2012 21:14:42 -0700
-Message-ID: <20120910041442.GN29537@lizard>
-References: <20120910040802.GA1261@lizard>
+From: leroy christophe <christophe.leroy@c-s.fr>
+Subject: Re: [PATCH] Powerpc 8xx CPM_UART delay in receive
+Date: Mon, 10 Sep 2012 09:09:32 +0200
+Message-ID: <504D922C.1030407@c-s.fr>
+References: <201208141426.q7EEQSPc003956@localhost.localdomain>
+ <20120814155227.018988da@pyramind.ukuu.org.uk> <502CF2A0.8080109@c-s.fr>
+ <20120816152918.5ed2649f@pyramind.ukuu.org.uk> <502D054B.3010606@c-s.fr>
+ <20120816162136.059b64b4@bob.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20120910040802.GA1261@lizard>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>
-Cc: Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>, Colin Cross <ccross@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="windows-1252"; Format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+In-Reply-To: <20120816162136.059b64b4@bob.linux.org.uk>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+To: Alan Cox <alan@linux.intel.com>
+Cc: Marcelo Tosatti <marcelo@kvack.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
 List-Id: linux-serial@vger.kernel.org
 
-If enabled, kernel will able to enter KGDB upon serial line activity on
-UART ports.
+Le 16/08/2012 17:21, Alan Cox a =E9crit :
+>> MAX_IDL: Maximum idle characters. When a character is received, the
+>> receiver begins counting idle characters. If MAX_IDL idle characters
+>> are received before the next data character, an idle timeout occurs
+>> and the buffer is closed,
+>> generating a maskable interrupt request to the core to receive the
+>> data from the buffer. Thus, MAX_IDL offers a way to demarcate frames.
+>> To disable the feature, clear MAX_IDL. The bit length of an idle
+>> character is calculated as follows: 1 + data length (5=969) + 1 (if
+>> parity is used)
+>> + number of stop bits (1=962). For 8 data bits, no parity, and 1 stop
+>> bit, the character length is 10 bits
+>
+> So if you have slightly bursty high speed data as its quite typical
+> before your change you would get one interrupt per buffer of 32 bytes,
+> with it you'll get a lot more interrupts.
+>
+> You have two available hints about the way to set this - one of them is
+> the baud rate (low baud rates mean the fifo isn't a big win and the
+> latency is high), the other is the low_latency flag if the driver
+> supports the low latency feature (and arguably you can still use a
+> request for it as a hint even if you refuse the actual feature).
+>
+> So I think a reasonable approach would be set the idle timeout down for
+> low baud rates or if low_latency is requested.
+>
+>> generated if there is at least one word in the FIFO and for a time
+>> equivalent to the transmission of four characters
+> Which is a bit more reasonable than one, although problematic at low
+> speed (hence the fifo on/off).
+>
+What would then thing about:
+* a value of 1 for all rates below 2400 (On 8250, fifo is set to 1 for =
 
-Note that even with this patch and CONFIG_KGDB_FIQ is enabled, you still
-need to pass kgdb_fiq.enable=1 kernel command line option, otherwise UART
-will behave in a normal way.
+such rates)
+* a value of 2 for 2400 and 4800
+* a value of 4 for 9600 (which is the default on the 8250 for all rates =
 
-By default UART0 is used, but this can be changed via kgdb_fiq.uart_num
-kernel command line option.
+above 2400)
+* a value of 8 for 19200
+* a value of 16 for 38400 and above (on UCC_UART, maxidl is set to 16, =
 
-Signed-off-by: Anton Vorontsov <anton.vorontsov@linaro.org>
----
- arch/arm/Kconfig                   |  1 +
- arch/arm/mach-versatile/Makefile   |  1 +
- arch/arm/mach-versatile/kgdb_fiq.c | 31 +++++++++++++++++++++++++++++++
- 3 files changed, 33 insertions(+)
- create mode 100644 arch/arm/mach-versatile/kgdb_fiq.c
+never 32)
 
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 66f4f81..5972886 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -336,6 +336,7 @@ config ARCH_VERSATILE
- 	select PLAT_VERSATILE_CLCD
- 	select PLAT_VERSATILE_FPGA_IRQ
- 	select ARM_TIMER_SP804
-+	select ARCH_MIGHT_HAVE_KGDB_FIQ
- 	help
- 	  This enables support for ARM Ltd Versatile board.
- 
-diff --git a/arch/arm/mach-versatile/Makefile b/arch/arm/mach-versatile/Makefile
-index 81fa3fe..bfd761f 100644
---- a/arch/arm/mach-versatile/Makefile
-+++ b/arch/arm/mach-versatile/Makefile
-@@ -7,3 +7,4 @@ obj-$(CONFIG_ARCH_VERSATILE_PB)		+= versatile_pb.o
- obj-$(CONFIG_MACH_VERSATILE_AB)		+= versatile_ab.o
- obj-$(CONFIG_MACH_VERSATILE_DT)		+= versatile_dt.o
- obj-$(CONFIG_PCI)			+= pci.o
-+obj-$(CONFIG_KGDB_FIQ)			+= kgdb_fiq.o
-diff --git a/arch/arm/mach-versatile/kgdb_fiq.c b/arch/arm/mach-versatile/kgdb_fiq.c
-new file mode 100644
-index 0000000..3cdf71d
---- /dev/null
-+++ b/arch/arm/mach-versatile/kgdb_fiq.c
-@@ -0,0 +1,31 @@
-+/*
-+ * KGDB FIQ board support
-+ *
-+ * Copyright 2012 Linaro Ltd.
-+ *		  Anton Vorontsov <anton.vorontsov@linaro.org>
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published
-+ * by the Free Software Foundation.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/kgdb.h>
-+#include <mach/hardware.h>
-+#include <mach/platform.h>
-+#include <asm/hardware/vic.h>
-+
-+static int kgdb_fiq;
-+module_param_named(uart_num, kgdb_fiq, int, 0600);
-+MODULE_PARM_DESC(uart_num, "UART<number> port to use for KGDB FIQ");
-+
-+static int __init kgdb_fiq_init(void)
-+{
-+	WARN_ON(kgdb_fiq > INT_UARTINT2 - INT_UARTINT0);
-+
-+	return kgdb_register_fiq(INT_UARTINT0 + kgdb_fiq,
-+				 vic_fiq_select,
-+				 vic_is_fiq_rised);
-+}
-+console_initcall(kgdb_fiq_init);
--- 
-1.7.11.5
+Christophe
