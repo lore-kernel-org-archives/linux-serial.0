@@ -1,50 +1,43 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 06/14] tty/serial/core: Introduce poll_init callback
-Date: Mon, 10 Sep 2012 20:18:10 +0100
-Message-ID: <20120910201810.409a58ea@pyramind.ukuu.org.uk>
+Subject: Re: [PATCH 08/14] tty/serial/kgdboc: Add and wire up clear_irqs
+ callback
+Date: Mon, 10 Sep 2012 20:19:18 +0100
+Message-ID: <20120910201918.1e3c8fd0@pyramind.ukuu.org.uk>
 References: <20120910040802.GA1261@lizard>
-	<20120910041335.GF29537@lizard>
-	<20120910121320.03c9dfc7@pyramind.ukuu.org.uk>
-	<20120910175725.GA13673@lizard>
+	<20120910041357.GH29537@lizard>
+	<20120910121624.226c1a88@pyramind.ukuu.org.uk>
+	<20120910175704.GA11392@lizard>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20120910175725.GA13673@lizard>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:52176 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758097Ab2IJTOu (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 10 Sep 2012 15:14:50 -0400
+In-Reply-To: <20120910175704.GA11392@lizard>
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: Anton Vorontsov <anton.vorontsov@linaro.org>
 Cc: Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Arve =?UTF-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>, Colin Cross <ccross@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
 
-> > What stops a parallel open or close changing ASYNC_INITIALIZED after you
-> > test and before you lock ?
+On Mon, 10 Sep 2012 10:57:04 -0700
+Anton Vorontsov <anton.vorontsov@linaro.org> wrote:
+
+> On Mon, Sep 10, 2012 at 12:16:24PM +0100, Alan Cox wrote:
+> > > serial port, the CPU receives NMI exception, and we fall into KDB
+> > > shell.  So, it is our "debug console", and it is able to interrupt
+> > > (and thus debug) even IRQ handlers themselves.
+> > 
+> > You seem to have an assumption of single core here. What happens if
+> > the NMI hits CPU #0 and the serial IRQ hits CPU #1 simultaneously ?
 > 
-> Yeah, I should do the whole thing under the mutex.
+> If you can't redirect all serial IRQs to NMI context, e.g. sometimes you get
+> NMIs, sometimes IRQs, then your NMI handling is not deterministic, and surely
+> this is not supported.
 
-Can you use test_bit() as well. I'm trying to gradually push all the code
-that way so people habitually use set_bit() and we don't get any (more)
-races where some compile situations and architectures otherwise create
-
-	load to register
-	register ored with constant
-	write back
-
-> Not related to this particular issue, but the fact that close() can powerdown
-> the hardware is quite bad. Today it is always possible to use open,close
-> sequence on /dev/ttyXXXX, and polling would break if close() deinitializes the
-> hardware (e.g. via uart_change_pm()).
-
-One of the long term goals of tty_port has always ben to have an object
-with the lifetime of the physical port so this kind of thing can be fixed.
-
-> In console= case, serial core handles the issue via uart_console(), checking if
-> the port is used for console, preventing it to power down the hardware. We can
-> do the same, or make tty_find_polling_driver() refcount individual ports/lines.
-> But the issue is orthogonal to this particular patch, although needs to be
-> fixed some day.
-
-Agreed - however you'll need a separate refcount than the main tty one
-for this, because we still need to do a hangup() on the final "tty" close
-even if the hardware is 'pinned' for a debugger.
+This seems like arch specific magic leaking into the tty code. Surely
+this should be buried in the depths of the platform IRQ code ?
 
 Alan
