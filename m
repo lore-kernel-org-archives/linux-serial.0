@@ -1,11 +1,11 @@
 From: Anton Vorontsov <anton.vorontsov@linaro.org>
-Subject: [PATCH 12/14] ARM: Add KGDB/KDB FIQ debugger generic code
-Date: Sun, 9 Sep 2012 21:14:27 -0700
-Message-ID: <20120910041427.GL29537@lizard>
+Subject: [PATCH 13/14] ARM: VIC: Add a couple of low-level FIQ management
+ helpers
+Date: Sun, 9 Sep 2012 21:14:36 -0700
+Message-ID: <20120910041436.GM29537@lizard>
 References: <20120910040802.GA1261@lizard>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
 In-Reply-To: <20120910040802.GA1261@lizard>
@@ -14,297 +14,66 @@ To: Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org
 Cc: Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>, Colin Cross <ccross@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The FIQ debugger may be used to debug situations when the kernel stuck
-in uninterruptable sections, e.g. the kernel infinitely loops or
-deadlocked in an interrupt or with interrupts disabled.
-
-By default KGDB FIQ is disabled in runtime, but can be enabled with
-kgdb_fiq.enable=3D1 kernel command line option.
+Just a couple of calls to manage VIC FIQ routing. We'll use them for
+KGDB FIQ support on ARM Versatile machines.
 
 Signed-off-by: Anton Vorontsov <anton.vorontsov@linaro.org>
 ---
- arch/arm/Kconfig                 | 18 ++++++++
- arch/arm/include/asm/kgdb.h      |  8 ++++
- arch/arm/kernel/Makefile         |  1 +
- arch/arm/kernel/kgdb_fiq.c       | 99 ++++++++++++++++++++++++++++++++=
-++++++++
- arch/arm/kernel/kgdb_fiq_entry.S | 87 ++++++++++++++++++++++++++++++++=
-+++
- 5 files changed, 213 insertions(+)
- create mode 100644 arch/arm/kernel/kgdb_fiq.c
- create mode 100644 arch/arm/kernel/kgdb_fiq_entry.S
+ arch/arm/common/vic.c               | 28 ++++++++++++++++++++++++++++
+ arch/arm/include/asm/hardware/vic.h |  2 ++
+ 2 files changed, 30 insertions(+)
 
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index c5f9ae5..66f4f81 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -171,6 +171,24 @@ config GENERIC_ISA_DMA
- config FIQ
- 	bool
-=20
-+config ARCH_MIGHT_HAVE_KGDB_FIQ
-+	bool
-+
-+config KGDB_FIQ
-+	bool "KGDB/KDB FIQ debugger"
-+	depends on KGDB_KDB && ARCH_MIGHT_HAVE_KGDB_FIQ && !THUMB2_KERNEL
-+	select FIQ
-+	help
-+	  The FIQ debugger may be used to debug situations when the
-+	  kernel stuck in uninterruptable sections, e.g. the kernel
-+	  infinitely loops or deadlocked in an interrupt or with
-+	  interrupts disabled.
-+
-+	  By default KGDB FIQ is disabled in runtime, but can be
-+	  enabled with kgdb_fiq.enable=3D1 kernel command line option.
-+
-+	  If unsure, say N.
-+
- config NEED_RET_TO_USER
- 	bool
-=20
-diff --git a/arch/arm/include/asm/kgdb.h b/arch/arm/include/asm/kgdb.h
-index 48066ce..807e547 100644
---- a/arch/arm/include/asm/kgdb.h
-+++ b/arch/arm/include/asm/kgdb.h
-@@ -11,6 +11,8 @@
- #define __ARM_KGDB_H__
-=20
- #include <linux/ptrace.h>
-+#include <linux/linkage.h>
-+#include <asm/exception.h>
-=20
- /*
-  * GDB assumes that we're a user process being debugged, so
-@@ -47,6 +49,12 @@ static inline void arch_kgdb_breakpoint(void)
- extern void kgdb_handle_bus_error(void);
- extern int kgdb_fault_expected;
-=20
-+extern char kgdb_fiq_handler;
-+extern char kgdb_fiq_handler_end;
-+asmlinkage void __exception_irq_entry kgdb_fiq_do_handle(struct pt_reg=
-s *regs);
-+extern int __init kgdb_register_fiq(unsigned int mach_kgdb_fiq,
-+		     void (*mach_kgdb_enable_fiq)(unsigned int irq, bool on),
-+		     bool (*mach_is_kgdb_fiq)(unsigned int irq));
- #endif /* !__ASSEMBLY__ */
-=20
- /*
-diff --git a/arch/arm/kernel/Makefile b/arch/arm/kernel/Makefile
-index 7ad2d5c..5aa079b 100644
---- a/arch/arm/kernel/Makefile
-+++ b/arch/arm/kernel/Makefile
-@@ -56,6 +56,7 @@ obj-$(CONFIG_ATAGS_PROC)	+=3D atags.o
- obj-$(CONFIG_OABI_COMPAT)	+=3D sys_oabi-compat.o
- obj-$(CONFIG_ARM_THUMBEE)	+=3D thumbee.o
- obj-$(CONFIG_KGDB)		+=3D kgdb.o
-+obj-$(CONFIG_KGDB_FIQ)		+=3D kgdb_fiq_entry.o kgdb_fiq.o
- obj-$(CONFIG_ARM_UNWIND)	+=3D unwind.o
- obj-$(CONFIG_HAVE_TCM)		+=3D tcm.o
- obj-$(CONFIG_OF)		+=3D devtree.o
-diff --git a/arch/arm/kernel/kgdb_fiq.c b/arch/arm/kernel/kgdb_fiq.c
-new file mode 100644
-index 0000000..8443af1
---- /dev/null
-+++ b/arch/arm/kernel/kgdb_fiq.c
-@@ -0,0 +1,99 @@
-+/*
-+ * KGDB FIQ
-+ *
-+ * Copyright 2010 Google, Inc.
-+ *		  Arve Hj=C3=B8nnev=C3=A5g <arve@android.com>
-+ *		  Colin Cross <ccross@android.com>
-+ * Copyright 2012 Linaro Ltd.
-+ *		  Anton Vorontsov <anton.vorontsov@linaro.org>
-+ *
-+ * This program is free software; you can redistribute it and/or modif=
-y it
-+ * under the terms of the GNU General Public License version 2 as publ=
-ished
-+ * by the Free Software Foundation.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/slab.h>
-+#include <linux/errno.h>
-+#include <linux/hardirq.h>
-+#include <linux/kdb.h>
-+#include <linux/kgdb.h>
-+#include <asm/fiq.h>
-+#include <asm/exception.h>
-+
-+static int kgdb_fiq_enabled;
-+module_param_named(enable, kgdb_fiq_enabled, int, 0600);
-+MODULE_PARM_DESC(enable, "set to 1 to enable FIQ KGDB");
-+
-+static unsigned int kgdb_fiq;
-+static bool (*is_kgdb_fiq)(unsigned int irq);
-+
-+asmlinkage void __exception_irq_entry kgdb_fiq_do_handle(struct pt_reg=
-s *regs)
+diff --git a/arch/arm/common/vic.c b/arch/arm/common/vic.c
+index e0d5388..df2fc82 100644
+--- a/arch/arm/common/vic.c
++++ b/arch/arm/common/vic.c
+@@ -66,6 +66,34 @@ static struct vic_device vic_devices[CONFIG_ARM_VIC_NR];
+ 
+ static int vic_id;
+ 
++static void __iomem *vic_base(struct irq_data *d)
 +{
-+	if (!is_kgdb_fiq(kgdb_fiq))
-+		return;
-+	if (!kgdb_nmi_poll_knock())
-+		return;
-+
-+	nmi_enter();
-+	kgdb_handle_exception(1, 0, 0, regs);
-+	nmi_exit();
++	return (void __iomem *)irq_data_get_irq_chip_data(d);
 +}
 +
-+static struct fiq_handler kgdb_fiq_desc =3D {
-+	.name =3D "kgdb",
-+};
-+
-+static long kgdb_fiq_setup_stack(void *info)
++void vic_fiq_select(unsigned int irq, bool on)
 +{
-+	struct pt_regs regs;
++	void __iomem *base = vic_base(&irq_to_desc(irq)->irq_data);
++	void __iomem *sel = base + VIC_INT_SELECT;
++	u32 msk = 1 << irq;
++	u32 val;
 +
-+	regs.ARM_sp =3D __get_free_pages(GFP_KERNEL, THREAD_SIZE_ORDER) +
-+			THREAD_START_SP;
-+	WARN_ON(!regs.ARM_sp);
++	pr_debug("rerouting VIC vector %d to %s\n", irq, on ? "FIQ" : "IRQ");
 +
-+	set_fiq_regs(&regs);
-+	return 0;
++	val = readl(sel);
++	val &= ~msk;
++	if (on)
++		val |= msk;
++	writel(val, sel);
 +}
 +
-+static void (*kgdb_enable_fiq)(unsigned int irq, bool on);
-+
-+void kgdb_arch_enable_nmi(bool on)
++bool vic_is_fiq_rised(unsigned int irq)
 +{
-+	if (!kgdb_enable_fiq)
-+		return;
-+	kgdb_enable_fiq(kgdb_fiq, on);
++	void __iomem *base = vic_base(&irq_to_desc(irq)->irq_data);
++
++	return readl(base + VIC_FIQ_STATUS) & (1 << irq);
 +}
 +
-+int __init kgdb_register_fiq(unsigned int mach_kgdb_fiq,
-+		void (*mach_kgdb_enable_fiq)(unsigned int irq, bool on),
-+		bool (*mach_is_kgdb_fiq)(unsigned int irq))
-+{
-+	int err;
-+	int cpu;
-+
-+	if (!kgdb_fiq_enabled)
-+		return -ENODEV;
-+	if (kgdb_fiq)
-+		return -EBUSY;
-+
-+	kgdb_fiq =3D mach_kgdb_fiq;
-+	kgdb_enable_fiq =3D mach_kgdb_enable_fiq;
-+	is_kgdb_fiq =3D mach_is_kgdb_fiq;
-+
-+	err =3D claim_fiq(&kgdb_fiq_desc);
-+	if (err) {
-+		pr_warn("%s: unable to claim fiq", __func__);
-+		return err;
-+	}
-+
-+	for_each_possible_cpu(cpu)
-+		work_on_cpu(cpu, kgdb_fiq_setup_stack, NULL);
-+
-+	set_fiq_handler(&kgdb_fiq_handler,
-+			&kgdb_fiq_handler_end - &kgdb_fiq_handler);
-+
-+	return 0;
-+}
-diff --git a/arch/arm/kernel/kgdb_fiq_entry.S b/arch/arm/kernel/kgdb_fi=
-q_entry.S
-new file mode 100644
-index 0000000..d6becca
---- /dev/null
-+++ b/arch/arm/kernel/kgdb_fiq_entry.S
-@@ -0,0 +1,87 @@
-+/*
-+ * KGDB FIQ entry
-+ *
-+ * Copyright 1996,1997,1998 Russell King.
-+ * Copyright 2012 Linaro Ltd.
-+ *		  Anton Vorontsov <anton.vorontsov@linaro.org>
-+ *
-+ * This program is free software; you can redistribute it and/or modif=
-y it
-+ * under the terms of the GNU General Public License version 2 as publ=
-ished
-+ * by the Free Software Foundation.
-+ */
-+
-+#include <linux/linkage.h>
-+#include <asm/assembler.h>
-+#include <asm/memory.h>
-+#include <asm/unwind.h>
-+#include "entry-header.S"
-+
-+	.text
-+
-+@ This is needed for usr_entry/alignment_trap
-+.LCcralign:
-+	.long	cr_alignment
-+.LCdohandle:
-+	.long	kgdb_fiq_do_handle
-+
-+	.macro	fiq_handler
-+	ldr	r1, =3D.LCdohandle
-+	mov	r0, sp
-+	adr	lr, BSYM(9997f)
-+	ldr	pc, [r1]
-+9997:
-+	.endm
-+
-+	.align	5
-+__fiq_svc:
-+	svc_entry
-+	fiq_handler
-+	mov	r0, sp
-+	ldmib	r0, {r1 - r14}
-+	msr	cpsr_c, #FIQ_MODE | PSR_I_BIT | PSR_F_BIT
-+	add	r8, r0, #S_PC
-+	ldr	r9, [r0, #S_PSR]
-+	msr	spsr_cxsf, r9
-+	ldr	r0, [r0, #S_R0]
-+	ldmia	r8, {pc}^
-+
-+ UNWIND(.fnend		)
-+ENDPROC(__fiq_svc)
-+	.ltorg
-+
-+	.align	5
-+__fiq_usr:
-+	usr_entry
-+	kuser_cmpxchg_check
-+	fiq_handler
-+	get_thread_info tsk
-+	mov	why, #0
-+	b	ret_to_user_from_irq
-+ UNWIND(.fnend		)
-+ENDPROC(__fiq_usr)
-+	.ltorg
-+
-+	.global kgdb_fiq_handler
-+kgdb_fiq_handler:
-+
-+	vector_stub	fiq, FIQ_MODE, 4
-+
-+	.long	__fiq_usr			@  0  (USR_26 / USR_32)
-+	.long	__fiq_svc			@  1  (FIQ_26 / FIQ_32)
-+	.long	__fiq_svc			@  2  (IRQ_26 / IRQ_32)
-+	.long	__fiq_svc			@  3  (SVC_26 / SVC_32)
-+	.long	__fiq_svc			@  4
-+	.long	__fiq_svc			@  5
-+	.long	__fiq_svc			@  6
-+	.long	__fiq_svc			@  7
-+	.long	__fiq_svc			@  8
-+	.long	__fiq_svc			@  9
-+	.long	__fiq_svc			@  a
-+	.long	__fiq_svc			@  b
-+	.long	__fiq_svc			@  c
-+	.long	__fiq_svc			@  d
-+	.long	__fiq_svc			@  e
-+	.long	__fiq_svc			@  f
-+
-+	.global kgdb_fiq_handler_end
-+kgdb_fiq_handler_end:
---=20
+ /**
+  * vic_init2 - common initialisation code
+  * @base: Base of the VIC.
+diff --git a/arch/arm/include/asm/hardware/vic.h b/arch/arm/include/asm/hardware/vic.h
+index e14af1a..2728975 100644
+--- a/arch/arm/include/asm/hardware/vic.h
++++ b/arch/arm/include/asm/hardware/vic.h
+@@ -52,6 +52,8 @@ void __vic_init(void __iomem *base, unsigned int irq_start, u32 vic_sources,
+ void vic_init(void __iomem *base, unsigned int irq_start, u32 vic_sources, u32 resume_sources);
+ int vic_of_init(struct device_node *node, struct device_node *parent);
+ void vic_handle_irq(struct pt_regs *regs);
++void vic_fiq_select(unsigned int irq, bool on);
++bool vic_is_fiq_rised(unsigned int irq);
+ 
+ #endif /* __ASSEMBLY__ */
+ #endif
+-- 
 1.7.11.5
