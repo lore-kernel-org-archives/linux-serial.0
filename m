@@ -1,33 +1,52 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: mxs-auart: put the device when exit or error
-Date: Mon, 10 Sep 2012 16:00:05 -0700
-Message-ID: <20120910230005.GA15782@kroah.com>
-References: <20120907024349.GH26709@S2101-09.ap.freescale.net>
- <1346985187-30459-1-git-send-email-b32955@freescale.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: [PATCH 09/17] serial/8250: Limit the omap workarounds to omap1
+Date: Mon, 10 Sep 2012 22:31:04 -0700
+Message-ID: <20120911053104.29637.95283.stgit@muffinssi.local>
+References: <20120911052934.29637.9190.stgit@muffinssi.local>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1346985187-30459-1-git-send-email-b32955@freescale.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Huang Shijie <b32955@freescale.com>
-Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, shawn.guo@linaro.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <20120911052934.29637.9190.stgit@muffinssi.local>
+Sender: linux-omap-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Sep 07, 2012 at 10:33:07AM +0800, Huang Shijie wrote:
-> We call the get_device() in the mxs_auart_probe().
-> For the balance of the reference count, we should put the
-> device in the mxs_auart_remove() or in the error path of
-> probe.
-> 
-> Signed-off-by: Huang Shijie <b32955@freescale.com>
-> ---
->  drivers/tty/serial/mxs-auart.c |    2 ++
->  1 files changed, 2 insertions(+), 0 deletions(-)
+These workarounds do not apply for CONFIG_ARCH_OMAP2PLUS at all,
+so let's make it just CONFIG_ARCH_OMAP1.
 
-I already applied the previous version, so can you make up a patch
-against the tty-next tree that fixes it up properly based on this patch?
+This is needed to for ARM common zImage changes for
+omap2+ to avoid including plat and mach headers.
 
-thanks,
+Cc: Alan Cox <alan@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+---
+ drivers/tty/serial/8250/8250.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-greg k-h
+diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
+index 8123f78..5b3f2fe 100644
+--- a/drivers/tty/serial/8250/8250.c
++++ b/drivers/tty/serial/8250/8250.c
+@@ -2336,7 +2336,7 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
+ 			serial_port_out(port, UART_EFR, efr);
+ 	}
+ 
+-#ifdef CONFIG_ARCH_OMAP
++#ifdef CONFIG_ARCH_OMAP1
+ 	/* Workaround to enable 115200 baud on OMAP1510 internal ports */
+ 	if (cpu_is_omap1510() && is_omap_port(up)) {
+ 		if (baud == 115200) {
+@@ -2426,7 +2426,7 @@ static unsigned int serial8250_port_size(struct uart_8250_port *pt)
+ {
+ 	if (pt->port.iotype == UPIO_AU)
+ 		return 0x1000;
+-#ifdef CONFIG_ARCH_OMAP
++#ifdef CONFIG_ARCH_OMAP1
+ 	if (is_omap_port(pt))
+ 		return 0x16 << pt->port.regshift;
+ #endif
+
