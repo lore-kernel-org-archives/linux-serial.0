@@ -1,44 +1,74 @@
-From: Huang Shijie <b32955@freescale.com>
-Subject: [PATCH] serial: mxs-auart: put the device in the error path
-Date: Tue, 11 Sep 2012 15:30:30 +0800
-Message-ID: <1347348630-20329-1-git-send-email-b32955@freescale.com>
-References: <20120910230005.GA15782@kroah.com>
+From: Anton Vorontsov <anton.vorontsov@linaro.org>
+Subject: [PATCH v6 0/12] KGDB/KDB FIQ (NMI) debugger
+Date: Tue, 11 Sep 2012 02:30:43 -0700
+Message-ID: <20120911093042.GA12471@lizard>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from co1ehsobe004.messaging.microsoft.com ([216.32.180.187]:52575
-	"EHLO co1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751830Ab2IKHya (ORCPT
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:59299 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756744Ab2IKJdS (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 11 Sep 2012 03:54:30 -0400
-In-Reply-To: <20120910230005.GA15782@kroah.com>
+	Tue, 11 Sep 2012 05:33:18 -0400
+Received: by pbbrr13 with SMTP id rr13so527851pbb.19
+        for <linux-serial@vger.kernel.org>; Tue, 11 Sep 2012 02:33:18 -0700 (PDT)
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, shawn.guo@linaro.org, Huang Shijie <b32955@freescale.com>
+To: Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>
+Cc: Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>, Colin Cross <ccross@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
 
-The mxs_auart_probe() gets the device by the get_device().
-So we should put the device in the error path to balance the
-device's reference counter.
+Hi all,
 
-Signed-off-by: Huang Shijie <b32955@freescale.com>
----
- drivers/tty/serial/mxs-auart.c |    1 +
- 1 files changed, 1 insertions(+), 0 deletions(-)
+Here is a new revision, mostly tty reworks. The new tty_port stuff is a
+bliss: no more per-driver mutex, no more counting for open(),
+well-separated initialization callbacks (I hope I got them right :-).
 
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index 6898413..6db3baa 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -781,6 +781,7 @@ out_free_irq:
- 	auart_port[pdev->id] = NULL;
- 	free_irq(s->irq, s);
- out_free_clk:
-+	put_device(s->dev);
- 	clk_put(s->clk);
- out_free:
- 	kfree(s);
--- 
-1.7.0.4
+But since I now use a lot of new tty_port stuff, I had to rebase the
+patch set on top of tty-next, so there's no point in cherry-picking
+anymore.
 
+So, in v6:
 
+- Converted the NMI tty driver to use tty_port helpers, per Alan Cox's
+  suggestions;
+
+- In uart's poll_init callback fixed a race, spotted by Alan;
+
+- Use test_bit instead of touching port->flags directly;
+
+These patches can be found in the following repo (based on tty-next):
+
+	git://git.infradead.org/users/cbou/linux-nmi-kdb.git master
+
+Old changelogs and rationale for these patches can be found here:
+
+	v1-v5: http://lkml.org/lkml/2012/9/10/2
+
+Thanks,
+
+--
+ arch/arm/Kconfig                    |  19 ++
+ arch/arm/common/vic.c               |  28 +++
+ arch/arm/include/asm/hardware/vic.h |   2 +
+ arch/arm/include/asm/kgdb.h         |   8 +
+ arch/arm/kernel/Makefile            |   1 +
+ arch/arm/kernel/entry-armv.S        | 167 +------------
+ arch/arm/kernel/entry-header.S      | 170 +++++++++++++
+ arch/arm/kernel/kgdb_fiq.c          |  99 ++++++++
+ arch/arm/kernel/kgdb_fiq_entry.S    |  87 +++++++
+ arch/arm/mach-versatile/Makefile    |   1 +
+ arch/arm/mach-versatile/kgdb_fiq.c  |  31 +++
+ drivers/tty/serial/Kconfig          |  19 ++
+ drivers/tty/serial/Makefile         |   1 +
+ drivers/tty/serial/amba-pl011.c     |  66 ++++-
+ drivers/tty/serial/kgdb_nmi.c       | 391 ++++++++++++++++++++++++++++++
+ drivers/tty/serial/kgdboc.c         |  16 ++
+ drivers/tty/serial/serial_core.c    |  32 +++
+ include/linux/kdb.h                 |  29 ++-
+ include/linux/kgdb.h                |  34 +++
+ include/linux/serial_core.h         |   2 +
+ include/linux/tty_driver.h          |   1 +
+ kernel/debug/debug_core.c           |  36 ++-
+ kernel/debug/kdb/kdb_main.c         |  29 +++
+ 23 files changed, 1076 insertions(+), 193 deletions(-)
