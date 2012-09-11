@@ -1,76 +1,43 @@
-From: Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH v4 00/21] OMAP UART Patches
-Date: Tue, 11 Sep 2012 14:54:50 +0300
-Message-ID: <20120911115449.GH18907@arwen.pp.htv.fi>
-References: <20120906122948.GC29202@arwen.pp.htv.fi>
- <1346935540-1792-1-git-send-email-balbi@ti.com>
- <87harahiv6.fsf@deeprootsystems.com>
- <20120907054932.GB3136@arwen.pp.htv.fi>
- <87oblhmu6g.fsf@deeprootsystems.com>
- <20120908190423.GA14771@arwen.pp.htv.fi>
- <504F20FA.7020003@ti.com>
-Reply-To: balbi@ti.com
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 08/12] tty/serial: Add kgdb_nmi driver
+Date: Tue, 11 Sep 2012 15:14:20 +0100
+Message-ID: <20120911151420.14a29485@pyramind.ukuu.org.uk>
+References: <20120911093042.GA12471@lizard>
+	<1347356106-25368-8-git-send-email-anton.vorontsov@linaro.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="MGu/vTNewDGZ7tmp"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog131.obsmtp.com ([74.125.149.247]:35117 "EHLO
-	na3sys009aog131.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751008Ab2IKL7W (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:53426 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754828Ab2IKOKb (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 11 Sep 2012 07:59:22 -0400
-Received: by eekc1 with SMTP id c1so276557eek.1
-        for <linux-serial@vger.kernel.org>; Tue, 11 Sep 2012 04:59:20 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <504F20FA.7020003@ti.com>
+	Tue, 11 Sep 2012 10:10:31 -0400
+In-Reply-To: <1347356106-25368-8-git-send-email-anton.vorontsov@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Shubhrajyoti <shubhrajyoti@ti.com>
-Cc: balbi@ti.com, Kevin Hilman <khilman@deeprootsystems.com>, Greg KH <gregkh@linuxfoundation.org>, Tony Lindgren <tony@atomide.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Santosh Shilimkar <santosh.shilimkar@ti.com>, linux-serial@vger.kernel.org, Sourav Poddar <sourav.poddar@ti.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, alan@linux.intel.com
+To: Anton Vorontsov <anton.vorontsov@linaro.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Arve =?UTF-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>, Colin Cross <ccross@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+
+> +struct kgdb_nmi_tty_priv {
+> +	struct tty_port port;
+> +	int opened;
+> +	struct tasklet_struct tlet;
+> +	STRUCT_KFIFO(char, KGDB_NMI_FIFO_SIZE) fifo;
+
+I don't see where "opened" is used.
 
 
---MGu/vTNewDGZ7tmp
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> +static const struct tty_operations kgdb_nmi_tty_ops = {
+> +	.open		= kgdb_nmi_tty_open,
+> +	.close		= kgdb_nmi_tty_close,
+> +	.install	= kgdb_nmi_tty_install,
+> +	.cleanup	= kgdb_nmi_tty_cleanup,
+> +	.write_room	= kgdb_nmi_tty_write_room,
+> +	.write		= kgdb_nmi_tty_write,
 
-On Tue, Sep 11, 2012 at 05:01:06PM +0530, Shubhrajyoti wrote:
-> On Sunday 09 September 2012 12:34 AM, Felipe Balbi wrote:
-> >> In addition, IMO, if this was only tested on Panda (as suggested by
-> >> > earlier cover letters), it really should not have been merged until =
-it
-> >> > got some broader testing.
-> > Shubhro's got his Tested-by tag. I believe he tested on beagleboard and
-> > omap4sdp. Shubhro, can you confirm which platforms you tested the UART
-> > patches ? cheers
-> Felipe I had boot tested on omap3sdp and onap4 sdp and did pm testing
-> on both with omap3 hitting off.
+And a hangup method (just using tty_port helpers will do the job - it's
+needed so vhangup() works as expected on a port)
 
-Thanks ;-)
 
---=20
-balbi
-
---MGu/vTNewDGZ7tmp
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-
-iQIcBAEBAgAGBQJQTyaIAAoJEIaOsuA1yqRES4AP/161NxY2gSXOJW6E7HcGKu5f
-rqRyuL6LEEjYhIxuSyAUn8bvTPfCmWGiswWFoOVbV4xWb1JfZCo1pKUzrqcU6jMs
-EFFMPZDvmS99Eyu5V3WhMZCVvmEl+3pawTf2AmLhxqNKWKTcoHUEEY3SkuVlVWbt
-ZTp/Vj54v+eDkvRu5PwmUQ22radyUK7L9wDSd3INAu6GYgWjijX/2xQRtM7tvmf5
-Zc1LbxH6LW9eWy1jeOVaneNTlLXOXKCo5W0hG7FNoC+2QW4EQsOWMJ6G0Wi9RdPM
-iQQUsrhMe187Ux/76wCuNK0Riv3U0ip5lrhX0H7l6vrFK7JE0srMc1oDxUPuAdhe
-AtQ1j8WNvpfEJCymSmyp53Zuw90d4ZAxstOyho8X4vtpmIeEF6mHmhGf7uuT+xO+
-F4uhev0qZ+GFGQ7L8ZeizFTluxSHwfPKHW+YcRDNf2aKrieXMplDnCd1am5E2tDY
-M+oaE7CeCWSEjZi75tM1xN/a0lDAKIfeSgQkdXCrJa8sdCIqJZe46/LG0zBn5wwi
-OV1HWrZS2zDumQdN1P0nMlIqeljnLNd21u8uYYyLrpNuGJEErLk1T2EQpU2Dpell
-PC0N7oVnPKkiqxrA+CqM5GKt6EOGOu5jwdha4k3tLxv+Ev4JFw2dI/buFq8G4J/z
-diHTtDQCE2GYb55xOWuJ
-=joTh
------END PGP SIGNATURE-----
-
---MGu/vTNewDGZ7tmp--
+Alan
