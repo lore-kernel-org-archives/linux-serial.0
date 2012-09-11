@@ -1,76 +1,32 @@
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: Re: [PATCH 08/14] tty: atmel_serial: add pinctrl support
-Date: Tue, 11 Sep 2012 12:33:57 +0200
-Message-ID: <504F1395.8070509@atmel.com>
-References: <20120810124820.GA20557@game.jcrosoft.org> <1344603731-32667-1-git-send-email-plagnioj@jcrosoft.com> <1344603731-32667-8-git-send-email-plagnioj@jcrosoft.com>
+From: Shubhrajyoti <shubhrajyoti@ti.com>
+Subject: Re: [PATCH v4 00/21] OMAP UART Patches
+Date: Tue, 11 Sep 2012 17:01:06 +0530
+Message-ID: <504F20FA.7020003@ti.com>
+References: <20120906122948.GC29202@arwen.pp.htv.fi> <1346935540-1792-1-git-send-email-balbi@ti.com> <87harahiv6.fsf@deeprootsystems.com> <20120907054932.GB3136@arwen.pp.htv.fi> <87oblhmu6g.fsf@deeprootsystems.com> <20120908190423.GA14771@arwen.pp.htv.fi>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from eusmtp01.atmel.com ([212.144.249.242]:34789 "EHLO
-	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754199Ab2IKKeE (ORCPT
+Received: from na3sys009aog110.obsmtp.com ([74.125.149.203]:51448 "EHLO
+	na3sys009aog110.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1759164Ab2IKLbO (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 11 Sep 2012 06:34:04 -0400
-In-Reply-To: <1344603731-32667-8-git-send-email-plagnioj@jcrosoft.com>
+	Tue, 11 Sep 2012 07:31:14 -0400
+Received: by obbuo13 with SMTP id uo13so531781obb.19
+        for <linux-serial@vger.kernel.org>; Tue, 11 Sep 2012 04:31:13 -0700 (PDT)
+In-Reply-To: <20120908190423.GA14771@arwen.pp.htv.fi>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-Cc: linux-arm-kernel@lists.infradead.org, Linus Walleij <linus.walleij@linaro.org>, linux-serial@vger.kernel.org
+To: balbi@ti.com
+Cc: Kevin Hilman <khilman@deeprootsystems.com>, Greg KH <gregkh@linuxfoundation.org>, Tony Lindgren <tony@atomide.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Santosh Shilimkar <santosh.shilimkar@ti.com>, linux-serial@vger.kernel.org, Sourav Poddar <sourav.poddar@ti.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, alan@linux.intel.com
 
-On 08/10/2012 03:02 PM, Jean-Christophe PLAGNIOL-VILLARD :
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
-> Signed-off-by: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-> Cc: linux-serial@vger.kernel.org
-> ---
-> Hi Greg,
-> 
-> 	if you don't mind I would like to apply with the rest of the pinctrl
-> 	patch series
-> 
-> Best Regards,
-> J.
->  drivers/tty/serial/atmel_serial.c |    8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 3d7e1ee..65f891b 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -39,6 +39,7 @@
->  #include <linux/atmel_pdc.h>
->  #include <linux/atmel_serial.h>
->  #include <linux/uaccess.h>
-> +#include <linux/pinctrl/consumer.h>
->  
->  #include <asm/io.h>
->  #include <asm/ioctls.h>
-> @@ -1773,6 +1774,7 @@ static int __devinit atmel_serial_probe(struct platform_device *pdev)
->  	struct atmel_uart_data *pdata = pdev->dev.platform_data;
->  	void *data;
->  	int ret = -ENODEV;
-> +	struct pinctrl *pinctrl;
->  
->  	BUILD_BUG_ON(ATMEL_SERIAL_RINGSIZE & (ATMEL_SERIAL_RINGSIZE - 1));
->  
-> @@ -1805,6 +1807,12 @@ static int __devinit atmel_serial_probe(struct platform_device *pdev)
->  
->  	atmel_init_port(port, pdev);
->  
-> +	pinctrl = devm_pinctrl_get_select_default(&pdev->dev);
-> +	if (IS_ERR(pinctrl)) {
-> +		ret = PTR_ERR(pinctrl);
-> +		goto err;
-> +	}
-> +
->  	if (!atmel_use_dma_rx(&port->uart)) {
->  		ret = -ENOMEM;
->  		data = kmalloc(sizeof(struct atmel_uart_char)
+On Sunday 09 September 2012 12:34 AM, Felipe Balbi wrote:
+>> In addition, IMO, if this was only tested on Panda (as suggested by
+>> > earlier cover letters), it really should not have been merged until it
+>> > got some broader testing.
+> Shubhro's got his Tested-by tag. I believe he tested on beagleboard and
+> omap4sdp. Shubhro, can you confirm which platforms you tested the UART
+> patches ? cheers
+Felipe I had boot tested on omap3sdp and onap4 sdp and did pm testing
+on both with omap3 hitting off.
 
-
-No: you should branch to "err_alloc_ring:".
-
-Bye,
--- 
-Nicolas Ferre
