@@ -1,31 +1,44 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: [PATCH 09/17] serial/8250: Limit the omap workarounds to omap1
-Date: Tue, 11 Sep 2012 20:19:19 +0100
-Message-ID: <20120911201919.58d44dcb@bob.linux.org.uk>
-References: <20120911052934.29637.9190.stgit@muffinssi.local>
-	<20120911053104.29637.95283.stgit@muffinssi.local>
-	<20120911174234.45919fd3@bob.linux.org.uk>
-	<20120911164023.GE23092@atomide.com>
+From: Paul Walmsley <paul@pwsan.com>
+Subject: Re: [PATCH v4 00/21] OMAP UART Patches
+Date: Tue, 11 Sep 2012 22:02:48 +0000 (UTC)
+Message-ID: <alpine.DEB.2.00.1209112141220.9444@utopia.booyaka.com>
+References: <20120906122948.GC29202@arwen.pp.htv.fi> <1346935540-1792-1-git-send-email-balbi@ti.com> <alpine.DEB.2.00.1209062137000.11516@utopia.booyaka.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:64117 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1759171Ab2IKTBZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 11 Sep 2012 15:01:25 -0400
-In-Reply-To: <20120911164023.GE23092@atomide.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <alpine.DEB.2.00.1209062137000.11516@utopia.booyaka.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Felipe Balbi <balbi@ti.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, alan@linux.intel.com, Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Shubhrajyoti Datta <shubhrajyoti@ti.com>, Sourav Poddar <sourav.poddar@ti.com>
 List-Id: linux-serial@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org
 
-> > Even better would be if for other cases is_omap_port and friends
-> > returned 0...
-> 
-> Yes it seems that those macros could be moved from plat-omap/serial.h
-> to live in drivers/tty/serial/8250/8250.h? Or do you have some better
-> place in mind?
 
-I've not looked at it enough to decide if it's doable or not. I'm happy
-either way - both patches are progress the right way!
+Hi Felipe
+
+Just tested these OMAP serial changes at commit 
+e36851d0fa94b0f7802b3cc80406dbd3ef4f2f16 ("serial: omap: fix compile 
+breakage").  There's good news and bad news...
+
+The good news is that after applying this series, the 'OMAP4 UART garbage 
+on long transmit buffers when PM is enabled' bug:
+
+http://www.pwsan.com/omap/testlogs/test_v3.6-rc5/20120908202511/pm/4430es2panda/4430es2panda_log.txt
+
+... goes away.  (Unclear if it's because the underlying bug was fixed, or 
+if unrelated changes are masking it.)  Not sure what caused the problem to 
+go away exactly, but it's one of the changes between d37c6ceb and bf63a08.  
+So that's good!
+
+The bad news is that N800 no longer boots -- or the UART dies during 
+serial init:
+
+http://www.pwsan.com/omap/testlogs/test_tty_next_e36851d0/20120910020323/boot/2420n800/2420n800_log.txt
+
+The problem doesn't seem to affect the 2430SDP.
+
+Could you put together a patch to fix N800?
+
+
+regards
+
+- Paul
