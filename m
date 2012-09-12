@@ -1,44 +1,47 @@
-From: Paul Walmsley <paul@pwsan.com>
-Subject: Re: [PATCH v4 00/21] OMAP UART Patches
-Date: Tue, 11 Sep 2012 22:02:48 +0000 (UTC)
-Message-ID: <alpine.DEB.2.00.1209112141220.9444@utopia.booyaka.com>
-References: <20120906122948.GC29202@arwen.pp.htv.fi> <1346935540-1792-1-git-send-email-balbi@ti.com> <alpine.DEB.2.00.1209062137000.11516@utopia.booyaka.com>
+From: Anton Vorontsov <anton.vorontsov@linaro.org>
+Subject: Re: [PATCH 08/12] tty/serial: Add kgdb_nmi driver
+Date: Tue, 11 Sep 2012 17:41:25 -0700
+Message-ID: <20120912004125.GA19637@lizard>
+References: <20120911093042.GA12471@lizard>
+ <1347356106-25368-8-git-send-email-anton.vorontsov@linaro.org>
+ <20120911151420.14a29485@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <alpine.DEB.2.00.1209062137000.11516@utopia.booyaka.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Felipe Balbi <balbi@ti.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, alan@linux.intel.com, Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Shubhrajyoti Datta <shubhrajyoti@ti.com>, Sourav Poddar <sourav.poddar@ti.com>
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:58189 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752113Ab2ILAoU (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 11 Sep 2012 20:44:20 -0400
+Received: by pbbrr13 with SMTP id rr13so1518799pbb.19
+        for <linux-serial@vger.kernel.org>; Tue, 11 Sep 2012 17:44:19 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <20120911151420.14a29485@pyramind.ukuu.org.uk>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>, Colin Cross <ccross@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
 
+On Tue, Sep 11, 2012 at 03:14:20PM +0100, Alan Cox wrote:
+> > +struct kgdb_nmi_tty_priv {
+> > +	struct tty_port port;
+> > +	int opened;
+> > +	struct tasklet_struct tlet;
+> > +	STRUCT_KFIFO(char, KGDB_NMI_FIFO_SIZE) fifo;
+> 
+> I don't see where "opened" is used.
 
-Hi Felipe
+Yup, a leftover, with tty_port no longer needed. Thanks for noticing.
 
-Just tested these OMAP serial changes at commit 
-e36851d0fa94b0f7802b3cc80406dbd3ef4f2f16 ("serial: omap: fix compile 
-breakage").  There's good news and bad news...
+> > +static const struct tty_operations kgdb_nmi_tty_ops = {
+> > +	.open		= kgdb_nmi_tty_open,
+> > +	.close		= kgdb_nmi_tty_close,
+> > +	.install	= kgdb_nmi_tty_install,
+> > +	.cleanup	= kgdb_nmi_tty_cleanup,
+> > +	.write_room	= kgdb_nmi_tty_write_room,
+> > +	.write		= kgdb_nmi_tty_write,
+> 
+> And a hangup method (just using tty_port helpers will do the job - it's
+> needed so vhangup() works as expected on a port)
 
-The good news is that after applying this series, the 'OMAP4 UART garbage 
-on long transmit buffers when PM is enabled' bug:
-
-http://www.pwsan.com/omap/testlogs/test_v3.6-rc5/20120908202511/pm/4430es2panda/4430es2panda_log.txt
-
-... goes away.  (Unclear if it's because the underlying bug was fixed, or 
-if unrelated changes are masking it.)  Not sure what caused the problem to 
-go away exactly, but it's one of the changes between d37c6ceb and bf63a08.  
-So that's good!
-
-The bad news is that N800 no longer boots -- or the UART dies during 
-serial init:
-
-http://www.pwsan.com/omap/testlogs/test_tty_next_e36851d0/20120910020323/boot/2420n800/2420n800_log.txt
-
-The problem doesn't seem to affect the 2430SDP.
-
-Could you put together a patch to fix N800?
-
-
-regards
-
-- Paul
+Will add. Thanks a lot!
