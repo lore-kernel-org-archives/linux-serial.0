@@ -1,74 +1,42 @@
-From: Anton Vorontsov <anton.vorontsov@linaro.org>
-Subject: Re: [RFC] tty/serial/kgdboc: Add and wire up clear_irqs callback
-Date: Wed, 12 Sep 2012 03:32:05 -0700
-Message-ID: <20120912103202.GA26690@lizard>
-References: <20120911093042.GA12471@lizard>
- <1347356106-25368-6-git-send-email-anton.vorontsov@linaro.org>
- <20120911151540.362001c6@pyramind.ukuu.org.uk>
- <20120912033209.GA32156@lizard>
- <CAMbhsRTmZyxFE-vAa-UvNE8KJ2f0cfXP7mncXKcpUiNF6C9PUQ@mail.gmail.com>
- <20120912040657.GA3880@lizard>
- <20120912104420.06a88957@bob.linux.org.uk>
+From: Paul Walmsley <paul@pwsan.com>
+Subject: Re: [PATCH v4 00/21] OMAP UART Patches
+Date: Wed, 12 Sep 2012 20:25:30 +0000 (UTC)
+Message-ID: <alpine.DEB.2.00.1209122025020.17903@utopia.booyaka.com>
+References: <20120906122948.GC29202@arwen.pp.htv.fi> <1346935540-1792-1-git-send-email-balbi@ti.com> <alpine.DEB.2.00.1209062137000.11516@utopia.booyaka.com> <alpine.DEB.2.00.1209112141220.9444@utopia.booyaka.com> <20120912062259.GC18563@arwen.pp.htv.fi>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20120912104420.06a88957@bob.linux.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: Colin Cross <ccross@android.com>, Thomas Gleixner <tglx@linutronix.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from utopia.booyaka.com ([74.50.51.50]:41291 "EHLO
+	utopia.booyaka.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751901Ab2ILUZb (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 12 Sep 2012 16:25:31 -0400
+In-Reply-To: <20120912062259.GC18563@arwen.pp.htv.fi>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Felipe Balbi <balbi@ti.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, alan@linux.intel.com, Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Shubhrajyoti Datta <shubhrajyoti@ti.com>, Sourav Poddar <sourav.poddar@ti.com>
 
-On Wed, Sep 12, 2012 at 10:44:20AM +0100, Alan Cox wrote:
-> > Of course, if Alan is OK with this, I'm more than OK too. :-)
+Hi
+
+On Wed, 12 Sep 2012, Felipe Balbi wrote:
+
+> On Tue, Sep 11, 2012 at 10:02:48PM +0000, Paul Walmsley wrote:
 > 
-> It may well be better.
-> 
-> > (But the polling routines would need to clear all interrupts, not
-> > just rx/tx. For example, if the controller indicated some error, and
-> > nobody clears it, then we'll start reentering infinitely.)
-> 
-> For a lot of devices and platforms you'd probably mask them instead ?
-
-If there is no way to clear them, yes, we obviously would want to
-mask them before using the port for NMI debugger. Then we'd need
-three callbacks:
-
-- mask_all_irqs_but_rx() -- used before we want to start using the port
-  for the NMI debugger;
-- clear_rx_irq() -- (optional) clears rx IRQ for controllers that need
-  it;
-- restore_irqs() -- unmasks interrupts that were previously masked.
-
-If we ever encounter a case when just clearing interrupts doesn't work,
-we can surely implement the above scheme... It's just so far I don't
-see any need to over-design this, but again, it's your call, I told my
-opinion on this, but I'll do whatever you guys like more. :-)
-
-> > > If you use a clear_irqs callback, you can drop characters if
-> > > one arrives between the last character buffer read and calling
-> > > clear_irqs.
+> > The bad news is that N800 no longer boots -- or the UART dies during 
+> > serial init:
 > > 
-> > Only if we call clear_irqs() after reading the characters, but we do
-> > it before. So if new characters are available, we will reenter NMI,
-> > which is OK.
+> > http://www.pwsan.com/omap/testlogs/test_tty_next_e36851d0/20120910020323/boot/2420n800/2420n800_log.txt
+> > 
+> > The problem doesn't seem to affect the 2430SDP.
+> > 
+> > Could you put together a patch to fix N800?
 > 
-> Recursively or not... again you get platform specific magic in places
-> we don't want.
+> I'll see what I can do. BTW, is that log with DEBUG_LL enabled ?
 
-I really really don't see how this is platform-specific. All we ask the
-serial driver is to quiesce its interrupt. Whether we can handle
-NMIs/IRQs recursively or not is not serial driver's worry, since its
-IRQ handler is not going to fire anyway. The polling routines already
-gave us the power to steal/inject the data, so now we're stealing the
-interrupt too.
+Yes.  Here's the .config that was used on N800:
 
-How we use the callback is indeed platform-specific, but so is the
-whole KGDB, and that knowledge is hidden there.
+http://www.pwsan.com/omap/testlogs/test_tty_next_e36851d0/20120910020323/build/n800_b_testconfig/Kconfig
 
-For serial driver it's all pretty much clear: lower the interrupt, but
-don't turn off rx detection.
 
-Thanks!
-
-Anton.
+- Paul
