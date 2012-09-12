@@ -1,73 +1,105 @@
-From: Colin Cross <ccross@android.com>
-Subject: Re: [RFC] tty/serial/kgdboc: Add and wire up clear_irqs callback
-Date: Tue, 11 Sep 2012 21:40:35 -0700
-Message-ID: <CAMbhsRT+JR9-qzADiPXo9e59oHFCY4g6HNObKNMeciC5Xj6m6g@mail.gmail.com>
-References: <20120911093042.GA12471@lizard>
-	<1347356106-25368-6-git-send-email-anton.vorontsov@linaro.org>
-	<20120911151540.362001c6@pyramind.ukuu.org.uk>
-	<20120912033209.GA32156@lizard>
-	<CAMbhsRTmZyxFE-vAa-UvNE8KJ2f0cfXP7mncXKcpUiNF6C9PUQ@mail.gmail.com>
-	<20120912040657.GA3880@lizard>
+From: Felipe Balbi <balbi@ti.com>
+Subject: Re: [PATCH v4 00/21] OMAP UART Patches
+Date: Wed, 12 Sep 2012 09:23:01 +0300
+Message-ID: <20120912062259.GC18563@arwen.pp.htv.fi>
+References: <20120906122948.GC29202@arwen.pp.htv.fi>
+ <1346935540-1792-1-git-send-email-balbi@ti.com>
+ <alpine.DEB.2.00.1209062137000.11516@utopia.booyaka.com>
+ <alpine.DEB.2.00.1209112141220.9444@utopia.booyaka.com>
+Reply-To: balbi@ti.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="i7F3eY7HS/tUJxUd"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ie0-f174.google.com ([209.85.223.174]:43630 "EHLO
-	mail-ie0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751160Ab2ILEkg (ORCPT
+Received: from na3sys009aog127.obsmtp.com ([74.125.149.107]:42194 "EHLO
+	na3sys009aog127.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1756199Ab2ILG1e (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Sep 2012 00:40:36 -0400
-Received: by ieje11 with SMTP id e11so2222091iej.19
-        for <linux-serial@vger.kernel.org>; Tue, 11 Sep 2012 21:40:35 -0700 (PDT)
-In-Reply-To: <20120912040657.GA3880@lizard>
+	Wed, 12 Sep 2012 02:27:34 -0400
+Received: by fapp1 with SMTP id p1so750055fap.1
+        for <linux-serial@vger.kernel.org>; Tue, 11 Sep 2012 23:27:32 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.00.1209112141220.9444@utopia.booyaka.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Anton Vorontsov <anton.vorontsov@linaro.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, =?ISO-8859-1?Q?Arve_Hj=F8nnev=E5g?= <arve@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+To: Paul Walmsley <paul@pwsan.com>
+Cc: Felipe Balbi <balbi@ti.com>, Greg KH <gregkh@linuxfoundation.org>, alan@linux.intel.com, Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Shubhrajyoti Datta <shubhrajyoti@ti.com>, Sourav Poddar <sourav.poddar@ti.com>
 
-On Tue, Sep 11, 2012 at 9:06 PM, Anton Vorontsov
-<anton.vorontsov@linaro.org> wrote:
-> On Tue, Sep 11, 2012 at 08:42:46PM -0700, Colin Cross wrote:
-> [...]
->> > The "problem" is in the last step. If we exit NMI without making UART
->> > know that we're done with the interrupt, we will reenter the NMI
->> > immediately, even without any new characters from the UART.
->>
->> The UART irq line should go low when you read the character out of the
->
-> Probably some controllers may lower the line by themselves, but not
-> all, and probably most of them need an explicit clear.
 
-Anything 8250-based will clear the interrupt automatically, assuming
-you read the status registers as well as the character register.
+--i7F3eY7HS/tUJxUd
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->> receive buffer, or the polling rx function should clear the interrupt
->> for you.
->
-> Yes, that's an option. But that way we add a new semantic for the
-> polling routines, and effecitvely we just merge the two callbacks.
->
-> Of course, if Alan is OK with this, I'm more than OK too. :-)
->
-> (But the polling routines would need to clear all interrupts, not
-> just rx/tx. For example, if the controller indicated some error, and
-> nobody clears it, then we'll start reentering infinitely.)
+Hi,
 
-For exynos5, the only non-8250 based serial port I've come across, we
-clear all interrupts in the rx poll function (see
-https://android.googlesource.com/kernel/exynos/+/ef427aafffb7153dde59745e440fd7ec41ea969d/arch/arm/mach-exynos/exynos_fiq_debugger.c).
+On Tue, Sep 11, 2012 at 10:02:48PM +0000, Paul Walmsley wrote:
+>=20
+> Hi Felipe
+>=20
+> Just tested these OMAP serial changes at commit=20
+> e36851d0fa94b0f7802b3cc80406dbd3ef4f2f16 ("serial: omap: fix compile=20
+> breakage").  There's good news and bad news...
+>=20
+> The good news is that after applying this series, the 'OMAP4 UART garbage=
+=20
+> on long transmit buffers when PM is enabled' bug:
+>=20
+> http://www.pwsan.com/omap/testlogs/test_v3.6-rc5/20120908202511/pm/4430es=
+2panda/4430es2panda_log.txt
+>=20
+> ... goes away.  (Unclear if it's because the underlying bug was fixed, or=
+=20
+> if unrelated changes are masking it.)  Not sure what caused the problem t=
+o=20
+> go away exactly, but it's one of the changes between d37c6ceb and bf63a08=
+=2E =20
+> So that's good!
 
->> If you use a clear_irqs callback, you can drop characters if
->> one arrives between the last character buffer read and calling
->> clear_irqs.
->
-> Only if we call clear_irqs() after reading the characters, but we do
-> it before. So if new characters are available, we will reenter NMI,
-> which is OK.
->
-> But if used incorrectly, it truly can cause dropping (or staling) of
-> characters, so I'd better add some comments about this.
+I'd point the finger at sticking to put_autosuspend() as that would give
+HW enough time to actually unload all bytes from its FIFO through the
+UART lines. can you check if forcing the autosuspend_delay to -1
+triggers the issue again ? If it does, it's some help from autosuspend,
+which would mean we still have the problem and needs to be properly
+fixed.
 
-What does clear_irqs() mean for a status or tx interrupt?  The tx
-interrupt will generally re-assert as long as the tx fifo is empty,
-which would require disabling it.  On 8250 ports, status interrupts
-will re-assert until the corresponding status register is read.
+> The bad news is that N800 no longer boots -- or the UART dies during=20
+> serial init:
+>=20
+> http://www.pwsan.com/omap/testlogs/test_tty_next_e36851d0/20120910020323/=
+boot/2420n800/2420n800_log.txt
+>=20
+> The problem doesn't seem to affect the 2430SDP.
+>=20
+> Could you put together a patch to fix N800?
+
+I'll see what I can do. BTW, is that log with DEBUG_LL enabled ?
+
+cheers
+
+--=20
+balbi
+
+--i7F3eY7HS/tUJxUd
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+
+iQIcBAEBAgAGBQJQUCpCAAoJEIaOsuA1yqREnhEQAI9asEuO04CahEB8Dh5jCm5A
+VNJ8hg/zvaL4eEtZ4yB2P+inDPogqFCpfdMXnwQJpHNg5jR+TASmsxITOO16q4/R
+B2Cv+ayZijXAHm3X2e8GO11X777Usv3bCm8BznNZFBjggDqJfeaIzZVcp+1RkaAQ
+VOOKDpvTmj2m/vM4kCWOMynFB9B8i0aIncxXcx/WWguzczvTRq4Q8AfHnJb7HEGH
+AWyVHbVJKUbLZvWUujoLgKRjqf6cH6/SHvLHhNUYOuaC4JsPtEVI8G2ptvvVD1tB
+ho2OQboA3sQBpzbNGgyAf3qWxl9cO7e2cpGKlaZY39MLYM4TRG3kHtqrDEamnAMU
+5nZTvLJaJR1VAeUQ6DHMk2Cx65wd7UP0tAtQFoEc7wTMnVSfp5d1fIVJlBGzPpYW
+DvQM8LTYMC3C3n15vt6vksHy3kROXoKoNYy4xvIL7YkAvJIkLbkfwBkLcRpt+WTs
+rZdHKPJ/3q5KRr4y3gYEO0+1sn50XBffsfLLfr1D8q0SZ+9n4UHtb/iDAVz/xjrc
+GSV3/0ZtZ6i52DnIkwbiYH2CK3kfOqI3V2+cn30KsFxXnLz1QasHMSVoYqW632+m
+cein7FgWlgiYtLfNpmLRpSnAjwEFhcjOQAtZuWnOH/X6F9Sr1e+Fgdjyd1Obq1IG
+WTD4ChIk3JVFq+RJx0M/
+=Twiu
+-----END PGP SIGNATURE-----
+
+--i7F3eY7HS/tUJxUd--
