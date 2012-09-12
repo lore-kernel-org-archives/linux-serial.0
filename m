@@ -1,45 +1,87 @@
-From: Sachin Kamat <sachin.kamat@linaro.org>
-Subject: [PATCH] serial: Samsung: Fix return value
-Date: Wed, 12 Sep 2012 12:00:01 +0530
-Message-ID: <1347431401-3306-1-git-send-email-sachin.kamat@linaro.org>
+From: Anton Vorontsov <anton.vorontsov@linaro.org>
+Subject: Re: [RFC] tty/serial/kgdboc: Add and wire up clear_irqs callback
+Date: Wed, 12 Sep 2012 00:01:54 -0700
+Message-ID: <20120912070154.GA8932@lizard>
+References: <20120911093042.GA12471@lizard>
+ <1347356106-25368-6-git-send-email-anton.vorontsov@linaro.org>
+ <20120911151540.362001c6@pyramind.ukuu.org.uk>
+ <20120912033209.GA32156@lizard>
+ <CAMbhsRTmZyxFE-vAa-UvNE8KJ2f0cfXP7mncXKcpUiNF6C9PUQ@mail.gmail.com>
+ <20120912040657.GA3880@lizard>
+ <CAMbhsRT+JR9-qzADiPXo9e59oHFCY4g6HNObKNMeciC5Xj6m6g@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:39132 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750726Ab2ILGdF (ORCPT
+Received: from mail-ie0-f174.google.com ([209.85.223.174]:38317 "EHLO
+	mail-ie0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753126Ab2ILHEc (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Sep 2012 02:33:05 -0400
-Received: by pbbrr13 with SMTP id rr13so1815541pbb.19
-        for <linux-serial@vger.kernel.org>; Tue, 11 Sep 2012 23:33:05 -0700 (PDT)
+	Wed, 12 Sep 2012 03:04:32 -0400
+Received: by ieje11 with SMTP id e11so2363403iej.19
+        for <linux-serial@vger.kernel.org>; Wed, 12 Sep 2012 00:04:31 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <CAMbhsRT+JR9-qzADiPXo9e59oHFCY4g6HNObKNMeciC5Xj6m6g@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: alan@linux.intel.com, gregkh@linuxfoundation.org, sachin.kamat@linaro.org, patches@linaro.org
+To: Colin Cross <ccross@android.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
 
-Return the value returned by the failing function instead
-of -1 (which does not convey the right error information).
+On Tue, Sep 11, 2012 at 09:40:35PM -0700, Colin Cross wrote:
+[..]
+> >> the polling rx function should clear the interrupt
+> >> for you.
+> >
+> > Yes, that's an option. But that way we add a new semantic for the
+> > polling routines, and effecitvely we just merge the two callbacks.
+> >
+> > Of course, if Alan is OK with this, I'm more than OK too. :-)
+> >
+> > (But the polling routines would need to clear all interrupts, not
+> > just rx/tx. For example, if the controller indicated some error, and
+> > nobody clears it, then we'll start reentering infinitely.)
+> 
+> For exynos5, the only non-8250 based serial port I've come across, we
+> clear all interrupts in the rx poll function (see
+> https://android.googlesource.com/kernel/exynos/+/ef427aafffb7153dde59745e440fd7ec41ea969d/arch/arm/mach-exynos/exynos_fiq_debugger.c).
 
-Fixes the following smatch warning:
-drivers/tty/serial/samsung.c:1687 s3c24xx_serial_modinit() info:
-why not propagate 'ret' from uart_register_driver() instead of -1?
+Yes, but if you'd like to merge your code, some might ask you: why?
 
-Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
----
- drivers/tty/serial/samsung.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+You'd answer that you need to clear the interrupts, otherwise you'll
+keep reentering NMI. The next that you might get is this: "this does
+not belong to the getc callback, it's better to factor it out". :-) And
+here comes clear_irq() (or alike, see below).
 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index bdaa06f..8eef114 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1684,7 +1684,7 @@ static int __init s3c24xx_serial_modinit(void)
- 	ret = uart_register_driver(&s3c24xx_uart_drv);
- 	if (ret < 0) {
- 		pr_err("Failed to register Samsung UART driver\n");
--		return -1;
-+		return ret;
- 	}
- 
- 	return platform_driver_register(&samsung_serial_driver);
--- 
-1.7.4.1
+> >> If you use a clear_irqs callback, you can drop characters if
+> >> one arrives between the last character buffer read and calling
+> >> clear_irqs.
+> >
+> > Only if we call clear_irqs() after reading the characters, but we do
+> > it before. So if new characters are available, we will reenter NMI,
+> > which is OK.
+> >
+> > But if used incorrectly, it truly can cause dropping (or staling) of
+> > characters, so I'd better add some comments about this.
+> 
+> What does clear_irqs() mean for a status or tx interrupt?  The tx
+> interrupt will generally re-assert as long as the tx fifo is empty,
+> which would require disabling it.
 
+Yup, and that's exactly what we do: http://lkml.org/lkml/2012/9/11/119
+
+Your words made me think that clear_irq() might be indeed a somewhat
+inappropriate name. We have to be even stricter on its definition and
+behaviour.
+
+So, returning to your question "What does clear_irqs() mean", I'd
+answer that: the function must do whatever needed to lower the IRQ
+line, plus the function must leave the port in the state that it's
+still able to throw RX interrupts after the call.
+
+So, the 100% proper name for this function would be this:
+
+	quiesce_irqs_but_rx()
+
+It's a bit long, but does exactly what the name states.
+
+Thanks!
+Anton.
