@@ -1,87 +1,49 @@
-From: Anton Vorontsov <anton.vorontsov@linaro.org>
+From: Alan Cox <alan@linux.intel.com>
 Subject: Re: [RFC] tty/serial/kgdboc: Add and wire up clear_irqs callback
-Date: Wed, 12 Sep 2012 00:01:54 -0700
-Message-ID: <20120912070154.GA8932@lizard>
+Date: Wed, 12 Sep 2012 10:44:20 +0100
+Message-ID: <20120912104420.06a88957@bob.linux.org.uk>
 References: <20120911093042.GA12471@lizard>
- <1347356106-25368-6-git-send-email-anton.vorontsov@linaro.org>
- <20120911151540.362001c6@pyramind.ukuu.org.uk>
- <20120912033209.GA32156@lizard>
- <CAMbhsRTmZyxFE-vAa-UvNE8KJ2f0cfXP7mncXKcpUiNF6C9PUQ@mail.gmail.com>
- <20120912040657.GA3880@lizard>
- <CAMbhsRT+JR9-qzADiPXo9e59oHFCY4g6HNObKNMeciC5Xj6m6g@mail.gmail.com>
+	<1347356106-25368-6-git-send-email-anton.vorontsov@linaro.org>
+	<20120911151540.362001c6@pyramind.ukuu.org.uk>
+	<20120912033209.GA32156@lizard>
+	<CAMbhsRTmZyxFE-vAa-UvNE8KJ2f0cfXP7mncXKcpUiNF6C9PUQ@mail.gmail.com>
+	<20120912040657.GA3880@lizard>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ie0-f174.google.com ([209.85.223.174]:38317 "EHLO
-	mail-ie0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753126Ab2ILHEc (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Sep 2012 03:04:32 -0400
-Received: by ieje11 with SMTP id e11so2363403iej.19
-        for <linux-serial@vger.kernel.org>; Wed, 12 Sep 2012 00:04:31 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <CAMbhsRT+JR9-qzADiPXo9e59oHFCY4g6HNObKNMeciC5Xj6m6g@mail.gmail.com>
+Received: from mga01.intel.com ([192.55.52.88]:45212 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752014Ab2ILJ03 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 12 Sep 2012 05:26:29 -0400
+In-Reply-To: <20120912040657.GA3880@lizard>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Colin Cross <ccross@android.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+To: Anton Vorontsov <anton.vorontsov@linaro.org>
+Cc: Colin Cross <ccross@android.com>, Thomas Gleixner <tglx@linutronix.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Arve =?ISO-8859-1?B?SGr4bm5lduVn?= <arve@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
 
-On Tue, Sep 11, 2012 at 09:40:35PM -0700, Colin Cross wrote:
-[..]
-> >> the polling rx function should clear the interrupt
-> >> for you.
-> >
-> > Yes, that's an option. But that way we add a new semantic for the
-> > polling routines, and effecitvely we just merge the two callbacks.
-> >
-> > Of course, if Alan is OK with this, I'm more than OK too. :-)
-> >
-> > (But the polling routines would need to clear all interrupts, not
-> > just rx/tx. For example, if the controller indicated some error, and
-> > nobody clears it, then we'll start reentering infinitely.)
+> Of course, if Alan is OK with this, I'm more than OK too. :-)
+
+It may well be better.
+
+> (But the polling routines would need to clear all interrupts, not
+> just rx/tx. For example, if the controller indicated some error, and
+> nobody clears it, then we'll start reentering infinitely.)
+
+For a lot of devices and platforms you'd probably mask them instead ?
+
 > 
-> For exynos5, the only non-8250 based serial port I've come across, we
-> clear all interrupts in the rx poll function (see
-> https://android.googlesource.com/kernel/exynos/+/ef427aafffb7153dde59745e440fd7ec41ea969d/arch/arm/mach-exynos/exynos_fiq_debugger.c).
-
-Yes, but if you'd like to merge your code, some might ask you: why?
-
-You'd answer that you need to clear the interrupts, otherwise you'll
-keep reentering NMI. The next that you might get is this: "this does
-not belong to the getc callback, it's better to factor it out". :-) And
-here comes clear_irq() (or alike, see below).
-
-> >> If you use a clear_irqs callback, you can drop characters if
-> >> one arrives between the last character buffer read and calling
-> >> clear_irqs.
-> >
-> > Only if we call clear_irqs() after reading the characters, but we do
-> > it before. So if new characters are available, we will reenter NMI,
-> > which is OK.
-> >
-> > But if used incorrectly, it truly can cause dropping (or staling) of
-> > characters, so I'd better add some comments about this.
+> > If you use a clear_irqs callback, you can drop characters if
+> > one arrives between the last character buffer read and calling
+> > clear_irqs.
 > 
-> What does clear_irqs() mean for a status or tx interrupt?  The tx
-> interrupt will generally re-assert as long as the tx fifo is empty,
-> which would require disabling it.
+> Only if we call clear_irqs() after reading the characters, but we do
+> it before. So if new characters are available, we will reenter NMI,
+> which is OK.
 
-Yup, and that's exactly what we do: http://lkml.org/lkml/2012/9/11/119
+Recursively or not... again you get platform specific magic in places
+we don't want.
 
-Your words made me think that clear_irq() might be indeed a somewhat
-inappropriate name. We have to be even stricter on its definition and
-behaviour.
+In the driver poll method for most uarts is going to be at least buried
+in what is usually arch specific uarts.
 
-So, returning to your question "What does clear_irqs() mean", I'd
-answer that: the function must do whatever needed to lower the IRQ
-line, plus the function must leave the port in the state that it's
-still able to throw RX interrupts after the call.
-
-So, the 100% proper name for this function would be this:
-
-	quiesce_irqs_but_rx()
-
-It's a bit long, but does exactly what the name states.
-
-Thanks!
-Anton.
