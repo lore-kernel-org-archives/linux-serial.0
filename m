@@ -1,80 +1,75 @@
 From: Anton Vorontsov <anton.vorontsov@linaro.org>
-Subject: [PATCH 06/11] tty/serial/amba-pl011: Quiesce interrupts in poll_get_char
-Date: Thu, 13 Sep 2012 08:03:30 -0700
-Message-ID: <1347548615-18227-6-git-send-email-anton.vorontsov@linaro.org>
+Subject: [PATCH 10/11] ARM: VIC: Add a couple of low-level FIQ management helpers
+Date: Thu, 13 Sep 2012 08:03:34 -0700
+Message-ID: <1347548615-18227-10-git-send-email-anton.vorontsov@linaro.org>
 References: <20120913150133.GA16238@lizard>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:53115 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758157Ab2IMPGk (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 13 Sep 2012 11:06:40 -0400
-Received: by pbbrr13 with SMTP id rr13so4090760pbb.19
-        for <linux-serial@vger.kernel.org>; Thu, 13 Sep 2012 08:06:39 -0700 (PDT)
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20120913150133.GA16238@lizard>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>
 Cc: =?UTF-8?q?Arve=20Hj=C3=B8nnev=C3=A5g?= <arve@android.com>, Colin Cross <ccross@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 
-We need to quiesce interrupts in the poll_get_char routine, otherwise,
-if used with KGDB NMI debugger, we'll keep reentering the NMI.
-
-Quiescing interrupts is pretty straightforward, except for TXIM
-interrupt. The interrupt has "ready to transmit" meaning, so it's
-almost always raised, and the only way to silence it is to mask it. But
-that's OK, ops->start_tx will unmask it.
+Just a couple of calls to manage VIC FIQ routing. We'll use them for
+KGDB FIQ support on ARM Versatile machines.
 
 Signed-off-by: Anton Vorontsov <anton.vorontsov@linaro.org>
 ---
- drivers/tty/serial/amba-pl011.c | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+ arch/arm/common/vic.c               | 28 ++++++++++++++++++++++++++++
+ arch/arm/include/asm/hardware/vic.h |  2 ++
+ 2 files changed, 30 insertions(+)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 45137e4..459f8ba 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1284,11 +1284,40 @@ static void pl011_break_ctl(struct uart_port *port, int break_state)
- }
+diff --git a/arch/arm/common/vic.c b/arch/arm/common/vic.c
+index e0d5388..df2fc82 100644
+--- a/arch/arm/common/vic.c
++++ b/arch/arm/common/vic.c
+@@ -66,6 +66,34 @@ static struct vic_device vic_devices[CONFIG_ARM_VIC_NR];
  
- #ifdef CONFIG_CONSOLE_POLL
-+
-+static void pl011_quiesce_irqs(struct uart_port *port)
+ static int vic_id;
+ 
++static void __iomem *vic_base(struct irq_data *d)
 +{
-+	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-+	unsigned char __iomem *regs = uap->port.membase;
-+
-+	writew(readw(regs + UART011_MIS), regs + UART011_ICR);
-+	/*
-+	 * There is no way to clear TXIM as this is "ready to transmit IRQ", so
-+	 * we simply mask it. start_tx() will unmask it.
-+	 *
-+	 * Note we can race with start_tx(), and if the race happens, the
-+	 * polling user might get another interrupt just after we clear it.
-+	 * But it should be OK and can happen even w/o the race, e.g.
-+	 * controller immediately got some new data and raised the IRQ.
-+	 *
-+	 * And whoever uses polling routines assumes that it manages the device
-+	 * (including tx queue), so we're also fine with start_tx()'s caller
-+	 * side.
-+	 */
-+	writew(readw(regs + UART011_IMSC) & ~UART011_TXIM, regs + UART011_IMSC);
++	return (void __iomem *)irq_data_get_irq_chip_data(d);
 +}
 +
- static int pl011_get_poll_char(struct uart_port *port)
- {
- 	struct uart_amba_port *uap = (struct uart_amba_port *)port;
- 	unsigned int status;
- 
-+	/*
-+	 * The caller might need IRQs lowered, e.g. if used with KDB NMI
-+	 * debugger.
-+	 */
-+	pl011_quiesce_irqs(port);
++void vic_fiq_select(unsigned int irq, bool on)
++{
++	void __iomem *base = vic_base(&irq_to_desc(irq)->irq_data);
++	void __iomem *sel = base + VIC_INT_SELECT;
++	u32 msk = 1 << irq;
++	u32 val;
 +
- 	status = readw(uap->port.membase + UART01x_FR);
- 	if (status & UART01x_FR_RXFE)
- 		return NO_POLL_CHAR;
++	pr_debug("rerouting VIC vector %d to %s\n", irq, on ? "FIQ" : "IRQ");
++
++	val = readl(sel);
++	val &= ~msk;
++	if (on)
++		val |= msk;
++	writel(val, sel);
++}
++
++bool vic_is_fiq_rised(unsigned int irq)
++{
++	void __iomem *base = vic_base(&irq_to_desc(irq)->irq_data);
++
++	return readl(base + VIC_FIQ_STATUS) & (1 << irq);
++}
++
+ /**
+  * vic_init2 - common initialisation code
+  * @base: Base of the VIC.
+diff --git a/arch/arm/include/asm/hardware/vic.h b/arch/arm/include/asm/hardware/vic.h
+index e14af1a..2728975 100644
+--- a/arch/arm/include/asm/hardware/vic.h
++++ b/arch/arm/include/asm/hardware/vic.h
+@@ -52,6 +52,8 @@ void __vic_init(void __iomem *base, unsigned int irq_start, u32 vic_sources,
+ void vic_init(void __iomem *base, unsigned int irq_start, u32 vic_sources, u32 resume_sources);
+ int vic_of_init(struct device_node *node, struct device_node *parent);
+ void vic_handle_irq(struct pt_regs *regs);
++void vic_fiq_select(unsigned int irq, bool on);
++bool vic_is_fiq_rised(unsigned int irq);
+ 
+ #endif /* __ASSEMBLY__ */
+ #endif
 -- 
 1.7.11.5
-
