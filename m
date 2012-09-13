@@ -1,48 +1,65 @@
-From: Huang Shijie <b32955@freescale.com>
-Subject: Re: [PATCH 1/2] serial: mxs-auart: fix the wrong setting order
-Date: Thu, 13 Sep 2012 13:45:08 +0800
-Message-ID: <505172E4.1070300@freescale.com>
-References: <1346985521-2248-1-git-send-email-shijie8@gmail.com> <20120907023841.GF26709@S2101-09.ap.freescale.net> <50495F6F.4040800@freescale.com> <50516EF6.7070306@bluegiga.com>
+From: Anton Vorontsov <anton.vorontsov@linaro.org>
+Subject: [PATCH v7 0/11] KGDB/KDB FIQ (NMI) debugger
+Date: Thu, 13 Sep 2012 08:01:33 -0700
+Message-ID: <20120913150133.GA16238@lizard>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=utf-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from va3ehsobe001.messaging.microsoft.com ([216.32.180.11]:17456
-	"EHLO va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750822Ab2IMFm5 convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 13 Sep 2012 01:42:57 -0400
-In-Reply-To: <50516EF6.7070306@bluegiga.com>
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:47194 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751492Ab2IMPEL (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 13 Sep 2012 11:04:11 -0400
+Received: by pbbrr13 with SMTP id rr13so4087036pbb.19
+        for <linux-serial@vger.kernel.org>; Thu, 13 Sep 2012 08:04:11 -0700 (PDT)
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Lauri Hintsala <lauri.hintsala@bluegiga.com>
-Cc: Huang Shijie <shijie8@gmail.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>
+Cc: Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>, Colin Cross <ccross@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
 
-=E4=BA=8E 2012=E5=B9=B409=E6=9C=8813=E6=97=A5 13:28, Lauri Hintsala =E5=
-=86=99=E9=81=93:
-> Hi Huang,
->
-> On 09/07/2012 05:43 AM, Huang Shijie wrote:
->> I found this bug when i tried to add DMA support for MXS-AUART.
->
-> What is the status of DMA support? We could help you testing your=20
-> patches.
-thanks.
+Hi all,
 
-I maybe send out the new patch set in next week. I resume this work=20
-recently.
+Here comes the lucky v7:
 
-BR
-Huang Shijie
->
-> Best regards,
-> Lauri Hintsala
->
+- Per Alan Cox's suggestion added hangup method and removed a small
+  leftover;
+- Per Colin Cross' suggestion moved IRQ quiescing logic into
+  poll_get_char routine. IIUC, Alan is less unhappy about it.  As a
+  result, clear_irq() callback dropped.
 
+These patches can be found in the following repo (based on tty-next):
+
+	git://git.infradead.org/users/cbou/linux-nmi-kdb.git master
+
+Old changelogs and rationale for these patches can be found here:
+
+	v1-v5, rationale: http://lkml.org/lkml/2012/9/10/2
+	v6: http://lkml.org/lkml/2012/9/10/2
+
+Thanks,
 
 --
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+ arch/arm/Kconfig                    |  19 ++
+ arch/arm/common/vic.c               |  28 ++
+ arch/arm/include/asm/hardware/vic.h |   2 +
+ arch/arm/include/asm/kgdb.h         |   8 +
+ arch/arm/kernel/Makefile            |   1 +
+ arch/arm/kernel/entry-armv.S        | 167 +-----------
+ arch/arm/kernel/entry-header.S      | 170 +++++++++++++
+ arch/arm/kernel/kgdb_fiq.c          |  99 ++++++++
+ arch/arm/kernel/kgdb_fiq_entry.S    |  87 +++++++
+ arch/arm/mach-versatile/Makefile    |   1 +
+ arch/arm/mach-versatile/kgdb_fiq.c  |  31 +++
+ drivers/tty/serial/Kconfig          |  19 ++
+ drivers/tty/serial/Makefile         |   1 +
+ drivers/tty/serial/amba-pl011.c     |  73 +++++-
+ drivers/tty/serial/kgdb_nmi.c       | 396 +++++++++++++++++++++++++++++
+ drivers/tty/serial/kgdboc.c         |   6 +
+ drivers/tty/serial/serial_core.c    |  17 ++
+ include/linux/kdb.h                 |  29 ++-
+ include/linux/kgdb.h                |  33 +++
+ include/linux/serial_core.h         |   1 +
+ kernel/debug/debug_core.c           |  36 ++-
+ kernel/debug/kdb/kdb_main.c         |  29 +++
+ 22 files changed, 1060 insertions(+), 193 deletions(-)
