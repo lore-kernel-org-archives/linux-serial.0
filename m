@@ -1,11 +1,8 @@
 From: Anton Vorontsov <anton.vorontsov@linaro.org>
-Subject: =?UTF-8?q?=5BPATCH=2009/11=5D=20ARM=3A=20Add=20KGDB/KDB=20FIQ=20debugger=20generic=20code?=
-Date: Thu, 13 Sep 2012 08:03:33 -0700
-Message-ID: <1347548615-18227-9-git-send-email-anton.vorontsov@linaro.org>
+Subject: [PATCH 05/11] tty/serial/amba-pl011: Implement poll_init callback
+Date: Thu, 13 Sep 2012 08:03:29 -0700
+Message-ID: <1347548615-18227-5-git-send-email-anton.vorontsov@linaro.org>
 References: <20120913150133.GA16238@lizard>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20120913150133.GA16238@lizard>
 Sender: linux-kernel-owner@vger.kernel.org
@@ -13,297 +10,142 @@ To: Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org
 Cc: =?UTF-8?q?Arve=20Hj=C3=B8nnev=C3=A5g?= <arve@android.com>, Colin Cross <ccross@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The FIQ debugger may be used to debug situations when the kernel stuck
-in uninterruptable sections, e.g. the kernel infinitely loops or
-deadlocked in an interrupt or with interrupts disabled.
+The callback is used to initialize the hardware, nothing else should be
+done, i.e. we should not request interrupts (but we can and do unmask
+some of them, as they might be useful for NMI entry).
 
-By default KGDB FIQ is disabled in runtime, but can be enabled with
-kgdb_fiq.enable=3D1 kernel command line option.
+As a side-effect, the patch also fixes a division by zero[1] when booting
+with kgdboc options specified (e.g. kgdboc=ttyAMA0,115200n8). The issue
+happens because serial core calls set_termios callback, but the driver
+doesn't know clock frequency, and thus cannot calculate proper baud rate
+values.
+
+[1]
+WARNING: at drivers/tty/serial/serial_core.c:400 uart_get_baud_rate+0xe8/0x14c()
+Modules linked in:
+[<c0018e50>] (unwind_backtrace+0x0/0xf0) from [<c0020ae8>] (warn_slowpath_common+0x4c/0x64)
+[<c0020ae8>] (warn_slowpath_common+0x4c/0x64) from [<c0020b1c>] (warn_slowpath_null+0x1c/0x24)
+[<c0020b1c>] (warn_slowpath_null+0x1c/0x24) from [<c0185ed8>] (uart_get_baud_rate+0xe8/0x14c)
+[<c0185ed8>] (uart_get_baud_rate+0xe8/0x14c) from [<c0187078>] (pl011_set_termios+0x48/0x278)
+[<c0187078>] (pl011_set_termios+0x48/0x278) from [<c01850b0>] (uart_set_options+0xe8/0x114)
+[<c01850b0>] (uart_set_options+0xe8/0x114) from [<c0185de4>] (uart_poll_init+0xd4/0xe0)
+[<c0185de4>] (uart_poll_init+0xd4/0xe0) from [<c016da8c>] (tty_find_polling_driver+0x100/0x17c)
+[<c016da8c>] (tty_find_polling_driver+0x100/0x17c) from [<c0188538>] (configure_kgdboc+0xc8/0x1b8)
+[<c0188538>] (configure_kgdboc+0xc8/0x1b8) from [<c00088a4>] (do_one_initcall+0x30/0x168)
+[<c00088a4>] (do_one_initcall+0x30/0x168) from [<c033784c>] (do_basic_setup+0x94/0xc8)
+[<c033784c>] (do_basic_setup+0x94/0xc8) from [<c03378e0>] (kernel_init+0x60/0xf4)
+[<c03378e0>] (kernel_init+0x60/0xf4) from [<c00144a0>] (kernel_thread_exit+0x0/0x8)
+---[ end trace 7d41c9186f342c40 ]---
+Division by zero in kernel.
+[<c0018e50>] (unwind_backtrace+0x0/0xf0) from [<c014546c>] (Ldiv0+0x8/0x10)
+[<c014546c>] (Ldiv0+0x8/0x10) from [<c0187098>] (pl011_set_termios+0x68/0x278)
+[<c0187098>] (pl011_set_termios+0x68/0x278) from [<c01850b0>] (uart_set_options+0xe8/0x114)
+[<c01850b0>] (uart_set_options+0xe8/0x114) from [<c0185de4>] (uart_poll_init+0xd4/0xe0)
+[<c0185de4>] (uart_poll_init+0xd4/0xe0) from [<c016da8c>] (tty_find_polling_driver+0x100/0x17c)
+[<c016da8c>] (tty_find_polling_driver+0x100/0x17c) from [<c0188538>] (configure_kgdboc+0xc8/0x1b8)
+[<c0188538>] (configure_kgdboc+0xc8/0x1b8) from [<c00088a4>] (do_one_initcall+0x30/0x168)
+[<c00088a4>] (do_one_initcall+0x30/0x168) from [<c033784c>] (do_basic_setup+0x94/0xc8)
+[<c033784c>] (do_basic_setup+0x94/0xc8) from [<c03378e0>] (kernel_init+0x60/0xf4)
+[<c03378e0>] (kernel_init+0x60/0xf4) from [<c00144a0>] (kernel_thread_exit+0x0/0x8)
+Division by zero in kernel.
+[<c0018e50>] (unwind_backtrace+0x0/0xf0) from [<c014546c>] (Ldiv0+0x8/0x10)
+[<c014546c>] (Ldiv0+0x8/0x10) from [<c0183a98>] (uart_update_timeout+0x4c/0x5c)
+[<c0183a98>] (uart_update_timeout+0x4c/0x5c) from [<c01870f8>] (pl011_set_termios+0xc8/0x278)
+[<c01870f8>] (pl011_set_termios+0xc8/0x278) from [<c01850b0>] (uart_set_options+0xe8/0x114)
+[<c01850b0>] (uart_set_options+0xe8/0x114) from [<c0185de4>] (uart_poll_init+0xd4/0xe0)
+[<c0185de4>] (uart_poll_init+0xd4/0xe0) from [<c016da8c>] (tty_find_polling_driver+0x100/0x17c)
+[<c016da8c>] (tty_find_polling_driver+0x100/0x17c) from [<c0188538>] (configure_kgdboc+0xc8/0x1b8)
+[<c0188538>] (configure_kgdboc+0xc8/0x1b8) from [<c00088a4>] (do_one_initcall+0x30/0x168)
+[<c00088a4>] (do_one_initcall+0x30/0x168) from [<c033784c>] (do_basic_setup+0x94/0xc8)
+[<c033784c>] (do_basic_setup+0x94/0xc8) from [<c03378e0>] (kernel_init+0x60/0xf4)
+[<c03378e0>] (kernel_init+0x60/0xf4) from [<c00144a0>] (kernel_thread_exit+0x0/0x8)
 
 Signed-off-by: Anton Vorontsov <anton.vorontsov@linaro.org>
 ---
- arch/arm/Kconfig                 | 18 ++++++++
- arch/arm/include/asm/kgdb.h      |  8 ++++
- arch/arm/kernel/Makefile         |  1 +
- arch/arm/kernel/kgdb_fiq.c       | 99 ++++++++++++++++++++++++++++++++=
-++++++++
- arch/arm/kernel/kgdb_fiq_entry.S | 87 ++++++++++++++++++++++++++++++++=
-+++
- 5 files changed, 213 insertions(+)
- create mode 100644 arch/arm/kernel/kgdb_fiq.c
- create mode 100644 arch/arm/kernel/kgdb_fiq_entry.S
+ drivers/tty/serial/amba-pl011.c | 44 ++++++++++++++++++++++++++++++-----------
+ 1 file changed, 33 insertions(+), 11 deletions(-)
 
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 6d6e18f..c978c74 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -171,6 +171,24 @@ config GENERIC_ISA_DMA
- config FIQ
- 	bool
-=20
-+config ARCH_MIGHT_HAVE_KGDB_FIQ
-+	bool
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index cede938..45137e4 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1309,10 +1309,9 @@ static void pl011_put_poll_char(struct uart_port *port,
+ 
+ #endif /* CONFIG_CONSOLE_POLL */
+ 
+-static int pl011_startup(struct uart_port *port)
++static int pl011_hwinit(struct uart_port *port)
+ {
+ 	struct uart_amba_port *uap = (struct uart_amba_port *)port;
+-	unsigned int cr;
+ 	int retval;
+ 
+ 	/* Optionaly enable pins to be muxed in and configured */
+@@ -1337,6 +1336,37 @@ static int pl011_startup(struct uart_port *port)
+ 	       UART011_RTIS | UART011_RXIS, uap->port.membase + UART011_ICR);
+ 
+ 	/*
++	 * Save interrupts enable mask, and enable RX interrupts in case if
++	 * the interrupt is used for NMI entry.
++	 */
++	uap->im = readw(uap->port.membase + UART011_IMSC);
++	writew(UART011_RTIM | UART011_RXIM, uap->port.membase + UART011_IMSC);
 +
-+config KGDB_FIQ
-+	bool "KGDB/KDB FIQ debugger"
-+	depends on KGDB_KDB && ARCH_MIGHT_HAVE_KGDB_FIQ && !THUMB2_KERNEL
-+	select FIQ
-+	help
-+	  The FIQ debugger may be used to debug situations when the
-+	  kernel stuck in uninterruptable sections, e.g. the kernel
-+	  infinitely loops or deadlocked in an interrupt or with
-+	  interrupts disabled.
++	if (uap->port.dev->platform_data) {
++		struct amba_pl011_data *plat;
 +
-+	  By default KGDB FIQ is disabled in runtime, but can be
-+	  enabled with kgdb_fiq.enable=3D1 kernel command line option.
-+
-+	  If unsure, say N.
-+
- config NEED_RET_TO_USER
- 	bool
-=20
-diff --git a/arch/arm/include/asm/kgdb.h b/arch/arm/include/asm/kgdb.h
-index 48066ce..807e547 100644
---- a/arch/arm/include/asm/kgdb.h
-+++ b/arch/arm/include/asm/kgdb.h
-@@ -11,6 +11,8 @@
- #define __ARM_KGDB_H__
-=20
- #include <linux/ptrace.h>
-+#include <linux/linkage.h>
-+#include <asm/exception.h>
-=20
- /*
-  * GDB assumes that we're a user process being debugged, so
-@@ -47,6 +49,12 @@ static inline void arch_kgdb_breakpoint(void)
- extern void kgdb_handle_bus_error(void);
- extern int kgdb_fault_expected;
-=20
-+extern char kgdb_fiq_handler;
-+extern char kgdb_fiq_handler_end;
-+asmlinkage void __exception_irq_entry kgdb_fiq_do_handle(struct pt_reg=
-s *regs);
-+extern int __init kgdb_register_fiq(unsigned int mach_kgdb_fiq,
-+		     void (*mach_kgdb_enable_fiq)(unsigned int irq, bool on),
-+		     bool (*mach_is_kgdb_fiq)(unsigned int irq));
- #endif /* !__ASSEMBLY__ */
-=20
- /*
-diff --git a/arch/arm/kernel/Makefile b/arch/arm/kernel/Makefile
-index 7ad2d5c..5aa079b 100644
---- a/arch/arm/kernel/Makefile
-+++ b/arch/arm/kernel/Makefile
-@@ -56,6 +56,7 @@ obj-$(CONFIG_ATAGS_PROC)	+=3D atags.o
- obj-$(CONFIG_OABI_COMPAT)	+=3D sys_oabi-compat.o
- obj-$(CONFIG_ARM_THUMBEE)	+=3D thumbee.o
- obj-$(CONFIG_KGDB)		+=3D kgdb.o
-+obj-$(CONFIG_KGDB_FIQ)		+=3D kgdb_fiq_entry.o kgdb_fiq.o
- obj-$(CONFIG_ARM_UNWIND)	+=3D unwind.o
- obj-$(CONFIG_HAVE_TCM)		+=3D tcm.o
- obj-$(CONFIG_OF)		+=3D devtree.o
-diff --git a/arch/arm/kernel/kgdb_fiq.c b/arch/arm/kernel/kgdb_fiq.c
-new file mode 100644
-index 0000000..8443af1
---- /dev/null
-+++ b/arch/arm/kernel/kgdb_fiq.c
-@@ -0,0 +1,99 @@
-+/*
-+ * KGDB FIQ
-+ *
-+ * Copyright 2010 Google, Inc.
-+ *		  Arve Hj=C3=B8nnev=C3=A5g <arve@android.com>
-+ *		  Colin Cross <ccross@android.com>
-+ * Copyright 2012 Linaro Ltd.
-+ *		  Anton Vorontsov <anton.vorontsov@linaro.org>
-+ *
-+ * This program is free software; you can redistribute it and/or modif=
-y it
-+ * under the terms of the GNU General Public License version 2 as publ=
-ished
-+ * by the Free Software Foundation.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/slab.h>
-+#include <linux/errno.h>
-+#include <linux/hardirq.h>
-+#include <linux/kdb.h>
-+#include <linux/kgdb.h>
-+#include <asm/fiq.h>
-+#include <asm/exception.h>
-+
-+static int kgdb_fiq_enabled;
-+module_param_named(enable, kgdb_fiq_enabled, int, 0600);
-+MODULE_PARM_DESC(enable, "set to 1 to enable FIQ KGDB");
-+
-+static unsigned int kgdb_fiq;
-+static bool (*is_kgdb_fiq)(unsigned int irq);
-+
-+asmlinkage void __exception_irq_entry kgdb_fiq_do_handle(struct pt_reg=
-s *regs)
-+{
-+	if (!is_kgdb_fiq(kgdb_fiq))
-+		return;
-+	if (!kgdb_nmi_poll_knock())
-+		return;
-+
-+	nmi_enter();
-+	kgdb_handle_exception(1, 0, 0, regs);
-+	nmi_exit();
-+}
-+
-+static struct fiq_handler kgdb_fiq_desc =3D {
-+	.name =3D "kgdb",
-+};
-+
-+static long kgdb_fiq_setup_stack(void *info)
-+{
-+	struct pt_regs regs;
-+
-+	regs.ARM_sp =3D __get_free_pages(GFP_KERNEL, THREAD_SIZE_ORDER) +
-+			THREAD_START_SP;
-+	WARN_ON(!regs.ARM_sp);
-+
-+	set_fiq_regs(&regs);
-+	return 0;
-+}
-+
-+static void (*kgdb_enable_fiq)(unsigned int irq, bool on);
-+
-+void kgdb_arch_enable_nmi(bool on)
-+{
-+	if (!kgdb_enable_fiq)
-+		return;
-+	kgdb_enable_fiq(kgdb_fiq, on);
-+}
-+
-+int __init kgdb_register_fiq(unsigned int mach_kgdb_fiq,
-+		void (*mach_kgdb_enable_fiq)(unsigned int irq, bool on),
-+		bool (*mach_is_kgdb_fiq)(unsigned int irq))
-+{
-+	int err;
-+	int cpu;
-+
-+	if (!kgdb_fiq_enabled)
-+		return -ENODEV;
-+	if (kgdb_fiq)
-+		return -EBUSY;
-+
-+	kgdb_fiq =3D mach_kgdb_fiq;
-+	kgdb_enable_fiq =3D mach_kgdb_enable_fiq;
-+	is_kgdb_fiq =3D mach_is_kgdb_fiq;
-+
-+	err =3D claim_fiq(&kgdb_fiq_desc);
-+	if (err) {
-+		pr_warn("%s: unable to claim fiq", __func__);
-+		return err;
++		plat = uap->port.dev->platform_data;
++		if (plat->init)
++			plat->init();
 +	}
-+
-+	for_each_possible_cpu(cpu)
-+		work_on_cpu(cpu, kgdb_fiq_setup_stack, NULL);
-+
-+	set_fiq_handler(&kgdb_fiq_handler,
-+			&kgdb_fiq_handler_end - &kgdb_fiq_handler);
-+
 +	return 0;
++ out:
++	return retval;
 +}
-diff --git a/arch/arm/kernel/kgdb_fiq_entry.S b/arch/arm/kernel/kgdb_fi=
-q_entry.S
-new file mode 100644
-index 0000000..d6becca
---- /dev/null
-+++ b/arch/arm/kernel/kgdb_fiq_entry.S
-@@ -0,0 +1,87 @@
-+/*
-+ * KGDB FIQ entry
-+ *
-+ * Copyright 1996,1997,1998 Russell King.
-+ * Copyright 2012 Linaro Ltd.
-+ *		  Anton Vorontsov <anton.vorontsov@linaro.org>
-+ *
-+ * This program is free software; you can redistribute it and/or modif=
-y it
-+ * under the terms of the GNU General Public License version 2 as publ=
-ished
-+ * by the Free Software Foundation.
-+ */
 +
-+#include <linux/linkage.h>
-+#include <asm/assembler.h>
-+#include <asm/memory.h>
-+#include <asm/unwind.h>
-+#include "entry-header.S"
++static int pl011_startup(struct uart_port *port)
++{
++	struct uart_amba_port *uap = (struct uart_amba_port *)port;
++	unsigned int cr;
++	int retval;
 +
-+	.text
++	retval = pl011_hwinit(port);
++	if (retval)
++		goto clk_dis;
 +
-+@ This is needed for usr_entry/alignment_trap
-+.LCcralign:
-+	.long	cr_alignment
-+.LCdohandle:
-+	.long	kgdb_fiq_do_handle
++	writew(uap->im, uap->port.membase + UART011_IMSC);
 +
-+	.macro	fiq_handler
-+	ldr	r1, =3D.LCdohandle
-+	mov	r0, sp
-+	adr	lr, BSYM(9997f)
-+	ldr	pc, [r1]
-+9997:
-+	.endm
-+
-+	.align	5
-+__fiq_svc:
-+	svc_entry
-+	fiq_handler
-+	mov	r0, sp
-+	ldmib	r0, {r1 - r14}
-+	msr	cpsr_c, #FIQ_MODE | PSR_I_BIT | PSR_F_BIT
-+	add	r8, r0, #S_PC
-+	ldr	r9, [r0, #S_PSR]
-+	msr	spsr_cxsf, r9
-+	ldr	r0, [r0, #S_R0]
-+	ldmia	r8, {pc}^
-+
-+ UNWIND(.fnend		)
-+ENDPROC(__fiq_svc)
-+	.ltorg
-+
-+	.align	5
-+__fiq_usr:
-+	usr_entry
-+	kuser_cmpxchg_check
-+	fiq_handler
-+	get_thread_info tsk
-+	mov	why, #0
-+	b	ret_to_user_from_irq
-+ UNWIND(.fnend		)
-+ENDPROC(__fiq_usr)
-+	.ltorg
-+
-+	.global kgdb_fiq_handler
-+kgdb_fiq_handler:
-+
-+	vector_stub	fiq, FIQ_MODE, 4
-+
-+	.long	__fiq_usr			@  0  (USR_26 / USR_32)
-+	.long	__fiq_svc			@  1  (FIQ_26 / FIQ_32)
-+	.long	__fiq_svc			@  2  (IRQ_26 / IRQ_32)
-+	.long	__fiq_svc			@  3  (SVC_26 / SVC_32)
-+	.long	__fiq_svc			@  4
-+	.long	__fiq_svc			@  5
-+	.long	__fiq_svc			@  6
-+	.long	__fiq_svc			@  7
-+	.long	__fiq_svc			@  8
-+	.long	__fiq_svc			@  9
-+	.long	__fiq_svc			@  a
-+	.long	__fiq_svc			@  b
-+	.long	__fiq_svc			@  c
-+	.long	__fiq_svc			@  d
-+	.long	__fiq_svc			@  e
-+	.long	__fiq_svc			@  f
-+
-+	.global kgdb_fiq_handler_end
-+kgdb_fiq_handler_end:
---=20
++	/*
+ 	 * Allocate the IRQ
+ 	 */
+ 	retval = request_irq(uap->port.irq, pl011_int, 0, "uart-pl011", uap);
+@@ -1395,19 +1425,10 @@ static int pl011_startup(struct uart_port *port)
+ 	writew(uap->im, uap->port.membase + UART011_IMSC);
+ 	spin_unlock_irq(&uap->port.lock);
+ 
+-	if (uap->port.dev->platform_data) {
+-		struct amba_pl011_data *plat;
+-
+-		plat = uap->port.dev->platform_data;
+-		if (plat->init)
+-			plat->init();
+-	}
+-
+ 	return 0;
+ 
+  clk_dis:
+ 	clk_disable_unprepare(uap->clk);
+- out:
+ 	return retval;
+ }
+ 
+@@ -1688,6 +1709,7 @@ static struct uart_ops amba_pl011_pops = {
+ 	.config_port	= pl011_config_port,
+ 	.verify_port	= pl011_verify_port,
+ #ifdef CONFIG_CONSOLE_POLL
++	.poll_init     = pl011_hwinit,
+ 	.poll_get_char = pl011_get_poll_char,
+ 	.poll_put_char = pl011_put_poll_char,
+ #endif
+-- 
 1.7.11.5
