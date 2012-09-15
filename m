@@ -1,39 +1,70 @@
-From: Thomas Walters <Thomas.Walters@sealevel.com>
-Subject: FW: atmel_serial DBGU RX DMA
-Date: Fri, 14 Sep 2012 18:45:49 +0000
-Message-ID: <4993675D6FC33A498CEED979ED2DD66701004D6B@SEAEXCH.int.sealevel.com>
+From: Francesco Lavra <francescolavra.fl@gmail.com>
+Subject: Re: [PATCH 07/11] tty/serial: Add kgdb_nmi driver
+Date: Sat, 15 Sep 2012 17:52:54 +0200
+Message-ID: <5054A456.80606@gmail.com>
+References: <20120913150133.GA16238@lizard> <1347548615-18227-7-git-send-email-anton.vorontsov@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from p01c12o144.mxlogic.net ([208.65.145.67]:39464 "EHLO
-	p01c12o144.mxlogic.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759908Ab2INSyW convert rfc822-to-8bit (ORCPT
+Received: from mail-bk0-f46.google.com ([209.85.214.46]:61405 "EHLO
+	mail-bk0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754553Ab2IOPvz (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 14 Sep 2012 14:54:22 -0400
-Content-Language: en-US
+	Sat, 15 Sep 2012 11:51:55 -0400
+In-Reply-To: <1347548615-18227-7-git-send-email-anton.vorontsov@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Anton Vorontsov <anton.vorontsov@linaro.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linaro-kernel@lists.linaro.org, patches@linaro.org, Brian Swetland <swetland@google.com>, linux-kernel@vger.kernel.org, =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>, linux-serial@vger.kernel.org, Colin Cross <ccross@android.com>, kgdb-bugreport@lists.sourceforge.net, kernel-team@android.com, linux-arm-kernel@lists.infradead.org
 
-Greetings,
+On 09/13/2012 05:03 PM, Anton Vorontsov wrote:
+...
+> +static int kgdb_nmi_tty_install(struct tty_driver *drv, struct tty_struct *tty)
+> +{
+> +	struct kgdb_nmi_tty_priv *priv;
+> +	int ret;
+> +
+> +	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+> +	if (!priv)
+> +		return -ENOMEM;
+> +
+> +	INIT_KFIFO(priv->fifo);
+> +	tasklet_init(&priv->tlet, kgdb_nmi_tty_receiver, (unsigned long)priv);
+> +	tty_port_init(&priv->port);
+> +	priv->port.ops = &kgdb_nmi_tty_port_ops;
+> +	tty->driver_data = priv;
+> +
+> +	ret = tty_port_install(&priv->port, drv, tty);
+> +	if (ret) {
+> +		pr_err("%s: can't nstall tty port: %d\n", __func__, ret);
 
-While working with an Atmel AT91SAM9G45 microprocessor, I have run into a problem with input overruns during typical console usage of the Debug Unit (DBGU) serial port.  The port, being compatible with the standard Atmel USART, uses the Atmel serial driver (drivers/tty/serial/atmel_serial.c).  The driver has the option of using DMA transfers (in fact, it does so by default on all ports except the DBGU).
+s/nstall/install
 
-Using DMA for receive with DBGU does not work on the mainline driver.  I have determined that this is due to the reliance of the driver on the ATMEL_US_TIMEOUT interrupt to trigger transfers from the RX DMA buffer to the TTY buffer at regular intervals.  The DBGU port hardware does not implement the receiver timeout feature.
+...
+> diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+> index 2b42a01..ed97cfd 100644
+> --- a/drivers/tty/serial/kgdboc.c
+> +++ b/drivers/tty/serial/kgdboc.c
+> @@ -145,6 +145,8 @@ __setup("kgdboc=", kgdboc_option_setup);
+>  
+>  static void cleanup_kgdboc(void)
+>  {
+> +	if (kgdb_unregister_nmi_console())
+> +		return;
+>  	kgdboc_unregister_kbd();
+>  	if (configured == 1)
+>  		kgdb_unregister_io_module(&kgdboc_io_ops);
+> @@ -198,6 +200,10 @@ do_register:
+>  	if (err)
+>  		goto noconfig;
+>  
+> +	err = kgdb_register_nmi_console();
+> +	if (err)
+> +		goto noconfig;
 
-I have been able to "force" receive DMA to work by adding a timer callback (similar to the method used by the 8250 driver with devices that do not support interrupts).  This method has relieved the input overrun errors I was getting.
+If kgdb_register_nmi_console() fails, kgdb_unregister_io_module() must
+be called for proper cleanup
 
-I am curious if this is an acceptable approach and if there are any better alternatives.  I'm still looking into the effect on performance, but so far I haven't seen any significant change from the original driver.
-
-Thanks,
-Thomas Walters
-
-
-
-Confidentiality Notice
-________________________________
- This message is intended exclusively for the individual or entity to which it is addressed. This communication may contain information that is PROPRIETARY, TRADE SECRET, PRIVILEGED, CONFIDENTIAL or otherwise legally exempt from disclosure.
-
-If you are not the named addressee, you are not authorized to read, print, retain, copy or disseminate this message or any part of it. If you have received this message in error, please notify the sender immediately either by phone (864.843.4343) or reply to this e-mail and delete all copies of this message.
-________________________________
+--
+Francesco
