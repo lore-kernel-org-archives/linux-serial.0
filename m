@@ -1,70 +1,47 @@
-From: Francesco Lavra <francescolavra.fl@gmail.com>
-Subject: Re: [PATCH 07/11] tty/serial: Add kgdb_nmi driver
-Date: Sat, 15 Sep 2012 17:52:54 +0200
-Message-ID: <5054A456.80606@gmail.com>
-References: <20120913150133.GA16238@lizard> <1347548615-18227-7-git-send-email-anton.vorontsov@linaro.org>
+From: Paul Walmsley <paul@pwsan.com>
+Subject: Re: [PATCH v4 00/21] OMAP UART Patches
+Date: Sun, 16 Sep 2012 01:22:01 +0000 (UTC)
+Message-ID: <alpine.DEB.2.00.1209160117510.23371@utopia.booyaka.com>
+References: <20120906122948.GC29202@arwen.pp.htv.fi> <1346935540-1792-1-git-send-email-balbi@ti.com> <alpine.DEB.2.00.1209062137000.11516@utopia.booyaka.com> <alpine.DEB.2.00.1209112141220.9444@utopia.booyaka.com> <20120912062259.GC18563@arwen.pp.htv.fi>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bk0-f46.google.com ([209.85.214.46]:61405 "EHLO
-	mail-bk0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754553Ab2IOPvz (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 15 Sep 2012 11:51:55 -0400
-In-Reply-To: <1347548615-18227-7-git-send-email-anton.vorontsov@linaro.org>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <20120912062259.GC18563@arwen.pp.htv.fi>
+Sender: linux-omap-owner@vger.kernel.org
+To: Felipe Balbi <balbi@ti.com>, Shubhrajyoti Datta <shubhrajyoti@ti.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, alan@linux.intel.com, Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@ti.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Sourav Poddar <sourav.poddar@ti.com>
 List-Id: linux-serial@vger.kernel.org
-To: Anton Vorontsov <anton.vorontsov@linaro.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linaro-kernel@lists.linaro.org, patches@linaro.org, Brian Swetland <swetland@google.com>, linux-kernel@vger.kernel.org, =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>, linux-serial@vger.kernel.org, Colin Cross <ccross@android.com>, kgdb-bugreport@lists.sourceforge.net, kernel-team@android.com, linux-arm-kernel@lists.infradead.org
 
-On 09/13/2012 05:03 PM, Anton Vorontsov wrote:
-...
-> +static int kgdb_nmi_tty_install(struct tty_driver *drv, struct tty_struct *tty)
-> +{
-> +	struct kgdb_nmi_tty_priv *priv;
-> +	int ret;
-> +
-> +	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
-> +	if (!priv)
-> +		return -ENOMEM;
-> +
-> +	INIT_KFIFO(priv->fifo);
-> +	tasklet_init(&priv->tlet, kgdb_nmi_tty_receiver, (unsigned long)priv);
-> +	tty_port_init(&priv->port);
-> +	priv->port.ops = &kgdb_nmi_tty_port_ops;
-> +	tty->driver_data = priv;
-> +
-> +	ret = tty_port_install(&priv->port, drv, tty);
-> +	if (ret) {
-> +		pr_err("%s: can't nstall tty port: %d\n", __func__, ret);
+On Wed, 12 Sep 2012, Felipe Balbi wrote:
 
-s/nstall/install
+> On Tue, Sep 11, 2012 at 10:02:48PM +0000, Paul Walmsley wrote:
+> 
+> > The bad news is that N800 no longer boots -- or the UART dies during 
+> > serial init:
+> > 
+> > http://www.pwsan.com/omap/testlogs/test_tty_next_e36851d0/20120910020323/boot/2420n800/2420n800_log.txt
+> > 
+> > The problem doesn't seem to affect the 2430SDP.
+> > 
+> > Could you put together a patch to fix N800?
 
-...
-> diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-> index 2b42a01..ed97cfd 100644
-> --- a/drivers/tty/serial/kgdboc.c
-> +++ b/drivers/tty/serial/kgdboc.c
-> @@ -145,6 +145,8 @@ __setup("kgdboc=", kgdboc_option_setup);
->  
->  static void cleanup_kgdboc(void)
->  {
-> +	if (kgdb_unregister_nmi_console())
-> +		return;
->  	kgdboc_unregister_kbd();
->  	if (configured == 1)
->  		kgdb_unregister_io_module(&kgdboc_io_ops);
-> @@ -198,6 +200,10 @@ do_register:
->  	if (err)
->  		goto noconfig;
->  
-> +	err = kgdb_register_nmi_console();
-> +	if (err)
-> +		goto noconfig;
+Bisected this down.  It's this one that causes the problem on N800:
 
-If kgdb_register_nmi_console() fails, kgdb_unregister_io_module() must
-be called for proper cleanup
+commit 93220dcc3052182e7156c09655ad1316055564b9
+Author: Felipe Balbi <balbi@ti.com>
+Date:   Thu Sep 6 15:45:27 2012 +0300
 
---
-Francesco
+    serial: omap: set dev->drvdata before enabling pm_runtime
+    
+    by the time we call our first pm_runtme_get_sync()
+    after enable pm_runtime, our resume method might
+    be called. To avoid problems, we must make sure
+    that our dev->drvdata is set correctly before
+    our resume method gets called.
+    
+    Tested-by: Shubhrajyoti D <shubhrajyoti@ti.com>
+    Acked-by: Santosh Shilimkar <santosh.shilimkar@ti.com>
+    Signed-off-by: Felipe Balbi <balbi@ti.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+- Paul
