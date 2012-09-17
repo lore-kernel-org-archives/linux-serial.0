@@ -1,42 +1,46 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH] tty: Fix hvc return
-Date: Mon, 17 Sep 2012 12:03:39 +0100
-Message-ID: <20120917110324.30537.26940.stgit@localhost.localdomain>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v7 0/11] KGDB/KDB FIQ (NMI) debugger
+Date: Mon, 17 Sep 2012 04:37:50 -0700
+Message-ID: <20120917113750.GA28838@kroah.com>
+References: <20120913150133.GA16238@lizard>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:32948 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753863Ab2IQKpL (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 17 Sep 2012 06:45:11 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20120913150133.GA16238@lizard>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Anton Vorontsov <anton.vorontsov@linaro.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Alan Cox <alan@linux.intel.com>, Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>, Colin Cross <ccross@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: greg@kroah.com, linux-serial@vger.kernel.org
 
-From: Alan Cox <alan@linux.intel.com>
+On Thu, Sep 13, 2012 at 08:01:33AM -0700, Anton Vorontsov wrote:
+> Hi all,
+> 
+> Here comes the lucky v7:
+> 
+> - Per Alan Cox's suggestion added hangup method and removed a small
+>   leftover;
+> - Per Colin Cross' suggestion moved IRQ quiescing logic into
+>   poll_get_char routine. IIUC, Alan is less unhappy about it.  As a
+>   result, clear_irq() callback dropped.
+> 
+> These patches can be found in the following repo (based on tty-next):
+> 
+> 	git://git.infradead.org/users/cbou/linux-nmi-kdb.git master
+> 
+> Old changelogs and rationale for these patches can be found here:
+> 
+> 	v1-v5, rationale: http://lkml.org/lkml/2012/9/10/2
+> 	v6: http://lkml.org/lkml/2012/9/10/2
 
-HVC returns a size of -1 bytes for the write room in some cases.
-This is bogus and not handled by the tty layer at all.
+I have no objection to these patches, and as they are based on my
+tty-next tree, should I be the ones accepting them?  If so, then I need
+a bunch of acks from others involved in the kdb/kgdb code before I can
+do so.
 
-Signed-off-by: Alan Cox <alan@linux.intel.com>
----
+To make it easier, can I just take the tty driver patches now?  Will
+that break anything?
 
- drivers/tty/hvc/hvc_console.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+thanks,
 
-diff --git a/drivers/tty/hvc/hvc_console.c b/drivers/tty/hvc/hvc_console.c
-index b57dcbd..a5dec1c 100644
---- a/drivers/tty/hvc/hvc_console.c
-+++ b/drivers/tty/hvc/hvc_console.c
-@@ -568,7 +568,7 @@ static int hvc_write_room(struct tty_struct *tty)
- 	struct hvc_struct *hp = tty->driver_data;
- 
- 	if (!hp)
--		return -1;
-+		return 0;
- 
- 	return hp->outbuf_size - hp->n_outbuf;
- }
-
+greg k-h
