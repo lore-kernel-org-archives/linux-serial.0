@@ -1,51 +1,59 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v7 0/11] KGDB/KDB FIQ (NMI) debugger
-Date: Mon, 17 Sep 2012 08:54:08 -0700
-Message-ID: <20120917155408.GA302@kroah.com>
-References: <20120913150133.GA16238@lizard>
- <20120917113750.GA28838@kroah.com>
- <50571ADF.3000406@windriver.com>
- <20120917125427.GA23516@kroah.com>
- <20120917153943.GA7510@lizard>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20120917153943.GA7510@lizard>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Anton Vorontsov <anton.vorontsov@linaro.org>
-Cc: Jason Wessel <jason.wessel@windriver.com>, Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Alan Cox <alan@linux.intel.com>, Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>, Colin Cross <ccross@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+From: Flavio Leitner <fbl@redhat.com>
+Subject: [PATCH] serial: set correct baud_base for EXSYS EX-41092 Dual 16950
+Date: Mon, 17 Sep 2012 15:53:41 -0300
+Message-ID: <1347908021-13570-1-git-send-email-fbl@redhat.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mx1.redhat.com ([209.132.183.28]:62791 "EHLO mx1.redhat.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932417Ab2IQSyK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 17 Sep 2012 14:54:10 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Niels de Vos <niels.devos@wincor-nixdorf.com>, Alan Cox <alan@linux.intel.com>, Flavio Leitner <fbl@redhat.com>
 
-On Mon, Sep 17, 2012 at 08:39:43AM -0700, Anton Vorontsov wrote:
-> On Mon, Sep 17, 2012 at 05:54:27AM -0700, Greg Kroah-Hartman wrote:
-> [...]
-> > > > To make it easier, can I just take the tty driver patches now?  Will
-> > > > that break anything?
-> > > 
-> > > I have not made my way through the entire series yet, so I am not sure
-> > > if you need the kdb header changes or not, but so far it looks like
-> > > the tty pieces are separate.  If you add your ack Greg, I'll take the
-> > > whole series and merge it into kgdb-next, or after I finish the review
-> > > we could do it the other way around.
-> > 
-> > Your tree is fine:
-> > 
-> > Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > 
-> > Let me know if you have problems merging this due to any tty patches,
-> > and if so, I'll be glad to take them through my tree.
-> 
-> Guys, thanks for taking a look into this!
-> 
-> The patch that adds nmi console driver (i.e. tty/serial/kgdb_nmi.c)
-> depends on the first KDB patches in these series, and it depends on
-> amba-pl1011 and tty_port work, which is in tty-next.
-> 
-> So, the series have to go via tty-next; I believe Jason won't able
-> to take it via his tree.
+Apparently the same card model has two IDs, so this patch
+complements the commit 39aced68d664291db3324d0fcf0985ab5626aac2
+adding the missing one.
 
-Ok, I'll wait for Jason to review them.  Jason, let me know how it
-goes...
+Signed-off-by: Flavio Leitner <fbl@redhat.com>
+---
+ drivers/tty/serial/8250/8250_pci.c | 7 +++++--
+ include/linux/pci_ids.h            | 3 ++-
+ 2 files changed, 7 insertions(+), 3 deletions(-)
 
-greg k-h
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 28e7c7c..6fe88e6 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -3232,8 +3232,11 @@ static struct pci_device_id serial_pci_tbl[] = {
+ 		 * For now just used the hex ID 0x950a.
+ 		 */
+ 	{	PCI_VENDOR_ID_OXSEMI, 0x950a,
+-		PCI_SUBVENDOR_ID_SIIG, PCI_SUBDEVICE_ID_SIIG_DUAL_SERIAL, 0, 0,
+-		pbn_b0_2_115200 },
++		PCI_SUBVENDOR_ID_SIIG, PCI_SUBDEVICE_ID_SIIG_DUAL_SERIAL_00,
++		0, 0, pbn_b0_2_115200 },
++	{	PCI_VENDOR_ID_OXSEMI, 0x950a,
++		PCI_SUBVENDOR_ID_SIIG, PCI_SUBDEVICE_ID_SIIG_DUAL_SERIAL_30,
++		0, 0, pbn_b0_2_115200 },
+ 	{	PCI_VENDOR_ID_OXSEMI, 0x950a,
+ 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+ 		pbn_b0_2_1130000 },
+diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+index 6b4565c..4242013 100644
+--- a/include/linux/pci_ids.h
++++ b/include/linux/pci_ids.h
+@@ -1847,7 +1847,8 @@
+ #define PCI_DEVICE_ID_SIIG_8S_20x_650	0x2081
+ #define PCI_DEVICE_ID_SIIG_8S_20x_850	0x2082
+ #define PCI_SUBDEVICE_ID_SIIG_QUARTET_SERIAL	0x2050
+-#define PCI_SUBDEVICE_ID_SIIG_DUAL_SERIAL	0x2530
++#define PCI_SUBDEVICE_ID_SIIG_DUAL_SERIAL_00	0x2500
++#define PCI_SUBDEVICE_ID_SIIG_DUAL_SERIAL_30	0x2530
+ 
+ #define PCI_VENDOR_ID_RADISYS		0x1331
+ 
+-- 
+1.7.11.4
+
