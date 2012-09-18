@@ -1,102 +1,77 @@
-From: "Poddar, Sourav" <sourav.poddar@ti.com>
-Subject: Re: [PATCH] serial: omap: Remove unnecessary checks from suspend/resume
-Date: Tue, 18 Sep 2012 17:14:15 +0530
-Message-ID: <CAKdam56UKpc3icL7J7+Om=5Qk_P4ckWM+XY5E+GFvXieAAxjyA@mail.gmail.com>
-References: <1347968154-27997-1-git-send-email-sourav.poddar@ti.com>
-	<20120918113444.GG24047@arwen.pp.htv.fi>
+From: Sourav Poddar <sourav.poddar@ti.com>
+Subject: [RFT/PATCH] serial: omap: prevent resume if device is not suspended.
+Date: Tue, 18 Sep 2012 18:10:50 +0530
+Message-ID: <1347972050-3509-1-git-send-email-sourav.poddar@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog126.obsmtp.com ([74.125.149.155]:60094 "EHLO
-	na3sys009aog126.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932711Ab2IRLoR (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Sep 2012 07:44:17 -0400
-Received: by vcbfo13 with SMTP id fo13so7362940vcb.19
-        for <linux-serial@vger.kernel.org>; Tue, 18 Sep 2012 04:44:15 -0700 (PDT)
-In-Reply-To: <20120918113444.GG24047@arwen.pp.htv.fi>
+Received: from bear.ext.ti.com ([192.94.94.41]:53583 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932928Ab2IRMl1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 18 Sep 2012 08:41:27 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: balbi@ti.com
-Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, tony@atomide.com, khilman@ti.com, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, santosh.shilimkar@ti.com
+To: gregkh@linuxfoundation.org
+Cc: alan@linux.intel.com, tony@atomide.com, khilman@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, santosh.shilimkar@ti.com, balbi@ti.com, paul@pwsan.com, Sourav Poddar <sourav.poddar@ti.com>
 
-Hi Felipe,
+Greg's tty-next is not booting on 2420 based N800. The failure is
+observed at serial init itself. The reason might be that n800 tries to
+resume even though it is not suspended before.
 
-On Tue, Sep 18, 2012 at 5:04 PM, Felipe Balbi <balbi@ti.com> wrote:
-> On Tue, Sep 18, 2012 at 05:05:54PM +0530, Sourav Poddar wrote:
->> Drop the check for "up" being valid on suspend/resume callbacks.
->> It should be valid always. Get rid of the "pdata" check also as
->> serial_omap_get_context_loss_count() checks for it.
->>
->> Tested on omap4 panda and 3630 based Beagle board.
->
-> you need a blank line here. Other than that:
->
-> Reviewed-by: Felipe Balbi <balbi@ti.com>
->
-> ps: what kind of tests did you run, btw ?
->
-Boot tested on Panda.
-Boot and PM tested(hitiing Off) on Beagle.
->> Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
->> ---
->>  drivers/tty/serial/omap-serial.c |   23 +++++++++--------------
->>  1 files changed, 9 insertions(+), 14 deletions(-)
->>
->> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
->> index f175385..3c05c5e 100644
->> --- a/drivers/tty/serial/omap-serial.c
->> +++ b/drivers/tty/serial/omap-serial.c
->> @@ -1222,10 +1222,8 @@ static int serial_omap_suspend(struct device *dev)
->>  {
->>       struct uart_omap_port *up = dev_get_drvdata(dev);
->>
->> -     if (up) {
->> -             uart_suspend_port(&serial_omap_reg, &up->port);
->> -             flush_work_sync(&up->qos_work);
->> -     }
->> +     uart_suspend_port(&serial_omap_reg, &up->port);
->> +     flush_work_sync(&up->qos_work);
->>
->>       return 0;
->>  }
->> @@ -1234,8 +1232,8 @@ static int serial_omap_resume(struct device *dev)
->>  {
->>       struct uart_omap_port *up = dev_get_drvdata(dev);
->>
->> -     if (up)
->> -             uart_resume_port(&serial_omap_reg, &up->port);
->> +     uart_resume_port(&serial_omap_reg, &up->port);
->> +
->>       return 0;
->>  }
->>  #endif
->> @@ -1553,17 +1551,14 @@ static int serial_omap_runtime_suspend(struct device *dev)
->>  static int serial_omap_runtime_resume(struct device *dev)
->>  {
->>       struct uart_omap_port *up = dev_get_drvdata(dev);
->> -     struct omap_uart_port_info *pdata = dev->platform_data;
->>
->> -     if (up && pdata) {
->> -                     u32 loss_cnt = serial_omap_get_context_loss_count(up);
->> +     u32 loss_cnt = serial_omap_get_context_loss_count(up);
->>
->> -                     if (up->context_loss_cnt != loss_cnt)
->> -                             serial_omap_restore_context(up);
->> +     if (up->context_loss_cnt != loss_cnt)
->> +             serial_omap_restore_context(up);
->>
->> -             up->latency = up->calc_latency;
->> -             schedule_work(&up->qos_work);
->> -     }
->> +     up->latency = up->calc_latency;
->> +     schedule_work(&up->qos_work);
->>
->>       return 0;
->>  }
->> --
->> 1.7.1
->>
->
-> --
-> balbi
+Reported-by: Paul Walmsley <paul@pwsan.com>
+Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
+---
+This patch is developed on top of greg's tty-next branch
+CommitId: e740d8f tty: serial: Samsung: Fix return value +
+the following patch which I have already posted to the mailing list.
+http://comments.gmane.org/gmane.linux.ports.arm.omap/84729
+
+ drivers/tty/serial/omap-serial.c |   11 ++++++++++-
+ 1 files changed, 10 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 3c05c5e..bc355f2 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -110,6 +110,7 @@ struct uart_omap_port {
+ 	u32			calc_latency;
+ 	struct work_struct	qos_work;
+ 	struct pinctrl		*pins;
++	unsigned int		suspended:1;
+ };
+ 
+ #define to_uart_omap_port(p)	((container_of((p), struct uart_omap_port, port)))
+@@ -1545,14 +1546,20 @@ static int serial_omap_runtime_suspend(struct device *dev)
+ 	up->latency = PM_QOS_CPU_DMA_LAT_DEFAULT_VALUE;
+ 	schedule_work(&up->qos_work);
+ 
++	up->suspended = true;
++
+ 	return 0;
+ }
+ 
+ static int serial_omap_runtime_resume(struct device *dev)
+ {
+ 	struct uart_omap_port *up = dev_get_drvdata(dev);
++	u32 loss_cnt;
++
++	if (!up->suspended)
++		return 0;
+ 
+-	u32 loss_cnt = serial_omap_get_context_loss_count(up);
++	loss_cnt = serial_omap_get_context_loss_count(up);
+ 
+ 	if (up->context_loss_cnt != loss_cnt)
+ 		serial_omap_restore_context(up);
+@@ -1560,6 +1567,8 @@ static int serial_omap_runtime_resume(struct device *dev)
+ 	up->latency = up->calc_latency;
+ 	schedule_work(&up->qos_work);
+ 
++	up->suspended = false;
++
+ 	return 0;
+ }
+ #endif
+-- 
+1.7.1
+
