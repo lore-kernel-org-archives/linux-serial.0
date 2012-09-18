@@ -1,103 +1,40 @@
-From: Flavio Leitner <fbl@redhat.com>
-Subject: [PATCH] 8250: fix autoconfig to work with serial console
-Date: Tue, 18 Sep 2012 16:21:32 -0300
-Message-ID: <1347996092-30957-1-git-send-email-fbl@redhat.com>
+From: Mohan Das <moha.dasm@gmail.com>
+Subject: Top secret, please treat as urgent
+Date: Tue, 18 Sep 2012 23:11:11 +0100
+Message-ID: <CAKP7og3gzCCaiJP7UwM2F+yG7cQYpyLf479Fdz9Mu4d+erqn+Q@mail.gmail.com>
+Reply-To: mohandas124@gmail.com
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([209.132.183.28]:7168 "EHLO mx1.redhat.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754011Ab2IRTVl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Sep 2012 15:21:41 -0400
+Received: from mail-vc0-f194.google.com ([209.85.220.194]:49652 "EHLO
+	mail-vc0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755601Ab2IRWgX (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 18 Sep 2012 18:36:23 -0400
+Received: by vcbfo13 with SMTP id fo13so102385vcb.1
+        for <linux-serial@vger.kernel.org>; Tue, 18 Sep 2012 15:36:22 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Flavio Leitner <fbl@redhat.com>
 
-The autoconfig prints messages while holding the
-port's spinlock and that causes a deadlock when
-using serial console.
+Dear friend,
+I am Mr Mohan Das a staff of Banque Internationale du Burkina (B.I.B)
+here in Burkina Faso / Ouagadougou . In my department I discover an
+abandoned sum of (US$18.5 Million US Dollars) in an account that
+belongs to one of our foreign customer who died along with his family
+in plane crash.
+It is therefore upon this discovery that i now decided to make this
+business proposal to you and release the money to you as the next of
+kin or relation to the deceased for the safety and subsequent
+disbursement since nobody is coming for it.
+I agree that 40% of this money will be for you, and 10% will be set
+aside for expenses incurred during the business and 50% would be for
+me. Then after the money is been transferred into your account, i will
+visit your country for an investment under your kind control.
+You have to contact my Bank directly as the real next of kin of this
+deceased account with next of kin application form which i will send
+to you immediately i hear from you.
+I am waiting for your urgent respond to enable us proceed further for
+the transfer.
 
-Signed-off-by: Flavio Leitner <fbl@redhat.com>
----
- drivers/tty/serial/8250/8250.c | 25 ++++++++++++++-----------
- 1 file changed, 14 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
-index 8123f78..17e0c3f 100644
---- a/drivers/tty/serial/8250/8250.c
-+++ b/drivers/tty/serial/8250/8250.c
-@@ -1037,6 +1037,7 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
- 	unsigned char save_lcr, save_mcr;
- 	struct uart_port *port = &up->port;
- 	unsigned long flags;
-+	unsigned int old_capabilities;
- 
- 	if (!port->iobase && !port->mapbase && !port->membase)
- 		return;
-@@ -1087,6 +1088,7 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
- 			/*
- 			 * We failed; there's nothing here
- 			 */
-+			spin_unlock_irqrestore(&port->lock, flags);
- 			DEBUG_AUTOCONF("IER test failed (%02x, %02x) ",
- 				       scratch2, scratch3);
- 			goto out;
-@@ -1110,6 +1112,7 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
- 		status1 = serial_in(up, UART_MSR) & 0xF0;
- 		serial_out(up, UART_MCR, save_mcr);
- 		if (status1 != 0x90) {
-+			spin_unlock_irqrestore(&port->lock, flags);
- 			DEBUG_AUTOCONF("LOOP test failed (%02x) ",
- 				       status1);
- 			goto out;
-@@ -1132,8 +1135,6 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
- 	serial_out(up, UART_FCR, UART_FCR_ENABLE_FIFO);
- 	scratch = serial_in(up, UART_IIR) >> 6;
- 
--	DEBUG_AUTOCONF("iir=%d ", scratch);
--
- 	switch (scratch) {
- 	case 0:
- 		autoconfig_8250(up);
-@@ -1167,19 +1168,13 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
- 
- 	serial_out(up, UART_LCR, save_lcr);
- 
--	if (up->capabilities != uart_config[port->type].flags) {
--		printk(KERN_WARNING
--		       "ttyS%d: detected caps %08x should be %08x\n",
--		       serial_index(port), up->capabilities,
--		       uart_config[port->type].flags);
--	}
--
- 	port->fifosize = uart_config[up->port.type].fifo_size;
-+	old_capabilities = up->capabilities; 
- 	up->capabilities = uart_config[port->type].flags;
- 	up->tx_loadsz = uart_config[port->type].tx_loadsz;
- 
- 	if (port->type == PORT_UNKNOWN)
--		goto out;
-+		goto out_lock;
- 
- 	/*
- 	 * Reset the UART.
-@@ -1196,8 +1191,16 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
- 	else
- 		serial_out(up, UART_IER, 0);
- 
-- out:
-+out_lock:
- 	spin_unlock_irqrestore(&port->lock, flags);
-+	if (up->capabilities != old_capabilities) {
-+		printk(KERN_WARNING
-+		       "ttyS%d: detected caps %08x should be %08x\n",
-+		       serial_index(port), old_capabilities,
-+		       up->capabilities);
-+	}
-+out:
-+	DEBUG_AUTOCONF("iir=%d ", scratch);
- 	DEBUG_AUTOCONF("type=%s\n", uart_config[port->type].name);
- }
- 
--- 
-1.7.11.4
-
+Yours faithfully
+Mr Mohan Das
