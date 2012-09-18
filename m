@@ -1,53 +1,147 @@
-From: "Steven J. Ackerman" <steve-I01wfHm1r9xGyKhy+UYuEA@public.gmane.org>
-Subject: RE: Linux USB Serial
-Date: Tue, 18 Sep 2012 10:00:11 -0400
-Message-ID: <002e01cd95a5$ec0a4190$c41ec4b0$@acscontrol.com>
-References: <00a301cd950a$ae9081d0$0bb18570$@acscontrol.com> <87zk4o1kh4.fsf@nemi.mork.no> <00b801cd9518$715dd160$54197420$@acscontrol.com> <5789366.GGq3fAeCyr@linux-lqwf.site>
+From: Felipe Balbi <balbi@ti.com>
+Subject: Re: [RFT/PATCH] serial: omap: prevent resume if device is not
+ suspended.
+Date: Tue, 18 Sep 2012 17:02:17 +0300
+Message-ID: <20120918140213.GA27463@arwen.pp.htv.fi>
+References: <1347972050-3509-1-git-send-email-sourav.poddar@ti.com>
+Reply-To: balbi@ti.com
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <5789366.GGq3fAeCyr-ugxBuEnWX9yG/4A2pS7c2Q@public.gmane.org>
-Content-Language: en-us
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: 'Oliver Neukum' <oneukum-l3A5Bk7waGM@public.gmane.org>
-Cc: =?iso-8859-1?Q?'Bj=F8rn_Mork'?= <bjorn-yOkvZcmFvRU@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="VS++wcV0S1rZb1Fb"
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from na3sys009aog104.obsmtp.com ([74.125.149.73]:54414 "EHLO
+	na3sys009aog104.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S932079Ab2IROHB (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 18 Sep 2012 10:07:01 -0400
+Received: by lbbgj3 with SMTP id gj3so23802lbb.19
+        for <linux-serial@vger.kernel.org>; Tue, 18 Sep 2012 07:06:58 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <1347972050-3509-1-git-send-email-sourav.poddar@ti.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-
-> It shouldn't. Your device follows the CDC ACM specification, aside from
-> the incorrect subclass. Such devices don't generate /dev/ttyUSB devices
-> nodes. They generate /dev/ttyACM nodes.
-> 
-
-Thank you.  I did some more research on this last night and found out that 
-I was being mis-lead by observing how other USB Serial devices were 
-working and used under Linux - without having to install a driver.
-Apparently 
-these were all using the FTDI chip - and there is a driver that is already 
-installed for them.
-
-> That is the wrong driver. usbserial is for vendor specific serial devices.
-> Your device follows a class specification. You need cdc_acm. As soon
-> as the subclass is fixed, it should autoload.
-> 
-
-Yes - the driver now autoloads and I can communicate with the device 
-using the /dev/ttyACM0 node. I was able to install picocom and talk to and 
-from our display.
-
-Thanks to everyone who replied to this question for your assistance.
-
-Steven J. Ackerman, Consultant
-ACS, Sarasota, FL
-http://www.acscontrol.com
-mailto:steve-I01wfHm1r9xGyKhy+UYuEA@public.gmane.org
+To: Sourav Poddar <sourav.poddar@ti.com>
+Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, tony@atomide.com, khilman@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, santosh.shilimkar@ti.com, balbi@ti.com, paul@pwsan.com
 
 
+--VS++wcV0S1rZb1Fb
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Tue, Sep 18, 2012 at 06:10:50PM +0530, Sourav Poddar wrote:
+> Greg's tty-next is not booting on 2420 based N800. The failure is
+> observed at serial init itself. The reason might be that n800 tries to
+> resume even though it is not suspended before.
+>=20
+> Reported-by: Paul Walmsley <paul@pwsan.com>
+> Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
 
+FWIW:
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Reviewed-by: Felipe Balbi <balbi@ti.com>
+
+Paul does this fix the issue for you ? Note that it depends on a
+previous patch Sourav sent [1]
+
+[1] http://marc.info/?l=3Dlinux-omap&m=3D134796819607889&w=3D2
+
+There's one thing that gets my attention, though, why only n800 would
+fail here ?
+
+I wonder if we should be using:
+
+pm_runtime_set_active(dev);
+pm_runtime_get_enable(dev);
+
+to prevent our runtime_resume() to be called from probe, but Sourav
+tested and it doesn't work on BeagleBoard, but it works on PandaBoard.
+
+Does it ring any bell ??
+
+> ---
+> This patch is developed on top of greg's tty-next branch
+> CommitId: e740d8f tty: serial: Samsung: Fix return value +
+> the following patch which I have already posted to the mailing list.
+> http://comments.gmane.org/gmane.linux.ports.arm.omap/84729
+>=20
+>  drivers/tty/serial/omap-serial.c |   11 ++++++++++-
+>  1 files changed, 10 insertions(+), 1 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-s=
+erial.c
+> index 3c05c5e..bc355f2 100644
+> --- a/drivers/tty/serial/omap-serial.c
+> +++ b/drivers/tty/serial/omap-serial.c
+> @@ -110,6 +110,7 @@ struct uart_omap_port {
+>  	u32			calc_latency;
+>  	struct work_struct	qos_work;
+>  	struct pinctrl		*pins;
+> +	unsigned int		suspended:1;
+>  };
+> =20
+>  #define to_uart_omap_port(p)	((container_of((p), struct uart_omap_port, =
+port)))
+> @@ -1545,14 +1546,20 @@ static int serial_omap_runtime_suspend(struct dev=
+ice *dev)
+>  	up->latency =3D PM_QOS_CPU_DMA_LAT_DEFAULT_VALUE;
+>  	schedule_work(&up->qos_work);
+> =20
+> +	up->suspended =3D true;
+> +
+>  	return 0;
+>  }
+> =20
+>  static int serial_omap_runtime_resume(struct device *dev)
+>  {
+>  	struct uart_omap_port *up =3D dev_get_drvdata(dev);
+> +	u32 loss_cnt;
+> +
+> +	if (!up->suspended)
+> +		return 0;
+> =20
+> -	u32 loss_cnt =3D serial_omap_get_context_loss_count(up);
+> +	loss_cnt =3D serial_omap_get_context_loss_count(up);
+> =20
+>  	if (up->context_loss_cnt !=3D loss_cnt)
+>  		serial_omap_restore_context(up);
+> @@ -1560,6 +1567,8 @@ static int serial_omap_runtime_resume(struct device=
+ *dev)
+>  	up->latency =3D up->calc_latency;
+>  	schedule_work(&up->qos_work);
+> =20
+> +	up->suspended =3D false;
+> +
+>  	return 0;
+>  }
+>  #endif
+> --=20
+> 1.7.1
+>=20
+
+--=20
+balbi
+
+--VS++wcV0S1rZb1Fb
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+
+iQIcBAEBAgAGBQJQWH7lAAoJEIaOsuA1yqREYDUP/0o0veibz7UEo1FP5bnAsNUW
+zULkHGzwKPa6McM6cTVepuN6NhdLLxHvx/zOdcq27YCU4swE4ZIX0nzl83QJOcaP
+UmHW1bljT8m7NqeBGWo8GURe939DFF3wfN9gqB3BmfwwwY5pT8u+50y0Ut8kJ3Bd
+RhjABXnUS81OdntcLcPlEgWaiI5zkcESwfoi3JaXtpXhClOn2c54FeuMibfUBytR
+KtLskxEGt9dwXVraIxR5EloFpZrTgDDOK+vErjYMOqI86BM/GFTP6pwlIu/F24LM
+idLYhwsbdHpbDwkfYz7X/izdoUz6e88XIK8fEsH/ZWzVTzJiVXVaNzB3ZEMQNvEb
+TjyZ5nHtzGj9h4AYFE/fSjlSyt3xa2gNznG/Vm3+kMWMg+z7VNuse1jUIAepvg/0
+o4XAngk/is/pp47vDRp+F18raSaPfKaFVJKyOs4xk84SKp+CdHNbT+nfxIjYVrJ7
++E43k57Yf49Jkjs5NgljQdTiY8FXTd2ptR1GPUZmPfMeT3SqkfdlJN3fMT8/4Z7E
+vF5Aychije1+1sW2CeJiDz8PDf8aO2p4LtNHtdgFVnOesKKwwjpQjSCI85kOhfG8
+sN7StSIBzQHpsA5YInd2qRlicozbHnuv3xCr6AUhr7ihR71X4HWlTYRvlZyCIHNC
+EQtZzylmeo5QnGVXUQi1
+=Ah57
+-----END PGP SIGNATURE-----
+
+--VS++wcV0S1rZb1Fb--
