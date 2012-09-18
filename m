@@ -1,58 +1,76 @@
-From: Richard Zhao <richard.zhao@freescale.com>
-Subject: [PATCH 2/2] serial: imx: remove null check of sport in suspend/resume function
-Date: Tue, 18 Sep 2012 16:14:59 +0800
-Message-ID: <1347956099-15257-2-git-send-email-richard.zhao@freescale.com>
-References: <1347956099-15257-1-git-send-email-richard.zhao@freescale.com>
+From: Sourav Poddar <sourav.poddar@ti.com>
+Subject: [PATCH] serial: omap: Remove unnecessary checks from suspend/resume
+Date: Tue, 18 Sep 2012 17:05:54 +0530
+Message-ID: <1347968154-27997-1-git-send-email-sourav.poddar@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from va3ehsobe002.messaging.microsoft.com ([216.32.180.12]:58842
-	"EHLO va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1756645Ab2IRIOV (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Sep 2012 04:14:21 -0400
-In-Reply-To: <1347956099-15257-1-git-send-email-richard.zhao@freescale.com>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-omap-owner@vger.kernel.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: alan@linux.intel.com, tony@atomide.com, khilman@ti.com, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, balbi@ti.com, santosh.shilimkar@ti.com, Sourav Poddar <sourav.poddar@ti.com>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: alan@linux.intel.com, gregkh@linuxfoundation.org, shawn.guo@linaro.org, kernel@pengutronix.de, Richard Zhao <richard.zhao@freescale.com>
 
-platform_get_drvdata always retrun a valid value after probe succeed.
+Drop the check for "up" being valid on suspend/resume callbacks.
+It should be valid always. Get rid of the "pdata" check also as
+serial_omap_get_context_loss_count() checks for it.
 
-It also fixed smatch warnings:
-drivers/tty/serial/imx.c:1376 serial_imx_suspend() warn: variable dereferenced before check 'sport' (see line 1372)
-drivers/tty/serial/imx.c:1392 serial_imx_resume() warn: variable dereferenced before check 'sport' (see line 1388)
-
-Signed-off-by: Richard Zhao <richard.zhao@freescale.com>
+Tested on omap4 panda and 3630 based Beagle board.
+Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
 ---
- drivers/tty/serial/imx.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/tty/serial/omap-serial.c |   23 +++++++++--------------
+ 1 files changed, 9 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 49f664f..efeb8be 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1373,8 +1373,7 @@ static int serial_imx_suspend(struct platform_device *dev, pm_message_t state)
- 	val |= UCR3_AWAKEN;
- 	writel(val, sport->port.membase + UCR3);
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index f175385..3c05c5e 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -1222,10 +1222,8 @@ static int serial_omap_suspend(struct device *dev)
+ {
+ 	struct uart_omap_port *up = dev_get_drvdata(dev);
  
--	if (sport)
--		uart_suspend_port(&imx_reg, &sport->port);
-+	uart_suspend_port(&imx_reg, &sport->port);
+-	if (up) {
+-		uart_suspend_port(&serial_omap_reg, &up->port);
+-		flush_work_sync(&up->qos_work);
+-	}
++	uart_suspend_port(&serial_omap_reg, &up->port);
++	flush_work_sync(&up->qos_work);
  
  	return 0;
  }
-@@ -1389,8 +1388,7 @@ static int serial_imx_resume(struct platform_device *dev)
- 	val &= ~UCR3_AWAKEN;
- 	writel(val, sport->port.membase + UCR3);
+@@ -1234,8 +1232,8 @@ static int serial_omap_resume(struct device *dev)
+ {
+ 	struct uart_omap_port *up = dev_get_drvdata(dev);
  
--	if (sport)
--		uart_resume_port(&imx_reg, &sport->port);
-+	uart_resume_port(&imx_reg, &sport->port);
+-	if (up)
+-		uart_resume_port(&serial_omap_reg, &up->port);
++	uart_resume_port(&serial_omap_reg, &up->port);
++
+ 	return 0;
+ }
+ #endif
+@@ -1553,17 +1551,14 @@ static int serial_omap_runtime_suspend(struct device *dev)
+ static int serial_omap_runtime_resume(struct device *dev)
+ {
+ 	struct uart_omap_port *up = dev_get_drvdata(dev);
+-	struct omap_uart_port_info *pdata = dev->platform_data;
+ 
+-	if (up && pdata) {
+-			u32 loss_cnt = serial_omap_get_context_loss_count(up);
++	u32 loss_cnt = serial_omap_get_context_loss_count(up);
+ 
+-			if (up->context_loss_cnt != loss_cnt)
+-				serial_omap_restore_context(up);
++	if (up->context_loss_cnt != loss_cnt)
++		serial_omap_restore_context(up);
+ 
+-		up->latency = up->calc_latency;
+-		schedule_work(&up->qos_work);
+-	}
++	up->latency = up->calc_latency;
++	schedule_work(&up->qos_work);
  
  	return 0;
  }
 -- 
-1.7.9.5
-
+1.7.1
 
