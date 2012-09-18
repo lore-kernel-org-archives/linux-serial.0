@@ -1,147 +1,103 @@
-From: Felipe Balbi <balbi@ti.com>
-Subject: Re: [RFT/PATCH] serial: omap: prevent resume if device is not
- suspended.
-Date: Tue, 18 Sep 2012 17:02:17 +0300
-Message-ID: <20120918140213.GA27463@arwen.pp.htv.fi>
-References: <1347972050-3509-1-git-send-email-sourav.poddar@ti.com>
-Reply-To: balbi@ti.com
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="VS++wcV0S1rZb1Fb"
+From: Flavio Leitner <fbl@redhat.com>
+Subject: [PATCH] 8250: fix autoconfig to work with serial console
+Date: Tue, 18 Sep 2012 16:21:32 -0300
+Message-ID: <1347996092-30957-1-git-send-email-fbl@redhat.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog104.obsmtp.com ([74.125.149.73]:54414 "EHLO
-	na3sys009aog104.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932079Ab2IROHB (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Sep 2012 10:07:01 -0400
-Received: by lbbgj3 with SMTP id gj3so23802lbb.19
-        for <linux-serial@vger.kernel.org>; Tue, 18 Sep 2012 07:06:58 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <1347972050-3509-1-git-send-email-sourav.poddar@ti.com>
+Received: from mx1.redhat.com ([209.132.183.28]:7168 "EHLO mx1.redhat.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754011Ab2IRTVl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 18 Sep 2012 15:21:41 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sourav Poddar <sourav.poddar@ti.com>
-Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, tony@atomide.com, khilman@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, santosh.shilimkar@ti.com, balbi@ti.com, paul@pwsan.com
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Flavio Leitner <fbl@redhat.com>
 
+The autoconfig prints messages while holding the
+port's spinlock and that causes a deadlock when
+using serial console.
 
---VS++wcV0S1rZb1Fb
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Flavio Leitner <fbl@redhat.com>
+---
+ drivers/tty/serial/8250/8250.c | 25 ++++++++++++++-----------
+ 1 file changed, 14 insertions(+), 11 deletions(-)
 
-On Tue, Sep 18, 2012 at 06:10:50PM +0530, Sourav Poddar wrote:
-> Greg's tty-next is not booting on 2420 based N800. The failure is
-> observed at serial init itself. The reason might be that n800 tries to
-> resume even though it is not suspended before.
->=20
-> Reported-by: Paul Walmsley <paul@pwsan.com>
-> Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
+diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
+index 8123f78..17e0c3f 100644
+--- a/drivers/tty/serial/8250/8250.c
++++ b/drivers/tty/serial/8250/8250.c
+@@ -1037,6 +1037,7 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
+ 	unsigned char save_lcr, save_mcr;
+ 	struct uart_port *port = &up->port;
+ 	unsigned long flags;
++	unsigned int old_capabilities;
+ 
+ 	if (!port->iobase && !port->mapbase && !port->membase)
+ 		return;
+@@ -1087,6 +1088,7 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
+ 			/*
+ 			 * We failed; there's nothing here
+ 			 */
++			spin_unlock_irqrestore(&port->lock, flags);
+ 			DEBUG_AUTOCONF("IER test failed (%02x, %02x) ",
+ 				       scratch2, scratch3);
+ 			goto out;
+@@ -1110,6 +1112,7 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
+ 		status1 = serial_in(up, UART_MSR) & 0xF0;
+ 		serial_out(up, UART_MCR, save_mcr);
+ 		if (status1 != 0x90) {
++			spin_unlock_irqrestore(&port->lock, flags);
+ 			DEBUG_AUTOCONF("LOOP test failed (%02x) ",
+ 				       status1);
+ 			goto out;
+@@ -1132,8 +1135,6 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
+ 	serial_out(up, UART_FCR, UART_FCR_ENABLE_FIFO);
+ 	scratch = serial_in(up, UART_IIR) >> 6;
+ 
+-	DEBUG_AUTOCONF("iir=%d ", scratch);
+-
+ 	switch (scratch) {
+ 	case 0:
+ 		autoconfig_8250(up);
+@@ -1167,19 +1168,13 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
+ 
+ 	serial_out(up, UART_LCR, save_lcr);
+ 
+-	if (up->capabilities != uart_config[port->type].flags) {
+-		printk(KERN_WARNING
+-		       "ttyS%d: detected caps %08x should be %08x\n",
+-		       serial_index(port), up->capabilities,
+-		       uart_config[port->type].flags);
+-	}
+-
+ 	port->fifosize = uart_config[up->port.type].fifo_size;
++	old_capabilities = up->capabilities; 
+ 	up->capabilities = uart_config[port->type].flags;
+ 	up->tx_loadsz = uart_config[port->type].tx_loadsz;
+ 
+ 	if (port->type == PORT_UNKNOWN)
+-		goto out;
++		goto out_lock;
+ 
+ 	/*
+ 	 * Reset the UART.
+@@ -1196,8 +1191,16 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
+ 	else
+ 		serial_out(up, UART_IER, 0);
+ 
+- out:
++out_lock:
+ 	spin_unlock_irqrestore(&port->lock, flags);
++	if (up->capabilities != old_capabilities) {
++		printk(KERN_WARNING
++		       "ttyS%d: detected caps %08x should be %08x\n",
++		       serial_index(port), old_capabilities,
++		       up->capabilities);
++	}
++out:
++	DEBUG_AUTOCONF("iir=%d ", scratch);
+ 	DEBUG_AUTOCONF("type=%s\n", uart_config[port->type].name);
+ }
+ 
+-- 
+1.7.11.4
 
-FWIW:
-
-Reviewed-by: Felipe Balbi <balbi@ti.com>
-
-Paul does this fix the issue for you ? Note that it depends on a
-previous patch Sourav sent [1]
-
-[1] http://marc.info/?l=3Dlinux-omap&m=3D134796819607889&w=3D2
-
-There's one thing that gets my attention, though, why only n800 would
-fail here ?
-
-I wonder if we should be using:
-
-pm_runtime_set_active(dev);
-pm_runtime_get_enable(dev);
-
-to prevent our runtime_resume() to be called from probe, but Sourav
-tested and it doesn't work on BeagleBoard, but it works on PandaBoard.
-
-Does it ring any bell ??
-
-> ---
-> This patch is developed on top of greg's tty-next branch
-> CommitId: e740d8f tty: serial: Samsung: Fix return value +
-> the following patch which I have already posted to the mailing list.
-> http://comments.gmane.org/gmane.linux.ports.arm.omap/84729
->=20
->  drivers/tty/serial/omap-serial.c |   11 ++++++++++-
->  1 files changed, 10 insertions(+), 1 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-s=
-erial.c
-> index 3c05c5e..bc355f2 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -110,6 +110,7 @@ struct uart_omap_port {
->  	u32			calc_latency;
->  	struct work_struct	qos_work;
->  	struct pinctrl		*pins;
-> +	unsigned int		suspended:1;
->  };
-> =20
->  #define to_uart_omap_port(p)	((container_of((p), struct uart_omap_port, =
-port)))
-> @@ -1545,14 +1546,20 @@ static int serial_omap_runtime_suspend(struct dev=
-ice *dev)
->  	up->latency =3D PM_QOS_CPU_DMA_LAT_DEFAULT_VALUE;
->  	schedule_work(&up->qos_work);
-> =20
-> +	up->suspended =3D true;
-> +
->  	return 0;
->  }
-> =20
->  static int serial_omap_runtime_resume(struct device *dev)
->  {
->  	struct uart_omap_port *up =3D dev_get_drvdata(dev);
-> +	u32 loss_cnt;
-> +
-> +	if (!up->suspended)
-> +		return 0;
-> =20
-> -	u32 loss_cnt =3D serial_omap_get_context_loss_count(up);
-> +	loss_cnt =3D serial_omap_get_context_loss_count(up);
-> =20
->  	if (up->context_loss_cnt !=3D loss_cnt)
->  		serial_omap_restore_context(up);
-> @@ -1560,6 +1567,8 @@ static int serial_omap_runtime_resume(struct device=
- *dev)
->  	up->latency =3D up->calc_latency;
->  	schedule_work(&up->qos_work);
-> =20
-> +	up->suspended =3D false;
-> +
->  	return 0;
->  }
->  #endif
-> --=20
-> 1.7.1
->=20
-
---=20
-balbi
-
---VS++wcV0S1rZb1Fb
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-
-iQIcBAEBAgAGBQJQWH7lAAoJEIaOsuA1yqREYDUP/0o0veibz7UEo1FP5bnAsNUW
-zULkHGzwKPa6McM6cTVepuN6NhdLLxHvx/zOdcq27YCU4swE4ZIX0nzl83QJOcaP
-UmHW1bljT8m7NqeBGWo8GURe939DFF3wfN9gqB3BmfwwwY5pT8u+50y0Ut8kJ3Bd
-RhjABXnUS81OdntcLcPlEgWaiI5zkcESwfoi3JaXtpXhClOn2c54FeuMibfUBytR
-KtLskxEGt9dwXVraIxR5EloFpZrTgDDOK+vErjYMOqI86BM/GFTP6pwlIu/F24LM
-idLYhwsbdHpbDwkfYz7X/izdoUz6e88XIK8fEsH/ZWzVTzJiVXVaNzB3ZEMQNvEb
-TjyZ5nHtzGj9h4AYFE/fSjlSyt3xa2gNznG/Vm3+kMWMg+z7VNuse1jUIAepvg/0
-o4XAngk/is/pp47vDRp+F18raSaPfKaFVJKyOs4xk84SKp+CdHNbT+nfxIjYVrJ7
-+E43k57Yf49Jkjs5NgljQdTiY8FXTd2ptR1GPUZmPfMeT3SqkfdlJN3fMT8/4Z7E
-vF5Aychije1+1sW2CeJiDz8PDf8aO2p4LtNHtdgFVnOesKKwwjpQjSCI85kOhfG8
-sN7StSIBzQHpsA5YInd2qRlicozbHnuv3xCr6AUhr7ihR71X4HWlTYRvlZyCIHNC
-EQtZzylmeo5QnGVXUQi1
-=Ah57
------END PGP SIGNATURE-----
-
---VS++wcV0S1rZb1Fb--
