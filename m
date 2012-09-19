@@ -1,44 +1,53 @@
-From: Anton Vorontsov <anton.vorontsov@linaro.org>
-Subject: Re: [PATCH v7 0/11] KGDB/KDB FIQ (NMI) debugger
-Date: Wed, 19 Sep 2012 09:57:19 -0700
-Message-ID: <20120919165719.GB6316@lizard>
-References: <20120913150133.GA16238@lizard>
- <20120917113750.GA28838@kroah.com>
- <50571ADF.3000406@windriver.com>
- <20120917125427.GA23516@kroah.com>
- <20120917153943.GA7510@lizard>
- <20120917155408.GA302@kroah.com>
- <5059B324.70409@windriver.com>
+From: Kevin Hilman <khilman@deeprootsystems.com>
+Subject: Re: [PATCH] serial: omap: Remove unnecessary checks from suspend/resume
+Date: Wed, 19 Sep 2012 14:43:17 -0700
+Message-ID: <87r4pxelje.fsf@deeprootsystems.com>
+References: <1347968154-27997-1-git-send-email-sourav.poddar@ti.com>
+	<20120918113444.GG24047@arwen.pp.htv.fi>
+	<CAKdam56UKpc3icL7J7+Om=5Qk_P4ckWM+XY5E+GFvXieAAxjyA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:46674 "EHLO
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:42202 "EHLO
 	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753954Ab2ISQ75 (ORCPT
+	with ESMTP id S1752076Ab2ISVnP (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 Sep 2012 12:59:57 -0400
-Received: by pbbrr13 with SMTP id rr13so2920636pbb.19
-        for <linux-serial@vger.kernel.org>; Wed, 19 Sep 2012 09:59:57 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <5059B324.70409@windriver.com>
+	Wed, 19 Sep 2012 17:43:15 -0400
+Received: by pbbrr13 with SMTP id rr13so3474737pbb.19
+        for <linux-serial@vger.kernel.org>; Wed, 19 Sep 2012 14:43:14 -0700 (PDT)
+In-Reply-To: <CAKdam56UKpc3icL7J7+Om=5Qk_P4ckWM+XY5E+GFvXieAAxjyA@mail.gmail.com>
+	(Sourav Poddar's message of "Tue, 18 Sep 2012 17:14:15 +0530")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jason Wessel <jason.wessel@windriver.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Alan Cox <alan@linux.intel.com>, Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>, Colin Cross <ccross@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+To: "Poddar, Sourav" <sourav.poddar@ti.com>
+Cc: balbi@ti.com, gregkh@linuxfoundation.org, alan@linux.intel.com, tony@atomide.com, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, santosh.shilimkar@ti.com
 
-On Wed, Sep 19, 2012 at 06:57:24AM -0500, Jason Wessel wrote:
-[..]
-> Other than 1, 2 and 7.   They all get:
-> 
-> Acked-by: Jason Wessel <jason.wessel@windriver.com>
-> 
-> I ran out of time to review things yesterday, but it is all reviewed now.
-> After we get some more comments from Anton, we can move forward.
+"Poddar, Sourav" <sourav.poddar@ti.com> writes:
 
-Thanks for reviews, Jason!
+> Hi Felipe,
+>
+> On Tue, Sep 18, 2012 at 5:04 PM, Felipe Balbi <balbi@ti.com> wrote:
+>> On Tue, Sep 18, 2012 at 05:05:54PM +0530, Sourav Poddar wrote:
+>>> Drop the check for "up" being valid on suspend/resume callbacks.
+>>> It should be valid always. Get rid of the "pdata" check also as
+>>> serial_omap_get_context_loss_count() checks for it.
+>>>
+>>> Tested on omap4 panda and 3630 based Beagle board.
+>>
+>> you need a blank line here. Other than that:
+>>
+>> Reviewed-by: Felipe Balbi <balbi@ti.com>
+>>
+>> ps: what kind of tests did you run, btw ?
+>>
+> Boot tested on Panda.
+> Boot and PM tested(hitiing Off) on Beagle.
 
-I'll implement all your suggestions soonish.
+What does "PM tested" mean.  hitting off in idle?  hitting off in
+suspend?  both?
 
-Cheers,
+Please clarify.
 
-Anton.
+Thanks,
+
+Kevin
