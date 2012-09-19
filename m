@@ -1,70 +1,44 @@
 From: Anton Vorontsov <anton.vorontsov@linaro.org>
-Subject: Re: [PATCH 07/11] tty/serial: Add kgdb_nmi driver
-Date: Wed, 19 Sep 2012 09:54:47 -0700
-Message-ID: <20120919165447.GA6316@lizard>
+Subject: Re: [PATCH v7 0/11] KGDB/KDB FIQ (NMI) debugger
+Date: Wed, 19 Sep 2012 09:57:19 -0700
+Message-ID: <20120919165719.GB6316@lizard>
 References: <20120913150133.GA16238@lizard>
- <1347548615-18227-7-git-send-email-anton.vorontsov@linaro.org>
- <5059B200.9040706@windriver.com>
+ <20120917113750.GA28838@kroah.com>
+ <50571ADF.3000406@windriver.com>
+ <20120917125427.GA23516@kroah.com>
+ <20120917153943.GA7510@lizard>
+ <20120917155408.GA302@kroah.com>
+ <5059B324.70409@windriver.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:39585 "EHLO
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:46674 "EHLO
 	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756636Ab2ISQ50 (ORCPT
+	with ESMTP id S1753954Ab2ISQ75 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 Sep 2012 12:57:26 -0400
-Received: by pbbrr13 with SMTP id rr13so2915374pbb.19
-        for <linux-serial@vger.kernel.org>; Wed, 19 Sep 2012 09:57:26 -0700 (PDT)
+	Wed, 19 Sep 2012 12:59:57 -0400
+Received: by pbbrr13 with SMTP id rr13so2920636pbb.19
+        for <linux-serial@vger.kernel.org>; Wed, 19 Sep 2012 09:59:57 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <5059B200.9040706@windriver.com>
+In-Reply-To: <5059B324.70409@windriver.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Jason Wessel <jason.wessel@windriver.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>, Colin Cross <ccross@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Alan Cox <alan@linux.intel.com>, Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>, Colin Cross <ccross@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
 
-On Wed, Sep 19, 2012 at 06:52:32AM -0500, Jason Wessel wrote:
-[...]
-> > --- a/drivers/tty/serial/kgdboc.c
-> > +++ b/drivers/tty/serial/kgdboc.c
-> > @@ -145,6 +145,8 @@ __setup("kgdboc=", kgdboc_option_setup);
-> >  
-> >  static void cleanup_kgdboc(void)
-> >  {
-> > +	if (kgdb_unregister_nmi_console())
-> > +		return;
-> >  	kgdboc_unregister_kbd();
-> >  	if (configured == 1)
-> >  		kgdb_unregister_io_module(&kgdboc_io_ops);
-> > @@ -198,6 +200,10 @@ do_register:
-> >  	if (err)
-> >  		goto noconfig;
-> >  
-> > +	err = kgdb_register_nmi_console();
-> > +	if (err)
-> > +		goto noconfig;
-> > +
+On Wed, Sep 19, 2012 at 06:57:24AM -0500, Jason Wessel wrote:
+[..]
+> Other than 1, 2 and 7.   They all get:
 > 
-> Just one question on this one, what do you expect to happen, or how
-> does this work when you use a different serial port for example on a
-> board that has a real serial port and an FIQ port?   It was not
-> obvious that there was a path to check if the port you are
-> registering is an FIQ enabled port and then call the
-> kgdb_register_nmi_console at that point.
+> Acked-by: Jason Wessel <jason.wessel@windriver.com>
+> 
+> I ran out of time to review things yesterday, but it is all reviewed now.
+> After we get some more comments from Anton, we can move forward.
 
-Yes, it works perfectly fine. If the port is not FIQ-enabled (which,
-technically, can be enabled later -- it's just not implemented), then
-ttyNMI just won't able to receive data.
+Thanks for reviews, Jason!
 
-The reason why I register nmi console in KGDB code (as opposite to arch
-code), is the dependcy: the port should be initialized before it can be
-used as ttyNMI. We could place the ttyNMI registration code into
-late_initcall in arch/, and check for dbg_io_ops, but that is ugly by
-itself, plus dbg_io_ops can change.
+I'll implement all your suggestions soonish.
 
-But with your kgdb_arch->enable_nmi suggestion (which I'll surely
-implement), we can skip the registration at least for the cases when
-the arch doesn't have this feature.
-
-Thanks!
+Cheers,
 
 Anton.
