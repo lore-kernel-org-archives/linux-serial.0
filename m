@@ -1,56 +1,56 @@
-From: Paul Walmsley <paul@pwsan.com>
-Subject: Re: [RFT/PATCH] serial: omap: prevent resume if device is not
- suspended.
-Date: Tue, 18 Sep 2012 22:57:08 +0000 (UTC)
-Message-ID: <alpine.DEB.2.00.1209182255500.4747@utopia.booyaka.com>
-References: <1347972050-3509-1-git-send-email-sourav.poddar@ti.com> <20120918140213.GA27463@arwen.pp.htv.fi>
+From: Shawn Guo <shawn.guo@linaro.org>
+Subject: Re: [PATCH 1/2] serial: imx: set sport as drvdata, like it's used
+ elsewhere
+Date: Wed, 19 Sep 2012 11:36:05 +0800
+Message-ID: <20120919033600.GE6460@S2100-06.ap.freescale.net>
+References: <1347956099-15257-1-git-send-email-richard.zhao@freescale.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20120918140213.GA27463@arwen.pp.htv.fi>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Felipe Balbi <balbi@ti.com>, khilman@ti.com
-Cc: Sourav Poddar <sourav.poddar@ti.com>, gregkh@linuxfoundation.org, alan@linux.intel.com, tony@atomide.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, santosh.shilimkar@ti.com
+Content-Type: text/plain; charset="us-ascii"
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from va3ehsobe010.messaging.microsoft.com ([216.32.180.30]:48578
+	"EHLO va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754110Ab2ISDMZ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 18 Sep 2012 23:12:25 -0400
+Content-Disposition: inline
+In-Reply-To: <1347956099-15257-1-git-send-email-richard.zhao@freescale.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Richard Zhao <richard.zhao@freescale.com>
+Cc: linux-serial@vger.kernel.org, alan@linux.intel.com, gregkh@linuxfoundation.org, kernel@pengutronix.de
 
-On Tue, 18 Sep 2012, Felipe Balbi wrote:
+On Tue, Sep 18, 2012 at 04:14:58PM +0800, Richard Zhao wrote:
+> Signed-off-by: Richard Zhao <richard.zhao@freescale.com>
 
-> On Tue, Sep 18, 2012 at 06:10:50PM +0530, Sourav Poddar wrote:
-> > Greg's tty-next is not booting on 2420 based N800. The failure is
-> > observed at serial init itself. The reason might be that n800 tries to
-> > resume even though it is not suspended before.
-> > 
-> > Reported-by: Paul Walmsley <paul@pwsan.com>
-> > Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
-> 
-> FWIW:
-> 
-> Reviewed-by: Felipe Balbi <balbi@ti.com>
-> 
-> Paul does this fix the issue for you ? Note that it depends on a
-> previous patch Sourav sent [1]
-> 
-> [1] http://marc.info/?l=linux-omap&m=134796819607889&w=2
+I think it's worth to have a sensible commit log explaining why it
+has not trigger any issue.
 
-Yes, thanks - that fixes it,
+It happens to work without problem because "struct uart_port port" is
+the first member of "struct imx_port".
 
-Tested-by: Paul Walmsley <paul@pwsan.com>
+Otherwise,
 
-> There's one thing that gets my attention, though, why only n800 would
-> fail here ?
+Acked-by: Shawn Guo <shawn.guo@linaro.org>
+
+> ---
+>  drivers/tty/serial/imx.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> I wonder if we should be using:
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 5952b25..49f664f 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -1540,7 +1540,7 @@ static int serial_imx_probe(struct platform_device *pdev)
+>  	ret = uart_add_one_port(&imx_reg, &sport->port);
+>  	if (ret)
+>  		goto deinit;
+> -	platform_set_drvdata(pdev, &sport->port);
+> +	platform_set_drvdata(pdev, sport);
+>  
+>  	return 0;
+>  deinit:
+> -- 
+> 1.7.9.5
 > 
-> pm_runtime_set_active(dev);
-> pm_runtime_get_enable(dev);
 > 
-> to prevent our runtime_resume() to be called from probe, but Sourav
-> tested and it doesn't work on BeagleBoard, but it works on PandaBoard.
-> 
-> Does it ring any bell ??
 
-Nothing off the top of my head but haven't looked into it -- maybe this 
-rings a bell with Kevin?
-
-
-- Paul
