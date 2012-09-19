@@ -1,66 +1,74 @@
-From: Shawn Guo <shawn.guo@linaro.org>
-Subject: Re: [PATCH 2/2] serial: imx: remove null check of sport in
- suspend/resume function
-Date: Wed, 19 Sep 2012 11:37:58 +0800
-Message-ID: <20120919033757.GF6460@S2100-06.ap.freescale.net>
-References: <1347956099-15257-1-git-send-email-richard.zhao@freescale.com>
- <1347956099-15257-2-git-send-email-richard.zhao@freescale.com>
+From: Grazvydas Ignotas <notasas@gmail.com>
+Subject: Re: [RFT/PATCH] serial: omap: prevent resume if device is not suspended.
+Date: Wed, 19 Sep 2012 14:52:18 +0300
+Message-ID: <CANOLnONC1oDN3yu=ipao2A6MfuSkZfROVPewWLLEM5fNTKipxQ@mail.gmail.com>
+References: <1347972050-3509-1-git-send-email-sourav.poddar@ti.com>
+	<20120918140213.GA27463@arwen.pp.htv.fi>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ch1ehsobe003.messaging.microsoft.com ([216.32.181.183]:24045
-	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753027Ab2ISDOR (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Sep 2012 23:14:17 -0400
-Content-Disposition: inline
-In-Reply-To: <1347956099-15257-2-git-send-email-richard.zhao@freescale.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <20120918140213.GA27463@arwen.pp.htv.fi>
+Sender: linux-omap-owner@vger.kernel.org
+To: balbi@ti.com
+Cc: Sourav Poddar <sourav.poddar@ti.com>, gregkh@linuxfoundation.org, alan@linux.intel.com, tony@atomide.com, khilman@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, santosh.shilimkar@ti.com, paul@pwsan.com
 List-Id: linux-serial@vger.kernel.org
-To: Richard Zhao <richard.zhao@freescale.com>
-Cc: linux-serial@vger.kernel.org, alan@linux.intel.com, gregkh@linuxfoundation.org, kernel@pengutronix.de
 
-On Tue, Sep 18, 2012 at 04:14:59PM +0800, Richard Zhao wrote:
-> platform_get_drvdata always retrun a valid value after probe succeed.
-> 
-> It also fixed smatch warnings:
-> drivers/tty/serial/imx.c:1376 serial_imx_suspend() warn: variable dereferenced before check 'sport' (see line 1372)
-> drivers/tty/serial/imx.c:1392 serial_imx_resume() warn: variable dereferenced before check 'sport' (see line 1388)
-> 
-> Signed-off-by: Richard Zhao <richard.zhao@freescale.com>
+On Tue, Sep 18, 2012 at 5:02 PM, Felipe Balbi <balbi@ti.com> wrote:
+> On Tue, Sep 18, 2012 at 06:10:50PM +0530, Sourav Poddar wrote:
+>> Greg's tty-next is not booting on 2420 based N800. The failure is
+>> observed at serial init itself. The reason might be that n800 tries =
+to
+>> resume even though it is not suspended before.
+>>
+>> Reported-by: Paul Walmsley <paul@pwsan.com>
+>> Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
+>
+> FWIW:
+>
+> Reviewed-by: Felipe Balbi <balbi@ti.com>
+>
+> Paul does this fix the issue for you ? Note that it depends on a
+> previous patch Sourav sent [1]
+>
+> [1] http://marc.info/?l=3Dlinux-omap&m=3D134796819607889&w=3D2
+>
+> There's one thing that gets my attention, though, why only n800 would
+> fail here ?
+>
+> I wonder if we should be using:
+>
+> pm_runtime_set_active(dev);
+> pm_runtime_get_enable(dev);
+>
+> to prevent our runtime_resume() to be called from probe, but Sourav
+> tested and it doesn't work on BeagleBoard, but it works on PandaBoard=
+=2E
+>
+> Does it ring any bell ??
 
-Acked-by: Shawn Guo <shawn.guo@linaro.org>
+Well I guess it's normal resume callback is called during probe as
+pm_runtime_get_sync() is called there, and according to documentation
+[1], devices are assumed to be suspended before probe is called.
 
-> ---
->  drivers/tty/serial/imx.c |    6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 49f664f..efeb8be 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -1373,8 +1373,7 @@ static int serial_imx_suspend(struct platform_device *dev, pm_message_t state)
->  	val |= UCR3_AWAKEN;
->  	writel(val, sport->port.membase + UCR3);
->  
-> -	if (sport)
-> -		uart_suspend_port(&imx_reg, &sport->port);
-> +	uart_suspend_port(&imx_reg, &sport->port);
->  
->  	return 0;
->  }
-> @@ -1389,8 +1388,7 @@ static int serial_imx_resume(struct platform_device *dev)
->  	val &= ~UCR3_AWAKEN;
->  	writel(val, sport->port.membase + UCR3);
->  
-> -	if (sport)
-> -		uart_resume_port(&imx_reg, &sport->port);
-> +	uart_resume_port(&imx_reg, &sport->port);
->  
->  	return 0;
->  }
-> -- 
-> 1.7.9.5
-> 
-> 
+According to [1], pm_runtime_set_active() should be called before
+pm_runtime_enable() to indicate to the core that device is active
+during probe if that's the case, I guess this means
+pm_runtime_get_sync() is not needed in that case, but I'm not sure
+what's the actual serial state during probe nowadays.
 
+[1] chapter 5 of Documentation/power/runtime_pm.txt:
+The initial runtime PM status of all devices is 'suspended', but it
+need not reflect the actual physical state of the device. Thus, if the
+device is initially active (i.e. it is able to process I/O), its
+runtime PM status must be changed to 'active', with the help of
+pm_runtime_set_active(), before pm_runtime_enable() is called for the
+device.
+
+--=20
+Gra=C5=BEvydas
+--
+To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
+n
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
