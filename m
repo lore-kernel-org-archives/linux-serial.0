@@ -1,59 +1,59 @@
-From: Jason Wessel <jason.wessel@windriver.com>
-Subject: Re: [PATCH 07/11] tty/serial: Add kgdb_nmi driver
-Date: Thu, 20 Sep 2012 08:57:26 -0500
-Message-ID: <505B20C6.5090308@windriver.com>
-References: <20120919234003.GA24143@lizard> <1348098122-11041-7-git-send-email-anton.vorontsov@linaro.org>
+From: Ivo Sieben <meltedpianoman@gmail.com>
+Subject: [PATCH] tty: prevent unnecessary work queue lock checking on flip buffer copy
+Date: Thu, 20 Sep 2012 16:02:42 +0200
+Message-ID: <1348149762-4596-1-git-send-email-meltedpianoman@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail1.windriver.com ([147.11.146.13]:56596 "EHLO
-	mail1.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752635Ab2ITN6H (ORCPT
+Received: from co1ehsobe002.messaging.microsoft.com ([216.32.180.185]:12793
+	"EHLO co1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753102Ab2ITODF (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 20 Sep 2012 09:58:07 -0400
-In-Reply-To: <1348098122-11041-7-git-send-email-anton.vorontsov@linaro.org>
+	Thu, 20 Sep 2012 10:03:05 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Anton Vorontsov <anton.vorontsov@linaro.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>, Colin Cross <ccross@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, RT <linux-rt-users@vger.kernel.org>
+Cc: Ivo Sieben <meltedpianoman@gmail.com>
 
-On 09/19/2012 06:41 PM, Anton Vorontsov wrote:
-> This special driver makes it possible to temporary use NMI debugger port
-> as a normal console by issuing 'nmi_console' command (assuming that the
-> port is attached to KGDB).
-> 
+In case of PREEMPT_RT or when low_latency flag is set by the serial driver
+the TTY receive flip buffer is copied to the line discipline directly
+instead of using a work queue in the background. Therefor only in case a
+workqueue is actually used for copying data to the line discipline
+we'll have to check & wait for the workqueue to finish.
 
+This prevents unnecessary spin lock/unlock on the workqueue spin lock that can
+cause additional scheduling overhead on a PREEMPT_RT system. On a 240 MHz
+AT91SAM9261 processor setup this fixes about 100us of scheduling overhead on the
+TTY read call.
 
-The kgdb regression compiler also does checkpatch, so the "check patch
-police" don't come chasing us let's get rid of this warning.  This
-comes with the disclaimer that I believe checkpatch is a bit overly
-agressive in the first place. :-)
-
-WARNING: quoted string split across lines
-#133: FILE: drivers/tty/serial/kgdb_nmi.c:36:
-+MODULE_PARM_DESC(knock, "if set to 1 (default), the special '$3#33' command "
-+                       "must be used to enter the debugger; when set to 0, "
-
+Signed-off-by: Ivo Sieben <meltedpianoman@gmail.com>
 ---
- drivers/tty/serial/kgdb_nmi.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/tty/tty_buffer.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
---- a/drivers/tty/serial/kgdb_nmi.c
-+++ b/drivers/tty/serial/kgdb_nmi.c
-@@ -32,10 +32,10 @@
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index 5cfa548..b8e90b8 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -492,7 +492,16 @@ static void flush_to_ldisc(struct work_struct *work)
+  */
+ void tty_flush_to_ldisc(struct tty_struct *tty)
+ {
+-	flush_work(&tty->buf.work);
++	/*
++	 * Only in case a workqueue is actually used for copying data to the
++	 * line discipline, we'll have to wait for the workqueue to finish. In
++	 * other cases this prevents us from unnecessary blocking by the
++	 * workqueue spin lock.
++	 */
++#ifndef CONFIG_PREEMPT_RT_FULL
++	if (!tty->low_latency)
++		flush_work(&tty->buf.work);
++#endif
+ }
  
- static int kgdb_nmi_knock = 1;
- module_param_named(knock, kgdb_nmi_knock, int, 0600);
--MODULE_PARM_DESC(knock, "if set to 1 (default), the special '$3#33' command "
--			"must be used to enter the debugger; when set to 0, "
--			"hitting return key is enough to enter the debugger; "
--			"when set to -1, the debugger is entered immediately "
-+MODULE_PARM_DESC(knock, "if set to 1 (default), the special '$3#33' command " \
-+			"must be used to enter the debugger; when set to 0, " \
-+			"hitting return key is enough to enter the debugger; " \
-+			"when set to -1, the debugger is entered immediately " \
- 			"upon NMI");
- 
- static char *kgdb_nmi_magic = "$3#33";
+ /**
+-- 
+1.7.9.5
+
 
