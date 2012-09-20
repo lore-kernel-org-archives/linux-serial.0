@@ -1,7 +1,7 @@
 From: Linus Walleij <linus.walleij@stericsson.com>
-Subject: [PATCH 2/3] serial: pl011: handle corruption at high clock speeds
-Date: Thu, 20 Sep 2012 11:46:00 +0200
-Message-ID: <1348134360-25628-1-git-send-email-linus.walleij@stericsson.com>
+Subject: [PATCH 3/3] serial: pl011: allow very high baudrates
+Date: Thu, 20 Sep 2012 11:46:08 +0200
+Message-ID: <1348134368-25663-1-git-send-email-linus.walleij@stericsson.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -16,31 +16,16 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: linux-arm-kernel-bounces@lists.infradead.org
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Guillaume Jaunet <guillaume.jaunet@stericsson.com>, Bibek Basu <bibek.basu@stericsson.com>, Par-Gunnar Hjalmdahl <par-gunnar.hjalmdahl@stericsson.com>, Anmar Oueja <anmar.oueja@linaro.org>, Matthias Locher <matthias.locher@stericsson.com>, "Rajanikanth H.V" <rajanikanth.hv@stericsson.com>, Christophe Arnal <christophe.arnal@stericsson.com>, linux-arm-kernel@lists.infradead.org
+Cc: Linus Walleij <linus.walleij@linaro.org>, Guillaume Jaunet <guillaume.jaunet@stericsson.com>, Par-Gunnar Hjalmdahl <par-gunnar.hjalmdahl@stericsson.com>, Anmar Oueja <anmar.oueja@linaro.org>, Matthias Locher <matthias.locher@stericsson.com>, "Rajanikanth H.V" <rajanikanth.hv@stericsson.com>, Christophe Arnal <christophe.arnal@stericsson.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
 From: Linus Walleij <linus.walleij@linaro.org>
 
-This works around a few glitches in the ST version of the PL011
-serial driver when using very high baud rates, as we do in the
-Ux500: 3, 3.25, 4 and 4.05 Mbps are used in our platform.
+The ST Microelectronics variant of the PL011 is capable of supporting
+very high non-standard baud rates, even above 4 Mbps. However the
+uart_get_baud_rate() will not allow us to set these, so override that
+calculation on very high speeds.
 
-Problem Observed/rootcause:
-
-In case of high baud-rates, where the baud-rate*8 is getting close to
-the provided clock frequency (so a division factor close to 1) when
-using bursts of characters (so they are abutted), then it seems as if
-there is not enough time to detect the beginning of the start-bit which
-is a timing reference for the entire character, and thus the sampling
-moment of character bits is moving towards the end of each bit, instead
-of the middle.
-
-Fix:
-Increase slightly the RX baud rate of the UART above the theoretical
-baudrate by 5%. This will definitely give more margin time to the
-UART_RX to sample correctly the data at the middle of the bit period.
-
-Cc: Bibek Basu <bibek.basu@stericsson.com>
 Cc: Par-Gunnar Hjalmdahl <par-gunnar.hjalmdahl@stericsson.com>
 Signed-off-by: Guillaume Jaunet <guillaume.jaunet@stericsson.com>
 Signed-off-by: Christophe Arnal <christophe.arnal@stericsson.com>
@@ -48,40 +33,35 @@ Signed-off-by: Matthias Locher <matthias.locher@stericsson.com>
 Signed-off-by: Rajanikanth H.V <rajanikanth.hv@stericsson.com>
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/tty/serial/amba-pl011.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ drivers/tty/serial/amba-pl011.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 9e16ea6..32240a7 100644
+index 32240a7..8ac1a42 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -1601,13 +1601,26 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
- 			old_cr &= ~ST_UART011_CR_OVSFACT;
+@@ -1507,10 +1507,19 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
  	}
  
-+	/*
-+	 * Workaround for the ST Micro oversampling variants to
-+	 * increase the bitrate slightly, by lowering the divisor,
-+	 * to avoid delayed sampling of start bit at high speeds,
-+	 * else we see data corruption.
-+	 */
-+	if (uap->vendor->oversampling) {
-+		if (baud > 3000000 && baud < 3250000 && quot > 1)
-+			quot -= 1;
-+		else if (baud > 3250000 && quot > 2)
-+			quot -= 2;
-+	}
- 	/* Set baud rate */
- 	writew(quot & 0x3f, port->membase + UART011_FBRD);
- 	writew(quot >> 6, port->membase + UART011_IBRD);
- 
  	/*
- 	 * ----------v----------v----------v----------v-----
--	 * NOTE: MUST BE WRITTEN AFTER UARTLCR_M & UARTLCR_L
-+	 * NOTE: lcrh_tx and lcrh_rx MUST BE WRITTEN AFTER
-+	 * UARTLCR_M(IBRD)  & UARTLCR_L(FBRD).
- 	 * ----------^----------^----------^----------^-----
+-	 * Ask the core to calculate the divisor for us.
++	 * Override baud calculation for very high non-standard baudrates
++	 * on the ST Micro oversampling variant. This must override the
++	 * uart_get_baud_rate() call, because this function changes
++	 * baudrate to the default on these baudrates.
  	 */
- 	writew(lcr_h, port->membase + uap->lcrh_rx);
+-	baud = uart_get_baud_rate(port, termios, old, 0,
+-				  max_baud);
++	if (uap->vendor->oversampling &&
++	    ((termios->c_ispeed > 4000000) ||
++	     (termios->c_ospeed > 4000000)))
++		baud = termios->c_ispeed;
++	else
++		/* Ask the core to calculate the divisor for us. */
++		baud = uart_get_baud_rate(port, termios, old, 0,
++					  max_baud);
+ 
+ 	if (baud > port->uartclk/16)
+ 		quot = DIV_ROUND_CLOSEST(port->uartclk * 8, baud);
 -- 
 1.7.11.3
