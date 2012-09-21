@@ -1,37 +1,48 @@
-From: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCHv4 7/9] arm: vt8500: doc: Add device tree bindings for
- arch-vt8500 devices
-Date: Thu, 20 Sep 2012 18:13:42 -0500
-Message-ID: <505BA326.1030909@gmail.com>
-References: <1345707346-9035-1-git-send-email-linux@prisktech.co.nz> <1345707346-9035-8-git-send-email-linux@prisktech.co.nz>
+From: Paul Walmsley <paul@pwsan.com>
+Subject: Re: [PATCHv7 04/12] ARM: OMAP: hwmod: Add support for per hwmod/module
+ context lost count
+Date: Fri, 21 Sep 2012 00:38:46 +0000 (UTC)
+Message-ID: <alpine.DEB.2.00.1209210032380.6888@utopia.booyaka.com>
+References: <1342704392-23657-1-git-send-email-t-kristo@ti.com> <1342704392-23657-5-git-send-email-t-kristo@ti.com> <alpine.DEB.2.00.1209121946410.17903@utopia.booyaka.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1345707346-9035-8-git-send-email-linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Tony Prisk <linux-ci5G2KO2hbZ+pU9mqzGVBQ@public.gmane.org>
-Cc: vt8500-wm8505-linux-kernel-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Linus Walleij <linus.walleij-0IS4wlFg1OjSUeElwK9/Pw@public.gmane.org>, Florian Tobias Schandinat <FlorianSchandinat-Mmb7MZpHnFY@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mike Turquette <mturquette-l0cyMroinI0@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <alpine.DEB.2.00.1209121946410.17903@utopia.booyaka.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Tero Kristo <t-kristo@ti.com>, balbi@ti.com, sourav.poddar@ti.com, gregkh@linuxfoundation.org
+Cc: linux-omap@vger.kernel.org, nm@ti.com, khilman@ti.com, rnayak@ti.com, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 08/23/2012 02:35 AM, Tony Prisk wrote:
-> Bindings for gpio, interrupt controller, power management controller,
-> timer, realtime clock, serial uart, ehci and uhci controllers and
-> framebuffer controllers used on the arch-vt8500 platform.
+Hi 
+
+On Wed, 12 Sep 2012, Paul Walmsley wrote:
+
+> On Thu, 19 Jul 2012, Tero Kristo wrote:
 > 
-> Framebuffer binding also specifies a 'display' node which is required
-> for determining the lcd panel data.
+> > From: Rajendra Nayak <rnayak@ti.com>
+> > 
+> > OMAP4 has module specific context lost registers which makes it now
+> > possible to have module level context loss count, instead of relying
+> > on the powerdomain level context count.
+> > 
+> > Add 2 private hwmod api's to update/clear the hwmod/module specific
+> > context lost counters/register.
+> 
+> This one has been modified to align with the changes on patch 3, and 
+> queued for 3.7.
 
-Overall, these bindings look okay, but there is some effort to
-standardize a binding for displays:
+Am sorry to say that I had to drop the code changes from this patch, due 
+to the OMAP serial bugs addressed by these two patches:
 
-http://comments.gmane.org/gmane.linux.drivers.devicetree/21386
+    http://comments.gmane.org/gmane.linux.ports.arm.omap/84729
+    http://www.spinics.net/lists/arm-kernel/msg196034.html
 
-I would like to see that used rather than something custom.
+Without those two patches, OMAP4430ES2 Panda crashes after Tero's patches 
+are applied, with the same symptom as with the N800 crash.  Applying 
+those two patches fixes the problem.
 
-Rob
+It would be good if you guys could ask Greg to pick up the first patch 
+ASAP so we can queue the second one during the early 3.7-rc time frame.
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+- Paul
