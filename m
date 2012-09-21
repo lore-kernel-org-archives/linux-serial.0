@@ -1,48 +1,59 @@
-From: Paul Walmsley <paul@pwsan.com>
-Subject: Re: [PATCHv7 04/12] ARM: OMAP: hwmod: Add support for per hwmod/module
- context lost count
-Date: Fri, 21 Sep 2012 00:38:46 +0000 (UTC)
-Message-ID: <alpine.DEB.2.00.1209210032380.6888@utopia.booyaka.com>
-References: <1342704392-23657-1-git-send-email-t-kristo@ti.com> <1342704392-23657-5-git-send-email-t-kristo@ti.com> <alpine.DEB.2.00.1209121946410.17903@utopia.booyaka.com>
+From: "Poddar, Sourav" <sourav.poddar@ti.com>
+Subject: Re: [PATCH] serial: omap: Remove unnecessary checks from suspend/resume
+Date: Fri, 21 Sep 2012 10:40:44 +0530
+Message-ID: <CAKdam57u8qdOhgtgjgQG3r=eFB_Wsd54KzLoAtPj9GcHLz2E5A@mail.gmail.com>
+References: <1347968154-27997-1-git-send-email-sourav.poddar@ti.com>
+	<20120918113444.GG24047@arwen.pp.htv.fi>
+	<CAKdam56UKpc3icL7J7+Om=5Qk_P4ckWM+XY5E+GFvXieAAxjyA@mail.gmail.com>
+	<87r4pxelje.fsf@deeprootsystems.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <alpine.DEB.2.00.1209121946410.17903@utopia.booyaka.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Tero Kristo <t-kristo@ti.com>, balbi@ti.com, sourav.poddar@ti.com, gregkh@linuxfoundation.org
-Cc: linux-omap@vger.kernel.org, nm@ti.com, khilman@ti.com, rnayak@ti.com, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from na3sys009aog108.obsmtp.com ([74.125.149.199]:42424 "EHLO
+	na3sys009aog108.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753285Ab2IUFKq (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 21 Sep 2012 01:10:46 -0400
+Received: by vcbfo13 with SMTP id fo13so3517596vcb.19
+        for <linux-serial@vger.kernel.org>; Thu, 20 Sep 2012 22:10:44 -0700 (PDT)
+In-Reply-To: <87r4pxelje.fsf@deeprootsystems.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Kevin Hilman <khilman@deeprootsystems.com>
+Cc: balbi@ti.com, gregkh@linuxfoundation.org, alan@linux.intel.com, tony@atomide.com, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, santosh.shilimkar@ti.com
 
-Hi 
+Hi Kevin,
 
-On Wed, 12 Sep 2012, Paul Walmsley wrote:
-
-> On Thu, 19 Jul 2012, Tero Kristo wrote:
-> 
-> > From: Rajendra Nayak <rnayak@ti.com>
-> > 
-> > OMAP4 has module specific context lost registers which makes it now
-> > possible to have module level context loss count, instead of relying
-> > on the powerdomain level context count.
-> > 
-> > Add 2 private hwmod api's to update/clear the hwmod/module specific
-> > context lost counters/register.
-> 
-> This one has been modified to align with the changes on patch 3, and 
-> queued for 3.7.
-
-Am sorry to say that I had to drop the code changes from this patch, due 
-to the OMAP serial bugs addressed by these two patches:
-
-    http://comments.gmane.org/gmane.linux.ports.arm.omap/84729
-    http://www.spinics.net/lists/arm-kernel/msg196034.html
-
-Without those two patches, OMAP4430ES2 Panda crashes after Tero's patches 
-are applied, with the same symptom as with the N800 crash.  Applying 
-those two patches fixes the problem.
-
-It would be good if you guys could ask Greg to pick up the first patch 
-ASAP so we can queue the second one during the early 3.7-rc time frame.
-
-
-- Paul
+On Thu, Sep 20, 2012 at 3:13 AM, Kevin Hilman
+<khilman@deeprootsystems.com> wrote:
+> "Poddar, Sourav" <sourav.poddar@ti.com> writes:
+>
+>> Hi Felipe,
+>>
+>> On Tue, Sep 18, 2012 at 5:04 PM, Felipe Balbi <balbi@ti.com> wrote:
+>>> On Tue, Sep 18, 2012 at 05:05:54PM +0530, Sourav Poddar wrote:
+>>>> Drop the check for "up" being valid on suspend/resume callbacks.
+>>>> It should be valid always. Get rid of the "pdata" check also as
+>>>> serial_omap_get_context_loss_count() checks for it.
+>>>>
+>>>> Tested on omap4 panda and 3630 based Beagle board.
+>>>
+>>> you need a blank line here. Other than that:
+>>>
+>>> Reviewed-by: Felipe Balbi <balbi@ti.com>
+>>>
+>>> ps: what kind of tests did you run, btw ?
+>>>
+>> Boot tested on Panda.
+>> Boot and PM tested(hitiing Off) on Beagle.
+>
+> What does "PM tested" mean.  hitting off in idle?  hitting off in
+> suspend?  both?
+>
+Hitting off in both idle and suspend.
+> Please clarify.
+>
+> Thanks,
+>
+> Kevin
+~Sourav
