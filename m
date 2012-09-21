@@ -1,15 +1,14 @@
 From: Sourav Poddar <sourav.poddar@ti.com>
-Subject: [PATCHv2] serial: omap: Remove unnecessary checks from suspend/resume
-Date: Fri, 21 Sep 2012 12:26:48 +0530
-Message-ID: <1348210608-9542-1-git-send-email-sourav.poddar@ti.com>
+Subject: [Resend/PATCHv2] serial: omap: Remove unnecessary checks from suspend/resume
+Date: Fri, 21 Sep 2012 12:34:08 +0530
+Message-ID: <1348211049-9675-1-git-send-email-sourav.poddar@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:48724 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754835Ab2IUG5a (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Sep 2012 02:57:30 -0400
+Received: from comal.ext.ti.com ([198.47.26.152]:53743 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752308Ab2IUHEk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 21 Sep 2012 03:04:40 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org
@@ -22,8 +21,10 @@ serial_omap_get_context_loss_count() checks for it.
 Boot tested on omap4 panda and PM tested(hitting off in Idle
 and suspend) on 3630 based Beagle board.
 
+Reviewed-by: Felipe Balbi <balbi@ti.com>
 Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
 ---
+Added Felipe's Reviewed by
 v1->v2
 Not a functionality change, just
 Introduce a blank line before "signed off by" line.
