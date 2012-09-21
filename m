@@ -1,73 +1,39 @@
-From: Shubhrajyoti Datta <omaplinuxkernel@gmail.com>
-Subject: Re: [PATCH] serial: omap: fix the overrun case
-Date: Fri, 21 Sep 2012 20:38:36 +0530
-Message-ID: <CAM=Q2cu6B3w4OHOo3+X4bSK1wp_HXiK3wTqnYVSRQFqeSke6TA@mail.gmail.com>
-References: <1348222976-7241-1-git-send-email-shubhrajyoti@ti.com>
-	<87a9wjfohd.fsf@deeprootsystems.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 3/3] serial: pl011: allow very high baudrates
+Date: Fri, 21 Sep 2012 16:14:02 +0100
+Message-ID: <20120921161402.25cf1520@pyramind.ukuu.org.uk>
+References: <1348134368-25663-1-git-send-email-linus.walleij@stericsson.com>
+ <20120920190034.GB15609@n2100.arm.linux.org.uk>
+ <CACRpkdY1ZxQoyGFO9OnKr0WYQzooxPGvZV8Gnr_YO_yT_+ddDw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ie0-f174.google.com ([209.85.223.174]:37435 "EHLO
-	mail-ie0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755903Ab2IUPIh (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Sep 2012 11:08:37 -0400
-In-Reply-To: <87a9wjfohd.fsf@deeprootsystems.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <CACRpkdY1ZxQoyGFO9OnKr0WYQzooxPGvZV8Gnr_YO_yT_+ddDw@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: linux-arm-kernel-bounces@lists.infradead.org
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@stericsson.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Christophe Arnal <christophe.arnal@stericsson.com>, Guillaume Jaunet <guillaume.jaunet@stericsson.com>, Par-Gunnar Hjalmdahl <par-gunnar.hjalmdahl@stericsson.com>, Anmar Oueja <anmar.oueja@linaro.org>, Matthias Locher <matthias.locher@stericsson.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, "Rajanikanth H.V" <rajanikanth.hv@stericsson.com>, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
-To: Kevin Hilman <khilman@deeprootsystems.com>
-Cc: Shubhrajyoti D <shubhrajyoti@ti.com>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, sourav.poddar@ti.com
 
-On Fri, Sep 21, 2012 at 7:48 PM, Kevin Hilman
-<khilman@deeprootsystems.com> wrote:
-> Shubhrajyoti D <shubhrajyoti@ti.com> writes:
->
-[...]
->>
->> Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
->> ---
->> - functional testing on omap4sdp
->> - Verified idle and suspend path hits off on beagle.
->
-> Tested-by: Kevin Hilman <khilman@ti.com>
->
-> This fixes the console hang I was seeing on 3530/Overo.
-Thanks for the test.
+> So I looked closer: uart_get_baud_rate() in turn calls out to
+> tty_termios_baud_rate() which does some fuzzy matching to the
+> fix baudrate table and simply "snaps" the baudrate to the closest
+> match if it is "close enough".
 
-Could you test the v2
-http://www.spinics.net/lists/arm-kernel/msg197050.html
+The fuzzing is getting done when re-encoding and because the code
+encodes/re-decodes stuff.
 
-I have removed the redundant check.
-Thanks,
+> I wonder how to fix this ... I'm planning to do what the comment
+> in tty_ioctl says:
 
+If you support the ancient alt speed hacks then its not quite so neat.
 
->
-> Thanks,
->
-> Kevin
->
->>  drivers/tty/serial/omap-serial.c |    7 +++++++
->>  1 files changed, 7 insertions(+), 0 deletions(-)
->>
->> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
->> index a0d4460..bc22a2b 100644
->> --- a/drivers/tty/serial/omap-serial.c
->> +++ b/drivers/tty/serial/omap-serial.c
->> @@ -334,6 +334,13 @@ static unsigned int check_modem_status(struct uart_omap_port *up)
->>  static void serial_omap_rlsi(struct uart_omap_port *up, unsigned int lsr)
->>  {
->>       unsigned int flag;
->> +     unsigned char ch = 0;
->> +
->> +     if (!(lsr & UART_LSR_BRK_ERROR_BITS))
->> +             return;
->> +
->> +     if (likely(lsr & UART_LSR_DR))
->> +             ch = serial_in(up, UART_RX);
->>
->>       up->port.icount.rx++;
->>       flag = TTY_NORMAL;
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Alan
