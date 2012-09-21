@@ -1,85 +1,70 @@
-From: Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH] serial: omap: fix the overrun case
-Date: Fri, 21 Sep 2012 15:07:53 +0300
-Message-ID: <20120921120752.GG16003@arwen.pp.htv.fi>
-References: <1348222976-7241-1-git-send-email-shubhrajyoti@ti.com>
- <20120921110050.GC16003@arwen.pp.htv.fi>
- <CAKdam55VG8KTRZNvPgur9M-wkbD7wyJt27Jsvks=r4PNiuEGaQ@mail.gmail.com>
-Reply-To: balbi@ti.com
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH 3/3] serial: pl011: allow very high baudrates
+Date: Fri, 21 Sep 2012 15:41:11 +0200
+Message-ID: <CACRpkdY1ZxQoyGFO9OnKr0WYQzooxPGvZV8Gnr_YO_yT_+ddDw@mail.gmail.com>
+References: <1348134368-25663-1-git-send-email-linus.walleij@stericsson.com>
+	<20120920190034.GB15609@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="4eRLI4hEmsdu6Npr"
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog137.obsmtp.com ([74.125.149.18]:45200 "EHLO
-	na3sys009aog137.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752357Ab2IUMMl (ORCPT
+Received: from mail-we0-f174.google.com ([74.125.82.174]:63728 "EHLO
+	mail-we0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755299Ab2IUNlN (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Sep 2012 08:12:41 -0400
-Received: by lbbgj3 with SMTP id gj3so3758147lbb.19
-        for <linux-serial@vger.kernel.org>; Fri, 21 Sep 2012 05:12:39 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <CAKdam55VG8KTRZNvPgur9M-wkbD7wyJt27Jsvks=r4PNiuEGaQ@mail.gmail.com>
+	Fri, 21 Sep 2012 09:41:13 -0400
+Received: by weyx8 with SMTP id x8so1960797wey.19
+        for <linux-serial@vger.kernel.org>; Fri, 21 Sep 2012 06:41:12 -0700 (PDT)
+In-Reply-To: <20120920190034.GB15609@n2100.arm.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Poddar, Sourav" <sourav.poddar@ti.com>
-Cc: balbi@ti.com, Shubhrajyoti D <shubhrajyoti@ti.com>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>
+Cc: Linus Walleij <linus.walleij@stericsson.com>, linux-serial@vger.kernel.org, Guillaume Jaunet <guillaume.jaunet@stericsson.com>, Par-Gunnar Hjalmdahl <par-gunnar.hjalmdahl@stericsson.com>, Anmar Oueja <anmar.oueja@linaro.org>, Matthias Locher <matthias.locher@stericsson.com>, "Rajanikanth H.V" <rajanikanth.hv@stericsson.com>, Christophe Arnal <christophe.arnal@stericsson.com>, linux-arm-kernel@lists.infradead.org
 
+On Thu, Sep 20, 2012 at 9:00 PM, Russell King - ARM Linux
+<linux@arm.linux.org.uk> wrote:
+> On Thu, Sep 20, 2012 at 11:46:08AM +0200, Linus Walleij wrote:
+>> From: Linus Walleij <linus.walleij@linaro.org>
+>>
+>> The ST Microelectronics variant of the PL011 is capable of supporting
+>> very high non-standard baud rates, even above 4 Mbps. However the
+>> uart_get_baud_rate() will not allow us to set these, so override that
+>> calculation on very high speeds.
+>
+> You don't explain why it doesn't.  It should in theory allow you to,
+> because there's no limits within that function other than those which
+> you pass in as the minimum and maximum.
 
---4eRLI4hEmsdu6Npr
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+So I looked closer: uart_get_baud_rate() in turn calls out to
+tty_termios_baud_rate() which does some fuzzy matching to the
+fix baudrate table and simply "snaps" the baudrate to the closest
+match if it is "close enough".
 
-On Fri, Sep 21, 2012 at 05:09:56PM +0530, Poddar, Sourav wrote:
-> Hi Felipe,
->=20
-> On Fri, Sep 21, 2012 at 4:30 PM, Felipe Balbi <balbi@ti.com> wrote:
-> > On Fri, Sep 21, 2012 at 03:52:56PM +0530, Shubhrajyoti D wrote:
-> >> Overrun also causes an internal flag to be set, which disables further
-> >> reception. Before the next frame can
-> >> be received, the MPU must:
-> >> =E2=80=A2 Reset the RX FIFO.
-> >> =E2=80=A2 clear the internal flag.
-> >>
-> >> In the uart mode a dummy read is needed. Add the same.
-> >
-> > Very nice patch but I think commit log can be a bit more verbose.
-> >
-> > Please make the problem a little clearer. Why do we even get that
-> > interrupt fired if BRK_ERROR_BITS aren't set ?
-> >
-> According to LSR registers, there are few other bits like RX_FIFO_E( atle=
-ast 1
-> character in RX_FIFO or TX FIFO Empty), which might be the cause of an
-> interrupt. ?
+I.e. 4050000 baud is close enough to 4000000 so it will round
+off and "snap" to 4000000, whereas 3250000 baud will not
+"close enough" to 3000000 so it will not "snap" to 3000000.
 
-right. In that case, is it really correct to just return if
-BRK_ERROR_BITS aren't set ? IRQ line will not toggle and we just might
-end up with an IRQ storm, right ?
+So we don't like that 4050000 snaps to 4000000.
 
---=20
-balbi
+I wonder how to fix this ... I'm planning to do what the comment
+in tty_ioctl says:
 
---4eRLI4hEmsdu6Npr
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+/**
+ *	tty_termios_baud_rate
+ *	@termios: termios structure
+ *
+ *	Convert termios baud rate data into a speed. This should be called
+ *	with the termios lock held if this termios is a terminal termios
+ *	structure. May change the termios data. Device drivers can call this
+ *	function but should use ->c_[io]speed directly as they are updated.
+ *
+ *	Locking: none
+ */
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
+Device drivers should use c_[io]speed directly!
 
-iQIcBAEBAgAGBQJQXFiXAAoJEIaOsuA1yqREX2oP/2FywlS1qPBc8elm79pdRfbw
-MmeENv8PI7SQxn+RJC1bhH56WYSeF43srN5sE96G1dChs5zZemfS6cMukO5pIZVa
-nINXKJ9kNYZtmdBTIo4e4SLgAulmNfg93oFjwyqpSHKo8r+ELU3JK+A6FKGF8hTo
-0JR41hCEhBDKad9xNfkOsq4YFQ8QV8ZBPSfSpU2nB0oGbbeVzEKvW+r+GmRGAtap
-rrqEcmt0nEp4+ilQ7O1Rd2P5lAlBPgeaq0p+XINBlfoZf10fTkQmnLt0RTN8KNc/
-bTL3h4bV+ncq94EAjGXdn5V1TXlI0plKL5kcU2ioylRgtKHO4UDy0c2KYdPF0oY0
-HqHGLKTAph65hUiEaPXXcYN6z54FKNyFF2dbq+4+5hzuK+UaXveds1o66uziffMA
-R08QowC9rfSZz+thmxAS0w/LabsMbqrPPd5XbVBQK1ZRgLBYm3fdsi5+3YcvxiT/
-NZvZr175ABEfvVFu3s1GagMT2ZVDzLVzi2GqAMZIpXIDfND5ZvXK9GpI3tF82Gp+
-p20ONxB/w5xX5uMKQidyxBMs0UNvMOA9KoFSjWyPMXticrgLQTcZKOY4Axlvms83
-A57DkcKBbX5fgVNQ6diW+xrQTuEQYYdBZzWcnT/yaoUS5YbewPr8Ld+YUKofktd2
-piUltdefZ4iVfJ8BuO99
-=LplN
------END PGP SIGNATURE-----
+Alan Cox wrote this, so Alan: should I just ditch the use of
+uart_get_baud_rate() and program the divider directly from
+c_[io]speed?
 
---4eRLI4hEmsdu6Npr--
+Yours,
+Linus Walleij
