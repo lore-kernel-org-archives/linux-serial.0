@@ -1,37 +1,58 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [RFC 2/3] ARM: move udc_pxa2xx.h to linux/platform_data
-Date: Fri, 21 Sep 2012 10:48:55 +0100
-Message-ID: <20120921094855.GC15609@n2100.arm.linux.org.uk>
-References: <20120921093530.GB31374@n2100.arm.linux.org.uk> <E1TEzet-00077v-VD@rmk-PC.arm.linux.org.uk> <CAMPhdO_xqpqUUbSvi1zC4eT6vr0xFO-70+ieknjMWk9h0iWfHg@mail.gmail.com>
+From: Shubhrajyoti D <shubhrajyoti@ti.com>
+Subject: [PATCH] serial: omap: fix the overrun case
+Date: Fri, 21 Sep 2012 15:52:56 +0530
+Message-ID: <1348222976-7241-1-git-send-email-shubhrajyoti@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([78.32.30.218]:37332 "EHLO
-	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751132Ab2IUJtF (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Sep 2012 05:49:05 -0400
-Content-Disposition: inline
-In-Reply-To: <CAMPhdO_xqpqUUbSvi1zC4eT6vr0xFO-70+ieknjMWk9h0iWfHg@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-omap-owner@vger.kernel.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, sourav.poddar@ti.com, Shubhrajyoti D <shubhrajyoti@ti.com>
 List-Id: linux-serial@vger.kernel.org
-To: Eric Miao <eric.y.miao@gmail.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, Imre Kaloz <kaloz@openwrt.org>, Krzysztof Halasa <khc@pm.waw.pl>, Haojian Zhuang <haojian.zhuang@gmail.com>, Felipe Balbi <balbi@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-On Fri, Sep 21, 2012 at 05:40:07PM +0800, Eric Miao wrote:
-> On Fri, Sep 21, 2012 at 5:36 PM, Russell King
-> <rmk+kernel@arm.linux.org.uk> wrote:
-> > diff --git a/arch/arm/mach-ixp4xx/include/mach/udc.h b/arch/arm/mach-ixp4xx/include/mach/udc.h
-> > index 80d6da2..b47cc0d 100644
-> > --- a/arch/arm/mach-ixp4xx/include/mach/udc.h
-> > +++ b/arch/arm/mach-ixp4xx/include/mach/udc.h
-> > @@ -2,7 +2,7 @@
-> >   * arch/arm/mach-ixp4xx/include/mach/udc.h
-> >   *
-> >   */
-> > -#include <asm/mach/udc_pxa2xx.h>
-> > +#include <linux/platform_data_pxa2xx_udc.h>
-> 
-> Guess a typo here, "/" instead of "_"? Otherwise looks good to me
+Overrun also causes an internal flag to be set, which disables further
+reception. Before the next frame can
+be received, the MPU must:
+=E2=80=A2 Reset the RX FIFO.
+=E2=80=A2 clear the internal flag.
 
-Yea, fixed.
+In the uart mode a dummy read is needed. Add the same.
+
+Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
+---
+- functional testing on omap4sdp
+- Verified idle and suspend path hits off on beagle.
+
+ drivers/tty/serial/omap-serial.c |    7 +++++++
+ 1 files changed, 7 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap=
+-serial.c
+index a0d4460..bc22a2b 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -334,6 +334,13 @@ static unsigned int check_modem_status(struct uart=
+_omap_port *up)
+ static void serial_omap_rlsi(struct uart_omap_port *up, unsigned int l=
+sr)
+ {
+ 	unsigned int flag;
++	unsigned char ch =3D 0;
++
++	if (!(lsr & UART_LSR_BRK_ERROR_BITS))
++		return;
++
++	if (likely(lsr & UART_LSR_DR))
++		ch =3D serial_in(up, UART_RX);
+=20
+ 	up->port.icount.rx++;
+ 	flag =3D TTY_NORMAL;
+--=20
+1.7.5.4
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
+n
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
