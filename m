@@ -1,70 +1,76 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH 3/3] serial: pl011: allow very high baudrates
-Date: Fri, 21 Sep 2012 15:41:11 +0200
-Message-ID: <CACRpkdY1ZxQoyGFO9OnKr0WYQzooxPGvZV8Gnr_YO_yT_+ddDw@mail.gmail.com>
-References: <1348134368-25663-1-git-send-email-linus.walleij@stericsson.com>
-	<20120920190034.GB15609@n2100.arm.linux.org.uk>
+From: Kevin Hilman <khilman@deeprootsystems.com>
+Subject: Re: [PATCH] serial: omap: fix the overrun case
+Date: Fri, 21 Sep 2012 07:18:54 -0700
+Message-ID: <87a9wjfohd.fsf@deeprootsystems.com>
+References: <1348222976-7241-1-git-send-email-shubhrajyoti@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-we0-f174.google.com ([74.125.82.174]:63728 "EHLO
-	mail-we0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755299Ab2IUNlN (ORCPT
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:63231 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753287Ab2IUOS5 convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Sep 2012 09:41:13 -0400
-Received: by weyx8 with SMTP id x8so1960797wey.19
-        for <linux-serial@vger.kernel.org>; Fri, 21 Sep 2012 06:41:12 -0700 (PDT)
-In-Reply-To: <20120920190034.GB15609@n2100.arm.linux.org.uk>
+	Fri, 21 Sep 2012 10:18:57 -0400
+Received: by pbbrr4 with SMTP id rr4so2723714pbb.19
+        for <linux-serial@vger.kernel.org>; Fri, 21 Sep 2012 07:18:57 -0700 (PDT)
+In-Reply-To: <1348222976-7241-1-git-send-email-shubhrajyoti@ti.com>
+	(Shubhrajyoti D.'s message of "Fri, 21 Sep 2012 15:52:56 +0530")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>
-Cc: Linus Walleij <linus.walleij@stericsson.com>, linux-serial@vger.kernel.org, Guillaume Jaunet <guillaume.jaunet@stericsson.com>, Par-Gunnar Hjalmdahl <par-gunnar.hjalmdahl@stericsson.com>, Anmar Oueja <anmar.oueja@linaro.org>, Matthias Locher <matthias.locher@stericsson.com>, "Rajanikanth H.V" <rajanikanth.hv@stericsson.com>, Christophe Arnal <christophe.arnal@stericsson.com>, linux-arm-kernel@lists.infradead.org
+To: Shubhrajyoti D <shubhrajyoti@ti.com>
+Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, sourav.poddar@ti.com
 
-On Thu, Sep 20, 2012 at 9:00 PM, Russell King - ARM Linux
-<linux@arm.linux.org.uk> wrote:
-> On Thu, Sep 20, 2012 at 11:46:08AM +0200, Linus Walleij wrote:
->> From: Linus Walleij <linus.walleij@linaro.org>
->>
->> The ST Microelectronics variant of the PL011 is capable of supporting
->> very high non-standard baud rates, even above 4 Mbps. However the
->> uart_get_baud_rate() will not allow us to set these, so override that
->> calculation on very high speeds.
+Shubhrajyoti D <shubhrajyoti@ti.com> writes:
+
+> Overrun also causes an internal flag to be set, which disables furthe=
+r
+> reception. Before the next frame can
+> be received, the MPU must:
+> =E2=80=A2 Reset the RX FIFO.
+> =E2=80=A2 clear the internal flag.
 >
-> You don't explain why it doesn't.  It should in theory allow you to,
-> because there's no limits within that function other than those which
-> you pass in as the minimum and maximum.
+> In the uart mode a dummy read is needed. Add the same.
+>
+> Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
+> ---
+> - functional testing on omap4sdp
+> - Verified idle and suspend path hits off on beagle.
 
-So I looked closer: uart_get_baud_rate() in turn calls out to
-tty_termios_baud_rate() which does some fuzzy matching to the
-fix baudrate table and simply "snaps" the baudrate to the closest
-match if it is "close enough".
+Tested-by: Kevin Hilman <khilman@ti.com>
 
-I.e. 4050000 baud is close enough to 4000000 so it will round
-off and "snap" to 4000000, whereas 3250000 baud will not
-"close enough" to 3000000 so it will not "snap" to 3000000.
+This fixes the console hang I was seeing on 3530/Overo.
 
-So we don't like that 4050000 snaps to 4000000.
+Thanks,
 
-I wonder how to fix this ... I'm planning to do what the comment
-in tty_ioctl says:
+Kevin
 
-/**
- *	tty_termios_baud_rate
- *	@termios: termios structure
- *
- *	Convert termios baud rate data into a speed. This should be called
- *	with the termios lock held if this termios is a terminal termios
- *	structure. May change the termios data. Device drivers can call this
- *	function but should use ->c_[io]speed directly as they are updated.
- *
- *	Locking: none
- */
-
-Device drivers should use c_[io]speed directly!
-
-Alan Cox wrote this, so Alan: should I just ditch the use of
-uart_get_baud_rate() and program the divider directly from
-c_[io]speed?
-
-Yours,
-Linus Walleij
+>  drivers/tty/serial/omap-serial.c |    7 +++++++
+>  1 files changed, 7 insertions(+), 0 deletions(-)
+>
+> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/om=
+ap-serial.c
+> index a0d4460..bc22a2b 100644
+> --- a/drivers/tty/serial/omap-serial.c
+> +++ b/drivers/tty/serial/omap-serial.c
+> @@ -334,6 +334,13 @@ static unsigned int check_modem_status(struct ua=
+rt_omap_port *up)
+>  static void serial_omap_rlsi(struct uart_omap_port *up, unsigned int=
+ lsr)
+>  {
+>  	unsigned int flag;
+> +	unsigned char ch =3D 0;
+> +
+> +	if (!(lsr & UART_LSR_BRK_ERROR_BITS))
+> +		return;
+> +
+> +	if (likely(lsr & UART_LSR_DR))
+> +		ch =3D serial_in(up, UART_RX);
+> =20
+>  	up->port.icount.rx++;
+>  	flag =3D TTY_NORMAL;
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
