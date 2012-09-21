@@ -1,52 +1,73 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH 3/3] serial: pl011: allow very high baudrates
-Date: Fri, 21 Sep 2012 16:06:56 +0100
-Message-ID: <20120921150656.GG15609@n2100.arm.linux.org.uk>
-References: <1348134368-25663-1-git-send-email-linus.walleij@stericsson.com> <20120920190034.GB15609@n2100.arm.linux.org.uk> <CACRpkdY1ZxQoyGFO9OnKr0WYQzooxPGvZV8Gnr_YO_yT_+ddDw@mail.gmail.com> <20120921153710.220adb92@bob.linux.org.uk> <20120921145803.GF15609@n2100.arm.linux.org.uk> <20120921160503.53736fee@pyramind.ukuu.org.uk>
+From: Shubhrajyoti Datta <omaplinuxkernel@gmail.com>
+Subject: Re: [PATCH] serial: omap: fix the overrun case
+Date: Fri, 21 Sep 2012 20:38:36 +0530
+Message-ID: <CAM=Q2cu6B3w4OHOo3+X4bSK1wp_HXiK3wTqnYVSRQFqeSke6TA@mail.gmail.com>
+References: <1348222976-7241-1-git-send-email-shubhrajyoti@ti.com>
+	<87a9wjfohd.fsf@deeprootsystems.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([78.32.30.218]:37490 "EHLO
-	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755449Ab2IUPHQ (ORCPT
+Received: from mail-ie0-f174.google.com ([209.85.223.174]:37435 "EHLO
+	mail-ie0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755903Ab2IUPIh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Sep 2012 11:07:16 -0400
-Content-Disposition: inline
-In-Reply-To: <20120921160503.53736fee@pyramind.ukuu.org.uk>
+	Fri, 21 Sep 2012 11:08:37 -0400
+In-Reply-To: <87a9wjfohd.fsf@deeprootsystems.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Alan Cox <alan@linux.intel.com>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@stericsson.com>, linux-serial@vger.kernel.org, Guillaume Jaunet <guillaume.jaunet@stericsson.com>, Par-Gunnar Hjalmdahl <par-gunnar.hjalmdahl@stericsson.com>, Anmar Oueja <anmar.oueja@linaro.org>, Matthias Locher <matthias.locher@stericsson.com>, "Rajanikanth H.V" <rajanikanth.hv@stericsson.com>, Christophe Arnal <christophe.arnal@stericsson.com>, linux-arm-kernel@lists.infradead.org
+To: Kevin Hilman <khilman@deeprootsystems.com>
+Cc: Shubhrajyoti D <shubhrajyoti@ti.com>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, sourav.poddar@ti.com
 
-On Fri, Sep 21, 2012 at 04:05:03PM +0100, Alan Cox wrote:
-> > Alan - the only issue that remains is handling the invalid baud rate
-> > situation - if left to individual drivers to do this, we will see them
-> > doing stuff (as was the case with this very patch - and was the case
-> > prior to serial_core) such as using dev_err() to print an error and
-> > merely returning from their set_termios function, or clamping to some
-> > speed and not feeding back to userspace what they're actually doing.
-> 
-> They've had years to adapt. It's time they got with the program or just
-> broke horribly.
+On Fri, Sep 21, 2012 at 7:48 PM, Kevin Hilman
+<khilman@deeprootsystems.com> wrote:
+> Shubhrajyoti D <shubhrajyoti@ti.com> writes:
+>
+[...]
+>>
+>> Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
+>> ---
+>> - functional testing on omap4sdp
+>> - Verified idle and suspend path hits off on beagle.
+>
+> Tested-by: Kevin Hilman <khilman@ti.com>
+>
+> This fixes the console hang I was seeing on 3530/Overo.
+Thanks for the test.
 
-Sorry Alan, I don't think you really understand what I'm saying.
+Could you test the v2
+http://www.spinics.net/lists/arm-kernel/msg197050.html
 
-In the old days, lots of serial drivers just ignored termios settings
-that they didn't support, or baud rates that they didn't know about -
-so when userspace requests, eg 4Mbps on a UART port, the ioctl didn't
-fail, and getting the termios back reported 4Mbps.
+I have removed the redundant check.
+Thanks,
 
-That is in violation of the POSIX general terminal interface standard,
-and is something that I fixed with the uart baud rate functions - which
-most serial_core using drivers are using.
 
-Now you're pushing that logic back down into drivers, where driver authors
-have to understand these details again, and that's precisely the reverse
-of what should be happening.  We should be helping driver authors get
-things right by providing helpers to do that, which is exactly what has
-been done.
-
-We need helper functions so we don't end up with 10s of buggy
-implementations of the same calculation of baud rate quotient, which
-each do their own range checking, and then go on to set some random
-unreported-back-to-userspace baud rate.
+>
+> Thanks,
+>
+> Kevin
+>
+>>  drivers/tty/serial/omap-serial.c |    7 +++++++
+>>  1 files changed, 7 insertions(+), 0 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+>> index a0d4460..bc22a2b 100644
+>> --- a/drivers/tty/serial/omap-serial.c
+>> +++ b/drivers/tty/serial/omap-serial.c
+>> @@ -334,6 +334,13 @@ static unsigned int check_modem_status(struct uart_omap_port *up)
+>>  static void serial_omap_rlsi(struct uart_omap_port *up, unsigned int lsr)
+>>  {
+>>       unsigned int flag;
+>> +     unsigned char ch = 0;
+>> +
+>> +     if (!(lsr & UART_LSR_BRK_ERROR_BITS))
+>> +             return;
+>> +
+>> +     if (likely(lsr & UART_LSR_DR))
+>> +             ch = serial_in(up, UART_RX);
+>>
+>>       up->port.icount.rx++;
+>>       flag = TTY_NORMAL;
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
