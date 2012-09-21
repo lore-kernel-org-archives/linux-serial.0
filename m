@@ -1,87 +1,38 @@
-From: Sourav Poddar <sourav.poddar@ti.com>
-Subject: [Resend/PATCHv2] serial: omap: Remove unnecessary checks from suspend/resume
-Date: Fri, 21 Sep 2012 12:34:08 +0530
-Message-ID: <1348211049-9675-1-git-send-email-sourav.poddar@ti.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH 1/3] serial: pl011: safeguard against impossible baudrates
+Date: Fri, 21 Sep 2012 10:26:52 +0200
+Message-ID: <CACRpkdZXEnPpw6ZWuZL4Lt1qeHJJ6+WtMi41HtOb+BHiG4-+iw@mail.gmail.com>
+References: <1348134346-25593-1-git-send-email-linus.walleij@stericsson.com>
+	<20120920185748.GA15609@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:53743 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752308Ab2IUHEk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Sep 2012 03:04:40 -0400
+Received: from mail-we0-f174.google.com ([74.125.82.174]:57849 "EHLO
+	mail-we0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755896Ab2IUI0y (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 21 Sep 2012 04:26:54 -0400
+Received: by weyx8 with SMTP id x8so1809890wey.19
+        for <linux-serial@vger.kernel.org>; Fri, 21 Sep 2012 01:26:52 -0700 (PDT)
+In-Reply-To: <20120920185748.GA15609@n2100.arm.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: alan@linux.intel.com, tony@atomide.com, khilman@ti.com, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, balbi@ti.com, santosh.shilimkar@ti.com, paul@pwsan.com, Sourav Poddar <sourav.poddar@ti.com>
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Linus Walleij <linus.walleij@stericsson.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guillaume Jaunet <guillaume.jaunet@stericsson.com>, Par-Gunnar Hjalmdahl <par-gunnar.hjalmdahl@stericsson.com>, Anmar Oueja <anmar.oueja@linaro.org>, Matthias Locher <matthias.locher@stericsson.com>, "Rajanikanth H.V" <rajanikanth.hv@stericsson.com>, Christophe Arnal <christophe.arnal@stericsson.com>, linux-arm-kernel@lists.infradead.org
 
-Drop the check for "up" being valid on suspend/resume callbacks.
-It should be valid always. Get rid of the "pdata" check also as
-serial_omap_get_context_loss_count() checks for it.
+On Thu, Sep 20, 2012 at 8:57 PM, Russell King - ARM Linux
+<linux@arm.linux.org.uk> wrote:
 
-Boot tested on omap4 panda and PM tested(hitting off in Idle
-and suspend) on 3630 based Beagle board.
+> uart_get_baud_rate() is there precisely to do the right thing for invalid
+> baud rates, which is to fallback to the old termios setting (and update
+> the new termios with that) if the old termios setting satisifies the
+> limits, if not it falls back to something within the limited range.
 
-Reviewed-by: Felipe Balbi <balbi@ti.com>
-Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
----
-Added Felipe's Reviewed by
-v1->v2
-Not a functionality change, just
-Introduce a blank line before "signed off by" line.
- drivers/tty/serial/omap-serial.c |   23 +++++++++--------------
- 1 files changed, 9 insertions(+), 14 deletions(-)
+Yeah, hm, passing 4800000 as max rate to this function and
+requesting 4050000 returns 4000000... (Other high baud rates
+such as 3250000 or 3000000 works fine) so there is some fishy
+bug in there we're just duct-taping around, I'll go hunt the real bug
+instead.
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index f175385..3c05c5e 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -1222,10 +1222,8 @@ static int serial_omap_suspend(struct device *dev)
- {
- 	struct uart_omap_port *up = dev_get_drvdata(dev);
- 
--	if (up) {
--		uart_suspend_port(&serial_omap_reg, &up->port);
--		flush_work_sync(&up->qos_work);
--	}
-+	uart_suspend_port(&serial_omap_reg, &up->port);
-+	flush_work_sync(&up->qos_work);
- 
- 	return 0;
- }
-@@ -1234,8 +1232,8 @@ static int serial_omap_resume(struct device *dev)
- {
- 	struct uart_omap_port *up = dev_get_drvdata(dev);
- 
--	if (up)
--		uart_resume_port(&serial_omap_reg, &up->port);
-+	uart_resume_port(&serial_omap_reg, &up->port);
-+
- 	return 0;
- }
- #endif
-@@ -1553,17 +1551,14 @@ static int serial_omap_runtime_suspend(struct device *dev)
- static int serial_omap_runtime_resume(struct device *dev)
- {
- 	struct uart_omap_port *up = dev_get_drvdata(dev);
--	struct omap_uart_port_info *pdata = dev->platform_data;
- 
--	if (up && pdata) {
--			u32 loss_cnt = serial_omap_get_context_loss_count(up);
-+	u32 loss_cnt = serial_omap_get_context_loss_count(up);
- 
--			if (up->context_loss_cnt != loss_cnt)
--				serial_omap_restore_context(up);
-+	if (up->context_loss_cnt != loss_cnt)
-+		serial_omap_restore_context(up);
- 
--		up->latency = up->calc_latency;
--		schedule_work(&up->qos_work);
--	}
-+	up->latency = up->calc_latency;
-+	schedule_work(&up->qos_work);
- 
- 	return 0;
- }
--- 
-1.7.1
-
+Thanks!
+Linus Walleij
