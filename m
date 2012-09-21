@@ -1,39 +1,33 @@
-From: Kevin Hilman <khilman@deeprootsystems.com>
-Subject: Re: [PATCH v2] serial: omap: fix the reciever line error case
-Date: Fri, 21 Sep 2012 14:46:18 -0700
-Message-ID: <87r4pvdp79.fsf@deeprootsystems.com>
-References: <1348238239-18510-1-git-send-email-shubhrajyoti@ti.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: Vizzini
+Date: Fri, 21 Sep 2012 15:52:03 -0700
+Message-ID: <20120921225203.GB4310@kroah.com>
+References: <20120919162349.1d9107ba@pyramind.ukuu.org.uk>
+ <20120921154323.GH18601@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1348238239-18510-1-git-send-email-shubhrajyoti@ti.com>
-	(Shubhrajyoti D.'s message of "Fri, 21 Sep 2012 20:07:19 +0530")
-Sender: linux-omap-owner@vger.kernel.org
-To: Shubhrajyoti D <shubhrajyoti@ti.com>
-Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:61127 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758359Ab2IUWz1 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 21 Sep 2012 18:55:27 -0400
+Received: by mail-pb0-f46.google.com with SMTP id rr4so3562079pbb.19
+        for <linux-serial@vger.kernel.org>; Fri, 21 Sep 2012 15:55:27 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <20120921154323.GH18601@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>, Rob Duncan <rob.duncan@exar.com>
+Cc: linux-serial@vger.kernel.org
 
-Shubhrajyoti D <shubhrajyoti@ti.com> writes:
+On Fri, Sep 21, 2012 at 04:43:23PM +0100, Greg KH wrote:
+> [Rob added, as he wrote this driver.]
 
-> This patch does the following
-> - In case of errors if there least one data character in the RX FIFO
-> read it otherwise it may stall the receiver.
->
-> This is recommended in the interrupt reset method in the table 23-246 of
-> the omap4 TRM.
->
-> Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
-> ---
-> - Tested on omap4sdp.
-> - pm tested hitting off in idle and suspend.
-> - v2 changes update the changelogs.
-> - Also remove the dummy check as FE , PE , BI and OE are the only
-> receiver errors.
+Ok, as Rob's email bounces, I'm just going to drop this driver entirely,
+as I don't want to maintain it, and I can't answer any questions about
+it.
 
-Tested-by: Kevin Hilman <khilman@ti.com>
+Thanks for the review,
 
-This one also makes the regression I was seeing on 3530/Overo disappear.
-
-Thanks,
-
-Kevin
+greg k-h
