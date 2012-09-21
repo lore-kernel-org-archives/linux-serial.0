@@ -1,76 +1,37 @@
-From: Kevin Hilman <khilman@deeprootsystems.com>
-Subject: Re: [PATCH] serial: omap: fix the overrun case
-Date: Fri, 21 Sep 2012 07:18:54 -0700
-Message-ID: <87a9wjfohd.fsf@deeprootsystems.com>
-References: <1348222976-7241-1-git-send-email-shubhrajyoti@ti.com>
+From: Alan Cox <alan@linux.intel.com>
+Subject: Re: [PATCH 3/3] serial: pl011: allow very high baudrates
+Date: Fri, 21 Sep 2012 15:37:10 +0100
+Message-ID: <20120921153710.220adb92@bob.linux.org.uk>
+References: <1348134368-25663-1-git-send-email-linus.walleij@stericsson.com>
+	<20120920190034.GB15609@n2100.arm.linux.org.uk>
+	<CACRpkdY1ZxQoyGFO9OnKr0WYQzooxPGvZV8Gnr_YO_yT_+ddDw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:63231 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753287Ab2IUOS5 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Sep 2012 10:18:57 -0400
-Received: by pbbrr4 with SMTP id rr4so2723714pbb.19
-        for <linux-serial@vger.kernel.org>; Fri, 21 Sep 2012 07:18:57 -0700 (PDT)
-In-Reply-To: <1348222976-7241-1-git-send-email-shubhrajyoti@ti.com>
-	(Shubhrajyoti D.'s message of "Fri, 21 Sep 2012 15:52:56 +0530")
+Received: from mga14.intel.com ([143.182.124.37]:45084 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755282Ab2IUOfu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 21 Sep 2012 10:35:50 -0400
+In-Reply-To: <CACRpkdY1ZxQoyGFO9OnKr0WYQzooxPGvZV8Gnr_YO_yT_+ddDw@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Shubhrajyoti D <shubhrajyoti@ti.com>
-Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, sourav.poddar@ti.com
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@stericsson.com>, linux-serial@vger.kernel.org, Guillaume Jaunet <guillaume.jaunet@stericsson.com>, Par-Gunnar Hjalmdahl <par-gunnar.hjalmdahl@stericsson.com>, Anmar Oueja <anmar.oueja@linaro.org>, Matthias Locher <matthias.locher@stericsson.com>, "Rajanikanth H.V" <rajanikanth.hv@stericsson.com>, Christophe Arnal <christophe.arnal@stericsson.com>, linux-arm-kernel@lists.infradead.org
 
-Shubhrajyoti D <shubhrajyoti@ti.com> writes:
+> Device drivers should use c_[io]speed directly!
+> 
+> Alan Cox wrote this, so Alan: should I just ditch the use of
+> uart_get_baud_rate() and program the divider directly from
+> c_[io]speed?
 
-> Overrun also causes an internal flag to be set, which disables furthe=
-r
-> reception. Before the next frame can
-> be received, the MPU must:
-> =E2=80=A2 Reset the RX FIFO.
-> =E2=80=A2 clear the internal flag.
->
-> In the uart mode a dummy read is needed. Add the same.
->
-> Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
-> ---
-> - functional testing on omap4sdp
-> - Verified idle and suspend path hits off on beagle.
+Yes.
 
-Tested-by: Kevin Hilman <khilman@ti.com>
+The functions are designed to act as helpers for old devices. In fact
+we can actually probably abolish tty_termios_baud_rate at this point as
+I don't think there is much if anything left which blows up fed a non
+Bxxx table entry.
 
-This fixes the console hang I was seeing on 3530/Overo.
+I will have a look at that in fact see what it involves at this point.
 
-Thanks,
-
-Kevin
-
->  drivers/tty/serial/omap-serial.c |    7 +++++++
->  1 files changed, 7 insertions(+), 0 deletions(-)
->
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/om=
-ap-serial.c
-> index a0d4460..bc22a2b 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -334,6 +334,13 @@ static unsigned int check_modem_status(struct ua=
-rt_omap_port *up)
->  static void serial_omap_rlsi(struct uart_omap_port *up, unsigned int=
- lsr)
->  {
->  	unsigned int flag;
-> +	unsigned char ch =3D 0;
-> +
-> +	if (!(lsr & UART_LSR_BRK_ERROR_BITS))
-> +		return;
-> +
-> +	if (likely(lsr & UART_LSR_DR))
-> +		ch =3D serial_in(up, UART_RX);
-> =20
->  	up->port.icount.rx++;
->  	flag =3D TTY_NORMAL;
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Alan
