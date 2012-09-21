@@ -1,105 +1,92 @@
-From: Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH v2] serial: omap: fix the reciever line error case
-Date: Fri, 21 Sep 2012 19:01:00 +0300
-Message-ID: <20120921160059.GA9886@arwen.pp.htv.fi>
-References: <1348238239-18510-1-git-send-email-shubhrajyoti@ti.com>
-Reply-To: balbi@ti.com
+From: Linus Walleij <linus.walleij@stericsson.com>
+Subject: [PATCH] serial: pl011: handle corruption at high clock speeds
+Date: Fri, 21 Sep 2012 18:38:31 +0200
+Message-ID: <1348245511-13732-1-git-send-email-linus.walleij@stericsson.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="7AUc2qLy4jB3hD7Z"
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from na3sys009aog126.obsmtp.com ([74.125.149.155]:36711 "EHLO
-	na3sys009aog126.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753721Ab2IUQFu (ORCPT
+Received: from eu1sys200aog119.obsmtp.com ([207.126.144.147]:58103 "EHLO
+	eu1sys200aog119.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751932Ab2IUQjA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Sep 2012 12:05:50 -0400
-Received: by lbbgj3 with SMTP id gj3so4094571lbb.19
-        for <linux-serial@vger.kernel.org>; Fri, 21 Sep 2012 09:05:47 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <1348238239-18510-1-git-send-email-shubhrajyoti@ti.com>
+	Fri, 21 Sep 2012 12:39:00 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Shubhrajyoti D <shubhrajyoti@ti.com>
-Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Greg KH <gregkh@linuxfoundation.org>
+To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-arm-kernel@lists.infradead.org, Anmar Oueja <anmar.oueja@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, stable@kernel.org, Bibek Basu <bibek.basu@stericsson.com>, Par-Gunnar Hjalmdahl <par-gunnar.hjalmdahl@stericsson.com>, Guillaume Jaunet <guillaume.jaunet@stericsson.com>, Christophe Arnal <christophe.arnal@stericsson.com>, Matthias Locher <matthias.locher@stericsson.com>, Rajanikanth HV <rajanikanth.hv@stericsson.com>
 
+From: Linus Walleij <linus.walleij@linaro.org>
 
---7AUc2qLy4jB3hD7Z
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This works around a few glitches in the ST version of the PL011
+serial driver when using very high baud rates, as we do in the
+Ux500: 3, 3.25, 4 and 4.05 Mbps.
 
-On Fri, Sep 21, 2012 at 08:07:19PM +0530, Shubhrajyoti D wrote:
-> This patch does the following
-> - In case of errors if there least one data character in the RX FIFO
-> read it otherwise it may stall the receiver.
->=20
-> This is recommended in the interrupt reset method in the table 23-246 of
-> the omap4 TRM.
->=20
-> Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
+Problem Observed/rootcause:
 
-FWIW:
+When using high baud-rates, and the baudrate*8 is getting close to
+the provided clock frequency (so a division factor close to 1), when
+using bursts of characters (so they are abutted), then it seems as if
+there is not enough time to detect the beginning of the start-bit which
+is a timing reference for the entire character, and thus the sampling
+moment of character bits is moving towards the end of each bit, instead
+of the middle.
 
-Reviewed-by: Felipe Balbi <balbi@ti.com>
+Fix:
+Increase slightly the RX baud rate of the UART above the theoretical
+baudrate by 5%. This will definitely give more margin time to the
+UART_RX to correctly sample the data at the middle of the bit period.
 
-> ---
-> - Tested on omap4sdp.
-> - pm tested hitting off in idle and suspend.
-> - v2 changes update the changelogs.
-> - Also remove the dummy check as FE , PE , BI and OE are the only
-> receiver errors.
->=20
->  drivers/tty/serial/omap-serial.c |    4 ++++
->  1 files changed, 4 insertions(+), 0 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-s=
-erial.c
-> index a0d4460..4fea16b 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -334,6 +334,10 @@ static unsigned int check_modem_status(struct uart_o=
-map_port *up)
->  static void serial_omap_rlsi(struct uart_omap_port *up, unsigned int lsr)
->  {
->  	unsigned int flag;
-> +	unsigned char ch =3D 0;
-> +
-> +	if (likely(lsr & UART_LSR_DR))
-> +		ch =3D serial_in(up, UART_RX);
-> =20
->  	up->port.icount.rx++;
->  	flag =3D TTY_NORMAL;
-> --=20
-> 1.7.5.4
->=20
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-omap" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Also fix the ages old copy-paste error in the very stressed comment,
+it's referencing the registers used in the PL010 driver rather than
+the PL011 ones.
 
---=20
-balbi
+Cc: stable@kernel.org
+Cc: Bibek Basu <bibek.basu@stericsson.com>
+Cc: Par-Gunnar Hjalmdahl <par-gunnar.hjalmdahl@stericsson.com>
+Signed-off-by: Guillaume Jaunet <guillaume.jaunet@stericsson.com>
+Signed-off-by: Christophe Arnal <christophe.arnal@stericsson.com>
+Signed-off-by: Matthias Locher <matthias.locher@stericsson.com>
+Signed-off-by: Rajanikanth HV <rajanikanth.hv@stericsson.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+This patch fell off the earlier patch series so better send it
+alone as it should go into stable.
+---
+ drivers/tty/serial/amba-pl011.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
---7AUc2qLy4jB3hD7Z
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index d626d84..cb9f694 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1594,13 +1594,26 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
+ 			old_cr &= ~ST_UART011_CR_OVSFACT;
+ 	}
+ 
++	/*
++	 * Workaround for the ST Micro oversampling variants to
++	 * increase the bitrate slightly, by lowering the divisor,
++	 * to avoid delayed sampling of start bit at high speeds,
++	 * else we see data corruption.
++	 */
++	if (uap->vendor->oversampling) {
++		if (baud > 3000000 && baud < 3250000 && quot > 1)
++			quot -= 1;
++		else if (baud > 3250000 && quot > 2)
++			quot -= 2;
++	}
+ 	/* Set baud rate */
+ 	writew(quot & 0x3f, port->membase + UART011_FBRD);
+ 	writew(quot >> 6, port->membase + UART011_IBRD);
+ 
+ 	/*
+ 	 * ----------v----------v----------v----------v-----
+-	 * NOTE: MUST BE WRITTEN AFTER UARTLCR_M & UARTLCR_L
++	 * NOTE: lcrh_tx and lcrh_rx MUST BE WRITTEN AFTER
++	 * UART011_FBRD & UART011_IBRD.
+ 	 * ----------^----------^----------^----------^-----
+ 	 */
+ 	writew(lcr_h, port->membase + uap->lcrh_rx);
+-- 
+1.7.11.3
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-
-iQIcBAEBAgAGBQJQXI87AAoJEIaOsuA1yqREPz8P/1txQoZjbQsA1X2hPr+2yInx
-/qvK8pCisKPt9PM3I4ArYT2eufVKmmCtbe/pg3NtpzxCGMAIF3tVEU4PMvc0ZUgg
-XcDmY+b0LeIuFOiJTJAGqGmBmHb2ksNAqfqOV6ZxmisgcgDaTDHe9U80GxI7qaE3
-ypDk0GFng9ExJ4yy+RyAQ36G9BPQ66qkLGTzF+JVVCsw8lC9oPkTVUCeMv8Uo0+2
-JveF77E+5L3rKjQyhS8Xfcf1iZAVfOfOYmMrofDc6iNydQBSPGMPlKxNlFGvK5pd
-lIOMYFd1xYS6mhbHXLaW5k/7erD3AUVH+XuYMN+7MjgnkatUzninpLupmE6k4tDT
-u+b0o5C9F5x8tp9BNVVOY05O4aXT/3NIV1EPET4YR4e8vz1k4q1kjZqGlCaYimSR
-RaShDQzNaLofFVMYbHp7MbtJjHGgiEwP9EfceCziEssAVn+H7o8qU03QzAFyyAQD
-9RMZJ93SkV7lo6Qif/jF66rrfHayqOip3YHrOJryMQn3qEOk+mG5k4GD0bbS9gqC
-eYcULuMvrV8ze6JmZT7a1+2LKEK9NXXXGmmt7sVT8HO43BCSCH3x6k3Ln6vXK9ov
-lg209vDN3rD22SLdX9cV5g3JI8QkeQKVpTkcF2KeuCmUNIs1eO1N7u5Oe7UnhhjV
-uZ1zPiGhdH2jOgrUK8qc
-=qT+m
------END PGP SIGNATURE-----
-
---7AUc2qLy4jB3hD7Z--
