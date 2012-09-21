@@ -1,126 +1,111 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH 3/3] serial: pl011: allow very high baudrates
-Date: Fri, 21 Sep 2012 19:52:04 +0200
-Message-ID: <CACRpkdakLAPmD0TQwe2VNhdePDuFv2KXD2U1xoP1C0axkx2p7A@mail.gmail.com>
-References: <1348134368-25663-1-git-send-email-linus.walleij@stericsson.com>
-	<20120920190034.GB15609@n2100.arm.linux.org.uk>
-	<CACRpkdY1ZxQoyGFO9OnKr0WYQzooxPGvZV8Gnr_YO_yT_+ddDw@mail.gmail.com>
-	<20120921162543.1ed18775@pyramind.ukuu.org.uk>
+From: Linus Walleij <linus.walleij@stericsson.com>
+Subject: [PATCH] RFC: serial: pl011: allow very high baudrates
+Date: Fri, 21 Sep 2012 19:59:59 +0200
+Message-ID: <1348250399-5651-1-git-send-email-linus.walleij@stericsson.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f44.google.com ([74.125.82.44]:36554 "EHLO
-	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932208Ab2IURwG (ORCPT
+Received: from eu1sys200aog104.obsmtp.com ([207.126.144.117]:49434 "EHLO
+	eu1sys200aog104.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S932804Ab2IUSfl (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Sep 2012 13:52:06 -0400
-Received: by wgbdr13 with SMTP id dr13so1624676wgb.1
-        for <linux-serial@vger.kernel.org>; Fri, 21 Sep 2012 10:52:04 -0700 (PDT)
-In-Reply-To: <20120921162543.1ed18775@pyramind.ukuu.org.uk>
+	Fri, 21 Sep 2012 14:35:41 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Linus Walleij <linus.walleij@stericsson.com>, linux-serial@vger.kernel.org, Guillaume Jaunet <guillaume.jaunet@stericsson.com>, Par-Gunnar Hjalmdahl <par-gunnar.hjalmdahl@stericsson.com>, Anmar Oueja <anmar.oueja@linaro.org>, Matthias Locher <matthias.locher@stericsson.com>, "Rajanikanth H.V" <rajanikanth.hv@stericsson.com>, Christophe Arnal <christophe.arnal@stericsson.com>, linux-arm-kernel@lists.infradead.org
+To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@arm.linux.org.uk>, Alan Cox <alan@linux.intel.com>
+Cc: linux-arm-kernel@lists.infradead.org, Anmar Oueja <anmar.oueja@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, Par-Gunnar Hjalmdahl <par-gunnar.hjalmdahl@stericsson.com>, Guillaume Jaunet <guillaume.jaunet@stericsson.com>, Christophe Arnal <christophe.arnal@stericsson.com>, Matthias Locher <matthias.locher@stericsson.com>, Rajanikanth HV <rajanikanth.hv@stericsson.com>
 
-On Fri, Sep 21, 2012 at 5:25 PM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
+From: Linus Walleij <linus.walleij@linaro.org>
 
-> Untested but I suspect the following may help
+The ST Microelectronics variant of the PL011 is capable of supporting
+very high non-standard baud rates, even above 4 Mbps. Mostly this
+works, but when we try to use 4050000 baud, the code in
+tty_termios_encode_baud_rate(), which is called from
+uart_get_baud_rate() will do some fuzzy matching and "snap" the
+baudrate to 4000000 baud, which happens to be in the baud_table[].
 
-Nope it doesn't, it's not this part that goes wrong, it's the call to
-tty_termios_encode_baud_rate() that is the problem, not how it
-gets called. It's that function that fuzzes and "snaps" the baudrate
-to some rough-fit speed and screws things up for me.
+However there is an encouraging comment from Alan Cox above the
+tty_termios_input_baud_rate() function stating that device
+drivers should use ->c_[io]speed directly as they are updated.
 
-But I looked a bit at the patch as such.
+I tried this, but that requires the driver to handle a few
+odd cases such as when the ->c_ispeed and ->c_ospeed differs,
+or when they are both send it as 0 (which happens a lot in
+the kernel) so that would require pushing a lot of duplicate
+code into the driver to get the same behaviour.
 
-It doesn't compile, but when I fix it like this:
+Here I take a middle-ground approach: if the baud rate of
+->c_ispeed and ->c_ospeed differs, or if either of them is
+zero, I still call the uart_get_baud_rate() function, but
+root the baudrate to what the block can handle at max.
 
-> -               if (baud >= min && baud <= max)
-> +               if (baud >= min && baud <= max) {
-> +                       tty_termios_encode_baud_rate(tty, baud, baud);
+Cc: Par-Gunnar Hjalmdahl <par-gunnar.hjalmdahl@stericsson.com>
+Signed-off-by: Guillaume Jaunet <guillaume.jaunet@stericsson.com>
+Signed-off-by: Christophe Arnal <christophe.arnal@stericsson.com>
+Signed-off-by: Matthias Locher <matthias.locher@stericsson.com>
+Signed-off-by: Rajanikanth HV <rajanikanth.hv@stericsson.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+After discussing with Alan and Russell I still don't feel this
+is the right solution, but it demonstrates Russell's point of
+how intelligence (here just some checking of ->c_[io]speed,
+but you get the point) is moved out of the serial/tty core and
+out into the drivers if we do this.
 
-s/tty/termios/
+Maybe a new function is needed in the serial core, one that
+will just call out to serial and tty like this if the c_[io]speed
+differs or either is zero?
+---
+ drivers/tty/serial/amba-pl011.c | 30 ++++++++++++++++++++++++------
+ 1 file changed, 24 insertions(+), 6 deletions(-)
 
-Then it compiles, but regresses.
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index cb9f694..778a6a5 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1492,18 +1492,36 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	struct uart_amba_port *uap = (struct uart_amba_port *)port;
+ 	unsigned int lcr_h, old_cr;
+ 	unsigned long flags;
+-	unsigned int baud, quot, clkdiv;
++	unsigned int max_baud, baud, quot;
+ 
+ 	if (uap->vendor->oversampling)
+-		clkdiv = 8;
++		max_baud = port->uartclk / 8;
+ 	else
+-		clkdiv = 16;
++		max_baud = port->uartclk / 16;
+ 
+ 	/*
+-	 * Ask the core to calculate the divisor for us.
++	 * For "zero" speeds or in the case where in and output
++	 * speed differs, fall back on using the serial core to
++	 * determine applicable baudrate.
+ 	 */
+-	baud = uart_get_baud_rate(port, termios, old, 0,
+-				  port->uartclk / clkdiv);
++	if ((termios->c_ispeed != termios->c_ospeed) ||
++	    (termios->c_ispeed == 0) ||
++	    (termios->c_ospeed == 0))
++		baud = uart_get_baud_rate(port, termios, old, 0,
++					  max_baud);
++	else {
++		/*
++		 * Else we just use the requested speed from
++		 * termios. But we sanity check it so as not to
++		 * exceed hardware limits.
++		 */
++		baud = termios->c_ospeed;
++		if (baud > max_baud)
++			baud = max_baud;
++	}
++	dev_dbg(uap->port.dev, "c_ispeed: %u, c_ospeed: %u, "
++		"max_baud: %u, resulting baud rate %u bps\n",
++		termios->c_ispeed, termios->c_ospeed, max_baud, baud);
+ 
+ 	if (baud > port->uartclk/16)
+ 		quot = DIV_ROUND_CLOSEST(port->uartclk * 8, baud);
+-- 
+1.7.11.3
 
-What's going wrong is that the termios encoding of zero does
-not happen anymore, for baudrate 0, i.e whereas we used to
-encode 0 into termios and then return 9600 this encodes
-9600 and returns 9600.
-
-So if I handle baudrate 9600 specially instead like this it works:
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 7d9fbb8..a2442fb 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -351,8 +351,9 @@ uart_get_baud_rate(struct uart_port *port, struct
-ktermios *termios,
- 	else if (flags == UPF_SPD_WARP)
- 		altbaud = 460800;
-
-+	baud = tty_termios_baud_rate(termios);
-+
- 	for (try = 0; try < 2; try++) {
--		baud = tty_termios_baud_rate(termios);
-
- 		/*
- 		 * The spd_hi, spd_vhi, spd_shi, spd_warp kludge...
-@@ -362,26 +363,27 @@ uart_get_baud_rate(struct uart_port *port,
-struct ktermios *termios,
- 			baud = altbaud;
-
- 		/*
--		 * Special case: B0 rate.
-+		 * Special case: B0 rate. Note: this breaks if the
-+		 * device cannot support 9600 baud
- 		 */
- 		if (baud == 0) {
- 			hung_up = 1;
--			baud = 9600;
-+			/* Encode zeroes to preserve semantics */
-+			tty_termios_encode_baud_rate(termios, 0, 0);
-+			return 9600;
- 		}
-
--		if (baud >= min && baud <= max)
-+		if (baud >= min && baud <= max) {
-+			tty_termios_encode_baud_rate(termios, baud, baud);
- 			return baud;
-+		}
-
- 		/*
- 		 * Oops, the quotient was zero.  Try again with
- 		 * the old baud rate if possible.
- 		 */
--		termios->c_cflag &= ~CBAUD;
- 		if (old) {
- 			baud = tty_termios_baud_rate(old);
--			if (!hung_up)
--				tty_termios_encode_baud_rate(termios,
--								baud, baud);
- 			old = NULL;
- 			continue;
- 		}
-@@ -392,11 +394,9 @@ uart_get_baud_rate(struct uart_port *port, struct
-ktermios *termios,
- 		 */
- 		if (!hung_up) {
- 			if (baud <= min)
--				tty_termios_encode_baud_rate(termios,
--							min + 1, min + 1);
-+				baud = min + 1;
- 			else
--				tty_termios_encode_baud_rate(termios,
--							max - 1, max - 1);
-+				baud = max - 1;
- 		}
- 	}
- 	/* Should never happen */
-
-(FWIW Signed-off-by: Linus Walleij <linus.walleij@linaro.org> for the twoliner)
-
-But as mentioned I get the same errors...
-
-Yours,
-Linus Walleij
