@@ -1,31 +1,47 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [RFC 2/3] ARM: move udc_pxa2xx.h to linux/platform_data
-Date: Fri, 21 Sep 2012 16:05:39 -0700
-Message-ID: <20120921230539.GE4918@kroah.com>
-References: <20120921093530.GB31374@n2100.arm.linux.org.uk>
- <E1TEzet-00077v-VD@rmk-PC.arm.linux.org.uk>
+From: Fengguang Wu <fengguang.wu@intel.com>
+Subject: [tty:tty-next 10/16] fs/compat_ioctl.c:869:1: error: 'TIOCSRS485'
+ undeclared here (not in a function)
+Date: Sat, 22 Sep 2012 08:50:21 +0800
+Message-ID: <20120922005021.GM5959@localhost>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:34632 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754702Ab2IVAKh (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Sep 2012 20:10:37 -0400
-Received: by mail-pb0-f46.google.com with SMTP id rr4so3650852pbb.19
-        for <linux-serial@vger.kernel.org>; Fri, 21 Sep 2012 17:10:37 -0700 (PDT)
+Received: from mga01.intel.com ([192.55.52.88]:32301 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753864Ab2IVAu1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 21 Sep 2012 20:50:27 -0400
 Content-Disposition: inline
-In-Reply-To: <E1TEzet-00077v-VD@rmk-PC.arm.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <rmk+kernel@arm.linux.org.uk>
-Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, Imre Kaloz <kaloz@openwrt.org>, Krzysztof Halasa <khc@pm.waw.pl>, Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Felipe Balbi <balbi@ti.com>
+To: Jaeden Amero <jaeden.amero@ni.com>
+Cc: kernel-janitors@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
 
-On Fri, Sep 21, 2012 at 10:36:27AM +0100, Russell King wrote:
-> Move the PXA2xx/IXP4xx UDC header file into linux/platform_data as it
-> only contains a driver platform data structure.
-> 
-> Signed-off-by: Russell King <rmk+kernel@arm.linux.org.uk>
+Hi Jaeden,
 
+FYI, kernel build failed on
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
+head:   ac57e7f38ea6fe7358cd0b7a2f2d21aef5ab70cd
+commit: 84c3b84860440a9e3a3666c14112f41311b8f623 [10/16] compat_ioctl: Add RS-485 IOCTLs to the list
+config: mips-fuloong2e_defconfig
+
+All related error/warning messages:
+
+fs/compat_ioctl.c:869:1: error: 'TIOCSRS485' undeclared here (not in a function)
+fs/compat_ioctl.c:870:1: error: 'TIOCGRS485' undeclared here (not in a function)
+
+vim +869 fs/compat_ioctl.c
+   863	COMPATIBLE_IOCTL(TIOCSPGRP)
+   864	COMPATIBLE_IOCTL(TIOCGPGRP)
+   865	COMPATIBLE_IOCTL(TIOCGPTN)
+   866	COMPATIBLE_IOCTL(TIOCSPTLCK)
+   867	COMPATIBLE_IOCTL(TIOCSERGETLSR)
+   868	COMPATIBLE_IOCTL(TIOCSIG)
+ > 869	COMPATIBLE_IOCTL(TIOCSRS485)
+   870	COMPATIBLE_IOCTL(TIOCGRS485)
+   871	#ifdef TCGETS2
+   872	COMPATIBLE_IOCTL(TCGETS2)
+
+---
+0-DAY kernel build testing backend         Open Source Technology Centre
+Fengguang Wu, Yuanhan Liu                              Intel Corporation
