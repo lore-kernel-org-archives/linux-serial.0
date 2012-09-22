@@ -1,111 +1,40 @@
-From: Doug Anderson <dianders@chromium.org>
-Subject: [PATCH] serial: samsung: Add poll_get_char & poll_put_char
-Date: Fri, 21 Sep 2012 23:22:31 -0700
-Message-ID: <1348294951-28617-1-git-send-email-dianders@chromium.org>
-References: <20120212182201.GA17975@debian>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20120212182201.GA17975@debian>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-samsung-soc@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Julien Pichon <pichon.jln@gmail.com>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, kgene.kim@samsung.com, GNUtoo@no-log.org, heiko@sntech.de, ben-linux@fluff.org, Doug Anderson <dianders@chromium.org>
+From: Krzysztof Halasa <khc@pm.waw.pl>
+Subject: Re: [RFC 2/3] ARM: move udc_pxa2xx.h to linux/platform_data
+Date: Sat, 22 Sep 2012 13:41:28 +0200
+Message-ID: <m3haqqthcn.fsf@intrepid.localdomain>
+References: <20120921093530.GB31374@n2100.arm.linux.org.uk>
+ <E1TEzet-00077v-VD@rmk-PC.arm.linux.org.uk>
+ <CAMPhdO_xqpqUUbSvi1zC4eT6vr0xFO-70+ieknjMWk9h0iWfHg@mail.gmail.com>
+ <20120921094855.GC15609@n2100.arm.linux.org.uk>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20120921094855.GC15609@n2100.arm.linux.org.uk> (Russell King's
+ message of "Fri, 21 Sep 2012 10:48:55 +0100")
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: linux-arm-kernel-bounces@lists.infradead.org
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Eric Miao <eric.y.miao@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-usb@vger.kernel.org, Haojian Zhuang <haojian.zhuang@gmail.com>, Felipe Balbi <balbi@ti.com>, linux-serial@vger.kernel.org, Imre Kaloz <kaloz@openwrt.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Julien Pichon <pichon.jln@gmail.com>
-
-The following patch allows users to use KGDB over serial console on
-board based on Samsung SOC. It has been tested on a board using
-exynos5.
-
-Signed-off-by: Julien Pichon <pichon.jln@gmail.com>
-Signed-off-by: Doug Anderson <dianders@chromium.org>
-(dianders changed poll to return NO_POLL_CHAR, which appears to
-fix 'help' in kgdb; also updated commit message)
----
-This is pulled from an email on <linux-samsung-soc@vger.kernel.org>
-from Feb 18, 2012. It's never landed anywhere. I've made a small modification
-that make it so that kgdb's "help" doesn't crash.
-
-See: http://comments.gmane.org/gmane.linux.kernel.samsung-soc/9477
-
- drivers/tty/serial/samsung.c |   47 ++++++++++++++++++++++++++++++++++++++++++
- 1 files changed, 47 insertions(+), 0 deletions(-)
-
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index 8eef114..7f04717 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -876,11 +876,24 @@ s3c24xx_serial_verify_port(struct uart_port *port, struct serial_struct *ser)
- 
- static struct console s3c24xx_serial_console;
- 
-+static int __init s3c24xx_serial_console_init(void)
-+{
-+	register_console(&s3c24xx_serial_console);
-+	return 0;
-+}
-+console_initcall(s3c24xx_serial_console_init);
-+
- #define S3C24XX_SERIAL_CONSOLE &s3c24xx_serial_console
- #else
- #define S3C24XX_SERIAL_CONSOLE NULL
- #endif
- 
-+#ifdef CONFIG_CONSOLE_POLL
-+static int s3c24xx_serial_get_poll_char(struct uart_port *port);
-+static void s3c24xx_serial_put_poll_char(struct uart_port *port,
-+			 unsigned char c);
-+#endif
-+
- static struct uart_ops s3c24xx_serial_ops = {
- 	.pm		= s3c24xx_serial_pm,
- 	.tx_empty	= s3c24xx_serial_tx_empty,
-@@ -899,6 +912,10 @@ static struct uart_ops s3c24xx_serial_ops = {
- 	.request_port	= s3c24xx_serial_request_port,
- 	.config_port	= s3c24xx_serial_config_port,
- 	.verify_port	= s3c24xx_serial_verify_port,
-+#ifdef CONFIG_CONSOLE_POLL
-+	.poll_get_char = s3c24xx_serial_get_poll_char,
-+	.poll_put_char = s3c24xx_serial_put_poll_char,
-+#endif
- };
- 
- static struct uart_driver s3c24xx_uart_drv = {
-@@ -1316,6 +1333,36 @@ s3c24xx_serial_console_txrdy(struct uart_port *port, unsigned int ufcon)
- 	return (utrstat & S3C2410_UTRSTAT_TXE) ? 1 : 0;
- }
- 
-+#ifdef CONFIG_CONSOLE_POLL
-+/*
-+ * Console polling routines for writing and reading from the uart while
-+ * in an interrupt or debug context.
-+ */
-+
-+static int s3c24xx_serial_get_poll_char(struct uart_port *port)
-+{
-+	struct s3c24xx_uart_port *ourport = to_ourport(port);
-+	unsigned int ufstat;
-+
-+	ufstat = rd_regl(port, S3C2410_UFSTAT);
-+	if (s3c24xx_serial_rx_fifocnt(ourport, ufstat) == 0)
-+		return NO_POLL_CHAR;
-+
-+	return rd_regb(port, S3C2410_URXH);
-+}
-+
-+static void s3c24xx_serial_put_poll_char(struct uart_port *port,
-+		unsigned char c)
-+{
-+	unsigned int ufcon = rd_regl(cons_uart, S3C2410_UFCON);
-+
-+	while (!s3c24xx_serial_console_txrdy(port, ufcon))
-+		cpu_relax();
-+	wr_regb(cons_uart, S3C2410_UTXH, c);
-+}
-+
-+#endif /* CONFIG_CONSOLE_POLL */
-+
- static void
- s3c24xx_serial_console_putchar(struct uart_port *port, int ch)
- {
--- 
-1.7.7.3
+UnVzc2VsbCBLaW5nIC0gQVJNIExpbnV4IDxsaW51eEBhcm0ubGludXgub3JnLnVrPiB3cml0ZXM6
+Cgo+PiA+IC0tLSBhL2FyY2gvYXJtL21hY2gtaXhwNHh4L2luY2x1ZGUvbWFjaC91ZGMuaAo+PiA+
+ICsrKyBiL2FyY2gvYXJtL21hY2gtaXhwNHh4L2luY2x1ZGUvbWFjaC91ZGMuaAo+PiA+IEBAIC0y
+LDcgKzIsNyBAQAo+PiA+ICAgKiBhcmNoL2FybS9tYWNoLWl4cDR4eC9pbmNsdWRlL21hY2gvdWRj
+LmgKPj4gPiAgICoKPj4gPiAgICovCj4+ID4gLSNpbmNsdWRlIDxhc20vbWFjaC91ZGNfcHhhMnh4
+Lmg+Cj4+ID4gKyNpbmNsdWRlIDxsaW51eC9wbGF0Zm9ybV9kYXRhX3B4YTJ4eF91ZGMuaD4KPj4g
+Cj4+IEd1ZXNzIGEgdHlwbyBoZXJlLCAiLyIgaW5zdGVhZCBvZiAiXyI/IE90aGVyd2lzZSBsb29r
+cyBnb29kIHRvIG1lCj4KPiBZZWEsIGZpeGVkLgoKVGhlIGl4cDR4eCBwYXJ0IGxvb2tzIGdvb2Qg
+dG8gbWUgdG9vLgpBY2tlZC1ieTogS3J6eXN6dG9mIEhhbGFzYSA8a2hjQHBtLndhdy5wbD4KCi0t
+IApLcnp5c3p0b2YgSGHFgmFzYQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5l
+bEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4v
+bGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
