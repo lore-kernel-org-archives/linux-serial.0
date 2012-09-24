@@ -1,40 +1,26 @@
-From: Krzysztof Halasa <khc@pm.waw.pl>
-Subject: Re: [RFC 2/3] ARM: move udc_pxa2xx.h to linux/platform_data
-Date: Sat, 22 Sep 2012 13:41:28 +0200
-Message-ID: <m3haqqthcn.fsf@intrepid.localdomain>
-References: <20120921093530.GB31374@n2100.arm.linux.org.uk>
- <E1TEzet-00077v-VD@rmk-PC.arm.linux.org.uk>
- <CAMPhdO_xqpqUUbSvi1zC4eT6vr0xFO-70+ieknjMWk9h0iWfHg@mail.gmail.com>
- <20120921094855.GC15609@n2100.arm.linux.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20120921094855.GC15609@n2100.arm.linux.org.uk> (Russell King's
- message of "Fri, 21 Sep 2012 10:48:55 +0100")
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: linux-arm-kernel-bounces@lists.infradead.org
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Eric Miao <eric.y.miao@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-usb@vger.kernel.org, Haojian Zhuang <haojian.zhuang@gmail.com>, Felipe Balbi <balbi@ti.com>, linux-serial@vger.kernel.org, Imre Kaloz <kaloz@openwrt.org>, linux-arm-kernel@lists.infradead.org
+From: Christophe Leroy <christophe.leroy@c-s.fr>
+Subject: [PATCH v2] Powerpc 8xx CPM_UART desynchronisation
+Date: Mon, 24 Sep 2012 08:17:08 +0200
+Message-ID: <201209240617.q8O6H8ED029430@localhost.localdomain>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>, Vitaly Bordug <vitb@kernel.crashing.org>, Marcelo Tosatti <marcelo@kvack.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 List-Id: linux-serial@vger.kernel.org
 
-UnVzc2VsbCBLaW5nIC0gQVJNIExpbnV4IDxsaW51eEBhcm0ubGludXgub3JnLnVrPiB3cml0ZXM6
-Cgo+PiA+IC0tLSBhL2FyY2gvYXJtL21hY2gtaXhwNHh4L2luY2x1ZGUvbWFjaC91ZGMuaAo+PiA+
-ICsrKyBiL2FyY2gvYXJtL21hY2gtaXhwNHh4L2luY2x1ZGUvbWFjaC91ZGMuaAo+PiA+IEBAIC0y
-LDcgKzIsNyBAQAo+PiA+ICAgKiBhcmNoL2FybS9tYWNoLWl4cDR4eC9pbmNsdWRlL21hY2gvdWRj
-LmgKPj4gPiAgICoKPj4gPiAgICovCj4+ID4gLSNpbmNsdWRlIDxhc20vbWFjaC91ZGNfcHhhMnh4
-Lmg+Cj4+ID4gKyNpbmNsdWRlIDxsaW51eC9wbGF0Zm9ybV9kYXRhX3B4YTJ4eF91ZGMuaD4KPj4g
-Cj4+IEd1ZXNzIGEgdHlwbyBoZXJlLCAiLyIgaW5zdGVhZCBvZiAiXyI/IE90aGVyd2lzZSBsb29r
-cyBnb29kIHRvIG1lCj4KPiBZZWEsIGZpeGVkLgoKVGhlIGl4cDR4eCBwYXJ0IGxvb2tzIGdvb2Qg
-dG8gbWUgdG9vLgpBY2tlZC1ieTogS3J6eXN6dG9mIEhhbGFzYSA8a2hjQHBtLndhdy5wbD4KCi0t
-IApLcnp5c3p0b2YgSGHFgmFzYQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5l
-bEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4v
-bGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+This patch fixes a desynchronisation problem with CPM UART driver on
+Powerpc MPC8xx. The problem happens if data is received before the device
+is open by the user application.
+
+Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
+
+--- linux-3.5-vanilla/drivers/tty/serial/cpm_uart/cpm_uart_core.c	2012-07-21 22:58:29.000000000 +0200
++++ linux-3.5/drivers/tty/serial/cpm_uart/cpm_uart_core.c	2012-08-09 17:38:37.000000000 +0200
+@@ -417,6 +417,7 @@
+ 			clrbits32(&pinfo->sccp->scc_gsmrl, SCC_GSMRL_ENR);
+ 			clrbits16(&pinfo->sccp->scc_sccm, UART_SCCM_RX);
+ 		}
++		cpm_uart_initbd(pinfo);
+ 		cpm_line_cr_cmd(pinfo, CPM_CR_INIT_TRX);
+ 	}
+ 	/* Install interrupt handler. */
