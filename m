@@ -1,32 +1,49 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: [PATCH] Powerpc 8xx CPM_UART setting MAXIDL register
- proportionaly to baud rate
-Date: Mon, 24 Sep 2012 14:21:10 +0100
-Message-ID: <20120924142110.4a07a225@bob.linux.org.uk>
-References: <201209240639.q8O6di6f029596@localhost.localdomain>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga03.intel.com ([143.182.124.21]:35688 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754285Ab2IXNTs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 24 Sep 2012 09:19:48 -0400
-In-Reply-To: <201209240639.q8O6di6f029596@localhost.localdomain>
-Sender: linux-serial-owner@vger.kernel.org
+From: Jaeden Amero <jaeden.amero@ni.com>
+Subject: Re: [tty:tty-next 10/16] fs/compat_ioctl.c:869:1: error: 'TIOCSRS485' undeclared here (not in a function)
+Date: Mon, 24 Sep 2012 10:39:44 -0500
+Message-ID: <1348501185-23657-1-git-send-email-jaeden.amero@ni.com>
+References: <20120922005021.GM5959@localhost>
+Return-path: <linux-next-owner@vger.kernel.org>
+In-Reply-To: <20120922005021.GM5959@localhost>
+Sender: linux-next-owner@vger.kernel.org
+To: fengguang.wu@intel.com
+Cc: linux-next@vger.kernel.org, sfr@canb.auug.org.au, gregkh@linuxfoundation.org, alan@linux.intel.com, kernel-janitors@vger.kernel.org, linux-serial@vger.kernel.org, Jaeden Amero <jaeden.amero@ni.com>
 List-Id: linux-serial@vger.kernel.org
-To: Christophe Leroy <christophe.leroy@c-s.fr>
-Cc: Vitaly Bordug <vitb@kernel.crashing.org>, Marcelo Tosatti <marcelo@kvack.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 
-On Mon, 24 Sep 2012 08:39:44 +0200
-Christophe Leroy <christophe.leroy@c-s.fr> wrote:
+On Sat, 22 Sep 2012 08:50:21 +0800, Fengguang Wu wrote:
+> FYI, kernel build failed on
+>
+> tree:   git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
+> tty-next
+> head:   ac57e7f38ea6fe7358cd0b7a2f2d21aef5ab70cd
+> commit: 84c3b84860440a9e3a3666c14112f41311b8f623 [10/16]
+>   compat_ioctl: Add RS-485 IOCTLs to the list
+> config: mips-fuloong2e_defconfig
+>
+> All related error/warning messages:
+>
+> fs/compat_ioctl.c:869:1: error: 'TIOCSRS485' undeclared here (not in
+>   a function)
+> fs/compat_ioctl.c:870:1: error: 'TIOCGRS485' undeclared here (not in
+>   a function)
 
-> MAXIDL is the timeout after which a receive buffer is closed when not
-> full if no more characters are received. We calculate it from the
-> baudrate so that the duration is always the same at standard rates:
-> about 4ms. At 9600 bauds it gives a timeout of 4 characters, which is
-> the timeout on the 8250 UART.
-> 
-> Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
+I could fix this by defining these IOCTLs for all architectures that
+don't have them yet, but I'm unsure of what values to give them or why
+MIPS isn't using 'include/asm-generic/ioctls.h'.
 
-Looks good tome - series Acked-by: Alan Cox <alan@linux.intel.com>
+Perhaps it is better to leave adding those IOCTLs up to those who add
+the first RS-485 capable driver for that platform and to wrap the use
+of these defines in compat_ioctl.c with #ifdefs, as I've done in this
+patch. What do you think is best?
+
+Cheers,
+Jaeden Amero
+
+Jaeden Amero (1):
+  compat_ioctl: Avoid using undefined RS-485 IOCTLs
+
+ fs/compat_ioctl.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+-- 
+1.7.12
