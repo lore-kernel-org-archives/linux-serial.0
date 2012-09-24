@@ -1,70 +1,45 @@
-From: Jaeden Amero <jaeden.amero@ni.com>
-Subject: [PATCH] compat_ioctl: Avoid using undefined RS-485 IOCTLs
-Date: Mon, 24 Sep 2012 10:39:45 -0500
-Message-ID: <1348501185-23657-2-git-send-email-jaeden.amero@ni.com>
-References: <20120922005021.GM5959@localhost>
- <1348501185-23657-1-git-send-email-jaeden.amero@ni.com>
-Return-path: <linux-next-owner@vger.kernel.org>
-In-Reply-To: <1348501185-23657-1-git-send-email-jaeden.amero@ni.com>
-Sender: linux-next-owner@vger.kernel.org
-To: fengguang.wu@intel.com
-Cc: linux-next@vger.kernel.org, sfr@canb.auug.org.au, gregkh@linuxfoundation.org, alan@linux.intel.com, kernel-janitors@vger.kernel.org, linux-serial@vger.kernel.org, Jaeden Amero <jaeden.amero@ni.com>
+From: Alexander Shiyan <shc_work@mail.ru>
+Subject: Re: [PATCH 1/2] serial: New serial driver SCCNXP
+Date: Mon, 24 Sep 2012 20:50:47 +0400
+Message-ID: <20120924205047.da73876b.shc_work@mail.ru>
+References: <1345908260-6948-1-git-send-email-shc_work@mail.ru>
+	<20120905202433.GA23267@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp9.mail.ru ([94.100.176.54]:60828 "EHLO smtp9.mail.ru"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753888Ab2IXRGr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 24 Sep 2012 13:06:47 -0400
+In-Reply-To: <20120905202433.GA23267@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
 
-Wrap the use of TIOCSRS485 and TIOCGRS485 in #ifdef so that we avoid
-adding undefined IOCTLs to the ioctl pointer list as compatible
-ioctls.
+On Wed, 5 Sep 2012 13:24:33 -0700
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+...
+> > +config SERIAL_SCCNXP
+> > +	bool "SCCNXP serial port support"
+> > +	depends on !SERIAL_SC26XX
+> > +	select SERIAL_CORE
+> > +	default n
+> > +	help
+> > +	  This selects support for an advanced UART from NXP (Philips).
+> > +	  Supported ICs are SCC2681, SCC2691, SCC2692, SC28L91, SC28L92,
+> > +	  SC28L202, SCC68681 and SCC68692.
+> > +	  Positioned as a replacement for the driver SC26XX.
+> 
+> This driver can be built as a module, right?  If so, please change this
+> to a tristate variable, not a "bool".  I don't feel like always building
+> it into my kernels :)
+> Care to send a follow-on patch fixing this up?
 
-This change was motivated by a build error on a MIPS build.
+I'm not sure whether the driver works as a module, as in the case of the
+module, we can not setup at least IO-address and IRQ parameters. Or, we are
+need to create module_param variables.
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
-tty-next
-head:   ac57e7f38ea6fe7358cd0b7a2f2d21aef5ab70cd
-commit: 84c3b84860440a9e3a3666c14112f41311b8f623 [10/16] compat_ioctl:
-  Add RS-485 IOCTLs to the list
-config: mips-fuloong2e_defconfig
-
-All related error/warning messages:
-
-fs/compat_ioctl.c:869:1: error: 'TIOCSRS485' undeclared here (not in a
-  function)
-fs/compat_ioctl.c:870:1: error: 'TIOCGRS485' undeclared here (not in a
-  function)
-
-vim +869 fs/compat_ioctl.c
-863 COMPATIBLE_IOCTL(TIOCSPGRP)
-864 COMPATIBLE_IOCTL(TIOCGPGRP)
-865 COMPATIBLE_IOCTL(TIOCGPTN)
-866 COMPATIBLE_IOCTL(TIOCSPTLCK)
-867 COMPATIBLE_IOCTL(TIOCSERGETLSR)
-868 COMPATIBLE_IOCTL(TIOCSIG)
-> 869 COMPATIBLE_IOCTL(TIOCSRS485)
-870 COMPATIBLE_IOCTL(TIOCGRS485)
-871 #ifdef TCGETS2
-872 COMPATIBLE_IOCTL(TCGETS2)
-
-Reported-by: Fengguang Wu <fengguang.wu@intel.com>
-Signed-off-by: Jaeden Amero <jaeden.amero@ni.com>
----
- fs/compat_ioctl.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/fs/compat_ioctl.c b/fs/compat_ioctl.c
-index 85dfebfe6820856dc3154dfd178acb6fca63bbe9..59f8db4a39a78338b2c7a148122a04e11e026caf 100644
---- a/fs/compat_ioctl.c
-+++ b/fs/compat_ioctl.c
-@@ -866,8 +866,12 @@ COMPATIBLE_IOCTL(TIOCGPTN)
- COMPATIBLE_IOCTL(TIOCSPTLCK)
- COMPATIBLE_IOCTL(TIOCSERGETLSR)
- COMPATIBLE_IOCTL(TIOCSIG)
-+#ifdef TIOCSRS485
- COMPATIBLE_IOCTL(TIOCSRS485)
-+#endif
-+#ifdef TIOCGRS485
- COMPATIBLE_IOCTL(TIOCGRS485)
-+#endif
- #ifdef TCGETS2
- COMPATIBLE_IOCTL(TCGETS2)
- COMPATIBLE_IOCTL(TCSETS2)
 -- 
-1.7.12
+Alexander Shiyan <shc_work@mail.ru>
