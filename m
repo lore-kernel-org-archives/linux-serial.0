@@ -1,66 +1,52 @@
-From: Alexander Shiyan <shc_work@mail.ru>
-Subject: [PATCH 1/3] serial: sccnxp: Report actual baudrate back to core
-Date: Mon, 24 Sep 2012 21:12:00 +0400
-Message-ID: <1348506722-17457-1-git-send-email-shc_work@mail.ru>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 1/2] serial: New serial driver SCCNXP
+Date: Mon, 24 Sep 2012 10:26:14 -0700
+Message-ID: <20120924172614.GB32691@kroah.com>
+References: <1345908260-6948-1-git-send-email-shc_work@mail.ru>
+ <20120905202433.GA23267@kroah.com>
+ <20120924205047.da73876b.shc_work@mail.ru>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp24.mail.ru ([94.100.176.177]:35586 "EHLO smtp24.mail.ru"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757231Ab2IXRIR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 24 Sep 2012 13:08:17 -0400
+Received: from mail-pa0-f46.google.com ([209.85.220.46]:38957 "EHLO
+	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755934Ab2IXR0U (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 24 Sep 2012 13:26:20 -0400
+Received: by padhz1 with SMTP id hz1so1065783pad.19
+        for <linux-serial@vger.kernel.org>; Mon, 24 Sep 2012 10:26:20 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <20120924205047.da73876b.shc_work@mail.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexander Shiyan <shc_work@mail.ru>
+To: Alexander Shiyan <shc_work@mail.ru>
+Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
 
+On Mon, Sep 24, 2012 at 08:50:47PM +0400, Alexander Shiyan wrote:
+> On Wed, 5 Sep 2012 13:24:33 -0700
+> Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+> ...
+> > > +config SERIAL_SCCNXP
+> > > +	bool "SCCNXP serial port support"
+> > > +	depends on !SERIAL_SC26XX
+> > > +	select SERIAL_CORE
+> > > +	default n
+> > > +	help
+> > > +	  This selects support for an advanced UART from NXP (Philips).
+> > > +	  Supported ICs are SCC2681, SCC2691, SCC2692, SC28L91, SC28L92,
+> > > +	  SC28L202, SCC68681 and SCC68692.
+> > > +	  Positioned as a replacement for the driver SC26XX.
+> > 
+> > This driver can be built as a module, right?  If so, please change this
+> > to a tristate variable, not a "bool".  I don't feel like always building
+> > it into my kernels :)
+> > Care to send a follow-on patch fixing this up?
+> 
+> I'm not sure whether the driver works as a module, as in the case of the
+> module, we can not setup at least IO-address and IRQ parameters. Or, we are
+> need to create module_param variables.
 
-Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
----
- drivers/tty/serial/sccnxp.c |   14 ++++++++++----
- 1 files changed, 10 insertions(+), 4 deletions(-)
+You should not use module parameters for this type of thing.  What about
+platform data instead?
 
-diff --git a/drivers/tty/serial/sccnxp.c b/drivers/tty/serial/sccnxp.c
-index 29dda9b..478630b 100644
---- a/drivers/tty/serial/sccnxp.c
-+++ b/drivers/tty/serial/sccnxp.c
-@@ -213,7 +213,7 @@ const struct baud_table baud_std[] = {
- 	{ 0, 0, 0, 0 }
- };
- 
--static void sccnxp_set_baud(struct uart_port *port, int baud)
-+static int sccnxp_set_baud(struct uart_port *port, int baud)
- {
- 	struct sccnxp_port *s = dev_get_drvdata(port->dev);
- 	int div_std, tmp_baud, bestbaud = baud, besterr = -1;
-@@ -244,8 +244,11 @@ static void sccnxp_set_baud(struct uart_port *port, int baud)
- 	sccnxp_port_write(port, SCCNXP_ACR_REG, acr | ACR_TIMER_MODE);
- 	sccnxp_port_write(port, SCCNXP_CSR_REG, (csr << 4) | csr);
- 
--	dev_dbg(port->dev, "Baudrate desired: %i, calculated: %i\n",
--		baud, bestbaud);
-+	if (baud != bestbaud)
-+		dev_dbg(port->dev, "Baudrate desired: %i, calculated: %i\n",
-+			baud, bestbaud);
-+
-+	return bestbaud;
- }
- 
- static void sccnxp_enable_irq(struct uart_port *port, int mask)
-@@ -587,11 +590,14 @@ static void sccnxp_set_termios(struct uart_port *port,
- 	baud = uart_get_baud_rate(port, termios, old, 50,
- 				  (s->flags & SCCNXP_HAVE_MR0) ?
- 				  230400 : 38400);
--	sccnxp_set_baud(port, baud);
-+	baud = sccnxp_set_baud(port, baud);
- 
- 	/* Update timeout according to new baud rate */
- 	uart_update_timeout(port, termios->c_cflag, baud);
- 
-+	if (tty_termios_baud_rate(termios))
-+		tty_termios_encode_baud_rate(termios, baud, baud);
-+
- 	/* Enable RX & TX */
- 	sccnxp_port_write(port, SCCNXP_CR_REG, CR_RX_ENABLE | CR_TX_ENABLE);
- 
--- 
-1.7.8.6
-
+gre gk-h
