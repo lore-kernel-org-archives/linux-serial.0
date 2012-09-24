@@ -1,47 +1,73 @@
-From: Jason Wessel <jason.wessel@windriver.com>
-Subject: Re: [PATCH v8 0/11] KGDB/KDB FIQ (NMI) debugger
-Date: Mon, 24 Sep 2012 05:46:09 -0500
-Message-ID: <506039F1.2040108@windriver.com>
-References: <20120919234003.GA24143@lizard> <505B1CC7.9000005@windriver.com>
+From: Ivo Sieben <meltedpianoman@gmail.com>
+Subject: [PATCH] RFC: sched: Prevent wakeup to enter critical section needlessly
+Date: Mon, 24 Sep 2012 15:06:37 +0200
+Message-ID: <1348491997-30898-1-git-send-email-meltedpianoman@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <505B1CC7.9000005@windriver.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Anton Vorontsov <anton.vorontsov@linaro.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>, Colin Cross <ccross@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from tx2ehsobe001.messaging.microsoft.com ([65.55.88.11]:48731 "EHLO
+	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752158Ab2IXNHe (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 24 Sep 2012 09:07:34 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, linux-serial@vger.kernel.org, RT <linux-rt-users@vger.kernel.org>, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>
+Cc: Ivo Sieben <meltedpianoman@gmail.com>
 
-On 09/20/2012 08:40 AM, Jason Wessel wrote:
-> On 09/19/2012 06:40 PM, Anton Vorontsov wrote:
->> Hi all,
->>
->> In v8, addressed Jason's comments:
->>
->> - Changed kgdb_enable_nmi() weak function to kgdb_arch callbck;
->> - We no longer register disable_nmi command if arch does not register
->>   KGDB NMI handling (i.e. not filling kgdb_arch.enable_nmi callback);
->> - The same is for ttyNMI: if architecure does not provide us with
->>   enable_nmi call, we don't need the tty device. Of course, there is no
->>   way to tell wether a specific serial device can be used for NMI
->>   debugging, as it is not serial-device specific, but specific to
->>   whether IRQ can be rerouted to an NMI (for most our cases, pretty
->>   much every IRQ can be rerouted, e.g. a hot-pluggable serial device on
->>   a PCI bus).
->> - Rebased on the latest and greatest tty-next, just in case.
->
-> I have the kgdb regression builder running right now (it will be done in about 1 hour), and so far it picked up one new warning.
->
-> drivers/tty/serial/kgdb_nmi.c: In function 'kgdb_nmi_poll_one_knock':
-> drivers/tty/serial/kgdb_nmi.c:161: warning: field width should have type 'int', but argument 4 has type 'size_t'
->
+Check the waitqueue task list to be non empty before entering the critical
+section. This prevents locking the spin lock needlessly in case the queue
+was empty, and therefor also prevent scheduling overhead on a PREEMPT_RT
+system.
 
-Hi Anton,
+Signed-off-by: Ivo Sieben <meltedpianoman@gmail.com>
+---
 
-You can add my ack to the series, for what you have in: "git://git.infradead.org/users/cbou/linux-nmi-kdb.git master", and then drop a pull request to Greg for the next merge window.  Thank you for your hard work through all the revisions of this code and this slick new feature.
+ Request for comments:
+ - Does this make any sense?
+ - I assume that I can safely use the list_empty_careful() function here, but is
+   that correct?
 
-Acked-by: Jason Wessel <jason.wessel@windriver.com>
+ Background to this patch:
+ Testing on a PREEMPT_RT system with TTY serial communication. Each time the TTY
+ line discipline is dereferenced the Idle handling wait queue is woken up (see
+ function put_ldisc in /drivers/tty/tty_ldisc.c)
+ However line discipline idle handling is not used very often so the wait queue
+ is empty most of the time. But still the wake_up() function enters the critical
+ section guarded by spin locks. This causes additional scheduling overhead when
+ a lower priority thread has control of that same lock.
 
-Cheers,
-Jason.
+ kernel/sched/core.c |   16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 649c9f8..6436eb8 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -3631,9 +3631,19 @@ void __wake_up(wait_queue_head_t *q, unsigned int mode,
+ {
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&q->lock, flags);
+-	__wake_up_common(q, mode, nr_exclusive, 0, key);
+-	spin_unlock_irqrestore(&q->lock, flags);
++	/*
++	 * We can check for list emptiness outside the lock by using the
++	 * "careful" check that verifies both the next and prev pointers, so
++	 * that there cannot be any half-pending updates in progress.
++	 *
++	 * This prevents the wake up to enter the critical section needlessly
++	 * when the task list is empty.
++	 */
++	if (!list_empty_careful(&q->task_list)) {
++		spin_lock_irqsave(&q->lock, flags);
++		__wake_up_common(q, mode, nr_exclusive, 0, key);
++		spin_unlock_irqrestore(&q->lock, flags);
++	}
+ }
+ EXPORT_SYMBOL(__wake_up);
+ 
+-- 
+1.7.9.5
+
+
