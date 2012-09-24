@@ -1,47 +1,65 @@
-From: Ivo Sieben <meltedpianoman@gmail.com>
-Subject: Re: [PATCH] tty: prevent unnecessary work queue lock checking on flip
- buffer copy
-Date: Mon, 24 Sep 2012 11:33:17 +0200
-Message-ID: <CAMSQXEGEf8xSYZa+0N77K-Ld5xHLefyMHtK6FxcKCqNhpnMp6g@mail.gmail.com>
-References: <1348149762-4596-1-git-send-email-meltedpianoman@gmail.com>
-	<20120920173305.15ea580a@bob.linux.org.uk>
+From: Sean Young <sean@mess.org>
+Subject: Re: [PATCH v3 0/2] winbond-cir: Fix initialization
+Date: Mon, 24 Sep 2012 10:53:02 +0100
+Message-ID: <20120924095301.GA9201@pequod.mess.org>
+References: <cover.1347029782.git.sean@mess.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-oa0-f46.google.com ([209.85.219.46]:37208 "EHLO
-	mail-oa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752778Ab2IXJdS (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 24 Sep 2012 05:33:18 -0400
-In-Reply-To: <20120920173305.15ea580a@bob.linux.org.uk>
+Received: from pequod.mess.org ([93.97.41.153]:52294 "EHLO pequod.mess.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751298Ab2IXJxE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 24 Sep 2012 05:53:04 -0400
+Content-Disposition: inline
+In-Reply-To: <cover.1347029782.git.sean@mess.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, RT <linux-rt-users@vger.kernel.org>
+To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+Cc: David =?iso-8859-1?Q?H=E4rdeman?= <david@hardeman.nu>, Mauro Carvalho Chehab <mchehab@redhat.com>
 
-Hi,
+Hi Alan,
 
-2012/9/20 Alan Cox <alan@linux.intel.com>:
->
-> This seems reasonable, but given its also relevant for upstream it
-> would be nice to get it without the ifdef in upstream.
->
-> The corner case is when the tty->low_latency flag is flipped but the
-> drivers should handle that gracefully and if not we should fix them so
-> you can get your 100uS.
->
-> Alan
+On Fri, Sep 07, 2012 at 07:06:22PM +0100, Sean Young wrote:
+> The serial driver will detect the winbond cir device as a serial port,
+> since it looks exactly like a serial port unless you know what it is
+> from the PNP ID.
+> 
+> v2:
+> Alan Cox pointed out[1] that the pnp serial probe should be done before
+> the legacy probe and we should keep track of any IR ports during the
+> pnp scan. This is an implementation of that idea.
+> 
+> [1] http://www.spinics.net/lists/linux-serial/msg06757.html
+> 
+> v3:
+>  - Removed IrDA entries
+>  - Renamed PORT_IR to PORT_8250_CIR
+>  - commit message rewording
 
-Actually this patch is related to my previous patch "tty: cleanup
-duplicate functions in tty_buffer". Some drivers call the
-tty_schedule_flip() function instead of tty_flip_buffer_push(). In
-that case the work queue is always used, regardless the
-tty->low_latency flag. That's why tried to get rid of the
-tty_schedule_flip() function.
+It's been more than two weeks. Do you have any review comments? It
+would be great to have this in 3.7.
 
-But from the first review remarks on the "tty: cleanup duplicate
-functions in tty_buffer" patch, that patch seems to be invalid. So in
-that case this patch is invalid also.
+Thanks
+Sean
 
-Regards,
-Ivo Sieben
+> Diffed against tty-next.
+> 
+> Sean Young (2):
+>   8250_pnp: do pnp probe before legacy probe
+>   8250: blacklist Winbond CIR port
+> 
+>  drivers/tty/serial/8250/8250.c     |   47 ++++++++++++++++++++++++-----------
+>  drivers/tty/serial/8250/8250.h     |    9 +++++++
+>  drivers/tty/serial/8250/8250_pnp.c |   31 +++++++++++++----------
+>  drivers/tty/serial/8250/Kconfig    |   16 ++++++------
+>  drivers/tty/serial/8250/Makefile   |    5 ++-
+>  include/linux/serial_core.h        |    3 +-
+>  6 files changed, 72 insertions(+), 39 deletions(-)
+> 
+> -- 
+> 1.7.2.5
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
