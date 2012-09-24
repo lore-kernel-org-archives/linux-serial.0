@@ -1,73 +1,36 @@
-From: Ivo Sieben <meltedpianoman@gmail.com>
-Subject: [PATCH] RFC: sched: Prevent wakeup to enter critical section needlessly
-Date: Mon, 24 Sep 2012 15:06:37 +0200
-Message-ID: <1348491997-30898-1-git-send-email-meltedpianoman@gmail.com>
+From: Alan Cox <alan@linux.intel.com>
+Subject: Re: [PATCH v3 0/2] winbond-cir: Fix initialization
+Date: Mon, 24 Sep 2012 14:18:51 +0100
+Message-ID: <20120924141851.156b6099@bob.linux.org.uk>
+References: <cover.1347029782.git.sean@mess.org>
+	<20120924095301.GA9201@pequod.mess.org>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from tx2ehsobe001.messaging.microsoft.com ([65.55.88.11]:48731 "EHLO
-	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752158Ab2IXNHe (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 24 Sep 2012 09:07:34 -0400
+Received: from mga03.intel.com ([143.182.124.21]:6959 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754291Ab2IXNR2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 24 Sep 2012 09:17:28 -0400
+In-Reply-To: <20120924095301.GA9201@pequod.mess.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, linux-serial@vger.kernel.org, RT <linux-rt-users@vger.kernel.org>, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>
-Cc: Ivo Sieben <meltedpianoman@gmail.com>
+To: Sean Young <sean@mess.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, David =?UTF-8?B?SMOkcmRlbWFu?= <david@hardeman.nu>, Mauro Carvalho Chehab <mchehab@redhat.com>
 
-Check the waitqueue task list to be non empty before entering the critical
-section. This prevents locking the spin lock needlessly in case the queue
-was empty, and therefor also prevent scheduling overhead on a PREEMPT_RT
-system.
+> > 
+> > [1] http://www.spinics.net/lists/linux-serial/msg06757.html
+> > 
+> > v3:
+> >  - Removed IrDA entries
+> >  - Renamed PORT_IR to PORT_8250_CIR
+> >  - commit message rewording
+> 
+> It's been more than two weeks. Do you have any review comments? It
+> would be great to have this in 3.7.
 
-Signed-off-by: Ivo Sieben <meltedpianoman@gmail.com>
----
+Agreed - I'd been trying to see if there was a nicer way to split the
+PnP and non PnP stuff cleanly but no inspiration has appeared
 
- Request for comments:
- - Does this make any sense?
- - I assume that I can safely use the list_empty_careful() function here, but is
-   that correct?
-
- Background to this patch:
- Testing on a PREEMPT_RT system with TTY serial communication. Each time the TTY
- line discipline is dereferenced the Idle handling wait queue is woken up (see
- function put_ldisc in /drivers/tty/tty_ldisc.c)
- However line discipline idle handling is not used very often so the wait queue
- is empty most of the time. But still the wake_up() function enters the critical
- section guarded by spin locks. This causes additional scheduling overhead when
- a lower priority thread has control of that same lock.
-
- kernel/sched/core.c |   16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
-
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 649c9f8..6436eb8 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -3631,9 +3631,19 @@ void __wake_up(wait_queue_head_t *q, unsigned int mode,
- {
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&q->lock, flags);
--	__wake_up_common(q, mode, nr_exclusive, 0, key);
--	spin_unlock_irqrestore(&q->lock, flags);
-+	/*
-+	 * We can check for list emptiness outside the lock by using the
-+	 * "careful" check that verifies both the next and prev pointers, so
-+	 * that there cannot be any half-pending updates in progress.
-+	 *
-+	 * This prevents the wake up to enter the critical section needlessly
-+	 * when the task list is empty.
-+	 */
-+	if (!list_empty_careful(&q->task_list)) {
-+		spin_lock_irqsave(&q->lock, flags);
-+		__wake_up_common(q, mode, nr_exclusive, 0, key);
-+		spin_unlock_irqrestore(&q->lock, flags);
-+	}
- }
- EXPORT_SYMBOL(__wake_up);
- 
--- 
-1.7.9.5
-
+Acked-by: Alan Cox <alan@linux.intel.com>
 
