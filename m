@@ -1,65 +1,46 @@
-From: Christophe Leroy <christophe.leroy@c-s.fr>
-Subject: [PATCH] Powerpc 8xx CPM_UART setting MAXIDL register proportionaly to baud rate
-Date: Mon, 24 Sep 2012 08:39:44 +0200
-Message-ID: <201209240639.q8O6di6f029596@localhost.localdomain>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from pegase1.c-s.fr ([93.17.236.30]:25698 "EHLO mailhub1.si.c-s.fr"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752246Ab2IXGlK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 24 Sep 2012 02:41:10 -0400
-Sender: linux-serial-owner@vger.kernel.org
+From: Ivo Sieben <meltedpianoman@gmail.com>
+Subject: Re: [PATCH] tty: cleanup duplicate functions in tty_buffer
+Date: Mon, 24 Sep 2012 10:02:13 +0200
+Message-ID: <CAMSQXEHkjWubwNXiCd_bBnUdzQ2M+sa8HPs2KCzwcOOp2dSsBw@mail.gmail.com>
+References: <1348149223-4281-1-git-send-email-meltedpianoman@gmail.com>
+	<20120920171717.04ee9098@bob.linux.org.uk>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-rt-users-owner@vger.kernel.org>
+In-Reply-To: <20120920171717.04ee9098@bob.linux.org.uk>
+Sender: linux-rt-users-owner@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, RT <linux-rt-users@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>, Heiko Carstens <heiko.carstens@de.ibm.com>
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>, Vitaly Bordug <vitb@kernel.crashing.org>, Marcelo Tosatti <marcelo@kvack.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 
-MAXIDL is the timeout after which a receive buffer is closed when not full if
-no more characters are received. We calculate it from the baudrate so that the
-duration is always the same at standard rates: about 4ms. At 9600 bauds it gives
-a timeout of 4 characters, which is the timeout on the 8250 UART.
+Hi,
 
-Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
+2012/9/20 Alan Cox <alan@linux.intel.com>:
+>
+> So now when the user sets tty->low_latency on these devices the machine
+> crashes ?
+>
+> This is the wrong direction - in fact we have a pile we need to move
+> the other way !
+>
+> If they resolve to the same thing in hard RT patches fine, that's a
+> different question.
 
---- linux-3.5-vanilla/drivers/tty/serial/cpm_uart/cpm_uart_core.c	2012-07-21 22:58:29.000000000 +0200
-+++ linux-3.5/drivers/tty/serial/cpm_uart/cpm_uart_core.c	2012-08-09 17:38:37.000000000 +0200
-@@ -501,6 +501,7 @@
- 	struct uart_cpm_port *pinfo = (struct uart_cpm_port *)port;
- 	smc_t __iomem *smcp = pinfo->smcp;
- 	scc_t __iomem *sccp = pinfo->sccp;
-+	int maxidl;
- 
- 	pr_debug("CPM uart[%d]:set_termios\n", port->line);
- 
-@@ -511,6 +512,17 @@
- 	else
- 		pinfo->rx_fifosize = RX_BUF_SIZE;
- 
-+	/* MAXIDL is the timeout after which a receive buffer is closed
-+	 * when not full if no more characters are received.
-+	 * We calculate it from the baudrate so that the duration is
-+	 * always the same at standard rates: about 4ms.
-+	 */
-+	maxidl = baud / 2400;
-+	if (maxidl < 1)
-+		maxidl = 1;
-+	if (maxidl > 0x10)
-+		maxidl = 0x10;
-+
- 	/* Character length programmed into the mode register is the
- 	 * sum of: 1 start bit, number of data bits, 0 or 1 parity bit,
- 	 * 1 or 2 stop bits, minus 1.
-@@ -611,6 +623,7 @@
- 		 * SMC/SCC receiver is disabled.
- 		 */
- 		out_be16(&pinfo->smcup->smc_mrblr, pinfo->rx_fifosize);
-+		out_be16(&pinfo->smcup->smc_maxidl, maxidl);
- 
- 		/* Set the mode register.  We want to keep a copy of the
- 		 * enables, because we want to put them back if they were
-@@ -623,6 +636,7 @@
- 		    SMCMR_SM_UART | prev_mode);
- 	} else {
- 		out_be16(&pinfo->sccup->scc_genscc.scc_mrblr, pinfo->rx_fifosize);
-+		out_be16(&pinfo->sccup->scc_maxidl, maxidl);
- 		out_be16(&sccp->scc_psmr, (sbits << 12) | scval);
- 	}
- 
+Sorry, Allan you are probably right, but I don't get it...
+
+I agree that when the tty->low_latency flag is set on these machines,
+the drivers that were modified by my patch will behave differently:
+they will call the flush_to_ldisc() function directly instead of using
+the work queue. So that indeed introduces different functionality.
+
+But what I don't understand is how this would cause the machine to
+crash? Even when the flush_to_ldisc() function is called from hard IRQ
+context this would cause no problems: the flush_to_ldisc() function
+uses IRQ save spin locks instead of mutexes to protect it's critical
+section. Right?
+
+Furthermore the majority of TTY drivers currently already use the
+tty_flip_buffer_push() function.
+
+Regards,
+Ivo Sieben
