@@ -1,45 +1,32 @@
-From: Ivo Sieben <meltedpianoman@gmail.com>
-Subject: Re: [PATCH] tty: cleanup duplicate functions in tty_buffer
-Date: Tue, 25 Sep 2012 13:28:35 +0200
-Message-ID: <CAMSQXEFoJa++iWqyx2v44CPDO1FXvt8y=MaUgV20bH337Ard8g@mail.gmail.com>
-References: <1348149223-4281-1-git-send-email-meltedpianoman@gmail.com>
-	<20120920171717.04ee9098@bob.linux.org.uk>
-	<CAMSQXEHkjWubwNXiCd_bBnUdzQ2M+sa8HPs2KCzwcOOp2dSsBw@mail.gmail.com>
-	<20120924102547.62581af4@pyramind.ukuu.org.uk>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [RFT/PATCH] serial: omap: prevent resume if device is not
+	suspended.
+Date: Tue, 25 Sep 2012 12:32:15 +0100
+Message-ID: <20120925113215.GP31374@n2100.arm.linux.org.uk>
+References: <20120925083029.GG31374@n2100.arm.linux.org.uk> <20120925083118.GI9137@arwen.pp.htv.fi> <20120925091228.GI31374@n2100.arm.linux.org.uk> <20120925091112.GK9137@arwen.pp.htv.fi> <20120925092118.GJ31374@n2100.arm.linux.org.uk> <20120925094815.GL9137@arwen.pp.htv.fi> <20120925102958.GL31374@n2100.arm.linux.org.uk> <20120925103652.GN9137@arwen.pp.htv.fi> <20120925110703.GN31374@n2100.arm.linux.org.uk> <20120925111243.GR9137@arwen.pp.htv.fi>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ob0-f174.google.com ([209.85.214.174]:49620 "EHLO
-	mail-ob0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755361Ab2IYL2g (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 25 Sep 2012 07:28:36 -0400
-In-Reply-To: <20120924102547.62581af4@pyramind.ukuu.org.uk>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20120925111243.GR9137@arwen.pp.htv.fi>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Felipe Balbi <balbi@ti.com>
+Cc: "Poddar, Sourav" <sourav.poddar@ti.com>, gregkh@linuxfoundation.org, khilman@ti.com, paul@pwsan.com, tony@atomide.com, linux-kernel@vger.kernel.org, santosh.shilimkar@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, alan@linux.intel.com
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, RT <linux-rt-users@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>, Heiko Carstens <heiko.carstens@de.ibm.com>
 
-Hi
+On Tue, Sep 25, 2012 at 02:12:43PM +0300, Felipe Balbi wrote:
+> I don't see any aggressive attitude towards what you suggested,
+> actually. Mailing list archives are available to check, but the one
+> cursing around was always yourself and THAT deserves an apology.
 
-2012/9/24 Alan Cox <alan@lxorguk.ukuu.org.uk>:
->
-> flush_to_ldisc calls into the tty core code which sleeps. The rule is
-> that you may not call flush_to_ldisc except from a workqueue context.
->
-> If you break that rule then various bad things will occur (eg rx ->
-> flush_to_ldisc -> n_tty -> flow control -> tx -> deadlock) in a lot of
-> drivers.
->
->
-> Several of them are ones that shouldn't.
->
+Total rubbish.  No apology, because I wasn't cursing you.  Whatever,
+I'm not going to re-explain the email thread.
 
-OK, I now understand what you mean with "pile that has needs to move
-the other way"
-I'll abandon this patch.
+What I said was that your raising of beagleboard breakage (twice) was
+idiotic to a request for investigation.  That's a statement I _still_
+fully agree with, and I'll say it again if I have to.
 
-Thank you all for reviewing
-
-Regards,
-Ivo Sieben
+Trying to shut down investigation because investigation may break
+something _is_ idiotic - especially if the investigation reveals
+potential reasons why that breakage would occur.  Further investigation
+is precisely how we arrive at better solutions.
