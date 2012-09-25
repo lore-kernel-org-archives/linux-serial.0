@@ -1,98 +1,82 @@
-From: Anton Vorontsov <anton.vorontsov@linaro.org>
-Subject: [PATCH 11/11] ARM: versatile: Make able to use UART ports for KGDB FIQ debugger
-Date: Mon, 24 Sep 2012 14:28:00 -0700
-Message-ID: <1348522080-32629-11-git-send-email-anton.vorontsov@linaro.org>
-References: <20120924212648.GA27605@lizard>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f46.google.com ([209.85.220.46]:39101 "EHLO
-	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751153Ab2IXVdv (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 24 Sep 2012 17:33:51 -0400
-Received: by mail-pa0-f46.google.com with SMTP id hz1so1192083pad.19
-        for <linux-serial@vger.kernel.org>; Mon, 24 Sep 2012 14:33:51 -0700 (PDT)
-In-Reply-To: <20120924212648.GA27605@lizard>
-Sender: linux-serial-owner@vger.kernel.org
+From: "Poddar, Sourav" <sourav.poddar@ti.com>
+Subject: Re: [RFT/PATCH] serial: omap: prevent resume if device is not suspended.
+Date: Tue, 25 Sep 2012 13:52:03 +0530
+Message-ID: <CAKdam572krJZcayRdJ_AciCUZH3LuzD9yoHenhxrB6j9xDZ6JQ@mail.gmail.com>
+References: <1347972050-3509-1-git-send-email-sourav.poddar@ti.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <1347972050-3509-1-git-send-email-sourav.poddar@ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: alan@linux.intel.com, tony@atomide.com, khilman@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, santosh.shilimkar@ti.com, balbi@ti.com, paul@pwsan.com, Sourav Poddar <sourav.poddar@ti.com>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@arm.linux.org.uk>
-Cc: Alan Cox <alan@linux.intel.com>, Jason Wessel <jason.wessel@windriver.com>, =?UTF-8?q?Arve=20Hj=C3=B8nnev=C3=A5g?= <arve@android.com>, Colin Cross <ccross@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
 
-If enabled, kernel will able to enter KGDB upon serial line activity on
-UART ports.
+Hi Greg,
 
-Note that even with this patch and CONFIG_KGDB_FIQ is enabled, you still
-need to pass kgdb_fiq.enable=1 kernel command line option, otherwise UART
-will behave in a normal way.
+Ping on this?
 
-By default UART0 is used, but this can be changed via kgdb_fiq.uart_num
-kernel command line option.
+On Tue, Sep 18, 2012 at 6:10 PM, Sourav Poddar <sourav.poddar@ti.com> wrote:
+> Greg's tty-next is not booting on 2420 based N800. The failure is
+> observed at serial init itself. The reason might be that n800 tries to
+> resume even though it is not suspended before.
+>
+> Reported-by: Paul Walmsley <paul@pwsan.com>
+> Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
+> ---
+> This patch is developed on top of greg's tty-next branch
+> CommitId: e740d8f tty: serial: Samsung: Fix return value +
+> the following patch which I have already posted to the mailing list.
+> http://comments.gmane.org/gmane.linux.ports.arm.omap/84729
+>
+>  drivers/tty/serial/omap-serial.c |   11 ++++++++++-
+>  1 files changed, 10 insertions(+), 1 deletions(-)
+>
+> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+> index 3c05c5e..bc355f2 100644
+> --- a/drivers/tty/serial/omap-serial.c
+> +++ b/drivers/tty/serial/omap-serial.c
+> @@ -110,6 +110,7 @@ struct uart_omap_port {
+>         u32                     calc_latency;
+>         struct work_struct      qos_work;
+>         struct pinctrl          *pins;
+> +       unsigned int            suspended:1;
+>  };
+>
+>  #define to_uart_omap_port(p)   ((container_of((p), struct uart_omap_port, port)))
+> @@ -1545,14 +1546,20 @@ static int serial_omap_runtime_suspend(struct device *dev)
+>         up->latency = PM_QOS_CPU_DMA_LAT_DEFAULT_VALUE;
+>         schedule_work(&up->qos_work);
+>
+> +       up->suspended = true;
+> +
+>         return 0;
+>  }
+>
+>  static int serial_omap_runtime_resume(struct device *dev)
+>  {
+>         struct uart_omap_port *up = dev_get_drvdata(dev);
+> +       u32 loss_cnt;
+> +
+> +       if (!up->suspended)
+> +               return 0;
+>
+> -       u32 loss_cnt = serial_omap_get_context_loss_count(up);
+> +       loss_cnt = serial_omap_get_context_loss_count(up);
+>
+>         if (up->context_loss_cnt != loss_cnt)
+>                 serial_omap_restore_context(up);
+> @@ -1560,6 +1567,8 @@ static int serial_omap_runtime_resume(struct device *dev)
+>         up->latency = up->calc_latency;
+>         schedule_work(&up->qos_work);
+>
+> +       up->suspended = false;
+> +
+>         return 0;
+>  }
+>  #endif
+> --
+> 1.7.1
+>
 
-Signed-off-by: Anton Vorontsov <anton.vorontsov@linaro.org>
----
- arch/arm/Kconfig                   |  1 +
- arch/arm/mach-versatile/Makefile   |  1 +
- arch/arm/mach-versatile/kgdb_fiq.c | 31 +++++++++++++++++++++++++++++++
- 3 files changed, 33 insertions(+)
- create mode 100644 arch/arm/mach-versatile/kgdb_fiq.c
-
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index fa10a2d..2bf83c6 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -336,6 +336,7 @@ config ARCH_VERSATILE
- 	select PLAT_VERSATILE_CLCD
- 	select PLAT_VERSATILE_FPGA_IRQ
- 	select ARM_TIMER_SP804
-+	select ARCH_MIGHT_HAVE_KGDB_FIQ
- 	help
- 	  This enables support for ARM Ltd Versatile board.
- 
-diff --git a/arch/arm/mach-versatile/Makefile b/arch/arm/mach-versatile/Makefile
-index 81fa3fe..bfd761f 100644
---- a/arch/arm/mach-versatile/Makefile
-+++ b/arch/arm/mach-versatile/Makefile
-@@ -7,3 +7,4 @@ obj-$(CONFIG_ARCH_VERSATILE_PB)		+= versatile_pb.o
- obj-$(CONFIG_MACH_VERSATILE_AB)		+= versatile_ab.o
- obj-$(CONFIG_MACH_VERSATILE_DT)		+= versatile_dt.o
- obj-$(CONFIG_PCI)			+= pci.o
-+obj-$(CONFIG_KGDB_FIQ)			+= kgdb_fiq.o
-diff --git a/arch/arm/mach-versatile/kgdb_fiq.c b/arch/arm/mach-versatile/kgdb_fiq.c
-new file mode 100644
-index 0000000..3cdf71d
---- /dev/null
-+++ b/arch/arm/mach-versatile/kgdb_fiq.c
-@@ -0,0 +1,31 @@
-+/*
-+ * KGDB FIQ board support
-+ *
-+ * Copyright 2012 Linaro Ltd.
-+ *		  Anton Vorontsov <anton.vorontsov@linaro.org>
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published
-+ * by the Free Software Foundation.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/kgdb.h>
-+#include <mach/hardware.h>
-+#include <mach/platform.h>
-+#include <asm/hardware/vic.h>
-+
-+static int kgdb_fiq;
-+module_param_named(uart_num, kgdb_fiq, int, 0600);
-+MODULE_PARM_DESC(uart_num, "UART<number> port to use for KGDB FIQ");
-+
-+static int __init kgdb_fiq_init(void)
-+{
-+	WARN_ON(kgdb_fiq > INT_UARTINT2 - INT_UARTINT0);
-+
-+	return kgdb_register_fiq(INT_UARTINT0 + kgdb_fiq,
-+				 vic_fiq_select,
-+				 vic_is_fiq_rised);
-+}
-+console_initcall(kgdb_fiq_init);
--- 
-1.7.12
-
+~Sourav
