@@ -1,82 +1,45 @@
-From: "Poddar, Sourav" <sourav.poddar@ti.com>
-Subject: Re: [RFT/PATCH] serial: omap: prevent resume if device is not suspended.
-Date: Tue, 25 Sep 2012 13:52:03 +0530
-Message-ID: <CAKdam572krJZcayRdJ_AciCUZH3LuzD9yoHenhxrB6j9xDZ6JQ@mail.gmail.com>
-References: <1347972050-3509-1-git-send-email-sourav.poddar@ti.com>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [RFT/PATCH] serial: omap: prevent resume if device is not
+	suspended.
+Date: Tue, 25 Sep 2012 09:30:29 +0100
+Message-ID: <20120925083029.GG31374@n2100.arm.linux.org.uk>
+References: <1347972050-3509-1-git-send-email-sourav.poddar@ti.com> <CAKdam572krJZcayRdJ_AciCUZH3LuzD9yoHenhxrB6j9xDZ6JQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1347972050-3509-1-git-send-email-sourav.poddar@ti.com>
+Content-Disposition: inline
+In-Reply-To: <CAKdam572krJZcayRdJ_AciCUZH3LuzD9yoHenhxrB6j9xDZ6JQ@mail.gmail.com>
 Sender: linux-omap-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: alan@linux.intel.com, tony@atomide.com, khilman@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, santosh.shilimkar@ti.com, balbi@ti.com, paul@pwsan.com, Sourav Poddar <sourav.poddar@ti.com>
+To: "Poddar, Sourav" <sourav.poddar@ti.com>
+Cc: gregkh@linuxfoundation.org, khilman@ti.com, paul@pwsan.com, tony@atomide.com, linux-kernel@vger.kernel.org, balbi@ti.com, santosh.shilimkar@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, alan@linux.intel.com
 List-Id: linux-serial@vger.kernel.org
 
-Hi Greg,
+On Tue, Sep 25, 2012 at 01:52:03PM +0530, Poddar, Sourav wrote:
+> Hi Greg,
+> 
+> Ping on this?
+> 
+> On Tue, Sep 18, 2012 at 6:10 PM, Sourav Poddar <sourav.poddar@ti.com> wrote:
+> > Greg's tty-next is not booting on 2420 based N800. The failure is
+> > observed at serial init itself. The reason might be that n800 tries to
+> > resume even though it is not suspended before.
 
-Ping on this?
+How is this happening?  I think that needs proper investigation - or if
+it's had more investigation, then the results needs to be included in
+the commit description so that everyone can understand the issue here.
 
-On Tue, Sep 18, 2012 at 6:10 PM, Sourav Poddar <sourav.poddar@ti.com> wrote:
-> Greg's tty-next is not booting on 2420 based N800. The failure is
-> observed at serial init itself. The reason might be that n800 tries to
-> resume even though it is not suspended before.
->
-> Reported-by: Paul Walmsley <paul@pwsan.com>
-> Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
-> ---
-> This patch is developed on top of greg's tty-next branch
-> CommitId: e740d8f tty: serial: Samsung: Fix return value +
-> the following patch which I have already posted to the mailing list.
-> http://comments.gmane.org/gmane.linux.ports.arm.omap/84729
->
->  drivers/tty/serial/omap-serial.c |   11 ++++++++++-
->  1 files changed, 10 insertions(+), 1 deletions(-)
->
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-> index 3c05c5e..bc355f2 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -110,6 +110,7 @@ struct uart_omap_port {
->         u32                     calc_latency;
->         struct work_struct      qos_work;
->         struct pinctrl          *pins;
-> +       unsigned int            suspended:1;
->  };
->
->  #define to_uart_omap_port(p)   ((container_of((p), struct uart_omap_port, port)))
-> @@ -1545,14 +1546,20 @@ static int serial_omap_runtime_suspend(struct device *dev)
->         up->latency = PM_QOS_CPU_DMA_LAT_DEFAULT_VALUE;
->         schedule_work(&up->qos_work);
->
-> +       up->suspended = true;
-> +
->         return 0;
->  }
->
->  static int serial_omap_runtime_resume(struct device *dev)
->  {
->         struct uart_omap_port *up = dev_get_drvdata(dev);
-> +       u32 loss_cnt;
-> +
-> +       if (!up->suspended)
-> +               return 0;
->
-> -       u32 loss_cnt = serial_omap_get_context_loss_count(up);
-> +       loss_cnt = serial_omap_get_context_loss_count(up);
->
->         if (up->context_loss_cnt != loss_cnt)
->                 serial_omap_restore_context(up);
-> @@ -1560,6 +1567,8 @@ static int serial_omap_runtime_resume(struct device *dev)
->         up->latency = up->calc_latency;
->         schedule_work(&up->qos_work);
->
-> +       up->suspended = false;
-> +
->         return 0;
->  }
->  #endif
-> --
-> 1.7.1
->
+We should not be resuming a device which hasn't been suspended.  Maybe
+the runtime PM enable sequence is wrong, and that's what should be fixed
+instead?  
 
-~Sourav
+This sequence in the probe() function:
+
+        pm_runtime_irq_safe(&pdev->dev);
+        pm_runtime_enable(&pdev->dev);
+        pm_runtime_get_sync(&pdev->dev);
+
+would enable runtime PM while the s/w state indicates that it's disabled,
+and then that pm_runtime_get_sync() will want to resume the device.  See
+the section "5. Runtime PM Initialization, Device Probing and Removal"
+in Documentation/power/runtime_pm.txt, specifically the second paragraph
+of that section.
