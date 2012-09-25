@@ -1,32 +1,119 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [RFT/PATCH] serial: omap: prevent resume if device is not
-	suspended.
-Date: Tue, 25 Sep 2012 12:32:15 +0100
-Message-ID: <20120925113215.GP31374@n2100.arm.linux.org.uk>
-References: <20120925083029.GG31374@n2100.arm.linux.org.uk> <20120925083118.GI9137@arwen.pp.htv.fi> <20120925091228.GI31374@n2100.arm.linux.org.uk> <20120925091112.GK9137@arwen.pp.htv.fi> <20120925092118.GJ31374@n2100.arm.linux.org.uk> <20120925094815.GL9137@arwen.pp.htv.fi> <20120925102958.GL31374@n2100.arm.linux.org.uk> <20120925103652.GN9137@arwen.pp.htv.fi> <20120925110703.GN31374@n2100.arm.linux.org.uk> <20120925111243.GR9137@arwen.pp.htv.fi>
+From: Ivo Sieben <meltedpianoman@gmail.com>
+Subject: [PATCH-v2] tty: prevent unnecessary work queue lock checking on flip buffer copy
+Date: Tue, 25 Sep 2012 14:01:46 +0200
+Message-ID: <1348574506-23625-1-git-send-email-meltedpianoman@gmail.com>
+References: <CAMSQXEGEf8xSYZa+0N77K-Ld5xHLefyMHtK6FxcKCqNhpnMp6g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20120925111243.GR9137@arwen.pp.htv.fi>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Felipe Balbi <balbi@ti.com>
-Cc: "Poddar, Sourav" <sourav.poddar@ti.com>, gregkh@linuxfoundation.org, khilman@ti.com, paul@pwsan.com, tony@atomide.com, linux-kernel@vger.kernel.org, santosh.shilimkar@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, alan@linux.intel.com
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from va3ehsobe004.messaging.microsoft.com ([216.32.180.14]:49515
+	"EHLO va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755361Ab2IYMDH (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 25 Sep 2012 08:03:07 -0400
+In-Reply-To: <CAMSQXEGEf8xSYZa+0N77K-Ld5xHLefyMHtK6FxcKCqNhpnMp6g@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, RT <linux-rt-users@vger.kernel.org>
+Cc: Ivo Sieben <meltedpianoman@gmail.com>
 
-On Tue, Sep 25, 2012 at 02:12:43PM +0300, Felipe Balbi wrote:
-> I don't see any aggressive attitude towards what you suggested,
-> actually. Mailing list archives are available to check, but the one
-> cursing around was always yourself and THAT deserves an apology.
+In case of PREEMPT_RT or when low_latency flag is set by the serial driver
+the TTY receive flip buffer is copied to the line discipline directly
+instead of using a work queue in the background. Therefor only in case a
+workqueue is actually used for copying data to the line discipline
+we'll have to check & wait for the workqueue to finish.
 
-Total rubbish.  No apology, because I wasn't cursing you.  Whatever,
-I'm not going to re-explain the email thread.
+This prevents unnecessary spin lock/unlock on the workqueue spin lock that can
+cause additional scheduling overhead on a PREEMPT_RT system. On a 240 MHz
+AT91SAM9261 processor setup this fixes about 100us of scheduling overhead on the
+TTY read call.
 
-What I said was that your raising of beagleboard breakage (twice) was
-idiotic to a request for investigation.  That's a statement I _still_
-fully agree with, and I'll say it again if I have to.
+Signed-off-by: Ivo Sieben <meltedpianoman@gmail.com>
+---
 
-Trying to shut down investigation because investigation may break
-something _is_ idiotic - especially if the investigation reveals
-potential reasons why that breakage would occur.  Further investigation
-is precisely how we arrive at better solutions.
+ v2:
+ Patch v1 was based on the fact that only the tty_flip_buffer_push() function
+ was used to copy dat to the line discipline because I removed the
+ tty_schedule_flip() in my previous patch "[PATCH] tty: cleanup duplicate
+ functions in tty_buffer". Since that patched turned out to be invalid, I had
+ to implement this functionality differently.
+
+ drivers/tty/tty_buffer.c |   17 ++++++++++++++---
+ include/linux/tty.h      |    3 ++-
+ 2 files changed, 16 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index 6146e8b..dee77b4 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -354,6 +354,7 @@ void tty_schedule_flip(struct tty_struct *tty)
+ 		tty->buf.tail->commit = tty->buf.tail->used;
+ 	spin_unlock_irqrestore(&tty->buf.lock, flags);
+ 	schedule_work(&tty->buf.work);
++	atomic_set(&tty->buf.flush_work, 1);
+ }
+ EXPORT_SYMBOL(tty_schedule_flip);
+ 
+@@ -514,7 +515,14 @@ static void flush_to_ldisc(struct work_struct *work)
+  */
+ void tty_flush_to_ldisc(struct tty_struct *tty)
+ {
+-	flush_work(&tty->buf.work);
++	/*
++	 * The work queue is not always used to move data from the flip buffer
++	 * to the line discipline: the tty_flip_buffer_push() will call the
++	 * flush_to_ldisc() routine directly when low_latency flag is set.
++	 * Therefor only flush the work queue when required.
++	 */
++	if (atomic_xchg(&tty->buf.flush_work, 0))
++		flush_work(&tty->buf.work);
+ }
+ 
+ /**
+@@ -538,10 +546,12 @@ void tty_flip_buffer_push(struct tty_struct *tty)
+ 		tty->buf.tail->commit = tty->buf.tail->used;
+ 	raw_spin_unlock_irqrestore(&tty->buf.lock, flags);
+ 
+-	if (tty->low_latency)
++	if (tty->low_latency) {
+ 		flush_to_ldisc(&tty->buf.work);
+-	else
++	} else {
+ 		schedule_work(&tty->buf.work);
++		atomic_set(&tty->buf.flush_work, 1);
++	}
+ }
+ EXPORT_SYMBOL(tty_flip_buffer_push);
+ 
+@@ -563,5 +573,6 @@ void tty_buffer_init(struct tty_struct *tty)
+ 	tty->buf.free = NULL;
+ 	tty->buf.memory_used = 0;
+ 	INIT_WORK(&tty->buf.work, flush_to_ldisc);
++	atomic_set(&tty->buf.flush_work, 0);
+ }
+ 
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 21bceef..f76ac5e 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -43,7 +43,7 @@
+ #include <linux/tty_driver.h>
+ #include <linux/tty_ldisc.h>
+ #include <linux/mutex.h>
+-
++#include <linux/atomic.h>
+ 
+ 
+ /*
+@@ -86,6 +86,7 @@ struct tty_buffer {
+ 
+ struct tty_bufhead {
+ 	struct work_struct work;
++	atomic_t flush_work;
+ 	raw_spinlock_t lock;
+ 	struct tty_buffer *head;	/* Queue head */
+ 	struct tty_buffer *tail;	/* Active buffer */
+-- 
+1.7.9.5
+
+
