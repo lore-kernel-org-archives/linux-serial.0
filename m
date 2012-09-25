@@ -1,29 +1,57 @@
-From: Jassi Brar <jaswinder.singh@linaro.org>
-Subject: Re: [RFT/PATCH] serial: omap: prevent resume if device is not suspended.
-Date: Tue, 25 Sep 2012 17:59:52 +0530
-Message-ID: <CAJe_Zhc5jCBcfvTcs=Xi_QXLU+t_Erck-3pxV5co1xAsjj8kkA@mail.gmail.com>
-References: <1347972050-3509-1-git-send-email-sourav.poddar@ti.com>
-	<20120918140213.GA27463@arwen.pp.htv.fi>
-	<CANOLnONC1oDN3yu=ipao2A6MfuSkZfROVPewWLLEM5fNTKipxQ@mail.gmail.com>
-	<20120919115933.GJ3772@arwen.pp.htv.fi>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH-v2] tty: prevent unnecessary work queue lock checking on
+ flip buffer copy
+Date: Tue, 25 Sep 2012 14:06:27 +0100
+Message-ID: <20120925140627.5aea6ad7@pyramind.ukuu.org.uk>
+References: <CAMSQXEGEf8xSYZa+0N77K-Ld5xHLefyMHtK6FxcKCqNhpnMp6g@mail.gmail.com>
+	<1348574506-23625-1-git-send-email-meltedpianoman@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20120919115933.GJ3772@arwen.pp.htv.fi>
-Sender: linux-omap-owner@vger.kernel.org
-To: balbi@ti.com
-Cc: Grazvydas Ignotas <notasas@gmail.com>, Sourav Poddar <sourav.poddar@ti.com>, gregkh@linuxfoundation.org, alan@linux.intel.com, tony@atomide.com, khilman@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, santosh.shilimkar@ti.com, paul@pwsan.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:43320 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753529Ab2IYNBg (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 25 Sep 2012 09:01:36 -0400
+In-Reply-To: <1348574506-23625-1-git-send-email-meltedpianoman@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Ivo Sieben <meltedpianoman@gmail.com>
+Cc: Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, RT <linux-rt-users@vger.kernel.org>
 
-On 19 September 2012 17:29, Felipe Balbi <balbi@ti.com> wrote:
+> instead of using a work queue in the background. Therefor only in case a
+> workqueue is actually used for copying data to the line discipline
+> we'll have to check & wait for the workqueue to finish.
+> 
+> This prevents unnecessary spin lock/unlock on the workqueue spin lock that can
+> cause additional scheduling overhead on a PREEMPT_RT system. On a 240 MHz
+> AT91SAM9261 processor setup this fixes about 100us of scheduling overhead on the
+> TTY read call.
 
-> this is what I mean, actually. If we remove pm_runtime_get_sync() in
-> exchange for pm_runtime_set_active() before pm_runtime_enable(), it
-> works on PandaBoard, but breaks BeagleBoard.
->
-Perhaps it suggests that OMAP4 (PandaBoard) serial port is already
-activated but OMAP3 (BeagleBoard) isn't. So we need to reflect that
-either by doing pm_runtime_set_active() only on OMAP4 or by bringing
-up the OMAP3 too before the pm_runtime_set_active() call.
-BTW I understand get_sync(), set_active() and enable() are for
-different purposes, they can't be traded for one another.
+This seems incredibly convoluted and complicated as well as asking for
+races and weirdness with the divisibility between the schedule_work and
+the atomic operation.
+
+If the only cases are:
+
+	tty->low_latency = 0
+				call flush_work
+	tty->low_latency = 1
+				don't call
+
+	tty->low_latency changes
+				call flush_work
+
+then surely the right fix is
+
+	if (tty->low_latency == 0)
+		flush_work(&tty->buf.work);
+
+and making the couple of spots we set/unset low latency on a running port
+somewhat smarter ?
+
+That avoids an expensive atomic operation as well (and atomic ops are
+very expensive on some platforms).
+
+Alan
