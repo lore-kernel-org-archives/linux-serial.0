@@ -1,33 +1,44 @@
-From: Anton Vorontsov <anton.vorontsov@linaro.org>
-Subject: Re: [PATCH v9 0/11] KGDB/KDB FIQ (NMI) debugger
-Date: Wed, 26 Sep 2012 13:57:50 -0700
-Message-ID: <20120926205749.GA2219@lizard>
-References: <20120924212648.GA27605@lizard>
- <20120926205420.GA2510@kroah.com>
+From: Stephen Boyd <sboyd@codeaurora.org>
+Subject: Re: [PATCH 08/11] ARM: Move some macros from entry-armv to entry-header
+Date: Wed, 26 Sep 2012 15:05:24 -0700
+Message-ID: <50637C24.90206@codeaurora.org>
+References: <20120924212648.GA27605@lizard> <1348522080-32629-8-git-send-email-anton.vorontsov@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:37785 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751704Ab2IZVAb (ORCPT
+Received: from wolverine02.qualcomm.com ([199.106.114.251]:1854 "EHLO
+	wolverine02.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751532Ab2IZWFf (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Sep 2012 17:00:31 -0400
-Received: by pbbrr4 with SMTP id rr4so2480226pbb.19
-        for <linux-serial@vger.kernel.org>; Wed, 26 Sep 2012 14:00:30 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <20120926205420.GA2510@kroah.com>
+	Wed, 26 Sep 2012 18:05:35 -0400
+In-Reply-To: <1348522080-32629-8-git-send-email-anton.vorontsov@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Russell King <linux@arm.linux.org.uk>, Alan Cox <alan@linux.intel.com>, Jason Wessel <jason.wessel@windriver.com>, Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>, Colin Cross <ccross@android.com>, Brian Swetland <swetland@google.com>, John Stultz <john.stultz@linaro.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-kernel@lists.linaro.org, patches@linaro.org, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+To: Anton Vorontsov <anton.vorontsov@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@arm.linux.org.uk>, linaro-kernel@lists.linaro.org, patches@linaro.org, Brian Swetland <swetland@google.com>, Jason Wessel <jason.wessel@windriver.com>, linux-kernel@vger.kernel.org, =?ISO-8859-1?Q?Arve_Hj=F8nnev=E5g?= <arve@android.com>, John Stultz <john.stultz@linaro.org>, linux-serial@vger.kernel.org, Colin Cross <ccross@android.com>, kgdb-bugreport@lists.sourceforge.net, kernel-team@android.com, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
 
-On Wed, Sep 26, 2012 at 01:54:20PM -0700, Greg Kroah-Hartman wrote:
-> On Mon, Sep 24, 2012 at 02:26:50PM -0700, Anton Vorontsov wrote:
-> > Here comes v9...
-> > 
-> > Greg, patches 1-7 have gotten all the needed acks from Alan and Jason, so
-> > it would be awesome if you could apply them to your tty-next tree.
-> 
-> All 7 patches of these are now applied, thanks.
+On 09/24/12 14:27, Anton Vorontsov wrote:
+> Just move the macros into header file as we would want to use them for
+> KGDB FIQ entry code.
+>
+> The following macros were moved:
+>
+>  - svc_entry
+>  - usr_entry
+>  - kuser_cmpxchg_check
+>  - vector_stub
+>
+> To make kuser_cmpxchg_check actually work across different files, we
+> also have to make kuser_cmpxchg64_fixup global.
+>
+> Signed-off-by: Anton Vorontsov <anton.vorontsov@linaro.org>
 
-Thanks a lot, Greg!
+Why can't we put the fiq entry code from the next patch into
+entry-armv.S? Sorry if this has been asked before but I don't see any
+reasoning in the commit text.
+
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+hosted by The Linux Foundation
+
