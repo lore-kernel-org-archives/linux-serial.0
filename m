@@ -1,18 +1,19 @@
 From: Alexey Brodkin <Alexey.Brodkin@synopsys.com>
 Subject: [PATCH] tty/8250_early: Prevent rounding error in uartclk to baud ratio
-Date: Fri, 28 Sep 2012 16:03:04 +0400
-Message-ID: <1348833784-31385-1-git-send-email-abrodkin@synopsys.com>
+Date: Fri, 28 Sep 2012 16:19:08 +0400
+Message-ID: <1348834748-31565-1-git-send-email-abrodkin@synopsys.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from us02smtp2.synopsys.com ([198.182.60.77]:43646 "EHLO
+Received: from us02smtp2.synopsys.com ([198.182.60.77]:43736 "EHLO
 	alvesta.synopsys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757519Ab2I1MMf (ORCPT
+	with ESMTP id S1751259Ab2I1MTT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 28 Sep 2012 08:12:35 -0400
+	Fri, 28 Sep 2012 08:19:19 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@suse.de, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Vineet.Gupta1@synopsys.com, Alexey.Brodkin@synopsys.com
+To: gregkh@linuxfoundation.org, alan@linux.intel.com
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Vineet.Gupta1@synopsys.com, Alexey.Brodkin@synopsys.com
 
 Modify divisor to select the nearest baud rate divider rather than the
 lowest. It minimizes baud rate errors especially on low UART clock
