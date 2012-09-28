@@ -1,93 +1,53 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: [PATCH] serial/arc-uart: Add new driver
-Date: Fri, 28 Sep 2012 14:02:48 +0100
-Message-ID: <20120928140248.54a10d06@bob.linux.org.uk>
-References: <1348835752-28426-1-git-send-email-vgupta@synopsys.com>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: Re: [PATCH] tty/8250_early: Prevent rounding error in uartclk to
+ baud ratio
+Date: Fri, 28 Sep 2012 15:01:28 +0200
+Message-ID: <50659FA8.7020200@suse.cz>
+References: <1348833784-31385-1-git-send-email-abrodkin@synopsys.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-2
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga03.intel.com ([143.182.124.21]:32534 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756148Ab2I1NBU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 28 Sep 2012 09:01:20 -0400
-In-Reply-To: <1348835752-28426-1-git-send-email-vgupta@synopsys.com>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1348833784-31385-1-git-send-email-abrodkin@synopsys.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alexey Brodkin <Alexey.Brodkin@synopsys.com>
+Cc: gregkh@suse.de, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Vineet.Gupta1@synopsys.com
 List-Id: linux-serial@vger.kernel.org
-To: Vineet.Gupta1@synopsys.com
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-> +int __attribute__((weak)) running_on_iss;
+On 09/28/2012 02:03 PM, Alexey Brodkin wrote:
+> Modify divisor to select the nearest baud rate divider rather than the
+> lowest. It minimizes baud rate errors especially on low UART clock
+> frequencies.
+> 
+> For example, if uartclk is 33000000 and baud is 115200 the ratio is
+> about 17.9 The current code selects 17 (5% error) but should select 18
+> (0.5% error).
+> 
+> On the same lines as following:
+> http://www.kernel.org/pub/linux/kernel/people/akpm/patches/2.6/2.6.9-rc3/2.6.9-rc3-mm2/broken-out/serial-pick-nearest-baud-rate-divider.patch
+> 
+> Signed-off-by: Alexey Brodkin <abrodkin@synopsys.com>
+> ---
+>  drivers/tty/serial/8250_early.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250_early.c b/drivers/tty/serial/8250_early.c
+> index eaafb98..cfc46b7 100644
+> --- a/drivers/tty/serial/8250_early.c
+> +++ b/drivers/tty/serial/8250_early.c
+> @@ -140,7 +140,7 @@ static void __init init_port(struct early_serial8250_device *device)
+>  	serial_out(port, UART_FCR, 0);		/* no fifo */
+>  	serial_out(port, UART_MCR, 0x3);	/* DTR + RTS */
+>  
+> -	divisor = port->uartclk / (16 * device->baud);
+> +	divisor = (port->uartclk + (8 * device->baud)) / (16 *	device->baud);
 
-Globals really ought to have sensible names, if they must exist at all.
-Why is this needed ?
+So this should be in fact DIV_ROUND_CLOSEST(), right?
 
-> +#define ARC_SERIAL_DEV_NAME	"ttyS"
+But anyway I'm missing any explanation of *why* this is needed? This
+should be part of the commit log. Is there any bug you are fixing here?
 
-ttyS is reserved by the 8250 driver. Use a different name
-
-> /* ttySxx per Documentation/devices.txt */
-> +#define ARC_SERIAL_MAJOR	4
-> +#define ARC_SERIAL_MINOR	64
-
-Use dynamic assignments
-
-> +static void arc_serial_rx_chars(struct arc_uart_port *uart)
-> +{
-> +	struct tty_struct *tty = NULL;
-> +	unsigned int status, ch, flg = 0;
-> +
-> +	tty = uart->port.state->port.tty;
-
-Please get rid of the unneeded initialisers for things like tty - they
-just hide bugs later.
-
-For locking purposes you need to be doing
-
-	tty = tty_port_tty_get(&uart->port.state->port);
-
-	if (tty) {
-
-		stuff
-
-		tty_kref_put(tty);
-
-
-so that the tty cannot vanish under you on a hangup. As you reference
-it in several spots it might make sense to do that once if either
-RXIENB/TXIENB is set and then pass it to the tx/rx handlers ?
-
-
-> +static void arc_serial_break_ctl(struct uart_port *port, int
-> break_state) +{
-> +	/* ARC UART doesn't support sendind Break signal */
-
-sending ..
-
-> +static void arc_serial_set_ldisc(struct uart_port *port, int ld)
-> +{
-> +	/* this might need implementing for the touch driver */
-> +}
-
-Is this a left over comment or somehting else ?
-
-> +static void
-> +arc_serial_set_termios(struct uart_port *port, struct ktermios
-> *termios,
-> +		       struct ktermios *old)
-> +{
-> +	struct arc_uart_port *uart = (struct arc_uart_port *)port;
-> +	unsigned int baud, uartl, uarth, hw_val;
-> +	unsigned long flags;
-> +
-
-Two things here. Firstly you want to write the actual baud back to the
-termios (tty_termios_encode_baud_rate) unless B0 is set.
-
-Secondly if you don't support hardware flow control, character size
-setting etc then you need to set those bits back so the caller knows.
-Two ways to do that. Either initialise the default termios for the tty
-type to the correct values and use tty_termios_copy_hw() or set them in
-the termios handler.
-
-Alan
+thanks,
+-- 
+js
+suse labs
