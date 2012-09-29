@@ -1,68 +1,64 @@
-From: Jiri Slaby <jslaby@suse.cz>
+From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
 Subject: Re: [PATCH] tty/8250_early: Prevent rounding error in uartclk to
  baud ratio
-Date: Sat, 29 Sep 2012 09:07:33 +0200
-Message-ID: <50669E35.20809@suse.cz>
-References: <1348834748-31565-1-git-send-email-abrodkin@synopsys.com> <5065A003.4090604@suse.cz> <506697DC.50200@synopsys.com>
+Date: Sat, 29 Sep 2012 16:34:43 +0530
+Message-ID: <5066D5CB.5040405@synopsys.com>
+References: <1348834748-31565-1-git-send-email-abrodkin@synopsys.com> <5065A003.4090604@suse.cz> <506697DC.50200@synopsys.com> <50669E35.20809@suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-2
+Content-Type: text/plain; charset="ISO-8859-2"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-we0-f174.google.com ([74.125.82.174]:47570 "EHLO
-	mail-we0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753574Ab2I2HHj (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 29 Sep 2012 03:07:39 -0400
-In-Reply-To: <506697DC.50200@synopsys.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
-To: Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <50669E35.20809@suse.cz>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jiri Slaby <jslaby@suse.cz>
 Cc: Alexey Brodkin <Alexey.Brodkin@synopsys.com>, gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 
-On 09/29/2012 08:40 AM, Vineet Gupta wrote:
-> On Friday 28 September 2012 06:32 PM, Jiri Slaby wrote:
->> On 09/28/2012 02:19 PM, Alexey Brodkin wrote:
->>> Modify divisor to select the nearest baud rate divider rather than the
->>> lowest. It minimizes baud rate errors especially on low UART clock
->>> frequencies.
+On Saturday 29 September 2012 12:37 PM, Jiri Slaby wrote:
+> On 09/29/2012 08:40 AM, Vineet Gupta wrote:
+>> On Friday 28 September 2012 06:32 PM, Jiri Slaby wrote:
+>>> On 09/28/2012 02:19 PM, Alexey Brodkin wrote:
+>>>> Modify divisor to select the nearest baud rate divider rather than the
+>>>> lowest. It minimizes baud rate errors especially on low UART clock
+>>>> frequencies.
+>>>>
+>>>> For example, if uartclk is 33000000 and baud is 115200 the ratio is
+>>>> about 17.9 The current code selects 17 (5% error) but should select 18
+>>>> (0.5% error).
+>>>>
+>>>> On the same lines as following:
+>>>> http://www.kernel.org/pub/linux/kernel/people/akpm/patches/2.6/2.6.9-rc3/2.6.9-rc3-mm2/broken-out/serial-pick-nearest-baud-rate-divider.patch
+>>>>
+>>>> Signed-off-by: Alexey Brodkin <abrodkin@synopsys.com>
+>>>> ---
+>>>>  drivers/tty/serial/8250_early.c |    2 +-
+>>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/drivers/tty/serial/8250_early.c b/drivers/tty/serial/8250_early.c
+>>>> index eaafb98..cfc46b7 100644
+>>>> --- a/drivers/tty/serial/8250_early.c
+>>>> +++ b/drivers/tty/serial/8250_early.c
+>>>> @@ -140,7 +140,7 @@ static void __init init_port(struct early_serial8250_device *device)
+>>>>  	serial_out(port, UART_FCR, 0);		/* no fifo */
+>>>>  	serial_out(port, UART_MCR, 0x3);	/* DTR + RTS */
+>>>>  
+>>>> -	divisor = port->uartclk / (16 * device->baud);
+>>>> +	divisor = (port->uartclk + (8 * device->baud)) / (16 *	device->baud);
+>>> So this should be in fact DIV_ROUND_CLOSEST(), right?
 >>>
->>> For example, if uartclk is 33000000 and baud is 115200 the ratio is
->>> about 17.9 The current code selects 17 (5% error) but should select 18
->>> (0.5% error).
->>>
->>> On the same lines as following:
->>> http://www.kernel.org/pub/linux/kernel/people/akpm/patches/2.6/2.6.9-rc3/2.6.9-rc3-mm2/broken-out/serial-pick-nearest-baud-rate-divider.patch
->>>
->>> Signed-off-by: Alexey Brodkin <abrodkin@synopsys.com>
->>> ---
->>>  drivers/tty/serial/8250_early.c |    2 +-
->>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/tty/serial/8250_early.c b/drivers/tty/serial/8250_early.c
->>> index eaafb98..cfc46b7 100644
->>> --- a/drivers/tty/serial/8250_early.c
->>> +++ b/drivers/tty/serial/8250_early.c
->>> @@ -140,7 +140,7 @@ static void __init init_port(struct early_serial8250_device *device)
->>>  	serial_out(port, UART_FCR, 0);		/* no fifo */
->>>  	serial_out(port, UART_MCR, 0x3);	/* DTR + RTS */
->>>  
->>> -	divisor = port->uartclk / (16 * device->baud);
->>> +	divisor = (port->uartclk + (8 * device->baud)) / (16 *	device->baud);
->> So this should be in fact DIV_ROUND_CLOSEST(), right?
->>
->> But anyway I'm missing any explanation of *why* this is needed? This
->> should be part of the commit log. Is there any bug you are fixing here?
-> 
-> Actually the issue showed up when using the stock 8250 driver for
-> Synopsys DW UART. This was on a FPGA with ~50MHz clk. When we enabled
-> early serial, we saw garbage which Alexey narrowed down to the rounding
-> error. So the bug had been latent and it only showed up with such low
-> clk rates.
+>>> But anyway I'm missing any explanation of *why* this is needed? This
+>>> should be part of the commit log. Is there any bug you are fixing here?
+>> Actually the issue showed up when using the stock 8250 driver for
+>> Synopsys DW UART. This was on a FPGA with ~50MHz clk. When we enabled
+>> early serial, we saw garbage which Alexey narrowed down to the rounding
+>> error. So the bug had been latent and it only showed up with such low
+>> clk rates.
+> Yes, this is a perfect argument I was asking for and should have been a
+> part of the commit...
 
-Yes, this is a perfect argument I was asking for and should have been a
-part of the commit...
+First timer's anxiety I suppose ! Per your DIV_ROUND_CLOSEST()
+suggestion, Alexey has already sent out a v2 patch. I presume he needs
+to respin a v3 to beef up the commitlog along the lines of above !
 
-thanks,
--- 
-js
-suse labs
+Thx,
+-Vineet
