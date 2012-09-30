@@ -1,64 +1,45 @@
-From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: Re: [PATCH] tty/8250_early: Prevent rounding error in uartclk to
- baud ratio
-Date: Sat, 29 Sep 2012 16:34:43 +0530
-Message-ID: <5066D5CB.5040405@synopsys.com>
-References: <1348834748-31565-1-git-send-email-abrodkin@synopsys.com> <5065A003.4090604@suse.cz> <506697DC.50200@synopsys.com> <50669E35.20809@suse.cz>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-2"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <50669E35.20809@suse.cz>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: Alexey Brodkin <Alexey.Brodkin@synopsys.com>, gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Alexander Shiyan <shc_work@mail.ru>
+Subject: [PATCH] serial: sccnxp: Allows the driver to be compiled as a module
+Date: Sun, 30 Sep 2012 13:19:19 +0400
+Message-ID: <1348996759-2449-1-git-send-email-shc_work@mail.ru>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp28.mail.ru ([94.100.176.181]:60142 "EHLO smtp28.mail.ru"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750724Ab2I3JTd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 30 Sep 2012 05:19:33 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexander Shiyan <shc_work@mail.ru>
 
-On Saturday 29 September 2012 12:37 PM, Jiri Slaby wrote:
-> On 09/29/2012 08:40 AM, Vineet Gupta wrote:
->> On Friday 28 September 2012 06:32 PM, Jiri Slaby wrote:
->>> On 09/28/2012 02:19 PM, Alexey Brodkin wrote:
->>>> Modify divisor to select the nearest baud rate divider rather than the
->>>> lowest. It minimizes baud rate errors especially on low UART clock
->>>> frequencies.
->>>>
->>>> For example, if uartclk is 33000000 and baud is 115200 the ratio is
->>>> about 17.9 The current code selects 17 (5% error) but should select 18
->>>> (0.5% error).
->>>>
->>>> On the same lines as following:
->>>> http://www.kernel.org/pub/linux/kernel/people/akpm/patches/2.6/2.6.9-rc3/2.6.9-rc3-mm2/broken-out/serial-pick-nearest-baud-rate-divider.patch
->>>>
->>>> Signed-off-by: Alexey Brodkin <abrodkin@synopsys.com>
->>>> ---
->>>>  drivers/tty/serial/8250_early.c |    2 +-
->>>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/tty/serial/8250_early.c b/drivers/tty/serial/8250_early.c
->>>> index eaafb98..cfc46b7 100644
->>>> --- a/drivers/tty/serial/8250_early.c
->>>> +++ b/drivers/tty/serial/8250_early.c
->>>> @@ -140,7 +140,7 @@ static void __init init_port(struct early_serial8250_device *device)
->>>>  	serial_out(port, UART_FCR, 0);		/* no fifo */
->>>>  	serial_out(port, UART_MCR, 0x3);	/* DTR + RTS */
->>>>  
->>>> -	divisor = port->uartclk / (16 * device->baud);
->>>> +	divisor = (port->uartclk + (8 * device->baud)) / (16 *	device->baud);
->>> So this should be in fact DIV_ROUND_CLOSEST(), right?
->>>
->>> But anyway I'm missing any explanation of *why* this is needed? This
->>> should be part of the commit log. Is there any bug you are fixing here?
->> Actually the issue showed up when using the stock 8250 driver for
->> Synopsys DW UART. This was on a FPGA with ~50MHz clk. When we enabled
->> early serial, we saw garbage which Alexey narrowed down to the rounding
->> error. So the bug had been latent and it only showed up with such low
->> clk rates.
-> Yes, this is a perfect argument I was asking for and should have been a
-> part of the commit...
 
-First timer's anxiety I suppose ! Per your DIV_ROUND_CLOSEST()
-suggestion, Alexey has already sent out a v2 patch. I presume he needs
-to respin a v3 to beef up the commitlog along the lines of above !
+Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
+---
+ drivers/tty/serial/Kconfig |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
-Thx,
--Vineet
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 750671d..b7aaa95 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1105,7 +1105,7 @@ config SERIAL_SC26XX_CONSOLE
+ 	  Support for Console on SC2681/SC2692 serial ports.
+ 
+ config SERIAL_SCCNXP
+-	bool "SCCNXP serial port support"
++	tristate "SCCNXP serial port support"
+ 	depends on !SERIAL_SC26XX
+ 	select SERIAL_CORE
+ 	default n
+@@ -1117,7 +1117,7 @@ config SERIAL_SCCNXP
+ 
+ config SERIAL_SCCNXP_CONSOLE
+ 	bool "Console on SCCNXP serial port"
+-	depends on SERIAL_SCCNXP
++	depends on SERIAL_SCCNXP=y
+ 	select SERIAL_CORE_CONSOLE
+ 	help
+ 	  Support for console on SCCNXP serial ports.
+-- 
+1.7.8.6
+
