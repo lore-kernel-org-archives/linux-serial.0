@@ -1,39 +1,61 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [GIT PATCH] TTY patches for 3.7-rc1
-Date: Mon, 1 Oct 2012 15:13:50 -0700
-Message-ID: <20121001221350.GA10172@kroah.com>
-References: <20121001183046.GA13042@kroah.com>
- <506A0FCA.2020908@suse.cz>
+From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Subject: Re: [PATCH] serial/arc-uart: Add new driver
+Date: Tue, 2 Oct 2012 10:03:18 +0530
+Message-ID: <506A6E8E.2000005@synopsys.com>
+References: <1348835752-28426-1-git-send-email-vgupta@synopsys.com> <20120928140248.54a10d06@bob.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:46262 "EHLO
-	out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752055Ab2JAWNw (ORCPT
+Received: from us02smtp1.synopsys.com ([198.182.60.75]:47447 "EHLO
+	vaxjo.synopsys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750765Ab2JBEds (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 1 Oct 2012 18:13:52 -0400
-Content-Disposition: inline
-In-Reply-To: <506A0FCA.2020908@suse.cz>
+	Tue, 2 Oct 2012 00:33:48 -0400
+In-Reply-To: <20120928140248.54a10d06@bob.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Stanislav Kozina <skozina@redhat.com>
+To: Alan Cox <alan@linux.intel.com>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Mon, Oct 01, 2012 at 11:48:58PM +0200, Jiri Slaby wrote:
-> On 10/01/2012 08:30 PM, Greg KH wrote:
-> > Stanislav Kozina (2):
-> >       tty: Fix possible race in n_tty_read()
-> 
-> The (pretty hopeless) commit log says:
->     Fix possible panic caused by unlocked access to tty->read_cnt in
->     while-loop condition in n_tty_read().
-> 
-> Just curious, what kind of panic that can cause, can you be more
-> concrete on that? I suppose two readers, one eats everything, the other
-> is a killer? And should we backport to -stable?
+On Friday 28 September 2012 06:32 PM, Alan Cox wrote:
 
-Stanislav, you are the one who could reproduce this, any answers here?
+>> +static void
+>> +arc_serial_set_termios(struct uart_port *port, struct ktermios
+>> *termios,
+>> +		       struct ktermios *old)
+>> +{
+>> +	struct arc_uart_port *uart = (struct arc_uart_port *)port;
+>> +	unsigned int baud, uartl, uarth, hw_val;
+>> +	unsigned long flags;
+>> +
+> Two things here. Firstly you want to write the actual baud back to the
+> termios (tty_termios_encode_baud_rate) unless B0 is set.
+>
+> Secondly if you don't support hardware flow control, character size
+> setting etc then you need to set those bits back so the caller knows.
+> Two ways to do that. Either initialise the default termios for the tty
+> type to the correct values and use tty_termios_copy_hw() or set them in
+> the termios handler.
 
-thanks,
+Just to give you an idea, is something on the lines of following OK for
+both the above points above !
 
-greg k-h
+-       uart_update_timeout(port, termios->c_cflag, baud);
++       new->c_cflag &= ~(CMSPAR|CRTSCTS);  /* Don't care for
+parity/flow ctrl */
++
++       if (old)
++               tty_termios_copy_hw(new, old);
++
++       /* Don't rewrite B0 */
++       if (tty_termios_baud_rate(new))
++               tty_termios_encode_baud_rate(new, baud, baud);
++
++       uart_update_timeout(port, new->c_cflag, baud);
+ 
+
+Respun patch to follow shortly.
+
+Thx,
+Vineet
