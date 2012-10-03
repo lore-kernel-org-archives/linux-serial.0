@@ -1,33 +1,48 @@
-From: Alexey Brodkin <Alexey.Brodkin@synopsys.com>
-Subject: Re: [PATCH v3] serial/8250/8250_early: Prevent rounding error in
- uartclk
-Date: Wed, 3 Oct 2012 16:53:06 +0400
-Message-ID: <506C3532.4020400@synopsys.com>
-References: <1349267263-21683-1-git-send-email-abrodkin@synopsys.com> <20121003133740.69c9dbce@bob.linux.org.uk>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH] tty/serial/8250: Make omap hardware workarounds local
+ to 8250.h
+Date: Wed, 3 Oct 2012 16:51:58 -0700
+Message-ID: <20121003235157.GN4840@atomide.com>
+References: <20121003223158.GL4840@atomide.com>
+ <20121003232547.GD14392@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from alvesta.synopsys.com ([198.182.60.77]:43901 "EHLO
-	alvesta.synopsys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754766Ab2JCMxU (ORCPT
+Received: from mho-04-ewr.mailhop.org ([204.13.248.74]:39408 "EHLO
+	mho-02-ewr.mailhop.org" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S933038Ab2JCXwA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 3 Oct 2012 08:53:20 -0400
-In-Reply-To: <20121003133740.69c9dbce@bob.linux.org.uk>
+	Wed, 3 Oct 2012 19:52:00 -0400
+Content-Disposition: inline
+In-Reply-To: <20121003232547.GD14392@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: Alexey Brodkin <Alexey.Brodkin@synopsys.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, Vineet.Gupta1@synopsys.com
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
 
-On 03.10.2012 16:37, Alan Cox wrote:
->> So the bug had been latent and it only showed up with such low cock
->> rates.
->
-> clock ?
->
-> Perhaps Greg can tweak the description as it goes in - otherwise all
-> fine with me
->
-Sorry for this.
-Essentially I meant "clock".
-May do another respin if needed.
+* Greg Kroah-Hartman <gregkh@linuxfoundation.org> [121003 16:27]:
+> On Wed, Oct 03, 2012 at 03:31:58PM -0700, Tony Lindgren wrote:
+> > This allows us to get rid of the ifdefs in 8250.c.
+> > 
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Cc: Alan Cox <alan@linux.intel.com>
+> > Cc: linux-serial@vger.kernel.org
+> > Cc: linux-omap@vger.kernel.org
+> > Signed-off-by: Tony Lindgren <tony@atomide.com>
+> > 
+> > ---
+> > 
+> > Would appreciate some minimal immutable branch
+> > with this commit that I can also pull in to my
+> > upcoming omap cleanup branch for v3.8 merge window
+> > as I'll be moving plat/serial.h for the ARM common
+> > zImage changes.
+> 
+> Please wait for 3.7-rc1 to come out before I can do that.
+
+OK thanks, rc1 is what I'm waiting for as well before
+I apply my series.
+
+Regards,
+
+Tony
