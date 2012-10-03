@@ -1,47 +1,40 @@
 From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH] tty/serial/8250: Make omap hardware workarounds local
- to 8250.h
-Date: Wed, 3 Oct 2012 16:51:58 -0700
-Message-ID: <20121003235157.GN4840@atomide.com>
-References: <20121003223158.GL4840@atomide.com>
- <20121003232547.GD14392@kroah.com>
+Subject: Re: [PATCH 09/17] serial/8250: Limit the omap workarounds to omap1
+Date: Wed, 3 Oct 2012 15:26:22 -0700
+Message-ID: <20121003222622.GK4840@atomide.com>
+References: <20120911052934.29637.9190.stgit@muffinssi.local>
+ <20120911053104.29637.95283.stgit@muffinssi.local>
+ <20120911174234.45919fd3@bob.linux.org.uk>
+ <20120911164023.GE23092@atomide.com>
+ <20120911201919.58d44dcb@bob.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mho-04-ewr.mailhop.org ([204.13.248.74]:39408 "EHLO
+Received: from mho-04-ewr.mailhop.org ([204.13.248.74]:50696 "EHLO
 	mho-02-ewr.mailhop.org" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S933038Ab2JCXwA (ORCPT
+	with ESMTP id S1754475Ab2JCW03 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 3 Oct 2012 19:52:00 -0400
+	Wed, 3 Oct 2012 18:26:29 -0400
 Content-Disposition: inline
-In-Reply-To: <20121003232547.GD14392@kroah.com>
+In-Reply-To: <20120911201919.58d44dcb@bob.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
+To: Alan Cox <alan@linux.intel.com>
+Cc: linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org
 
-* Greg Kroah-Hartman <gregkh@linuxfoundation.org> [121003 16:27]:
-> On Wed, Oct 03, 2012 at 03:31:58PM -0700, Tony Lindgren wrote:
-> > This allows us to get rid of the ifdefs in 8250.c.
+* Alan Cox <alan@linux.intel.com> [120911 12:02]:
+> > > Even better would be if for other cases is_omap_port and friends
+> > > returned 0...
 > > 
-> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Cc: Alan Cox <alan@linux.intel.com>
-> > Cc: linux-serial@vger.kernel.org
-> > Cc: linux-omap@vger.kernel.org
-> > Signed-off-by: Tony Lindgren <tony@atomide.com>
-> > 
-> > ---
-> > 
-> > Would appreciate some minimal immutable branch
-> > with this commit that I can also pull in to my
-> > upcoming omap cleanup branch for v3.8 merge window
-> > as I'll be moving plat/serial.h for the ARM common
-> > zImage changes.
+> > Yes it seems that those macros could be moved from plat-omap/serial.h
+> > to live in drivers/tty/serial/8250/8250.h? Or do you have some better
+> > place in mind?
 > 
-> Please wait for 3.7-rc1 to come out before I can do that.
+> I've not looked at it enough to decide if it's doable or not. I'm happy
+> either way - both patches are progress the right way!
 
-OK thanks, rc1 is what I'm waiting for as well before
-I apply my series.
+FYI, I'll send something along these lines as a separate patch as
+"[PATCH] tty/serial/8250: Make omap hardware workarounds local to 8250.h"
 
 Regards,
 
