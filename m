@@ -1,30 +1,45 @@
-From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: Re: [PATCH v2] serial/arc-uart: Add new driver
-Date: Wed, 3 Oct 2012 12:40:35 +0530
-Message-ID: <506BE4EB.4010904@synopsys.com>
-References: <1349154216-7906-1-git-send-email-vgupta@synopsys.com> <20121002124707.32b70292@bob.linux.org.uk>
+From: Shubhrajyoti D <shubhrajyoti@ti.com>
+Subject: [PATCH 3/3] serial: omap: Remove the hardcode serial_omap_console_ports array.
+Date: Wed, 3 Oct 2012 17:24:38 +0530
+Message-ID: <1349265278-27763-3-git-send-email-shubhrajyoti@ti.com>
+References: <1349265278-27763-1-git-send-email-shubhrajyoti@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20121002124707.32b70292@bob.linux.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from bear.ext.ti.com ([192.94.94.41]:58333 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754023Ab2JCLyr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 3 Oct 2012 07:54:47 -0400
+In-Reply-To: <1349265278-27763-1-git-send-email-shubhrajyoti@ti.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, sourav.poddar@ti.com, Shubhrajyoti D <shubhrajyoti@ti.com>, AnilKumar Ch <anilkumar@ti.com>
 
-On Tuesday 02 October 2012 05:17 PM, Alan Cox wrote:
->> +/* Is this for UART emulation on ARC Instruction Set Simulator (ISS)
->> */ +int __attribute__((weak)) running_on_iss;
-> Why not pass a quirks field in your platform data instead - much
-> cleaner than a global.
+Currently the array serial_omap_console_ports is hard coded to 4.
+Make it depend on the maximum uart count.
+Post to [cfc55bc ARM: OMAP2+: serial: Change MAX_HSUART_PORTS to 6]
+the max ports is 6.
 
-I'd thought about it too. However the platform data is retrieved in
-arc_uart_init_one() while it's usage in arc_serial_set_termios() will be
-in a different call chain, meaning this info will have to be anyways
-saved in "some" data structure - probably within struct arc_uart_port -
-and that too per port - which is not clean either. However if you
-strongly feel that the global is a must go - I can rework it that way.
+Cc: AnilKumar Ch <anilkumar@ti.com>
+Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
+---
+ drivers/tty/serial/omap-serial.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-thx,
--Vineet
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index caf49a6..478383d 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -1077,7 +1077,7 @@ out:
+ 
+ #ifdef CONFIG_SERIAL_OMAP_CONSOLE
+ 
+-static struct uart_omap_port *serial_omap_console_ports[4];
++static struct uart_omap_port *serial_omap_console_ports[OMAP_MAX_HSUART_PORTS];
+ 
+ static struct uart_driver serial_omap_reg;
+ 
+-- 
+1.7.5.4
+
