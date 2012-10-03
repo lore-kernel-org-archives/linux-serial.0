@@ -1,64 +1,50 @@
-From: Shubhrajyoti D <shubhrajyoti@ti.com>
-Subject: [PATCH 1/3] serial: omap: Make context_loss_cnt signed
-Date: Wed, 3 Oct 2012 17:24:36 +0530
-Message-ID: <1349265278-27763-1-git-send-email-shubhrajyoti@ti.com>
+From: Alexey Brodkin <Alexey.Brodkin@synopsys.com>
+Subject: [PATCH v3] serial/8250/8250_early: Prevent rounding error in uartclk
+Date: Wed, 3 Oct 2012 16:27:43 +0400
+Message-ID: <1349267263-21683-1-git-send-email-abrodkin@synopsys.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:38246 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753888Ab2JCLyr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 3 Oct 2012 07:54:47 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: alan@linux.intel.com, gregkh@linuxfoundation.org, Vineet.Gupta1@synopsys.com, Alexey Brodkin <Alexey.Brodkin@synopsys.com>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, sourav.poddar@ti.com, Shubhrajyoti D <shubhrajyoti@ti.com>
 
-get_context_loss_count returns an int however it is stored in
-unsigned integer context_loss_cnt . This patch tries to make
-context_loss_cnt int. So that in case of errors the value
-(which may be negative) is not interpreted wrongly.
+Modify divisor to select the nearest baud rate divider rather than the
+lowest. It minimizes baud rate errors especially on low UART clock
+frequencies.
 
-In serial_omap_runtime_resume in case of errors returned by
-get_context_loss_count print a warning and do a restore.
+For example, if uartclk is 33000000 and baud is 115200 the ratio is
+about 17.9 The current code selects 17 (5% error) but should select 18
+(0.5% error).
 
-Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
+This 5% error in baud rate leads to garbage on receiving end, while 0.5%
+doesn't.
+
+The issue showed up when using the stock 8250 driver for
+Synopsys DW UART. This was on a FPGA with ~12MHz UART clock.
+When we enabled early serial, we saw garbage which was narrowed down
+to the rounding error.
+
+So the bug had been latent and it only showed up with such low cock rates.
+
+Signed-off-by: Alexey Brodkin <abrodkin@synopsys.com>
 ---
- drivers/tty/serial/omap-serial.c |   12 ++++++++----
- 1 files changed, 8 insertions(+), 4 deletions(-)
+ drivers/tty/serial/8250/8250_early.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 6ede6fd..fd0fb8c 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -96,7 +96,7 @@ struct uart_omap_port {
- 	unsigned char		msr_saved_flags;
- 	char			name[20];
- 	unsigned long		port_activity;
--	u32			context_loss_cnt;
-+	int			context_loss_cnt;
- 	u32			errata;
- 	u8			wakeups_enabled;
- 	unsigned int		irq_pending:1;
-@@ -1556,11 +1556,15 @@ static int serial_omap_runtime_resume(struct device *dev)
- {
- 	struct uart_omap_port *up = dev_get_drvdata(dev);
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index eaafb98..843a150 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -140,7 +140,7 @@ static void __init init_port(struct early_serial8250_device *device)
+ 	serial_out(port, UART_FCR, 0);		/* no fifo */
+ 	serial_out(port, UART_MCR, 0x3);	/* DTR + RTS */
  
--	u32 loss_cnt = serial_omap_get_context_loss_count(up);
-+	int loss_cnt = serial_omap_get_context_loss_count(up);
- 
--	if (up->context_loss_cnt != loss_cnt)
-+	if (loss_cnt < 0) {
-+		dev_err(dev, "serial_omap_get_context_loss_count failed : %d\n",
-+			loss_cnt);
- 		serial_omap_restore_context(up);
--
-+	} else if (up->context_loss_cnt != loss_cnt) {
-+		serial_omap_restore_context(up);
-+	}
- 	up->latency = up->calc_latency;
- 	schedule_work(&up->qos_work);
- 
+-	divisor = port->uartclk / (16 * device->baud);
++	divisor = DIV_ROUND_CLOSEST(port->uartclk, 16 * device->baud);
+ 	c = serial_in(port, UART_LCR);
+ 	serial_out(port, UART_LCR, c | UART_LCR_DLAB);
+ 	serial_out(port, UART_DLL, divisor & 0xff);
 -- 
-1.7.5.4
-
+1.7.9.5
