@@ -1,127 +1,104 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: [PATCH] tty/serial/8250: Make omap hardware workarounds local to
- 8250.h
-Date: Wed, 3 Oct 2012 15:31:58 -0700
-Message-ID: <20121003223158.GL4840@atomide.com>
+From: Rob Herring <robherring2@gmail.com>
+Subject: Re: [PATCH] serial: i.MX: evaluate linux,stdout-path property
+Date: Thu, 04 Oct 2012 07:44:45 -0500
+Message-ID: <506D84BD.5010000@gmail.com>
+References: <1349347191-7406-1-git-send-email-s.hauer@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mho-03-ewr.mailhop.org ([204.13.248.66]:54344 "EHLO
-	mho-01-ewr.mailhop.org" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1754475Ab2JCWcB (ORCPT
+Received: from mail-ob0-f174.google.com ([209.85.214.174]:58118 "EHLO
+	mail-ob0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756483Ab2JDMou (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 3 Oct 2012 18:32:01 -0400
-Content-Disposition: inline
+	Thu, 4 Oct 2012 08:44:50 -0400
+In-Reply-To: <1349347191-7406-1-git-send-email-s.hauer@pengutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+To: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org, Rob Herring <rob.herring@calxeda.com>, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
 
-This allows us to get rid of the ifdefs in 8250.c.
+On 10/04/2012 05:39 AM, Sascha Hauer wrote:
+> devicetrees may have the linux,stdout-path property to specify the
+> console. This patch adds support to the i.MX serial driver for this.
+> 
+> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+> ---
+> 
+> I was originally looking for a more generic way to handle this, but
+> since a struct console has no device associated to it, it's not
+> possible to match a console with a device in a generic way. So we
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Alan Cox <alan@linux.intel.com>
-Cc: linux-serial@vger.kernel.org
-Cc: linux-omap@vger.kernel.org
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Could we add a device ptr to struct console?
 
----
+> just call add_preferred_console from the driver and let it go down
+> to a string matching in the console code.
+> If anyone has a better idea how to handle this, please let me know.
+> Otherwise I'm happy to see this patch applied aswell.
+> 
+> Thanks
+>  Sascha
+> 
+>  drivers/tty/serial/imx.c |   29 +++++++++++++++++++++++++++++
+>  1 file changed, 29 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index e309e8b..b52c4a7 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -1397,6 +1397,32 @@ static int serial_imx_resume(struct platform_device *dev)
+>  
+>  #ifdef CONFIG_OF
+>  /*
+> + * Check if this device matches the linux,stdout-path property
+> + * in the chosen node. return true if yes, false otherwise
+> + */
+> +static int serial_imx_is_stdoutpath(struct platform_device *pdev)
 
-Would appreciate some minimal immutable branch
-with this commit that I can also pull in to my
-upcoming omap cleanup branch for v3.8 merge window
-as I'll be moving plat/serial.h for the ARM common
-zImage changes.
+Couldn't this function be generic? Just move
+IS_ENABLED(CONFIG_SERIAL_IMX_CONSOLE) outside this function. Arguably,
+the presence of the property or not could replace the config option all
+together.
 
---- a/arch/arm/plat-omap/include/plat/serial.h
-+++ b/arch/arm/plat-omap/include/plat/serial.h
-@@ -109,15 +109,6 @@
- #define OMAP5UART4		OMAP4UART4
- #define ZOOM_UART		95		/* Only on zoom2/3 */
- 
--/* This is only used by 8250.c for omap1510 */
--#define is_omap_port(pt)	({int __ret = 0;			\
--			if ((pt)->port.mapbase == OMAP1_UART1_BASE ||	\
--			    (pt)->port.mapbase == OMAP1_UART2_BASE ||	\
--			    (pt)->port.mapbase == OMAP1_UART3_BASE)	\
--				__ret = 1;				\
--			__ret;						\
--			})
--
- #ifndef __ASSEMBLER__
- 
- struct omap_board_data;
---- a/drivers/tty/serial/8250/8250.c
-+++ b/drivers/tty/serial/8250/8250.c
-@@ -2349,16 +2349,14 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 			serial_port_out(port, UART_EFR, efr);
- 	}
- 
--#ifdef CONFIG_ARCH_OMAP1
- 	/* Workaround to enable 115200 baud on OMAP1510 internal ports */
--	if (cpu_is_omap1510() && is_omap_port(up)) {
-+	if (is_omap1510_8250(up)) {
- 		if (baud == 115200) {
- 			quot = 1;
- 			serial_port_out(port, UART_OMAP_OSC_12M_SEL, 1);
- 		} else
- 			serial_port_out(port, UART_OMAP_OSC_12M_SEL, 0);
- 	}
--#endif
- 
- 	/*
- 	 * For NatSemi, switch to bank 2 not bank 1, to avoid resetting EXCR2,
-@@ -2439,10 +2437,9 @@ static unsigned int serial8250_port_size(struct uart_8250_port *pt)
- {
- 	if (pt->port.iotype == UPIO_AU)
- 		return 0x1000;
--#ifdef CONFIG_ARCH_OMAP1
--	if (is_omap_port(pt))
-+	if (is_omap1_8250(pt))
- 		return 0x16 << pt->port.regshift;
--#endif
-+
- 	return 8 << pt->port.regshift;
- }
- 
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -106,3 +106,39 @@ static inline int serial8250_pnp_init(void) { return 0; }
- static inline void serial8250_pnp_exit(void) { }
- #endif
- 
-+#ifdef CONFIG_ARCH_OMAP1
-+static inline int is_omap1_8250(struct uart_8250_port *pt)
-+{
-+	int res;
-+
-+	switch (pt->port.mapbase) {
-+	case OMAP1_UART1_BASE:
-+	case OMAP1_UART2_BASE:
-+	case OMAP1_UART3_BASE:
-+		res = 1;
-+		break;
-+	default:
-+		res = 0;
-+		break;
-+	}
-+
-+	return res;
-+}
-+
-+static inline int is_omap1510_8250(struct uart_8250_port *pt)
-+{
-+	if (!cpu_is_omap1510())
-+		return 0;
-+
-+	return is_omap1_8250(pt);
-+}
-+#else
-+static inline int is_omap1_8250(struct uart_8250_port *pt)
-+{
-+	return 0;
-+}
-+static inline int is_omap1510_8250(struct uart_8250_port *pt)
-+{
-+	return 0;
-+}
-+#endif
+And use a struct device so this can work with devices other than
+platform devices (i.e. amba).
+
+Rob
+
+> +{
+> +	struct device_node *dn;
+> +	const char *name;
+> +
+> +	if (!IS_ENABLED(CONFIG_SERIAL_IMX_CONSOLE))
+> +		return 0;
+> +
+> +	name = of_get_property(of_chosen, "linux,stdout-path", NULL);
+> +	if (name == NULL)
+> +		return 0;
+> +
+> +	dn = of_find_node_by_path(name);
+> +	if (!dn)
+> +		return 0;
+> +
+> +	if (dn == pdev->dev.of_node)
+> +		return 1;
+> +
+> +	return 0;
+> +}
+> +
+> +/*
+>   * This function returns 1 iff pdev isn't a device instatiated by dt, 0 iff it
+>   * could successfully get all information from dt or a negative errno.
+>   */
+> @@ -1427,6 +1453,9 @@ static int serial_imx_probe_dt(struct imx_port *sport,
+>  
+>  	sport->devdata = of_id->data;
+>  
+> +	if (serial_imx_is_stdoutpath(pdev))
+> +		add_preferred_console(imx_reg.cons->name, sport->port.line, 0);
+> +
+>  	return 0;
+>  }
+>  #else
+> 
+
