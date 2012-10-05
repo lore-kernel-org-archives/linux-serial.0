@@ -1,36 +1,109 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: sccnxp: Allows the driver to be compiled as a
- module
-Date: Fri, 5 Oct 2012 09:37:15 -0700
-Message-ID: <20121005163715.GA15740@kroah.com>
-References: <1348996759-2449-1-git-send-email-shc_work@mail.ru>
+From: Rob Herring <robherring2@gmail.com>
+Subject: Re: [PATCH 1/3] serial_core: Add helper for matching against linux,stdout-path
+Date: Fri, 05 Oct 2012 11:43:17 -0500
+Message-ID: <506F0E25.6080309@gmail.com>
+References: <1349453581-1685-1-git-send-email-s.hauer@pengutronix.de> <1349453581-1685-2-git-send-email-s.hauer@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f46.google.com ([209.85.220.46]:41675 "EHLO
-	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751745Ab2JEQhT (ORCPT
+Received: from mail-ob0-f174.google.com ([209.85.214.174]:57556 "EHLO
+	mail-ob0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752255Ab2JEQnV (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 5 Oct 2012 12:37:19 -0400
-Received: by mail-pa0-f46.google.com with SMTP id hz1so1956804pad.19
-        for <linux-serial@vger.kernel.org>; Fri, 05 Oct 2012 09:37:19 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <1348996759-2449-1-git-send-email-shc_work@mail.ru>
+	Fri, 5 Oct 2012 12:43:21 -0400
+In-Reply-To: <1349453581-1685-2-git-send-email-s.hauer@pengutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alexander Shiyan <shc_work@mail.ru>
-Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
+To: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Grant Likely <grant.likely@secretlab.ca>, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
 
-On Sun, Sep 30, 2012 at 01:19:19PM +0400, Alexander Shiyan wrote:
+On 10/05/2012 11:12 AM, Sascha Hauer wrote:
+> devicetrees may have a linux,stdout-path property in the chosen
+> node describing the console device. This adds a helper function
+> to match a device against this property so a driver can call
+> add_preferred_console for a matching device.
+
+Consoles can be on devices other than uarts, so this should really be
+of_device_is_stdout_path() and in the DT core.
+
 > 
-> Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
+> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+> ---
+>  drivers/tty/serial/serial_core.c |   30 ++++++++++++++++++++++++++++++
+>  include/linux/serial_core.h      |    3 +++
+>  2 files changed, 33 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index a21dc8e..f4a9f26 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -33,6 +33,7 @@
+>  #include <linux/serial_core.h>
+>  #include <linux/delay.h>
+>  #include <linux/mutex.h>
+> +#include <linux/of.h>
+>  
+>  #include <asm/irq.h>
+>  #include <asm/uaccess.h>
+> @@ -2540,6 +2541,35 @@ void uart_insert_char(struct uart_port *port, unsigned int status,
+>  }
+>  EXPORT_SYMBOL_GPL(uart_insert_char);
+>  
+> +#ifdef CONFIG_OF
+> +/**
+> + * of_uart_is_stdoutpath - check if this device matches the linux,stdout-path
+> + *                         property
+> + *
+> + * Check if this device matches the linux,stdout-path property
+> + * in the chosen node. return true if yes, false otherwise.
+> + */
+> +int of_uart_is_stdoutpath(struct device *dev)
+> +{
+> +	struct device_node *dn;
+> +	const char *name;
+> +
+> +	name = of_get_property(of_chosen, "linux,stdout-path", NULL);
+> +	if (name == NULL)
+> +		return 0;
+> +
+> +	dn = of_find_node_by_path(name);
+> +	if (!dn)
+> +		return 0;
+> +
+> +	if (dn == dev->of_node)
 
-Thanks for this fix, but as it breaks the build when you do this, it's
-kind of sad that you haven't tested it out :(
+I know I said use struct device, but since only device_node ptr is
+needed you should just use that. Then the function is usable if you only
+have the device_node ptr.
 
-I'll go fix up that build breakage when the driver is being built by a
-module and push the fixes to Linus.
+> +		return 1;
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(of_uart_is_stdoutpath);
+> +#endif
+> +
+>  EXPORT_SYMBOL(uart_write_wakeup);
+>  EXPORT_SYMBOL(uart_register_driver);
+>  EXPORT_SYMBOL(uart_unregister_driver);
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index 0253c20..35a61f6 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -560,6 +560,9 @@ static inline int uart_handle_break(struct uart_port *port)
+>  					 (cflag) & CRTSCTS || \
+>  					 !((cflag) & CLOCAL))
+>  
+> +/* check if a device matches the linux,stdout-path property */
+> +int of_uart_is_stdoutpath(struct device *dev);
 
-thanks,
+Need an empty version for !CONFIG_OF?
 
-greg k-h
+Rob
+
+> +
+>  #endif
+>  
+>  #endif /* LINUX_SERIAL_CORE_H */
+> 
