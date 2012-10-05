@@ -1,42 +1,42 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: [PATCH 3/3] serial: i.MX: evaluate linux,stdout-path property
-Date: Fri,  5 Oct 2012 18:13:01 +0200
-Message-ID: <1349453581-1685-4-git-send-email-s.hauer@pengutronix.de>
-References: <1349453581-1685-1-git-send-email-s.hauer@pengutronix.de>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v3] serial/8250/8250_early: Prevent rounding error in
+ uartclk
+Date: Fri, 5 Oct 2012 09:20:55 -0700
+Message-ID: <20121005162055.GA24092@kroah.com>
+References: <1349267263-21683-1-git-send-email-abrodkin@synopsys.com>
+ <20121003133740.69c9dbce@bob.linux.org.uk>
+ <506C3532.4020400@synopsys.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:42867 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756701Ab2JEQNW (ORCPT
+Received: from mail-pa0-f46.google.com ([209.85.220.46]:41706 "EHLO
+	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756662Ab2JEQVD (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 5 Oct 2012 12:13:22 -0400
-In-Reply-To: <1349453581-1685-1-git-send-email-s.hauer@pengutronix.de>
+	Fri, 5 Oct 2012 12:21:03 -0400
+Received: by mail-pa0-f46.google.com with SMTP id hz1so1939114pad.19
+        for <linux-serial@vger.kernel.org>; Fri, 05 Oct 2012 09:21:02 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <506C3532.4020400@synopsys.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, Sascha Hauer <s.hauer@pengutronix.de>
+To: Alexey Brodkin <Alexey.Brodkin@synopsys.com>
+Cc: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Vineet.Gupta1@synopsys.com
 
-devicetrees may have the linux,stdout-path property to specify the
-console. This patch adds support to the i.MX serial driver for this.
+On Wed, Oct 03, 2012 at 04:53:06PM +0400, Alexey Brodkin wrote:
+> On 03.10.2012 16:37, Alan Cox wrote:
+> >>So the bug had been latent and it only showed up with such low cock
+> >>rates.
+> >
+> >clock ?
+> >
+> >Perhaps Greg can tweak the description as it goes in - otherwise all
+> >fine with me
+> >
+> Sorry for this.
+> Essentially I meant "clock".
+> May do another respin if needed.
 
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
----
- drivers/tty/serial/imx.c |    3 +++
- 1 file changed, 3 insertions(+)
+Don't worry, I can edit it :)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 3a9337e..bc8a7bfa 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1421,6 +1421,9 @@ static int serial_imx_probe_dt(struct imx_port *sport,
- 
- 	sport->devdata = of_id->data;
- 
-+	if (of_uart_is_stdoutpath(&pdev->dev))
-+		add_preferred_console(imx_reg.cons->name, sport->port.line, 0);
-+
- 	return 0;
- }
- #else
--- 
-1.7.10.4
-
+greg k-h
