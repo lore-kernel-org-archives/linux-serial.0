@@ -1,44 +1,51 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [RFC 20/24] SERIAL: core: add xmit buffer allocation callbacks
-Date: Sat, 6 Oct 2012 17:51:36 +0100
-Message-ID: <20121006165136.GC28061@n2100.arm.linux.org.uk>
-References: <20121006123803.GD15246@n2100.arm.linux.org.uk> <E1TKTlL-0002ni-MB@rmk-PC.arm.linux.org.uk> <20121006164956.2956375c@pyramind.ukuu.org.uk>
+From: "Reddy Kaveri, Praveen Kumar" <praveen-kumar.reddy-kaveri@hp.com>
+Subject: RE: PL2303 Driver Issue
+Date: Sat, 6 Oct 2012 18:33:19 +0000
+Message-ID: <523E9909A6DFCF469669581BEB8DA7AA56928B25@G2W2441.americas.hpqcorp.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-omap-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20121006164956.2956375c@pyramind.ukuu.org.uk>
-Sender: linux-omap-owner@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Tony Lindgren <tony@atomide.com>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from g1t0029.austin.hp.com ([15.216.28.36]:18367 "EHLO
+	g1t0029.austin.hp.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753304Ab2JFSeM convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 6 Oct 2012 14:34:12 -0400
+Received: from G2W1953G.americas.hpqcorp.net (gvt0525.austin.hp.com [16.238.8.185])
+	(using TLSv1 with cipher AES128-SHA (128/128 bits))
+	(No client certificate requested)
+	by g1t0029.austin.hp.com (Postfix) with ESMTPS id D992638096
+	for <linux-serial@vger.kernel.org>; Sat,  6 Oct 2012 18:34:11 +0000 (UTC)
+Content-Language: en-US
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On Sat, Oct 06, 2012 at 04:49:56PM +0100, Alan Cox wrote:
-> On Sat, 06 Oct 2012 13:45:47 +0100
-> Russell King <rmk+kernel@arm.linux.org.uk> wrote:
-> 
-> > This allows drivers (such as OMAP serial) to allocate and free their
-> > transmit buffers in a sane manner, rather than working around the
-> > buffer allocation provided by serial_core.
-> 
-> I think this just illustrates how broken the serial_core layering is in
-> that drivers can't treat it as a library but get constrained by it.
-> 
-> Fine for now and actually probably a useful hook to begin removing the
-> circ buffers for the kernel generic kfifo and other work that needs doing
-> eventually.
+Hi,
 
-Yes, I was thinking about turning the 'default' buffer allocation into
-a library call which drivers would set, but I felt that's just asking
-for a big patch and problems with new drivers appearing.
+I am using Telxon PTC-710 device in linux environment and I am using RS=
+232 Serial to USB converter. When I connect the device to USB port it i=
+s detecting and showing in the system log as "attached to ttyUSB0".=A0 =
+I have written a java program to display all the available ports. But t=
+his program is displaying only ttyS0 &ttyS1. I have tried to set all pe=
+rmissions to the user as well as to port. Please help me if I am missin=
+g any configuration related to this driver.
 
-We could transition it by providing a default buffer allocation call,
-converting all the drivers, and then making that call mandatory.  That
-probably would then give us a better path to convert to kfifo.
+I look forward to hearing from you.
+Thanks In advance
 
-The view that serial_core should be a library is one that Ted mentioned
-when I created serial_core originally - I disagreed at the time, and
-I still believe it would've ended up being much more complex - and
-hairy - to go that route at that time.  Maybe as things have moved
-forward in the tty layer that's changed, but I've been out of tty stuff
-for too long to properly comment.
+Regards,
+Praveen Kumar Reddy K
+Hewlett-Packard Company
+
+#101, 1035 64 Ave SE ,Calgary, AB,=A0T2H 2J7, CANADA
+
++1 403 692 7914 / Tel=20
++1 403=A0619=A08242 / Mobile=20
+praveen-kumar.reddy-kaveri@hp.com=A0/ Email
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
