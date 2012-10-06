@@ -1,109 +1,98 @@
-From: Rob Herring <robherring2@gmail.com>
-Subject: Re: [PATCH 1/3] serial_core: Add helper for matching against linux,stdout-path
-Date: Fri, 05 Oct 2012 11:43:17 -0500
-Message-ID: <506F0E25.6080309@gmail.com>
-References: <1349453581-1685-1-git-send-email-s.hauer@pengutronix.de> <1349453581-1685-2-git-send-email-s.hauer@pengutronix.de>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: [RFC 00/24] OMAP serial driver flow control fixes, and preparation
+	for DMA engine conversion
+Date: Sat, 6 Oct 2012 13:38:03 +0100
+Message-ID: <20121006123803.GD15246@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ob0-f174.google.com ([209.85.214.174]:57556 "EHLO
-	mail-ob0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752255Ab2JEQnV (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 5 Oct 2012 12:43:21 -0400
-In-Reply-To: <1349453581-1685-2-git-send-email-s.hauer@pengutronix.de>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-omap-owner@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, Tony Lindgren <tony@atomide.com>
 List-Id: linux-serial@vger.kernel.org
-To: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Grant Likely <grant.likely@secretlab.ca>, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
 
-On 10/05/2012 11:12 AM, Sascha Hauer wrote:
-> devicetrees may have a linux,stdout-path property in the chosen
-> node describing the console device. This adds a helper function
-> to match a device against this property so a driver can call
-> add_preferred_console for a matching device.
+Hi,
 
-Consoles can be on devices other than uarts, so this should really be
-of_device_is_stdout_path() and in the DT core.
+This series of patches fixes multiple flow control issues with the OMAP
+serial driver, and prepares the driver for DMA engine conversion.  We
+require hardware assisted flow control to work properly for DMA support
+otherwise we have no way to properly pause the transmitter.
 
-> 
-> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-> ---
->  drivers/tty/serial/serial_core.c |   30 ++++++++++++++++++++++++++++++
->  include/linux/serial_core.h      |    3 +++
->  2 files changed, 33 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index a21dc8e..f4a9f26 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -33,6 +33,7 @@
->  #include <linux/serial_core.h>
->  #include <linux/delay.h>
->  #include <linux/mutex.h>
-> +#include <linux/of.h>
->  
->  #include <asm/irq.h>
->  #include <asm/uaccess.h>
-> @@ -2540,6 +2541,35 @@ void uart_insert_char(struct uart_port *port, unsigned int status,
->  }
->  EXPORT_SYMBOL_GPL(uart_insert_char);
->  
-> +#ifdef CONFIG_OF
-> +/**
-> + * of_uart_is_stdoutpath - check if this device matches the linux,stdout-path
-> + *                         property
-> + *
-> + * Check if this device matches the linux,stdout-path property
-> + * in the chosen node. return true if yes, false otherwise.
-> + */
-> +int of_uart_is_stdoutpath(struct device *dev)
-> +{
-> +	struct device_node *dn;
-> +	const char *name;
-> +
-> +	name = of_get_property(of_chosen, "linux,stdout-path", NULL);
-> +	if (name == NULL)
-> +		return 0;
-> +
-> +	dn = of_find_node_by_path(name);
-> +	if (!dn)
-> +		return 0;
-> +
-> +	if (dn == dev->of_node)
+This is generated against v3.6, and has been developed mainly by testing
+on the OMAP4430 SDP platform.
 
-I know I said use struct device, but since only device_node ptr is
-needed you should just use that. Then the function is usable if you only
-have the device_node ptr.
+Flow control seems to be really broken in the OMAP serial driver as things
+stand today.  It just about works with software flow control because the
+generic serial core layer is inserting those characters, but only when the
+legacy DMA support is not being used.  Otherwise, flow control is
+completely non-functional.
 
-> +		return 1;
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(of_uart_is_stdoutpath);
-> +#endif
-> +
->  EXPORT_SYMBOL(uart_write_wakeup);
->  EXPORT_SYMBOL(uart_register_driver);
->  EXPORT_SYMBOL(uart_unregister_driver);
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index 0253c20..35a61f6 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -560,6 +560,9 @@ static inline int uart_handle_break(struct uart_port *port)
->  					 (cflag) & CRTSCTS || \
->  					 !((cflag) & CLOCAL))
->  
-> +/* check if a device matches the linux,stdout-path property */
-> +int of_uart_is_stdoutpath(struct device *dev);
+Issues identified in the OMAP serial driver are:
+- set_mctrl() can only assert modem control lines, once asserted it
+  is not possible to deassert them.
+- IXOFF controls sending of XON/XOFF characters, not the reception of
+  these sequences.
+- IXON controls the recognition of XON/XOFF characters, not the transmission
+  of the same.
+- Wrong bitmasks for hardware assisted software flow control.  Bit 2
+  in EFR enables sending of XON2/XOFF2 which are never set.
+- No point comparing received characters against XOFF2 ('special character
+  detect') as XOFF2 is not set.
+- Fix multiple places where bits 6 and 5 of MCR are attempted to be
+  altered, but because EFR ECB is unset, these bits remain unaffected.
+  This effectively prevents us accessing the right XON/XOFF/TCR/TLR
+  registers.
+- Remove unnecessary read-backs of EFR/MCR/LCR registers - these registers
+  don't change beneath us, they are configuration registers which hold their
+  values.  Not only does this simplify the code, but it makes it more
+  readable, and more importantly ensures that we work from a consistent
+  state where ->efr never has ECB set, and ->mcr never has the TCRTLR
+  bit set.
+- Fix disablement of hardware flow control and IXANY modes; once enabled
+  these could never be disabled because nothing in the code ever clears
+  these configuration bits.
 
-Need an empty version for !CONFIG_OF?
+Once that lot is fixed, these patches expand serial_core to permit hardware
+assisted flow control by:
+- adding throttle/unthrottle callbacks into low level serial drivers,
+  which allow them to take whatever action is necessary with hardware
+  assisted flow control to throttle the remote end.  In the case of
+  OMAP serial, this means disabling the RX interrupts so that the FIFO
+  fills to the watermark.
 
-Rob
+We then have a number of cleanups to the OMAP serial code to make the
+set_termios() function clearer and less prone to the kinds of mistakes
+identified above.  This results in a great simplification of the flow
+control configuration code.
 
-> +
->  #endif
->  
->  #endif /* LINUX_SERIAL_CORE_H */
-> 
+The OMAP serial driver hacks around with the transmit buffer allocation;
+lets clean that up so that drivers can cleanly allocate their transmitter
+buffer using coherent memory if that's what they desire.
+
+Finally, the last few patches clean up the plat/omap-serial.h header file,
+moving most of its contents into the OMAP serial driver itself.  Most of
+this is private to the OMAP serial driver and should never have been
+shared with anything else.
+
+I have omitted to include the conversion of the transmit paths to DMA
+engine.  Even with all the above fixed, it has issues when DMA transmit
+is in progress, and a program issues a TCSETS call (as `less' does after
+it has written its prompt.)  At the moment, this causes lots of junk to
+be emitted from the serial port when issuing `dmesg | less' which sometimes
+brings the port to a complete halt.
+
+As the OMAP DMA hardware does not have a clean pause when performing a
+MEM->DEV transfer (it discards its FIFO) I do not see a solution to this,
+which probably means that we can _not_ ever support transmit DMA on OMAP
+platforms.
+
+This means the xmit buffer allocation patches are not that useful unless
+a solution to that can be found.
+
+Now, the remaining question is, how much of this patch set do we think
+about merging, and when.  Given that flow control in this driver has been
+broken for a very long time, and no one has apparantly noticed, I don't
+think there's any urgency to this, so given its size, my preference would
+be to queue it up for the next merge window.  The thing that would worry
+me about applying some of the initial patches is that they may change
+the behaviour today and make any problems here more visible.
